@@ -354,8 +354,14 @@
 
     <!-- CUSTOMER: Favorites -->
     <section class="view" id="v-fav">
-      <div class="grid" id="favGrid"></div>
-      <p class="hint" id="emptyFav" style="display:none;">Noch keine Favoriten. Speichere Anbieter.</p>
+      <div class="panel">
+        <div class="section-title">Anbieter-Favoriten</div>
+        <div class="grid" id="favProviders"></div>
+        <div class="hint" id="emptyFavProviders" style="display:none;">Noch keine Anbieter-Favoriten.</div>
+        <div class="section-title" style="margin-top:12px;">Gericht-Favoriten</div>
+        <div class="grid" id="favDishes"></div>
+        <div class="hint" id="emptyFavDishes" style="display:none;">Noch keine Gericht-Favoriten.</div>
+      </div>
     </section>
 
     <!-- CUSTOMER: Orders -->
@@ -611,7 +617,8 @@
 
     <button class="btn" type="button" id="btnAddCart">In den Warenkorb</button>
     <button class="btn secondary" type="button" id="btnShare">Teilen</button>
-    <button class="btn ghost" type="button" id="btnFav">Favorit</button>
+    <button class="btn ghost" type="button" id="btnDishFav">Gericht speichern</button>
+    <button class="btn ghost" type="button" id="btnFav">Anbieter speichern</button>
     <div class="mini" id="sCodeNote"></div>
   </div>
 </div>
@@ -695,6 +702,8 @@
   const LS = {
     offers: 'mittagio_offers_v1',
     favs: 'mittagio_favs_v1',
+    providerFavs: 'mittagio_provider_favs_v1',
+    dishFavs: 'mittagio_dish_favs_v1',
     cart: 'mittagio_cart_v1',
     orders: 'mittagio_orders_v1',
     customer: 'mittagio_customer_v1',
@@ -709,7 +718,9 @@
   // --- State ---
   let mode = load(LS.mode, 'customer'); // 'customer' | 'provider'
   let offers = load(LS.offers, []);
-  let favs = new Set(load(LS.favs, []));
+  const legacyFavs = load(LS.favs, []);
+  let providerFavs = new Set(load(LS.providerFavs, legacyFavs));
+  let dishFavs = new Set(load(LS.dishFavs, []));
   let cart = load(LS.cart, null); // {providerId, items:[{offerId, qty}]} or null
   let orders = load(LS.orders, []); // [{id, providerName, summary, code, status, createdAt}]
   let customer = load(LS.customer, { loggedIn:false, name:null });
@@ -1030,12 +1041,13 @@
       ${data.hasPickupCode?'<div class="badge code">Abholcode</div>':''}
     `;
 
-    const favKey = data.providerId || data.id;
+    const providerKey = data.providerId || data.id;
+    const dishKey = data.id;
     const heart=document.createElement('button');
-    heart.className='heart'+(favs.has(favKey)?' on':'');
+    heart.className='heart'+(dishFavs.has(dishKey)?' on':'');
     heart.type='button';
-    heart.textContent = favs.has(favKey)?'❤':'♡';
-    heart.onclick=(e)=>{ e.stopPropagation(); toggleFav(favKey); };
+    heart.textContent = dishFavs.has(dishKey)?'❤':'♡';
+    heart.onclick=(e)=>{ e.stopPropagation(); toggleDishFav(dishKey); };
 
     const plogo = data.providerLogoData ? `<img src="${data.providerLogoData}" alt="Logo" />` : `<img src="assets/provider-placeholder.png" alt="Logo" />`;
 
@@ -1075,8 +1087,8 @@
       const favBtn=document.createElement('button');
       favBtn.type='button';
       favBtn.className='card-action';
-      favBtn.textContent = favs.has(favKey) ? 'Favorit entfernen' : 'Favorit';
-      favBtn.onclick=(e)=>{ e.stopPropagation(); toggleFav(favKey); };
+      favBtn.textContent = providerFavs.has(providerKey) ? 'Anbieter gespeichert' : 'Anbieter speichern';
+      favBtn.onclick=(e)=>{ e.stopPropagation(); toggleProviderFav(providerKey); };
 
       const shareBtn=document.createElement('button');
       shareBtn.type='button';
@@ -1137,29 +1149,53 @@
     return card;
   }
 
-  function toggleFav(providerId){
+  function toggleProviderFav(providerId){
     if(!providerId) return;
-    if(favs.has(providerId)) favs.delete(providerId); else favs.add(providerId);
-    save(LS.favs, Array.from(favs));
+    if(providerFavs.has(providerId)) providerFavs.delete(providerId); else providerFavs.add(providerId);
+    const arr = Array.from(providerFavs);
+    save(LS.providerFavs, arr);
+    // keep legacy key for compatibility
+    save(LS.favs, arr);
     renderDiscover();
     renderFavorites();
-    updateSheetFav();
+    updateSheetFavs();
+  }
+
+  function toggleDishFav(offerId){
+    if(!offerId) return;
+    if(dishFavs.has(offerId)) dishFavs.delete(offerId); else dishFavs.add(offerId);
+    save(LS.dishFavs, Array.from(dishFavs));
+    renderDiscover();
+    renderFavorites();
+    updateSheetFavs();
   }
 
   function renderFavorites(){
-    const grid=document.getElementById('favGrid');
-    const empty=document.getElementById('emptyFav');
+    const provGrid=document.getElementById('favProviders');
+    const provEmpty=document.getElementById('emptyFavProviders');
+    const dishGrid=document.getElementById('favDishes');
+    const dishEmpty=document.getElementById('emptyFavDishes');
+    if(!provGrid || !dishGrid || !provEmpty || !dishEmpty) return;
+
     const candidates = offers
-      .filter(o => o.active !== false && favs.has(o.providerId))
+      .filter(o => o.active !== false && providerFavs.has(o.providerId))
       .sort((a,b)=>String(b.day||'').localeCompare(String(a.day||'')));
     const bestByProvider = new Map();
     candidates.forEach(o=>{
       if(!bestByProvider.has(o.providerId)) bestByProvider.set(o.providerId, o);
     });
-    const list = Array.from(bestByProvider.values());
-    grid.innerHTML='';
-    empty.style.display = list.length ? 'none' : 'block';
-    list.forEach(o=>grid.appendChild(offerCard(o)));
+    const providerList = Array.from(bestByProvider.values());
+
+    provGrid.innerHTML='';
+    provEmpty.style.display = providerList.length ? 'none' : 'block';
+    providerList.forEach(o=>provGrid.appendChild(offerCard(o)));
+
+    const dishList = offers
+      .filter(o => o.active !== false && dishFavs.has(o.id))
+      .sort((a,b)=>String(b.day||'').localeCompare(String(a.day||'')));
+    dishGrid.innerHTML='';
+    dishEmpty.style.display = dishList.length ? 'none' : 'block';
+    dishList.forEach(o=>dishGrid.appendChild(offerCard(o)));
   }
 
   function genPickupCode(){
@@ -1312,18 +1348,30 @@
       ? 'Abholcode aktiv: <b>vorab bezahlt</b>.'
       : 'Ohne Abholcode nur ansehen.';
 
-    updateSheetFav();
+    updateSheetFavs();
 
     document.getElementById('bd').classList.add('active');
     document.getElementById('sheet').classList.add('active');
   }
 
-  function updateSheetFav(){
-    const b = document.getElementById('btnFav');
-    if(!activeOfferId){ b.textContent='Favorit'; return; }
+  function updateSheetFavs(){
+    const providerBtn = document.getElementById('btnFav');
+    const dishBtn = document.getElementById('btnDishFav');
+    if(!activeOfferId){
+      if(providerBtn) providerBtn.textContent='Anbieter speichern';
+      if(dishBtn) dishBtn.textContent='Gericht speichern';
+      return;
+    }
     const o = offers.find(x=>x.id===activeOfferId);
-    const key = o ? o.providerId : null;
-    b.textContent = key && favs.has(key) ? 'Aus Favoriten entfernen' : 'Als Favorit speichern';
+    if(!o) return;
+    const providerKey = o.providerId;
+    const dishKey = o.id;
+    if(providerBtn){
+      providerBtn.textContent = providerKey && providerFavs.has(providerKey) ? 'Anbieter entfernen' : 'Anbieter speichern';
+    }
+    if(dishBtn){
+      dishBtn.textContent = dishKey && dishFavs.has(dishKey) ? 'Gericht entfernen' : 'Gericht speichern';
+    }
   }
 
   function closeSheet(){
@@ -1415,7 +1463,11 @@
     if(!activeOfferId) return;
     const o = offers.find(x=>x.id===activeOfferId);
     if(!o) return;
-    toggleFav(o.providerId);
+    toggleProviderFav(o.providerId);
+  };
+  document.getElementById('btnDishFav').onclick=()=>{
+    if(!activeOfferId) return;
+    toggleDishFav(activeOfferId);
   };
   document.getElementById('btnShare').onclick=()=>{
     const o = offers.find(x=>x.id===activeOfferId);
