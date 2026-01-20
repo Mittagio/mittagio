@@ -956,7 +956,7 @@
     const loc=document.getElementById('locationInput');
     if(loc){
       if(loc.value !== locationQuery) loc.value = locationQuery || '';
-      loc.oninput=()=>{ locationQuery = loc.value; };
+      loc.oninput=()=>{ locationQuery = loc.value; renderDiscover(); };
     }
 
     let list = offers.filter(o => o.day === activeDay && o.active !== false);
@@ -966,7 +966,17 @@
       list = list.filter(o => (o.category||'') === cat);
     }
 
+    const q = String(locationQuery||'').trim().toLowerCase();
+    if(q){
+      list = list.filter(o=>{
+        const data = normalizeOffer(o);
+        const addr = buildAddress({address:data.address, street:data.providerStreet, zip:data.providerZip, city:data.providerCity});
+        return String(addr||'').toLowerCase().includes(q);
+      });
+    }
+
     grid.innerHTML='';
+    empty.textContent = q ? 'Keine Angebote fuer diesen Standort.' : 'Noch keine Angebote. Demo: Als Anbieter ein Inserat erstellen.';
     empty.style.display = list.length ? 'none' : 'block';
 
     list.forEach(o=> grid.appendChild(offerCard(o)));
