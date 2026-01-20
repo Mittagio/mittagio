@@ -158,6 +158,7 @@
       box-shadow:0 10px 22px rgba(0,0,0,.18);
     }
     .badge.code{left:auto; right:12px; background:rgba(31,157,85,.9)}
+    .badge.dine{background:rgba(242,183,5,.9); color:#111}
 
     .heart{
       position:absolute; top:12px; right:12px;
@@ -543,6 +544,18 @@
     'Vegetarisch':'Vegetarisch',
     'Mit Fleisch':'Fleisch'
   };
+  const DISH_SUGGESTIONS = [
+    {name:'Kuerbissuppe', category:'Vegan'},
+    {name:'Tomatensuppe mit Brot', category:'Vegan'},
+    {name:'Pasta mit Gemuese', category:'Vegetarisch'},
+    {name:'Kaesespaetzle', category:'Vegetarisch'},
+    {name:'Salat Bowl', category:'Vegetarisch'},
+    {name:'Falafel Teller', category:'Vegan'},
+    {name:'Veggie Burger', category:'Vegan'},
+    {name:'Schnitzel mit Pommes', category:'Fleisch'},
+    {name:'Currywurst', category:'Fleisch'},
+    {name:'Gulasch mit Spaetzle', category:'Fleisch'}
+  ];
 
   // Day slider: today..+6
   function fmtDay(d){
@@ -627,6 +640,26 @@
     const out = {...base, ...(p||{})};
     if(!out.address){ out.address = buildAddress(out); }
     if(!out.mealWindow){ out.mealWindow = DEFAULT_MEAL_WINDOW; }
+    return out;
+  }
+
+  function normalizeOffer(o){
+    const out = {...(o||{})};
+    if(!out.dish && out.title) out.dish = out.title;
+    if(!out.imageUrl && out.img) out.imageUrl = out.img;
+    if(!out.pickupWindow && out.time) out.pickupWindow = out.time;
+    if(!out.category && out.diet) out.category = out.diet;
+
+    if(out.address && (!out.providerStreet && !out.providerZip && !out.providerCity)){
+      const parsed = parseAddress(out.address);
+      out.providerStreet = out.providerStreet || parsed.street || '';
+      out.providerZip = out.providerZip || parsed.zip || '';
+      out.providerCity = out.providerCity || parsed.city || '';
+    }
+    out.providerStreet = out.providerStreet || '';
+    out.providerZip = out.providerZip || '';
+    out.providerCity = out.providerCity || '';
+    out.dineInPossible = !!out.dineInPossible;
     return out;
   }
 
@@ -759,80 +792,89 @@
     list.forEach(o=> grid.appendChild(offerCard(o)));
   }
 
-  function offerCard(o){
+  function offerCard(o, opts={}){
+    const data = normalizeOffer(o);
+    const interactive = opts.interactive !== false;
     const card=document.createElement('div');
     card.className='card';
-    card.onclick=()=>openOffer(o.id);
+    if(interactive){
+      card.onclick=()=>openOffer(data.id);
+    } else {
+      card.style.cursor='default';
+    }
 
     const img=document.createElement('div');
     img.className='img';
+    const imgSrc = data.imageUrl || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70';
     img.innerHTML = `
-      <img alt="${esc(o.dish)}" src="${esc(o.imageUrl||'')}" />
-      <div class="badge">${esc(o.pickupWindow||'Abholfenster')}</div>
-      ${o.hasPickupCode?'<div class="badge code">Abholcode</div>':''}
+      <img alt="${esc(data.dish||'')}" src="${esc(imgSrc)}" />
+      ${data.dineInPossible?'<div class="badge dine">Vor Ort</div>':''}
+      ${data.hasPickupCode?'<div class="badge code">Abholcode</div>':''}
     `;
 
     const heart=document.createElement('button');
-    heart.className='heart'+(favs.has(o.id)?' on':'');
+    heart.className='heart'+(favs.has(data.id)?' on':'');
     heart.type='button';
-    heart.textContent = favs.has(o.id)?'❤':'♡';
-    heart.onclick=(e)=>{ e.stopPropagation(); toggleFav(o.id); };
+    heart.textContent = favs.has(data.id)?'❤':'♡';
+    heart.onclick=(e)=>{ e.stopPropagation(); toggleFav(data.id); };
 
-    const plogo = o.providerLogoData ? `<img src="${o.providerLogoData}" alt="Logo" />` : `<img src="assets/provider-placeholder.png" alt="Logo" />`;
+    const plogo = data.providerLogoData ? `<img src="${data.providerLogoData}" alt="Logo" />` : `<img src="assets/provider-placeholder.png" alt="Logo" />`;
 
     const providerRow=document.createElement('div');
     providerRow.className='provider-logo';
     providerRow.innerHTML = `
       <div class="plogo">${plogo}</div>
-      <div class="pname">${esc(o.providerName||'Anbieter')}</div>
+      <div class="pname">${esc(data.providerName||'Anbieter')}</div>
     `;
 
+    const addr = buildAddress({address:data.address, street:data.providerStreet, zip:data.providerZip, city:data.providerCity});
     const body=document.createElement('div');
     body.className='body';
     body.innerHTML = `
-      <p class="title">${esc(o.dish||'')}</p>
-      <p class="sub">${esc((o.providerStreet||'') + ', ' + (o.providerZip||'') + ' ' + (o.providerCity||''))}</p>
+      <p class="title">${esc(data.dish||'')}</p>
+      <p class="sub">${esc(addr || '')}</p>
       <div class="meta">
-        <div class="price">${euro(o.price)}</div>
+        <div class="price">${euro(data.price)}</div>
         <div class="right">
-          <div>⏱️ ${esc(o.pickupWindow||'')}</div>
-          <div class="tag">${esc(o.category||'')}</div>
+          <div>⏱️ ${esc(data.pickupWindow||'')}</div>
+          <div class="tag">${esc(data.category||'')}</div>
         </div>
       </div>
     `;
 
     card.appendChild(img);
-    card.appendChild(heart);
+    if(interactive){ card.appendChild(heart); }
     card.appendChild(providerRow);
     card.appendChild(body);
     return card;
   }
 
   function providerCard(o){
+    const data = normalizeOffer(o);
     const card=document.createElement('div');
     card.className='card';
     card.style.cursor='default';
 
     const profile = normalizeProviderProfile(provider.profile || {});
-    const imgSrc = o.imageUrl || o.photoData || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70';
-    const windowText = o.pickupWindow || profile.mealWindow || '';
+    const imgSrc = data.imageUrl || data.photoData || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70';
+    const windowText = data.pickupWindow || profile.mealWindow || '';
 
     const img=document.createElement('div');
     img.className='img';
     img.innerHTML = `
-      <img alt="${esc(o.dish||'Gericht')}" src="${esc(imgSrc)}" />
-      ${o.hasPickupCode?'<div class="badge code">Abholcode</div>':''}
+      <img alt="${esc(data.dish||'Gericht')}" src="${esc(imgSrc)}" />
+      ${data.hasPickupCode?'<div class="badge code">Abholcode</div>':''}
     `;
 
     const body=document.createElement('div');
     body.className='body';
     body.innerHTML = `
-      <p class="title">${esc(o.dish||'Gericht')}</p>
+      <p class="title">${esc(data.dish||'Gericht')}</p>
       <p class="sub">Essenszeit: ${esc(windowText || '—')}</p>
       <div class="meta">
-        <div class="price">${euro(o.price)}</div>
+        <div class="price">${euro(data.price)}</div>
         <div class="right">
-          <div>${esc(o.category||'')}</div>
+          <div>${esc(data.category||'')}</div>
         </div>
       </div>
     `;
@@ -862,18 +904,19 @@
   // --- Offer sheet ---
   let activeOfferId=null;
   function openOffer(id){
-    const o = offers.find(x=>x.id===id);
-    if(!o) return;
+    const raw = offers.find(x=>x.id===id);
+    if(!raw) return;
+    const o = normalizeOffer(raw);
     activeOfferId=id;
 
-    document.getElementById('sImg').src = o.imageUrl || '';
+    document.getElementById('sImg').src = o.imageUrl || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70';
     document.getElementById('sDish').textContent = o.dish || '';
     document.getElementById('sProvider').textContent = o.providerName || '';
     document.getElementById('sPrice').textContent = euro(o.price);
     document.getElementById('sCat').textContent = o.category || '';
     document.getElementById('sWindow').textContent = o.pickupWindow || '';
 
-    const addr = `${o.providerStreet||''}, ${o.providerZip||''} ${o.providerCity||''}`.trim();
+    const addr = buildAddress({address:o.address, street:o.providerStreet, zip:o.providerZip, city:o.providerCity});
     const maps = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr)}`;
     const a = document.getElementById('sAddr');
     a.textContent = addr || '–';
@@ -1242,7 +1285,20 @@
   let w = { kind:null, step:0, data:{}, ctx:{} };
 
   const ALLERGENS_14 = [
-    'Gluten','Krebstiere','Eier','Fisch','Erdnüsse','Soja','Milch','Schalenfrüchte','Sellerie','Senf','Sesam','Sulfite','Lupinen','Weichtiere'
+    {name:'Gluten', short:'GL'},
+    {name:'Krebstiere', short:'KR'},
+    {name:'Eier', short:'EI'},
+    {name:'Fisch', short:'FI'},
+    {name:'Erdnuesse', short:'EN'},
+    {name:'Soja', short:'SO'},
+    {name:'Milch', short:'MI'},
+    {name:'Schalenfruechte', short:'SF'},
+    {name:'Sellerie', short:'SE'},
+    {name:'Senf', short:'SN'},
+    {name:'Sesam', short:'SS'},
+    {name:'Sulfite', short:'SU'},
+    {name:'Lupinen', short:'LU'},
+    {name:'Weichtiere', short:'WE'}
   ];
 
   function openWizard(){
@@ -1273,6 +1329,7 @@
       buildCookbookStep();
     }
     if(kind==='listing'){
+      const profile = normalizeProviderProfile(provider.profile || {});
       // if from cookbook
       if(ctx.fromCookbookId){
         const x = cookbook.find(c=>c.id===ctx.fromCookbookId);
@@ -1281,14 +1338,24 @@
         w.data = {
           providerId: providerId(),
           dish:'', category:'Vegetarisch', price:0,
-          pickupWindow:'',
+          pickupWindow: profile.mealWindow || DEFAULT_MEAL_WINDOW,
           hasPickupCode:false,
+          dineInPossible:false,
           allergens:[],
           extras:[],
           reuse:{enabled:false, deposit:0},
           photoData:''
         };
       }
+      w.data.providerId = providerId();
+      w.data.category = w.data.category || 'Vegetarisch';
+      w.data.price = Number(w.data.price||0);
+      w.data.pickupWindow = w.data.pickupWindow || profile.mealWindow || DEFAULT_MEAL_WINDOW;
+      w.data.hasPickupCode = !!w.data.hasPickupCode;
+      w.data.dineInPossible = !!w.data.dineInPossible;
+      w.data.allergens = Array.isArray(w.data.allergens) ? w.data.allergens : [];
+      w.data.extras = Array.isArray(w.data.extras) ? w.data.extras : [];
+      if(!w.data.reuse) w.data.reuse = {enabled:false, deposit:0};
       buildListingStep();
     }
     if(kind==='week'){
@@ -1305,17 +1372,15 @@
   // Common wizard buttons
   const wBackBtn = document.getElementById('wBack');
   const wNextBtn = document.getElementById('wNext');
+  const defaultWizardNext = ()=>{ w.step += 1; rebuildWizard(); };
+  function setWizardNextDefault(){ wNextBtn.onclick = defaultWizardNext; }
 
   wBackBtn.onclick=()=>{
     if(w.step===0){ closeWizard(); return; }
     w.step -= 1;
     rebuildWizard();
   };
-  wNextBtn.onclick=()=>{
-    // validation per step inside rebuild
-    w.step += 1;
-    rebuildWizard();
-  };
+  setWizardNextDefault();
 
   function setWizardHeader(title, stepText){
     document.getElementById('wTitle').textContent = title;
@@ -1361,6 +1426,7 @@
 
   // --- Provider onboarding (step-by-step, no form) ---
   function buildProviderStep(){
+    setWizardNextDefault();
     const total = 5;
     const stepText = `Schritt ${Math.min(w.step+1,total)} von ${total}`;
     setWizardHeader('Anbieter-Profil', stepText);
@@ -1550,261 +1616,383 @@
     }
   }
 
-  // --- Listing wizard (Immobilienscout-like: click answers) ---
+  // --- Listing wizard (Punkt 6 final) ---
+  function updateListingPreviewContent(target){
+    target.innerHTML = '';
+    const title = document.createElement('div');
+    title.className = 'hint';
+    title.textContent = 'Live-Preview';
+    target.appendChild(title);
+    target.appendChild(offerCard(previewOfferFromWizard(), {interactive:false}));
+    if(w.data.hasPickupCode){
+      const note = document.createElement('div');
+      note.className = 'mini';
+      note.textContent = 'Abholcode-Beispiel: A3';
+      target.appendChild(note);
+    }
+  }
+
+  function attachListingPreview(box){
+    const wrap = document.createElement('div');
+    wrap.id = 'listingPreview';
+    wrap.style.marginTop = '12px';
+    updateListingPreviewContent(wrap);
+    box.appendChild(wrap);
+  }
+
+  function refreshListingPreview(){
+    const wrap = document.getElementById('listingPreview');
+    if(wrap){ updateListingPreviewContent(wrap); }
+  }
+
   function buildListingStep(){
-    // Steps order per your request:
-    // 1 category, 2 photo, 3 name, 4 allergens, 5 extras, 6 reuse, 7 price, 8 pickup window, 9 pickup code, 10 preview + publish
+    setWizardNextDefault();
     const total = 10;
-    setWizardHeader('Neues Inserat', `${Math.min(w.step+1,total)}/${total}`);
+    setWizardHeader('Neues Inserat', `Schritt ${Math.min(w.step+1,total)} von ${total}`);
 
     if(w.step===0){
-      setWizardQuestion('Was möchtest du inserieren?', 'Tippe eine Kategorie.');
+      setWizardQuestion('Gerichtname?', 'Autocomplete: schnell tippen.');
       const box=document.createElement('div');
-      const ans=document.createElement('div'); ans.className='answers';
-      ['Vegan','Vegetarisch','Fleisch','Salat'].forEach(c=>{
-        const b=document.createElement('button');
-        b.type='button';
-        b.className='ans'+(w.data.category===c?' on':'');
-        b.textContent=c;
-        b.onclick=()=>{ w.data.category=c; rebuildWizard(); };
-        ans.appendChild(b);
+      const input=document.createElement('input');
+      input.className='field';
+      input.placeholder='z.B. Kuerbissuppe';
+      input.setAttribute('list','dishSuggestions');
+      input.value=w.data.dish||'';
+      input.oninput=()=>{
+        w.data.dish = input.value;
+        const hit = DISH_SUGGESTIONS.find(d => d.name.toLowerCase() === input.value.trim().toLowerCase());
+        if(hit){ w.data.category = hit.category; }
+        refreshListingPreview();
+      };
+      const list=document.createElement('datalist');
+      list.id='dishSuggestions';
+      DISH_SUGGESTIONS.forEach(d=>{
+        const opt=document.createElement('option');
+        opt.value=d.name;
+        list.appendChild(opt);
       });
-      box.appendChild(ans);
+      const h=document.createElement('div'); h.className='hint'; h.textContent='Kategorie wird automatisch gesetzt, wenn bekannt.';
+
+      box.appendChild(input);
+      box.appendChild(list);
+      box.appendChild(h);
+      attachListingPreview(box);
       setWizardContent(box);
       wNextBtn.textContent='Weiter';
       return;
     }
 
     if(w.step===1){
-      setWizardQuestion('Foto hinzufügen?', 'Datei auswählen oder direkt Kamera (Handy).');
+      setWizardQuestion('Preis pro Portion?', 'Zahlen-Tastatur, Standard 0,00.');
       const box=document.createElement('div');
-      const ans=document.createElement('div'); ans.className='answers';
-
-      const b1=document.createElement('button'); b1.type='button'; b1.className='ans'; b1.textContent='Foto auswählen';
-      b1.onclick=async()=>{ const f=await pickImage(); if(!f) return; w.data.photoData = await toDataUrl(f); rebuildWizard(); };
-      const b2=document.createElement('button'); b2.type='button'; b2.className='ans'; b2.textContent='Platzhalter';
-      b2.onclick=()=>{ w.data.photoData=''; rebuildWizard(); };
-
-      ans.appendChild(b1); ans.appendChild(b2);
-      box.appendChild(ans);
-      if(w.data.photoData){
-        const p=document.createElement('div'); p.style.marginTop='10px';
-        p.innerHTML = `<div class="hint">Vorschau:</div><div style="border-radius:16px;overflow:hidden;border:1px solid #eee"><img src="${w.data.photoData}" alt="" style="width:100%;height:200px;object-fit:cover;display:block"></div>`;
-        box.appendChild(p);
-      }
+      const input=document.createElement('input');
+      input.className='field';
+      input.inputMode='decimal';
+      input.placeholder='0,00';
+      input.value = formatPriceInput(w.data.price);
+      input.oninput=()=>{ w.data.price = parsePriceInput(input.value); refreshListingPreview(); };
+      const h=document.createElement('div'); h.className='hint'; h.textContent='Beispiel: 7,90';
+      box.appendChild(input);
+      box.appendChild(h);
+      attachListingPreview(box);
       setWizardContent(box);
       wNextBtn.textContent='Weiter';
       return;
     }
 
     if(w.step===2){
-      setWizardQuestion('Wie heißt das Gericht?', 'Kurz & klar.');
+      setWizardQuestion('Essenszeit?', 'Standard aus Profil, optional aendern.');
+      const profile = normalizeProviderProfile(provider.profile || {});
+      if(!w.data.pickupWindow){ w.data.pickupWindow = profile.mealWindow || DEFAULT_MEAL_WINDOW; }
+
+      const current = w.data.pickupWindow || profile.mealWindow || DEFAULT_MEAL_WINDOW;
+      const split = current.includes('–') ? current.split('–') : current.split('-');
+      const startDefault = split[0] ? split[0].trim() : '11:30';
+      const endDefault = split[1] ? split[1].trim() : '14:00';
+      if(!w.data.mealStart) w.data.mealStart = startDefault;
+      if(!w.data.mealEnd) w.data.mealEnd = endDefault;
+
       const box=document.createElement('div');
-      const input=document.createElement('input');
-      input.className='field';
-      input.placeholder='z.B. Rinderroulade mit Spätzle';
-      input.value=w.data.dish||'';
-      input.oninput=()=>{ w.data.dish=input.value; };
-      box.appendChild(input);
+      const summary=document.createElement('div');
+      summary.className='panel';
+      summary.innerHTML = `<b>${esc(current)}</b><div class="hint">Standard aus Profil</div>`;
+      box.appendChild(summary);
+
+      const actions=document.createElement('div');
+      actions.className='answers';
+      const toggle=document.createElement('button');
+      toggle.type='button';
+      toggle.className='ans';
+      toggle.textContent = w.data.mealCustom ? 'Fertig' : 'Essenszeit aendern';
+      toggle.onclick=()=>{
+        w.data.mealCustom = !w.data.mealCustom;
+        if(!w.data.mealCustom){
+          w.data.pickupWindow = profile.mealWindow || DEFAULT_MEAL_WINDOW;
+        }
+        rebuildWizard();
+      };
+      actions.appendChild(toggle);
+      box.appendChild(actions);
+
+      if(w.data.mealCustom){
+        const updateWindow = ()=>{
+          if(w.data.mealStart && w.data.mealEnd){
+            w.data.pickupWindow = `${w.data.mealStart} – ${w.data.mealEnd}`;
+          }
+        };
+
+        const startLabel=document.createElement('div'); startLabel.className='hint'; startLabel.textContent='Start';
+        const startRow=document.createElement('div'); startRow.className='answers';
+        ['10:30','11:00','11:30','12:00'].forEach(t=>{
+          const b=document.createElement('button');
+          b.type='button';
+          b.className='ans'+(w.data.mealStart===t?' on':'');
+          b.textContent=t;
+          b.onclick=()=>{ w.data.mealStart=t; updateWindow(); rebuildWizard(); };
+          startRow.appendChild(b);
+        });
+
+        const endLabel=document.createElement('div'); endLabel.className='hint'; endLabel.textContent='Ende';
+        const endRow=document.createElement('div'); endRow.className='answers';
+        ['13:00','13:30','14:00','14:30'].forEach(t=>{
+          const b=document.createElement('button');
+          b.type='button';
+          b.className='ans'+(w.data.mealEnd===t?' on':'');
+          b.textContent=t;
+          b.onclick=()=>{ w.data.mealEnd=t; updateWindow(); rebuildWizard(); };
+          endRow.appendChild(b);
+        });
+
+        box.appendChild(document.createElement('div')).style.height='10px';
+        box.appendChild(startLabel);
+        box.appendChild(startRow);
+        box.appendChild(document.createElement('div')).style.height='8px';
+        box.appendChild(endLabel);
+        box.appendChild(endRow);
+      }
+
+      attachListingPreview(box);
       setWizardContent(box);
       wNextBtn.textContent='Weiter';
       return;
     }
 
     if(w.step===3){
-      setWizardQuestion('Allergene hinzufügen?', 'Optional. Tippe an, was zutrifft.');
+      setWizardQuestion('Allergene?', 'Ja / Nein. Bei Ja: 14 Allergene als Toggle.');
       const box=document.createElement('div');
       const ans=document.createElement('div'); ans.className='answers';
+      const has = w.data.hasAllergens || (Array.isArray(w.data.allergens) && w.data.allergens.length);
 
-      if(!Array.isArray(w.data.allergens)) w.data.allergens=[];
-      ALLERGENS_14.forEach(a=>{
-        const b=document.createElement('button');
-        b.type='button';
-        b.className='ans'+(w.data.allergens.includes(a)?' on':'');
-        b.textContent=a;
-        b.onclick=()=>{
-          const i=w.data.allergens.indexOf(a);
-          if(i>=0) w.data.allergens.splice(i,1); else w.data.allergens.push(a);
-          rebuildWizard();
-        };
-        ans.appendChild(b);
-      });
+      const yes=document.createElement('button'); yes.type='button'; yes.className='ans'+(has?' on':''); yes.textContent='Ja';
+      const no=document.createElement('button'); no.type='button'; no.className='ans'+(!has?' on':''); no.textContent='Nein';
+      yes.onclick=()=>{ w.data.hasAllergens=true; if(!Array.isArray(w.data.allergens)) w.data.allergens=[]; rebuildWizard(); };
+      no.onclick=()=>{ w.data.hasAllergens=false; w.data.allergens=[]; rebuildWizard(); };
+      ans.appendChild(yes); ans.appendChild(no);
       box.appendChild(ans);
+
+      if(has){
+        const list=document.createElement('div'); list.className='answers';
+        ALLERGENS_14.forEach(a=>{
+          const b=document.createElement('button');
+          b.type='button';
+          b.className='ans'+(w.data.allergens.includes(a.short)?' on':'');
+          b.textContent=`${a.short} ${a.name}`;
+          b.onclick=()=>{
+            const i=w.data.allergens.indexOf(a.short);
+            if(i>=0) w.data.allergens.splice(i,1); else w.data.allergens.push(a.short);
+            rebuildWizard();
+          };
+          list.appendChild(b);
+        });
+        box.appendChild(document.createElement('div')).style.height='8px';
+        box.appendChild(list);
+      }
+
+      attachListingPreview(box);
       setWizardContent(box);
       wNextBtn.textContent='Weiter';
       return;
     }
 
     if(w.step===4){
-      setWizardQuestion('Extras?', 'z.B. Beilagensalat. Optional.');
+      setWizardQuestion('Extras?', 'Presets auswaehlen und Preis tippen.');
       const box=document.createElement('div');
+      if(!Array.isArray(w.data.extras)) w.data.extras=[];
+
       const ans=document.createElement('div'); ans.className='answers';
-
-      const yes=document.createElement('button'); yes.type='button'; yes.className='ans'+(w.data.extras?.length?' on':''); yes.textContent='Ja';
-      const no=document.createElement('button'); no.type='button'; no.className='ans'+(!w.data.extras?.length?' on':''); no.textContent='Nein';
-
-      yes.onclick=()=>{
-        w.data.extras = w.data.extras?.length ? w.data.extras : [{name:'Beilagensalat', price:2.0}];
-        rebuildWizard();
-      };
-      no.onclick=()=>{ w.data.extras = []; rebuildWizard(); };
-
-      ans.appendChild(yes); ans.appendChild(no);
+      ['Beilagensalat','Extrasosse','Sonstiges'].forEach(name=>{
+        const active = w.data.extras.some(e=>e.name===name);
+        const b=document.createElement('button');
+        b.type='button';
+        b.className='ans'+(active?' on':'');
+        b.textContent=name;
+        b.onclick=()=>{
+          const idx = w.data.extras.findIndex(e=>e.name===name);
+          if(idx>=0) w.data.extras.splice(idx,1);
+          else w.data.extras.push({name, price:0});
+          rebuildWizard();
+        };
+        ans.appendChild(b);
+      });
       box.appendChild(ans);
 
-      if(w.data.extras?.length){
-        const name=document.createElement('input');
-        name.className='field';
-        name.placeholder='Extra (z.B. Beilagensalat)';
-        name.value=w.data.extras[0].name||'';
-        name.oninput=()=>{ w.data.extras[0].name=name.value; };
-
-        const price=document.createElement('input');
-        price.className='field';
-        price.inputMode='numeric';
-        price.placeholder='Preis in € (z.B. 2)';
-        price.value = String(w.data.extras[0].price||'');
-        price.oninput=()=>{ w.data.extras[0].price = smartNumber(price.value); };
-
-        box.appendChild(document.createElement('div')).style.height='10px';
-        box.appendChild(name);
-        box.appendChild(document.createElement('div')).style.height='10px';
-        box.appendChild(price);
-        const h=document.createElement('div'); h.className='hint'; h.textContent='Tipp: Du musst kein Komma tippen.';
-        box.appendChild(h);
+      if(w.data.extras.length){
+        w.data.extras.forEach(extra=>{
+          const label=document.createElement('div');
+          label.className='hint';
+          label.textContent=extra.name;
+          const input=document.createElement('input');
+          input.className='field';
+          input.inputMode='decimal';
+          input.placeholder='Preis in EUR (z.B. 2,00)';
+          input.value = formatPriceInput(extra.price);
+          input.oninput=()=>{ extra.price = parsePriceInput(input.value); refreshListingPreview(); };
+          box.appendChild(document.createElement('div')).style.height='8px';
+          box.appendChild(label);
+          box.appendChild(input);
+        });
       }
 
+      attachListingPreview(box);
       setWizardContent(box);
       wNextBtn.textContent='Weiter';
       return;
     }
 
     if(w.step===5){
-      setWizardQuestion('Mehrweg / Pfandsystem anbieten?', 'Optional (z.B. Mehrwegbox mit Pfand).');
+      setWizardQuestion('Mehrweg anbieten?', 'Ja / Nein. Presets: 2, 3, 5.');
       const box=document.createElement('div');
-      const ans=document.createElement('div'); ans.className='answers';
-
       if(!w.data.reuse) w.data.reuse = {enabled:false, deposit:0};
 
+      const ans=document.createElement('div'); ans.className='answers';
       const yes=document.createElement('button'); yes.type='button'; yes.className='ans'+(w.data.reuse.enabled?' on':''); yes.textContent='Ja';
       const no=document.createElement('button'); no.type='button'; no.className='ans'+(!w.data.reuse.enabled?' on':''); no.textContent='Nein';
-
-      yes.onclick=()=>{ w.data.reuse.enabled=true; if(!w.data.reuse.deposit) w.data.reuse.deposit=5; rebuildWizard(); };
-      no.onclick=()=>{ w.data.reuse.enabled=false; w.data.reuse.deposit=0; rebuildWizard(); };
-
+      yes.onclick=()=>{ w.data.reuse.enabled=true; if(!w.data.reuse.deposit) w.data.reuse.deposit=2; rebuildWizard(); };
+      no.onclick=()=>{ w.data.reuse.enabled=false; w.data.reuse.deposit=0; w.data.reuseCustom=false; rebuildWizard(); };
       ans.appendChild(yes); ans.appendChild(no);
       box.appendChild(ans);
 
       if(w.data.reuse.enabled){
-        const dep=document.createElement('input');
-        dep.className='field';
-        dep.inputMode='numeric';
-        dep.placeholder='Pfand in € (z.B. 5)';
-        dep.value = String(w.data.reuse.deposit||'');
-        dep.oninput=()=>{ w.data.reuse.deposit = smartNumber(dep.value); };
-        box.appendChild(document.createElement('div')).style.height='10px';
-        box.appendChild(dep);
-        const h=document.createElement('div'); h.className='hint'; h.textContent='Neutraler Text: „Mehrweg / Pfand“ (ohne Markennamen).';
-        box.appendChild(h);
+        const presets=document.createElement('div'); presets.className='answers';
+        [2,3,5].forEach(val=>{
+          const b=document.createElement('button');
+          b.type='button';
+          b.className='ans'+(w.data.reuse.deposit===val && !w.data.reuseCustom?' on':'');
+          b.textContent=`${val} EUR`;
+          b.onclick=()=>{ w.data.reuse.deposit=val; w.data.reuseCustom=false; rebuildWizard(); };
+          presets.appendChild(b);
+        });
+        const other=document.createElement('button');
+        other.type='button';
+        other.className='ans'+(w.data.reuseCustom?' on':'');
+        other.textContent='Anderer Betrag';
+        other.onclick=()=>{ w.data.reuseCustom=true; rebuildWizard(); };
+        presets.appendChild(other);
+        box.appendChild(document.createElement('div')).style.height='8px';
+        box.appendChild(presets);
+
+        if(w.data.reuseCustom){
+          const input=document.createElement('input');
+          input.className='field';
+          input.inputMode='decimal';
+          input.placeholder='Betrag in EUR';
+          input.value = formatPriceInput(w.data.reuse.deposit);
+          input.oninput=()=>{ w.data.reuse.deposit = parsePriceInput(input.value); refreshListingPreview(); };
+          box.appendChild(document.createElement('div')).style.height='8px';
+          box.appendChild(input);
+        }
       }
 
+      attachListingPreview(box);
       setWizardContent(box);
       wNextBtn.textContent='Weiter';
       return;
     }
 
     if(w.step===6){
-      setWizardQuestion('Preis des Gerichts?', 'Nur Zahl tippen – Komma nicht nötig.');
+      setWizardQuestion('Foto?', 'Kamera, Galerie oder ohne Foto.');
       const box=document.createElement('div');
-      const input=document.createElement('input');
-      input.className='field';
-      input.inputMode='numeric';
-      input.placeholder='z.B. 799 für 7,99';
-      input.value = w.data.price ? String(Math.round(w.data.price*100)) : '';
-      input.oninput=()=>{ w.data.price = smartNumberToEuro(input.value); };
-      box.appendChild(input);
-      const h=document.createElement('div'); h.className='hint'; h.textContent='Beispiel: 799 → 7,99 € · 450 → 4,50 €';
-      box.appendChild(h);
+      const ans=document.createElement('div'); ans.className='answers';
+
+      const cam=document.createElement('button'); cam.type='button'; cam.className='ans'; cam.textContent='Kamera';
+      cam.onclick=async()=>{ const f=await pickImage({capture:true}); if(!f) return; w.data.photoData = await toDataUrl(f); rebuildWizard(); };
+      const gal=document.createElement('button'); gal.type='button'; gal.className='ans'; gal.textContent='Galerie';
+      gal.onclick=async()=>{ const f=await pickImage(); if(!f) return; w.data.photoData = await toDataUrl(f); rebuildWizard(); };
+      const none=document.createElement('button'); none.type='button'; none.className='ans'; none.textContent='Ohne Foto';
+      none.onclick=()=>{ w.data.photoData=''; rebuildWizard(); };
+
+      ans.appendChild(cam); ans.appendChild(gal); ans.appendChild(none);
+      box.appendChild(ans);
+      if(w.data.photoData){
+        const p=document.createElement('div'); p.style.marginTop='10px';
+        p.innerHTML = `<div class="hint">Vorschau:</div><div style="border-radius:16px;overflow:hidden;border:1px solid #eee"><img src="${w.data.photoData}" alt="" style="width:100%;height:200px;object-fit:cover;display:block"></div>`;
+        box.appendChild(p);
+      }
+
+      attachListingPreview(box);
       setWizardContent(box);
       wNextBtn.textContent='Weiter';
       return;
     }
 
     if(w.step===7){
-      setWizardQuestion('Abholfenster?', 'Tippe ein Fenster (daumenfreundlich).');
+      setWizardQuestion('Bezahlung mit Abholcode?', 'Preview zeigt Badge + Abholcode-Beispiel.');
       const box=document.createElement('div');
       const ans=document.createElement('div'); ans.className='answers';
-
-      const windows = ['11:00 – 14:00','11:30 – 14:00','12:00 – 14:00','11:30 – 13:30','12:00 – 13:30','12:00 – 14:30'];
-      windows.forEach(win=>{
-        const b=document.createElement('button');
-        b.type='button';
-        b.className='ans'+(w.data.pickupWindow===win?' on':'');
-        b.textContent=win;
-        b.onclick=()=>{ w.data.pickupWindow=win; rebuildWizard(); };
-        ans.appendChild(b);
-      });
+      const yes=document.createElement('button'); yes.type='button'; yes.className='ans'+(w.data.hasPickupCode?' on':''); yes.textContent='Ja';
+      const no=document.createElement('button'); no.type='button'; no.className='ans'+(!w.data.hasPickupCode?' on':''); no.textContent='Nein';
+      yes.onclick=()=>{ w.data.hasPickupCode=true; rebuildWizard(); };
+      no.onclick=()=>{ w.data.hasPickupCode=false; rebuildWizard(); };
+      ans.appendChild(yes); ans.appendChild(no);
       box.appendChild(ans);
 
-      // custom
-      const custom=document.createElement('input');
-      custom.className='field';
-      custom.placeholder='oder frei eintippen (z.B. 11:15 – 14:30)';
-      custom.value = w.data.pickupWindow || '';
-      custom.oninput=()=>{ w.data.pickupWindow=custom.value; };
-      box.appendChild(document.createElement('div')).style.height='10px';
-      box.appendChild(custom);
-
+      attachListingPreview(box);
       setWizardContent(box);
       wNextBtn.textContent='Weiter';
       return;
     }
 
     if(w.step===8){
-      setWizardQuestion('Abholcode aktivieren?', 'Optional: spart Zeit & Chaos an der Ausgabe.');
+      setWizardQuestion('Vor Ort essen moeglich?', 'Preview zeigt das Badge.');
       const box=document.createElement('div');
       const ans=document.createElement('div'); ans.className='answers';
-
-      const yes=document.createElement('button'); yes.type='button'; yes.className='ans'+(w.data.hasPickupCode?' on':''); yes.textContent='Ja (0,49 € pro Vorgang)';
-      const no=document.createElement('button'); no.type='button'; no.className='ans'+(!w.data.hasPickupCode?' on':''); no.textContent='Nein';
-
-      yes.onclick=()=>{ w.data.hasPickupCode=true; rebuildWizard(); };
-      no.onclick=()=>{ w.data.hasPickupCode=false; rebuildWizard(); };
-
+      const yes=document.createElement('button'); yes.type='button'; yes.className='ans'+(w.data.dineInPossible?' on':''); yes.textContent='Ja';
+      const no=document.createElement('button'); no.type='button'; no.className='ans'+(!w.data.dineInPossible?' on':''); no.textContent='Nein';
+      yes.onclick=()=>{ w.data.dineInPossible=true; rebuildWizard(); };
+      no.onclick=()=>{ w.data.dineInPossible=false; rebuildWizard(); };
       ans.appendChild(yes); ans.appendChild(no);
       box.appendChild(ans);
+
+      attachListingPreview(box);
       setWizardContent(box);
       wNextBtn.textContent='Weiter';
       return;
     }
 
     if(w.step===9){
-      setWizardQuestion('Vorschau', 'Veröffentlichen oder speichern.');
+      setWizardQuestion('Abschluss', 'Inserat veroeffentlichen oder speichern.');
       const box=document.createElement('div');
+      attachListingPreview(box);
 
-      // preview card
-      const o = previewOfferFromWizard();
-      box.appendChild(offerCard(o));
-
-      // actions
-      const a=document.createElement('div');
-      a.style.marginTop='10px';
+      const actions=document.createElement('div');
+      actions.style.marginTop='10px';
 
       const btnPub=document.createElement('button');
       btnPub.className='btn';
       btnPub.type='button';
-      btnPub.textContent = 'Inserat veröffentlichen — 4,99 €';
+      btnPub.textContent = 'Inserat veroeffentlichen';
       btnPub.onclick=()=>{
+        const o = previewOfferFromWizard();
         publishOffer(o);
         closeWizard();
-        alert('Inserat veröffentlicht ✅');
+        alert('Inserat veroeffentlicht ✅');
         showProviderHome();
       };
 
       const btnSave=document.createElement('button');
       btnSave.className='btn secondary';
       btnSave.type='button';
-      btnSave.textContent='Ins Kochbuch speichern';
+      btnSave.textContent='In Kochbuch speichern';
       btnSave.onclick=()=>{
         saveToCookbookFromWizard();
         alert('Im Kochbuch gespeichert ✅');
@@ -1815,17 +2003,24 @@
       const btnWeek=document.createElement('button');
       btnWeek.className='btn ghost';
       btnWeek.type='button';
-      btnWeek.textContent='Zum Wochenplan hinzufügen';
+      btnWeek.textContent='In Wochenplan uebernehmen';
       btnWeek.onclick=()=>{
         saveToCookbookFromWizard(true);
         const cb = cookbook.filter(x=>x.providerId===providerId()).slice(-1)[0];
         if(cb) startWizard('week', {fromCookbookId:cb.id});
       };
 
-      a.appendChild(btnPub);
-      a.appendChild(btnSave);
-      a.appendChild(btnWeek);
-      box.appendChild(a);
+      const btnBack=document.createElement('button');
+      btnBack.className='btn ghost';
+      btnBack.type='button';
+      btnBack.textContent='Zurueck';
+      btnBack.onclick=()=>{ w.step = Math.max(0, w.step-1); rebuildWizard(); };
+
+      actions.appendChild(btnPub);
+      actions.appendChild(btnSave);
+      actions.appendChild(btnWeek);
+      actions.appendChild(btnBack);
+      box.appendChild(actions);
 
       setWizardContent(box);
       wNextBtn.textContent='Fertig';
@@ -1835,7 +2030,8 @@
   }
 
   function previewOfferFromWizard(){
-    const p = provider.profile||{};
+    const p = normalizeProviderProfile(provider.profile||{});
+    const pickupWindow = w.data.pickupWindow || p.mealWindow || DEFAULT_MEAL_WINDOW;
     return {
       id: 'preview',
       providerId: providerId(),
@@ -1847,9 +2043,10 @@
       dish: w.data.dish||'Gericht',
       category: w.data.category||'Vegetarisch',
       price: Number(w.data.price||0),
-      pickupWindow: w.data.pickupWindow||'',
+      pickupWindow,
       imageUrl: w.data.photoData || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70',
       hasPickupCode: !!w.data.hasPickupCode,
+      dineInPossible: !!w.data.dineInPossible,
       allergens: w.data.allergens||[],
       extras: w.data.extras||[],
       reuse: w.data.reuse||{enabled:false,deposit:0},
@@ -1868,7 +2065,7 @@
     offers.unshift(out);
     save(LS.offers, offers);
     // restore default next button handler
-    wNextBtn.onclick=null;
+    setWizardNextDefault();
     renderProviderHome();
     renderProviderPickups();
     renderDiscover();
@@ -1893,6 +2090,7 @@
 
   // Cookbook wizard (add recipe)
   function buildCookbookStep(){
+    setWizardNextDefault();
     // reuse listing steps subset: category, photo, name, allergens, extras, reuse, price, preview/save
     const total = 8;
     setWizardHeader('Kochbuch', `${Math.min(w.step+1,total)}/${total}`);
@@ -1944,8 +2142,15 @@
       const ans=document.createElement('div'); ans.className='answers';
       if(!Array.isArray(w.data.allergens)) w.data.allergens=[];
       ALLERGENS_14.forEach(a=>{
-        const b=document.createElement('button'); b.type='button'; b.className='ans'+(w.data.allergens.includes(a)?' on':''); b.textContent=a;
-        b.onclick=()=>{ const i=w.data.allergens.indexOf(a); if(i>=0) w.data.allergens.splice(i,1); else w.data.allergens.push(a); rebuildWizard(); };
+        const b=document.createElement('button');
+        b.type='button';
+        b.className='ans'+(w.data.allergens.includes(a.short)?' on':'');
+        b.textContent=`${a.short} ${a.name}`;
+        b.onclick=()=>{
+          const i=w.data.allergens.indexOf(a.short);
+          if(i>=0) w.data.allergens.splice(i,1); else w.data.allergens.push(a.short);
+          rebuildWizard();
+        };
         ans.appendChild(b);
       });
       box.appendChild(ans);
@@ -2051,6 +2256,7 @@
 
   // Weekplan wizard (simple date choose)
   function buildWeekStep(){
+    setWizardNextDefault();
     setWizardHeader('Wochenplan', '1/1');
     setWizardQuestion('Für welchen Tag?', 'Wähle einen Tag und füge das Gericht hinzu.');
 
@@ -2094,6 +2300,16 @@
   }
 
   // --- Input helpers (thumb-friendly) ---
+  function formatPriceInput(value){
+    const num = Number(value||0);
+    return num.toFixed(2).replace('.',',');
+  }
+  function parsePriceInput(raw){
+    const cleaned = String(raw||'').trim().replace(',', '.').replace(/[^0-9.]/g,'');
+    const num = parseFloat(cleaned);
+    if(Number.isNaN(num)) return 0;
+    return Math.round(num*100)/100;
+  }
   function smartNumberToEuro(raw){
     const digits = String(raw||'').replace(/\D/g,'');
     if(!digits) return 0;
@@ -2107,11 +2323,12 @@
   }
 
   // Image picker
-  function pickImage(){
+  function pickImage(opts={}){
     return new Promise(resolve=>{
       const input=document.createElement('input');
       input.type='file';
       input.accept='image/*';
+      if(opts.capture) input.capture='environment';
       input.onchange=()=> resolve(input.files && input.files[0] ? input.files[0] : null);
       input.click();
     });
@@ -2127,6 +2344,8 @@
 
   // --- boot ---
   seed();
+  offers = offers.map(normalizeOffer);
+  save(LS.offers, offers);
   renderChips();
 
   // init nav bindings
