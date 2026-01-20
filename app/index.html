@@ -1149,7 +1149,14 @@
   function renderFavorites(){
     const grid=document.getElementById('favGrid');
     const empty=document.getElementById('emptyFav');
-    const list = offers.filter(o => o.active !== false && favs.has(o.providerId));
+    const candidates = offers
+      .filter(o => o.active !== false && favs.has(o.providerId))
+      .sort((a,b)=>String(b.day||'').localeCompare(String(a.day||'')));
+    const bestByProvider = new Map();
+    candidates.forEach(o=>{
+      if(!bestByProvider.has(o.providerId)) bestByProvider.set(o.providerId, o);
+    });
+    const list = Array.from(bestByProvider.values());
     grid.innerHTML='';
     empty.style.display = list.length ? 'none' : 'block';
     list.forEach(o=>grid.appendChild(offerCard(o)));
