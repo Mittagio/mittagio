@@ -256,6 +256,7 @@
     .qty-btn{border:1px solid var(--border); background:#fff; border-radius:999px; width:28px; height:28px; cursor:pointer; font-weight:900}
     .cart-price{font-weight:900}
     .order-item{border:1px solid var(--border); border-radius:14px; padding:10px; background:#fff; box-shadow:0 6px 14px rgba(0,0,0,.06)}
+    .order-item.done{opacity:.65}
     .order-item + .order-item{margin-top:10px}
     .order-top{display:flex; justify-content:space-between; align-items:center; gap:10px}
     .order-code{border:1px solid var(--border); background:#fff; border-radius:10px; padding:6px 10px; font-weight:900; cursor:pointer}
@@ -631,6 +632,8 @@
   <div class="sheet-body">
     <div class="code-full" id="codeText">A1</div>
     <div class="hint" style="text-align:center;">Abholnummer</div>
+    <div class="hint" id="codeStatus" style="text-align:center; margin-top:6px;"></div>
+    <button class="btn" type="button" id="btnToggleOrderStatus">Als abgeholt markieren</button>
     <button class="btn secondary" type="button" id="btnCodeClose">Schliessen</button>
   </div>
 </div>
@@ -718,6 +721,7 @@
   let weekPlanDay = isoDate(new Date());
   let locationQuery = '';
   let pickupDone = new Set();
+  let activeOrderId = null;
 
   // --- Seed demo offers if empty ---
   function seed(){
@@ -1128,13 +1132,13 @@
       return fmtDay(d);
     };
     box.innerHTML = orders.map(o=>`
-      <div class="order-item">
+      <div class="order-item ${o.status==='abgeholt' ? 'done' : ''}">
         <div class="order-top">
           <div>
             <div style="font-weight:900">${esc(o.providerName || 'Anbieter')}</div>
             <div class="hint">${esc(o.summary || '')}</div>
           </div>
-          <button class="order-code" type="button" data-code="${esc(o.code||'')}">${esc(o.code||'')}</button>
+          <button class="order-code" type="button" data-id="${esc(o.id||'')}" data-code="${esc(o.code||'')}">${esc(o.code||'')}</button>
         </div>
         <div class="hint" style="margin-top:6px;">
           Status: ${esc(o.status||'offen')}${o.pickupTime ? ` - Abholzeit: ${esc(o.pickupTime)}` : ''} - ${fmt(o.createdAt)}
@@ -1143,19 +1147,24 @@
     `).join('');
 
     box.querySelectorAll('.order-code').forEach(btn=>{
-      btn.onclick=()=> openCodeSheet(btn.getAttribute('data-code') || '');
+      btn.onclick=()=> openCodeSheet(btn.getAttribute('data-id') || '');
     });
   }
 
-  function openCodeSheet(code){
-    if(!code) return;
-    document.getElementById('codeText').textContent = code;
+  function openCodeSheet(orderId){
+    const order = orders.find(o=>o.id===orderId);
+    if(!order) return;
+    activeOrderId = orderId;
+    document.getElementById('codeText').textContent = order.code || '';
+    document.getElementById('codeStatus').textContent = order.status === 'abgeholt' ? 'Status: abgeholt' : 'Status: offen';
+    document.getElementById('btnToggleOrderStatus').textContent = order.status === 'abgeholt' ? 'Als offen markieren' : 'Als abgeholt markieren';
     document.getElementById('codeBd').classList.add('active');
     document.getElementById('codeSheet').classList.add('active');
   }
   function closeCodeSheet(){
     document.getElementById('codeBd').classList.remove('active');
     document.getElementById('codeSheet').classList.remove('active');
+    activeOrderId = null;
   }
 
   // --- Offer sheet ---
@@ -1304,6 +1313,15 @@
     shareOffer(o);
   };
   document.getElementById('btnCodeClose').onclick=()=> closeCodeSheet();
+  document.getElementById('btnToggleOrderStatus').onclick=()=>{
+    if(!activeOrderId) return;
+    const idx = orders.findIndex(o=>o.id===activeOrderId);
+    if(idx<0) return;
+    orders[idx].status = orders[idx].status === 'abgeholt' ? 'offen' : 'abgeholt';
+    save(LS.orders, orders);
+    renderOrders();
+    openCodeSheet(activeOrderId);
+  };
 
   document.getElementById('btnAddCart').onclick=()=>{
     const o = offers.find(x=>x.id===activeOfferId);
@@ -1327,9 +1345,11 @@
     }
 
     let total=0;
+    let canCheckout = true;
     const lines = cart.items.map(it=>{
       const o = offers.find(x=>x.id===it.offerId);
       if(!o) return '';
+      if(!o.hasPickupCode) canCheckout = false;
       const lineTotal = Number(o.price||0) * it.qty;
       total += lineTotal;
       return `
@@ -1350,6 +1370,7 @@
       ${lines.join('')}
       <div class="row"><span>Wann moechtest du ungefaehr da sein?</span></div>
       <input class="field" id="pickupTimeInput" type="text" placeholder="z.B. 12:15" value="${esc(cart.pickupTime||'')}" />
+      <div class="hint">Bitte innerhalb der Essenszeit.</div>
       <div class="row"><span>Gesamt</span><b>${euro(total)}</b></div>
       <a href="#" id="clearCart">Warenkorb leeren</a>
     `;
@@ -1378,6 +1399,8 @@
     });
 
     btn.style.display='block';
+    btn.disabled = !canCheckout;
+    btn.textContent = canCheckout ? 'Weiter zur Zahlung' : 'Nur ansehen';
     note.style.display='block';
   }
 
