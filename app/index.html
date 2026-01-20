@@ -500,7 +500,7 @@
   let favs = new Set(load(LS.favs, []));
   let cart = load(LS.cart, null); // {providerId, items:[{offerId, qty}]} or null
   let customer = load(LS.customer, { loggedIn:false, name:null });
-  let provider = load(LS.provider, { loggedIn:false, email:null, profile:{ name:'', street:'', zip:'', city:'', logoData:'' } });
+  let provider = load(LS.provider, { loggedIn:false, email:null, profile:{ name:'', address:'', street:'', zip:'', city:'', mealWindow:'11:30 – 14:00', logoData:'' } });
   let cookbook = load(LS.cookbook, []); // [{id, dish, category, price, allergens[], extras?, reuse? , photoData?}]
   let week = load(LS.week, {}); // { 'YYYY-MM-DD': [cookbookId,...] }
 
@@ -562,6 +562,37 @@
   }
   function esc(s){
     return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#039;'}[c]));
+  }
+
+  const DEFAULT_MEAL_WINDOW = '11:30 – 14:00';
+
+  function buildAddress(p){
+    if(p && p.address && String(p.address).trim()) return String(p.address).trim();
+    const rest = [p?.zip, p?.city].filter(Boolean).join(' ').trim();
+    return [p?.street, rest].filter(Boolean).join(', ');
+  }
+
+  function parseAddress(addr){
+    const raw = String(addr||'').trim();
+    const out = { address: raw, street:'', zip:'', city:'' };
+    if(!raw) return out;
+    const parts = raw.split(',').map(s=>s.trim()).filter(Boolean);
+    if(parts.length){ out.street = parts[0]; }
+    if(parts.length > 1){
+      const rest = parts.slice(1).join(', ');
+      const m = rest.match(/^(\d{4,6})\s*(.*)$/);
+      if(m){ out.zip = m[1]; out.city = m[2] || ''; }
+      else { out.city = rest; }
+    }
+    return out;
+  }
+
+  function normalizeProviderProfile(p){
+    const base = { name:'', address:'', street:'', zip:'', city:'', mealWindow:DEFAULT_MEAL_WINDOW, logoData:'' };
+    const out = {...base, ...(p||{})};
+    if(!out.address){ out.address = buildAddress(out); }
+    if(!out.mealWindow){ out.mealWindow = DEFAULT_MEAL_WINDOW; }
+    return out;
   }
 
   // --- Navigation ---
@@ -990,11 +1021,12 @@
   }
 
   function renderProviderProfile(){
-    const p = provider.profile || {};
-    const addr = [p.street, (p.zip||'') + ' ' + (p.city||'')].filter(Boolean).join(', ');
+    const p = normalizeProviderProfile(provider.profile || {});
+    const addr = buildAddress(p);
     document.getElementById('provProfileHint').innerHTML = `
       <b>${esc(p.name || 'Name fehlt')}</b><br>
       ${esc(addr || 'Adresse fehlt')}<br>
+      Essenszeit: <b>${esc(p.mealWindow || DEFAULT_MEAL_WINDOW)}</b><br>
       ${p.logoData ? 'Logo: ✅' : 'Logo: —'}
     `;
   }
@@ -1082,7 +1114,7 @@
     w = { kind, step:0, data:{}, ctx };
 
     if(kind==='provider'){
-      w.data = JSON.parse(JSON.stringify(provider.profile||{}));
+      w.data = normalizeProviderProfile(JSON.parse(JSON.stringify(provider.profile||{})));
       buildProviderStep();
     }
     if(kind==='cookbook'){
@@ -1162,52 +1194,145 @@
     if(w.kind==='week') return buildWeekStep();
   }
 
-  // --- Provider profile wizard (step-by-step, not a form) ---
-  function buildProviderStep(){
-    const steps = [
-      { q:'Wie heißt dein Betrieb?', key:'name', type:'text', placeholder:'z.B. Metzgerei Müller' },
-      { q:'Straße & Hausnummer?', key:'street', type:'text', placeholder:'z.B. Musterstraße 12' },
-      { q:'PLZ?', key:'zip', type:'text', placeholder:'z.B. 73614' },
-      { q:'Ort?', key:'city', type:'text', placeholder:'z.B. Schorndorf' },
-      { q:'Betriebslogo hinzufügen?', key:'logoData', type:'logo' }
-    ];
+  function saveProviderProfileFromWizard(){
+    const parsed = parseAddress(w.data.address || '');
+    const street = parsed.street || w.data.street || '';
+    const zip = parsed.zip || w.data.zip || '';
+    const city = parsed.city || w.data.city || '';
+    const address = parsed.address || buildAddress({street, zip, city});
 
-    const total = steps.length;
+    provider.profile = {
+      name: w.data.name||'',
+      address,
+      street,
+      zip,
+      city,
+      mealWindow: w.data.mealWindow || DEFAULT_MEAL_WINDOW,
+      logoData: w.data.logoData||''
+    };
+    save(LS.provider, provider);
+    renderProviderProfile();
+    renderProviderHome();
+  }
+
+  // --- Provider onboarding (step-by-step, no form) ---
+  function buildProviderStep(){
+    const total = 5;
+    const stepText = `Schritt ${Math.min(w.step+1,total)} von ${total}`;
+    setWizardHeader('Anbieter-Profil', stepText);
+
     if(w.step >= total){
-      provider.profile = {
-        name: w.data.name||'',
-        street: w.data.street||'',
-        zip: w.data.zip||'',
-        city: w.data.city||'',
-        logoData: w.data.logoData||''
-      };
-      save(LS.provider, provider);
+      saveProviderProfileFromWizard();
       closeWizard();
-      renderProviderProfile();
-      renderProviderHome();
-      alert('Profil gespeichert ✅');
+      alert('Profil ist bereit ✅');
       return;
     }
 
-    const s = steps[w.step];
-    setWizardHeader('Meine Daten', `${w.step+1}/${total}`);
-    setWizardQuestion(s.q, 'Tippen → weiter. Alles daumenfreundlich.');
-
-    const wrap = document.createElement('div');
-
-    if(s.type==='text'){
+    if(w.step===0){
+      setWizardQuestion('Wie heißt dein Betrieb?', 'Du kannst den Namen jederzeit ändern.');
+      const box=document.createElement('div');
       const input=document.createElement('input');
       input.className='field';
-      input.placeholder=s.placeholder;
-      input.value = w.data[s.key] || '';
-      input.oninput=()=>{ w.data[s.key]=input.value; };
-      input.autofocus = true;
-      wrap.appendChild(input);
-
+      input.placeholder='z.B. Metzgerei Müller';
+      input.value = w.data.name || '';
+      input.oninput=()=>{ w.data.name=input.value; };
+      box.appendChild(input);
+      setWizardContent(box);
       wNextBtn.textContent='Weiter';
+      return;
     }
 
-    if(s.type==='logo'){
+    if(w.step===1){
+      setWizardQuestion('Adresse deines Betriebs?', 'Auto-Vervollständigung folgt (Demo).');
+      const box=document.createElement('div');
+      const input=document.createElement('input');
+      input.className='field';
+      input.placeholder='Musterstraße 12, 73614 Schorndorf';
+      input.value = w.data.address || buildAddress(w.data) || '';
+      input.oninput=()=>{ w.data.address=input.value; };
+      box.appendChild(input);
+      const h=document.createElement('div'); h.className='hint'; h.textContent='Tipp: Straße, PLZ, Ort – getrennt mit Komma.';
+      box.appendChild(h);
+      setWizardContent(box);
+      wNextBtn.textContent='Weiter';
+      return;
+    }
+
+    if(w.step===2){
+      setWizardQuestion('Wann können Gäste dein Essen genießen?', 'Standard aus Profil, optional anpassen.');
+      if(!w.data.mealWindow) w.data.mealWindow = DEFAULT_MEAL_WINDOW;
+
+      const current = w.data.mealWindow || DEFAULT_MEAL_WINDOW;
+      const split = current.includes('–') ? current.split('–') : current.split('-');
+      const startDefault = split[0] ? split[0].trim() : '11:30';
+      const endDefault = split[1] ? split[1].trim() : '14:00';
+      if(!w.data.mealStart) w.data.mealStart = startDefault;
+      if(!w.data.mealEnd) w.data.mealEnd = endDefault;
+
+      const box=document.createElement('div');
+      const summary=document.createElement('div');
+      summary.className='panel';
+      summary.innerHTML = `<b>${esc(current)}</b><div class="hint">Standard aus Profil</div>`;
+      box.appendChild(summary);
+
+      const actions=document.createElement('div');
+      actions.className='answers';
+      const toggle=document.createElement('button');
+      toggle.type='button';
+      toggle.className='ans';
+      toggle.textContent = w.data.mealCustom ? 'Fertig' : 'Essenszeit ändern';
+      toggle.onclick=()=>{
+        w.data.mealCustom = !w.data.mealCustom;
+        rebuildWizard();
+      };
+      actions.appendChild(toggle);
+      box.appendChild(actions);
+
+      if(w.data.mealCustom){
+        const updateMealWindow = ()=>{
+          if(w.data.mealStart && w.data.mealEnd){
+            w.data.mealWindow = `${w.data.mealStart} – ${w.data.mealEnd}`;
+          }
+        };
+
+        const startLabel=document.createElement('div'); startLabel.className='hint'; startLabel.textContent='Start';
+        const startRow=document.createElement('div'); startRow.className='answers';
+        ['10:30','11:00','11:30','12:00'].forEach(t=>{
+          const b=document.createElement('button');
+          b.type='button';
+          b.className='ans'+(w.data.mealStart===t?' on':'');
+          b.textContent=t;
+          b.onclick=()=>{ w.data.mealStart=t; updateMealWindow(); rebuildWizard(); };
+          startRow.appendChild(b);
+        });
+
+        const endLabel=document.createElement('div'); endLabel.className='hint'; endLabel.textContent='Ende';
+        const endRow=document.createElement('div'); endRow.className='answers';
+        ['13:00','13:30','14:00','14:30'].forEach(t=>{
+          const b=document.createElement('button');
+          b.type='button';
+          b.className='ans'+(w.data.mealEnd===t?' on':'');
+          b.textContent=t;
+          b.onclick=()=>{ w.data.mealEnd=t; updateMealWindow(); rebuildWizard(); };
+          endRow.appendChild(b);
+        });
+
+        box.appendChild(document.createElement('div')).style.height='10px';
+        box.appendChild(startLabel);
+        box.appendChild(startRow);
+        box.appendChild(document.createElement('div')).style.height='8px';
+        box.appendChild(endLabel);
+        box.appendChild(endRow);
+      }
+
+      setWizardContent(box);
+      wNextBtn.textContent='Weiter';
+      return;
+    }
+
+    if(w.step===3){
+      setWizardQuestion('Logo hochladen?', 'Optional, später jederzeit austauschbar.');
+      const wrap = document.createElement('div');
       const btns=document.createElement('div');
       btns.className='answers';
 
@@ -1226,7 +1351,7 @@
       skip.className='ans';
       skip.type='button';
       skip.textContent='Später';
-      skip.onclick=()=>{ w.data.logoData=''; w.step=total; rebuildWizard(); };
+      skip.onclick=()=>{ w.data.logoData=''; rebuildWizard(); };
 
       btns.appendChild(up);
       btns.appendChild(skip);
@@ -1239,10 +1364,46 @@
         wrap.appendChild(prev);
       }
 
-      wNextBtn.textContent='Speichern';
+      setWizardContent(wrap);
+      wNextBtn.textContent='Weiter';
+      return;
     }
 
-    setWizardContent(wrap);
+    if(w.step===4){
+      setWizardQuestion('Profil ist bereit', 'Kurz prüfen, dann loslegen.');
+      const box=document.createElement('div');
+      const addr = buildAddress(w.data);
+      const logo = w.data.logoData ? `<img src="${w.data.logoData}" alt="Logo" />` : `<img src="assets/provider-placeholder.png" alt="Logo" />`;
+
+      const summary=document.createElement('div');
+      summary.className='panel';
+      summary.innerHTML = `
+        <div style="display:flex;gap:10px;align-items:center;">
+          <div class="plogo" style="width:52px;height:52px;border-radius:14px">${logo}</div>
+          <div>
+            <div style="font-weight:950">${esc(w.data.name || 'Betrieb')}</div>
+            <div class="hint">${esc(addr || 'Adresse fehlt')}</div>
+          </div>
+        </div>
+        <div class="row"><span>Essenszeit</span><b>${esc(w.data.mealWindow || DEFAULT_MEAL_WINDOW)}</b></div>
+      `;
+
+      const cta=document.createElement('button');
+      cta.className='btn';
+      cta.type='button';
+      cta.textContent='Erstes Gericht erstellen';
+      cta.onclick=()=>{
+        saveProviderProfileFromWizard();
+        closeWizard();
+        startWizard('listing');
+      };
+
+      box.appendChild(summary);
+      box.appendChild(cta);
+      setWizardContent(box);
+      wNextBtn.textContent='Fertig';
+      return;
+    }
   }
 
   // --- Listing wizard (Immobilienscout-like: click answers) ---
