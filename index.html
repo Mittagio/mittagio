@@ -2,11 +2,1920 @@
 <html lang="de">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta http-equiv="refresh" content="0; url=/app/" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Mittagio</title>
+  <meta name="description" content="Mittagio – Dein Mittag! lokal - frisch - digital" />
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#0f1216" />
+  <link rel="icon" href="mittagio-logo.png" />
+
+  <style>
+    :root{
+      --bg:#0f1216;
+      --surface:#151a21;
+      --surface2:#10151c;
+      --text:#e8ecf1;
+      --muted:#9aa3ad;
+      --line:#202634;
+      --accent:#5dd39e;
+      --warn:#f6c177;
+      --danger:#ff6b6b;
+      --ok:#34d399;
+      --radius:16px;
+      --shadow: 0 14px 40px rgba(0,0,0,.35);
+    }
+
+    *{box-sizing:border-box}
+    html,body{margin:0;height:100%;font-family:system-ui,-apple-system,Segoe UI,Roboto}
+    body{background:var(--bg);color:var(--text)}
+    a{color:inherit;text-decoration:none}
+    button,input,select,textarea{font:inherit}
+
+    /* App chrome */
+    header{
+      position:sticky; top:0; z-index:50;
+      background:linear-gradient(#0f1216,#0f1216e6);
+      backdrop-filter: blur(8px);
+      border-bottom:1px solid var(--line);
+    }
+    .topbar{
+      display:flex; align-items:center; gap:10px;
+      padding:10px 12px;
+    }
+    .brand{
+      display:flex; align-items:center; gap:10px;
+      font-weight:900; letter-spacing:.2px;
+    }
+    .brand img{width:28px;height:28px;border-radius:8px}
+    .title{font-weight:800}
+    .subtitle{color:var(--muted);font-size:12px}
+    .spacer{flex:1}
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:6px 10px;
+      border:1px solid var(--line);
+      border-radius:999px;
+      color:var(--muted);
+      background:rgba(21,26,33,.7);
+      font-size:12px;
+    }
+
+    .container{padding:12px 12px 88px}
+
+    /* Cards */
+    .card{
+      background:var(--surface);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      padding:12px;
+      box-shadow:none;
+    }
+    .card + .card{margin-top:10px}
+
+    .row{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:10px;
+      padding:12px;
+      background:var(--surface);
+      border:1px solid var(--line);
+      border-radius:14px;
+    }
+
+    .list{display:flex; flex-direction:column; gap:10px}
+
+    .hstack{display:flex; align-items:center; gap:10px}
+    .vstack{display:flex; flex-direction:column; gap:8px}
+
+    /* Buttons */
+    button{
+      border:1px solid var(--line);
+      background:var(--surface);
+      color:var(--text);
+      border-radius:14px;
+      padding:10px 12px;
+    }
+    button.primary{border:none;background:var(--accent);color:#071015;font-weight:800}
+    button.ghost{background:transparent}
+    button.danger{border:none;background:var(--danger);color:#071015;font-weight:800}
+    button.small{padding:8px 10px;border-radius:12px}
+    button.icon{width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center}
+    button:disabled{opacity:.45}
+
+    /* Inputs */
+    input,select,textarea{
+      width:100%;
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:var(--surface2);
+      color:var(--text);
+      outline:none;
+    }
+    label{display:block;color:var(--muted);font-size:12px;margin:6px 2px}
+
+    /* Chips */
+    .chips{display:flex; gap:8px; overflow:auto; padding-bottom:4px}
+    .chip{
+      display:inline-flex; align-items:center; gap:8px;
+      white-space:nowrap;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(21,26,33,.65);
+      color:var(--muted);
+      cursor:pointer;
+      user-select:none;
+      font-size:13px;
+    }
+    .chip.active{border-color:transparent;background:#173b2a;color:#a7f3d0}
+
+    /* Badges */
+    .badge{
+      display:inline-flex; align-items:center; gap:6px;
+      padding:4px 8px;
+      border-radius:999px;
+      font-size:12px;
+      border:1px solid var(--line);
+      color:var(--muted);
+    }
+    .badge.ok{border:none;background:#173b2a;color:#a7f3d0}
+    .badge.warn{border:none;background:#3a2a12;color:#fde68a}
+
+    /* Thumb */
+    .thumb{width:76px;height:76px;border-radius:14px;background:var(--surface2);border:1px dashed var(--line);
+      display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px;overflow:hidden}
+    .thumb img{width:100%;height:100%;object-fit:cover}
+
+    /* Bottom nav */
+    .bottom{
+      position:fixed;left:0;right:0;bottom:0;z-index:60;
+      background:rgba(15,18,22,.92);
+      backdrop-filter: blur(10px);
+      border-top:1px solid var(--line);
+    }
+    .nav{display:grid;grid-template-columns:repeat(4,1fr)}
+    .nav button{
+      border:none;background:transparent;padding:10px 6px;
+      display:flex;flex-direction:column;align-items:center;gap:4px;
+      color:var(--muted);
+      font-size:12px;
+    }
+    .nav .active{color:var(--accent);font-weight:800}
+
+    /* Screens */
+    .screen{display:none}
+    .screen.active{display:block}
+
+    /* Modal */
+    .modal-backdrop{
+      position:fixed;inset:0;z-index:100;
+      background:rgba(0,0,0,.55);
+      display:none;
+      align-items:flex-end;
+      justify-content:center;
+      padding:12px;
+    }
+    .modal-backdrop.show{display:flex}
+    .modal{
+      width:100%;
+      max-width:680px;
+      background:var(--bg);
+      border:1px solid var(--line);
+      border-radius:18px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .modal header{position:relative;border-bottom:1px solid var(--line)}
+    .modal .modal-body{padding:12px;max-height:70vh;overflow:auto}
+
+    /* Toast */
+    .toast{
+      position:fixed;left:12px;right:12px;bottom:88px;z-index:120;
+      display:none;
+    }
+    .toast.show{display:block}
+    .toast .card{display:flex;align-items:center;justify-content:space-between;gap:12px}
+
+    /* Helpers */
+    .section-title{font-size:18px;font-weight:900;margin:8px 0 10px}
+    .sub{color:var(--muted);font-size:13px}
+    .divider{height:1px;background:var(--line);margin:10px 0}
+    .center{text-align:center}
+    .kbd{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas; font-size:12px; padding:2px 6px; border:1px solid var(--line); border-radius:8px; color:var(--muted)}
+
+    /* Print sheet */
+    @media print{
+      header,.bottom,.toast,.modal-backdrop{display:none !important}
+      body{background:white;color:black}
+      .card,.row{border:1px solid #ddd}
+    }
+  </style>
 </head>
+
 <body>
-  <a href="/app/">Weiter zur App</a>
+
+<header>
+  <div class="topbar">
+    <div class="brand" id="brandBtn" title="Mittagio">
+      <img src="mittagio-logo.png" alt="Mittagio" />
+      <div>
+        <div class="title">Mittagio</div>
+        <div class="subtitle">Dein Mittag! lokal - frisch - digital</div>
+      </div>
+    </div>
+    <div class="spacer"></div>
+    <span class="pill" id="rolePill">Modus: Start</span>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- START / ROLE SELECT -->
+  <section class="screen active" id="screen-start">
+    <div class="card">
+      <div class="section-title">Los geht’s 👋</div>
+      <div class="sub">Wähle, wie du Mittagio nutzen möchtest.</div>
+      <div class="divider"></div>
+      <div class="vstack">
+        <button class="primary" onclick="setRole('customer')">Als Gast entdecken</button>
+        <button onclick="setRole('provider')">Als Anbieter starten</button>
+        <button class="ghost" onclick="openModal('modal-admin')" style="color:var(--muted)">Admin (intern)</button>
+      </div>
+      <div class="divider"></div>
+      <div class="sub">Kein Abo. Keine Verträge. Du kannst jederzeit wieder wechseln.</div>
+    </div>
+  </section>
+
+  <!-- CUSTOMER: DISCOVER -->
+  <section class="screen" id="screen-c-discover">
+    <div class="section-title">Entdecken</div>
+
+    <div class="card">
+      <div class="sub">Standort (optional)</div>
+      <div class="hstack" style="margin-top:8px">
+        <input id="cLocation" placeholder="Ort oder PLZ eingeben" />
+        <button class="icon" onclick="toast('Standort gesetzt', 'Du kannst jederzeit wechseln.')">📍</button>
+      </div>
+    </div>
+
+    <div class="chips" id="cFilters" aria-label="Filter">
+      <div class="chip" data-f="veggie">🥗 Vegetarisch</div>
+      <div class="chip" data-f="vegan">🌱 Vegan</div>
+      <div class="chip" data-f="meat">🥩 Mit Fleisch</div>
+      <div class="chip" data-f="today">🕒 Heute</div>
+      <div class="chip" data-f="date">📅 Datum</div>
+    </div>
+
+    <div class="list" id="cCards" style="margin-top:10px"></div>
+  </section>
+
+  <!-- CUSTOMER: DISH DETAIL -->
+  <section class="screen" id="screen-c-detail">
+    <div class="hstack">
+      <button class="ghost" onclick="go('screen-c-discover')">←</button>
+      <div class="section-title" style="margin:0">Gericht</div>
+      <div class="spacer"></div>
+      <button class="icon" onclick="customerShareCurrent()">📤</button>
+    </div>
+
+    <div class="card" id="cDetailCard"></div>
+    <div class="card">
+      <button class="primary" onclick="addToCart()">In den Warenkorb</button>
+      <div class="sub" style="margin-top:8px">Online bezahlen ist optional. Abholnummern gibt’s nur, wenn online bezahlt wurde.</div>
+    </div>
+  </section>
+
+  <!-- CUSTOMER: CART -->
+  <section class="screen" id="screen-c-cart">
+    <div class="section-title">Warenkorb</div>
+
+    <div class="card" id="cCartCard"></div>
+
+    <div class="card">
+      <label>Wann möchtest du ungefähr da sein?</label>
+      <select id="cEta">
+        <option>12:00</option>
+        <option>12:15</option>
+        <option>12:30</option>
+        <option>12:45</option>
+      </select>
+
+      <div class="divider"></div>
+
+      <label>Mitnehmen oder vor Ort essen?</label>
+      <select id="cDine">
+        <option value="takeaway">Mitnehmen</option>
+        <option value="dinein">Vor Ort essen</option>
+      </select>
+
+      <div class="divider"></div>
+
+      <div class="hstack">
+        <button class="primary" onclick="checkout()">Weiter</button>
+        <button onclick="clearCart()">Leeren</button>
+      </div>
+      <div class="sub" style="margin-top:8px">Hinweis: Abholnummern nur bei Online-Zahlung.</div>
+    </div>
+  </section>
+
+  <!-- CUSTOMER: CHECKOUT (SIM) -->
+  <section class="screen" id="screen-c-checkout">
+    <div class="section-title">Bezahlen (Demo)</div>
+    <div class="card">
+      <div class="sub">Wähle die Zahlungsart</div>
+      <div class="divider"></div>
+      <div class="vstack">
+        <button class="primary" onclick="pay('card')">💳 Online bezahlen (Karte)</button>
+        <button onclick="pay('paypal')">🅿️ Online bezahlen (PayPal)</button>
+        <button class="ghost" onclick="pay('later')" style="color:var(--muted)">Ohne Online-Zahlung fortfahren</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- CUSTOMER: ORDERS -->
+  <section class="screen" id="screen-c-orders">
+    <div class="section-title">Bestellungen</div>
+    <div class="list" id="cOrdersList"></div>
+  </section>
+
+  <!-- CUSTOMER: PROFILE -->
+  <section class="screen" id="screen-c-profile">
+    <div class="section-title">Profil</div>
+    <div class="list">
+      <div class="row" onclick="openModal('modal-faq-customer')">
+        <div>
+          <div><b>FAQ</b></div>
+          <div class="sub">Kurz & klar</div>
+        </div>
+        <div>›</div>
+      </div>
+
+      <div class="row" onclick="openModal('modal-legal')">
+        <div>
+          <div><b>Rechtliches</b></div>
+          <div class="sub">Impressum · Datenschutz · AGB</div>
+        </div>
+        <div>›</div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- PROVIDER: ONBOARDING -->
+  <section class="screen" id="screen-p-onboarding">
+    <div class="section-title">Onboarding</div>
+    <div class="card" id="pOnboardingCard"></div>
+  </section>
+
+  <!-- PROVIDER: DASHBOARD -->
+  <section class="screen" id="screen-p-home">
+    <div class="section-title">Dashboard</div>
+
+    <div class="card" style="display:flex;gap:12px;align-items:center">
+      <img src="provider-placeholder.png" alt="Logo" style="width:48px;height:48px;border-radius:14px;border:1px solid var(--line)" />
+      <div>
+        <div style="font-weight:900" id="pName">Anbieter</div>
+        <div class="sub" id="pAddr">Adresse</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="hstack" style="justify-content:space-between">
+        <div>
+          <div style="font-weight:900">Heute</div>
+          <div class="sub">Nur bezahlte Abholungen mit Abholnummer</div>
+        </div>
+        <span class="badge ok" id="pPaidCount">0 Abholungen</span>
+      </div>
+      <div class="divider"></div>
+      <div class="sub">Wichtig: Hier siehst du nur Bestellungen, die online bezahlt wurden und eine Abholnummer haben.</div>
+    </div>
+
+    <div class="card">
+      <div class="hstack" style="justify-content:space-between;align-items:flex-start">
+        <div>
+          <div style="font-weight:900">Neues Inserat</div>
+          <div class="sub">Du entscheidest erst am Ende: veröffentlichen, ins Kochbuch, in den Wochenplan.</div>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="hstack">
+        <button class="primary" onclick="providerNewListing('new')">Neu erstellen</button>
+        <button onclick="providerNewListing('cookbook')">Aus Kochbuch</button>
+      </div>
+    </div>
+
+    <div class="section-title" style="margin-top:16px">Aktive Inserate</div>
+    <div class="list" id="pActiveList"></div>
+
+    <div class="section-title" style="margin-top:16px">Wochenvorschau</div>
+    <div class="sub">Swipe nach links/rechts · Tippen für Aktionen</div>
+    <div class="card">
+      <div class="chips" id="pWeekChips"></div>
+      <div class="divider"></div>
+      <div class="list" id="pWeekList"></div>
+      <div class="divider"></div>
+      <div class="hstack">
+        <button onclick="toast('PDF (Demo)', 'Im echten System wird eine PDF erstellt.')">🖨️ Wochenkarte drucken</button>
+        <button class="primary" onclick="providerNewListing('new')">+ Inserat hinzufügen</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROVIDER: PICKUPS -->
+  <section class="screen" id="screen-p-pickups">
+    <div class="section-title">Abholungen</div>
+
+    <div class="card">
+      <div class="sub">Sortierung</div>
+      <div class="hstack" style="margin-top:8px">
+        <select id="pPickupSort" onchange="renderPickups()">
+          <option value="time">Nach Abholzeit</option>
+          <option value="code">Nach Abholnummer</option>
+          <option value="group">Nach Gericht-Gruppen</option>
+        </select>
+        <button onclick="toast('Offline (Demo)', 'Letzter Stand bleibt sichtbar.')">📶</button>
+      </div>
+    </div>
+
+    <div id="pPickupsEmpty" class="card" style="display:none">
+      <div style="font-weight:900">Aktuell keine Abholungen geplant</div>
+      <div class="sub" style="margin-top:6px">Geplante Abholungen sorgen für weniger Chaos – oft brauchst du weniger Personal in der Stoßzeit.</div>
+      <div class="divider"></div>
+      <button onclick="openModal('modal-faq-provider')">Mehr erfahren</button>
+    </div>
+
+    <div class="list" id="pPickupsList"></div>
+  </section>
+
+  <!-- PROVIDER: COOKBOOK -->
+  <section class="screen" id="screen-p-cookbook">
+    <div class="section-title">Mein Kochbuch</div>
+    <div class="card">
+      <div style="font-weight:900">Dein digitales Kochbuch</div>
+      <div class="sub">Einmal anlegen. Immer wieder nutzen – für Planbarkeit ohne Stress.</div>
+      <div class="divider"></div>
+      <div class="hstack">
+        <select id="pBookSort" onchange="renderCookbook()">
+          <option value="recent">Zuletzt verwendet</option>
+          <option value="az">Alphabetisch</option>
+          <option value="price">Preis</option>
+        </select>
+        <input id="pBookSearch" placeholder="Gericht suchen" oninput="renderCookbook()" />
+      </div>
+    </div>
+    <div class="list" id="pCookbookList"></div>
+  </section>
+
+  <!-- PROVIDER: PROFILE -->
+  <section class="screen" id="screen-p-profile">
+    <div class="section-title">Profil</div>
+
+    <div class="list">
+      <div class="row" onclick="openModal('modal-provider-profile')">
+        <div>
+          <div><b>Mein Profil</b></div>
+          <div class="sub">Name · Adresse · Logo · Abholzeiten</div>
+        </div>
+        <div>›</div>
+      </div>
+
+      <div class="row" onclick="openModal('modal-billing')">
+        <div>
+          <div><b>Abrechnung</b></div>
+          <div class="sub">Auszahlungen · Gebühren · Export</div>
+        </div>
+        <div>›</div>
+      </div>
+
+      <div class="row" onclick="openModal('modal-faq-provider')">
+        <div>
+          <div><b>FAQ & Hilfe</b></div>
+          <div class="sub">Kurz & professionell</div>
+        </div>
+        <div>›</div>
+      </div>
+
+      <div class="row" onclick="openModal('modal-legal')">
+        <div>
+          <div><b>Rechtliches</b></div>
+          <div class="sub">Impressum · Datenschutz · AGB</div>
+        </div>
+        <div>›</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROVIDER: LISTING FLOW -->
+  <section class="screen" id="screen-p-listing">
+    <div class="section-title">Inserat erstellen</div>
+
+    <div class="card" id="pListingStep"></div>
+  </section>
+
+</div><!-- /container -->
+
+<!-- Bottom nav (dynamic) -->
+<div class="bottom">
+  <div class="nav" id="nav-customer" style="display:none">
+    <button id="cNavDiscover" onclick="navCustomer('discover')">🏠<div>Entdecken</div></button>
+    <button id="cNavCart" onclick="navCustomer('cart')">🛒<div>Warenkorb</div></button>
+    <button id="cNavOrders" onclick="navCustomer('orders')">📄<div>Bestellungen</div></button>
+    <button id="cNavProfile" onclick="navCustomer('profile')">👤<div>Profil</div></button>
+  </div>
+
+  <div class="nav" id="nav-provider" style="display:none">
+    <button id="pNavHome" onclick="navProvider('home')">🏠<div>Home</div></button>
+    <button id="pNavPickups" onclick="navProvider('pickups')">🧾<div>Abholungen</div></button>
+    <button id="pNavCookbook" onclick="navProvider('cookbook')">📘<div>Kochbuch</div></button>
+    <button id="pNavProfile" onclick="navProvider('profile')">👤<div>Profil</div></button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">
+  <div class="card">
+    <div>
+      <div style="font-weight:900" id="toastTitle">Gespeichert</div>
+      <div class="sub" id="toastMsg">OK</div>
+    </div>
+    <button class="small" id="toastAction" style="display:none" onclick="toastActionClick()">Undo</button>
+  </div>
+</div>
+
+<!-- Modals -->
+<div class="modal-backdrop" id="modal-backdrop" onclick="if(event.target.id==='modal-backdrop') closeModal()">
+  <div class="modal" id="modal">
+    <header>
+      <div class="topbar">
+        <div class="title" id="modalTitle">Info</div>
+        <div class="spacer"></div>
+        <button class="icon" onclick="closeModal()">✕</button>
+      </div>
+    </header>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+  // --------- State ---------
+  const state = {
+    role: 'start',
+    customer: {
+      filters: new Set(),
+      currentDishId: null,
+      cart: null,
+      orders: []
+    },
+    provider: {
+      onboarded: false,
+      profile: {
+        type: 'Sonstiges',
+        name: 'Metzgerei Maier',
+        address: 'Marktplatz 3, 73614 Schorndorf',
+        pickupPreset: '11:30 – 14:00',
+        dineInPossible: true,
+        payoutIban: '',
+        vatId: ''
+      },
+      listings: [],
+      cookbook: [],
+      pickups: []
+    },
+    toast: { timer:null, undo:null },
+  };
+
+  // --------- Demo data ---------
+  const demoProviders = [
+    {
+      id:'maier', name:'Metzgerei Maier', city:'Schorndorf',
+      pickup:'11:30 – 14:00', dineIn:true,
+      dishes:[
+        {id:'m1', title:'Schnitzel mit Pommes', price:9.90, tags:['meat'], onlinePay:true, photo:false},
+        {id:'m2', title:'Currywurst mit Brötchen', price:6.50, tags:['meat'], onlinePay:true, photo:false},
+        {id:'m3', title:'Leberkäse mit Kartoffelsalat', price:7.90, tags:['meat'], onlinePay:true, photo:false},
+        {id:'m4', title:'Käsespätzle', price:7.50, tags:['veggie'], onlinePay:true, photo:false},
+      ]
+    },
+    {
+      id:'sonneneck', name:'Bistro Sonneneck', city:'Stuttgart',
+      pickup:'11:00 – 13:30', dineIn:true,
+      dishes:[
+        {id:'s1', title:'Flammkuchen', price:8.90, tags:['veggie'], onlinePay:false, photo:false},
+        {id:'s2', title:'Pasta Arrabiata', price:9.40, tags:['vegan'], onlinePay:false, photo:false},
+        {id:'s3', title:'Chicken Bowl', price:10.50, tags:['meat'], onlinePay:false, photo:false},
+        {id:'s4', title:'Caesar Salad', price:9.20, tags:['meat'], onlinePay:false, photo:false},
+      ]
+    },
+    {
+      id:'gruene', name:'Foodtruck Grüne Pause', city:'Esslingen',
+      pickup:'12:00 – 14:30', dineIn:false,
+      dishes:[
+        {id:'g1', title:'Veggie-Burger mit Süßkartoffeln', price:8.50, tags:['veggie'], onlinePay:true, photo:false},
+        {id:'g2', title:'Falafel-Teller mit Hummus', price:9.00, tags:['vegan'], onlinePay:true, photo:false},
+        {id:'g3', title:'Pasta mit Gemüse & Pesto', price:8.80, tags:['veggie'], onlinePay:true, photo:false},
+        {id:'g4', title:'Ofenkartoffel mit Kräuterquark', price:7.90, tags:['veggie'], onlinePay:true, photo:false},
+      ]
+    }
+  ];
+
+  // --------- Utils ---------
+  const qs = (s,root=document)=>root.querySelector(s);
+  const qsa = (s,root=document)=>Array.from(root.querySelectorAll(s));
+  const eur = (n)=> new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR'}).format(n);
+
+  function go(screenId){
+    qsa('.screen').forEach(s=>s.classList.remove('active'));
+    qs('#'+screenId).classList.add('active');
+  }
+
+  function setRole(role){
+    state.role = role;
+    qs('#rolePill').textContent = role==='customer' ? 'Modus: Gast' : role==='provider' ? 'Modus: Anbieter' : 'Modus: Start';
+
+    qs('#nav-customer').style.display = (role==='customer') ? 'grid' : 'none';
+    qs('#nav-provider').style.display = (role==='provider') ? 'grid' : 'none';
+
+    if(role==='customer'){
+      navCustomer('discover');
+    } else if(role==='provider'){
+      // if not onboarded -> onboarding
+      if(!loadPersistedProvider().onboarded){
+        startOnboarding();
+      } else {
+        navProvider('home');
+      }
+    } else {
+      go('screen-start');
+    }
+  }
+
+  // --------- Persist provider basic state (local) ---------
+  function loadPersistedProvider(){
+    try{
+      const raw = localStorage.getItem('mittagio_provider_state');
+      if(!raw) return state.provider;
+      const parsed = JSON.parse(raw);
+      state.provider = Object.assign(state.provider, parsed);
+      return state.provider;
+    }catch(e){
+      return state.provider;
+    }
+  }
+  function saveProvider(){
+    localStorage.setItem('mittagio_provider_state', JSON.stringify(state.provider));
+  }
+
+  // --------- Customer navigation ---------
+  function setActiveNav(prefix, key){
+    qsa('#'+prefix+' button').forEach(b=>b.classList.remove('active'));
+    const map = {
+      customer:{discover:'#cNavDiscover',cart:'#cNavCart',orders:'#cNavOrders',profile:'#cNavProfile'},
+      provider:{home:'#pNavHome',pickups:'#pNavPickups',cookbook:'#pNavCookbook',profile:'#pNavProfile'}
+    };
+    qs(map[prefix==='nav-customer'?'customer':'provider'][key]).classList.add('active');
+  }
+
+  function navCustomer(tab){
+    setActiveNav('nav-customer', tab);
+    if(tab==='discover') go('screen-c-discover');
+    if(tab==='cart') go('screen-c-cart');
+    if(tab==='orders') go('screen-c-orders');
+    if(tab==='profile') go('screen-c-profile');
+    renderCustomer();
+  }
+
+  function navProvider(tab){
+    setActiveNav('nav-provider', tab);
+    if(tab==='home') go('screen-p-home');
+    if(tab==='pickups') go('screen-p-pickups');
+    if(tab==='cookbook') go('screen-p-cookbook');
+    if(tab==='profile') go('screen-p-profile');
+    renderProvider();
+  }
+
+  // --------- Customer: render ---------
+  function renderCustomer(){
+    // Discover cards
+    const cards = qs('#cCards');
+    cards.innerHTML='';
+
+    const activeFilters = state.customer.filters;
+    const allDishes = demoProviders.flatMap(p => p.dishes.map(d=>({provider:p, dish:d})));
+
+    const filtered = allDishes.filter(x => {
+      if(activeFilters.size===0) return true;
+      // map filters
+      const f = activeFilters;
+      if(f.has('vegan') && !x.dish.tags.includes('vegan')) return false;
+      if(f.has('veggie') && !(x.dish.tags.includes('veggie') || x.dish.tags.includes('vegan'))) return false;
+      if(f.has('meat') && !x.dish.tags.includes('meat')) return false;
+      return true;
+    });
+
+    filtered.slice(0,8).forEach(x=>{
+      const c = document.createElement('div');
+      c.className='card';
+      c.style.cursor='pointer';
+      c.onclick=()=>openDish(x.provider.id, x.dish.id);
+
+      const badgePay = x.dish.onlinePay ? `<span class="badge ok">💳 Online bezahlen</span>` : `<span class="badge">💶 Ohne Online-Zahlung</span>`;
+      const badgeDine = x.provider.dineIn ? `<span class="badge warn">🍽️ Vor Ort</span>` : ``;
+
+      c.innerHTML = `
+        <div class="hstack" style="align-items:flex-start">
+          <div class="thumb">Foto</div>
+          <div style="flex:1">
+            <div style="font-weight:900">${escapeHtml(x.dish.title)}</div>
+            <div class="hstack" style="justify-content:space-between;margin-top:2px">
+              <div style="font-weight:900">${eur(x.dish.price)}</div>
+              <button class="icon" onclick="event.stopPropagation(); customerShare('${x.provider.id}','${x.dish.id}')">📤</button>
+            </div>
+            <div class="sub">${escapeHtml(x.provider.name)} · ${escapeHtml(x.provider.city)} · ${escapeHtml(x.provider.pickup)}</div>
+            <div class="hstack" style="margin-top:8px;flex-wrap:wrap">${badgePay} ${badgeDine}</div>
+          </div>
+        </div>
+      `;
+      cards.appendChild(c);
+    });
+
+    // Filters
+    qsa('#cFilters .chip').forEach(ch=>{
+      const f = ch.dataset.f;
+      const active = state.customer.filters.has(f);
+      ch.classList.toggle('active', active);
+      ch.onclick=()=>{
+        if(state.customer.filters.has(f)) state.customer.filters.delete(f);
+        else state.customer.filters.add(f);
+        renderCustomer();
+      };
+    });
+
+    // Cart
+    renderCart();
+
+    // Orders
+    renderOrders();
+  }
+
+  function openDish(providerId, dishId){
+    state.customer.currentDishId = dishId;
+    const p = demoProviders.find(x=>x.id===providerId);
+    const d = p.dishes.find(x=>x.id===dishId);
+
+    qs('#cDetailCard').innerHTML = `
+      <div class="hstack" style="align-items:flex-start">
+        <div class="thumb">Foto</div>
+        <div style="flex:1">
+          <div style="font-weight:900;font-size:20px">${escapeHtml(d.title)}</div>
+          <div class="hstack" style="justify-content:space-between;margin-top:4px">
+            <div style="font-weight:900">${eur(d.price)}</div>
+            ${d.onlinePay ? `<span class="badge ok">💳 Online bezahlen möglich</span>` : `<span class="badge">Ohne Online-Zahlung</span>`}
+          </div>
+          <div class="divider"></div>
+          <div class="sub"><b>${escapeHtml(p.name)}</b> · ${escapeHtml(p.city)}</div>
+          <div class="sub">Abholung: ${escapeHtml(p.pickup)}</div>
+          ${p.dineIn ? `<div class="sub">Vor Ort essen möglich</div>` : `<div class="sub">Nur Mitnehmen</div>`}
+        </div>
+      </div>
+    `;
+
+    go('screen-c-detail');
+  }
+
+  function addToCart(){
+    const dish = findDishById(state.customer.currentDishId);
+    if(!dish) return;
+    state.customer.cart = {
+      providerId: dish.provider.id,
+      dishId: dish.dish.id,
+      title: dish.dish.title,
+      price: dish.dish.price,
+      pickup: dish.provider.pickup,
+      providerName: dish.provider.name,
+      providerCity: dish.provider.city,
+      onlinePay: dish.dish.onlinePay,
+      dineInPossible: dish.provider.dineIn
+    };
+    toast('Im Warenkorb', 'Du kannst jetzt Abholzeit wählen.');
+    navCustomer('cart');
+  }
+
+  function renderCart(){
+    const card = qs('#cCartCard');
+    const c = state.customer.cart;
+    if(!c){
+      card.innerHTML = `
+        <div style="font-weight:900">Noch nichts im Warenkorb</div>
+        <div class="sub">Entdecke Gerichte und füge eins hinzu.</div>
+      `;
+      return;
+    }
+
+    const dineOptions = c.dineInPossible
+      ? `<option value="takeaway">Mitnehmen</option><option value="dinein">Vor Ort essen</option>`
+      : `<option value="takeaway">Mitnehmen</option>`;
+
+    qs('#cDine').innerHTML = dineOptions;
+
+    card.innerHTML = `
+      <div style="font-weight:900">${escapeHtml(c.title)}</div>
+      <div class="hstack" style="justify-content:space-between;margin-top:4px">
+        <div style="font-weight:900">${eur(c.price)}</div>
+        ${c.onlinePay ? `<span class="badge ok">💳 Online bezahlen möglich</span>` : `<span class="badge">Ohne Online-Zahlung</span>`}
+      </div>
+      <div class="sub">${escapeHtml(c.providerName)} · ${escapeHtml(c.providerCity)}</div>
+      <div class="sub">Abholfenster: ${escapeHtml(c.pickup)}</div>
+    `;
+  }
+
+  function checkout(){
+    if(!state.customer.cart){
+      toast('Warenkorb leer', 'Bitte zuerst ein Gericht hinzufügen.');
+      navCustomer('discover');
+      return;
+    }
+    go('screen-c-checkout');
+  }
+
+  function pay(method){
+    const c = state.customer.cart;
+    const eta = qs('#cEta').value;
+    const dine = qs('#cDine').value;
+
+    const isPaid = (method==='card' || method==='paypal');
+
+    const order = {
+      id: 'o'+Math.random().toString(16).slice(2,8).toUpperCase(),
+      title: c.title,
+      provider: c.providerName,
+      eta,
+      dine,
+      paid: isPaid,
+      code: isPaid ? makePickupCodeFor(c.dishId) : null,
+      createdAt: new Date().toISOString()
+    };
+
+    state.customer.orders.unshift(order);
+
+    // add to provider pickups when paid
+    if(isPaid){
+      const p = loadPersistedProvider();
+      p.pickups = p.pickups || [];
+      p.pickups.push({
+        code: order.code,
+        title: order.title,
+        eta: order.eta,
+        dine: order.dine,
+        paid:true,
+        done:false
+      });
+      saveProvider();
+    }
+
+    state.customer.cart = null;
+    toast('Bestellung erstellt', isPaid ? `Abholnummer: ${order.code}` : 'Ohne Online-Zahlung – keine Abholnummer.');
+
+    navCustomer('orders');
+  }
+
+  function makePickupCodeFor(dishId){
+    // A/B/C assigned by insertion order of todays dishes (demo). Randomize letter by dishId hash (simple) + number range.
+    const letters = ['A','B','C','D','E'];
+    const idx = Math.abs(hashCode(dishId)) % 3; // up to 3 dishes groups
+    const letter = letters[idx];
+    const num = 1 + (Math.abs(hashCode(dishId+Date.now())) % 5);
+    return letter + num;
+  }
+
+  function clearCart(){
+    state.customer.cart = null;
+    toast('Warenkorb geleert','');
+    renderCustomer();
+  }
+
+  function renderOrders(){
+    const list = qs('#cOrdersList');
+    list.innerHTML='';
+    if(state.customer.orders.length===0){
+      list.innerHTML = `<div class="card"><div style="font-weight:900">Noch keine Bestellungen</div><div class="sub">Wenn du online bezahlst, bekommst du eine Abholnummer.</div></div>`;
+      return;
+    }
+
+    state.customer.orders.slice(0,20).forEach(o=>{
+      const c = document.createElement('div');
+      c.className='card';
+      c.innerHTML = `
+        <div style="font-weight:900">${escapeHtml(o.title)}</div>
+        <div class="sub">${escapeHtml(o.provider)} · ${escapeHtml(o.eta)} · ${o.dine==='dinein'?'Vor Ort':'Mitnehmen'}</div>
+        <div class="hstack" style="margin-top:10px;justify-content:space-between">
+          ${o.paid ? `<span class="badge ok">Online bezahlt</span>` : `<span class="badge">Ohne Online-Zahlung</span>`}
+          ${o.paid ? `<button class="primary small" onclick="showPickupCode('${o.code}')">Abholnummer</button>` : `<span class="muted">Keine Abholnummer</span>`}
+        </div>
+      `;
+      list.appendChild(c);
+    });
+  }
+
+  function showPickupCode(code){
+    openModal('modal-code', {code});
+  }
+
+  // Share
+  function shareTextFor(provider, dish){
+    const base = `\n\nhttps://www.mittagio.de`;
+    return `🍽️ Heute zum Mittag: ${dish.title} (${eur(dish.price)})\n${provider.name} · ${provider.city}\nAbholung: ${provider.pickup}${base}`;
+  }
+
+  async function customerShare(providerId, dishId){
+    const p = demoProviders.find(x=>x.id===providerId);
+    const d = p.dishes.find(x=>x.id===dishId);
+    const text = shareTextFor(p,d);
+    try{
+      if(navigator.share){
+        await navigator.share({title:'Mittagio', text});
+      } else {
+        await navigator.clipboard.writeText(text);
+        toast('Kopiert', 'Text in Zwischenablage.');
+      }
+    }catch(e){
+      toast('Teilen abgebrochen','');
+    }
+  }
+
+  function customerShareCurrent(){
+    const dish = findDishById(state.customer.currentDishId);
+    if(!dish) return;
+    customerShare(dish.provider.id, dish.dish.id);
+  }
+
+  function findDishById(dishId){
+    for(const p of demoProviders){
+      const d = p.dishes.find(x=>x.id===dishId);
+      if(d) return {provider:p, dish:d};
+    }
+    return null;
+  }
+
+  // --------- Provider: onboarding ---------
+  const onboardingSteps = [
+    {
+      key:'welcome',
+      title:'Willkommen bei Mittagio 👋',
+      text:'Fangen wir mit deinem Profil an. So finden Gäste deinen Mittagstisch.',
+      render: ()=>`<button class="primary" onclick="nextOnboarding()">Profil einrichten</button>`
+    },
+    {
+      key:'type',
+      title:'Wer bist du?',
+      text:'Wähle, was am besten passt.',
+      render: ()=>{
+        const types=['Metzgerei','Bäckerei','Restaurant','Foodtruck','Imbiss','Sonstiges'];
+        return `
+          <div class="chips" style="margin:10px 0">${types.map(t=>`<div class="chip ${state.provider.profile.type===t?'active':''}" onclick="setProviderField('type','${t}')">${t}</div>`).join('')}</div>
+          <button class="primary" onclick="nextOnboarding()">Weiter</button>
+        `;
+      }
+    },
+    {
+      key:'name',
+      title:'Wie heißt dein Betrieb?',
+      text:'Wird Gästen angezeigt.',
+      render: ()=>`<label>Anbietername</label><input id="pNameInput" value="${escapeHtml(state.provider.profile.name)}" placeholder="Anbietername" oninput="setProviderField('name', this.value)" /><div class="divider"></div><button class="primary" onclick="nextOnboarding()">Weiter</button>`
+    },
+    {
+      key:'location',
+      title:'Wo bist du?',
+      text:'Kann jederzeit geändert werden.',
+      render: ()=>`<label>Adresse</label><input value="${escapeHtml(state.provider.profile.address)}" placeholder="Adresse" oninput="setProviderField('address', this.value)" /><div class="divider"></div><button class="primary" onclick="nextOnboarding()">Weiter</button>`
+    },
+    {
+      key:'pickup',
+      title:'Wann können Gäste abholen?',
+      text:'Wird automatisch übernommen.',
+      render: ()=>{
+        const presets=['11:00 – 13:00','11:30 – 14:00','12:00 – 14:30'];
+        return `
+          <div class="chips" style="margin:10px 0">
+            ${presets.map(p=>`<div class="chip ${state.provider.profile.pickupPreset===p?'active':''}" onclick="setProviderField('pickupPreset','${p}')">${p}</div>`).join('')}
+            <div class="chip" onclick="customPickup()">Eigene Zeit festlegen</div>
+          </div>
+          <button class="primary" onclick="nextOnboarding()">Weiter</button>
+        `;
+      }
+    },
+    {
+      key:'logo',
+      title:'Dein Logo',
+      text:'Mit Logo wirkst du vertrauenswürdiger.',
+      render: ()=>`<div class="hstack"><button onclick="toast('Logo (Demo)','In echt: Upload')">Logo hochladen</button><button class="ghost" onclick="nextOnboarding()" style="color:var(--muted)">Später</button></div>`
+    },
+    {
+      key:'payment',
+      title:'Online-Zahlung',
+      text:'Abholnummern nur bei Online-Zahlung.',
+      render: ()=>`<div class="chips" style="margin:10px 0"><div class="chip active">Online bezahlen möglich</div></div><button class="primary" onclick="nextOnboarding()">Weiter</button>`
+    },
+    {
+      key:'done',
+      title:'Geschafft 🎉',
+      text:'Dein Profil ist bereit. Jetzt kannst du dein erstes Gericht einstellen.',
+      render: ()=>`<div class="hstack"><button class="primary" onclick="finishOnboarding(true)">Neues Inserat erstellen</button><button onclick="finishOnboarding(false)">Zur Übersicht</button></div>`
+    }
+  ];
+
+  let onboardingIndex = 0;
+
+  function startOnboarding(){
+    loadPersistedProvider();
+    onboardingIndex = 0;
+    renderOnboarding();
+    go('screen-p-onboarding');
+  }
+
+  function renderOnboarding(){
+    const s = onboardingSteps[onboardingIndex];
+    const card = qs('#pOnboardingCard');
+    card.innerHTML = `
+      <div style="font-weight:900;font-size:18px">${s.title}</div>
+      <div class="sub" style="margin-top:6px">${s.text}</div>
+      <div class="divider"></div>
+      ${s.render()}
+    `;
+  }
+
+  function nextOnboarding(){
+    onboardingIndex = Math.min(onboardingIndex+1, onboardingSteps.length-1);
+    renderOnboarding();
+  }
+
+  function finishOnboarding(goToListing){
+    state.provider.onboarded = true;
+    saveProvider();
+    toast('Profil fertig','');
+    if(goToListing){
+      providerNewListing('new');
+    } else {
+      navProvider('home');
+    }
+  }
+
+  function setProviderField(field, value){
+    state.provider.profile[field] = value;
+    saveProvider();
+  }
+
+  function customPickup(){
+    openModal('modal-custom-pickup');
+  }
+
+  // --------- Provider: listing flow ---------
+  const allergens = ['Gluten','Milch','Ei','Nüsse','Soja','Sellerie','Senf'];
+  const extras = ['Mehrwegsystem','Schärfe','Extra Sauce','Besteck'];
+
+  let listingFlow = {
+    source:'new',
+    step:0,
+    data:{
+      title:'',
+      price:'',
+      photo:null,
+      pickup:'',
+      pickupChanged:false,
+      tags:new Set(),
+      allergens:new Set(),
+      extras:new Set(),
+      onlinePay:true,
+      dineIn:true,
+    }
+  };
+
+  const listingSteps = [
+    {key:'what', title:'Was möchtest du einstellen?', render:()=>{
+      return `
+        <div class="sub">Schnell per Buttons – wie bei ImmobilienScout.</div>
+        <div class="divider"></div>
+        <div class="vstack">
+          <button class="primary" onclick="lfNext()">Neu erstellen</button>
+          <button onclick="providerNewListing('cookbook')">Aus Kochbuch wählen</button>
+        </div>
+      `;
+    }},
+    {key:'basics', title:'Gericht & Preis', render:()=>{
+      return `
+        <label>Gericht</label>
+        <input value="${escapeHtml(listingFlow.data.title)}" placeholder="z. B. Schnitzel mit Pommes" oninput="listingFlow.data.title=this.value" />
+        <label style="margin-top:10px">Preis (EUR)</label>
+        <input type="number" step="0.10" value="${escapeHtml(listingFlow.data.price)}" placeholder="9.90" oninput="listingFlow.data.price=this.value" />
+        <div class="divider"></div>
+        <button class="primary" onclick="lfNext()" ${(!listingFlow.data.title || !listingFlow.data.price)?'disabled':''}>Weiter</button>
+      `;
+    }},
+    {key:'pickup', title:'Abholzeit', render:()=>{
+      const preset = state.provider.profile.pickupPreset;
+      const current = listingFlow.data.pickup || preset;
+      return `
+        <div class="sub">Standard aus deinem Profil: <b>${escapeHtml(preset)}</b></div>
+        <div class="divider"></div>
+        <label>Abholzeit</label>
+        <select onchange="listingFlow.data.pickup=this.value; listingFlow.data.pickupChanged=true; renderListingStep()">
+          <option ${current===preset?'selected':''}>${escapeHtml(preset)}</option>
+          <option ${current==='11:00 – 13:00'?'selected':''}>11:00 – 13:00</option>
+          <option ${current==='12:00 – 14:30'?'selected':''}>12:00 – 14:30</option>
+        </select>
+        <div class="divider"></div>
+        <button class="primary" onclick="lfNext()">Weiter</button>
+      `;
+    }},
+    {key:'tags', title:'Eigenschaften', render:()=>{
+      const tagList=[{k:'veggie',t:'🥗 Vegetarisch'},{k:'vegan',t:'🌱 Vegan'},{k:'meat',t:'🥩 Mit Fleisch'}];
+      return `
+        <div class="sub">Optional – hilft Gästen beim Finden.</div>
+        <div class="divider"></div>
+        <div class="chips">${tagList.map(x=>`<div class="chip ${listingFlow.data.tags.has(x.k)?'active':''}" onclick="toggleSet(listingFlow.data.tags,'${x.k}'); renderListingStep()">${x.t}</div>`).join('')}</div>
+        <div class="divider"></div>
+        <button class="primary" onclick="lfNext()">Weiter</button>
+      `;
+    }},
+    {key:'allergens', title:'Allergene', render:()=>{
+      return `
+        <div class="sub">Optional – einfach anklicken.</div>
+        <div class="divider"></div>
+        <div class="chips" style="flex-wrap:wrap;overflow:visible">${allergens.map(a=>`<div class="chip ${listingFlow.data.allergens.has(a)?'active':''}" onclick="toggleSet(listingFlow.data.allergens,'${a}'); renderListingStep()">${a}</div>`).join('')}</div>
+        <div class="divider"></div>
+        <button class="primary" onclick="lfNext()">Weiter</button>
+      `;
+    }},
+    {key:'extras', title:'Extras', render:()=>{
+      return `
+        <div class="sub">Optional – z. B. Mehrwegsystem (Pfand/Mehrweg).</div>
+        <div class="divider"></div>
+        <div class="chips" style="flex-wrap:wrap;overflow:visible">${extras.map(e=>`<div class="chip ${listingFlow.data.extras.has(e)?'active':''}" onclick="toggleSet(listingFlow.data.extras,'${e}'); renderListingStep()">${e}</div>`).join('')}</div>
+        <div class="divider"></div>
+        <button class="primary" onclick="lfNext()">Weiter</button>
+      `;
+    }},
+    {key:'photo', title:'Foto (optional)', render:()=>{
+      return `
+        <div class="sub">Ein Foto hilft – ist aber keine Pflicht.</div>
+        <div class="divider"></div>
+        <input type="file" accept="image/*" onchange="handlePhoto(event)" />
+        ${listingFlow.data.photo ? `<div class="divider"></div><div class="thumb" style="width:100%;height:160px"><img src="${listingFlow.data.photo}" alt="Foto" /></div>` : ''}
+        <div class="divider"></div>
+        <button class="primary" onclick="lfNext()">Weiter</button>
+      `;
+    }},
+    {key:'pay', title:'Online-Zahlung', render:()=>{
+      return `
+        <div class="sub">Online bezahlen ist optional. Abholnummern nur bei Online-Zahlung.</div>
+        <div class="divider"></div>
+        <div class="chips">
+          <div class="chip ${listingFlow.data.onlinePay?'active':''}" onclick="listingFlow.data.onlinePay=true; renderListingStep()">💳 Online bezahlen aktiv</div>
+          <div class="chip ${!listingFlow.data.onlinePay?'active':''}" onclick="listingFlow.data.onlinePay=false; renderListingStep()">💶 Ohne Online-Zahlung</div>
+        </div>
+        <div class="divider"></div>
+        <button class="primary" onclick="lfNext()">Weiter</button>
+      `;
+    }},
+    {key:'dinein', title:'Vor Ort essen', render:()=>{
+      const possible = state.provider.profile.dineInPossible;
+      if(!possible){
+        listingFlow.data.dineIn=false;
+        return `
+          <div class="sub">Du hast „Vor Ort essen“ im Profil deaktiviert.</div>
+          <div class="divider"></div>
+          <button class="primary" onclick="lfNext()">Weiter</button>
+        `;
+      }
+      return `
+        <div class="sub">Optionaler Badge für Gäste.</div>
+        <div class="divider"></div>
+        <div class="chips">
+          <div class="chip ${listingFlow.data.dineIn?'active':''}" onclick="listingFlow.data.dineIn=true; renderListingStep()">🍽️ Vor Ort möglich</div>
+          <div class="chip ${!listingFlow.data.dineIn?'active':''}" onclick="listingFlow.data.dineIn=false; renderListingStep()">🥡 Nur Mitnehmen</div>
+        </div>
+        <div class="divider"></div>
+        <button class="primary" onclick="lfNext()">Weiter</button>
+      `;
+    }},
+    {key:'finish', title:'Fertig', render:()=>{
+      const codeHint = listingFlow.data.onlinePay ? 'Online Abholcode aktiv' : 'Ohne Online Abholcode';
+      return `
+        <div style="font-weight:900">Dein Inserat ist bereit.</div>
+        <div class="sub" style="margin-top:6px">${escapeHtml(listingFlow.data.title)} · ${eur(Number(listingFlow.data.price||0))} · ${escapeHtml(listingFlow.data.pickup || state.provider.profile.pickupPreset)} · ${codeHint}</div>
+        <div class="divider"></div>
+        <div class="vstack">
+          <button class="primary" onclick="finishListing('publish')">Inserat veröffentlichen</button>
+          <button onclick="finishListing('cookbook')">Ins Kochbuch speichern</button>
+          <button onclick="finishListing('week')">In den Wochenplan hinzufügen</button>
+        </div>
+        <div class="divider"></div>
+        <button class="ghost" onclick="finishListing('publish', true)" style="color:var(--muted)">Überspringen & später</button>
+      `;
+    }}
+  ];
+
+  function providerNewListing(source){
+    loadPersistedProvider();
+    listingFlow = {
+      source,
+      step: 0,
+      data:{
+        title: source==='cookbook' ? (state.provider.cookbook[0]?.title||'') : '',
+        price: source==='cookbook' ? (state.provider.cookbook[0]?.price||'') : '',
+        photo:null,
+        pickup: state.provider.profile.pickupPreset,
+        pickupChanged:false,
+        tags:new Set(),
+        allergens:new Set(),
+        extras:new Set(),
+        onlinePay:true,
+        dineIn:true,
+      }
+    };
+
+    go('screen-p-listing');
+    renderListingStep();
+  }
+
+  function renderListingStep(){
+    const step = listingSteps[listingFlow.step];
+    const el = qs('#pListingStep');
+    el.innerHTML = `
+      <div class="hstack" style="justify-content:space-between;align-items:flex-start">
+        <div>
+          <div style="font-weight:900;font-size:18px">${step.title}</div>
+          <div class="sub">Schritt ${listingFlow.step+1} von ${listingSteps.length}</div>
+        </div>
+        <div class="hstack">
+          ${listingFlow.step>0 ? `<button class="small" onclick="lfBack()">Zurück</button>` : ''}
+          <button class="small" onclick="navProvider('home')">Abbrechen</button>
+        </div>
+      </div>
+      <div class="divider"></div>
+      ${step.render()}
+    `;
+  }
+
+  function lfNext(){
+    listingFlow.step = Math.min(listingFlow.step+1, listingSteps.length-1);
+    renderListingStep();
+  }
+
+  function lfBack(){
+    listingFlow.step = Math.max(listingFlow.step-1, 0);
+    renderListingStep();
+  }
+
+  function toggleSet(set, key){
+    if(set.has(key)) set.delete(key);
+    else set.add(key);
+  }
+
+  function handlePhoto(ev){
+    const file = ev.target.files && ev.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = ()=>{
+      listingFlow.data.photo = reader.result;
+      renderListingStep();
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function finishListing(action, skip=false){
+    loadPersistedProvider();
+
+    if(skip){
+      toast('Übersprungen','Du kannst später veröffentlichen.');
+      navProvider('home');
+      return;
+    }
+
+    const listing = {
+      id: 'l'+Math.random().toString(16).slice(2,8).toUpperCase(),
+      title: listingFlow.data.title,
+      price: Number(listingFlow.data.price||0),
+      pickup: listingFlow.data.pickup || state.provider.profile.pickupPreset,
+      tags: Array.from(listingFlow.data.tags),
+      allergens: Array.from(listingFlow.data.allergens),
+      extras: Array.from(listingFlow.data.extras),
+      onlinePay: listingFlow.data.onlinePay,
+      dineIn: listingFlow.data.dineIn,
+      createdAt: new Date().toISOString(),
+      active: action==='publish'
+    };
+
+    if(action==='cookbook'){
+      state.provider.cookbook = state.provider.cookbook || [];
+      state.provider.cookbook.unshift({
+        title: listing.title,
+        price: listing.price,
+        lastUsed: listing.createdAt,
+        soldViaMittagio: 0
+      });
+      saveProvider();
+      toast('Im Kochbuch gespeichert','');
+    }
+
+    if(action==='week'){
+      state.provider.listings = state.provider.listings || [];
+      listing.active = false;
+      listing.inWeek = true;
+      state.provider.listings.unshift(listing);
+      saveProvider();
+      toast('Zum Wochenplan hinzugefügt','');
+    }
+
+    if(action==='publish'){
+      state.provider.listings = state.provider.listings || [];
+      state.provider.listings.unshift(listing);
+      saveProvider();
+      toast('Inserat ist online 🎉','Glückwunsch – du kannst direkt das nächste erstellen.', {
+        actionLabel:'Weiteres Inserat',
+        undo: ()=>{
+          state.provider.listings = state.provider.listings.filter(x=>x.id!==listing.id);
+          saveProvider();
+          renderProvider();
+        },
+        onAction: ()=>providerNewListing('new')
+      });
+    }
+
+    // after any action
+    navProvider('home');
+    renderProvider();
+  }
+
+  // --------- Provider: render ---------
+  function renderProvider(){
+    loadPersistedProvider();
+
+    // header
+    qs('#pName').textContent = state.provider.profile.name || 'Anbieter';
+    qs('#pAddr').textContent = state.provider.profile.address || '';
+
+    // active listings
+    if(!state.provider.listings || state.provider.listings.length===0){
+      qs('#pActiveList').innerHTML = `
+        <div class="card">
+          <div style="font-weight:900">Noch keine aktiven Inserate</div>
+          <div class="sub">Erstelle dein erstes Inserat – du entscheidest am Ende, was passiert.</div>
+        </div>
+      `;
+    } else {
+      qs('#pActiveList').innerHTML = '';
+      state.provider.listings.slice(0,6).forEach(l=>{
+        const card = document.createElement('div');
+        card.className='card';
+        card.style.cursor='pointer';
+        const codesText = l.onlinePay ? 'Online Abholcode: aktiv' : 'Ohne Online Abholcode';
+        card.innerHTML = `
+          <div class="hstack" style="align-items:flex-start">
+            <div class="thumb">Foto</div>
+            <div style="flex:1">
+              <div style="font-weight:900">${escapeHtml(l.title)}</div>
+              <div class="sub">${eur(l.price)} · ${escapeHtml(l.pickup)} · ${codesText}</div>
+              <div class="divider"></div>
+              <div class="hstack" style="flex-wrap:wrap">
+                <button class="small" onclick="event.stopPropagation(); openProviderListingActions('${l.id}')">Aktionen</button>
+                <button class="small" onclick="event.stopPropagation(); providerShareListing('${l.id}')">Teilen</button>
+                <button class="small" onclick="event.stopPropagation(); toast('Drucken (Demo)','In echt: PDF/Print')">Drucken</button>
+              </div>
+            </div>
+          </div>
+        `;
+        card.onclick=()=>openProviderListingActions(l.id);
+        qs('#pActiveList').appendChild(card);
+      });
+    }
+
+    // pickups
+    const paidPickups = (state.provider.pickups||[]).filter(p=>p.paid && !p.done);
+    qs('#pPaidCount').textContent = paidPickups.length + ' Abholungen';
+
+    // week preview chips
+    const days = nextDays(5);
+    const chips = qs('#pWeekChips');
+    chips.innerHTML = '';
+    days.forEach((d,i)=>{
+      const ch = document.createElement('div');
+      ch.className='chip'+(i===0?' active':'');
+      ch.textContent = d.label;
+      ch.onclick=()=>{
+        qsa('#pWeekChips .chip').forEach(x=>x.classList.remove('active'));
+        ch.classList.add('active');
+        renderWeek(d.key);
+      };
+      chips.appendChild(ch);
+    });
+    renderWeek(days[0].key);
+
+    renderPickups();
+    renderCookbook();
+  }
+
+  function renderWeek(dayKey){
+    // demo: show provider listings tagged inWeek OR random subset
+    const list = qs('#pWeekList');
+    const pool = (state.provider.listings||[]);
+    const items = pool.length ? pool.slice(0,3) : [
+      {id:'w1', title:'Schnitzel mit Pommes', price:9.90, pickup: state.provider.profile.pickupPreset, onlinePay:true, active:false},
+      {id:'w2', title:'Käsespätzle', price:7.50, pickup: state.provider.profile.pickupPreset, onlinePay:true, active:false},
+    ];
+
+    list.innerHTML='';
+    items.forEach(l=>{
+      const card = document.createElement('div');
+      card.className='card';
+      card.style.cursor='pointer';
+      const codesText = l.onlinePay ? 'Online Abholcode: aktiv' : 'Ohne Online Abholcode';
+      card.innerHTML = `
+        <div style="font-weight:900">${escapeHtml(l.title)}</div>
+        <div class="sub">${eur(l.price)} · ${escapeHtml(l.pickup)} · ${codesText}</div>
+        <div class="divider"></div>
+        <div class="hstack" style="flex-wrap:wrap">
+          <button class="small" onclick="event.stopPropagation(); openProviderListingActions('${l.id}')">Bearbeiten</button>
+          <button class="small" onclick="event.stopPropagation(); toast('Aktiviert (Demo)','')">Aktivieren</button>
+          <button class="small" onclick="event.stopPropagation(); toast('Deaktiviert (Demo)','')">Deaktivieren</button>
+          <button class="small" onclick="event.stopPropagation(); providerShareText('${escapeHtml(state.provider.profile.name)}','${escapeHtml(l.title)}','${eur(l.price)}','${escapeHtml(l.pickup)}')">Teilen</button>
+          <button class="small" onclick="event.stopPropagation(); toast('Drucken (Demo)','')">Drucken</button>
+        </div>
+      `;
+      list.appendChild(card);
+    });
+
+    if(items.length===0){
+      list.innerHTML = `
+        <div class="card">
+          <div style="font-weight:900">Keine Inserate geplant</div>
+          <div class="sub">Füge ein Inserat hinzu, um deine Wochenkarte aufzubauen.</div>
+        </div>
+      `;
+    }
+  }
+
+  function openProviderListingActions(listingId){
+    const l = (state.provider.listings||[]).find(x=>x.id===listingId) || null;
+    const title = l ? l.title : 'Inserat';
+
+    openModal('modal-actions', {title, listingId});
+  }
+
+  async function providerShareListing(listingId){
+    const l = (state.provider.listings||[]).find(x=>x.id===listingId);
+    if(!l){ toast('Nicht gefunden',''); return; }
+
+    const provider = state.provider.profile;
+    const text = `🍽️ Heute zum Mittag: ${l.title} (${eur(l.price)})\n${provider.name}\nAbholung: ${l.pickup}\n\nhttps://www.mittagio.de`;
+
+    try{
+      if(navigator.share){
+        await navigator.share({title:'Mittagio', text});
+      } else {
+        await navigator.clipboard.writeText(text);
+        toast('Kopiert','Text in Zwischenablage.');
+      }
+    }catch(e){ toast('Teilen abgebrochen',''); }
+
+    // show share options (demo)
+    openModal('modal-share', {text});
+  }
+
+  function providerShareText(providerName, dishTitle, priceText, pickupText){
+    const text = `🍽️ Heute zum Mittag: ${dishTitle} (${priceText})\n${providerName}\nAbholung: ${pickupText}\n\nhttps://www.mittagio.de`;
+    openModal('modal-share', {text});
+  }
+
+  function renderPickups(){
+    loadPersistedProvider();
+    const list = qs('#pPickupsList');
+    const empty = qs('#pPickupsEmpty');
+
+    let items = (state.provider.pickups||[]).filter(p=>p.paid && !p.done);
+
+    const sort = qs('#pPickupSort').value;
+    if(sort==='time') items = items.sort((a,b)=>a.eta.localeCompare(b.eta));
+    if(sort==='code') items = items.sort((a,b)=>a.code.localeCompare(b.code));
+    if(sort==='group') items = items.sort((a,b)=>a.title.localeCompare(b.title));
+
+    list.innerHTML='';
+
+    if(items.length===0){
+      empty.style.display='block';
+      return;
+    }
+    empty.style.display='none';
+
+    items.forEach(p=>{
+      const card = document.createElement('div');
+      card.className='card';
+      card.innerHTML = `
+        <div class="hstack" style="justify-content:space-between;align-items:flex-start">
+          <div>
+            <div style="font-weight:900;font-size:22px">${escapeHtml(p.code)}</div>
+            <div class="sub">${escapeHtml(p.eta)} · ${escapeHtml(p.title)} · ${p.dine==='dinein'?'Vor Ort':'Mitnehmen'}</div>
+          </div>
+          <button class="primary small" onclick="markPickupDone('${p.code}')">Abgeholt</button>
+        </div>
+      `;
+      list.appendChild(card);
+    });
+  }
+
+  function markPickupDone(code){
+    loadPersistedProvider();
+    const idx = (state.provider.pickups||[]).findIndex(p=>p.code===code && !p.done);
+    if(idx<0) return;
+    const item = state.provider.pickups[idx];
+    item.done = true;
+    saveProvider();
+
+    toast('Als abgeholt markiert','',{
+      actionLabel:'Undo',
+      undo: ()=>{
+        item.done=false;
+        saveProvider();
+        renderPickups();
+      }
+    });
+
+    renderPickups();
+  }
+
+  function renderCookbook(){
+    loadPersistedProvider();
+    const list = qs('#pCookbookList');
+    const sort = qs('#pBookSort').value;
+    const q = (qs('#pBookSearch').value||'').toLowerCase();
+
+    let items = (state.provider.cookbook||[]).slice();
+
+    if(q) items = items.filter(x=>x.title.toLowerCase().includes(q));
+    if(sort==='recent') items.sort((a,b)=>(b.lastUsed||'').localeCompare(a.lastUsed||''));
+    if(sort==='az') items.sort((a,b)=>a.title.localeCompare(b.title));
+    if(sort==='price') items.sort((a,b)=>(a.price||0)-(b.price||0));
+
+    list.innerHTML='';
+
+    if(items.length===0){
+      list.innerHTML = `
+        <div class="card">
+          <div style="font-weight:900">Noch keine Einträge</div>
+          <div class="sub">Speichere Gerichte ins Kochbuch – dann kannst du sie mit einem Klick wiederverwenden.</div>
+        </div>
+      `;
+      return;
+    }
+
+    items.forEach((x)=>{
+      const card = document.createElement('div');
+      card.className='card';
+      card.style.cursor='pointer';
+      card.onclick=()=>{
+        providerNewListing('cookbook');
+        toast('Aus Kochbuch','Gericht wird vorbefuellt.');
+      };
+      card.innerHTML = `
+        <div class="hstack" style="justify-content:space-between;align-items:flex-start">
+          <div>
+            <div style="font-weight:900">${escapeHtml(x.title)}</div>
+            <div class="sub">Letzte Veröffentlichung: ${x.lastUsed?new Date(x.lastUsed).toLocaleDateString('de-DE'):'–'} · Verkäufe über Mittagio: ${x.soldViaMittagio||0}</div>
+          </div>
+          <button class="small" onclick="event.stopPropagation(); toast('Bearbeiten (Demo)','')">Bearbeiten</button>
+        </div>
+      `;
+      list.appendChild(card);
+    });
+  }
+
+  // --------- Modals ---------
+  function openModal(kind, payload={}){
+    const backdrop = qs('#modal-backdrop');
+    const title = qs('#modalTitle');
+    const body = qs('#modalBody');
+
+    let t='Info', html='';
+
+    if(kind==='modal-admin'){
+      t='Admin (intern)';
+      html = `
+        <div class="card">
+          <div style="font-weight:900">Admin-Bereich (Demo)</div>
+          <div class="sub">Später: Live-Tracking (Firebase) & Auszahlungen (Stripe).</div>
+          <div class="divider"></div>
+          <div class="sub">Hinweis: In der echten App wird dieser Bereich nicht öffentlich sichtbar sein.</div>
+        </div>
+      `;
+    }
+
+    if(kind==='modal-code'){
+      t='Abholnummer';
+      html = `
+        <div class="card center">
+          <div class="code">${escapeHtml(payload.code||'A1')}</div>
+          <div class="sub">Handy hochhalten – fertig.</div>
+        </div>
+      `;
+    }
+
+    if(kind==='modal-custom-pickup'){
+      t='Eigene Abholzeit';
+      html = `
+        <div class="card">
+          <label>Abholzeit</label>
+          <input id="customPickup" placeholder="z. B. 11:15 – 13:45" />
+          <div class="divider"></div>
+          <button class="primary" onclick="applyCustomPickup()">Übernehmen</button>
+        </div>
+      `;
+    }
+
+    if(kind==='modal-actions'){
+      t='Inserat';
+      const id = payload.listingId;
+      html = `
+        <div class="card">
+          <div style="font-weight:900">${escapeHtml(payload.title||'Inserat')}</div>
+          <div class="divider"></div>
+          <div class="vstack">
+            <button onclick="toast('Bearbeiten (Demo)','')">Bearbeiten</button>
+            <button onclick="toggleListingActive('${id}')">Aktivieren / Deaktivieren</button>
+            <button onclick="providerShareListing('${id}')">Teilen</button>
+            <button onclick="toast('Drucken (Demo)','')">Drucken</button>
+          </div>
+        </div>
+      `;
+    }
+
+    if(kind==='modal-share'){
+      t='Teilen';
+      const text = payload.text || '';
+      html = `
+        <div class="card">
+          <div style="font-weight:900">Text (vorgefüllt)</div>
+          <div class="sub">WhatsApp · Instagram · Homepage</div>
+          <div class="divider"></div>
+          <textarea rows="7" readonly>${escapeHtml(text)}</textarea>
+          <div class="divider"></div>
+          <div class="hstack" style="flex-wrap:wrap">
+            <button onclick="copyText()">📋 Kopieren</button>
+            <button onclick="toast('WhatsApp (Demo)','Öffnet Share Sheet')">💬 WhatsApp</button>
+            <button onclick="toast('Instagram (Demo)','Öffnet Share Sheet')">📷 Instagram</button>
+            <button onclick="toast('Homepage (Demo)','Einbettung später')">🌐 Homepage</button>
+          </div>
+        </div>
+      `;
+      window.__shareText = text;
+    }
+
+    if(kind==='modal-provider-profile'){
+      t='Profil bearbeiten';
+      const p = state.provider.profile;
+      html = `
+        <div class="card">
+          <label>Anbietername</label>
+          <input value="${escapeHtml(p.name)}" oninput="setProviderField('name', this.value); qs('#pName').textContent=this.value" />
+          <label style="margin-top:10px">Adresse</label>
+          <input value="${escapeHtml(p.address)}" oninput="setProviderField('address', this.value); qs('#pAddr').textContent=this.value" />
+          <label style="margin-top:10px">Standard-Abholzeit</label>
+          <input value="${escapeHtml(p.pickupPreset)}" oninput="setProviderField('pickupPreset', this.value)" />
+          <div class="divider"></div>
+          <div class="hstack" style="justify-content:space-between">
+            <div>
+              <div style="font-weight:900">Vor Ort essen möglich</div>
+              <div class="sub">Badge für Gäste</div>
+            </div>
+            <button class="small" onclick="toggleDineInPossible()">${p.dineInPossible?'Aktiv':'Inaktiv'}</button>
+          </div>
+          <div class="divider"></div>
+          <button class="primary" onclick="closeModal(); renderProvider(); toast('Gespeichert','')">Speichern</button>
+        </div>
+      `;
+    }
+
+    if(kind==='modal-billing'){
+      t='Abrechnung';
+      html = `
+        <div class="card">
+          <div style="font-weight:900">Auszahlungen (Demo)</div>
+          <div class="sub">Später via Stripe Connect – live und automatisch.</div>
+          <div class="divider"></div>
+          <label>IBAN (optional)</label>
+          <input value="${escapeHtml(state.provider.profile.payoutIban)}" placeholder="DE00 ..." oninput="setProviderField('payoutIban', this.value)" />
+          <label style="margin-top:10px">USt-IdNr. (optional)</label>
+          <input value="${escapeHtml(state.provider.profile.vatId)}" placeholder="DE123..." oninput="setProviderField('vatId', this.value)" />
+          <div class="divider"></div>
+          <button onclick="toast('Export (Demo)','CSV/PDF später')">Export</button>
+        </div>
+      `;
+    }
+
+    if(kind==='modal-faq-provider'){
+      t='FAQ (Anbieter)';
+      html = `
+        <div class="card">
+          <div style="font-weight:900">Was ist Mittagio?</div>
+          <div class="sub" style="margin-top:6px">Mittagio ist eine Online-Plattform, auf der du dein Mittagsangebot sichtbar machst – schnell, einfach und flexibel.</div>
+        </div>
+        <div class="card">
+          <div style="font-weight:900">Wie verdiene ich damit Zeit?</div>
+          <div class="sub" style="margin-top:6px">Du legst Gerichte einmal an (Kochbuch) und veröffentlichst sie mit einem Klick. Weniger Telefonate, weniger Chaos.</div>
+        </div>
+        <div class="card">
+          <div style="font-weight:900">Muss Online-Zahlung aktiv sein?</div>
+          <div class="sub" style="margin-top:6px">Nein. Online-Zahlung ist optional. Abholnummern gibt’s nur bei Online-Zahlung.</div>
+        </div>
+        <div class="card">
+          <div style="font-weight:900">Wie kann ich mein Angebot teilen?</div>
+          <div class="sub" style="margin-top:6px">Mit einem Tap: WhatsApp, Instagram oder Homepage – Text ist automatisch vorbereitet.</div>
+        </div>
+      `;
+    }
+
+    if(kind==='modal-faq-customer'){
+      t='FAQ';
+      html = `
+        <div class="card">
+          <div style="font-weight:900">Wie funktioniert Mittagio?</div>
+          <div class="sub" style="margin-top:6px">Du findest Mittagsangebote in deiner Stadt, optional bezahlst du online und holst zur gewählten Zeit ab.</div>
+        </div>
+        <div class="card">
+          <div style="font-weight:900">Ist Online-Zahlung Pflicht?</div>
+          <div class="sub" style="margin-top:6px">Nein. Online-Zahlung ist optional. Eine Abholnummer gibt’s nur bei Online-Zahlung.</div>
+        </div>
+      `;
+    }
+
+    if(kind==='modal-legal'){
+      t='Rechtliches';
+      html = `
+        <div class="card">
+          <div style="font-weight:900">Impressum</div>
+          <div class="sub" style="margin-top:6px">
+            Mittagio.de<br>
+            Mike Quach<br>
+            Langäcker 2<br>
+            73635 Rudersberg<br>
+            <br>
+            www.mittagio.de<br>
+            info@mittagio.de
+          </div>
+        </div>
+        <div class="card">
+          <div style="font-weight:900">Datenschutz</div>
+          <div class="sub" style="margin-top:6px">(Demo-Text) Datenschutz wird final eingefügt. In der App wird dieser Text als Row-Ansicht angezeigt.</div>
+        </div>
+        <div class="card">
+          <div style="font-weight:900">AGB</div>
+          <div class="sub" style="margin-top:6px">(Demo-Text) AGB werden final eingefügt. In der App wird dieser Text als Row-Ansicht angezeigt.</div>
+        </div>
+      `;
+    }
+
+    title.textContent = t;
+    body.innerHTML = html;
+    qs('#modal-backdrop').classList.add('show');
+  }
+
+  function closeModal(){
+    qs('#modal-backdrop').classList.remove('show');
+    qs('#modalBody').innerHTML='';
+  }
+
+  function applyCustomPickup(){
+    const val = qs('#customPickup').value.trim();
+    if(!val){ toast('Bitte eingeben',''); return; }
+    setProviderField('pickupPreset', val);
+    closeModal();
+    toast('Übernommen','Standard-Abholzeit aktualisiert.');
+    renderProvider();
+  }
+
+  function copyText(){
+    if(!window.__shareText) return;
+    navigator.clipboard.writeText(window.__shareText).then(()=>toast('Kopiert','Text in Zwischenablage.'));
+  }
+
+  function toggleListingActive(listingId){
+    loadPersistedProvider();
+    const l = (state.provider.listings||[]).find(x=>x.id===listingId);
+    if(!l){ toast('Nicht gefunden',''); return; }
+    l.active = !l.active;
+    saveProvider();
+    toast(l.active ? 'Aktiviert' : 'Deaktiviert','');
+    closeModal();
+    renderProvider();
+  }
+
+  function toggleDineInPossible(){
+    state.provider.profile.dineInPossible = !state.provider.profile.dineInPossible;
+    saveProvider();
+    openModal('modal-provider-profile');
+  }
+
+  // --------- Toast ---------
+  function toast(title, msg, opts=null){
+    const el = qs('#toast');
+    qs('#toastTitle').textContent = title || 'OK';
+    qs('#toastMsg').textContent = msg || '';
+
+    const actionBtn = qs('#toastAction');
+    actionBtn.style.display = 'none';
+    state.toast.undo = null;
+
+    if(opts && (opts.actionLabel || opts.undo || opts.onAction)){
+      actionBtn.textContent = opts.actionLabel || 'Undo';
+      actionBtn.style.display = 'inline-flex';
+      state.toast.undo = opts;
+    }
+
+    el.classList.add('show');
+    clearTimeout(state.toast.timer);
+    state.toast.timer = setTimeout(()=>el.classList.remove('show'), 3200);
+  }
+
+  function toastActionClick(){
+    if(!state.toast.undo) return;
+    const opts = state.toast.undo;
+    if(opts.undo) opts.undo();
+    if(opts.onAction) opts.onAction();
+    qs('#toast').classList.remove('show');
+  }
+
+  // --------- Misc helpers ---------
+  function escapeHtml(str){
+    return String(str??'')
+      .replaceAll('&','&amp;')
+      .replaceAll('<','&lt;')
+      .replaceAll('>','&gt;')
+      .replaceAll('"','&quot;')
+      .replaceAll("'",'&#039;');
+  }
+
+  function hashCode(s){
+    let h=0; for(let i=0;i<s.length;i++){ h=((h<<5)-h)+s.charCodeAt(i); h|=0; }
+    return h;
+  }
+
+  function nextDays(n){
+    const out=[];
+    const now=new Date();
+    for(let i=0;i<n;i++){
+      const d=new Date(now); d.setDate(now.getDate()+i);
+      const label = d.toLocaleDateString('de-DE',{weekday:'short', day:'2-digit', month:'2-digit'});
+      out.push({key:d.toISOString().slice(0,10), label});
+    }
+    return out;
+  }
+
+  // --------- Init ---------
+  function init(){
+    // Register SW if available
+    try{
+      if('serviceWorker' in navigator){
+        navigator.serviceWorker.register('sw.js').catch(()=>{});
+      }
+    }catch(e){}
+
+    // preload provider data (cookbook/listings empty)
+    loadPersistedProvider();
+
+    // seed cookbook with some demo dishes (once)
+    if(!state.provider.cookbook || state.provider.cookbook.length===0){
+      state.provider.cookbook = [
+        {title:'Schnitzel mit Pommes', price:9.90, lastUsed:new Date().toISOString(), soldViaMittagio:12},
+        {title:'Käsespätzle', price:7.50, lastUsed:new Date(Date.now()-86400000*3).toISOString(), soldViaMittagio:7},
+      ];
+      saveProvider();
+    }
+
+    // seed provider listings demo if empty
+    if(!state.provider.listings || state.provider.listings.length===0){
+      state.provider.listings = [
+        {id:'LDEMO1', title:'Schnitzel mit Pommes', price:9.90, pickup: state.provider.profile.pickupPreset, onlinePay:true, dineIn:true, active:true},
+        {id:'LDEMO2', title:'Käsespätzle', price:7.50, pickup: state.provider.profile.pickupPreset, onlinePay:true, dineIn:true, active:true}
+      ];
+      saveProvider();
+    }
+
+    renderCustomer();
+    renderProvider();
+
+    // make brand long-press return to start
+    let pressTimer=null;
+    qs('#brandBtn').addEventListener('pointerdown', ()=>{ pressTimer=setTimeout(()=>{ setRole('start'); toast('Zurück zum Start',''); }, 700); });
+    qs('#brandBtn').addEventListener('pointerup', ()=>{ clearTimeout(pressTimer); });
+    qs('#brandBtn').addEventListener('pointerleave', ()=>{ clearTimeout(pressTimer); });
+
+    // start view
+    setRole('start');
+  }
+
+  window.onload = init;
+</script>
+
 </body>
 </html>
