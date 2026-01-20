@@ -642,6 +642,7 @@
     <div class="panel" style="margin-top:10px;">
       <div style="font-weight:900" id="codeProvider">Anbieter</div>
       <div class="hint" id="codeSummary"></div>
+      <div class="hint" id="codePickupWindow"></div>
       <div class="hint" id="codePickupTime"></div>
     </div>
     <button class="btn" type="button" id="btnToggleOrderStatus">Als abgeholt markieren</button>
@@ -1229,6 +1230,7 @@
     document.getElementById('btnToggleOrderStatus').textContent = order.status === 'abgeholt' ? 'Als offen markieren' : 'Als abgeholt markieren';
     document.getElementById('codeProvider').textContent = order.providerName || 'Anbieter';
     document.getElementById('codeSummary').textContent = order.summary || '';
+    document.getElementById('codePickupWindow').textContent = order.pickupWindow ? `Essenszeit: ${order.pickupWindow}` : '';
     document.getElementById('codePickupTime').textContent = order.pickupTime ? `Abholzeit: ${order.pickupTime}` : 'Abholzeit: offen';
     document.getElementById('codeBd').classList.add('active');
     document.getElementById('codeSheet').classList.add('active');
@@ -1456,6 +1458,8 @@
 
     let total=0;
     let canCheckout = true;
+    const firstOffer = cart.items.length ? offers.find(x=>x.id===cart.items[0].offerId) : null;
+    const windowText = firstOffer && firstOffer.pickupWindow ? firstOffer.pickupWindow : '';
     const lines = cart.items.map(it=>{
       const o = offers.find(x=>x.id===it.offerId);
       if(!o) return '';
@@ -1478,6 +1482,7 @@
     box.innerHTML = `
       <b>${esc(cart.providerName || 'Anbieter')}</b>
       ${lines.join('')}
+      ${windowText ? `<div class="hint">Essenszeit: ${esc(windowText)}</div>` : ''}
       <div class="row"><span>Wann moechtest du ungefaehr da sein?</span></div>
       <input class="field" id="pickupTimeInput" type="text" placeholder="z.B. 12:15" value="${esc(cart.pickupTime||'')}" />
       <div class="hint">Bitte innerhalb der Essenszeit.</div>
@@ -1532,6 +1537,8 @@
       return;
     }
     const code = genPickupCode();
+    const firstOffer = cart.items.length ? offers.find(x=>x.id===cart.items[0].offerId) : null;
+    const pickupWindow = firstOffer && firstOffer.pickupWindow ? firstOffer.pickupWindow : '';
     const summary = cart.items.map(it=>{
       const o = offers.find(x=>x.id===it.offerId);
       if(!o) return '';
@@ -1544,6 +1551,7 @@
       code,
       status:'offen',
       pickupTime: cart.pickupTime || '',
+      pickupWindow,
       createdAt: Date.now()
     };
     orders.unshift(newOrder);
