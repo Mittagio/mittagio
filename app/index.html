@@ -90,6 +90,7 @@
       background:#fff; font-size:12px; font-weight:900;
       margin:4px 6px 0 0; box-shadow:0 6px 14px rgba(0,0,0,.06);
     }
+    .code-chip.done{background:rgba(31,157,85,.12); border-color:rgba(31,157,85,.4); color:#1f9d55; text-decoration:line-through}
 
     .dayrow{
       max-width:980px; margin:0 auto; padding:0 14px 12px;
@@ -159,6 +160,7 @@
     }
     .badge.code{left:auto; right:12px; background:rgba(31,157,85,.9)}
     .badge.dine{background:rgba(242,183,5,.9); color:#111}
+    .badge.inactive{background:rgba(0,0,0,.45)}
 
     .heart{
       position:absolute; top:12px; right:12px;
@@ -213,9 +215,24 @@
       background:var(--brand); color:#111;
       margin-top:10px;
     }
+    .btn:disabled{opacity:.6; cursor:not-allowed}
     .btn.secondary{background:#fff; border:1px solid var(--border)}
     .btn.ghost{background:#f8f7f3; border:1px solid var(--border)}
     .mini{font-size:12px; color:var(--muted); margin-top:8px; line-height:1.25}
+
+    .card-actions{display:flex; flex-wrap:wrap; gap:6px; margin-top:10px}
+    .card-action{
+      border:1px solid var(--border);
+      background:#fff;
+      border-radius:999px;
+      padding:6px 10px;
+      font-size:12px;
+      font-weight:900;
+      cursor:pointer;
+    }
+    .card-action.primary{background:var(--brand); border-color:var(--brand)}
+    .card-action.ghost{background:#f8f7f3}
+    .card-action:disabled{opacity:.5; cursor:not-allowed}
 
     /* Profile cards */
     .panel{background:#fff; border:1px solid var(--border); border-radius:18px; box-shadow:var(--shadow); padding:12px}
@@ -233,6 +250,16 @@
     .cookbook-item + .cookbook-item{margin-top:10px}
     .cookbook-actions{display:flex; gap:8px; flex-wrap:wrap; margin-top:8px}
     .cookbook-facts{font-size:12px; color:var(--muted); margin-top:6px; line-height:1.35}
+    .cart-line{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 0; border-top:1px solid #eee}
+    .cart-left{font-weight:700}
+    .cart-qty{display:flex; align-items:center; gap:6px}
+    .qty-btn{border:1px solid var(--border); background:#fff; border-radius:999px; width:28px; height:28px; cursor:pointer; font-weight:900}
+    .cart-price{font-weight:900}
+    .order-item{border:1px solid var(--border); border-radius:14px; padding:10px; background:#fff; box-shadow:0 6px 14px rgba(0,0,0,.06)}
+    .order-item + .order-item{margin-top:10px}
+    .order-top{display:flex; justify-content:space-between; align-items:center; gap:10px}
+    .order-code{border:1px solid var(--border); background:#fff; border-radius:10px; padding:6px 10px; font-weight:900; cursor:pointer}
+    .code-full{font-size:42px; font-weight:950; text-align:center; margin:10px 0}
     .two{display:grid; grid-template-columns:1fr 1fr; gap:10px}
     .bigbtn{
       border:none; cursor:pointer;
@@ -298,7 +325,7 @@
         <div class="brand-name">MITTAGIO</div>
       </div>
       <div class="spacer"></div>
-      <div id="modePill" class="prov-pill" style="display:none;">🧑‍🍳 Anbieter-Modus</div>
+      <div id="modePill" class="prov-pill" style="display:none;">Dashboard</div>
     </div>
 
     <!-- Customer discover filter rows (hidden in provider mode) -->
@@ -311,6 +338,11 @@
   <main>
     <!-- CUSTOMER: Discover -->
     <section class="view active" id="v-discover">
+      <div class="panel">
+        <div class="hint">Standort (optional)</div>
+        <input class="field" id="locationInput" type="text" placeholder="PLZ oder Stadt" />
+      </div>
+      <div style="height:10px"></div>
       <div class="grid" id="offerGrid"></div>
       <p class="hint" id="emptyOffers" style="display:none;">Noch keine Angebote. Demo: Als Anbieter ein Inserat erstellen.</p>
     </section>
@@ -318,7 +350,15 @@
     <!-- CUSTOMER: Favorites -->
     <section class="view" id="v-fav">
       <div class="grid" id="favGrid"></div>
-      <p class="hint" id="emptyFav" style="display:none;">Noch keine Favoriten. Tippe auf das Herz.</p>
+      <p class="hint" id="emptyFav" style="display:none;">Noch keine Favoriten. Speichere Anbieter.</p>
+    </section>
+
+    <!-- CUSTOMER: Orders -->
+    <section class="view" id="v-orders">
+      <div class="panel">
+        <h3>Bestellungen</h3>
+        <div id="ordersList" class="hint">Noch keine Bestellungen.</div>
+      </div>
     </section>
 
     <!-- CUSTOMER: Cart -->
@@ -328,7 +368,7 @@
         <div id="cartBox" class="hint">Dein Warenkorb ist leer.</div>
         <button class="btn" id="btnCheckout" type="button" style="display:none;">Weiter zur Zahlung</button>
         <div class="mini" id="cartNote" style="display:none;">
-          MVP: Ein Warenkorb nur fuer <b>einen Anbieter</b>. Mehrere Gerichte moeglich.
+          Warenkorb nur mit Abholcode. Ein Anbieter pro Warenkorb.
         </div>
       </div>
     </section>
@@ -372,7 +412,7 @@
     <!-- PROVIDER APP -->
     <section class="view" id="v-provider-home">
       <div class="panel">
-        <h3>Home</h3>
+        <h3>Dashboard</h3>
         <div class="hint" id="provHomeHello"></div>
         <button class="btn" type="button" id="btnNewListing">+ Neues Gericht erstellen</button>
         <button class="btn ghost" type="button" id="btnShareToday" style="display:none;">Heutige Angebote teilen</button>
@@ -383,6 +423,13 @@
         <h3>Aktive Inserate</h3>
         <div id="provActiveGrid" class="grid" style="margin-top:10px"></div>
         <div id="provActiveEmpty" class="hint">Noch keine aktiven Inserate.</div>
+      </div>
+
+      <div style="height:12px"></div>
+      <div class="panel" id="provInactivePanel" style="display:none;">
+        <h3>Inaktive Inserate</h3>
+        <div id="provInactiveGrid" class="grid" style="margin-top:10px"></div>
+        <div id="provInactiveEmpty" class="hint">Keine inaktiven Inserate.</div>
       </div>
 
       <div style="height:12px"></div>
@@ -406,6 +453,8 @@
         <div id="provPickupsEmpty" class="hint">
           Aktuell keine Abholungen geplant.<br>
           Geplante Abholungen sorgen fuer weniger Chaos.
+          <div style="height:10px"></div>
+          <button class="btn secondary" type="button" id="btnPickupsFaq">Mehr erfahren</button>
         </div>
         <div id="provPickupsWrap" style="display:none;">
           <div class="hint" style="margin-top:8px;">Sortierung</div>
@@ -509,6 +558,7 @@
   <nav class="bottom" id="customerNav">
     <button class="navbtn active" data-go="discover"><div class="ico">🍽️</div><div>Entdecken</div></button>
     <button class="navbtn" data-go="fav"><div class="ico">❤️</div><div>Favoriten</div></button>
+    <button class="navbtn" data-go="orders"><div class="ico">🧾</div><div>Bestellungen</div></button>
     <button class="navbtn" data-go="cart"><div class="ico">🛒</div><div>Warenkorb</div></button>
     <button class="navbtn" data-go="profile"><div class="ico">👤</div><div>Profil</div></button>
   </nav>
@@ -553,9 +603,35 @@
     </div>
 
     <button class="btn" type="button" id="btnAddCart">In den Warenkorb</button>
-    <button class="btn secondary" type="button" id="btnShare">Teilen: "Zum Mittag?"</button>
+    <button class="btn secondary" type="button" id="btnShare">Teilen</button>
     <button class="btn ghost" type="button" id="btnFav">Favorit</button>
     <div class="mini" id="sCodeNote"></div>
+  </div>
+</div>
+
+<!-- Provider offer sheet -->
+<div class="backdrop" id="pbd" onclick="closeProviderSheet()"></div>
+<div class="sheet" id="psheet">
+  <div class="handle"></div>
+  <div class="sheet-body">
+    <div id="pPreview"></div>
+    <div class="row"><span>Status</span><b id="pStatus"></b></div>
+    <div class="row"><span>Essenszeit</span><b id="pWindow"></b></div>
+    <button class="btn" type="button" id="btnEditOffer">Bearbeiten</button>
+    <button class="btn secondary" type="button" id="btnToggleOffer">Deaktivieren</button>
+    <button class="btn ghost" type="button" id="btnShareOffer">Teilen</button>
+    <button class="btn ghost" type="button" id="btnPrintOffer">Drucken</button>
+  </div>
+</div>
+
+<!-- Pickup code sheet -->
+<div class="backdrop" id="codeBd" onclick="closeCodeSheet()"></div>
+<div class="sheet" id="codeSheet">
+  <div class="handle"></div>
+  <div class="sheet-body">
+    <div class="code-full" id="codeText">A1</div>
+    <div class="hint" style="text-align:center;">Abholnummer</div>
+    <button class="btn secondary" type="button" id="btnCodeClose">Schliessen</button>
   </div>
 </div>
 
@@ -586,6 +662,7 @@
     offers: 'mittagio_offers_v1',
     favs: 'mittagio_favs_v1',
     cart: 'mittagio_cart_v1',
+    orders: 'mittagio_orders_v1',
     customer: 'mittagio_customer_v1',
     provider: 'mittagio_provider_v1',
     cookbook: 'mittagio_cookbook_v1',
@@ -600,16 +677,17 @@
   let offers = load(LS.offers, []);
   let favs = new Set(load(LS.favs, []));
   let cart = load(LS.cart, null); // {providerId, items:[{offerId, qty}]} or null
+  let orders = load(LS.orders, []); // [{id, providerName, summary, code, status, createdAt}]
   let customer = load(LS.customer, { loggedIn:false, name:null });
   let provider = load(LS.provider, { loggedIn:false, email:null, profile:{ name:'', address:'', street:'', zip:'', city:'', mealWindow:'11:30 – 14:00', logoData:'' } });
   let cookbook = load(LS.cookbook, []); // [{id, dish, category, price, allergens[], extras?, reuse? , photoData?}]
   let week = load(LS.week, {}); // { 'YYYY-MM-DD': [cookbookId,...] }
 
-  const CATEGORIES = ['In meiner Nähe','Vegan','Vegetarisch','Mit Fleisch'];
+  const CATEGORIES = ['Vegan','Vegetarisch','Fleisch'];
   const CAT_MAP = {
     'Vegan':'Vegan',
     'Vegetarisch':'Vegetarisch',
-    'Mit Fleisch':'Fleisch'
+    'Fleisch':'Fleisch'
   };
   const DISH_SUGGESTIONS = [
     {name:'Kuerbissuppe', category:'Vegan'},
@@ -631,13 +709,15 @@
   }
   function isoDate(d){ return d.toISOString().slice(0,10); }
 
-  let activeCat = 'In meiner Nähe';
+  let activeCat = null;
   let activeDay = isoDate(new Date());
   let providerWeekDay = isoDate(new Date());
   let pickupSort = 'time';
   let cookbookSort = 'recent';
   let cookbookQuery = '';
   let weekPlanDay = isoDate(new Date());
+  let locationQuery = '';
+  let pickupDone = new Set();
 
   // --- Seed demo offers if empty ---
   function seed(){
@@ -729,13 +809,15 @@
     out.providerStreet = out.providerStreet || '';
     out.providerZip = out.providerZip || '';
     out.providerCity = out.providerCity || '';
+    out.hasPickupCode = !!out.hasPickupCode;
     out.dineInPossible = !!out.dineInPossible;
+    if(out.active === undefined) out.active = true;
     return out;
   }
 
   // --- Navigation ---
   const views = {
-    discover:'v-discover', fav:'v-fav', cart:'v-cart', profile:'v-profile',
+    discover:'v-discover', fav:'v-fav', orders:'v-orders', cart:'v-cart', profile:'v-profile',
     providerLogin:'v-provider-login',
     providerHome:'v-provider-home', providerPickups:'v-provider-pickups', providerCookbook:'v-provider-cookbook', providerProfile:'v-provider-profile', providerWeek:'v-provider-week'
   };
@@ -786,6 +868,11 @@
     showView(views.fav);
     renderFavorites();
   }
+  function showOrders(){
+    setCustomerNavActive('orders');
+    showView(views.orders);
+    renderOrders();
+  }
   function showCart(){
     setCustomerNavActive('cart');
     showView(views.cart);
@@ -832,13 +919,17 @@
       const b=document.createElement('button');
       b.className='chip'+(activeCat===c?' active':'');
       b.textContent=c;
-      b.onclick=()=>{ activeCat=c; renderChips(); renderDiscover(); };
+      b.onclick=()=>{
+        activeCat = activeCat===c ? null : c;
+        renderChips();
+        renderDiscover();
+      };
       catEl.appendChild(b);
     });
 
     const dayEl = document.getElementById('dayChips');
     dayEl.innerHTML='';
-    for(let i=0;i<7;i++){
+    for(let i=0;i<5;i++){
       const d=new Date(); d.setDate(d.getDate()+i);
       const key=isoDate(d);
       const b=document.createElement('button');
@@ -853,11 +944,16 @@
   function renderDiscover(){
     const grid=document.getElementById('offerGrid');
     const empty=document.getElementById('emptyOffers');
+    const loc=document.getElementById('locationInput');
+    if(loc){
+      if(loc.value !== locationQuery) loc.value = locationQuery || '';
+      loc.oninput=()=>{ locationQuery = loc.value; };
+    }
 
-    let list = offers.filter(o => o.day === activeDay);
+    let list = offers.filter(o => o.day === activeDay && o.active !== false);
 
-    if(activeCat !== 'In meiner Nähe'){
-      const cat = CAT_MAP[activeCat];
+    if(activeCat){
+      const cat = CAT_MAP[activeCat] || activeCat;
       list = list.filter(o => (o.category||'') === cat);
     }
 
@@ -887,11 +983,12 @@
       ${data.hasPickupCode?'<div class="badge code">Abholcode</div>':''}
     `;
 
+    const favKey = data.providerId || data.id;
     const heart=document.createElement('button');
-    heart.className='heart'+(favs.has(data.id)?' on':'');
+    heart.className='heart'+(favs.has(favKey)?' on':'');
     heart.type='button';
-    heart.textContent = favs.has(data.id)?'❤':'♡';
-    heart.onclick=(e)=>{ e.stopPropagation(); toggleFav(data.id); };
+    heart.textContent = favs.has(favKey)?'❤':'♡';
+    heart.onclick=(e)=>{ e.stopPropagation(); toggleFav(favKey); };
 
     const plogo = data.providerLogoData ? `<img src="${data.providerLogoData}" alt="Logo" />` : `<img src="assets/provider-placeholder.png" alt="Logo" />`;
 
@@ -917,6 +1014,35 @@
       </div>
     `;
 
+    if(interactive){
+      const actions=document.createElement('div');
+      actions.className='card-actions';
+
+      const orderBtn=document.createElement('button');
+      orderBtn.type='button';
+      orderBtn.className='card-action primary';
+      orderBtn.textContent='Bestellen';
+      orderBtn.disabled = !data.hasPickupCode;
+      orderBtn.onclick=(e)=>{ e.stopPropagation(); handleOrderClick(data); };
+
+      const favBtn=document.createElement('button');
+      favBtn.type='button';
+      favBtn.className='card-action';
+      favBtn.textContent = favs.has(favKey) ? 'Favorit entfernen' : 'Favorit';
+      favBtn.onclick=(e)=>{ e.stopPropagation(); toggleFav(favKey); };
+
+      const shareBtn=document.createElement('button');
+      shareBtn.type='button';
+      shareBtn.className='card-action ghost';
+      shareBtn.textContent='Teilen';
+      shareBtn.onclick=(e)=>{ e.stopPropagation(); shareOffer(data); };
+
+      actions.appendChild(orderBtn);
+      actions.appendChild(favBtn);
+      actions.appendChild(shareBtn);
+      body.appendChild(actions);
+    }
+
     card.appendChild(img);
     if(interactive){ card.appendChild(heart); }
     card.appendChild(providerRow);
@@ -924,11 +1050,15 @@
     return card;
   }
 
-  function providerCard(o){
+  function providerCard(o, opts={}){
     const data = normalizeOffer(o);
+    const interactive = opts.interactive !== false;
     const card=document.createElement('div');
     card.className='card';
-    card.style.cursor='default';
+    card.style.cursor = interactive ? 'pointer' : 'default';
+    if(interactive){
+      card.onclick=()=>openProviderOffer(data.id);
+    }
 
     const profile = normalizeProviderProfile(provider.profile || {});
     const imgSrc = data.imageUrl || data.photoData || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70';
@@ -938,6 +1068,7 @@
     img.className='img';
     img.innerHTML = `
       <img alt="${esc(data.dish||'Gericht')}" src="${esc(imgSrc)}" />
+      ${data.active===false?'<div class="badge inactive">Inaktiv</div>':''}
       ${data.hasPickupCode?'<div class="badge code">Abholcode</div>':''}
     `;
 
@@ -959,8 +1090,9 @@
     return card;
   }
 
-  function toggleFav(id){
-    if(favs.has(id)) favs.delete(id); else favs.add(id);
+  function toggleFav(providerId){
+    if(!providerId) return;
+    if(favs.has(providerId)) favs.delete(providerId); else favs.add(providerId);
     save(LS.favs, Array.from(favs));
     renderDiscover();
     renderFavorites();
@@ -970,14 +1102,65 @@
   function renderFavorites(){
     const grid=document.getElementById('favGrid');
     const empty=document.getElementById('emptyFav');
-    const list = offers.filter(o => favs.has(o.id));
+    const list = offers.filter(o => o.active !== false && favs.has(o.providerId));
     grid.innerHTML='';
     empty.style.display = list.length ? 'none' : 'block';
     list.forEach(o=>grid.appendChild(offerCard(o)));
   }
 
+  function genPickupCode(){
+    const letters = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+    const letter = letters[Math.floor(Math.random()*letters.length)];
+    const num = Math.floor(Math.random()*9) + 1;
+    return `${letter}${num}`;
+  }
+
+  function renderOrders(){
+    const box = document.getElementById('ordersList');
+    if(!box) return;
+    if(!orders.length){
+      box.textContent = 'Noch keine Bestellungen.';
+      return;
+    }
+    const fmt = (ts)=>{
+      const d = new Date(ts);
+      if(Number.isNaN(d.getTime())) return '';
+      return fmtDay(d);
+    };
+    box.innerHTML = orders.map(o=>`
+      <div class="order-item">
+        <div class="order-top">
+          <div>
+            <div style="font-weight:900">${esc(o.providerName || 'Anbieter')}</div>
+            <div class="hint">${esc(o.summary || '')}</div>
+          </div>
+          <button class="order-code" type="button" data-code="${esc(o.code||'')}">${esc(o.code||'')}</button>
+        </div>
+        <div class="hint" style="margin-top:6px;">
+          Status: ${esc(o.status||'offen')}${o.pickupTime ? ` - Abholzeit: ${esc(o.pickupTime)}` : ''} - ${fmt(o.createdAt)}
+        </div>
+      </div>
+    `).join('');
+
+    box.querySelectorAll('.order-code').forEach(btn=>{
+      btn.onclick=()=> openCodeSheet(btn.getAttribute('data-code') || '');
+    });
+  }
+
+  function openCodeSheet(code){
+    if(!code) return;
+    document.getElementById('codeText').textContent = code;
+    document.getElementById('codeBd').classList.add('active');
+    document.getElementById('codeSheet').classList.add('active');
+  }
+  function closeCodeSheet(){
+    document.getElementById('codeBd').classList.remove('active');
+    document.getElementById('codeSheet').classList.remove('active');
+  }
+
   // --- Offer sheet ---
   let activeOfferId=null;
+  let activeProviderOfferId=null;
   function openOffer(id){
     const raw = offers.find(x=>x.id===id);
     if(!raw) return;
@@ -1018,9 +1201,18 @@
       document.getElementById('sReuse').textContent = `Pfand ${euro(o.reuse.deposit)}`;
     } else rw.style.display='none';
 
+    const addBtn = document.getElementById('btnAddCart');
+    if(o.hasPickupCode){
+      addBtn.disabled = false;
+      addBtn.textContent = 'In den Warenkorb';
+    } else {
+      addBtn.disabled = true;
+      addBtn.textContent = 'Nur ansehen';
+    }
+
     document.getElementById('sCodeNote').innerHTML = o.hasPickupCode
       ? 'Abholcode aktiv: <b>vorab bezahlt</b>.'
-      : 'Nur Inserat (ohne Abholcode).';
+      : 'Ohne Abholcode nur ansehen.';
 
     updateSheetFav();
 
@@ -1031,7 +1223,9 @@
   function updateSheetFav(){
     const b = document.getElementById('btnFav');
     if(!activeOfferId){ b.textContent='Favorit'; return; }
-    b.textContent = favs.has(activeOfferId) ? 'Aus Favoriten entfernen' : 'Als Favorit speichern';
+    const o = offers.find(x=>x.id===activeOfferId);
+    const key = o ? o.providerId : null;
+    b.textContent = key && favs.has(key) ? 'Aus Favoriten entfernen' : 'Als Favorit speichern';
   }
 
   function closeSheet(){
@@ -1039,27 +1233,82 @@
     document.getElementById('sheet').classList.remove('active');
   }
 
-  document.getElementById('btnFav').onclick=()=>{ if(activeOfferId) toggleFav(activeOfferId); };
+  function openProviderOffer(id){
+    const raw = offers.find(x=>x.id===id);
+    if(!raw) return;
+    const o = normalizeOffer(raw);
+    activeProviderOfferId = id;
+
+    const preview = document.getElementById('pPreview');
+    preview.innerHTML = '';
+    preview.appendChild(offerCard(o, {interactive:false}));
+
+    document.getElementById('pStatus').textContent = o.active===false ? 'Inaktiv' : 'Aktiv';
+    document.getElementById('pWindow').textContent = o.pickupWindow || '-';
+    document.getElementById('btnToggleOffer').textContent = o.active===false ? 'Aktivieren' : 'Deaktivieren';
+
+    document.getElementById('pbd').classList.add('active');
+    document.getElementById('psheet').classList.add('active');
+  }
+
+  function closeProviderSheet(){
+    document.getElementById('pbd').classList.remove('active');
+    document.getElementById('psheet').classList.remove('active');
+  }
+
+  function buildShareText(o){
+    const dish = o.dish || o.title || 'Gericht';
+    return `Heute bei uns zu Mittag:\n${dish} - ${euro(o.price)}\npowered by mittagio.de`;
+  }
+
+  function shareOffer(o){
+    if(!o) return;
+    const txt = buildShareText(o);
+    if(navigator.share){ navigator.share({title:'Mittagio', text:txt, url:location.href}).catch(()=>{}); }
+    else prompt('Kopieren und teilen:', txt + '\n' + location.href);
+  }
+
+  function addToCart(o){
+    if(!o || !o.hasPickupCode){
+      alert('Ohne Abholcode nur ansehen.');
+      return false;
+    }
+    if(cart && cart.providerId !== o.providerId){
+      alert('MVP: Warenkorb nur fuer einen Anbieter. Bitte zuerst Warenkorb leeren.');
+      return false;
+    }
+    if(!cart){ cart = { providerId:o.providerId, providerName:o.providerName, items:[], pickupTime:'' }; }
+    const idx = cart.items.findIndex(i=>i.offerId===o.id);
+    if(idx>=0) cart.items[idx].qty += 1; else cart.items.push({offerId:o.id, qty:1});
+    save(LS.cart, cart);
+    return true;
+  }
+
+  function handleOrderClick(o){
+    if(addToCart(o)){
+      showCart();
+    } else {
+      openOffer(o.id);
+    }
+  }
+
+  document.getElementById('btnFav').onclick=()=>{
+    if(!activeOfferId) return;
+    const o = offers.find(x=>x.id===activeOfferId);
+    if(!o) return;
+    toggleFav(o.providerId);
+  };
   document.getElementById('btnShare').onclick=()=>{
     const o = offers.find(x=>x.id===activeOfferId);
     if(!o) return;
-    const txt = `Zum Mittag: ${o.dish} - ${euro(o.price)}\nAbholfenster: ${o.pickupWindow}\n${o.providerName}\npowered by Mittagio`;
-    if(navigator.share){ navigator.share({title:'Mittagio', text:txt, url:location.href}).catch(()=>{}); }
-    else prompt('Kopieren und teilen:', txt + '\n' + location.href);
+    shareOffer(o);
   };
+  document.getElementById('btnCodeClose').onclick=()=> closeCodeSheet();
 
   document.getElementById('btnAddCart').onclick=()=>{
     const o = offers.find(x=>x.id===activeOfferId);
     if(!o) return;
-    // cart: one provider only
-    if(cart && cart.providerId !== o.providerId){
-      alert('MVP: Warenkorb nur fuer einen Anbieter. Bitte zuerst Warenkorb leeren.');
-      return;
-    }
-    if(!cart){ cart = { providerId:o.providerId, providerName:o.providerName, items:[] }; }
-    const idx = cart.items.findIndex(i=>i.offerId===o.id);
-    if(idx>=0) cart.items[idx].qty += 1; else cart.items.push({offerId:o.id, qty:1});
-    save(LS.cart, cart);
+    if(!addToCart(o)) return;
     closeSheet();
     showCart();
   };
@@ -1081,13 +1330,52 @@
     const lines = cart.items.map(it=>{
       const o = offers.find(x=>x.id===it.offerId);
       if(!o) return '';
-      total += Number(o.price||0) * it.qty;
-      return `- ${o.dish} x ${it.qty} = ${euro(Number(o.price||0)*it.qty)}`;
+      const lineTotal = Number(o.price||0) * it.qty;
+      total += lineTotal;
+      return `
+        <div class="cart-line">
+          <div class="cart-left">${esc(o.dish)}</div>
+          <div class="cart-qty">
+            <button class="qty-btn" type="button" data-action="dec" data-id="${esc(o.id)}">-</button>
+            <div>${it.qty}</div>
+            <button class="qty-btn" type="button" data-action="inc" data-id="${esc(o.id)}">+</button>
+          </div>
+          <div class="cart-price">${euro(lineTotal)}</div>
+        </div>
+      `;
     }).filter(Boolean);
 
-    box.innerHTML = `<b>${esc(cart.providerName)}</b><br>${lines.join('<br>')}<br><br><b>Gesamt:</b> ${euro(total)}<br><br><a href="#" id="clearCart">Warenkorb leeren</a>`;
+    box.innerHTML = `
+      <b>${esc(cart.providerName || 'Anbieter')}</b>
+      ${lines.join('')}
+      <div class="row"><span>Wann moechtest du ungefaehr da sein?</span></div>
+      <input class="field" id="pickupTimeInput" type="text" placeholder="z.B. 12:15" value="${esc(cart.pickupTime||'')}" />
+      <div class="row"><span>Gesamt</span><b>${euro(total)}</b></div>
+      <a href="#" id="clearCart">Warenkorb leeren</a>
+    `;
 
     document.getElementById('clearCart').onclick=(e)=>{ e.preventDefault(); cart=null; save(LS.cart, cart); renderCart(); };
+    const timeInput = document.getElementById('pickupTimeInput');
+    if(timeInput){
+      timeInput.oninput=()=>{
+        cart.pickupTime = timeInput.value;
+        save(LS.cart, cart);
+      };
+    }
+
+    box.querySelectorAll('.qty-btn').forEach(btnEl=>{
+      btnEl.onclick=()=>{
+        const id = btnEl.getAttribute('data-id');
+        const action = btnEl.getAttribute('data-action');
+        const idx = cart.items.findIndex(i=>i.offerId===id);
+        if(idx<0) return;
+        if(action==='inc') cart.items[idx].qty += 1;
+        if(action==='dec') cart.items[idx].qty -= 1;
+        if(cart.items[idx].qty <= 0) cart.items.splice(idx,1);
+        save(LS.cart, cart);
+        renderCart();
+      };
+    });
 
     btn.style.display='block';
     note.style.display='block';
@@ -1099,7 +1387,29 @@
       showProfile();
       return;
     }
-    alert('Checkout (Demo): Zahlung folgt spaeter.');
+    if(!cart || !cart.items || !cart.items.length) return;
+    const code = genPickupCode();
+    const summary = cart.items.map(it=>{
+      const o = offers.find(x=>x.id===it.offerId);
+      if(!o) return '';
+      return `${o.dish} x ${it.qty}`;
+    }).filter(Boolean).join(', ');
+    orders.unshift({
+      id: cryptoId(),
+      providerName: cart.providerName || 'Anbieter',
+      summary,
+      code,
+      status:'offen',
+      pickupTime: cart.pickupTime || '',
+      createdAt: Date.now()
+    });
+    save(LS.orders, orders);
+    cart = null;
+    save(LS.cart, cart);
+    renderCart();
+    renderOrders();
+    showOrders();
+    alert('Bestellung angelegt. Abholcode folgt nach Zahlung (Demo).');
   };
 
   // --- Customer login (demo) ---
@@ -1152,6 +1462,7 @@
     const go = b.dataset.go;
     if(go==='discover') showDiscover();
     if(go==='fav') showFav();
+    if(go==='orders') showOrders();
     if(go==='cart') showCart();
     if(go==='profile') showProfile();
   });
@@ -1162,7 +1473,9 @@
     document.getElementById('provHomeHello').textContent = `Eingeloggt als ${profile.name || provider.email}`;
 
     const todayKey = isoDate(new Date());
-    const mineActive = offers.filter(o => o.providerId === providerId() && o.day >= todayKey);
+    const mineAll = offers.filter(o => o.providerId === providerId());
+    const mineActive = mineAll.filter(o => o.active !== false && o.day >= todayKey);
+    const mineInactive = mineAll.filter(o => o.active === false);
     const mineToday = mineActive.filter(o => o.day === todayKey);
 
     const grid = document.getElementById('provActiveGrid');
@@ -1173,6 +1486,20 @@
     } else {
       empty.style.display='none';
       mineActive.slice(0,6).forEach(o=> grid.appendChild(providerCard(o)));
+    }
+
+    const inactivePanel = document.getElementById('provInactivePanel');
+    const inactiveGrid = document.getElementById('provInactiveGrid');
+    const inactiveEmpty = document.getElementById('provInactiveEmpty');
+    if(inactivePanel && inactiveGrid && inactiveEmpty){
+      inactiveGrid.innerHTML = '';
+      if(!mineInactive.length){
+        inactivePanel.style.display = 'none';
+      } else {
+        inactivePanel.style.display = 'block';
+        mineInactive.slice(0,6).forEach(o=> inactiveGrid.appendChild(providerCard(o)));
+        inactiveEmpty.style.display = mineInactive.length ? 'none' : 'block';
+      }
     }
 
     renderProviderWeekPreview();
@@ -1201,7 +1528,7 @@
       dayWrap.appendChild(b);
     }
 
-    const items = (week[providerWeekDay]||[]).filter(x=>x.providerId===providerId());
+    const items = (week[providerWeekDay]||[]).filter(x=>x.providerId===providerId() && x.active !== false);
     if(!items.length){
       list.textContent = 'Noch nichts geplant.';
       return;
@@ -1240,60 +1567,83 @@
       const cb = cookbook.find(c=>c.id===entry.cookbookId);
       const name = cb?.dish || entry.dish || 'Gericht';
       const price = cb?.price || 0;
+      const isActive = entry.active !== false;
 
       const item = document.createElement('div');
       item.className = 'cookbook-item';
       item.innerHTML = `
         <div style="font-weight:900">${esc(name)}</div>
-        <div class="hint">${euro(price)}</div>
+        <div class="hint">${euro(price)} - ${isActive ? 'Aktiv' : 'Inaktiv'}</div>
       `;
 
       const actions = document.createElement('div');
       actions.className = 'cookbook-actions';
-      const pub = document.createElement('button');
-      pub.type='button';
-      pub.className='ans';
-      pub.textContent='Veroeffentlichen';
-      pub.onclick=()=>{ publishWeekEntry(weekPlanDay, entry); };
 
-      const remove = document.createElement('button');
-      remove.type='button';
-      remove.className='ans';
-      remove.textContent='Entfernen';
-      remove.onclick=()=>{
-        const updated = (week[weekPlanDay]||[]).filter((_, i)=>i!==idx);
+      const edit = document.createElement('button');
+      edit.type='button';
+      edit.className='ans';
+      edit.textContent='Bearbeiten';
+      edit.onclick=()=>{ if(entry.cookbookId) startWizard('cookbook', {editId: entry.cookbookId}); };
+
+      const toggle = document.createElement('button');
+      toggle.type='button';
+      toggle.className='ans';
+      toggle.textContent = isActive ? 'Deaktivieren' : 'Aktivieren';
+      toggle.onclick=()=>{
+        const updated = (week[weekPlanDay]||[]).map((x,i)=> i===idx ? {...x, active: !(x.active !== false)} : x);
         if(updated.length) week[weekPlanDay]=updated; else delete week[weekPlanDay];
         save(LS.week, week);
         renderWeekPlan();
-        renderProviderHome();
+        renderProviderWeekPreview();
       };
 
-      actions.appendChild(pub);
-      actions.appendChild(remove);
+      const share = document.createElement('button');
+      share.type='button';
+      share.className='ans';
+      share.textContent='Teilen';
+      share.onclick=()=>{ shareOffer({dish:name, price}); };
+
+      const print = document.createElement('button');
+      print.type='button';
+      print.className='ans';
+      print.textContent='Drucken';
+      print.onclick=()=>{ window.print(); };
+
+      actions.appendChild(edit);
+      actions.appendChild(toggle);
+      actions.appendChild(share);
+      actions.appendChild(print);
       item.appendChild(actions);
       list.appendChild(item);
     });
   }
 
+  function pickupCodeCount(dish){
+    const base = String(dish||'').split('').reduce((sum, ch)=>sum + ch.charCodeAt(0), 0);
+    return 2 + (base % 4); // 2..5
+  }
+
   function buildPickupGroups(){
     const todayKey = isoDate(new Date());
-    const mineToday = offers.filter(o => o.providerId === providerId() && o.hasPickupCode && o.day === todayKey);
+    const mineToday = offers.filter(o => o.providerId === providerId() && o.hasPickupCode && o.day === todayKey && o.active !== false);
     if(!mineToday.length) return [];
 
-    if(mineToday.length === 1){
-      return [{time:'11:30', group:'A', codes:['A1','A2','A3']}];
-    }
-    if(mineToday.length === 2){
-      return [
-        {time:'11:30', group:'A', codes:['A1','A2','A3','A4']},
-        {time:'12:00', group:'B', codes:['B1','B2','B3']}
-      ];
-    }
-    return [
-      {time:'11:30', group:'A', codes:['A1','A2','A3','A4','A5']},
-      {time:'12:00', group:'B', codes:['B1','B2','B3']},
-      {time:'12:30', group:'C', codes:['C1','C2']}
-    ];
+    const map = new Map();
+    mineToday.forEach(o=>{
+      const dish = o.dish || 'Gericht';
+      if(!map.has(dish)){
+        map.set(dish, {dish, time: o.pickupWindow || '', offerId: o.id});
+      }
+    });
+
+    const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const groups = Array.from(map.values()).map((g, idx)=>{
+      const group = letters[idx % letters.length];
+      const count = pickupCodeCount(g.dish);
+      const codes = Array.from({length:count}, (_,i)=>`${group}${i+1}`);
+      return {id:`${group}:${g.offerId}`, group, dish:g.dish, time:g.time, codes};
+    });
+    return groups;
   }
 
   function renderProviderPickups(){
@@ -1327,7 +1677,14 @@
     });
 
     const list = [...groups];
-    if(pickupSort==='time') list.sort((a,b)=>a.time.localeCompare(b.time));
+    const timeKey = (t)=>{
+      const raw = String(t||'').split(/[–-]/)[0].trim();
+      const parts = raw.split(':');
+      const h = parseInt(parts[0]||'0',10);
+      const m = parseInt(parts[1]||'0',10);
+      return h*60+m;
+    };
+    if(pickupSort==='time') list.sort((a,b)=>timeKey(a.time)-timeKey(b.time));
     if(pickupSort==='code') list.sort((a,b)=>(a.codes[0]||'').localeCompare(b.codes[0]||''));
     if(pickupSort==='group') list.sort((a,b)=>a.group.localeCompare(b.group));
 
@@ -1337,14 +1694,28 @@
       box.className='pickup-group';
       box.innerHTML = `
         <div class="pickup-head">
-          <div>Gruppe ${esc(g.group)}</div>
-          <div class="pickup-sub">${esc(g.time)}</div>
+          <div>${esc(g.dish)}</div>
+          <div class="pickup-sub">Gruppe ${esc(g.group)} - ${esc(g.time || '-')}</div>
         </div>
         <div style="margin-top:6px;">
-          ${g.codes.map(c=>`<span class="code-chip">${esc(c)}</span>`).join('')}
+          ${g.codes.map(c=>{
+            const key = `${g.id}:${c}`;
+            const done = pickupDone.has(key);
+            return `<button type="button" class="code-chip${done ? ' done' : ''}" data-code="${esc(c)}" data-group="${esc(g.id)}">${esc(c)}</button>`;
+          }).join('')}
         </div>
       `;
       groupsEl.appendChild(box);
+    });
+
+    groupsEl.querySelectorAll('.code-chip').forEach(btn=>{
+      btn.onclick=()=>{
+        const code = btn.getAttribute('data-code') || '';
+        const group = btn.getAttribute('data-group') || '';
+        const key = `${group}:${code}`;
+        if(pickupDone.has(key)) pickupDone.delete(key); else pickupDone.add(key);
+        btn.classList.toggle('done');
+      };
     });
   }
 
@@ -1393,19 +1764,50 @@
   document.getElementById('btnCookbookAdd').onclick=()=> startWizard('cookbook');
   document.getElementById('btnProvSetup').onclick=()=> startWizard('provider');
   document.getElementById('btnOpenWeekPlan').onclick=()=> showProviderWeek();
+  document.getElementById('btnPickupsFaq').onclick=()=>{
+    showProviderProfile();
+    const box = document.getElementById('provFaqBox');
+    if(box) box.style.display = 'block';
+  };
+
+  document.getElementById('btnEditOffer').onclick=()=>{
+    if(!activeProviderOfferId) return;
+    closeProviderSheet();
+    startWizard('listing', {editOfferId: activeProviderOfferId});
+  };
+  document.getElementById('btnToggleOffer').onclick=()=>{
+    if(!activeProviderOfferId) return;
+    const idx = offers.findIndex(x=>x.id===activeProviderOfferId);
+    if(idx<0) return;
+    offers[idx].active = offers[idx].active === false ? true : false;
+    save(LS.offers, offers);
+    closeProviderSheet();
+    renderProviderHome();
+    renderProviderPickups();
+    renderDiscover();
+  };
+  document.getElementById('btnShareOffer').onclick=()=>{
+    if(!activeProviderOfferId) return;
+    const o = offers.find(x=>x.id===activeProviderOfferId);
+    if(!o) return;
+    shareOffer(o);
+  };
+  document.getElementById('btnPrintOffer').onclick=()=>{
+    window.print();
+  };
 
   document.getElementById('btnShareToday').onclick=()=>{
     const todayKey = isoDate(new Date());
-    const mineToday = offers.filter(o => o.providerId === providerId() && o.day === todayKey);
+    const mineToday = offers.filter(o => o.providerId === providerId() && o.day === todayKey && o.active !== false);
     if(!mineToday.length) return;
-    const txt = `Heute bei uns zu Mittag:\n` + mineToday.map(o=>`- ${o.dish} - ${euro(o.price)}`).join('\n') + `\npowered by Mittagio`;
+    const txt = `Heute bei uns zu Mittag:\n` + mineToday.map(o=>`${o.dish} - ${euro(o.price)}`).join('\n') + `\npowered by mittagio.de`;
     if(navigator.share){ navigator.share({title:'Mittagio', text:txt, url:location.href}).catch(()=>{}); }
     else prompt('Kopieren und teilen:', txt);
   };
 
   document.getElementById('btnWeekBack').onclick=()=> showProviderHome();
   document.getElementById('btnWeekPdf').onclick=()=>{
-    alert('PDF-Wochenkarte (Demo): Logo, Gerichte, Preis, Essenszeit, QR-Code.');
+    alert('PDF-Wochenkarte (Demo): Logo, Gerichte, Preis, Essenszeit, QR-Code. Footer: Powered by Mittagio.');
   };
 
   // Provider ID (for demo)
@@ -1713,7 +2115,27 @@
     if(kind==='listing'){
       const profile = normalizeProviderProfile(provider.profile || {});
       // if from cookbook
-      if(ctx.fromCookbookId){
+      if(ctx.editOfferId){
+        const existing = offers.find(o=>o.id===ctx.editOfferId);
+        if(existing){
+          const o = normalizeOffer(existing);
+          w.data = {
+            providerId: o.providerId || providerId(),
+            dish: o.dish||'',
+            category: o.category||'Vegetarisch',
+            price: Number(o.price||0),
+            pickupWindow: o.pickupWindow || profile.mealWindow || DEFAULT_MEAL_WINDOW,
+            hasPickupCode: !!o.hasPickupCode,
+            dineInPossible: !!o.dineInPossible,
+            allergens: Array.isArray(o.allergens) ? [...o.allergens] : [],
+            extras: Array.isArray(o.extras) ? JSON.parse(JSON.stringify(o.extras)) : [],
+            reuse: o.reuse ? JSON.parse(JSON.stringify(o.reuse)) : {enabled:false, deposit:0},
+            photoData: o.imageUrl || '',
+            day: o.day,
+            active: o.active !== false
+          };
+        }
+      } else if(ctx.fromCookbookId){
         const x = cookbook.find(c=>c.id===ctx.fromCookbookId);
         if(x){ w.data = JSON.parse(JSON.stringify(x)); }
       } else {
@@ -1729,7 +2151,7 @@
           photoData:''
         };
       }
-      w.data.providerId = providerId();
+      w.data.providerId = w.data.providerId || providerId();
       w.data.category = w.data.category || 'Vegetarisch';
       w.data.price = Number(w.data.price||0);
       w.data.pickupWindow = w.data.pickupWindow || profile.mealWindow || DEFAULT_MEAL_WINDOW;
@@ -2272,6 +2694,10 @@
         presets.appendChild(other);
         box.appendChild(document.createElement('div')).style.height='8px';
         box.appendChild(presets);
+        const hint=document.createElement('div');
+        hint.className='hint';
+        hint.textContent='Hinweis: spaeter Recup/Rebowl.';
+        box.appendChild(hint);
 
         if(w.data.reuseCustom){
           const input=document.createElement('input');
@@ -2432,19 +2858,31 @@
       allergens: w.data.allergens||[],
       extras: w.data.extras||[],
       reuse: w.data.reuse||{enabled:false,deposit:0},
-      day: isoDate(new Date())
+      day: w.data.day || isoDate(new Date()),
+      active: w.data.active !== false
     };
   }
 
   function publishOffer(o){
-    const id = cryptoId();
-    const out = {...o, id, day: isoDate(new Date())};
+    const existingId = w.ctx && w.ctx.editOfferId ? w.ctx.editOfferId : null;
+    const id = existingId || cryptoId();
+    const out = {...o, id, day: o.day || isoDate(new Date()), active: o.active !== false};
     // ensure provider address exists
     if(!out.providerStreet){
-      alert('Bitte zuerst Anbieterprofil ausfüllen (Adresse).');
+      alert('Bitte zuerst Anbieterprofil ausfuellen (Adresse).');
       return;
     }
-    offers.unshift(out);
+    if(existingId){
+      const idx = offers.findIndex(x=>x.id===existingId);
+      if(idx>=0){
+        const prev = offers[idx];
+        offers[idx] = {...prev, ...out, id: prev.id, day: prev.day, active: prev.active !== false};
+      } else {
+        offers.unshift(out);
+      }
+    } else {
+      offers.unshift(out);
+    }
     save(LS.offers, offers);
     // restore default next button handler
     setWizardNextDefault();
@@ -2655,7 +3093,7 @@
     const box=document.createElement('div');
     const ans=document.createElement('div'); ans.className='answers';
 
-    for(let i=0;i<7;i++){
+    for(let i=0;i<5;i++){
       const d=new Date(); d.setDate(d.getDate()+i);
       const key=isoDate(d);
       const b=document.createElement('button');
@@ -2674,7 +3112,7 @@
     btn.onclick=()=>{
       const cb = cookbook.find(c=>c.id===w.data.cookbookId);
       if(!cb){ alert('Gericht nicht gefunden'); return; }
-      const entry = { providerId:providerId(), dish:cb.dish, cookbookId:cb.id };
+      const entry = { providerId:providerId(), dish:cb.dish, cookbookId:cb.id, active:true };
       if(!week[w.data.date]) week[w.data.date]=[];
       week[w.data.date].push(entry);
       save(LS.week, week);
