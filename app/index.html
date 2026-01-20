@@ -721,6 +721,7 @@
     provider: 'mittagio_provider_v1',
     cookbook: 'mittagio_cookbook_v1',
     week: 'mittagio_week_v1',
+    pickupDone: 'mittagio_pickup_done_v1',
     mode: 'mittagio_mode_v1'
   };
   const load = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } };
@@ -773,7 +774,7 @@
   let cookbookQuery = '';
   let weekPlanDay = isoDate(new Date());
   let locationQuery = '';
-  let pickupDone = new Set();
+  let pickupDone = new Set(load(LS.pickupDone, []));
   let activeOrderId = null;
   let ordersFilter = 'offen';
   let sharePayload = { text:'', url:'' };
@@ -1945,6 +1946,7 @@
         const key = `${group}:${code}`;
         if(pickupDone.has(key)) pickupDone.delete(key); else pickupDone.add(key);
         btn.classList.toggle('done');
+        save(LS.pickupDone, Array.from(pickupDone));
       };
     });
   }
