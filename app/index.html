@@ -259,7 +259,11 @@
     .order-item.done{opacity:.65}
     .order-item + .order-item{margin-top:10px}
     .order-top{display:flex; justify-content:space-between; align-items:center; gap:10px}
+    .order-right{display:flex; flex-direction:column; align-items:flex-end; gap:6px}
     .order-code{border:1px solid var(--border); background:#fff; border-radius:10px; padding:6px 10px; font-weight:900; cursor:pointer}
+    .status-pill{display:inline-flex; align-items:center; padding:4px 8px; border-radius:999px; font-size:11px; font-weight:900; border:1px solid var(--border)}
+    .status-pill.open{background:rgba(242,183,5,.12); color:#b37b00}
+    .status-pill.done{background:rgba(31,157,85,.12); color:#1f9d55}
     .code-full{font-size:42px; font-weight:950; text-align:center; margin:10px 0}
     .two{display:grid; grid-template-columns:1fr 1fr; gap:10px}
     .bigbtn{
@@ -1173,7 +1177,10 @@
             <div style="font-weight:900">${esc(o.providerName || 'Anbieter')}</div>
             <div class="hint">${esc(o.summary || '')}</div>
           </div>
-          <button class="order-code" type="button" data-id="${esc(o.id||'')}" data-code="${esc(o.code||'')}">${esc(o.code||'')}</button>
+          <div class="order-right">
+            <button class="order-code" type="button" data-id="${esc(o.id||'')}" data-code="${esc(o.code||'')}">${esc(o.code||'')}</button>
+            <div class="status-pill ${o.status==='abgeholt' ? 'done' : 'open'}">${esc(o.status||'offen')}</div>
+          </div>
         </div>
         <div class="hint" style="margin-top:6px;">
           Status: ${esc(o.status||'offen')}${o.pickupTime ? ` - Abholzeit: ${esc(o.pickupTime)}` : ''} - ${fmt(o.createdAt)}
