@@ -220,6 +220,11 @@
     /* Profile cards */
     .panel{background:#fff; border:1px solid var(--border); border-radius:18px; box-shadow:var(--shadow); padding:12px}
     .panel h3{margin:0 0 8px; font-size:14px}
+    .section-title{font-weight:900; margin:10px 0 6px}
+    .cookbook-item{border:1px solid var(--border); border-radius:14px; padding:10px; background:#fff; box-shadow:0 6px 14px rgba(0,0,0,.06)}
+    .cookbook-item + .cookbook-item{margin-top:10px}
+    .cookbook-actions{display:flex; gap:8px; flex-wrap:wrap; margin-top:8px}
+    .cookbook-facts{font-size:12px; color:var(--muted); margin-top:6px; line-height:1.35}
     .two{display:grid; grid-template-columns:1fr 1fr; gap:10px}
     .bigbtn{
       border:none; cursor:pointer;
@@ -404,7 +409,12 @@
     <section class="view" id="v-provider-cookbook">
       <div class="panel">
         <h3>Mein Kochbuch</h3>
-        <button class="btn" type="button" id="btnCookbookAdd">+ Gericht hinzufügen</button>
+        <div class="hint">Dein digitales Kochbuch - dein Kopf in der App</div>
+        <div style="height:10px"></div>
+        <input class="field" id="cookbookSearch" type="text" placeholder="Suche nach Gerichtsnamen" />
+        <div style="height:10px"></div>
+        <div class="answers" id="cookbookFilters"></div>
+        <button class="btn" type="button" id="btnCookbookAdd">+ Gericht hinzufuegen</button>
         <div style="height:10px"></div>
         <div id="cookbookList" class="hint">Noch leer.</div>
       </div>
@@ -568,6 +578,8 @@
   let activeDay = isoDate(new Date());
   let providerWeekDay = isoDate(new Date());
   let pickupSort = 'time';
+  let cookbookSort = 'recent';
+  let cookbookQuery = '';
 
   // --- Seed demo offers if empty ---
   function seed(){
@@ -1251,34 +1263,180 @@
   // --- Cookbook ---
   function renderCookbook(){
     const box = document.getElementById('cookbookList');
+    const filterBox = document.getElementById('cookbookFilters');
+    const search = document.getElementById('cookbookSearch');
+    if(!box) return;
+
+    let updated = false;
+    cookbook = cookbook.map(entry=>{
+      const out = {...entry};
+      if(!out.createdAt){ out.createdAt = Date.now(); updated = true; }
+      if(out.lastUsed === undefined){ out.lastUsed = null; updated = true; }
+      return out;
+    });
+    if(updated) save(LS.cookbook, cookbook);
+
+    if(search){
+      if(search.value !== cookbookQuery) search.value = cookbookQuery || '';
+      search.oninput=()=>{ cookbookQuery = search.value; renderCookbook(); };
+    }
+
+    if(filterBox){
+      filterBox.innerHTML='';
+      [
+        {id:'recent', label:'Zuletzt verwendet'},
+        {id:'alpha', label:'Alphabetisch'}
+      ].forEach(f=>{
+        const b=document.createElement('button');
+        b.type='button';
+        b.className='ans'+(cookbookSort===f.id?' on':'');
+        b.textContent=f.label;
+        b.onclick=()=>{ cookbookSort=f.id; renderCookbook(); };
+        filterBox.appendChild(b);
+      });
+    }
+
     const mine = cookbook.filter(x=>x.providerId===providerId());
-    if(!mine.length){ box.textContent='Noch keine gespeicherten Gerichte.'; return; }
-    box.innerHTML = mine.map(x=>{
-      const sold = offers.filter(o=>o.providerId===providerId() && o.dish===x.dish).length; // simple proxy
-      return `
-        <div style="padding:10px 0;border-top:1px solid #eee">
-          <b>${esc(x.dish)}</b> · ${esc(x.category)} · ${euro(x.price)}<br>
-          <span class="hint">Letzte Nutzung (Proxy): ${sold}×</span><br>
-          <a href="#" data-cb="${x.id}" class="cbUse">[als Inserat]</a>
-          &nbsp; <a href="#" data-cb="${x.id}" class="cbWeek">[zum Wochenplan]</a>
+    const q = String(cookbookQuery||'').trim().toLowerCase();
+    const filtered = mine.filter(x => !q || String(x.dish||'').toLowerCase().includes(q));
+
+    if(!filtered.length){
+      box.innerHTML = '<div class="hint">Noch keine gespeicherten Gerichte.</div>';
+      return;
+    }
+
+    const sortRecent = (a,b)=>(b.lastUsed||b.createdAt) - (a.lastUsed||a.createdAt);
+    const sortAlpha = (a,b)=>String(a.dish||'').localeCompare(String(b.dish||''));
+    const sortFn = cookbookSort==='alpha' ? sortAlpha : sortRecent;
+
+    const used = filtered.filter(x=>x.lastUsed);
+    const drafts = filtered.filter(x=>!x.lastUsed);
+    used.sort(sortFn);
+    drafts.sort(sortFn);
+
+    const wrap = document.createElement('div');
+
+    const formatDayLabel = (iso)=>{
+      if(!iso) return '—';
+      const d = new Date(iso);
+      if(Number.isNaN(d.getTime())) return iso;
+      const today = isoDate(new Date());
+      const tomorrow = isoDate(new Date(Date.now()+86400000));
+      if(iso===today) return 'Heute';
+      if(iso===tomorrow) return 'Morgen';
+      return fmtDay(d);
+    };
+
+    const buildItem = (entry)=>{
+      const item=document.createElement('div');
+      item.className='cookbook-item';
+
+      const lastOnline = offers
+        .filter(o=>o.providerId===providerId() && o.dish===entry.dish)
+        .map(o=>o.day)
+        .sort()
+        .slice(-1)[0];
+      const sales = offers.filter(o=>o.providerId===providerId() && o.dish===entry.dish).length * 3;
+
+      item.innerHTML = `
+        <div style="font-weight:900">${esc(entry.dish||'Gericht')}</div>
+        <div class="hint">${esc(entry.category||'Vegetarisch')} · ${euro(entry.price||0)}</div>
+        <div class="cookbook-facts">
+          Zuletzt online: <b>${esc(formatDayLabel(lastOnline))}</b><br>
+          Verkaeufe ueber Mittagio: <b>${sales}</b>
         </div>
       `;
-    }).join('');
 
-    box.querySelectorAll('.cbUse').forEach(a=>{
-      a.onclick=(e)=>{
-        e.preventDefault();
-        const id=a.getAttribute('data-cb');
-        startWizard('listing', {fromCookbookId:id});
-      };
+      const actions=document.createElement('div');
+      actions.className='cookbook-actions';
+
+      const pub=document.createElement('button');
+      pub.type='button';
+      pub.className='ans';
+      pub.textContent='Veroeffentlichen';
+      pub.onclick=()=>{ publishCookbookEntry(entry.id); };
+
+      const edit=document.createElement('button');
+      edit.type='button';
+      edit.className='ans';
+      edit.textContent='Bearbeiten';
+      edit.onclick=()=>{ startWizard('cookbook', {editId: entry.id}); };
+
+      actions.appendChild(pub);
+      actions.appendChild(edit);
+      item.appendChild(actions);
+      return item;
+    };
+
+    const usedTitle=document.createElement('div');
+    usedTitle.className='section-title';
+    usedTitle.textContent='Zuletzt verwendet';
+    wrap.appendChild(usedTitle);
+    if(!used.length){
+      const h=document.createElement('div'); h.className='hint'; h.textContent='Noch keine verwendeten Gerichte.';
+      wrap.appendChild(h);
+    } else {
+      used.forEach(x=>wrap.appendChild(buildItem(x)));
+    }
+
+    const draftTitle=document.createElement('div');
+    draftTitle.className='section-title';
+    draftTitle.textContent='Entwuerfe';
+    wrap.appendChild(draftTitle);
+    if(!drafts.length){
+      const h=document.createElement('div'); h.className='hint'; h.textContent='Keine Entwuerfe vorhanden.';
+      wrap.appendChild(h);
+    } else {
+      drafts.forEach(x=>wrap.appendChild(buildItem(x)));
+    }
+
+    box.innerHTML='';
+    box.appendChild(wrap);
+  }
+
+  function publishCookbookEntry(entryId){
+    const entry = cookbook.find(c=>c.id===entryId && c.providerId===providerId());
+    if(!entry) return;
+
+    const profile = normalizeProviderProfile(provider.profile || {});
+    const offer = normalizeOffer({
+      id: cryptoId(),
+      providerId: providerId(),
+      providerName: profile.name || provider.email || 'Anbieter',
+      providerStreet: profile.street||'',
+      providerZip: profile.zip||'',
+      providerCity: profile.city||'',
+      providerLogoData: profile.logoData||'',
+      dish: entry.dish||'',
+      category: entry.category||'Vegetarisch',
+      price: Number(entry.price||0),
+      pickupWindow: profile.mealWindow || DEFAULT_MEAL_WINDOW,
+      hasPickupCode: !!entry.hasPickupCode,
+      dineInPossible: !!entry.dineInPossible,
+      allergens: entry.allergens||[],
+      extras: entry.extras||[],
+      reuse: entry.reuse||{enabled:false,deposit:0},
+      imageUrl: entry.photoData || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70',
+      day: isoDate(new Date())
     });
-    box.querySelectorAll('.cbWeek').forEach(a=>{
-      a.onclick=(e)=>{
-        e.preventDefault();
-        const id=a.getAttribute('data-cb');
-        startWizard('week', {fromCookbookId:id});
-      };
-    });
+
+    if(!offer.providerStreet){
+      alert('Bitte zuerst Anbieterprofil ausfuellen (Adresse).');
+      return;
+    }
+
+    offers.unshift(offer);
+    save(LS.offers, offers);
+
+    const idx = cookbook.findIndex(c=>c.id===entryId);
+    if(idx>=0){ cookbook[idx].lastUsed = Date.now(); }
+    save(LS.cookbook, cookbook);
+
+    renderCookbook();
+    renderProviderHome();
+    renderProviderPickups();
+    renderDiscover();
+    alert('Inserat veroeffentlicht ✅');
   }
 
   // --- Wizard engine (Provider profile / Listing / Cookbook / Week) ---
@@ -1318,14 +1476,35 @@
       buildProviderStep();
     }
     if(kind==='cookbook'){
-      w.data = {
-        providerId: providerId(),
-        dish:'', category:'Vegetarisch', price:0,
-        allergens:[],
-        extras:[],
-        reuse:{enabled:false, deposit:0},
-        photoData:''
-      };
+      if(ctx.editId){
+        const existing = cookbook.find(c=>c.id===ctx.editId);
+        if(existing){ w.data = JSON.parse(JSON.stringify(existing)); }
+      }
+      if(!w.data || !w.data.providerId){
+        w.data = {
+          providerId: providerId(),
+          dish:'', category:'Vegetarisch', price:0,
+          allergens:[],
+          extras:[],
+          reuse:{enabled:false, deposit:0},
+          photoData:'',
+          hasPickupCode:false,
+          dineInPossible:false,
+          createdAt: Date.now(),
+          lastUsed: null
+        };
+      }
+      w.data.providerId = providerId();
+      w.data.category = w.data.category || 'Vegetarisch';
+      w.data.price = Number(w.data.price||0);
+      w.data.allergens = Array.isArray(w.data.allergens) ? w.data.allergens : [];
+      w.data.extras = Array.isArray(w.data.extras) ? w.data.extras : [];
+      if(!w.data.reuse) w.data.reuse = {enabled:false, deposit:0};
+      w.data.photoData = w.data.photoData || '';
+      w.data.hasPickupCode = !!w.data.hasPickupCode;
+      w.data.dineInPossible = !!w.data.dineInPossible;
+      w.data.createdAt = w.data.createdAt || Date.now();
+      if(w.data.lastUsed === undefined) w.data.lastUsed = null;
       buildCookbookStep();
     }
     if(kind==='listing'){
@@ -2072,7 +2251,8 @@
   }
 
   function saveToCookbookFromWizard(keepOpen=false){
-    const x = {
+    const now = Date.now();
+    const base = {
       id: cryptoId(),
       providerId: providerId(),
       dish: w.data.dish||'',
@@ -2081,9 +2261,29 @@
       allergens: w.data.allergens||[],
       extras: w.data.extras||[],
       reuse: w.data.reuse||{enabled:false,deposit:0},
-      photoData: w.data.photoData||''
+      photoData: w.data.photoData||'',
+      hasPickupCode: !!w.data.hasPickupCode,
+      dineInPossible: !!w.data.dineInPossible,
+      createdAt: now,
+      lastUsed: null
     };
-    cookbook.push(x);
+    if(w.ctx && w.ctx.editId){
+      const idx = cookbook.findIndex(c=>c.id===w.ctx.editId);
+      if(idx>=0){
+        const prev = cookbook[idx];
+        cookbook[idx] = {
+          ...prev,
+          ...base,
+          id: prev.id,
+          createdAt: prev.createdAt || now,
+          lastUsed: prev.lastUsed ?? null
+        };
+      } else {
+        cookbook.push(base);
+      }
+    } else {
+      cookbook.push(base);
+    }
     save(LS.cookbook, cookbook);
     if(!keepOpen){ renderCookbook(); }
   }
@@ -2224,24 +2424,13 @@
         reuse:w.data.reuse||{enabled:false,deposit:0},
         day: isoDate(new Date())
       };
-      box.appendChild(offerCard(prev));
+      box.appendChild(offerCard(prev, {interactive:false}));
       const btn=document.createElement('button');
       btn.className='btn';
       btn.type='button';
-      btn.textContent='Im Kochbuch speichern';
+      btn.textContent = w.ctx && w.ctx.editId ? 'Aenderungen speichern' : 'Im Kochbuch speichern';
       btn.onclick=()=>{
-        cookbook.push({
-          id:cryptoId(),
-          providerId:providerId(),
-          dish:w.data.dish||'',
-          category:w.data.category||'Vegetarisch',
-          price:Number(w.data.price||0),
-          allergens:w.data.allergens||[],
-          extras:w.data.extras||[],
-          reuse:w.data.reuse||{enabled:false,deposit:0},
-          photoData:w.data.photoData||''
-        });
-        save(LS.cookbook, cookbook);
+        saveToCookbookFromWizard();
         closeWizard();
         renderCookbook();
         alert('Gespeichert ✅');
