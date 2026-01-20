@@ -382,6 +382,7 @@
         <h3>Wochenvorschau</h3>
         <div class="dayrow" id="provWeekDays" style="padding:0 0 10px; max-width:none;"></div>
         <div id="provWeekPreview" class="hint">Noch nichts geplant.</div>
+        <button class="btn secondary" type="button" id="btnOpenWeekPlan">Wochenplan oeffnen</button>
       </div>
 
       <div style="height:12px"></div>
@@ -403,6 +404,16 @@
           <div class="answers" id="provPickupSort"></div>
           <div id="provPickupGroups" style="margin-top:10px;"></div>
         </div>
+      </div>
+    </section>
+
+    <section class="view" id="v-provider-week">
+      <div class="panel">
+        <h3>Wochenplan</h3>
+        <div class="dayrow" id="weekDays" style="padding:0 0 10px; max-width:none;"></div>
+        <div id="weekList" class="hint">Noch nichts geplant.</div>
+        <button class="btn secondary" type="button" id="btnWeekPdf">PDF-Wochenkarte</button>
+        <button class="btn ghost" type="button" id="btnWeekBack">Zurueck</button>
       </div>
     </section>
 
@@ -580,6 +591,7 @@
   let pickupSort = 'time';
   let cookbookSort = 'recent';
   let cookbookQuery = '';
+  let weekPlanDay = isoDate(new Date());
 
   // --- Seed demo offers if empty ---
   function seed(){
@@ -679,7 +691,7 @@
   const views = {
     discover:'v-discover', fav:'v-fav', cart:'v-cart', profile:'v-profile',
     providerLogin:'v-provider-login',
-    providerHome:'v-provider-home', providerPickups:'v-provider-pickups', providerCookbook:'v-provider-cookbook', providerProfile:'v-provider-profile'
+    providerHome:'v-provider-home', providerPickups:'v-provider-pickups', providerCookbook:'v-provider-cookbook', providerProfile:'v-provider-profile', providerWeek:'v-provider-week'
   };
 
   function setCustomerNavActive(go){
@@ -749,6 +761,11 @@
     setProviderNavActive('provider-pickups');
     showView(views.providerPickups);
     renderProviderPickups();
+  }
+  function showProviderWeek(){
+    setProviderNavActive('provider-home');
+    showView(views.providerWeek);
+    renderWeekPlan();
   }
   function showProviderCookbook(){
     setProviderNavActive('provider-cookbook');
@@ -1146,6 +1163,72 @@
     list.innerHTML = items.map(i=>`• ${esc(i.dish)}`).join('<br>');
   }
 
+  function renderWeekPlan(){
+    const dayWrap = document.getElementById('weekDays');
+    const list = document.getElementById('weekList');
+    if(!dayWrap || !list) return;
+
+    dayWrap.innerHTML = '';
+    for(let i=0;i<5;i++){
+      const d = new Date(); d.setDate(d.getDate()+i);
+      const key = isoDate(d);
+      const b = document.createElement('button');
+      b.className = 'day' + (weekPlanDay===key ? ' active' : '');
+      b.textContent = i===0 ? 'Heute' : (i===1 ? 'Morgen' : fmtDay(d));
+      b.onclick=()=>{ weekPlanDay = key; renderWeekPlan(); };
+      dayWrap.appendChild(b);
+    }
+
+    const dayEntries = week[weekPlanDay] || [];
+    const providerEntries = dayEntries
+      .map((entry, idx)=>({entry, idx}))
+      .filter(x=>x.entry.providerId===providerId());
+
+    if(!providerEntries.length){
+      list.textContent = 'Noch nichts geplant.';
+      return;
+    }
+
+    list.innerHTML = '';
+    providerEntries.forEach(({entry, idx})=>{
+      const cb = cookbook.find(c=>c.id===entry.cookbookId);
+      const name = cb?.dish || entry.dish || 'Gericht';
+      const price = cb?.price || 0;
+
+      const item = document.createElement('div');
+      item.className = 'cookbook-item';
+      item.innerHTML = `
+        <div style="font-weight:900">${esc(name)}</div>
+        <div class="hint">${euro(price)}</div>
+      `;
+
+      const actions = document.createElement('div');
+      actions.className = 'cookbook-actions';
+      const pub = document.createElement('button');
+      pub.type='button';
+      pub.className='ans';
+      pub.textContent='Veroeffentlichen';
+      pub.onclick=()=>{ publishWeekEntry(weekPlanDay, entry); };
+
+      const remove = document.createElement('button');
+      remove.type='button';
+      remove.className='ans';
+      remove.textContent='Entfernen';
+      remove.onclick=()=>{
+        const updated = (week[weekPlanDay]||[]).filter((_, i)=>i!==idx);
+        if(updated.length) week[weekPlanDay]=updated; else delete week[weekPlanDay];
+        save(LS.week, week);
+        renderWeekPlan();
+        renderProviderHome();
+      };
+
+      actions.appendChild(pub);
+      actions.appendChild(remove);
+      item.appendChild(actions);
+      list.appendChild(item);
+    });
+  }
+
   function buildPickupGroups(){
     const todayKey = isoDate(new Date());
     const mineToday = offers.filter(o => o.providerId === providerId() && o.hasPickupCode && o.day === todayKey);
@@ -1243,6 +1326,7 @@
   document.getElementById('btnNewListing').onclick=()=> startWizard('listing');
   document.getElementById('btnCookbookAdd').onclick=()=> startWizard('cookbook');
   document.getElementById('btnProvSetup').onclick=()=> startWizard('provider');
+  document.getElementById('btnOpenWeekPlan').onclick=()=> showProviderWeek();
 
   document.getElementById('btnShareToday').onclick=()=>{
     const todayKey = isoDate(new Date());
@@ -1251,6 +1335,11 @@
     const txt = `Mittagio – heutige Angebote\n` + mineToday.map(o=>`• ${o.dish} (${euro(o.price)}) — ${o.pickupWindow}`).join('\n');
     if(navigator.share){ navigator.share({title:'Mittagio', text:txt, url:location.href}).catch(()=>{}); }
     else prompt('Kopieren & teilen:', txt);
+  };
+
+  document.getElementById('btnWeekBack').onclick=()=> showProviderHome();
+  document.getElementById('btnWeekPdf').onclick=()=>{
+    alert('PDF-Wochenkarte (Demo): Logo, Gerichte, Preis, Essenszeit, QR-Code.');
   };
 
   // Provider ID (for demo)
@@ -1433,6 +1522,54 @@
     save(LS.cookbook, cookbook);
 
     renderCookbook();
+    renderProviderHome();
+    renderProviderPickups();
+    renderDiscover();
+    alert('Inserat veroeffentlicht ✅');
+  }
+
+  function publishWeekEntry(dayKey, entry){
+    const cb = cookbook.find(c=>c.id===entry.cookbookId);
+    if(!cb){
+      alert('Gericht nicht gefunden.');
+      return;
+    }
+
+    const profile = normalizeProviderProfile(provider.profile || {});
+    const offer = normalizeOffer({
+      id: cryptoId(),
+      providerId: providerId(),
+      providerName: profile.name || provider.email || 'Anbieter',
+      providerStreet: profile.street||'',
+      providerZip: profile.zip||'',
+      providerCity: profile.city||'',
+      providerLogoData: profile.logoData||'',
+      dish: cb.dish||entry.dish||'',
+      category: cb.category||'Vegetarisch',
+      price: Number(cb.price||0),
+      pickupWindow: profile.mealWindow || DEFAULT_MEAL_WINDOW,
+      hasPickupCode: !!cb.hasPickupCode,
+      dineInPossible: !!cb.dineInPossible,
+      allergens: cb.allergens||[],
+      extras: cb.extras||[],
+      reuse: cb.reuse||{enabled:false,deposit:0},
+      imageUrl: cb.photoData || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70',
+      day: dayKey
+    });
+
+    if(!offer.providerStreet){
+      alert('Bitte zuerst Anbieterprofil ausfuellen (Adresse).');
+      return;
+    }
+
+    offers.unshift(offer);
+    save(LS.offers, offers);
+
+    const idx = cookbook.findIndex(c=>c.id===entry.cookbookId);
+    if(idx>=0){ cookbook[idx].lastUsed = Date.now(); }
+    save(LS.cookbook, cookbook);
+
+    renderWeekPlan();
     renderProviderHome();
     renderProviderPickups();
     renderDiscover();
