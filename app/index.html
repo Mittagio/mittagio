@@ -362,6 +362,8 @@
     <section class="view" id="v-orders">
       <div class="panel">
         <h3>Bestellungen</h3>
+        <div class="answers" id="ordersFilters"></div>
+        <div style="height:10px"></div>
         <div id="ordersList" class="hint">Noch keine Bestellungen.</div>
       </div>
     </section>
@@ -750,6 +752,7 @@
   let locationQuery = '';
   let pickupDone = new Set();
   let activeOrderId = null;
+  let ordersFilter = 'offen';
   let sharePayload = { text:'', url:'' };
 
   // --- Seed demo offers if empty ---
@@ -1160,7 +1163,23 @@
 
   function renderOrders(){
     const box = document.getElementById('ordersList');
+    const filters = document.getElementById('ordersFilters');
     if(!box) return;
+    if(filters){
+      filters.innerHTML='';
+      [
+        {id:'offen', label:'Offen'},
+        {id:'abgeholt', label:'Abgeholt'},
+        {id:'alle', label:'Alle'}
+      ].forEach(f=>{
+        const b=document.createElement('button');
+        b.type='button';
+        b.className='ans'+(ordersFilter===f.id?' on':'');
+        b.textContent=f.label;
+        b.onclick=()=>{ ordersFilter=f.id; renderOrders(); };
+        filters.appendChild(b);
+      });
+    }
     if(!orders.length){
       box.textContent = 'Noch keine Bestellungen.';
       return;
@@ -1170,7 +1189,15 @@
       if(Number.isNaN(d.getTime())) return '';
       return fmtDay(d);
     };
-    box.innerHTML = orders.map(o=>`
+    const list = orders.filter(o=>{
+      if(ordersFilter==='alle') return true;
+      return (o.status || 'offen') === ordersFilter;
+    });
+    if(!list.length){
+      box.textContent = 'Keine passenden Bestellungen.';
+      return;
+    }
+    box.innerHTML = list.map(o=>`
       <div class="order-item ${o.status==='abgeholt' ? 'done' : ''}">
         <div class="order-top">
           <div>
