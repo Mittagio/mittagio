@@ -1112,7 +1112,7 @@
       const orderBtn=document.createElement('button');
       orderBtn.type='button';
       orderBtn.className='card-action primary';
-      orderBtn.textContent='Bestellen';
+      orderBtn.textContent = data.hasPickupCode ? 'Bestellen' : 'Nur ansehen';
       orderBtn.disabled = !data.hasPickupCode;
       orderBtn.onclick=(e)=>{ e.stopPropagation(); handleOrderClick(data); };
 
