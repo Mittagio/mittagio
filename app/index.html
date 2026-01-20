@@ -312,23 +312,23 @@
     <!-- CUSTOMER: Discover -->
     <section class="view active" id="v-discover">
       <div class="grid" id="offerGrid"></div>
-      <p class="hint" id="emptyOffers" style="display:none;">Noch keine Angebote. (Demo: Als Anbieter ein Inserat erstellen.)</p>
+      <p class="hint" id="emptyOffers" style="display:none;">Noch keine Angebote. Demo: Als Anbieter ein Inserat erstellen.</p>
     </section>
 
     <!-- CUSTOMER: Favorites -->
     <section class="view" id="v-fav">
       <div class="grid" id="favGrid"></div>
-      <p class="hint" id="emptyFav" style="display:none;">Noch keine Favoriten. Tippe auf ❤️.</p>
+      <p class="hint" id="emptyFav" style="display:none;">Noch keine Favoriten. Tippe auf das Herz.</p>
     </section>
 
     <!-- CUSTOMER: Cart -->
     <section class="view" id="v-cart">
       <div class="panel">
         <h3>Warenkorb</h3>
-        <div id="cartBox" class="hint">Noch leer.</div>
-        <button class="btn" id="btnCheckout" type="button" style="display:none;">Zur Kasse</button>
+        <div id="cartBox" class="hint">Dein Warenkorb ist leer.</div>
+        <button class="btn" id="btnCheckout" type="button" style="display:none;">Weiter zur Zahlung</button>
         <div class="mini" id="cartNote" style="display:none;">
-          MVP: Ein Warenkorb nur für <b>einen Anbieter</b>. (Mehrere Gerichte möglich.)
+          MVP: Ein Warenkorb nur fuer <b>einen Anbieter</b>. Mehrere Gerichte moeglich.
         </div>
       </div>
     </section>
@@ -338,8 +338,8 @@
       <div class="panel">
         <h3>Profil</h3>
         <div class="two" style="margin-top:10px;">
-          <button class="bigbtn" type="button" id="btnCustomerLogin">Kunde anmelden<span>Google / Apple / E-Mail (Demo)</span></button>
-          <button class="bigbtn" type="button" id="btnProviderEntry">Anbieter Login<span>Zum Anbieterbereich</span></button>
+          <button class="bigbtn" type="button" id="btnCustomerLogin">Als Kunde anmelden<span>Google / Apple / E-Mail (Demo)</span></button>
+          <button class="bigbtn" type="button" id="btnProviderEntry">Anbieter-Login<span>Zum Anbieterbereich</span></button>
         </div>
         <div style="margin-top:10px;" class="hint" id="customerStatus">Nicht angemeldet (Demo).</div>
       </div>
@@ -347,10 +347,10 @@
       <div class="faq">
         <details>
           <summary>Wie funktioniert Mittagio?</summary>
-          <p>Entdecken → Gericht auswählen → in den Warenkorb → bezahlen → Abholcode zeigen.</p>
+          <p>Entdecken -> Gericht auswaehlen -> in den Warenkorb -> bezahlen -> Abholcode zeigen.</p>
         </details>
         <details>
-          <summary>Kann ich für mehrere Personen bestellen?</summary>
+          <summary>Kann ich fuer mehrere Personen bestellen?</summary>
           <p>Ja. Du kannst mehrere Gerichte in einem Vorgang bestellen (Abholcode pro Vorgang).</p>
         </details>
       </div>
@@ -359,13 +359,13 @@
     <!-- PROVIDER: Login page -->
     <section class="view" id="v-provider-login">
       <div class="panel">
-        <h3>Anbieter Login</h3>
+        <h3>Anbieter-Login</h3>
         <input class="field" id="provEmail" type="email" placeholder="E-Mail" autocomplete="email" />
         <div style="height:10px"></div>
         <input class="field" id="provPass" type="password" placeholder="Passwort" autocomplete="current-password" />
         <button class="btn" type="button" id="btnProvLogin">Einloggen</button>
-        <button class="btn secondary" type="button" id="btnProvBack">Zurück</button>
-        <p class="hint">Demo: beliebige E-Mail/Passwort → du bist drin. (Später Firebase Auth.)</p>
+        <button class="btn secondary" type="button" id="btnProvBack">Zurueck</button>
+        <p class="hint">Demo: beliebige E-Mail/Passwort -> du bist drin. (Spaeter: Firebase Auth.)</p>
       </div>
     </section>
 
@@ -375,7 +375,7 @@
         <h3>Home</h3>
         <div class="hint" id="provHomeHello"></div>
         <button class="btn" type="button" id="btnNewListing">+ Neues Gericht erstellen</button>
-        <button class="btn ghost" type="button" id="btnShareToday" style="display:none;">Heutige Inserate teilen</button>
+        <button class="btn ghost" type="button" id="btnShareToday" style="display:none;">Heutige Angebote teilen</button>
       </div>
 
       <div style="height:12px"></div>
@@ -390,13 +390,13 @@
         <h3>Wochenvorschau</h3>
         <div class="dayrow" id="provWeekDays" style="padding:0 0 10px; max-width:none;"></div>
         <div id="provWeekPreview" class="hint">Noch nichts geplant.</div>
-        <button class="btn secondary" type="button" id="btnOpenWeekPlan">Wochenplan oeffnen</button>
+        <button class="btn secondary" type="button" id="btnOpenWeekPlan">Wochenplan anzeigen</button>
       </div>
 
       <div style="height:12px"></div>
       <div class="panel">
         <h3>Abholcodes heute</h3>
-        <div id="provPickupStats" class="hint">Noch keine Abholcodes geplant.</div>
+        <div id="provPickupStats" class="hint">Noch keine Abholcodes fuer heute.</div>
       </div>
     </section>
 
@@ -420,7 +420,7 @@
         <h3>Wochenplan</h3>
         <div class="dayrow" id="weekDays" style="padding:0 0 10px; max-width:none;"></div>
         <div id="weekList" class="hint">Noch nichts geplant.</div>
-        <button class="btn secondary" type="button" id="btnWeekPdf">PDF-Wochenkarte</button>
+        <button class="btn secondary" type="button" id="btnWeekPdf">PDF-Wochenkarte erstellen</button>
         <button class="btn ghost" type="button" id="btnWeekBack">Zurueck</button>
       </div>
     </section>
@@ -428,14 +428,14 @@
     <section class="view" id="v-provider-cookbook">
       <div class="panel">
         <h3>Mein Kochbuch</h3>
-        <div class="hint">Dein digitales Kochbuch - dein Kopf in der App</div>
+        <div class="hint">Dein digitales Kochbuch - dein Kopf in der App.</div>
         <div style="height:10px"></div>
-        <input class="field" id="cookbookSearch" type="text" placeholder="Suche nach Gerichtsnamen" />
+        <input class="field" id="cookbookSearch" type="text" placeholder="Suche nach Gerichten" />
         <div style="height:10px"></div>
         <div class="answers" id="cookbookFilters"></div>
         <button class="btn" type="button" id="btnCookbookAdd">+ Gericht hinzufuegen</button>
         <div style="height:10px"></div>
-        <div id="cookbookList" class="hint">Noch leer.</div>
+        <div id="cookbookList" class="hint">Noch keine Gerichte gespeichert.</div>
       </div>
     </section>
 
@@ -490,7 +490,7 @@
       <div id="provFaqBox" class="faq" style="display:none;">
         <details>
           <summary>Kein Abo / keine Provision?</summary>
-          <p>Ja. Fixpreis pro Inserat (aktuell 4,99 €). Keine Mindestlaufzeit.</p>
+          <p>Ja. Fixpreis pro Inserat (aktuell 4,99 EUR). Keine Mindestlaufzeit.</p>
         </details>
         <details>
           <summary>Was kostet Abholcode?</summary>
@@ -498,7 +498,7 @@
         </details>
         <details>
           <summary>Wie spare ich Zeit?</summary>
-          <p>Speichere Gerichte im Kochbuch und veröffentliche sie mit 2–3 Taps erneut.</p>
+          <p>Speichere Gerichte im Kochbuch und veroeffentliche sie mit 2-3 Taps erneut.</p>
         </details>
       </div>
     </section>
@@ -540,7 +540,7 @@
     </div>
 
     <div class="row"><span>Abholfenster</span><b id="sWindow"></b></div>
-    <div class="row"><span>Adresse</span><a id="sAddr" href="#" target="_blank" rel="noopener">öffnen</a></div>
+    <div class="row"><span>Adresse</span><a id="sAddr" href="#" target="_blank" rel="noopener">oeffnen</a></div>
 
     <div id="sAllergensWrap" style="display:none">
       <div class="row"><span>Allergene</span><span id="sAllergens" style="text-align:right;color:var(--muted)"></span></div>
@@ -553,8 +553,8 @@
     </div>
 
     <button class="btn" type="button" id="btnAddCart">In den Warenkorb</button>
-    <button class="btn secondary" type="button" id="btnShare">Teilen: „Das zum Mittagio?“</button>
-    <button class="btn ghost" type="button" id="btnFav">❤️ Favorit</button>
+    <button class="btn secondary" type="button" id="btnShare">Teilen: "Zum Mittag?"</button>
+    <button class="btn ghost" type="button" id="btnFav">Favorit</button>
     <div class="mini" id="sCodeNote"></div>
   </div>
 </div>
@@ -573,7 +573,7 @@
       <p class="w-help" id="wHelp"></p>
       <div id="wContent"></div>
       <div class="w-actions">
-        <button class="btn secondary" type="button" id="wBack">Zurück</button>
+        <button class="btn secondary" type="button" id="wBack">Zurueck</button>
         <button class="btn" type="button" id="wNext">Weiter</button>
       </div>
     </div>
@@ -994,7 +994,7 @@
     const addr = buildAddress({address:o.address, street:o.providerStreet, zip:o.providerZip, city:o.providerCity});
     const maps = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr)}`;
     const a = document.getElementById('sAddr');
-    a.textContent = addr || '–';
+    a.textContent = addr || '-';
     a.href = maps;
 
     // Allergens
@@ -1019,8 +1019,8 @@
     } else rw.style.display='none';
 
     document.getElementById('sCodeNote').innerHTML = o.hasPickupCode
-      ? '✅ Dieses Angebot unterstützt <b>Abholcode</b> (schnell & ohne Chaos).' 
-      : 'ℹ️ Dieses Angebot ist nur Inserat (ohne Abholcode).';
+      ? 'Abholcode aktiv: <b>vorab bezahlt</b>.'
+      : 'Nur Inserat (ohne Abholcode).';
 
     updateSheetFav();
 
@@ -1030,8 +1030,8 @@
 
   function updateSheetFav(){
     const b = document.getElementById('btnFav');
-    if(!activeOfferId){ b.textContent='❤️ Favorit'; return; }
-    b.textContent = favs.has(activeOfferId) ? '❤️ Aus Favoriten entfernen' : '❤️ Als Favorit speichern';
+    if(!activeOfferId){ b.textContent='Favorit'; return; }
+    b.textContent = favs.has(activeOfferId) ? 'Aus Favoriten entfernen' : 'Als Favorit speichern';
   }
 
   function closeSheet(){
@@ -1043,9 +1043,9 @@
   document.getElementById('btnShare').onclick=()=>{
     const o = offers.find(x=>x.id===activeOfferId);
     if(!o) return;
-    const txt = `Das zum Mittagio? 🍽️\n${o.dish} · ${euro(o.price)}\nAbholfenster: ${o.pickupWindow}\n${o.providerName}`;
+    const txt = `Zum Mittag: ${o.dish} - ${euro(o.price)}\nAbholfenster: ${o.pickupWindow}\n${o.providerName}\npowered by Mittagio`;
     if(navigator.share){ navigator.share({title:'Mittagio', text:txt, url:location.href}).catch(()=>{}); }
-    else prompt('Kopieren & teilen:', txt + '\n' + location.href);
+    else prompt('Kopieren und teilen:', txt + '\n' + location.href);
   };
 
   document.getElementById('btnAddCart').onclick=()=>{
@@ -1053,7 +1053,7 @@
     if(!o) return;
     // cart: one provider only
     if(cart && cart.providerId !== o.providerId){
-      alert('MVP: Warenkorb nur für einen Anbieter. Bitte zuerst Warenkorb leeren.');
+      alert('MVP: Warenkorb nur fuer einen Anbieter. Bitte zuerst Warenkorb leeren.');
       return;
     }
     if(!cart){ cart = { providerId:o.providerId, providerName:o.providerName, items:[] }; }
@@ -1071,7 +1071,7 @@
     const note=document.getElementById('cartNote');
 
     if(!cart || !cart.items.length){
-      box.textContent='Noch leer.';
+      box.textContent='Dein Warenkorb ist leer.';
       btn.style.display='none';
       note.style.display='none';
       return;
@@ -1082,7 +1082,7 @@
       const o = offers.find(x=>x.id===it.offerId);
       if(!o) return '';
       total += Number(o.price||0) * it.qty;
-      return `• ${o.dish} × ${it.qty} = ${euro(Number(o.price||0)*it.qty)}`;
+      return `- ${o.dish} x ${it.qty} = ${euro(Number(o.price||0)*it.qty)}`;
     }).filter(Boolean);
 
     box.innerHTML = `<b>${esc(cart.providerName)}</b><br>${lines.join('<br>')}<br><br><b>Gesamt:</b> ${euro(total)}<br><br><a href="#" id="clearCart">Warenkorb leeren</a>`;
@@ -1095,11 +1095,11 @@
 
   document.getElementById('btnCheckout').onclick=()=>{
     if(!customer.loggedIn){
-      alert('Für die Demo: Bitte zuerst als Kunde anmelden (Profil).');
+      alert('Fuer die Demo: Bitte zuerst als Kunde anmelden (Profil).');
       showProfile();
       return;
     }
-    alert('Checkout (Demo): Stripe/PayPal bauen wir als nächstes sauber ein.');
+    alert('Checkout (Demo): Zahlung folgt spaeter.');
   };
 
   // --- Customer login (demo) ---
@@ -1179,7 +1179,7 @@
 
     const stats = document.getElementById('provPickupStats');
     const withCodeToday = mineToday.filter(o=>o.hasPickupCode).length;
-    stats.textContent = withCodeToday ? `${withCodeToday} aktive Abholcode-Inserate heute.` : 'Noch keine Abholcodes geplant.';
+    stats.textContent = withCodeToday ? `Abholcode heute: ${withCodeToday} Inserate.` : 'Noch keine Abholcodes fuer heute.';
 
     const shareBtn = document.getElementById('btnShareToday');
     shareBtn.style.display = mineToday.length ? 'block' : 'none';
@@ -1355,7 +1355,7 @@
       <b>${esc(p.name || 'Name fehlt')}</b><br>
       ${esc(addr || 'Adresse fehlt')}<br>
       Essenszeit: <b>${esc(p.mealWindow || DEFAULT_MEAL_WINDOW)}</b><br>
-      ${p.logoData ? 'Logo: ✅' : 'Logo: —'}
+      ${p.logoData ? 'Logo: vorhanden' : 'Logo: fehlt'}
     `;
   }
 
@@ -1365,7 +1365,7 @@
   };
 
   document.getElementById('btnBilling').onclick=()=>{
-    alert('Abrechnungen (MVP): monatliche Sammelrechnung. Dashboard + Stripe Tax bauen wir danach.');
+    alert('Abrechnungen (MVP): monatliche Sammelrechnung. Stripe Tax folgt spaeter.');
   };
 
   document.getElementById('rowProfileOverview').onclick=()=>{
@@ -1375,17 +1375,17 @@
   };
 
   document.getElementById('btnProvActions').onclick=()=>{
-    alert('Aktionen (Demo): Inserat teilen, Inserat deaktivieren, Gutscheinaktionen.');
+    alert('Aktionen (Demo): Teilen, Deaktivieren, Gutscheinaktionen.');
   };
 
   document.getElementById('btnLegalImprint').onclick=()=>{
-    alert('Impressum (Demo): wird spaeter verlinkt.');
+    alert('Impressum (Demo): Link folgt.');
   };
   document.getElementById('btnLegalPrivacy').onclick=()=>{
-    alert('Datenschutz (Demo): wird spaeter verlinkt.');
+    alert('Datenschutz (Demo): Link folgt.');
   };
   document.getElementById('btnLegalTerms').onclick=()=>{
-    alert('AGB (Demo): wird spaeter verlinkt.');
+    alert('AGB (Demo): Link folgt.');
   };
 
   // --- Provider actions ---
@@ -1398,9 +1398,9 @@
     const todayKey = isoDate(new Date());
     const mineToday = offers.filter(o => o.providerId === providerId() && o.day === todayKey);
     if(!mineToday.length) return;
-    const txt = `Mittagio – heutige Angebote\n` + mineToday.map(o=>`• ${o.dish} (${euro(o.price)}) — ${o.pickupWindow}`).join('\n');
+    const txt = `Heute bei uns zu Mittag:\n` + mineToday.map(o=>`- ${o.dish} - ${euro(o.price)}`).join('\n') + `\npowered by Mittagio`;
     if(navigator.share){ navigator.share({title:'Mittagio', text:txt, url:location.href}).catch(()=>{}); }
-    else prompt('Kopieren & teilen:', txt);
+    else prompt('Kopieren und teilen:', txt);
   };
 
   document.getElementById('btnWeekBack').onclick=()=> showProviderHome();
@@ -1456,7 +1456,7 @@
     const filtered = mine.filter(x => !q || String(x.dish||'').toLowerCase().includes(q));
 
     if(!filtered.length){
-      box.innerHTML = '<div class="hint">Noch keine gespeicherten Gerichte.</div>';
+      box.innerHTML = '<div class="hint">Noch keine Gerichte gespeichert.</div>';
       return;
     }
 
@@ -1591,7 +1591,7 @@
     renderProviderHome();
     renderProviderPickups();
     renderDiscover();
-    alert('Inserat veroeffentlicht ✅');
+    alert('Inserat veroeffentlicht.');
   }
 
   function publishWeekEntry(dayKey, entry){
@@ -1639,7 +1639,7 @@
     renderProviderHome();
     renderProviderPickups();
     renderDiscover();
-    alert('Inserat veroeffentlicht ✅');
+    alert('Inserat veroeffentlicht.');
   }
 
   // --- Wizard engine (Provider profile / Listing / Cookbook / Week) ---
@@ -1816,16 +1816,16 @@
     if(w.step >= total){
       saveProviderProfileFromWizard();
       closeWizard();
-      alert('Profil ist bereit ✅');
+      alert('Profil ist bereit.');
       return;
     }
 
     if(w.step===0){
-      setWizardQuestion('Wie heißt dein Betrieb?', 'Du kannst den Namen jederzeit ändern.');
+      setWizardQuestion('Wie heisst dein Betrieb?', 'Du kannst den Namen jederzeit aendern.');
       const box=document.createElement('div');
       const input=document.createElement('input');
       input.className='field';
-      input.placeholder='z.B. Metzgerei Müller';
+      input.placeholder='z.B. Metzgerei Mueller';
       input.value = w.data.name || '';
       input.oninput=()=>{ w.data.name=input.value; };
       box.appendChild(input);
@@ -1835,15 +1835,15 @@
     }
 
     if(w.step===1){
-      setWizardQuestion('Adresse deines Betriebs?', 'Auto-Vervollständigung folgt (Demo).');
+      setWizardQuestion('Adresse deines Betriebs?', 'Auto-Vervollstaendigung folgt (Demo).');
       const box=document.createElement('div');
       const input=document.createElement('input');
       input.className='field';
-      input.placeholder='Musterstraße 12, 73614 Schorndorf';
+      input.placeholder='Musterstrasse 12, 73614 Schorndorf';
       input.value = w.data.address || buildAddress(w.data) || '';
       input.oninput=()=>{ w.data.address=input.value; };
       box.appendChild(input);
-      const h=document.createElement('div'); h.className='hint'; h.textContent='Tipp: Straße, PLZ, Ort – getrennt mit Komma.';
+      const h=document.createElement('div'); h.className='hint'; h.textContent='Tipp: Strasse, PLZ, Ort - getrennt mit Komma.';
       box.appendChild(h);
       setWizardContent(box);
       wNextBtn.textContent='Weiter';
@@ -1851,7 +1851,7 @@
     }
 
     if(w.step===2){
-      setWizardQuestion('Wann können Gäste dein Essen genießen?', 'Standard aus Profil, optional anpassen.');
+      setWizardQuestion('Wann koennen Gaeste dein Essen geniessen?', 'Standard aus Profil, optional anpassen.');
       if(!w.data.mealWindow) w.data.mealWindow = DEFAULT_MEAL_WINDOW;
 
       const current = w.data.mealWindow || DEFAULT_MEAL_WINDOW;
@@ -1872,7 +1872,7 @@
       const toggle=document.createElement('button');
       toggle.type='button';
       toggle.className='ans';
-      toggle.textContent = w.data.mealCustom ? 'Fertig' : 'Essenszeit ändern';
+      toggle.textContent = w.data.mealCustom ? 'Fertig' : 'Essenszeit aendern';
       toggle.onclick=()=>{
         w.data.mealCustom = !w.data.mealCustom;
         rebuildWizard();
@@ -1923,7 +1923,7 @@
     }
 
     if(w.step===3){
-      setWizardQuestion('Logo hochladen?', 'Optional, später jederzeit austauschbar.');
+      setWizardQuestion('Logo hochladen?', 'Optional, spaeter jederzeit austauschbar.');
       const wrap = document.createElement('div');
       const btns=document.createElement('div');
       btns.className='answers';
@@ -1931,7 +1931,7 @@
       const up=document.createElement('button');
       up.className='ans';
       up.type='button';
-      up.textContent='Logo auswählen';
+      up.textContent='Logo auswaehlen';
       up.onclick=async()=>{
         const file = await pickImage();
         if(!file) return;
@@ -1942,7 +1942,7 @@
       const skip=document.createElement('button');
       skip.className='ans';
       skip.type='button';
-      skip.textContent='Später';
+      skip.textContent='Spaeter';
       skip.onclick=()=>{ w.data.logoData=''; rebuildWizard(); };
 
       btns.appendChild(up);
@@ -2003,13 +2003,13 @@
     target.innerHTML = '';
     const title = document.createElement('div');
     title.className = 'hint';
-    title.textContent = 'Live-Preview';
+    title.textContent = 'Live-Vorschau';
     target.appendChild(title);
     target.appendChild(offerCard(previewOfferFromWizard(), {interactive:false}));
     if(w.data.hasPickupCode){
       const note = document.createElement('div');
       note.className = 'mini';
-      note.textContent = 'Abholcode-Beispiel: A3';
+      note.textContent = 'Beispielcode: A3';
       target.appendChild(note);
     }
   }
@@ -2033,7 +2033,7 @@
     setWizardHeader('Neues Inserat', `Schritt ${Math.min(w.step+1,total)} von ${total}`);
 
     if(w.step===0){
-      setWizardQuestion('Gerichtname?', 'Autocomplete: schnell tippen.');
+      setWizardQuestion('Gerichtname?', 'Vorschlaege erleichtern die Eingabe.');
       const box=document.createElement('div');
       const input=document.createElement('input');
       input.className='field';
@@ -2065,7 +2065,7 @@
     }
 
     if(w.step===1){
-      setWizardQuestion('Preis pro Portion?', 'Zahlen-Tastatur, Standard 0,00.');
+      setWizardQuestion('Preis pro Portion?', 'Standard: 0,00.');
       const box=document.createElement('div');
       const input=document.createElement('input');
       input.className='field';
@@ -2083,7 +2083,7 @@
     }
 
     if(w.step===2){
-      setWizardQuestion('Essenszeit?', 'Standard aus Profil, optional aendern.');
+      setWizardQuestion('Essenszeit?', 'Standard aus Profil, optional anpassen.');
       const profile = normalizeProviderProfile(provider.profile || {});
       if(!w.data.pickupWindow){ w.data.pickupWindow = profile.mealWindow || DEFAULT_MEAL_WINDOW; }
 
@@ -2160,7 +2160,7 @@
     }
 
     if(w.step===3){
-      setWizardQuestion('Allergene?', 'Ja / Nein. Bei Ja: 14 Allergene als Toggle.');
+      setWizardQuestion('Allergene?', 'Ja/Nein. Bei Ja: 14 Allergene als Toggle.');
       const box=document.createElement('div');
       const ans=document.createElement('div'); ans.className='answers';
       const has = w.data.hasAllergens || (Array.isArray(w.data.allergens) && w.data.allergens.length);
@@ -2197,7 +2197,7 @@
     }
 
     if(w.step===4){
-      setWizardQuestion('Extras?', 'Presets auswaehlen und Preis tippen.');
+      setWizardQuestion('Extras?', 'Presets waehlen und Preis angeben.');
       const box=document.createElement('div');
       if(!Array.isArray(w.data.extras)) w.data.extras=[];
 
@@ -2242,7 +2242,7 @@
     }
 
     if(w.step===5){
-      setWizardQuestion('Mehrweg anbieten?', 'Ja / Nein. Presets: 2, 3, 5.');
+      setWizardQuestion('Mehrweg anbieten?', 'Ja/Nein. Presets: 2, 3, 5 EUR.');
       const box=document.createElement('div');
       if(!w.data.reuse) w.data.reuse = {enabled:false, deposit:0};
 
@@ -2318,7 +2318,7 @@
     }
 
     if(w.step===7){
-      setWizardQuestion('Bezahlung mit Abholcode?', 'Preview zeigt Badge + Abholcode-Beispiel.');
+      setWizardQuestion('Bezahlung mit Abholcode?', 'Vorschau zeigt Badge + Beispielcode.');
       const box=document.createElement('div');
       const ans=document.createElement('div'); ans.className='answers';
       const yes=document.createElement('button'); yes.type='button'; yes.className='ans'+(w.data.hasPickupCode?' on':''); yes.textContent='Ja';
@@ -2335,7 +2335,7 @@
     }
 
     if(w.step===8){
-      setWizardQuestion('Vor Ort essen moeglich?', 'Preview zeigt das Badge.');
+      setWizardQuestion('Vor Ort essen moeglich?', 'Vorschau zeigt Badge.');
       const box=document.createElement('div');
       const ans=document.createElement('div'); ans.className='answers';
       const yes=document.createElement('button'); yes.type='button'; yes.className='ans'+(w.data.dineInPossible?' on':''); yes.textContent='Ja';
@@ -2352,7 +2352,7 @@
     }
 
     if(w.step===9){
-      setWizardQuestion('Abschluss', 'Inserat veroeffentlichen oder speichern.');
+      setWizardQuestion('Abschluss', 'Veroeffentlichen oder speichern.');
       const box=document.createElement('div');
       attachListingPreview(box);
 
@@ -2367,7 +2367,7 @@
         const o = previewOfferFromWizard();
         publishOffer(o);
         closeWizard();
-        alert('Inserat veroeffentlicht ✅');
+        alert('Inserat veroeffentlicht.');
         showProviderHome();
       };
 
@@ -2377,7 +2377,7 @@
       btnSave.textContent='In Kochbuch speichern';
       btnSave.onclick=()=>{
         saveToCookbookFromWizard();
-        alert('Im Kochbuch gespeichert ✅');
+        alert('Im Kochbuch gespeichert.');
         closeWizard();
         showProviderCookbook();
       };
@@ -2514,7 +2514,7 @@
     }
 
     if(w.step===1){
-      setWizardQuestion('Foto speichern?', 'Optional (für schnelleres Wiederverwenden).');
+      setWizardQuestion('Foto speichern?', 'Optional (fuer schnelleres Wiederverwenden).');
       const box=document.createElement('div');
       const ans=document.createElement('div'); ans.className='answers';
       const b1=document.createElement('button'); b1.type='button'; b1.className='ans'; b1.textContent='Foto auswählen';
@@ -2596,7 +2596,7 @@
     }
 
     if(w.step===6){
-      setWizardQuestion('Standardpreis?', 'Nur Zahl – Komma nicht nötig.');
+      setWizardQuestion('Standardpreis?', 'Nur Zahl - Komma nicht noetig.');
       const box=document.createElement('div');
       const input=document.createElement('input');
       input.className='field'; input.inputMode='numeric'; input.placeholder='z.B. 799';
@@ -2609,7 +2609,7 @@
     }
 
     if(w.step===7){
-      setWizardQuestion('Speichern?', 'Damit du später mit 2 Taps inserierst.');
+      setWizardQuestion('Speichern?', 'Damit du spaeter mit 2 Taps inserierst.');
       const box=document.createElement('div');
       const prev = {
         id:'preview',
@@ -2636,7 +2636,7 @@
         saveToCookbookFromWizard();
         closeWizard();
         renderCookbook();
-        alert('Gespeichert ✅');
+        alert('Gespeichert.');
       };
       box.appendChild(btn);
       setWizardContent(box);
@@ -2650,7 +2650,7 @@
   function buildWeekStep(){
     setWizardNextDefault();
     setWizardHeader('Wochenplan', '1/1');
-    setWizardQuestion('Für welchen Tag?', 'Wähle einen Tag und füge das Gericht hinzu.');
+    setWizardQuestion('Fuer welchen Tag?', 'Waehle einen Tag und fuege das Gericht hinzu.');
 
     const box=document.createElement('div');
     const ans=document.createElement('div'); ans.className='answers';
@@ -2670,7 +2670,7 @@
     const btn=document.createElement('button');
     btn.className='btn';
     btn.type='button';
-    btn.textContent='Zum Wochenplan hinzufügen';
+    btn.textContent='Zum Wochenplan hinzufuegen';
     btn.onclick=()=>{
       const cb = cookbook.find(c=>c.id===w.data.cookbookId);
       if(!cb){ alert('Gericht nicht gefunden'); return; }
@@ -2680,7 +2680,7 @@
       save(LS.week, week);
       closeWizard();
       renderProviderHome();
-      alert('Im Wochenplan ✅');
+      alert('Im Wochenplan gespeichert.');
     };
 
     box.appendChild(document.createElement('div')).style.height='10px';
