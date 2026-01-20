@@ -643,6 +643,25 @@
   </div>
 </div>
 
+<!-- Share sheet -->
+<div class="backdrop" id="shareBd" onclick="closeShareSheet()"></div>
+<div class="sheet" id="shareSheet">
+  <div class="handle"></div>
+  <div class="sheet-body">
+    <div class="panel">
+      <div style="font-weight:900">Teilen</div>
+      <div class="hint" id="sharePreview"></div>
+    </div>
+    <div class="answers" style="margin-top:10px;">
+      <button class="ans" type="button" id="btnShareWhatsApp">WhatsApp</button>
+      <button class="ans" type="button" id="btnShareInstagram">Instagram</button>
+      <button class="ans" type="button" id="btnShareWebsite">Website</button>
+      <button class="ans" type="button" id="btnShareCopy">Link kopieren</button>
+    </div>
+    <button class="btn secondary" type="button" id="btnShareClose">Schliessen</button>
+  </div>
+</div>
+
 <!-- Provider Wizard sheet (single reusable) -->
 <div class="backdrop" id="wbd" onclick="closeWizard()"></div>
 <div class="sheet" id="wizard">
@@ -727,6 +746,7 @@
   let locationQuery = '';
   let pickupDone = new Set();
   let activeOrderId = null;
+  let sharePayload = { text:'', url:'' };
 
   // --- Seed demo offers if empty ---
   function seed(){
@@ -1288,11 +1308,32 @@
     return `Heute bei uns zu Mittag:\n${dish} - ${euro(o.price)}\npowered by mittagio.de`;
   }
 
+  function openShareSheet(text, url=location.href){
+    sharePayload = { text, url };
+    const preview = document.getElementById('sharePreview');
+    if(preview) preview.textContent = text;
+    document.getElementById('shareBd').classList.add('active');
+    document.getElementById('shareSheet').classList.add('active');
+  }
+
+  function closeShareSheet(){
+    document.getElementById('shareBd').classList.remove('active');
+    document.getElementById('shareSheet').classList.remove('active');
+  }
+
+  async function copyShareText(){
+    const txt = `${sharePayload.text}\n${sharePayload.url}`.trim();
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      try{ await navigator.clipboard.writeText(txt); return true; }catch{}
+    }
+    prompt('Kopieren und teilen:', txt);
+    return false;
+  }
+
   function shareOffer(o){
     if(!o) return;
     const txt = buildShareText(o);
-    if(navigator.share){ navigator.share({title:'Mittagio', text:txt, url:location.href}).catch(()=>{}); }
-    else prompt('Kopieren und teilen:', txt + '\n' + location.href);
+    openShareSheet(txt);
   }
 
   function addToCart(o){
@@ -1339,6 +1380,23 @@
     save(LS.orders, orders);
     renderOrders();
     openCodeSheet(activeOrderId);
+  };
+  document.getElementById('btnShareClose').onclick=()=> closeShareSheet();
+  document.getElementById('btnShareWhatsApp').onclick=()=>{
+    const txt = `${sharePayload.text}\n${sharePayload.url}`.trim();
+    window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`,'_blank');
+  };
+  document.getElementById('btnShareInstagram').onclick=async()=>{
+    await copyShareText();
+    window.open('https://www.instagram.com/','_blank');
+  };
+  document.getElementById('btnShareWebsite').onclick=async()=>{
+    await copyShareText();
+    window.open(sharePayload.url || location.href,'_blank');
+  };
+  document.getElementById('btnShareCopy').onclick=async()=>{
+    const ok = await copyShareText();
+    if(ok) alert('Link kopiert.');
   };
 
   document.getElementById('btnAddCart').onclick=()=>{
@@ -1853,8 +1911,7 @@
     const mineToday = offers.filter(o => o.providerId === providerId() && o.day === todayKey && o.active !== false);
     if(!mineToday.length) return;
     const txt = `Heute bei uns zu Mittag:\n` + mineToday.map(o=>`${o.dish} - ${euro(o.price)}`).join('\n') + `\npowered by mittagio.de`;
-    if(navigator.share){ navigator.share({title:'Mittagio', text:txt, url:location.href}).catch(()=>{}); }
-    else prompt('Kopieren und teilen:', txt);
+    openShareSheet(txt);
   };
 
   document.getElementById('btnWeekBack').onclick=()=> showProviderHome();
