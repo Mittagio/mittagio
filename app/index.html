@@ -74,6 +74,23 @@
     }
     .chip.active{border-color:rgba(31,157,85,.35); box-shadow:0 10px 22px rgba(31,157,85,.12)}
 
+    .pickup-group{
+      border:1px solid var(--border);
+      background:#fff;
+      border-radius:14px;
+      padding:10px;
+      box-shadow:0 6px 14px rgba(0,0,0,.06);
+    }
+    .pickup-group + .pickup-group{margin-top:10px}
+    .pickup-head{display:flex; align-items:center; justify-content:space-between; gap:8px; font-weight:900}
+    .pickup-sub{font-size:12px; color:var(--muted)}
+    .code-chip{
+      display:inline-flex; align-items:center; justify-content:center;
+      padding:6px 10px; border-radius:999px; border:1px solid var(--border);
+      background:#fff; font-size:12px; font-weight:900;
+      margin:4px 6px 0 0; box-shadow:0 6px 14px rgba(0,0,0,.06);
+    }
+
     .dayrow{
       max-width:980px; margin:0 auto; padding:0 14px 12px;
       display:flex; gap:8px; overflow:auto; -webkit-overflow-scrolling:touch;
@@ -343,27 +360,43 @@
       <div class="panel">
         <h3>Home</h3>
         <div class="hint" id="provHomeHello"></div>
-        <button class="btn" type="button" id="btnNewListing">+ Neues Inserat</button>
+        <button class="btn" type="button" id="btnNewListing">+ Neues Gericht erstellen</button>
         <button class="btn ghost" type="button" id="btnShareToday" style="display:none;">Heutige Inserate teilen</button>
       </div>
 
       <div style="height:12px"></div>
       <div class="panel">
-        <h3>Meine Inserate heute</h3>
-        <div id="provToday" class="hint">Noch keine.</div>
+        <h3>Aktive Inserate</h3>
+        <div id="provActiveGrid" class="grid" style="margin-top:10px"></div>
+        <div id="provActiveEmpty" class="hint">Noch keine aktiven Inserate.</div>
       </div>
 
       <div style="height:12px"></div>
       <div class="panel">
-        <h3>Wochenplan (Vorschau)</h3>
-        <div id="provWeekPreview" class="hint">Noch leer.</div>
+        <h3>Wochenvorschau</h3>
+        <div class="dayrow" id="provWeekDays" style="padding:0 0 10px; max-width:none;"></div>
+        <div id="provWeekPreview" class="hint">Noch nichts geplant.</div>
+      </div>
+
+      <div style="height:12px"></div>
+      <div class="panel">
+        <h3>Abholcodes heute</h3>
+        <div id="provPickupStats" class="hint">Noch keine Abholcodes geplant.</div>
       </div>
     </section>
 
-    <section class="view" id="v-provider-listings">
+    <section class="view" id="v-provider-pickups">
       <div class="panel">
-        <h3>Meine Inserate</h3>
-        <div id="provListings" class="hint">Noch keine.</div>
+        <h3>Abholungen</h3>
+        <div id="provPickupsEmpty" class="hint">
+          Aktuell keine Abholungen geplant.<br>
+          Geplante Abholungen sorgen fuer weniger Chaos.
+        </div>
+        <div id="provPickupsWrap" style="display:none;">
+          <div class="hint" style="margin-top:8px;">Sortierung</div>
+          <div class="answers" id="provPickupSort"></div>
+          <div id="provPickupGroups" style="margin-top:10px;"></div>
+        </div>
       </div>
     </section>
 
@@ -415,7 +448,7 @@
   <!-- PROVIDER bottom nav -->
   <nav class="bottom" id="providerNav" style="display:none;">
     <button class="navbtn active" data-pgo="provider-home"><div class="ico">🏠</div><div>Home</div></button>
-    <button class="navbtn" data-pgo="provider-listings"><div class="ico">🧾</div><div>Inserate</div></button>
+    <button class="navbtn" data-pgo="provider-pickups"><div class="ico">🧾</div><div>Abholungen</div></button>
     <button class="navbtn" data-pgo="provider-cookbook"><div class="ico">📚</div><div>Kochbuch</div></button>
     <button class="navbtn" data-pgo="provider-profile"><div class="ico">⚙️</div><div>Profil</div></button>
   </nav>
@@ -520,6 +553,8 @@
 
   let activeCat = 'In meiner Nähe';
   let activeDay = isoDate(new Date());
+  let providerWeekDay = isoDate(new Date());
+  let pickupSort = 'time';
 
   // --- Seed demo offers if empty ---
   function seed(){
@@ -599,7 +634,7 @@
   const views = {
     discover:'v-discover', fav:'v-fav', cart:'v-cart', profile:'v-profile',
     providerLogin:'v-provider-login',
-    providerHome:'v-provider-home', providerListings:'v-provider-listings', providerCookbook:'v-provider-cookbook', providerProfile:'v-provider-profile'
+    providerHome:'v-provider-home', providerPickups:'v-provider-pickups', providerCookbook:'v-provider-cookbook', providerProfile:'v-provider-profile'
   };
 
   function setCustomerNavActive(go){
@@ -665,10 +700,10 @@
     showView(views.providerHome);
     renderProviderHome();
   }
-  function showProviderListings(){
-    setProviderNavActive('provider-listings');
-    showView(views.providerListings);
-    renderProviderListings();
+  function showProviderPickups(){
+    setProviderNavActive('provider-pickups');
+    showView(views.providerPickups);
+    renderProviderPickups();
   }
   function showProviderCookbook(){
     setProviderNavActive('provider-cookbook');
@@ -769,6 +804,40 @@
     card.appendChild(img);
     card.appendChild(heart);
     card.appendChild(providerRow);
+    card.appendChild(body);
+    return card;
+  }
+
+  function providerCard(o){
+    const card=document.createElement('div');
+    card.className='card';
+    card.style.cursor='default';
+
+    const profile = normalizeProviderProfile(provider.profile || {});
+    const imgSrc = o.imageUrl || o.photoData || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70';
+    const windowText = o.pickupWindow || profile.mealWindow || '';
+
+    const img=document.createElement('div');
+    img.className='img';
+    img.innerHTML = `
+      <img alt="${esc(o.dish||'Gericht')}" src="${esc(imgSrc)}" />
+      ${o.hasPickupCode?'<div class="badge code">Abholcode</div>':''}
+    `;
+
+    const body=document.createElement('div');
+    body.className='body';
+    body.innerHTML = `
+      <p class="title">${esc(o.dish||'Gericht')}</p>
+      <p class="sub">Essenszeit: ${esc(windowText || '—')}</p>
+      <div class="meta">
+        <div class="price">${euro(o.price)}</div>
+        <div class="right">
+          <div>${esc(o.category||'')}</div>
+        </div>
+      </div>
+    `;
+
+    card.appendChild(img);
     card.appendChild(body);
     return card;
   }
@@ -953,7 +1022,7 @@
     if(!b) return;
     const go = b.dataset.pgo;
     if(go==='provider-home') showProviderHome();
-    if(go==='provider-listings') showProviderListings();
+    if(go==='provider-pickups') showProviderPickups();
     if(go==='provider-cookbook') showProviderCookbook();
     if(go==='provider-profile') showProviderProfile();
   });
@@ -971,52 +1040,127 @@
 
   // --- Provider home renders ---
   function renderProviderHome(){
-    document.getElementById('provHomeHello').textContent = `Eingeloggt als ${provider.profile.name || provider.email}`;
+    const profile = normalizeProviderProfile(provider.profile || {});
+    document.getElementById('provHomeHello').textContent = `Eingeloggt als ${profile.name || provider.email}`;
 
     const todayKey = isoDate(new Date());
-    const mineToday = offers.filter(o => o.providerId === providerId() && o.day === todayKey);
+    const mineActive = offers.filter(o => o.providerId === providerId() && o.day >= todayKey);
+    const mineToday = mineActive.filter(o => o.day === todayKey);
 
-    const box = document.getElementById('provToday');
-    if(!mineToday.length) box.textContent='Noch keine Inserate heute.';
-    else box.innerHTML = mineToday.map(o=>`• ${esc(o.dish)} (${euro(o.price)}) — ${esc(o.pickupWindow)}`).join('<br>');
-
-    // week preview
-    const wbox = document.getElementById('provWeekPreview');
-    const keys = Object.keys(week).sort();
-    const mine = keys.filter(k => (week[k]||[]).some(x => x.providerId===providerId()));
-    if(!mine.length) wbox.textContent='Noch kein Wochenplan.';
-    else {
-      const lines = mine.slice(0,5).map(k=>{
-        const items = (week[k]||[]).filter(x=>x.providerId===providerId());
-        return `<b>${k}</b>: ${items.map(i=>esc(i.dish)).join(' · ')}`;
-      });
-      wbox.innerHTML = lines.join('<br>');
+    const grid = document.getElementById('provActiveGrid');
+    const empty = document.getElementById('provActiveEmpty');
+    grid.innerHTML = '';
+    if(!mineActive.length){
+      empty.style.display='block';
+    } else {
+      empty.style.display='none';
+      mineActive.slice(0,6).forEach(o=> grid.appendChild(providerCard(o)));
     }
 
-    // share button
+    renderProviderWeekPreview();
+
+    const stats = document.getElementById('provPickupStats');
+    const withCodeToday = mineToday.filter(o=>o.hasPickupCode).length;
+    stats.textContent = withCodeToday ? `${withCodeToday} aktive Abholcode-Inserate heute.` : 'Noch keine Abholcodes geplant.';
+
     const shareBtn = document.getElementById('btnShareToday');
     shareBtn.style.display = mineToday.length ? 'block' : 'none';
   }
 
-  function renderProviderListings(){
-    const box = document.getElementById('provListings');
-    const mine = offers.filter(o => o.providerId === providerId());
-    if(!mine.length){ box.textContent='Noch keine Inserate.'; return; }
-    box.innerHTML = mine.slice(0,30).map(o=>{
-      const day = o.day;
-      return `• <b>${esc(day)}</b> — ${esc(o.dish)} (${euro(o.price)}) <a href="#" data-off="${o.id}" class="toggleSold">[deaktivieren]</a>`;
-    }).join('<br>');
+  function renderProviderWeekPreview(){
+    const dayWrap = document.getElementById('provWeekDays');
+    const list = document.getElementById('provWeekPreview');
+    if(!dayWrap || !list) return;
 
-    box.querySelectorAll('.toggleSold').forEach(a=>{
-      a.onclick=(e)=>{
-        e.preventDefault();
-        const id = a.getAttribute('data-off');
-        offers = offers.filter(x=>x.id!==id);
-        save(LS.offers, offers);
-        renderProviderListings();
-        renderProviderHome();
-        renderDiscover();
-      };
+    dayWrap.innerHTML = '';
+    for(let i=0;i<5;i++){
+      const d = new Date(); d.setDate(d.getDate()+i);
+      const key = isoDate(d);
+      const b = document.createElement('button');
+      b.className = 'day' + (providerWeekDay===key ? ' active' : '');
+      b.textContent = i===0 ? 'Heute' : (i===1 ? 'Morgen' : fmtDay(d));
+      b.onclick=()=>{ providerWeekDay = key; renderProviderWeekPreview(); };
+      dayWrap.appendChild(b);
+    }
+
+    const items = (week[providerWeekDay]||[]).filter(x=>x.providerId===providerId());
+    if(!items.length){
+      list.textContent = 'Noch nichts geplant.';
+      return;
+    }
+    list.innerHTML = items.map(i=>`• ${esc(i.dish)}`).join('<br>');
+  }
+
+  function buildPickupGroups(){
+    const todayKey = isoDate(new Date());
+    const mineToday = offers.filter(o => o.providerId === providerId() && o.hasPickupCode && o.day === todayKey);
+    if(!mineToday.length) return [];
+
+    if(mineToday.length === 1){
+      return [{time:'11:30', group:'A', codes:['A1','A2','A3']}];
+    }
+    if(mineToday.length === 2){
+      return [
+        {time:'11:30', group:'A', codes:['A1','A2','A3','A4']},
+        {time:'12:00', group:'B', codes:['B1','B2','B3']}
+      ];
+    }
+    return [
+      {time:'11:30', group:'A', codes:['A1','A2','A3','A4','A5']},
+      {time:'12:00', group:'B', codes:['B1','B2','B3']},
+      {time:'12:30', group:'C', codes:['C1','C2']}
+    ];
+  }
+
+  function renderProviderPickups(){
+    const empty = document.getElementById('provPickupsEmpty');
+    const wrap = document.getElementById('provPickupsWrap');
+    const sortEl = document.getElementById('provPickupSort');
+    const groupsEl = document.getElementById('provPickupGroups');
+    if(!empty || !wrap || !sortEl || !groupsEl) return;
+
+    const groups = buildPickupGroups();
+    if(!groups.length){
+      empty.style.display='block';
+      wrap.style.display='none';
+      return;
+    }
+    empty.style.display='none';
+    wrap.style.display='block';
+
+    sortEl.innerHTML='';
+    [
+      {id:'time', label:'Zeit'},
+      {id:'code', label:'Code'},
+      {id:'group', label:'Gruppe'}
+    ].forEach(s=>{
+      const b=document.createElement('button');
+      b.type='button';
+      b.className='ans'+(pickupSort===s.id?' on':'');
+      b.textContent=s.label;
+      b.onclick=()=>{ pickupSort=s.id; renderProviderPickups(); };
+      sortEl.appendChild(b);
+    });
+
+    const list = [...groups];
+    if(pickupSort==='time') list.sort((a,b)=>a.time.localeCompare(b.time));
+    if(pickupSort==='code') list.sort((a,b)=>(a.codes[0]||'').localeCompare(b.codes[0]||''));
+    if(pickupSort==='group') list.sort((a,b)=>a.group.localeCompare(b.group));
+
+    groupsEl.innerHTML='';
+    list.forEach(g=>{
+      const box=document.createElement('div');
+      box.className='pickup-group';
+      box.innerHTML = `
+        <div class="pickup-head">
+          <div>Gruppe ${esc(g.group)}</div>
+          <div class="pickup-sub">${esc(g.time)}</div>
+        </div>
+        <div style="margin-top:6px;">
+          ${g.codes.map(c=>`<span class="code-chip">${esc(c)}</span>`).join('')}
+        </div>
+      `;
+      groupsEl.appendChild(box);
     });
   }
 
@@ -1726,7 +1870,7 @@
     // restore default next button handler
     wNextBtn.onclick=null;
     renderProviderHome();
-    renderProviderListings();
+    renderProviderPickups();
     renderDiscover();
   }
 
