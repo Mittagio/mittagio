@@ -268,6 +268,23 @@
     .status-pill.open{background:rgba(242,183,5,.12); color:#b37b00}
     .status-pill.done{background:rgba(31,157,85,.12); color:#1f9d55}
     .code-full{font-size:42px; font-weight:950; text-align:center; margin:10px 0}
+
+    .print-view{display:none}
+    @media print{
+      body{background:#fff; color:#000}
+      body > *:not(#printView){display:none !important}
+      #printView{display:block}
+      #printView .print-card{
+        border:1px solid #ddd; border-radius:12px; padding:16px; margin-bottom:12px;
+      }
+      #printView h1{margin:0 0 8px; font-size:20px}
+      #printView h2{margin:12px 0 6px; font-size:16px}
+      #printView .print-row{display:flex; justify-content:space-between; gap:12px; margin-top:6px}
+      #printView .print-muted{color:#555; font-size:12px}
+      #printView .print-badge{display:inline-block; padding:4px 8px; border:1px solid #999; border-radius:999px; font-size:11px; font-weight:700}
+      #printView .print-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+      #printView .qr{width:120px; height:120px; border:1px dashed #999; display:flex; align-items:center; justify-content:center; font-size:11px}
+    }
     .two{display:grid; grid-template-columns:1fr 1fr; gap:10px}
     .bigbtn{
       border:none; cursor:pointer;
@@ -686,6 +703,9 @@
     <button class="btn secondary" type="button" id="btnShareClose">Schließen</button>
   </div>
 </div>
+
+<!-- Print view -->
+<div id="printView" class="print-view"></div>
 
 <!-- Provider Wizard sheet (single reusable) -->
 <div class="backdrop" id="wbd" onclick="closeWizard()"></div>
@@ -1419,6 +1439,109 @@
     return `Heute bei uns zu Mittag:\n${dish} - ${euro(o.price)}\npowered by mittagio.de`;
   }
 
+  function setPrintView(html){
+    const pv = document.getElementById('printView');
+    if(!pv) return;
+    pv.innerHTML = html;
+  }
+  function clearPrintView(){
+    const pv = document.getElementById('printView');
+    if(!pv) return;
+    pv.innerHTML = '';
+  }
+  window.addEventListener('afterprint', clearPrintView);
+
+  function printHtml(html){
+    setPrintView(html);
+    window.print();
+    setTimeout(clearPrintView, 300);
+  }
+
+  function buildOfferPrintHtml(o){
+    const data = normalizeOffer(o);
+    const profile = normalizeProviderProfile(provider.profile || {});
+    const name = data.providerName || profile.name || 'Anbieter';
+    const addr = buildAddress({address:data.address, street:data.providerStreet, zip:data.providerZip, city:data.providerCity}) || buildAddress(profile);
+    const badges = [];
+    if(data.hasPickupCode) badges.push('Abholcode');
+    if(data.dineInPossible) badges.push('Vor Ort');
+    return `
+      <div class="print-card">
+        <div style="display:flex;align-items:center;gap:12px;">
+          ${profile.logoData ? `<img src="${profile.logoData}" alt="Logo" style="width:56px;height:56px;border-radius:12px;object-fit:cover" />` : ''}
+          <div>
+            <h1>${esc(name)}</h1>
+            <div class="print-muted">${esc(addr || '')}</div>
+          </div>
+        </div>
+        <h2>${esc(data.dish || 'Gericht')}</h2>
+        <div class="print-row">
+          <div><b>Preis:</b> ${euro(data.price || 0)}</div>
+          <div><b>Essenszeit:</b> ${esc(data.pickupWindow || profile.mealWindow || '')}</div>
+        </div>
+        <div style="margin-top:8px;">
+          ${badges.map(b=>`<span class="print-badge">${esc(b)}</span>`).join(' ')}
+        </div>
+      </div>
+    `;
+  }
+
+  function buildWeekCardHtml(){
+    const profile = normalizeProviderProfile(provider.profile || {});
+    const days = [];
+    for(let i=0;i<5;i++){
+      const d = new Date(); d.setDate(d.getDate()+i);
+      days.push(isoDate(d));
+    }
+    const dayBlocks = days.map(key=>{
+      const items = (week[key]||[])
+        .filter(x=>x.providerId===providerId() && x.active !== false)
+        .map(entry=>{
+          const cb = cookbook.find(c=>c.id===entry.cookbookId);
+          const name = cb?.dish || entry.dish || 'Gericht';
+          const price = cb?.price || 0;
+          return `<div class="print-row"><div>${esc(name)}</div><div>${euro(price)}</div></div>`;
+        });
+      const label = key ? fmtDay(new Date(key)) : key;
+      return `
+        <div class="print-card">
+          <h2>${esc(label)}</h2>
+          ${items.length ? items.join('') : '<div class="print-muted">Keine Gerichte geplant.</div>'}
+        </div>
+      `;
+    }).join('');
+
+    return `
+      <div class="print-card">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+          <div>
+            <h1>Wochenkarte</h1>
+            <div class="print-muted">${esc(profile.name || 'Anbieter')}</div>
+            <div class="print-muted">${esc(buildAddress(profile) || '')}</div>
+            <div class="print-muted">Essenszeit: ${esc(profile.mealWindow || '')}</div>
+          </div>
+          ${profile.logoData ? `<img src="${profile.logoData}" alt="Logo" style="width:72px;height:72px;border-radius:14px;object-fit:cover" />` : ''}
+        </div>
+      </div>
+      <div class="print-grid">
+        ${dayBlocks}
+      </div>
+      <div class="print-card" style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+        <div class="print-muted">Powered by Mittagio</div>
+        <div class="qr">QR-Code</div>
+      </div>
+    `;
+  }
+
+  function printOffer(o){
+    if(!o) return;
+    printHtml(buildOfferPrintHtml(o));
+  }
+
+  function printWeekCard(){
+    printHtml(buildWeekCardHtml());
+  }
+
   function openShareSheet(text, url=location.href){
     sharePayload = { text, url };
     const preview = document.getElementById('sharePreview');
@@ -1838,7 +1961,25 @@
       print.type='button';
       print.className='ans';
       print.textContent='Drucken';
-      print.onclick=()=>{ window.print(); };
+      print.onclick=()=>{
+        const profile = normalizeProviderProfile(provider.profile || {});
+        const offer = normalizeOffer({
+          providerId: providerId(),
+          providerName: profile.name || provider.email || 'Anbieter',
+          providerStreet: profile.street||'',
+          providerZip: profile.zip||'',
+          providerCity: profile.city||'',
+          providerLogoData: profile.logoData||'',
+          dish: name,
+          category: cb?.category || 'Vegetarisch',
+          price: Number(price||0),
+          pickupWindow: profile.mealWindow || DEFAULT_MEAL_WINDOW,
+          hasPickupCode: !!cb?.hasPickupCode,
+          dineInPossible: !!cb?.dineInPossible,
+          imageUrl: cb?.photoData || ''
+        });
+        printOffer(offer);
+      };
 
       actions.appendChild(edit);
       actions.appendChild(toggle);
@@ -2025,7 +2166,10 @@
     shareOffer(o);
   };
   document.getElementById('btnPrintOffer').onclick=()=>{
-    window.print();
+    if(!activeProviderOfferId) return;
+    const o = offers.find(x=>x.id===activeProviderOfferId);
+    if(!o) return;
+    printOffer(o);
   };
 
   document.getElementById('btnShareToday').onclick=()=>{
@@ -2038,7 +2182,7 @@
 
   document.getElementById('btnWeekBack').onclick=()=> showProviderHome();
   document.getElementById('btnWeekPdf').onclick=()=>{
-    alert('PDF-Wochenkarte (Demo): Logo, Gerichte, Preis, Essenszeit, QR-Code. Footer: Powered by Mittagio.');
+    printWeekCard();
   };
 
   // Provider ID (for demo)
