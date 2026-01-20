@@ -221,6 +221,14 @@
     .panel{background:#fff; border:1px solid var(--border); border-radius:18px; box-shadow:var(--shadow); padding:12px}
     .panel h3{margin:0 0 8px; font-size:14px}
     .section-title{font-weight:900; margin:10px 0 6px}
+    .rowlist{display:flex; flex-direction:column; gap:8px}
+    .rowbtn{
+      width:100%; border:1px solid var(--border); background:#fff; cursor:pointer;
+      border-radius:14px; padding:12px; text-align:left; font-weight:900;
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+    }
+    .rowbtn span{display:block; font-weight:600; font-size:12px; color:var(--muted); margin-top:4px}
+    .rowgroup-title{font-size:12px; font-weight:900; color:var(--muted); margin-top:6px}
     .cookbook-item{border:1px solid var(--border); border-radius:14px; padding:10px; background:#fff; box-shadow:0 6px 14px rgba(0,0,0,.06)}
     .cookbook-item + .cookbook-item{margin-top:10px}
     .cookbook-actions{display:flex; gap:8px; flex-wrap:wrap; margin-top:8px}
@@ -435,11 +443,49 @@
       <div class="panel">
         <h3>Mein Profil</h3>
         <div class="hint" id="provProfileHint"></div>
-        <button class="btn" type="button" id="btnProvSetup">Meine Daten bearbeiten</button>
-        <button class="btn secondary" type="button" id="btnBilling">Abrechnungen</button>
-        <button class="btn secondary" type="button" id="btnProvFaq">FAQ / Hilfe</button>
-        <button class="btn ghost" type="button" id="btnProvLogout">Logout</button>
       </div>
+
+      <div style="height:12px"></div>
+      <div class="panel">
+        <div class="rowlist">
+          <button class="rowbtn" type="button" id="rowProfileOverview">
+            <div>Mein Profil<span>Uebersicht</span></div>
+            <div>›</div>
+          </button>
+          <button class="rowbtn" type="button" id="btnProvSetup">
+            <div>Profil bearbeiten<span>Name, Adresse, Logo, E-Mail, Website</span></div>
+            <div>›</div>
+          </button>
+          <button class="rowbtn" type="button" id="btnBilling">
+            <div>Abrechnungen</div>
+            <div>›</div>
+          </button>
+          <button class="rowbtn" type="button" id="btnProvActions">
+            <div>Aktionen</div>
+            <div>›</div>
+          </button>
+          <button class="rowbtn" type="button" id="btnProvFaq">
+            <div>FAQs & Hilfe</div>
+            <div>›</div>
+          </button>
+          <div class="rowgroup-title">Rechtliches</div>
+          <button class="rowbtn" type="button" id="btnLegalImprint">
+            <div>Impressum</div>
+            <div>›</div>
+          </button>
+          <button class="rowbtn" type="button" id="btnLegalPrivacy">
+            <div>Datenschutz</div>
+            <div>›</div>
+          </button>
+          <button class="rowbtn" type="button" id="btnLegalTerms">
+            <div>AGB</div>
+            <div>›</div>
+          </button>
+        </div>
+      </div>
+
+      <div style="height:12px"></div>
+      <button class="btn ghost" type="button" id="btnProvLogout">Logout</button>
 
       <div id="provFaqBox" class="faq" style="display:none;">
         <details>
@@ -1320,6 +1366,26 @@
 
   document.getElementById('btnBilling').onclick=()=>{
     alert('Abrechnungen (MVP): monatliche Sammelrechnung. Dashboard + Stripe Tax bauen wir danach.');
+  };
+
+  document.getElementById('rowProfileOverview').onclick=()=>{
+    const p = normalizeProviderProfile(provider.profile || {});
+    const addr = buildAddress(p) || 'Adresse fehlt';
+    alert(`Profil-Uebersicht\n${p.name || 'Name fehlt'}\n${addr}\nEssenszeit: ${p.mealWindow || DEFAULT_MEAL_WINDOW}`);
+  };
+
+  document.getElementById('btnProvActions').onclick=()=>{
+    alert('Aktionen (Demo): Inserat teilen, Inserat deaktivieren, Gutscheinaktionen.');
+  };
+
+  document.getElementById('btnLegalImprint').onclick=()=>{
+    alert('Impressum (Demo): wird spaeter verlinkt.');
+  };
+  document.getElementById('btnLegalPrivacy').onclick=()=>{
+    alert('Datenschutz (Demo): wird spaeter verlinkt.');
+  };
+  document.getElementById('btnLegalTerms').onclick=()=>{
+    alert('AGB (Demo): wird spaeter verlinkt.');
   };
 
   // --- Provider actions ---
