@@ -1194,6 +1194,14 @@
       if(ordersFilter==='alle') return true;
       return (o.status || 'offen') === ordersFilter;
     });
+    list.sort((a,b)=>{
+      if(ordersFilter === 'alle'){
+        const sa = a.status || 'offen';
+        const sb = b.status || 'offen';
+        if(sa !== sb) return sa === 'offen' ? -1 : 1;
+      }
+      return (b.createdAt||0) - (a.createdAt||0);
+    });
     if(!list.length){
       box.textContent = 'Keine passenden Bestellungen.';
       return;
