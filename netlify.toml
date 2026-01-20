@@ -1,0 +1,18 @@
+[build]
+  publish = "."
+
+[[redirects]]
+  from = "/app"
+  to = "/app/"
+  status = 301
+
+[[redirects]]
+  from = "/app/*"
+  to = "/app/index.html"
+  status = 200
+
+# optional: fall back to root
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

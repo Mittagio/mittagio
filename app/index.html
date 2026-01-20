@@ -1,2 +1,1845 @@
-<!DOCTYPE html>
-<html><head><meta charset='utf-8'><title>Mittagio App</title><link rel='stylesheet' href='styles.css'></head><body><div id='app'>Mittagio Modular App Shell</div><script src='app.js'></script></body></html>
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Mittagio</title>
+  <meta name="theme-color" content="#F2B705" />
+  <link rel="manifest" href="manifest.json" />
+  <style>
+    :root{
+      /* Mittagio palette (can be adjusted later) */
+      --bg:#F7F6F0;
+      --card:#FFFFFF;
+      --text:#111;
+      --muted:#6b6b6b;
+      --border:#e7e1d5;
+      --shadow:0 10px 24px rgba(0,0,0,.08);
+      --shadow2:0 16px 40px rgba(0,0,0,.14);
+      --radius:18px;
+      --brand:#F2B705;   /* warm yellow */
+      --brand2:#1F9D55;  /* green */
+      --danger:#E34D4D;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      background:var(--bg);
+      color:var(--text);
+    }
+    a{color:inherit}
+
+    /* App shell */
+    .app{min-height:100%; padding-bottom:78px;}
+    .topbar{
+      position:sticky; top:0; z-index:10;
+      background:rgba(247,246,240,.92);
+      backdrop-filter:saturate(160%) blur(8px);
+      border-bottom:1px solid var(--border);
+    }
+    .topbar-inner{max-width:980px; margin:0 auto; padding:12px 14px; display:flex; align-items:center; gap:10px;}
+    .brand{
+      display:flex; align-items:center; gap:10px; min-width:0;
+    }
+    .brand-badge{
+      width:38px; height:38px; border-radius:12px;
+      background:linear-gradient(135deg,var(--brand),var(--brand2));
+      box-shadow:0 8px 18px rgba(0,0,0,.16);
+      display:flex; align-items:center; justify-content:center;
+      overflow:hidden;
+      flex:0 0 auto;
+    }
+    .brand-badge img{width:100%; height:100%; object-fit:cover; display:block}
+    .brand-name{font-weight:900; letter-spacing:.06em; font-size:18px; white-space:nowrap}
+    .spacer{flex:1}
+
+    .chiprow{
+      max-width:980px; margin:0 auto; padding:10px 14px 12px;
+      display:flex; gap:8px; overflow:auto; -webkit-overflow-scrolling:touch;
+    }
+    .chip{
+      flex:0 0 auto;
+      border:1px solid var(--border);
+      background:#fff;
+      padding:9px 12px;
+      border-radius:999px;
+      font-size:13px;
+      font-weight:800;
+      color:#222;
+      cursor:pointer;
+      white-space:nowrap;
+      box-shadow:0 6px 14px rgba(0,0,0,.06);
+    }
+    .chip.active{border-color:rgba(31,157,85,.35); box-shadow:0 10px 22px rgba(31,157,85,.12)}
+
+    .dayrow{
+      max-width:980px; margin:0 auto; padding:0 14px 12px;
+      display:flex; gap:8px; overflow:auto; -webkit-overflow-scrolling:touch;
+    }
+    .day{
+      flex:0 0 auto;
+      border:none;
+      background:#fff;
+      padding:10px 12px;
+      border-radius:999px;
+      font-size:13px;
+      font-weight:900;
+      cursor:pointer;
+      box-shadow:0 6px 14px rgba(0,0,0,.06);
+      border:1px solid var(--border);
+    }
+    .day.active{background:rgba(242,183,5,.14); border-color:rgba(242,183,5,.55)}
+
+    main{max-width:980px; margin:0 auto; padding:14px}
+    .grid{display:grid; grid-template-columns:1fr; gap:12px}
+    @media (min-width:820px){ .grid{grid-template-columns:1fr 1fr} }
+
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      overflow:hidden;
+      box-shadow:var(--shadow);
+      cursor:pointer;
+      position:relative;
+    }
+    .img{height:190px; background:#eee; position:relative}
+    .img img{width:100%; height:100%; object-fit:cover; display:block}
+
+    .provider-logo{
+      display:flex; align-items:center; gap:8px;
+      padding:10px 12px 0;
+    }
+    .plogo{
+      width:28px; height:28px; border-radius:8px;
+      background:#f2f2f2;
+      overflow:hidden;
+      border:1px solid var(--border);
+      flex:0 0 auto;
+    }
+    .plogo img{width:100%; height:100%; object-fit:cover; display:block}
+    .pname{font-size:13px; font-weight:900; color:#222; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+
+    .body{padding:10px 12px 12px}
+    .title{font-weight:950; font-size:16px; margin:0}
+    .sub{margin:3px 0 0; color:#444; font-size:13px}
+
+    .meta{display:flex; justify-content:space-between; align-items:flex-end; gap:12px; margin-top:10px}
+    .price{font-weight:950; font-size:16px; color:#0f5c4c}
+    .right{ text-align:right; font-size:12px; color:var(--muted); line-height:1.25 }
+    .tag{display:inline-block; margin-top:6px; padding:4px 8px; border-radius:999px; font-size:12px; font-weight:900; background:rgba(31,157,85,.12)}
+
+    .badge{
+      position:absolute; top:12px; left:12px;
+      background:rgba(17,17,17,.82);
+      color:#fff;
+      font-size:12px; font-weight:900;
+      padding:6px 10px;
+      border-radius:999px;
+      box-shadow:0 10px 22px rgba(0,0,0,.18);
+    }
+    .badge.code{left:auto; right:12px; background:rgba(31,157,85,.9)}
+
+    .heart{
+      position:absolute; top:12px; right:12px;
+      width:36px; height:36px; border-radius:999px;
+      border:none; cursor:pointer;
+      background:rgba(255,255,255,.92);
+      box-shadow:0 10px 22px rgba(0,0,0,.16);
+      font-size:16px;
+      color:#bbb;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .heart.on{color:var(--danger)}
+
+    /* Bottom nav */
+    .bottom{
+      position:fixed; left:0; right:0; bottom:0; z-index:20;
+      height:72px; padding-bottom:env(safe-area-inset-bottom);
+      background:#fff; border-top:1px solid var(--border);
+      display:flex;
+    }
+    .navbtn{
+      flex:1; border:none; background:none; cursor:pointer;
+      display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px;
+      color:#777; font-size:11px;
+    }
+    .navbtn .ico{font-size:18px}
+    .navbtn.active{color:#111; font-weight:900}
+
+    /* Views */
+    .view{display:none}
+    .view.active{display:block}
+
+    /* Sheets / modals */
+    .backdrop{position:fixed; inset:0; background:rgba(0,0,0,.38); opacity:0; pointer-events:none; transition:opacity .2s; z-index:30}
+    .backdrop.active{opacity:1; pointer-events:auto}
+    .sheet{
+      position:fixed; left:0; right:0; bottom:-120%; z-index:31;
+      background:#fff; border-radius:22px 22px 0 0;
+      box-shadow:var(--shadow2);
+      transition:bottom .28s ease;
+      max-height:92vh; overflow:auto;
+    }
+    .sheet.active{bottom:0}
+    .handle{width:46px; height:5px; background:#ddd; border-radius:999px; margin:10px auto 6px}
+    .sheet-img{height:260px; background:#eee}
+    .sheet-img img{width:100%; height:100%; object-fit:cover; display:block}
+    .sheet-body{padding:12px 14px 18px}
+    .row{display:flex; justify-content:space-between; align-items:center; gap:10px; padding:10px 0; border-top:1px solid #eee; font-size:14px}
+    .btn{
+      width:100%; border:none; cursor:pointer;
+      border-radius:999px; padding:14px 14px; font-weight:950; font-size:15px;
+      background:var(--brand); color:#111;
+      margin-top:10px;
+    }
+    .btn.secondary{background:#fff; border:1px solid var(--border)}
+    .btn.ghost{background:#f8f7f3; border:1px solid var(--border)}
+    .mini{font-size:12px; color:var(--muted); margin-top:8px; line-height:1.25}
+
+    /* Profile cards */
+    .panel{background:#fff; border:1px solid var(--border); border-radius:18px; box-shadow:var(--shadow); padding:12px}
+    .panel h3{margin:0 0 8px; font-size:14px}
+    .two{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+    .bigbtn{
+      border:none; cursor:pointer;
+      border-radius:18px; padding:14px;
+      background:linear-gradient(135deg,rgba(242,183,5,.18),rgba(31,157,85,.12));
+      border:1px solid var(--border);
+      text-align:left;
+      font-weight:950;
+    }
+    .bigbtn span{display:block; font-weight:700; font-size:12px; color:var(--muted); margin-top:6px}
+
+    /* Provider app header */
+    .prov-pill{
+      display:inline-flex; align-items:center; gap:8px;
+      background:#fff; border:1px solid var(--border);
+      padding:9px 12px; border-radius:999px;
+      font-weight:950; font-size:13px;
+      box-shadow:0 6px 14px rgba(0,0,0,.06);
+    }
+
+    /* Wizard */
+    .wizard{
+      background:#fff; border:1px solid var(--border); border-radius:18px; box-shadow:var(--shadow);
+      padding:12px;
+    }
+    .w-top{display:flex; align-items:center; justify-content:space-between; gap:10px}
+    .w-title{font-weight:950}
+    .w-step{font-size:12px; color:var(--muted)}
+    .w-q{margin:12px 0 10px; font-size:18px; font-weight:950; line-height:1.2}
+    .w-help{margin:0 0 10px; color:var(--muted); font-size:13px}
+    .answers{display:flex; flex-wrap:wrap; gap:8px}
+    .ans{
+      border:1px solid var(--border);
+      background:#fff;
+      padding:10px 12px;
+      border-radius:999px;
+      font-weight:950;
+      cursor:pointer;
+      box-shadow:0 6px 14px rgba(0,0,0,.06);
+    }
+    .ans.on{border-color:rgba(31,157,85,.4); background:rgba(31,157,85,.10)}
+    .field{width:100%; padding:12px 12px; border-radius:14px; border:1px solid var(--border); font-size:16px; background:#fbfaf7}
+    .w-actions{display:flex; gap:10px; margin-top:12px}
+    .w-actions button{flex:1}
+
+    /* FAQ accordion */
+    .faq{margin-top:12px}
+    details{background:#fff;border:1px solid var(--border);border-radius:14px;box-shadow:0 6px 14px rgba(0,0,0,.06);padding:10px 12px}
+    details+details{margin-top:10px}
+    summary{cursor:pointer;font-weight:950}
+    details p{margin:8px 0 0;color:var(--muted);font-size:13px;line-height:1.3}
+
+    /* helper */
+    .hint{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.25}
+  </style>
+</head>
+<body>
+<div class="app" id="app">
+  <div class="topbar" id="topbar">
+    <div class="topbar-inner">
+      <div class="brand" role="button" aria-label="Mittagio">
+        <div class="brand-badge"><img src="assets/mittagio-logo.png" alt="Mittagio" onerror="this.style.display='none'" /></div>
+        <div class="brand-name">MITTAGIO</div>
+      </div>
+      <div class="spacer"></div>
+      <div id="modePill" class="prov-pill" style="display:none;">🧑‍🍳 Anbieter-Modus</div>
+    </div>
+
+    <!-- Customer discover filter rows (hidden in provider mode) -->
+    <div id="discoverFilters">
+      <div class="chiprow" id="catChips"></div>
+      <div class="dayrow" id="dayChips"></div>
+    </div>
+  </div>
+
+  <main>
+    <!-- CUSTOMER: Discover -->
+    <section class="view active" id="v-discover">
+      <div class="grid" id="offerGrid"></div>
+      <p class="hint" id="emptyOffers" style="display:none;">Noch keine Angebote. (Demo: Als Anbieter ein Inserat erstellen.)</p>
+    </section>
+
+    <!-- CUSTOMER: Favorites -->
+    <section class="view" id="v-fav">
+      <div class="grid" id="favGrid"></div>
+      <p class="hint" id="emptyFav" style="display:none;">Noch keine Favoriten. Tippe auf ❤️.</p>
+    </section>
+
+    <!-- CUSTOMER: Cart -->
+    <section class="view" id="v-cart">
+      <div class="panel">
+        <h3>Warenkorb</h3>
+        <div id="cartBox" class="hint">Noch leer.</div>
+        <button class="btn" id="btnCheckout" type="button" style="display:none;">Zur Kasse</button>
+        <div class="mini" id="cartNote" style="display:none;">
+          MVP: Ein Warenkorb nur für <b>einen Anbieter</b>. (Mehrere Gerichte möglich.)
+        </div>
+      </div>
+    </section>
+
+    <!-- CUSTOMER: Profile -->
+    <section class="view" id="v-profile">
+      <div class="panel">
+        <h3>Profil</h3>
+        <div class="two" style="margin-top:10px;">
+          <button class="bigbtn" type="button" id="btnCustomerLogin">Kunde anmelden<span>Google / Apple / E-Mail (Demo)</span></button>
+          <button class="bigbtn" type="button" id="btnProviderEntry">Anbieter Login<span>Zum Anbieterbereich</span></button>
+        </div>
+        <div style="margin-top:10px;" class="hint" id="customerStatus">Nicht angemeldet (Demo).</div>
+      </div>
+
+      <div class="faq">
+        <details>
+          <summary>Wie funktioniert Mittagio?</summary>
+          <p>Entdecken → Gericht auswählen → in den Warenkorb → bezahlen → Abholcode zeigen.</p>
+        </details>
+        <details>
+          <summary>Kann ich für mehrere Personen bestellen?</summary>
+          <p>Ja. Du kannst mehrere Gerichte in einem Vorgang bestellen (Abholcode pro Vorgang).</p>
+        </details>
+      </div>
+    </section>
+
+    <!-- PROVIDER: Login page -->
+    <section class="view" id="v-provider-login">
+      <div class="panel">
+        <h3>Anbieter Login</h3>
+        <input class="field" id="provEmail" type="email" placeholder="E-Mail" autocomplete="email" />
+        <div style="height:10px"></div>
+        <input class="field" id="provPass" type="password" placeholder="Passwort" autocomplete="current-password" />
+        <button class="btn" type="button" id="btnProvLogin">Einloggen</button>
+        <button class="btn secondary" type="button" id="btnProvBack">Zurück</button>
+        <p class="hint">Demo: beliebige E-Mail/Passwort → du bist drin. (Später Firebase Auth.)</p>
+      </div>
+    </section>
+
+    <!-- PROVIDER APP -->
+    <section class="view" id="v-provider-home">
+      <div class="panel">
+        <h3>Home</h3>
+        <div class="hint" id="provHomeHello"></div>
+        <button class="btn" type="button" id="btnNewListing">+ Neues Inserat</button>
+        <button class="btn ghost" type="button" id="btnShareToday" style="display:none;">Heutige Inserate teilen</button>
+      </div>
+
+      <div style="height:12px"></div>
+      <div class="panel">
+        <h3>Meine Inserate heute</h3>
+        <div id="provToday" class="hint">Noch keine.</div>
+      </div>
+
+      <div style="height:12px"></div>
+      <div class="panel">
+        <h3>Wochenplan (Vorschau)</h3>
+        <div id="provWeekPreview" class="hint">Noch leer.</div>
+      </div>
+    </section>
+
+    <section class="view" id="v-provider-listings">
+      <div class="panel">
+        <h3>Meine Inserate</h3>
+        <div id="provListings" class="hint">Noch keine.</div>
+      </div>
+    </section>
+
+    <section class="view" id="v-provider-cookbook">
+      <div class="panel">
+        <h3>Mein Kochbuch</h3>
+        <button class="btn" type="button" id="btnCookbookAdd">+ Gericht hinzufügen</button>
+        <div style="height:10px"></div>
+        <div id="cookbookList" class="hint">Noch leer.</div>
+      </div>
+    </section>
+
+    <section class="view" id="v-provider-profile">
+      <div class="panel">
+        <h3>Mein Profil</h3>
+        <div class="hint" id="provProfileHint"></div>
+        <button class="btn" type="button" id="btnProvSetup">Meine Daten bearbeiten</button>
+        <button class="btn secondary" type="button" id="btnBilling">Abrechnungen</button>
+        <button class="btn secondary" type="button" id="btnProvFaq">FAQ / Hilfe</button>
+        <button class="btn ghost" type="button" id="btnProvLogout">Logout</button>
+      </div>
+
+      <div id="provFaqBox" class="faq" style="display:none;">
+        <details>
+          <summary>Kein Abo / keine Provision?</summary>
+          <p>Ja. Fixpreis pro Inserat (aktuell 4,99 €). Keine Mindestlaufzeit.</p>
+        </details>
+        <details>
+          <summary>Was kostet Abholcode?</summary>
+          <p>49 Cent pro bezahltem Vorgang. (Auch wenn der Kunde mehrere Gerichte in einem Vorgang holt.)</p>
+        </details>
+        <details>
+          <summary>Wie spare ich Zeit?</summary>
+          <p>Speichere Gerichte im Kochbuch und veröffentliche sie mit 2–3 Taps erneut.</p>
+        </details>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- CUSTOMER bottom nav -->
+  <nav class="bottom" id="customerNav">
+    <button class="navbtn active" data-go="discover"><div class="ico">🍽️</div><div>Entdecken</div></button>
+    <button class="navbtn" data-go="fav"><div class="ico">❤️</div><div>Favoriten</div></button>
+    <button class="navbtn" data-go="cart"><div class="ico">🛒</div><div>Warenkorb</div></button>
+    <button class="navbtn" data-go="profile"><div class="ico">👤</div><div>Profil</div></button>
+  </nav>
+
+  <!-- PROVIDER bottom nav -->
+  <nav class="bottom" id="providerNav" style="display:none;">
+    <button class="navbtn active" data-pgo="provider-home"><div class="ico">🏠</div><div>Home</div></button>
+    <button class="navbtn" data-pgo="provider-listings"><div class="ico">🧾</div><div>Inserate</div></button>
+    <button class="navbtn" data-pgo="provider-cookbook"><div class="ico">📚</div><div>Kochbuch</div></button>
+    <button class="navbtn" data-pgo="provider-profile"><div class="ico">⚙️</div><div>Profil</div></button>
+  </nav>
+</div>
+
+<!-- Offer sheet -->
+<div class="backdrop" id="bd" onclick="closeSheet()"></div>
+<div class="sheet" id="sheet">
+  <div class="handle"></div>
+  <div class="sheet-img"><img id="sImg" alt="" /></div>
+  <div class="sheet-body">
+    <div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start;">
+      <div>
+        <div style="font-weight:950;font-size:18px" id="sDish"></div>
+        <div style="color:#444;font-size:13px;margin-top:4px" id="sProvider"></div>
+      </div>
+      <div style="text-align:right">
+        <div class="price" id="sPrice"></div>
+        <div class="tag" id="sCat" style="margin-top:8px"></div>
+      </div>
+    </div>
+
+    <div class="row"><span>Abholfenster</span><b id="sWindow"></b></div>
+    <div class="row"><span>Adresse</span><a id="sAddr" href="#" target="_blank" rel="noopener">öffnen</a></div>
+
+    <div id="sAllergensWrap" style="display:none">
+      <div class="row"><span>Allergene</span><span id="sAllergens" style="text-align:right;color:var(--muted)"></span></div>
+    </div>
+    <div id="sExtrasWrap" style="display:none">
+      <div class="row"><span>Extras</span><span id="sExtras" style="text-align:right;color:var(--muted)"></span></div>
+    </div>
+    <div id="sReuseWrap" style="display:none">
+      <div class="row"><span>Mehrweg / Pfand</span><span id="sReuse" style="text-align:right;color:var(--muted)"></span></div>
+    </div>
+
+    <button class="btn" type="button" id="btnAddCart">In den Warenkorb</button>
+    <button class="btn secondary" type="button" id="btnShare">Teilen: „Das zum Mittagio?“</button>
+    <button class="btn ghost" type="button" id="btnFav">❤️ Favorit</button>
+    <div class="mini" id="sCodeNote"></div>
+  </div>
+</div>
+
+<!-- Provider Wizard sheet (single reusable) -->
+<div class="backdrop" id="wbd" onclick="closeWizard()"></div>
+<div class="sheet" id="wizard">
+  <div class="handle"></div>
+  <div class="sheet-body">
+    <div class="wizard" id="wBox">
+      <div class="w-top">
+        <div class="w-title" id="wTitle">Setup</div>
+        <div class="w-step" id="wStep">1/6</div>
+      </div>
+      <div class="w-q" id="wQ">…</div>
+      <p class="w-help" id="wHelp"></p>
+      <div id="wContent"></div>
+      <div class="w-actions">
+        <button class="btn secondary" type="button" id="wBack">Zurück</button>
+        <button class="btn" type="button" id="wNext">Weiter</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // --- Storage keys ---
+  const LS = {
+    offers: 'mittagio_offers_v1',
+    favs: 'mittagio_favs_v1',
+    cart: 'mittagio_cart_v1',
+    customer: 'mittagio_customer_v1',
+    provider: 'mittagio_provider_v1',
+    cookbook: 'mittagio_cookbook_v1',
+    week: 'mittagio_week_v1',
+    mode: 'mittagio_mode_v1'
+  };
+  const load = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } };
+  const save = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+
+  // --- State ---
+  let mode = load(LS.mode, 'customer'); // 'customer' | 'provider'
+  let offers = load(LS.offers, []);
+  let favs = new Set(load(LS.favs, []));
+  let cart = load(LS.cart, null); // {providerId, items:[{offerId, qty}]} or null
+  let customer = load(LS.customer, { loggedIn:false, name:null });
+  let provider = load(LS.provider, { loggedIn:false, email:null, profile:{ name:'', street:'', zip:'', city:'', logoData:'' } });
+  let cookbook = load(LS.cookbook, []); // [{id, dish, category, price, allergens[], extras?, reuse? , photoData?}]
+  let week = load(LS.week, {}); // { 'YYYY-MM-DD': [cookbookId,...] }
+
+  const CATEGORIES = ['In meiner Nähe','Vegan','Vegetarisch','Mit Fleisch'];
+  const CAT_MAP = {
+    'Vegan':'Vegan',
+    'Vegetarisch':'Vegetarisch',
+    'Mit Fleisch':'Fleisch'
+  };
+
+  // Day slider: today..+6
+  function fmtDay(d){
+    const wd = ['So','Mo','Di','Mi','Do','Fr','Sa'][d.getDay()];
+    return `${wd} ${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}`;
+  }
+  function isoDate(d){ return d.toISOString().slice(0,10); }
+
+  let activeCat = 'In meiner Nähe';
+  let activeDay = isoDate(new Date());
+
+  // --- Seed demo offers if empty ---
+  function seed(){
+    if(offers.length) return;
+    offers = [
+      // Demo: 3 Anbieter × 4 Gerichte
+      // Metzgerei Maier (Schorndorf) — Vorab-Bezahlung aktiv
+      {id: uid(), providerId: 'p_maier', providerName: 'Metzgerei Maier', address: 'Musterstraße 12, 73614 Schorndorf', title: 'Schnitzel mit Pommes', price: 7.90, time: '11:30 – 14:00', diet: 'Fleisch', day: '2026-01-18', img: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true},
+      {id: uid(), providerId: 'p_maier', providerName: 'Metzgerei Maier', address: 'Musterstraße 12, 73614 Schorndorf', title: 'Currywurst mit Brötchen', price: 5.90, time: '11:30 – 14:00', diet: 'Fleisch', day: '2026-01-18', img: 'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true},
+      {id: uid(), providerId: 'p_maier', providerName: 'Metzgerei Maier', address: 'Musterstraße 12, 73614 Schorndorf', title: 'Leberkäse mit Kartoffelsalat', price: 6.50, time: '11:30 – 14:00', diet: 'Fleisch', day: '2026-01-18', img: 'https://images.unsplash.com/photo-1604908177522-937be1a2d0a0?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true},
+      {id: uid(), providerId: 'p_maier', providerName: 'Metzgerei Maier', address: 'Musterstraße 12, 73614 Schorndorf', title: 'Käsespätzle', price: 6.90, time: '11:30 – 14:00', diet: 'Vegetarisch', day: '2026-01-18', img: 'https://images.unsplash.com/photo-1604908812253-9b998f4949b3?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true},
+
+      // Bäckerei & Bistro Sonneneck (Stuttgart) — Vorab-Bezahlung NICHT aktiv
+      {id: uid(), providerId: 'p_sonn', providerName: 'Bäckerei Sonneneck', address: 'Hauptstraße 8, 70173 Stuttgart', title: 'Pasta-Bowl', price: 7.20, time: '11:00 – 13:30', diet: 'Vegetarisch', day: '2026-01-18', img: 'https://images.unsplash.com/photo-1523986371872-9d3ba2e2f642?auto=format&fit=crop&w=1200&q=60', hasPickupCode: false},
+      {id: uid(), providerId: 'p_sonn', providerName: 'Bäckerei Sonneneck', address: 'Hauptstraße 8, 70173 Stuttgart', title: 'Hähnchen-Sandwich', price: 5.40, time: '11:00 – 13:30', diet: 'Fleisch', day: '2026-01-18', img: 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?auto=format&fit=crop&w=1200&q=60', hasPickupCode: false},
+      {id: uid(), providerId: 'p_sonn', providerName: 'Bäckerei Sonneneck', address: 'Hauptstraße 8, 70173 Stuttgart', title: 'Veggie Bowl', price: 6.80, time: '11:00 – 13:30', diet: 'Vegan', day: '2026-01-18', img: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1200&q=60', hasPickupCode: false},
+      {id: uid(), providerId: 'p_sonn', providerName: 'Bäckerei Sonneneck', address: 'Hauptstraße 8, 70173 Stuttgart', title: 'Tomatensuppe mit Brot', price: 4.90, time: '11:00 – 13:30', diet: 'Vegetarisch', day: '2026-01-18', img: 'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=1200&q=60', hasPickupCode: false},
+
+      // Foodtruck „Grüne Pause“ (Esslingen) — Vorab-Bezahlung aktiv
+      {id: uid(), providerId: 'p_green', providerName: 'Foodtruck Grüne Pause', address: 'Marktplatz 1, 73728 Esslingen', title: 'Veggie-Burger mit Süßkartoffeln', price: 8.40, time: '12:00 – 14:30', diet: 'Vegan', day: '2026-01-18', img: 'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true},
+      {id: uid(), providerId: 'p_green', providerName: 'Foodtruck Grüne Pause', address: 'Marktplatz 1, 73728 Esslingen', title: 'Falafel-Teller mit Hummus', price: 7.90, time: '12:00 – 14:30', diet: 'Vegan', day: '2026-01-18', img: 'https://images.unsplash.com/photo-1613408181925-78e9f9a49f3f?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true},
+      {id: uid(), providerId: 'p_green', providerName: 'Foodtruck Grüne Pause', address: 'Marktplatz 1, 73728 Esslingen', title: 'Pasta mit Gemüse & Pesto', price: 7.50, time: '12:00 – 14:30', diet: 'Vegetarisch', day: '2026-01-18', img: 'https://images.unsplash.com/photo-1523986371872-9d3ba2e2f642?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true},
+      {id: uid(), providerId: 'p_green', providerName: 'Foodtruck Grüne Pause', address: 'Marktplatz 1, 73728 Esslingen', title: 'Ofenkartoffel mit Kräuterquark', price: 6.90, time: '12:00 – 14:30', diet: 'Vegetarisch', day: '2026-01-18', img: 'https://images.unsplash.com/photo-1518779578993-ec3579fee39f?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true},
+
+      // Ein paar Angebote für morgen/übermorgen (damit die Datums-Tabs nicht leer wirken)
+      {id: uid(), providerId: 'p_maier', providerName: 'Metzgerei Maier', address: 'Musterstraße 12, 73614 Schorndorf', title: 'Gulasch mit Spätzle', price: 8.20, time: '11:30 – 14:00', diet: 'Fleisch', day: '2026-01-19', img: 'https://images.unsplash.com/photo-1604908177522-937be1a2d0a0?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true},
+      {id: uid(), providerId: 'p_sonn', providerName: 'Bäckerei Sonneneck', address: 'Hauptstraße 8, 70173 Stuttgart', title: 'Kürbissuppe', price: 5.20, time: '11:00 – 13:30', diet: 'Vegan', day: '2026-01-19', img: 'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=1200&q=60', hasPickupCode: false},
+      {id: uid(), providerId: 'p_green', providerName: 'Foodtruck Grüne Pause', address: 'Marktplatz 1, 73728 Esslingen', title: 'Wrap (Vegan)', price: 7.10, time: '12:00 – 14:30', diet: 'Vegan', day: '2026-01-20', img: 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true},
+    ];
+    save(LS.offers, offers);
+  }
+
+  // --- UI helpers ---
+  function euro(n){
+    const v = Number(n||0);
+    return v.toFixed(2).replace('.',',') + ' €';
+  }
+  function cryptoId(){
+    return 'id_' + Math.random().toString(16).slice(2) + '_' + Date.now().toString(16);
+  }
+  function esc(s){
+    return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#039;'}[c]));
+  }
+
+  // --- Navigation ---
+  const views = {
+    discover:'v-discover', fav:'v-fav', cart:'v-cart', profile:'v-profile',
+    providerLogin:'v-provider-login',
+    providerHome:'v-provider-home', providerListings:'v-provider-listings', providerCookbook:'v-provider-cookbook', providerProfile:'v-provider-profile'
+  };
+
+  function setCustomerNavActive(go){
+    document.querySelectorAll('#customerNav .navbtn').forEach(b=>b.classList.toggle('active', b.dataset.go===go));
+  }
+  function setProviderNavActive(go){
+    document.querySelectorAll('#providerNav .navbtn').forEach(b=>b.classList.toggle('active', b.dataset.pgo===go));
+  }
+
+  function showView(id){
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  function setMode(next){
+    mode = next;
+    save(LS.mode, mode);
+
+    const isProv = mode==='provider';
+    document.getElementById('customerNav').style.display = isProv ? 'none' : 'flex';
+    document.getElementById('providerNav').style.display = isProv ? 'flex' : 'none';
+    document.getElementById('discoverFilters').style.display = isProv ? 'none' : 'block';
+    document.getElementById('modePill').style.display = isProv ? 'inline-flex' : 'none';
+
+    if(isProv){
+      // provider must be logged in
+      if(!provider.loggedIn){
+        showView(views.providerLogin);
+      } else {
+        showProviderHome();
+      }
+    } else {
+      showDiscover();
+    }
+  }
+
+  // --- Customer views ---
+  function showDiscover(){
+    setCustomerNavActive('discover');
+    showView(views.discover);
+    renderDiscover();
+  }
+  function showFav(){
+    setCustomerNavActive('fav');
+    showView(views.fav);
+    renderFavorites();
+  }
+  function showCart(){
+    setCustomerNavActive('cart');
+    showView(views.cart);
+    renderCart();
+  }
+  function showProfile(){
+    setCustomerNavActive('profile');
+    showView(views.profile);
+    document.getElementById('customerStatus').textContent = customer.loggedIn ? `Angemeldet als ${customer.name || 'Kunde'}` : 'Nicht angemeldet (Demo).';
+  }
+
+  // --- Provider views ---
+  function showProviderHome(){
+    setProviderNavActive('provider-home');
+    showView(views.providerHome);
+    renderProviderHome();
+  }
+  function showProviderListings(){
+    setProviderNavActive('provider-listings');
+    showView(views.providerListings);
+    renderProviderListings();
+  }
+  function showProviderCookbook(){
+    setProviderNavActive('provider-cookbook');
+    showView(views.providerCookbook);
+    renderCookbook();
+  }
+  function showProviderProfile(){
+    setProviderNavActive('provider-profile');
+    showView(views.providerProfile);
+    renderProviderProfile();
+  }
+
+  // --- Chips render ---
+  function renderChips(){
+    const catEl = document.getElementById('catChips');
+    catEl.innerHTML='';
+    CATEGORIES.forEach(c=>{
+      const b=document.createElement('button');
+      b.className='chip'+(activeCat===c?' active':'');
+      b.textContent=c;
+      b.onclick=()=>{ activeCat=c; renderChips(); renderDiscover(); };
+      catEl.appendChild(b);
+    });
+
+    const dayEl = document.getElementById('dayChips');
+    dayEl.innerHTML='';
+    for(let i=0;i<7;i++){
+      const d=new Date(); d.setDate(d.getDate()+i);
+      const key=isoDate(d);
+      const b=document.createElement('button');
+      b.className='day'+(activeDay===key?' active':'');
+      b.textContent = i===0 ? 'Heute' : (i===1 ? 'Morgen' : fmtDay(d));
+      b.onclick=()=>{ activeDay=key; renderChips(); renderDiscover(); };
+      dayEl.appendChild(b);
+    }
+  }
+
+  // --- Discover render ---
+  function renderDiscover(){
+    const grid=document.getElementById('offerGrid');
+    const empty=document.getElementById('emptyOffers');
+
+    let list = offers.filter(o => o.day === activeDay);
+
+    if(activeCat !== 'In meiner Nähe'){
+      const cat = CAT_MAP[activeCat];
+      list = list.filter(o => (o.category||'') === cat);
+    }
+
+    grid.innerHTML='';
+    empty.style.display = list.length ? 'none' : 'block';
+
+    list.forEach(o=> grid.appendChild(offerCard(o)));
+  }
+
+  function offerCard(o){
+    const card=document.createElement('div');
+    card.className='card';
+    card.onclick=()=>openOffer(o.id);
+
+    const img=document.createElement('div');
+    img.className='img';
+    img.innerHTML = `
+      <img alt="${esc(o.dish)}" src="${esc(o.imageUrl||'')}" />
+      <div class="badge">${esc(o.pickupWindow||'Abholfenster')}</div>
+      ${o.hasPickupCode?'<div class="badge code">Abholcode</div>':''}
+    `;
+
+    const heart=document.createElement('button');
+    heart.className='heart'+(favs.has(o.id)?' on':'');
+    heart.type='button';
+    heart.textContent = favs.has(o.id)?'❤':'♡';
+    heart.onclick=(e)=>{ e.stopPropagation(); toggleFav(o.id); };
+
+    const plogo = o.providerLogoData ? `<img src="${o.providerLogoData}" alt="Logo" />` : `<img src="assets/provider-placeholder.png" alt="Logo" />`;
+
+    const providerRow=document.createElement('div');
+    providerRow.className='provider-logo';
+    providerRow.innerHTML = `
+      <div class="plogo">${plogo}</div>
+      <div class="pname">${esc(o.providerName||'Anbieter')}</div>
+    `;
+
+    const body=document.createElement('div');
+    body.className='body';
+    body.innerHTML = `
+      <p class="title">${esc(o.dish||'')}</p>
+      <p class="sub">${esc((o.providerStreet||'') + ', ' + (o.providerZip||'') + ' ' + (o.providerCity||''))}</p>
+      <div class="meta">
+        <div class="price">${euro(o.price)}</div>
+        <div class="right">
+          <div>⏱️ ${esc(o.pickupWindow||'')}</div>
+          <div class="tag">${esc(o.category||'')}</div>
+        </div>
+      </div>
+    `;
+
+    card.appendChild(img);
+    card.appendChild(heart);
+    card.appendChild(providerRow);
+    card.appendChild(body);
+    return card;
+  }
+
+  function toggleFav(id){
+    if(favs.has(id)) favs.delete(id); else favs.add(id);
+    save(LS.favs, Array.from(favs));
+    renderDiscover();
+    renderFavorites();
+    updateSheetFav();
+  }
+
+  function renderFavorites(){
+    const grid=document.getElementById('favGrid');
+    const empty=document.getElementById('emptyFav');
+    const list = offers.filter(o => favs.has(o.id));
+    grid.innerHTML='';
+    empty.style.display = list.length ? 'none' : 'block';
+    list.forEach(o=>grid.appendChild(offerCard(o)));
+  }
+
+  // --- Offer sheet ---
+  let activeOfferId=null;
+  function openOffer(id){
+    const o = offers.find(x=>x.id===id);
+    if(!o) return;
+    activeOfferId=id;
+
+    document.getElementById('sImg').src = o.imageUrl || '';
+    document.getElementById('sDish').textContent = o.dish || '';
+    document.getElementById('sProvider').textContent = o.providerName || '';
+    document.getElementById('sPrice').textContent = euro(o.price);
+    document.getElementById('sCat').textContent = o.category || '';
+    document.getElementById('sWindow').textContent = o.pickupWindow || '';
+
+    const addr = `${o.providerStreet||''}, ${o.providerZip||''} ${o.providerCity||''}`.trim();
+    const maps = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr)}`;
+    const a = document.getElementById('sAddr');
+    a.textContent = addr || '–';
+    a.href = maps;
+
+    // Allergens
+    const aw = document.getElementById('sAllergensWrap');
+    if(o.allergens && o.allergens.length){
+      aw.style.display='block';
+      document.getElementById('sAllergens').textContent = o.allergens.join(', ');
+    } else aw.style.display='none';
+
+    // Extras
+    const ew = document.getElementById('sExtrasWrap');
+    if(o.extras && o.extras.length){
+      ew.style.display='block';
+      document.getElementById('sExtras').textContent = o.extras.map(e=>`${e.name} (+${euro(e.price)})`).join(' · ');
+    } else ew.style.display='none';
+
+    // Reuse
+    const rw = document.getElementById('sReuseWrap');
+    if(o.reuse && o.reuse.enabled){
+      rw.style.display='block';
+      document.getElementById('sReuse').textContent = `Pfand ${euro(o.reuse.deposit)}`;
+    } else rw.style.display='none';
+
+    document.getElementById('sCodeNote').innerHTML = o.hasPickupCode
+      ? '✅ Dieses Angebot unterstützt <b>Abholcode</b> (schnell & ohne Chaos).' 
+      : 'ℹ️ Dieses Angebot ist nur Inserat (ohne Abholcode).';
+
+    updateSheetFav();
+
+    document.getElementById('bd').classList.add('active');
+    document.getElementById('sheet').classList.add('active');
+  }
+
+  function updateSheetFav(){
+    const b = document.getElementById('btnFav');
+    if(!activeOfferId){ b.textContent='❤️ Favorit'; return; }
+    b.textContent = favs.has(activeOfferId) ? '❤️ Aus Favoriten entfernen' : '❤️ Als Favorit speichern';
+  }
+
+  function closeSheet(){
+    document.getElementById('bd').classList.remove('active');
+    document.getElementById('sheet').classList.remove('active');
+  }
+
+  document.getElementById('btnFav').onclick=()=>{ if(activeOfferId) toggleFav(activeOfferId); };
+  document.getElementById('btnShare').onclick=()=>{
+    const o = offers.find(x=>x.id===activeOfferId);
+    if(!o) return;
+    const txt = `Das zum Mittagio? 🍽️\n${o.dish} · ${euro(o.price)}\nAbholfenster: ${o.pickupWindow}\n${o.providerName}`;
+    if(navigator.share){ navigator.share({title:'Mittagio', text:txt, url:location.href}).catch(()=>{}); }
+    else prompt('Kopieren & teilen:', txt + '\n' + location.href);
+  };
+
+  document.getElementById('btnAddCart').onclick=()=>{
+    const o = offers.find(x=>x.id===activeOfferId);
+    if(!o) return;
+    // cart: one provider only
+    if(cart && cart.providerId !== o.providerId){
+      alert('MVP: Warenkorb nur für einen Anbieter. Bitte zuerst Warenkorb leeren.');
+      return;
+    }
+    if(!cart){ cart = { providerId:o.providerId, providerName:o.providerName, items:[] }; }
+    const idx = cart.items.findIndex(i=>i.offerId===o.id);
+    if(idx>=0) cart.items[idx].qty += 1; else cart.items.push({offerId:o.id, qty:1});
+    save(LS.cart, cart);
+    closeSheet();
+    showCart();
+  };
+
+  // --- Cart ---
+  function renderCart(){
+    const box=document.getElementById('cartBox');
+    const btn=document.getElementById('btnCheckout');
+    const note=document.getElementById('cartNote');
+
+    if(!cart || !cart.items.length){
+      box.textContent='Noch leer.';
+      btn.style.display='none';
+      note.style.display='none';
+      return;
+    }
+
+    let total=0;
+    const lines = cart.items.map(it=>{
+      const o = offers.find(x=>x.id===it.offerId);
+      if(!o) return '';
+      total += Number(o.price||0) * it.qty;
+      return `• ${o.dish} × ${it.qty} = ${euro(Number(o.price||0)*it.qty)}`;
+    }).filter(Boolean);
+
+    box.innerHTML = `<b>${esc(cart.providerName)}</b><br>${lines.join('<br>')}<br><br><b>Gesamt:</b> ${euro(total)}<br><br><a href="#" id="clearCart">Warenkorb leeren</a>`;
+
+    document.getElementById('clearCart').onclick=(e)=>{ e.preventDefault(); cart=null; save(LS.cart, cart); renderCart(); };
+
+    btn.style.display='block';
+    note.style.display='block';
+  }
+
+  document.getElementById('btnCheckout').onclick=()=>{
+    if(!customer.loggedIn){
+      alert('Für die Demo: Bitte zuerst als Kunde anmelden (Profil).');
+      showProfile();
+      return;
+    }
+    alert('Checkout (Demo): Stripe/PayPal bauen wir als nächstes sauber ein.');
+  };
+
+  // --- Customer login (demo) ---
+  document.getElementById('btnCustomerLogin').onclick=()=>{
+    customer.loggedIn = true;
+    customer.name = customer.name || 'Mike';
+    save(LS.customer, customer);
+    showProfile();
+  };
+
+  // --- Provider entry ---
+  document.getElementById('btnProviderEntry').onclick=()=>{
+    // switch mode; show provider login page
+    setMode('provider');
+  };
+  document.getElementById('btnProvBack').onclick=()=>{ setMode('customer'); showProfile(); };
+
+  document.getElementById('btnProvLogin').onclick=()=>{
+    const email = document.getElementById('provEmail').value.trim();
+    const pass = document.getElementById('provPass').value.trim();
+    if(!email || !pass){ alert('Bitte E-Mail und Passwort eingeben.'); return; }
+    provider.loggedIn = true;
+    provider.email = email;
+    save(LS.provider, provider);
+    showProviderHome();
+  };
+
+  document.getElementById('btnProvLogout').onclick=()=>{
+    provider.loggedIn=false;
+    save(LS.provider, provider);
+    setMode('customer');
+    showProfile();
+  };
+
+  // Provider nav handlers
+  document.getElementById('providerNav').addEventListener('click',(e)=>{
+    const b = e.target.closest('button');
+    if(!b) return;
+    const go = b.dataset.pgo;
+    if(go==='provider-home') showProviderHome();
+    if(go==='provider-listings') showProviderListings();
+    if(go==='provider-cookbook') showProviderCookbook();
+    if(go==='provider-profile') showProviderProfile();
+  });
+
+  // Customer nav handlers
+  document.getElementById('customerNav').addEventListener('click',(e)=>{
+    const b = e.target.closest('button');
+    if(!b) return;
+    const go = b.dataset.go;
+    if(go==='discover') showDiscover();
+    if(go==='fav') showFav();
+    if(go==='cart') showCart();
+    if(go==='profile') showProfile();
+  });
+
+  // --- Provider home renders ---
+  function renderProviderHome(){
+    document.getElementById('provHomeHello').textContent = `Eingeloggt als ${provider.profile.name || provider.email}`;
+
+    const todayKey = isoDate(new Date());
+    const mineToday = offers.filter(o => o.providerId === providerId() && o.day === todayKey);
+
+    const box = document.getElementById('provToday');
+    if(!mineToday.length) box.textContent='Noch keine Inserate heute.';
+    else box.innerHTML = mineToday.map(o=>`• ${esc(o.dish)} (${euro(o.price)}) — ${esc(o.pickupWindow)}`).join('<br>');
+
+    // week preview
+    const wbox = document.getElementById('provWeekPreview');
+    const keys = Object.keys(week).sort();
+    const mine = keys.filter(k => (week[k]||[]).some(x => x.providerId===providerId()));
+    if(!mine.length) wbox.textContent='Noch kein Wochenplan.';
+    else {
+      const lines = mine.slice(0,5).map(k=>{
+        const items = (week[k]||[]).filter(x=>x.providerId===providerId());
+        return `<b>${k}</b>: ${items.map(i=>esc(i.dish)).join(' · ')}`;
+      });
+      wbox.innerHTML = lines.join('<br>');
+    }
+
+    // share button
+    const shareBtn = document.getElementById('btnShareToday');
+    shareBtn.style.display = mineToday.length ? 'block' : 'none';
+  }
+
+  function renderProviderListings(){
+    const box = document.getElementById('provListings');
+    const mine = offers.filter(o => o.providerId === providerId());
+    if(!mine.length){ box.textContent='Noch keine Inserate.'; return; }
+    box.innerHTML = mine.slice(0,30).map(o=>{
+      const day = o.day;
+      return `• <b>${esc(day)}</b> — ${esc(o.dish)} (${euro(o.price)}) <a href="#" data-off="${o.id}" class="toggleSold">[deaktivieren]</a>`;
+    }).join('<br>');
+
+    box.querySelectorAll('.toggleSold').forEach(a=>{
+      a.onclick=(e)=>{
+        e.preventDefault();
+        const id = a.getAttribute('data-off');
+        offers = offers.filter(x=>x.id!==id);
+        save(LS.offers, offers);
+        renderProviderListings();
+        renderProviderHome();
+        renderDiscover();
+      };
+    });
+  }
+
+  function renderProviderProfile(){
+    const p = provider.profile || {};
+    const addr = [p.street, (p.zip||'') + ' ' + (p.city||'')].filter(Boolean).join(', ');
+    document.getElementById('provProfileHint').innerHTML = `
+      <b>${esc(p.name || 'Name fehlt')}</b><br>
+      ${esc(addr || 'Adresse fehlt')}<br>
+      ${p.logoData ? 'Logo: ✅' : 'Logo: —'}
+    `;
+  }
+
+  document.getElementById('btnProvFaq').onclick=()=>{
+    const box = document.getElementById('provFaqBox');
+    box.style.display = box.style.display==='none' ? 'block' : 'none';
+  };
+
+  document.getElementById('btnBilling').onclick=()=>{
+    alert('Abrechnungen (MVP): monatliche Sammelrechnung. Dashboard + Stripe Tax bauen wir danach.');
+  };
+
+  // --- Provider actions ---
+  document.getElementById('btnNewListing').onclick=()=> startWizard('listing');
+  document.getElementById('btnCookbookAdd').onclick=()=> startWizard('cookbook');
+  document.getElementById('btnProvSetup').onclick=()=> startWizard('provider');
+
+  document.getElementById('btnShareToday').onclick=()=>{
+    const todayKey = isoDate(new Date());
+    const mineToday = offers.filter(o => o.providerId === providerId() && o.day === todayKey);
+    if(!mineToday.length) return;
+    const txt = `Mittagio – heutige Angebote\n` + mineToday.map(o=>`• ${o.dish} (${euro(o.price)}) — ${o.pickupWindow}`).join('\n');
+    if(navigator.share){ navigator.share({title:'Mittagio', text:txt, url:location.href}).catch(()=>{}); }
+    else prompt('Kopieren & teilen:', txt);
+  };
+
+  // Provider ID (for demo)
+  function providerId(){
+    // stable per email
+    const e = provider.email || 'provider';
+    return 'prov_' + btoa(unescape(encodeURIComponent(e))).slice(0,16);
+  }
+
+  // --- Cookbook ---
+  function renderCookbook(){
+    const box = document.getElementById('cookbookList');
+    const mine = cookbook.filter(x=>x.providerId===providerId());
+    if(!mine.length){ box.textContent='Noch keine gespeicherten Gerichte.'; return; }
+    box.innerHTML = mine.map(x=>{
+      const sold = offers.filter(o=>o.providerId===providerId() && o.dish===x.dish).length; // simple proxy
+      return `
+        <div style="padding:10px 0;border-top:1px solid #eee">
+          <b>${esc(x.dish)}</b> · ${esc(x.category)} · ${euro(x.price)}<br>
+          <span class="hint">Letzte Nutzung (Proxy): ${sold}×</span><br>
+          <a href="#" data-cb="${x.id}" class="cbUse">[als Inserat]</a>
+          &nbsp; <a href="#" data-cb="${x.id}" class="cbWeek">[zum Wochenplan]</a>
+        </div>
+      `;
+    }).join('');
+
+    box.querySelectorAll('.cbUse').forEach(a=>{
+      a.onclick=(e)=>{
+        e.preventDefault();
+        const id=a.getAttribute('data-cb');
+        startWizard('listing', {fromCookbookId:id});
+      };
+    });
+    box.querySelectorAll('.cbWeek').forEach(a=>{
+      a.onclick=(e)=>{
+        e.preventDefault();
+        const id=a.getAttribute('data-cb');
+        startWizard('week', {fromCookbookId:id});
+      };
+    });
+  }
+
+  // --- Wizard engine (Provider profile / Listing / Cookbook / Week) ---
+  let w = { kind:null, step:0, data:{}, ctx:{} };
+
+  const ALLERGENS_14 = [
+    'Gluten','Krebstiere','Eier','Fisch','Erdnüsse','Soja','Milch','Schalenfrüchte','Sellerie','Senf','Sesam','Sulfite','Lupinen','Weichtiere'
+  ];
+
+  function openWizard(){
+    document.getElementById('wbd').classList.add('active');
+    document.getElementById('wizard').classList.add('active');
+  }
+  function closeWizard(){
+    document.getElementById('wbd').classList.remove('active');
+    document.getElementById('wizard').classList.remove('active');
+  }
+
+  function startWizard(kind, ctx={}){
+    w = { kind, step:0, data:{}, ctx };
+
+    if(kind==='provider'){
+      w.data = JSON.parse(JSON.stringify(provider.profile||{}));
+      buildProviderStep();
+    }
+    if(kind==='cookbook'){
+      w.data = {
+        providerId: providerId(),
+        dish:'', category:'Vegetarisch', price:0,
+        allergens:[],
+        extras:[],
+        reuse:{enabled:false, deposit:0},
+        photoData:''
+      };
+      buildCookbookStep();
+    }
+    if(kind==='listing'){
+      // if from cookbook
+      if(ctx.fromCookbookId){
+        const x = cookbook.find(c=>c.id===ctx.fromCookbookId);
+        if(x){ w.data = JSON.parse(JSON.stringify(x)); }
+      } else {
+        w.data = {
+          providerId: providerId(),
+          dish:'', category:'Vegetarisch', price:0,
+          pickupWindow:'',
+          hasPickupCode:false,
+          allergens:[],
+          extras:[],
+          reuse:{enabled:false, deposit:0},
+          photoData:''
+        };
+      }
+      buildListingStep();
+    }
+    if(kind==='week'){
+      // schedule cookbook item to a date
+      const x = cookbook.find(c=>c.id===ctx.fromCookbookId);
+      if(!x){ alert('Bitte erst ein Gericht im Kochbuch speichern.'); return; }
+      w.data = { cookbookId:x.id, date: isoDate(new Date()) };
+      buildWeekStep();
+    }
+
+    openWizard();
+  }
+
+  // Common wizard buttons
+  const wBackBtn = document.getElementById('wBack');
+  const wNextBtn = document.getElementById('wNext');
+
+  wBackBtn.onclick=()=>{
+    if(w.step===0){ closeWizard(); return; }
+    w.step -= 1;
+    rebuildWizard();
+  };
+  wNextBtn.onclick=()=>{
+    // validation per step inside rebuild
+    w.step += 1;
+    rebuildWizard();
+  };
+
+  function setWizardHeader(title, stepText){
+    document.getElementById('wTitle').textContent = title;
+    document.getElementById('wStep').textContent = stepText;
+  }
+  function setWizardQuestion(q, help=''){ 
+    document.getElementById('wQ').textContent = q;
+    document.getElementById('wHelp').textContent = help;
+  }
+  function setWizardContent(node){
+    const c = document.getElementById('wContent');
+    c.innerHTML='';
+    c.appendChild(node);
+  }
+
+  function rebuildWizard(){
+    if(w.kind==='provider') return buildProviderStep();
+    if(w.kind==='cookbook') return buildCookbookStep();
+    if(w.kind==='listing') return buildListingStep();
+    if(w.kind==='week') return buildWeekStep();
+  }
+
+  // --- Provider profile wizard (step-by-step, not a form) ---
+  function buildProviderStep(){
+    const steps = [
+      { q:'Wie heißt dein Betrieb?', key:'name', type:'text', placeholder:'z.B. Metzgerei Müller' },
+      { q:'Straße & Hausnummer?', key:'street', type:'text', placeholder:'z.B. Musterstraße 12' },
+      { q:'PLZ?', key:'zip', type:'text', placeholder:'z.B. 73614' },
+      { q:'Ort?', key:'city', type:'text', placeholder:'z.B. Schorndorf' },
+      { q:'Betriebslogo hinzufügen?', key:'logoData', type:'logo' }
+    ];
+
+    const total = steps.length;
+    if(w.step >= total){
+      provider.profile = {
+        name: w.data.name||'',
+        street: w.data.street||'',
+        zip: w.data.zip||'',
+        city: w.data.city||'',
+        logoData: w.data.logoData||''
+      };
+      save(LS.provider, provider);
+      closeWizard();
+      renderProviderProfile();
+      renderProviderHome();
+      alert('Profil gespeichert ✅');
+      return;
+    }
+
+    const s = steps[w.step];
+    setWizardHeader('Meine Daten', `${w.step+1}/${total}`);
+    setWizardQuestion(s.q, 'Tippen → weiter. Alles daumenfreundlich.');
+
+    const wrap = document.createElement('div');
+
+    if(s.type==='text'){
+      const input=document.createElement('input');
+      input.className='field';
+      input.placeholder=s.placeholder;
+      input.value = w.data[s.key] || '';
+      input.oninput=()=>{ w.data[s.key]=input.value; };
+      input.autofocus = true;
+      wrap.appendChild(input);
+
+      wNextBtn.textContent='Weiter';
+    }
+
+    if(s.type==='logo'){
+      const btns=document.createElement('div');
+      btns.className='answers';
+
+      const up=document.createElement('button');
+      up.className='ans';
+      up.type='button';
+      up.textContent='Logo auswählen';
+      up.onclick=async()=>{
+        const file = await pickImage();
+        if(!file) return;
+        w.data.logoData = await toDataUrl(file);
+        rebuildWizard();
+      };
+
+      const skip=document.createElement('button');
+      skip.className='ans';
+      skip.type='button';
+      skip.textContent='Später';
+      skip.onclick=()=>{ w.data.logoData=''; w.step=total; rebuildWizard(); };
+
+      btns.appendChild(up);
+      btns.appendChild(skip);
+      wrap.appendChild(btns);
+
+      if(w.data.logoData){
+        const prev=document.createElement('div');
+        prev.style.marginTop='10px';
+        prev.innerHTML = `<div class="hint">Vorschau:</div><div class="plogo" style="width:60px;height:60px;border-radius:14px"><img src="${w.data.logoData}" alt="Logo" /></div>`;
+        wrap.appendChild(prev);
+      }
+
+      wNextBtn.textContent='Speichern';
+    }
+
+    setWizardContent(wrap);
+  }
+
+  // --- Listing wizard (Immobilienscout-like: click answers) ---
+  function buildListingStep(){
+    // Steps order per your request:
+    // 1 category, 2 photo, 3 name, 4 allergens, 5 extras, 6 reuse, 7 price, 8 pickup window, 9 pickup code, 10 preview + publish
+    const total = 10;
+    setWizardHeader('Neues Inserat', `${Math.min(w.step+1,total)}/${total}`);
+
+    if(w.step===0){
+      setWizardQuestion('Was möchtest du inserieren?', 'Tippe eine Kategorie.');
+      const box=document.createElement('div');
+      const ans=document.createElement('div'); ans.className='answers';
+      ['Vegan','Vegetarisch','Fleisch','Salat'].forEach(c=>{
+        const b=document.createElement('button');
+        b.type='button';
+        b.className='ans'+(w.data.category===c?' on':'');
+        b.textContent=c;
+        b.onclick=()=>{ w.data.category=c; rebuildWizard(); };
+        ans.appendChild(b);
+      });
+      box.appendChild(ans);
+      setWizardContent(box);
+      wNextBtn.textContent='Weiter';
+      return;
+    }
+
+    if(w.step===1){
+      setWizardQuestion('Foto hinzufügen?', 'Datei auswählen oder direkt Kamera (Handy).');
+      const box=document.createElement('div');
+      const ans=document.createElement('div'); ans.className='answers';
+
+      const b1=document.createElement('button'); b1.type='button'; b1.className='ans'; b1.textContent='Foto auswählen';
+      b1.onclick=async()=>{ const f=await pickImage(); if(!f) return; w.data.photoData = await toDataUrl(f); rebuildWizard(); };
+      const b2=document.createElement('button'); b2.type='button'; b2.className='ans'; b2.textContent='Platzhalter';
+      b2.onclick=()=>{ w.data.photoData=''; rebuildWizard(); };
+
+      ans.appendChild(b1); ans.appendChild(b2);
+      box.appendChild(ans);
+      if(w.data.photoData){
+        const p=document.createElement('div'); p.style.marginTop='10px';
+        p.innerHTML = `<div class="hint">Vorschau:</div><div style="border-radius:16px;overflow:hidden;border:1px solid #eee"><img src="${w.data.photoData}" alt="" style="width:100%;height:200px;object-fit:cover;display:block"></div>`;
+        box.appendChild(p);
+      }
+      setWizardContent(box);
+      wNextBtn.textContent='Weiter';
+      return;
+    }
+
+    if(w.step===2){
+      setWizardQuestion('Wie heißt das Gericht?', 'Kurz & klar.');
+      const box=document.createElement('div');
+      const input=document.createElement('input');
+      input.className='field';
+      input.placeholder='z.B. Rinderroulade mit Spätzle';
+      input.value=w.data.dish||'';
+      input.oninput=()=>{ w.data.dish=input.value; };
+      box.appendChild(input);
+      setWizardContent(box);
+      wNextBtn.textContent='Weiter';
+      return;
+    }
+
+    if(w.step===3){
+      setWizardQuestion('Allergene hinzufügen?', 'Optional. Tippe an, was zutrifft.');
+      const box=document.createElement('div');
+      const ans=document.createElement('div'); ans.className='answers';
+
+      if(!Array.isArray(w.data.allergens)) w.data.allergens=[];
+      ALLERGENS_14.forEach(a=>{
+        const b=document.createElement('button');
+        b.type='button';
+        b.className='ans'+(w.data.allergens.includes(a)?' on':'');
+        b.textContent=a;
+        b.onclick=()=>{
+          const i=w.data.allergens.indexOf(a);
+          if(i>=0) w.data.allergens.splice(i,1); else w.data.allergens.push(a);
+          rebuildWizard();
+        };
+        ans.appendChild(b);
+      });
+      box.appendChild(ans);
+      setWizardContent(box);
+      wNextBtn.textContent='Weiter';
+      return;
+    }
+
+    if(w.step===4){
+      setWizardQuestion('Extras?', 'z.B. Beilagensalat. Optional.');
+      const box=document.createElement('div');
+      const ans=document.createElement('div'); ans.className='answers';
+
+      const yes=document.createElement('button'); yes.type='button'; yes.className='ans'+(w.data.extras?.length?' on':''); yes.textContent='Ja';
+      const no=document.createElement('button'); no.type='button'; no.className='ans'+(!w.data.extras?.length?' on':''); no.textContent='Nein';
+
+      yes.onclick=()=>{
+        w.data.extras = w.data.extras?.length ? w.data.extras : [{name:'Beilagensalat', price:2.0}];
+        rebuildWizard();
+      };
+      no.onclick=()=>{ w.data.extras = []; rebuildWizard(); };
+
+      ans.appendChild(yes); ans.appendChild(no);
+      box.appendChild(ans);
+
+      if(w.data.extras?.length){
+        const name=document.createElement('input');
+        name.className='field';
+        name.placeholder='Extra (z.B. Beilagensalat)';
+        name.value=w.data.extras[0].name||'';
+        name.oninput=()=>{ w.data.extras[0].name=name.value; };
+
+        const price=document.createElement('input');
+        price.className='field';
+        price.inputMode='numeric';
+        price.placeholder='Preis in € (z.B. 2)';
+        price.value = String(w.data.extras[0].price||'');
+        price.oninput=()=>{ w.data.extras[0].price = smartNumber(price.value); };
+
+        box.appendChild(document.createElement('div')).style.height='10px';
+        box.appendChild(name);
+        box.appendChild(document.createElement('div')).style.height='10px';
+        box.appendChild(price);
+        const h=document.createElement('div'); h.className='hint'; h.textContent='Tipp: Du musst kein Komma tippen.';
+        box.appendChild(h);
+      }
+
+      setWizardContent(box);
+      wNextBtn.textContent='Weiter';
+      return;
+    }
+
+    if(w.step===5){
+      setWizardQuestion('Mehrweg / Pfandsystem anbieten?', 'Optional (z.B. Mehrwegbox mit Pfand).');
+      const box=document.createElement('div');
+      const ans=document.createElement('div'); ans.className='answers';
+
+      if(!w.data.reuse) w.data.reuse = {enabled:false, deposit:0};
+
+      const yes=document.createElement('button'); yes.type='button'; yes.className='ans'+(w.data.reuse.enabled?' on':''); yes.textContent='Ja';
+      const no=document.createElement('button'); no.type='button'; no.className='ans'+(!w.data.reuse.enabled?' on':''); no.textContent='Nein';
+
+      yes.onclick=()=>{ w.data.reuse.enabled=true; if(!w.data.reuse.deposit) w.data.reuse.deposit=5; rebuildWizard(); };
+      no.onclick=()=>{ w.data.reuse.enabled=false; w.data.reuse.deposit=0; rebuildWizard(); };
+
+      ans.appendChild(yes); ans.appendChild(no);
+      box.appendChild(ans);
+
+      if(w.data.reuse.enabled){
+        const dep=document.createElement('input');
+        dep.className='field';
+        dep.inputMode='numeric';
+        dep.placeholder='Pfand in € (z.B. 5)';
+        dep.value = String(w.data.reuse.deposit||'');
+        dep.oninput=()=>{ w.data.reuse.deposit = smartNumber(dep.value); };
+        box.appendChild(document.createElement('div')).style.height='10px';
+        box.appendChild(dep);
+        const h=document.createElement('div'); h.className='hint'; h.textContent='Neutraler Text: „Mehrweg / Pfand“ (ohne Markennamen).';
+        box.appendChild(h);
+      }
+
+      setWizardContent(box);
+      wNextBtn.textContent='Weiter';
+      return;
+    }
+
+    if(w.step===6){
+      setWizardQuestion('Preis des Gerichts?', 'Nur Zahl tippen – Komma nicht nötig.');
+      const box=document.createElement('div');
+      const input=document.createElement('input');
+      input.className='field';
+      input.inputMode='numeric';
+      input.placeholder='z.B. 799 für 7,99';
+      input.value = w.data.price ? String(Math.round(w.data.price*100)) : '';
+      input.oninput=()=>{ w.data.price = smartNumberToEuro(input.value); };
+      box.appendChild(input);
+      const h=document.createElement('div'); h.className='hint'; h.textContent='Beispiel: 799 → 7,99 € · 450 → 4,50 €';
+      box.appendChild(h);
+      setWizardContent(box);
+      wNextBtn.textContent='Weiter';
+      return;
+    }
+
+    if(w.step===7){
+      setWizardQuestion('Abholfenster?', 'Tippe ein Fenster (daumenfreundlich).');
+      const box=document.createElement('div');
+      const ans=document.createElement('div'); ans.className='answers';
+
+      const windows = ['11:00 – 14:00','11:30 – 14:00','12:00 – 14:00','11:30 – 13:30','12:00 – 13:30','12:00 – 14:30'];
+      windows.forEach(win=>{
+        const b=document.createElement('button');
+        b.type='button';
+        b.className='ans'+(w.data.pickupWindow===win?' on':'');
+        b.textContent=win;
+        b.onclick=()=>{ w.data.pickupWindow=win; rebuildWizard(); };
+        ans.appendChild(b);
+      });
+      box.appendChild(ans);
+
+      // custom
+      const custom=document.createElement('input');
+      custom.className='field';
+      custom.placeholder='oder frei eintippen (z.B. 11:15 – 14:30)';
+      custom.value = w.data.pickupWindow || '';
+      custom.oninput=()=>{ w.data.pickupWindow=custom.value; };
+      box.appendChild(document.createElement('div')).style.height='10px';
+      box.appendChild(custom);
+
+      setWizardContent(box);
+      wNextBtn.textContent='Weiter';
+      return;
+    }
+
+    if(w.step===8){
+      setWizardQuestion('Abholcode aktivieren?', 'Optional: spart Zeit & Chaos an der Ausgabe.');
+      const box=document.createElement('div');
+      const ans=document.createElement('div'); ans.className='answers';
+
+      const yes=document.createElement('button'); yes.type='button'; yes.className='ans'+(w.data.hasPickupCode?' on':''); yes.textContent='Ja (0,49 € pro Vorgang)';
+      const no=document.createElement('button'); no.type='button'; no.className='ans'+(!w.data.hasPickupCode?' on':''); no.textContent='Nein';
+
+      yes.onclick=()=>{ w.data.hasPickupCode=true; rebuildWizard(); };
+      no.onclick=()=>{ w.data.hasPickupCode=false; rebuildWizard(); };
+
+      ans.appendChild(yes); ans.appendChild(no);
+      box.appendChild(ans);
+      setWizardContent(box);
+      wNextBtn.textContent='Weiter';
+      return;
+    }
+
+    if(w.step===9){
+      setWizardQuestion('Vorschau', 'Veröffentlichen oder speichern.');
+      const box=document.createElement('div');
+
+      // preview card
+      const o = previewOfferFromWizard();
+      box.appendChild(offerCard(o));
+
+      // actions
+      const a=document.createElement('div');
+      a.style.marginTop='10px';
+
+      const btnPub=document.createElement('button');
+      btnPub.className='btn';
+      btnPub.type='button';
+      btnPub.textContent = 'Inserat veröffentlichen — 4,99 €';
+      btnPub.onclick=()=>{
+        publishOffer(o);
+        closeWizard();
+        alert('Inserat veröffentlicht ✅');
+        showProviderHome();
+      };
+
+      const btnSave=document.createElement('button');
+      btnSave.className='btn secondary';
+      btnSave.type='button';
+      btnSave.textContent='Ins Kochbuch speichern';
+      btnSave.onclick=()=>{
+        saveToCookbookFromWizard();
+        alert('Im Kochbuch gespeichert ✅');
+        closeWizard();
+        showProviderCookbook();
+      };
+
+      const btnWeek=document.createElement('button');
+      btnWeek.className='btn ghost';
+      btnWeek.type='button';
+      btnWeek.textContent='Zum Wochenplan hinzufügen';
+      btnWeek.onclick=()=>{
+        saveToCookbookFromWizard(true);
+        const cb = cookbook.filter(x=>x.providerId===providerId()).slice(-1)[0];
+        if(cb) startWizard('week', {fromCookbookId:cb.id});
+      };
+
+      a.appendChild(btnPub);
+      a.appendChild(btnSave);
+      a.appendChild(btnWeek);
+      box.appendChild(a);
+
+      setWizardContent(box);
+      wNextBtn.textContent='Fertig';
+      wNextBtn.onclick=()=>{ closeWizard(); showProviderHome(); };
+      return;
+    }
+  }
+
+  function previewOfferFromWizard(){
+    const p = provider.profile||{};
+    return {
+      id: 'preview',
+      providerId: providerId(),
+      providerName: p.name || provider.email || 'Anbieter',
+      providerStreet: p.street||'',
+      providerZip: p.zip||'',
+      providerCity: p.city||'',
+      providerLogoData: p.logoData||'',
+      dish: w.data.dish||'Gericht',
+      category: w.data.category||'Vegetarisch',
+      price: Number(w.data.price||0),
+      pickupWindow: w.data.pickupWindow||'',
+      imageUrl: w.data.photoData || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70',
+      hasPickupCode: !!w.data.hasPickupCode,
+      allergens: w.data.allergens||[],
+      extras: w.data.extras||[],
+      reuse: w.data.reuse||{enabled:false,deposit:0},
+      day: isoDate(new Date())
+    };
+  }
+
+  function publishOffer(o){
+    const id = cryptoId();
+    const out = {...o, id, day: isoDate(new Date())};
+    // ensure provider address exists
+    if(!out.providerStreet){
+      alert('Bitte zuerst Anbieterprofil ausfüllen (Adresse).');
+      return;
+    }
+    offers.unshift(out);
+    save(LS.offers, offers);
+    // restore default next button handler
+    wNextBtn.onclick=null;
+    renderProviderHome();
+    renderProviderListings();
+    renderDiscover();
+  }
+
+  function saveToCookbookFromWizard(keepOpen=false){
+    const x = {
+      id: cryptoId(),
+      providerId: providerId(),
+      dish: w.data.dish||'',
+      category: w.data.category||'Vegetarisch',
+      price: Number(w.data.price||0),
+      allergens: w.data.allergens||[],
+      extras: w.data.extras||[],
+      reuse: w.data.reuse||{enabled:false,deposit:0},
+      photoData: w.data.photoData||''
+    };
+    cookbook.push(x);
+    save(LS.cookbook, cookbook);
+    if(!keepOpen){ renderCookbook(); }
+  }
+
+  // Cookbook wizard (add recipe)
+  function buildCookbookStep(){
+    // reuse listing steps subset: category, photo, name, allergens, extras, reuse, price, preview/save
+    const total = 8;
+    setWizardHeader('Kochbuch', `${Math.min(w.step+1,total)}/${total}`);
+
+    if(w.step===0){
+      setWizardQuestion('Kategorie?', 'Tippe eine Kategorie.');
+      const box=document.createElement('div');
+      const ans=document.createElement('div'); ans.className='answers';
+      ['Vegan','Vegetarisch','Fleisch','Salat'].forEach(c=>{
+        const b=document.createElement('button'); b.type='button'; b.className='ans'+(w.data.category===c?' on':''); b.textContent=c;
+        b.onclick=()=>{ w.data.category=c; rebuildWizard(); };
+        ans.appendChild(b);
+      });
+      box.appendChild(ans);
+      setWizardContent(box);
+      wNextBtn.textContent='Weiter';
+      return;
+    }
+
+    if(w.step===1){
+      setWizardQuestion('Foto speichern?', 'Optional (für schnelleres Wiederverwenden).');
+      const box=document.createElement('div');
+      const ans=document.createElement('div'); ans.className='answers';
+      const b1=document.createElement('button'); b1.type='button'; b1.className='ans'; b1.textContent='Foto auswählen';
+      b1.onclick=async()=>{ const f=await pickImage(); if(!f) return; w.data.photoData = await toDataUrl(f); rebuildWizard(); };
+      const b2=document.createElement('button'); b2.type='button'; b2.className='ans'; b2.textContent='Ohne';
+      b2.onclick=()=>{ w.data.photoData=''; rebuildWizard(); };
+      ans.appendChild(b1); ans.appendChild(b2);
+      box.appendChild(ans);
+      setWizardContent(box);
+      wNextBtn.textContent='Weiter';
+      return;
+    }
+
+    if(w.step===2){
+      setWizardQuestion('Gerichtname?', 'Wie im Kochbuch.');
+      const box=document.createElement('div');
+      const input=document.createElement('input'); input.className='field'; input.placeholder='z.B. Lasagne'; input.value=w.data.dish||'';
+      input.oninput=()=>{ w.data.dish=input.value; };
+      box.appendChild(input);
+      setWizardContent(box);
+      wNextBtn.textContent='Weiter';
+      return;
+    }
+
+    if(w.step===3){
+      setWizardQuestion('Allergene?', 'Optional, antippen.');
+      const box=document.createElement('div');
+      const ans=document.createElement('div'); ans.className='answers';
+      if(!Array.isArray(w.data.allergens)) w.data.allergens=[];
+      ALLERGENS_14.forEach(a=>{
+        const b=document.createElement('button'); b.type='button'; b.className='ans'+(w.data.allergens.includes(a)?' on':''); b.textContent=a;
+        b.onclick=()=>{ const i=w.data.allergens.indexOf(a); if(i>=0) w.data.allergens.splice(i,1); else w.data.allergens.push(a); rebuildWizard(); };
+        ans.appendChild(b);
+      });
+      box.appendChild(ans);
+      setWizardContent(box);
+      wNextBtn.textContent='Weiter';
+      return;
+    }
+
+    if(w.step===4){
+      // Extras
+      setWizardQuestion('Extras?', 'Optional.');
+      const box=document.createElement('div');
+      const ans=document.createElement('div'); ans.className='answers';
+      const yes=document.createElement('button'); yes.type='button'; yes.className='ans'+(w.data.extras?.length?' on':''); yes.textContent='Ja';
+      const no=document.createElement('button'); no.type='button'; no.className='ans'+(!w.data.extras?.length?' on':''); no.textContent='Nein';
+      yes.onclick=()=>{ w.data.extras = w.data.extras?.length ? w.data.extras : [{name:'Beilagensalat', price:2.0}]; rebuildWizard(); };
+      no.onclick=()=>{ w.data.extras=[]; rebuildWizard(); };
+      ans.appendChild(yes); ans.appendChild(no);
+      box.appendChild(ans);
+      setWizardContent(box);
+      wNextBtn.textContent='Weiter';
+      return;
+    }
+
+    if(w.step===5){
+      // reuse
+      setWizardQuestion('Mehrweg / Pfand?', 'Optional.');
+      const box=document.createElement('div');
+      const ans=document.createElement('div'); ans.className='answers';
+      if(!w.data.reuse) w.data.reuse={enabled:false,deposit:0};
+      const yes=document.createElement('button'); yes.type='button'; yes.className='ans'+(w.data.reuse.enabled?' on':''); yes.textContent='Ja';
+      const no=document.createElement('button'); no.type='button'; no.className='ans'+(!w.data.reuse.enabled?' on':''); no.textContent='Nein';
+      yes.onclick=()=>{ w.data.reuse.enabled=true; if(!w.data.reuse.deposit) w.data.reuse.deposit=5; rebuildWizard(); };
+      no.onclick=()=>{ w.data.reuse.enabled=false; w.data.reuse.deposit=0; rebuildWizard(); };
+      ans.appendChild(yes); ans.appendChild(no);
+      box.appendChild(ans);
+      setWizardContent(box);
+      wNextBtn.textContent='Weiter';
+      return;
+    }
+
+    if(w.step===6){
+      setWizardQuestion('Standardpreis?', 'Nur Zahl – Komma nicht nötig.');
+      const box=document.createElement('div');
+      const input=document.createElement('input');
+      input.className='field'; input.inputMode='numeric'; input.placeholder='z.B. 799';
+      input.value = w.data.price ? String(Math.round(w.data.price*100)) : '';
+      input.oninput=()=>{ w.data.price = smartNumberToEuro(input.value); };
+      box.appendChild(input);
+      setWizardContent(box);
+      wNextBtn.textContent='Weiter';
+      return;
+    }
+
+    if(w.step===7){
+      setWizardQuestion('Speichern?', 'Damit du später mit 2 Taps inserierst.');
+      const box=document.createElement('div');
+      const prev = {
+        id:'preview',
+        providerId:providerId(),
+        providerName: provider.profile.name || provider.email || 'Anbieter',
+        providerStreet:'',providerZip:'',providerCity:'',providerLogoData: provider.profile.logoData||'',
+        dish:w.data.dish||'Gericht',
+        category:w.data.category||'Vegetarisch',
+        price:Number(w.data.price||0),
+        pickupWindow:'',
+        imageUrl: w.data.photoData || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70',
+        hasPickupCode:false,
+        allergens:w.data.allergens||[],
+        extras:w.data.extras||[],
+        reuse:w.data.reuse||{enabled:false,deposit:0},
+        day: isoDate(new Date())
+      };
+      box.appendChild(offerCard(prev));
+      const btn=document.createElement('button');
+      btn.className='btn';
+      btn.type='button';
+      btn.textContent='Im Kochbuch speichern';
+      btn.onclick=()=>{
+        cookbook.push({
+          id:cryptoId(),
+          providerId:providerId(),
+          dish:w.data.dish||'',
+          category:w.data.category||'Vegetarisch',
+          price:Number(w.data.price||0),
+          allergens:w.data.allergens||[],
+          extras:w.data.extras||[],
+          reuse:w.data.reuse||{enabled:false,deposit:0},
+          photoData:w.data.photoData||''
+        });
+        save(LS.cookbook, cookbook);
+        closeWizard();
+        renderCookbook();
+        alert('Gespeichert ✅');
+      };
+      box.appendChild(btn);
+      setWizardContent(box);
+      wNextBtn.textContent='Fertig';
+      wNextBtn.onclick=()=>{ closeWizard(); showProviderCookbook(); };
+      return;
+    }
+  }
+
+  // Weekplan wizard (simple date choose)
+  function buildWeekStep(){
+    setWizardHeader('Wochenplan', '1/1');
+    setWizardQuestion('Für welchen Tag?', 'Wähle einen Tag und füge das Gericht hinzu.');
+
+    const box=document.createElement('div');
+    const ans=document.createElement('div'); ans.className='answers';
+
+    for(let i=0;i<7;i++){
+      const d=new Date(); d.setDate(d.getDate()+i);
+      const key=isoDate(d);
+      const b=document.createElement('button');
+      b.type='button';
+      b.className='ans'+(w.data.date===key?' on':'');
+      b.textContent = i===0?'Heute':(i===1?'Morgen':fmtDay(d));
+      b.onclick=()=>{ w.data.date=key; rebuildWizard(); };
+      ans.appendChild(b);
+    }
+    box.appendChild(ans);
+
+    const btn=document.createElement('button');
+    btn.className='btn';
+    btn.type='button';
+    btn.textContent='Zum Wochenplan hinzufügen';
+    btn.onclick=()=>{
+      const cb = cookbook.find(c=>c.id===w.data.cookbookId);
+      if(!cb){ alert('Gericht nicht gefunden'); return; }
+      const entry = { providerId:providerId(), dish:cb.dish, cookbookId:cb.id };
+      if(!week[w.data.date]) week[w.data.date]=[];
+      week[w.data.date].push(entry);
+      save(LS.week, week);
+      closeWizard();
+      renderProviderHome();
+      alert('Im Wochenplan ✅');
+    };
+
+    box.appendChild(document.createElement('div')).style.height='10px';
+    box.appendChild(btn);
+
+    setWizardContent(box);
+    wNextBtn.textContent='Fertig';
+    wNextBtn.onclick=()=>{ closeWizard(); showProviderHome(); };
+  }
+
+  // --- Input helpers (thumb-friendly) ---
+  function smartNumberToEuro(raw){
+    const digits = String(raw||'').replace(/\D/g,'');
+    if(!digits) return 0;
+    const cents = parseInt(digits,10);
+    return Math.round((cents/100)*100)/100;
+  }
+  function smartNumber(raw){
+    const digits = String(raw||'').replace(/\D/g,'');
+    if(!digits) return 0;
+    return parseInt(digits,10);
+  }
+
+  // Image picker
+  function pickImage(){
+    return new Promise(resolve=>{
+      const input=document.createElement('input');
+      input.type='file';
+      input.accept='image/*';
+      input.onchange=()=> resolve(input.files && input.files[0] ? input.files[0] : null);
+      input.click();
+    });
+  }
+  function toDataUrl(file){
+    return new Promise((resolve,reject)=>{
+      const r=new FileReader();
+      r.onload=()=>resolve(r.result);
+      r.onerror=reject;
+      r.readAsDataURL(file);
+    });
+  }
+
+  // --- boot ---
+  seed();
+  renderChips();
+
+  // init nav bindings
+  // default start
+  if(mode==='provider' && !provider.loggedIn) mode='customer';
+  setMode(mode);
+
+  // initial customer view
+  showDiscover();
+</script>
+
+<script>
+  // PWA (optional)
+  if('serviceWorker' in navigator){
+    window.addEventListener('load', ()=>{
+      navigator.serviceWorker.register('sw.js').catch(()=>{});
+    });
+  }
+</script>
+</body>
+</html>
