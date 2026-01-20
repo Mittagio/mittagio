@@ -7,6 +7,7 @@
   <meta name="theme-color" content="#F2B705" />
   <link rel="manifest" href="manifest.json" />
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
     :root{
       /* Mittagio palette (can be adjusted later) */
       --bg:#F7F6F0;
@@ -25,7 +26,7 @@
     html,body{height:100%}
     body{
       margin:0;
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
       background:var(--bg);
       color:var(--text);
     }
@@ -403,7 +404,7 @@
           <p>Entdecken -> Gericht auswaehlen -> in den Warenkorb -> bezahlen -> Abholcode zeigen.</p>
         </details>
         <details>
-          <summary>Kann ich fuer mehrere Personen bestellen?</summary>
+          <summary>Kann ich für mehrere Personen bestellen?</summary>
           <p>Ja. Du kannst mehrere Gerichte in einem Vorgang bestellen (Abholcode pro Vorgang).</p>
         </details>
       </div>
@@ -417,8 +418,8 @@
         <div style="height:10px"></div>
         <input class="field" id="provPass" type="password" placeholder="Passwort" autocomplete="current-password" />
         <button class="btn" type="button" id="btnProvLogin">Einloggen</button>
-        <button class="btn secondary" type="button" id="btnProvBack">Zurueck</button>
-        <p class="hint">Demo: beliebige E-Mail/Passwort -> du bist drin. (Spaeter: Firebase Auth.)</p>
+        <button class="btn secondary" type="button" id="btnProvBack">Zurück</button>
+        <p class="hint">Demo: beliebige E-Mail/Passwort -> du bist drin. (Später: Firebase Auth.)</p>
       </div>
     </section>
 
@@ -456,7 +457,7 @@
       <div style="height:12px"></div>
       <div class="panel">
         <h3>Abholcodes heute</h3>
-        <div id="provPickupStats" class="hint">Noch keine Abholcodes fuer heute.</div>
+        <div id="provPickupStats" class="hint">Noch keine Abholcodes für heute.</div>
       </div>
     </section>
 
@@ -465,7 +466,7 @@
         <h3>Abholungen</h3>
         <div id="provPickupsEmpty" class="hint">
           Aktuell keine Abholungen geplant.<br>
-          Geplante Abholungen sorgen fuer weniger Chaos.
+          Geplante Abholungen sorgen für weniger Chaos.
           <div style="height:10px"></div>
           <button class="btn secondary" type="button" id="btnPickupsFaq">Mehr erfahren</button>
         </div>
@@ -483,7 +484,7 @@
         <div class="dayrow" id="weekDays" style="padding:0 0 10px; max-width:none;"></div>
         <div id="weekList" class="hint">Noch nichts geplant.</div>
         <button class="btn secondary" type="button" id="btnWeekPdf">PDF-Wochenkarte erstellen</button>
-        <button class="btn ghost" type="button" id="btnWeekBack">Zurueck</button>
+        <button class="btn ghost" type="button" id="btnWeekBack">Zurück</button>
       </div>
     </section>
 
@@ -495,7 +496,7 @@
         <input class="field" id="cookbookSearch" type="text" placeholder="Suche nach Gerichten" />
         <div style="height:10px"></div>
         <div class="answers" id="cookbookFilters"></div>
-        <button class="btn" type="button" id="btnCookbookAdd">+ Gericht hinzufuegen</button>
+        <button class="btn" type="button" id="btnCookbookAdd">+ Gericht hinzufügen</button>
         <div style="height:10px"></div>
         <div id="cookbookList" class="hint">Noch keine Gerichte gespeichert.</div>
       </div>
@@ -511,7 +512,7 @@
       <div class="panel">
         <div class="rowlist">
           <button class="rowbtn" type="button" id="rowProfileOverview">
-            <div>Mein Profil<span>Uebersicht</span></div>
+            <div>Mein Profil<span>Übersicht</span></div>
             <div>›</div>
           </button>
           <button class="rowbtn" type="button" id="btnProvSetup">
@@ -560,7 +561,7 @@
         </details>
         <details>
           <summary>Wie spare ich Zeit?</summary>
-          <p>Speichere Gerichte im Kochbuch und veroeffentliche sie mit 2-3 Taps erneut.</p>
+          <p>Speichere Gerichte im Kochbuch und veröffentliche sie mit 2-3 Taps erneut.</p>
         </details>
       </div>
     </section>
@@ -603,7 +604,7 @@
     </div>
 
     <div class="row"><span>Abholfenster</span><b id="sWindow"></b></div>
-    <div class="row"><span>Adresse</span><a id="sAddr" href="#" target="_blank" rel="noopener">oeffnen</a></div>
+    <div class="row"><span>Adresse</span><a id="sAddr" href="#" target="_blank" rel="noopener">öffnen</a></div>
 
     <div id="sAllergensWrap" style="display:none">
       <div class="row"><span>Allergene</span><span id="sAllergens" style="text-align:right;color:var(--muted)"></span></div>
@@ -653,7 +654,7 @@
       <div class="hint" id="codePickupTime"></div>
     </div>
     <button class="btn" type="button" id="btnToggleOrderStatus">Als abgeholt markieren</button>
-    <button class="btn secondary" type="button" id="btnCodeClose">Schliessen</button>
+    <button class="btn secondary" type="button" id="btnCodeClose">Schließen</button>
   </div>
 </div>
 
@@ -672,7 +673,7 @@
       <button class="ans" type="button" id="btnShareWebsite">Website</button>
       <button class="ans" type="button" id="btnShareCopy">Link kopieren</button>
     </div>
-    <button class="btn secondary" type="button" id="btnShareClose">Schliessen</button>
+    <button class="btn secondary" type="button" id="btnShareClose">Schließen</button>
   </div>
 </div>
 
@@ -690,7 +691,7 @@
       <p class="w-help" id="wHelp"></p>
       <div id="wContent"></div>
       <div class="w-actions">
-        <button class="btn secondary" type="button" id="wBack">Zurueck</button>
+        <button class="btn secondary" type="button" id="wBack">Zurück</button>
         <button class="btn" type="button" id="wNext">Weiter</button>
       </div>
     </div>
@@ -735,16 +736,16 @@
     'Fleisch':'Fleisch'
   };
   const DISH_SUGGESTIONS = [
-    {name:'Kuerbissuppe', category:'Vegan'},
+    {name:'Kürbissuppe', category:'Vegan'},
     {name:'Tomatensuppe mit Brot', category:'Vegan'},
-    {name:'Pasta mit Gemuese', category:'Vegetarisch'},
-    {name:'Kaesespaetzle', category:'Vegetarisch'},
+    {name:'Pasta mit Gemüse', category:'Vegetarisch'},
+    {name:'Käsespätzle', category:'Vegetarisch'},
     {name:'Salat Bowl', category:'Vegetarisch'},
     {name:'Falafel Teller', category:'Vegan'},
     {name:'Veggie Burger', category:'Vegan'},
     {name:'Schnitzel mit Pommes', category:'Fleisch'},
     {name:'Currywurst', category:'Fleisch'},
-    {name:'Gulasch mit Spaetzle', category:'Fleisch'}
+    {name:'Gulasch mit Spätzle', category:'Fleisch'}
   ];
 
   // Day slider: today..+6
@@ -1015,7 +1016,7 @@
     }
 
     grid.innerHTML='';
-    empty.textContent = q ? 'Keine Angebote fuer diesen Standort.' : 'Noch keine Angebote. Demo: Als Anbieter ein Inserat erstellen.';
+    empty.textContent = q ? 'Keine Angebote für diesen Standort.' : 'Noch keine Angebote. Demo: Als Anbieter ein Inserat erstellen.';
     empty.style.display = list.length ? 'none' : 'block';
 
     list.forEach(o=> grid.appendChild(offerCard(o)));
@@ -1441,7 +1442,7 @@
       return false;
     }
     if(cart && cart.providerId !== o.providerId){
-      alert('MVP: Warenkorb nur fuer einen Anbieter. Bitte zuerst Warenkorb leeren.');
+      alert('MVP: Warenkorb nur für einen Anbieter. Bitte zuerst Warenkorb leeren.');
       return false;
     }
     if(!cart){ cart = { providerId:o.providerId, providerName:o.providerName, items:[], pickupTime:'' }; }
@@ -1550,7 +1551,7 @@
       <b>${esc(cart.providerName || 'Anbieter')}</b>
       ${lines.join('')}
       ${windowText ? `<div class="hint">Essenszeit: ${esc(windowText)}</div>` : ''}
-      <div class="row"><span>Wann moechtest du ungefaehr da sein?</span></div>
+      <div class="row"><span>Wann möchtest du ungefähr da sein?</span></div>
       <input class="field" id="pickupTimeInput" type="text" placeholder="z.B. 12:15" value="${esc(cart.pickupTime||'')}" />
       <div class="hint">Bitte innerhalb der Essenszeit.</div>
       <div class="row"><span>Gesamt</span><b>${euro(total)}</b></div>
@@ -1588,14 +1589,14 @@
 
   document.getElementById('btnCheckout').onclick=()=>{
     if(!customer.loggedIn){
-      alert('Fuer die Demo: Bitte zuerst als Kunde anmelden (Profil).');
+      alert('Für die Demo: Bitte zuerst als Kunde anmelden (Profil).');
       showProfile();
       return;
     }
     if(!cart || !cart.items || !cart.items.length) return;
     const pickupTime = String(cart.pickupTime||'').trim();
     if(!pickupTime){
-      alert('Bitte eine ungefaehre Abholzeit angeben.');
+      alert('Bitte eine ungefähre Abholzeit angeben.');
       showCart();
       setTimeout(()=>{
         const input = document.getElementById('pickupTimeInput');
@@ -1725,7 +1726,7 @@
 
     const stats = document.getElementById('provPickupStats');
     const withCodeToday = mineToday.filter(o=>o.hasPickupCode).length;
-    stats.textContent = withCodeToday ? `Abholcode heute: ${withCodeToday} Inserate.` : 'Noch keine Abholcodes fuer heute.';
+    stats.textContent = withCodeToday ? `Abholcode heute: ${withCodeToday} Inserate.` : 'Noch keine Abholcodes für heute.';
 
     const shareBtn = document.getElementById('btnShareToday');
     shareBtn.style.display = mineToday.length ? 'block' : 'none';
@@ -1955,13 +1956,13 @@
   };
 
   document.getElementById('btnBilling').onclick=()=>{
-    alert('Abrechnungen (MVP): monatliche Sammelrechnung. Stripe Tax folgt spaeter.');
+    alert('Abrechnungen (MVP): monatliche Sammelrechnung. Stripe Tax folgt später.');
   };
 
   document.getElementById('rowProfileOverview').onclick=()=>{
     const p = normalizeProviderProfile(provider.profile || {});
     const addr = buildAddress(p) || 'Adresse fehlt';
-    alert(`Profil-Uebersicht\n${p.name || 'Name fehlt'}\n${addr}\nEssenszeit: ${p.mealWindow || DEFAULT_MEAL_WINDOW}`);
+    alert(`Profil-Übersicht\n${p.name || 'Name fehlt'}\n${addr}\nEssenszeit: ${p.mealWindow || DEFAULT_MEAL_WINDOW}`);
   };
 
   document.getElementById('btnProvActions').onclick=()=>{
@@ -2118,7 +2119,7 @@
         <div class="hint">${esc(entry.category||'Vegetarisch')} · ${euro(entry.price||0)}</div>
         <div class="cookbook-facts">
           Zuletzt online: <b>${esc(formatDayLabel(lastOnline))}</b><br>
-          Verkaeufe ueber Mittagio: <b>${sales}</b>
+          Verkäufe über Mittagio: <b>${sales}</b>
         </div>
       `;
 
@@ -2128,7 +2129,7 @@
       const pub=document.createElement('button');
       pub.type='button';
       pub.className='ans';
-      pub.textContent='Veroeffentlichen';
+      pub.textContent='Veröffentlichen';
       pub.onclick=()=>{ publishCookbookEntry(entry.id); };
 
       const edit=document.createElement('button');
@@ -2156,10 +2157,10 @@
 
     const draftTitle=document.createElement('div');
     draftTitle.className='section-title';
-    draftTitle.textContent='Entwuerfe';
+    draftTitle.textContent='Entwürfe';
     wrap.appendChild(draftTitle);
     if(!drafts.length){
-      const h=document.createElement('div'); h.className='hint'; h.textContent='Keine Entwuerfe vorhanden.';
+      const h=document.createElement('div'); h.className='hint'; h.textContent='Keine Entwürfe vorhanden.';
       wrap.appendChild(h);
     } else {
       drafts.forEach(x=>wrap.appendChild(buildItem(x)));
@@ -2196,7 +2197,7 @@
     });
 
     if(!offer.providerStreet){
-      alert('Bitte zuerst Anbieterprofil ausfuellen (Adresse).');
+      alert('Bitte zuerst Anbieterprofil ausfüllen (Adresse).');
       return;
     }
 
@@ -2211,7 +2212,7 @@
     renderProviderHome();
     renderProviderPickups();
     renderDiscover();
-    alert('Inserat veroeffentlicht.');
+    alert('Inserat veröffentlicht.');
   }
 
   function publishWeekEntry(dayKey, entry){
@@ -2244,7 +2245,7 @@
     });
 
     if(!offer.providerStreet){
-      alert('Bitte zuerst Anbieterprofil ausfuellen (Adresse).');
+      alert('Bitte zuerst Anbieterprofil ausfüllen (Adresse).');
       return;
     }
 
@@ -2259,7 +2260,7 @@
     renderProviderHome();
     renderProviderPickups();
     renderDiscover();
-    alert('Inserat veroeffentlicht.');
+    alert('Inserat veröffentlicht.');
   }
 
   // --- Wizard engine (Provider profile / Listing / Cookbook / Week) ---
@@ -2270,10 +2271,10 @@
     {name:'Krebstiere', short:'KR'},
     {name:'Eier', short:'EI'},
     {name:'Fisch', short:'FI'},
-    {name:'Erdnuesse', short:'EN'},
+    {name:'Erdnüsse', short:'EN'},
     {name:'Soja', short:'SO'},
     {name:'Milch', short:'MI'},
-    {name:'Schalenfruechte', short:'SF'},
+    {name:'Schalenfrüchte', short:'SF'},
     {name:'Sellerie', short:'SE'},
     {name:'Senf', short:'SN'},
     {name:'Sesam', short:'SS'},
@@ -2461,11 +2462,11 @@
     }
 
     if(w.step===0){
-      setWizardQuestion('Wie heisst dein Betrieb?', 'Du kannst den Namen jederzeit aendern.');
+      setWizardQuestion('Wie heißt dein Betrieb?', 'Du kannst den Namen jederzeit ändern.');
       const box=document.createElement('div');
       const input=document.createElement('input');
       input.className='field';
-      input.placeholder='z.B. Metzgerei Mueller';
+      input.placeholder='z.B. Metzgerei Müller';
       input.value = w.data.name || '';
       input.oninput=()=>{ w.data.name=input.value; };
       box.appendChild(input);
@@ -2475,7 +2476,7 @@
     }
 
     if(w.step===1){
-      setWizardQuestion('Adresse deines Betriebs?', 'Auto-Vervollstaendigung folgt (Demo).');
+      setWizardQuestion('Adresse deines Betriebs?', 'Auto-Vervollständigung folgt (Demo).');
       const box=document.createElement('div');
       const input=document.createElement('input');
       input.className='field';
@@ -2483,7 +2484,7 @@
       input.value = w.data.address || buildAddress(w.data) || '';
       input.oninput=()=>{ w.data.address=input.value; };
       box.appendChild(input);
-      const h=document.createElement('div'); h.className='hint'; h.textContent='Tipp: Strasse, PLZ, Ort - getrennt mit Komma.';
+      const h=document.createElement('div'); h.className='hint'; h.textContent='Tipp: Straße, PLZ, Ort - getrennt mit Komma.';
       box.appendChild(h);
       setWizardContent(box);
       wNextBtn.textContent='Weiter';
@@ -2491,7 +2492,7 @@
     }
 
     if(w.step===2){
-      setWizardQuestion('Wann koennen Gaeste dein Essen geniessen?', 'Standard aus Profil, optional anpassen.');
+      setWizardQuestion('Wann können Gäste dein Essen genießen?', 'Standard aus Profil, optional anpassen.');
       if(!w.data.mealWindow) w.data.mealWindow = DEFAULT_MEAL_WINDOW;
 
       const current = w.data.mealWindow || DEFAULT_MEAL_WINDOW;
@@ -2512,7 +2513,7 @@
       const toggle=document.createElement('button');
       toggle.type='button';
       toggle.className='ans';
-      toggle.textContent = w.data.mealCustom ? 'Fertig' : 'Essenszeit aendern';
+      toggle.textContent = w.data.mealCustom ? 'Fertig' : 'Essenszeit ändern';
       toggle.onclick=()=>{
         w.data.mealCustom = !w.data.mealCustom;
         rebuildWizard();
@@ -2563,7 +2564,7 @@
     }
 
     if(w.step===3){
-      setWizardQuestion('Logo hochladen?', 'Optional, spaeter jederzeit austauschbar.');
+      setWizardQuestion('Logo hochladen?', 'Optional, später jederzeit austauschbar.');
       const wrap = document.createElement('div');
       const btns=document.createElement('div');
       btns.className='answers';
@@ -2571,7 +2572,7 @@
       const up=document.createElement('button');
       up.className='ans';
       up.type='button';
-      up.textContent='Logo auswaehlen';
+      up.textContent='Logo auswählen';
       up.onclick=async()=>{
         const file = await pickImage();
         if(!file) return;
@@ -2582,7 +2583,7 @@
       const skip=document.createElement('button');
       skip.className='ans';
       skip.type='button';
-      skip.textContent='Spaeter';
+      skip.textContent='Später';
       skip.onclick=()=>{ w.data.logoData=''; rebuildWizard(); };
 
       btns.appendChild(up);
@@ -2673,11 +2674,11 @@
     setWizardHeader('Neues Inserat', `Schritt ${Math.min(w.step+1,total)} von ${total}`);
 
     if(w.step===0){
-      setWizardQuestion('Gerichtname?', 'Vorschlaege erleichtern die Eingabe.');
+      setWizardQuestion('Gerichtname?', 'Vorschläge erleichtern die Eingabe.');
       const box=document.createElement('div');
       const input=document.createElement('input');
       input.className='field';
-      input.placeholder='z.B. Kuerbissuppe';
+      input.placeholder='z.B. Kürbissuppe';
       input.setAttribute('list','dishSuggestions');
       input.value=w.data.dish||'';
       input.oninput=()=>{
@@ -2745,7 +2746,7 @@
       const toggle=document.createElement('button');
       toggle.type='button';
       toggle.className='ans';
-      toggle.textContent = w.data.mealCustom ? 'Fertig' : 'Essenszeit aendern';
+      toggle.textContent = w.data.mealCustom ? 'Fertig' : 'Essenszeit ändern';
       toggle.onclick=()=>{
         w.data.mealCustom = !w.data.mealCustom;
         if(!w.data.mealCustom){
@@ -2837,7 +2838,7 @@
     }
 
     if(w.step===4){
-      setWizardQuestion('Extras?', 'Presets waehlen und Preis angeben.');
+      setWizardQuestion('Extras?', 'Presets wählen und Preis angeben.');
       const box=document.createElement('div');
       if(!Array.isArray(w.data.extras)) w.data.extras=[];
 
@@ -2914,7 +2915,7 @@
         box.appendChild(presets);
         const hint=document.createElement('div');
         hint.className='hint';
-        hint.textContent='Hinweis: spaeter Recup/Rebowl.';
+        hint.textContent='Hinweis: später Recup/Rebowl.';
         box.appendChild(hint);
 
         if(w.data.reuseCustom){
@@ -2979,7 +2980,7 @@
     }
 
     if(w.step===8){
-      setWizardQuestion('Vor Ort essen moeglich?', 'Vorschau zeigt Badge.');
+      setWizardQuestion('Vor Ort essen möglich?', 'Vorschau zeigt Badge.');
       const box=document.createElement('div');
       const ans=document.createElement('div'); ans.className='answers';
       const yes=document.createElement('button'); yes.type='button'; yes.className='ans'+(w.data.dineInPossible?' on':''); yes.textContent='Ja';
@@ -2996,7 +2997,7 @@
     }
 
     if(w.step===9){
-      setWizardQuestion('Abschluss', 'Veroeffentlichen oder speichern.');
+      setWizardQuestion('Abschluss', 'Veröffentlichen oder speichern.');
       const box=document.createElement('div');
       attachListingPreview(box);
 
@@ -3006,12 +3007,12 @@
       const btnPub=document.createElement('button');
       btnPub.className='btn';
       btnPub.type='button';
-      btnPub.textContent = 'Inserat veroeffentlichen';
+      btnPub.textContent = 'Inserat veröffentlichen';
       btnPub.onclick=()=>{
         const o = previewOfferFromWizard();
         publishOffer(o);
         closeWizard();
-        alert('Inserat veroeffentlicht.');
+        alert('Inserat veröffentlicht.');
         showProviderHome();
       };
 
@@ -3029,7 +3030,7 @@
       const btnWeek=document.createElement('button');
       btnWeek.className='btn ghost';
       btnWeek.type='button';
-      btnWeek.textContent='In Wochenplan uebernehmen';
+      btnWeek.textContent='In Wochenplan übernehmen';
       btnWeek.onclick=()=>{
         saveToCookbookFromWizard(true);
         const cb = cookbook.filter(x=>x.providerId===providerId()).slice(-1)[0];
@@ -3039,7 +3040,7 @@
       const btnBack=document.createElement('button');
       btnBack.className='btn ghost';
       btnBack.type='button';
-      btnBack.textContent='Zurueck';
+      btnBack.textContent='Zurück';
       btnBack.onclick=()=>{ w.step = Math.max(0, w.step-1); rebuildWizard(); };
 
       actions.appendChild(btnPub);
@@ -3087,7 +3088,7 @@
     const out = {...o, id, day: o.day || isoDate(new Date()), active: o.active !== false};
     // ensure provider address exists
     if(!out.providerStreet){
-      alert('Bitte zuerst Anbieterprofil ausfuellen (Adresse).');
+      alert('Bitte zuerst Anbieterprofil ausfüllen (Adresse).');
       return;
     }
     if(existingId){
@@ -3170,7 +3171,7 @@
     }
 
     if(w.step===1){
-      setWizardQuestion('Foto speichern?', 'Optional (fuer schnelleres Wiederverwenden).');
+      setWizardQuestion('Foto speichern?', 'Optional (für schnelleres Wiederverwenden).');
       const box=document.createElement('div');
       const ans=document.createElement('div'); ans.className='answers';
       const b1=document.createElement('button'); b1.type='button'; b1.className='ans'; b1.textContent='Foto auswählen';
@@ -3252,7 +3253,7 @@
     }
 
     if(w.step===6){
-      setWizardQuestion('Standardpreis?', 'Nur Zahl - Komma nicht noetig.');
+      setWizardQuestion('Standardpreis?', 'Nur Zahl - Komma nicht nötig.');
       const box=document.createElement('div');
       const input=document.createElement('input');
       input.className='field'; input.inputMode='numeric'; input.placeholder='z.B. 799';
@@ -3265,7 +3266,7 @@
     }
 
     if(w.step===7){
-      setWizardQuestion('Speichern?', 'Damit du spaeter mit 2 Taps inserierst.');
+      setWizardQuestion('Speichern?', 'Damit du später mit 2 Taps inserierst.');
       const box=document.createElement('div');
       const prev = {
         id:'preview',
@@ -3287,7 +3288,7 @@
       const btn=document.createElement('button');
       btn.className='btn';
       btn.type='button';
-      btn.textContent = w.ctx && w.ctx.editId ? 'Aenderungen speichern' : 'Im Kochbuch speichern';
+      btn.textContent = w.ctx && w.ctx.editId ? 'Änderungen speichern' : 'Im Kochbuch speichern';
       btn.onclick=()=>{
         saveToCookbookFromWizard();
         closeWizard();
@@ -3306,7 +3307,7 @@
   function buildWeekStep(){
     setWizardNextDefault();
     setWizardHeader('Wochenplan', '1/1');
-    setWizardQuestion('Fuer welchen Tag?', 'Waehle einen Tag und fuege das Gericht hinzu.');
+    setWizardQuestion('Für welchen Tag?', 'Wähle einen Tag und füge das Gericht hinzu.');
 
     const box=document.createElement('div');
     const ans=document.createElement('div'); ans.className='answers';
@@ -3326,7 +3327,7 @@
     const btn=document.createElement('button');
     btn.className='btn';
     btn.type='button';
-    btn.textContent='Zum Wochenplan hinzufuegen';
+    btn.textContent='Zum Wochenplan hinzufügen';
     btn.onclick=()=>{
       const cb = cookbook.find(c=>c.id===w.data.cookbookId);
       if(!cb){ alert('Gericht nicht gefunden'); return; }
