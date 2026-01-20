@@ -2,6 +2,11 @@
   publish = "."
 
 [[redirects]]
+  from = "/"
+  to = "/app/"
+  status = 301
+
+[[redirects]]
   from = "/app"
   to = "/app/"
   status = 301
@@ -14,5 +19,5 @@
 # optional: fall back to root
 [[redirects]]
   from = "/*"
-  to = "/index.html"
+  to = "/app/index.html"
   status = 200
