@@ -1,23 +1,7 @@
 [build]
-  publish = "."
+  publish = "app"
 
-[[redirects]]
-  from = "/"
-  to = "/app/"
-  status = 301
-
-[[redirects]]
-  from = "/app"
-  to = "/app/"
-  status = 301
-
-[[redirects]]
-  from = "/app/*"
-  to = "/app/index.html"
-  status = 200
-
-# optional: fall back to root
 [[redirects]]
   from = "/*"
-  to = "/app/index.html"
+  to = "/index.html"
   status = 200

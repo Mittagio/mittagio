@@ -388,8 +388,20 @@
   </div>
 
   <main>
+    <!-- START -->
+    <section class="view active" id="v-start">
+      <div class="panel">
+        <div class="section-title">Los geht’s 👋</div>
+        <div class="hint">Wähle, wie du Mittagio nutzen möchtest.</div>
+        <div style="height:10px"></div>
+        <button class="btn" type="button" id="btnStartCustomer">Als Gast entdecken</button>
+        <button class="btn secondary" type="button" id="btnStartProvider">Als Anbieter starten</button>
+        <div class="mini" style="margin-top:8px;">Kein Abo. Keine Verträge. Du kannst jederzeit wechseln.</div>
+      </div>
+    </section>
+
     <!-- CUSTOMER: Discover -->
-    <section class="view active" id="v-discover">
+    <section class="view" id="v-discover">
       <div class="panel">
         <div class="hint">Standort (optional)</div>
         <div class="loc-row" style="margin-top:8px;">
@@ -820,13 +832,18 @@
     cookbook: 'mittagio_cookbook_v1',
     week: 'mittagio_week_v1',
     pickupDone: 'mittagio_pickup_done_v1',
-    mode: 'mittagio_mode_v1'
+    mode: 'mittagio_mode_v1',
+    startSeen: 'mittagio_start_seen_v1'
   };
   const load = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } };
   const save = (k, v) => localStorage.setItem(k, JSON.stringify(v));
 
   // --- State ---
-  let mode = load(LS.mode, 'customer'); // 'customer' | 'provider'
+  let mode = load(LS.mode, 'customer'); // 'start' | 'customer' | 'provider'
+  let startSeen = load(LS.startSeen, false);
+  if(!startSeen){
+    mode = 'start';
+  }
   let offers = load(LS.offers, []);
   const legacyFavs = load(LS.favs, []);
   let providerFavs = new Set(load(LS.providerFavs, legacyFavs));
@@ -1035,6 +1052,7 @@
 
   // --- Navigation ---
   const views = {
+    start:'v-start',
     discover:'v-discover', fav:'v-fav', orders:'v-orders', cart:'v-cart', profile:'v-profile',
     providerLogin:'v-provider-login',
     providerHome:'v-provider-home', providerPickups:'v-provider-pickups', providerCookbook:'v-provider-cookbook', providerProfile:'v-provider-profile', providerWeek:'v-provider-week'
@@ -1053,15 +1071,29 @@
     window.scrollTo({top:0,behavior:'smooth'});
   }
 
+  function markStartSeen(){
+    if(!startSeen){
+      startSeen = true;
+      save(LS.startSeen, true);
+    }
+  }
+
   function setMode(next){
     mode = next;
     save(LS.mode, mode);
 
     const isProv = mode==='provider';
-    document.getElementById('customerNav').style.display = isProv ? 'none' : 'flex';
+    const isStart = mode==='start';
+    const isCustomer = mode==='customer';
+    document.getElementById('customerNav').style.display = isCustomer ? 'flex' : 'none';
     document.getElementById('providerNav').style.display = isProv ? 'flex' : 'none';
-    document.getElementById('discoverFilters').style.display = isProv ? 'none' : 'block';
+    document.getElementById('discoverFilters').style.display = isCustomer ? 'block' : 'none';
     document.getElementById('modePill').style.display = isProv ? 'inline-flex' : 'none';
+
+    if(isStart){
+      showStart();
+      return;
+    }
 
     if(isProv){
       // provider must be logged in
@@ -1073,6 +1105,11 @@
     } else {
       showDiscover();
     }
+  }
+
+  // --- Start ---
+  function showStart(){
+    showView(views.start);
   }
 
   // --- Customer views ---
@@ -1979,6 +2016,22 @@
     openCodeSheet(newOrder.id);
   };
 
+  // --- Start actions ---
+  const startCustomerBtn = document.getElementById('btnStartCustomer');
+  if(startCustomerBtn){
+    startCustomerBtn.onclick=()=>{
+      markStartSeen();
+      setMode('customer');
+    };
+  }
+  const startProviderBtn = document.getElementById('btnStartProvider');
+  if(startProviderBtn){
+    startProviderBtn.onclick=()=>{
+      markStartSeen();
+      setMode('provider');
+    };
+  }
+
   // --- Customer login (demo) ---
   document.getElementById('btnCustomerLogin').onclick=()=>{
     customer.loggedIn = true;
@@ -1990,6 +2043,7 @@
   // --- Provider entry ---
   document.getElementById('btnProviderEntry').onclick=()=>{
     // switch mode; show provider login page
+    markStartSeen();
     setMode('provider');
   };
   document.getElementById('btnProvBack').onclick=()=>{ setMode('customer'); showProfile(); };
@@ -3786,12 +3840,8 @@
   renderChips();
 
   // init nav bindings
-  // default start
   if(mode==='provider' && !provider.loggedIn) mode='customer';
   setMode(mode);
-
-  // initial customer view
-  showDiscover();
 </script>
 
 <script>
