@@ -1,1 +1,0 @@
-// Component: bottom-nav.js
