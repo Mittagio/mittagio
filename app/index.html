@@ -1116,6 +1116,7 @@
   function showDiscover(){
     setCustomerNavActive('discover');
     showView(views.discover);
+    renderChips();
     renderDiscover();
   }
   function showFav(){
@@ -1169,6 +1170,10 @@
   // --- Chips render ---
   function renderChips(){
     const catEl = document.getElementById('catChips');
+    const dayEl = document.getElementById('dayChips');
+    if(!catEl || !dayEl){
+      return;
+    }
     catEl.innerHTML='';
     CATEGORIES.forEach(c=>{
       const b=document.createElement('button');
@@ -1183,7 +1188,6 @@
       catEl.appendChild(b);
     });
 
-    const dayEl = document.getElementById('dayChips');
     dayEl.innerHTML='';
     for(let i=0;i<5;i++){
       const d=new Date(); d.setDate(d.getDate()+i);
