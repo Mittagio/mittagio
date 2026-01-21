@@ -463,35 +463,42 @@
         <div style="margin-top:10px;" class="hint" id="customerStatus">Nicht angemeldet (Demo).</div>
       </div>
 
-      <div class="faq">
-        <details>
-          <summary>Wie funktioniert Mittagio?</summary>
-          <p>Entdecken -> Gericht wählen -> bezahlen -> Abholcode zeigen -> abholen.</p>
-        </details>
-        <details>
-          <summary>Was ist der Abholcode?</summary>
-          <p>Der Abholcode zeigt, dass du vorab bezahlt hast. Du bekommst eine Abholnummer nach der Zahlung.</p>
-        </details>
-        <details>
-          <summary>Kann ich ohne Abholcode bestellen?</summary>
-          <p>Nein. Angebote ohne Abholcode kannst du nur ansehen.</p>
-        </details>
-        <details>
-          <summary>Wann kann ich abholen?</summary>
-          <p>Innerhalb der Essenszeit. Wähle eine ungefähre Abholzeit im Warenkorb.</p>
-        </details>
-        <details>
-          <summary>Kann ich für mehrere Personen bestellen?</summary>
-          <p>Ja. Du kannst mehrere Gerichte in einem Vorgang bestellen (eine Abholnummer).</p>
-        </details>
-        <details>
-          <summary>Vor Ort essen möglich?</summary>
-          <p>Wenn das Badge „Vor Ort“ angezeigt wird, kannst du vor Ort essen.</p>
-        </details>
-        <details>
-          <summary>Teilen</summary>
-          <p>Teile Angebote per WhatsApp, Instagram oder Website.</p>
-        </details>
+      <div class="panel" style="margin-top:12px;">
+        <div class="section-title">FAQ</div>
+        <div class="faq">
+          <details>
+            <summary>Wie funktioniert Mittagio?</summary>
+            <p>Du findest Mittagsangebote in deiner Stadt, optional bezahlst du online und holst zur gewählten Zeit ab.</p>
+          </details>
+          <details>
+            <summary>Ist Online-Zahlung Pflicht?</summary>
+            <p>Nein. Online-Zahlung ist optional. Eine Abholnummer gibt’s nur bei Online-Zahlung.</p>
+          </details>
+          <details>
+            <summary>Was ist der Abholcode?</summary>
+            <p>Der Abholcode zeigt, dass du vorab bezahlt hast. Du bekommst eine Abholnummer nach der Zahlung.</p>
+          </details>
+          <details>
+            <summary>Kann ich ohne Abholcode bestellen?</summary>
+            <p>Nein. Angebote ohne Abholcode kannst du nur ansehen.</p>
+          </details>
+          <details>
+            <summary>Wann kann ich abholen?</summary>
+            <p>Innerhalb der Essenszeit. Wähle eine ungefähre Abholzeit im Warenkorb.</p>
+          </details>
+          <details>
+            <summary>Kann ich für mehrere Personen bestellen?</summary>
+            <p>Ja. Du kannst mehrere Gerichte in einem Vorgang bestellen (eine Abholnummer).</p>
+          </details>
+          <details>
+            <summary>Vor Ort essen möglich?</summary>
+            <p>Wenn das Badge „Vor Ort“ angezeigt wird, kannst du vor Ort essen.</p>
+          </details>
+          <details>
+            <summary>Teilen</summary>
+            <p>Teile Angebote per WhatsApp, Instagram oder Website.</p>
+          </details>
+        </div>
       </div>
     </section>
 
@@ -656,27 +663,48 @@
       <div style="height:12px"></div>
       <button class="btn ghost" type="button" id="btnProvLogout">Logout</button>
 
-      <div id="provFaqBox" class="faq" style="display:none;">
-        <details>
-          <summary>Kein Abo / keine Provision?</summary>
-          <p>Ja. Fixpreis pro Inserat (aktuell 4,99 EUR). Keine Mindestlaufzeit.</p>
-        </details>
-        <details>
-          <summary>Wie funktionieren Abholungen?</summary>
-          <p>Wenn Abholcode aktiv ist, werden die Codes nach Gericht gruppiert angezeigt. Tippe einen Code an, sobald ein Gast abgeholt hat.</p>
-        </details>
-        <details>
-          <summary>Warum Abholcode?</summary>
-          <p>Vorab bezahlt, weniger Chaos an der Ausgabe und ein klarer Ablauf pro Bestellung.</p>
-        </details>
-        <details>
-          <summary>Was kostet Abholcode?</summary>
-          <p>49 Cent pro bezahltem Vorgang. (Auch wenn der Kunde mehrere Gerichte in einem Vorgang holt.)</p>
-        </details>
-        <details>
-          <summary>Wie spare ich Zeit?</summary>
-          <p>Speichere Gerichte im Kochbuch und veröffentliche sie mit 2-3 Taps erneut.</p>
-        </details>
+      <div id="provFaqBox" style="display:none;">
+        <div class="panel">
+          <div class="section-title">FAQ (Anbieter)</div>
+          <div class="faq">
+            <details>
+              <summary>Was ist Mittagio?</summary>
+              <p>Mittagio ist eine Online-Plattform, auf der du dein Mittagsangebot sichtbar machst – schnell, einfach und flexibel.</p>
+            </details>
+            <details>
+              <summary>Wie verdiene ich damit Zeit?</summary>
+              <p>Du legst Gerichte einmal an (Kochbuch) und veröffentlichst sie mit einem Klick. Weniger Telefonate, weniger Chaos.</p>
+            </details>
+            <details>
+              <summary>Muss Online-Zahlung aktiv sein?</summary>
+              <p>Nein. Online-Zahlung ist optional. Abholnummern gibt’s nur bei Online-Zahlung.</p>
+            </details>
+            <details>
+              <summary>Wie kann ich mein Angebot teilen?</summary>
+              <p>Mit einem Tap: WhatsApp, Instagram oder Homepage – Text ist automatisch vorbereitet.</p>
+            </details>
+            <details>
+              <summary>Kein Abo / keine Provision?</summary>
+              <p>Ja. Fixpreis pro Inserat (aktuell 4,99 EUR). Keine Mindestlaufzeit.</p>
+            </details>
+            <details>
+              <summary>Wie funktionieren Abholungen?</summary>
+              <p>Wenn Abholcode aktiv ist, werden die Codes nach Gericht gruppiert angezeigt. Tippe einen Code an, sobald ein Gast abgeholt hat.</p>
+            </details>
+            <details>
+              <summary>Warum Abholcode?</summary>
+              <p>Vorab bezahlt, weniger Chaos an der Ausgabe und ein klarer Ablauf pro Bestellung.</p>
+            </details>
+            <details>
+              <summary>Was kostet Abholcode?</summary>
+              <p>49 Cent pro bezahltem Vorgang. (Auch wenn der Kunde mehrere Gerichte in einem Vorgang holt.)</p>
+            </details>
+            <details>
+              <summary>Wie spare ich Zeit?</summary>
+              <p>Speichere Gerichte im Kochbuch und veröffentliche sie mit 2-3 Taps erneut.</p>
+            </details>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -1116,6 +1144,7 @@
   function showDiscover(){
     setCustomerNavActive('discover');
     showView(views.discover);
+    renderChips();
     renderDiscover();
   }
   function showFav(){
@@ -1169,6 +1198,10 @@
   // --- Chips render ---
   function renderChips(){
     const catEl = document.getElementById('catChips');
+    const dayEl = document.getElementById('dayChips');
+    if(!catEl || !dayEl){
+      return;
+    }
     catEl.innerHTML='';
     CATEGORIES.forEach(c=>{
       const b=document.createElement('button');
@@ -1183,7 +1216,6 @@
       catEl.appendChild(b);
     });
 
-    const dayEl = document.getElementById('dayChips');
     dayEl.innerHTML='';
     for(let i=0;i<5;i++){
       const d=new Date(); d.setDate(d.getDate()+i);
