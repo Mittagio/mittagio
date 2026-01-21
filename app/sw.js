@@ -1,12 +1,12 @@
-const CACHE = 'mittagio-v4';
+const CACHE = 'mittagio-v5';
 const ASSETS = [
-  '/app/',
-  '/app/index.html',
-  '/app/manifest.json',
-  '/app/assets/mittagio-logo.png',
-  '/app/assets/provider-placeholder.png',
-  '/app/assets/icons/icon-192.png',
-  '/app/assets/icons/icon-512.png'
+  '/',
+  '/index.html',
+  '/manifest.json',
+  '/assets/mittagio-logo.png',
+  '/assets/provider-placeholder.png',
+  '/assets/icons/icon-192.png',
+  '/assets/icons/icon-512.png'
 ];
 
 self.addEventListener('install', (e) => {
