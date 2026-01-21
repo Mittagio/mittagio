@@ -74,6 +74,9 @@
       cursor:pointer;
       white-space:nowrap;
       box-shadow:0 6px 14px rgba(0,0,0,.06);
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
     }
     .chip.active{border-color:rgba(31,157,85,.35); box-shadow:0 10px 22px rgba(31,157,85,.12)}
 
@@ -217,6 +220,10 @@
       border-radius:999px; padding:14px 14px; font-weight:950; font-size:15px;
       background:var(--brand); color:#111;
       margin-top:10px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
     }
     .btn:disabled{opacity:.6; cursor:not-allowed}
     .btn.secondary{background:#fff; border:1px solid var(--border)}
@@ -232,6 +239,9 @@
       font-size:12px;
       font-weight:900;
       cursor:pointer;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
     }
     .card-action.primary{background:var(--brand); border-color:var(--brand)}
     .card-action.ghost{background:#f8f7f3}
@@ -324,6 +334,9 @@
       font-weight:950;
       cursor:pointer;
       box-shadow:0 6px 14px rgba(0,0,0,.06);
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
     }
     .ans.on{border-color:rgba(31,157,85,.4); background:rgba(31,157,85,.10)}
     .field{width:100%; padding:12px 12px; border-radius:14px; border:1px solid var(--border); font-size:16px; background:#fbfaf7}
@@ -346,6 +359,10 @@
       width:44px; height:44px; cursor:pointer; font-size:18px;
       display:flex; align-items:center; justify-content:center;
     }
+    .ico-inline{display:inline-flex; align-items:center}
+    .ico-inline svg{width:14px; height:14px}
+    .info-row{display:flex; flex-wrap:wrap; gap:10px; margin-top:8px; font-size:12px; color:var(--muted)}
+    .info-item{display:inline-flex; align-items:center; gap:6px}
   </style>
 </head>
 <body>
@@ -368,7 +385,7 @@
         <div class="hint">Standort (optional)</div>
         <div class="loc-row" style="margin-top:8px;">
           <input class="field" id="locationInput" type="text" placeholder="Ort oder PLZ eingeben" />
-          <button class="pin-btn" type="button" id="btnLocationPin">📍</button>
+          <button class="pin-btn" type="button" id="btnLocationPin" aria-label="Standort setzen"></button>
         </div>
       </div>
       <div style="height:10px"></div>
@@ -494,8 +511,8 @@
         <h3>Neues Inserat</h3>
         <div class="hint">Du entscheidest am Ende: veröffentlichen, ins Kochbuch, in den Wochenplan.</div>
         <div class="w-actions" style="margin-top:10px;">
-          <button class="btn" type="button" id="btnNewListing">Neu erstellen</button>
-          <button class="btn secondary" type="button" id="btnFromCookbook">Aus Kochbuch</button>
+          <button class="btn" type="button" id="btnNewListing" data-icon="plus">Neu erstellen</button>
+          <button class="btn secondary" type="button" id="btnFromCookbook" data-icon="book">Aus Kochbuch</button>
         </div>
       </div>
 
@@ -519,7 +536,7 @@
         <div class="hint">Swipe nach links/rechts · Tippen für Aktionen</div>
         <div class="dayrow" id="provWeekDays" style="padding:0 0 10px; max-width:none;"></div>
         <div id="provWeekPreview" class="hint">Noch nichts geplant.</div>
-        <button class="btn secondary" type="button" id="btnOpenWeekPlan">Wochenplan anzeigen</button>
+        <button class="btn secondary" type="button" id="btnOpenWeekPlan" data-icon="calendar">Wochenplan anzeigen</button>
       </div>
 
       <div style="height:12px"></div>
@@ -536,7 +553,7 @@
           Aktuell keine Abholungen geplant.<br>
           Geplante Abholungen sorgen für weniger Chaos.
           <div style="height:10px"></div>
-          <button class="btn secondary" type="button" id="btnPickupsFaq">Mehr erfahren</button>
+          <button class="btn secondary" type="button" id="btnPickupsFaq" data-icon="info">Mehr erfahren</button>
         </div>
         <div id="provPickupsWrap" style="display:none;">
           <div class="hint" style="margin-top:8px;">Sortierung</div>
@@ -551,7 +568,7 @@
         <h3>Wochenplan</h3>
         <div class="dayrow" id="weekDays" style="padding:0 0 10px; max-width:none;"></div>
         <div id="weekList" class="hint">Noch nichts geplant.</div>
-        <button class="btn secondary" type="button" id="btnWeekPdf">PDF-Wochenkarte erstellen</button>
+        <button class="btn secondary" type="button" id="btnWeekPdf" data-icon="print">PDF-Wochenkarte erstellen</button>
         <button class="btn ghost" type="button" id="btnWeekBack">Zurück</button>
       </div>
     </section>
@@ -681,6 +698,9 @@
 
     <div class="row"><span>Abholfenster</span><b id="sWindow"></b></div>
     <div class="row"><span>Adresse</span><a id="sAddr" href="#" target="_blank" rel="noopener">öffnen</a></div>
+    <div class="row"><span>Entfernung</span><b id="sDistance"></b></div>
+    <div class="row"><span>Bewertung</span><b id="sRating"></b></div>
+    <div class="row"><span>Verfügbar</span><b id="sAvail"></b></div>
 
     <div id="sAllergensWrap" style="display:none">
       <div class="row"><span>Allergene</span><span id="sAllergens" style="text-align:right;color:var(--muted)"></span></div>
@@ -692,10 +712,10 @@
       <div class="row"><span>Mehrweg / Pfand</span><span id="sReuse" style="text-align:right;color:var(--muted)"></span></div>
     </div>
 
-    <button class="btn" type="button" id="btnAddCart">In den Warenkorb</button>
-    <button class="btn secondary" type="button" id="btnShare">Teilen</button>
-    <button class="btn ghost" type="button" id="btnDishFav">Gericht speichern</button>
-    <button class="btn ghost" type="button" id="btnFav">Anbieter speichern</button>
+    <button class="btn" type="button" id="btnAddCart" data-icon="cart">In den Warenkorb</button>
+    <button class="btn secondary" type="button" id="btnShare" data-icon="share">Teilen</button>
+    <button class="btn ghost" type="button" id="btnDishFav" data-icon="heart">Gericht speichern</button>
+    <button class="btn ghost" type="button" id="btnFav" data-icon="heart">Anbieter speichern</button>
     <div class="mini" id="sCodeNote"></div>
   </div>
 </div>
@@ -708,10 +728,10 @@
     <div id="pPreview"></div>
     <div class="row"><span>Status</span><b id="pStatus"></b></div>
     <div class="row"><span>Essenszeit</span><b id="pWindow"></b></div>
-    <button class="btn" type="button" id="btnEditOffer">Bearbeiten</button>
-    <button class="btn secondary" type="button" id="btnToggleOffer">Deaktivieren</button>
-    <button class="btn ghost" type="button" id="btnShareOffer">Teilen</button>
-    <button class="btn ghost" type="button" id="btnPrintOffer">Drucken</button>
+    <button class="btn" type="button" id="btnEditOffer" data-icon="edit">Bearbeiten</button>
+    <button class="btn secondary" type="button" id="btnToggleOffer" data-icon="action">Deaktivieren</button>
+    <button class="btn ghost" type="button" id="btnShareOffer" data-icon="share">Teilen</button>
+    <button class="btn ghost" type="button" id="btnPrintOffer" data-icon="print">Drucken</button>
   </div>
 </div>
 
@@ -744,10 +764,10 @@
       <div class="hint" id="sharePreview"></div>
     </div>
     <div class="answers" style="margin-top:10px;">
-      <button class="ans" type="button" id="btnShareWhatsApp">WhatsApp</button>
-      <button class="ans" type="button" id="btnShareInstagram">Instagram</button>
-      <button class="ans" type="button" id="btnShareWebsite">Website</button>
-      <button class="ans" type="button" id="btnShareCopy">Link kopieren</button>
+      <button class="ans" type="button" id="btnShareWhatsApp" data-icon="share">WhatsApp</button>
+      <button class="ans" type="button" id="btnShareInstagram" data-icon="share">Instagram</button>
+      <button class="ans" type="button" id="btnShareWebsite" data-icon="share">Website</button>
+      <button class="ans" type="button" id="btnShareCopy" data-icon="share">Link kopieren</button>
     </div>
     <button class="btn secondary" type="button" id="btnShareClose">Schließen</button>
   </div>
@@ -891,6 +911,51 @@
     return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#039;'}[c]));
   }
 
+  const ICONS = {
+    plus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>',
+    book:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v15H6.5A2.5 2.5 0 0 0 4 17.5z"/></svg>',
+    share:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="m16 6-4-4-4 4"/><path d="M12 2v14"/></svg>',
+    print:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>',
+    edit:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>',
+    action:'<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>',
+    heart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 6.6a5 5 0 0 0-7.1 0L12 8.3l-1.7-1.7a5 5 0 1 0-7.1 7.1L12 22l8.8-8.3a5 5 0 0 0 0-7.1Z"/></svg>',
+    cart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2h12l2 7H4z"/><path d="M4 9h16v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9Z"/></svg>',
+    location:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s7-7.2 7-12a7 7 0 1 0-14 0c0 4.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg>',
+    star:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 2 3 7 7 .6-5.2 4.5 1.6 7L12 17l-6.4 4.1 1.6-7L2 9.6 9 9z"/></svg>',
+    box:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7l9-4 9 4-9 4-9-4Z"/><path d="M3 7v10l9 4 9-4V7"/><path d="M12 11v10"/></svg>',
+    leaf:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 14c6-8 14-8 16-6-2 8-10 16-18 14 0-6 2-8 2-8Z"/><path d="M6 14c2 0 6 0 10-4"/></svg>',
+    flame:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2s3 4 3 7a3 3 0 1 1-6 0c0-3 3-7 3-7Z"/><path d="M5.5 14.5a6.5 6.5 0 1 0 13 0c0-3.5-2.5-6.5-6.5-9-4 2.5-6.5 5.5-6.5 9Z"/></svg>',
+    calendar:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>',
+    eye:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s4-6 10-6 10 6 10 6-4 6-10 6S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>',
+    info:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 10v6"/><path d="M12 7h.01"/></svg>',
+    card:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>'
+  };
+  const iconMarkup = (name)=> ICONS[name] ? `<span class="ico-inline">${ICONS[name]}</span>` : '';
+  function applyStaticIcons(){
+    document.querySelectorAll('[data-icon]').forEach(el=>{
+      if(el.dataset.iconApplied) return;
+      const label = el.dataset.label || el.textContent.trim();
+      el.dataset.label = label;
+      el.innerHTML = `${iconMarkup(el.dataset.icon)}<span>${esc(label)}</span>`;
+      el.dataset.iconApplied = '1';
+    });
+  }
+
+  function seededInfoKey(str){
+    const s = String(str||'');
+    let h = 0;
+    for(let i=0;i<s.length;i++){ h = (h*31 + s.charCodeAt(i)) % 10000; }
+    return h;
+  }
+  function seededInfo(str){
+    const h = seededInfoKey(str);
+    const distanceKm = Number((0.5 + (h % 80) / 10).toFixed(1));
+    const rating = Number((4 + (h % 9) / 10).toFixed(1));
+    const ratingCount = 30 + (h % 400);
+    const availableCount = 1 + (h % 6);
+    return {distanceKm, rating, ratingCount, availableCount};
+  }
+
   const DEFAULT_MEAL_WINDOW = '11:30 – 14:00';
 
   function buildAddress(p){
@@ -941,6 +1006,11 @@
     out.hasPickupCode = !!out.hasPickupCode;
     out.dineInPossible = !!out.dineInPossible;
     if(out.active === undefined) out.active = true;
+    const info = seededInfo(out.dish || out.providerName || out.providerId);
+    if(out.distanceKm == null) out.distanceKm = info.distanceKm;
+    if(out.rating == null) out.rating = info.rating;
+    if(out.ratingCount == null) out.ratingCount = info.ratingCount;
+    if(out.availableCount == null) out.availableCount = info.availableCount;
     return out;
   }
 
@@ -1047,7 +1117,8 @@
     CATEGORIES.forEach(c=>{
       const b=document.createElement('button');
       b.className='chip'+(activeCat===c?' active':'');
-      b.textContent=c;
+      const iconName = c==='Vegetarisch' ? 'leaf' : (c==='Vegan' ? 'leaf' : 'flame');
+      b.innerHTML = `${iconMarkup(iconName)}<span>${esc(c)}</span>`;
       b.onclick=()=>{
         activeCat = activeCat===c ? null : c;
         renderChips();
@@ -1119,7 +1190,7 @@
     img.innerHTML = `
       <img alt="${esc(data.dish||'')}" src="${esc(imgSrc)}" />
       ${data.dineInPossible?'<div class="badge dine">Vor Ort</div>':''}
-      ${data.hasPickupCode?'<div class="badge code">Abholcode</div>':''}
+      ${data.hasPickupCode?'<div class="badge code">Online bezahlen</div>':''}
     `;
 
     const providerKey = data.providerId || data.id;
@@ -1154,6 +1225,19 @@
       </div>
     `;
 
+    const info=document.createElement('div');
+    info.className='info-row';
+    const addInfo = (icon, text)=>{
+      const item=document.createElement('div');
+      item.className='info-item';
+      item.innerHTML = `${iconMarkup(icon)}<span>${esc(text)}</span>`;
+      info.appendChild(item);
+    };
+    if(data.availableCount != null) addInfo('box', `${data.availableCount} verfügbar`);
+    if(data.rating != null && data.ratingCount != null) addInfo('star', `${data.rating.toFixed(1)} (${data.ratingCount})`);
+    if(data.distanceKm != null) addInfo('location', `${Number(data.distanceKm).toFixed(1)} km`);
+    body.appendChild(info);
+
     if(interactive){
       const actions=document.createElement('div');
       actions.className='card-actions';
@@ -1161,20 +1245,22 @@
       const orderBtn=document.createElement('button');
       orderBtn.type='button';
       orderBtn.className='card-action primary';
-      orderBtn.textContent = data.hasPickupCode ? 'Bestellen' : 'Nur ansehen';
+      const orderLabel = data.hasPickupCode ? 'Bestellen' : 'Nur ansehen';
+      orderBtn.innerHTML = `${iconMarkup(data.hasPickupCode ? 'cart' : 'eye')}<span>${esc(orderLabel)}</span>`;
       orderBtn.disabled = !data.hasPickupCode;
       orderBtn.onclick=(e)=>{ e.stopPropagation(); handleOrderClick(data); };
 
       const favBtn=document.createElement('button');
       favBtn.type='button';
       favBtn.className='card-action';
-      favBtn.textContent = providerFavs.has(providerKey) ? 'Anbieter gespeichert' : 'Anbieter speichern';
+      const favLabel = providerFavs.has(providerKey) ? 'Anbieter gespeichert' : 'Anbieter speichern';
+      favBtn.innerHTML = `${iconMarkup('heart')}<span>${esc(favLabel)}</span>`;
       favBtn.onclick=(e)=>{ e.stopPropagation(); toggleProviderFav(providerKey); };
 
       const shareBtn=document.createElement('button');
       shareBtn.type='button';
       shareBtn.className='card-action ghost';
-      shareBtn.textContent='Teilen';
+      shareBtn.innerHTML = `${iconMarkup('share')}<span>Teilen</span>`;
       shareBtn.onclick=(e)=>{ e.stopPropagation(); shareOffer(data); };
 
       actions.appendChild(orderBtn);
@@ -1233,19 +1319,19 @@
       const actBtn=document.createElement('button');
       actBtn.type='button';
       actBtn.className='card-action';
-      actBtn.textContent='Aktionen';
+      actBtn.innerHTML = `${iconMarkup('action')}<span>Aktionen</span>`;
       actBtn.onclick=(e)=>{ e.stopPropagation(); openProviderOffer(data.id); };
 
       const shareBtn=document.createElement('button');
       shareBtn.type='button';
       shareBtn.className='card-action';
-      shareBtn.textContent='Teilen';
+      shareBtn.innerHTML = `${iconMarkup('share')}<span>Teilen</span>`;
       shareBtn.onclick=(e)=>{ e.stopPropagation(); shareOffer(data); };
 
       const printBtn=document.createElement('button');
       printBtn.type='button';
       printBtn.className='card-action';
-      printBtn.textContent='Drucken';
+      printBtn.innerHTML = `${iconMarkup('print')}<span>Drucken</span>`;
       printBtn.onclick=(e)=>{ e.stopPropagation(); printOffer(data); };
 
       actions.appendChild(actBtn);
@@ -1424,6 +1510,19 @@
     a.textContent = addr || '-';
     a.href = maps;
 
+    const distRow = document.getElementById('sDistance');
+    if(distRow){
+      distRow.textContent = o.distanceKm != null ? `${Number(o.distanceKm).toFixed(1)} km` : '-';
+    }
+    const ratingRow = document.getElementById('sRating');
+    if(ratingRow){
+      ratingRow.textContent = (o.rating != null && o.ratingCount != null) ? `${o.rating.toFixed(1)} (${o.ratingCount})` : '-';
+    }
+    const availRow = document.getElementById('sAvail');
+    if(availRow){
+      availRow.textContent = o.availableCount != null ? `${o.availableCount}` : '-';
+    }
+
     // Allergens
     const aw = document.getElementById('sAllergensWrap');
     if(o.allergens && o.allergens.length){
@@ -1448,15 +1547,15 @@
     const addBtn = document.getElementById('btnAddCart');
     if(o.hasPickupCode){
       addBtn.disabled = false;
-      addBtn.textContent = 'In den Warenkorb';
+      addBtn.innerHTML = `${iconMarkup('cart')}<span>In den Warenkorb</span>`;
     } else {
       addBtn.disabled = true;
-      addBtn.textContent = 'Nur ansehen';
+      addBtn.innerHTML = `${iconMarkup('eye')}<span>Nur ansehen</span>`;
     }
 
     document.getElementById('sCodeNote').innerHTML = o.hasPickupCode
-      ? 'Abholcode aktiv: <b>vorab bezahlt</b>.'
-      : 'Ohne Abholcode nur ansehen.';
+      ? 'Online bezahlen aktiv.'
+      : 'Ohne Online-Bezahlung nur ansehen.';
 
     updateSheetFavs();
 
@@ -1477,10 +1576,12 @@
     const providerKey = o.providerId;
     const dishKey = o.id;
     if(providerBtn){
-      providerBtn.textContent = providerKey && providerFavs.has(providerKey) ? 'Anbieter entfernen' : 'Anbieter speichern';
+      const label = providerKey && providerFavs.has(providerKey) ? 'Anbieter entfernen' : 'Anbieter speichern';
+      providerBtn.innerHTML = `${iconMarkup('heart')}<span>${esc(label)}</span>`;
     }
     if(dishBtn){
-      dishBtn.textContent = dishKey && dishFavs.has(dishKey) ? 'Gericht entfernen' : 'Gericht speichern';
+      const label = dishKey && dishFavs.has(dishKey) ? 'Gericht entfernen' : 'Gericht speichern';
+      dishBtn.innerHTML = `${iconMarkup('heart')}<span>${esc(label)}</span>`;
     }
   }
 
@@ -1501,7 +1602,11 @@
 
     document.getElementById('pStatus').textContent = o.active===false ? 'Inaktiv' : 'Aktiv';
     document.getElementById('pWindow').textContent = o.pickupWindow || '-';
-    document.getElementById('btnToggleOffer').textContent = o.active===false ? 'Aktivieren' : 'Deaktivieren';
+    const toggleLabel = o.active===false ? 'Aktivieren' : 'Deaktivieren';
+    const toggleBtn = document.getElementById('btnToggleOffer');
+    if(toggleBtn){
+      toggleBtn.innerHTML = `${iconMarkup('action')}<span>${esc(toggleLabel)}</span>`;
+    }
 
     document.getElementById('pbd').classList.add('active');
     document.getElementById('psheet').classList.add('active');
@@ -1714,8 +1819,11 @@
     const ok = await copyShareText();
     if(ok) alert('Link kopiert.');
   };
+
+  applyStaticIcons();
   const locBtn = document.getElementById('btnLocationPin');
   if(locBtn){
+    locBtn.innerHTML = iconMarkup('location');
     locBtn.onclick=()=>{
       alert('Standort gesetzt. Du kannst jederzeit wechseln.');
     };
@@ -1801,7 +1909,9 @@
 
     btn.style.display='block';
     btn.disabled = !canCheckout;
-    btn.textContent = canCheckout ? 'Weiter zur Zahlung' : 'Nur ansehen';
+    btn.innerHTML = canCheckout
+      ? `${iconMarkup('card')}<span>Weiter zur Zahlung</span>`
+      : `${iconMarkup('eye')}<span>Nur ansehen</span>`;
     note.style.display='block';
   }
 
@@ -1960,7 +2070,9 @@
     }
 
     const shareBtn = document.getElementById('btnShareToday');
-    shareBtn.style.display = mineToday.length ? 'block' : 'none';
+    if(shareBtn){
+      shareBtn.style.display = mineToday.length ? 'block' : 'none';
+    }
   }
 
   function renderProviderWeekPreview(){
@@ -2270,13 +2382,16 @@
     printOffer(o);
   };
 
-  document.getElementById('btnShareToday').onclick=()=>{
-    const todayKey = isoDate(new Date());
-    const mineToday = offers.filter(o => o.providerId === providerId() && o.day === todayKey && o.active !== false);
-    if(!mineToday.length) return;
-    const txt = `Heute bei uns zu Mittag:\n` + mineToday.map(o=>`${o.dish} - ${euro(o.price)}`).join('\n') + `\npowered by mittagio.de`;
-    openShareSheet(txt);
-  };
+  const shareTodayBtn = document.getElementById('btnShareToday');
+  if(shareTodayBtn){
+    shareTodayBtn.onclick=()=>{
+      const todayKey = isoDate(new Date());
+      const mineToday = offers.filter(o => o.providerId === providerId() && o.day === todayKey && o.active !== false);
+      if(!mineToday.length) return;
+      const txt = `Heute bei uns zu Mittag:\n` + mineToday.map(o=>`${o.dish} - ${euro(o.price)}`).join('\n') + `\npowered by mittagio.de`;
+      openShareSheet(txt);
+    };
+  }
 
   document.getElementById('btnWeekBack').onclick=()=> showProviderHome();
   document.getElementById('btnWeekPdf').onclick=()=>{
