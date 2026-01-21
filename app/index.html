@@ -391,11 +391,27 @@
     <!-- START -->
     <section class="view active" id="v-start">
       <div class="panel">
-        <div class="section-title">Los geht’s 👋</div>
-        <div class="hint">Wähle, wie du Mittagio nutzen möchtest.</div>
-        <div style="height:10px"></div>
-        <button class="btn" type="button" id="btnStartCustomer">Als Gast entdecken</button>
-        <button class="btn secondary" type="button" id="btnStartProvider">Als Anbieter starten</button>
+        <div class="section-title">Entdecken</div>
+        <div class="hint">Rette frische Mittagsangebote in deiner Nähe.</div>
+        <div class="loc-row" style="margin-top:8px;">
+          <input class="field" id="startLocationInput" type="text" placeholder="Ort oder PLZ eingeben" />
+          <button class="pin-btn" type="button" id="btnStartLocationPin" aria-label="Standort setzen"></button>
+        </div>
+      </div>
+      <div style="height:10px"></div>
+      <div class="hint">Kategorien</div>
+      <div class="chiprow" id="startCatChips"></div>
+      <div class="hint" style="margin-top:6px;">Datum</div>
+      <div class="dayrow" id="startDayChips"></div>
+      <div class="section-title" style="margin-top:8px;">Heute in deiner Nähe</div>
+      <div class="grid" id="startOfferGrid"></div>
+      <p class="hint" id="startEmptyOffers" style="display:none;">Noch keine Angebote. Demo: Als Anbieter ein Inserat erstellen.</p>
+      <div class="panel" style="margin-top:12px;">
+        <div class="section-title">Ich möchte…</div>
+        <div class="two" style="margin-top:10px;">
+          <button class="bigbtn" type="button" id="btnStartCustomer">Als Gast entdecken<span>Finde Gerichte in deiner Nähe</span></button>
+          <button class="bigbtn" type="button" id="btnStartProvider">Als Anbieter starten<span>Angebot sichtbar machen</span></button>
+        </div>
         <div class="mini" style="margin-top:8px;">Kein Abo. Keine Verträge. Du kannst jederzeit wechseln.</div>
       </div>
     </section>
@@ -403,7 +419,8 @@
     <!-- CUSTOMER: Discover -->
     <section class="view" id="v-discover">
       <div class="panel">
-        <div class="hint">Standort (optional)</div>
+        <div class="section-title">Entdecken</div>
+        <div class="hint">Finde Angebote in deiner Nähe.</div>
         <div class="loc-row" style="margin-top:8px;">
           <input class="field" id="locationInput" type="text" placeholder="Ort oder PLZ eingeben" />
           <button class="pin-btn" type="button" id="btnLocationPin" aria-label="Standort setzen"></button>
@@ -411,9 +428,12 @@
       </div>
       <div style="height:10px"></div>
       <div id="discoverFilters">
+        <div class="hint">Kategorien</div>
         <div class="chiprow" id="catChips"></div>
+        <div class="hint" style="margin-top:6px;">Datum</div>
         <div class="dayrow" id="dayChips"></div>
       </div>
+      <div class="section-title" style="margin-top:8px;">Heute in deiner Nähe</div>
       <div class="grid" id="offerGrid"></div>
       <p class="hint" id="emptyOffers" style="display:none;">Noch keine Angebote. Demo: Als Anbieter ein Inserat erstellen.</p>
     </section>
@@ -1138,6 +1158,7 @@
   // --- Start ---
   function showStart(){
     showView(views.start);
+    renderStart();
   }
 
   // --- Customer views ---
@@ -1226,6 +1247,78 @@
       b.onclick=()=>{ activeDay=key; renderChips(); renderDiscover(); };
       dayEl.appendChild(b);
     }
+  }
+
+  function renderStartChips(){
+    const catEl = document.getElementById('startCatChips');
+    const dayEl = document.getElementById('startDayChips');
+    if(!catEl || !dayEl){
+      return;
+    }
+    catEl.innerHTML='';
+    CATEGORIES.forEach(c=>{
+      const b=document.createElement('button');
+      b.className='chip'+(activeCat===c?' active':'');
+      const iconName = c==='Vegetarisch' ? 'leaf' : (c==='Vegan' ? 'leaf' : 'flame');
+      b.innerHTML = `${iconMarkup(iconName)}<span>${esc(c)}</span>`;
+      b.onclick=()=>{
+        activeCat = activeCat===c ? null : c;
+        renderStart();
+        renderDiscover();
+      };
+      catEl.appendChild(b);
+    });
+
+    dayEl.innerHTML='';
+    for(let i=0;i<5;i++){
+      const d=new Date(); d.setDate(d.getDate()+i);
+      const key=isoDate(d);
+      const b=document.createElement('button');
+      b.className='day'+(activeDay===key?' active':'');
+      b.textContent = fmtDay(d);
+      b.onclick=()=>{ activeDay=key; renderStart(); renderDiscover(); };
+      dayEl.appendChild(b);
+    }
+  }
+
+  function renderStart(){
+    renderStartChips();
+    renderStartDiscover();
+  }
+
+  function renderStartDiscover(){
+    const grid = document.getElementById('startOfferGrid');
+    const empty = document.getElementById('startEmptyOffers');
+    const loc = document.getElementById('startLocationInput');
+    if(!grid || !empty){
+      return;
+    }
+    if(loc){
+      if(loc.value !== locationQuery) loc.value = locationQuery || '';
+      loc.oninput=()=>{ locationQuery = loc.value; renderStart(); renderDiscover(); };
+    }
+
+    let list = offers.filter(o => o.day === activeDay && o.active !== false);
+
+    if(activeCat){
+      const cat = CAT_MAP[activeCat] || activeCat;
+      list = list.filter(o => (o.category||'') === cat);
+    }
+
+    const q = String(locationQuery||'').trim().toLowerCase();
+    if(q){
+      list = list.filter(o=>{
+        const data = normalizeOffer(o);
+        const addr = buildAddress({address:data.address, street:data.providerStreet, zip:data.providerZip, city:data.providerCity});
+        return String(addr||'').toLowerCase().includes(q);
+      });
+    }
+
+    grid.innerHTML='';
+    empty.textContent = q ? 'Keine Angebote für diesen Standort.' : 'Noch keine Angebote. Demo: Als Anbieter ein Inserat erstellen.';
+    empty.style.display = list.length ? 'none' : 'block';
+
+    list.slice(0,6).forEach(o=> grid.appendChild(offerCard(o)));
   }
 
   // --- Discover render ---
@@ -1441,6 +1534,7 @@
     // keep legacy key for compatibility
     save(LS.favs, arr);
     renderDiscover();
+    renderStart();
     renderFavorites();
     updateSheetFavs();
   }
@@ -1450,6 +1544,7 @@
     if(dishFavs.has(offerId)) dishFavs.delete(offerId); else dishFavs.add(offerId);
     save(LS.dishFavs, Array.from(dishFavs));
     renderDiscover();
+    renderStart();
     renderFavorites();
     updateSheetFavs();
   }
@@ -1913,6 +2008,13 @@
   if(locBtn){
     locBtn.innerHTML = iconMarkup('location');
     locBtn.onclick=()=>{
+      alert('Standort gesetzt. Du kannst jederzeit wechseln.');
+    };
+  }
+  const startLocBtn = document.getElementById('btnStartLocationPin');
+  if(startLocBtn){
+    startLocBtn.innerHTML = iconMarkup('location');
+    startLocBtn.onclick=()=>{
       alert('Standort gesetzt. Du kannst jederzeit wechseln.');
     };
   }
