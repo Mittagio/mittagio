@@ -65,7 +65,7 @@
     .chip{
       flex:0 0 auto;
       border:1px solid var(--border);
-      background:#fff;
+      background:#f8f7f3;
       padding:9px 12px;
       border-radius:999px;
       font-size:13px;
@@ -78,7 +78,11 @@
       align-items:center;
       gap:6px;
     }
-    .chip.active{border-color:rgba(31,157,85,.35); box-shadow:0 10px 22px rgba(31,157,85,.12)}
+    .chip.active{
+      border-color:rgba(31,157,85,.45);
+      background:rgba(31,157,85,.12);
+      box-shadow:0 10px 22px rgba(31,157,85,.12)
+    }
 
     .pickup-group{
       border:1px solid var(--border);
@@ -123,7 +127,7 @@
     .card{
       background:var(--card);
       border:1px solid var(--border);
-      border-radius:var(--radius);
+      border-radius:20px;
       overflow:hidden;
       box-shadow:var(--shadow);
       cursor:pointer;
@@ -134,7 +138,7 @@
 
     .provider-logo{
       display:flex; align-items:center; gap:8px;
-      padding:10px 12px 0;
+      padding:12px 14px 0;
     }
     .plogo{
       width:28px; height:28px; border-radius:8px;
@@ -146,21 +150,21 @@
     .plogo img{width:100%; height:100%; object-fit:cover; display:block}
     .pname{font-size:13px; font-weight:900; color:#222; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
 
-    .body{padding:10px 12px 12px}
+    .body{padding:12px 14px 14px}
     .title{font-weight:950; font-size:16px; margin:0}
     .sub{margin:3px 0 0; color:#444; font-size:13px}
 
     .meta{display:flex; justify-content:space-between; align-items:flex-end; gap:12px; margin-top:10px}
     .price{font-weight:950; font-size:16px; color:#0f5c4c}
     .right{ text-align:right; font-size:12px; color:var(--muted); line-height:1.25 }
-    .tag{display:inline-block; margin-top:6px; padding:4px 8px; border-radius:999px; font-size:12px; font-weight:900; background:rgba(31,157,85,.12)}
+    .tag{display:inline-block; margin-top:6px; padding:4px 8px; border-radius:999px; font-size:12px; font-weight:900; background:rgba(242,183,5,.18)}
 
     .badge{
       position:absolute; top:12px; left:12px;
-      background:rgba(17,17,17,.82);
+      background:rgba(17,17,17,.72);
       color:#fff;
-      font-size:12px; font-weight:900;
-      padding:6px 10px;
+      font-size:11px; font-weight:900;
+      padding:5px 9px;
       border-radius:999px;
       box-shadow:0 10px 22px rgba(0,0,0,.18);
     }
@@ -231,12 +235,12 @@
     .btn.ghost{background:#f8f7f3; border:1px solid var(--border)}
     .mini{font-size:12px; color:var(--muted); margin-top:8px; line-height:1.25}
 
-    .card-actions{display:flex; flex-wrap:wrap; gap:6px; margin-top:10px}
+    .card-actions{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px}
     .card-action{
       border:1px solid var(--border);
       background:#fff;
       border-radius:999px;
-      padding:6px 10px;
+      padding:8px 12px;
       font-size:12px;
       font-weight:900;
       cursor:pointer;
@@ -362,8 +366,12 @@
     }
     .ico-inline{display:inline-flex; align-items:center}
     .ico-inline svg{width:14px; height:14px}
-    .info-row{display:flex; flex-wrap:wrap; gap:10px; margin-top:8px; font-size:12px; color:var(--muted)}
-    .info-item{display:inline-flex; align-items:center; gap:6px}
+    .info-row{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; font-size:12px; color:var(--muted)}
+    .info-item{
+      display:inline-flex; align-items:center; gap:6px;
+      background:#f8f7f3; border:1px solid var(--border);
+      padding:4px 8px; border-radius:999px;
+    }
   </style>
 </head>
 <body>
