@@ -59,7 +59,7 @@
     .spacer{flex:1}
 
     .chiprow{
-      max-width:980px; margin:0 auto; padding:10px 14px 12px;
+      max-width:980px; margin:0 auto; padding:6px 14px 8px;
       display:flex; gap:8px; overflow:auto; -webkit-overflow-scrolling:touch;
     }
     .chip{
@@ -339,6 +339,13 @@
 
     /* helper */
     .hint{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.25}
+
+    .loc-row{display:flex; gap:8px; align-items:center}
+    .pin-btn{
+      border:1px solid var(--border); background:#fff; border-radius:14px;
+      width:44px; height:44px; cursor:pointer; font-size:18px;
+      display:flex; align-items:center; justify-content:center;
+    }
   </style>
 </head>
 <body>
@@ -357,15 +364,18 @@
   <main>
     <!-- CUSTOMER: Discover -->
     <section class="view active" id="v-discover">
+      <div class="panel">
+        <div class="hint">Standort (optional)</div>
+        <div class="loc-row" style="margin-top:8px;">
+          <input class="field" id="locationInput" type="text" placeholder="Ort oder PLZ eingeben" />
+          <button class="pin-btn" type="button" id="btnLocationPin">📍</button>
+        </div>
+      </div>
+      <div style="height:10px"></div>
       <div id="discoverFilters">
         <div class="chiprow" id="catChips"></div>
         <div class="dayrow" id="dayChips"></div>
       </div>
-      <div class="panel">
-        <div class="hint">Standort (optional)</div>
-        <input class="field" id="locationInput" type="text" placeholder="PLZ oder Stadt" />
-      </div>
-      <div style="height:10px"></div>
       <div class="grid" id="offerGrid"></div>
       <p class="hint" id="emptyOffers" style="display:none;">Noch keine Angebote. Demo: Als Anbieter ein Inserat erstellen.</p>
     </section>
@@ -463,10 +473,30 @@
     <!-- PROVIDER APP -->
     <section class="view" id="v-provider-home">
       <div class="panel">
-        <h3>Dashboard</h3>
-        <div class="hint" id="provHomeHello"></div>
-        <button class="btn" type="button" id="btnNewListing">+ Neues Gericht erstellen</button>
-        <button class="btn ghost" type="button" id="btnShareToday" style="display:none;">Heutige Angebote teilen</button>
+        <div class="provider-logo">
+          <div class="plogo" id="provCardLogo"></div>
+          <div>
+            <div style="font-weight:900" id="provCardName">Anbieter</div>
+            <div class="hint" id="provCardAddr"></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="height:12px"></div>
+      <div class="panel">
+        <h3>Heute</h3>
+        <div class="hint">Nur bezahlte Abholungen mit Abholnummer.</div>
+        <div class="hint" id="provTodayCount" style="margin-top:6px;"></div>
+      </div>
+
+      <div style="height:12px"></div>
+      <div class="panel">
+        <h3>Neues Inserat</h3>
+        <div class="hint">Du entscheidest am Ende: veröffentlichen, ins Kochbuch, in den Wochenplan.</div>
+        <div class="w-actions" style="margin-top:10px;">
+          <button class="btn" type="button" id="btnNewListing">Neu erstellen</button>
+          <button class="btn secondary" type="button" id="btnFromCookbook">Aus Kochbuch</button>
+        </div>
       </div>
 
       <div style="height:12px"></div>
@@ -486,6 +516,7 @@
       <div style="height:12px"></div>
       <div class="panel">
         <h3>Wochenvorschau</h3>
+        <div class="hint">Swipe nach links/rechts · Tippen für Aktionen</div>
         <div class="dayrow" id="provWeekDays" style="padding:0 0 10px; max-width:none;"></div>
         <div id="provWeekPreview" class="hint">Noch nichts geplant.</div>
         <button class="btn secondary" type="button" id="btnOpenWeekPlan">Wochenplan anzeigen</button>
@@ -778,11 +809,11 @@
   let cookbook = load(LS.cookbook, []); // [{id, dish, category, price, allergens[], extras?, reuse? , photoData?}]
   let week = load(LS.week, {}); // { 'YYYY-MM-DD': [cookbookId,...] }
 
-  const CATEGORIES = ['Vegan','Vegetarisch','Fleisch'];
+  const CATEGORIES = ['Vegetarisch','Vegan','Mit Fleisch'];
   const CAT_MAP = {
     'Vegan':'Vegan',
     'Vegetarisch':'Vegetarisch',
-    'Fleisch':'Fleisch'
+    'Mit Fleisch':'Fleisch'
   };
   const DISH_SUGGESTIONS = [
     {name:'Kürbissuppe', category:'Vegan'},
@@ -800,7 +831,7 @@
   // Day slider: today..+6
   function fmtDay(d){
     const wd = ['So','Mo','Di','Mi','Do','Fr','Sa'][d.getDay()];
-    return `${wd} ${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}`;
+    return `${wd}, ${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.`;
   }
   function isoDate(d){ return d.toISOString().slice(0,10); }
 
@@ -1032,7 +1063,7 @@
       const key=isoDate(d);
       const b=document.createElement('button');
       b.className='day'+(activeDay===key?' active':'');
-      b.textContent = i===0 ? 'Heute' : (i===1 ? 'Morgen' : fmtDay(d));
+      b.textContent = fmtDay(d);
       b.onclick=()=>{ activeDay=key; renderChips(); renderDiscover(); };
       dayEl.appendChild(b);
     }
@@ -1162,6 +1193,7 @@
   function providerCard(o, opts={}){
     const data = normalizeOffer(o);
     const interactive = opts.interactive !== false;
+    const showActions = opts.showActions === true;
     const card=document.createElement('div');
     card.className='card';
     card.style.cursor = interactive ? 'pointer' : 'default';
@@ -1193,6 +1225,34 @@
         </div>
       </div>
     `;
+
+    if(showActions){
+      const actions=document.createElement('div');
+      actions.className='card-actions';
+
+      const actBtn=document.createElement('button');
+      actBtn.type='button';
+      actBtn.className='card-action';
+      actBtn.textContent='Aktionen';
+      actBtn.onclick=(e)=>{ e.stopPropagation(); openProviderOffer(data.id); };
+
+      const shareBtn=document.createElement('button');
+      shareBtn.type='button';
+      shareBtn.className='card-action';
+      shareBtn.textContent='Teilen';
+      shareBtn.onclick=(e)=>{ e.stopPropagation(); shareOffer(data); };
+
+      const printBtn=document.createElement('button');
+      printBtn.type='button';
+      printBtn.className='card-action';
+      printBtn.textContent='Drucken';
+      printBtn.onclick=(e)=>{ e.stopPropagation(); printOffer(data); };
+
+      actions.appendChild(actBtn);
+      actions.appendChild(shareBtn);
+      actions.appendChild(printBtn);
+      body.appendChild(actions);
+    }
 
     card.appendChild(img);
     card.appendChild(body);
@@ -1654,6 +1714,12 @@
     const ok = await copyShareText();
     if(ok) alert('Link kopiert.');
   };
+  const locBtn = document.getElementById('btnLocationPin');
+  if(locBtn){
+    locBtn.onclick=()=>{
+      alert('Standort gesetzt. Du kannst jederzeit wechseln.');
+    };
+  }
 
   document.getElementById('btnAddCart').onclick=()=>{
     const o = offers.find(x=>x.id===activeOfferId);
@@ -1842,7 +1908,15 @@
   // --- Provider home renders ---
   function renderProviderHome(){
     const profile = normalizeProviderProfile(provider.profile || {});
-    document.getElementById('provHomeHello').textContent = `Eingeloggt als ${profile.name || provider.email}`;
+
+    const logoWrap = document.getElementById('provCardLogo');
+    if(logoWrap){
+      logoWrap.innerHTML = profile.logoData ? `<img src="${profile.logoData}" alt="Logo" />` : `<img src="assets/provider-placeholder.png" alt="Logo" />`;
+    }
+    const nameEl = document.getElementById('provCardName');
+    if(nameEl) nameEl.textContent = profile.name || provider.email || 'Anbieter';
+    const addrEl = document.getElementById('provCardAddr');
+    if(addrEl) addrEl.textContent = buildAddress(profile) || 'Adresse fehlt';
 
     const todayKey = isoDate(new Date());
     const mineAll = offers.filter(o => o.providerId === providerId());
@@ -1857,7 +1931,7 @@
       empty.style.display='block';
     } else {
       empty.style.display='none';
-      mineActive.slice(0,6).forEach(o=> grid.appendChild(providerCard(o)));
+      mineActive.slice(0,6).forEach(o=> grid.appendChild(providerCard(o, {showActions:true})));
     }
 
     const inactivePanel = document.getElementById('provInactivePanel');
@@ -1869,7 +1943,7 @@
         inactivePanel.style.display = 'none';
       } else {
         inactivePanel.style.display = 'block';
-        mineInactive.slice(0,6).forEach(o=> inactiveGrid.appendChild(providerCard(o)));
+        mineInactive.slice(0,6).forEach(o=> inactiveGrid.appendChild(providerCard(o, {showActions:true})));
         inactiveEmpty.style.display = mineInactive.length ? 'none' : 'block';
       }
     }
@@ -1879,6 +1953,11 @@
     const stats = document.getElementById('provPickupStats');
     const withCodeToday = mineToday.filter(o=>o.hasPickupCode).length;
     stats.textContent = withCodeToday ? `Abholcode heute: ${withCodeToday} Inserate.` : 'Noch keine Abholcodes für heute.';
+
+    const todayCount = document.getElementById('provTodayCount');
+    if(todayCount){
+      todayCount.textContent = withCodeToday ? `${withCodeToday} Abholungen` : 'Keine Abholungen geplant.';
+    }
 
     const shareBtn = document.getElementById('btnShareToday');
     shareBtn.style.display = mineToday.length ? 'block' : 'none';
@@ -2152,6 +2231,7 @@
 
   // --- Provider actions ---
   document.getElementById('btnNewListing').onclick=()=> startWizard('listing');
+  document.getElementById('btnFromCookbook').onclick=()=> showProviderCookbook();
   document.getElementById('btnCookbookAdd').onclick=()=> startWizard('cookbook');
   document.getElementById('btnProvSetup').onclick=()=> startWizard('provider');
   document.getElementById('btnOpenWeekPlan').onclick=()=> showProviderWeek();
