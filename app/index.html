@@ -37,7 +37,7 @@
     /* App shell */
     .app{min-height:100%; padding-bottom:78px;}
     .topbar{
-      position:sticky; top:0; z-index:10;
+      position:relative; z-index:10;
       background:rgba(247,246,240,.92);
       backdrop-filter:saturate(160%) blur(8px);
       border-bottom:1px solid var(--border);
@@ -264,6 +264,18 @@
     }
     .rowbtn span{display:block; font-weight:600; font-size:12px; color:var(--muted); margin-top:4px}
     .rowgroup-title{font-size:12px; font-weight:900; color:var(--muted); margin-top:6px}
+    .profile-head{display:flex; align-items:center; gap:12px}
+    .profile-head .plogo{width:56px; height:56px; border-radius:50%}
+    .profile-meta{display:flex; flex-direction:column; gap:4px}
+    .profile-chip{display:inline-flex; align-items:center; gap:6px; border:1px solid var(--border); padding:6px 10px; border-radius:999px; font-size:12px; font-weight:900; background:#fff}
+    .profile-actions{margin-top:10px}
+    .profile-actions .btn{width:auto; margin-top:0}
+    .row-group{margin-top:12px}
+    .row-group .rowgroup-title{margin:0 0 8px}
+    .row-muted{font-size:12px; color:var(--muted)}
+
+    .tabrow{display:flex; gap:8px; flex-wrap:wrap}
+    .tabrow .ans{font-size:12px; padding:8px 10px}
     .cookbook-item{border:1px solid var(--border); border-radius:14px; padding:10px; background:#fff; box-shadow:0 6px 14px rgba(0,0,0,.06)}
     .cookbook-item + .cookbook-item{margin-top:10px}
     .cookbook-actions{display:flex; gap:8px; flex-wrap:wrap; margin-top:8px}
@@ -318,6 +330,23 @@
       padding:9px 12px; border-radius:999px;
       font-weight:950; font-size:13px;
       box-shadow:0 6px 14px rgba(0,0,0,.06);
+    }
+    .provider-header{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap}
+    .provider-logo.compact{padding:0}
+    .header-actions{display:flex; gap:8px; flex-wrap:wrap}
+    .header-actions .btn{width:auto; margin-top:0}
+
+    .snackbar{
+      position:fixed; left:50%; bottom:90px; transform:translateX(-50%);
+      background:#111; color:#fff; border-radius:999px; padding:10px 14px;
+      display:flex; align-items:center; gap:10px; box-shadow:0 10px 24px rgba(0,0,0,.22);
+      opacity:0; pointer-events:none; transition:opacity .2s ease;
+      z-index:40; font-size:13px; font-weight:900;
+    }
+    .snackbar.active{opacity:1; pointer-events:auto}
+    .snackbar button{
+      border:none; background:#fff; color:#111; border-radius:999px; padding:6px 10px;
+      font-size:12px; font-weight:900; cursor:pointer;
     }
 
     /* Wizard */
@@ -404,6 +433,32 @@
       </div>
       <div class="grid" id="offerGrid"></div>
       <p class="hint" id="emptyOffers" style="display:none;">Noch keine Angebote. Demo: Als Anbieter ein Inserat erstellen.</p>
+    </section>
+
+    <section class="view" id="v-provider-billing">
+      <div class="panel">
+        <h3>Abrechnungen</h3>
+        <div class="hint">Auszahlbarer Betrag</div>
+        <div style="font-size:24px;font-weight:900" id="billingAmount">0,00 €</div>
+        <div class="hint" id="billingLast">Letzte Auszahlung: –</div>
+      </div>
+
+      <div style="height:12px"></div>
+      <div class="panel">
+        <div class="hint">Filter</div>
+        <div class="answers" id="billingFilters"></div>
+        <div style="height:8px"></div>
+        <select class="field" id="billingMonth">
+          <option value="2026-01">Januar 2026</option>
+          <option value="2025-12">Dezember 2025</option>
+          <option value="2025-11">November 2025</option>
+        </select>
+        <div style="height:10px"></div>
+        <div id="billingList" class="hint">Noch keine Abrechnungen.</div>
+      </div>
+
+      <div style="height:12px"></div>
+      <button class="btn ghost" type="button" id="btnBillingBack">Zurück</button>
     </section>
 
     <!-- CUSTOMER: Favorites -->
@@ -499,11 +554,17 @@
     <!-- PROVIDER APP -->
     <section class="view" id="v-provider-home">
       <div class="panel">
-        <div class="provider-logo">
-          <div class="plogo" id="provCardLogo"></div>
-          <div>
-            <div style="font-weight:900" id="provCardName">Anbieter</div>
-            <div class="hint" id="provCardAddr"></div>
+        <div class="provider-header">
+          <div class="provider-logo compact">
+            <div class="plogo" id="provCardLogo"></div>
+            <div>
+              <div style="font-weight:900" id="provCardName">Anbieter</div>
+              <div class="hint" id="provCardAddr"></div>
+            </div>
+          </div>
+          <div class="header-actions">
+            <button class="btn" type="button" id="btnNewListing" data-icon="plus">Neues Inserat</button>
+            <button class="btn secondary" type="button" id="btnFromCookbook" data-icon="book">Aus Kochbuch</button>
           </div>
         </div>
       </div>
@@ -511,47 +572,19 @@
       <div style="height:12px"></div>
       <div class="panel">
         <h3>Heute</h3>
-        <div class="hint">Nur bezahlte Abholungen mit Abholnummer.</div>
+        <div class="hint">Aktive Inserate für heute. Online-Abholcodes sind markiert.</div>
         <div class="hint" id="provTodayCount" style="margin-top:6px;"></div>
+        <div id="provTodayGrid" class="grid" style="margin-top:10px"></div>
+        <div id="provTodayEmpty" class="hint">Noch keine Inserate für heute.</div>
       </div>
 
       <div style="height:12px"></div>
-      <div class="panel">
-        <h3>Neues Inserat</h3>
-        <div class="hint">Du entscheidest am Ende: veröffentlichen, ins Kochbuch, in den Wochenplan.</div>
-        <div class="w-actions" style="margin-top:10px;">
-          <button class="btn" type="button" id="btnNewListing" data-icon="plus">Neu erstellen</button>
-          <button class="btn secondary" type="button" id="btnFromCookbook" data-icon="book">Aus Kochbuch</button>
-        </div>
-      </div>
-
-      <div style="height:12px"></div>
-      <div class="panel">
-        <h3>Aktive Inserate</h3>
-        <div id="provActiveGrid" class="grid" style="margin-top:10px"></div>
-        <div id="provActiveEmpty" class="hint">Noch keine aktiven Inserate.</div>
-      </div>
-
-      <div style="height:12px"></div>
-      <div class="panel" id="provInactivePanel" style="display:none;">
-        <h3>Inaktive Inserate</h3>
-        <div id="provInactiveGrid" class="grid" style="margin-top:10px"></div>
-        <div id="provInactiveEmpty" class="hint">Keine inaktiven Inserate.</div>
-      </div>
-
-      <div style="height:12px"></div>
-      <div class="panel">
+      <div class="panel" id="provWeekPanel">
         <h3>Wochenvorschau</h3>
         <div class="hint">Swipe nach links/rechts · Tippen für Aktionen</div>
         <div class="dayrow" id="provWeekDays" style="padding:0 0 10px; max-width:none;"></div>
         <div id="provWeekPreview" class="hint">Noch nichts geplant.</div>
         <button class="btn secondary" type="button" id="btnOpenWeekPlan" data-icon="calendar">Wochenplan anzeigen</button>
-      </div>
-
-      <div style="height:12px"></div>
-      <div class="panel">
-        <h3>Abholcodes heute</h3>
-        <div id="provPickupStats" class="hint">Noch keine Abholcodes für heute.</div>
       </div>
     </section>
 
@@ -585,12 +618,15 @@
     <section class="view" id="v-provider-cookbook">
       <div class="panel">
         <h3>Mein Kochbuch</h3>
-        <div class="hint">Dein digitales Kochbuch - dein Kopf in der App.</div>
+        <div class="hint">Dein digitales Kochbuch. Immer griffbereit für deine Planung.</div>
+        <div style="height:10px"></div>
+        <div class="tabrow" id="cookbookTabs"></div>
         <div style="height:10px"></div>
         <input class="field" id="cookbookSearch" type="text" placeholder="Suche nach Gerichten" />
         <div style="height:10px"></div>
-        <div class="answers" id="cookbookFilters"></div>
-        <button class="btn" type="button" id="btnCookbookAdd">+ Gericht hinzufügen</button>
+        <div class="hint">Sortierung</div>
+        <div class="answers" id="cookbookSorts"></div>
+        <button class="btn" type="button" id="btnCookbookAdd">Gericht hinzufügen</button>
         <div style="height:10px"></div>
         <div id="cookbookList" class="hint">Noch keine Gerichte gespeichert.</div>
       </div>
@@ -598,49 +634,88 @@
 
     <section class="view" id="v-provider-profile">
       <div class="panel">
-        <h3>Mein Profil</h3>
-        <div class="hint" id="provProfileHint"></div>
+        <div class="profile-head">
+          <div class="plogo" id="provProfileLogo"></div>
+          <div class="profile-meta">
+            <div style="font-weight:900" id="provProfileName">Anbieter</div>
+            <div class="hint" id="provProfileCity"></div>
+            <div class="profile-chip" id="provProfileMeal"></div>
+          </div>
+        </div>
+        <div class="profile-actions">
+          <button class="btn" type="button" id="btnProvSetup" data-icon="edit">Profil bearbeiten</button>
+        </div>
       </div>
 
       <div style="height:12px"></div>
       <div class="panel">
-        <div class="rowlist">
-          <button class="rowbtn" type="button" id="rowProfileOverview">
-            <div>Mein Profil<span>Übersicht</span></div>
-            <div>›</div>
-          </button>
-          <button class="rowbtn" type="button" id="btnProvSetup">
-            <div>Profil bearbeiten<span>Name, Adresse, Logo, E-Mail, Website</span></div>
-            <div>›</div>
-          </button>
-          <button class="rowbtn" type="button" id="btnBilling">
-            <div>Abrechnungen</div>
-            <div>›</div>
-          </button>
-          <button class="rowbtn" type="button" id="btnProvActions">
-            <div>Aktionen</div>
-            <div>›</div>
-          </button>
-          <button class="rowbtn" type="button" id="btnProvFaq">
-            <div>FAQs & Hilfe</div>
-            <div>›</div>
-          </button>
+        <div class="row-group">
+          <div class="rowgroup-title">Profil & Betrieb</div>
+          <div class="rowlist">
+            <button class="rowbtn" type="button" id="rowProfileOverview">
+              <div>Mein Profil<span>Übersicht</span></div>
+              <div>›</div>
+            </button>
+            <button class="rowbtn" type="button" id="btnBilling">
+              <div>Meine Abrechnungen</div>
+              <div>›</div>
+            </button>
+          </div>
+        </div>
+
+        <div class="row-group">
+          <div class="rowgroup-title">Aktionen</div>
+          <div class="rowlist">
+            <button class="rowbtn" type="button" id="btnProvShareOffer">
+              <div>Angebot teilen</div>
+              <div>›</div>
+            </button>
+            <button class="rowbtn" type="button" id="btnProvWeekPdf">
+              <div>Wochenkarte als PDF</div>
+              <div>›</div>
+            </button>
+          </div>
+        </div>
+
+        <div class="row-group">
+          <div class="rowgroup-title">Hilfe</div>
+          <div class="rowlist">
+            <button class="rowbtn" type="button" id="btnProvFaq">
+              <div>FAQ</div>
+              <div>›</div>
+            </button>
+            <button class="rowbtn" type="button" id="btnProvSupport">
+              <div>Support kontaktieren<span>Öffnet dein Mail-Programm</span></div>
+              <div>›</div>
+            </button>
+          </div>
+        </div>
+
+        <div class="row-group">
           <div class="rowgroup-title">Rechtliches</div>
-          <button class="rowbtn" type="button" id="btnLegalImprint">
-            <div>Impressum</div>
-            <div>›</div>
-          </button>
-          <button class="rowbtn" type="button" id="btnLegalPrivacy">
-            <div>Datenschutz</div>
-            <div>›</div>
-          </button>
-          <button class="rowbtn" type="button" id="btnLegalTerms">
-            <div>AGB</div>
-            <div>›</div>
-          </button>
+          <div class="rowlist">
+            <button class="rowbtn" type="button" id="btnLegalImprint">
+              <div>Impressum</div>
+              <div>›</div>
+            </button>
+            <button class="rowbtn" type="button" id="btnLegalPrivacy">
+              <div>Datenschutz</div>
+              <div>›</div>
+            </button>
+            <button class="rowbtn" type="button" id="btnLegalTerms">
+              <div>AGB</div>
+              <div>›</div>
+            </button>
+            <button class="rowbtn" type="button" id="btnLegalPricing">
+              <div>Preise & Konditionen</div>
+              <div>›</div>
+            </button>
+          </div>
         </div>
       </div>
 
+      <div style="height:12px"></div>
+      <div class="row-muted">Kein Abo · Keine Laufzeit · Kein Vertrag</div>
       <div style="height:12px"></div>
       <button class="btn ghost" type="button" id="btnProvLogout">Logout</button>
 
@@ -782,6 +857,12 @@
   </div>
 </div>
 
+<!-- Snackbar: Undo pickup -->
+<div class="snackbar" id="pickupUndo">
+  <span id="pickupUndoLabel">Abholung markiert</span>
+  <button type="button" id="pickupUndoBtn">Rückgängig</button>
+</div>
+
 <!-- Print view -->
 <div id="printView" class="print-view"></div>
 
@@ -870,12 +951,17 @@
   let pickupSort = 'time';
   let cookbookSort = 'recent';
   let cookbookQuery = '';
+  let cookbookTab = 'dishes';
   let weekPlanDay = isoDate(new Date());
   let locationQuery = '';
   let pickupDone = new Set(load(LS.pickupDone, []));
   let activeOrderId = null;
   let ordersFilter = 'offen';
   let sharePayload = { text:'', url:'' };
+  let pickupUndoKey = null;
+  let pickupUndoTimer = null;
+  let billingFilter = 'month';
+  let billingMonth = '2026-01';
 
   // --- Seed demo offers if empty ---
   function seed(){
@@ -1037,7 +1123,8 @@
   const views = {
     discover:'v-discover', fav:'v-fav', orders:'v-orders', cart:'v-cart', profile:'v-profile',
     providerLogin:'v-provider-login',
-    providerHome:'v-provider-home', providerPickups:'v-provider-pickups', providerCookbook:'v-provider-cookbook', providerProfile:'v-provider-profile', providerWeek:'v-provider-week'
+    providerHome:'v-provider-home', providerPickups:'v-provider-pickups', providerCookbook:'v-provider-cookbook',
+    providerProfile:'v-provider-profile', providerBilling:'v-provider-billing', providerWeek:'v-provider-week'
   };
 
   function setCustomerNavActive(go){
@@ -1127,6 +1214,11 @@
     setProviderNavActive('provider-profile');
     showView(views.providerProfile);
     renderProviderProfile();
+  }
+  function showProviderBilling(){
+    setProviderNavActive('provider-profile');
+    showView(views.providerBilling);
+    renderBilling();
   }
 
   // --- Chips render ---
@@ -1299,6 +1391,8 @@
     const data = normalizeOffer(o);
     const interactive = opts.interactive !== false;
     const showActions = opts.showActions === true;
+    const isToday = data.day === (opts.todayKey || isoDate(new Date()));
+    const statusLine = data.hasPickupCode ? (isToday ? 'Online-Abholcode · Heute' : 'Online-Abholcode') : '';
     const card=document.createElement('div');
     card.className='card';
     card.style.cursor = interactive ? 'pointer' : 'default';
@@ -1316,6 +1410,7 @@
       <img alt="${esc(data.dish||'Gericht')}" src="${esc(imgSrc)}" />
       ${data.active===false?'<div class="badge inactive">Inaktiv</div>':''}
       ${data.hasPickupCode?'<div class="badge code">Abholcode</div>':''}
+      ${data.dineInPossible?'<div class="badge dine">Vor Ort</div>':''}
     `;
 
     const body=document.createElement('div');
@@ -1323,6 +1418,7 @@
     body.innerHTML = `
       <p class="title">${esc(data.dish||'Gericht')}</p>
       <p class="sub">Essenszeit: ${esc(windowText || '—')}</p>
+      ${statusLine ? `<div class="tag">${esc(statusLine)}</div>` : ''}
       <div class="meta">
         <div class="price">${euro(data.price)}</div>
         <div class="right">
@@ -1638,7 +1734,10 @@
 
   function buildShareText(o){
     const dish = o.dish || o.title || 'Gericht';
-    return `Heute bei uns zu Mittag:\n${dish} - ${euro(o.price)}\npowered by mittagio.de`;
+    const profile = normalizeProviderProfile(provider.profile || {});
+    const providerName = o.providerName || profile.name || 'Anbieter';
+    const pickup = o.pickupWindow || profile.mealWindow || '—';
+    return `${providerName}\nHeute zu Mittag: ${dish}\n💰 ${euro(o.price)}\n⏰ ${pickup}\nPowered by Mittagio`;
   }
 
   function setPrintView(html){
@@ -1702,7 +1801,16 @@
           const cb = cookbook.find(c=>c.id===entry.cookbookId);
           const name = cb?.dish || entry.dish || 'Gericht';
           const price = cb?.price || 0;
-          return `<div class="print-row"><div>${esc(name)}</div><div>${euro(price)}</div></div>`;
+          const windowText = cb?.pickupWindow || profile.mealWindow || '';
+          return `
+            <div class="print-row">
+              <div>
+                <div>${esc(name)}</div>
+                <div class="print-muted">${esc(windowText)}</div>
+              </div>
+              <div>${euro(price)}</div>
+            </div>
+          `;
         });
       const label = key ? fmtDay(new Date(key)) : key;
       return `
@@ -1717,10 +1825,10 @@
       <div class="print-card">
         <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
           <div>
-            <h1>Wochenkarte</h1>
-            <div class="print-muted">${esc(profile.name || 'Anbieter')}</div>
+            <h1>${esc(profile.name || 'Anbieter')}</h1>
             <div class="print-muted">${esc(buildAddress(profile) || '')}</div>
             <div class="print-muted">Essenszeit: ${esc(profile.mealWindow || '')}</div>
+            <div class="print-muted" style="margin-top:6px;"><b>Unsere Gerichte – nächste Tage</b></div>
           </div>
           ${profile.logoData ? `<img src="${profile.logoData}" alt="Logo" style="width:72px;height:72px;border-radius:14px;object-fit:cover" />` : ''}
         </div>
@@ -1729,8 +1837,14 @@
         ${dayBlocks}
       </div>
       <div class="print-card" style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
-        <div class="print-muted">Powered by Mittagio</div>
-        <div class="qr">QR-Code</div>
+        <div>
+          <div style="font-weight:900">Mittagio</div>
+          <div class="print-muted">Dein Mittag! lokal · frisch · digital</div>
+        </div>
+        <div style="text-align:center;">
+          <div class="qr">QR-Code</div>
+          <div class="print-muted">Jetzt scannen</div>
+        </div>
       </div>
     `;
   }
@@ -1738,6 +1852,28 @@
   function printOffer(o){
     if(!o) return;
     printHtml(buildOfferPrintHtml(o));
+  }
+
+  function printCookbookEntry(entry){
+    if(!entry) return;
+    const profile = normalizeProviderProfile(provider.profile || {});
+    const offer = normalizeOffer({
+      dish: entry.dish,
+      category: entry.category,
+      price: entry.price,
+      pickupWindow: profile.mealWindow || DEFAULT_MEAL_WINDOW,
+      providerName: profile.name || provider.email || 'Anbieter',
+      providerStreet: profile.street||'',
+      providerZip: profile.zip||'',
+      providerCity: profile.city||'',
+      providerLogoData: profile.logoData||'',
+      hasPickupCode: !!entry.hasPickupCode,
+      dineInPossible: !!entry.dineInPossible,
+      allergens: entry.allergens||[],
+      extras: entry.extras||[],
+      reuse: entry.reuse||{enabled:false,deposit:0}
+    });
+    printHtml(buildOfferPrintHtml(offer));
   }
 
   function printWeekCard(){
@@ -2049,49 +2185,31 @@
 
     const todayKey = isoDate(new Date());
     const mineAll = offers.filter(o => o.providerId === providerId());
-    const mineActive = mineAll.filter(o => o.active !== false && o.day >= todayKey);
-    const mineInactive = mineAll.filter(o => o.active === false);
-    const mineToday = mineActive.filter(o => o.day === todayKey);
+    const mineToday = mineAll.filter(o => o.active !== false && o.day === todayKey);
 
-    const grid = document.getElementById('provActiveGrid');
-    const empty = document.getElementById('provActiveEmpty');
-    grid.innerHTML = '';
-    if(!mineActive.length){
-      empty.style.display='block';
-    } else {
-      empty.style.display='none';
-      mineActive.slice(0,6).forEach(o=> grid.appendChild(providerCard(o, {showActions:true})));
-    }
-
-    const inactivePanel = document.getElementById('provInactivePanel');
-    const inactiveGrid = document.getElementById('provInactiveGrid');
-    const inactiveEmpty = document.getElementById('provInactiveEmpty');
-    if(inactivePanel && inactiveGrid && inactiveEmpty){
-      inactiveGrid.innerHTML = '';
-      if(!mineInactive.length){
-        inactivePanel.style.display = 'none';
+    const grid = document.getElementById('provTodayGrid');
+    const empty = document.getElementById('provTodayEmpty');
+    if(grid && empty){
+      grid.innerHTML = '';
+      if(!mineToday.length){
+        empty.style.display='block';
       } else {
-        inactivePanel.style.display = 'block';
-        mineInactive.slice(0,6).forEach(o=> inactiveGrid.appendChild(providerCard(o, {showActions:true})));
-        inactiveEmpty.style.display = mineInactive.length ? 'none' : 'block';
+        empty.style.display='none';
+        mineToday.forEach(o=> grid.appendChild(providerCard(o, {showActions:true, todayKey})));
       }
     }
 
-    renderProviderWeekPreview();
-
-    const stats = document.getElementById('provPickupStats');
     const withCodeToday = mineToday.filter(o=>o.hasPickupCode).length;
-    stats.textContent = withCodeToday ? `Abholcode heute: ${withCodeToday} Inserate.` : 'Noch keine Abholcodes für heute.';
-
     const todayCount = document.getElementById('provTodayCount');
     if(todayCount){
-      todayCount.textContent = withCodeToday ? `${withCodeToday} Abholungen` : 'Keine Abholungen geplant.';
+      todayCount.textContent = withCodeToday ? `${withCodeToday} Abholcodes heute` : 'Keine Abholungen geplant.';
     }
 
-    const shareBtn = document.getElementById('btnShareToday');
-    if(shareBtn){
-      shareBtn.style.display = mineToday.length ? 'block' : 'none';
+    const weekPanel = document.getElementById('provWeekPanel');
+    if(weekPanel){
+      weekPanel.style.display = mineToday.length ? 'none' : 'block';
     }
+    renderProviderWeekPreview();
   }
 
   function renderProviderWeekPreview(){
@@ -2105,14 +2223,20 @@
       const key = isoDate(d);
       const b = document.createElement('button');
       b.className = 'day' + (providerWeekDay===key ? ' active' : '');
-      b.textContent = i===0 ? 'Heute' : (i===1 ? 'Morgen' : fmtDay(d));
+      b.textContent = fmtDay(d);
       b.onclick=()=>{ providerWeekDay = key; renderProviderWeekPreview(); };
       dayWrap.appendChild(b);
     }
 
     const items = (week[providerWeekDay]||[]).filter(x=>x.providerId===providerId() && x.active !== false);
     if(!items.length){
-      list.textContent = 'Noch nichts geplant.';
+      list.innerHTML = `
+        <div>Keine Inserate geplant.</div>
+        <div style="height:8px"></div>
+        <button class="btn secondary" type="button" id="btnWeekAdd">Inserat hinzufügen</button>
+      `;
+      const addBtn = document.getElementById('btnWeekAdd');
+      if(addBtn) addBtn.onclick=()=> startWizard('listing');
       return;
     }
     list.innerHTML = items.map(i=>`• ${esc(i.dish)}`).join('<br>');
@@ -2129,7 +2253,7 @@
       const key = isoDate(d);
       const b = document.createElement('button');
       b.className = 'day' + (weekPlanDay===key ? ' active' : '');
-      b.textContent = i===0 ? 'Heute' : (i===1 ? 'Morgen' : fmtDay(d));
+      b.textContent = fmtDay(d);
       b.onclick=()=>{ weekPlanDay = key; renderWeekPlan(); };
       dayWrap.appendChild(b);
     }
@@ -2313,22 +2437,118 @@
         const code = btn.getAttribute('data-code') || '';
         const group = btn.getAttribute('data-group') || '';
         const key = `${group}:${code}`;
-        if(pickupDone.has(key)) pickupDone.delete(key); else pickupDone.add(key);
-        btn.classList.toggle('done');
-        save(LS.pickupDone, Array.from(pickupDone));
+        if(pickupDone.has(key)){
+          pickupDone.delete(key);
+          save(LS.pickupDone, Array.from(pickupDone));
+          renderProviderPickups();
+        } else {
+          pickupDone.add(key);
+          save(LS.pickupDone, Array.from(pickupDone));
+          renderProviderPickups();
+          showPickupUndo(key);
+        }
       };
     });
+  }
+
+  function showPickupUndo(key){
+    pickupUndoKey = key;
+    const snack = document.getElementById('pickupUndo');
+    if(!snack) return;
+    const label = document.getElementById('pickupUndoLabel');
+    if(label) label.textContent = 'Abholung markiert';
+    const btn = document.getElementById('pickupUndoBtn');
+    if(btn){
+      btn.onclick=()=>{
+        if(pickupUndoKey && pickupDone.has(pickupUndoKey)){
+          pickupDone.delete(pickupUndoKey);
+          save(LS.pickupDone, Array.from(pickupDone));
+          renderProviderPickups();
+        }
+        hidePickupUndo();
+      };
+    }
+    snack.classList.add('active');
+    if(pickupUndoTimer) clearTimeout(pickupUndoTimer);
+    pickupUndoTimer = setTimeout(hidePickupUndo, 5000);
+  }
+
+  function hidePickupUndo(){
+    const snack = document.getElementById('pickupUndo');
+    if(!snack) return;
+    snack.classList.remove('active');
+    pickupUndoKey = null;
   }
 
   function renderProviderProfile(){
     const p = normalizeProviderProfile(provider.profile || {});
     const addr = buildAddress(p);
-    document.getElementById('provProfileHint').innerHTML = `
-      <b>${esc(p.name || 'Name fehlt')}</b><br>
-      ${esc(addr || 'Adresse fehlt')}<br>
-      Essenszeit: <b>${esc(p.mealWindow || DEFAULT_MEAL_WINDOW)}</b><br>
-      ${p.logoData ? 'Logo: vorhanden' : 'Logo: fehlt'}
-    `;
+    const parsed = parseAddress(p.address || '');
+    const city = p.city || parsed.city || '';
+    const logoWrap = document.getElementById('provProfileLogo');
+    if(logoWrap){
+      logoWrap.innerHTML = p.logoData ? `<img src="${p.logoData}" alt="Logo" />` : `<img src="assets/provider-placeholder.png" alt="Logo" />`;
+    }
+    const nameEl = document.getElementById('provProfileName');
+    if(nameEl) nameEl.textContent = p.name || provider.email || 'Anbieter';
+    const cityEl = document.getElementById('provProfileCity');
+    if(cityEl) cityEl.textContent = city || addr || 'Ort fehlt';
+    const mealEl = document.getElementById('provProfileMeal');
+    if(mealEl) mealEl.textContent = p.mealWindow || DEFAULT_MEAL_WINDOW;
+  }
+
+  function renderBilling(){
+    const amountEl = document.getElementById('billingAmount');
+    const lastEl = document.getElementById('billingLast');
+    const filtersEl = document.getElementById('billingFilters');
+    const monthEl = document.getElementById('billingMonth');
+    const listEl = document.getElementById('billingList');
+    if(!amountEl || !lastEl || !filtersEl || !monthEl || !listEl) return;
+
+    const demo = [
+      {range:'06.01.–12.01.2026', sales:18, total:148.50, fee:7.20, payout:141.30, status:'Nächste Auszahlung geplant'},
+      {range:'30.12.–05.01.2026', sales:12, total:96.80, fee:4.80, payout:92.00, status:'Auszahlung erfolgt'}
+    ];
+
+    amountEl.textContent = euro(demo[0].payout);
+    lastEl.textContent = `Letzte Auszahlung: ${demo[1].range} · ${euro(demo[1].payout)}`;
+
+    const filters = [
+      {id:'today', label:'Heute'},
+      {id:'week', label:'Woche'},
+      {id:'month', label:'Monat'},
+      {id:'custom', label:'Benutzerdefiniert'}
+    ];
+    filtersEl.innerHTML = '';
+    filters.forEach(f=>{
+      const b=document.createElement('button');
+      b.type='button';
+      b.className='ans'+(billingFilter===f.id?' on':'');
+      b.textContent=f.label;
+      b.onclick=()=>{ billingFilter = f.id; renderBilling(); };
+      filtersEl.appendChild(b);
+    });
+
+    monthEl.value = billingMonth;
+    monthEl.onchange = ()=>{ billingMonth = monthEl.value; renderBilling(); };
+
+    listEl.innerHTML = demo.map(d=>`
+      <div class="cookbook-item">
+        <div style="font-weight:900">${esc(d.range)}</div>
+        <div class="cookbook-facts">
+          Verkäufe: ${d.sales} · Gesamt: ${euro(d.total)}<br>
+          Gebühren: ${euro(d.fee)} · Auszahlung: <b>${euro(d.payout)}</b><br>
+          Status: ${esc(d.status)}
+        </div>
+        <div class="cookbook-actions">
+          <button class="card-action" type="button" data-icon="print">PDF-Download</button>
+        </div>
+      </div>
+    `).join('');
+    listEl.querySelectorAll('button').forEach(btn=>{
+      btn.onclick=()=> alert('PDF-Download (Demo).');
+    });
+    applyStaticIcons();
   }
 
   document.getElementById('btnProvFaq').onclick=()=>{
@@ -2337,8 +2557,9 @@
   };
 
   document.getElementById('btnBilling').onclick=()=>{
-    alert('Abrechnungen (MVP): monatliche Sammelrechnung. Stripe Tax folgt später.');
+    showProviderBilling();
   };
+  document.getElementById('btnBillingBack').onclick=()=> showProviderProfile();
 
   document.getElementById('rowProfileOverview').onclick=()=>{
     const p = normalizeProviderProfile(provider.profile || {});
@@ -2346,8 +2567,14 @@
     alert(`Profil-Übersicht\n${p.name || 'Name fehlt'}\n${addr}\nEssenszeit: ${p.mealWindow || DEFAULT_MEAL_WINDOW}`);
   };
 
-  document.getElementById('btnProvActions').onclick=()=>{
-    alert('Aktionen (Demo): Teilen, Deaktivieren, Gutscheinaktionen.');
+  document.getElementById('btnProvShareOffer').onclick=()=>{
+    const first = offers.find(o=>o.providerId===providerId());
+    if(first) shareOffer(first);
+    else alert('Noch keine Inserate zum Teilen.');
+  };
+  document.getElementById('btnProvWeekPdf').onclick=()=> printWeekCard();
+  document.getElementById('btnProvSupport').onclick=()=>{
+    window.location.href = 'mailto:support@mittagio.de';
   };
 
   document.getElementById('btnLegalImprint').onclick=()=>{
@@ -2359,10 +2586,13 @@
   document.getElementById('btnLegalTerms').onclick=()=>{
     alert('AGB (Demo): Link folgt.');
   };
+  document.getElementById('btnLegalPricing').onclick=()=>{
+    alert('Preise & Konditionen (Demo): Link folgt.');
+  };
 
   // --- Provider actions ---
   document.getElementById('btnNewListing').onclick=()=> startWizard('listing');
-  document.getElementById('btnFromCookbook').onclick=()=> showProviderCookbook();
+  document.getElementById('btnFromCookbook').onclick=()=> startWizard('listing', {source:'cookbook'});
   document.getElementById('btnCookbookAdd').onclick=()=> startWizard('cookbook');
   document.getElementById('btnProvSetup').onclick=()=> startWizard('provider');
   document.getElementById('btnOpenWeekPlan').onclick=()=> showProviderWeek();
@@ -2401,17 +2631,6 @@
     printOffer(o);
   };
 
-  const shareTodayBtn = document.getElementById('btnShareToday');
-  if(shareTodayBtn){
-    shareTodayBtn.onclick=()=>{
-      const todayKey = isoDate(new Date());
-      const mineToday = offers.filter(o => o.providerId === providerId() && o.day === todayKey && o.active !== false);
-      if(!mineToday.length) return;
-      const txt = `Heute bei uns zu Mittag:\n` + mineToday.map(o=>`${o.dish} - ${euro(o.price)}`).join('\n') + `\npowered by mittagio.de`;
-      openShareSheet(txt);
-    };
-  }
-
   document.getElementById('btnWeekBack').onclick=()=> showProviderHome();
   document.getElementById('btnWeekPdf').onclick=()=>{
     printWeekCard();
@@ -2427,7 +2646,8 @@
   // --- Cookbook ---
   function renderCookbook(){
     const box = document.getElementById('cookbookList');
-    const filterBox = document.getElementById('cookbookFilters');
+    const tabs = document.getElementById('cookbookTabs');
+    const sortBox = document.getElementById('cookbookSorts');
     const search = document.getElementById('cookbookSearch');
     if(!box) return;
 
@@ -2445,18 +2665,35 @@
       search.oninput=()=>{ cookbookQuery = search.value; renderCookbook(); };
     }
 
-    if(filterBox){
-      filterBox.innerHTML='';
+    if(tabs){
+      tabs.innerHTML='';
+      [
+        {id:'drafts', label:'Entwürfe'},
+        {id:'dishes', label:'Gerichte'}
+      ].forEach(t=>{
+        const b=document.createElement('button');
+        b.type='button';
+        b.className='ans'+(cookbookTab===t.id?' on':'');
+        b.textContent=t.label;
+        b.onclick=()=>{ cookbookTab=t.id; renderCookbook(); };
+        tabs.appendChild(b);
+      });
+    }
+
+    if(sortBox){
+      sortBox.innerHTML='';
       [
         {id:'recent', label:'Zuletzt verwendet'},
-        {id:'alpha', label:'Alphabetisch'}
+        {id:'alpha', label:'Alphabetisch'},
+        {id:'priceAsc', label:'Preis aufsteigend'},
+        {id:'priceDesc', label:'Preis absteigend'}
       ].forEach(f=>{
         const b=document.createElement('button');
         b.type='button';
         b.className='ans'+(cookbookSort===f.id?' on':'');
         b.textContent=f.label;
         b.onclick=()=>{ cookbookSort=f.id; renderCookbook(); };
-        filterBox.appendChild(b);
+        sortBox.appendChild(b);
       });
     }
 
@@ -2471,15 +2708,16 @@
 
     const sortRecent = (a,b)=>(b.lastUsed||b.createdAt) - (a.lastUsed||a.createdAt);
     const sortAlpha = (a,b)=>String(a.dish||'').localeCompare(String(b.dish||''));
-    const sortFn = cookbookSort==='alpha' ? sortAlpha : sortRecent;
+    const sortPriceAsc = (a,b)=>(Number(a.price||0) - Number(b.price||0));
+    const sortPriceDesc = (a,b)=>(Number(b.price||0) - Number(a.price||0));
+    const sortFn = cookbookSort==='alpha' ? sortAlpha : (cookbookSort==='priceAsc' ? sortPriceAsc : (cookbookSort==='priceDesc' ? sortPriceDesc : sortRecent));
 
-    const used = filtered.filter(x=>x.lastUsed);
+    const dishes = filtered.filter(x=>x.lastUsed);
     const drafts = filtered.filter(x=>!x.lastUsed);
-    used.sort(sortFn);
+    dishes.sort(sortFn);
     drafts.sort(sortFn);
 
-    const wrap = document.createElement('div');
-
+    const list = cookbookTab === 'drafts' ? drafts : dishes;
     const formatDayLabel = (iso)=>{
       if(!iso) return '—';
       const d = new Date(iso);
@@ -2491,7 +2729,7 @@
       return fmtDay(d);
     };
 
-    const buildItem = (entry)=>{
+    const buildItem = (entry, isDraft)=>{
       const item=document.createElement('div');
       item.className='cookbook-item';
 
@@ -2506,56 +2744,63 @@
         <div style="font-weight:900">${esc(entry.dish||'Gericht')}</div>
         <div class="hint">${esc(entry.category||'Vegetarisch')} · ${euro(entry.price||0)}</div>
         <div class="cookbook-facts">
-          Zuletzt online: <b>${esc(formatDayLabel(lastOnline))}</b><br>
-          Verkäufe über Mittagio: <b>${sales}</b>
+          ${isDraft ? 'Entwurf seit:' : 'Letzte Veröffentlichung:'}
+          <b>${esc(formatDayLabel(isDraft ? entry.createdAt : lastOnline))}</b><br>
+          Verkäufe (Mittagio, gesamt): <b>${sales}</b>
         </div>
       `;
 
       const actions=document.createElement('div');
       actions.className='cookbook-actions';
 
-      const pub=document.createElement('button');
-      pub.type='button';
-      pub.className='ans';
-      pub.textContent='Veröffentlichen';
-      pub.onclick=()=>{ publishCookbookEntry(entry.id); };
+      if(isDraft){
+        const cont=document.createElement('button');
+        cont.type='button';
+        cont.className='ans';
+        cont.textContent='Weiterführen';
+        cont.onclick=()=>{ startWizard('listing', {fromCookbookId: entry.id}); };
 
-      const edit=document.createElement('button');
-      edit.type='button';
-      edit.className='ans';
-      edit.textContent='Bearbeiten';
-      edit.onclick=()=>{ startWizard('cookbook', {editId: entry.id}); };
+        const edit=document.createElement('button');
+        edit.type='button';
+        edit.className='ans';
+        edit.textContent='Bearbeiten';
+        edit.onclick=()=>{ startWizard('cookbook', {editId: entry.id}); };
 
-      actions.appendChild(pub);
-      actions.appendChild(edit);
+        actions.appendChild(cont);
+        actions.appendChild(edit);
+      } else {
+        const create=document.createElement('button');
+        create.type='button';
+        create.className='ans';
+        create.textContent='Inserat erstellen';
+        create.onclick=()=>{ startWizard('listing', {fromCookbookId: entry.id}); };
+
+        const edit=document.createElement('button');
+        edit.type='button';
+        edit.className='ans';
+        edit.textContent='Bearbeiten';
+        edit.onclick=()=>{ startWizard('cookbook', {editId: entry.id}); };
+
+        const print=document.createElement('button');
+        print.type='button';
+        print.className='ans';
+        print.textContent='Drucken';
+        print.onclick=()=>{ printCookbookEntry(entry); };
+
+        actions.appendChild(create);
+        actions.appendChild(edit);
+        actions.appendChild(print);
+      }
       item.appendChild(actions);
       return item;
     };
 
-    const usedTitle=document.createElement('div');
-    usedTitle.className='section-title';
-    usedTitle.textContent='Zuletzt verwendet';
-    wrap.appendChild(usedTitle);
-    if(!used.length){
-      const h=document.createElement('div'); h.className='hint'; h.textContent='Noch keine verwendeten Gerichte.';
-      wrap.appendChild(h);
-    } else {
-      used.forEach(x=>wrap.appendChild(buildItem(x)));
+    box.innerHTML = '';
+    if(!list.length){
+      box.innerHTML = `<div class="hint">Keine ${cookbookTab==='drafts' ? 'Entwürfe' : 'Gerichte'} vorhanden.</div>`;
+      return;
     }
-
-    const draftTitle=document.createElement('div');
-    draftTitle.className='section-title';
-    draftTitle.textContent='Entwürfe';
-    wrap.appendChild(draftTitle);
-    if(!drafts.length){
-      const h=document.createElement('div'); h.className='hint'; h.textContent='Keine Entwürfe vorhanden.';
-      wrap.appendChild(h);
-    } else {
-      drafts.forEach(x=>wrap.appendChild(buildItem(x)));
-    }
-
-    box.innerHTML='';
-    box.appendChild(wrap);
+    list.forEach(entry=> box.appendChild(buildItem(entry, cookbookTab==='drafts')));
   }
 
   function publishCookbookEntry(entryId){
@@ -2744,7 +2989,13 @@
         }
       } else if(ctx.fromCookbookId){
         const x = cookbook.find(c=>c.id===ctx.fromCookbookId);
-        if(x){ w.data = JSON.parse(JSON.stringify(x)); }
+        if(x){
+          w.data = {
+            ...JSON.parse(JSON.stringify(x)),
+            source:'cookbook',
+            cookbookId: x.id
+          };
+        }
       } else {
         w.data = {
           providerId: providerId(),
@@ -2755,13 +3006,18 @@
           allergens:[],
           extras:[],
           reuse:{enabled:false, deposit:0},
-          photoData:''
+          photoData:'',
+          source:'new',
+          cookbookId:null
         };
       }
       w.data.providerId = w.data.providerId || providerId();
       w.data.category = w.data.category || 'Vegetarisch';
       w.data.price = Number(w.data.price||0);
       w.data.pickupWindow = w.data.pickupWindow || profile.mealWindow || DEFAULT_MEAL_WINDOW;
+      w.data.source = w.data.source || 'new';
+      if(ctx.source){ w.data.source = ctx.source; }
+      w.data.cookbookId = w.data.cookbookId || null;
       w.data.hasPickupCode = !!w.data.hasPickupCode;
       w.data.dineInPossible = !!w.data.dineInPossible;
       w.data.allergens = Array.isArray(w.data.allergens) ? w.data.allergens : [];
@@ -3058,35 +3314,24 @@
 
   function buildListingStep(){
     setWizardNextDefault();
-    const total = 10;
-    setWizardHeader('Neues Inserat', `Schritt ${Math.min(w.step+1,total)} von ${total}`);
+    const total = 8;
+    setWizardHeader('Inserat erstellen', `Schritt ${Math.min(w.step+1,total)} von ${total}`);
+    const profile = normalizeProviderProfile(provider.profile || {});
+    if(!w.data.pickupWindow){ w.data.pickupWindow = profile.mealWindow || DEFAULT_MEAL_WINDOW; }
 
     if(w.step===0){
-      setWizardQuestion('Gerichtname?', 'Vorschläge erleichtern die Eingabe.');
+      setWizardQuestion('Kategorie?', 'Wähle eine Kategorie.');
       const box=document.createElement('div');
-      const input=document.createElement('input');
-      input.className='field';
-      input.placeholder='z.B. Kürbissuppe';
-      input.setAttribute('list','dishSuggestions');
-      input.value=w.data.dish||'';
-      input.oninput=()=>{
-        w.data.dish = input.value;
-        const hit = DISH_SUGGESTIONS.find(d => d.name.toLowerCase() === input.value.trim().toLowerCase());
-        if(hit){ w.data.category = hit.category; }
-        refreshListingPreview();
-      };
-      const list=document.createElement('datalist');
-      list.id='dishSuggestions';
-      DISH_SUGGESTIONS.forEach(d=>{
-        const opt=document.createElement('option');
-        opt.value=d.name;
-        list.appendChild(opt);
+      const ans=document.createElement('div'); ans.className='answers';
+      CATEGORIES.forEach(c=>{
+        const b=document.createElement('button');
+        b.type='button';
+        b.className='ans'+(w.data.category===c?' on':'');
+        b.textContent=c;
+        b.onclick=()=>{ w.data.category=c; rebuildWizard(); };
+        ans.appendChild(b);
       });
-      const h=document.createElement('div'); h.className='hint'; h.textContent='Kategorie wird automatisch gesetzt, wenn bekannt.';
-
-      box.appendChild(input);
-      box.appendChild(list);
-      box.appendChild(h);
+      box.appendChild(ans);
       attachListingPreview(box);
       setWizardContent(box);
       wNextBtn.textContent='Weiter';
@@ -3094,92 +3339,81 @@
     }
 
     if(w.step===1){
-      setWizardQuestion('Preis pro Portion?', 'Standard: 0,00.');
+      setWizardQuestion('Gericht auswählen', 'Aus Kochbuch oder neu.');
       const box=document.createElement('div');
-      const input=document.createElement('input');
-      input.className='field';
-      input.inputMode='decimal';
-      input.placeholder='0,00';
-      input.value = formatPriceInput(w.data.price);
-      input.oninput=()=>{ w.data.price = parsePriceInput(input.value); refreshListingPreview(); };
-      const h=document.createElement('div'); h.className='hint'; h.textContent='Beispiel: 7,90';
-      box.appendChild(input);
-      box.appendChild(h);
-      attachListingPreview(box);
-      setWizardContent(box);
-      wNextBtn.textContent='Weiter';
-      return;
-    }
+      const source=document.createElement('div'); source.className='answers';
+      const fromCb=document.createElement('button'); fromCb.type='button'; fromCb.className='ans'+(w.data.source==='cookbook'?' on':''); fromCb.textContent='Aus Kochbuch';
+      const fromNew=document.createElement('button'); fromNew.type='button'; fromNew.className='ans'+(w.data.source==='new'?' on':''); fromNew.textContent='Neu';
+      fromCb.onclick=()=>{ w.data.source='cookbook'; rebuildWizard(); };
+      fromNew.onclick=()=>{ w.data.source='new'; w.data.cookbookId=null; rebuildWizard(); };
+      source.appendChild(fromCb); source.appendChild(fromNew);
+      box.appendChild(source);
 
-    if(w.step===2){
-      setWizardQuestion('Essenszeit?', 'Standard aus Profil, optional anpassen.');
-      const profile = normalizeProviderProfile(provider.profile || {});
-      if(!w.data.pickupWindow){ w.data.pickupWindow = profile.mealWindow || DEFAULT_MEAL_WINDOW; }
-
-      const current = w.data.pickupWindow || profile.mealWindow || DEFAULT_MEAL_WINDOW;
-      const split = current.includes('–') ? current.split('–') : current.split('-');
-      const startDefault = split[0] ? split[0].trim() : '11:30';
-      const endDefault = split[1] ? split[1].trim() : '14:00';
-      if(!w.data.mealStart) w.data.mealStart = startDefault;
-      if(!w.data.mealEnd) w.data.mealEnd = endDefault;
-
-      const box=document.createElement('div');
-      const summary=document.createElement('div');
-      summary.className='panel';
-      summary.innerHTML = `<b>${esc(current)}</b><div class="hint">Standard aus Profil</div>`;
-      box.appendChild(summary);
-
-      const actions=document.createElement('div');
-      actions.className='answers';
-      const toggle=document.createElement('button');
-      toggle.type='button';
-      toggle.className='ans';
-      toggle.textContent = w.data.mealCustom ? 'Fertig' : 'Essenszeit ändern';
-      toggle.onclick=()=>{
-        w.data.mealCustom = !w.data.mealCustom;
-        if(!w.data.mealCustom){
-          w.data.pickupWindow = profile.mealWindow || DEFAULT_MEAL_WINDOW;
-        }
-        rebuildWizard();
+      const applyEntry = (entry)=>{
+        w.data.dish = entry.dish || w.data.dish;
+        w.data.category = entry.category || w.data.category;
+        w.data.price = Number(entry.price||w.data.price||0);
+        w.data.allergens = Array.isArray(entry.allergens) ? [...entry.allergens] : [];
+        w.data.extras = Array.isArray(entry.extras) ? JSON.parse(JSON.stringify(entry.extras)) : [];
+        w.data.reuse = entry.reuse ? JSON.parse(JSON.stringify(entry.reuse)) : {enabled:false, deposit:0};
+        w.data.photoData = entry.photoData || '';
+        w.data.hasPickupCode = !!entry.hasPickupCode;
+        w.data.dineInPossible = !!entry.dineInPossible;
+        w.data.cookbookId = entry.id;
       };
-      actions.appendChild(toggle);
-      box.appendChild(actions);
 
-      if(w.data.mealCustom){
-        const updateWindow = ()=>{
-          if(w.data.mealStart && w.data.mealEnd){
-            w.data.pickupWindow = `${w.data.mealStart} – ${w.data.mealEnd}`;
-          }
+      if(w.data.source==='cookbook'){
+        const mine = cookbook.filter(c=>c.providerId===providerId());
+        if(!mine.length){
+          const hint=document.createElement('div');
+          hint.className='hint';
+          hint.textContent='Noch keine Gerichte im Kochbuch.';
+          const add=document.createElement('button');
+          add.className='btn secondary';
+          add.type='button';
+          add.textContent='Gericht anlegen';
+          add.onclick=()=> startWizard('cookbook');
+          box.appendChild(document.createElement('div')).style.height='8px';
+          box.appendChild(hint);
+          box.appendChild(add);
+        } else {
+          const list=document.createElement('div'); list.className='answers';
+          mine.forEach(entry=>{
+            const b=document.createElement('button');
+            b.type='button';
+            b.className='ans'+(w.data.cookbookId===entry.id?' on':'');
+            b.textContent=entry.dish||'Gericht';
+            b.onclick=()=>{ applyEntry(entry); rebuildWizard(); };
+            list.appendChild(b);
+          });
+          box.appendChild(document.createElement('div')).style.height='8px';
+          box.appendChild(list);
+        }
+      } else {
+        const input=document.createElement('input');
+        input.className='field';
+        input.placeholder='z.B. Kürbissuppe';
+        input.value=w.data.dish||'';
+        input.oninput=()=>{
+          w.data.dish = input.value;
+          const hit = DISH_SUGGESTIONS.find(d => d.name.toLowerCase() === input.value.trim().toLowerCase());
+          if(hit){ w.data.category = hit.category; }
+          refreshListingPreview();
         };
-
-        const startLabel=document.createElement('div'); startLabel.className='hint'; startLabel.textContent='Start';
-        const startRow=document.createElement('div'); startRow.className='answers';
-        ['10:30','11:00','11:30','12:00'].forEach(t=>{
+        const suggest=document.createElement('div');
+        suggest.className='answers';
+        DISH_SUGGESTIONS.slice(0,6).forEach(s=>{
           const b=document.createElement('button');
           b.type='button';
-          b.className='ans'+(w.data.mealStart===t?' on':'');
-          b.textContent=t;
-          b.onclick=()=>{ w.data.mealStart=t; updateWindow(); rebuildWizard(); };
-          startRow.appendChild(b);
+          b.className='ans';
+          b.textContent=s.name;
+          b.onclick=()=>{ w.data.dish = s.name; w.data.category = s.category; rebuildWizard(); };
+          suggest.appendChild(b);
         });
-
-        const endLabel=document.createElement('div'); endLabel.className='hint'; endLabel.textContent='Ende';
-        const endRow=document.createElement('div'); endRow.className='answers';
-        ['13:00','13:30','14:00','14:30'].forEach(t=>{
-          const b=document.createElement('button');
-          b.type='button';
-          b.className='ans'+(w.data.mealEnd===t?' on':'');
-          b.textContent=t;
-          b.onclick=()=>{ w.data.mealEnd=t; updateWindow(); rebuildWizard(); };
-          endRow.appendChild(b);
-        });
-
-        box.appendChild(document.createElement('div')).style.height='10px';
-        box.appendChild(startLabel);
-        box.appendChild(startRow);
         box.appendChild(document.createElement('div')).style.height='8px';
-        box.appendChild(endLabel);
-        box.appendChild(endRow);
+        box.appendChild(input);
+        box.appendChild(document.createElement('div')).style.height='8px';
+        box.appendChild(suggest);
       }
 
       attachListingPreview(box);
@@ -3188,12 +3422,149 @@
       return;
     }
 
+    if(w.step===2){
+      setWizardQuestion('Preis pro Portion?', 'Preset wählen oder frei eingeben.');
+      const box=document.createElement('div');
+      const presets=document.createElement('div'); presets.className='answers';
+      [4.5,5.5,6.5,7.5,8.5].forEach(val=>{
+        const b=document.createElement('button');
+        b.type='button';
+        b.className='ans'+(Number(w.data.price)===val?' on':'');
+        b.textContent=`${val.toFixed(2).replace('.',',')} €`;
+        b.onclick=()=>{ w.data.price=val; rebuildWizard(); };
+        presets.appendChild(b);
+      });
+      const input=document.createElement('input');
+      input.className='field';
+      input.inputMode='decimal';
+      input.placeholder='0,00';
+      input.value = formatPriceInput(w.data.price);
+      input.oninput=()=>{ w.data.price = parsePriceInput(input.value); refreshListingPreview(); };
+      box.appendChild(presets);
+      box.appendChild(document.createElement('div')).style.height='8px';
+      box.appendChild(input);
+      attachListingPreview(box);
+      setWizardContent(box);
+      wNextBtn.textContent='Weiter';
+      return;
+    }
+
     if(w.step===3){
-      setWizardQuestion('Allergene?', 'Ja/Nein. Bei Ja: 14 Allergene als Toggle.');
+      setWizardQuestion('Abholzeit', 'Aus Profil übernommen.');
+      const box=document.createElement('div');
+      const summary=document.createElement('div');
+      summary.className='panel';
+      summary.innerHTML = `<b>${esc(w.data.pickupWindow || DEFAULT_MEAL_WINDOW)}</b><div class="hint">Aus Profil übernommen</div>`;
+      const hint=document.createElement('div');
+      hint.className='hint';
+      hint.textContent='Änderung der Essenszeit ist im Profil möglich.';
+      box.appendChild(summary);
+      box.appendChild(hint);
+      attachListingPreview(box);
+      setWizardContent(box);
+      wNextBtn.textContent='Weiter';
+      return;
+    }
+
+    if(w.step===4){
+      setWizardQuestion('Extras & Mehrweg', 'Optional hinzufügen.');
+      const box=document.createElement('div');
+      if(!Array.isArray(w.data.extras)) w.data.extras=[];
+      if(!w.data.reuse) w.data.reuse = {enabled:false, deposit:0};
+
+      const extrasTitle=document.createElement('div');
+      extrasTitle.className='hint';
+      extrasTitle.textContent='Extras';
+      const extrasAns=document.createElement('div'); extrasAns.className='answers';
+      ['Beilagensalat','Extrasosse','Sonstiges'].forEach(name=>{
+        const active = w.data.extras.some(e=>e.name===name);
+        const b=document.createElement('button');
+        b.type='button';
+        b.className='ans'+(active?' on':'');
+        b.textContent=name;
+        b.onclick=()=>{
+          const idx = w.data.extras.findIndex(e=>e.name===name);
+          if(idx>=0) w.data.extras.splice(idx,1);
+          else w.data.extras.push({name, price:0});
+          rebuildWizard();
+        };
+        extrasAns.appendChild(b);
+      });
+      box.appendChild(extrasTitle);
+      box.appendChild(extrasAns);
+
+      if(w.data.extras.length){
+        w.data.extras.forEach(extra=>{
+          const label=document.createElement('div');
+          label.className='hint';
+          label.textContent=extra.name;
+          const input=document.createElement('input');
+          input.className='field';
+          input.inputMode='decimal';
+          input.placeholder='Preis in EUR (z.B. 2,00)';
+          input.value = formatPriceInput(extra.price);
+          input.oninput=()=>{ extra.price = parsePriceInput(input.value); refreshListingPreview(); };
+          box.appendChild(document.createElement('div')).style.height='8px';
+          box.appendChild(label);
+          box.appendChild(input);
+        });
+      }
+
+      const reuseTitle=document.createElement('div');
+      reuseTitle.className='hint';
+      reuseTitle.textContent='Mehrweg / Pfand';
+      const reuseAns=document.createElement('div'); reuseAns.className='answers';
+      const yes=document.createElement('button'); yes.type='button'; yes.className='ans'+(w.data.reuse.enabled?' on':''); yes.textContent='Ja';
+      const no=document.createElement('button'); no.type='button'; no.className='ans'+(!w.data.reuse.enabled?' on':''); no.textContent='Nein';
+      yes.onclick=()=>{ w.data.reuse.enabled=true; if(!w.data.reuse.deposit) w.data.reuse.deposit=2; rebuildWizard(); };
+      no.onclick=()=>{ w.data.reuse.enabled=false; w.data.reuse.deposit=0; w.data.reuseCustom=false; rebuildWizard(); };
+      reuseAns.appendChild(yes); reuseAns.appendChild(no);
+      box.appendChild(document.createElement('div')).style.height='8px';
+      box.appendChild(reuseTitle);
+      box.appendChild(reuseAns);
+
+      if(w.data.reuse.enabled){
+        const presets=document.createElement('div'); presets.className='answers';
+        [2,3,5].forEach(val=>{
+          const b=document.createElement('button');
+          b.type='button';
+          b.className='ans'+(w.data.reuse.deposit===val && !w.data.reuseCustom?' on':'');
+          b.textContent=`${val} €`;
+          b.onclick=()=>{ w.data.reuse.deposit=val; w.data.reuseCustom=false; rebuildWizard(); };
+          presets.appendChild(b);
+        });
+        const other=document.createElement('button');
+        other.type='button';
+        other.className='ans'+(w.data.reuseCustom?' on':'');
+        other.textContent='Anderer Betrag';
+        other.onclick=()=>{ w.data.reuseCustom=true; rebuildWizard(); };
+        presets.appendChild(other);
+        box.appendChild(document.createElement('div')).style.height='8px';
+        box.appendChild(presets);
+
+        if(w.data.reuseCustom){
+          const input=document.createElement('input');
+          input.className='field';
+          input.inputMode='decimal';
+          input.placeholder='Betrag in EUR';
+          input.value = formatPriceInput(w.data.reuse.deposit);
+          input.oninput=()=>{ w.data.reuse.deposit = parsePriceInput(input.value); refreshListingPreview(); };
+          box.appendChild(document.createElement('div')).style.height='8px';
+          box.appendChild(input);
+        }
+      }
+
+      attachListingPreview(box);
+      setWizardContent(box);
+      wNextBtn.textContent='Weiter';
+      return;
+    }
+
+    if(w.step===5){
+      setWizardQuestion('Allergene?', 'Optional auswählen.');
       const box=document.createElement('div');
       const ans=document.createElement('div'); ans.className='answers';
       const has = w.data.hasAllergens || (Array.isArray(w.data.allergens) && w.data.allergens.length);
-
       const yes=document.createElement('button'); yes.type='button'; yes.className='ans'+(has?' on':''); yes.textContent='Ja';
       const no=document.createElement('button'); no.type='button'; no.className='ans'+(!has?' on':''); no.textContent='Nein';
       yes.onclick=()=>{ w.data.hasAllergens=true; if(!Array.isArray(w.data.allergens)) w.data.allergens=[]; rebuildWizard(); };
@@ -3217,105 +3588,6 @@
         });
         box.appendChild(document.createElement('div')).style.height='8px';
         box.appendChild(list);
-      }
-
-      attachListingPreview(box);
-      setWizardContent(box);
-      wNextBtn.textContent='Weiter';
-      return;
-    }
-
-    if(w.step===4){
-      setWizardQuestion('Extras?', 'Presets wählen und Preis angeben.');
-      const box=document.createElement('div');
-      if(!Array.isArray(w.data.extras)) w.data.extras=[];
-
-      const ans=document.createElement('div'); ans.className='answers';
-      ['Beilagensalat','Extrasosse','Sonstiges'].forEach(name=>{
-        const active = w.data.extras.some(e=>e.name===name);
-        const b=document.createElement('button');
-        b.type='button';
-        b.className='ans'+(active?' on':'');
-        b.textContent=name;
-        b.onclick=()=>{
-          const idx = w.data.extras.findIndex(e=>e.name===name);
-          if(idx>=0) w.data.extras.splice(idx,1);
-          else w.data.extras.push({name, price:0});
-          rebuildWizard();
-        };
-        ans.appendChild(b);
-      });
-      box.appendChild(ans);
-
-      if(w.data.extras.length){
-        w.data.extras.forEach(extra=>{
-          const label=document.createElement('div');
-          label.className='hint';
-          label.textContent=extra.name;
-          const input=document.createElement('input');
-          input.className='field';
-          input.inputMode='decimal';
-          input.placeholder='Preis in EUR (z.B. 2,00)';
-          input.value = formatPriceInput(extra.price);
-          input.oninput=()=>{ extra.price = parsePriceInput(input.value); refreshListingPreview(); };
-          box.appendChild(document.createElement('div')).style.height='8px';
-          box.appendChild(label);
-          box.appendChild(input);
-        });
-      }
-
-      attachListingPreview(box);
-      setWizardContent(box);
-      wNextBtn.textContent='Weiter';
-      return;
-    }
-
-    if(w.step===5){
-      setWizardQuestion('Mehrweg anbieten?', 'Ja/Nein. Presets: 2, 3, 5 EUR.');
-      const box=document.createElement('div');
-      if(!w.data.reuse) w.data.reuse = {enabled:false, deposit:0};
-
-      const ans=document.createElement('div'); ans.className='answers';
-      const yes=document.createElement('button'); yes.type='button'; yes.className='ans'+(w.data.reuse.enabled?' on':''); yes.textContent='Ja';
-      const no=document.createElement('button'); no.type='button'; no.className='ans'+(!w.data.reuse.enabled?' on':''); no.textContent='Nein';
-      yes.onclick=()=>{ w.data.reuse.enabled=true; if(!w.data.reuse.deposit) w.data.reuse.deposit=2; rebuildWizard(); };
-      no.onclick=()=>{ w.data.reuse.enabled=false; w.data.reuse.deposit=0; w.data.reuseCustom=false; rebuildWizard(); };
-      ans.appendChild(yes); ans.appendChild(no);
-      box.appendChild(ans);
-
-      if(w.data.reuse.enabled){
-        const presets=document.createElement('div'); presets.className='answers';
-        [2,3,5].forEach(val=>{
-          const b=document.createElement('button');
-          b.type='button';
-          b.className='ans'+(w.data.reuse.deposit===val && !w.data.reuseCustom?' on':'');
-          b.textContent=`${val} EUR`;
-          b.onclick=()=>{ w.data.reuse.deposit=val; w.data.reuseCustom=false; rebuildWizard(); };
-          presets.appendChild(b);
-        });
-        const other=document.createElement('button');
-        other.type='button';
-        other.className='ans'+(w.data.reuseCustom?' on':'');
-        other.textContent='Anderer Betrag';
-        other.onclick=()=>{ w.data.reuseCustom=true; rebuildWizard(); };
-        presets.appendChild(other);
-        box.appendChild(document.createElement('div')).style.height='8px';
-        box.appendChild(presets);
-        const hint=document.createElement('div');
-        hint.className='hint';
-        hint.textContent='Hinweis: später Recup/Rebowl.';
-        box.appendChild(hint);
-
-        if(w.data.reuseCustom){
-          const input=document.createElement('input');
-          input.className='field';
-          input.inputMode='decimal';
-          input.placeholder='Betrag in EUR';
-          input.value = formatPriceInput(w.data.reuse.deposit);
-          input.oninput=()=>{ w.data.reuse.deposit = parsePriceInput(input.value); refreshListingPreview(); };
-          box.appendChild(document.createElement('div')).style.height='8px';
-          box.appendChild(input);
-        }
       }
 
       attachListingPreview(box);
@@ -3351,43 +3623,38 @@
     }
 
     if(w.step===7){
-      setWizardQuestion('Bezahlung mit Abholcode?', 'Vorschau zeigt Badge + Beispielcode.');
-      const box=document.createElement('div');
-      const ans=document.createElement('div'); ans.className='answers';
-      const yes=document.createElement('button'); yes.type='button'; yes.className='ans'+(w.data.hasPickupCode?' on':''); yes.textContent='Ja';
-      const no=document.createElement('button'); no.type='button'; no.className='ans'+(!w.data.hasPickupCode?' on':''); no.textContent='Nein';
-      yes.onclick=()=>{ w.data.hasPickupCode=true; rebuildWizard(); };
-      no.onclick=()=>{ w.data.hasPickupCode=false; rebuildWizard(); };
-      ans.appendChild(yes); ans.appendChild(no);
-      box.appendChild(ans);
-
-      attachListingPreview(box);
-      setWizardContent(box);
-      wNextBtn.textContent='Weiter';
-      return;
-    }
-
-    if(w.step===8){
-      setWizardQuestion('Vor Ort essen möglich?', 'Vorschau zeigt Badge.');
-      const box=document.createElement('div');
-      const ans=document.createElement('div'); ans.className='answers';
-      const yes=document.createElement('button'); yes.type='button'; yes.className='ans'+(w.data.dineInPossible?' on':''); yes.textContent='Ja';
-      const no=document.createElement('button'); no.type='button'; no.className='ans'+(!w.data.dineInPossible?' on':''); no.textContent='Nein';
-      yes.onclick=()=>{ w.data.dineInPossible=true; rebuildWizard(); };
-      no.onclick=()=>{ w.data.dineInPossible=false; rebuildWizard(); };
-      ans.appendChild(yes); ans.appendChild(no);
-      box.appendChild(ans);
-
-      attachListingPreview(box);
-      setWizardContent(box);
-      wNextBtn.textContent='Weiter';
-      return;
-    }
-
-    if(w.step===9){
       setWizardQuestion('Abschluss', 'Veröffentlichen oder speichern.');
       const box=document.createElement('div');
       attachListingPreview(box);
+
+      const options=document.createElement('div');
+      options.style.marginTop='10px';
+      const codeLabel=document.createElement('div');
+      codeLabel.className='hint';
+      codeLabel.textContent='Bezahlung mit Abholcode';
+      const codeRow=document.createElement('div'); codeRow.className='answers';
+      const codeYes=document.createElement('button'); codeYes.type='button'; codeYes.className='ans'+(w.data.hasPickupCode?' on':''); codeYes.textContent='Ja';
+      const codeNo=document.createElement('button'); codeNo.type='button'; codeNo.className='ans'+(!w.data.hasPickupCode?' on':''); codeNo.textContent='Nein';
+      codeYes.onclick=()=>{ w.data.hasPickupCode=true; rebuildWizard(); };
+      codeNo.onclick=()=>{ w.data.hasPickupCode=false; rebuildWizard(); };
+      codeRow.appendChild(codeYes); codeRow.appendChild(codeNo);
+
+      const dineLabel=document.createElement('div');
+      dineLabel.className='hint';
+      dineLabel.textContent='Vor Ort essen möglich';
+      const dineRow=document.createElement('div'); dineRow.className='answers';
+      const dineYes=document.createElement('button'); dineYes.type='button'; dineYes.className='ans'+(w.data.dineInPossible?' on':''); dineYes.textContent='Ja';
+      const dineNo=document.createElement('button'); dineNo.type='button'; dineNo.className='ans'+(!w.data.dineInPossible?' on':''); dineNo.textContent='Nein';
+      dineYes.onclick=()=>{ w.data.dineInPossible=true; rebuildWizard(); };
+      dineNo.onclick=()=>{ w.data.dineInPossible=false; rebuildWizard(); };
+      dineRow.appendChild(dineYes); dineRow.appendChild(dineNo);
+
+      options.appendChild(codeLabel);
+      options.appendChild(codeRow);
+      options.appendChild(document.createElement('div')).style.height='6px';
+      options.appendChild(dineLabel);
+      options.appendChild(dineRow);
+      box.appendChild(options);
 
       const actions=document.createElement('div');
       actions.style.marginTop='10px';
@@ -3400,17 +3667,18 @@
         const o = previewOfferFromWizard();
         publishOffer(o);
         closeWizard();
-        alert('Inserat veröffentlicht.');
         showProviderHome();
+        if(confirm('Inserat veröffentlicht. Weiteres Inserat erstellen?')){
+          startWizard('listing');
+        }
       };
 
       const btnSave=document.createElement('button');
       btnSave.className='btn secondary';
       btnSave.type='button';
-      btnSave.textContent='In Kochbuch speichern';
+      btnSave.textContent='Im Kochbuch speichern';
       btnSave.onclick=()=>{
         saveToCookbookFromWizard();
-        alert('Im Kochbuch gespeichert.');
         closeWizard();
         showProviderCookbook();
       };
@@ -3418,27 +3686,20 @@
       const btnWeek=document.createElement('button');
       btnWeek.className='btn ghost';
       btnWeek.type='button';
-      btnWeek.textContent='In Wochenplan übernehmen';
+      btnWeek.textContent='Zum Wochenplan hinzufügen';
       btnWeek.onclick=()=>{
         saveToCookbookFromWizard(true);
         const cb = cookbook.filter(x=>x.providerId===providerId()).slice(-1)[0];
         if(cb) startWizard('week', {fromCookbookId:cb.id});
       };
 
-      const btnBack=document.createElement('button');
-      btnBack.className='btn ghost';
-      btnBack.type='button';
-      btnBack.textContent='Zurück';
-      btnBack.onclick=()=>{ w.step = Math.max(0, w.step-1); rebuildWizard(); };
-
       actions.appendChild(btnPub);
       actions.appendChild(btnSave);
       actions.appendChild(btnWeek);
-      actions.appendChild(btnBack);
       box.appendChild(actions);
 
       setWizardContent(box);
-      wNextBtn.textContent='Fertig';
+      wNextBtn.textContent='Schließen';
       wNextBtn.onclick=()=>{ closeWizard(); showProviderHome(); };
       return;
     }
