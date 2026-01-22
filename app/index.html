@@ -576,15 +576,18 @@
 
     /* Discover Page - App-like UX */
     .discover-header{
-      padding:12px 14px 8px;
+      position:sticky; top:0; z-index:10;
+      background:#fff; padding:12px 14px 8px;
       max-width:980px; margin:0 auto;
+      border-bottom:1px solid rgba(0,0,0,.05);
     }
     .discover-location-pill{
       display:inline-flex; align-items:center; gap:6px;
-      padding:8px 14px; border-radius:20px;
+      padding:10px 16px; border-radius:24px;
       background:rgba(0,0,0,.04); border:none;
       font-size:14px; font-weight:600; color:#333;
       cursor:pointer; transition:all .2s;
+      height:44px; box-sizing:border-box;
     }
     .discover-location-pill:active{
       background:rgba(0,0,0,.08);
@@ -593,7 +596,7 @@
       max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
     }
     .discover-location-icon{
-      width:16px; height:16px; flex-shrink:0;
+      width:18px; height:18px; flex-shrink:0;
     }
     
     .discover-categories{
@@ -655,27 +658,45 @@
       box-shadow:0 1px 4px rgba(0,0,0,.12);
     }
     .discover-hero-image{
-      flex:0 0 100px; width:100px; height:100px;
-      border-radius:12px; overflow:hidden;
+      flex:0 0 30%; max-width:120px; width:30%;
+      aspect-ratio:1; border-radius:16px; overflow:hidden;
       position:relative;
     }
     .discover-hero-image img{
       width:100%; height:100%; object-fit:cover;
     }
     .discover-hero-content{
-      flex:1; display:flex; flex-direction:column; gap:6px;
-      min-width:0;
+      flex:1; display:flex; flex-direction:column; gap:8px;
+      min-width:0; justify-content:space-between;
     }
     .discover-hero-title{
       font-size:16px; font-weight:900; color:#000;
-      overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+      line-height:1.3; display:-webkit-box;
+      -webkit-line-clamp:2; -webkit-box-orient:vertical;
+      overflow:hidden;
     }
     .discover-hero-price{
-      font-size:18px; font-weight:900; color:var(--brand);
+      font-size:20px; font-weight:900; color:var(--brand);
+    }
+    .discover-hero-actions{
+      display:flex; flex-direction:column; gap:8px;
+      margin-top:auto;
+    }
+    .discover-hero-btn{
+      width:100%; padding:12px 16px; border-radius:12px;
+      border:none; font-weight:900; font-size:14px;
+      cursor:pointer; transition:transform .1s;
+    }
+    .discover-hero-btn:active{transform:scale(.98)}
+    .discover-hero-btn.primary{
+      background:var(--brand); color:#111;
+    }
+    .discover-hero-btn.secondary{
+      background:#f8f7f3; border:1px solid var(--border); color:var(--text);
+      display:none; /* Nur wenn nötig anzeigen */
     }
     .discover-hero-badges{
-      display:flex; gap:6px; flex-wrap:wrap;
-      margin-top:4px;
+      display:flex; gap:6px; flex-wrap:wrap; margin-top:8px;
     }
     .discover-hero-badge{
       display:inline-flex; align-items:center; gap:4px;
@@ -855,9 +876,21 @@
       <div class="discover-offers" id="discoverOffers">
         <!-- Wird dynamisch befüllt -->
       </div>
-      <p class="hint" id="discoverEmpty" style="display:none; text-align:center; padding:40px 20px;">
-        Noch keine Angebote. Demo: Als Anbieter ein Inserat erstellen.
-      </p>
+      <div id="discoverEmpty" style="display:none; text-align:center; padding:60px 20px;">
+        <div style="font-size:48px; margin-bottom:16px;">🍽️</div>
+        <div style="font-size:18px; font-weight:900; margin-bottom:8px; color:#333;">Noch keine Mittagsangebote in deiner Nähe</div>
+        <div style="font-size:14px; color:var(--muted); margin-bottom:24px; line-height:1.5;">
+          Ändere deinen Standort oder starte als Anbieter
+        </div>
+        <div style="display:flex; flex-direction:column; gap:12px; max-width:280px; margin:0 auto;">
+          <button class="btn" type="button" onclick="const q=prompt('Neuer Standort:'); if(q){locationQuery=q; renderDiscover();}" style="width:100%;">
+            Standort ändern
+          </button>
+          <button class="btn secondary" type="button" onclick="setMode('provider')" style="width:100%;">
+            Als Anbieter starten
+          </button>
+        </div>
+      </div>
     </section>
 
     <section class="view" id="v-provider-billing">
@@ -2104,14 +2137,15 @@
     return bubble;
   }
 
-  // --- Discover render (App-like UX) ---
+  // --- Discover render (App-like UX, PWA, Light Mode) ---
   let activeDiscoverFilter = 'near'; // 'near', 'Vegan', 'Vegetarisch', 'Mit Fleisch'
   
   function renderDiscover(){
-    // Header: Standort
+    // Header: Standort (kompakt, Pill-Form)
     const locationText = document.getElementById('discoverLocationText');
     if(locationText){
       const addr = locationQuery || 'Standort wählen';
+      // Format: "Ort + PLZ" wenn möglich
       locationText.textContent = addr;
     }
     
@@ -2137,7 +2171,7 @@
       });
     }
     
-    // Kalender rendern
+    // Kalender rendern (kurzes Format: "Mo 22")
     const calendarEl = document.getElementById('discoverCalendar');
     if(calendarEl){
       calendarEl.innerHTML = '';
@@ -2146,11 +2180,11 @@
         d.setDate(d.getDate() + i);
         const key = isoDate(d);
         const dayName = ['So','Mo','Di','Mi','Do','Fr','Sa'][d.getDay()];
-        const dayNum = String(d.getDate()).padStart(2,'0');
+        const dayNum = String(d.getDate());
         
         const btn = document.createElement('button');
         btn.className = 'discover-day' + (activeDay === key ? ' active' : '');
-        btn.textContent = i===0 ? 'Heute' : `${dayName} ${dayNum}`;
+        btn.textContent = `${dayName} ${dayNum}`;
         btn.onclick = ()=>{
           activeDay = key;
           renderDiscover();
@@ -2183,7 +2217,6 @@
     const emptyEl = document.getElementById('discoverEmpty');
     if(offersEl && emptyEl){
       offersEl.innerHTML = '';
-      emptyEl.textContent = q ? 'Keine Angebote für diesen Standort.' : 'Noch keine Angebote. Demo: Als Anbieter ein Inserat erstellen.';
       emptyEl.style.display = list.length ? 'none' : 'block';
       
       list.forEach(o=> offersEl.appendChild(createDiscoverHeroCard(o)));
@@ -2195,14 +2228,19 @@
     }
   }
   
-  // Hero Card für Discover-Seite
+  // Hero Card für Discover-Seite (PWA, Light Mode, App-like UX)
   function createDiscoverHeroCard(o){
     const data = normalizeOffer(o);
     const card = document.createElement('div');
     card.className = 'discover-hero-card';
-    card.onclick = ()=> openOffer(data.id);
     
     const imgSrc = data.imageUrl || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70';
+    
+    // Badges für unter Buttons
+    const badges = [];
+    if(data.hasPickupCode) badges.push('<div class="discover-hero-badge code"><i data-lucide="shopping-bag"></i> Abholcode</div>');
+    if(data.dineInPossible) badges.push('<div class="discover-hero-badge dine"><i data-lucide="utensils"></i> Vor Ort</div>');
+    if(!data.dineInPossible && !data.hasPickupCode) badges.push('<div class="discover-hero-badge"><i data-lucide="package"></i> Zum Mitnehmen</div>');
     
     card.innerHTML = `
       <div class="discover-hero-image">
@@ -2211,21 +2249,24 @@
       <div class="discover-hero-content">
         <div class="discover-hero-title">${esc(data.dish||'Gericht')}</div>
         <div class="discover-hero-price">${euro(data.price)}</div>
-        <div class="discover-hero-badges">
-          ${data.hasPickupCode ? '<div class="discover-hero-badge code"><i data-lucide="shopping-bag"></i> Abholcode</div>' : ''}
-          ${data.dineInPossible ? '<div class="discover-hero-badge dine"><i data-lucide="utensils"></i> Vor Ort</div>' : ''}
-          ${!data.dineInPossible && !data.hasPickupCode ? '<div class="discover-hero-badge"><i data-lucide="package"></i> Zum Mitnehmen</div>' : ''}
-        </div>
         <div class="discover-hero-actions">
           <button class="discover-hero-btn primary" onclick="event.stopPropagation(); const o=offers.find(x=>x.id==='${data.id}'); if(o) handleOrderClick(o);">
             ${data.hasPickupCode ? 'Bestellen' : 'Details'}
           </button>
-          <button class="discover-hero-btn secondary" onclick="event.stopPropagation(); openOffer('${data.id}');">
-            Details
-          </button>
         </div>
+        ${badges.length ? `<div class="discover-hero-badges">${badges.join('')}</div>` : ''}
       </div>
     `;
+    
+    // Klick auf Kachel öffnet direkt Bestellung (wenn möglich) oder Details
+    card.onclick = (e)=>{
+      if(e.target.closest('.discover-hero-btn')) return; // Button-Handler übernimmt
+      if(data.hasPickupCode){
+        handleOrderClick(o);
+      } else {
+        openOffer(data.id);
+      }
+    };
     
     return card;
   }
