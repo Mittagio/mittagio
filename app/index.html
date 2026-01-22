@@ -1863,6 +1863,11 @@
     document.getElementById('modePill').style.display = isProv ? 'inline-flex' : 'none';
 
     if(isStart){
+      // Onboarding: Neukunden direkt zur Profil-Seite
+      if(!customer.loggedIn){
+        showProfile();
+        return;
+      }
       showStart();
       return;
     }
@@ -3193,7 +3198,9 @@
     customer.email = email;
     save(LS.customer, customer);
     updateProfileView();
-    showProfile();
+    // Nach Login zur Startseite
+    setMode('start');
+    showStart();
   };
 
   document.getElementById('btnUnifiedLoginDemo').onclick=()=>{
@@ -3201,7 +3208,9 @@
     customer.name = customer.name || 'Mike';
     save(LS.customer, customer);
     updateProfileView();
-    showProfile();
+    // Nach Demo-Login zur Startseite
+    setMode('start');
+    showStart();
   };
 
   document.getElementById('btnUnifiedLogout').onclick=()=>{
