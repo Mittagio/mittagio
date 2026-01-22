@@ -1001,18 +1001,13 @@
     cookbook: 'mittagio_cookbook_v1',
     week: 'mittagio_week_v1',
     pickupDone: 'mittagio_pickup_done_v1',
-    mode: 'mittagio_mode_v1',
-    startSeen: 'mittagio_start_seen_v1'
+    mode: 'mittagio_mode_v1'
   };
   const load = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } };
   const save = (k, v) => localStorage.setItem(k, JSON.stringify(v));
 
   // --- State ---
-  let mode = load(LS.mode, 'customer'); // 'start' | 'customer' | 'provider'
-  let startSeen = load(LS.startSeen, false);
-  if(!startSeen){
-    mode = 'start';
-  }
+  let mode = 'start'; // 'start' | 'customer' | 'provider'
   let offers = load(LS.offers, []);
   const legacyFavs = load(LS.favs, []);
   let providerFavs = new Set(load(LS.providerFavs, legacyFavs));
@@ -1257,13 +1252,6 @@
     document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
     document.getElementById(id).classList.add('active');
     window.scrollTo({top:0,behavior:'smooth'});
-  }
-
-  function markStartSeen(){
-    if(!startSeen){
-      startSeen = true;
-      save(LS.startSeen, true);
-    }
   }
 
   function setMode(next){
@@ -2355,14 +2343,12 @@
   const startCustomerBtn = document.getElementById('btnStartCustomer');
   if(startCustomerBtn){
     startCustomerBtn.onclick=()=>{
-      markStartSeen();
       setMode('customer');
     };
   }
   const startProviderBtn = document.getElementById('btnStartProvider');
   if(startProviderBtn){
     startProviderBtn.onclick=()=>{
-      markStartSeen();
       setMode('provider');
     };
   }
@@ -2378,7 +2364,6 @@
   // --- Provider entry ---
   document.getElementById('btnProviderEntry').onclick=()=>{
     // switch mode; show provider login page
-    markStartSeen();
     setMode('provider');
   };
   document.getElementById('btnProvBack').onclick=()=>{ setMode('customer'); showProfile(); };
