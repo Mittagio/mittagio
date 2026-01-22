@@ -133,6 +133,15 @@
       cursor:pointer;
       position:relative;
     }
+    .card.playful{
+      border-color:rgba(242,183,5,.38);
+      box-shadow:0 12px 26px rgba(242,183,5,.18);
+    }
+    .card.playful .body{
+      background:linear-gradient(180deg,#fff, #fff4e6);
+    }
+    .card.playful .price{color:#b26b00}
+    .card.playful .tag{background:rgba(242,183,5,.25)}
     .img{height:190px; background:#eee; position:relative}
     .img img{width:100%; height:100%; object-fit:cover; display:block}
 
@@ -431,7 +440,6 @@
     <section class="view active" id="v-start">
       <div class="panel">
         <div class="section-title">Entdecken</div>
-        <div class="hint">Rette frische Mittagsangebote in deiner Nähe.</div>
         <div class="loc-row" style="margin-top:8px;">
           <input class="field" id="startLocationInput" type="text" placeholder="Ort oder PLZ eingeben" />
           <button class="pin-btn" type="button" id="btnStartLocationPin" aria-label="Standort setzen"></button>
@@ -442,17 +450,12 @@
       <div class="chiprow" id="startCatChips"></div>
       <div class="hint" style="margin-top:6px;">Datum</div>
       <div class="dayrow" id="startDayChips"></div>
+      <div class="answers" style="margin-top:6px;">
+        <button class="ans" type="button" id="btnStartNear" data-icon="location">In der Nähe</button>
+      </div>
       <div class="section-title" style="margin-top:8px;">Heute in deiner Nähe</div>
       <div class="grid" id="startOfferGrid"></div>
       <p class="hint" id="startEmptyOffers" style="display:none;">Noch keine Angebote. Demo: Als Anbieter ein Inserat erstellen.</p>
-      <div class="panel" style="margin-top:12px;">
-        <div class="section-title">Ich möchte…</div>
-        <div class="two" style="margin-top:10px;">
-          <button class="bigbtn" type="button" id="btnStartCustomer">Als Gast entdecken<span>Finde Gerichte in deiner Nähe</span></button>
-          <button class="bigbtn" type="button" id="btnStartProvider">Als Anbieter starten<span>Angebot sichtbar machen</span></button>
-        </div>
-        <div class="mini" style="margin-top:8px;">Kein Abo. Keine Verträge. Du kannst jederzeit wechseln.</div>
-      </div>
     </section>
 
     <!-- CUSTOMER: Discover -->
@@ -1261,7 +1264,7 @@
     const isProv = mode==='provider';
     const isStart = mode==='start';
     const isCustomer = mode==='customer';
-    document.getElementById('customerNav').style.display = isCustomer ? 'flex' : 'none';
+    document.getElementById('customerNav').style.display = (isCustomer || isStart) ? 'flex' : 'none';
     document.getElementById('providerNav').style.display = isProv ? 'flex' : 'none';
     document.getElementById('discoverFilters').style.display = isCustomer ? 'block' : 'none';
     document.getElementById('modePill').style.display = isProv ? 'inline-flex' : 'none';
@@ -1285,6 +1288,7 @@
 
   // --- Start ---
   function showStart(){
+    setCustomerNavActive('discover');
     showView(views.start);
     renderStart();
   }
@@ -1451,7 +1455,7 @@
     empty.textContent = q ? 'Keine Angebote für diesen Standort.' : 'Noch keine Angebote. Demo: Als Anbieter ein Inserat erstellen.';
     empty.style.display = list.length ? 'none' : 'block';
 
-    list.slice(0,6).forEach(o=> grid.appendChild(offerCard(o)));
+    list.slice(0,6).forEach(o=> grid.appendChild(offerCard(o, {context:'start'})));
   }
 
   // --- Discover render ---
@@ -1484,7 +1488,7 @@
     empty.textContent = q ? 'Keine Angebote für diesen Standort.' : 'Noch keine Angebote. Demo: Als Anbieter ein Inserat erstellen.';
     empty.style.display = list.length ? 'none' : 'block';
 
-    list.forEach(o=> grid.appendChild(offerCard(o)));
+    list.forEach(o=> grid.appendChild(offerCard(o, {context:'customer'})));
   }
 
   function offerCard(o, opts={}){
@@ -1492,6 +1496,9 @@
     const interactive = opts.interactive !== false;
     const card=document.createElement('div');
     card.className='card';
+    if(opts.context === 'start' || opts.context === 'customer'){
+      card.classList.add('playful');
+    }
     if(interactive){
       card.onclick=()=>openOffer(data.id);
     } else {
@@ -2205,6 +2212,13 @@
     startLocBtn.innerHTML = iconMarkup('location');
     startLocBtn.onclick=()=>{
       alert('Standort gesetzt. Du kannst jederzeit wechseln.');
+    };
+  }
+  const startNearBtn = document.getElementById('btnStartNear');
+  if(startNearBtn){
+    startNearBtn.onclick=()=>{
+      alert('Zeige Angebote in deiner Nähe.');
+      renderStart();
     };
   }
 
