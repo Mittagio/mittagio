@@ -8,6 +8,7 @@
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" href="assets/icons/icon-192.png" />
   <link rel="apple-touch-icon" href="assets/icons/icon-192.png" />
+  <script src="https://unpkg.com/lucide@latest"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
     :root{
@@ -19,8 +20,8 @@
       --border:#e7e1d5;
       --shadow:0 10px 24px rgba(0,0,0,.08);
       --shadow2:0 16px 40px rgba(0,0,0,.14);
-      --radius:18px;
-      --brand:#F2B705;   /* warm yellow */
+      --radius:24px;     /* rounded-3xl for messenger vibe */
+      --brand:#FFCC00;   /* Mittagio-Gelb */
       --brand2:#1F9D55;  /* green */
       --danger:#E34D4D;
     }
@@ -29,6 +30,8 @@
     body{
       margin:0;
       font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      font-size:16px;
+      line-height:1.5;
       background:var(--bg);
       color:var(--text);
     }
@@ -55,7 +58,7 @@
       flex:0 0 auto;
     }
     .brand-badge img{width:100%; height:100%; object-fit:cover; display:block}
-    .brand-name{font-weight:900; letter-spacing:.06em; font-size:18px; white-space:nowrap}
+    .brand-name{font-weight:900; letter-spacing:.06em; font-size:20px; white-space:nowrap}
     .spacer{flex:1}
 
     .chiprow{
@@ -66,9 +69,9 @@
       flex:0 0 auto;
       border:1px solid var(--border);
       background:#f8f7f3;
-      padding:9px 12px;
+      padding:10px 16px;
       border-radius:999px;
-      font-size:13px;
+      font-size:14px;
       font-weight:800;
       color:#222;
       cursor:pointer;
@@ -110,9 +113,9 @@
       flex:0 0 auto;
       border:none;
       background:#fff;
-      padding:10px 12px;
+      padding:12px 16px;
       border-radius:999px;
-      font-size:13px;
+      font-size:14px;
       font-weight:900;
       cursor:pointer;
       box-shadow:0 6px 14px rgba(0,0,0,.06);
@@ -157,15 +160,15 @@
       flex:0 0 auto;
     }
     .plogo img{width:100%; height:100%; object-fit:cover; display:block}
-    .pname{font-size:13px; font-weight:900; color:#222; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+    .pname{font-size:14px; font-weight:900; color:#222; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; line-height:1.3}
 
-    .body{padding:12px 14px 14px}
-    .title{font-weight:950; font-size:16px; margin:0}
-    .sub{margin:3px 0 0; color:#444; font-size:13px}
+    .body{padding:14px 16px 16px}
+    .title{font-weight:950; font-size:18px; margin:0; line-height:1.3}
+    .sub{margin:4px 0 0; color:#444; font-size:14px; line-height:1.4}
 
-    .meta{display:flex; justify-content:space-between; align-items:flex-end; gap:12px; margin-top:10px}
-    .price{font-weight:950; font-size:16px; color:#0f5c4c}
-    .right{ text-align:right; font-size:12px; color:var(--muted); line-height:1.25 }
+    .meta{display:flex; justify-content:space-between; align-items:flex-end; gap:12px; margin-top:12px}
+    .price{font-weight:950; font-size:18px; color:#0f5c4c}
+    .right{ text-align:right; font-size:13px; color:var(--muted); line-height:1.4 }
     .meta-line{display:flex; align-items:center; gap:6px; justify-content:flex-end}
     .tag{display:inline-block; margin-top:6px; padding:4px 8px; border-radius:999px; font-size:12px; font-weight:900; background:rgba(242,183,5,.18)}
 
@@ -173,10 +176,11 @@
       position:absolute; top:12px; left:12px;
       background:rgba(17,17,17,.72);
       color:#fff;
-      font-size:11px; font-weight:900;
-      padding:5px 9px;
+      font-size:12px; font-weight:900;
+      padding:6px 10px;
       border-radius:999px;
       box-shadow:0 10px 22px rgba(0,0,0,.18);
+      line-height:1.3;
     }
     .badge.code{left:auto; right:12px; background:rgba(31,157,85,.9)}
     .badge.dine{background:rgba(242,183,5,.9); color:#111}
@@ -194,21 +198,31 @@
     }
     .heart.on{color:var(--danger)}
 
-    /* Bottom nav */
+    /* Bottom nav - Glassmorphism Mittagio-Bar */
     .bottom{
       position:fixed; left:0; right:0; bottom:0; z-index:20;
-      height:72px; padding-bottom:env(safe-area-inset-bottom);
-      background:#fff; border-top:1px solid var(--border);
+      height:80px; padding-bottom:env(safe-area-inset-bottom);
+      background:rgba(255,255,255,.85);
+      backdrop-filter:saturate(180%) blur(20px);
+      -webkit-backdrop-filter:saturate(180%) blur(20px);
+      border-top:1px solid rgba(231,225,213,.3);
       display:flex;
+      box-shadow:0 -4px 20px rgba(0,0,0,.05);
     }
     .navbtn{
       flex:1; border:none; background:none; cursor:pointer;
-      display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px;
-      color:#777; font-size:11px;
+      display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;
+      color:#777; font-size:11px; font-weight:600;
+      transition:color .2s;
     }
-    .navbtn .ico{font-size:18px; display:inline-flex; align-items:center; justify-content:center}
-    .navbtn .ico svg{width:18px; height:18px}
-    .navbtn.active{color:#111; font-weight:900}
+    .navbtn .ico{font-size:22px; display:inline-flex; align-items:center; justify-content:center}
+    .navbtn .ico svg{width:22px; height:22px; stroke-width:2}
+    .navbtn.active{color:var(--brand); font-weight:900}
+    .navbtn .badge-notification{
+      position:absolute; top:8px; right:calc(50% - 20px);
+      width:8px; height:8px; border-radius:50%;
+      background:var(--brand); border:2px solid rgba(255,255,255,.85);
+    }
 
     /* Views */
     .view{display:none}
@@ -229,11 +243,12 @@
     .sheet-img{height:260px; background:#eee}
     .sheet-img img{width:100%; height:100%; object-fit:cover; display:block}
     .sheet-body{padding:12px 14px 18px}
-    .row{display:flex; justify-content:space-between; align-items:center; gap:10px; padding:10px 0; border-top:1px solid #eee; font-size:14px}
+    .row{display:flex; justify-content:space-between; align-items:center; gap:10px; padding:12px 0; border-top:1px solid #eee; font-size:15px; line-height:1.4}
     .btn{
       width:100%; border:none; cursor:pointer;
-      border-radius:999px; padding:14px 14px; font-weight:950; font-size:15px;
+      border-radius:999px; padding:16px 20px; font-weight:950; font-size:16px;
       background:var(--brand); color:#111;
+      line-height:1.4;
       margin-top:10px;
       display:flex;
       align-items:center;
@@ -243,7 +258,7 @@
     .btn:disabled{opacity:.6; cursor:not-allowed}
     .btn.secondary{background:#fff; border:1px solid var(--border)}
     .btn.ghost{background:#f8f7f3; border:1px solid var(--border)}
-    .mini{font-size:12px; color:var(--muted); margin-top:8px; line-height:1.25}
+    .mini{font-size:13px; color:var(--muted); margin-top:8px; line-height:1.5}
 
     .card-actions{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px}
     .card-action{
@@ -264,8 +279,8 @@
 
     /* Profile cards */
     .panel{background:#fff; border:1px solid var(--border); border-radius:18px; box-shadow:var(--shadow); padding:12px}
-    .panel h3{margin:0 0 8px; font-size:14px}
-    .section-title{font-weight:900; margin:10px 0 6px}
+    .panel h3{margin:0 0 10px; font-size:18px; font-weight:900; line-height:1.3}
+    .section-title{font-weight:900; font-size:20px; margin:12px 0 8px; line-height:1.3}
     .rowlist{display:flex; flex-direction:column; gap:8px}
     .rowbtn{
       width:100%; border:1px solid var(--border); background:#fff; cursor:pointer;
@@ -280,9 +295,9 @@
     }
     .rowbtn-ico svg{width:16px; height:16px}
     .rowbtn-text{min-width:0}
-    .rowbtn-text span{display:block; font-weight:600; font-size:12px; color:var(--muted); margin-top:4px}
-    .rowbtn .chev{font-size:18px; color:var(--muted)}
-    .rowgroup-title{font-size:12px; font-weight:900; color:var(--muted); margin-top:6px}
+    .rowbtn-text span{display:block; font-weight:600; font-size:13px; color:var(--muted); margin-top:4px; line-height:1.4}
+    .rowbtn .chev{font-size:20px; color:var(--muted)}
+    .rowgroup-title{font-size:13px; font-weight:900; color:var(--muted); margin-top:8px; line-height:1.4}
     .profile-head{display:flex; align-items:center; gap:12px}
     .profile-head .plogo{width:56px; height:56px; border-radius:50%}
     .profile-meta{display:flex; flex-direction:column; gap:4px}
@@ -314,6 +329,85 @@
     .status-pill.open{background:rgba(242,183,5,.12); color:#b37b00}
     .status-pill.done{background:rgba(31,157,85,.12); color:#1f9d55}
     .code-full{font-size:42px; font-weight:950; text-align:center; margin:10px 0}
+
+    /* Quick-Ticket (bildschirmfüllend) */
+    .quick-ticket{
+      position:fixed; inset:0; z-index:31;
+      background:linear-gradient(135deg, var(--brand) 0%, #FFD700 100%);
+      display:flex; align-items:center; justify-content:center;
+      transform:translateY(100%); transition:transform .3s cubic-bezier(.4,0,.2,1);
+      padding:20px;
+    }
+    .quick-ticket.active{transform:translateY(0)}
+    .quick-ticket-close{
+      position:absolute; top:20px; right:20px;
+      width:44px; height:44px; border-radius:50%;
+      background:rgba(255,255,255,.2); backdrop-filter:blur(10px);
+      border:2px solid rgba(255,255,255,.3);
+      color:#fff; cursor:pointer;
+      display:flex; align-items:center; justify-content:center;
+      transition:background .2s;
+    }
+    .quick-ticket-close:hover{background:rgba(255,255,255,.3)}
+    .quick-ticket-close i{width:24px; height:24px}
+    .quick-ticket-content{
+      width:100%; max-width:400px; text-align:center;
+      color:#111;
+    }
+    .quick-ticket-header{
+      margin-bottom:40px;
+    }
+    .quick-ticket-logo{
+      width:80px; height:80px; border-radius:20px;
+      background:#fff; border:4px solid rgba(255,255,255,.5);
+      margin:0 auto 16px; overflow:hidden;
+      box-shadow:0 8px 24px rgba(0,0,0,.2);
+    }
+    .quick-ticket-logo img{
+      width:100%; height:100%; object-fit:cover;
+    }
+    .quick-ticket-provider{
+      font-size:26px; font-weight:900; margin-bottom:10px; line-height:1.3;
+    }
+    .quick-ticket-time{
+      font-size:15px; opacity:.8; font-weight:600; line-height:1.4;
+    }
+    .quick-ticket-code{
+      background:#fff; border-radius:var(--radius);
+      padding:32px 24px; margin-bottom:24px;
+      box-shadow:0 12px 32px rgba(0,0,0,.2);
+    }
+    .quick-ticket-code-label{
+      font-size:12px; font-weight:700; text-transform:uppercase;
+      letter-spacing:.1em; color:var(--muted); margin-bottom:12px;
+    }
+    .quick-ticket-code-value{
+      font-size:72px; font-weight:950; line-height:1;
+      color:#111; font-family:'Inter', monospace;
+      letter-spacing:.05em;
+    }
+    .quick-ticket-details{
+      background:rgba(255,255,255,.3); backdrop-filter:blur(10px);
+      border-radius:var(--radius); padding:20px;
+      margin-bottom:20px;
+    }
+    .quick-ticket-detail-item{
+      margin-bottom:16px;
+    }
+    .quick-ticket-detail-item:last-child{margin-bottom:0}
+    .quick-ticket-detail-label{
+      font-size:13px; font-weight:700; opacity:.7; margin-bottom:6px; line-height:1.4;
+    }
+    .quick-ticket-detail-value{
+      font-size:17px; font-weight:900; line-height:1.4;
+    }
+    .quick-ticket-status{
+      font-size:14px; font-weight:700; opacity:.8; line-height:1.4;
+      margin-bottom:24px;
+    }
+    .quick-ticket-actions .btn{
+      background:#fff; color:#111; box-shadow:0 8px 24px rgba(0,0,0,.2);
+    }
 
     .print-view{display:none}
     @media print{
@@ -392,16 +486,16 @@
       gap:6px;
     }
     .ans.on{border-color:rgba(31,157,85,.4); background:rgba(31,157,85,.10)}
-    .field{width:100%; padding:12px 12px; border-radius:14px; border:1px solid var(--border); font-size:16px; background:#fbfaf7}
+    .field{width:100%; padding:14px 16px; border-radius:14px; border:1px solid var(--border); font-size:16px; background:#fbfaf7; line-height:1.5}
     .w-actions{display:flex; gap:10px; margin-top:12px}
     .w-actions button{flex:1}
 
     /* FAQ accordion */
     .faq{margin-top:12px}
-    details{background:#fff;border:1px solid var(--border);border-radius:14px;box-shadow:0 6px 14px rgba(0,0,0,.06);padding:10px 12px}
+    details{background:#fff;border:1px solid var(--border);border-radius:14px;box-shadow:0 6px 14px rgba(0,0,0,.06);padding:14px 16px}
     details+details{margin-top:10px}
-    summary{cursor:pointer;font-weight:950}
-    details p{margin:8px 0 0;color:var(--muted);font-size:13px;line-height:1.3}
+    summary{cursor:pointer;font-weight:950;font-size:15px;line-height:1.4}
+    details p{margin:10px 0 0;color:var(--muted);font-size:14px;line-height:1.6}
 
     /* helper */
     .hint{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.25}
@@ -418,7 +512,124 @@
     .info-item{
       display:inline-flex; align-items:center; gap:6px;
       background:#f8f7f3; border:1px solid var(--border);
-      padding:4px 8px; border-radius:999px;
+      padding:5px 10px; border-radius:999px;
+      font-size:13px; line-height:1.4;
+    }
+
+    /* Onboarding */
+    .onboarding-step{
+      max-width:600px; margin:0 auto;
+    }
+    .onboarding-header{
+      display:flex; justify-content:space-between; align-items:flex-start;
+    }
+    .onboarding-progress{
+      font-size:12px; font-weight:900; color:var(--muted);
+      text-transform:uppercase; letter-spacing:.05em;
+    }
+    .onboarding-logo-preview:hover{
+      border-color:var(--brand); background:#fff4e6;
+    }
+    .onboarding-logo-preview img{
+      display:block;
+    }
+    .time-btn.active{
+      background:var(--brand); border-color:var(--brand);
+    }
+    .onboarding-summary-item:last-child{
+      margin-bottom:0;
+    }
+
+    /* Social Feed - Story-Leiste */
+    .stories-container{
+      padding:16px 14px 20px;
+      max-width:980px; margin:0 auto;
+    }
+    .stories-scroll{
+      display:flex; gap:16px; overflow-x:auto;
+      -webkit-overflow-scrolling:touch;
+      padding-bottom:4px;
+    }
+    .story-item{
+      flex:0 0 auto; display:flex; flex-direction:column; align-items:center; gap:8px;
+      cursor:pointer;
+    }
+    .story-avatar{
+      width:64px; height:64px; border-radius:50%;
+      border:3px solid var(--brand);
+      padding:2px; background:#fff;
+      overflow:hidden; position:relative;
+    }
+    .story-avatar img{
+      width:100%; height:100%; object-fit:cover; border-radius:50%;
+    }
+    .story-name{
+      font-size:12px; font-weight:700; color:var(--text);
+      max-width:64px; text-align:center; overflow:hidden; text-overflow:ellipsis;
+      line-height:1.3;
+    }
+
+    /* Chat-Bubbles Feed */
+    .feed-container{
+      max-width:980px; margin:0 auto; padding:0 14px 20px;
+    }
+    .chat-bubble{
+      background:#fff; border:1px solid var(--border);
+      border-radius:var(--radius); padding:16px;
+      margin-bottom:16px; box-shadow:0 4px 12px rgba(0,0,0,.06);
+      position:relative;
+    }
+    .chat-bubble-header{
+      display:flex; align-items:center; gap:12px; margin-bottom:12px;
+    }
+    .chat-bubble-avatar{
+      width:44px; height:44px; border-radius:50%;
+      overflow:hidden; flex:0 0 auto;
+      border:2px solid var(--border);
+    }
+    .chat-bubble-avatar img{
+      width:100%; height:100%; object-fit:cover;
+    }
+    .chat-bubble-meta{
+      flex:1; min-width:0;
+    }
+    .chat-bubble-name{
+      font-weight:900; font-size:17px; margin-bottom:4px; line-height:1.3;
+    }
+    .chat-bubble-time{
+      font-size:13px; color:var(--muted);
+      display:flex; align-items:center; gap:6px; line-height:1.4;
+    }
+    .chat-bubble-distance{
+      position:absolute; top:16px; right:16px;
+      font-size:12px; font-weight:700; color:var(--muted);
+      background:#f8f7f3; padding:5px 10px; border-radius:999px;
+    }
+    .chat-bubble-message{
+      font-size:16px; line-height:1.6; color:var(--text);
+      margin-bottom:14px;
+    }
+    .chat-bubble-image{
+      width:100%; border-radius:16px; overflow:hidden;
+      margin-bottom:12px; max-height:300px; object-fit:cover;
+    }
+    .chat-bubble-actions{
+      display:flex; gap:10px; margin-top:12px;
+    }
+    .chat-bubble-btn{
+      flex:1; padding:12px; border-radius:12px;
+      border:none; font-weight:900; font-size:14px;
+      cursor:pointer; transition:transform .1s;
+    }
+    .chat-bubble-btn:active{transform:scale(.98)}
+    .chat-bubble-btn-primary{
+      background:var(--brand); color:#111;
+    }
+    .chat-bubble-btn-secondary{
+      background:#f8f7f3; border:1px solid var(--border); color:var(--text);
+    }
+    .feed-empty{
+      max-width:980px; margin:0 auto;
     }
   </style>
 </head>
@@ -436,48 +647,40 @@
   </div>
 
   <main>
-    <!-- START -->
+    <!-- START - Lunch-Feed (Social Style) -->
     <section class="view active" id="v-start">
-      <div class="panel">
-        <div class="section-title">Entdecken</div>
-        <div class="loc-row" style="margin-top:8px;">
-          <input class="field" id="startLocationInput" type="text" placeholder="Ort oder PLZ eingeben" />
-          <button class="pin-btn" type="button" id="btnStartLocationPin" aria-label="Standort setzen"></button>
+      <!-- Story-Leiste -->
+      <div class="stories-container">
+        <div class="stories-scroll" id="startStories">
+          <!-- Stories werden hier dynamisch eingefügt -->
         </div>
       </div>
-      <div style="height:10px"></div>
-      <div class="hint">Kategorien</div>
-      <div class="chiprow" id="startCatChips"></div>
-      <div class="hint" style="margin-top:6px;">Datum</div>
-      <div class="dayrow" id="startDayChips"></div>
-      <div class="answers" style="margin-top:6px;">
-        <button class="ans" type="button" id="btnStartNear" data-icon="location">In der Nähe</button>
+
+      <!-- Chat-ähnlicher Feed -->
+      <div class="feed-container" id="startFeed">
+        <!-- Chat-Bubbles werden hier dynamisch eingefügt -->
       </div>
-      <div class="section-title" style="margin-top:8px;">Heute in deiner Nähe</div>
-      <div class="grid" id="startOfferGrid"></div>
-      <p class="hint" id="startEmptyOffers" style="display:none;">Noch keine Angebote. Demo: Als Anbieter ein Inserat erstellen.</p>
+      <p class="hint feed-empty" id="startEmptyOffers" style="display:none; text-align:center; padding:40px 20px;">
+        Noch keine Angebote. Demo: Als Anbieter ein Inserat erstellen.
+      </p>
     </section>
 
-    <!-- CUSTOMER: Discover -->
+    <!-- CUSTOMER: Discover - Social Feed -->
     <section class="view" id="v-discover">
-      <div class="panel">
-        <div class="section-title">Entdecken</div>
-        <div class="hint">Finde Angebote in deiner Nähe.</div>
-        <div class="loc-row" style="margin-top:8px;">
-          <input class="field" id="locationInput" type="text" placeholder="Ort oder PLZ eingeben" />
-          <button class="pin-btn" type="button" id="btnLocationPin" aria-label="Standort setzen"></button>
+      <!-- Story-Leiste -->
+      <div class="stories-container">
+        <div class="stories-scroll" id="discoverStories">
+          <!-- Stories werden hier dynamisch eingefügt -->
         </div>
       </div>
-      <div style="height:10px"></div>
-      <div id="discoverFilters">
-        <div class="hint">Kategorien</div>
-        <div class="chiprow" id="catChips"></div>
-        <div class="hint" style="margin-top:6px;">Datum</div>
-        <div class="dayrow" id="dayChips"></div>
+
+      <!-- Chat-ähnlicher Feed -->
+      <div class="feed-container" id="discoverFeed">
+        <!-- Chat-Bubbles werden hier dynamisch eingefügt -->
       </div>
-      <div class="section-title" style="margin-top:8px;">Heute in deiner Nähe</div>
-      <div class="grid" id="offerGrid"></div>
-      <p class="hint" id="emptyOffers" style="display:none;">Noch keine Angebote. Demo: Als Anbieter ein Inserat erstellen.</p>
+      <p class="hint feed-empty" id="emptyOffers" style="display:none; text-align:center; padding:40px 20px;">
+        Noch keine Angebote. Demo: Als Anbieter ein Inserat erstellen.
+      </p>
     </section>
 
     <section class="view" id="v-provider-billing">
@@ -521,8 +724,9 @@
     <!-- CUSTOMER: Orders -->
     <section class="view" id="v-orders">
       <div class="panel">
-        <h3>Bestellungen</h3>
-        <div class="answers" id="ordersFilters"></div>
+        <h3>Mittagsbox</h3>
+        <div class="hint">Deine aktiven Tickets (Abholcodes)</div>
+        <div class="answers" id="ordersFilters" style="margin-top:12px;"></div>
         <div style="height:10px"></div>
         <div id="ordersList" class="hint">Noch keine Bestellungen.</div>
       </div>
@@ -544,11 +748,24 @@
     <section class="view" id="v-profile">
       <div class="panel">
         <h3>Profil</h3>
-        <div class="two" style="margin-top:10px;">
-          <button class="bigbtn" type="button" id="btnCustomerLogin">Als Kunde anmelden<span>Google / Apple / E-Mail (Demo)</span></button>
-          <button class="bigbtn" type="button" id="btnProviderEntry">Anbieter-Login<span>Zum Anbieterbereich</span></button>
+        <div id="profileLoginSection">
+          <input class="field" id="unifiedEmail" type="email" placeholder="E-Mail" autocomplete="email" style="margin-top:12px;" />
+          <div style="height:10px"></div>
+          <input class="field" id="unifiedPass" type="password" placeholder="Passwort" autocomplete="current-password" />
+          <button class="btn" type="button" id="btnUnifiedLogin" style="margin-top:16px;">Anmelden</button>
+          <div style="margin-top:12px; text-align:center;">
+            <button class="btn ghost" type="button" id="btnUnifiedLoginDemo" style="width:auto; padding:8px 16px;">Demo-Login (ohne Anmeldung)</button>
+          </div>
+          <div style="margin-top:16px; padding-top:16px; border-top:1px solid var(--border); text-align:center;">
+            <a href="#" id="linkProviderLogin" style="font-size:13px; color:var(--muted); text-decoration:none;">
+              Du bist Gastronom? Hier lang →
+            </a>
+          </div>
         </div>
-        <div style="margin-top:10px;" class="hint" id="customerStatus">Nicht angemeldet (Demo).</div>
+        <div id="profileLoggedInSection" style="display:none;">
+          <div style="margin-top:12px;" class="hint" id="customerStatus">Nicht angemeldet (Demo).</div>
+          <button class="btn secondary" type="button" id="btnUnifiedLogout" style="margin-top:12px;">Abmelden</button>
+        </div>
       </div>
 
       <div class="panel" style="margin-top:12px;">
@@ -564,7 +781,7 @@
           </details>
           <details>
             <summary>Was ist der Abholcode?</summary>
-            <p>Der Abholcode zeigt, dass du vorab bezahlt hast. Du bekommst eine Abholnummer nach der Zahlung.</p>
+            <p><strong>Dein Schnell-Ticket für die Mittagspause.</strong> Der Abholcode zeigt, dass du vorab bezahlt hast. Du bekommst eine Abholnummer nach der Zahlung, die du beim Gastronomen vorzeigst – schnell, einfach, ohne Chaos.</p>
           </details>
           <details>
             <summary>Kann ich ohne Abholcode bestellen?</summary>
@@ -588,18 +805,185 @@
           </details>
         </div>
       </div>
+
+      <!-- Rechtliches -->
+      <div class="panel" style="margin-top:12px;">
+        <div class="section-title">Rechtliches</div>
+        <div class="rowlist">
+          <button class="rowbtn" type="button" id="btnImpressum">
+            <div class="rowbtn-left">
+              <div class="rowbtn-ico"><i data-lucide="file-text"></i></div>
+              <div class="rowbtn-text">Impressum</div>
+            </div>
+            <div class="chev">›</div>
+          </button>
+          <button class="rowbtn" type="button" id="btnAGB">
+            <div class="rowbtn-left">
+              <div class="rowbtn-ico"><i data-lucide="file-text"></i></div>
+              <div class="rowbtn-text">AGB</div>
+            </div>
+            <div class="chev">›</div>
+          </button>
+          <button class="rowbtn" type="button" id="btnDatenschutz">
+            <div class="rowbtn-left">
+              <div class="rowbtn-ico"><i data-lucide="shield"></i></div>
+              <div class="rowbtn-text">Datenschutz</div>
+            </div>
+            <div class="chev">›</div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Anbieter-Switch (nur wenn eingeloggt) -->
+      <div class="panel" id="providerSwitchPanel" style="margin-top:12px; display:none;">
+        <div class="section-title">Anbieter-Modus</div>
+        <div class="hint">Wechsle zum Anbieter-Dashboard</div>
+        <button class="btn" type="button" id="btnSwitchToProvider" style="margin-top:12px;">
+          <i data-lucide="store" style="width:18px; height:18px; margin-right:8px;"></i>
+          Zum Anbieter-Modus
+        </button>
+      </div>
     </section>
 
-    <!-- PROVIDER: Login page -->
+    <!-- PROVIDER: Login page (für direkten Zugriff) -->
     <section class="view" id="v-provider-login">
       <div class="panel">
         <h3>Anbieter-Login</h3>
-        <input class="field" id="provEmail" type="email" placeholder="E-Mail" autocomplete="email" />
+        <div class="hint">Melde dich als Gastronom an</div>
+        <input class="field" id="provEmail" type="email" placeholder="E-Mail" autocomplete="email" style="margin-top:12px;" />
         <div style="height:10px"></div>
         <input class="field" id="provPass" type="password" placeholder="Passwort" autocomplete="current-password" />
-        <button class="btn" type="button" id="btnProvLogin">Einloggen</button>
-        <button class="btn secondary" type="button" id="btnProvBack">Zurück</button>
-        <p class="hint">Demo: beliebige E-Mail/Passwort -> du bist drin. (Später: Firebase Auth.)</p>
+        <button class="btn" type="button" id="btnProvLogin" style="margin-top:16px;">Einloggen</button>
+        <button class="btn secondary" type="button" id="btnProvBack" style="margin-top:8px;">Zurück</button>
+        <p class="hint" style="margin-top:12px;">Demo: beliebige E-Mail/Passwort -> du bist drin. (Später: Firebase Auth.)</p>
+      </div>
+    </section>
+
+    <!-- PROVIDER: Onboarding -->
+    <section class="view" id="v-provider-onboarding">
+      <!-- Schritt 1: Betriebsname -->
+      <div class="panel onboarding-step" data-step="1">
+        <div class="onboarding-header">
+          <div class="onboarding-progress">Schritt 1 von 5</div>
+          <button class="btn ghost" type="button" id="btnOnboardingBack" style="width:auto; padding:8px 12px; margin-top:8px;">
+            ← Zurück
+          </button>
+        </div>
+        <h3 style="margin-top:16px;">Wie heißt dein Betrieb?</h3>
+        <div class="hint">Gib den Namen deines Restaurants, Cafés oder Betriebs ein.</div>
+        <input class="field" id="onboardingBusinessName" type="text" placeholder="z.B. Café Sonnenschein" style="margin-top:12px;" />
+        <button class="btn" type="button" id="btnOnboardingStep1Next" style="margin-top:16px;">Weiter</button>
+      </div>
+
+      <!-- Schritt 2: Adresse -->
+      <div class="panel onboarding-step" data-step="2" style="display:none;">
+        <div class="onboarding-header">
+          <div class="onboarding-progress">Schritt 2 von 5</div>
+          <button class="btn ghost" type="button" id="btnOnboardingStep2Back" style="width:auto; padding:8px 12px; margin-top:8px;">
+            ← Zurück
+          </button>
+        </div>
+        <h3 style="margin-top:16px;">Adresse deines Betriebs</h3>
+        <div class="hint">Wo können Gäste dein Essen abholen?</div>
+        <div class="loc-row" style="margin-top:12px;">
+          <input class="field" id="onboardingAddress" type="text" placeholder="Straße und Hausnummer" />
+          <button class="pin-btn" type="button" id="btnOnboardingLocationPin" aria-label="Standort setzen"></button>
+        </div>
+        <input class="field" id="onboardingPostalCode" type="text" placeholder="PLZ" style="margin-top:10px;" />
+        <input class="field" id="onboardingCity" type="text" placeholder="Stadt" style="margin-top:10px;" />
+        <button class="btn" type="button" id="btnOnboardingStep2Next" style="margin-top:16px;">Weiter</button>
+      </div>
+
+      <!-- Schritt 3: Essenszeit -->
+      <div class="panel onboarding-step" data-step="3" style="display:none;">
+        <div class="onboarding-header">
+          <div class="onboarding-progress">Schritt 3 von 5</div>
+          <button class="btn ghost" type="button" id="btnOnboardingStep3Back" style="width:auto; padding:8px 12px; margin-top:8px;">
+            ← Zurück
+          </button>
+        </div>
+        <h3 style="margin-top:16px;">Wann können Gäste dein Essen genießen?</h3>
+        <div class="hint">Wähle die Standard-Zeiten für deine Essensausgabe.</div>
+        
+        <div style="margin-top:16px;">
+          <div class="hint" style="margin-bottom:6px;">Startzeit</div>
+          <div class="w-actions">
+            <button class="btn secondary time-btn" type="button" data-time="11:00">11:00</button>
+            <button class="btn secondary time-btn" type="button" data-time="11:30">11:30</button>
+            <button class="btn secondary time-btn" type="button" data-time="12:00">12:00</button>
+            <button class="btn secondary time-btn" type="button" data-time="12:30">12:30</button>
+          </div>
+          <input class="field" id="onboardingMealStart" type="time" placeholder="Startzeit" style="margin-top:10px;" />
+        </div>
+
+        <div style="margin-top:16px;">
+          <div class="hint" style="margin-bottom:6px;">Endzeit</div>
+          <div class="w-actions">
+            <button class="btn secondary time-btn" type="button" data-time="14:00">14:00</button>
+            <button class="btn secondary time-btn" type="button" data-time="14:30">14:30</button>
+            <button class="btn secondary time-btn" type="button" data-time="15:00">15:00</button>
+            <button class="btn secondary time-btn" type="button" data-time="15:30">15:30</button>
+          </div>
+          <input class="field" id="onboardingMealEnd" type="time" placeholder="Endzeit" style="margin-top:10px;" />
+        </div>
+
+        <button class="btn" type="button" id="btnOnboardingStep3Next" style="margin-top:20px;">Weiter</button>
+      </div>
+
+      <!-- Schritt 4: Logo -->
+      <div class="panel onboarding-step" data-step="4" style="display:none;">
+        <div class="onboarding-header">
+          <div class="onboarding-progress">Schritt 4 von 5</div>
+          <button class="btn ghost" type="button" id="btnOnboardingStep4Back" style="width:auto; padding:8px 12px; margin-top:8px;">
+            ← Zurück
+          </button>
+        </div>
+        <h3 style="margin-top:16px;">Logo hochladen</h3>
+        <div class="hint">Optional: Lade ein Logo für deinen Betrieb hoch. Du kannst das auch später machen.</div>
+        
+        <div style="margin-top:20px; text-align:center;">
+          <div class="onboarding-logo-preview" id="onboardingLogoPreview" style="width:120px; height:120px; margin:0 auto; border-radius:18px; border:2px dashed var(--border); background:#f8f7f3; display:flex; align-items:center; justify-content:center; cursor:pointer; position:relative; overflow:hidden;">
+            <div style="text-align:center; color:var(--muted); font-size:12px;">
+              <div style="font-size:32px; margin-bottom:8px;">📷</div>
+              <div>Logo hinzufügen</div>
+            </div>
+            <img id="onboardingLogoImg" style="display:none; width:100%; height:100%; object-fit:cover;" />
+          </div>
+          <input type="file" id="onboardingLogoInput" accept="image/*" style="display:none;" />
+          <button class="btn secondary" type="button" id="btnOnboardingLogoRemove" style="margin-top:12px; display:none;">Logo entfernen</button>
+        </div>
+
+        <button class="btn" type="button" id="btnOnboardingStep4Next" style="margin-top:20px;">Weiter</button>
+        <button class="btn ghost" type="button" id="btnOnboardingSkipLogo" style="margin-top:8px;">Überspringen</button>
+      </div>
+
+      <!-- Schritt 5: Zusammenfassung -->
+      <div class="panel onboarding-step" data-step="5" style="display:none;">
+        <div class="onboarding-header">
+          <div class="onboarding-progress">Schritt 5 von 5</div>
+        </div>
+        <h3 style="margin-top:16px;">Profil ist bereit! 🎉</h3>
+        <div class="hint">Hier ist eine Zusammenfassung deiner Angaben:</div>
+        
+        <div class="onboarding-summary" style="margin-top:20px; padding:16px; background:#f8f7f3; border-radius:14px; border:1px solid var(--border);">
+          <div class="onboarding-summary-item" style="margin-bottom:12px;">
+            <div style="font-weight:900; font-size:14px;" id="summaryBusinessName">–</div>
+            <div class="hint" id="summaryAddress" style="margin-top:4px;">–</div>
+          </div>
+          <div class="onboarding-summary-item" style="margin-bottom:12px;">
+            <div class="hint" style="margin-bottom:4px;">Essenszeit</div>
+            <div style="font-weight:900;" id="summaryMealTime">–</div>
+          </div>
+          <div class="onboarding-summary-item" id="summaryLogoContainer" style="display:none;">
+            <div class="hint" style="margin-bottom:4px;">Logo</div>
+            <div id="summaryLogo" style="width:60px; height:60px; border-radius:12px; overflow:hidden; border:1px solid var(--border);">
+              <img id="summaryLogoImg" style="width:100%; height:100%; object-fit:cover;" />
+            </div>
+          </div>
+        </div>
+
+        <button class="btn" type="button" id="btnOnboardingComplete" style="margin-top:24px;">Erstes Gericht erstellen</button>
+        <button class="btn secondary" type="button" id="btnOnboardingEdit" style="margin-top:8px;">Angaben bearbeiten</button>
       </div>
     </section>
 
@@ -848,13 +1232,29 @@
 
   </main>
 
-  <!-- CUSTOMER bottom nav -->
+  <!-- CUSTOMER bottom nav - Mittagio-Bar -->
   <nav class="bottom" id="customerNav">
-    <button class="navbtn active" data-go="discover"><div class="ico" data-icon="compass" data-icon-only="1"></div><div>Entdecken</div></button>
-    <button class="navbtn" data-go="fav"><div class="ico" data-icon="heart" data-icon-only="1"></div><div>Favoriten</div></button>
-    <button class="navbtn" data-go="orders"><div class="ico" data-icon="receipt" data-icon-only="1"></div><div>Bestellungen</div></button>
-    <button class="navbtn" data-go="cart"><div class="ico" data-icon="cart" data-icon-only="1"></div><div>Warenkorb</div></button>
-    <button class="navbtn" data-go="profile"><div class="ico" data-icon="user" data-icon-only="1"></div><div>Profil</div></button>
+    <button class="navbtn active" data-go="discover" style="position:relative;">
+      <div class="ico"><i data-lucide="utensils"></i></div>
+      <div>Entdecken</div>
+    </button>
+    <button class="navbtn" data-go="fav" style="position:relative;">
+      <div class="ico"><i data-lucide="heart"></i></div>
+      <div>Favoriten</div>
+    </button>
+    <button class="navbtn" data-go="cart" style="position:relative;">
+      <div class="ico"><i data-lucide="shopping-bag"></i></div>
+      <div>Essenskorb</div>
+      <span class="badge-notification" id="cartBadge" style="display:none;"></span>
+    </button>
+    <button class="navbtn" data-go="orders" style="position:relative;">
+      <div class="ico"><i data-lucide="box"></i></div>
+      <div>Mittagsbox</div>
+    </button>
+    <button class="navbtn" data-go="profile" style="position:relative;">
+      <div class="ico"><i data-lucide="user"></i></div>
+      <div>Profil</div>
+    </button>
   </nav>
 
   <!-- PROVIDER bottom nav -->
@@ -886,7 +1286,6 @@
     <div class="row"><span>Abholfenster</span><b id="sWindow"></b></div>
     <div class="row"><span>Adresse</span><a id="sAddr" href="#" target="_blank" rel="noopener">öffnen</a></div>
     <div class="row"><span>Entfernung</span><b id="sDistance"></b></div>
-    <div class="row"><span>Bewertung</span><b id="sRating"></b></div>
     <div class="row"><span>Verfügbar</span><b id="sAvail"></b></div>
 
     <div id="sAllergensWrap" style="display:none">
@@ -922,22 +1321,36 @@
   </div>
 </div>
 
-<!-- Pickup code sheet -->
+<!-- Quick-Ticket (bildschirmfüllend) -->
 <div class="backdrop" id="codeBd" onclick="closeCodeSheet()"></div>
-<div class="sheet" id="codeSheet">
-  <div class="handle"></div>
-  <div class="sheet-body">
-    <div class="code-full" id="codeText">A1</div>
-    <div class="hint" style="text-align:center;">Abholnummer</div>
-    <div class="hint" id="codeStatus" style="text-align:center; margin-top:6px;"></div>
-    <div class="panel" style="margin-top:10px;">
-      <div style="font-weight:900" id="codeProvider">Anbieter</div>
-      <div class="hint" id="codeSummary"></div>
-      <div class="hint" id="codePickupWindow"></div>
-      <div class="hint" id="codePickupTime"></div>
+<div class="quick-ticket" id="codeSheet">
+  <button class="quick-ticket-close" onclick="closeCodeSheet()" aria-label="Schließen">
+    <i data-lucide="x"></i>
+  </button>
+  <div class="quick-ticket-content">
+    <div class="quick-ticket-header">
+      <div class="quick-ticket-logo" id="codeProviderLogo"></div>
+      <div class="quick-ticket-provider" id="codeProvider">Anbieter</div>
+      <div class="quick-ticket-time" id="codePickupWindow">Essenszeit: –</div>
     </div>
-    <button class="btn" type="button" id="btnToggleOrderStatus">Als abgeholt markieren</button>
-    <button class="btn secondary" type="button" id="btnCodeClose">Schließen</button>
+    <div class="quick-ticket-code">
+      <div class="quick-ticket-code-label">Abholcode</div>
+      <div class="quick-ticket-code-value" id="codeText">A1</div>
+    </div>
+    <div class="quick-ticket-details">
+      <div class="quick-ticket-detail-item">
+        <div class="quick-ticket-detail-label">Gericht</div>
+        <div class="quick-ticket-detail-value" id="codeSummary">–</div>
+      </div>
+      <div class="quick-ticket-detail-item">
+        <div class="quick-ticket-detail-label">Abholzeit</div>
+        <div class="quick-ticket-detail-value" id="codePickupTime">offen</div>
+      </div>
+    </div>
+    <div class="quick-ticket-status" id="codeStatus">Status: offen</div>
+    <div class="quick-ticket-actions">
+      <button class="btn" type="button" id="btnToggleOrderStatus">Als abgeholt markieren</button>
+    </div>
   </div>
 </div>
 
@@ -1066,36 +1479,36 @@
   let billingFilter = 'month';
   let billingMonth = '2026-01';
 
-  // --- Seed demo offers if empty ---
+  // --- Seed demo offers (Testanbieter) ---
   function seed(){
-    if(offers.length) return;
+    // Testdaten immer erstellen (zum Testen)
     const today = isoDate(new Date());
     offers = [
-      // 5 Anbieter × 3 Gerichte (mit Bildern & je 2 Abholcodes)
-      // Bistro Sonnenhof (Stuttgart)
-      {id: cryptoId(), providerId: 'p_sonnenhof', providerName: 'Bistro Sonnenhof', address: 'Königstraße 22, 70173 Stuttgart', title: 'Rinderroulade mit Spätzle', price: 9.40, time: '11:30 – 14:00', diet: 'Fleisch', day: today, img: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 2},
-      {id: cryptoId(), providerId: 'p_sonnenhof', providerName: 'Bistro Sonnenhof', address: 'Königstraße 22, 70173 Stuttgart', title: 'Gemüserisotto', price: 7.80, time: '11:30 – 14:00', diet: 'Vegetarisch', day: today, img: 'https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 2},
-      {id: cryptoId(), providerId: 'p_sonnenhof', providerName: 'Bistro Sonnenhof', address: 'Königstraße 22, 70173 Stuttgart', title: 'Ofengemüse-Bowl', price: 8.10, time: '11:30 – 14:00', diet: 'Vegan', day: today, img: 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 2},
+      // 4 Testanbieter × 4 Gerichte (mit Bildern & je Abholcodes)
+      
+      // 1. Pizzeria Bella Vista (Stuttgart)
+      {id: cryptoId(), providerId: 'p_bellavista', providerName: 'Pizzeria Bella Vista', address: 'Hauptstraße 45, 70173 Stuttgart', title: 'Pizza Prosciutto', price: 9.90, time: '11:30 – 14:30', diet: 'Fleisch', day: today, img: 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 3},
+      {id: cryptoId(), providerId: 'p_bellavista', providerName: 'Pizzeria Bella Vista', address: 'Hauptstraße 45, 70173 Stuttgart', title: 'Pizza Quattro Formaggi', price: 8.50, time: '11:30 – 14:30', diet: 'Vegetarisch', day: today, img: 'https://images.unsplash.com/photo-1571997478779-2adcbbe9ab2f?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 4},
+      {id: cryptoId(), providerId: 'p_bellavista', providerName: 'Pizzeria Bella Vista', address: 'Hauptstraße 45, 70173 Stuttgart', title: 'Pasta Carbonara', price: 8.80, time: '11:30 – 14:30', diet: 'Fleisch', day: today, img: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 2},
+      {id: cryptoId(), providerId: 'p_bellavista', providerName: 'Pizzeria Bella Vista', address: 'Hauptstraße 45, 70173 Stuttgart', title: 'Insalata Caprese', price: 7.20, time: '11:30 – 14:30', diet: 'Vegetarisch', day: today, img: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 3},
 
-      // Veggie Corner (Tübingen)
-      {id: cryptoId(), providerId: 'p_veggie', providerName: 'Veggie Corner', address: 'Lange Gasse 5, 72070 Tübingen', title: 'Buddha Bowl', price: 8.20, time: '11:00 – 14:00', diet: 'Vegan', day: today, img: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 2},
-      {id: cryptoId(), providerId: 'p_veggie', providerName: 'Veggie Corner', address: 'Lange Gasse 5, 72070 Tübingen', title: 'Süßkartoffel-Curry', price: 7.80, time: '11:00 – 14:00', diet: 'Vegan', day: today, img: 'https://images.unsplash.com/photo-1546069901-d5bfd2cbfb1f?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 2},
-      {id: cryptoId(), providerId: 'p_veggie', providerName: 'Veggie Corner', address: 'Lange Gasse 5, 72070 Tübingen', title: 'Veggie-Burger', price: 8.90, time: '11:00 – 14:00', diet: 'Vegan', day: today, img: 'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 2},
+      // 2. Asia Wok Express (Tübingen)
+      {id: cryptoId(), providerId: 'p_asiawok', providerName: 'Asia Wok Express', address: 'Neckarhalde 8, 72070 Tübingen', title: 'Hähnchen Teriyaki', price: 8.90, time: '11:00 – 14:00', diet: 'Fleisch', day: today, img: 'https://images.unsplash.com/photo-1603133872878-684f208fb84b?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 5},
+      {id: cryptoId(), providerId: 'p_asiawok', providerName: 'Asia Wok Express', address: 'Neckarhalde 8, 72070 Tübingen', title: 'Gebratene Nudeln mit Gemüse', price: 7.50, time: '11:00 – 14:00', diet: 'Vegetarisch', day: today, img: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 4},
+      {id: cryptoId(), providerId: 'p_asiawok', providerName: 'Asia Wok Express', address: 'Neckarhalde 8, 72070 Tübingen', title: 'Pad Thai', price: 8.40, time: '11:00 – 14:00', diet: 'Vegetarisch', day: today, img: 'https://images.unsplash.com/photo-1559314809-0d155014e29e?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 3},
+      {id: cryptoId(), providerId: 'p_asiawok', providerName: 'Asia Wok Express', address: 'Neckarhalde 8, 72070 Tübingen', title: 'Frühlingsrollen (4 Stück)', price: 6.80, time: '11:00 – 14:00', diet: 'Vegetarisch', day: today, img: 'https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 6},
 
-      // Trattoria Napoli (Ludwigsburg)
-      {id: cryptoId(), providerId: 'p_napoli', providerName: 'Trattoria Napoli', address: 'Marktstraße 3, 71634 Ludwigsburg', title: 'Pasta Arrabbiata', price: 8.50, time: '12:00 – 14:30', diet: 'Vegetarisch', day: today, img: 'https://images.unsplash.com/photo-1523986371872-9d3ba2e2f642?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 2},
-      {id: cryptoId(), providerId: 'p_napoli', providerName: 'Trattoria Napoli', address: 'Marktstraße 3, 71634 Ludwigsburg', title: 'Pizza Margherita', price: 7.90, time: '12:00 – 14:30', diet: 'Vegetarisch', day: today, img: 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 2},
-      {id: cryptoId(), providerId: 'p_napoli', providerName: 'Trattoria Napoli', address: 'Marktstraße 3, 71634 Ludwigsburg', title: 'Lasagne al Forno', price: 9.20, time: '12:00 – 14:30', diet: 'Fleisch', day: today, img: 'https://images.unsplash.com/photo-1546069901-5ec6a79120b0?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 2},
+      // 3. Burger House (Ludwigsburg)
+      {id: cryptoId(), providerId: 'p_burgerhouse', providerName: 'Burger House', address: 'Wilhelmstraße 12, 71634 Ludwigsburg', title: 'Classic Cheeseburger', price: 8.90, time: '11:30 – 14:00', diet: 'Fleisch', day: today, img: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 4},
+      {id: cryptoId(), providerId: 'p_burgerhouse', providerName: 'Burger House', address: 'Wilhelmstraße 12, 71634 Ludwigsburg', title: 'Veggie Burger', price: 7.90, time: '11:30 – 14:00', diet: 'Vegetarisch', day: today, img: 'https://images.unsplash.com/photo-1525059696034-4967a7290027?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 3},
+      {id: cryptoId(), providerId: 'p_burgerhouse', providerName: 'Burger House', address: 'Wilhelmstraße 12, 71634 Ludwigsburg', title: 'Chicken Burger', price: 9.20, time: '11:30 – 14:00', diet: 'Fleisch', day: today, img: 'https://images.unsplash.com/photo-1606755962773-d324e0a13086?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 5},
+      {id: cryptoId(), providerId: 'p_burgerhouse', providerName: 'Burger House', address: 'Wilhelmstraße 12, 71634 Ludwigsburg', title: 'Sweet Potato Fries', price: 4.50, time: '11:30 – 14:00', diet: 'Vegan', day: today, img: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 8},
 
-      // Café Linden (Esslingen)
-      {id: cryptoId(), providerId: 'p_linden', providerName: 'Café Linden', address: 'Bahnhofstraße 12, 73728 Esslingen', title: 'Linsensuppe', price: 6.20, time: '11:00 – 13:30', diet: 'Vegan', day: today, img: 'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 2},
-      {id: cryptoId(), providerId: 'p_linden', providerName: 'Café Linden', address: 'Bahnhofstraße 12, 73728 Esslingen', title: 'Flammkuchen Classic', price: 8.10, time: '11:00 – 13:30', diet: 'Fleisch', day: today, img: 'https://images.unsplash.com/photo-1604908177522-937be1a2d0a0?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 2},
-      {id: cryptoId(), providerId: 'p_linden', providerName: 'Café Linden', address: 'Bahnhofstraße 12, 73728 Esslingen', title: 'Quiche Lorraine', price: 7.40, time: '11:00 – 13:30', diet: 'Fleisch', day: today, img: 'https://images.unsplash.com/photo-1466978913421-dad2ebd01d17?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 2},
-
-      // Wirtshaus zur Brücke (Reutlingen)
-      {id: cryptoId(), providerId: 'p_bruecke', providerName: 'Wirtshaus zur Brücke', address: 'Mühlstraße 4, 72764 Reutlingen', title: 'Schnitzel mit Pommes', price: 9.10, time: '11:30 – 14:00', diet: 'Fleisch', day: today, img: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 2},
-      {id: cryptoId(), providerId: 'p_bruecke', providerName: 'Wirtshaus zur Brücke', address: 'Mühlstraße 4, 72764 Reutlingen', title: 'Maultaschen in Brühe', price: 7.60, time: '11:30 – 14:00', diet: 'Fleisch', day: today, img: 'https://images.unsplash.com/photo-1523986371872-9d3ba2e2f642?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 2},
-      {id: cryptoId(), providerId: 'p_bruecke', providerName: 'Wirtshaus zur Brücke', address: 'Mühlstraße 4, 72764 Reutlingen', title: 'Käsespätzle', price: 7.20, time: '11:30 – 14:00', diet: 'Vegetarisch', day: today, img: 'https://images.unsplash.com/photo-1604908812253-9b998f4949b3?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 2},
+      // 4. Green Garden (Esslingen)
+      {id: cryptoId(), providerId: 'p_greengarden', providerName: 'Green Garden', address: 'Marktplatz 7, 73728 Esslingen', title: 'Avocado-Bowl', price: 9.50, time: '11:00 – 14:00', diet: 'Vegan', day: today, img: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 4},
+      {id: cryptoId(), providerId: 'p_greengarden', providerName: 'Green Garden', address: 'Marktplatz 7, 73728 Esslingen', title: 'Quinoa-Salat', price: 8.20, time: '11:00 – 14:00', diet: 'Vegan', day: today, img: 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 5},
+      {id: cryptoId(), providerId: 'p_greengarden', providerName: 'Green Garden', address: 'Marktplatz 7, 73728 Esslingen', title: 'Falafel-Wrap', price: 7.80, time: '11:00 – 14:00', diet: 'Vegan', day: today, img: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 6},
+      {id: cryptoId(), providerId: 'p_greengarden', providerName: 'Green Garden', address: 'Marktplatz 7, 73728 Esslingen', title: 'Gemüse-Curry', price: 8.60, time: '11:00 – 14:00', diet: 'Vegan', day: today, img: 'https://images.unsplash.com/photo-1546069901-d5bfd2cbfb1f?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 3},
     ];
     save(LS.offers, offers);
   }
@@ -1318,7 +1731,8 @@
   function showProfile(){
     setCustomerNavActive('profile');
     showView(views.profile);
-    document.getElementById('customerStatus').textContent = customer.loggedIn ? `Angemeldet als ${customer.name || 'Kunde'}` : 'Nicht angemeldet (Demo).';
+    updateProfileView();
+    lucide.createIcons();
   }
 
   // --- Provider views ---
@@ -1555,7 +1969,6 @@
       info.appendChild(item);
     };
     if(data.availableCount != null) addInfo('box', `${data.availableCount} verfügbar`);
-    if(data.rating != null && data.ratingCount != null) addInfo('star', `${data.rating.toFixed(1)} (${data.ratingCount})`);
     if(data.distanceKm != null) addInfo('location', `${Number(data.distanceKm).toFixed(1)} km`);
     body.appendChild(info);
 
@@ -1816,10 +2229,27 @@
     document.getElementById('btnToggleOrderStatus').textContent = order.status === 'abgeholt' ? 'Als offen markieren' : 'Als abgeholt markieren';
     document.getElementById('codeProvider').textContent = order.providerName || 'Anbieter';
     document.getElementById('codeSummary').textContent = order.summary || '';
-    document.getElementById('codePickupWindow').textContent = order.pickupWindow ? `Essenszeit: ${order.pickupWindow}` : '';
-    document.getElementById('codePickupTime').textContent = order.pickupTime ? `Abholzeit: ${order.pickupTime}` : 'Abholzeit: offen';
+    document.getElementById('codePickupWindow').textContent = order.pickupWindow ? `Essenszeit: ${order.pickupWindow}` : 'Essenszeit: –';
+    document.getElementById('codePickupTime').textContent = order.pickupTime ? order.pickupTime : 'offen';
+    
+    // Logo rendern (falls vorhanden)
+    const logoEl = document.getElementById('codeProviderLogo');
+    if(logoEl){
+      const providerOffer = offers.find(o=>o.providerName === order.providerName);
+      if(providerOffer && providerOffer.providerLogo){
+        logoEl.innerHTML = `<img src="${providerOffer.providerLogo}" alt="Logo" />`;
+      } else {
+        logoEl.innerHTML = `<img src="assets/provider-placeholder.png" alt="Logo" />`;
+      }
+    }
+    
     document.getElementById('codeBd').classList.add('active');
     document.getElementById('codeSheet').classList.add('active');
+    
+    // Icons aktualisieren
+    if(typeof lucide !== 'undefined'){
+      setTimeout(()=> lucide.createIcons(), 50);
+    }
   }
   function closeCodeSheet(){
     document.getElementById('codeBd').classList.remove('active');
@@ -1852,10 +2282,6 @@
     const distRow = document.getElementById('sDistance');
     if(distRow){
       distRow.textContent = o.distanceKm != null ? `${Number(o.distanceKm).toFixed(1)} km` : '-';
-    }
-    const ratingRow = document.getElementById('sRating');
-    if(ratingRow){
-      ratingRow.textContent = (o.rating != null && o.ratingCount != null) ? `${o.rating.toFixed(1)} (${o.ratingCount})` : '-';
     }
     const availRow = document.getElementById('sAvail');
     if(availRow){
@@ -2367,19 +2793,63 @@
     };
   }
 
-  // --- Customer login (demo) ---
-  document.getElementById('btnCustomerLogin').onclick=()=>{
+  // --- Unified Login ---
+  function updateProfileView(){
+    const isLoggedIn = customer.loggedIn;
+    document.getElementById('profileLoginSection').style.display = isLoggedIn ? 'none' : 'block';
+    document.getElementById('profileLoggedInSection').style.display = isLoggedIn ? 'block' : 'none';
+    document.getElementById('providerSwitchPanel').style.display = (isLoggedIn && provider.loggedIn) ? 'block' : 'none';
+    if(isLoggedIn){
+      document.getElementById('customerStatus').textContent = `Angemeldet als ${customer.name || 'Kunde'}`;
+    }
+  }
+
+  document.getElementById('btnUnifiedLogin').onclick=()=>{
+    const email = document.getElementById('unifiedEmail').value.trim();
+    const pass = document.getElementById('unifiedPass').value.trim();
+    if(!email || !pass){
+      alert('Bitte E-Mail und Passwort eingeben.');
+      return;
+    }
     customer.loggedIn = true;
-    customer.name = customer.name || 'Mike';
+    customer.name = customer.name || email.split('@')[0];
+    customer.email = email;
     save(LS.customer, customer);
+    updateProfileView();
     showProfile();
   };
 
-  // --- Provider entry ---
-  document.getElementById('btnProviderEntry').onclick=()=>{
-    // switch mode; show provider login page
+  document.getElementById('btnUnifiedLoginDemo').onclick=()=>{
+    customer.loggedIn = true;
+    customer.name = customer.name || 'Mike';
+    save(LS.customer, customer);
+    updateProfileView();
+    showProfile();
+  };
+
+  document.getElementById('btnUnifiedLogout').onclick=()=>{
+    customer.loggedIn = false;
+    customer.name = null;
+    customer.email = null;
+    save(LS.customer, customer);
+    updateProfileView();
+    showProfile();
+  };
+
+  document.getElementById('linkProviderLogin').onclick=(e)=>{
+    e.preventDefault();
     setMode('provider');
   };
+
+  document.getElementById('btnSwitchToProvider').onclick=()=>{
+    if(!provider.loggedIn){
+      setMode('provider');
+    } else {
+      showProviderHome();
+    }
+  };
+
+  // --- Provider entry ---
   document.getElementById('btnProvBack').onclick=()=>{ setMode('customer'); showProfile(); };
 
   document.getElementById('btnProvLogin').onclick=()=>{
@@ -2397,6 +2867,17 @@
     save(LS.provider, provider);
     setMode('customer');
     showProfile();
+  };
+
+  // Rechtliches
+  document.getElementById('btnImpressum').onclick=()=>{
+    alert('Impressum\n\nMittagio\n[Adresse]\n[Kontakt]\n\n(Platzhalter - wird später ausgefüllt)');
+  };
+  document.getElementById('btnAGB').onclick=()=>{
+    alert('Allgemeine Geschäftsbedingungen\n\n(Platzhalter - wird später ausgefüllt)');
+  };
+  document.getElementById('btnDatenschutz').onclick=()=>{
+    alert('Datenschutzerklärung\n\n(Platzhalter - wird später ausgefüllt)');
   };
 
   // Provider nav handlers
@@ -4314,8 +4795,23 @@
   if('serviceWorker' in navigator){
     window.addEventListener('load', ()=>{
       navigator.serviceWorker.register('sw.js').catch(()=>{});
+      // Icons initialisieren
+      if(typeof lucide !== 'undefined'){
+        lucide.createIcons();
+      }
+      // Profile-View aktualisieren
+      updateProfileView();
     });
   }
+
+  // Icons nach jedem View-Wechsel aktualisieren
+  const originalShowView = showView;
+  showView = function(id){
+    originalShowView(id);
+    if(typeof lucide !== 'undefined'){
+      setTimeout(()=> lucide.createIcons(), 50);
+    }
+  };
 </script>
 </body>
 </html>
