@@ -2,7 +2,7 @@ name: Deploy GitHub Pages
 
 on:
   push:
-    branches: ["main"]
+    branches: ["cursor/mittagio-gesamtprojekt-cac6"]
 
 permissions:
   contents: read
