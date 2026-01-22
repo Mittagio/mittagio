@@ -2992,98 +2992,66 @@
     if(go==='provider-profile') showProviderProfile();
   });
 
-  // Customer nav handlers - Direkte onclick-Handler
-  function setupCustomerNav(){
-    const nav = document.getElementById('customerNav');
-    if(!nav) {
-      console.warn('customerNav nicht gefunden');
-      return;
-    }
+  // Customer nav handlers - Event-Delegation auf nav-Element
+  function initCustomerNav(){
+    const customerNavEl = document.getElementById('customerNav');
+    if(!customerNavEl) return;
     
-    const buttons = nav.querySelectorAll('button.navbtn');
-    if(buttons.length === 0) {
-      console.warn('Keine navbtn Buttons gefunden');
-      return;
-    }
+    // Entferne alte Handler
+    customerNavEl.onclick = null;
     
-    buttons.forEach(btn=>{
-      const go = btn.dataset.go;
-      if(!go) {
-        console.warn('Button ohne data-go:', btn);
-        return;
-      }
-      
-      // Entferne alte Handler
-      const newBtn = btn.cloneNode(true);
-      btn.parentNode.replaceChild(newBtn, btn);
-      
-      // Setze neuen Handler direkt auf den Button
-      newBtn.addEventListener('click', function(e){
-        e.preventDefault();
-        e.stopPropagation();
-        console.log('Navigation clicked:', go, 'mode:', mode);
-        
-        try {
-          if(go==='discover'){
-            if(mode === 'start'){
-              if(typeof showStart === 'function') {
-                showStart();
-              } else {
-                console.error('showStart ist keine Funktion');
+    // Setze neuen Handler
+    customerNavEl.addEventListener('click', function(e){
+      // Finde den Button, auch wenn auf inneres Element geklickt wurde
+      let target = e.target;
+      while(target && target !== customerNavEl){
+        if(target.tagName === 'BUTTON' && target.classList.contains('navbtn')){
+          const go = target.dataset.go;
+          if(go){
+            e.preventDefault();
+            e.stopPropagation();
+            
+            try {
+              if(go==='discover'){
+                if(mode === 'start'){
+                  showStart();
+                } else {
+                  showDiscover();
+                }
+              } else if(go==='fav'){
+                showFav();
+              } else if(go==='orders'){
+                showOrders();
+              } else if(go==='cart'){
+                showCart();
+              } else if(go==='profile'){
+                showProfile();
               }
-            } else {
-              if(typeof showDiscover === 'function') {
-                showDiscover();
-              } else {
-                console.error('showDiscover ist keine Funktion');
-              }
-            }
-          } else if(go==='fav'){
-            if(typeof showFav === 'function') {
-              showFav();
-            } else {
-              console.error('showFav ist keine Funktion');
-            }
-          } else if(go==='orders'){
-            if(typeof showOrders === 'function') {
-              showOrders();
-            } else {
-              console.error('showOrders ist keine Funktion');
-            }
-          } else if(go==='cart'){
-            if(typeof showCart === 'function') {
-              showCart();
-            } else {
-              console.error('showCart ist keine Funktion');
-            }
-          } else if(go==='profile'){
-            if(typeof showProfile === 'function') {
-              showProfile();
-            } else {
-              console.error('showProfile ist keine Funktion');
+            } catch(err){
+              console.error('Navigation error:', err, go);
             }
           }
-        } catch(err){
-          console.error('Navigation error:', err);
+          break;
         }
-      });
-    });
-    
-    console.log('Navigation initialisiert:', buttons.length, 'Buttons');
+        target = target.parentElement;
+      }
+    }, true); // useCapture = true für frühere Event-Erfassung
   }
   
-  // Initialisiere Navigation mehrfach (sicherheitshalber)
+  // Initialisiere Navigation nach DOM-Load
   if(document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', ()=>{
-      setupCustomerNav();
-      setTimeout(setupCustomerNav, 100);
-      setTimeout(setupCustomerNav, 500);
-    });
+    document.addEventListener('DOMContentLoaded', initCustomerNav);
   } else {
-    setupCustomerNav();
-    setTimeout(setupCustomerNav, 100);
-    setTimeout(setupCustomerNav, 500);
+    // DOM bereits geladen, aber warte kurz bis alle Funktionen definiert sind
+    setTimeout(initCustomerNav, 0);
   }
+  
+  // Nochmal initialisieren nach setMode (falls Navigation neu gerendert wird)
+  const originalSetMode = setMode;
+  setMode = function(m){
+    originalSetMode(m);
+    setTimeout(initCustomerNav, 100);
+  };
 
   // --- Provider home renders ---
   function renderProviderHome(){
@@ -4978,10 +4946,6 @@
   if(mode==='provider' && !provider.loggedIn) mode='customer';
   setMode(mode);
   
-  // Navigation nochmal initialisieren nach setMode
-  setTimeout(()=>{
-    setupCustomerNav();
-  }, 300);
   
   // Sicherstellen, dass Startseite gerendert wird
   if(mode === 'start'){
