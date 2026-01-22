@@ -1,4 +1,4 @@
-const CACHE = 'mittagio-app-v8';
+const CACHE = 'mittagio-app-v9';
 const CACHE_PREFIX = 'mittagio-';
 const ASSETS = [
   './',
@@ -30,16 +30,14 @@ self.addEventListener('activate', (e) => {
 
 self.addEventListener('fetch', (e) => {
   const req = e.request;
+  // HTML-Dateien NICHT cachen - immer neueste Version vom Server laden
   if(isHtmlRequest(req)){
     e.respondWith(
-      fetch(req).then((resp)=>{
-        const copy = resp.clone();
-        caches.open(CACHE).then(c=>c.put(req, copy)).catch(()=>{});
-        return resp;
-      }).catch(()=> caches.match(req))
+      fetch(req).catch(()=> caches.match(req))
     );
     return;
   }
+  // Andere Assets (Bilder, CSS, JS) können gecached werden
   e.respondWith(
     caches.match(req).then((r) => r || fetch(req).then((resp) => {
       const copy = resp.clone();
