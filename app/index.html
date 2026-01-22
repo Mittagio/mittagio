@@ -3026,22 +3026,82 @@
   });
 
   // Customer nav handlers
-  document.getElementById('customerNav').addEventListener('click',(e)=>{
-    const b = e.target.closest('button');
-    if(!b) return;
-    const go = b.dataset.go;
-    if(go==='discover'){
-      if(mode === 'start'){
-        showStart();
-      } else {
-        showDiscover();
+  function initCustomerNav(){
+    const customerNavEl = document.getElementById('customerNav');
+    if(!customerNavEl) return;
+    
+    customerNavEl.addEventListener('click',(e)=>{
+      let b = e.target;
+      // Finde den Button, auch wenn auf Icon oder Text geklickt wurde
+      while(b && b !== customerNavEl){
+        if(b.classList && b.classList.contains('navbtn') && b.dataset.go){
+          break;
+        }
+        b = b.parentElement;
       }
-    }
-    if(go==='fav') showFav();
-    if(go==='orders') showOrders();
-    if(go==='cart') showCart();
-    if(go==='profile') showProfile();
-  });
+      
+      if(!b || !b.classList || !b.classList.contains('navbtn') || !b.dataset.go) return;
+      
+      e.preventDefault();
+      e.stopPropagation();
+      
+      const go = b.dataset.go;
+      try {
+        if(go==='discover'){
+          if(mode === 'start'){
+            if(typeof showStart === 'function') showStart();
+          } else {
+            if(typeof showDiscover === 'function') showDiscover();
+          }
+        } else if(go==='fav'){
+          if(typeof showFav === 'function') showFav();
+        } else if(go==='orders'){
+          if(typeof showOrders === 'function') showOrders();
+        } else if(go==='cart'){
+          if(typeof showCart === 'function') showCart();
+        } else if(go==='profile'){
+          if(typeof showProfile === 'function') showProfile();
+        }
+      } catch(err){
+        console.error('Navigation error:', err);
+      }
+    });
+  }
+  
+  // Initialisiere Navigation
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', initCustomerNav);
+  } else {
+    initCustomerNav();
+  }
+  
+  // Fallback: Direkte onclick-Handler auf Buttons
+  setTimeout(()=>{
+    document.querySelectorAll('#customerNav button.navbtn').forEach(btn=>{
+      if(btn.dataset.go && !btn.onclick){
+        btn.onclick = (e)=>{
+          e.preventDefault();
+          e.stopPropagation();
+          const go = btn.dataset.go;
+          if(go==='discover'){
+            if(mode === 'start'){
+              if(typeof showStart === 'function') showStart();
+            } else {
+              if(typeof showDiscover === 'function') showDiscover();
+            }
+          } else if(go==='fav'){
+            if(typeof showFav === 'function') showFav();
+          } else if(go==='orders'){
+            if(typeof showOrders === 'function') showOrders();
+          } else if(go==='cart'){
+            if(typeof showCart === 'function') showCart();
+          } else if(go==='profile'){
+            if(typeof showProfile === 'function') showProfile();
+          }
+        };
+      }
+    });
+  }, 100);
 
   // --- Provider home renders ---
   function renderProviderHome(){
@@ -3724,6 +3784,7 @@
     renderProviderHome();
     renderProviderPickups();
     renderDiscover();
+    renderStart();
     alert('Inserat veröffentlicht.');
   }
 
@@ -3772,6 +3833,7 @@
     renderProviderHome();
     renderProviderPickups();
     renderDiscover();
+    renderStart();
     alert('Inserat veröffentlicht.');
   }
 
@@ -4636,6 +4698,7 @@
     renderProviderHome();
     renderProviderPickups();
     renderDiscover();
+    renderStart();
   }
 
   function saveToCookbookFromWizard(keepOpen=false){
@@ -4863,9 +4926,12 @@
       if(!week[w.data.date]) week[w.data.date]=[];
       week[w.data.date].push(entry);
       save(LS.week, week);
+      
+      // Automatisch als Angebot veröffentlichen, damit Kunden es sehen
+      publishWeekEntry(w.data.date, entry);
+      
       closeWizard();
       renderProviderHome();
-      alert('Im Wochenplan gespeichert.');
     };
 
     box.appendChild(document.createElement('div')).style.height='10px';
