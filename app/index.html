@@ -1835,19 +1835,19 @@
   function renderStart(){
     renderStartChips();
     renderStartDiscover();
+    // Icons aktualisieren
+    if(typeof lucide !== 'undefined'){
+      setTimeout(()=> lucide.createIcons(), 50);
+    }
   }
 
   function renderStartDiscover(){
-    const grid = document.getElementById('startOfferGrid');
+    // Stories rendern
+    const storiesEl = document.getElementById('startStories');
+    const feedEl = document.getElementById('startFeed');
     const empty = document.getElementById('startEmptyOffers');
-    const loc = document.getElementById('startLocationInput');
-    if(!grid || !empty){
-      return;
-    }
-    if(loc){
-      if(loc.value !== locationQuery) loc.value = locationQuery || '';
-      loc.oninput=()=>{ locationQuery = loc.value; renderStart(); renderDiscover(); };
-    }
+    
+    if(!storiesEl || !feedEl || !empty) return;
 
     let list = offers.filter(o => o.day === activeDay && o.active !== false);
 
@@ -1865,18 +1865,89 @@
       });
     }
 
-    grid.innerHTML='';
+    // Stories: Eindeutige Anbieter sammeln
+    const providers = new Map();
+    list.forEach(o=>{
+      if(!providers.has(o.providerId)){
+        const data = normalizeOffer(o);
+        providers.set(o.providerId, {
+          id: o.providerId,
+          name: o.providerName || 'Anbieter',
+          logo: data.imageUrl || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=1200&q=60'
+        });
+      }
+    });
+
+    // Stories rendern
+    storiesEl.innerHTML='';
+    providers.forEach(p=>{
+      const story = document.createElement('div');
+      story.className='story-item';
+      story.innerHTML=`
+        <div class="story-avatar">
+          <img src="${esc(p.logo)}" alt="${esc(p.name)}" />
+        </div>
+        <div class="story-name">${esc(p.name)}</div>
+      `;
+      storiesEl.appendChild(story);
+    });
+
+    // Chat-Bubbles rendern
+    feedEl.innerHTML='';
     empty.textContent = q ? 'Keine Angebote für diesen Standort.' : 'Noch keine Angebote. Demo: Als Anbieter ein Inserat erstellen.';
     empty.style.display = list.length ? 'none' : 'block';
 
-    list.slice(0,6).forEach(o=> grid.appendChild(offerCard(o, {context:'start'})));
+    list.slice(0,10).forEach(o=>{
+      const bubble = createChatBubble(o);
+      feedEl.appendChild(bubble);
+    });
+  }
+
+  function createChatBubble(offer){
+    const data = normalizeOffer(offer);
+    const bubble = document.createElement('div');
+    bubble.className='chat-bubble';
+    bubble.onclick=()=>openOffer(data.id);
+    
+    const timeAgo = 'vor 2h'; // Placeholder
+    const distance = data.distanceKm ? `${Number(data.distanceKm).toFixed(1)} km` : '';
+    const emoji = data.category === 'Vegan' ? '🌱' : (data.category === 'Vegetarisch' ? '🥗' : '🍖');
+    
+    bubble.innerHTML=`
+      <div class="chat-bubble-header">
+        <div class="chat-bubble-avatar">
+          <img src="${esc(data.imageUrl || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=1200&q=60')}" alt="${esc(data.providerName || '')}" />
+        </div>
+        <div class="chat-bubble-meta">
+          <div class="chat-bubble-name">${esc(data.providerName || 'Anbieter')}</div>
+          <div class="chat-bubble-time">
+            <i data-lucide="clock"></i>
+            ${timeAgo}
+          </div>
+        </div>
+        ${distance ? `<div class="chat-bubble-distance">${distance}</div>` : ''}
+      </div>
+      ${data.imageUrl ? `<img src="${esc(data.imageUrl)}" alt="${esc(data.dish || '')}" class="chat-bubble-image" />` : ''}
+      <div class="chat-bubble-message">
+        Hey! Heute gibt's ${emoji} <strong>${esc(data.dish || 'Gericht')}</strong> für <strong>${euro(data.price || 0)}</strong> – wer ist dabei?
+      </div>
+      <div class="chat-bubble-actions">
+        <button class="chat-bubble-btn chat-bubble-btn-primary" onclick="event.stopPropagation(); const o=offers.find(x=>x.id==='${data.id}'); if(o) openOffer('${data.id}');">Dabei sein</button>
+      </div>
+    `;
+    
+    return bubble;
   }
 
   // --- Discover render ---
   function renderDiscover(){
-    const grid=document.getElementById('offerGrid');
-    const empty=document.getElementById('emptyOffers');
-    const loc=document.getElementById('locationInput');
+    const storiesEl = document.getElementById('discoverStories');
+    const feedEl = document.getElementById('discoverFeed');
+    const empty = document.getElementById('emptyOffers');
+    const loc = document.getElementById('locationInput');
+    
+    if(!storiesEl || !feedEl || !empty) return;
+    
     if(loc){
       if(loc.value !== locationQuery) loc.value = locationQuery || '';
       loc.oninput=()=>{ locationQuery = loc.value; renderDiscover(); };
@@ -1898,11 +1969,47 @@
       });
     }
 
-    grid.innerHTML='';
+    // Stories: Eindeutige Anbieter sammeln
+    const providers = new Map();
+    list.forEach(o=>{
+      if(!providers.has(o.providerId)){
+        const data = normalizeOffer(o);
+        providers.set(o.providerId, {
+          id: o.providerId,
+          name: o.providerName || 'Anbieter',
+          logo: data.imageUrl || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=1200&q=60'
+        });
+      }
+    });
+
+    // Stories rendern
+    storiesEl.innerHTML='';
+    providers.forEach(p=>{
+      const story = document.createElement('div');
+      story.className='story-item';
+      story.innerHTML=`
+        <div class="story-avatar">
+          <img src="${esc(p.logo)}" alt="${esc(p.name)}" />
+        </div>
+        <div class="story-name">${esc(p.name)}</div>
+      `;
+      storiesEl.appendChild(story);
+    });
+
+    // Chat-Bubbles rendern
+    feedEl.innerHTML='';
     empty.textContent = q ? 'Keine Angebote für diesen Standort.' : 'Noch keine Angebote. Demo: Als Anbieter ein Inserat erstellen.';
     empty.style.display = list.length ? 'none' : 'block';
 
-    list.forEach(o=> grid.appendChild(offerCard(o, {context:'customer'})));
+    list.forEach(o=>{
+      const bubble = createChatBubble(o);
+      feedEl.appendChild(bubble);
+    });
+    
+    // Icons aktualisieren
+    if(typeof lucide !== 'undefined'){
+      setTimeout(()=> lucide.createIcons(), 50);
+    }
   }
 
   function offerCard(o, opts={}){
