@@ -2770,16 +2770,18 @@
     let total=0;
     let canCheckout = true;
     const firstOffer = cart.items.length ? offers.find(x=>x.id===cart.items[0].offerId) : null;
-    const windowText = firstOffer && firstOffer.pickupWindow ? firstOffer.pickupWindow : '';
+    const firstOfferNormalized = firstOffer ? normalizeOffer(firstOffer) : null;
+    const windowText = firstOfferNormalized && firstOfferNormalized.pickupWindow ? firstOfferNormalized.pickupWindow : '';
     const lines = cart.items.map(it=>{
       const o = offers.find(x=>x.id===it.offerId);
       if(!o) return '';
-      if(!o.hasPickupCode) canCheckout = false;
-      const lineTotal = Number(o.price||0) * it.qty;
+      const normalized = normalizeOffer(o);
+      if(!normalized.hasPickupCode) canCheckout = false;
+      const lineTotal = Number(normalized.price||0) * it.qty;
       total += lineTotal;
       return `
         <div class="cart-line">
-          <div class="cart-left">${esc(o.dish)}</div>
+          <div class="cart-left">${esc(normalized.dish || normalized.title || 'Gericht')}</div>
           <div class="cart-qty">
             <button class="qty-btn" type="button" data-action="dec" data-id="${esc(o.id)}">-</button>
             <div>${it.qty}</div>
@@ -2851,11 +2853,13 @@
     }
     const code = genPickupCode();
     const firstOffer = cart.items.length ? offers.find(x=>x.id===cart.items[0].offerId) : null;
-    const pickupWindow = firstOffer && firstOffer.pickupWindow ? firstOffer.pickupWindow : '';
+    const firstOfferNormalized = firstOffer ? normalizeOffer(firstOffer) : null;
+    const pickupWindow = firstOfferNormalized && firstOfferNormalized.pickupWindow ? firstOfferNormalized.pickupWindow : '';
     const summary = cart.items.map(it=>{
       const o = offers.find(x=>x.id===it.offerId);
       if(!o) return '';
-      return `${o.dish} x ${it.qty}`;
+      const normalized = normalizeOffer(o);
+      return `${normalized.dish || normalized.title || 'Gericht'} x ${it.qty}`;
     }).filter(Boolean).join(', ');
     const newOrder = {
       id: cryptoId(),
