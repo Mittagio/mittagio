@@ -990,7 +990,7 @@
 <script>
   // --- Storage keys ---
   const LS = {
-    offers: 'mittagio_offers_v1',
+    offers: 'mittagio_offers_v2',
     favs: 'mittagio_favs_v1',
     providerFavs: 'mittagio_provider_favs_v1',
     dishFavs: 'mittagio_dish_favs_v1',
@@ -1067,32 +1067,32 @@
   function seed(){
     if(offers.length) return;
     const today = isoDate(new Date());
-    const tomorrow = isoDate(new Date(Date.now() + 86400000));
-    const dayAfter = isoDate(new Date(Date.now() + 86400000 * 2));
     offers = [
-      // Demo: 3 Anbieter × 4 Gerichte
-      // Metzgerei Maier (Schorndorf) — Vorab-Bezahlung aktiv
-      {id: uid(), providerId: 'p_maier', providerName: 'Metzgerei Maier', address: 'Musterstraße 12, 73614 Schorndorf', title: 'Schnitzel mit Pommes', price: 7.90, time: '11:30 – 14:00', diet: 'Fleisch', day: today, img: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true},
-      {id: uid(), providerId: 'p_maier', providerName: 'Metzgerei Maier', address: 'Musterstraße 12, 73614 Schorndorf', title: 'Currywurst mit Brötchen', price: 5.90, time: '11:30 – 14:00', diet: 'Fleisch', day: today, img: 'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true},
-      {id: uid(), providerId: 'p_maier', providerName: 'Metzgerei Maier', address: 'Musterstraße 12, 73614 Schorndorf', title: 'Leberkäse mit Kartoffelsalat', price: 6.50, time: '11:30 – 14:00', diet: 'Fleisch', day: today, img: 'https://images.unsplash.com/photo-1604908177522-937be1a2d0a0?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true},
-      {id: uid(), providerId: 'p_maier', providerName: 'Metzgerei Maier', address: 'Musterstraße 12, 73614 Schorndorf', title: 'Käsespätzle', price: 6.90, time: '11:30 – 14:00', diet: 'Vegetarisch', day: today, img: 'https://images.unsplash.com/photo-1604908812253-9b998f4949b3?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true},
+      // 5 Anbieter × 3 Gerichte (mit Bildern & je 2 Abholcodes)
+      // Bistro Sonnenhof (Stuttgart)
+      {id: cryptoId(), providerId: 'p_sonnenhof', providerName: 'Bistro Sonnenhof', address: 'Königstraße 22, 70173 Stuttgart', title: 'Rinderroulade mit Spätzle', price: 9.40, time: '11:30 – 14:00', diet: 'Fleisch', day: today, img: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 2},
+      {id: cryptoId(), providerId: 'p_sonnenhof', providerName: 'Bistro Sonnenhof', address: 'Königstraße 22, 70173 Stuttgart', title: 'Gemüserisotto', price: 7.80, time: '11:30 – 14:00', diet: 'Vegetarisch', day: today, img: 'https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 2},
+      {id: cryptoId(), providerId: 'p_sonnenhof', providerName: 'Bistro Sonnenhof', address: 'Königstraße 22, 70173 Stuttgart', title: 'Ofengemüse-Bowl', price: 8.10, time: '11:30 – 14:00', diet: 'Vegan', day: today, img: 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 2},
 
-      // Bäckerei & Bistro Sonneneck (Stuttgart) — Vorab-Bezahlung NICHT aktiv
-      {id: uid(), providerId: 'p_sonn', providerName: 'Bäckerei Sonneneck', address: 'Hauptstraße 8, 70173 Stuttgart', title: 'Pasta-Bowl', price: 7.20, time: '11:00 – 13:30', diet: 'Vegetarisch', day: today, img: 'https://images.unsplash.com/photo-1523986371872-9d3ba2e2f642?auto=format&fit=crop&w=1200&q=60', hasPickupCode: false},
-      {id: uid(), providerId: 'p_sonn', providerName: 'Bäckerei Sonneneck', address: 'Hauptstraße 8, 70173 Stuttgart', title: 'Hähnchen-Sandwich', price: 5.40, time: '11:00 – 13:30', diet: 'Fleisch', day: today, img: 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?auto=format&fit=crop&w=1200&q=60', hasPickupCode: false},
-      {id: uid(), providerId: 'p_sonn', providerName: 'Bäckerei Sonneneck', address: 'Hauptstraße 8, 70173 Stuttgart', title: 'Veggie Bowl', price: 6.80, time: '11:00 – 13:30', diet: 'Vegan', day: today, img: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1200&q=60', hasPickupCode: false},
-      {id: uid(), providerId: 'p_sonn', providerName: 'Bäckerei Sonneneck', address: 'Hauptstraße 8, 70173 Stuttgart', title: 'Tomatensuppe mit Brot', price: 4.90, time: '11:00 – 13:30', diet: 'Vegetarisch', day: today, img: 'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=1200&q=60', hasPickupCode: false},
+      // Veggie Corner (Tübingen)
+      {id: cryptoId(), providerId: 'p_veggie', providerName: 'Veggie Corner', address: 'Lange Gasse 5, 72070 Tübingen', title: 'Buddha Bowl', price: 8.20, time: '11:00 – 14:00', diet: 'Vegan', day: today, img: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 2},
+      {id: cryptoId(), providerId: 'p_veggie', providerName: 'Veggie Corner', address: 'Lange Gasse 5, 72070 Tübingen', title: 'Süßkartoffel-Curry', price: 7.80, time: '11:00 – 14:00', diet: 'Vegan', day: today, img: 'https://images.unsplash.com/photo-1546069901-d5bfd2cbfb1f?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 2},
+      {id: cryptoId(), providerId: 'p_veggie', providerName: 'Veggie Corner', address: 'Lange Gasse 5, 72070 Tübingen', title: 'Veggie-Burger', price: 8.90, time: '11:00 – 14:00', diet: 'Vegan', day: today, img: 'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 2},
 
-      // Foodtruck „Grüne Pause“ (Esslingen) — Vorab-Bezahlung aktiv
-      {id: uid(), providerId: 'p_green', providerName: 'Foodtruck Grüne Pause', address: 'Marktplatz 1, 73728 Esslingen', title: 'Veggie-Burger mit Süßkartoffeln', price: 8.40, time: '12:00 – 14:30', diet: 'Vegan', day: today, img: 'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true},
-      {id: uid(), providerId: 'p_green', providerName: 'Foodtruck Grüne Pause', address: 'Marktplatz 1, 73728 Esslingen', title: 'Falafel-Teller mit Hummus', price: 7.90, time: '12:00 – 14:30', diet: 'Vegan', day: today, img: 'https://images.unsplash.com/photo-1613408181925-78e9f9a49f3f?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true},
-      {id: uid(), providerId: 'p_green', providerName: 'Foodtruck Grüne Pause', address: 'Marktplatz 1, 73728 Esslingen', title: 'Pasta mit Gemüse & Pesto', price: 7.50, time: '12:00 – 14:30', diet: 'Vegetarisch', day: today, img: 'https://images.unsplash.com/photo-1523986371872-9d3ba2e2f642?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true},
-      {id: uid(), providerId: 'p_green', providerName: 'Foodtruck Grüne Pause', address: 'Marktplatz 1, 73728 Esslingen', title: 'Ofenkartoffel mit Kräuterquark', price: 6.90, time: '12:00 – 14:30', diet: 'Vegetarisch', day: today, img: 'https://images.unsplash.com/photo-1518779578993-ec3579fee39f?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true},
+      // Trattoria Napoli (Ludwigsburg)
+      {id: cryptoId(), providerId: 'p_napoli', providerName: 'Trattoria Napoli', address: 'Marktstraße 3, 71634 Ludwigsburg', title: 'Pasta Arrabbiata', price: 8.50, time: '12:00 – 14:30', diet: 'Vegetarisch', day: today, img: 'https://images.unsplash.com/photo-1523986371872-9d3ba2e2f642?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 2},
+      {id: cryptoId(), providerId: 'p_napoli', providerName: 'Trattoria Napoli', address: 'Marktstraße 3, 71634 Ludwigsburg', title: 'Pizza Margherita', price: 7.90, time: '12:00 – 14:30', diet: 'Vegetarisch', day: today, img: 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 2},
+      {id: cryptoId(), providerId: 'p_napoli', providerName: 'Trattoria Napoli', address: 'Marktstraße 3, 71634 Ludwigsburg', title: 'Lasagne al Forno', price: 9.20, time: '12:00 – 14:30', diet: 'Fleisch', day: today, img: 'https://images.unsplash.com/photo-1546069901-5ec6a79120b0?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 2},
 
-      // Ein paar Angebote für morgen/übermorgen (damit die Datums-Tabs nicht leer wirken)
-      {id: uid(), providerId: 'p_maier', providerName: 'Metzgerei Maier', address: 'Musterstraße 12, 73614 Schorndorf', title: 'Gulasch mit Spätzle', price: 8.20, time: '11:30 – 14:00', diet: 'Fleisch', day: tomorrow, img: 'https://images.unsplash.com/photo-1604908177522-937be1a2d0a0?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true},
-      {id: uid(), providerId: 'p_sonn', providerName: 'Bäckerei Sonneneck', address: 'Hauptstraße 8, 70173 Stuttgart', title: 'Kürbissuppe', price: 5.20, time: '11:00 – 13:30', diet: 'Vegan', day: tomorrow, img: 'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=1200&q=60', hasPickupCode: false},
-      {id: uid(), providerId: 'p_green', providerName: 'Foodtruck Grüne Pause', address: 'Marktplatz 1, 73728 Esslingen', title: 'Wrap (Vegan)', price: 7.10, time: '12:00 – 14:30', diet: 'Vegan', day: dayAfter, img: 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true},
+      // Café Linden (Esslingen)
+      {id: cryptoId(), providerId: 'p_linden', providerName: 'Café Linden', address: 'Bahnhofstraße 12, 73728 Esslingen', title: 'Linsensuppe', price: 6.20, time: '11:00 – 13:30', diet: 'Vegan', day: today, img: 'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 2},
+      {id: cryptoId(), providerId: 'p_linden', providerName: 'Café Linden', address: 'Bahnhofstraße 12, 73728 Esslingen', title: 'Flammkuchen Classic', price: 8.10, time: '11:00 – 13:30', diet: 'Fleisch', day: today, img: 'https://images.unsplash.com/photo-1604908177522-937be1a2d0a0?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 2},
+      {id: cryptoId(), providerId: 'p_linden', providerName: 'Café Linden', address: 'Bahnhofstraße 12, 73728 Esslingen', title: 'Quiche Lorraine', price: 7.40, time: '11:00 – 13:30', diet: 'Fleisch', day: today, img: 'https://images.unsplash.com/photo-1466978913421-dad2ebd01d17?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 2},
+
+      // Wirtshaus zur Brücke (Reutlingen)
+      {id: cryptoId(), providerId: 'p_bruecke', providerName: 'Wirtshaus zur Brücke', address: 'Mühlstraße 4, 72764 Reutlingen', title: 'Schnitzel mit Pommes', price: 9.10, time: '11:30 – 14:00', diet: 'Fleisch', day: today, img: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 2},
+      {id: cryptoId(), providerId: 'p_bruecke', providerName: 'Wirtshaus zur Brücke', address: 'Mühlstraße 4, 72764 Reutlingen', title: 'Maultaschen in Brühe', price: 7.60, time: '11:30 – 14:00', diet: 'Fleisch', day: today, img: 'https://images.unsplash.com/photo-1523986371872-9d3ba2e2f642?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 2},
+      {id: cryptoId(), providerId: 'p_bruecke', providerName: 'Wirtshaus zur Brücke', address: 'Mühlstraße 4, 72764 Reutlingen', title: 'Käsespätzle', price: 7.20, time: '11:30 – 14:00', diet: 'Vegetarisch', day: today, img: 'https://images.unsplash.com/photo-1604908812253-9b998f4949b3?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 2},
     ];
     save(LS.offers, offers);
   }
@@ -2594,14 +2594,14 @@
     mineToday.forEach(o=>{
       const dish = o.dish || 'Gericht';
       if(!map.has(dish)){
-        map.set(dish, {dish, time: o.pickupWindow || '', offerId: o.id});
+        map.set(dish, {dish, time: o.pickupWindow || '', offerId: o.id, codeCount: o.pickupCodeCount});
       }
     });
 
     const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     const groups = Array.from(map.values()).map((g, idx)=>{
       const group = letters[idx % letters.length];
-      const count = pickupCodeCount(g.dish);
+      const count = Number(g.codeCount) || pickupCodeCount(g.dish);
       const codes = Array.from({length:count}, (_,i)=>`${group}${i+1}`);
       return {id:`${group}:${g.offerId}`, group, dish:g.dish, time:g.time, codes};
     });
