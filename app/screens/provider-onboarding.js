@@ -1,1 +1,0 @@
-// Screen: provider-onboarding.js
