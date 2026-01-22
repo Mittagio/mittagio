@@ -213,7 +213,12 @@
       flex:1; border:none; background:none; cursor:pointer;
       display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;
       color:#777; font-size:11px; font-weight:600;
-      transition:color .2s;
+      padding:8px 4px; transition:color .2s;
+      position:relative;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .navbtn * {
+      pointer-events: none;
     }
     .navbtn .ico{font-size:22px; display:inline-flex; align-items:center; justify-content:center}
     .navbtn .ico svg{width:22px; height:22px; stroke-width:2}
@@ -649,13 +654,6 @@
   <main>
     <!-- START - Lunch-Feed (Social Style) -->
     <section class="view active" id="v-start">
-      <!-- Story-Leiste -->
-      <div class="stories-container">
-        <div class="stories-scroll" id="startStories">
-          <!-- Stories werden hier dynamisch eingefügt -->
-        </div>
-      </div>
-
       <!-- Standort-Suche -->
       <div class="panel" style="margin-top:12px;">
         <div class="section-title">Entdecken</div>
@@ -1865,8 +1863,6 @@
   }
 
   function renderStartDiscover(){
-    // Stories rendern
-    const storiesEl = document.getElementById('startStories');
     const grid = document.getElementById('startOfferGrid');
     const empty = document.getElementById('startEmptyOffers');
     const loc = document.getElementById('startLocationInput');
@@ -1895,36 +1891,7 @@
       });
     }
 
-    // Stories: Eindeutige Anbieter sammeln
-    if(storiesEl){
-      const providers = new Map();
-      list.forEach(o=>{
-        if(!providers.has(o.providerId)){
-          const data = normalizeOffer(o);
-          providers.set(o.providerId, {
-            id: o.providerId,
-            name: o.providerName || 'Anbieter',
-            logo: data.imageUrl || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=1200&q=60'
-          });
-        }
-      });
-
-      // Stories rendern
-      storiesEl.innerHTML='';
-      providers.forEach(p=>{
-        const story = document.createElement('div');
-        story.className='story-item';
-        story.innerHTML=`
-          <div class="story-avatar">
-            <img src="${esc(p.logo)}" alt="${esc(p.name)}" />
-          </div>
-          <div class="story-name">${esc(p.name)}</div>
-        `;
-        storiesEl.appendChild(story);
-      });
-    }
-
-    // Normale Kacheln rendern (keine Chat-Bubbles)
+    // Normale Kacheln rendern
     grid.innerHTML='';
     empty.textContent = q ? 'Keine Angebote für diesen Standort.' : 'Noch keine Angebote. Demo: Als Anbieter ein Inserat erstellen.';
     empty.style.display = list.length ? 'none' : 'block';
@@ -3025,83 +2992,98 @@
     if(go==='provider-profile') showProviderProfile();
   });
 
-  // Customer nav handlers
-  function initCustomerNav(){
-    const customerNavEl = document.getElementById('customerNav');
-    if(!customerNavEl) return;
+  // Customer nav handlers - Direkte onclick-Handler
+  function setupCustomerNav(){
+    const nav = document.getElementById('customerNav');
+    if(!nav) {
+      console.warn('customerNav nicht gefunden');
+      return;
+    }
     
-    customerNavEl.addEventListener('click',(e)=>{
-      let b = e.target;
-      // Finde den Button, auch wenn auf Icon oder Text geklickt wurde
-      while(b && b !== customerNavEl){
-        if(b.classList && b.classList.contains('navbtn') && b.dataset.go){
-          break;
-        }
-        b = b.parentElement;
+    const buttons = nav.querySelectorAll('button.navbtn');
+    if(buttons.length === 0) {
+      console.warn('Keine navbtn Buttons gefunden');
+      return;
+    }
+    
+    buttons.forEach(btn=>{
+      const go = btn.dataset.go;
+      if(!go) {
+        console.warn('Button ohne data-go:', btn);
+        return;
       }
       
-      if(!b || !b.classList || !b.classList.contains('navbtn') || !b.dataset.go) return;
+      // Entferne alte Handler
+      const newBtn = btn.cloneNode(true);
+      btn.parentNode.replaceChild(newBtn, btn);
       
-      e.preventDefault();
-      e.stopPropagation();
-      
-      const go = b.dataset.go;
-      try {
-        if(go==='discover'){
-          if(mode === 'start'){
-            if(typeof showStart === 'function') showStart();
-          } else {
-            if(typeof showDiscover === 'function') showDiscover();
-          }
-        } else if(go==='fav'){
-          if(typeof showFav === 'function') showFav();
-        } else if(go==='orders'){
-          if(typeof showOrders === 'function') showOrders();
-        } else if(go==='cart'){
-          if(typeof showCart === 'function') showCart();
-        } else if(go==='profile'){
-          if(typeof showProfile === 'function') showProfile();
-        }
-      } catch(err){
-        console.error('Navigation error:', err);
-      }
-    });
-  }
-  
-  // Initialisiere Navigation
-  if(document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', initCustomerNav);
-  } else {
-    initCustomerNav();
-  }
-  
-  // Fallback: Direkte onclick-Handler auf Buttons
-  setTimeout(()=>{
-    document.querySelectorAll('#customerNav button.navbtn').forEach(btn=>{
-      if(btn.dataset.go && !btn.onclick){
-        btn.onclick = (e)=>{
-          e.preventDefault();
-          e.stopPropagation();
-          const go = btn.dataset.go;
+      // Setze neuen Handler direkt auf den Button
+      newBtn.addEventListener('click', function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('Navigation clicked:', go, 'mode:', mode);
+        
+        try {
           if(go==='discover'){
             if(mode === 'start'){
-              if(typeof showStart === 'function') showStart();
+              if(typeof showStart === 'function') {
+                showStart();
+              } else {
+                console.error('showStart ist keine Funktion');
+              }
             } else {
-              if(typeof showDiscover === 'function') showDiscover();
+              if(typeof showDiscover === 'function') {
+                showDiscover();
+              } else {
+                console.error('showDiscover ist keine Funktion');
+              }
             }
           } else if(go==='fav'){
-            if(typeof showFav === 'function') showFav();
+            if(typeof showFav === 'function') {
+              showFav();
+            } else {
+              console.error('showFav ist keine Funktion');
+            }
           } else if(go==='orders'){
-            if(typeof showOrders === 'function') showOrders();
+            if(typeof showOrders === 'function') {
+              showOrders();
+            } else {
+              console.error('showOrders ist keine Funktion');
+            }
           } else if(go==='cart'){
-            if(typeof showCart === 'function') showCart();
+            if(typeof showCart === 'function') {
+              showCart();
+            } else {
+              console.error('showCart ist keine Funktion');
+            }
           } else if(go==='profile'){
-            if(typeof showProfile === 'function') showProfile();
+            if(typeof showProfile === 'function') {
+              showProfile();
+            } else {
+              console.error('showProfile ist keine Funktion');
+            }
           }
-        };
-      }
+        } catch(err){
+          console.error('Navigation error:', err);
+        }
+      });
     });
-  }, 100);
+    
+    console.log('Navigation initialisiert:', buttons.length, 'Buttons');
+  }
+  
+  // Initialisiere Navigation mehrfach (sicherheitshalber)
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', ()=>{
+      setupCustomerNav();
+      setTimeout(setupCustomerNav, 100);
+      setTimeout(setupCustomerNav, 500);
+    });
+  } else {
+    setupCustomerNav();
+    setTimeout(setupCustomerNav, 100);
+    setTimeout(setupCustomerNav, 500);
+  }
 
   // --- Provider home renders ---
   function renderProviderHome(){
@@ -4995,6 +4977,11 @@
   // init nav bindings
   if(mode==='provider' && !provider.loggedIn) mode='customer';
   setMode(mode);
+  
+  // Navigation nochmal initialisieren nach setMode
+  setTimeout(()=>{
+    setupCustomerNav();
+  }, 300);
   
   // Sicherstellen, dass Startseite gerendert wird
   if(mode === 'start'){
