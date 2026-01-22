@@ -1,4 +1,4 @@
-const CACHE = 'mittagio-app-v7';
+const CACHE = 'mittagio-app-v8';
 const CACHE_PREFIX = 'mittagio-';
 const ASSETS = [
   './',
