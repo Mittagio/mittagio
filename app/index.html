@@ -656,11 +656,9 @@
         </div>
       </div>
 
-      <!-- Chat-ähnlicher Feed -->
-      <div class="feed-container" id="startFeed">
-        <!-- Chat-Bubbles werden hier dynamisch eingefügt -->
-      </div>
-      <p class="hint feed-empty" id="startEmptyOffers" style="display:none; text-align:center; padding:40px 20px;">
+      <!-- Angebots-Grid (normale Kacheln) -->
+      <div class="grid" id="startOfferGrid"></div>
+      <p class="hint" id="startEmptyOffers" style="display:none; text-align:center; padding:40px 20px;">
         Noch keine Angebote. Demo: Als Anbieter ein Inserat erstellen.
       </p>
     </section>
@@ -1844,10 +1842,10 @@
   function renderStartDiscover(){
     // Stories rendern
     const storiesEl = document.getElementById('startStories');
-    const feedEl = document.getElementById('startFeed');
+    const grid = document.getElementById('startOfferGrid');
     const empty = document.getElementById('startEmptyOffers');
     
-    if(!storiesEl || !feedEl || !empty) return;
+    if(!grid || !empty) return;
 
     let list = offers.filter(o => o.day === activeDay && o.active !== false);
 
@@ -1866,41 +1864,40 @@
     }
 
     // Stories: Eindeutige Anbieter sammeln
-    const providers = new Map();
-    list.forEach(o=>{
-      if(!providers.has(o.providerId)){
-        const data = normalizeOffer(o);
-        providers.set(o.providerId, {
-          id: o.providerId,
-          name: o.providerName || 'Anbieter',
-          logo: data.imageUrl || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=1200&q=60'
-        });
-      }
-    });
+    if(storiesEl){
+      const providers = new Map();
+      list.forEach(o=>{
+        if(!providers.has(o.providerId)){
+          const data = normalizeOffer(o);
+          providers.set(o.providerId, {
+            id: o.providerId,
+            name: o.providerName || 'Anbieter',
+            logo: data.imageUrl || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=1200&q=60'
+          });
+        }
+      });
 
-    // Stories rendern
-    storiesEl.innerHTML='';
-    providers.forEach(p=>{
-      const story = document.createElement('div');
-      story.className='story-item';
-      story.innerHTML=`
-        <div class="story-avatar">
-          <img src="${esc(p.logo)}" alt="${esc(p.name)}" />
-        </div>
-        <div class="story-name">${esc(p.name)}</div>
-      `;
-      storiesEl.appendChild(story);
-    });
+      // Stories rendern
+      storiesEl.innerHTML='';
+      providers.forEach(p=>{
+        const story = document.createElement('div');
+        story.className='story-item';
+        story.innerHTML=`
+          <div class="story-avatar">
+            <img src="${esc(p.logo)}" alt="${esc(p.name)}" />
+          </div>
+          <div class="story-name">${esc(p.name)}</div>
+        `;
+        storiesEl.appendChild(story);
+      });
+    }
 
-    // Chat-Bubbles rendern
-    feedEl.innerHTML='';
+    // Normale Kacheln rendern (keine Chat-Bubbles)
+    grid.innerHTML='';
     empty.textContent = q ? 'Keine Angebote für diesen Standort.' : 'Noch keine Angebote. Demo: Als Anbieter ein Inserat erstellen.';
     empty.style.display = list.length ? 'none' : 'block';
 
-    list.slice(0,10).forEach(o=>{
-      const bubble = createChatBubble(o);
-      feedEl.appendChild(bubble);
-    });
+    list.slice(0,6).forEach(o=> grid.appendChild(offerCard(o, {context:'start'})));
   }
 
   function createChatBubble(offer){
@@ -1942,11 +1939,11 @@
   // --- Discover render ---
   function renderDiscover(){
     const storiesEl = document.getElementById('discoverStories');
-    const feedEl = document.getElementById('discoverFeed');
-    const empty = document.getElementById('emptyOffers');
-    const loc = document.getElementById('locationInput');
+    const grid=document.getElementById('offerGrid');
+    const empty=document.getElementById('emptyOffers');
+    const loc=document.getElementById('locationInput');
     
-    if(!storiesEl || !feedEl || !empty) return;
+    if(!grid || !empty) return;
     
     if(loc){
       if(loc.value !== locationQuery) loc.value = locationQuery || '';
@@ -1970,46 +1967,40 @@
     }
 
     // Stories: Eindeutige Anbieter sammeln
-    const providers = new Map();
-    list.forEach(o=>{
-      if(!providers.has(o.providerId)){
-        const data = normalizeOffer(o);
-        providers.set(o.providerId, {
-          id: o.providerId,
-          name: o.providerName || 'Anbieter',
-          logo: data.imageUrl || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=1200&q=60'
-        });
-      }
-    });
+    if(storiesEl){
+      const providers = new Map();
+      list.forEach(o=>{
+        if(!providers.has(o.providerId)){
+          const data = normalizeOffer(o);
+          providers.set(o.providerId, {
+            id: o.providerId,
+            name: o.providerName || 'Anbieter',
+            logo: data.imageUrl || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=1200&q=60'
+          });
+        }
+      });
 
-    // Stories rendern
-    storiesEl.innerHTML='';
-    providers.forEach(p=>{
-      const story = document.createElement('div');
-      story.className='story-item';
-      story.innerHTML=`
-        <div class="story-avatar">
-          <img src="${esc(p.logo)}" alt="${esc(p.name)}" />
-        </div>
-        <div class="story-name">${esc(p.name)}</div>
-      `;
-      storiesEl.appendChild(story);
-    });
+      // Stories rendern
+      storiesEl.innerHTML='';
+      providers.forEach(p=>{
+        const story = document.createElement('div');
+        story.className='story-item';
+        story.innerHTML=`
+          <div class="story-avatar">
+            <img src="${esc(p.logo)}" alt="${esc(p.name)}" />
+          </div>
+          <div class="story-name">${esc(p.name)}</div>
+        `;
+        storiesEl.appendChild(story);
+      });
+    }
 
-    // Chat-Bubbles rendern
-    feedEl.innerHTML='';
+    // Normale Kacheln rendern (keine Chat-Bubbles)
+    grid.innerHTML='';
     empty.textContent = q ? 'Keine Angebote für diesen Standort.' : 'Noch keine Angebote. Demo: Als Anbieter ein Inserat erstellen.';
     empty.style.display = list.length ? 'none' : 'block';
 
-    list.forEach(o=>{
-      const bubble = createChatBubble(o);
-      feedEl.appendChild(bubble);
-    });
-    
-    // Icons aktualisieren
-    if(typeof lucide !== 'undefined'){
-      setTimeout(()=> lucide.createIcons(), 50);
-    }
+    list.forEach(o=> grid.appendChild(offerCard(o, {context:'customer'})));
   }
 
   function offerCard(o, opts={}){
@@ -4887,6 +4878,7 @@
   }
 
   // --- boot ---
+  // Testdaten immer erstellen (überschreibt vorhandene für Demo)
   seed();
   offers = offers.map(normalizeOffer);
   save(LS.offers, offers);
@@ -4895,6 +4887,15 @@
   // init nav bindings
   if(mode==='provider' && !provider.loggedIn) mode='customer';
   setMode(mode);
+  
+  // Sicherstellen, dass Startseite gerendert wird
+  if(mode === 'start'){
+    setTimeout(()=>{
+      if(typeof renderStart !== 'undefined'){
+        renderStart();
+      }
+    }, 200);
+  }
 </script>
 
 <script>
@@ -4907,7 +4908,18 @@
         lucide.createIcons();
       }
       // Profile-View aktualisieren
-      updateProfileView();
+      if(typeof updateProfileView !== 'undefined'){
+        updateProfileView();
+      }
+      // Startseite rendern, falls im start-Mode
+      if(mode === 'start' && typeof renderStart !== 'undefined'){
+        setTimeout(()=>{
+          renderStart();
+          if(typeof lucide !== 'undefined'){
+            lucide.createIcons();
+          }
+        }, 100);
+      }
     });
   }
 
