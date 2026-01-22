@@ -574,6 +574,152 @@
       line-height:1.3;
     }
 
+    /* Discover Page - App-like UX */
+    .discover-header{
+      padding:12px 14px 8px;
+      max-width:980px; margin:0 auto;
+    }
+    .discover-location-pill{
+      display:inline-flex; align-items:center; gap:6px;
+      padding:8px 14px; border-radius:20px;
+      background:rgba(0,0,0,.04); border:none;
+      font-size:14px; font-weight:600; color:#333;
+      cursor:pointer; transition:all .2s;
+    }
+    .discover-location-pill:active{
+      background:rgba(0,0,0,.08);
+    }
+    .discover-location-text{
+      max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+    }
+    .discover-location-icon{
+      width:16px; height:16px; flex-shrink:0;
+    }
+    
+    .discover-categories{
+      padding:8px 0 12px;
+      max-width:980px; margin:0 auto;
+    }
+    .discover-categories-scroll{
+      display:flex; gap:8px; overflow-x:auto;
+      -webkit-overflow-scrolling:touch;
+      padding:0 14px;
+    }
+    .discover-category-chip{
+      flex:0 0 auto; padding:8px 16px;
+      border-radius:20px; border:none;
+      font-size:14px; font-weight:600;
+      background:#f5f5f5; color:#666;
+      cursor:pointer; transition:all .2s;
+      white-space:nowrap;
+    }
+    .discover-category-chip.active{
+      background:var(--brand); color:#000;
+    }
+    
+    .discover-calendar{
+      padding:0 0 12px;
+      max-width:980px; margin:0 auto;
+    }
+    .discover-calendar-scroll{
+      display:flex; gap:8px; overflow-x:auto;
+      -webkit-overflow-scrolling:touch;
+      padding:0 14px;
+    }
+    .discover-day{
+      flex:0 0 auto; padding:10px 16px;
+      border-radius:16px; border:none;
+      font-size:13px; font-weight:600;
+      background:#f5f5f5; color:#666;
+      cursor:pointer; transition:all .2s;
+      white-space:nowrap;
+      min-width:60px; text-align:center;
+    }
+    .discover-day.active{
+      background:var(--brand); color:#000;
+    }
+    
+    .discover-offers{
+      padding:0 14px 20px;
+      max-width:980px; margin:0 auto;
+      display:flex; flex-direction:column; gap:12px;
+    }
+    .discover-hero-card{
+      display:flex; gap:12px; padding:12px;
+      background:#fff; border-radius:16px;
+      box-shadow:0 2px 8px rgba(0,0,0,.08);
+      cursor:pointer; transition:transform .2s, box-shadow .2s;
+    }
+    .discover-hero-card:active{
+      transform:scale(.98);
+      box-shadow:0 1px 4px rgba(0,0,0,.12);
+    }
+    .discover-hero-image{
+      flex:0 0 100px; width:100px; height:100px;
+      border-radius:12px; overflow:hidden;
+      position:relative;
+    }
+    .discover-hero-image img{
+      width:100%; height:100%; object-fit:cover;
+    }
+    .discover-hero-content{
+      flex:1; display:flex; flex-direction:column; gap:6px;
+      min-width:0;
+    }
+    .discover-hero-title{
+      font-size:16px; font-weight:900; color:#000;
+      overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+    }
+    .discover-hero-price{
+      font-size:18px; font-weight:900; color:var(--brand);
+    }
+    .discover-hero-badges{
+      display:flex; gap:6px; flex-wrap:wrap;
+      margin-top:4px;
+    }
+    .discover-hero-badge{
+      display:inline-flex; align-items:center; gap:4px;
+      padding:4px 8px; border-radius:8px;
+      font-size:11px; font-weight:600;
+      background:rgba(0,0,0,.05);
+    }
+    .discover-hero-badge.code{
+      background:rgba(255,204,0,.2); color:#000;
+    }
+    .discover-hero-badge.dine{
+      background:rgba(76,175,80,.1); color:#4caf50;
+    }
+    .discover-hero-actions{
+      display:flex; gap:8px; margin-top:auto;
+    }
+    .discover-hero-btn{
+      flex:1; padding:8px 12px;
+      border-radius:10px; border:none;
+      font-size:13px; font-weight:700;
+      cursor:pointer; transition:all .2s;
+    }
+    .discover-hero-btn.primary{
+      background:var(--brand); color:#000;
+    }
+    .discover-hero-btn.secondary{
+      background:#f5f5f5; color:#666;
+    }
+    
+    /* Back Navigation */
+    .back-button{
+      position:absolute; top:12px; left:12px;
+      width:40px; height:40px;
+      border-radius:50%; border:none;
+      background:rgba(255,255,255,.9);
+      backdrop-filter:blur(10px);
+      display:flex; align-items:center; justify-content:center;
+      cursor:pointer; z-index:10;
+      box-shadow:0 2px 8px rgba(0,0,0,.1);
+    }
+    .back-button i{
+      width:20px; height:20px;
+    }
+
     /* Chat-Bubbles Feed */
     .feed-container{
       max-width:980px; margin:0 auto; padding:0 14px 20px;
@@ -681,20 +827,35 @@
       </p>
     </section>
 
-    <!-- CUSTOMER: Discover - Social Feed -->
+    <!-- CUSTOMER: Discover - App-like UX -->
     <section class="view" id="v-discover">
-      <!-- Story-Leiste -->
-      <div class="stories-container">
-        <div class="stories-scroll" id="discoverStories">
-          <!-- Stories werden hier dynamisch eingefügt -->
+      <!-- Header: Kompakte Adresszeile (44-48px, Pill-Form) -->
+      <div class="discover-header">
+        <button class="discover-location-pill" type="button" id="btnDiscoverLocation">
+          <span class="discover-location-text" id="discoverLocationText">Standort</span>
+          <i data-lucide="map-pin" class="discover-location-icon"></i>
+        </button>
+      </div>
+
+      <!-- Kategorien (horizontal swipebar) -->
+      <div class="discover-categories">
+        <div class="discover-categories-scroll" id="discoverCategories">
+          <!-- Wird dynamisch befüllt -->
         </div>
       </div>
 
-      <!-- Chat-ähnlicher Feed -->
-      <div class="feed-container" id="discoverFeed">
-        <!-- Chat-Bubbles werden hier dynamisch eingefügt -->
+      <!-- Kalender (horizontal swipebar, direkt unter Kategorien) -->
+      <div class="discover-calendar">
+        <div class="discover-calendar-scroll" id="discoverCalendar">
+          <!-- Wird dynamisch befüllt -->
+        </div>
       </div>
-      <p class="hint feed-empty" id="emptyOffers" style="display:none; text-align:center; padding:40px 20px;">
+
+      <!-- Angebots-Kacheln (Hero Cards - horizontal) -->
+      <div class="discover-offers" id="discoverOffers">
+        <!-- Wird dynamisch befüllt -->
+      </div>
+      <p class="hint" id="discoverEmpty" style="display:none; text-align:center; padding:40px 20px;">
         Noch keine Angebote. Demo: Als Anbieter ein Inserat erstellen.
       </p>
     </section>
@@ -1285,6 +1446,9 @@
 <!-- Offer sheet -->
 <div class="backdrop" id="bd" onclick="closeSheet()"></div>
 <div class="sheet" id="sheet">
+  <button class="back-button" type="button" onclick="closeSheet()" aria-label="Zurück">
+    <i data-lucide="arrow-left"></i>
+  </button>
   <div class="handle"></div>
   <div class="sheet-img"><img id="sImg" alt="" /></div>
   <div class="sheet-body">
@@ -1935,27 +2099,71 @@
     return bubble;
   }
 
-  // --- Discover render ---
+  // --- Discover render (App-like UX) ---
+  let activeDiscoverFilter = 'near'; // 'near', 'Vegan', 'Vegetarisch', 'Mit Fleisch'
+  
   function renderDiscover(){
-    const storiesEl = document.getElementById('discoverStories');
-    const grid=document.getElementById('offerGrid');
-    const empty=document.getElementById('emptyOffers');
-    const loc=document.getElementById('locationInput');
-    
-    if(!grid || !empty) return;
-    
-    if(loc){
-      if(loc.value !== locationQuery) loc.value = locationQuery || '';
-      loc.oninput=()=>{ locationQuery = loc.value; renderDiscover(); };
+    // Header: Standort
+    const locationText = document.getElementById('discoverLocationText');
+    if(locationText){
+      const addr = locationQuery || 'Standort wählen';
+      locationText.textContent = addr;
     }
-
+    
+    // Kategorien rendern
+    const categoriesEl = document.getElementById('discoverCategories');
+    if(categoriesEl){
+      categoriesEl.innerHTML = '';
+      const cats = [
+        {id:'near', label:'In der Nähe'},
+        {id:'Vegan', label:'Vegan'},
+        {id:'Vegetarisch', label:'Vegetarisch'},
+        {id:'Mit Fleisch', label:'Mit Fleisch'}
+      ];
+      cats.forEach(cat=>{
+        const btn = document.createElement('button');
+        btn.className = 'discover-category-chip' + (activeDiscoverFilter === cat.id ? ' active' : '');
+        btn.textContent = cat.label;
+        btn.onclick = ()=>{
+          activeDiscoverFilter = cat.id;
+          renderDiscover();
+        };
+        categoriesEl.appendChild(btn);
+      });
+    }
+    
+    // Kalender rendern
+    const calendarEl = document.getElementById('discoverCalendar');
+    if(calendarEl){
+      calendarEl.innerHTML = '';
+      for(let i=0; i<5; i++){
+        const d = new Date();
+        d.setDate(d.getDate() + i);
+        const key = isoDate(d);
+        const dayName = ['So','Mo','Di','Mi','Do','Fr','Sa'][d.getDay()];
+        const dayNum = String(d.getDate()).padStart(2,'0');
+        
+        const btn = document.createElement('button');
+        btn.className = 'discover-day' + (activeDay === key ? ' active' : '');
+        btn.textContent = i===0 ? 'Heute' : `${dayName} ${dayNum}`;
+        btn.onclick = ()=>{
+          activeDay = key;
+          renderDiscover();
+        };
+        calendarEl.appendChild(btn);
+      }
+    }
+    
+    // Angebote filtern
     let list = offers.filter(o => o.day === activeDay && o.active !== false);
-
-    if(activeCat){
-      const cat = CAT_MAP[activeCat] || activeCat;
+    
+    // Kategorie-Filter
+    if(activeDiscoverFilter !== 'near'){
+      const cat = CAT_MAP[activeDiscoverFilter] || activeDiscoverFilter;
       list = list.filter(o => (o.category||'') === cat);
     }
-
+    
+    // Standort-Filter
     const q = String(locationQuery||'').trim().toLowerCase();
     if(q){
       list = list.filter(o=>{
@@ -1964,42 +2172,57 @@
         return String(addr||'').toLowerCase().includes(q);
       });
     }
-
-    // Stories: Eindeutige Anbieter sammeln
-    if(storiesEl){
-      const providers = new Map();
-      list.forEach(o=>{
-        if(!providers.has(o.providerId)){
-          const data = normalizeOffer(o);
-          providers.set(o.providerId, {
-            id: o.providerId,
-            name: o.providerName || 'Anbieter',
-            logo: data.imageUrl || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=1200&q=60'
-          });
-        }
-      });
-
-      // Stories rendern
-      storiesEl.innerHTML='';
-      providers.forEach(p=>{
-        const story = document.createElement('div');
-        story.className='story-item';
-        story.innerHTML=`
-          <div class="story-avatar">
-            <img src="${esc(p.logo)}" alt="${esc(p.name)}" />
-          </div>
-          <div class="story-name">${esc(p.name)}</div>
-        `;
-        storiesEl.appendChild(story);
-      });
+    
+    // Hero Cards rendern
+    const offersEl = document.getElementById('discoverOffers');
+    const emptyEl = document.getElementById('discoverEmpty');
+    if(offersEl && emptyEl){
+      offersEl.innerHTML = '';
+      emptyEl.textContent = q ? 'Keine Angebote für diesen Standort.' : 'Noch keine Angebote. Demo: Als Anbieter ein Inserat erstellen.';
+      emptyEl.style.display = list.length ? 'none' : 'block';
+      
+      list.forEach(o=> offersEl.appendChild(createDiscoverHeroCard(o)));
     }
-
-    // Normale Kacheln rendern (keine Chat-Bubbles)
-    grid.innerHTML='';
-    empty.textContent = q ? 'Keine Angebote für diesen Standort.' : 'Noch keine Angebote. Demo: Als Anbieter ein Inserat erstellen.';
-    empty.style.display = list.length ? 'none' : 'block';
-
-    list.forEach(o=> grid.appendChild(offerCard(o, {context:'customer'})));
+    
+    // Icons aktualisieren
+    if(typeof lucide !== 'undefined'){
+      setTimeout(()=> lucide.createIcons(), 50);
+    }
+  }
+  
+  // Hero Card für Discover-Seite
+  function createDiscoverHeroCard(o){
+    const data = normalizeOffer(o);
+    const card = document.createElement('div');
+    card.className = 'discover-hero-card';
+    card.onclick = ()=> openOffer(data.id);
+    
+    const imgSrc = data.imageUrl || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70';
+    
+    card.innerHTML = `
+      <div class="discover-hero-image">
+        <img src="${esc(imgSrc)}" alt="${esc(data.dish||'')}" />
+      </div>
+      <div class="discover-hero-content">
+        <div class="discover-hero-title">${esc(data.dish||'Gericht')}</div>
+        <div class="discover-hero-price">${euro(data.price)}</div>
+        <div class="discover-hero-badges">
+          ${data.hasPickupCode ? '<div class="discover-hero-badge code"><i data-lucide="shopping-bag"></i> Abholcode</div>' : ''}
+          ${data.dineInPossible ? '<div class="discover-hero-badge dine"><i data-lucide="utensils"></i> Vor Ort</div>' : ''}
+          ${!data.dineInPossible && !data.hasPickupCode ? '<div class="discover-hero-badge"><i data-lucide="package"></i> Zum Mitnehmen</div>' : ''}
+        </div>
+        <div class="discover-hero-actions">
+          <button class="discover-hero-btn primary" onclick="event.stopPropagation(); const o=offers.find(x=>x.id==='${data.id}'); if(o) handleOrderClick(o);">
+            ${data.hasPickupCode ? 'Bestellen' : 'Details'}
+          </button>
+          <button class="discover-hero-btn secondary" onclick="event.stopPropagation(); openOffer('${data.id}');">
+            Details
+          </button>
+        </div>
+      </div>
+    `;
+    
+    return card;
   }
 
   function offerCard(o, opts={}){
@@ -2357,11 +2580,23 @@
   // --- Offer sheet ---
   let activeOfferId=null;
   let activeProviderOfferId=null;
+  // Navigation History für Back-Button
+  let navigationHistory = [];
+  
   function openOffer(id){
     const raw = offers.find(x=>x.id===id);
     if(!raw) return;
     const o = normalizeOffer(raw);
     activeOfferId=id;
+    
+    // History speichern
+    navigationHistory.push({
+      view: mode === 'start' ? 'start' : 'discover',
+      locationQuery: locationQuery,
+      activeCat: activeCat,
+      activeDay: activeDay,
+      activeFilter: activeDiscoverFilter
+    });
 
     document.getElementById('sImg').src = o.imageUrl || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70';
     document.getElementById('sDish').textContent = o.dish || '';
@@ -2423,6 +2658,11 @@
 
     document.getElementById('bd').classList.add('active');
     document.getElementById('sheet').classList.add('active');
+    
+    // Icons aktualisieren
+    if(typeof lucide !== 'undefined'){
+      setTimeout(()=> lucide.createIcons(), 50);
+    }
   }
 
   function updateSheetFavs(){
@@ -2450,7 +2690,31 @@
   function closeSheet(){
     document.getElementById('bd').classList.remove('active');
     document.getElementById('sheet').classList.remove('active');
+    
+    // Zurück zur vorherigen Ansicht
+    if(navigationHistory.length > 0){
+      const prev = navigationHistory.pop();
+      locationQuery = prev.locationQuery || '';
+      activeCat = prev.activeCat || null;
+      activeDay = prev.activeDay || isoDate(new Date());
+      activeDiscoverFilter = prev.activeFilter || 'near';
+      
+      if(prev.view === 'start'){
+        showStart();
+      } else {
+        showDiscover();
+      }
+    }
   }
+  
+  // Android Hardware-Back unterstützen
+  window.addEventListener('popstate', function(e){
+    if(document.getElementById('sheet').classList.contains('active')){
+      closeSheet();
+      e.preventDefault();
+      history.pushState(null, '', location.pathname);
+    }
+  });
 
   function openProviderOffer(id){
     const raw = offers.find(x=>x.id===id);
@@ -2744,6 +3008,18 @@
       renderStart();
     };
   }
+  
+  // Discover Standort-Button
+  const discoverLocationBtn = document.getElementById('btnDiscoverLocation');
+  if(discoverLocationBtn){
+    discoverLocationBtn.onclick=()=>{
+      const newLoc = prompt('Standort eingeben (Ort oder PLZ):', locationQuery || '');
+      if(newLoc !== null){
+        locationQuery = newLoc.trim();
+        renderDiscover();
+      }
+    };
+  }
 
   document.getElementById('btnAddCart').onclick=()=>{
     const o = offers.find(x=>x.id===activeOfferId);
@@ -2992,66 +3268,53 @@
     if(go==='provider-profile') showProviderProfile();
   });
 
-  // Customer nav handlers - Event-Delegation auf nav-Element
-  function initCustomerNav(){
-    const customerNavEl = document.getElementById('customerNav');
-    if(!customerNavEl) return;
+  // Customer nav handlers - Robuster Event-Delegation-Ansatz
+  document.addEventListener('click', function(e){
+    // Prüfe ob Klick innerhalb von customerNav
+    const nav = document.getElementById('customerNav');
+    if(!nav || !nav.contains(e.target)) return;
     
-    // Entferne alte Handler
-    customerNavEl.onclick = null;
+    // Finde den Button (auch wenn auf Icon/Text geklickt wurde)
+    let target = e.target;
+    let btn = null;
     
-    // Setze neuen Handler
-    customerNavEl.addEventListener('click', function(e){
-      // Finde den Button, auch wenn auf inneres Element geklickt wurde
-      let target = e.target;
-      while(target && target !== customerNavEl){
-        if(target.tagName === 'BUTTON' && target.classList.contains('navbtn')){
-          const go = target.dataset.go;
-          if(go){
-            e.preventDefault();
-            e.stopPropagation();
-            
-            try {
-              if(go==='discover'){
-                if(mode === 'start'){
-                  showStart();
-                } else {
-                  showDiscover();
-                }
-              } else if(go==='fav'){
-                showFav();
-              } else if(go==='orders'){
-                showOrders();
-              } else if(go==='cart'){
-                showCart();
-              } else if(go==='profile'){
-                showProfile();
-              }
-            } catch(err){
-              console.error('Navigation error:', err, go);
-            }
-          }
-          break;
-        }
-        target = target.parentElement;
+    while(target && target !== nav){
+      if(target.tagName === 'BUTTON' && target.classList.contains('navbtn')){
+        btn = target;
+        break;
       }
-    }, true); // useCapture = true für frühere Event-Erfassung
-  }
-  
-  // Initialisiere Navigation nach DOM-Load
-  if(document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', initCustomerNav);
-  } else {
-    // DOM bereits geladen, aber warte kurz bis alle Funktionen definiert sind
-    setTimeout(initCustomerNav, 0);
-  }
-  
-  // Nochmal initialisieren nach setMode (falls Navigation neu gerendert wird)
-  const originalSetMode = setMode;
-  setMode = function(m){
-    originalSetMode(m);
-    setTimeout(initCustomerNav, 100);
-  };
+      target = target.parentElement;
+    }
+    
+    if(!btn || !btn.dataset.go) return;
+    
+    const go = btn.dataset.go;
+    e.preventDefault();
+    e.stopPropagation();
+    
+    console.log('Navigation clicked:', go, 'mode:', mode);
+    
+    try {
+      if(go==='discover'){
+        if(mode === 'start'){
+          showStart();
+        } else {
+          showDiscover();
+        }
+      } else if(go==='fav'){
+        showFav();
+      } else if(go==='orders'){
+        showOrders();
+      } else if(go==='cart'){
+        showCart();
+      } else if(go==='profile'){
+        showProfile();
+      }
+    } catch(err){
+      console.error('Navigation error:', err, go);
+      alert('Navigation-Fehler: ' + err.message);
+    }
+  }, true); // useCapture für frühere Event-Erfassung
 
   // --- Provider home renders ---
   function renderProviderHome(){
@@ -4488,24 +4751,75 @@
     }
 
     if(w.step===6){
-      setWizardQuestion('Foto?', 'Kamera, Galerie oder ohne Foto.');
+      setWizardQuestion('Foto', 'Pflicht: Foto mit automatischem Filter & Zuschnitt.');
       const box=document.createElement('div');
-      const ans=document.createElement('div'); ans.className='answers';
-
-      const cam=document.createElement('button'); cam.type='button'; cam.className='ans'; cam.textContent='Kamera';
-      cam.onclick=async()=>{ const f=await pickImage({capture:true}); if(!f) return; w.data.photoData = await toDataUrl(f); rebuildWizard(); };
-      const gal=document.createElement('button'); gal.type='button'; gal.className='ans'; gal.textContent='Galerie';
-      gal.onclick=async()=>{ const f=await pickImage(); if(!f) return; w.data.photoData = await toDataUrl(f); rebuildWizard(); };
-      const none=document.createElement('button'); none.type='button'; none.className='ans'; none.textContent='Ohne Foto';
-      none.onclick=()=>{ w.data.photoData=''; rebuildWizard(); };
-
-      ans.appendChild(cam); ans.appendChild(gal); ans.appendChild(none);
-      box.appendChild(ans);
-      if(w.data.photoData){
-        const p=document.createElement('div'); p.style.marginTop='10px';
-        p.innerHTML = `<div class="hint">Vorschau:</div><div style="border-radius:16px;overflow:hidden;border:1px solid #eee"><img src="${w.data.photoData}" alt="" style="width:100%;height:200px;object-fit:cover;display:block"></div>`;
-        box.appendChild(p);
+      
+      if(!w.data.photoData){
+        const ans=document.createElement('div'); ans.className='answers';
+        const cam=document.createElement('button'); cam.type='button'; cam.className='ans'; cam.textContent='Kamera';
+        cam.onclick=async()=>{ 
+          const f=await pickImage({capture:true}); 
+          if(!f) return; 
+          const dataUrl = await toDataUrl(f);
+          await openPhotoEditor(dataUrl);
+        };
+        const gal=document.createElement('button'); gal.type='button'; gal.className='ans'; gal.textContent='Galerie';
+        gal.onclick=async()=>{ 
+          const f=await pickImage(); 
+          if(!f) return; 
+          const dataUrl = await toDataUrl(f);
+          await openPhotoEditor(dataUrl);
+        };
+        ans.appendChild(cam); ans.appendChild(gal);
+        box.appendChild(ans);
+      } else {
+        // Foto bereits vorhanden - Editor öffnen
+        const preview=document.createElement('div');
+        preview.style.marginTop='10px';
+        preview.innerHTML = `
+          <div class="hint">Aktuelles Foto:</div>
+          <div style="border-radius:16px;overflow:hidden;border:1px solid #eee;margin-top:8px">
+            <img src="${w.data.photoData}" alt="" style="width:100%;height:200px;object-fit:cover;display:block">
+          </div>
+        `;
+        box.appendChild(preview);
+        
+        const editBtn=document.createElement('button');
+        editBtn.className='btn secondary';
+        editBtn.type='button';
+        editBtn.textContent='Foto bearbeiten';
+        editBtn.style.marginTop='12px';
+        editBtn.onclick=async()=> await openPhotoEditor(w.data.photoData);
+        box.appendChild(editBtn);
+        
+        const removeBtn=document.createElement('button');
+        removeBtn.className='btn ghost';
+        removeBtn.type='button';
+        removeBtn.textContent='Foto entfernen';
+        removeBtn.style.marginTop='8px';
+        removeBtn.onclick=()=>{ w.data.photoData=''; rebuildWizard(); };
+        box.appendChild(removeBtn);
       }
+      
+      // Live-Vorschau "So erscheint es in der App"
+      const livePreview=document.createElement('div');
+      livePreview.style.marginTop='20px';
+      livePreview.style.padding='16px';
+      livePreview.style.background='#f8f7f3';
+      livePreview.style.borderRadius='16px';
+      livePreview.innerHTML = `
+        <div class="hint" style="margin-bottom:8px;font-weight:700;">So erscheint es in der App:</div>
+        <div class="discover-hero-card" style="margin:0;cursor:default;">
+          <div class="discover-hero-image">
+            <img src="${w.data.photoData || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70'}" alt="" />
+          </div>
+          <div class="discover-hero-content">
+            <div class="discover-hero-title">${esc(w.data.dish||'Gericht')}</div>
+            <div class="discover-hero-price">${euro(w.data.price||0)}</div>
+          </div>
+        </div>
+      `;
+      box.appendChild(livePreview);
 
       attachListingPreview(box);
       setWizardContent(box);
@@ -4932,6 +5246,83 @@
       r.onload=()=>resolve(r.result);
       r.onerror=reject;
       r.readAsDataURL(file);
+    });
+  }
+  
+  // Fotoeditor mit Filter & Zuschnitt
+  async function openPhotoEditor(imageDataUrl){
+    return new Promise((resolve)=>{
+      const editor = document.createElement('div');
+      editor.className='backdrop active';
+      editor.style.zIndex='50';
+      
+      const editorContent = document.createElement('div');
+      editorContent.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:24px;padding:24px;max-width:90vw;max-height:90vh;overflow:auto;z-index:51;box-shadow:0 8px 32px rgba(0,0,0,.2);';
+      
+      const img = new Image();
+      img.src = imageDataUrl;
+      img.onload = ()=>{
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const size = 400;
+        canvas.width = size;
+        canvas.height = size;
+        
+        // Quadratischer Zuschnitt (zentriert)
+        const sourceSize = Math.min(img.width, img.height);
+        const sourceX = (img.width - sourceSize) / 2;
+        const sourceY = (img.height - sourceSize) / 2;
+        
+        // Filter: Helligkeit + Kontrast
+        ctx.filter = 'brightness(1.1) contrast(1.15) saturate(1.1)';
+        ctx.drawImage(img, sourceX, sourceY, sourceSize, sourceSize, 0, 0, size, size);
+        
+        const processedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
+        
+        const acceptBtn = document.createElement('button');
+        acceptBtn.className='btn';
+        acceptBtn.textContent='Übernehmen';
+        acceptBtn.onclick=()=>{
+          w.data.photoData = processedDataUrl;
+          editor.remove();
+          rebuildWizard();
+          resolve(processedDataUrl);
+        };
+        
+        const cancelBtn = document.createElement('button');
+        cancelBtn.className='btn secondary';
+        cancelBtn.textContent='Abbrechen';
+        cancelBtn.style.marginLeft='8px';
+        cancelBtn.onclick=()=>{
+          editor.remove();
+          resolve(null);
+        };
+        
+        editorContent.innerHTML = `
+          <h3 style="margin:0 0 16px;font-size:18px;font-weight:900;">Foto bearbeiten</h3>
+          <div style="border-radius:16px;overflow:hidden;border:1px solid #eee;margin-bottom:16px;background:#f5f5f5">
+            <img src="${processedDataUrl}" alt="" style="width:100%;max-width:400px;display:block" />
+          </div>
+          <div class="hint" style="margin-bottom:16px;">✓ Automatisch optimiert: Helligkeit + Kontrast<br>✓ Quadratischer Zuschnitt (wie in der App)</div>
+        `;
+        
+        const btnRow = document.createElement('div');
+        btnRow.style.display='flex';
+        btnRow.style.gap='8px';
+        btnRow.appendChild(acceptBtn);
+        btnRow.appendChild(cancelBtn);
+        editorContent.appendChild(btnRow);
+        
+        editor.onclick=(e)=>{
+          if(e.target === editor){
+            editor.remove();
+            resolve(null);
+          }
+        };
+        
+        editor.appendChild(editorContent);
+        document.body.appendChild(editor);
+      };
     });
   }
 
