@@ -1658,7 +1658,8 @@
 
   // --- State ---
   let mode = 'start'; // 'start' | 'customer' | 'provider'
-  let offers = load(LS.offers, []);
+  // Angebote werden später durch seed() überschrieben, daher hier leer initialisieren
+  let offers = [];
   const legacyFavs = load(LS.favs, []);
   let providerFavs = new Set(load(LS.providerFavs, legacyFavs));
   let dishFavs = new Set(load(LS.dishFavs, []));
@@ -2215,13 +2216,22 @@
       }
     }
     
+    // Debug: Prüfe Filter
+    console.log('renderDiscover - activeDay:', activeDay);
+    console.log('renderDiscover - offers gesamt:', offers.length);
+    console.log('renderDiscover - offers mit day=' + activeDay + ':', offers.filter(o => o.day === activeDay).length);
+    console.log('renderDiscover - Heute:', isoDate(new Date()));
+    
     // Angebote filtern
     let list = offers.filter(o => o.day === activeDay && o.active !== false);
+    
+    console.log('renderDiscover - nach activeDay Filter:', list.length);
     
     // Kategorie-Filter
     if(activeDiscoverFilter !== 'near'){
       const cat = CAT_MAP[activeDiscoverFilter] || activeDiscoverFilter;
       list = list.filter(o => (o.category||'') === cat);
+      console.log('renderDiscover - nach Kategorie Filter (' + activeDiscoverFilter + '):', list.length);
     }
     
     // Standort-Filter
@@ -2232,7 +2242,10 @@
         const addr = buildAddress({address:data.address, street:data.providerStreet, zip:data.providerZip, city:data.providerCity});
         return String(addr||'').toLowerCase().includes(q);
       });
+      console.log('renderDiscover - nach Standort Filter:', list.length);
     }
+    
+    console.log('renderDiscover - finale Liste:', list.length);
     
     // Hero Cards rendern
     const offersEl = document.getElementById('discoverOffers');
@@ -5410,6 +5423,12 @@
   seed();
   offers = offers.map(normalizeOffer);
   save(LS.offers, offers);
+  
+  // Debug: Prüfe ob Angebote vorhanden sind
+  console.log('Angebote nach seed():', offers.length, offers);
+  console.log('activeDay:', activeDay);
+  console.log('Heute:', isoDate(new Date()));
+  
   renderChips();
 
   // init nav bindings
