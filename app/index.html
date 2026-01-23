@@ -1200,6 +1200,11 @@
     </section>
 
     <section class="view" id="v-provider-billing">
+      <!-- Kosten-Info-Box (ganz oben) -->
+      <div class="panel" id="billingCostInfo" style="background:#f0f7f0; border:1px solid #4caf50; margin-bottom:12px;">
+        <!-- Wird dynamisch befüllt -->
+      </div>
+      
       <div class="panel">
         <h3>Abrechnungen</h3>
         <div class="hint">Auszahlbarer Betrag</div>
@@ -1413,7 +1418,7 @@
           </details>
           <details>
             <summary>Kontakt</summary>
-            <p>Bei Fragen schreib uns an <a href="mailto:info@mittagio.de" style="color:var(--brand);">info@mittagio.de</a></p>
+            <p>Bei Fragen schreib uns an <a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a></p>
           </details>
         </div>
         <a href="#" id="btnProfileShowMoreFaq" style="display:inline-block; font-size:13px; color:var(--muted); text-decoration:none; margin-top:4px;">
@@ -1424,12 +1429,13 @@
       <!-- Legal (bottom, small) -->
       <div style="margin-top:20px; padding:16px 16px 24px; text-align:center;">
         <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:12px 16px; font-size:12px; margin-bottom:10px;">
-          <a href="#" id="btnProfileImpressum" style="color:var(--muted); text-decoration:none;">Datenschutz</a>
-          <a href="#" id="btnProfileAGB" style="color:var(--muted); text-decoration:none;">AGB (Kunden)</a>
-          <a href="#" id="btnProfileDatenschutz" style="color:var(--muted); text-decoration:none;">Impressum</a>
+          <a href="#/impressum" id="btnProfileImpressum" onclick="showLegalPage('impressum'); return false;" style="color:var(--muted); text-decoration:none;">Impressum</a>
+          <a href="#/agb-kurz" id="btnProfileAGB" onclick="showLegalPage('agb-kurz'); return false;" style="color:var(--muted); text-decoration:none;">AGB</a>
+          <a href="#/datenschutz" id="btnProfileDatenschutz" onclick="showLegalPage('datenschutz'); return false;" style="color:var(--muted); text-decoration:none;">Datenschutz</a>
+          <a href="#/anbieter-faq" onclick="showLegalPage('anbieter-faq'); return false;" style="color:var(--muted); text-decoration:none;">Anbieter-FAQ</a>
         </div>
         <div style="font-size:12px; color:var(--muted);">
-          <a href="mailto:info@mittagio.de" style="color:var(--muted); text-decoration:none;">info@mittagio.de</a>
+          <a href="mailto:support@mittagio.de" style="color:var(--muted); text-decoration:none;">support@mittagio.de</a>
         </div>
       </div>
     </section>
@@ -1784,7 +1790,7 @@
         </div>
 
         <div class="row-group">
-          <div class="rowgroup-title">Rechtliches</div>
+          <div class="rowgroup-title">Rechtliches & Hilfe</div>
           <div class="rowlist">
             <button class="rowbtn" type="button" id="btnLegalImprint">
               <div class="rowbtn-left">
@@ -1803,14 +1809,14 @@
             <button class="rowbtn" type="button" id="btnLegalTerms">
               <div class="rowbtn-left">
                 <div class="rowbtn-ico" data-icon="file" data-icon-only="1"></div>
-                <div class="rowbtn-text">AGB</div>
+                <div class="rowbtn-text">AGB (Kurzfassung)</div>
               </div>
               <div class="chev">›</div>
             </button>
             <button class="rowbtn" type="button" id="btnLegalPricing">
               <div class="rowbtn-left">
-                <div class="rowbtn-ico" data-icon="card" data-icon-only="1"></div>
-                <div class="rowbtn-text">Preise & Konditionen</div>
+                <div class="rowbtn-ico" data-icon="info" data-icon-only="1"></div>
+                <div class="rowbtn-text">Anbieter-FAQ</div>
               </div>
               <div class="chev">›</div>
             </button>
@@ -1823,6 +1829,189 @@
       <div style="height:12px"></div>
       <button class="btn ghost" type="button" id="btnProvLogout">Logout</button>
 
+      <div id="provFaqBox" style="display:none;">
+        
+    </section>
+
+    <!-- STATISCHE RECHTSTEXTE-SEITEN -->
+    <section class="view" id="v-legal-impressum">
+      <div class="panel">
+        <h1 style="font-size:24px; font-weight:900; margin-bottom:20px;">Impressum</h1>
+        <div style="line-height:1.8; font-size:15px;">
+          <p style="font-weight:700; margin-bottom:12px;">Verantwortlich für den Inhalt:</p>
+          <p>
+            Mittagio<br>
+            Inhaber: Mike Quach<br>
+            Langäcker 2<br>
+            73635 Rudersberg<br>
+            Deutschland
+          </p>
+          <p style="margin-top:16px;">
+            <strong>E-Mail:</strong> <a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a>
+          </p>
+          <p style="margin-top:20px; padding-top:20px; border-top:1px solid #eee; font-size:13px; color:#666;">
+            <strong>Unternehmensform:</strong> Einzelunternehmen<br>
+            <strong>Umsatzsteuer-ID:</strong> nicht vorhanden (§19 UStG)
+          </p>
+          <p style="margin-top:16px; padding-top:16px; border-top:1px solid #eee; font-size:13px; color:#666;">
+            <strong>Plattformhinweis:</strong><br>
+            Mittagio vermittelt Mittagsangebote lokaler Anbieter. Vertragspartner bei Bestellungen ist ausschließlich der jeweilige Anbieter.
+          </p>
+        </div>
+        <div style="margin-top:32px; padding-top:20px; border-top:1px solid #eee; text-align:center; font-size:14px; color:#666;">
+          Fragen, Hilfe oder Vorschläge? <a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a>
+        </div>
+        <button class="btn ghost" type="button" onclick="history.back()" style="margin-top:20px; width:100%;">Zurück</button>
+      </div>
+    </section>
+
+    <section class="view" id="v-legal-agb-kurz">
+      <div class="panel">
+        <h1 style="font-size:24px; font-weight:900; margin-bottom:20px;">AGB (Kurzfassung)</h1>
+        <div style="line-height:1.8; font-size:15px;">
+          <p><strong>Mittagio ist Plattform, nicht Verkäufer</strong></p>
+          <p>Mittagio vermittelt Mittagsangebote lokaler Anbieter. Vertragspartner bei Bestellungen ist ausschließlich der jeweilige Anbieter.</p>
+          
+          <p style="margin-top:20px;"><strong>Kosten für Anbieter:</strong></p>
+          <ul style="padding-left:20px; margin:8px 0;">
+            <li>4,99 € zzgl. MwSt. pro Veröffentlichung</li>
+            <li>0,89 € zzgl. MwSt. pro Online-Bestellung inkl. aller Bank- & Zahlungsgebühren (pro Bestellung, egal wie viele Gerichte)</li>
+          </ul>
+          
+          <p style="margin-top:20px;"><strong>Abholcode:</strong></p>
+          <p>Der Abholcode dient als Zahlungs- & Abholnachweis. Die Abwicklungsgebühr fällt auch bei Nicht-Abholung an.</p>
+          
+          <p style="margin-top:20px;"><strong>Verantwortung:</strong></p>
+          <p>Der Anbieter ist verantwortlich für Inhalte, Speisen und gesetzliche Vorgaben.</p>
+          
+          <p style="margin-top:20px;"><strong>Support:</strong></p>
+          <p><a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a></p>
+        </div>
+        <div style="margin-top:32px; padding-top:20px; border-top:1px solid #eee; text-align:center; font-size:14px; color:#666;">
+          Fragen, Hilfe oder Vorschläge? <a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a>
+        </div>
+        <button class="btn ghost" type="button" onclick="history.back()" style="margin-top:20px; width:100%;">Zurück</button>
+      </div>
+    </section>
+
+    <section class="view" id="v-legal-datenschutz">
+      <div class="panel">
+        <h1 style="font-size:24px; font-weight:900; margin-bottom:20px;">Datenschutzerklärung</h1>
+        <div style="line-height:1.8; font-size:15px;">
+          <p style="font-weight:700; margin-bottom:12px;">Verantwortlicher:</p>
+          <p>
+            Mittagio<br>
+            Mike Quach<br>
+            Langäcker 2<br>
+            73635 Rudersberg<br>
+            Deutschland<br>
+            E-Mail: <a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a>
+          </p>
+          
+          <p style="margin-top:24px; font-weight:700;">Welche Daten erheben wir?</p>
+          
+          <p style="margin-top:12px;"><strong>Anbieter:</strong></p>
+          <ul style="padding-left:20px; margin:8px 0;">
+            <li>Betriebsname</li>
+            <li>Kontaktdaten</li>
+            <li>Standort/Öffnungszeiten</li>
+            <li>Inserats-/Bestelldaten</li>
+            <li>Abrechnungsdaten</li>
+          </ul>
+          
+          <p style="margin-top:12px;"><strong>Kunden:</strong></p>
+          <ul style="padding-left:20px; margin:8px 0;">
+            <li>Bestelldaten</li>
+            <li>Zahlungsstatus</li>
+            <li>Abholcode (keine unnötigen personenbezogenen Daten)</li>
+          </ul>
+          
+          <p style="margin-top:24px; font-weight:700;">Online-Zahlung:</p>
+          <p>Online-Zahlung erfolgt über externe Zahlungsdienstleister (z.B. Stripe). Wir speichern keine kompletter Zahlungsdaten (z.B. Kreditkartennummern).</p>
+          
+          <p style="margin-top:24px; font-weight:700;">Zweck des Abholcodes:</p>
+          <p>Der Abholcode dient als Zahlungs-/Abholnachweis, zur Zuordnung und zum Missbrauchsschutz.</p>
+          
+          <p style="margin-top:24px; font-weight:700;">Weitergabe:</p>
+          <p>Daten werden nur an Zahlungsdienstleister und wenn gesetzlich erforderlich weitergegeben. Keine Werbeweitergabe.</p>
+          
+          <p style="margin-top:24px; font-weight:700;">Speicherdauer:</p>
+          <p>Daten werden nur so lange gespeichert wie nötig und gemäß gesetzlicher Aufbewahrungspflichten.</p>
+          
+          <p style="margin-top:24px; font-weight:700;">Ihre Rechte:</p>
+          <p>Sie haben das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung und Widerspruch. Kontakt: <a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a></p>
+          
+          <p style="margin-top:24px; font-weight:700;">Datensicherheit:</p>
+          <p>Wir setzen technische und organisatorische Maßnahmen zum Schutz Ihrer Daten ein.</p>
+          
+          <p style="margin-top:24px; font-weight:700;">Änderungen:</p>
+          <p>Diese Datenschutzerklärung kann angepasst werden. Aktuelle Version finden Sie auf dieser Seite.</p>
+        </div>
+        <div style="margin-top:32px; padding-top:20px; border-top:1px solid #eee; text-align:center; font-size:14px; color:#666;">
+          Fragen, Hilfe oder Vorschläge? <a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a>
+        </div>
+        <button class="btn ghost" type="button" onclick="history.back()" style="margin-top:20px; width:100%;">Zurück</button>
+      </div>
+    </section>
+
+    <section class="view" id="v-legal-anbieter-faq">
+      <div class="panel">
+        <h1 style="font-size:24px; font-weight:900; margin-bottom:20px;">Anbieter-FAQ</h1>
+        <div style="line-height:1.8; font-size:15px;">
+          <p style="font-weight:700; margin-bottom:12px; font-size:18px;">Kosten</p>
+          
+          <p style="margin-top:16px;"><strong>Veröffentlichung:</strong></p>
+          <p>4,99 € zzgl. MwSt. pro Veröffentlichung (einmalig pro Veröffentlichung)</p>
+          
+          <p style="margin-top:16px;"><strong>Online-Bestellung:</strong></p>
+          <p>0,89 € zzgl. MwSt. pro Online-Bestellung/Vorgang</p>
+          <ul style="padding-left:20px; margin:8px 0; font-size:14px; color:#666;">
+            <li>gilt pro Bestellung, egal wie viele Gerichte</li>
+            <li>inkl. aller Bank- und Zahlungsgebühren (keine zusätzlichen Gebühren)</li>
+            <li>fällt bei erfolgreicher Zahlung an, auch wenn nicht abgeholt</li>
+          </ul>
+          
+          <p style="margin-top:24px; font-weight:700; font-size:18px;">Abholcode</p>
+          <p>Der Kunde erhält den Abholcode nach Online-Zahlung. Sie müssen nicht scannen, sondern nur als abgeholt markieren.</p>
+          
+          <p style="margin-top:24px; font-weight:700; font-size:18px;">Kochbuch & Wochenplan</p>
+          <ul style="padding-left:20px; margin:8px 0;">
+            <li>Kostenlos bis Veröffentlichung</li>
+            <li>Aus Kochbuch schnell in Wochenplan hinzufügen (USP)</li>
+          </ul>
+        </div>
+        <div style="margin-top:32px; padding-top:20px; border-top:1px solid #eee; text-align:center; font-size:14px; color:#666;">
+          Fragen, Hilfe oder Vorschläge? <a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a>
+        </div>
+        <button class="btn ghost" type="button" onclick="history.back()" style="margin-top:20px; width:100%;">Zurück</button>
+      </div>
+    </section>
+
+    <section class="view" id="v-legal-agb-onboarding">
+      <div class="panel">
+        <h2 style="font-size:20px; font-weight:900; margin-bottom:16px;">AGB (Kurzfassung)</h2>
+        <div style="line-height:1.7; font-size:14px; max-height:60vh; overflow-y:auto;">
+          <p><strong>Mittagio ist Plattform, nicht Verkäufer</strong></p>
+          <p>Mittagio vermittelt Mittagsangebote lokaler Anbieter. Vertragspartner bei Bestellungen ist ausschließlich der jeweilige Anbieter.</p>
+          
+          <p style="margin-top:16px;"><strong>Kosten:</strong></p>
+          <ul style="padding-left:20px; margin:8px 0;">
+            <li>4,99 € zzgl. MwSt. pro Veröffentlichung</li>
+            <li>0,89 € zzgl. MwSt. pro Online-Bestellung inkl. aller Bank- & Zahlungsgebühren (pro Bestellung, egal wie viele Gerichte)</li>
+          </ul>
+          
+          <p style="margin-top:16px;"><strong>Abholcode:</strong></p>
+          <p>Abholcode = Zahlungs- & Abholnachweis. Abwicklungsgebühr fällt auch bei Nicht-Abholung an.</p>
+          
+          <p style="margin-top:16px;"><strong>Verantwortung:</strong></p>
+          <p>Anbieter ist verantwortlich für Inhalte/Speisen/gesetzliche Vorgaben.</p>
+          
+          <p style="margin-top:16px;"><strong>Support:</strong></p>
+          <p><a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a></p>
+        </div>
+      </div>
+    </section>
+      
       <div id="provFaqBox" style="display:none;">
         <div class="panel">
           <div class="section-title">FAQ (Anbieter)</div>
@@ -2036,6 +2225,25 @@
 
 <!-- Legal Sheets (Impressum, AGB, Datenschutz) -->
 <div class="backdrop" id="legalBd" onclick="closeLegalSheet()"></div>
+<!-- AGB Onboarding Modal (1-Screen) -->
+<div class="backdrop" id="agbOnboardingBd" onclick="closeAgbOnboardingModal()"></div>
+<div class="sheet" id="agbOnboardingSheet">
+  <div class="handle"></div>
+  <div class="sheet-body" style="padding:24px;">
+    <div id="agbOnboardingContent">
+      <!-- Wird dynamisch befüllt -->
+    </div>
+    <div style="display:flex; gap:12px; margin-top:20px;">
+      <button class="btn" type="button" id="btnAgbOnboardingAccept" style="flex:1; min-height:56px;">
+        Akzeptieren
+      </button>
+      <button class="btn secondary" type="button" id="btnAgbOnboardingCancel" style="flex:1; min-height:56px;">
+        Abbrechen
+      </button>
+    </div>
+  </div>
+</div>
+
 <div class="sheet" id="legalSheet">
   <div class="handle"></div>
   <div class="sheet-body" style="max-height:80vh; overflow-y:auto;">
@@ -2066,8 +2274,8 @@
     <div style="font-size:48px; font-weight:900; font-family:monospace; color:var(--brand); margin-bottom:12px; text-align:center; line-height:1;" id="pickupConfirmCode">–</div>
     <div style="font-size:16px; color:var(--muted); margin-bottom:24px; text-align:center;" id="pickupConfirmDish">–</div>
     <div style="display:flex; flex-direction:column; gap:12px;">
-      <button class="btn" type="button" id="btnPickupConfirmYes" style="width:100%; min-height:50px; font-size:16px;">
-        ✅ Abgeholt
+      <button class="btn" type="button" id="btnPickupConfirmYes" style="width:100%; min-height:56px; font-size:16px; font-weight:600;">
+        Als abgeholt markieren
       </button>
       <button class="btn secondary" type="button" id="btnPickupConfirmNo" style="width:100%; min-height:50px; font-size:16px;">
         ❓ Doch nicht
@@ -2435,8 +2643,9 @@
 
   // --- State ---
   let mode = load(LS.mode, 'customer'); // 'start' | 'customer' | 'provider' (Standard: 'customer' für Discover-Seite)
-  // Angebote werden später durch seed() überschrieben, daher hier leer initialisieren
-  let offers = [];
+  // Angebote werden später durch seedExampleData() oder seed() geladen
+  // Zuerst aus localStorage laden, falls vorhanden
+  let offers = load(LS.offers, []);
   const legacyFavs = load(LS.favs, []);
   let providerFavs = new Set(load(LS.providerFavs, legacyFavs));
   let dishFavs = new Set(load(LS.dishFavs, []));
@@ -2544,6 +2753,323 @@
       {id: cryptoId(), providerId: 'p_greengarden', providerName: 'Green Garden', address: 'Marktplatz 7, 73728 Esslingen', title: 'Gemüse-Curry', price: 8.60, time: '11:00 – 14:00', diet: 'Vegan', day: today, img: 'https://images.unsplash.com/photo-1546069901-d5bfd2cbfb1f?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 3},
     ];
     save(LS.offers, offers);
+  }
+
+  // --- Beispieldaten: 10 Anbieter mit je 3 Gerichten und 10 Abholcodes ---
+  function seedExampleData(){
+    const today = isoDate(new Date());
+    const providerNames = [
+      {id: 'p_01', name: 'Pizzeria Bella Vista', address: 'Hauptstraße 45, 70173 Stuttgart', street: 'Hauptstraße 45', zip: '70173', city: 'Stuttgart'},
+      {id: 'p_02', name: 'Asia Wok Express', address: 'Neckarhalde 8, 72070 Tübingen', street: 'Neckarhalde 8', zip: '72070', city: 'Tübingen'},
+      {id: 'p_03', name: 'Burger House', address: 'Wilhelmstraße 12, 71634 Ludwigsburg', street: 'Wilhelmstraße 12', zip: '71634', city: 'Ludwigsburg'},
+      {id: 'p_04', name: 'Green Garden', address: 'Marktplatz 7, 73728 Esslingen', street: 'Marktplatz 7', zip: '73728', city: 'Esslingen'},
+      {id: 'p_05', name: 'La Trattoria', address: 'Königstraße 23, 70173 Stuttgart', street: 'Königstraße 23', zip: '70173', city: 'Stuttgart'},
+      {id: 'p_06', name: 'Sushi Bar Tokyo', address: 'Eberhardstraße 15, 72072 Tübingen', street: 'Eberhardstraße 15', zip: '72072', city: 'Tübingen'},
+      {id: 'p_07', name: 'Curry & Co', address: 'Bahnhofstraße 8, 71634 Ludwigsburg', street: 'Bahnhofstraße 8', zip: '71634', city: 'Ludwigsburg'},
+      {id: 'p_08', name: 'Veggie Delight', address: 'Hafenstraße 12, 73728 Esslingen', street: 'Hafenstraße 12', zip: '73728', city: 'Esslingen'},
+      {id: 'p_09', name: 'Steakhouse Premium', address: 'Schillerplatz 5, 70173 Stuttgart', street: 'Schillerplatz 5', zip: '70173', city: 'Stuttgart'},
+      {id: 'p_10', name: 'Bio Bistro', address: 'Münzgasse 3, 72070 Tübingen', street: 'Münzgasse 3', zip: '72070', city: 'Tübingen'}
+    ];
+
+    const dishTemplates = [
+      // Verschiedene Kategorien
+      {dish: 'Kürbissuppe', category: 'Vegan', price: 6.50, img: 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=1200&q=60'},
+      {dish: 'Pasta Carbonara', category: 'Mit Fleisch', price: 8.80, img: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=1200&q=60'},
+      {dish: 'Salat Bowl', category: 'Vegetarisch', price: 7.90, img: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1200&q=60'},
+      {dish: 'Hähnchen Teriyaki', category: 'Mit Fleisch', price: 9.20, img: 'https://images.unsplash.com/photo-1603133872878-684f208fb84b?auto=format&fit=crop&w=1200&q=60'},
+      {dish: 'Falafel Teller', category: 'Vegan', price: 7.50, img: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?auto=format&fit=crop&w=1200&q=60'},
+      {dish: 'Käsespätzle', category: 'Vegetarisch', price: 7.20, img: 'https://images.unsplash.com/photo-1546069901-d5bfd2cbfb1f?auto=format&fit=crop&w=1200&q=60'},
+      {dish: 'Pizza Margherita', category: 'Vegetarisch', price: 8.50, img: 'https://images.unsplash.com/photo-1571997478779-2adcbbe9ab2f?auto=format&fit=crop&w=1200&q=60'},
+      {dish: 'Lachs mit Gemüse', category: 'Fisch', price: 10.50, img: 'https://images.unsplash.com/photo-1559314809-0d155014e29e?auto=format&fit=crop&w=1200&q=60'},
+      {dish: 'Veggie Burger', category: 'Vegan', price: 7.90, img: 'https://images.unsplash.com/photo-1525059696034-4967a7290027?auto=format&fit=crop&w=1200&q=60'},
+      {dish: 'Schnitzel mit Pommes', category: 'Mit Fleisch', price: 9.80, img: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=1200&q=60'},
+      {dish: 'Quinoa-Salat', category: 'Vegan', price: 8.20, img: 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=1200&q=60'},
+      {dish: 'Thunfisch-Steak', category: 'Fisch', price: 11.20, img: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=1200&q=60'},
+      {dish: 'Gulasch mit Spätzle', category: 'Mit Fleisch', price: 9.50, img: 'https://images.unsplash.com/photo-1606755962773-d324e0a13086?auto=format&fit=crop&w=1200&q=60'},
+      {dish: 'Gemüse-Curry', category: 'Vegan', price: 8.60, img: 'https://images.unsplash.com/photo-1546069901-d5bfd2cbfb1f?auto=format&fit=crop&w=1200&q=60'},
+      {dish: 'Risotto ai Funghi', category: 'Vegetarisch', price: 8.90, img: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=1200&q=60'},
+      {dish: 'Sushi Platte', category: 'Fisch', price: 12.50, img: 'https://images.unsplash.com/photo-1559314809-0d155014e29e?auto=format&fit=crop&w=1200&q=60'},
+      {dish: 'Steak mit Beilagen', category: 'Mit Fleisch', price: 13.90, img: 'https://images.unsplash.com/photo-1606755962773-d324e0a13086?auto=format&fit=crop&w=1200&q=60'},
+      {dish: 'Buddha Bowl', category: 'Vegan', price: 8.80, img: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1200&q=60'},
+      {dish: 'Caprese Salat', category: 'Vegetarisch', price: 7.40, img: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=1200&q=60'},
+      {dish: 'Fischfilet mit Kartoffeln', category: 'Fisch', price: 10.80, img: 'https://images.unsplash.com/photo-1559314809-0d155014e29e?auto=format&fit=crop&w=1200&q=60'},
+      {dish: 'Chili con Carne', category: 'Mit Fleisch', price: 8.70, img: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=1200&q=60'},
+      {dish: 'Avocado-Bowl', category: 'Vegan', price: 9.50, img: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1200&q=60'},
+      {dish: 'Mozzarella-Pasta', category: 'Vegetarisch', price: 8.30, img: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=1200&q=60'},
+      {dish: 'Lachs-Tartar', category: 'Fisch', price: 11.90, img: 'https://images.unsplash.com/photo-1559314809-0d155014e29e?auto=format&fit=crop&w=1200&q=60'},
+      {dish: 'Hamburger Classic', category: 'Mit Fleisch', price: 8.90, img: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=1200&q=60'},
+      {dish: 'Tofu-Wrap', category: 'Vegan', price: 7.60, img: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?auto=format&fit=crop&w=1200&q=60'},
+      {dish: 'Gemüse-Lasagne', category: 'Vegetarisch', price: 9.20, img: 'https://images.unsplash.com/photo-1546069901-d5bfd2cbfb1f?auto=format&fit=crop&w=1200&q=60'},
+      {dish: 'Forelle blau', category: 'Fisch', price: 10.40, img: 'https://images.unsplash.com/photo-1559314809-0d155014e29e?auto=format&fit=crop&w=1200&q=60'},
+      {dish: 'Rinderbraten', category: 'Mit Fleisch', price: 12.50, img: 'https://images.unsplash.com/photo-1606755962773-d324e0a13086?auto=format&fit=crop&w=1200&q=60'},
+      {dish: 'Power-Smoothie Bowl', category: 'Vegan', price: 6.90, img: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1200&q=60'}
+    ];
+
+    const newOffers = [];
+    const newCookbook = [];
+    const newOrders = [];
+
+    providerNames.forEach((provider, pIdx) => {
+      // 3 Gerichte pro Provider (verschiedene Kategorien)
+      const dishIndices = [
+        (pIdx * 3) % dishTemplates.length,
+        ((pIdx * 3 + 1) % dishTemplates.length),
+        ((pIdx * 3 + 2) % dishTemplates.length)
+      ];
+
+      dishIndices.forEach((dishIdx, dIdx) => {
+        const template = dishTemplates[dishIdx];
+        const cookbookId = cryptoId();
+        const offerId = cryptoId();
+
+        // Kochbuch-Eintrag
+        newCookbook.push({
+          id: cookbookId,
+          providerId: provider.id,
+          dish: template.dish,
+          category: template.category,
+          price: template.price,
+          allergens: [],
+          extras: [],
+          reuse: {enabled: false, deposit: 0},
+          photoData: template.img,
+          hasPickupCode: true,
+          dineInPossible: true,
+          createdAt: Date.now() - (pIdx * 86400000) - (dIdx * 3600000),
+          lastUsed: Date.now() - (pIdx * 86400000) - (dIdx * 3600000)
+        });
+
+        // Offer (Inserat für heute)
+        newOffers.push({
+          id: offerId,
+          providerId: provider.id,
+          providerName: provider.name,
+          providerStreet: provider.street,
+          providerZip: provider.zip,
+          providerCity: provider.city,
+          address: provider.address,
+          dish: template.dish,
+          category: template.category,
+          price: template.price,
+          pickupWindow: '11:30 – 14:00',
+          day: today,
+          imageUrl: template.img,
+          hasPickupCode: true,
+          dineInPossible: true,
+          allergens: [],
+          extras: [],
+          reuse: {enabled: false, deposit: 0},
+          active: true,
+          createdAt: Date.now() - (pIdx * 3600000) - (dIdx * 600000)
+        });
+      });
+    });
+
+    // Zuerst Offers speichern, damit assignPickupCode sie verwenden kann
+    // WICHTIG: Ersetze alte Offers, damit keine Duplikate entstehen
+    offers = [...newOffers];
+    save(LS.offers, offers);
+
+    // Jetzt Bestellungen mit Abholcodes erstellen
+    providerNames.forEach((provider, pIdx) => {
+      const dishIndices = [
+        (pIdx * 3) % dishTemplates.length,
+        ((pIdx * 3 + 1) % dishTemplates.length),
+        ((pIdx * 3 + 2) % dishTemplates.length)
+      ];
+
+      dishIndices.forEach((dishIdx, dIdx) => {
+        const template = dishTemplates[dishIdx];
+        // Finde das entsprechende Offer
+        const offer = newOffers.find(o => 
+          o.providerId === provider.id && 
+          o.dish === template.dish
+        );
+        if(!offer) return;
+
+        // 10 Bestellungen pro Provider (mit Abholcodes)
+        // Verteilung: 3-4 pro Gericht
+        const ordersPerDish = dIdx === 0 ? 4 : (dIdx === 1 ? 3 : 3);
+        for(let o = 0; o < ordersPerDish; o++){
+          const orderId = cryptoId();
+          const pickupCode = assignPickupCode({
+            providerId: provider.id,
+            pickupDate: today,
+            dishId: offer.id
+          });
+
+          newOrders.push({
+            id: orderId,
+            createdAt: Date.now() - (pIdx * 3600000) - (dIdx * 600000) - (o * 60000),
+            updatedAt: Date.now() - (pIdx * 3600000) - (dIdx * 600000) - (o * 60000),
+            dishId: offer.id,
+            dishName: template.dish,
+            providerId: provider.id,
+            providerName: provider.name,
+            providerAddress: provider.address,
+            quantity: 1,
+            unitPrice: Math.round(template.price * 100), // in cents
+            total: Math.round(template.price * 100),
+            fulfillType: 'PICKUP',
+            status: 'PAID',
+            currency: 'EUR',
+            pickupCode: pickupCode.pickupCode,
+            pickupCodeActivatedAt: Date.now() - (pIdx * 3600000) - (dIdx * 600000) - (o * 60000),
+            pickupDate: today,
+            pickupWindow: '11:30 – 14:00',
+            dishLetter: pickupCode.dishLetter,
+            runningNumber: pickupCode.runningNumber,
+            offerId: offer.id,
+            isGuest: false
+          });
+        }
+      });
+    });
+
+    // Speichern (Offers bereits oben gespeichert)
+    cookbook = [...cookbook, ...newCookbook];
+    save(LS.cookbook, cookbook);
+
+    const existingOrders = loadOrders();
+    const allOrders = [...existingOrders, ...newOrders];
+    saveOrders(allOrders);
+
+    console.log(`✅ Beispieldaten erstellt: ${providerNames.length} Anbieter, ${newCookbook.length} Kochbuch-Einträge, ${newOffers.length} Inserate, ${newOrders.length} Bestellungen`);
+    return {providers: providerNames.length, cookbook: newCookbook.length, offers: newOffers.length, orders: newOrders.length};
+  }
+
+  // --- Test-Funktion für Abholcode-Logik ---
+  function testPickupCodeLogic(){
+    console.log('🧪 Teste Abholcode-Logik...');
+    const today = isoDate(new Date());
+    
+    // Test 1: Prüfe ob Beispieldaten vorhanden sind
+    const allOrders = loadOrders();
+    const allOffers = offers;
+    const todayOrders = allOrders.filter(o => o.pickupDate === today && o.status === 'PAID');
+    const todayOffers = allOffers.filter(o => o.day === today && o.active !== false);
+    
+    console.log(`📊 Test 1 - Daten vorhanden:`);
+    console.log(`  - Heutige Bestellungen: ${todayOrders.length}`);
+    console.log(`  - Heutige Inserate: ${todayOffers.length}`);
+    
+    if(todayOrders.length === 0){
+      console.warn('⚠️ Keine Bestellungen für heute gefunden. seedExampleData() ausführen?');
+      return false;
+    }
+    
+    // Test 2: Prüfe Abholcode-Format
+    console.log(`\n📊 Test 2 - Abholcode-Format:`);
+    const codes = todayOrders.map(o => o.pickupCode).filter(Boolean);
+    const invalidCodes = codes.filter(c => !/^\d+[A-E]$/.test(c));
+    if(invalidCodes.length > 0){
+      console.error(`❌ Ungültige Codes gefunden: ${invalidCodes.join(', ')}`);
+      return false;
+    }
+    console.log(`  ✅ Alle ${codes.length} Codes haben gültiges Format (z.B. "1A", "2B")`);
+    
+    // Test 3: Prüfe Eindeutigkeit pro Provider/Tag
+    console.log(`\n📊 Test 3 - Eindeutigkeit pro Provider/Tag:`);
+    const providers = [...new Set(todayOrders.map(o => o.providerId))];
+    let allUnique = true;
+    providers.forEach(pid => {
+      const providerOrders = todayOrders.filter(o => o.providerId === pid);
+      const providerCodes = providerOrders.map(o => o.pickupCode);
+      const uniqueCodes = [...new Set(providerCodes)];
+      if(providerCodes.length !== uniqueCodes.length){
+        console.error(`❌ Provider ${pid}: Duplikate gefunden!`);
+        console.error(`  Codes: ${providerCodes.join(', ')}`);
+        allUnique = false;
+      } else {
+        console.log(`  ✅ Provider ${pid}: ${providerCodes.length} eindeutige Codes`);
+      }
+    });
+    if(!allUnique) return false;
+    
+    // Test 4: Prüfe dishLetter-Zuordnung
+    console.log(`\n📊 Test 4 - dishLetter-Zuordnung:`);
+    providers.forEach(pid => {
+      const providerOffers = todayOffers.filter(o => o.providerId === pid).sort((a,b) => (a.createdAt || 0) - (b.createdAt || 0));
+      const providerOrders = todayOrders.filter(o => o.providerId === pid);
+      
+      // Erwartete Letters: A, B, C (für 3 Gerichte)
+      const expectedLetters = ['A', 'B', 'C'];
+      const actualLetters = [...new Set(providerOrders.map(o => o.dishLetter).filter(Boolean))].sort();
+      
+      console.log(`  Provider ${pid}:`);
+      console.log(`    - Inserate: ${providerOffers.length} (erwartet: 3)`);
+      console.log(`    - Bestellungen: ${providerOrders.length} (erwartet: 10)`);
+      console.log(`    - dishLetters: ${actualLetters.join(', ')} (erwartet: A, B, C)`);
+      
+      // Prüfe ob Letters korrekt zugeordnet sind
+      providerOffers.forEach((offer, idx) => {
+        const expectedLetter = expectedLetters[idx] || 'A';
+        const ordersForOffer = providerOrders.filter(o => o.offerId === offer.id);
+        const lettersForOffer = [...new Set(ordersForOffer.map(o => o.dishLetter))];
+        if(lettersForOffer.length !== 1 || lettersForOffer[0] !== expectedLetter){
+          console.warn(`    ⚠️ Offer "${offer.dish}" hat unerwartete Letters: ${lettersForOffer.join(', ')} (erwartet: ${expectedLetter})`);
+        } else {
+          console.log(`    ✅ Offer "${offer.dish}": Letter ${expectedLetter}, ${ordersForOffer.length} Bestellungen`);
+        }
+      });
+    });
+    
+    // Test 5: Prüfe runningNumber-Sequenz
+    console.log(`\n📊 Test 5 - runningNumber-Sequenz:`);
+    providers.forEach(pid => {
+      const providerOrders = todayOrders.filter(o => o.providerId === pid);
+      const letters = ['A', 'B', 'C'];
+      letters.forEach(letter => {
+        const ordersForLetter = providerOrders.filter(o => o.dishLetter === letter).sort((a,b) => a.runningNumber - b.runningNumber);
+        if(ordersForLetter.length > 0){
+          const numbers = ordersForLetter.map(o => o.runningNumber);
+          const expected = Array.from({length: ordersForLetter.length}, (_, i) => i + 1);
+          const isSequential = JSON.stringify(numbers) === JSON.stringify(expected);
+          if(!isSequential){
+            console.error(`❌ Provider ${pid}, Letter ${letter}: Sequenz fehlerhaft!`);
+            console.error(`  Gefunden: ${numbers.join(', ')}`);
+            console.error(`  Erwartet: ${expected.join(', ')}`);
+          } else {
+            console.log(`  ✅ Provider ${pid}, Letter ${letter}: Sequenz korrekt (1-${numbers.length})`);
+          }
+        }
+      });
+    });
+    
+    // Test 6: Prüfe assignPickupCode Funktion direkt
+    console.log(`\n📊 Test 6 - assignPickupCode Funktion:`);
+    if(todayOffers.length > 0 && providers.length > 0){
+      const testProvider = providers[0];
+      const testOffers = todayOffers.filter(o => o.providerId === testProvider).sort((a,b) => (a.createdAt || 0) - (b.createdAt || 0));
+      if(testOffers.length > 0){
+        const testOffer = testOffers[0];
+        const testResult = assignPickupCode({
+          providerId: testProvider,
+          pickupDate: today,
+          dishId: testOffer.id
+        });
+        console.log(`  Test für Provider ${testProvider}, Offer "${testOffer.dish}":`);
+        console.log(`    - dishLetter: ${testResult.dishLetter} (erwartet: A)`);
+        console.log(`    - runningNumber: ${testResult.runningNumber}`);
+        console.log(`    - pickupCode: ${testResult.pickupCode}`);
+        
+        const existingCount = todayOrders.filter(o => 
+          o.providerId === testProvider && 
+          o.pickupDate === today && 
+          o.dishLetter === testResult.dishLetter &&
+          o.status === 'PAID'
+        ).length;
+        const expectedRunningNumber = existingCount + 1;
+        if(testResult.runningNumber === expectedRunningNumber){
+          console.log(`    ✅ runningNumber korrekt (${testResult.runningNumber} = ${existingCount} + 1)`);
+        } else {
+          console.error(`    ❌ runningNumber falsch! Gefunden: ${testResult.runningNumber}, Erwartet: ${expectedRunningNumber}`);
+        }
+      }
+    }
+    
+    console.log(`\n✅ Alle Tests abgeschlossen!`);
+    return true;
   }
 
   // --- UI helpers ---
@@ -2712,7 +3238,8 @@
     pickupCode:'v-pickup-code', // Neuer AbholcodeScreen
     providerLogin:'v-provider-login',
     providerHome:'v-provider-home', providerPickups:'v-provider-pickups', providerCookbook:'v-provider-cookbook',
-    providerProfile:'v-provider-profile', providerBilling:'v-provider-billing', providerWeek:'v-provider-week'
+    providerProfile:'v-provider-profile', providerBilling:'v-provider-billing', providerWeek:'v-provider-week',
+    legalImpressum:'v-legal-impressum', legalAgbKurz:'v-legal-agb-kurz', legalDatenschutz:'v-legal-datenschutz', legalAnbieterFaq:'v-legal-anbieter-faq', legalAgbOnboarding:'v-legal-agb-onboarding'
   };
 
   function setCustomerNavActive(go){
@@ -3993,6 +4520,12 @@
   
   // Android Hardware-Back unterstützen
   window.addEventListener('popstate', function(e){
+    // AGB Onboarding Modal schließen
+    if(document.getElementById('agbOnboardingSheet') && document.getElementById('agbOnboardingSheet').classList.contains('active')){
+      closeAgbOnboardingModal();
+      e.preventDefault();
+      return;
+    }
     // Fullscreen Code Modal schließen
     if(document.getElementById('fullscreenCode') && document.getElementById('fullscreenCode').classList.contains('active')){
       closeFullscreenCode();
@@ -4250,16 +4783,13 @@
     createFlowPreselectedDate = null;
   }
   
-  // Create Flow Handlers
+  // Create Flow Handlers - Beide öffnen Master-Flow
   const btnCreateFromCookbook = document.getElementById('btnCreateFromCookbook');
   if(btnCreateFromCookbook){
     btnCreateFromCookbook.onclick = () => {
       closeCreateFlowSheet();
-      // Open cookbook selection with date preselected
-      // Navigate to cookbook and show selection
+      // Navigate to cookbook - user selects entry there, then "Inserieren" opens Master-Flow
       showProviderCookbook();
-      // TODO: Highlight cookbook entries and pass date when creating offer
-      // For now, user selects from cookbook and date will be preselected in wizard
     };
   }
   
@@ -4267,7 +4797,8 @@
   if(btnCreateNewDish){
     btnCreateNewDish.onclick = () => {
       closeCreateFlowSheet();
-      startWizard('listing', {date: createFlowPreselectedDate});
+      // Open Master-Flow directly (new dish)
+      startListingFlow({date: createFlowPreselectedDate});
     };
   }
   
@@ -4279,7 +4810,7 @@
     const actions = [
       {label: 'Bearbeiten', action: () => {
         closeCreateFlowSheet(); // Falls offen
-        startWizard('listing', {editOfferId: offerId});
+        startListingFlow({editOfferId: offerId});
       }},
       {label: 'Duplizieren', action: () => {
         const newOffer = {...offer, id: cryptoId(), createdAt: Date.now()};
@@ -5272,6 +5803,54 @@
   };
 
   // Rechtliches
+  // --- AGB Onboarding Modal (1-Screen) ---
+  function openAgbOnboardingModal(callback){
+    const content = document.getElementById('agbOnboardingContent');
+    if(!content) return;
+    
+    content.innerHTML = `
+      <h2 style="font-size:20px; font-weight:900; margin-bottom:16px;">AGB (Kurzfassung)</h2>
+      <div style="line-height:1.7; font-size:14px; max-height:60vh; overflow-y:auto; padding-right:8px;">
+        <p><strong>Mittagio ist Plattform, nicht Verkäufer</strong></p>
+        <p>Mittagio vermittelt Mittagsangebote lokaler Anbieter. Vertragspartner bei Bestellungen ist ausschließlich der jeweilige Anbieter.</p>
+        
+        <p style="margin-top:16px;"><strong>Kosten:</strong></p>
+        <ul style="padding-left:20px; margin:8px 0;">
+          <li>4,99 € zzgl. MwSt. pro Veröffentlichung</li>
+          <li>0,89 € zzgl. MwSt. pro Online-Bestellung inkl. aller Bank- & Zahlungsgebühren (pro Bestellung, egal wie viele Gerichte)</li>
+        </ul>
+        
+        <p style="margin-top:16px;"><strong>Abholcode:</strong></p>
+        <p>Abholcode = Zahlungs- & Abholnachweis. Abwicklungsgebühr fällt auch bei Nicht-Abholung an.</p>
+        
+        <p style="margin-top:16px;"><strong>Verantwortung:</strong></p>
+        <p>Anbieter ist verantwortlich für Inhalte/Speisen/gesetzliche Vorgaben.</p>
+        
+        <p style="margin-top:16px;"><strong>Support:</strong></p>
+        <p><a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a></p>
+      </div>
+    `;
+    
+    document.getElementById('agbOnboardingBd').classList.add('active');
+    document.getElementById('agbOnboardingSheet').classList.add('active');
+    
+    const acceptBtn = document.getElementById('btnAgbOnboardingAccept');
+    const cancelBtn = document.getElementById('btnAgbOnboardingCancel');
+    if(acceptBtn) acceptBtn.onclick = () => {
+      closeAgbOnboardingModal();
+      if(callback) callback(true);
+    };
+    if(cancelBtn) cancelBtn.onclick = () => {
+      closeAgbOnboardingModal();
+      if(callback) callback(false);
+    };
+  }
+  
+  function closeAgbOnboardingModal(){
+    document.getElementById('agbOnboardingBd').classList.remove('active');
+    document.getElementById('agbOnboardingSheet').classList.remove('active');
+  }
+  
   // --- Legal Sheets (Impressum, AGB, Datenschutz) ---
   function openLegalSheet(type){
     const content = document.getElementById('legalContent');
@@ -5294,7 +5873,7 @@
             Deutschland
           </p>
           <p style="margin-top:16px;">
-            <strong>E-Mail:</strong> <a href="mailto:info@mittagio.de" style="color:var(--brand);">info@mittagio.de</a>
+            <strong>E-Mail:</strong> <a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a>
           </p>
           <p style="margin-top:20px; padding-top:20px; border-top:1px solid #eee; font-size:13px; color:#666;">
             <strong>Unternehmensform:</strong> Einzelunternehmen<br>
@@ -5339,7 +5918,7 @@
           <p style="margin-bottom:20px;">Mittagio behält sich vor, diese AGB anzupassen, wenn sich Funktionen oder rechtliche Rahmenbedingungen ändern.</p>
           
           <p style="margin-bottom:16px;"><strong>10. Kontakt</strong></p>
-          <p style="margin-bottom:20px;">Bei Fragen zur Nutzung der Plattform: <a href="mailto:info@mittagio.de" style="color:var(--brand);">info@mittagio.de</a></p>
+          <p style="margin-bottom:20px;">Bei Fragen zur Nutzung der Plattform: <a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a></p>
           
           <p style="margin-top:24px; padding-top:20px; border-top:1px solid #eee; font-size:12px; color:#666;">
             <strong>Stand:</strong> Januar 2026
@@ -5480,7 +6059,7 @@
       </details>
       <details>
         <summary style="font-size:15px; line-height:1.4; font-weight:500; padding:12px 0;">Kontakt</summary>
-        <p style="font-size:14px; line-height:1.5; margin-top:8px; padding-bottom:12px; color:var(--muted);">Bei Fragen schreib uns an <a href="mailto:info@mittagio.de" style="color:var(--muted);">info@mittagio.de</a></p>
+        <p style="font-size:14px; line-height:1.5; margin-top:8px; padding-bottom:12px; color:var(--muted);">Bei Fragen schreib uns an <a href="mailto:support@mittagio.de" style="color:var(--muted);">support@mittagio.de</a></p>
       </details>
     `;
     
@@ -5505,13 +6084,13 @@
   const btnDatenschutz = document.getElementById('btnDatenschutz');
   if(btnDatenschutz) btnDatenschutz.onclick=()=>{ openLegalSheet('datenschutz'); };
   
-  // Profile Legal Links (neue IDs)
+  // Profile Legal Links - öffnen statische Seiten
   const btnProfileImpressum = document.getElementById('btnProfileImpressum');
-  if(btnProfileImpressum) btnProfileImpressum.onclick=(e)=>{ e.preventDefault(); openLegalSheet('impressum'); };
+  if(btnProfileImpressum) btnProfileImpressum.onclick=(e)=>{ e.preventDefault(); showLegalPage('impressum'); };
   const btnProfileAGB = document.getElementById('btnProfileAGB');
-  if(btnProfileAGB) btnProfileAGB.onclick=(e)=>{ e.preventDefault(); openLegalSheet('agb'); };
+  if(btnProfileAGB) btnProfileAGB.onclick=(e)=>{ e.preventDefault(); showLegalPage('agb-kurz'); };
   const btnProfileDatenschutz = document.getElementById('btnProfileDatenschutz');
-  if(btnProfileDatenschutz) btnProfileDatenschutz.onclick=(e)=>{ e.preventDefault(); openLegalSheet('datenschutz'); };
+  if(btnProfileDatenschutz) btnProfileDatenschutz.onclick=(e)=>{ e.preventDefault(); showLegalPage('datenschutz'); };
   
   // FAQ Expand Button (Text Link) - öffnet Modal
   const btnProfileShowMoreFaq = document.getElementById('btnProfileShowMoreFaq');
@@ -5760,7 +6339,7 @@
           if(el.tagName !== 'BUTTON'){
             el.onclick = () => {
               const offerId = el.dataset.offerId;
-              startWizard('listing', {editOfferId: offerId});
+              startListingFlow({editOfferId: offerId});
             };
           }
         });
@@ -5907,7 +6486,7 @@
         <button class="btn secondary" type="button" id="btnWeekAdd">Inserat hinzufügen</button>
       `;
       const addBtn = document.getElementById('btnWeekAdd');
-      if(addBtn) addBtn.onclick=()=> startWizard('listing');
+      if(addBtn) addBtn.onclick=()=> startListingFlow({});
       return;
     }
     list.innerHTML = items.map(i=>`• ${esc(i.dish)}`).join('<br>');
@@ -6090,7 +6669,7 @@
     // Filter Toggle
     filterEl.innerHTML='';
     [
-      {id:'offen', label:'Offen'},
+      {id:'offen', label:'Bezahlt'},
       {id:'abgeholt', label:'Abgeholt'}
     ].forEach(f=>{
       const b=document.createElement('button');
@@ -6154,8 +6733,8 @@
         <div style="flex:1; min-width:0;">
           <div style="font-weight:600; font-size:16px; line-height:1.3; margin-bottom:6px;">${esc(p.dishName)}</div>
           <div style="font-size:14px; color:var(--muted); margin-bottom:6px;">${esc(p.pickupTime || '')}</div>
-          <div style="font-size:13px; color:${isPickedUp ? 'var(--muted)' : 'var(--brand)'}; font-weight:500; display:flex; align-items:center; gap:4px;">
-            ${isPickedUp ? '✅ Abgeholt' : '⏳ Offen'}
+          <div style="font-size:13px; color:${isPickedUp ? 'var(--muted)' : '#2e7d32'}; font-weight:500; display:flex; align-items:center; gap:4px;">
+            ${isPickedUp ? '✅ Abgeholt' : '🟢 Bezahlt'}
           </div>
         </div>
       `;
@@ -6267,6 +6846,30 @@
   }
 
   function renderBilling(){
+    // Kosten-Info-Box (ganz oben)
+    const costInfoEl = document.getElementById('billingCostInfo');
+    if(costInfoEl){
+      costInfoEl.innerHTML = `
+        <div style="font-weight:600; font-size:16px; margin-bottom:12px; color:#2e7d32;">Kosten – kurz erklärt</div>
+        <div style="font-size:14px; line-height:1.6; color:#333; margin-bottom:8px;">
+          <div style="margin-bottom:8px;">
+            <strong>4,99 € zzgl. MwSt.</strong> pro Veröffentlichung
+          </div>
+          <div>
+            <strong>0,89 € zzgl. MwSt.</strong> pro Bestellung für Online-Zahlung & Abholcode<br>
+            <span style="font-size:12px; color:#666; font-style:italic;">
+              inkl. aller Bank- & Zahlungsgebühren · gilt pro Bestellung (egal wie viele Gerichte)
+            </span>
+          </div>
+        </div>
+        <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
+          <a href="#/anbieter-faq" onclick="showLegalPage('anbieter-faq'); return false;" style="font-size:13px; color:var(--brand); text-decoration:none;">Anbieter-FAQ</a>
+          <span style="color:#ccc;">·</span>
+          <a href="#/datenschutz" onclick="showLegalPage('datenschutz'); return false;" style="font-size:13px; color:var(--brand); text-decoration:none;">Datenschutz</a>
+        </div>
+      `;
+    }
+    
     const amountEl = document.getElementById('billingAmount');
     const lastEl = document.getElementById('billingLast');
     const filtersEl = document.getElementById('billingFilters');
@@ -6347,18 +6950,33 @@
     window.location.href = 'mailto:support@mittagio.de';
   };
 
-  // Provider Legal Links (gleiche Sheets wie für Kunden)
+  // Legal Pages Navigation (statische Seiten)
+  function showLegalPage(page){
+    const pageMap = {
+      'impressum': 'v-legal-impressum',
+      'agb-kurz': 'v-legal-agb-kurz',
+      'datenschutz': 'v-legal-datenschutz',
+      'anbieter-faq': 'v-legal-anbieter-faq'
+    };
+    const viewId = pageMap[page];
+    if(viewId){
+      showView(viewId);
+      window.scrollTo({top:0, behavior:'smooth'});
+    }
+  }
+
+  // Provider Legal Links - öffnen statische Seiten
   document.getElementById('btnLegalImprint').onclick=()=>{
-    openLegalSheet('impressum');
+    showLegalPage('impressum');
   };
   document.getElementById('btnLegalPrivacy').onclick=()=>{
-    openLegalSheet('datenschutz');
+    showLegalPage('datenschutz');
   };
   document.getElementById('btnLegalTerms').onclick=()=>{
-    openLegalSheet('agb');
+    showLegalPage('agb-kurz');
   };
   document.getElementById('btnLegalPricing').onclick=()=>{
-    alert('Preise & Konditionen (Demo): Link folgt.');
+    showLegalPage('anbieter-faq');
   };
 
   // --- Provider actions (alte Buttons entfernt, jetzt über Create Flow Sheet) ---
@@ -6368,7 +6986,8 @@
   const btnFromCookbook = document.getElementById('btnFromCookbook');
   if(btnFromCookbook) btnFromCookbook.style.display = 'none';
   
-  document.getElementById('btnCookbookAdd').onclick=()=> startWizard('cookbook');
+  // Kochbuch: "+ Gericht hinzufügen" öffnet IMMER Master-Flow (kein cookbook-Wizard)
+  document.getElementById('btnCookbookAdd').onclick=()=> startListingFlow({});
   document.getElementById('btnProvSetup').onclick=()=> startWizard('provider');
   // btnOpenWeekPlan wird nicht mehr verwendet (Week Preview ist jetzt im Dashboard)
   const btnOpenWeekPlan = document.getElementById('btnOpenWeekPlan');
@@ -6382,7 +7001,7 @@
   document.getElementById('btnEditOffer').onclick=()=>{
     if(!activeProviderOfferId) return;
     closeProviderSheet();
-    startWizard('listing', {editOfferId: activeProviderOfferId});
+    startListingFlow({editOfferId: activeProviderOfferId});
   };
   document.getElementById('btnToggleOffer').onclick=()=>{
     if(!activeProviderOfferId) return;
@@ -6517,62 +7136,83 @@
         .slice(-1)[0];
       const sales = offers.filter(o=>o.providerId===providerId() && o.dish===entry.dish).length * 3;
 
+      // Optional: Bild anzeigen (falls vorhanden)
+      const imageHtml = entry.photoData ? `<img src="${esc(entry.photoData)}" alt="${esc(entry.dish)}" style="width:100%; height:120px; object-fit:cover; border-radius:12px; margin-bottom:8px;" />` : '';
+      // Optional: Kategorie-Badge
+      const categoryBadge = entry.category ? `<span style="font-size:11px; padding:2px 6px; background:rgba(0,0,0,.06); border-radius:6px; color:var(--muted);">${esc(entry.category)}</span>` : '';
+      
       item.innerHTML = `
-        <div style="font-weight:900">${esc(entry.dish||'Gericht')}</div>
-        <div class="hint">${esc(entry.category||'Vegetarisch')} · ${euro(entry.price||0)}</div>
-        <div class="cookbook-facts">
+        ${imageHtml}
+        <div style="font-weight:900; font-size:16px; margin-bottom:4px;">${esc(entry.dish||'Gericht')}</div>
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+          ${categoryBadge}
+          <span class="hint" style="font-size:13px;">${euro(entry.price||0)}</span>
+        </div>
+        <div class="cookbook-facts" style="font-size:12px; color:var(--muted);">
           ${isDraft ? 'Entwurf seit:' : 'Letzte Veröffentlichung:'}
-          <b>${esc(formatDayLabel(isDraft ? entry.createdAt : lastOnline))}</b><br>
-          Verkäufe (Mittagio, gesamt): <b>${sales}</b>
+          <b>${esc(formatDayLabel(isDraft ? entry.createdAt : lastOnline))}</b>
         </div>
       `;
 
       const actions=document.createElement('div');
       actions.className='cookbook-actions';
+      actions.style.cssText = 'display:flex; align-items:center; gap:8px; margin-top:12px;';
 
-      if(isDraft){
-        const cont=document.createElement('button');
-        cont.type='button';
-        cont.className='ans';
-        cont.textContent='Weiterführen';
-        cont.dataset.icon = 'plus';
-        cont.onclick=()=>{ startWizard('listing', {fromCookbookId: entry.id, date: createFlowPreselectedDate}); };
+      // Button: "Inserieren" (öffnet Master-Flow vorbefüllt)
+      const insertBtn=document.createElement('button');
+      insertBtn.type='button';
+      insertBtn.className='ans';
+      insertBtn.textContent='Inserieren';
+      insertBtn.dataset.icon = 'plus';
+      insertBtn.onclick=()=>{ startListingFlow({dishId: entry.id, date: createFlowPreselectedDate}); };
+      actions.appendChild(insertBtn);
 
-        const edit=document.createElement('button');
-        edit.type='button';
-        edit.className='ans';
-        edit.textContent='Bearbeiten';
-        edit.dataset.icon = 'edit';
-        edit.onclick=()=>{ startWizard('cookbook', {editId: entry.id}); };
+      // Button: "📅 In Wochenplan" (öffnet Master-Flow mit weekplan-context)
+      const weekPlanBtn=document.createElement('button');
+      weekPlanBtn.type='button';
+      weekPlanBtn.className='ans';
+      weekPlanBtn.textContent='📅 In Wochenplan';
+      weekPlanBtn.onclick=()=>{ startListingFlow({dishId: entry.id, source: 'weekplan'}); };
+      actions.appendChild(weekPlanBtn);
 
-        actions.appendChild(cont);
-        actions.appendChild(edit);
-      } else {
-        const create=document.createElement('button');
-        create.type='button';
-        create.className='ans';
-        create.textContent='Inserat erstellen';
-        create.dataset.icon = 'plus';
-        create.onclick=()=>{ startWizard('listing', {fromCookbookId: entry.id, date: createFlowPreselectedDate}); };
-
-        const edit=document.createElement('button');
-        edit.type='button';
-        edit.className='ans';
-        edit.textContent='Bearbeiten';
-        edit.dataset.icon = 'edit';
-        edit.onclick=()=>{ startWizard('cookbook', {editId: entry.id}); };
-
-        const print=document.createElement('button');
-        print.type='button';
-        print.className='ans';
-        print.textContent='Drucken';
-        print.dataset.icon = 'print';
-        print.onclick=()=>{ printCookbookEntry(entry); };
-
-        actions.appendChild(create);
-        actions.appendChild(edit);
-        actions.appendChild(print);
-      }
+      // Menü: "⋯" (Einstellungen: bearbeiten/pausieren/archivieren/löschen)
+      const menuBtn=document.createElement('button');
+      menuBtn.type='button';
+      menuBtn.className='btn ghost';
+      menuBtn.textContent='⋯';
+      menuBtn.style.cssText = 'padding:8px; min-width:36px; font-size:18px;';
+      menuBtn.onclick=(e)=>{
+        e.stopPropagation();
+        // Simple menu (später kann ein Sheet verwendet werden)
+        const menuActions = [
+          {label: 'Bearbeiten', action: () => startWizard('cookbook', {editId: entry.id})},
+          {label: 'Pausieren', action: () => {
+            // TODO: Implement pause/archive
+            alert('Pausieren (TODO)');
+          }},
+          {label: 'Archivieren', action: () => {
+            // TODO: Implement archive
+            alert('Archivieren (TODO)');
+          }},
+          {label: 'Löschen', action: () => {
+            if(confirm(`"${entry.dish}" wirklich löschen?`)){
+              const idx = cookbook.findIndex(c => c.id === entry.id);
+              if(idx >= 0){
+                cookbook.splice(idx, 1);
+                save(LS.cookbook, cookbook);
+                renderCookbook();
+                showToast('Gericht gelöscht');
+              }
+            }
+          }}
+        ];
+        const choice = prompt(`Aktion für "${entry.dish}":\n${menuActions.map((a,i) => `${i+1}. ${a.label}`).join('\n')}\n\nNummer eingeben:`);
+        const idx = parseInt(choice) - 1;
+        if(idx >= 0 && idx < menuActions.length){
+          menuActions[idx].action();
+        }
+      };
+      actions.appendChild(menuBtn);
       item.appendChild(actions);
       return item;
     };
@@ -6710,6 +7350,25 @@
     document.getElementById('wizard').classList.remove('active');
   }
 
+  /**
+   * MASTER INSERATSFLOW - Einziger Entry-Point
+   * Wird IMMER verwendet für:
+   * - Inserat erstellen
+   * - Gericht hinzufügen (Kochbuch)
+   * - Gericht hinzufügen (Wochenplan)
+   * KEINE Sonderflows bauen!
+   * 
+   * @param {Object} context
+   * @param {string} [context.source] - "cookbook" | "new" | undefined
+   * @param {string} [context.dishId] - Kochbuch-Eintrag ID (wenn aus Kochbuch)
+   * @param {string} [context.date] - Preselected date (ISO format)
+   * @param {string} [context.editOfferId] - Offer ID (wenn bearbeiten)
+   */
+  function startListingFlow(context = {}){
+    // Always use listing wizard (Master Flow)
+    startWizard('listing', context);
+  }
+
   function startWizard(kind, ctx={}){
     w = { kind, step:0, data:{}, ctx };
 
@@ -6718,6 +7377,8 @@
       buildProviderStep();
     }
     if(kind==='cookbook'){
+      // Cookbook editing only (not for creating new dishes)
+      // For creating new dishes, use startListingFlow() instead
       if(ctx.editId){
         const existing = cookbook.find(c=>c.id===ctx.editId);
         if(existing){ w.data = JSON.parse(JSON.stringify(existing)); }
@@ -6750,8 +7411,10 @@
       buildCookbookStep();
     }
     if(kind==='listing'){
+      // MASTER INSERATSFLOW - Always the same flow
       const profile = normalizeProviderProfile(provider.profile || {});
-      // if from cookbook
+      
+      // Case 1: Edit existing offer
       if(ctx.editOfferId){
         const existing = offers.find(o=>o.id===ctx.editOfferId);
         if(existing){
@@ -6769,20 +7432,51 @@
             reuse: o.reuse ? JSON.parse(JSON.stringify(o.reuse)) : {enabled:false, deposit:0},
             photoData: o.imageUrl || '',
             day: o.day,
-            active: o.active !== false
+            active: o.active !== false,
+            cookbookId: null
           };
         }
-      } else if(ctx.fromCookbookId){
-        const x = cookbook.find(c=>c.id===ctx.fromCookbookId);
+      } 
+      // Case 2: From cookbook (context.dishId or ctx.fromCookbookId)
+      else if(ctx.dishId || ctx.fromCookbookId){
+        const cookbookId = ctx.dishId || ctx.fromCookbookId;
+        const x = cookbook.find(c=>c.id===cookbookId);
         if(x){
+          // Prefill from cookbook entry
           w.data = {
-            ...JSON.parse(JSON.stringify(x)),
-            source:'cookbook',
+            providerId: providerId(),
+            dish: x.dish || '',
+            category: x.category || 'Vegetarisch',
+            price: Number(x.price||0),
+            pickupWindow: profile.mealWindow || DEFAULT_MEAL_WINDOW,
+            hasPickupCode: !!x.hasPickupCode,
+            dineInPossible: !!x.dineInPossible,
+            allergens: Array.isArray(x.allergens) ? [...x.allergens] : [],
+            extras: Array.isArray(x.extras) ? JSON.parse(JSON.stringify(x.extras)) : [],
+            reuse: x.reuse ? JSON.parse(JSON.stringify(x.reuse)) : {enabled:false, deposit:0},
+            photoData: x.photoData || '',
             cookbookId: x.id,
             day: ctx.date || createFlowPreselectedDate || isoDate(new Date())
           };
+        } else {
+          // Fallback: new dish
+          w.data = {
+            providerId: providerId(),
+            dish:'', category:'Vegetarisch', price:0,
+            pickupWindow: profile.mealWindow || DEFAULT_MEAL_WINDOW,
+            hasPickupCode:false,
+            dineInPossible:false,
+            allergens:[],
+            extras:[],
+            reuse:{enabled:false, deposit:0},
+            photoData:'',
+            cookbookId:null,
+            day: ctx.date || createFlowPreselectedDate || isoDate(new Date())
+          };
         }
-      } else {
+      } 
+      // Case 3: New dish (default)
+      else {
         w.data = {
           providerId: providerId(),
           dish:'', category:'Vegetarisch', price:0,
@@ -6793,17 +7487,16 @@
           extras:[],
           reuse:{enabled:false, deposit:0},
           photoData:'',
-          source:'new',
           cookbookId:null,
           day: ctx.date || createFlowPreselectedDate || isoDate(new Date())
         };
       }
+      
+      // Normalize data
       w.data.providerId = w.data.providerId || providerId();
       w.data.category = w.data.category || 'Vegetarisch';
       w.data.price = Number(w.data.price||0);
       w.data.pickupWindow = w.data.pickupWindow || profile.mealWindow || DEFAULT_MEAL_WINDOW;
-      w.data.source = w.data.source || 'new';
-      if(ctx.source){ w.data.source = ctx.source; }
       w.data.cookbookId = w.data.cookbookId || null;
       // Date preselect support
       if(ctx.date || createFlowPreselectedDate){
@@ -6819,7 +7512,8 @@
       buildListingStep();
     }
     if(kind==='week'){
-      // schedule cookbook item to a date
+      // Legacy: schedule cookbook item to a date
+      // Should use startListingFlow({dishId, date}) instead
       const x = cookbook.find(c=>c.id===ctx.fromCookbookId);
       if(!x){ alert('Bitte erst ein Gericht im Kochbuch speichern.'); return; }
       w.data = { cookbookId:x.id, date: isoDate(new Date()) };
@@ -7083,6 +7777,22 @@
     title.className = 'hint';
     title.textContent = 'Live-Vorschau';
     target.appendChild(title);
+    
+    // Badge und Subline für Online-Zahlung + Abholcode
+    if(w.data.hasPickupCode){
+      const badgeContainer = document.createElement('div');
+      badgeContainer.style.cssText = 'margin-bottom:12px; padding:12px; background:#f0f7f0; border-radius:12px; border:1px solid #4caf50;';
+      const badge = document.createElement('div');
+      badge.style.cssText = 'font-weight:600; font-size:14px; color:#2e7d32; margin-bottom:4px; display:flex; align-items:center; gap:6px;';
+      badge.innerHTML = '🟢 Online bezahlt · Abholung mit Abholcode';
+      const subline = document.createElement('div');
+      subline.style.cssText = 'font-size:12px; color:#666;';
+      subline.textContent = 'Zahlung läuft direkt über Mittagio';
+      badgeContainer.appendChild(badge);
+      badgeContainer.appendChild(subline);
+      target.appendChild(badgeContainer);
+    }
+    
     target.appendChild(offerCard(previewOfferFromWizard(), {interactive:false}));
     if(w.data.hasPickupCode){
       const note = document.createElement('div');
@@ -7105,6 +7815,14 @@
     if(wrap){ updateListingPreviewContent(wrap); }
   }
 
+  // ============================================================
+  // MASTER INSERATSFLOW
+  // Wird IMMER verwendet für:
+  // - Inserat erstellen
+  // - Gericht hinzufügen (Kochbuch)
+  // - Gericht hinzufügen (Wochenplan)
+  // KEINE Sonderflows bauen!
+  // ============================================================
   function buildListingStep(){
     setWizardNextDefault();
     const total = 8;
@@ -7132,81 +7850,49 @@
     }
 
     if(w.step===1){
-      setWizardQuestion('Gericht auswählen', 'Aus Kochbuch oder neu.');
+      // MASTER FLOW: Always start with dish name input (no "Aus Kochbuch/Neu" switch)
+      // If context.dishId is provided, prefill from cookbook
+      setWizardQuestion('Gericht', 'Wie heißt das Gericht?');
       const box=document.createElement('div');
-      const source=document.createElement('div'); source.className='answers';
-      const fromCb=document.createElement('button'); fromCb.type='button'; fromCb.className='ans'+(w.data.source==='cookbook'?' on':''); fromCb.textContent='Aus Kochbuch';
-      const fromNew=document.createElement('button'); fromNew.type='button'; fromNew.className='ans'+(w.data.source==='new'?' on':''); fromNew.textContent='Neu';
-      fromCb.onclick=()=>{ w.data.source='cookbook'; rebuildWizard(); };
-      fromNew.onclick=()=>{ w.data.source='new'; w.data.cookbookId=null; rebuildWizard(); };
-      source.appendChild(fromCb); source.appendChild(fromNew);
-      box.appendChild(source);
-
-      const applyEntry = (entry)=>{
-        w.data.dish = entry.dish || w.data.dish;
-        w.data.category = entry.category || w.data.category;
-        w.data.price = Number(entry.price||w.data.price||0);
-        w.data.allergens = Array.isArray(entry.allergens) ? [...entry.allergens] : [];
-        w.data.extras = Array.isArray(entry.extras) ? JSON.parse(JSON.stringify(entry.extras)) : [];
-        w.data.reuse = entry.reuse ? JSON.parse(JSON.stringify(entry.reuse)) : {enabled:false, deposit:0};
-        w.data.photoData = entry.photoData || '';
-        w.data.hasPickupCode = !!entry.hasPickupCode;
-        w.data.dineInPossible = !!entry.dineInPossible;
-        w.data.cookbookId = entry.id;
+      
+      // Check if we should prefill from cookbook
+      const cookbookEntry = w.data.cookbookId ? cookbook.find(c => c.id === w.data.cookbookId) : null;
+      const isFromCookbook = !!cookbookEntry;
+      
+      const input=document.createElement('input');
+      input.className='field';
+      input.placeholder='z.B. Kürbissuppe';
+      input.value=w.data.dish||'';
+      input.oninput=()=>{
+        w.data.dish = input.value;
+        const hit = DISH_SUGGESTIONS.find(d => d.name.toLowerCase() === input.value.trim().toLowerCase());
+        if(hit){ w.data.category = hit.category; }
+        refreshListingPreview();
       };
-
-      if(w.data.source==='cookbook'){
-        const mine = cookbook.filter(c=>c.providerId===providerId());
-        if(!mine.length){
-          const hint=document.createElement('div');
-          hint.className='hint';
-          hint.textContent='Noch keine Gerichte im Kochbuch.';
-          const add=document.createElement('button');
-          add.className='btn secondary';
-          add.type='button';
-          add.textContent='Gericht anlegen';
-          add.onclick=()=> startWizard('cookbook');
-          box.appendChild(document.createElement('div')).style.height='8px';
-          box.appendChild(hint);
-          box.appendChild(add);
-        } else {
-          const list=document.createElement('div'); list.className='answers';
-          mine.forEach(entry=>{
-            const b=document.createElement('button');
-            b.type='button';
-            b.className='ans'+(w.data.cookbookId===entry.id?' on':'');
-            b.textContent=entry.dish||'Gericht';
-            b.onclick=()=>{ applyEntry(entry); rebuildWizard(); };
-            list.appendChild(b);
-          });
-          box.appendChild(document.createElement('div')).style.height='8px';
-          box.appendChild(list);
-        }
-      } else {
-        const input=document.createElement('input');
-        input.className='field';
-        input.placeholder='z.B. Kürbissuppe';
-        input.value=w.data.dish||'';
-        input.oninput=()=>{
-          w.data.dish = input.value;
-          const hit = DISH_SUGGESTIONS.find(d => d.name.toLowerCase() === input.value.trim().toLowerCase());
-          if(hit){ w.data.category = hit.category; }
-          refreshListingPreview();
-        };
-        const suggest=document.createElement('div');
-        suggest.className='answers';
-        DISH_SUGGESTIONS.slice(0,6).forEach(s=>{
-          const b=document.createElement('button');
-          b.type='button';
-          b.className='ans';
-          b.textContent=s.name;
-          b.onclick=()=>{ w.data.dish = s.name; w.data.category = s.category; rebuildWizard(); };
-          suggest.appendChild(b);
-        });
-        box.appendChild(document.createElement('div')).style.height='8px';
-        box.appendChild(input);
-        box.appendChild(document.createElement('div')).style.height='8px';
-        box.appendChild(suggest);
+      
+      const suggest=document.createElement('div');
+      suggest.className='answers';
+      DISH_SUGGESTIONS.slice(0,6).forEach(s=>{
+        const b=document.createElement('button');
+        b.type='button';
+        b.className='ans';
+        b.textContent=s.name;
+        b.onclick=()=>{ w.data.dish = s.name; w.data.category = s.category; rebuildWizard(); };
+        suggest.appendChild(b);
+      });
+      
+      box.appendChild(document.createElement('div')).style.height='8px';
+      box.appendChild(input);
+      box.appendChild(document.createElement('div')).style.height='8px';
+      box.appendChild(suggest);
+      
+      // Show hint if from cookbook
+      if(isFromCookbook){
+        const hint=document.createElement('div');
+        hint.className='hint';
+        hint.style.marginTop='12px';
+        hint.textContent='✓ Aus Kochbuch geladen';
+        box.appendChild(hint);
       }
 
       attachListingPreview(box);
@@ -7503,10 +8189,44 @@
       const actions=document.createElement('div');
       actions.style.marginTop='10px';
 
+      // Kosten-Info-Blöcke vor dem Button
+      const costInfo = document.createElement('div');
+      costInfo.style.cssText = 'margin-top:16px; margin-bottom:16px;';
+      
+      // Block 1: Veröffentlichung
+      const block1 = document.createElement('div');
+      block1.style.cssText = 'padding:12px; background:#f8f8f8; border-radius:12px; margin-bottom:12px;';
+      block1.innerHTML = `
+        <div style="font-weight:600; font-size:14px; margin-bottom:4px;">Veröffentlichung</div>
+        <div style="font-size:16px; font-weight:700; color:var(--brand);">4,99 € + MwSt. pro Veröffentlichung</div>
+      `;
+      
+      // Block 2: Online-Zahlung inkl. Abholcode
+      if(w.data.hasPickupCode){
+        const block2 = document.createElement('div');
+        block2.style.cssText = 'padding:12px; background:#f0f7f0; border-radius:12px; border:1px solid #4caf50;';
+        block2.innerHTML = `
+          <div style="font-weight:600; font-size:14px; margin-bottom:8px; color:#2e7d32;">Online-Zahlung inkl. Abholcode</div>
+          <ul style="margin:0; padding-left:20px; font-size:13px; line-height:1.6; color:#333;">
+            <li>Kunde bezahlt online</li>
+            <li>Geld ist sicher</li>
+            <li>Keine Kasse · kein Bargeld</li>
+          </ul>
+          <div style="margin-top:8px; font-size:11px; color:#666; font-style:italic;">
+            Für jede Online-Bestellung fällt eine Abwicklungsgebühr an (inkl. aller Zahlungsgebühren).
+          </div>
+        `;
+        costInfo.appendChild(block2);
+      }
+      
+      costInfo.appendChild(block1);
+      box.appendChild(costInfo);
+
       const btnPub=document.createElement('button');
       btnPub.className='btn';
       btnPub.type='button';
-      btnPub.textContent = 'Inserat veröffentlichen';
+      btnPub.textContent = 'Jetzt veröffentlichen';
+      btnPub.style.cssText = 'width:100%; min-height:56px; font-size:16px; font-weight:600; margin-top:8px;';
       btnPub.onclick=()=>{
         const o = previewOfferFromWizard();
         closeWizard();
@@ -7531,7 +8251,8 @@
       btnWeek.onclick=()=>{
         saveToCookbookFromWizard(true);
         const cb = cookbook.filter(x=>x.providerId===providerId()).slice(-1)[0];
-        if(cb) startWizard('week', {fromCookbookId:cb.id});
+        // Week plan: Use Master-Flow instead
+        if(cb) startListingFlow({dishId: cb.id});
       };
 
       actions.appendChild(btnPub);
@@ -8149,7 +8870,11 @@
   
   // --- boot ---
   // Testdaten immer erstellen (überschreibt vorhandene für Demo)
-  seed();
+  // Alte seed() Funktion - wird durch seedExampleData() ersetzt
+  // seed(); // Auskommentiert, da seedExampleData() die neuen Beispieldaten lädt
+  
+  // Neue Beispieldaten laden (10 Anbieter, je 3 Gerichte, je 10 Abholcodes)
+  seedExampleData();
   offers = offers.map(normalizeOffer);
   save(LS.offers, offers);
   
@@ -8188,6 +8913,33 @@
         window.history.replaceState({}, '', window.location.pathname);
       }
     }
+    
+    // Legal Pages Routes: /impressum, /agb-kurz, /datenschutz, /anbieter-faq
+    if(hash){
+      const legalRoutes = {
+        '#/impressum': 'impressum',
+        '#/agb-kurz': 'agb-kurz',
+        '#/datenschutz': 'datenschutz',
+        '#/anbieter-faq': 'anbieter-faq'
+      };
+      if(legalRoutes[hash]){
+        showLegalPage(legalRoutes[hash]);
+      }
+    }
+    
+    // Hash-Change Listener für Legal Pages
+    window.addEventListener('hashchange', function(){
+      const hash = window.location.hash;
+      const legalRoutes = {
+        '#/impressum': 'impressum',
+        '#/agb-kurz': 'agb-kurz',
+        '#/datenschutz': 'datenschutz',
+        '#/anbieter-faq': 'anbieter-faq'
+      };
+      if(legalRoutes[hash]){
+        showLegalPage(legalRoutes[hash]);
+      }
+    });
     
     // Abholcode Route: /abholcode/:orderId
     // Support: /abholcode?orderId=xxx OR hash #abholcode/:orderId
@@ -8265,6 +9017,13 @@
       }, 100);
     }
   }
+
+  // Beispieldaten laden: 10 Anbieter mit je 3 Gerichten und 10 Abholcodes
+  // WICHTIG: seedExampleData() NACH seed() aufrufen, damit die neuen Daten nicht überschrieben werden
+  // seedExampleData() wird am Ende aufgerufen (siehe unten)
+  
+  // Test-Funktion global verfügbar machen (in Browser-Konsole: testPickupCodeLogic() aufrufen)
+  window.testPickupCodeLogic = testPickupCodeLogic;
 
   // PWA (optional)
   if('serviceWorker' in navigator){
