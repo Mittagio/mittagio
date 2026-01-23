@@ -166,7 +166,7 @@
     }
     .card.playful .price{color:#b26b00}
     .card.playful .tag{background:rgba(242,183,5,.25)}
-    .img{height:190px; background:#eee; position:relative}
+    .img{aspect-ratio:16/9; height:auto; min-height:120px; max-height:140px; background:#eee; position:relative; overflow:hidden; border-radius:20px 20px 0 0}
     .img img{width:100%; height:100%; object-fit:cover; display:block}
 
     .provider-logo{
@@ -186,6 +186,97 @@
     .body{padding:14px 16px 16px}
     .title{font-weight:950; font-size:18px; margin:0; line-height:1.3}
     .sub{margin:4px 0 0; color:#444; font-size:14px; line-height:1.4}
+    
+    /* Refactored Card Styles - weniger Text, mehr Icons */
+    .card-heart{
+      position:absolute; top:12px; right:12px; z-index:5;
+      width:36px; height:36px; border-radius:50%;
+      border:none; background:rgba(255,255,255,.9);
+      backdrop-filter:blur(8px); display:flex;
+      align-items:center; justify-content:center;
+      cursor:pointer; transition:all .2s;
+      box-shadow:0 2px 8px rgba(0,0,0,.1);
+    }
+    .card-heart:hover{background:rgba(255,255,255,1); transform:scale(1.05)}
+    .card-heart.on{background:rgba(255,204,0,.2)}
+    .card-heart i{width:18px; height:18px; color:#999}
+    .card-heart.on i{color:#e74c3c; fill:currentColor}
+    
+    .card-title-row{
+      display:flex; align-items:flex-start; justify-content:space-between;
+      gap:8px; margin-bottom:6px;
+    }
+    .card-title{
+      font-weight:900; font-size:17px; margin:0;
+      line-height:1.3; flex:1; min-width:0;
+      display:-webkit-box; -webkit-line-clamp:2;
+      -webkit-box-orient:vertical; overflow:hidden;
+      color:#111;
+    }
+    .card-provider{
+      font-size:13px; color:#666; margin:0 0 8px;
+      line-height:1.3; font-weight:500;
+      display:flex; align-items:center; gap:6px;
+    }
+    .card-provider .ico-inline{
+      width:16px; height:16px; flex-shrink:0;
+      color:var(--muted);
+    }
+    .card-provider .ico-inline svg{
+      width:16px; height:16px;
+    }
+    .card-price{
+      font-size:24px; font-weight:950; color:var(--brand);
+      margin:0 0 10px; line-height:1;
+    }
+    .card-info-badges{
+      display:flex; gap:10px; flex-wrap:wrap;
+      margin-bottom:10px; align-items:center;
+    }
+    .card-info-badge{
+      display:inline-flex; align-items:center; gap:4px;
+      font-size:13px; font-weight:600; color:#666;
+      white-space:nowrap;
+    }
+    .card-info-badge .ico-inline{
+      width:16px; height:16px; flex-shrink:0;
+      color:var(--muted);
+    }
+    .card-info-badge .ico-inline svg{
+      width:16px; height:16px;
+    }
+    .card-status-badges{
+      display:flex; gap:6px; flex-wrap:wrap;
+      margin-bottom:10px;
+    }
+    .card-status-badge{
+      display:inline-flex; align-items:center; gap:4px;
+      padding:4px 10px; border-radius:999px;
+      font-size:11px; font-weight:600;
+      background:rgba(0,0,0,.06); color:#666;
+      white-space:nowrap;
+    }
+    .card-status-badge .ico-inline{
+      width:14px; height:14px; flex-shrink:0;
+    }
+    .card-status-badge .ico-inline svg{
+      width:14px; height:14px;
+    }
+    /* Abholcode Badge: leicht hervorgehoben (Markenfarbe Gelb) */
+    .card-status-badge.code{
+      background:rgba(255,204,0,.2); color:#b8860b;
+      font-weight:700;
+    }
+    .card-status-badge.code .ico-inline{color:#b8860b}
+    /* Vor Ort Badge: weiche grüne Füllung */
+    .card-status-badge.dine{
+      background:rgba(31,157,85,.12); color:#1f9d55;
+    }
+    .card-status-badge.dine .ico-inline{color:#1f9d55}
+    /* Zum Mitnehmen Badge: neutrale weiche Füllung */
+    .card-status-badge.pickup{
+      background:rgba(0,0,0,.06); color:#666;
+    }
 
     .meta{display:flex; justify-content:space-between; align-items:flex-end; gap:12px; margin-top:12px}
     .price{font-weight:950; font-size:18px; color:#0f5c4c}
@@ -243,6 +334,9 @@
     }
     .navbtn .ico{font-size:22px; display:inline-flex; align-items:center; justify-content:center}
     .navbtn .ico svg{width:22px; height:22px; stroke-width:2}
+    /* Bottom Navigation Icons: 22-24px */
+    .navbtn.active{color:var(--brand)}
+    .navbtn.active .ico svg{color:var(--brand); stroke:var(--brand)}
     .navbtn.active{color:var(--brand); font-weight:900}
     .navbtn .badge-notification{
       position:absolute; top:8px; right:calc(50% - 20px);
@@ -286,22 +380,24 @@
     .btn.ghost{background:#f8f7f3; border:1px solid var(--border)}
     .mini{font-size:13px; color:var(--muted); margin-top:8px; line-height:1.5}
 
-    .card-actions{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px}
+    .card-actions{display:flex; gap:8px; margin-top:12px}
     .card-action{
-      border:1px solid var(--border);
-      background:#fff;
-      border-radius:999px;
-      padding:8px 12px;
-      font-size:12px;
-      font-weight:900;
-      cursor:pointer;
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
+      flex:1; padding:0 16px; min-height:44px;
+      border-radius:12px; border:none;
+      background:#fff; font-weight:900; font-size:15px;
+      cursor:pointer; transition:transform .1s, background .15s;
+      display:flex; align-items:center; justify-content:center; gap:6px;
+      text-align:center;
     }
-    .card-action.primary{background:var(--brand); border-color:var(--brand)}
-    .card-action.ghost{background:#f8f7f3}
-    .card-action:disabled{opacity:.5; cursor:not-allowed}
+    .card-action:active{transform:scale(.97)}
+    .card-action.primary{
+      background:var(--brand); color:#111;
+      border:1px solid var(--brand);
+      min-height:44px;
+    }
+    .card-action.primary:active{background:#e6b800}
+    .card-action.ghost{background:#f8f7f3; border:1px solid var(--border)}
+    .card-action:disabled{opacity:.5; cursor:not-allowed; background:#f5f5f5}
 
     /* Profile cards */
     .panel{background:#fff; border:1px solid var(--border); border-radius:18px; box-shadow:var(--shadow); padding:12px}
@@ -604,8 +700,9 @@
       display:flex; align-items:center; justify-content:center;
     }
     .ico-inline{display:inline-flex; align-items:center}
-    .ico-inline svg{width:14px; height:14px}
+    .ico-inline svg{width:14px; height:14px; stroke:currentColor}
     .info-row{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; font-size:12px; color:var(--muted)}
+    /* Legacy: Alte info-row (wird nicht mehr in offerCard verwendet) */
     .info-item{
       display:inline-flex; align-items:center; gap:6px;
       background:#f8f7f3; border:1px solid var(--border);
@@ -670,32 +767,45 @@
     .discover-header{
       position:sticky; top:0; z-index:10;
       background:rgba(255,255,255,.95); backdrop-filter:blur(10px);
-      padding:8px 14px 6px; max-width:980px; margin:0 auto;
+      padding:8px 14px; max-width:980px; margin:0 auto;
       border-bottom:1px solid rgba(0,0,0,.06);
     }
-    /* Kompakte Adressleiste (Pill, reduziert auf ~40px) */
+    /* Kompakte Standort-Pill (44-48px) */
     .discover-location-pill{
-      display:inline-flex; align-items:center; gap:6px;
-      padding:8px 16px; border-radius:22px;
-      background:rgba(0,0,0,.04); border:none;
-      font-size:14px; font-weight:600; color:#333;
-      cursor:pointer; transition:all .2s;
-      height:40px; box-sizing:border-box; min-width:120px;
+      display:flex; align-items:center; gap:8px;
+      padding:10px 14px; border-radius:24px;
+      background:rgba(0,0,0,.04); border:1px solid rgba(0,0,0,.08);
+      height:44px; box-sizing:border-box;
     }
-    .discover-location-pill:active{
-      background:rgba(0,0,0,.08); transform:scale(.98);
+    .discover-location-icon-left{
+      width:18px; height:18px; flex-shrink:0; opacity:.7;
+      color:#666;
     }
-    .discover-location-text{
-      max-width:220px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
-      flex:1; min-width:0;
+    .discover-location-input{
+      flex:1; border:none; background:transparent;
+      font-size:15px; font-weight:500; color:#333;
+      outline:none; min-width:0;
     }
-    .discover-location-icon{
-      width:16px; height:16px; flex-shrink:0; opacity:.8;
+    .discover-location-input::placeholder{
+      color:#999; font-weight:400;
+    }
+    .discover-location-btn{
+      width:32px; height:32px; border-radius:50%;
+      border:none; background:transparent;
+      display:flex; align-items:center; justify-content:center;
+      cursor:pointer; transition:background .2s;
+      flex-shrink:0;
+    }
+    .discover-location-btn:hover{
+      background:rgba(0,0,0,.05);
+    }
+    .discover-location-btn i{
+      width:18px; height:18px; color:#666;
     }
     
-    /* Kategorien (horizontal swipebar) */
+    /* Kategorien (horizontal swipebar, ohne Überschrift) */
     .discover-categories{
-      padding:10px 0 8px;
+      padding:12px 0 8px;
       max-width:980px; margin:0 auto;
     }
     .discover-categories-scroll{
@@ -706,7 +816,7 @@
     .discover-categories-scroll::-webkit-scrollbar{display:none}
     .discover-category-chip{
       flex:0 0 auto; padding:10px 18px;
-      border-radius:20px; border:none;
+      border-radius:20px; border:1.5px solid transparent;
       font-size:14px; font-weight:700;
       background:#f5f5f5; color:#666;
       cursor:pointer; transition:all .2s;
@@ -714,19 +824,25 @@
     }
     .discover-category-chip.active{
       background:var(--brand); color:#000;
+      border-color:var(--brand);
       box-shadow:0 2px 8px rgba(255,204,0,.3);
+      font-weight:900;
+    }
+    .discover-category-chip:not(.active){
+      border-color:rgba(0,0,0,.1);
+      background:#fff;
     }
     .discover-category-chip:active{
       transform:scale(.96);
     }
     
-    /* Kalender (horizontal swipebar, direkt unter Kategorien) - visuell von Kategorien unterscheidbar */
+    /* Kalender (horizontal swipebar, ohne Überschrift, distinct style) */
     .discover-calendar{
       padding:0 0 14px;
       max-width:980px; margin:0 auto;
-      border-top:1px solid rgba(0,0,0,.04);
+      border-top:1px solid rgba(0,0,0,.06);
       margin-top:4px;
-      padding-top:8px;
+      padding-top:10px;
     }
     .discover-calendar-scroll{
       display:flex; gap:8px; overflow-x:auto;
@@ -735,16 +851,17 @@
     }
     .discover-calendar-scroll::-webkit-scrollbar{display:none}
     .discover-day{
-      flex:0 0 auto; padding:9px 16px;
-      border-radius:16px; border:none;
-      font-size:13px; font-weight:700;
-      background:#f8f8f8; color:#666;
+      flex:0 0 auto; padding:8px 14px;
+      border-radius:16px; border:1.5px solid rgba(0,0,0,.15);
+      font-size:13px; font-weight:600;
+      background:#fff; color:#666;
       cursor:pointer; transition:all .2s;
       white-space:nowrap;
-      min-width:65px; text-align:center;
+      min-width:60px; text-align:center;
     }
     .discover-day.active{
       background:var(--brand); color:#000;
+      border-color:var(--brand);
       box-shadow:0 2px 6px rgba(255,204,0,.25);
       font-weight:900;
     }
@@ -752,97 +869,109 @@
       transform:scale(.96);
     }
     
-    /* Angebots-Kacheln Container */
+    /* Angebots-Liste Container */
     .discover-offers{
       padding:0 14px 24px;
       max-width:980px; margin:0 auto;
-      display:flex; flex-direction:column; gap:14px;
+      display:flex; flex-direction:column; gap:12px;
     }
-    /* Hero Cards - Horizontal Layout (Foto links 30-35%, Content rechts) */
-    .discover-hero-card{
-      display:flex; gap:12px; padding:14px;
-      background:#fff; border-radius:18px;
-      box-shadow:0 2px 10px rgba(0,0,0,.06);
-      cursor:pointer; transition:transform .15s, box-shadow .15s;
-      margin-bottom:12px;
+    /* List Cards - Horizontal Layout (kleines Bild links, Content rechts) */
+    .discover-list-card{
+      display:flex; gap:12px; padding:12px;
+      background:#fff; border-radius:16px;
+      box-shadow:0 1px 6px rgba(0,0,0,.06);
+      cursor:pointer; transition:transform .1s, box-shadow .1s;
+      border:1px solid rgba(0,0,0,.04);
     }
-    .discover-hero-card:active{
+    .discover-list-card:active{
       transform:scale(.98);
-      box-shadow:0 1px 5px rgba(0,0,0,.1);
+      box-shadow:0 1px 4px rgba(0,0,0,.1);
     }
-    /* Foto links - klein, max 30-35%, abgerundet */
-    .discover-hero-image{
-      flex:0 0 35%; max-width:120px; min-width:100px;
-      aspect-ratio:1; border-radius:14px; overflow:hidden;
-      position:relative; background:#f5f5f5;
+    .discover-list-image{
+      flex:0 0 80px; width:80px; height:80px;
+      border-radius:12px; overflow:hidden;
+      background:#f0f0f0; flex-shrink:0;
     }
-    .discover-hero-image img{
-      width:100%; height:100%; object-fit:cover; display:block;
+    .discover-list-image img{
+      width:100%; height:100%; object-fit:cover;
     }
-    /* Content rechts - flex:1 */
-    .discover-hero-content{
-      flex:1; display:flex; flex-direction:column; gap:10px;
-      min-width:0; justify-content:space-between;
+    .discover-list-content{
+      flex:1; display:flex; flex-direction:column;
+      min-width:0; gap:4px;
     }
-    /* Gerichtname - max 2 Zeilen, fett */
-    .discover-hero-title{
-      font-size:17px; font-weight:900; color:#111;
-      line-height:1.3; display:-webkit-box;
-      -webkit-line-clamp:2; -webkit-box-orient:vertical;
-      overflow:hidden; margin:0;
+    .discover-list-title{
+      font-size:16px; font-weight:900; line-height:1.3;
+      color:#111; margin:0;
+      display:-webkit-box; -webkit-line-clamp:2;
+      -webkit-box-orient:vertical; overflow:hidden;
     }
-    /* Anbietername - ruhig, gut lesbar */
-    .discover-hero-provider{
-      font-size:13px; color:#666; margin-top:4px;
-      line-height:1.4; font-weight:500;
+    .discover-list-provider{
+      font-size:13px; font-weight:500; color:#666;
+      margin:0; line-height:1.3;
     }
-    /* Preis - fett, klar sichtbar, hervorgehoben */
-    .discover-hero-price{
-      font-size:22px; font-weight:950; color:var(--brand);
-      line-height:1.2; margin:8px 0 0;
+    .discover-list-meta{
+      display:flex; align-items:center; gap:8px;
+      margin-top:4px; flex-wrap:wrap;
     }
-    /* Actions + Badges Container */
-    .discover-hero-actions{
-      display:flex; flex-direction:column; gap:8px;
-      margin-top:auto;
+    .discover-list-price{
+      font-size:18px; font-weight:900; color:var(--brand);
+      margin:0;
     }
-    /* Action Button - "Bestellen" oder "Details" */
-    .discover-hero-btn{
-      width:100%; padding:12px 16px; border-radius:12px;
-      border:none; font-weight:900; font-size:15px;
-      cursor:pointer; transition:transform .1s, background .15s;
-      text-align:center;
+    .discover-list-info{
+      font-size:12px; color:#999;
+      display:flex; align-items:center; gap:4px;
     }
-    .discover-hero-btn:active{transform:scale(.97)}
-    .discover-hero-btn.primary{
-      background:var(--brand); color:#111;
+    .discover-list-info .ico-inline{
+      width:16px; height:16px; flex-shrink:0;
+      color:var(--muted);
     }
-    .discover-hero-btn.primary:active{
-      background:#e6b800;
+    .discover-list-info .ico-inline svg{
+      width:16px; height:16px;
     }
-    .discover-hero-btn.secondary{
-      background:#f8f7f3; border:1px solid var(--border); color:var(--text);
-      display:none; /* Nur wenn nötig anzeigen */
-    }
-    /* Badges unter Buttons - kleine Badges mit Icon + Text */
-    .discover-hero-badges{
+    .discover-list-badges{
       display:flex; gap:6px; flex-wrap:wrap;
-      margin-top:4px;
+      margin-top:6px;
     }
-    .discover-hero-badge{
-      display:inline-flex; align-items:center; gap:4px;
-      padding:5px 10px; border-radius:8px;
-      font-size:11px; font-weight:700;
-      background:rgba(0,0,0,.04); color:#666;
+    .discover-list-badge{
+      display:inline-flex; align-items:center; gap:3px;
+      padding:4px 8px; border-radius:6px;
+      font-size:10px; font-weight:700;
+      background:rgba(0,0,0,.05); color:#666;
     }
-    .discover-hero-badge i{
-      width:12px; height:12px;
+    .discover-list-badge .ico-inline{
+      width:14px; height:14px; flex-shrink:0;
     }
-    .discover-hero-badge.code{
+    .discover-list-badge .ico-inline svg{
+      width:14px; height:14px;
+    }
+    .discover-list-badge.code{
       background:rgba(255,204,0,.15); color:#b8860b;
     }
-    .discover-hero-badge.dine{
+    .discover-list-badge.dine{
       background:rgba(31,157,85,.1); color:#1f9d55;
+    }
+    .discover-list-badge.pickup{
+      background:rgba(0,0,0,.05); color:#666;
+    }
+    .discover-list-actions{
+      margin-top:auto; padding-top:8px;
+    }
+    .discover-list-btn{
+      width:100%; padding:10px 14px; border-radius:10px;
+      border:none; font-weight:900; font-size:14px;
+      cursor:pointer; transition:transform .1s, background .15s;
+      text-align:center; background:var(--brand); color:#111;
+      display:flex; align-items:center; justify-content:center; gap:6px;
+    }
+    .discover-list-btn .ico-inline{
+      width:18px; height:18px; flex-shrink:0;
+    }
+    .discover-list-btn .ico-inline svg{
+      width:18px; height:18px;
+    }
+    .discover-list-btn:active{
+      transform:scale(.97);
+      background:#e6b800;
     }
     
     /* Back Navigation */
@@ -969,29 +1098,32 @@
 
     <!-- CUSTOMER: Discover - App-like UX (Final Spec) -->
     <section class="view active" id="v-discover">
-      <!-- Header: Kompakte Adresszeile (44-48px, Pill-Form) -->
+      <!-- Header: Kompakte Standort-Pill (44-48px) -->
       <div class="discover-header">
-        <button class="discover-location-pill" type="button" id="btnDiscoverLocation">
-          <i data-lucide="map-pin" class="discover-location-icon"></i>
-          <span class="discover-location-text" id="discoverLocationText">Standort</span>
-        </button>
+        <div class="discover-location-pill">
+          <i data-lucide="map-pin" class="discover-location-icon-left"></i>
+          <input type="text" class="discover-location-input" id="discoverLocationInput" placeholder="Ort oder PLZ" />
+          <button class="discover-location-btn" type="button" id="btnDiscoverLocationSearch" aria-label="Standort suchen">
+            <i data-lucide="search"></i>
+          </button>
+        </div>
       </div>
 
-      <!-- Kategorien (horizontal swipebar) -->
+      <!-- Kategorien (horizontal swipebar, ohne Überschrift) -->
       <div class="discover-categories">
         <div class="discover-categories-scroll" id="discoverCategories">
           <!-- Wird dynamisch befüllt -->
         </div>
       </div>
 
-      <!-- Kalender (horizontal swipebar, direkt unter Kategorien) -->
+      <!-- Kalender (horizontal swipebar, ohne Überschrift) -->
       <div class="discover-calendar">
         <div class="discover-calendar-scroll" id="discoverCalendar">
           <!-- Wird dynamisch befüllt -->
         </div>
       </div>
 
-      <!-- Angebots-Kacheln (Hero Cards - horizontal) -->
+      <!-- Angebots-Liste (horizontale List-Cards) -->
       <div class="discover-offers" id="discoverOffers">
         <!-- Wird dynamisch befüllt -->
       </div>
@@ -1068,7 +1200,7 @@
         <div id="cartBox" class="hint">Dein Warenkorb ist leer.</div>
         <button class="btn" id="btnCheckout" type="button" style="display:none;" data-icon="card">Weiter zur Zahlung</button>
         <div class="mini" id="cartNote" style="display:none;">
-          Ein Anbieter pro Bestellung · Abholung per Code
+          Ein Anbieter pro Bestellung · Zahlung per Stripe · Abholcode nach Zahlung
         </div>
       </div>
     </section>
@@ -1096,16 +1228,16 @@
         <!-- Code-Kachel (normal groß) -->
         <div id="pickupCodeCard" style="background:#fff; border:2px solid var(--brand); border-radius:18px; padding:24px; text-align:center; margin-bottom:20px;">
           <div class="hint" style="font-size:12px; margin-bottom:8px; color:#666;">Abholcode</div>
-          <div id="pickupCodeValue" style="font-size:48px; font-weight:900; font-family:monospace; letter-spacing:4px; color:#000; margin-bottom:12px;">
+          <div id="pickupCodeValue" style="font-size:48px; font-weight:900; font-family:monospace; letter-spacing:4px; color:#111; margin-bottom:12px;">
             –
           </div>
-          <button class="btn secondary" type="button" id="btnCopyCode" style="width:100%;">
+          <button class="btn secondary" type="button" id="btnCopyCode" style="width:100%; min-height:44px;">
             <i data-lucide="copy"></i> Code kopieren
           </button>
         </div>
         
         <!-- Primary CTA: Code groß anzeigen -->
-        <button class="btn" type="button" id="btnShowFullscreenCode" style="width:100%; margin-bottom:16px;">
+        <button class="btn" type="button" id="btnShowFullscreenCode" style="width:100%; margin-bottom:16px; min-height:44px;">
           <i data-lucide="maximize-2"></i> Code groß anzeigen
         </button>
         
@@ -1120,45 +1252,18 @@
         
         <!-- Secondary Buttons -->
         <div style="display:flex; flex-direction:column; gap:10px;">
-          <button class="btn secondary" type="button" id="btnOpenRoute" style="width:100%;">
+          <button class="btn secondary" type="button" id="btnOpenRoute" style="width:100%; min-height:44px;">
             <i data-lucide="map-pin"></i> Route öffnen
           </button>
-          <button class="btn ghost" type="button" id="btnToOrders" style="width:100%;">
+          <button class="btn ghost" type="button" id="btnToOrders" style="width:100%; min-height:44px;">
             <i data-lucide="box"></i> Zur Mittagsbox
           </button>
         </div>
       </div>
     </section>
 
-    <!-- CUSTOMER: Profile -->
+    <!-- CUSTOMER: Profile (Info-Hub) -->
     <section class="view" id="v-profile">
-      <!-- Welcome Card (immer sichtbar, wenn nicht eingeloggt) -->
-      <div class="panel" id="profileWelcomeCard" style="text-align:center; padding:32px 20px;">
-        <div style="font-size:32px; margin-bottom:12px;">👋</div>
-        <h3 style="margin:0 0 12px;">Willkommen bei Mittagio</h3>
-        <p class="hint" style="margin-bottom:24px; line-height:1.6;">
-          Entdecke lokale Mittagsangebote – ganz ohne Anmeldung.
-        </p>
-        <button class="btn" type="button" id="btnDiscoverWithoutLogin" style="width:100%; margin-bottom:12px;">
-          Ohne Anmeldung entdecken
-        </button>
-        <button class="btn ghost" type="button" id="btnShowLogin" style="width:100%;">
-          Anmelden oder Konto erstellen
-        </button>
-      </div>
-      
-      <!-- Login Expand Card (ausgeblendet, wird durch btnShowLogin geöffnet) -->
-      <div class="panel" id="profileLoginCard" style="display:none;">
-        <h3 style="margin:0 0 16px;">Anmelden</h3>
-        <input class="field" id="unifiedEmail" type="email" placeholder="E-Mail" autocomplete="email" />
-        <div style="height:10px"></div>
-        <input class="field" id="unifiedPass" type="password" placeholder="Passwort" autocomplete="current-password" />
-        <button class="btn" type="button" id="btnUnifiedLogin" style="margin-top:16px; width:100%;">Anmelden</button>
-        <div style="margin-top:12px; text-align:center;">
-          <button class="btn ghost" type="button" id="btnUnifiedLoginDemo" style="width:auto; padding:8px 16px;">Demo-Login (ohne Anmeldung)</button>
-        </div>
-      </div>
-      
       <!-- Logged In Section (wenn eingeloggt) -->
       <div class="panel" id="profileLoggedInSection" style="display:none;">
         <h3>Profil</h3>
@@ -1654,7 +1759,7 @@
   <!-- CUSTOMER bottom nav - Mittagio-Bar -->
   <nav class="bottom" id="customerNav">
     <button class="navbtn active" data-go="discover" style="position:relative;">
-      <div class="ico"><i data-lucide="utensils"></i></div>
+      <div class="ico"><i data-lucide="utensils-crossed"></i></div>
       <div>Entdecken</div>
     </button>
     <button class="navbtn" data-go="fav" style="position:relative;">
@@ -1662,12 +1767,12 @@
       <div>Favoriten</div>
     </button>
     <button class="navbtn" data-go="cart" style="position:relative;">
-      <div class="ico"><i data-lucide="shopping-bag"></i></div>
+      <div class="ico"><i data-lucide="shopping-cart"></i></div>
       <div>Essenskorb</div>
       <span class="badge-notification" id="cartBadge" style="display:none;"></span>
     </button>
     <button class="navbtn" data-go="orders" style="position:relative;">
-      <div class="ico"><i data-lucide="box"></i></div>
+      <div class="ico"><i data-lucide="package"></i></div>
       <div>Mittagsbox</div>
     </button>
     <button class="navbtn" data-go="profile" style="position:relative;">
@@ -1729,9 +1834,10 @@
 </div>
 
 <!-- Fullscreen Code Modal (extrem groß, 1-2m lesbar) -->
-<div class="backdrop" id="fullscreenCodeBd" onclick="closeFullscreenCode()"></div>
+<!-- Fullscreen Code Modal (extrem groß, 1-2m lesbar) -->
+<div class="backdrop" id="fullscreenCodeBd"></div>
 <div class="fullscreen-code" id="fullscreenCode">
-  <button class="fullscreen-code-close" onclick="closeFullscreenCode()" aria-label="Schließen">
+  <button class="fullscreen-code-close" aria-label="Schließen">
     <i data-lucide="x"></i>
   </button>
   <div class="fullscreen-code-content">
@@ -1795,6 +1901,25 @@
   <div class="sheet-body" style="max-height:80vh; overflow-y:auto;">
     <div class="panel" id="legalContent">
       <!-- Wird dynamisch befüllt -->
+    </div>
+  </div>
+</div>
+
+<!-- Login Modal (Bottom Sheet) -->
+<div class="backdrop" id="loginBd" onclick="closeLoginSheet()"></div>
+<div class="sheet" id="loginSheet">
+  <div class="handle"></div>
+  <div class="sheet-body">
+    <div class="panel">
+      <h3 style="margin:0 0 8px;">Anmelden</h3>
+      <div class="hint" style="margin-bottom:20px;">Melde dich an, um zu bestellen</div>
+      <input class="field" id="loginModalEmail" type="email" placeholder="E-Mail" autocomplete="email" />
+      <div style="height:10px"></div>
+      <input class="field" id="loginModalPass" type="password" placeholder="Passwort" autocomplete="current-password" />
+      <button class="btn" type="button" id="btnLoginModalLogin" style="margin-top:16px; width:100%;">Anmelden</button>
+      <div style="margin-top:12px; text-align:center;">
+        <button class="btn ghost" type="button" id="btnLoginModalDemo" style="width:auto; padding:8px 16px;">Demo-Login (ohne Anmeldung)</button>
+      </div>
     </div>
   </div>
 </div>
@@ -1875,7 +2000,7 @@
   let providerFavs = new Set(load(LS.providerFavs, legacyFavs));
   let dishFavs = new Set(load(LS.dishFavs, []));
   let cart = load(LS.cart, null); // {providerId, items:[{offerId, qty}]} or null
-  let orders = load(LS.orders, []); // [{id, providerName, summary, code, status, createdAt}]
+  let orders = loadOrders(); // Load via Order Store
   let customer = load(LS.customer, { loggedIn:false, name:null });
   let provider = load(LS.provider, { loggedIn:false, email:null, profile:{ name:'', address:'', street:'', zip:'', city:'', mealWindow:'11:30 – 14:00', logoData:'' } });
   let cookbook = load(LS.cookbook, []); // [{id, dish, category, price, allergens[], extras?, reuse? , photoData?}]
@@ -1979,7 +2104,9 @@
     edit:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>',
     action:'<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>',
     heart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 6.6a5 5 0 0 0-7.1 0L12 8.3l-1.7-1.7a5 5 0 1 0-7.1 7.1L12 22l8.8-8.3a5 5 0 0 0 0-7.1Z"/></svg>',
+    heartFilled:'<svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><path d="M20.8 6.6a5 5 0 0 0-7.1 0L12 8.3l-1.7-1.7a5 5 0 1 0-7.1 7.1L12 22l8.8-8.3a5 5 0 0 0 0-7.1Z"/></svg>',
     cart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2h12l2 7H4z"/><path d="M4 9h16v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9Z"/></svg>',
+    'shopping-cart':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>',
     location:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s7-7.2 7-12a7 7 0 1 0-14 0c0 4.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg>',
     star:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 2 3 7 7 .6-5.2 4.5 1.6 7L12 17l-6.4 4.1 1.6-7L2 9.6 9 9z"/></svg>',
     box:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7l9-4 9 4-9 4-9-4Z"/><path d="M3 7v10l9 4 9-4V7"/><path d="M12 11v10"/></svg>',
@@ -2003,9 +2130,30 @@
     shield:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 20 5v6c0 5-3.5 9-8 11-4.5-2-8-6-8-11V5z"/></svg>',
     file:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>',
     wallet:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7h18a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H3z"/><path d="M3 7V5a2 2 0 0 1 2-2h14"/><path d="M17 12h4"/></svg>',
-    utensils:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 2v6a4 4 0 0 0 8 0V2"/><path d="M8 2v10"/><path d="M16 2v20"/><path d="M20 2v6a2 2 0 0 1-2 2h-2"/></svg>'
+    utensils:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 2v6a4 4 0 0 0 8 0V2"/><path d="M8 2v10"/><path d="M16 2v20"/><path d="M20 2v6a2 2 0 0 1-2 2h-2"/></svg>',
+    // Mittagio Icon Set (Lucide Icons - Outline only)
+    carrot:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.5 16.88a1 1 0 0 1-.32-1.43l1.5-2.5a1 1 0 0 1 1.37-.37L8 15l5-5-2-2-5 5-3.13-1.95a1 1 0 0 0-1.37.37l-2.5 1.5a1 1 0 0 0-.5.88Z"/><path d="M16 21h5a1 1 0 0 0 1-1v-5"/><path d="M21 16l-5 5"/><path d="M11 2L9 4l5 5 2-2-5-5Z"/></svg>',
+    drumstick:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15.5 9.5 12 13l-1-1-1 1c-1 1-2.5 1.5-4 1l-1 1c-.5.5-1 1.5-1 2.5 0 1 .5 1.5 1 2l2 2c.5.5 1 .5 1.5 0l1-1c-.5-1.5 0-3 1-4l1-1 1 1 3.5-3.5Z"/><path d="M20 2v10"/><path d="M22 4h-4"/></svg>',
+    fish:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 10s3-3 8-3 8 3 8 3-3 3-8 3-8-3-8-3Z"/><path d="M4 10v4"/><path d="M8 10v4"/><path d="M12 10v4"/><path d="M16 10v4"/><path d="M2 16s3-3 8-3 8 3 8 3"/><path d="M2 4s3 3 8 3 8-3 8-3"/></svg>',
+    'key-round':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="15" r="4"/><path d="m10 15 6-6"/><path d="m18 5 2 2"/><path d="m20 5-2 2"/></svg>',
+    'credit-card':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>',
+    'shopping-bag':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>',
+    package:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 18v-8Z"/><path d="M3.27 6.96 12 12.01l8.73-5.05"/><path d="M12 22.08V12"/></svg>',
+    'utensils-crossed':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15.5-1-.5.5"/><path d="M15 2v5"/><path d="M12 22V8"/><path d="M12 2v3"/><path d="M19 22V11"/><path d="M19 2v4"/><path d="M2 22l20-20"/></svg>',
+    store:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7v13h16V7"/><path d="M4 7l2-5h12l2 5"/><path d="M9 12v6"/><path d="M15 12v6"/></svg>',
+    'calendar-days':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01"/></svg>',
+    'map-pin':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>',
+    copy:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>',
+    check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>',
+    'arrow-left':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>',
+    'maximize-2':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg>',
+    x:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg>',
+    'alert-circle':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>'
   };
-  const iconMarkup = (name)=> ICONS[name] ? `<span class="ico-inline">${ICONS[name]}</span>` : '';
+  const iconMarkup = (name, opts={})=> {
+    const iconName = opts.fill && ICONS[name + 'Filled'] ? name + 'Filled' : name;
+    return ICONS[iconName] ? `<span class="ico-inline">${ICONS[iconName]}</span>` : '';
+  };
   function applyStaticIcons(){
     document.querySelectorAll('[data-icon]').forEach(el=>{
       if(el.dataset.iconApplied) return;
@@ -2192,6 +2340,117 @@
     updateProfileView();
     lucide.createIcons();
   }
+  
+  // --- Pickup Code Screen ---
+  let currentPickupOrderId = null;
+  
+  /**
+   * Show pickup code screen (with guard)
+   * Route: /abholcode/:orderId
+   * @param {string} orderId
+   */
+  function showPickupCode(orderId){
+    const order = getOrderById(orderId);
+    
+    // Guard: Order nicht gefunden
+    if(!order){
+      // Fehler-UI: "Bestellung nicht gefunden" + CTA "Zur Entdecken"
+      const errorView = document.createElement('div');
+      errorView.className = 'panel';
+      errorView.style.padding = '40px 20px';
+      errorView.style.textAlign = 'center';
+      errorView.innerHTML = `
+        <div style="font-size:48px; margin-bottom:20px;">⚠️</div>
+        <h3 style="margin-bottom:12px;">Bestellung nicht gefunden</h3>
+        <p class="hint" style="margin-bottom:24px;">Die Bestellung konnte nicht gefunden werden.</p>
+        <button class="btn" type="button" onclick="showDiscover()" style="width:100%; min-height:44px;">
+          <i data-lucide="compass"></i> Zur Entdecken-Seite
+        </button>
+      `;
+      document.body.appendChild(errorView);
+      showView(null); // Hide all views
+      if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
+      return;
+    }
+    
+    // GUARD: Code nur anzeigen wenn PAID
+    if(order.status !== 'PAID'){
+      // Info UI: "Zahlung noch nicht bestätigt" + Button "Zurück"
+      const infoView = document.createElement('div');
+      infoView.className = 'panel';
+      infoView.style.padding = '40px 20px';
+      infoView.style.textAlign = 'center';
+      
+      const statusLabel = order.status === 'PAYMENT_PENDING' ? 'Zahlung ausstehend' :
+                         order.status === 'CREATED' ? 'Bestellung erstellt' :
+                         order.status === 'CANCELLED' ? 'Bestellung abgebrochen' :
+                         'Unbekannter Status';
+      
+      infoView.innerHTML = `
+        <div style="font-size:48px; margin-bottom:20px;">⏳</div>
+        <h3 style="margin-bottom:12px;">Zahlung noch nicht bestätigt</h3>
+        <p class="hint" style="margin-bottom:8px;">Status: ${statusLabel}</p>
+        <p class="hint" style="margin-bottom:24px;">Der Abholcode wird nach erfolgreicher Zahlung angezeigt.</p>
+        <button class="btn" type="button" onclick="showOrders()" style="width:100%; min-height:44px;">
+          <i data-lucide="arrow-left"></i> Zurück
+        </button>
+      `;
+      document.body.appendChild(infoView);
+      showView(null); // Hide all views
+      if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
+      return;
+    }
+    
+    // PAID: Zeige Code
+    currentPickupOrderId = orderId;
+    setCustomerNavActive('orders'); // Navigation auf Mittagsbox setzen
+    showView(views.pickupCode);
+    renderPickupCode(order);
+  }
+  
+  /**
+   * Render pickup code screen
+   * @param {Order} order
+   */
+  function renderPickupCode(order){
+    // Code anzeigen (nur wenn PAID - Guard bereits in showPickupCode)
+    const codeEl = document.getElementById('pickupCodeValue');
+    if(codeEl){
+      const code = order.pickupCode || order.code || '';
+      // Code ohne Zwischenräume in normaler Ansicht (nur im Fullscreen mit Zwischenräumen)
+      codeEl.textContent = code || '–';
+    }
+    
+    // Bestellinfos
+    const dishEl = document.getElementById('pickupCodeDish');
+    if(dishEl) dishEl.textContent = order.dishName || order.summary || '–';
+    
+    const providerEl = document.getElementById('pickupCodeProvider');
+    if(providerEl) providerEl.textContent = order.providerName || '–';
+    
+    const timeEl = document.getElementById('pickupCodeTime');
+    if(timeEl) timeEl.textContent = order.etaTime || order.pickupTime || 'offen';
+    
+    const typeEl = document.getElementById('pickupCodeType');
+    if(typeEl){
+      const fulfillType = order.fulfillType || (order.dineInPossible ? 'DINE_IN' : 'PICKUP');
+      // Formatierung: PICKUP -> "Zum Mitnehmen", DINE_IN -> "Vor Ort"
+      typeEl.textContent = fulfillType === 'DINE_IN' ? 'Vor Ort' : 'Zum Mitnehmen';
+    }
+    
+    const totalEl = document.getElementById('pickupCodeTotal');
+    if(totalEl){
+      // Total in EUR formatieren (cents → € mit 2 Dezimalstellen)
+      const totalCents = order.totalCents || (order.total ? Math.round(order.total * 100) : 0);
+      const totalEur = totalCents / 100;
+      totalEl.textContent = totalEur > 0 ? euro(totalEur) : '–';
+    }
+    
+    // Icons aktualisieren
+    if(typeof lucide !== 'undefined'){
+      setTimeout(()=> lucide.createIcons(), 50);
+    }
+  }
 
   // --- Provider views ---
   function showProviderHome(){
@@ -2236,7 +2495,8 @@
     CATEGORIES.forEach(c=>{
       const b=document.createElement('button');
       b.className='chip'+(activeCat===c?' active':'');
-      const iconName = c==='Vegetarisch' ? 'leaf' : (c==='Vegan' ? 'leaf' : 'flame');
+      // Icon Mapping: Vegan=leaf, Vegetarisch=carrot, Mit Fleisch=drumstick
+      const iconName = c==='Vegan' ? 'leaf' : (c==='Vegetarisch' ? 'carrot' : 'drumstick');
       b.innerHTML = `${iconMarkup(iconName)}<span>${esc(c)}</span>`;
       b.onclick=()=>{
         activeCat = activeCat===c ? null : c;
@@ -2268,7 +2528,8 @@
     CATEGORIES.forEach(c=>{
       const b=document.createElement('button');
       b.className='chip'+(activeCat===c?' active':'');
-      const iconName = c==='Vegetarisch' ? 'leaf' : (c==='Vegan' ? 'leaf' : 'flame');
+      // Icon Mapping: Vegan=leaf, Vegetarisch=carrot, Mit Fleisch=drumstick
+      const iconName = c==='Vegan' ? 'leaf' : (c==='Vegetarisch' ? 'carrot' : 'drumstick');
       b.innerHTML = `${iconMarkup(iconName)}<span>${esc(c)}</span>`;
       b.onclick=()=>{
         activeCat = activeCat===c ? null : c;
@@ -2344,7 +2605,11 @@
     
     const timeAgo = 'vor 2h'; // Placeholder
     const distance = data.distanceKm ? `${Number(data.distanceKm).toFixed(1)} km` : '';
-    const emoji = data.category === 'Vegan' ? '🌱' : (data.category === 'Vegetarisch' ? '🥗' : '🍖');
+    // Food type icon (keine Emojis)
+    const foodTypeIcon = data.category === 'Vegan' ? 'leaf' : 
+                         data.category === 'Vegetarisch' ? 'carrot' : 
+                         data.category === 'Mit Fleisch' ? 'drumstick' : 
+                         data.category === 'Fisch' ? 'fish' : '';
     
     bubble.innerHTML=`
       <div class="chat-bubble-header">
@@ -2354,15 +2619,15 @@
         <div class="chat-bubble-meta">
           <div class="chat-bubble-name">${esc(data.providerName || 'Anbieter')}</div>
           <div class="chat-bubble-time">
-            <i data-lucide="clock"></i>
-            ${timeAgo}
+            ${iconMarkup('clock')}
+            <span>${timeAgo}</span>
           </div>
         </div>
         ${distance ? `<div class="chat-bubble-distance">${distance}</div>` : ''}
       </div>
       ${data.imageUrl ? `<img src="${esc(data.imageUrl)}" alt="${esc(data.dish || '')}" class="chat-bubble-image" />` : ''}
       <div class="chat-bubble-message">
-        Hey! Heute gibt's ${emoji} <strong>${esc(data.dish || 'Gericht')}</strong> für <strong>${euro(data.price || 0)}</strong> – wer ist dabei?
+        Hey! Heute gibt's ${foodTypeIcon ? iconMarkup(foodTypeIcon) : ''} <strong>${esc(data.dish || 'Gericht')}</strong> für <strong>${euro(data.price || 0)}</strong> – wer ist dabei?
       </div>
       <div class="chat-bubble-actions">
         <button class="chat-bubble-btn chat-bubble-btn-primary" onclick="event.stopPropagation(); const o=offers.find(x=>x.id==='${data.id}'); if(o) openOffer('${data.id}');">Dabei sein</button>
@@ -2376,30 +2641,31 @@
   let activeDiscoverFilter = 'near'; // 'near', 'Vegan', 'Vegetarisch', 'Mit Fleisch'
   
   function renderDiscover(){
-    // Header: Standort (kompakt, Pill-Form) - Format: "Ort + PLZ"
-    const locationText = document.getElementById('discoverLocationText');
-    if(locationText){
-      if(locationQuery && locationQuery.trim()){
-        // Versuche "Ort + PLZ" Format zu extrahieren
-        const parts = locationQuery.split(',').map(s => s.trim()).filter(Boolean);
-        if(parts.length >= 2){
-          // Format: "Stadt, PLZ" oder "Straße, PLZ Stadt"
-          const zipMatch = parts.find(p => /^\d{4,5}/.test(p));
-          const cityMatch = parts.find(p => !/^\d{4,5}/.test(p) && p.length > 2);
-          if(zipMatch && cityMatch){
-            locationText.textContent = `${cityMatch} ${zipMatch}`;
-          } else {
-            locationText.textContent = locationQuery;
-          }
-        } else {
-          locationText.textContent = locationQuery;
+    // Header: Standort-Input
+    const locationInput = document.getElementById('discoverLocationInput');
+    if(locationInput){
+      locationInput.value = locationQuery || '';
+      locationInput.oninput = ()=>{
+        locationQuery = locationInput.value;
+        renderDiscover();
+      };
+      locationInput.onkeydown = (e)=>{
+        if(e.key === 'Enter'){
+          e.preventDefault();
+          renderDiscover();
         }
-      } else {
-        locationText.textContent = 'Standort wählen';
-      }
+      };
     }
     
-    // Kategorien rendern
+    // Location Search Button
+    const btnLocationSearch = document.getElementById('btnDiscoverLocationSearch');
+    if(btnLocationSearch){
+      btnLocationSearch.onclick = ()=>{
+        if(locationInput) locationInput.focus();
+      };
+    }
+    
+    // Kategorien rendern (ohne Überschrift)
     const categoriesEl = document.getElementById('discoverCategories');
     if(categoriesEl){
       categoriesEl.innerHTML = '';
@@ -2421,7 +2687,7 @@
       });
     }
     
-    // Kalender rendern (kurzes Format: "Mo 22" - KEIN "Heute"!)
+    // Kalender rendern (ohne Überschrift, distinct style)
     const calendarEl = document.getElementById('discoverCalendar');
     if(calendarEl){
       calendarEl.innerHTML = '';
@@ -2430,12 +2696,16 @@
         d.setDate(d.getDate() + i);
         const key = isoDate(d);
         const dayName = ['So','Mo','Di','Mi','Do','Fr','Sa'][d.getDay()];
-        const dayNum = String(d.getDate()); // Kein padStart, direkt String
+        const dayNum = String(d.getDate());
         
         const btn = document.createElement('button');
         btn.className = 'discover-day' + (activeDay === key ? ' active' : '');
-        // WICHTIG: Immer kurzes Format "Mo 22", niemals "Heute"
-        btn.textContent = `${dayName} ${dayNum}`;
+        // Format: "Heute" für heute, sonst "Fr 23"
+        if(i === 0){
+          btn.textContent = 'Heute';
+        } else {
+          btn.textContent = `${dayName} ${dayNum}`;
+        }
         btn.onclick = ()=>{
           activeDay = key;
           renderDiscover();
@@ -2447,11 +2717,12 @@
     // Angebote filtern
     let list = offers.filter(o => o.day === activeDay && o.active !== false);
     
-    // Kategorie-Filter
+    // Kategorie-Filter (entferne doppelte "In der Nähe" Filterung)
     if(activeDiscoverFilter !== 'near'){
       const cat = CAT_MAP[activeDiscoverFilter] || activeDiscoverFilter;
       list = list.filter(o => (o.category||'') === cat);
     }
+    // "In der Nähe" zeigt alle Angebote (keine zusätzliche Filterung)
     
     // Standort-Filter
     const q = String(locationQuery||'').trim().toLowerCase();
@@ -2463,14 +2734,14 @@
       });
     }
     
-    // Hero Cards rendern
+    // List Cards rendern (horizontale List-Cards statt Hero Cards)
     const offersEl = document.getElementById('discoverOffers');
     const emptyEl = document.getElementById('discoverEmpty');
     if(offersEl && emptyEl){
       offersEl.innerHTML = '';
       emptyEl.style.display = list.length ? 'none' : 'block';
       
-      list.forEach(o=> offersEl.appendChild(createDiscoverHeroCard(o)));
+      list.forEach(o=> offersEl.appendChild(createDiscoverListCard(o)));
     }
     
     // Icons aktualisieren
@@ -2479,40 +2750,56 @@
     }
   }
   
-  // Hero Card für Discover-Seite (PWA, Light Mode, App-like UX)
-  function createDiscoverHeroCard(o){
+  // List Card für Discover-Seite (kompakt, horizontal, app-like)
+  function createDiscoverListCard(o){
     const data = normalizeOffer(o);
     const card = document.createElement('div');
-    card.className = 'discover-hero-card';
+    card.className = 'discover-list-card';
     
     const imgSrc = data.imageUrl || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70';
     
-    // Badges für unter Buttons
+    // Badges (mit Icons statt Emojis)
     const badges = [];
-    if(data.hasPickupCode) badges.push('<div class="discover-hero-badge code"><i data-lucide="shopping-bag"></i> Abholcode</div>');
-    if(data.dineInPossible) badges.push('<div class="discover-hero-badge dine"><i data-lucide="utensils"></i> Vor Ort</div>');
-    if(!data.dineInPossible && !data.hasPickupCode) badges.push('<div class="discover-hero-badge"><i data-lucide="package"></i> Zum Mitnehmen</div>');
+    if(data.hasPickupCode) badges.push(`<div class="discover-list-badge code">${iconMarkup('key-round')} <span>Abholcode</span></div>`);
+    if(data.dineInPossible) badges.push(`<div class="discover-list-badge dine">${iconMarkup('utensils')} <span>Vor Ort</span></div>`);
+    if(!data.dineInPossible && !data.hasPickupCode) badges.push(`<div class="discover-list-badge pickup">${iconMarkup('shopping-bag')} <span>Zum Mitnehmen</span></div>`);
+    
+    // Meta-Info (optional: time/qty/distance) - mit Icons
+    const metaInfo = [];
+    if(data.pickupWindow) metaInfo.push(`<span class="discover-list-info">${iconMarkup('clock')} <span>${esc(data.pickupWindow)}</span></span>`);
+    if(data.distanceKm != null) metaInfo.push(`<span class="discover-list-info">${iconMarkup('map-pin')} <span>${Number(data.distanceKm).toFixed(1)}</span></span>`);
+    if(data.availableCount != null) metaInfo.push(`<span class="discover-list-info">${iconMarkup('box')} <span>${data.availableCount}</span></span>`);
+    
+    // Food type icon
+    const foodTypeIcon = data.category === 'Vegan' ? 'leaf' : 
+                         data.category === 'Vegetarisch' ? 'carrot' : 
+                         data.category === 'Mit Fleisch' ? 'drumstick' : 
+                         data.category === 'Fisch' ? 'fish' : '';
+    if(foodTypeIcon) metaInfo.push(`<span class="discover-list-info">${iconMarkup(foodTypeIcon)}</span>`);
     
     card.innerHTML = `
-      <div class="discover-hero-image">
+      <div class="discover-list-image">
         <img src="${esc(imgSrc)}" alt="${esc(data.dish||'')}" />
       </div>
-      <div class="discover-hero-content">
-        <div class="discover-hero-title">${esc(data.dish||'Gericht')}</div>
-        <div class="discover-hero-provider">${esc(data.providerName||'Anbieter')}</div>
-        <div class="discover-hero-price">${euro(data.price)}</div>
-        <div class="discover-hero-actions">
-          <button class="discover-hero-btn primary" onclick="event.stopPropagation(); const o=offers.find(x=>x.id==='${data.id}'); if(o) handleOrderClick(o);">
-            ${data.hasPickupCode ? 'Bestellen' : 'Details'}
+      <div class="discover-list-content">
+        <h3 class="discover-list-title">${esc(data.dish||'Gericht')}</h3>
+        <p class="discover-list-provider">${esc(data.providerName||'Anbieter')}</p>
+        <div class="discover-list-meta">
+          <span class="discover-list-price">${euro(data.price)}</span>
+          ${metaInfo.length ? metaInfo.join('') : ''}
+        </div>
+        ${badges.length ? `<div class="discover-list-badges">${badges.join('')}</div>` : ''}
+        <div class="discover-list-actions">
+          <button class="discover-list-btn" onclick="event.stopPropagation(); const o=offers.find(x=>x.id==='${data.id}'); if(o) handleOrderClick(o);">
+            ${data.hasPickupCode ? iconMarkup('shopping-cart') + ' <span>Bestellen</span>' : iconMarkup('eye') + ' <span>Details</span>'}
           </button>
         </div>
-        ${badges.length ? `<div class="discover-hero-badges">${badges.join('')}</div>` : ''}
       </div>
     `;
     
     // Klick auf Kachel öffnet direkt Bestellung (wenn möglich) oder Details
     card.onclick = (e)=>{
-      if(e.target.closest('.discover-hero-btn')) return; // Button-Handler übernimmt
+      if(e.target.closest('.discover-list-btn')) return; // Button-Handler übernimmt
       if(data.hasPickupCode){
         handleOrderClick(o);
       } else {
@@ -2537,94 +2824,164 @@
       card.style.cursor='default';
     }
 
+    // Image
     const img=document.createElement('div');
     img.className='img';
     const imgSrc = data.imageUrl || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70';
-    img.innerHTML = `
-      <img alt="${esc(data.dish||'')}" src="${esc(imgSrc)}" />
-      ${data.dineInPossible?'<div class="badge dine">Vor Ort</div>':''}
-      ${data.hasPickupCode?'<div class="badge code">Online bezahlen</div>':''}
-    `;
+    img.innerHTML = `<img alt="${esc(data.dish||'')}" src="${esc(imgSrc)}" />`;
 
-    const providerKey = data.providerId || data.id;
+    // Heart Icon (Favorit) - rechts oben (kein Text, nur Icon)
     const dishKey = data.id;
     const heart=document.createElement('button');
-    heart.className='heart'+(dishFavs.has(dishKey)?' on':'');
+    heart.className='card-heart'+(dishFavs.has(dishKey)?' on':'');
     heart.type='button';
-    heart.textContent = dishFavs.has(dishKey)?'❤':'♡';
+    heart.innerHTML = dishFavs.has(dishKey) ? iconMarkup('heart', {fill:true}) : iconMarkup('heart');
     heart.onclick=(e)=>{ e.stopPropagation(); toggleDishFav(dishKey); };
+    if(interactive){ card.appendChild(heart); }
 
-    const plogo = data.providerLogoData ? `<img src="${data.providerLogoData}" alt="Logo" />` : `<img src="assets/provider-placeholder.png" alt="Logo" />`;
-
-    const providerRow=document.createElement('div');
-    providerRow.className='provider-logo';
-    providerRow.innerHTML = `
-      <div class="plogo">${plogo}</div>
-      <div class="pname">${esc(data.providerName||'Anbieter')}</div>
-    `;
-
-    const addr = buildAddress({address:data.address, street:data.providerStreet, zip:data.providerZip, city:data.providerCity});
+    // Body
     const body=document.createElement('div');
     body.className='body';
-    body.innerHTML = `
-      <p class="title">${esc(data.dish||'')}</p>
-      <p class="sub">${esc(addr || '')}</p>
-      <div class="meta">
-        <div class="price">${euro(data.price)}</div>
-        <div class="right">
-          <div class="meta-line">${iconMarkup('clock')}<span>${esc(data.pickupWindow||'')}</span></div>
-          <div class="tag">${esc(data.category||'')}</div>
-        </div>
-      </div>
-    `;
-
-    const info=document.createElement('div');
-    info.className='info-row';
-    const addInfo = (icon, text)=>{
-      const item=document.createElement('div');
-      item.className='info-item';
-      item.innerHTML = `${iconMarkup(icon)}<span>${esc(text)}</span>`;
-      info.appendChild(item);
-    };
-    if(data.availableCount != null) addInfo('box', `${data.availableCount} verfügbar`);
-    if(data.distanceKm != null) addInfo('location', `${Number(data.distanceKm).toFixed(1)} km`);
-    body.appendChild(info);
-
+    
+    // Titelzeile: Dish name (max 2 Zeilen)
+    const titleRow = document.createElement('div');
+    titleRow.className='card-title-row';
+    const title = document.createElement('h3');
+    title.className='card-title';
+    title.textContent = data.dish || 'Gericht';
+    titleRow.appendChild(title);
+    body.appendChild(titleRow);
+    
+    // Anbieter: Kurzform mit Store-Icon
+    const provider = document.createElement('p');
+    provider.className='card-provider';
+    provider.innerHTML = `${iconMarkup('store')} <span>${esc(data.providerName || 'Anbieter')}</span>`;
+    body.appendChild(provider);
+    
+    // Pickup-Badges (obligatorisch, max 3, nach Anbieter, vor Preis)
+    // Reihenfolge: Vor Ort → Zum Mitnehmen → Abholcode
+    // Nur anwendbare Badges anzeigen
+    const pickupBadges = [];
+    
+    // 1. Vor Ort (wenn dineInPossible)
+    if(data.dineInPossible) {
+      pickupBadges.push({class:'dine', text:'Vor Ort', icon:'utensils'});
+    }
+    
+    // 2. Zum Mitnehmen (immer anzeigen, außer wenn nur Vor Ort möglich)
+    // Wenn dineInPossible false ist, dann ist es definitiv "Zum Mitnehmen"
+    // Wenn dineInPossible true ist, kann es beides sein
+    if(!data.dineInPossible) {
+      // Nur Zum Mitnehmen möglich
+      pickupBadges.push({class:'pickup', text:'Zum Mitnehmen', icon:'shopping-bag'});
+    } else if(pickupBadges.length < 3) {
+      // Beides möglich, aber max 3 Badges
+      pickupBadges.push({class:'pickup', text:'Zum Mitnehmen', icon:'shopping-bag'});
+    }
+    
+    // 3. Abholcode (wenn verfügbar und noch Platz)
+    if(data.hasPickupCode && pickupBadges.length < 3) {
+      pickupBadges.push({class:'code', text:'Abholcode', icon:'key-round'});
+    }
+    
+    // Max 3 Badges sicherstellen
+    if(pickupBadges.length > 3) {
+      pickupBadges.splice(3);
+    }
+    
+    if(pickupBadges.length > 0){
+      const badgesRow = document.createElement('div');
+      badgesRow.className='card-status-badges';
+      pickupBadges.forEach(badge => {
+        const badgeEl = document.createElement('span');
+        badgeEl.className = `card-status-badge ${badge.class}`;
+        badgeEl.innerHTML = `${iconMarkup(badge.icon)} <span>${esc(badge.text)}</span>`;
+        badgesRow.appendChild(badgeEl);
+      });
+      body.appendChild(badgesRow);
+    }
+    
+    // Preis: Groß & prominent, Markenfarbe
+    const price = document.createElement('div');
+    price.className='card-price';
+    price.textContent = euro(data.price);
+    body.appendChild(price);
+    
+    // Info-Zeile als Icon-Badges (eine Zeile, max 4 Icons, nur Icons + Zahlen)
+    const infoRow = document.createElement('div');
+    infoRow.className='card-info-badges';
+    
+    // clock: timeRange
+    if(data.pickupWindow){
+      const timeBadge = document.createElement('span');
+      timeBadge.className='card-info-badge';
+      timeBadge.innerHTML = `${iconMarkup('clock')} <span>${esc(data.pickupWindow)}</span>`;
+      infoRow.appendChild(timeBadge);
+    }
+    
+    // map-pin: distance
+    if(data.distanceKm != null){
+      const distBadge = document.createElement('span');
+      distBadge.className='card-info-badge';
+      distBadge.innerHTML = `${iconMarkup('map-pin')} <span>${Number(data.distanceKm).toFixed(1)}</span>`;
+      infoRow.appendChild(distBadge);
+    }
+    
+    // box: quantity/availability
+    if(data.availableCount != null){
+      const qtyBadge = document.createElement('span');
+      qtyBadge.className='card-info-badge';
+      qtyBadge.innerHTML = `${iconMarkup('box')} <span>${data.availableCount}</span>`;
+      infoRow.appendChild(qtyBadge);
+    }
+    
+    // food type: leaf (Vegan), carrot (Vegetarian), drumstick (Meat), fish (Fish)
+    const foodTypeIcon = data.category === 'Vegan' ? 'leaf' : 
+                         data.category === 'Vegetarisch' ? 'carrot' : 
+                         data.category === 'Mit Fleisch' ? 'drumstick' : 
+                         data.category === 'Fisch' ? 'fish' : '';
+    if(foodTypeIcon){
+      const typeBadge = document.createElement('span');
+      typeBadge.className='card-info-badge';
+      typeBadge.innerHTML = iconMarkup(foodTypeIcon);
+      infoRow.appendChild(typeBadge);
+    }
+    
+    // Max 4 Icons pro Info-Zeile
+    if(infoRow.children.length > 4){
+      while(infoRow.children.length > 4){
+        infoRow.removeChild(infoRow.lastChild);
+      }
+    }
+    
+    if(infoRow.children.length > 0){
+      body.appendChild(infoRow);
+    }
+    
+    // Actions: Nur ein Primary CTA "Bestellen"
     if(interactive){
       const actions=document.createElement('div');
       actions.className='card-actions';
-
+      
       const orderBtn=document.createElement('button');
       orderBtn.type='button';
       orderBtn.className='card-action primary';
-      const orderLabel = data.hasPickupCode ? 'Bestellen' : 'Nur ansehen';
-      orderBtn.innerHTML = `${iconMarkup(data.hasPickupCode ? 'cart' : 'eye')}<span>${esc(orderLabel)}</span>`;
+      orderBtn.innerHTML = `${iconMarkup('shopping-cart')} <span>Bestellen</span>`;
       orderBtn.disabled = !data.hasPickupCode;
       orderBtn.onclick=(e)=>{ e.stopPropagation(); handleOrderClick(data); };
-
-      const favBtn=document.createElement('button');
-      favBtn.type='button';
-      favBtn.className='card-action';
-      const favLabel = providerFavs.has(providerKey) ? 'Anbieter gespeichert' : 'Anbieter speichern';
-      favBtn.innerHTML = `${iconMarkup('heart')}<span>${esc(favLabel)}</span>`;
-      favBtn.onclick=(e)=>{ e.stopPropagation(); toggleProviderFav(providerKey); };
-
-      const shareBtn=document.createElement('button');
-      shareBtn.type='button';
-      shareBtn.className='card-action ghost';
-      shareBtn.innerHTML = `${iconMarkup('share')}<span>Teilen</span>`;
-      shareBtn.onclick=(e)=>{ e.stopPropagation(); shareOffer(data); };
-
+      
       actions.appendChild(orderBtn);
-      actions.appendChild(favBtn);
-      actions.appendChild(shareBtn);
       body.appendChild(actions);
     }
 
     card.appendChild(img);
-    if(interactive){ card.appendChild(heart); }
-    card.appendChild(providerRow);
     card.appendChild(body);
+    
+    // Icons aktualisieren (für Heart Icon)
+    if(typeof lucide !== 'undefined'){
+      setTimeout(()=> lucide.createIcons(), 50);
+    }
+    
     return card;
   }
 
@@ -2764,11 +3121,9 @@
     dishList.forEach(o=>dishGrid.appendChild(offerCard(o)));
   }
 
+  // Legacy: genPickupCode (wird durch generatePickupCode ersetzt)
   function genPickupCode(){
-    const letters = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
-    const letter = letters[Math.floor(Math.random()*letters.length)];
-    const num = Math.floor(Math.random()*9) + 1;
-    return `${letter}${num}`;
+    return generatePickupCode();
   }
 
   function renderOrders(){
@@ -2810,7 +3165,11 @@
       if(ordersFilter === 'alle'){
         const sa = a.status || 'offen';
         const sb = b.status || 'offen';
-        if(sa !== sb) return sa === 'offen' ? -1 : 1;
+        // Sortierung: PAID > PAYMENT_PENDING > CREATED > andere
+        const priority = { 'PAID': 1, 'PAYMENT_PENDING': 2, 'CREATED': 3, 'offen': 4 };
+        const pa = priority[sa] || 5;
+        const pb = priority[sb] || 5;
+        if(pa !== pb) return pa - pb;
       }
       return (b.createdAt||0) - (a.createdAt||0);
     });
@@ -2818,23 +3177,38 @@
       box.textContent = 'Keine passenden Bestellungen.';
       return;
     }
-    box.innerHTML = list.map(o=>`
-      <div class="order-item ${o.status==='abgeholt' ? 'done' : ''}">
+    box.innerHTML = list.map(o=>{
+      // Status-Anzeige
+      const status = o.status || 'offen';
+      const statusLabel = status === 'CREATED' ? 'Erstellt' :
+                         status === 'PAYMENT_PENDING' ? 'Zahlung ausstehend' :
+                         status === 'PAID' ? 'Bezahlt' :
+                         status === 'CANCELLED' ? 'Abgebrochen' :
+                         status === 'COMPLETED' ? 'Abgeholt' :
+                         status;
+      const isDone = status === 'COMPLETED' || status === 'abgeholt';
+      const code = o.pickupCode || o.code || '';
+      // Code nur anzeigen wenn PAID (Guard)
+      const showCode = status === 'PAID' && code;
+      
+      return `
+      <div class="order-item ${isDone ? 'done' : ''}">
         <div class="order-top">
           <div>
             <div style="font-weight:900">${esc(o.providerName || 'Anbieter')}</div>
-            <div class="hint">${esc(o.summary || '')}</div>
+            <div class="hint">${esc(o.dishName || o.summary || '')}</div>
           </div>
           <div class="order-right">
-            <button class="order-code" type="button" data-id="${esc(o.id||'')}" data-code="${esc(o.code||'')}">${esc(o.code||'')}</button>
-            <div class="status-pill ${o.status==='abgeholt' ? 'done' : 'open'}">${esc(o.status||'offen')}</div>
+            ${showCode ? `<button class="order-code" type="button" data-id="${esc(o.id||'')}" data-code="${esc(code)}">${esc(code)}</button>` : ''}
+            <div class="status-pill ${isDone ? 'done' : 'open'}">${esc(statusLabel)}</div>
           </div>
         </div>
         <div class="hint" style="margin-top:6px;">
-          Status: ${esc(o.status||'offen')}${o.pickupTime ? ` - Abholzeit: ${esc(o.pickupTime)}` : ''} - ${fmt(o.createdAt)}
+          ${o.total ? `Gesamt: ${euro(o.totalCents ? (o.totalCents / 100) : (o.total || 0))} · ` : ''}${o.etaTime ? `Abholzeit: ${esc(o.etaTime)} · ` : ''}${fmt(o.createdAt)}
         </div>
       </div>
-    `).join('');
+    `;
+    }).join('');
 
     box.querySelectorAll('.order-code').forEach(btn=>{
       btn.onclick=()=> {
@@ -3035,6 +3409,13 @@
       history.pushState(null, '', location.pathname);
       return;
     }
+    // Login Modal schließen
+    if(document.getElementById('loginSheet') && document.getElementById('loginSheet').classList.contains('active')){
+      closeLoginSheet();
+      e.preventDefault();
+      history.pushState(null, '', location.pathname);
+      return;
+    }
     // Sheet schließen
     if(document.getElementById('sheet').classList.contains('active')){
       closeSheet();
@@ -3075,7 +3456,7 @@
     const profile = normalizeProviderProfile(provider.profile || {});
     const providerName = o.providerName || profile.name || 'Anbieter';
     const pickup = o.pickupWindow || profile.mealWindow || '—';
-    return `${providerName}\nHeute zu Mittag: ${dish}\n💰 ${euro(o.price)}\n⏰ ${pickup}\nPowered by Mittagio`;
+    return `${providerName}\nHeute zu Mittag: ${dish}\n${euro(o.price)}\n${pickup}\nPowered by Mittagio`;
   }
 
   function setPrintView(html){
@@ -3263,6 +3644,7 @@
   }
 
   function handleOrderClick(o){
+    // KEIN Login-Zwang: Gast kann direkt bestellen
     if(addToCart(o)){
       showCart();
     } else {
@@ -3302,6 +3684,60 @@
   };
   const btnShareClose = document.getElementById('btnShareClose');
   if(btnShareClose) btnShareClose.onclick=()=> closeShareSheet();
+  
+  // --- Login Modal ---
+  function openLoginSheet(){
+    document.getElementById('loginBd').classList.add('active');
+    document.getElementById('loginSheet').classList.add('active');
+    // Focus auf E-Mail-Input
+    setTimeout(()=>{
+      const emailInput = document.getElementById('loginModalEmail');
+      if(emailInput) emailInput.focus();
+    }, 300);
+  }
+  
+  function closeLoginSheet(){
+    document.getElementById('loginBd').classList.remove('active');
+    document.getElementById('loginSheet').classList.remove('active');
+  }
+  
+  // Login Modal Backdrop Handler
+  const loginBd = document.getElementById('loginBd');
+  if(loginBd){
+    loginBd.onclick = () => {
+      closeLoginSheet();
+    };
+  }
+  
+  // Login Modal Handler
+  document.getElementById('btnLoginModalLogin').onclick=()=>{
+    const email = document.getElementById('loginModalEmail').value.trim();
+    const pass = document.getElementById('loginModalPass').value.trim();
+    if(!email || !pass){
+      alert('Bitte E-Mail und Passwort eingeben.');
+      return;
+    }
+    customer.loggedIn = true;
+    customer.name = customer.name || email.split('@')[0];
+    customer.email = email;
+    save(LS.customer, customer);
+    updateProfileView();
+    closeLoginSheet();
+    // Nach Login zur Discover-Seite
+    setMode('customer');
+    showDiscover();
+  };
+  
+  document.getElementById('btnLoginModalDemo').onclick=()=>{
+    customer.loggedIn = true;
+    customer.name = customer.name || 'Mike';
+    save(LS.customer, customer);
+    updateProfileView();
+    closeLoginSheet();
+    // Nach Demo-Login zur Discover-Seite
+    setMode('customer');
+    showDiscover();
+  };
   const btnShareWhatsApp = document.getElementById('btnShareWhatsApp');
   if(btnShareWhatsApp) btnShareWhatsApp.onclick=()=>{
     const txt = `${sharePayload.text}\n${sharePayload.url}`.trim();
@@ -3506,13 +3942,13 @@
 
     btn.style.display='block';
     btn.disabled = !canCheckout;
-    // CTA-Text: Mit Payment = "Weiter zur Zahlung", ohne Payment = "Bestellung bestätigen" oder "Abholcode erhalten"
+    // CTA-Text: Zahlung ist Pflicht (Stripe Checkout, Gastzahlung)
     if(canCheckout){
-      // Alle Items haben hasPickupCode = true → Payment möglich
+      // Alle Items haben hasPickupCode = true → Stripe Checkout (Gastzahlung, Zahlung Pflicht)
       btn.innerHTML = `${iconMarkup('card')}<span>Weiter zur Zahlung</span>`;
     } else {
-      // Kein Payment → Bestellung bestätigen / Abholcode erhalten
-      btn.innerHTML = `${iconMarkup('check')}<span>Bestellung bestätigen</span>`;
+      // Kein Payment möglich → Button deaktiviert
+      btn.innerHTML = `${iconMarkup('alert-circle')}<span>Zahlung nicht möglich</span>`;
     }
     note.style.display='block';
     
@@ -3523,11 +3959,7 @@
   }
 
   document.getElementById('btnCheckout').onclick=()=>{
-    if(!customer.loggedIn){
-      alert('Für die Demo: Bitte zuerst als Kunde anmelden (Profil).');
-      showProfile();
-      return;
-    }
+    // KEIN Login-Zwang: Gast kann direkt bezahlen
     if(!cart || !cart.items || !cart.items.length) return;
     
     // Prüfe ob Payment möglich ist
@@ -3547,24 +3979,6 @@
       return;
     }
     
-    // Wenn kein Payment möglich, trotzdem Bestellung erstellen (nur ohne Code)
-    if(!hasPayment){
-      alert('Hinweis: Diese Bestellung enthält Gerichte ohne Abholcode. Du erhältst keine Bestätigung per Code.');
-    }
-    // Pickup Code generieren
-    const code = generatePickupCode();
-    const firstOffer = cart.items.length ? offers.find(x=>x.id===cart.items[0].offerId) : null;
-    const firstOfferNormalized = firstOffer ? normalizeOffer(firstOffer) : null;
-    const pickupWindow = firstOfferNormalized && firstOfferNormalized.pickupWindow ? firstOfferNormalized.pickupWindow : '';
-    
-    // Bestellinfos zusammenstellen
-    const summary = cart.items.map(it=>{
-      const o = offers.find(x=>x.id===it.offerId);
-      if(!o) return '';
-      const normalized = normalizeOffer(o);
-      return `${normalized.dish || normalized.title || 'Gericht'} x ${it.qty}`;
-    }).filter(Boolean).join(', ');
-    
     // Gesamtpreis berechnen
     let total = 0;
     cart.items.forEach(it=>{
@@ -3575,43 +3989,295 @@
       }
     });
     
-    // Order nach Datenmodell erstellen
-    const newOrder = {
+    // Zahlung ist Pflicht (MVP: Stripe Checkout)
+    if(!hasPayment){
+      alert('Diese Bestellung enthält Gerichte ohne Abholcode. Bitte wähle Angebote mit Abholcode aus.');
+      return;
+    }
+    
+    if(total <= 0){
+      alert('Bitte wähle mindestens ein Gericht aus.');
+      return;
+    }
+    
+    // Order mit Status CREATED erstellen (Warenkorb)
+    const orderCreated = createOrderFromCart(cart, 'CREATED');
+    if(!orderCreated){
+      alert('Fehler beim Erstellen der Bestellung.');
+      return;
+    }
+    
+    // Stripe Checkout öffnen (Gastzahlung, Zahlung Pflicht)
+    // Order wird auf PAYMENT_PENDING gesetzt
+    updateOrder(orderCreated.id, { status: 'PAYMENT_PENDING' });
+    
+    startStripeCheckout(total, cart, orderCreated.id);
+  };
+  
+  /**
+   * Create order from cart
+   * @param {Object} cartData
+   * @param {'CREATED'|'PAYMENT_PENDING'} initialStatus
+   * @returns {Order|null}
+   */
+  function createOrderFromCart(cartData, initialStatus){
+    if(!cartData || !cartData.items || !cartData.items.length) return null;
+    
+    const firstOffer = cartData.items.length ? offers.find(x=>x.id===cartData.items[0].offerId) : null;
+    const firstOfferNormalized = firstOffer ? normalizeOffer(firstOffer) : null;
+    
+    // Gesamtpreis berechnen (in Cents)
+    let totalCents = 0;
+    const items = cartData.items.map(it=>{
+      const o = offers.find(x=>x.id===it.offerId);
+      if(!o) return null;
+      const normalized = normalizeOffer(o);
+      const unitPriceCents = Math.round(Number(normalized.price||0) * 100);
+      const lineTotalCents = unitPriceCents * it.qty;
+      totalCents += lineTotalCents;
+      return {
+        dishId: o.id,
+        dishName: normalized.dish || normalized.title || 'Gericht',
+        quantity: it.qty,
+        unitPriceCents: unitPriceCents
+      };
+    }).filter(Boolean);
+    
+    const now = Date.now();
+    /** @type {Order} */
+    const order = {
       id: cryptoId(),
-      dishName: summary,
-      providerName: cart.providerName || 'Anbieter',
+      createdAt: now,
+      updatedAt: now,
+      dishId: items[0]?.dishId || '',
+      dishName: items.map(i => `${i.dishName} x ${i.quantity}`).join(', '),
+      providerId: cartData.providerId || '',
+      providerName: cartData.providerName || 'Anbieter',
       providerAddress: firstOfferNormalized ? buildAddress({
         address: firstOfferNormalized.address,
         street: firstOfferNormalized.providerStreet,
         zip: firstOfferNormalized.providerZip,
         city: firstOfferNormalized.providerCity
       }) : '',
-      quantity: cart.items.reduce((sum, it) => sum + it.qty, 0),
-      total: total,
-      pickupTime: cart.pickupTime || '',
+      quantity: cartData.items.reduce((sum, it) => sum + it.qty, 0),
+      unitPrice: items[0]?.unitPriceCents || 0,
+      total: totalCents,
       fulfillType: firstOfferNormalized && firstOfferNormalized.dineInPossible ? 'DINE_IN' : 'PICKUP',
-      pickupCode: code,
-      status: 'CONFIRMED',
-      pickupWindow: pickupWindow,
-      createdAt: Date.now(),
+      etaTime: cartData.pickupTime || '',
+      status: initialStatus,
+      currency: 'EUR',
+      stripeCheckoutSessionId: undefined,
+      stripePaymentIntentId: undefined,
+      receiptEmail: undefined,
+      pickupCode: undefined, // Nur bei PAID (Guard in addOrder)
+      pickupCodeActivatedAt: undefined, // Nur bei PAID
+      isGuest: true,
       // Legacy-Felder für Kompatibilität
-      summary: summary,
-      code: code
+      summary: items.map(i => `${i.dishName} x ${i.quantity}`).join(', '),
+      code: null,
+      pickupTime: cartData.pickupTime || '',
+      pickupWindow: firstOfferNormalized && firstOfferNormalized.pickupWindow ? firstOfferNormalized.pickupWindow : '',
+      unitPriceCents: items[0]?.unitPriceCents || 0,
+      totalCents: totalCents,
+      paymentIntentId: null
     };
     
-    // Order speichern
-    addOrder(newOrder);
-    orders = loadOrders(); // Aktualisieren
+    return addOrder(order);
+  }
+  
+  // --- Stripe Checkout (Gastzahlung, Zahlung Pflicht) ---
+  /**
+   * Start Stripe Checkout flow
+   * @param {number} total - Total amount in EUR (not cents)
+   * @param {Object} cartData - Cart data
+   * @param {string} orderId - Order ID
+   */
+  function startStripeCheckout(total, cartData, orderId){
+    // TODO: Replace with real Stripe integration
+    // In Production:
+    //   1. Backend-Endpoint: POST /api/create-checkout-session
+    //   2. Request Body: { orderId, items: cartData.items, total, pickupTime, ... }
+    //   3. Backend erstellt Stripe Checkout Session (mode: 'payment', allow_promotion_codes: true)
+    //   4. Session-URL erhalten: session.url
+    //   5. window.location.href = session.url; (öffnet Stripe Checkout)
+    //   6. Nach Zahlung: Stripe leitet zurück zu success_url?session_id=xxx
+    //   7. Webhook bestätigt Zahlung → handleCheckoutSuccess(session_id)
+    
+    // MVP Demo: Simuliere Stripe Checkout
+    const sessionId = 'demo_session_' + cryptoId();
+    
+    // Speichere session_id in Order (wird später bei Success verwendet)
+    updateOrder(orderId, {
+      stripeCheckoutSessionId: sessionId
+    });
+    
+    // Demo: Simuliere erfolgreiche Zahlung
+    // In Production: window.location.href = session.url;
+    if(confirm(`Stripe Checkout würde jetzt geöffnet.\n\nGesamtbetrag: ${euro(total)}\n\nGastzahlung möglich (E-Mail nur für Zahlungsbeleg, kein Login erforderlich).\n\nDemo: Zahlung erfolgreich simulieren?`)){
+      // Simuliere Success-Return
+      handleCheckoutSuccess(sessionId, orderId);
+    } else {
+      // Simuliere Cancel
+      handleCheckoutCancel(orderId);
+    }
+  }
+  
+  /**
+   * Handle Stripe Checkout Success Return
+   * Route: /checkout/success?session_id=xxx OR ?orderId=xxx
+   * @param {string} [sessionId] - Stripe session ID (optional)
+   * @param {string} [orderId] - Order ID (optional, if sessionId not available)
+   */
+  function handleCheckoutSuccess(sessionId, orderId){
+    // TODO: In Production, verify payment via Webhook
+    // For now: MVP assumes payment is successful if we reach this point
+    
+    let order = null;
+    
+    // Find order: priority: orderId > sessionId
+    if(orderId){
+      order = getOrderById(orderId);
+    } else if(sessionId){
+      // Find order by session_id
+      const ordersList = loadOrders();
+      order = ordersList.find(o => o.stripeCheckoutSessionId === sessionId);
+    }
+    
+    // Fehler-UI: Bestellung nicht gefunden
+    if(!order){
+      console.error('Order not found for checkout success', { sessionId, orderId });
+      // Zeige Fehler-UI
+      const errorView = document.createElement('div');
+      errorView.className = 'panel';
+      errorView.style.padding = '40px 20px';
+      errorView.style.textAlign = 'center';
+      errorView.innerHTML = `
+        <div style="font-size:48px; margin-bottom:20px;">⚠️</div>
+        <h3 style="margin-bottom:12px;">Bestellung nicht gefunden</h3>
+        <p class="hint" style="margin-bottom:24px;">Die Bestellung konnte nicht gefunden werden.</p>
+        <button class="btn" type="button" onclick="showDiscover()" style="width:100%; min-height:44px;">
+          <i data-lucide="compass"></i> Zur Entdecken-Seite
+        </button>
+      `;
+      document.body.appendChild(errorView);
+      showView(null); // Hide all views
+      if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
+      return;
+    }
+    
+    // Wenn Order noch nicht PAID: auf PAID setzen und Code generieren
+    if(order.status !== 'PAID'){
+      if(order.status !== 'PAYMENT_PENDING'){
+        console.warn('Order status is not PAYMENT_PENDING:', order.status);
+      }
+      
+      // Mark as PAID and generate pickup code
+      completePayment(order.id, {
+        stripeCheckoutSessionId: sessionId || order.stripeCheckoutSessionId,
+        paymentIntentId: 'pi_' + cryptoId(), // Would come from Stripe webhook
+        receiptEmail: 'customer@example.com' // Would come from Stripe
+      });
+    } else {
+      // Bereits PAID: direkt zu Abholcode navigieren
+      showPickupCode(order.id);
+    }
+  }
+  
+  /**
+   * Handle Stripe Checkout Cancel
+   * Route: /checkout/cancel?orderId=xxx OR ?session_id=xxx
+   * @param {string} [orderId] - Order ID (optional)
+   * @param {string} [sessionId] - Stripe session ID (optional)
+   */
+  function handleCheckoutCancel(orderId, sessionId){
+    let order = null;
+    
+    // Find order: priority: orderId > sessionId
+    if(orderId){
+      order = getOrderById(orderId);
+    } else if(sessionId){
+      const ordersList = loadOrders();
+      order = ordersList.find(o => o.stripeCheckoutSessionId === sessionId);
+    }
+    
+    if(!order){
+      // Fallback: direkt zum Warenkorb
+      showCart();
+      return;
+    }
+    
+    // Set status to CANCELLED
+    updateOrder(order.id, {
+      status: 'CANCELLED'
+    });
+    
+    // UI: "Zahlung abgebrochen" + Button "Zurück zum Warenkorb"
+    // Navigate back to cart
+    showCart();
+    
+    // Zeige Info (optional, kann auch weggelassen werden)
+    setTimeout(() => {
+      const cartBox = document.getElementById('cartBox');
+      if(cartBox){
+        const infoDiv = document.createElement('div');
+        infoDiv.className = 'hint';
+        infoDiv.style.cssText = 'background:#fff3cd; border:1px solid #ffc107; border-radius:12px; padding:12px; margin-bottom:16px; text-align:center;';
+        infoDiv.innerHTML = 'ℹ️ Zahlung abgebrochen';
+        cartBox.insertBefore(infoDiv, cartBox.firstChild);
+      }
+    }, 100);
+  }
+  
+  /**
+   * Complete payment (set status to PAID and generate pickup code)
+   * @param {string} orderId
+   * @param {Object} paymentData
+   * @param {string} [paymentData.stripeCheckoutSessionId]
+   * @param {string} [paymentData.paymentIntentId]
+   * @param {string} [paymentData.receiptEmail]
+   */
+  function completePayment(orderId, paymentData){
+    const order = getOrderById(orderId);
+    if(!order){
+      console.error('Order not found:', orderId);
+      return;
+    }
+    
+    // Pickup Code generieren (nur bei PAID)
+    const code = generatePickupCode(5);
+    const now = Date.now();
+    
+    // Order auf PAID setzen (pickupCode wird hier gesetzt, da status=PAID)
+    const updatedOrder = updateOrder(orderId, {
+      status: 'PAID',
+      stripeCheckoutSessionId: paymentData.stripeCheckoutSessionId,
+      stripePaymentIntentId: paymentData.paymentIntentId,
+      receiptEmail: paymentData.receiptEmail,
+      pickupCode: code,
+      pickupCodeActivatedAt: now,
+      // Legacy-Felder für Kompatibilität
+      code: code,
+      paymentStatus: 'PAID',
+      paymentIntentId: paymentData.paymentIntentId
+    });
+    
+    if(!updatedOrder){
+      console.error('Failed to update order');
+      return;
+    }
     
     // Warenkorb leeren
     cart = null;
     save(LS.cart, cart);
     renderCart();
+    
+    // Orders aktualisieren
+    orders = loadOrders();
     renderOrders();
     
-    // Navigiere zu AbholcodeScreen (nicht zu Mittagsbox)
-    showPickupCode(newOrder.id);
-  };
+    // Navigiere zu AbholcodeScreen
+    showPickupCode(updatedOrder.id);
+  }
 
   // --- Start actions ---
   const startCustomerBtn = document.getElementById('btnStartCustomer');
@@ -3630,54 +4296,20 @@
   // --- Unified Login ---
   function updateProfileView(){
     const isLoggedIn = customer.loggedIn;
-    const welcomeCard = document.getElementById('profileWelcomeCard');
-    const loginCard = document.getElementById('profileLoginCard');
     const loggedInSection = document.getElementById('profileLoggedInSection');
     
     if(isLoggedIn){
-      // Eingeloggt: Welcome & Login ausblenden, LoggedIn anzeigen
-      if(welcomeCard) welcomeCard.style.display = 'none';
-      if(loginCard) loginCard.style.display = 'none';
+      // Eingeloggt: LoggedIn anzeigen
       if(loggedInSection) loggedInSection.style.display = 'block';
       if(document.getElementById('customerStatus')){
         document.getElementById('customerStatus').textContent = `Angemeldet als ${customer.name || 'Kunde'}`;
       }
     } else {
-      // Nicht eingeloggt: Welcome anzeigen, Login & LoggedIn ausblenden
-      if(welcomeCard) welcomeCard.style.display = 'block';
-      if(loginCard) loginCard.style.display = 'none';
+      // Nicht eingeloggt: LoggedIn ausblenden
       if(loggedInSection) loggedInSection.style.display = 'none';
     }
     
     document.getElementById('providerSwitchPanel').style.display = (isLoggedIn && provider.loggedIn) ? 'block' : 'none';
-  }
-  
-  // Login Card expandieren/zuklappen
-  const btnShowLogin = document.getElementById('btnShowLogin');
-  if(btnShowLogin){
-    btnShowLogin.onclick = () => {
-      const loginCard = document.getElementById('profileLoginCard');
-      if(loginCard){
-        if(loginCard.style.display === 'none'){
-          loginCard.style.display = 'block';
-          // Smooth scroll zu Login Card
-          setTimeout(()=>{
-            loginCard.scrollIntoView({behavior: 'smooth', block: 'nearest'});
-          }, 100);
-        } else {
-          loginCard.style.display = 'none';
-        }
-      }
-    };
-  }
-  
-  // "Ohne Anmeldung entdecken" Button
-  const btnDiscoverWithoutLogin = document.getElementById('btnDiscoverWithoutLogin');
-  if(btnDiscoverWithoutLogin){
-    btnDiscoverWithoutLogin.onclick = () => {
-      setMode('customer');
-      showDiscover();
-    };
   }
   
   // "Zum Anbieterbereich" Button
@@ -3688,32 +4320,7 @@
     };
   }
 
-  document.getElementById('btnUnifiedLogin').onclick=()=>{
-    const email = document.getElementById('unifiedEmail').value.trim();
-    const pass = document.getElementById('unifiedPass').value.trim();
-    if(!email || !pass){
-      alert('Bitte E-Mail und Passwort eingeben.');
-      return;
-    }
-    customer.loggedIn = true;
-    customer.name = customer.name || email.split('@')[0];
-    customer.email = email;
-    save(LS.customer, customer);
-    updateProfileView();
-    // Nach Login zur Discover-Seite
-    setMode('customer');
-    showDiscover();
-  };
-
-  document.getElementById('btnUnifiedLoginDemo').onclick=()=>{
-    customer.loggedIn = true;
-    customer.name = customer.name || 'Mike';
-    save(LS.customer, customer);
-    updateProfileView();
-    // Nach Demo-Login zur Discover-Seite
-    setMode('customer');
-    showDiscover();
-  };
+  // Alte Login-Handler entfernt (werden durch Login-Modal ersetzt)
 
   document.getElementById('btnUnifiedLogout').onclick=()=>{
     customer.loggedIn = false;
@@ -6018,6 +6625,11 @@
       if(!currentPickupOrderId) return;
       const order = getOrderById(currentPickupOrderId);
       if(!order) return;
+      // Code nur kopieren wenn PAID
+      if(order.status !== 'PAID'){
+        alert('Abholcode wird nach erfolgreicher Zahlung generiert.');
+        return;
+      }
       const code = order.pickupCode || order.code || '';
       if(!code) return;
       
@@ -6059,14 +6671,86 @@
     };
   }
   
+  // --- Fullscreen Code Modal Functions ---
+  let wakeLock = null;
+  
+  /**
+   * Open fullscreen code modal
+   * @param {string} code - Pickup code (without spaces)
+   */
+  function openFullscreenCode(code){
+    if(!code) return;
+    
+    const modal = document.getElementById('fullscreenCode');
+    const valueEl = document.getElementById('fullscreenCodeValue');
+    const backdrop = document.getElementById('fullscreenCodeBd');
+    
+    if(!modal || !valueEl) return;
+    
+    // Code mit Zwischenräumen formatieren: "A  B  1  2  C"
+    const formattedCode = code.split('').join('  ');
+    valueEl.textContent = formattedCode;
+    
+    // Modal anzeigen
+    modal.classList.add('active');
+    if(backdrop) backdrop.classList.add('active');
+    
+    // Icons aktualisieren
+    if(typeof lucide !== 'undefined'){
+      setTimeout(() => lucide.createIcons(), 50);
+    }
+    
+    // Optional: WakeLock API (MVP+)
+    if(navigator.wakeLock){
+      navigator.wakeLock.request('screen').then(lock => {
+        wakeLock = lock;
+      }).catch(err => {
+        console.log('WakeLock not available:', err);
+      });
+    }
+    
+    // Esc schließt Modal
+    const handleKeyDown = (e) => {
+      if(e.key === 'Escape'){
+        closeFullscreenCode();
+        document.removeEventListener('keydown', handleKeyDown);
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+  }
+  
+  /**
+   * Close fullscreen code modal
+   */
+  function closeFullscreenCode(){
+    const modal = document.getElementById('fullscreenCode');
+    const backdrop = document.getElementById('fullscreenCodeBd');
+    
+    if(modal) modal.classList.remove('active');
+    if(backdrop) backdrop.classList.remove('active');
+    
+    // WakeLock freigeben
+    if(wakeLock){
+      wakeLock.release().catch(err => {
+        console.log('WakeLock release error:', err);
+      });
+      wakeLock = null;
+    }
+  }
+  
   const btnShowFullscreenCode = document.getElementById('btnShowFullscreenCode');
   if(btnShowFullscreenCode){
     btnShowFullscreenCode.onclick = () => {
       if(!currentPickupOrderId) return;
       const order = getOrderById(currentPickupOrderId);
       if(!order) return;
-      const code = order.pickupCode || order.code || '';
-      if(code) openFullscreenCode(code);
+      // Code nur anzeigen wenn PAID
+      if(order.status === 'PAID'){
+        const code = order.pickupCode || order.code || '';
+        if(code) openFullscreenCode(code);
+      } else {
+        alert('Abholcode wird nach erfolgreicher Zahlung generiert.');
+      }
     };
   }
   
@@ -6075,16 +6759,22 @@
     btnOpenRoute.onclick = () => {
       if(!currentPickupOrderId) return;
       const order = getOrderById(currentPickupOrderId);
-      if(!order || !order.providerAddress) return;
-      const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(order.providerAddress)}`;
-      window.open(mapsUrl, '_blank');
+      if(!order) return;
+      const address = order.providerAddress || '';
+      if(address){
+        // Route öffnen (öffnet Maps mit providerAddress)
+        const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+        window.open(mapsUrl, '_blank');
+      } else {
+        alert('Adresse nicht verfügbar.');
+      }
     };
   }
   
   const btnToOrders = document.getElementById('btnToOrders');
   if(btnToOrders){
     btnToOrders.onclick = () => {
-      showOrders(); // Zur Mittagsbox
+      showOrders(); // Zur Mittagsbox (orders)
     };
   }
   
@@ -6092,6 +6782,13 @@
   const fullscreenCodeBd = document.getElementById('fullscreenCodeBd');
   if(fullscreenCodeBd){
     fullscreenCodeBd.onclick = () => {
+      closeFullscreenCode();
+    };
+  }
+  
+  const fullscreenCodeClose = document.querySelector('.fullscreen-code-close');
+  if(fullscreenCodeClose){
+    fullscreenCodeClose.onclick = () => {
       closeFullscreenCode();
     };
   }
@@ -6105,13 +6802,72 @@
   // Orders laden
   orders = loadOrders();
   
+  // --- Route Handler: Checkout Success/Cancel + Abholcode ---
+  // Routes:
+  //   /checkout/success?session_id=xxx OR ?orderId=xxx
+  //   /checkout/cancel?orderId=xxx OR ?session_id=xxx
+  //   /abholcode/:orderId (via URL hash or query param)
+  (function(){
+    const urlParams = new URLSearchParams(window.location.search);
+    const path = window.location.pathname;
+    const hash = window.location.hash;
+    
+    // Success Route: /checkout/success
+    if(path.includes('/checkout/success') || urlParams.has('session_id') || (urlParams.has('success') && urlParams.has('orderId'))){
+      const sessionId = urlParams.get('session_id');
+      const orderId = urlParams.get('orderId');
+      
+      if(sessionId || orderId){
+        handleCheckoutSuccess(sessionId, orderId);
+        // Clean URL (remove query params)
+        window.history.replaceState({}, '', window.location.pathname);
+      }
+    }
+    
+    // Cancel Route: /checkout/cancel
+    if(path.includes('/checkout/cancel') || (urlParams.has('cancel') && (urlParams.has('orderId') || urlParams.has('session_id')))){
+      const orderId = urlParams.get('orderId');
+      const sessionId = urlParams.get('session_id');
+      if(orderId || sessionId){
+        handleCheckoutCancel(orderId, sessionId);
+        // Clean URL
+        window.history.replaceState({}, '', window.location.pathname);
+      }
+    }
+    
+    // Abholcode Route: /abholcode/:orderId
+    // Support: /abholcode?orderId=xxx OR hash #abholcode/:orderId
+    if(path.includes('/abholcode') || hash.includes('#abholcode/') || urlParams.has('abholcode')){
+      let orderId = null;
+      
+      // Try hash first: #abholcode/:orderId
+      if(hash.includes('#abholcode/')){
+        orderId = hash.split('#abholcode/')[1]?.split('?')[0]?.split('#')[0];
+      }
+      
+      // Try query param: ?abholcode=xxx or ?orderId=xxx
+      if(!orderId){
+        orderId = urlParams.get('abholcode') || urlParams.get('orderId');
+      }
+      
+      if(orderId){
+        showPickupCode(orderId);
+        // Clean URL
+        window.history.replaceState({}, '', window.location.pathname);
+      }
+    }
+  })();
+  
   renderChips();
 
   // init nav bindings
   if(mode==='provider' && !provider.loggedIn) mode='customer';
-  // Start-Seite auf Discover-Seite umstellen (Final Spec)
+  // Start-Seite auf Discover-Seite umstellen (Final Spec) - KEIN Login-Zwang
   if(mode==='start') mode='customer';
   setMode(mode);
+  
+  // Profil-View initialisieren
+  updateProfileView();
   
   // Sicherstellen, dass Discover-Seite gerendert wird (auch wenn mode='customer')
   if(mode === 'customer'){
