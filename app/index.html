@@ -340,11 +340,45 @@
     .cookbook-item + .cookbook-item{margin-top:10px}
     .cookbook-actions{display:flex; gap:8px; flex-wrap:wrap; margin-top:8px}
     .cookbook-facts{font-size:12px; color:var(--muted); margin-top:6px; line-height:1.35}
-    .cart-line{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 0; border-top:1px solid #eee}
-    .cart-left{font-weight:700}
+    .cart-line{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:10px 0; border-top:1px solid #eee}
+    .cart-left{font-weight:700; flex:1; min-width:0}
     .cart-qty{display:flex; align-items:center; gap:6px}
-    .qty-btn{border:1px solid var(--border); background:#fff; border-radius:999px; width:28px; height:28px; cursor:pointer; font-weight:900}
-    .cart-price{font-weight:900}
+    .qty-btn{border:1px solid var(--border); background:#fff; border-radius:999px; width:28px; height:28px; cursor:pointer; font-weight:900; transition:all .15s}
+    .qty-btn:active{transform:scale(.95); background:#f5f5f5}
+    .cart-price{font-weight:900; min-width:60px; text-align:right}
+    /* Essenszeit Badge */
+    .cart-window-badge{
+      display:inline-flex; align-items:center; gap:6px;
+      padding:6px 12px; border-radius:12px;
+      background:rgba(255,204,0,.1); color:#b8860b;
+      font-size:13px; font-weight:700; margin:8px 0;
+    }
+    .cart-window-badge i{width:16px; height:16px}
+    /* Quick-Time-Chips */
+    .cart-time-chips{
+      display:flex; gap:8px; flex-wrap:wrap; margin:8px 0 12px;
+    }
+    .cart-time-chip{
+      padding:8px 14px; border-radius:12px;
+      border:1px solid #ddd; background:#fff;
+      font-size:13px; font-weight:600; color:#666;
+      cursor:pointer; transition:all .15s;
+    }
+    .cart-time-chip:active{transform:scale(.96); background:#f5f5f5}
+    .cart-time-chip.selected{
+      background:var(--brand); color:#000; border-color:var(--brand);
+    }
+    /* Warenkorb leeren Button */
+    .cart-clear-btn{
+      display:inline-block; margin-top:12px;
+      padding:8px 16px; border-radius:10px;
+      background:#f5f5f5; color:#666;
+      font-size:13px; font-weight:600;
+      text-decoration:none; cursor:pointer;
+      transition:all .15s;
+    }
+    .cart-clear-btn:hover{background:#eee}
+    .cart-clear-btn:active{transform:scale(.98)}
     .order-item{border:1px solid var(--border); border-radius:14px; padding:10px; background:#fff; box-shadow:0 6px 14px rgba(0,0,0,.06)}
     .order-item.done{opacity:.65}
     .order-item + .order-item{margin-top:10px}
@@ -357,6 +391,43 @@
     .code-full{font-size:42px; font-weight:950; text-align:center; margin:10px 0}
 
     /* Quick-Ticket (bildschirmfüllend) */
+    /* Fullscreen Code Modal (extrem groß, 1-2m lesbar) */
+    .fullscreen-code{
+      position:fixed; top:0; left:0; right:0; bottom:0;
+      background:#fff; z-index:1000;
+      display:flex; align-items:center; justify-content:center;
+      flex-direction:column; padding:40px 20px;
+      opacity:0; pointer-events:none; transition:opacity .2s;
+    }
+    .fullscreen-code.active{
+      opacity:1; pointer-events:auto;
+    }
+    .fullscreen-code-close{
+      position:absolute; top:20px; right:20px;
+      width:48px; height:48px; border-radius:50%;
+      background:rgba(0,0,0,.1); border:none;
+      display:flex; align-items:center; justify-content:center;
+      cursor:pointer; transition:all .2s;
+      z-index:1001;
+    }
+    .fullscreen-code-close:hover{background:rgba(0,0,0,.15)}
+    .fullscreen-code-close i{width:24px; height:24px}
+    .fullscreen-code-content{
+      text-align:center; width:100%; max-width:600px;
+    }
+    .fullscreen-code-value{
+      font-size:clamp(56px, 12vw, 120px);
+      font-weight:900; font-family:monospace;
+      letter-spacing:clamp(8px, 2vw, 16px);
+      color:#000; line-height:1.2;
+      margin-bottom:24px;
+      word-spacing:clamp(12px, 3vw, 24px);
+    }
+    .fullscreen-code-subtext{
+      font-size:clamp(14px, 3vw, 20px);
+      color:#666; font-weight:600;
+    }
+    
     .quick-ticket{
       position:fixed; inset:0; z-index:31;
       background:linear-gradient(135deg, var(--brand) 0%, #FFD700 100%);
@@ -997,38 +1068,124 @@
         <div id="cartBox" class="hint">Dein Warenkorb ist leer.</div>
         <button class="btn" id="btnCheckout" type="button" style="display:none;" data-icon="card">Weiter zur Zahlung</button>
         <div class="mini" id="cartNote" style="display:none;">
-          Warenkorb nur mit Abholcode. Ein Anbieter pro Warenkorb.
+          Ein Anbieter pro Bestellung · Abholung per Code
+        </div>
+      </div>
+    </section>
+
+    <!-- CUSTOMER: Pickup Code (AbholcodeScreen) -->
+    <section class="view" id="v-pickup-code">
+      <div class="panel">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
+          <button class="back-button" type="button" id="btnPickupCodeBack" aria-label="Zurück">
+            <i data-lucide="arrow-left"></i>
+          </button>
+          <h3 style="margin:0; flex:1;">Abholcode</h3>
+        </div>
+        
+        <!-- Status & Hinweis -->
+        <div style="text-align:center; margin-bottom:24px;">
+          <div style="font-size:16px; font-weight:700; color:#1f9d55; margin-bottom:8px;">
+            ✓ Bestellung bestätigt
+          </div>
+          <div class="hint" style="font-size:13px;">
+            Bitte diesen Code beim Abholen zeigen
+          </div>
+        </div>
+        
+        <!-- Code-Kachel (normal groß) -->
+        <div id="pickupCodeCard" style="background:#fff; border:2px solid var(--brand); border-radius:18px; padding:24px; text-align:center; margin-bottom:20px;">
+          <div class="hint" style="font-size:12px; margin-bottom:8px; color:#666;">Abholcode</div>
+          <div id="pickupCodeValue" style="font-size:48px; font-weight:900; font-family:monospace; letter-spacing:4px; color:#000; margin-bottom:12px;">
+            –
+          </div>
+          <button class="btn secondary" type="button" id="btnCopyCode" style="width:100%;">
+            <i data-lucide="copy"></i> Code kopieren
+          </button>
+        </div>
+        
+        <!-- Primary CTA: Code groß anzeigen -->
+        <button class="btn" type="button" id="btnShowFullscreenCode" style="width:100%; margin-bottom:16px;">
+          <i data-lucide="maximize-2"></i> Code groß anzeigen
+        </button>
+        
+        <!-- Bestellinfos kompakt -->
+        <div id="pickupCodeInfo" style="background:#f8f8f8; border-radius:14px; padding:16px; margin-bottom:16px;">
+          <div class="row" style="margin-bottom:8px;"><span>Gericht</span><b id="pickupCodeDish">–</b></div>
+          <div class="row" style="margin-bottom:8px;"><span>Anbieter</span><b id="pickupCodeProvider">–</b></div>
+          <div class="row" style="margin-bottom:8px;"><span>Abholzeit</span><b id="pickupCodeTime">–</b></div>
+          <div class="row" style="margin-bottom:8px;"><span>Art</span><b id="pickupCodeType">–</b></div>
+          <div class="row" style="margin-top:12px; padding-top:12px; border-top:1px solid #ddd;"><span style="font-size:16px; font-weight:900;">Gesamt</span><b style="font-size:16px;" id="pickupCodeTotal">–</b></div>
+        </div>
+        
+        <!-- Secondary Buttons -->
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <button class="btn secondary" type="button" id="btnOpenRoute" style="width:100%;">
+            <i data-lucide="map-pin"></i> Route öffnen
+          </button>
+          <button class="btn ghost" type="button" id="btnToOrders" style="width:100%;">
+            <i data-lucide="box"></i> Zur Mittagsbox
+          </button>
         </div>
       </div>
     </section>
 
     <!-- CUSTOMER: Profile -->
     <section class="view" id="v-profile">
-      <div class="panel">
-        <h3>Profil</h3>
-        <div id="profileLoginSection">
-          <input class="field" id="unifiedEmail" type="email" placeholder="E-Mail" autocomplete="email" style="margin-top:12px;" />
-          <div style="height:10px"></div>
-          <input class="field" id="unifiedPass" type="password" placeholder="Passwort" autocomplete="current-password" />
-          <button class="btn" type="button" id="btnUnifiedLogin" style="margin-top:16px;">Anmelden</button>
-          <div style="margin-top:12px; text-align:center;">
-            <button class="btn ghost" type="button" id="btnUnifiedLoginDemo" style="width:auto; padding:8px 16px;">Demo-Login (ohne Anmeldung)</button>
-          </div>
-          <div style="margin-top:16px; padding-top:16px; border-top:1px solid var(--border); text-align:center;">
-            <a href="#" id="linkProviderLogin" style="font-size:13px; color:var(--muted); text-decoration:none;">
-              Du bist Gastronom? Hier lang →
-            </a>
-          </div>
-        </div>
-        <div id="profileLoggedInSection" style="display:none;">
-          <div style="margin-top:12px;" class="hint" id="customerStatus">Nicht angemeldet (Demo).</div>
-          <button class="btn secondary" type="button" id="btnUnifiedLogout" style="margin-top:12px;">Abmelden</button>
+      <!-- Welcome Card (immer sichtbar, wenn nicht eingeloggt) -->
+      <div class="panel" id="profileWelcomeCard" style="text-align:center; padding:32px 20px;">
+        <div style="font-size:32px; margin-bottom:12px;">👋</div>
+        <h3 style="margin:0 0 12px;">Willkommen bei Mittagio</h3>
+        <p class="hint" style="margin-bottom:24px; line-height:1.6;">
+          Entdecke lokale Mittagsangebote – ganz ohne Anmeldung.
+        </p>
+        <button class="btn" type="button" id="btnDiscoverWithoutLogin" style="width:100%; margin-bottom:12px;">
+          Ohne Anmeldung entdecken
+        </button>
+        <button class="btn ghost" type="button" id="btnShowLogin" style="width:100%;">
+          Anmelden oder Konto erstellen
+        </button>
+      </div>
+      
+      <!-- Login Expand Card (ausgeblendet, wird durch btnShowLogin geöffnet) -->
+      <div class="panel" id="profileLoginCard" style="display:none;">
+        <h3 style="margin:0 0 16px;">Anmelden</h3>
+        <input class="field" id="unifiedEmail" type="email" placeholder="E-Mail" autocomplete="email" />
+        <div style="height:10px"></div>
+        <input class="field" id="unifiedPass" type="password" placeholder="Passwort" autocomplete="current-password" />
+        <button class="btn" type="button" id="btnUnifiedLogin" style="margin-top:16px; width:100%;">Anmelden</button>
+        <div style="margin-top:12px; text-align:center;">
+          <button class="btn ghost" type="button" id="btnUnifiedLoginDemo" style="width:auto; padding:8px 16px;">Demo-Login (ohne Anmeldung)</button>
         </div>
       </div>
+      
+      <!-- Logged In Section (wenn eingeloggt) -->
+      <div class="panel" id="profileLoggedInSection" style="display:none;">
+        <h3>Profil</h3>
+        <div style="margin-top:12px;" class="hint" id="customerStatus">Nicht angemeldet (Demo).</div>
+        <button class="btn secondary" type="button" id="btnUnifiedLogout" style="margin-top:12px; width:100%;">Abmelden</button>
+      </div>
+      
+      <!-- Gastronom Card (immer sichtbar) -->
+      <div class="panel" style="margin-top:12px; background:linear-gradient(135deg, rgba(255,204,0,.1) 0%, rgba(255,204,0,.05) 100%); border:1px solid rgba(255,204,0,.2);">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+          <div style="font-size:24px;">🍽️</div>
+          <div style="flex:1;">
+            <div style="font-weight:900; font-size:16px; margin-bottom:4px;">Für Gastronomen</div>
+            <div class="hint" style="font-size:13px; line-height:1.4;">
+              Mittag einstellen & Abholcodes verwalten
+            </div>
+          </div>
+        </div>
+        <button class="btn secondary" type="button" id="btnGoToProvider" style="width:100%;">
+          Zum Anbieterbereich →
+        </button>
+      </div>
 
+      <!-- FAQ (App-like) -->
       <div class="panel" style="margin-top:12px;">
-        <div class="section-title">FAQ</div>
-        <div class="faq">
+        <div class="section-title">Häufige Fragen</div>
+        <div class="faq" style="margin-top:8px;">
           <details>
             <summary>Wie funktioniert Mittagio?</summary>
             <p>Du findest Mittagsangebote in deiner Stadt, optional bezahlst du online und holst zur gewählten Zeit ab.</p>
@@ -1060,6 +1217,10 @@
           <details>
             <summary>Teilen</summary>
             <p>Teile Angebote per WhatsApp, Instagram oder Website.</p>
+          </details>
+          <details>
+            <summary>Kontakt</summary>
+            <p>Bei Fragen schreib uns an <a href="mailto:info@mittagio.de" style="color:var(--brand);">info@mittagio.de</a></p>
           </details>
         </div>
       </div>
@@ -1567,6 +1728,18 @@
   </div>
 </div>
 
+<!-- Fullscreen Code Modal (extrem groß, 1-2m lesbar) -->
+<div class="backdrop" id="fullscreenCodeBd" onclick="closeFullscreenCode()"></div>
+<div class="fullscreen-code" id="fullscreenCode">
+  <button class="fullscreen-code-close" onclick="closeFullscreenCode()" aria-label="Schließen">
+    <i data-lucide="x"></i>
+  </button>
+  <div class="fullscreen-code-content">
+    <div class="fullscreen-code-value" id="fullscreenCodeValue">A  B  1  2  C</div>
+    <div class="fullscreen-code-subtext">Bitte dem Personal zeigen</div>
+  </div>
+</div>
+
 <!-- Provider offer sheet -->
 <div class="backdrop" id="pbd" onclick="closeProviderSheet()"></div>
 <div class="sheet" id="psheet">
@@ -1611,6 +1784,17 @@
     <div class="quick-ticket-status" id="codeStatus">Status: offen</div>
     <div class="quick-ticket-actions">
       <button class="btn" type="button" id="btnToggleOrderStatus">Als abgeholt markieren</button>
+    </div>
+  </div>
+</div>
+
+<!-- Legal Sheets (Impressum, AGB, Datenschutz) -->
+<div class="backdrop" id="legalBd" onclick="closeLegalSheet()"></div>
+<div class="sheet" id="legalSheet">
+  <div class="handle"></div>
+  <div class="sheet-body" style="max-height:80vh; overflow-y:auto;">
+    <div class="panel" id="legalContent">
+      <!-- Wird dynamisch befüllt -->
     </div>
   </div>
 </div>
@@ -1914,6 +2098,7 @@
   const views = {
     start:'v-start',
     discover:'v-discover', fav:'v-fav', orders:'v-orders', cart:'v-cart', profile:'v-profile',
+    pickupCode:'v-pickup-code', // Neuer AbholcodeScreen
     providerLogin:'v-provider-login',
     providerHome:'v-provider-home', providerPickups:'v-provider-pickups', providerCookbook:'v-provider-cookbook',
     providerProfile:'v-provider-profile', providerBilling:'v-provider-billing', providerWeek:'v-provider-week'
@@ -1945,9 +2130,10 @@
     document.getElementById('modePill').style.display = isProv ? 'inline-flex' : 'none';
 
     if(isStart){
-      // Onboarding: Neukunden direkt zur Profil-Seite
+      // Start-Seite: Wenn nicht eingeloggt, zur Discover-Seite (kein Zwang)
       if(!customer.loggedIn){
-        showProfile();
+        setMode('customer');
+        showDiscover();
         return;
       }
       showStart();
@@ -2586,6 +2772,9 @@
   }
 
   function renderOrders(){
+    // Orders aus localStorage laden
+    orders = loadOrders();
+    
     const box = document.getElementById('ordersList');
     const filters = document.getElementById('ordersFilters');
     if(!box) return;
@@ -2648,7 +2837,10 @@
     `).join('');
 
     box.querySelectorAll('.order-code').forEach(btn=>{
-      btn.onclick=()=> openCodeSheet(btn.getAttribute('data-id') || '');
+      btn.onclick=()=> {
+        const orderId = btn.getAttribute('data-id') || '';
+        showPickupCode(orderId); // Navigiere zu AbholcodeScreen statt codeSheet
+      };
     });
   }
 
@@ -2836,6 +3028,14 @@
   
   // Android Hardware-Back unterstützen
   window.addEventListener('popstate', function(e){
+    // Fullscreen Code Modal schließen
+    if(document.getElementById('fullscreenCode') && document.getElementById('fullscreenCode').classList.contains('active')){
+      closeFullscreenCode();
+      e.preventDefault();
+      history.pushState(null, '', location.pathname);
+      return;
+    }
+    // Sheet schließen
     if(document.getElementById('sheet').classList.contains('active')){
       closeSheet();
       e.preventDefault();
@@ -3206,23 +3406,87 @@
       `;
     }).filter(Boolean);
 
+    // Quick-Time-Chips generieren (basierend auf Essenszeit)
+    let timeChips = '';
+    if(windowText){
+      // Versuche Zeitfenster zu parsen (z.B. "11:30 – 14:30")
+      const timeMatch = windowText.match(/(\d{1,2}):(\d{2})\s*[–-]\s*(\d{1,2}):(\d{2})/);
+      if(timeMatch){
+        const startH = parseInt(timeMatch[1]);
+        const startM = parseInt(timeMatch[2]);
+        const endH = parseInt(timeMatch[3]);
+        const endM = parseInt(timeMatch[4]);
+        // Generiere 3 Quick-Time-Chips (Start, Mitte, Ende)
+        const times = [];
+        if(startH < endH || (startH === endH && startM < endM)){
+          const midH = Math.floor((startH + endH) / 2);
+          const midM = Math.floor((startM + endM) / 2);
+          times.push(`${String(startH).padStart(2,'0')}:${String(startM).padStart(2,'0')}`);
+          times.push(`${String(midH).padStart(2,'0')}:${String(midM).padStart(2,'0')}`);
+          times.push(`${String(endH).padStart(2,'0')}:${String(endM).padStart(2,'0')}`);
+        }
+        timeChips = times.map(t => 
+          `<button class="cart-time-chip ${cart.pickupTime === t ? 'selected' : ''}" type="button" data-time="${t}">${t} Uhr</button>`
+        ).join('');
+      }
+    }
+    
     box.innerHTML = `
-      <b>${esc(cart.providerName || 'Anbieter')}</b>
+      <div style="font-size:16px; font-weight:900; margin-bottom:12px;">${esc(cart.providerName || 'Anbieter')}</div>
       ${lines.join('')}
-      ${windowText ? `<div class="hint">Essenszeit: ${esc(windowText)}</div>` : ''}
-      <div class="row"><span>Wann möchtest du ungefähr da sein?</span></div>
-      <input class="field" id="pickupTimeInput" type="text" placeholder="z.B. 12:15" value="${esc(cart.pickupTime||'')}" />
-      <div class="hint">Bitte innerhalb der Essenszeit.</div>
-      <div class="row"><span>Gesamt</span><b>${euro(total)}</b></div>
-      <a href="#" id="clearCart">Warenkorb leeren</a>
+      ${windowText ? `
+        <div class="cart-window-badge">
+          <i data-lucide="clock"></i>
+          <span>Essenszeit: ${esc(windowText)}</span>
+        </div>
+      ` : ''}
+      <div class="row" style="margin-top:16px;"><span>Wann möchtest du ungefähr da sein?</span></div>
+      ${timeChips ? `<div class="cart-time-chips">${timeChips}</div>` : ''}
+      <input class="field" id="pickupTimeInput" type="text" placeholder="z.B. 12:15 Uhr" value="${esc(cart.pickupTime||'')}" />
+      <div class="hint" style="margin-top:6px;">Bitte innerhalb der Essenszeit.</div>
+      <div class="row" style="margin-top:20px; padding-top:16px; border-top:2px solid #eee;"><span style="font-size:16px; font-weight:900;">Gesamt</span><b style="font-size:18px;">${euro(total)}</b></div>
+      <a href="#" id="clearCart" class="cart-clear-btn">Warenkorb leeren</a>
     `;
 
-    document.getElementById('clearCart').onclick=(e)=>{ e.preventDefault(); cart=null; save(LS.cart, cart); renderCart(); };
+    // Warenkorb leeren mit Bestätigung
+    const clearCartBtn = document.getElementById('clearCart');
+    if(clearCartBtn){
+      clearCartBtn.onclick=(e)=>{
+        e.preventDefault();
+        if(confirm('Möchtest du den Warenkorb wirklich leeren?')){
+          cart=null;
+          save(LS.cart, cart);
+          renderCart();
+        }
+      };
+    }
+    
+    // Quick-Time-Chips Handler
+    box.querySelectorAll('.cart-time-chip').forEach(chip=>{
+      chip.onclick=()=>{
+        const time = chip.getAttribute('data-time');
+        cart.pickupTime = time;
+        save(LS.cart, cart);
+        renderCart();
+        // Input fokussieren für bessere UX
+        setTimeout(()=>{
+          const input = document.getElementById('pickupTimeInput');
+          if(input) input.focus();
+        }, 50);
+      };
+    });
+    
+    // Ankunftszeit Input
     const timeInput = document.getElementById('pickupTimeInput');
     if(timeInput){
       timeInput.oninput=()=>{
-        cart.pickupTime = timeInput.value;
+        cart.pickupTime = timeInput.value.trim();
         save(LS.cart, cart);
+        // Quick-Chips aktualisieren
+        box.querySelectorAll('.cart-time-chip').forEach(chip=>{
+          const chipTime = chip.getAttribute('data-time');
+          chip.classList.toggle('selected', chipTime === cart.pickupTime);
+        });
       };
     }
 
@@ -3242,10 +3506,20 @@
 
     btn.style.display='block';
     btn.disabled = !canCheckout;
-    btn.innerHTML = canCheckout
-      ? `${iconMarkup('card')}<span>Weiter zur Zahlung</span>`
-      : `${iconMarkup('eye')}<span>Nur ansehen</span>`;
+    // CTA-Text: Mit Payment = "Weiter zur Zahlung", ohne Payment = "Bestellung bestätigen" oder "Abholcode erhalten"
+    if(canCheckout){
+      // Alle Items haben hasPickupCode = true → Payment möglich
+      btn.innerHTML = `${iconMarkup('card')}<span>Weiter zur Zahlung</span>`;
+    } else {
+      // Kein Payment → Bestellung bestätigen / Abholcode erhalten
+      btn.innerHTML = `${iconMarkup('check')}<span>Bestellung bestätigen</span>`;
+    }
     note.style.display='block';
+    
+    // Icons aktualisieren
+    if(typeof lucide !== 'undefined'){
+      setTimeout(()=> lucide.createIcons(), 50);
+    }
   }
 
   document.getElementById('btnCheckout').onclick=()=>{
@@ -3255,6 +3529,13 @@
       return;
     }
     if(!cart || !cart.items || !cart.items.length) return;
+    
+    // Prüfe ob Payment möglich ist
+    const hasPayment = cart.items.every(it=>{
+      const o = offers.find(x=>x.id===it.offerId);
+      return o && normalizeOffer(o).hasPickupCode;
+    });
+    
     const pickupTime = String(cart.pickupTime||'').trim();
     if(!pickupTime){
       alert('Bitte eine ungefähre Abholzeit angeben.');
@@ -3265,34 +3546,71 @@
       }, 50);
       return;
     }
-    const code = genPickupCode();
+    
+    // Wenn kein Payment möglich, trotzdem Bestellung erstellen (nur ohne Code)
+    if(!hasPayment){
+      alert('Hinweis: Diese Bestellung enthält Gerichte ohne Abholcode. Du erhältst keine Bestätigung per Code.');
+    }
+    // Pickup Code generieren
+    const code = generatePickupCode();
     const firstOffer = cart.items.length ? offers.find(x=>x.id===cart.items[0].offerId) : null;
     const firstOfferNormalized = firstOffer ? normalizeOffer(firstOffer) : null;
     const pickupWindow = firstOfferNormalized && firstOfferNormalized.pickupWindow ? firstOfferNormalized.pickupWindow : '';
+    
+    // Bestellinfos zusammenstellen
     const summary = cart.items.map(it=>{
       const o = offers.find(x=>x.id===it.offerId);
       if(!o) return '';
       const normalized = normalizeOffer(o);
       return `${normalized.dish || normalized.title || 'Gericht'} x ${it.qty}`;
     }).filter(Boolean).join(', ');
+    
+    // Gesamtpreis berechnen
+    let total = 0;
+    cart.items.forEach(it=>{
+      const o = offers.find(x=>x.id===it.offerId);
+      if(o){
+        const normalized = normalizeOffer(o);
+        total += Number(normalized.price||0) * it.qty;
+      }
+    });
+    
+    // Order nach Datenmodell erstellen
     const newOrder = {
       id: cryptoId(),
+      dishName: summary,
       providerName: cart.providerName || 'Anbieter',
-      summary,
-      code,
-      status:'offen',
+      providerAddress: firstOfferNormalized ? buildAddress({
+        address: firstOfferNormalized.address,
+        street: firstOfferNormalized.providerStreet,
+        zip: firstOfferNormalized.providerZip,
+        city: firstOfferNormalized.providerCity
+      }) : '',
+      quantity: cart.items.reduce((sum, it) => sum + it.qty, 0),
+      total: total,
       pickupTime: cart.pickupTime || '',
-      pickupWindow,
-      createdAt: Date.now()
+      fulfillType: firstOfferNormalized && firstOfferNormalized.dineInPossible ? 'DINE_IN' : 'PICKUP',
+      pickupCode: code,
+      status: 'CONFIRMED',
+      pickupWindow: pickupWindow,
+      createdAt: Date.now(),
+      // Legacy-Felder für Kompatibilität
+      summary: summary,
+      code: code
     };
-    orders.unshift(newOrder);
-    save(LS.orders, orders);
+    
+    // Order speichern
+    addOrder(newOrder);
+    orders = loadOrders(); // Aktualisieren
+    
+    // Warenkorb leeren
     cart = null;
     save(LS.cart, cart);
     renderCart();
     renderOrders();
-    showOrders();
-    openCodeSheet(newOrder.id);
+    
+    // Navigiere zu AbholcodeScreen (nicht zu Mittagsbox)
+    showPickupCode(newOrder.id);
   };
 
   // --- Start actions ---
@@ -3312,12 +3630,62 @@
   // --- Unified Login ---
   function updateProfileView(){
     const isLoggedIn = customer.loggedIn;
-    document.getElementById('profileLoginSection').style.display = isLoggedIn ? 'none' : 'block';
-    document.getElementById('profileLoggedInSection').style.display = isLoggedIn ? 'block' : 'none';
-    document.getElementById('providerSwitchPanel').style.display = (isLoggedIn && provider.loggedIn) ? 'block' : 'none';
+    const welcomeCard = document.getElementById('profileWelcomeCard');
+    const loginCard = document.getElementById('profileLoginCard');
+    const loggedInSection = document.getElementById('profileLoggedInSection');
+    
     if(isLoggedIn){
-      document.getElementById('customerStatus').textContent = `Angemeldet als ${customer.name || 'Kunde'}`;
+      // Eingeloggt: Welcome & Login ausblenden, LoggedIn anzeigen
+      if(welcomeCard) welcomeCard.style.display = 'none';
+      if(loginCard) loginCard.style.display = 'none';
+      if(loggedInSection) loggedInSection.style.display = 'block';
+      if(document.getElementById('customerStatus')){
+        document.getElementById('customerStatus').textContent = `Angemeldet als ${customer.name || 'Kunde'}`;
+      }
+    } else {
+      // Nicht eingeloggt: Welcome anzeigen, Login & LoggedIn ausblenden
+      if(welcomeCard) welcomeCard.style.display = 'block';
+      if(loginCard) loginCard.style.display = 'none';
+      if(loggedInSection) loggedInSection.style.display = 'none';
     }
+    
+    document.getElementById('providerSwitchPanel').style.display = (isLoggedIn && provider.loggedIn) ? 'block' : 'none';
+  }
+  
+  // Login Card expandieren/zuklappen
+  const btnShowLogin = document.getElementById('btnShowLogin');
+  if(btnShowLogin){
+    btnShowLogin.onclick = () => {
+      const loginCard = document.getElementById('profileLoginCard');
+      if(loginCard){
+        if(loginCard.style.display === 'none'){
+          loginCard.style.display = 'block';
+          // Smooth scroll zu Login Card
+          setTimeout(()=>{
+            loginCard.scrollIntoView({behavior: 'smooth', block: 'nearest'});
+          }, 100);
+        } else {
+          loginCard.style.display = 'none';
+        }
+      }
+    };
+  }
+  
+  // "Ohne Anmeldung entdecken" Button
+  const btnDiscoverWithoutLogin = document.getElementById('btnDiscoverWithoutLogin');
+  if(btnDiscoverWithoutLogin){
+    btnDiscoverWithoutLogin.onclick = () => {
+      setMode('customer');
+      showDiscover();
+    };
+  }
+  
+  // "Zum Anbieterbereich" Button
+  const btnGoToProvider = document.getElementById('btnGoToProvider');
+  if(btnGoToProvider){
+    btnGoToProvider.onclick = () => {
+      setMode('provider');
+    };
   }
 
   document.getElementById('btnUnifiedLogin').onclick=()=>{
@@ -3332,9 +3700,9 @@
     customer.email = email;
     save(LS.customer, customer);
     updateProfileView();
-    // Nach Login zur Startseite
-    setMode('start');
-    showStart();
+    // Nach Login zur Discover-Seite
+    setMode('customer');
+    showDiscover();
   };
 
   document.getElementById('btnUnifiedLoginDemo').onclick=()=>{
@@ -3342,9 +3710,9 @@
     customer.name = customer.name || 'Mike';
     save(LS.customer, customer);
     updateProfileView();
-    // Nach Demo-Login zur Startseite
-    setMode('start');
-    showStart();
+    // Nach Demo-Login zur Discover-Seite
+    setMode('customer');
+    showDiscover();
   };
 
   document.getElementById('btnUnifiedLogout').onclick=()=>{
@@ -3356,10 +3724,7 @@
     showProfile();
   };
 
-  document.getElementById('linkProviderLogin').onclick=(e)=>{
-    e.preventDefault();
-    setMode('provider');
-  };
+  // LinkProviderLogin wurde durch btnGoToProvider ersetzt
 
   document.getElementById('btnSwitchToProvider').onclick=()=>{
     if(!provider.loggedIn){
@@ -3390,14 +3755,182 @@
   };
 
   // Rechtliches
+  // --- Legal Sheets (Impressum, AGB, Datenschutz) ---
+  function openLegalSheet(type){
+    const content = document.getElementById('legalContent');
+    if(!content) return;
+    
+    let html = '';
+    let title = '';
+    
+    if(type === 'impressum'){
+      title = 'Impressum';
+      html = `
+        <h3 style="margin:0 0 20px;">Impressum</h3>
+        <div style="line-height:1.8;">
+          <p style="font-weight:700; margin-bottom:12px;">Verantwortlich für den Inhalt:</p>
+          <p>
+            Mittagio<br>
+            Inhaber: Mike Quach<br>
+            Langäcker 2<br>
+            73635 Rudersberg<br>
+            Deutschland
+          </p>
+          <p style="margin-top:16px;">
+            <strong>E-Mail:</strong> <a href="mailto:info@mittagio.de" style="color:var(--brand);">info@mittagio.de</a>
+          </p>
+          <p style="margin-top:20px; padding-top:20px; border-top:1px solid #eee; font-size:13px; color:#666;">
+            <strong>Unternehmensform:</strong> Einzelunternehmen<br>
+            <strong>Umsatzsteuer-ID:</strong> nicht vorhanden (§19 UStG)
+          </p>
+          <p style="margin-top:16px; padding-top:16px; border-top:1px solid #eee; font-size:13px; color:#666;">
+            <strong>Plattformhinweis:</strong><br>
+            Mittagio vermittelt Mittagsangebote lokaler Anbieter. Vertragspartner bei Bestellungen ist ausschließlich der jeweilige Anbieter.
+          </p>
+        </div>
+      `;
+    } else if(type === 'agb'){
+      title = 'Allgemeine Geschäftsbedingungen (Kunden)';
+      html = `
+        <h3 style="margin:0 0 20px;">Allgemeine Geschäftsbedingungen (Kunden)</h3>
+        <div style="line-height:1.8; font-size:14px;">
+          <p style="margin-bottom:16px;"><strong>1. Geltungsbereich</strong></p>
+          <p style="margin-bottom:20px;">Diese Allgemeinen Geschäftsbedingungen (AGB) gelten für die Nutzung der Plattform Mittagio durch Kunden. Mittagio betreibt eine Plattform zur Vermittlung von Mittagsangeboten lokaler Anbieter.</p>
+          
+          <p style="margin-bottom:16px;"><strong>2. Rolle von Mittagio</strong></p>
+          <p style="margin-bottom:20px;">Mittagio ist kein Restaurant und kein Lieferdienst. Mittagio vermittelt ausschließlich zwischen Kunden und Anbietern. Der Kaufvertrag kommt direkt zwischen dem Kunden und dem jeweiligen Anbieter zustande.</p>
+          
+          <p style="margin-bottom:16px;"><strong>3. Nutzung der Plattform</strong></p>
+          <p style="margin-bottom:20px;">Die Nutzung ist grundsätzlich ohne Registrierung möglich. Kunden können Mittagsangebote auswählen und vorbestellen. Ein Anspruch auf Verfügbarkeit bestimmter Angebote besteht nicht.</p>
+          
+          <p style="margin-bottom:16px;"><strong>4. Bestellung & Abholung</strong></p>
+          <p style="margin-bottom:20px;">Mit Abschluss der Bestellung erhält der Kunde einen Abholcode. Der Abholcode ist beim Anbieter vorzuzeigen. Die Abholung erfolgt innerhalb der vom Anbieter angegebenen Essenszeit.</p>
+          
+          <p style="margin-bottom:16px;"><strong>5. Preise & Bezahlung</strong></p>
+          <p style="margin-bottom:20px;">Alle Preise werden vom Anbieter festgelegt. Die Bezahlung erfolgt direkt beim Anbieter vor Ort, sofern nicht anders angegeben. Mittagio erhebt aktuell keine Gebühren vom Kunden.</p>
+          
+          <p style="margin-bottom:16px;"><strong>6. Stornierung</strong></p>
+          <p style="margin-bottom:20px;">Stornierungen sind abhängig von den Regelungen des jeweiligen Anbieters. Ein Anspruch auf Stornierung oder Rückerstattung über Mittagio besteht nicht.</p>
+          
+          <p style="margin-bottom:16px;"><strong>7. Haftung</strong></p>
+          <p style="margin-bottom:20px;">Mittagio haftet nicht für Qualität, Menge oder Beschaffenheit der Speisen, Ausfälle, Verspätungen oder Änderungen durch den Anbieter, sowie Allergene oder Unverträglichkeiten. Für diese Punkte ist ausschließlich der jeweilige Anbieter verantwortlich.</p>
+          
+          <p style="margin-bottom:16px;"><strong>8. Verfügbarkeit</strong></p>
+          <p style="margin-bottom:20px;">Mittagio bemüht sich um eine hohe Verfügbarkeit der Plattform, übernimmt jedoch keine Garantie für eine jederzeit unterbrechungsfreie Nutzung.</p>
+          
+          <p style="margin-bottom:16px;"><strong>9. Änderungen der AGB</strong></p>
+          <p style="margin-bottom:20px;">Mittagio behält sich vor, diese AGB anzupassen, wenn sich Funktionen oder rechtliche Rahmenbedingungen ändern.</p>
+          
+          <p style="margin-bottom:16px;"><strong>10. Kontakt</strong></p>
+          <p style="margin-bottom:20px;">Bei Fragen zur Nutzung der Plattform: <a href="mailto:info@mittagio.de" style="color:var(--brand);">info@mittagio.de</a></p>
+          
+          <p style="margin-top:24px; padding-top:20px; border-top:1px solid #eee; font-size:12px; color:#666;">
+            <strong>Stand:</strong> Januar 2026
+          </p>
+        </div>
+      `;
+    } else if(type === 'datenschutz'){
+      title = 'Datenschutzerklärung';
+      html = `
+        <h3 style="margin:0 0 20px;">Datenschutzerklärung</h3>
+        <div style="line-height:1.8; font-size:14px;">
+          <p style="margin-bottom:16px;"><strong>1. Verantwortlicher</strong></p>
+          <p style="margin-bottom:20px;">
+            Verantwortlich für die Datenverarbeitung ist:<br><br>
+            <strong>Mittagio</strong><br>
+            Inhaber: Mike Quach<br>
+            Langäcker 2<br>
+            73635 Rudersberg<br>
+            Deutschland<br><br>
+            <strong>E-Mail:</strong> <a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a>
+          </p>
+          
+          <p style="margin-bottom:16px;"><strong>2. Allgemeines</strong></p>
+          <p style="margin-bottom:20px;">Der Schutz deiner persönlichen Daten ist uns wichtig. Wir verarbeiten personenbezogene Daten nur im notwendigen Umfang und gemäß den geltenden Datenschutzgesetzen (DSGVO).</p>
+          
+          <p style="margin-bottom:16px;"><strong>3. Welche Daten wir verarbeiten</strong></p>
+          <p style="margin-bottom:12px;"><strong>a) Bei der Nutzung der Plattform</strong></p>
+          <p style="margin-bottom:20px;">Beim Besuch von Mittagio werden technisch notwendige Daten verarbeitet, z. B.:</p>
+          <ul style="margin:0 0 20px 20px; padding-left:0;">
+            <li style="margin-bottom:8px;">IP-Adresse (gekürzt/anonymisiert, sofern möglich)</li>
+            <li style="margin-bottom:8px;">Datum und Uhrzeit des Zugriffs</li>
+            <li style="margin-bottom:8px;">Browsertyp / Betriebssystem</li>
+            <li style="margin-bottom:8px;">aufgerufene Seiten</li>
+          </ul>
+          <p style="margin-bottom:20px;">Diese Daten sind technisch erforderlich, um die Plattform bereitzustellen.</p>
+          
+          <p style="margin-bottom:12px;"><strong>b) Bei einer Bestellung</strong></p>
+          <p style="margin-bottom:12px;">Wenn du ein Mittagsangebot bestellst, verarbeiten wir:</p>
+          <ul style="margin:0 0 12px 20px; padding-left:0;">
+            <li style="margin-bottom:8px;">ausgewähltes Gericht</li>
+            <li style="margin-bottom:8px;">Anbieter</li>
+            <li style="margin-bottom:8px;">Abholzeit (ungefähr)</li>
+            <li style="margin-bottom:8px;">generierter Abholcode</li>
+          </ul>
+          <p style="margin-bottom:20px;">
+            👉 Keine Pflicht zur Registrierung<br>
+            👉 Keine Zahlungsdaten (Bezahlung erfolgt ggf. vor Ort beim Anbieter)
+          </p>
+          
+          <p style="margin-bottom:12px;"><strong>c) Lokale Speicherung (PWA)</strong></p>
+          <p style="margin-bottom:20px;">Bestellungen und Abholcodes werden lokal auf deinem Gerät gespeichert (z. B. im LocalStorage), damit du sie auch offline wieder anzeigen kannst. Diese Daten werden nicht automatisch an uns übertragen.</p>
+          
+          <p style="margin-bottom:16px;"><strong>4. Weitergabe von Daten</strong></p>
+          <p style="margin-bottom:20px;">Deine Daten werden nur an den jeweiligen Anbieter weitergegeben, soweit dies zur Abwicklung deiner Bestellung erforderlich ist.</p>
+          <p style="margin-bottom:20px;">Eine Weitergabe an Dritte erfolgt nicht, außer:</p>
+          <ul style="margin:0 0 20px 20px; padding-left:0;">
+            <li style="margin-bottom:8px;">es besteht eine gesetzliche Verpflichtung</li>
+            <li style="margin-bottom:8px;">oder du hast ausdrücklich eingewilligt</li>
+          </ul>
+          
+          <p style="margin-bottom:16px;"><strong>5. Cookies & Tracking</strong></p>
+          <p style="margin-bottom:20px;">Mittagio verwendet keine Tracking-Cookies und kein Nutzer-Tracking zu Werbezwecken.</p>
+          <p style="margin-bottom:20px;">Es werden ausschließlich technisch notwendige Speichermechanismen verwendet (z. B. für App-Funktionen).</p>
+          
+          <p style="margin-bottom:16px;"><strong>6. Hosting</strong></p>
+          <p style="margin-bottom:20px;">Die Plattform wird über externe Hosting-Anbieter betrieben. Dabei können technisch notwendige Zugriffsdaten (z. B. IP-Adresse) verarbeitet werden, um den sicheren Betrieb zu gewährleisten.</p>
+          
+          <p style="margin-bottom:16px;"><strong>7. Deine Rechte</strong></p>
+          <p style="margin-bottom:12px;">Du hast jederzeit das Recht auf:</p>
+          <ul style="margin:0 0 12px 20px; padding-left:0;">
+            <li style="margin-bottom:8px;">Auskunft über deine gespeicherten Daten</li>
+            <li style="margin-bottom:8px;">Berichtigung unrichtiger Daten</li>
+            <li style="margin-bottom:8px;">Löschung deiner Daten</li>
+            <li style="margin-bottom:8px;">Einschränkung der Verarbeitung</li>
+            <li style="margin-bottom:8px;">Widerspruch gegen die Verarbeitung</li>
+          </ul>
+          <p style="margin-bottom:20px;">Anfragen bitte per E-Mail an: <a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a></p>
+          
+          <p style="margin-bottom:16px;"><strong>8. Änderungen dieser Datenschutzerklärung</strong></p>
+          <p style="margin-bottom:20px;">Diese Datenschutzerklärung kann angepasst werden, wenn sich Funktionen oder gesetzliche Vorgaben ändern.</p>
+          <p style="margin-bottom:20px;">Es gilt jeweils die auf dieser Seite veröffentlichte Version.</p>
+          
+          <p style="margin-top:24px; padding-top:20px; border-top:1px solid #eee; font-size:12px; color:#666;">
+            <strong>9. Stand</strong><br>
+            Stand: Januar 2026
+          </p>
+        </div>
+      `;
+    }
+    
+    content.innerHTML = html;
+    document.getElementById('legalBd').classList.add('active');
+    document.getElementById('legalSheet').classList.add('active');
+  }
+  
+  function closeLegalSheet(){
+    document.getElementById('legalBd').classList.remove('active');
+    document.getElementById('legalSheet').classList.remove('active');
+  }
+  
   document.getElementById('btnImpressum').onclick=()=>{
-    alert('Impressum\n\nMittagio\n[Adresse]\n[Kontakt]\n\n(Platzhalter - wird später ausgefüllt)');
+    openLegalSheet('impressum');
   };
   document.getElementById('btnAGB').onclick=()=>{
-    alert('Allgemeine Geschäftsbedingungen\n\n(Platzhalter - wird später ausgefüllt)');
+    openLegalSheet('agb');
   };
   document.getElementById('btnDatenschutz').onclick=()=>{
-    alert('Datenschutzerklärung\n\n(Platzhalter - wird später ausgefüllt)');
+    openLegalSheet('datenschutz');
   };
 
   // Provider nav handlers
@@ -3862,18 +4395,20 @@
     else alert('Noch keine Inserate zum Teilen.');
   };
   document.getElementById('btnProvWeekPdf').onclick=()=> printWeekCard();
+  // Provider Support (nur im Anbieter-Dashboard, support@mittagio.de)
   document.getElementById('btnProvSupport').onclick=()=>{
     window.location.href = 'mailto:support@mittagio.de';
   };
 
+  // Provider Legal Links (gleiche Sheets wie für Kunden)
   document.getElementById('btnLegalImprint').onclick=()=>{
-    alert('Impressum (Demo): Link folgt.');
+    openLegalSheet('impressum');
   };
   document.getElementById('btnLegalPrivacy').onclick=()=>{
-    alert('Datenschutz (Demo): Link folgt.');
+    openLegalSheet('datenschutz');
   };
   document.getElementById('btnLegalTerms').onclick=()=>{
-    alert('AGB (Demo): Link folgt.');
+    openLegalSheet('agb');
   };
   document.getElementById('btnLegalPricing').onclick=()=>{
     alert('Preise & Konditionen (Demo): Link folgt.');
@@ -5469,11 +6004,106 @@
     });
   }
 
+  // --- Pickup Code Screen Event Handlers ---
+  const btnPickupCodeBack = document.getElementById('btnPickupCodeBack');
+  if(btnPickupCodeBack){
+    btnPickupCodeBack.onclick = () => {
+      showOrders(); // Zurück zur Mittagsbox (nicht Warenkorb)
+    };
+  }
+  
+  const btnCopyCode = document.getElementById('btnCopyCode');
+  if(btnCopyCode){
+    btnCopyCode.onclick = async () => {
+      if(!currentPickupOrderId) return;
+      const order = getOrderById(currentPickupOrderId);
+      if(!order) return;
+      const code = order.pickupCode || order.code || '';
+      if(!code) return;
+      
+      // Clipboard API nutzen
+      try{
+        if(navigator.clipboard && navigator.clipboard.writeText){
+          await navigator.clipboard.writeText(code);
+          btnCopyCode.innerHTML = '<i data-lucide="check"></i> Kopiert!';
+          setTimeout(()=>{
+            btnCopyCode.innerHTML = '<i data-lucide="copy"></i> Code kopieren';
+            if(typeof lucide !== 'undefined') lucide.createIcons();
+          }, 2000);
+          if(typeof lucide !== 'undefined') lucide.createIcons();
+          return;
+        }
+      } catch(e){
+        // Fallback
+      }
+      
+      // Fallback: select + copy
+      const textarea = document.createElement('textarea');
+      textarea.value = code;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      try{
+        document.execCommand('copy');
+        btnCopyCode.innerHTML = '<i data-lucide="check"></i> Kopiert!';
+        setTimeout(()=>{
+          btnCopyCode.innerHTML = '<i data-lucide="copy"></i> Code kopieren';
+          if(typeof lucide !== 'undefined') lucide.createIcons();
+        }, 2000);
+        if(typeof lucide !== 'undefined') lucide.createIcons();
+      } catch(e){
+        // Fehler
+      }
+      document.body.removeChild(textarea);
+    };
+  }
+  
+  const btnShowFullscreenCode = document.getElementById('btnShowFullscreenCode');
+  if(btnShowFullscreenCode){
+    btnShowFullscreenCode.onclick = () => {
+      if(!currentPickupOrderId) return;
+      const order = getOrderById(currentPickupOrderId);
+      if(!order) return;
+      const code = order.pickupCode || order.code || '';
+      if(code) openFullscreenCode(code);
+    };
+  }
+  
+  const btnOpenRoute = document.getElementById('btnOpenRoute');
+  if(btnOpenRoute){
+    btnOpenRoute.onclick = () => {
+      if(!currentPickupOrderId) return;
+      const order = getOrderById(currentPickupOrderId);
+      if(!order || !order.providerAddress) return;
+      const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(order.providerAddress)}`;
+      window.open(mapsUrl, '_blank');
+    };
+  }
+  
+  const btnToOrders = document.getElementById('btnToOrders');
+  if(btnToOrders){
+    btnToOrders.onclick = () => {
+      showOrders(); // Zur Mittagsbox
+    };
+  }
+  
+  // Fullscreen Code Modal: Tap anywhere to close
+  const fullscreenCodeBd = document.getElementById('fullscreenCodeBd');
+  if(fullscreenCodeBd){
+    fullscreenCodeBd.onclick = () => {
+      closeFullscreenCode();
+    };
+  }
+  
   // --- boot ---
   // Testdaten immer erstellen (überschreibt vorhandene für Demo)
   seed();
   offers = offers.map(normalizeOffer);
   save(LS.offers, offers);
+  
+  // Orders laden
+  orders = loadOrders();
   
   renderChips();
 
