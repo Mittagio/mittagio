@@ -1,13 +1,33 @@
-const CACHE = 'mittagio-app-v9';
+const CACHE = 'mittagio-app-v12';
 const CACHE_PREFIX = 'mittagio-';
+
+// Base-Pfad automatisch erkennen (Service Worker liegt im gleichen Verzeichnis wie index.html)
+function getBasePath() {
+  const swPath = self.location.pathname;
+  
+  // Service Worker-Pfad: z.B. /mittagio/app/sw.js -> Base: /mittagio/app/
+  if (swPath.includes('/mittagio/app/')) {
+    return '/mittagio/app/';
+  } else if (swPath.includes('/app/')) {
+    const dir = swPath.substring(0, swPath.indexOf('/app/') + 5);
+    return dir;
+  } else if (swPath.endsWith('sw.js')) {
+    return swPath.replace('sw.js', '');
+  }
+  // Fallback: aktuelles Verzeichnis
+  const dir = swPath.substring(0, swPath.lastIndexOf('/') + 1);
+  return dir || './';
+}
+
+const BASE = getBasePath();
 const ASSETS = [
-  './',
-  './index.html',
-  './manifest.json',
-  './assets/mittagio-logo.png',
-  './assets/provider-placeholder.png',
-  './assets/icons/icon-192.png',
-  './assets/icons/icon-512.png'
+  BASE,
+  BASE + 'index.html',
+  BASE + 'manifest.json',
+  BASE + 'assets/mittagio-logo.png',
+  BASE + 'assets/provider-placeholder.png',
+  BASE + 'assets/icons/icon-192.png',
+  BASE + 'assets/icons/icon-512.png'
 ];
 
 self.addEventListener('install', (e) => {

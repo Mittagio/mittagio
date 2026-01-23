@@ -5,6 +5,27 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>Mittagio</title>
   <meta name="theme-color" content="#F2B705" />
+  <script>
+    // Base-Pfad für GitHub Pages automatisch erkennen
+    (function() {
+      const base = document.createElement('base');
+      const path = window.location.pathname;
+      
+      // Prüfe zuerst den Pfad (wichtig für GitHub Pages mit Subpfad)
+      if (path.includes('/mittagio/app/')) {
+        base.href = '/mittagio/app/';
+      } else if (path.includes('/app/')) {
+        base.href = '/app/';
+      } else if (path === '/' || path === '/index.html') {
+        // Root-Verzeichnis (wenn app/ als Root deployed wurde)
+        base.href = './';
+      } else {
+        // Fallback: aktuelles Verzeichnis
+        base.href = './';
+      }
+      document.head.insertBefore(base, document.head.firstChild);
+    })();
+  </script>
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" href="assets/icons/icon-192.png" />
   <link rel="apple-touch-icon" href="assets/icons/icon-192.png" />
@@ -1700,7 +1721,7 @@
       // 4 Testanbieter × 4 Gerichte (mit Bildern & je Abholcodes)
       
       // 1. Pizzeria Bella Vista (Stuttgart)
-      {id: cryptoId(), providerId: 'p_bellavista', providerName: 'Pizzeria Bella Vista', address: 'Hauptstraße 45, 70173 Stuttgart', title: 'Pizza Prosciutto', price: 9.90, time: '11:30 – 14:30', diet: 'Fleisch', day: today, img: 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 3},
+      {id: cryptoId(), providerId: 'p_bellavista', providerName: 'Pizzeria Bella Vista', address: 'Hauptstraße 45, 70173 Stuttgart', title: 'Leberkäse mit Spätzle', price: 6.90, time: '11:30 – 14:30', diet: 'Fleisch', day: today, img: 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 3},
       {id: cryptoId(), providerId: 'p_bellavista', providerName: 'Pizzeria Bella Vista', address: 'Hauptstraße 45, 70173 Stuttgart', title: 'Pizza Quattro Formaggi', price: 8.50, time: '11:30 – 14:30', diet: 'Vegetarisch', day: today, img: 'https://images.unsplash.com/photo-1571997478779-2adcbbe9ab2f?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 4},
       {id: cryptoId(), providerId: 'p_bellavista', providerName: 'Pizzeria Bella Vista', address: 'Hauptstraße 45, 70173 Stuttgart', title: 'Pasta Carbonara', price: 8.80, time: '11:30 – 14:30', diet: 'Fleisch', day: today, img: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 2},
       {id: cryptoId(), providerId: 'p_bellavista', providerName: 'Pizzeria Bella Vista', address: 'Hauptstraße 45, 70173 Stuttgart', title: 'Insalata Caprese', price: 7.20, time: '11:30 – 14:30', diet: 'Vegetarisch', day: today, img: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 3},
@@ -5410,7 +5431,9 @@
   // PWA (optional)
   if('serviceWorker' in navigator){
     window.addEventListener('load', ()=>{
-      navigator.serviceWorker.register('sw.js').catch(()=>{});
+      // Service Worker-Pfad relativ zum aktuellen Verzeichnis
+      const swPath = document.querySelector('base') ? 'sw.js' : './sw.js';
+      navigator.serviceWorker.register(swPath).catch(()=>{});
       // Icons initialisieren
       if(typeof lucide !== 'undefined'){
         lucide.createIcons();

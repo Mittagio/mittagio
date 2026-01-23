@@ -12,3 +12,27 @@ https://mittagio.github.io/mittagio/
 http://localhost:8000/app/
 
 Stand: Konzept-first, App in Umsetzung.
+
+## 🔄 Synchronisation (Multi-PC-Arbeit)
+
+**WICHTIG:** Alle Änderungen müssen committed und gepusht werden, damit sie auf anderen PCs verfügbar sind!
+
+### Schnell-Synchronisation:
+- **Windows:** Doppelklick auf `sync-to-github.bat`
+- **Mac/Linux:** `./sync-to-github.sh` ausführen
+
+### Manuell:
+```bash
+git add .
+git commit -m "Beschreibung der Änderungen"
+git push origin main
+```
+
+### Auf neuem PC:
+```bash
+git clone https://github.com/[username]/mittagio.git
+# oder wenn bereits geklont:
+git pull origin main
+```
+
+📋 Siehe `SYNC_CHECKLIST.md` für detaillierte Anleitung.
