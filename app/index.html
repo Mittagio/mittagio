@@ -5416,6 +5416,14 @@
   if(mode==='provider' && !provider.loggedIn) mode='customer';
   setMode(mode);
   
+  // Sicherstellen, dass Discover-Seite gerendert wird (auch wenn mode='customer')
+  if(mode === 'customer'){
+    setTimeout(()=>{
+      if(typeof renderDiscover !== 'undefined'){
+        renderDiscover();
+      }
+    }, 100);
+  }
   
   // Sicherstellen, dass Startseite gerendert wird
   if(mode === 'start'){
