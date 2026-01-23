@@ -2352,18 +2352,19 @@
   
   /**
    * Generate dish-letter pickup code (new format: 1A, 2A, 3B, etc.)
-   * @param {string} orderId
-   * @param {string} dishId
+   * Single source of truth: Order record
+   * @param {string} orderId - Order ID
+   * @param {string} dishId - Dish/Offer ID
+   * @param {string} providerIdVal - Provider ID (from order)
    * @param {string} day - ISO date string (YYYY-MM-DD)
-   * @returns {string} - Format: "1A", "2A", "3B", etc.
+   * @returns {{code: string, dishLetter: string, runningNumber: number}} - Format: "1A", "2A", "3B", etc.
    */
-  function generateDishLetterPickupCode(orderId, dishId, day){
-    const todayKey = day || isoDate(new Date());
-    const providerIdVal = providerId();
+  function generateDishLetterPickupCode(orderId, dishId, providerIdVal, day){
+    const pickupDate = day || isoDate(new Date());
     
     // Get all offers for this provider on this day, sorted by creation/order
     const todayOffers = offers
-      .filter(o => o.providerId === providerIdVal && o.day === todayKey && o.active !== false)
+      .filter(o => o.providerId === providerIdVal && o.day === pickupDate && o.active !== false)
       .sort((a, b) => {
         // Sort by creation time or ID for consistent ordering
         const timeA = a.createdAt || 0;
@@ -2374,41 +2375,42 @@
     
     // Find position of this dish (1-based, max 5)
     const dishIndex = todayOffers.findIndex(o => o.id === dishId);
+    let dishLetter = 'A';
+    
     if(dishIndex === -1){
       // Fallback: use first dish (A)
-      const letter = 'A';
-      const ordersList = loadOrders();
-      const ordersForDish = ordersList.filter(o => {
-        const offer = offers.find(off => off.id === o.dishId);
-        return offer && 
-               offer.providerId === providerIdVal && 
-               offer.day === todayKey && 
-               o.dishId === dishId &&
-               o.status === 'PAID' &&
-               o.id !== orderId;
-      });
-      const number = ordersForDish.length + 1;
-      return `${number}${letter}`;
+      dishLetter = 'A';
+    } else {
+      const position = Math.min(dishIndex + 1, 5); // Max 5 dishes (A-E)
+      dishLetter = String.fromCharCode(64 + position); // A=65 (1→A), B=66 (2→B), etc.
     }
     
-    const position = Math.min(dishIndex + 1, 5); // Max 5 dishes (A-E)
-    const letter = String.fromCharCode(64 + position); // A=65 (1→A), B=66 (2→B), etc.
-    
-    // Count how many orders exist for this dish on this day (before this order)
+    // Count how many orders exist for this provider+pickupDate+dishLetter (before this order)
+    // This is the running number (increments per provider+pickupDate+dishLetter)
     const ordersList = loadOrders();
-    const ordersForDish = ordersList.filter(o => {
+    const ordersForDishLetter = ordersList.filter(o => {
+      // Get offer for this order
       const offer = offers.find(off => off.id === o.dishId);
-      return offer && 
-             offer.providerId === providerIdVal && 
-             offer.day === todayKey && 
-             o.dishId === dishId &&
-             o.status === 'PAID' &&
-             o.id !== orderId; // Exclude current order
+      if(!offer) return false;
+      
+      // Check if same provider, same day
+      if(offer.providerId !== providerIdVal || offer.day !== pickupDate) return false;
+      
+      // Check if same dishLetter
+      const offerIndex = todayOffers.findIndex(off => off.id === offer.id);
+      if(offerIndex === -1) return false;
+      const offerPosition = Math.min(offerIndex + 1, 5);
+      const offerLetter = String.fromCharCode(64 + offerPosition);
+      if(offerLetter !== dishLetter) return false;
+      
+      // Must be PAID and not the current order
+      return o.status === 'PAID' && o.id !== orderId;
     });
     
-    const number = ordersForDish.length + 1; // Running number (1, 2, 3, ...)
+    const runningNumber = ordersForDishLetter.length + 1; // Running number (1, 2, 3, ...)
+    const code = `${runningNumber}${dishLetter}`;
     
-    return `${number}${letter}`;
+    return {code, dishLetter, runningNumber};
   }
 
   // --- State ---
@@ -2858,8 +2860,10 @@
     const codeEl = document.getElementById('pickupCodeValue');
     if(codeEl){
       const code = order.pickupCode || order.code || '';
-      // Code ohne Zwischenräume in normaler Ansicht (nur im Fullscreen mit Zwischenräumen)
+      // Code groß anzeigen (Format: 1A, 2B, etc.)
       codeEl.textContent = code || '–';
+      codeEl.style.fontSize = '64px'; // Größer für bessere Lesbarkeit
+      codeEl.style.letterSpacing = '2px';
     }
     
     // Bestellinfos
@@ -2870,7 +2874,18 @@
     if(providerEl) providerEl.textContent = order.providerName || '–';
     
     const timeEl = document.getElementById('pickupCodeTime');
-    if(timeEl) timeEl.textContent = order.etaTime || order.pickupTime || 'offen';
+    if(timeEl){
+      // Use pickupWindow (from order) or fallback to etaTime/pickupTime
+      const timeWindow = order.pickupWindow || order.etaTime || order.pickupTime || 'offen';
+      // Format: Show date if available
+      let timeText = timeWindow;
+      if(order.pickupDate){
+        const date = new Date(order.pickupDate);
+        const dateStr = `${date.getDate()}.${String(date.getMonth()+1).padStart(2,'0')}.`;
+        timeText = `${dateStr} · ${timeWindow}`;
+      }
+      timeEl.textContent = timeText;
+    }
     
     const typeEl = document.getElementById('pickupCodeType');
     if(typeEl){
@@ -3661,13 +3676,15 @@
     box.innerHTML = list.map(o=>{
       // Status-Anzeige
       const status = o.status || 'offen';
-      const statusLabel = status === 'CREATED' ? 'Erstellt' :
+      // Check for PICKED_UP status (from pickupStatus field)
+      const isPickedUp = status === 'COMPLETED' || o.pickupStatus === 'PICKED_UP' || status === 'abgeholt';
+      const statusLabel = isPickedUp ? 'Abgeholt ✅' :
+                         status === 'CREATED' ? 'Erstellt' :
                          status === 'PAYMENT_PENDING' ? 'Zahlung ausstehend' :
                          status === 'PAID' ? 'Bezahlt' :
                          status === 'CANCELLED' ? 'Abgebrochen' :
-                         status === 'COMPLETED' ? 'Abgeholt' :
                          status;
-      const isDone = status === 'COMPLETED' || status === 'abgeholt';
+      const isDone = isPickedUp;
       const code = o.pickupCode || o.code || '';
       // Code nur anzeigen wenn PAID (Guard)
       const showCode = status === 'PAID' && code;
@@ -4749,6 +4766,7 @@
       createdAt: now,
       updatedAt: now,
       dishId: items[0]?.dishId || '',
+      offerId: items[0]?.dishId || '', // Same as dishId for MVP
       dishName: items.map(i => `${i.dishName} x ${i.quantity}`).join(', '),
       providerId: cartData.providerId || '',
       providerName: cartData.providerName || 'Anbieter',
@@ -4770,6 +4788,10 @@
       receiptEmail: undefined,
       pickupCode: undefined, // Nur bei PAID (Guard in addOrder)
       pickupCodeActivatedAt: undefined, // Nur bei PAID
+      pickupDate: undefined, // Wird bei PAID gesetzt
+      pickupWindow: firstOfferNormalized && firstOfferNormalized.pickupWindow ? firstOfferNormalized.pickupWindow : '',
+      dishLetter: undefined, // Wird bei PAID gesetzt
+      runningNumber: undefined, // Wird bei PAID gesetzt
       isGuest: true,
       // Legacy-Felder für Kompatibilität
       summary: items.map(i => `${i.dishName} x ${i.quantity}`).join(', '),
@@ -4942,12 +4964,19 @@
       return;
     }
     
-    // Get offer to determine day
-    const offer = offers.find(o => o.id === order.dishId);
-    const day = offer ? offer.day : isoDate(new Date());
+    // Get offer to determine day and pickup window
+    const offer = offers.find(o => o.id === order.dishId || o.id === order.offerId);
+    const pickupDate = offer ? offer.day : isoDate(new Date());
+    const pickupWindow = offer ? (offer.pickupWindow || '') : (order.pickupWindow || '');
     
     // Pickup Code generieren (nur bei PAID) - new format: dish-letter + number
-    const code = generateDishLetterPickupCode(orderId, order.dishId, day);
+    // Single source of truth: Order record
+    const {code, dishLetter, runningNumber} = generateDishLetterPickupCode(
+      orderId, 
+      order.dishId || order.offerId, 
+      order.providerId, 
+      pickupDate
+    );
     const now = Date.now();
     
     // Order auf PAID setzen (pickupCode wird hier gesetzt, da status=PAID)
@@ -4958,6 +4987,10 @@
       receiptEmail: paymentData.receiptEmail,
       pickupCode: code,
       pickupCodeActivatedAt: now,
+      pickupDate: pickupDate,
+      pickupWindow: pickupWindow,
+      dishLetter: dishLetter,
+      runningNumber: runningNumber,
       // Legacy-Felder für Kompatibilität
       code: code,
       paymentStatus: 'PAID',
@@ -5956,33 +5989,44 @@
   }
 
   // Build pickup list with dish-letter codes (new format)
+  // Single source of truth: Order record
   function buildPickupList(){
     const todayKey = isoDate(new Date());
     const providerIdVal = providerId();
     
-    // Get all PAID orders for today
+    // Get all PAID orders for this provider
+    // Use pickupDate from order (single source of truth) or fallback to offer.day
     const ordersList = loadOrders();
     const todayOrders = ordersList.filter(o => {
-      const offer = offers.find(off => off.id === o.dishId);
-      return offer && 
-             offer.providerId === providerIdVal && 
-             offer.day === todayKey && 
-             o.status === 'PAID' &&
-             o.pickupCode; // Must have pickup code
+      // Must be for this provider
+      if(o.providerId !== providerIdVal) return false;
+      
+      // Must be PAID with pickupCode
+      if(o.status !== 'PAID' || !o.pickupCode) return false;
+      
+      // Check pickupDate (from order) or fallback to offer.day
+      const orderPickupDate = o.pickupDate;
+      if(orderPickupDate){
+        return orderPickupDate === todayKey;
+      }
+      
+      // Fallback: check offer.day
+      const offer = offers.find(off => off.id === o.dishId || off.id === o.offerId);
+      return offer && offer.day === todayKey;
     });
     
     if(!todayOrders.length) return [];
     
     // Map orders to pickup items
     return todayOrders.map(order => {
-      const offer = offers.find(off => off.id === order.dishId);
+      const offer = offers.find(off => off.id === order.dishId || off.id === order.offerId);
       const isPickedUp = order.status === 'COMPLETED' || order.pickupStatus === 'PICKED_UP';
       
       return {
         orderId: order.id,
         code: order.pickupCode || order.code || '',
         dishName: order.dishName || offer?.dish || 'Gericht',
-        pickupTime: order.etaTime || offer?.pickupWindow || '',
+        pickupTime: order.pickupWindow || order.etaTime || offer?.pickupWindow || '',
         status: isPickedUp ? 'PICKED_UP' : 'OPEN',
         offer: offer
       };
