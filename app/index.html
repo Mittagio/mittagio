@@ -859,7 +859,7 @@
 
   <main>
     <!-- START - Lunch-Feed (Social Style) -->
-    <section class="view active" id="v-start">
+    <section class="view" id="v-start">
       <!-- Standort-Suche -->
       <div class="panel" style="margin-top:12px;">
         <div class="section-title">Entdecken</div>
@@ -887,8 +887,8 @@
       </p>
     </section>
 
-    <!-- CUSTOMER: Discover - App-like UX -->
-    <section class="view" id="v-discover">
+    <!-- CUSTOMER: Discover - App-like UX (Final Spec) -->
+    <section class="view active" id="v-discover">
       <!-- Header: Kompakte Adresszeile (44-48px, Pill-Form) -->
       <div class="discover-header">
         <button class="discover-location-pill" type="button" id="btnDiscoverLocation">
@@ -1675,7 +1675,7 @@
   const save = (k, v) => localStorage.setItem(k, JSON.stringify(v));
 
   // --- State ---
-  let mode = 'start'; // 'start' | 'customer' | 'provider'
+  let mode = load(LS.mode, 'customer'); // 'start' | 'customer' | 'provider' (Standard: 'customer' für Discover-Seite)
   // Angebote werden später durch seed() überschrieben, daher hier leer initialisieren
   let offers = [];
   const legacyFavs = load(LS.favs, []);
@@ -5462,6 +5462,8 @@
 
   // init nav bindings
   if(mode==='provider' && !provider.loggedIn) mode='customer';
+  // Start-Seite auf Discover-Seite umstellen (Final Spec)
+  if(mode==='start') mode='customer';
   setMode(mode);
   
   // Sicherstellen, dass Discover-Seite gerendert wird (auch wenn mode='customer')
