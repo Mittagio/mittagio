@@ -1576,56 +1576,105 @@
       </div>
     </section>
 
-    <!-- PROVIDER APP -->
+    <!-- PROVIDER APP - Dashboard (Home) -->
     <section class="view" id="v-provider-home">
-      <div class="panel">
-        <div class="provider-header">
-          <div class="provider-logo compact">
-            <div class="plogo" id="provCardLogo"></div>
-            <div>
-              <div style="font-weight:900" id="provCardName">Anbieter</div>
-              <div class="hint" id="provCardAddr"></div>
-            </div>
+      <!-- Provider Identity Card (Header) -->
+      <div class="panel" id="providerIdentityCard" style="padding:16px; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,.04);">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+          <div class="plogo" id="provCardLogo" style="width:56px; height:56px; border-radius:14px; flex-shrink:0;"></div>
+          <div style="flex:1; min-width:0;">
+            <div style="font-weight:600; font-size:17px; line-height:1.3; margin-bottom:4px;" id="provCardName">Anbieter</div>
+            <div class="hint" id="provCardAddr" style="font-size:13px; line-height:1.4;">Adresse hinzufügen</div>
           </div>
-          <div class="header-actions">
-            <button class="btn" type="button" id="btnNewListing" data-icon="plus">Neues Inserat</button>
-            <button class="btn secondary" type="button" id="btnFromCookbook" data-icon="book">Aus Kochbuch</button>
-          </div>
+        </div>
+        <button class="btn secondary" type="button" id="btnProviderEditProfile" style="width:100%; min-height:44px;">
+          Profil bearbeiten
+        </button>
+      </div>
+
+      <!-- KPI Dashboard Cards (Row of 3) -->
+      <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; margin-top:18px;">
+        <div class="panel" id="kpiCardInserate" style="padding:16px; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,.04); cursor:pointer; text-align:center;">
+          <div style="font-size:24px; font-weight:900; line-height:1.2; margin-bottom:6px;" id="kpiInserateCount">0</div>
+          <div style="font-size:13px; color:var(--muted);">Inserate</div>
+        </div>
+        <div class="panel" id="kpiCardAbholungen" style="padding:16px; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,.04); cursor:pointer; text-align:center;">
+          <div style="font-size:24px; font-weight:900; line-height:1.2; margin-bottom:6px;" id="kpiAbholungenCount">0</div>
+          <div style="font-size:13px; color:var(--muted);">Abholungen</div>
+        </div>
+        <div class="panel" id="kpiCardKochbuch" style="padding:16px; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,.04); cursor:pointer; text-align:center;">
+          <div style="font-size:24px; font-weight:900; line-height:1.2; margin-bottom:6px;" id="kpiKochbuchCount">0</div>
+          <div style="font-size:13px; color:var(--muted);">Kochbuch</div>
         </div>
       </div>
 
-      <div style="height:12px"></div>
-      <div class="panel">
-        <h3>Heute</h3>
-        <div class="hint">Aktive Inserate für heute. Online-Abholcodes sind markiert.</div>
-        <div class="hint" id="provTodayCount" style="margin-top:6px;"></div>
-        <div id="provTodayGrid" class="grid" style="margin-top:10px"></div>
-        <div id="provTodayEmpty" class="hint">Noch keine Inserate für heute.</div>
+      <!-- TODAY Card -->
+      <div class="panel" id="providerTodayCard" style="margin-top:18px; padding:16px; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,.04);">
+        <div style="font-weight:600; font-size:17px; margin-bottom:12px; line-height:1.3;" id="providerTodayTitle">Heute</div>
+        <div id="providerTodayContent">
+          <!-- Wird dynamisch befüllt -->
+        </div>
       </div>
 
-      <div style="height:12px"></div>
-      <div class="panel" id="provWeekPanel">
-        <h3>Wochenvorschau</h3>
-        <div class="hint">Swipe nach links/rechts · Tippen für Aktionen</div>
-        <div class="dayrow" id="provWeekDays" style="padding:0 0 10px; max-width:none;"></div>
-        <div id="provWeekPreview" class="hint">Noch nichts geplant.</div>
-        <button class="btn secondary" type="button" id="btnOpenWeekPlan" data-icon="calendar">Wochenplan anzeigen</button>
+      <!-- Active Offers Mini List -->
+      <div class="panel" id="providerActiveOffers" style="margin-top:18px; padding:16px; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,.04); display:none;">
+        <div style="font-weight:600; font-size:17px; margin-bottom:12px; line-height:1.3;">Aktive Inserate</div>
+        <div id="providerActiveOffersList"></div>
+        <a href="#" id="btnProviderShowAllOffers" style="display:inline-block; font-size:13px; color:var(--muted); text-decoration:none; margin-top:12px;">
+          Alle Inserate anzeigen →
+        </a>
+      </div>
+
+      <!-- Week Preview -->
+      <div class="panel" id="providerWeekPreview" style="margin-top:18px; padding:16px; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,.04);">
+        <div style="font-weight:600; font-size:17px; margin-bottom:12px; line-height:1.3;">Wochenvorschau</div>
+        <div class="dayrow" id="providerWeekDays" style="padding:0 0 10px; max-width:none; margin-bottom:12px;"></div>
+        <div id="providerWeekDayContent" style="min-height:60px;">
+          <!-- Wird dynamisch befüllt -->
+        </div>
+      </div>
+
+      <!-- Empty Dashboard (Welcome Card) -->
+      <div class="panel" id="providerEmptyDashboard" style="margin-top:18px; padding:20px; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,.04); text-align:center; display:none;">
+        <div style="font-size:32px; margin-bottom:12px;">👋</div>
+        <div style="font-weight:600; font-size:18px; margin-bottom:8px; line-height:1.3;">Willkommen bei Mittagio</div>
+        <div class="hint" style="font-size:14px; line-height:1.4; margin-bottom:16px; color:var(--muted);">
+          Starte mit deinem ersten Gericht.
+        </div>
+        <button class="btn secondary" type="button" id="btnProviderEmptyAddDish" style="width:100%; min-height:44px;">
+          Gericht hinzufügen
+        </button>
+      </div>
+
+      <!-- FAB (Floating Action Button) -->
+      <button class="fab" id="fabProviderAddOffer" type="button" aria-label="Inserat hinzufügen" style="position:fixed; bottom:90px; right:16px; width:56px; height:56px; border-radius:28px; background:var(--brand); color:#111; border:none; box-shadow:0 4px 12px rgba(0,0,0,.2); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:24px; font-weight:900; z-index:20;">
+        +
+      </button>
+      <div id="fabProviderAddOfferLabel" style="position:fixed; bottom:154px; right:16px; background:rgba(0,0,0,.8); color:#fff; padding:6px 12px; border-radius:8px; font-size:13px; white-space:nowrap; pointer-events:none; opacity:0; transition:opacity .2s; z-index:21;">
+        + Inserat
       </div>
     </section>
 
     <section class="view" id="v-provider-pickups">
-      <div class="panel">
-        <h3>Abholungen</h3>
-        <div id="provPickupsEmpty" class="hint">
-          Aktuell keine Abholungen geplant.<br>
-          Geplante Abholungen sorgen für weniger Chaos.
-          <div style="height:10px"></div>
-          <button class="btn secondary" type="button" id="btnPickupsFaq" data-icon="info">Mehr erfahren</button>
+      <div class="panel" style="padding:16px;">
+        <h3 style="margin:0 0 8px; font-size:24px; font-weight:900; line-height:1.2;">Abholungen</h3>
+        <div id="provPickupsSubheader" class="hint" style="font-size:14px; margin-bottom:16px; color:var(--muted);">
+          <!-- Wird dynamisch befüllt -->
         </div>
-        <div id="provPickupsWrap" style="display:none;">
-          <div class="hint" style="margin-top:8px;">Sortierung</div>
-          <div class="answers" id="provPickupSort"></div>
-          <div id="provPickupGroups" style="margin-top:10px;"></div>
+        
+        <!-- Filter Toggle -->
+        <div class="answers" id="provPickupFilter" style="margin-bottom:16px;">
+          <!-- Wird dynamisch befüllt -->
+        </div>
+        
+        <!-- Empty States -->
+        <div id="provPickupsEmpty" class="hint" style="text-align:center; padding:40px 20px; display:none;">
+          <!-- Wird dynamisch befüllt -->
+        </div>
+        
+        <!-- Pickup List -->
+        <div id="provPickupsList" style="display:none;">
+          <!-- Wird dynamisch befüllt -->
         </div>
       </div>
     </section>
@@ -2008,6 +2057,25 @@
   </div>
 </div>
 
+<!-- Pickup Confirmation Sheet -->
+<div class="backdrop" id="pickupConfirmBd" onclick="closePickupConfirmSheet()"></div>
+<div class="sheet" id="pickupConfirmSheet">
+  <div class="handle"></div>
+  <div class="sheet-body" style="padding:24px;">
+    <div style="font-weight:600; font-size:18px; margin-bottom:20px; line-height:1.3; text-align:center;">Abholung bestätigen</div>
+    <div style="font-size:48px; font-weight:900; font-family:monospace; color:var(--brand); margin-bottom:12px; text-align:center; line-height:1;" id="pickupConfirmCode">–</div>
+    <div style="font-size:16px; color:var(--muted); margin-bottom:24px; text-align:center;" id="pickupConfirmDish">–</div>
+    <div style="display:flex; flex-direction:column; gap:12px;">
+      <button class="btn" type="button" id="btnPickupConfirmYes" style="width:100%; min-height:50px; font-size:16px;">
+        ✅ Abgeholt
+      </button>
+      <button class="btn secondary" type="button" id="btnPickupConfirmNo" style="width:100%; min-height:50px; font-size:16px;">
+        ❓ Doch nicht
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- Login Modal (Bottom Sheet) -->
 <div class="backdrop" id="loginBd" onclick="closeLoginSheet()"></div>
 <div class="sheet" id="loginSheet">
@@ -2047,6 +2115,26 @@
         <i data-lucide="copy"></i><span>Link kopieren</span>
       </button>
     </div>
+  </div>
+</div>
+
+<!-- Create Flow Sheet (Gericht hinzufügen) -->
+<div class="backdrop" id="createFlowBd" onclick="closeCreateFlowSheet()"></div>
+<div class="sheet" id="createFlowSheet">
+  <div class="handle"></div>
+  <div class="sheet-body" style="padding:16px;">
+    <div style="font-weight:600; font-size:18px; margin-bottom:16px; line-height:1.3;">Gericht hinzufügen</div>
+    <div style="display:flex; flex-direction:column; gap:12px;">
+      <button class="btn secondary" type="button" id="btnCreateFromCookbook" style="width:100%; min-height:44px; justify-content:flex-start; text-align:left;">
+        <span style="margin-right:12px;">📖</span>
+        <span>Aus Kochbuch auswählen</span>
+      </button>
+      <button class="btn secondary" type="button" id="btnCreateNewDish" style="width:100%; min-height:44px; justify-content:flex-start; text-align:left;">
+        <span style="margin-right:12px;">➕</span>
+        <span>Neues Gericht erstellen</span>
+      </button>
+    </div>
+    <div class="hint" id="createFlowDateHint" style="margin-top:12px; font-size:13px; color:var(--muted); display:none;"></div>
   </div>
 </div>
 
@@ -2231,7 +2319,7 @@
   }
   
   /**
-   * Generate pickup code
+   * Generate pickup code (legacy: random 5-char code)
    * @param {number} [len=5]
    * @returns {string}
    */
@@ -2260,6 +2348,67 @@
     }
     
     return code;
+  }
+  
+  /**
+   * Generate dish-letter pickup code (new format: 1A, 2A, 3B, etc.)
+   * @param {string} orderId
+   * @param {string} dishId
+   * @param {string} day - ISO date string (YYYY-MM-DD)
+   * @returns {string} - Format: "1A", "2A", "3B", etc.
+   */
+  function generateDishLetterPickupCode(orderId, dishId, day){
+    const todayKey = day || isoDate(new Date());
+    const providerIdVal = providerId();
+    
+    // Get all offers for this provider on this day, sorted by creation/order
+    const todayOffers = offers
+      .filter(o => o.providerId === providerIdVal && o.day === todayKey && o.active !== false)
+      .sort((a, b) => {
+        // Sort by creation time or ID for consistent ordering
+        const timeA = a.createdAt || 0;
+        const timeB = b.createdAt || 0;
+        if(timeA !== timeB) return timeA - timeB;
+        return (a.id || '').localeCompare(b.id || '');
+      });
+    
+    // Find position of this dish (1-based, max 5)
+    const dishIndex = todayOffers.findIndex(o => o.id === dishId);
+    if(dishIndex === -1){
+      // Fallback: use first dish (A)
+      const letter = 'A';
+      const ordersList = loadOrders();
+      const ordersForDish = ordersList.filter(o => {
+        const offer = offers.find(off => off.id === o.dishId);
+        return offer && 
+               offer.providerId === providerIdVal && 
+               offer.day === todayKey && 
+               o.dishId === dishId &&
+               o.status === 'PAID' &&
+               o.id !== orderId;
+      });
+      const number = ordersForDish.length + 1;
+      return `${number}${letter}`;
+    }
+    
+    const position = Math.min(dishIndex + 1, 5); // Max 5 dishes (A-E)
+    const letter = String.fromCharCode(64 + position); // A=65 (1→A), B=66 (2→B), etc.
+    
+    // Count how many orders exist for this dish on this day (before this order)
+    const ordersList = loadOrders();
+    const ordersForDish = ordersList.filter(o => {
+      const offer = offers.find(off => off.id === o.dishId);
+      return offer && 
+             offer.providerId === providerIdVal && 
+             offer.day === todayKey && 
+             o.dishId === dishId &&
+             o.status === 'PAID' &&
+             o.id !== orderId; // Exclude current order
+    });
+    
+    const number = ordersForDish.length + 1; // Running number (1, 2, 3, ...)
+    
+    return `${number}${letter}`;
   }
 
   // --- State ---
@@ -2326,7 +2475,8 @@
   let activeCat = null;
   let activeDay = isoDate(new Date());
   let providerWeekDay = isoDate(new Date());
-  let pickupSort = 'time';
+  let pickupSort = 'code'; // Default: sort by code (1A, 1B, 1C, 2A, 2B...)
+  let pickupFilter = 'offen'; // 'offen' | 'abgeholt'
   let cookbookSort = 'recent';
   let cookbookQuery = '';
   let cookbookTab = 'dishes';
@@ -2748,26 +2898,52 @@
     setProviderNavActive('provider-home');
     showView(views.providerHome);
     renderProviderHome();
+    
+    // FAB anzeigen
+    const fab = document.getElementById('fabProviderAddOffer');
+    const fabLabel = document.getElementById('fabProviderAddOfferLabel');
+    if(fab) fab.style.display = 'flex';
+    if(fabLabel) fabLabel.style.display = 'block';
   }
   function showProviderPickups(){
     setProviderNavActive('provider-pickups');
     showView(views.providerPickups);
     renderProviderPickups();
+    // FAB ausblenden
+    const fab = document.getElementById('fabProviderAddOffer');
+    const fabLabel = document.getElementById('fabProviderAddOfferLabel');
+    if(fab) fab.style.display = 'none';
+    if(fabLabel) fabLabel.style.display = 'none';
   }
   function showProviderWeek(){
     setProviderNavActive('provider-home');
     showView(views.providerWeek);
     renderWeekPlan();
+    // FAB ausblenden
+    const fab = document.getElementById('fabProviderAddOffer');
+    const fabLabel = document.getElementById('fabProviderAddOfferLabel');
+    if(fab) fab.style.display = 'none';
+    if(fabLabel) fabLabel.style.display = 'none';
   }
   function showProviderCookbook(){
     setProviderNavActive('provider-cookbook');
     showView(views.providerCookbook);
     renderCookbook();
+    // FAB ausblenden
+    const fab = document.getElementById('fabProviderAddOffer');
+    const fabLabel = document.getElementById('fabProviderAddOfferLabel');
+    if(fab) fab.style.display = 'none';
+    if(fabLabel) fabLabel.style.display = 'none';
   }
   function showProviderProfile(){
     setProviderNavActive('provider-profile');
     showView(views.providerProfile);
     renderProviderProfile();
+    // FAB ausblenden
+    const fab = document.getElementById('fabProviderAddOffer');
+    const fabLabel = document.getElementById('fabProviderAddOfferLabel');
+    if(fab) fab.style.display = 'none';
+    if(fabLabel) fabLabel.style.display = 'none';
   }
   function showProviderBilling(){
     setProviderNavActive('provider-profile');
@@ -3776,6 +3952,20 @@
       history.pushState(null, '', location.pathname);
       return;
     }
+    // Pickup Confirmation Sheet schließen
+    if(document.getElementById('pickupConfirmSheet') && document.getElementById('pickupConfirmSheet').classList.contains('active')){
+      closePickupConfirmSheet();
+      e.preventDefault();
+      history.pushState(null, '', location.pathname);
+      return;
+    }
+    // Create Flow Sheet schließen
+    if(document.getElementById('createFlowSheet') && document.getElementById('createFlowSheet').classList.contains('active')){
+      closeCreateFlowSheet();
+      e.preventDefault();
+      history.pushState(null, '', location.pathname);
+      return;
+    }
     // FAQ Sheet schließen
     if(document.getElementById('faqSheet') && document.getElementById('faqSheet').classList.contains('active')){
       closeFaqSheet();
@@ -3985,6 +4175,116 @@
   function closeShareSheet(){
     document.getElementById('shareBd').classList.remove('active');
     document.getElementById('shareSheet').classList.remove('active');
+  }
+  
+  // Create Flow Sheet
+  function openCreateFlowSheet(){
+    const sheet = document.getElementById('createFlowSheet');
+    const hint = document.getElementById('createFlowDateHint');
+    if(sheet && hint){
+      if(createFlowPreselectedDate){
+        const d = new Date(createFlowPreselectedDate);
+        const weekday = ['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'][d.getDay()];
+        const dateStr = `${d.getDate()}.${String(d.getMonth()+1).padStart(2,'0')}.`;
+        hint.textContent = `Für: ${weekday}, ${dateStr}`;
+        hint.style.display = 'block';
+      } else {
+        hint.style.display = 'none';
+      }
+      document.getElementById('createFlowBd').classList.add('active');
+      sheet.classList.add('active');
+    }
+  }
+  
+  function closeCreateFlowSheet(){
+    document.getElementById('createFlowBd').classList.remove('active');
+    document.getElementById('createFlowSheet').classList.remove('active');
+    createFlowPreselectedDate = null;
+  }
+  
+  // Create Flow Handlers
+  const btnCreateFromCookbook = document.getElementById('btnCreateFromCookbook');
+  if(btnCreateFromCookbook){
+    btnCreateFromCookbook.onclick = () => {
+      closeCreateFlowSheet();
+      // Open cookbook selection with date preselected
+      // Navigate to cookbook and show selection
+      showProviderCookbook();
+      // TODO: Highlight cookbook entries and pass date when creating offer
+      // For now, user selects from cookbook and date will be preselected in wizard
+    };
+  }
+  
+  const btnCreateNewDish = document.getElementById('btnCreateNewDish');
+  if(btnCreateNewDish){
+    btnCreateNewDish.onclick = () => {
+      closeCreateFlowSheet();
+      startWizard('listing', {date: createFlowPreselectedDate});
+    };
+  }
+  
+  // Offer More Menu
+  function openOfferMoreMenu(offerId){
+    const offer = offers.find(o => o.id === offerId);
+    if(!offer) return;
+    
+    const actions = [
+      {label: 'Bearbeiten', action: () => {
+        closeCreateFlowSheet(); // Falls offen
+        startWizard('listing', {editOfferId: offerId});
+      }},
+      {label: 'Duplizieren', action: () => {
+        const newOffer = {...offer, id: cryptoId(), createdAt: Date.now()};
+        offers.unshift(newOffer);
+        save(LS.offers, offers);
+        renderProviderHome();
+        renderDiscover();
+        showToast('Inserat dupliziert');
+      }},
+      {label: 'Pausieren', action: () => {
+        offer.active = false;
+        save(LS.offers, offers);
+        renderProviderHome();
+        renderDiscover();
+        showToast('Inserat pausiert');
+      }},
+      {label: 'Löschen', action: () => {
+        if(confirm('Inserat wirklich löschen?')){
+          const idx = offers.findIndex(o => o.id === offerId);
+          if(idx >= 0){
+            offers.splice(idx, 1);
+            save(LS.offers, offers);
+            renderProviderHome();
+            renderDiscover();
+            showToast('Inserat gelöscht');
+          }
+        }
+      }}
+    ];
+    
+    // Simple prompt-based menu (später kann ein Sheet verwendet werden)
+    const choice = prompt(`Aktion für "${offer.dish || offer.title}":\n1. Bearbeiten\n2. Duplizieren\n3. Pausieren\n4. Löschen\n\nNummer eingeben:`);
+    const idx = parseInt(choice) - 1;
+    if(idx >= 0 && idx < actions.length){
+      actions[idx].action();
+    }
+  }
+  
+  // Toast helper
+  function showToast(message){
+    // Simple snackbar-style toast
+    let toast = document.getElementById('toast');
+    if(!toast){
+      toast = document.createElement('div');
+      toast.id = 'toast';
+      toast.style.cssText = 'position:fixed; bottom:90px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,.85); color:#fff; padding:12px 20px; border-radius:12px; font-size:14px; z-index:100; opacity:0; transition:opacity .3s; pointer-events:none;';
+      document.body.appendChild(toast);
+    }
+    toast.textContent = message;
+    toast.style.opacity = '1';
+    setTimeout(() => {
+      toast.style.opacity = '0';
+    }, 3000);
   }
 
   async function copyShareLink(){
@@ -4642,8 +4942,12 @@
       return;
     }
     
-    // Pickup Code generieren (nur bei PAID)
-    const code = generatePickupCode(5);
+    // Get offer to determine day
+    const offer = offers.find(o => o.id === order.dishId);
+    const day = offer ? offer.day : isoDate(new Date());
+    
+    // Pickup Code generieren (nur bei PAID) - new format: dish-letter + number
+    const code = generateDishLetterPickupCode(orderId, order.dishId, day);
     const now = Date.now();
     
     // Order auf PAID setzen (pickupCode wird hier gesetzt, da status=PAID)
@@ -5214,48 +5518,308 @@
     }
   }, true); // useCapture für frühere Event-Erfassung
 
-  // --- Provider home renders ---
+  // --- Provider Dashboard (Home) - FINAL MVP ---
+  let createFlowPreselectedDate = null; // Für Date-Preselect aus Today/Week
+  
   function renderProviderHome(){
     const profile = normalizeProviderProfile(provider.profile || {});
-
+    const todayKey = isoDate(new Date());
+    const mineAll = offers.filter(o => o.providerId === providerId());
+    const mineActive = mineAll.filter(o => o.active !== false);
+    const mineToday = mineActive.filter(o => o.day === todayKey);
+    
+    // Provider Identity Card
     const logoWrap = document.getElementById('provCardLogo');
     if(logoWrap){
-      logoWrap.innerHTML = profile.logoData ? `<img src="${profile.logoData}" alt="Logo" />` : `<img src="assets/provider-placeholder.png" alt="Logo" />`;
+      if(profile.logoData){
+        logoWrap.innerHTML = `<img src="${esc(profile.logoData)}" alt="Logo" style="width:100%; height:100%; object-fit:cover; border-radius:14px;" />`;
+      } else {
+        const initials = (profile.name || provider.email || 'A').charAt(0).toUpperCase();
+        logoWrap.innerHTML = `<div style="width:100%; height:100%; background:linear-gradient(135deg, var(--brand), var(--brand2)); display:flex; align-items:center; justify-content:center; border-radius:14px; font-size:24px; font-weight:900; color:#111;">${esc(initials)}</div>`;
+      }
     }
     const nameEl = document.getElementById('provCardName');
     if(nameEl) nameEl.textContent = profile.name || provider.email || 'Anbieter';
     const addrEl = document.getElementById('provCardAddr');
-    if(addrEl) addrEl.textContent = buildAddress(profile) || 'Adresse fehlt';
-
-    const todayKey = isoDate(new Date());
-    const mineAll = offers.filter(o => o.providerId === providerId());
-    const mineToday = mineAll.filter(o => o.active !== false && o.day === todayKey);
-
-    const grid = document.getElementById('provTodayGrid');
-    const empty = document.getElementById('provTodayEmpty');
-    if(grid && empty){
-      grid.innerHTML = '';
-      if(!mineToday.length){
-        empty.style.display='block';
+    if(addrEl){
+      const addr = buildAddress(profile);
+      if(addr){
+        addrEl.textContent = esc(addr);
+        addrEl.style.color = 'var(--muted)';
       } else {
-        empty.style.display='none';
-        mineToday.forEach(o=> grid.appendChild(providerCard(o, {showActions:true, todayKey})));
+        addrEl.textContent = 'Adresse hinzufügen';
+        addrEl.style.color = 'var(--brand)';
       }
     }
-
-    const withCodeToday = mineToday.filter(o=>o.hasPickupCode).length;
-    const todayCount = document.getElementById('provTodayCount');
-    if(todayCount){
-      todayCount.textContent = withCodeToday ? `${withCodeToday} Abholcodes heute` : 'Keine Abholungen geplant.';
+    
+    const btnProviderEditProfile = document.getElementById('btnProviderEditProfile');
+    if(btnProviderEditProfile){
+      btnProviderEditProfile.textContent = buildAddress(profile) ? 'Profil bearbeiten' : 'Adresse hinzufügen';
+      btnProviderEditProfile.onclick = () => {
+        showProviderProfile();
+      };
     }
-
-    const weekPanel = document.getElementById('provWeekPanel');
-    if(weekPanel){
-      weekPanel.style.display = mineToday.length ? 'none' : 'block';
+    
+    // KPI Cards
+    const activeOffersCount = mineActive.length;
+    const todayPickups = loadOrders().filter(o => {
+      const offer = offers.find(off => off.id === o.dishId || off.providerId === o.providerId);
+      return offer && offer.providerId === providerId() && offer.day === todayKey && o.status === 'PAID';
+    }).length;
+    const cookbookCount = cookbook.length;
+    
+    const kpiInserateCount = document.getElementById('kpiInserateCount');
+    if(kpiInserateCount) kpiInserateCount.textContent = activeOffersCount;
+    const kpiAbholungenCount = document.getElementById('kpiAbholungenCount');
+    if(kpiAbholungenCount) kpiAbholungenCount.textContent = todayPickups;
+    const kpiKochbuchCount = document.getElementById('kpiKochbuchCount');
+    if(kpiKochbuchCount) kpiKochbuchCount.textContent = cookbookCount;
+    
+    // KPI Card Handlers
+    const kpiCardInserate = document.getElementById('kpiCardInserate');
+    if(kpiCardInserate) kpiCardInserate.onclick = () => {
+      // Scroll to Active Offers section
+      const activeOffers = document.getElementById('providerActiveOffers');
+      if(activeOffers){
+        activeOffers.scrollIntoView({behavior: 'smooth', block: 'start'});
+      }
+    };
+    const kpiCardAbholungen = document.getElementById('kpiCardAbholungen');
+    if(kpiCardAbholungen) kpiCardAbholungen.onclick = () => {
+      showProviderPickups();
+    };
+    const kpiCardKochbuch = document.getElementById('kpiCardKochbuch');
+    if(kpiCardKochbuch) kpiCardKochbuch.onclick = () => {
+      showProviderCookbook();
+    };
+    
+    // TODAY Card
+    const providerTodayCard = document.getElementById('providerTodayCard');
+    const providerTodayTitle = document.getElementById('providerTodayTitle');
+    const providerTodayContent = document.getElementById('providerTodayContent');
+    if(providerTodayCard && providerTodayTitle && providerTodayContent){
+      const today = new Date();
+      const weekday = ['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'][today.getDay()];
+      const dateStr = `${today.getDate()}.${String(today.getMonth()+1).padStart(2,'0')}.`;
+      providerTodayTitle.textContent = `Heute · ${weekday}, ${dateStr}`;
+      
+      if(mineToday.length > 0){
+        const withCodeToday = mineToday.filter(o => o.hasPickupCode).length;
+        const nextPickup = loadOrders().filter(o => {
+          const offer = offers.find(off => off.id === o.dishId || off.providerId === o.providerId);
+          return offer && offer.providerId === providerId() && offer.day === todayKey && o.status === 'PAID';
+        }).sort((a,b) => (a.etaTime || '').localeCompare(b.etaTime || ''))[0];
+        
+        let html = `
+          <div style="margin-bottom:12px;">
+            <a href="#" id="providerTodayInserateLink" style="display:block; padding:10px; background:#f8f7f3; border-radius:12px; text-decoration:none; color:inherit; margin-bottom:8px;">
+              <div style="font-weight:600; font-size:14px;">Inserate heute: ${mineToday.length}</div>
+            </a>
+            <a href="#" id="providerTodayPickupsLink" style="display:block; padding:10px; background:#f8f7f3; border-radius:12px; text-decoration:none; color:inherit;">
+              <div style="font-weight:600; font-size:14px;">Abholungen heute: ${todayPickups}</div>
+            </a>
+        `;
+        if(nextPickup && nextPickup.etaTime){
+          const pickupCount = loadOrders().filter(o => {
+            const offer = offers.find(off => off.id === o.dishId || off.providerId === o.providerId);
+            return offer && offer.providerId === providerId() && offer.day === todayKey && o.status === 'PAID' && o.etaTime === nextPickup.etaTime;
+          }).length;
+          html += `
+            <div style="margin-top:8px; padding:10px; background:#f8f7f3; border-radius:12px;">
+              <div style="font-weight:600; font-size:14px;">Nächste Abholung: ${esc(nextPickup.etaTime)} (${pickupCount} ${pickupCount === 1 ? 'Code' : 'Codes'})</div>
+            </div>
+          `;
+        }
+        html += `</div>`;
+        providerTodayContent.innerHTML = html;
+        
+        const providerTodayInserateLink = document.getElementById('providerTodayInserateLink');
+        if(providerTodayInserateLink) providerTodayInserateLink.onclick = (e) => {
+          e.preventDefault();
+          // Scroll to Active Offers section (falls vorhanden)
+          const activeOffers = document.getElementById('providerActiveOffers');
+          if(activeOffers){
+            activeOffers.scrollIntoView({behavior: 'smooth', block: 'start'});
+          }
+        };
+        const providerTodayPickupsLink = document.getElementById('providerTodayPickupsLink');
+        if(providerTodayPickupsLink) providerTodayPickupsLink.onclick = (e) => {
+          e.preventDefault();
+          showProviderPickups();
+        };
+      } else {
+        providerTodayContent.innerHTML = `
+          <div class="hint" style="font-size:14px; line-height:1.4; margin-bottom:14px; color:var(--muted);">
+            Heute noch keine Inserate geplant.
+          </div>
+          <button class="btn secondary" type="button" id="btnProviderTodayAddDish" style="width:100%; min-height:44px;">
+            Inserat für heute erstellen
+          </button>
+        `;
+        const btnProviderTodayAddDish = document.getElementById('btnProviderTodayAddDish');
+        if(btnProviderTodayAddDish) btnProviderTodayAddDish.onclick = () => {
+          createFlowPreselectedDate = todayKey;
+          openCreateFlowSheet();
+        };
+      }
     }
-    renderProviderWeekPreview();
+    
+    // Active Offers Mini List (max 3, expandable)
+    const providerActiveOffers = document.getElementById('providerActiveOffers');
+    const providerActiveOffersList = document.getElementById('providerActiveOffersList');
+    if(providerActiveOffers && providerActiveOffersList){
+      const showAll = providerActiveOffers.dataset.showAll === 'true';
+      const activeList = showAll ? mineActive : mineActive.slice(0, 3);
+      if(activeList.length > 0){
+        providerActiveOffers.style.display = 'block';
+        providerActiveOffersList.innerHTML = activeList.map(o => {
+          const badges = [];
+          if(o.hasPickupCode) badges.push('<span style="font-size:11px; padding:2px 6px; background:rgba(255,204,0,.15); border-radius:6px; color:var(--brand);">Abholcode</span>');
+          if(o.dineInPossible) badges.push('<span style="font-size:11px; padding:2px 6px; background:rgba(31,157,85,.15); border-radius:6px; color:var(--brand2);">Vor Ort</span>');
+          if(!o.dineInPossible && !o.hasPickupCode) badges.push('<span style="font-size:11px; padding:2px 6px; background:rgba(0,0,0,.06); border-radius:6px;">To Go</span>');
+          
+          return `
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 0; border-bottom:1px solid var(--border);">
+              <div style="flex:1; min-width:0;" data-offer-id="${esc(o.id)}" style="cursor:pointer;">
+                <div style="font-weight:600; font-size:14px; line-height:1.3; margin-bottom:4px;">${esc(o.dish || o.title || 'Gericht')}</div>
+                <div style="font-size:12px; color:var(--muted); margin-bottom:6px;">${esc(o.pickupWindow || o.time || '')}</div>
+                <div style="display:flex; gap:6px; flex-wrap:wrap;">${badges.join('')}</div>
+              </div>
+              <button class="btn ghost" type="button" data-offer-id="${esc(o.id)}" style="padding:8px; min-width:36px; margin-left:8px; flex-shrink:0;" onclick="event.stopPropagation(); openOfferMoreMenu('${esc(o.id)}');">
+                ⋯
+              </button>
+            </div>
+          `;
+        }).join('');
+        
+        // Tap on offer item
+        providerActiveOffersList.querySelectorAll('[data-offer-id]').forEach(el => {
+          if(el.tagName !== 'BUTTON'){
+            el.onclick = () => {
+              const offerId = el.dataset.offerId;
+              startWizard('listing', {editOfferId: offerId});
+            };
+          }
+        });
+        
+        const btnProviderShowAllOffers = document.getElementById('btnProviderShowAllOffers');
+        if(btnProviderShowAllOffers){
+          if(mineActive.length > 3){
+            btnProviderShowAllOffers.style.display = 'inline-block';
+            btnProviderShowAllOffers.onclick = (e) => {
+              e.preventDefault();
+              providerActiveOffers.dataset.showAll = 'true';
+              renderProviderHome();
+            };
+          } else {
+            btnProviderShowAllOffers.style.display = 'none';
+          }
+        }
+      } else {
+        providerActiveOffers.style.display = 'none';
+      }
+    }
+    
+    // Week Preview
+    renderProviderWeekPreviewNew();
+    
+    // Empty Dashboard State
+    const providerEmptyDashboard = document.getElementById('providerEmptyDashboard');
+    if(providerEmptyDashboard){
+      const hasAnyData = mineActive.length > 0 || cookbook.length > 0;
+      providerEmptyDashboard.style.display = hasAnyData ? 'none' : 'block';
+      
+      const btnProviderEmptyAddDish = document.getElementById('btnProviderEmptyAddDish');
+      if(btnProviderEmptyAddDish) btnProviderEmptyAddDish.onclick = () => {
+        createFlowPreselectedDate = null;
+        openCreateFlowSheet();
+      };
+    }
+    
+    // FAB
+    const fabProviderAddOffer = document.getElementById('fabProviderAddOffer');
+    const fabProviderAddOfferLabel = document.getElementById('fabProviderAddOfferLabel');
+    if(fabProviderAddOffer){
+      fabProviderAddOffer.onclick = () => {
+        createFlowPreselectedDate = null;
+        openCreateFlowSheet();
+      };
+      fabProviderAddOffer.onmouseenter = () => {
+        if(fabProviderAddOfferLabel) fabProviderAddOfferLabel.style.opacity = '1';
+      };
+      fabProviderAddOffer.onmouseleave = () => {
+        if(fabProviderAddOfferLabel) fabProviderAddOfferLabel.style.opacity = '0';
+      };
+    }
+    
+    // Icons aktualisieren
+    if(typeof lucide !== 'undefined') setTimeout(()=> lucide.createIcons(), 50);
   }
 
+  // Week Preview (7 Tage)
+  function renderProviderWeekPreviewNew(){
+    const dayWrap = document.getElementById('providerWeekDays');
+    const dayContent = document.getElementById('providerWeekDayContent');
+    if(!dayWrap || !dayContent) return;
+    
+    const today = new Date();
+    let selectedDay = providerWeekDay || isoDate(today);
+    
+    dayWrap.innerHTML = '';
+    for(let i=0; i<7; i++){
+      const d = new Date(today);
+      d.setDate(d.getDate() + i);
+      const key = isoDate(d);
+      const b = document.createElement('button');
+      b.className = 'day' + (selectedDay === key ? ' active' : '');
+      const weekday = ['So','Mo','Di','Mi','Do','Fr','Sa'][d.getDay()];
+      const dateStr = `${d.getDate()}.${String(d.getMonth()+1).padStart(2,'0')}.`;
+      b.textContent = i === 0 ? 'Heute' : `${weekday}, ${dateStr}`;
+      b.onclick = () => {
+        providerWeekDay = key;
+        renderProviderWeekPreviewNew();
+      };
+      dayWrap.appendChild(b);
+    }
+    
+    // Day Content
+    const offersForDay = offers.filter(o => o.providerId === providerId() && o.active !== false && o.day === selectedDay);
+    const weekEntries = (week[selectedDay] || []).filter(x => x.providerId === providerId() && x.active !== false);
+    const totalPlanned = offersForDay.length + weekEntries.length;
+    
+    if(totalPlanned > 0){
+      dayContent.innerHTML = `
+        <div style="padding:12px; background:#f8f7f3; border-radius:12px; margin-bottom:12px;">
+          <div style="font-weight:600; font-size:14px; margin-bottom:8px;">${totalPlanned} ${totalPlanned === 1 ? 'Inserat' : 'Inserate'} geplant</div>
+          <div style="font-size:13px; color:var(--muted); margin-bottom:12px;">${offersForDay.length} aktiv, ${weekEntries.length} im Wochenplan</div>
+        </div>
+        <button class="btn secondary" type="button" id="btnProviderWeekAddDish" style="width:100%; min-height:44px;">
+          Inserat für diesen Tag hinzufügen
+        </button>
+      `;
+      const btnProviderWeekAddDish = document.getElementById('btnProviderWeekAddDish');
+      if(btnProviderWeekAddDish) btnProviderWeekAddDish.onclick = () => {
+        createFlowPreselectedDate = selectedDay;
+        openCreateFlowSheet();
+      };
+    } else {
+      dayContent.innerHTML = `
+        <div class="hint" style="font-size:14px; line-height:1.4; margin-bottom:14px; color:var(--muted); text-align:center; padding:20px 0;">
+          Noch keine Inserate geplant.
+        </div>
+        <button class="btn secondary" type="button" id="btnProviderWeekAddDishEmpty" style="width:100%; min-height:44px;">
+          Inserat für diesen Tag erstellen
+        </button>
+      `;
+      const btnProviderWeekAddDishEmpty = document.getElementById('btnProviderWeekAddDishEmpty');
+      if(btnProviderWeekAddDishEmpty) btnProviderWeekAddDishEmpty.onclick = () => {
+        createFlowPreselectedDate = selectedDay;
+        openCreateFlowSheet();
+      };
+    }
+  }
+  
+  // Legacy function (für Kompatibilität)
   function renderProviderWeekPreview(){
     const dayWrap = document.getElementById('provWeekDays');
     const list = document.getElementById('provWeekPreview');
@@ -5391,108 +5955,193 @@
     return 2 + (base % 4); // 2..5
   }
 
-  function buildPickupGroups(){
+  // Build pickup list with dish-letter codes (new format)
+  function buildPickupList(){
     const todayKey = isoDate(new Date());
-    const mineToday = offers.filter(o => o.providerId === providerId() && o.hasPickupCode && o.day === todayKey && o.active !== false);
-    if(!mineToday.length) return [];
-
-    const map = new Map();
-    mineToday.forEach(o=>{
-      const dish = o.dish || 'Gericht';
-      if(!map.has(dish)){
-        map.set(dish, {dish, time: o.pickupWindow || '', offerId: o.id, codeCount: o.pickupCodeCount});
-      }
+    const providerIdVal = providerId();
+    
+    // Get all PAID orders for today
+    const ordersList = loadOrders();
+    const todayOrders = ordersList.filter(o => {
+      const offer = offers.find(off => off.id === o.dishId);
+      return offer && 
+             offer.providerId === providerIdVal && 
+             offer.day === todayKey && 
+             o.status === 'PAID' &&
+             o.pickupCode; // Must have pickup code
     });
-
-    const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    const groups = Array.from(map.values()).map((g, idx)=>{
-      const group = letters[idx % letters.length];
-      const count = Number(g.codeCount) || pickupCodeCount(g.dish);
-      const codes = Array.from({length:count}, (_,i)=>`${group}${i+1}`);
-      return {id:`${group}:${g.offerId}`, group, dish:g.dish, time:g.time, codes};
+    
+    if(!todayOrders.length) return [];
+    
+    // Map orders to pickup items
+    return todayOrders.map(order => {
+      const offer = offers.find(off => off.id === order.dishId);
+      const isPickedUp = order.status === 'COMPLETED' || order.pickupStatus === 'PICKED_UP';
+      
+      return {
+        orderId: order.id,
+        code: order.pickupCode || order.code || '',
+        dishName: order.dishName || offer?.dish || 'Gericht',
+        pickupTime: order.etaTime || offer?.pickupWindow || '',
+        status: isPickedUp ? 'PICKED_UP' : 'OPEN',
+        offer: offer
+      };
     });
-    return groups;
   }
 
   function renderProviderPickups(){
+    const subheader = document.getElementById('provPickupsSubheader');
+    const filterEl = document.getElementById('provPickupFilter');
     const empty = document.getElementById('provPickupsEmpty');
-    const wrap = document.getElementById('provPickupsWrap');
-    const sortEl = document.getElementById('provPickupSort');
-    const groupsEl = document.getElementById('provPickupGroups');
-    if(!empty || !wrap || !sortEl || !groupsEl) return;
+    const listEl = document.getElementById('provPickupsList');
+    if(!subheader || !filterEl || !empty || !listEl) return;
 
-    const groups = buildPickupGroups();
-    if(!groups.length){
-      empty.style.display='block';
-      wrap.style.display='none';
-      return;
-    }
-    empty.style.display='none';
-    wrap.style.display='block';
+    // Subheader: "Heute · {weekday, date}"
+    const today = new Date();
+    const weekday = ['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'][today.getDay()];
+    const dateStr = `${today.getDate()}.${String(today.getMonth()+1).padStart(2,'0')}.`;
+    subheader.textContent = `Heute · ${weekday}, ${dateStr}`;
 
-    sortEl.innerHTML='';
+    // Get all pickups
+    const allPickups = buildPickupList();
+    
+    // Filter pickups
+    const filteredPickups = allPickups.filter(p => {
+      if(pickupFilter === 'offen') return p.status === 'OPEN';
+      if(pickupFilter === 'abgeholt') return p.status === 'PICKED_UP';
+      return true;
+    });
+
+    // Filter Toggle
+    filterEl.innerHTML='';
     [
-      {id:'time', label:'Zeit'},
-      {id:'code', label:'Code'},
-      {id:'group', label:'Gruppe'}
-    ].forEach(s=>{
+      {id:'offen', label:'Offen'},
+      {id:'abgeholt', label:'Abgeholt'}
+    ].forEach(f=>{
       const b=document.createElement('button');
       b.type='button';
-      b.className='ans'+(pickupSort===s.id?' on':'');
-      b.textContent=s.label;
-      b.onclick=()=>{ pickupSort=s.id; renderProviderPickups(); };
-      sortEl.appendChild(b);
+      b.className='ans'+(pickupFilter===f.id?' on':'');
+      b.textContent=f.label;
+      b.onclick=()=>{ pickupFilter=f.id; renderProviderPickups(); };
+      filterEl.appendChild(b);
     });
 
-    const list = [...groups];
-    const timeKey = (t)=>{
-      const raw = String(t||'').split(/[–-]/)[0].trim();
-      const parts = raw.split(':');
-      const h = parseInt(parts[0]||'0',10);
-      const m = parseInt(parts[1]||'0',10);
-      return h*60+m;
-    };
-    if(pickupSort==='time') list.sort((a,b)=>timeKey(a.time)-timeKey(b.time));
-    if(pickupSort==='code') list.sort((a,b)=>(a.codes[0]||'').localeCompare(b.codes[0]||''));
-    if(pickupSort==='group') list.sort((a,b)=>a.group.localeCompare(b.group));
+    // Empty States
+    if(!allPickups.length){
+      empty.style.display='block';
+      empty.innerHTML = 'Heute gibt es keine Abholungen.';
+      listEl.style.display='none';
+      return;
+    }
+    
+    if(!filteredPickups.length){
+      empty.style.display='block';
+      if(pickupFilter === 'offen'){
+        empty.innerHTML = 'Alle Abholungen erledigt 🎉';
+      } else {
+        empty.innerHTML = 'Keine abgeholten Bestellungen.';
+      }
+      listEl.style.display='none';
+      return;
+    }
+    
+    empty.style.display='none';
+    listEl.style.display='block';
 
-    groupsEl.innerHTML='';
-    list.forEach(g=>{
-      const box=document.createElement('div');
-      box.className='pickup-group';
-      box.innerHTML = `
-        <div class="pickup-head">
-          <div>${esc(g.dish)}</div>
-          <div class="pickup-sub">Gruppe ${esc(g.group)} - ${esc(g.time || '-')}</div>
+    // Sort pickups by code order (1A, 1B, 1C, 2A, 2B, 2C, 10A, 10B...)
+    const list = [...filteredPickups];
+    list.sort((a, b) => {
+      // Extract number and letter from code (e.g., "1A" -> num=1, letter="A", "10B" -> num=10, letter="B")
+      const parseCode = (code) => {
+        const match = String(code || '').match(/^(\d+)([A-Z])$/);
+        if(!match) return {num: 0, letter: ''};
+        return {num: parseInt(match[1], 10), letter: match[2]};
+      };
+      const aCode = parseCode(a.code);
+      const bCode = parseCode(b.code);
+      
+      // Sort by number first (numeric comparison), then by letter
+      if(aCode.num !== bCode.num) return aCode.num - bCode.num;
+      return aCode.letter.localeCompare(bCode.letter);
+    });
+
+    // Render list
+    listEl.innerHTML='';
+    list.forEach(p=>{
+      const isPickedUp = p.status === 'PICKED_UP';
+      const row = document.createElement('div');
+      row.className = 'pickup-row' + (isPickedUp ? ' picked-up' : '');
+      row.style.cssText = 'display:flex; align-items:center; gap:16px; padding:16px; border-bottom:1px solid var(--border); ' + (isPickedUp ? 'opacity:0.5; background:#f8f8f8;' : 'cursor:pointer;');
+      row.innerHTML = `
+        <div style="font-size:36px; font-weight:900; font-family:monospace; color:var(--brand); min-width:70px; text-align:center; line-height:1;">
+          ${esc(p.code)}
         </div>
-        <div style="margin-top:6px;">
-          ${g.codes.map(c=>{
-            const key = `${g.id}:${c}`;
-            const done = pickupDone.has(key);
-            return `<button type="button" class="code-chip${done ? ' done' : ''}" data-code="${esc(c)}" data-group="${esc(g.id)}">${esc(c)}</button>`;
-          }).join('')}
+        <div style="flex:1; min-width:0;">
+          <div style="font-weight:600; font-size:16px; line-height:1.3; margin-bottom:6px;">${esc(p.dishName)}</div>
+          <div style="font-size:14px; color:var(--muted); margin-bottom:6px;">${esc(p.pickupTime || '')}</div>
+          <div style="font-size:13px; color:${isPickedUp ? 'var(--muted)' : 'var(--brand)'}; font-weight:500; display:flex; align-items:center; gap:4px;">
+            ${isPickedUp ? '✅ Abgeholt' : '⏳ Offen'}
+          </div>
         </div>
       `;
-      groupsEl.appendChild(box);
+      if(!isPickedUp){
+        row.onclick = () => {
+          openPickupConfirmSheet(p.orderId, p.code, p.dishName);
+        };
+      }
+      listEl.appendChild(row);
     });
-
-    groupsEl.querySelectorAll('.code-chip').forEach(btn=>{
-      btn.onclick=()=>{
-        const code = btn.getAttribute('data-code') || '';
-        const group = btn.getAttribute('data-group') || '';
-        const key = `${group}:${code}`;
-        if(pickupDone.has(key)){
-          pickupDone.delete(key);
-          save(LS.pickupDone, Array.from(pickupDone));
-          renderProviderPickups();
-        } else {
-          pickupDone.add(key);
-          save(LS.pickupDone, Array.from(pickupDone));
-          renderProviderPickups();
-          showPickupUndo(key);
-        }
-      };
-    });
+  }
+  
+  // Pickup Confirmation Sheet
+  let currentPickupConfirmOrderId = null;
+  
+  function openPickupConfirmSheet(orderId, code, dishName){
+    currentPickupConfirmOrderId = orderId;
+    const codeEl = document.getElementById('pickupConfirmCode');
+    const dishEl = document.getElementById('pickupConfirmDish');
+    if(codeEl) codeEl.textContent = code;
+    if(dishEl) dishEl.textContent = dishName;
+    
+    document.getElementById('pickupConfirmBd').classList.add('active');
+    document.getElementById('pickupConfirmSheet').classList.add('active');
+  }
+  
+  function closePickupConfirmSheet(){
+    document.getElementById('pickupConfirmBd').classList.remove('active');
+    document.getElementById('pickupConfirmSheet').classList.remove('active');
+    currentPickupConfirmOrderId = null;
+  }
+  
+  // Pickup Confirmation Handlers
+  const btnPickupConfirmYes = document.getElementById('btnPickupConfirmYes');
+  if(btnPickupConfirmYes){
+    btnPickupConfirmYes.onclick = () => {
+      if(!currentPickupConfirmOrderId) return;
+      
+      const order = getOrderById(currentPickupConfirmOrderId);
+      if(!order) return;
+      
+      // Mark as picked up
+      updateOrder(currentPickupConfirmOrderId, {
+        status: 'COMPLETED',
+        pickupStatus: 'PICKED_UP',
+        completedAt: Date.now()
+      });
+      
+      closePickupConfirmSheet();
+      renderProviderPickups();
+      
+      // Show toast
+      showToast(`Abholung ${order.pickupCode || order.code || ''} bestätigt`);
+    };
+  }
+  
+  const btnPickupConfirmNo = document.getElementById('btnPickupConfirmNo');
+  if(btnPickupConfirmNo){
+    btnPickupConfirmNo.onclick = () => {
+      closePickupConfirmSheet();
+    };
   }
 
   function showPickupUndo(key){
@@ -5636,12 +6285,18 @@
     alert('Preise & Konditionen (Demo): Link folgt.');
   };
 
-  // --- Provider actions ---
-  document.getElementById('btnNewListing').onclick=()=> startWizard('listing');
-  document.getElementById('btnFromCookbook').onclick=()=> startWizard('listing', {source:'cookbook'});
+  // --- Provider actions (alte Buttons entfernt, jetzt über Create Flow Sheet) ---
+  // btnNewListing und btnFromCookbook werden nicht mehr verwendet
+  const btnNewListing = document.getElementById('btnNewListing');
+  if(btnNewListing) btnNewListing.style.display = 'none';
+  const btnFromCookbook = document.getElementById('btnFromCookbook');
+  if(btnFromCookbook) btnFromCookbook.style.display = 'none';
+  
   document.getElementById('btnCookbookAdd').onclick=()=> startWizard('cookbook');
   document.getElementById('btnProvSetup').onclick=()=> startWizard('provider');
-  document.getElementById('btnOpenWeekPlan').onclick=()=> showProviderWeek();
+  // btnOpenWeekPlan wird nicht mehr verwendet (Week Preview ist jetzt im Dashboard)
+  const btnOpenWeekPlan = document.getElementById('btnOpenWeekPlan');
+  if(btnOpenWeekPlan) btnOpenWeekPlan.style.display = 'none';
   document.getElementById('btnPickupsFaq').onclick=()=>{
     showProviderProfile();
     const box = document.getElementById('provFaqBox');
@@ -5805,7 +6460,7 @@
         cont.className='ans';
         cont.textContent='Weiterführen';
         cont.dataset.icon = 'plus';
-        cont.onclick=()=>{ startWizard('listing', {fromCookbookId: entry.id}); };
+        cont.onclick=()=>{ startWizard('listing', {fromCookbookId: entry.id, date: createFlowPreselectedDate}); };
 
         const edit=document.createElement('button');
         edit.type='button';
@@ -5822,7 +6477,7 @@
         create.className='ans';
         create.textContent='Inserat erstellen';
         create.dataset.icon = 'plus';
-        create.onclick=()=>{ startWizard('listing', {fromCookbookId: entry.id}); };
+        create.onclick=()=>{ startWizard('listing', {fromCookbookId: entry.id, date: createFlowPreselectedDate}); };
 
         const edit=document.createElement('button');
         edit.type='button';
@@ -6047,7 +6702,8 @@
           w.data = {
             ...JSON.parse(JSON.stringify(x)),
             source:'cookbook',
-            cookbookId: x.id
+            cookbookId: x.id,
+            day: ctx.date || createFlowPreselectedDate || isoDate(new Date())
           };
         }
       } else {
@@ -6062,7 +6718,8 @@
           reuse:{enabled:false, deposit:0},
           photoData:'',
           source:'new',
-          cookbookId:null
+          cookbookId:null,
+          day: ctx.date || createFlowPreselectedDate || isoDate(new Date())
         };
       }
       w.data.providerId = w.data.providerId || providerId();
@@ -6072,6 +6729,12 @@
       w.data.source = w.data.source || 'new';
       if(ctx.source){ w.data.source = ctx.source; }
       w.data.cookbookId = w.data.cookbookId || null;
+      // Date preselect support
+      if(ctx.date || createFlowPreselectedDate){
+        w.data.day = ctx.date || createFlowPreselectedDate;
+      } else if(!w.data.day){
+        w.data.day = isoDate(new Date());
+      }
       w.data.hasPickupCode = !!w.data.hasPickupCode;
       w.data.dineInPossible = !!w.data.dineInPossible;
       w.data.allergens = Array.isArray(w.data.allergens) ? w.data.allergens : [];
@@ -6770,12 +7433,9 @@
       btnPub.textContent = 'Inserat veröffentlichen';
       btnPub.onclick=()=>{
         const o = previewOfferFromWizard();
-        publishOffer(o);
         closeWizard();
-        showProviderHome();
-        if(confirm('Inserat veröffentlicht. Weiteres Inserat erstellen?')){
-          startWizard('listing');
-        }
+        publishOffer(o);
+        // publishOffer navigates back to Dashboard and shows toast
       };
 
       const btnSave=document.createElement('button');
@@ -6839,7 +7499,7 @@
   function publishOffer(o){
     const existingId = w.ctx && w.ctx.editOfferId ? w.ctx.editOfferId : null;
     const id = existingId || cryptoId();
-    const out = {...o, id, day: o.day || isoDate(new Date()), active: o.active !== false};
+    const out = {...o, id, day: o.day || w.data.day || isoDate(new Date()), active: o.active !== false};
     // ensure provider address exists
     if(!out.providerStreet){
       alert('Bitte zuerst Anbieterprofil ausfüllen (Adresse).');
@@ -6849,7 +7509,7 @@
       const idx = offers.findIndex(x=>x.id===existingId);
       if(idx>=0){
         const prev = offers[idx];
-        offers[idx] = {...prev, ...out, id: prev.id, day: prev.day, active: prev.active !== false};
+        offers[idx] = {...prev, ...out, id: prev.id, day: out.day, active: out.active};
       } else {
         offers.unshift(out);
       }
@@ -6857,6 +7517,9 @@
       offers.unshift(out);
     }
     save(LS.offers, offers);
+    
+    // Reset createFlowPreselectedDate
+    createFlowPreselectedDate = null;
     // restore default next button handler
     setWizardNextDefault();
     renderProviderHome();
