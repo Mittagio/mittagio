@@ -29,7 +29,7 @@
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" href="assets/icons/icon-192.png" />
   <link rel="apple-touch-icon" href="assets/icons/icon-192.png" />
-  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://unpkg.com/lucide@latest" onload="if(typeof lucide !== 'undefined') lucide.createIcons();"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
     :root{
@@ -7245,6 +7245,10 @@
       if(typeof renderDiscover !== 'undefined'){
         renderDiscover();
       }
+      // Icons nach Discover-Rendering initialisieren
+      if(typeof lucide !== 'undefined'){
+        setTimeout(()=> lucide.createIcons(), 150);
+      }
     }, 100);
   }
   
@@ -7259,6 +7263,25 @@
 </script>
 
 <script>
+  // Icon-Initialisierung (immer, nicht nur bei Service Worker)
+  function initIcons(){
+    if(typeof lucide !== 'undefined' && typeof lucide.createIcons === 'function'){
+      lucide.createIcons();
+    } else {
+      // Warte bis Lucide geladen ist (max. 2 Sekunden)
+      let attempts = 0;
+      const checkLucide = setInterval(()=>{
+        attempts++;
+        if(typeof lucide !== 'undefined' && typeof lucide.createIcons === 'function'){
+          lucide.createIcons();
+          clearInterval(checkLucide);
+        } else if(attempts > 20){ // Nach 2 Sekunden aufgeben
+          clearInterval(checkLucide);
+        }
+      }, 100);
+    }
+  }
+
   // PWA (optional)
   if('serviceWorker' in navigator){
     window.addEventListener('load', ()=>{
@@ -7266,9 +7289,7 @@
       const swPath = document.querySelector('base') ? 'sw.js' : './sw.js';
       navigator.serviceWorker.register(swPath).catch(()=>{});
       // Icons initialisieren
-      if(typeof lucide !== 'undefined'){
-        lucide.createIcons();
-      }
+      initIcons();
       // Profile-View aktualisieren
       if(typeof updateProfileView !== 'undefined'){
         updateProfileView();
@@ -7277,9 +7298,23 @@
       if(mode === 'start' && typeof renderStart !== 'undefined'){
         setTimeout(()=>{
           renderStart();
-          if(typeof lucide !== 'undefined'){
-            lucide.createIcons();
-          }
+          initIcons();
+        }, 100);
+      }
+    });
+  } else {
+    // Fallback: Icons auch ohne Service Worker initialisieren
+    window.addEventListener('load', ()=>{
+      initIcons();
+      // Profile-View aktualisieren
+      if(typeof updateProfileView !== 'undefined'){
+        updateProfileView();
+      }
+      // Startseite rendern, falls im start-Mode
+      if(mode === 'start' && typeof renderStart !== 'undefined'){
+        setTimeout(()=>{
+          renderStart();
+          initIcons();
         }, 100);
       }
     });
@@ -7289,9 +7324,7 @@
   const originalShowView = showView;
   showView = function(id){
     originalShowView(id);
-    if(typeof lucide !== 'undefined'){
-      setTimeout(()=> lucide.createIcons(), 50);
-    }
+    setTimeout(()=> initIcons(), 50);
   };
 </script>
 </body>
