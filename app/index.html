@@ -1456,7 +1456,6 @@
           <a href="#/impressum" id="btnProfileImpressum" onclick="showLegalPage('impressum'); return false;" style="color:var(--muted); text-decoration:none;">Impressum</a>
           <a href="#/agb-kurz" id="btnProfileAGB" onclick="showLegalPage('agb-kurz'); return false;" style="color:var(--muted); text-decoration:none;">AGB</a>
           <a href="#/datenschutz" id="btnProfileDatenschutz" onclick="showLegalPage('datenschutz'); return false;" style="color:var(--muted); text-decoration:none;">Datenschutz</a>
-          <a href="#/anbieter-faq" onclick="showLegalPage('anbieter-faq'); return false;" style="color:var(--muted); text-decoration:none;">Anbieter-FAQ</a>
         </div>
         <div style="font-size:12px; color:var(--muted);">
           <a href="mailto:support@mittagio.de" style="color:var(--muted); text-decoration:none;">support@mittagio.de</a>
@@ -1606,6 +1605,147 @@
       </div>
     </section>
 
+    <!-- PROVIDER: Hybrid Onboarding -->
+    <section class="view" id="v-provider-onboarding-entry">
+      <div class="panel" style="padding:24px; text-align:center; max-width:480px; margin:40px auto;">
+        <h1 style="font-size:28px; font-weight:900; margin-bottom:16px; line-height:1.2;">Dein Mittag. Lokal. Frisch. Digital.</h1>
+        <p style="font-size:16px; line-height:1.5; margin-bottom:32px; color:var(--muted);">
+          Starte mit deinem ersten Gericht.
+        </p>
+        <button class="btn-primary" type="button" id="btnOnboardingEntryStart" style="width:100%; min-height:56px; margin-bottom:12px;">
+          Gericht anlegen
+        </button>
+        <button class="btn secondary" type="button" id="btnOnboardingEntryLater" style="width:100%; min-height:44px;">
+          Später starten
+        </button>
+        <div style="margin-top:24px; font-size:12px; color:var(--muted);">
+          Kein Abo · Keine Verpflichtung
+        </div>
+      </div>
+    </section>
+
+    <section class="view" id="v-provider-onboarding-first-dish">
+      <div class="panel" style="padding:20px;">
+        <h2 style="font-size:20px; font-weight:900; margin-bottom:20px;">Erstes Gericht anlegen</h2>
+        
+        <div style="margin-bottom:16px;">
+          <label style="display:block; font-size:14px; font-weight:600; margin-bottom:8px;">Gerichtname *</label>
+          <input class="field" type="text" id="onboardingDishName" placeholder="z.B. Kürbissuppe" required />
+        </div>
+        
+        <div style="margin-bottom:16px;">
+          <label style="display:block; font-size:14px; font-weight:600; margin-bottom:8px;">Abholzeit von *</label>
+          <input class="field" type="time" id="onboardingPickupTimeStart" required />
+        </div>
+        
+        <div style="margin-bottom:16px;">
+          <label style="display:block; font-size:14px; font-weight:600; margin-bottom:8px;">Abholzeit bis *</label>
+          <input class="field" type="time" id="onboardingPickupTimeEnd" required />
+        </div>
+        
+        <div style="margin-bottom:24px;">
+          <button class="btn secondary" type="button" id="btnOnboardingAddPhoto" style="width:100%; min-height:44px;">
+            <i data-lucide="camera"></i><span>Foto hinzufügen</span>
+          </button>
+          <div id="onboardingPhotoPreview" style="display:none; margin-top:12px;">
+            <img id="onboardingPhotoPreviewImg" style="width:100%; max-height:200px; object-fit:cover; border-radius:12px;" />
+          </div>
+        </div>
+        
+        <div style="display:flex; gap:12px;">
+          <button class="btn secondary" type="button" id="btnOnboardingFirstDishBack" style="flex:1; min-height:44px;">
+            Zurück
+          </button>
+          <button class="btn-primary" type="button" id="btnOnboardingFirstDishNext" style="flex:1; min-height:56px;">
+            Weiter
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="view" id="v-provider-onboarding-signup">
+      <div class="panel" style="padding:20px;">
+        <h2 style="font-size:20px; font-weight:900; margin-bottom:8px;">Speichern & weitermachen</h2>
+        <p style="font-size:14px; line-height:1.5; margin-bottom:24px; color:var(--muted);">
+          Erstelle ein Konto, um dein Gericht zu speichern und jederzeit weiterzumachen.
+        </p>
+        
+        <div style="margin-bottom:16px;">
+          <label style="display:block; font-size:14px; font-weight:600; margin-bottom:8px;">E-Mail *</label>
+          <input class="field" type="email" id="onboardingEmail" placeholder="deine@email.de" required autocomplete="email" />
+        </div>
+        
+        <div style="margin-bottom:24px;">
+          <label style="display:block; font-size:14px; font-weight:600; margin-bottom:8px;">Passwort *</label>
+          <input class="field" type="password" id="onboardingPassword" placeholder="Mindestens 8 Zeichen" required autocomplete="new-password" />
+        </div>
+        
+        <button class="btn-primary" type="button" id="btnOnboardingSignupCreate" style="width:100%; min-height:56px; margin-bottom:12px;">
+          Konto erstellen
+        </button>
+        <button class="btn secondary" type="button" id="btnOnboardingSignupLater" style="width:100%; min-height:44px;">
+          Später
+        </button>
+        
+        <div style="margin-top:16px; font-size:12px; color:var(--muted); text-align:center;">
+          Kein Abo · jederzeit kündbar
+        </div>
+      </div>
+    </section>
+
+    <section class="view" id="v-provider-onboarding-business">
+      <div class="panel" style="padding:20px;">
+        <h2 style="font-size:20px; font-weight:900; margin-bottom:20px;">Dein Betrieb</h2>
+        
+        <div style="margin-bottom:16px;">
+          <label style="display:block; font-size:14px; font-weight:600; margin-bottom:8px;">Betriebsname *</label>
+          <input class="field" type="text" id="onboardingBusinessName" placeholder="z.B. Café Sonnenschein" required />
+        </div>
+        
+        <div style="margin-bottom:24px;">
+          <label style="display:block; font-size:14px; font-weight:600; margin-bottom:8px;">Stadt oder Adresse *</label>
+          <input class="field" type="text" id="onboardingCityOrAddress" placeholder="z.B. Stuttgart oder Hauptstraße 1, 70173 Stuttgart" required />
+        </div>
+        
+        <div class="hint" style="font-size:13px; margin-bottom:24px; color:var(--muted);">
+          Diese Angaben kannst du jederzeit ändern.
+        </div>
+        
+        <div style="display:flex; gap:12px;">
+          <button class="btn secondary" type="button" id="btnOnboardingBusinessBack" style="flex:1; min-height:44px;">
+            Zurück
+          </button>
+          <button class="btn-primary" type="button" id="btnOnboardingBusinessNext" style="flex:1; min-height:56px;">
+            Weiter
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="view" id="v-provider-onboarding-preview">
+      <div class="panel" style="padding:20px;">
+        <h2 style="font-size:20px; font-weight:900; margin-bottom:8px;">So sehen Kunden dein Gericht</h2>
+        <p style="font-size:14px; line-height:1.5; margin-bottom:20px; color:var(--muted);">
+          So erscheint dein Gericht später für Kunden.
+        </p>
+        
+        <div style="margin-bottom:20px; padding:12px; background:#f0f7f0; border-radius:12px; border:1px solid #4caf50;">
+          <div style="font-weight:600; font-size:13px; color:#2e7d32; margin-bottom:4px;">Vorschau · noch nicht veröffentlicht</div>
+        </div>
+        
+        <div id="onboardingPreviewCard" style="margin-bottom:24px;">
+          <!-- Wird dynamisch befüllt -->
+        </div>
+        
+        <button class="btn-primary" type="button" id="btnOnboardingPreviewDashboard" style="width:100%; min-height:56px; margin-bottom:12px;">
+          Weiter zum Dashboard
+        </button>
+        <button class="btn secondary" type="button" id="btnOnboardingPreviewEdit" style="width:100%; min-height:44px;">
+          Gericht bearbeiten
+        </button>
+      </div>
+    </section>
+
     <!-- PROVIDER APP - Dashboard (Home) -->
     <section class="view" id="v-provider-home">
       <!-- Provider Identity Card (Header) -->
@@ -1666,7 +1806,6 @@
 
       <!-- Empty Dashboard (Welcome Card) -->
       <div class="panel" id="providerEmptyDashboard" style="margin-top:18px; padding:20px; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,.04); text-align:center; display:none;">
-        <div style="font-size:32px; margin-bottom:12px;">👋</div>
         <div style="font-weight:600; font-size:18px; margin-bottom:8px; line-height:1.3;">Willkommen bei Mittagio</div>
         <div class="hint" style="font-size:14px; line-height:1.4; margin-bottom:16px; color:var(--muted);">
           Starte mit deinem ersten Gericht.
@@ -1713,9 +1852,17 @@
       <div class="panel">
         <h3>Wochenplan</h3>
         <div class="dayrow" id="weekDays" style="padding:0 0 10px; max-width:none;"></div>
-        <div id="weekList" class="hint">Noch nichts geplant.</div>
-        <button class="btn secondary" type="button" id="btnWeekPdf" data-icon="print">PDF-Wochenkarte erstellen</button>
-        <button class="btn ghost" type="button" id="btnWeekBack">Zurück</button>
+        <div id="weekList" style="text-align:center; padding:40px 20px;">
+          <div style="font-weight:600; font-size:16px; margin-bottom:8px;">Keine Inserate geplant</div>
+          <div class="hint" style="font-size:14px; line-height:1.4; margin-bottom:16px; color:var(--muted);">
+            Plane deine Woche und erstelle Inserate.
+          </div>
+          <button class="btn secondary" type="button" id="btnWeekEmptyAdd" style="width:100%; min-height:44px;">
+            Inserat erstellen
+          </button>
+        </div>
+        <button class="btn secondary" type="button" id="btnWeekPdf" data-icon="print" style="display:none; margin-top:12px;">PDF-Wochenkarte erstellen</button>
+        <button class="btn ghost" type="button" id="btnWeekBack" style="margin-top:12px;">Zurück</button>
       </div>
     </section>
 
@@ -1837,19 +1984,12 @@
               </div>
               <div class="chev">›</div>
             </button>
-            <button class="rowbtn" type="button" id="btnLegalPricing">
-              <div class="rowbtn-left">
-                <div class="rowbtn-ico" data-icon="info" data-icon-only="1"></div>
-                <div class="rowbtn-text">Anbieter-FAQ</div>
-              </div>
-              <div class="chev">›</div>
-            </button>
           </div>
         </div>
       </div>
 
       <div style="height:12px"></div>
-      <div class="row-muted">Kein Abo · Keine Laufzeit · Kein Vertrag</div>
+      <div class="row-muted">Kein Abo · Kein Vertrag · Keine Mindestlaufzeit</div>
       <div style="height:12px"></div>
       <button class="btn ghost" type="button" id="btnProvLogout">Logout</button>
 
@@ -1978,38 +2118,6 @@
       </div>
     </section>
 
-    <section class="view" id="v-legal-anbieter-faq">
-      <div class="panel">
-        <h1 style="font-size:24px; font-weight:900; margin-bottom:20px;">Anbieter-FAQ</h1>
-        <div style="line-height:1.8; font-size:15px;">
-          <p style="font-weight:700; margin-bottom:12px; font-size:18px;">Kosten</p>
-          
-          <p style="margin-top:16px;"><strong>Veröffentlichung:</strong></p>
-          <p>4,99 € zzgl. MwSt. pro Veröffentlichung (einmalig pro Veröffentlichung)</p>
-          
-          <p style="margin-top:16px;"><strong>Online-Bestellung:</strong></p>
-          <p>0,89 € zzgl. MwSt. pro Online-Bestellung/Vorgang</p>
-          <ul style="padding-left:20px; margin:8px 0; font-size:14px; color:#666;">
-            <li>gilt pro Bestellung, egal wie viele Gerichte</li>
-            <li>inkl. aller Bank- und Zahlungsgebühren (keine zusätzlichen Gebühren)</li>
-            <li>fällt bei erfolgreicher Zahlung an, auch wenn nicht abgeholt</li>
-          </ul>
-          
-          <p style="margin-top:24px; font-weight:700; font-size:18px;">Abholcode</p>
-          <p>Der Kunde erhält den Abholcode nach Online-Zahlung. Sie müssen nicht scannen, sondern nur als abgeholt markieren.</p>
-          
-          <p style="margin-top:24px; font-weight:700; font-size:18px;">Kochbuch & Wochenplan</p>
-          <ul style="padding-left:20px; margin:8px 0;">
-            <li>Kostenlos bis Veröffentlichung</li>
-            <li>Aus Kochbuch schnell in Wochenplan hinzufügen (USP)</li>
-          </ul>
-        </div>
-        <div style="margin-top:32px; padding-top:20px; border-top:1px solid #eee; text-align:center; font-size:14px; color:#666;">
-          Fragen, Hilfe oder Vorschläge? <a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a>
-        </div>
-        <button class="btn ghost" type="button" onclick="history.back()" style="margin-top:20px; width:100%;">Zurück</button>
-      </div>
-    </section>
 
     <section class="view" id="v-legal-agb-onboarding">
       <div class="panel">
@@ -2333,7 +2441,7 @@
     </div>
     <div class="answers" style="margin-top:16px;">
       <button class="ans" type="button" id="btnShareWhatsApp">
-        <i data-lucide="message"></i><span>WhatsApp</span>
+        <i data-lucide="message-circle"></i><span>WhatsApp</span>
       </button>
       <button class="ans" type="button" id="btnShareInstagram">
         <i data-lucide="share-2"></i><span>Instagram</span>
@@ -2408,6 +2516,7 @@
     provider: 'mittagio_provider_v1',
     cookbook: 'mittagio_cookbook_v1',
     week: 'mittagio_week_v1',
+    onboardingDraft: 'mittagio_onboarding_draft_v1',
     pickupDone: 'mittagio_pickup_done_v1',
     mode: 'mittagio_mode_v1'
   };
@@ -2946,7 +3055,9 @@
     });
 
     // Speichern (Offers bereits oben gespeichert)
-    cookbook = [...cookbook, ...newCookbook];
+    // Ersetze Cookbook komplett für Demo (keine Duplikate)
+    const existingCookbook = cookbook.filter(c => !providerNames.some(p => p.id === c.providerId));
+    cookbook = [...existingCookbook, ...newCookbook];
     save(LS.cookbook, cookbook);
 
     const existingOrders = loadOrders();
@@ -3256,9 +3367,14 @@
     discover:'v-discover', fav:'v-fav', orders:'v-orders', cart:'v-cart', profile:'v-profile',
     pickupCode:'v-pickup-code', // Neuer AbholcodeScreen
     providerLogin:'v-provider-login',
+    providerOnboardingEntry:'v-provider-onboarding-entry',
+    providerOnboardingFirstDish:'v-provider-onboarding-first-dish',
+    providerOnboardingSignup:'v-provider-onboarding-signup',
+    providerOnboardingBusiness:'v-provider-onboarding-business',
+    providerOnboardingPreview:'v-provider-onboarding-preview',
     providerHome:'v-provider-home', providerPickups:'v-provider-pickups', providerCookbook:'v-provider-cookbook',
     providerProfile:'v-provider-profile', providerBilling:'v-provider-billing', providerWeek:'v-provider-week',
-    legalImpressum:'v-legal-impressum', legalAgbKurz:'v-legal-agb-kurz', legalDatenschutz:'v-legal-datenschutz', legalAnbieterFaq:'v-legal-anbieter-faq', legalAgbOnboarding:'v-legal-agb-onboarding'
+    legalImpressum:'v-legal-impressum', legalAgbKurz:'v-legal-agb-kurz', legalDatenschutz:'v-legal-datenschutz', legalAgbOnboarding:'v-legal-agb-onboarding'
   };
 
   function setCustomerNavActive(go){
@@ -3298,9 +3414,21 @@
     }
 
     if(isProv){
-      // provider must be logged in
+      // provider must be logged in OR show onboarding entry
       if(!provider.loggedIn){
-        showView(views.providerLogin);
+        // Check if user has onboarding draft -> show returning banner
+        const onboardingDraft = load(LS.onboardingDraft, null);
+        if(onboardingDraft && !provider.onboardingCompleted){
+          // Show onboarding entry with returning banner
+          showOnboardingEntry(true);
+        } else {
+          // Check if onboarding should be shown (new provider)
+          if(!provider.onboardingCompleted){
+            showOnboardingEntry(false);
+          } else {
+            showView(views.providerLogin);
+          }
+        }
       } else {
         showProviderHome();
       }
@@ -4488,7 +4616,24 @@
       primaryCTA.className = 'btn-primary';
       primaryCTA.classList.remove('loading', 'success');
       
-      if(o.hasPickupCode){
+      // Check if offer is active/available
+      const isActive = o.active !== false;
+      const todayKey = isoDate(new Date());
+      const isToday = o.day === todayKey;
+      const isAvailable = isActive && isToday;
+      
+      if(!isAvailable){
+        // Disabled state with reason
+        primaryCTA.disabled = true;
+        if(!isActive){
+          primaryCTAText.textContent = 'Angebot nicht verfügbar';
+        } else if(!isToday){
+          primaryCTAText.textContent = 'Angebot nicht mehr verfügbar';
+        } else {
+          primaryCTAText.textContent = 'Nicht verfügbar';
+        }
+        primaryCTA.onclick = null;
+      } else if(o.hasPickupCode){
         // MIT Abholcode: CTA "Jetzt online bestellen"
         primaryCTAText.textContent = 'Jetzt online bestellen';
         primaryCTA.onclick = () => {
@@ -4656,11 +4801,55 @@
       history.pushState(null, '', location.pathname);
       return;
     }
+    // Wizard schließen
+    if(document.getElementById('wizard') && document.getElementById('wizard').classList.contains('active')){
+      closeWizard();
+      e.preventDefault();
+      history.pushState(null, '', location.pathname);
+      return;
+    }
     // Sheet schließen
-    if(document.getElementById('sheet').classList.contains('active')){
+    if(document.getElementById('sheet') && document.getElementById('sheet').classList.contains('active')){
       closeSheet();
       e.preventDefault();
       history.pushState(null, '', location.pathname);
+      return;
+    }
+    // Onboarding back navigation
+    const currentView = document.querySelector('.view.active');
+    if(currentView && currentView.id.startsWith('v-provider-onboarding')){
+      if(currentView.id === 'v-provider-onboarding-preview'){
+        showOnboardingBusiness();
+        e.preventDefault();
+        history.pushState(null, '', location.pathname);
+        return;
+      } else if(currentView.id === 'v-provider-onboarding-business'){
+        showOnboardingSignup();
+        e.preventDefault();
+        history.pushState(null, '', location.pathname);
+        return;
+      } else if(currentView.id === 'v-provider-onboarding-signup'){
+        showOnboardingFirstDish(!!onboardingDraftDish);
+        e.preventDefault();
+        history.pushState(null, '', location.pathname);
+        return;
+      } else if(currentView.id === 'v-provider-onboarding-first-dish'){
+        showOnboardingEntry(!!onboardingDraftDish);
+        e.preventDefault();
+        history.pushState(null, '', location.pathname);
+        return;
+      } else if(currentView.id === 'v-provider-onboarding-entry'){
+        // Exit onboarding, go to login or customer mode
+        if(provider.loggedIn){
+          showProviderHome();
+        } else {
+          setMode('customer');
+          showProfile();
+        }
+        e.preventDefault();
+        history.pushState(null, '', location.pathname);
+        return;
+      }
     }
   });
 
@@ -4798,7 +4987,7 @@
       <div class="print-card" style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
         <div>
           <div style="font-weight:900">Mittagio</div>
-          <div class="print-muted">Dein Mittag! lokal · frisch · digital</div>
+          <div class="print-muted">Dein Mittag. Lokal. Frisch. Digital.</div>
         </div>
         <div style="text-align:center;">
           <div class="qr">QR-Code</div>
@@ -5913,6 +6102,325 @@
     };
   }
 
+  // --- Hybrid Onboarding System ---
+  let onboardingDraftDish = load(LS.onboardingDraft, null);
+  
+  function showOnboardingEntry(hasDraft = false){
+    showView(views.providerOnboardingEntry);
+    
+    // Show returning banner if draft exists
+    const entryPanel = document.querySelector('#v-provider-onboarding-entry .panel');
+    if(hasDraft && onboardingDraftDish && entryPanel){
+      const banner = document.createElement('div');
+      banner.style.cssText = 'margin-bottom:24px; padding:16px; background:#f0f7f0; border-radius:12px; border:1px solid #4caf50;';
+      banner.innerHTML = `
+        <div style="font-weight:600; font-size:16px; margin-bottom:8px; color:#2e7d32;">Du hast ein Gericht vorbereitet</div>
+        <div style="font-size:14px; line-height:1.4; margin-bottom:12px; color:#666;">Möchtest du weitermachen?</div>
+        <div style="display:flex; gap:8px;">
+          <button class="btn secondary" type="button" id="btnOnboardingResume" style="flex:1; min-height:44px;">Weiter bearbeiten</button>
+          <button class="btn ghost" type="button" id="btnOnboardingDiscard" style="flex:1; min-height:44px;">Verwerfen</button>
+        </div>
+      `;
+      entryPanel.insertBefore(banner, entryPanel.firstChild);
+      
+      const btnResume = document.getElementById('btnOnboardingResume');
+      const btnDiscard = document.getElementById('btnOnboardingDiscard');
+      if(btnResume) btnResume.onclick = () => showOnboardingFirstDish(true);
+      if(btnDiscard) btnDiscard.onclick = () => {
+        onboardingDraftDish = null;
+        save(LS.onboardingDraft, null);
+        showOnboardingEntry(false);
+      };
+    }
+  }
+  
+  function showOnboardingFirstDish(prefill = false){
+    showView(views.providerOnboardingFirstDish);
+    
+    // Push state for browser back button
+    history.pushState({onboarding: 'first-dish'}, '', location.pathname);
+    
+    if(prefill && onboardingDraftDish){
+      const dishName = document.getElementById('onboardingDishName');
+      const timeStart = document.getElementById('onboardingPickupTimeStart');
+      const timeEnd = document.getElementById('onboardingPickupTimeEnd');
+      const photoPreview = document.getElementById('onboardingPhotoPreview');
+      const photoPreviewImg = document.getElementById('onboardingPhotoPreviewImg');
+      
+      if(dishName) dishName.value = onboardingDraftDish.dishName || '';
+      if(timeStart) timeStart.value = onboardingDraftDish.pickupTimeStart || '';
+      if(timeEnd) timeEnd.value = onboardingDraftDish.pickupTimeEnd || '';
+      if(onboardingDraftDish.photoData && photoPreview && photoPreviewImg){
+        photoPreview.style.display = 'block';
+        photoPreviewImg.src = onboardingDraftDish.photoData;
+      }
+    }
+    
+    // Photo upload handler (recreate each time to avoid duplicates)
+    const existingInput = document.getElementById('onboardingPhotoInput');
+    if(existingInput) existingInput.remove();
+    
+    const photoInput = document.createElement('input');
+    photoInput.id = 'onboardingPhotoInput';
+    photoInput.type = 'file';
+    photoInput.accept = 'image/*';
+    photoInput.style.display = 'none';
+    document.body.appendChild(photoInput);
+    
+    const btnAddPhoto = document.getElementById('btnOnboardingAddPhoto');
+    if(btnAddPhoto){
+      btnAddPhoto.onclick = () => photoInput.click();
+    }
+    
+    photoInput.onchange = async (e) => {
+      const file = e.target.files[0];
+      if(!file) return;
+      const dataUrl = await toDataUrl(file);
+      const photoPreview = document.getElementById('onboardingPhotoPreview');
+      const photoPreviewImg = document.getElementById('onboardingPhotoPreviewImg');
+      if(photoPreview && photoPreviewImg){
+        photoPreview.style.display = 'block';
+        photoPreviewImg.src = dataUrl;
+      }
+      if(!onboardingDraftDish) onboardingDraftDish = {};
+      onboardingDraftDish.photoData = dataUrl;
+      save(LS.onboardingDraft, onboardingDraftDish);
+    };
+    
+    // Warn before leaving if changes exist
+    let hasChanges = false;
+    const inputs = ['onboardingDishName', 'onboardingPickupTimeStart', 'onboardingPickupTimeEnd'];
+    inputs.forEach(id => {
+      const el = document.getElementById(id);
+      if(el){
+        el.oninput = () => { hasChanges = true; };
+      }
+    });
+    
+    window.onbeforeunload = (e) => {
+      if(hasChanges && onboardingDraftDish){
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+  }
+  
+  function showOnboardingSignup(){
+    showView(views.providerOnboardingSignup);
+    history.pushState({onboarding: 'signup'}, '', location.pathname);
+  }
+  
+  function showOnboardingBusiness(){
+    showView(views.providerOnboardingBusiness);
+    history.pushState({onboarding: 'business'}, '', location.pathname);
+  }
+  
+  function showOnboardingPreview(dishId){
+    showView(views.providerOnboardingPreview);
+    history.pushState({onboarding: 'preview'}, '', location.pathname);
+    
+    // Load saved dish and show preview
+    const savedDish = dishId ? cookbook.find(c => c.id === dishId) : cookbook.find(c => c.providerId === providerId());
+    const previewCard = document.getElementById('onboardingPreviewCard');
+    if(previewCard && (savedDish || onboardingDraftDish)){
+      const dish = savedDish || {
+        dish: onboardingDraftDish.dishName,
+        category: 'Vegetarisch',
+        photoData: onboardingDraftDish.photoData || null
+      };
+      
+      const preview = offerCard({
+        id: dish.id || 'preview',
+        dish: dish.dish,
+        category: dish.category || 'Vegetarisch',
+        price: 0, // No price in preview
+        pickupWindow: savedDish?.pickupWindow || `${onboardingDraftDish?.pickupTimeStart || '11:30'} – ${onboardingDraftDish?.pickupTimeEnd || '14:30'}`,
+        imageUrl: dish.photoData || dish.imageUrl || '',
+        providerName: provider.profile?.name || 'Dein Betrieb',
+        hasPickupCode: false, // No abholcode in preview
+        dineInPossible: false
+      }, {interactive: false});
+      
+      previewCard.innerHTML = '';
+      previewCard.appendChild(preview);
+      
+      // Disable all interactive elements in preview
+      preview.querySelectorAll('button, a').forEach(el => {
+        el.style.pointerEvents = 'none';
+        el.style.opacity = '0.5';
+      });
+      
+      // Update icons
+      if(typeof lucide !== 'undefined'){
+        setTimeout(() => lucide.createIcons(), 50);
+      }
+    }
+  }
+  
+  // Onboarding Event Handlers
+  const btnOnboardingEntryStart = document.getElementById('btnOnboardingEntryStart');
+  if(btnOnboardingEntryStart) btnOnboardingEntryStart.onclick = () => showOnboardingFirstDish(false);
+  
+  const btnOnboardingEntryLater = document.getElementById('btnOnboardingEntryLater');
+  if(btnOnboardingEntryLater) btnOnboardingEntryLater.onclick = () => {
+    if(provider.loggedIn){
+      showProviderHome();
+    } else {
+      showView(views.providerLogin);
+    }
+  };
+  
+  const btnOnboardingFirstDishBack = document.getElementById('btnOnboardingFirstDishBack');
+  if(btnOnboardingFirstDishBack) btnOnboardingFirstDishBack.onclick = () => {
+    const dishName = document.getElementById('onboardingDishName')?.value.trim();
+    const timeStart = document.getElementById('onboardingPickupTimeStart')?.value;
+    const timeEnd = document.getElementById('onboardingPickupTimeEnd')?.value;
+    
+    // Check if user has made changes
+    if(dishName || timeStart || timeEnd || onboardingDraftDish?.photoData){
+      if(confirm('Später weitermachen?\n\nDein Gericht ist noch nicht gespeichert.')){
+        showOnboardingEntry(!!onboardingDraftDish);
+      }
+    } else {
+      showOnboardingEntry(!!onboardingDraftDish);
+    }
+  };
+  
+  const btnOnboardingFirstDishNext = document.getElementById('btnOnboardingFirstDishNext');
+  if(btnOnboardingFirstDishNext) btnOnboardingFirstDishNext.onclick = () => {
+    const dishName = document.getElementById('onboardingDishName')?.value.trim();
+    const timeStart = document.getElementById('onboardingPickupTimeStart')?.value;
+    const timeEnd = document.getElementById('onboardingPickupTimeEnd')?.value;
+    
+    if(!dishName || !timeStart || !timeEnd){
+      alert('Bitte fülle alle Pflichtfelder aus.');
+      return;
+    }
+    
+    // Save draft
+    onboardingDraftDish = {
+      dishName,
+      pickupTimeStart: timeStart,
+      pickupTimeEnd: timeEnd,
+      photoData: onboardingDraftDish?.photoData || null
+    };
+    save(LS.onboardingDraft, onboardingDraftDish);
+    
+    // Check if user wants to leave
+    showOnboardingSignup();
+  };
+  
+  const btnOnboardingSignupCreate = document.getElementById('btnOnboardingSignupCreate');
+  if(btnOnboardingSignupCreate) btnOnboardingSignupCreate.onclick = () => {
+    const email = document.getElementById('onboardingEmail')?.value.trim();
+    const password = document.getElementById('onboardingPassword')?.value.trim();
+    
+    if(!email || !password || password.length < 8){
+      alert('Bitte gib eine gültige E-Mail und ein Passwort (mind. 8 Zeichen) ein.');
+      return;
+    }
+    
+    // Create account
+    provider.loggedIn = true;
+    provider.email = email;
+    provider.onboardingCompleted = false; // Will be set to true after preview
+    save(LS.provider, provider);
+    
+    // Save dish to cookbook
+    if(onboardingDraftDish){
+      const newDish = {
+        id: cryptoId(),
+        providerId: providerId(),
+        dish: onboardingDraftDish.dishName,
+        category: 'Vegetarisch',
+        price: 0, // No price in onboarding
+        pickupWindow: `${onboardingDraftDish.pickupTimeStart} – ${onboardingDraftDish.pickupTimeEnd}`,
+        photoData: onboardingDraftDish.photoData || '',
+        hasPickupCode: false, // No abholcode in onboarding
+        dineInPossible: false,
+        allergens: [],
+        extras: [],
+        reuse: {enabled: false, deposit: 0},
+        createdAt: Date.now(),
+        lastUsed: null
+      };
+      cookbook.push(newDish);
+      save(LS.cookbook, cookbook);
+      
+      // Clear draft after successful save
+      onboardingDraftDish = null;
+      save(LS.onboardingDraft, null);
+      
+      // Proceed to business screen
+      showOnboardingBusiness();
+    }
+  };
+  
+  const btnOnboardingSignupLater = document.getElementById('btnOnboardingSignupLater');
+  if(btnOnboardingSignupLater) btnOnboardingSignupLater.onclick = () => {
+    // Keep draft, go to login
+    showView(views.providerLogin);
+  };
+  
+  const btnOnboardingBusinessBack = document.getElementById('btnOnboardingBusinessBack');
+  if(btnOnboardingBusinessBack) btnOnboardingBusinessBack.onclick = () => showOnboardingSignup();
+  
+  const btnOnboardingBusinessNext = document.getElementById('btnOnboardingBusinessNext');
+  if(btnOnboardingBusinessNext) btnOnboardingBusinessNext.onclick = () => {
+    const businessName = document.getElementById('onboardingBusinessName')?.value.trim();
+    const cityOrAddress = document.getElementById('onboardingCityOrAddress')?.value.trim();
+    
+    if(!businessName || !cityOrAddress){
+      alert('Bitte fülle alle Felder aus.');
+      return;
+    }
+    
+    // Save provider profile basics
+    if(!provider.profile) provider.profile = {};
+    provider.profile.name = businessName;
+    const parsed = parseAddress(cityOrAddress);
+    provider.profile.street = parsed.street || cityOrAddress;
+    provider.profile.zip = parsed.zip || '';
+    provider.profile.city = parsed.city || cityOrAddress;
+    save(LS.provider, provider);
+    
+    // Get the saved dish ID
+    const savedDish = cookbook.find(c => c.providerId === providerId() && c.dish === onboardingDraftDish?.dishName);
+    if(savedDish){
+      showOnboardingPreview(savedDish.id);
+    } else {
+      // Fallback: show preview with draft data
+      showOnboardingPreview(null);
+    }
+  };
+  
+  const btnOnboardingPreviewDashboard = document.getElementById('btnOnboardingPreviewDashboard');
+  if(btnOnboardingPreviewDashboard) btnOnboardingPreviewDashboard.onclick = () => {
+    provider.onboardingCompleted = true;
+    save(LS.provider, provider);
+    showProviderHome();
+  };
+  
+  const btnOnboardingPreviewEdit = document.getElementById('btnOnboardingPreviewEdit');
+  if(btnOnboardingPreviewEdit) btnOnboardingPreviewEdit.onclick = () => {
+    // Restore draft from saved dish
+    const savedDish = cookbook.find(c => c.providerId === providerId());
+    if(savedDish){
+      onboardingDraftDish = {
+        dishName: savedDish.dish,
+        pickupTimeStart: savedDish.pickupWindow?.split(' – ')[0] || '11:30',
+        pickupTimeEnd: savedDish.pickupWindow?.split(' – ')[1] || '14:30',
+        photoData: savedDish.photoData || null
+      };
+      save(LS.onboardingDraft, onboardingDraftDish);
+    }
+    showOnboardingFirstDish(true);
+  };
+  
+  // Browser back button handling for onboarding (integrated in existing popstate handler)
+  // The existing popstate handler already handles wizard and sheets
+  // We add onboarding handling there
+
   // --- Provider entry ---
   document.getElementById('btnProvBack').onclick=()=>{ setMode('customer'); showProfile(); };
 
@@ -6422,8 +6930,9 @@
         };
       } else {
         providerTodayContent.innerHTML = `
-          <div class="hint" style="font-size:14px; line-height:1.4; margin-bottom:14px; color:var(--muted);">
-            Heute noch keine Inserate geplant.
+          <div style="font-weight:600; font-size:16px; margin-bottom:8px; text-align:center;">Keine Inserate heute</div>
+          <div class="hint" style="font-size:14px; line-height:1.4; margin-bottom:16px; color:var(--muted); text-align:center;">
+            Erstelle dein erstes Inserat für heute.
           </div>
           <button class="btn secondary" type="button" id="btnProviderTodayAddDish" style="width:100%; min-height:44px;">
             Inserat für heute erstellen
@@ -6510,17 +7019,64 @@
     // Week Preview
     renderProviderWeekPreviewNew();
     
-    // Empty Dashboard State
+    // Post-Onboarding Dashboard State (if just completed onboarding)
     const providerEmptyDashboard = document.getElementById('providerEmptyDashboard');
     if(providerEmptyDashboard){
       const hasAnyData = mineActive.length > 0 || cookbook.length > 0;
-      providerEmptyDashboard.style.display = hasAnyData ? 'none' : 'block';
+      const justCompletedOnboarding = provider.onboardingCompleted && !provider.onboardingShown && cookbook.length > 0;
       
-      const btnProviderEmptyAddDish = document.getElementById('btnProviderEmptyAddDish');
-      if(btnProviderEmptyAddDish) btnProviderEmptyAddDish.onclick = () => {
-        createFlowPreselectedDate = null;
-        openCreateFlowSheet();
-      };
+      if(justCompletedOnboarding){
+        // Show post-onboarding state
+        providerEmptyDashboard.style.display = 'block';
+        providerEmptyDashboard.innerHTML = `
+          <div style="font-weight:600; font-size:18px; margin-bottom:8px; line-height:1.3;">Gericht erstellt</div>
+          <div class="hint" style="font-size:14px; line-height:1.4; margin-bottom:16px; color:var(--muted);">
+            Dein Gericht ist gespeichert. Veröffentliche es, um sichtbar zu werden.
+          </div>
+          <button class="btn-primary" type="button" id="btnPostOnboardingPublish" style="width:100%; min-height:56px; margin-bottom:12px;">
+            Gericht veröffentlichen
+          </button>
+          <button class="btn secondary" type="button" id="btnPostOnboardingPlan" style="width:100%; min-height:44px;">
+            Weiter planen
+          </button>
+        `;
+        
+        const btnPublish = document.getElementById('btnPostOnboardingPublish');
+        const btnPlan = document.getElementById('btnPostOnboardingPlan');
+        if(btnPublish){
+          const savedDish = cookbook.find(c => c.providerId === providerId());
+          if(savedDish){
+            btnPublish.onclick = () => {
+              startListingFlow({dishId: savedDish.id});
+            };
+          }
+        }
+        if(btnPlan) btnPlan.onclick = () => showProviderCookbook();
+        
+        // Mark onboarding as shown
+        provider.onboardingShown = true;
+        save(LS.provider, provider);
+      } else {
+        // Normal empty state
+        providerEmptyDashboard.style.display = hasAnyData ? 'none' : 'block';
+        if(!hasAnyData){
+          providerEmptyDashboard.innerHTML = `
+            <div style="font-weight:600; font-size:18px; margin-bottom:8px; line-height:1.3;">Willkommen bei Mittagio</div>
+            <div class="hint" style="font-size:14px; line-height:1.4; margin-bottom:16px; color:var(--muted);">
+              Starte mit deinem ersten Gericht.
+            </div>
+            <button class="btn secondary" type="button" id="btnProviderEmptyAddDish" style="width:100%; min-height:44px;">
+              Gericht hinzufügen
+            </button>
+          `;
+        }
+        
+        const btnProviderEmptyAddDish = document.getElementById('btnProviderEmptyAddDish');
+        if(btnProviderEmptyAddDish) btnProviderEmptyAddDish.onclick = () => {
+          createFlowPreselectedDate = null;
+          openCreateFlowSheet();
+        };
+      }
     }
     
     // FAB
@@ -6591,8 +7147,9 @@
       };
     } else {
       dayContent.innerHTML = `
-        <div class="hint" style="font-size:14px; line-height:1.4; margin-bottom:14px; color:var(--muted); text-align:center; padding:20px 0;">
-          Noch keine Inserate geplant.
+        <div style="font-weight:600; font-size:16px; margin-bottom:8px; text-align:center;">Keine Inserate geplant</div>
+        <div class="hint" style="font-size:14px; line-height:1.4; margin-bottom:16px; color:var(--muted); text-align:center;">
+          Erstelle ein Inserat für diesen Tag.
         </div>
         <button class="btn secondary" type="button" id="btnProviderWeekAddDishEmpty" style="width:100%; min-height:44px;">
           Inserat für diesen Tag erstellen
@@ -6659,10 +7216,30 @@
       .filter(x=>x.entry.providerId===providerId());
 
     if(!providerEntries.length){
-      list.textContent = 'Noch nichts geplant.';
+      list.innerHTML = `
+        <div style="font-weight:600; font-size:16px; margin-bottom:8px;">Keine Inserate geplant</div>
+        <div class="hint" style="font-size:14px; line-height:1.4; margin-bottom:16px; color:var(--muted);">
+          Plane deine Woche und erstelle Inserate.
+        </div>
+        <button class="btn secondary" type="button" id="btnWeekEmptyAdd" style="width:100%; min-height:44px;">
+          Inserat erstellen
+        </button>
+      `;
+      const btnWeekEmptyAdd = document.getElementById('btnWeekEmptyAdd');
+      if(btnWeekEmptyAdd) btnWeekEmptyAdd.onclick = () => {
+        createFlowPreselectedDate = weekPlanDay;
+        openCreateFlowSheet();
+      };
+      // Hide PDF button in empty state
+      const btnWeekPdf = document.getElementById('btnWeekPdf');
+      if(btnWeekPdf) btnWeekPdf.style.display = 'none';
       return;
     }
 
+    // Show PDF button only when there are entries
+    const btnWeekPdf = document.getElementById('btnWeekPdf');
+    if(btnWeekPdf) btnWeekPdf.style.display = 'block';
+    
     list.innerHTML = '';
     providerEntries.forEach(({entry, idx})=>{
       const cb = cookbook.find(c=>c.id===entry.cookbookId);
@@ -6828,7 +7405,10 @@
     // Empty States
     if(!allPickups.length){
       empty.style.display='block';
-      empty.innerHTML = 'Heute gibt es keine Abholungen.';
+      empty.innerHTML = `
+        <div style="font-weight:600; font-size:16px; margin-bottom:8px;">Keine Abholungen</div>
+        <div style="font-size:14px; line-height:1.4; color:var(--muted);">Heute gibt es noch keine Abholungen.</div>
+      `;
       listEl.style.display='none';
       return;
     }
@@ -6836,9 +7416,15 @@
     if(!filteredPickups.length){
       empty.style.display='block';
       if(pickupFilter === 'offen'){
-        empty.innerHTML = 'Alle Abholungen erledigt 🎉';
+        empty.innerHTML = `
+          <div style="font-weight:600; font-size:16px; margin-bottom:8px;">Alles erledigt</div>
+          <div style="font-size:14px; line-height:1.4; color:var(--muted);">Alle Abholungen sind abgeschlossen.</div>
+        `;
       } else {
-        empty.innerHTML = 'Keine abgeholten Bestellungen.';
+        empty.innerHTML = `
+          <div style="font-weight:600; font-size:16px; margin-bottom:8px;">Keine abgeholten Bestellungen</div>
+          <div style="font-size:14px; line-height:1.4; color:var(--muted);">Noch keine Bestellungen als abgeholt markiert.</div>
+        `;
       }
       listEl.style.display='none';
       return;
@@ -7008,8 +7594,6 @@
           </div>
         </div>
         <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
-          <a href="#/anbieter-faq" onclick="showLegalPage('anbieter-faq'); return false;" style="font-size:13px; color:var(--brand); text-decoration:none;">Anbieter-FAQ</a>
-          <span style="color:#ccc;">·</span>
           <a href="#/datenschutz" onclick="showLegalPage('datenschutz'); return false;" style="font-size:13px; color:var(--brand); text-decoration:none;">Datenschutz</a>
         </div>
       `;
@@ -7100,13 +7684,21 @@
     const pageMap = {
       'impressum': 'v-legal-impressum',
       'agb-kurz': 'v-legal-agb-kurz',
-      'datenschutz': 'v-legal-datenschutz',
-      'anbieter-faq': 'v-legal-anbieter-faq'
+      'datenschutz': 'v-legal-datenschutz'
     };
     const viewId = pageMap[page];
     if(viewId){
       showView(viewId);
       window.scrollTo({top:0, behavior:'smooth'});
+    }
+  }
+  
+  function goBackFromLegalPage(){
+    // Zurück zur Profil-Seite (Kunde oder Anbieter)
+    if(mode === 'provider'){
+      showProviderProfile();
+    } else {
+      showProfile();
     }
   }
 
@@ -7120,9 +7712,6 @@
   document.getElementById('btnLegalTerms').onclick=()=>{
     showLegalPage('agb-kurz');
   };
-  document.getElementById('btnLegalPricing').onclick=()=>{
-    showLegalPage('anbieter-faq');
-  };
 
   // --- Provider actions (alte Buttons entfernt, jetzt über Create Flow Sheet) ---
   // btnNewListing und btnFromCookbook werden nicht mehr verwendet
@@ -7132,7 +7721,8 @@
   if(btnFromCookbook) btnFromCookbook.style.display = 'none';
   
   // Kochbuch: "+ Gericht hinzufügen" öffnet IMMER Master-Flow (kein cookbook-Wizard)
-  document.getElementById('btnCookbookAdd').onclick=()=> startListingFlow({});
+  const btnCookbookAdd = document.getElementById('btnCookbookAdd');
+  if(btnCookbookAdd) btnCookbookAdd.onclick=()=> startListingFlow({});
   document.getElementById('btnProvSetup').onclick=()=> startWizard('provider');
   // btnOpenWeekPlan wird nicht mehr verwendet (Week Preview ist jetzt im Dashboard)
   const btnOpenWeekPlan = document.getElementById('btnOpenWeekPlan');
@@ -7243,7 +7833,21 @@
     const filtered = mine.filter(x => !q || String(x.dish||'').toLowerCase().includes(q));
 
     if(!filtered.length){
-      box.innerHTML = '<div class="hint">Noch keine Gerichte gespeichert.</div>';
+      box.innerHTML = `
+        <div style="text-align:center; padding:40px 20px;">
+          <div style="font-weight:600; font-size:16px; margin-bottom:8px;">Keine Gerichte</div>
+          <div class="hint" style="font-size:14px; line-height:1.4; margin-bottom:16px; color:var(--muted);">
+            Erstelle dein erstes Gericht im Kochbuch.
+          </div>
+          <button class="btn secondary" type="button" id="btnCookbookEmptyAdd" style="width:100%; min-height:44px;">
+            Gericht hinzufügen
+          </button>
+        </div>
+      `;
+      const btnCookbookEmptyAdd = document.getElementById('btnCookbookEmptyAdd');
+      if(btnCookbookEmptyAdd) btnCookbookEmptyAdd.onclick = () => {
+        startListingFlow({});
+      };
       return;
     }
 
@@ -7487,8 +8091,12 @@
   ];
 
   function openWizard(){
-    document.getElementById('wbd').classList.add('active');
-    document.getElementById('wizard').classList.add('active');
+    const wbd = document.getElementById('wbd');
+    const wizard = document.getElementById('wizard');
+    if(wbd) wbd.classList.add('active');
+    if(wizard) wizard.classList.add('active');
+    // Push state for browser back button
+    history.pushState({wizard: true}, '', location.pathname);
   }
   function closeWizard(){
     document.getElementById('wbd').classList.remove('active');
@@ -9029,12 +9637,15 @@
   }
   
   // --- boot ---
-  // Testdaten immer erstellen (überschreibt vorhandene für Demo)
+  // Testdaten erstellen (nur wenn keine vorhanden oder für Demo)
   // Alte seed() Funktion - wird durch seedExampleData() ersetzt
   // seed(); // Auskommentiert, da seedExampleData() die neuen Beispieldaten lädt
   
   // Neue Beispieldaten laden (10 Anbieter, je 3 Gerichte, je 10 Abholcodes)
-  seedExampleData();
+  // Nur wenn keine Offers vorhanden oder für Demo
+  if(offers.length === 0 || true){ // true für Demo - immer neu generieren
+    seedExampleData();
+  }
   offers = offers.map(normalizeOffer);
   save(LS.offers, offers);
   
@@ -9074,13 +9685,12 @@
       }
     }
     
-    // Legal Pages Routes: /impressum, /agb-kurz, /datenschutz, /anbieter-faq
+    // Legal Pages Routes: /impressum, /agb-kurz, /datenschutz
     if(hash){
       const legalRoutes = {
         '#/impressum': 'impressum',
         '#/agb-kurz': 'agb-kurz',
-        '#/datenschutz': 'datenschutz',
-        '#/anbieter-faq': 'anbieter-faq'
+        '#/datenschutz': 'datenschutz'
       };
       if(legalRoutes[hash]){
         showLegalPage(legalRoutes[hash]);
@@ -9093,8 +9703,7 @@
       const legalRoutes = {
         '#/impressum': 'impressum',
         '#/agb-kurz': 'agb-kurz',
-        '#/datenschutz': 'datenschutz',
-        '#/anbieter-faq': 'anbieter-faq'
+        '#/datenschutz': 'datenschutz'
       };
       if(legalRoutes[hash]){
         showLegalPage(legalRoutes[hash]);
