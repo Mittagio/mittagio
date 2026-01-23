@@ -11,7 +11,12 @@ const ASSETS = [
 ];
 
 self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)).catch(() => {}));
+  // Alte Caches löschen beim Install
+  e.waitUntil(
+    caches.keys().then(keys => Promise.all(
+      keys.filter(k => k.startsWith(CACHE_PREFIX)).map(k => caches.delete(k))
+    )).then(() => caches.open(CACHE).then(c => c.addAll(ASSETS)).catch(() => {}))
+  );
   self.skipWaiting();
 });
 
