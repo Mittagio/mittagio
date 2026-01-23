@@ -45,6 +45,61 @@
       --brand:#FFCC00;   /* Mittagio-Gelb */
       --brand2:#1F9D55;  /* green */
       --danger:#E34D4D;
+      
+      /* Design Tokens - PWA Light */
+      /* Radius */
+      --r-sm: 10px;
+      --r-md: 14px;
+      --r-lg: 18px;
+      --r-xl: 24px;
+      --r-full: 999px;
+      
+      /* Spacing */
+      --s-1: 4px;
+      --s-2: 8px;
+      --s-3: 12px;
+      --s-4: 16px;
+      --s-5: 20px;
+      --s-6: 24px;
+      --s-8: 32px;
+      
+      /* Typography */
+      --font-title: 18px;
+      --font-title-lg: 20px;
+      --font-body: 14px;
+      --font-body-lg: 16px;
+      --font-meta: 12px;
+      --font-meta-sm: 13px;
+      --font-weight-semibold: 600;
+      --font-weight-bold: 700;
+      
+      /* Colors (Light) */
+      --color-bg: #FFFFFF;
+      --color-surface: #FFFFFF;
+      --color-border: #EAEAEA;
+      --color-text: #1A1A1A;
+      --color-text-secondary: #6B6B6B;
+      --color-brand-yellow: #FFCC00;
+      --color-soft-yellow-bg: rgba(255, 204, 0, 0.15);
+      --color-soft-green-bg: rgba(31, 157, 85, 0.12);
+      --color-soft-grey-bg: rgba(0, 0, 0, 0.06);
+      
+      /* Icon Sizes */
+      --icon-inline: 16px;
+      --icon-inline-lg: 18px;
+      --icon-header: 20px;
+      --icon-header-lg: 22px;
+      --icon-nav: 22px;
+      --icon-nav-lg: 24px;
+      
+      /* Button Heights */
+      --btn-height-min: 44px;
+      --btn-height-md: 48px;
+      
+      /* Badge */
+      --badge-height: 24px;
+      --badge-px: 10px;
+      --badge-px-lg: 12px;
     }
     *{box-sizing:border-box}
     html,body{height:100%}
@@ -1793,20 +1848,27 @@
 <!-- Offer sheet -->
 <div class="backdrop" id="bd" onclick="closeSheet()"></div>
 <div class="sheet" id="sheet">
-  <button class="back-button" type="button" onclick="closeSheet()" aria-label="Zurück">
-    <i data-lucide="arrow-left"></i>
-  </button>
+  <div class="sheet-header" style="position:sticky; top:0; z-index:10; background:var(--card); padding:12px 16px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--border);">
+    <button class="back-button" type="button" onclick="closeSheet()" aria-label="Zurück" style="background:none; border:none; padding:8px; cursor:pointer;">
+      <i data-lucide="arrow-left"></i>
+    </button>
+    <div style="font-weight:600; font-size:16px;">Angebot</div>
+    <button class="share-button-header" type="button" id="btnShareHeader" aria-label="Teilen" style="background:none; border:none; padding:8px; cursor:pointer; color:var(--text-secondary);">
+      <i data-lucide="share-2"></i>
+    </button>
+  </div>
   <div class="handle"></div>
-  <div class="sheet-img"><img id="sImg" alt="" /></div>
+  <div class="sheet-img" style="max-height:220px; overflow:hidden;"><img id="sImg" alt="" style="width:100%; height:auto; object-fit:cover; display:block;" /></div>
   <div class="sheet-body">
-    <div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start;">
-      <div>
-        <div style="font-weight:950;font-size:18px" id="sDish"></div>
-        <div style="color:#444;font-size:13px;margin-top:4px" id="sProvider"></div>
+    <div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start; margin-top:16px;">
+      <div style="flex:1;">
+        <div style="font-weight:700;font-size:20px; line-height:1.3; margin-bottom:8px;" id="sDish"></div>
+        <div style="color:var(--text-secondary);font-size:14px; display:flex; align-items:center; gap:6px;" id="sProvider">
+          ${iconMarkup('store')}<span></span>
+        </div>
       </div>
       <div style="text-align:right">
-        <div class="price" id="sPrice"></div>
-        <div class="tag" id="sCat" style="margin-top:8px"></div>
+        <div class="price" id="sPrice" style="font-size:24px; font-weight:700; color:var(--brand);"></div>
       </div>
     </div>
 
@@ -1825,11 +1887,30 @@
       <div class="row"><span>Mehrweg / Pfand</span><span id="sReuse" style="text-align:right;color:var(--muted)"></span></div>
     </div>
 
-    <button class="btn" type="button" id="btnAddCart" data-icon="cart">In den Warenkorb</button>
-    <button class="btn secondary" type="button" id="btnShare" data-icon="share">Teilen</button>
-    <button class="btn ghost" type="button" id="btnDishFav" data-icon="heart">Gericht speichern</button>
-    <button class="btn ghost" type="button" id="btnFav" data-icon="heart">Anbieter speichern</button>
-    <div class="mini" id="sCodeNote"></div>
+    <!-- Badges Row (max 3) -->
+    <div class="sheet-badges" id="sBadges" style="display:flex; gap:8px; margin:16px 0; flex-wrap:wrap;"></div>
+    
+    <!-- Info Row (Icons) -->
+    <div class="sheet-info-row" id="sInfoRow" style="display:flex; gap:16px; margin:16px 0; color:var(--text-secondary); font-size:14px;"></div>
+    
+    <!-- Address Card -->
+    <div class="sheet-address-card" style="background:var(--color-soft-grey-bg); border-radius:var(--r-md); padding:16px; margin:16px 0;">
+      <div style="font-weight:600; margin-bottom:8px;">Adresse</div>
+      <div id="sAddressFull" style="color:var(--text-secondary); font-size:14px; line-height:1.5;"></div>
+      <button class="btn secondary" type="button" id="btnOpenRoute" style="margin-top:12px; width:100%; min-height:44px;">
+        <i data-lucide="map-pin"></i><span>Route öffnen</span>
+      </button>
+    </div>
+    
+    <!-- Bottom Sticky CTA -->
+    <div style="position:sticky; bottom:0; background:var(--card); padding:16px 0; margin-top:24px; border-top:1px solid var(--border);">
+      <button class="btn" type="button" id="btnAddCart" style="width:100%; min-height:44px;">
+        <i data-lucide="shopping-cart"></i><span>Jetzt bezahlen</span>
+      </button>
+    </div>
+    
+    <button class="btn ghost" type="button" id="btnDishFav" style="margin-top:8px;"><i data-lucide="heart"></i><span>Gericht speichern</span></button>
+    <div class="mini" id="sCodeNote" style="margin-top:12px;"></div>
   </div>
 </div>
 
@@ -1924,22 +2005,26 @@
   </div>
 </div>
 
-<!-- Share sheet -->
+<!-- Share sheet (MVP: nur WhatsApp + E-Mail) -->
 <div class="backdrop" id="shareBd" onclick="closeShareSheet()"></div>
 <div class="sheet" id="shareSheet">
   <div class="handle"></div>
   <div class="sheet-body">
     <div class="panel">
-      <div style="font-weight:900">Teilen</div>
-      <div class="hint" id="sharePreview"></div>
+      <div style="font-weight:900; font-size:18px;">Teilen</div>
+      <div class="hint" style="margin-top:4px;">Empfiehl dieses Mittagsangebot weiter</div>
     </div>
-    <div class="answers" style="margin-top:10px;">
-      <button class="ans" type="button" id="btnShareWhatsApp" data-icon="message">WhatsApp</button>
-      <button class="ans" type="button" id="btnShareInstagram" data-icon="camera">Instagram</button>
-      <button class="ans" type="button" id="btnShareWebsite" data-icon="globe">Website</button>
-      <button class="ans" type="button" id="btnShareCopy" data-icon="link">Link kopieren</button>
+    <div class="answers" style="margin-top:16px;">
+      <button class="ans" type="button" id="btnShareWhatsApp">
+        <i data-lucide="message"></i><span>WhatsApp</span>
+      </button>
+      <button class="ans" type="button" id="btnShareEmail">
+        <i data-lucide="mail"></i><span>E-Mail</span>
+      </button>
+      <button class="ans" type="button" id="btnShareCopy" style="margin-top:8px;">
+        <i data-lucide="copy"></i><span>Link kopieren</span>
+      </button>
     </div>
-    <button class="btn secondary" type="button" id="btnShareClose" data-icon="action">Schließen</button>
   </div>
 </div>
 
@@ -2169,10 +2254,11 @@
   let cookbook = load(LS.cookbook, []); // [{id, dish, category, price, allergens[], extras?, reuse? , photoData?}]
   let week = load(LS.week, {}); // { 'YYYY-MM-DD': [cookbookId,...] }
 
-  const CATEGORIES = ['Vegetarisch','Vegan','Mit Fleisch'];
+  const CATEGORIES = ['Vegetarisch','Vegan','Fisch','Mit Fleisch'];
   const CAT_MAP = {
     'Vegan':'Vegan',
     'Vegetarisch':'Vegetarisch',
+    'Fisch':'Fisch',
     'Mit Fleisch':'Fleisch'
   };
   const DISH_SUGGESTIONS = [
@@ -2189,10 +2275,30 @@
   ];
 
   // Day slider: today..+6
-  function fmtDay(d){
-    const wd = ['So','Mo','Di','Mi','Do','Fr','Sa'][d.getDay()];
-    return `${wd}, ${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.`;
+  // Format: "Montag, 24.01." (immer vollständiger Wochentag + DD.MM.)
+  function fmtDay(d, includeToday = false){
+    const weekdays = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
+    const wd = weekdays[d.getDay()];
+    const day = String(d.getDate()).padStart(2,'0');
+    const month = String(d.getMonth()+1).padStart(2,'0');
+    
+    if(includeToday){
+      const today = new Date();
+      const isToday = d.toDateString() === today.toDateString();
+      if(isToday){
+        return `Heute, ${wd} ${day}.${month}.`;
+      }
+    }
+    
+    return `${wd}, ${day}.${month}.`;
   }
+  
+  // Format date with time range: "Montag, 24.01. · 11:30–14:30"
+  function fmtDateWithTime(d, timeRange){
+    const dateStr = fmtDay(d);
+    return timeRange ? `${dateStr} · ${timeRange}` : dateStr;
+  }
+  
   function isoDate(d){ return d.toISOString().slice(0,10); }
 
   let activeCat = null;
@@ -2207,7 +2313,6 @@
   let pickupDone = new Set(load(LS.pickupDone, []));
   let activeOrderId = null;
   let ordersFilter = 'offen';
-  let sharePayload = { text:'', url:'' };
   let pickupUndoKey = null;
   let pickupUndoTimer = null;
   let billingFilter = 'month';
@@ -2263,6 +2368,7 @@
     plus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>',
     book:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v15H6.5A2.5 2.5 0 0 0 4 17.5z"/></svg>',
     share:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="m16 6-4-4-4 4"/><path d="M12 2v14"/></svg>',
+    'share-2':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.59 13.51 6.83 3.98"/><path d="m15.41 6.51-6.82 3.98"/></svg>',
     print:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>',
     edit:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>',
     action:'<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>',
@@ -2655,14 +2761,21 @@
       return;
     }
     catEl.innerHTML='';
-    CATEGORIES.forEach(c=>{
+    // Discover Filter Chips: "In der Nähe" (default) + Kategorien
+    const discoverCats = [
+      {id: 'near', label: 'In der Nähe', icon: null},
+      {id: 'Vegan', label: 'Vegan', icon: 'leaf'},
+      {id: 'Vegetarisch', label: 'Vegetarisch', icon: 'carrot'},
+      {id: 'Fisch', label: 'Fisch', icon: 'fish'},
+      {id: 'Mit Fleisch', label: 'Mit Fleisch', icon: 'drumstick'}
+    ];
+    
+    discoverCats.forEach(cat=>{
       const b=document.createElement('button');
-      b.className='chip'+(activeCat===c?' active':'');
-      // Icon Mapping: Vegan=leaf, Vegetarisch=carrot, Mit Fleisch=drumstick
-      const iconName = c==='Vegan' ? 'leaf' : (c==='Vegetarisch' ? 'carrot' : 'drumstick');
-      b.innerHTML = `${iconMarkup(iconName)}<span>${esc(c)}</span>`;
+      b.className='discover-category-chip' + (activeDiscoverFilter === cat.id ? ' active' : '');
+      b.innerHTML = cat.icon ? `${iconMarkup(cat.icon)}<span>${esc(cat.label)}</span>` : `<span>${esc(cat.label)}</span>`;
       b.onclick=()=>{
-        activeCat = activeCat===c ? null : c;
+        activeDiscoverFilter = cat.id;
         renderChips();
         renderDiscover();
       };
@@ -2670,12 +2783,19 @@
     });
 
     dayEl.innerHTML='';
-    for(let i=0;i<5;i++){
-      const d=new Date(); d.setDate(d.getDate()+i);
+    // Date Swipebar: Heute + nächste 6 Tage
+    const today = new Date();
+    for(let i=0;i<7;i++){
+      const d=new Date(today); d.setDate(d.getDate()+i);
       const key=isoDate(d);
       const b=document.createElement('button');
-      b.className='day'+(activeDay===key?' active':'');
-      b.textContent = fmtDay(d);
+      b.className='discover-calendar-day'+(activeDay===key?' active':'');
+      // Format: "Heute" für heute, sonst "Montag, 24.01."
+      if(i===0){
+        b.textContent = 'Heute';
+      } else {
+        b.textContent = fmtDay(d);
+      }
       b.onclick=()=>{ activeDay=key; renderChips(); renderDiscover(); };
       dayEl.appendChild(b);
     }
@@ -2833,15 +2953,16 @@
     if(categoriesEl){
       categoriesEl.innerHTML = '';
       const cats = [
-        {id:'near', label:'In der Nähe'},
-        {id:'Vegan', label:'Vegan'},
-        {id:'Vegetarisch', label:'Vegetarisch'},
-        {id:'Mit Fleisch', label:'Mit Fleisch'}
+        {id:'near', label:'In der Nähe', icon: null},
+        {id:'Vegan', label:'Vegan', icon: 'leaf'},
+        {id:'Vegetarisch', label:'Vegetarisch', icon: 'carrot'},
+        {id:'Fisch', label:'Fisch', icon: 'fish'},
+        {id:'Mit Fleisch', label:'Mit Fleisch', icon: 'drumstick'}
       ];
       cats.forEach(cat=>{
         const btn = document.createElement('button');
         btn.className = 'discover-category-chip' + (activeDiscoverFilter === cat.id ? ' active' : '');
-        btn.textContent = cat.label;
+        btn.innerHTML = cat.icon ? `${iconMarkup(cat.icon)}<span>${esc(cat.label)}</span>` : `<span>${esc(cat.label)}</span>`;
         btn.onclick = ()=>{
           activeDiscoverFilter = cat.id;
           renderDiscover();
@@ -2854,20 +2975,19 @@
     const calendarEl = document.getElementById('discoverCalendar');
     if(calendarEl){
       calendarEl.innerHTML = '';
-      for(let i=0; i<5; i++){
-        const d = new Date();
+      const today = new Date();
+      for(let i=0; i<7; i++){
+        const d = new Date(today);
         d.setDate(d.getDate() + i);
         const key = isoDate(d);
-        const dayName = ['So','Mo','Di','Mi','Do','Fr','Sa'][d.getDay()];
-        const dayNum = String(d.getDate());
         
         const btn = document.createElement('button');
         btn.className = 'discover-day' + (activeDay === key ? ' active' : '');
-        // Format: "Heute" für heute, sonst "Fr 23"
+        // Format: "Heute" für heute, sonst "Montag, 24.01."
         if(i === 0){
           btn.textContent = 'Heute';
         } else {
-          btn.textContent = `${dayName} ${dayNum}`;
+          btn.textContent = fmtDay(d);
         }
         btn.onclick = ()=>{
           activeDay = key;
@@ -3449,24 +3569,86 @@
     
     if(sImg) sImg.src = o.imageUrl || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70';
     if(sDish) sDish.textContent = o.dish || '';
-    if(sProvider) sProvider.textContent = o.providerName || '';
+    // Provider mit Icon
+    const sProviderEl = document.getElementById('sProvider');
+    if(sProviderEl){
+      const providerSpan = sProviderEl.querySelector('span');
+      if(providerSpan) providerSpan.textContent = o.providerName || 'Anbieter';
+    }
     if(sPrice) sPrice.textContent = euro(o.price);
     if(sCat) sCat.textContent = o.category || '';
     if(sWindow) sWindow.textContent = o.pickupWindow || '';
 
+    // Badges Row (max 3)
+    const badgesEl = document.getElementById('sBadges');
+    if(badgesEl){
+      badgesEl.innerHTML = '';
+      const badges = [];
+      if(o.dineInPossible) badges.push({class:'dine', text:'Vor Ort', icon:'utensils'});
+      if(!o.dineInPossible || badges.length < 3) badges.push({class:'pickup', text:'Zum Mitnehmen', icon:'shopping-bag'});
+      if(o.hasPickupCode && badges.length < 3) badges.push({class:'code', text:'Abholcode', icon:'key-round'});
+      
+      badges.slice(0, 3).forEach(badge => {
+        const badgeEl = document.createElement('span');
+        badgeEl.className = `card-status-badge ${badge.class}`;
+        badgeEl.innerHTML = `${iconMarkup(badge.icon)} <span>${esc(badge.text)}</span>`;
+        badgesEl.appendChild(badgeEl);
+      });
+    }
+    
+    // Info Row (Icons: clock, map-pin, food icon)
+    const infoRowEl = document.getElementById('sInfoRow');
+    if(infoRowEl){
+      infoRowEl.innerHTML = '';
+      if(o.pickupWindow){
+        const day = o.day ? new Date(o.day) : new Date();
+        const dateStr = fmtDateWithTime(day, o.pickupWindow);
+        const timeEl = document.createElement('div');
+        timeEl.style.display = 'flex';
+        timeEl.style.alignItems = 'center';
+        timeEl.style.gap = '6px';
+        timeEl.innerHTML = `${iconMarkup('clock')} <span>${esc(dateStr)}</span>`;
+        infoRowEl.appendChild(timeEl);
+      }
+      if(o.distanceKm != null){
+        const distEl = document.createElement('div');
+        distEl.style.display = 'flex';
+        distEl.style.alignItems = 'center';
+        distEl.style.gap = '6px';
+        distEl.innerHTML = `${iconMarkup('map-pin')} <span>${Number(o.distanceKm).toFixed(1)} km</span>`;
+        infoRowEl.appendChild(distEl);
+      }
+      // Food type icon (exactly one)
+      const foodTypeIcon = o.category === 'Vegan' ? 'leaf' : 
+                           o.category === 'Vegetarisch' ? 'carrot' : 
+                           o.category === 'Fisch' ? 'fish' :
+                           o.category === 'Mit Fleisch' ? 'drumstick' : '';
+      if(foodTypeIcon){
+        const foodEl = document.createElement('div');
+        foodEl.innerHTML = iconMarkup(foodTypeIcon);
+        infoRowEl.appendChild(foodEl);
+      }
+    }
+    
+    // Address Card
     const addr = buildAddress({address:o.address, street:o.providerStreet, zip:o.providerZip, city:o.providerCity});
     const maps = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr)}`;
-    const a = document.getElementById('sAddr');
-    a.textContent = addr || '-';
-    a.href = maps;
-
-    const distRow = document.getElementById('sDistance');
-    if(distRow){
-      distRow.textContent = o.distanceKm != null ? `${Number(o.distanceKm).toFixed(1)} km` : '-';
+    const addressFullEl = document.getElementById('sAddressFull');
+    if(addressFullEl){
+      const fullAddr = [
+        o.providerName || '',
+        o.providerStreet || '',
+        o.providerZip || '',
+        o.providerCity || ''
+      ].filter(Boolean).join(', ');
+      addressFullEl.textContent = fullAddr || addr || '-';
     }
-    const availRow = document.getElementById('sAvail');
-    if(availRow){
-      availRow.textContent = o.availableCount != null ? `${o.availableCount}` : '-';
+    
+    const btnOpenRoute = document.getElementById('btnOpenRoute');
+    if(btnOpenRoute){
+      btnOpenRoute.onclick = () => {
+        window.open(maps, '_blank');
+      };
     }
 
     // Allergens
@@ -3762,10 +3944,11 @@
     printHtml(buildWeekCardHtml());
   }
 
-  function openShareSheet(text, url=location.href){
-    sharePayload = { text, url };
-    const preview = document.getElementById('sharePreview');
-    if(preview) preview.textContent = text;
+  // Share Payload für Offer Details
+  let sharePayload = { subject: '', body: '', url: '' };
+  
+  function openShareSheet(subject, body, url=location.href){
+    sharePayload = { subject, body, url };
     document.getElementById('shareBd').classList.add('active');
     document.getElementById('shareSheet').classList.add('active');
   }
@@ -3775,19 +3958,38 @@
     document.getElementById('shareSheet').classList.remove('active');
   }
 
-  async function copyShareText(){
-    const txt = `${sharePayload.text}\n${sharePayload.url}`.trim();
+  async function copyShareLink(){
+    const url = sharePayload.url || location.href;
     if(navigator.clipboard && navigator.clipboard.writeText){
-      try{ await navigator.clipboard.writeText(txt); return true; }catch{}
+      try{ 
+        await navigator.clipboard.writeText(url);
+        alert('Link kopiert!');
+        return true;
+      }catch{}
     }
-    prompt('Kopieren und teilen:', txt);
+    prompt('Link kopieren:', url);
     return false;
+  }
+  
+  function shareViaWhatsApp(subject, body, url){
+    const text = `${subject}\n\n${body}\n\n👉 Jetzt anschauen:\n${url}`;
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
+    window.open(whatsappUrl, '_blank');
+  }
+  
+  function shareViaEmail(subject, body, url){
+    const emailBody = `${body}\n\n👉 Jetzt anschauen:\n${url}`;
+    const mailtoUrl = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(emailBody)}`;
+    window.location.href = mailtoUrl;
   }
 
   function shareOffer(o){
     if(!o) return;
-    const txt = buildShareText(o);
-    openShareSheet(txt);
+    const data = normalizeOffer(o);
+    const subject = `Mittagsangebot: ${data.dish || 'Gericht'} (${euro(data.price)})`;
+    const body = `🍽️ ${data.dish || 'Gericht'}\n📍 ${data.providerName || 'Anbieter'}\n💶 ${euro(data.price)}\n⏰ ${data.pickupWindow || ''}`;
+    const url = `${location.origin}${location.pathname}#offer/${o.id}`;
+    openShareSheet(subject, body, url);
   }
 
   function addToCart(o){
@@ -3827,12 +4029,41 @@
     if(!activeOfferId) return;
     toggleDishFav(activeOfferId);
   };
+  // Share Button im Header (Offer Detail Page)
+  const btnShareHeader = document.getElementById('btnShareHeader');
+  if(btnShareHeader) btnShareHeader.onclick=()=>{
+    const o = offers.find(x=>x.id===activeOfferId);
+    if(!o) return;
+    shareOffer(o);
+  };
+  
+  // Share Button im Body (legacy, kann entfernt werden)
   const btnShare = document.getElementById('btnShare');
   if(btnShare) btnShare.onclick=()=>{
     const o = offers.find(x=>x.id===activeOfferId);
     if(!o) return;
     shareOffer(o);
   };
+  
+  // Share Sheet Actions
+  const btnShareWhatsApp = document.getElementById('btnShareWhatsApp');
+  if(btnShareWhatsApp) btnShareWhatsApp.onclick=()=>{
+    shareViaWhatsApp(sharePayload.subject, sharePayload.body, sharePayload.url);
+    closeShareSheet();
+  };
+  
+  const btnShareEmail = document.getElementById('btnShareEmail');
+  if(btnShareEmail) btnShareEmail.onclick=()=>{
+    shareViaEmail(sharePayload.subject, sharePayload.body, sharePayload.url);
+    closeShareSheet();
+  };
+  
+  const btnShareCopy = document.getElementById('btnShareCopy');
+  if(btnShareCopy) btnShareCopy.onclick=()=>{
+    copyShareLink();
+    closeShareSheet();
+  };
+  
   const btnCodeClose = document.getElementById('btnCodeClose');
   if(btnCodeClose) btnCodeClose.onclick=()=> closeCodeSheet();
   const btnToggleOrderStatus = document.getElementById('btnToggleOrderStatus');
@@ -3845,8 +4076,6 @@
     renderOrders();
     openCodeSheet(activeOrderId);
   };
-  const btnShareClose = document.getElementById('btnShareClose');
-  if(btnShareClose) btnShareClose.onclick=()=> closeShareSheet();
   
   // --- Login Modal ---
   function openLoginSheet(){
@@ -3901,28 +4130,6 @@
     setMode('customer');
     showDiscover();
   };
-  const btnShareWhatsApp = document.getElementById('btnShareWhatsApp');
-  if(btnShareWhatsApp) btnShareWhatsApp.onclick=()=>{
-    const txt = `${sharePayload.text}\n${sharePayload.url}`.trim();
-    window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`,'_blank');
-  };
-  const btnShareInstagram = document.getElementById('btnShareInstagram');
-  if(btnShareInstagram) btnShareInstagram.onclick=async()=>{
-    await copyShareText();
-    window.open('https://www.instagram.com/','_blank');
-  };
-  const btnShareWebsite = document.getElementById('btnShareWebsite');
-  if(btnShareWebsite) btnShareWebsite.onclick=async()=>{
-    await copyShareText();
-    window.open(sharePayload.url || location.href,'_blank');
-  };
-  const btnShareCopy = document.getElementById('btnShareCopy');
-  if(btnShareCopy) {
-    btnShareCopy.onclick=async()=>{
-      const ok = await copyShareText();
-      if(ok) alert('Link kopiert.');
-    };
-  }
 
   applyStaticIcons();
   const locBtn = document.getElementById('btnLocationPin');
