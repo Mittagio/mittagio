@@ -3031,23 +3031,28 @@
     }
   }
 
-  document.getElementById('btnFav').onclick=()=>{
+  const btnFav = document.getElementById('btnFav');
+  if(btnFav) btnFav.onclick=()=>{
     if(!activeOfferId) return;
     const o = offers.find(x=>x.id===activeOfferId);
     if(!o) return;
     toggleProviderFav(o.providerId);
   };
-  document.getElementById('btnDishFav').onclick=()=>{
+  const btnDishFav = document.getElementById('btnDishFav');
+  if(btnDishFav) btnDishFav.onclick=()=>{
     if(!activeOfferId) return;
     toggleDishFav(activeOfferId);
   };
-  document.getElementById('btnShare').onclick=()=>{
+  const btnShare = document.getElementById('btnShare');
+  if(btnShare) btnShare.onclick=()=>{
     const o = offers.find(x=>x.id===activeOfferId);
     if(!o) return;
     shareOffer(o);
   };
-  document.getElementById('btnCodeClose').onclick=()=> closeCodeSheet();
-  document.getElementById('btnToggleOrderStatus').onclick=()=>{
+  const btnCodeClose = document.getElementById('btnCodeClose');
+  if(btnCodeClose) btnCodeClose.onclick=()=> closeCodeSheet();
+  const btnToggleOrderStatus = document.getElementById('btnToggleOrderStatus');
+  if(btnToggleOrderStatus) btnToggleOrderStatus.onclick=()=>{
     if(!activeOrderId) return;
     const idx = orders.findIndex(o=>o.id===activeOrderId);
     if(idx<0) return;
@@ -3056,23 +3061,30 @@
     renderOrders();
     openCodeSheet(activeOrderId);
   };
-  document.getElementById('btnShareClose').onclick=()=> closeShareSheet();
-  document.getElementById('btnShareWhatsApp').onclick=()=>{
+  const btnShareClose = document.getElementById('btnShareClose');
+  if(btnShareClose) btnShareClose.onclick=()=> closeShareSheet();
+  const btnShareWhatsApp = document.getElementById('btnShareWhatsApp');
+  if(btnShareWhatsApp) btnShareWhatsApp.onclick=()=>{
     const txt = `${sharePayload.text}\n${sharePayload.url}`.trim();
     window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`,'_blank');
   };
-  document.getElementById('btnShareInstagram').onclick=async()=>{
+  const btnShareInstagram = document.getElementById('btnShareInstagram');
+  if(btnShareInstagram) btnShareInstagram.onclick=async()=>{
     await copyShareText();
     window.open('https://www.instagram.com/','_blank');
   };
-  document.getElementById('btnShareWebsite').onclick=async()=>{
+  const btnShareWebsite = document.getElementById('btnShareWebsite');
+  if(btnShareWebsite) btnShareWebsite.onclick=async()=>{
     await copyShareText();
     window.open(sharePayload.url || location.href,'_blank');
   };
-  document.getElementById('btnShareCopy').onclick=async()=>{
-    const ok = await copyShareText();
-    if(ok) alert('Link kopiert.');
-  };
+  const btnShareCopy = document.getElementById('btnShareCopy');
+  if(btnShareCopy) {
+    btnShareCopy.onclick=async()=>{
+      const ok = await copyShareText();
+      if(ok) alert('Link kopiert.');
+    };
+  }
 
   applyStaticIcons();
   const locBtn = document.getElementById('btnLocationPin');
