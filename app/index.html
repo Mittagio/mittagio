@@ -434,6 +434,30 @@
     .btn.secondary{background:#fff; border:1px solid var(--border)}
     .btn.ghost{background:#f8f7f3; border:1px solid var(--border)}
     .mini{font-size:13px; color:var(--muted); margin-top:8px; line-height:1.5}
+    
+    /* Primary CTA (Yellow, Dark Text, 56-64px) */
+    .btn-primary{
+      width:100%; border:none; cursor:pointer;
+      border-radius:999px; padding:16px 20px; font-weight:950; font-size:16px;
+      background:#f2b705; color:#111;
+      line-height:1.4;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      min-height:56px; max-height:64px;
+      transition:all .2s;
+    }
+    .btn-primary:active{background:#e6b800}
+    .btn-primary:disabled{
+      opacity:.6; cursor:not-allowed; background:#f2b705;
+    }
+    .btn-primary.loading{
+      opacity:.7; cursor:wait;
+    }
+    .btn-primary.success{
+      background:#2e7d32; color:#fff;
+    }
 
     .card-actions{display:flex; gap:8px; margin-top:12px}
     .card-action{
@@ -2108,16 +2132,13 @@
   <div class="handle"></div>
   <div class="sheet-img" style="max-height:220px; overflow:hidden;"><img id="sImg" alt="" style="width:100%; height:auto; object-fit:cover; display:block;" /></div>
   <div class="sheet-body">
-    <div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start; margin-top:16px;">
-      <div style="flex:1;">
-        <div style="font-weight:700;font-size:20px; line-height:1.3; margin-bottom:8px;" id="sDish"></div>
-        <div style="color:var(--text-secondary);font-size:14px; display:flex; align-items:center; gap:6px;" id="sProvider">
-          ${iconMarkup('store')}<span></span>
-        </div>
+    <div style="margin-top:16px;">
+      <div style="font-weight:700;font-size:20px; line-height:1.3; margin-bottom:8px;" id="sDish"></div>
+      <div style="color:var(--text-secondary);font-size:14px; display:flex; align-items:center; gap:6px; margin-bottom:12px;" id="sProvider">
+        ${iconMarkup('store')}<span></span>
       </div>
-      <div style="text-align:right">
-        <div class="price" id="sPrice" style="font-size:24px; font-weight:700; color:var(--brand);"></div>
-      </div>
+      <!-- Status Badge (dynamisch) -->
+      <div id="sStatusBadge" style="margin-bottom:16px;"></div>
     </div>
 
     <div class="row"><span>Abholfenster</span><b id="sWindow"></b></div>
@@ -2145,20 +2166,16 @@
     <div class="sheet-address-card" style="background:var(--color-soft-grey-bg); border-radius:var(--r-md); padding:16px; margin:16px 0;">
       <div style="font-weight:600; margin-bottom:8px;">Adresse</div>
       <div id="sAddressFull" style="color:var(--text-secondary); font-size:14px; line-height:1.5;"></div>
-      <button class="btn secondary" type="button" id="btnOpenRoute" style="margin-top:12px; width:100%; min-height:44px;">
-        <i data-lucide="map-pin"></i><span>Route öffnen</span>
-      </button>
-    </div>
-    
-    <!-- Bottom Sticky CTA -->
-    <div style="position:sticky; bottom:0; background:var(--card); padding:16px 0; margin-top:24px; border-top:1px solid var(--border);">
-      <button class="btn" type="button" id="btnAddCart" style="width:100%; min-height:44px;">
-        <i data-lucide="shopping-cart"></i><span>Jetzt bezahlen</span>
-      </button>
     </div>
     
     <button class="btn ghost" type="button" id="btnDishFav" style="margin-top:8px;"><i data-lucide="heart"></i><span>Gericht speichern</span></button>
-    <div class="mini" id="sCodeNote" style="margin-top:12px;"></div>
+    
+    <!-- Bottom Sticky Primary CTA -->
+    <div style="position:sticky; bottom:0; background:var(--card); padding:16px 0; margin-top:24px; border-top:1px solid var(--border); z-index:10;">
+      <button class="btn-primary" type="button" id="btnPrimaryCTA" style="width:100%; min-height:56px; max-height:64px;">
+        <span id="btnPrimaryCTAText"></span>
+      </button>
+    </div>
   </div>
 </div>
 
@@ -2309,17 +2326,19 @@
   <div class="handle"></div>
   <div class="sheet-body">
     <div class="panel">
-      <div style="font-weight:900; font-size:18px;">Teilen</div>
-      <div class="hint" style="margin-top:4px;">Empfiehl dieses Mittagsangebot weiter</div>
+      <div style="font-weight:900; font-size:18px;">Inserat teilen</div>
+      <div class="hint" id="shareSheetSubtitle" style="margin-top:4px;">
+        <!-- Wird dynamisch befüllt -->
+      </div>
     </div>
     <div class="answers" style="margin-top:16px;">
       <button class="ans" type="button" id="btnShareWhatsApp">
         <i data-lucide="message"></i><span>WhatsApp</span>
       </button>
-      <button class="ans" type="button" id="btnShareEmail">
-        <i data-lucide="mail"></i><span>E-Mail</span>
+      <button class="ans" type="button" id="btnShareInstagram">
+        <i data-lucide="share-2"></i><span>Instagram</span>
       </button>
-      <button class="ans" type="button" id="btnShareCopy" style="margin-top:8px;">
+      <button class="ans" type="button" id="btnShareCopy">
         <i data-lucide="copy"></i><span>Link kopieren</span>
       </button>
     </div>
@@ -4348,9 +4367,22 @@
       const providerSpan = sProviderEl.querySelector('span');
       if(providerSpan) providerSpan.textContent = o.providerName || 'Anbieter';
     }
-    if(sPrice) sPrice.textContent = euro(o.price);
+    // Preis wird nicht mehr angezeigt (öffentliche Seite)
+    // if(sPrice) sPrice.textContent = euro(o.price);
     if(sCat) sCat.textContent = o.category || '';
     if(sWindow) sWindow.textContent = o.pickupWindow || '';
+    
+    // Status Badge (dynamisch basierend auf Abholcode)
+    const statusBadgeEl = document.getElementById('sStatusBadge');
+    if(statusBadgeEl){
+      if(o.hasPickupCode){
+        // MIT Abholcode: Status "Online bezahlen & Abholcode"
+        statusBadgeEl.innerHTML = '<span style="display:inline-flex; align-items:center; gap:6px; padding:6px 12px; background:rgba(46,125,50,.12); border-radius:8px; color:#2e7d32; font-size:14px; font-weight:600;">🟢 Online bezahlen & Abholcode</span>';
+      } else {
+        // OHNE Abholcode: Status "Vor Ort erhältlich"
+        statusBadgeEl.innerHTML = '<span style="display:inline-flex; align-items:center; gap:6px; padding:6px 12px; background:rgba(0,0,0,.06); border-radius:8px; color:#666; font-size:14px; font-weight:600;">⚪ Vor Ort erhältlich</span>';
+      }
+    }
 
     // Badges Row (max 3)
     const badgesEl = document.getElementById('sBadges');
@@ -4445,18 +4477,81 @@
       document.getElementById('sReuse').textContent = `Pfand ${euro(o.reuse.deposit)}`;
     } else rw.style.display='none';
 
-    const addBtn = document.getElementById('btnAddCart');
-    if(o.hasPickupCode){
-      addBtn.disabled = false;
-      addBtn.innerHTML = `${iconMarkup('cart')}<span>In den Warenkorb</span>`;
-    } else {
-      addBtn.disabled = true;
-      addBtn.innerHTML = `${iconMarkup('eye')}<span>Nur ansehen</span>`;
+    // Primary CTA (dynamisch basierend auf Abholcode)
+    const primaryCTA = document.getElementById('btnPrimaryCTA');
+    const primaryCTAText = document.getElementById('btnPrimaryCTAText');
+    const btnOpenRoute = document.getElementById('btnOpenRoute');
+    
+    if(primaryCTA && primaryCTAText){
+      // Reset states
+      primaryCTA.disabled = false;
+      primaryCTA.className = 'btn-primary';
+      primaryCTA.classList.remove('loading', 'success');
+      
+      if(o.hasPickupCode){
+        // MIT Abholcode: CTA "Jetzt online bestellen"
+        primaryCTAText.textContent = 'Jetzt online bestellen';
+        primaryCTA.onclick = () => {
+          // Loading state
+          primaryCTA.disabled = true;
+          primaryCTA.classList.add('loading');
+          primaryCTAText.textContent = 'Wird geladen...';
+          
+          // Navigate to cart/checkout
+          setTimeout(() => {
+            if(addToCart(o)){
+              // Success state
+              primaryCTA.classList.remove('loading');
+              primaryCTA.classList.add('success');
+              primaryCTAText.textContent = 'Erfolgreich!';
+              showToast('Gericht zum Warenkorb hinzugefügt');
+              
+              // Redirect to cart
+              setTimeout(() => {
+                showCart();
+                // Reset button after navigation
+                setTimeout(() => {
+                  primaryCTA.disabled = false;
+                  primaryCTA.classList.remove('success');
+                  primaryCTAText.textContent = 'Jetzt online bestellen';
+                }, 500);
+              }, 300);
+            } else {
+              // Error: reset to default
+              primaryCTA.disabled = false;
+              primaryCTA.classList.remove('loading');
+              primaryCTAText.textContent = 'Jetzt online bestellen';
+              showToast('Fehler beim Hinzufügen. Bitte erneut versuchen.');
+            }
+          }, 200);
+        };
+      } else {
+        // OHNE Abholcode: CTA "Route öffnen"
+        primaryCTAText.textContent = 'Route öffnen';
+        primaryCTA.onclick = () => {
+          // Open route in maps (no loading state needed)
+          const profile = normalizeProviderProfile(provider.profile || {});
+          const address = `${profile.street || ''}, ${profile.zip || ''} ${profile.city || ''}`.trim();
+          const maps = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+          window.open(maps, '_blank');
+        };
+      }
     }
-
-    document.getElementById('sCodeNote').innerHTML = o.hasPickupCode
-      ? 'Online bezahlen aktiv.'
-      : 'Ohne Online-Bezahlung nur ansehen.';
+    
+    // Route Button in Address Card (nur bei OHNE Abholcode sichtbar)
+    if(btnOpenRoute){
+      if(!o.hasPickupCode){
+        btnOpenRoute.style.display = 'block';
+        btnOpenRoute.onclick = () => {
+          const profile = normalizeProviderProfile(provider.profile || {});
+          const address = `${profile.street || ''}, ${profile.zip || ''} ${profile.city || ''}`.trim();
+          const maps = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+          window.open(maps, '_blank');
+        };
+      } else {
+        btnOpenRoute.style.display = 'none';
+      }
+    }
 
     updateSheetFavs();
 
@@ -4747,8 +4842,15 @@
   // Share Payload für Offer Details
   let sharePayload = { subject: '', body: '', url: '' };
   
-  function openShareSheet(subject, body, url=location.href){
+  function openShareSheet(subject, body, url=location.href, subtitle=''){
     sharePayload = { subject, body, url };
+    
+    // Dynamischen Untertitel setzen
+    const subtitleEl = document.getElementById('shareSheetSubtitle');
+    if(subtitleEl){
+      subtitleEl.textContent = subtitle || 'Empfiehl dieses Mittagsangebot weiter';
+    }
+    
     document.getElementById('shareBd').classList.add('active');
     document.getElementById('shareSheet').classList.add('active');
   }
@@ -4885,19 +4987,48 @@
     window.open(whatsappUrl, '_blank');
   }
   
-  function shareViaEmail(subject, body, url){
-    const emailBody = `${body}\n\n👉 Jetzt anschauen:\n${url}`;
-    const mailtoUrl = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(emailBody)}`;
-    window.location.href = mailtoUrl;
+  function shareViaInstagram(subject, body, url){
+    // Instagram unterstützt keine direkten Share-Links, daher Link kopieren + Hinweis
+    const text = `${subject}\n\n${body}\n\n👉 Jetzt anschauen:\n${url}`;
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(() => {
+        showToast('Text kopiert! Füge ihn in deinen Instagram-Post ein.');
+      }).catch(() => {
+        prompt('Text für Instagram kopieren:', text);
+      });
+    } else {
+      prompt('Text für Instagram kopieren:', text);
+    }
   }
 
   function shareOffer(o){
     if(!o) return;
     const data = normalizeOffer(o);
-    const subject = `Mittagsangebot: ${data.dish || 'Gericht'} (${euro(data.price)})`;
-    const body = `🍽️ ${data.dish || 'Gericht'}\n📍 ${data.providerName || 'Anbieter'}\n💶 ${euro(data.price)}\n⏰ ${data.pickupWindow || ''}`;
     const url = `${location.origin}${location.pathname}#offer/${o.id}`;
-    openShareSheet(subject, body, url);
+    
+    // Dynamische Share-Texte basierend auf Abholcode-Status
+    let subject, body, subtitle;
+    const claim = 'Dein Mittag. Lokal. Frisch. Digital.\nauf mittagio.de';
+    
+    if(data.hasPickupCode){
+      // Share-Modus A: MIT Abholcode (ON)
+      // Status: Online bezahlt
+      // Share-Modus: Online bestellen & Abholcode
+      // Kunde zahlt online
+      subject = 'Online bestellen & mit Abholcode abholen';
+      body = `Online bestellen & mit Abholcode abholen\n${claim}`;
+      subtitle = 'Kunden bestellen online & holen mit Abholcode ab';
+    } else {
+      // Share-Modus B: OHNE Abholcode (OFF)
+      // Status: Vor Ort
+      // Share-Modus: Vor Ort erhältlich
+      // Keine Online-Zahlung
+      subject = 'Heute Mittag frisch vor Ort';
+      body = `Heute Mittag frisch vor Ort\n${claim}`;
+      subtitle = 'Für Laufkundschaft & Vor-Ort-Verkauf';
+    }
+    
+    openShareSheet(subject, body, url, subtitle);
   }
 
   function addToCart(o){
@@ -4960,9 +5091,9 @@
     closeShareSheet();
   };
   
-  const btnShareEmail = document.getElementById('btnShareEmail');
-  if(btnShareEmail) btnShareEmail.onclick=()=>{
-    shareViaEmail(sharePayload.subject, sharePayload.body, sharePayload.url);
+  const btnShareInstagram = document.getElementById('btnShareInstagram');
+  if(btnShareInstagram) btnShareInstagram.onclick=()=>{
+    shareViaInstagram(sharePayload.subject, sharePayload.body, sharePayload.url);
     closeShareSheet();
   };
   
@@ -6315,6 +6446,17 @@
       if(activeList.length > 0){
         providerActiveOffers.style.display = 'block';
         providerActiveOffersList.innerHTML = activeList.map(o => {
+          // Status-Badge: "LIVE · Online bezahlt" oder "LIVE · Vor Ort"
+          let statusBadge = '';
+          if(o.active !== false){
+            if(o.hasPickupCode){
+              statusBadge = '<span style="font-size:11px; padding:2px 8px; background:rgba(46,125,50,.12); border-radius:6px; color:#2e7d32; font-weight:600;">🟢 LIVE · Online bezahlt</span>';
+            } else {
+              statusBadge = '<span style="font-size:11px; padding:2px 8px; background:rgba(0,0,0,.06); border-radius:6px; color:#666; font-weight:600;">⚪ LIVE · Vor Ort</span>';
+            }
+          }
+          
+          // Verzehrart-Badges
           const badges = [];
           if(o.hasPickupCode) badges.push('<span style="font-size:11px; padding:2px 6px; background:rgba(255,204,0,.15); border-radius:6px; color:var(--brand);">Abholcode</span>');
           if(o.dineInPossible) badges.push('<span style="font-size:11px; padding:2px 6px; background:rgba(31,157,85,.15); border-radius:6px; color:var(--brand2);">Vor Ort</span>');
@@ -6325,7 +6467,10 @@
               <div style="flex:1; min-width:0;" data-offer-id="${esc(o.id)}" style="cursor:pointer;">
                 <div style="font-weight:600; font-size:14px; line-height:1.3; margin-bottom:4px;">${esc(o.dish || o.title || 'Gericht')}</div>
                 <div style="font-size:12px; color:var(--muted); margin-bottom:6px;">${esc(o.pickupWindow || o.time || '')}</div>
-                <div style="display:flex; gap:6px; flex-wrap:wrap;">${badges.join('')}</div>
+                <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
+                  ${statusBadge}
+                  ${badges.join('')}
+                </div>
               </div>
               <button class="btn ghost" type="button" data-offer-id="${esc(o.id)}" style="padding:8px; min-width:36px; margin-left:8px; flex-shrink:0;" onclick="event.stopPropagation(); openOfferMoreMenu('${esc(o.id)}');">
                 ⋯
@@ -7481,7 +7626,7 @@
           providerId: providerId(),
           dish:'', category:'Vegetarisch', price:0,
           pickupWindow: profile.mealWindow || DEFAULT_MEAL_WINDOW,
-          hasPickupCode:false,
+          hasPickupCode:true, // Default: ON
           dineInPossible:false,
           allergens:[],
           extras:[],
@@ -8161,13 +8306,28 @@
       options.style.marginTop='10px';
       const codeLabel=document.createElement('div');
       codeLabel.className='hint';
-      codeLabel.textContent='Bezahlung mit Abholcode';
+      codeLabel.textContent='Abholcode & Online-Zahlung';
       const codeRow=document.createElement('div'); codeRow.className='answers';
       const codeYes=document.createElement('button'); codeYes.type='button'; codeYes.className='ans'+(w.data.hasPickupCode?' on':''); codeYes.textContent='Ja';
       const codeNo=document.createElement('button'); codeNo.type='button'; codeNo.className='ans'+(!w.data.hasPickupCode?' on':''); codeNo.textContent='Nein';
       codeYes.onclick=()=>{ w.data.hasPickupCode=true; rebuildWizard(); };
       codeNo.onclick=()=>{ w.data.hasPickupCode=false; rebuildWizard(); };
       codeRow.appendChild(codeYes); codeRow.appendChild(codeNo);
+      
+      // Optionaler Hinweis bei deaktiviertem Abholcode (nicht blockierend)
+      if(!w.data.hasPickupCode){
+        const hintBox = document.createElement('div');
+        hintBox.style.cssText = 'margin-top:12px; padding:12px; background:#f8f8f8; border-radius:12px; border:1px solid #e0e0e0;';
+        hintBox.innerHTML = `
+          <div style="font-size:13px; line-height:1.5; color:#666; margin-bottom:8px;">
+            Tipp: Mit Abholcode zahlen Kunden online und du hast weniger Aufwand.
+          </div>
+          <button class="btn secondary" type="button" style="width:100%; min-height:44px; font-size:14px;" onclick="w.data.hasPickupCode=true; rebuildWizard();">
+            Abholcode aktivieren
+          </button>
+        `;
+        options.appendChild(hintBox);
+      }
 
       const dineLabel=document.createElement('div');
       dineLabel.className='hint';
