@@ -1317,38 +1317,71 @@
       </div>
     </section>
 
-    <!-- CUSTOMER: Profile (Info-Hub) -->
+    <!-- CUSTOMER: Profile ("Mein Mittagio") - MVP Final -->
     <section class="view" id="v-profile">
-      <!-- Logged In Section (wenn eingeloggt) -->
-      <div class="panel" id="profileLoggedInSection" style="display:none;">
-        <h3>Profil</h3>
-        <div style="margin-top:12px;" class="hint" id="customerStatus">Nicht angemeldet (Demo).</div>
-        <button class="btn secondary" type="button" id="btnUnifiedLogout" style="margin-top:12px; width:100%;">Abmelden</button>
+      <!-- Header -->
+      <div style="padding:16px 16px 20px; background:transparent; border:none; box-shadow:none;">
+        <h2 style="margin:0; font-size:24px; font-weight:900; line-height:1.2;">Mein Mittagio</h2>
       </div>
-      
-      <!-- Gastronom Card (immer sichtbar) -->
-      <div class="panel" style="margin-top:12px; background:linear-gradient(135deg, rgba(255,204,0,.1) 0%, rgba(255,204,0,.05) 100%); border:1px solid rgba(255,204,0,.2);">
-        <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
-          <div style="font-size:24px;">🍽️</div>
-          <div style="flex:1;">
-            <div style="font-weight:900; font-size:16px; margin-bottom:4px;">Für Gastronomen</div>
-            <div class="hint" style="font-size:13px; line-height:1.4;">
-              Mittag einstellen & Abholcodes verwalten
-            </div>
-          </div>
+
+      <!-- Welcome Card (dynamic) -->
+      <div class="panel" id="profileWelcomeCard" style="margin-top:0; padding:16px; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,.04);">
+        <!-- Wird dynamisch befüllt -->
+      </div>
+
+      <!-- Orders Teaser -->
+      <div class="panel" id="profileOrdersTeaser" style="margin-top:18px; padding:16px; display:none; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,.04);">
+        <div style="font-weight:600; font-size:17px; margin-bottom:10px; line-height:1.3;">Meine Bestellungen</div>
+        <div class="hint" id="profileLastOrderText" style="font-size:14px; line-height:1.4; margin-bottom:12px; color:var(--muted);"></div>
+        <button class="btn secondary" type="button" id="btnProfileToOrders" style="width:100%; min-height:44px; display:none;">
+          Zur Mittagsbox
+        </button>
+        <button class="btn secondary" type="button" id="btnProfileDiscoverFromOrders" style="width:100%; min-height:44px; display:none;">
+          Jetzt entdecken
+        </button>
+      </div>
+
+      <!-- Reorder Teaser -->
+      <div class="panel" id="profileReorderTeaser" style="margin-top:18px; padding:16px; display:none; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,.04);">
+        <div style="font-weight:600; font-size:17px; margin-bottom:10px; line-height:1.3;">Wieder bei bekannten Anbietern</div>
+        <div class="hint" id="profileReorderHelper" style="font-size:13px; line-height:1.4; margin-bottom:12px; color:var(--muted); display:none;">
+          Bestelle erneut bei Anbietern, die dir gefallen haben.
         </div>
-        <button class="btn secondary" type="button" id="btnGoToProvider" style="width:100%;">
+        <div id="profileReorderProviders"></div>
+      </div>
+
+      <!-- Personal Data -->
+      <div class="panel" id="profilePersonalData" style="margin-top:18px; padding:16px; display:none; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,.04);">
+        <div style="font-weight:600; font-size:17px; margin-bottom:12px; line-height:1.3;">Meine Daten</div>
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 0; border-bottom:1px solid var(--border);">
+          <div style="flex:1; min-width:0;">
+            <div class="hint" style="font-size:12px; margin-bottom:4px; color:var(--muted);">E-Mail-Adresse</div>
+            <div id="profileEmail" style="font-weight:600; font-size:14px; line-height:1.4; word-break:break-word;"></div>
+          </div>
+          <button class="btn ghost" type="button" id="btnProfileEditEmail" style="padding:8px 12px; font-size:14px; min-height:36px; margin-left:12px; flex-shrink:0;">
+            Ändern
+          </button>
+        </div>
+      </div>
+
+      <!-- Provider Area -->
+      <div class="panel" style="margin-top:18px; padding:16px; background:linear-gradient(135deg, rgba(255,204,0,.08) 0%, rgba(255,204,0,.03) 100%); border:1px solid rgba(255,204,0,.15); border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,.04);">
+        <div style="font-weight:600; font-size:17px; margin-bottom:8px; line-height:1.3;">Als Anbieter starten</div>
+        <div class="hint" style="font-size:14px; line-height:1.4; margin-bottom:14px; color:var(--muted);">
+          Mittagstische online anbieten
+        </div>
+        <button class="btn secondary" type="button" id="btnGoToProvider" style="width:100%; min-height:44px;">
           Zum Anbieterbereich →
         </button>
       </div>
 
-      <!-- FAQ (App-like) -->
-      <div class="panel" style="margin-top:12px;">
-        <div class="section-title">Häufige Fragen</div>
-        <div class="faq" style="margin-top:8px;">
+      <!-- FAQ (reduced) -->
+      <div class="panel" style="margin-top:18px; padding:16px; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,.04);">
+        <div style="font-weight:600; font-size:17px; margin-bottom:12px; line-height:1.3;">Häufige Fragen</div>
+        <div class="faq" id="profileFaqReduced" style="margin-bottom:12px;">
           <details>
-            <summary>Wie funktioniert Mittagio?</summary>
-            <p>Du findest Mittagsangebote in deiner Stadt, optional bezahlst du online und holst zur gewählten Zeit ab.</p>
+            <summary style="font-size:14px; line-height:1.4; font-weight:500;">Wie funktioniert Mittagio?</summary>
+            <p style="font-size:14px; line-height:1.5; margin-top:8px; color:var(--muted);">Du findest Mittagsangebote in deiner Stadt, optional bezahlst du online und holst zur gewählten Zeit ab.</p>
           </details>
           <details>
             <summary>Ist Online-Zahlung Pflicht?</summary>
@@ -1383,44 +1416,21 @@
             <p>Bei Fragen schreib uns an <a href="mailto:info@mittagio.de" style="color:var(--brand);">info@mittagio.de</a></p>
           </details>
         </div>
+        <a href="#" id="btnProfileShowMoreFaq" style="display:inline-block; font-size:13px; color:var(--muted); text-decoration:none; margin-top:4px;">
+          Weitere Fragen anzeigen →
+        </a>
       </div>
 
-      <!-- Rechtliches -->
-      <div class="panel" style="margin-top:12px;">
-        <div class="section-title">Rechtliches</div>
-        <div class="rowlist">
-          <button class="rowbtn" type="button" id="btnImpressum">
-            <div class="rowbtn-left">
-              <div class="rowbtn-ico"><i data-lucide="file-text"></i></div>
-              <div class="rowbtn-text">Impressum</div>
-            </div>
-            <div class="chev">›</div>
-          </button>
-          <button class="rowbtn" type="button" id="btnAGB">
-            <div class="rowbtn-left">
-              <div class="rowbtn-ico"><i data-lucide="file-text"></i></div>
-              <div class="rowbtn-text">AGB</div>
-            </div>
-            <div class="chev">›</div>
-          </button>
-          <button class="rowbtn" type="button" id="btnDatenschutz">
-            <div class="rowbtn-left">
-              <div class="rowbtn-ico"><i data-lucide="shield"></i></div>
-              <div class="rowbtn-text">Datenschutz</div>
-            </div>
-            <div class="chev">›</div>
-          </button>
+      <!-- Legal (bottom, small) -->
+      <div style="margin-top:20px; padding:16px 16px 24px; text-align:center;">
+        <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:12px 16px; font-size:12px; margin-bottom:10px;">
+          <a href="#" id="btnProfileImpressum" style="color:var(--muted); text-decoration:none;">Datenschutz</a>
+          <a href="#" id="btnProfileAGB" style="color:var(--muted); text-decoration:none;">AGB (Kunden)</a>
+          <a href="#" id="btnProfileDatenschutz" style="color:var(--muted); text-decoration:none;">Impressum</a>
         </div>
-      </div>
-
-      <!-- Anbieter-Switch (nur wenn eingeloggt) -->
-      <div class="panel" id="providerSwitchPanel" style="margin-top:12px; display:none;">
-        <div class="section-title">Anbieter-Modus</div>
-        <div class="hint">Wechsle zum Anbieter-Dashboard</div>
-        <button class="btn" type="button" id="btnSwitchToProvider" style="margin-top:12px;">
-          <i data-lucide="store" style="width:18px; height:18px; margin-right:8px;"></i>
-          Zum Anbieter-Modus
-        </button>
+        <div style="font-size:12px; color:var(--muted);">
+          <a href="mailto:info@mittagio.de" style="color:var(--muted); text-decoration:none;">info@mittagio.de</a>
+        </div>
       </div>
     </section>
 
@@ -1981,6 +1991,18 @@
   <div class="handle"></div>
   <div class="sheet-body" style="max-height:80vh; overflow-y:auto;">
     <div class="panel" id="legalContent">
+      <!-- Wird dynamisch befüllt -->
+    </div>
+  </div>
+</div>
+
+<!-- FAQ Sheet (Alle Fragen) -->
+<div class="backdrop" id="faqBd" onclick="closeFaqSheet()"></div>
+<div class="sheet" id="faqSheet">
+  <div class="handle"></div>
+  <div class="sheet-body" style="max-height:85vh; overflow-y:auto; padding:16px;">
+    <div style="font-weight:600; font-size:18px; margin-bottom:16px; line-height:1.3;">Häufige Fragen</div>
+    <div class="faq" id="faqSheetContent">
       <!-- Wird dynamisch befüllt -->
     </div>
   </div>
@@ -3754,6 +3776,13 @@
       history.pushState(null, '', location.pathname);
       return;
     }
+    // FAQ Sheet schließen
+    if(document.getElementById('faqSheet') && document.getElementById('faqSheet').classList.contains('active')){
+      closeFaqSheet();
+      e.preventDefault();
+      history.pushState(null, '', location.pathname);
+      return;
+    }
     // Login Modal schließen
     if(document.getElementById('loginSheet') && document.getElementById('loginSheet').classList.contains('active')){
       closeLoginSheet();
@@ -4663,23 +4692,163 @@
     };
   }
 
-  // --- Unified Login ---
+  // --- Profile View ("Mein Mittagio") - MVP Final ---
   function updateProfileView(){
     const isLoggedIn = customer.loggedIn;
-    const loggedInSection = document.getElementById('profileLoggedInSection');
+    const firstName = customer.name ? customer.name.split(' ')[0] : '';
     
-    if(isLoggedIn){
-      // Eingeloggt: LoggedIn anzeigen
-      if(loggedInSection) loggedInSection.style.display = 'block';
-      if(document.getElementById('customerStatus')){
-        document.getElementById('customerStatus').textContent = `Angemeldet als ${customer.name || 'Kunde'}`;
+    // Welcome Card
+    const welcomeCard = document.getElementById('profileWelcomeCard');
+    if(welcomeCard){
+      if(isLoggedIn){
+        welcomeCard.innerHTML = `
+          <div style="font-weight:600; font-size:17px; margin-bottom:8px; line-height:1.3;">Hallo ${esc(firstName || 'Kunde')} 👋</div>
+          <div class="hint" style="font-size:14px; line-height:1.4; margin-bottom:14px; color:var(--muted);">Dein persönlicher Mittagsbereich.</div>
+          <button class="btn secondary" type="button" id="btnProfileToOrdersFromWelcome" style="width:100%; min-height:44px;">
+            Zu meinen Bestellungen
+          </button>
+        `;
+        const btn = document.getElementById('btnProfileToOrdersFromWelcome');
+        if(btn) btn.onclick = () => showOrders();
+      } else {
+        welcomeCard.innerHTML = `
+          <div style="font-weight:600; font-size:17px; margin-bottom:8px; line-height:1.3;">Willkommen bei Mittagio 👋</div>
+          <div class="hint" style="font-size:14px; line-height:1.4; margin-bottom:14px; color:var(--muted);">Bestelle schneller und finde deine Abholcodes wieder.</div>
+          <button class="btn secondary" type="button" id="btnProfileCreateAccount" style="width:100%; min-height:44px;">
+            Profil anlegen
+          </button>
+        `;
+        const btn = document.getElementById('btnProfileCreateAccount');
+        if(btn) btn.onclick = () => {
+          // Öffne Login-Modal oder zeige Login-Flow
+          const email = prompt('E-Mail-Adresse:');
+          if(email){
+            customer.loggedIn = true;
+            customer.email = email;
+            customer.name = email.split('@')[0];
+            save(LS.customer, customer);
+            updateProfileView();
+          }
+        };
       }
-    } else {
-      // Nicht eingeloggt: LoggedIn ausblenden
-      if(loggedInSection) loggedInSection.style.display = 'none';
     }
     
-    document.getElementById('providerSwitchPanel').style.display = (isLoggedIn && provider.loggedIn) ? 'block' : 'none';
+    // Orders Teaser (mit Empty States)
+    const ordersTeaser = document.getElementById('profileOrdersTeaser');
+    const lastOrderText = document.getElementById('profileLastOrderText');
+    const btnProfileToOrders = document.getElementById('btnProfileToOrders');
+    const btnProfileDiscoverFromOrders = document.getElementById('btnProfileDiscoverFromOrders');
+    const allOrders = loadOrders();
+    const hasOrders = allOrders.length > 0;
+    const lastOrder = hasOrders ? allOrders.sort((a,b) => (b.createdAt || 0) - (a.createdAt || 0))[0] : null;
+    
+    if(ordersTeaser && lastOrderText){
+      if(hasOrders && lastOrder && lastOrder.providerName){
+        // CASE: Orders exist - show normal teaser
+        ordersTeaser.style.display = 'block';
+        lastOrderText.textContent = `Zuletzt bestellt bei: ${esc(lastOrder.providerName)}`;
+        if(btnProfileToOrders){
+          btnProfileToOrders.style.display = 'block';
+          btnProfileToOrders.onclick = () => showOrders();
+        }
+        if(btnProfileDiscoverFromOrders) btnProfileDiscoverFromOrders.style.display = 'none';
+      } else {
+        // CASE 1 & 2: No orders - show empty state
+        ordersTeaser.style.display = 'block';
+        if(isLoggedIn){
+          // CASE 2: Logged-in, no orders
+          lastOrderText.textContent = 'Noch keine Bestellungen vorhanden.';
+        } else {
+          // CASE 1: Guest, no orders
+          lastOrderText.textContent = 'Du hast noch nichts bestellt.';
+        }
+        if(btnProfileToOrders) btnProfileToOrders.style.display = 'none';
+        if(btnProfileDiscoverFromOrders){
+          btnProfileDiscoverFromOrders.style.display = 'block';
+          btnProfileDiscoverFromOrders.onclick = () => {
+            showDiscover();
+            renderDiscover();
+          };
+        }
+      }
+    }
+    
+    // Reorder Teaser (mit Empty States)
+    const reorderTeaser = document.getElementById('profileReorderTeaser');
+    const reorderProviders = document.getElementById('profileReorderProviders');
+    const reorderHelper = document.getElementById('profileReorderHelper');
+    
+    if(reorderTeaser && reorderProviders){
+      // Nur anzeigen wenn Orders existieren
+      if(!hasOrders){
+        // CASE 1 & 2: No orders - hide completely
+        reorderTeaser.style.display = 'none';
+      } else {
+        const uniqueProviders = [];
+        const providerMap = new Map();
+        allOrders.forEach(o => {
+          if(o.providerName && o.providerId && !providerMap.has(o.providerId)){
+            providerMap.set(o.providerId, o.providerName);
+            uniqueProviders.push({id: o.providerId, name: o.providerName});
+          }
+        });
+        
+        if(uniqueProviders.length > 0){
+          // CASE: Reorder providers exist - show cards with CTAs
+          reorderTeaser.style.display = 'block';
+          if(reorderHelper) reorderHelper.style.display = 'none';
+          reorderProviders.innerHTML = uniqueProviders.slice(0, 2).map(p => `
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:12px; background:#f8f7f3; border-radius:14px; margin-bottom:8px; border:1px solid var(--border);">
+              <div style="font-weight:600; font-size:14px; line-height:1.4;">${esc(p.name)}</div>
+              <button class="btn ghost" type="button" data-provider-id="${esc(p.id)}" style="padding:8px 12px; font-size:14px; min-height:36px; margin-left:12px; flex-shrink:0;">
+                Angebote ansehen
+              </button>
+            </div>
+          `).join('');
+          
+          // Event Handler für Reorder-Buttons
+          reorderProviders.querySelectorAll('button[data-provider-id]').forEach(btn => {
+            btn.onclick = () => {
+              const providerId = btn.dataset.providerId;
+              // Filtere Discover nach diesem Provider
+              locationQuery = '';
+              activeDiscoverFilter = 'near';
+              const providerOffer = offers.find(o => o.providerId === providerId);
+              if(providerOffer) activeDay = providerOffer.day;
+              showDiscover();
+              renderDiscover();
+            };
+          });
+        } else {
+          // CASE 3: Orders exist, but no reorder providers - show helper text only
+          reorderTeaser.style.display = 'block';
+          if(reorderHelper) reorderHelper.style.display = 'block';
+          reorderProviders.innerHTML = '';
+        }
+      }
+    }
+    
+    // Personal Data
+    const personalData = document.getElementById('profilePersonalData');
+    const profileEmail = document.getElementById('profileEmail');
+    if(personalData && profileEmail){
+      if(isLoggedIn && customer.email){
+        personalData.style.display = 'block';
+        profileEmail.textContent = esc(customer.email);
+      } else {
+        personalData.style.display = 'none';
+      }
+    }
+    
+    const btnProfileEditEmail = document.getElementById('btnProfileEditEmail');
+    if(btnProfileEditEmail) btnProfileEditEmail.onclick = () => {
+      const newEmail = prompt('Neue E-Mail-Adresse:', customer.email || '');
+      if(newEmail && newEmail !== customer.email){
+        customer.email = newEmail;
+        save(LS.customer, customer);
+        updateProfileView();
+      }
+    };
   }
   
   // "Zum Anbieterbereich" Button
@@ -4690,26 +4859,30 @@
     };
   }
 
-  // Alte Login-Handler entfernt (werden durch Login-Modal ersetzt)
+  // Logout-Handler (wenn vorhanden)
+  const btnUnifiedLogout = document.getElementById('btnUnifiedLogout');
+  if(btnUnifiedLogout){
+    btnUnifiedLogout.onclick=()=>{
+      customer.loggedIn = false;
+      customer.name = null;
+      customer.email = null;
+      save(LS.customer, customer);
+      updateProfileView();
+      showProfile();
+    };
+  }
 
-  document.getElementById('btnUnifiedLogout').onclick=()=>{
-    customer.loggedIn = false;
-    customer.name = null;
-    customer.email = null;
-    save(LS.customer, customer);
-    updateProfileView();
-    showProfile();
-  };
-
-  // LinkProviderLogin wurde durch btnGoToProvider ersetzt
-
-  document.getElementById('btnSwitchToProvider').onclick=()=>{
-    if(!provider.loggedIn){
-      setMode('provider');
-    } else {
-      showProviderHome();
-    }
-  };
+  // Provider Switch (wenn vorhanden)
+  const btnSwitchToProvider = document.getElementById('btnSwitchToProvider');
+  if(btnSwitchToProvider){
+    btnSwitchToProvider.onclick=()=>{
+      if(!provider.loggedIn){
+        setMode('provider');
+      } else {
+        showProviderHome();
+      }
+    };
+  }
 
   // --- Provider entry ---
   document.getElementById('btnProvBack').onclick=()=>{ setMode('customer'); showProfile(); };
@@ -4900,15 +5073,87 @@
     document.getElementById('legalSheet').classList.remove('active');
   }
   
-  document.getElementById('btnImpressum').onclick=()=>{
-    openLegalSheet('impressum');
-  };
-  document.getElementById('btnAGB').onclick=()=>{
-    openLegalSheet('agb');
-  };
-  document.getElementById('btnDatenschutz').onclick=()=>{
-    openLegalSheet('datenschutz');
-  };
+  // FAQ Sheet
+  function openFaqSheet(){
+    const content = document.getElementById('faqSheetContent');
+    if(!content) return;
+    
+    const allFaq = `
+      <details>
+        <summary style="font-size:15px; line-height:1.4; font-weight:500; padding:12px 0;">Wie funktioniert Mittagio?</summary>
+        <p style="font-size:14px; line-height:1.5; margin-top:8px; padding-bottom:12px; color:var(--muted);">Du findest Mittagsangebote in deiner Stadt, optional bezahlst du online und holst zur gewählten Zeit ab.</p>
+      </details>
+      <details>
+        <summary style="font-size:15px; line-height:1.4; font-weight:500; padding:12px 0;">Was ist der Abholcode?</summary>
+        <p style="font-size:14px; line-height:1.5; margin-top:8px; padding-bottom:12px; color:var(--muted);">Dein Schnell-Ticket für die Mittagspause. Du erhältst ihn nach erfolgreicher Online-Zahlung.</p>
+      </details>
+      <details>
+        <summary style="font-size:15px; line-height:1.4; font-weight:500; padding:12px 0;">Muss ich online bezahlen?</summary>
+        <p style="font-size:14px; line-height:1.5; margin-top:8px; padding-bottom:12px; color:var(--muted);">Nein. Online-Zahlung ist optional. Eine Abholnummer gibt's nur bei Online-Zahlung.</p>
+      </details>
+      <details>
+        <summary style="font-size:15px; line-height:1.4; font-weight:500; padding:12px 0;">Kann ich ohne Abholcode bestellen?</summary>
+        <p style="font-size:14px; line-height:1.5; margin-top:8px; padding-bottom:12px; color:var(--muted);">Nein. Angebote ohne Abholcode kannst du nur ansehen.</p>
+      </details>
+      <details>
+        <summary style="font-size:15px; line-height:1.4; font-weight:500; padding:12px 0;">Wann kann ich abholen?</summary>
+        <p style="font-size:14px; line-height:1.5; margin-top:8px; padding-bottom:12px; color:var(--muted);">Innerhalb der Essenszeit. Wähle eine ungefähre Abholzeit im Warenkorb.</p>
+      </details>
+      <details>
+        <summary style="font-size:15px; line-height:1.4; font-weight:500; padding:12px 0;">Kann ich für mehrere Personen bestellen?</summary>
+        <p style="font-size:14px; line-height:1.5; margin-top:8px; padding-bottom:12px; color:var(--muted);">Ja. Du kannst mehrere Gerichte in einem Vorgang bestellen (eine Abholnummer).</p>
+      </details>
+      <details>
+        <summary style="font-size:15px; line-height:1.4; font-weight:500; padding:12px 0;">Vor Ort essen möglich?</summary>
+        <p style="font-size:14px; line-height:1.5; margin-top:8px; padding-bottom:12px; color:var(--muted);">Wenn das Badge „Vor Ort" angezeigt wird, kannst du vor Ort essen.</p>
+      </details>
+      <details>
+        <summary style="font-size:15px; line-height:1.4; font-weight:500; padding:12px 0;">Teilen</summary>
+        <p style="font-size:14px; line-height:1.5; margin-top:8px; padding-bottom:12px; color:var(--muted);">Teile Angebote per WhatsApp, Instagram oder Website.</p>
+      </details>
+      <details>
+        <summary style="font-size:15px; line-height:1.4; font-weight:500; padding:12px 0;">Kontakt</summary>
+        <p style="font-size:14px; line-height:1.5; margin-top:8px; padding-bottom:12px; color:var(--muted);">Bei Fragen schreib uns an <a href="mailto:info@mittagio.de" style="color:var(--muted);">info@mittagio.de</a></p>
+      </details>
+    `;
+    
+    content.innerHTML = allFaq;
+    document.getElementById('faqBd').classList.add('active');
+    document.getElementById('faqSheet').classList.add('active');
+    
+    // Icons aktualisieren
+    if(typeof lucide !== 'undefined') setTimeout(()=> lucide.createIcons(), 50);
+  }
+  
+  function closeFaqSheet(){
+    document.getElementById('faqBd').classList.remove('active');
+    document.getElementById('faqSheet').classList.remove('active');
+  }
+  
+  // Legal Links (alte IDs)
+  const btnImpressum = document.getElementById('btnImpressum');
+  if(btnImpressum) btnImpressum.onclick=()=>{ openLegalSheet('impressum'); };
+  const btnAGB = document.getElementById('btnAGB');
+  if(btnAGB) btnAGB.onclick=()=>{ openLegalSheet('agb'); };
+  const btnDatenschutz = document.getElementById('btnDatenschutz');
+  if(btnDatenschutz) btnDatenschutz.onclick=()=>{ openLegalSheet('datenschutz'); };
+  
+  // Profile Legal Links (neue IDs)
+  const btnProfileImpressum = document.getElementById('btnProfileImpressum');
+  if(btnProfileImpressum) btnProfileImpressum.onclick=(e)=>{ e.preventDefault(); openLegalSheet('impressum'); };
+  const btnProfileAGB = document.getElementById('btnProfileAGB');
+  if(btnProfileAGB) btnProfileAGB.onclick=(e)=>{ e.preventDefault(); openLegalSheet('agb'); };
+  const btnProfileDatenschutz = document.getElementById('btnProfileDatenschutz');
+  if(btnProfileDatenschutz) btnProfileDatenschutz.onclick=(e)=>{ e.preventDefault(); openLegalSheet('datenschutz'); };
+  
+  // FAQ Expand Button (Text Link) - öffnet Modal
+  const btnProfileShowMoreFaq = document.getElementById('btnProfileShowMoreFaq');
+  if(btnProfileShowMoreFaq){
+    btnProfileShowMoreFaq.onclick = (e) => {
+      e.preventDefault();
+      openFaqSheet();
+    };
+  }
 
   // Provider nav handlers
   document.getElementById('providerNav').addEventListener('click',(e)=>{
