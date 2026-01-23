@@ -1992,6 +1992,169 @@
   const load = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } };
   const save = (k, v) => localStorage.setItem(k, JSON.stringify(v));
 
+  // --- Order Store (localStorage MVP) - MUSS VOR VERWENDUNG DEFINIERT SEIN ---
+  /**
+   * @typedef {Object} Order
+   * @property {string} id
+   * @property {number} createdAt
+   * @property {number} updatedAt
+   * @property {string} dishId
+   * @property {string} dishName
+   * @property {string} providerId
+   * @property {string} providerName
+   * @property {string} [providerAddress]
+   * @property {number} quantity
+   * @property {number} unitPrice - in cents
+   * @property {number} total - in cents
+   * @property {'PICKUP'|'DINE_IN'} fulfillType
+   * @property {string} [etaTime]
+   * @property {'CREATED'|'PAYMENT_PENDING'|'PAID'|'CANCELLED'|'COMPLETED'} status
+   * @property {'EUR'} currency
+   * @property {string} [stripeCheckoutSessionId]
+   * @property {string} [stripePaymentIntentId]
+   * @property {string} [receiptEmail]
+   * @property {string} [pickupCode] - nur bei PAID
+   * @property {number} [pickupCodeActivatedAt] - nur bei PAID
+   * @property {boolean} isGuest
+   */
+  
+  /**
+   * Load orders from localStorage
+   * @returns {Order[]}
+   */
+  function loadOrders(){
+    try {
+      const stored = localStorage.getItem(LS.orders);
+      if(!stored) return [];
+      const parsed = JSON.parse(stored);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch(e){
+      console.error('Error loading orders:', e);
+      return [];
+    }
+  }
+  
+  /**
+   * Save orders to localStorage
+   * @param {Order[]} ordersList
+   */
+  function saveOrders(ordersList){
+    try {
+      localStorage.setItem(LS.orders, JSON.stringify(ordersList || []));
+    } catch(e){
+      console.error('Error saving orders:', e);
+    }
+  }
+  
+  /**
+   * Add a new order
+   * @param {Order} order
+   * @returns {Order}
+   */
+  function addOrder(order){
+    // Guard: pickupCode nur bei PAID
+    if(order.pickupCode && order.status !== 'PAID'){
+      console.warn('pickupCode should only be set when status is PAID');
+      order.pickupCode = undefined;
+      order.pickupCodeActivatedAt = undefined;
+    }
+    
+    const ordersList = loadOrders();
+    ordersList.push(order);
+    saveOrders(ordersList);
+    return order;
+  }
+  
+  /**
+   * Update an existing order
+   * @param {string} orderId
+   * @param {Partial<Order>} patch
+   * @returns {Order|null}
+   */
+  function updateOrder(orderId, patch){
+    const ordersList = loadOrders();
+    const index = ordersList.findIndex(o => o.id === orderId);
+    if(index === -1){
+      console.error('Order not found:', orderId);
+      return null;
+    }
+    
+    const order = ordersList[index];
+    
+    // Guard: pickupCode nur bei PAID
+    if(patch.pickupCode && patch.status !== 'PAID' && order.status !== 'PAID'){
+      console.warn('pickupCode should only be set when status is PAID');
+      patch.pickupCode = undefined;
+      patch.pickupCodeActivatedAt = undefined;
+    }
+    
+    // Merge patch
+    const updated = {
+      ...order,
+      ...patch,
+      updatedAt: Date.now()
+    };
+    
+    ordersList[index] = updated;
+    saveOrders(ordersList);
+    return updated;
+  }
+  
+  /**
+   * Get order by ID
+   * @param {string} orderId
+   * @returns {Order|null}
+   */
+  function getOrderById(orderId){
+    const ordersList = loadOrders();
+    return ordersList.find(o => o.id === orderId) || null;
+  }
+  
+  /**
+   * List active orders (CREATED, PAYMENT_PENDING, PAID)
+   * @returns {Order[]}
+   */
+  function listActiveOrders(){
+    const ordersList = loadOrders();
+    return ordersList.filter(o => 
+      o.status === 'CREATED' || 
+      o.status === 'PAYMENT_PENDING' || 
+      o.status === 'PAID'
+    );
+  }
+  
+  /**
+   * Generate pickup code
+   * @param {number} [len=5]
+   * @returns {string}
+   */
+  function generatePickupCode(len = 5){
+    const alphabet = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'; // ohne O/I/0/1
+    let code = '';
+    for(let i = 0; i < len; i++){
+      code += alphabet[Math.floor(Math.random() * alphabet.length)];
+    }
+    
+    // Optional: ensure uniqueness (wenn collision, neu generieren)
+    const ordersList = loadOrders();
+    const existingCodes = ordersList
+      .filter(o => o.pickupCode)
+      .map(o => o.pickupCode);
+    
+    if(existingCodes.includes(code)){
+      // Collision: neu generieren (max 10 Versuche)
+      for(let attempt = 0; attempt < 10; attempt++){
+        code = '';
+        for(let i = 0; i < len; i++){
+          code += alphabet[Math.floor(Math.random() * alphabet.length)];
+        }
+        if(!existingCodes.includes(code)) break;
+      }
+    }
+    
+    return code;
+  }
+
   // --- State ---
   let mode = load(LS.mode, 'customer'); // 'start' | 'customer' | 'provider' (Standard: 'customer' für Discover-Seite)
   // Angebote werden später durch seed() überschrieben, daher hier leer initialisieren
