@@ -1,35 +1,11 @@
 <!doctype html>
 <html lang="de">
 <head>
+  <base href="/mittagio/">
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>Mittagio</title>
   <meta name="theme-color" content="#F2B705" />
-  <script>
-    // Base-Pfad für GitHub Pages automatisch erkennen
-    (function() {
-      try {
-        const base = document.createElement('base');
-        const path = window.location.pathname;
-        
-        // Vereinfachte Logik: Prüfe nur den Pfad
-        // Workflow deployed ./app als Root, daher sind Dateien direkt unter /mittagio/ verfügbar
-        if (path.startsWith('/mittagio/')) {
-          // GitHub Pages mit Repository-Name im Pfad
-          base.href = '/mittagio/';
-        } else if (path.startsWith('/app/')) {
-          // Lokale Entwicklung mit /app/ Pfad
-          base.href = '/app/';
-        } else {
-          // Root-Verzeichnis oder lokale Entwicklung
-          base.href = './';
-        }
-        document.head.insertBefore(base, document.head.firstChild);
-      } catch(e) {
-        console.error('Base-Pfad Fehler:', e);
-      }
-    })();
-  </script>
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" href="assets/icons/icon-192.png" />
   <link rel="apple-touch-icon" href="assets/icons/icon-192.png" />
