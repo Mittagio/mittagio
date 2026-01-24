@@ -9883,7 +9883,7 @@
         updateProfileView();
       }
       // Startseite rendern, falls im start-Mode
-      if(mode === 'start' && typeof renderStart !== 'undefined'){
+      if(typeof mode !== 'undefined' && mode === 'start' && typeof renderStart !== 'undefined'){
         setTimeout(()=>{
           renderStart();
           initIcons();
@@ -9899,7 +9899,7 @@
         updateProfileView();
       }
       // Startseite rendern, falls im start-Mode
-      if(mode === 'start' && typeof renderStart !== 'undefined'){
+      if(typeof mode !== 'undefined' && mode === 'start' && typeof renderStart !== 'undefined'){
         setTimeout(()=>{
           renderStart();
           initIcons();
@@ -9909,11 +9909,13 @@
   }
 
   // Icons nach jedem View-Wechsel aktualisieren
-  const originalShowView = showView;
-  showView = function(id){
-    originalShowView(id);
-    setTimeout(()=> initIcons(), 50);
-  };
+  if(typeof showView !== 'undefined'){
+    const originalShowView = showView;
+    showView = function(id){
+      originalShowView(id);
+      setTimeout(()=> initIcons(), 50);
+    };
+  }
 </script>
 </body>
 </html>
