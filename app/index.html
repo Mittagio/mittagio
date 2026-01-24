@@ -9711,7 +9711,7 @@
   //   /checkout/success?session_id=xxx OR ?orderId=xxx
   //   /checkout/cancel?orderId=xxx OR ?session_id=xxx
   //   /abholcode/:orderId (via URL hash or query param)
-  (function(){
+  {
     const urlParams = new URLSearchParams(window.location.search);
     const path = window.location.pathname;
     const hash = window.location.hash;
@@ -9785,7 +9785,7 @@
         window.history.replaceState({}, '', window.location.pathname);
       }
     }
-  })();
+  }
   
   renderChips();
 
