@@ -3397,10 +3397,14 @@
     const isProv = mode==='provider';
     const isStart = mode==='start';
     const isCustomer = mode==='customer';
-    document.getElementById('customerNav').style.display = (isCustomer || isStart) ? 'flex' : 'none';
-    document.getElementById('providerNav').style.display = isProv ? 'flex' : 'none';
-    document.getElementById('discoverFilters').style.display = isCustomer ? 'block' : 'none';
-    document.getElementById('modePill').style.display = isProv ? 'inline-flex' : 'none';
+    const customerNav = document.getElementById('customerNav');
+    if(customerNav) customerNav.style.display = (isCustomer || isStart) ? 'flex' : 'none';
+    const providerNav = document.getElementById('providerNav');
+    if(providerNav) providerNav.style.display = isProv ? 'flex' : 'none';
+    const discoverFilters = document.getElementById('discoverFilters');
+    if(discoverFilters) discoverFilters.style.display = isCustomer ? 'block' : 'none';
+    const modePill = document.getElementById('modePill');
+    if(modePill) modePill.style.display = isProv ? 'inline-flex' : 'none';
 
     if(isStart){
       // Start-Seite: Wenn nicht eingeloggt, zur Discover-Seite (kein Zwang)
@@ -7739,17 +7743,23 @@
   // btnOpenWeekPlan wird nicht mehr verwendet (Week Preview ist jetzt im Dashboard)
   const btnOpenWeekPlan = document.getElementById('btnOpenWeekPlan');
   if(btnOpenWeekPlan) btnOpenWeekPlan.style.display = 'none';
-  document.getElementById('btnPickupsFaq').onclick=()=>{
-    showProviderProfile();
-    const box = document.getElementById('provFaqBox');
-    if(box) box.style.display = 'block';
-  };
+  const btnPickupsFaq = document.getElementById('btnPickupsFaq');
+  if(btnPickupsFaq){
+    btnPickupsFaq.onclick=()=>{
+      showProviderProfile();
+      const box = document.getElementById('provFaqBox');
+      if(box) box.style.display = 'block';
+    };
+  }
 
-  document.getElementById('btnEditOffer').onclick=()=>{
-    if(!activeProviderOfferId) return;
-    closeProviderSheet();
-    startListingFlow({editOfferId: activeProviderOfferId});
-  };
+  const btnEditOffer = document.getElementById('btnEditOffer');
+  if(btnEditOffer){
+    btnEditOffer.onclick=()=>{
+      if(!activeProviderOfferId) return;
+      closeProviderSheet();
+      startListingFlow({editOfferId: activeProviderOfferId});
+    };
+  }
   document.getElementById('btnToggleOffer').onclick=()=>{
     if(!activeProviderOfferId) return;
     const idx = offers.findIndex(x=>x.id===activeProviderOfferId);
@@ -9663,6 +9673,13 @@
   
   // Orders laden
   orders = loadOrders();
+  
+  // Provider-View aktualisieren, falls im Provider-Mode
+  if(mode === 'provider' && typeof renderProviderHome !== 'undefined'){
+    setTimeout(()=>{
+      renderProviderHome();
+    }, 100);
+  }
   
   // --- Route Handler: Checkout Success/Cancel + Abholcode ---
   // Routes:
