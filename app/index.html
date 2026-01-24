@@ -5330,7 +5330,9 @@
   }
   
   // Login Modal Handler
-  document.getElementById('btnLoginModalLogin').onclick=()=>{
+  const btnLoginModalLogin = document.getElementById('btnLoginModalLogin');
+  if(btnLoginModalLogin){
+    btnLoginModalLogin.onclick=()=>{
     const email = document.getElementById('loginModalEmail').value.trim();
     const pass = document.getElementById('loginModalPass').value.trim();
     if(!email || !pass){
@@ -5346,9 +5348,12 @@
     // Nach Login zur Discover-Seite
     setMode('customer');
     showDiscover();
-  };
+    };
+  }
   
-  document.getElementById('btnLoginModalDemo').onclick=()=>{
+  const btnLoginModalDemo = document.getElementById('btnLoginModalDemo');
+  if(btnLoginModalDemo){
+    btnLoginModalDemo.onclick=()=>{
     customer.loggedIn = true;
     customer.name = customer.name || 'Mike';
     save(LS.customer, customer);
@@ -5357,7 +5362,8 @@
     // Nach Demo-Login zur Discover-Seite
     setMode('customer');
     showDiscover();
-  };
+    };
+  }
 
   applyStaticIcons();
   const locBtn = document.getElementById('btnLocationPin');
@@ -5394,13 +5400,16 @@
     };
   }
 
-  document.getElementById('btnAddCart').onclick=()=>{
-    const o = offers.find(x=>x.id===activeOfferId);
-    if(!o) return;
-    if(!addToCart(o)) return;
-    closeSheet();
-    showCart();
-  };
+  const btnAddCart = document.getElementById('btnAddCart');
+  if(btnAddCart){
+    btnAddCart.onclick=()=>{
+      const o = offers.find(x=>x.id===activeOfferId);
+      if(!o) return;
+      if(!addToCart(o)) return;
+      closeSheet();
+      showCart();
+    };
+  }
 
   // --- Cart ---
   function renderCart(){
@@ -5556,7 +5565,9 @@
     }
   }
 
-  document.getElementById('btnCheckout').onclick=()=>{
+  const btnCheckout = document.getElementById('btnCheckout');
+  if(btnCheckout){
+    btnCheckout.onclick=()=>{
     // KEIN Login-Zwang: Gast kann direkt bezahlen
     if(!cart || !cart.items || !cart.items.length) return;
     
@@ -5610,7 +5621,8 @@
     updateOrder(orderCreated.id, { status: 'PAYMENT_PENDING' });
     
     startStripeCheckout(total, cart, orderCreated.id);
-  };
+    };
+  }
   
   /**
    * Create order from cart
@@ -9814,6 +9826,12 @@
           renderStart();
           initIcons();
         }, 100);
+      } else if(mode === 'customer' && typeof showDiscover !== 'undefined'){
+        // Discover-Seite rendern, falls im customer-Mode
+        setTimeout(()=>{
+          showDiscover();
+          initIcons();
+        }, 100);
       }
     });
   } else {
@@ -9828,6 +9846,12 @@
       if(mode === 'start' && typeof renderStart !== 'undefined'){
         setTimeout(()=>{
           renderStart();
+          initIcons();
+        }, 100);
+      } else if(mode === 'customer' && typeof showDiscover !== 'undefined'){
+        // Discover-Seite rendern, falls im customer-Mode
+        setTimeout(()=>{
+          showDiscover();
           initIcons();
         }, 100);
       }
