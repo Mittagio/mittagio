@@ -1,4 +1,4 @@
-const CACHE = 'mittagio-app-v14';
+const CACHE = 'mittagio-app-v15';
 const CACHE_PREFIX = 'mittagio-';
 
 // Base-Pfad automatisch erkennen (Service Worker liegt im gleichen Verzeichnis wie index.html)
@@ -56,9 +56,13 @@ self.addEventListener('activate', (e) => {
 self.addEventListener('fetch', (e) => {
   const req = e.request;
   // HTML-Dateien NICHT cachen - immer neueste Version vom Server laden
+  // KEIN Cache-Fallback, um sicherzustellen, dass immer die neueste Version geladen wird
   if(isHtmlRequest(req)){
     e.respondWith(
-      fetch(req).catch(()=> caches.match(req))
+      fetch(req).catch(()=> {
+        // Bei Netzwerkfehler: leere Response statt Cache-Fallback
+        return new Response('', { status: 503, statusText: 'Service Unavailable' });
+      })
     );
     return;
   }
