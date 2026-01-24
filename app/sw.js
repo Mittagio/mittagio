@@ -1,4 +1,4 @@
-const CACHE = 'mittagio-app-v13';
+const CACHE = 'mittagio-app-v14';
 const CACHE_PREFIX = 'mittagio-';
 
 // Base-Pfad automatisch erkennen (Service Worker liegt im gleichen Verzeichnis wie index.html)
@@ -22,7 +22,7 @@ function getBasePath() {
 const BASE = getBasePath();
 const ASSETS = [
   BASE,
-  BASE + 'index.html',
+  // index.html NICHT cachen - immer neueste Version vom Server laden
   BASE + 'manifest.json',
   BASE + 'assets/mittagio-logo.png',
   BASE + 'assets/provider-placeholder.png',
