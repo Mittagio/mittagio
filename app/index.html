@@ -1489,7 +1489,7 @@
         </div>
         <h3 style="margin-top:16px;">Wie heißt dein Betrieb?</h3>
         <div class="hint">Gib den Namen deines Restaurants, Cafés oder Betriebs ein.</div>
-        <input class="field" id="onboardingBusinessName" type="text" placeholder="z.B. Café Sonnenschein" style="margin-top:12px;" />
+        <input class="field" id="onboardingBusinessNameOld" type="text" placeholder="z.B. Café Sonnenschein" style="margin-top:12px;" />
         <button class="btn" type="button" id="btnOnboardingStep1Next" style="margin-top:16px;">Weiter</button>
       </div>
 
@@ -4608,7 +4608,7 @@
     // Primary CTA (dynamisch basierend auf Abholcode)
     const primaryCTA = document.getElementById('btnPrimaryCTA');
     const primaryCTAText = document.getElementById('btnPrimaryCTAText');
-    const btnOpenRoute = document.getElementById('btnOpenRoute');
+    // btnOpenRoute wurde bereits oben deklariert (Zeile 4580)
     
     if(primaryCTA && primaryCTAText){
       // Reset states
@@ -9792,7 +9792,9 @@
   // seedExampleData() wird am Ende aufgerufen (siehe unten)
   
   // Test-Funktion global verfügbar machen (in Browser-Konsole: testPickupCodeLogic() aufrufen)
-  window.testPickupCodeLogic = testPickupCodeLogic;
+  if(typeof testPickupCodeLogic !== 'undefined'){
+    window.testPickupCodeLogic = testPickupCodeLogic;
+  }
 
   // PWA (optional)
   if('serviceWorker' in navigator){
