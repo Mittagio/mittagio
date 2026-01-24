@@ -8,22 +8,40 @@
   <script>
     // Base-Pfad für GitHub Pages automatisch erkennen
     (function() {
-      const base = document.createElement('base');
-      const path = window.location.pathname;
-      
-      // Prüfe zuerst den Pfad (wichtig für GitHub Pages mit Subpfad)
-      if (path.includes('/mittagio/app/')) {
-        base.href = '/mittagio/app/';
-      } else if (path.includes('/app/')) {
-        base.href = '/app/';
-      } else if (path === '/' || path === '/index.html') {
-        // Root-Verzeichnis (wenn app/ als Root deployed wurde)
-        base.href = './';
-      } else {
-        // Fallback: aktuelles Verzeichnis
-        base.href = './';
+      try {
+        const base = document.createElement('base');
+        const path = window.location.pathname;
+        const hostname = window.location.hostname;
+        
+        // GitHub Pages: Wenn hostname mittagio.github.io ist
+        if (hostname === 'mittagio.github.io') {
+          // Prüfe ob es ein Subpfad gibt (Repository-Name)
+          if (path.startsWith('/mittagio/')) {
+            // Repository-Name im Pfad: /mittagio/...
+            // Da ./app als Root deployed wird, sollte der Base-Pfad /mittagio/ sein
+            base.href = '/mittagio/';
+          } else if (path.startsWith('/app/')) {
+            base.href = '/app/';
+          } else {
+            // Root-Verzeichnis
+            base.href = './';
+          }
+        } else {
+          // Lokale Entwicklung oder andere Domains
+          if (path.includes('/mittagio/app/')) {
+            base.href = '/mittagio/app/';
+          } else if (path.includes('/app/')) {
+            base.href = '/app/';
+          } else if (path === '/' || path === '/index.html') {
+            base.href = './';
+          } else {
+            base.href = './';
+          }
+        }
+        document.head.insertBefore(base, document.head.firstChild);
+      } catch(e) {
+        console.error('Base-Pfad Fehler:', e);
       }
-      document.head.insertBefore(base, document.head.firstChild);
     })();
   </script>
   <link rel="manifest" href="manifest.json" />
