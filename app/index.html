@@ -3378,10 +3378,15 @@
     const isProv = mode==='provider';
     const isStart = mode==='start';
     const isCustomer = mode==='customer';
-    document.getElementById('customerNav').style.display = (isCustomer || isStart) ? 'flex' : 'none';
-    document.getElementById('providerNav').style.display = isProv ? 'flex' : 'none';
-    document.getElementById('discoverFilters').style.display = isCustomer ? 'block' : 'none';
-    document.getElementById('modePill').style.display = isProv ? 'inline-flex' : 'none';
+    const customerNav = document.getElementById('customerNav');
+    const providerNav = document.getElementById('providerNav');
+    const discoverFilters = document.getElementById('discoverFilters');
+    const modePill = document.getElementById('modePill');
+    
+    if(customerNav) customerNav.style.display = (isCustomer || isStart) ? 'flex' : 'none';
+    if(providerNav) providerNav.style.display = isProv ? 'flex' : 'none';
+    if(discoverFilters) discoverFilters.style.display = isCustomer ? 'block' : 'none';
+    if(modePill) modePill.style.display = isProv ? 'inline-flex' : 'none';
 
     if(isStart){
       // Start-Seite: Wenn nicht eingeloggt, zur Discover-Seite (kein Zwang)
@@ -9814,7 +9819,7 @@
     }, 200);
   }
   
-  } // Test-Klammern zum "Zuknallen" offener Blöcke (1 Klammer)
+  } // Fehlende Klammer hinzugefügt - SyntaxError behoben
 </script>
 
 <script>
