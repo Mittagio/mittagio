@@ -1320,9 +1320,7 @@
           <button class="btn secondary" type="button" id="btnOpenRoute" style="width:100%; min-height:44px;">
             <i data-lucide="map-pin"></i> Route öffnen
           </button>
-          <button class="btn ghost" type="button" id="btnToOrders" style="width:100%; min-height:44px;">
-            <i data-lucide="box"></i> Zur Mittagsbox
-          </button>
+          <!-- Zur Mittagsbox entfernt (nicht für Endkunden) -->
         </div>
       </div>
     </section>
@@ -1331,7 +1329,7 @@
     <section class="view" id="v-profile">
       <!-- Header -->
       <div style="padding:16px 16px 20px; background:transparent; border:none; box-shadow:none;">
-        <h2 style="margin:0; font-size:24px; font-weight:900; line-height:1.2;">Mein Mittagio</h2>
+        <h2 style="margin:0; font-size:24px; font-weight:900; line-height:1.2;">Dein Mittag in der Nähe</h2>
       </div>
 
       <!-- Welcome Card (dynamic) -->
@@ -1339,15 +1337,12 @@
         <!-- Wird dynamisch befüllt -->
       </div>
 
-      <!-- Orders Teaser -->
-      <div class="panel" id="profileOrdersTeaser" style="margin-top:18px; padding:16px; display:none; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,.04);">
-        <div style="font-weight:600; font-size:17px; margin-bottom:10px; line-height:1.3;">Meine Bestellungen</div>
-        <div class="hint" id="profileLastOrderText" style="font-size:14px; line-height:1.4; margin-bottom:12px; color:var(--muted);"></div>
-        <button class="btn secondary" type="button" id="btnProfileToOrders" style="width:100%; min-height:44px; display:none;">
-          Zur Mittagsbox
-        </button>
-        <button class="btn secondary" type="button" id="btnProfileDiscoverFromOrders" style="width:100%; min-height:44px; display:none;">
-          Jetzt entdecken
+      <!-- Kürzlich angesehen -->
+      <div class="panel" id="profileRecentlyViewed" style="margin-top:18px; padding:16px; display:none; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,.04);">
+        <div style="font-weight:600; font-size:17px; margin-bottom:10px; line-height:1.3;">Kürzlich angesehen</div>
+        <div id="profileRecentlyViewedList" style="margin-bottom:12px;"></div>
+        <button class="btn secondary" type="button" id="btnProfileViewAllRecent" style="width:100%; min-height:44px; display:none;">
+          Angebote ansehen
         </button>
       </div>
 
@@ -1360,28 +1355,19 @@
         <div id="profileReorderProviders"></div>
       </div>
 
-      <!-- Personal Data -->
+      <!-- Personal Data - ENTFERNT (Endkunden haben kein Profil) -->
       <div class="panel" id="profilePersonalData" style="margin-top:18px; padding:16px; display:none; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,.04);">
-        <div style="font-weight:600; font-size:17px; margin-bottom:12px; line-height:1.3;">Meine Daten</div>
-        <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 0; border-bottom:1px solid var(--border);">
-          <div style="flex:1; min-width:0;">
-            <div class="hint" style="font-size:12px; margin-bottom:4px; color:var(--muted);">E-Mail-Adresse</div>
-            <div id="profileEmail" style="font-weight:600; font-size:14px; line-height:1.4; word-break:break-word;"></div>
-          </div>
-          <button class="btn ghost" type="button" id="btnProfileEditEmail" style="padding:8px 12px; font-size:14px; min-height:36px; margin-left:12px; flex-shrink:0;">
-            Ändern
-          </button>
-        </div>
+        <!-- Endkunden haben kein Profil - dieser Bereich wird nicht angezeigt -->
       </div>
 
       <!-- Provider Area -->
       <div class="panel" style="margin-top:18px; padding:16px; background:linear-gradient(135deg, rgba(255,204,0,.08) 0%, rgba(255,204,0,.03) 100%); border:1px solid rgba(255,204,0,.15); border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,.04);">
         <div style="font-weight:600; font-size:17px; margin-bottom:8px; line-height:1.3;">Als Anbieter starten</div>
         <div class="hint" style="font-size:14px; line-height:1.4; margin-bottom:14px; color:var(--muted);">
-          Mittagstische online anbieten
+          Mittagtische einfach online anbieten
         </div>
         <button class="btn secondary" type="button" id="btnGoToProvider" style="width:100%; min-height:44px;">
-          Zum Anbieterbereich →
+          Zum Anbieterbereich
         </button>
       </div>
 
@@ -1785,15 +1771,9 @@
         </div>
       </div>
 
-      <!-- Empty Dashboard (Welcome Card) -->
+      <!-- Empty Dashboard (Welcome Card) - ENTFERNT (kein Onboarding) -->
       <div class="panel" id="providerEmptyDashboard" style="margin-top:18px; padding:20px; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,.04); text-align:center; display:none;">
-        <div style="font-weight:600; font-size:18px; margin-bottom:8px; line-height:1.3;">Willkommen bei Mittagio</div>
-        <div class="hint" style="font-size:14px; line-height:1.4; margin-bottom:16px; color:var(--muted);">
-          Starte mit deinem ersten Gericht.
-        </div>
-        <button class="btn secondary" type="button" id="btnProviderEmptyAddDish" style="width:100%; min-height:44px;">
-          Gericht hinzufügen
-        </button>
+        <!-- Dashboard zeigt nur Inserate, Abholung, Kochbuch + CTA "Inserat erstellen" -->
       </div>
 
       <!-- FAB (Floating Action Button) -->
@@ -5910,84 +5890,34 @@
 
   // --- Profile View ("Mein Mittagio") - MVP Final ---
   function updateProfileView(){
-    const isLoggedIn = customer.loggedIn;
-    const firstName = customer.name ? customer.name.split(' ')[0] : '';
-    
-    // Welcome Card
+    // Welcome Card - immer gleich für Endkunden (kein Login)
     const welcomeCard = document.getElementById('profileWelcomeCard');
     if(welcomeCard){
-      if(isLoggedIn){
-        welcomeCard.innerHTML = `
-          <div style="font-weight:600; font-size:17px; margin-bottom:8px; line-height:1.3;">Hallo ${esc(firstName || 'Kunde')} 👋</div>
-          <div class="hint" style="font-size:14px; line-height:1.4; margin-bottom:14px; color:var(--muted);">Dein persönlicher Mittagsbereich.</div>
-          <button class="btn secondary" type="button" id="btnProfileToOrdersFromWelcome" style="width:100%; min-height:44px;">
-            Zu meinen Bestellungen
-          </button>
-        `;
-        const btn = document.getElementById('btnProfileToOrdersFromWelcome');
-        if(btn) btn.onclick = () => showOrders();
-      } else {
-        welcomeCard.innerHTML = `
-          <div style="font-weight:600; font-size:17px; margin-bottom:8px; line-height:1.3;">Willkommen bei Mittagio 👋</div>
-          <div class="hint" style="font-size:14px; line-height:1.4; margin-bottom:14px; color:var(--muted);">Bestelle schneller und finde deine Abholcodes wieder.</div>
-          <button class="btn secondary" type="button" id="btnProfileCreateAccount" style="width:100%; min-height:44px;">
-            Profil anlegen
-          </button>
-        `;
-        const btn = document.getElementById('btnProfileCreateAccount');
-        if(btn) btn.onclick = () => {
-          // Öffne Login-Modal oder zeige Login-Flow
-          const email = prompt('E-Mail-Adresse:');
-          if(email){
-            customer.loggedIn = true;
-            customer.email = email;
-            customer.name = email.split('@')[0];
-            save(LS.customer, customer);
-            updateProfileView();
-          }
-        };
-      }
+      welcomeCard.innerHTML = `
+        <div style="font-weight:600; font-size:17px; margin-bottom:8px; line-height:1.3;">Willkommen bei Mittagio 👋</div>
+        <div class="hint" style="font-size:14px; line-height:1.4; margin-bottom:14px; color:var(--muted);">Finde frische Mittagsangebote in deiner Nähe.</div>
+        <button class="btn secondary" type="button" id="btnProfileDiscover" style="width:100%; min-height:44px;">
+          Angebote entdecken
+        </button>
+      `;
+      const btn = document.getElementById('btnProfileDiscover');
+      if(btn) btn.onclick = () => {
+        setMode('customer');
+        showView('discover');
+      };
     }
     
-    // Orders Teaser (mit Empty States)
+    // Kürzlich angesehen (session-basiert)
+    const recentlyViewed = document.getElementById('profileRecentlyViewed');
+    const recentlyViewedList = document.getElementById('profileRecentlyViewedList');
+    if(recentlyViewed && recentlyViewedList){
+      // TODO: Session-basierte Anzeige implementieren
+      recentlyViewed.style.display = 'none'; // Erstmal ausblenden, bis Logik implementiert ist
+    }
+    
+    // Orders Teaser - ENTFERNT (nicht mehr für Endkunden - keine Bestellungen/Box)
     const ordersTeaser = document.getElementById('profileOrdersTeaser');
-    const lastOrderText = document.getElementById('profileLastOrderText');
-    const btnProfileToOrders = document.getElementById('btnProfileToOrders');
-    const btnProfileDiscoverFromOrders = document.getElementById('btnProfileDiscoverFromOrders');
-    const allOrders = loadOrders();
-    const hasOrders = allOrders.length > 0;
-    const lastOrder = hasOrders ? allOrders.sort((a,b) => (b.createdAt || 0) - (a.createdAt || 0))[0] : null;
-    
-    if(ordersTeaser && lastOrderText){
-      if(hasOrders && lastOrder && lastOrder.providerName){
-        // CASE: Orders exist - show normal teaser
-        ordersTeaser.style.display = 'block';
-        lastOrderText.textContent = `Zuletzt bestellt bei: ${esc(lastOrder.providerName)}`;
-        if(btnProfileToOrders){
-          btnProfileToOrders.style.display = 'block';
-          btnProfileToOrders.onclick = () => showOrders();
-        }
-        if(btnProfileDiscoverFromOrders) btnProfileDiscoverFromOrders.style.display = 'none';
-      } else {
-        // CASE 1 & 2: No orders - show empty state
-        ordersTeaser.style.display = 'block';
-        if(isLoggedIn){
-          // CASE 2: Logged-in, no orders
-          lastOrderText.textContent = 'Noch keine Bestellungen vorhanden.';
-        } else {
-          // CASE 1: Guest, no orders
-          lastOrderText.textContent = 'Du hast noch nichts bestellt.';
-        }
-        if(btnProfileToOrders) btnProfileToOrders.style.display = 'none';
-        if(btnProfileDiscoverFromOrders){
-          btnProfileDiscoverFromOrders.style.display = 'block';
-          btnProfileDiscoverFromOrders.onclick = () => {
-            showDiscover();
-            renderDiscover();
-          };
-        }
-      }
-    }
+    if(ordersTeaser) ordersTeaser.style.display = 'none';
     
     // Reorder Teaser (mit Empty States)
     const reorderTeaser = document.getElementById('profileReorderTeaser');
@@ -6044,17 +5974,9 @@
       }
     }
     
-    // Personal Data
+    // Personal Data - ENTFERNT (Endkunden haben kein Profil)
     const personalData = document.getElementById('profilePersonalData');
-    const profileEmail = document.getElementById('profileEmail');
-    if(personalData && profileEmail){
-      if(isLoggedIn && customer.email){
-        personalData.style.display = 'block';
-        profileEmail.textContent = esc(customer.email);
-      } else {
-        personalData.style.display = 'none';
-      }
-    }
+    if(personalData) personalData.style.display = 'none';
     
     const btnProfileEditEmail = document.getElementById('btnProfileEditEmail');
     if(btnProfileEditEmail) btnProfileEditEmail.onclick = () => {
@@ -7064,19 +6986,8 @@
         provider.onboardingShown = true;
         save(LS.provider, provider);
       } else {
-        // Normal empty state
-        providerEmptyDashboard.style.display = hasAnyData ? 'none' : 'block';
-        if(!hasAnyData){
-          providerEmptyDashboard.innerHTML = `
-            <div style="font-weight:600; font-size:18px; margin-bottom:8px; line-height:1.3;">Willkommen bei Mittagio</div>
-            <div class="hint" style="font-size:14px; line-height:1.4; margin-bottom:16px; color:var(--muted);">
-              Starte mit deinem ersten Gericht.
-            </div>
-            <button class="btn secondary" type="button" id="btnProviderEmptyAddDish" style="width:100%; min-height:44px;">
-              Gericht hinzufügen
-            </button>
-          `;
-        }
+        // Normal empty state - Dashboard zeigt nur Inserate/Abholung/Kochbuch (kein Onboarding)
+        providerEmptyDashboard.style.display = 'none'; // Immer ausblenden, kein Onboarding
         
         const btnProviderEmptyAddDish = document.getElementById('btnProviderEmptyAddDish');
         if(btnProviderEmptyAddDish) btnProviderEmptyAddDish.onclick = () => {
