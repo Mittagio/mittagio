@@ -5330,34 +5330,40 @@
   }
   
   // Login Modal Handler
-  document.getElementById('btnLoginModalLogin').onclick=()=>{
-    const email = document.getElementById('loginModalEmail').value.trim();
-    const pass = document.getElementById('loginModalPass').value.trim();
-    if(!email || !pass){
-      alert('Bitte E-Mail und Passwort eingeben.');
-      return;
-    }
-    customer.loggedIn = true;
-    customer.name = customer.name || email.split('@')[0];
-    customer.email = email;
-    save(LS.customer, customer);
-    updateProfileView();
-    closeLoginSheet();
-    // Nach Login zur Discover-Seite
-    setMode('customer');
-    showDiscover();
-  };
+  const btnLoginModalLogin = document.getElementById('btnLoginModalLogin');
+  if(btnLoginModalLogin){
+    btnLoginModalLogin.onclick=()=>{
+      const email = document.getElementById('loginModalEmail').value.trim();
+      const pass = document.getElementById('loginModalPass').value.trim();
+      if(!email || !pass){
+        alert('Bitte E-Mail und Passwort eingeben.');
+        return;
+      }
+      customer.loggedIn = true;
+      customer.name = customer.name || email.split('@')[0];
+      customer.email = email;
+      save(LS.customer, customer);
+      updateProfileView();
+      closeLoginSheet();
+      // Nach Login zur Discover-Seite
+      setMode('customer');
+      showDiscover();
+    };
+  }
   
-  document.getElementById('btnLoginModalDemo').onclick=()=>{
-    customer.loggedIn = true;
-    customer.name = customer.name || 'Mike';
-    save(LS.customer, customer);
-    updateProfileView();
-    closeLoginSheet();
-    // Nach Demo-Login zur Discover-Seite
-    setMode('customer');
-    showDiscover();
-  };
+  const btnLoginModalDemo = document.getElementById('btnLoginModalDemo');
+  if(btnLoginModalDemo){
+    btnLoginModalDemo.onclick=()=>{
+      customer.loggedIn = true;
+      customer.name = customer.name || 'Mike';
+      save(LS.customer, customer);
+      updateProfileView();
+      closeLoginSheet();
+      // Nach Demo-Login zur Discover-Seite
+      setMode('customer');
+      showDiscover();
+    };
+  }
 
   applyStaticIcons();
   const locBtn = document.getElementById('btnLocationPin');
@@ -5394,13 +5400,16 @@
     };
   }
 
-  document.getElementById('btnAddCart').onclick=()=>{
-    const o = offers.find(x=>x.id===activeOfferId);
-    if(!o) return;
-    if(!addToCart(o)) return;
-    closeSheet();
-    showCart();
-  };
+  const btnAddCart = document.getElementById('btnAddCart');
+  if(btnAddCart){
+    btnAddCart.onclick=()=>{
+      const o = offers.find(x=>x.id===activeOfferId);
+      if(!o) return;
+      if(!addToCart(o)) return;
+      closeSheet();
+      showCart();
+    };
+  }
 
   // --- Cart ---
   function renderCart(){
@@ -5556,61 +5565,64 @@
     }
   }
 
-  document.getElementById('btnCheckout').onclick=()=>{
-    // KEIN Login-Zwang: Gast kann direkt bezahlen
-    if(!cart || !cart.items || !cart.items.length) return;
-    
-    // Prüfe ob Payment möglich ist
-    const hasPayment = cart.items.every(it=>{
-      const o = offers.find(x=>x.id===it.offerId);
-      return o && normalizeOffer(o).hasPickupCode;
-    });
-    
-    const pickupTime = String(cart.pickupTime||'').trim();
-    if(!pickupTime){
-      alert('Bitte eine ungefähre Abholzeit angeben.');
-      showCart();
-      setTimeout(()=>{
-        const input = document.getElementById('pickupTimeInput');
-        if(input) input.focus();
-      }, 50);
-      return;
-    }
-    
-    // Gesamtpreis berechnen
-    let total = 0;
-    cart.items.forEach(it=>{
-      const o = offers.find(x=>x.id===it.offerId);
-      if(o){
-        const normalized = normalizeOffer(o);
-        total += Number(normalized.price||0) * it.qty;
+  const btnCheckout = document.getElementById('btnCheckout');
+  if(btnCheckout){
+    btnCheckout.onclick=()=>{
+      // KEIN Login-Zwang: Gast kann direkt bezahlen
+      if(!cart || !cart.items || !cart.items.length) return;
+      
+      // Prüfe ob Payment möglich ist
+      const hasPayment = cart.items.every(it=>{
+        const o = offers.find(x=>x.id===it.offerId);
+        return o && normalizeOffer(o).hasPickupCode;
+      });
+      
+      const pickupTime = String(cart.pickupTime||'').trim();
+      if(!pickupTime){
+        alert('Bitte eine ungefähre Abholzeit angeben.');
+        showCart();
+        setTimeout(()=>{
+          const input = document.getElementById('pickupTimeInput');
+          if(input) input.focus();
+        }, 50);
+        return;
       }
-    });
-    
-    // Zahlung ist Pflicht (MVP: Stripe Checkout)
-    if(!hasPayment){
-      alert('Diese Bestellung enthält Gerichte ohne Abholcode. Bitte wähle Angebote mit Abholcode aus.');
-      return;
-    }
-    
-    if(total <= 0){
-      alert('Bitte wähle mindestens ein Gericht aus.');
-      return;
-    }
-    
-    // Order mit Status CREATED erstellen (Warenkorb)
-    const orderCreated = createOrderFromCart(cart, 'CREATED');
-    if(!orderCreated){
-      alert('Fehler beim Erstellen der Bestellung.');
-      return;
-    }
-    
-    // Stripe Checkout öffnen (Gastzahlung, Zahlung Pflicht)
-    // Order wird auf PAYMENT_PENDING gesetzt
-    updateOrder(orderCreated.id, { status: 'PAYMENT_PENDING' });
-    
-    startStripeCheckout(total, cart, orderCreated.id);
-  };
+      
+      // Gesamtpreis berechnen
+      let total = 0;
+      cart.items.forEach(it=>{
+        const o = offers.find(x=>x.id===it.offerId);
+        if(o){
+          const normalized = normalizeOffer(o);
+          total += Number(normalized.price||0) * it.qty;
+        }
+      });
+      
+      // Zahlung ist Pflicht (MVP: Stripe Checkout)
+      if(!hasPayment){
+        alert('Diese Bestellung enthält Gerichte ohne Abholcode. Bitte wähle Angebote mit Abholcode aus.');
+        return;
+      }
+      
+      if(total <= 0){
+        alert('Bitte wähle mindestens ein Gericht aus.');
+        return;
+      }
+      
+      // Order mit Status CREATED erstellen (Warenkorb)
+      const orderCreated = createOrderFromCart(cart, 'CREATED');
+      if(!orderCreated){
+        alert('Fehler beim Erstellen der Bestellung.');
+        return;
+      }
+      
+      // Stripe Checkout öffnen (Gastzahlung, Zahlung Pflicht)
+      // Order wird auf PAYMENT_PENDING gesetzt
+      updateOrder(orderCreated.id, { status: 'PAYMENT_PENDING' });
+      
+      startStripeCheckout(total, cart, orderCreated.id);
+    };
+  }
   
   /**
    * Create order from cart
@@ -6422,24 +6434,33 @@
   // We add onboarding handling there
 
   // --- Provider entry ---
-  document.getElementById('btnProvBack').onclick=()=>{ setMode('customer'); showProfile(); };
+  const btnProvBack = document.getElementById('btnProvBack');
+  if(btnProvBack){
+    btnProvBack.onclick=()=>{ setMode('customer'); showProfile(); };
+  }
 
-  document.getElementById('btnProvLogin').onclick=()=>{
-    const email = document.getElementById('provEmail').value.trim();
-    const pass = document.getElementById('provPass').value.trim();
-    if(!email || !pass){ alert('Bitte E-Mail und Passwort eingeben.'); return; }
-    provider.loggedIn = true;
-    provider.email = email;
-    save(LS.provider, provider);
-    showProviderHome();
-  };
+  const btnProvLogin = document.getElementById('btnProvLogin');
+  if(btnProvLogin){
+    btnProvLogin.onclick=()=>{
+      const email = document.getElementById('provEmail').value.trim();
+      const pass = document.getElementById('provPass').value.trim();
+      if(!email || !pass){ alert('Bitte E-Mail und Passwort eingeben.'); return; }
+      provider.loggedIn = true;
+      provider.email = email;
+      save(LS.provider, provider);
+      showProviderHome();
+    };
+  }
 
-  document.getElementById('btnProvLogout').onclick=()=>{
-    provider.loggedIn=false;
-    save(LS.provider, provider);
-    setMode('customer');
-    showProfile();
-  };
+  const btnProvLogout = document.getElementById('btnProvLogout');
+  if(btnProvLogout){
+    btnProvLogout.onclick=()=>{
+      provider.loggedIn=false;
+      save(LS.provider, provider);
+      setMode('customer');
+      showProfile();
+    };
+  }
 
   // Rechtliches
   // --- AGB Onboarding Modal (1-Screen) ---
@@ -7652,32 +7673,53 @@
     applyStaticIcons();
   }
 
-  document.getElementById('btnProvFaq').onclick=()=>{
-    const box = document.getElementById('provFaqBox');
-    box.style.display = box.style.display==='none' ? 'block' : 'none';
-  };
+  const btnProvFaq = document.getElementById('btnProvFaq');
+  if(btnProvFaq){
+    btnProvFaq.onclick=()=>{
+      const box = document.getElementById('provFaqBox');
+      if(box) box.style.display = box.style.display==='none' ? 'block' : 'none';
+    };
+  }
 
-  document.getElementById('btnBilling').onclick=()=>{
-    showProviderBilling();
-  };
-  document.getElementById('btnBillingBack').onclick=()=> showProviderProfile();
+  const btnBilling = document.getElementById('btnBilling');
+  if(btnBilling){
+    btnBilling.onclick=()=>{
+      showProviderBilling();
+    };
+  }
+  const btnBillingBack = document.getElementById('btnBillingBack');
+  if(btnBillingBack){
+    btnBillingBack.onclick=()=> showProviderProfile();
+  }
 
-  document.getElementById('rowProfileOverview').onclick=()=>{
-    const p = normalizeProviderProfile(provider.profile || {});
-    const addr = buildAddress(p) || 'Adresse fehlt';
-    alert(`Profil-Übersicht\n${p.name || 'Name fehlt'}\n${addr}\nEssenszeit: ${p.mealWindow || DEFAULT_MEAL_WINDOW}`);
-  };
+  const rowProfileOverview = document.getElementById('rowProfileOverview');
+  if(rowProfileOverview){
+    rowProfileOverview.onclick=()=>{
+      const p = normalizeProviderProfile(provider.profile || {});
+      const addr = buildAddress(p) || 'Adresse fehlt';
+      alert(`Profil-Übersicht\n${p.name || 'Name fehlt'}\n${addr}\nEssenszeit: ${p.mealWindow || DEFAULT_MEAL_WINDOW}`);
+    };
+  }
 
-  document.getElementById('btnProvShareOffer').onclick=()=>{
-    const first = offers.find(o=>o.providerId===providerId());
-    if(first) shareOffer(first);
-    else alert('Noch keine Inserate zum Teilen.');
-  };
-  document.getElementById('btnProvWeekPdf').onclick=()=> printWeekCard();
+  const btnProvShareOffer = document.getElementById('btnProvShareOffer');
+  if(btnProvShareOffer){
+    btnProvShareOffer.onclick=()=>{
+      const first = offers.find(o=>o.providerId===providerId());
+      if(first) shareOffer(first);
+      else alert('Noch keine Inserate zum Teilen.');
+    };
+  }
+  const btnProvWeekPdf = document.getElementById('btnProvWeekPdf');
+  if(btnProvWeekPdf){
+    btnProvWeekPdf.onclick=()=> printWeekCard();
+  }
   // Provider Support (nur im Anbieter-Dashboard, support@mittagio.de)
-  document.getElementById('btnProvSupport').onclick=()=>{
-    window.location.href = 'mailto:support@mittagio.de';
-  };
+  const btnProvSupport = document.getElementById('btnProvSupport');
+  if(btnProvSupport){
+    btnProvSupport.onclick=()=>{
+      window.location.href = 'mailto:support@mittagio.de';
+    };
+  }
 
   // Legal Pages Navigation (statische Seiten)
   function showLegalPage(page){
@@ -7703,15 +7745,24 @@
   }
 
   // Provider Legal Links - öffnen statische Seiten
-  document.getElementById('btnLegalImprint').onclick=()=>{
-    showLegalPage('impressum');
-  };
-  document.getElementById('btnLegalPrivacy').onclick=()=>{
-    showLegalPage('datenschutz');
-  };
-  document.getElementById('btnLegalTerms').onclick=()=>{
-    showLegalPage('agb-kurz');
-  };
+  const btnLegalImprint = document.getElementById('btnLegalImprint');
+  if(btnLegalImprint){
+    btnLegalImprint.onclick=()=>{
+      showLegalPage('impressum');
+    };
+  }
+  const btnLegalPrivacy = document.getElementById('btnLegalPrivacy');
+  if(btnLegalPrivacy){
+    btnLegalPrivacy.onclick=()=>{
+      showLegalPage('datenschutz');
+    };
+  }
+  const btnLegalTerms = document.getElementById('btnLegalTerms');
+  if(btnLegalTerms){
+    btnLegalTerms.onclick=()=>{
+      showLegalPage('agb-kurz');
+    };
+  }
 
   // --- Provider actions (alte Buttons entfernt, jetzt über Create Flow Sheet) ---
   // btnNewListing und btnFromCookbook werden nicht mehr verwendet
@@ -7723,47 +7774,70 @@
   // Kochbuch: "+ Gericht hinzufügen" öffnet IMMER Master-Flow (kein cookbook-Wizard)
   const btnCookbookAdd = document.getElementById('btnCookbookAdd');
   if(btnCookbookAdd) btnCookbookAdd.onclick=()=> startListingFlow({});
-  document.getElementById('btnProvSetup').onclick=()=> startWizard('provider');
+  const btnProvSetup = document.getElementById('btnProvSetup');
+  if(btnProvSetup){
+    btnProvSetup.onclick=()=> startWizard('provider');
+  }
   // btnOpenWeekPlan wird nicht mehr verwendet (Week Preview ist jetzt im Dashboard)
   const btnOpenWeekPlan = document.getElementById('btnOpenWeekPlan');
   if(btnOpenWeekPlan) btnOpenWeekPlan.style.display = 'none';
-  document.getElementById('btnPickupsFaq').onclick=()=>{
-    showProviderProfile();
-    const box = document.getElementById('provFaqBox');
-    if(box) box.style.display = 'block';
-  };
+  const btnPickupsFaq = document.getElementById('btnPickupsFaq');
+  if(btnPickupsFaq){
+    btnPickupsFaq.onclick=()=>{
+      showProviderProfile();
+      const box = document.getElementById('provFaqBox');
+      if(box) box.style.display = 'block';
+    };
+  }
 
-  document.getElementById('btnEditOffer').onclick=()=>{
-    if(!activeProviderOfferId) return;
-    closeProviderSheet();
-    startListingFlow({editOfferId: activeProviderOfferId});
-  };
-  document.getElementById('btnToggleOffer').onclick=()=>{
-    if(!activeProviderOfferId) return;
-    const idx = offers.findIndex(x=>x.id===activeProviderOfferId);
-    if(idx<0) return;
-    offers[idx].active = offers[idx].active === false ? true : false;
-    save(LS.offers, offers);
-    closeProviderSheet();
-    renderProviderHome();
-    renderProviderPickups();
-    renderDiscover();
-  };
-  document.getElementById('btnShareOffer').onclick=()=>{
-    if(!activeProviderOfferId) return;
-    const o = offers.find(x=>x.id===activeProviderOfferId);
-    if(!o) return;
-    shareOffer(o);
-  };
-  document.getElementById('btnPrintOffer').onclick=()=>{
-    if(!activeProviderOfferId) return;
-    const o = offers.find(x=>x.id===activeProviderOfferId);
-    if(!o) return;
-    printOffer(o);
-  };
+  const btnEditOffer = document.getElementById('btnEditOffer');
+  if(btnEditOffer){
+    btnEditOffer.onclick=()=>{
+      if(!activeProviderOfferId) return;
+      closeProviderSheet();
+      startListingFlow({editOfferId: activeProviderOfferId});
+    };
+  }
+  const btnToggleOffer = document.getElementById('btnToggleOffer');
+  if(btnToggleOffer){
+    btnToggleOffer.onclick=()=>{
+      if(!activeProviderOfferId) return;
+      const idx = offers.findIndex(x=>x.id===activeProviderOfferId);
+      if(idx<0) return;
+      offers[idx].active = offers[idx].active === false ? true : false;
+      save(LS.offers, offers);
+      closeProviderSheet();
+      renderProviderHome();
+      renderProviderPickups();
+      renderDiscover();
+    };
+  }
+  const btnShareOffer = document.getElementById('btnShareOffer');
+  if(btnShareOffer){
+    btnShareOffer.onclick=()=>{
+      if(!activeProviderOfferId) return;
+      const o = offers.find(x=>x.id===activeProviderOfferId);
+      if(!o) return;
+      shareOffer(o);
+    };
+  }
+  const btnPrintOffer = document.getElementById('btnPrintOffer');
+  if(btnPrintOffer){
+    btnPrintOffer.onclick=()=>{
+      if(!activeProviderOfferId) return;
+      const o = offers.find(x=>x.id===activeProviderOfferId);
+      if(!o) return;
+      printOffer(o);
+    };
+  }
 
-  document.getElementById('btnWeekBack').onclick=()=> showProviderHome();
-  document.getElementById('btnWeekPdf').onclick=()=>{
+  const btnWeekBack = document.getElementById('btnWeekBack');
+  if(btnWeekBack){
+    btnWeekBack.onclick=()=> showProviderHome();
+  }
+  const btnWeekPdf = document.getElementById('btnWeekPdf');
+  if(btnWeekPdf){
+    btnWeekPdf.onclick=()=>{
     printWeekCard();
   };
 
