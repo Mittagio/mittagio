@@ -9787,32 +9787,26 @@
     }
   }
   
-  // Route Handler abgeschlossen - Initialisierung startet
   renderChips();
 
   // init nav bindings
   if(mode==='provider' && !provider.loggedIn) mode='customer';
-  // Start-Seite auf Discover-Seite umstellen (Final Spec) - KEIN Login-Zwang
   if(mode==='start') mode='customer';
   setMode(mode);
   
-  // Profil-View initialisieren
   updateProfileView();
   
-  // Sicherstellen, dass Discover-Seite gerendert wird (auch wenn mode='customer')
   if(mode === 'customer'){
     setTimeout(()=>{
       if(typeof renderDiscover !== 'undefined'){
         renderDiscover();
       }
-      // Icons nach Discover-Rendering initialisieren
       if(typeof lucide !== 'undefined'){
         setTimeout(()=> lucide.createIcons(), 150);
       }
     }, 100);
   }
   
-  // Sicherstellen, dass Startseite gerendert wird
   if(mode === 'start'){
     setTimeout(()=>{
       if(typeof renderStart !== 'undefined'){
