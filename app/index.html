@@ -9871,7 +9871,8 @@
   }
 
   // PWA (optional)
-  if('serviceWorker' in navigator){
+  // TEMPORÄR DEAKTIVIERT ZUM TESTEN
+  if(false && 'serviceWorker' in navigator){
     window.addEventListener('load', ()=>{
       // Service Worker-Pfad relativ zum aktuellen Verzeichnis
       const swPath = document.querySelector('base') ? 'sw.js' : './sw.js';
