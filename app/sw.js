@@ -1,4 +1,4 @@
-const CACHE = 'mittagio-app-v12';
+const CACHE = 'mittagio-app-v13';
 const CACHE_PREFIX = 'mittagio-';
 
 // Base-Pfad automatisch erkennen (Service Worker liegt im gleichen Verzeichnis wie index.html)
