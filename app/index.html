@@ -1137,7 +1137,7 @@
   <div class="topbar" id="topbar">
     <div class="topbar-inner">
       <div class="brand" role="button" aria-label="Mittagio">
-        <div class="brand-badge" id="appLogo" style="cursor:pointer;"><img src="assets/mittagio-logo.png" alt="Mittagio" onerror="this.style.display='none'" /></div>
+        <div class="brand-badge"><img src="assets/mittagio-logo.png" alt="Mittagio" onerror="this.style.display='none'" /></div>
         <div class="brand-name">MITTAGIO</div>
       </div>
       <div class="spacer"></div>
@@ -1216,7 +1216,7 @@
           <button class="btn" type="button" onclick="const q=prompt('Neuer Standort:'); if(q){locationQuery=q; renderDiscover();}" style="width:100%;">
             Standort ändern
           </button>
-          <button class="btn secondary" type="button" onclick="navigateTo('/anbieter/dashboard')" style="width:100%;">
+          <button class="btn secondary" type="button" onclick="setMode('provider')" style="width:100%;">
             Als Anbieter starten
           </button>
         </div>
@@ -1346,23 +1346,50 @@
       </div>
     </section>
 
-    <!-- CUSTOMER: Profile ("Mein Mittagio") - Endkunden-Dashboard -->
+    <!-- CUSTOMER: Profile ("Mein Mittagio") - MVP Final -->
     <section class="view" id="v-profile">
       <!-- Header -->
       <div style="padding:16px 16px 20px; background:transparent; border:none; box-shadow:none;">
         <h2 style="margin:0; font-size:24px; font-weight:900; line-height:1.2;">Mein Mittagio</h2>
       </div>
 
-      <!-- Welcome Card (neutral, ohne "Bestellen") -->
+      <!-- Welcome Card (dynamic) -->
       <div class="panel" id="profileWelcomeCard" style="margin-top:0; padding:16px; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,.04);">
         <!-- Wird dynamisch befüllt -->
       </div>
 
-      <!-- Kürzlich angesehene Anbieter/Angebote (session-basiert) -->
-      <div class="panel" id="profileRecentViews" style="margin-top:18px; padding:16px; display:none; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,.04);">
-        <div style="font-weight:600; font-size:17px; margin-bottom:12px; line-height:1.3;">Kürzlich angesehen</div>
-        <div id="profileRecentViewsList" style="display:flex; flex-direction:column; gap:8px;">
-          <!-- Wird dynamisch befüllt -->
+      <!-- Orders Teaser -->
+      <div class="panel" id="profileOrdersTeaser" style="margin-top:18px; padding:16px; display:none; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,.04);">
+        <div style="font-weight:600; font-size:17px; margin-bottom:10px; line-height:1.3;">Meine Bestellungen</div>
+        <div class="hint" id="profileLastOrderText" style="font-size:14px; line-height:1.4; margin-bottom:12px; color:var(--muted);"></div>
+        <button class="btn secondary" type="button" id="btnProfileToOrders" style="width:100%; min-height:44px; display:none;">
+          Zur Mittagsbox
+        </button>
+        <button class="btn secondary" type="button" id="btnProfileDiscoverFromOrders" style="width:100%; min-height:44px; display:none;">
+          Jetzt entdecken
+        </button>
+      </div>
+
+      <!-- Reorder Teaser -->
+      <div class="panel" id="profileReorderTeaser" style="margin-top:18px; padding:16px; display:none; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,.04);">
+        <div style="font-weight:600; font-size:17px; margin-bottom:10px; line-height:1.3;">Wieder bei bekannten Anbietern</div>
+        <div class="hint" id="profileReorderHelper" style="font-size:13px; line-height:1.4; margin-bottom:12px; color:var(--muted); display:none;">
+          Bestelle erneut bei Anbietern, die dir gefallen haben.
+        </div>
+        <div id="profileReorderProviders"></div>
+      </div>
+
+      <!-- Personal Data -->
+      <div class="panel" id="profilePersonalData" style="margin-top:18px; padding:16px; display:none; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,.04);">
+        <div style="font-weight:600; font-size:17px; margin-bottom:12px; line-height:1.3;">Meine Daten</div>
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 0; border-bottom:1px solid var(--border);">
+          <div style="flex:1; min-width:0;">
+            <div class="hint" style="font-size:12px; margin-bottom:4px; color:var(--muted);">E-Mail-Adresse</div>
+            <div id="profileEmail" style="font-weight:600; font-size:14px; line-height:1.4; word-break:break-word;"></div>
+          </div>
+          <button class="btn ghost" type="button" id="btnProfileEditEmail" style="padding:8px 12px; font-size:14px; min-height:36px; margin-left:12px; flex-shrink:0;">
+            Ändern
+          </button>
         </div>
       </div>
 
@@ -1428,7 +1455,7 @@
         <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:12px 16px; font-size:12px; margin-bottom:10px;">
           <a href="#/impressum" id="btnProfileImpressum" onclick="showLegalPage('impressum'); return false;" style="color:var(--muted); text-decoration:none;">Impressum</a>
           <a href="#/agb-kurz" id="btnProfileAGB" onclick="showLegalPage('agb-kurz'); return false;" style="color:var(--muted); text-decoration:none;">AGB</a>
-          <a href="/datenschutz" id="btnProfileDatenschutz" onclick="navigateTo('/datenschutz'); return false;" style="color:var(--muted); text-decoration:none;">Datenschutz</a>
+          <a href="#/datenschutz" id="btnProfileDatenschutz" onclick="showLegalPage('datenschutz'); return false;" style="color:var(--muted); text-decoration:none;">Datenschutz</a>
         </div>
         <div style="font-size:12px; color:var(--muted);">
           <a href="mailto:support@mittagio.de" style="color:var(--muted); text-decoration:none;">support@mittagio.de</a>
@@ -1721,7 +1748,21 @@
 
     <!-- PROVIDER APP - Dashboard (Home) -->
     <section class="view" id="v-provider-home">
-      <!-- KPI Dashboard Cards (Row of 3) - TICKET 03: Nur 3 Tabs/Stats sichtbar -->
+      <!-- Provider Identity Card (Header) -->
+      <div class="panel" id="providerIdentityCard" style="padding:16px; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,.04);">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+          <div class="plogo" id="provCardLogo" style="width:56px; height:56px; border-radius:14px; flex-shrink:0;"></div>
+          <div style="flex:1; min-width:0;">
+            <div style="font-weight:600; font-size:17px; line-height:1.3; margin-bottom:4px;" id="provCardName">Anbieter</div>
+            <div class="hint" id="provCardAddr" style="font-size:13px; line-height:1.4;">Adresse hinzufügen</div>
+          </div>
+        </div>
+        <button class="btn secondary" type="button" id="btnProviderEditProfile" style="width:100%; min-height:44px;">
+          Profil bearbeiten
+        </button>
+      </div>
+
+      <!-- KPI Dashboard Cards (Row of 3) -->
       <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; margin-top:18px;">
         <div class="panel" id="kpiCardInserate" style="padding:16px; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,.04); cursor:pointer; text-align:center;">
           <div style="font-size:24px; font-weight:900; line-height:1.2; margin-bottom:6px;" id="kpiInserateCount">0</div>
@@ -1763,16 +1804,15 @@
         </div>
       </div>
 
-      <!-- Empty Dashboard (Welcome Card) - TICKET 04: Entfernt -->
-
-      <!-- TICKET 05: Stepper/Tags über Inserat erstellen -->
-      <div id="providerStepperTags" style="margin-top:18px; padding:12px 16px; background:#f8f7f3; border-radius:12px; display:flex; align-items:center; gap:8px; font-size:13px; color:var(--muted); flex-wrap:wrap;">
-        <span style="color:var(--muted);">➜</span>
-        <span>Inserat erstellen</span>
-        <span style="color:var(--muted);">➜</span>
-        <span>Gericht wählen</span>
-        <span style="color:var(--muted);">➜</span>
-        <span>Abholcode (optional)</span>
+      <!-- Empty Dashboard (Welcome Card) -->
+      <div class="panel" id="providerEmptyDashboard" style="margin-top:18px; padding:20px; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,.04); text-align:center; display:none;">
+        <div style="font-weight:600; font-size:18px; margin-bottom:8px; line-height:1.3;">Willkommen bei Mittagio</div>
+        <div class="hint" style="font-size:14px; line-height:1.4; margin-bottom:16px; color:var(--muted);">
+          Starte mit deinem ersten Gericht.
+        </div>
+        <button class="btn secondary" type="button" id="btnProviderEmptyAddDish" style="width:100%; min-height:44px;">
+          Gericht hinzufügen
+        </button>
       </div>
 
       <!-- FAB (Floating Action Button) -->
@@ -1913,7 +1953,7 @@
             <button class="rowbtn" type="button" id="btnProvSupport">
               <div class="rowbtn-left">
                 <div class="rowbtn-ico" data-icon="mail" data-icon-only="1"></div>
-                <div class="rowbtn-text">Support kontaktieren</div>
+                <div class="rowbtn-text">Support kontaktieren<span>Öffnet dein Mail-Programm</span></div>
               </div>
               <div class="chev">›</div>
             </button>
@@ -1940,7 +1980,7 @@
             <button class="rowbtn" type="button" id="btnLegalTerms">
               <div class="rowbtn-left">
                 <div class="rowbtn-ico" data-icon="file" data-icon-only="1"></div>
-                <div class="rowbtn-text">AGB</div>
+                <div class="rowbtn-text">AGB (Kurzfassung)</div>
               </div>
               <div class="chev">›</div>
             </button>
@@ -1962,7 +2002,7 @@
       <div class="panel">
         <h1 style="font-size:24px; font-weight:900; margin-bottom:20px;">Impressum</h1>
         <div style="line-height:1.8; font-size:15px;">
-          <p style="font-weight:700; margin-bottom:12px;">Angaben gemäß § 5 TMG</p>
+          <p style="font-weight:700; margin-bottom:12px;">Verantwortlich für den Inhalt:</p>
           <p>
             Mittagio<br>
             Inhaber: Mike Quach<br>
@@ -1971,178 +2011,117 @@
             Deutschland
           </p>
           <p style="margin-top:16px;">
-            <strong>📧 E-Mail:</strong> <a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a>
+            <strong>E-Mail:</strong> <a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a>
           </p>
-          
-          <p style="margin-top:24px; font-weight:700;">Rechtsform</p>
-          <p>Einzelunternehmen</p>
-          
-          <p style="margin-top:20px; font-weight:700;">Umsatzsteuer</p>
-          <p>Gemäß § 19 UStG wird keine Umsatzsteuer ausgewiesen (Kleinunternehmerregelung).</p>
-          
-          <p style="margin-top:20px; font-weight:700;">Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV</p>
-          <p>
-            Mike Quach<br>
-            Langäcker 2<br>
-            73635 Rudersberg
+          <p style="margin-top:20px; padding-top:20px; border-top:1px solid #eee; font-size:13px; color:#666;">
+            <strong>Unternehmensform:</strong> Einzelunternehmen<br>
+            <strong>Umsatzsteuer-ID:</strong> nicht vorhanden (§19 UStG)
           </p>
-          
-          <p style="margin-top:24px; font-weight:700;">Haftung für Inhalte</p>
-          <p>Als Diensteanbieter sind wir gemäß § 7 Abs.1 TMG für eigene Inhalte auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich. Für fremde Inhalte, die über die Plattform durch Anbieter eingestellt werden, übernehmen wir keine Gewähr.</p>
-          
-          <p style="margin-top:20px; font-weight:700;">Haftung für Links</p>
-          <p>Unsere Plattform kann Links zu externen Webseiten Dritter enthalten. Auf deren Inhalte haben wir keinen Einfluss.</p>
+          <p style="margin-top:16px; padding-top:16px; border-top:1px solid #eee; font-size:13px; color:#666;">
+            <strong>Plattformhinweis:</strong><br>
+            Mittagio vermittelt Mittagsangebote lokaler Anbieter. Vertragspartner bei Bestellungen ist ausschließlich der jeweilige Anbieter.
+          </p>
         </div>
         <div style="margin-top:32px; padding-top:20px; border-top:1px solid #eee; text-align:center; font-size:14px; color:#666;">
           Fragen, Hilfe oder Vorschläge? <a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a>
         </div>
-        <button class="btn ghost" type="button" id="btnLegalImpressumBack" style="margin-top:20px; width:100%;">Zurück</button>
+        <button class="btn ghost" type="button" onclick="history.back()" style="margin-top:20px; width:100%;">Zurück</button>
       </div>
     </section>
 
     <section class="view" id="v-legal-agb-kurz">
       <div class="panel">
-        <h1 style="font-size:24px; font-weight:900; margin-bottom:20px;">Allgemeine Geschäftsbedingungen (AGB)</h1>
-        <div style="line-height:1.8; font-size:15px; max-height:70vh; overflow-y:auto;">
-          <p style="font-weight:700; margin-bottom:8px;">für Anbieter auf Mittagio</p>
+        <h1 style="font-size:24px; font-weight:900; margin-bottom:20px;">AGB (Kurzfassung)</h1>
+        <div style="line-height:1.8; font-size:15px;">
+          <p><strong>Mittagio ist Plattform, nicht Verkäufer</strong></p>
+          <p>Mittagio vermittelt Mittagsangebote lokaler Anbieter. Vertragspartner bei Bestellungen ist ausschließlich der jeweilige Anbieter.</p>
           
-          <p style="margin-top:24px; font-weight:700;">§1 Geltungsbereich</p>
-          <p>Diese Allgemeinen Geschäftsbedingungen gelten für alle Anbieter (nachfolgend „Anbieter"), die über die Plattform Mittagio Mittagstisch-Angebote, Speisen oder sonstige Leistungen einstellen und bewerben.</p>
-          <p>Mittagio ist eine digitale Vermittlungsplattform und selbst kein Verkäufer, Produzent oder Lieferant der angebotenen Speisen.</p>
-          
-          <p style="margin-top:24px; font-weight:700;">§2 Vertragsverhältnis</p>
-          <p>(1) Der Vertrag über die angebotenen Speisen kommt ausschließlich zwischen Anbieter und Endkunde zustande.</p>
-          <p>(2) Mittagio stellt lediglich die technische Plattform zur Präsentation und Vermittlung der Angebote bereit.</p>
-          
-          <p style="margin-top:24px; font-weight:700;">§3 Leistungen von Mittagio</p>
-          <p>(1) Bereitstellung einer digitalen Plattform zur:</p>
+          <p style="margin-top:20px;"><strong>Kosten für Anbieter:</strong></p>
           <ul style="padding-left:20px; margin:8px 0;">
-            <li>Erstellung und Veröffentlichung von Mittagsangeboten</li>
-            <li>Verwaltung von Inseraten, Kochbuch und Abholungen</li>
-            <li>Anzeige von Abholcodes und Abholstatus</li>
-          </ul>
-          <p>(2) Mittagio schuldet keinen wirtschaftlichen Erfolg, keine Mindestverkäufe und keine bestimmte Reichweite.</p>
-          
-          <p style="margin-top:24px; font-weight:700;">§4 Pflichten des Anbieters</p>
-          <p>(1) Der Anbieter ist verpflichtet:</p>
-          <ul style="padding-left:20px; margin:8px 0;">
-            <li>korrekte und vollständige Angaben zu Speisen, Preisen und Abholzeiten zu machen</li>
-            <li>lebensmittelrechtliche Vorschriften einzuhalten</li>
-            <li>nur tatsächlich verfügbare Speisen anzubieten</li>
-          </ul>
-          <p>(2) Der Anbieter ist allein verantwortlich für:</p>
-          <ul style="padding-left:20px; margin:8px 0;">
-            <li>Qualität, Frische und Sicherheit der Speisen</li>
-            <li>ordnungsgemäße Ausgabe an den Endkunden</li>
+            <li>4,99 € zzgl. MwSt. pro Veröffentlichung</li>
+            <li>0,89 € zzgl. MwSt. pro Online-Bestellung inkl. aller Bank- & Zahlungsgebühren (pro Bestellung, egal wie viele Gerichte)</li>
           </ul>
           
-          <p style="margin-top:24px; font-weight:700;">§5 Preise & Abrechnung</p>
-          <p>(1) Die Nutzung der Plattform kann kostenpflichtig sein.</p>
-          <p>(2) Etwaige Gebühren werden transparent im Anbieterbereich ausgewiesen.</p>
-          <p>(3) Es besteht kein Abonnement, keine Mindestvertragslaufzeit und kein langfristiger Vertrag, sofern nicht ausdrücklich anders vereinbart.</p>
+          <p style="margin-top:20px;"><strong>Abholcode:</strong></p>
+          <p>Der Abholcode dient als Zahlungs- & Abholnachweis. Die Abwicklungsgebühr fällt auch bei Nicht-Abholung an.</p>
           
-          <p style="margin-top:24px; font-weight:700;">§6 Haftung</p>
-          <p>(1) Mittagio haftet nicht für:</p>
-          <ul style="padding-left:20px; margin:8px 0;">
-            <li>Qualität oder Beschaffenheit der angebotenen Speisen</li>
-            <li>gesundheitliche Schäden oder Unverträglichkeiten</li>
-            <li>Streitigkeiten zwischen Anbieter und Endkunde</li>
-          </ul>
-          <p>(2) Mittagio haftet nur bei Vorsatz oder grober Fahrlässigkeit im Rahmen der gesetzlichen Vorschriften.</p>
+          <p style="margin-top:20px;"><strong>Verantwortung:</strong></p>
+          <p>Der Anbieter ist verantwortlich für Inhalte, Speisen und gesetzliche Vorgaben.</p>
           
-          <p style="margin-top:24px; font-weight:700;">§7 Verfügbarkeit der Plattform</p>
-          <p>Mittagio bemüht sich um eine hohe Verfügbarkeit der Plattform, kann jedoch keine unterbrechungsfreie Nutzung garantieren (z. B. Wartung, technische Störungen).</p>
-          
-          <p style="margin-top:24px; font-weight:700;">§8 Kündigung</p>
-          <p>(1) Anbieter können ihr Profil jederzeit löschen.</p>
-          <p>(2) Mittagio behält sich vor, Anbieter bei Verstößen gegen diese AGB oder gesetzliche Vorschriften zu sperren oder zu entfernen.</p>
-          
-          <p style="margin-top:24px; font-weight:700;">§9 Änderungen der AGB</p>
-          <p>Mittagio behält sich vor, diese AGB zu ändern. Anbieter werden über wesentliche Änderungen rechtzeitig informiert.</p>
-          
-          <p style="margin-top:24px; font-weight:700;">§10 Schlussbestimmungen</p>
-          <p>(1) Es gilt deutsches Recht.</p>
-          <p>(2) Sollten einzelne Bestimmungen unwirksam sein, bleibt die Wirksamkeit der übrigen unberührt.</p>
+          <p style="margin-top:20px;"><strong>Support:</strong></p>
+          <p><a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a></p>
         </div>
         <div style="margin-top:32px; padding-top:20px; border-top:1px solid #eee; text-align:center; font-size:14px; color:#666;">
           Fragen, Hilfe oder Vorschläge? <a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a>
         </div>
-        <button class="btn ghost" type="button" id="btnLegalAgbBack" style="margin-top:20px; width:100%;">Zurück</button>
+        <button class="btn ghost" type="button" onclick="history.back()" style="margin-top:20px; width:100%;">Zurück</button>
       </div>
     </section>
 
     <section class="view" id="v-legal-datenschutz">
       <div class="panel">
         <h1 style="font-size:24px; font-weight:900; margin-bottom:20px;">Datenschutzerklärung</h1>
-        <div style="line-height:1.8; font-size:15px; max-height:70vh; overflow-y:auto;">
-          <p>Der Schutz Ihrer personenbezogenen Daten ist uns wichtig. Nachfolgend informieren wir Sie darüber, welche Daten wir erheben und wie wir sie verwenden.</p>
-          
-          <p style="margin-top:24px; font-weight:700;">1. Verantwortlicher</p>
-          <p>Verantwortlich für die Datenverarbeitung ist:</p>
+        <div style="line-height:1.8; font-size:15px;">
+          <p style="font-weight:700; margin-bottom:12px;">Verantwortlicher:</p>
           <p>
             Mittagio<br>
-            Inhaber: Mike Quach<br>
+            Mike Quach<br>
             Langäcker 2<br>
             73635 Rudersberg<br>
-            📧 support@mittagio.de
+            Deutschland<br>
+            E-Mail: <a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a>
           </p>
           
-          <p style="margin-top:24px; font-weight:700;">2. Erhebung und Verarbeitung personenbezogener Daten</p>
-          <p>Wir verarbeiten personenbezogene Daten nur, soweit dies zur Bereitstellung unserer Plattform erforderlich ist.</p>
-          <p>Dazu gehören insbesondere:</p>
+          <p style="margin-top:24px; font-weight:700;">Welche Daten erheben wir?</p>
+          
+          <p style="margin-top:12px;"><strong>Anbieter:</strong></p>
           <ul style="padding-left:20px; margin:8px 0;">
-            <li>Name und Kontaktdaten von Anbietern</li>
-            <li>Profil- und Angebotsdaten</li>
-            <li>Kommunikationsdaten (z. B. Support-Anfragen)</li>
+            <li>Betriebsname</li>
+            <li>Kontaktdaten</li>
+            <li>Standort/Öffnungszeiten</li>
+            <li>Inserats-/Bestelldaten</li>
+            <li>Abrechnungsdaten</li>
           </ul>
           
-          <p style="margin-top:24px; font-weight:700;">3. Zweck der Datenverarbeitung</p>
-          <p>Die Verarbeitung erfolgt zur:</p>
+          <p style="margin-top:12px;"><strong>Kunden:</strong></p>
           <ul style="padding-left:20px; margin:8px 0;">
-            <li>Bereitstellung der Plattformfunktionen</li>
-            <li>Verwaltung von Anbieterprofilen und Inseraten</li>
-            <li>Kommunikation mit Anbietern</li>
-            <li>Sicherstellung eines ordnungsgemäßen Betriebs</li>
+            <li>Bestelldaten</li>
+            <li>Zahlungsstatus</li>
+            <li>Abholcode (keine unnötigen personenbezogenen Daten)</li>
           </ul>
           
-          <p style="margin-top:24px; font-weight:700;">4. Weitergabe von Daten</p>
-          <p>Eine Weitergabe personenbezogener Daten erfolgt nur:</p>
-          <ul style="padding-left:20px; margin:8px 0;">
-            <li>wenn dies gesetzlich erforderlich ist</li>
-            <li>oder zur technischen Bereitstellung der Plattform (z. B. Hosting)</li>
-          </ul>
-          <p>Eine Weitergabe an Dritte zu Werbezwecken erfolgt nicht.</p>
+          <p style="margin-top:24px; font-weight:700;">Online-Zahlung:</p>
+          <p>Online-Zahlung erfolgt über externe Zahlungsdienstleister (z.B. Stripe). Wir speichern keine kompletter Zahlungsdaten (z.B. Kreditkartennummern).</p>
           
-          <p style="margin-top:24px; font-weight:700;">5. Speicherdauer</p>
-          <p>Personenbezogene Daten werden nur so lange gespeichert, wie dies für den jeweiligen Zweck erforderlich ist oder gesetzliche Aufbewahrungspflichten bestehen.</p>
+          <p style="margin-top:24px; font-weight:700;">Zweck des Abholcodes:</p>
+          <p>Der Abholcode dient als Zahlungs-/Abholnachweis, zur Zuordnung und zum Missbrauchsschutz.</p>
           
-          <p style="margin-top:24px; font-weight:700;">6. Rechte der betroffenen Personen</p>
-          <p>Sie haben das Recht auf:</p>
-          <ul style="padding-left:20px; margin:8px 0;">
-            <li>Auskunft über Ihre gespeicherten Daten</li>
-            <li>Berichtigung unrichtiger Daten</li>
-            <li>Löschung Ihrer Daten, sofern keine gesetzlichen Pflichten entgegenstehen</li>
-            <li>Einschränkung der Verarbeitung</li>
-          </ul>
-          <p>Anfragen richten Sie bitte an: <a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a></p>
+          <p style="margin-top:24px; font-weight:700;">Weitergabe:</p>
+          <p>Daten werden nur an Zahlungsdienstleister und wenn gesetzlich erforderlich weitergegeben. Keine Werbeweitergabe.</p>
           
-          <p style="margin-top:24px; font-weight:700;">7. Datensicherheit</p>
-          <p>Wir setzen technische und organisatorische Maßnahmen ein, um Ihre Daten gegen Verlust, Missbrauch oder unbefugten Zugriff zu schützen.</p>
+          <p style="margin-top:24px; font-weight:700;">Speicherdauer:</p>
+          <p>Daten werden nur so lange gespeichert wie nötig und gemäß gesetzlicher Aufbewahrungspflichten.</p>
           
-          <p style="margin-top:24px; font-weight:700;">8. Änderungen</p>
-          <p>Diese Datenschutzerklärung kann bei Bedarf angepasst werden, um rechtlichen Anforderungen zu entsprechen.</p>
+          <p style="margin-top:24px; font-weight:700;">Ihre Rechte:</p>
+          <p>Sie haben das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung und Widerspruch. Kontakt: <a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a></p>
+          
+          <p style="margin-top:24px; font-weight:700;">Datensicherheit:</p>
+          <p>Wir setzen technische und organisatorische Maßnahmen zum Schutz Ihrer Daten ein.</p>
+          
+          <p style="margin-top:24px; font-weight:700;">Änderungen:</p>
+          <p>Diese Datenschutzerklärung kann angepasst werden. Aktuelle Version finden Sie auf dieser Seite.</p>
         </div>
         <div style="margin-top:32px; padding-top:20px; border-top:1px solid #eee; text-align:center; font-size:14px; color:#666;">
           Fragen, Hilfe oder Vorschläge? <a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a>
         </div>
-        <button class="btn ghost" type="button" id="btnLegalDatenschutzBack" style="margin-top:20px; width:100%;">Zurück</button>
+        <button class="btn ghost" type="button" onclick="history.back()" style="margin-top:20px; width:100%;">Zurück</button>
       </div>
     </section>
 
 
     <section class="view" id="v-legal-agb-onboarding">
       <div class="panel">
-        <h2 style="font-size:20px; font-weight:900; margin-bottom:16px;">AGB</h2>
+        <h2 style="font-size:20px; font-weight:900; margin-bottom:16px;">AGB (Kurzfassung)</h2>
         <div style="line-height:1.7; font-size:14px; max-height:60vh; overflow-y:auto;">
           <p><strong>Mittagio ist Plattform, nicht Verkäufer</strong></p>
           <p>Mittagio vermittelt Mittagsangebote lokaler Anbieter. Vertragspartner bei Bestellungen ist ausschließlich der jeweilige Anbieter.</p>
@@ -2165,11 +2144,10 @@
       </div>
     </section>
       
-    <!-- FAQ View -->
-    <section class="view" id="v-legal-faq">
-      <div class="panel">
-        <h1 style="font-size:24px; font-weight:900; margin-bottom:20px;">FAQ (Anbieter)</h1>
-        <div class="faq">
+      <div id="provFaqBox" style="display:none;">
+        <div class="panel">
+          <div class="section-title">FAQ (Anbieter)</div>
+          <div class="faq">
             <details>
               <summary>Was ist Mittagio?</summary>
               <p>Mittagio ist eine Online-Plattform, auf der du dein Mittagsangebot sichtbar machst – schnell, einfach und flexibel.</p>
@@ -2208,99 +2186,8 @@
             </details>
           </div>
         </div>
-        <div style="margin-top:32px; padding-top:20px; border-top:1px solid #eee; text-align:center; font-size:14px; color:#666;">
-          Fragen, Hilfe oder Vorschläge? <a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a>
-        </div>
-        <button class="btn ghost" type="button" id="btnLegalFaqBack" style="margin-top:20px; width:100%;">Zurück</button>
       </div>
     </section>
-    
-    <!-- Endkunden-Datenschutz (für Besucher & Endkunden ohne Anbieter-Account) -->
-    <section class="view" id="v-legal-datenschutz-customer">
-      <div class="panel">
-        <h1 style="font-size:24px; font-weight:900; margin-bottom:20px;">Datenschutzerklärung</h1>
-        <div style="line-height:1.8; font-size:15px; max-height:70vh; overflow-y:auto;">
-          <p>Der Schutz Ihrer personenbezogenen Daten ist uns wichtig. Nachfolgend informieren wir Sie darüber, welche Daten wir erheben und wie wir sie verwenden.</p>
-          
-          <p style="margin-top:24px; font-weight:700;">1. Verantwortlicher</p>
-          <p>Verantwortlich für die Datenverarbeitung ist:</p>
-          <p>
-            Mittagio<br>
-            Inhaber: Mike Quach<br>
-            Langäcker 2<br>
-            73635 Rudersberg<br>
-            📧 support@mittagio.de
-          </p>
-          
-          <p style="margin-top:24px; font-weight:700;">2. Erhebung und Verarbeitung personenbezogener Daten</p>
-          <p>Wir verarbeiten personenbezogene Daten nur, soweit dies zur Bereitstellung unserer Plattform erforderlich ist.</p>
-          <p><strong>Wichtig:</strong> Mittagio ist eine Vermittlungsplattform. Wir vermitteln Mittagsangebote lokaler Anbieter. Der Vertrag über die angebotenen Speisen kommt ausschließlich zwischen Ihnen (Endkunde) und dem jeweiligen Anbieter zustande.</p>
-          
-          <p style="margin-top:20px;"><strong>Daten, die wir erheben:</strong></p>
-          <ul style="padding-left:20px; margin:8px 0;">
-            <li>Technische Daten (IP-Adresse, Browser-Typ, Geräteinformationen) zur Bereitstellung der Plattform</li>
-            <li>Kommunikationsdaten (z. B. Support-Anfragen), wenn Sie uns kontaktieren</li>
-          </ul>
-          
-          <p style="margin-top:20px;"><strong>Was wir nicht erheben:</strong></p>
-          <ul style="padding-left:20px; margin:8px 0;">
-            <li>Keine Registrierung erforderlich für die Nutzung der Plattform</li>
-            <li>Keine Bestellungen über Mittagio (Bestellungen erfolgen direkt beim Anbieter)</li>
-            <li>Keine Zahlungen über Mittagio (Zahlungen erfolgen direkt beim Anbieter)</li>
-          </ul>
-          
-          <p style="margin-top:24px; font-weight:700;">3. Zweck der Datenverarbeitung</p>
-          <p>Die Verarbeitung erfolgt zur:</p>
-          <ul style="padding-left:20px; margin:8px 0;">
-            <li>Bereitstellung der Plattformfunktionen (Anzeige von Angeboten, Suche)</li>
-            <li>Sicherstellung eines ordnungsgemäßen Betriebs</li>
-            <li>Kommunikation mit Ihnen, wenn Sie uns kontaktieren</li>
-          </ul>
-          
-          <p style="margin-top:24px; font-weight:700;">4. Weitergabe von Daten</p>
-          <p><strong>Keine Weitergabe von Endkundendaten an Anbieter:</strong> Wir geben keine personenbezogenen Daten von Endkunden an Anbieter weiter.</p>
-          <p>Eine Weitergabe personenbezogener Daten erfolgt nur:</p>
-          <ul style="padding-left:20px; margin:8px 0;">
-            <li>wenn dies gesetzlich erforderlich ist</li>
-            <li>oder zur technischen Bereitstellung der Plattform (z. B. Hosting)</li>
-          </ul>
-          <p><strong>Keine Werbung, kein Marketing-Tracking:</strong> Eine Weitergabe an Dritte zu Werbezwecken erfolgt nicht. Wir verwenden keine Marketing-Tracking-Tools.</p>
-          
-          <p style="margin-top:24px; font-weight:700;">5. Speicherdauer</p>
-          <p>Personenbezogene Daten werden nur so lange gespeichert, wie dies für den jeweiligen Zweck erforderlich ist oder gesetzliche Aufbewahrungspflichten bestehen.</p>
-          
-          <p style="margin-top:24px; font-weight:700;">6. Rechte der betroffenen Personen</p>
-          <p>Sie haben das Recht auf:</p>
-          <ul style="padding-left:20px; margin:8px 0;">
-            <li>Auskunft über Ihre gespeicherten Daten</li>
-            <li>Berichtigung unrichtiger Daten</li>
-            <li>Löschung Ihrer Daten, sofern keine gesetzlichen Pflichten entgegenstehen</li>
-            <li>Einschränkung der Verarbeitung</li>
-          </ul>
-          <p>Anfragen richten Sie bitte an: <a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a></p>
-          
-          <p style="margin-top:24px; font-weight:700;">7. Datensicherheit</p>
-          <p>Wir setzen technische und organisatorische Maßnahmen ein, um Ihre Daten gegen Verlust, Missbrauch oder unbefugten Zugriff zu schützen.</p>
-          
-          <p style="margin-top:24px; font-weight:700;">8. Änderungen</p>
-          <p>Diese Datenschutzerklärung kann bei Bedarf angepasst werden, um rechtlichen Anforderungen zu entsprechen.</p>
-        </div>
-        <div style="margin-top:32px; padding-top:20px; border-top:1px solid #eee; text-align:center; font-size:14px; color:#666;">
-          Fragen, Hilfe oder Vorschläge? <a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a>
-        </div>
-        <button class="btn ghost" type="button" id="btnLegalDatenschutzCustomerBack" style="margin-top:20px; width:100%;">Zurück</button>
-      </div>
-    </section>
-    
-    <!-- Alte provFaqBox (wird noch verwendet, aber FAQ-View ist jetzt primär) -->
-    <div id="provFaqBox" style="display:none;">
-      <div class="panel">
-        <div class="section-title">FAQ (Anbieter)</div>
-        <div class="faq">
-          <!-- Wird dynamisch befüllt -->
-        </div>
-      </div>
-    </div>
 
   </main>
 
@@ -3510,14 +3397,10 @@
     const isProv = mode==='provider';
     const isStart = mode==='start';
     const isCustomer = mode==='customer';
-    const customerNav = document.getElementById('customerNav');
-    if(customerNav) customerNav.style.display = (isCustomer || isStart) ? 'flex' : 'none';
-    const providerNav = document.getElementById('providerNav');
-    if(providerNav) providerNav.style.display = isProv ? 'flex' : 'none';
-    const discoverFilters = document.getElementById('discoverFilters');
-    if(discoverFilters) discoverFilters.style.display = isCustomer ? 'block' : 'none';
-    const modePill = document.getElementById('modePill');
-    if(modePill) modePill.style.display = isProv ? 'inline-flex' : 'none';
+    document.getElementById('customerNav').style.display = (isCustomer || isStart) ? 'flex' : 'none';
+    document.getElementById('providerNav').style.display = isProv ? 'flex' : 'none';
+    document.getElementById('discoverFilters').style.display = isCustomer ? 'block' : 'none';
+    document.getElementById('modePill').style.display = isProv ? 'inline-flex' : 'none';
 
     if(isStart){
       // Start-Seite: Wenn nicht eingeloggt, zur Discover-Seite (kein Zwang)
@@ -4587,11 +4470,6 @@
     const o = normalizeOffer(raw);
     activeOfferId=id;
     
-    // Track "Kürzlich angesehen" (session-basiert, nur für Endkunden)
-    if(mode === 'customer'){
-      trackRecentView(o.providerId, id);
-    }
-    
     // History speichern (inkl. Scroll-Position)
     navigationHistory.push({
       view: mode === 'start' ? 'start' : 'discover',
@@ -5209,8 +5087,6 @@
   const btnCreateNewDish = document.getElementById('btnCreateNewDish');
   if(btnCreateNewDish){
     btnCreateNewDish.onclick = () => {
-      // TICKET 06: Navigiere zu /anbieter/kochbuch/neu
-      navigateTo('/anbieter/kochbuch/neu');
       closeCreateFlowSheet();
       // Open Master-Flow directly (new dish)
       startListingFlow({date: createFlowPreselectedDate});
@@ -5454,9 +5330,7 @@
   }
   
   // Login Modal Handler
-  const btnLoginModalLogin = document.getElementById('btnLoginModalLogin');
-  if(btnLoginModalLogin){
-    btnLoginModalLogin.onclick=()=>{
+  document.getElementById('btnLoginModalLogin').onclick=()=>{
     const email = document.getElementById('loginModalEmail').value.trim();
     const pass = document.getElementById('loginModalPass').value.trim();
     if(!email || !pass){
@@ -5472,12 +5346,9 @@
     // Nach Login zur Discover-Seite
     setMode('customer');
     showDiscover();
-    };
-  }
+  };
   
-  const btnLoginModalDemo = document.getElementById('btnLoginModalDemo');
-  if(btnLoginModalDemo){
-    btnLoginModalDemo.onclick=()=>{
+  document.getElementById('btnLoginModalDemo').onclick=()=>{
     customer.loggedIn = true;
     customer.name = customer.name || 'Mike';
     save(LS.customer, customer);
@@ -5486,8 +5357,7 @@
     // Nach Demo-Login zur Discover-Seite
     setMode('customer');
     showDiscover();
-    };
-  }
+  };
 
   applyStaticIcons();
   const locBtn = document.getElementById('btnLocationPin');
@@ -5524,16 +5394,13 @@
     };
   }
 
-  const btnAddCart = document.getElementById('btnAddCart');
-  if(btnAddCart){
-    btnAddCart.onclick=()=>{
-      const o = offers.find(x=>x.id===activeOfferId);
-      if(!o) return;
-      if(!addToCart(o)) return;
-      closeSheet();
-      showCart();
-    };
-  }
+  document.getElementById('btnAddCart').onclick=()=>{
+    const o = offers.find(x=>x.id===activeOfferId);
+    if(!o) return;
+    if(!addToCart(o)) return;
+    closeSheet();
+    showCart();
+  };
 
   // --- Cart ---
   function renderCart(){
@@ -5689,9 +5556,7 @@
     }
   }
 
-  const btnCheckout = document.getElementById('btnCheckout');
-  if(btnCheckout){
-    btnCheckout.onclick=()=>{
+  document.getElementById('btnCheckout').onclick=()=>{
     // KEIN Login-Zwang: Gast kann direkt bezahlen
     if(!cart || !cart.items || !cart.items.length) return;
     
@@ -5745,8 +5610,7 @@
     updateOrder(orderCreated.id, { status: 'PAYMENT_PENDING' });
     
     startStripeCheckout(total, cart, orderCreated.id);
-    };
-  }
+  };
   
   /**
    * Create order from cart
@@ -6042,105 +5906,174 @@
   const startProviderBtn = document.getElementById('btnStartProvider');
   if(startProviderBtn){
     startProviderBtn.onclick=()=>{
-      navigateTo('/anbieter/dashboard');
+      setMode('provider');
     };
   }
 
-  // --- Profile View ("Mein Mittagio") - Endkunden-Dashboard (kein Account, keine Bestellungen) ---
+  // --- Profile View ("Mein Mittagio") - MVP Final ---
   function updateProfileView(){
-    // Welcome Card (neutral, ohne "Bestellen")
+    const isLoggedIn = customer.loggedIn;
+    const firstName = customer.name ? customer.name.split(' ')[0] : '';
+    
+    // Welcome Card
     const welcomeCard = document.getElementById('profileWelcomeCard');
     if(welcomeCard){
-      welcomeCard.innerHTML = `
-        <div style="font-weight:600; font-size:17px; margin-bottom:8px; line-height:1.3;">Willkommen bei Mittagio 👋</div>
-        <div class="hint" style="font-size:14px; line-height:1.4; margin-bottom:14px; color:var(--muted);">Entdecke lokale Mittagsangebote in deiner Nähe.</div>
-        <button class="btn secondary" type="button" id="btnProfileDiscover" style="width:100%; min-height:44px;">
-          <i data-lucide="compass"></i> Angebote entdecken
-        </button>
-      `;
-      const btn = document.getElementById('btnProfileDiscover');
-      if(btn) btn.onclick = () => {
-        showDiscover();
-        renderDiscover();
-      };
-    }
-    
-    // Kürzlich angesehene Anbieter/Angebote (session-basiert)
-    const recentViewsPanel = document.getElementById('profileRecentViews');
-    const recentViewsList = document.getElementById('profileRecentViewsList');
-    if(recentViewsPanel && recentViewsList){
-      // Session-basierte "Kürzlich angesehen" aus sessionStorage
-      const recentViews = JSON.parse(sessionStorage.getItem('mittagio_recent_views') || '[]');
-      
-      if(recentViews.length > 0){
-        recentViewsPanel.style.display = 'block';
-        recentViewsList.innerHTML = recentViews.slice(0, 5).map(item => {
-          const provider = providers.find(p => p.id === item.providerId);
-          const offer = offers.find(o => o.id === item.offerId);
-          if(!provider && !offer) return '';
-          
-          const name = provider ? provider.name : (offer ? offer.providerName : 'Unbekannt');
-          const dishName = offer ? offer.dishName : '';
-          
-          return `
-            <div style="display:flex; align-items:center; justify-content:space-between; padding:12px; background:#f8f7f3; border-radius:14px; border:1px solid var(--border); cursor:pointer;" 
-                 onclick="navigateToProvider('${esc(item.providerId || '')}')">
-              <div style="flex:1; min-width:0;">
-                <div style="font-weight:600; font-size:14px; line-height:1.4; margin-bottom:4px;">${esc(name)}</div>
-                ${dishName ? `<div class="hint" style="font-size:12px; color:var(--muted);">${esc(dishName)}</div>` : ''}
-              </div>
-              <div style="margin-left:12px; color:var(--muted);">›</div>
-            </div>
-          `;
-        }).filter(html => html).join('');
+      if(isLoggedIn){
+        welcomeCard.innerHTML = `
+          <div style="font-weight:600; font-size:17px; margin-bottom:8px; line-height:1.3;">Hallo ${esc(firstName || 'Kunde')} 👋</div>
+          <div class="hint" style="font-size:14px; line-height:1.4; margin-bottom:14px; color:var(--muted);">Dein persönlicher Mittagsbereich.</div>
+          <button class="btn secondary" type="button" id="btnProfileToOrdersFromWelcome" style="width:100%; min-height:44px;">
+            Zu meinen Bestellungen
+          </button>
+        `;
+        const btn = document.getElementById('btnProfileToOrdersFromWelcome');
+        if(btn) btn.onclick = () => showOrders();
       } else {
-        recentViewsPanel.style.display = 'none';
+        welcomeCard.innerHTML = `
+          <div style="font-weight:600; font-size:17px; margin-bottom:8px; line-height:1.3;">Willkommen bei Mittagio 👋</div>
+          <div class="hint" style="font-size:14px; line-height:1.4; margin-bottom:14px; color:var(--muted);">Bestelle schneller und finde deine Abholcodes wieder.</div>
+          <button class="btn secondary" type="button" id="btnProfileCreateAccount" style="width:100%; min-height:44px;">
+            Profil anlegen
+          </button>
+        `;
+        const btn = document.getElementById('btnProfileCreateAccount');
+        if(btn) btn.onclick = () => {
+          // Öffne Login-Modal oder zeige Login-Flow
+          const email = prompt('E-Mail-Adresse:');
+          if(email){
+            customer.loggedIn = true;
+            customer.email = email;
+            customer.name = email.split('@')[0];
+            save(LS.customer, customer);
+            updateProfileView();
+          }
+        };
       }
     }
-  }
-  
-  // Helper: Navigiere zu Provider (Filter Discover nach Provider)
-  function navigateToProvider(providerId){
-    if(!providerId) return;
-    locationQuery = '';
-    activeDiscoverFilter = 'near';
-    const providerOffer = offers.find(o => o.providerId === providerId);
-    if(providerOffer) activeDay = providerOffer.day;
-    showDiscover();
-    renderDiscover();
-  }
-  
-  // Session-basierte "Kürzlich angesehen" Tracking
-  // Wird aufgerufen, wenn ein Angebot/Provider angesehen wird
-  function trackRecentView(providerId, offerId){
-    if(!providerId && !offerId) return;
     
-    const recentViews = JSON.parse(sessionStorage.getItem('mittagio_recent_views') || '[]');
-    const newView = {
-      providerId: providerId || null,
-      offerId: offerId || null,
-      timestamp: Date.now()
+    // Orders Teaser (mit Empty States)
+    const ordersTeaser = document.getElementById('profileOrdersTeaser');
+    const lastOrderText = document.getElementById('profileLastOrderText');
+    const btnProfileToOrders = document.getElementById('btnProfileToOrders');
+    const btnProfileDiscoverFromOrders = document.getElementById('btnProfileDiscoverFromOrders');
+    const allOrders = loadOrders();
+    const hasOrders = allOrders.length > 0;
+    const lastOrder = hasOrders ? allOrders.sort((a,b) => (b.createdAt || 0) - (a.createdAt || 0))[0] : null;
+    
+    if(ordersTeaser && lastOrderText){
+      if(hasOrders && lastOrder && lastOrder.providerName){
+        // CASE: Orders exist - show normal teaser
+        ordersTeaser.style.display = 'block';
+        lastOrderText.textContent = `Zuletzt bestellt bei: ${esc(lastOrder.providerName)}`;
+        if(btnProfileToOrders){
+          btnProfileToOrders.style.display = 'block';
+          btnProfileToOrders.onclick = () => showOrders();
+        }
+        if(btnProfileDiscoverFromOrders) btnProfileDiscoverFromOrders.style.display = 'none';
+      } else {
+        // CASE 1 & 2: No orders - show empty state
+        ordersTeaser.style.display = 'block';
+        if(isLoggedIn){
+          // CASE 2: Logged-in, no orders
+          lastOrderText.textContent = 'Noch keine Bestellungen vorhanden.';
+        } else {
+          // CASE 1: Guest, no orders
+          lastOrderText.textContent = 'Du hast noch nichts bestellt.';
+        }
+        if(btnProfileToOrders) btnProfileToOrders.style.display = 'none';
+        if(btnProfileDiscoverFromOrders){
+          btnProfileDiscoverFromOrders.style.display = 'block';
+          btnProfileDiscoverFromOrders.onclick = () => {
+            showDiscover();
+            renderDiscover();
+          };
+        }
+      }
+    }
+    
+    // Reorder Teaser (mit Empty States)
+    const reorderTeaser = document.getElementById('profileReorderTeaser');
+    const reorderProviders = document.getElementById('profileReorderProviders');
+    const reorderHelper = document.getElementById('profileReorderHelper');
+    
+    if(reorderTeaser && reorderProviders){
+      // Nur anzeigen wenn Orders existieren
+      if(!hasOrders){
+        // CASE 1 & 2: No orders - hide completely
+        reorderTeaser.style.display = 'none';
+      } else {
+        const uniqueProviders = [];
+        const providerMap = new Map();
+        allOrders.forEach(o => {
+          if(o.providerName && o.providerId && !providerMap.has(o.providerId)){
+            providerMap.set(o.providerId, o.providerName);
+            uniqueProviders.push({id: o.providerId, name: o.providerName});
+          }
+        });
+        
+        if(uniqueProviders.length > 0){
+          // CASE: Reorder providers exist - show cards with CTAs
+          reorderTeaser.style.display = 'block';
+          if(reorderHelper) reorderHelper.style.display = 'none';
+          reorderProviders.innerHTML = uniqueProviders.slice(0, 2).map(p => `
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:12px; background:#f8f7f3; border-radius:14px; margin-bottom:8px; border:1px solid var(--border);">
+              <div style="font-weight:600; font-size:14px; line-height:1.4;">${esc(p.name)}</div>
+              <button class="btn ghost" type="button" data-provider-id="${esc(p.id)}" style="padding:8px 12px; font-size:14px; min-height:36px; margin-left:12px; flex-shrink:0;">
+                Angebote ansehen
+              </button>
+            </div>
+          `).join('');
+          
+          // Event Handler für Reorder-Buttons
+          reorderProviders.querySelectorAll('button[data-provider-id]').forEach(btn => {
+            btn.onclick = () => {
+              const providerId = btn.dataset.providerId;
+              // Filtere Discover nach diesem Provider
+              locationQuery = '';
+              activeDiscoverFilter = 'near';
+              const providerOffer = offers.find(o => o.providerId === providerId);
+              if(providerOffer) activeDay = providerOffer.day;
+              showDiscover();
+              renderDiscover();
+            };
+          });
+        } else {
+          // CASE 3: Orders exist, but no reorder providers - show helper text only
+          reorderTeaser.style.display = 'block';
+          if(reorderHelper) reorderHelper.style.display = 'block';
+          reorderProviders.innerHTML = '';
+        }
+      }
+    }
+    
+    // Personal Data
+    const personalData = document.getElementById('profilePersonalData');
+    const profileEmail = document.getElementById('profileEmail');
+    if(personalData && profileEmail){
+      if(isLoggedIn && customer.email){
+        personalData.style.display = 'block';
+        profileEmail.textContent = esc(customer.email);
+      } else {
+        personalData.style.display = 'none';
+      }
+    }
+    
+    const btnProfileEditEmail = document.getElementById('btnProfileEditEmail');
+    if(btnProfileEditEmail) btnProfileEditEmail.onclick = () => {
+      const newEmail = prompt('Neue E-Mail-Adresse:', customer.email || '');
+      if(newEmail && newEmail !== customer.email){
+        customer.email = newEmail;
+        save(LS.customer, customer);
+        updateProfileView();
+      }
     };
-    
-    // Entferne Duplikate (gleicher Provider/Offer)
-    const filtered = recentViews.filter(v => 
-      !(v.providerId === newView.providerId && v.offerId === newView.offerId)
-    );
-    
-    // Füge neuen View hinzu (am Anfang)
-    filtered.unshift(newView);
-    
-    // Maximal 10 Einträge
-    const limited = filtered.slice(0, 10);
-    
-    sessionStorage.setItem('mittagio_recent_views', JSON.stringify(limited));
   }
   
   // "Zum Anbieterbereich" Button
   const btnGoToProvider = document.getElementById('btnGoToProvider');
   if(btnGoToProvider){
     btnGoToProvider.onclick = () => {
-      navigateTo('/anbieter/dashboard');
+      setMode('provider');
     };
   }
 
@@ -6161,7 +6094,11 @@
   const btnSwitchToProvider = document.getElementById('btnSwitchToProvider');
   if(btnSwitchToProvider){
     btnSwitchToProvider.onclick=()=>{
-      navigateTo('/anbieter/dashboard');
+      if(!provider.loggedIn){
+        setMode('provider');
+      } else {
+        showProviderHome();
+      }
     };
   }
 
@@ -6511,7 +6448,7 @@
     if(!content) return;
     
     content.innerHTML = `
-        <h2 style="font-size:20px; font-weight:900; margin-bottom:16px;">AGB</h2>
+      <h2 style="font-size:20px; font-weight:900; margin-bottom:16px;">AGB (Kurzfassung)</h2>
       <div style="line-height:1.7; font-size:14px; max-height:60vh; overflow-y:auto; padding-right:8px;">
         <p><strong>Mittagio ist Plattform, nicht Verkäufer</strong></p>
         <p>Mittagio vermittelt Mittagsangebote lokaler Anbieter. Vertragspartner bei Bestellungen ist ausschließlich der jeweilige Anbieter.</p>
@@ -6792,7 +6729,7 @@
   const btnProfileAGB = document.getElementById('btnProfileAGB');
   if(btnProfileAGB) btnProfileAGB.onclick=(e)=>{ e.preventDefault(); showLegalPage('agb-kurz'); };
   const btnProfileDatenschutz = document.getElementById('btnProfileDatenschutz');
-  if(btnProfileDatenschutz) btnProfileDatenschutz.onclick=(e)=>{ e.preventDefault(); navigateTo('/datenschutz'); };
+  if(btnProfileDatenschutz) btnProfileDatenschutz.onclick=(e)=>{ e.preventDefault(); showLegalPage('datenschutz'); };
   
   // FAQ Expand Button (Text Link) - öffnet Modal
   const btnProfileShowMoreFaq = document.getElementById('btnProfileShowMoreFaq');
@@ -6808,10 +6745,10 @@
     const b = e.target.closest('button');
     if(!b) return;
     const go = b.dataset.pgo;
-    if(go==='provider-home') navigateTo('/anbieter/dashboard');
-    if(go==='provider-pickups') navigateTo('/anbieter/abholungen');
-    if(go==='provider-cookbook') navigateTo('/anbieter/kochbuch');
-    if(go==='provider-profile') navigateTo('/anbieter/profil');
+    if(go==='provider-home') showProviderHome();
+    if(go==='provider-pickups') showProviderPickups();
+    if(go==='provider-cookbook') showProviderCookbook();
+    if(go==='provider-profile') showProviderProfile();
   });
 
   // Customer nav handlers - Robuster Event-Delegation-Ansatz
@@ -6872,7 +6809,37 @@
     const mineActive = mineAll.filter(o => o.active !== false);
     const mineToday = mineActive.filter(o => o.day === todayKey);
     
-    // TICKET 03: Provider Identity Card entfernt - nur KPI Cards
+    // Provider Identity Card
+    const logoWrap = document.getElementById('provCardLogo');
+    if(logoWrap){
+      if(profile.logoData){
+        logoWrap.innerHTML = `<img src="${esc(profile.logoData)}" alt="Logo" style="width:100%; height:100%; object-fit:cover; border-radius:14px;" />`;
+      } else {
+        const initials = (profile.name || provider.email || 'A').charAt(0).toUpperCase();
+        logoWrap.innerHTML = `<div style="width:100%; height:100%; background:linear-gradient(135deg, var(--brand), var(--brand2)); display:flex; align-items:center; justify-content:center; border-radius:14px; font-size:24px; font-weight:900; color:#111;">${esc(initials)}</div>`;
+      }
+    }
+    const nameEl = document.getElementById('provCardName');
+    if(nameEl) nameEl.textContent = profile.name || provider.email || 'Anbieter';
+    const addrEl = document.getElementById('provCardAddr');
+    if(addrEl){
+      const addr = buildAddress(profile);
+      if(addr){
+        addrEl.textContent = esc(addr);
+        addrEl.style.color = 'var(--muted)';
+      } else {
+        addrEl.textContent = 'Adresse hinzufügen';
+        addrEl.style.color = 'var(--brand)';
+      }
+    }
+    
+    const btnProviderEditProfile = document.getElementById('btnProviderEditProfile');
+    if(btnProviderEditProfile){
+      btnProviderEditProfile.textContent = buildAddress(profile) ? 'Profil bearbeiten' : 'Adresse hinzufügen';
+      btnProviderEditProfile.onclick = () => {
+        showProviderProfile();
+      };
+    }
     
     // KPI Cards
     const activeOffersCount = mineActive.length;
@@ -6973,8 +6940,8 @@
         `;
         const btnProviderTodayAddDish = document.getElementById('btnProviderTodayAddDish');
         if(btnProviderTodayAddDish) btnProviderTodayAddDish.onclick = () => {
-          // TICKET 07: Navigiere zu /anbieter/inserate/neu?mode=heute
-          navigateTo('/anbieter/inserate/neu?mode=heute');
+          createFlowPreselectedDate = todayKey;
+          openCreateFlowSheet();
         };
       }
     }
@@ -7052,11 +7019,64 @@
     // Week Preview
     renderProviderWeekPreviewNew();
     
-    // TICKET 04: Welcome-Card entfernt - kein Empty State mehr
-    // Mark onboarding as shown (wenn vorhanden)
-    if(provider.onboardingCompleted && !provider.onboardingShown && cookbook.length > 0){
-      provider.onboardingShown = true;
-      save(LS.provider, provider);
+    // Post-Onboarding Dashboard State (if just completed onboarding)
+    const providerEmptyDashboard = document.getElementById('providerEmptyDashboard');
+    if(providerEmptyDashboard){
+      const hasAnyData = mineActive.length > 0 || cookbook.length > 0;
+      const justCompletedOnboarding = provider.onboardingCompleted && !provider.onboardingShown && cookbook.length > 0;
+      
+      if(justCompletedOnboarding){
+        // Show post-onboarding state
+        providerEmptyDashboard.style.display = 'block';
+        providerEmptyDashboard.innerHTML = `
+          <div style="font-weight:600; font-size:18px; margin-bottom:8px; line-height:1.3;">Gericht erstellt</div>
+          <div class="hint" style="font-size:14px; line-height:1.4; margin-bottom:16px; color:var(--muted);">
+            Dein Gericht ist gespeichert. Veröffentliche es, um sichtbar zu werden.
+          </div>
+          <button class="btn-primary" type="button" id="btnPostOnboardingPublish" style="width:100%; min-height:56px; margin-bottom:12px;">
+            Gericht veröffentlichen
+          </button>
+          <button class="btn secondary" type="button" id="btnPostOnboardingPlan" style="width:100%; min-height:44px;">
+            Weiter planen
+          </button>
+        `;
+        
+        const btnPublish = document.getElementById('btnPostOnboardingPublish');
+        const btnPlan = document.getElementById('btnPostOnboardingPlan');
+        if(btnPublish){
+          const savedDish = cookbook.find(c => c.providerId === providerId());
+          if(savedDish){
+            btnPublish.onclick = () => {
+              startListingFlow({dishId: savedDish.id});
+            };
+          }
+        }
+        if(btnPlan) btnPlan.onclick = () => showProviderCookbook();
+        
+        // Mark onboarding as shown
+        provider.onboardingShown = true;
+        save(LS.provider, provider);
+      } else {
+        // Normal empty state
+        providerEmptyDashboard.style.display = hasAnyData ? 'none' : 'block';
+        if(!hasAnyData){
+          providerEmptyDashboard.innerHTML = `
+            <div style="font-weight:600; font-size:18px; margin-bottom:8px; line-height:1.3;">Willkommen bei Mittagio</div>
+            <div class="hint" style="font-size:14px; line-height:1.4; margin-bottom:16px; color:var(--muted);">
+              Starte mit deinem ersten Gericht.
+            </div>
+            <button class="btn secondary" type="button" id="btnProviderEmptyAddDish" style="width:100%; min-height:44px;">
+              Gericht hinzufügen
+            </button>
+          `;
+        }
+        
+        const btnProviderEmptyAddDish = document.getElementById('btnProviderEmptyAddDish');
+        if(btnProviderEmptyAddDish) btnProviderEmptyAddDish.onclick = () => {
+          createFlowPreselectedDate = null;
+          openCreateFlowSheet();
+        };
+      }
     }
     
     // FAB
@@ -7574,7 +7594,7 @@
           </div>
         </div>
         <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
-          <a href="/datenschutz" onclick="navigateTo('/datenschutz'); return false;" style="font-size:13px; color:var(--brand); text-decoration:none;">Datenschutz</a>
+          <a href="#/datenschutz" onclick="showLegalPage('datenschutz'); return false;" style="font-size:13px; color:var(--brand); text-decoration:none;">Datenschutz</a>
         </div>
       `;
     }
@@ -7664,43 +7684,19 @@
     const pageMap = {
       'impressum': 'v-legal-impressum',
       'agb-kurz': 'v-legal-agb-kurz',
-      'datenschutz': 'v-legal-datenschutz', // Anbieter-Datenschutz
-      'datenschutz-customer': 'v-legal-datenschutz-customer', // Endkunden-Datenschutz // Anbieter-Datenschutz
-      'datenschutz-customer': 'v-legal-datenschutz-customer', // Endkunden-Datenschutz
-      'faq': 'v-legal-faq'
+      'datenschutz': 'v-legal-datenschutz'
     };
     const viewId = pageMap[page];
     if(viewId){
       showView(viewId);
       window.scrollTo({top:0, behavior:'smooth'});
-      
-      // URL aktualisieren, wenn im Provider-Mode
-      if(mode === 'provider'){
-        const routeMap = {
-          'impressum': '/anbieter/recht/impressum',
-          'agb-kurz': '/anbieter/recht/agb',
-          'datenschutz': '/anbieter/recht/datenschutz',
-          'faq': '/anbieter/hilfe/faq'
-        };
-        if(routeMap[page]){
-          window.history.replaceState({path: routeMap[page]}, '', routeMap[page]);
-        }
-      }
     }
   }
   
   function goBackFromLegalPage(){
-    // Zurück zur Profil-Seite (Kunde oder Anbieter) - TICKET 12: In-App Navigation
+    // Zurück zur Profil-Seite (Kunde oder Anbieter)
     if(mode === 'provider'){
-      // Primär: /anbieter/hilfe, Fallback: /anbieter/dashboard
-      const helpView = document.getElementById('v-provider-profile');
-      if(helpView && helpView.classList.contains('active')){
-        // Wenn wir vom Profil kamen, zurück zum Profil
-        navigateTo('/anbieter/profil');
-      } else {
-        // Sonst zu Hilfe oder Dashboard
-        navigateTo('/anbieter/hilfe');
-      }
+      showProviderProfile();
     } else {
       showProfile();
     }
@@ -7716,43 +7712,6 @@
   document.getElementById('btnLegalTerms').onclick=()=>{
     showLegalPage('agb-kurz');
   };
-  
-  // TICKET 12: Zurück-Buttons für Rechtstexte (In-App Navigation)
-  const btnLegalImpressumBack = document.getElementById('btnLegalImpressumBack');
-  if(btnLegalImpressumBack){
-    btnLegalImpressumBack.onclick = () => {
-      goBackFromLegalPage();
-    };
-  }
-  const btnLegalAgbBack = document.getElementById('btnLegalAgbBack');
-  if(btnLegalAgbBack){
-    btnLegalAgbBack.onclick = () => {
-      goBackFromLegalPage();
-    };
-  }
-  const btnLegalDatenschutzBack = document.getElementById('btnLegalDatenschutzBack');
-  if(btnLegalDatenschutzBack){
-    btnLegalDatenschutzBack.onclick = () => {
-      goBackFromLegalPage();
-    };
-  }
-  const btnLegalFaqBack = document.getElementById('btnLegalFaqBack');
-  if(btnLegalFaqBack){
-    btnLegalFaqBack.onclick = () => {
-      goBackFromLegalPage();
-    };
-  }
-  const btnLegalDatenschutzCustomerBack = document.getElementById('btnLegalDatenschutzCustomerBack');
-  if(btnLegalDatenschutzCustomerBack){
-    btnLegalDatenschutzCustomerBack.onclick = () => {
-      // Endkunden-Datenschutz: Zurück zu Discover/Home
-      if(mode === 'customer'){
-        navigateTo('/');
-      } else {
-        showProfile();
-      }
-    };
-  }
 
   // --- Provider actions (alte Buttons entfernt, jetzt über Create Flow Sheet) ---
   // btnNewListing und btnFromCookbook werden nicht mehr verwendet
@@ -7763,31 +7722,22 @@
   
   // Kochbuch: "+ Gericht hinzufügen" öffnet IMMER Master-Flow (kein cookbook-Wizard)
   const btnCookbookAdd = document.getElementById('btnCookbookAdd');
-  if(btnCookbookAdd) btnCookbookAdd.onclick=()=> {
-    // TICKET 08: Navigiere zu /anbieter/kochbuch/neu
-    navigateTo('/anbieter/kochbuch/neu');
-  };
+  if(btnCookbookAdd) btnCookbookAdd.onclick=()=> startListingFlow({});
   document.getElementById('btnProvSetup').onclick=()=> startWizard('provider');
   // btnOpenWeekPlan wird nicht mehr verwendet (Week Preview ist jetzt im Dashboard)
   const btnOpenWeekPlan = document.getElementById('btnOpenWeekPlan');
   if(btnOpenWeekPlan) btnOpenWeekPlan.style.display = 'none';
-  const btnPickupsFaq = document.getElementById('btnPickupsFaq');
-  if(btnPickupsFaq){
-    btnPickupsFaq.onclick=()=>{
-      showProviderProfile();
-      const box = document.getElementById('provFaqBox');
-      if(box) box.style.display = 'block';
-    };
-  }
+  document.getElementById('btnPickupsFaq').onclick=()=>{
+    showProviderProfile();
+    const box = document.getElementById('provFaqBox');
+    if(box) box.style.display = 'block';
+  };
 
-  const btnEditOffer = document.getElementById('btnEditOffer');
-  if(btnEditOffer){
-    btnEditOffer.onclick=()=>{
-      if(!activeProviderOfferId) return;
-      closeProviderSheet();
-      startListingFlow({editOfferId: activeProviderOfferId});
-    };
-  }
+  document.getElementById('btnEditOffer').onclick=()=>{
+    if(!activeProviderOfferId) return;
+    closeProviderSheet();
+    startListingFlow({editOfferId: activeProviderOfferId});
+  };
   document.getElementById('btnToggleOffer').onclick=()=>{
     if(!activeProviderOfferId) return;
     const idx = offers.findIndex(x=>x.id===activeProviderOfferId);
@@ -9702,156 +9652,6 @@
   // Orders laden
   orders = loadOrders();
   
-  // Provider-View aktualisieren, falls im Provider-Mode
-  if(mode === 'provider' && typeof renderProviderHome !== 'undefined'){
-    setTimeout(()=>{
-      renderProviderHome();
-    }, 100);
-  }
-  
-  // --- Router System ---
-  function navigateTo(path, replace = false){
-    if(replace){
-      window.history.replaceState({path}, '', path);
-    } else {
-      window.history.pushState({path}, '', path);
-    }
-    handleRoute(path);
-  }
-
-  function handleRoute(path){
-    const urlParams = new URLSearchParams(window.location.search);
-    
-    // Anbieter-Routes: /anbieter/*
-    if(path.startsWith('/anbieter')){
-      setMode('provider');
-      
-      // /anbieter → /anbieter/dashboard (Redirect)
-      if(path === '/anbieter' || path === '/anbieter/'){
-        navigateTo('/anbieter/dashboard', true);
-        return;
-      }
-      
-      // /anbieter/dashboard
-      if(path === '/anbieter/dashboard'){
-        showProviderHome();
-        return;
-      }
-      
-      // /anbieter/inserate/neu
-      if(path === '/anbieter/inserate/neu'){
-        const mode = urlParams.get('mode') || 'new';
-        const todayKey = mode === 'heute' ? isoDate(new Date()) : null;
-        startListingFlow({source: mode === 'heute' ? 'today' : 'new', date: todayKey});
-        return;
-      }
-      
-      // /anbieter/kochbuch/neu
-      if(path === '/anbieter/kochbuch/neu'){
-        startWizard('cookbook', {});
-        return;
-      }
-      
-      // /anbieter/kochbuch
-      if(path === '/anbieter/kochbuch'){
-        showProviderCookbook();
-        return;
-      }
-      
-      // /anbieter/abholungen
-      if(path === '/anbieter/abholungen'){
-        showProviderPickups();
-        return;
-      }
-      
-      // /anbieter/profil
-      if(path === '/anbieter/profil'){
-        showProviderProfile();
-        return;
-      }
-      
-      // /anbieter/profil/bearbeiten
-      if(path === '/anbieter/profil/bearbeiten'){
-        startWizard('provider', {});
-        return;
-      }
-      
-      // /anbieter/hilfe
-      if(path === '/anbieter/hilfe'){
-        // Zeige Hilfe-Übersicht (aktuell im Profil integriert)
-        showProviderProfile();
-        return;
-      }
-      
-      // /anbieter/hilfe/faq
-      if(path === '/anbieter/hilfe/faq'){
-        showLegalPage('faq');
-        return;
-      }
-      
-      // /anbieter/recht/impressum
-      if(path === '/anbieter/recht/impressum'){
-        showLegalPage('impressum');
-        return;
-      }
-      
-      // /anbieter/recht/datenschutz
-      if(path === '/anbieter/recht/datenschutz'){
-        navigateTo('/datenschutz');
-        return;
-      }
-      
-      // /anbieter/recht/agb
-      if(path === '/anbieter/recht/agb'){
-        showLegalPage('agb-kurz');
-        return;
-      }
-      
-      // Fallback: Dashboard
-      navigateTo('/anbieter/dashboard', true);
-      return;
-    }
-    
-    // Endkunden-Routes (nicht /anbieter/*)
-    // /datenschutz (für Endkunden)
-    if(path === '/datenschutz'){
-      setMode('customer');
-      showLegalPage('datenschutz-customer');
-      return;
-    }
-    
-    // Customer/Discover Routes (default)
-    if(path === '/' || path === '' || path.startsWith('/app')){
-      setMode('customer');
-      showDiscover();
-      return;
-    }
-  }
-
-  // Browser Navigation (Back/Forward)
-  window.addEventListener('popstate', (e)=>{
-    const path = window.location.pathname;
-    handleRoute(path);
-  });
-
-  // Initial Route auf App-Load
-  (function(){
-    const path = window.location.pathname;
-    handleRoute(path);
-  })();
-
-  // TICKET 11: Logo-Klick im Anbieterbereich → /anbieter/dashboard
-  const appLogo = document.getElementById('appLogo');
-  if(appLogo){
-    appLogo.onclick = () => {
-      if(mode === 'provider'){
-        navigateTo('/anbieter/dashboard');
-      } else {
-        navigateTo('/');
-      }
-    };
-  }
-
   // --- Route Handler: Checkout Success/Cancel + Abholcode ---
   // Routes:
   //   /checkout/success?session_id=xxx OR ?orderId=xxx
@@ -9890,7 +9690,7 @@
       const legalRoutes = {
         '#/impressum': 'impressum',
         '#/agb-kurz': 'agb-kurz',
-        '#/datenschutz': 'datenschutz-customer'
+        '#/datenschutz': 'datenschutz'
       };
       if(legalRoutes[hash]){
         showLegalPage(legalRoutes[hash]);
@@ -9903,7 +9703,7 @@
       const legalRoutes = {
         '#/impressum': 'impressum',
         '#/agb-kurz': 'agb-kurz',
-        '#/datenschutz': 'datenschutz-customer'
+        '#/datenschutz': 'datenschutz'
       };
       if(legalRoutes[hash]){
         showLegalPage(legalRoutes[hash]);
@@ -10014,12 +9814,6 @@
           renderStart();
           initIcons();
         }, 100);
-      } else if(mode === 'customer' && typeof showDiscover !== 'undefined'){
-        // Discover-Seite rendern, falls im customer-Mode
-        setTimeout(()=>{
-          showDiscover();
-          initIcons();
-        }, 100);
       }
     });
   } else {
@@ -10034,12 +9828,6 @@
       if(mode === 'start' && typeof renderStart !== 'undefined'){
         setTimeout(()=>{
           renderStart();
-          initIcons();
-        }, 100);
-      } else if(mode === 'customer' && typeof showDiscover !== 'undefined'){
-        // Discover-Seite rendern, falls im customer-Mode
-        setTimeout(()=>{
-          showDiscover();
           initIcons();
         }, 100);
       }
