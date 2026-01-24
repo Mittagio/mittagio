@@ -11,32 +11,18 @@
       try {
         const base = document.createElement('base');
         const path = window.location.pathname;
-        const hostname = window.location.hostname;
         
-        // GitHub Pages: Wenn hostname mittagio.github.io ist
-        if (hostname === 'mittagio.github.io') {
-          // Prüfe ob es ein Subpfad gibt (Repository-Name)
-          if (path.startsWith('/mittagio/')) {
-            // Repository-Name im Pfad: /mittagio/...
-            // Da ./app als Root deployed wird, sollte der Base-Pfad /mittagio/ sein
-            base.href = '/mittagio/';
-          } else if (path.startsWith('/app/')) {
-            base.href = '/app/';
-          } else {
-            // Root-Verzeichnis
-            base.href = './';
-          }
+        // Vereinfachte Logik: Prüfe nur den Pfad
+        // Workflow deployed ./app als Root, daher sind Dateien direkt unter /mittagio/ verfügbar
+        if (path.startsWith('/mittagio/')) {
+          // GitHub Pages mit Repository-Name im Pfad
+          base.href = '/mittagio/';
+        } else if (path.startsWith('/app/')) {
+          // Lokale Entwicklung mit /app/ Pfad
+          base.href = '/app/';
         } else {
-          // Lokale Entwicklung oder andere Domains
-          if (path.includes('/mittagio/app/')) {
-            base.href = '/mittagio/app/';
-          } else if (path.includes('/app/')) {
-            base.href = '/app/';
-          } else if (path === '/' || path === '/index.html') {
-            base.href = './';
-          } else {
-            base.href = './';
-          }
+          // Root-Verzeichnis oder lokale Entwicklung
+          base.href = './';
         }
         document.head.insertBefore(base, document.head.firstChild);
       } catch(e) {
