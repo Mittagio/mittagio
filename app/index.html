@@ -1446,6 +1446,159 @@
     .filter-chip:active {
       transform: scale(0.96);
     }
+
+    /* Profile Header Card */
+    .profile-header-card {
+      background: #f8f8f8;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .profile-avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #F2B705, #1F9D55);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: 900;
+      color: #111;
+      flex-shrink: 0;
+    }
+
+    .profile-header-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .profile-name {
+      font-size: 20px;
+      font-weight: 900;
+      color: #111;
+      margin-bottom: 4px;
+    }
+
+    .profile-status {
+      font-size: 14px;
+      color: #666;
+    }
+
+    /* Active Pickup Numbers */
+    .active-pickup-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px;
+      background: #fff;
+      border: 1px solid #eee;
+      border-radius: 12px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .active-pickup-item:hover {
+      background: #f9f9f9;
+      border-color: #F2B705;
+    }
+
+    .active-pickup-code {
+      font-size: 20px;
+      font-weight: 900;
+      font-family: monospace;
+      color: #F2B705;
+    }
+
+    .active-pickup-details {
+      font-size: 12px;
+      color: #666;
+    }
+
+    /* Preference Switches */
+    .preference-switch {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .preference-switch:last-child {
+      border-bottom: none;
+    }
+
+    .preference-label {
+      font-size: 16px;
+      font-weight: 600;
+      color: #111;
+    }
+
+    .switch {
+      position: relative;
+      width: 50px;
+      height: 30px;
+      background: #ccc;
+      border-radius: 15px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .switch.active {
+      background: #F2B705;
+    }
+
+    .switch-slider {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 24px;
+      height: 24px;
+      background: #fff;
+      border-radius: 50%;
+      transition: transform 0.3s ease;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .switch.active .switch-slider {
+      transform: translateX(20px);
+    }
+
+    /* Support & Legal List */
+    .support-list-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 0;
+      border-bottom: 1px solid #eee;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .support-list-item:hover {
+      background: #f9f9f9;
+    }
+
+    .support-list-item:last-child {
+      border-bottom: none;
+    }
+
+    .support-list-label {
+      font-size: 16px;
+      font-weight: 500;
+      color: #111;
+    }
+
+    .support-list-chevron {
+      width: 20px;
+      height: 20px;
+      color: #999;
+    }
     
     /* Back Navigation */
     .back-button{
@@ -1747,40 +1900,48 @@
       </div>
     </section>
 
-    <!-- CUSTOMER: Profile ("Mein Mittagio") - MVP Final -->
+    <!-- CUSTOMER: Profile ("Mein Mittagio") - Premium Redesign -->
     <section class="view" id="v-profile">
-      <!-- Header -->
-      <div style="padding:16px 16px 20px; background:transparent; border:none; box-shadow:none;">
-        <h2 style="margin:0; font-size:24px; font-weight:900; line-height:1.2;">Dein Mittag in der Nähe</h2>
-      </div>
-
-      <!-- Welcome Card (dynamic) -->
-      <div class="panel" id="profileWelcomeCard" style="margin-top:0; padding:16px; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,.04);">
-        <!-- Wird dynamisch befüllt -->
-      </div>
-
-      <!-- Kürzlich angesehen -->
-      <div class="panel" id="profileRecentlyViewed" style="margin-top:18px; padding:16px; display:none; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,.04);">
-        <div style="font-weight:600; font-size:17px; margin-bottom:10px; line-height:1.3;">Kürzlich angesehen</div>
-        <div id="profileRecentlyViewedList" style="margin-bottom:12px;"></div>
-        <button class="btn secondary" type="button" id="btnProfileViewAllRecent" style="width:100%; min-height:44px; display:none;">
-          Angebote ansehen
-        </button>
-      </div>
-
-      <!-- Reorder Teaser -->
-      <div class="panel" id="profileReorderTeaser" style="margin-top:18px; padding:16px; display:none; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,.04);">
-        <div style="font-weight:600; font-size:17px; margin-bottom:10px; line-height:1.3;">Wieder bei bekannten Anbietern</div>
-        <div class="hint" id="profileReorderHelper" style="font-size:13px; line-height:1.4; margin-bottom:12px; color:var(--muted); display:none;">
-          Bestelle erneut bei Anbietern, die dir gefallen haben.
+      <div style="padding:16px; padding-bottom:90px;">
+        <!-- Header Card mit Avatar -->
+        <div class="profile-header-card" id="profileHeaderCard">
+          <div class="profile-avatar" id="profileAvatar">G</div>
+          <div class="profile-header-info">
+            <div class="profile-name" id="profileName">Gast-Profil</div>
+            <div class="profile-status" id="profileStatus">Willkommen bei Mittagio</div>
+          </div>
         </div>
-        <div id="profileReorderProviders"></div>
-      </div>
 
-      <!-- Personal Data - ENTFERNT (Endkunden haben kein Profil) -->
-      <div class="panel" id="profilePersonalData" style="margin-top:18px; padding:16px; display:none; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,.04);">
-        <!-- Endkunden haben kein Profil - dieser Bereich wird nicht angezeigt -->
-      </div>
+        <!-- Aktive Abholnummern (Quick-History) -->
+        <div class="panel" id="profileActivePickups" style="margin-top:0; padding:16px; display:none; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,.04);">
+          <div style="font-weight:600; font-size:17px; margin-bottom:12px; line-height:1.3;">Aktive Abholnummern</div>
+          <div id="profileActivePickupsList">
+            <!-- Wird dynamisch befüllt -->
+          </div>
+        </div>
+
+        <!-- Ernährung & Filter (Präferenzen) -->
+        <div class="panel" style="margin-top:18px; padding:16px; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,.04);">
+          <div style="font-weight:600; font-size:17px; margin-bottom:16px; line-height:1.3;">Ernährung & Filter</div>
+          <div class="preference-switch">
+            <div class="preference-label">Vegan</div>
+            <div class="switch" id="switchVegan" onclick="togglePreference('vegan', this);">
+              <div class="switch-slider"></div>
+            </div>
+          </div>
+          <div class="preference-switch">
+            <div class="preference-label">Vegetarisch</div>
+            <div class="switch" id="switchVegetarian" onclick="togglePreference('vegetarian', this);">
+              <div class="switch-slider"></div>
+            </div>
+          </div>
+          <div class="preference-switch">
+            <div class="preference-label">Glutenfrei</div>
+            <div class="switch" id="switchGlutenFree" onclick="togglePreference('glutenFree', this);">
+              <div class="switch-slider"></div>
+            </div>
+          </div>
+        </div>
 
       <!-- Provider Area -->
       <div class="panel" style="margin-top:18px; padding:16px; background:linear-gradient(135deg, rgba(255,204,0,.08) 0%, rgba(255,204,0,.03) 100%); border:1px solid rgba(255,204,0,.15); border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,.04);">
@@ -1839,15 +2000,27 @@
         </a>
       </div>
 
-      <!-- Legal (bottom, small) -->
-      <div style="margin-top:20px; padding:16px 16px 24px; text-align:center;">
-        <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:12px 16px; font-size:12px; margin-bottom:10px;">
-          <a href="#/impressum" id="btnProfileImpressum" onclick="showLegalPage('impressum'); return false;" style="color:var(--muted); text-decoration:none;">Impressum</a>
-          <a href="#/agb-kurz" id="btnProfileAGB" onclick="showLegalPage('agb-kurz'); return false;" style="color:var(--muted); text-decoration:none;">AGB</a>
-          <a href="#/datenschutz" id="btnProfileDatenschutz" onclick="showLegalPage('datenschutz'); return false;" style="color:var(--muted); text-decoration:none;">Datenschutz</a>
-        </div>
-        <div style="font-size:12px; color:var(--muted);">
-          <a href="mailto:support@mittagio.de" style="color:var(--muted); text-decoration:none;">support@mittagio.de</a>
+        <!-- Support & Rechtliches -->
+        <div class="panel" style="margin-top:18px; padding:16px; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,.04);">
+          <div class="support-list-item" onclick="openHelpSheet();">
+            <div class="support-list-label">Hilfe & Kontakt</div>
+            <i data-lucide="chevron-right" class="support-list-chevron"></i>
+          </div>
+          <div class="support-list-item" onclick="showLegalPage('datenschutz');">
+            <div class="support-list-label">Datenschutz</div>
+            <i data-lucide="chevron-right" class="support-list-chevron"></i>
+          </div>
+          <div class="support-list-item" onclick="showLegalPage('impressum');">
+            <div class="support-list-label">Impressum</div>
+            <i data-lucide="chevron-right" class="support-list-chevron"></i>
+          </div>
+          <div class="support-list-item" onclick="showLegalPage('agb-kurz');">
+            <div class="support-list-label">AGB</div>
+            <i data-lucide="chevron-right" class="support-list-chevron"></i>
+          </div>
+          <div class="support-list-item" style="border-top:1px solid #eee; margin-top:8px; padding-top:16px;">
+            <div class="support-list-label" style="font-size:12px; color:#999;">App-Version v1.0.4</div>
+          </div>
         </div>
       </div>
     </section>
@@ -2901,7 +3074,8 @@
     week: 'mittagio_week_v1',
     onboardingDraft: 'mittagio_onboarding_draft_v1',
     pickupDone: 'mittagio_pickup_done_v1',
-    mode: 'mittagio_mode_v1'
+    mode: 'mittagio_mode_v1',
+    preferences: 'mittagio_preferences_v1'
   };
   const load = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } };
   const save = (k, v) => localStorage.setItem(k, JSON.stringify(v));
@@ -6469,6 +6643,23 @@
         updateProfileView();
       }
     };
+  }
+  
+  // Präferenzen Toggle-Funktion
+  function togglePreference(key, element){
+    const preferences = load(LS.preferences, {vegan: false, vegetarian: false, glutenFree: false});
+    preferences[key] = !preferences[key];
+    save(LS.preferences, preferences);
+    element.classList.toggle('active', preferences[key]);
+    // Optional: Feed neu rendern basierend auf Präferenzen
+    if(typeof renderDiscover !== 'undefined'){
+      renderDiscover();
+    }
+  }
+  
+  // Hilfe-Sheet öffnen (Fallback)
+  function openHelpSheet(){
+    alert('Hilfe & Kontakt\n\nBei Fragen schreib uns an:\nsupport@mittagio.de');
   }
   
   // "Zum Anbieterbereich" Button
