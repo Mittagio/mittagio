@@ -7003,23 +7003,24 @@
       };
     }
     
-    // Legacy: photoInput.onchange (falls vorhanden)
-    const photoInput = document.getElementById('photoInput');
-    if(photoInput){
-      photoInput.onchange = async (e) => {
-      const file = e.target.files[0];
-      if(!file) return;
-      const dataUrl = await toDataUrl(file);
-      const photoPreview = document.getElementById('onboardingPhotoPreview');
-      const photoPreviewImg = document.getElementById('onboardingPhotoPreviewImg');
-      if(photoPreview && photoPreviewImg){
-        photoPreview.style.display = 'block';
-        photoPreviewImg.src = dataUrl;
-      }
-      if(!onboardingDraftDish) onboardingDraftDish = {};
-      onboardingDraftDish.photoData = dataUrl;
-      save(LS.onboardingDraft, onboardingDraftDish);
-    };
+    // Legacy: photoInput.onchange (falls vorhanden - prüfe ob Element existiert)
+    const existingPhotoInput = document.getElementById('photoInput');
+    if(existingPhotoInput){
+      existingPhotoInput.onchange = async (e) => {
+        const file = e.target.files[0];
+        if(!file) return;
+        const dataUrl = await toDataUrl(file);
+        const photoPreview = document.getElementById('onboardingPhotoPreview');
+        const photoPreviewImg = document.getElementById('onboardingPhotoPreviewImg');
+        if(photoPreview && photoPreviewImg){
+          photoPreview.style.display = 'block';
+          photoPreviewImg.src = dataUrl;
+        }
+        if(!onboardingDraftDish) onboardingDraftDish = {};
+        onboardingDraftDish.photoData = dataUrl;
+        save(LS.onboardingDraft, onboardingDraftDish);
+      };
+    }
     
     // Warn before leaving if changes exist
     let hasChanges = false;
