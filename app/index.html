@@ -5055,7 +5055,10 @@
     btnCreateNewDish.onclick = () => {
       closeCreateFlowSheet();
       // Open Master-Flow directly (new dish)
-      startListingFlow({date: createFlowPreselectedDate});
+      // Use setTimeout to ensure sheet is closed before opening wizard
+      setTimeout(() => {
+        startListingFlow({date: createFlowPreselectedDate});
+      }, 100);
     };
   }
   
@@ -7989,6 +7992,8 @@
     renderProviderPickups();
     renderDiscover();
     renderStart();
+    // Always navigate back to Dashboard (same page as Insert Flow)
+    showProviderHome();
     alert('Inserat veröffentlicht.');
   }
 
@@ -8038,6 +8043,8 @@
     renderProviderPickups();
     renderDiscover();
     renderStart();
+    // Always navigate back to Dashboard (same page as Insert Flow)
+    showProviderHome();
     alert('Inserat veröffentlicht.');
   }
 
@@ -8090,6 +8097,8 @@
    */
   function startListingFlow(context = {}){
     // Always use listing wizard (Master Flow)
+    // Ensure create flow sheet is closed
+    closeCreateFlowSheet();
     startWizard('listing', context);
   }
 
@@ -9058,10 +9067,17 @@
     createFlowPreselectedDate = null;
     // restore default next button handler
     setWizardNextDefault();
+    
+    // Close wizard and create flow sheet
+    closeWizard();
+    closeCreateFlowSheet();
+    
+    // Always navigate back to Dashboard (same page as Insert Flow)
     renderProviderHome();
     renderProviderPickups();
     renderDiscover();
     renderStart();
+    showProviderHome(); // Explicitly show Dashboard view
   }
 
   function saveToCookbookFromWizard(keepOpen=false){
