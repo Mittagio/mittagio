@@ -90,6 +90,7 @@
       font-size:16px;
       line-height:1.5;
       background:var(--bg);
+      padding-bottom:80px; /* Verhindert, dass Inhalt hinter der Bottom Navigation verschwindet */
       color:var(--text);
     }
     a{color:inherit}
@@ -346,22 +347,24 @@
     }
     .heart.on{color:var(--danger)}
 
-    /* Bottom nav - Glassmorphism Mittagio-Bar */
+    /* Bottom nav - Premium Glassmorphism Mittagio-Bar */
     .bottom{
-      position:fixed; left:0; right:0; bottom:0; z-index:20;
-      height:80px; padding-bottom:env(safe-area-inset-bottom);
-      background:rgba(255,255,255,.85);
-      backdrop-filter:saturate(180%) blur(20px);
-      -webkit-backdrop-filter:saturate(180%) blur(20px);
-      border-top:1px solid rgba(231,225,213,.3);
+      position:fixed; left:0; right:0; bottom:0; z-index:9999;
+      height:70px; padding-bottom:env(safe-area-inset-bottom);
+      background:rgba(255,255,255,0.92);
+      backdrop-filter:blur(15px);
+      -webkit-backdrop-filter:blur(15px);
+      border-top:1px solid rgba(0,0,0,0.08);
       display:flex;
+      justify-content:space-around;
+      align-items:center;
       box-shadow:0 -4px 20px rgba(0,0,0,.05);
     }
     .navbtn{
       flex:1; border:none; background:none; cursor:pointer;
       display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;
-      color:#777; font-size:11px; font-weight:600;
-      padding:8px 4px; transition:color .2s;
+      color:#888; font-size:11px; font-weight:600;
+      padding:8px 4px; transition:all 0.2s ease;
       position:relative;
       -webkit-tap-highlight-color: transparent;
     }
@@ -369,15 +372,16 @@
       pointer-events: none;
     }
     .navbtn .ico{font-size:22px; display:inline-flex; align-items:center; justify-content:center}
+    .navbtn .ico i{width:22px; height:22px}
     .navbtn .ico svg{width:22px; height:22px; stroke-width:2}
-    /* Bottom Navigation Icons: 22-24px */
-    .navbtn.active{color:var(--brand)}
-    .navbtn.active .ico svg{color:var(--brand); stroke:var(--brand)}
-    .navbtn.active{color:var(--brand); font-weight:900}
+    /* Bottom Navigation Icons: 22px */
+    .navbtn.active{color:#F2B705}
+    .navbtn.active .ico svg{color:#F2B705; stroke:#F2B705}
+    .navbtn.active{color:#F2B705; font-weight:600}
     .navbtn .badge-notification{
       position:absolute; top:8px; right:calc(50% - 20px);
       width:8px; height:8px; border-radius:50%;
-      background:var(--brand); border:2px solid rgba(255,255,255,.85);
+      background:#F2B705; border:2px solid rgba(255,255,255,0.92);
     }
 
     /* Views */
