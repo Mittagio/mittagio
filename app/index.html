@@ -1699,12 +1699,12 @@
 
     <!-- CUSTOMER: Pickup Code (AbholcodeScreen) -->
     <section class="view" id="v-pickup-code">
-      <div class="panel">
+      <div class="panel" style="padding-bottom:90px;">
         <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
           <button class="back-button" type="button" id="btnPickupCodeBack" aria-label="Zurück">
             <i data-lucide="arrow-left"></i>
           </button>
-          <h3 style="margin:0; flex:1;">Abholcode</h3>
+          <h3 style="margin:0; flex:1;">Abholnummer</h3>
         </div>
         
         <!-- Status & Hinweis -->
@@ -1713,7 +1713,7 @@
             ✓ Bestellung bestätigt
           </div>
           <div class="hint" style="font-size:13px;">
-            Bitte diesen Code beim Abholen zeigen
+            Bitte diese Nummer beim Abholen zeigen
           </div>
         </div>
         
@@ -1727,11 +1727,6 @@
             <i data-lucide="copy"></i> Code kopieren
           </button>
         </div>
-        
-        <!-- Primary CTA: Code groß anzeigen -->
-        <button class="btn" type="button" id="btnShowFullscreenCode" style="width:100%; margin-bottom:16px; min-height:44px;">
-          <i data-lucide="maximize-2"></i> Code groß anzeigen
-        </button>
         
         <!-- Bestellinfos kompakt -->
         <div id="pickupCodeInfo" style="background:#f8f8f8; border-radius:14px; padding:16px; margin-bottom:16px;">
@@ -3953,12 +3948,17 @@
       codeEl.style.letterSpacing = '2px';
     }
     
+    // Anbieter-Name oben in der Karte
+    const providerNameEl = document.getElementById('pickupCodeProviderName');
+    if(providerNameEl) providerNameEl.textContent = order.providerName || '–';
+    
+    // Anbieter-Name oben in der Karte
+    const providerNameEl = document.getElementById('pickupCodeProviderName');
+    if(providerNameEl) providerNameEl.textContent = order.providerName || '–';
+    
     // Bestellinfos
     const dishEl = document.getElementById('pickupCodeDish');
     if(dishEl) dishEl.textContent = order.dishName || order.summary || '–';
-    
-    const providerEl = document.getElementById('pickupCodeProvider');
-    if(providerEl) providerEl.textContent = order.providerName || '–';
     
     const timeEl = document.getElementById('pickupCodeTime');
     if(timeEl){
