@@ -1314,8 +1314,8 @@
     <!-- CUSTOMER: Orders -->
     <section class="view" id="v-orders">
       <div class="panel">
-        <h3>Mittagsbox</h3>
-        <div class="hint">Deine aktiven Tickets (Abholcodes)</div>
+        <h3>Aktive Tickets</h3>
+        <div class="hint">Deine aktiven Tickets</div>
         <div class="answers" id="ordersFilters" style="margin-top:12px;"></div>
         <div style="height:10px"></div>
         <div id="ordersList" class="hint">Noch keine Bestellungen.</div>
@@ -1419,7 +1419,7 @@
           <button class="back-button" type="button" id="btnPickupCodeBack" aria-label="Zurück">
             <i data-lucide="arrow-left"></i>
           </button>
-          <h3 style="margin:0; flex:1;">Abholcode</h3>
+          <h3 style="margin:0; flex:1;">Ticket</h3>
         </div>
         
         <!-- Status & Hinweis -->
@@ -1434,7 +1434,7 @@
         
         <!-- Code-Kachel (normal groß) -->
         <div id="pickupCodeCard" style="background:#fff; border:2px solid var(--brand); border-radius:18px; padding:24px; text-align:center; margin-bottom:20px;">
-          <div class="hint" style="font-size:12px; margin-bottom:8px; color:#666;">Abholcode</div>
+          <div class="hint" style="font-size:12px; margin-bottom:8px; color:#666;">Ticket</div>
           <div id="pickupCodeValue" style="font-size:48px; font-weight:900; font-family:monospace; letter-spacing:4px; color:#111; margin-bottom:12px;">
             –
           </div>
@@ -1463,7 +1463,7 @@
             <i data-lucide="map-pin"></i> Route öffnen
           </button>
           <button class="btn ghost" type="button" id="btnToOrders" style="width:100%; min-height:44px;">
-            <i data-lucide="box"></i> Zur Mittagsbox
+            <i data-lucide="ticket"></i> Zu meinen Tickets
           </button>
         </div>
       </div>
@@ -1486,7 +1486,7 @@
         <div style="font-weight:600; font-size:17px; margin-bottom:10px; line-height:1.3;">Meine Bestellungen</div>
         <div class="hint" id="profileLastOrderText" style="font-size:14px; line-height:1.4; margin-bottom:12px; color:var(--muted);"></div>
         <button class="btn secondary" type="button" id="btnProfileToOrders" style="width:100%; min-height:44px; display:none;">
-          Zur Mittagsbox
+          Zu meinen Tickets
         </button>
         <button class="btn secondary" type="button" id="btnProfileDiscoverFromOrders" style="width:100%; min-height:44px; display:none;">
           Jetzt entdecken
@@ -1540,12 +1540,12 @@
             <p>Nein. Online-Zahlung ist optional. Eine Abholnummer gibt’s nur bei Online-Zahlung.</p>
           </details>
           <details>
-            <summary>Was ist der Abholcode?</summary>
+            <summary>Was ist das Ticket?</summary>
             <p>Dein Schnell-Ticket für die Mittagspause.</p>
           </details>
           <details>
-            <summary>Kann ich ohne Abholcode bestellen?</summary>
-            <p>Nein. Angebote ohne Abholcode kannst du nur ansehen.</p>
+            <summary>Kann ich ohne Ticket bestellen?</summary>
+            <p>Nein. Angebote ohne Ticket kannst du nur ansehen.</p>
           </details>
           <details>
             <summary>Wann kann ich abholen?</summary>
@@ -2451,13 +2451,9 @@
       <div>Essenskorb</div>
       <span class="badge-notification" id="cartBadge" style="display:none;"></span>
     </button>
-    <button class="navbtn" data-go="orders" style="position:relative;">
-      <div class="ico"><i data-lucide="package"></i></div>
-      <div>Mittagsbox</div>
-    </button>
     <button class="navbtn" data-go="profile" style="position:relative;">
       <div class="ico"><i data-lucide="user"></i></div>
-      <div>Profil</div>
+      <div>Meins</div>
     </button>
   </nav>
 
@@ -2616,7 +2612,7 @@
       <div class="quick-ticket-time" id="codePickupWindow">Essenszeit: –</div>
     </div>
     <div class="quick-ticket-code">
-      <div class="quick-ticket-code-label">Abholcode</div>
+      <div class="quick-ticket-code-label">Ticket</div>
       <div class="quick-ticket-code-value" id="codeText">A1</div>
     </div>
     <div class="quick-ticket-details">
@@ -3821,7 +3817,7 @@
         <div style="font-size:48px; margin-bottom:20px;">⏳</div>
         <h3 style="margin-bottom:12px;">Zahlung noch nicht bestätigt</h3>
         <p class="hint" style="margin-bottom:8px;">Status: ${statusLabel}</p>
-        <p class="hint" style="margin-bottom:24px;">Der Abholcode wird nach erfolgreicher Zahlung angezeigt.</p>
+        <p class="hint" style="margin-bottom:24px;">Das Ticket wird nach erfolgreicher Zahlung angezeigt.</p>
         <button class="btn" type="button" onclick="showOrders()" style="width:100%; min-height:44px;">
           <i data-lucide="arrow-left"></i> Zurück
         </button>
@@ -3834,7 +3830,7 @@
     
     // PAID: Zeige Code
     currentPickupOrderId = orderId;
-    setCustomerNavActive('orders'); // Navigation auf Mittagsbox setzen
+    setCustomerNavActive('profile'); // Navigation auf Meins setzen
     showView(views.pickupCode);
     renderPickupCode(order);
   }
@@ -4252,7 +4248,7 @@
     
     // Badges (mit Icons statt Emojis)
     const badges = [];
-    if(data.hasPickupCode) badges.push(`<div class="discover-list-badge code">${iconMarkup('key-round')} <span>Abholcode</span></div>`);
+    if(data.hasPickupCode) badges.push(`<div class="discover-list-badge code">${iconMarkup('ticket')} <span>Ticket</span></div>`);
     if(data.dineInPossible) badges.push(`<div class="discover-list-badge dine">${iconMarkup('utensils')} <span>Vor Ort</span></div>`);
     if(!data.dineInPossible && !data.hasPickupCode) badges.push(`<div class="discover-list-badge pickup">${iconMarkup('shopping-bag')} <span>Zum Mitnehmen</span></div>`);
     
@@ -4373,7 +4369,7 @@
     
     // 3. Abholcode (wenn verfügbar und noch Platz)
     if(data.hasPickupCode && pickupBadges.length < 3) {
-      pickupBadges.push({class:'code', text:'Abholcode', icon:'key-round'});
+      pickupBadges.push({class:'code', text:'Ticket', icon:'ticket'});
     }
     
     // Max 3 Badges sicherstellen
@@ -4482,7 +4478,7 @@
     const interactive = opts.interactive !== false;
     const showActions = opts.showActions === true;
     const isToday = data.day === (opts.todayKey || isoDate(new Date()));
-    const statusLine = data.hasPickupCode ? (isToday ? 'Online-Abholcode · Heute' : 'Online-Abholcode') : '';
+    const statusLine = data.hasPickupCode ? (isToday ? 'Online-Ticket · Heute' : 'Online-Ticket') : '';
     const card=document.createElement('div');
     card.className='card';
     card.style.cursor = interactive ? 'pointer' : 'default';
@@ -4499,7 +4495,7 @@
     img.innerHTML = `
       <img alt="${esc(data.dish||'Gericht')}" src="${esc(imgSrc)}" />
       ${data.active===false?'<div class="badge inactive">Inaktiv</div>':''}
-      ${data.hasPickupCode?'<div class="badge code">Abholcode</div>':''}
+      ${data.hasPickupCode?'<div class="badge code">Ticket</div>':''}
       ${data.dineInPossible?'<div class="badge dine">Vor Ort</div>':''}
     `;
 
@@ -4525,7 +4521,7 @@
       item.innerHTML = `${iconMarkup(icon)}<span>${esc(text)}</span>`;
       info.appendChild(item);
     };
-    if(data.hasPickupCode) addInfo('card', 'Online-Abholcode');
+    if(data.hasPickupCode) addInfo('ticket', 'Online-Ticket');
     if(data.dineInPossible) addInfo('utensils', 'Vor Ort');
     if(info.childElementCount){ body.appendChild(info); }
 
@@ -4826,8 +4822,8 @@
     const statusBadgeEl = document.getElementById('sStatusBadge');
     if(statusBadgeEl){
       if(o.hasPickupCode){
-        // MIT Abholcode: Status "Online bezahlen & Abholcode"
-        statusBadgeEl.innerHTML = '<span style="display:inline-flex; align-items:center; gap:6px; padding:6px 12px; background:rgba(46,125,50,.12); border-radius:8px; color:#2e7d32; font-size:14px; font-weight:600;">🟢 Online bezahlen & Abholcode</span>';
+        // MIT Ticket: Status "Online bezahlen & Ticket"
+        statusBadgeEl.innerHTML = '<span style="display:inline-flex; align-items:center; gap:6px; padding:6px 12px; background:rgba(46,125,50,.12); border-radius:8px; color:#2e7d32; font-size:14px; font-weight:600;">🟢 Online bezahlen & Ticket</span>';
       } else {
         // OHNE Abholcode: Status "Vor Ort erhältlich"
         statusBadgeEl.innerHTML = '<span style="display:inline-flex; align-items:center; gap:6px; padding:6px 12px; background:rgba(0,0,0,.06); border-radius:8px; color:#666; font-size:14px; font-weight:600;">⚪ Vor Ort erhältlich</span>';
@@ -4841,7 +4837,7 @@
       const badges = [];
       if(o.dineInPossible) badges.push({class:'dine', text:'Vor Ort', icon:'utensils'});
       if(!o.dineInPossible || badges.length < 3) badges.push({class:'pickup', text:'Zum Mitnehmen', icon:'shopping-bag'});
-      if(o.hasPickupCode && badges.length < 3) badges.push({class:'code', text:'Abholcode', icon:'key-round'});
+      if(o.hasPickupCode && badges.length < 3) badges.push({class:'code', text:'Ticket', icon:'ticket'});
       
       badges.slice(0, 3).forEach(badge => {
         const badgeEl = document.createElement('span');
@@ -5371,7 +5367,7 @@
     const name = data.providerName || profile.name || 'Anbieter';
     const addr = buildAddress({address:data.address, street:data.providerStreet, zip:data.providerZip, city:data.providerCity}) || buildAddress(profile);
     const badges = [];
-    if(data.hasPickupCode) badges.push('Abholcode');
+    if(data.hasPickupCode) badges.push('Ticket');
     if(data.dineInPossible) badges.push('Vor Ort');
     return `
       <div class="print-card">
@@ -5663,9 +5659,9 @@
       // Status: Online bezahlt
       // Share-Modus: Online bestellen & Abholcode
       // Kunde zahlt online
-      subject = 'Online bestellen & mit Abholcode abholen';
-      body = `Online bestellen & mit Abholcode abholen\n${claim}`;
-      subtitle = 'Kunden bestellen online & holen mit Abholcode ab';
+      subject = 'Online bestellen & mit Ticket abholen';
+      body = `Online bestellen & mit Ticket abholen\n${claim}`;
+      subtitle = 'Kunden bestellen online & holen mit Ticket ab';
     } else {
       // Share-Modus B: OHNE Abholcode (OFF)
       // Status: Vor Ort
@@ -7845,7 +7841,7 @@
           
           // Verzehrart-Badges
           const badges = [];
-          if(o.hasPickupCode) badges.push('<span style="font-size:11px; padding:2px 6px; background:rgba(255,204,0,.15); border-radius:6px; color:var(--brand);">Abholcode</span>');
+          if(o.hasPickupCode) badges.push('<span style="font-size:11px; padding:2px 6px; background:rgba(255,204,0,.15); border-radius:6px; color:var(--brand);">Ticket</span>');
           if(o.dineInPossible) badges.push('<span style="font-size:11px; padding:2px 6px; background:rgba(31,157,85,.15); border-radius:6px; color:var(--brand2);">Vor Ort</span>');
           if(!o.dineInPossible && !o.hasPickupCode) badges.push('<span style="font-size:11px; padding:2px 6px; background:rgba(0,0,0,.06); border-radius:6px;">To Go</span>');
           
@@ -8579,7 +8575,7 @@
             <strong>4,99 € zzgl. MwSt.</strong> pro Veröffentlichung
           </div>
           <div>
-            <strong>0,89 € zzgl. MwSt.</strong> pro Bestellung für Online-Zahlung & Abholcode<br>
+            <strong>0,89 € zzgl. MwSt.</strong> pro Bestellung für Online-Zahlung & Ticket<br>
             <span style="font-size:12px; color:#666; font-style:italic;">
               inkl. aller Bank- & Zahlungsgebühren · gilt pro Bestellung (egal wie viele Gerichte)
             </span>
@@ -9582,7 +9578,7 @@
       badgeContainer.style.cssText = 'margin-bottom:12px; padding:12px; background:#f0f7f0; border-radius:12px; border:1px solid #4caf50;';
       const badge = document.createElement('div');
       badge.style.cssText = 'font-weight:600; font-size:14px; color:#2e7d32; margin-bottom:4px; display:flex; align-items:center; gap:6px;';
-      badge.innerHTML = '🟢 Online bezahlt · Abholung mit Abholcode';
+      badge.innerHTML = '🟢 Online bezahlt · Abholung mit Ticket';
       const subline = document.createElement('div');
       subline.style.cssText = 'font-size:12px; color:#666;';
       subline.textContent = 'Zahlung läuft direkt über Mittagio';
@@ -10503,7 +10499,7 @@
   const btnPickupCodeBack = document.getElementById('btnPickupCodeBack');
   if(btnPickupCodeBack){
     btnPickupCodeBack.onclick = () => {
-      showOrders(); // Zurück zur Mittagsbox (nicht Warenkorb)
+      showOrders(); // Zurück zu Tickets
     };
   }
   
@@ -10662,7 +10658,7 @@
   const btnToOrders = document.getElementById('btnToOrders');
   if(btnToOrders){
     btnToOrders.onclick = () => {
-      showOrders(); // Zur Mittagsbox (orders)
+      showOrders(); // Zu Tickets
     };
   }
   
