@@ -6527,25 +6527,25 @@
     orders = loadOrders();
     renderOrders();
     
-      // Navigiere zu AbholcodeScreen mit Animation
-      showPickupCode(updatedOrder.id);
-      
-      // Animation: "Zahlung bestätigt – Dein Schnitzel wird reserviert!"
-      setTimeout(() => {
-        const pickupCodeView = document.getElementById('v-pickup-code');
-        if(pickupCodeView){
-          const animationEl = document.createElement('div');
-          animationEl.style.cssText = 'position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:rgba(0,0,0,0.9); color:#fff; padding:24px 32px; border-radius:20px; font-size:18px; font-weight:700; z-index:10000; text-align:center; box-shadow:0 8px 32px rgba(0,0,0,0.3);';
-          animationEl.textContent = '✓ Zahlung bestätigt – Dein Gericht wird reserviert!';
-          document.body.appendChild(animationEl);
-          setTimeout(() => {
-            animationEl.style.transition = 'opacity 0.3s';
-            animationEl.style.opacity = '0';
-            setTimeout(() => animationEl.remove(), 300);
-          }, 1500);
-        }
-      }, 100);
-    }
+    // Navigiere zu AbholcodeScreen mit Animation
+    showPickupCode(updatedOrder.id);
+    
+    // Animation: "Zahlung bestätigt – Dein Gericht wird reserviert!"
+    setTimeout(() => {
+      const pickupCodeView = document.getElementById('v-pickup-code');
+      if(pickupCodeView){
+        const animationEl = document.createElement('div');
+        animationEl.style.cssText = 'position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:rgba(0,0,0,0.9); color:#fff; padding:24px 32px; border-radius:20px; font-size:18px; font-weight:700; z-index:10000; text-align:center; box-shadow:0 8px 32px rgba(0,0,0,0.3);';
+        animationEl.textContent = '✓ Zahlung bestätigt – Dein Gericht wird reserviert!';
+        document.body.appendChild(animationEl);
+        setTimeout(() => {
+          animationEl.style.transition = 'opacity 0.3s';
+          animationEl.style.opacity = '0';
+          setTimeout(() => animationEl.remove(), 300);
+        }, 1500);
+      }
+    }, 100);
+  }
 
   // --- Start actions ---
   const startCustomerBtn = document.getElementById('btnStartCustomer');
