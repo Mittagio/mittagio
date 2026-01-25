@@ -8322,10 +8322,6 @@
     }
     
     empty.style.display='none';
-    const gridEl = document.getElementById('provPickupsGrid');
-    if(gridEl){
-      gridEl.style.display = filteredPickups.length > 0 ? 'grid' : 'none';
-    }
     listEl.style.display='none'; // Grid hat Priorität
 
     // Sort pickups by code order (1A, 1B, 1C, 2A, 2B, 2C, 10A, 10B...)
