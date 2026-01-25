@@ -6845,18 +6845,19 @@
     let selectedProPhoto = null;
     let recentProPhotos = JSON.parse(localStorage.getItem('mittagio_recent_pro_photos') || '[]');
     
-    function openProPhotoGallery(){
+    // Profi-Galerie Funktionen (global, damit onclick funktioniert)
+    window.openProPhotoGallery = function(){
       document.getElementById('proPhotoBd').style.display = 'block';
       document.getElementById('proPhotoSheet').style.display = 'flex';
-      renderProPhotoGallery('all');
-    }
+      window.renderProPhotoGallery('all');
+    };
     
-    function closeProPhotoGallery(){
+    window.closeProPhotoGallery = function(){
       document.getElementById('proPhotoBd').style.display = 'none';
       document.getElementById('proPhotoSheet').style.display = 'none';
-    }
+    };
     
-    function renderProPhotoGallery(category){
+    window.renderProPhotoGallery = function(category){
       const gridEl = document.getElementById('proPhotoGrid');
       if(!gridEl) return;
       
@@ -6900,9 +6901,9 @@
           </div>
         `;
       }).join('');
-    }
+    };
     
-    function selectProPhoto(photoId, photoUrl, category){
+    window.selectProPhoto = function(photoId, photoUrl, category){
       selectedProPhoto = {id: photoId, url: photoUrl, category: category, isStockPhoto: true};
       
       // Zu "Zuletzt genutzt" hinzufügen
@@ -6923,14 +6924,14 @@
         if(watermarkEl) watermarkEl.style.display = 'block';
       }
       
-      closeProPhotoGallery();
+      window.closeProPhotoGallery();
       showToast('Profi-Foto ausgewählt. Wir markieren es als Serviervorschlag.');
-    }
+    };
     
     // Kategorien-Tab Handler
     document.querySelectorAll('.pro-photo-category-tab').forEach(tab => {
       tab.onclick = () => {
-        renderProPhotoGallery(tab.dataset.category);
+        window.renderProPhotoGallery(tab.dataset.category);
       };
     });
     
@@ -6938,7 +6939,7 @@
     const btnOnboardingChooseProPhoto = document.getElementById('btnOnboardingChooseProPhoto');
     if(btnOnboardingChooseProPhoto){
       btnOnboardingChooseProPhoto.onclick = () => {
-        openProPhotoGallery();
+        window.openProPhotoGallery();
       };
     }
     
