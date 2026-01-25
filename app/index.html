@@ -1161,10 +1161,30 @@
       border-color: #ffdce0;
     }
 
-    .btn-icon.heart-btn.active {
-      color: #ff4757;
-      border-color: #ffdce0;
+    /* Herz-Animation & Farbe */
+    .btn-icon.heart-btn {
+      transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .btn-icon.heart-btn.active,
+    .btn-icon.heart-btn.active-heart {
+      color: #e74c3c !important;
+      border-color: rgba(231, 76, 60, 0.2);
+      transform: scale(1.1);
       background: #fff5f5;
+    }
+
+    /* Empty State Styling */
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #888;
+    }
+
+    .empty-state i {
+      display: block;
+      margin-bottom: 12px;
+      opacity: 0.3;
     }
     
     /* Premium App Container & Header (Zalando/Lieferando-Style) */
@@ -4338,7 +4358,7 @@
             <button class="btn-icon" onclick="event.stopPropagation(); const o=offers.find(x=>x.id==='${data.id}'); if(o) shareOffer(o);">
               <i data-lucide="share-2" style="width:16px;height:16px;"></i>
             </button>
-            <button class="btn-icon heart-btn ${isFav ? 'active' : ''}" onclick="event.stopPropagation(); toggleDishFav('${data.id}');">
+            <button class="btn-icon heart-btn ${isFav ? 'active-heart' : ''}" onclick="event.stopPropagation(); toggleDishFav('${data.id}'); const btn=this; setTimeout(()=>{const isFavNow=dishFavs.has('${data.id}'); btn.classList.toggle('active-heart', isFavNow); if(typeof lucide !== 'undefined') lucide.createIcons();}, 50);">
               <i data-lucide="heart" style="width:16px;height:16px;" ${isFav ? 'fill="currentColor"' : ''}></i>
             </button>
           </div>
