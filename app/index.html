@@ -17,15 +17,16 @@
       /* Mittagio palette (can be adjusted later) */
       --bg:#F7F6F0;
       --card:#FFFFFF;
-      --text:#111;
+      --text:#2D3436;    /* Dunkles Anthrazit statt hartem Schwarz */
       --muted:#6b6b6b;
       --border:#e7e1d5;
       --shadow:0 10px 24px rgba(0,0,0,.08);
       --shadow2:0 16px 40px rgba(0,0,0,.14);
       --radius:24px;     /* rounded-3xl for messenger vibe */
-      --brand:#FFCC00;   /* Mittagio-Gelb */
+      --brand:#FFB800;   /* Warmer Honig-Ton für Planer/Ticket */
       --brand2:#1F9D55;  /* green */
       --danger:#E34D4D;
+      --plan-bg:#F8F9FA; /* Soft Gray für Planer-Hintergrund */
       
       /* Design Tokens - PWA Light */
       /* Radius */
@@ -514,6 +515,21 @@
       font-size:13px; font-weight:700; margin:8px 0;
     }
     .cart-window-badge i{width:16px; height:16px}
+    
+    /* Abholcode-Banner im Warenkorb */
+    .cart-pickup-banner summary {
+      list-style: none;
+    }
+    .cart-pickup-banner summary::-webkit-details-marker {
+      display: none;
+    }
+    .cart-pickup-banner summary i {
+      transition: transform 0.2s ease;
+    }
+    .cart-pickup-banner[open] summary i {
+      transform: rotate(180deg);
+    }
+    
     /* Quick-Time-Chips */
     .cart-time-chips{
       display:flex; gap:8px; flex-wrap:wrap; margin:8px 0 12px;
@@ -892,30 +908,30 @@
     .discover-header{
       position:sticky; top:0; z-index:10;
       background:rgba(255,255,255,.95); backdrop-filter:blur(10px);
-      padding:8px 14px; max-width:980px; margin:0 auto;
+      padding:6px 14px; max-width:980px; margin:0 auto;
       border-bottom:1px solid rgba(0,0,0,.06);
     }
     /* Kompakte Standort-Pill (44-48px) */
     .discover-location-pill{
-      display:flex; align-items:center; gap:8px;
-      padding:10px 14px; border-radius:24px;
+      display:flex; align-items:center; gap:6px;
+      padding:8px 12px; border-radius:24px;
       background:rgba(0,0,0,.04); border:1px solid rgba(0,0,0,.08);
-      height:44px; box-sizing:border-box;
+      height:40px; box-sizing:border-box;
     }
     .discover-location-icon-left{
-      width:18px; height:18px; flex-shrink:0; opacity:.7;
+      width:16px; height:16px; flex-shrink:0; opacity:.7;
       color:#666;
     }
     .discover-location-input{
       flex:1; border:none; background:transparent;
-      font-size:15px; font-weight:500; color:#333;
+      font-size:14px; font-weight:500; color:#333;
       outline:none; min-width:0;
     }
     .discover-location-input::placeholder{
       color:#999; font-weight:400;
     }
     .discover-location-btn{
-      width:32px; height:32px; border-radius:50%;
+      width:28px; height:28px; border-radius:50%;
       border:none; background:transparent;
       display:flex; align-items:center; justify-content:center;
       cursor:pointer; transition:background .2s;
@@ -925,12 +941,12 @@
       background:rgba(0,0,0,.05);
     }
     .discover-location-btn i{
-      width:18px; height:18px; color:#666;
+      width:16px; height:16px; color:#666;
     }
     
     /* Kategorien (horizontal swipebar, ohne Überschrift) */
     .discover-categories{
-      padding:12px 0 8px;
+      padding:8px 0 6px;
       max-width:980px; margin:0 auto;
     }
     .discover-categories-scroll{
@@ -963,11 +979,11 @@
     
     /* Kalender (horizontal swipebar, ohne Überschrift, distinct style) */
     .discover-calendar{
-      padding:0 0 14px;
+      padding:0 0 10px;
       max-width:980px; margin:0 auto;
       border-top:1px solid rgba(0,0,0,.06);
-      margin-top:4px;
-      padding-top:10px;
+      margin-top:2px;
+      padding-top:8px;
     }
     .discover-calendar-scroll{
       display:flex; gap:8px; overflow-x:auto;
@@ -976,13 +992,13 @@
     }
     .discover-calendar-scroll::-webkit-scrollbar{display:none}
     .discover-day{
-      flex:0 0 auto; padding:8px 14px;
-      border-radius:16px; border:1.5px solid rgba(0,0,0,.15);
-      font-size:13px; font-weight:600;
+      flex:0 0 auto; padding:6px 12px;
+      border-radius:14px; border:1.5px solid rgba(0,0,0,.15);
+      font-size:12px; font-weight:600;
       background:#fff; color:#666;
       cursor:pointer; transition:all .2s;
       white-space:nowrap;
-      min-width:60px; text-align:center;
+      min-width:55px; text-align:center;
     }
     .discover-day.active{
       background:var(--brand); color:#000;
@@ -996,25 +1012,25 @@
     
     /* Angebots-Liste Container */
     .discover-offers{
-      padding:0 14px 24px;
+      padding:0 14px 20px;
       max-width:980px; margin:0 auto;
-      display:flex; flex-direction:column; gap:12px;
+      display:flex; flex-direction:column; gap:6px;
     }
-    /* List Cards - Horizontal Layout (kleines Bild links, Content rechts) */
+    /* List Cards - Horizontal Layout (kleines Bild links, Content rechts) - Kompakt */
     .discover-list-card{
-      display:flex; gap:12px; padding:12px;
-      background:#fff; border-radius:16px;
-      box-shadow:0 1px 6px rgba(0,0,0,.06);
+      display:flex; gap:8px; padding:8px;
+      background:#fff; border-radius:12px;
+      box-shadow:0 1px 3px rgba(0,0,0,.04);
       cursor:pointer; transition:transform .1s, box-shadow .1s;
-      border:1px solid rgba(0,0,0,.04);
+      border:1px solid rgba(0,0,0,.03);
     }
     .discover-list-card:active{
       transform:scale(.98);
-      box-shadow:0 1px 4px rgba(0,0,0,.1);
+      box-shadow:0 1px 2px rgba(0,0,0,.06);
     }
     .discover-list-image{
-      flex:0 0 80px; width:80px; height:80px;
-      border-radius:12px; overflow:hidden;
+      flex:0 0 70px; width:70px; height:70px;
+      border-radius:10px; overflow:hidden;
       background:#f0f0f0; flex-shrink:0;
     }
     .discover-list-image img{
@@ -1022,16 +1038,16 @@
     }
     .discover-list-content{
       flex:1; display:flex; flex-direction:column;
-      min-width:0; gap:4px;
+      min-width:0; gap:3px;
     }
     .discover-list-title{
-      font-size:16px; font-weight:900; line-height:1.3;
+      font-size:15px; font-weight:900; line-height:1.3;
       color:#111; margin:0;
       display:-webkit-box; -webkit-line-clamp:2;
       -webkit-box-orient:vertical; overflow:hidden;
     }
     .discover-list-provider{
-      font-size:13px; font-weight:500; color:#666;
+      font-size:12px; font-weight:500; color:#666;
       margin:0; line-height:1.3;
     }
     .discover-list-meta{
@@ -1039,8 +1055,10 @@
       margin-top:4px; flex-wrap:wrap;
     }
     .discover-list-price{
-      font-size:18px; font-weight:900; color:var(--brand);
+      font-size:16px; font-weight:900; color:var(--brand);
       margin:0;
+      padding:4px 10px; background:rgba(255,184,0,.1);
+      border-radius:8px; display:inline-block;
     }
     .discover-list-info{
       font-size:12px; color:#999;
@@ -1070,7 +1088,8 @@
       width:14px; height:14px;
     }
     .discover-list-badge.code{
-      background:rgba(255,204,0,.15); color:#b8860b;
+      background:rgba(255,204,0,.12); color:#b8860b;
+      box-shadow:0 1px 2px rgba(255,204,0,.1);
     }
     .discover-list-badge.dine{
       background:rgba(31,157,85,.1); color:#1f9d55;
@@ -1080,6 +1099,27 @@
     }
     .discover-list-actions{
       margin-top:auto; padding-top:8px;
+      display:flex; gap:8px; align-items:center;
+    }
+    .discover-list-btn-plan{
+      width:36px; height:36px; padding:0;
+      border-radius:8px; border:1.5px solid rgba(0,0,0,.15);
+      background:#fff; color:#666;
+      cursor:pointer; transition:all .15s;
+      display:flex; align-items:center; justify-content:center;
+      flex-shrink:0;
+    }
+    .discover-list-btn-plan:hover{
+      background:#f5f5f5;
+    }
+    .discover-list-btn-plan:active{
+      transform:scale(.95);
+    }
+    .discover-list-btn-plan.planned{
+      background:var(--brand); color:#000; border-color:var(--brand);
+    }
+    .discover-list-btn-plan i{
+      width:18px; height:18px;
     }
     .discover-list-btn{
       width:100%; padding:10px 14px; border-radius:10px;
@@ -1365,6 +1405,94 @@
     .gps-button i {
       width: 18px;
       height: 18px;
+    }
+    
+    /* Favorites Slider (Instagram Stories Style) - Premium */
+    .favorites-slider {
+      display: flex;
+      gap: 20px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      padding: 4px 0;
+    }
+    
+    .favorites-slider::-webkit-scrollbar {
+      display: none;
+    }
+    
+    .favorite-provider-circle {
+      flex: 0 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    
+    .favorite-provider-circle:active {
+      transform: scale(0.95);
+    }
+    
+    .favorite-provider-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #FFB800 0%, #FFD700 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      font-weight: 900;
+      color: #2D3436;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      border: 3px solid rgba(255,255,255,0.9);
+      overflow: hidden;
+      position: relative;
+    }
+    
+    .favorite-provider-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .favorite-provider-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: #2D3436;
+      text-align: center;
+      max-width: 80px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    
+    .favorite-provider-circle:active {
+      transform: scale(0.95);
+    }
+    
+    /* Ticket Hero Card (Glassmorphism) */
+    .ticket-hero-card {
+      position: relative;
+      padding: 28px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.9) 100%);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 24px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+      border: 2px dashed rgba(255,184,0,0.4);
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    .ticket-hero-card:active {
+      transform: scale(0.98);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
     }
 
     /* Location Bar (Discover-View) */
@@ -1677,6 +1805,141 @@
     .feed-empty{
       max-width:980px; margin:0 auto;
     }
+    
+    /* Favoriten-Seite - Premium Redesign */
+    .fav-providers-section,
+    .fav-dishes-section{
+      padding:0 14px 20px;
+      max-width:980px; margin:0 auto;
+    }
+    .fav-section-header{
+      margin-bottom:12px;
+    }
+    .fav-section-title{
+      font-size:18px; font-weight:900; color:#111; margin:0;
+    }
+    
+    /* Anbieter Circle-Slider (Stories-Style) */
+    .fav-providers-slider{
+      display:flex; gap:16px; overflow-x:auto;
+      -webkit-overflow-scrolling:touch;
+      padding:8px 0 16px; scrollbar-width:none;
+    }
+    .fav-providers-slider::-webkit-scrollbar{display:none}
+    .fav-provider-item{
+      flex:0 0 auto; display:flex; flex-direction:column; align-items:center; gap:8px;
+      cursor:pointer; transition:transform .1s;
+    }
+    .fav-provider-item:active{
+      transform:scale(.95);
+    }
+    .fav-provider-avatar{
+      width:72px; height:72px; border-radius:50%;
+      border:3px solid var(--brand);
+      padding:2px; background:#fff;
+      overflow:hidden; position:relative;
+      box-shadow:0 2px 8px rgba(0,0,0,.1);
+    }
+    .fav-provider-avatar img{
+      width:100%; height:100%; object-fit:cover; border-radius:50%;
+    }
+    .fav-provider-name{
+      font-size:12px; font-weight:700; color:#111;
+      max-width:80px; text-align:center; overflow:hidden; text-overflow:ellipsis;
+      line-height:1.3;
+    }
+    
+    /* Gerichte-Favoriten: Kompakte horizontale Karten */
+    .fav-dishes-list{
+      display:flex; flex-direction:column; gap:8px;
+    }
+    .fav-dish-card{
+      display:flex; gap:10px; padding:10px;
+      background:#fff; border-radius:14px;
+      box-shadow:0 1px 4px rgba(0,0,0,.05);
+      cursor:pointer; transition:transform .1s, box-shadow .1s;
+      border:1px solid rgba(0,0,0,.04);
+      position:relative;
+    }
+    .fav-dish-card:active{
+      transform:scale(.98);
+      box-shadow:0 1px 3px rgba(0,0,0,.08);
+    }
+    .fav-dish-image{
+      flex:0 0 80px; width:80px; height:80px;
+      border-radius:10px; overflow:hidden;
+      background:#f0f0f0; flex-shrink:0;
+    }
+    .fav-dish-image img{
+      width:100%; height:100%; object-fit:cover;
+    }
+    .fav-dish-content{
+      flex:1; display:flex; flex-direction:column;
+      min-width:0; gap:3px;
+    }
+    .fav-dish-title{
+      font-size:15px; font-weight:900; line-height:1.3;
+      color:#111; margin:0;
+      display:-webkit-box; -webkit-line-clamp:2;
+      -webkit-box-orient:vertical; overflow:hidden;
+    }
+    .fav-dish-provider{
+      font-size:12px; font-weight:500; color:#666;
+      margin:0; line-height:1.3;
+    }
+    .fav-dish-meta{
+      display:flex; align-items:center; gap:8px;
+      margin-top:4px; flex-wrap:wrap;
+    }
+    .fav-dish-price{
+      font-size:18px; font-weight:900; color:var(--brand);
+      margin:0;
+    }
+    
+    /* "Heute verfügbar" Badge */
+    .fav-dish-available-badge{
+      position:absolute; top:8px; right:8px;
+      background:#1f9d55; color:#fff;
+      padding:4px 8px; border-radius:8px;
+      font-size:10px; font-weight:700;
+      display:flex; align-items:center; gap:4px;
+      box-shadow:0 2px 4px rgba(31,157,85,.3);
+      z-index:2;
+    }
+    .fav-dish-available-badge i{
+      width:12px; height:12px;
+    }
+    
+    /* Empty State */
+    .fav-empty-state{
+      max-width:980px; margin:0 auto;
+      padding:60px 20px;
+      text-align:center;
+    }
+    .fav-empty-illustration{
+      margin-bottom:20px;
+    }
+    .fav-empty-title{
+      font-size:20px; font-weight:900; color:#111;
+      margin:0 0 12px;
+    }
+    .fav-empty-text{
+      font-size:15px; color:#666; line-height:1.5;
+      margin:0 0 24px;
+      max-width:320px; margin-left:auto; margin-right:auto;
+    }
+    
+    /* Mein Plan Sektion */
+    .meal-plan-list{
+      display:flex; flex-direction:column; gap:8px;
+    }
+    .meal-plan-item{
+      transition:transform .1s, box-shadow .1s;
+    }
+    .meal-plan-item:active{
+      transform:scale(.98);
+      box-shadow:0 1px 3px rgba(0,0,0,.08);
+    }
   </style>
 </head>
 <body>
@@ -1763,22 +2026,49 @@
         </div>
       </div>
 
-      <!-- Angebots-Liste (horizontale List-Cards) -->
-      <div class="discover-offers" id="discoverOffers">
+      <!-- Swipe-Container (Tinder-Style) -->
+      <div class="swipe-container" id="swipeContainer" style="position:relative; width:100%; max-width:400px; margin:0 auto; height:500px; padding:20px 14px;">
+        <div class="swipe-stack" id="swipeStack">
+          <!-- Karten werden hier dynamisch eingefügt -->
+        </div>
+        <!-- Swipe-Overlays (werden dynamisch angezeigt) -->
+        <div class="swipe-overlay swipe-overlay-like" id="swipeOverlayLike" style="display:none;">
+          <div class="swipe-overlay-text">HUNGER!</div>
+        </div>
+        <div class="swipe-overlay swipe-overlay-pass" id="swipeOverlayPass" style="display:none;">
+          <div class="swipe-overlay-text">NÄCHSTES</div>
+        </div>
+        <!-- Hilfs-Buttons -->
+        <div class="swipe-actions" id="swipeActions" style="display:none; position:absolute; bottom:20px; left:50%; transform:translateX(-50%); display:flex; gap:24px; z-index:10;">
+          <button class="swipe-btn swipe-btn-pass" id="swipeBtnPass" type="button" aria-label="Überspringen">
+            <i data-lucide="x"></i>
+          </button>
+          <button class="swipe-btn swipe-btn-like" id="swipeBtnLike" type="button" aria-label="Interessiert">
+            <i data-lucide="heart"></i>
+          </button>
+        </div>
+      </div>
+      
+      <!-- Fallback: Angebots-Liste (wenn Swipe nicht aktiv) -->
+      <div class="discover-offers" id="discoverOffers" style="display:none;">
         <!-- Wird dynamisch befüllt -->
       </div>
-      <!-- Leerer Zustand (wenn keine Angebote) -->
+      
+      <!-- Leerer Zustand (wenn alle Karten weggewischt) -->
       <div id="discoverEmpty" style="display:none; text-align:center; padding:80px 20px;">
-        <div style="font-size:64px; margin-bottom:20px; opacity:.6;">🍽️</div>
-        <div style="font-size:18px; font-weight:900; margin-bottom:10px; color:#333; line-height:1.4;">
-          Noch keine Mittagsangebote in deiner Nähe
-        </div>
-        <div style="display:flex; flex-direction:column; gap:12px; max-width:280px; margin:24px auto 0;">
+        <div style="font-size:64px; margin-bottom:20px; opacity:.5;">🍽️</div>
+        <h3 style="font-size:18px; font-weight:900; margin-bottom:10px; color:#111; line-height:1.4;">
+          Das war's für heute in deiner Umgebung!
+        </h3>
+        <p style="font-size:14px; color:#666; margin-bottom:24px; line-height:1.5;">
+          Schau später nochmal rein oder ändere deinen Radius.
+        </p>
+        <div style="display:flex; flex-direction:column; gap:12px; max-width:280px; margin:0 auto;">
           <button class="btn" type="button" onclick="const q=prompt('Neuer Standort:'); if(q){locationQuery=q; renderDiscover();}" style="width:100%;">
-            Standort ändern
+            <i data-lucide="map-pin"></i> <span>Standort ändern</span>
           </button>
           <button class="btn secondary" type="button" onclick="setMode('provider')" style="width:100%;">
-            Als Anbieter starten
+            <i data-lucide="store"></i> <span>Als Anbieter starten</span>
           </button>
         </div>
       </div>
@@ -1792,9 +2082,17 @@
       
       <div class="panel">
         <h3>Abrechnungen</h3>
-        <div class="hint">Auszahlbarer Betrag</div>
-        <div style="font-size:24px;font-weight:900" id="billingAmount">0,00 €</div>
-        <div class="hint" id="billingLast">Letzte Auszahlung: –</div>
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+          <div class="hint" style="margin:0;">Auszahlbarer Betrag</div>
+          <div style="position:relative; display:inline-block;">
+            <i data-lucide="info" style="width:16px;height:16px;color:#999;cursor:help;" title="Deine Zeitersparnis: Automatische Abrechnung & bezahlte Bankgebühren inklusive."></i>
+          </div>
+        </div>
+        <div style="font-size:28px;font-weight:900; margin-bottom:4px;" id="billingAmount">0,00 €</div>
+        <div class="hint" id="billingLast" style="font-size:12px;">Letzte Auszahlung: –</div>
+        <div style="margin-top:12px; padding:10px; background:#f8f8f8; border-radius:10px; font-size:12px; color:#666; line-height:1.5;">
+          <strong>Deine Zeitersparnis:</strong> Automatische Abrechnung & bezahlte Bankgebühren inklusive.
+        </div>
       </div>
 
       <div style="height:12px"></div>
@@ -1815,15 +2113,38 @@
       <button class="btn ghost" type="button" id="btnBillingBack">Zurück</button>
     </section>
 
-    <!-- CUSTOMER: Favorites -->
+    <!-- CUSTOMER: Favorites (Premium Redesign) -->
     <section class="view" id="v-fav">
-      <div class="panel">
-        <div class="section-title">Anbieter-Favoriten</div>
-        <div class="grid" id="favProviders"></div>
-        <div class="hint" id="emptyFavProviders" style="display:none;">Noch keine Anbieter-Favoriten.</div>
-        <div class="section-title" style="margin-top:12px;">Gericht-Favoriten</div>
-        <div class="grid" id="favDishes"></div>
-        <div class="hint" id="emptyFavDishes" style="display:none;">Noch keine Gericht-Favoriten.</div>
+      <!-- Anbieter-Favoriten: Circle-Slider (Stories-Style) -->
+      <div class="fav-providers-section" id="favProvidersSection" style="display:none;">
+        <div class="fav-section-header">
+          <h3 class="fav-section-title">Meine Restaurants</h3>
+        </div>
+        <div class="fav-providers-slider" id="favProvidersSlider">
+          <!-- Wird dynamisch befüllt -->
+        </div>
+      </div>
+      
+      <!-- Gericht-Favoriten: Kompakte horizontale Karten -->
+      <div class="fav-dishes-section" id="favDishesSection" style="display:none;">
+        <div class="fav-section-header">
+          <h3 class="fav-section-title">Meine Gerichte</h3>
+        </div>
+        <div class="fav-dishes-list" id="favDishesList">
+          <!-- Wird dynamisch befüllt -->
+        </div>
+      </div>
+      
+      <!-- Empty State: Keine Favoriten -->
+      <div class="fav-empty-state" id="favEmptyState">
+        <div class="fav-empty-illustration">
+          <i data-lucide="heart" style="width:64px;height:64px;color:#ddd;margin-bottom:16px;"></i>
+        </div>
+        <h3 class="fav-empty-title">Noch keine Favoriten?</h3>
+        <p class="fav-empty-text">Zeit, dich zu verlieben! Entdecke leckere Gerichte und markiere deine Favoriten.</p>
+        <button class="btn" type="button" id="btnFavEmptyDiscover" style="margin-top:20px; width:100%; max-width:280px;">
+          <i data-lucide="compass"></i> <span>Zur Entdecken-Seite</span>
+        </button>
       </div>
     </section>
 
@@ -1831,7 +2152,7 @@
     <section class="view" id="v-orders">
       <div class="panel">
         <h3>Mittagsbox</h3>
-        <div class="hint">Deine aktiven Tickets (Abholcodes)</div>
+        <div class="hint">Deine aktiven Tickets</div>
         <div class="answers" id="ordersFilters" style="margin-top:12px;"></div>
         <div style="height:10px"></div>
         <div id="ordersList" class="hint">Noch keine Bestellungen.</div>
@@ -1845,7 +2166,7 @@
         <div id="cartBox" class="hint">Dein Warenkorb ist leer.</div>
         <button class="checkout-btn" id="btnCheckout" type="button" style="display:none;">Weiter zur Zahlung</button>
         <div class="mini" id="cartNote" style="display:none;">
-          Ein Anbieter pro Bestellung · Zahlung per Stripe · Abholcode nach Zahlung
+          Ein Anbieter pro Bestellung · Zahlung per Stripe · Ticket nach Zahlung
         </div>
       </div>
     </section>
@@ -1857,7 +2178,7 @@
           <button class="back-button" type="button" id="btnPickupCodeBack" aria-label="Zurück">
             <i data-lucide="arrow-left"></i>
           </button>
-          <h3 style="margin:0; flex:1;">Abholnummer</h3>
+          <h3 style="margin:0; flex:1;">Dein Ticket</h3>
         </div>
         
         <!-- Status & Hinweis -->
@@ -1866,63 +2187,171 @@
             ✓ Bestellung bestätigt
           </div>
           <div class="hint" style="font-size:13px;">
-            Bitte diese Nummer beim Abholen zeigen
+            Zeige dein Ticket beim Abholen vor
           </div>
         </div>
         
-        <!-- Code-Kachel (normal groß) -->
-        <div id="pickupCodeCard" style="background:#fff; border:2px solid var(--brand); border-radius:18px; padding:24px; text-align:center; margin-bottom:20px;">
-          <div class="hint" style="font-size:12px; margin-bottom:8px; color:#666;">Abholcode</div>
-          <div id="pickupCodeValue" style="font-size:48px; font-weight:900; font-family:monospace; letter-spacing:4px; color:#111; margin-bottom:12px;">
-            –
+        <!-- Premium Ticket Card (Kassenbeleg-Style) -->
+        <div id="pickupCodeCard" style="background:rgba(255,255,255,0.8); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border:1px solid rgba(229,231,235,1); border-radius:24px; padding:24px; margin:16px; box-shadow:0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04); position:relative; overflow:hidden;">
+          <!-- Gelber Akzent-Kreis oben rechts -->
+          <div style="position:absolute; top:0; right:0; width:80px; height:80px; background:rgba(255,204,0,0.2); border-radius:50%; margin-right:-40px; margin-top:-40px;"></div>
+          
+          <!-- Header: Label + Gericht + Status -->
+          <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:16px; position:relative; z-index:1;">
+            <div>
+              <p style="font-size:11px; text-transform:uppercase; letter-spacing:0.1em; color:#9ca3af; font-weight:700; margin:0 0 4px;">Dein Ticket</p>
+              <h3 id="pickupCodeDish" style="font-size:20px; font-weight:900; color:#1f2937; margin:0; line-height:1.2;">–</h3>
+            </div>
+            <div style="background:#d1fae5; color:#059669; font-size:11px; font-weight:700; padding:4px 12px; border-radius:9999px;">Aktiv</div>
           </div>
-          <button class="btn secondary" type="button" id="btnCopyCode" style="width:100%; min-height:44px;">
-            <i data-lucide="copy"></i> Code kopieren
+          
+          <!-- Gestrichelte Linie (Kassenbeleg-Style) -->
+          <div style="border-top:2px dashed #e5e7eb; margin:16px 0;"></div>
+          
+          <!-- Ticket-Nummer (groß & prominent) -->
+          <div style="text-align:center; margin:24px 0;">
+            <div id="pickupCodeValue" style="font-size:56px; font-weight:900; font-family:monospace; letter-spacing:6px; color:#111; line-height:1; margin-bottom:8px;">–</div>
+            <p style="font-size:12px; color:#6b7280; margin:0;">Zeige beim Abholen vor</p>
+          </div>
+          
+          <!-- Gestrichelte Linie (Kassenbeleg-Style) -->
+          <div style="border-top:2px dashed #e5e7eb; margin:16px 0;"></div>
+          
+          <!-- Footer: Anbieter + Icon -->
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:16px;">
+            <div>
+              <p style="font-size:11px; color:#9ca3af; margin:0 0 4px;">Anbieter</p>
+              <p id="pickupCodeProvider" style="font-weight:600; color:#374151; margin:0; font-size:14px;">–</p>
+            </div>
+            <div style="width:48px; height:48px; background:#f3f4f6; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:24px;">
+              🎟️
+            </div>
+          </div>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div style="padding:0 16px 16px; display:flex; flex-direction:column; gap:10px;">
+          <button class="btn" type="button" id="btnCopyCode" style="width:100%; min-height:44px;">
+            <i data-lucide="copy"></i> Ticket kopieren
           </button>
-        </div>
-        
-        <!-- Bestellinfos kompakt -->
-        <div id="pickupCodeInfo" style="background:#f8f8f8; border-radius:14px; padding:16px; margin-bottom:16px;">
-          <div class="row" style="margin-bottom:8px;"><span>Gericht</span><b id="pickupCodeDish">–</b></div>
-          <div class="row" style="margin-bottom:8px;"><span>Anbieter</span><b id="pickupCodeProvider">–</b></div>
-          <div class="row" style="margin-bottom:8px;"><span>Abholzeit</span><b id="pickupCodeTime">–</b></div>
-          <div class="row" style="margin-bottom:8px;"><span>Art</span><b id="pickupCodeType">–</b></div>
-          <div class="row" style="margin-top:12px; padding-top:12px; border-top:1px solid #ddd;"><span style="font-size:16px; font-weight:900;">Gesamt</span><b style="font-size:16px;" id="pickupCodeTotal">–</b></div>
-        </div>
-        
-        <!-- Secondary Buttons -->
-        <div style="display:flex; flex-direction:column; gap:10px;">
           <button class="btn secondary" type="button" id="btnOpenRoute" style="width:100%; min-height:44px;">
             <i data-lucide="map-pin"></i> Route öffnen
           </button>
-          <!-- Zur Mittagsbox entfernt (nicht für Endkunden) -->
+          <button class="btn ghost" type="button" id="btnToOrders" style="width:100%; min-height:44px;">
+            <i data-lucide="box"></i> Zu meinen Tickets
+          </button>
+        </div>
+        
+        <!-- Zusätzliche Infos (kompakt) -->
+        <div id="pickupCodeInfo" style="background:#f9fafb; border-radius:14px; padding:16px; margin:0 16px 16px;">
+          <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:13px;">
+            <span style="color:#6b7280;">Abholzeit</span>
+            <b id="pickupCodeTime" style="color:#111;">–</b>
+          </div>
+          <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:13px;">
+            <span style="color:#6b7280;">Art</span>
+            <b id="pickupCodeType" style="color:#111;">–</b>
+          </div>
+          <div style="display:flex; justify-content:space-between; margin-top:12px; padding-top:12px; border-top:1px solid #e5e7eb; font-size:15px;">
+            <span style="font-weight:900; color:#111;">Gesamt</span>
+            <b id="pickupCodeTotal" style="font-weight:900; color:#111;">–</b>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- CUSTOMER: Profile ("Mein Mittagio") - Premium Redesign -->
-    <section class="view" id="v-profile">
-      <div style="padding:16px; padding-bottom:90px;">
-        <!-- Header Card mit Avatar -->
-        <div class="profile-header-card" id="profileHeaderCard">
-          <div class="profile-avatar" id="profileAvatar">G</div>
-          <div class="profile-header-info">
-            <div class="profile-name" id="profileName">Gast-Profil</div>
-            <div class="profile-status" id="profileStatus">Willkommen bei Mittagio</div>
+    <!-- CUSTOMER: Profile ("Mein Mittagio") - Premium High-End Redesign -->
+    <section class="view" id="v-profile" style="background:linear-gradient(180deg, #FEF9F0 0%, #FFFFFF 100%); min-height:100vh;">
+      <div style="padding-bottom:90px;">
+        <!-- Premium Header mit Avatar -->
+        <div class="profile-premium-header" style="padding:28px 20px 24px; background:transparent;">
+          <div style="display:flex; align-items:center; gap:16px;">
+            <div class="profile-avatar-large" id="profileAvatarLarge" style="width:72px; height:72px; border-radius:50%; background:linear-gradient(135deg, #FFB800 0%, #FFD700 100%); display:flex; align-items:center; justify-content:center; font-size:32px; font-weight:900; color:#2D3436; flex-shrink:0; box-shadow:0 6px 20px rgba(255,184,0,0.3); border:4px solid rgba(255,255,255,0.95);">
+              G
+            </div>
+            <div style="flex:1; min-width:0;">
+              <h2 style="margin:0; font-size:28px; font-weight:900; line-height:1.2; color:#2D3436;" id="profileGreeting">Hallo!</h2>
+              <p style="margin:6px 0 0; font-size:15px; color:#666; font-weight:500;" id="profileSubtitle">Dein persönlicher Bereich</p>
+            </div>
           </div>
         </div>
 
-        <!-- Aktive Abholnummern (Quick-History) -->
-        <div class="panel" id="profileActivePickups" style="margin-top:0; padding:16px; display:none; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,.04);">
-          <div style="font-weight:600; font-size:17px; margin-bottom:12px; line-height:1.3;">Aktive Abholnummern</div>
-          <div id="profileActivePickupsList">
+        <!-- Ticket als Hero-Element (wenn aktiv) - Glassmorphism -->
+        <div id="profileHeroTicket" style="display:none; padding:0 20px 24px;">
+          <!-- Wird dynamisch befüllt -->
+        </div>
+
+        <!-- Mein Plan (Wochenplan) - Premium -->
+        <div class="panel meal-plan-panel" id="profileMealPlan" style="margin:0 20px 24px; padding:0; border-radius:24px; box-shadow:0 8px 24px rgba(0,0,0,.08); background:rgba(255,255,255,0.95); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); overflow:hidden; border:1px solid rgba(255,255,255,0.8);">
+          <div style="padding:28px 28px 20px;">
+            <h3 style="font-weight:900; font-size:24px; margin:0 0 6px; line-height:1.3; color:#2D3436;">Mein Plan</h3>
+            <p style="font-size:14px; color:#666; margin:0; font-weight:500;">Deine Woche im Überblick</p>
+          </div>
+          
+          <!-- Sticky Header: Horizontaler Kalender - Premium -->
+          <div class="meal-plan-calendar-sticky" id="mealPlanCalendarSticky" style="position:sticky; top:0; z-index:10; background:rgba(255,255,255,0.95); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); padding:0 28px 20px; border-bottom:1px solid rgba(0,0,0,.06);">
+            <div class="meal-plan-calendar-scroll" id="mealPlanCalendar" style="display:flex; gap:12px; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; padding:4px 0;">
+              <!-- Wird dynamisch befüllt -->
+            </div>
+          </div>
+          
+          <!-- Plan-Cards Liste -->
+          <div style="padding:28px; padding-top:24px;">
+            <div id="profileMealPlanList" style="display:flex; flex-direction:column; gap:12px;">
+              <!-- Wird dynamisch befüllt -->
+            </div>
+            
+            <!-- Empty State für einzelnen Tag -->
+            <div id="profileMealPlanDayEmpty" style="display:none; text-align:center; padding:40px 20px;">
+              <div style="width:64px; height:64px; margin:0 auto 20px; border-radius:50%; background:rgba(255,184,0,0.12); display:flex; align-items:center; justify-content:center;">
+                <i data-lucide="plus" style="width:32px; height:32px; color:#FFB800;"></i>
+              </div>
+              <p style="font-size:15px; color:#2D3436; margin:0; font-weight:600;" id="mealPlanDayEmptyText">Was isst du am [Wochentag]?</p>
+            </div>
+            
+            <!-- Global Empty State (wenn überhaupt nichts geplant) -->
+            <div id="profileMealPlanEmpty" style="display:none; text-align:center; padding:48px 20px;">
+              <div style="font-size:72px; margin-bottom:20px; opacity:0.4;">📅</div>
+              <h3 style="font-size:20px; font-weight:900; margin-bottom:10px; color:#2D3436;">Noch nichts geplant</h3>
+              <p style="font-size:15px; color:#666; margin-bottom:28px; line-height:1.6;">Plane deine Woche und merke dir Gerichte für später vor.</p>
+              <button class="btn" type="button" onclick="showDiscover();" style="width:100%; max-width:300px; margin:0 auto; background:#FFB800; color:#2D3436; border:none; padding:16px; font-size:16px; font-weight:700; border-radius:16px;">
+                <i data-lucide="compass"></i> <span>Zur Entdecken-Seite</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Abhol-Erinnerung (Banner) -->
+        <div class="panel" id="profilePickupReminder" style="margin-top:24px; padding:20px; display:none; background:linear-gradient(135deg, rgba(46,125,50,.12) 0%, rgba(46,125,50,.06) 100%); border:1px solid rgba(46,125,50,.25); border-radius:20px; box-shadow:0 2px 12px rgba(46,125,50,0.1);">
+          <div style="display:flex; align-items:start; gap:16px;">
+            <div style="font-size:28px;">🔔</div>
+            <div style="flex:1;">
+              <div style="font-weight:900; font-size:18px; margin-bottom:6px; color:#2e7d32;">Dein nächstes Mittagio</div>
+              <div id="profilePickupReminderText" style="font-size:15px; color:#666; margin-bottom:16px; font-weight:500;">–</div>
+              <button class="btn secondary" type="button" id="btnProfilePickupReminderAction" style="width:100%; min-height:48px; font-size:15px; font-weight:700; border-radius:14px;">
+                Details ansehen
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Meine Lieblinge (Horizontaler Slider) -->
+        <div class="panel" id="profileFavoritesSlider" style="margin-top:0; padding:20px 20px 24px; border-radius:20px; box-shadow:0 2px 12px rgba(0,0,0,.06); background:#fff;">
+          <div style="font-weight:900; font-size:20px; margin-bottom:16px; line-height:1.3; color:#2D3436;">Meine Lieblinge</div>
+          <div class="favorites-slider" id="favoritesSlider" style="display:flex; gap:16px; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; padding:4px 0;">
             <!-- Wird dynamisch befüllt -->
           </div>
+          <div id="favoritesSliderEmpty" style="display:none; text-align:center; padding:32px 20px;">
+            <div style="width:64px; height:64px; margin:0 auto 16px; border-radius:50%; background:rgba(255,184,0,0.1); display:flex; align-items:center; justify-content:center;">
+              <i data-lucide="heart" style="width:32px; height:32px; color:#FFB800;"></i>
+            </div>
+            <p style="font-size:14px; color:#666; margin:0;">Noch keine Lieblings-Anbieter</p>
+          </div>
         </div>
 
-        <!-- Ernährung & Filter (Präferenzen) -->
-        <div class="panel" style="margin-top:18px; padding:16px; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,.04);">
-          <div style="font-weight:600; font-size:17px; margin-bottom:16px; line-height:1.3;">Ernährung & Filter</div>
+        <!-- Ernährung & Filter (Präferenzen) - Premium -->
+        <div class="panel" style="margin:0 20px 24px; padding:28px; border-radius:24px; box-shadow:0 8px 24px rgba(0,0,0,.08); background:rgba(255,255,255,0.95); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,0.8);">
+          <h3 style="font-weight:900; font-size:24px; margin:0 0 24px; line-height:1.3; color:#2D3436;">Ernährung & Filter</h3>
           <div class="preference-switch">
             <div class="preference-label">Vegan</div>
             <div class="switch" id="switchVegan" onclick="togglePreference('vegan', this);">
@@ -1943,20 +2372,23 @@
           </div>
         </div>
 
-      <!-- Provider Area -->
-      <div class="panel" style="margin-top:18px; padding:16px; background:linear-gradient(135deg, rgba(255,204,0,.08) 0%, rgba(255,204,0,.03) 100%); border:1px solid rgba(255,204,0,.15); border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,.04);">
-        <div style="font-weight:600; font-size:17px; margin-bottom:8px; line-height:1.3;">Als Anbieter starten</div>
-        <div class="hint" style="font-size:14px; line-height:1.4; margin-bottom:14px; color:var(--muted);">
-          Mittagtische einfach online anbieten
+      <!-- Zeit-Gewinner: Anbieter-Switch (Premium) -->
+      <div class="panel provider-switch-premium" style="margin:0 20px 24px; padding:32px 28px; background:linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border-radius:24px; box-shadow:0 12px 40px rgba(0,0,0,0.25); position:relative; overflow:hidden;">
+        <div style="position:absolute; top:-50px; right:-50px; width:200px; height:200px; background:radial-gradient(circle, rgba(255,184,0,0.15) 0%, transparent 70%); border-radius:50%;"></div>
+        <div style="position:relative; z-index:1;">
+          <h3 style="font-weight:900; font-size:26px; margin:0 0 12px; line-height:1.3; color:#FFD700;">Verdiene Zeit mit deinem Essen.</h3>
+          <p style="font-size:16px; line-height:1.6; margin:0 0 28px; color:rgba(255,255,255,0.9); font-weight:500;">
+            Weniger Chaos, mehr Planbarkeit. Zum Anbieter-Dashboard.
+          </p>
+          <button class="btn" type="button" id="btnGoToProvider" style="width:100%; min-height:52px; font-size:16px; font-weight:800; background:#FFD700; color:#1a1a1a; border:none; border-radius:16px; box-shadow:0 4px 16px rgba(255,215,0,0.3);">
+            Zum Anbieter-Dashboard
+          </button>
         </div>
-        <button class="btn secondary" type="button" id="btnGoToProvider" style="width:100%; min-height:44px;">
-          Zum Anbieterbereich
-        </button>
       </div>
 
       <!-- FAQ (reduced) -->
-      <div class="panel" style="margin-top:18px; padding:16px; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,.04);">
-        <div style="font-weight:600; font-size:17px; margin-bottom:12px; line-height:1.3;">Häufige Fragen</div>
+      <div class="panel" style="margin-top:24px; padding:24px; border-radius:20px; box-shadow:0 2px 12px rgba(0,0,0,.06); background:#fff;">
+        <div style="font-weight:900; font-size:20px; margin-bottom:16px; line-height:1.3; color:#2D3436;">Häufige Fragen</div>
         <div class="faq" id="profileFaqReduced" style="margin-bottom:12px;">
           <details>
             <summary style="font-size:14px; line-height:1.4; font-weight:500;">Wie funktioniert Mittagio?</summary>
@@ -1967,12 +2399,12 @@
             <p>Nein. Online-Zahlung ist optional. Eine Abholnummer gibt’s nur bei Online-Zahlung.</p>
           </details>
           <details>
-            <summary>Was ist der Abholcode?</summary>
+            <summary>Was ist das Ticket?</summary>
             <p>Dein Schnell-Ticket für die Mittagspause.</p>
           </details>
           <details>
-            <summary>Kann ich ohne Abholcode bestellen?</summary>
-            <p>Nein. Angebote ohne Abholcode kannst du nur ansehen.</p>
+            <summary>Kann ich ohne Ticket bestellen?</summary>
+            <p>Nein. Angebote ohne Ticket kannst du nur ansehen.</p>
           </details>
           <details>
             <summary>Wann kann ich abholen?</summary>
@@ -1980,7 +2412,7 @@
           </details>
           <details>
             <summary>Kann ich für mehrere Personen bestellen?</summary>
-            <p>Ja. Du kannst mehrere Gerichte in einem Vorgang bestellen (eine Abholnummer).</p>
+            <p>Ja. Du kannst mehrere Gerichte in einem Vorgang bestellen (ein Ticket).</p>
           </details>
           <details>
             <summary>Vor Ort essen möglich?</summary>
@@ -2001,7 +2433,7 @@
       </div>
 
         <!-- Support & Rechtliches -->
-        <div class="panel" style="margin-top:18px; padding:16px; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,.04);">
+        <div class="panel" style="margin-top:20px; padding:16px; border-radius:16px; box-shadow:0 1px 3px rgba(0,0,0,.04);">
           <div class="support-list-item" onclick="openHelpSheet();">
             <div class="support-list-label">Hilfe & Kontakt</div>
             <i data-lucide="chevron-right" class="support-list-chevron"></i>
@@ -2326,18 +2758,38 @@
 
       <!-- KPI Dashboard Cards (Row of 3) -->
       <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; margin-top:18px;">
-        <div class="panel" id="kpiCardInserate" style="padding:16px; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,.04); cursor:pointer; text-align:center;">
+        <div class="panel" id="kpiCardInserate" style="padding:16px; border-radius:16px; box-shadow:0 1px 3px rgba(0,0,0,.04); cursor:pointer; text-align:center;">
           <div style="font-size:24px; font-weight:900; line-height:1.2; margin-bottom:6px;" id="kpiInserateCount">0</div>
           <div style="font-size:13px; color:var(--muted);">Inserate</div>
         </div>
-        <div class="panel" id="kpiCardAbholungen" style="padding:16px; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,.04); cursor:pointer; text-align:center;">
+        <div class="panel" id="kpiCardAbholungen" style="padding:16px; border-radius:16px; box-shadow:0 1px 3px rgba(0,0,0,.04); cursor:pointer; text-align:center;">
           <div style="font-size:24px; font-weight:900; line-height:1.2; margin-bottom:6px;" id="kpiAbholungenCount">0</div>
           <div style="font-size:13px; color:var(--muted);">Abholungen</div>
         </div>
-        <div class="panel" id="kpiCardKochbuch" style="padding:16px; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,.04); cursor:pointer; text-align:center;">
+        <div class="panel" id="kpiCardKochbuch" style="padding:16px; border-radius:16px; box-shadow:0 1px 3px rgba(0,0,0,.04); cursor:pointer; text-align:center;">
           <div style="font-size:24px; font-weight:900; line-height:1.2; margin-bottom:6px;" id="kpiKochbuchCount">0</div>
           <div style="font-size:13px; color:var(--muted);">Kochbuch</div>
         </div>
+      </div>
+      
+      <!-- Finanz-Widget: Auszahlungsbetrag -->
+      <div class="panel" id="providerFinanceWidget" style="margin-top:18px; padding:16px; border-radius:16px; box-shadow:0 1px 3px rgba(0,0,0,.04); background:linear-gradient(135deg, rgba(255,204,0,.08) 0%, rgba(255,204,0,.03) 100%); border:1px solid rgba(255,204,0,.15);">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+          <div>
+            <div style="font-weight:600; font-size:15px; margin-bottom:4px; color:#111;">Meine Küche</div>
+            <div style="font-size:12px; color:#666;">Auszahlbarer Betrag</div>
+          </div>
+          <div style="position:relative; display:inline-block;">
+            <i data-lucide="info" style="width:18px;height:18px;color:#999;cursor:help;" title="Deine Zeitersparnis: Automatische Abrechnung & bezahlte Bankgebühren inklusive."></i>
+          </div>
+        </div>
+        <div style="font-size:32px; font-weight:900; color:var(--brand); margin-bottom:8px;" id="providerFinanceAmount">0,00 €</div>
+        <div style="font-size:11px; color:#666; line-height:1.4; padding:8px; background:rgba(255,255,255,.6); border-radius:8px;">
+          <strong>Deine Zeitersparnis:</strong> Automatische Abrechnung & bezahlte Bankgebühren inklusive.
+        </div>
+        <button class="btn secondary" type="button" id="btnProviderFinanceDetails" style="width:100%; margin-top:12px; min-height:44px;">
+          <i data-lucide="wallet"></i> <span>Zu meinen Abrechnungen</span>
+        </button>
       </div>
 
       <!-- TODAY Card -->
@@ -2595,11 +3047,11 @@
           <p style="margin-top:20px;"><strong>Kosten für Anbieter:</strong></p>
           <ul style="padding-left:20px; margin:8px 0;">
             <li>4,99 € zzgl. MwSt. pro Veröffentlichung</li>
-            <li>0,89 € zzgl. MwSt. pro Online-Bestellung inkl. aller Bank- & Zahlungsgebühren (pro Bestellung, egal wie viele Gerichte)</li>
+            <li>0,89 € Service-Pauschale zzgl. MwSt. pro Vorgang. Inklusive aller Bank- und Transaktionsgebühren. Keine versteckten Kosten. Die Pauschale fällt einmal pro Ticket an, unabhängig von der Anzahl der Gerichte.</li>
           </ul>
           
-          <p style="margin-top:20px;"><strong>Abholcode:</strong></p>
-          <p>Der Abholcode dient als Zahlungs- & Abholnachweis. Die Abwicklungsgebühr fällt auch bei Nicht-Abholung an.</p>
+          <p style="margin-top:20px;"><strong>Ticket:</strong></p>
+          <p>Das Ticket dient als Zahlungs- & Abholnachweis. Die Abwicklungsgebühr fällt auch bei Nicht-Abholung an.</p>
           
           <p style="margin-top:20px;"><strong>Verantwortung:</strong></p>
           <p>Der Anbieter ist verantwortlich für Inhalte, Speisen und gesetzliche Vorgaben.</p>
@@ -2643,13 +3095,13 @@
           <ul style="padding-left:20px; margin:8px 0;">
             <li>Bestelldaten</li>
             <li>Zahlungsstatus</li>
-            <li>Abholcode (keine unnötigen personenbezogenen Daten)</li>
+            <li>Ticket (keine unnötigen personenbezogenen Daten)</li>
           </ul>
           
           <p style="margin-top:24px; font-weight:700;">Online-Zahlung:</p>
           <p>Online-Zahlung erfolgt über externe Zahlungsdienstleister (z.B. Stripe). Wir speichern keine kompletter Zahlungsdaten (z.B. Kreditkartennummern).</p>
           
-          <p style="margin-top:24px; font-weight:700;">Zweck des Abholcodes:</p>
+          <p style="margin-top:24px; font-weight:700;">Zweck des Tickets:</p>
           <p>Der Abholcode dient als Zahlungs-/Abholnachweis, zur Zuordnung und zum Missbrauchsschutz.</p>
           
           <p style="margin-top:24px; font-weight:700;">Weitergabe:</p>
@@ -2685,7 +3137,7 @@
           <p style="margin-top:16px;"><strong>Kosten:</strong></p>
           <ul style="padding-left:20px; margin:8px 0;">
             <li>4,99 € zzgl. MwSt. pro Veröffentlichung</li>
-            <li>0,89 € zzgl. MwSt. pro Online-Bestellung inkl. aller Bank- & Zahlungsgebühren (pro Bestellung, egal wie viele Gerichte)</li>
+            <li>0,89 € Service-Pauschale zzgl. MwSt. pro Vorgang. Inklusive aller Bank- und Transaktionsgebühren. Keine versteckten Kosten. Die Pauschale fällt einmal pro Ticket an, unabhängig von der Anzahl der Gerichte.</li>
           </ul>
           
           <p style="margin-top:16px;"><strong>Abholcode:</strong></p>
@@ -2729,12 +3181,12 @@
               <p>Wenn Abholcode aktiv ist, werden die Codes nach Gericht gruppiert angezeigt. Tippe einen Code an, sobald ein Gast abgeholt hat.</p>
             </details>
             <details>
-              <summary>Warum Abholcode?</summary>
+              <summary>Warum Ticket?</summary>
               <p>Vorab bezahlt, weniger Chaos an der Ausgabe und ein klarer Ablauf pro Bestellung.</p>
             </details>
             <details>
-              <summary>Was kostet Abholcode?</summary>
-              <p>49 Cent pro bezahltem Vorgang. (Auch wenn der Kunde mehrere Gerichte in einem Vorgang holt.)</p>
+              <summary>Was kostet Ticket?</summary>
+              <p>0,89 € Service-Pauschale zzgl. MwSt. pro Vorgang. Inklusive aller Bank- und Transaktionsgebühren. Die Pauschale fällt einmal pro Ticket an, unabhängig von der Anzahl der Gerichte.</p>
             </details>
             <details>
               <summary>Wie spare ich Zeit?</summary>
@@ -2762,13 +3214,9 @@
       <div>Essenskorb</div>
       <span class="badge-notification" id="cartBadge" style="display:none;"></span>
     </button>
-    <button class="navbtn" data-go="orders" style="position:relative;">
-      <div class="ico"><i data-lucide="package"></i></div>
-      <div>Mittagsbox</div>
-    </button>
     <button class="navbtn" data-go="profile" style="position:relative;">
       <div class="ico"><i data-lucide="user"></i></div>
-      <div>Profil</div>
+      <div>Meins</div>
     </button>
   </nav>
 
@@ -2884,7 +3332,7 @@
       <div class="quick-ticket-time" id="codePickupWindow">Essenszeit: –</div>
     </div>
     <div class="quick-ticket-code">
-      <div class="quick-ticket-code-label">Abholcode</div>
+      <div class="quick-ticket-code-label">Dein Ticket</div>
       <div class="quick-ticket-code-value" id="codeText">A1</div>
     </div>
     <div class="quick-ticket-details">
@@ -3075,7 +3523,8 @@
     onboardingDraft: 'mittagio_onboarding_draft_v1',
     pickupDone: 'mittagio_pickup_done_v1',
     mode: 'mittagio_mode_v1',
-    preferences: 'mittagio_preferences_v1'
+    preferences: 'mittagio_preferences_v1',
+    plannedMeals: 'mittagio_planned_meals_v1'
   };
   const load = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } };
   const save = (k, v) => localStorage.setItem(k, JSON.stringify(v));
@@ -3941,10 +4390,59 @@
     document.querySelectorAll('#providerNav .navbtn').forEach(b=>b.classList.toggle('active', b.dataset.pgo===go));
   }
 
-  function showView(id){
+  // Routing-System: History API für logische Navigation
+  let navigationStack = []; // Stack für View-History
+  let isNavigatingBack = false; // Flag um pushState bei Back-Navigation zu vermeiden
+  
+  function showView(id, options = {}){
+    const skipHistory = options.skipHistory || false;
+    
     document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
     document.getElementById(id).classList.add('active');
     window.scrollTo({top:0,behavior:'smooth'});
+    
+    // History API: Push State für Browser-Back-Button
+    if(!skipHistory && !isNavigatingBack){
+      const route = getRouteForView(id);
+      if(route){
+        navigationStack.push({viewId: id, route: route});
+        history.pushState({viewId: id, route: route}, '', route);
+      }
+    }
+    isNavigatingBack = false;
+  }
+  
+  // Route-Mapping: View-ID → URL-Route
+  function getRouteForView(viewId){
+    const routeMap = {
+      'v-start': '/',
+      'v-discover': '/entdecken',
+      'v-fav': '/favoriten',
+      'v-cart': '/warenkorb',
+      'v-profile': '/meins',
+      'v-pickup-code': navigationStack.length > 0 ? navigationStack[navigationStack.length - 1].route : '/ticket',
+      'v-provider-home': '/anbieter/dashboard',
+      'v-provider-pickups': '/anbieter/abholungen',
+      'v-provider-cookbook': '/anbieter/kochbuch',
+      'v-provider-profile': '/anbieter/profil'
+    };
+    return routeMap[viewId] || null;
+  }
+  
+  // Route → View Mapping (für Initial-Load und Back-Button)
+  function getViewForRoute(route){
+    const viewMap = {
+      '/': 'v-start',
+      '/entdecken': 'v-discover',
+      '/favoriten': 'v-fav',
+      '/warenkorb': 'v-cart',
+      '/meins': 'v-profile',
+      '/anbieter/dashboard': 'v-provider-home',
+      '/anbieter/abholungen': 'v-provider-pickups',
+      '/anbieter/kochbuch': 'v-provider-cookbook',
+      '/anbieter/profil': 'v-provider-profile'
+    };
+    return viewMap[route] || null;
   }
 
   function setMode(next){
@@ -4022,11 +4520,38 @@
     setCustomerNavActive('fav');
     showView(views.fav);
     renderFavorites();
+    if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
+  }
+  
+  // Toggle Meal Plan (Gericht für Woche vormerken)
+  function toggleMealPlan(offerId, date){
+    if(!offerId || !date) return;
+    
+    const plannedMeals = load(LS.plannedMeals, []);
+    const mealKey = `${offerId}_${date}`;
+    const existingIndex = plannedMeals.findIndex(m => m.offerId === offerId && m.date === date);
+    
+    if(existingIndex >= 0){
+      // Entfernen
+      plannedMeals.splice(existingIndex, 1);
+      showToast('Aus Plan entfernt');
+    } else {
+      // Hinzufügen
+      plannedMeals.push({offerId, date, addedAt: Date.now()});
+      showToast('Zu Plan hinzugefügt');
+    }
+    
+    save(LS.plannedMeals, plannedMeals);
+    
+    // Views aktualisieren
+    renderDiscover();
+    renderFavorites();
+    updateProfileView();
   }
   function showOrders(){
-    setCustomerNavActive('orders');
-    showView(views.orders);
-    renderOrders();
+    // Orders View wird nicht mehr über Tab-Bar aufgerufen
+    // Fallback: Zeige Warenkorb mit aktiven Abholcodes
+    showCart();
   }
   function showCart(){
     setCustomerNavActive('cart');
@@ -4037,7 +4562,14 @@
     setCustomerNavActive('profile');
     showView(views.profile);
     updateProfileView();
-    lucide.createIcons();
+    if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
+  }
+  
+  function showFav(){
+    setCustomerNavActive('fav');
+    showView(views.fav);
+    renderFavorites();
+    if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
   }
   
   // --- Pickup Code Screen ---
@@ -4050,6 +4582,8 @@
    */
   function showPickupCode(orderId){
     const order = getOrderById(orderId);
+    currentPickupOrderId = orderId; // Für Routing
+    showView(views.pickupCode); // View wechseln mit Routing
     
     // Guard: Order nicht gefunden
     if(!order){
@@ -4089,7 +4623,7 @@
         <div style="font-size:48px; margin-bottom:20px;">⏳</div>
         <h3 style="margin-bottom:12px;">Zahlung noch nicht bestätigt</h3>
         <p class="hint" style="margin-bottom:8px;">Status: ${statusLabel}</p>
-        <p class="hint" style="margin-bottom:24px;">Der Abholcode wird nach erfolgreicher Zahlung angezeigt.</p>
+        <p class="hint" style="margin-bottom:24px;">Das Ticket wird nach erfolgreicher Zahlung angezeigt.</p>
         <button class="btn" type="button" onclick="showOrders()" style="width:100%; min-height:44px;">
           <i data-lucide="arrow-left"></i> Zurück
         </button>
@@ -4102,7 +4636,7 @@
     
     // PAID: Zeige Code
     currentPickupOrderId = orderId;
-    setCustomerNavActive('orders'); // Navigation auf Mittagsbox setzen
+    setCustomerNavActive('cart'); // Navigation auf Essenskorb setzen (Abholcodes sind dort integriert)
     showView(views.pickupCode);
     renderPickupCode(order);
   }
@@ -4118,8 +4652,6 @@
       const code = order.pickupCode || order.code || '';
       // Code groß anzeigen (Format: 1A, 2B, etc.)
       codeEl.textContent = code || '–';
-      codeEl.style.fontSize = '64px'; // Größer für bessere Lesbarkeit
-      codeEl.style.letterSpacing = '2px';
     }
     
     // Anbieter-Name oben in der Karte
@@ -4535,14 +5067,68 @@
       });
     }
     
-    // List Cards rendern (horizontale List-Cards statt Hero Cards)
+    // Swipe-System rendern (Tinder-Style)
+    const swipeStack = document.getElementById('swipeStack');
+    const swipeContainer = document.getElementById('swipeContainer');
+    const swipeActions = document.getElementById('swipeActions');
     const offersEl = document.getElementById('discoverOffers');
     const emptyEl = document.getElementById('discoverEmpty');
-    if(offersEl && emptyEl){
-      offersEl.innerHTML = '';
-      emptyEl.style.display = list.length ? 'none' : 'block';
+    
+    if(swipeStack && swipeContainer && swipeActions){
+      swipeStack.innerHTML = '';
+      emptyEl.style.display = 'none';
       
-      list.forEach(o=> offersEl.appendChild(createDiscoverListCard(o)));
+      if(list.length > 0){
+        swipeContainer.style.display = 'block';
+        swipeActions.style.display = 'flex';
+        offersEl.style.display = 'none';
+        
+        // Karten in umgekehrter Reihenfolge einfügen (oberste zuletzt)
+        list.slice().reverse().forEach((o, index) => {
+          const card = createSwipeCard(o);
+          swipeStack.appendChild(card);
+          
+          // Intro-Animation für oberste Karte
+          if(index === list.length - 1){
+            setTimeout(() => {
+              card.classList.add('intro-bounce');
+              // Overlays kurz zeigen
+              const overlayLike = document.getElementById('swipeOverlayLike');
+              const overlayPass = document.getElementById('swipeOverlayPass');
+              if(overlayLike) {
+                overlayLike.style.display = 'block';
+                overlayLike.classList.add('active');
+                setTimeout(() => overlayLike.classList.remove('active'), 300);
+              }
+              if(overlayPass) {
+                overlayPass.style.display = 'block';
+                overlayPass.classList.add('active');
+                setTimeout(() => overlayPass.classList.remove('active'), 300);
+              }
+              setTimeout(() => {
+                card.classList.remove('intro-bounce');
+                if(overlayLike) overlayLike.style.display = 'none';
+                if(overlayPass) overlayPass.style.display = 'none';
+              }, 600);
+            }, 100);
+          }
+        });
+        
+        // Swipe-Event-Handler initialisieren
+        initSwipeSystem();
+      } else {
+        swipeContainer.style.display = 'none';
+        swipeActions.style.display = 'none';
+        offersEl.style.display = 'none';
+        emptyEl.style.display = 'block';
+      }
+    } else {
+      // Fallback: List Cards rendern (wenn Swipe-Container nicht vorhanden)
+      if(offersEl && emptyEl){
+        offersEl.innerHTML = '';
+        emptyEl.style.display = list.length ? 'none' : 'block';
+        list.forEach(o=> offersEl.appendChild(createDiscoverListCard(o)));
+      }
     }
     
     // Icons aktualisieren
@@ -4681,7 +5267,7 @@
     
     // 3. Abholcode (wenn verfügbar und noch Platz)
     if(data.hasPickupCode && pickupBadges.length < 3) {
-      pickupBadges.push({class:'code', text:'Abholcode', icon:'key-round'});
+      pickupBadges.push({class:'code', text:'Ticket', icon:'key-round'});
     }
     
     // Max 3 Badges sicherstellen
@@ -4790,7 +5376,7 @@
     const interactive = opts.interactive !== false;
     const showActions = opts.showActions === true;
     const isToday = data.day === (opts.todayKey || isoDate(new Date()));
-    const statusLine = data.hasPickupCode ? (isToday ? 'Online-Abholcode · Heute' : 'Online-Abholcode') : '';
+    const statusLine = data.hasPickupCode ? (isToday ? 'Online-Ticket · Heute' : 'Online-Ticket') : '';
     const card=document.createElement('div');
     card.className='card';
     card.style.cursor = interactive ? 'pointer' : 'default';
@@ -4807,7 +5393,7 @@
     img.innerHTML = `
       <img alt="${esc(data.dish||'Gericht')}" src="${esc(imgSrc)}" />
       ${data.active===false?'<div class="badge inactive">Inaktiv</div>':''}
-      ${data.hasPickupCode?'<div class="badge code">Abholcode</div>':''}
+      ${data.hasPickupCode?'<div class="badge code">Ticket</div>':''}
       ${data.dineInPossible?'<div class="badge dine">Vor Ort</div>':''}
     `;
 
@@ -4833,7 +5419,7 @@
       item.innerHTML = `${iconMarkup(icon)}<span>${esc(text)}</span>`;
       info.appendChild(item);
     };
-    if(data.hasPickupCode) addInfo('card', 'Online-Abholcode');
+    if(data.hasPickupCode) addInfo('card', 'Online-Ticket');
     if(data.dineInPossible) addInfo('utensils', 'Vor Ort');
     if(info.childElementCount){ body.appendChild(info); }
 
@@ -4892,33 +5478,199 @@
     renderFavorites();
     updateSheetFavs();
   }
+  
+  // Planungs-Funktion: Gericht für einen Tag planen
+  function toggleMealPlan(offerId){
+    if(!offerId) return;
+    const offer = offers.find(x => x.id === offerId);
+    if(!offer) return;
+    
+    const plannedMeals = load(LS.plannedMeals, []);
+    const existingIndex = plannedMeals.findIndex(p => p.offerId === offerId && p.day === (offer.day || isoDate(new Date())));
+    
+    if(existingIndex >= 0){
+      // Entfernen
+      plannedMeals.splice(existingIndex, 1);
+    } else {
+      // Hinzufügen
+      const normalized = normalizeOffer(offer);
+      plannedMeals.push({
+        offerId: offerId,
+        day: offer.day || isoDate(new Date()),
+        dishName: normalized.dish || 'Gericht',
+        providerName: normalized.providerName || 'Anbieter',
+        price: normalized.price || 0,
+        pickupWindow: normalized.pickupWindow || '',
+        plannedAt: Date.now()
+      });
+    }
+    
+    save(LS.plannedMeals, plannedMeals);
+    renderDiscover();
+    renderFavorites();
+    updateProfileView();
+    
+    // Visuelles Feedback
+    const btn = event?.target?.closest('.discover-list-btn-plan');
+    if(btn){
+      btn.classList.toggle('planned', existingIndex < 0);
+      if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
+    }
+  }
 
   function renderFavorites(){
-    const provGrid=document.getElementById('favProviders');
-    const provEmpty=document.getElementById('emptyFavProviders');
-    const dishGrid=document.getElementById('favDishes');
-    const dishEmpty=document.getElementById('emptyFavDishes');
-    if(!provGrid || !dishGrid || !provEmpty || !dishEmpty) return;
+    const providersSection = document.getElementById('favProvidersSection');
+    const providersSlider = document.getElementById('favProvidersSlider');
+    const dishesSection = document.getElementById('favDishesSection');
+    const dishesList = document.getElementById('favDishesList');
+    const emptyState = document.getElementById('favEmptyState');
+    
+    if(!providersSection || !providersSlider || !dishesSection || !dishesList || !emptyState) return;
 
-    const candidates = offers
-      .filter(o => o.active !== false && providerFavs.has(o.providerId))
-      .sort((a,b)=>String(b.day||'').localeCompare(String(a.day||'')));
-    const bestByProvider = new Map();
-    candidates.forEach(o=>{
-      if(!bestByProvider.has(o.providerId)) bestByProvider.set(o.providerId, o);
+    // Heute-Datum für Verfügbarkeits-Prüfung
+    const todayKey = isoDate(new Date());
+    
+    // Anbieter-Favoriten sammeln
+    const providerIds = Array.from(providerFavs);
+    const providerData = [];
+    
+    providerIds.forEach(providerId => {
+      // Finde ein aktuelles Angebot dieses Anbieters
+      const latestOffer = offers
+        .filter(o => o.providerId === providerId && o.active !== false)
+        .sort((a,b)=>String(b.day||'').localeCompare(String(a.day||'')))[0];
+      
+      if(latestOffer){
+        const normalized = normalizeOffer(latestOffer);
+        providerData.push({
+          id: providerId,
+          name: normalized.providerName || 'Anbieter',
+          logo: normalized.providerLogo || null,
+          offer: latestOffer
+        });
+      } else {
+        // Fallback: Anbieter ohne Angebot trotzdem anzeigen
+        providerData.push({
+          id: providerId,
+          name: 'Anbieter',
+          logo: null,
+          offer: null
+        });
+      }
     });
-    const providerList = Array.from(bestByProvider.values());
 
-    provGrid.innerHTML='';
-    provEmpty.style.display = providerList.length ? 'none' : 'block';
-    providerList.forEach(o=>provGrid.appendChild(offerCard(o)));
-
+    // Gericht-Favoriten sammeln
     const dishList = offers
       .filter(o => o.active !== false && dishFavs.has(o.id))
       .sort((a,b)=>String(b.day||'').localeCompare(String(a.day||'')));
-    dishGrid.innerHTML='';
-    dishEmpty.style.display = dishList.length ? 'none' : 'block';
-    dishList.forEach(o=>dishGrid.appendChild(offerCard(o)));
+
+    // Empty State prüfen
+    const hasAnyFavorites = providerData.length > 0 || dishList.length > 0;
+    
+    if(!hasAnyFavorites){
+      emptyState.style.display = 'block';
+      providersSection.style.display = 'none';
+      dishesSection.style.display = 'none';
+      
+      // Empty State Button Handler
+      const btnEmptyDiscover = document.getElementById('btnFavEmptyDiscover');
+      if(btnEmptyDiscover){
+        btnEmptyDiscover.onclick = () => {
+          showDiscover();
+        };
+      }
+      
+      if(typeof lucide !== 'undefined'){
+        setTimeout(() => lucide.createIcons(), 50);
+      }
+      return;
+    }
+    
+    emptyState.style.display = 'none';
+    
+    // Anbieter-Slider rendern
+    if(providerData.length > 0){
+      providersSection.style.display = 'block';
+      providersSlider.innerHTML = '';
+      
+      providerData.forEach(provider => {
+        const item = document.createElement('div');
+        item.className = 'fav-provider-item';
+        item.onclick = () => {
+          if(provider.offer){
+            openOffer(provider.offer.id);
+          } else {
+            // Fallback: Zeige Discover mit Filter
+            showDiscover();
+          }
+        };
+        
+        const avatar = document.createElement('div');
+        avatar.className = 'fav-provider-avatar';
+        if(provider.logo){
+          avatar.innerHTML = `<img src="${esc(provider.logo)}" alt="${esc(provider.name)}" />`;
+        } else {
+          const initial = provider.name.charAt(0).toUpperCase();
+          avatar.innerHTML = `<div style="width:100%;height:100%;background:linear-gradient(135deg,var(--brand),var(--brand2));display:flex;align-items:center;justify-content:center;border-radius:50%;font-size:28px;font-weight:900;color:#111;">${esc(initial)}</div>`;
+        }
+        
+        const name = document.createElement('div');
+        name.className = 'fav-provider-name';
+        name.textContent = provider.name;
+        
+        item.appendChild(avatar);
+        item.appendChild(name);
+        providersSlider.appendChild(item);
+      });
+    } else {
+      providersSection.style.display = 'none';
+    }
+    
+    // Gerichte-Liste rendern
+    if(dishList.length > 0){
+      dishesSection.style.display = 'block';
+      dishesList.innerHTML = '';
+      
+      dishList.forEach(offer => {
+        const normalized = normalizeOffer(offer);
+        const isAvailableToday = offer.day === todayKey;
+        
+        const card = document.createElement('div');
+        card.className = 'fav-dish-card';
+        card.onclick = () => openOffer(offer.id);
+        
+        const imgSrc = normalized.imageUrl || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70';
+        
+        card.innerHTML = `
+          ${isAvailableToday ? `
+            <div class="fav-dish-available-badge">
+              <i data-lucide="check-circle"></i>
+              <span>Heute verfügbar</span>
+            </div>
+          ` : ''}
+          <div class="fav-dish-image">
+            <img src="${esc(imgSrc)}" alt="${esc(normalized.dish||'')}" />
+          </div>
+          <div class="fav-dish-content">
+            <h3 class="fav-dish-title">${esc(normalized.dish||'Gericht')}</h3>
+            <p class="fav-dish-provider">${esc(normalized.providerName||'Anbieter')}</p>
+            <div class="fav-dish-meta">
+              <span class="fav-dish-price">${euro(normalized.price)}</span>
+              ${normalized.pickupWindow ? `<span style="font-size:12px;color:#999;">${iconMarkup('clock')} ${esc(normalized.pickupWindow)}</span>` : ''}
+            </div>
+          </div>
+        `;
+        
+        dishesList.appendChild(card);
+      });
+    } else {
+      dishesSection.style.display = 'none';
+    }
+    
+    // Icons aktualisieren
+    if(typeof lucide !== 'undefined'){
+      setTimeout(() => lucide.createIcons(), 50);
+    }
   }
 
   // Legacy: genPickupCode (wird durch generatePickupCode ersetzt)
@@ -4949,7 +5701,17 @@
       });
     }
     if(!orders.length){
-      box.textContent = 'Noch keine Bestellungen.';
+      box.innerHTML = `
+        <div style="text-align:center; padding:60px 20px;">
+          <div style="font-size:64px; margin-bottom:16px; opacity:0.5;">🎫</div>
+          <h3 style="font-size:18px; font-weight:900; margin-bottom:8px; color:#111;">Noch keine Tickets</h3>
+          <p style="font-size:14px; color:#666; margin-bottom:24px; line-height:1.5;">Du hast noch keine Bestellungen aufgegeben. Entdecke leckere Gerichte und bestelle dein erstes Mittagio!</p>
+          <button class="btn" type="button" onclick="showDiscover();" style="width:100%; max-width:280px; margin:0 auto;">
+            <i data-lucide="compass"></i> <span>Zur Entdecken-Seite</span>
+          </button>
+        </div>
+      `;
+      if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
       return;
     }
     const fmt = (ts)=>{
@@ -4984,7 +5746,15 @@
       return (b.createdAt||0) - (a.createdAt||0);
     });
     if(!list.length){
-      box.textContent = 'Keine passenden Bestellungen.';
+      box.innerHTML = `
+        <div style="text-align:center; padding:40px 20px;">
+          <div style="font-size:48px; margin-bottom:12px; opacity:0.5;">🔍</div>
+          <p style="font-size:14px; color:#666; margin-bottom:20px;">Keine passenden Bestellungen für diesen Filter.</p>
+          <button class="btn secondary" type="button" onclick="ordersFilter='alle'; renderOrders();" style="width:100%; max-width:200px; margin:0 auto;">
+            Alle anzeigen
+          </button>
+        </div>
+      `;
       return;
     }
     box.innerHTML = list.map(o=>{
@@ -5114,8 +5884,8 @@
     const statusBadgeEl = document.getElementById('sStatusBadge');
     if(statusBadgeEl){
       if(o.hasPickupCode){
-        // MIT Abholcode: Status "Online bezahlen & Abholcode"
-        statusBadgeEl.innerHTML = '<span style="display:inline-flex; align-items:center; gap:6px; padding:6px 12px; background:rgba(46,125,50,.12); border-radius:8px; color:#2e7d32; font-size:14px; font-weight:600;">🟢 Online bezahlen & Abholcode</span>';
+        // MIT Ticket: Status "Online bezahlen & Ticket"
+        statusBadgeEl.innerHTML = '<span style="display:inline-flex; align-items:center; gap:6px; padding:6px 12px; background:rgba(46,125,50,.12); border-radius:8px; color:#2e7d32; font-size:14px; font-weight:600;">🟢 Online bezahlen & Ticket</span>';
       } else {
         // OHNE Abholcode: Status "Vor Ort erhältlich"
         statusBadgeEl.innerHTML = '<span style="display:inline-flex; align-items:center; gap:6px; padding:6px 12px; background:rgba(0,0,0,.06); border-radius:8px; color:#666; font-size:14px; font-weight:600;">⚪ Vor Ort erhältlich</span>';
@@ -5129,7 +5899,7 @@
       const badges = [];
       if(o.dineInPossible) badges.push({class:'dine', text:'Vor Ort', icon:'utensils'});
       if(!o.dineInPossible || badges.length < 3) badges.push({class:'pickup', text:'Zum Mitnehmen', icon:'shopping-bag'});
-      if(o.hasPickupCode && badges.length < 3) badges.push({class:'code', text:'Abholcode', icon:'key-round'});
+      if(o.hasPickupCode && badges.length < 3) badges.push({class:'code', text:'Ticket', icon:'key-round'});
       
       badges.slice(0, 3).forEach(badge => {
         const badgeEl = document.createElement('span');
@@ -5244,7 +6014,7 @@
         }
         primaryCTA.onclick = null;
       } else if(o.hasPickupCode){
-        // MIT Abholcode: CTA "Jetzt online bestellen"
+        // MIT Ticket: CTA "Jetzt online bestellen"
         primaryCTAText.textContent = 'Jetzt online bestellen';
         primaryCTA.onclick = () => {
           // Loading state
@@ -5293,7 +6063,7 @@
       }
     }
     
-    // Route Button in Address Card (nur bei OHNE Abholcode sichtbar)
+    // Route Button in Address Card (nur bei OHNE Ticket sichtbar)
     if(btnOpenRoute){
       if(!o.hasPickupCode){
         btnOpenRoute.style.display = 'block';
@@ -5345,7 +6115,7 @@
     document.getElementById('bd').classList.remove('active');
     document.getElementById('sheet').classList.remove('active');
     
-    // Zurück zur vorherigen Ansicht (inkl. Scroll-Position)
+    // Routing: History zurück (für Browser Back-Button)
     if(navigationHistory.length > 0){
       const prev = navigationHistory.pop();
       locationQuery = prev.locationQuery || '';
@@ -5353,6 +6123,8 @@
       activeDay = prev.activeDay || isoDate(new Date());
       activeDiscoverFilter = prev.activeFilter || 'near';
       
+      // History zurück navigieren (ohne neuen State zu pushen)
+      isNavigatingBack = true;
       if(prev.view === 'start'){
         showStart();
       } else {
@@ -5368,8 +6140,82 @@
     }
   }
   
-  // Android Hardware-Back unterstützen
+  // Android Hardware-Back unterstützen + Routing-System
   window.addEventListener('popstate', function(e){
+    // Routing: Zurück zur vorherigen View basierend auf History
+    if(e.state && e.state.viewId){
+      isNavigatingBack = true;
+      const prevViewId = e.state.viewId;
+      const prevRoute = e.state.route;
+      
+      // Navigation-Stack aktualisieren
+      const stackIndex = navigationStack.findIndex(item => item.viewId === prevViewId);
+      if(stackIndex >= 0){
+        navigationStack = navigationStack.slice(0, stackIndex + 1);
+      }
+      
+      // View wiederherstellen
+      showView(prevViewId, {skipHistory: true});
+      
+      // View-spezifische Logik
+      if(prevViewId === views.discover){
+        showDiscover();
+      } else if(prevViewId === views.fav){
+        showFav();
+      } else if(prevViewId === views.cart){
+        showCart();
+      } else if(prevViewId === views.profile){
+        showProfile();
+      } else if(prevViewId === views.pickupCode){
+        // Ticket-View: Order-ID aus Stack holen
+        if(navigationStack.length > 0 && currentPickupOrderId){
+          showPickupCode(currentPickupOrderId);
+        }
+      }
+      
+      e.preventDefault();
+      return;
+    }
+    
+    // Fallback: Route aus URL parsen
+    const currentRoute = window.location.pathname;
+    const viewId = getViewForRoute(currentRoute);
+    if(viewId){
+      isNavigatingBack = true;
+      showView(viewId, {skipHistory: true});
+      
+      // View-spezifische Logik
+      if(viewId === views.discover){
+        showDiscover();
+      } else if(viewId === views.fav){
+        showFav();
+      } else if(viewId === views.cart){
+        showCart();
+      } else if(viewId === views.profile){
+        showProfile();
+      }
+      
+      e.preventDefault();
+      return;
+    }
+    
+    // Back-Button von "Meins" oder "Favoriten" → zur Startseite/Discover
+    const currentView = document.querySelector('.view.active');
+    if(currentView){
+      if(currentView.id === views.profile || currentView.id === views.fav){
+        // Zurück zur Startseite/Discover
+        isNavigatingBack = true;
+        if(mode === 'start'){
+          showStart();
+        } else {
+          showDiscover();
+        }
+        e.preventDefault();
+        return;
+      }
+    }
+    
+    // Original-Logik für Modals/Sheets
     // AGB Onboarding Modal schließen
     if(document.getElementById('agbOnboardingSheet') && document.getElementById('agbOnboardingSheet').classList.contains('active')){
       closeAgbOnboardingModal();
@@ -5463,6 +6309,114 @@
     }
   });
 
+  // Meal Plan Rendering (Wochenübersicht)
+  let selectedMealPlanDay = isoDate(new Date()); // Standard: Heute
+  
+  function renderMealPlan(){
+    const calendarEl = document.getElementById('mealPlanCalendar');
+    const listEl = document.getElementById('profileMealPlanList');
+    const emptyEl = document.getElementById('profileMealPlanEmpty');
+    const dayEmptyEl = document.getElementById('profileMealPlanDayEmpty');
+    const dayEmptyText = document.getElementById('mealPlanDayEmptyText');
+    
+    if(!calendarEl || !listEl) return;
+    
+    // Geplante Mahlzeiten laden
+    const plannedMeals = load(LS.plannedMeals, []);
+    
+    // Kalender rendern (Mo-Fr)
+    calendarEl.innerHTML = '';
+    const today = new Date();
+    const weekDays = ['Mo', 'Di', 'Mi', 'Do', 'Fr'];
+    
+    for(let i = 0; i < 5; i++){
+      const d = new Date(today);
+      // Montag = 0, also auf Montag setzen und dann i Tage addieren
+      const dayOfWeek = d.getDay();
+      const diff = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // Sonntag = 6 (letzter Wochentag)
+      d.setDate(d.getDate() - diff + i);
+      
+      const dateKey = isoDate(d);
+      const dayName = weekDays[i];
+      const dayNum = d.getDate();
+      const isActive = selectedMealPlanDay === dateKey;
+      const hasMeals = plannedMeals.some(m => m.date === dateKey);
+      
+      const btn = document.createElement('button');
+      btn.className = 'meal-plan-day-btn' + (isActive ? ' active' : '');
+      btn.innerHTML = `
+        <span class="meal-plan-day-label">${dayName}</span>
+        <span class="meal-plan-day-date">${dayNum}</span>
+      `;
+      btn.onclick = () => {
+        selectedMealPlanDay = dateKey;
+        renderMealPlan();
+      };
+      calendarEl.appendChild(btn);
+    }
+    
+    // Plan-Cards für ausgewählten Tag rendern
+    const dayMeals = plannedMeals.filter(m => m.date === selectedMealPlanDay);
+    
+    if(plannedMeals.length === 0){
+      // Global Empty State: Keine geplanten Mahlzeiten überhaupt
+      listEl.style.display = 'none';
+      dayEmptyEl.style.display = 'none';
+      if(emptyEl) emptyEl.style.display = 'block';
+    } else if(dayMeals.length === 0){
+      // Tag-Empty State: Für diesen Tag nichts geplant
+      listEl.style.display = 'none';
+      if(emptyEl) emptyEl.style.display = 'none';
+      dayEmptyEl.style.display = 'block';
+      
+      const selectedDate = new Date(selectedMealPlanDay);
+      const dayNames = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
+      const dayName = dayNames[selectedDate.getDay()];
+      if(dayEmptyText) dayEmptyText.textContent = `Was isst du am ${dayName}?`;
+    } else {
+      // Plan-Cards rendern
+      listEl.style.display = 'flex';
+      if(emptyEl) emptyEl.style.display = 'none';
+      dayEmptyEl.style.display = 'none';
+      
+      listEl.innerHTML = dayMeals.map(meal => {
+        const offer = offers.find(o => o.id === meal.offerId);
+        if(!offer) return '';
+        
+        const data = normalizeOffer(offer);
+        const imgSrc = data.imageUrl || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70';
+        
+        return `
+          <div class="meal-plan-card" onclick="openOffer('${data.id}');">
+            <div class="meal-plan-card-image">
+              <img src="${esc(imgSrc)}" alt="${esc(data.dish||'')}" />
+            </div>
+            <div class="meal-plan-card-content">
+              <div>
+                <h3 class="meal-plan-card-title">${esc(data.dish||'Gericht')}</h3>
+                <p class="meal-plan-card-provider">${esc(data.providerName||'Anbieter')}</p>
+              </div>
+              <div class="meal-plan-card-meta">
+                ${data.pickupWindow ? `
+                  <div class="meal-plan-card-time">
+                    <i data-lucide="clock" style="width:14px;height:14px;"></i>
+                    <span>${esc(data.pickupWindow)}</span>
+                  </div>
+                ` : ''}
+                <div class="meal-plan-card-price">${euro(data.price)}</div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+      
+      // Icons aktualisieren
+      if(typeof lucide !== 'undefined'){
+        setTimeout(() => lucide.createIcons(), 50);
+      }
+    }
+  }
+  
   function openProviderOffer(id){
     const raw = offers.find(x=>x.id===id);
     if(!raw) return;
@@ -5522,7 +6476,7 @@
     const name = data.providerName || profile.name || 'Anbieter';
     const addr = buildAddress({address:data.address, street:data.providerStreet, zip:data.providerZip, city:data.providerCity}) || buildAddress(profile);
     const badges = [];
-    if(data.hasPickupCode) badges.push('Abholcode');
+    if(data.hasPickupCode) badges.push('Ticket');
     if(data.dineInPossible) badges.push('Vor Ort');
     return `
       <div class="print-card">
@@ -5808,20 +6762,20 @@
     const data = normalizeOffer(o);
     const url = `${location.origin}${location.pathname}#offer/${o.id}`;
     
-    // Dynamische Share-Texte basierend auf Abholcode-Status
+    // Dynamische Share-Texte basierend auf Ticket-Status
     let subject, body, subtitle;
     const claim = 'Dein Mittag. Lokal. Frisch. Digital.\nauf mittagio.de';
     
     if(data.hasPickupCode){
-      // Share-Modus A: MIT Abholcode (ON)
+      // Share-Modus A: MIT Ticket (ON)
       // Status: Online bezahlt
-      // Share-Modus: Online bestellen & Abholcode
+      // Share-Modus: Online bestellen & Ticket
       // Kunde zahlt online
-      subject = 'Online bestellen & mit Abholcode abholen';
-      body = `Online bestellen & mit Abholcode abholen\n${claim}`;
-      subtitle = 'Kunden bestellen online & holen mit Abholcode ab';
+      subject = 'Online bestellen & mit Ticket abholen';
+      body = `Online bestellen & mit Ticket abholen\n${claim}`;
+      subtitle = 'Kunden bestellen online & holen mit Ticket ab';
     } else {
-      // Share-Modus B: OHNE Abholcode (OFF)
+      // Share-Modus B: OHNE Ticket (OFF)
       // Status: Vor Ort
       // Share-Modus: Vor Ort erhältlich
       // Keine Online-Zahlung
@@ -5835,7 +6789,7 @@
 
   function addToCart(o){
     if(!o || !o.hasPickupCode){
-      alert('Ohne Abholcode nur ansehen.');
+      alert('Ohne Ticket nur ansehen.');
       return false;
     }
     if(cart && cart.providerId !== o.providerId){
@@ -6031,7 +6985,34 @@
     const note=document.getElementById('cartNote');
 
     if(!cart || !cart.items.length){
-      box.textContent='Dein Warenkorb ist leer.';
+      // Prüfe auf aktive Abholcodes (ehemals Mittagsbox)
+      const allOrders = loadOrders();
+      const activeOrders = allOrders.filter(o => o.status === 'PAID' && o.pickupCode);
+      
+      if(activeOrders.length > 0){
+        box.innerHTML = `
+          <div style="margin-bottom:16px;">
+            <div style="font-size:14px; font-weight:600; margin-bottom:8px; color:#666;">Aktive Abholnummern</div>
+            ${activeOrders.map(order => {
+              const code = order.pickupCode || order.code || '';
+              const providerName = order.providerName || 'Anbieter';
+              return `
+                <div class="active-pickup-item" onclick="showPickupCode('${order.id}');" style="margin-bottom:8px;">
+                  <div>
+                    <div class="active-pickup-code">${esc(code)}</div>
+                    <div class="active-pickup-details">${esc(providerName)}</div>
+                  </div>
+                  <i data-lucide="chevron-right" style="width:20px;height:20px;color:#999;"></i>
+                </div>
+              `;
+            }).join('')}
+          </div>
+          <div class="hint">Dein Warenkorb ist leer.</div>
+        `;
+        if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
+      } else {
+        box.textContent='Dein Warenkorb ist leer.';
+      }
       btn.style.display='none';
       note.style.display='none';
       return;
@@ -6061,6 +7042,36 @@
         </div>
       `;
     }).filter(Boolean);
+    
+    // Aktive Abholcodes prüfen (für Status-Banner)
+    const allOrders = loadOrders();
+    const activeOrders = allOrders.filter(o => o.status === 'PAID' && o.pickupCode);
+    let activePickupsHtml = '';
+    if(activeOrders.length > 0){
+      activePickupsHtml = `
+        <details class="cart-pickup-banner" style="margin-bottom:16px; background:#f8f8f8; border-radius:12px; padding:12px; border:1px solid #eee;">
+          <summary style="display:flex; align-items:center; justify-content:space-between; cursor:pointer; font-weight:600; font-size:14px; color:#111;">
+            <span>Aktive Abholnummern (${activeOrders.length})</span>
+            <i data-lucide="chevron-down" style="width:18px;height:18px;color:#999;transition:transform 0.2s;"></i>
+          </summary>
+          <div style="margin-top:12px; display:flex; flex-direction:column; gap:8px;">
+            ${activeOrders.map(order => {
+              const code = order.pickupCode || order.code || '';
+              const providerName = order.providerName || 'Anbieter';
+              return `
+                <div class="active-pickup-item" onclick="showPickupCode('${order.id}');" style="margin-bottom:0;">
+                  <div>
+                    <div class="active-pickup-code">${esc(code)}</div>
+                    <div class="active-pickup-details">${esc(providerName)}</div>
+                  </div>
+                  <i data-lucide="chevron-right" style="width:20px;height:20px;color:#999;"></i>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </details>
+      `;
+    }
 
     // Quick-Time-Chips generieren (basierend auf Essenszeit)
     let timeChips = '';
@@ -6088,6 +7099,7 @@
     }
     
     box.innerHTML = `
+      ${activePickupsHtml}
       <div style="font-size:16px; font-weight:900; margin-bottom:12px;">${esc(cart.providerName || 'Anbieter')}</div>
       ${lines.join('')}
       ${windowText ? `
@@ -6103,6 +7115,27 @@
       <div class="row" style="margin-top:20px; padding-top:16px; border-top:2px solid #eee;"><span style="font-size:16px; font-weight:900;">Gesamt</span><b style="font-size:18px;">${euro(total)}</b></div>
       <a href="#" id="clearCart" class="cart-clear-btn">Warenkorb leeren</a>
     `;
+    
+    // Icons für Abholcode-Banner aktualisieren
+    if(typeof lucide !== 'undefined'){
+      setTimeout(() => {
+        lucide.createIcons();
+        // Chevron-Icon rotieren wenn details geöffnet ist
+        box.querySelectorAll('details.cart-pickup-banner').forEach(details => {
+          const chevron = details.querySelector('summary i[data-lucide="chevron-down"]');
+          if(chevron){
+            details.addEventListener('toggle', () => {
+              if(details.open){
+                chevron.style.transform = 'rotate(180deg)';
+              } else {
+                chevron.style.transform = 'rotate(0deg)';
+              }
+              lucide.createIcons(); // Icons neu rendern nach Rotation
+            });
+          }
+        });
+      }, 50);
+    }
 
     // Warenkorb leeren mit Bestätigung
     const clearCartBtn = document.getElementById('clearCart');
@@ -6213,7 +7246,7 @@
       
       // Zahlung ist Pflicht (MVP: Stripe Checkout)
       if(!hasPayment){
-        alert('Diese Bestellung enthält Gerichte ohne Abholcode. Bitte wähle Angebote mit Abholcode aus.');
+        alert('Diese Bestellung enthält Gerichte ohne Ticket. Bitte wähle Angebote mit Ticket aus.');
         return;
       }
       
@@ -6406,7 +7439,7 @@
         receiptEmail: 'customer@example.com' // Would come from Stripe
       });
     } else {
-      // Bereits PAID: direkt zu Abholcode navigieren
+      // Bereits PAID: direkt zu Ticket navigieren
       showPickupCode(order.id);
     }
   }
@@ -6517,7 +7550,7 @@
     orders = loadOrders();
     renderOrders();
     
-    // Navigiere zu AbholcodeScreen
+    // Navigiere zu Ticket-Screen
     showPickupCode(updatedOrder.id);
   }
 
@@ -6575,64 +7608,174 @@
     const ordersTeaser = document.getElementById('profileOrdersTeaser');
     if(ordersTeaser) ordersTeaser.style.display = 'none';
     
-    // Reorder Teaser (mit Empty States)
-    const reorderTeaser = document.getElementById('profileReorderTeaser');
-    const reorderProviders = document.getElementById('profileReorderProviders');
-    const reorderHelper = document.getElementById('profileReorderHelper');
+    // Meine Lieblinge (Horizontaler Slider - Instagram Stories Style)
+    const favoritesSlider = document.getElementById('favoritesSlider');
+    const favoritesSliderContainer = document.getElementById('profileFavoritesSlider');
+    const favoritesSliderEmpty = document.getElementById('favoritesSliderEmpty');
     
-    if(reorderTeaser && reorderProviders){
-      // Nur anzeigen wenn Orders existieren
-      if(!hasOrders){
-        // CASE 1 & 2: No orders - hide completely
-        reorderTeaser.style.display = 'none';
-      } else {
-        const uniqueProviders = [];
-        const providerMap = new Map();
-        allOrders.forEach(o => {
-          if(o.providerName && o.providerId && !providerMap.has(o.providerId)){
-            providerMap.set(o.providerId, o.providerName);
-            uniqueProviders.push({id: o.providerId, name: o.providerName});
-          }
-        });
-        
-        if(uniqueProviders.length > 0){
-          // CASE: Reorder providers exist - show cards with CTAs
-          reorderTeaser.style.display = 'block';
-          if(reorderHelper) reorderHelper.style.display = 'none';
-          reorderProviders.innerHTML = uniqueProviders.slice(0, 2).map(p => `
-            <div style="display:flex; align-items:center; justify-content:space-between; padding:12px; background:#f8f7f3; border-radius:14px; margin-bottom:8px; border:1px solid var(--border);">
-              <div style="font-weight:600; font-size:14px; line-height:1.4;">${esc(p.name)}</div>
-              <button class="btn ghost" type="button" data-provider-id="${esc(p.id)}" style="padding:8px 12px; font-size:14px; min-height:36px; margin-left:12px; flex-shrink:0;">
-                Angebote ansehen
-              </button>
-            </div>
-          `).join('');
-          
-          // Event Handler für Reorder-Buttons
-          reorderProviders.querySelectorAll('button[data-provider-id]').forEach(btn => {
-            btn.onclick = () => {
-              const providerId = btn.dataset.providerId;
-              // Filtere Discover nach diesem Provider
-              locationQuery = '';
-              activeDiscoverFilter = 'near';
-              const providerOffer = offers.find(o => o.providerId === providerId);
-              if(providerOffer) activeDay = providerOffer.day;
-              showDiscover();
-              renderDiscover();
-            };
+    if(favoritesSlider && favoritesSliderContainer){
+      // Provider-Favoriten aus Orders extrahieren
+      const uniqueProviders = [];
+      const providerMap = new Map();
+      allOrders.forEach(o => {
+        if(o.providerName && o.providerId && !providerMap.has(o.providerId)){
+          providerMap.set(o.providerId, o.providerName);
+          // Finde Provider-Logo/Image aus Offers
+          const providerOffer = offers.find(off => off.providerId === o.providerId);
+          uniqueProviders.push({
+            id: o.providerId,
+            name: o.providerName,
+            logo: providerOffer?.providerLogoData || providerOffer?.imageUrl || null
           });
-        } else {
-          // CASE 3: Orders exist, but no reorder providers - show helper text only
-          reorderTeaser.style.display = 'block';
-          if(reorderHelper) reorderHelper.style.display = 'block';
-          reorderProviders.innerHTML = '';
         }
+      });
+      
+      // Auch aus providerFavs hinzufügen (falls nicht schon vorhanden)
+      providerFavs.forEach(providerId => {
+        if(!providerMap.has(providerId)){
+          const providerOffer = offers.find(off => off.providerId === providerId);
+          if(providerOffer){
+            uniqueProviders.push({
+              id: providerId,
+              name: providerOffer.providerName || 'Anbieter',
+              logo: providerOffer.providerLogoData || providerOffer.imageUrl || null
+            });
+          }
+        }
+      });
+      
+      if(uniqueProviders.length > 0){
+        favoritesSliderContainer.style.display = 'block';
+        favoritesSliderEmpty.style.display = 'none';
+        favoritesSlider.innerHTML = uniqueProviders.map(p => {
+          const initial = p.name.charAt(0).toUpperCase();
+          return `
+            <div class="favorite-provider-circle" onclick="locationQuery=''; activeDiscoverFilter='near'; const offer=offers.find(o=>o.providerId==='${p.id}'); if(offer) activeDay=offer.day; showDiscover(); renderDiscover();">
+              <div class="favorite-provider-avatar">
+                ${p.logo ? `<img src="${esc(p.logo)}" alt="${esc(p.name)}" />` : `<span>${initial}</span>`}
+              </div>
+              <div class="favorite-provider-name">${esc(p.name)}</div>
+            </div>
+          `;
+        }).join('');
+      } else {
+        favoritesSliderContainer.style.display = 'none';
       }
     }
     
     // Personal Data - ENTFERNT (Endkunden haben kein Profil)
     const personalData = document.getElementById('profilePersonalData');
     if(personalData) personalData.style.display = 'none';
+    
+    // Ticket als Hero-Element (ganz oben, wenn vorhanden)
+    const ticketHero = document.getElementById('profileTicketHero');
+    const todayOrders = allOrders.filter(o => {
+      const orderDate = o.pickupDate || o.day;
+      return orderDate === isoDate(new Date()) && o.status === 'PAID' && (o.pickupCode || o.code);
+    });
+    
+    if(ticketHero){
+      if(todayOrders.length > 0){
+        const order = todayOrders[0]; // Erstes Ticket als Hero
+        const code = order.pickupCode || order.code || '';
+        const offer = offers.find(o => o.id === order.dishId || o.providerId === order.providerId);
+        const dishName = order.dishName || offer?.dish || 'Gericht';
+        const providerName = order.providerName || offer?.providerName || 'Anbieter';
+        
+        ticketHero.style.display = 'block';
+        ticketHero.innerHTML = `
+          <div class="ticket-hero-card" style="position:relative; padding:28px; background:linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.9) 100%); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border-radius:24px; box-shadow:0 8px 32px rgba(0,0,0,0.12); border:2px dashed rgba(255,184,0,0.4); cursor:pointer; transition:transform 0.2s;" onclick="if('${order.id}') showPickupCode('${order.id}');">
+            <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:20px;">
+              <div style="flex:1;">
+                <div style="font-size:12px; font-weight:700; color:#666; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;">Dein Ticket</div>
+                <div style="font-size:36px; font-weight:900; color:#2D3436; font-family:monospace; letter-spacing:3px; margin-bottom:12px; line-height:1;">${esc(code)}</div>
+                <div style="font-size:18px; font-weight:800; color:#2D3436; margin-bottom:6px;">${esc(dishName)}</div>
+                <div style="font-size:14px; color:#666; font-weight:500;">${esc(providerName)}</div>
+              </div>
+              <div style="background:linear-gradient(135deg, rgba(46,125,50,0.15) 0%, rgba(46,125,50,0.1) 100%); color:#2e7d32; padding:8px 16px; border-radius:12px; font-size:12px; font-weight:800; white-space:nowrap; box-shadow:0 2px 8px rgba(46,125,50,0.2);">Aktiv</div>
+            </div>
+            <div style="display:flex; align-items:center; gap:10px; padding-top:16px; border-top:1px solid rgba(0,0,0,.08);">
+              <i data-lucide="map-pin" style="width:16px;height:16px;color:#666;"></i>
+              <span style="font-size:14px; color:#666; font-weight:500;">Route öffnen</span>
+            </div>
+          </div>
+        `;
+        
+        // Icons aktualisieren
+        if(typeof lucide !== 'undefined'){
+          setTimeout(() => lucide.createIcons(), 50);
+        }
+      } else {
+        ticketHero.style.display = 'none';
+      }
+    }
+    
+    // Meine Lieblinge (Horizontaler Slider)
+    const favoritesSlider = document.getElementById('favoritesSlider');
+    const favoritesSliderEmpty = document.getElementById('favoritesSliderEmpty');
+    const providerFavList = offers
+      .filter(o => o.active !== false && providerFavs.has(o.providerId))
+      .reduce((acc, o) => {
+        if(!acc.find(p => p.providerId === o.providerId)){
+          acc.push(o);
+        }
+        return acc;
+      }, [])
+      .slice(0, 10);
+    
+    if(favoritesSlider && favoritesSliderEmpty){
+      if(providerFavList.length > 0){
+        favoritesSlider.style.display = 'flex';
+        favoritesSliderEmpty.style.display = 'none';
+        favoritesSlider.innerHTML = providerFavList.map(offer => {
+          const data = normalizeOffer(offer);
+          const logoUrl = data.providerLogoData || 'assets/provider-placeholder.png';
+          const providerName = data.providerName || 'Anbieter';
+          
+          return `
+            <div class="favorite-provider-circle" style="flex:0 0 auto; display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer;" onclick="locationQuery=''; activeDiscoverFilter='near'; const providerOffer=offers.find(o=>o.providerId==='${data.providerId}'); if(providerOffer) activeDay=providerOffer.day; showDiscover(); renderDiscover();">
+              <div style="width:72px; height:72px; border-radius:50%; overflow:hidden; border:3px solid #fff; box-shadow:0 4px 12px rgba(0,0,0,0.15); background:#f0f0f0;">
+                <img src="${esc(logoUrl)}" alt="${esc(providerName)}" style="width:100%; height:100%; object-fit:cover;" onerror="this.src='assets/provider-placeholder.png';" />
+              </div>
+              <div style="font-size:12px; font-weight:600; color:#2D3436; text-align:center; max-width:72px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${esc(providerName)}</div>
+            </div>
+          `;
+        }).join('');
+      } else {
+        favoritesSlider.style.display = 'none';
+        favoritesSliderEmpty.style.display = 'block';
+        if(typeof lucide !== 'undefined'){
+          setTimeout(() => lucide.createIcons(), 50);
+        }
+      }
+    }
+    
+    // Mein Plan (Wochenübersicht)
+    renderMealPlan();
+    
+    // Abhol-Erinnerung Banner
+    const pickupReminder = document.getElementById('profilePickupReminder');
+    const pickupReminderText = document.getElementById('profilePickupReminderText');
+    const btnProfilePickupReminderAction = document.getElementById('btnProfilePickupReminderAction');
+    const todayOrders = allOrders.filter(o => {
+      const orderDate = o.pickupDate || o.day;
+      return orderDate === isoDate(new Date());
+    });
+    
+    if(pickupReminder && pickupReminderText){
+      if(todayOrders.length > 0){
+        const nextOrder = todayOrders[0];
+        pickupReminder.style.display = 'block';
+        pickupReminderText.textContent = `${esc(nextOrder.providerName || 'Anbieter')} – ${esc(nextOrder.dish || 'Gericht')}`;
+        if(btnProfilePickupReminderAction){
+          btnProfilePickupReminderAction.onclick = () => {
+            if(nextOrder.id) showPickupCode(nextOrder.id);
+          };
+        }
+      } else {
+        pickupReminder.style.display = 'none';
+      }
+    }
     
     const btnProfileEditEmail = document.getElementById('btnProfileEditEmail');
     if(btnProfileEditEmail) btnProfileEditEmail.onclick = () => {
@@ -6643,6 +7786,126 @@
         updateProfileView();
       }
     };
+    
+    // Mein Plan (Wochenplan) rendern
+    const mealPlanList = document.getElementById('profileMealPlanList');
+    const mealPlanEmpty = document.getElementById('profileMealPlanEmpty');
+    if(mealPlanList && mealPlanEmpty){
+      const plannedMeals = load(LS.plannedMeals, []);
+      const today = new Date();
+      const nextWeek = new Date(today);
+      nextWeek.setDate(today.getDate() + 7);
+      
+      // Filtere: Nur geplante Gerichte der nächsten 7 Tage
+      const upcomingPlanned = plannedMeals.filter(meal => {
+        const mealDate = new Date(meal.date);
+        return mealDate >= today && mealDate <= nextWeek;
+      }).sort((a, b) => new Date(a.date) - new Date(b.date));
+      
+      if(upcomingPlanned.length > 0){
+        mealPlanList.innerHTML = upcomingPlanned.map(meal => {
+          const offer = offers.find(o => o.id === meal.offerId);
+          if(!offer) return '';
+          const data = normalizeOffer(offer);
+          const mealDate = new Date(meal.date);
+          const dateStr = mealDate.toDateString() === today.toDateString() ? 'Heute' : fmtDay(mealDate);
+          
+          return `
+            <div class="meal-plan-item" style="display:flex; align-items:center; justify-content:space-between; padding:12px; background:#f9fafb; border-radius:12px; margin-bottom:8px; border:1px solid #e5e7eb; transition:transform 0.2s, box-shadow 0.2s;">
+              <div style="flex:1;">
+                <div style="font-weight:600; font-size:14px; margin-bottom:4px; color:#111;">${esc(data.dish || 'Gericht')}</div>
+                <div style="font-size:12px; color:#666;">${esc(dateStr)} · ${esc(data.providerName || 'Anbieter')}</div>
+              </div>
+              <button class="btn ghost" type="button" onclick="toggleMealPlan('${esc(meal.offerId)}', '${esc(meal.date)}'); updateProfileView();" style="padding:6px 12px; min-height:36px; font-size:12px;">
+                <i data-lucide="x"></i>
+              </button>
+            </div>
+          `;
+        }).join('');
+        mealPlanEmpty.style.display = 'none';
+        mealPlanList.style.display = 'block';
+        
+        // Icons aktualisieren
+        if(typeof lucide !== 'undefined'){
+          setTimeout(() => lucide.createIcons(), 50);
+        }
+      } else {
+        mealPlanList.style.display = 'none';
+        mealPlanEmpty.style.display = 'block';
+      }
+    }
+    
+    // Abhol-Erinnerung (Banner) rendern
+    const pickupReminder = document.getElementById('profilePickupReminder');
+    const pickupReminderText = document.getElementById('profilePickupReminderText');
+    const btnPickupReminderAction = document.getElementById('btnProfilePickupReminderAction');
+    
+    if(pickupReminder && pickupReminderText && btnPickupReminderAction){
+      const allOrders = loadOrders();
+      const todayKey = isoDate(new Date());
+      const todayOrders = allOrders.filter(o => {
+        const offer = offers.find(off => off.id === o.dishId || off.providerId === o.providerId);
+        return offer && o.status === 'PAID' && o.pickupDate === todayKey;
+      });
+      
+      if(todayOrders.length > 0){
+        const nextOrder = todayOrders[0];
+        const offer = offers.find(o => o.id === nextOrder.dishId);
+        const pickupTime = nextOrder.etaTime || nextOrder.pickupWindow || '12:30 Uhr';
+        
+        pickupReminderText.textContent = `Heute, ${pickupTime}`;
+        pickupReminder.style.display = 'block';
+        
+        btnPickupReminderAction.onclick = () => {
+          if(nextOrder.id){
+            showPickupCode(nextOrder.id);
+          }
+        };
+      } else {
+        pickupReminder.style.display = 'none';
+      }
+    }
+    
+    // Aktive Tickets rendern (mit Animation)
+    const activePickups = document.getElementById('profileActivePickups');
+    const activePickupsList = document.getElementById('profileActivePickupsList');
+    if(activePickups && activePickupsList){
+      const allOrders = loadOrders();
+      const activeTickets = allOrders.filter(o => o.status === 'PAID' && o.pickupCode);
+      
+      if(activeTickets.length > 0){
+        activePickups.style.display = 'block';
+        activePickupsList.innerHTML = activeTickets.slice(0, 3).map(order => {
+          const offer = offers.find(o => o.id === order.dishId);
+          const data = normalizeOffer(offer || {});
+          
+          return `
+            <div class="ticket-card-pulse" style="background:rgba(255,255,255,0.8); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border:1px solid rgba(229,231,235,1); border-radius:16px; padding:16px; margin-bottom:12px; box-shadow:0 4px 12px rgba(0,0,0,0.08); position:relative; overflow:hidden; cursor:pointer;" onclick="showPickupCode('${esc(order.id)}');">
+              <div style="position:absolute; top:0; right:0; width:60px; height:60px; background:rgba(255,204,0,0.15); border-radius:50%; margin-right:-30px; margin-top:-30px;"></div>
+              <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:12px; position:relative; z-index:1;">
+                <div>
+                  <p style="font-size:10px; text-transform:uppercase; letter-spacing:0.1em; color:#9ca3af; font-weight:700; margin:0 0 4px;">Ticket</p>
+                  <h3 style="font-size:16px; font-weight:900; color:#1f2937; margin:0; line-height:1.2;">${esc(data.dish || order.dishName || 'Gericht')}</h3>
+                </div>
+                <div style="background:#d1fae5; color:#059669; font-size:10px; font-weight:700; padding:3px 10px; border-radius:9999px;">Aktiv</div>
+              </div>
+              <div style="border-top:2px dashed #e5e7eb; margin:12px 0;"></div>
+              <div style="text-align:center; margin:16px 0;">
+                <div style="font-size:36px; font-weight:900; font-family:monospace; letter-spacing:4px; color:#111; line-height:1; margin-bottom:6px;">${esc(order.pickupCode || '–')}</div>
+                <p style="font-size:11px; color:#6b7280; margin:0;">${esc(data.providerName || order.providerName || 'Anbieter')}</p>
+              </div>
+            </div>
+          `;
+        }).join('');
+        
+        // Icons aktualisieren
+        if(typeof lucide !== 'undefined'){
+          setTimeout(() => lucide.createIcons(), 50);
+        }
+      } else {
+        activePickups.style.display = 'none';
+      }
+    }
   }
   
   // Präferenzen Toggle-Funktion
@@ -7141,7 +8404,7 @@
           <p style="margin-bottom:20px;">Die Nutzung ist grundsätzlich ohne Registrierung möglich. Kunden können Mittagsangebote auswählen und vorbestellen. Ein Anspruch auf Verfügbarkeit bestimmter Angebote besteht nicht.</p>
           
           <p style="margin-bottom:16px;"><strong>4. Bestellung & Abholung</strong></p>
-          <p style="margin-bottom:20px;">Mit Abschluss der Bestellung erhält der Kunde einen Abholcode. Der Abholcode ist beim Anbieter vorzuzeigen. Die Abholung erfolgt innerhalb der vom Anbieter angegebenen Essenszeit.</p>
+          <p style="margin-bottom:20px;">Mit Abschluss der Bestellung erhält der Kunde ein Ticket. Das Ticket ist beim Anbieter vorzuzeigen. Die Abholung erfolgt innerhalb der vom Anbieter angegebenen Essenszeit.</p>
           
           <p style="margin-bottom:16px;"><strong>5. Preise & Bezahlung</strong></p>
           <p style="margin-bottom:20px;">Alle Preise werden vom Anbieter festgelegt. Die Bezahlung erfolgt direkt beim Anbieter vor Ort, sofern nicht anders angegeben. Mittagio erhebt aktuell keine Gebühren vom Kunden.</p>
@@ -7202,7 +8465,7 @@
             <li style="margin-bottom:8px;">ausgewähltes Gericht</li>
             <li style="margin-bottom:8px;">Anbieter</li>
             <li style="margin-bottom:8px;">Abholzeit (ungefähr)</li>
-            <li style="margin-bottom:8px;">generierter Abholcode</li>
+            <li style="margin-bottom:8px;">generiertes Ticket</li>
           </ul>
           <p style="margin-bottom:20px;">
             👉 Keine Pflicht zur Registrierung<br>
@@ -7210,7 +8473,7 @@
           </p>
           
           <p style="margin-bottom:12px;"><strong>c) Lokale Speicherung (PWA)</strong></p>
-          <p style="margin-bottom:20px;">Bestellungen und Abholcodes werden lokal auf deinem Gerät gespeichert (z. B. im LocalStorage), damit du sie auch offline wieder anzeigen kannst. Diese Daten werden nicht automatisch an uns übertragen.</p>
+          <p style="margin-bottom:20px;">Bestellungen und Tickets werden lokal auf deinem Gerät gespeichert (z. B. im LocalStorage), damit du sie auch offline wieder anzeigen kannst. Diese Daten werden nicht automatisch an uns übertragen.</p>
           
           <p style="margin-bottom:16px;"><strong>4. Weitergabe von Daten</strong></p>
           <p style="margin-bottom:20px;">Deine Daten werden nur an den jeweiligen Anbieter weitergegeben, soweit dies zur Abwicklung deiner Bestellung erforderlich ist.</p>
@@ -7271,16 +8534,16 @@
         <p style="font-size:14px; line-height:1.5; margin-top:8px; padding-bottom:12px; color:var(--muted);">Du findest Mittagsangebote in deiner Stadt, optional bezahlst du online und holst zur gewählten Zeit ab.</p>
       </details>
       <details>
-        <summary style="font-size:15px; line-height:1.4; font-weight:500; padding:12px 0;">Was ist der Abholcode?</summary>
-        <p style="font-size:14px; line-height:1.5; margin-top:8px; padding-bottom:12px; color:var(--muted);">Dein Schnell-Ticket für die Mittagspause. Du erhältst ihn nach erfolgreicher Online-Zahlung.</p>
+        <summary style="font-size:15px; line-height:1.4; font-weight:500; padding:12px 0;">Was ist das Ticket?</summary>
+        <p style="font-size:14px; line-height:1.5; margin-top:8px; padding-bottom:12px; color:var(--muted);">Dein Schnell-Ticket für die Mittagspause. Du erhältst es nach erfolgreicher Online-Zahlung.</p>
       </details>
       <details>
         <summary style="font-size:15px; line-height:1.4; font-weight:500; padding:12px 0;">Muss ich online bezahlen?</summary>
-        <p style="font-size:14px; line-height:1.5; margin-top:8px; padding-bottom:12px; color:var(--muted);">Nein. Online-Zahlung ist optional. Eine Abholnummer gibt's nur bei Online-Zahlung.</p>
+        <p style="font-size:14px; line-height:1.5; margin-top:8px; padding-bottom:12px; color:var(--muted);">Nein. Online-Zahlung ist optional. Ein Ticket gibt's nur bei Online-Zahlung.</p>
       </details>
       <details>
-        <summary style="font-size:15px; line-height:1.4; font-weight:500; padding:12px 0;">Kann ich ohne Abholcode bestellen?</summary>
-        <p style="font-size:14px; line-height:1.5; margin-top:8px; padding-bottom:12px; color:var(--muted);">Nein. Angebote ohne Abholcode kannst du nur ansehen.</p>
+        <summary style="font-size:15px; line-height:1.4; font-weight:500; padding:12px 0;">Kann ich ohne Ticket bestellen?</summary>
+        <p style="font-size:14px; line-height:1.5; margin-top:8px; padding-bottom:12px; color:var(--muted);">Nein. Angebote ohne Ticket kannst du nur ansehen.</p>
       </details>
       <details>
         <summary style="font-size:15px; line-height:1.4; font-weight:500; padding:12px 0;">Wann kann ich abholen?</summary>
@@ -7388,8 +8651,6 @@
         }
       } else if(go==='fav'){
         showFav();
-      } else if(go==='orders'){
-        showOrders();
       } else if(go==='cart'){
         showCart();
       } else if(go==='profile'){
@@ -7476,6 +8737,45 @@
       showProviderCookbook();
     };
     
+    // Finanz-Widget: Auszahlungsbetrag berechnen
+    const financeWidget = document.getElementById('providerFinanceWidget');
+    const financeAmount = document.getElementById('providerFinanceAmount');
+    const btnFinanceDetails = document.getElementById('btnProviderFinanceDetails');
+    
+    if(financeWidget && financeAmount){
+      // Demo: Berechne Auszahlungsbetrag (Umsatz minus Gebühren)
+      const allOrders = loadOrders();
+      const myOrders = allOrders.filter(o => {
+        const offer = offers.find(off => off.id === o.dishId || off.providerId === o.providerId);
+        return offer && offer.providerId === providerId() && o.status === 'PAID';
+      });
+      
+      let totalSales = 0;
+      let totalFees = 0;
+      myOrders.forEach(o => {
+        const totalCents = o.totalCents || (o.total ? Math.round(o.total * 100) : 0);
+        const totalEur = totalCents / 100;
+        totalSales += totalEur;
+        // Service-Pauschale: 0,89 € pro Vorgang (inkl. MwSt.)
+        totalFees += 0.89;
+      });
+      
+      const payoutAmount = Math.max(0, totalSales - totalFees);
+      financeAmount.textContent = euro(payoutAmount);
+      
+      if(btnFinanceDetails){
+        btnFinanceDetails.onclick = () => {
+          showProviderBilling();
+        };
+      }
+      
+      // Info-Icon Tooltip
+      const infoIcon = financeWidget.querySelector('i[data-lucide="info"]');
+      if(infoIcon){
+        infoIcon.title = 'Deine Zeitersparnis: Automatische Abrechnung & bezahlte Bankgebühren inklusive.';
+      }
+    }
+    
     // TODAY Card
     const providerTodayCard = document.getElementById('providerTodayCard');
     const providerTodayTitle = document.getElementById('providerTodayTitle');
@@ -7509,7 +8809,7 @@
           }).length;
           html += `
             <div style="margin-top:8px; padding:10px; background:#f8f7f3; border-radius:12px;">
-              <div style="font-weight:600; font-size:14px;">Nächste Abholung: ${esc(nextPickup.etaTime)} (${pickupCount} ${pickupCount === 1 ? 'Code' : 'Codes'})</div>
+              <div style="font-weight:600; font-size:14px;">Nächste Abholung: ${esc(nextPickup.etaTime)} (${pickupCount} ${pickupCount === 1 ? 'Ticket' : 'Tickets'})</div>
             </div>
           `;
         }
@@ -8174,14 +9474,23 @@
       costInfoEl.innerHTML = `
         <div style="font-weight:600; font-size:16px; margin-bottom:12px; color:#2e7d32;">Kosten – kurz erklärt</div>
         <div style="font-size:14px; line-height:1.6; color:#333; margin-bottom:8px;">
-          <div style="margin-bottom:8px;">
+          <div style="margin-bottom:12px;">
             <strong>4,99 € zzgl. MwSt.</strong> pro Veröffentlichung
           </div>
-          <div>
-            <strong>0,89 € zzgl. MwSt.</strong> pro Bestellung für Online-Zahlung & Abholcode<br>
-            <span style="font-size:12px; color:#666; font-style:italic;">
-              inkl. aller Bank- & Zahlungsgebühren · gilt pro Bestellung (egal wie viele Gerichte)
+          <div style="margin-bottom:12px;">
+            <strong>0,89 € Service-Pauschale zzgl. MwSt.</strong> pro Vorgang<br>
+            <span style="font-size:12px; color:#666; font-style:italic; display:block; margin-top:4px;">
+              Inklusive aller Bank- und Transaktionsgebühren. Keine versteckten Kosten.
             </span>
+            <span style="font-size:12px; color:#666; display:block; margin-top:4px;">
+              Die Pauschale fällt einmal pro Ticket an, unabhängig von der Anzahl der Gerichte in dieser Bestellung.
+            </span>
+          </div>
+          <div style="padding:12px; background:rgba(255,204,0,.08); border-radius:10px; border-left:3px solid var(--brand); margin-top:12px;">
+            <div style="font-weight:600; font-size:13px; margin-bottom:6px; color:#111;">Verwaltungs-Frei Versprechen</div>
+            <div style="font-size:12px; line-height:1.5; color:#666;">
+              Wir übernehmen die komplette Abrechnung für dich. Du erhältst eine saubere Gutschrift – kein Stress mit Einzelbelegen oder Kartengebühren.
+            </div>
           </div>
         </div>
         <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
@@ -8225,20 +9534,38 @@
     monthEl.onchange = ()=>{ billingMonth = monthEl.value; renderBilling(); };
 
     listEl.innerHTML = demo.map(d=>`
-      <div class="cookbook-item">
-        <div style="font-weight:900">${esc(d.range)}</div>
-        <div class="cookbook-facts">
-          Verkäufe: ${d.sales} · Gesamt: ${euro(d.total)}<br>
-          Gebühren: ${euro(d.fee)} · Auszahlung: <b>${euro(d.payout)}</b><br>
-          Status: ${esc(d.status)}
+      <div class="cookbook-item" style="border:1px solid rgba(0,0,0,.08); border-radius:14px; padding:16px; margin-bottom:12px; background:#fff;">
+        <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:12px;">
+          <div>
+            <div style="font-weight:900; font-size:16px; margin-bottom:4px;">${esc(d.range)}</div>
+            <div style="font-size:12px; color:#666; margin-bottom:8px;">Status: ${esc(d.status)}</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:20px; font-weight:900; color:var(--brand);">${euro(d.payout)}</div>
+            <div style="font-size:11px; color:#999;">Auszahlung</div>
+          </div>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; padding:12px; background:#f8f8f8; border-radius:10px; margin-bottom:12px;">
+          <div>
+            <div style="font-size:11px; color:#666; margin-bottom:2px;">Verkäufe</div>
+            <div style="font-size:14px; font-weight:700;">${d.sales}</div>
+          </div>
+          <div>
+            <div style="font-size:11px; color:#666; margin-bottom:2px;">Gesamt</div>
+            <div style="font-size:14px; font-weight:700;">${euro(d.total)}</div>
+          </div>
+          <div>
+            <div style="font-size:11px; color:#666; margin-bottom:2px;">Gebühren</div>
+            <div style="font-size:14px; font-weight:700; color:#999;">${euro(d.fee)}</div>
+          </div>
         </div>
         <div class="cookbook-actions">
-          <button class="card-action" type="button" data-icon="print">PDF-Download</button>
+          <button class="card-action" type="button" data-icon="print" style="width:100%;">PDF-Download (Finanzamt-konform)</button>
         </div>
       </div>
     `).join('');
     listEl.querySelectorAll('button').forEach(btn=>{
-      btn.onclick=()=> alert('PDF-Download (Demo).');
+      btn.onclick=()=> alert('PDF-Download (Demo). Die Abrechnung ist finanzamt-konform und kann direkt an deinen Steuerberater weitergegeben werden.');
     });
     applyStaticIcons();
   }
@@ -9187,7 +10514,7 @@
       badgeContainer.style.cssText = 'margin-bottom:12px; padding:12px; background:#f0f7f0; border-radius:12px; border:1px solid #4caf50;';
       const badge = document.createElement('div');
       badge.style.cssText = 'font-weight:600; font-size:14px; color:#2e7d32; margin-bottom:4px; display:flex; align-items:center; gap:6px;';
-      badge.innerHTML = '🟢 Online bezahlt · Abholung mit Abholcode';
+      badge.innerHTML = '🟢 Online bezahlt · Abholung mit Ticket';
       const subline = document.createElement('div');
       subline.style.cssText = 'font-size:12px; color:#666;';
       subline.textContent = 'Zahlung läuft direkt über Mittagio';
@@ -9564,7 +10891,7 @@
       options.style.marginTop='10px';
       const codeLabel=document.createElement('div');
       codeLabel.className='hint';
-      codeLabel.textContent='Abholcode & Online-Zahlung';
+      codeLabel.textContent='Ticket & Online-Zahlung';
       const codeRow=document.createElement('div'); codeRow.className='answers';
       const codeYes=document.createElement('button'); codeYes.type='button'; codeYes.className='ans'+(w.data.hasPickupCode?' on':''); codeYes.textContent='Ja';
       const codeNo=document.createElement('button'); codeNo.type='button'; codeNo.className='ans'+(!w.data.hasPickupCode?' on':''); codeNo.textContent='Nein';
@@ -9578,10 +10905,10 @@
         hintBox.style.cssText = 'margin-top:12px; padding:12px; background:#f8f8f8; border-radius:12px; border:1px solid #e0e0e0;';
         hintBox.innerHTML = `
           <div style="font-size:13px; line-height:1.5; color:#666; margin-bottom:8px;">
-            Tipp: Mit Abholcode zahlen Kunden online und du hast weniger Aufwand.
+            Tipp: Mit Ticket zahlen Kunden online und du hast weniger Aufwand.
           </div>
           <button class="btn secondary" type="button" style="width:100%; min-height:44px; font-size:14px;" onclick="w.data.hasPickupCode=true; rebuildWizard();">
-            Abholcode aktivieren
+            Ticket aktivieren
           </button>
         `;
         options.appendChild(hintBox);
@@ -9619,19 +10946,29 @@
         <div style="font-size:16px; font-weight:700; color:var(--brand);">4,99 € + MwSt. pro Veröffentlichung</div>
       `;
       
-      // Block 2: Online-Zahlung inkl. Abholcode
+      // Block 2: Online-Zahlung inkl. Ticket
       if(w.data.hasPickupCode){
         const block2 = document.createElement('div');
         block2.style.cssText = 'padding:12px; background:#f0f7f0; border-radius:12px; border:1px solid #4caf50;';
         block2.innerHTML = `
-          <div style="font-weight:600; font-size:14px; margin-bottom:8px; color:#2e7d32;">Online-Zahlung inkl. Abholcode</div>
+          <div style="font-weight:600; font-size:14px; margin-bottom:8px; color:#2e7d32;">Online-Zahlung inkl. Ticket</div>
           <ul style="margin:0; padding-left:20px; font-size:13px; line-height:1.6; color:#333;">
             <li>Kunde bezahlt online</li>
             <li>Geld ist sicher</li>
             <li>Keine Kasse · kein Bargeld</li>
           </ul>
-          <div style="margin-top:8px; font-size:11px; color:#666; font-style:italic;">
-            Für jede Online-Bestellung fällt eine Abwicklungsgebühr an (inkl. aller Zahlungsgebühren).
+          <div style="margin-top:10px; padding:10px; background:rgba(255,255,255,.6); border-radius:8px;">
+            <div style="font-weight:600; font-size:13px; margin-bottom:4px; color:#2e7d32;">0,89 € Service-Pauschale zzgl. MwSt. pro Vorgang</div>
+            <div style="font-size:11px; color:#666; line-height:1.5;">
+              Inklusive aller Bank- und Transaktionsgebühren. Keine versteckten Kosten.<br>
+              Die Pauschale fällt einmal pro Ticket an, unabhängig von der Anzahl der Gerichte in dieser Bestellung.
+            </div>
+          </div>
+          <div style="margin-top:10px; padding:10px; background:rgba(255,204,0,.1); border-radius:8px; border-left:3px solid var(--brand);">
+            <div style="font-weight:600; font-size:12px; margin-bottom:4px; color:#111;">Verwaltungs-Frei</div>
+            <div style="font-size:11px; color:#666; line-height:1.4;">
+              Wir übernehmen die komplette Abrechnung für dich. Du erhältst eine saubere Gutschrift – kein Stress mit Einzelbelegen oder Kartengebühren.
+            </div>
           </div>
         `;
         costInfo.appendChild(block2);
@@ -10127,7 +11464,7 @@
       if(!order) return;
       // Code nur kopieren wenn PAID
       if(order.status !== 'PAID'){
-        alert('Abholcode wird nach erfolgreicher Zahlung generiert.');
+        alert('Ticket wird nach erfolgreicher Zahlung generiert.');
         return;
       }
       const code = order.pickupCode || order.code || '';
@@ -10139,7 +11476,7 @@
           await navigator.clipboard.writeText(code);
           btnCopyCode.innerHTML = '<i data-lucide="check"></i> Kopiert!';
           setTimeout(()=>{
-            btnCopyCode.innerHTML = '<i data-lucide="copy"></i> Code kopieren';
+            btnCopyCode.innerHTML = '<i data-lucide="copy"></i> Ticket kopieren';
             if(typeof lucide !== 'undefined') lucide.createIcons();
           }, 2000);
           if(typeof lucide !== 'undefined') lucide.createIcons();
@@ -10160,7 +11497,7 @@
         document.execCommand('copy');
         btnCopyCode.innerHTML = '<i data-lucide="check"></i> Kopiert!';
         setTimeout(()=>{
-          btnCopyCode.innerHTML = '<i data-lucide="copy"></i> Code kopieren';
+            btnCopyCode.innerHTML = '<i data-lucide="copy"></i> Ticket kopieren';
           if(typeof lucide !== 'undefined') lucide.createIcons();
         }, 2000);
         if(typeof lucide !== 'undefined') lucide.createIcons();
@@ -10249,7 +11586,7 @@
         const code = order.pickupCode || order.code || '';
         if(code) openFullscreenCode(code);
       } else {
-        alert('Abholcode wird nach erfolgreicher Zahlung generiert.');
+        alert('Ticket wird nach erfolgreicher Zahlung generiert.');
       }
     };
   }
