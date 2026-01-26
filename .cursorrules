@@ -107,6 +107,23 @@
 - **Keine `history.back()`** verwenden
 - **Immer explizite Navigation**
 - Jeder Button muss reagieren (Dead-Click-Regel)
+- **Toast statt Alert**: Immer `showToast('Nachricht')` verwenden, nie `alert()`
+- **Arbeitsverzeichnis**: Immer in `C:\Projekte\mittagio` arbeiten (NICHT OneDrive)
+
+### Design-Standards
+- **Premium Card-Design**: Horizontales Layout (`.dish-card`, 140px Höhe)
+- **Lucide Icons**: Immer `<i data-lucide="icon-name"></i>` verwenden
+- **Nach Rendering**: `lucide.createIcons()` aufrufen
+- **Farben**: `var(--brand)` für Gelb (#FFD700), `var(--border)` für Rahmen
+- **Buttons**: Mindesthöhe 44px (Fat-Finger-Safe), runde Icon-Buttons 34px
+
+### Implementierte Features
+- **Tinder-Swipe**: View-Toggle Liste/Swipe, Touch-Gesten, Haptic Feedback, Match Modal
+- **Mittagspausen-Timer**: Gehzeit-Berechnung (5 km/h), "Noch X Min zu Fuß" Badge
+- **Social-Proof**: "Heute schon Xx bestellt" Badge (gelb, users-Icon)
+- **Invite-Feature**: "Ich hole mir heute [Gericht] bei [Metzger] – kommst du mit?"
+- **Skeleton-Screens**: Loading-Placeholder mit pulse-Animation
+- **Foto-KI**: Mock GPT-4o Vision API, Auto-Tagging von Allergenen
 
 ### Projektstruktur
 ```
@@ -125,6 +142,7 @@ mittagio/
 - `CURSOR_CONTEXT_MITTAGIO.md` - Vollständige Projektzusammenfassung
 - `CURSOR_UI_TEXTE.md` - Verbindliche UI-Texte
 - `CURSOR_CONTEXT_MITTAGIO_KURZ.md` - Kurzfassung
+- `PROMPTS.md` - Wiederverwendbare Master-Prompts (Prompt-Library)
 
 ## Golden Rules (für Cursor)
 

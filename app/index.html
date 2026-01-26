@@ -10821,6 +10821,9 @@
     renderProviderPickups();
     renderDiscover();
     renderStart();
+    
+    // Erfolgsmeldung (Toast statt Alert)
+    showToast(existingId ? 'Inserat aktualisiert' : 'Inserat veröffentlicht');
   }
 
   function saveToCookbookFromWizard(keepOpen=false){
