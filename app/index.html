@@ -4659,6 +4659,19 @@
       const rotation = currentX * ROTATION_FACTOR;
       card.style.transform = `translateX(${currentX}px) translateY(${currentY}px) rotate(${rotation}deg)`;
       
+      // Match-Feedback während Swipe
+      if(Math.abs(currentX) > 50){
+        if(currentX < 0){
+          card.classList.add('match-left');
+          card.classList.remove('match-right');
+        } else {
+          card.classList.add('match-right');
+          card.classList.remove('match-left');
+        }
+      } else {
+        card.classList.remove('match-left', 'match-right');
+      }
+      
       // Overlay anzeigen
       const overlayLeft = card.querySelector('.swipe-overlay.left');
       const overlayRight = card.querySelector('.swipe-overlay.right');
@@ -4687,28 +4700,35 @@
       if(Math.abs(currentX) > SWIPE_THRESHOLD){
         // Swipe durchgeführt
         if(currentX < 0){
-          // Links swipen = "Bäh"
-          triggerHapticFeedback();
-          card.classList.add('swipe-left');
+          // Links swipen = "Bäh" - Rot aufleuchten
+          card.classList.add('match-left');
           setTimeout(() => {
-            handleSwipeLeft(offer);
-            card.remove();
-            currentSwipeIndex++;
-            showNextSwipeCard();
-          }, 200);
+            triggerHapticFeedback();
+            card.classList.add('swipe-left');
+            setTimeout(() => {
+              handleSwipeLeft(offer);
+              card.remove();
+              currentSwipeIndex++;
+              showNextSwipeCard();
+            }, 200);
+          }, 100);
         } else {
-          // Rechts swipen = "Gut"
-          triggerHapticFeedback();
-          card.classList.add('swipe-right');
+          // Rechts swipen = "Gut" - Grün aufleuchten
+          card.classList.add('match-right');
           setTimeout(() => {
-            handleSwipeRight(offer);
-            card.remove();
-            currentSwipeIndex++;
-            showNextSwipeCard();
-          }, 200);
+            triggerHapticFeedback();
+            card.classList.add('swipe-right');
+            setTimeout(() => {
+              handleSwipeRight(offer);
+              card.remove();
+              currentSwipeIndex++;
+              showNextSwipeCard();
+            }, 200);
+          }, 100);
         }
       } else {
         // Zurück zur Mitte
+        card.classList.remove('match-left', 'match-right');
         card.style.transform = '';
       }
       
@@ -4759,25 +4779,34 @@
       
       if(Math.abs(currentX) > SWIPE_THRESHOLD){
         if(currentX < 0){
-          triggerHapticFeedback();
-          card.classList.add('swipe-left');
+          // Links swipen = "Bäh" - Rot aufleuchten
+          card.classList.add('match-left');
           setTimeout(() => {
-            handleSwipeLeft(offer);
-            card.remove();
-            currentSwipeIndex++;
-            showNextSwipeCard();
-          }, 200);
+            triggerHapticFeedback();
+            card.classList.add('swipe-left');
+            setTimeout(() => {
+              handleSwipeLeft(offer);
+              card.remove();
+              currentSwipeIndex++;
+              showNextSwipeCard();
+            }, 200);
+          }, 100);
         } else {
-          triggerHapticFeedback();
-          card.classList.add('swipe-right');
+          // Rechts swipen = "Gut" - Grün aufleuchten
+          card.classList.add('match-right');
           setTimeout(() => {
-            handleSwipeRight(offer);
-            card.remove();
-            currentSwipeIndex++;
-            showNextSwipeCard();
-          }, 200);
+            triggerHapticFeedback();
+            card.classList.add('swipe-right');
+            setTimeout(() => {
+              handleSwipeRight(offer);
+              card.remove();
+              currentSwipeIndex++;
+              showNextSwipeCard();
+            }, 200);
+          }, 100);
         }
       } else {
+        card.classList.remove('match-left', 'match-right');
         card.style.transform = '';
       }
       
