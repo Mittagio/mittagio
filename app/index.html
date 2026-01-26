@@ -5740,7 +5740,7 @@
     addToCartBtn.style.fontSize = '16px';
     addToCartBtn.style.fontWeight = '700';
     addToCartBtn.style.marginTop = '8px';
-    addToCartBtn.innerHTML = `${iconMarkup('shopping-basket')} <span>In die Mittagsbox</span>`;
+    addToCartBtn.innerHTML = `${iconMarkup('shopping-basket')} <span>Heute essen</span>`;
     addToCartBtn.onclick = (e) => {
       e.stopPropagation();
       addFavoriteToCart(o);
@@ -5770,7 +5770,7 @@
     }
     
     // Bestätigung
-    const confirmed = confirm(`Dieses Gericht für heute wählen?\n\n${esc(data.dish||'Gericht')}\n${euro(data.price)}`);
+    const confirmed = confirm(`Dieses Gericht für heute wählen?\n\n${esc(data.dish||'Gericht')}\n${euro(data.price)}\n\nNach der Zahlung erhältst du deine Abholnummer.`);
     if(!confirmed) return;
     
     // Zur Mittagsbox hinzufügen
@@ -5778,7 +5778,7 @@
       showToast('Gericht zur Mittagsbox hinzugefügt! 🧺', 2000);
       updateHeaderBasket();
       
-      // Zur Mittagsbox navigieren
+      // Zur Mittagsbox navigieren (dort kann der Nutzer dann zur Kasse gehen)
       setTimeout(() => {
         showCart();
       }, 500);
