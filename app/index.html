@@ -5023,9 +5023,13 @@
           }, 100);
         }
       } else {
-        // Zurück zur Mitte
+        // Zurück zur Mitte mit smooth Animation
         card.classList.remove('match-left', 'match-right');
+        card.style.transition = 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)';
         card.style.transform = '';
+        setTimeout(() => {
+          card.style.transition = '';
+        }, 300);
       }
       
       currentX = 0;
@@ -5046,7 +5050,8 @@
       if(!isDragging || index !== 0) return;
       currentX = e.clientX - startX;
       currentY = e.clientY - startY;
-      const rotation = currentX * ROTATION_FACTOR;
+      // Physikalisch korrekte Rotation: begrenzt auf max 25 Grad
+      const rotation = Math.max(-MAX_ROTATION, Math.min(MAX_ROTATION, currentX * ROTATION_FACTOR));
       card.style.transform = `translateX(${currentX}px) translateY(${currentY}px) rotate(${rotation}deg)`;
       
       const overlayLeft = card.querySelector('.swipe-overlay.left');
