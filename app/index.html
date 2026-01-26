@@ -7128,17 +7128,17 @@
 
   // Header-Basket aktualisieren (Badge mit Anzahl)
   function updateHeaderBasket(){
-    const headerBasketBtn = document.getElementById('headerBasketBtn');
-    const headerBasketBadge = document.getElementById('headerBasketBadge');
-    if(!headerBasketBtn || !headerBasketBadge) return;
+    const bottomNavBasketBadge = document.getElementById('bottomNavBasketBadge');
+    if(!bottomNavBasketBadge) return;
     
-    const itemCount = cart && cart.items ? cart.items.reduce((sum, it) => sum + it.qty, 0) : 0;
+    const cart = load(LS.cart, []);
+    const itemCount = cart && cart.items ? cart.items.reduce((sum, it) => sum + it.qty, 0) : cart.length;
     
     if(itemCount > 0){
-      headerBasketBadge.textContent = itemCount > 99 ? '99+' : itemCount;
-      headerBasketBadge.style.display = 'flex';
+      bottomNavBasketBadge.textContent = itemCount > 99 ? '99+' : itemCount;
+      bottomNavBasketBadge.style.display = 'flex';
     } else {
-      headerBasketBadge.style.display = 'none';
+      bottomNavBasketBadge.style.display = 'none';
     }
     
     // Icons aktualisieren
