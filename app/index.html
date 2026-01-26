@@ -6560,8 +6560,8 @@
   if(btnCreateNewDish){
     btnCreateNewDish.onclick = () => {
       closeCreateFlowSheet();
-      // Open Master-Flow directly (new dish)
-      startListingFlow({date: createFlowPreselectedDate});
+      // Unified Flow: openDishFlow mit Datum
+      openDishFlow(createFlowPreselectedDate);
     };
   }
   
@@ -9076,8 +9076,8 @@
         `;
         const btnProviderTodayAddDish = document.getElementById('btnProviderTodayAddDish');
         if(btnProviderTodayAddDish) btnProviderTodayAddDish.onclick = () => {
-          createFlowPreselectedDate = todayKey;
-          openCreateFlowSheet();
+          // Unified Flow: Direkt mit Heute-Datum
+          openDishFlow(todayKey);
         };
       }
     }
@@ -9211,7 +9211,7 @@
           const savedDish = cookbook.find(c => c.providerId === providerId());
           if(savedDish){
             btnPublish.onclick = () => {
-              startListingFlow({dishId: savedDish.id});
+              openDishFlow(); // Unified Flow: Heute
             };
           }
         }
@@ -9237,8 +9237,8 @@
         
         const btnProviderEmptyAddDish = document.getElementById('btnProviderEmptyAddDish');
         if(btnProviderEmptyAddDish) btnProviderEmptyAddDish.onclick = () => {
-          createFlowPreselectedDate = null;
-          openCreateFlowSheet();
+          // Unified Flow: Ohne Datum = Heute
+          openDishFlow();
         };
       }
     }
@@ -9248,8 +9248,8 @@
     const fabProviderAddOfferLabel = document.getElementById('fabProviderAddOfferLabel');
     if(fabProviderAddOffer){
       fabProviderAddOffer.onclick = () => {
-        createFlowPreselectedDate = null;
-        openCreateFlowSheet();
+        // Unified Flow: Ohne Datum = Heute
+        openDishFlow();
       };
       fabProviderAddOffer.onmouseenter = () => {
         if(fabProviderAddOfferLabel) fabProviderAddOfferLabel.style.opacity = '1';
@@ -10124,9 +10124,9 @@
   const btnFromCookbook = document.getElementById('btnFromCookbook');
   if(btnFromCookbook) btnFromCookbook.style.display = 'none';
   
-  // Kochbuch: "+ Gericht hinzufügen" öffnet IMMER Master-Flow (kein cookbook-Wizard)
+  // Kochbuch: "+ Gericht hinzufügen" öffnet IMMER Unified Flow
   const btnCookbookAdd = document.getElementById('btnCookbookAdd');
-  if(btnCookbookAdd) btnCookbookAdd.onclick=()=> startListingFlow({});
+  if(btnCookbookAdd) btnCookbookAdd.onclick=()=> openDishFlow();
   // btnProvSetup wurde entfernt - jetzt btnProfileEdit verwendet
   // btnOpenWeekPlan wird nicht mehr verwendet (Week Preview ist jetzt im Dashboard)
   const btnOpenWeekPlan = document.getElementById('btnOpenWeekPlan');
@@ -10281,7 +10281,7 @@
       `;
       const btnCookbookEmptyAdd = document.getElementById('btnCookbookEmptyAdd');
       if(btnCookbookEmptyAdd) btnCookbookEmptyAdd.onclick = () => {
-        startListingFlow({});
+        openDishFlow();
       };
       return;
     }
@@ -10348,7 +10348,7 @@
       insertBtn.className='ans';
       insertBtn.textContent='Inserieren';
       insertBtn.dataset.icon = 'plus';
-      insertBtn.onclick=()=>{ startListingFlow({dishId: entry.id, date: createFlowPreselectedDate}); };
+      insertBtn.onclick=()=>{ startListingFlow({dishId: entry.id, date: createFlowPreselectedDate || isoDate(new Date())}); };
       actions.appendChild(insertBtn);
 
       // Button: "📅 In Wochenplan" (öffnet Master-Flow mit weekplan-context)
@@ -10356,7 +10356,7 @@
       weekPlanBtn.type='button';
       weekPlanBtn.className='ans';
       weekPlanBtn.textContent='📅 In Wochenplan';
-      weekPlanBtn.onclick=()=>{ startListingFlow({dishId: entry.id, source: 'weekplan'}); };
+      weekPlanBtn.onclick=()=>{ startListingFlow({dishId: entry.id, source: 'weekplan', date: createFlowPreselectedDate || isoDate(new Date())}); };
       actions.appendChild(weekPlanBtn);
 
       // Menü: "⋯" (Einstellungen: bearbeiten/pausieren/archivieren/löschen)
@@ -10538,6 +10538,22 @@
     document.getElementById('wizard').classList.remove('active');
   }
 
+  /**
+   * UNIFIED DISH FLOW - Zentrale Funktion für alle Inserats-Buttons
+   * Egal ob "Schnellschuss" für heute oder Wochenplan - immer derselbe Flow!
+   * 
+   * @param {string} [defaultDate] - Preselected date (ISO format, z.B. "2026-01-26")
+   *                                  Wenn null/undefined: Heute
+   *                                  Wenn vom Wochenplan: Gewählter Tag
+   */
+  function openDishFlow(defaultDate = null){
+    // Normalisiere Datum: null/undefined = Heute
+    const date = defaultDate || isoDate(new Date());
+    
+    // Öffne Master-Flow mit Datum
+    startListingFlow({date: date});
+  }
+  
   /**
    * MASTER INSERATSFLOW - Einziger Entry-Point
    * Wird IMMER verwendet für:
@@ -11013,7 +11029,7 @@
   // ============================================================
   function buildListingStep(){
     setWizardNextDefault();
-    const total = 8;
+    const total = 9; // Erhöht: Mehrweg nach Preis, Datum-Bestätigung, Extras getrennt
     setWizardHeader('Inserat erstellen', `Schritt ${Math.min(w.step+1,total)} von ${total}`);
     const profile = normalizeProviderProfile(provider.profile || {});
     if(!w.data.pickupWindow){ w.data.pickupWindow = profile.mealWindow || DEFAULT_MEAL_WINDOW; }
@@ -11110,13 +11126,92 @@
       box.appendChild(presets);
       box.appendChild(document.createElement('div')).style.height='8px';
       box.appendChild(input);
+      
+      // Mehrweg-Badge Toggle (prominent nach Preis)
+      box.appendChild(document.createElement('div')).style.height='20px';
+      const reuseSection=document.createElement('div');
+      reuseSection.style.cssText='padding:16px; background:rgba(31,157,85,0.08); border-radius:16px; border:2px solid rgba(31,157,85,0.2);';
+      if(!w.data.reuse) w.data.reuse = {enabled:false, deposit:0};
+      
+      const reuseHeader=document.createElement('div');
+      reuseHeader.style.cssText='display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;';
+      reuseHeader.innerHTML=`
+        <div style="display:flex; align-items:center; gap:8px;">
+          <i data-lucide="leaf" style="width:20px;height:20px; color:#1f9d55;"></i>
+          <span style="font-weight:700; font-size:15px; color:#2D3436;">Mehrweg möglich?</span>
+        </div>
+        <label style="position:relative; width:52px; height:32px; cursor:pointer;">
+          <input type="checkbox" ${w.data.reuse.enabled ? 'checked' : ''} style="opacity:0; position:absolute; width:0; height:0;" onchange="w.data.reuse.enabled=this.checked; if(this.checked && !w.data.reuse.deposit) w.data.reuse.deposit=2; rebuildWizard();">
+          <span style="position:absolute; top:0; left:0; right:0; bottom:0; background:${w.data.reuse.enabled ? '#1f9d55' : '#ccc'}; border-radius:999px; transition:all 0.3s ease;">
+            <span style="position:absolute; top:2px; left:${w.data.reuse.enabled ? '22px' : '2px'}; width:28px; height:28px; background:#fff; border-radius:50%; box-shadow:0 2px 4px rgba(0,0,0,0.2); transition:all 0.3s ease;"></span>
+          </span>
+        </label>
+      `;
+      reuseSection.appendChild(reuseHeader);
+      
+      if(w.data.reuse.enabled){
+        const reusePreview=document.createElement('div');
+        reusePreview.style.cssText='padding:12px; background:#fff; border-radius:12px; display:flex; align-items:center; gap:8px; border:2px solid #1f9d55;';
+        reusePreview.innerHTML=`
+          <i data-lucide="leaf" style="width:18px;height:18px; color:#1f9d55;"></i>
+          <span style="font-weight:700; font-size:14px; color:#1f9d55;">Mehrweg</span>
+          <span style="font-size:13px; color:#666; margin-left:auto;">Pfand: ${euro(w.data.reuse.deposit || 2)}</span>
+        `;
+        reuseSection.appendChild(reusePreview);
+        
+        // Pfand-Betrag (vereinfacht: nur Presets)
+        box.appendChild(document.createElement('div')).style.height='12px';
+        const depositLabel=document.createElement('div');
+        depositLabel.className='hint';
+        depositLabel.textContent='Pfand-Betrag';
+        const depositPresets=document.createElement('div');
+        depositPresets.className='answers';
+        [2,3,5].forEach(val=>{
+          const b=document.createElement('button');
+          b.type='button';
+          b.className='ans'+(w.data.reuse.deposit===val?' on':'');
+          b.textContent=`${val} €`;
+          b.onclick=()=>{ w.data.reuse.deposit=val; rebuildWizard(); };
+          depositPresets.appendChild(b);
+        });
+        reuseSection.appendChild(depositLabel);
+        reuseSection.appendChild(depositPresets);
+      }
+      
+      box.appendChild(reuseSection);
+      
+      attachListingPreview(box);
+      setWizardContent(box);
+      if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
+      wNextBtn.textContent='Weiter';
+      return;
+    }
+
+    if(w.step===3){
+      // Datum bestätigen (Default: Heute oder gewählter Wochentag)
+      const dateLabel = w.data.day === isoDate(new Date()) ? 'Heute' : fmtDay(new Date(w.data.day));
+      setWizardQuestion('Datum bestätigen', `Veröffentlichung für: ${dateLabel}`);
+      const box=document.createElement('div');
+      const summary=document.createElement('div');
+      summary.className='panel';
+      summary.style.cssText='padding:20px; text-align:center;';
+      summary.innerHTML = `
+        <div style="font-size:24px; font-weight:900; color:#2D3436; margin-bottom:8px;">${esc(dateLabel)}</div>
+        <div class="hint" style="font-size:14px;">${esc(w.data.pickupWindow || DEFAULT_MEAL_WINDOW)}</div>
+      `;
+      const hint=document.createElement('div');
+      hint.className='hint';
+      hint.style.marginTop='12px';
+      hint.textContent='Datum kann im nächsten Schritt geändert werden.';
+      box.appendChild(summary);
+      box.appendChild(hint);
       attachListingPreview(box);
       setWizardContent(box);
       wNextBtn.textContent='Weiter';
       return;
     }
 
-    if(w.step===3){
+    if(w.step===4){
       setWizardQuestion('Abholzeit', 'Aus Profil übernommen.');
       const box=document.createElement('div');
       const summary=document.createElement('div');
@@ -11133,15 +11228,11 @@
       return;
     }
 
-    if(w.step===4){
-      setWizardQuestion('Extras & Mehrweg', 'Optional hinzufügen.');
+    if(w.step===5){
+      setWizardQuestion('Extras', 'Optional hinzufügen.');
       const box=document.createElement('div');
       if(!Array.isArray(w.data.extras)) w.data.extras=[];
-      if(!w.data.reuse) w.data.reuse = {enabled:false, deposit:0};
 
-      const extrasTitle=document.createElement('div');
-      extrasTitle.className='hint';
-      extrasTitle.textContent='Extras';
       const extrasAns=document.createElement('div'); extrasAns.className='answers';
       ['Beilagensalat','Extrasosse','Sonstiges'].forEach(name=>{
         const active = w.data.extras.some(e=>e.name===name);
@@ -11157,10 +11248,10 @@
         };
         extrasAns.appendChild(b);
       });
-      box.appendChild(extrasTitle);
       box.appendChild(extrasAns);
 
       if(w.data.extras.length){
+        box.appendChild(document.createElement('div')).style.height='12px';
         w.data.extras.forEach(extra=>{
           const label=document.createElement('div');
           label.className='hint';
@@ -11177,57 +11268,13 @@
         });
       }
 
-      const reuseTitle=document.createElement('div');
-      reuseTitle.className='hint';
-      reuseTitle.textContent='Mehrweg / Pfand';
-      const reuseAns=document.createElement('div'); reuseAns.className='answers';
-      const yes=document.createElement('button'); yes.type='button'; yes.className='ans'+(w.data.reuse.enabled?' on':''); yes.textContent='Ja';
-      const no=document.createElement('button'); no.type='button'; no.className='ans'+(!w.data.reuse.enabled?' on':''); no.textContent='Nein';
-      yes.onclick=()=>{ w.data.reuse.enabled=true; if(!w.data.reuse.deposit) w.data.reuse.deposit=2; rebuildWizard(); };
-      no.onclick=()=>{ w.data.reuse.enabled=false; w.data.reuse.deposit=0; w.data.reuseCustom=false; rebuildWizard(); };
-      reuseAns.appendChild(yes); reuseAns.appendChild(no);
-      box.appendChild(document.createElement('div')).style.height='8px';
-      box.appendChild(reuseTitle);
-      box.appendChild(reuseAns);
-
-      if(w.data.reuse.enabled){
-        const presets=document.createElement('div'); presets.className='answers';
-        [2,3,5].forEach(val=>{
-          const b=document.createElement('button');
-          b.type='button';
-          b.className='ans'+(w.data.reuse.deposit===val && !w.data.reuseCustom?' on':'');
-          b.textContent=`${val} €`;
-          b.onclick=()=>{ w.data.reuse.deposit=val; w.data.reuseCustom=false; rebuildWizard(); };
-          presets.appendChild(b);
-        });
-        const other=document.createElement('button');
-        other.type='button';
-        other.className='ans'+(w.data.reuseCustom?' on':'');
-        other.textContent='Anderer Betrag';
-        other.onclick=()=>{ w.data.reuseCustom=true; rebuildWizard(); };
-        presets.appendChild(other);
-        box.appendChild(document.createElement('div')).style.height='8px';
-        box.appendChild(presets);
-
-        if(w.data.reuseCustom){
-          const input=document.createElement('input');
-          input.className='field';
-          input.inputMode='decimal';
-          input.placeholder='Betrag in EUR';
-          input.value = formatPriceInput(w.data.reuse.deposit);
-          input.oninput=()=>{ w.data.reuse.deposit = parsePriceInput(input.value); refreshListingPreview(); };
-          box.appendChild(document.createElement('div')).style.height='8px';
-          box.appendChild(input);
-        }
-      }
-
       attachListingPreview(box);
       setWizardContent(box);
       wNextBtn.textContent='Weiter';
       return;
     }
 
-    if(w.step===5){
+    if(w.step===6){
       setWizardQuestion('Allergene?', 'Optional auswählen.');
       const box=document.createElement('div');
       const ans=document.createElement('div'); ans.className='answers';
@@ -11263,7 +11310,7 @@
       return;
     }
 
-    if(w.step===6){
+    if(w.step===7){
       setWizardQuestion('Foto', 'Pflicht: Foto mit automatischem Filter & Zuschnitt.');
       const box=document.createElement('div');
       
@@ -11340,7 +11387,7 @@
       return;
     }
 
-    if(w.step===7){
+    if(w.step===8){
       setWizardQuestion('Abschluss', 'Veröffentlichen oder speichern.');
       const box=document.createElement('div');
       attachListingPreview(box);
