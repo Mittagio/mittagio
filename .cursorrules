@@ -110,12 +110,19 @@
 - **Toast statt Alert**: Immer `showToast('Nachricht')` verwenden, nie `alert()`
 - **Arbeitsverzeichnis**: Immer in `C:\Projekte\mittagio` arbeiten (NICHT OneDrive)
 
+### Design-System (Farben & Haptik)
+- **Mittagio-Gelb**: `#FFD700` (Sattes, warmes Gelb – wie eine frische Kruste)
+- **Küchen-Anthrazit**: `#121826` (Dunkel, edel, hoher Kontrast)
+- **Schatten für gelbe Buttons**: `box-shadow: 0 25px 50px -12px rgba(255, 215, 0, 0.25)` (Schwebe-Effekt)
+- **CSS-Variablen**: `var(--brand)` = `#FFD700`, `var(--border)` für Rahmen
+- **Micro-Interactions**: Buttons mit `transform: scale(0.98)` bei `:active` (0.1s)
+
 ### Design-Standards
 - **Premium Card-Design**: Horizontales Layout (`.dish-card`, 140px Höhe)
 - **Lucide Icons**: Immer `<i data-lucide="icon-name"></i>` verwenden
 - **Nach Rendering**: `lucide.createIcons()` aufrufen
-- **Farben**: `var(--brand)` für Gelb (#FFD700), `var(--border)` für Rahmen
 - **Buttons**: Mindesthöhe 44px (Fat-Finger-Safe), runde Icon-Buttons 34px
+- **CTA-Buttons**: `h-16` (64px), `rounded-3xl`, `bg-[#FFD700]`, `text-black`, `font-weight: 900`
 
 ### Implementierte Features
 - **Tinder-Swipe**: View-Toggle Liste/Swipe, Touch-Gesten, Haptic Feedback, Match Modal

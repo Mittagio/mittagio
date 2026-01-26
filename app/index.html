@@ -475,7 +475,10 @@
       min-height:56px; max-height:64px;
       transition:all .2s;
     }
-    .btn-primary:active{background:#e6b800}
+    .btn-primary:active{
+      background:#e6b800;
+      transform:scale(0.98);
+    }
     .btn-primary:disabled{
       opacity:.6; cursor:not-allowed; background:#f2b705;
     }
@@ -586,7 +589,18 @@
     .order-item + .order-item{margin-top:10px}
     .order-top{display:flex; justify-content:space-between; align-items:center; gap:10px}
     .order-right{display:flex; flex-direction:column; align-items:flex-end; gap:6px}
-    .order-code{border:1px solid var(--border); background:#fff; border-radius:10px; padding:6px 10px; font-weight:900; cursor:pointer}
+    .order-code{
+      border:1px solid var(--border); 
+      background:#fff; 
+      border-radius:10px; 
+      padding:6px 10px; 
+      font-weight:900; 
+      cursor:pointer;
+      transition:transform 0.1s ease;
+    }
+    .order-code:active{
+      transform:scale(0.95);
+    }
     .status-pill{display:inline-flex; align-items:center; padding:4px 8px; border-radius:999px; font-size:11px; font-weight:900; border:1px solid var(--border)}
     .status-pill.open{background:rgba(242,183,5,.12); color:#b37b00}
     .status-pill.done{background:rgba(31,157,85,.12); color:#1f9d55}
@@ -1958,17 +1972,21 @@
     </section>
 
     <!-- PROVIDER: Hybrid Onboarding -->
-    <section class="view" id="v-provider-onboarding-entry" style="background:linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); min-height:100vh; padding:20px;">
-      <!-- Hero Video Loop (Platzhalter für Video) -->
-      <div style="width:100%; max-width:400px; margin:0 auto 32px; border-radius:20px; overflow:hidden; box-shadow:0 8px 32px rgba(0,0,0,0.4); background:#000;">
-        <div style="aspect-ratio:16/9; background:linear-gradient(135deg, #FFB800 0%, #FFD700 100%); display:flex; align-items:center; justify-content:center; position:relative;">
-          <div style="text-align:center; color:#2D3436;">
+    <section class="view" id="v-provider-onboarding-entry" style="background:linear-gradient(135deg, #121826 0%, #1a1a1a 100%); min-height:100vh; padding:20px; position:relative;">
+      <!-- Hero Video Loop (Full-Screen Background mit Overlay) -->
+      <div style="position:absolute; top:0; left:0; right:0; bottom:0; z-index:0; overflow:hidden;">
+        <div style="width:100%; height:100%; background:linear-gradient(135deg, #FFB800 0%, #FFD700 100%); display:flex; align-items:center; justify-content:center; position:relative;">
+          <div style="position:absolute; inset:0; background:rgba(0,0,0,0.6); z-index:1;"></div>
+          <div style="text-align:center; color:#fff; z-index:2; position:relative;">
             <div style="font-size:64px; margin-bottom:16px;">👆</div>
             <div style="font-size:18px; font-weight:900;">Nummer sehen → Antippen → Erledigt</div>
           </div>
-          <!-- Video würde hier eingefügt: <video autoplay loop muted playsinline style="width:100%; height:100%; object-fit:cover;"></video> -->
+          <!-- Video würde hier eingefügt: <video autoplay loop muted playsinline style="width:100%; height:100%; object-fit:cover; position:absolute; inset:0; z-index:0;"></video> -->
         </div>
       </div>
+      
+      <!-- Content (über Background) -->
+      <div style="position:relative; z-index:1;">
       
       <div class="panel" style="padding:32px; text-align:center; max-width:480px; margin:0 auto; background:rgba(255,255,255,0.95); border-radius:24px; box-shadow:0 8px 32px rgba(0,0,0,0.3);">
         <h1 style="font-size:32px; font-weight:900; margin-bottom:16px; line-height:1.2; color:#2D3436;">Verdiene Zeit an der Theke.</h1>
@@ -1976,11 +1994,11 @@
           Stell dein Tagesgericht online, bevor der Ansturm kommt. Kein Telefon-Stress, keine Zettelwirtschaft.
         </p>
         
-        <!-- 3-Punkte-Erklärung mit großen Icons -->
-        <div style="display:flex; flex-direction:column; gap:20px; margin-bottom:32px; text-align:left;">
-          <div style="display:flex; align-items:start; gap:16px;">
+        <!-- 3-Punkte-Erklärung mit großen Icons (animiert) -->
+        <div id="onboardingExplanationPoints" style="display:flex; flex-direction:column; gap:20px; margin-bottom:32px; text-align:left;">
+          <div class="onboarding-point" style="display:flex; align-items:start; gap:16px; opacity:0; transform:translateY(20px); transition:opacity 0.6s ease-out, transform 0.6s ease-out;">
             <div style="width:64px; height:64px; border-radius:16px; background:rgba(255,184,0,0.15); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
-              <div style="font-size:32px;">📢</div>
+              <i data-lucide="shield" style="width:32px; height:32px; color:#FFD700;"></i>
             </div>
             <div style="flex:1;">
               <div style="font-size:18px; font-weight:900; margin-bottom:6px; color:#2D3436;">Tages-Angebot live schalten</div>
@@ -1988,9 +2006,9 @@
             </div>
           </div>
           
-          <div style="display:flex; align-items:start; gap:16px;">
+          <div class="onboarding-point" style="display:flex; align-items:start; gap:16px; opacity:0; transform:translateY(20px); transition:opacity 0.6s ease-out, transform 0.6s ease-out;">
             <div style="width:64px; height:64px; border-radius:16px; background:rgba(255,184,0,0.15); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
-              <div style="font-size:32px;">👆</div>
+              <i data-lucide="hand" style="width:32px; height:32px; color:#FFD700;"></i>
             </div>
             <div style="flex:1;">
               <div style="font-size:18px; font-weight:900; margin-bottom:6px; color:#2D3436;">Abholung per Fingertipp</div>
@@ -1998,9 +2016,9 @@
             </div>
           </div>
           
-          <div style="display:flex; align-items:start; gap:16px;">
+          <div class="onboarding-point" style="display:flex; align-items:start; gap:16px; opacity:0; transform:translateY(20px); transition:opacity 0.6s ease-out, transform 0.6s ease-out;">
             <div style="width:64px; height:64px; border-radius:16px; background:rgba(255,184,0,0.15); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
-              <div style="font-size:32px;">⏱️</div>
+              <i data-lucide="timer" style="width:32px; height:32px; color:#FFD700;"></i>
             </div>
             <div style="flex:1;">
               <div style="font-size:18px; font-weight:900; margin-bottom:6px; color:#2D3436;">Zeit gewinnen & Umsatz steigern</div>
@@ -2009,13 +2027,24 @@
           </div>
         </div>
         
+        <!-- Interaktiver Tap-Moment: Demo-Kachel "49C" -->
+        <div id="onboardingTapDemo" style="margin-bottom:24px; text-align:center;">
+          <div style="font-size:14px; font-weight:600; color:#666; margin-bottom:12px;">So einfach geht's:</div>
+          <div id="demoPickupCode" style="display:inline-block; padding:20px 32px; background:#fff; border:3px solid #FFD700; border-radius:20px; font-size:48px; font-weight:900; color:#2D3436; cursor:pointer; transition:all 0.2s ease; box-shadow:0 4px 16px rgba(255,215,0,0.2);" onclick="triggerTapDemo()">
+            49C
+          </div>
+          <div id="tapDemoMessage" style="display:none; margin-top:16px; padding:12px 20px; background:rgba(76,175,80,0.1); border-radius:12px; font-size:16px; font-weight:700; color:#4caf50; animation:slideUp 0.4s ease-out;">
+            So einfach gewinnst du Zeit! ⚡
+          </div>
+        </div>
+        
         <!-- Badge: Garantiert ohne IT-Vorkenntnisse -->
         <div style="padding:12px 20px; background:rgba(46,125,50,0.12); border-radius:12px; margin-bottom:24px; display:inline-block;">
           <div style="font-size:14px; font-weight:700; color:#2e7d32;">✓ Garantiert ohne IT-Vorkenntnisse bedienbar</div>
         </div>
         
-        <button class="btn-primary" type="button" id="btnOnboardingEntryStart" style="width:100%; min-height:72px; background:#FFB800; color:#2D3436; font-weight:900; font-size:20px; border:none; border-radius:16px; box-shadow:0 4px 16px rgba(255,184,0,0.3); margin-bottom:12px;">
-          Jetzt meine Küche eröffnen
+        <button class="btn-primary" type="button" id="btnOnboardingEntryStart" style="width:100%; min-height:64px; background:#FFD700; color:#111; font-weight:900; font-size:18px; border:none; border-radius:24px; box-shadow:0 25px 50px -12px rgba(255, 215, 0, 0.25); margin-bottom:12px; transition:transform 0.1s ease;">
+          JETZT MEINE KÜCHE ERÖFFNEN
         </button>
         <button class="btn secondary" type="button" id="btnOnboardingEntryLater" style="width:100%; min-height:52px; background:transparent; color:#666; border:2px solid #e7e1d5; border-radius:16px;">
           Später starten
@@ -5876,6 +5905,18 @@
         history.pushState(null, '', location.pathname);
         return;
       } else if(currentView.id === 'v-provider-onboarding-entry'){
+        // Animation für 3-Punkt-Erklärung
+        setTimeout(() => {
+          const points = document.querySelectorAll('#onboardingExplanationPoints .onboarding-point');
+          points.forEach((point, index) => {
+            setTimeout(() => {
+              point.style.opacity = '1';
+              point.style.transform = 'translateY(0)';
+            }, index * 200);
+          });
+          // Icons aktualisieren
+          if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 100);
+        }, 100);
         // Exit onboarding, go to login or customer mode
         if(provider.loggedIn){
           showProviderHome();
@@ -7818,6 +7859,35 @@
     }
   };
   
+  // Tap-Demo Funktion (interaktiver Moment im Onboarding)
+  function triggerTapDemo(){
+    const demoCode = document.getElementById('demoPickupCode');
+    const message = document.getElementById('tapDemoMessage');
+    if(!demoCode || !message) return;
+    
+    // Grüner Flash-Effekt
+    demoCode.style.background = '#4caf50';
+    demoCode.style.color = '#fff';
+    demoCode.style.transform = 'scale(0.95)';
+    demoCode.style.borderColor = '#4caf50';
+    
+    // Nach 200ms zurück
+    setTimeout(() => {
+      demoCode.style.background = '#fff';
+      demoCode.style.color = '#2D3436';
+      demoCode.style.transform = 'scale(1)';
+      demoCode.style.borderColor = '#FFD700';
+    }, 200);
+    
+    // Nachricht anzeigen
+    message.style.display = 'block';
+    
+    // Haptic Feedback
+    if('vibrate' in navigator){
+      navigator.vibrate([50, 30, 50]);
+    }
+  }
+  
   const btnOnboardingPreviewDashboard = document.getElementById('btnOnboardingPreviewDashboard');
   if(btnOnboardingPreviewDashboard) btnOnboardingPreviewDashboard.onclick = () => {
     provider.onboardingCompleted = true;
@@ -9012,6 +9082,18 @@
         `;
         
         if(!isPickedUp){
+          // Micro-Interaction: Scale-Effekt bei Klick
+          tile.style.cursor = 'pointer';
+          tile.addEventListener('mousedown', () => {
+            tile.style.transform = 'scale(0.95)';
+          });
+          tile.addEventListener('mouseup', () => {
+            tile.style.transform = 'scale(1)';
+          });
+          tile.addEventListener('mouseleave', () => {
+            tile.style.transform = 'scale(1)';
+          });
+          
           // Tap-to-Complete: Direkt ohne Bestätigungsdialog
           tile.onclick = () => {
             // Haptisches Feedback
@@ -10817,13 +10899,19 @@
     createFlowPreselectedDate = null;
     // restore default next button handler
     setWizardNextDefault();
+    
+    // Ostereier: Feuerwerk-Icon bei erstem Inserat
+    const isFirstOffer = !existingId && offers.filter(o => o.providerId === providerId()).length === 1;
+    if(isFirstOffer){
+      showToast('🎉 Dein erstes Inserat ist live!', 4000);
+    } else {
+      showToast(existingId ? 'Inserat aktualisiert' : 'Inserat veröffentlicht');
+    }
+    
     renderProviderHome();
     renderProviderPickups();
     renderDiscover();
     renderStart();
-    
-    // Erfolgsmeldung (Toast statt Alert)
-    showToast(existingId ? 'Inserat aktualisiert' : 'Inserat veröffentlicht');
   }
 
   function saveToCookbookFromWizard(keepOpen=false){

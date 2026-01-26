@@ -190,4 +190,61 @@ Häufig verwendete Befehle:
 
 ---
 
+## 🎬 Instant-Aha Onboarding & Dashboard-Animation
+
+```
+Finalisiere das 'Instant-Aha' Onboarding & Dashboard-Animation für Mittagio:
+
+1. Onboarding Screen (v-provider-onboarding-entry):
+
+Background: Implementiere einen Full-Screen Background-Layer. Nutze als Platzhalter ein video-Tag mit object-cover und einem dunklen Overlay (bg-black/60 oder rgba(0,0,0,0.6)).
+
+Icons: Nutze Lucide Icons. Für 'Tages-Angebot' (shield), 'Abholung' (hand-tap), 'Zeit' (timer).
+
+Animation: Die 3 Erklär-Punkte sollen nacheinander sanft von unten nach oben einfließen (y: 20 -> 0, opacity: 0 -> 1) mit CSS-Animationen oder JavaScript.
+
+CTA-Button: Der Button muss massiv sein (min-height: 64px, border-radius: 24px, background: #FFD700, color: #111, font-weight: 900). Label: 'JETZT MEINE KÜCHE ERÖFFNEN'.
+
+2. Der interaktive 'Tap-Moment' im Onboarding:
+
+Füge eine kleine Demo-Kachel ein, die '49C' zeigt (Abholcode-Beispiel).
+
+Wenn der User darauf klickt, soll die Kachel kurz grün aufleuchten (background: #4caf50) und eine kleine Konfetti-Animation oder ein scale-Effekt ausgelöst werden. Text erscheint: 'So einfach gewinnst du Zeit!'.
+
+3. Dashboard-Zähler (providerTimeTracker):
+
+Wenn der User das Dashboard das erste Mal betritt, animiere den 'Zeit-Gewinn-Tracker'. Die Zahl soll in 1.5 Sekunden von 0 auf den aktuellen Wert hochzählen (ease-out cubic).
+
+Nutze ein kräftiges Wording: 'Du hast bereits X Minuten Stress gespart – lass uns das ändern!'.
+
+4. Branding & Vertrauen:
+
+Platziere unter dem Registrierungs-Feld dezent: 'Kein Abo • Keine Grundgebühr • In 2 Min. online'.
+
+5. Navigation:
+
+Nach dem Onboarding muss der User direkt in seinem 'Kochbuch' landen (showProviderCookbook()), um das erste Gericht anzulegen.
+
+6. Micro-Interactions:
+
+Abholcode-Kacheln: Bei Klick kurz verkleinern (transform: scale(0.95)) für 0.1s, dann zurück.
+Buttons: :active State mit scale(0.98) für haptisches Feedback.
+```
+
+---
+
+## 🎆 Ostereier & Überraschungs-Effekte
+
+```
+Implementiere kleine Überraschungs-Effekte für Anbieter:
+
+1. Feuerwerk-Icon: Wenn Anbieter sein erstes Tagesgericht live schaltet, zeige kurz ein Feuerwerk-Icon (sparkles) mit Toast: "🎉 Dein erstes Inserat ist live!"
+
+2. Erfolgs-Animation: Bei erfolgreicher Veröffentlichung: Kurze Confetti-Animation oder Scale-Pulse
+
+3. Zeit-Spar-Milestone: Bei bestimmten Zeit-Ersparnissen (z.B. 1h, 5h) zeige einen speziellen Toast mit Icon
+```
+
+---
+
 **Hinweis:** Diese Prompts können direkt in den Cursor Composer kopiert werden (Strg + I).
