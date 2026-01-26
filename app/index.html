@@ -1020,11 +1020,48 @@
       transform:translateX(32px);
     }
     
-    .discover-header{
+    /* Discover Header - Sticky mit zwei Ebenen */
+    .discover-header-sticky{
       position:sticky; top:0; z-index:10;
-      background:rgba(255,255,255,.95); backdrop-filter:blur(10px);
-      padding:8px 14px; max-width:980px; margin:0 auto;
+      background:rgba(255,255,255,.98); backdrop-filter:blur(20px);
       border-bottom:1px solid rgba(0,0,0,.06);
+      box-shadow:0 2px 8px rgba(0,0,0,.04);
+    }
+    
+    /* Ebene 1: Quick-Filters */
+    .discover-quick-filters{
+      display:flex; align-items:center; gap:8px;
+      padding:12px 14px; max-width:980px; margin:0 auto;
+      flex-wrap:wrap;
+    }
+    
+    .quick-filter-btn{
+      display:flex; align-items:center; gap:6px;
+      padding:10px 16px; border-radius:24px;
+      border:1px solid rgba(0,0,0,.1);
+      background:#fff; color:#333;
+      font-size:14px; font-weight:600;
+      cursor:pointer; transition:all 0.2s ease;
+      white-space:nowrap;
+      box-shadow:0 2px 4px rgba(0,0,0,.05);
+    }
+    .quick-filter-btn i{
+      width:18px; height:18px; flex-shrink:0;
+    }
+    .quick-filter-btn:hover{
+      background:#f8f8f8;
+      transform:translateY(-1px);
+      box-shadow:0 4px 8px rgba(0,0,0,.08);
+    }
+    .quick-filter-btn.active{
+      background:var(--brand);
+      color:#2D3436; border-color:var(--brand);
+      font-weight:700;
+      box-shadow:0 4px 12px rgba(255,204,0,0.3);
+    }
+    
+    .discover-header{
+      position:relative;
     }
     /* Kompakte Standort-Pill (44-48px) */
     .discover-location-pill{
@@ -1579,33 +1616,44 @@
 
     <!-- CUSTOMER: Discover - App-like UX (Final Spec) -->
     <section class="view active" id="v-discover">
-      <!-- Header: Kompakte Standort-Pill (44-48px) + Toggle oben rechts -->
-      <div class="discover-header" style="position:relative;">
-        <div class="discover-location-pill">
-          <i data-lucide="map-pin" class="discover-location-icon-left"></i>
-          <input type="text" class="discover-location-input" id="discoverLocationInput" placeholder="Ort oder PLZ" />
-          <button class="discover-location-btn" type="button" id="btnDiscoverLocationSearch" aria-label="Standort suchen">
-            <i data-lucide="search"></i>
+      <!-- Header: Sticky mit Quick-Filters und Kategorien -->
+      <div class="discover-header-sticky">
+        <!-- Ebene 1: Quick-Filters (große Kapseln) -->
+        <div class="discover-quick-filters">
+          <div class="discover-location-pill">
+            <i data-lucide="map-pin" class="discover-location-icon-left"></i>
+            <input type="text" class="discover-location-input" id="discoverLocationInput" placeholder="Ort oder PLZ" />
+            <button class="discover-location-btn" type="button" id="btnDiscoverLocationSearch" aria-label="Standort suchen">
+              <i data-lucide="search"></i>
+            </button>
+          </div>
+          <button class="quick-filter-btn" id="quickFilterNear" data-filter="near">
+            <i data-lucide="navigation"></i>
+            <span>In der Nähe</span>
           </button>
-        </div>
-        <!-- Toggle-Switch oben rechts -->
-        <div class="discover-view-toggle" id="discoverViewToggle" style="position:absolute; top:12px; right:14px; z-index:10;">
-          <button type="button" class="toggle-switch" id="toggleDiscoverView" aria-label="Ansicht wechseln">
-            <span class="toggle-icon toggle-icon-list">
-              <i data-lucide="list"></i>
-            </span>
-            <span class="toggle-icon toggle-icon-match">
-              <i data-lucide="flame"></i>
-            </span>
-            <span class="toggle-slider"></span>
+          <button class="quick-filter-btn" id="quickFilterToday" data-filter="today">
+            <i data-lucide="calendar"></i>
+            <span>Heute</span>
           </button>
+          <!-- Toggle-Switch oben rechts -->
+          <div class="discover-view-toggle">
+            <button type="button" class="toggle-switch" id="toggleDiscoverView" aria-label="Ansicht wechseln">
+              <span class="toggle-icon toggle-icon-list">
+                <i data-lucide="list"></i>
+              </span>
+              <span class="toggle-icon toggle-icon-match">
+                <i data-lucide="flame"></i>
+              </span>
+              <span class="toggle-slider"></span>
+            </button>
+          </div>
         </div>
-      </div>
-
-      <!-- Kategorien (horizontal swipebar, ohne Überschrift) -->
-      <div class="discover-categories">
-        <div class="discover-categories-scroll" id="discoverCategories">
-          <!-- Wird dynamisch befüllt -->
+        
+        <!-- Ebene 2: Food-Kategorien (horizontal scrollbar) -->
+        <div class="discover-categories-wrapper">
+          <div class="discover-categories-scroll" id="discoverCategories">
+            <!-- Wird dynamisch befüllt -->
+          </div>
         </div>
       </div>
 
@@ -4652,21 +4700,42 @@
       };
     }
     
-    // Kategorien rendern (ohne Überschrift)
+    // Quick-Filter Buttons
+    const quickFilterNear = document.getElementById('quickFilterNear');
+    const quickFilterToday = document.getElementById('quickFilterToday');
+    if(quickFilterNear){
+      quickFilterNear.classList.toggle('active', activeDiscoverFilter === 'near');
+      quickFilterNear.onclick = () => {
+        activeDiscoverFilter = 'near';
+        renderDiscover();
+      };
+    }
+    if(quickFilterToday){
+      const todayKey = isoDate(new Date());
+      quickFilterToday.classList.toggle('active', activeDay === todayKey);
+      quickFilterToday.onclick = () => {
+        activeDay = todayKey;
+        renderDiscover();
+      };
+    }
+    
+    // Kategorien rendern (mit farbigen Icons)
     const categoriesEl = document.getElementById('discoverCategories');
     if(categoriesEl){
       categoriesEl.innerHTML = '';
       const cats = [
-        {id:'near', label:'In der Nähe', icon: null},
-        {id:'Vegan', label:'Vegan', icon: 'leaf'},
-        {id:'Vegetarisch', label:'Vegetarisch', icon: 'carrot'},
-        {id:'Fisch', label:'Fisch', icon: 'fish'},
-        {id:'Mit Fleisch', label:'Mit Fleisch', icon: 'drumstick'}
+        {id:'Vegan', label:'Vegan', icon: 'leaf', emoji: '🌿'},
+        {id:'Vegetarisch', label:'Vegetarisch', icon: 'carrot', emoji: '🧀'},
+        {id:'Fisch', label:'Fisch', icon: 'fish', emoji: '🐟'},
+        {id:'Mit Fleisch', label:'Fleisch', icon: 'drumstick', emoji: '🍖'},
+        {id:'Salat', label:'Salat', icon: 'salad', emoji: '🥗'}
       ];
       cats.forEach(cat=>{
         const btn = document.createElement('button');
         btn.className = 'discover-category-chip' + (activeDiscoverFilter === cat.id ? ' active' : '');
-        btn.innerHTML = cat.icon ? `${iconMarkup(cat.icon)}<span>${esc(cat.label)}</span>` : `<span>${esc(cat.label)}</span>`;
+        btn.setAttribute('data-cat', cat.id);
+        // Emoji + Icon für bessere Sichtbarkeit
+        btn.innerHTML = `<span style="font-size:18px;">${cat.emoji}</span><i data-lucide="${cat.icon}"></i><span>${esc(cat.label)}</span>`;
         btn.onclick = ()=>{
           activeDiscoverFilter = cat.id;
           renderDiscover();
