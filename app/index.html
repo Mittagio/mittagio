@@ -1056,23 +1056,27 @@
     /* Premium Horizontale Gericht-Karte */
     .dish-card {
       display: flex;
-      height: 140px;
+      height: 160px;
       background: #ffffff;
-      border-radius: 18px;
+      border-radius: 24px; /* rounded-3xl */
       overflow: hidden;
       border: 1px solid rgba(0,0,0,0.05);
       box-shadow: 0 4px 15px rgba(0,0,0,0.04);
       margin-bottom: 14px;
       cursor: pointer;
-      transition: transform 0.2s ease;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      position: relative;
     }
     .dish-card:active {
       transform: scale(0.98);
     }
-    /* Linke Seite: Bild */
+    .dish-card:hover {
+      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    }
+    /* Linke Seite: Bild - 50% der Karte */
     .dish-image-box {
-      width: 140px;
-      height: 140px;
+      width: 50%;
+      height: 160px;
       flex-shrink: 0;
       background: #f5f5f5;
     }
@@ -1097,13 +1101,14 @@
       gap: 10px;
     }
     .dish-name {
-      font-size: 16px;
-      font-weight: 850; /* Extra Bold Look */
+      font-size: 18px;
+      font-weight: 900; /* Kräftiger */
       color: #111;
       line-height: 1.2;
       margin: 0;
       display: -webkit-box;
       -webkit-line-clamp: 2;
+      font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Montserrat', 'Segoe UI', sans-serif;
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
@@ -1542,26 +1547,28 @@
     <section class="view" id="v-fav">
       <div class="panel">
         <!-- Empty State (wenn beide Listen leer) -->
-        <div id="favEmptyState" style="display:none; text-align:center; padding:60px 20px;">
-          <div style="font-size:64px; margin-bottom:16px; opacity:0.5;">❤️</div>
-          <h3 style="font-size:18px; font-weight:900; margin-bottom:8px; color:#111;">Noch keine Favoriten</h3>
-          <p style="font-size:14px; color:#666; margin-bottom:24px; line-height:1.5;">Zeit, dich zu verlieben! Entdecke leckere Gerichte und markiere deine Favoriten.</p>
-          <button class="btn" type="button" onclick="showDiscover();" style="width:100%; max-width:280px; margin:0 auto;">
-            <i data-lucide="compass"></i> <span>Zur Entdecken-Seite</span>
+        <div id="favEmptyState" style="display:none; text-align:center; padding:80px 20px;">
+          <div style="width:120px; height:120px; margin:0 auto 24px; background:linear-gradient(135deg, rgba(255,215,0,0.1) 0%, rgba(255,184,0,0.15) 100%); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:64px;">
+            ❤️
+          </div>
+          <h3 style="font-size:22px; font-weight:900; margin-bottom:12px; color:#111; font-family:-apple-system, BlinkMacSystemFont, 'Inter', 'Montserrat', sans-serif;">Noch keine Favoriten</h3>
+          <p style="font-size:15px; color:#666; margin-bottom:32px; line-height:1.6; max-width:320px; margin-left:auto; margin-right:auto;">Zeit, dich zu verlieben! Entdecke leckere Gerichte und markiere deine Favoriten.</p>
+          <button class="btn-primary" type="button" onclick="showDiscover();" style="width:100%; max-width:280px; margin:0 auto; min-height:52px; font-size:16px; font-weight:700;">
+            <i data-lucide="compass" style="width:20px;height:20px;"></i> <span>Jetzt Gerichte entdecken</span>
           </button>
         </div>
         
         <div id="favContent">
-          <div class="section-title">Anbieter-Favoriten</div>
+          <div class="section-title" id="sectionProviders" style="display:none;">Anbieter-Favoriten</div>
           <div class="grid" id="favProviders"></div>
-          <div class="hint" id="emptyFavProviders" style="display:none; text-align:center; padding:24px;">
-            <div style="font-size:48px; margin-bottom:12px; opacity:0.5;">🍽️</div>
+          <div class="hint" id="emptyFavProviders" style="display:none; text-align:center; padding:32px;">
+            <div style="width:80px; height:80px; margin:0 auto 16px; background:rgba(0,0,0,0.03); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:40px; opacity:0.6;">🍽️</div>
             <p style="font-size:14px; color:#666; margin:0;">Noch keine Anbieter-Favoriten</p>
           </div>
-          <div class="section-title" style="margin-top:12px;">Gericht-Favoriten</div>
+          <div class="section-title" id="sectionDishes" style="display:none; margin-top:24px;">Gericht-Favoriten</div>
           <div class="grid" id="favDishes"></div>
-          <div class="hint" id="emptyFavDishes" style="display:none; text-align:center; padding:24px;">
-            <div style="font-size:48px; margin-bottom:12px; opacity:0.5;">🍴</div>
+          <div class="hint" id="emptyFavDishes" style="display:none; text-align:center; padding:32px;">
+            <div style="width:80px; height:80px; margin:0 auto 16px; background:rgba(0,0,0,0.03); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:40px; opacity:0.6;">🍴</div>
             <p style="font-size:14px; color:#666; margin:0;">Noch keine Gericht-Favoriten</p>
           </div>
         </div>
@@ -2717,7 +2724,7 @@
       <div>Favoriten</div>
     </button>
     <button class="navbtn" data-go="cart" style="position:relative;">
-      <div class="ico"><i data-lucide="shopping-cart"></i></div>
+      <div class="ico"><i data-lucide="shopping-basket"></i></div>
       <div>Essenskorb</div>
       <span class="badge-notification" id="cartBadge" style="display:none;"></span>
     </button>
@@ -4919,10 +4926,15 @@
       <div class="dish-details">
         <div>
           <div class="dish-header">
-            <h3 class="dish-name">${esc(data.dish||'Gericht')}</h3>
-            <span class="dish-price">${euro(data.price)}</span>
+            <h3 class="dish-name">${esc(data.dish||'Gericht')} <span class="dish-price" style="font-size:18px; color:var(--brand); font-weight:900; margin-left:8px;">${euro(data.price)}</span></h3>
           </div>
-          <div class="dish-provider">bei ${esc(data.providerName||'Anbieter')}</div>
+          <div class="dish-provider" style="display:flex; align-items:center; gap:6px; margin-top:4px;">
+            <i data-lucide="store" style="width:14px;height:14px; color:#666;"></i>
+            <span>${esc(data.providerName||'Anbieter')}</span>
+            ${data.pickupWindow ? `<span style="margin-left:8px; display:flex; align-items:center; gap:4px; color:#666; font-size:12px;"><i data-lucide="clock" style="width:12px;height:12px;"></i> ${esc(data.pickupWindow)}</span>` : ''}
+            ${data.dineInPossible ? `<i data-lucide="utensils" style="width:14px;height:14px; color:#1f9d55; margin-left:4px;" title="Vor Ort"></i>` : ''}
+            ${!data.dineInPossible && data.hasPickupCode ? `<i data-lucide="shopping-bag" style="width:14px;height:14px; color:#666; margin-left:4px;" title="Zum Mitnehmen"></i>` : ''}
+          </div>
           ${socialProof}
         </div>
         <div class="dish-footer">
@@ -4938,6 +4950,20 @@
         </div>
       </div>
     `;
+    
+    // Button nur bei Tap/Hover anzeigen (eleganter)
+    const actionGroup = card.querySelector('.action-group');
+    if(actionGroup){
+      actionGroup.style.opacity = '0';
+      actionGroup.style.transition = 'opacity 0.2s ease';
+    }
+    
+    card.addEventListener('mouseenter', () => {
+      if(actionGroup) actionGroup.style.opacity = '1';
+    });
+    card.addEventListener('mouseleave', () => {
+      if(actionGroup) actionGroup.style.opacity = '0';
+    });
     
     // Klick auf Karte öffnet Details oder Bestellung
     card.onclick = (e)=>{
@@ -5261,15 +5287,35 @@
       favContent.style.display = hasAnyFavorites ? 'block' : 'none';
     }
     
-    // Provider Section
+    // Provider Section - Optional Chaining für Fehlerbehebung
     provGrid.innerHTML='';
+    const sectionProviders = document.getElementById('sectionProviders');
+    if(sectionProviders) sectionProviders.style.display = providerList.length > 0 ? 'block' : 'none';
     provEmpty.style.display = providerList.length ? 'none' : 'block';
-    providerList.forEach(o=>provGrid.appendChild(offerCard(o)));
+    providerList.forEach(o=>{
+      if(o?.id){
+        try {
+          provGrid.appendChild(offerCard(o));
+        } catch(err){
+          console.error('Error rendering provider favorite:', err, o);
+        }
+      }
+    });
 
-    // Dish Section
+    // Dish Section - Optional Chaining für Fehlerbehebung
     dishGrid.innerHTML='';
+    const sectionDishes = document.getElementById('sectionDishes');
+    if(sectionDishes) sectionDishes.style.display = dishList.length > 0 ? 'block' : 'none';
     dishEmpty.style.display = dishList.length ? 'none' : 'block';
-    dishList.forEach(o=>dishGrid.appendChild(offerCard(o)));
+    dishList.forEach(o=>{
+      if(o?.id){
+        try {
+          dishGrid.appendChild(offerCard(o));
+        } catch(err){
+          console.error('Error rendering dish favorite:', err, o);
+        }
+      }
+    });
     
     // Icons aktualisieren
     if(typeof lucide !== 'undefined'){
