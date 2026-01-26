@@ -5065,14 +5065,34 @@
   }
   
   function handleSwipeRight(offer){
-    // Rechts = "Gut: Das möchte ich!" - Fly-to-Basket Animation
-    triggerFlyToBasketAnimation(offer);
-    // Quick-Action Overlay öffnen
-    showMatchModal(offer);
+    // Rechts = "Gut: Das möchte ich!" - Zu Favoriten hinzufügen
+    const data = normalizeOffer(offer);
+    const dishKey = data.id;
+    
+    // Zu Favoriten hinzufügen (wenn noch nicht vorhanden)
+    if(!dishFavs.has(dishKey)){
+      dishFavs.add(dishKey);
+      save(LS.dishFavs, Array.from(dishFavs));
+      
+      // Fly-to-Favorites Animation
+      triggerFlyToFavoritesAnimation(offer);
+      
+      // Haptic Feedback
+      if(navigator.vibrate) navigator.vibrate([30, 20, 30]);
+      
+      // Toast-Bestätigung
+      showToast('Gericht zu Favoriten hinzugefügt ❤️', 2000);
+      
+      // Favoriten-Seite aktualisieren (falls sichtbar)
+      renderFavorites();
+    } else {
+      // Bereits in Favoriten - kurze Bestätigung
+      showToast('Bereits in Favoriten ❤️', 1500);
+    }
   }
   
-  // Fly-to-Basket Animation: Gericht fliegt in den Korb
-  function triggerFlyToBasketAnimation(offer){
+  // Fly-to-Favorites Animation: Gericht fliegt zum Herz-Icon
+  function triggerFlyToFavoritesAnimation(offer){
     const data = normalizeOffer(offer);
     const card = document.querySelector('.swipe-card[data-offer-id="' + data.id + '"]');
     if(!card) return;
@@ -5080,15 +5100,16 @@
     const img = card.querySelector('.swipe-card-image img');
     if(!img) return;
     
-    const bottomNavBasketBtn = document.getElementById('bottomNavBasketBtn');
-    if(!bottomNavBasketBtn) return;
+    // Finde das Favoriten-Icon in der Bottom Nav
+    const favNavBtn = document.querySelector('#customerNav button[data-go="fav"]');
+    if(!favNavBtn) return;
     
     // Temporäre Kopie des Bildes erstellen
     const flyImg = img.cloneNode(true);
     flyImg.style.cssText = `
       position:fixed;
-      width:120px;
-      height:120px;
+      width:100px;
+      height:100px;
       object-fit:cover;
       border-radius:16px;
       z-index:9999;
@@ -5098,30 +5119,28 @@
     `;
     
     const cardRect = card.getBoundingClientRect();
-    const basketRect = bottomNavBasketBtn.getBoundingClientRect();
+    const favRect = favNavBtn.getBoundingClientRect();
     
-    flyImg.style.left = cardRect.left + (cardRect.width / 2) - 60 + 'px';
+    flyImg.style.left = cardRect.left + (cardRect.width / 2) - 50 + 'px';
     flyImg.style.top = cardRect.top + (cardRect.height * 0.3) + 'px';
     
     document.body.appendChild(flyImg);
     
-    // Animation zum Korb
+    // Animation zum Herz-Icon
     setTimeout(() => {
-      flyImg.style.left = basketRect.left + (basketRect.width / 2) - 60 + 'px';
-      flyImg.style.top = basketRect.top + (basketRect.height / 2) - 60 + 'px';
-      flyImg.style.transform = 'scale(0.3) rotate(360deg)';
+      flyImg.style.left = favRect.left + (favRect.width / 2) - 50 + 'px';
+      flyImg.style.top = favRect.top + (favRect.height / 2) - 50 + 'px';
+      flyImg.style.transform = 'scale(0.2) rotate(360deg)';
       flyImg.style.opacity = '0';
     }, 50);
     
-    // Basket-Reaction: Bounce + Glow
+    // Heart-Reaction: Bounce + Glow
     setTimeout(() => {
-      bottomNavBasketBtn.classList.add('bounce', 'glow');
-      if(navigator.vibrate) navigator.vibrate([30, 20, 30]);
+      favNavBtn.classList.add('bounce', 'glow');
       
-      // Badge aktualisieren (wenn Item hinzugefügt wurde)
+      // Cleanup
       setTimeout(() => {
-        updateHeaderBasket();
-        bottomNavBasketBtn.classList.remove('bounce', 'glow');
+        favNavBtn.classList.remove('bounce', 'glow');
       }, 500);
     }, 300);
     
@@ -5662,6 +5681,111 @@
     renderFavorites();
     updateSheetFavs();
   }
+  
+  // Favoriten-Karte mit "In die Mittagsbox" Button
+  function createFavoriteCard(o){
+    const data = normalizeOffer(o);
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.style.position = 'relative';
+    
+    const imgSrc = data.imageUrl || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70';
+    
+    // Entfernen-Button (X oben rechts)
+    const removeBtn = document.createElement('button');
+    removeBtn.type = 'button';
+    removeBtn.className = 'card-heart';
+    removeBtn.style.position = 'absolute';
+    removeBtn.style.top = '12px';
+    removeBtn.style.right = '12px';
+    removeBtn.style.zIndex = '10';
+    removeBtn.style.background = 'rgba(255,255,255,0.95)';
+    removeBtn.style.border = 'none';
+    removeBtn.style.borderRadius = '50%';
+    removeBtn.style.width = '36px';
+    removeBtn.style.height = '36px';
+    removeBtn.style.display = 'flex';
+    removeBtn.style.alignItems = 'center';
+    removeBtn.style.justifyContent = 'center';
+    removeBtn.style.cursor = 'pointer';
+    removeBtn.style.boxShadow = '0 2px 8px rgba(0,0,0,0.15)';
+    removeBtn.innerHTML = iconMarkup('x');
+    removeBtn.onclick = (e) => {
+      e.stopPropagation();
+      toggleDishFav(data.id);
+    };
+    
+    // Image
+    const img = document.createElement('div');
+    img.className = 'img';
+    img.innerHTML = `<img alt="${esc(data.dish||'Gericht')}" src="${esc(imgSrc)}" />`;
+    
+    // Body
+    const body = document.createElement('div');
+    body.className = 'body';
+    body.innerHTML = `
+      <p class="title">${esc(data.dish||'Gericht')}</p>
+      <p class="sub">${esc(data.providerName||'Anbieter')}</p>
+      <div class="meta" style="margin-top:12px; margin-bottom:16px;">
+        <div class="price" style="font-size:24px; font-weight:900; color:var(--brand);">${euro(data.price)}</div>
+      </div>
+    `;
+    
+    // "In die Mittagsbox" Button
+    const addToCartBtn = document.createElement('button');
+    addToCartBtn.type = 'button';
+    addToCartBtn.className = 'btn-primary';
+    addToCartBtn.style.width = '100%';
+    addToCartBtn.style.minHeight = '48px';
+    addToCartBtn.style.fontSize = '16px';
+    addToCartBtn.style.fontWeight = '700';
+    addToCartBtn.style.marginTop = '8px';
+    addToCartBtn.innerHTML = `${iconMarkup('shopping-basket')} <span>In die Mittagsbox</span>`;
+    addToCartBtn.onclick = (e) => {
+      e.stopPropagation();
+      addFavoriteToCart(o);
+    };
+    body.appendChild(addToCartBtn);
+    
+    card.appendChild(removeBtn);
+    card.appendChild(img);
+    card.appendChild(body);
+    
+    // Klick auf Karte öffnet Details
+    card.onclick = () => {
+      openOffer(data.id);
+    };
+    
+    return card;
+  }
+  
+  // Favorit zur Mittagsbox hinzufügen
+  function addFavoriteToCart(o){
+    const data = normalizeOffer(o);
+    
+    // Prüfe ob Gericht Abholcode hat
+    if(!data.hasPickupCode){
+      showToast('Dieses Gericht hat keinen Abholcode. Bitte wähle ein anderes Gericht.', 3000);
+      return;
+    }
+    
+    // Bestätigung
+    const confirmed = confirm(`Dieses Gericht für heute wählen?\n\n${esc(data.dish||'Gericht')}\n${euro(data.price)}`);
+    if(!confirmed) return;
+    
+    // Zur Mittagsbox hinzufügen
+    if(addToCart(o)){
+      showToast('Gericht zur Mittagsbox hinzugefügt! 🧺', 2000);
+      updateHeaderBasket();
+      
+      // Zur Mittagsbox navigieren
+      setTimeout(() => {
+        showCart();
+      }, 500);
+    } else {
+      showToast('Fehler beim Hinzufügen. Bitte erneut versuchen.', 3000);
+    }
+  }
 
   function renderFavorites(){
     const provGrid=document.getElementById('favProviders');
@@ -5724,7 +5848,7 @@
     dishList.forEach(o=>{
       if(o?.id){
         try {
-          dishGrid.appendChild(offerCard(o));
+          dishGrid.appendChild(createFavoriteCard(o));
         } catch(err){
           console.error('Error rendering dish favorite:', err, o);
         }
