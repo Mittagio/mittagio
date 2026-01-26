@@ -1743,7 +1743,7 @@
           </button>
         </div>
       <div class="spacer"></div>
-      <div id="modePill" class="prov-pill" style="display:none;">Dashboard</div>
+      <div id="modePill" class="prov-pill" style="display:none; background:#2a2a2a; border:1px solid rgba(255,255,255,0.1); color:#fff;">Küchenmodus</div>
     </div>
   </div>
 
@@ -2613,16 +2613,22 @@
       </div>
     </section>
 
-    <!-- PROVIDER APP - Dashboard (Home) -->
-    <section class="view" id="v-provider-home" style="background:#1a1a1a; min-height:100vh; padding:20px; padding-bottom:90px;">
+    <!-- PROVIDER APP - Küchenmodus (Home) -->
+    <section class="view" id="v-provider-home" style="background:#1e1e1e; min-height:100vh; padding:20px; padding-bottom:90px;">
+      <!-- Header: Küchenmodus -->
+      <div style="margin-bottom:20px; text-align:center;">
+        <div style="font-size:11px; color:rgba(255,255,255,0.5); text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">Mittagio – dein digitaler Helfer</div>
+        <h1 style="margin:0; font-size:32px; font-weight:900; color:#fff; line-height:1.2;">Küchenmodus</h1>
+      </div>
+      
       <!-- Status-Banner: LIVE/PAUSE -->
       <div class="panel" id="providerStatusBanner" style="padding:20px; border-radius:20px; box-shadow:0 4px 16px rgba(0,0,0,.3); background:linear-gradient(135deg, #2e7d32 0%, #1f5f23 100%); margin-bottom:20px; text-align:center;">
         <div style="font-weight:900; font-size:20px; color:#fff; margin-bottom:8px;" id="providerStatusText">Deine Küche ist LIVE</div>
         <div style="font-size:14px; color:rgba(255,255,255,0.9);">Bereit für Bestellungen</div>
       </div>
       
-      <!-- Provider Identity Card (Header) - Dark Mode -->
-      <div class="panel" id="providerIdentityCard" style="padding:20px; border-radius:20px; box-shadow:0 4px 16px rgba(0,0,0,.3); background:#2d2d2d; margin-bottom:20px;">
+      <!-- Provider Identity Card (Header) - Profi-Dunkelgrau -->
+      <div class="panel" id="providerIdentityCard" style="padding:20px; border-radius:20px; box-shadow:0 4px 16px rgba(0,0,0,.4); background:#2a2a2a; border:1px solid rgba(255,255,255,0.05); margin-bottom:20px;">
         <div style="display:flex; align-items:center; gap:16px; margin-bottom:16px;">
           <div class="plogo" id="provCardLogo" style="width:64px; height:64px; border-radius:16px; flex-shrink:0; border:3px solid rgba(255,215,0,0.3);"></div>
           <div style="flex:1; min-width:0;">
@@ -2635,32 +2641,33 @@
         </button>
       </div>
       
-      <!-- Quick-Kill-Widget: ALLES AUSVERKAUFT -->
-      <div class="panel" id="providerQuickKill" style="padding:20px; border-radius:20px; box-shadow:0 4px 16px rgba(0,0,0,.3); background:#2d2d2d; margin-bottom:20px; text-align:center;">
+      <!-- Quick-Kill-Widget: ALLES AUSVERKAUFT (Not-Aus) -->
+      <div class="panel" id="providerQuickKill" style="padding:20px; border-radius:20px; box-shadow:0 4px 16px rgba(0,0,0,.4); background:#2a2a2a; border:1px solid rgba(255,255,255,0.05); margin-bottom:20px; text-align:center;">
         <button class="btn" type="button" id="btnQuickKill" style="width:100%; min-height:72px; background:#E34D4D; color:#fff; font-weight:900; font-size:18px; border:none; border-radius:16px; box-shadow:0 4px 16px rgba(227,77,77,0.3);">
-          ALLES AUSVERKAUFT
+          <i data-lucide="power" style="width:24px;height:24px; margin-right:8px;"></i>
+          NOT-AUS: ALLES AUSVERKAUFT
         </button>
-        <div style="font-size:13px; color:rgba(255,255,255,0.6); margin-top:12px;">Schließt alle aktiven Inserate für heute</div>
+          <div style="font-size:13px; color:rgba(255,255,255,0.6); margin-top:12px;">Schließt alle aktiven Gerichte für heute</div>
       </div>
 
       <!-- KPI Dashboard Cards (Row of 3) - Dark Mode -->
       <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; margin-bottom:20px;">
-        <div class="panel" id="kpiCardInserate" style="padding:20px; border-radius:16px; box-shadow:0 4px 16px rgba(0,0,0,.3); background:#2d2d2d; cursor:pointer; text-align:center; border:2px solid rgba(255,215,0,0.2);">
+        <div class="panel" id="kpiCardInserate" style="padding:20px; border-radius:16px; box-shadow:0 4px 16px rgba(0,0,0,.4); background:#2a2a2a; border:1px solid rgba(255,215,0,0.2); cursor:pointer; text-align:center; transition:all 0.2s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(0,0,0,.5)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 16px rgba(0,0,0,.4)';">
           <div style="font-size:32px; font-weight:900; line-height:1.2; margin-bottom:8px; color:#FFD700;" id="kpiInserateCount">0</div>
-          <div style="font-size:13px; color:rgba(255,255,255,0.7); font-weight:600;">Inserate</div>
+          <div style="font-size:13px; color:rgba(255,255,255,0.7); font-weight:600;">Meine Speisekarte</div>
         </div>
-        <div class="panel" id="kpiCardAbholungen" style="padding:20px; border-radius:16px; box-shadow:0 4px 16px rgba(0,0,0,.3); background:#2d2d2d; cursor:pointer; text-align:center; border:2px solid rgba(255,184,0,0.2);">
+        <div class="panel" id="kpiCardAbholungen" style="padding:20px; border-radius:16px; box-shadow:0 4px 16px rgba(0,0,0,.4); background:#2a2a2a; border:1px solid rgba(255,215,0,0.2); cursor:pointer; text-align:center; transition:all 0.2s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(0,0,0,.5)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 16px rgba(0,0,0,.4)';">
           <div style="font-size:32px; font-weight:900; line-height:1.2; margin-bottom:8px; color:#FFD700;" id="kpiAbholungenCount">0</div>
           <div style="font-size:13px; color:rgba(255,255,255,0.7); font-weight:600;">Abholungen</div>
         </div>
-        <div class="panel" id="kpiCardKochbuch" style="padding:20px; border-radius:16px; box-shadow:0 4px 16px rgba(0,0,0,.3); background:#2d2d2d; cursor:pointer; text-align:center; border:2px solid rgba(255,215,0,0.2);">
+        <div class="panel" id="kpiCardKochbuch" style="padding:20px; border-radius:16px; box-shadow:0 4px 16px rgba(0,0,0,.4); background:#2a2a2a; border:1px solid rgba(255,215,0,0.2); cursor:pointer; text-align:center; transition:all 0.2s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(0,0,0,.5)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 16px rgba(0,0,0,.4)';">
           <div style="font-size:32px; font-weight:900; line-height:1.2; margin-bottom:8px; color:#FFD700;" id="kpiKochbuchCount">0</div>
           <div style="font-size:13px; color:rgba(255,255,255,0.7); font-weight:600;">Kochbuch</div>
         </div>
       </div>
       
       <!-- Zeit-Gewinn-Tracker Widget -->
-      <div class="panel" id="providerTimeTracker" style="padding:20px; border-radius:20px; box-shadow:0 4px 16px rgba(0,0,0,.3); background:#2d2d2d; margin-bottom:20px; text-align:center; border:2px solid rgba(46,125,50,0.3);">
+      <div class="panel" id="providerTimeTracker" style="padding:20px; border-radius:20px; box-shadow:0 4px 16px rgba(0,0,0,.4); background:#2a2a2a; border:1px solid rgba(46,125,50,0.3); margin-bottom:20px; text-align:center;">
         <div style="font-size:14px; color:rgba(255,255,255,0.7); margin-bottom:8px; font-weight:600;">Deine Bilanz</div>
         <div style="font-size:36px; font-weight:900; color:#2ECC71; margin-bottom:8px;" id="providerTimeSaved">
           0h 0min
@@ -2681,8 +2688,42 @@
         </div>
       </div>
 
-      <!-- TODAY Card -->
-      <div class="panel" id="providerTodayCard" style="margin-top:18px; padding:16px; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,.04);">
+      <!-- Kacheln: Kommandozentrale -->
+      <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; margin-bottom:20px;">
+        <!-- Kachel: Mein Tagesessen (mit Status) -->
+        <div class="panel provider-tile" id="tileTagesessen" style="padding:16px; border-radius:16px; box-shadow:0 4px 16px rgba(0,0,0,.4); background:#2a2a2a; border:1px solid rgba(255,255,255,0.05); cursor:pointer; text-align:center; position:relative; transition:all 0.2s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(0,0,0,.5)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 16px rgba(0,0,0,.4)';">
+          <div style="font-size:20px; font-weight:900; line-height:1.2; margin-bottom:4px; color:#FFD700;" id="tileTagesessenDish">–</div>
+          <div style="font-size:11px; color:rgba(255,255,255,0.6); margin-bottom:6px;" id="tileTagesessenStatus">Kein Gericht</div>
+          <div style="font-size:10px; color:rgba(255,255,255,0.5); font-weight:600;">Mein Tagesessen</div>
+        </div>
+        
+        <!-- Kachel: Bestellungen -->
+        <div class="panel provider-tile" id="tileBestellungen" style="padding:16px; border-radius:16px; box-shadow:0 4px 16px rgba(0,0,0,.4); background:#2a2a2a; border:1px solid rgba(255,255,255,0.05); cursor:pointer; text-align:center; position:relative; transition:all 0.2s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(0,0,0,.5)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 16px rgba(0,0,0,.4)';" onclick="showProviderPickups();">
+          <div style="font-size:28px; font-weight:900; line-height:1.2; margin-bottom:6px; color:#2ECC71;" id="tileBestellungenCount">0</div>
+          <div style="font-size:12px; color:rgba(255,255,255,0.7); font-weight:600;">Bestellungen</div>
+        </div>
+        
+        <!-- Kachel: Abholnummern (ausgegraut mit Info-Popup) -->
+        <div class="panel provider-tile" id="tileAbholnummern" style="padding:16px; border-radius:16px; box-shadow:0 4px 16px rgba(0,0,0,.4); background:#1a1a1a; border:1px solid rgba(255,255,255,0.05); cursor:pointer; text-align:center; position:relative; transition:all 0.2s ease; opacity:0.5;" onmouseover="this.style.opacity='0.7'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(0,0,0,.5)'; showTilePopup(this, 'Hier siehst du live die eingehenden Abholnummern – behalte den Überblick über deine Kunden.');" onmouseout="this.style.opacity='0.5'; this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 16px rgba(0,0,0,.4)'; hideTilePopup(this);" onclick="showProviderPickups();">
+          <div style="font-size:28px; font-weight:900; line-height:1.2; margin-bottom:6px; color:rgba(255,255,255,0.4);" id="tileAbholnummernCount">–</div>
+          <div style="font-size:12px; color:rgba(255,255,255,0.4); font-weight:600;">Abholnummern</div>
+          <div class="tile-popup" style="position:absolute; bottom:calc(100% + 8px); left:50%; transform:translateX(-50%); background:#1e1e1e; color:#fff; padding:10px 14px; border-radius:8px; font-size:11px; max-width:200px; text-align:center; opacity:0; pointer-events:none; transition:opacity 0.2s; border:1px solid rgba(255,255,255,0.1); box-shadow:0 4px 12px rgba(0,0,0,.3); z-index:100; white-space:normal; line-height:1.4;">
+            Hier siehst du live die eingehenden Abholnummern – behalte den Überblick über deine Kunden.
+            <div style="position:absolute; top:100%; left:50%; transform:translateX(-50%); width:0; height:0; border-left:6px solid transparent; border-right:6px solid transparent; border-top:6px solid #1e1e1e;"></div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Tagesessen teilen Button -->
+      <div class="panel" id="providerTodayShare" style="margin-top:18px; padding:16px; border-radius:16px; box-shadow:0 4px 16px rgba(0,0,0,.4); background:#2a2a2a; border:1px solid rgba(255,255,255,0.05); display:none;">
+        <button class="btn secondary" type="button" id="btnTodayShare" style="width:100%; min-height:52px; background:#FFD700; color:#334155; font-weight:800; border:none; border-radius:12px; display:flex; align-items:center; justify-content:center; gap:8px;">
+          <i data-lucide="share-2" style="width:20px;height:20px;"></i>
+          <span>Tagesessen teilen</span>
+        </button>
+      </div>
+      
+      <!-- TODAY Card (Legacy - für Kompatibilität) -->
+      <div class="panel" id="providerTodayCard" style="margin-top:18px; padding:16px; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,.04); display:none;">
         <div style="font-weight:600; font-size:17px; margin-bottom:12px; line-height:1.3;" id="providerTodayTitle">Heute</div>
         <div id="providerTodayContent">
           <!-- Wird dynamisch befüllt -->
@@ -2691,10 +2732,10 @@
 
       <!-- Active Offers Mini List -->
       <div class="panel" id="providerActiveOffers" style="margin-top:18px; padding:16px; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,.04); display:none;">
-        <div style="font-weight:600; font-size:17px; margin-bottom:12px; line-height:1.3;">Aktive Inserate</div>
+        <div style="font-weight:600; font-size:17px; margin-bottom:12px; line-height:1.3;">Meine Speisekarte</div>
         <div id="providerActiveOffersList"></div>
         <a href="#" id="btnProviderShowAllOffers" style="display:inline-block; font-size:13px; color:var(--muted); text-decoration:none; margin-top:12px;">
-          Alle Inserate anzeigen →
+          Alle Gerichte anzeigen →
         </a>
       </div>
 
@@ -2719,7 +2760,7 @@
       </div>
 
       <!-- FAB (Floating Action Button) -->
-      <button class="fab" id="fabProviderAddOffer" type="button" aria-label="Inserat hinzufügen" style="position:fixed; bottom:90px; right:16px; width:56px; height:56px; border-radius:28px; background:var(--brand); color:#111; border:none; box-shadow:0 4px 12px rgba(0,0,0,.2); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:24px; font-weight:900; z-index:20;">
+      <button class="fab" id="fabProviderAddOffer" type="button" aria-label="Gericht hinzufügen" style="position:fixed; bottom:90px; right:16px; width:56px; height:56px; border-radius:28px; background:var(--brand); color:#111; border:none; box-shadow:0 4px 12px rgba(0,0,0,.2); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:24px; font-weight:900; z-index:20;">
         +
       </button>
       <div id="fabProviderAddOfferLabel" style="position:fixed; bottom:154px; right:16px; background:rgba(0,0,0,.8); color:#fff; padding:6px 12px; border-radius:8px; font-size:13px; white-space:nowrap; pointer-events:none; opacity:0; transition:opacity .2s; z-index:21;">
@@ -2727,11 +2768,22 @@
       </div>
     </section>
 
-    <section class="view" id="v-provider-pickups" style="background:#1a1a1a; min-height:100vh; padding:20px; padding-bottom:90px;">
-      <div style="margin-bottom:20px;">
-        <h3 style="margin:0 0 8px; font-size:28px; font-weight:900; line-height:1.2; color:#fff;">Abholungen</h3>
-        <div id="provPickupsSubheader" class="hint" style="font-size:15px; color:rgba(255,255,255,0.7);">
-          <!-- Wird dynamisch befüllt -->
+    <section class="view" id="v-provider-pickups" style="background:#1e1e1e; min-height:100vh; padding:20px; padding-bottom:90px;">
+      <div style="margin-bottom:20px; display:flex; justify-content:space-between; align-items:flex-start; gap:12px;">
+        <div style="flex:1;">
+          <h3 style="margin:0 0 8px; font-size:28px; font-weight:900; line-height:1.2; color:#fff;">Abholungen</h3>
+          <div id="provPickupsSubheader" class="hint" style="font-size:15px; color:rgba(255,255,255,0.7);">
+            <!-- Wird dynamisch befüllt -->
+          </div>
+        </div>
+        <div style="display:flex; gap:8px; flex-shrink:0;">
+          <button class="btn secondary" type="button" id="btnKitchenListPDF" style="min-height:44px; background:#2a2a2a; border:1px solid rgba(255,255,255,0.1); color:#fff; font-weight:600;" title="Küchenliste drucken">
+            <i data-lucide="file-text" style="width:18px;height:18px;"></i>
+            <span style="margin-left:6px;">PDF</span>
+          </button>
+          <button class="btn secondary" type="button" id="btnKitchenListEmail" style="min-height:44px; background:#2a2a2a; border:1px solid rgba(255,255,255,0.1); color:#fff; font-weight:600;" title="Küchenliste per E-Mail">
+            <i data-lucide="mail" style="width:18px;height:18px;"></i>
+          </button>
         </div>
       </div>
       
@@ -2769,7 +2821,10 @@
             Inserat erstellen
           </button>
         </div>
-        <button class="btn secondary" type="button" id="btnWeekPdf" data-icon="print" style="display:none; margin-top:12px;">PDF-Wochenkarte erstellen</button>
+        <div style="display:flex; gap:8px; margin-top:12px;">
+          <button class="btn secondary" type="button" id="btnWeekPdf" data-icon="print" style="display:none; flex:1; min-height:44px;">PDF-Wochenkarte</button>
+          <button class="btn secondary" type="button" id="btnWeekShare" data-icon="share-2" style="display:none; flex:1; min-height:44px; background:#FFD700; color:#334155; font-weight:700;">Wochenplan teilen</button>
+        </div>
         <button class="btn ghost" type="button" id="btnWeekBack" style="margin-top:12px;">Zurück</button>
       </div>
     </section>
@@ -3124,8 +3179,8 @@
     </button>
   </nav>
 
-    <!-- PROVIDER bottom nav -->
-  <nav class="bottom" id="providerNav" style="display:none; background:#1a1a1a; border-top:1px solid rgba(255,255,255,0.1);">
+    <!-- PROVIDER bottom nav - Dunkler Küchenmodus -->
+  <nav class="bottom" id="providerNav" style="display:none; background:#1e1e1e; border-top:1px solid rgba(255,255,255,0.1); backdrop-filter:saturate(180%) blur(20px); -webkit-backdrop-filter:saturate(180%) blur(20px);">
     <button class="navbtn active" data-pgo="provider-home"><div class="ico" data-icon="utensils" data-icon-only="1"></div><div>Meine Küche</div></button>
     <button class="navbtn" data-pgo="provider-pickups"><div class="ico" data-icon="receipt" data-icon-only="1"></div><div>Abholungen</div></button>
     <button class="navbtn" data-pgo="provider-cookbook"><div class="ico" data-icon="bookOpen" data-icon-only="1"></div><div>Kochbuch</div></button>
@@ -3538,7 +3593,8 @@
     onboardingDraft: 'mittagio_onboarding_draft_v1',
     pickupDone: 'mittagio_pickup_done_v1',
     mode: 'mittagio_mode_v1',
-    discoverView: 'mittagio_discover_view_v1'
+    discoverView: 'mittagio_discover_view_v1',
+    orderHistory: 'mittagio_order_history_v1'
   };
   const load = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } };
   const save = (k, v) => localStorage.setItem(k, JSON.stringify(v));
@@ -8664,6 +8720,14 @@
     orders = loadOrders();
     renderOrders();
     
+    // Akustisches "Pling" bei neuem Verkauf (nur für Provider)
+    if(mode === 'provider' && order.providerId === providerId()){
+      playSaleSound();
+      // Dashboard aktualisieren
+      renderProviderHome();
+      renderProviderPickups();
+    }
+    
     // Navigiere zu AbholcodeScreen mit Animation
     showPickupCode(updatedOrder.id);
     
@@ -9838,6 +9902,93 @@
     if(typeof lucide !== 'undefined') setTimeout(()=> lucide.createIcons(), 50);
   }
   
+  // Kachel-Popup Funktionen (Neugier-Popup)
+  function showTilePopup(element, text){
+    const popup = element.querySelector('.tile-popup');
+    if(popup){
+      if(text){
+        const textNode = popup.childNodes[0];
+        if(textNode && textNode.nodeType === 3) textNode.textContent = text;
+        else {
+          const arrow = popup.querySelector('div[style*="border-left"]') || '';
+          popup.innerHTML = text + (arrow.outerHTML || '<div style="position:absolute; top:100%; left:50%; transform:translateX(-50%); width:0; height:0; border-left:6px solid transparent; border-right:6px solid transparent; border-top:6px solid #1e1e1e;"></div>');
+        }
+      }
+      popup.style.opacity = '1';
+    }
+  }
+  function hideTilePopup(element){
+    const popup = element.querySelector('.tile-popup');
+    if(popup){
+      popup.style.opacity = '0';
+    }
+  }
+  
+  // PDF-Küchenliste generieren & Download
+  function generateKitchenListPDF(dayKey = null){
+    const todayKey = dayKey || isoDate(new Date());
+    const profile = normalizeProviderProfile(provider.profile || {});
+    const providerName = profile.name || provider.email || 'Anbieter';
+    const providerAddr = buildAddress(profile) || '';
+    
+    // Bestellungen für den Tag filtern
+    const orders = loadOrders().filter(o => {
+      const offer = offers.find(off => off.id === o.dishId || off.providerId === o.providerId);
+      return offer && offer.providerId === providerId() && offer.day === todayKey && o.status === 'PAID';
+    });
+    
+    // Gruppieren nach Gericht
+    const grouped = {};
+    orders.forEach(o => {
+      const offer = offers.find(off => off.id === o.dishId);
+      const dishName = offer?.dish || o.dishName || 'Gericht';
+      if(!grouped[dishName]){
+        grouped[dishName] = {count: 0, orders: [], price: offer?.price || 0};
+      }
+      grouped[dishName].count += 1;
+      grouped[dishName].orders.push(o);
+    });
+    
+    // HTML für Print generieren
+    const dateStr = dayKey ? fmtDay(new Date(dayKey)) : 'Heute';
+    const html = `
+      <div class="print-card">
+        <h1>Küchenliste - ${esc(providerName)}</h1>
+        <div class="print-muted">${esc(providerAddr)}</div>
+        <div class="print-muted" style="margin-top:8px;">${esc(dateStr)} · ${orders.length} Bestellung${orders.length !== 1 ? 'en' : ''}</div>
+      </div>
+      ${Object.entries(grouped).map(([dish, data]) => `
+        <div class="print-card">
+          <h2>${esc(dish)} × ${data.count}</h2>
+          <div class="print-muted" style="margin-top:4px;">Abholnummern: ${data.orders.map(o => o.pickupCode || o.code || '–').join(', ')}</div>
+        </div>
+      `).join('')}
+      <div class="print-card" style="margin-top:20px; padding-top:20px; border-top:2px solid #ddd;">
+        <div class="print-muted">Erstellt am ${new Date().toLocaleString('de-DE')}</div>
+        <div class="print-muted">Mittagio - Dein Mittag. Lokal. Frisch. Digital.</div>
+      </div>
+    `;
+    
+    printHtml(html);
+  }
+  
+  // PDF-Küchenliste per E-Mail versenden (Fallback: Download)
+  function emailKitchenList(dayKey = null){
+    const todayKey = dayKey || isoDate(new Date());
+    const dateStr = dayKey ? fmtDay(new Date(dayKey)) : 'Heute';
+    
+    // Generiere HTML
+    generateKitchenListPDF(todayKey);
+    
+    // Fallback: Download-Link anbieten
+    showToast('Küchenliste wird vorbereitet...');
+    setTimeout(() => {
+      if(confirm('Küchenliste drucken oder als PDF speichern?')){
+        window.print();
+      }
+    }, 500);
+  }
+  
   function closeFaqSheet(){
     document.getElementById('faqBd').classList.remove('active');
     document.getElementById('faqSheet').classList.remove('active');
@@ -10048,6 +10199,75 @@
         }
       }
       
+      // Kacheln aktualisieren: Mein Tagesessen (mit Status), Bestellungen, Abholnummern
+      const tileTagesessenDish = document.getElementById('tileTagesessenDish');
+      const tileTagesessenStatus = document.getElementById('tileTagesessenStatus');
+      const tileTagesessen = document.getElementById('tileTagesessen');
+      
+      if(mineToday.length > 0){
+        const firstDish = mineToday[0];
+        const dishName = firstDish.dish || firstDish.title || 'Gericht';
+        const isActive = firstDish.active !== false;
+        const statusText = isActive ? 'Live' : 'Ausverkauft';
+        const statusColor = isActive ? '#2ECC71' : 'rgba(255,255,255,0.4)';
+        
+        if(tileTagesessenDish) tileTagesessenDish.textContent = dishName.length > 12 ? dishName.substring(0, 12) + '...' : dishName;
+        if(tileTagesessenStatus){
+          tileTagesessenStatus.textContent = statusText;
+          tileTagesessenStatus.style.color = statusColor;
+        }
+        if(tileTagesessen){
+          tileTagesessen.style.borderColor = isActive ? 'rgba(46,204,113,0.3)' : 'rgba(255,255,255,0.05)';
+        }
+      } else {
+        if(tileTagesessenDish) tileTagesessenDish.textContent = '–';
+        if(tileTagesessenStatus){
+          tileTagesessenStatus.textContent = 'Kein Gericht';
+          tileTagesessenStatus.style.color = 'rgba(255,255,255,0.4)';
+        }
+      }
+      
+      if(tileTagesessen){
+        tileTagesessen.onclick = () => {
+          if(mineToday.length > 0){
+            shareTodayOffers();
+          } else {
+            // Öffne Flow zum Gericht hinzufügen
+            openDishFlow();
+          }
+        };
+      }
+      
+      // Tagesessen teilen Button anzeigen/verstecken
+      const providerTodayShare = document.getElementById('providerTodayShare');
+      const btnTodayShare = document.getElementById('btnTodayShare');
+      if(providerTodayShare){
+        providerTodayShare.style.display = mineToday.length > 0 ? 'block' : 'none';
+      }
+      if(btnTodayShare){
+        btnTodayShare.onclick = () => {
+          shareTodayOffers();
+        };
+      }
+      
+      const tileBestellungenCount = document.getElementById('tileBestellungenCount');
+      if(tileBestellungenCount) tileBestellungenCount.textContent = todayPickups;
+      
+      const tileAbholnummernCount = document.getElementById('tileAbholnummernCount');
+      if(tileAbholnummernCount){
+        if(todayAbholnummern > 0){
+          tileAbholnummernCount.textContent = todayAbholnummern;
+          tileAbholnummernCount.style.color = '#FFD700';
+          const tileAbholnummern = document.getElementById('tileAbholnummern');
+          if(tileAbholnummern){
+            tileAbholnummern.style.opacity = '1';
+            tileAbholnummern.style.background = '#2a2a2a';
+          }
+        } else {
+          tileAbholnummernCount.textContent = '–';
+        }
+      }
+      
       const kpiInserateCount = document.getElementById('kpiInserateCount');
       if(kpiInserateCount) {
         kpiInserateCount.textContent = activeOffersCount;
@@ -10236,24 +10456,69 @@
       }
     }
     
-    // Quick-Kill-Widget Handler
+    // Quick-Kill-Widget Handler (Not-Aus)
     const btnQuickKill = document.getElementById('btnQuickKill');
     if(btnQuickKill){
       btnQuickKill.onclick = () => {
-        if(confirm('Möchtest du wirklich alle aktiven Inserate für heute schließen?')){
+        if(confirm('⚠️ NOT-AUS: Möchtest du wirklich ALLE aktiven Gerichte für heute schließen?\n\nDies kann nicht rückgängig gemacht werden.')){
           const todayKey = isoDate(new Date());
+          let closedCount = 0;
           mineToday.forEach(o => {
             const offer = offers.find(off => off.id === o.id);
-            if(offer){
+            if(offer && offer.active !== false){
               offer.active = false;
-              save(LS.offers, offers);
+              closedCount++;
             }
           });
-          showToast('Alle Inserate für heute geschlossen');
+          save(LS.offers, offers);
+          showToast(`✅ ${closedCount} Gericht${closedCount !== 1 ? 'e' : ''} geschlossen`);
           renderProviderHome();
+          renderDiscover();
         }
       };
     }
+    
+    // Storno-Funktion für Bestellungen (0,89 € Servicegebühr bleibt)
+    window.cancelOrder = function(orderId){
+      const order = getOrderById(orderId);
+      if(!order) return;
+      
+      if(order.status === 'PICKED_UP' || order.status === 'COMPLETED'){
+        alert('Diese Bestellung wurde bereits abgeholt und kann nicht storniert werden.');
+        return;
+      }
+      
+      const serviceFee = 0.89; // Servicegebühr bleibt
+      const refundAmount = (order.total || 0) / 100 - serviceFee;
+      
+      if(confirm(`Bestellung stornieren?\n\nErstattung: ${euro(refundAmount)}\nServicegebühr (0,89 €) wird einbehalten.\n\nFortfahren?`)){
+        updateOrder(orderId, {
+          status: 'CANCELLED',
+          cancelledAt: Date.now(),
+          refundAmount: Math.round(refundAmount * 100), // in cents
+          serviceFeeRetained: Math.round(serviceFee * 100) // in cents
+        });
+        
+        showToast(`Bestellung storniert. ${euro(refundAmount)} werden erstattet.`);
+        
+        // Historie speichern
+        const history = load(LS.orderHistory, []);
+        history.push({
+          orderId: order.id,
+          action: 'CANCELLED',
+          timestamp: Date.now(),
+          refundAmount: refundAmount,
+          serviceFeeRetained: serviceFee
+        });
+        save(LS.orderHistory, history);
+        
+        // UI aktualisieren
+        if(mode === 'provider'){
+          renderProviderPickups();
+          renderProviderHome();
+        }
+      }
+    };
     
     // Week Preview
     renderProviderWeekPreviewNew();
@@ -10857,6 +11122,23 @@
       }
       listEl.appendChild(row);
     });
+    
+    // PDF-Küchenliste Buttons
+    const btnKitchenListPDF = document.getElementById('btnKitchenListPDF');
+    const btnKitchenListEmail = document.getElementById('btnKitchenListEmail');
+    if(btnKitchenListPDF){
+      btnKitchenListPDF.onclick = () => {
+        generateKitchenListPDF();
+      };
+    }
+    if(btnKitchenListEmail){
+      btnKitchenListEmail.onclick = () => {
+        emailKitchenList();
+      };
+    }
+    
+    // Icons aktualisieren
+    if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
   }
   
   // Pickup Confirmation Sheet
@@ -11288,8 +11570,101 @@
   const btnWeekPdf = document.getElementById('btnWeekPdf');
   if(btnWeekPdf){
     btnWeekPdf.onclick=()=>{
-    printWeekCard();
-  };
+      printWeekCard();
+    };
+  }
+  
+  // Wochenplan teilen
+  const btnWeekShare = document.getElementById('btnWeekShare');
+  if(btnWeekShare){
+    btnWeekShare.onclick=()=>{
+      shareWeekPlan();
+    };
+  }
+  
+  // Wochenplan teilen-Funktion
+  function shareWeekPlan(){
+    const profile = normalizeProviderProfile(provider.profile || {});
+    const providerName = profile.name || provider.email || 'Anbieter';
+    const providerAddr = buildAddress(profile) || '';
+    
+    // Alle Gerichte der Woche sammeln
+    const weekOffers = [];
+    for(let i=0; i<7; i++){
+      const d = new Date();
+      d.setDate(d.getDate() + i);
+      const key = isoDate(d);
+      const dayOffers = (week[key] || []).filter(x => x.providerId === providerId() && x.active !== false);
+      dayOffers.forEach(entry => {
+        const cb = cookbook.find(c => c.id === entry.cookbookId);
+        weekOffers.push({
+          day: fmtDay(new Date(key)),
+          dish: cb?.dish || entry.dish || 'Gericht',
+          price: cb?.price || 0
+        });
+      });
+    }
+    
+    if(weekOffers.length === 0){
+      showToast('Keine Gerichte zum Teilen');
+      return;
+    }
+    
+    const shareUrl = `${location.origin}${location.pathname}#provider/${providerId()}/week`;
+    const shareText = `Schau mal, was es diese Woche bei ${providerName} gibt!\n\n${weekOffers.slice(0, 5).map(o => `• ${o.dish} - ${euro(o.price)}`).join('\n')}${weekOffers.length > 5 ? `\n... und ${weekOffers.length - 5} weitere` : ''}\n\n${shareUrl}`;
+    
+    if(navigator.share){
+      navigator.share({
+        title: `Wochenplan ${providerName}`,
+        text: shareText,
+        url: shareUrl
+      }).then(() => {
+        showToast('Wochenplan geteilt!');
+      }).catch((err) => {
+        if(err.name !== 'AbortError'){
+          copyToClipboard(shareText);
+          showToast('Link kopiert!');
+        }
+      });
+    } else {
+      copyToClipboard(shareText);
+      showToast('Link kopiert!');
+    }
+  }
+  
+  // Tagesessen teilen-Funktion
+  function shareTodayOffers(){
+    const todayKey = isoDate(new Date());
+    const profile = normalizeProviderProfile(provider.profile || {});
+    const providerName = profile.name || provider.email || 'Anbieter';
+    const mineToday = offers.filter(o => o.providerId === providerId() && o.day === todayKey && o.active !== false);
+    
+    if(mineToday.length === 0){
+      showToast('Keine Gerichte für heute');
+      return;
+    }
+    
+    const shareUrl = `${location.origin}${location.pathname}#provider/${providerId()}/today`;
+    const shareText = `Heute bei ${providerName}:\n\n${mineToday.map(o => `• ${o.dish || o.title || 'Gericht'} - ${euro(o.price || 0)}`).join('\n')}\n\n${shareUrl}`;
+    
+    if(navigator.share){
+      navigator.share({
+        title: `Heute bei ${providerName}`,
+        text: shareText,
+        url: shareUrl
+      }).then(() => {
+        showToast('Tagesessen geteilt!');
+      }).catch((err) => {
+        if(err.name !== 'AbortError'){
+          copyToClipboard(shareText);
+          showToast('Link kopiert!');
+        }
+      });
+    } else {
+      copyToClipboard(shareText);
+      showToast('Link kopiert!');
+    }
+  }
 
   // Provider ID (for demo)
   function providerId(){
