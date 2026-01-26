@@ -3091,10 +3091,11 @@
     
     <button class="btn ghost" type="button" id="btnDishFav" style="margin-top:8px;"><i data-lucide="heart"></i><span>Gericht speichern</span></button>
     
-    <!-- Bottom Sticky Primary CTA -->
+    <!-- Bottom Sticky Primary CTA: "In die Mittagsbox" -->
     <div style="position:sticky; bottom:0; background:var(--card); padding:16px 0; margin-top:24px; border-top:1px solid var(--border); z-index:10;">
-      <button class="btn-primary" type="button" id="btnPrimaryCTA" style="width:100%; min-height:56px; max-height:64px;">
-        <span id="btnPrimaryCTAText"></span>
+      <button class="btn-primary" type="button" id="btnPrimaryCTA" style="width:100%; min-height:56px; max-height:64px; background:#FFB800; color:#2D3436; font-weight:800; font-size:18px; border:none; border-radius:16px; box-shadow:0 4px 16px rgba(255,184,0,0.3);">
+        <i data-lucide="shopping-basket" style="width:22px;height:22px;"></i>
+        <span id="btnPrimaryCTAText">In die Mittagsbox</span>
       </button>
     </div>
   </div>
@@ -5037,7 +5038,7 @@
     
     // Badges
     const badges = [];
-    if(data.hasPickupCode) badges.push(`<span class="swipe-card-badge code">Ticket</span>`);
+    if(data.hasPickupCode) badges.push(`<span class="swipe-card-badge code">Abholnummer</span>`);
     if(data.dineInPossible) badges.push(`<span class="swipe-card-badge dine">Vor Ort</span>`);
     if(!data.dineInPossible && !data.hasPickupCode) badges.push(`<span class="swipe-card-badge">Zum Mitnehmen</span>`);
     
@@ -5709,9 +5710,9 @@
       pickupBadges.push({class:'pickup', text:'Zum Mitnehmen', icon:'shopping-bag'});
     }
     
-    // 3. Abholcode (wenn verfügbar und noch Platz)
+    // 3. Abholnummer (wenn verfügbar und noch Platz)
     if(data.hasPickupCode && pickupBadges.length < 3) {
-      pickupBadges.push({class:'code', text:'Ticket', icon:'ticket'});
+      pickupBadges.push({class:'code', text:'Abholnummer', icon:'ticket'});
     }
     
     // Max 3 Badges sicherstellen
@@ -6289,8 +6290,8 @@
     const statusBadgeEl = document.getElementById('sStatusBadge');
     if(statusBadgeEl){
       if(o.hasPickupCode){
-        // MIT Ticket: Status "Online bezahlen & Ticket"
-        statusBadgeEl.innerHTML = '<span style="display:inline-flex; align-items:center; gap:6px; padding:6px 12px; background:rgba(46,125,50,.12); border-radius:8px; color:#2e7d32; font-size:14px; font-weight:600;">🟢 Online bezahlen & Ticket</span>';
+        // MIT Abholnummer: Status "Online bezahlen & Abholnummer"
+        statusBadgeEl.innerHTML = '<span style="display:inline-flex; align-items:center; gap:6px; padding:6px 12px; background:rgba(46,125,50,.12); border-radius:8px; color:#2e7d32; font-size:14px; font-weight:600;">🟢 Online bezahlen & Abholnummer</span>';
       } else {
         // OHNE Abholcode: Status "Vor Ort erhältlich"
         statusBadgeEl.innerHTML = '<span style="display:inline-flex; align-items:center; gap:6px; padding:6px 12px; background:rgba(0,0,0,.06); border-radius:8px; color:#666; font-size:14px; font-weight:600;">⚪ Vor Ort erhältlich</span>';
@@ -6304,7 +6305,7 @@
       const badges = [];
       if(o.dineInPossible) badges.push({class:'dine', text:'Vor Ort', icon:'utensils'});
       if(!o.dineInPossible || badges.length < 3) badges.push({class:'pickup', text:'Zum Mitnehmen', icon:'shopping-bag'});
-      if(o.hasPickupCode && badges.length < 3) badges.push({class:'code', text:'Ticket', icon:'ticket'});
+      if(o.hasPickupCode && badges.length < 3) badges.push({class:'code', text:'Abholnummer', icon:'ticket'});
       
       badges.slice(0, 3).forEach(badge => {
         const badgeEl = document.createElement('span');
@@ -6419,13 +6420,13 @@
         }
         primaryCTA.onclick = null;
       } else if(o.hasPickupCode){
-        // MIT Abholcode: CTA "Jetzt online bestellen"
-        primaryCTAText.textContent = 'Jetzt online bestellen';
+        // MIT Abholcode: CTA "In die Mittagsbox"
+        primaryCTAText.textContent = 'In die Mittagsbox';
         primaryCTA.onclick = () => {
           // Loading state
           primaryCTA.disabled = true;
           primaryCTA.classList.add('loading');
-          primaryCTAText.textContent = 'Wird geladen...';
+          primaryCTAText.textContent = 'Wird hinzugefügt...';
           
           // Navigate to cart/checkout
           setTimeout(() => {
@@ -6434,7 +6435,7 @@
               primaryCTA.classList.remove('loading');
               primaryCTA.classList.add('success');
               primaryCTAText.textContent = 'Erfolgreich!';
-              showToast('Gericht zum Warenkorb hinzugefügt');
+              showToast('Gericht zur Mittagsbox hinzugefügt! 🧺');
               
               // Redirect to cart
               setTimeout(() => {
@@ -6443,7 +6444,7 @@
                 setTimeout(() => {
                   primaryCTA.disabled = false;
                   primaryCTA.classList.remove('success');
-                  primaryCTAText.textContent = 'Jetzt online bestellen';
+                  primaryCTAText.textContent = 'In die Mittagsbox';
                 }, 500);
               }, 300);
             } else {
