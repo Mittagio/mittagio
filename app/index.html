@@ -935,22 +935,23 @@
     }
     .discover-categories-scroll::-webkit-scrollbar{display:none}
     .discover-category-chip{
-      flex:0 0 auto; padding:10px 18px;
-      border-radius:20px; border:1.5px solid transparent;
+      flex:0 0 auto; padding:8px 16px;
+      height:40px; border-radius:999px; border:1px solid rgba(0,0,0,.15);
       font-size:14px; font-weight:700;
       background:#f5f5f5; color:#666;
       cursor:pointer; transition:all .2s;
       white-space:nowrap;
+      display:flex; align-items:center; justify-content:center;
     }
     .discover-category-chip.active{
-      background:var(--brand); color:#000;
-      border-color:var(--brand);
-      box-shadow:0 2px 8px rgba(255,204,0,.3);
+      background:#FFD700; color:#2D3436;
+      border-color:#FFD700;
+      box-shadow:0 2px 8px rgba(255,215,0,.3);
       font-weight:900;
     }
     .discover-category-chip:not(.active){
-      border-color:rgba(0,0,0,.1);
-      background:#fff;
+      border-color:rgba(0,0,0,.15);
+      background:#f5f5f5;
     }
     .discover-category-chip:active{
       transform:scale(.96);
@@ -1209,43 +1210,56 @@
       background:#e6b800;
     }
     
-    /* SwipeCard Styles (Tinder-Style) */
+    /* SwipeCard Styles (Tinder-Style) - Premium Design */
     .swipe-card{
       position:absolute; top:0; left:0; right:0; bottom:0;
       background:#fff; border-radius:24px;
-      box-shadow:0 10px 40px rgba(0,0,0,.15);
+      box-shadow:0 20px 50px rgba(0,0,0,0.1);
       overflow:hidden; cursor:grab;
       user-select:none; touch-action:none;
-      transition:transform .2s ease-out, opacity .2s;
+      transition:transform .2s ease-out, opacity .2s, box-shadow .2s;
       will-change:transform;
+      height:80vh; max-height:600px;
     }
     .swipe-card:active{cursor:grabbing}
     .swipe-card.swiping{
       transition:none;
     }
     .swipe-card.swipe-left{
-      transform:translateX(-100vw) rotate(-30deg);
+      transform:translateX(-100vw) rotate(-10deg);
       opacity:0;
+      box-shadow:0 20px 50px rgba(227,77,77,0.3);
     }
     .swipe-card.swipe-right{
-      transform:translateX(100vw) rotate(30deg);
+      transform:translateX(100vw) rotate(10deg);
       opacity:0;
+      box-shadow:0 20px 50px rgba(31,157,85,0.3);
+    }
+    .swipe-card.match-left{
+      box-shadow:0 20px 50px rgba(227,77,77,0.4);
+      border:3px solid rgba(227,77,77,0.6);
+    }
+    .swipe-card.match-right{
+      box-shadow:0 20px 50px rgba(31,157,85,0.4);
+      border:3px solid rgba(31,157,85,0.6);
     }
     .swipe-card-image{
-      width:100%; height:60%; min-height:300px;
+      width:100%; height:65%; min-height:300px;
       background:#f0f0f0; position:relative;
       overflow:hidden;
+      border-radius:24px 24px 0 0;
     }
     .swipe-card-image img{
       width:100%; height:100%; object-fit:cover;
     }
     .swipe-card-content{
-      padding:24px; height:40%;
+      padding:28px; height:35%;
       display:flex; flex-direction:column;
       justify-content:space-between;
+      background:#fff;
     }
     .swipe-card-title{
-      font-size:28px; font-weight:900;
+      font-size:32px; font-weight:900;
       margin:0 0 8px; line-height:1.2;
       color:#111;
     }
@@ -1461,7 +1475,7 @@
       </div>
       
       <!-- Swipe-Stack (Tinder-Style) -->
-      <div id="discoverSwipe" style="display:none; position:relative; height:calc(100vh - 200px); min-height:500px; max-width:400px; margin:0 auto; padding:20px 0;">
+      <div id="discoverSwipe" style="display:none; position:relative; height:80vh; min-height:500px; max-height:600px; max-width:400px; margin:0 auto; padding:20px 0;">
         <div id="swipeStack" style="position:relative; width:100%; height:100%;">
           <!-- SwipeCards werden hier eingefügt -->
         </div>
@@ -6271,50 +6285,65 @@
     }
   }
 
-  function shareOffer(o, useWebShare = false){
+  function shareOffer(o, useWebShare = true){
     if(!o) return;
     const data = normalizeOffer(o);
     const url = `${location.origin}${location.pathname}#offer/${o.id}`;
     
-    // Dynamische Share-Texte basierend auf Abholcode-Status
-    let subject, body, subtitle;
-    const claim = 'Dein Mittag. Lokal. Frisch. Digital.\nauf mittagio.de';
+    // Schöner Share-Text: "Schau mal, was es heute bei [Metzger] gibt! [Link]"
+    const providerName = data.providerName || 'Anbieter';
+    const dishName = data.dish || 'Gericht';
+    const shareText = `Schau mal, was es heute bei ${providerName} gibt! ${dishName} für ${euro(data.price)}. ${url}`;
     
-    if(data.hasPickupCode){
-      // Share-Modus A: MIT Abholcode (ON)
-      // Status: Online bezahlt
-      // Share-Modus: Online bestellen & Abholcode
-      // Kunde zahlt online
-      subject = 'Online bestellen & mit Ticket abholen';
-      body = `Online bestellen & mit Ticket abholen\n${claim}`;
-      subtitle = 'Kunden bestellen online & holen mit Ticket ab';
-    } else {
-      // Share-Modus B: OHNE Abholcode (OFF)
-      // Status: Vor Ort
-      // Share-Modus: Vor Ort erhältlich
-      // Keine Online-Zahlung
-      subject = 'Heute Mittag frisch vor Ort';
-      body = `Heute Mittag frisch vor Ort\n${claim}`;
-      subtitle = 'Für Laufkundschaft & Vor-Ort-Verkauf';
-    }
-    
-    // Web Share API (wenn verfügbar und gewünscht)
-    if(useWebShare && navigator.share){
+    // Web Share API (wenn verfügbar)
+    if(navigator.share){
       navigator.share({
-        title: subject,
-        text: body,
+        title: `${dishName} bei ${providerName}`,
+        text: shareText,
         url: url
       }).then(() => {
         showToast('Geteilt!');
       }).catch((err) => {
-        console.log('Share failed:', err);
-        // Fallback zu Share Sheet
-        openShareSheet(subject, body, url, subtitle);
+        // Fallback: Link kopieren
+        if(err.name !== 'AbortError'){
+          copyToClipboard(shareText);
+          showToast('Link kopiert!');
+        }
       });
       return;
     }
     
-    openShareSheet(subject, body, url, subtitle);
+    // Fallback: Link kopieren + Toast
+    copyToClipboard(shareText);
+    showToast('Link kopiert!');
+  }
+  
+  // Helper: Link in Zwischenablage kopieren
+  function copyToClipboard(text){
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).catch(() => {
+        // Fallback für ältere Browser
+        fallbackCopyToClipboard(text);
+      });
+    } else {
+      fallbackCopyToClipboard(text);
+    }
+  }
+  
+  function fallbackCopyToClipboard(text){
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-999999px';
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    try {
+      document.execCommand('copy');
+    } catch(err) {
+      console.error('Fallback copy failed:', err);
+    }
+    document.body.removeChild(textArea);
   }
   
   // Web Share API für Kunden (Bestätigungsseite)
