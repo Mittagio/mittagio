@@ -130,8 +130,9 @@
 - **Social-Proof**: "Heute schon Xx bestellt" Badge (gelb, users-Icon)
 - **Invite-Feature**: "Ich hole mir heute [Gericht] bei [Metzger] – kommst du mit?"
 - **Skeleton-Screens**: Loading-Placeholder mit pulse-Animation
-- **Foto-KI**: Mock GPT-4o Vision API, Auto-Tagging von Allergenen
+- **Foto-KI**: Mock GPT-4o Vision API, Auto-Tagging von Allergenen (ohne Mengenschätzungen)
 - **Ein-Hand-Check-in (USP)**: Große Abholnummern-Kacheln (72px), Tap-to-Complete, Grüner Flash, Sortierung nach Abholzeit
+- **No-Limits Inseratsflow**: Keine Mengenangaben, prominenter "Ausverkauft"/"Noch da" Toggle, active=false Gerichte verschwinden aus Feed
 
 ### Projektstruktur
 ```
