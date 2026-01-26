@@ -102,6 +102,50 @@
       border-bottom:1px solid var(--border);
     }
     .topbar-inner{max-width:980px; margin:0 auto; padding:12px 14px; display:flex; align-items:center; gap:10px;}
+    .header-basket-btn{
+      position:relative;
+      background:none;
+      border:none;
+      cursor:pointer;
+      padding:8px;
+      transition:transform 0.2s ease, filter 0.3s ease;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .header-basket-btn:hover{
+      transform:scale(1.1);
+    }
+    .header-basket-btn:active{
+      transform:scale(0.95);
+    }
+    .header-basket-btn.bounce{
+      animation:basketBounce 0.5s ease;
+    }
+    .header-basket-btn.glow{
+      filter:drop-shadow(0 0 12px rgba(255,215,0,0.8));
+    }
+    @keyframes basketBounce{
+      0%, 100%{transform:scale(1);}
+      50%{transform:scale(1.2);}
+    }
+    .header-basket-badge{
+      position:absolute;
+      top:4px;
+      right:4px;
+      width:18px;
+      height:18px;
+      background:#FFD700;
+      color:#2D3436;
+      border-radius:50%;
+      font-size:11px;
+      font-weight:900;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border:2px solid #fff;
+      box-shadow:0 2px 8px rgba(0,0,0,0.15);
+    }
     .brand{
       display:flex; align-items:center; gap:10px; min-width:0;
     }
@@ -1403,6 +1447,11 @@
         <div class="brand-name">MITTAGIO</div>
       </div>
       <div class="spacer"></div>
+      <!-- Essenskorb oben rechts (Picknickkorb) -->
+      <button id="headerBasketBtn" class="header-basket-btn" onclick="showCart();" style="display:none; position:relative; background:none; border:none; cursor:pointer; padding:8px; margin-right:8px; transition:transform 0.2s ease;">
+        <i data-lucide="shopping-basket" style="width:24px;height:24px; color:#2D3436;"></i>
+        <span id="headerBasketBadge" class="header-basket-badge" style="display:none; position:absolute; top:4px; right:4px; width:18px; height:18px; background:#FFD700; color:#2D3436; border-radius:50%; font-size:11px; font-weight:900; display:flex; align-items:center; justify-content:center; border:2px solid #fff; box-shadow:0 2px 8px rgba(0,0,0,0.15);">0</span>
+      </button>
       <div id="modePill" class="prov-pill" style="display:none;">Dashboard</div>
     </div>
   </div>
@@ -1600,7 +1649,7 @@
         
         <!-- Warenkorb -->
         <div class="panel" style="padding:24px; border-radius:24px; box-shadow:0 8px 24px rgba(0,0,0,.08); background:rgba(255,255,255,0.95); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);">
-          <h3 style="font-weight:900; font-size:24px; margin:0 0 20px; line-height:1.3; color:#2D3436;">Warenkorb</h3>
+          <h3 style="font-weight:900; font-size:24px; margin:0 0 20px; line-height:1.3; color:#2D3436;">Essenskorb</h3>
           <div id="cartBox" class="hint">Dein Warenkorb ist leer.</div>
           <button class="btn" id="btnCheckout" type="button" style="display:none; width:100%; min-height:52px; font-size:16px; font-weight:800; margin-top:20px; background:#FFB800; color:#2D3436; border:none; border-radius:16px; box-shadow:0 4px 16px rgba(255,184,0,0.25);" data-icon="card">Weiter zur Zahlung</button>
           <div class="mini" id="cartNote" style="display:none; margin-top:16px; padding:16px; background:rgba(255,184,0,0.08); border-radius:12px; font-size:13px; color:#666; line-height:1.5;">
@@ -1626,17 +1675,13 @@
             <!-- Wird dynamisch befüllt -->
           </div>
           
-          <!-- Abholzeit-Auswahl -->
+          <!-- Abholzeit-Auswahl (15-Minuten-Takt) -->
           <div style="margin-bottom:24px;">
-            <label style="display:block; font-weight:700; font-size:15px; margin-bottom:12px; color:#2D3436;">Abholzeit</label>
-            <select id="checkoutPickupTime" style="width:100%; padding:14px; border:2px solid #e7e1d5; border-radius:12px; font-size:16px; background:#fff; font-weight:600;">
-              <option value="asap">So schnell wie möglich</option>
-              <option value="11:30">11:30 Uhr</option>
-              <option value="12:00">12:00 Uhr</option>
-              <option value="12:30">12:30 Uhr</option>
-              <option value="13:00">13:00 Uhr</option>
-              <option value="13:30">13:30 Uhr</option>
-            </select>
+            <label style="display:block; font-weight:700; font-size:15px; margin-bottom:12px; color:#2D3436;">Wann holst du dein Essen ab?</label>
+            <div id="checkoutTimeSlots" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; margin-bottom:12px;">
+              <!-- Wird dynamisch befüllt -->
+            </div>
+            <input type="hidden" id="checkoutPickupTime" value="${cart && cart.pickupTime ? cart.pickupTime : ''}" />
           </div>
           
           <!-- Kontaktdaten (minimal) -->
@@ -2722,11 +2767,6 @@
     <button class="navbtn" data-go="fav" style="position:relative;">
       <div class="ico"><i data-lucide="heart"></i></div>
       <div>Favoriten</div>
-    </button>
-    <button class="navbtn" data-go="cart" style="position:relative;">
-      <div class="ico"><i data-lucide="shopping-basket"></i></div>
-      <div>Essenskorb</div>
-      <span class="badge-notification" id="cartBadge" style="display:none;"></span>
     </button>
     <button class="navbtn" data-go="profile" style="position:relative;">
       <div class="ico"><i data-lucide="user"></i></div>
@@ -3975,6 +4015,11 @@
     if(providerNav) providerNav.style.display = isProv ? 'flex' : 'none';
     if(discoverFilters) discoverFilters.style.display = isCustomer ? 'block' : 'none';
     if(modePill) modePill.style.display = isProv ? 'inline-flex' : 'none';
+    
+    // Essenskorb im Header anzeigen (nur für Endkunden)
+    const headerBasketBtn = document.getElementById('headerBasketBtn');
+    if(headerBasketBtn) headerBasketBtn.style.display = (isCustomer || isStart) ? 'flex' : 'none';
+    updateHeaderBasket();
 
     if(isStart){
       // Start-Seite: Wenn nicht eingeloggt, zur Discover-Seite (kein Zwang)
@@ -4849,9 +4894,196 @@
   }
   
   function handleSwipeRight(offer){
-    // Rechts = "Gut: Das möchte ich!"
+    // Rechts = "Gut: Das möchte ich!" - Fly-to-Basket Animation
+    triggerFlyToBasketAnimation(offer);
     // Quick-Action Overlay öffnen
     showMatchModal(offer);
+  }
+  
+  // Fly-to-Basket Animation: Gericht fliegt in den Korb
+  function triggerFlyToBasketAnimation(offer){
+    const data = normalizeOffer(offer);
+    const card = document.querySelector('.swipe-card[data-offer-id="' + data.id + '"]');
+    if(!card) return;
+    
+    const img = card.querySelector('.swipe-card-image img');
+    if(!img) return;
+    
+    const headerBasketBtn = document.getElementById('headerBasketBtn');
+    if(!headerBasketBtn) return;
+    
+    // Temporäre Kopie des Bildes erstellen
+    const flyImg = img.cloneNode(true);
+    flyImg.style.cssText = `
+      position:fixed;
+      width:120px;
+      height:120px;
+      object-fit:cover;
+      border-radius:16px;
+      z-index:9999;
+      pointer-events:none;
+      box-shadow:0 8px 24px rgba(0,0,0,0.3);
+      transition:all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    `;
+    
+    const cardRect = card.getBoundingClientRect();
+    const basketRect = headerBasketBtn.getBoundingClientRect();
+    
+    flyImg.style.left = cardRect.left + (cardRect.width / 2) - 60 + 'px';
+    flyImg.style.top = cardRect.top + (cardRect.height * 0.3) + 'px';
+    
+    document.body.appendChild(flyImg);
+    
+    // Animation zum Korb
+    setTimeout(() => {
+      flyImg.style.left = basketRect.left + (basketRect.width / 2) - 60 + 'px';
+      flyImg.style.top = basketRect.top + (basketRect.height / 2) - 60 + 'px';
+      flyImg.style.transform = 'scale(0.3) rotate(360deg)';
+      flyImg.style.opacity = '0';
+    }, 50);
+    
+    // Basket-Reaction: Bounce + Glow
+    setTimeout(() => {
+      headerBasketBtn.classList.add('bounce', 'glow');
+      if(navigator.vibrate) navigator.vibrate([30, 20, 30]);
+      
+      // Badge aktualisieren (wenn Item hinzugefügt wurde)
+      setTimeout(() => {
+        updateHeaderBasket();
+        headerBasketBtn.classList.remove('bounce', 'glow');
+      }, 500);
+    }, 300);
+    
+    // Cleanup
+    setTimeout(() => {
+      if(flyImg.parentNode) flyImg.parentNode.removeChild(flyImg);
+    }, 700);
+  }
+  
+  // Anbieter-Quick-View (Modal mit Adresse & Maps-Link)
+  function openProviderQuickView(providerId){
+    const providerOffers = offers.filter(o => o.providerId === providerId && o.active !== false);
+    if(providerOffers.length === 0) return;
+    
+    const provider = normalizeOffer(providerOffers[0]);
+    const address = buildAddress({
+      street: provider.providerStreet,
+      zip: provider.providerZip,
+      city: provider.providerCity,
+      address: provider.address
+    });
+    
+    // Modal erstellen
+    const modal = document.createElement('div');
+    modal.className = 'backdrop active';
+    modal.style.zIndex = '100';
+    modal.onclick = () => {
+      modal.remove();
+    };
+    
+    const content = document.createElement('div');
+    content.style.cssText = `
+      position:fixed;
+      top:50%;
+      left:50%;
+      transform:translate(-50%, -50%);
+      background:#fff;
+      border-radius:24px;
+      padding:24px;
+      max-width:90vw;
+      width:400px;
+      box-shadow:0 8px 32px rgba(0,0,0,0.2);
+      z-index:101;
+    `;
+    content.onclick = (e) => e.stopPropagation();
+    
+    content.innerHTML = `
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
+        <div style="width:48px; height:48px; border-radius:12px; background:rgba(255,215,0,0.15); display:flex; align-items:center; justify-content:center;">
+          <i data-lucide="store" style="width:24px;height:24px; color:#FFD700;"></i>
+        </div>
+        <div style="flex:1;">
+          <div style="font-weight:900; font-size:18px; color:#2D3436; margin-bottom:4px;">${esc(provider.providerName || 'Anbieter')}</div>
+          <div style="font-size:14px; color:#666; display:flex; align-items:center; gap:6px;">
+            <i data-lucide="map-pin" style="width:14px;height:14px;"></i>
+            <span>${esc(address)}</span>
+          </div>
+        </div>
+        <button onclick="this.closest('.backdrop').remove();" style="background:none; border:none; padding:8px; cursor:pointer; border-radius:8px; transition:background 0.2s;" onmouseover="this.style.background='#f5f5f5';" onmouseout="this.style.background='none';">
+          <i data-lucide="x" style="width:20px;height:20px; color:#666;"></i>
+        </button>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        <button class="btn-primary" type="button" onclick="openGoogleMapsRoute('${esc(providerId)}'); this.closest('.backdrop').remove();" style="width:100%; min-height:48px; font-weight:700;">
+          <i data-lucide="navigation" style="width:20px;height:20px;"></i> <span>Anfahrt</span>
+        </button>
+        ${provider.distanceKm != null ? `<div style="text-align:center; font-size:13px; color:#666; padding:8px;">Entfernung: ${Number(provider.distanceKm).toFixed(1)} km</div>` : ''}
+      </div>
+    `;
+    
+    modal.appendChild(content);
+    document.body.appendChild(modal);
+    
+    if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
+  }
+  
+  // Google Maps Route öffnen (für einen oder mehrere Anbieter)
+  function openGoogleMapsRoute(providerId){
+    if(!providerId){
+      // Multi-Vendor: Alle Anbieter im Korb
+      if(!cart || !cart.items.length) return;
+      const providerIds = new Set();
+      cart.items.forEach(it => {
+        const o = offers.find(x => x.id === it.offerId);
+        if(o) providerIds.add(o.providerId);
+      });
+      
+      if(providerIds.size === 0) return;
+      if(providerIds.size === 1){
+        openGoogleMapsRoute(Array.from(providerIds)[0]);
+        return;
+      }
+      
+      // Mehrere Anbieter: Optimale Route
+      const addresses = [];
+      Array.from(providerIds).forEach(id => {
+        const o = offers.find(x => x.providerId === id && x.active !== false);
+        if(o){
+          const p = normalizeOffer(o);
+          const addr = buildAddress({
+            street: p.providerStreet,
+            zip: p.providerZip,
+            city: p.providerCity
+          });
+          if(addr) addresses.push(encodeURIComponent(addr));
+        }
+      });
+      
+      if(addresses.length === 0) return;
+      
+      // Google Maps mit Waypoints
+      const waypoints = addresses.slice(0, -1).join('|');
+      const destination = addresses[addresses.length - 1];
+      const url = `https://www.google.com/maps/dir/?api=1&origin=My+Location&waypoints=${waypoints}&destination=${destination}`;
+      window.open(url, '_blank');
+      return;
+    }
+    
+    // Einzelner Anbieter
+    const o = offers.find(x => x.providerId === providerId && x.active !== false);
+    if(!o) return;
+    
+    const p = normalizeOffer(o);
+    const address = buildAddress({
+      street: p.providerStreet,
+      zip: p.providerZip,
+      city: p.providerCity
+    });
+    
+    if(!address) return;
+    
+    const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+    window.open(url, '_blank');
   }
   
   // Nächste Karte anzeigen
@@ -6474,14 +6706,12 @@
       alert('Ohne Abholcode nur ansehen.');
       return false;
     }
-    if(cart && cart.providerId !== o.providerId){
-      alert('MVP: Warenkorb nur für einen Anbieter. Bitte zuerst Warenkorb leeren.');
-      return false;
-    }
+    // Multi-Vendor erlaubt (keine Warnung mehr, nur Info im Korb)
     if(!cart){ cart = { providerId:o.providerId, providerName:o.providerName, items:[], pickupTime:'' }; }
     const idx = cart.items.findIndex(i=>i.offerId===o.id);
     if(idx>=0) cart.items[idx].qty += 1; else cart.items.push({offerId:o.id, qty:1});
     save(LS.cart, cart);
+    updateHeaderBasket();
     return true;
   }
 
@@ -6660,6 +6890,25 @@
     };
   }
 
+  // Header-Basket aktualisieren (Badge mit Anzahl)
+  function updateHeaderBasket(){
+    const headerBasketBtn = document.getElementById('headerBasketBtn');
+    const headerBasketBadge = document.getElementById('headerBasketBadge');
+    if(!headerBasketBtn || !headerBasketBadge) return;
+    
+    const itemCount = cart && cart.items ? cart.items.reduce((sum, it) => sum + it.qty, 0) : 0;
+    
+    if(itemCount > 0){
+      headerBasketBadge.textContent = itemCount > 99 ? '99+' : itemCount;
+      headerBasketBadge.style.display = 'flex';
+    } else {
+      headerBasketBadge.style.display = 'none';
+    }
+    
+    // Icons aktualisieren
+    if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
+  }
+  
   // --- Cart ---
   function renderCart(){
     const box=document.getElementById('cartBox');
@@ -6667,9 +6916,23 @@
     const note=document.getElementById('cartNote');
 
     if(!cart || !cart.items.length){
-      box.textContent='Dein Warenkorb ist leer.';
+      // Empty State: Picknick-Motiv
+      box.innerHTML = `
+        <div style="text-align:center; padding:60px 20px;">
+          <div style="width:140px; height:140px; margin:0 auto 24px; background:linear-gradient(135deg, rgba(255,215,0,0.1) 0%, rgba(255,184,0,0.15) 100%); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:80px;">
+            🧺
+          </div>
+          <h3 style="font-size:22px; font-weight:900; margin-bottom:12px; color:#111; font-family:'Inter', 'Montserrat', sans-serif;">Dein Korb ist noch leer – Zeit für ein Match!</h3>
+          <p style="font-size:15px; color:#666; margin-bottom:32px; line-height:1.6; max-width:320px; margin-left:auto; margin-right:auto;">Swipe dich durch leckere Gerichte und fülle deinen Essenskorb.</p>
+          <button class="btn-primary" type="button" onclick="showDiscover();" style="width:100%; max-width:280px; margin:0 auto; min-height:52px; font-size:16px; font-weight:700;">
+            <i data-lucide="compass" style="width:20px;height:20px;"></i> <span>Jetzt Essen swipen</span>
+          </button>
+        </div>
+      `;
       btn.style.display='none';
       note.style.display='none';
+      if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
+      updateHeaderBasket();
       return;
     }
 
@@ -6698,46 +6961,121 @@
       `;
     }).filter(Boolean);
 
-    // Quick-Time-Chips generieren (basierend auf Essenszeit)
-    let timeChips = '';
-    if(windowText){
-      // Versuche Zeitfenster zu parsen (z.B. "11:30 – 14:30")
-      const timeMatch = windowText.match(/(\d{1,2}):(\d{2})\s*[–-]\s*(\d{1,2}):(\d{2})/);
-      if(timeMatch){
-        const startH = parseInt(timeMatch[1]);
-        const startM = parseInt(timeMatch[2]);
-        const endH = parseInt(timeMatch[3]);
-        const endM = parseInt(timeMatch[4]);
-        // Generiere 3 Quick-Time-Chips (Start, Mitte, Ende)
-        const times = [];
-        if(startH < endH || (startH === endH && startM < endM)){
-          const midH = Math.floor((startH + endH) / 2);
-          const midM = Math.floor((startM + endM) / 2);
-          times.push(`${String(startH).padStart(2,'0')}:${String(startM).padStart(2,'0')}`);
-          times.push(`${String(midH).padStart(2,'0')}:${String(midM).padStart(2,'0')}`);
-          times.push(`${String(endH).padStart(2,'0')}:${String(endM).padStart(2,'0')}`);
-        }
-        timeChips = times.map(t => 
-          `<button class="cart-time-chip ${cart.pickupTime === t ? 'selected' : ''}" type="button" data-time="${t}">${t} Uhr</button>`
-        ).join('');
+    // Standard-Zeit-Slots im 15-Minuten-Takt (11:30, 12:00, 12:15, etc.)
+    const TIME_SLOTS = ['11:30', '11:45', '12:00', '12:15', '12:30', '12:45', '13:00', '13:15', '13:30', '13:45', '14:00'];
+    
+    // Filtere Zeiten basierend auf aktueller Uhrzeit (mindestens 15 Min in Zukunft)
+    const now = new Date();
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+    const availableSlots = TIME_SLOTS.filter(slot => {
+      const [h, m] = slot.split(':').map(Number);
+      const slotMinutes = h * 60 + m;
+      return slotMinutes >= currentMinutes + 15; // Mindestens 15 Min Vorlauf
+    });
+    
+    // Wenn keine Slots verfügbar, zeige alle (für spätere Zeiten)
+    const slotsToShow = availableSlots.length > 0 ? availableSlots : TIME_SLOTS.slice(0, 6);
+    
+    // Speichere TIME_SLOTS global für Checkout
+    window.TIME_SLOTS = TIME_SLOTS;
+    window.currentMinutes = currentMinutes;
+    
+    // Generiere Time-Chips
+    const timeChips = slotsToShow.map(t => 
+      `<button class="cart-time-chip ${cart.pickupTime === t ? 'selected' : ''}" type="button" data-time="${t}" style="padding:10px 16px; border-radius:12px; border:2px solid ${cart.pickupTime === t ? '#FFD700' : '#e7e1d5'}; background:${cart.pickupTime === t ? '#FFD700' : '#fff'}; color:${cart.pickupTime === t ? '#2D3436' : '#666'}; font-weight:${cart.pickupTime === t ? '900' : '600'}; font-size:14px; cursor:pointer; transition:all 0.2s ease;">${t} Uhr</button>`
+    ).join('');
+    
+    // Multi-Vendor-Check: Prüfe ob verschiedene Anbieter im Korb sind
+    const uniqueProviders = new Set();
+    cart.items.forEach(it => {
+      const o = offers.find(x => x.id === it.offerId);
+      if(o) uniqueProviders.add(o.providerId);
+    });
+    const hasMultipleProviders = uniqueProviders.size > 1;
+    const multiVendorWarning = hasMultipleProviders ? `
+      <div style="margin-bottom:16px; padding:12px 16px; background:rgba(255,215,0,0.15); border-left:4px solid #FFD700; border-radius:8px;">
+        <div style="font-weight:700; font-size:14px; color:#2D3436; margin-bottom:4px; display:flex; align-items:center; gap:6px;">
+          <i data-lucide="alert-triangle" style="width:16px;height:16px; color:#FFD700;"></i>
+          Abholung an verschiedenen Standorten
+        </div>
+        <div style="font-size:13px; color:#666; line-height:1.5;">Du hast Essen von ${uniqueProviders.size} verschiedenen Anbietern. Plane genug Zeit für die Abholung ein!</div>
+      </div>
+    ` : '';
+    
+    // Gruppiere Items nach Anbieter
+    const itemsByProvider = new Map();
+    cart.items.forEach(it => {
+      const o = offers.find(x => x.id === it.offerId);
+      if(!o) return;
+      const providerId = o.providerId;
+      if(!itemsByProvider.has(providerId)){
+        itemsByProvider.set(providerId, {
+          provider: normalizeOffer(o),
+          items: []
+        });
       }
-    }
+      itemsByProvider.get(providerId).items.push({offer: o, qty: it.qty});
+    });
+    
+    // Rendere Items gruppiert nach Anbieter
+    let groupedLines = '';
+    itemsByProvider.forEach((group, providerId) => {
+      const provider = group.provider;
+      const providerLines = group.items.map(({offer, qty}) => {
+        const normalized = normalizeOffer(offer);
+        const lineTotal = Number(normalized.price||0) * qty;
+        return `
+          <div class="cart-line" style="padding-left:${hasMultipleProviders ? '20px' : '0'};">
+            <div class="cart-left">${esc(normalized.dish || normalized.title || 'Gericht')}</div>
+            <div class="cart-qty">
+              <button class="qty-btn" type="button" data-action="dec" data-id="${esc(offer.id)}">-</button>
+              <div>${qty}</div>
+              <button class="qty-btn" type="button" data-action="inc" data-id="${esc(offer.id)}">+</button>
+            </div>
+            <div class="cart-price">${euro(lineTotal)}</div>
+          </div>
+        `;
+      }).join('');
+      
+      groupedLines += `
+        <div style="margin-bottom:${hasMultipleProviders ? '20px' : '0'};">
+          <div style="font-size:16px; font-weight:900; margin-bottom:12px; display:flex; align-items:center; gap:8px; cursor:pointer;" onclick="openProviderQuickView('${esc(providerId)}');">
+            <i data-lucide="store" style="width:18px;height:18px; color:#666;"></i>
+            <span>${esc(provider.providerName || 'Anbieter')}</span>
+            <i data-lucide="chevron-right" style="width:16px;height:16px; color:#999; margin-left:auto;"></i>
+          </div>
+          ${providerLines}
+        </div>
+      `;
+    });
     
     box.innerHTML = `
-      <div style="font-size:16px; font-weight:900; margin-bottom:12px;">${esc(cart.providerName || 'Anbieter')}</div>
-      ${lines.join('')}
+      ${multiVendorWarning}
+      ${groupedLines}
       ${windowText ? `
-        <div class="cart-window-badge">
+        <div class="cart-window-badge" style="margin-top:16px;">
           <i data-lucide="clock"></i>
           <span>Essenszeit: ${esc(windowText)}</span>
         </div>
       ` : ''}
-      <div class="row" style="margin-top:16px;"><span>Wann möchtest du ungefähr da sein?</span></div>
-      ${timeChips ? `<div class="cart-time-chips">${timeChips}</div>` : ''}
-      <input class="field" id="pickupTimeInput" type="text" placeholder="z.B. 12:15 Uhr" value="${esc(cart.pickupTime||'')}" />
-      <div class="hint" style="margin-top:6px;">Bitte innerhalb der Essenszeit.</div>
-      <div class="row" style="margin-top:20px; padding-top:16px; border-top:2px solid #eee;"><span style="font-size:16px; font-weight:900;">Gesamt</span><b style="font-size:18px;">${euro(total)}</b></div>
-      <a href="#" id="clearCart" class="cart-clear-btn">Warenkorb leeren</a>
+      <div class="row" style="margin-top:20px;"><span style="font-weight:700; font-size:15px;">Wann holst du dein Essen ab?</span></div>
+      <div class="cart-time-chips" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; margin-top:12px; margin-bottom:12px;">
+        ${timeChips}
+      </div>
+      ${hasMultipleProviders ? `<div class="hint" style="margin-top:8px; font-size:12px; color:#666;">Diese Zeit gilt für alle gewählten Standorte.</div>` : ''}
+      ${hasMultipleProviders ? `
+        <div style="margin-top:16px; padding:12px 16px; background:rgba(31,157,85,0.1); border-left:4px solid #1f9d55; border-radius:8px;">
+          <div style="font-weight:700; font-size:13px; color:#1f9d55; margin-bottom:6px; display:flex; align-items:center; gap:6px;">
+            <i data-lucide="navigation" style="width:16px;height:16px;"></i>
+            Optimale Abhol-Route verfügbar
+          </div>
+          <button type="button" onclick="openGoogleMapsRoute();" style="margin-top:8px; padding:8px 16px; background:#1f9d55; color:#fff; border:none; border-radius:8px; font-weight:700; font-size:13px; cursor:pointer; transition:transform 0.2s ease;" onmouseover="this.style.transform='scale(1.02)';" onmouseout="this.style.transform='scale(1)';">
+            Route starten
+          </button>
+        </div>
+      ` : ''}
+      <div class="row" style="margin-top:24px; padding-top:20px; border-top:2px solid #eee;"><span style="font-size:18px; font-weight:900;">Gesamt</span><b style="font-size:20px; color:var(--brand);">${euro(total)}</b></div>
+      <a href="#" id="clearCart" class="cart-clear-btn" style="margin-top:16px;">Warenkorb leeren</a>
     `;
 
     // Warenkorb leeren mit Bestätigung
@@ -6760,27 +7098,11 @@
         cart.pickupTime = time;
         save(LS.cart, cart);
         renderCart();
-        // Input fokussieren für bessere UX
-        setTimeout(()=>{
-          const input = document.getElementById('pickupTimeInput');
-          if(input) input.focus();
-        }, 50);
       };
     });
     
-    // Ankunftszeit Input
-    const timeInput = document.getElementById('pickupTimeInput');
-    if(timeInput){
-      timeInput.oninput=()=>{
-        cart.pickupTime = timeInput.value.trim();
-        save(LS.cart, cart);
-        // Quick-Chips aktualisieren
-        box.querySelectorAll('.cart-time-chip').forEach(chip=>{
-          const chipTime = chip.getAttribute('data-time');
-          chip.classList.toggle('selected', chipTime === cart.pickupTime);
-        });
-      };
-    }
+    // Icons aktualisieren
+    if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
 
     box.querySelectorAll('.qty-btn').forEach(btnEl=>{
       btnEl.onclick=()=>{
@@ -6806,6 +7128,9 @@
       // Kein Payment möglich → Button deaktiviert
       btn.innerHTML = `${iconMarkup('alert-circle')}<span>Zahlung nicht möglich</span>`;
     }
+    
+    // Header-Basket aktualisieren
+    updateHeaderBasket();
     note.style.display='block';
     
     // Icons aktualisieren
@@ -6870,6 +7195,46 @@
   }
   
   function renderCheckout(total){
+    // Zeitauswahl im 15-Minuten-Takt rendern
+    const TIME_SLOTS = window.TIME_SLOTS || ['11:30', '11:45', '12:00', '12:15', '12:30', '12:45', '13:00', '13:15', '13:30', '13:45', '14:00'];
+    const currentMinutes = window.currentMinutes || (new Date().getHours() * 60 + new Date().getMinutes());
+    const selectedTime = cart && cart.pickupTime ? cart.pickupTime : '';
+    
+    const checkoutTimeSlots = document.getElementById('checkoutTimeSlots');
+    if(checkoutTimeSlots){
+      checkoutTimeSlots.innerHTML = TIME_SLOTS.map(t => {
+        const [h, m] = t.split(':').map(Number);
+        const slotMinutes = h * 60 + m;
+        const isAvailable = slotMinutes >= currentMinutes + 15;
+        const isSelected = selectedTime === t;
+        return `<button type="button" class="time-slot-btn ${isSelected ? 'selected' : ''} ${!isAvailable ? 'disabled' : ''}" data-time="${t}" style="padding:12px; border-radius:12px; border:2px solid ${isSelected ? '#FFD700' : '#e7e1d5'}; background:${isSelected ? '#FFD700' : '#fff'}; color:${isSelected ? '#2D3436' : isAvailable ? '#666' : '#ccc'}; font-weight:${isSelected ? '900' : '600'}; font-size:14px; cursor:${isAvailable ? 'pointer' : 'not-allowed'}; transition:all 0.2s ease; opacity:${isAvailable ? '1' : '0.5'};">
+          ${t}
+        </button>`;
+      }).join('');
+      
+      // Handler für Time-Slots
+      checkoutTimeSlots.querySelectorAll('.time-slot-btn:not(.disabled)').forEach(btn => {
+        btn.onclick = () => {
+          const time = btn.getAttribute('data-time');
+          if(!cart) cart = {items: []};
+          cart.pickupTime = time;
+          save(LS.cart, cart);
+          
+          // UI aktualisieren
+          checkoutTimeSlots.querySelectorAll('.time-slot-btn').forEach(b => {
+            const isSelected = b.getAttribute('data-time') === time;
+            b.classList.toggle('selected', isSelected);
+            b.style.borderColor = isSelected ? '#FFD700' : '#e7e1d5';
+            b.style.background = isSelected ? '#FFD700' : '#fff';
+            b.style.color = isSelected ? '#2D3436' : '#666';
+            b.style.fontWeight = isSelected ? '900' : '600';
+          });
+          
+          const hiddenInput = document.getElementById('checkoutPickupTime');
+          if(hiddenInput) hiddenInput.value = time;
+        };
+      });
+    }
     const summaryEl = document.getElementById('checkoutSummary');
     if(!summaryEl) return;
     
