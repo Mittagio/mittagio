@@ -955,6 +955,71 @@
     }
 
     /* Discover Page - App-like UX (PWA, Light Mode) */
+    /* Toggle-Switch für Discover-View */
+    .discover-view-toggle{
+      position:absolute; top:12px; right:14px; z-index:10;
+    }
+    .toggle-switch{
+      position:relative;
+      width:64px;
+      height:32px;
+      background:#e0e0e0;
+      border-radius:16px;
+      border:none;
+      cursor:pointer;
+      transition:background 0.3s ease;
+      display:flex;
+      align-items:center;
+      padding:4px;
+      box-shadow:0 2px 8px rgba(0,0,0,0.1);
+    }
+    .toggle-switch.active{
+      background:var(--brand);
+    }
+    .toggle-icon{
+      position:absolute;
+      width:24px;
+      height:24px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      transition:opacity 0.3s ease, transform 0.3s ease;
+      z-index:2;
+    }
+    .toggle-icon-list{
+      left:4px;
+      opacity:1;
+    }
+    .toggle-icon-match{
+      right:4px;
+      opacity:0.5;
+    }
+    .toggle-switch.active .toggle-icon-list{
+      opacity:0.5;
+    }
+    .toggle-switch.active .toggle-icon-match{
+      opacity:1;
+    }
+    .toggle-icon svg{
+      width:18px;
+      height:18px;
+      stroke-width:2.5;
+    }
+    .toggle-slider{
+      position:absolute;
+      width:24px;
+      height:24px;
+      background:#fff;
+      border-radius:50%;
+      transition:transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow:0 2px 4px rgba(0,0,0,0.2);
+      left:4px;
+      z-index:3;
+    }
+    .toggle-switch.active .toggle-slider{
+      transform:translateX(32px);
+    }
+    
     .discover-header{
       position:sticky; top:0; z-index:10;
       background:rgba(255,255,255,.95); backdrop-filter:blur(10px);
@@ -1514,13 +1579,25 @@
 
     <!-- CUSTOMER: Discover - App-like UX (Final Spec) -->
     <section class="view active" id="v-discover">
-      <!-- Header: Kompakte Standort-Pill (44-48px) -->
-      <div class="discover-header">
+      <!-- Header: Kompakte Standort-Pill (44-48px) + Toggle oben rechts -->
+      <div class="discover-header" style="position:relative;">
         <div class="discover-location-pill">
           <i data-lucide="map-pin" class="discover-location-icon-left"></i>
           <input type="text" class="discover-location-input" id="discoverLocationInput" placeholder="Ort oder PLZ" />
           <button class="discover-location-btn" type="button" id="btnDiscoverLocationSearch" aria-label="Standort suchen">
             <i data-lucide="search"></i>
+          </button>
+        </div>
+        <!-- Toggle-Switch oben rechts -->
+        <div class="discover-view-toggle" id="discoverViewToggle" style="position:absolute; top:12px; right:14px; z-index:10;">
+          <button type="button" class="toggle-switch" id="toggleDiscoverView" aria-label="Ansicht wechseln">
+            <span class="toggle-icon toggle-icon-list">
+              <i data-lucide="list"></i>
+            </span>
+            <span class="toggle-icon toggle-icon-match">
+              <i data-lucide="flame"></i>
+            </span>
+            <span class="toggle-slider"></span>
           </button>
         </div>
       </div>
@@ -1539,15 +1616,6 @@
         </div>
       </div>
 
-      <!-- View Toggle: Liste / Swipe -->
-      <div style="display:flex; justify-content:center; gap:8px; padding:12px 14px; margin-bottom:8px;">
-        <button class="btn ghost" type="button" id="btnDiscoverList" style="flex:1; min-height:40px; font-size:14px;">
-          Liste
-        </button>
-        <button class="btn ghost" type="button" id="btnDiscoverSwipe" style="flex:1; min-height:40px; font-size:14px;">
-          Wischen
-        </button>
-      </div>
 
       <!-- Angebots-Liste (horizontale List-Cards) -->
       <div class="discover-offers" id="discoverOffers">
@@ -3184,7 +3252,8 @@
     week: 'mittagio_week_v1',
     onboardingDraft: 'mittagio_onboarding_draft_v1',
     pickupDone: 'mittagio_pickup_done_v1',
-    mode: 'mittagio_mode_v1'
+    mode: 'mittagio_mode_v1',
+    discoverView: 'mittagio_discover_view_v1'
   };
   const load = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } };
   const save = (k, v) => localStorage.setItem(k, JSON.stringify(v));
@@ -4708,30 +4777,29 @@
     }
   }
   
-  // Swipe-View State
-  let discoverViewMode = 'list'; // 'list' oder 'swipe'
+  // Swipe-View State (mit LocalStorage-Persistenz)
+  let discoverViewMode = load(LS.discoverView, 'list'); // 'list' oder 'swipe'
   let swipeCards = [];
   let currentSwipeIndex = 0;
   
   // View-Toggle Handler
   function switchDiscoverView(mode){
     discoverViewMode = mode;
+    save(LS.discoverView, mode); // Präferenz speichern
+    
     const listEl = document.getElementById('discoverOffers');
     const swipeEl = document.getElementById('discoverSwipe');
-    const btnList = document.getElementById('btnDiscoverList');
-    const btnSwipe = document.getElementById('btnDiscoverSwipe');
+    const toggleBtn = document.getElementById('toggleDiscoverView');
     
     if(mode === 'swipe'){
       if(listEl) listEl.style.display = 'none';
       if(swipeEl) swipeEl.style.display = 'block';
-      if(btnList) btnList.classList.remove('active');
-      if(btnSwipe) btnSwipe.classList.add('active');
+      if(toggleBtn) toggleBtn.classList.add('active');
       renderSwipeCards();
     } else {
       if(listEl) listEl.style.display = 'block';
       if(swipeEl) swipeEl.style.display = 'none';
-      if(btnList) btnList.classList.add('active');
-      if(btnSwipe) btnSwipe.classList.remove('active');
+      if(toggleBtn) toggleBtn.classList.remove('active');
     }
   }
   
@@ -5308,15 +5376,25 @@
     }
   }
   
-  // View-Toggle Buttons
-  const btnDiscoverList = document.getElementById('btnDiscoverList');
-  const btnDiscoverSwipe = document.getElementById('btnDiscoverSwipe');
-  if(btnDiscoverList){
-    btnDiscoverList.onclick = () => switchDiscoverView('list');
-    btnDiscoverList.classList.add('active');
+  // Toggle-Switch Handler
+  const toggleDiscoverView = document.getElementById('toggleDiscoverView');
+  if(toggleDiscoverView){
+    // Initialer Zustand setzen
+    if(discoverViewMode === 'swipe'){
+      toggleDiscoverView.classList.add('active');
+    }
+    
+    toggleDiscoverView.onclick = () => {
+      const newMode = discoverViewMode === 'list' ? 'swipe' : 'list';
+      switchDiscoverView(newMode);
+    };
   }
-  if(btnDiscoverSwipe){
-    btnDiscoverSwipe.onclick = () => switchDiscoverView('swipe');
+  
+  // Initiale Ansicht beim ersten Laden setzen
+  if(discoverViewMode === 'swipe'){
+    switchDiscoverView('swipe');
+  } else {
+    switchDiscoverView('list');
   }
   
   // List Card für Discover-Seite (Premium horizontales Design)
