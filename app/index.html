@@ -736,7 +736,7 @@
       #printView .print-muted{color:#555; font-size:12px}
       #printView .print-badge{display:inline-block; padding:4px 8px; border:1px solid #999; border-radius:999px; font-size:11px; font-weight:700}
       #printView .print-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px}
-      #printView .qr{width:120px; height:120px; border:1px dashed #999; display:flex; align-items:center; justify-content:center; font-size:11px}
+      #printView .pickup-code-display{width:120px; height:120px; border:2px solid var(--brand); border-radius:12px; background:#fff; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:#2D3436}
     }
     .two{display:grid; grid-template-columns:1fr 1fr; gap:10px}
     .bigbtn{
@@ -1662,7 +1662,7 @@
           <button class="back-button" type="button" id="btnPickupCodeBack" aria-label="Zurück">
             <i data-lucide="arrow-left"></i>
           </button>
-          <h3 style="margin:0; flex:1;">Ticket</h3>
+          <h3 style="margin:0; flex:1;">Abholnummer</h3>
         </div>
         
         <!-- Status & Hinweis -->
@@ -1671,24 +1671,24 @@
             ✓ Bestellung bestätigt
           </div>
           <div class="hint" style="font-size:13px;">
-            Bitte diesen Code beim Abholen zeigen
+            Zeige diese Abholnummer beim Abholen
           </div>
         </div>
         
-        <!-- Code-Kachel (normal groß) -->
-        <div id="pickupCodeCard" style="background:#fff; border:2px solid var(--brand); border-radius:18px; padding:24px; text-align:center; margin-bottom:20px;">
-          <div class="hint" style="font-size:12px; margin-bottom:8px; color:#666;">Ticket</div>
-          <div id="pickupCodeValue" style="font-size:48px; font-weight:900; font-family:monospace; letter-spacing:4px; color:#111; margin-bottom:12px;">
+        <!-- Code-Kachel (groß & gut lesbar) -->
+        <div id="pickupCodeCard" style="background:#fff; border:3px solid var(--brand); border-radius:20px; padding:32px; text-align:center; margin-bottom:20px; box-shadow:0 4px 16px rgba(255,215,0,0.2);">
+          <div class="hint" style="font-size:13px; margin-bottom:12px; color:#666; font-weight:600;">Abholnummer</div>
+          <div id="pickupCodeValue" style="font-size:64px; font-weight:900; font-family:monospace; letter-spacing:6px; color:#2D3436; margin-bottom:16px; line-height:1;">
             –
           </div>
           <button class="btn secondary" type="button" id="btnCopyCode" style="width:100%; min-height:44px;">
-            <i data-lucide="copy"></i> Code kopieren
+            <i data-lucide="copy"></i> Abholnummer kopieren
           </button>
         </div>
         
         <!-- Primary CTA: Code groß anzeigen -->
         <button class="btn" type="button" id="btnShowFullscreenCode" style="width:100%; margin-bottom:16px; min-height:44px;">
-          <i data-lucide="maximize-2"></i> Code groß anzeigen
+          <i data-lucide="maximize-2"></i> Abholnummer groß anzeigen
         </button>
         
         <!-- Bestellinfos kompakt -->
@@ -2875,7 +2875,7 @@
       <div class="quick-ticket-time" id="codePickupWindow">Essenszeit: –</div>
     </div>
     <div class="quick-ticket-code">
-      <div class="quick-ticket-code-label">Ticket</div>
+      <div class="quick-ticket-code-label">Abholnummer</div>
       <div class="quick-ticket-code-value" id="codeText">A1</div>
     </div>
     <div class="quick-ticket-details">
@@ -6068,7 +6068,7 @@
           <div class="print-muted">Dein Mittag. Lokal. Frisch. Digital.</div>
         </div>
         <div style="text-align:center;">
-          <div class="qr">Abholnummer</div>
+          <div class="pickup-code-display">Abholnummer</div>
           <div class="print-muted">Ein Tap genügt</div>
         </div>
       </div>

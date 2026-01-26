@@ -72,9 +72,11 @@ Dies ist ein USP für Mittagio - Auschlussverfahren statt endloser Liste.
 
 ## III. Das Metzger-Dashboard (Anbieter-Seite)
 
-### QR-Scanner
+### Ein-Hand-Check-in (USP)
 ```
-Integriere die html5-qrcode Library, um die 'Tickets' der Kunden direkt über die Handy-Kamera des Metzgers zu scannen.
+Implementiere den Ein-Hand-Check-in: Große Abholnummern-Kacheln im Dashboard, Tap-to-Complete ohne Scanner.
+Der Metzger tippt einfach auf die Abholnummer (z.B. "A1") und markiert sie als abgeholt.
+Kein QR-Scanner, kein Warten - das ist unser USP.
 ```
 
 ### Bestands-Sync
