@@ -4935,7 +4935,8 @@
     let startX = 0, startY = 0, currentX = 0, currentY = 0;
     let isDragging = false;
     const SWIPE_THRESHOLD = 100;
-    const ROTATION_FACTOR = 0.1;
+    const ROTATION_FACTOR = 0.15; // Rotation pro Pixel (erhöht für mehr Rotation)
+    const MAX_ROTATION = 25; // Max 25 Grad Rotation
     
     card.addEventListener('touchstart', (e) => {
       if(index !== 0) return; // Nur oberste Karte
