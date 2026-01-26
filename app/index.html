@@ -5029,8 +5029,8 @@
   
   // Google Maps Route öffnen (für einen oder mehrere Anbieter)
   function openGoogleMapsRoute(providerId){
+    // Wenn kein providerId, dann Multi-Vendor aus Korb
     if(!providerId){
-      // Multi-Vendor: Alle Anbieter im Korb
       if(!cart || !cart.items.length) return;
       const providerIds = new Set();
       cart.items.forEach(it => {
@@ -5044,7 +5044,7 @@
         return;
       }
       
-      // Mehrere Anbieter: Optimale Route
+      // Mehrere Anbieter: Optimale Route mit Waypoints
       const addresses = [];
       Array.from(providerIds).forEach(id => {
         const o = offers.find(x => x.providerId === id && x.active !== false);
@@ -5061,11 +5061,16 @@
       
       if(addresses.length === 0) return;
       
-      // Google Maps mit Waypoints
-      const waypoints = addresses.slice(0, -1).join('|');
-      const destination = addresses[addresses.length - 1];
-      const url = `https://www.google.com/maps/dir/?api=1&origin=My+Location&waypoints=${waypoints}&destination=${destination}`;
-      window.open(url, '_blank');
+      // Google Maps mit Waypoints (optimale Route)
+      if(addresses.length > 1){
+        const waypoints = addresses.slice(0, -1).join('|');
+        const destination = addresses[addresses.length - 1];
+        const url = `https://www.google.com/maps/dir/?api=1&origin=My+Location&waypoints=${waypoints}&destination=${destination}`;
+        window.open(url, '_blank');
+      } else {
+        const url = `https://www.google.com/maps/search/?api=1&query=${addresses[0]}`;
+        window.open(url, '_blank');
+      }
       return;
     }
     
@@ -8764,8 +8769,6 @@
         showFav();
       } else if(go==='orders'){
         showOrders();
-      } else if(go==='cart'){
-        showCart();
       } else if(go==='profile'){
         showProfile();
       }
