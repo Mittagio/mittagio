@@ -1409,7 +1409,7 @@
       background:#e6b800;
     }
     
-    /* SwipeCard Styles (Tinder-Style) - Premium Modern Design */
+    /* SwipeCard Styles (Tinder-Style) - Premium Modern Design - Optimiert für Samsung S25 */
     .swipe-card{
       position:absolute; top:0; left:0; right:0; bottom:0;
       background:#fff; border-radius:32px;
@@ -1418,7 +1418,23 @@
       user-select:none; touch-action:none;
       transition:transform .2s ease-out, opacity .2s, box-shadow .2s;
       will-change:transform;
-      height:80vh; max-height:600px;
+      height:100%; max-height:100%;
+      width:100%;
+      box-sizing:border-box;
+    }
+    /* Responsive für Samsung S25 (390x844) und ähnliche Geräte */
+    @media (max-width:420px) and (min-height:800px){
+      #discoverSwipe{
+        height:calc(100vh - 220px) !important;
+        min-height:480px !important;
+        padding:12px 8px !important;
+      }
+      .swipe-card{
+        border-radius:28px;
+      }
+      .swipe-card-image{
+        min-height:360px !important;
+      }
     }
     .swipe-card:active{
       cursor:grabbing;
