@@ -1962,15 +1962,25 @@
         </div>
       </div>
 
-      <!-- Provider Area -->
-      <div class="panel" style="margin-top:18px; padding:16px; background:linear-gradient(135deg, rgba(255,204,0,.08) 0%, rgba(255,204,0,.03) 100%); border:1px solid rgba(255,204,0,.15); border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,.04);">
-        <div style="font-weight:600; font-size:17px; margin-bottom:8px; line-height:1.3;">Als Anbieter starten</div>
-        <div class="hint" style="font-size:14px; line-height:1.4; margin-bottom:14px; color:var(--muted);">
-          Mittagstische online anbieten
+      <!-- Business-Card: Für Partner -->
+      <div class="panel" id="profileBusinessCard" style="margin-top:20px; padding:24px; background:linear-gradient(135deg, rgba(255,204,0,.12) 0%, rgba(255,184,0,.06) 100%); border:2px solid rgba(255,204,0,.2); border-radius:24px; box-shadow:0 4px 16px rgba(255,204,0,0.15); position:relative; overflow:hidden;">
+        <!-- Dekoratives Icon -->
+        <div style="position:absolute; top:16px; right:16px; width:64px; height:64px; background:rgba(255,204,0,0.15); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:32px; opacity:0.6;">
+          🏪
         </div>
-        <button class="btn secondary" type="button" id="btnGoToProvider" style="width:100%; min-height:44px;">
-          Zum Anbieterbereich →
-        </button>
+        <div style="position:relative; z-index:1;">
+          <div style="font-weight:900; font-size:20px; margin-bottom:6px; line-height:1.3; color:#2D3436; display:flex; align-items:center; gap:8px;">
+            <i data-lucide="store" style="width:22px;height:22px; color:#FFD700;"></i>
+            <span>MITTAGIO Business</span>
+          </div>
+          <div class="hint" style="font-size:14px; line-height:1.5; margin-bottom:20px; color:#666; max-width:280px;">
+            Biete deine Mittagstische online an und erreiche mehr Gäste.
+          </div>
+          <button class="btn-primary" type="button" id="btnProviderBusinessLogin" style="width:100%; min-height:52px; font-size:16px; font-weight:700; box-shadow:0 4px 12px rgba(255,204,0,0.3);">
+            <i data-lucide="log-in" style="width:20px;height:20px;"></i>
+            <span id="btnProviderBusinessLoginText">Jetzt als Anbieter einloggen</span>
+          </button>
+        </div>
       </div>
 
       <!-- FAQ (reduced) -->
@@ -3206,6 +3216,34 @@
       <div style="margin-top:12px; text-align:center;">
         <button class="btn ghost" type="button" id="btnLoginModalDemo" style="width:auto; padding:8px 16px;">Demo-Login (ohne Anmeldung)</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- Provider Login Modal (Business-Login) -->
+<div class="backdrop" id="providerLoginBd" onclick="closeProviderLoginModal()" style="background:rgba(0,0,0,0.7); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); display:none;"></div>
+<div class="sheet" id="providerLoginSheet" style="max-width:420px; border-radius:24px; overflow:hidden; display:none;">
+  <div class="sheet-body" style="padding:32px;">
+    <div style="text-align:center; margin-bottom:24px;">
+      <div style="width:64px; height:64px; margin:0 auto 16px; background:linear-gradient(135deg, rgba(255,204,0,0.2) 0%, rgba(255,184,0,0.1) 100%); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:32px;">
+        🏪
+      </div>
+      <h3 style="margin:0 0 8px; font-size:24px; font-weight:900; color:#2D3436;">MITTAGIO Business</h3>
+      <p class="hint" style="font-size:14px; color:#666; line-height:1.5;">Melde dich als Gastronom an</p>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:16px;">
+      <input class="field" id="providerLoginEmail" type="email" placeholder="E-Mail-Adresse" autocomplete="email" style="width:100%; padding:14px 16px; border-radius:14px; border:1px solid var(--border); font-size:16px; background:#fbfaf7;" />
+      <input class="field" id="providerLoginPass" type="password" placeholder="Passwort" autocomplete="current-password" style="width:100%; padding:14px 16px; border-radius:14px; border:1px solid var(--border); font-size:16px; background:#fbfaf7;" />
+      <button class="btn-primary" type="button" id="btnProviderLoginModal" style="width:100%; min-height:52px; font-size:16px; font-weight:700; margin-top:8px;">
+        <i data-lucide="log-in" style="width:20px;height:20px;"></i>
+        <span>Einloggen</span>
+      </button>
+      <button class="btn ghost" type="button" onclick="closeProviderLoginModal();" style="width:100%; min-height:44px;">
+        Abbrechen
+      </button>
+    </div>
+    <div class="hint" style="margin-top:20px; padding:12px; background:rgba(255,204,0,0.08); border-radius:12px; font-size:12px; color:#666; line-height:1.5; text-align:center;">
+      Demo: Beliebige E-Mail/Passwort → du bist drin.<br>(Später: Firebase Auth)
     </div>
   </div>
 </div>
@@ -6654,6 +6692,13 @@
       history.pushState(null, '', location.pathname);
       return;
     }
+    // Provider Login Modal schließen
+    if(document.getElementById('providerLoginSheet') && document.getElementById('providerLoginSheet').style.display !== 'none'){
+      closeProviderLoginModal();
+      e.preventDefault();
+      history.pushState(null, '', location.pathname);
+      return;
+    }
     // Wizard schließen
     if(document.getElementById('wizard') && document.getElementById('wizard').classList.contains('active')){
       closeWizard();
@@ -8309,6 +8354,29 @@
       }).join('');
     }
     
+    // Business-Card: Provider-Login Button
+    const businessCard = document.getElementById('profileBusinessCard');
+    const btnProviderBusinessLogin = document.getElementById('btnProviderBusinessLogin');
+    const btnProviderBusinessLoginText = document.getElementById('btnProviderBusinessLoginText');
+    if(businessCard && btnProviderBusinessLogin && btnProviderBusinessLoginText){
+      if(provider.loggedIn){
+        // Eingeloggt: "Zum Dashboard" Button
+        btnProviderBusinessLoginText.textContent = 'Zum Dashboard';
+        btnProviderBusinessLogin.innerHTML = `<i data-lucide="layout-dashboard" style="width:20px;height:20px;"></i> <span>Zum Dashboard</span>`;
+        btnProviderBusinessLogin.onclick = () => {
+          setMode('provider');
+          showProviderHome();
+        };
+      } else {
+        // Nicht eingeloggt: "Jetzt als Anbieter einloggen" Button
+        btnProviderBusinessLoginText.textContent = 'Jetzt als Anbieter einloggen';
+        btnProviderBusinessLogin.innerHTML = `<i data-lucide="log-in" style="width:20px;height:20px;"></i> <span>Jetzt als Anbieter einloggen</span>`;
+        btnProviderBusinessLogin.onclick = () => {
+          showProviderLoginModal();
+        };
+      }
+    }
+    
     // Support & Vertrauen
     const supportSection = document.getElementById('profileSupportList');
     if(supportSection){
@@ -8370,12 +8438,64 @@
     }
   }
   
-  // "Zum Anbieterbereich" Button
-  const btnGoToProvider = document.getElementById('btnGoToProvider');
-  if(btnGoToProvider){
-    btnGoToProvider.onclick = () => {
-      setMode('provider');
+  // Provider Login Modal
+  function showProviderLoginModal(){
+    document.getElementById('providerLoginBd').style.display = 'block';
+    document.getElementById('providerLoginSheet').style.display = 'block';
+    // Icons aktualisieren
+    if(typeof lucide !== 'undefined'){
+      setTimeout(() => lucide.createIcons(), 50);
+    }
+  }
+  
+  function closeProviderLoginModal(){
+    document.getElementById('providerLoginBd').style.display = 'none';
+    document.getElementById('providerLoginSheet').style.display = 'none';
+    // Felder leeren
+    const emailField = document.getElementById('providerLoginEmail');
+    const passField = document.getElementById('providerLoginPass');
+    if(emailField) emailField.value = '';
+    if(passField) passField.value = '';
+  }
+  
+  // Provider Login Handler
+  const btnProviderLoginModal = document.getElementById('btnProviderLoginModal');
+  if(btnProviderLoginModal){
+    btnProviderLoginModal.onclick = () => {
+      const email = document.getElementById('providerLoginEmail').value.trim();
+      const pass = document.getElementById('providerLoginPass').value.trim();
+      if(!email || !pass){
+        showToast('Bitte E-Mail und Passwort eingeben.', 2000);
+        return;
+      }
+      // Login durchführen
+      provider.loggedIn = true;
+      provider.email = email;
+      save(LS.provider, provider);
+      closeProviderLoginModal();
+      showToast('Erfolgreich eingeloggt! 🎉', 2000);
+      // Profil aktualisieren (Button ändert sich zu "Zum Dashboard")
+      updateProfileView();
+      // Optional: Direkt zum Dashboard
+      setTimeout(() => {
+        setMode('provider');
+        showProviderHome();
+      }, 500);
     };
+  }
+  
+  // Enter-Taste im Login-Modal
+  const providerLoginEmail = document.getElementById('providerLoginEmail');
+  const providerLoginPass = document.getElementById('providerLoginPass');
+  if(providerLoginEmail && providerLoginPass){
+    [providerLoginEmail, providerLoginPass].forEach(field => {
+      field.onkeydown = (e) => {
+        if(e.key === 'Enter'){
+          e.preventDefault();
+          if(btnProviderLoginModal) btnProviderLoginModal.click();
+        }
+      };
+    });
   }
 
   // Logout-Handler (wenn vorhanden)
