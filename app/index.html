@@ -445,6 +445,25 @@
     .heart.on{color:var(--danger)}
 
     /* Bottom nav - Glassmorphism Mittagio-Bar */
+    .nav-badge{
+      position:absolute; top:4px; right:8px;
+      width:18px; height:18px;
+      background:#FFD700; color:#2D3436;
+      border-radius:50%; font-size:11px; font-weight:900;
+      display:flex; align-items:center; justify-content:center;
+      border:2px solid #fff; box-shadow:0 2px 8px rgba(0,0,0,0.15);
+      z-index:10;
+    }
+    .navbtn.bounce{
+      animation:basketBounce 0.5s ease;
+    }
+    .navbtn.glow{
+      filter:drop-shadow(0 0 12px rgba(255,215,0,0.8));
+    }
+    @keyframes basketBounce{
+      0%, 100%{transform:scale(1);}
+      50%{transform:scale(1.15);}
+    }
     .bottom{
       position:fixed; left:0; right:0; bottom:0; z-index:20;
       height:80px; padding-bottom:env(safe-area-inset-bottom);
@@ -1267,18 +1286,21 @@
       background:#e6b800;
     }
     
-    /* SwipeCard Styles (Tinder-Style) - Premium Design */
+    /* SwipeCard Styles (Tinder-Style) - Premium Modern Design */
     .swipe-card{
       position:absolute; top:0; left:0; right:0; bottom:0;
-      background:#fff; border-radius:24px;
-      box-shadow:0 20px 50px rgba(0,0,0,0.1);
+      background:#fff; border-radius:32px;
+      box-shadow:0 20px 60px rgba(0,0,0,.2), 0 0 0 1px rgba(0,0,0,.05);
       overflow:hidden; cursor:grab;
       user-select:none; touch-action:none;
       transition:transform .2s ease-out, opacity .2s, box-shadow .2s;
       will-change:transform;
       height:80vh; max-height:600px;
     }
-    .swipe-card:active{cursor:grabbing}
+    .swipe-card:active{
+      cursor:grabbing;
+      box-shadow:0 15px 45px rgba(0,0,0,.25), 0 0 0 1px rgba(0,0,0,.08);
+    }
     .swipe-card.swiping{
       transition:none;
     }
@@ -1301,24 +1323,25 @@
       border:3px solid rgba(31,157,85,0.6);
     }
     .swipe-card-image{
-      width:100%; height:65%; min-height:300px;
+      width:100%; height:70%; min-height:400px;
       background:#f0f0f0; position:relative;
       overflow:hidden;
-      border-radius:24px 24px 0 0;
+      border-radius:32px 32px 0 0;
     }
     .swipe-card-image img{
       width:100%; height:100%; object-fit:cover;
     }
     .swipe-card-content{
-      padding:28px; height:35%;
+      padding:28px; height:30%;
       display:flex; flex-direction:column;
       justify-content:space-between;
-      background:#fff;
+      background:linear-gradient(to top, #fff 0%, rgba(255,255,255,0.95) 100%);
     }
     .swipe-card-title{
-      font-size:32px; font-weight:900;
+      font-size:36px; font-weight:900;
       margin:0 0 8px; line-height:1.2;
       color:#111;
+      font-family:'Inter', 'Montserrat', sans-serif;
     }
     .swipe-card-provider{
       font-size:16px; color:#666;
@@ -1455,11 +1478,6 @@
         <div class="brand-name">MITTAGIO</div>
       </div>
       <div class="spacer"></div>
-      <!-- Essenskorb oben rechts (Picknickkorb) -->
-      <button id="headerBasketBtn" class="header-basket-btn" onclick="showCart();" style="display:none; position:relative; background:none; border:none; cursor:pointer; padding:8px; margin-right:8px; transition:transform 0.2s ease;">
-        <i data-lucide="shopping-basket" style="width:24px;height:24px; color:#2D3436;"></i>
-        <span id="headerBasketBadge" class="header-basket-badge" style="display:none; position:absolute; top:4px; right:4px; width:18px; height:18px; background:#FFD700; color:#2D3436; border-radius:50%; font-size:11px; font-weight:900; display:flex; align-items:center; justify-content:center; border:2px solid #fff; box-shadow:0 2px 8px rgba(0,0,0,0.15);">0</span>
-      </button>
       <div id="modePill" class="prov-pill" style="display:none;">Dashboard</div>
     </div>
   </div>
@@ -2771,6 +2789,11 @@
       <div class="ico"><i data-lucide="heart"></i></div>
       <div>Favoriten</div>
     </button>
+    <button class="navbtn" data-go="cart" style="position:relative;" id="bottomNavBasketBtn">
+      <div class="ico"><i data-lucide="shopping-basket"></i></div>
+      <div>Mittagsbox</div>
+      <span id="bottomNavBasketBadge" class="nav-badge" style="display:none; position:absolute; top:4px; right:8px; width:18px; height:18px; background:#FFD700; color:#2D3436; border-radius:50%; font-size:11px; font-weight:900; display:flex; align-items:center; justify-content:center; border:2px solid #fff; box-shadow:0 2px 8px rgba(0,0,0,0.15);">0</span>
+    </button>
     <button class="navbtn" data-go="profile" style="position:relative;">
       <div class="ico"><i data-lucide="user"></i></div>
       <div>Meins</div>
@@ -4061,9 +4084,7 @@
     if(discoverFilters) discoverFilters.style.display = isCustomer ? 'block' : 'none';
     if(modePill) modePill.style.display = isProv ? 'inline-flex' : 'none';
     
-    // Essenskorb im Header anzeigen (nur für Endkunden)
-    const headerBasketBtn = document.getElementById('headerBasketBtn');
-    if(headerBasketBtn) headerBasketBtn.style.display = (isCustomer || isStart) ? 'flex' : 'none';
+    // Essenskorb Badge aktualisieren (nur für Endkunden)
     updateHeaderBasket();
 
     if(isStart){
@@ -5059,8 +5080,8 @@
     const img = card.querySelector('.swipe-card-image img');
     if(!img) return;
     
-    const headerBasketBtn = document.getElementById('headerBasketBtn');
-    if(!headerBasketBtn) return;
+    const bottomNavBasketBtn = document.getElementById('bottomNavBasketBtn');
+    if(!bottomNavBasketBtn) return;
     
     // Temporäre Kopie des Bildes erstellen
     const flyImg = img.cloneNode(true);
@@ -5077,7 +5098,7 @@
     `;
     
     const cardRect = card.getBoundingClientRect();
-    const basketRect = headerBasketBtn.getBoundingClientRect();
+    const basketRect = bottomNavBasketBtn.getBoundingClientRect();
     
     flyImg.style.left = cardRect.left + (cardRect.width / 2) - 60 + 'px';
     flyImg.style.top = cardRect.top + (cardRect.height * 0.3) + 'px';
@@ -5094,13 +5115,13 @@
     
     // Basket-Reaction: Bounce + Glow
     setTimeout(() => {
-      headerBasketBtn.classList.add('bounce', 'glow');
+      bottomNavBasketBtn.classList.add('bounce', 'glow');
       if(navigator.vibrate) navigator.vibrate([30, 20, 30]);
       
       // Badge aktualisieren (wenn Item hinzugefügt wurde)
       setTimeout(() => {
         updateHeaderBasket();
-        headerBasketBtn.classList.remove('bounce', 'glow');
+        bottomNavBasketBtn.classList.remove('bounce', 'glow');
       }, 500);
     }, 300);
     
