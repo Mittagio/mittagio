@@ -4801,6 +4801,11 @@
       if(swipeEl) swipeEl.style.display = 'none';
       if(toggleBtn) toggleBtn.classList.remove('active');
     }
+    
+    // Icons aktualisieren
+    if(typeof lucide !== 'undefined'){
+      setTimeout(() => lucide.createIcons(), 50);
+    }
   }
   
   // SwipeCards rendern
