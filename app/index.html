@@ -1279,9 +1279,10 @@
       font-size:11px;
     }
     .discover-category-chip.active{
-      background:#e2e8f0; color:#475569;
-      border-color:rgba(0,0,0,.12);
-      font-weight:700;
+      background:var(--brand); color:#000;
+      border-color:var(--brand);
+      font-weight:900;
+      box-shadow:0 2px 6px rgba(255,204,0,.3);
     }
     .discover-category-chip:not(.active){
       border-color:rgba(0,0,0,.08);
@@ -1877,12 +1878,7 @@
     <section class="view active" id="v-discover">
       <!-- Header: Sticky mit korrekter Hierarchie -->
       <div class="discover-header-sticky">
-        <!-- Ebene 1: Standortsuche (ganz oben) -->
-        <div class="discover-location-search-row">
-          <input type="text" class="discover-location-search-input" id="discoverLocationInput" placeholder="Ort oder PLZ eingeben" />
-        </div>
-        
-        <!-- Ebene 2: Aktueller Standort zentriert (klickbar für GPS) -->
+        <!-- Ebene 1: Standort mit Pin-Icon (statisch, klickbar für GPS) -->
         <div class="discover-location-row">
           <button class="discover-location-pill-clickable" type="button" id="btnDiscoverLocationGPS">
             <i data-lucide="map-pin" class="discover-location-icon-left"></i>
@@ -1890,16 +1886,9 @@
           </button>
         </div>
         
-        <!-- Ebene 3: Buttons "In der Nähe" (links) und "Heute" (rechts) in einer Zeile -->
-        <div class="discover-quick-filters-row">
-          <button class="quick-filter-btn" id="quickFilterNear" data-filter="near" style="flex:1;">
-            <i data-lucide="navigation"></i>
-            <span>In der Nähe</span>
-          </button>
-          <button class="quick-filter-btn" id="quickFilterToday" data-filter="today" style="flex:1;">
-            <i data-lucide="calendar"></i>
-            <span>Heute</span>
-          </button>
+        <!-- Ebene 2: Horizontale Scroll-Liste für Wochentage -->
+        <div class="discover-calendar-scroll" id="discoverCalendar">
+          <!-- Wird dynamisch befüllt -->
         </div>
         
         <!-- Navigation: "Zur Liste wechseln" Button (sticky) -->
@@ -1991,6 +1980,17 @@
     <!-- CUSTOMER: Favorites -->
     <section class="view" id="v-fav">
       <div class="panel">
+        <!-- Modern Header mit Subline -->
+        <div id="favHeader" style="padding:20px 0 16px; border-bottom:1px solid rgba(0,0,0,0.06); margin-bottom:20px;">
+          <h1 style="font-size:32px; font-weight:900; margin:0 0 8px; color:#111; font-family:'Inter', 'Montserrat', sans-serif; line-height:1.2;">Favoriten</h1>
+          <p style="font-size:15px; color:#666; margin:0; line-height:1.5;">Deine Auswahl für die nächsten Tage.</p>
+        </div>
+        
+        <!-- Day-Switcher (horizontale Pillen-Navigation) -->
+        <div id="favDaySwitcher" style="display:flex; gap:8px; overflow-x:auto; padding:0 0 16px; margin-bottom:20px; scrollbar-width:none; -webkit-overflow-scrolling:touch;">
+          <!-- Wird dynamisch befüllt -->
+        </div>
+        
         <!-- Empty State (wenn beide Listen leer) -->
         <div id="favEmptyState" style="display:none; flex-direction:column; align-items:center; text-align:center; padding:60px 20px; gap:24px;">
           <div style="width:120px; height:120px; background:linear-gradient(135deg, rgba(255,215,0,0.1) 0%, rgba(255,184,0,0.15) 100%); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:64px; flex-shrink:0;">
@@ -2050,7 +2050,7 @@
           <h3 style="font-weight:900; font-size:24px; margin:0 0 20px; line-height:1.3; color:#2D3436;">Meine Mittagsbox</h3>
           <div id="cartBox" class="hint">Deine Mittagsbox ist leer.</div>
           <button class="btn" id="btnCheckout" type="button" style="display:none; width:100%; min-height:56px; font-size:18px; font-weight:800; margin-top:20px; background:#FFD700; color:#334155; border:none; border-radius:16px; box-shadow:0 4px 16px rgba(255,215,0,0.25);" data-icon="card">
-            <i data-lucide="ticket" style="width:22px;height:22px;"></i>
+            <i data-lucide="hash" style="width:22px;height:22px;"></i>
             <span>Abholnummer jetzt sichern</span>
           </button>
           <div class="mini" id="cartNote" style="display:none; margin-top:12px; padding:12px; background:rgba(255,184,0,0.08); border-radius:12px; font-size:12px; color:#666; line-height:1.5; text-align:center;">
@@ -2067,7 +2067,7 @@
               <span style="font-size:11px; color:#666; font-weight:600;">Ein Anbieter</span>
             </div>
             <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
-              <i data-lucide="ticket" style="width:24px;height:24px; color:#FFD700;"></i>
+              <i data-lucide="hash" style="width:24px;height:24px; color:#FFD700;"></i>
               <span style="font-size:11px; color:#666; font-weight:600;">Abholnummer sofort</span>
             </div>
           </div>
@@ -2196,7 +2196,7 @@
             <i data-lucide="map-pin"></i> Route öffnen
           </button>
           <button class="btn ghost" type="button" id="btnToOrders" style="width:100%; min-height:44px;">
-            <i data-lucide="ticket"></i> Zu meinen Abholnummern
+            <i data-lucide="hash"></i> Zu meinen Abholnummern
           </button>
         </div>
       </div>
@@ -2212,8 +2212,8 @@
       <!-- Quick-History (Aktive Tickets) -->
       <div class="panel" id="profileTicketsSection" style="margin-top:20px; padding:20px; border-radius:20px; box-shadow:0 2px 12px rgba(0,0,0,.06); display:none;">
         <div style="font-weight:900; font-size:18px; margin-bottom:16px; color:#2D3436; display:flex; align-items:center; gap:8px;">
-          <i data-lucide="ticket" style="width:20px;height:20px; color:#FFD700;"></i>
-          <span>Meine heutigen Tickets</span>
+          <i data-lucide="hash" style="width:20px;height:20px; color:#FFD700;"></i>
+          <span>Meine heutigen Abholnummern</span>
         </div>
         <div id="profileActiveTicketsList" style="display:flex; flex-direction:column; gap:12px;">
           <!-- Wird dynamisch befüllt -->
@@ -2280,8 +2280,8 @@
             <p>Deine Abholnummer für die Mittagspause.</p>
           </details>
           <details>
-            <summary>Kann ich ohne Ticket bestellen?</summary>
-            <p>Nein. Angebote ohne Ticket kannst du nur ansehen.</p>
+            <summary>Kann ich ohne Abholnummer bestellen?</summary>
+            <p>Nein. Angebote ohne Abholnummer kannst du nur ansehen.</p>
           </details>
           <details>
             <summary>Wann kann ich abholen?</summary>
@@ -5087,7 +5087,7 @@
         <div style="font-size:48px; margin-bottom:20px;">⏳</div>
         <h3 style="margin-bottom:12px;">Zahlung noch nicht bestätigt</h3>
         <p class="hint" style="margin-bottom:8px;">Status: ${statusLabel}</p>
-        <p class="hint" style="margin-bottom:24px;">Das Ticket wird nach erfolgreicher Zahlung angezeigt.</p>
+        <p class="hint" style="margin-bottom:24px;">Die Abholnummer wird nach erfolgreicher Zahlung angezeigt.</p>
         <button class="btn" type="button" onclick="showOrders()" style="width:100%; min-height:44px;">
           <i data-lucide="arrow-left"></i> Zurück
         </button>
@@ -5425,22 +5425,6 @@
   let currentProviderFilter = null; // Provider-ID für Provider-Filter
   
   function renderDiscover(){
-    // Header: Standort-Input
-    const locationInput = document.getElementById('discoverLocationInput');
-    if(locationInput){
-      locationInput.value = locationQuery || '';
-      locationInput.oninput = ()=>{
-        locationQuery = locationInput.value;
-        renderDiscover();
-      };
-      locationInput.onkeydown = (e)=>{
-        if(e.key === 'Enter'){
-          e.preventDefault();
-          renderDiscover();
-        }
-      };
-    }
-    
     // GPS-Button: Aktueller Standort (klickbar für GPS)
     const btnDiscoverLocationGPS = document.getElementById('btnDiscoverLocationGPS');
     const discoverCurrentLocation = document.getElementById('discoverCurrentLocation');
@@ -5500,31 +5484,12 @@
     }
     switchDiscoverView(discoverViewMode);
     
-    // Quick-Filter Buttons
-    const quickFilterNear = document.getElementById('quickFilterNear');
-    const quickFilterToday = document.getElementById('quickFilterToday');
-    if(quickFilterNear){
-      quickFilterNear.classList.toggle('active', activeDiscoverFilter === 'near' && !currentProviderFilter);
-      quickFilterNear.onclick = () => {
-        activeDiscoverFilter = 'near';
-        currentProviderFilter = null; // Provider-Filter zurücksetzen
-        renderDiscover();
-      };
-    }
-    if(quickFilterToday){
-      const todayKey = isoDate(new Date());
-      quickFilterToday.classList.toggle('active', activeDay === todayKey);
-      quickFilterToday.onclick = () => {
-        activeDay = todayKey;
-        renderDiscover();
-      };
-    }
-    
-    // Kategorien rendern (dezent, Reihenfolge: Fleisch -> Salat -> Vegetarisch -> Vegan -> Fisch)
+    // Kategorien rendern (Reihenfolge: In der Nähe -> Fleisch -> Salat -> Vegetarisch)
     const categoriesEl = document.getElementById('discoverCategories');
     if(categoriesEl){
       categoriesEl.innerHTML = '';
       const cats = [
+        {id:'near', label:'In der Nähe', icon: 'navigation'},
         {id:'Mit Fleisch', label:'Fleisch', icon: 'drumstick'},
         {id:'Salat', label:'Salat', icon: 'leaf'},
         {id:'Vegetarisch', label:'Vegetarisch', icon: 'carrot'},
@@ -5533,7 +5498,8 @@
       ];
       cats.forEach(cat=>{
         const btn = document.createElement('button');
-        btn.className = 'discover-category-chip' + (activeDiscoverFilter === cat.id && !currentProviderFilter ? ' active' : '');
+        const isActive = activeDiscoverFilter === cat.id && !currentProviderFilter;
+        btn.className = 'discover-category-chip' + (isActive ? ' active' : '');
         btn.setAttribute('data-cat', cat.id);
         // Nur Icon, kein Emoji für dezentes Design
         btn.innerHTML = `<i data-lucide="${cat.icon}"></i><span>${esc(cat.label)}</span>`;
@@ -6892,19 +6858,23 @@
       <div class="dish-details">
         <div>
           <div class="dish-header">
-            <h3 class="dish-name">${esc(data.dish||'Gericht')} <span class="dish-price" style="font-size:18px; color:var(--brand); font-weight:900; margin-left:8px;">${euro(data.price)}</span></h3>
+            <h3 class="dish-name" style="font-weight:900; font-size:18px; line-height:1.3; margin:0; color:#111;">${esc(data.dish||'Gericht')}</h3>
+            <div class="dish-price" style="font-size:20px; color:var(--brand); font-weight:900; margin-top:4px;">${euro(data.price)}</div>
           </div>
-          <div class="dish-provider" style="display:flex; align-items:center; gap:6px; margin-top:4px;">
-            <i data-lucide="store" style="width:14px;height:14px; color:#666;"></i>
-            <span>${esc(data.providerName||'Anbieter')}</span>
-            ${data.pickupWindow ? `<span style="margin-left:8px; display:flex; align-items:center; gap:4px; color:#666; font-size:12px;"><i data-lucide="clock" style="width:12px;height:12px;"></i> ${esc(data.pickupWindow)}</span>` : ''}
-            ${data.dineInPossible ? `<i data-lucide="utensils" style="width:14px;height:14px; color:#1f9d55; margin-left:4px;" title="Vor Ort"></i>` : ''}
-            ${!data.dineInPossible && data.hasPickupCode ? `<i data-lucide="shopping-bag" style="width:14px;height:14px; color:#666; margin-left:4px;" title="Zum Mitnehmen"></i>` : ''}
+          <div class="dish-meta" style="margin-top:8px; display:flex; flex-direction:column; gap:4px; font-size:12px; color:#666; line-height:1.4;">
+            <div style="display:flex; align-items:center; gap:4px;">
+              <i data-lucide="store" style="width:12px;height:12px; color:#666;"></i>
+              <span>${esc(data.providerName||'Anbieter')}</span>
+            </div>
+            ${data.pickupWindow ? `<div style="display:flex; align-items:center; gap:4px;">
+              <i data-lucide="clock" style="width:12px;height:12px; color:#666;"></i>
+              <span>${esc(data.pickupWindow)}</span>
+            </div>` : ''}
+            ${distanceDisplay ? `<div style="display:flex; align-items:center; gap:4px;">
+              ${distanceDisplay}
+            </div>` : ''}
           </div>
           ${socialProof}
-        </div>
-        <div class="dish-footer">
-          ${distanceDisplay}
         </div>
       </div>
     `;
@@ -7007,7 +6977,7 @@
     
     // 3. Abholnummer (wenn verfügbar und noch Platz)
     if(data.hasPickupCode && pickupBadges.length < 3) {
-      pickupBadges.push({class:'code', text:'Abholnummer', icon:'ticket'});
+      pickupBadges.push({class:'code', text:'Abholnummer', icon:'hash'});
     }
     
     // Max 3 Badges sicherstellen
@@ -7110,7 +7080,7 @@
     const interactive = opts.interactive !== false;
     const showActions = opts.showActions === true;
     const isToday = data.day === (opts.todayKey || isoDate(new Date()));
-    const statusLine = data.hasPickupCode ? (isToday ? 'Online-Ticket · Heute' : 'Online-Ticket') : '';
+    const statusLine = data.hasPickupCode ? (isToday ? 'Abholnummer · Heute' : 'Abholnummer') : '';
     const card=document.createElement('div');
     card.className='card';
     card.style.cursor = interactive ? 'pointer' : 'default';
@@ -7127,7 +7097,7 @@
     img.innerHTML = `
       <img alt="${esc(data.dish||'Gericht')}" src="${esc(imgSrc)}" />
       ${data.active===false?'<div class="badge inactive">Inaktiv</div>':''}
-      ${data.hasPickupCode?'<div class="badge code">Ticket</div>':''}
+      ${data.hasPickupCode?'<div class="badge code">Abholnummer</div>':''}
       ${data.dineInPossible?'<div class="badge dine">Vor Ort</div>':''}
     `;
 
@@ -7153,7 +7123,7 @@
       item.innerHTML = `${iconMarkup(icon)}<span>${esc(text)}</span>`;
       info.appendChild(item);
     };
-    if(data.hasPickupCode) addInfo('ticket', 'Online-Ticket');
+    if(data.hasPickupCode) addInfo('hash', 'Abholnummer');
     if(data.dineInPossible) addInfo('utensils', 'Vor Ort');
     if(info.childElementCount){ body.appendChild(info); }
 
@@ -7219,18 +7189,45 @@
     const card = document.createElement('div');
     card.className = 'card';
     card.style.position = 'relative';
+    // Glassmorphism-Effekt
+    card.style.background = 'rgba(255,255,255,0.95)';
+    card.style.backdropFilter = 'blur(10px)';
+    card.style.webkitBackdropFilter = 'blur(10px)';
+    card.style.boxShadow = '0 4px 16px rgba(0,0,0,0.08)';
+    card.style.border = '1px solid rgba(0,0,0,0.05)';
+    card.style.transition = 'transform 0.2s ease, box-shadow 0.2s ease';
+    card.onmouseenter = () => {
+      card.style.transform = 'translateY(-2px)';
+      card.style.boxShadow = '0 8px 24px rgba(0,0,0,0.12)';
+    };
+    card.onmouseleave = () => {
+      card.style.transform = 'translateY(0)';
+      card.style.boxShadow = '0 4px 16px rgba(0,0,0,0.08)';
+    };
     
     const imgSrc = data.imageUrl || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70';
     
-    // Entfernen-Button (X oben rechts)
+    // Image mit Preis-Overlay (oben rechts)
+    const img = document.createElement('div');
+    img.className = 'img';
+    img.style.position = 'relative';
+    img.style.overflow = 'hidden';
+    img.innerHTML = `
+      <img alt="${esc(data.dish||'Gericht')}" src="${esc(imgSrc)}" style="transition:transform 0.3s ease;" />
+      <div style="position:absolute; top:12px; right:12px; background:rgba(255,255,255,0.95); backdrop-filter:blur(10px); padding:8px 12px; border-radius:12px; font-size:18px; font-weight:900; color:var(--brand); box-shadow:0 2px 8px rgba(0,0,0,0.15);">
+        ${euro(data.price)}
+      </div>
+    `;
+    
+    // Entfernen-Button (X oben links)
     const removeBtn = document.createElement('button');
     removeBtn.type = 'button';
-    removeBtn.className = 'card-heart';
     removeBtn.style.position = 'absolute';
     removeBtn.style.top = '12px';
-    removeBtn.style.right = '12px';
+    removeBtn.style.left = '12px';
     removeBtn.style.zIndex = '10';
     removeBtn.style.background = 'rgba(255,255,255,0.95)';
+    removeBtn.style.backdropFilter = 'blur(10px)';
     removeBtn.style.border = 'none';
     removeBtn.style.borderRadius = '50%';
     removeBtn.style.width = '36px';
@@ -7246,21 +7243,32 @@
       toggleDishFav(data.id);
     };
     
-    // Image
-    const img = document.createElement('div');
-    img.className = 'img';
-    img.innerHTML = `<img alt="${esc(data.dish||'Gericht')}" src="${esc(imgSrc)}" />`;
-    
     // Body
     const body = document.createElement('div');
     body.className = 'body';
     body.innerHTML = `
-      <p class="title">${esc(data.dish||'Gericht')}</p>
-      <p class="sub">${esc(data.providerName||'Anbieter')}</p>
-      <div class="meta" style="margin-top:12px; margin-bottom:16px;">
-        <div class="price" style="font-size:24px; font-weight:900; color:var(--brand);">${euro(data.price)}</div>
-      </div>
+      <h3 style="font-size:20px; font-weight:900; margin:0 0 8px; color:#111; line-height:1.3;">${esc(data.dish||'Gericht')}</h3>
+      <p style="font-size:13px; color:#666; margin:0 0 4px; line-height:1.4;">${esc(data.providerName||'Anbieter')}</p>
+      ${data.pickupWindow ? `<p style="font-size:12px; color:#999; margin:0 0 12px; display:flex; align-items:center; gap:4px;"><i data-lucide="clock" style="width:12px;height:12px;"></i> ${esc(data.pickupWindow)}</p>` : ''}
+      ${data.distanceKm != null ? `<p style="font-size:12px; color:#999; margin:0 0 12px; display:flex; align-items:center; gap:4px;"><i data-lucide="map-pin" style="width:12px;height:12px;"></i> ${Number(data.distanceKm).toFixed(1)} km</p>` : ''}
     `;
+    
+    // Abholnummer-Quickview (falls bereits gebucht)
+    const order = orders.find(ord => ord.items && ord.items.some(item => item.offerId === data.id));
+    if(order && order.pickupCode){
+      const codeDisplay = document.createElement('div');
+      codeDisplay.style.marginTop = '12px';
+      codeDisplay.style.padding = '10px';
+      codeDisplay.style.background = 'rgba(255,215,0,0.1)';
+      codeDisplay.style.borderRadius = '8px';
+      codeDisplay.style.fontFamily = 'monospace';
+      codeDisplay.style.fontSize = '14px';
+      codeDisplay.style.fontWeight = '700';
+      codeDisplay.style.color = 'var(--brand)';
+      codeDisplay.style.textAlign = 'center';
+      codeDisplay.innerHTML = `Abholnummer: ${order.pickupCode}`;
+      body.appendChild(codeDisplay);
+    }
     
     // "In die Mittagsbox" Button
     const addToCartBtn = document.createElement('button');
@@ -7270,7 +7278,7 @@
     addToCartBtn.style.minHeight = '48px';
     addToCartBtn.style.fontSize = '16px';
     addToCartBtn.style.fontWeight = '700';
-    addToCartBtn.style.marginTop = '8px';
+    addToCartBtn.style.marginTop = '12px';
     addToCartBtn.innerHTML = `${iconMarkup('shopping-basket')} <span>Heute essen</span>`;
     addToCartBtn.onclick = (e) => {
       e.stopPropagation();
@@ -7296,7 +7304,7 @@
     
     // Prüfe ob Gericht Abholcode hat
     if(!data.hasPickupCode){
-      showToast('Dieses Gericht hat keinen Abholcode. Bitte wähle ein anderes Gericht.', 3000);
+      showToast('Dieses Gericht hat keine Abholnummer. Bitte wähle ein anderes Gericht.', 3000);
       return;
     }
     
@@ -7318,6 +7326,8 @@
     }
   }
 
+  let activeFavDay = isoDate(new Date()); // Aktiver Tag in Favoriten
+  
   function renderFavorites(){
     const provGrid=document.getElementById('favProviders');
     const provEmpty=document.getElementById('emptyFavProviders');
@@ -7326,9 +7336,44 @@
     const favEmptyState = document.getElementById('favEmptyState');
     const favContent = document.getElementById('favContent');
     if(!provGrid || !dishGrid || !provEmpty || !dishEmpty) return;
+    
+    // Day-Switcher rendern
+    const daySwitcher = document.getElementById('favDaySwitcher');
+    if(daySwitcher){
+      daySwitcher.innerHTML = '';
+      const today = new Date();
+      for(let i = 0; i < 7; i++){
+        const d = new Date(today);
+        d.setDate(d.getDate() + i);
+        const key = isoDate(d);
+        const btn = document.createElement('button');
+        btn.className = 'fav-day-pill' + (activeFavDay === key ? ' active' : '');
+        btn.style.flex = '0 0 auto';
+        btn.style.padding = '10px 18px';
+        btn.style.borderRadius = '999px';
+        btn.style.border = activeFavDay === key ? 'none' : '1.5px solid rgba(0,0,0,0.15)';
+        btn.style.fontSize = '13px';
+        btn.style.fontWeight = activeFavDay === key ? '900' : '600';
+        btn.style.background = activeFavDay === key ? 'var(--brand)' : 'transparent';
+        btn.style.color = activeFavDay === key ? '#000' : '#666';
+        btn.style.cursor = 'pointer';
+        btn.style.transition = 'all 0.2s ease';
+        btn.style.whiteSpace = 'nowrap';
+        if(i === 0){
+          btn.textContent = 'Heute';
+        } else {
+          btn.textContent = fmtDay(d).split(',')[0]; // Nur Wochentag
+        }
+        btn.onclick = () => {
+          activeFavDay = key;
+          renderFavorites();
+        };
+        daySwitcher.appendChild(btn);
+      }
+    }
 
     const candidates = offers
-      .filter(o => o.active !== false && providerFavs.has(o.providerId))
+      .filter(o => o.active !== false && providerFavs.has(o.providerId) && o.day === activeFavDay)
       .sort((a,b)=>String(b.day||'').localeCompare(String(a.day||'')));
     const bestByProvider = new Map();
     candidates.forEach(o=>{
@@ -7337,7 +7382,7 @@
     const providerList = Array.from(bestByProvider.values());
 
     const dishList = offers
-      .filter(o => o.active !== false && dishFavs.has(o.id))
+      .filter(o => o.active !== false && dishFavs.has(o.id) && o.day === activeFavDay)
       .sort((a,b)=>String(b.day||'').localeCompare(String(a.day||'')));
 
     // Empty State: Wenn beide Listen leer sind, zeige zentrierten Empty State
@@ -8610,7 +8655,7 @@
 
   function addToCart(o){
     if(!o || !o.hasPickupCode){
-      alert('Ohne Abholcode nur ansehen.');
+      alert('Ohne Abholnummer nur ansehen.');
       return false;
     }
     // Multi-Vendor erlaubt (keine Warnung mehr, nur Info im Korb)
@@ -9113,7 +9158,7 @@
     });
     
     if(!hasPayment){
-      alert('Diese Bestellung enthält Gerichte ohne Abholcode. Bitte wähle Angebote mit Abholcode aus.');
+      alert('Diese Bestellung enthält Gerichte ohne Abholnummer. Bitte wähle Angebote mit Abholnummer aus.');
       return;
     }
     
@@ -9743,7 +9788,7 @@
             </div>
             <div style="flex:1; min-width:0;">
               <div style="font-weight:900; font-size:22px; margin-bottom:4px; color:#2D3436; line-height:1.2;">Willkommen bei Mittagio 👋</div>
-              <div class="hint" style="font-size:14px; color:#666; line-height:1.4; margin-bottom:12px;">Bestelle schneller und finde deine Abholcodes wieder.</div>
+              <div class="hint" style="font-size:14px; color:#666; line-height:1.4; margin-bottom:12px;">Bestelle schneller und finde deine Abholnummern wieder.</div>
               <button class="btn-primary" type="button" id="btnProfileCreateAccount" style="width:100%; max-width:200px; min-height:44px; font-weight:700;">
                 Profil anlegen
               </button>
@@ -10735,8 +10780,8 @@
           <li>0,89 € zzgl. MwSt. pro Online-Bestellung inkl. aller Bank- & Zahlungsgebühren (pro Bestellung, egal wie viele Gerichte)</li>
         </ul>
         
-        <p style="margin-top:16px;"><strong>Abholcode:</strong></p>
-        <p>Abholcode = Zahlungs- & Abholnachweis. Abwicklungsgebühr fällt auch bei Nicht-Abholung an.</p>
+        <p style="margin-top:16px;"><strong>Abholnummer:</strong></p>
+        <p>Abholnummer = Zahlungs- & Abholnachweis. Abwicklungsgebühr fällt auch bei Nicht-Abholung an.</p>
         
         <p style="margin-top:16px;"><strong>Verantwortung:</strong></p>
         <p>Anbieter ist verantwortlich für Inhalte/Speisen/gesetzliche Vorgaben.</p>
@@ -10815,7 +10860,7 @@
           <p style="margin-bottom:20px;">Die Nutzung ist grundsätzlich ohne Registrierung möglich. Kunden können Mittagsangebote auswählen und vorbestellen. Ein Anspruch auf Verfügbarkeit bestimmter Angebote besteht nicht.</p>
           
           <p style="margin-bottom:16px;"><strong>4. Bestellung & Abholung</strong></p>
-          <p style="margin-bottom:20px;">Mit Abschluss der Bestellung erhält der Kunde einen Abholcode. Der Abholcode ist beim Anbieter vorzuzeigen. Die Abholung erfolgt innerhalb der vom Anbieter angegebenen Essenszeit.</p>
+          <p style="margin-bottom:20px;">Mit Abschluss der Bestellung erhält der Kunde eine Abholnummer. Die Abholnummer ist beim Anbieter vorzuzeigen. Die Abholung erfolgt innerhalb der vom Anbieter angegebenen Essenszeit.</p>
           
           <p style="margin-bottom:16px;"><strong>5. Preise & Bezahlung</strong></p>
           <p style="margin-bottom:20px;">Alle Preise werden vom Anbieter festgelegt. Die Bezahlung erfolgt direkt beim Anbieter vor Ort, sofern nicht anders angegeben. Mittagio erhebt aktuell keine Gebühren vom Kunden.</p>
@@ -10876,7 +10921,7 @@
             <li style="margin-bottom:8px;">ausgewähltes Gericht</li>
             <li style="margin-bottom:8px;">Anbieter</li>
             <li style="margin-bottom:8px;">Abholzeit (ungefähr)</li>
-            <li style="margin-bottom:8px;">generierter Abholcode</li>
+            <li style="margin-bottom:8px;">generierte Abholnummer</li>
           </ul>
           <p style="margin-bottom:20px;">
             👉 Keine Pflicht zur Registrierung<br>
@@ -10884,7 +10929,7 @@
           </p>
           
           <p style="margin-bottom:12px;"><strong>c) Lokale Speicherung (PWA)</strong></p>
-          <p style="margin-bottom:20px;">Bestellungen und Abholcodes werden lokal auf deinem Gerät gespeichert (z. B. im LocalStorage), damit du sie auch offline wieder anzeigen kannst. Diese Daten werden nicht automatisch an uns übertragen.</p>
+          <p style="margin-bottom:20px;">Bestellungen und Abholnummern werden lokal auf deinem Gerät gespeichert (z. B. im LocalStorage), damit du sie auch offline wieder anzeigen kannst. Diese Daten werden nicht automatisch an uns übertragen.</p>
           
           <p style="margin-bottom:16px;"><strong>4. Weitergabe von Daten</strong></p>
           <p style="margin-bottom:20px;">Deine Daten werden nur an den jeweiligen Anbieter weitergegeben, soweit dies zur Abwicklung deiner Bestellung erforderlich ist.</p>
@@ -10945,7 +10990,7 @@
         <p style="font-size:14px; line-height:1.5; margin-top:8px; padding-bottom:12px; color:var(--muted);">Du findest Mittagsangebote in deiner Stadt, optional bezahlst du online und holst zur gewählten Zeit ab.</p>
       </details>
       <details>
-        <summary style="font-size:15px; line-height:1.4; font-weight:500; padding:12px 0;">Was ist der Abholcode?</summary>
+        <summary style="font-size:15px; line-height:1.4; font-weight:500; padding:12px 0;">Was ist die Abholnummer?</summary>
         <p style="font-size:14px; line-height:1.5; margin-top:8px; padding-bottom:12px; color:var(--muted);">Deine Abholnummer für die Mittagspause. Du erhältst sie nach erfolgreicher Online-Zahlung.</p>
       </details>
       <details>
@@ -10953,8 +10998,8 @@
         <p style="font-size:14px; line-height:1.5; margin-top:8px; padding-bottom:12px; color:var(--muted);">Nein. Online-Zahlung ist optional. Eine Abholnummer gibt's nur bei Online-Zahlung.</p>
       </details>
       <details>
-        <summary style="font-size:15px; line-height:1.4; font-weight:500; padding:12px 0;">Kann ich ohne Abholcode bestellen?</summary>
-        <p style="font-size:14px; line-height:1.5; margin-top:8px; padding-bottom:12px; color:var(--muted);">Nein. Angebote ohne Abholcode kannst du nur ansehen.</p>
+        <summary style="font-size:15px; line-height:1.4; font-weight:500; padding:12px 0;">Kann ich ohne Abholnummer bestellen?</summary>
+        <p style="font-size:14px; line-height:1.5; margin-top:8px; padding-bottom:12px; color:var(--muted);">Nein. Angebote ohne Abholnummer kannst du nur ansehen.</p>
       </details>
       <details>
         <summary style="font-size:15px; line-height:1.4; font-weight:500; padding:12px 0;">Wann kann ich abholen?</summary>
@@ -14182,7 +14227,7 @@
       options.style.marginTop='10px';
       const codeLabel=document.createElement('div');
       codeLabel.className='hint';
-      codeLabel.textContent='Abholcode & Online-Zahlung';
+      codeLabel.textContent='Abholnummer & Online-Zahlung';
       const codeRow=document.createElement('div'); codeRow.className='answers';
       const codeYes=document.createElement('button'); codeYes.type='button'; codeYes.className='ans'+(w.data.hasPickupCode?' on':''); codeYes.textContent='Ja';
       const codeNo=document.createElement('button'); codeNo.type='button'; codeNo.className='ans'+(!w.data.hasPickupCode?' on':''); codeNo.textContent='Nein';
@@ -14242,7 +14287,7 @@
         const block2 = document.createElement('div');
         block2.style.cssText = 'padding:12px; background:#f0f7f0; border-radius:12px; border:1px solid #4caf50;';
         block2.innerHTML = `
-          <div style="font-weight:600; font-size:14px; margin-bottom:8px; color:#2e7d32;">Online-Zahlung inkl. Abholcode</div>
+          <div style="font-weight:600; font-size:14px; margin-bottom:8px; color:#2e7d32;">Online-Zahlung inkl. Abholnummer</div>
           <ul style="margin:0; padding-left:20px; font-size:13px; line-height:1.6; color:#333;">
             <li>Kunde bezahlt online</li>
             <li>Geld ist sicher</li>
@@ -14845,7 +14890,7 @@
       if(!order) return;
       // Code nur kopieren wenn PAID
       if(order.status !== 'PAID'){
-        alert('Abholcode wird nach erfolgreicher Zahlung generiert.');
+        alert('Abholnummer wird nach erfolgreicher Zahlung generiert.');
         return;
       }
       const code = order.pickupCode || order.code || '';
@@ -14967,7 +15012,7 @@
         const code = order.pickupCode || order.code || '';
         if(code) openFullscreenCode(code);
       } else {
-        alert('Abholcode wird nach erfolgreicher Zahlung generiert.');
+        alert('Abholnummer wird nach erfolgreicher Zahlung generiert.');
       }
     };
   }
