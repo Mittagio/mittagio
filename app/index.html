@@ -4302,6 +4302,9 @@
     const fabLabel = document.getElementById('fabProviderAddOfferLabel');
     if(fab) fab.style.display = 'flex';
     if(fabLabel) fabLabel.style.display = 'block';
+    
+    // Browser-Verlauf aktualisieren
+    history.pushState({view: 'provider-home', mode: mode}, '', location.pathname);
   }
   function showProviderPickups(){
     setProviderNavActive('provider-pickups');
@@ -4312,6 +4315,9 @@
     const fabLabel = document.getElementById('fabProviderAddOfferLabel');
     if(fab) fab.style.display = 'none';
     if(fabLabel) fabLabel.style.display = 'none';
+    
+    // Browser-Verlauf aktualisieren
+    history.pushState({view: 'provider-pickups', mode: mode}, '', location.pathname);
   }
   function showProviderWeek(){
     setProviderNavActive('provider-home');
@@ -4322,6 +4328,9 @@
     const fabLabel = document.getElementById('fabProviderAddOfferLabel');
     if(fab) fab.style.display = 'none';
     if(fabLabel) fabLabel.style.display = 'none';
+    
+    // Browser-Verlauf aktualisieren
+    history.pushState({view: 'provider-week', mode: mode}, '', location.pathname);
   }
   function showProviderCookbook(){
     setProviderNavActive('provider-cookbook');
@@ -4332,6 +4341,9 @@
     const fabLabel = document.getElementById('fabProviderAddOfferLabel');
     if(fab) fab.style.display = 'none';
     if(fabLabel) fabLabel.style.display = 'none';
+    
+    // Browser-Verlauf aktualisieren
+    history.pushState({view: 'provider-cookbook', mode: mode}, '', location.pathname);
   }
   function showProviderProfile(){
     setProviderNavActive('provider-profile');
@@ -4342,11 +4354,17 @@
     const fabLabel = document.getElementById('fabProviderAddOfferLabel');
     if(fab) fab.style.display = 'none';
     if(fabLabel) fabLabel.style.display = 'none';
+    
+    // Browser-Verlauf aktualisieren
+    history.pushState({view: 'provider-profile', mode: mode}, '', location.pathname);
   }
   function showProviderBilling(){
     setProviderNavActive('provider-profile');
     showView(views.providerBilling);
     renderBilling();
+    
+    // Browser-Verlauf aktualisieren
+    history.pushState({view: 'provider-billing', mode: mode}, '', location.pathname);
   }
 
   // --- Chips render ---
