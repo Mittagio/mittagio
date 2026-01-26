@@ -3883,6 +3883,40 @@
   </div>
 </div>
 
+<!-- Login-Konflikt Modal (Ein-Gerät-Schranke) -->
+<div class="backdrop" id="loginConflictBd" onclick="closeLoginConflictModal()" style="background:rgba(0,0,0,0.7); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); display:none;"></div>
+<div class="sheet" id="loginConflictSheet" style="max-width:420px; border-radius:24px; overflow:hidden; display:none;">
+  <div class="handle"></div>
+  <div class="sheet-body" style="padding:24px;">
+    <div style="text-align:center; margin-bottom:24px;">
+      <div style="width:64px; height:64px; margin:0 auto 16px; background:linear-gradient(135deg, rgba(227,77,77,0.1) 0%, rgba(255,215,0,0.08) 100%); border-radius:50%; display:flex; align-items:center; justify-content:center; border:2px solid rgba(227,77,77,0.3);">
+        <i data-lucide="smartphone" style="width:32px;height:32px; color:#E34D4D;"></i>
+      </div>
+      <h2 style="margin:0 0 8px; font-size:24px; font-weight:900; color:#2D3436;">Anderes Gerät aktiv</h2>
+      <p style="margin:0; font-size:15px; color:#666; line-height:1.5;">
+        Du bist aktuell bereits auf einem anderen Gerät (z.B. Tablet Kasse) angemeldet. Mittagio unterstützt im Standard-Plan eine aktive Sitzung zur Zeit.
+      </p>
+    </div>
+    
+    <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:20px;">
+      <button class="btn" type="button" id="btnLoginConflictTakeover" style="width:100%; min-height:52px; background:#E34D4D; color:#fff; font-weight:800; border:none; border-radius:12px;">
+        <i data-lucide="check-circle" style="width:20px;height:20px; margin-right:8px;"></i>
+        Diesen Account hier nutzen
+      </button>
+      <button class="btn ghost" type="button" onclick="closeLoginConflictModal()" style="width:100%; min-height:44px;">
+        Abbrechen
+      </button>
+    </div>
+    
+    <div style="padding-top:16px; border-top:1px solid #eee; text-align:center;">
+      <p style="margin:0; font-size:12px; color:#666; line-height:1.5;">
+        Du möchtest Küche und Kasse gleichzeitig vernetzen?<br>
+        <a href="mailto:support@mittagio.de" style="color:#E34D4D; text-decoration:none; font-weight:600;">Melde dich bei Mike für das Team-Upgrade.</a>
+      </p>
+    </div>
+  </div>
+</div>
+
 <!-- Support-Kontakt Sheet -->
 <div class="backdrop" id="supportContactBd" onclick="closeSupportContact()" style="background:rgba(0,0,0,0.7); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);"></div>
 <div class="sheet" id="supportContactSheet">
@@ -3980,7 +4014,8 @@
     mode: 'mittagio_mode_v1',
     discoverView: 'mittagio_discover_view_v1',
     orderHistory: 'mittagio_order_history_v1',
-    swipeOnboardingShown: 'mittagio_swipe_onboarding_shown_v1'
+    swipeOnboardingShown: 'mittagio_swipe_onboarding_shown_v1',
+    providerSession: 'mittagio_provider_session_v1' // Session-ID für Ein-Gerät-Schranke
   };
   const load = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } };
   const save = (k, v) => localStorage.setItem(k, JSON.stringify(v));
@@ -5129,6 +5164,12 @@
 
   // --- Provider views ---
   function showProviderHome(){
+    // Session-Validität prüfen
+    if(!checkSessionValidity()){
+      // Session ungültig, wurde bereits ausgeloggt
+      return;
+    }
+    
     setProviderNavActive('provider-home');
     showView(views.providerHome);
     renderProviderHome();
@@ -9732,21 +9773,137 @@
         showToast('Bitte E-Mail und Passwort eingeben.', 2000);
         return;
       }
-      // Login durchführen
-      provider.loggedIn = true;
-      provider.email = email;
-      save(LS.provider, provider);
-      closeProviderLoginModal();
-      showToast('Erfolgreich eingeloggt! 🎉', 2000);
-      // Profil aktualisieren (Button ändert sich zu "Zum Dashboard")
-      updateProfileView();
-      // Optional: Direkt zum Dashboard
-      setTimeout(() => {
-        setMode('provider');
-        showProviderHome();
-      }, 500);
+      
+      // Session-Check: Prüfe ob bereits eine aktive Session existiert
+      const existingSession = load(LS.providerSession, null);
+      const currentSessionId = load('mittagio_current_session_id', null);
+      
+      // Wenn bereits eine Session existiert und es ist nicht die aktuelle Session
+      if(existingSession && existingSession.email === email && existingSession.sessionId !== currentSessionId){
+        // Login-Konflikt: Zeige Modal
+        openLoginConflictModal(email, () => {
+          // Übernahme bestätigt: Neue Session erstellen
+          performProviderLogin(email);
+        });
+        return;
+      }
+      
+      // Normale Login-Durchführung
+      performProviderLogin(email);
     };
   }
+  
+  // Provider-Login durchführen (mit Session-Management)
+  function performProviderLogin(email){
+    // Neue Session-ID generieren
+    const newSessionId = cryptoId();
+    const sessionData = {
+      email: email,
+      sessionId: newSessionId,
+      createdAt: Date.now(),
+      lastActivity: Date.now()
+    };
+    
+    // Session speichern (überschreibt alte Session)
+    save(LS.providerSession, sessionData);
+    save('mittagio_current_session_id', newSessionId);
+    
+    // Login durchführen
+    provider.loggedIn = true;
+    provider.email = email;
+    save(LS.provider, provider);
+    closeProviderLoginModal();
+    showToast('Erfolgreich eingeloggt! 🎉', 2000);
+    
+    // Profil aktualisieren (Button ändert sich zu "Zum Dashboard")
+    updateProfileView();
+    
+    // Optional: Direkt zum Dashboard
+    setTimeout(() => {
+      setMode('provider');
+      showProviderHome();
+    }, 500);
+  }
+  
+  // Login-Konflikt Modal öffnen
+  function openLoginConflictModal(email, onConfirm){
+    const bd = document.getElementById('loginConflictBd');
+    const sheet = document.getElementById('loginConflictSheet');
+    if(bd) bd.classList.add('active');
+    if(sheet) sheet.classList.add('active');
+    
+    // Übernahme-Button Handler
+    const btnTakeover = document.getElementById('btnLoginConflictTakeover');
+    if(btnTakeover){
+      btnTakeover.onclick = () => {
+        closeLoginConflictModal();
+        if(onConfirm) onConfirm();
+      };
+    }
+    
+    // Icons rendern
+    if(typeof lucide !== 'undefined'){
+      setTimeout(() => lucide.createIcons(), 50);
+    }
+  }
+  
+  // Login-Konflikt Modal schließen
+  function closeLoginConflictModal(){
+    const bd = document.getElementById('loginConflictBd');
+    const sheet = document.getElementById('loginConflictSheet');
+    if(bd) bd.classList.remove('active');
+    if(sheet) sheet.classList.remove('active');
+  }
+  
+  // Session-Validität prüfen (bei App-Start und regelmäßig)
+  function checkSessionValidity(){
+    if(mode !== 'provider' || !provider.loggedIn) return true;
+    
+    const currentSessionId = load('mittagio_current_session_id', null);
+    const storedSession = load(LS.providerSession, null);
+    
+    // Wenn keine Session-ID vorhanden oder Session nicht mehr gültig
+    if(!currentSessionId || !storedSession || storedSession.sessionId !== currentSessionId){
+      // Session ungültig: Ausloggen
+      provider.loggedIn = false;
+      save(LS.provider, provider);
+      localStorage.removeItem('mittagio_current_session_id');
+      showToast('Deine Sitzung wurde auf einem anderen Gerät beendet.', 3000);
+      setMode('customer');
+      showProfile();
+      return false;
+    }
+    
+    // Session aktualisieren (lastActivity) - nur wenn noch aktiv
+    if(storedSession.email === provider.email){
+      storedSession.lastActivity = Date.now();
+      save(LS.providerSession, storedSession);
+    }
+    
+    return true;
+  }
+  
+  // Session-Aktivität aktualisieren (bei User-Interaktionen)
+  function updateSessionActivity(){
+    if(mode === 'provider' && provider.loggedIn){
+      const storedSession = load(LS.providerSession, null);
+      const currentSessionId = load('mittagio_current_session_id', null);
+      if(storedSession && storedSession.sessionId === currentSessionId){
+        storedSession.lastActivity = Date.now();
+        save(LS.providerSession, storedSession);
+      }
+    }
+  }
+  
+  // Session-Aktivität bei wichtigen Aktionen aktualisieren
+  // (wird bei renderProviderHome, renderProviderPickups, etc. aufgerufen)
+  
+  // Session-Check regelmäßig durchführen (alle 30 Sekunden)
+  setInterval(() => {
+    if(mode === 'provider' && provider.loggedIn){
+      checkSessionValidity();
+    }
+  }, 30000);
   
   // Enter-Taste im Login-Modal
   const providerLoginEmail = document.getElementById('providerLoginEmail');
@@ -10342,9 +10499,24 @@
       const email = document.getElementById('provEmail').value.trim();
       const pass = document.getElementById('provPass').value.trim();
       if(!email || !pass){ alert('Bitte E-Mail und Passwort eingeben.'); return; }
-      provider.loggedIn = true;
-      provider.email = email;
-      save(LS.provider, provider);
+      
+      // Session-Check: Prüfe ob bereits eine aktive Session existiert
+      const existingSession = load(LS.providerSession, null);
+      const currentSessionId = load('mittagio_current_session_id', null);
+      
+      // Wenn bereits eine Session existiert und es ist nicht die aktuelle Session
+      if(existingSession && existingSession.email === email && existingSession.sessionId !== currentSessionId){
+        // Login-Konflikt: Zeige Modal
+        openLoginConflictModal(email, () => {
+          // Übernahme bestätigt: Neue Session erstellen
+          performProviderLogin(email);
+          showProviderHome();
+        });
+        return;
+      }
+      
+      // Normale Login-Durchführung
+      performProviderLogin(email);
       showProviderHome();
     };
   }
@@ -10352,6 +10524,10 @@
   const btnProvLogout = document.getElementById('btnProvLogout');
   if(btnProvLogout){
     btnProvLogout.onclick=()=>{
+      // Session löschen
+      localStorage.removeItem(LS.providerSession);
+      localStorage.removeItem('mittagio_current_session_id');
+      
       provider.loggedIn=false;
       save(LS.provider, provider);
       setMode('customer');
@@ -10834,6 +11010,9 @@
   }
   
   function renderProviderHome(){
+    // Session-Aktivität aktualisieren
+    updateSessionActivity();
+    
     const profile = normalizeProviderProfile(provider.profile || {});
     const todayKey = isoDate(new Date());
     const mineAll = offers.filter(o => o.providerId === providerId());
@@ -11425,6 +11604,8 @@
   }
 
   function renderWeekPlan(){
+    // Session-Aktivität aktualisieren
+    updateSessionActivity();
     const dayWrap = document.getElementById('weekDays');
     const list = document.getElementById('weekList');
     if(!dayWrap || !list) return;
@@ -11596,6 +11777,8 @@
   }
 
   function renderProviderPickups(){
+    // Session-Aktivität aktualisieren
+    updateSessionActivity();
     const subheader = document.getElementById('provPickupsSubheader');
     const filterEl = document.getElementById('provPickupFilter');
     const empty = document.getElementById('provPickupsEmpty');
@@ -11949,6 +12132,8 @@
   }
 
   function renderProviderProfile(){
+    // Session-Aktivität aktualisieren
+    updateSessionActivity();
     const p = normalizeProviderProfile(provider.profile || {});
     const addr = buildAddress(p);
     const name = p.name || provider.email || 'Anbieter';
@@ -15069,6 +15254,15 @@
   // init nav bindings
   if(mode==='provider' && !provider.loggedIn) mode='customer';
   if(mode==='start') mode='customer';
+  
+  // Session-Validität prüfen BEVOR setMode aufgerufen wird
+  if(mode === 'provider' && provider.loggedIn){
+    if(!checkSessionValidity()){
+      // Session ungültig, wurde bereits ausgeloggt
+      mode = 'customer';
+    }
+  }
+  
   setMode(mode);
   
   // Connectivity-Check starten wenn Provider-Modus
