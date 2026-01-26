@@ -1038,6 +1038,121 @@
       display:flex; gap:6px; flex-wrap:wrap;
       margin-top:6px;
     }
+    /* Premium Horizontale Gericht-Karte */
+    .dish-card {
+      display: flex;
+      height: 140px;
+      background: #ffffff;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid rgba(0,0,0,0.05);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+      margin-bottom: 14px;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+    .dish-card:active {
+      transform: scale(0.98);
+    }
+    /* Linke Seite: Bild */
+    .dish-image-box {
+      width: 140px;
+      height: 140px;
+      flex-shrink: 0;
+      background: #f5f5f5;
+    }
+    .dish-image-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    /* Rechte Seite: Details */
+    .dish-details {
+      flex: 1;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    /* Obere Zeile: Name & Preis */
+    .dish-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    .dish-name {
+      font-size: 16px;
+      font-weight: 850; /* Extra Bold Look */
+      color: #111;
+      line-height: 1.2;
+      margin: 0;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .dish-price {
+      font-size: 16px;
+      font-weight: 700;
+      color: #111;
+      white-space: nowrap;
+    }
+    /* Mittlere Zeile: Anbieter */
+    .dish-provider {
+      font-size: 13px;
+      color: #666;
+      font-weight: 500;
+      margin-top: 4px;
+    }
+    /* Untere Zeile: Meta & Buttons */
+    .dish-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 8px;
+    }
+    .distance-badge {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #444;
+      background: #f0f0f0;
+      padding: 4px 10px;
+      border-radius: 8px;
+    }
+    .action-group {
+      display: flex;
+      gap: 8px;
+    }
+    .btn-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 1px solid #f0f0f0;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #111;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .btn-icon:hover {
+      background: #f9f9f9;
+    }
+    .btn-icon.heart-btn:hover {
+      color: #ff4757;
+      border-color: #ffdce0;
+    }
+    .btn-icon.heart-btn.active {
+      color: #ff4757;
+      background: #ffdce0;
+      border-color: #ff4757;
+    }
     .discover-list-badge{
       display:inline-flex; align-items:center; gap:3px;
       padding:4px 8px; border-radius:6px;
@@ -4698,56 +4813,63 @@
     btnDiscoverSwipe.onclick = () => switchDiscoverView('swipe');
   }
   
-  // List Card für Discover-Seite (kompakt, horizontal, app-like)
+  // List Card für Discover-Seite (Premium horizontales Design)
   function createDiscoverListCard(o){
     const data = normalizeOffer(o);
     const card = document.createElement('div');
-    card.className = 'discover-list-card';
+    card.className = 'dish-card';
     
     const imgSrc = data.imageUrl || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70';
     
-    // Badges (mit Icons statt Emojis)
-    const badges = [];
-    if(data.hasPickupCode) badges.push(`<div class="discover-list-badge code">${iconMarkup('ticket')} <span>Ticket</span></div>`);
-    if(data.dineInPossible) badges.push(`<div class="discover-list-badge dine">${iconMarkup('utensils')} <span>Vor Ort</span></div>`);
-    if(!data.dineInPossible && !data.hasPickupCode) badges.push(`<div class="discover-list-badge pickup">${iconMarkup('shopping-bag')} <span>Zum Mitnehmen</span></div>`);
+    // Favorit-Status prüfen
+    const dishKey = data.id;
+    const isFav = dishFavs.has(dishKey);
     
-    // Meta-Info (optional: time/qty/distance) - mit Icons
-    const metaInfo = [];
-    if(data.pickupWindow) metaInfo.push(`<span class="discover-list-info">${iconMarkup('clock')} <span>${esc(data.pickupWindow)}</span></span>`);
-    if(data.distanceKm != null) metaInfo.push(`<span class="discover-list-info">${iconMarkup('map-pin')} <span>${Number(data.distanceKm).toFixed(1)}</span></span>`);
-    if(data.availableCount != null) metaInfo.push(`<span class="discover-list-info">${iconMarkup('box')} <span>${data.availableCount}</span></span>`);
+    // Entfernung anzeigen (Gehzeit oder Distanz)
+    let distanceDisplay = '';
+    if(data.walkingTimeText){
+      distanceDisplay = `<div class="distance-badge" style="color:var(--brand); background:rgba(242,183,5,0.1);">
+        <i data-lucide="navigation" style="width:12px;height:12px;"></i> ${esc(data.walkingTimeText)}
+      </div>`;
+    } else if(data.distanceKm != null){
+      distanceDisplay = `<div class="distance-badge">
+        <i data-lucide="map-pin" style="width:12px;height:12px;"></i> ${Number(data.distanceKm).toFixed(1)} km
+      </div>`;
+    }
     
-    // Food type icon
-    const foodTypeIcon = data.category === 'Vegan' ? 'leaf' : 
-                         data.category === 'Vegetarisch' ? 'carrot' : 
-                         data.category === 'Mit Fleisch' ? 'drumstick' : 
-                         data.category === 'Fisch' ? 'fish' : '';
-    if(foodTypeIcon) metaInfo.push(`<span class="discover-list-info">${iconMarkup(foodTypeIcon)}</span>`);
+    // Social-Proof: "Heute schon Xx bestellt" (optional, zwischen Provider und Footer)
+    const socialProof = data.todayOrderCount > 0 ? `<div style="margin-top:4px; padding:4px 8px; background:rgba(255,204,0,0.1); border-radius:6px; font-size:11px; font-weight:600; color:#b8860b; display:inline-flex; align-items:center; gap:4px; width:fit-content;"><i data-lucide="users" style="width:12px;height:12px;"></i> <span>${data.todayOrderCount}x heute</span></div>` : '';
     
     card.innerHTML = `
-      <div class="discover-list-image">
+      <div class="dish-image-box">
         <img src="${esc(imgSrc)}" alt="${esc(data.dish||'')}" />
       </div>
-      <div class="discover-list-content">
-        <h3 class="discover-list-title">${esc(data.dish||'Gericht')}</h3>
-        <p class="discover-list-provider">${esc(data.providerName||'Anbieter')}</p>
-        <div class="discover-list-meta">
-          <span class="discover-list-price">${euro(data.price)}</span>
-          ${metaInfo.length ? metaInfo.join('') : ''}
+      <div class="dish-details">
+        <div>
+          <div class="dish-header">
+            <h3 class="dish-name">${esc(data.dish||'Gericht')}</h3>
+            <span class="dish-price">${euro(data.price)}</span>
+          </div>
+          <div class="dish-provider">bei ${esc(data.providerName||'Anbieter')}</div>
+          ${socialProof}
         </div>
-        ${badges.length ? `<div class="discover-list-badges">${badges.join('')}</div>` : ''}
-        <div class="discover-list-actions">
-          <button class="discover-list-btn" onclick="event.stopPropagation(); const o=offers.find(x=>x.id==='${data.id}'); if(o) handleOrderClick(o);">
-            ${data.hasPickupCode ? iconMarkup('shopping-cart') + ' <span>Bestellen</span>' : iconMarkup('eye') + ' <span>Details</span>'}
-          </button>
+        <div class="dish-footer">
+          ${distanceDisplay}
+          <div class="action-group">
+            <button class="btn-icon" onclick="event.stopPropagation(); const o=offers.find(x=>x.id==='${data.id}'); if(o) shareInviteLink(o);" title="Einladen">
+              <i data-lucide="user-plus" style="width:16px;height:16px;"></i>
+            </button>
+            <button class="btn-icon heart-btn ${isFav ? 'active' : ''}" onclick="event.stopPropagation(); toggleDishFav('${dishKey}'); const btn=this; setTimeout(()=>{btn.classList.toggle('active', dishFavs.has('${dishKey}')); if(typeof lucide !== 'undefined') lucide.createIcons();}, 10);" title="Favorit">
+              <i data-lucide="heart" style="width:16px;height:16px;${isFav ? 'fill:currentColor;' : ''}"></i>
+            </button>
+          </div>
         </div>
       </div>
     `;
     
-    // Klick auf Kachel öffnet direkt Bestellung (wenn möglich) oder Details
+    // Klick auf Karte öffnet Details oder Bestellung
     card.onclick = (e)=>{
-      if(e.target.closest('.discover-list-btn')) return; // Button-Handler übernimmt
+      if(e.target.closest('.btn-icon')) return; // Button-Handler übernimmt
       if(data.hasPickupCode){
         handleOrderClick(o);
       } else {
