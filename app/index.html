@@ -957,7 +957,7 @@
     /* Discover Page - App-like UX (PWA, Light Mode) */
     /* Toggle-Switch für Discover-View */
     .discover-view-toggle{
-      position:absolute; top:12px; right:14px; z-index:10;
+      margin-left:auto; /* Rechts ausrichten in Quick-Filters */
     }
     .toggle-switch{
       position:relative;
@@ -4728,7 +4728,7 @@
         {id:'Vegetarisch', label:'Vegetarisch', icon: 'carrot', emoji: '🧀'},
         {id:'Fisch', label:'Fisch', icon: 'fish', emoji: '🐟'},
         {id:'Mit Fleisch', label:'Fleisch', icon: 'drumstick', emoji: '🍖'},
-        {id:'Salat', label:'Salat', icon: 'salad', emoji: '🥗'}
+        {id:'Salat', label:'Salat', icon: 'leaf', emoji: '🥗'}
       ];
       cats.forEach(cat=>{
         const btn = document.createElement('button');
