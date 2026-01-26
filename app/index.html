@@ -4953,7 +4953,8 @@
       currentX = touch.clientX - startX;
       currentY = touch.clientY - startY;
       
-      const rotation = currentX * ROTATION_FACTOR;
+      // Physikalisch korrekte Rotation: begrenzt auf max 25 Grad
+      const rotation = Math.max(-MAX_ROTATION, Math.min(MAX_ROTATION, currentX * ROTATION_FACTOR));
       card.style.transform = `translateX(${currentX}px) translateY(${currentY}px) rotate(${rotation}deg)`;
       
       // Match-Feedback während Swipe
@@ -4995,12 +4996,16 @@
       if(overlayRight) overlayRight.classList.remove('show');
       
       if(Math.abs(currentX) > SWIPE_THRESHOLD){
-        // Swipe durchgeführt
+        // Swipe durchgeführt - finale Rotation für den Swipe beibehalten
+        const finalRotation = Math.max(-30, Math.min(30, currentX * ROTATION_FACTOR));
         if(currentX < 0){
           // Links swipen = "Bäh" - Rot aufleuchten
           card.classList.add('match-left');
           setTimeout(() => {
             triggerHapticFeedback();
+            // Finale Rotation beim Wegfliegen
+            card.style.transform = `translateX(-100vw) rotate(${finalRotation - 10}deg)`;
+            card.style.opacity = '0';
             card.classList.add('swipe-left');
             setTimeout(() => {
               handleSwipeLeft(offer);
@@ -5014,6 +5019,9 @@
           card.classList.add('match-right');
           setTimeout(() => {
             triggerHapticFeedback();
+            // Finale Rotation beim Wegfliegen
+            card.style.transform = `translateX(100vw) rotate(${finalRotation + 10}deg)`;
+            card.style.opacity = '0';
             card.classList.add('swipe-right');
             setTimeout(() => {
               handleSwipeRight(offer);
