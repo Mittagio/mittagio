@@ -190,6 +190,42 @@ Häufig verwendete Befehle:
 
 ---
 
+## 🎯 Ein-Hand-Check-in (USP: Abholnummer + Tap-Funktion)
+
+```
+Überarbeite das Anbieter-Dashboard und den Abholprozess basierend auf unserem USP:
+
+1. Kein Scanner-Modus:
+   - Entferne alle Funktionen zum Scannen von QR-Codes oder Tickets
+   - Fokus: Abholnummer + Tap-Funktion
+
+2. Abhol-Listen (Dashboard):
+   - Zeige aktive Bestellungen als große, gut lesbare Abholnummern (A1, B5, C2)
+   - Theken-Optimierung: Nummern müssen so groß sein, dass der Metzger sie auch bei 1m Entfernung erkennt
+   - Schriftgröße: Mindestens 72px für Abholnummern in Grid-Ansicht
+   - Kacheln: Mindestens 180px Höhe, 2-Spalten-Grid
+
+3. Tap-to-Complete:
+   - Ein einfacher Tap auf die Nummer markiert das Gericht sofort als 'Abgeholt'
+   - Kein Bestätigungsdialog, direkte Aktion
+
+4. Visuelles Feedback:
+   - Grüner Flash: background: #4caf50 bei Tap
+   - Smooth-Move Animation: Fade-out + translateY(-20px) nach 200ms
+   - Haptic Feedback: navigator.vibrate([50, 30, 50])
+   - Toast: Kurz "✓ [CODE]" (2s)
+
+5. Sortierung:
+   - Priorität 1: Abholzeit (früheste zuerst)
+   - Priorität 2: Code-Reihenfolge (1A, 1B, 1C, 2A, 2B...)
+
+6. Onboarding-Anpassung:
+   - Text: "Abholung per Fingertipp"
+   - Subtext: "Kein Scannen, kein Warten. Einfach die Abholnummer auf dem Display antippen und fertig."
+```
+
+---
+
 ## 🎬 Instant-Aha Onboarding & Dashboard-Animation
 
 ```

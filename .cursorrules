@@ -131,6 +131,7 @@
 - **Invite-Feature**: "Ich hole mir heute [Gericht] bei [Metzger] – kommst du mit?"
 - **Skeleton-Screens**: Loading-Placeholder mit pulse-Animation
 - **Foto-KI**: Mock GPT-4o Vision API, Auto-Tagging von Allergenen
+- **Ein-Hand-Check-in (USP)**: Große Abholnummern-Kacheln (72px), Tap-to-Complete, Grüner Flash, Sortierung nach Abholzeit
 
 ### Projektstruktur
 ```
