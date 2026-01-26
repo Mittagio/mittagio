@@ -1807,18 +1807,36 @@
         <div class="panel" id="cartActiveTickets" style="margin-bottom:24px; padding:24px; display:none; border-radius:24px; box-shadow:0 8px 32px rgba(0,0,0,.12); background:rgba(255,255,255,0.98); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border:2px dashed rgba(255,184,0,0.3); position:relative;">
           <h3 style="font-weight:900; font-size:22px; margin:0 0 20px; line-height:1.3; color:#2D3436; display:flex; align-items:center; gap:10px;">
             <span style="font-size:28px;">🎫</span>
-            <span>Aktive Tickets</span>
+            <span>Aktive Abholnummern</span>
           </h3>
           <div id="cartActiveTicketsList" style="display:flex; flex-direction:column; gap:16px;"></div>
         </div>
         
         <!-- Warenkorb -->
         <div class="panel" style="padding:24px; border-radius:24px; box-shadow:0 8px 24px rgba(0,0,0,.08); background:rgba(255,255,255,0.95); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);">
-          <h3 style="font-weight:900; font-size:24px; margin:0 0 20px; line-height:1.3; color:#2D3436;">Essenskorb</h3>
-          <div id="cartBox" class="hint">Dein Warenkorb ist leer.</div>
-          <button class="btn" id="btnCheckout" type="button" style="display:none; width:100%; min-height:52px; font-size:16px; font-weight:800; margin-top:20px; background:#FFB800; color:#2D3436; border:none; border-radius:16px; box-shadow:0 4px 16px rgba(255,184,0,0.25);" data-icon="card">Weiter zur Zahlung</button>
-          <div class="mini" id="cartNote" style="display:none; margin-top:16px; padding:16px; background:rgba(255,184,0,0.08); border-radius:12px; font-size:13px; color:#666; line-height:1.5;">
-            Ein Anbieter pro Bestellung · Zahlung per Stripe · Ticket nach Zahlung
+          <h3 style="font-weight:900; font-size:24px; margin:0 0 20px; line-height:1.3; color:#2D3436;">Meine Mittagsbox</h3>
+          <div id="cartBox" class="hint">Deine Mittagsbox ist leer.</div>
+          <button class="btn" id="btnCheckout" type="button" style="display:none; width:100%; min-height:56px; font-size:18px; font-weight:800; margin-top:20px; background:#FFB800; color:#2D3436; border:none; border-radius:16px; box-shadow:0 4px 16px rgba(255,184,0,0.25);" data-icon="card">
+            <i data-lucide="ticket" style="width:22px;height:22px;"></i>
+            <span>Abholnummer jetzt sichern</span>
+          </button>
+          <div class="mini" id="cartNote" style="display:none; margin-top:12px; padding:12px; background:rgba(255,184,0,0.08); border-radius:12px; font-size:12px; color:#666; line-height:1.5; text-align:center;">
+            Du erhältst deine Abholnummer direkt nach der Bestätigung.
+          </div>
+          <!-- Trust-Icons (horizontal) -->
+          <div id="cartTrustIcons" style="display:none; margin-top:16px; display:flex; justify-content:center; gap:24px; padding:12px 0; border-top:1px solid rgba(0,0,0,.06);">
+            <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+              <i data-lucide="shield-check" style="width:24px;height:24px; color:#1f9d55;"></i>
+              <span style="font-size:11px; color:#666; font-weight:600;">Sichere Zahlung</span>
+            </div>
+            <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+              <i data-lucide="store" style="width:24px;height:24px; color:#666;"></i>
+              <span style="font-size:11px; color:#666; font-weight:600;">Ein Anbieter</span>
+            </div>
+            <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+              <i data-lucide="ticket" style="width:24px;height:24px; color:#FFD700;"></i>
+              <span style="font-size:11px; color:#666; font-weight:600;">Abholnummer sofort</span>
+            </div>
           </div>
         </div>
       </div>
@@ -1846,6 +1864,11 @@
             <div id="checkoutTimeSlots" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; margin-bottom:12px;">
               <!-- Wird dynamisch befüllt -->
             </div>
+            <button type="button" id="btnOtherTime" style="width:100%; min-height:44px; margin-top:8px; background:transparent; border:2px dashed #e7e1d5; border-radius:12px; color:#666; font-size:14px; font-weight:600; cursor:pointer; transition:all 0.2s ease;" onmouseover="this.style.borderColor='#FFB800'; this.style.color='#2D3436';" onmouseout="this.style.borderColor='#e7e1d5'; this.style.color='#666';">
+              <i data-lucide="clock" style="width:16px;height:16px;"></i>
+              <span>Andere Uhrzeit wählen</span>
+            </button>
+            <input type="text" id="checkoutPickupTimeCustom" placeholder="z.B. 12:45 Uhr" style="display:none; width:100%; margin-top:8px; padding:14px; border:2px solid #e7e1d5; border-radius:12px; font-size:16px; background:#fff;" />
             <input type="hidden" id="checkoutPickupTime" value="${cart && cart.pickupTime ? cart.pickupTime : ''}" />
           </div>
           
@@ -2026,7 +2049,7 @@
           </details>
           <details>
             <summary>Wann kann ich abholen?</summary>
-            <p>Innerhalb der Essenszeit. Wähle eine ungefähre Abholzeit im Warenkorb.</p>
+            <p>Innerhalb der Essenszeit. Wähle eine ungefähre Abholzeit in deiner Mittagsbox.</p>
           </details>
           <details>
             <summary>Kann ich für mehrere Personen bestellen?</summary>
@@ -7526,7 +7549,7 @@
             🧺
           </div>
           <h3 style="font-size:22px; font-weight:900; margin-bottom:12px; color:#111; font-family:'Inter', 'Montserrat', sans-serif;">Dein Korb ist noch leer – Zeit für ein Match!</h3>
-          <p style="font-size:15px; color:#666; margin-bottom:32px; line-height:1.6; max-width:320px; margin-left:auto; margin-right:auto;">Swipe dich durch leckere Gerichte und fülle deinen Essenskorb.</p>
+          <p style="font-size:15px; color:#666; margin-bottom:32px; line-height:1.6; max-width:320px; margin-left:auto; margin-right:auto;">Swipe dich durch leckere Gerichte und fülle deine Mittagsbox.</p>
           <button class="btn-primary" type="button" onclick="showDiscover();" style="width:100%; max-width:280px; margin:0 auto; min-height:52px; font-size:16px; font-weight:700;">
             <i data-lucide="compass" style="width:20px;height:20px;"></i> <span>Jetzt Essen swipen</span>
           </button>
@@ -7677,20 +7700,60 @@
           </button>
         </div>
       ` : ''}
-      <div class="row" style="margin-top:24px; padding-top:20px; border-top:2px solid #eee;"><span style="font-size:18px; font-weight:900;">Gesamt</span><b style="font-size:20px; color:var(--brand);">${euro(total)}</b></div>
-      <a href="#" id="clearCart" class="cart-clear-btn" style="margin-top:16px;">Warenkorb leeren</a>
+      <div class="row" style="margin-top:24px; padding-top:20px; border-top:2px solid #eee; position:relative;"><span style="font-size:18px; font-weight:900;">Gesamt</span><b style="font-size:20px; color:var(--brand);">${euro(total)}</b>
+        <!-- Mülleimer-Icon oben rechts (dezentes Design) -->
+        <button type="button" id="clearCartIcon" class="cart-clear-icon" style="position:absolute; top:20px; right:0; width:36px; height:36px; border-radius:50%; border:none; background:rgba(0,0,0,0.05); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s ease; color:#666;" onmouseover="this.style.background='rgba(227,77,77,0.1)'; this.style.color='#e74c3c';" onmouseout="this.style.background='rgba(0,0,0,0.05)'; this.style.color='#666';" title="Mittagsbox leeren">
+          <i data-lucide="trash-2" style="width:18px;height:18px;"></i>
+        </button>
+      </div>
     `;
 
-    // Warenkorb leeren mit Bestätigung
-    const clearCartBtn = document.getElementById('clearCart');
+    // Warenkorb leeren mit Sicherheitsabfrage (Bottom-Sheet)
+    const clearCartBtn = document.getElementById('clearCartIcon');
     if(clearCartBtn){
       clearCartBtn.onclick=(e)=>{
         e.preventDefault();
-        if(confirm('Möchtest du den Warenkorb wirklich leeren?')){
-          cart=null;
+        e.stopPropagation();
+        // Bottom-Sheet für Bestätigung öffnen
+        const confirmSheet = document.createElement('div');
+        confirmSheet.style.cssText = 'position:fixed; bottom:0; left:0; right:0; background:#fff; border-radius:24px 24px 0 0; padding:24px; box-shadow:0 -4px 20px rgba(0,0,0,0.15); z-index:1000; max-width:480px; margin:0 auto;';
+        confirmSheet.innerHTML = `
+          <div style="text-align:center; margin-bottom:20px;">
+            <div style="width:64px; height:64px; margin:0 auto 16px; background:rgba(227,77,77,0.1); border-radius:50%; display:flex; align-items:center; justify-content:center;">
+              <i data-lucide="trash-2" style="width:32px;height:32px; color:#e74c3c;"></i>
+            </div>
+            <h3 style="font-size:20px; font-weight:900; margin:0 0 8px; color:#2D3436;">Mittagsbox wirklich leeren?</h3>
+            <p style="font-size:14px; color:#666; margin:0; line-height:1.5;">Alle Gerichte werden entfernt.</p>
+          </div>
+          <div style="display:flex; gap:12px;">
+            <button type="button" id="confirmClearCart" style="flex:1; min-height:52px; background:#e74c3c; color:#fff; border:none; border-radius:16px; font-weight:700; font-size:16px; cursor:pointer;">Ja, leeren</button>
+            <button type="button" id="cancelClearCart" style="flex:1; min-height:52px; background:#f0f0f0; color:#666; border:none; border-radius:16px; font-weight:700; font-size:16px; cursor:pointer;">Abbrechen</button>
+          </div>
+        `;
+        document.body.appendChild(confirmSheet);
+        if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
+        
+        // Backdrop
+        const backdrop = document.createElement('div');
+        backdrop.style.cssText = 'position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); z-index:999;';
+        document.body.appendChild(backdrop);
+        
+        const closeSheet = () => {
+          document.body.removeChild(confirmSheet);
+          document.body.removeChild(backdrop);
+        };
+        
+        document.getElementById('confirmClearCart').onclick = () => {
+          cart = null;
           save(LS.cart, cart);
           renderCart();
-        }
+          updateHeaderBasket();
+          closeSheet();
+          showToast('Mittagsbox geleert', 2000);
+        };
+        
+        document.getElementById('cancelClearCart').onclick = closeSheet;
+        backdrop.onclick = closeSheet;
       };
     }
     
@@ -7723,6 +7786,18 @@
 
     btn.style.display='block';
     btn.disabled = !canCheckout;
+    
+    // Trust-Icons anzeigen
+    const trustIcons = document.getElementById('cartTrustIcons');
+    if(trustIcons){
+      trustIcons.style.display = canCheckout ? 'flex' : 'none';
+      if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
+    }
+    
+    // Note anzeigen
+    if(note){
+      note.style.display = canCheckout ? 'block' : 'none';
+    }
     // CTA-Text: Zahlung ist Pflicht (Stripe Checkout, Gastzahlung)
     if(canCheckout){
       // Alle Items haben hasPickupCode = true → Stripe Checkout (Gastzahlung, Zahlung Pflicht)
@@ -7801,7 +7876,21 @@
     // Zeitauswahl im 15-Minuten-Takt rendern
     const TIME_SLOTS = window.TIME_SLOTS || ['11:30', '11:45', '12:00', '12:15', '12:30', '12:45', '13:00', '13:15', '13:30', '13:45', '14:00'];
     const currentMinutes = window.currentMinutes || (new Date().getHours() * 60 + new Date().getMinutes());
-    const selectedTime = cart && cart.pickupTime ? cart.pickupTime : '';
+    let selectedTime = cart && cart.pickupTime ? cart.pickupTime : '';
+    
+    // Auto-Auswahl: Nächster verfügbarer Slot (wenn noch keine Zeit gewählt)
+    if(!selectedTime){
+      const availableSlots = TIME_SLOTS.filter(t => {
+        const [h, m] = t.split(':').map(Number);
+        return (h * 60 + m) >= currentMinutes + 15;
+      });
+      if(availableSlots.length > 0){
+        selectedTime = availableSlots[0];
+        if(!cart) cart = {items: []};
+        cart.pickupTime = selectedTime;
+        save(LS.cart, cart);
+      }
+    }
     
     const checkoutTimeSlots = document.getElementById('checkoutTimeSlots');
     if(checkoutTimeSlots){
@@ -7823,6 +7912,10 @@
           cart.pickupTime = time;
           save(LS.cart, cart);
           
+          // Custom Input ausblenden
+          const customInput = document.getElementById('checkoutPickupTimeCustom');
+          if(customInput) customInput.style.display = 'none';
+          
           // UI aktualisieren
           checkoutTimeSlots.querySelectorAll('.time-slot-btn').forEach(b => {
             const isSelected = b.getAttribute('data-time') === time;
@@ -7838,6 +7931,41 @@
         };
       });
     }
+    
+    // "Andere Uhrzeit wählen" Button Handler
+    const btnOtherTime = document.getElementById('btnOtherTime');
+    const customTimeInput = document.getElementById('checkoutPickupTimeCustom');
+    if(btnOtherTime && customTimeInput){
+      btnOtherTime.onclick = () => {
+        customTimeInput.style.display = customTimeInput.style.display === 'none' ? 'block' : 'none';
+        if(customTimeInput.style.display === 'block'){
+          customTimeInput.focus();
+          // Alle Slots deselektieren
+          checkoutTimeSlots.querySelectorAll('.time-slot-btn').forEach(b => {
+            b.classList.remove('selected');
+            b.style.borderColor = '#e7e1d5';
+            b.style.background = '#fff';
+            b.style.color = '#666';
+            b.style.fontWeight = '600';
+          });
+        }
+      };
+      
+      customTimeInput.oninput = () => {
+        const customTime = customTimeInput.value.trim();
+        if(customTime){
+          if(!cart) cart = {items: []};
+          cart.pickupTime = customTime;
+          save(LS.cart, cart);
+          const hiddenInput = document.getElementById('checkoutPickupTime');
+          if(hiddenInput) hiddenInput.value = customTime;
+        }
+      };
+    }
+    
+    // Hidden Input setzen
+    const hiddenInput = document.getElementById('checkoutPickupTime');
+    if(hiddenInput && selectedTime) hiddenInput.value = selectedTime;
     const summaryEl = document.getElementById('checkoutSummary');
     if(!summaryEl) return;
     
@@ -9364,7 +9492,7 @@
       </details>
       <details>
         <summary style="font-size:15px; line-height:1.4; font-weight:500; padding:12px 0;">Wann kann ich abholen?</summary>
-        <p style="font-size:14px; line-height:1.5; margin-top:8px; padding-bottom:12px; color:var(--muted);">Innerhalb der Essenszeit. Wähle eine ungefähre Abholzeit im Warenkorb.</p>
+        <p style="font-size:14px; line-height:1.5; margin-top:8px; padding-bottom:12px; color:var(--muted);">Innerhalb der Essenszeit. Wähle eine ungefähre Abholzeit in deiner Mittagsbox.</p>
       </details>
       <details>
         <summary style="font-size:15px; line-height:1.4; font-weight:500; padding:12px 0;">Kann ich für mehrere Personen bestellen?</summary>
