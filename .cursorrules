@@ -1,0 +1,149 @@
+# Mittagio - Cursor Rules
+
+## Projekt-Übersicht
+
+**Mittagio** ist eine digitale Vermittlungs- & Entdeckungsplattform für strukturierte Mittagstische.
+
+- **Typ:** Single-Page-Application (SPA) in `app/index.html`
+- **Deployment:** GitHub Pages (`/mittagio/app/`)
+- **Base-Path:** `<base href="/mittagio/app/">`
+- **Service Worker:** aktuell deaktiviert (`sw.js.disabled`)
+
+## Wichtigste Projektprinzipien
+
+### Grundprinzip
+- **Vermittlungs- & Entdeckungsplattform** (KEIN Marktplatz, KEIN Checkout, KEIN Abo)
+- Verträge entstehen **ausschließlich zwischen Anbieter und Endkunde vor Ort**
+- **Keine Mindestlaufzeit, kein Vertrag mit Endkunden**
+
+### Klare Trennung der Bereiche
+
+**Endkundenbereich:**
+- Öffentlich, ohne Login, ohne Profil, ohne Registrierung
+- Routen: `/`, `/entdecken`, `/datenschutz`, `/impressum`, `/agb`
+
+**Anbieterbereich:**
+- Eigener App-Bereich unter `/anbieter/*`
+- Eigene Layout-Shell (Header + Anbieter-BottomNav)
+- Routen: `/anbieter/dashboard`, `/anbieter/profil`, `/anbieter/profil/bearbeiten`, `/anbieter/recht/*`, `/anbieter/hilfe`
+- `/anbieter` → Redirect auf `/anbieter/dashboard`
+
+**❌ KEINE Vermischung von Endkunden- & Anbieter-Logik**
+
+## Routing-Regeln
+
+### Logo-Regel
+- Klick auf Mittagio-Logo im Anbieterbereich → **immer `/anbieter/dashboard`**
+
+### Back-Regel
+- ❌ **KEIN** Browser-Back (`history.back()`)
+- ✅ **Immer explizite In-App-Navigation**
+- Fallback immer: `/anbieter/dashboard`
+
+### Dead-Click-Regel (SEHR WICHTIG)
+- **Jeder klickbare Button MUSS reagieren**
+- Erlaubt: Navigation, Toast/Hinweis
+- ❌ Verboten: Klick ohne Reaktion
+
+## UI-Texte (VERBINDLICH)
+
+**WICHTIG:** Diese Texte MÜSSEN exakt so verwendet werden. Keine eigenen Erfindungen!
+
+### Endkunden-Dashboard ("Mein Mittagio")
+- **Titel:** Dein Mittag in der Nähe
+- **Willkommenskarte:**
+  - Überschrift: Willkommen bei Mittagio 👋
+  - Text: Finde frische Mittagsangebote in deiner Nähe.
+  - Button: Angebote entdecken
+- **Kürzlich angesehen:** Titel + Button "Angebote ansehen"
+- **Anbieter-CTA:**
+  - Titel: Als Anbieter starten
+  - Text: Mittagtische einfach online anbieten
+  - Button: Zum Anbieterbereich
+
+### ❌ Verbotene Begriffe (Endkunden)
+- Profil anlegen
+- Meine Bestellungen
+- Zur Mittagsbox
+- Bestellen
+- Abholcodes (für Endkunden)
+
+### Anbieter-Dashboard
+- **Erlaubt:** Inserate, Abholung, Kochbuch, Button "Inserat erstellen"
+- **Optional (graue Stepper-Tags):** ➜ Inserat erstellen, ➜ Gericht wählen, ➜ Abholcode (optional)
+- **❌ Entfernen:** "Willkommen bei Mittagio", "Starte mit deinem ersten Gericht", "Adresse hinzufügen"
+
+### Rechtstexte
+- ✅ Exakt so: AGB, Impressum, Datenschutz
+- ❌ Nie: AGB-Kurzfassung, Hinweise wie "öffnet dein E-Mail-Programm"
+
+**Vollständige UI-Texte:** Siehe `CURSOR_UI_TEXTE.md`
+
+## Datenschutz & Endkunden
+
+### Endkunden-Datenschutz
+- Gilt für **Besucher & Endkunden**
+- Route: `/datenschutz`
+- Keine Registrierung, keine Bestellungen, keine Zahlungen, kein Nutzerkonto
+- Kein Marketing-Tracking, keine Werbung
+- DSGVO-konform (MVP-Level)
+
+### Erlaubte Endkunden-Daten
+- Technisch notwendige Daten
+- Standort max. **Stadt / Region**
+- Session-basierte Anzeige (z. B. zuletzt angesehen)
+
+### Nicht erlaubt
+- Profil anlegen
+- "Meine Bestellungen"
+- Warenkorb / Box / Checkout
+- Abholcodes für Endkunden
+- Personalisierte Nutzerprofile
+
+## Code-Qualität & Standards
+
+### Technische Regeln
+- Alle DOM-Zugriffe mit **Null-Checks** absichern
+- **Keine `history.back()`** verwenden
+- **Immer explizite Navigation**
+- Jeder Button muss reagieren (Dead-Click-Regel)
+
+### Projektstruktur
+```
+mittagio/
+├── app/                    # Hauptcode (SPA)
+│   ├── index.html         # Single-Page-Application
+│   ├── manifest.json      # PWA Manifest
+│   ├── assets/            # Bilder, Icons
+│   └── sw.js.disabled     # Service Worker (deaktiviert)
+├── docs/                  # Produkt- & UX-Konzept
+├── tickets/               # Feature-Tickets
+└── .cursorrules           # Diese Datei
+```
+
+### Wichtige Dateien für Kontext
+- `CURSOR_CONTEXT_MITTAGIO.md` - Vollständige Projektzusammenfassung
+- `CURSOR_UI_TEXTE.md` - Verbindliche UI-Texte
+- `CURSOR_CONTEXT_MITTAGIO_KURZ.md` - Kurzfassung
+
+## Golden Rules (für Cursor)
+
+> Wenn sich etwas **wie ein Shop oder Account** anfühlt → **falsch**
+> Wenn ein Klick **nichts tut** → **nicht done**
+> Wenn Endkunde & Anbieter vermischt sind → **Bug**
+
+## Empfohlener Cursor-Prompt
+
+**Immer davor schreiben:**
+> "Bitte strikt nach der Cursor-Gesamtzusammenfassung Mittagio (Stand 24.01.2026) arbeiten und ausschließlich die verbindlichen UI-Texte verwenden."
+
+## Git & Synchronisation
+
+- Alle Änderungen müssen committed und gepusht werden
+- Schnell-Sync: `sync-to-github.bat` (Windows) oder `sync-to-github.sh` (Mac/Linux)
+- Siehe `SYNC_CHECKLIST.md` für Details
+
+---
+
+**Stand:** 26.01.2026  
+**Letzte Aktualisierung:** 24.01.2026 (Kontext-Dateien)
