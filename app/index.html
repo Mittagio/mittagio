@@ -2109,7 +2109,7 @@
           Später starten
         </button>
         <div style="margin-top:24px; font-size:13px; color:#666; line-height:1.5;">
-          <div style="font-weight:700; margin-bottom:4px;">Kein Abo. Keine Grundgebühr. In 2 Minuten online.</div>
+          <div style="font-weight:700; margin-bottom:4px;">Inseratsgebühr: 4,99 €. All-In Erfolgsgebühr: 0,89 €. In 2 Minuten online.</div>
           <div>Inklusive automatischer Abrechnung & bezahlter Bankgebühren.</div>
         </div>
       </div>
@@ -2220,7 +2220,7 @@
         </button>
         
         <div style="margin-top:16px; font-size:12px; color:var(--muted); text-align:center;">
-          Kein Abo · jederzeit kündbar
+          Inseratsgebühr nur bei Veröffentlichung · keine Mindestlaufzeit
         </div>
       </div>
     </section>
@@ -2549,7 +2549,7 @@
       </div>
 
       <div style="height:12px"></div>
-      <div class="row-muted">Kein Abo · Kein Vertrag · Keine Mindestlaufzeit</div>
+      <div class="row-muted">Inseratsgebühr nur bei Veröffentlichung · Kein Vertrag · Keine Mindestlaufzeit</div>
       <div style="height:12px"></div>
       <button class="btn ghost" type="button" id="btnProvLogout">Logout</button>
 
@@ -2774,6 +2774,38 @@
     <button class="navbtn" data-pgo="provider-cookbook"><div class="ico" data-icon="bookOpen" data-icon-only="1"></div><div>Kochbuch</div></button>
     <button class="navbtn" data-pgo="provider-profile"><div class="ico" data-icon="user" data-icon-only="1"></div><div>Meins</div></button>
   </nav>
+</div>
+
+<!-- Publish Fee Modal (vor Inserats-Veröffentlichung) -->
+<div class="backdrop" id="publishFeeBd" onclick="closePublishFeeModal()" style="background:rgba(0,0,0,0.7); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); display:none;"></div>
+<div class="sheet" id="publishFeeSheet" style="max-width:480px; border-radius:24px; overflow:hidden; display:none;">
+  <div class="sheet-body" style="padding:28px;">
+    <h3 style="margin:0 0 20px; font-size:22px; font-weight:900; color:#2D3436;">Inserat veröffentlichen</h3>
+    <div style="margin-bottom:24px; padding:20px; background:rgba(255,215,0,0.1); border-radius:16px; border:2px solid rgba(255,215,0,0.3);">
+      <div style="font-weight:700; font-size:16px; color:#2D3436; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+        <i data-lucide="info" style="width:20px;height:20px; color:#FFD700;"></i>
+        <span>Gebühren-Übersicht</span>
+      </div>
+      <div style="font-size:15px; line-height:1.6; color:#2D3436; margin-bottom:16px;">
+        <div style="margin-bottom:12px;">
+          <strong>Inseratsgebühr:</strong> <span style="color:#FFD700; font-weight:900;">4,99 €</span>
+          <div style="font-size:13px; color:#666; margin-top:4px;">Einmalig pro Gericht für die Sichtbarkeit im Feed</div>
+        </div>
+        <div style="padding-top:12px; border-top:1px solid rgba(0,0,0,0.1);">
+          <strong>All-In Erfolgsgebühr:</strong> <span style="color:#1f9d55; font-weight:900;">0,89 €</span>
+          <div style="font-size:13px; color:#666; margin-top:4px;">Pro verkaufter Abholnummer. Beinhaltet bereits alle Bank-, Stripe- und Verwaltungsgebühren.</div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:12px;">
+      <button class="btn-primary" type="button" id="btnPublishConfirm" style="width:100%; min-height:56px; font-size:16px; font-weight:700;">
+        Veröffentlichen
+      </button>
+      <button class="btn ghost" type="button" onclick="closePublishFeeModal();" style="width:100%; min-height:44px;">
+        Abbrechen
+      </button>
+    </div>
+  </div>
 </div>
 
 <!-- Match Success Modal (nach Rechts-Swipe) -->
@@ -9935,20 +9967,26 @@
   }
 
   function renderBilling(){
-    // Kosten-Info-Box (ganz oben)
+    // Kosten-Info-Box (ganz oben) - Neue Terminologie
     const costInfoEl = document.getElementById('billingCostInfo');
     if(costInfoEl){
       costInfoEl.innerHTML = `
-        <div style="font-weight:600; font-size:16px; margin-bottom:12px; color:#2e7d32;">Kosten – kurz erklärt</div>
+        <div style="font-weight:600; font-size:16px; margin-bottom:12px; color:#2e7d32;">Gebühren – kurz erklärt</div>
         <div style="font-size:14px; line-height:1.6; color:#333; margin-bottom:8px;">
           <div style="margin-bottom:8px;">
-            <strong>4,99 € zzgl. MwSt.</strong> pro Veröffentlichung
+            <strong>Inseratsgebühr: 4,99 €</strong> (einmalig pro Gericht)
           </div>
           <div>
-            <strong>0,89 € zzgl. MwSt.</strong> pro Bestellung für Online-Zahlung & Ticket<br>
+            <strong>All-In Erfolgsgebühr: 0,89 €</strong> pro verkaufter Abholnummer<br>
             <span style="font-size:12px; color:#666; font-style:italic;">
-              inkl. aller Bank- & Zahlungsgebühren · gilt pro Bestellung (egal wie viele Gerichte)
+              Beinhaltet bereits alle Bank-, Stripe- und Verwaltungsgebühren
             </span>
+          </div>
+        </div>
+        <div style="margin-top:12px; padding:12px; background:rgba(31,157,85,0.1); border-radius:12px; border-left:4px solid #1f9d55;">
+          <div style="font-size:13px; color:#2D3436; font-weight:600; margin-bottom:4px;">💡 Wichtig:</div>
+          <div style="font-size:12px; color:#666; line-height:1.5;">
+            Alle Beträge sind Netto-Auszahlungen inkl. abgegoltenen Transaktionsgebühren.
           </div>
         </div>
         <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
@@ -9964,9 +10002,13 @@
     const listEl = document.getElementById('billingList');
     if(!amountEl || !lastEl || !filtersEl || !monthEl || !listEl) return;
 
+    // Demo-Daten: Berechnung nach Formel (Verkaufspreis - 0,89 € pro Abholnummer)
+    // Beispiel: 18 Verkäufe à 8,50 € = 153,00 € Gesamt
+    // Gebühren: 18 × 0,89 € = 16,02 €
+    // Auszahlung: 153,00 € - 16,02 € = 136,98 €
     const demo = [
-      {range:'06.01.–12.01.2026', sales:18, total:148.50, fee:7.20, payout:141.30, status:'Nächste Auszahlung geplant'},
-      {range:'30.12.–05.01.2026', sales:12, total:96.80, fee:4.80, payout:92.00, status:'Auszahlung erfolgt'}
+      {range:'06.01.–12.01.2026', sales:18, total:153.00, fee:16.02, payout:136.98, status:'Nächste Auszahlung geplant'},
+      {range:'30.12.–05.01.2026', sales:12, total:102.00, fee:10.68, payout:91.32, status:'Auszahlung erfolgt'}
     ];
 
     amountEl.textContent = euro(demo[0].payout);
@@ -9995,8 +10037,9 @@
       <div class="cookbook-item">
         <div style="font-weight:900">${esc(d.range)}</div>
         <div class="cookbook-facts">
-          Verkäufe: ${d.sales} · Gesamt: ${euro(d.total)}<br>
-          Gebühren: ${euro(d.fee)} · Auszahlung: <b>${euro(d.payout)}</b><br>
+          Abholnummern verkauft: ${d.sales} · Gesamtumsatz: ${euro(d.total)}<br>
+          All-In Erfolgsgebühren: ${euro(d.fee)} · <b>Auszahlung: ${euro(d.payout)}</b><br>
+          <span style="font-size:11px; color:#666;">Netto-Auszahlung inkl. abgegoltenen Transaktionsgebühren</span><br>
           Status: ${esc(d.status)}
         </div>
         <div class="cookbook-actions">
@@ -10988,7 +11031,7 @@
       badgeContainer.style.cssText = 'margin-bottom:12px; padding:12px; background:#f0f7f0; border-radius:12px; border:1px solid #4caf50;';
       const badge = document.createElement('div');
       badge.style.cssText = 'font-weight:600; font-size:14px; color:#2e7d32; margin-bottom:4px; display:flex; align-items:center; gap:6px;';
-      badge.innerHTML = '🟢 Online bezahlt · Abholung mit Ticket';
+      badge.innerHTML = '🟢 Online bezahlt · Abholung mit Abholnummer';
       const subline = document.createElement('div');
       subline.style.cssText = 'font-size:12px; color:#666;';
       subline.textContent = 'Zahlung läuft direkt über Mittagio';
@@ -11001,7 +11044,7 @@
     if(w.data.hasPickupCode){
       const note = document.createElement('div');
       note.className = 'mini';
-      note.textContent = 'Beispielcode: A3';
+      note.textContent = 'Beispiel-Abholnummer: A3';
       target.appendChild(note);
     }
   }
@@ -11480,8 +11523,8 @@
       btnPub.onclick=()=>{
         const o = previewOfferFromWizard();
         closeWizard();
-        publishOffer(o);
-        // publishOffer navigates back to Dashboard and shows toast
+        // Zeige Monetarisierungs-Modal vor Veröffentlichung
+        showPublishFeeModal(o);
       };
 
       const btnSave=document.createElement('button');
