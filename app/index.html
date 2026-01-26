@@ -4636,12 +4636,42 @@
     if(!swipeStack) return;
     
     // Filtere Angebote (gleiche Logik wie renderDiscover)
-    let list = offers.filter(o=>{
-      const data = normalizeOffer(o);
-      return data.day === activeDay;
-    });
+    let list = offers.filter(o => o.day === activeDay && o.active !== false);
     
-    if(activeCat && activeCat !== 'Alle'){
+    // Ernährungs-Präferenzen Filter (aus Profil)
+    if(customer && customer.dietaryPreferences){
+      const prefs = customer.dietaryPreferences;
+      list = list.filter(o => {
+        const normalized = normalizeOffer(o);
+        const category = normalized.category || '';
+        const allergens = normalized.allergens || [];
+        
+        // Vegan: Nur "Vegan" Kategorie
+        if(prefs.vegan && category !== 'Vegan') return false;
+        
+        // Vegetarisch: "Vegan" oder "Vegetarisch" (aber nicht "Mit Fleisch" oder "Fisch")
+        if(prefs.vegetarian && (category === 'Mit Fleisch' || category === 'Fisch')) return false;
+        
+        // Glutenfrei: Keine glutenhaltigen Allergene
+        if(prefs.glutenFree && allergens.some(a => 
+          a.toLowerCase().includes('gluten') || 
+          a.toLowerCase().includes('weizen') ||
+          a.toLowerCase().includes('dinkel')
+        )) return false;
+        
+        // Laktosefrei: Keine laktosehaltigen Allergene
+        if(prefs.lactoseFree && allergens.some(a => 
+          a.toLowerCase().includes('laktose') || 
+          a.toLowerCase().includes('milch') ||
+          a.toLowerCase().includes('käse')
+        )) return false;
+        
+        return true;
+      });
+    }
+    
+    // Kategorie-Filter
+    if(activeDiscoverFilter !== 'near'){
       const cat = CAT_MAP[activeDiscoverFilter] || activeDiscoverFilter;
       list = list.filter(o => (o.category||'') === cat);
     }
