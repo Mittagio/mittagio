@@ -4963,6 +4963,11 @@
   
   // Swipe-View State (mit LocalStorage-Persistenz)
   let discoverViewMode = load(LS.discoverView, 'list'); // 'list' oder 'swipe'
+  
+  // Initialisiere FAB State
+  setTimeout(() => {
+    if(typeof syncToggleState === 'function') syncToggleState();
+  }, 100);
   let swipeCards = [];
   let currentSwipeIndex = 0;
   
