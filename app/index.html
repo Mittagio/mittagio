@@ -5,7 +5,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>Mittagio</title>
-  <meta name="theme-color" content="#F2B705" />
+  <meta name="theme-color" content="#FFD700" />
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" href="assets/icons/icon-192.png" />
   <link rel="apple-touch-icon" href="assets/icons/icon-192.png" />
@@ -13,17 +13,18 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Montserrat:wght@400;600;700;900&display=swap');
     :root{
-      /* Mittagio palette (can be adjusted later) */
+      /* Mittagio High-End Farbpalette */
       --bg:#F7F6F0;
       --card:#FFFFFF;
-      --text:#111;
+      --text:#334155;   /* Slate Grey - edler als reines Schwarz */
       --muted:#6b6b6b;
       --border:#e7e1d5;
       --shadow:0 10px 24px rgba(0,0,0,.08);
       --shadow2:0 16px 40px rgba(0,0,0,.14);
       --radius:24px;     /* rounded-3xl for messenger vibe */
-      --brand:#FFCC00;   /* Mittagio-Gelb */
-      --brand2:#1F9D55;  /* green */
+      --brand:#FFD700;   /* Mittagio Gold - Primär (Korb, Abholnummer-Buttons) */
+      --brand2:#2ECC71;  /* Erfolgs-Grün - Profit (Netto-Umsatz) */
+      --brand3:#27AE60;  /* Mehrweg-Grün - Dezent (Blatt-Icon) */
       --danger:#E34D4D;
       
       /* Design Tokens - PWA Light */
@@ -59,7 +60,10 @@
       --color-border: #EAEAEA;
       --color-text: #1A1A1A;
       --color-text-secondary: #6B6B6B;
-      --color-brand-yellow: #FFCC00;
+      --color-brand-yellow: #FFD700;  /* Mittagio Gold */
+      --color-success-green: #2ECC71;  /* Erfolgs-Grün - Profit */
+      --color-eco-green: #27AE60;      /* Mehrweg-Grün - Dezent */
+      --color-slate-text: #334155;     /* Slate Grey - Texte */
       --color-soft-yellow-bg: rgba(255, 204, 0, 0.15);
       --color-soft-green-bg: rgba(31, 157, 85, 0.12);
       --color-soft-grey-bg: rgba(0, 0, 0, 0.06);
@@ -1029,10 +1033,11 @@
       border-top:6px solid #2D3436;
     }
     .discover-calendar-wrapper{
-      padding:8px 0;
+      padding:6px 0 4px;
       border-top:1px solid rgba(0,0,0,.04);
-      max-width:980px;
+      max-width:100%;
       margin:0 auto;
+      box-sizing:border-box;
     }
     .discover-calendar-scroll{
       display:flex;
@@ -1104,7 +1109,7 @@
       transform:translateX(32px);
     }
     
-    /* Discover Header - Sticky mit zwei Ebenen */
+    /* Discover Header - Sticky mit vier Ebenen */
     .discover-header-sticky{
       position:sticky; top:0; z-index:10;
       background:rgba(255,255,255,.98); backdrop-filter:blur(20px);
@@ -1112,11 +1117,18 @@
       box-shadow:0 2px 8px rgba(0,0,0,.04);
     }
     
-    /* Ebene 1: Quick-Filters */
-    .discover-quick-filters{
-      display:flex; align-items:center; gap:8px;
-      padding:12px 14px; max-width:980px; margin:0 auto;
-      flex-wrap:wrap;
+    /* Ebene 1: Standort zentriert */
+    .discover-location-row{
+      display:flex; justify-content:center; align-items:center;
+      padding:8px 10px 6px; max-width:100%; margin:0 auto;
+      box-sizing:border-box;
+    }
+    
+    /* Ebene 2: Quick-Filter Buttons nebeneinander */
+    .discover-quick-filters-row{
+      display:flex; align-items:center; justify-content:center; gap:6px;
+      padding:0 10px 6px; max-width:100%; margin:0 auto;
+      box-sizing:border-box;
     }
     
     .quick-filter-btn{
@@ -1147,12 +1159,13 @@
     .discover-header{
       position:relative;
     }
-    /* Kompakte Standort-Pill (44-48px) */
+    /* Kompakte Standort-Pill (44-48px) - zentriert */
     .discover-location-pill{
       display:flex; align-items:center; gap:8px;
       padding:10px 14px; border-radius:24px;
       background:rgba(0,0,0,.04); border:1px solid rgba(0,0,0,.08);
       height:44px; box-sizing:border-box;
+      max-width:280px; width:100%;
     }
     .discover-location-icon-left{
       width:18px; height:18px; flex-shrink:0; opacity:.7;
@@ -1180,37 +1193,42 @@
       width:18px; height:18px; color:#666;
     }
     
-    /* Kategorien (horizontal swipebar, ohne Überschrift) */
-    .discover-categories{
-      padding:12px 0 8px;
+    /* Kategorien (horizontal swipebar, dezent) */
+    .discover-categories-wrapper{
+      padding:6px 0 8px;
+      border-top:1px solid rgba(0,0,0,.04);
       max-width:980px; margin:0 auto;
     }
     .discover-categories-scroll{
-      display:flex; gap:10px; overflow-x:auto;
+      display:flex; gap:4px; overflow-x:auto;
       -webkit-overflow-scrolling:touch;
-      padding:0 16px 0 16px; scrollbar-width:none;
-      /* Letztes Element leicht abgeschnitten für Scroll-Hinweis */
-      padding-right:calc(16px + 20%);
+      padding:0 10px; scrollbar-width:none;
     }
     .discover-categories-scroll::-webkit-scrollbar{display:none}
     .discover-category-chip{
-      flex:0 0 auto; padding:8px 16px;
-      height:40px; border-radius:999px; border:1px solid rgba(0,0,0,.15);
-      font-size:14px; font-weight:700;
-      background:#f5f5f5; color:#666;
+      flex:0 0 auto; padding:5px 10px;
+      height:28px; border-radius:14px; border:1px solid rgba(0,0,0,.08);
+      font-size:11px; font-weight:600;
+      background:#f1f5f9; color:#64748b;
       cursor:pointer; transition:all .2s;
       white-space:nowrap;
-      display:flex; align-items:center; justify-content:center;
+      display:flex; align-items:center; justify-content:center; gap:3px;
+    }
+    .discover-category-chip i{
+      width:12px; height:12px; flex-shrink:0;
+      opacity:0.7;
+    }
+    .discover-category-chip span{
+      font-size:11px;
     }
     .discover-category-chip.active{
-      background:#FFD700; color:#2D3436;
-      border-color:#FFD700;
-      box-shadow:0 2px 8px rgba(255,215,0,.3);
-      font-weight:900;
+      background:#e2e8f0; color:#475569;
+      border-color:rgba(0,0,0,.12);
+      font-weight:700;
     }
     .discover-category-chip:not(.active){
-      border-color:rgba(0,0,0,.15);
-      background:#f5f5f5;
+      border-color:rgba(0,0,0,.08);
+      background:#f1f5f9;
     }
     .discover-category-chip:active{
       transform:scale(.96);
@@ -1225,9 +1243,9 @@
       padding-top:10px;
     }
     .discover-calendar-scroll{
-      display:flex; gap:8px; overflow-x:auto;
+      display:flex; gap:6px; overflow-x:auto;
       -webkit-overflow-scrolling:touch;
-      padding:0 14px; scrollbar-width:none;
+      padding:0 10px; scrollbar-width:none;
     }
     .discover-calendar-scroll::-webkit-scrollbar{display:none}
     .discover-day{
@@ -1251,9 +1269,10 @@
     
     /* Angebots-Liste Container */
     .discover-offers{
-      padding:0 14px 24px;
-      max-width:980px; margin:0 auto;
-      display:flex; flex-direction:column; gap:12px;
+      padding:0 10px 16px;
+      max-width:100%; margin:0 auto;
+      display:flex; flex-direction:column; gap:10px;
+      box-sizing:border-box;
     }
     /* List Cards - Horizontal Layout (kleines Bild links, Content rechts) */
     .discover-list-card{
@@ -1315,16 +1334,18 @@
     /* Premium Horizontale Gericht-Karte */
     .dish-card {
       display: flex;
-      height: 160px;
+      height: 150px;
       background: #ffffff;
-      border-radius: 24px; /* rounded-3xl */
+      border-radius: 20px;
       overflow: hidden;
       border: 1px solid rgba(0,0,0,0.05);
-      box-shadow: 0 4px 15px rgba(0,0,0,0.04);
-      margin-bottom: 14px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+      margin-bottom: 10px;
       cursor: pointer;
       transition: transform 0.2s ease, box-shadow 0.2s ease;
       position: relative;
+      max-width: 100%;
+      box-sizing: border-box;
     }
     .dish-card:active {
       transform: scale(0.98);
@@ -1332,25 +1353,31 @@
     .dish-card:hover {
       box-shadow: 0 6px 20px rgba(0,0,0,0.08);
     }
-    /* Linke Seite: Bild - 50% der Karte */
+    /* Linke Seite: Bild - 45% der Karte, zentriert */
     .dish-image-box {
-      width: 50%;
-      height: 160px;
+      width: 45%;
+      height: 150px;
       flex-shrink: 0;
       background: #f5f5f5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
     }
     .dish-image-box img {
       width: 100%;
       height: 100%;
       object-fit: cover;
+      object-position: center;
     }
     /* Rechte Seite: Details */
     .dish-details {
       flex: 1;
-      padding: 14px;
+      padding: 12px 14px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+      min-width: 0;
     }
     /* Obere Zeile: Name & Preis */
     .dish-header {
@@ -1474,18 +1501,20 @@
       background:#e6b800;
     }
     
-    /* SwipeCard Styles (Tinder-Style) - Premium Modern Design - Optimiert für Samsung S25 */
+    /* SwipeCard Styles (Tinder-Style) - Premium Modern Design - Zentriert & Optimiert */
     .swipe-card{
-      position:absolute; top:0; left:50%; transform:translateX(-50%);
+      position:absolute; top:50%; left:50%; transform:translate(-50%, -50%);
       background:#fff; border-radius:24px;
       box-shadow:0 8px 32px rgba(0,0,0,.12), 0 0 0 1px rgba(0,0,0,.04);
       overflow:hidden; cursor:grab;
       user-select:none; touch-action:none;
       transition:transform .2s ease-out, opacity .2s, box-shadow .2s;
       will-change:transform;
-      height:100%; max-height:100%;
-      width:calc(100% - 32px);
-      max-width:calc(100% - 32px);
+      max-width:90vw; width:90vw;
+      max-height:85vh; height:auto;
+      margin:0 auto;
+      display:flex; flex-direction:column;
+      align-items:center;
       box-sizing:border-box;
     }
     /* Responsive für Samsung S25 (390x844) und ähnliche Geräte */
@@ -1497,9 +1526,12 @@
       }
       .swipe-card{
         border-radius:28px;
+        max-width:88vw !important;
+        width:88vw !important;
       }
-      .swipe-card-image{
-        min-height:360px !important;
+      .swipe-card-image-wrapper{
+        width:82% !important;
+        margin-top:12px !important;
       }
     }
     .swipe-card:active{
@@ -1510,12 +1542,12 @@
       transition:none;
     }
     .swipe-card.swipe-left{
-      transform:translateX(-100vw) rotate(-10deg);
+      transform:translate(calc(-50% - 50vw), -50%) rotate(-10deg);
       opacity:0;
       box-shadow:0 20px 50px rgba(227,77,77,0.3);
     }
     .swipe-card.swipe-right{
-      transform:translateX(100vw) rotate(10deg);
+      transform:translate(calc(-50% + 50vw), -50%) rotate(10deg);
       opacity:0;
       box-shadow:0 20px 50px rgba(31,157,85,0.3);
     }
@@ -1527,40 +1559,56 @@
       box-shadow:0 20px 50px rgba(31,157,85,0.4);
       border:3px solid rgba(31,157,85,0.6);
     }
+    /* Bild-Container mit weißem Rahmen (85% Breite, zentriert) */
+    .swipe-card-image-wrapper{
+      width:85%; margin-top:16px;
+      display:flex; justify-content:center; align-items:center;
+      background:#fff;
+    }
     .swipe-card-image{
-      width:100%; height:70%; min-height:400px;
+      width:100%; aspect-ratio:1;
       background:#f0f0f0; position:relative;
       overflow:hidden;
-      border-radius:32px 32px 0 0;
+      border-radius:16px;
+      display:flex; align-items:center; justify-content:center;
     }
     .swipe-card-image img{
-      width:100%; height:100%; object-fit:cover;
+      width:100%; height:100%; object-fit:cover; object-position:center;
     }
+    /* Content-Bereich: Preis und Anbieter zentriert unter dem Bild */
     .swipe-card-content{
-      padding:28px; height:30%;
+      width:100%; padding:16px 20px 20px;
       display:flex; flex-direction:column;
-      justify-content:space-between;
-      background:linear-gradient(to top, #fff 0%, rgba(255,255,255,0.95) 100%);
+      align-items:center;
+      background:#fff;
+      text-align:center;
     }
     .swipe-card-title{
-      font-size:36px; font-weight:900;
-      margin:0 0 8px; line-height:1.2;
+      font-size:28px; font-weight:900;
+      margin:0 0 12px; line-height:1.2;
       color:#111;
       font-family:'Inter', 'Montserrat', sans-serif;
     }
-    .swipe-card-provider{
-      font-size:16px; color:#666;
-      margin:0 0 16px; display:flex;
-      align-items:center; gap:6px;
-    }
-    .swipe-card-meta{
-      display:flex; align-items:center;
-      gap:16px; margin-bottom:16px;
-      flex-wrap:wrap;
+    /* Preis und Anbieter zentriert */
+    .swipe-card-price-info{
+      display:flex; flex-direction:column;
+      align-items:center; gap:4px;
+      margin-bottom:12px;
     }
     .swipe-card-price{
-      font-size:32px; font-weight:900;
-      color:var(--brand);
+      font-size:24px; font-weight:900;
+      color:#1e293b; letter-spacing:-0.5px;
+      line-height:1.2;
+    }
+    .swipe-card-provider{
+      font-size:14px; color:#64748b;
+      margin:0; font-weight:500;
+      display:flex; align-items:center; justify-content:center; gap:4px;
+    }
+    .swipe-card-meta{
+      display:flex; align-items:center; justify-content:center;
+      gap:12px; margin-bottom:12px;
+      flex-wrap:wrap;
     }
     .swipe-card-badges{
       display:flex; gap:8px; flex-wrap:wrap;
@@ -1733,15 +1781,19 @@
     <section class="view active" id="v-discover">
       <!-- Header: Sticky mit Quick-Filters und Kategorien -->
       <div class="discover-header-sticky">
-        <!-- Ebene 1: Quick-Filters (große Kapseln) -->
-        <div class="discover-quick-filters">
+        <!-- Ebene 1: Standort zentriert -->
+        <div class="discover-location-row">
           <div class="discover-location-pill">
             <i data-lucide="map-pin" class="discover-location-icon-left"></i>
-            <input type="text" class="discover-location-input" id="discoverLocationInput" placeholder="Ort oder PLZ" />
+            <input type="text" class="discover-location-input" id="discoverLocationInput" placeholder="Jena..." />
             <button class="discover-location-btn" type="button" id="btnDiscoverLocationSearch" aria-label="Standort suchen">
               <i data-lucide="search"></i>
             </button>
           </div>
+        </div>
+        
+        <!-- Ebene 2: Buttons "In der Nähe" und "Heute" nebeneinander -->
+        <div class="discover-quick-filters-row">
           <button class="quick-filter-btn" id="quickFilterNear" data-filter="near">
             <i data-lucide="navigation"></i>
             <span>In der Nähe</span>
@@ -1752,14 +1804,14 @@
           </button>
         </div>
         
-        <!-- Ebene 2: Datums-Leiste (horizontaler Scroller) -->
+        <!-- Ebene 3: Datums-Leiste (horizontaler Scroller) -->
         <div class="discover-calendar-wrapper">
           <div class="discover-calendar-scroll" id="discoverCalendar">
             <!-- Wird dynamisch befüllt -->
           </div>
         </div>
         
-        <!-- Ebene 3: Food-Kategorien (horizontal scrollbar) -->
+        <!-- Ebene 4: Food-Kategorien (horizontal scrollbar, dezent) -->
         <div class="discover-categories-wrapper">
           <div class="discover-categories-scroll" id="discoverCategories">
             <!-- Wird dynamisch befüllt -->
@@ -1774,8 +1826,8 @@
       </div>
       
       <!-- Swipe-Stack (Tinder-Style) -->
-      <div id="discoverSwipe" style="display:none; position:relative; height:80vh; min-height:500px; max-height:600px; max-width:400px; margin:0 auto; padding:20px 0;">
-        <div id="swipeStack" style="position:relative; width:100%; height:100%;">
+      <div id="discoverSwipe" style="display:none; position:relative; height:75vh; min-height:480px; max-height:600px; margin:0 auto; padding:12px 0;">
+        <div id="swipeStack" style="position:relative; width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
           <!-- SwipeCards werden hier eingefügt -->
         </div>
         <div id="swipeEmpty" style="display:none; text-align:center; padding:80px 20px; position:absolute; top:50%; left:50%; transform:translate(-50%, -50%);">
@@ -1815,7 +1867,7 @@
       <div class="panel">
         <h3>Abrechnungen</h3>
         <div class="hint">Auszahlbarer Betrag</div>
-        <div style="font-size:24px;font-weight:900" id="billingAmount">0,00 €</div>
+        <div style="font-size:24px;font-weight:900; color:#2ECC71;" id="billingAmount">0,00 €</div>
         <div class="hint" id="billingLast">Letzte Auszahlung: –</div>
       </div>
 
@@ -1898,7 +1950,7 @@
         <div class="panel" style="padding:20px; border-radius:24px; box-shadow:0 4px 16px rgba(0,0,0,.08); background:rgba(255,255,255,0.95); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);">
           <h3 style="font-weight:900; font-size:24px; margin:0 0 20px; line-height:1.3; color:#2D3436;">Meine Mittagsbox</h3>
           <div id="cartBox" class="hint">Deine Mittagsbox ist leer.</div>
-          <button class="btn" id="btnCheckout" type="button" style="display:none; width:100%; min-height:56px; font-size:18px; font-weight:800; margin-top:20px; background:#FFB800; color:#2D3436; border:none; border-radius:16px; box-shadow:0 4px 16px rgba(255,184,0,0.25);" data-icon="card">
+          <button class="btn" id="btnCheckout" type="button" style="display:none; width:100%; min-height:56px; font-size:18px; font-weight:800; margin-top:20px; background:#FFD700; color:#334155; border:none; border-radius:16px; box-shadow:0 4px 16px rgba(255,215,0,0.25);" data-icon="card">
             <i data-lucide="ticket" style="width:22px;height:22px;"></i>
             <span>Abholnummer jetzt sichern</span>
           </button>
@@ -1946,7 +1998,7 @@
             <div id="checkoutTimeSlots" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; margin-bottom:12px;">
               <!-- Wird dynamisch befüllt -->
             </div>
-            <button type="button" id="btnOtherTime" class="time-chip-alternative" style="width:100%; min-height:44px; margin-top:8px; background:#f0f0f0; border:2px dashed #e7e1d5; border-radius:12px; color:#666; font-size:14px; font-weight:600; cursor:pointer; transition:all 0.2s ease; display:flex; align-items:center; justify-content:center; gap:8px;" onmouseover="this.style.borderColor='#FFB800'; this.style.background='rgba(255,184,0,0.1)'; this.style.color='#2D3436';" onmouseout="this.style.borderColor='#e7e1d5'; this.style.background='#f0f0f0'; this.style.color='#666';">
+            <button type="button" id="btnOtherTime" class="time-chip-alternative" style="width:100%; min-height:44px; margin-top:8px; background:#f0f0f0; border:2px dashed #e7e1d5; border-radius:12px; color:#666; font-size:14px; font-weight:600; cursor:pointer; transition:all 0.2s ease; display:flex; align-items:center; justify-content:center; gap:8px;" onmouseover="this.style.borderColor='#FFD700'; this.style.background='rgba(255,215,0,0.1)'; this.style.color='#334155';" onmouseout="this.style.borderColor='#e7e1d5'; this.style.background='#f0f0f0'; this.style.color='#666';">
               <i data-lucide="clock" style="width:18px;height:18px;"></i>
               <span>🕒 Andere Zeit</span>
             </button>
@@ -1980,7 +2032,7 @@
                 <span style="font-size:20px;">G</span> Google Pay
               </button>
               <!-- Standard Zahlung -->
-              <button class="btn" type="button" id="btnStandardPayment" style="width:100%; min-height:56px; background:#FFB800; color:#2D3436; border:none; border-radius:12px; font-size:16px; font-weight:800; box-shadow:0 4px 16px rgba(255,184,0,0.25);">
+              <button class="btn" type="button" id="btnStandardPayment" style="width:100%; min-height:56px; background:#FFD700; color:#334155; border:none; border-radius:12px; font-size:16px; font-weight:800; box-shadow:0 4px 16px rgba(255,215,0,0.25);">
                 <i data-lucide="credit-card"></i> <span>Mit Karte bezahlen</span>
               </button>
             </div>
@@ -2072,7 +2124,7 @@
       <!-- Ernährungs-Zentrale (Präferenzen) -->
       <div class="panel" id="profileDietSection" style="margin-top:20px; padding:20px; border-radius:20px; box-shadow:0 2px 12px rgba(0,0,0,.06);">
         <div style="font-weight:900; font-size:18px; margin-bottom:16px; color:#2D3436; display:flex; align-items:center; gap:8px;">
-          <i data-lucide="leaf" style="width:20px;height:20px; color:#1f9d55;"></i>
+          <i data-lucide="leaf" style="width:20px;height:20px; color:#27AE60;"></i>
           <span>Ernährungs-Präferenzen</span>
         </div>
         <div class="hint" style="font-size:13px; color:#666; margin-bottom:20px; line-height:1.5;">
@@ -2317,7 +2369,7 @@
     <section class="view" id="v-provider-onboarding-entry" style="background:linear-gradient(135deg, #121826 0%, #1a1a1a 100%); min-height:100vh; padding:20px; position:relative;">
       <!-- Hero Video Loop (Full-Screen Background mit Overlay) -->
       <div style="position:absolute; top:0; left:0; right:0; bottom:0; z-index:0; overflow:hidden;">
-        <div style="width:100%; height:100%; background:linear-gradient(135deg, #FFB800 0%, #FFD700 100%); display:flex; align-items:center; justify-content:center; position:relative;">
+        <div style="width:100%; height:100%; background:linear-gradient(135deg, #FFD700 0%, #FFD700 100%); display:flex; align-items:center; justify-content:center; position:relative;">
           <div style="position:absolute; inset:0; background:rgba(0,0,0,0.6); z-index:1;"></div>
           <div style="text-align:center; color:#fff; z-index:2; position:relative;">
             <div style="font-size:64px; margin-bottom:16px;">👆</div>
@@ -2419,7 +2471,7 @@
         
         <div style="margin-bottom:24px;">
           <div style="display:flex; gap:12px; margin-bottom:12px;">
-            <button class="btn secondary" type="button" id="btnOnboardingAddPhoto" style="flex:1; min-height:52px; background:#FFB800; color:#2D3436; font-weight:700; border:none;">
+            <button class="btn secondary" type="button" id="btnOnboardingAddPhoto" style="flex:1; min-height:52px; background:#FFD700; color:#334155; font-weight:700; border:none;">
               <i data-lucide="camera"></i><span>Foto aufnehmen</span>
             </button>
             <button class="btn secondary" type="button" id="btnOnboardingChooseProPhoto" style="flex:1; min-height:52px; background:#2d2d2d; color:#fff; font-weight:700; border:none;">
@@ -2444,7 +2496,7 @@
           
           <!-- Kategorien-Tabs -->
           <div style="display:flex; gap:8px; padding:16px; border-bottom:1px solid var(--border); overflow-x:auto; scrollbar-width:none;">
-            <button class="pro-photo-category-tab active" data-category="all" style="padding:8px 16px; border-radius:12px; background:#FFB800; color:#2D3436; font-weight:700; border:none; white-space:nowrap;">Alle</button>
+            <button class="pro-photo-category-tab active" data-category="all" style="padding:8px 16px; border-radius:12px; background:#FFD700; color:#334155; font-weight:700; border:none; white-space:nowrap;">Alle</button>
             <button class="pro-photo-category-tab" data-category="klassiker" style="padding:8px 16px; border-radius:12px; background:#f5f5f5; color:#666; font-weight:600; border:none; white-space:nowrap;">Klassiker</button>
             <button class="pro-photo-category-tab" data-category="deftig" style="padding:8px 16px; border-radius:12px; background:#f5f5f5; color:#666; font-weight:600; border:none; white-space:nowrap;">Deftig</button>
             <button class="pro-photo-category-tab" data-category="eintoepfe" style="padding:8px 16px; border-radius:12px; background:#f5f5f5; color:#666; font-weight:600; border:none; white-space:nowrap;">Eintöpfe</button>
@@ -2572,13 +2624,13 @@
       <!-- Provider Identity Card (Header) - Dark Mode -->
       <div class="panel" id="providerIdentityCard" style="padding:20px; border-radius:20px; box-shadow:0 4px 16px rgba(0,0,0,.3); background:#2d2d2d; margin-bottom:20px;">
         <div style="display:flex; align-items:center; gap:16px; margin-bottom:16px;">
-          <div class="plogo" id="provCardLogo" style="width:64px; height:64px; border-radius:16px; flex-shrink:0; border:3px solid rgba(255,184,0,0.3);"></div>
+          <div class="plogo" id="provCardLogo" style="width:64px; height:64px; border-radius:16px; flex-shrink:0; border:3px solid rgba(255,215,0,0.3);"></div>
           <div style="flex:1; min-width:0;">
             <div style="font-weight:900; font-size:20px; line-height:1.3; margin-bottom:6px; color:#fff;" id="provCardName">Anbieter</div>
             <div class="hint" id="provCardAddr" style="font-size:14px; line-height:1.4; color:rgba(255,255,255,0.7);">Adresse hinzufügen</div>
           </div>
         </div>
-        <button class="btn secondary" type="button" id="btnProviderEditProfile" style="width:100%; min-height:52px; background:#FFB800; color:#2D3436; font-weight:800; border:none; border-radius:12px;">
+        <button class="btn secondary" type="button" id="btnProviderEditProfile" style="width:100%; min-height:52px; background:#FFD700; color:#334155; font-weight:800; border:none; border-radius:12px;">
           Profil bearbeiten
         </button>
       </div>
@@ -2593,16 +2645,16 @@
 
       <!-- KPI Dashboard Cards (Row of 3) - Dark Mode -->
       <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; margin-bottom:20px;">
-        <div class="panel" id="kpiCardInserate" style="padding:20px; border-radius:16px; box-shadow:0 4px 16px rgba(0,0,0,.3); background:#2d2d2d; cursor:pointer; text-align:center; border:2px solid rgba(255,184,0,0.2);">
-          <div style="font-size:32px; font-weight:900; line-height:1.2; margin-bottom:8px; color:#FFB800;" id="kpiInserateCount">0</div>
+        <div class="panel" id="kpiCardInserate" style="padding:20px; border-radius:16px; box-shadow:0 4px 16px rgba(0,0,0,.3); background:#2d2d2d; cursor:pointer; text-align:center; border:2px solid rgba(255,215,0,0.2);">
+          <div style="font-size:32px; font-weight:900; line-height:1.2; margin-bottom:8px; color:#FFD700;" id="kpiInserateCount">0</div>
           <div style="font-size:13px; color:rgba(255,255,255,0.7); font-weight:600;">Inserate</div>
         </div>
         <div class="panel" id="kpiCardAbholungen" style="padding:20px; border-radius:16px; box-shadow:0 4px 16px rgba(0,0,0,.3); background:#2d2d2d; cursor:pointer; text-align:center; border:2px solid rgba(255,184,0,0.2);">
-          <div style="font-size:32px; font-weight:900; line-height:1.2; margin-bottom:8px; color:#FFB800;" id="kpiAbholungenCount">0</div>
+          <div style="font-size:32px; font-weight:900; line-height:1.2; margin-bottom:8px; color:#FFD700;" id="kpiAbholungenCount">0</div>
           <div style="font-size:13px; color:rgba(255,255,255,0.7); font-weight:600;">Abholungen</div>
         </div>
-        <div class="panel" id="kpiCardKochbuch" style="padding:20px; border-radius:16px; box-shadow:0 4px 16px rgba(0,0,0,.3); background:#2d2d2d; cursor:pointer; text-align:center; border:2px solid rgba(255,184,0,0.2);">
-          <div style="font-size:32px; font-weight:900; line-height:1.2; margin-bottom:8px; color:#FFB800;" id="kpiKochbuchCount">0</div>
+        <div class="panel" id="kpiCardKochbuch" style="padding:20px; border-radius:16px; box-shadow:0 4px 16px rgba(0,0,0,.3); background:#2d2d2d; cursor:pointer; text-align:center; border:2px solid rgba(255,215,0,0.2);">
+          <div style="font-size:32px; font-weight:900; line-height:1.2; margin-bottom:8px; color:#FFD700;" id="kpiKochbuchCount">0</div>
           <div style="font-size:13px; color:rgba(255,255,255,0.7); font-weight:600;">Kochbuch</div>
         </div>
       </div>
@@ -2610,11 +2662,22 @@
       <!-- Zeit-Gewinn-Tracker Widget -->
       <div class="panel" id="providerTimeTracker" style="padding:20px; border-radius:20px; box-shadow:0 4px 16px rgba(0,0,0,.3); background:#2d2d2d; margin-bottom:20px; text-align:center; border:2px solid rgba(46,125,50,0.3);">
         <div style="font-size:14px; color:rgba(255,255,255,0.7); margin-bottom:8px; font-weight:600;">Deine Bilanz</div>
-        <div style="font-size:36px; font-weight:900; color:#1F9D55; margin-bottom:8px;" id="providerTimeSaved">
+        <div style="font-size:36px; font-weight:900; color:#2ECC71; margin-bottom:8px;" id="providerTimeSaved">
           0h 0min
         </div>
         <div style="font-size:13px; color:rgba(255,255,255,0.7);">
           Zeit an der Theke gewonnen
+        </div>
+      </div>
+
+      <!-- Personal-Spar Bonus Infobox -->
+      <div class="panel" id="providerPersonalSpar" style="padding:16px; border-radius:20px; box-shadow:0 4px 16px rgba(0,0,0,.3); background:linear-gradient(135deg, rgba(31,157,85,0.15) 0%, rgba(46,125,50,0.1) 100%); margin-bottom:20px; border:2px solid rgba(31,157,85,0.3);">
+        <div style="font-size:13px; color:rgba(255,255,255,0.9); margin-bottom:6px; font-weight:600; display:flex; align-items:center; gap:6px;">
+          <i data-lucide="users" style="width:16px;height:16px; color:#2ECC71;"></i>
+          Dein digitaler Kassierer
+        </div>
+        <div style="font-size:14px; color:rgba(255,255,255,0.8); line-height:1.5;" id="providerPersonalSparText">
+          Heute wurden <strong style="color:#2ECC71; font-weight:700;" id="providerTodayAbholnummernCount">0</strong> Abholnummern vollautomatisch abgewickelt. Das entspricht einer geschätzten Entlastung deines Service-Teams von ca. <strong style="color:#2ECC71; font-weight:700;" id="providerTodayTimeSaved">0</strong> Minuten.
         </div>
       </div>
 
@@ -3105,7 +3168,7 @@
 <!-- Match Success Modal (nach Rechts-Swipe) -->
 <div class="backdrop" id="matchBd" onclick="closeMatchModal()" style="background:rgba(0,0,0,0.7); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);"></div>
 <div class="sheet" id="matchSheet" style="max-width:400px; border-radius:24px; overflow:hidden;">
-  <div style="position:relative; padding:40px 24px; text-align:center; background:linear-gradient(135deg, #FFB800 0%, #FFD700 100%);">
+  <div style="position:relative; padding:40px 24px; text-align:center; background:linear-gradient(135deg, #FFD700 0%, #FFD700 100%);">
     <!-- Konfetti-Animation (Canvas) -->
     <canvas id="matchConfetti" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none;"></canvas>
     
@@ -3142,7 +3205,7 @@
     
     <!-- CTA Buttons -->
     <div style="display:flex; flex-direction:column; gap:12px;">
-      <button class="btn" type="button" id="btnMatchReserve" style="width:100%; min-height:56px; background:#FFB800; color:#2D3436; font-weight:800; font-size:18px; border:none; border-radius:16px; box-shadow:0 4px 16px rgba(255,184,0,0.3);">
+      <button class="btn" type="button" id="btnMatchReserve" style="width:100%; min-height:56px; background:#FFD700; color:#334155; font-weight:800; font-size:18px; border:none; border-radius:16px; box-shadow:0 4px 16px rgba(255,215,0,0.3);">
         Heute essen
       </button>
       <button class="btn secondary" type="button" id="btnMatchLater" style="width:100%; min-height:52px; background:transparent; color:#666; font-weight:700; border:2px solid #e7e1d5; border-radius:16px;">
@@ -3207,7 +3270,7 @@
     
     <!-- Bottom Sticky Primary CTA: "In die Mittagsbox" -->
     <div style="position:sticky; bottom:0; background:var(--card); padding:16px 0; margin-top:24px; border-top:1px solid var(--border); z-index:10;">
-      <button class="btn-primary" type="button" id="btnPrimaryCTA" style="width:100%; min-height:56px; max-height:64px; background:#FFB800; color:#2D3436; font-weight:800; font-size:18px; border:none; border-radius:16px; box-shadow:0 4px 16px rgba(255,184,0,0.3);">
+      <button class="btn-primary" type="button" id="btnPrimaryCTA" style="width:100%; min-height:56px; max-height:64px; background:#FFD700; color:#334155; font-weight:800; font-size:18px; border:none; border-radius:16px; box-shadow:0 4px 16px rgba(255,215,0,0.3);">
         <i data-lucide="shopping-basket" style="width:22px;height:22px;"></i>
         <span id="btnPrimaryCTAText">In die Mittagsbox</span>
       </button>
@@ -4899,23 +4962,23 @@
       };
     }
     
-    // Kategorien rendern (mit farbigen Icons)
+    // Kategorien rendern (dezent, Reihenfolge: Fleisch -> Salat -> Vegetarisch -> Vegan -> Fisch)
     const categoriesEl = document.getElementById('discoverCategories');
     if(categoriesEl){
       categoriesEl.innerHTML = '';
       const cats = [
-        {id:'Vegan', label:'Vegan', icon: 'leaf', emoji: '🌿'},
-        {id:'Vegetarisch', label:'Vegetarisch', icon: 'carrot', emoji: '🧀'},
-        {id:'Fisch', label:'Fisch', icon: 'fish', emoji: '🐟'},
-        {id:'Mit Fleisch', label:'Fleisch', icon: 'drumstick', emoji: '🍖'},
-        {id:'Salat', label:'Salat', icon: 'leaf', emoji: '🥗'}
+        {id:'Mit Fleisch', label:'Fleisch', icon: 'drumstick'},
+        {id:'Salat', label:'Salat', icon: 'leaf'},
+        {id:'Vegetarisch', label:'Vegetarisch', icon: 'carrot'},
+        {id:'Vegan', label:'Vegan', icon: 'leaf'},
+        {id:'Fisch', label:'Fisch', icon: 'fish'}
       ];
       cats.forEach(cat=>{
         const btn = document.createElement('button');
         btn.className = 'discover-category-chip' + (activeDiscoverFilter === cat.id ? ' active' : '');
         btn.setAttribute('data-cat', cat.id);
-        // Emoji + Icon für bessere Sichtbarkeit
-        btn.innerHTML = `<span style="font-size:18px;">${cat.emoji}</span><i data-lucide="${cat.icon}"></i><span>${esc(cat.label)}</span>`;
+        // Nur Icon, kein Emoji für dezentes Design
+        btn.innerHTML = `<i data-lucide="${cat.icon}"></i><span>${esc(cat.label)}</span>`;
         btn.onclick = ()=>{
           activeDiscoverFilter = cat.id;
           renderDiscover();
@@ -5150,7 +5213,10 @@
     card.className = 'swipe-card';
     card.dataset.offerId = data.id;
     card.style.zIndex = 100 - index;
-    card.style.transform = `scale(${1 - index * 0.05}) translateY(${index * 10}px)`;
+    // Zentrierte Position mit Stack-Effekt
+    const scale = 1 - index * 0.05;
+    const translateY = index * 10;
+    card.style.transform = `translate(-50%, calc(-50% + ${translateY}px)) scale(${scale})`;
     card.style.opacity = index === 0 ? 1 : 0.95;
     
     const imgSrc = data.imageUrl || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70';
@@ -5169,19 +5235,19 @@
     card.innerHTML = `
       <div class="swipe-overlay left">Bäh: Kein Lust auf ${esc(data.dish||'')} heute</div>
       <div class="swipe-overlay right">Gut: Das möchte ich!</div>
-      <div class="swipe-card-image">
-        <img src="${esc(imgSrc)}" alt="${esc(data.dish||'')}" />
+      <div class="swipe-card-image-wrapper">
+        <div class="swipe-card-image">
+          <img src="${esc(imgSrc)}" alt="${esc(data.dish||'')}" />
+        </div>
       </div>
       <div class="swipe-card-content">
-        <div>
-          <h2 class="swipe-card-title">${esc(data.dish||'Gericht')}</h2>
+        <h2 class="swipe-card-title">${esc(data.dish||'Gericht')}</h2>
+        <div class="swipe-card-price-info">
+          <span class="swipe-card-price">${euro(data.price)}</span>
           <p class="swipe-card-provider">${iconMarkup('store')} <span>${esc(data.providerName||'Anbieter')}</span></p>
-          ${badges.length ? `<div class="swipe-card-badges">${badges.join('')}</div>` : ''}
-          <div class="swipe-card-meta">
-            <span class="swipe-card-price">${euro(data.price)}</span>
-            ${metaInfo.join('')}
-          </div>
         </div>
+        ${badges.length ? `<div class="swipe-card-badges">${badges.join('')}</div>` : ''}
+        ${metaInfo.length ? `<div class="swipe-card-meta">${metaInfo.join('')}</div>` : ''}
       </div>
     `;
     
@@ -5258,7 +5324,7 @@
           setTimeout(() => {
             triggerHapticFeedback();
             // Finale Rotation beim Wegfliegen
-            card.style.transform = `translateX(-100vw) rotate(${finalRotation - 10}deg)`;
+            card.style.transform = `translate(calc(-50% - 50vw), -50%) rotate(${finalRotation - 10}deg)`;
             card.style.opacity = '0';
             card.classList.add('swipe-left');
             setTimeout(() => {
@@ -5274,7 +5340,7 @@
           setTimeout(() => {
             triggerHapticFeedback();
             // Finale Rotation beim Wegfliegen
-            card.style.transform = `translateX(100vw) rotate(${finalRotation + 10}deg)`;
+            card.style.transform = `translate(calc(-50% + 50vw), -50%) rotate(${finalRotation + 10}deg)`;
             card.style.opacity = '0';
             card.classList.add('swipe-right');
             setTimeout(() => {
@@ -5286,10 +5352,12 @@
           }, 100);
         }
       } else {
-        // Zurück zur Mitte mit smooth Animation
+        // Zurück zur Mitte mit smooth Animation (zentriert)
         card.classList.remove('match-left', 'match-right');
         card.style.transition = 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)';
-        card.style.transform = '';
+        const scale = 1 - index * 0.05;
+        const translateY = index * 10;
+        card.style.transform = `translate(-50%, calc(-50% + ${translateY}px)) scale(${scale})`;
         setTimeout(() => {
           card.style.transition = '';
         }, 300);
@@ -5835,7 +5903,7 @@
           <button class="btn-icon-overlay" onclick="event.stopPropagation(); toggleDishFav('${dishKey}'); const btn=this.querySelector('i'); setTimeout(()=>{const isFav=dishFavs.has('${dishKey}'); btn.style.fill=isFav?'currentColor':''; btn.style.color=isFav?'#e74c3c':'#666'; if(typeof lucide !== 'undefined') lucide.createIcons();}, 10);" title="Favorit" style="width:40px; height:40px; border-radius:50%; background:rgba(255,255,255,0.95); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.15); transition:transform 0.2s ease;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
             <i data-lucide="heart" style="width:20px;height:20px;${isFav ? 'fill:currentColor; color:#e74c3c;' : 'color:#666;'}"></i>
           </button>
-          <button class="btn-icon-overlay" onclick="event.stopPropagation(); const o=offers.find(x=>x.id==='${data.id}'); if(o) shareInviteLink(o);" title="Teilen" style="width:40px; height:40px; border-radius:50%; background:rgba(255,255,255,0.95); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.15); transition:transform 0.2s ease;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+          <button class="btn-icon-overlay" onclick="event.stopPropagation(); const o=offers.find(x=>x.id==='${data.id}'); if(o) shareOffer(o);" title="Teilen" style="width:40px; height:40px; border-radius:50%; background:rgba(255,255,255,0.95); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.15); transition:transform 0.2s ease;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
             <i data-lucide="share-2" style="width:20px;height:20px; color:#666;"></i>
           </button>
         </div>
@@ -6832,7 +6900,7 @@
     canvas.height = canvas.offsetHeight;
     
     const particles = [];
-    const colors = ['#FFB800', '#FFD700', '#FF6B6B', '#4ECDC4', '#45B7D1'];
+    const colors = ['#FFD700', '#FFD700', '#FF6B6B', '#4ECDC4', '#45B7D1'];
     
     for(let i = 0; i < 50; i++){
       particles.push({
@@ -7426,19 +7494,28 @@
   function shareOffer(o, useWebShare = true){
     if(!o) return;
     const data = normalizeOffer(o);
-    const url = `${location.origin}${location.pathname}#offer/${o.id}`;
+    // Share-Link Format: https://mittagio.de/share/[Gericht-ID]
+    const shareUrl = `https://mittagio.de/share/${o.id}`;
+    // Fallback-URL für direkten Zugriff in der App
+    const appUrl = `${location.origin}${location.pathname}#offer/${o.id}`;
     
-    // Schöner Share-Text: "Schau mal, was es heute bei [Metzger] gibt! [Link]"
     const providerName = data.providerName || 'Anbieter';
     const dishName = data.dish || 'Gericht';
-    const shareText = `Schau mal, was es heute bei ${providerName} gibt! ${dishName} für ${euro(data.price)}. ${url}`;
+    const price = euro(data.price);
+    
+    // Titel für Open Graph / Share-Vorschau
+    const shareTitle = `Schau mal, was es heute bei ${providerName} gibt!`;
+    // Beschreibung für Open Graph / Share-Vorschau
+    const shareDescription = `${dishName} für nur ${price} €. Hol es dir mit deiner Abholnummer über die Mittagio App.`;
+    // Vollständiger Share-Text für WhatsApp & Co.
+    const shareText = `${shareTitle}\n\n${shareDescription}\n\n${shareUrl}`;
     
     // Web Share API (wenn verfügbar)
-    if(navigator.share){
+    if(navigator.share && useWebShare){
       navigator.share({
-        title: `${dishName} bei ${providerName}`,
-        text: shareText,
-        url: url
+        title: shareTitle,
+        text: shareDescription,
+        url: shareUrl
       }).then(() => {
         showToast('Geteilt!');
       }).catch((err) => {
@@ -8636,7 +8713,7 @@
       if(isLoggedIn){
         headerCard.innerHTML = `
           <div style="display:flex; align-items:center; gap:16px;">
-            <div style="width:64px; height:64px; border-radius:50%; background:linear-gradient(135deg, #FFD700 0%, #FFB800 100%); display:flex; align-items:center; justify-content:center; font-size:24px; font-weight:900; color:#2D3436; box-shadow:0 4px 12px rgba(255,215,0,0.3); flex-shrink:0;">
+            <div style="width:64px; height:64px; border-radius:50%; background:linear-gradient(135deg, #FFD700 0%, #FFD700 100%); display:flex; align-items:center; justify-content:center; font-size:24px; font-weight:900; color:#334155; box-shadow:0 4px 12px rgba(255,215,0,0.3); flex-shrink:0;">
               ${initials}
             </div>
             <div style="flex:1; min-width:0;">
@@ -8833,8 +8910,10 @@
   
   // Provider Login Modal
   function showProviderLoginModal(){
-    document.getElementById('providerLoginBd').style.display = 'block';
-    document.getElementById('providerLoginSheet').style.display = 'block';
+    const providerLoginBd = document.getElementById('providerLoginBd');
+    const providerLoginSheet = document.getElementById('providerLoginSheet');
+    if(providerLoginBd) providerLoginBd.style.display = 'block';
+    if(providerLoginSheet) providerLoginSheet.style.display = 'block';
     // Icons aktualisieren
     if(typeof lucide !== 'undefined'){
       setTimeout(() => lucide.createIcons(), 50);
@@ -8842,8 +8921,10 @@
   }
   
   function closeProviderLoginModal(){
-    document.getElementById('providerLoginBd').style.display = 'none';
-    document.getElementById('providerLoginSheet').style.display = 'none';
+    const providerLoginBd = document.getElementById('providerLoginBd');
+    const providerLoginSheet = document.getElementById('providerLoginSheet');
+    if(providerLoginBd) providerLoginBd.style.display = 'none';
+    if(providerLoginSheet) providerLoginSheet.style.display = 'none';
     // Felder leeren
     const emailField = document.getElementById('providerLoginEmail');
     const passField = document.getElementById('providerLoginPass');
@@ -9010,14 +9091,18 @@
     
     // Profi-Galerie Funktionen (global, damit onclick funktioniert)
     window.openProPhotoGallery = function(){
-      document.getElementById('proPhotoBd').style.display = 'block';
-      document.getElementById('proPhotoSheet').style.display = 'flex';
+      const proPhotoBd = document.getElementById('proPhotoBd');
+      const proPhotoSheet = document.getElementById('proPhotoSheet');
+      if(proPhotoBd) proPhotoBd.style.display = 'block';
+      if(proPhotoSheet) proPhotoSheet.style.display = 'flex';
       window.renderProPhotoGallery('all');
     };
     
     window.closeProPhotoGallery = function(){
-      document.getElementById('proPhotoBd').style.display = 'none';
-      document.getElementById('proPhotoSheet').style.display = 'none';
+      const proPhotoBd = document.getElementById('proPhotoBd');
+      const proPhotoSheet = document.getElementById('proPhotoSheet');
+      if(proPhotoBd) proPhotoBd.style.display = 'none';
+      if(proPhotoSheet) proPhotoSheet.style.display = 'none';
     };
     
     window.renderProPhotoGallery = function(category){
@@ -9027,7 +9112,7 @@
       // Kategorien-Tabs aktualisieren
       document.querySelectorAll('.pro-photo-category-tab').forEach(tab => {
         tab.classList.toggle('active', tab.dataset.category === category);
-        tab.style.background = tab.dataset.category === category ? '#FFB800' : '#f5f5f5';
+        tab.style.background = tab.dataset.category === category ? '#FFD700' : '#f5f5f5';
         tab.style.color = tab.dataset.category === category ? '#2D3436' : '#666';
       });
       
@@ -9039,7 +9124,7 @@
           recentEl.style.display = 'block';
           recentGridEl.innerHTML = recentProPhotos.slice(0, 4).map(photo => {
             return `
-              <div onclick="selectProPhoto('${photo.id}', '${esc(photo.url)}', '${esc(photo.category)}');" style="aspect-ratio:1; border-radius:12px; overflow:hidden; cursor:pointer; border:2px solid #FFB800;">
+              <div onclick="selectProPhoto('${photo.id}', '${esc(photo.url)}', '${esc(photo.category)}');" style="aspect-ratio:1; border-radius:12px; overflow:hidden; cursor:pointer; border:2px solid #FFD700;">
                 <img src="${esc(photo.url)}" alt="${esc(photo.name)}" style="width:100%; height:100%; object-fit:cover;" />
               </div>
             `;
@@ -9059,7 +9144,7 @@
       
       gridEl.innerHTML = photos.map(photo => {
         return `
-          <div onclick="selectProPhoto('${photo.id}', '${esc(photo.url)}', '${category}');" style="aspect-ratio:1; border-radius:12px; overflow:hidden; cursor:pointer; border:2px solid #e7e1d5; transition:all 0.2s;" onmouseover="this.style.borderColor='#FFB800'; this.style.transform='scale(1.05)';" onmouseout="this.style.borderColor='#e7e1d5'; this.style.transform='scale(1)';">
+          <div onclick="selectProPhoto('${photo.id}', '${esc(photo.url)}', '${category}');" style="aspect-ratio:1; border-radius:12px; overflow:hidden; cursor:pointer; border:2px solid #e7e1d5; transition:all 0.2s;" onmouseover="this.style.borderColor='#FFD700'; this.style.transform='scale(1.05)';" onmouseout="this.style.borderColor='#e7e1d5'; this.style.transform='scale(1)';">
             <img src="${esc(photo.url)}" alt="${esc(photo.name)}" style="width:100%; height:100%; object-fit:cover;" />
           </div>
         `;
@@ -9942,6 +10027,27 @@
         }
       }
       
+      // Personal-Spar Bonus Infobox aktualisieren
+      const todayAbholnummern = loadOrders().filter(o => {
+        const offer = offers.find(off => off.id === o.dishId || off.providerId === o.providerId);
+        return offer && offer.providerId === providerId() && offer.day === todayKey && o.status === 'PAID';
+      }).length;
+      const timeSavedTodayMinutes = Math.round(todayAbholnummern * 1.5);
+      
+      const providerPersonalSpar = document.getElementById('providerPersonalSpar');
+      const providerTodayAbholnummernCount = document.getElementById('providerTodayAbholnummernCount');
+      const providerTodayTimeSaved = document.getElementById('providerTodayTimeSaved');
+      
+      if(providerPersonalSpar && providerTodayAbholnummernCount && providerTodayTimeSaved){
+        if(todayAbholnummern > 0){
+          providerTodayAbholnummernCount.textContent = todayAbholnummern;
+          providerTodayTimeSaved.textContent = timeSavedTodayMinutes;
+          providerPersonalSpar.style.display = 'block';
+        } else {
+          providerPersonalSpar.style.display = 'none';
+        }
+      }
+      
       const kpiInserateCount = document.getElementById('kpiInserateCount');
       if(kpiInserateCount) {
         kpiInserateCount.textContent = activeOffersCount;
@@ -10609,7 +10715,7 @@
         tile.className = 'pickup-tile' + (isPickedUp ? ' picked-up' : '');
         
         // Farbleitsystem: Gelb/Orange für neue, Grau für abgeholt
-        const bgColor = isPickedUp ? '#2d2d2d' : '#FFB800';
+        const bgColor = isPickedUp ? '#2d2d2d' : '#FFD700';
         const textColor = isPickedUp ? 'rgba(255,255,255,0.5)' : '#2D3436';
         const borderColor = isPickedUp ? 'rgba(255,255,255,0.1)' : 'rgba(255,184,0,0.5)';
         
@@ -10975,7 +11081,7 @@
         <div style="font-weight:900">${esc(d.range)}</div>
         <div class="cookbook-facts">
           Abholnummern verkauft: ${d.sales} · Gesamtumsatz: ${euro(d.total)}<br>
-          All-In Erfolgsgebühren: ${euro(d.fee)} · <b>Auszahlung: ${euro(d.payout)}</b><br>
+          All-In Erfolgsgebühren: ${euro(d.fee)} · <b style="color:#2ECC71;">Auszahlung: ${euro(d.payout)}</b><br>
           <span style="font-size:11px; color:#666;">Netto-Auszahlung inkl. abgegoltenen Transaktionsgebühren</span><br>
           Status: ${esc(d.status)}
         </div>
@@ -12120,12 +12226,12 @@
       reuseHeader.style.cssText='display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;';
       reuseHeader.innerHTML=`
         <div style="display:flex; align-items:center; gap:8px;">
-          <i data-lucide="leaf" style="width:20px;height:20px; color:#1f9d55;"></i>
+          <i data-lucide="leaf" style="width:20px;height:20px; color:#27AE60;"></i>
           <span style="font-weight:700; font-size:15px; color:#2D3436;">Mehrweg möglich?</span>
         </div>
         <label style="position:relative; width:52px; height:32px; cursor:pointer;">
           <input type="checkbox" ${w.data.reuse.enabled ? 'checked' : ''} style="opacity:0; position:absolute; width:0; height:0;" onchange="w.data.reuse.enabled=this.checked; if(this.checked && !w.data.reuse.deposit) w.data.reuse.deposit=2; rebuildWizard();">
-          <span style="position:absolute; top:0; left:0; right:0; bottom:0; background:${w.data.reuse.enabled ? '#1f9d55' : '#ccc'}; border-radius:999px; transition:all 0.3s ease;">
+          <span style="position:absolute; top:0; left:0; right:0; bottom:0; background:${w.data.reuse.enabled ? '#27AE60' : '#ccc'}; border-radius:999px; transition:all 0.3s ease;">
             <span style="position:absolute; top:2px; left:${w.data.reuse.enabled ? '22px' : '2px'}; width:28px; height:28px; background:#fff; border-radius:50%; box-shadow:0 2px 4px rgba(0,0,0,0.2); transition:all 0.3s ease;"></span>
           </span>
         </label>
@@ -12134,10 +12240,10 @@
       
       if(w.data.reuse.enabled){
         const reusePreview=document.createElement('div');
-        reusePreview.style.cssText='padding:12px; background:#fff; border-radius:12px; display:flex; align-items:center; gap:8px; border:2px solid #1f9d55;';
+        reusePreview.style.cssText='padding:12px; background:#fff; border-radius:12px; display:flex; align-items:center; gap:8px; border:2px solid #27AE60;';
         reusePreview.innerHTML=`
-          <i data-lucide="leaf" style="width:18px;height:18px; color:#1f9d55;"></i>
-          <span style="font-weight:700; font-size:14px; color:#1f9d55;">Mehrweg</span>
+          <i data-lucide="leaf" style="width:18px;height:18px; color:#27AE60;"></i>
+          <span style="font-weight:700; font-size:14px; color:#27AE60;">Mehrweg</span>
           <span style="font-size:13px; color:#666; margin-left:auto;">Pfand: ${euro(w.data.reuse.deposit || 2)}</span>
         `;
         reuseSection.appendChild(reusePreview);
@@ -13299,6 +13405,34 @@
       
       if(orderId){
         showPickupCode(orderId);
+        // Clean URL
+        window.history.replaceState({}, '', window.location.pathname);
+      }
+    }
+    
+    // Share Route: /share/:offerId
+    // Support: /share?offerId=xxx OR hash #share/:offerId
+    if(path.includes('/share/') || hash.includes('#share/') || urlParams.has('share')){
+      let offerId = null;
+      
+      // Try path: /share/:offerId
+      if(path.includes('/share/')){
+        offerId = path.split('/share/')[1]?.split('?')[0]?.split('#')[0];
+      }
+      
+      // Try hash: #share/:offerId
+      if(!offerId && hash.includes('#share/')){
+        offerId = hash.split('#share/')[1]?.split('?')[0]?.split('#')[0];
+      }
+      
+      // Try query param: ?share=xxx or ?offerId=xxx
+      if(!offerId){
+        offerId = urlParams.get('share') || urlParams.get('offerId');
+      }
+      
+      if(offerId){
+        // Öffne das Gericht direkt
+        openOffer(offerId);
         // Clean URL
         window.history.replaceState({}, '', window.location.pathname);
       }
