@@ -6387,6 +6387,60 @@
         return;
       }
     }
+    
+    // In-App Navigation: Zurück zu vorheriger View innerhalb der App
+    // Prüfe ob wir in einer Customer-View sind
+    if(currentView){
+      const viewId = currentView.id;
+      if(viewId === 'v-fav'){
+        showDiscover();
+        e.preventDefault();
+        return;
+      } else if(viewId === 'v-cart'){
+        showDiscover();
+        e.preventDefault();
+        return;
+      } else if(viewId === 'v-orders'){
+        showProfile();
+        e.preventDefault();
+        return;
+      } else if(viewId === 'v-profile'){
+        showDiscover();
+        e.preventDefault();
+        return;
+      } else if(viewId === 'v-discover'){
+        showStart();
+        e.preventDefault();
+        return;
+      } else if(viewId === 'v-start'){
+        // Bleib auf Start oder gehe zu Discover
+        showStart();
+        e.preventDefault();
+        return;
+      }
+    }
+    
+    // Provider Views
+    if(mode === 'provider'){
+      const providerView = currentView ? currentView.id : '';
+      if(providerView === 'v-provider-profile'){
+        showProviderHome();
+        e.preventDefault();
+        return;
+      } else if(providerView === 'v-provider-pickups'){
+        showProviderHome();
+        e.preventDefault();
+        return;
+      } else if(providerView === 'v-provider-cookbook'){
+        showProviderHome();
+        e.preventDefault();
+        return;
+      } else if(providerView === 'v-provider-billing'){
+        showProviderProfile();
+        e.preventDefault();
+        return;
+      }
+    }
   });
 
   function openProviderOffer(id){
