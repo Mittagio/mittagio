@@ -1981,15 +1981,18 @@
     <section class="view" id="v-fav">
       <div class="panel">
         <!-- Modern Header mit Subline -->
-        <div id="favHeader" style="padding:20px 0 16px; border-bottom:1px solid rgba(0,0,0,0.06); margin-bottom:20px;">
-          <h1 style="font-size:32px; font-weight:900; margin:0 0 8px; color:#111; font-family:'Inter', 'Montserrat', sans-serif; line-height:1.2;">Favoriten</h1>
-          <p style="font-size:15px; color:#666; margin:0; line-height:1.5;">Deine Auswahl für die nächsten Tage.</p>
+        <div id="favHeader" style="padding:48px 24px 24px; border-bottom:1px solid rgba(0,0,0,0.06); margin-bottom:24px;">
+          <h1 style="font-size:36px; font-weight:900; margin:0 0 8px; color:#1a1a1a; font-family:'Inter', 'Montserrat', sans-serif; line-height:1.2; letter-spacing:-0.5px;">Favoriten</h1>
+          <p style="font-size:15px; color:#64748b; margin:0; line-height:1.5; font-weight:500;">Deine Highlights für die Woche.</p>
         </div>
         
-        <!-- Day-Switcher (horizontale Pillen-Navigation) -->
-        <div id="favDaySwitcher" style="display:flex; gap:8px; overflow-x:auto; padding:0 0 16px; margin-bottom:20px; scrollbar-width:none; -webkit-overflow-scrolling:touch;">
+        <!-- Day-Switcher (elegante horizontale Scrollbar) -->
+        <div id="favDaySwitcher" style="display:flex; gap:12px; overflow-x:auto; padding:0 24px 24px; margin-bottom:24px; scrollbar-width:none; -webkit-overflow-scrolling:touch;">
           <!-- Wird dynamisch befüllt -->
         </div>
+        <style>
+          #favDaySwitcher::-webkit-scrollbar { display: none; }
+        </style>
         
         <!-- Empty State (wenn beide Listen leer) -->
         <div id="favEmptyState" style="display:none; flex-direction:column; align-items:center; text-align:center; padding:60px 20px; gap:24px;">
@@ -2005,15 +2008,15 @@
           </button>
         </div>
         
-        <div id="favContent">
-          <div class="section-title" id="sectionProviders" style="display:none;">Anbieter-Favoriten</div>
-          <div class="grid" id="favProviders"></div>
+        <div id="favContent" style="padding:0 24px 24px;">
+          <div class="section-title" id="sectionProviders" style="display:none; margin-bottom:16px;">Anbieter-Favoriten</div>
+          <div class="grid" id="favProviders" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:24px;"></div>
           <div class="hint" id="emptyFavProviders" style="display:none; text-align:center; padding:32px;">
             <div style="width:80px; height:80px; margin:0 auto 16px; background:rgba(0,0,0,0.03); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:40px; opacity:0.6;">🍽️</div>
             <p style="font-size:14px; color:#666; margin:0;">Noch keine Anbieter-Favoriten</p>
           </div>
-          <div class="section-title" id="sectionDishes" style="display:none; margin-top:24px;">Gericht-Favoriten</div>
-          <div class="grid" id="favDishes"></div>
+          <div class="section-title" id="sectionDishes" style="display:none; margin-top:32px; margin-bottom:16px;">Gericht-Favoriten</div>
+          <div id="favDishes" style="display:flex; flex-direction:column; gap:24px;"></div>
           <div class="hint" id="emptyFavDishes" style="display:none; text-align:center; padding:32px;">
             <div style="width:80px; height:80px; margin:0 auto 16px; background:rgba(0,0,0,0.03); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:40px; opacity:0.6;">🍴</div>
             <p style="font-size:14px; color:#666; margin:0;">Noch keine Gericht-Favoriten</p>
@@ -7183,110 +7186,178 @@
     updateSheetFavs();
   }
   
-  // Favoriten-Karte mit "In die Mittagsbox" Button
+  // Favoriten-Karte mit "In die Mittagsbox" Button (High-End Design)
   function createFavoriteCard(o){
     const data = normalizeOffer(o);
     const card = document.createElement('div');
     card.className = 'card';
     card.style.position = 'relative';
-    // Glassmorphism-Effekt
-    card.style.background = 'rgba(255,255,255,0.95)';
-    card.style.backdropFilter = 'blur(10px)';
-    card.style.webkitBackdropFilter = 'blur(10px)';
-    card.style.boxShadow = '0 4px 16px rgba(0,0,0,0.08)';
+    // High-End Card Design: rounded-3xl (40px), shadow-xl
+    card.style.background = '#FFFFFF';
+    card.style.borderRadius = '40px';
+    card.style.boxShadow = '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)';
     card.style.border = '1px solid rgba(0,0,0,0.05)';
-    card.style.transition = 'transform 0.2s ease, box-shadow 0.2s ease';
+    card.style.overflow = 'hidden';
+    card.style.transition = 'transform 0.3s ease, box-shadow 0.3s ease';
+    card.style.marginBottom = '24px';
     card.onmouseenter = () => {
-      card.style.transform = 'translateY(-2px)';
-      card.style.boxShadow = '0 8px 24px rgba(0,0,0,0.12)';
+      card.style.transform = 'scale(1.02)';
+      card.style.boxShadow = '0 25px 50px -12px rgba(0, 0, 0, 0.25)';
     };
     card.onmouseleave = () => {
-      card.style.transform = 'translateY(0)';
-      card.style.boxShadow = '0 4px 16px rgba(0,0,0,0.08)';
+      card.style.transform = 'scale(1)';
+      card.style.boxShadow = '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)';
     };
     
     const imgSrc = data.imageUrl || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70';
     
-    // Image mit Preis-Overlay (oben rechts)
+    // Image Layer mit Hover-Zoom
     const img = document.createElement('div');
-    img.className = 'img';
     img.style.position = 'relative';
+    img.style.height = '256px';
     img.style.overflow = 'hidden';
-    img.innerHTML = `
-      <img alt="${esc(data.dish||'Gericht')}" src="${esc(imgSrc)}" style="transition:transform 0.3s ease;" />
-      <div style="position:absolute; top:12px; right:12px; background:rgba(255,255,255,0.95); backdrop-filter:blur(10px); padding:8px 12px; border-radius:12px; font-size:18px; font-weight:900; color:var(--brand); box-shadow:0 2px 8px rgba(0,0,0,0.15);">
-        ${euro(data.price)}
-      </div>
-    `;
+    img.style.background = '#f0f0f0';
+    const imgEl = document.createElement('img');
+    imgEl.src = imgSrc;
+    imgEl.alt = esc(data.dish||'Gericht');
+    imgEl.style.width = '100%';
+    imgEl.style.height = '100%';
+    imgEl.style.objectFit = 'cover';
+    imgEl.style.transition = 'transform 0.7s ease';
+    card.onmouseenter = () => {
+      card.style.transform = 'scale(1.02)';
+      card.style.boxShadow = '0 25px 50px -12px rgba(0, 0, 0, 0.25)';
+      imgEl.style.transform = 'scale(1.1)';
+    };
+    card.onmouseleave = () => {
+      card.style.transform = 'scale(1)';
+      card.style.boxShadow = '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)';
+      imgEl.style.transform = 'scale(1)';
+    };
+    img.appendChild(imgEl);
     
-    // Entfernen-Button (X oben links)
-    const removeBtn = document.createElement('button');
-    removeBtn.type = 'button';
-    removeBtn.style.position = 'absolute';
-    removeBtn.style.top = '12px';
-    removeBtn.style.left = '12px';
-    removeBtn.style.zIndex = '10';
-    removeBtn.style.background = 'rgba(255,255,255,0.95)';
-    removeBtn.style.backdropFilter = 'blur(10px)';
-    removeBtn.style.border = 'none';
-    removeBtn.style.borderRadius = '50%';
-    removeBtn.style.width = '36px';
-    removeBtn.style.height = '36px';
-    removeBtn.style.display = 'flex';
-    removeBtn.style.alignItems = 'center';
-    removeBtn.style.justifyContent = 'center';
-    removeBtn.style.cursor = 'pointer';
-    removeBtn.style.boxShadow = '0 2px 8px rgba(0,0,0,0.15)';
-    removeBtn.innerHTML = iconMarkup('x');
-    removeBtn.onclick = (e) => {
+    // Preis-Tag: Gelbe Pillenform absolut positioniert (top-4 right-4)
+    const priceTag = document.createElement('div');
+    priceTag.style.position = 'absolute';
+    priceTag.style.top = '20px';
+    priceTag.style.right = '20px';
+    priceTag.style.background = 'var(--brand)';
+    priceTag.style.color = '#1a1a1a';
+    priceTag.style.padding = '8px 16px';
+    priceTag.style.borderRadius = '999px';
+    priceTag.style.fontSize = '18px';
+    priceTag.style.fontWeight = '900';
+    priceTag.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)';
+    priceTag.style.zIndex = '10';
+    priceTag.textContent = euro(data.price);
+    img.appendChild(priceTag);
+    
+    // Favoriten-Status (Herz-Icon oben links)
+    const favBtn = document.createElement('button');
+    favBtn.type = 'button';
+    favBtn.style.position = 'absolute';
+    favBtn.style.top = '20px';
+    favBtn.style.left = '20px';
+    favBtn.style.zIndex = '10';
+    favBtn.style.background = 'rgba(255,255,255,0.2)';
+    favBtn.style.backdropFilter = 'blur(10px)';
+    favBtn.style.webkitBackdropFilter = 'blur(10px)';
+    favBtn.style.border = '1px solid rgba(255,255,255,0.3)';
+    favBtn.style.borderRadius = '50%';
+    favBtn.style.width = '40px';
+    favBtn.style.height = '40px';
+    favBtn.style.display = 'flex';
+    favBtn.style.alignItems = 'center';
+    favBtn.style.justifyContent = 'center';
+    favBtn.style.cursor = 'pointer';
+    favBtn.style.padding = '0';
+    favBtn.innerHTML = iconMarkup('heart', {fill: true});
+    favBtn.onclick = (e) => {
       e.stopPropagation();
       toggleDishFav(data.id);
     };
+    img.appendChild(favBtn);
     
-    // Body
+    // Info Layer
     const body = document.createElement('div');
-    body.className = 'body';
+    body.style.padding = '24px';
     body.innerHTML = `
-      <h3 style="font-size:20px; font-weight:900; margin:0 0 8px; color:#111; line-height:1.3;">${esc(data.dish||'Gericht')}</h3>
-      <p style="font-size:13px; color:#666; margin:0 0 4px; line-height:1.4;">${esc(data.providerName||'Anbieter')}</p>
-      ${data.pickupWindow ? `<p style="font-size:12px; color:#999; margin:0 0 12px; display:flex; align-items:center; gap:4px;"><i data-lucide="clock" style="width:12px;height:12px;"></i> ${esc(data.pickupWindow)}</p>` : ''}
-      ${data.distanceKm != null ? `<p style="font-size:12px; color:#999; margin:0 0 12px; display:flex; align-items:center; gap:4px;"><i data-lucide="map-pin" style="width:12px;height:12px;"></i> ${Number(data.distanceKm).toFixed(1)} km</p>` : ''}
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+        <div style="flex:1;">
+          <h3 style="font-size:24px; font-weight:900; margin:0 0 8px; color:#1a1a1a; line-height:1.2; letter-spacing:-0.5px;">${esc(data.dish||'Gericht')}</h3>
+          <div style="display:flex; align-items:center; gap:8px; margin-top:8px;">
+            <!-- Logo mit farbigem Ring -->
+            <div style="width:32px; height:32px; border-radius:8px; overflow:hidden; position:relative; flex-shrink:0; border:2px solid var(--brand); box-shadow:0 2px 4px rgba(255,204,0,0.3);">
+              ${data.providerLogo ? `<img src="${esc(data.providerLogo)}" alt="${esc(data.providerName||'')}" style="width:100%; height:100%; object-fit:cover;" />` : `<div style="width:100%; height:100%; background:linear-gradient(135deg, var(--brand), var(--brand2)); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:900; color:#1a1a1a;">${esc((data.providerName||'A').charAt(0).toUpperCase())}</div>`}
+            </div>
+            <!-- Restaurant-Name mit Icon -->
+            <p style="font-size:14px; color:#64748b; font-weight:600; margin:0; display:flex; align-items:center; gap:4px;">
+              ${iconMarkup('store')}
+              <span>${esc(data.providerName||'Anbieter')}</span>
+            </p>
+          </div>
+        </div>
+      </div>
+      ${data.pickupWindow ? `<p style="font-size:12px; color:#94a3b8; margin:8px 0 0; display:flex; align-items:center; gap:4px;"><i data-lucide="clock" style="width:12px;height:12px;"></i> ${esc(data.pickupWindow)}</p>` : ''}
+      ${data.distanceKm != null ? `<p style="font-size:12px; color:#94a3b8; margin:4px 0 0; display:flex; align-items:center; gap:4px;"><i data-lucide="map-pin" style="width:12px;height:12px;"></i> ${Number(data.distanceKm).toFixed(1)} km</p>` : ''}
     `;
     
-    // Abholnummer-Quickview (falls bereits gebucht)
+    // Abholnummer-Quickview: Ticket-Stumpf-Design mit gestrichelter Linie
     const order = orders.find(ord => ord.items && ord.items.some(item => item.offerId === data.id));
     if(order && order.pickupCode){
-      const codeDisplay = document.createElement('div');
-      codeDisplay.style.marginTop = '12px';
-      codeDisplay.style.padding = '10px';
-      codeDisplay.style.background = 'rgba(255,215,0,0.1)';
-      codeDisplay.style.borderRadius = '8px';
-      codeDisplay.style.fontFamily = 'monospace';
-      codeDisplay.style.fontSize = '14px';
-      codeDisplay.style.fontWeight = '700';
-      codeDisplay.style.color = 'var(--brand)';
-      codeDisplay.style.textAlign = 'center';
-      codeDisplay.innerHTML = `Abholnummer: ${order.pickupCode}`;
-      body.appendChild(codeDisplay);
+      const ticketSection = document.createElement('div');
+      ticketSection.style.marginTop = '24px';
+      ticketSection.style.paddingTop = '24px';
+      ticketSection.style.borderTop = '2px dashed #e2e8f0';
+      ticketSection.style.display = 'flex';
+      ticketSection.style.alignItems = 'center';
+      ticketSection.style.justifyContent = 'space-between';
+      ticketSection.innerHTML = `
+        <div style="display:flex; flex-direction:column;">
+          <span style="font-size:10px; text-transform:uppercase; letter-spacing:0.1em; color:#94a3b8; font-weight:700; margin-bottom:4px;">Abholnummer</span>
+          <span style="font-family:monospace; font-size:18px; font-weight:900; color:#1a1a1a;">${order.pickupCode}</span>
+        </div>
+        <button class="btn-primary" style="background:#1a1a1a; color:#fff; padding:12px 24px; border-radius:16px; font-weight:700; font-size:14px; border:none; cursor:pointer; transition:background 0.2s ease;" onmouseover="this.style.background='var(--brand)'; this.style.color='#1a1a1a';" onmouseout="this.style.background='#1a1a1a'; this.style.color='#fff';">
+          Jetzt buchen
+        </button>
+      `;
+      ticketSection.querySelector('button').onclick = (e) => {
+        e.stopPropagation();
+        addFavoriteToCart(o);
+      };
+      body.appendChild(ticketSection);
+    } else {
+      // "In die Mittagsbox" Button (wenn noch nicht gebucht)
+      const addToCartBtn = document.createElement('button');
+      addToCartBtn.type = 'button';
+      addToCartBtn.className = 'btn-primary';
+      addToCartBtn.style.width = '100%';
+      addToCartBtn.style.minHeight = '52px';
+      addToCartBtn.style.fontSize = '16px';
+      addToCartBtn.style.fontWeight = '700';
+      addToCartBtn.style.marginTop = '24px';
+      addToCartBtn.style.borderRadius = '16px';
+      addToCartBtn.style.background = '#1a1a1a';
+      addToCartBtn.style.color = '#fff';
+      addToCartBtn.style.border = 'none';
+      addToCartBtn.style.cursor = 'pointer';
+      addToCartBtn.style.transition = 'background 0.2s ease';
+      addToCartBtn.innerHTML = `${iconMarkup('shopping-basket')} <span>Heute essen</span>`;
+      addToCartBtn.onmouseenter = () => {
+        addToCartBtn.style.background = 'var(--brand)';
+        addToCartBtn.style.color = '#1a1a1a';
+      };
+      addToCartBtn.onmouseleave = () => {
+        addToCartBtn.style.background = '#1a1a1a';
+        addToCartBtn.style.color = '#fff';
+      };
+      addToCartBtn.onclick = (e) => {
+        e.stopPropagation();
+        addFavoriteToCart(o);
+      };
+      body.appendChild(addToCartBtn);
     }
     
-    // "In die Mittagsbox" Button
-    const addToCartBtn = document.createElement('button');
-    addToCartBtn.type = 'button';
-    addToCartBtn.className = 'btn-primary';
-    addToCartBtn.style.width = '100%';
-    addToCartBtn.style.minHeight = '48px';
-    addToCartBtn.style.fontSize = '16px';
-    addToCartBtn.style.fontWeight = '700';
-    addToCartBtn.style.marginTop = '12px';
-    addToCartBtn.innerHTML = `${iconMarkup('shopping-basket')} <span>Heute essen</span>`;
-    addToCartBtn.onclick = (e) => {
-      e.stopPropagation();
-      addFavoriteToCart(o);
-    };
-    body.appendChild(addToCartBtn);
-    
-    card.appendChild(removeBtn);
     card.appendChild(img);
     card.appendChild(body);
     
@@ -7337,7 +7408,7 @@
     const favContent = document.getElementById('favContent');
     if(!provGrid || !dishGrid || !provEmpty || !dishEmpty) return;
     
-    // Day-Switcher rendern
+    // Day-Switcher rendern (elegante Pillen-Navigation)
     const daySwitcher = document.getElementById('favDaySwitcher');
     if(daySwitcher){
       daySwitcher.innerHTML = '';
@@ -7347,18 +7418,20 @@
         d.setDate(d.getDate() + i);
         const key = isoDate(d);
         const btn = document.createElement('button');
-        btn.className = 'fav-day-pill' + (activeFavDay === key ? ' active' : '');
+        const isActive = activeFavDay === key;
+        btn.className = 'fav-day-pill' + (isActive ? ' active' : '');
         btn.style.flex = '0 0 auto';
-        btn.style.padding = '10px 18px';
-        btn.style.borderRadius = '999px';
-        btn.style.border = activeFavDay === key ? 'none' : '1.5px solid rgba(0,0,0,0.15)';
+        btn.style.padding = '10px 20px';
+        btn.style.borderRadius = '16px';
+        btn.style.border = isActive ? 'none' : '1.5px solid rgba(0,0,0,0.1)';
         btn.style.fontSize = '13px';
-        btn.style.fontWeight = activeFavDay === key ? '900' : '600';
-        btn.style.background = activeFavDay === key ? 'var(--brand)' : 'transparent';
-        btn.style.color = activeFavDay === key ? '#000' : '#666';
+        btn.style.fontWeight = isActive ? '900' : '600';
+        btn.style.background = isActive ? 'var(--brand)' : '#FFFFFF';
+        btn.style.color = isActive ? '#1a1a1a' : '#64748b';
         btn.style.cursor = 'pointer';
         btn.style.transition = 'all 0.2s ease';
         btn.style.whiteSpace = 'nowrap';
+        btn.style.boxShadow = isActive ? '0 2px 6px rgba(255,204,0,0.3)' : 'none';
         if(i === 0){
           btn.textContent = 'Heute';
         } else {
