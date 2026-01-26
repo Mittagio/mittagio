@@ -2856,7 +2856,7 @@
     <div class="row"><span>Status</span><b id="pStatus"></b></div>
     <div class="row"><span>Essenszeit</span><b id="pWindow"></b></div>
     <button class="btn" type="button" id="btnEditOffer" data-icon="edit">Bearbeiten</button>
-    <button class="btn secondary" type="button" id="btnToggleOffer" data-icon="action">Deaktivieren</button>
+    <button class="btn" type="button" id="btnToggleOffer" data-icon="action" style="background:var(--brand); color:#2D3436; font-weight:900;">Noch da</button>
     <button class="btn ghost" type="button" id="btnShareOffer" data-icon="share">Teilen</button>
     <button class="btn ghost" type="button" id="btnPrintOffer" data-icon="print">Drucken</button>
   </div>
@@ -3846,8 +3846,8 @@
     const distanceKm = Number((0.5 + (h % 80) / 10).toFixed(1));
     const rating = Number((4 + (h % 9) / 10).toFixed(1));
     const ratingCount = 30 + (h % 400);
-    const availableCount = 1 + (h % 6);
-    return {distanceKm, rating, ratingCount, availableCount};
+    // No-Limits: Keine Mengenangaben mehr
+    return {distanceKm, rating, ratingCount};
   }
 
   const DEFAULT_MEAL_WINDOW = '11:30 – 14:00';
@@ -3904,7 +3904,7 @@
     if(out.distanceKm == null) out.distanceKm = info.distanceKm;
     if(out.rating == null) out.rating = info.rating;
     if(out.ratingCount == null) out.ratingCount = info.ratingCount;
-    if(out.availableCount == null) out.availableCount = info.availableCount;
+    // No-Limits: availableCount entfernt - Status wird nur über active gesteuert
     return out;
   }
 
@@ -5026,13 +5026,7 @@
       infoRow.appendChild(distBadge);
     }
     
-    // box: quantity/availability
-    if(data.availableCount != null){
-      const qtyBadge = document.createElement('span');
-      qtyBadge.className='card-info-badge';
-      qtyBadge.innerHTML = `${iconMarkup('box')} <span>${data.availableCount}</span>`;
-      infoRow.appendChild(qtyBadge);
-    }
+    // No-Limits: Keine Mengenangaben mehr - Status wird über active gesteuert
     
     // food type: leaf (Vegan), carrot (Vegetarian), drumstick (Meat), fish (Fish)
     const foodTypeIcon = data.category === 'Vegan' ? 'leaf' : 
@@ -5719,8 +5713,8 @@
     
     // Fast weg Badge (wenn ausverkauft oder fast ausverkauft)
     if(fastWegEl){
-      const isAlmostSoldOut = data.availableCount != null && data.availableCount < 5;
-      fastWegEl.style.display = isAlmostSoldOut ? 'block' : 'none';
+      // No-Limits: Keine "Fast weg" Logik mehr - Status wird über active gesteuert
+      fastWegEl.style.display = 'none';
     }
     
     // Konfetti-Animation
@@ -5941,12 +5935,21 @@
     preview.innerHTML = '';
     preview.appendChild(offerCard(o, {interactive:false}));
 
-    document.getElementById('pStatus').textContent = o.active===false ? 'Inaktiv' : 'Aktiv';
+    document.getElementById('pStatus').textContent = o.active===false ? 'Ausverkauft' : 'Noch da';
     document.getElementById('pWindow').textContent = o.pickupWindow || '-';
-    const toggleLabel = o.active===false ? 'Aktivieren' : 'Deaktivieren';
+    
+    // No-Limits: Prominenter "Ausverkauft" / "Noch da" Toggle
     const toggleBtn = document.getElementById('btnToggleOffer');
     if(toggleBtn){
-      toggleBtn.innerHTML = `${iconMarkup('action')}<span>${esc(toggleLabel)}</span>`;
+      if(o.active === false){
+        toggleBtn.textContent = 'Wieder verfügbar';
+        toggleBtn.style.background = '#4caf50';
+        toggleBtn.style.color = '#fff';
+      } else {
+        toggleBtn.textContent = 'Ausverkauft';
+        toggleBtn.style.background = '#E34D4D';
+        toggleBtn.style.color = '#fff';
+      }
     }
 
     document.getElementById('pbd').classList.add('active');
@@ -8539,6 +8542,12 @@
           if(o.dineInPossible) badges.push('<span style="font-size:11px; padding:2px 6px; background:rgba(31,157,85,.15); border-radius:6px; color:var(--brand2);">Vor Ort</span>');
           if(!o.dineInPossible && !o.hasPickupCode) badges.push('<span style="font-size:11px; padding:2px 6px; background:rgba(0,0,0,.06); border-radius:6px;">To Go</span>');
           
+          // No-Limits: Prominenter "Ausverkauft" / "Noch da" Toggle direkt in der Liste
+          const isActive = o.active !== false;
+          const toggleBtn = isActive 
+            ? `<button class="btn" type="button" data-offer-id="${esc(o.id)}" onclick="event.stopPropagation(); toggleOfferSoldOut('${esc(o.id)}');" style="background:#E34D4D; color:#fff; font-weight:700; padding:6px 12px; font-size:12px; min-height:32px; border-radius:8px; border:none; flex-shrink:0;">Ausverkauft</button>`
+            : `<button class="btn" type="button" data-offer-id="${esc(o.id)}" onclick="event.stopPropagation(); toggleOfferSoldOut('${esc(o.id)}');" style="background:#4caf50; color:#fff; font-weight:700; padding:6px 12px; font-size:12px; min-height:32px; border-radius:8px; border:none; flex-shrink:0;">Wieder verfügbar</button>`;
+          
           return `
             <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 0; border-bottom:1px solid var(--border);">
               <div style="flex:1; min-width:0;" data-offer-id="${esc(o.id)}" style="cursor:pointer;">
@@ -8549,9 +8558,12 @@
                   ${badges.join('')}
                 </div>
               </div>
-              <button class="btn ghost" type="button" data-offer-id="${esc(o.id)}" style="padding:8px; min-width:36px; margin-left:8px; flex-shrink:0;" onclick="event.stopPropagation(); openOfferMoreMenu('${esc(o.id)}');">
-                ⋯
-              </button>
+              <div style="display:flex; gap:8px; align-items:center; flex-shrink:0;">
+                ${toggleBtn}
+                <button class="btn ghost" type="button" data-offer-id="${esc(o.id)}" style="padding:8px; min-width:36px;" onclick="event.stopPropagation(); openOfferMoreMenu('${esc(o.id)}');">
+                  ⋯
+                </button>
+              </div>
             </div>
           `;
         }).join('');
@@ -9571,18 +9583,29 @@
       startListingFlow({editOfferId: activeProviderOfferId});
     };
   }
+  // No-Limits: Toggle-Funktion für "Ausverkauft" / "Noch da"
+  function toggleOfferSoldOut(offerId){
+    const idx = offers.findIndex(x=>x.id===offerId);
+    if(idx<0) return;
+    const wasActive = offers[idx].active !== false;
+    offers[idx].active = !wasActive;
+    save(LS.offers, offers);
+    
+    // Toast-Feedback
+    showToast(wasActive ? 'Als ausverkauft markiert' : 'Wieder verfügbar', 2000);
+    
+    // Neu rendern
+    renderProviderHome();
+    renderProviderPickups();
+    renderDiscover();
+  }
+  
   const btnToggleOffer = document.getElementById('btnToggleOffer');
   if(btnToggleOffer){
     btnToggleOffer.onclick=()=>{
       if(!activeProviderOfferId) return;
-      const idx = offers.findIndex(x=>x.id===activeProviderOfferId);
-      if(idx<0) return;
-      offers[idx].active = offers[idx].active === false ? true : false;
-      save(LS.offers, offers);
+      toggleOfferSoldOut(activeProviderOfferId);
       closeProviderSheet();
-      renderProviderHome();
-      renderProviderPickups();
-      renderDiscover();
     };
   }
   const btnShareOffer = document.getElementById('btnShareOffer');
@@ -11250,7 +11273,7 @@
       //     messages: [{
       //       role: 'user',
       //       content: [
-      //         { type: 'text', text: 'Analysiere dieses Food-Foto und extrahiere: Name des Gerichts, geschätzter Preis in EUR, Hauptzutaten (Liste), geschätzte Kalorien pro Portion. Antworte im JSON-Format: {name, price, ingredients: [], calories}' },
+      //         { type: 'text', text: 'Analysiere dieses Food-Foto und extrahiere: Name des Gerichts, geschätzter Preis in EUR, Hauptzutaten (Liste). Antworte im JSON-Format: {name, price, ingredients: []}. KEINE Mengenschätzungen oder Kalorien.' },
       //         { type: 'image_url', image_url: { url: imageDataUrl } }
       //       ]
       //     }]
