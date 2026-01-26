@@ -1864,11 +1864,14 @@
             <div id="checkoutTimeSlots" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; margin-bottom:12px;">
               <!-- Wird dynamisch befüllt -->
             </div>
-            <button type="button" id="btnOtherTime" style="width:100%; min-height:44px; margin-top:8px; background:transparent; border:2px dashed #e7e1d5; border-radius:12px; color:#666; font-size:14px; font-weight:600; cursor:pointer; transition:all 0.2s ease;" onmouseover="this.style.borderColor='#FFB800'; this.style.color='#2D3436';" onmouseout="this.style.borderColor='#e7e1d5'; this.style.color='#666';">
-              <i data-lucide="clock" style="width:16px;height:16px;"></i>
-              <span>Andere Uhrzeit wählen</span>
+            <button type="button" id="btnOtherTime" class="time-chip-alternative" style="width:100%; min-height:44px; margin-top:8px; background:#f0f0f0; border:2px dashed #e7e1d5; border-radius:12px; color:#666; font-size:14px; font-weight:600; cursor:pointer; transition:all 0.2s ease; display:flex; align-items:center; justify-content:center; gap:8px;" onmouseover="this.style.borderColor='#FFB800'; this.style.background='rgba(255,184,0,0.1)'; this.style.color='#2D3436';" onmouseout="this.style.borderColor='#e7e1d5'; this.style.background='#f0f0f0'; this.style.color='#666';">
+              <i data-lucide="clock" style="width:18px;height:18px;"></i>
+              <span>🕒 Andere Zeit</span>
             </button>
-            <input type="text" id="checkoutPickupTimeCustom" placeholder="z.B. 12:45 Uhr" style="display:none; width:100%; margin-top:8px; padding:14px; border:2px solid #e7e1d5; border-radius:12px; font-size:16px; background:#fff;" />
+            <div id="customTimeInputWrapper" style="display:none; margin-top:15px; padding:15px; background:#fff9e6; border-radius:12px; text-align:center;">
+              <input type="time" id="checkoutPickupTimeCustom" min="11:30" max="14:00" style="width:100%; padding:14px; border:2px solid #FFD700; border-radius:12px; font-size:18px; font-weight:700; background:#fff; text-align:center; margin-bottom:8px;" />
+              <p class="hint" style="font-size:12px; color:#666; margin:0; line-height:1.5;">Bitte zwischen 11:30 und 14:00 Uhr wählen</p>
+            </div>
             <input type="hidden" id="checkoutPickupTime" value="${cart && cart.pickupTime ? cart.pickupTime : ''}" />
           </div>
           
@@ -7913,8 +7916,10 @@
           save(LS.cart, cart);
           
           // Custom Input ausblenden
+          const customInputWrapper = document.getElementById('customTimeInputWrapper');
+          if(customInputWrapper) customInputWrapper.style.display = 'none';
           const customInput = document.getElementById('checkoutPickupTimeCustom');
-          if(customInput) customInput.style.display = 'none';
+          if(customInput) customInput.value = '';
           
           // UI aktualisieren
           checkoutTimeSlots.querySelectorAll('.time-slot-btn').forEach(b => {
@@ -7934,31 +7939,57 @@
     
     // "Andere Uhrzeit wählen" Button Handler
     const btnOtherTime = document.getElementById('btnOtherTime');
+    const customTimeInputWrapper = document.getElementById('customTimeInputWrapper');
     const customTimeInput = document.getElementById('checkoutPickupTimeCustom');
-    if(btnOtherTime && customTimeInput){
+    if(btnOtherTime && customTimeInputWrapper && customTimeInput){
       btnOtherTime.onclick = () => {
-        customTimeInput.style.display = customTimeInput.style.display === 'none' ? 'block' : 'none';
-        if(customTimeInput.style.display === 'block'){
+        const isVisible = customTimeInputWrapper.style.display !== 'none';
+        customTimeInputWrapper.style.display = isVisible ? 'none' : 'block';
+        if(!isVisible){
           customTimeInput.focus();
           // Alle Slots deselektieren
-          checkoutTimeSlots.querySelectorAll('.time-slot-btn').forEach(b => {
-            b.classList.remove('selected');
-            b.style.borderColor = '#e7e1d5';
-            b.style.background = '#fff';
-            b.style.color = '#666';
-            b.style.fontWeight = '600';
-          });
+          if(checkoutTimeSlots){
+            checkoutTimeSlots.querySelectorAll('.time-slot-btn').forEach(b => {
+              b.classList.remove('selected');
+              b.style.borderColor = '#e7e1d5';
+              b.style.background = '#fff';
+              b.style.color = '#666';
+              b.style.fontWeight = '600';
+            });
+          }
+          // Wenn bereits eine Custom-Zeit gesetzt ist, diese anzeigen
+          if(cart && cart.pickupTime && !TIME_SLOTS.includes(cart.pickupTime)){
+            // Format für time-Input: HH:MM
+            const timeParts = cart.pickupTime.replace(' Uhr', '').split(':');
+            if(timeParts.length === 2){
+              customTimeInput.value = `${timeParts[0].padStart(2, '0')}:${timeParts[1].padStart(2, '0')}`;
+            }
+          }
         }
       };
       
-      customTimeInput.oninput = () => {
-        const customTime = customTimeInput.value.trim();
+      customTimeInput.onchange = () => {
+        const customTime = customTimeInput.value;
         if(customTime){
-          if(!cart) cart = {items: []};
-          cart.pickupTime = customTime;
-          save(LS.cart, cart);
-          const hiddenInput = document.getElementById('checkoutPickupTime');
-          if(hiddenInput) hiddenInput.value = customTime;
+          // Validierung: Zwischen 11:30 und 14:00
+          const [h, m] = customTime.split(':').map(Number);
+          const timeMinutes = h * 60 + m;
+          const minMinutes = 11 * 60 + 30; // 11:30
+          const maxMinutes = 14 * 60; // 14:00
+          
+          if(timeMinutes >= minMinutes && timeMinutes <= maxMinutes){
+            // Format: "HH:MM Uhr"
+            const formattedTime = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')} Uhr`;
+            if(!cart) cart = {items: []};
+            cart.pickupTime = formattedTime;
+            save(LS.cart, cart);
+            const hiddenInput = document.getElementById('checkoutPickupTime');
+            if(hiddenInput) hiddenInput.value = formattedTime;
+            showToast('Zeit gespeichert ✓', 1500);
+          } else {
+            showToast('Bitte wähle eine Zeit zwischen 11:30 und 14:00 Uhr', 3000);
+            customTimeInput.value = '';
+          }
         }
       };
     }
