@@ -959,6 +959,27 @@
     .discover-view-toggle{
       margin-left:auto; /* Rechts ausrichten in Quick-Filters */
     }
+    /* View-Toggle im Topbar (oben rechts neben Logo) */
+    .discover-view-toggle-topbar{
+      display:flex;
+      align-items:center;
+      margin-left:auto;
+    }
+    .discover-calendar-wrapper{
+      padding:8px 0;
+      border-top:1px solid rgba(0,0,0,.04);
+      max-width:980px;
+      margin:0 auto;
+    }
+    .discover-calendar-scroll{
+      display:flex;
+      gap:8px;
+      overflow-x:auto;
+      -webkit-overflow-scrolling:touch;
+      padding:0 14px;
+      scrollbar-width:none;
+    }
+    .discover-calendar-scroll::-webkit-scrollbar{display:none}
     .toggle-switch{
       position:relative;
       width:64px;
@@ -1574,11 +1595,23 @@
 <body>
 <div class="app" id="app">
   <div class="topbar" id="topbar">
-    <div class="topbar-inner">
-      <div class="brand" role="button" aria-label="Mittagio" onclick="handleLogoClick();" style="cursor:pointer;">
-        <div class="brand-badge"><img src="assets/mittagio-logo.png" alt="Mittagio" onerror="this.style.display='none'" /></div>
-        <div class="brand-name">MITTAGIO</div>
-      </div>
+      <div class="topbar-inner">
+        <div class="brand" role="button" aria-label="Mittagio" onclick="handleLogoClick();" style="cursor:pointer;">
+          <div class="brand-badge"><img src="assets/mittagio-logo.png" alt="Mittagio" onerror="this.style.display='none'" /></div>
+          <div class="brand-name">MITTAGIO</div>
+        </div>
+        <!-- View-Toggle oben rechts (nur in Discover-View sichtbar) -->
+        <div class="discover-view-toggle-topbar" id="discoverViewToggleTopbar" style="display:none;">
+          <button type="button" class="toggle-switch" id="toggleDiscoverViewTopbar" aria-label="Ansicht wechseln">
+            <span class="toggle-icon toggle-icon-list">
+              <i data-lucide="list"></i>
+            </span>
+            <span class="toggle-icon toggle-icon-match">
+              <i data-lucide="flame"></i>
+            </span>
+            <span class="toggle-slider"></span>
+          </button>
+        </div>
       <div class="spacer"></div>
       <div id="modePill" class="prov-pill" style="display:none;">Dashboard</div>
     </div>
@@ -1635,32 +1668,20 @@
             <i data-lucide="calendar"></i>
             <span>Heute</span>
           </button>
-          <!-- Toggle-Switch oben rechts -->
-          <div class="discover-view-toggle">
-            <button type="button" class="toggle-switch" id="toggleDiscoverView" aria-label="Ansicht wechseln">
-              <span class="toggle-icon toggle-icon-list">
-                <i data-lucide="list"></i>
-              </span>
-              <span class="toggle-icon toggle-icon-match">
-                <i data-lucide="flame"></i>
-              </span>
-              <span class="toggle-slider"></span>
-            </button>
+        </div>
+        
+        <!-- Ebene 2: Datums-Leiste (horizontaler Scroller) -->
+        <div class="discover-calendar-wrapper">
+          <div class="discover-calendar-scroll" id="discoverCalendar">
+            <!-- Wird dynamisch befüllt -->
           </div>
         </div>
         
-        <!-- Ebene 2: Food-Kategorien (horizontal scrollbar) -->
+        <!-- Ebene 3: Food-Kategorien (horizontal scrollbar) -->
         <div class="discover-categories-wrapper">
           <div class="discover-categories-scroll" id="discoverCategories">
             <!-- Wird dynamisch befüllt -->
           </div>
-        </div>
-      </div>
-
-      <!-- Kalender (horizontal swipebar, ohne Überschrift) -->
-      <div class="discover-calendar">
-        <div class="discover-calendar-scroll" id="discoverCalendar">
-          <!-- Wird dynamisch befüllt -->
         </div>
       </div>
 
@@ -4310,12 +4331,18 @@
     showView(views.discover);
     renderChips();
     renderDiscover();
+    // Toggle im Topbar anzeigen
+    const toggleTopbar = document.getElementById('discoverViewToggleTopbar');
+    if(toggleTopbar) toggleTopbar.style.display = 'flex';
     // Browser-Verlauf aktualisieren
     history.pushState({view: 'discover', mode: mode}, '', location.pathname);
   }
   function showFav(){
     setCustomerNavActive('fav');
     showView(views.fav);
+    // Toggle im Topbar ausblenden
+    const toggleTopbar = document.getElementById('discoverViewToggleTopbar');
+    if(toggleTopbar) toggleTopbar.style.display = 'none';
     renderFavorites();
     // Browser-Verlauf aktualisieren
     history.pushState({view: 'fav', mode: mode}, '', location.pathname);
@@ -5502,19 +5529,40 @@
     }
   }
   
-  // Toggle-Switch Handler
+  // Toggle-Switch Handler (beide: im Header und im Topbar)
   const toggleDiscoverView = document.getElementById('toggleDiscoverView');
-  if(toggleDiscoverView){
-    // Initialer Zustand setzen
-    if(discoverViewMode === 'swipe'){
-      toggleDiscoverView.classList.add('active');
+  const toggleDiscoverViewTopbar = document.getElementById('toggleDiscoverViewTopbar');
+  
+  function syncToggleState(){
+    const isSwipe = discoverViewMode === 'swipe';
+    if(toggleDiscoverView){
+      if(isSwipe) toggleDiscoverView.classList.add('active');
+      else toggleDiscoverView.classList.remove('active');
     }
-    
+    if(toggleDiscoverViewTopbar){
+      if(isSwipe) toggleDiscoverViewTopbar.classList.add('active');
+      else toggleDiscoverViewTopbar.classList.remove('active');
+    }
+  }
+  
+  if(toggleDiscoverView){
     toggleDiscoverView.onclick = () => {
       const newMode = discoverViewMode === 'list' ? 'swipe' : 'list';
       switchDiscoverView(newMode);
+      syncToggleState();
     };
   }
+  
+  if(toggleDiscoverViewTopbar){
+    toggleDiscoverViewTopbar.onclick = () => {
+      const newMode = discoverViewMode === 'list' ? 'swipe' : 'list';
+      switchDiscoverView(newMode);
+      syncToggleState();
+    };
+  }
+  
+  // Initialer Zustand setzen
+  syncToggleState();
   
   // Initiale Ansicht beim ersten Laden setzen
   if(discoverViewMode === 'swipe'){
@@ -5551,8 +5599,17 @@
     const socialProof = data.todayOrderCount > 0 ? `<div style="margin-top:4px; padding:4px 8px; background:rgba(255,204,0,0.1); border-radius:6px; font-size:11px; font-weight:600; color:#b8860b; display:inline-flex; align-items:center; gap:4px; width:fit-content;"><i data-lucide="users" style="width:12px;height:12px;"></i> <span>${data.todayOrderCount}x heute</span></div>` : '';
     
     card.innerHTML = `
-      <div class="dish-image-box">
-        <img src="${esc(imgSrc)}" alt="${esc(data.dish||'')}" />
+      <div class="dish-image-box" style="position:relative; overflow:hidden;">
+        <img src="${esc(imgSrc)}" alt="${esc(data.dish||'')}" style="width:100%; height:100%; object-fit:cover;" />
+        <!-- Overlay-Icons auf dem Bild (Herz + Share) -->
+        <div style="position:absolute; top:12px; right:12px; display:flex; gap:8px; z-index:5;">
+          <button class="btn-icon-overlay" onclick="event.stopPropagation(); toggleDishFav('${dishKey}'); const btn=this.querySelector('i'); setTimeout(()=>{const isFav=dishFavs.has('${dishKey}'); btn.style.fill=isFav?'currentColor':''; btn.style.color=isFav?'#e74c3c':'#666'; if(typeof lucide !== 'undefined') lucide.createIcons();}, 10);" title="Favorit" style="width:40px; height:40px; border-radius:50%; background:rgba(255,255,255,0.95); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.15); transition:transform 0.2s ease;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+            <i data-lucide="heart" style="width:20px;height:20px;${isFav ? 'fill:currentColor; color:#e74c3c;' : 'color:#666;'}"></i>
+          </button>
+          <button class="btn-icon-overlay" onclick="event.stopPropagation(); const o=offers.find(x=>x.id==='${data.id}'); if(o) shareInviteLink(o);" title="Teilen" style="width:40px; height:40px; border-radius:50%; background:rgba(255,255,255,0.95); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.15); transition:transform 0.2s ease;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+            <i data-lucide="share-2" style="width:20px;height:20px; color:#666;"></i>
+          </button>
+        </div>
       </div>
       <div class="dish-details">
         <div>
@@ -5570,40 +5627,14 @@
         </div>
         <div class="dish-footer">
           ${distanceDisplay}
-          <div class="action-group">
-            <button class="btn-icon" onclick="event.stopPropagation(); const o=offers.find(x=>x.id==='${data.id}'); if(o) shareInviteLink(o);" title="Einladen">
-              <i data-lucide="user-plus" style="width:16px;height:16px;"></i>
-            </button>
-            <button class="btn-icon heart-btn ${isFav ? 'active' : ''}" onclick="event.stopPropagation(); toggleDishFav('${dishKey}'); const btn=this; setTimeout(()=>{btn.classList.toggle('active', dishFavs.has('${dishKey}')); if(typeof lucide !== 'undefined') lucide.createIcons();}, 10);" title="Favorit">
-              <i data-lucide="heart" style="width:16px;height:16px;${isFav ? 'fill:currentColor;' : ''}"></i>
-            </button>
-          </div>
         </div>
       </div>
     `;
     
-    // Button nur bei Tap/Hover anzeigen (eleganter)
-    const actionGroup = card.querySelector('.action-group');
-    if(actionGroup){
-      actionGroup.style.opacity = '0';
-      actionGroup.style.transition = 'opacity 0.2s ease';
-    }
-    
-    card.addEventListener('mouseenter', () => {
-      if(actionGroup) actionGroup.style.opacity = '1';
-    });
-    card.addEventListener('mouseleave', () => {
-      if(actionGroup) actionGroup.style.opacity = '0';
-    });
-    
-    // Klick auf Karte öffnet Details oder Bestellung
+    // Klick auf Karte öffnet immer Detailansicht (nicht direkt Bestellung)
     card.onclick = (e)=>{
       if(e.target.closest('.btn-icon')) return; // Button-Handler übernimmt
-      if(data.hasPickupCode){
-        handleOrderClick(o);
-      } else {
-        openOffer(data.id);
-      }
+      openOffer(data.id); // Immer Detailansicht öffnen
     };
     
     return card;
