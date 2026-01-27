@@ -1247,11 +1247,16 @@
       width:18px; height:18px; color:#666;
     }
     
-    /* Filter-Leiste: Kategorien (schmal, dezent, farbige Icons) */
+    /* Filter-Leiste: Kategorien (schmal, dezent, farbige Icons) - Fixiert oben */
     .discover-categories-wrapper{
       padding:6px 0 8px;
       border-top:1px solid rgba(0,0,0,.04);
       max-width:980px; margin:0 auto;
+      position:sticky;
+      top:0;
+      background:#fff;
+      z-index:50;
+      box-shadow:0 2px 8px rgba(0,0,0,0.02);
     }
     .discover-categories-scroll{
       display:flex; gap:6px; overflow-x:auto;
@@ -1486,16 +1491,40 @@
       gap: 10px;
     }
     .dish-name {
-      font-size: 18px;
+      font-size: 20px; /* Erhöht für bessere Lesbarkeit */
       font-weight: 900; /* Kräftiger */
       color: #111;
-      line-height: 1.2;
+      line-height: 1.3; /* Verbesserter Zeilenabstand */
       margin: 0;
       display: -webkit-box;
       -webkit-line-clamp: 2;
       font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Montserrat', 'Segoe UI', sans-serif;
       -webkit-box-orient: vertical;
       overflow: hidden;
+    }
+    
+    /* Favoriten Grid-Kachel Styling */
+    .fav-grid-card {
+      animation: fadeIn 0.3s ease-out;
+    }
+    
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+    
+    /* Responsive Grid: Auf größeren Screens 3 Spalten */
+    @media (min-width: 768px) {
+      #favDishes {
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 16px !important;
+      }
     }
     .dish-price {
       font-size: 16px;
@@ -1845,16 +1874,10 @@
           <div class="brand-badge"><img src="assets/mittagio-logo.png" alt="Mittagio" onerror="this.style.display='none'" /></div>
           <div class="brand-name">MITTAGIO</div>
         </div>
-        <!-- View-Toggle oben rechts (immer in Discover-View sichtbar) -->
+        <!-- View-Toggle oben rechts (Grid/List Icon) -->
         <div class="discover-view-toggle-topbar" id="discoverViewToggleTopbar" style="display:flex;">
-          <button type="button" class="toggle-switch" id="toggleDiscoverViewTopbar" aria-label="Ansicht wechseln">
-            <span class="toggle-icon toggle-icon-list">
-              <i data-lucide="list"></i>
-            </span>
-            <span class="toggle-icon toggle-icon-match">
-              <i data-lucide="flame"></i>
-            </span>
-            <span class="toggle-slider"></span>
+          <button type="button" class="toggle-switch" id="toggleDiscoverViewTopbar" aria-label="Ansicht wechseln" style="width:44px; height:44px; border-radius:12px; border:none; background:rgba(0,0,0,0.05); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s ease;" onmouseover="this.style.background='rgba(0,0,0,0.1)';" onmouseout="this.style.background='rgba(0,0,0,0.05)';">
+            <i data-lucide="grid-3x3" id="toggleDiscoverViewIcon" style="width:20px;height:20px; color:#666;"></i>
           </button>
         </div>
       <div class="spacer"></div>
@@ -1896,12 +1919,20 @@
     <section class="view active" id="v-discover">
       <!-- Header: Sticky mit korrekter Hierarchie -->
       <div class="discover-header-sticky">
-        <!-- Ebene 1: Standort mit Pin-Icon (statisch, klickbar für GPS) -->
-        <div class="discover-location-row">
-          <button class="discover-location-pill-clickable" type="button" id="btnDiscoverLocationGPS">
-            <i data-lucide="map-pin" class="discover-location-icon-left"></i>
+        <!-- Ebene 1: Standort mit Pin-Icon + Search mit Lupe -->
+        <div class="discover-location-row" style="display:flex; align-items:center; gap:8px; padding:6px 10px;">
+          <button class="discover-location-pill-clickable" type="button" id="btnDiscoverLocationGPS" style="flex:1; display:flex; align-items:center; gap:6px; padding:8px 14px; border-radius:20px; background:rgba(0,0,0,.04); border:1px solid rgba(0,0,0,.08); font-size:14px; font-weight:600; color:#333; cursor:pointer; transition:all 0.2s ease; border:none; background:transparent;">
+            <i data-lucide="map-pin" class="discover-location-icon-left" style="width:16px;height:16px; color:#666;"></i>
             <span id="discoverCurrentLocation">Jena</span>
           </button>
+          <!-- Search mit Lupe (expandiert bei Klick) -->
+          <button type="button" id="btnDiscoverSearch" aria-label="Suchen" style="width:44px; height:44px; border-radius:12px; border:none; background:rgba(0,0,0,0.05); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s ease; flex-shrink:0;" onmouseover="this.style.background='rgba(0,0,0,0.1)';" onmouseout="this.style.background='rgba(0,0,0,0.05)';">
+            <i data-lucide="search" style="width:20px;height:20px; color:#666;"></i>
+          </button>
+        </div>
+        <!-- Expandiertes Suchfeld (versteckt, wird bei Klick auf Lupe angezeigt) -->
+        <div id="discoverSearchExpanded" style="display:none; padding:0 10px 8px;">
+          <input type="text" id="discoverSearchInput" placeholder="Gericht oder Anbieter suchen..." style="width:100%; padding:12px 16px; border-radius:12px; border:2px solid rgba(0,0,0,0.1); font-size:14px; background:#fff; outline:none; transition:border-color 0.2s ease;" onfocus="this.style.borderColor='#FFD700';" onblur="this.style.borderColor='rgba(0,0,0,0.1)';" />
         </div>
         
         <!-- Ebene 2: Horizontale Scroll-Liste für Wochentage -->
@@ -1959,8 +1990,8 @@
           </button>
         </div>
         
-        <!-- Action-Buttons: Rot (Ablehnen) und Grün (Besteck-Icon) -->
-        <div id="swipeActionButtons" style="position:absolute; bottom:32px; left:50%; transform:translateX(-50%); display:flex; gap:24px; z-index:100;">
+        <!-- Action-Buttons: Rot (Ablehnen) und Grün (Besteck-Icon) - Stabil am unteren Rand -->
+        <div id="swipeActionButtons" style="position:fixed; bottom:calc(80px + env(safe-area-inset-bottom, 0px)); left:50%; transform:translateX(-50%); display:flex; gap:24px; z-index:1000; pointer-events:auto;">
           <button type="button" id="btnSwipeReject" class="swipe-action-btn swipe-action-btn-reject" aria-label="Ablehnen" style="width:64px; height:64px; border-radius:50%; background:#E34D4D; border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 4px 16px rgba(227,77,77,0.4); transition:transform 0.2s ease;">
             <i data-lucide="x" style="width:32px;height:32px;color:#fff;"></i>
           </button>
@@ -2038,7 +2069,7 @@
         <!-- Empty State (wenn beide Listen leer) -->
         <div id="favEmptyState" style="display:none; flex-direction:column; align-items:center; text-align:center; padding:60px 20px; gap:24px;">
           <div style="width:120px; height:120px; background:linear-gradient(135deg, rgba(255,215,0,0.1) 0%, rgba(255,184,0,0.15) 100%); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:64px; flex-shrink:0;">
-            ❤️
+            🍴
           </div>
           <div style="display:flex; flex-direction:column; align-items:center; gap:12px; max-width:100%;">
             <h3 style="font-size:22px; font-weight:900; margin:0; color:#111; font-family:'Inter', 'Montserrat', sans-serif; line-height:1.3;">Noch keine Favoriten</h3>
@@ -2057,7 +2088,8 @@
             <p style="font-size:14px; color:#666; margin:0;">Noch keine Anbieter-Favoriten</p>
           </div>
           <div class="section-title" id="sectionDishes" style="display:none; margin-top:32px; margin-bottom:16px;">Gericht-Favoriten</div>
-          <div id="favDishes" style="display:flex; flex-direction:column; gap:24px;"></div>
+          <!-- Grid-Layout: 2-spaltig, kompakte Kacheln -->
+          <div id="favDishes" style="display:grid; grid-template-columns:repeat(2, 1fr); gap:12px; padding:0;"></div>
           <div class="hint" id="emptyFavDishes" style="display:none; text-align:center; padding:32px;">
             <div style="width:80px; height:80px; margin:0 auto 16px; background:rgba(0,0,0,0.03); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:40px; opacity:0.6;">🍴</div>
             <p style="font-size:14px; color:#666; margin:0;">Noch keine Gericht-Favoriten</p>
@@ -5475,30 +5507,99 @@
   let currentProviderFilter = null; // Provider-ID für Provider-Filter
   
   function renderDiscover(){
-    // GPS-Button: Aktueller Standort (klickbar für GPS)
+    // GPS-Button: Aktueller Standort (klickbar für GPS) - Sofortige Reaktion
     const btnDiscoverLocationGPS = document.getElementById('btnDiscoverLocationGPS');
     const discoverCurrentLocation = document.getElementById('discoverCurrentLocation');
     if(btnDiscoverLocationGPS){
-      btnDiscoverLocationGPS.onclick = ()=>{
+      btnDiscoverLocationGPS.onclick = (e)=>{
+        e.preventDefault();
+        e.stopPropagation();
+        // Haptics
+        triggerHapticFeedback([10]);
+        // Sofortige visuelle Reaktion
+        btnDiscoverLocationGPS.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+          btnDiscoverLocationGPS.style.transform = 'scale(1)';
+        }, 150);
+        
         // GPS-Standort abrufen
         if(navigator.geolocation){
+          showToast('Standort wird ermittelt...', 1000);
           navigator.geolocation.getCurrentPosition((position)=>{
             // Hier würde normalerweise Reverse Geocoding stattfinden
             // Für MVP: Zeige Toast
-            showToast('Standort aktualisiert');
+            showToast('Standort aktualisiert', 2000);
             if(discoverCurrentLocation) discoverCurrentLocation.textContent = 'Aktueller Standort';
             renderDiscover();
           }, (err)=>{
-            showToast('Standort konnte nicht ermittelt werden');
+            showToast('Standort konnte nicht ermittelt werden', 2000);
           });
         } else {
-          showToast('GPS nicht verfügbar');
+          // Fallback: Standort-Eingabe öffnen
+          const newLoc = prompt('Standort eingeben (Ort oder PLZ):', locationQuery || 'Jena');
+          if(newLoc !== null && newLoc.trim()){
+            locationQuery = newLoc.trim();
+            if(discoverCurrentLocation) discoverCurrentLocation.textContent = locationQuery;
+            renderDiscover();
+          }
         }
       };
     }
     // Aktuellen Standort anzeigen
     if(discoverCurrentLocation){
       discoverCurrentLocation.textContent = locationQuery || 'Jena';
+    }
+    
+    // Search-Button: Expandiert Suchfeld bei Klick
+    const btnDiscoverSearch = document.getElementById('btnDiscoverSearch');
+    const discoverSearchExpanded = document.getElementById('discoverSearchExpanded');
+    const discoverSearchInput = document.getElementById('discoverSearchInput');
+    let searchExpanded = false;
+    
+    if(btnDiscoverSearch && discoverSearchExpanded && discoverSearchInput){
+      btnDiscoverSearch.onclick = (e)=>{
+        e.preventDefault();
+        e.stopPropagation();
+        triggerHapticFeedback([10]);
+        
+        if(!searchExpanded){
+          discoverSearchExpanded.style.display = 'block';
+          setTimeout(() => {
+            discoverSearchInput.focus();
+          }, 100);
+          searchExpanded = true;
+        } else {
+          discoverSearchExpanded.style.display = 'none';
+          discoverSearchInput.value = '';
+          searchExpanded = false;
+          renderDiscover();
+        }
+      };
+      
+      // Search-Input Handler
+      discoverSearchInput.oninput = ()=>{
+        const query = discoverSearchInput.value.trim().toLowerCase();
+        if(query){
+          // Filtere Angebote nach Suchbegriff
+          // Wird in renderDiscover() berücksichtigt
+          locationQuery = query; // Temporär für Suche nutzen
+          renderDiscover();
+        } else {
+          locationQuery = '';
+          renderDiscover();
+        }
+      };
+      
+      // ESC zum Schließen
+      discoverSearchInput.onkeydown = (e)=>{
+        if(e.key === 'Escape'){
+          discoverSearchExpanded.style.display = 'none';
+          discoverSearchInput.value = '';
+          searchExpanded = false;
+          locationQuery = '';
+          renderDiscover();
+        }
+      };
     }
     
     // "Zur Liste wechseln" Button (sticky) - Scroll-Detection für Shadow
@@ -5690,21 +5791,39 @@
     const categoriesWrapper = document.getElementById('discoverCategoriesWrapper');
     const calendarEl = document.getElementById('discoverCalendar');
     
+    const locationRow = document.querySelector('.discover-location-row');
+    
     if(mode === 'swipe'){
       if(listEl) listEl.style.display = 'none';
-      if(swipeEl) swipeEl.style.display = 'block';
+      if(swipeEl) {
+        swipeEl.style.display = 'flex';
+        swipeEl.style.alignItems = 'center';
+        swipeEl.style.justifyContent = 'center';
+        swipeEl.style.height = 'calc(100vh - 180px)'; // Platz für Header und Bottom Bar
+        swipeEl.style.minHeight = '480px';
+        swipeEl.style.maxHeight = 'none';
+        swipeEl.style.padding = '12px 0';
+      }
       if(toggleBtn) toggleBtn.classList.add('active');
-      // Filter und Kalender im Swipe-Modus ausblenden
+      // Filter, Kalender und Standort im Swipe-Modus komplett ausblenden (immersiver Modus)
       if(categoriesWrapper) categoriesWrapper.style.display = 'none';
       if(calendarEl) calendarEl.style.display = 'none';
+      if(locationRow) locationRow.style.display = 'none';
       renderSwipeCards();
     } else {
       if(listEl) listEl.style.display = 'block';
-      if(swipeEl) swipeEl.style.display = 'none';
+      if(swipeEl) {
+        swipeEl.style.display = 'none';
+        // Reset für Listenansicht
+        swipeEl.style.height = '75vh';
+        swipeEl.style.minHeight = '480px';
+        swipeEl.style.maxHeight = '600px';
+      }
       if(toggleBtn) toggleBtn.classList.remove('active');
-      // Filter und Kalender im Listen-Modus anzeigen
-      if(categoriesWrapper) categoriesWrapper.style.display = 'block';
+      // Filter, Kalender und Standort in Listenansicht wieder einblenden
+      if(categoriesWrapper) categoriesWrapper.style.display = 'flex';
       if(calendarEl) calendarEl.style.display = 'flex';
+      if(locationRow) locationRow.style.display = 'flex';
     }
     
     // Icons aktualisieren
@@ -5870,7 +5989,7 @@
         <h2 class="swipe-card-title">${esc(data.dish||'Gericht')}</h2>
         <div class="swipe-card-price-info">
           <span class="swipe-card-price">${euro(data.price)}</span>
-          <p class="swipe-card-provider" style="cursor:pointer; text-decoration:underline; text-decoration-color:rgba(0,0,0,0.2); transition:opacity 0.2s ease;" onmouseover="this.style.opacity='0.7';" onmouseout="this.style.opacity='1';" onclick="event.stopPropagation(); const providerId='${esc(data.providerId||'')}'; if(providerId){ activeDiscoverFilter='provider'; currentProviderFilter=providerId; renderDiscover(); switchDiscoverView('list'); showToast('Angebote von ${esc(data.providerName||'Anbieter')}'); } else { showToast('Anbieter-Informationen nicht verfügbar'); }">${iconMarkup('store')} <span>${esc(data.providerName||'Anbieter')}</span></p>
+          <p class="swipe-card-provider" style="cursor:pointer; text-decoration:underline; text-decoration-color:rgba(0,0,0,0.2); transition:opacity 0.2s ease; display:flex; align-items:center; gap:4px;" onmouseover="this.style.opacity='0.7';" onmouseout="this.style.opacity='1';" onclick="event.stopPropagation(); const providerId='${esc(data.providerId||'')}'; if(providerId){ activeDiscoverFilter='provider'; currentProviderFilter=providerId; renderDiscover(); switchDiscoverView('list'); showToast('Angebote von ${esc(data.providerName||'Anbieter')}'); } else { showToast('Anbieter-Informationen nicht verfügbar'); }"><i data-lucide="store" style="width:14px;height:14px;"></i> <span>${esc(data.providerName||'Anbieter')}</span></p>
         </div>
         ${badges.length ? `<div class="swipe-card-badges">${badges.join('')}</div>` : ''}
         ${metaInfo.length ? `<div class="swipe-card-meta">${metaInfo.join('')}</div>` : ''}
@@ -6709,19 +6828,27 @@
     });
     
     // CRITICAL FIX: Stelle sicher, dass die oberste Karte (index 0) korrekt konfiguriert ist
+    // BUGFIX: Index-Problem beheben - stelle sicher, dass currentSwipeIndex korrekt ist
+    if(cards.length === 0 && currentSwipeIndex < swipeCards.length){
+      // Wenn keine Karten mehr sichtbar sind, aber noch Karten im Array sind, lade die nächste
+      const nextCard = createSwipeCard(swipeCards[currentSwipeIndex], 0);
+      if(nextCard && swipeStack) swipeStack.appendChild(nextCard);
+      cards = [nextCard].filter(Boolean);
+    }
+    
     cards.forEach((card, i) => {
       if(!card || !card.parentNode || !card.style) return; // Sicherheitscheck
       
       // CRITICAL FIX: Aktualisiere den Index als data-Attribut für dynamische Prüfung
-      if(card.dataset) card.dataset.swipeIndex = i;
+      if(card.dataset) card.dataset.swipeIndex = String(currentSwipeIndex + i);
       
       // Reset Transform und Transition für sauberen Neustart
       card.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
-      card.style.zIndex = 100 - i;
+      card.style.zIndex = String(100 - i);
       const scale = 1 - i * 0.05;
       const translateY = i * 10;
       card.style.transform = `translate(-50%, calc(-50% + ${translateY}px)) scale(${scale})`;
-      card.style.opacity = i === 0 ? 1 : 0.95;
+      card.style.opacity = i === 0 ? '1' : '0.95';
       
       // CRITICAL: Die oberste Karte (i === 0) muss interaktiv sein und Event-Listener erhalten
       if(i === 0){
@@ -6732,6 +6859,9 @@
         card.style.willChange = 'transform';
         // Entferne alle Swipe-Klassen die Events blockieren könnten
         card.classList.remove('swipe-left', 'swipe-right', 'swiping');
+        // BUGFIX: Stelle sicher, dass die Karte nicht "eingefroren" ist
+        card.style.opacity = '1';
+        card.style.visibility = 'visible';
       } else {
         card.style.pointerEvents = 'none';
       }
@@ -6860,9 +6990,22 @@
   if(toggleDiscoverViewTopbar){
     toggleDiscoverViewTopbar.onclick = () => {
       const newMode = discoverViewMode === 'list' ? 'swipe' : 'list';
+      // Haptics beim View-Wechsel
+      triggerHapticFeedback([15]);
       switchDiscoverView(newMode);
       save(LS.discoverView, newMode);
       syncToggleState();
+      
+      // Icon wechseln: Grid (Liste) ↔ List (Swipe)
+      const toggleIcon = document.getElementById('toggleDiscoverViewIcon');
+      if(toggleIcon){
+        if(newMode === 'swipe'){
+          toggleIcon.setAttribute('data-lucide', 'list');
+        } else {
+          toggleIcon.setAttribute('data-lucide', 'grid-3x3');
+        }
+        if(typeof lucide !== 'undefined') lucide.createIcons();
+      }
     };
   }
   
@@ -6983,7 +7126,7 @@
       <div class="dish-details">
         <div>
           <div class="dish-header">
-            <h3 class="dish-name" style="font-weight:900; font-size:18px; line-height:1.3; margin:0; color:#111;">${esc(data.dish||'Gericht')}</h3>
+            <h3 class="dish-name" style="font-weight:900; font-size:20px; line-height:1.3; margin:0; color:#111; letter-spacing:-0.3px;">${esc(data.dish||'Gericht')}</h3>
             <div class="dish-price" style="font-size:20px; color:var(--brand); font-weight:900; margin-top:4px;">${euro(data.price)}</div>
           </div>
           <div class="dish-meta" style="margin-top:8px; display:flex; flex-direction:column; gap:4px; font-size:12px; color:#666; line-height:1.4;">
@@ -7298,8 +7441,21 @@
     updateSheetFavs();
   }
 
+  // Haptics-Funktion für Vibrations-Feedback
+  function triggerHapticFeedback(pattern = [15]){
+    if(navigator.vibrate){
+      try {
+        navigator.vibrate(pattern);
+      } catch(e){
+        // Fallback: Ignoriere Fehler
+      }
+    }
+  }
+  
   function toggleDishFav(offerId){
     if(!offerId) return;
+    // Haptics beim Markieren von Favoriten
+    triggerHapticFeedback([15]);
     if(dishFavs.has(offerId)) dishFavs.delete(offerId); else dishFavs.add(offerId);
     save(LS.dishFavs, Array.from(dishFavs));
     renderDiscover();
@@ -7308,35 +7464,39 @@
     updateSheetFavs();
   }
   
-  // Favoriten-Karte mit "In die Mittagsbox" Button (High-End Design)
+  // Favoriten-Kachel: Kompaktes Grid-Layout (Dashboard-Style)
   function createFavoriteCard(o){
     const data = normalizeOffer(o);
     const card = document.createElement('div');
-    card.className = 'card';
+    card.className = 'fav-grid-card';
+    card.setAttribute('data-fav-id', data.id);
     card.style.position = 'relative';
-    // High-End Card Design: rounded-3xl (40px), shadow-xl
     card.style.background = '#FFFFFF';
-    card.style.borderRadius = '40px';
-    card.style.boxShadow = '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)';
-    card.style.border = '1px solid rgba(0,0,0,0.05)';
+    card.style.borderRadius = '16px';
+    card.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.08)';
+    card.style.border = '1px solid rgba(0,0,0,0.06)';
     card.style.overflow = 'hidden';
-    card.style.transition = 'transform 0.3s ease, box-shadow 0.3s ease';
-    card.style.marginBottom = '24px';
+    card.style.transition = 'transform 0.2s ease, opacity 0.3s ease, box-shadow 0.2s ease';
+    card.style.cursor = 'pointer';
+    card.style.display = 'flex';
+    card.style.flexDirection = 'column';
+    
+    // Hover-Effekt
     card.onmouseenter = () => {
-      card.style.transform = 'scale(1.02)';
-      card.style.boxShadow = '0 25px 50px -12px rgba(0, 0, 0, 0.25)';
+      card.style.transform = 'translateY(-2px)';
+      card.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.12)';
     };
     card.onmouseleave = () => {
-      card.style.transform = 'scale(1)';
-      card.style.boxShadow = '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)';
+      card.style.transform = 'translateY(0)';
+      card.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.08)';
     };
     
     const imgSrc = data.imageUrl || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70';
     
-    // Image Layer mit Hover-Zoom
+    // Kompaktes Bild (reduzierte Höhe für Grid)
     const img = document.createElement('div');
     img.style.position = 'relative';
-    img.style.height = '256px';
+    img.style.height = '96px'; // Kompakt: 96px statt 256px
     img.style.overflow = 'hidden';
     img.style.background = '#f0f0f0';
     const imgEl = document.createElement('img');
@@ -7345,157 +7505,78 @@
     imgEl.style.width = '100%';
     imgEl.style.height = '100%';
     imgEl.style.objectFit = 'cover';
-    imgEl.style.transition = 'transform 0.7s ease';
-    card.onmouseenter = () => {
-      card.style.transform = 'scale(1.02)';
-      card.style.boxShadow = '0 25px 50px -12px rgba(0, 0, 0, 0.25)';
-      imgEl.style.transform = 'scale(1.1)';
-    };
-    card.onmouseleave = () => {
-      card.style.transform = 'scale(1)';
-      card.style.boxShadow = '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)';
-      imgEl.style.transform = 'scale(1)';
-    };
     img.appendChild(imgEl);
     
-    // Preis-Tag: Gelbe Pillenform absolut positioniert (top-4 right-4)
-    const priceTag = document.createElement('div');
-    priceTag.style.position = 'absolute';
-    priceTag.style.top = '20px';
-    priceTag.style.right = '20px';
-    priceTag.style.background = 'var(--brand)';
-    priceTag.style.color = '#1a1a1a';
-    priceTag.style.padding = '8px 16px';
-    priceTag.style.borderRadius = '999px';
-    priceTag.style.fontSize = '18px';
-    priceTag.style.fontWeight = '900';
-    priceTag.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)';
-    priceTag.style.zIndex = '10';
-    priceTag.textContent = euro(data.price);
-    img.appendChild(priceTag);
-    
-    // Favoriten-Status (Herz-Icon oben links)
-    const favBtn = document.createElement('button');
-    favBtn.type = 'button';
-    favBtn.style.position = 'absolute';
-    favBtn.style.top = '20px';
-    favBtn.style.left = '20px';
-    favBtn.style.zIndex = '10';
-    favBtn.style.background = 'rgba(255,255,255,0.2)';
-    favBtn.style.backdropFilter = 'blur(10px)';
-    favBtn.style.webkitBackdropFilter = 'blur(10px)';
-    favBtn.style.border = '1px solid rgba(255,255,255,0.3)';
-    favBtn.style.borderRadius = '50%';
-    favBtn.style.width = '40px';
-    favBtn.style.height = '40px';
-    favBtn.style.display = 'flex';
-    favBtn.style.alignItems = 'center';
-    favBtn.style.justifyContent = 'center';
-    favBtn.style.cursor = 'pointer';
-    favBtn.style.padding = '0';
-    favBtn.innerHTML = iconMarkup('heart', {fill: true});
-    favBtn.onclick = (e) => {
-      e.stopPropagation();
-      toggleDishFav(data.id);
+    // X-Icon oben rechts zum Entfernen (Schnell-Streichen)
+    const removeBtn = document.createElement('button');
+    removeBtn.type = 'button';
+    removeBtn.style.position = 'absolute';
+    removeBtn.style.top = '6px';
+    removeBtn.style.right = '6px';
+    removeBtn.style.zIndex = '10';
+    removeBtn.style.background = 'rgba(255,255,255,0.95)';
+    removeBtn.style.backdropFilter = 'blur(8px)';
+    removeBtn.style.webkitBackdropFilter = 'blur(8px)';
+    removeBtn.style.border = 'none';
+    removeBtn.style.borderRadius = '50%';
+    removeBtn.style.width = '28px';
+    removeBtn.style.height = '28px';
+    removeBtn.style.display = 'flex';
+    removeBtn.style.alignItems = 'center';
+    removeBtn.style.justifyContent = 'center';
+    removeBtn.style.cursor = 'pointer';
+    removeBtn.style.padding = '0';
+    removeBtn.style.boxShadow = '0 2px 6px rgba(0,0,0,0.15)';
+    removeBtn.style.transition = 'transform 0.2s ease, background 0.2s ease';
+    removeBtn.innerHTML = '<i data-lucide="x" style="width:16px;height:16px;color:#E34D4D;stroke-width:3;"></i>';
+    removeBtn.onmouseenter = () => {
+      removeBtn.style.transform = 'scale(1.1)';
+      removeBtn.style.background = '#fff';
     };
-    img.appendChild(favBtn);
+    removeBtn.onmouseleave = () => {
+      removeBtn.style.transform = 'scale(1)';
+      removeBtn.style.background = 'rgba(255,255,255,0.95)';
+    };
+    removeBtn.onclick = (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      // Haptics beim Entfernen
+      triggerHapticFeedback([15]);
+      // Animation: Ausblenden
+      card.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+      card.style.opacity = '0';
+      card.style.transform = 'scale(0.9)';
+      // Nach Animation entfernen
+      setTimeout(() => {
+        toggleDishFav(data.id);
+        // Grid automatisch neu anordnen durch Re-Render
+        renderFavorites();
+      }, 300);
+    };
+    img.appendChild(removeBtn);
     
-    // Info Layer
+    // Kompakter Content-Bereich
     const body = document.createElement('div');
-    body.style.padding = '24px';
+    body.style.padding = '8px';
+    body.style.flex = '1';
+    body.style.display = 'flex';
+    body.style.flexDirection = 'column';
+    body.style.gap = '4px';
     body.innerHTML = `
-      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
-        <div style="flex:1;">
-          <h3 style="font-size:24px; font-weight:900; margin:0 0 8px; color:#1a1a1a; line-height:1.2; letter-spacing:-0.5px;">${esc(data.dish||'Gericht')}</h3>
-          <div style="display:flex; align-items:center; gap:8px; margin-top:8px;">
-            <!-- Logo mit farbigem Ring (Branding) -->
-            <div style="width:32px; height:32px; border-radius:8px; overflow:hidden; position:relative; flex-shrink:0; border:2px solid var(--brand); box-shadow:0 2px 4px rgba(255,204,0,0.3); background:#fff;">
-              ${(() => {
-                // Versuche Logo aus Provider-Profil zu holen
-                const provider = offers.find(o => o.providerId === data.providerId);
-                const providerProfile = provider && provider.providerProfile ? provider.providerProfile : null;
-                const logoData = providerProfile && providerProfile.logoData ? providerProfile.logoData : null;
-                if(logoData){
-                  return `<img src="${esc(logoData)}" alt="${esc(data.providerName||'')}" style="width:100%; height:100%; object-fit:cover;" />`;
-                } else {
-                  const initial = (data.providerName||'A').charAt(0).toUpperCase();
-                  return `<div style="width:100%; height:100%; background:linear-gradient(135deg, var(--brand), var(--brand2)); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:900; color:#1a1a1a;">${esc(initial)}</div>`;
-                }
-              })()}
-            </div>
-            <!-- Restaurant-Name mit Icon (minimalistisch) -->
-            <p style="font-size:14px; color:#64748b; font-weight:600; margin:0; display:flex; align-items:center; gap:4px;">
-              <i data-lucide="store" style="width:14px;height:14px; opacity:0.7;"></i>
-              <span>${esc(data.providerName||'Anbieter')}</span>
-            </p>
-          </div>
-        </div>
+      <p style="font-size:10px; font-weight:700; color:#94a3b8; text-transform:uppercase; letter-spacing:0.5px; margin:0; line-height:1.2; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${esc(data.providerName||'Anbieter')}</p>
+      <p style="font-size:13px; font-weight:900; color:#1a1a1a; margin:0; line-height:1.3; overflow:hidden; text-overflow:ellipsis; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;">${esc(data.dish||'Gericht')}</p>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:auto; padding-top:4px;">
+        <span style="font-size:14px; font-weight:900; color:var(--brand);">${euro(data.price)}</span>
       </div>
-      ${data.pickupWindow ? `<p style="font-size:12px; color:#94a3b8; margin:8px 0 0; display:flex; align-items:center; gap:4px;"><i data-lucide="clock" style="width:12px;height:12px;"></i> ${esc(data.pickupWindow)}</p>` : ''}
-      ${data.distanceKm != null ? `<p style="font-size:12px; color:#94a3b8; margin:4px 0 0; display:flex; align-items:center; gap:4px;"><i data-lucide="map-pin" style="width:12px;height:12px;"></i> ${Number(data.distanceKm).toFixed(1)} km</p>` : ''}
     `;
-    
-    // Abholnummer-Quickview: Ticket-Stumpf-Design mit gestrichelter Linie
-    const order = orders.find(ord => ord.items && ord.items.some(item => item.offerId === data.id));
-    if(order && order.pickupCode){
-      const ticketSection = document.createElement('div');
-      ticketSection.style.marginTop = '24px';
-      ticketSection.style.paddingTop = '24px';
-      ticketSection.style.borderTop = '2px dashed #e2e8f0';
-      ticketSection.style.display = 'flex';
-      ticketSection.style.alignItems = 'center';
-      ticketSection.style.justifyContent = 'space-between';
-      ticketSection.innerHTML = `
-        <div style="display:flex; flex-direction:column;">
-          <span style="font-size:10px; text-transform:uppercase; letter-spacing:0.1em; color:#94a3b8; font-weight:700; margin-bottom:4px;">Abholnummer</span>
-          <span style="font-family:monospace; font-size:18px; font-weight:900; color:#1a1a1a;">${order.pickupCode}</span>
-        </div>
-        <button class="btn-primary" style="background:#1a1a1a; color:#fff; padding:12px 24px; border-radius:16px; font-weight:700; font-size:14px; border:none; cursor:pointer; transition:background 0.2s ease;" onmouseover="this.style.background='var(--brand)'; this.style.color='#1a1a1a';" onmouseout="this.style.background='#1a1a1a'; this.style.color='#fff';">
-          Jetzt buchen
-        </button>
-      `;
-      ticketSection.querySelector('button').onclick = (e) => {
-        e.stopPropagation();
-        addFavoriteToCart(o);
-      };
-      body.appendChild(ticketSection);
-    } else {
-      // "In die Mittagsbox" Button (wenn noch nicht gebucht)
-      const addToCartBtn = document.createElement('button');
-      addToCartBtn.type = 'button';
-      addToCartBtn.className = 'btn-primary';
-      addToCartBtn.style.width = '100%';
-      addToCartBtn.style.minHeight = '52px';
-      addToCartBtn.style.fontSize = '16px';
-      addToCartBtn.style.fontWeight = '700';
-      addToCartBtn.style.marginTop = '24px';
-      addToCartBtn.style.borderRadius = '16px';
-      addToCartBtn.style.background = '#1a1a1a';
-      addToCartBtn.style.color = '#fff';
-      addToCartBtn.style.border = 'none';
-      addToCartBtn.style.cursor = 'pointer';
-      addToCartBtn.style.transition = 'background 0.2s ease';
-      addToCartBtn.innerHTML = `${iconMarkup('shopping-basket')} <span>Heute essen</span>`;
-      addToCartBtn.onmouseenter = () => {
-        addToCartBtn.style.background = 'var(--brand)';
-        addToCartBtn.style.color = '#1a1a1a';
-      };
-      addToCartBtn.onmouseleave = () => {
-        addToCartBtn.style.background = '#1a1a1a';
-        addToCartBtn.style.color = '#fff';
-      };
-      addToCartBtn.onclick = (e) => {
-        e.stopPropagation();
-        addFavoriteToCart(o);
-      };
-      body.appendChild(addToCartBtn);
-    }
     
     card.appendChild(img);
     card.appendChild(body);
     
-    // Klick auf Karte öffnet Details
-    card.onclick = () => {
+    // Klick auf Karte öffnet Details (nicht auf Remove-Button)
+    card.onclick = (e) => {
+      // Ignoriere Klicks auf Remove-Button
+      if(e.target.closest('button[type="button"]')) return;
       openOffer(data.id);
     };
     
