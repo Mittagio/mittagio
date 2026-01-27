@@ -1827,8 +1827,8 @@
           <div class="brand-badge"><img src="assets/mittagio-logo.png" alt="Mittagio" onerror="this.style.display='none'" /></div>
           <div class="brand-name">MITTAGIO</div>
         </div>
-        <!-- View-Toggle oben rechts (nur in Discover-View sichtbar) -->
-        <div class="discover-view-toggle-topbar" id="discoverViewToggleTopbar" style="display:none;">
+        <!-- View-Toggle oben rechts (immer in Discover-View sichtbar) -->
+        <div class="discover-view-toggle-topbar" id="discoverViewToggleTopbar" style="display:flex;">
           <button type="button" class="toggle-switch" id="toggleDiscoverViewTopbar" aria-label="Ansicht wechseln">
             <span class="toggle-icon toggle-icon-list">
               <i data-lucide="list"></i>
@@ -1891,16 +1891,8 @@
           <!-- Wird dynamisch befüllt -->
         </div>
         
-        <!-- Navigation: "Zur Liste wechseln" Button (sticky) -->
-        <div class="discover-list-toggle-row">
-          <button class="btn-list-toggle" type="button" id="btnDiscoverToList">
-            <i data-lucide="list"></i>
-            <span>Zur Liste wechseln</span>
-          </button>
-        </div>
-        
-        <!-- Filter-Leiste: Kategorien (dezent, schmal, farbige Icons) -->
-        <div class="discover-categories-wrapper">
+        <!-- Filter-Leiste: Kategorien (dezent, schmal, farbige Icons) - wird im Swipe-Modus ausgeblendet -->
+        <div class="discover-categories-wrapper" id="discoverCategoriesWrapper">
           <div class="discover-categories-scroll" id="discoverCategories">
             <!-- Wird dynamisch befüllt -->
           </div>
@@ -5640,16 +5632,24 @@
     const listEl = document.getElementById('discoverOffers');
     const swipeEl = document.getElementById('discoverSwipe');
     const toggleBtn = document.getElementById('toggleDiscoverView');
+    const categoriesWrapper = document.getElementById('discoverCategoriesWrapper');
+    const calendarEl = document.getElementById('discoverCalendar');
     
     if(mode === 'swipe'){
       if(listEl) listEl.style.display = 'none';
       if(swipeEl) swipeEl.style.display = 'block';
       if(toggleBtn) toggleBtn.classList.add('active');
+      // Filter und Kalender im Swipe-Modus ausblenden
+      if(categoriesWrapper) categoriesWrapper.style.display = 'none';
+      if(calendarEl) calendarEl.style.display = 'none';
       renderSwipeCards();
     } else {
       if(listEl) listEl.style.display = 'block';
       if(swipeEl) swipeEl.style.display = 'none';
       if(toggleBtn) toggleBtn.classList.remove('active');
+      // Filter und Kalender im Listen-Modus anzeigen
+      if(categoriesWrapper) categoriesWrapper.style.display = 'block';
+      if(calendarEl) calendarEl.style.display = 'flex';
     }
     
     // Icons aktualisieren
@@ -7384,7 +7384,7 @@
   function addFavoriteToCart(o){
     const data = normalizeOffer(o);
     
-    // Prüfe ob Gericht Abholcode hat
+    // Prüfe ob Gericht Abholnummer hat
     if(!data.hasPickupCode){
       showToast('Dieses Gericht hat keine Abholnummer. Bitte wähle ein anderes Gericht.', 3000);
       return;
@@ -7717,7 +7717,7 @@
         // MIT Abholnummer: Status "Online bezahlen & Abholnummer"
         statusBadgeEl.innerHTML = '<span style="display:inline-flex; align-items:center; gap:6px; padding:6px 12px; background:rgba(46,125,50,.12); border-radius:8px; color:#2e7d32; font-size:14px; font-weight:600;">🟢 Online bezahlen & Abholnummer</span>';
       } else {
-        // OHNE Abholcode: Status "Vor Ort erhältlich"
+        // OHNE Abholnummer: Status "Vor Ort erhältlich"
         statusBadgeEl.innerHTML = '<span style="display:inline-flex; align-items:center; gap:6px; padding:6px 12px; background:rgba(0,0,0,.06); border-radius:8px; color:#666; font-size:14px; font-weight:600;">⚪ Vor Ort erhältlich</span>';
       }
     }
@@ -7844,7 +7844,7 @@
         }
         primaryCTA.onclick = null;
       } else if(o.hasPickupCode){
-        // MIT Abholcode: CTA "In die Mittagsbox"
+        // MIT Abholnummer: CTA "In die Mittagsbox"
         primaryCTAText.textContent = 'In die Mittagsbox';
         primaryCTA.onclick = () => {
           // Loading state
@@ -7881,7 +7881,7 @@
           }, 200);
         };
       } else {
-        // OHNE Abholcode: CTA "Route öffnen"
+        // OHNE Abholnummer: CTA "Route öffnen"
         primaryCTAText.textContent = 'Route öffnen';
         primaryCTA.onclick = () => {
           // Open route in maps (no loading state needed)
@@ -7893,7 +7893,7 @@
       }
     }
     
-    // Route Button in Address Card (nur bei OHNE Abholcode sichtbar)
+    // Route Button in Address Card (nur bei OHNE Abholnummer sichtbar)
     if(btnOpenRoute){
       if(!o.hasPickupCode){
         btnOpenRoute.style.display = 'block';
@@ -11614,7 +11614,7 @@
           
           // Verzehrart-Badges
           const badges = [];
-          if(o.hasPickupCode) badges.push('<span style="font-size:11px; padding:2px 6px; background:rgba(255,204,0,.15); border-radius:6px; color:var(--brand);">Ticket</span>');
+          if(o.hasPickupCode) badges.push('<span style="font-size:11px; padding:2px 6px; background:rgba(255,204,0,.15); border-radius:6px; color:var(--brand);">Abholnummer</span>');
           if(o.dineInPossible) badges.push('<span style="font-size:11px; padding:2px 6px; background:rgba(31,157,85,.15); border-radius:6px; color:var(--brand2);">Vor Ort</span>');
           if(!o.dineInPossible && !o.hasPickupCode) badges.push('<span style="font-size:11px; padding:2px 6px; background:rgba(0,0,0,.06); border-radius:6px;">To Go</span>');
           
