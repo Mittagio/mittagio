@@ -689,7 +689,7 @@
     /* Fullscreen Code Modal (extrem groß, 1-2m lesbar) */
     .fullscreen-code{
       position:fixed; top:0; left:0; right:0; bottom:0;
-      background:#fff; z-index:1000;
+      background:linear-gradient(135deg, #0d4f1c 0%, #000 100%); z-index:1000;
       display:flex; align-items:center; justify-content:center;
       flex-direction:column; padding:40px 20px;
       opacity:0; pointer-events:none; transition:opacity .2s;
@@ -700,27 +700,30 @@
     .fullscreen-code-close{
       position:absolute; top:20px; right:20px;
       width:48px; height:48px; border-radius:50%;
-      background:rgba(0,0,0,.1); border:none;
-      display:flex; align-items:center; justify-content:center;
+      background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2);
+      color:#fff; display:flex; align-items:center; justify-content:center;
       cursor:pointer; transition:all .2s;
       z-index:1001;
     }
-    .fullscreen-code-close:hover{background:rgba(0,0,0,.15)}
+    .fullscreen-code-close:hover{background:rgba(255,255,255,0.2)}
     .fullscreen-code-close i{width:24px; height:24px}
     .fullscreen-code-content{
-      text-align:center; width:100%; max-width:600px;
+      text-align:center; width:100%; max-width:800px;
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
     }
     .fullscreen-code-value{
-      font-size:clamp(56px, 12vw, 120px);
-      font-weight:900; font-family:monospace;
-      letter-spacing:clamp(8px, 2vw, 16px);
-      color:#000; line-height:1.2;
-      margin-bottom:24px;
-      word-spacing:clamp(12px, 3vw, 24px);
+      font-size:clamp(6rem, 25vw, 12rem);
+      font-weight:900; font-family:'Courier New', monospace;
+      letter-spacing:0.15em;
+      color:#fff; line-height:1.2;
+      margin-bottom:32px;
+      text-shadow:0 4px 20px rgba(0,0,0,0.5), 0 0 40px rgba(39,174,96,0.3);
     }
     .fullscreen-code-subtext{
-      font-size:clamp(14px, 3vw, 20px);
-      color:#666; font-weight:600;
+      font-size:clamp(1.2rem, 4vw, 2rem);
+      color:#fff; font-weight:700;
+      text-shadow:0 2px 8px rgba(0,0,0,0.3);
+      margin-bottom:24px;
     }
     
     .quick-ticket{
@@ -1120,6 +1123,18 @@
       0%, 100% { opacity: 1; transform: scale(1); }
       50% { opacity: 0.8; transform: scale(1.05); }
     }
+    @keyframes pulse-green-dot {
+      0%, 100% { 
+        opacity: 1; 
+        transform: scale(1);
+        box-shadow: 0 0 12px rgba(39,174,96,0.8);
+      }
+      50% { 
+        opacity: 0.8; 
+        transform: scale(1.2);
+        box-shadow: 0 0 20px rgba(39,174,96,1);
+      }
+    }
     
     /* Status-Ampel: Nur im Provider-Modus sichtbar */
     #providerStatusIndicator {
@@ -1155,6 +1170,31 @@
     }
     .discover-location-search-input:focus{
       border-color:var(--brand); box-shadow:0 0 0 3px rgba(255,215,0,0.1);
+    }
+    /* Location-Autofill Suggestions */
+    .location-suggestion-item{
+      padding:10px 12px;
+      cursor:pointer;
+      border-bottom:1px solid rgba(0,0,0,0.05);
+      transition:background 0.2s ease;
+    }
+    .location-suggestion-item:hover{
+      background:rgba(0,0,0,0.05);
+    }
+    .location-suggestion-item:active{
+      background:rgba(0,0,0,0.1);
+    }
+    .location-suggestion-item{
+      padding:10px 12px;
+      cursor:pointer;
+      border-bottom:1px solid rgba(0,0,0,0.05);
+      transition:background 0.2s ease;
+    }
+    .location-suggestion-item:hover{
+      background:rgba(0,0,0,0.05);
+    }
+    .location-suggestion-item:active{
+      background:rgba(0,0,0,0.1);
     }
     
     /* Ebene 2: Aktueller Standort zentriert (klickbar) */
@@ -1439,17 +1479,18 @@
       display:flex; gap:6px; flex-wrap:wrap;
       margin-top:6px;
     }
-    /* Kompakte Horizontale Gericht-Karte (Slim-Card) */
+    /* Kompakte Horizontale Gericht-Karte (Slim-Card) - High Performance */
     .dish-card {
       display: flex;
-      min-height: 96px;
-      padding: 10px;
+      min-height: 88px;
+      max-height: 100px;
+      padding: 8px;
       background: #ffffff;
-      border-radius: 16px;
+      border-radius: 14px;
       overflow: visible;
       border: 1px solid rgba(0,0,0,0.05);
-      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-      margin-bottom: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      margin-bottom: 6px;
       cursor: pointer;
       transition: transform 0.2s ease, box-shadow 0.2s ease;
       position: relative;
@@ -1462,11 +1503,13 @@
     .dish-card:hover {
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
-    /* Linke Seite: Bild - Kompakt als Thumbnail (96x96px quadratisch) */
+    /* Linke Seite: Bild - Kompakt als Thumbnail (max. 100px quadratisch) */
     .dish-image-box {
-      width: 96px;
-      min-width: 96px;
-      height: 96px;
+      width: 100px;
+      min-width: 100px;
+      height: 100px;
+      max-width: 100px;
+      max-height: 100px;
       flex-shrink: 0;
       background: #f5f5f5;
       display: flex;
@@ -1524,6 +1567,25 @@
         opacity: 1;
         transform: scale(1);
       }
+    }
+    
+    /* Skeleton Loading Animation (Pulse) */
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.5;
+      }
+    }
+    .skeleton-pulse {
+      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    .skeleton-bg {
+      background-color: #e2e8f0; /* slate-200 */
+    }
+    .skeleton-bg-light {
+      background-color: #f1f5f9; /* slate-100 */
     }
     
     /* Responsive Grid: Auf größeren Screens 3 Spalten */
@@ -1936,11 +1998,21 @@
             <span style="font-weight:900; font-size:16px; color:#1a1a1a; letter-spacing:-0.3px;">MITTAGIO</span>
           </div>
           
-          <!-- Standort-Anker (zentriert, kompakt) -->
-          <button class="discover-location-pill-clickable" type="button" id="btnDiscoverLocationGPS" style="flex:1; max-width:200px; display:flex; align-items:center; gap:6px; padding:6px 12px; border-radius:16px; background:rgba(0,0,0,.04); border:1px solid rgba(0,0,0,.08); font-size:13px; font-weight:600; color:#333; cursor:pointer; transition:all 0.2s ease; justify-content:center;">
-            <i data-lucide="map-pin" style="width:14px;height:14px; color:#666; flex-shrink:0;"></i>
-            <span id="discoverCurrentLocation" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">Jena</span>
-          </button>
+          <!-- Standort-Autofill-Suche (expandierbar) -->
+          <div style="flex:1; max-width:200px; position:relative;">
+            <button class="discover-location-pill-clickable" type="button" id="btnDiscoverLocationToggle" style="width:100%; display:flex; align-items:center; gap:6px; padding:6px 12px; border-radius:16px; background:rgba(0,0,0,.04); border:1px solid rgba(0,0,0,.08); font-size:13px; font-weight:600; color:#333; cursor:pointer; transition:all 0.2s ease; justify-content:center;">
+              <i data-lucide="map-pin" style="width:14px;height:14px; color:#666; flex-shrink:0;"></i>
+              <span id="discoverCurrentLocation" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">Jena</span>
+            </button>
+            <!-- Expandiertes Standort-Input mit Autofill (versteckt) -->
+            <div id="discoverLocationExpanded" style="display:none; position:absolute; top:100%; left:0; right:0; margin-top:4px; z-index:100; background:#fff; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.15); border:1px solid rgba(0,0,0,0.1); overflow:hidden;">
+              <div style="padding:8px;">
+                <input type="text" id="discoverLocationInput" placeholder="Ort oder PLZ eingeben..." autocomplete="address-line2" style="width:100%; padding:10px 12px; border-radius:8px; border:2px solid rgba(0,0,0,0.1); font-size:14px; background:#fff; outline:none; transition:border-color 0.2s ease;" onfocus="this.style.borderColor='#FFD700';" onblur="this.style.borderColor='rgba(0,0,0,0.1)';" />
+                <!-- Autofill-Vorschläge Container -->
+                <div id="discoverLocationSuggestions" style="max-height:200px; overflow-y:auto; margin-top:4px;"></div>
+              </div>
+            </div>
+          </div>
           
           <!-- Search + Ansichts-Umschalter (rechts) -->
           <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
@@ -2255,60 +2327,47 @@
       </div>
     </section>
 
-    <!-- CUSTOMER: Pickup Code (Abholnummer-Screen) -->
-    <section class="view" id="v-pickup-code">
-      <div class="panel">
-        <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
-          <button class="back-button" type="button" id="btnPickupCodeBack" aria-label="Zurück">
-            <i data-lucide="arrow-left"></i>
-          </button>
-          <h3 style="margin:0; flex:1;">Abholnummer</h3>
+    <!-- CUSTOMER: Pickup Code (Ultimative Abholnummer-Ansicht) -->
+    <section class="view" id="v-pickup-code" style="background:#1a1a1a; min-height:100vh; padding:0; display:flex; flex-direction:column; overflow:hidden;">
+      <!-- Hero-Element: Extrem große Abholnummer mit kontrastreichem Hintergrund -->
+      <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:40px 20px; background:linear-gradient(135deg, #0d4f1c 0%, #1a1a1a 100%); position:relative; min-height:60vh;">
+        <!-- Status-Indikator: Pulsierender grüner Punkt -->
+        <div style="position:absolute; top:20px; right:20px; display:flex; align-items:center; gap:8px; z-index:10;">
+          <div id="pickupCodeStatusDot" style="width:12px; height:12px; border-radius:50%; background:#27AE60; box-shadow:0 0 12px rgba(39,174,96,0.8); animation:pulse-green-dot 2s infinite;"></div>
+          <span style="font-size:12px; font-weight:600; color:rgba(255,255,255,0.9);">Aktiv</span>
         </div>
         
-        <!-- Status & Hinweis -->
-        <div style="text-align:center; margin-bottom:24px;">
-          <div style="font-size:16px; font-weight:700; color:#1f9d55; margin-bottom:8px;">
-            ✓ Bestellung bestätigt
-          </div>
-          <div class="hint" style="font-size:13px;">
-            Zeige diese Abholnummer beim Abholen
-          </div>
+        <!-- Abholnummer (extrem groß, zentriert) -->
+        <div id="pickupCodeValue" style="font-size:clamp(4rem, 15vw, 8rem); font-weight:900; font-family:'Courier New', monospace; letter-spacing:0.1em; color:#fff; text-align:center; line-height:1.2; text-shadow:0 4px 20px rgba(0,0,0,0.5), 0 0 40px rgba(39,174,96,0.3); margin-bottom:24px;">
+          –
         </div>
         
-        <!-- Code-Kachel (groß & gut lesbar) -->
-        <div id="pickupCodeCard" style="background:#fff; border:3px solid var(--brand); border-radius:20px; padding:32px; text-align:center; margin-bottom:20px; box-shadow:0 4px 16px rgba(255,215,0,0.2);">
-          <div class="hint" style="font-size:13px; margin-bottom:12px; color:#666; font-weight:600;">Abholnummer</div>
-          <div id="pickupCodeValue" style="font-size:64px; font-weight:900; font-family:monospace; letter-spacing:6px; color:#2D3436; margin-bottom:16px; line-height:1;">
-            –
-          </div>
-          <button class="btn secondary" type="button" id="btnCopyCode" style="width:100%; min-height:44px;">
-            <i data-lucide="copy"></i> Abholnummer kopieren
-          </button>
+        <!-- Klare Handlungsanweisung -->
+        <div style="text-align:center; margin-bottom:32px;">
+          <p style="font-size:18px; font-weight:700; color:#fff; margin:0; text-shadow:0 2px 8px rgba(0,0,0,0.3);">
+            Bitte direkt beim Personal vorzeigen.
+          </p>
         </div>
         
-        <!-- Primary CTA: Code groß anzeigen -->
-        <button class="btn" type="button" id="btnShowFullscreenCode" style="width:100%; margin-bottom:16px; min-height:44px;">
-          <i data-lucide="maximize-2"></i> Abholnummer groß anzeigen
+        <!-- Kontext-Infos (dezent, klein) -->
+        <div id="pickupCodeContext" style="text-align:center; padding:16px 24px; background:rgba(255,255,255,0.1); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border-radius:16px; border:1px solid rgba(255,255,255,0.1); max-width:400px; width:100%;">
+          <div style="font-size:14px; color:rgba(255,255,255,0.9); margin-bottom:4px;">
+            <span id="pickupCodeDish" style="font-weight:600;">–</span>
+          </div>
+          <div style="font-size:16px; font-weight:700; color:#FFD700; margin-top:4px;">
+            <span id="pickupCodeTotal">–</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Sekundäre Aktionen (unten, dezent) -->
+      <div style="padding:20px; background:#1a1a1a; border-top:1px solid rgba(255,255,255,0.1);">
+        <button class="btn secondary" type="button" id="btnCopyCode" style="width:100%; min-height:48px; background:rgba(255,255,255,0.1); color:#fff; border:1px solid rgba(255,255,255,0.2); margin-bottom:12px;">
+          <i data-lucide="copy"></i> Abholnummer kopieren
         </button>
-        
-        <!-- Bestellinfos kompakt -->
-        <div id="pickupCodeInfo" style="background:#f8f8f8; border-radius:14px; padding:16px; margin-bottom:16px;">
-          <div class="row" style="margin-bottom:8px;"><span>Gericht</span><b id="pickupCodeDish">–</b></div>
-          <div class="row" style="margin-bottom:8px;"><span>Anbieter</span><b id="pickupCodeProvider">–</b></div>
-          <div class="row" style="margin-bottom:8px;"><span>Abholzeit</span><b id="pickupCodeTime">–</b></div>
-          <div class="row" style="margin-bottom:8px;"><span>Art</span><b id="pickupCodeType">–</b></div>
-          <div class="row" style="margin-top:12px; padding-top:12px; border-top:1px solid #ddd;"><span style="font-size:16px; font-weight:900;">Gesamt</span><b style="font-size:16px;" id="pickupCodeTotal">–</b></div>
-        </div>
-        
-        <!-- Secondary Buttons -->
-        <div style="display:flex; flex-direction:column; gap:10px;">
-          <button class="btn secondary" type="button" id="btnOpenRoute" style="width:100%; min-height:44px;">
-            <i data-lucide="map-pin"></i> Route öffnen
-          </button>
-          <button class="btn ghost" type="button" id="btnToOrders" style="width:100%; min-height:44px;">
-            <i data-lucide="hash"></i> Zu meinen Abholnummern
-          </button>
-        </div>
+        <button class="btn ghost" type="button" id="btnPickupCodeBack" style="width:100%; min-height:44px; color:rgba(255,255,255,0.7);">
+          <i data-lucide="arrow-left"></i> Zurück
+        </button>
       </div>
     </section>
 
@@ -2888,6 +2947,23 @@
         </div>
         <button class="btn secondary" type="button" id="btnProviderEditProfile" style="width:100%; min-height:52px; background:#FFD700; color:#334155; font-weight:800; border:none; border-radius:12px;">
           Profil bearbeiten
+        </button>
+      </div>
+      
+      <!-- Kunden-Nachfrage: Express-Requests (Psychologischer Druck) -->
+      <div class="panel" id="providerCustomerDemand" style="padding:20px; border-radius:20px; box-shadow:0 4px 16px rgba(0,0,0,.4); background:linear-gradient(135deg, rgba(255,215,0,0.2) 0%, rgba(255,184,0,0.1) 100%); border:2px solid rgba(255,215,0,0.4); margin-bottom:20px;">
+        <div style="font-weight:900; font-size:18px; color:#fff; margin-bottom:12px; text-align:center;">
+          Kunden-Nachfrage
+        </div>
+        <div id="providerRequestCount" style="font-weight:900; font-size:32px; color:#FFD700; text-align:center; margin-bottom:8px; text-shadow:0 2px 8px rgba(255,215,0,0.3);">
+          0
+        </div>
+        <div style="font-size:14px; color:rgba(255,255,255,0.9); text-align:center; margin-bottom:16px; line-height:1.4;">
+          Kunden wollten heute bei dir per Abholnummer bestellen!
+        </div>
+        <button class="btn-primary" type="button" id="btnActivateExpress" style="width:100%; min-height:56px; background:#27AE60; color:#fff; font-weight:800; font-size:16px; border:none; border-radius:12px; box-shadow:0 4px 12px rgba(39,174,96,0.3);">
+          <i data-lucide="zap" style="width:20px;height:20px; margin-right:8px;"></i>
+          Aktiviere jetzt Express, um diesen Umsatz zu sichern
         </button>
       </div>
       
@@ -3707,7 +3783,16 @@
     </button>
   </div>
   <div class="handle"></div>
-  <div class="sheet-img" style="max-height:220px; overflow:hidden;"><img id="sImg" alt="" style="width:100%; height:auto; object-fit:cover; display:block;" /></div>
+  <!-- Foto-Container (Card-Style, aspect-ratio 16/9 für Laien-Fotos) -->
+  <div style="padding:16px 16px 0;">
+    <div style="width:100%; aspect-ratio:16/9; max-height:320px; border-radius:16px; overflow:hidden; background:#f0f0f0; box-shadow:0 2px 8px rgba(0,0,0,0.08); position:relative; border:1px solid rgba(0,0,0,0.05);">
+      <img id="sImg" alt="" style="width:100%; height:100%; object-fit:cover; display:block;" />
+      <!-- Platzhalter-Hintergrund falls kein Bild -->
+      <div id="sImgPlaceholder" style="position:absolute; top:0; left:0; right:0; bottom:0; background:linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%); display:none; align-items:center; justify-content:center; color:#999; font-size:14px;">
+        <i data-lucide="image" style="width:48px;height:48px;"></i>
+      </div>
+    </div>
+  </div>
   <div class="sheet-body">
     <div style="margin-top:16px;">
       <div style="font-weight:700;font-size:20px; line-height:1.3; margin-bottom:8px;" id="sDish"></div>
@@ -3720,9 +3805,18 @@
       <div id="sStatusBadge" style="margin-bottom:16px;"></div>
     </div>
 
-    <div class="row"><span>Abholfenster</span><b id="sWindow"></b></div>
-    <div class="row"><span>Adresse</span><a id="sAddr" href="#" target="_blank" rel="noopener">öffnen</a></div>
-    <div class="row"><span>Entfernung</span><b id="sDistance"></b></div>
+    <!-- Kompakte Smart-Adresse & Zeit (minimalistisch) -->
+    <div id="sSmartLocationTime" style="display:flex; align-items:center; gap:12px; padding:12px 16px; background:rgba(0,0,0,0.03); border-radius:12px; margin:16px 0; font-size:14px; color:var(--text-secondary);">
+      <a id="sSmartLocationLink" href="#" target="_blank" rel="noopener" style="display:flex; align-items:center; gap:6px; color:var(--text-secondary); text-decoration:none; flex:1; min-width:0;" onmouseover="this.style.color='var(--brand)';" onmouseout="this.style.color='var(--text-secondary)';">
+        <i data-lucide="map-pin" style="width:16px;height:16px; flex-shrink:0;"></i>
+        <span id="sSmartLocation" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"></span>
+      </a>
+      <span style="color:rgba(0,0,0,0.2);">|</span>
+      <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
+        <i data-lucide="clock" style="width:16px;height:16px;"></i>
+        <span id="sSmartTime">bis <span id="sSmartTimeEnd"></span> Uhr</span>
+      </div>
+    </div>
 
     <div id="sAllergensWrap" style="display:none">
       <div class="row"><span>Allergene</span><span id="sAllergens" style="text-align:right;color:var(--muted)"></span></div>
@@ -3746,28 +3840,49 @@
       <div id="sAddressFull" style="color:var(--text-secondary); font-size:14px; line-height:1.5;"></div>
     </div>
     
-    <button class="btn ghost" type="button" id="btnDishFav" style="margin-top:8px;"><i data-lucide="heart"></i><span>Gericht speichern</span></button>
+    <button class="btn ghost" type="button" id="btnDishFav" style="margin-top:8px;"><i data-lucide="utensils"></i><span>Auf meinen Speiseplan</span></button>
     
-    <!-- Bottom Sticky Primary CTA: "In die Mittagsbox" -->
+    <!-- Bottom Sticky Primary CTA: Dynamisch (Express vs. Nur Info) -->
     <div style="position:sticky; bottom:0; background:var(--card); padding:16px 0; margin-top:24px; border-top:1px solid var(--border); z-index:10;">
       <button class="btn-primary" type="button" id="btnPrimaryCTA" style="width:100%; min-height:56px; max-height:64px; background:#FFD700; color:#334155; font-weight:800; font-size:18px; border:none; border-radius:16px; box-shadow:0 4px 16px rgba(255,215,0,0.3);">
         <i data-lucide="shopping-basket" style="width:22px;height:22px;"></i>
-        <span id="btnPrimaryCTAText">In die Mittagsbox</span>
+        <span id="btnPrimaryCTAText">Jetzt Abholnummer sichern</span>
       </button>
+      <!-- Hinweis-Text für Express-Anbieter -->
+      <div id="sExpressHint" style="margin-top:8px; text-align:center; font-size:12px; color:#666; padding:0 16px;">
+        Sichere dir jetzt deine Abholnummer für heute.
+      </div>
     </div>
   </div>
 </div>
 
-<!-- Fullscreen Code Modal (extrem groß, 1-2m lesbar) -->
-<!-- Fullscreen Code Modal (extrem groß, 1-2m lesbar) -->
-<div class="backdrop" id="fullscreenCodeBd"></div>
-<div class="fullscreen-code" id="fullscreenCode">
-  <button class="fullscreen-code-close" aria-label="Schließen">
-    <i data-lucide="x"></i>
+<!-- Fullscreen Code Modal (Ultimative Ansicht - extrem groß, 1-2m lesbar) -->
+<div class="backdrop" id="fullscreenCodeBd" style="background:#000;"></div>
+<div class="fullscreen-code" id="fullscreenCode" style="background:linear-gradient(135deg, #0d4f1c 0%, #000 100%);">
+  <button class="fullscreen-code-close" aria-label="Schließen" style="position:absolute; top:20px; right:20px; width:48px; height:48px; border-radius:50%; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:10;">
+    <i data-lucide="x" style="width:24px;height:24px;"></i>
   </button>
-  <div class="fullscreen-code-content">
-    <div class="fullscreen-code-value" id="fullscreenCodeValue">A  B  1  2  C</div>
-    <div class="fullscreen-code-subtext">Bitte dem Personal zeigen</div>
+  <div class="fullscreen-code-content" style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; padding:40px;">
+    <!-- Status-Indikator -->
+    <div style="position:absolute; top:20px; left:20px; display:flex; align-items:center; gap:8px;">
+      <div style="width:12px; height:12px; border-radius:50%; background:#27AE60; box-shadow:0 0 12px rgba(39,174,96,0.8); animation:pulse-green-dot 2s infinite;"></div>
+      <span style="font-size:12px; font-weight:600; color:rgba(255,255,255,0.9);">Aktiv</span>
+    </div>
+    <!-- Abholnummer (extrem groß) -->
+    <div class="fullscreen-code-value" id="fullscreenCodeValue" style="font-size:clamp(6rem, 25vw, 12rem); font-weight:900; font-family:'Courier New', monospace; letter-spacing:0.15em; color:#fff; text-align:center; line-height:1.2; text-shadow:0 4px 20px rgba(0,0,0,0.5), 0 0 40px rgba(39,174,96,0.3); margin-bottom:32px;">A  B  1  2  C</div>
+    <!-- Handlungsanweisung -->
+    <div class="fullscreen-code-subtext" style="font-size:clamp(1.2rem, 4vw, 2rem); font-weight:700; color:#fff; text-align:center; text-shadow:0 2px 8px rgba(0,0,0,0.3); margin-bottom:24px;">
+      Bitte direkt beim Personal vorzeigen.
+    </div>
+    <!-- Kontext-Infos (dezent) -->
+    <div id="fullscreenCodeContext" style="text-align:center; padding:16px 24px; background:rgba(255,255,255,0.1); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border-radius:16px; border:1px solid rgba(255,255,255,0.1); max-width:500px; width:100%;">
+      <div style="font-size:16px; color:rgba(255,255,255,0.9); margin-bottom:4px;">
+        <span id="fullscreenCodeDish" style="font-weight:600;">–</span>
+      </div>
+      <div style="font-size:18px; font-weight:700; color:#FFD700; margin-top:4px;">
+        <span id="fullscreenCodeTotal">–</span>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -5263,9 +5378,8 @@
     
     const typeEl = document.getElementById('pickupCodeType');
     if(typeEl){
-      const fulfillType = order.fulfillType || (order.dineInPossible ? 'DINE_IN' : 'PICKUP');
-      // Formatierung: PICKUP -> "Zum Mitnehmen", DINE_IN -> "Vor Ort"
-      typeEl.textContent = fulfillType === 'DINE_IN' ? 'Vor Ort' : 'Zum Mitnehmen';
+      // Formatierung: Immer "Zum Mitnehmen" (keine "Vor Ort" Option)
+      typeEl.textContent = 'Zum Mitnehmen';
     }
     
     const totalEl = document.getElementById('pickupCodeTotal');
@@ -5544,49 +5658,132 @@
   let activeDiscoverFilter = 'near'; // 'near', 'Vegan', 'Vegetarisch', 'Mit Fleisch', 'provider'
   let currentProviderFilter = null; // Provider-ID für Provider-Filter
   
+  // Location-Autofill: Deutsche Städte & PLZ (Demo-Daten)
+  const locationSuggestions = [
+    'Jena', 'Erfurt', 'Weimar', 'Gera', 'Leipzig', 'Dresden', 'Berlin', 'München', 'Hamburg', 'Köln',
+    'Frankfurt', 'Stuttgart', 'Düsseldorf', 'Dortmund', 'Essen', 'Bremen', 'Hannover', 'Nürnberg',
+    '07743', '07745', '07747', '07749', '99084', '99085', '99086', '99087', '99088', '99089', '99090',
+    '99423', '99424', '99425', '99427', '99428', '07545', '07546', '07548', '07549', '07551', '07552'
+  ];
+  
+  function filterLocationSuggestions(query){
+    if(!query || query.length < 2) return [];
+    const q = query.toLowerCase();
+    return locationSuggestions.filter(loc => 
+      loc.toLowerCase().includes(q) || 
+      (q.length >= 3 && loc.toLowerCase().startsWith(q))
+    ).slice(0, 5);
+  }
+  
   function renderDiscover(){
-    // GPS-Button: Aktueller Standort (klickbar für GPS) - Sofortige Reaktion
-    const btnDiscoverLocationGPS = document.getElementById('btnDiscoverLocationGPS');
+    // Location-Autofill: Toggle & Input-Handler
+    const btnDiscoverLocationToggle = document.getElementById('btnDiscoverLocationToggle');
+    const discoverLocationExpanded = document.getElementById('discoverLocationExpanded');
+    const discoverLocationInput = document.getElementById('discoverLocationInput');
+    const discoverLocationSuggestions = document.getElementById('discoverLocationSuggestions');
     const discoverCurrentLocation = document.getElementById('discoverCurrentLocation');
-    if(btnDiscoverLocationGPS){
-      btnDiscoverLocationGPS.onclick = (e)=>{
+    let locationExpanded = false;
+    
+    if(btnDiscoverLocationToggle && discoverLocationExpanded && discoverLocationInput){
+      // Toggle Location-Input
+      btnDiscoverLocationToggle.onclick = (e)=>{
         e.preventDefault();
         e.stopPropagation();
-        // Haptics
         triggerHapticFeedback([10]);
-        // Sofortige visuelle Reaktion
-        btnDiscoverLocationGPS.style.transform = 'scale(0.95)';
-        setTimeout(() => {
-          btnDiscoverLocationGPS.style.transform = 'scale(1)';
-        }, 150);
         
-        // GPS-Standort abrufen
+        if(!locationExpanded){
+          discoverLocationExpanded.style.display = 'block';
+          setTimeout(() => {
+            discoverLocationInput.focus();
+          }, 100);
+          locationExpanded = true;
+        } else {
+          discoverLocationExpanded.style.display = 'none';
+          discoverLocationInput.value = '';
+          discoverLocationSuggestions.innerHTML = '';
+          locationExpanded = false;
+        }
+      };
+      
+      // Location-Input mit Autofill
+      discoverLocationInput.oninput = ()=>{
+        const query = discoverLocationInput.value.trim();
+        if(query.length >= 2){
+          const suggestions = filterLocationSuggestions(query);
+          if(suggestions.length > 0){
+            discoverLocationSuggestions.innerHTML = suggestions.map(loc => 
+              `<div class="location-suggestion-item" onclick="selectLocation('${loc}');" style="padding:10px 12px; cursor:pointer; border-bottom:1px solid rgba(0,0,0,0.05); transition:background 0.2s ease;" onmouseover="this.style.background='rgba(0,0,0,0.05)';" onmouseout="this.style.background='transparent';">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <i data-lucide="map-pin" style="width:14px;height:14px; color:#666;"></i>
+                  <span style="font-size:14px; font-weight:500; color:#333;">${loc}</span>
+                </div>
+              </div>`
+            ).join('');
+            if(typeof lucide !== 'undefined') lucide.createIcons();
+          } else {
+            discoverLocationSuggestions.innerHTML = '';
+          }
+        } else {
+          discoverLocationSuggestions.innerHTML = '';
+        }
+      };
+      
+      // Enter-Taste: Ersten Vorschlag auswählen oder aktuellen Wert übernehmen
+      discoverLocationInput.onkeydown = (e)=>{
+        if(e.key === 'Enter'){
+          e.preventDefault();
+          const query = discoverLocationInput.value.trim();
+          if(query){
+            selectLocation(query);
+          }
+        } else if(e.key === 'Escape'){
+          discoverLocationExpanded.style.display = 'none';
+          discoverLocationInput.value = '';
+          discoverLocationSuggestions.innerHTML = '';
+          locationExpanded = false;
+        }
+      };
+      
+      // GPS-Button: Doppelklick auf Location-Pill aktiviert GPS
+      btnDiscoverLocationToggle.ondblclick = (e)=>{
+        e.preventDefault();
+        e.stopPropagation();
+        triggerHapticFeedback([10, 20]);
+        
         if(navigator.geolocation){
           showToast('Standort wird ermittelt...', 1000);
           navigator.geolocation.getCurrentPosition((position)=>{
-            // Hier würde normalerweise Reverse Geocoding stattfinden
-            // Für MVP: Zeige Toast
             showToast('Standort aktualisiert', 2000);
             if(discoverCurrentLocation) discoverCurrentLocation.textContent = 'Aktueller Standort';
+            locationQuery = 'Aktueller Standort';
+            discoverLocationExpanded.style.display = 'none';
+            locationExpanded = false;
             renderDiscover();
           }, (err)=>{
             showToast('Standort konnte nicht ermittelt werden', 2000);
           });
         } else {
-          // Fallback: Standort-Eingabe öffnen
-          const newLoc = prompt('Standort eingeben (Ort oder PLZ):', locationQuery || 'Jena');
-          if(newLoc !== null && newLoc.trim()){
-            locationQuery = newLoc.trim();
-            if(discoverCurrentLocation) discoverCurrentLocation.textContent = locationQuery;
-            renderDiscover();
-          }
+          showToast('GPS nicht verfügbar', 2000);
         }
       };
     }
+    
     // Aktuellen Standort anzeigen
     if(discoverCurrentLocation){
       discoverCurrentLocation.textContent = locationQuery || 'Jena';
     }
+    
+    // Globale Funktion für Location-Auswahl
+    window.selectLocation = function(loc){
+      locationQuery = loc;
+      if(discoverCurrentLocation) discoverCurrentLocation.textContent = loc;
+      if(discoverLocationInput) discoverLocationInput.value = '';
+      if(discoverLocationSuggestions) discoverLocationSuggestions.innerHTML = '';
+      if(discoverLocationExpanded) discoverLocationExpanded.style.display = 'none';
+      locationExpanded = false;
+      triggerHapticFeedback([10]);
+      renderDiscover();
+    };
     
     // Search-Button: Expandiert Suchfeld bei Klick
     const btnDiscoverSearch = document.getElementById('btnDiscoverSearch');
@@ -5808,24 +6005,33 @@
     const offersEl = document.getElementById('discoverOffers');
     const emptyEl = document.getElementById('discoverEmpty');
     if(offersEl && emptyEl){
+      // Skeleton-Loader anzeigen während Daten geladen werden
       offersEl.innerHTML = '';
-      emptyEl.style.display = list.length ? 'none' : 'block';
+      for(let i = 0; i < 3; i++){
+        offersEl.appendChild(createSlimCardSkeleton());
+      }
       
-      list.forEach(o=> {
-        const card = createDiscoverListCard(o);
-        // Match-Screen Trigger: Bei Rechts-Swipe (für später, wenn Swipe-System implementiert wird)
-        // Hier können wir einen Test-Button hinzufügen für Demo-Zwecke
-        offersEl.appendChild(card);
-      });
+      // Kurze Verzögerung für bessere UX (simuliert Ladezeit)
+      setTimeout(() => {
+        offersEl.innerHTML = '';
+        emptyEl.style.display = list.length ? 'none' : 'block';
+        
+        list.forEach(o=> {
+          const card = createDiscoverListCard(o);
+          // Match-Screen Trigger: Bei Rechts-Swipe (für später, wenn Swipe-System implementiert wird)
+          // Hier können wir einen Test-Button hinzufügen für Demo-Zwecke
+          offersEl.appendChild(card);
+        });
+        
+        // Icons aktualisieren nach dem Rendern
+        if(typeof lucide !== 'undefined'){
+          setTimeout(()=> lucide.createIcons(), 50);
+        }
+      }, 300); // 300ms Delay für realistische Ladezeit
     }
     
     // Demo: Match-Screen Test (kann später durch Swipe-System ersetzt werden)
     // Wenn ein Gericht angeklickt wird und es hasPickupCode hat, könnte man showMatchModal aufrufen
-    
-    // Icons aktualisieren
-    if(typeof lucide !== 'undefined'){
-      setTimeout(()=> lucide.createIcons(), 50);
-    }
   }
   
   // Swipe-View State (mit LocalStorage-Persistenz)
@@ -6007,11 +6213,17 @@
     
     const imgSrc = data.imageUrl || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70';
     
-    // Badges
+    // Service-Label prüfen (Express vs. Nur Info)
+    const hasAbholnummer = data.hasPickupCode || false;
+    const serviceLabel = hasAbholnummer 
+      ? {text: 'Express-Abholung', icon: '⚡', color: '#27AE60', bg: 'rgba(39,174,96,0.15)', border: 'rgba(39,174,96,0.3)'}
+      : {text: 'Nur Info', icon: '👁️', color: '#64748b', bg: 'rgba(100,116,139,0.1)', border: 'rgba(100,116,139,0.2)'};
+    
+    // Badges (nur Abholnummer, keine "Vor Ort" Referenzen)
     const badges = [];
-    if(data.hasPickupCode) badges.push(`<span class="swipe-card-badge code">Abholnummer</span>`);
-    if(data.dineInPossible) badges.push(`<span class="swipe-card-badge dine">Vor Ort</span>`);
-    if(!data.dineInPossible && !data.hasPickupCode) badges.push(`<span class="swipe-card-badge">Zum Mitnehmen</span>`);
+    const provider = offers.find(p => p.providerId === data.providerId);
+    const orderingEnabled = provider && (provider.orderingEnabled !== false && (data.hasPickupCode || provider.hasPickupCode));
+    if(orderingEnabled) badges.push(`<span class="swipe-card-badge code">Abholnummer</span>`);
     
     // Meta-Info
     const metaInfo = [];
@@ -6038,6 +6250,11 @@
       <div class="swipe-overlay left" style="display:none; opacity:0;">NÄCHSTES GERICHT</div>
       <div class="swipe-overlay right" style="display:none; opacity:0;">AUF SPEISEPLAN</div>
       <div class="swipe-card-image-wrapper">
+        <!-- Service-Label (oben links auf Bild) -->
+        <div style="position:absolute; top:12px; left:12px; background:${serviceLabel.bg}; border:1px solid ${serviceLabel.border}; color:${serviceLabel.color}; padding:6px 10px; border-radius:8px; font-size:11px; font-weight:700; display:flex; align-items:center; gap:4px; box-shadow:0 2px 8px rgba(0,0,0,0.25); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); z-index:10; white-space:nowrap;">
+          <span style="font-size:12px;">${serviceLabel.icon}</span>
+          <span>${serviceLabel.text}</span>
+        </div>
         <div class="swipe-card-image">
           <img src="${esc(imgSrc)}" alt="${esc(data.dish||'')}" />
         </div>
@@ -7139,6 +7356,38 @@
     switchDiscoverView('list');
   }
   
+  // Skeleton-Loader für Slim-Cards (Loading-State)
+  function createSlimCardSkeleton(){
+    const skeleton = document.createElement('div');
+    skeleton.className = 'dish-card skeleton-pulse';
+    skeleton.innerHTML = `
+      <div style="display:flex; gap:12px; align-items:flex-start;">
+        <!-- Bild-Platzhalter -->
+        <div class="skeleton-bg" style="width:100px; height:100px; max-width:100px; max-height:100px; flex-shrink:0; border-radius:12px;"></div>
+        
+        <!-- Text-Platzhalter -->
+        <div style="flex:1; display:flex; flex-direction:column; justify-content:space-between; min-width:0; padding:2px 0;">
+          <div>
+            <!-- Name & Preis Zeile -->
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px; margin-bottom:4px;">
+              <div class="skeleton-bg" style="height:16px; border-radius:4px; flex:1; max-width:66%;"></div>
+              <div class="skeleton-bg" style="height:16px; border-radius:4px; width:25%;"></div>
+            </div>
+            <!-- Anbieter-Platzhalter -->
+            <div class="skeleton-bg-light" style="height:10px; border-radius:4px; width:50%; margin-bottom:6px;"></div>
+          </div>
+          
+          <!-- Info-Zeile Platzhalter -->
+          <div style="display:flex; gap:12px; margin-top:auto;">
+            <div class="skeleton-bg-light" style="height:10px; border-radius:4px; width:48px;"></div>
+            <div class="skeleton-bg-light" style="height:10px; border-radius:4px; width:48px;"></div>
+          </div>
+        </div>
+      </div>
+    `;
+    return skeleton;
+  }
+  
   // List Card für Discover-Seite (Kompaktes horizontales Design - Slim-Card)
   function createDiscoverListCard(o){
     const data = normalizeOffer(o);
@@ -7164,14 +7413,25 @@
     const provider = offers.find(p => p.providerId === data.providerId);
     const hasReuseSupport = provider && (provider.reuseEnabled || provider.reuse || (provider.providerProfile && provider.providerProfile.reuseEnabled));
     
+    // Service-Label prüfen (Express vs. Nur Info)
+    const hasAbholnummer = data.hasPickupCode || false;
+    const serviceLabel = hasAbholnummer 
+      ? {text: 'Express-Abholung', icon: '⚡', color: '#27AE60', bg: 'rgba(39,174,96,0.15)', border: 'rgba(39,174,96,0.3)'}
+      : {text: 'Nur Info', icon: '👁️', color: '#64748b', bg: 'rgba(100,116,139,0.1)', border: 'rgba(100,116,139,0.2)'};
+    
     // Kompaktes horizontales Layout: Bild links (quadratisch), Text rechts
     card.innerHTML = `
       <div style="display:flex; gap:12px; align-items:flex-start;">
-        <!-- Kompaktes Bild links (quadratisch, 80-100px) -->
-        <div style="position:relative; width:96px; height:96px; flex-shrink:0; border-radius:12px; overflow:hidden; background:#f0f0f0;">
+        <!-- Kompaktes Bild links (quadratisch, max. 100px) -->
+        <div style="position:relative; width:100px; height:100px; max-width:100px; max-height:100px; flex-shrink:0; border-radius:12px; overflow:hidden; background:#f0f0f0;">
           <img src="${esc(imgSrc)}" alt="${esc(data.dish||'')}" style="width:100%; height:100%; object-fit:cover;" />
-          <!-- Eco-Badge als Mini-Icon am Bildrand (oben links) -->
-          ${hasReuseSupport ? `<div style="position:absolute; top:4px; left:4px; background:#27AE60; color:#fff; width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 4px rgba(0,0,0,0.2); z-index:5; font-size:12px;">🌿</div>` : ''}
+          <!-- Service-Label (oben links) -->
+          <div style="position:absolute; top:4px; left:4px; background:${serviceLabel.bg}; border:1px solid ${serviceLabel.border}; color:${serviceLabel.color}; padding:3px 6px; border-radius:6px; font-size:9px; font-weight:700; display:flex; align-items:center; gap:3px; box-shadow:0 2px 4px rgba(0,0,0,0.2); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px); z-index:6; white-space:nowrap;">
+            <span style="font-size:10px;">${serviceLabel.icon}</span>
+            <span>${serviceLabel.text}</span>
+          </div>
+          <!-- Eco-Badge als Mini-Icon am Bildrand (unten links, wenn kein Service-Label) -->
+          ${hasReuseSupport && !hasAbholnummer ? `<div style="position:absolute; bottom:4px; left:4px; background:#27AE60; color:#fff; width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 4px rgba(0,0,0,0.2); z-index:5; font-size:12px;">🌿</div>` : ''}
           <!-- Favorit-Button (oben rechts) -->
           <button class="btn-icon-overlay" onclick="event.stopPropagation(); toggleDishFav('${dishKey}'); const btn=this.querySelector('i'); setTimeout(()=>{const isFav=dishFavs.has('${dishKey}'); btn.style.fill=isFav?'currentColor':''; btn.style.color=isFav?'#e74c3c':'#666'; if(typeof lucide !== 'undefined') lucide.createIcons();}, 10);" title="Favorit" style="position:absolute; top:4px; right:4px; width:28px; height:28px; border-radius:50%; background:rgba(255,255,255,0.95); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 2px 6px rgba(0,0,0,0.15); transition:transform 0.2s ease; z-index:5;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
             <i data-lucide="heart" style="width:14px;height:14px;${isFav ? 'fill:currentColor; color:#e74c3c;' : 'color:#666;'}"></i>
@@ -7282,29 +7542,20 @@
     body.appendChild(provider);
     
     // Pickup-Badges (obligatorisch, max 3, nach Anbieter, vor Preis)
-    // Reihenfolge: Vor Ort → Zum Mitnehmen → Abholcode
+    // Reihenfolge: Abholnummer (keine "Vor Ort" Referenzen)
     // Nur anwendbare Badges anzeigen
     const pickupBadges = [];
     
-    // 1. Vor Ort (wenn dineInPossible)
-    if(data.dineInPossible) {
-      pickupBadges.push({class:'dine', text:'Vor Ort', icon:'utensils'});
-    }
-    
-    // 2. Zum Mitnehmen (immer anzeigen, außer wenn nur Vor Ort möglich)
-    // Wenn dineInPossible false ist, dann ist es definitiv "Zum Mitnehmen"
-    // Wenn dineInPossible true ist, kann es beides sein
-    if(!data.dineInPossible) {
-      // Nur Zum Mitnehmen möglich
-      pickupBadges.push({class:'pickup', text:'Zum Mitnehmen', icon:'shopping-bag'});
-    } else if(pickupBadges.length < 3) {
-      // Beides möglich, aber max 3 Badges
-      pickupBadges.push({class:'pickup', text:'Zum Mitnehmen', icon:'shopping-bag'});
-    }
-    
-    // 3. Abholnummer (wenn verfügbar und noch Platz)
-    if(data.hasPickupCode && pickupBadges.length < 3) {
+    // 1. Abholnummer (wenn ordering_enabled)
+    const provider = offers.find(p => p.providerId === data.providerId);
+    const orderingEnabled = provider && (provider.orderingEnabled !== false && (data.hasPickupCode || provider.hasPickupCode));
+    if(orderingEnabled) {
       pickupBadges.push({class:'code', text:'Abholnummer', icon:'hash'});
+    }
+    
+    // 2. Zum Mitnehmen (immer anzeigen, wenn keine Abholnummer)
+    if(!orderingEnabled && pickupBadges.length < 3) {
+      pickupBadges.push({class:'pickup', text:'Zum Mitnehmen', icon:'shopping-bag'});
     }
     
     // Max 3 Badges sicherstellen
@@ -7959,7 +8210,20 @@
     const sCat = document.getElementById('sCat');
     const sWindow = document.getElementById('sWindow');
     
-    if(sImg) sImg.src = o.imageUrl || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70';
+    // Foto-Handling mit Platzhalter
+    const sImgPlaceholder = document.getElementById('sImgPlaceholder');
+    if(sImg){
+      const imgSrc = o.imageUrl || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70';
+      sImg.src = imgSrc;
+      sImg.onerror = () => {
+        if(sImgPlaceholder) sImgPlaceholder.style.display = 'flex';
+        if(sImg) sImg.style.display = 'none';
+      };
+      sImg.onload = () => {
+        if(sImgPlaceholder) sImgPlaceholder.style.display = 'none';
+        if(sImg) sImg.style.display = 'block';
+      };
+    }
     if(sDish) sDish.textContent = o.dish || '';
     // Provider mit Icon
     const sProviderEl = document.getElementById('sProvider');
@@ -7970,17 +8234,41 @@
     // Preis wird nicht mehr angezeigt (öffentliche Seite)
     // if(sPrice) sPrice.textContent = euro(o.price);
     if(sCat) sCat.textContent = o.category || '';
-    if(sWindow) sWindow.textContent = o.pickupWindow || '';
     
-    // Status Badge (dynamisch basierend auf Abholcode)
-    const statusBadgeEl = document.getElementById('sStatusBadge');
-    if(statusBadgeEl){
-      if(o.hasPickupCode){
-        // MIT Abholnummer: Status "Online bezahlen & Abholnummer"
-        statusBadgeEl.innerHTML = '<span style="display:inline-flex; align-items:center; gap:6px; padding:6px 12px; background:rgba(46,125,50,.12); border-radius:8px; color:#2e7d32; font-size:14px; font-weight:600;">🟢 Online bezahlen & Abholnummer</span>';
+    // Kompakte Smart-Adresse & Zeit
+    const smartLocationEl = document.getElementById('sSmartLocation');
+    const smartLocationLink = document.getElementById('sSmartLocationLink');
+    const smartTimeEnd = document.getElementById('sSmartTimeEnd');
+    if(smartLocationEl && smartLocationLink){
+      const city = o.providerCity || o.city || 'Ort';
+      smartLocationEl.textContent = city;
+      const addr = buildAddress({address:o.address, street:o.providerStreet, zip:o.providerZip, city:o.providerCity});
+      const maps = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr)}`;
+      smartLocationLink.href = maps;
+    }
+    if(smartTimeEnd && o.pickupWindow){
+      // Extrahiere Endzeit aus "11:30 – 14:30" Format
+      const timeMatch = o.pickupWindow.match(/(\d{1,2}:\d{2})\s*[–-]\s*(\d{1,2}:\d{2})/);
+      if(timeMatch && timeMatch[2]){
+        smartTimeEnd.textContent = timeMatch[2];
       } else {
-        // OHNE Abholnummer: Status "Vor Ort erhältlich"
-        statusBadgeEl.innerHTML = '<span style="display:inline-flex; align-items:center; gap:6px; padding:6px 12px; background:rgba(0,0,0,.06); border-radius:8px; color:#666; font-size:14px; font-weight:600;">⚪ Vor Ort erhältlich</span>';
+        // Fallback: Zeige gesamtes Zeitfenster
+        smartTimeEnd.textContent = o.pickupWindow.replace(/.*[–-]\s*/, '');
+      }
+    }
+    
+    // Status Badge (dynamisch basierend auf ordering_enabled)
+    const statusBadgeEl = document.getElementById('sStatusBadge');
+    const provider = offers.find(p => p.providerId === o.providerId);
+    const orderingEnabled = provider && (provider.orderingEnabled !== false && (o.hasPickupCode || provider.hasPickupCode));
+    
+    if(statusBadgeEl){
+      if(orderingEnabled){
+        // Express-Anbieter: Badge "Nur mit Abholnummer"
+        statusBadgeEl.innerHTML = '<span style="display:inline-flex; align-items:center; gap:6px; padding:6px 12px; background:rgba(39,174,96,0.12); border-radius:8px; color:#27AE60; font-size:13px; font-weight:700; border:1px solid rgba(39,174,96,0.2);">⚡ Nur mit Abholnummer</span>';
+      } else {
+        // Info-Anbieter: Status "Nur Info"
+        statusBadgeEl.innerHTML = '<span style="display:inline-flex; align-items:center; gap:6px; padding:6px 12px; background:rgba(100,116,139,0.1); border-radius:8px; color:#64748b; font-size:13px; font-weight:600; border:1px solid rgba(100,116,139,0.2);">👁️ Nur Info</span>';
       }
     }
 
@@ -7993,9 +8281,8 @@
       const provider = offers.find(p => p.providerId === o.providerId);
       const hasReuseSupport = provider && (provider.reuseEnabled || provider.reuse || (provider.providerProfile && provider.providerProfile.reuseEnabled));
       if(hasReuseSupport && badges.length < 3) badges.push({class:'eco', text:'Mehrweg möglich', icon:'leaf', emoji:'🌿'});
-      if(o.dineInPossible && badges.length < 3) badges.push({class:'dine', text:'Vor Ort', icon:'utensils'});
-      if(!o.dineInPossible || badges.length < 3) badges.push({class:'pickup', text:'Zum Mitnehmen', icon:'shopping-bag'});
-      if(o.hasPickupCode && badges.length < 3) badges.push({class:'code', text:'Abholnummer', icon:'hash'});
+      if(orderingEnabled && badges.length < 3) badges.push({class:'code', text:'Abholnummer', icon:'hash'});
+      if(!orderingEnabled && badges.length < 3) badges.push({class:'pickup', text:'Zum Mitnehmen', icon:'shopping-bag'});
       
       badges.slice(0, 3).forEach(badge => {
         const badgeEl = document.createElement('span');
@@ -8132,9 +8419,13 @@
           primaryCTAText.textContent = 'Nicht verfügbar';
         }
         primaryCTA.onclick = null;
-      } else if(o.hasPickupCode){
-        // MIT Abholnummer: CTA "In die Mittagsbox"
-        primaryCTAText.textContent = 'In die Mittagsbox';
+      } else if(orderingEnabled){
+        // Express-Anbieter (ordering_enabled): CTA "Jetzt Abholnummer sichern"
+        const expressHint = document.getElementById('sExpressHint');
+        if(expressHint) expressHint.style.display = 'block';
+        const infoHint = document.getElementById('sInfoHint');
+        if(infoHint) infoHint.style.display = 'none';
+        primaryCTAText.textContent = 'Jetzt Abholnummer sichern';
         primaryCTA.onclick = () => {
           // Loading state
           primaryCTA.disabled = true;
@@ -8157,28 +8448,75 @@
                 setTimeout(() => {
                   primaryCTA.disabled = false;
                   primaryCTA.classList.remove('success');
-                  primaryCTAText.textContent = 'In die Mittagsbox';
+                  primaryCTAText.textContent = 'Jetzt Abholnummer sichern';
                 }, 500);
               }, 300);
             } else {
               // Error: reset to default
               primaryCTA.disabled = false;
               primaryCTA.classList.remove('loading');
-              primaryCTAText.textContent = 'Jetzt online bestellen';
+              primaryCTAText.textContent = 'Jetzt Abholnummer sichern';
               showToast('Fehler beim Hinzufügen. Bitte erneut versuchen.');
             }
           }, 200);
         };
       } else {
-        // OHNE Abholnummer: CTA "Route öffnen"
-        primaryCTAText.textContent = 'Route öffnen';
+        // Info-Anbieter (ordering_enabled = false): Request-Button "Express-Abholung anfragen"
+        const expressHint = document.getElementById('sExpressHint');
+        if(expressHint) expressHint.style.display = 'none';
+        
+        primaryCTA.disabled = false;
+        primaryCTA.className = 'btn-primary';
+        primaryCTA.style.background = '#27AE60';
+        primaryCTA.style.color = '#fff';
+        primaryCTA.style.cursor = 'pointer';
+        primaryCTAText.textContent = 'Express-Abholung anfragen';
         primaryCTA.onclick = () => {
-          // Open route in maps (no loading state needed)
-          const profile = normalizeProviderProfile(provider.profile || {});
-          const address = `${profile.street || ''}, ${profile.zip || ''} ${profile.city || ''}`.trim();
-          const maps = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
-          window.open(maps, '_blank');
+          // Request-Counter erhöhen (LocalStorage für Demo)
+          const requestKey = `express_request_${o.providerId}_${isoDate(new Date())}`;
+          const currentCount = parseInt(localStorage.getItem(`provider_${o.providerId}_requests`) || '0', 10);
+          localStorage.setItem(`provider_${o.providerId}_requests`, String(currentCount + 1));
+          localStorage.setItem(requestKey, 'true');
+          
+          // Haptics
+          triggerHapticFeedback([10, 20]);
+          
+          // Success-Feedback
+          primaryCTA.disabled = true;
+          primaryCTA.classList.add('success');
+          primaryCTAText.textContent = 'Vielen Dank! ✓';
+          showToast('Deine Anfrage wurde übermittelt. Der Anbieter wird benachrichtigt.', 3000);
+          
+          // Reset nach 2 Sekunden
+          setTimeout(() => {
+            primaryCTA.disabled = false;
+            primaryCTA.classList.remove('success');
+            primaryCTAText.textContent = 'Express-Abholung anfragen';
+          }, 2000);
         };
+        
+        // Hinweis-Text unter dem Button
+        const hintEl = document.getElementById('sInfoHint');
+        if(!hintEl){
+          const hint = document.createElement('div');
+          hint.id = 'sInfoHint';
+          hint.style.marginTop = '8px';
+          hint.style.padding = '12px';
+          hint.style.background = 'rgba(39,174,96,0.05)';
+          hint.style.borderRadius = '8px';
+          hint.style.fontSize = '13px';
+          hint.style.color = '#27AE60';
+          hint.style.textAlign = 'center';
+          hint.style.lineHeight = '1.5';
+          hint.style.fontWeight = '600';
+          hint.innerHTML = 'Hilf dem Anbieter, Express-Abholung zu aktivieren!';
+          primaryCTA.parentElement.appendChild(hint);
+        } else {
+          hintEl.style.display = 'block';
+          hintEl.style.background = 'rgba(39,174,96,0.05)';
+          hintEl.style.color = '#27AE60';
+          hintEl.innerHTML = 'Hilf dem Anbieter, Express-Abholung zu aktivieren!';
+        }
       }
     }
     
@@ -8225,8 +8563,8 @@
       providerBtn.innerHTML = `${iconMarkup('heart')}<span>${esc(label)}</span>`;
     }
     if(dishBtn){
-      const label = dishKey && dishFavs.has(dishKey) ? 'Gericht entfernen' : 'Gericht speichern';
-      dishBtn.innerHTML = `${iconMarkup('heart')}<span>${esc(label)}</span>`;
+      const label = dishKey && dishFavs.has(dishKey) ? 'Von Speiseplan entfernen' : 'Auf meinen Speiseplan';
+      dishBtn.innerHTML = `${iconMarkup('utensils')}<span>${esc(label)}</span>`;
     }
   }
 
@@ -8630,8 +8968,9 @@
     const name = data.providerName || profile.name || 'Anbieter';
     const addr = buildAddress({address:data.address, street:data.providerStreet, zip:data.providerZip, city:data.providerCity}) || buildAddress(profile);
     const badges = [];
-    if(data.hasPickupCode) badges.push('Ticket');
-    if(data.dineInPossible) badges.push('Vor Ort');
+    const provider = offers.find(p => p.providerId === data.providerId);
+    const orderingEnabled = provider && (provider.orderingEnabled !== false && (data.hasPickupCode || provider.hasPickupCode));
+    if(orderingEnabled) badges.push('Abholnummer');
     return `
       <div class="print-card">
         <div style="display:flex;align-items:center;gap:12px;">
@@ -9871,7 +10210,7 @@
       quantity: cartData.items.reduce((sum, it) => sum + it.qty, 0),
       unitPrice: items[0]?.unitPriceCents || 0,
       total: totalCents,
-      fulfillType: firstOfferNormalized && firstOfferNormalized.dineInPossible ? 'DINE_IN' : 'PICKUP',
+      fulfillType: 'PICKUP', // Immer "Zum Mitnehmen" (keine "Vor Ort" Option)
       etaTime: cartData.pickupTime || '',
       status: initialStatus,
       currency: 'EUR',
@@ -11701,6 +12040,34 @@
     const mineActive = mineAll.filter(o => o.active !== false);
     const mineToday = mineActive.filter(o => o.day === todayKey);
     
+    // Kunden-Nachfrage: Request-Count aus LocalStorage
+    const requestCountEl = document.getElementById('providerRequestCount');
+    const btnActivateExpress = document.getElementById('btnActivateExpress');
+    if(requestCountEl){
+      const requestCount = parseInt(localStorage.getItem(`provider_${providerId()}_requests`) || '0', 10);
+      requestCountEl.textContent = requestCount;
+      
+      // Sektion nur anzeigen wenn Requests vorhanden
+      const demandSection = document.getElementById('providerCustomerDemand');
+      if(demandSection){
+        if(requestCount > 0){
+          demandSection.style.display = 'block';
+        } else {
+          demandSection.style.display = 'none';
+        }
+      }
+    }
+    if(btnActivateExpress){
+      btnActivateExpress.onclick = () => {
+        showToast('Express-Aktivierung wird vorbereitet...', 2000);
+        // Hier würde normalerweise die Express-Aktivierung im Backend erfolgen
+        // Für Demo: Zeige Toast
+        setTimeout(() => {
+          showToast('Express-Aktivierung erfolgreich! Du kannst jetzt Abholnummern vergeben.', 3000);
+        }, 2000);
+      };
+    }
+    
     // Provider Identity Card
     const logoWrap = document.getElementById('provCardLogo');
     if(logoWrap){
@@ -11985,9 +12352,10 @@
           
           // Verzehrart-Badges
           const badges = [];
-          if(o.hasPickupCode) badges.push('<span style="font-size:11px; padding:2px 6px; background:rgba(255,204,0,.15); border-radius:6px; color:var(--brand);">Abholnummer</span>');
-          if(o.dineInPossible) badges.push('<span style="font-size:11px; padding:2px 6px; background:rgba(31,157,85,.15); border-radius:6px; color:var(--brand2);">Vor Ort</span>');
-          if(!o.dineInPossible && !o.hasPickupCode) badges.push('<span style="font-size:11px; padding:2px 6px; background:rgba(0,0,0,.06); border-radius:6px;">To Go</span>');
+          const provider = offers.find(p => p.providerId === o.providerId);
+          const orderingEnabled = provider && (provider.orderingEnabled !== false && (o.hasPickupCode || provider.hasPickupCode));
+          if(orderingEnabled) badges.push('<span style="font-size:11px; padding:2px 6px; background:rgba(255,204,0,.15); border-radius:6px; color:var(--brand);">Abholnummer</span>');
+          if(!orderingEnabled) badges.push('<span style="font-size:11px; padding:2px 6px; background:rgba(0,0,0,.06); border-radius:6px;">To Go</span>');
           
           // No-Limits: Prominenter "Ausverkauft" / "Noch da" Toggle direkt in der Liste
           const isActive = o.active !== false;
