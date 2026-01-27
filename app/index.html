@@ -5113,6 +5113,38 @@
     x:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg>',
     'alert-circle':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>'
   };
+  // MITTAGIO Master-Icons: Spezielle Icons für Abholnummer, Vor Ort, Mehrweg
+  function getMittagioMasterIcon(type){
+    // type: 'pickup-code' | 'dine-in' | 'reuse'
+    if(type === 'pickup-code'){
+      // Abholnummer: Ticket mit "A1", Schwarz-Weiß-Kontrast
+      return `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="stroke-width:2.5;">
+        <rect x="4" y="6" width="16" height="12" rx="2" stroke="currentColor" fill="none"/>
+        <path d="M4 10h16" stroke="currentColor" stroke-linecap="round"/>
+        <text x="12" y="16" font-family="Arial, sans-serif" font-size="8" font-weight="900" text-anchor="middle" fill="currentColor">A1</text>
+        <path d="M18 8l2-2M18 16l2 2" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>`;
+    } else if(type === 'dine-in'){
+      // Vor Ort: Gekreuztes Besteck (Gabel und Messer), schlichte, dicke Linienführung
+      return `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="stroke-width:2.5;">
+        <path d="M8 3v18M8 3l4 4M8 3L4 7" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M16 3v18M16 3l-4 4M16 3l4 4" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="12" cy="12" r="1.5" fill="currentColor"/>
+      </svg>`;
+    } else if(type === 'reuse'){
+      // Mehrweg: Kreislauf-Symbol (zwei Pfeile im Kreis) mit Blatt in der Mitte, organische Form
+      return `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="stroke-width:2;">
+        <path d="M12 4c-4.4 0-8 3.6-8 8s3.6 8 8 8" stroke="currentColor" stroke-linecap="round" fill="none"/>
+        <path d="M12 4l4 4-4 4" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <path d="M12 20c4.4 0 8-3.6 8-8s-3.6-8-8-8" stroke="currentColor" stroke-linecap="round" fill="none"/>
+        <path d="M12 20L8 16l4-4" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <path d="M12 9c-1.5 1.5-1.5 3.5 0 5" stroke="currentColor" stroke-linecap="round" fill="none" style="stroke-width:1.5;"/>
+        <path d="M12 9l-1 1 1 1" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" fill="none" style="stroke-width:1.5;"/>
+      </svg>`;
+    }
+    return '';
+  }
+  
   const iconMarkup = (name, opts={})=> {
     const iconName = opts.fill && ICONS[name + 'Filled'] ? name + 'Filled' : name;
     return ICONS[iconName] ? `<span class="ico-inline">${ICONS[iconName]}</span>` : '';
@@ -6463,11 +6495,11 @@
       navigator.vibrate(pattern); // Standard: 15ms, oder Pattern wie [10, 5, 10]
     }
   }
-      card.style.transform = `translateX(${currentX}px) translateY(${currentY}px) rotate(${rotation}deg)`;
-      
-      // Match-Feedback während Swipe
-      if(Math.abs(currentX) > 50){
-        if(currentX < 0){
+  
+  // Swipe-Handler mit LocalStorage/SessionStorage
+  function handleSwipeLeft(offer){
+    // Links-Swipe = Ablehnen - In SessionStorage speichern
+    if(!offer || !offer.id){
           card.classList.add('match-left');
           card.classList.remove('match-right');
         } else {
@@ -6892,16 +6924,6 @@
         startX = 0;
         startY = 0;
       }
-      card.dataset.hapticTriggered = ''; // Reset für nächsten Swipe
-    });
-    
-  // Haptic Feedback (verbessert: kurze, dezent Vibration)
-  function triggerHapticFeedback(pattern = [15]){
-    if('vibrate' in navigator){
-      navigator.vibrate(pattern); // Standard: 15ms, oder Pattern wie [10, 5, 10]
-    }
-  }
-  
   // Swipe-Handler mit LocalStorage/SessionStorage
   function handleSwipeLeft(offer){
     // Links-Swipe = Ablehnen - In SessionStorage speichern
@@ -7652,37 +7674,59 @@
     };
     body.appendChild(providerEl);
     
-    // Pickup-Badges (obligatorisch, max 3, nach Anbieter, vor Preis)
-    // Reihenfolge: Abholnummer (keine "Vor Ort" Referenzen)
-    // Nur anwendbare Badges anzeigen
-    const pickupBadges = [];
-    
-    // 1. Abholnummer (wenn ordering_enabled)
+    // MITTAGIO Master-Icons: 3 Badge-Grundsäulen (feste Plätze)
+    // Slot 1: Abholnummer (A1-Ticket), Slot 2: Vor Ort (Besteck), Slot 3: Mehrweg (Kreislauf-Blatt)
     const offerProvider = offers.find(p => p.providerId === data.providerId);
     const orderingEnabled = offerProvider && (offerProvider.orderingEnabled !== false && (data.hasPickupCode || offerProvider.hasPickupCode));
+    const hasDineIn = offerProvider && (offerProvider.dineInPossible !== false || data.dineInPossible);
+    const hasReuse = offerProvider && (offerProvider.reuse && offerProvider.reuse.enabled);
+    
+    const badgesRow = document.createElement('div');
+    badgesRow.className='card-status-badges';
+    badgesRow.style.display = 'flex';
+    badgesRow.style.gap = '8px';
+    badgesRow.style.marginTop = '12px';
+    
+    // Slot 1: Abholnummer (A1-Ticket)
     if(orderingEnabled) {
-      pickupBadges.push({class:'code', text:'Abholnummer', icon:'hash'});
+      const badge1 = document.createElement('span');
+      badge1.className = 'card-status-badge code';
+      badge1.style.display = 'flex';
+      badge1.style.alignItems = 'center';
+      badge1.style.gap = '6px';
+      badge1.style.fontSize = '13px';
+      badge1.style.color = '#000';
+      badge1.innerHTML = `<span style="display:inline-flex; align-items:center; justify-content:center; width:20px; height:20px;">${getMittagioMasterIcon('pickup-code')}</span> <span>Abholnummer</span>`;
+      badgesRow.appendChild(badge1);
     }
     
-    // 2. Zum Mitnehmen (immer anzeigen, wenn keine Abholnummer)
-    if(!orderingEnabled && pickupBadges.length < 3) {
-      pickupBadges.push({class:'pickup', text:'Zum Mitnehmen', icon:'shopping-bag'});
+    // Slot 2: Vor Ort (Besteck) - nur wenn Plätze vorhanden
+    if(hasDineIn) {
+      const badge2 = document.createElement('span');
+      badge2.className = 'card-status-badge dine-in';
+      badge2.style.display = 'flex';
+      badge2.style.alignItems = 'center';
+      badge2.style.gap = '6px';
+      badge2.style.fontSize = '13px';
+      badge2.style.color = '#000';
+      badge2.innerHTML = `<span style="display:inline-flex; align-items:center; justify-content:center; width:20px; height:20px;">${getMittagioMasterIcon('dine-in')}</span> <span>Vor Ort</span>`;
+      badgesRow.appendChild(badge2);
     }
     
-    // Max 3 Badges sicherstellen
-    if(pickupBadges.length > 3) {
-      pickupBadges.splice(3);
+    // Slot 3: Mehrweg (Kreislauf-Blatt) - nur bei Pfandsystem
+    if(hasReuse) {
+      const badge3 = document.createElement('span');
+      badge3.className = 'card-status-badge reuse';
+      badge3.style.display = 'flex';
+      badge3.style.alignItems = 'center';
+      badge3.style.gap = '6px';
+      badge3.style.fontSize = '13px';
+      badge3.style.color = '#000';
+      badge3.innerHTML = `<span style="display:inline-flex; align-items:center; justify-content:center; width:20px; height:20px;">${getMittagioMasterIcon('reuse')}</span> <span>Mehrweg</span>`;
+      badgesRow.appendChild(badge3);
     }
     
-    if(pickupBadges.length > 0){
-      const badgesRow = document.createElement('div');
-      badgesRow.className='card-status-badges';
-      pickupBadges.forEach(badge => {
-        const badgeEl = document.createElement('span');
-        badgeEl.className = `card-status-badge ${badge.class}`;
-        badgeEl.innerHTML = `${iconMarkup(badge.icon)} <span>${esc(badge.text)}</span>`;
-        badgesRow.appendChild(badgeEl);
-      });
+    if(badgesRow.children.length > 0){
       body.appendChild(badgesRow);
     }
     
