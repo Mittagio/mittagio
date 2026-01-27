@@ -984,7 +984,7 @@
       -webkit-backdrop-filter:saturate(180%) blur(20px);
       border:1px solid rgba(231,225,213,.3);
       box-shadow:0 8px 24px rgba(0,0,0,.12), 0 0 0 1px rgba(0,0,0,.04);
-      display:none; flex; align-items:center; justify-content:center;
+      display:none; align-items:center; justify-content:center;
       cursor:pointer; z-index:25;
       transition:transform .2s ease, box-shadow .2s ease, background .2s ease;
       user-select:none;
@@ -6205,8 +6205,8 @@
     
     // Badges (nur Abholnummer, keine "Vor Ort" Referenzen)
     const badges = [];
-    const provider = offers.find(p => p.providerId === data.providerId);
-    const orderingEnabled = provider && (provider.orderingEnabled !== false && (data.hasPickupCode || provider.hasPickupCode));
+    const offerProvider = offers.find(p => p.providerId === data.providerId);
+    const orderingEnabled = offerProvider && (offerProvider.orderingEnabled !== false && (data.hasPickupCode || offerProvider.hasPickupCode));
     if(orderingEnabled) badges.push(`<span class="swipe-card-badge code">Abholnummer</span>`);
     
     // Meta-Info
@@ -7394,8 +7394,8 @@
     }
     
     // Eco-Badge: Mehrweg-Option (wenn Anbieter es unterstützt)
-    const provider = offers.find(p => p.providerId === data.providerId);
-    const hasReuseSupport = provider && (provider.reuseEnabled || provider.reuse || (provider.providerProfile && provider.providerProfile.reuseEnabled));
+    const offerProvider = offers.find(p => p.providerId === data.providerId);
+    const hasReuseSupport = offerProvider && (offerProvider.reuseEnabled || offerProvider.reuse || (offerProvider.providerProfile && offerProvider.providerProfile.reuseEnabled));
     
     // Service-Label prüfen (Express vs. Nur Info)
     const hasAbholnummer = data.hasPickupCode || false;
@@ -7502,16 +7502,16 @@
     body.appendChild(titleRow);
     
     // Anbieter: Kurzform mit Store-Icon (klickbar)
-    const provider = document.createElement('p');
-    provider.className='card-provider';
-    provider.style.cursor = 'pointer';
-    provider.style.textDecoration = 'underline';
-    provider.style.textDecorationColor = 'rgba(0,0,0,0.2)';
-    provider.style.transition = 'opacity 0.2s ease';
-    provider.onmouseover = () => { provider.style.opacity = '0.7'; };
-    provider.onmouseout = () => { provider.style.opacity = '1'; };
-    provider.innerHTML = `<i data-lucide="store" style="width:16px;height:16px;"></i> <span>${esc(data.providerName || 'Anbieter')}</span>`;
-    provider.onclick = (e) => {
+    const providerEl = document.createElement('p');
+    providerEl.className='card-provider';
+    providerEl.style.cursor = 'pointer';
+    providerEl.style.textDecoration = 'underline';
+    providerEl.style.textDecorationColor = 'rgba(0,0,0,0.2)';
+    providerEl.style.transition = 'opacity 0.2s ease';
+    providerEl.onmouseover = () => { providerEl.style.opacity = '0.7'; };
+    providerEl.onmouseout = () => { providerEl.style.opacity = '1'; };
+    providerEl.innerHTML = `<i data-lucide="store" style="width:16px;height:16px;"></i> <span>${esc(data.providerName || 'Anbieter')}</span>`;
+    providerEl.onclick = (e) => {
       e.stopPropagation();
       // Filtere nach diesem Provider
       if(data.providerId){
@@ -7523,7 +7523,7 @@
         showToast('Anbieter-Informationen nicht verfügbar');
       }
     };
-    body.appendChild(provider);
+    body.appendChild(providerEl);
     
     // Pickup-Badges (obligatorisch, max 3, nach Anbieter, vor Preis)
     // Reihenfolge: Abholnummer (keine "Vor Ort" Referenzen)
@@ -7531,8 +7531,8 @@
     const pickupBadges = [];
     
     // 1. Abholnummer (wenn ordering_enabled)
-    const provider = offers.find(p => p.providerId === data.providerId);
-    const orderingEnabled = provider && (provider.orderingEnabled !== false && (data.hasPickupCode || provider.hasPickupCode));
+    const offerProvider = offers.find(p => p.providerId === data.providerId);
+    const orderingEnabled = offerProvider && (offerProvider.orderingEnabled !== false && (data.hasPickupCode || offerProvider.hasPickupCode));
     if(orderingEnabled) {
       pickupBadges.push({class:'code', text:'Abholnummer', icon:'hash'});
     }
@@ -8243,8 +8243,8 @@
     
     // Status Badge (dynamisch basierend auf ordering_enabled)
     const statusBadgeEl = document.getElementById('sStatusBadge');
-    const provider = offers.find(p => p.providerId === o.providerId);
-    const orderingEnabled = provider && (provider.orderingEnabled !== false && (o.hasPickupCode || provider.hasPickupCode));
+    const offerProvider = offers.find(p => p.providerId === o.providerId);
+    const orderingEnabled = offerProvider && (offerProvider.orderingEnabled !== false && (o.hasPickupCode || offerProvider.hasPickupCode));
     
     if(statusBadgeEl){
       if(orderingEnabled){
@@ -8262,8 +8262,8 @@
       badgesEl.innerHTML = '';
       const badges = [];
       // Mehrweg-Badge (höchste Priorität)
-      const provider = offers.find(p => p.providerId === o.providerId);
-      const hasReuseSupport = provider && (provider.reuseEnabled || provider.reuse || (provider.providerProfile && provider.providerProfile.reuseEnabled));
+      const offerProvider = offers.find(p => p.providerId === o.providerId);
+      const hasReuseSupport = offerProvider && (offerProvider.reuseEnabled || offerProvider.reuse || (offerProvider.providerProfile && offerProvider.providerProfile.reuseEnabled));
       if(hasReuseSupport && badges.length < 3) badges.push({class:'eco', text:'Mehrweg möglich', icon:'leaf', emoji:'🌿'});
       if(orderingEnabled && badges.length < 3) badges.push({class:'code', text:'Abholnummer', icon:'hash'});
       if(!orderingEnabled && badges.length < 3) badges.push({class:'pickup', text:'Zum Mitnehmen', icon:'shopping-bag'});
@@ -8365,8 +8365,8 @@
     // Eco-Badge für Mehrweg-Option (zusätzlich zu Reuse-Wrap)
     const ecoBadgeEl = document.getElementById('sEcoBadge');
     if(ecoBadgeEl){
-      const provider = offers.find(p => p.providerId === o.providerId);
-      const hasReuseSupport = provider && (provider.reuseEnabled || provider.reuse || (provider.providerProfile && provider.providerProfile.reuseEnabled));
+      const offerProvider = offers.find(p => p.providerId === o.providerId);
+      const hasReuseSupport = offerProvider && (offerProvider.reuseEnabled || offerProvider.reuse || (offerProvider.providerProfile && offerProvider.providerProfile.reuseEnabled));
       if(hasReuseSupport){
         ecoBadgeEl.style.display = 'block';
         ecoBadgeEl.innerHTML = `<div style="padding:8px 12px; background:rgba(39,174,96,0.1); border-radius:8px; font-size:13px; font-weight:700; color:#27AE60; display:inline-flex; align-items:center; gap:6px; border:1px solid rgba(39,174,96,0.2);"><span style="font-size:16px;">🌿</span> <span>Mehrweg möglich</span></div>`;
@@ -8952,8 +8952,8 @@
     const name = data.providerName || profile.name || 'Anbieter';
     const addr = buildAddress({address:data.address, street:data.providerStreet, zip:data.providerZip, city:data.providerCity}) || buildAddress(profile);
     const badges = [];
-    const provider = offers.find(p => p.providerId === data.providerId);
-    const orderingEnabled = provider && (provider.orderingEnabled !== false && (data.hasPickupCode || provider.hasPickupCode));
+    const offerProvider = offers.find(p => p.providerId === data.providerId);
+    const orderingEnabled = offerProvider && (offerProvider.orderingEnabled !== false && (data.hasPickupCode || offerProvider.hasPickupCode));
     if(orderingEnabled) badges.push('Abholnummer');
     return `
       <div class="print-card">
@@ -12336,8 +12336,8 @@
           
           // Verzehrart-Badges
           const badges = [];
-          const provider = offers.find(p => p.providerId === o.providerId);
-          const orderingEnabled = provider && (provider.orderingEnabled !== false && (o.hasPickupCode || provider.hasPickupCode));
+          const offerProvider = offers.find(p => p.providerId === o.providerId);
+          const orderingEnabled = offerProvider && (offerProvider.orderingEnabled !== false && (o.hasPickupCode || offerProvider.hasPickupCode));
           if(orderingEnabled) badges.push('<span style="font-size:11px; padding:2px 6px; background:rgba(255,204,0,.15); border-radius:6px; color:var(--brand);">Abholnummer</span>');
           if(!orderingEnabled) badges.push('<span style="font-size:11px; padding:2px 6px; background:rgba(0,0,0,.06); border-radius:6px;">To Go</span>');
           
@@ -15709,7 +15709,7 @@
           await navigator.clipboard.writeText(code);
           btnCopyCode.innerHTML = '<i data-lucide="check"></i> Kopiert!';
           setTimeout(()=>{
-            btnCopyCode.innerHTML = '<i data-lucide="copy"></i> Code kopieren';
+            btnCopyCode.innerHTML = '<i data-lucide="copy"></i> Abholnummer kopieren';
             if(typeof lucide !== 'undefined') lucide.createIcons();
           }, 2000);
           if(typeof lucide !== 'undefined') lucide.createIcons();
@@ -15730,7 +15730,7 @@
         document.execCommand('copy');
         btnCopyCode.innerHTML = '<i data-lucide="check"></i> Kopiert!';
         setTimeout(()=>{
-          btnCopyCode.innerHTML = '<i data-lucide="copy"></i> Code kopieren';
+          btnCopyCode.innerHTML = '<i data-lucide="copy"></i> Abholnummer kopieren';
           if(typeof lucide !== 'undefined') lucide.createIcons();
         }, 2000);
         if(typeof lucide !== 'undefined') lucide.createIcons();
