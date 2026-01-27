@@ -1305,16 +1305,14 @@
     }
     .discover-categories-scroll::-webkit-scrollbar{display:none}
     .discover-category-chip{
-      flex:0 0 auto; padding:6px 12px;
-      height:32px; border-radius:16px; border:1px solid rgba(0,0,0,.08);
-      font-size:12px; font-weight:600;
+      flex:0 0 auto; padding:8px 16px;
+      height:36px; border-radius:999px; border:1.5px solid rgba(0,0,0,.1);
+      font-size:13px; font-weight:600;
       display:flex; align-items:center; gap:6px;
-      background:#f8f8f8; color:#333;
-      cursor:pointer; transition:all 0.2s ease;
       background:#f1f5f9; color:#64748b;
-      cursor:pointer; transition:all .2s;
+      cursor:pointer; transition:all 0.2s ease;
       white-space:nowrap;
-      display:flex; align-items:center; justify-content:center; gap:3px;
+      display:flex; align-items:center; justify-content:center; gap:4px;
     }
     .discover-category-chip i{
       width:12px; height:12px; flex-shrink:0;
@@ -1327,11 +1325,16 @@
       background:var(--brand); color:#000;
       border-color:var(--brand);
       font-weight:900;
-      box-shadow:0 2px 6px rgba(255,204,0,.3);
+      box-shadow:0 2px 8px rgba(255,204,0,.4);
+      transform:scale(1.02);
     }
     .discover-category-chip:not(.active){
-      border-color:rgba(0,0,0,.08);
+      border-color:rgba(0,0,0,.1);
       background:#f1f5f9;
+    }
+    .discover-category-chip:not(.active):hover{
+      background:#e2e8f0;
+      border-color:rgba(0,0,0,.15);
     }
     .discover-category-chip:active{
       transform:scale(.96);
@@ -1596,10 +1599,11 @@
       }
     }
     .dish-price {
-      font-size: 16px;
-      font-weight: 700;
-      color: #111;
+      font-size: 18px;
+      font-weight: 900;
+      color: var(--brand);
       white-space: nowrap;
+      flex-shrink: 0;
     }
     /* Mittlere Zeile: Anbieter */
     .dish-provider {
@@ -8251,11 +8255,11 @@
     
     if(statusBadgeEl){
       if(orderingEnabled){
-        // Express-Anbieter: Badge "Nur mit Abholnummer"
-        statusBadgeEl.innerHTML = '<span style="display:inline-flex; align-items:center; gap:6px; padding:6px 12px; background:rgba(39,174,96,0.12); border-radius:8px; color:#27AE60; font-size:13px; font-weight:700; border:1px solid rgba(39,174,96,0.2);">⚡ Nur mit Abholnummer</span>';
+        // Express-Anbieter: Badge "Nur mit Abholnummer" (dezent, aber klar)
+        statusBadgeEl.innerHTML = '<span style="display:inline-flex; align-items:center; gap:6px; padding:6px 14px; background:rgba(39,174,96,0.1); border-radius:12px; color:#27AE60; font-size:12px; font-weight:700; border:1.5px solid rgba(39,174,96,0.25); letter-spacing:0.3px;">⚡ Nur mit Abholnummer</span>';
       } else {
-        // Info-Anbieter: Status "Nur Info"
-        statusBadgeEl.innerHTML = '<span style="display:inline-flex; align-items:center; gap:6px; padding:6px 12px; background:rgba(100,116,139,0.1); border-radius:8px; color:#64748b; font-size:13px; font-weight:600; border:1px solid rgba(100,116,139,0.2);">👁️ Nur Info</span>';
+        // Info-Anbieter: Status "Nur Info" (dezent)
+        statusBadgeEl.innerHTML = '<span style="display:inline-flex; align-items:center; gap:6px; padding:6px 14px; background:rgba(100,116,139,0.08); border-radius:12px; color:#64748b; font-size:12px; font-weight:600; border:1.5px solid rgba(100,116,139,0.15); letter-spacing:0.3px;">👁️ Nur Info</span>';
       }
     }
 
