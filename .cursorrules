@@ -12,15 +12,21 @@
 ## Wichtigste Projektprinzipien
 
 ### Grundprinzip
-- **Vermittlungs- & Entdeckungsplattform** (KEIN Marktplatz, KEIN Checkout, KEIN Abo)
-- Verträge entstehen **ausschließlich zwischen Anbieter und Endkunde vor Ort**
-- **Keine Mindestlaufzeit, kein Vertrag mit Endkunden**
+- **Vermittlungs- & Entdeckungsplattform** mit optionalem Checkout-System
+- **Zwei Modi für Anbieter:**
+  - **Mit Abholnummer (hasPickupCode=true):** Online-Zahlung möglich, Stripe Checkout, Abholnummer wird generiert
+  - **Ohne Abholnummer (hasPickupCode=false):** Reine Vermittlung, Zahlung vor Ort, direkter Kontakt
+- **Keine Mindestlaufzeit, kein Abo für Endkunden**
+- **Verträge:** Bei Abholnummer-System entsteht Vertrag online, sonst vor Ort
 
 ### Klare Trennung der Bereiche
 
 **Endkundenbereich:**
 - Öffentlich, ohne Login, ohne Profil, ohne Registrierung
-- Routen: `/`, `/entdecken`, `/datenschutz`, `/impressum`, `/agb`
+- Routen: `/`, `/entdecken`, `/favoriten`, `/mittagsbox`, `/checkout`, `/abholnummer`, `/profil`, `/datenschutz`, `/impressum`, `/agb`
+- **Mittagsbox (Warenkorb):** Sammlung von Gerichten für Bestellung
+- **Checkout:** Stripe-Zahlung für Gerichte mit `hasPickupCode=true`
+- **Abholnummer:** Wird nach erfolgreicher Zahlung generiert und angezeigt
 
 **Anbieterbereich:**
 - Eigener App-Bereich unter `/anbieter/*`
@@ -61,12 +67,19 @@
   - Text: Mittagtische einfach online anbieten
   - Button: Zum Anbieterbereich
 
+### ✅ Erlaubte Begriffe (Endkunden)
+- **Mittagsbox** (statt Warenkorb)
+- **Abholnummer** (statt Ticket/Abholcode)
+- **"In die Mittagsbox"** (Button in Detailansicht)
+- **"Abholnummer jetzt sichern"** (Checkout-Button)
+- **"Meine Mittagsbox"** (Titel der Cart-View)
+- **"Aktive Abholnummern"** (für bereits bezahlte Bestellungen)
+
 ### ❌ Verbotene Begriffe (Endkunden)
-- Profil anlegen
-- Meine Bestellungen
-- Zur Mittagsbox
-- Bestellen
-- Abholcodes (für Endkunden)
+- Profil anlegen (kein Nutzerkonto)
+- "Meine Bestellungen" (nur "Aktive Abholnummern")
+- "Bestellen" (statt "In die Mittagsbox")
+- "Ticket" oder "Abholcode" (immer "Abholnummer")
 
 ### Anbieter-Dashboard
 - **Erlaubt:** Inserate, Abholung, Kochbuch, Button "Inserat erstellen"
@@ -93,12 +106,18 @@
 - Standort max. **Stadt / Region**
 - Session-basierte Anzeige (z. B. zuletzt angesehen)
 
+### Erlaubt (MVP-Level)
+- **Mittagsbox (Warenkorb):** Session-basiert, LocalStorage
+- **Checkout:** Stripe Checkout für Gerichte mit `hasPickupCode=true`
+- **Abholnummer:** Wird nach Zahlung generiert, angezeigt in `v-pickup-code`
+- **Aktive Abholnummern:** Liste der bezahlten Bestellungen im Profil
+- **Favoriten:** LocalStorage-basiert, keine Registrierung nötig
+
 ### Nicht erlaubt
-- Profil anlegen
-- "Meine Bestellungen"
-- Warenkorb / Box / Checkout
-- Abholcodes für Endkunden
-- Personalisierte Nutzerprofile
+- Profil anlegen / Nutzerkonto
+- "Meine Bestellungen" (nur "Aktive Abholnummern")
+- Personalisierte Nutzerprofile mit Login
+- Abholcodes für Gerichte ohne `hasPickupCode`
 
 ## Code-Qualität & Standards
 
@@ -120,19 +139,42 @@
 ### Design-Standards
 - **Premium Card-Design**: Horizontales Layout (`.dish-card`, 140px Höhe)
 - **Lucide Icons**: Immer `<i data-lucide="icon-name"></i>` verwenden
-- **Nach Rendering**: `lucide.createIcons()` aufrufen
-- **Buttons**: Mindesthöhe 44px (Fat-Finger-Safe), runde Icon-Buttons 34px
+- **Nach Rendering**: `lucide.createIcons()` aufrufen (mit `setTimeout` für dynamische Inhalte)
+- **Buttons**: Mindesthöhe 44px (Fat-Finger-Safe), runde Icon-Buttons 34px, FAB 56px
 - **CTA-Buttons**: `h-16` (64px), `rounded-3xl`, `bg-[#FFD700]`, `text-black`, `font-weight: 900`
+- **Paddings**: Konsistentes 16px-Raster für alle Container
+- **Safe Areas**: `env(safe-area-inset-top/bottom)` für Header und Bottom Nav
+- **Filter-Chips**: Horizontal scrollbar, letztes Element leicht abgeschnitten als Scroll-Hinweis
 
 ### Implementierte Features
+
+**Entdeckung & Navigation:**
 - **Tinder-Swipe**: View-Toggle Liste/Swipe, Touch-Gesten, Haptic Feedback, Match Modal
+- **Floating Action Button (FAB)**: Modus-Wechsel (Liste ↔ Inspiration), Glassmorphism, Puls-Animation
 - **Mittagspausen-Timer**: Gehzeit-Berechnung (5 km/h), "Noch X Min zu Fuß" Badge
 - **Social-Proof**: "Heute schon Xx bestellt" Badge (gelb, users-Icon)
 - **Invite-Feature**: "Ich hole mir heute [Gericht] bei [Metzger] – kommst du mit?"
 - **Skeleton-Screens**: Loading-Placeholder mit pulse-Animation
+- **Sticky Header**: Zwei Ebenen (Quick-Filters + Kategorien), Safe Areas für Samsung S25
+
+**Bestellung & Zahlung:**
+- **Mittagsbox (Warenkorb)**: Session-basiert, LocalStorage, "Meine Mittagsbox" als Titel
+- **Checkout-Flow**: Stripe Checkout für Gerichte mit `hasPickupCode=true`
+- **Abholnummer-System**: Wird nach Zahlung generiert, Format "A1", "B5", etc.
+- **Flexibler Time-Picker**: 15-Minuten-Slots (11:30-14:00), Auto-Auswahl nächster Slot, "Andere Zeit" Option
+- **Trust-Icons**: "Sichere Zahlung", "Ein Anbieter", "Abholnummer sofort"
+
+**Anbieter-Features:**
 - **Foto-KI**: Mock GPT-4o Vision API, Auto-Tagging von Allergenen (ohne Mengenschätzungen)
 - **Ein-Hand-Check-in (USP)**: Große Abholnummern-Kacheln (72px), Tap-to-Complete, Grüner Flash, Sortierung nach Abholzeit
 - **No-Limits Inseratsflow**: Keine Mengenangaben, prominenter "Ausverkauft"/"Noch da" Toggle, active=false Gerichte verschwinden aus Feed
+- **Monetarisierung**: Inseratsgebühr (4,99 €) + All-In Erfolgsgebühr (0,89 € pro Verkauf)
+
+**Design-System:**
+- **Konsistente Paddings**: 16px-Raster für alle Container
+- **Safe Areas**: `env(safe-area-inset-top/bottom)` für moderne Geräte
+- **Weichere Schatten**: `box-shadow: 0 4px 16px rgba(0,0,0,.08)`
+- **Swipe-Cards**: Rand `calc(100% - 32px)`, zentriert, `border-radius: 24px`
 
 ### Projektstruktur
 ```
@@ -155,9 +197,11 @@ mittagio/
 
 ## Golden Rules (für Cursor)
 
-> Wenn sich etwas **wie ein Shop oder Account** anfühlt → **falsch**
+> Wenn sich etwas **wie ein Shop oder Account** anfühlt → **falsch** (außer Checkout-Flow)
 > Wenn ein Klick **nichts tut** → **nicht done**
 > Wenn Endkunde & Anbieter vermischt sind → **Bug**
+> Wenn "Ticket" oder "Abholcode" verwendet wird → **immer "Abholnummer" verwenden**
+> Wenn "Warenkorb" verwendet wird → **immer "Mittagsbox" verwenden**
 
 ## Empfohlener Cursor-Prompt
 
@@ -170,7 +214,34 @@ mittagio/
 - Schnell-Sync: `sync-to-github.bat` (Windows) oder `sync-to-github.sh` (Mac/Linux)
 - Siehe `SYNC_CHECKLIST.md` für Details
 
+## Wichtige Implementierungsdetails
+
+### Checkout-Flow
+- **Route**: `#checkout` → `v-checkout` View
+- **Voraussetzung**: Alle Gerichte im Cart müssen `hasPickupCode=true` haben
+- **Zahlung**: Stripe Checkout (Gastzahlung, E-Mail optional)
+- **Nach Zahlung**: Abholnummer wird generiert, Order-Status → `PAID`
+- **Abholnummer-Anzeige**: `v-pickup-code` View mit großem Code-Display
+
+### Abholnummer-System
+- **Format**: Buchstabe + Zahl (z.B. "A1", "B5", "C2")
+- **Generierung**: `generatePickupCode()` → zufällige Kombination
+- **Zuweisung**: `assignPickupCode(orderId)` → speichert in Order
+- **Anbieter-Dashboard**: Große Kacheln (72px), Tap-to-Complete, grüner Flash
+
+### Mittagsbox (Cart)
+- **LocalStorage**: `LS.cart` mit `{items: [], pickupTime: '', customerName: '', customerEmail: ''}`
+- **Badge**: Zeigt Anzahl der Items in Bottom Nav
+- **Clear Cart**: Mülleimer-Icon mit Bottom-Sheet Bestätigung
+- **Trust-Icons**: "Sichere Zahlung", "Ein Anbieter", "Abholnummer sofort"
+
+### FAB (Floating Action Button)
+- **Position**: `bottom: calc(80px + env(safe-area-inset-bottom) + 20px)`, `right: 16px`
+- **Icon-Wechsel**: `sparkles` (Inspiration) ↔ `list` (Liste)
+- **Animation**: Puls-Effekt beim Klick (`fabPulse` Keyframes)
+- **Micro-Hint**: "Lust auf Inspiration?" beim ersten Start (2 Sekunden)
+
 ---
 
 **Stand:** 26.01.2026  
-**Letzte Aktualisierung:** 24.01.2026 (Kontext-Dateien)
+**Letzte Aktualisierung:** 26.01.2026 (Checkout-Flow, Abholnummer-System, FAB, Design-System)
