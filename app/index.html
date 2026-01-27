@@ -8413,7 +8413,8 @@
         btnOpenRoute.style.display = 'block';
         btnOpenRoute.onclick = () => {
           // Verwende bereits vorhandene addr-Variable für Maps-Link
-          window.open(maps, '_blank');
+          const routeMaps = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr)}`;
+          window.open(routeMaps, '_blank');
         };
       } else {
         btnOpenRoute.style.display = 'none';
