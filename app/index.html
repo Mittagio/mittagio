@@ -95,6 +95,10 @@
       line-height:1.5;
       background:var(--bg);
       color:var(--text);
+      /* Touch-Optimierungen für Mobile */
+      -webkit-tap-highlight-color: transparent;
+      -webkit-touch-callout: none;
+      touch-action: pan-y pinch-zoom; /* Vertikales Scrollen erlauben, horizontales Swipe verhindern */
     }
     a{color:inherit}
 
@@ -1643,6 +1647,43 @@
         gap: 16px !important;
       }
     }
+    
+    /* Responsive Discovery-Grid: Anpassung für verschiedene Bildschirmgrößen */
+    @media (max-width: 374px) {
+      /* Sehr kleine Handys: 1 Spalte */
+      .discover-offers {
+        grid-template-columns: 1fr !important;
+        padding: 12px 8px !important;
+      }
+    }
+    @media (min-width: 375px) and (max-width: 413px) {
+      /* Kleine Handys (iPhone SE, etc.): 1-2 Spalten */
+      .discover-offers {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)) !important;
+        gap: 16px !important;
+      }
+    }
+    @media (min-width: 414px) and (max-width: 767px) {
+      /* Große Handys (iPhone 15 Pro Max, S25, etc.): 2 Spalten */
+      .discover-offers {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 18px !important;
+      }
+    }
+    @media (min-width: 768px) {
+      /* Tablets: 3 Spalten */
+      .discover-offers {
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 20px !important;
+      }
+    }
+    @media (min-width: 1024px) {
+      /* Desktop: 4 Spalten */
+      .discover-offers {
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 24px !important;
+      }
+    }
     .dish-price {
       font-size: 16px;
       font-weight: 700;
@@ -1754,6 +1795,10 @@
       border-radius:4px;
       box-shadow:0 4px 16px rgba(0,0,0,0.15), 0 2px 8px rgba(0,0,0,0.1);
       overflow:visible; cursor:default;
+      /* Touch-Optimierung: Keine Swipe-Gesten auf Karte selbst (nur Buttons) */
+      touch-action: none;
+      -webkit-user-select: none;
+      user-select: none;
       user-select:none; touch-action:none;
       transition:transform .2s ease-out, opacity .2s, box-shadow .2s;
       will-change:transform;
@@ -2047,14 +2092,14 @@
           
           <!-- Search + Ansichts-Umschalter (rechts) -->
           <div style="display:flex; align-items:center; gap:6px; flex-shrink:0; margin-left:auto;">
-            <!-- Search mit Lupe (kompakt) -->
-            <button type="button" id="btnDiscoverSearch" aria-label="Suchen" style="width:36px; height:36px; border-radius:10px; border:none; background:rgba(0,0,0,0.05); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s ease;" onmouseover="this.style.background='rgba(0,0,0,0.1)';" onmouseout="this.style.background='rgba(0,0,0,0.05)';">
-              <i data-lucide="search" style="width:16px;height:16px; color:#666;"></i>
+            <!-- Search mit Lupe (kompakt, Touch-Safe: 44px Minimum) -->
+            <button type="button" id="btnDiscoverSearch" aria-label="Suchen" style="width:44px; height:44px; border-radius:10px; border:none; background:rgba(0,0,0,0.05); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s ease;" onmouseover="this.style.background='rgba(0,0,0,0.1)';" onmouseout="this.style.background='rgba(0,0,0,0.05)';">
+              <i data-lucide="search" style="width:18px;height:18px; color:#666;"></i>
             </button>
-            <!-- Ansichts-Umschalter (Grid/Liste) -->
+            <!-- Ansichts-Umschalter (Grid/Liste, Touch-Safe: 44px Minimum) -->
             <div class="discover-view-toggle-topbar" id="discoverViewToggleTopbar" style="display:flex;">
-              <button type="button" class="toggle-switch" id="toggleDiscoverViewTopbar" aria-label="Ansicht wechseln" style="width:36px; height:36px; border-radius:10px; border:none; background:rgba(0,0,0,0.05); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s ease;" onmouseover="this.style.background='rgba(0,0,0,0.1)';" onmouseout="this.style.background='rgba(0,0,0,0.05)';">
-                <i data-lucide="grid-3x3" id="toggleDiscoverViewIcon" style="width:18px;height:18px; color:#666;"></i>
+              <button type="button" class="toggle-switch" id="toggleDiscoverViewTopbar" aria-label="Ansicht wechseln" style="width:44px; height:44px; border-radius:10px; border:none; background:rgba(0,0,0,0.05); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s ease;" onmouseover="this.style.background='rgba(0,0,0,0.1)';" onmouseout="this.style.background='rgba(0,0,0,0.05)';">
+                <i data-lucide="grid-3x3" id="toggleDiscoverViewIcon" style="width:20px;height:20px; color:#666;"></i>
               </button>
             </div>
           </div>
@@ -5305,7 +5350,18 @@
 
   function showView(id){
     document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
+    const view = document.getElementById(id);
+    if(!view){
+      console.error('View not found:', id);
+      // Fallback zur Discover-Seite
+      const fallbackView = document.getElementById(views.discover || 'v-discover');
+      if(fallbackView){
+        fallbackView.classList.add('active');
+        window.scrollTo({top:0,behavior:'smooth'});
+      }
+      return;
+    }
+    view.classList.add('active');
     window.scrollTo({top:0,behavior:'smooth'});
   }
 
@@ -16380,6 +16436,28 @@
       }
     });
   }
+  
+  // Offline/Online Event-Handler (Fallback-Verhalten)
+  window.addEventListener('online', () => {
+    console.log('Online-Verbindung wiederhergestellt');
+    // Optional: Toast anzeigen
+    if(typeof showToast === 'function'){
+      showToast('Verbindung wiederhergestellt', 2000);
+    }
+    // Optional: Daten neu laden
+    if(mode === 'customer'){
+      renderDiscover();
+    }
+  });
+  
+  window.addEventListener('offline', () => {
+    console.log('Offline-Verbindung erkannt');
+    // Optional: Toast anzeigen
+    if(typeof showToast === 'function'){
+      showToast('Keine Internetverbindung', 3000);
+    }
+    // Hinweis: Service Worker ist deaktiviert, daher keine Offline-Funktionalität
+  });
 
   // Icons nach jedem View-Wechsel aktualisieren
   if(typeof showView !== 'undefined'){
