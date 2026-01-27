@@ -8179,13 +8179,6 @@
       ].filter(Boolean).join(', ');
       addressFullEl.textContent = fullAddr || addr || '-';
     }
-    
-    const btnOpenRoute = document.getElementById('btnOpenRoute');
-    if(btnOpenRoute){
-      btnOpenRoute.onclick = () => {
-        window.open(maps, '_blank');
-      };
-    }
 
     // Allergene (dezent, mit Preview)
     const aw = document.getElementById('sAllergensWrap');
