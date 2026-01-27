@@ -2556,32 +2556,57 @@
       <!-- Footer: Professionalisierung & Branding (zentral) -->
       <div style="margin-top:32px; padding:24px 16px 32px; text-align:center; border-top:2px solid rgba(0,0,0,0.06);">
         <!-- Zentrale Übersicht: FAQs, Impressum, Versionierung -->
-        <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:12px 20px; font-size:13px; margin-bottom:16px;">
-          <a href="#/faq" id="btnProfileFAQ" onclick="showLegalPage('faq'); return false;" style="color:var(--muted); text-decoration:none; font-weight:500;">FAQ</a>
-          <a href="#/impressum" id="btnProfileImpressum" onclick="showLegalPage('impressum'); return false;" style="color:var(--muted); text-decoration:none; font-weight:500;">Impressum</a>
-          <a href="#/datenschutz" id="btnProfileDatenschutz" onclick="showLegalPage('datenschutz'); return false;" style="color:var(--muted); text-decoration:none; font-weight:500;">Datenschutz</a>
-          <a href="#/agb-kurz" id="btnProfileAGB" onclick="showLegalPage('agb-kurz'); return false;" style="color:var(--muted); text-decoration:none; font-weight:500;">AGB</a>
+        <div style="display:flex; flex-direction:column; gap:16px; margin-bottom:20px;">
+          <!-- Kunden-Bereich -->
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <div style="font-size:11px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px;">Kunden</div>
+            <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:12px 20px; font-size:13px;">
+              <a href="#/faq" id="btnProfileFAQ" onclick="showLegalPage('faq'); return false;" style="color:var(--muted); text-decoration:none; font-weight:500;">FAQ</a>
+              <a href="#/impressum" id="btnProfileImpressum" onclick="showLegalPage('impressum'); return false;" style="color:var(--muted); text-decoration:none; font-weight:500;">Impressum</a>
+              <a href="#/datenschutz" id="btnProfileDatenschutz" onclick="showLegalPage('datenschutz'); return false;" style="color:var(--muted); text-decoration:none; font-weight:500;">Datenschutz</a>
+              <a href="#/agb-kurz" id="btnProfileAGB" onclick="showLegalPage('agb-kurz'); return false;" style="color:var(--muted); text-decoration:none; font-weight:500;">AGB</a>
+            </div>
+          </div>
+          
+          <!-- Anbieter-Bereich (nur wenn nicht eingeloggt als Provider) -->
+          <div id="profileFooterProviderSection" style="display:flex; flex-direction:column; gap:8px; padding-top:16px; border-top:1px solid rgba(0,0,0,0.06);">
+            <div style="font-size:11px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px;">Anbieter</div>
+            <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:12px 20px; font-size:13px;">
+              <a href="#/faq-provider" onclick="showLegalPage('faq-provider'); return false;" style="color:var(--muted); text-decoration:none; font-weight:500;">FAQ</a>
+              <a href="#/impressum-provider" onclick="showLegalPage('impressum-provider'); return false;" style="color:var(--muted); text-decoration:none; font-weight:500;">Impressum</a>
+              <a href="#/agb-provider" onclick="showLegalPage('agb-provider'); return false;" style="color:var(--muted); text-decoration:none; font-weight:500;">AGB</a>
+            </div>
+          </div>
         </div>
         
         <!-- Branding-Elemente -->
-        <div style="margin-top:16px; padding-top:16px; border-top:1px solid rgba(0,0,0,0.06);">
+        <div style="margin-top:20px; padding-top:20px; border-top:1px solid rgba(0,0,0,0.06);">
           <div style="font-size:11px; color:var(--muted); line-height:1.6; margin-bottom:8px;">
-            <div style="margin-bottom:4px;">
-              <a href="https://hageo.de" target="_blank" rel="noopener" style="color:var(--muted); text-decoration:none;">hageo.de</a>
-              <span style="margin:0 6px;">·</span>
-              <span>made with helps</span>
-              <span style="margin:0 6px;">·</span>
-              <span>Besteck-Strategie</span>
+            <div style="margin-bottom:6px;">
+              <a href="https://hageo.de" target="_blank" rel="noopener" style="color:var(--muted); text-decoration:none; font-weight:500;">hageo.de</a>
+              <span style="margin:0 8px; color:#cbd5e1;">·</span>
+              <span style="color:var(--muted);">made with helps</span>
+              <span style="margin:0 8px; color:#cbd5e1;">·</span>
+              <span style="color:var(--muted);">Besteck-Strategie</span>
             </div>
-            <div style="font-size:10px; color:#94a3b8; margin-top:8px;">
+            <div style="font-size:10px; color:#94a3b8; margin-top:10px; font-weight:500;">
               Version 1.0.0
             </div>
           </div>
         </div>
         
-        <!-- Kontakt -->
-        <div style="margin-top:12px; font-size:12px; color:var(--muted);">
-          <a href="mailto:info@mittagio.de" style="color:var(--muted); text-decoration:none;">info@mittagio.de</a> (Kunden-Hilfe) | <a href="mailto:support@mittagio.de" style="color:var(--muted); text-decoration:none;">support@mittagio.de</a> (Business)
+        <!-- Kontakt (dezent) -->
+        <div style="margin-top:16px; padding-top:16px; border-top:1px solid rgba(0,0,0,0.06); font-size:11px; color:var(--muted); line-height:1.6;">
+          <div style="margin-bottom:4px;">
+            <a href="mailto:info@mittagio.de" style="color:var(--muted); text-decoration:none;">info@mittagio.de</a>
+            <span style="margin:0 6px; color:#cbd5e1;">·</span>
+            <span>Kunden-Hilfe</span>
+          </div>
+          <div>
+            <a href="mailto:support@mittagio.de" style="color:var(--muted); text-decoration:none;">support@mittagio.de</a>
+            <span style="margin:0 6px; color:#cbd5e1;">·</span>
+            <span>Business</span>
+          </div>
         </div>
       </div>
     </section>
@@ -10528,6 +10553,13 @@
           ecoBadge.style.display = 'none';
         }
       }
+    }
+    
+    // Footer: Anbieter-Bereich anzeigen/verstecken
+    const profileFooterProviderSection = document.getElementById('profileFooterProviderSection');
+    if(profileFooterProviderSection){
+      // Anbieter-Bereich immer anzeigen (auch für nicht eingeloggte Kunden)
+      profileFooterProviderSection.style.display = 'flex';
     }
     
     // Business-Card: Provider-Login Button
