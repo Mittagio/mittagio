@@ -1699,12 +1699,13 @@
       background:#e6b800;
     }
     
-    /* SwipeCard Styles (Tinder-Style) - Premium Modern Design - Zentriert & Optimiert */
+    /* Schiefertafel-Karte: Dunkler Hintergrund, Kreide-Optik */
     .swipe-card{
       position:absolute; top:50%; left:50%; transform:translate(-50%, -50%);
-      background:#fff; border-radius:24px;
-      box-shadow:0 8px 32px rgba(0,0,0,.12), 0 0 0 1px rgba(0,0,0,.04);
-      overflow:hidden; cursor:grab;
+      background:linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+      border-radius:24px;
+      box-shadow:0 8px 32px rgba(0,0,0,.4), 0 0 0 1px rgba(255,255,255,0.1);
+      overflow:hidden; cursor:default;
       user-select:none; touch-action:none;
       transition:transform .2s ease-out, opacity .2s, box-shadow .2s;
       will-change:transform;
@@ -1714,6 +1715,7 @@
       display:flex; flex-direction:column;
       align-items:center;
       box-sizing:border-box;
+      border:2px solid rgba(255,255,255,0.08);
     }
     
     /* Visueller Glow beim Swipe */
@@ -1780,7 +1782,7 @@
     .swipe-card-image-wrapper{
       width:85%; margin-top:16px;
       display:flex; justify-content:center; align-items:center;
-      background:#fff;
+      background:transparent;
     }
     .swipe-card-image{
       width:100%; aspect-ratio:1;
@@ -1797,14 +1799,16 @@
       width:100%; padding:16px 20px 20px;
       display:flex; flex-direction:column;
       align-items:center;
-      background:#fff;
+      background:transparent;
       text-align:center;
     }
     .swipe-card-title{
       font-size:28px; font-weight:900;
       margin:0 0 12px; line-height:1.2;
-      color:#111;
+      color:#fff;
       font-family:'Inter', 'Montserrat', sans-serif;
+      text-shadow:0 2px 4px rgba(0,0,0,0.3);
+      letter-spacing:-0.5px;
     }
     /* Preis und Anbieter zentriert */
     .swipe-card-price-info{
@@ -1814,11 +1818,13 @@
     }
     .swipe-card-price{
       font-size:24px; font-weight:900;
-      color:#1e293b; letter-spacing:-0.5px;
+      color:var(--brand);
+      letter-spacing:-0.5px;
       line-height:1.2;
+      text-shadow:0 2px 4px rgba(0,0,0,0.3);
     }
     .swipe-card-provider{
-      font-size:14px; color:#64748b;
+      font-size:14px; color:rgba(255,255,255,0.8);
       margin:0; font-weight:500;
       display:flex; align-items:center; justify-content:center; gap:4px;
     }
@@ -2062,13 +2068,26 @@
       
       <!-- Swipe-Stack (Tinder-Style) -->
       <div id="discoverSwipe" style="display:none; position:relative; height:75vh; min-height:480px; max-height:600px; margin:0 auto; padding:12px 0;">
-        <!-- Debug-Overlay: Bild-Index oben rechts -->
-        <div id="swipeDebugOverlay" style="position:absolute; top:16px; right:16px; z-index:1000; background:rgba(0,0,0,0.7); color:#fff; padding:8px 12px; border-radius:12px; font-size:12px; font-weight:700; font-family:monospace;">
-          Bild-Index: <span id="swipeCurrentIndex">0</span>
+        <!-- Exit-Button (X) oben rechts -->
+        <button type="button" id="btnSwipeExit" style="position:absolute; top:16px; right:16px; z-index:1000; width:40px; height:40px; border-radius:50%; border:2px solid rgba(255,255,255,0.3); background:rgba(0,0,0,0.4); color:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s ease; backdrop-filter:blur(8px);" onmouseover="this.style.background='rgba(255,255,255,0.2)'; this.style.borderColor='rgba(255,255,255,0.5)';" onmouseout="this.style.background='rgba(0,0,0,0.4)'; this.style.borderColor='rgba(255,255,255,0.3)';">
+          <i data-lucide="x" style="width:20px;height:20px;"></i>
+        </button>
+        
+        <div id="swipeStack" style="position:relative; width:100%; height:calc(100% - 80px); display:flex; align-items:center; justify-content:center; padding-bottom:80px;">
+          <!-- Schiefertafel-Karten werden hier eingefügt -->
         </div>
         
-        <div id="swipeStack" style="position:relative; width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
-          <!-- SwipeCards werden hier eingefügt -->
+        <!-- Action-Buttons: Rot (Keine Lust) | Mitte (Nächstes) | Grün (Will ich) -->
+        <div id="swipeActionButtons" style="position:absolute; bottom:20px; left:50%; transform:translateX(-50%); display:flex; gap:16px; align-items:center; z-index:100;">
+          <button type="button" id="btnSwipeReject" class="swipe-action-btn swipe-action-btn-reject" style="width:64px; height:64px; border-radius:50%; border:none; background:#E34D4D; color:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s ease; box-shadow:0 4px 12px rgba(227,77,77,0.4);">
+            <i data-lucide="x" style="width:28px;height:28px;"></i>
+          </button>
+          <button type="button" id="btnSwipeNext" class="swipe-action-btn" style="width:56px; height:56px; border-radius:50%; border:2px solid rgba(255,255,255,0.3); background:rgba(255,255,255,0.1); color:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s ease; backdrop-filter:blur(8px);">
+            <i data-lucide="skip-forward" style="width:24px;height:24px;"></i>
+          </button>
+          <button type="button" id="btnSwipeLike" class="swipe-action-btn swipe-action-btn-like" style="width:64px; height:64px; border-radius:50%; border:none; background:#27AE60; color:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s ease; box-shadow:0 4px 12px rgba(39,174,96,0.4);">
+            <i data-lucide="heart" style="width:28px;height:28px;"></i>
+          </button>
         </div>
         
         <!-- End-of-Stack Karte (wenn alle Gerichte durchgesehen wurden) -->
@@ -6197,48 +6216,38 @@
     
     const imgSrc = data.imageUrl || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70';
     
-    // Service-Label prüfen (Express vs. Nur Info)
-    const hasAbholnummer = data.hasPickupCode || false;
-    const serviceLabel = hasAbholnummer 
-      ? {text: 'Express-Abholung', icon: '⚡', color: '#27AE60', bg: 'rgba(39,174,96,0.15)', border: 'rgba(39,174,96,0.3)'}
-      : {text: 'Nur Info', icon: '👁️', color: '#64748b', bg: 'rgba(100,116,139,0.1)', border: 'rgba(100,116,139,0.2)'};
-    
-    // Badges (nur Abholnummer, keine "Vor Ort" Referenzen)
-    const badges = [];
+    // Prüfe Provider-Daten für Badges
     const offerProvider = offers.find(p => p.providerId === data.providerId);
     const orderingEnabled = offerProvider && (offerProvider.orderingEnabled !== false && (data.hasPickupCode || offerProvider.hasPickupCode));
-    if(orderingEnabled) badges.push(`<span class="swipe-card-badge code">Abholnummer</span>`);
+    const hasReuseSupport = offerProvider && (offerProvider.reuseEnabled || offerProvider.reuse || (offerProvider.providerProfile && offerProvider.providerProfile.reuseEnabled));
+    const hasDineIn = data.dineInPossible || false;
     
-    // Meta-Info
-    const metaInfo = [];
-    if(data.pickupWindow) metaInfo.push(`<span style="display:flex;align-items:center;gap:4px;font-size:14px;color:#666;">${iconMarkup('clock')} ${esc(data.pickupWindow)}</span>`);
-    if(data.distanceKm != null) metaInfo.push(`<span style="display:flex;align-items:center;gap:4px;font-size:14px;color:#666;">${iconMarkup('map-pin')} ${Number(data.distanceKm).toFixed(1)} km</span>`);
-    
-    // Onboarding-Hilfe: Nur beim ersten Start (3 Sekunden anzeigen)
-    const isFirstSwipe = !load(LS.swipeOnboardingShown, false);
-    const onboardingHint = isFirstSwipe ? `
-      <div class="swipe-onboarding-hint show" id="swipeOnboardingHint">
-        <div class="swipe-onboarding-hint-left">
-          <span>←</span>
-          <span>Wegwischen</span>
+    // 3 Badge-Säulen: Vor Ort, Mehrweg, Abholnummer verfügbar
+    const badgePillars = `
+      <div style="display:flex; justify-content:center; align-items:center; gap:24px; margin-top:16px; padding:12px 0;">
+        <!-- Säule 1: Vor Ort -->
+        <div style="display:flex; flex-direction:column; align-items:center; gap:4px;">
+          <div style="width:48px; height:48px; border-radius:50%; background:rgba(255,255,255,0.1); border:2px solid rgba(255,255,255,0.2); display:flex; align-items:center; justify-content:center; backdrop-filter:blur(8px);">
+            <i data-lucide="map-pin" style="width:24px;height:24px; color:#fff;"></i>
+          </div>
         </div>
-        <div class="swipe-onboarding-hint-right">
-          <span>Speichern</span>
-          <span>→</span>
+        <!-- Säule 2: Mehrweg -->
+        <div style="display:flex; flex-direction:column; align-items:center; gap:4px;">
+          <div style="width:48px; height:48px; border-radius:50%; background:${hasReuseSupport ? 'rgba(39,174,96,0.2)' : 'rgba(255,255,255,0.05)'}; border:2px solid ${hasReuseSupport ? 'rgba(39,174,96,0.4)' : 'rgba(255,255,255,0.1)'}; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(8px);">
+            <i data-lucide="refresh-cw" style="width:24px;height:24px; color:${hasReuseSupport ? '#27AE60' : 'rgba(255,255,255,0.4)'};"></i>
+          </div>
+        </div>
+        <!-- Säule 3: Abholnummer verfügbar -->
+        <div style="display:flex; flex-direction:column; align-items:center; gap:4px;">
+          <div style="width:48px; height:48px; border-radius:50%; background:${orderingEnabled ? 'rgba(255,215,0,0.2)' : 'rgba(255,255,255,0.05)'}; border:2px solid ${orderingEnabled ? 'rgba(255,215,0,0.4)' : 'rgba(255,255,255,0.1)'}; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(8px);">
+            <i data-lucide="hash" style="width:24px;height:24px; color:${orderingEnabled ? 'var(--brand)' : 'rgba(255,255,255,0.4)'};"></i>
+          </div>
         </div>
       </div>
-    ` : '';
+    `;
     
     card.innerHTML = `
-      ${onboardingHint}
-      <div class="swipe-overlay left" style="display:none; opacity:0;">NÄCHSTES GERICHT</div>
-      <div class="swipe-overlay right" style="display:none; opacity:0;">AUF SPEISEPLAN</div>
       <div class="swipe-card-image-wrapper">
-        <!-- Service-Label (oben links auf Bild) -->
-        <div style="position:absolute; top:12px; left:12px; background:${serviceLabel.bg}; border:1px solid ${serviceLabel.border}; color:${serviceLabel.color}; padding:6px 10px; border-radius:8px; font-size:11px; font-weight:700; display:flex; align-items:center; gap:4px; box-shadow:0 2px 8px rgba(0,0,0,0.25); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); z-index:10; white-space:nowrap;">
-          <span style="font-size:12px;">${serviceLabel.icon}</span>
-          <span>${serviceLabel.text}</span>
-        </div>
         <div class="swipe-card-image">
           <img src="${esc(imgSrc)}" alt="${esc(data.dish||'')}" />
         </div>
@@ -6247,35 +6256,123 @@
         <h2 class="swipe-card-title">${esc(data.dish||'Gericht')}</h2>
         <div class="swipe-card-price-info">
           <span class="swipe-card-price">${euro(data.price)}</span>
-          <p class="swipe-card-provider" style="cursor:pointer; text-decoration:underline; text-decoration-color:rgba(0,0,0,0.2); transition:opacity 0.2s ease; display:flex; align-items:center; gap:4px;" onmouseover="this.style.opacity='0.7';" onmouseout="this.style.opacity='1';" onclick="event.stopPropagation(); const providerId='${esc(data.providerId||'')}'; if(providerId){ activeDiscoverFilter='provider'; currentProviderFilter=providerId; renderDiscover(); switchDiscoverView('list'); showToast('Angebote von ${esc(data.providerName||'Anbieter')}'); } else { showToast('Anbieter-Informationen nicht verfügbar'); }"><i data-lucide="store" style="width:14px;height:14px;"></i> <span>${esc(data.providerName||'Anbieter')}</span></p>
+          <p class="swipe-card-provider" style="cursor:pointer; transition:opacity 0.2s ease; display:flex; align-items:center; gap:4px;" onmouseover="this.style.opacity='0.7';" onmouseout="this.style.opacity='1';" onclick="event.stopPropagation(); const providerId='${esc(data.providerId||'')}'; if(providerId){ activeDiscoverFilter='provider'; currentProviderFilter=providerId; renderDiscover(); switchDiscoverView('list'); showToast('Angebote von ${esc(data.providerName||'Anbieter')}'); } else { showToast('Anbieter-Informationen nicht verfügbar'); }"><i data-lucide="store" style="width:14px;height:14px;"></i> <span>${esc(data.providerName||'Anbieter')}</span></p>
         </div>
-        ${badges.length ? `<div class="swipe-card-badges">${badges.join('')}</div>` : ''}
-        ${metaInfo.length ? `<div class="swipe-card-meta">${metaInfo.join('')}</div>` : ''}
+        ${badgePillars}
       </div>
     `;
     
-    // Touch-Gesten
-    let startX = 0, startY = 0, currentX = 0, currentY = 0;
-    let isDragging = false;
-    const SWIPE_THRESHOLD = 100;
-    const ROTATION_FACTOR = 0.15; // Rotation pro Pixel (erhöht für mehr Rotation)
-    const MAX_ROTATION = 25; // Max 25 Grad Rotation
-    
-    // Onboarding-Hilfe: Nach 3 Sekunden automatisch ausblenden
-    if(isFirstSwipe){
-      setTimeout(() => {
-        const onboardingHint = card.querySelector('#swipeOnboardingHint');
-        if(onboardingHint){
-          onboardingHint.style.opacity = '0';
-          setTimeout(() => {
-            if(onboardingHint.parentNode) onboardingHint.remove();
-          }, 300);
-          save(LS.swipeOnboardingShown, true);
-        }
-      }, 3000);
+    // Icons aktualisieren
+    if(typeof lucide !== 'undefined'){
+      setTimeout(() => lucide.createIcons(), 50);
     }
     
-    card.addEventListener('touchstart', (e) => {
+    return card;
+  }
+  
+  // Button-Handler für Schiefertafel-Modus (Button-basiert, keine Swipe-Gesten)
+  function setupSwipeButtons(){
+    // Exit-Button (X oben rechts)
+    const btnExit = document.getElementById('btnSwipeExit');
+    if(btnExit){
+      btnExit.onclick = () => {
+        switchDiscoverView('list');
+        showToast('Zur Listenansicht gewechselt');
+      };
+    }
+    
+    // Rot-Button: Keine Lust
+    const btnReject = document.getElementById('btnSwipeReject');
+    if(btnReject){
+      btnReject.onclick = () => {
+        const swipeStack = document.getElementById('swipeStack');
+        if(!swipeStack) return;
+        const allCards = Array.from(swipeStack.querySelectorAll('.swipe-card')).filter(c => 
+          c && c.parentNode && c.style && c.style.opacity !== '0' && 
+          !c.classList.contains('swipe-left') && !c.classList.contains('swipe-right')
+        );
+        if(allCards.length === 0) return;
+        const currentCard = allCards[0];
+        if(!currentCard || !currentCard.dataset) return;
+        const offerId = currentCard.dataset.offerId;
+        const offer = offers.find(o => o.id === offerId);
+        if(offer){
+          triggerHapticFeedback([15]);
+          handleSwipeLeft(offer);
+          currentCard.classList.add('swipe-left');
+          currentCard.style.transform = 'translate(calc(-50% - 50vw), -50%) rotate(-10deg)';
+          currentCard.style.opacity = '0';
+          setTimeout(() => {
+            if(currentCard.parentNode) currentCard.remove();
+            currentSwipeIndex++;
+            showNextSwipeCard();
+          }, 200);
+        }
+      };
+    }
+    
+    // Mitte-Button: Nächstes Gericht
+    const btnNext = document.getElementById('btnSwipeNext');
+    if(btnNext){
+      btnNext.onclick = () => {
+        const swipeStack = document.getElementById('swipeStack');
+        if(!swipeStack) return;
+        const allCards = Array.from(swipeStack.querySelectorAll('.swipe-card')).filter(c => 
+          c && c.parentNode && c.style && c.style.opacity !== '0' && 
+          !c.classList.contains('swipe-left') && !c.classList.contains('swipe-right')
+        );
+        if(allCards.length === 0) return;
+        const currentCard = allCards[0];
+        if(!currentCard || !currentCard.dataset) return;
+        triggerHapticFeedback([10]);
+        currentCard.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+        currentCard.style.transform = 'translate(-50%, calc(-50% - 20px))';
+        currentCard.style.opacity = '0';
+        setTimeout(() => {
+          if(currentCard.parentNode) currentCard.remove();
+          currentSwipeIndex++;
+          showNextSwipeCard();
+        }, 300);
+      };
+    }
+    
+    // Grün-Button: Will ich
+    const btnLike = document.getElementById('btnSwipeLike');
+    if(btnLike){
+      btnLike.onclick = () => {
+        const swipeStack = document.getElementById('swipeStack');
+        if(!swipeStack) return;
+        const allCards = Array.from(swipeStack.querySelectorAll('.swipe-card')).filter(c => 
+          c && c.parentNode && c.style && c.style.opacity !== '0' && 
+          !c.classList.contains('swipe-left') && !c.classList.contains('swipe-right')
+        );
+        if(allCards.length === 0) return;
+        const currentCard = allCards[0];
+        if(!currentCard || !currentCard.dataset) return;
+        const offerId = currentCard.dataset.offerId;
+        const offer = offers.find(o => o.id === offerId);
+        if(offer){
+          triggerHapticFeedback([15]);
+          handleSwipeRight(offer);
+          currentCard.classList.add('swipe-right');
+          currentCard.style.transform = 'translate(calc(-50% + 50vw), -50%) rotate(10deg)';
+          currentCard.style.opacity = '0';
+          setTimeout(() => {
+            if(currentCard.parentNode) currentCard.remove();
+            currentSwipeIndex++;
+            showNextSwipeCard();
+          }, 200);
+        }
+      };
+    }
+    
+    // Icons aktualisieren
+    if(typeof lucide !== 'undefined'){
+      setTimeout(() => lucide.createIcons(), 50);
+    }
+  }
+  
+  // Alte Swipe-Gesten wurden entfernt - jetzt nur noch Button-basierte Interaktion
       // CRITICAL FIX: Prüfe dynamisch ob diese Karte die oberste ist
       const swipeStack = document.getElementById('swipeStack');
       if(!swipeStack) return;
