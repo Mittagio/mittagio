@@ -409,7 +409,7 @@
       font-weight:700;
     }
     .card-status-badge.code .ico-inline{color:#b8860b}
-    /* Vor Ort Badge: weiche grüne Füllung */
+    /* Badge-Styles (Vor Ort entfernt - nur Abholnummer) */
     .card-status-badge.dine{
       background:rgba(31,157,85,.12); color:#1f9d55;
     }
@@ -4268,7 +4268,7 @@
    * @property {number} quantity
    * @property {number} unitPrice - in cents
    * @property {number} total - in cents
-   * @property {'PICKUP'|'DINE_IN'} fulfillType
+   * @property {'PICKUP'} fulfillType - Immer "Zum Mitnehmen" (keine Vor-Ort-Option)
    * @property {string} [etaTime]
    * @property {'CREATED'|'PAYMENT_PENDING'|'PAID'|'CANCELLED'|'COMPLETED'|'PICKED_UP'} status
    * @property {'EUR'} currency
@@ -4704,7 +4704,7 @@
           reuse: {enabled: false, deposit: 0},
           photoData: template.img,
           hasPickupCode: true,
-          dineInPossible: true,
+          dineInPossible: false, // Keine Vor-Ort-Option - nur Abholnummer
           createdAt: Date.now() - (pIdx * 86400000) - (dIdx * 3600000),
           lastUsed: Date.now() - (pIdx * 86400000) - (dIdx * 3600000)
         });
@@ -4725,7 +4725,7 @@
           day: today,
           imageUrl: template.img,
           hasPickupCode: true,
-          dineInPossible: true,
+          dineInPossible: false, // Keine Vor-Ort-Option - nur Abholnummer
           allergens: [],
           extras: [],
           reuse: {enabled: false, deposit: 0},
@@ -15057,21 +15057,9 @@
         options.appendChild(hintBox);
       }
 
-      const dineLabel=document.createElement('div');
-      dineLabel.className='hint';
-      dineLabel.textContent='Vor Ort essen möglich';
-      const dineRow=document.createElement('div'); dineRow.className='answers';
-      const dineYes=document.createElement('button'); dineYes.type='button'; dineYes.className='ans'+(w.data.dineInPossible?' on':''); dineYes.textContent='Ja';
-      const dineNo=document.createElement('button'); dineNo.type='button'; dineNo.className='ans'+(!w.data.dineInPossible?' on':''); dineNo.textContent='Nein';
-      dineYes.onclick=()=>{ w.data.dineInPossible=true; rebuildWizard(); };
-      dineNo.onclick=()=>{ w.data.dineInPossible=false; rebuildWizard(); };
-      dineRow.appendChild(dineYes); dineRow.appendChild(dineNo);
-
+      // "Vor Ort essen" Option entfernt - nur Abholnummer möglich
       options.appendChild(codeLabel);
       options.appendChild(codeRow);
-      options.appendChild(document.createElement('div')).style.height='6px';
-      options.appendChild(dineLabel);
-      options.appendChild(dineRow);
       box.appendChild(options);
 
       const actions=document.createElement('div');
