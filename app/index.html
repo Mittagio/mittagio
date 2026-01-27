@@ -11,10 +11,11 @@
   <link rel="apple-touch-icon" href="assets/icons/icon-192.png" />
   <script src="https://unpkg.com/lucide@latest" onload="if(typeof lucide !== 'undefined') lucide.createIcons();"></script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Montserrat:wght@400;600;700;900&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Montserrat:wght@400;600;700;900&family=Kalam:wght@400;700&display=swap');
     :root{
       /* Mittagio High-End Farbpalette */
-      --bg:#F7F6F0;
+      --bg:#F7F6F0; /* Standard-Hintergrund */
+      --bg-polaroid:#E8E0D6; /* Gebleichte Eiche (Polaroid-Discovery Hintergrund) */
       --card:#FFFFFF;
       --text:#334155;   /* Slate Grey - edler als reines Schwarz */
       --muted:#6b6b6b;
@@ -298,6 +299,17 @@
       position:relative;
       margin-bottom:16px;
     }
+    /* Polaroid-Discovery: Weiße Polaroid-Rahmen mit Schlagschatten */
+    .card.polaroid{
+      background:#FFFFFF;
+      border:1px solid rgba(255,255,255,0.8);
+      border-radius:4px;
+      box-shadow:0 8px 24px rgba(0,0,0,0.15), 0 2px 8px rgba(0,0,0,0.1);
+      padding:12px 12px 20px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+    }
     .card.playful{
       border-color:rgba(242,183,5,.38);
       box-shadow:0 12px 26px rgba(242,183,5,.18);
@@ -309,6 +321,24 @@
     .card.playful .tag{background:rgba(242,183,5,.25)}
     .img{aspect-ratio:16/9; height:auto; min-height:120px; max-height:140px; background:#eee; position:relative; overflow:hidden; border-radius:20px 20px 0 0}
     .img img{width:100%; height:100%; object-fit:cover; display:block}
+    /* Polaroid: Quadratisches Bild */
+    .card.polaroid .img{
+      aspect-ratio:1/1;
+      width:100%;
+      max-width:100%;
+      height:auto;
+      min-height:auto;
+      max-height:none;
+      border-radius:2px;
+      position:relative;
+      overflow:visible;
+    }
+    .card.polaroid .img img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
 
     .provider-logo{
       display:flex; align-items:center; gap:8px;
@@ -1419,9 +1449,27 @@
     
     /* Angebots-Liste Container (kompakt) */
     .discover-offers{
-      max-width:980px; margin:0 auto; padding:8px 10px 16px;
-      display:flex; flex-direction:column; gap:8px;
+      max-width:980px; margin:0 auto; padding:16px 12px;
+      display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:20px;
       box-sizing:border-box;
+    }
+    /* Polaroid-Karten: Zufällige Rotation für natürlichen Look */
+    .card.polaroid{
+      transform:rotate(0deg);
+      transition:transform 0.3s ease;
+    }
+    .card.polaroid:nth-child(3n+1){
+      transform:rotate(-1.5deg);
+    }
+    .card.polaroid:nth-child(3n+2){
+      transform:rotate(1deg);
+    }
+    .card.polaroid:nth-child(3n+3){
+      transform:rotate(-0.8deg);
+    }
+    .card.polaroid:hover{
+      transform:rotate(0deg) scale(1.02);
+      z-index:10;
     }
     .discover-list-card{
       display:flex; gap:12px; padding:12px;
@@ -1991,27 +2039,19 @@
     </section>
 
     <!-- CUSTOMER: Discover - App-like UX (Final Spec) -->
-    <section class="view active" id="v-discover">
-      <!-- Header: Sticky mit Logo, Standort & Ansichts-Umschalter -->
-      <div class="discover-header-sticky">
-        <!-- Ebene 1: Logo + Standort + Search + Ansichts-Umschalter -->
+    <section class="view active" id="v-discover" style="background:var(--bg-polaroid);">
+      <!-- Header: Sticky mit Logo zentriert, Standort links, Suche/Grid rechts -->
+      <div class="discover-header-sticky" style="background:rgba(232,224,214,0.92); backdrop-filter:saturate(160%) blur(8px); -webkit-backdrop-filter:saturate(160%) blur(8px);">
+        <!-- Ebene 1: Standort links | Logo zentriert | Search/Grid rechts -->
         <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 12px; gap:8px;">
-          <!-- Logo & Marke (links) -->
-          <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
-            <div class="brand-badge" style="width:32px; height:32px; border-radius:8px; overflow:hidden; display:flex; align-items:center; justify-content:center; background:var(--brand);">
-              <img src="assets/mittagio-logo.png" alt="Mittagio" style="width:24px;height:24px;" onerror="this.style.display='none'; this.parentElement.innerHTML='<span style=\'font-weight:900; font-size:18px; color:#1a1a1a;\'>M</span>';" />
-            </div>
-            <span style="font-weight:900; font-size:16px; color:#1a1a1a; letter-spacing:-0.3px;">MITTAGIO</span>
-          </div>
-          
-          <!-- Standort-Autofill-Suche (expandierbar) -->
-          <div style="flex:1; max-width:200px; position:relative;">
-            <button class="discover-location-pill-clickable" type="button" id="btnDiscoverLocationToggle" style="width:100%; display:flex; align-items:center; gap:6px; padding:6px 12px; border-radius:16px; background:rgba(0,0,0,.04); border:1px solid rgba(0,0,0,.08); font-size:13px; font-weight:600; color:#333; cursor:pointer; transition:all 0.2s ease; justify-content:center;">
-              <i data-lucide="map-pin" style="width:14px;height:14px; color:#666; flex-shrink:0;"></i>
+          <!-- Standort (links) -->
+          <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
+            <i data-lucide="map-pin" style="width:16px;height:16px; color:#666;"></i>
+            <button class="discover-location-pill-clickable" type="button" id="btnDiscoverLocationToggle" style="display:flex; align-items:center; gap:4px; padding:6px 12px; border-radius:16px; background:rgba(0,0,0,.04); border:1px solid rgba(0,0,0,.08); font-size:13px; font-weight:600; color:#333; cursor:pointer; transition:all 0.2s ease;">
               <span id="discoverCurrentLocation" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">Jena</span>
             </button>
             <!-- Expandiertes Standort-Input mit Autofill (versteckt) -->
-            <div id="discoverLocationExpanded" style="display:none; position:absolute; top:100%; left:0; right:0; margin-top:4px; z-index:100; background:#fff; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.15); border:1px solid rgba(0,0,0,0.1); overflow:hidden;">
+            <div id="discoverLocationExpanded" style="display:none; position:absolute; top:100%; left:0; margin-top:4px; z-index:100; background:#fff; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.15); border:1px solid rgba(0,0,0,0.1); overflow:hidden; min-width:200px;">
               <div style="padding:8px;">
                 <input type="text" id="discoverLocationInput" placeholder="Ort oder PLZ eingeben..." autocomplete="address-line2" style="width:100%; padding:10px 12px; border-radius:8px; border:2px solid rgba(0,0,0,0.1); font-size:14px; background:#fff; outline:none; transition:border-color 0.2s ease;" onfocus="this.style.borderColor='#FFD700';" onblur="this.style.borderColor='rgba(0,0,0,0.1)';" />
                 <!-- Autofill-Vorschläge Container -->
@@ -2020,8 +2060,16 @@
             </div>
           </div>
           
+          <!-- MITTAGIO-Logo (zentriert) -->
+          <div style="position:absolute; left:50%; transform:translateX(-50%); display:flex; align-items:center; gap:8px;">
+            <div class="brand-badge" style="width:32px; height:32px; border-radius:8px; overflow:hidden; display:flex; align-items:center; justify-content:center; background:var(--brand);">
+              <img src="assets/mittagio-logo.png" alt="Mittagio" style="width:24px;height:24px;" onerror="this.style.display='none'; this.parentElement.innerHTML='<span style=\'font-weight:900; font-size:18px; color:#1a1a1a;\'>M</span>';" />
+            </div>
+            <span style="font-weight:900; font-size:16px; color:#1a1a1a; letter-spacing:-0.3px;">MITTAGIO</span>
+          </div>
+          
           <!-- Search + Ansichts-Umschalter (rechts) -->
-          <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
+          <div style="display:flex; align-items:center; gap:6px; flex-shrink:0; margin-left:auto;">
             <!-- Search mit Lupe (kompakt) -->
             <button type="button" id="btnDiscoverSearch" aria-label="Suchen" style="width:36px; height:36px; border-radius:10px; border:none; background:rgba(0,0,0,0.05); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s ease;" onmouseover="this.style.background='rgba(0,0,0,0.1)';" onmouseout="this.style.background='rgba(0,0,0,0.05)';">
               <i data-lucide="search" style="width:16px;height:16px; color:#666;"></i>
@@ -6135,9 +6183,8 @@
         emptyEl.style.display = list.length ? 'none' : 'block';
         
         list.forEach(o=> {
-          const card = createDiscoverListCard(o);
-          // Match-Screen Trigger: Bei Rechts-Swipe (für später, wenn Swipe-System implementiert wird)
-          // Hier können wir einen Test-Button hinzufügen für Demo-Zwecke
+          // Polaroid-Discovery: Verwende offerCard mit context 'discover' für Polaroid-Design
+          const card = offerCard(o, {context: 'discover', interactive: true});
           offersEl.appendChild(card);
         });
         
@@ -7611,9 +7658,12 @@
   function offerCard(o, opts={}){
     const data = normalizeOffer(o);
     const interactive = opts.interactive !== false;
+    const isPolaroid = opts.context === 'customer' || opts.context === 'discover';
     const card=document.createElement('div');
     card.className='card';
-    if(opts.context === 'start' || opts.context === 'customer'){
+    if(isPolaroid){
+      card.classList.add('polaroid');
+    } else if(opts.context === 'start' || opts.context === 'customer'){
       card.classList.add('playful');
     }
     if(interactive){
@@ -7622,11 +7672,35 @@
       card.style.cursor='default';
     }
 
-    // Image
+    // Image (Polaroid: Quadratisch)
     const img=document.createElement('div');
     img.className='img';
     const imgSrc = data.imageUrl || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70';
     img.innerHTML = `<img alt="${esc(data.dish||'')}" src="${esc(imgSrc)}" />`;
+    
+    // Preis-Sticker: Grüner, runder Sticker direkt auf dem Foto (rechts unten)
+    if(isPolaroid){
+      const priceSticker = document.createElement('div');
+      priceSticker.style.position = 'absolute';
+      priceSticker.style.bottom = '8px';
+      priceSticker.style.right = '8px';
+      priceSticker.style.width = '56px';
+      priceSticker.style.height = '56px';
+      priceSticker.style.borderRadius = '50%';
+      priceSticker.style.background = '#27AE60';
+      priceSticker.style.border = '3px solid #fff';
+      priceSticker.style.display = 'flex';
+      priceSticker.style.alignItems = 'center';
+      priceSticker.style.justifyContent = 'center';
+      priceSticker.style.fontWeight = '900';
+      priceSticker.style.fontSize = '14px';
+      priceSticker.style.color = '#fff';
+      priceSticker.style.boxShadow = '0 2px 8px rgba(0,0,0,0.2)';
+      priceSticker.style.zIndex = '10';
+      priceSticker.textContent = euro(data.price);
+      img.style.position = 'relative';
+      img.appendChild(priceSticker);
+    }
 
     // Heart Icon (Favorit) - rechts oben (kein Text, nur Icon)
     const dishKey = data.id;
@@ -7641,14 +7715,35 @@
     const body=document.createElement('div');
     body.className='body';
     
-    // Titelzeile: Dish name (max 2 Zeilen)
-    const titleRow = document.createElement('div');
-    titleRow.className='card-title-row';
-    const title = document.createElement('h3');
-    title.className='card-title';
-    title.textContent = data.dish || 'Gericht';
-    titleRow.appendChild(title);
-    body.appendChild(titleRow);
+    // Polaroid: Gerichtname in Marker-Schrift (Handschrift-Stil) auf weißem Polaroid-Rand
+    if(isPolaroid){
+      const titleRow = document.createElement('div');
+      titleRow.style.marginTop = '16px';
+      titleRow.style.width = '100%';
+      titleRow.style.textAlign = 'center';
+      const title = document.createElement('h3');
+      title.style.fontFamily = "'Kalam', 'Comic Sans MS', 'Marker Felt', cursive";
+      title.style.fontWeight = '700';
+      title.style.fontSize = '18px';
+      title.style.color = '#000';
+      title.style.textTransform = 'none';
+      title.style.letterSpacing = '0.5px';
+      title.style.lineHeight = '1.3';
+      title.style.margin = '0';
+      title.style.padding = '0 8px';
+      title.textContent = data.dish || 'Gericht';
+      titleRow.appendChild(title);
+      body.appendChild(titleRow);
+    } else {
+      // Standard-Titelzeile: Dish name (max 2 Zeilen)
+      const titleRow = document.createElement('div');
+      titleRow.className='card-title-row';
+      const title = document.createElement('h3');
+      title.className='card-title';
+      title.textContent = data.dish || 'Gericht';
+      titleRow.appendChild(title);
+      body.appendChild(titleRow);
+    }
     
     // Anbieter: Kurzform mit Store-Icon (klickbar)
     const providerEl = document.createElement('p');
@@ -7730,11 +7825,13 @@
       body.appendChild(badgesRow);
     }
     
-    // Preis: Groß & prominent, Markenfarbe
-    const price = document.createElement('div');
-    price.className='card-price';
-    price.textContent = euro(data.price);
-    body.appendChild(price);
+    // Preis: Nur bei Nicht-Polaroid (bei Polaroid ist Preis auf dem Bild)
+    if(!isPolaroid){
+      const price = document.createElement('div');
+      price.className='card-price';
+      price.textContent = euro(data.price);
+      body.appendChild(price);
+    }
     
     // Info-Zeile als Icon-Badges (eine Zeile, max 4 Icons, nur Icons + Zahlen)
     const infoRow = document.createElement('div');
