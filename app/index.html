@@ -10546,7 +10546,20 @@
       } else {
         // Nicht eingeloggt: "Jetzt als Anbieter einloggen" Button
         btnProviderBusinessLoginText.textContent = 'Jetzt als Anbieter einloggen';
-        btnProviderBusinessLogin.innerHTML = `<i data-lucide="log-in" style="width:22px;height:22px;"></i> <span>Jetzt als Anbieter einloggen</span>`;
+        // Icon aktualisieren ohne innerHTML (um Handler nicht zu überschreiben)
+        const iconEl = btnProviderBusinessLogin.querySelector('i[data-lucide="log-in"]');
+        if(iconEl) {
+          iconEl.style.width = '22px';
+          iconEl.style.height = '22px';
+        } else {
+          // Falls Icon fehlt, nur das Icon hinzufügen
+          const existingIcon = btnProviderBusinessLogin.querySelector('i');
+          if(existingIcon) {
+            existingIcon.setAttribute('data-lucide', 'log-in');
+            existingIcon.style.width = '22px';
+            existingIcon.style.height = '22px';
+          }
+        }
         // Handler sicher setzen und Event-Propagation verhindern
         btnProviderBusinessLogin.onclick = (e) => {
           e.preventDefault();
@@ -10554,8 +10567,6 @@
           triggerHapticFeedback([10]);
           showProviderLoginModal();
         };
-        // Zusätzlich: Sicherstellen dass der Handler nicht überschrieben wird
-        btnProviderBusinessLogin.setAttribute('data-handler-set', 'true');
       }
     }
     
