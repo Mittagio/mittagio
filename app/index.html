@@ -8109,8 +8109,7 @@
     if(badgesEl){
       badgesEl.innerHTML = '';
       const badges = [];
-      // Mehrweg-Badge (höchste Priorität)
-      const offerProvider = offers.find(p => p.providerId === o.providerId);
+      // Mehrweg-Badge (höchste Priorität) - offerProvider bereits oben deklariert
       const hasReuseSupport = offerProvider && (offerProvider.reuseEnabled || offerProvider.reuse || (offerProvider.providerProfile && offerProvider.providerProfile.reuseEnabled));
       if(hasReuseSupport && badges.length < 3) badges.push({class:'eco', text:'Mehrweg möglich', icon:'leaf', emoji:'🌿'});
       if(orderingEnabled && badges.length < 3) badges.push({class:'code', text:'Abholnummer', icon:'hash'});
@@ -8168,8 +8167,7 @@
       }
     }
     
-    // Address Card
-    const addr = buildAddress({address:o.address, street:o.providerStreet, zip:o.providerZip, city:o.providerCity});
+    // Address Card (addr bereits oben deklariert, wiederverwenden)
     const maps = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr)}`;
     const addressFullEl = document.getElementById('sAddressFull');
     if(addressFullEl){
@@ -8232,10 +8230,9 @@
       document.getElementById('sReuse').textContent = `Pfand ${euro(o.reuse.deposit)}`;
     } else rw.style.display='none';
     
-    // Eco-Badge für Mehrweg-Option (zusätzlich zu Reuse-Wrap)
+    // Eco-Badge für Mehrweg-Option (zusätzlich zu Reuse-Wrap) - offerProvider bereits oben deklariert
     const ecoBadgeEl = document.getElementById('sEcoBadge');
     if(ecoBadgeEl){
-      const offerProvider = offers.find(p => p.providerId === o.providerId);
       const hasReuseSupport = offerProvider && (offerProvider.reuseEnabled || offerProvider.reuse || (offerProvider.providerProfile && offerProvider.providerProfile.reuseEnabled));
       if(hasReuseSupport){
         ecoBadgeEl.style.display = 'block';
@@ -8245,12 +8242,10 @@
       }
     }
 
-    // Primary CTA (dynamisch basierend auf Abholcode)
+    // Primary CTA (dynamisch basierend auf Abholcode) - offerProvider und orderingEnabled bereits oben deklariert
     const primaryCTA = document.getElementById('btnPrimaryCTA');
     const primaryCTAText = document.getElementById('btnPrimaryCTAText');
     const sInfoHint = document.getElementById('sInfoHint');
-    const offerProvider = offers.find(p => p.providerId === o.providerId);
-    const orderingEnabled = offerProvider && (offerProvider.orderingEnabled !== false && (o.hasPickupCode || offerProvider.hasPickupCode));
     
     if(primaryCTA && primaryCTAText){
       // Reset states
