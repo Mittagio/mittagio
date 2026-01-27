@@ -3789,88 +3789,90 @@
   </div>
 </div>
 
-<!-- Offer sheet -->
-<div class="backdrop" id="bd" onclick="closeSheet()"></div>
-<div class="sheet" id="sheet">
-  <div class="sheet-header" style="position:sticky; top:0; z-index:10; background:var(--card); padding:12px 16px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--border);">
-    <button class="back-button" type="button" onclick="closeSheet()" aria-label="Zurück" style="background:none; border:none; padding:8px; cursor:pointer;">
-      <i data-lucide="arrow-left"></i>
+<!-- Offer sheet - Schiefertafel-Design -->
+<div class="backdrop" id="bd" onclick="closeSheet()" style="background:rgba(0,0,0,0.7);"></div>
+<div class="sheet" id="sheet" style="background:linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); color:#fff; border-top:2px solid rgba(255,255,255,0.1);">
+  <div class="sheet-header" style="position:sticky; top:0; z-index:10; background:transparent; padding:12px 16px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.1);">
+    <button class="back-button" type="button" onclick="closeSheet()" aria-label="Zurück" style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); border-radius:50%; width:40px; height:40px; padding:0; cursor:pointer; display:flex; align-items:center; justify-content:center; color:#fff; transition:all 0.2s ease;" onmouseover="this.style.background='rgba(255,255,255,0.2)';" onmouseout="this.style.background='rgba(255,255,255,0.1)';">
+      <i data-lucide="arrow-left" style="width:20px;height:20px;"></i>
     </button>
-    <div style="font-weight:600; font-size:16px;">Angebot</div>
-    <button class="share-button-header" type="button" id="btnShareHeader" aria-label="Teilen" style="background:none; border:none; padding:8px; cursor:pointer; color:var(--text-secondary);">
-      <i data-lucide="share-2"></i>
+    <div style="font-weight:600; font-size:16px; color:#fff;">Angebot</div>
+    <button class="share-button-header" type="button" id="btnShareHeader" aria-label="Teilen" style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); border-radius:50%; width:40px; height:40px; padding:0; cursor:pointer; display:flex; align-items:center; justify-content:center; color:#fff; transition:all 0.2s ease;" onmouseover="this.style.background='rgba(255,255,255,0.2)';" onmouseout="this.style.background='rgba(255,255,255,0.1)';">
+      <i data-lucide="share-2" style="width:18px;height:18px;"></i>
     </button>
   </div>
-  <div class="handle"></div>
-  <!-- Foto-Container (Card-Style, aspect-ratio 16/9 für Laien-Fotos) -->
+  <div class="handle" style="background:rgba(255,255,255,0.3);"></div>
+  
+  <!-- Hero-Image (Schiefertafel-Optik) -->
   <div style="padding:16px 16px 0;">
-    <div style="width:100%; aspect-ratio:16/9; max-height:320px; border-radius:16px; overflow:hidden; background:#f0f0f0; box-shadow:0 2px 8px rgba(0,0,0,0.08); position:relative; border:1px solid rgba(0,0,0,0.05);">
+    <div style="width:100%; aspect-ratio:16/9; max-height:320px; border-radius:16px; overflow:hidden; background:#0f0f0f; box-shadow:0 4px 16px rgba(0,0,0,0.5); position:relative; border:2px solid rgba(255,255,255,0.1);">
       <img id="sImg" alt="" style="width:100%; height:100%; object-fit:cover; display:block;" />
       <!-- Platzhalter-Hintergrund falls kein Bild -->
-      <div id="sImgPlaceholder" style="position:absolute; top:0; left:0; right:0; bottom:0; background:linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%); display:none; align-items:center; justify-content:center; color:#999; font-size:14px;">
+      <div id="sImgPlaceholder" style="position:absolute; top:0; left:0; right:0; bottom:0; background:linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); display:none; align-items:center; justify-content:center; color:rgba(255,255,255,0.5); font-size:14px;">
         <i data-lucide="image" style="width:48px;height:48px;"></i>
       </div>
+      <!-- Preis-Badge oben rechts auf Bild -->
+      <div id="sPriceBadge" style="position:absolute; top:16px; right:16px; background:var(--brand); color:#000; padding:8px 16px; border-radius:20px; font-weight:900; font-size:18px; box-shadow:0 4px 12px rgba(255,215,0,0.4); z-index:10;"></div>
     </div>
   </div>
-  <div class="sheet-body">
+  
+  <div class="sheet-body" style="background:transparent; padding:16px;">
+    <!-- Header-Infos: Gerichtsname (fett) -->
     <div style="margin-top:16px;">
-      <div style="font-weight:700;font-size:20px; line-height:1.3; margin-bottom:8px;" id="sDish"></div>
-      <div style="color:var(--text-secondary);font-size:14px; display:flex; align-items:center; gap:6px; margin-bottom:12px;" id="sProvider">
-        <i data-lucide="store" style="width:16px;height:16px;"></i><span></span>
+      <div style="font-weight:900; font-size:24px; line-height:1.3; margin-bottom:12px; color:#fff; text-shadow:0 2px 4px rgba(0,0,0,0.3);" id="sDish"></div>
+    </div>
+
+    <!-- Die 3 Säulen (Badges): Abholnummer, Vor Ort, Mehrweg -->
+    <div id="sThreePillars" style="display:flex; justify-content:center; align-items:center; gap:20px; margin:20px 0; padding:16px 0;">
+      <!-- Wird dynamisch befüllt -->
+    </div>
+
+    <!-- Essenszeit mit Uhr-Icon -->
+    <div id="sMealTime" style="display:flex; align-items:center; gap:8px; margin-bottom:16px; padding:12px 16px; background:rgba(255,255,255,0.05); border-radius:12px; border:1px solid rgba(255,255,255,0.1);">
+      <i data-lucide="clock" style="width:18px;height:18px; color:var(--brand);"></i>
+      <span style="color:rgba(255,255,255,0.9); font-size:14px; font-weight:500;">Essenszeit: <span id="sMealTimeRange"></span> Uhr</span>
+    </div>
+
+    <!-- Anbieter-Modul: Name + Adresse + Navi-Icon -->
+    <div id="sProviderModule" style="margin-bottom:20px; padding:16px; background:rgba(255,255,255,0.05); border-radius:12px; border:1px solid rgba(255,255,255,0.1);">
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+        <i data-lucide="store" style="width:18px;height:18px; color:var(--brand);"></i>
+        <span id="sProviderName" style="font-weight:700; font-size:16px; color:#fff;"></span>
       </div>
-      <!-- Eco-Badge für Mehrweg (wird dynamisch hinzugefügt) -->
-      <div id="sEcoBadge" style="display:none; margin-bottom:12px;"></div>
-      <!-- Status Badge (dynamisch) -->
-      <div id="sStatusBadge" style="margin-bottom:16px;"></div>
-    </div>
-
-    <!-- Kompakte Smart-Adresse & Zeit (minimalistisch) -->
-    <div id="sSmartLocationTime" style="display:flex; align-items:center; gap:12px; padding:12px 16px; background:rgba(0,0,0,0.03); border-radius:12px; margin:16px 0; font-size:14px; color:var(--text-secondary);">
-      <a id="sSmartLocationLink" href="#" target="_blank" rel="noopener" style="display:flex; align-items:center; gap:6px; color:var(--text-secondary); text-decoration:none; flex:1; min-width:0;" onmouseover="this.style.color='var(--brand)';" onmouseout="this.style.color='var(--text-secondary)';">
-        <i data-lucide="map-pin" style="width:16px;height:16px; flex-shrink:0;"></i>
-        <span id="sSmartLocation" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"></span>
-      </a>
-      <span style="color:rgba(0,0,0,0.2);">|</span>
-      <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
-        <i data-lucide="clock" style="width:16px;height:16px;"></i>
-        <span id="sSmartTime">bis <span id="sSmartTimeEnd"></span> Uhr</span>
+      <div style="display:flex; align-items:center; gap:8px; margin-top:8px;">
+        <i data-lucide="map-pin" style="width:16px;height:16px; color:rgba(255,255,255,0.7);"></i>
+        <span id="sProviderAddress" style="color:rgba(255,255,255,0.8); font-size:14px; flex:1;"></span>
+        <a id="sProviderMapsLink" href="#" target="_blank" rel="noopener" style="display:flex; align-items:center; justify-content:center; width:40px; height:40px; border-radius:50%; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:#fff; text-decoration:none; transition:all 0.2s ease;" onmouseover="this.style.background='rgba(255,255,255,0.2)';" onmouseout="this.style.background='rgba(255,255,255,0.1)';">
+          <i data-lucide="navigation" style="width:20px;height:20px;"></i>
+        </a>
       </div>
     </div>
 
-    <div id="sAllergensWrap" style="display:none">
-      <div class="row"><span>Allergene</span><span id="sAllergens" style="text-align:right;color:var(--muted)"></span></div>
+    <!-- Allergene & Disclaimer (dezent, mit Overlay bei Klick) -->
+    <div id="sAllergensWrap" style="margin:20px 0; padding:12px 16px; background:rgba(255,255,255,0.03); border-radius:12px; border:1px solid rgba(255,255,255,0.08);">
+      <div style="display:flex; align-items:center; justify-content:space-between; cursor:pointer;" onclick="showAllergensOverlay();">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <i data-lucide="info" style="width:16px;height:16px; color:rgba(255,255,255,0.7);"></i>
+          <span style="color:rgba(255,255,255,0.8); font-size:13px; font-weight:500;">Allergene</span>
+        </div>
+        <div id="sAllergensPreview" style="color:rgba(255,255,255,0.6); font-size:12px; display:flex; align-items:center; gap:4px;">
+          <span id="sAllergensCount">0</span>
+          <i data-lucide="chevron-right" style="width:14px;height:14px;"></i>
+        </div>
+      </div>
+      <div id="sAllergensList" style="display:none; margin-top:8px; padding-top:8px; border-top:1px solid rgba(255,255,255,0.1);">
+        <div id="sAllergens" style="color:rgba(255,255,255,0.7); font-size:12px; line-height:1.6;"></div>
+      </div>
     </div>
-    <div id="sExtrasWrap" style="display:none">
-      <div class="row"><span>Extras</span><span id="sExtras" style="text-align:right;color:var(--muted)"></span></div>
-    </div>
-    <div id="sReuseWrap" style="display:none">
-      <div class="row"><span>Mehrweg / Pfand</span><span id="sReuse" style="text-align:right;color:var(--muted)"></span></div>
-    </div>
-
-    <!-- Badges Row (max 3) -->
-    <div class="sheet-badges" id="sBadges" style="display:flex; gap:8px; margin:16px 0; flex-wrap:wrap;"></div>
-    
-    <!-- Info Row (Icons) -->
-    <div class="sheet-info-row" id="sInfoRow" style="display:flex; gap:16px; margin:16px 0; color:var(--text-secondary); font-size:14px;"></div>
-    
-    <!-- Address Card -->
-    <div class="sheet-address-card" style="background:var(--color-soft-grey-bg); border-radius:var(--r-md); padding:16px; margin:16px 0;">
-      <div style="font-weight:600; margin-bottom:8px;">Adresse</div>
-      <div id="sAddressFull" style="color:var(--text-secondary); font-size:14px; line-height:1.5;"></div>
-    </div>
-    
-    <button class="btn ghost" type="button" id="btnDishFav" style="margin-top:8px;"><i data-lucide="utensils"></i><span>Auf meinen Speiseplan</span></button>
     
     <!-- Bottom Sticky Primary CTA: Dynamisch (Express vs. Nur Info) -->
-    <div style="position:sticky; bottom:0; background:var(--card); padding:16px 0; margin-top:24px; border-top:1px solid var(--border); z-index:10;">
-      <button class="btn-primary" type="button" id="btnPrimaryCTA" style="width:100%; min-height:56px; max-height:64px; background:#FFD700; color:#334155; font-weight:800; font-size:18px; border:none; border-radius:16px; box-shadow:0 4px 16px rgba(255,215,0,0.3);">
+    <div style="position:sticky; bottom:0; background:transparent; padding:16px 0 24px; margin-top:24px; border-top:1px solid rgba(255,255,255,0.1); z-index:10;">
+      <button class="btn-primary" type="button" id="btnPrimaryCTA" style="width:100%; min-height:56px; max-height:64px; background:#27AE60; color:#fff; font-weight:800; font-size:18px; border:none; border-radius:16px; box-shadow:0 4px 16px rgba(39,174,96,0.4); display:flex; align-items:center; justify-content:center; gap:8px; transition:all 0.2s ease;" onmouseover="this.style.transform='scale(1.02)'; this.style.boxShadow='0 6px 20px rgba(39,174,96,0.5)';" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 16px rgba(39,174,96,0.4)';">
         <i data-lucide="shopping-basket" style="width:22px;height:22px;"></i>
-        <span id="btnPrimaryCTAText">Jetzt Abholnummer sichern</span>
+        <span id="btnPrimaryCTAText">In die Mittagspause legen</span>
       </button>
-      <!-- Hinweis-Text für Express-Anbieter -->
-      <div id="sExpressHint" style="margin-top:8px; text-align:center; font-size:12px; color:#666; padding:0 16px;">
-        Sichere dir jetzt deine Abholnummer für heute.
-      </div>
+      <!-- Infotext unter Button (Szenario A/B) -->
+      <div id="sInfoHint" style="margin-top:8px; text-align:center; font-size:12px; color:rgba(255,255,255,0.6); padding:0 16px; line-height:1.4;"></div>
     </div>
   </div>
 </div>
@@ -8306,36 +8308,70 @@
       };
     }
     if(sDish) sDish.textContent = o.dish || '';
-    // Provider mit Icon
-    const sProviderEl = document.getElementById('sProvider');
-    if(sProviderEl){
-      const providerSpan = sProviderEl.querySelector('span');
-      if(providerSpan) providerSpan.textContent = o.providerName || 'Anbieter';
-    }
-    // Preis wird nicht mehr angezeigt (öffentliche Seite)
-    // if(sPrice) sPrice.textContent = euro(o.price);
-    if(sCat) sCat.textContent = o.category || '';
     
-    // Kompakte Smart-Adresse & Zeit
-    const smartLocationEl = document.getElementById('sSmartLocation');
-    const smartLocationLink = document.getElementById('sSmartLocationLink');
-    const smartTimeEnd = document.getElementById('sSmartTimeEnd');
-    if(smartLocationEl && smartLocationLink){
-      const city = o.providerCity || o.city || 'Ort';
-      smartLocationEl.textContent = city;
-      const addr = buildAddress({address:o.address, street:o.providerStreet, zip:o.providerZip, city:o.providerCity});
-      const maps = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr)}`;
-      smartLocationLink.href = maps;
+    // Preis-Badge oben rechts auf Bild
+    const sPriceBadge = document.getElementById('sPriceBadge');
+    if(sPriceBadge){
+      sPriceBadge.textContent = euro(o.price);
+      sPriceBadge.style.display = 'block';
     }
-    if(smartTimeEnd && o.pickupWindow){
-      // Extrahiere Endzeit aus "11:30 – 14:30" Format
+    
+    // Die 3 Säulen (Badges): Abholnummer, Vor Ort, Mehrweg
+    const sThreePillars = document.getElementById('sThreePillars');
+    if(sThreePillars){
+      const offerProvider = offers.find(p => p.providerId === o.providerId);
+      const orderingEnabled = offerProvider && (offerProvider.orderingEnabled !== false && (o.hasPickupCode || offerProvider.hasPickupCode));
+      const hasReuseSupport = offerProvider && (offerProvider.reuseEnabled || offerProvider.reuse || (offerProvider.providerProfile && offerProvider.providerProfile.reuseEnabled));
+      const hasDineIn = o.dineInPossible || false;
+      
+      sThreePillars.innerHTML = `
+        <!-- Säule 1: Abholnummer -->
+        <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+          <div style="width:56px; height:56px; border-radius:50%; background:${orderingEnabled ? 'rgba(255,215,0,0.2)' : 'rgba(255,255,255,0.05)'}; border:2px solid ${orderingEnabled ? 'rgba(255,215,0,0.5)' : 'rgba(255,255,255,0.1)'}; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(8px);">
+            <i data-lucide="hash" style="width:28px;height:28px; color:${orderingEnabled ? 'var(--brand)' : 'rgba(255,255,255,0.4)'};"></i>
+          </div>
+          <span style="color:rgba(255,255,255,0.8); font-size:11px; font-weight:600; text-align:center;">Abholnummer</span>
+        </div>
+        <!-- Säule 2: Vor Ort -->
+        <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+          <div style="width:56px; height:56px; border-radius:50%; background:rgba(255,255,255,0.1); border:2px solid rgba(255,255,255,0.2); display:flex; align-items:center; justify-content:center; backdrop-filter:blur(8px);">
+            <i data-lucide="map-pin" style="width:28px;height:28px; color:#fff;"></i>
+          </div>
+          <span style="color:rgba(255,255,255,0.8); font-size:11px; font-weight:600; text-align:center;">Vor Ort</span>
+        </div>
+        <!-- Säule 3: Mehrweg -->
+        <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+          <div style="width:56px; height:56px; border-radius:50%; background:${hasReuseSupport ? 'rgba(39,174,96,0.2)' : 'rgba(255,255,255,0.05)'}; border:2px solid ${hasReuseSupport ? 'rgba(39,174,96,0.4)' : 'rgba(255,255,255,0.1)'}; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(8px);">
+            <i data-lucide="refresh-cw" style="width:28px;height:28px; color:${hasReuseSupport ? '#27AE60' : 'rgba(255,255,255,0.4)'};"></i>
+          </div>
+          <span style="color:rgba(255,255,255,0.8); font-size:11px; font-weight:600; text-align:center;">Mehrweg</span>
+        </div>
+      `;
+      if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
+    }
+    
+    // Essenszeit
+    const sMealTimeRange = document.getElementById('sMealTimeRange');
+    if(sMealTimeRange && o.pickupWindow){
+      // Extrahiere Start- und Endzeit aus "11:30 – 14:30" Format
       const timeMatch = o.pickupWindow.match(/(\d{1,2}:\d{2})\s*[–-]\s*(\d{1,2}:\d{2})/);
-      if(timeMatch && timeMatch[2]){
-        smartTimeEnd.textContent = timeMatch[2];
+      if(timeMatch && timeMatch[1] && timeMatch[2]){
+        sMealTimeRange.textContent = `von ${timeMatch[1]} bis ${timeMatch[2]}`;
       } else {
-        // Fallback: Zeige gesamtes Zeitfenster
-        smartTimeEnd.textContent = o.pickupWindow.replace(/.*[–-]\s*/, '');
+        sMealTimeRange.textContent = o.pickupWindow;
       }
+    }
+    
+    // Anbieter-Modul: Name + Adresse + Navi-Icon
+    const sProviderName = document.getElementById('sProviderName');
+    const sProviderAddress = document.getElementById('sProviderAddress');
+    const sProviderMapsLink = document.getElementById('sProviderMapsLink');
+    if(sProviderName) sProviderName.textContent = o.providerName || 'Anbieter';
+    const addr = buildAddress({address:o.address, street:o.providerStreet, zip:o.providerZip, city:o.providerCity});
+    if(sProviderAddress) sProviderAddress.textContent = addr || 'Adresse nicht verfügbar';
+    if(sProviderMapsLink){
+      const maps = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr)}`;
+      sProviderMapsLink.href = maps;
     }
     
     // Status Badge (dynamisch basierend auf ordering_enabled)
@@ -8438,12 +8474,34 @@
       };
     }
 
-    // Allergens
+    // Allergene (dezent, mit Preview)
     const aw = document.getElementById('sAllergensWrap');
+    const sAllergens = document.getElementById('sAllergens');
+    const sAllergensCount = document.getElementById('sAllergensCount');
+    const sAllergensList = document.getElementById('sAllergensList');
     if(o.allergens && o.allergens.length){
-      aw.style.display='block';
-      document.getElementById('sAllergens').textContent = o.allergens.join(', ');
-    } else aw.style.display='none';
+      if(aw) aw.style.display='block';
+      if(sAllergensCount) sAllergensCount.textContent = o.allergens.length.toString();
+      if(sAllergens){
+        // Allergene mit Icons formatieren
+        const allergenMap = {
+          'Gluten': {icon: 'info', code: '(A)'},
+          'Laktose': {icon: 'droplet', code: '(G)'},
+          'Sellerie': {icon: 'leaf', code: '(L)'}
+        };
+        const allergenList = o.allergens.map(a => {
+          const info = allergenMap[a] || {icon: 'info', code: ''};
+          return `<div style="display:flex; align-items:center; gap:6px; margin-bottom:4px;">
+            <i data-lucide="${info.icon}" style="width:14px;height:14px; color:rgba(255,255,255,0.7);"></i>
+            <span>${esc(a)} ${info.code}</span>
+          </div>`;
+        }).join('');
+        sAllergens.innerHTML = allergenList;
+        if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
+      }
+    } else {
+      if(aw) aw.style.display='none';
+    }
 
     // Extras
     const ew = document.getElementById('sExtrasWrap');
@@ -8475,7 +8533,9 @@
     // Primary CTA (dynamisch basierend auf Abholcode)
     const primaryCTA = document.getElementById('btnPrimaryCTA');
     const primaryCTAText = document.getElementById('btnPrimaryCTAText');
-    // btnOpenRoute wurde bereits oben deklariert (Zeile 4580)
+    const sInfoHint = document.getElementById('sInfoHint');
+    const offerProvider = offers.find(p => p.providerId === o.providerId);
+    const orderingEnabled = offerProvider && (offerProvider.orderingEnabled !== false && (o.hasPickupCode || offerProvider.hasPickupCode));
     
     if(primaryCTA && primaryCTAText){
       // Reset states
@@ -8501,12 +8561,12 @@
         }
         primaryCTA.onclick = null;
       } else if(orderingEnabled){
-        // Express-Anbieter (ordering_enabled): CTA "Jetzt Abholnummer sichern"
-        const expressHint = document.getElementById('sExpressHint');
-        if(expressHint) expressHint.style.display = 'block';
-        const infoHint = document.getElementById('sInfoHint');
-        if(infoHint) infoHint.style.display = 'none';
-        primaryCTAText.textContent = 'Jetzt Abholnummer sichern';
+        // Express-Anbieter (ordering_enabled): CTA "In die Mittagspause legen"
+        primaryCTAText.textContent = 'In die Mittagspause legen';
+        if(sInfoHint){
+          sInfoHint.textContent = '';
+          sInfoHint.style.display = 'none';
+        }
         primaryCTA.onclick = () => {
           // Loading state
           primaryCTA.disabled = true;
@@ -8542,16 +8602,19 @@
           }, 200);
         };
       } else {
-        // Info-Anbieter (ordering_enabled = false): Request-Button "Express-Abholung anfragen"
-        const expressHint = document.getElementById('sExpressHint');
-        if(expressHint) expressHint.style.display = 'none';
+        // Info-Anbieter (ordering_enabled = false): Button "In die Mittagspause legen" mit Infotext
+        primaryCTAText.textContent = 'In die Mittagspause legen';
+        if(sInfoHint){
+          sInfoHint.textContent = 'Dieser Anbieter nimmt nicht an der Abholnummer teil.';
+          sInfoHint.style.display = 'block';
+        }
         
         primaryCTA.disabled = false;
         primaryCTA.className = 'btn-primary';
         primaryCTA.style.background = '#27AE60';
         primaryCTA.style.color = '#fff';
         primaryCTA.style.cursor = 'pointer';
-        primaryCTAText.textContent = 'Express-Abholung anfragen';
+        primaryCTAText.textContent = 'In die Mittagspause legen';
         primaryCTA.onclick = () => {
           // Request-Counter erhöhen (LocalStorage für Demo)
           const requestKey = `express_request_${o.providerId}_${isoDate(new Date())}`;
@@ -8572,28 +8635,9 @@
           setTimeout(() => {
             primaryCTA.disabled = false;
             primaryCTA.classList.remove('success');
-            primaryCTAText.textContent = 'Express-Abholung anfragen';
+            primaryCTAText.textContent = 'In die Mittagspause legen';
           }, 2000);
         };
-        
-        // Hinweis-Text unter dem Button
-        const hintEl = document.getElementById('sInfoHint');
-        if(!hintEl){
-          const hint = document.createElement('div');
-          hint.id = 'sInfoHint';
-          hint.style.marginTop = '8px';
-          hint.style.padding = '12px';
-          hint.style.background = 'rgba(39,174,96,0.05)';
-          hint.style.borderRadius = '8px';
-          hint.style.fontSize = '13px';
-          hint.style.color = '#27AE60';
-          hint.style.textAlign = 'center';
-          hint.style.lineHeight = '1.5';
-          hint.style.fontWeight = '600';
-          hint.innerHTML = 'Hilf dem Anbieter, Express-Abholung zu aktivieren!';
-          primaryCTA.parentElement.appendChild(hint);
-        } else {
-          hintEl.style.display = 'block';
           hintEl.style.background = 'rgba(39,174,96,0.05)';
           hintEl.style.color = '#27AE60';
           hintEl.innerHTML = 'Hilf dem Anbieter, Express-Abholung zu aktivieren!';
