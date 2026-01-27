@@ -6456,39 +6456,8 @@
   }
   
   // Alte Swipe-Gesten wurden entfernt - jetzt nur noch Button-basierte Interaktion
-      // CRITICAL FIX: Prüfe dynamisch ob diese Karte die oberste ist
-      const swipeStack = document.getElementById('swipeStack');
-      if(!swipeStack) return;
-      const allCards = Array.from(swipeStack.querySelectorAll('.swipe-card')).filter(c => 
-        c && c.parentNode && c.style && c.style.opacity !== '0' && 
-        !c.classList.contains('swipe-left') && !c.classList.contains('swipe-right')
-      );
-      const currentIndex = allCards.indexOf(card);
-      if(currentIndex !== 0) return; // Nur oberste Karte
-      
-      const touch = e.touches[0];
-      startX = touch.clientX;
-      startY = touch.clientY;
-      isDragging = true;
-      card.classList.add('swiping');
-      card.dataset.hapticTriggered = ''; // Reset haptisches Feedback
-      
-      // Onboarding-Hilfe sofort ausblenden beim ersten Touch
-      if(isFirstSwipe){
-        const onboardingHint = card.querySelector('#swipeOnboardingHint');
-        if(onboardingHint){
-          onboardingHint.style.opacity = '0';
-          setTimeout(() => {
-            if(onboardingHint && onboardingHint.parentNode) onboardingHint.remove();
-          }, 300);
-          save(LS.swipeOnboardingShown, true);
-        }
-      }
-    }, {passive: true});
-    
-    card.addEventListener('touchmove', (e) => {
-      // CRITICAL FIX: Prüfe dynamisch ob diese Karte die oberste ist
-      if(!isDragging) return;
+  
+  // Haptic Feedback (verbessert: kurze, dezent Vibration)
       const swipeStack = document.getElementById('swipeStack');
       if(!swipeStack) return;
       const allCards = Array.from(swipeStack.querySelectorAll('.swipe-card')).filter(c => 
