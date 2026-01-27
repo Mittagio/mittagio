@@ -7347,45 +7347,49 @@
     const badgesRow = document.createElement('div');
     badgesRow.className='card-status-badges';
     badgesRow.style.display = 'flex';
-    badgesRow.style.gap = '8px';
-    badgesRow.style.marginTop = '12px';
+    badgesRow.style.justifyContent = 'center';
+    badgesRow.style.alignItems = 'center';
+    badgesRow.style.gap = '32px';
+    badgesRow.style.marginTop = '16px';
+    badgesRow.style.paddingTop = '16px';
+    badgesRow.style.borderTop = '1px solid rgba(0,0,0,0.1)';
     
-    // Slot 1: Abholnummer (A1-Ticket)
+    // Slot 1: Abholnummer (🧾) - Nur großes Emoji-Icon, kein Text
     if(orderingEnabled) {
-      const badge1 = document.createElement('span');
-      badge1.className = 'card-status-badge code';
+      const badge1 = document.createElement('div');
+      badge1.style.fontSize = '32px';
+      badge1.style.opacity = '1';
       badge1.style.display = 'flex';
       badge1.style.alignItems = 'center';
-      badge1.style.gap = '6px';
-      badge1.style.fontSize = '13px';
-      badge1.style.color = '#000';
-      badge1.innerHTML = `<span style="display:inline-flex; align-items:center; justify-content:center; width:20px; height:20px;">${getMittagioMasterIcon('pickup-code')}</span> <span>Abholnummer</span>`;
+      badge1.style.justifyContent = 'center';
+      badge1.title = 'Abholnummer verfügbar';
+      badge1.textContent = '🧾';
       badgesRow.appendChild(badge1);
     }
     
-    // Slot 2: Vor Ort (Besteck) - nur wenn Plätze vorhanden
+    // Slot 2: Vor Ort (🍴) - Nur großes Emoji-Icon, kein Text
     if(hasDineIn) {
-      const badge2 = document.createElement('span');
-      badge2.className = 'card-status-badge dine-in';
+      const badge2 = document.createElement('div');
+      badge2.style.fontSize = '32px';
+      badge2.style.opacity = '1';
       badge2.style.display = 'flex';
       badge2.style.alignItems = 'center';
-      badge2.style.gap = '6px';
-      badge2.style.fontSize = '13px';
-      badge2.style.color = '#000';
-      badge2.innerHTML = `<span style="display:inline-flex; align-items:center; justify-content:center; width:20px; height:20px;">${getMittagioMasterIcon('dine-in')}</span> <span>Vor Ort</span>`;
+      badge2.style.justifyContent = 'center';
+      badge2.title = 'Vor Ort essen möglich';
+      badge2.textContent = '🍴';
       badgesRow.appendChild(badge2);
     }
     
-    // Slot 3: Mehrweg (Kreislauf-Blatt) - nur bei Pfandsystem
+    // Slot 3: Mehrweg (🔄) - Nur großes Emoji-Icon, kein Text
     if(hasReuse) {
-      const badge3 = document.createElement('span');
-      badge3.className = 'card-status-badge reuse';
+      const badge3 = document.createElement('div');
+      badge3.style.fontSize = '32px';
+      badge3.style.opacity = '1';
       badge3.style.display = 'flex';
       badge3.style.alignItems = 'center';
-      badge3.style.gap = '6px';
-      badge3.style.fontSize = '13px';
-      badge3.style.color = '#000';
-      badge3.innerHTML = `<span style="display:inline-flex; align-items:center; justify-content:center; width:20px; height:20px;">${getMittagioMasterIcon('reuse')}</span> <span>Mehrweg</span>`;
+      badge3.style.justifyContent = 'center';
+      badge3.title = 'Mehrweg-System';
+      badge3.textContent = '🔄';
       badgesRow.appendChild(badge3);
     }
     
