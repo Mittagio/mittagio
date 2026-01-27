@@ -2259,17 +2259,38 @@
         </div>
       </div>
 
-      <!-- Ernährungs-Zentrale (Präferenzen) -->
-      <div class="panel" id="profileDietSection" style="margin-top:20px; padding:20px; border-radius:20px; box-shadow:0 2px 12px rgba(0,0,0,.06);">
+      <!-- Untermenü: Mein Geschmack -->
+      <div class="panel" id="profileTasteSection" style="margin-top:20px; padding:20px; border-radius:20px; box-shadow:0 2px 12px rgba(0,0,0,.06);">
         <div style="font-weight:900; font-size:18px; margin-bottom:16px; color:#2D3436; display:flex; align-items:center; gap:8px;">
-          <i data-lucide="leaf" style="width:20px;height:20px; color:#27AE60;"></i>
-          <span>Ernährungs-Präferenzen</span>
+          <span style="font-size:24px;">❤️</span>
+          <span>Mein Geschmack</span>
         </div>
         <div class="hint" style="font-size:13px; color:#666; margin-bottom:20px; line-height:1.5;">
           Diese Einstellungen filtern automatisch deinen "Entdecken"-Feed, sodass dir nur Essen angezeigt wird, das du auch wirklich magst.
         </div>
         <div id="profileDietSwitches" style="display:flex; flex-direction:column; gap:16px;">
           <!-- Wird dynamisch befüllt -->
+        </div>
+        
+        <!-- Nachhaltigkeit: Mehrweg-Option -->
+        <div style="margin-top:24px; padding-top:24px; border-top:2px solid rgba(0,0,0,0.06);">
+          <div style="font-weight:900; font-size:18px; margin-bottom:16px; color:#2D3436; display:flex; align-items:center; gap:8px;">
+            <span style="font-size:24px;">🥗</span>
+            <span>Nachhaltigkeit</span>
+          </div>
+          <div id="profileReuseSwitch" style="display:flex; flex-direction:column; gap:16px;">
+            <!-- Wird dynamisch befüllt -->
+          </div>
+          <!-- Eco-Badge Vorschau -->
+          <div id="profileEcoBadge" style="margin-top:16px; padding:16px; background:linear-gradient(135deg, rgba(31,157,85,0.1) 0%, rgba(46,204,113,0.08) 100%); border-radius:16px; border:2px solid rgba(31,157,85,0.2); display:none;">
+            <div style="font-weight:700; font-size:15px; color:#1f9d55; margin-bottom:8px; display:flex; align-items:center; gap:8px;">
+              <i data-lucide="award" style="width:18px;height:18px;"></i>
+              <span>Eco-Badge</span>
+            </div>
+            <div style="font-size:14px; color:#666; line-height:1.5;">
+              Du hast bereits <span id="ecoBadgeCount" style="font-weight:700; color:#1f9d55;">0</span> Mal Verpackungsmüll gespart! 🌱
+            </div>
+          </div>
         </div>
       </div>
 
@@ -2281,21 +2302,24 @@
         </div>
       </div>
 
-      <!-- Business-Card: Für Partner -->
-      <div class="panel" id="profileBusinessCard" style="margin-top:20px; padding:24px; background:linear-gradient(135deg, rgba(255,204,0,.12) 0%, rgba(255,184,0,.06) 100%); border:2px solid rgba(255,204,0,.2); border-radius:24px; box-shadow:0 4px 16px rgba(255,204,0,0.15); position:relative; overflow:hidden;">
+      <!-- Business-Card: Für Partner (visuell getrennt - dunkles Design) -->
+      <div class="panel" id="profileBusinessCard" style="margin-top:20px; padding:24px; background:linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%); border:2px solid rgba(255,215,0,0.3); border-radius:24px; box-shadow:0 4px 16px rgba(0,0,0,0.3); position:relative; overflow:hidden;">
         <!-- Dekoratives Icon -->
-        <div style="position:absolute; top:16px; right:16px; width:64px; height:64px; background:rgba(255,204,0,0.15); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:32px; opacity:0.6;">
+        <div style="position:absolute; top:16px; right:16px; width:64px; height:64px; background:rgba(255,215,0,0.15); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:32px; opacity:0.6;">
           🏪
         </div>
         <div style="position:relative; z-index:1;">
-          <div style="font-weight:900; font-size:20px; margin-bottom:6px; line-height:1.3; color:#2D3436; display:flex; align-items:center; gap:8px;">
+          <div style="font-weight:900; font-size:20px; margin-bottom:6px; line-height:1.3; color:#fff; display:flex; align-items:center; gap:8px;">
             <i data-lucide="store" style="width:22px;height:22px; color:#FFD700;"></i>
             <span>MITTAGIO Business</span>
           </div>
-          <div class="hint" style="font-size:14px; line-height:1.5; margin-bottom:20px; color:#666; max-width:280px;">
+          <div class="hint" style="font-size:14px; line-height:1.5; margin-bottom:12px; color:#aaa; max-width:280px;">
             Biete deine Mittagstische online an und erreiche mehr Gäste.
           </div>
-          <button class="btn-primary" type="button" id="btnProviderBusinessLogin" style="width:100%; min-height:52px; font-size:16px; font-weight:700; box-shadow:0 4px 12px rgba(255,204,0,0.3);">
+          <div style="font-size:12px; color:#888; margin-bottom:20px; line-height:1.4;">
+            Anbieter-Support: <a href="mailto:support@mittagio.de" style="color:#FFD700; text-decoration:none;">support@mittagio.de</a>
+          </div>
+          <button class="btn-primary" type="button" id="btnProviderBusinessLogin" style="width:100%; min-height:52px; font-size:16px; font-weight:700; box-shadow:0 4px 12px rgba(255,215,0,0.3);">
             <i data-lucide="log-in" style="width:20px;height:20px;"></i>
             <span id="btnProviderBusinessLoginText">Jetzt als Anbieter einloggen</span>
           </button>
@@ -2316,7 +2340,15 @@
           </details>
           <details>
             <summary>Was ist die Abholnummer?</summary>
-            <p>Deine Abholnummer für die Mittagspause.</p>
+            <p>Dein digitaler Beleg für das Restaurant. Bitte beachte: Wir nutzen keine "Tickets" oder "Abholcodes".</p>
+          </details>
+          <details>
+            <summary>Kann ich telefonisch bestellen?</summary>
+            <p>Ja, bei Anbietern mit dem Status "Nur Speisekarte" kannst du direkt über den Anruf-Button bestellen.</p>
+          </details>
+          <details>
+            <summary>Wie funktioniert Mehrweg?</summary>
+            <p>Aktiviere es unter "Mein Geschmack". Das Restaurant sieht deinen Wunsch sofort in der Mittagsbox.</p>
           </details>
           <details>
             <summary>Kann ich ohne Abholnummer bestellen?</summary>
@@ -2353,11 +2385,12 @@
         <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:12px 16px; font-size:12px; margin-bottom:10px;">
           <a href="#/faq" id="btnProfileFAQ" onclick="showLegalPage('faq'); return false;" style="color:var(--muted); text-decoration:none;">FAQ</a>
           <a href="#/impressum" id="btnProfileImpressum" onclick="showLegalPage('impressum'); return false;" style="color:var(--muted); text-decoration:none;">Impressum</a>
+          <a href="#/datenschutz" id="btnProfileDatenschutz" onclick="showLegalPage('datenschutz'); return false;" style="color:var(--muted); text-decoration:none;">Datenschutz</a>
           <a href="#/agb-kurz" id="btnProfileAGB" onclick="showLegalPage('agb-kurz'); return false;" style="color:var(--muted); text-decoration:none;">AGB</a>
           <a href="#/datenschutz" id="btnProfileDatenschutz" onclick="showLegalPage('datenschutz'); return false;" style="color:var(--muted); text-decoration:none;">Datenschutz</a>
         </div>
         <div style="font-size:12px; color:var(--muted);">
-          <a href="mailto:support@mittagio.de" style="color:var(--muted); text-decoration:none;">support@mittagio.de</a>
+          <a href="mailto:info@mittagio.de" style="color:var(--muted); text-decoration:none;">info@mittagio.de</a>
         </div>
       </div>
     </section>
@@ -3200,27 +3233,20 @@
         <h1 style="font-size:24px; font-weight:900; margin-bottom:20px;">Impressum</h1>
         <div style="line-height:1.8; font-size:15px;">
           <p>
-            <strong>Mittagio.de</strong><br>
-            Mike Quach (Einzelunternehmen)<br>
-            Langäcker 2<br>
-            73635 Rudersberg<br>
-            E-Mail: <a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a>
+            <strong>Anbieter:</strong> MQ Mittagio UG (haftungsbeschränkt)<br>
+            <strong>Anschrift:</strong> [Deine Adresse in Jena]<br>
+            <strong>Kontakt:</strong> <a href="mailto:info@mittagio.de" style="color:var(--brand);">info@mittagio.de</a><br>
+            <strong>Vertreten durch:</strong> [Dein Name]<br>
+            <strong>Registereintrag:</strong> Amtsgericht Jena, HRB [Deine Nummer]
           </p>
-          
-          <p style="margin-top:20px; padding-top:20px; border-top:1px solid #eee; font-weight:700;">Verantwortlich für den Inhalt:</p>
-          <p>Mike Quach</p>
           
           <p style="margin-top:20px; padding-top:20px; border-top:1px solid #eee; font-size:13px; color:#666;">
-            <strong>Unternehmensform:</strong> Einzelunternehmen<br>
-            <strong>Umsatzsteuer-ID:</strong> nicht vorhanden (§19 UStG)
-          </p>
-          <p style="margin-top:16px; padding-top:16px; border-top:1px solid #eee; font-size:13px; color:#666;">
             <strong>Plattformhinweis:</strong><br>
             Mittagio vermittelt Mittagsangebote lokaler Anbieter. Vertragspartner bei Bestellungen ist ausschließlich der jeweilige Anbieter.
           </p>
         </div>
         <div style="margin-top:32px; padding-top:20px; border-top:1px solid #eee; text-align:center; font-size:14px; color:#666;">
-          Fragen, Hilfe oder Vorschläge? <a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a>
+          Fragen, Hilfe oder Vorschläge? <a href="mailto:info@mittagio.de" style="color:var(--brand);">info@mittagio.de</a>
         </div>
         <button class="btn ghost" type="button" onclick="goBackFromLegalPage()" style="margin-top:20px; width:100%;">Zurück</button>
       </div>
@@ -3366,55 +3392,34 @@
         <div style="line-height:1.8; font-size:15px;">
           <p style="font-weight:700; margin-bottom:12px;">Verantwortlicher:</p>
           <p>
-            Mittagio<br>
-            Mike Quach<br>
-            Langäcker 2<br>
-            73635 Rudersberg<br>
-            Deutschland<br>
-            E-Mail: <a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a>
+            MQ Mittagio UG (haftungsbeschränkt)<br>
+            [Deine Adresse in Jena]<br>
+            Kontakt: <a href="mailto:info@mittagio.de" style="color:var(--brand);">info@mittagio.de</a>
           </p>
           
-          <p style="margin-top:24px; font-weight:700;">Welche Daten erheben wir?</p>
+          <p style="margin-top:24px; font-weight:700;">Datenminimierung:</p>
+          <p>Wir speichern nur, was für die Zuordnung deiner Abholnummer und deiner Ernährungseinstellungen nötig ist.</p>
           
-          <p style="margin-top:12px;"><strong>Anbieter:</strong></p>
-          <ul style="padding-left:20px; margin:8px 0;">
-            <li>Betriebsname</li>
-            <li>Kontaktdaten</li>
-            <li>Standort/Öffnungszeiten</li>
-            <li>Inserats-/Bestelldaten</li>
-            <li>Abrechnungsdaten</li>
-          </ul>
+          <p style="margin-top:24px; font-weight:700;">Sitzungssicherheit:</p>
+          <p>Um Missbrauch vorzubeugen, erlauben wir nur eine aktive Session pro Account. Eine Neuanmeldung trennt bestehende Verbindungen.</p>
           
-          <p style="margin-top:12px;"><strong>Kunden:</strong></p>
-          <ul style="padding-left:20px; margin:8px 0;">
-            <li>Bestelldaten</li>
-            <li>Zahlungsstatus</li>
-            <li>Abholnummer (keine unnötigen personenbezogenen Daten)</li>
-          </ul>
+          <p style="margin-top:24px; font-weight:700;">Anbieter-Daten:</p>
+          <p>Kommunikation für Partner erfolgt strikt über <a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a>.</p>
+          
+          <p style="margin-top:24px; font-weight:700;">Abholnummer:</p>
+          <p>Die Abholnummer dient als Zahlungs-/Abholnachweis, zur Zuordnung und zum Missbrauchsschutz. Bitte beachte: Wir nutzen keine "Tickets" oder "Abholcodes".</p>
           
           <p style="margin-top:24px; font-weight:700;">Online-Zahlung:</p>
-          <p>Online-Zahlung erfolgt über externe Zahlungsdienstleister (z.B. Stripe). Wir speichern keine kompletter Zahlungsdaten (z.B. Kreditkartennummern).</p>
-          
-          <p style="margin-top:24px; font-weight:700;">Zweck der Abholnummer:</p>
-          <p>Die Abholnummer dient als Zahlungs-/Abholnachweis, zur Zuordnung und zum Missbrauchsschutz.</p>
+          <p>Online-Zahlung erfolgt über externe Zahlungsdienstleister (z.B. Stripe). Wir speichern keine vollständigen Zahlungsdaten (z.B. Kreditkartennummern).</p>
           
           <p style="margin-top:24px; font-weight:700;">Weitergabe:</p>
           <p>Daten werden nur an Zahlungsdienstleister und wenn gesetzlich erforderlich weitergegeben. Keine Werbeweitergabe.</p>
           
-          <p style="margin-top:24px; font-weight:700;">Speicherdauer:</p>
-          <p>Daten werden nur so lange gespeichert wie nötig und gemäß gesetzlicher Aufbewahrungspflichten.</p>
-          
           <p style="margin-top:24px; font-weight:700;">Ihre Rechte:</p>
-          <p>Sie haben das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung und Widerspruch. Kontakt: <a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a></p>
-          
-          <p style="margin-top:24px; font-weight:700;">Datensicherheit:</p>
-          <p>Wir setzen technische und organisatorische Maßnahmen zum Schutz Ihrer Daten ein.</p>
-          
-          <p style="margin-top:24px; font-weight:700;">Änderungen:</p>
-          <p>Diese Datenschutzerklärung kann angepasst werden. Aktuelle Version finden Sie auf dieser Seite.</p>
+          <p>Sie haben das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung und Widerspruch. Kontakt: <a href="mailto:info@mittagio.de" style="color:var(--brand);">info@mittagio.de</a></p>
         </div>
         <div style="margin-top:32px; padding-top:20px; border-top:1px solid #eee; text-align:center; font-size:14px; color:#666;">
-          Fragen, Hilfe oder Vorschläge? <a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a>
+          Fragen, Hilfe oder Vorschläge? <a href="mailto:info@mittagio.de" style="color:var(--brand);">info@mittagio.de</a>
         </div>
         <button class="btn ghost" type="button" onclick="goBackFromLegalPage()" style="margin-top:20px; width:100%;">Zurück</button>
       </div>
@@ -3633,7 +3638,7 @@
     <div style="margin-top:16px;">
       <div style="font-weight:700;font-size:20px; line-height:1.3; margin-bottom:8px;" id="sDish"></div>
       <div style="color:var(--text-secondary);font-size:14px; display:flex; align-items:center; gap:6px; margin-bottom:12px;" id="sProvider">
-        ${iconMarkup('store')}<span></span>
+        <i data-lucide="store" style="width:16px;height:16px;"></i><span></span>
       </div>
       <!-- Status Badge (dynamisch) -->
       <div id="sStatusBadge" style="margin-bottom:16px;"></div>
@@ -4324,7 +4329,8 @@
       vegetarian: false,
       glutenFree: false,
       lactoseFree: false
-    }
+    },
+    reuseEnabled: false
   });
   let provider = load(LS.provider, { loggedIn:false, email:null, profile:{ name:'', address:'', street:'', zip:'', city:'', mealWindow:'11:30 – 14:00', logoData:'' } });
   let cookbook = load(LS.cookbook, []); // [{id, dish, category, price, allergens[], extras?, reuse? , photoData?}]
@@ -7048,7 +7054,7 @@
     provider.style.transition = 'opacity 0.2s ease';
     provider.onmouseover = () => { provider.style.opacity = '0.7'; };
     provider.onmouseout = () => { provider.style.opacity = '1'; };
-    provider.innerHTML = `${iconMarkup('store')} <span>${esc(data.providerName || 'Anbieter')}</span>`;
+    provider.innerHTML = `<i data-lucide="store" style="width:16px;height:16px;"></i> <span>${esc(data.providerName || 'Anbieter')}</span>`;
     provider.onclick = (e) => {
       e.stopPropagation();
       // Filtere nach diesem Provider
@@ -9993,6 +9999,7 @@
             customer.email = email;
             customer.name = email.split('@')[0];
             if(!customer.dietaryPreferences) customer.dietaryPreferences = { vegan: false, vegetarian: false, glutenFree: false, lactoseFree: false };
+            if(customer.reuseEnabled === undefined) customer.reuseEnabled = false;
             save(LS.customer, customer);
             updateProfileView();
           }
@@ -10041,6 +10048,7 @@
     const dietSection = document.getElementById('profileDietSwitches');
     if(dietSection){
       if(!customer.dietaryPreferences) customer.dietaryPreferences = { vegan: false, vegetarian: false, glutenFree: false, lactoseFree: false };
+      if(customer.reuseEnabled === undefined) customer.reuseEnabled = false;
       const prefs = customer.dietaryPreferences;
       
       const switches = [
@@ -10070,6 +10078,47 @@
           </div>
         `;
       }).join('');
+    }
+    
+    // Mehrweg-Option (Nachhaltigkeit)
+    const reuseSection = document.getElementById('profileReuseSwitch');
+    const ecoBadge = document.getElementById('profileEcoBadge');
+    const ecoBadgeCount = document.getElementById('ecoBadgeCount');
+    
+    if(reuseSection){
+      if(!customer.reuseEnabled) customer.reuseEnabled = false;
+      const isReuseEnabled = customer.reuseEnabled || false;
+      
+      // Zähle Mehrweg-Nutzungen aus Bestellungen
+      const reuseCount = orders.filter(o => o.reuseEnabled === true).length;
+      
+      reuseSection.innerHTML = `
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:16px; background:${isReuseEnabled ? 'rgba(31,157,85,0.1)' : '#f8f9fa'}; border-radius:16px; border:2px solid ${isReuseEnabled ? '#1f9d55' : 'transparent'}; transition:all 0.2s ease;">
+          <div style="flex:1; min-width:0;">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:4px;">
+              <i data-lucide="recycle" style="width:20px;height:20px; color:${isReuseEnabled ? '#1f9d55' : '#666'};"></i>
+              <span style="font-weight:700; font-size:15px; color:#2D3436;">Mehrweg-Nutzer</span>
+            </div>
+            <div style="font-size:12px; color:#666; line-height:1.4;">Ich bringe mein eigenes Gefäß mit</div>
+          </div>
+          <label style="position:relative; width:52px; height:32px; cursor:pointer; flex-shrink:0;">
+            <input type="checkbox" ${isReuseEnabled ? 'checked' : ''} style="opacity:0; position:absolute; width:0; height:0;" onchange="toggleReuseOption(this.checked);">
+            <span style="position:absolute; top:0; left:0; right:0; bottom:0; background:${isReuseEnabled ? '#1f9d55' : '#ccc'}; border-radius:999px; transition:all 0.3s ease;">
+              <span style="position:absolute; top:2px; left:${isReuseEnabled ? '22px' : '2px'}; width:28px; height:28px; background:#fff; border-radius:50%; box-shadow:0 2px 4px rgba(0,0,0,0.2); transition:all 0.3s ease;"></span>
+            </span>
+          </label>
+        </div>
+      `;
+      
+      // Eco-Badge anzeigen wenn aktiviert
+      if(ecoBadge && ecoBadgeCount){
+        if(isReuseEnabled && reuseCount > 0){
+          ecoBadge.style.display = 'block';
+          ecoBadgeCount.textContent = reuseCount;
+        } else {
+          ecoBadge.style.display = 'none';
+        }
+      }
     }
     
     // Business-Card: Provider-Login Button
@@ -10126,6 +10175,7 @@
   // Ernährungs-Präferenz Toggle
   function toggleDietaryPreference(key, value){
     if(!customer.dietaryPreferences) customer.dietaryPreferences = { vegan: false, vegetarian: false, glutenFree: false, lactoseFree: false };
+    if(customer.reuseEnabled === undefined) customer.reuseEnabled = false;
     customer.dietaryPreferences[key] = value;
     save(LS.customer, customer);
     updateProfileView();
@@ -10136,11 +10186,26 @@
     }
   }
   
+  // Mehrweg-Option Toggle
+  function toggleReuseOption(enabled){
+    customer.reuseEnabled = enabled;
+    save(LS.customer, customer);
+    updateProfileView();
+    
+    if(enabled){
+      showToast('Mehrweg-Option aktiviert 🌱', 2000);
+    } else {
+      showToast('Mehrweg-Option deaktiviert', 1500);
+    }
+  }
+  
   // Support-Actions Handler
   function handleSupportAction(action){
     if(action === 'openHelp'){
-      // TODO: Hilfe-Seite öffnen
-      alert('Hilfe & Kontakt: info@mittagio.de');
+      // Hilfe & Kontakt: info@mittagio.de (nur für Kunden)
+      showToast('Kontakt: info@mittagio.de', 2000);
+      // Optional: E-Mail-Client öffnen
+      window.location.href = 'mailto:info@mittagio.de?subject=Hilfe%20bei%20Mittagio';
     } else if(action === 'showDatenschutz'){
       showView(views.legalDatenschutz);
     } else if(action === 'showImpressum'){
