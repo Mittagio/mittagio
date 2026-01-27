@@ -2117,7 +2117,7 @@
     <section class="view active" id="v-discover" style="background:var(--bg-polaroid);">
       <!-- Header: Sticky mit Logo zentriert, Standort links, Suche/Grid rechts -->
       <div class="discover-header-sticky" style="background:rgba(232,224,214,0.92); backdrop-filter:saturate(160%) blur(8px); -webkit-backdrop-filter:saturate(160%) blur(8px);">
-        <!-- Ebene 1: Standort links | Logo zentriert | Search/Grid rechts -->
+        <!-- Ebene 1: Standort links | Schöner Umschaltbutton rechts -->
         <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 12px; gap:8px;">
           <!-- Standort (links) -->
           <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
@@ -2135,26 +2135,26 @@
             </div>
           </div>
           
-          <!-- Search + Ansichts-Umschalter (rechts) -->
+          <!-- Search + Schöner Umschaltbutton (rechts) -->
           <div style="display:flex; align-items:center; gap:8px; flex-shrink:0; margin-left:auto;">
             <!-- Search mit Lupe (kompakt, Touch-Safe: 44px Minimum) -->
             <button type="button" id="btnDiscoverSearch" aria-label="Suchen" style="width:44px; height:44px; border-radius:10px; border:none; background:rgba(0,0,0,0.05); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s ease;" onmouseover="this.style.background='rgba(0,0,0,0.1)';" onmouseout="this.style.background='rgba(0,0,0,0.05)';">
               <i data-lucide="search" style="width:18px;height:18px; color:#666;"></i>
             </button>
-            <!-- Moderner Ansichts-Umschalter (Liste/Swipe-Modus) -->
+            <!-- Premium Umschaltbutton: Liste ↔ Entdecken -->
             <div class="discover-view-toggle-topbar" id="discoverViewToggleTopbar" style="display:flex;">
-              <button type="button" class="toggle-switch-modern" id="toggleDiscoverViewTopbar" aria-label="Ansicht wechseln" style="display:flex; align-items:center; gap:8px; padding:8px 12px; border-radius:24px; border:none; background:rgba(0,0,0,0.06); cursor:pointer; transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1); position:relative; overflow:hidden;" onmouseover="this.style.background='rgba(0,0,0,0.1)';" onmouseout="if(!this.classList.contains('active')) this.style.background='rgba(0,0,0,0.06)';">
-                <!-- Slider-Hintergrund (animiert) -->
-                <div class="toggle-slider-bg" style="position:absolute; left:0; top:0; width:50%; height:100%; background:var(--brand); border-radius:24px; transition:transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); transform:translateX(0%); z-index:0;"></div>
+              <button type="button" class="toggle-switch-premium" id="toggleDiscoverViewTopbar" aria-label="Ansicht wechseln" style="display:flex; align-items:center; gap:0; padding:4px; border-radius:28px; border:2px solid rgba(0,0,0,0.1); background:#fff; cursor:pointer; transition:all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); position:relative; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.08); min-width:120px;">
+                <!-- Animierter Slider-Hintergrund (Gold-Gradient) -->
+                <div class="toggle-slider-bg-premium" style="position:absolute; left:4px; top:4px; width:calc(50% - 4px); height:calc(100% - 8px); background:linear-gradient(135deg, #FFD700 0%, #FFA500 100%); border-radius:24px; transition:transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease; transform:translateX(0%); z-index:1; box-shadow:0 2px 8px rgba(255,215,0,0.3);"></div>
                 <!-- Liste-Option -->
-                <div class="toggle-option toggle-option-list" style="position:relative; z-index:1; display:flex; align-items:center; gap:4px; padding:4px 6px; transition:color 0.3s ease;">
-                  <i data-lucide="grid-3x3" id="toggleDiscoverViewIconList" style="width:16px;height:16px; color:#666; transition:color 0.3s ease;"></i>
-                  <span style="font-size:13px; font-weight:600; color:#666; transition:color 0.3s ease; white-space:nowrap;">Liste</span>
+                <div class="toggle-option-premium toggle-option-list" style="position:relative; z-index:2; display:flex; align-items:center; justify-content:center; gap:6px; padding:8px 12px; flex:1; transition:color 0.3s ease, transform 0.2s ease;">
+                  <i data-lucide="list" id="toggleDiscoverViewIconList" style="width:18px;height:18px; transition:color 0.3s ease;"></i>
+                  <span style="font-size:13px; font-weight:700; transition:color 0.3s ease; white-space:nowrap;">Liste</span>
                 </div>
-                <!-- Swipe-Option -->
-                <div class="toggle-option toggle-option-swipe" style="position:relative; z-index:1; display:flex; align-items:center; gap:4px; padding:4px 6px; transition:color 0.3s ease;">
-                  <i data-lucide="sparkles" id="toggleDiscoverViewIconSwipe" style="width:16px;height:16px; color:#666; transition:color 0.3s ease;"></i>
-                  <span style="font-size:13px; font-weight:600; color:#666; transition:color 0.3s ease; white-space:nowrap;">Entdecken</span>
+                <!-- Entdecken-Option -->
+                <div class="toggle-option-premium toggle-option-swipe" style="position:relative; z-index:2; display:flex; align-items:center; justify-content:center; gap:6px; padding:8px 12px; flex:1; transition:color 0.3s ease, transform 0.2s ease;">
+                  <i data-lucide="sparkles" id="toggleDiscoverViewIconSwipe" style="width:18px;height:18px; transition:color 0.3s ease;"></i>
+                  <span style="font-size:13px; font-weight:700; transition:color 0.3s ease; white-space:nowrap;">Entdecken</span>
                 </div>
               </button>
             </div>
