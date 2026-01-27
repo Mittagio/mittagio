@@ -2514,11 +2514,10 @@
       <!-- Legal (bottom, small) -->
       <div style="margin-top:20px; padding:16px 16px 24px; text-align:center;">
         <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:12px 16px; font-size:12px; margin-bottom:10px;">
-          <a href="#/faq" id="btnProfileFAQ" onclick="showLegalPage('faq'); return false;" style="color:var(--muted); text-decoration:none;">FAQ</a>
-          <a href="#/impressum" id="btnProfileImpressum" onclick="showLegalPage('impressum'); return false;" style="color:var(--muted); text-decoration:none;">Impressum</a>
-          <a href="#/datenschutz" id="btnProfileDatenschutz" onclick="showLegalPage('datenschutz'); return false;" style="color:var(--muted); text-decoration:none;">Datenschutz</a>
-          <a href="#/agb-kurz" id="btnProfileAGB" onclick="showLegalPage('agb-kurz'); return false;" style="color:var(--muted); text-decoration:none;">AGB</a>
-          <a href="#/datenschutz" id="btnProfileDatenschutz" onclick="showLegalPage('datenschutz'); return false;" style="color:var(--muted); text-decoration:none;">Datenschutz</a>
+          <a href="#/faq" id="btnProfileFAQ" style="color:var(--muted); text-decoration:none;">FAQ</a>
+          <a href="#/impressum" id="btnProfileImpressum" style="color:var(--muted); text-decoration:none;">Impressum</a>
+          <a href="#/datenschutz" id="btnProfileDatenschutz" style="color:var(--muted); text-decoration:none;">Datenschutz</a>
+          <a href="#/agb-kurz" id="btnProfileAGB" style="color:var(--muted); text-decoration:none;">AGB</a>
         </div>
         <div style="font-size:12px; color:var(--muted);">
           <a href="mailto:info@mittagio.de" style="color:var(--muted); text-decoration:none;">info@mittagio.de</a> (Kunden-Hilfe) | <a href="mailto:support@mittagio.de" style="color:var(--muted); text-decoration:none;">support@mittagio.de</a> (Business)
@@ -5249,6 +5248,10 @@
     renderFavorites();
     // Browser-Verlauf aktualisieren
     history.pushState({view: 'fav', mode: mode}, '', location.pathname);
+  }
+  // Alias für Konsistenz
+  function showFavorites(){
+    showFav();
   }
   function showOrders(){
     setCustomerNavActive('orders');
@@ -9510,8 +9513,10 @@
   const startNearBtn = document.getElementById('btnStartNear');
   if(startNearBtn){
     startNearBtn.onclick=()=>{
-      alert('Zeige Angebote in deiner Nähe.');
-      renderStart();
+      // Filter auf "In der Nähe" setzen und zu Discover navigieren
+      activeDiscoverFilter = 'near';
+      showDiscover();
+      renderDiscover();
     };
   }
   
@@ -11910,6 +11915,8 @@
   if(btnDatenschutz) btnDatenschutz.onclick=()=>{ openLegalSheet('datenschutz'); };
   
   // Profile Legal Links - öffnen statische Seiten
+  const btnProfileFAQ = document.getElementById('btnProfileFAQ');
+  if(btnProfileFAQ) btnProfileFAQ.onclick=(e)=>{ e.preventDefault(); showLegalPage('faq'); };
   const btnProfileImpressum = document.getElementById('btnProfileImpressum');
   if(btnProfileImpressum) btnProfileImpressum.onclick=(e)=>{ e.preventDefault(); showLegalPage('impressum'); };
   const btnProfileAGB = document.getElementById('btnProfileAGB');
@@ -11972,6 +11979,8 @@
         }
       } else if(go==='fav'){
         showFav();
+      } else if(go==='cart'){
+        showCart();
       } else if(go==='orders'){
         showOrders();
       } else if(go==='profile'){
