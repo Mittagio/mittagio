@@ -6382,7 +6382,7 @@
     const offerProvider = offers.find(p => p.providerId === data.providerId);
     const orderingEnabled = offerProvider && (offerProvider.orderingEnabled !== false && (data.hasPickupCode || offerProvider.hasPickupCode));
     const hasReuseSupport = offerProvider && (offerProvider.reuseEnabled || offerProvider.reuse || (offerProvider.providerProfile && offerProvider.providerProfile.reuseEnabled));
-    const hasDineIn = data.dineInPossible || false;
+    const hasDineIn = offerProvider && (offerProvider.dineInPossible !== false || data.dineInPossible);
     
     // 3 Icon-Säulen: Finale Definition - Nur Symbole, kein Text
     // Säule 1: Vor Ort (🍴) - Essen vor Ort möglich (Umsatzfokus)
