@@ -1318,7 +1318,7 @@
       background:#fff; color:#666;
       cursor:pointer; transition:all .2s;
       white-space:nowrap;
-      min-width:60px; text-align:center;
+      min-width:50px; text-align:center;
     }
     .discover-day.active{
       background:var(--brand); color:#000;
@@ -1327,6 +1327,21 @@
       font-weight:900;
     }
     .discover-day:active{
+      transform:scale(.96);
+    }
+    
+    /* Quick-Filter Pill (große Kapsel) */
+    .discover-quick-filter-pill{
+      transition:all 0.2s ease;
+    }
+    .discover-quick-filter-pill.active{
+      background:var(--brand) !important;
+      border-color:var(--brand) !important;
+      color:#1a1a1a !important;
+      font-weight:900 !important;
+      box-shadow:0 2px 6px rgba(255,204,0,.3);
+    }
+    .discover-quick-filter-pill:active{
       transform:scale(.96);
     }
     
@@ -1362,18 +1377,11 @@
       width:18px; height:18px;
     }
     
-    /* Angebots-Liste Container */
+    /* Angebots-Liste Container (kompakt) */
     .discover-offers{
-      padding:0 10px 16px;
-      max-width:100%; margin:0 auto;
-      display:flex; flex-direction:column; gap:10px;
+      max-width:980px; margin:0 auto; padding:8px 10px 16px;
+      display:flex; flex-direction:column; gap:8px;
       box-sizing:border-box;
-    }
-    /* List Cards - Horizontal Layout (kleines Bild links, Content rechts) */
-    .discover-offers{
-      max-width:980px; margin:0 auto; padding:16px 10px;
-      display:flex; flex-direction:column; gap:12px;
-      align-items:center; /* Zentrierte Karten */
     }
     .discover-list-card{
       display:flex; gap:12px; padding:12px;
@@ -1431,17 +1439,17 @@
       display:flex; gap:6px; flex-wrap:wrap;
       margin-top:6px;
     }
-    /* Premium Horizontale Gericht-Karte */
+    /* Kompakte Horizontale Gericht-Karte (Slim-Card) */
     .dish-card {
       display: flex;
-      min-height: 120px;
-      padding: 12px;
+      min-height: 96px;
+      padding: 10px;
       background: #ffffff;
-      border-radius: 20px;
+      border-radius: 16px;
       overflow: visible;
       border: 1px solid rgba(0,0,0,0.05);
-      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
-      margin-bottom: 10px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      margin-bottom: 8px;
       cursor: pointer;
       transition: transform 0.2s ease, box-shadow 0.2s ease;
       position: relative;
@@ -1452,13 +1460,13 @@
       transform: scale(0.98);
     }
     .dish-card:hover {
-      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
-    /* Linke Seite: Bild - Kompakt als Thumbnail (max. 25% der Karte) */
+    /* Linke Seite: Bild - Kompakt als Thumbnail (96x96px quadratisch) */
     .dish-image-box {
-      width: 100px;
-      min-width: 100px;
-      height: 100px;
+      width: 96px;
+      min-width: 96px;
+      height: 96px;
       flex-shrink: 0;
       background: #f5f5f5;
       display: flex;
@@ -1466,7 +1474,6 @@
       justify-content: center;
       overflow: hidden;
       border-radius: 12px;
-      margin-right: 12px;
     }
     .dish-image-box img {
       width: 100%;
@@ -1474,10 +1481,10 @@
       object-fit: cover;
       object-position: center;
     }
-    /* Rechte Seite: Details */
+    /* Rechte Seite: Details (kompakt, ohne extra Padding) */
     .dish-details {
       flex: 1;
-      padding: 12px 14px;
+      padding: 0;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -1917,30 +1924,57 @@
 
     <!-- CUSTOMER: Discover - App-like UX (Final Spec) -->
     <section class="view active" id="v-discover">
-      <!-- Header: Sticky mit korrekter Hierarchie -->
+      <!-- Header: Sticky mit Logo, Standort & Ansichts-Umschalter -->
       <div class="discover-header-sticky">
-        <!-- Ebene 1: Standort mit Pin-Icon + Search mit Lupe -->
-        <div class="discover-location-row" style="display:flex; align-items:center; gap:8px; padding:6px 10px;">
-          <button class="discover-location-pill-clickable" type="button" id="btnDiscoverLocationGPS" style="flex:1; display:flex; align-items:center; gap:6px; padding:8px 14px; border-radius:20px; background:rgba(0,0,0,.04); border:1px solid rgba(0,0,0,.08); font-size:14px; font-weight:600; color:#333; cursor:pointer; transition:all 0.2s ease; border:none; background:transparent;">
-            <i data-lucide="map-pin" class="discover-location-icon-left" style="width:16px;height:16px; color:#666;"></i>
-            <span id="discoverCurrentLocation">Jena</span>
+        <!-- Ebene 1: Logo + Standort + Search + Ansichts-Umschalter -->
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 12px; gap:8px;">
+          <!-- Logo & Marke (links) -->
+          <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
+            <div class="brand-badge" style="width:32px; height:32px; border-radius:8px; overflow:hidden; display:flex; align-items:center; justify-content:center; background:var(--brand);">
+              <img src="assets/mittagio-logo.png" alt="Mittagio" style="width:24px;height:24px;" onerror="this.style.display='none'; this.parentElement.innerHTML='<span style=\'font-weight:900; font-size:18px; color:#1a1a1a;\'>M</span>';" />
+            </div>
+            <span style="font-weight:900; font-size:16px; color:#1a1a1a; letter-spacing:-0.3px;">MITTAGIO</span>
+          </div>
+          
+          <!-- Standort-Anker (zentriert, kompakt) -->
+          <button class="discover-location-pill-clickable" type="button" id="btnDiscoverLocationGPS" style="flex:1; max-width:200px; display:flex; align-items:center; gap:6px; padding:6px 12px; border-radius:16px; background:rgba(0,0,0,.04); border:1px solid rgba(0,0,0,.08); font-size:13px; font-weight:600; color:#333; cursor:pointer; transition:all 0.2s ease; justify-content:center;">
+            <i data-lucide="map-pin" style="width:14px;height:14px; color:#666; flex-shrink:0;"></i>
+            <span id="discoverCurrentLocation" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">Jena</span>
           </button>
-          <!-- Search mit Lupe (expandiert bei Klick) -->
-          <button type="button" id="btnDiscoverSearch" aria-label="Suchen" style="width:44px; height:44px; border-radius:12px; border:none; background:rgba(0,0,0,0.05); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s ease; flex-shrink:0;" onmouseover="this.style.background='rgba(0,0,0,0.1)';" onmouseout="this.style.background='rgba(0,0,0,0.05)';">
-            <i data-lucide="search" style="width:20px;height:20px; color:#666;"></i>
-          </button>
+          
+          <!-- Search + Ansichts-Umschalter (rechts) -->
+          <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
+            <!-- Search mit Lupe (kompakt) -->
+            <button type="button" id="btnDiscoverSearch" aria-label="Suchen" style="width:36px; height:36px; border-radius:10px; border:none; background:rgba(0,0,0,0.05); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s ease;" onmouseover="this.style.background='rgba(0,0,0,0.1)';" onmouseout="this.style.background='rgba(0,0,0,0.05)';">
+              <i data-lucide="search" style="width:16px;height:16px; color:#666;"></i>
+            </button>
+            <!-- Ansichts-Umschalter (Grid/Liste) -->
+            <div class="discover-view-toggle-topbar" id="discoverViewToggleTopbar" style="display:flex;">
+              <button type="button" class="toggle-switch" id="toggleDiscoverViewTopbar" aria-label="Ansicht wechseln" style="width:36px; height:36px; border-radius:10px; border:none; background:rgba(0,0,0,0.05); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s ease;" onmouseover="this.style.background='rgba(0,0,0,0.1)';" onmouseout="this.style.background='rgba(0,0,0,0.05)';">
+                <i data-lucide="grid-3x3" id="toggleDiscoverViewIcon" style="width:18px;height:18px; color:#666;"></i>
+              </button>
+            </div>
+          </div>
         </div>
+        
         <!-- Expandiertes Suchfeld (versteckt, wird bei Klick auf Lupe angezeigt) -->
-        <div id="discoverSearchExpanded" style="display:none; padding:0 10px 8px;">
-          <input type="text" id="discoverSearchInput" placeholder="Gericht oder Anbieter suchen..." style="width:100%; padding:12px 16px; border-radius:12px; border:2px solid rgba(0,0,0,0.1); font-size:14px; background:#fff; outline:none; transition:border-color 0.2s ease;" onfocus="this.style.borderColor='#FFD700';" onblur="this.style.borderColor='rgba(0,0,0,0.1)';" />
+        <div id="discoverSearchExpanded" style="display:none; padding:0 12px 8px;">
+          <input type="text" id="discoverSearchInput" placeholder="Gericht oder Anbieter suchen..." style="width:100%; padding:10px 14px; border-radius:10px; border:2px solid rgba(0,0,0,0.1); font-size:14px; background:#fff; outline:none; transition:border-color 0.2s ease;" onfocus="this.style.borderColor='#FFD700';" onblur="this.style.borderColor='rgba(0,0,0,0.1)';" />
         </div>
         
-        <!-- Ebene 2: Horizontale Scroll-Liste für Wochentage -->
-        <div class="discover-calendar-scroll" id="discoverCalendar">
-          <!-- Wird dynamisch befüllt -->
+        <!-- Ebene 2: Quick-Filters (In der Nähe + Datum) - große Kapseln -->
+        <div id="discoverQuickFilters" style="display:flex; align-items:center; gap:8px; padding:8px 12px; overflow-x:auto; scrollbar-width:none; -webkit-overflow-scrolling:touch;">
+          <button type="button" id="btnDiscoverNear" class="discover-quick-filter-pill" style="flex:0 0 auto; padding:10px 18px; border-radius:20px; border:1.5px solid rgba(0,0,0,0.15); background:#fff; font-size:14px; font-weight:700; color:#333; cursor:pointer; transition:all 0.2s ease; display:flex; align-items:center; gap:6px;">
+            <i data-lucide="navigation" style="width:16px;height:16px;"></i>
+            <span>In der Nähe</span>
+          </button>
+          <!-- Datum-Scroll-Liste (horizontal) -->
+          <div class="discover-calendar-scroll" id="discoverCalendar" style="display:flex; gap:6px; flex:1; min-width:0;">
+            <!-- Wird dynamisch befüllt -->
+          </div>
         </div>
         
-        <!-- Filter-Leiste: Kategorien (dezent, schmal, farbige Icons) - wird im Swipe-Modus ausgeblendet -->
+        <!-- Ebene 3: Kategorien (horizontal scrollbar mit Food-Icons) - wird im Swipe-Modus ausgeblendet -->
         <div class="discover-categories-wrapper" id="discoverCategoriesWrapper">
           <div class="discover-categories-scroll" id="discoverCategories">
             <!-- Wird dynamisch befüllt -->
@@ -2409,7 +2443,8 @@
           </details>
           <details>
             <summary>Kontakt</summary>
-            <p>Bei Fragen schreib uns an <a href="mailto:info@mittagio.de" style="color:var(--brand);">info@mittagio.de</a></p>
+            <p>Kunden-Hilfe: <a href="mailto:info@mittagio.de" style="color:var(--brand);">info@mittagio.de</a><br>
+            Business-Anfragen: <a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a></p>
           </details>
         </div>
         <a href="#" id="btnProfileShowMoreFaq" style="display:inline-block; font-size:13px; color:var(--muted); text-decoration:none; margin-top:4px;">
@@ -2427,7 +2462,7 @@
           <a href="#/datenschutz" id="btnProfileDatenschutz" onclick="showLegalPage('datenschutz'); return false;" style="color:var(--muted); text-decoration:none;">Datenschutz</a>
         </div>
         <div style="font-size:12px; color:var(--muted);">
-          <a href="mailto:info@mittagio.de" style="color:var(--muted); text-decoration:none;">info@mittagio.de</a>
+          <a href="mailto:info@mittagio.de" style="color:var(--muted); text-decoration:none;">info@mittagio.de</a> (Kunden-Hilfe) | <a href="mailto:support@mittagio.de" style="color:var(--muted); text-decoration:none;">support@mittagio.de</a> (Business)
         </div>
       </div>
     </section>
@@ -3271,9 +3306,10 @@
         <div style="line-height:1.8; font-size:15px;">
           <p>
             <strong>Anbieter:</strong> MQ Mittagio UG (haftungsbeschränkt)<br>
-            <strong>Anschrift:</strong> [Deine Adresse in Jena]<br>
-            <strong>Kontakt:</strong> <a href="mailto:info@mittagio.de" style="color:var(--brand);">info@mittagio.de</a><br>
-            <strong>Vertreten durch:</strong> [Dein Name]<br>
+            <strong>Anschrift:</strong> Langäcker 2, 73635 Rudersberg<br>
+            <strong>Kontakt (Kunden-Hilfe):</strong> <a href="mailto:info@mittagio.de" style="color:var(--brand);">info@mittagio.de</a><br>
+            <strong>Business-Anfragen:</strong> <a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a><br>
+            <strong>Vertreten durch:</strong> Mike Quach<br>
             <strong>Registereintrag:</strong> Amtsgericht Jena, HRB [Deine Nummer]
           </p>
           
@@ -3283,7 +3319,7 @@
           </p>
         </div>
         <div style="margin-top:32px; padding-top:20px; border-top:1px solid #eee; text-align:center; font-size:14px; color:#666;">
-          Fragen, Hilfe oder Vorschläge? <a href="mailto:info@mittagio.de" style="color:var(--brand);">info@mittagio.de</a>
+          Kunden-Hilfe: <a href="mailto:info@mittagio.de" style="color:var(--brand);">info@mittagio.de</a> | Business: <a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a>
         </div>
         <button class="btn ghost" type="button" onclick="goBackFromLegalPage()" style="margin-top:20px; width:100%;">Zurück</button>
       </div>
@@ -3430,8 +3466,9 @@
           <p style="font-weight:700; margin-bottom:12px;">Verantwortlicher:</p>
           <p>
             MQ Mittagio UG (haftungsbeschränkt)<br>
-            [Deine Adresse in Jena]<br>
-            Kontakt: <a href="mailto:info@mittagio.de" style="color:var(--brand);">info@mittagio.de</a>
+            Langäcker 2, 73635 Rudersberg<br>
+            Kunden-Hilfe: <a href="mailto:info@mittagio.de" style="color:var(--brand);">info@mittagio.de</a><br>
+            Business-Anfragen: <a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a>
           </p>
           
           <p style="margin-top:24px; font-weight:700;">Datenminimierung:</p>
@@ -3441,7 +3478,7 @@
           <p>Um Missbrauch vorzubeugen, erlauben wir nur eine aktive Session pro Account. Eine Neuanmeldung trennt bestehende Verbindungen.</p>
           
           <p style="margin-top:24px; font-weight:700;">Anbieter-Daten:</p>
-          <p>Kommunikation für Partner erfolgt strikt über <a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a>.</p>
+          <p>Kommunikation für Business-Partner erfolgt strikt über <a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a>.</p>
           
           <p style="margin-top:24px; font-weight:700;">Abholnummer:</p>
           <p>Die Abholnummer dient als Zahlungs-/Abholnachweis, zur Zuordnung und zum Missbrauchsschutz. Bitte beachte: Wir nutzen keine "Tickets" oder "Abholcodes".</p>
@@ -3456,7 +3493,7 @@
           <p>Sie haben das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung und Widerspruch. Kontakt: <a href="mailto:info@mittagio.de" style="color:var(--brand);">info@mittagio.de</a></p>
         </div>
         <div style="margin-top:32px; padding-top:20px; border-top:1px solid #eee; text-align:center; font-size:14px; color:#666;">
-          Fragen, Hilfe oder Vorschläge? <a href="mailto:info@mittagio.de" style="color:var(--brand);">info@mittagio.de</a>
+          Kunden-Hilfe: <a href="mailto:info@mittagio.de" style="color:var(--brand);">info@mittagio.de</a> | Business: <a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a>
         </div>
         <button class="btn ghost" type="button" onclick="goBackFromLegalPage()" style="margin-top:20px; width:100%;">Zurück</button>
       </div>
@@ -3483,7 +3520,7 @@
           <p>Anbieter ist verantwortlich für Inhalte/Speisen/gesetzliche Vorgaben.</p>
           
           <p style="margin-top:16px;"><strong>Support:</strong></p>
-          <p><a href="mailto:info@mittagio.de" style="color:var(--brand);">info@mittagio.de</a></p>
+          <p>Business-Anfragen: <a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a></p>
         </div>
       </div>
     </section>
@@ -3677,6 +3714,8 @@
       <div style="color:var(--text-secondary);font-size:14px; display:flex; align-items:center; gap:6px; margin-bottom:12px;" id="sProvider">
         <i data-lucide="store" style="width:16px;height:16px;"></i><span></span>
       </div>
+      <!-- Eco-Badge für Mehrweg (wird dynamisch hinzugefügt) -->
+      <div id="sEcoBadge" style="display:none; margin-bottom:12px;"></div>
       <!-- Status Badge (dynamisch) -->
       <div id="sStatusBadge" style="margin-bottom:16px;"></div>
     </div>
@@ -3684,7 +3723,6 @@
     <div class="row"><span>Abholfenster</span><b id="sWindow"></b></div>
     <div class="row"><span>Adresse</span><a id="sAddr" href="#" target="_blank" rel="noopener">öffnen</a></div>
     <div class="row"><span>Entfernung</span><b id="sDistance"></b></div>
-    <div class="row"><span>Verfügbar</span><b id="sAvail"></b></div>
 
     <div id="sAllergensWrap" style="display:none">
       <div class="row"><span>Allergene</span><span id="sAllergens" style="text-align:right;color:var(--muted)"></span></div>
@@ -5635,26 +5673,44 @@
     }
     switchDiscoverView(discoverViewMode);
     
-    // Kategorien rendern (Reihenfolge: In der Nähe -> Fleisch -> Salat -> Vegetarisch)
+    // Quick-Filters: "In der Nähe" Button
+    const btnDiscoverNear = document.getElementById('btnDiscoverNear');
+    const quickFiltersEl = document.getElementById('discoverQuickFilters');
+    if(btnDiscoverNear){
+      const isActive = activeDiscoverFilter === 'near';
+      btnDiscoverNear.className = 'discover-quick-filter-pill' + (isActive ? ' active' : '');
+      btnDiscoverNear.style.background = isActive ? 'var(--brand)' : '#fff';
+      btnDiscoverNear.style.borderColor = isActive ? 'var(--brand)' : 'rgba(0,0,0,0.15)';
+      btnDiscoverNear.style.color = isActive ? '#1a1a1a' : '#333';
+      btnDiscoverNear.style.fontWeight = isActive ? '900' : '700';
+      btnDiscoverNear.onclick = () => {
+        triggerHapticFeedback([10]);
+        activeDiscoverFilter = 'near';
+        currentProviderFilter = null;
+        renderDiscover();
+      };
+    }
+    
+    // Kategorien rendern (horizontal scrollbar mit Food-Icons)
     const categoriesEl = document.getElementById('discoverCategories');
     if(categoriesEl){
       categoriesEl.innerHTML = '';
       const cats = [
-        {id:'near', label:'In der Nähe', icon: 'navigation'},
-        {id:'Mit Fleisch', label:'Fleisch', icon: 'drumstick'},
-        {id:'Salat', label:'Salat', icon: 'leaf'},
-        {id:'Vegetarisch', label:'Vegetarisch', icon: 'carrot'},
-        {id:'Vegan', label:'Vegan', icon: 'leaf'},
-        {id:'Fisch', label:'Fisch', icon: 'fish'}
+        {id:'Mit Fleisch', label:'Fleisch', emoji: '🍖', icon: 'drumstick'},
+        {id:'Salat', label:'Salat', emoji: '🥗', icon: 'leaf'},
+        {id:'Vegetarisch', label:'Vegetarisch', emoji: '🧀', icon: 'carrot'},
+        {id:'Vegan', label:'Vegan', emoji: '🌿', icon: 'leaf'},
+        {id:'Fisch', label:'Fisch', emoji: '🐟', icon: 'fish'}
       ];
       cats.forEach(cat=>{
         const btn = document.createElement('button');
         const isActive = activeDiscoverFilter === cat.id && !currentProviderFilter;
         btn.className = 'discover-category-chip' + (isActive ? ' active' : '');
         btn.setAttribute('data-cat', cat.id);
-        // Nur Icon, kein Emoji für dezentes Design
-        btn.innerHTML = `<i data-lucide="${cat.icon}"></i><span>${esc(cat.label)}</span>`;
+        // Food-Icons mit Emojis für bessere Erkennbarkeit
+        btn.innerHTML = `<span style="font-size:16px; margin-right:4px;">${cat.emoji || ''}</span><span>${esc(cat.label)}</span>`;
         btn.onclick = ()=>{
+          triggerHapticFeedback([10]);
           activeDiscoverFilter = cat.id;
           currentProviderFilter = null; // Provider-Filter zurücksetzen
           renderDiscover();
@@ -5663,7 +5719,7 @@
       });
     }
     
-    // Kalender rendern (ohne Überschrift, distinct style)
+    // Kalender rendern (kompakte Datum-Pills in Quick-Filters)
     const calendarEl = document.getElementById('discoverCalendar');
     if(calendarEl){
       calendarEl.innerHTML = '';
@@ -5675,13 +5731,15 @@
         
         const btn = document.createElement('button');
         btn.className = 'discover-day' + (activeDay === key ? ' active' : '');
-        // Format: "Heute" für heute, sonst "Montag, 24.01."
+        // Kompaktes Format: "Heute" für heute, sonst nur Wochentag (z.B. "Mo", "Di")
         if(i === 0){
           btn.textContent = 'Heute';
         } else {
-          btn.textContent = fmtDay(d);
+          const dayNames = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
+          btn.textContent = dayNames[d.getDay()];
         }
         btn.onclick = ()=>{
+          triggerHapticFeedback([10]);
           activeDay = key;
           renderDiscover();
         };
@@ -5790,8 +5848,7 @@
     const toggleBtn = document.getElementById('toggleDiscoverView');
     const categoriesWrapper = document.getElementById('discoverCategoriesWrapper');
     const calendarEl = document.getElementById('discoverCalendar');
-    
-    const locationRow = document.querySelector('.discover-location-row');
+    const quickFiltersEl = document.getElementById('discoverQuickFilters');
     
     if(mode === 'swipe'){
       if(listEl) listEl.style.display = 'none';
@@ -5805,10 +5862,10 @@
         swipeEl.style.padding = '12px 0';
       }
       if(toggleBtn) toggleBtn.classList.add('active');
-      // Filter, Kalender und Standort im Swipe-Modus komplett ausblenden (immersiver Modus)
+      // Filter, Quick-Filters und Kalender im Swipe-Modus komplett ausblenden (immersiver Modus)
       if(categoriesWrapper) categoriesWrapper.style.display = 'none';
+      if(quickFiltersEl) quickFiltersEl.style.display = 'none';
       if(calendarEl) calendarEl.style.display = 'none';
-      if(locationRow) locationRow.style.display = 'none';
       renderSwipeCards();
     } else {
       if(listEl) listEl.style.display = 'block';
@@ -5820,10 +5877,10 @@
         swipeEl.style.maxHeight = '600px';
       }
       if(toggleBtn) toggleBtn.classList.remove('active');
-      // Filter, Kalender und Standort in Listenansicht wieder einblenden
+      // Filter, Quick-Filters und Kalender in Listenansicht wieder einblenden
       if(categoriesWrapper) categoriesWrapper.style.display = 'flex';
+      if(quickFiltersEl) quickFiltersEl.style.display = 'flex';
       if(calendarEl) calendarEl.style.display = 'flex';
-      if(locationRow) locationRow.style.display = 'flex';
     }
     
     // Icons aktualisieren
@@ -6820,7 +6877,7 @@
     
     // Verschiebe alle verbleibenden Karten nach oben (zentriert)
     // Performance-Fix: Prüfe ob Elemente noch existieren
-    const cards = Array.from(swipeStack.querySelectorAll('.swipe-card')).filter(c => {
+    let cards = Array.from(swipeStack.querySelectorAll('.swipe-card')).filter(c => {
       if(!c || !c.parentNode || !c.style) return false; // Element existiert nicht mehr
       // CRITICAL FIX: Filtere auch display:none Karten aus
       if(c.style.display === 'none') return false;
@@ -7082,7 +7139,7 @@
     switchDiscoverView('list');
   }
   
-  // List Card für Discover-Seite (Premium horizontales Design)
+  // List Card für Discover-Seite (Kompaktes horizontales Design - Slim-Card)
   function createDiscoverListCard(o){
     const data = normalizeOffer(o);
     const card = document.createElement('div');
@@ -7094,62 +7151,64 @@
     const dishKey = data.id;
     const isFav = dishFavs.has(dishKey);
     
-    // Entfernung anzeigen (Gehzeit-Fokus: Immer "X Min. zu Fuß" wenn möglich)
-    let distanceDisplay = '';
+    // Gehzeit berechnen
+    let walkingTimeText = '';
     if(data.walkingTimeText){
-      // Bereits berechnete Gehzeit verwenden
-      distanceDisplay = `<div class="distance-badge" style="color:var(--brand); background:rgba(242,183,5,0.1); font-weight:700;">
-        <i data-lucide="navigation" style="width:12px;height:12px;"></i> ${esc(data.walkingTimeText)}
-      </div>`;
+      walkingTimeText = data.walkingTimeText;
     } else if(data.distanceKm != null){
-      // Gehzeit berechnen: 5 km/h = 12 Minuten pro km
       const walkingMinutes = Math.round(Number(data.distanceKm) * 12);
-      const walkingTimeText = walkingMinutes < 1 ? '< 1 Min.' : `${walkingMinutes} Min.`;
-      distanceDisplay = `<div class="distance-badge" style="color:var(--brand); background:rgba(242,183,5,0.1); font-weight:700;">
-        <i data-lucide="navigation" style="width:12px;height:12px;"></i> ${walkingTimeText} zu Fuß
-      </div>`;
+      walkingTimeText = walkingMinutes < 1 ? '< 1 Min.' : `${walkingMinutes} Min.`;
     }
     
-    // Social-Proof: "Heute schon Xx bestellt" (optional, zwischen Provider und Footer)
-    const socialProof = data.todayOrderCount > 0 ? `<div style="margin-top:4px; padding:4px 8px; background:rgba(255,204,0,0.1); border-radius:6px; font-size:11px; font-weight:600; color:#b8860b; display:inline-flex; align-items:center; gap:4px; width:fit-content;"><i data-lucide="users" style="width:12px;height:12px;"></i> <span>${data.todayOrderCount}x heute</span></div>` : '';
+    // Eco-Badge: Mehrweg-Option (wenn Anbieter es unterstützt)
+    const provider = offers.find(p => p.providerId === data.providerId);
+    const hasReuseSupport = provider && (provider.reuseEnabled || provider.reuse || (provider.providerProfile && provider.providerProfile.reuseEnabled));
     
+    // Kompaktes horizontales Layout: Bild links (quadratisch), Text rechts
     card.innerHTML = `
-      <div class="dish-image-box" style="position:relative; overflow:hidden; border-radius:12px;">
-        <img src="${esc(imgSrc)}" alt="${esc(data.dish||'')}" style="width:100%; height:100%; object-fit:cover; border-radius:12px;" />
-        <!-- Overlay-Icons auf dem Bild (kompakt für kleineres Bild) -->
-        <div style="position:absolute; top:6px; right:6px; display:flex; gap:4px; z-index:5;">
-          <button class="btn-icon-overlay" onclick="event.stopPropagation(); toggleDishFav('${dishKey}'); const btn=this.querySelector('i'); setTimeout(()=>{const isFav=dishFavs.has('${dishKey}'); btn.style.fill=isFav?'currentColor':''; btn.style.color=isFav?'#e74c3c':'#666'; if(typeof lucide !== 'undefined') lucide.createIcons();}, 10);" title="Favorit" style="width:32px; height:32px; border-radius:50%; background:rgba(255,255,255,0.95); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 2px 6px rgba(0,0,0,0.15); transition:transform 0.2s ease;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
-            <i data-lucide="heart" style="width:16px;height:16px;${isFav ? 'fill:currentColor; color:#e74c3c;' : 'color:#666;'}"></i>
+      <div style="display:flex; gap:12px; align-items:flex-start;">
+        <!-- Kompaktes Bild links (quadratisch, 80-100px) -->
+        <div style="position:relative; width:96px; height:96px; flex-shrink:0; border-radius:12px; overflow:hidden; background:#f0f0f0;">
+          <img src="${esc(imgSrc)}" alt="${esc(data.dish||'')}" style="width:100%; height:100%; object-fit:cover;" />
+          <!-- Eco-Badge als Mini-Icon am Bildrand (oben links) -->
+          ${hasReuseSupport ? `<div style="position:absolute; top:4px; left:4px; background:#27AE60; color:#fff; width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 4px rgba(0,0,0,0.2); z-index:5; font-size:12px;">🌿</div>` : ''}
+          <!-- Favorit-Button (oben rechts) -->
+          <button class="btn-icon-overlay" onclick="event.stopPropagation(); toggleDishFav('${dishKey}'); const btn=this.querySelector('i'); setTimeout(()=>{const isFav=dishFavs.has('${dishKey}'); btn.style.fill=isFav?'currentColor':''; btn.style.color=isFav?'#e74c3c':'#666'; if(typeof lucide !== 'undefined') lucide.createIcons();}, 10);" title="Favorit" style="position:absolute; top:4px; right:4px; width:28px; height:28px; border-radius:50%; background:rgba(255,255,255,0.95); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 2px 6px rgba(0,0,0,0.15); transition:transform 0.2s ease; z-index:5;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+            <i data-lucide="heart" style="width:14px;height:14px;${isFav ? 'fill:currentColor; color:#e74c3c;' : 'color:#666;'}"></i>
           </button>
         </div>
-      </div>
-      <div class="dish-details">
-        <div>
-          <div class="dish-header">
-            <h3 class="dish-name" style="font-weight:900; font-size:20px; line-height:1.3; margin:0; color:#111; letter-spacing:-0.3px;">${esc(data.dish||'Gericht')}</h3>
-            <div class="dish-price" style="font-size:20px; color:var(--brand); font-weight:900; margin-top:4px;">${euro(data.price)}</div>
+        
+        <!-- Info-Bereich rechts (flex:1 für volle Breite) -->
+        <div style="flex:1; display:flex; flex-direction:column; justify-content:space-between; min-width:0; padding:2px 0;">
+          <!-- Name & Preis in einer Zeile -->
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px; margin-bottom:4px;">
+            <h3 class="dish-name" style="font-weight:900; font-size:15px; line-height:1.3; margin:0; color:#111; letter-spacing:-0.2px; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;">${esc(data.dish||'Gericht')}</h3>
+            <div class="dish-price" style="font-size:16px; color:var(--brand); font-weight:900; flex-shrink:0; white-space:nowrap;">${euro(data.price)}</div>
           </div>
-          <div class="dish-meta" style="margin-top:8px; display:flex; flex-direction:column; gap:4px; font-size:12px; color:#666; line-height:1.4;">
-            <div style="display:flex; align-items:center; gap:4px;">
-              <i data-lucide="store" style="width:12px;height:12px; color:#666;"></i>
-              <span>${esc(data.providerName||'Anbieter')}</span>
-            </div>
-            ${distanceDisplay ? `<div style="margin-top:2px;">
-              ${distanceDisplay}
-            </div>` : ''}
-            ${data.pickupWindow ? `<div style="display:flex; align-items:center; gap:4px; margin-top:2px;">
-              <i data-lucide="clock" style="width:12px;height:12px; color:#666;"></i>
+          
+          <!-- Anbieter-Name (klein, uppercase) -->
+          <p style="font-size:10px; font-weight:700; color:#94a3b8; text-transform:uppercase; letter-spacing:0.5px; margin:0 0 6px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+            ${esc(data.providerName||'Anbieter')}
+          </p>
+          
+          <!-- Info-Zeile: Gehzeit & Zeit-Slot (kompakt) -->
+          <div style="display:flex; align-items:center; gap:12px; font-size:10px; font-weight:700; color:#64748b; margin-top:auto;">
+            ${walkingTimeText ? `<span style="display:flex; align-items:center; gap:3px;">
+              <i data-lucide="navigation" style="width:11px;height:11px; color:var(--brand);"></i>
+              <span>${walkingTimeText}</span>
+            </span>` : ''}
+            ${data.pickupWindow ? `<span style="display:flex; align-items:center; gap:3px;">
+              <i data-lucide="clock" style="width:11px;height:11px; color:#94a3b8;"></i>
               <span>${esc(data.pickupWindow)}</span>
-            </div>` : ''}
+            </span>` : ''}
           </div>
-          ${socialProof}
         </div>
       </div>
     `;
     
     // Klick auf Karte öffnet immer Detailansicht (nicht direkt Bestellung)
     card.onclick = (e)=>{
-      if(e.target.closest('.btn-icon')) return; // Button-Handler übernimmt
+      if(e.target.closest('.btn-icon-overlay')) return; // Button-Handler übernimmt
       openOffer(data.id); // Immer Detailansicht öffnen
     };
     
@@ -7925,19 +7984,30 @@
       }
     }
 
-    // Badges Row (max 3)
+    // Badges Row (max 3) - Eco-Badge für Mehrweg-Option
     const badgesEl = document.getElementById('sBadges');
     if(badgesEl){
       badgesEl.innerHTML = '';
       const badges = [];
-      if(o.dineInPossible) badges.push({class:'dine', text:'Vor Ort', icon:'utensils'});
+      // Mehrweg-Badge (höchste Priorität)
+      const provider = offers.find(p => p.providerId === o.providerId);
+      const hasReuseSupport = provider && (provider.reuseEnabled || provider.reuse || (provider.providerProfile && provider.providerProfile.reuseEnabled));
+      if(hasReuseSupport && badges.length < 3) badges.push({class:'eco', text:'Mehrweg möglich', icon:'leaf', emoji:'🌿'});
+      if(o.dineInPossible && badges.length < 3) badges.push({class:'dine', text:'Vor Ort', icon:'utensils'});
       if(!o.dineInPossible || badges.length < 3) badges.push({class:'pickup', text:'Zum Mitnehmen', icon:'shopping-bag'});
-      if(o.hasPickupCode && badges.length < 3) badges.push({class:'code', text:'Abholnummer', icon:'ticket'});
+      if(o.hasPickupCode && badges.length < 3) badges.push({class:'code', text:'Abholnummer', icon:'hash'});
       
       badges.slice(0, 3).forEach(badge => {
         const badgeEl = document.createElement('span');
         badgeEl.className = `card-status-badge ${badge.class}`;
-        badgeEl.innerHTML = `${iconMarkup(badge.icon)} <span>${esc(badge.text)}</span>`;
+        if(badge.class === 'eco'){
+          badgeEl.style.background = 'rgba(39,174,96,0.1)';
+          badgeEl.style.color = '#27AE60';
+          badgeEl.style.border = '1px solid rgba(39,174,96,0.2)';
+          badgeEl.innerHTML = `<span style="font-size:14px; margin-right:4px;">${badge.emoji || ''}</span><span>${esc(badge.text)}</span>`;
+        } else {
+          badgeEl.innerHTML = `<i data-lucide="${badge.icon}" style="width:14px;height:14px;"></i> <span>${esc(badge.text)}</span>`;
+        }
         badgesEl.appendChild(badgeEl);
       });
     }
@@ -8020,6 +8090,19 @@
       rw.style.display='block';
       document.getElementById('sReuse').textContent = `Pfand ${euro(o.reuse.deposit)}`;
     } else rw.style.display='none';
+    
+    // Eco-Badge für Mehrweg-Option (zusätzlich zu Reuse-Wrap)
+    const ecoBadgeEl = document.getElementById('sEcoBadge');
+    if(ecoBadgeEl){
+      const provider = offers.find(p => p.providerId === o.providerId);
+      const hasReuseSupport = provider && (provider.reuseEnabled || provider.reuse || (provider.providerProfile && provider.providerProfile.reuseEnabled));
+      if(hasReuseSupport){
+        ecoBadgeEl.style.display = 'block';
+        ecoBadgeEl.innerHTML = `<div style="padding:8px 12px; background:rgba(39,174,96,0.1); border-radius:8px; font-size:13px; font-weight:700; color:#27AE60; display:inline-flex; align-items:center; gap:6px; border:1px solid rgba(39,174,96,0.2);"><span style="font-size:16px;">🌿</span> <span>Mehrweg möglich</span></div>`;
+      } else {
+        ecoBadgeEl.style.display = 'none';
+      }
+    }
 
     // Primary CTA (dynamisch basierend auf Abholcode)
     const primaryCTA = document.getElementById('btnPrimaryCTA');
@@ -10317,9 +10400,9 @@
   // Support-Actions Handler
   function handleSupportAction(action){
     if(action === 'openHelp'){
-      // Hilfe & Kontakt: info@mittagio.de (nur für Kunden)
-      showToast('Kontakt: info@mittagio.de', 2000);
-      // Optional: E-Mail-Client öffnen
+      // Kunden-Hilfe: info@mittagio.de (Mike Quach, Rudersberg)
+      showToast('Kunden-Hilfe: info@mittagio.de', 2000);
+      // E-Mail-Client öffnen
       window.location.href = 'mailto:info@mittagio.de?subject=Hilfe%20bei%20Mittagio';
     } else if(action === 'showDatenschutz'){
       showView(views.legalDatenschutz);
@@ -11196,14 +11279,15 @@
         <div style="line-height:1.8;">
           <p style="font-weight:700; margin-bottom:12px;">Verantwortlich für den Inhalt:</p>
           <p>
-            Mittagio<br>
-            Inhaber: Mike Quach<br>
+            MQ Mittagio UG (haftungsbeschränkt)<br>
+            Vertreten durch: Mike Quach<br>
             Langäcker 2<br>
             73635 Rudersberg<br>
             Deutschland
           </p>
           <p style="margin-top:16px;">
-            <strong>E-Mail:</strong> <a href="mailto:info@mittagio.de" style="color:var(--brand);">info@mittagio.de</a>
+            <strong>Kunden-Hilfe:</strong> <a href="mailto:info@mittagio.de" style="color:var(--brand);">info@mittagio.de</a><br>
+            <strong>Business-Anfragen:</strong> <a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a>
           </p>
           <p style="margin-top:20px; padding-top:20px; border-top:1px solid #eee; font-size:13px; color:#666;">
             <strong>Unternehmensform:</strong> Einzelunternehmen<br>
@@ -11263,12 +11347,13 @@
           <p style="margin-bottom:16px;"><strong>1. Verantwortlicher</strong></p>
           <p style="margin-bottom:20px;">
             Verantwortlich für die Datenverarbeitung ist:<br><br>
-            <strong>Mittagio</strong><br>
-            Inhaber: Mike Quach<br>
+            <strong>MQ Mittagio UG (haftungsbeschränkt)</strong><br>
+            Vertreten durch: Mike Quach<br>
             Langäcker 2<br>
             73635 Rudersberg<br>
             Deutschland<br><br>
-            <strong>E-Mail:</strong> <a href="mailto:info@mittagio.de" style="color:var(--brand);">info@mittagio.de</a>
+            <strong>Kunden-Hilfe:</strong> <a href="mailto:info@mittagio.de" style="color:var(--brand);">info@mittagio.de</a><br>
+            <strong>Business-Anfragen:</strong> <a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a>
           </p>
           
           <p style="margin-bottom:16px;"><strong>2. Allgemeines</strong></p>
