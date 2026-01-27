@@ -8645,6 +8645,57 @@
       }
     }
     
+    // Allergene-Overlay Funktion
+    window.showAllergensOverlay = function(){
+      const o = normalizeOffer(offers.find(x => x.id === activeOfferId));
+      if(!o || !o.allergens || o.allergens.length === 0) return;
+      
+      const overlay = document.createElement('div');
+      overlay.style.cssText = 'position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.8); z-index:2000; display:flex; align-items:center; justify-content:center; padding:20px;';
+      overlay.onclick = (e) => {
+        if(e.target === overlay) {
+          document.body.removeChild(overlay);
+        }
+      };
+      
+      const content = document.createElement('div');
+      content.style.cssText = 'background:linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border-radius:24px; padding:24px; max-width:400px; width:100%; border:2px solid rgba(255,255,255,0.1); box-shadow:0 8px 32px rgba(0,0,0,0.5);';
+      content.onclick = (e) => e.stopPropagation();
+      
+      const allergenMap = {
+        'Gluten': {icon: 'info', code: '(A)'},
+        'Laktose': {icon: 'droplet', code: '(G)'},
+        'Sellerie': {icon: 'leaf', code: '(L)'}
+      };
+      
+      const allergenList = o.allergens.map(a => {
+        const info = allergenMap[a] || {icon: 'info', code: ''};
+        return `<div style="display:flex; align-items:center; gap:8px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.1);">
+          <i data-lucide="${info.icon}" style="width:18px;height:18px; color:rgba(255,255,255,0.7);"></i>
+          <span style="color:#fff; font-size:14px;">${esc(a)} ${info.code}</span>
+        </div>`;
+      }).join('');
+      
+      content.innerHTML = `
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+          <h3 style="color:#fff; font-size:20px; font-weight:900; margin:0;">Allergene</h3>
+          <button onclick="this.closest('[style*=\\'position:fixed\\']').remove();" style="background:none; border:none; color:#fff; cursor:pointer; padding:4px; display:flex; align-items:center; justify-content:center;">
+            <i data-lucide="x" style="width:20px;height:20px;"></i>
+          </button>
+        </div>
+        <div style="max-height:300px; overflow-y:auto;">
+          ${allergenList}
+        </div>
+        <div style="margin-top:16px; padding-top:16px; border-top:1px solid rgba(255,255,255,0.1); color:rgba(255,255,255,0.6); font-size:12px; font-style:italic; line-height:1.5;">
+          Für die Richtigkeit der Angaben zu Allergenen ist ausschließlich der Anbieter verantwortlich.
+        </div>
+      `;
+      
+      overlay.appendChild(content);
+      document.body.appendChild(overlay);
+      if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
+    };
+    
     // Route Button in Address Card (nur bei OHNE Abholnummer sichtbar)
     if(btnOpenRoute){
       if(!o.hasPickupCode){
