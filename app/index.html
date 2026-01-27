@@ -8407,13 +8407,12 @@
     };
     
     // Route Button in Address Card (nur bei OHNE Abholnummer sichtbar)
+    // offerProvider bereits oben deklariert
     if(btnOpenRoute){
       if(!o.hasPickupCode){
         btnOpenRoute.style.display = 'block';
         btnOpenRoute.onclick = () => {
-          const profile = normalizeProviderProfile(provider.profile || {});
-          const address = `${profile.street || ''}, ${profile.zip || ''} ${profile.city || ''}`.trim();
-          const maps = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+          // Verwende bereits vorhandene addr-Variable für Maps-Link
           window.open(maps, '_blank');
         };
       } else {
