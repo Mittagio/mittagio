@@ -6458,20 +6458,11 @@
   // Alte Swipe-Gesten wurden entfernt - jetzt nur noch Button-basierte Interaktion
   
   // Haptic Feedback (verbessert: kurze, dezent Vibration)
-      const swipeStack = document.getElementById('swipeStack');
-      if(!swipeStack) return;
-      const allCards = Array.from(swipeStack.querySelectorAll('.swipe-card')).filter(c => 
-        c && c.parentNode && c.style && c.style.opacity !== '0' && 
-        !c.classList.contains('swipe-left') && !c.classList.contains('swipe-right')
-      );
-      const currentIndex = allCards.indexOf(card);
-      if(currentIndex !== 0) return;
-      const touch = e.touches[0];
-      currentX = touch.clientX - startX;
-      currentY = touch.clientY - startY;
-      
-      // Physikalisch korrekte Rotation: begrenzt auf max 25 Grad
-      const rotation = Math.max(-MAX_ROTATION, Math.min(MAX_ROTATION, currentX * ROTATION_FACTOR));
+  function triggerHapticFeedback(pattern = [15]){
+    if('vibrate' in navigator){
+      navigator.vibrate(pattern); // Standard: 15ms, oder Pattern wie [10, 5, 10]
+    }
+  }
       card.style.transform = `translateX(${currentX}px) translateY(${currentY}px) rotate(${rotation}deg)`;
       
       // Match-Feedback während Swipe
@@ -6904,19 +6895,6 @@
       card.dataset.hapticTriggered = ''; // Reset für nächsten Swipe
     });
     
-    card.addEventListener('mouseleave', () => {
-      if(isDragging){
-        isDragging = false;
-        card.classList.remove('swiping');
-        card.style.transform = '';
-        currentX = 0;
-        currentY = 0;
-      }
-    });
-    
-    return card;
-  }
-  
   // Haptic Feedback (verbessert: kurze, dezent Vibration)
   function triggerHapticFeedback(pattern = [15]){
     if('vibrate' in navigator){
