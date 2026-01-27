@@ -2408,27 +2408,33 @@
         </div>
       </div>
 
-      <!-- Untermenü: Mein Geschmack -->
+      <!-- Untermenü: Mein Geschmack (Präferenzen in zweite Reihe) -->
       <div class="panel" id="profileTasteSection" style="margin-top:20px; padding:20px; border-radius:20px; box-shadow:0 2px 12px rgba(0,0,0,.06);">
-        <div style="font-weight:900; font-size:18px; margin-bottom:16px; color:#2D3436; display:flex; align-items:center; gap:8px;">
-          <span style="font-size:24px;">❤️</span>
+        <div style="font-weight:700; font-size:16px; margin-bottom:12px; color:#64748b; display:flex; align-items:center; gap:8px;">
+          <span style="font-size:20px;">❤️</span>
           <span>Mein Geschmack</span>
         </div>
-        <div class="hint" style="font-size:13px; color:#666; margin-bottom:20px; line-height:1.5;">
+        <div class="hint" style="font-size:12px; color:#94a3b8; margin-bottom:16px; line-height:1.5;">
           Diese Einstellungen filtern automatisch deinen "Entdecken"-Feed, sodass dir nur Essen angezeigt wird, das du auch wirklich magst.
         </div>
-        <div id="profileDietSwitches" style="display:flex; flex-direction:column; gap:16px;">
+        <div id="profileDietSwitches" style="display:flex; flex-direction:column; gap:12px;">
           <!-- Wird dynamisch befüllt -->
         </div>
         
-        <!-- Nachhaltigkeit: Mehrweg-Option -->
+        <!-- Nachhaltigkeit: Mehrweg-Option (zweite Ebene) -->
         <div style="margin-top:24px; padding-top:24px; border-top:2px solid rgba(0,0,0,0.06);">
-          <div style="font-weight:900; font-size:18px; margin-bottom:16px; color:#2D3436; display:flex; align-items:center; gap:8px;">
-            <span style="font-size:24px;">🥗</span>
+          <div style="font-weight:700; font-size:16px; margin-bottom:12px; color:#64748b; display:flex; align-items:center; gap:8px;">
+            <span style="font-size:20px;">🌿</span>
             <span>Nachhaltigkeit</span>
           </div>
-          <div id="profileReuseSwitch" style="display:flex; flex-direction:column; gap:16px;">
+          <div id="profileReuseSwitch" style="display:flex; flex-direction:column; gap:12px;">
             <!-- Wird dynamisch befüllt -->
+          </div>
+          <!-- Hinweistext über Mehrweg-System -->
+          <div style="margin-top:16px; padding:12px; background:rgba(0,0,0,0.03); border-radius:12px; border-left:3px solid rgba(39,174,96,0.3);">
+            <div style="font-size:13px; color:#64748b; line-height:1.5;">
+              Wir arbeiten stetig daran, weitere Partner für unser Mehrweg-System zu gewinnen. Aktuell führen noch nicht alle Anbieter Mehrweg-Optionen; es werden dir weiterhin alle verfügbaren Angebote angezeigt.
+            </div>
           </div>
           <!-- Eco-Badge Vorschau -->
           <div id="profileEcoBadge" style="margin-top:16px; padding:16px; background:linear-gradient(135deg, rgba(31,157,85,0.1) 0%, rgba(46,204,113,0.08) 100%); border-radius:16px; border:2px solid rgba(31,157,85,0.2); display:none;">
@@ -2468,9 +2474,9 @@
           <div style="font-size:12px; color:#888; margin-bottom:20px; line-height:1.4;">
             Anbieter-Support: <a href="mailto:support@mittagio.de" style="color:#FFD700; text-decoration:none;">support@mittagio.de</a>
           </div>
-          <button class="btn-primary" type="button" id="btnProviderBusinessLogin" style="width:100%; min-height:52px; font-size:16px; font-weight:700; box-shadow:0 4px 12px rgba(255,215,0,0.3);">
+          <button class="btn-primary" type="button" id="btnProviderBusinessLogin" style="width:100%; min-height:52px; font-size:16px; font-weight:700; background:#6b7280; color:#fff; border:none; box-shadow:0 4px 12px rgba(107,114,128,0.3); transition:all 0.2s ease;" onmouseover="this.style.background='#4b5563'; this.style.boxShadow='0 6px 16px rgba(107,114,128,0.4)';" onmouseout="this.style.background='#6b7280'; this.style.boxShadow='0 4px 12px rgba(107,114,128,0.3)';">
             <i data-lucide="log-in" style="width:20px;height:20px;"></i>
-            <span id="btnProviderBusinessLoginText">Jetzt als Anbieter einloggen</span>
+            <span id="btnProviderBusinessLoginText">Dein Mittagessen anbieten – einfach und digital.</span>
           </button>
         </div>
       </div>
@@ -2530,16 +2536,34 @@
         </a>
       </div>
 
-      <!-- Legal (bottom, small) -->
-      <div style="margin-top:20px; padding:16px 16px 24px; text-align:center;">
-        <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:12px 16px; font-size:12px; margin-bottom:10px;">
-          <a href="#/faq" id="btnProfileFAQ" onclick="showLegalPage('faq'); return false;" style="color:var(--muted); text-decoration:none;">FAQ</a>
-          <a href="#/impressum" id="btnProfileImpressum" onclick="showLegalPage('impressum'); return false;" style="color:var(--muted); text-decoration:none;">Impressum</a>
-          <a href="#/datenschutz" id="btnProfileDatenschutz" onclick="showLegalPage('datenschutz'); return false;" style="color:var(--muted); text-decoration:none;">Datenschutz</a>
-          <a href="#/agb-kurz" id="btnProfileAGB" onclick="showLegalPage('agb-kurz'); return false;" style="color:var(--muted); text-decoration:none;">AGB</a>
-          <a href="#/datenschutz" id="btnProfileDatenschutz" onclick="showLegalPage('datenschutz'); return false;" style="color:var(--muted); text-decoration:none;">Datenschutz</a>
+      <!-- Footer: Professionalisierung & Branding (zentral) -->
+      <div style="margin-top:32px; padding:24px 16px 32px; text-align:center; border-top:2px solid rgba(0,0,0,0.06);">
+        <!-- Zentrale Übersicht: FAQs, Impressum, Versionierung -->
+        <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:12px 20px; font-size:13px; margin-bottom:16px;">
+          <a href="#/faq" id="btnProfileFAQ" onclick="showLegalPage('faq'); return false;" style="color:var(--muted); text-decoration:none; font-weight:500;">FAQ</a>
+          <a href="#/impressum" id="btnProfileImpressum" onclick="showLegalPage('impressum'); return false;" style="color:var(--muted); text-decoration:none; font-weight:500;">Impressum</a>
+          <a href="#/datenschutz" id="btnProfileDatenschutz" onclick="showLegalPage('datenschutz'); return false;" style="color:var(--muted); text-decoration:none; font-weight:500;">Datenschutz</a>
+          <a href="#/agb-kurz" id="btnProfileAGB" onclick="showLegalPage('agb-kurz'); return false;" style="color:var(--muted); text-decoration:none; font-weight:500;">AGB</a>
         </div>
-        <div style="font-size:12px; color:var(--muted);">
+        
+        <!-- Branding-Elemente -->
+        <div style="margin-top:16px; padding-top:16px; border-top:1px solid rgba(0,0,0,0.06);">
+          <div style="font-size:11px; color:var(--muted); line-height:1.6; margin-bottom:8px;">
+            <div style="margin-bottom:4px;">
+              <a href="https://hageo.de" target="_blank" rel="noopener" style="color:var(--muted); text-decoration:none;">hageo.de</a>
+              <span style="margin:0 6px;">·</span>
+              <span>made with helps</span>
+              <span style="margin:0 6px;">·</span>
+              <span>Besteck-Strategie</span>
+            </div>
+            <div style="font-size:10px; color:#94a3b8; margin-top:8px;">
+              Version 1.0.0
+            </div>
+          </div>
+        </div>
+        
+        <!-- Kontakt -->
+        <div style="margin-top:12px; font-size:12px; color:var(--muted);">
           <a href="mailto:info@mittagio.de" style="color:var(--muted); text-decoration:none;">info@mittagio.de</a> (Kunden-Hilfe) | <a href="mailto:support@mittagio.de" style="color:var(--muted); text-decoration:none;">support@mittagio.de</a> (Business)
         </div>
       </div>
@@ -2553,7 +2577,7 @@
         <input class="field" id="provEmail" type="email" placeholder="E-Mail" autocomplete="email" style="margin-top:12px;" />
         <div style="height:10px"></div>
         <input class="field" id="provPass" type="password" placeholder="Passwort" autocomplete="current-password" />
-        <button class="btn" type="button" id="btnProvLogin" style="margin-top:16px;">Einloggen</button>
+        <button class="btn" type="button" id="btnProvLogin" style="margin-top:16px; background:#6b7280; color:#fff; border:none; transition:all 0.2s ease;" onmouseover="this.style.background='#4b5563';" onmouseout="this.style.background='#6b7280';">Einloggen</button>
         <button class="btn secondary" type="button" id="btnProvBack" style="margin-top:8px;">Zurück</button>
         <p class="hint" style="margin-top:12px;">Demo: beliebige E-Mail/Passwort -> du bist drin. (Später: Firebase Auth.)</p>
       </div>
@@ -3394,10 +3418,10 @@
       </div>
     </section>
 
-    <!-- STATISCHE RECHTSTEXTE-SEITEN -->
+    <!-- STATISCHE RECHTSTEXTE-SEITEN: KUNDEN -->
     <section class="view" id="v-legal-impressum">
       <div class="panel">
-        <h1 style="font-size:24px; font-weight:900; margin-bottom:20px;">Impressum</h1>
+        <h1 style="font-size:24px; font-weight:900; margin-bottom:20px;">Impressum (Kunden)</h1>
         <div style="line-height:1.8; font-size:15px;">
           <p>
             <strong>Anbieter:</strong> MQ Mittagio UG (haftungsbeschränkt)<br>
@@ -3420,12 +3444,69 @@
       </div>
     </section>
 
+    <!-- Impressum für Anbieter -->
+    <section class="view" id="v-legal-impressum-provider" style="background:#1e1e1e; min-height:100vh; padding:20px; padding-bottom:90px;">
+      <div class="panel" style="padding:20px; border-radius:20px; box-shadow:0 4px 16px rgba(0,0,0,.4); background:#2a2a2a; border:1px solid rgba(255,255,255,0.05);">
+        <h1 style="font-size:24px; font-weight:900; margin-bottom:20px; color:#fff;">Impressum (Anbieter)</h1>
+        <div style="line-height:1.8; font-size:15px; color:rgba(255,255,255,0.9);">
+          <p>
+            <strong>Anbieter:</strong> MQ Mittagio UG (haftungsbeschränkt)<br>
+            <strong>Anschrift:</strong> Langäcker 2, 73635 Rudersberg<br>
+            <strong>Business-Support:</strong> <a href="mailto:support@mittagio.de" style="color:#FFD700;">support@mittagio.de</a><br>
+            <strong>Kunden-Hilfe:</strong> <a href="mailto:info@mittagio.de" style="color:#FFD700;">info@mittagio.de</a><br>
+            <strong>Vertreten durch:</strong> Mike Quach<br>
+            <strong>Registereintrag:</strong> Amtsgericht Jena, HRB [Deine Nummer]
+          </p>
+          
+          <p style="margin-top:20px; padding-top:20px; border-top:1px solid rgba(255,255,255,0.1); font-size:13px; color:rgba(255,255,255,0.7);">
+            <strong>Plattformhinweis:</strong><br>
+            Mittagio ist eine Vermittlungsplattform für lokale Gastronomie. Als Anbieter nutzt du unsere digitale Infrastruktur zur Verwaltung deiner Mittagsangebote und zur Abwicklung von Online-Bestellungen.
+          </p>
+        </div>
+        <div style="margin-top:32px; padding-top:20px; border-top:1px solid rgba(255,255,255,0.1); text-align:center; font-size:14px; color:rgba(255,255,255,0.7);">
+          Business-Support: <a href="mailto:support@mittagio.de" style="color:#FFD700;">support@mittagio.de</a>
+        </div>
+        <button class="btn ghost" type="button" onclick="goBackFromLegalPage()" style="margin-top:20px; width:100%; background:#1e1e1e; border:1px solid rgba(255,255,255,0.1); color:rgba(255,255,255,0.8);">Zurück</button>
+      </div>
+    </section>
+
+    <!-- AGB für Kunden -->
     <section class="view" id="v-legal-agb-kurz">
       <div class="panel">
-        <h1 style="font-size:24px; font-weight:900; margin-bottom:20px;">AGB</h1>
+        <h1 style="font-size:24px; font-weight:900; margin-bottom:20px;">AGB (Kunden)</h1>
         <div style="line-height:1.8; font-size:15px;">
           <p><strong>Mittagio ist Plattform, nicht Verkäufer</strong></p>
           <p>Mittagio vermittelt Mittagsangebote lokaler Anbieter. Vertragspartner bei Bestellungen ist ausschließlich der jeweilige Anbieter.</p>
+          
+          <p style="margin-top:20px;"><strong>Bestellung & Zahlung:</strong></p>
+          <p>Du bestellst direkt beim Anbieter über unsere Plattform. Die Zahlung erfolgt sicher online. Nach erfolgreicher Zahlung erhältst du deine Abholnummer.</p>
+          
+          <p style="margin-top:20px;"><strong>Abholnummer:</strong></p>
+          <p>Die Abholnummer dient als Zahlungs- & Abholnachweis. Zeige sie beim Abholen vor, um dein Essen zu erhalten.</p>
+          
+          <p style="margin-top:20px;"><strong>Stornierung:</strong></p>
+          <p>Stornierungen sind bis zu einer bestimmten Frist vor der Abholzeit möglich. Details findest du in der Bestellübersicht.</p>
+          
+          <p style="margin-top:20px;"><strong>Verantwortung:</strong></p>
+          <p>Der Anbieter ist verantwortlich für Speisen, Preise und gesetzliche Vorgaben. Mittagio übernimmt keine Haftung für die Qualität der Speisen.</p>
+          
+          <p style="margin-top:20px;"><strong>Support:</strong></p>
+          <p>Kunden-Hilfe: <a href="mailto:info@mittagio.de" style="color:var(--brand);">info@mittagio.de</a></p>
+        </div>
+        <div style="margin-top:32px; padding-top:20px; border-top:1px solid #eee; text-align:center; font-size:14px; color:#666;">
+          Fragen, Hilfe oder Vorschläge? <a href="mailto:info@mittagio.de" style="color:var(--brand);">info@mittagio.de</a>
+        </div>
+        <button class="btn ghost" type="button" onclick="goBackFromLegalPage()" style="margin-top:20px; width:100%;">Zurück</button>
+      </div>
+    </section>
+
+    <!-- AGB für Anbieter -->
+    <section class="view" id="v-legal-agb-provider" style="background:#1e1e1e; min-height:100vh; padding:20px; padding-bottom:90px;">
+      <div class="panel" style="padding:20px; border-radius:20px; box-shadow:0 4px 16px rgba(0,0,0,.4); background:#2a2a2a; border:1px solid rgba(255,255,255,0.05);">
+        <h1 style="font-size:24px; font-weight:900; margin-bottom:20px; color:#fff;">AGB (Anbieter)</h1>
+        <div style="line-height:1.8; font-size:15px; color:rgba(255,255,255,0.9);">
+          <p><strong>Mittagio ist Plattform, nicht Verkäufer</strong></p>
+          <p>Mittagio stellt dir eine digitale Infrastruktur zur Verwaltung deiner Mittagsangebote und zur Abwicklung von Online-Bestellungen zur Verfügung.</p>
           
           <p style="margin-top:20px;"><strong>Kosten für Anbieter:</strong></p>
           <ul style="padding-left:20px; margin:8px 0;">
@@ -3440,15 +3521,15 @@
           <p>Die Abholnummer dient als zentrales Beweismittel für die Warenausgabe und als Zahlungs- & Abholnachweis. Die Abwicklungsgebühr fällt auch bei Nicht-Abholung an.</p>
           
           <p style="margin-top:20px;"><strong>Verantwortung:</strong></p>
-          <p>Der Anbieter ist verantwortlich für Inhalte, Speisen und gesetzliche Vorgaben.</p>
+          <p>Du bist verantwortlich für Inhalte, Speisen und gesetzliche Vorgaben. Mittagio übernimmt keine Haftung für deine Angebote.</p>
           
           <p style="margin-top:20px;"><strong>Support:</strong></p>
-          <p><a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a></p>
+          <p><a href="mailto:support@mittagio.de" style="color:#FFD700;">support@mittagio.de</a></p>
         </div>
-        <div style="margin-top:32px; padding-top:20px; border-top:1px solid #eee; text-align:center; font-size:14px; color:#666;">
-          Fragen, Hilfe oder Vorschläge? <a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a>
+        <div style="margin-top:32px; padding-top:20px; border-top:1px solid rgba(255,255,255,0.1); text-align:center; font-size:14px; color:rgba(255,255,255,0.7);">
+          Fragen, Hilfe oder Vorschläge? <a href="mailto:support@mittagio.de" style="color:#FFD700;">support@mittagio.de</a>
         </div>
-        <button class="btn ghost" type="button" onclick="goBackFromLegalPage()" style="margin-top:20px; width:100%;">Zurück</button>
+        <button class="btn ghost" type="button" onclick="goBackFromLegalPage()" style="margin-top:20px; width:100%; background:#1e1e1e; border:1px solid rgba(255,255,255,0.1); color:rgba(255,255,255,0.8);">Zurück</button>
       </div>
     </section>
 
@@ -5138,7 +5219,7 @@
     providerOnboardingPreview:'v-provider-onboarding-preview',
     providerHome:'v-provider-home', providerPickups:'v-provider-pickups', providerCookbook:'v-provider-cookbook',
     providerProfile:'v-provider-profile', providerBilling:'v-provider-billing', providerWeek:'v-provider-week',
-    legalImpressum:'v-legal-impressum', legalAgbKurz:'v-legal-agb-kurz', legalDatenschutz:'v-legal-datenschutz', legalAgbOnboarding:'v-legal-agb-onboarding', legalFaq:'v-legal-faq', legalFaqProvider:'v-legal-faq-provider'
+    legalImpressum:'v-legal-impressum', legalImpressumProvider:'v-legal-impressum-provider', legalAgbKurz:'v-legal-agb-kurz', legalAgbProvider:'v-legal-agb-provider', legalDatenschutz:'v-legal-datenschutz', legalAgbOnboarding:'v-legal-agb-onboarding', legalFaq:'v-legal-faq', legalFaqProvider:'v-legal-faq-provider'
   };
 
   function setCustomerNavActive(go){
@@ -13731,9 +13812,13 @@
 
   // Legal Pages Navigation (statische Seiten)
   function showLegalPage(page){
+    // Separate Impressen und AGBs für Kunden und Anbieter
+    const isProvider = mode === 'provider';
     const pageMap = {
-      'impressum': 'v-legal-impressum',
-      'agb-kurz': 'v-legal-agb-kurz',
+      'impressum': isProvider ? 'v-legal-impressum-provider' : 'v-legal-impressum',
+      'agb-kurz': isProvider ? 'v-legal-agb-provider' : 'v-legal-agb-kurz',
+      'agb-provider': 'v-legal-agb-provider',
+      'impressum-provider': 'v-legal-impressum-provider',
       'datenschutz': 'v-legal-datenschutz',
       'faq': 'v-legal-faq',
       'faq-provider': 'v-legal-faq-provider'
@@ -13743,7 +13828,7 @@
       showView(viewId);
       window.scrollTo({top:0, behavior:'smooth'});
       // Wenn FAQ, auf Anbieter-Tab wechseln wenn Provider-Modus
-      if(viewId === 'v-legal-faq' && mode === 'provider'){
+      if(viewId === 'v-legal-faq' && isProvider){
         setTimeout(() => switchFaqTab('provider'), 100);
       }
     }
@@ -13828,13 +13913,13 @@
   const btnProviderLegalImpressum = document.getElementById('btnProviderLegalImpressum');
   if(btnProviderLegalImpressum){
     btnProviderLegalImpressum.onclick=()=>{
-      showLegalPage('impressum');
+      showLegalPage('impressum-provider');
     };
   }
   const btnProviderLegalAGB = document.getElementById('btnProviderLegalAGB');
   if(btnProviderLegalAGB){
     btnProviderLegalAGB.onclick=()=>{
-      showLegalPage('agb-kurz');
+      showLegalPage('agb-provider');
     };
   }
   const btnProviderLegalDatenschutz = document.getElementById('btnProviderLegalDatenschutz');
