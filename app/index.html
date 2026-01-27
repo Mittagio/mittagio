@@ -5349,38 +5349,14 @@
     const codeEl = document.getElementById('pickupCodeValue');
     if(codeEl){
       const code = order.pickupCode || order.code || '';
-      // Code groß anzeigen (Format: 1A, 2B, etc.)
-      codeEl.textContent = code || '–';
-      codeEl.style.fontSize = '64px'; // Größer für bessere Lesbarkeit
-      codeEl.style.letterSpacing = '2px';
+      // Code mit Zwischenräumen formatieren: "A  B  1  2  C"
+      const formattedCode = code ? code.split('').join('  ') : '–';
+      codeEl.textContent = formattedCode;
     }
     
-    // Bestellinfos
+    // Kontext-Infos (kompakt)
     const dishEl = document.getElementById('pickupCodeDish');
     if(dishEl) dishEl.textContent = order.dishName || order.summary || '–';
-    
-    const providerEl = document.getElementById('pickupCodeProvider');
-    if(providerEl) providerEl.textContent = order.providerName || '–';
-    
-    const timeEl = document.getElementById('pickupCodeTime');
-    if(timeEl){
-      // Use pickupWindow (from order) or fallback to etaTime/pickupTime
-      const timeWindow = order.pickupWindow || order.etaTime || order.pickupTime || 'offen';
-      // Format: Show date if available
-      let timeText = timeWindow;
-      if(order.pickupDate){
-        const date = new Date(order.pickupDate);
-        const dateStr = `${date.getDate()}.${String(date.getMonth()+1).padStart(2,'0')}.`;
-        timeText = `${dateStr} · ${timeWindow}`;
-      }
-      timeEl.textContent = timeText;
-    }
-    
-    const typeEl = document.getElementById('pickupCodeType');
-    if(typeEl){
-      // Formatierung: Immer "Zum Mitnehmen" (keine "Vor Ort" Option)
-      typeEl.textContent = 'Zum Mitnehmen';
-    }
     
     const totalEl = document.getElementById('pickupCodeTotal');
     if(totalEl){
@@ -5388,6 +5364,14 @@
       const totalCents = order.totalCents || (order.total ? Math.round(order.total * 100) : 0);
       const totalEur = totalCents / 100;
       totalEl.textContent = totalEur > 0 ? euro(totalEur) : '–';
+    }
+    
+    // Klick auf Code öffnet Fullscreen-Modal
+    if(codeEl && (order.pickupCode || order.code)){
+      codeEl.style.cursor = 'pointer';
+      codeEl.onclick = () => {
+        openFullscreenCode(order.pickupCode || order.code, order);
+      };
     }
     
     // Icons aktualisieren
@@ -15764,18 +15748,44 @@
    * Open fullscreen code modal
    * @param {string} code - Pickup code (without spaces)
    */
-  function openFullscreenCode(code){
+  function openFullscreenCode(code, order = null){
     if(!code) return;
     
     const modal = document.getElementById('fullscreenCode');
     const valueEl = document.getElementById('fullscreenCodeValue');
     const backdrop = document.getElementById('fullscreenCodeBd');
+    const closeBtn = modal?.querySelector('.fullscreen-code-close');
     
     if(!modal || !valueEl) return;
     
     // Code mit Zwischenräumen formatieren: "A  B  1  2  C"
     const formattedCode = code.split('').join('  ');
     valueEl.textContent = formattedCode;
+    
+    // Kontext-Infos im Fullscreen-Modal
+    if(order){
+      const dishEl = document.getElementById('fullscreenCodeDish');
+      const totalEl = document.getElementById('fullscreenCodeTotal');
+      if(dishEl) dishEl.textContent = order.dishName || order.summary || '–';
+      if(totalEl){
+        const totalCents = order.totalCents || (order.total ? Math.round(order.total * 100) : 0);
+        const totalEur = totalCents / 100;
+        totalEl.textContent = totalEur > 0 ? euro(totalEur) : '–';
+      }
+    }
+    
+    // Close-Button Handler
+    if(closeBtn){
+      closeBtn.onclick = (e) => {
+        e.stopPropagation();
+        closeFullscreenCode();
+      };
+    }
+    
+    // Backdrop schließt Modal
+    if(backdrop){
+      backdrop.onclick = () => closeFullscreenCode();
+    }
     
     // Modal anzeigen
     modal.classList.add('active');
@@ -15824,21 +15834,7 @@
     }
   }
   
-  const btnShowFullscreenCode = document.getElementById('btnShowFullscreenCode');
-  if(btnShowFullscreenCode){
-    btnShowFullscreenCode.onclick = () => {
-      if(!currentPickupOrderId) return;
-      const order = getOrderById(currentPickupOrderId);
-      if(!order) return;
-      // Code nur anzeigen wenn PAID
-      if(order.status === 'PAID'){
-        const code = order.pickupCode || order.code || '';
-        if(code) openFullscreenCode(code);
-      } else {
-        alert('Abholnummer wird nach erfolgreicher Zahlung generiert.');
-      }
-    };
-  }
+  // Fullscreen-Code wird jetzt direkt durch Klick auf pickupCodeValue geöffnet (in renderPickupCode)
   
   const btnOpenRoute = document.getElementById('btnOpenRoute');
   if(btnOpenRoute){
