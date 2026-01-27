@@ -6384,20 +6384,23 @@
     const hasReuseSupport = offerProvider && (offerProvider.reuseEnabled || offerProvider.reuse || (offerProvider.providerProfile && offerProvider.providerProfile.reuseEnabled));
     const hasDineIn = data.dineInPossible || false;
     
-    // 3 Icon-Säulen: Nur Symbole, kein Text (Vor Ort, Abholnummer, Mehrweg)
+    // 3 Icon-Säulen: Finale Definition - Nur Symbole, kein Text
+    // Säule 1: Vor Ort (🍴) - Essen vor Ort möglich (Umsatzfokus)
+    // Säule 2: Abholnummer (🧾) - Identifikation für die Abholung (kein "Ticket"/"Code")
+    // Säule 3: Mehrweg (🔄) - Nachhaltiges Pfandsystem
     const iconPillars = `
       <div style="display:flex; justify-content:center; align-items:center; gap:32px; padding:16px 0 8px; border-top:1px solid rgba(0,0,0,0.1);">
-        <!-- Säule 1: Vor Ort (Besteck) -->
-        <div style="font-size:32px; opacity:${hasDineIn ? '1' : '0.3'};">
-          ${hasDineIn ? '👨‍🍳🍴' : '👨‍🍳🍴'}
+        <!-- Säule 1: Vor Ort (🍴) - Verzehr im Betrieb möglich -->
+        <div style="font-size:32px; opacity:${hasDineIn ? '1' : '0.3'};" title="Vor Ort essen möglich">
+          🍴
         </div>
-        <!-- Säule 2: Abholnummer (Ticket) -->
-        <div style="font-size:32px; opacity:${orderingEnabled ? '1' : '0.3'};">
-          ${orderingEnabled ? '🎫' : '🎫'}
+        <!-- Säule 2: Abholnummer (🧾) - Identifikation für Abholung -->
+        <div style="font-size:32px; opacity:${orderingEnabled ? '1' : '0.3'};" title="Abholnummer verfügbar">
+          🧾
         </div>
-        <!-- Säule 3: Mehrweg (Recycling) -->
-        <div style="font-size:32px; opacity:${hasReuseSupport ? '1' : '0.3'};">
-          ${hasReuseSupport ? '♻️' : '♻️'}
+        <!-- Säule 3: Mehrweg (🔄) - Nachhaltiges Pfandsystem -->
+        <div style="font-size:32px; opacity:${hasReuseSupport ? '1' : '0.3'};" title="Mehrweg-System">
+          🔄
         </div>
       </div>
     `;
