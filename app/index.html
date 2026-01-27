@@ -2488,15 +2488,12 @@
             <i data-lucide="store" style="width:22px;height:22px; color:#FFD700;"></i>
             <span>MITTAGIO Business</span>
           </div>
-          <div class="hint" style="font-size:14px; line-height:1.5; margin-bottom:12px; color:#aaa; max-width:280px;">
+          <div class="hint" style="font-size:14px; line-height:1.5; margin-bottom:20px; color:#aaa; max-width:280px;">
             Biete deine Mittagstische online an und erreiche mehr Gäste.
           </div>
-          <div style="font-size:12px; color:#888; margin-bottom:20px; line-height:1.4;">
-            Anbieter-Support: <a href="mailto:support@mittagio.de" style="color:#FFD700; text-decoration:none;">support@mittagio.de</a>
-          </div>
-          <button class="btn-primary" type="button" id="btnProviderBusinessLogin" style="width:100%; min-height:52px; font-size:16px; font-weight:700; background:#6b7280; color:#fff; border:none; box-shadow:0 4px 12px rgba(107,114,128,0.3); transition:all 0.2s ease;" onmouseover="this.style.background='#4b5563'; this.style.boxShadow='0 6px 16px rgba(107,114,128,0.4)';" onmouseout="this.style.background='#6b7280'; this.style.boxShadow='0 4px 12px rgba(107,114,128,0.3)';">
-            <i data-lucide="log-in" style="width:20px;height:20px;"></i>
-            <span id="btnProviderBusinessLoginText">Dein Mittagessen anbieten – einfach und digital.</span>
+          <button class="btn-primary" type="button" id="btnProviderBusinessLogin" style="width:100%; min-height:56px; font-size:16px; font-weight:700; background:linear-gradient(135deg, #6b7280 0%, #4b5563 100%); color:#fff; border:none; box-shadow:0 4px 16px rgba(107,114,128,0.4); transition:all 0.3s ease; display:flex; align-items:center; justify-content:center; gap:10px; border-radius:16px;" onmouseover="this.style.background='linear-gradient(135deg, #4b5563 0%, #374151 100%)'; this.style.boxShadow='0 6px 20px rgba(107,114,128,0.5)'; this.style.transform='translateY(-2px)';" onmouseout="this.style.background='linear-gradient(135deg, #6b7280 0%, #4b5563 100%)'; this.style.boxShadow='0 4px 16px rgba(107,114,128,0.4)'; this.style.transform='translateY(0)';">
+            <i data-lucide="log-in" style="width:22px;height:22px;"></i>
+            <span id="btnProviderBusinessLoginText">Jetzt als Anbieter einloggen</span>
           </button>
         </div>
       </div>
@@ -10549,10 +10546,16 @@
       } else {
         // Nicht eingeloggt: "Jetzt als Anbieter einloggen" Button
         btnProviderBusinessLoginText.textContent = 'Jetzt als Anbieter einloggen';
-        btnProviderBusinessLogin.innerHTML = `<i data-lucide="log-in" style="width:20px;height:20px;"></i> <span>Jetzt als Anbieter einloggen</span>`;
-        btnProviderBusinessLogin.onclick = () => {
+        btnProviderBusinessLogin.innerHTML = `<i data-lucide="log-in" style="width:22px;height:22px;"></i> <span>Jetzt als Anbieter einloggen</span>`;
+        // Handler sicher setzen und Event-Propagation verhindern
+        btnProviderBusinessLogin.onclick = (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          triggerHapticFeedback([10]);
           showProviderLoginModal();
         };
+        // Zusätzlich: Sicherstellen dass der Handler nicht überschrieben wird
+        btnProviderBusinessLogin.setAttribute('data-handler-set', 'true');
       }
     }
     
