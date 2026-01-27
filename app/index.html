@@ -1429,10 +1429,11 @@
     /* Premium Horizontale Gericht-Karte */
     .dish-card {
       display: flex;
-      height: 150px;
+      min-height: 120px;
+      padding: 12px;
       background: #ffffff;
       border-radius: 20px;
-      overflow: hidden;
+      overflow: visible;
       border: 1px solid rgba(0,0,0,0.05);
       box-shadow: 0 2px 12px rgba(0,0,0,0.04);
       margin-bottom: 10px;
@@ -1448,16 +1449,19 @@
     .dish-card:hover {
       box-shadow: 0 6px 20px rgba(0,0,0,0.08);
     }
-    /* Linke Seite: Bild - 45% der Karte, zentriert */
+    /* Linke Seite: Bild - Kompakt als Thumbnail (max. 25% der Karte) */
     .dish-image-box {
-      width: 45%;
-      height: 150px;
+      width: 100px;
+      min-width: 100px;
+      height: 100px;
       flex-shrink: 0;
       background: #f5f5f5;
       display: flex;
       align-items: center;
       justify-content: center;
       overflow: hidden;
+      border-radius: 12px;
+      margin-right: 12px;
     }
     .dish-image-box img {
       width: 100%;
@@ -1514,7 +1518,7 @@
       margin-top: 8px;
     }
     .distance-badge {
-      display: flex;
+      display: inline-flex;
       align-items: center;
       gap: 4px;
       font-size: 12px;
@@ -1523,6 +1527,7 @@
       background: #f0f0f0;
       padding: 4px 10px;
       border-radius: 8px;
+      white-space: nowrap;
     }
     .action-group {
       display: flex;
@@ -6582,7 +6587,11 @@
         <button class="btn-primary" type="button" onclick="openGoogleMapsRoute('${esc(providerId)}'); this.closest('.backdrop').remove();" style="width:100%; min-height:48px; font-weight:700;">
           <i data-lucide="navigation" style="width:20px;height:20px;"></i> <span>Anfahrt</span>
         </button>
-        ${provider.distanceKm != null ? `<div style="text-align:center; font-size:13px; color:#666; padding:8px;">Entfernung: ${Number(provider.distanceKm).toFixed(1)} km</div>` : ''}
+        ${provider.distanceKm != null ? (() => {
+          const walkingMinutes = Math.round(Number(provider.distanceKm) * 12);
+          const walkingTimeText = walkingMinutes < 1 ? '< 1 Min.' : `${walkingMinutes} Min.`;
+          return `<div style="text-align:center; font-size:13px; color:#666; padding:8px; display:flex; align-items:center; justify-content:center; gap:4px;"><i data-lucide="navigation" style="width:14px;height:14px;"></i> <span>${walkingTimeText} zu Fuß</span></div>`;
+        })() : ''}
       </div>
     `;
     
@@ -6942,15 +6951,19 @@
     const dishKey = data.id;
     const isFav = dishFavs.has(dishKey);
     
-    // Entfernung anzeigen (Gehzeit oder Distanz)
+    // Entfernung anzeigen (Gehzeit-Fokus: Immer "X Min. zu Fuß" wenn möglich)
     let distanceDisplay = '';
     if(data.walkingTimeText){
-      distanceDisplay = `<div class="distance-badge" style="color:var(--brand); background:rgba(242,183,5,0.1);">
+      // Bereits berechnete Gehzeit verwenden
+      distanceDisplay = `<div class="distance-badge" style="color:var(--brand); background:rgba(242,183,5,0.1); font-weight:700;">
         <i data-lucide="navigation" style="width:12px;height:12px;"></i> ${esc(data.walkingTimeText)}
       </div>`;
     } else if(data.distanceKm != null){
-      distanceDisplay = `<div class="distance-badge">
-        <i data-lucide="map-pin" style="width:12px;height:12px;"></i> ${Number(data.distanceKm).toFixed(1)} km
+      // Gehzeit berechnen: 5 km/h = 12 Minuten pro km
+      const walkingMinutes = Math.round(Number(data.distanceKm) * 12);
+      const walkingTimeText = walkingMinutes < 1 ? '< 1 Min.' : `${walkingMinutes} Min.`;
+      distanceDisplay = `<div class="distance-badge" style="color:var(--brand); background:rgba(242,183,5,0.1); font-weight:700;">
+        <i data-lucide="navigation" style="width:12px;height:12px;"></i> ${walkingTimeText} zu Fuß
       </div>`;
     }
     
@@ -6958,15 +6971,12 @@
     const socialProof = data.todayOrderCount > 0 ? `<div style="margin-top:4px; padding:4px 8px; background:rgba(255,204,0,0.1); border-radius:6px; font-size:11px; font-weight:600; color:#b8860b; display:inline-flex; align-items:center; gap:4px; width:fit-content;"><i data-lucide="users" style="width:12px;height:12px;"></i> <span>${data.todayOrderCount}x heute</span></div>` : '';
     
     card.innerHTML = `
-      <div class="dish-image-box" style="position:relative; overflow:hidden;">
-        <img src="${esc(imgSrc)}" alt="${esc(data.dish||'')}" style="width:100%; height:100%; object-fit:cover;" />
-        <!-- Overlay-Icons auf dem Bild (Herz + Share) -->
-        <div style="position:absolute; top:12px; right:12px; display:flex; gap:8px; z-index:5;">
-          <button class="btn-icon-overlay" onclick="event.stopPropagation(); toggleDishFav('${dishKey}'); const btn=this.querySelector('i'); setTimeout(()=>{const isFav=dishFavs.has('${dishKey}'); btn.style.fill=isFav?'currentColor':''; btn.style.color=isFav?'#e74c3c':'#666'; if(typeof lucide !== 'undefined') lucide.createIcons();}, 10);" title="Favorit" style="width:40px; height:40px; border-radius:50%; background:rgba(255,255,255,0.95); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.15); transition:transform 0.2s ease;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
-            <i data-lucide="heart" style="width:20px;height:20px;${isFav ? 'fill:currentColor; color:#e74c3c;' : 'color:#666;'}"></i>
-          </button>
-          <button class="btn-icon-overlay" onclick="event.stopPropagation(); const o=offers.find(x=>x.id==='${data.id}'); if(o) shareOffer(o);" title="Teilen" style="width:40px; height:40px; border-radius:50%; background:rgba(255,255,255,0.95); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.15); transition:transform 0.2s ease;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
-            <i data-lucide="share-2" style="width:20px;height:20px; color:#666;"></i>
+      <div class="dish-image-box" style="position:relative; overflow:hidden; border-radius:12px;">
+        <img src="${esc(imgSrc)}" alt="${esc(data.dish||'')}" style="width:100%; height:100%; object-fit:cover; border-radius:12px;" />
+        <!-- Overlay-Icons auf dem Bild (kompakt für kleineres Bild) -->
+        <div style="position:absolute; top:6px; right:6px; display:flex; gap:4px; z-index:5;">
+          <button class="btn-icon-overlay" onclick="event.stopPropagation(); toggleDishFav('${dishKey}'); const btn=this.querySelector('i'); setTimeout(()=>{const isFav=dishFavs.has('${dishKey}'); btn.style.fill=isFav?'currentColor':''; btn.style.color=isFav?'#e74c3c':'#666'; if(typeof lucide !== 'undefined') lucide.createIcons();}, 10);" title="Favorit" style="width:32px; height:32px; border-radius:50%; background:rgba(255,255,255,0.95); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 2px 6px rgba(0,0,0,0.15); transition:transform 0.2s ease;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+            <i data-lucide="heart" style="width:16px;height:16px;${isFav ? 'fill:currentColor; color:#e74c3c;' : 'color:#666;'}"></i>
           </button>
         </div>
       </div>
@@ -6981,12 +6991,12 @@
               <i data-lucide="store" style="width:12px;height:12px; color:#666;"></i>
               <span>${esc(data.providerName||'Anbieter')}</span>
             </div>
-            ${data.pickupWindow ? `<div style="display:flex; align-items:center; gap:4px;">
+            ${distanceDisplay ? `<div style="margin-top:2px;">
+              ${distanceDisplay}
+            </div>` : ''}
+            ${data.pickupWindow ? `<div style="display:flex; align-items:center; gap:4px; margin-top:2px;">
               <i data-lucide="clock" style="width:12px;height:12px; color:#666;"></i>
               <span>${esc(data.pickupWindow)}</span>
-            </div>` : ''}
-            ${distanceDisplay ? `<div style="display:flex; align-items:center; gap:4px;">
-              ${distanceDisplay}
             </div>` : ''}
           </div>
           ${socialProof}
@@ -7870,7 +7880,10 @@
         distEl.style.display = 'flex';
         distEl.style.alignItems = 'center';
         distEl.style.gap = '6px';
-        distEl.innerHTML = `${iconMarkup('map-pin')} <span>${Number(o.distanceKm).toFixed(1)} km</span>`;
+        // Gehzeit berechnen: 5 km/h = 12 Minuten pro km
+        const walkingMinutes = Math.round(Number(o.distanceKm) * 12);
+        const walkingTimeText = walkingMinutes < 1 ? '< 1 Min.' : `${walkingMinutes} Min.`;
+        distEl.innerHTML = `<i data-lucide="navigation" style="width:14px;height:14px;"></i> <span>${walkingTimeText} zu Fuß</span>`;
         infoRowEl.appendChild(distEl);
       }
       // Food type icon (exactly one)
@@ -9211,17 +9224,38 @@
         ${timeChips}
       </div>
       ${hasMultipleProviders ? `<div class="hint" style="margin-top:8px; font-size:12px; color:#666;">Diese Zeit gilt für alle gewählten Standorte.</div>` : ''}
-      ${hasMultipleProviders ? `
+      ${hasMultipleProviders ? (() => {
+        // Berechne Gesamtgehzeit für Route mit mehreren Stopps
+        let totalWalkingMinutes = 0;
+        const providerDistances = [];
+        Array.from(uniqueProviders).forEach(providerId => {
+          const o = offers.find(x => x.providerId === providerId && x.active !== false);
+          if(o && o.distanceKm != null){
+            const walkingMinutes = Math.round(Number(o.distanceKm) * 12); // 5 km/h = 12 Min/km
+            providerDistances.push(walkingMinutes);
+            totalWalkingMinutes += walkingMinutes;
+          }
+        });
+        // Geschätzte Gesamtzeit: Summe der Gehzeiten + 2 Min pro Stopp für Abholung
+        const pickupTimePerStop = 2;
+        const totalTime = totalWalkingMinutes + (uniqueProviders.size * pickupTimePerStop);
+        const totalTimeText = totalTime < 60 ? `${totalTime} Min.` : `${Math.floor(totalTime / 60)} Std. ${totalTime % 60} Min.`;
+        
+        return `
         <div style="margin-top:16px; padding:12px 16px; background:rgba(31,157,85,0.1); border-left:4px solid #1f9d55; border-radius:8px;">
           <div style="font-weight:700; font-size:13px; color:#1f9d55; margin-bottom:6px; display:flex; align-items:center; gap:6px;">
             <i data-lucide="navigation" style="width:16px;height:16px;"></i>
             Optimale Abhol-Route verfügbar
           </div>
-          <button type="button" onclick="openGoogleMapsRoute();" style="margin-top:8px; padding:8px 16px; background:#1f9d55; color:#fff; border:none; border-radius:8px; font-weight:700; font-size:13px; cursor:pointer; transition:transform 0.2s ease;" onmouseover="this.style.transform='scale(1.02)';" onmouseout="this.style.transform='scale(1)';">
-            Route starten
+          <div style="font-size:12px; color:#666; margin-bottom:8px; line-height:1.4;">
+            Geschätzte Gesamtzeit: <span style="font-weight:700; color:#1f9d55;">${totalTimeText} zu Fuß</span> (inkl. ${uniqueProviders.size} Stopps)
+          </div>
+          <button type="button" onclick="openGoogleMapsRoute();" style="width:100%; padding:10px 16px; background:#1f9d55; color:#fff; border:none; border-radius:8px; font-weight:700; font-size:14px; cursor:pointer; transition:transform 0.2s ease;" onmouseover="this.style.transform='scale(1.02)';" onmouseout="this.style.transform='scale(1)';">
+            <i data-lucide="navigation" style="width:16px;height:16px;"></i> Route starten
           </button>
         </div>
-      ` : ''}
+      `;
+      })() : ''}
       <div class="row" style="margin-top:24px; padding-top:20px; border-top:2px solid #eee; position:relative;"><span style="font-size:18px; font-weight:900;">Gesamt</span><b style="font-size:20px; color:var(--brand);">${euro(total)}</b>
         <!-- Mülleimer-Icon oben rechts (dezentes Design) -->
         <button type="button" id="clearCartIcon" class="cart-clear-icon" style="position:absolute; top:20px; right:0; width:36px; height:36px; border-radius:50%; border:none; background:rgba(0,0,0,0.05); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s ease; color:#666;" onmouseover="this.style.background='rgba(227,77,77,0.1)'; this.style.color='#e74c3c';" onmouseout="this.style.background='rgba(0,0,0,0.05)'; this.style.color='#666';" title="Mittagsbox leeren">
