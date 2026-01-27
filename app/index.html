@@ -10538,8 +10538,17 @@
       if(provider.loggedIn){
         // Eingeloggt: "Zum Dashboard" Button
         btnProviderBusinessLoginText.textContent = 'Zum Dashboard';
-        btnProviderBusinessLogin.innerHTML = `<i data-lucide="layout-dashboard" style="width:20px;height:20px;"></i> <span>Zum Dashboard</span>`;
-        btnProviderBusinessLogin.onclick = () => {
+        // Icon aktualisieren ohne innerHTML
+        const iconEl = btnProviderBusinessLogin.querySelector('i');
+        if(iconEl) {
+          iconEl.setAttribute('data-lucide', 'layout-dashboard');
+          iconEl.style.width = '22px';
+          iconEl.style.height = '22px';
+        }
+        btnProviderBusinessLogin.onclick = (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          triggerHapticFeedback([10]);
           setMode('provider');
           showProviderHome();
         };
