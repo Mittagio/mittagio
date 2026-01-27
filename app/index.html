@@ -1817,6 +1817,19 @@
     .feed-empty{
       max-width:980px; margin:0 auto;
     }
+    
+    /* Swipe Action-Buttons Hover-Effekte */
+    .swipe-action-btn:active{
+      transform:scale(0.95) !important;
+    }
+    .swipe-action-btn-reject:hover{
+      background:#C0392B !important;
+      box-shadow:0 6px 20px rgba(227,77,77,0.5) !important;
+    }
+    .swipe-action-btn-like:hover{
+      background:#27AE60 !important;
+      box-shadow:0 6px 20px rgba(46,204,113,0.5) !important;
+    }
   </style>
 </head>
 <body>
@@ -1907,9 +1920,30 @@
       
       <!-- Swipe-Stack (Tinder-Style) -->
       <div id="discoverSwipe" style="display:none; position:relative; height:75vh; min-height:480px; max-height:600px; margin:0 auto; padding:12px 0;">
+        <!-- Debug-Overlay: Bild-Index oben rechts -->
+        <div id="swipeDebugOverlay" style="position:absolute; top:16px; right:16px; z-index:1000; background:rgba(0,0,0,0.7); color:#fff; padding:8px 12px; border-radius:12px; font-size:12px; font-weight:700; font-family:monospace;">
+          Bild-Index: <span id="swipeCurrentIndex">0</span>
+        </div>
+        
         <div id="swipeStack" style="position:relative; width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
           <!-- SwipeCards werden hier eingefügt -->
         </div>
+        
+        <!-- End-of-Stack Karte (wenn alle Gerichte durchgesehen wurden) -->
+        <div id="swipeEndOfStack" style="display:none; position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); text-align:center; padding:40px 24px; background:#fff; border-radius:24px; box-shadow:0 8px 32px rgba(0,0,0,0.15); max-width:320px; z-index:200;">
+          <div style="font-size:64px; margin-bottom:20px;">🍽️</div>
+          <h3 style="font-size:22px; font-weight:900; margin-bottom:12px; color:#1a1a1a;">Das war's für heute!</h3>
+          <p style="font-size:15px; color:#64748b; margin-bottom:24px; line-height:1.5;">Du hast alle Inspirationen für deine Region gesehen.</p>
+          <div style="display:flex; flex-direction:column; gap:12px;">
+            <button class="btn" type="button" id="btnSwipeReset" style="width:100%; min-height:48px; background:#FFD700; color:#1a1a1a; font-weight:800;">
+              Nochmal von vorne
+            </button>
+            <button class="btn secondary" type="button" id="btnSwipeToList" style="width:100%; min-height:48px;">
+              Alle Angebote anzeigen
+            </button>
+          </div>
+        </div>
+        
         <div id="swipeEmpty" style="display:none; text-align:center; padding:80px 20px; position:absolute; top:50%; left:50%; transform:translate(-50%, -50%);">
           <div style="font-size:64px; margin-bottom:20px; opacity:.6;">🍽️</div>
           <div style="font-size:18px; font-weight:900; margin-bottom:10px; color:#333; line-height:1.4;">
@@ -1917,6 +1951,16 @@
           </div>
           <button class="btn secondary" type="button" onclick="switchDiscoverView('list')" style="margin-top:20px;">
             Zur Liste wechseln
+          </button>
+        </div>
+        
+        <!-- Action-Buttons: Rot (Ablehnen) und Grün (Besteck-Icon) -->
+        <div id="swipeActionButtons" style="position:absolute; bottom:32px; left:50%; transform:translateX(-50%); display:flex; gap:24px; z-index:100;">
+          <button type="button" id="btnSwipeReject" class="swipe-action-btn swipe-action-btn-reject" aria-label="Ablehnen" style="width:64px; height:64px; border-radius:50%; background:#E34D4D; border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 4px 16px rgba(227,77,77,0.4); transition:transform 0.2s ease;">
+            <i data-lucide="x" style="width:32px;height:32px;color:#fff;"></i>
+          </button>
+          <button type="button" id="btnSwipeLike" class="swipe-action-btn swipe-action-btn-like" aria-label="Auf Speiseplan setzen" style="width:64px; height:64px; border-radius:50%; background:#2ECC71; border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 4px 16px rgba(46,204,113,0.4); transition:transform 0.2s ease;">
+            <i data-lucide="utensils" style="width:32px;height:32px;color:#fff;"></i>
           </button>
         </div>
       </div>
@@ -5714,17 +5758,38 @@
       });
     }
     
+    // Filter: Entferne bereits gelikte oder abgelehnte Gerichte
+    const favorites = JSON.parse(localStorage.getItem('mittagio_favorites') || '[]');
+    const disliked = JSON.parse(sessionStorage.getItem('mittagio_disliked') || '[]');
+    
+    list = list.filter(o => {
+      const data = normalizeOffer(o);
+      const dishKey = data.id;
+      // Zeige nur Gerichte, die weder geliked noch abgelehnt wurden
+      return !favorites.includes(dishKey) && !disliked.includes(dishKey);
+    });
+    
     swipeCards = list;
     currentSwipeIndex = 0;
     
     swipeStack.innerHTML = '';
     
+    // Debug-Overlay aktualisieren
+    const debugOverlay = document.getElementById('swipeCurrentIndex');
+    if(debugOverlay){
+      debugOverlay.textContent = '0';
+    }
+    
     if(swipeCards.length === 0){
       if(swipeEmpty) swipeEmpty.style.display = 'block';
+      const swipeEndOfStack = document.getElementById('swipeEndOfStack');
+      if(swipeEndOfStack) swipeEndOfStack.style.display = 'none';
       return;
     }
     
     if(swipeEmpty) swipeEmpty.style.display = 'none';
+    const swipeEndOfStack = document.getElementById('swipeEndOfStack');
+    if(swipeEndOfStack) swipeEndOfStack.style.display = 'none';
     
     // Erstelle nur die ersten 3 Karten (Performance)
     const cardsToShow = Math.min(3, swipeCards.length);
@@ -5783,8 +5848,8 @@
     
     card.innerHTML = `
       ${onboardingHint}
-      <div class="swipe-overlay left" style="display:none; opacity:0;">NÄCHSTES ESSEN</div>
-      <div class="swipe-overlay right" style="display:none; opacity:0;">MERKEN</div>
+      <div class="swipe-overlay left" style="display:none; opacity:0;">NÄCHSTES GERICHT</div>
+      <div class="swipe-overlay right" style="display:none; opacity:0;">AUF SPEISEPLAN</div>
       <div class="swipe-card-image-wrapper">
         <div class="swipe-card-image">
           <img src="${esc(imgSrc)}" alt="${esc(data.dish||'')}" />
@@ -5827,7 +5892,7 @@
       const swipeStack = document.getElementById('swipeStack');
       if(!swipeStack) return;
       const allCards = Array.from(swipeStack.querySelectorAll('.swipe-card')).filter(c => 
-        c && c.parentNode && c.style.opacity !== '0' && 
+        c && c.parentNode && c.style && c.style.opacity !== '0' && 
         !c.classList.contains('swipe-left') && !c.classList.contains('swipe-right')
       );
       const currentIndex = allCards.indexOf(card);
@@ -5859,7 +5924,7 @@
       const swipeStack = document.getElementById('swipeStack');
       if(!swipeStack) return;
       const allCards = Array.from(swipeStack.querySelectorAll('.swipe-card')).filter(c => 
-        c && c.parentNode && c.style.opacity !== '0' && 
+        c && c.parentNode && c.style && c.style.opacity !== '0' && 
         !c.classList.contains('swipe-left') && !c.classList.contains('swipe-right')
       );
       const currentIndex = allCards.indexOf(card);
@@ -5963,7 +6028,7 @@
       const swipeStack = document.getElementById('swipeStack');
       if(!swipeStack) return;
       const allCards = Array.from(swipeStack.querySelectorAll('.swipe-card')).filter(c => 
-        c && c.parentNode && c.style.opacity !== '0' && 
+        c && c.parentNode && c.style && c.style.opacity !== '0' && 
         !c.classList.contains('swipe-left') && !c.classList.contains('swipe-right')
       );
       const currentIndex = allCards.indexOf(card);
@@ -6083,7 +6148,7 @@
       const swipeStack = document.getElementById('swipeStack');
       if(!swipeStack) return;
       const allCards = Array.from(swipeStack.querySelectorAll('.swipe-card')).filter(c => 
-        c && c.parentNode && c.style.opacity !== '0' && 
+        c && c.parentNode && c.style && c.style.opacity !== '0' && 
         !c.classList.contains('swipe-left') && !c.classList.contains('swipe-right')
       );
       const currentIndex = allCards.indexOf(card);
@@ -6102,7 +6167,7 @@
       const swipeStack = document.getElementById('swipeStack');
       if(!swipeStack) return;
       const allCards = Array.from(swipeStack.querySelectorAll('.swipe-card')).filter(c => 
-        c && c.parentNode && c.style.opacity !== '0' && 
+        c && c.parentNode && c.style && c.style.opacity !== '0' && 
         !c.classList.contains('swipe-left') && !c.classList.contains('swipe-right')
       );
       const currentIndex = allCards.indexOf(card);
@@ -6196,7 +6261,7 @@
       const swipeStack = document.getElementById('swipeStack');
       if(!swipeStack) return;
       const allCards = Array.from(swipeStack.querySelectorAll('.swipe-card')).filter(c => 
-        c && c.parentNode && c.style.opacity !== '0' && 
+        c && c.parentNode && c.style && c.style.opacity !== '0' && 
         !c.classList.contains('swipe-left') && !c.classList.contains('swipe-right')
       );
       const currentIndex = allCards.indexOf(card);
@@ -6322,15 +6387,32 @@
     }
   }
   
-  // Swipe-Handler
+  // Swipe-Handler mit LocalStorage/SessionStorage
   function handleSwipeLeft(offer){
-    // Links-Swipe = Nächstes Gericht (überspringen)
-    // Keine Aktion, einfach zum nächsten Gericht
-    console.log('Swipe left: Nächstes Gericht');
+    // Links-Swipe = Ablehnen - In SessionStorage speichern
+    if(!offer || !offer.id){
+      console.error('Invalid offer in handleSwipeLeft:', offer);
+      return;
+    }
+    
+    const data = normalizeOffer(offer);
+    const dishKey = data.id;
+    
+    // Zu Ablehnungs-Liste hinzufügen (SessionStorage - nur für diese Session)
+    const disliked = JSON.parse(sessionStorage.getItem('mittagio_disliked') || '[]');
+    if(!disliked.includes(dishKey)){
+      disliked.push(dishKey);
+      sessionStorage.setItem('mittagio_disliked', JSON.stringify(disliked));
+    }
+    
+    // Visuelles Feedback: Leerer Teller Overlay
+    showToast('Nächstes Gericht', 1000);
+    
+    console.log('Swipe left: Gericht abgelehnt, zu SessionStorage hinzugefügt');
   }
   
   function handleSwipeRight(offer){
-    // Rechts = "Merken" - Zu Favoriten hinzufügen
+    // Rechts = "Auf Speiseplan setzen" - Zu Favoriten hinzufügen (LocalStorage)
     if(!offer || !offer.id){
       console.error('Invalid offer in handleSwipeRight:', offer);
       return;
@@ -6339,7 +6421,19 @@
     const data = normalizeOffer(offer);
     const dishKey = data.id;
     
-    // Zu Favoriten hinzufügen (wenn noch nicht vorhanden)
+    // Zu Favoriten hinzufügen (LocalStorage - dauerhaft)
+    const favorites = JSON.parse(localStorage.getItem('mittagio_favorites') || '[]');
+    if(!favorites.includes(dishKey)){
+      favorites.push(dishKey);
+      localStorage.setItem('mittagio_favorites', JSON.stringify(favorites));
+      
+      // Visuelles Feedback: Besteck-Icon Overlay
+      showToast('Auf Speiseplan gesetzt', 1500);
+    } else {
+      showToast('Bereits auf deinem Speiseplan', 1000);
+    }
+    
+    // Auch in dishFavs Set hinzufügen (für Kompatibilität mit bestehender Logik)
     if(!dishFavs.has(dishKey)){
       dishFavs.add(dishKey);
       save(LS.dishFavs, Array.from(dishFavs));
@@ -6566,7 +6660,7 @@
     // WICHTIG: Dies verhindert, dass alte State-Variablen aus Closure die neue Karte blockieren
     const allCards = swipeStack.querySelectorAll('.swipe-card');
     allCards.forEach(card => {
-      if(card){
+      if(card && card.style){
         // Entferne alle Swipe-Klassen und setze State zurück
         card.classList.remove('swiping', 'match-left', 'match-right', 'swipe-left', 'swipe-right', 'swipe-glow-left', 'swipe-glow-right');
         card.style.transition = '';
@@ -6577,9 +6671,9 @@
     
     // Speicher-Bereinigung: Entferne alle entfernten Karten aus dem DOM
     allCards.forEach(card => {
-      if(!card || !card.parentNode || card.style.opacity === '0' || card.classList.contains('swipe-left') || card.classList.contains('swipe-right')){
+      if(!card || !card.parentNode || !card.style || card.style.opacity === '0' || card.classList.contains('swipe-left') || card.classList.contains('swipe-right')){
         // Karte wurde bereits entfernt oder ist unsichtbar - entferne sie komplett
-        if(card && card.parentNode){
+        if(card && card.parentNode && card.style){
           // CRITICAL FIX: Setze display:none BEVOR entfernt wird, um Events zu blockieren
           card.style.display = 'none';
           // Cleanup: Entferne alle Event-Listener durch Klonen und Ersetzen
@@ -6593,7 +6687,7 @@
     // Verschiebe alle verbleibenden Karten nach oben (zentriert)
     // Performance-Fix: Prüfe ob Elemente noch existieren
     const cards = Array.from(swipeStack.querySelectorAll('.swipe-card')).filter(c => {
-      if(!c || !c.parentNode) return false; // Element existiert nicht mehr
+      if(!c || !c.parentNode || !c.style) return false; // Element existiert nicht mehr
       // CRITICAL FIX: Filtere auch display:none Karten aus
       if(c.style.display === 'none') return false;
       return !c.classList.contains('swipe-left') && !c.classList.contains('swipe-right') && c.style.opacity !== '0';
@@ -6601,10 +6695,10 @@
     
     // CRITICAL FIX: Stelle sicher, dass die oberste Karte (index 0) korrekt konfiguriert ist
     cards.forEach((card, i) => {
-      if(!card || !card.parentNode) return; // Sicherheitscheck
+      if(!card || !card.parentNode || !card.style) return; // Sicherheitscheck
       
       // CRITICAL FIX: Aktualisiere den Index als data-Attribut für dynamische Prüfung
-      card.dataset.swipeIndex = i;
+      if(card.dataset) card.dataset.swipeIndex = i;
       
       // Reset Transform und Transition für sauberen Neustart
       card.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
@@ -6637,10 +6731,22 @@
       }
     }
     
-    // Wenn keine Karten mehr, zeige Empty-State
+    // End-of-Stack: Wenn keine Karten mehr, zeige Abschlusskarte
+    const swipeEndOfStack = document.getElementById('swipeEndOfStack');
+    const swipeEmpty = document.getElementById('swipeEmpty');
+    
     if(cards.length === 0 && currentSwipeIndex >= swipeCards.length){
-      const swipeEmpty = document.getElementById('swipeEmpty');
-      if(swipeEmpty) swipeEmpty.style.display = 'block';
+      if(swipeEndOfStack) swipeEndOfStack.style.display = 'block';
+      if(swipeEmpty) swipeEmpty.style.display = 'none';
+    } else {
+      if(swipeEndOfStack) swipeEndOfStack.style.display = 'none';
+      if(swipeEmpty) swipeEmpty.style.display = 'none';
+    }
+    
+    // Debug-Overlay aktualisieren
+    const debugOverlay = document.getElementById('swipeCurrentIndex');
+    if(debugOverlay){
+      debugOverlay.textContent = currentSwipeIndex;
     }
     
     // Cleanup: Entferne Event-Listener von entfernten Karten (verhindert Memory Leaks)
@@ -15137,6 +15243,139 @@
   if(fullscreenCodeClose){
     fullscreenCodeClose.onclick = () => {
       closeFullscreenCode();
+    };
+  }
+  
+  // --- Swipe Action-Buttons Handler ---
+  const btnSwipeReject = document.getElementById('btnSwipeReject');
+  const btnSwipeLike = document.getElementById('btnSwipeLike');
+  const btnSwipeReset = document.getElementById('btnSwipeReset');
+  const btnSwipeToList = document.getElementById('btnSwipeToList');
+  
+  // Ablehnen-Button (Rot)
+  if(btnSwipeReject){
+    btnSwipeReject.onclick = () => {
+      const swipeStack = document.getElementById('swipeStack');
+      if(!swipeStack) return;
+      
+      const allCards = Array.from(swipeStack.querySelectorAll('.swipe-card')).filter(c => 
+        c && c.parentNode && c.style && c.style.opacity !== '0' && 
+        !c.classList.contains('swipe-left') && !c.classList.contains('swipe-right')
+      );
+      
+      if(allCards.length === 0) return;
+      
+      const currentCard = allCards[0];
+      if(!currentCard || !currentCard.dataset) return;
+      
+      const offerId = currentCard.dataset.offerId;
+      const offer = swipeCards.find(o => normalizeOffer(o).id === offerId);
+      
+      if(offer && currentCard){
+        // Simuliere Links-Swipe
+        triggerHapticFeedback([15]);
+        currentCard.classList.add('swipe-left');
+        if(currentCard.style){
+          currentCard.style.transform = `translate(calc(-50% - 50vw), -50%) rotate(-30deg)`;
+          currentCard.style.opacity = '0';
+        }
+        
+        setTimeout(() => {
+          if(currentCard && currentCard.parentNode){
+            handleSwipeLeft(offer);
+            currentCard.remove();
+            currentSwipeIndex++;
+            setTimeout(() => {
+              showNextSwipeCard();
+            }, 50);
+          }
+        }, 200);
+      }
+    };
+    
+    // Hover-Effekt
+    btnSwipeReject.onmouseover = () => {
+      if(btnSwipeReject) btnSwipeReject.style.transform = 'scale(1.1)';
+    };
+    btnSwipeReject.onmouseout = () => {
+      if(btnSwipeReject) btnSwipeReject.style.transform = 'scale(1)';
+    };
+  }
+  
+  // Zustimmen-Button (Grün mit Besteck-Icon)
+  if(btnSwipeLike){
+    btnSwipeLike.onclick = () => {
+      const swipeStack = document.getElementById('swipeStack');
+      if(!swipeStack) return;
+      
+      const allCards = Array.from(swipeStack.querySelectorAll('.swipe-card')).filter(c => 
+        c && c.parentNode && c.style && c.style.opacity !== '0' && 
+        !c.classList.contains('swipe-left') && !c.classList.contains('swipe-right')
+      );
+      
+      if(allCards.length === 0) return;
+      
+      const currentCard = allCards[0];
+      if(!currentCard || !currentCard.dataset) return;
+      
+      const offerId = currentCard.dataset.offerId;
+      const offer = swipeCards.find(o => normalizeOffer(o).id === offerId);
+      
+      if(offer && currentCard){
+        // Simuliere Rechts-Swipe
+        triggerHapticFeedback([15]);
+        currentCard.classList.add('swipe-right');
+        if(currentCard.style){
+          currentCard.style.transform = `translate(calc(-50% + 50vw), -50%) rotate(30deg)`;
+          currentCard.style.opacity = '0';
+        }
+        
+        setTimeout(() => {
+          if(currentCard && currentCard.parentNode){
+            handleSwipeRight(offer);
+            currentCard.remove();
+            currentSwipeIndex++;
+            setTimeout(() => {
+              showNextSwipeCard();
+            }, 50);
+          }
+        }, 200);
+      }
+    };
+    
+    // Hover-Effekt mit Puls-Animation
+    btnSwipeLike.onmouseover = () => {
+      if(btnSwipeLike) btnSwipeLike.style.transform = 'scale(1.1)';
+    };
+    btnSwipeLike.onmouseout = () => {
+      if(btnSwipeLike) btnSwipeLike.style.transform = 'scale(1)';
+    };
+  }
+  
+  // Reset-Button (Nochmal von vorne)
+  if(btnSwipeReset){
+    btnSwipeReset.onclick = () => {
+      // SessionStorage leeren (Ablehnungen zurücksetzen)
+      sessionStorage.removeItem('mittagio_disliked');
+      
+      // Index zurücksetzen
+      currentSwipeIndex = 0;
+      
+      // Swipe-Stack neu rendern
+      renderSwipeCards();
+      
+      // End-of-Stack Karte ausblenden
+      const swipeEndOfStack = document.getElementById('swipeEndOfStack');
+      if(swipeEndOfStack) swipeEndOfStack.style.display = 'none';
+      
+      showToast('Von vorne gestartet', 1500);
+    };
+  }
+  
+  // Zur Liste wechseln Button
+  if(btnSwipeToList){
+    btnSwipeToList.onclick = () => {
+      switchDiscoverView('list');
     };
   }
   
