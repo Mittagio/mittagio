@@ -4610,10 +4610,15 @@
     discoverView: 'mittagio_discover_view_v1',
     orderHistory: 'mittagio_order_history_v1',
     swipeOnboardingShown: 'mittagio_swipe_onboarding_shown_v1',
-    providerSession: 'mittagio_provider_session_v1' // Session-ID für Ein-Gerät-Schranke
+    providerSession: 'mittagio_provider_session_v1',
+    favPillars: 'mittagio_fav_pillars_v1' // { [dishId]: { vorOrt, abholnummer, mehrweg } } – 3-Säulen beim Favorisieren einfrieren
   };
   const load = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } };
   const save = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+
+  function getFavPillars(dishId){ const m = load(LS.favPillars, {}); return m[dishId] || null; }
+  function setFavPillars(dishId, pillars){ const m = load(LS.favPillars, {}); m[dishId] = pillars; save(LS.favPillars, m); }
+  function clearFavPillars(dishId){ const m = load(LS.favPillars, {}); delete m[dishId]; save(LS.favPillars, m); }
 
   // --- Order Store (localStorage MVP) - MUSS VOR VERWENDUNG DEFINIERT SEIN ---
   /**
@@ -7121,7 +7126,6 @@
   }
   
   function acceptOffer(offer){
-    // Ja = Zu Favoriten hinzufügen (Match!)
     if(!offer || !offer.id){
       console.error('Invalid offer in acceptOffer:', offer);
       return;
@@ -7129,21 +7133,24 @@
     
     const data = normalizeOffer(offer);
     const dishKey = data.id;
+    const offerProvider = offers.find(p => p.providerId === data.providerId);
+    const vorOrt = !!(offerProvider && (offerProvider.dineInPossible !== false || data.dineInPossible));
+    const abholnummer = !!(offerProvider && (offerProvider.orderingEnabled !== false && (data.hasPickupCode || offerProvider.hasPickupCode)));
+    const mehrweg = !!(offerProvider && (offerProvider.reuseEnabled || offerProvider.reuse || (offerProvider.providerProfile && offerProvider.providerProfile.reuseEnabled)));
     
-    // Zu Favoriten hinzufügen (LocalStorage - dauerhaft)
+    // 3-Säulen einfrieren: Status beim Favorisieren speichern
+    setFavPillars(dishKey, { vorOrt, abholnummer, mehrweg });
+    
     const favorites = JSON.parse(localStorage.getItem('mittagio_favorites') || '[]');
     if(!favorites.includes(dishKey)){
       favorites.push(dishKey);
       localStorage.setItem('mittagio_favorites', JSON.stringify(favorites));
     }
-    
-    // Auch in dishFavs Set hinzufügen
     if(!dishFavs.has(dishKey)){
       dishFavs.add(dishKey);
       save(LS.dishFavs, Array.from(dishFavs));
     }
     
-    // Haptic Feedback (Tinder-Style)
     triggerHapticFeedback([20, 10, 30]);
     
     // "Lecker!" Match-Overlay anzeigen
@@ -8548,9 +8555,22 @@
 
   function toggleDishFav(offerId){
     if(!offerId) return;
-    // Haptics beim Markieren von Favoriten
     triggerHapticFeedback([15]);
-    if(dishFavs.has(offerId)) dishFavs.delete(offerId); else dishFavs.add(offerId);
+    if(dishFavs.has(offerId)){
+      dishFavs.delete(offerId);
+      clearFavPillars(offerId);
+    } else {
+      dishFavs.add(offerId);
+      const offer = offers.find(o => o.id === offerId);
+      if(offer){
+        const data = normalizeOffer(offer);
+        const prov = offers.find(p => p.providerId === data.providerId);
+        const vorOrt = !!(prov && (prov.dineInPossible !== false || data.dineInPossible));
+        const abholnummer = !!(prov && (prov.orderingEnabled !== false && (data.hasPickupCode || prov.hasPickupCode)));
+        const mehrweg = !!(prov && (prov.reuseEnabled || prov.reuse || (prov.providerProfile && prov.providerProfile.reuseEnabled)));
+        setFavPillars(offerId, { vorOrt, abholnummer, mehrweg });
+      }
+    }
     save(LS.dishFavs, Array.from(dishFavs));
     renderDiscover();
     renderStart();
