@@ -1909,9 +1909,9 @@
     /* Polaroid-Karte: Reinweißer Hintergrund, breiter unterer Rand */
     .swipe-card{
       position:absolute; top:50%; left:50%; transform:translate(-50%, -50%);
-      background:#FFFFFF;
+      background:#FFFFFF; /* Reinweißer Hintergrund - KEINE Schiefertafel */
       border-radius:4px;
-      box-shadow:0 4px 16px rgba(0,0,0,0.15), 0 2px 8px rgba(0,0,0,0.1);
+      box-shadow:0 8px 24px rgba(0,0,0,0.12), 0 4px 12px rgba(0,0,0,0.08); /* Weicher Drop-Shadow für Tiefe auf beigem Hintergrund */
       overflow:visible; cursor:default;
       /* Touch-Optimierung: Keine Swipe-Gesten auf Karte selbst (nur Buttons) */
       touch-action: none;
@@ -1963,12 +1963,12 @@
     .swipe-card.swiping{
       transition:none;
     }
-    /* Polaroid: Titel oben */
+    /* Polaroid: Titel oben - Handwriting-Font */
     .swipe-card-title{
       font-size:22px; font-weight:700;
       margin:0 0 16px; line-height:1.3;
       color:#000;
-      font-family:'Kalam', 'Comic Sans MS', 'Marker Felt', cursive;
+      font-family:var(--font-polaroid-marker), 'Permanent Marker', 'Kalam', 'Comic Sans MS', 'Marker Felt', cursive; /* Handwriting-Font */
       text-align:center;
       padding:0 8px;
     }
@@ -1989,15 +1989,15 @@
     .swipe-card-image img{
       width:100%; height:100%; object-fit:cover; object-position:center;
     }
-    /* Preis-Sticker auf Bild (rechts unten) */
+    /* Preis-Sticker auf Bild (rechts unten) - Grüner Kreis mit weißer Schrift */
     .swipe-card-price-sticker{
       position:absolute; bottom:8px; right:8px;
       width:56px; height:56px;
       border-radius:50%;
-      background:#27AE60;
+      background:var(--sticker-green); /* Grüner Kreis */
       border:3px solid #fff;
       display:flex; align-items:center; justify-content:center;
-      font-weight:900; font-size:14px; color:#fff;
+      font-weight:900; font-size:14px; color:#fff; /* Weiße Schrift */
       box-shadow:0 2px 8px rgba(0,0,0,0.2);
       z-index:10;
     }
@@ -2014,6 +2014,7 @@
       margin:0 0 20px;
       font-weight:500;
       margin:0; font-weight:500;
+      font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; /* Schlichte Sans-Serif */
       display:flex; align-items:center; justify-content:center; gap:4px;
     }
     .swipe-card-meta{
@@ -2233,30 +2234,43 @@
       </div>
       
       <!-- Swipe-Stack (Polaroid-Design) -->
-      <div id="discoverSwipe" style="display:none; position:relative; height:75vh; min-height:480px; max-height:600px; margin:0 auto; padding:12px 0; background:var(--bg-polaroid); width:100%; overflow:hidden;">
-        <!-- Header: Kategorien-Pills + Exit-Button -->
-        <header style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px; position:sticky; top:0; z-index:100; background:rgba(232,224,214,0.95); backdrop-filter:blur(8px); border-bottom:1px solid rgba(0,0,0,0.1);">
-          <div id="swipeCategoryPills" style="display:flex; gap:8px; overflow-x:auto; flex:1;">
-            <!-- Wird dynamisch befüllt -->
+      <div id="discoverSwipe" style="display:none; position:relative; height:75vh; min-height:480px; max-height:600px; margin:0 auto; padding:0; padding-bottom:100px; background:var(--bg-polaroid); width:100%; overflow:hidden;">
+        <!-- Swipe-Header: Clean Design ohne Kategorien -->
+        <div class="swipe-header-clean" style="background:#fff; border-bottom:1px solid rgba(0,0,0,0.08);">
+          <div class="nav-bar" style="display:flex; justify-content:space-between; align-items:center; padding:10px 16px; background:#fff; position:relative;">
+            <div class="location" id="swipeLocationCity" style="display:flex; align-items:center; gap:6px; flex-shrink:0; font-size:13px; font-weight:600; color:#333;">
+              <span class="icon">📍</span>
+              <span class="city">Jena</span>
+            </div>
+            
+            <div class="brand" style="position:absolute; left:50%; transform:translateX(-50%); font-size:1.2rem; font-weight:900; letter-spacing:1px; color:#1a1a1a;">
+              MITTAGIO
+            </div>
+            
+            <button class="close" type="button" id="btnSwipeExit" aria-label="Swipe-Modus verlassen" style="background:none; border:none; font-size:1.5rem; cursor:pointer; color:#333; padding:4px; flex-shrink:0; transition:opacity 0.2s ease;" onmouseover="this.style.opacity='0.7';" onmouseout="this.style.opacity='1';">
+              ✕
+            </button>
+          </div>
+
+          <div class="info-strip" id="swipeReachabilityText" style="text-align:center; font-size:0.85rem; color:#666; padding:4px 0 12px 0; font-style:italic; border-bottom:1px solid #eee;">
+            In deiner Nähe (👣 10 Min. / 🚗 10 Min.)
+          </div>
         </div>
-          <button type="button" id="btnSwipeExit" style="width:36px; height:36px; border-radius:50%; border:1px solid rgba(0,0,0,0.2); background:rgba(255,255,255,0.8); color:#333; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s ease; flex-shrink:0; margin-left:12px;" onmouseover="this.style.background='rgba(0,0,0,0.1)';" onmouseout="this.style.background='rgba(255,255,255,0.8)';">
-            <i data-lucide="x" style="width:18px;height:18px;"></i>
-          </button>
-        </header>
         
-        <div id="swipeStack" style="position:relative; width:100%; height:calc(100% - 140px); min-height:400px; display:flex; align-items:center; justify-content:center; padding:20px 0; overflow:visible;">
+        <div id="swipeStack" style="position:relative; width:100%; height:calc(100% - 120px); min-height:400px; display:flex; align-items:center; justify-content:center; padding:20px 0; overflow:visible;">
           <!-- Polaroid-Karten werden hier eingefügt -->
         </div>
         
-        <!-- Action-Buttons: Rot (✕) | Grau (🔄) | Grün (❤️🍴) -->
-        <div id="swipeActionButtons" style="position:absolute; bottom:20px; left:50%; transform:translateX(-50%); display:flex; gap:20px; align-items:center; z-index:100;">
-          <button type="button" id="btnSwipeReject" class="swipe-action-btn swipe-action-btn-reject" style="width:64px; height:64px; border-radius:50%; border:none; background:#E34D4D; color:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s ease; box-shadow:0 4px 12px rgba(227,77,77,0.4); font-size:28px;" aria-label="Nein">
-            ✕
+        <!-- Action-Buttons: Fixiert am unteren Bildschirmrand -->
+        <!-- ROT (btn-red): ❌ für "Ablehnen" | GRAU/BLAU (btn-next): 🔄 für "Weiterschauen" | GRÜN (btn-love): ❤️🍴 für "Zustimmen" -->
+        <div id="swipeActionButtons" class="swipe-action-buttons-container" style="position:fixed; bottom:0; left:0; right:0; display:flex; justify-content:center; gap:20px; align-items:center; z-index:1000; padding:20px; background:linear-gradient(to top, rgba(232,224,214,0.95) 0%, rgba(232,224,214,0.8) 80%, transparent 100%); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);">
+          <button type="button" id="btnSwipeReject" class="swipe-action-btn btn-red" style="width:64px; height:64px; border-radius:50%; border:none; background:#E34D4D; color:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s ease; box-shadow:0 4px 12px rgba(227,77,77,0.4); font-size:28px;" aria-label="Ablehnen" onmouseover="this.style.transform='scale(1.1)';" onmouseout="this.style.transform='scale(1)';">
+            ❌
           </button>
-          <button type="button" id="btnSwipeNext" class="swipe-action-btn" style="width:56px; height:56px; border-radius:50%; border:1px solid rgba(0,0,0,0.2); background:rgba(255,255,255,0.9); color:#666; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s ease; box-shadow:0 2px 8px rgba(0,0,0,0.1); font-size:24px;" aria-label="Weiter">
+          <button type="button" id="btnSwipeNext" class="swipe-action-btn btn-next" style="width:56px; height:56px; border-radius:50%; border:1px solid rgba(0,0,0,0.2); background:rgba(255,255,255,0.9); color:#666; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s ease; box-shadow:0 2px 8px rgba(0,0,0,0.1); font-size:24px;" aria-label="Weiterschauen" onmouseover="this.style.transform='scale(1.1)'; this.style.background='rgba(255,255,255,1)';" onmouseout="this.style.transform='scale(1)'; this.style.background='rgba(255,255,255,0.9)';">
             🔄
           </button>
-          <button type="button" id="btnSwipeLike" class="swipe-action-btn swipe-action-btn-like" style="width:64px; height:64px; border-radius:50%; border:none; background:#27AE60; color:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s ease; box-shadow:0 4px 12px rgba(39,174,96,0.4); font-size:24px; line-height:1;" aria-label="Ja">
+          <button type="button" id="btnSwipeLike" class="swipe-action-btn btn-love" style="width:64px; height:64px; border-radius:50%; border:none; background:#27AE60; color:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s ease; box-shadow:0 4px 12px rgba(39,174,96,0.4); font-size:24px; line-height:1;" aria-label="Zustimmen" onmouseover="this.style.transform='scale(1.1)';" onmouseout="this.style.transform='scale(1)';">
             ❤️🍴
           </button>
         </div>
@@ -6173,11 +6187,19 @@
     if(discoverCurrentLocation){
       discoverCurrentLocation.textContent = locationQuery || 'Jena';
     }
+    // Swipe-Location synchronisieren
+    const swipeLocationCity = document.getElementById('swipeLocationCity');
+    if(swipeLocationCity){
+      swipeLocationCity.textContent = locationQuery || 'Jena';
+    }
     
     // Globale Funktion für Location-Auswahl
     window.selectLocation = function(loc){
       locationQuery = loc;
       if(discoverCurrentLocation) discoverCurrentLocation.textContent = loc;
+      // Swipe-Location synchronisieren
+      const swipeLocationCity = document.getElementById('swipeLocationCity');
+      if(swipeLocationCity) swipeLocationCity.textContent = loc;
       if(discoverLocationInput) discoverLocationInput.value = '';
       if(discoverLocationSuggestions) discoverLocationSuggestions.innerHTML = '';
       if(discoverLocationExpanded) discoverLocationExpanded.style.display = 'none';
@@ -6499,6 +6521,40 @@
   // Zeit-Filter State (Standard: 10 Min Gehzeit)
   let activeTimeFilter = load('mittagio_timeFilter', 'walking'); // 'walking' (10 min) oder 'driving' (15 min)
   
+  // Swipe-Location-Info aktualisieren
+  function updateSwipeLocationInfo(){
+    const swipeLocationCity = document.getElementById('swipeLocationCity');
+    const swipeReachabilityText = document.getElementById('swipeReachabilityText');
+    const discoverCurrentLocation = document.getElementById('discoverCurrentLocation');
+    
+    // Standort synchronisieren (nur der Stadtname, nicht das Icon)
+    if(swipeLocationCity && discoverCurrentLocation){
+      const citySpan = swipeLocationCity.querySelector('.city');
+      if(citySpan){
+        citySpan.textContent = discoverCurrentLocation.textContent || 'Jena';
+      } else {
+        // Fallback: Falls .city nicht existiert, gesamten Text aktualisieren
+        swipeLocationCity.innerHTML = `<span class="icon">📍</span><span class="city">${discoverCurrentLocation.textContent || 'Jena'}</span>`;
+      }
+    } else if(swipeLocationCity){
+      const citySpan = swipeLocationCity.querySelector('.city');
+      if(citySpan){
+        citySpan.textContent = locationQuery || 'Jena';
+      } else {
+        swipeLocationCity.innerHTML = `<span class="icon">📍</span><span class="city">${locationQuery || 'Jena'}</span>`;
+      }
+    }
+    
+    // Erreichbarkeits-Info aktualisieren (basierend auf aktivem Zeit-Filter)
+    if(swipeReachabilityText){
+      if(activeTimeFilter === 'walking'){
+        swipeReachabilityText.textContent = 'In deiner Nähe (👣 10 Min. / 🚗 15 Min.)';
+      } else {
+        swipeReachabilityText.textContent = 'In deiner Nähe (👣 10 Min. / 🚗 15 Min.)';
+      }
+    }
+  }
+  
   // Initialisiere FAB State
   setTimeout(() => {
     if(typeof syncToggleState === 'function') syncToggleState();
@@ -6557,6 +6613,8 @@
       if(quickFiltersEl) quickFiltersEl.style.display = 'none';
       if(calendarEl) calendarEl.style.display = 'none';
       renderSwipeCards();
+      // Standort-Info aktualisieren
+      updateSwipeLocationInfo();
     } else {
       if(listEl) listEl.style.display = 'block';
       if(swipeEl) {
@@ -6582,41 +6640,16 @@
     }
   }
   
-  // SwipeCards rendern
+  // SwipeCards rendern - Überraschungs-Modus (nur Umkreis-Filter)
   function renderSwipeCards(){
+    // Standort und Erreichbarkeits-Info aktualisieren
+    updateSwipeLocationInfo();
     const swipeStack = document.getElementById('swipeStack');
     const swipeEmpty = document.getElementById('swipeEmpty');
-    const swipeCategoryPills = document.getElementById('swipeCategoryPills');
     if(!swipeStack) return;
     
-    // Kategorien-Pills im Header rendern
-    if(swipeCategoryPills){
-      swipeCategoryPills.innerHTML = '';
-      const cats = [
-        {id:'near', label:'In der Nähe', emoji: '📍'},
-        {id:'Mit Fleisch', label:'Fleisch', emoji: '🍖'},
-        {id:'Salat', label:'Salat', emoji: '🥗'},
-        {id:'Vegetarisch', label:'Vegetarisch', emoji: '🧀'},
-        {id:'Vegan', label:'Vegan', emoji: '🌿'},
-        {id:'Fisch', label:'Fisch', emoji: '🐟'}
-      ];
-      cats.forEach(cat => {
-        const btn = document.createElement('button');
-        const isActive = activeDiscoverFilter === cat.id && !currentProviderFilter;
-        btn.className = 'pill' + (isActive ? ' active' : '');
-        btn.style.cssText = `padding:8px 16px; border-radius:20px; border:1px solid ${isActive ? 'var(--brand)' : 'rgba(0,0,0,0.2)'}; background:${isActive ? 'var(--brand)' : '#fff'}; color:${isActive ? '#1a1a1a' : '#333'}; font-size:14px; font-weight:${isActive ? '700' : '500'}; cursor:pointer; transition:all 0.2s ease; white-space:nowrap; display:flex; align-items:center; gap:6px;`;
-        btn.innerHTML = `<span>${cat.emoji}</span><span>${esc(cat.label)}</span>`;
-        btn.onclick = () => {
-          triggerHapticFeedback([10]);
-          activeDiscoverFilter = cat.id;
-          currentProviderFilter = null;
-          renderSwipeCards();
-        };
-        swipeCategoryPills.appendChild(btn);
-      });
-    }
-    
     // Filtere Angebote: Nur heute + Zeit-Filter (10 Min Gehzeit oder 15 Min Fahrzeit)
+    // KEINE Kategorie-Filter, KEINE Ernährungs-Präferenzen - reiner Überraschungs-Modus
     let list = offers.filter(o => o.day === activeDay && o.active !== false);
     
     // Zeit-Filter: Standard 10 Min Gehzeit (5 km/h = 12 Min/km), optional 15 Min Fahrzeit (50 km/h = 1.2 Min/km)
@@ -6636,44 +6669,6 @@
         const carMinutes = Math.round(Number(data.distanceKm) * 1.2);
         return carMinutes <= 15;
       });
-    }
-    
-    // Ernährungs-Präferenzen Filter (aus Profil)
-    if(customer && customer.dietaryPreferences){
-      const prefs = customer.dietaryPreferences;
-      list = list.filter(o => {
-        const normalized = normalizeOffer(o);
-        const category = normalized.category || '';
-        const allergens = normalized.allergens || [];
-        
-        // Vegan: Nur "Vegan" Kategorie
-        if(prefs.vegan && category !== 'Vegan') return false;
-        
-        // Vegetarisch: "Vegan" oder "Vegetarisch" (aber nicht "Mit Fleisch" oder "Fisch")
-        if(prefs.vegetarian && (category === 'Mit Fleisch' || category === 'Fisch')) return false;
-        
-        // Glutenfrei: Keine glutenhaltigen Allergene
-        if(prefs.glutenFree && allergens.some(a => 
-          a.toLowerCase().includes('gluten') || 
-          a.toLowerCase().includes('weizen') ||
-          a.toLowerCase().includes('dinkel')
-        )) return false;
-        
-        // Laktosefrei: Keine laktosehaltigen Allergene
-        if(prefs.lactoseFree && allergens.some(a => 
-          a.toLowerCase().includes('laktose') || 
-          a.toLowerCase().includes('milch') ||
-          a.toLowerCase().includes('käse')
-        )) return false;
-        
-        return true;
-      });
-    }
-    
-    // Kategorie-Filter
-    if(activeDiscoverFilter !== 'near'){
-      const cat = CAT_MAP[activeDiscoverFilter] || activeDiscoverFilter;
-      list = list.filter(o => (o.category||'') === cat);
     }
     
     const q = String(locationQuery||'').trim().toLowerCase();
@@ -6753,17 +6748,19 @@
     const hasReuseSupport = offerProvider && (offerProvider.reuseEnabled || offerProvider.reuse || (offerProvider.providerProfile && offerProvider.providerProfile.reuseEnabled));
     const hasDineIn = offerProvider && (offerProvider.dineInPossible !== false || data.dineInPossible);
     
-    // 3 Konzept-Icons: Mehrweg, Essen vor Ort, Abholnummer (einheitliche Icon-Grafik)
-    // 2 Konzept-Icons: Essen vor Ort, Abholnummer (Mehrweg nur noch im Profil)
+    // 3 Säulen-Icons am OBEREN Rand: Vor Ort (🍴), Abholnummer (🧾), Mehrweg (🔄)
+    // Reihenfolge identisch zum Listen-Modus für maximale Konsistenz
     const iconPillars = `
-      <div style="display:flex; justify-content:center; align-items:center; gap:28px; padding:16px 0 8px; border-top:1px solid rgba(0,0,0,0.1);">
-        <div style="opacity:${hasDineIn ? '1' : '0.25'};" title="Essen vor Ort möglich"><img src="assets/icon-essen-vor-ort.png" alt="Essen vor Ort" class="concept-icon-xl" style="width:32px;height:32px;"></div>
-        <div style="opacity:${orderingEnabled ? '1' : '0.25'};" title="Abholnummer verfügbar"><img src="assets/icon-abholnummer.png" alt="Abholnummer" class="concept-icon-xl" style="width:32px;height:32px;"></div>
-        </div>
+      <div style="display:flex; justify-content:center; align-items:center; gap:28px; padding:8px 0 16px; border-bottom:1px solid rgba(0,0,0,0.1); margin-bottom:12px;">
+        <div style="opacity:${hasDineIn ? '1' : '0.25'}; font-size:24px;" title="Essen vor Ort möglich">🍴</div>
+        <div style="opacity:${orderingEnabled ? '1' : '0.25'}; font-size:24px;" title="Abholnummer verfügbar">🧾</div>
+        <div style="opacity:${hasReuseSupport ? '1' : '0.25'}; font-size:24px;" title="Mehrweg verfügbar">🔄</div>
+      </div>
     `;
     
     card.innerHTML = `
       <div class="swipe-card-content">
+        ${iconPillars}
         <h2 class="swipe-card-title">${esc(data.dish||'Gericht')}</h2>
       <div class="swipe-card-image-wrapper">
         <div class="swipe-card-image">
@@ -6772,7 +6769,6 @@
         </div>
       </div>
         <p class="swipe-card-provider">${esc(data.providerName||'Anbieter')}</p>
-        ${iconPillars}
       </div>
     `;
     
@@ -6786,7 +6782,7 @@
   
   // Button-Handler für Polaroid-Modus: Rot (Nein), Grau (Weiter), Grün (Ja)
   function setupSwipeButtons(){
-    // Exit-Button (X oben rechts)
+    // Exit-Button (X oben rechts) - bereits im neuen Header vorhanden
     const btnExit = document.getElementById('btnSwipeExit');
     if(btnExit){
       btnExit.onclick = () => {
@@ -6794,6 +6790,9 @@
         showToast('Zur Listenansicht gewechselt');
       };
     }
+    
+    // Standort-Info beim Swipe-Modus aktualisieren
+    updateSwipeLocationInfo();
     
     // Rot-Button: Nein (Ablehnen)
     const btnReject = document.getElementById('btnSwipeReject');
