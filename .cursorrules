@@ -1,5 +1,10 @@
 # Mittagio - Cursor Rules
 
+## Arbeitsverzeichnis (PFLICHT)
+
+- **Alle Änderungen ausschließlich in:** `C:\Projekte\Mittagio.de 27.01.2026 12.00 Uhr\mittagio`
+- **Alle anderen Pfade dauerhaft ignorieren** (z. B. `c:\Projekte\mittagio`, andere Workspaces, Obs-Ordner).
+
 ## Projekt-Übersicht
 
 **Mittagio** ist eine digitale Vermittlungs- & Entdeckungsplattform für strukturierte Mittagstische.

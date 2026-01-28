@@ -2487,9 +2487,9 @@
             <span>Nachhaltigkeit</span>
           </div>
           <div id="profileReuseSwitch" style="display:flex; flex-direction:column; gap:12px;">
-            <!-- Wird dynamisch befüllt -->
+            <!-- Wird dynamisch befüllt (Toggle) -->
           </div>
-          <!-- Hinweistext über Mehrweg-System -->
+          <!-- Hinweistext zwingend unter dem Toggle -->
           <div style="margin-top:16px; padding:12px; background:rgba(0,0,0,0.03); border-radius:12px; border-left:3px solid rgba(39,174,96,0.3);">
             <div style="font-size:13px; color:#64748b; line-height:1.5;">
               Wir arbeiten stetig daran, weitere Partner für unser Mehrweg-System zu gewinnen. Aktuell führen noch nicht alle Anbieter Mehrweg-Optionen; es werden dir weiterhin alle verfügbaren Angebote angezeigt.
@@ -2633,7 +2633,7 @@
           <div>
             <a href="mailto:support@mittagio.de" style="color:var(--muted); text-decoration:none;">support@mittagio.de</a>
             <span style="margin:0 6px; color:#cbd5e1;">|</span>
-            <span>Business-Bereich</span>
+            <a href="#" onclick="typeof showProviderLoginModal === 'function' && showProviderLoginModal(); return false;" style="color:var(--muted); text-decoration:none;">Business-Bereich</a>
           </div>
         </div>
       </div>
