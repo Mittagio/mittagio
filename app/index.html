@@ -359,10 +359,12 @@
       border:1px solid rgba(255,255,255,0.8);
       border-radius:4px;
       box-shadow:0 8px 24px rgba(0,0,0,0.15), 0 2px 8px rgba(0,0,0,0.1);
-      padding:12px 12px 20px;
+      padding:10px 10px 16px;
       display:flex;
       flex-direction:column;
       align-items:center;
+      transform: scale(0.8);
+      transform-origin: center;
     }
     .card.playful{
       border-color:rgba(242,183,5,.38);
@@ -375,14 +377,14 @@
     .card.playful .tag{background:rgba(242,183,5,.25)}
     .img{aspect-ratio:16/9; height:auto; min-height:120px; max-height:140px; background:#eee; position:relative; overflow:hidden; border-radius:20px 20px 0 0}
     .img img{width:100%; height:100%; object-fit:cover; display:block}
-    /* Polaroid: Quadratisches Bild */
+    /* Polaroid: Foto nimmt nur 50% der Kachelhöhe ein */
     .card.polaroid .img{
-      aspect-ratio:1/1;
+      aspect-ratio:4/3;
       width:100%;
       max-width:100%;
       height:auto;
       min-height:auto;
-      max-height:none;
+      max-height:50%;
       border-radius:2px;
       position:relative;
       overflow:visible;
@@ -1554,6 +1556,28 @@
     }
     /* Ungenutzte .discover-list-card Styles entfernt - wir verwenden .dish-card für kompakte Liste */
     /* Kompakte Horizontale Gericht-Karte (Slim-Card) - High Performance */
+    /* Entscheidungs-Kacheln (2x2 Grid) */
+    .decision-tiles-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      padding: 16px;
+    }
+    
+    @media (min-width: 640px) {
+      .decision-tiles-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+      }
+    }
+    
+    @media (min-width: 1024px) {
+      .decision-tiles-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+      }
+    }
+    
     .dish-card {
       display: flex;
       min-height: 88px;
@@ -2296,7 +2320,7 @@
     <!-- CUSTOMER: Cart -->
     <section class="view customer-view" id="v-cart">
       <div style="padding:16px; padding-bottom:calc(90px + env(safe-area-inset-bottom, 0px));">
-        <!-- Aktive Tickets (Wallet-Look) -->
+        <!-- Aktive Abholnummern (Wallet-Look) -->
         <div class="panel" id="cartActiveTickets" style="margin-bottom:16px; padding:20px; display:none; border-radius:24px; box-shadow:0 4px 16px rgba(0,0,0,.08); background:rgba(255,255,255,0.98); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border:2px dashed rgba(255,184,0,0.3); position:relative;">
           <h3 style="font-weight:900; font-size:22px; margin:0 0 20px; line-height:1.3; color:#2D3436; display:flex; align-items:center; gap:10px;">
             <span style="font-size:28px;">🎫</span>
@@ -2465,7 +2489,7 @@
         <!-- Wird dynamisch befüllt -->
       </div>
 
-      <!-- Quick-History (Aktive Tickets) -->
+      <!-- Quick-History (Aktive Abholnummern) -->
       <div class="panel" id="profileTicketsSection" style="margin-top:20px; padding:20px; border-radius:20px; box-shadow:0 2px 12px rgba(0,0,0,.06); display:none;">
         <div style="font-weight:900; font-size:18px; margin-bottom:16px; color:#2D3436; display:flex; align-items:center; gap:8px;">
           <i data-lucide="hash" style="width:20px;height:20px; color:#FFD700;"></i>
@@ -3966,24 +3990,32 @@
   </div>
   <div class="handle" style="background:rgba(255,255,255,0.3);"></div>
   
-  <!-- Hero-Image (Schiefertafel-Optik) -->
+  <!-- Hero-Image (Kompaktes Thumbnail, clean Design - kein Schiefertafel-Hintergrund) -->
   <div style="padding:16px 16px 0;">
-    <div style="width:100%; aspect-ratio:16/9; max-height:320px; border-radius:16px; overflow:hidden; background:#0f0f0f; box-shadow:0 4px 16px rgba(0,0,0,0.5); position:relative; border:2px solid rgba(255,255,255,0.1);">
+    <div style="width:100%; aspect-ratio:4/3; max-height:160px; border-radius:16px; overflow:hidden; background:#f0f0f0; box-shadow:0 2px 8px rgba(0,0,0,0.1); position:relative; border:1px solid rgba(0,0,0,0.05);">
       <img id="sImg" alt="" style="width:100%; height:100%; object-fit:cover; display:block;" />
       <!-- Platzhalter-Hintergrund falls kein Bild -->
-      <div id="sImgPlaceholder" style="position:absolute; top:0; left:0; right:0; bottom:0; background:linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); display:none; align-items:center; justify-content:center; color:rgba(255,255,255,0.5); font-size:14px;">
+      <div id="sImgPlaceholder" style="position:absolute; top:0; left:0; right:0; bottom:0; background:#f0f0f0; display:none; align-items:center; justify-content:center; color:rgba(0,0,0,0.3); font-size:14px;">
         <i data-lucide="image" style="width:48px;height:48px;"></i>
       </div>
-      <!-- Preis-Badge oben rechts auf Bild -->
-      <div id="sPriceBadge" style="position:absolute; top:16px; right:16px; background:var(--brand); color:#000; padding:8px 16px; border-radius:20px; font-weight:900; font-size:18px; box-shadow:0 4px 12px rgba(255,215,0,0.4); z-index:10;"></div>
+      <!-- Herz-Icon oben rechts am Bildrand (rot leuchtend, mit integriertem Besteck-Symbol) -->
+      <button id="sFavoriteBtn" type="button" style="position:absolute; top:8px; right:8px; width:40px; height:40px; border-radius:50%; background:rgba(255,255,255,0.95); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:2px solid #e74c3c; display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:10; box-shadow:0 2px 8px rgba(231,76,60,0.4); transition:all 0.2s ease;" onmouseover="this.style.transform='scale(1.1)';" onmouseout="this.style.transform='scale(1)';">
+        <i data-lucide="heart" style="width:20px;height:20px; color:#e74c3c; fill:none;"></i>
+        <i data-lucide="utensils" style="position:absolute; width:10px;height:10px; color:#e74c3c; bottom:5px; right:5px;"></i>
+      </button>
+      <!-- Preis-Badge oben links auf Bild -->
+      <div id="sPriceBadge" style="position:absolute; top:8px; left:8px; background:var(--brand); color:#000; padding:6px 12px; border-radius:16px; font-weight:900; font-size:16px; box-shadow:0 2px 8px rgba(255,215,0,0.4); z-index:10;"></div>
     </div>
   </div>
   
   <div class="sheet-body" style="background:transparent; padding:16px;">
-    <!-- Header-Infos: Gerichtsname (fett) -->
-    <div style="margin-top:16px;">
-      <div style="font-weight:900; font-size:24px; line-height:1.3; margin-bottom:12px; color:#fff; text-shadow:0 2px 4px rgba(0,0,0,0.3);" id="sDish"></div>
-      </div>
+    <!-- Header-Infos: Gerichtsname (fett) + Share-Icon -->
+    <div style="margin-top:16px; display:flex; align-items:flex-start; justify-content:space-between; gap:12px;">
+      <div style="font-weight:900; font-size:24px; line-height:1.3; margin-bottom:12px; color:#fff; text-shadow:0 2px 4px rgba(0,0,0,0.3); flex:1;" id="sDish"></div>
+      <button id="sShareBtn" type="button" style="flex-shrink:0; width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s ease; color:rgba(255,255,255,0.8);" onmouseover="this.style.background='rgba(255,255,255,0.2)';" onmouseout="this.style.background='rgba(255,255,255,0.1)';">
+        <i data-lucide="share-2" style="width:18px;height:18px;"></i>
+      </button>
+    </div>
 
     <!-- Die 3 Säulen (Badges): Abholnummer, Vor Ort, Mehrweg -->
     <div id="sThreePillars" style="display:flex; justify-content:center; align-items:center; gap:20px; margin:20px 0; padding:16px 0;">
@@ -3996,26 +4028,27 @@
       <span style="color:rgba(255,255,255,0.9); font-size:14px; font-weight:500;">Essenszeit: <span id="sMealTimeRange"></span> Uhr</span>
     </div>
 
-    <!-- Anbieter-Modul: Name + Adresse + Navi-Icon -->
+    <!-- Anbieter-Modul: Name + Adresse + Entfernungsangaben -->
     <div id="sProviderModule" style="margin-bottom:20px; padding:16px; background:rgba(255,255,255,0.05); border-radius:12px; border:1px solid rgba(255,255,255,0.1);">
-      <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
         <i data-lucide="store" style="width:18px;height:18px; color:var(--brand);"></i>
         <span id="sProviderName" style="font-weight:700; font-size:16px; color:#fff;"></span>
-    </div>
-      <div style="display:flex; align-items:center; gap:8px; margin-top:8px;">
+      </div>
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
         <i data-lucide="map-pin" style="width:16px;height:16px; color:rgba(255,255,255,0.7);"></i>
         <span id="sProviderAddress" style="color:rgba(255,255,255,0.8); font-size:14px; flex:1;"></span>
-        <a id="sProviderMapsLink" href="#" target="_blank" rel="noopener" style="display:flex; align-items:center; justify-content:center; width:40px; height:40px; border-radius:50%; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:#fff; text-decoration:none; transition:all 0.2s ease;" onmouseover="this.style.background='rgba(255,255,255,0.2)';" onmouseout="this.style.background='rgba(255,255,255,0.1)';">
-          <i data-lucide="navigation" style="width:20px;height:20px;"></i>
-        </a>
-    </div>
+      </div>
+      <!-- Entfernungsangaben: Zu Fuß & Mit dem Auto -->
+      <div id="sDistanceInfo" style="display:flex; flex-direction:column; gap:8px; margin-top:12px; padding-top:12px; border-top:1px solid rgba(255,255,255,0.1);">
+        <!-- Wird dynamisch befüllt -->
+      </div>
     </div>
 
     <!-- Allergene & Disclaimer (dezent, mit Overlay bei Klick) -->
     <div id="sAllergensWrap" style="margin:20px 0; padding:12px 16px; background:rgba(255,255,255,0.03); border-radius:12px; border:1px solid rgba(255,255,255,0.08);">
       <div style="display:flex; align-items:center; justify-content:space-between; cursor:pointer;" onclick="showAllergensOverlay();">
         <div style="display:flex; align-items:center; gap:8px;">
-          <i data-lucide="info" style="width:16px;height:16px; color:rgba(255,255,255,0.7);"></i>
+          <span style="font-size:16px; color:rgba(255,255,255,0.7);">ⓘ</span>
           <span style="color:rgba(255,255,255,0.8); font-size:13px; font-weight:500;">Allergene anzeigen</span>
         </div>
         <div id="sAllergensPreview" style="color:rgba(255,255,255,0.6); font-size:12px; display:flex; align-items:center; gap:4px;">
@@ -6291,11 +6324,29 @@
       offersEl.innerHTML = '';
       emptyEl.style.display = list.length ? 'none' : 'block';
       
-      list.forEach(o=> {
+      // Entscheidungs-Kacheln (2x2 Grid) - Heute-Fokus mit 3 Säulen
+      // Prüfe ob Grid-Modus aktiviert werden soll (kann später als Toggle implementiert werden)
+      const useDecisionTiles = false; // Standard: Liste, kann auf true gesetzt werden für Grid
+      
+      if(useDecisionTiles){
+        // Grid-Container erstellen
+        const gridContainer = document.createElement('div');
+        gridContainer.className = 'decision-tiles-grid';
+        
+        list.forEach(o => {
+          const tile = createDecisionTile(o, {interactive: true});
+          gridContainer.appendChild(tile);
+        });
+        
+        offersEl.appendChild(gridContainer);
+      } else {
+        // Standard: Liste mit offerCard
+        list.forEach(o=> {
           // Polaroid-Discovery: Verwende offerCard mit context 'discover' für Polaroid-Design
           const card = offerCard(o, {context: 'discover', interactive: true});
-        offersEl.appendChild(card);
-      });
+          offersEl.appendChild(card);
+        });
+      }
     
         // Icons aktualisieren nach dem Rendern
     if(typeof lucide !== 'undefined'){
@@ -7275,6 +7326,229 @@
     return skeleton;
   }
   
+  // Entscheidungs-Kachel (Heute-Fokus): 2x2 Grid mit 3 Säulen in unterer Leiste
+  function createDecisionTile(o, opts={}){
+    const data = normalizeOffer(o);
+    const interactive = opts.interactive !== false;
+    const card = document.createElement('div');
+    card.className = 'decision-tile';
+    card.style.cssText = `
+      position: relative;
+      background: #fff;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      aspect-ratio: 1;
+    `;
+    
+    if(interactive){
+      card.onclick = () => openOffer(data.id);
+      card.onmouseover = () => {
+        card.style.transform = 'scale(1.02)';
+        card.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+      };
+      card.onmouseout = () => {
+        card.style.transform = 'scale(1)';
+        card.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
+      };
+    }
+    
+    const imgSrc = data.imageUrl || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70';
+    
+    // Bild-Container (mit Overlay für 3 Säulen)
+    const imgContainer = document.createElement('div');
+    imgContainer.style.cssText = `
+      position: relative;
+      width: 100%;
+      flex: 1;
+      overflow: hidden;
+      background: #f0f0f0;
+    `;
+    
+    const img = document.createElement('img');
+    img.src = imgSrc;
+    img.alt = data.dish || '';
+    img.style.cssText = `
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    `;
+    imgContainer.appendChild(img);
+    
+    // Rotes X oben rechts (Ausschlussverfahren)
+    const dismissBtn = document.createElement('button');
+    dismissBtn.type = 'button';
+    dismissBtn.style.cssText = `
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(231, 76, 60, 0.95);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 2px solid #fff;
+      color: #fff;
+      font-size: 18px;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 20;
+      box-shadow: 0 2px 8px rgba(231, 76, 60, 0.4);
+      transition: transform 0.2s ease;
+    `;
+    dismissBtn.textContent = '×';
+    dismissBtn.onclick = (e) => {
+      e.stopPropagation();
+      triggerHapticFeedback([10]);
+      // Kachel ausblenden (Ausschlussverfahren)
+      card.style.opacity = '0';
+      card.style.transform = 'scale(0.9)';
+      setTimeout(() => {
+        if(card.parentNode) card.parentNode.removeChild(card);
+      }, 200);
+      showToast('Gericht ausgeschlossen');
+    };
+    dismissBtn.onmouseover = () => {
+      dismissBtn.style.transform = 'scale(1.1)';
+    };
+    dismissBtn.onmouseout = () => {
+      dismissBtn.style.transform = 'scale(1)';
+    };
+    imgContainer.appendChild(dismissBtn);
+    
+    // 3 Säulen in unterer Leiste (im Bild-Overlay)
+    const pillarsRow = document.createElement('div');
+    pillarsRow.style.cssText = `
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 50%, transparent 100%);
+      padding: 12px 8px 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      z-index: 10;
+    `;
+    
+    const offerProvider = offers.find(p => p.providerId === data.providerId);
+    const orderingEnabled = offerProvider && (offerProvider.orderingEnabled !== false && (data.hasPickupCode || offerProvider.hasPickupCode));
+    const hasDineIn = offerProvider && (offerProvider.dineInPossible !== false || data.dineInPossible);
+    const hasReuse = offerProvider && (offerProvider.reuse && offerProvider.reuse.enabled);
+    
+    // Säule 1: Vor Ort 🍴
+    const pillar1 = document.createElement('div');
+    pillar1.style.cssText = `
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: ${hasDineIn ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.4)'};
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      opacity: ${hasDineIn ? '1' : '0.4'};
+      filter: ${hasDineIn ? 'none' : 'grayscale(100%)'};
+    `;
+    pillar1.textContent = '🍴';
+    pillarsRow.appendChild(pillar1);
+    
+    // Säule 2: Abholnummer 🧾
+    const pillar2 = document.createElement('div');
+    pillar2.style.cssText = `
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: ${orderingEnabled ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.4)'};
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      opacity: ${orderingEnabled ? '1' : '0.4'};
+      filter: ${orderingEnabled ? 'none' : 'grayscale(100%)'};
+    `;
+    pillar2.textContent = '🧾';
+    pillarsRow.appendChild(pillar2);
+    
+    // Säule 3: Mehrweg 🔄
+    const pillar3 = document.createElement('div');
+    pillar3.style.cssText = `
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: ${hasReuse ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.4)'};
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      opacity: ${hasReuse ? '1' : '0.4'};
+      filter: ${hasReuse ? 'none' : 'grayscale(100%)'};
+    `;
+    pillar3.textContent = '🔄';
+    pillarsRow.appendChild(pillar3);
+    
+    imgContainer.appendChild(pillarsRow);
+    card.appendChild(imgContainer);
+    
+    // Footer: Name & Preis in Gelb
+    const footer = document.createElement('div');
+    footer.style.cssText = `
+      background: var(--brand);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-height: 60px;
+    `;
+    
+    const dishName = document.createElement('div');
+    dishName.style.cssText = `
+      font-weight: 900;
+      font-size: 14px;
+      color: #1a1a1a;
+      line-height: 1.3;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    `;
+    dishName.textContent = data.dish || 'Gericht';
+    footer.appendChild(dishName);
+    
+    const price = document.createElement('div');
+    price.style.cssText = `
+      font-weight: 900;
+      font-size: 18px;
+      color: #1a1a1a;
+    `;
+    price.textContent = euro(data.price);
+    footer.appendChild(price);
+    
+    card.appendChild(footer);
+    
+    return card;
+  }
+  
   // List Card für Discover-Seite (Kompaktes horizontales Design - Slim-Card)
   function createDiscoverListCard(o){
     const data = normalizeOffer(o);
@@ -7385,14 +7659,87 @@
     const imgSrc = data.imageUrl || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70';
     img.innerHTML = `<img alt="${esc(data.dish||'')}" src="${esc(imgSrc)}" />`;
     
-    // Preis-Sticker: Grüner, runder Sticker direkt auf dem Foto (rechts unten)
+    // Badges auf Foto (oben links): 3 Säulen als kleine kreisrunde Icons (Glass-Morphism)
     if(isPolaroid){
+      img.style.position = 'relative';
+      
+      // Badge-Container oben links
+      const badgesContainer = document.createElement('div');
+      badgesContainer.style.position = 'absolute';
+      badgesContainer.style.top = '8px';
+      badgesContainer.style.left = '8px';
+      badgesContainer.style.display = 'flex';
+      badgesContainer.style.gap = '6px';
+      badgesContainer.style.zIndex = '10';
+      
+      const offerProvider = offers.find(p => p.providerId === data.providerId);
+      const orderingEnabled = offerProvider && (offerProvider.orderingEnabled !== false && (data.hasPickupCode || offerProvider.hasPickupCode));
+      const hasDineIn = offerProvider && (offerProvider.dineInPossible !== false || data.dineInPossible);
+      const hasReuse = offerProvider && (offerProvider.reuse && offerProvider.reuse.enabled);
+      
+      // Badge 1: Vor Ort 🍴
+      const badge1 = document.createElement('div');
+      badge1.style.width = '20px';
+      badge1.style.height = '20px';
+      badge1.style.borderRadius = '50%';
+      badge1.style.background = hasDineIn ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.4)';
+      badge1.style.backdropFilter = 'blur(10px)';
+      badge1.style.webkitBackdropFilter = 'blur(10px)';
+      badge1.style.border = '1px solid rgba(255,255,255,0.5)';
+      badge1.style.display = 'flex';
+      badge1.style.alignItems = 'center';
+      badge1.style.justifyContent = 'center';
+      badge1.style.fontSize = '12px';
+      badge1.style.opacity = hasDineIn ? '1' : '0.4';
+      badge1.style.filter = hasDineIn ? 'none' : 'grayscale(100%)';
+      badge1.textContent = '🍴';
+      badgesContainer.appendChild(badge1);
+      
+      // Badge 2: Abholnummer 🧾
+      const badge2 = document.createElement('div');
+      badge2.style.width = '20px';
+      badge2.style.height = '20px';
+      badge2.style.borderRadius = '50%';
+      badge2.style.background = orderingEnabled ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.4)';
+      badge2.style.backdropFilter = 'blur(10px)';
+      badge2.style.webkitBackdropFilter = 'blur(10px)';
+      badge2.style.border = '1px solid rgba(255,255,255,0.5)';
+      badge2.style.display = 'flex';
+      badge2.style.alignItems = 'center';
+      badge2.style.justifyContent = 'center';
+      badge2.style.fontSize = '12px';
+      badge2.style.opacity = orderingEnabled ? '1' : '0.4';
+      badge2.style.filter = orderingEnabled ? 'none' : 'grayscale(100%)';
+      badge2.textContent = '🧾';
+      badgesContainer.appendChild(badge2);
+      
+      // Badge 3: Mehrweg 🔄
+      const badge3 = document.createElement('div');
+      badge3.style.width = '20px';
+      badge3.style.height = '20px';
+      badge3.style.borderRadius = '50%';
+      badge3.style.background = hasReuse ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.4)';
+      badge3.style.backdropFilter = 'blur(10px)';
+      badge3.style.webkitBackdropFilter = 'blur(10px)';
+      badge3.style.border = '1px solid rgba(255,255,255,0.5)';
+      badge3.style.display = 'flex';
+      badge3.style.alignItems = 'center';
+      badge3.style.justifyContent = 'center';
+      badge3.style.fontSize = '12px';
+      badge3.style.opacity = hasReuse ? '1' : '0.4';
+      badge3.style.filter = hasReuse ? 'none' : 'grayscale(100%)';
+      badge3.textContent = '🔄';
+      badgesContainer.appendChild(badge3);
+      
+      img.appendChild(badgesContainer);
+      
+      // Preis-Sticker: Grüner, runder Sticker direkt auf dem Foto (rechts unten)
       const priceSticker = document.createElement('div');
       priceSticker.style.position = 'absolute';
       priceSticker.style.bottom = '8px';
       priceSticker.style.right = '8px';
-      priceSticker.style.width = '56px';
-      priceSticker.style.height = '56px';
+      priceSticker.style.width = '48px';
+      priceSticker.style.height = '48px';
       priceSticker.style.borderRadius = '50%';
       priceSticker.style.background = '#27AE60';
       priceSticker.style.border = '3px solid #fff';
@@ -7400,12 +7747,11 @@
       priceSticker.style.alignItems = 'center';
       priceSticker.style.justifyContent = 'center';
       priceSticker.style.fontWeight = '900';
-      priceSticker.style.fontSize = '14px';
+      priceSticker.style.fontSize = '12px';
       priceSticker.style.color = '#fff';
       priceSticker.style.boxShadow = '0 2px 8px rgba(0,0,0,0.2)';
       priceSticker.style.zIndex = '10';
       priceSticker.textContent = euro(data.price);
-      img.style.position = 'relative';
       img.appendChild(priceSticker);
     }
 
@@ -7476,49 +7822,45 @@
     };
     body.appendChild(providerEl);
     
-    // MITTAGIO Master-Icons: 3 Badge-Grundsäulen (feste Plätze - NIE nachrutschen!)
-    // Reihenfolge: 🍴 Vor Ort | 🧾 Abholnummer | 🔄 Mehrweg
-    const offerProvider = offers.find(p => p.providerId === data.providerId);
-    const orderingEnabled = offerProvider && (offerProvider.orderingEnabled !== false && (data.hasPickupCode || offerProvider.hasPickupCode));
-    const hasDineIn = offerProvider && (offerProvider.dineInPossible !== false || data.dineInPossible);
-    const hasReuse = offerProvider && (offerProvider.reuse && offerProvider.reuse.enabled);
-    
-    const badgesRow = document.createElement('div');
-    badgesRow.className='card-status-badges three-pillar-row';
-    badgesRow.style.display = 'flex';
-    badgesRow.style.justifyContent = 'center';
-    badgesRow.style.alignItems = 'center';
-    badgesRow.style.gap = '32px';
-    badgesRow.style.marginTop = '16px';
-    badgesRow.style.paddingTop = '16px';
-    badgesRow.style.borderTop = '1px solid rgba(0,0,0,0.1)';
-    
-    // Hilfsfunktion: Badge erstellen (aktiv oder Platzhalter)
-    function createPillarBadge(emoji, title, isActive){
-      const badge = document.createElement('div');
-      badge.style.fontSize = '32px';
-      badge.style.opacity = isActive ? '1' : '0.2';
-      badge.style.display = 'flex';
-      badge.style.alignItems = 'center';
-      badge.style.justifyContent = 'center';
-      badge.style.width = '48px';
-      badge.style.height = '48px';
-      badge.style.filter = isActive ? 'none' : 'grayscale(100%)';
-      badge.title = isActive ? title : `${title} (nicht verfügbar)`;
-      badge.textContent = emoji;
-      return badge;
+    // Mobilitäts-Info: Wegweiser-Zeile unter dem Gerichtnamen (nur bei Polaroid)
+    if(isPolaroid && data.distanceKm != null){
+      const mobilityRow = document.createElement('div');
+      mobilityRow.style.display = 'flex';
+      mobilityRow.style.alignItems = 'center';
+      mobilityRow.style.justifyContent = 'center';
+      mobilityRow.style.gap = '16px';
+      mobilityRow.style.marginTop = '8px';
+      mobilityRow.style.fontSize = '11px';
+      mobilityRow.style.color = '#666';
+      mobilityRow.style.fontWeight = '500';
+      mobilityRow.style.fontStyle = 'italic';
+      
+      // Gehzeit berechnen: 5 km/h = 12 Minuten pro km
+      const walkingMinutes = Math.round(Number(data.distanceKm) * 12);
+      const walkingMeters = Math.round(Number(data.distanceKm) * 1000);
+      const walkingTimeText = walkingMinutes < 1 ? '< 1 Min' : `${walkingMinutes} Min`;
+      
+      // Autofahrt-Zeit berechnen: 50 km/h Durchschnitt = 1.2 Minuten pro km
+      const carMinutes = Math.round(Number(data.distanceKm) * 1.2);
+      const carTimeText = carMinutes < 1 ? '< 1 Min' : `${carMinutes} Min`;
+      const carKmText = Number(data.distanceKm).toFixed(1);
+      
+      mobilityRow.innerHTML = `
+        <span style="display:flex; align-items:center; gap:4px;">
+          <span style="font-size:14px;">🚶</span>
+          <span>${walkingMeters}m</span>
+          <span style="opacity:0.6;">·</span>
+          <span>${walkingTimeText}</span>
+        </span>
+        <span style="display:flex; align-items:center; gap:4px;">
+          <span style="font-size:14px;">🚗</span>
+          <span>${carKmText}km</span>
+          <span style="opacity:0.6;">·</span>
+          <span>${carTimeText}</span>
+        </span>
+      `;
+      body.appendChild(mobilityRow);
     }
-    
-    // Slot 1: Vor Ort (🍴) - Fester Platz
-    badgesRow.appendChild(createPillarBadge('🍴', 'Vor Ort essen möglich', hasDineIn));
-    
-    // Slot 2: Abholnummer (🧾) - Fester Platz
-    badgesRow.appendChild(createPillarBadge('🧾', 'Abholnummer verfügbar', orderingEnabled));
-    
-    // Slot 3: Mehrweg (🔄) - Fester Platz
-    badgesRow.appendChild(createPillarBadge('🔄', 'Mehrweg-System', hasReuse));
-    
-    body.appendChild(badgesRow);
     
     // Preis: Nur bei Nicht-Polaroid (bei Polaroid ist Preis auf dem Bild)
     if(!isPolaroid){
@@ -8180,7 +8522,7 @@
       sPriceBadge.style.display = 'block';
     }
     
-    // Die 3 Säulen (Badges): Abholnummer, Vor Ort, Mehrweg
+    // Die 3 Säulen (Badges): Abholnummer, Vor Ort, Mehrweg - Emoji-Version
     const sThreePillars = document.getElementById('sThreePillars');
     if(sThreePillars){
       const offerProvider = offers.find(p => p.providerId === o.providerId);
@@ -8189,29 +8531,22 @@
       const hasDineIn = o.dineInPossible || false;
       
       sThreePillars.innerHTML = `
-        <!-- Säule 1: Abholnummer -->
-        <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
-          <div style="width:56px; height:56px; border-radius:50%; background:${orderingEnabled ? 'rgba(255,215,0,0.2)' : 'rgba(255,255,255,0.05)'}; border:2px solid ${orderingEnabled ? 'rgba(255,215,0,0.5)' : 'rgba(255,255,255,0.1)'}; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(8px);">
-            <i data-lucide="hash" style="width:28px;height:28px; color:${orderingEnabled ? 'var(--brand)' : 'rgba(255,255,255,0.4)'};"></i>
-          </div>
-          <span style="color:rgba(255,255,255,0.8); font-size:11px; font-weight:600; text-align:center;">Abholnummer</span>
+        <!-- Säule 1: Vor Ort 🍴 (horizontal in Reihe) -->
+        <div style="display:flex; flex-direction:row; align-items:center; gap:8px; padding:8px 12px; background:${hasDineIn ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.05)'}; border-radius:12px; border:1px solid ${hasDineIn ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.1)'};">
+          <span style="font-size:20px; opacity:${hasDineIn ? '1' : '0.4'}; filter:${hasDineIn ? 'none' : 'grayscale(100%)'};">🍴</span>
+          <span style="color:${hasDineIn ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.4)'}; font-size:13px; font-weight:600;">Vor Ort</span>
         </div>
-        <!-- Säule 2: Vor Ort -->
-        <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
-          <div style="width:56px; height:56px; border-radius:50%; background:rgba(255,255,255,0.1); border:2px solid rgba(255,255,255,0.2); display:flex; align-items:center; justify-content:center; backdrop-filter:blur(8px);">
-            <i data-lucide="map-pin" style="width:28px;height:28px; color:#fff;"></i>
-          </div>
-          <span style="color:rgba(255,255,255,0.8); font-size:11px; font-weight:600; text-align:center;">Vor Ort</span>
+        <!-- Säule 2: Abholnummer 🧾 -->
+        <div style="display:flex; flex-direction:row; align-items:center; gap:8px; padding:8px 12px; background:${orderingEnabled ? 'rgba(255,215,0,0.15)' : 'rgba(255,255,255,0.05)'}; border-radius:12px; border:1px solid ${orderingEnabled ? 'rgba(255,215,0,0.3)' : 'rgba(255,255,255,0.1)'};">
+          <span style="font-size:20px; opacity:${orderingEnabled ? '1' : '0.4'}; filter:${orderingEnabled ? 'none' : 'grayscale(100%)'};">🧾</span>
+          <span style="color:${orderingEnabled ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.4)'}; font-size:13px; font-weight:600;">Abholnummer</span>
         </div>
-        <!-- Säule 3: Mehrweg -->
-        <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
-          <div style="width:56px; height:56px; border-radius:50%; background:${hasReuseSupport ? 'rgba(39,174,96,0.2)' : 'rgba(255,255,255,0.05)'}; border:2px solid ${hasReuseSupport ? 'rgba(39,174,96,0.4)' : 'rgba(255,255,255,0.1)'}; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(8px);">
-            <i data-lucide="refresh-cw" style="width:28px;height:28px; color:${hasReuseSupport ? '#27AE60' : 'rgba(255,255,255,0.4)'};"></i>
-          </div>
-          <span style="color:rgba(255,255,255,0.8); font-size:11px; font-weight:600; text-align:center;">Mehrweg</span>
+        <!-- Säule 3: Mehrweg 🔄 -->
+        <div style="display:flex; flex-direction:row; align-items:center; gap:8px; padding:8px 12px; background:${hasReuseSupport ? 'rgba(39,174,96,0.15)' : 'rgba(255,255,255,0.05)'}; border-radius:12px; border:1px solid ${hasReuseSupport ? 'rgba(39,174,96,0.3)' : 'rgba(255,255,255,0.1)'};">
+          <span style="font-size:20px; opacity:${hasReuseSupport ? '1' : '0.4'}; filter:${hasReuseSupport ? 'none' : 'grayscale(100%)'};">🔄</span>
+          <span style="color:${hasReuseSupport ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.4)'}; font-size:13px; font-weight:600;">Mehrweg</span>
         </div>
       `;
-      if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
     }
     
     // Essenszeit
@@ -8226,16 +8561,44 @@
       }
     }
     
-    // Anbieter-Modul: Name + Adresse + Navi-Icon
+    // Anbieter-Modul: Name + Adresse + Entfernungsangaben
     const sProviderName = document.getElementById('sProviderName');
     const sProviderAddress = document.getElementById('sProviderAddress');
-    const sProviderMapsLink = document.getElementById('sProviderMapsLink');
+    const sDistanceInfo = document.getElementById('sDistanceInfo');
     if(sProviderName) sProviderName.textContent = o.providerName || 'Anbieter';
     const addr = buildAddress({address:o.address, street:o.providerStreet, zip:o.providerZip, city:o.providerCity});
     if(sProviderAddress) sProviderAddress.textContent = addr || 'Adresse nicht verfügbar';
-    if(sProviderMapsLink){
-      const maps = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr)}`;
-      sProviderMapsLink.href = maps;
+    
+    // Entfernungsangaben: Zu Fuß & Mit dem Auto
+    if(sDistanceInfo && o.distanceKm != null){
+      // Gehzeit berechnen: 5 km/h = 12 Minuten pro km
+      const walkingMinutes = Math.round(Number(o.distanceKm) * 12);
+      const walkingMeters = Math.round(Number(o.distanceKm) * 1000);
+      const walkingTimeText = walkingMinutes < 1 ? '< 1 Min.' : `${walkingMinutes} Min.`;
+      
+      // Autofahrt-Zeit berechnen: 50 km/h Durchschnitt = 1.2 Minuten pro km
+      const carMinutes = Math.round(Number(o.distanceKm) * 1.2);
+      const carTimeText = carMinutes < 1 ? '< 1 Min.' : `${carMinutes} Min.`;
+      const carKmText = Number(o.distanceKm).toFixed(1);
+      
+      sDistanceInfo.innerHTML = `
+        <div style="display:flex; align-items:center; gap:8px; color:rgba(255,255,255,0.9); font-size:14px;">
+          <span style="font-size:18px;">🚶</span>
+          <span style="font-weight:600;">Zu Fuß:</span>
+          <span>${walkingMeters} m</span>
+          <span style="color:rgba(255,255,255,0.6);">·</span>
+          <span>${walkingTimeText}</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px; color:rgba(255,255,255,0.9); font-size:14px;">
+          <span style="font-size:18px;">🚗</span>
+          <span style="font-weight:600;">Mit dem Auto:</span>
+          <span>${carKmText} km</span>
+          <span style="color:rgba(255,255,255,0.6);">·</span>
+          <span>${carTimeText}</span>
+        </div>
+      `;
+    } else if(sDistanceInfo){
+      sDistanceInfo.style.display = 'none';
     }
     
     // Status Badge (dynamisch basierend auf ordering_enabled)
@@ -8295,17 +8658,7 @@
         timeEl.innerHTML = `${iconMarkup('clock')} <span>${esc(dateStr)}</span>`;
         infoRowEl.appendChild(timeEl);
       }
-      if(o.distanceKm != null){
-        const distEl = document.createElement('div');
-        distEl.style.display = 'flex';
-        distEl.style.alignItems = 'center';
-        distEl.style.gap = '6px';
-        // Gehzeit berechnen: 5 km/h = 12 Minuten pro km
-        const walkingMinutes = Math.round(Number(o.distanceKm) * 12);
-        const walkingTimeText = walkingMinutes < 1 ? '< 1 Min.' : `${walkingMinutes} Min.`;
-        distEl.innerHTML = `<i data-lucide="navigation" style="width:14px;height:14px;"></i> <span>${walkingTimeText} zu Fuß</span>`;
-        infoRowEl.appendChild(distEl);
-      }
+      // Entfernt: Einzelnes Navi-Icon - Entfernungsangaben werden in sDistanceInfo angezeigt
       // Food type icon (exactly one)
       const foodTypeIcon = o.category === 'Vegan' ? 'leaf' : 
                            o.category === 'Vegetarisch' ? 'carrot' : 
@@ -8423,17 +8776,39 @@
         }
         primaryCTA.onclick = null;
       } else if(orderingEnabled){
-        // Express-Anbieter (ordering_enabled): CTA "Jetzt Abholnummer sichern"
-        primaryCTAText.textContent = 'Jetzt Abholnummer sichern';
+        // Express-Anbieter (ordering_enabled): CTA "In die Mittagsbox legen"
+        primaryCTAText.textContent = 'In die Mittagsbox legen';
         if(sInfoHint){
-          sInfoHint.textContent = 'Sichere dir jetzt deine Abholnummer für heute.';
-          sInfoHint.style.display = 'block';
+          sInfoHint.textContent = '';
+          sInfoHint.style.display = 'none';
         }
         primaryCTA.onclick = () => {
           // Loading state
           primaryCTA.disabled = true;
           primaryCTA.classList.add('loading');
           primaryCTAText.textContent = 'Wird hinzugefügt...';
+          
+          // Automatisch als Favorit speichern
+          const favorites = JSON.parse(localStorage.getItem('mittagio_favorites') || '[]');
+          const dishKey = o.id;
+          if(!favorites.includes(dishKey)){
+            favorites.push(dishKey);
+            localStorage.setItem('mittagio_favorites', JSON.stringify(favorites));
+            // Auch in dishFavs Set hinzufügen
+            if(!dishFavs.has(dishKey)){
+              dishFavs.add(dishKey);
+              save(LS.dishFavs, Array.from(dishFavs));
+            }
+            // Herz-Icon aktualisieren (rot leuchtend)
+            const favBtn = document.getElementById('sFavoriteBtn');
+            if(favBtn){
+              const heartIcon = favBtn.querySelector('i[data-lucide="heart"]');
+              if(heartIcon){
+                heartIcon.style.fill = '#e74c3c';
+                heartIcon.style.color = '#e74c3c';
+              }
+            }
+          }
           
           // Navigate to cart/checkout
           setTimeout(() => {
@@ -8451,24 +8826,25 @@
                 setTimeout(() => {
                   primaryCTA.disabled = false;
                   primaryCTA.classList.remove('success');
-                  primaryCTAText.textContent = 'Jetzt Abholnummer sichern';
+                  primaryCTAText.textContent = 'In die Mittagsbox legen';
                 }, 500);
               }, 300);
             } else {
               // Error: reset to default
               primaryCTA.disabled = false;
               primaryCTA.classList.remove('loading');
-              primaryCTAText.textContent = 'Jetzt Abholnummer sichern';
+              primaryCTAText.textContent = 'In die Mittagsbox legen';
               showToast('Fehler beim Hinzufügen. Bitte erneut versuchen.');
             }
           }, 200);
         };
       } else {
-        // Info-Anbieter (ordering_enabled = false): Button "Abholnummer anfragen"
-        primaryCTAText.textContent = 'Abholnummer anfragen';
+        // Info-Anbieter (ordering_enabled = false): Button "In die Mittagsbox legen" mit Disclaimer
+        primaryCTAText.textContent = 'In die Mittagsbox legen';
         if(sInfoHint){
-          sInfoHint.textContent = 'Hilf dem Anbieter, Abholnummern zu aktivieren!';
+          sInfoHint.textContent = 'Dieser Anbieter nimmt nicht an der Abholnummer teil';
           sInfoHint.style.display = 'block';
+          sInfoHint.style.color = 'rgba(255,255,255,0.7)';
         }
         
         primaryCTA.disabled = false;
@@ -8477,6 +8853,28 @@
         primaryCTA.style.color = '#fff';
         primaryCTA.style.cursor = 'pointer';
         primaryCTA.onclick = () => {
+          // Automatisch als Favorit speichern
+          const favorites = JSON.parse(localStorage.getItem('mittagio_favorites') || '[]');
+          const dishKey = o.id;
+          if(!favorites.includes(dishKey)){
+            favorites.push(dishKey);
+            localStorage.setItem('mittagio_favorites', JSON.stringify(favorites));
+            // Auch in dishFavs Set hinzufügen
+            if(!dishFavs.has(dishKey)){
+              dishFavs.add(dishKey);
+              save(LS.dishFavs, Array.from(dishFavs));
+            }
+            // Herz-Icon aktualisieren (rot leuchtend)
+            const favBtn = document.getElementById('sFavoriteBtn');
+            if(favBtn){
+              const heartIcon = favBtn.querySelector('i[data-lucide="heart"]');
+              if(heartIcon){
+                heartIcon.style.fill = '#e74c3c';
+                heartIcon.style.color = '#e74c3c';
+              }
+            }
+          }
+          
           // Request-Counter erhöhen (LocalStorage für Demo)
           const requestKey = `abholnummer_request_${o.providerId}_${isoDate(new Date())}`;
           const currentCount = parseInt(localStorage.getItem(`provider_${o.providerId}_requests`) || '0', 10);
@@ -8496,10 +8894,70 @@
           setTimeout(() => {
             primaryCTA.disabled = false;
             primaryCTA.classList.remove('success');
-            primaryCTAText.textContent = 'Abholnummer anfragen';
+            primaryCTAText.textContent = 'In die Mittagsbox legen';
           }, 2000);
         };
       }
+    }
+    
+    // Herz-Icon Handler (Favorit)
+    const sFavoriteBtn = document.getElementById('sFavoriteBtn');
+    if(sFavoriteBtn){
+      const favorites = JSON.parse(localStorage.getItem('mittagio_favorites') || '[]');
+      const dishKey = o.id;
+      const isFavorite = favorites.includes(dishKey);
+      
+      // Initial state: Herz gefüllt wenn Favorit (rot leuchtend)
+      const heartIcon = sFavoriteBtn.querySelector('i[data-lucide="heart"]');
+      if(heartIcon){
+        if(isFavorite){
+          heartIcon.style.fill = '#e74c3c';
+          heartIcon.style.color = '#e74c3c';
+        } else {
+          heartIcon.style.fill = 'none';
+          heartIcon.style.color = '#e74c3c';
+        }
+      }
+      
+      sFavoriteBtn.onclick = (e) => {
+        e.stopPropagation();
+        const favorites = JSON.parse(localStorage.getItem('mittagio_favorites') || '[]');
+        const dishKey = o.id;
+        const isFavorite = favorites.includes(dishKey);
+        
+        if(isFavorite){
+          // Entfernen
+          const index = favorites.indexOf(dishKey);
+          favorites.splice(index, 1);
+          localStorage.setItem('mittagio_favorites', JSON.stringify(favorites));
+          dishFavs.delete(dishKey);
+          save(LS.dishFavs, Array.from(dishFavs));
+          if(heartIcon){
+            heartIcon.style.fill = 'none';
+          }
+          showToast('Von Favoriten entfernt');
+        } else {
+          // Hinzufügen
+          favorites.push(dishKey);
+          localStorage.setItem('mittagio_favorites', JSON.stringify(favorites));
+          dishFavs.add(dishKey);
+          save(LS.dishFavs, Array.from(dishFavs));
+          if(heartIcon){
+            heartIcon.style.fill = '#e74c3c';
+          }
+          showToast('Zu Favoriten hinzugefügt ❤️');
+        }
+        if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
+      };
+    }
+    
+    // Share-Icon Handler
+    const sShareBtn = document.getElementById('sShareBtn');
+    if(sShareBtn){
+      sShareBtn.onclick = (e) => {
+        e.stopPropagation();
+        shareOffer(o);
+      };
     }
     
     // Allergene-Overlay (ALLERGENE_OVERLAY_SPEC.md): Titel, Sticky-Disclaimer, standardisierte Kürzel-Liste
@@ -10633,13 +11091,13 @@
       }
     }
     
-    // Quick-History (Aktive Tickets)
+    // Quick-History (Aktive Abholnummern)
     const ticketsSection = document.getElementById('profileTicketsSection');
     const ticketsList = document.getElementById('profileActiveTicketsList');
     const allOrders = loadOrders();
     const hasOrders = Array.isArray(allOrders) && allOrders.length > 0; // Bug-Fix: Sauber definiert
     
-    // Heutige aktive Tickets (PAID, nicht PICKED_UP)
+    // Heutige aktive Abholnummern (PAID, nicht PICKED_UP)
     const today = isoDate(new Date());
     const activeTickets = allOrders.filter(o => 
       o.status === 'PAID' && 
@@ -15829,7 +16287,7 @@
   const btnPickupCodeBack = document.getElementById('btnPickupCodeBack');
   if(btnPickupCodeBack){
     btnPickupCodeBack.onclick = () => {
-      showOrders(); // Zurück zu Tickets
+      showOrders(); // Zurück zu Abholnummern
     };
   }
   
@@ -16000,7 +16458,7 @@
   const btnToOrders = document.getElementById('btnToOrders');
   if(btnToOrders){
     btnToOrders.onclick = () => {
-      showOrders(); // Zu Tickets
+      showOrders(); // Zu Abholnummern
     };
   }
   

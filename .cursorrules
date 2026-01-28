@@ -90,24 +90,28 @@
 
 ## Swipe-Modus & 3-Säulen-System
 
-### 1. Benennung & Begriffe
+### 1. Benennung & Begriffe (VERBINDLICH)
 - Die Funktion heißt konsistent **„Swipe-Modus“**.
 - ❌ **Niemals:** „Ticket“, „Abholcode“.
 - ✅ **Nur:** **Abholnummer** (Nutzer-Identifikation).
 
-### 2. Drei-Säulen-Regel (Emoji-Logik)
-Jede Karte im Swipe-Modus hat **zwingend genau drei Symbole** in der Fußzeile – **ohne begleitenden Text**:
+### 2. Die 3-Säulen-Regel (Emoji-Logik - PFLICHT)
+Jede Karte im Swipe-Modus muss **zwingend** diese drei Symbole **ohne begleitenden Text** in der Fußzeile enthalten:
 
-| Slot | Symbol | Bedeutung |
-|------|--------|-----------|
+| Position | Symbol | Bedeutung |
+|----------|--------|-----------|
 | 1 | 🍴 | Vor Ort (Essen vor Ort möglich) |
 | 2 | 🧾 | Abholnummer (wird bei Auswahl generiert) |
-| 3 | 🔄 | Mehrweg (Nachhaltiges Pfandsystem) |
+| 3 | 🔄 | Mehrweg (Nachhaltiges Pfandsystem vorhanden) |
 
-- Slots bleiben fest; bei fehlendem Feature: dezente Platzhalter-Box, kein Wegrücken.
+**Wichtig:**
+- Die drei Symbole stehen **horizontal in einer Reihe**.
+- Slots bleiben fest; bei fehlendem Feature: **Icon ausgegraut** (opacity: 0.4, grayscale(100%)).
+- **Kein Wegrücken** der Slots, keine Platzhalter-Boxen.
 
-### 3. UI & Interaktion
-- **Stil:** Polaroid (Sofortbildkamera) für Gerichte; **reinweiß**, keine Schiefertafel.
+### 3. UI & Interaktion (Design-Standards)
+- **Stil:** Nutze den **Sofortbildkamera-Stil (Polaroid)** für die Gerichte.
+- **Hintergrund:** **Reinweiß**, keine Schiefertafel-Texturen (Schiefer-Design wurde entfernt).
 - **Button-Leiste** (drei zentrale Aktions-Buttons am unteren Rand):
   - **Links (Rot):** ❌ Keine Lust
   - **Mitte (Grau/Blau):** 🔄 Nächstes Gericht
