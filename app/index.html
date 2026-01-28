@@ -498,7 +498,7 @@
     .card-title{
       font-weight:900; font-size:17px; margin:0;
       line-height:1.3; flex:1; min-width:0;
-      display:-webkit-box; -webkit-line-clamp:2;
+      display:-webkit-box; -webkit-line-clamp:2; line-clamp:2;
       -webkit-box-orient:vertical; overflow:hidden;
       color:#111;
     }
@@ -1712,6 +1712,7 @@
       margin: 0;
       display: -webkit-box;
       -webkit-line-clamp: 2;
+      line-clamp: 2;
       font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Montserrat', 'Segoe UI', sans-serif;
       -webkit-box-orient: vertical;
       overflow: hidden;
@@ -1839,6 +1840,13 @@
     }
     .fav-icon-bounce {
       animation: favBounce 0.5s ease-out;
+    }
+    @keyframes cartIconGlow {
+      0%, 100% { filter: brightness(1); transform: scale(1); }
+      50% { filter: brightness(1.4); transform: scale(1.15); }
+    }
+    .cart-icon-glow {
+      animation: cartIconGlow 0.5s ease-out;
     }
     
     /* Swipe Preference Button Active State */
@@ -9114,30 +9122,61 @@
     providerEl.innerHTML = `<i data-lucide="store" style="width:12px;height:12px; margin-right:4px;"></i> <span>${esc(data.providerName || 'Anbieter')}</span>`;
     body.appendChild(providerEl);
     
-    // 3 Säulen-Icons unten: 🍴, 🧾, 🔄
-    const offerProvider = offers.find(p => p.providerId === data.providerId);
-    const orderingEnabled = offerProvider && (offerProvider.orderingEnabled !== false && (data.hasPickupCode || offerProvider.hasPickupCode));
-    const hasDineIn = offerProvider && (offerProvider.dineInPossible !== false || data.dineInPossible);
-    const hasReuse = offerProvider && (offerProvider.reuse && offerProvider.reuse.enabled);
+    // 3 Säulen: aus gespeicherter Meta (eingefroren) oder aus Offer berechnen
+    const stored = getFavPillars(dishKey);
+    const vorOrt = stored ? !!stored.vorOrt : (() => { const p = offers.find(x => x.providerId === data.providerId); return !!(p && (p.dineInPossible !== false || data.dineInPossible)); })();
+    const abholnummer = stored ? !!stored.abholnummer : (() => { const p = offers.find(x => x.providerId === data.providerId); return !!(p && (p.orderingEnabled !== false && (data.hasPickupCode || p.hasPickupCode))); })();
+    const mehrweg = stored ? !!stored.mehrweg : (() => { const p = offers.find(x => x.providerId === data.providerId); return !!(p && (p.reuse && p.reuse.enabled)); })();
+    const opacityOff = '0.25';
     
     const iconsRow = document.createElement('div');
-    iconsRow.style.cssText = 'display:flex; align-items:center; justify-content:center; gap:16px; padding:0 16px 12px; margin-top:auto;';
+    iconsRow.style.cssText = 'display:flex; align-items:center; justify-content:center; gap:16px; padding:0 16px 8px; margin-top:auto;';
     iconsRow.innerHTML = `
-      <span style="font-size:20px; opacity:${hasDineIn ? '1' : '0.3'};" title="Vor Ort essen möglich">🍴</span>
-      <span style="font-size:20px; opacity:${orderingEnabled ? '1' : '0.3'};" title="Abholnummer verfügbar">🧾</span>
-      <span style="font-size:20px; opacity:${hasReuse ? '1' : '0.3'};" title="Mehrweg möglich">🔄</span>
+      <span style="font-size:20px; opacity:${vorOrt ? '1' : opacityOff};" title="Vor Ort">🍴</span>
+      <span style="font-size:20px; opacity:${abholnummer ? '1' : opacityOff};" title="Abholnummer">🧾</span>
+      <span style="font-size:20px; opacity:${mehrweg ? '1' : opacityOff};" title="Mehrweg">🔄</span>
     `;
     body.appendChild(iconsRow);
     
+    // Gelber CTA: "In die Mittagsbox" (nur wenn Abholnummer)
+    const ctaWrap = document.createElement('div');
+    ctaWrap.style.cssText = 'padding:0 16px 16px;';
+    const ctaBtn = document.createElement('button');
+    ctaBtn.type = 'button';
+    ctaBtn.className = 'btn';
+    ctaBtn.style.cssText = 'width:100%; min-height:44px; border-radius:12px; background:#FFD700; color:#1a1a1a; font-weight:800; font-size:14px; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; transition:transform 0.2s, box-shadow 0.2s;';
+    ctaBtn.innerHTML = '🧺 In die Mittagsbox';
+    ctaBtn.onmouseover = () => { ctaBtn.style.transform = 'scale(1.02)'; ctaBtn.style.boxShadow = '0 4px 12px rgba(255,215,0,0.4)'; };
+    ctaBtn.onmouseout = () => { ctaBtn.style.transform = 'scale(1)'; ctaBtn.style.boxShadow = 'none'; };
+    ctaBtn.onclick = (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      if(!abholnummer){ showToast('Keine Abholnummer – nur ansehen.', 2000); return; }
+      if(!addToCart(o)){ showToast('Fehler beim Hinzufügen.', 2000); return; }
+      triggerHapticFeedback([20]);
+      triggerCartIconGlow();
+      showToast('In die Mittagsbox gelegt 🧺', 1500);
+      if(typeof updateHeaderBasket === 'function') updateHeaderBasket();
+    };
+    if(!abholnummer){ ctaBtn.style.background = '#e5e5e5'; ctaBtn.style.color = '#888'; ctaBtn.style.cursor = 'not-allowed'; ctaBtn.disabled = true; }
+    ctaWrap.appendChild(ctaBtn);
+    body.appendChild(ctaWrap);
+    
     card.appendChild(body);
     
-    // Klick auf Karte öffnet Detailansicht
     card.onclick = (e) => {
-      if(e.target.closest('button')) return; // Button-Handler übernimmt
+      if(e.target.closest('button')) return;
       openOffer(data.id);
     };
     
     return card;
+  }
+  
+  function triggerCartIconGlow(){
+    const btn = document.getElementById('bottomNavBasketBtn');
+    if(!btn) return;
+    const ico = btn.querySelector('.ico');
+    if(ico){ ico.classList.add('cart-icon-glow'); setTimeout(() => ico.classList.remove('cart-icon-glow'), 600); }
   }
   
   // Anbieter-Favoriten-Karte: Kompakte Zeile mit Name, Text und 3 Icons
