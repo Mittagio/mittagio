@@ -13780,7 +13780,11 @@
   const btnProviderFAQ = document.getElementById('btnProviderFAQ');
   if(btnProviderFAQ){
     btnProviderFAQ.onclick=()=>{
-      showLegalPage('faq');
+      showLegalPage('faq-provider');
+      // URL aktualisieren für Provider-Mode
+      if(mode === 'provider'){
+        history.pushState({view: 'provider-faq', mode: mode}, '', '/anbieter/hilfe/faq');
+      }
     };
   }
   const btnProviderLegalImpressum = document.getElementById('btnProviderLegalImpressum');
