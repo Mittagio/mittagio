@@ -110,6 +110,7 @@ In der **Swipe-Karten-Fußzeile** ausschließlich diese drei Symbole **ohne begl
 - **UI-Texte:** `CURSOR_UI_TEXTE.md`
 - **Cursor-Regeln:** `.cursorrules`
 - **Detailseite Gericht (Schiefertafel):** `DETAILSEITE_GERICHT_SPEC.md`
+- **Allergene-Overlay (Kürzel, Disclaimer):** `ALLERGENE_OVERLAY_SPEC.md`
 - **Implementierung:** `app/index.html` (SPA).
 
 ---
