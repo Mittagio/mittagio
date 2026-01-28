@@ -2014,23 +2014,7 @@
 <div class="app" id="app">
   <div class="topbar" id="topbar">
       <div class="topbar-inner">
-        <!-- View-Toggle: Moderner Umschaltbutton für Liste/Swipe-Modus -->
-        <div class="discover-view-toggle-topbar" id="discoverViewToggleTopbar" style="display:flex;">
-          <button type="button" class="toggle-switch-modern" id="toggleDiscoverViewTopbar" aria-label="Ansicht wechseln" style="display:flex; align-items:center; gap:8px; padding:8px 12px; border-radius:24px; border:none; background:rgba(0,0,0,0.06); cursor:pointer; transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1); position:relative; overflow:hidden;" onmouseover="this.style.background='rgba(0,0,0,0.1)';" onmouseout="if(!this.classList.contains('active')) this.style.background='rgba(0,0,0,0.06)';">
-            <!-- Slider-Hintergrund (animiert) -->
-            <div class="toggle-slider-bg" style="position:absolute; left:0; top:0; width:50%; height:100%; background:var(--brand); border-radius:24px; transition:transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); transform:translateX(0%); z-index:0;"></div>
-            <!-- Liste-Option -->
-            <div class="toggle-option toggle-option-list" style="position:relative; z-index:1; display:flex; align-items:center; gap:4px; padding:4px 6px; transition:color 0.3s ease;">
-              <i data-lucide="grid-3x3" id="toggleDiscoverViewIconList" style="width:16px;height:16px; color:#666; transition:color 0.3s ease;"></i>
-              <span style="font-size:13px; font-weight:600; color:#666; transition:color 0.3s ease; white-space:nowrap;">Liste</span>
-        </div>
-            <!-- Swipe-Option -->
-            <div class="toggle-option toggle-option-swipe" style="position:relative; z-index:1; display:flex; align-items:center; gap:4px; padding:4px 6px; transition:color 0.3s ease;">
-              <i data-lucide="sparkles" id="toggleDiscoverViewIconSwipe" style="width:16px;height:16px; color:#666; transition:color 0.3s ease;"></i>
-              <span style="font-size:13px; font-weight:600; color:#666; transition:color 0.3s ease; white-space:nowrap;">Entdecken</span>
-            </div>
-          </button>
-        </div>
+        <!-- View-Toggle wurde in den discover-header verschoben -->
       <div class="spacer"></div>
       <div id="modePill" class="prov-pill" style="display:none; background:#2a2a2a; border:1px solid rgba(255,255,255,0.1); color:#fff;">Küchenmodus</div>
     </div>
@@ -2544,9 +2528,9 @@
             <span>MITTAGIO Business</span>
           </div>
           <div class="hint" style="font-size:14px; line-height:1.5; margin-bottom:20px; color:#aaa; max-width:280px;">
-            Biete deine Mittagstische online an und erreiche mehr Gäste.
+            Dein Mittagessen anbieten – einfach und digital.
           </div>
-          <button class="btn-primary" type="button" id="btnProviderBusinessLogin" style="width:100%; min-height:56px; font-size:16px; font-weight:700; background:linear-gradient(135deg, #6b7280 0%, #4b5563 100%); color:#fff; border:none; box-shadow:0 4px 16px rgba(107,114,128,0.4); transition:all 0.3s ease; display:flex; align-items:center; justify-content:center; gap:10px; border-radius:16px;" onmouseover="this.style.background='linear-gradient(135deg, #4b5563 0%, #374151 100%)'; this.style.boxShadow='0 6px 20px rgba(107,114,128,0.5)'; this.style.transform='translateY(-2px)';" onmouseout="this.style.background='linear-gradient(135deg, #6b7280 0%, #4b5563 100%)'; this.style.boxShadow='0 4px 16px rgba(107,114,128,0.4)'; this.style.transform='translateY(0)';">
+          <button class="btn-primary" type="button" id="btnProviderBusinessLogin" style="width:100%; min-height:56px; font-size:16px; font-weight:700; background:linear-gradient(135deg, #9ca3af 0%, #6b7280 100%); color:#fff; border:none; box-shadow:0 4px 16px rgba(107,114,128,0.3); transition:all 0.3s ease; display:flex; align-items:center; justify-content:center; gap:10px; border-radius:16px;" onmouseover="this.style.background='linear-gradient(135deg, #6b7280 0%, #4b5563 100%)'; this.style.boxShadow='0 6px 20px rgba(107,114,128,0.4)'; this.style.transform='translateY(-2px)';" onmouseout="this.style.background='linear-gradient(135deg, #9ca3af 0%, #6b7280 100%)'; this.style.boxShadow='0 4px 16px rgba(107,114,128,0.3)'; this.style.transform='translateY(0)';">
             <i data-lucide="log-in" style="width:22px;height:22px;"></i>
             <span id="btnProviderBusinessLoginText">Jetzt als Anbieter einloggen</span>
           </button>
@@ -2575,7 +2559,7 @@
           </details>
           <details>
             <summary>Wie funktioniert Mehrweg?</summary>
-            <p>Aktiviere es unter "Mein Geschmack". Das Restaurant sieht deinen Wunsch sofort in der Mittagsbox.</p>
+            <p>Aktiviere es unter „Nachhaltigkeit“ im Profil (Meins). Das Restaurant sieht deinen Wunsch sofort in der Mittagsbox.</p>
           </details>
           <details>
             <summary>Kann ich ohne Abholnummer Gerichte hinzufügen?</summary>
@@ -2608,59 +2592,48 @@
         </a>
       </div>
 
-      <!-- Footer: Professionalisierung & Branding (zentral) -->
-      <div style="margin-top:32px; padding:24px 16px 32px; text-align:center; border-top:2px solid rgba(0,0,0,0.06);">
-        <!-- Zentrale Übersicht: FAQs, Impressum, Versionierung -->
-        <div style="display:flex; flex-direction:column; gap:16px; margin-bottom:20px;">
-          <!-- Kunden-Bereich -->
-          <div style="display:flex; flex-direction:column; gap:8px;">
-            <div style="font-size:11px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px;">Kunden</div>
-            <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:12px 20px; font-size:13px;">
-              <a href="#/faq" id="btnProfileFAQ" onclick="showLegalPage('faq'); return false;" style="color:var(--muted); text-decoration:none; font-weight:500;">FAQ</a>
-              <a href="#/impressum" id="btnProfileImpressum" onclick="showLegalPage('impressum'); return false;" style="color:var(--muted); text-decoration:none; font-weight:500;">Impressum</a>
-              <a href="#/datenschutz" id="btnProfileDatenschutz" onclick="showLegalPage('datenschutz'); return false;" style="color:var(--muted); text-decoration:none; font-weight:500;">Datenschutz</a>
-              <a href="#/agb-kurz" id="btnProfileAGB" onclick="showLegalPage('agb-kurz'); return false;" style="color:var(--muted); text-decoration:none; font-weight:500;">AGB</a>
-        </div>
-          </div>
-          
-          <!-- Anbieter-Bereich (nur wenn nicht eingeloggt als Provider) -->
-          <div id="profileFooterProviderSection" style="display:flex; flex-direction:column; gap:8px; padding-top:16px; border-top:1px solid rgba(0,0,0,0.06);">
-            <div style="font-size:11px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px;">Anbieter</div>
-            <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:12px 20px; font-size:13px;">
-              <a href="#/faq-provider" onclick="showLegalPage('faq-provider'); return false;" style="color:var(--muted); text-decoration:none; font-weight:500;">FAQ</a>
-              <a href="#/impressum-provider" onclick="showLegalPage('impressum-provider'); return false;" style="color:var(--muted); text-decoration:none; font-weight:500;">Impressum</a>
-              <a href="#/agb-provider" onclick="showLegalPage('agb-provider'); return false;" style="color:var(--muted); text-decoration:none; font-weight:500;">AGB</a>
-            </div>
+      <!-- Footer: Strikte Trennung Kunden / Anbieter -->
+      <div style="margin-top:32px; padding:0 16px 32px; border-top:2px solid rgba(0,0,0,0.06);">
+        <!-- Bereich KUNDEN (hell) -->
+        <div style="background:#f8fafc; border-radius:16px; padding:20px; margin-bottom:12px;">
+          <div style="font-size:11px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:12px;">Kunden</div>
+          <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:12px 20px; font-size:13px;">
+            <a href="#/faq" id="btnProfileFAQ" onclick="showLegalPage('faq'); return false;" style="color:var(--muted); text-decoration:none; font-weight:500;">FAQ</a>
+            <a href="#/impressum" id="btnProfileImpressum" onclick="showLegalPage('impressum'); return false;" style="color:var(--muted); text-decoration:none; font-weight:500;">Impressum</a>
+            <a href="#/datenschutz" id="btnProfileDatenschutz" onclick="showLegalPage('datenschutz'); return false;" style="color:var(--muted); text-decoration:none; font-weight:500;">Datenschutz</a>
+            <a href="#/agb-kurz" id="btnProfileAGB" onclick="showLegalPage('agb-kurz'); return false;" style="color:var(--muted); text-decoration:none; font-weight:500;">AGB</a>
           </div>
         </div>
         
-        <!-- Branding-Elemente -->
-        <div style="margin-top:20px; padding-top:20px; border-top:1px solid rgba(0,0,0,0.06);">
-          <div style="font-size:11px; color:var(--muted); line-height:1.6; margin-bottom:8px;">
-            <div style="margin-bottom:6px;">
-              <a href="https://hageo.de" target="_blank" rel="noopener" style="color:var(--muted); text-decoration:none; font-weight:500;">hageo.de</a>
-              <span style="margin:0 8px; color:#cbd5e1;">·</span>
-              <span style="color:var(--muted);">made with helps</span>
-              <span style="margin:0 8px; color:#cbd5e1;">·</span>
-              <span style="color:var(--muted);">Besteck-Strategie</span>
-            </div>
-            <div style="font-size:10px; color:#94a3b8; margin-top:10px; font-weight:500;">
-              Version 1.0.0
-            </div>
+        <!-- Bereich ANBIETER (grau abgesetzt) -->
+        <div id="profileFooterProviderSection" style="background:#e2e8f0; border-radius:16px; padding:20px; margin-bottom:16px;">
+          <div style="font-size:11px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:12px;">Anbieter</div>
+          <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:12px 20px; font-size:13px;">
+            <a href="#/faq-provider" onclick="showLegalPage('faq-provider'); return false;" style="color:var(--muted); text-decoration:none; font-weight:500;">FAQ</a>
+            <a href="#/impressum-provider" onclick="showLegalPage('impressum-provider'); return false;" style="color:var(--muted); text-decoration:none; font-weight:500;">Impressum</a>
+            <a href="#/agb-provider" onclick="showLegalPage('agb-provider'); return false;" style="color:var(--muted); text-decoration:none; font-weight:500;">AGB</a>
           </div>
         </div>
         
-        <!-- Kontakt (dezent) -->
-        <div style="margin-top:16px; padding-top:16px; border-top:1px solid rgba(0,0,0,0.06); font-size:11px; color:var(--muted); line-height:1.6;">
-          <div style="margin-bottom:4px;">
+        <!-- Branding -->
+        <div style="text-align:center; padding-top:16px; border-top:1px solid rgba(0,0,0,0.06);">
+          <div style="font-size:13px; color:var(--muted); margin-bottom:6px;">
+            Mittagio.de · made with ♥ and 🍴
+          </div>
+          <div style="font-size:10px; color:#94a3b8; font-weight:500;">Version 1.0.0</div>
+        </div>
+        
+        <!-- Kontakt (Kunden / Business getrennt) -->
+        <div style="margin-top:16px; padding-top:16px; border-top:1px solid rgba(0,0,0,0.06); font-size:12px; color:var(--muted); line-height:1.6; text-align:center;">
+          <div style="margin-bottom:6px;">
             <a href="mailto:info@mittagio.de" style="color:var(--muted); text-decoration:none;">info@mittagio.de</a>
-            <span style="margin:0 6px; color:#cbd5e1;">·</span>
-            <span>Kunden-Hilfe</span>
+            <span style="margin:0 6px; color:#cbd5e1;">|</span>
+            <a href="#/faq" onclick="showLegalPage('faq'); return false;" style="color:var(--muted); text-decoration:none;">Kunden-Hilfe</a>
           </div>
           <div>
-          <a href="mailto:support@mittagio.de" style="color:var(--muted); text-decoration:none;">support@mittagio.de</a>
-            <span style="margin:0 6px; color:#cbd5e1;">·</span>
-            <span>Business</span>
+            <a href="mailto:support@mittagio.de" style="color:var(--muted); text-decoration:none;">support@mittagio.de</a>
+            <span style="margin:0 6px; color:#cbd5e1;">|</span>
+            <span>Business-Bereich</span>
           </div>
         </div>
       </div>
@@ -3521,47 +3494,53 @@
         <h1 style="font-size:24px; font-weight:900; margin-bottom:20px;">Impressum (Kunden)</h1>
         <div style="line-height:1.8; font-size:15px;">
           <p>
-            <strong>Anbieter:</strong> MQ Mittagio UG (haftungsbeschränkt)<br>
-            <strong>Anschrift:</strong> Langäcker 2, 73635 Rudersberg<br>
-            <strong>Kontakt (Kunden-Hilfe):</strong> <a href="mailto:info@mittagio.de" style="color:var(--brand);">info@mittagio.de</a><br>
-            <strong>Business-Anfragen:</strong> <a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a><br>
-            <strong>Vertreten durch:</strong> Mike Quach<br>
-            <strong>Registereintrag:</strong> Amtsgericht Jena, HRB [Deine Nummer]
+            <strong>Mike Quach</strong><br>
+            Langäcker 2<br>
+            73635 Rudersberg
           </p>
-          
+          <p style="margin-top:16px;">
+            <strong>Kunden-Hilfe:</strong> <a href="mailto:info@mittagio.de" style="color:var(--brand);">info@mittagio.de</a><br>
+            <strong>Business:</strong> <a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a>
+          </p>
           <p style="margin-top:20px; padding-top:20px; border-top:1px solid #eee; font-size:13px; color:#666;">
             <strong>Plattformhinweis:</strong><br>
             Mittagio vermittelt Mittagsangebote lokaler Anbieter. Vertragspartner bei Bestellungen ist ausschließlich der jeweilige Anbieter.
           </p>
         </div>
-        <div style="margin-top:32px; padding-top:20px; border-top:1px solid #eee; text-align:center; font-size:14px; color:#666;">
-          Kunden-Hilfe: <a href="mailto:info@mittagio.de" style="color:var(--brand);">info@mittagio.de</a> | Business: <a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a>
+        <div style="margin-top:24px; padding-top:16px; border-top:1px solid #eee; text-align:center; font-size:13px; color:#94a3b8;">
+          made with Love by mittagio.de
+        </div>
+        <div style="margin-top:16px; text-align:center; font-size:14px; color:#666;">
+          <a href="mailto:info@mittagio.de" style="color:var(--brand);">info@mittagio.de</a> · Kunden-Hilfe | <a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a> · Business-Bereich
         </div>
         <button class="btn ghost" type="button" onclick="goBackFromLegalPage()" style="margin-top:20px; width:100%;">Zurück</button>
       </div>
     </section>
 
-    <!-- Impressum für Anbieter -->
+    <!-- Impressum für Anbieter (rechtlich eigenes Dokument) -->
     <section class="view" id="v-legal-impressum-provider" style="background:#1e1e1e; min-height:100vh; padding:20px; padding-bottom:90px;">
       <div class="panel" style="padding:20px; border-radius:20px; box-shadow:0 4px 16px rgba(0,0,0,.4); background:#2a2a2a; border:1px solid rgba(255,255,255,0.05);">
         <h1 style="font-size:24px; font-weight:900; margin-bottom:20px; color:#fff;">Impressum (Anbieter)</h1>
         <div style="line-height:1.8; font-size:15px; color:rgba(255,255,255,0.9);">
           <p>
-            <strong>Anbieter:</strong> MQ Mittagio UG (haftungsbeschränkt)<br>
-            <strong>Anschrift:</strong> Langäcker 2, 73635 Rudersberg<br>
-            <strong>Business-Support:</strong> <a href="mailto:support@mittagio.de" style="color:#FFD700;">support@mittagio.de</a><br>
-            <strong>Kunden-Hilfe:</strong> <a href="mailto:info@mittagio.de" style="color:#FFD700;">info@mittagio.de</a><br>
-            <strong>Vertreten durch:</strong> Mike Quach<br>
-            <strong>Registereintrag:</strong> Amtsgericht Jena, HRB [Deine Nummer]
+            <strong>Mike Quach</strong><br>
+            Langäcker 2<br>
+            73635 Rudersberg
           </p>
-          
+          <p style="margin-top:16px;">
+            <strong>Business-Support:</strong> <a href="mailto:support@mittagio.de" style="color:#FFD700;">support@mittagio.de</a><br>
+            <strong>Kunden-Hilfe:</strong> <a href="mailto:info@mittagio.de" style="color:#FFD700;">info@mittagio.de</a>
+          </p>
           <p style="margin-top:20px; padding-top:20px; border-top:1px solid rgba(255,255,255,0.1); font-size:13px; color:rgba(255,255,255,0.7);">
             <strong>Plattformhinweis:</strong><br>
             Mittagio ist eine Vermittlungsplattform für lokale Gastronomie. Als Anbieter nutzt du unsere digitale Infrastruktur zur Verwaltung deiner Mittagsangebote und zur Abwicklung von Online-Bestellungen.
           </p>
         </div>
-        <div style="margin-top:32px; padding-top:20px; border-top:1px solid rgba(255,255,255,0.1); text-align:center; font-size:14px; color:rgba(255,255,255,0.7);">
-          Business-Support: <a href="mailto:support@mittagio.de" style="color:#FFD700;">support@mittagio.de</a>
+        <div style="margin-top:24px; padding-top:16px; border-top:1px solid rgba(255,255,255,0.1); text-align:center; font-size:13px; color:rgba(255,255,255,0.6);">
+          made with Love by mittagio.de
+        </div>
+        <div style="margin-top:16px; text-align:center; font-size:14px; color:rgba(255,255,255,0.7);">
+          <a href="mailto:support@mittagio.de" style="color:#FFD700;">support@mittagio.de</a> · Business-Bereich
         </div>
         <button class="btn ghost" type="button" onclick="goBackFromLegalPage()" style="margin-top:20px; width:100%; background:#1e1e1e; border:1px solid rgba(255,255,255,0.1); color:rgba(255,255,255,0.8);">Zurück</button>
       </div>
@@ -4222,12 +4201,12 @@
         🏪
       </div>
       <h3 style="margin:0 0 8px; font-size:24px; font-weight:900; color:#2D3436;">MITTAGIO Business</h3>
-      <p class="hint" style="font-size:14px; color:#666; line-height:1.5;">Melde dich als Gastronom an</p>
+      <p class="hint" style="font-size:14px; color:#666; line-height:1.5;">Dein Mittagessen anbieten – einfach und digital.</p>
     </div>
     <div style="display:flex; flex-direction:column; gap:16px;">
       <input class="field" id="providerLoginEmail" type="email" placeholder="E-Mail-Adresse" autocomplete="email" style="width:100%; padding:14px 16px; border-radius:14px; border:1px solid var(--border); font-size:16px; background:#fbfaf7;" />
       <input class="field" id="providerLoginPass" type="password" placeholder="Passwort" autocomplete="current-password" style="width:100%; padding:14px 16px; border-radius:14px; border:1px solid var(--border); font-size:16px; background:#fbfaf7;" />
-      <button class="btn-primary" type="button" id="btnProviderLoginModal" style="width:100%; min-height:52px; font-size:16px; font-weight:700; margin-top:8px;">
+      <button class="btn-primary" type="button" id="btnProviderLoginModal" style="width:100%; min-height:52px; font-size:16px; font-weight:700; margin-top:8px; background:linear-gradient(135deg, #9ca3af 0%, #6b7280 100%); color:#fff; border:none;">
         <i data-lucide="log-in" style="width:20px;height:20px;"></i>
         <span>Einloggen</span>
       </button>
@@ -7315,10 +7294,10 @@
     const offerProvider = offers.find(p => p.providerId === data.providerId);
     const hasReuseSupport = offerProvider && (offerProvider.reuseEnabled || offerProvider.reuse || (offerProvider.providerProfile && offerProvider.providerProfile.reuseEnabled));
     
-    // Service-Label prüfen (Express vs. Nur Info)
+    // Service-Label prüfen (Abholnummer vs. Nur Info)
     const hasAbholnummer = data.hasPickupCode || false;
     const serviceLabel = hasAbholnummer 
-      ? {text: 'Express-Abholung', icon: '⚡', color: '#27AE60', bg: 'rgba(39,174,96,0.15)', border: 'rgba(39,174,96,0.3)'}
+      ? {text: 'Abholnummer', icon: '🧾', color: '#27AE60', bg: 'rgba(39,174,96,0.15)', border: 'rgba(39,174,96,0.3)'}
       : {text: 'Nur Info', icon: '👁️', color: '#64748b', bg: 'rgba(100,116,139,0.1)', border: 'rgba(100,116,139,0.2)'};
     
     // Kompaktes horizontales Layout: Bild links (quadratisch), Text rechts
@@ -7491,15 +7470,15 @@
     };
     body.appendChild(providerEl);
     
-    // MITTAGIO Master-Icons: 3 Badge-Grundsäulen (feste Plätze)
-    // Slot 1: Abholnummer (A1-Ticket), Slot 2: Vor Ort (Besteck), Slot 3: Mehrweg (Kreislauf-Blatt)
+    // MITTAGIO Master-Icons: 3 Badge-Grundsäulen (feste Plätze - NIE nachrutschen!)
+    // Reihenfolge: 🍴 Vor Ort | 🧾 Abholnummer | 🔄 Mehrweg
     const offerProvider = offers.find(p => p.providerId === data.providerId);
     const orderingEnabled = offerProvider && (offerProvider.orderingEnabled !== false && (data.hasPickupCode || offerProvider.hasPickupCode));
     const hasDineIn = offerProvider && (offerProvider.dineInPossible !== false || data.dineInPossible);
     const hasReuse = offerProvider && (offerProvider.reuse && offerProvider.reuse.enabled);
     
     const badgesRow = document.createElement('div');
-    badgesRow.className='card-status-badges';
+    badgesRow.className='card-status-badges three-pillar-row';
     badgesRow.style.display = 'flex';
     badgesRow.style.justifyContent = 'center';
     badgesRow.style.alignItems = 'center';
@@ -7508,48 +7487,32 @@
     badgesRow.style.paddingTop = '16px';
     badgesRow.style.borderTop = '1px solid rgba(0,0,0,0.1)';
     
-    // Slot 1: Abholnummer (🧾) - Nur großes Emoji-Icon, kein Text
-    if(orderingEnabled) {
-      const badge1 = document.createElement('div');
-      badge1.style.fontSize = '32px';
-      badge1.style.opacity = '1';
-      badge1.style.display = 'flex';
-      badge1.style.alignItems = 'center';
-      badge1.style.justifyContent = 'center';
-      badge1.title = 'Abholnummer verfügbar';
-      badge1.textContent = '🧾';
-      badgesRow.appendChild(badge1);
+    // Hilfsfunktion: Badge erstellen (aktiv oder Platzhalter)
+    function createPillarBadge(emoji, title, isActive){
+      const badge = document.createElement('div');
+      badge.style.fontSize = '32px';
+      badge.style.opacity = isActive ? '1' : '0.2';
+      badge.style.display = 'flex';
+      badge.style.alignItems = 'center';
+      badge.style.justifyContent = 'center';
+      badge.style.width = '48px';
+      badge.style.height = '48px';
+      badge.style.filter = isActive ? 'none' : 'grayscale(100%)';
+      badge.title = isActive ? title : `${title} (nicht verfügbar)`;
+      badge.textContent = emoji;
+      return badge;
     }
     
-    // Slot 2: Vor Ort (🍴) - Nur großes Emoji-Icon, kein Text
-    if(hasDineIn) {
-      const badge2 = document.createElement('div');
-      badge2.style.fontSize = '32px';
-      badge2.style.opacity = '1';
-      badge2.style.display = 'flex';
-      badge2.style.alignItems = 'center';
-      badge2.style.justifyContent = 'center';
-      badge2.title = 'Vor Ort essen möglich';
-      badge2.textContent = '🍴';
-      badgesRow.appendChild(badge2);
-    }
+    // Slot 1: Vor Ort (🍴) - Fester Platz
+    badgesRow.appendChild(createPillarBadge('🍴', 'Vor Ort essen möglich', hasDineIn));
     
-    // Slot 3: Mehrweg (🔄) - Nur großes Emoji-Icon, kein Text
-    if(hasReuse) {
-      const badge3 = document.createElement('div');
-      badge3.style.fontSize = '32px';
-      badge3.style.opacity = '1';
-      badge3.style.display = 'flex';
-      badge3.style.alignItems = 'center';
-      badge3.style.justifyContent = 'center';
-      badge3.title = 'Mehrweg-System';
-      badge3.textContent = '🔄';
-      badgesRow.appendChild(badge3);
-    }
+    // Slot 2: Abholnummer (🧾) - Fester Platz
+    badgesRow.appendChild(createPillarBadge('🧾', 'Abholnummer verfügbar', orderingEnabled));
     
-    if(badgesRow.children.length > 0){
-      body.appendChild(badgesRow);
-    }
+    // Slot 3: Mehrweg (🔄) - Fester Platz
+    badgesRow.appendChild(createPillarBadge('🔄', 'Mehrweg-System', hasReuse));
+    
+    body.appendChild(badgesRow);
     
     // Preis: Nur bei Nicht-Polaroid (bei Polaroid ist Preis auf dem Bild)
     if(!isPolaroid){
@@ -8495,10 +8458,10 @@
           }, 200);
         };
       } else {
-        // Info-Anbieter (ordering_enabled = false): Button "Express-Abholung anfragen"
-        primaryCTAText.textContent = 'Express-Abholung anfragen';
+        // Info-Anbieter (ordering_enabled = false): Button "Abholnummer anfragen"
+        primaryCTAText.textContent = 'Abholnummer anfragen';
         if(sInfoHint){
-          sInfoHint.textContent = 'Hilf dem Anbieter, Express-Abholung zu aktivieren!';
+          sInfoHint.textContent = 'Hilf dem Anbieter, Abholnummern zu aktivieren!';
           sInfoHint.style.display = 'block';
         }
         
@@ -8509,7 +8472,7 @@
         primaryCTA.style.cursor = 'pointer';
         primaryCTA.onclick = () => {
           // Request-Counter erhöhen (LocalStorage für Demo)
-          const requestKey = `express_request_${o.providerId}_${isoDate(new Date())}`;
+          const requestKey = `abholnummer_request_${o.providerId}_${isoDate(new Date())}`;
           const currentCount = parseInt(localStorage.getItem(`provider_${o.providerId}_requests`) || '0', 10);
           localStorage.setItem(`provider_${o.providerId}_requests`, String(currentCount + 1));
           localStorage.setItem(requestKey, 'true');
@@ -8527,7 +8490,7 @@
           setTimeout(() => {
             primaryCTA.disabled = false;
             primaryCTA.classList.remove('success');
-            primaryCTAText.textContent = 'Express-Abholung anfragen';
+            primaryCTAText.textContent = 'Abholnummer anfragen';
           }, 2000);
         };
       }
@@ -10721,11 +10684,10 @@
       }
     }
     
-    // Footer: Anbieter-Bereich anzeigen/verstecken
+    // Footer: Anbieter-Bereich immer sichtbar (strikte Trennung Kunden/Anbieter)
     const profileFooterProviderSection = document.getElementById('profileFooterProviderSection');
     if(profileFooterProviderSection){
-      // Anbieter-Bereich immer anzeigen (auch für nicht eingeloggte Kunden)
-      profileFooterProviderSection.style.display = 'flex';
+      profileFooterProviderSection.style.display = 'block';
     }
     
     // Business-Card: Provider-Login Button
@@ -11714,23 +11676,21 @@
         <div style="line-height:1.8;">
           <p style="font-weight:700; margin-bottom:12px;">Verantwortlich für den Inhalt:</p>
           <p>
-            MQ Mittagio UG (haftungsbeschränkt)<br>
-            Vertreten durch: Mike Quach<br>
+            <strong>Mike Quach</strong><br>
             Langäcker 2<br>
             73635 Rudersberg<br>
             Deutschland
           </p>
           <p style="margin-top:16px;">
             <strong>Kunden-Hilfe:</strong> <a href="mailto:info@mittagio.de" style="color:var(--brand);">info@mittagio.de</a><br>
-            <strong>Business-Anfragen:</strong> <a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a>
+            <strong>Business:</strong> <a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a>
           </p>
           <p style="margin-top:20px; padding-top:20px; border-top:1px solid #eee; font-size:13px; color:#666;">
-            <strong>Unternehmensform:</strong> Einzelunternehmen<br>
-            <strong>Umsatzsteuer-ID:</strong> nicht vorhanden (§19 UStG)
-          </p>
-          <p style="margin-top:16px; padding-top:16px; border-top:1px solid #eee; font-size:13px; color:#666;">
             <strong>Plattformhinweis:</strong><br>
             Mittagio vermittelt Mittagsangebote lokaler Anbieter. Vertragspartner bei Bestellungen ist ausschließlich der jeweilige Anbieter.
+          </p>
+          <p style="margin-top:20px; padding-top:16px; border-top:1px solid #eee; font-size:13px; color:#94a3b8; text-align:center;">
+            made with Love by mittagio.de
           </p>
         </div>
       `;
