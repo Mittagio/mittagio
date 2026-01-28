@@ -2355,20 +2355,24 @@
           </div>
         </div>
         
-        <!-- Präferenz-Filter: Große Buttons mit Emojis (Tinder-Style) -->
-        <div id="swipeFilterBar" style="display:flex; justify-content:center; gap:12px; padding:16px; background:rgba(0,0,0,0.03);">
-          <button type="button" class="swipe-pref-btn" data-pref="fleisch" onclick="applySwipePreference('fleisch');" style="padding:12px 20px; border-radius:16px; border:2px solid transparent; background:#fff; font-size:15px; font-weight:700; color:#334155; cursor:pointer; transition:all 0.25s ease; box-shadow:0 2px 8px rgba(0,0,0,0.08); display:flex; align-items:center; gap:8px;">
-            <span style="font-size:20px;">🥩</span> Fleisch
-          </button>
-          <button type="button" class="swipe-pref-btn" data-pref="vegetarisch" onclick="applySwipePreference('vegetarisch');" style="padding:12px 20px; border-radius:16px; border:2px solid transparent; background:#fff; font-size:15px; font-weight:700; color:#334155; cursor:pointer; transition:all 0.25s ease; box-shadow:0 2px 8px rgba(0,0,0,0.08); display:flex; align-items:center; gap:8px;">
-            <span style="font-size:20px;">🌿</span> Vegetarisch
-          </button>
-          <button type="button" class="swipe-pref-btn" data-pref="salat" onclick="applySwipePreference('salat');" style="padding:12px 20px; border-radius:16px; border:2px solid transparent; background:#fff; font-size:15px; font-weight:700; color:#334155; cursor:pointer; transition:all 0.25s ease; box-shadow:0 2px 8px rgba(0,0,0,0.08); display:flex; align-items:center; gap:8px;">
-            <span style="font-size:20px;">🥗</span> Salat
-          </button>
+        <!-- Initial-Filter: "Worauf hast du heute Lust?" – erst Auswahl, dann Karten -->
+        <div id="swipeFilterIntro" style="text-align:center; padding:24px 16px 16px;">
+          <h2 style="font-size:22px; font-weight:900; color:#1a1a1a; margin:0 0 24px; line-height:1.3;">Worauf hast du heute Lust?</h2>
+          <div id="swipeFilterBar" style="display:flex; flex-wrap:wrap; justify-content:center; gap:12px; margin-bottom:20px;">
+            <button type="button" class="swipe-pref-btn" data-pref="fleisch" style="padding:14px 22px; border-radius:16px; border:2px solid transparent; background:#fff; font-size:15px; font-weight:700; color:#334155; cursor:pointer; transition:all 0.25s ease; box-shadow:0 2px 8px rgba(0,0,0,0.08); display:flex; align-items:center; gap:8px;"><span style="font-size:22px;">🥩</span> Fleisch</button>
+            <button type="button" class="swipe-pref-btn" data-pref="vegetarisch" style="padding:14px 22px; border-radius:16px; border:2px solid transparent; background:#fff; font-size:15px; font-weight:700; color:#334155; cursor:pointer; transition:all 0.25s ease; box-shadow:0 2px 8px rgba(0,0,0,0.08); display:flex; align-items:center; gap:8px;"><span style="font-size:22px;">🌿</span> Vegetarisch</button>
+            <button type="button" class="swipe-pref-btn" data-pref="salat" style="padding:14px 22px; border-radius:16px; border:2px solid transparent; background:#fff; font-size:15px; font-weight:700; color:#334155; cursor:pointer; transition:all 0.25s ease; box-shadow:0 2px 8px rgba(0,0,0,0.08); display:flex; align-items:center; gap:8px;"><span style="font-size:22px;">🥗</span> Salat</button>
+          </div>
+          <p style="font-size:14px; font-weight:600; color:#64748b; margin:0 0 12px;">Erreichbarkeit</p>
+          <div style="display:flex; justify-content:center; gap:12px;">
+            <button type="button" class="swipe-dist-btn" data-dist="walking" style="padding:12px 20px; border-radius:16px; border:2px solid transparent; background:#fff; font-size:15px; font-weight:700; color:#334155; cursor:pointer; transition:all 0.25s ease; box-shadow:0 2px 8px rgba(0,0,0,0.08); display:flex; align-items:center; gap:8px;"><span style="font-size:18px;">👣</span> Zu Fuss</button>
+            <button type="button" class="swipe-dist-btn" data-dist="driving" style="padding:12px 20px; border-radius:16px; border:2px solid transparent; background:#fff; font-size:15px; font-weight:700; color:#334155; cursor:pointer; transition:all 0.25s ease; box-shadow:0 2px 8px rgba(0,0,0,0.08); display:flex; align-items:center; gap:8px;"><span style="font-size:18px;">🚗</span> Auto</button>
+          </div>
         </div>
         
-        <div id="swipeStack" style="position:relative; width:100%; height:calc(100% - 160px); min-height:380px; display:flex; align-items:center; justify-content:center; padding:16px 0; overflow:visible;">
+        <!-- Stack + Actions: erst nach erster Filter-Auswahl sichtbar -->
+        <div id="swipeStackArea" style="display:none; flex:1; flex-direction:column; width:100%; min-height:0;">
+        <div id="swipeStack" style="position:relative; width:100%; flex:1; min-height:320px; display:flex; align-items:center; justify-content:center; padding:16px 0; overflow:visible;">
           <!-- Polaroid-Karten werden hier eingefügt -->
         </div>
         
@@ -2405,6 +2409,7 @@
           <button class="btn secondary" type="button" onclick="switchDiscoverView('list')" style="margin-top:20px;">
             Zur Liste wechseln
           </button>
+        </div>
         </div>
       </div>
       
@@ -6642,21 +6647,23 @@
         swipeEl.style.display = 'flex';
         swipeEl.style.flexDirection = 'column';
         swipeEl.style.alignItems = 'center';
-        swipeEl.style.justifyContent = 'center';
-        swipeEl.style.height = 'calc(100vh - 180px)'; // Platz für Header und Bottom Bar
+        swipeEl.style.justifyContent = 'flex-start';
+        swipeEl.style.height = 'calc(100vh - 180px)';
         swipeEl.style.minHeight = '480px';
         swipeEl.style.maxHeight = 'none';
         swipeEl.style.padding = '12px 0';
         swipeEl.style.width = '100%';
         swipeEl.style.overflow = 'hidden';
       }
-      // toggleBtn entfernt - nur noch Topbar-Toggle verwendet
-      // Filter, Quick-Filters und Kalender im Swipe-Modus komplett ausblenden (immersiver Modus)
       if(categoriesWrapper) categoriesWrapper.style.display = 'none';
       if(quickFiltersEl) quickFiltersEl.style.display = 'none';
       if(calendarEl) calendarEl.style.display = 'none';
-      renderSwipeCards();
-      // Standort-Info aktualisieren
+      swipeFiltersSelected = false;
+      const intro = document.getElementById('swipeFilterIntro');
+      const area = document.getElementById('swipeStackArea');
+      if(intro){ intro.style.display = 'block'; }
+      if(area){ area.style.display = 'none'; }
+      setupSwipeFilterHandlers();
       updateSwipeLocationInfo();
     } else {
       if(listEl) listEl.style.display = 'block';
@@ -6720,6 +6727,18 @@
         const data = normalizeOffer(o);
         const addr = buildAddress({address:data.address, street:data.providerStreet, zip:data.providerZip, city:data.providerCity});
         return String(addr||'').toLowerCase().includes(q);
+      });
+    }
+    
+    // Kategorie-Filter (Fleisch / Vegetarisch / Salat)
+    if(activeSwipePreference){
+      list = list.filter(o => {
+        const data = normalizeOffer(o);
+        const cat = (data.category || data.diet || '').toLowerCase();
+        if(activeSwipePreference === 'fleisch') return cat.includes('fleisch') || cat.includes('meat');
+        if(activeSwipePreference === 'vegetarisch') return cat.includes('vegetarisch') || cat.includes('vegan') || cat.includes('veggie');
+        if(activeSwipePreference === 'salat') return cat.includes('salat') || cat.includes('bowl') || cat.includes('salad');
+        return false;
       });
     }
     
@@ -7210,80 +7229,61 @@
     }
   }
   
-  // === MITTAGESSEN-TINDER: Filter-Logik ===
+  // === MITTAGESSEN-TINDER: Erst Filtern, dann Swipen ===
   let activeSwipePreference = null;
+  let swipeFiltersSelected = false;
   
-  // Präferenz-Filter anwenden (Fleisch/Vegetarisch/Salat)
-  window.applySwipePreference = function(pref){
-    const swipeStack = document.getElementById('swipeStack');
-    if(!swipeStack) return;
-    
-    // Toggle-Logik: Wenn bereits aktiv, deaktivieren (alle zeigen)
-    if(activeSwipePreference === pref){
-      activeSwipePreference = null;
-      renderSwipeCards(); // Alle Karten neu rendern
-      updatePrefButtonState(null);
-      showToast('Alle Kategorien anzeigen', 1000);
-      return;
-    }
-    
-    activeSwipePreference = pref;
-    updatePrefButtonState(pref);
-    
-    // Finde alle Karten und fly-out die nicht passenden
-    const cards = swipeStack.querySelectorAll('.swipe-card');
-    let removedCount = 0;
-    
-    cards.forEach(card => {
-      const offerId = card.dataset.offerId;
-      const offer = offers.find(o => o.id === offerId);
-      if(!offer) return;
-      
-      const data = normalizeOffer(offer);
-      const category = (data.category || data.diet || '').toLowerCase();
-      
-      // Prüfe ob Kategorie zur Präferenz passt
-      let matches = false;
-      if(pref === 'fleisch') matches = category.includes('fleisch') || category.includes('meat');
-      else if(pref === 'vegetarisch') matches = category.includes('vegetarisch') || category.includes('vegan') || category.includes('veggie');
-      else if(pref === 'salat') matches = category.includes('salat') || category.includes('bowl') || category.includes('salad');
-      
-      if(!matches){
-        card.classList.add('fly-out-left');
-        removedCount++;
-        setTimeout(() => { if(card.parentNode) card.remove(); }, 450);
-      }
+  function setupSwipeFilterHandlers(){
+    document.querySelectorAll('.swipe-pref-btn').forEach(btn => {
+      btn.onclick = () => onSwipeFilterSelect('pref', btn.dataset.pref);
     });
-    
-    const prefLabel = pref === 'fleisch' ? 'Fleisch 🥩' : pref === 'vegetarisch' ? 'Vegetarisch 🌿' : 'Salat 🥗';
-    showToast(`Filter: ${prefLabel} (${cards.length - removedCount} Gerichte)`, 1500);
-    
-    // Nach Fly-Out: Nächste Karte aktivieren
-    setTimeout(() => {
-      const remaining = swipeStack.querySelectorAll('.swipe-card:not(.fly-out-left)');
-      if(remaining.length === 0){
-        showToast('Keine Gerichte in dieser Kategorie. Wähle eine andere.', 2000);
-      }
-    }, 500);
-  };
-  
-  // Präferenz-Button-State aktualisieren
-  function updatePrefButtonState(activePref){
-    const btns = document.querySelectorAll('.swipe-pref-btn');
-    btns.forEach(btn => {
-      const pref = btn.dataset.pref;
-      if(pref === activePref){
-        btn.classList.add('active');
-      } else {
-        btn.classList.remove('active');
-      }
+    document.querySelectorAll('.swipe-dist-btn').forEach(btn => {
+      btn.onclick = () => onSwipeFilterSelect('dist', btn.dataset.dist);
     });
   }
   
-  // Kebab-Menü Toggle
+  function onSwipeFilterSelect(type, value){
+    triggerHapticFeedback([10]);
+    if(type === 'pref'){
+      if(activeSwipePreference === value){ activeSwipePreference = null; updatePrefButtonState(null); }
+      else { activeSwipePreference = value; updatePrefButtonState(value); }
+      if(!swipeFiltersSelected) activeTimeFilter = activeTimeFilter || 'walking';
+    } else {
+      activeTimeFilter = value;
+      updateDistanceButtonState(value);
+      if(!swipeFiltersSelected) activeSwipePreference = activeSwipePreference || null;
+    }
+    save('mittagio_timeFilter', activeTimeFilter);
+    
+    if(!swipeFiltersSelected){
+      swipeFiltersSelected = true;
+      const intro = document.getElementById('swipeFilterIntro');
+      const area = document.getElementById('swipeStackArea');
+      if(intro) intro.style.display = 'none';
+      if(area) area.style.display = 'flex';
+      renderSwipeCards();
+      showToast('Karten geladen – viel Spaß beim Swipen!', 1500);
+    } else {
+      renderSwipeCards();
+      const label = type === 'pref' ? (value === 'fleisch' ? 'Fleisch' : value === 'vegetarisch' ? 'Vegetarisch' : 'Salat') : (value === 'walking' ? 'Zu Fuss' : 'Auto');
+      showToast('Filter: ' + label, 1000);
+    }
+  }
+  
+  function updatePrefButtonState(activePref){
+    document.querySelectorAll('.swipe-pref-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.pref === activePref);
+    });
+  }
+  
+  function updateDistanceButtonState(activeDist){
+    document.querySelectorAll('.swipe-dist-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.dist === activeDist);
+    });
+  }
+  
   window.toggleSwipeMenu = function(){
     showToast('Menü: In Entwicklung', 1500);
-    // TODO: Dropdown mit Optionen (Standort ändern, Filter zurücksetzen, etc.)
   };
   
   // Fly-to-Favorites Animation: Gericht fliegt zum Herz-Icon
