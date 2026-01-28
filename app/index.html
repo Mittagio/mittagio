@@ -5598,7 +5598,7 @@
     }
     
     // Topbar-Toggle nur in Discover-View anzeigen
-    const toggleTopbar = document.getElementById('discoverViewToggleTopbar');
+    const toggleTopbar = document.getElementById('toggleDiscoverViewTopbar');
     if(toggleTopbar){
       toggleTopbar.style.display = (id === views.discover) ? 'flex' : 'none';
     }
@@ -5620,13 +5620,11 @@
     const isCustomer = mode==='customer';
     const customerNav = document.getElementById('customerNav');
     const providerNav = document.getElementById('providerNav');
-    const discoverFilters = document.getElementById('discoverFilters');
     const modePill = document.getElementById('modePill');
     const statusIndicator = document.getElementById('providerStatusIndicator');
     
     if(customerNav) customerNav.style.display = (isCustomer || isStart) ? 'flex' : 'none';
     if(providerNav) providerNav.style.display = isProv ? 'flex' : 'none';
-    if(discoverFilters) discoverFilters.style.display = isCustomer ? 'block' : 'none';
     if(modePill) modePill.style.display = isProv ? 'inline-flex' : 'none';
     if(statusIndicator) statusIndicator.style.display = (isProv && provider.loggedIn) ? 'flex' : 'none';
     
@@ -5701,7 +5699,7 @@
     const fabModeToggle = document.getElementById('fabModeToggle');
     if(fabModeToggle) fabModeToggle.style.display = 'flex';
     // Topbar-Toggle anzeigen (nur in Discover-View)
-    const toggleTopbar = document.getElementById('discoverViewToggleTopbar');
+    const toggleTopbar = document.getElementById('toggleDiscoverViewTopbar');
     if(toggleTopbar) toggleTopbar.style.display = 'flex';
     // Browser-Verlauf aktualisieren
     history.pushState({view: 'discover', mode: mode}, '', location.pathname);
@@ -5710,7 +5708,7 @@
     setCustomerNavActive('fav');
     showView(views.fav);
     // Toggle im Topbar ausblenden
-    const toggleTopbar = document.getElementById('discoverViewToggleTopbar');
+    const toggleTopbar = document.getElementById('toggleDiscoverViewTopbar');
     if(toggleTopbar) toggleTopbar.style.display = 'none';
     renderFavorites();
     // Vorschau-Sektion initial verstecken
@@ -6322,121 +6320,12 @@
       };
     }
     
-    // "Zur Liste wechseln" Button (sticky) - Scroll-Detection für Shadow
-    const btnDiscoverToList = document.getElementById('btnDiscoverToList');
-    const listToggleRow = document.querySelector('.discover-list-toggle-row');
-    if(btnDiscoverToList){
-      btnDiscoverToList.onclick = ()=>{
-        // Toggle zwischen Liste und Swipe
-        const newMode = discoverViewMode === 'list' ? 'swipe' : 'list';
-        discoverViewMode = newMode;
-        save(LS.discoverView, discoverViewMode);
-        switchDiscoverView(newMode);
-        if(newMode === 'list'){
-          renderDiscover(); // Liste neu rendern
-        }
-      };
-      // Initiales Label setzen
-      updateToggleButtonLabel(discoverViewMode);
-    }
-    
-    // Scroll-Detection für Sticky-Button Shadow
-    if(listToggleRow){
-      const discoverOffers = document.getElementById('discoverOffers');
-      if(discoverOffers){
-        discoverOffers.addEventListener('scroll', () => {
-          if(discoverOffers.scrollTop > 10){
-            listToggleRow.classList.add('scrolled');
-          } else {
-            listToggleRow.classList.remove('scrolled');
-          }
-        }, {passive: true});
-      }
-    }
-    
     // Standard-Start: App öffnet sich immer in Listenform
     if(discoverViewMode !== 'list'){
       discoverViewMode = 'list';
       save(LS.discoverView, discoverViewMode);
     }
     switchDiscoverView(discoverViewMode);
-    
-    // Zeit-Filter Pills ENTFERNT: Diese Informationen gehören nur auf die einzelnen Essens-Karten, nicht in die globale Navigation
-    // Die Filter-Logik bleibt aktiv, aber ohne UI-Elemente im Header
-    
-    // Quick-Filters: "In der Nähe" Button
-    const btnDiscoverNear = document.getElementById('btnDiscoverNear');
-    const quickFiltersEl = document.getElementById('discoverQuickFilters');
-    if(btnDiscoverNear){
-      const isActive = activeDiscoverFilter === 'near';
-      btnDiscoverNear.className = 'discover-quick-filter-pill' + (isActive ? ' active' : '');
-      btnDiscoverNear.style.background = isActive ? 'var(--brand)' : '#fff';
-      btnDiscoverNear.style.borderColor = isActive ? 'var(--brand)' : 'rgba(0,0,0,0.15)';
-      btnDiscoverNear.style.color = isActive ? '#1a1a1a' : '#333';
-      btnDiscoverNear.style.fontWeight = isActive ? '900' : '700';
-      btnDiscoverNear.onclick = () => {
-        triggerHapticFeedback([10]);
-        activeDiscoverFilter = 'near';
-        currentProviderFilter = null;
-        renderDiscover();
-      };
-    }
-    
-    // Kategorien rendern (horizontal scrollbar mit Food-Icons)
-    const categoriesEl = document.getElementById('discoverCategories');
-    if(categoriesEl){
-      categoriesEl.innerHTML = '';
-      const cats = [
-        {id:'Mit Fleisch', label:'Fleisch', emoji: '🍖', icon: 'drumstick'},
-        {id:'Salat', label:'Salat', emoji: '🥗', icon: 'leaf'},
-        {id:'Vegetarisch', label:'Vegetarisch', emoji: '🧀', icon: 'carrot'},
-        {id:'Vegan', label:'Vegan', emoji: '🌿', icon: 'leaf'},
-        {id:'Fisch', label:'Fisch', emoji: '🐟', icon: 'fish'}
-      ];
-      cats.forEach(cat=>{
-        const btn = document.createElement('button');
-        const isActive = activeDiscoverFilter === cat.id && !currentProviderFilter;
-        btn.className = 'discover-category-chip' + (isActive ? ' active' : '');
-        btn.setAttribute('data-cat', cat.id);
-        // Food-Icons mit Emojis für bessere Erkennbarkeit
-        btn.innerHTML = `<span style="font-size:16px; margin-right:4px;">${cat.emoji || ''}</span><span>${esc(cat.label)}</span>`;
-        btn.onclick = ()=>{
-          triggerHapticFeedback([10]);
-          activeDiscoverFilter = cat.id;
-          currentProviderFilter = null; // Provider-Filter zurücksetzen
-          renderDiscover();
-        };
-        categoriesEl.appendChild(btn);
-      });
-    }
-    
-    // Kalender rendern (kompakte Datum-Pills in Quick-Filters)
-    const calendarEl = document.getElementById('discoverCalendar');
-    if(calendarEl){
-      calendarEl.innerHTML = '';
-      const today = new Date();
-      for(let i=0; i<7; i++){
-        const d = new Date(today);
-        d.setDate(d.getDate() + i);
-        const key = isoDate(d);
-        
-        const btn = document.createElement('button');
-        btn.className = 'discover-day' + (activeDay === key ? ' active' : '');
-        // Kompaktes Format: "Heute" für heute, sonst nur Wochentag (z.B. "Mo", "Di")
-        if(i === 0){
-          btn.textContent = 'Heute';
-        } else {
-          const dayNames = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
-          btn.textContent = dayNames[d.getDay()];
-        }
-        btn.onclick = ()=>{
-          triggerHapticFeedback([10]);
-          activeDay = key;
-          renderDiscover();
-        };
-        calendarEl.appendChild(btn);
-      }
-    }
     
     // Angebote filtern: Nur heute + Zeit-Filter (10 Min Gehzeit oder 15 Min Fahrzeit)
     let list = offers.filter(o => o.day === activeDay && o.active !== false);
@@ -6611,36 +6500,12 @@
   let swipeCards = [];
   let currentSwipeIndex = 0;
   
-  // View-Toggle Handler
-  // Hilfsfunktion: Button-Label und Icon aktualisieren
-  function updateToggleButtonLabel(mode){
-    const btnDiscoverToList = document.getElementById('btnDiscoverToList');
-    if(!btnDiscoverToList) return;
-    
-    const iconEl = btnDiscoverToList.querySelector('i');
-    const labelEl = btnDiscoverToList.querySelector('span');
-    
-    if(mode === 'swipe'){
-      // In Swipe-Modus: Button zeigt "Zur Liste wechseln"
-      if(iconEl) iconEl.setAttribute('data-lucide', 'list');
-      if(labelEl) labelEl.textContent = 'Zur Liste wechseln';
-    } else {
-      // In Listen-Modus: Button zeigt "Zum Swipe wechseln"
-      if(iconEl) iconEl.setAttribute('data-lucide', 'flame');
-      if(labelEl) labelEl.textContent = 'Zum Swipe wechseln';
-    }
-  }
-  
   function switchDiscoverView(mode){
     discoverViewMode = mode;
     save(LS.discoverView, mode); // Präferenz speichern
     
     const listEl = document.getElementById('discoverOffers');
     const swipeEl = document.getElementById('discoverSwipe');
-    // toggleDiscoverView wurde entfernt - nur noch toggleDiscoverViewTopbar im Header
-    const categoriesWrapper = document.getElementById('discoverCategoriesWrapper');
-    const calendarEl = document.getElementById('discoverCalendar');
-    const quickFiltersEl = document.getElementById('discoverQuickFilters');
     
     if(mode === 'swipe'){
       if(listEl) listEl.style.display = 'none';
@@ -6656,9 +6521,6 @@
         swipeEl.style.width = '100%';
         swipeEl.style.overflow = 'hidden';
       }
-      if(categoriesWrapper) categoriesWrapper.style.display = 'none';
-      if(quickFiltersEl) quickFiltersEl.style.display = 'none';
-      if(calendarEl) calendarEl.style.display = 'none';
       swipeFiltersSelected = false;
       const intro = document.getElementById('swipeFilterIntro');
       const area = document.getElementById('swipeStackArea');
@@ -6670,22 +6532,12 @@
       if(listEl) listEl.style.display = 'block';
       if(swipeEl) {
         swipeEl.style.display = 'none';
-        // Reset für Listenansicht
         swipeEl.style.height = '75vh';
         swipeEl.style.minHeight = '480px';
         swipeEl.style.maxHeight = '600px';
       }
-      // toggleBtn entfernt - nur noch Topbar-Toggle verwendet
-      // Filter, Quick-Filters und Kalender in Listenansicht wieder einblenden
-      if(categoriesWrapper) categoriesWrapper.style.display = 'flex';
-      if(quickFiltersEl) quickFiltersEl.style.display = 'flex';
-      if(calendarEl) calendarEl.style.display = 'flex';
     }
     
-    // Button-Label und Icon aktualisieren
-    updateToggleButtonLabel(mode);
-    
-    // Icons aktualisieren
     if(typeof lucide !== 'undefined'){
       setTimeout(() => lucide.createIcons(), 50);
     }
@@ -7720,25 +7572,10 @@
   if(toggleDiscoverViewTopbar){
     toggleDiscoverViewTopbar.onclick = () => {
       const newMode = discoverViewMode === 'list' ? 'swipe' : 'list';
-      // Haptics beim View-Wechsel
       if(typeof triggerHapticFeedback === 'function') triggerHapticFeedback([15]);
       switchDiscoverView(newMode);
       save(LS.discoverView, newMode);
       syncToggleState();
-      
-      // Icons aktualisieren (beide Icons im modernen Toggle)
-      const toggleIconList = document.getElementById('toggleDiscoverViewIconList');
-      const toggleIconSwipe = document.getElementById('toggleDiscoverViewIconSwipe');
-      if(toggleIconList && toggleIconSwipe){
-        if(newMode === 'swipe'){
-          toggleIconList.setAttribute('data-lucide', 'grid-3x3');
-          toggleIconSwipe.setAttribute('data-lucide', 'sparkles');
-        } else {
-          toggleIconList.setAttribute('data-lucide', 'grid-3x3');
-          toggleIconSwipe.setAttribute('data-lucide', 'sparkles');
-        }
-        if(typeof lucide !== 'undefined') lucide.createIcons();
-      }
     };
   }
   
