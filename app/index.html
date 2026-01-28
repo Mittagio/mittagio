@@ -3278,41 +3278,51 @@
       </div>
     </section>
 
-    <section class="view" id="v-provider-week">
-      <div class="panel">
-        <h3>Wochenplan</h3>
+    <section class="view" id="v-provider-week" style="background:#1e1e1e; min-height:100vh; padding:20px; padding-bottom:90px;">
+      <!-- Header: Küchenmodus -->
+      <div style="margin-bottom:20px; text-align:center;">
+        <div style="font-size:11px; color:rgba(255,255,255,0.5); text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">Mittagio – dein digitaler Helfer</div>
+        <h1 style="margin:0; font-size:32px; font-weight:900; color:#fff; line-height:1.2;">Wochenplan</h1>
+      </div>
+      <div class="panel" style="background:#2a2a2a; border:1px solid rgba(255,255,255,0.05); box-shadow:0 4px 16px rgba(0,0,0,.4);">
+        <h3 style="color:#fff; display:none;">Wochenplan</h3>
         <div class="dayrow" id="weekDays" style="padding:0 0 10px; max-width:none;"></div>
         <div id="weekList" style="text-align:center; padding:40px 20px;">
-          <div style="font-weight:600; font-size:16px; margin-bottom:8px;">Keine Inserate geplant</div>
-          <div class="hint" style="font-size:14px; line-height:1.4; margin-bottom:16px; color:var(--muted);">
+          <div style="font-weight:600; font-size:16px; margin-bottom:8px; color:#fff;">Keine Inserate geplant</div>
+          <div class="hint" style="font-size:14px; line-height:1.4; margin-bottom:16px; color:rgba(255,255,255,0.7);">
             Plane deine Woche und erstelle Inserate.
           </div>
-          <button class="btn secondary" type="button" id="btnWeekEmptyAdd" style="width:100%; min-height:44px;">
+          <button class="btn secondary" type="button" id="btnWeekEmptyAdd" style="width:100%; min-height:44px; background:#FFD700; color:#334155; font-weight:700;">
             Inserat erstellen
           </button>
         </div>
         <div style="display:flex; gap:8px; margin-top:12px;">
-          <button class="btn secondary" type="button" id="btnWeekPdf" data-icon="print" style="display:none; flex:1; min-height:44px;">PDF-Wochenkarte</button>
+          <button class="btn secondary" type="button" id="btnWeekPdf" data-icon="print" style="display:none; flex:1; min-height:44px; background:#2a2a2a; border:1px solid rgba(255,255,255,0.1); color:#fff;">PDF-Wochenkarte</button>
           <button class="btn secondary" type="button" id="btnWeekShare" data-icon="share-2" style="display:none; flex:1; min-height:44px; background:#FFD700; color:#334155; font-weight:700;">Wochenplan teilen</button>
         </div>
-        <button class="btn ghost" type="button" id="btnWeekBack" style="margin-top:12px;">Zurück</button>
+        <button class="btn ghost" type="button" id="btnWeekBack" style="margin-top:12px; color:rgba(255,255,255,0.7);">Zurück</button>
       </div>
     </section>
 
-    <section class="view" id="v-provider-cookbook">
-      <div class="panel">
-        <h3>Mein Kochbuch</h3>
-        <div class="hint">Dein digitales Kochbuch. Immer griffbereit für deine Planung.</div>
+    <section class="view" id="v-provider-cookbook" style="background:#1e1e1e; min-height:100vh; padding:20px; padding-bottom:90px;">
+      <!-- Header: Küchenmodus -->
+      <div style="margin-bottom:20px; text-align:center;">
+        <div style="font-size:11px; color:rgba(255,255,255,0.5); text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">Mittagio – dein digitaler Helfer</div>
+        <h1 style="margin:0; font-size:32px; font-weight:900; color:#fff; line-height:1.2;">Mein Kochbuch</h1>
+      </div>
+      <div class="panel" style="background:#2a2a2a; border:1px solid rgba(255,255,255,0.05); box-shadow:0 4px 16px rgba(0,0,0,.4);">
+        <h3 style="color:#fff; display:none;">Mein Kochbuch</h3>
+        <div class="hint" style="color:rgba(255,255,255,0.7);">Dein digitales Kochbuch. Immer griffbereit für deine Planung.</div>
         <div style="height:10px"></div>
         <div class="tabrow" id="cookbookTabs"></div>
         <div style="height:10px"></div>
-        <input class="field" id="cookbookSearch" type="text" placeholder="Suche nach Gerichten" />
+        <input class="field" id="cookbookSearch" type="text" placeholder="Suche nach Gerichten" style="background:#1a1a1a; border:1px solid rgba(255,255,255,0.1); color:#fff;" />
         <div style="height:10px"></div>
-        <div class="hint">Sortierung</div>
+        <div class="hint" style="color:rgba(255,255,255,0.7);">Sortierung</div>
         <div class="answers" id="cookbookSorts"></div>
-        <button class="btn" type="button" id="btnCookbookAdd" data-icon="plus">Gericht hinzufügen</button>
+        <button class="btn" type="button" id="btnCookbookAdd" data-icon="plus" style="background:#FFD700; color:#334155; font-weight:700;">Gericht hinzufügen</button>
         <div style="height:10px"></div>
-        <div id="cookbookList" class="hint">Noch keine Gerichte gespeichert.</div>
+        <div id="cookbookList" class="hint" style="color:rgba(255,255,255,0.7);">Noch keine Gerichte gespeichert.</div>
       </div>
     </section>
 
@@ -14915,6 +14925,9 @@
    *                                  Wenn vom Wochenplan: Gewählter Tag
    */
   function openDishFlow(defaultDate = null){
+    // CRITICAL FIX: openDishFlow sollte startListingFlow verwenden für konsistenten Inseratsflow
+    startListingFlow({date: defaultDate || isoDate(new Date())});
+    return;
     // Normalisiere Datum: null/undefined = Heute
     const date = defaultDate || isoDate(new Date());
     
