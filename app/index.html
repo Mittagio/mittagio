@@ -4045,7 +4045,7 @@
     <div style="position:sticky; bottom:0; background:transparent; padding:16px 0 24px; margin-top:24px; border-top:1px solid rgba(255,255,255,0.1); z-index:10;">
       <button class="btn-primary" type="button" id="btnPrimaryCTA" style="width:100%; min-height:56px; max-height:64px; background:#27AE60; color:#fff; font-weight:800; font-size:18px; border:none; border-radius:16px; box-shadow:0 4px 16px rgba(39,174,96,0.4); display:flex; align-items:center; justify-content:center; gap:8px; transition:all 0.2s ease;" onmouseover="this.style.transform='scale(1.02)'; this.style.boxShadow='0 6px 20px rgba(39,174,96,0.5)';" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 16px rgba(39,174,96,0.4)';">
         <i data-lucide="shopping-basket" style="width:22px;height:22px;"></i>
-        <span id="btnPrimaryCTAText">In die Mittagspause legen</span>
+        <span id="btnPrimaryCTAText">Jetzt Abholnummer sichern</span>
       </button>
       <!-- Infotext unter Button (Szenario A/B) -->
       <div id="sInfoHint" style="margin-top:8px; text-align:center; font-size:12px; color:rgba(255,255,255,0.6); padding:0 16px; line-height:1.4;"></div>
@@ -8416,11 +8416,11 @@
         }
         primaryCTA.onclick = null;
       } else if(orderingEnabled){
-        // Express-Anbieter (ordering_enabled): CTA "In die Mittagspause legen"
-        primaryCTAText.textContent = 'In die Mittagspause legen';
+        // Express-Anbieter (ordering_enabled): CTA "Jetzt Abholnummer sichern"
+        primaryCTAText.textContent = 'Jetzt Abholnummer sichern';
         if(sInfoHint){
-          sInfoHint.textContent = '';
-          sInfoHint.style.display = 'none';
+          sInfoHint.textContent = 'Sichere dir jetzt deine Abholnummer für heute.';
+          sInfoHint.style.display = 'block';
         }
         primaryCTA.onclick = () => {
           // Loading state
@@ -8457,10 +8457,10 @@
           }, 200);
         };
       } else {
-        // Info-Anbieter (ordering_enabled = false): Button "In die Mittagspause legen" mit Infotext
-        primaryCTAText.textContent = 'In die Mittagspause legen';
+        // Info-Anbieter (ordering_enabled = false): Button "Express-Abholung anfragen"
+        primaryCTAText.textContent = 'Express-Abholung anfragen';
         if(sInfoHint){
-          sInfoHint.textContent = 'Dieser Anbieter nimmt nicht an der Abholnummer teil.';
+          sInfoHint.textContent = 'Hilf dem Anbieter, Express-Abholung zu aktivieren!';
           sInfoHint.style.display = 'block';
         }
         
@@ -8469,7 +8469,6 @@
         primaryCTA.style.background = '#27AE60';
         primaryCTA.style.color = '#fff';
         primaryCTA.style.cursor = 'pointer';
-        primaryCTAText.textContent = 'In die Mittagspause legen';
         primaryCTA.onclick = () => {
           // Request-Counter erhöhen (LocalStorage für Demo)
           const requestKey = `express_request_${o.providerId}_${isoDate(new Date())}`;
@@ -8490,7 +8489,7 @@
           setTimeout(() => {
             primaryCTA.disabled = false;
             primaryCTA.classList.remove('success');
-            primaryCTAText.textContent = 'In die Mittagspause legen';
+            primaryCTAText.textContent = 'Express-Abholung anfragen';
           }, 2000);
         };
       }
