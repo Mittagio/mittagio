@@ -2326,7 +2326,7 @@
               <span style="font-size:11px; color:#666; font-weight:600;">Ein Anbieter</span>
             </div>
             <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
-              <i data-lucide="hash" style="width:24px;height:24px; color:#FFD700;"></i>
+              <span style="font-size:24px;">🧾</span>
               <span style="font-size:11px; color:#666; font-weight:600;">Abholnummer sofort</span>
             </div>
           </div>
@@ -2350,6 +2350,14 @@
             <!-- Wird dynamisch befüllt -->
           </div>
           
+          <!-- Verzehrart (Vor Ort / Mitnehmen) -->
+          <div id="checkoutVerzehrart" style="margin-bottom:24px;">
+            <label style="display:block; font-weight:700; font-size:15px; margin-bottom:12px; color:#2D3436;">Wo möchtest du essen?</label>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+              <button type="button" id="checkoutBtnVorOrt" class="verzehrmodus-checkout-btn" data-mode="vor_ort" style="padding:14px 16px; border-radius:14px; border:2px solid #e7e1d5; background:#fff; color:#666; font-weight:600; font-size:15px; cursor:pointer; transition:all 0.2s ease;">🍴 Vor Ort essen</button>
+              <button type="button" id="checkoutBtnMitnehmen" class="verzehrmodus-checkout-btn" data-mode="mitnehmen" style="padding:14px 16px; border-radius:14px; border:2px solid #e7e1d5; background:#fff; color:#666; font-weight:600; font-size:15px; cursor:pointer; transition:all 0.2s ease;">🔄 Mitnehmen</button>
+            </div>
+          </div>
           <!-- Abholzeit-Auswahl (15-Minuten-Takt) -->
           <div style="margin-bottom:24px;">
             <label style="display:block; font-weight:700; font-size:15px; margin-bottom:12px; color:#2D3436;">Wann holst du dein Essen ab?</label>
@@ -2364,7 +2372,7 @@
               <input type="time" id="checkoutPickupTimeCustom" min="11:30" max="14:00" style="width:100%; padding:14px; border:2px solid #FFD700; border-radius:12px; font-size:18px; font-weight:700; background:#fff; text-align:center; margin-bottom:8px;" />
               <p class="hint" style="font-size:12px; color:#666; margin:0; line-height:1.5;">Bitte zwischen 11:30 und 14:00 Uhr wählen</p>
             </div>
-            <input type="hidden" id="checkoutPickupTime" value="${cart && cart.pickupTime ? cart.pickupTime : ''}" />
+            <input type="hidden" id="checkoutPickupTime" value="" />
           </div>
           
           <!-- Kontaktdaten (minimal) -->
@@ -9606,7 +9614,7 @@
     const note=document.getElementById('cartNote');
 
     if(!cart || !cart.items.length){
-      // Empty State: Picknick-Motiv
+      // Empty State: Picknick-Motiv (Verzehrart irrelevant)
       box.innerHTML = `
         <div style="text-align:center; padding:60px 20px;">
           <div style="width:140px; height:140px; margin:0 auto 24px; background:linear-gradient(135deg, rgba(255,215,0,0.1) 0%, rgba(255,184,0,0.15) 100%); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:80px;">
@@ -9626,6 +9634,7 @@
       return;
     }
 
+    if(!cart.verzehrmodus) cart.verzehrmodus = 'mitnehmen';
     let total=0;
     let canCheckout = true;
     const firstOffer = cart.items.length ? offers.find(x=>x.id===cart.items[0].offerId) : null;
@@ -9748,6 +9757,15 @@
           <span>Essenszeit: ${esc(windowText)}</span>
         </div>
       ` : ''}
+      <div class="row" style="margin-top:20px;"><span style="font-weight:700; font-size:15px;">Wo möchtest du essen?</span></div>
+      <div id="cartVerzehrart" style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px; margin-bottom:16px;">
+        <button type="button" class="verzehrmodus-btn" data-mode="vor_ort" style="padding:14px 16px; border-radius:14px; border:2px solid ${cart.verzehrmodus==='vor_ort'?'#FFD700':'#e7e1d5'}; background:${cart.verzehrmodus==='vor_ort'?'#FFD700':'#fff'}; color:${cart.verzehrmodus==='vor_ort'?'#2D3436':'#666'}; font-weight:${cart.verzehrmodus==='vor_ort'?'900':'600'}; font-size:15px; cursor:pointer; transition:all 0.2s ease;">
+          🍴 Vor Ort essen
+        </button>
+        <button type="button" class="verzehrmodus-btn" data-mode="mitnehmen" style="padding:14px 16px; border-radius:14px; border:2px solid ${cart.verzehrmodus==='mitnehmen'?'#FFD700':'#e7e1d5'}; background:${cart.verzehrmodus==='mitnehmen'?'#FFD700':'#fff'}; color:${cart.verzehrmodus==='mitnehmen'?'#2D3436':'#666'}; font-weight:${cart.verzehrmodus==='mitnehmen'?'900':'600'}; font-size:15px; cursor:pointer; transition:all 0.2s ease;">
+          🔄 Mitnehmen
+        </button>
+      </div>
       <div class="row" style="margin-top:20px;"><span style="font-weight:700; font-size:15px;">Wann holst du dein Essen ab?</span></div>
       <div class="cart-time-chips" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; margin-top:12px; margin-bottom:12px;">
         ${timeChips}
@@ -9785,7 +9803,7 @@
         </div>
       `;
       })() : ''}
-      <div class="row" style="margin-top:24px; padding-top:20px; border-top:2px solid #eee; position:relative;"><span style="font-size:18px; font-weight:900;">Gesamt</span><b style="font-size:20px; color:var(--brand);">${euro(total)}</b>
+      <div class="row" style="margin-top:24px; padding-top:20px; padding-right:48px; border-top:2px solid #eee; position:relative; display:flex; justify-content:space-between; align-items:center;"><span style="font-size:18px; font-weight:900;">Gesamt</span><b style="font-size:20px; color:var(--brand);">${euro(total)}</b>
         <!-- Mülleimer-Icon oben rechts (dezentes Design) -->
         <button type="button" id="clearCartIcon" class="cart-clear-icon" style="position:absolute; top:20px; right:0; width:36px; height:36px; border-radius:50%; border:none; background:rgba(0,0,0,0.05); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s ease; color:#666;" onmouseover="this.style.background='rgba(227,77,77,0.1)'; this.style.color='#e74c3c';" onmouseout="this.style.background='rgba(0,0,0,0.05)'; this.style.color='#666';" title="Mittagsbox leeren">
           <i data-lucide="trash-2" style="width:18px;height:18px;"></i>
@@ -9847,6 +9865,17 @@
       chip.onclick=()=>{
         const time = chip.getAttribute('data-time');
         cart.pickupTime = time;
+        save(LS.cart, cart);
+        renderCart();
+      };
+    });
+    
+    // Verzehrart-Buttons
+    box.querySelectorAll('.verzehrmodus-btn').forEach(btn=>{
+      btn.onclick=()=>{
+        const mode = btn.getAttribute('data-mode');
+        if(mode !== 'vor_ort' && mode !== 'mitnehmen') return;
+        cart.verzehrmodus = mode;
         save(LS.cart, cart);
         renderCart();
       };
@@ -9958,6 +9987,10 @@
   }
   
   function renderCheckout(total){
+    if(!cart) cart = { items: [] };
+    if(!cart.verzehrmodus) cart.verzehrmodus = 'mitnehmen';
+    save(LS.cart, cart);
+    
     // Zeitauswahl im 15-Minuten-Takt rendern
     const TIME_SLOTS = window.TIME_SLOTS || ['11:30', '11:45', '12:00', '12:15', '12:30', '12:45', '13:00', '13:15', '13:30', '13:45', '14:00'];
     const currentMinutes = window.currentMinutes || (new Date().getHours() * 60 + new Date().getMinutes());
@@ -10079,6 +10112,34 @@
     // Hidden Input setzen
     const hiddenInput = document.getElementById('checkoutPickupTime');
     if(hiddenInput && selectedTime) hiddenInput.value = selectedTime;
+    
+    // Verzehrart-Buttons (Vor Ort / Mitnehmen)
+    const btnVorOrt = document.getElementById('checkoutBtnVorOrt');
+    const btnMitnehmen = document.getElementById('checkoutBtnMitnehmen');
+    const vm = cart.verzehrmodus || 'mitnehmen';
+    if(btnVorOrt){
+      btnVorOrt.style.borderColor = vm === 'vor_ort' ? '#FFD700' : '#e7e1d5';
+      btnVorOrt.style.background = vm === 'vor_ort' ? '#FFD700' : '#fff';
+      btnVorOrt.style.color = vm === 'vor_ort' ? '#2D3436' : '#666';
+      btnVorOrt.style.fontWeight = vm === 'vor_ort' ? '900' : '600';
+      btnVorOrt.onclick = () => {
+        cart.verzehrmodus = 'vor_ort';
+        save(LS.cart, cart);
+        renderCheckout(total);
+      };
+    }
+    if(btnMitnehmen){
+      btnMitnehmen.style.borderColor = vm === 'mitnehmen' ? '#FFD700' : '#e7e1d5';
+      btnMitnehmen.style.background = vm === 'mitnehmen' ? '#FFD700' : '#fff';
+      btnMitnehmen.style.color = vm === 'mitnehmen' ? '#2D3436' : '#666';
+      btnMitnehmen.style.fontWeight = vm === 'mitnehmen' ? '900' : '600';
+      btnMitnehmen.onclick = () => {
+        cart.verzehrmodus = 'mitnehmen';
+        save(LS.cart, cart);
+        renderCheckout(total);
+      };
+    }
+    
     const summaryEl = document.getElementById('checkoutSummary');
     if(!summaryEl) return;
     
@@ -10236,14 +10297,17 @@
       quantity: cartData.items.reduce((sum, it) => sum + it.qty, 0),
       unitPrice: items[0]?.unitPriceCents || 0,
       total: totalCents,
-      fulfillType: 'PICKUP', // Immer "Zum Mitnehmen" (keine "Vor Ort" Option)
+      verzehrmodus: cartData.verzehrmodus === 'vor_ort' ? 'vor_ort' : 'mitnehmen',
+      fulfillType: cartData.verzehrmodus === 'vor_ort' ? 'DINE_IN' : 'PICKUP',
       etaTime: cartData.pickupTime || '',
+      abholzeit: cartData.pickupTime || '',
       status: initialStatus,
       currency: 'EUR',
       stripeCheckoutSessionId: undefined,
       stripePaymentIntentId: undefined,
       receiptEmail: undefined,
-      pickupCode: undefined, // Nur bei PAID (Guard in addOrder)
+      pickupCode: undefined, // Abholnummer; wird bei PAID gesetzt
+      abholnummer: undefined, // Alias für Anbieter-Output; bei PAID = pickupCode
       pickupCodeActivatedAt: undefined, // Nur bei PAID
       pickupDate: undefined, // Wird bei PAID gesetzt
       pickupWindow: firstOfferNormalized && firstOfferNormalized.pickupWindow ? firstOfferNormalized.pickupWindow : '',
@@ -10443,6 +10507,7 @@
       stripePaymentIntentId: paymentData.paymentIntentId,
       receiptEmail: paymentData.receiptEmail,
       pickupCode: pickupCode,
+      abholnummer: pickupCode,
       pickupCodeActivatedAt: now,
       pickupDate: pickupDate,
       pickupWindow: pickupWindow,
