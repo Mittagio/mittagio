@@ -2662,65 +2662,9 @@
         <div id="profileDietSwitches" style="display:flex; flex-direction:column; gap:12px;">
           <!-- Wird dynamisch befüllt -->
         </div>
-        
-        <!-- Nachhaltigkeit: Mehrweg-Option (zweite Ebene) -->
-        <div style="margin-top:24px; padding-top:24px; border-top:2px solid rgba(0,0,0,0.06);">
-          <div style="font-weight:700; font-size:16px; margin-bottom:12px; color:#64748b; display:flex; align-items:center; gap:8px;">
-            <img src="assets/icon-mehrweg.png" alt="Mehrweg" class="concept-icon-lg">
-            <span>Nachhaltigkeit</span>
-          </div>
-          <div id="profileReuseSwitch" style="display:flex; flex-direction:column; gap:12px;">
-            <!-- Wird dynamisch befüllt (Toggle) -->
-          </div>
-          <!-- Hinweistext zwingend unter dem Toggle -->
-          <div style="margin-top:16px; padding:12px; background:rgba(0,0,0,0.03); border-radius:12px; border-left:3px solid rgba(39,174,96,0.3);">
-            <div style="font-size:13px; color:#64748b; line-height:1.5;">
-              Wir arbeiten stetig daran, weitere Partner für unser Mehrweg-System zu gewinnen. Aktuell führen noch nicht alle Anbieter Mehrweg-Optionen; es werden dir weiterhin alle verfügbaren Angebote angezeigt.
-            </div>
-          </div>
-          <!-- Eco-Badge Vorschau -->
-          <div id="profileEcoBadge" style="margin-top:16px; padding:16px; background:linear-gradient(135deg, rgba(31,157,85,0.1) 0%, rgba(46,204,113,0.08) 100%); border-radius:16px; border:2px solid rgba(31,157,85,0.2); display:none;">
-            <div style="font-weight:700; font-size:15px; color:#1f9d55; margin-bottom:8px; display:flex; align-items:center; gap:8px;">
-              <i data-lucide="award" style="width:18px;height:18px;"></i>
-              <span>Eco-Badge</span>
-            </div>
-            <div style="font-size:14px; color:#666; line-height:1.5;">
-              Du hast bereits <span id="ecoBadgeCount" style="font-weight:700; color:#1f9d55;">0</span> Mal Verpackungsmüll gespart! 🌱
-            </div>
-          </div>
-        </div>
       </div>
 
-      <!-- Support & Vertrauen -->
-      <div class="panel" id="profileSupportSection" style="margin-top:20px; padding:20px; border-radius:20px; box-shadow:0 2px 12px rgba(0,0,0,.06);">
-        <div style="font-weight:900; font-size:18px; margin-bottom:16px; color:#2D3436;">Support & Vertrauen</div>
-        <div id="profileSupportList" style="display:flex; flex-direction:column; gap:0;">
-          <!-- Wird dynamisch befüllt -->
-        </div>
-      </div>
-
-      <!-- Business-Card: Für Partner (visuell getrennt - dunkles Design) -->
-      <div class="panel" id="profileBusinessCard" style="margin-top:20px; padding:24px; background:linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%); border:2px solid rgba(255,215,0,0.3); border-radius:24px; box-shadow:0 4px 16px rgba(0,0,0,0.3); position:relative; overflow:hidden;">
-        <!-- Dekoratives Icon -->
-        <div style="position:absolute; top:16px; right:16px; width:64px; height:64px; background:rgba(255,215,0,0.15); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:32px; opacity:0.6;">
-          🏪
-        </div>
-        <div style="position:relative; z-index:1;">
-          <div style="font-weight:900; font-size:20px; margin-bottom:6px; line-height:1.3; color:#fff; display:flex; align-items:center; gap:8px;">
-            <i data-lucide="store" style="width:22px;height:22px; color:#FFD700;"></i>
-            <span>MITTAGIO Business</span>
-          </div>
-          <div class="hint" style="font-size:14px; line-height:1.5; margin-bottom:20px; color:#aaa; max-width:280px;">
-            Dein Mittagessen anbieten – einfach und digital.
-          </div>
-          <button class="btn-primary" type="button" id="btnProviderBusinessLogin" onclick="if(typeof showProviderLoginModal === 'function') showProviderLoginModal(); else if(typeof setMode === 'function') setMode('provider');" style="width:100%; min-height:56px; font-size:16px; font-weight:700; background:linear-gradient(135deg, #9ca3af 0%, #6b7280 100%); color:#fff; border:none; box-shadow:0 4px 16px rgba(107,114,128,0.3); transition:all 0.3s ease; display:flex; align-items:center; justify-content:center; gap:10px; border-radius:16px;" onmouseover="this.style.background='linear-gradient(135deg, #6b7280 0%, #4b5563 100%)'; this.style.boxShadow='0 6px 20px rgba(107,114,128,0.4)'; this.style.transform='translateY(-2px)';" onmouseout="this.style.background='linear-gradient(135deg, #9ca3af 0%, #6b7280 100%)'; this.style.boxShadow='0 4px 16px rgba(107,114,128,0.3)'; this.style.transform='translateY(0)';">
-            <i data-lucide="log-in" style="width:22px;height:22px;"></i>
-            <span id="btnProviderBusinessLoginText">Jetzt als Anbieter einloggen</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- FAQ (reduced) -->
+      <!-- FAQ für Kunden (alle Fragen) -->
       <div class="panel" style="margin-top:18px; padding:16px; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,.04);">
         <div style="font-weight:600; font-size:17px; margin-bottom:12px; line-height:1.3;">Häufige Fragen</div>
         <div class="faq" id="profileFaqReduced" style="margin-bottom:12px;">
@@ -2739,10 +2683,6 @@
           <details>
             <summary>Kann ich telefonisch anrufen?</summary>
             <p>Ja, bei Anbietern mit dem Status "Nur Speisekarte" kannst du direkt über den Anruf-Button anrufen.</p>
-          </details>
-          <details>
-            <summary>Wie funktioniert Mehrweg?</summary>
-            <p>Aktiviere es unter „Nachhaltigkeit“ im Profil (Meins). Das Restaurant sieht deinen Wunsch sofort in der Mittagsbox.</p>
           </details>
           <details>
             <summary>Kann ich ohne Abholnummer Gerichte hinzufügen?</summary>
@@ -2770,48 +2710,27 @@
             Business-Anfragen: <a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a></p>
           </details>
         </div>
-        <a href="#" id="btnProfileShowMoreFaq" style="display:inline-block; font-size:13px; color:var(--muted); text-decoration:none; margin-top:4px;">
-          Weitere Fragen anzeigen →
-        </a>
       </div>
 
-      <!-- Footer: Kunden | Anbieter-Einstieg | Branding (final) -->
+      <!-- Footer: AGB | Datenschutz | Impressum, made with ♥ by mittagio.de -->
       <div class="profile-footer" style="margin-top:32px; padding:0 16px 32px; border-top:2px solid rgba(0,0,0,0.06);">
-        <!-- Kunden-Sektion: nur FAQ | Datenschutz | Impressum | AGB -->
-        <div style="margin-bottom:16px;">
-          <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:10px 16px; font-size:14px;">
-            <a href="#/faq" id="btnProfileFAQ" onclick="showLegalPage('faq'); return false;" style="color:var(--muted); text-decoration:none; font-weight:500;">FAQ</a>
-            <span style="color:rgba(0,0,0,0.2);">|</span>
-            <a href="#/datenschutz" id="btnProfileDatenschutz" onclick="showLegalPage('datenschutz'); return false;" style="color:var(--muted); text-decoration:none; font-weight:500;">Datenschutz</a>
-            <span style="color:rgba(0,0,0,0.2);">|</span>
-            <a href="#/impressum" id="btnProfileImpressum" onclick="showLegalPage('impressum'); return false;" style="color:var(--muted); text-decoration:none; font-weight:500;">Impressum</a>
-            <span style="color:rgba(0,0,0,0.2);">|</span>
-            <a href="#/agb-kurz" id="btnProfileAGB" onclick="showLegalPage('agb-kurz'); return false;" style="color:var(--muted); text-decoration:none; font-weight:500;">AGB</a>
-          </div>
-          <div style="text-align:center; font-size:11px; color:var(--muted); margin-top:8px;">Impressum: Mike Quach, Langäcker 2, 73635 Rudersberg</div>
+        <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:10px 16px; font-size:14px; margin-bottom:12px;">
+          <a href="#/agb-kurz" id="btnProfileAGB" onclick="showLegalPage('agb-kurz'); return false;" style="color:var(--muted); text-decoration:none; font-weight:500;">AGB</a>
+          <span style="color:rgba(0,0,0,0.2);">|</span>
+          <a href="#/datenschutz" id="btnProfileDatenschutz" onclick="showLegalPage('datenschutz'); return false;" style="color:var(--muted); text-decoration:none; font-weight:500;">Datenschutz</a>
+          <span style="color:rgba(0,0,0,0.2);">|</span>
+          <a href="#/impressum" id="btnProfileImpressum" onclick="showLegalPage('impressum'); return false;" style="color:var(--muted); text-decoration:none; font-weight:500;">Impressum</a>
         </div>
-        
-        <!-- Anbieter-Einstieg: grauer Bereich, nur ein CTA (Anbieter-FAQ/Impressum/AGB nur im internen Anbieterbereich) -->
-        <div id="profileFooterProviderSection" style="background:#e8e8e8; border-radius:16px; padding:20px; margin-bottom:20px;">
-          <a href="#" id="btnFooterProviderCTA" onclick="if(typeof showProviderLoginModal === 'function') showProviderLoginModal(); else if(typeof setMode === 'function') setMode('provider'); return false;" style="display:block; text-align:center; font-size:15px; font-weight:700; color:#334155; text-decoration:none;">
-            Dein Mittagessen anbieten – einfach und digital.
-          </a>
-        </div>
-        
-        <!-- Branding-Abschluss -->
-        <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px; padding-top:16px; border-top:1px solid rgba(0,0,0,0.06);">
-          <span style="font-size:12px; color:var(--muted);">made with love by mittagio.de ·</span>
-          <a href="#/version" id="btnFooterVersion" style="font-size:12px; color:var(--muted); text-decoration:none;">v1.0.x</a>
-        </div>
+        <div style="text-align:center; font-size:12px; color:var(--muted);">made with <span style="color:#e74c3c;">♥</span> by mittagio.de</div>
       </div>
     </section>
 
-    <!-- PROVIDER: Login page (für direkten Zugriff) -->
+    <!-- PROVIDER: Login-Seite (E-Mail + Passwort), danach Dashboard oder Onboarding -->
     <section class="view" id="v-provider-login">
       <div class="panel">
         <h3>Anbieter-Login</h3>
         <div class="hint">Melde dich als Gastronom an</div>
-        <input class="field" id="provEmail" type="email" placeholder="E-Mail" autocomplete="email" style="margin-top:12px;" />
+        <input class="field" id="provEmail" type="email" placeholder="E-Mail-Adresse" autocomplete="email" style="margin-top:12px;" />
         <div style="height:10px"></div>
         <input class="field" id="provPass" type="password" placeholder="Passwort" autocomplete="current-password" />
         <button class="btn" type="button" id="btnProvLogin" style="margin-top:16px; background:#6b7280; color:#fff; border:none; transition:all 0.2s ease;" onmouseover="this.style.background='#4b5563';" onmouseout="this.style.background='#6b7280';">Einloggen</button>
@@ -4356,6 +4275,27 @@
   </div>
 </div>
 
+<!-- Profil anlegen Sheet (Kunde) -->
+<div class="backdrop" id="profileCreateBd" onclick="closeProfileCreateSheet()"></div>
+<div class="sheet" id="profileCreateSheet" style="max-width:420px; border-radius:24px; overflow:hidden;">
+  <div class="handle"></div>
+  <div class="sheet-body" style="padding:24px;">
+    <div style="text-align:center; margin-bottom:20px;">
+      <div style="width:56px; height:56px; margin:0 auto 12px; background:linear-gradient(135deg, rgba(255,215,0,0.2) 0%, rgba(255,184,0,0.1) 100%); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:28px;">👤</div>
+      <h3 style="margin:0 0 6px; font-size:20px; font-weight:900; color:#2D3436;">Profil anlegen</h3>
+      <p class="hint" style="font-size:14px; color:#666; line-height:1.4;">Bestelle schneller und finde deine Abholnummern wieder.</p>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:14px;">
+      <label style="font-size:13px; font-weight:600; color:#64748b;">Name (optional)</label>
+      <input class="field" id="profileCreateName" type="text" placeholder="z.B. Max" autocomplete="name" style="width:100%; padding:12px 14px; border-radius:12px; border:1px solid var(--border); font-size:16px; background:#fbfaf7;" />
+      <label style="font-size:13px; font-weight:600; color:#64748b;">E-Mail-Adresse <span style="color:#e74c3c;">*</span></label>
+      <input class="field" id="profileCreateEmail" type="email" placeholder="deine@email.de" autocomplete="email" style="width:100%; padding:12px 14px; border-radius:12px; border:1px solid var(--border); font-size:16px; background:#fbfaf7;" />
+      <button class="btn-primary" type="button" id="btnProfileCreateSubmit" style="width:100%; min-height:48px; font-size:16px; font-weight:700; margin-top:8px;">Profil anlegen</button>
+      <button class="btn ghost" type="button" id="btnProfileCreateCancel" style="width:100%; min-height:44px;">Abbrechen</button>
+    </div>
+  </div>
+</div>
+
 <!-- Login Modal (Bottom Sheet) -->
 <div class="backdrop" id="loginBd" onclick="closeLoginSheet()"></div>
 <div class="sheet" id="loginSheet">
@@ -5591,7 +5531,8 @@
     }
   }
 
-  function setMode(next){
+  function setMode(next, opts){
+    opts = opts || {};
     mode = next;
     save(LS.mode, mode);
 
@@ -5610,22 +5551,20 @@
     if(modePill) modePill.style.display = isProv ? 'inline-flex' : 'none';
     if(statusIndicator) statusIndicator.style.display = (isProv && provider.loggedIn) ? 'flex' : 'none';
     
-    // Support-Button anzeigen/verstecken
     const supportBtn = document.getElementById('btnProviderSupportEmergency');
     if(supportBtn) supportBtn.style.display = (isProv && provider.loggedIn) ? 'flex' : 'none';
     
-    // Body-Klasse für CSS-Selektoren
     if(isProv && provider.loggedIn){
       document.body.classList.add('provider-mode');
     } else {
       document.body.classList.remove('provider-mode');
     }
     
-    // Mittagsbox Badge aktualisieren (nur für Endkunden)
     updateHeaderBasket();
 
+    if(opts.skipView) return;
+
     if(isStart){
-      // Start-Seite: Wenn nicht eingeloggt, zur Discover-Seite (kein Zwang)
       if(!customer.loggedIn){
         setMode('customer');
         showDiscover();
@@ -5636,21 +5575,8 @@
     }
 
     if(isProv){
-      // provider must be logged in OR show onboarding entry
       if(!provider.loggedIn){
-        // Check if user has onboarding draft -> show returning banner
-        const onboardingDraft = load(LS.onboardingDraft, null);
-        if(onboardingDraft && !provider.onboardingCompleted){
-          // Show onboarding entry with returning banner
-          showOnboardingEntry(true);
-        } else {
-          // Check if onboarding should be shown (new provider)
-          if(!provider.onboardingCompleted){
-            showOnboardingEntry(false);
-          } else {
-            showView(views.providerLogin);
-          }
-        }
+        showView(views.providerLogin);
       } else {
         showProviderHome();
       }
@@ -11984,20 +11910,13 @@
           </div>
         `;
         const btn = document.getElementById('btnProfileCreateAccount');
-        if(btn) btn.onclick = () => {
-          const email = prompt('E-Mail-Adresse:');
-          if(email){
-            customer.loggedIn = true;
-            customer.email = email;
-            customer.name = email.split('@')[0];
-            if(!customer.dietaryPreferences) customer.dietaryPreferences = { vegan: false, vegetarian: false, glutenFree: false, lactoseFree: false };
-            if(customer.reuseEnabled === undefined) customer.reuseEnabled = false;
-            save(LS.customer, customer);
-            updateProfileView();
-          }
-        };
+        if(btn) btn.onclick = () => { openProfileCreateSheet(); };
       }
     }
+    
+    // Mein Geschmack + Nachhaltigkeit nur bei "Mein Profil" (eingeloggt)
+    const tasteSection = document.getElementById('profileTasteSection');
+    if(tasteSection) tasteSection.style.display = isLoggedIn ? 'block' : 'none';
     
     // Quick-History (Aktive Abholnummern)
     const ticketsSection = document.getElementById('profileTicketsSection');
@@ -12113,94 +12032,6 @@
       }
     }
     
-    // Footer: Anbieter-Bereich immer sichtbar (strikte Trennung Kunden/Anbieter)
-    const profileFooterProviderSection = document.getElementById('profileFooterProviderSection');
-    if(profileFooterProviderSection){
-      profileFooterProviderSection.style.display = 'block';
-    }
-    
-    // Business-Card: Provider-Login Button
-    const businessCard = document.getElementById('profileBusinessCard');
-    const btnProviderBusinessLogin = document.getElementById('btnProviderBusinessLogin');
-    const btnProviderBusinessLoginText = document.getElementById('btnProviderBusinessLoginText');
-    if(businessCard && btnProviderBusinessLogin && btnProviderBusinessLoginText){
-      if(provider.loggedIn){
-        // Eingeloggt: "Zum Dashboard" Button
-        btnProviderBusinessLoginText.textContent = 'Zum Dashboard';
-        // Icon aktualisieren ohne innerHTML
-        const iconEl = btnProviderBusinessLogin.querySelector('i');
-        if(iconEl) {
-          iconEl.setAttribute('data-lucide', 'layout-dashboard');
-          iconEl.style.width = '22px';
-          iconEl.style.height = '22px';
-        }
-        // CRITICAL FIX: Entferne inline onclick und setze Handler explizit
-        btnProviderBusinessLogin.removeAttribute('onclick');
-        btnProviderBusinessLogin.onclick = (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          triggerHapticFeedback([10]);
-          setMode('provider');
-          showProviderHome();
-        };
-      } else {
-        // Nicht eingeloggt: "Jetzt als Anbieter einloggen" Button
-        btnProviderBusinessLoginText.textContent = 'Jetzt als Anbieter einloggen';
-        // Icon aktualisieren ohne innerHTML (um Handler nicht zu überschreiben)
-        const iconEl = btnProviderBusinessLogin.querySelector('i[data-lucide="log-in"]');
-        if(iconEl) {
-          iconEl.style.width = '22px';
-          iconEl.style.height = '22px';
-        } else {
-          // Falls Icon fehlt, nur das Icon hinzufügen
-          const existingIcon = btnProviderBusinessLogin.querySelector('i');
-          if(existingIcon) {
-            existingIcon.setAttribute('data-lucide', 'log-in');
-            existingIcon.style.width = '22px';
-            existingIcon.style.height = '22px';
-          }
-        }
-        // Handler sicher setzen und Event-Propagation verhindern
-        // CRITICAL FIX: Entferne inline onclick und setze Handler explizit
-        btnProviderBusinessLogin.removeAttribute('onclick');
-        btnProviderBusinessLogin.onclick = (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          triggerHapticFeedback([10]);
-          if(typeof showProviderLoginModal === 'function'){
-            showProviderLoginModal();
-          } else {
-            // Fallback: Direkt zum Provider-Mode wechseln
-            setMode('provider');
-          }
-        };
-      }
-    }
-    
-    // Support & Vertrauen
-    const supportSection = document.getElementById('profileSupportList');
-    if(supportSection){
-      const supportItems = [
-        { icon: 'help-circle', label: 'Hilfe & Kontakt', action: 'openHelp' },
-        { icon: 'shield', label: 'Datenschutz', action: 'showDatenschutz' },
-        { icon: 'file-text', label: 'Impressum', action: 'showImpressum' }
-      ];
-      
-      if(isLoggedIn){
-        supportItems.push({ icon: 'log-out', label: 'Abmelden', action: 'logout', danger: true });
-      }
-      
-      supportSection.innerHTML = supportItems.map(item => `
-        <button class="rowbtn" type="button" onclick="handleSupportAction('${item.action}');" style="width:100%; padding:16px 0; border:none; background:none; text-align:left; cursor:pointer; border-bottom:1px solid var(--border); transition:background 0.2s ease;" onmouseover="this.style.background='#f8f9fa';" onmouseout="this.style.background='none';">
-          <div style="display:flex; align-items:center; gap:12px;">
-            <i data-lucide="${item.icon}" style="width:20px;height:20px; color:${item.danger ? '#e74c3c' : '#666'};"></i>
-            <span style="font-weight:${item.danger ? '700' : '600'}; font-size:15px; color:${item.danger ? '#e74c3c' : '#2D3436'};">${esc(item.label)}</span>
-          </div>
-          <i data-lucide="chevron-right" style="width:18px;height:18px; color:#999; margin-left:auto;"></i>
-        </button>
-      `).join('');
-    }
-    
     // Icons aktualisieren
     if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
   }
@@ -12310,7 +12141,6 @@
   
   // Provider-Login durchführen (mit Session-Management)
   function performProviderLogin(email){
-    // Neue Session-ID generieren
     const newSessionId = cryptoId();
     const sessionData = {
       email: email,
@@ -12318,26 +12148,20 @@
       createdAt: Date.now(),
       lastActivity: Date.now()
     };
-    
-    // Session speichern (überschreibt alte Session)
     save(LS.providerSession, sessionData);
     save('mittagio_current_session_id', newSessionId);
-    
-    // Login durchführen
     provider.loggedIn = true;
     provider.email = email;
     save(LS.provider, provider);
     closeProviderLoginModal();
     showToast('Erfolgreich eingeloggt! 🎉', 2000);
-    
-    // Profil aktualisieren (Button ändert sich zu "Zum Dashboard")
-    updateProfileView();
-    
-    // Optional: Direkt zum Dashboard
-    setTimeout(() => {
-      setMode('provider');
+    if(typeof updateProfileView === 'function') updateProfileView();
+    setMode('provider', { skipView: true });
+    if(provider.onboardingCompleted){
       showProviderHome();
-    }, 500);
+    } else {
+      showOnboardingEntry(!!load(LS.onboardingDraft, null));
+    }
   }
   
   // Login-Konflikt Modal öffnen
@@ -13013,26 +12837,15 @@
     btnProvLogin.onclick=()=>{
       const email = document.getElementById('provEmail').value.trim();
       const pass = document.getElementById('provPass').value.trim();
-      if(!email || !pass){ alert('Bitte E-Mail und Passwort eingeben.'); return; }
+      if(!email || !pass){ showToast('Bitte E-Mail-Adresse und Passwort eingeben.', 2000); return; }
       
-      // Session-Check: Prüfe ob bereits eine aktive Session existiert
       const existingSession = load(LS.providerSession, null);
       const currentSessionId = load('mittagio_current_session_id', null);
-      
-      // Wenn bereits eine Session existiert und es ist nicht die aktuelle Session
       if(existingSession && existingSession.email === email && existingSession.sessionId !== currentSessionId){
-        // Login-Konflikt: Zeige Modal
-        openLoginConflictModal(email, () => {
-          // Übernahme bestätigt: Neue Session erstellen
-          performProviderLogin(email);
-          showProviderHome();
-        });
+        openLoginConflictModal(email, () => { performProviderLogin(email); });
         return;
       }
-      
-      // Normale Login-Durchführung
       performProviderLogin(email);
-      showProviderHome();
     };
   }
 
@@ -13267,6 +13080,27 @@
     document.getElementById('legalSheet').classList.remove('active');
   }
   
+  // Profil anlegen Sheet (Kunde)
+  function openProfileCreateSheet(){
+    const bd = document.getElementById('profileCreateBd');
+    const sheet = document.getElementById('profileCreateSheet');
+    const nameEl = document.getElementById('profileCreateName');
+    const emailEl = document.getElementById('profileCreateEmail');
+    if(!bd || !sheet || !emailEl) return;
+    if(nameEl) nameEl.value = '';
+    emailEl.value = '';
+    bd.classList.add('active');
+    sheet.classList.add('active');
+    setTimeout(function(){ emailEl.focus(); }, 120);
+    if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
+  }
+  function closeProfileCreateSheet(){
+    const bd = document.getElementById('profileCreateBd');
+    const sheet = document.getElementById('profileCreateSheet');
+    if(bd) bd.classList.remove('active');
+    if(sheet) sheet.classList.remove('active');
+  }
+  
   // FAQ Sheet
   function openFaqSheet(){
     const content = document.getElementById('faqSheetContent');
@@ -13427,15 +13261,40 @@
   const btnProfileDatenschutz = document.getElementById('btnProfileDatenschutz');
   if(btnProfileDatenschutz) btnProfileDatenschutz.onclick=(e)=>{ e.preventDefault(); showLegalPage('datenschutz'); };
   
-  // FAQ Expand Button (Text Link) - öffnet Modal
-  const btnProfileShowMoreFaq = document.getElementById('btnProfileShowMoreFaq');
-  if(btnProfileShowMoreFaq){
-    btnProfileShowMoreFaq.onclick = (e) => {
-      e.preventDefault();
-      openFaqSheet();
+  // Profil anlegen Sheet: Submit & Abbrechen
+  const btnProfileCreateSubmit = document.getElementById('btnProfileCreateSubmit');
+  const btnProfileCreateCancel = document.getElementById('btnProfileCreateCancel');
+  if(btnProfileCreateSubmit){
+    btnProfileCreateSubmit.onclick = function(){
+      const nameEl = document.getElementById('profileCreateName');
+      const emailEl = document.getElementById('profileCreateEmail');
+      const name = (nameEl && nameEl.value) ? nameEl.value.trim() : '';
+      const email = (emailEl && emailEl.value) ? emailEl.value.trim() : '';
+      if(!email){
+        showToast('Bitte E-Mail-Adresse eingeben.', 2000);
+        if(emailEl) emailEl.focus();
+        return;
+      }
+      var re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if(!re.test(email)){
+        showToast('Bitte gültige E-Mail-Adresse eingeben.', 2000);
+        if(emailEl) emailEl.focus();
+        return;
+      }
+      customer.loggedIn = true;
+      customer.email = email;
+      customer.name = name || email.split('@')[0];
+      if(!customer.dietaryPreferences) customer.dietaryPreferences = { vegan: false, vegetarian: false, glutenFree: false, lactoseFree: false };
+      if(customer.reuseEnabled === undefined) customer.reuseEnabled = false;
+      save(LS.customer, customer);
+      closeProfileCreateSheet();
+      updateProfileView();
+      showToast('Profil angelegt! 👋', 2000);
+      if(typeof triggerHapticFeedback === 'function') triggerHapticFeedback([10]);
     };
   }
-
+  if(btnProfileCreateCancel) btnProfileCreateCancel.onclick = closeProfileCreateSheet;
+  
   // Provider nav handlers
   document.getElementById('providerNav').addEventListener('click',(e)=>{
     const b = e.target.closest('button');
