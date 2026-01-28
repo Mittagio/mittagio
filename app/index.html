@@ -2575,7 +2575,7 @@
           <div class="hint" style="font-size:14px; line-height:1.5; margin-bottom:20px; color:#aaa; max-width:280px;">
             Dein Mittagessen anbieten – einfach und digital.
           </div>
-          <button class="btn-primary" type="button" id="btnProviderBusinessLogin" style="width:100%; min-height:56px; font-size:16px; font-weight:700; background:linear-gradient(135deg, #9ca3af 0%, #6b7280 100%); color:#fff; border:none; box-shadow:0 4px 16px rgba(107,114,128,0.3); transition:all 0.3s ease; display:flex; align-items:center; justify-content:center; gap:10px; border-radius:16px;" onmouseover="this.style.background='linear-gradient(135deg, #6b7280 0%, #4b5563 100%)'; this.style.boxShadow='0 6px 20px rgba(107,114,128,0.4)'; this.style.transform='translateY(-2px)';" onmouseout="this.style.background='linear-gradient(135deg, #9ca3af 0%, #6b7280 100%)'; this.style.boxShadow='0 4px 16px rgba(107,114,128,0.3)'; this.style.transform='translateY(0)';">
+          <button class="btn-primary" type="button" id="btnProviderBusinessLogin" onclick="if(typeof showProviderLoginModal === 'function') showProviderLoginModal(); else if(typeof setMode === 'function') setMode('provider');" style="width:100%; min-height:56px; font-size:16px; font-weight:700; background:linear-gradient(135deg, #9ca3af 0%, #6b7280 100%); color:#fff; border:none; box-shadow:0 4px 16px rgba(107,114,128,0.3); transition:all 0.3s ease; display:flex; align-items:center; justify-content:center; gap:10px; border-radius:16px;" onmouseover="this.style.background='linear-gradient(135deg, #6b7280 0%, #4b5563 100%)'; this.style.boxShadow='0 6px 20px rgba(107,114,128,0.4)'; this.style.transform='translateY(-2px)';" onmouseout="this.style.background='linear-gradient(135deg, #9ca3af 0%, #6b7280 100%)'; this.style.boxShadow='0 4px 16px rgba(107,114,128,0.3)'; this.style.transform='translateY(0)';">
             <i data-lucide="log-in" style="width:22px;height:22px;"></i>
             <span id="btnProviderBusinessLoginText">Jetzt als Anbieter einloggen</span>
           </button>
@@ -11341,6 +11341,8 @@
           iconEl.style.width = '22px';
           iconEl.style.height = '22px';
         }
+        // CRITICAL FIX: Entferne inline onclick und setze Handler explizit
+        btnProviderBusinessLogin.removeAttribute('onclick');
         btnProviderBusinessLogin.onclick = (e) => {
           e.preventDefault();
           e.stopPropagation();
@@ -11366,11 +11368,18 @@
           }
         }
         // Handler sicher setzen und Event-Propagation verhindern
+        // CRITICAL FIX: Entferne inline onclick und setze Handler explizit
+        btnProviderBusinessLogin.removeAttribute('onclick');
         btnProviderBusinessLogin.onclick = (e) => {
           e.preventDefault();
           e.stopPropagation();
           triggerHapticFeedback([10]);
-          showProviderLoginModal();
+          if(typeof showProviderLoginModal === 'function'){
+            showProviderLoginModal();
+          } else {
+            // Fallback: Direkt zum Provider-Mode wechseln
+            setMode('provider');
+          }
         };
       }
     }
