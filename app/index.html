@@ -356,23 +356,23 @@
     /* Polaroid-Discovery: Weiße Polaroid-Rahmen mit Schlagschatten */
     .card.polaroid{
       background:#FFFFFF;
-      border:1px solid rgba(0,0,0,0.08);
+      border:none; /* Clean-up: Keine störenden Rahmen */
       border-radius:12px;
-      box-shadow:0 4px 16px rgba(0,0,0,0.12), 0 2px 6px rgba(0,0,0,0.08);
+      box-shadow:0 2px 8px rgba(0,0,0,0.08); /* Reduzierter Schatten */
       padding:0;
       display:flex;
       flex-direction:column;
       align-items:stretch;
-      max-width:256px; /* 20% kleiner: 320px * 0.8 = 256px - für 2 Spalten auf S25: 160px */
+      max-width:256px; /* Für Desktop */
       margin:0 auto;
       overflow:hidden;
       /* Helles Holz-Hintergrund (warm, beige) */
       background:linear-gradient(135deg, #f5f1eb 0%, #ede8e0 100%);
     }
-    /* Responsive: 2 Spalten auf kleinen Bildschirmen */
+    /* Responsive: 2 Spalten auf S25 (390px Breite) */
     @media (max-width: 480px) {
       .card.polaroid {
-        max-width: 160px;
+        max-width: 160px; /* Exakt für 2 Spalten auf S25: (390px - 32px padding) / 2 = 179px, mit gap = 160px */
       }
     }
     .card.playful{
@@ -386,16 +386,48 @@
     .card.playful .tag{background:rgba(242,183,5,.25)}
     .img{aspect-ratio:16/9; height:auto; min-height:120px; max-height:140px; background:#eee; position:relative; overflow:hidden; border-radius:20px 20px 0 0}
     .img img{width:100%; height:100%; object-fit:cover; display:block}
-    /* Polaroid: Foto nimmt nur 50% der Kachelhöhe ein */
+    /* Polaroid: Foto nimmt exakt 50% der Kachelhöhe ein */
     .card.polaroid .img{
       width:100%;
-      height:50%;
-      min-height:140px; /* Reduziert für kompakteres Design */
-      max-height:140px; /* Exakt 50% der Kartenhöhe */
+      height:50%; /* Exakt 50% der Kartenhöhe */
+      min-height:140px;
+      max-height:140px;
       border-radius:0;
       position:relative;
       overflow:hidden;
       flex-shrink:0;
+    }
+    
+    /* Badge-Overlay oben links auf dem Bild */
+    .badge-overlay {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      display: flex;
+      gap: 6px;
+      z-index: 10;
+    }
+    
+    /* Der einzelne kreisrunde Badge-Button */
+    .badge-icon {
+      width: 28px;
+      height: 28px;
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    /* Bild innerhalb des Badges */
+    .badge-icon img {
+      width: 18px;
+      height: 18px;
+      object-fit: contain;
     }
     .card.polaroid .img img{
       width:100%;
@@ -1663,9 +1695,9 @@
       overflow: hidden;
     }
     
-    /* Favoriten Grid-Kachel Styling */
+    /* Favoriten Grid-Kachel Styling - Jiggle-Effekt wird in separater Regel definiert */
     .fav-grid-card {
-      animation: fadeIn 0.3s ease-out;
+      position: relative;
     }
     
     @keyframes fadeIn {
@@ -1677,6 +1709,43 @@
         opacity: 1;
         transform: scale(1);
       }
+    }
+    
+    /* Jiggle-Effekt: Leichtes, dauerhaftes Wackeln (Rotation -1 bis 1 Grad) */
+    @keyframes jiggle {
+      0%, 100% {
+        transform: rotate(-1deg);
+      }
+      25% {
+        transform: rotate(1deg);
+      }
+      50% {
+        transform: rotate(-1deg);
+      }
+      75% {
+        transform: rotate(1deg);
+      }
+    }
+    
+    /* Jiggle-Animation nur auf .fav-grid-card anwenden */
+    .fav-grid-card {
+      animation: fadeIn 0.3s ease-out, jiggle 3s ease-in-out infinite;
+    }
+    
+    /* Entfernen-Animation */
+    @keyframes removeCard {
+      0% {
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+      }
+      100% {
+        opacity: 0;
+        transform: scale(0.8) rotate(-5deg);
+      }
+    }
+    
+    .fav-grid-card.removing {
+      animation: removeCard 0.3s ease-out forwards;
     }
     
     /* Skeleton Loading Animation (Pulse) */
@@ -1698,17 +1767,22 @@
       background-color: #f1f5f9; /* slate-100 */
     }
     
-    /* Responsive Grid: Polaroid-Karten wie Discovery-Seite */
+    /* Favoriten-Grid: Immer 2x2 Layout (keine Responsive-Änderungen) */
+    #favDishes {
+      grid-template-columns: repeat(2, 1fr) !important;
+      gap: 12px !important;
+    }
+    
+    /* Responsive Grid für Provider-Favoriten */
     @media (min-width: 768px) {
-      #favDishes, #favProviders {
+      #favProviders {
         grid-template-columns: repeat(auto-fill, minmax(256px, 1fr)) !important;
         gap: 20px !important;
         justify-items: center !important;
       }
     }
-    /* Auf kleinen Bildschirmen: 2 Spalten mit 160px Karten */
     @media (max-width: 480px) {
-      #favDishes, #favProviders {
+      #favProviders {
         grid-template-columns: repeat(2, 1fr) !important;
         gap: 12px !important;
         justify-items: center !important;
@@ -2104,7 +2178,7 @@
           <!-- Standort (links) -->
           <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
             <i data-lucide="map-pin" style="width:16px;height:16px; color:#666;"></i>
-            <button class="discover-location-pill-clickable" type="button" id="btnDiscoverLocationToggle" style="display:flex; align-items:center; gap:4px; padding:6px 12px; border-radius:16px; background:rgba(0,0,0,.04); border:1px solid rgba(0,0,0,.08); font-size:13px; font-weight:600; color:#333; cursor:pointer; transition:all 0.2s ease;">
+            <button class="discover-location-pill-clickable" type="button" id="btnDiscoverLocationToggle" style="display:flex; align-items:center; gap:4px; padding:6px 12px; border-radius:16px; background:rgba(0,0,0,.04); border:none; font-size:13px; font-weight:600; color:#333; cursor:pointer; transition:all 0.2s ease;">
               <span id="discoverCurrentLocation" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">Jena</span>
           </button>
             <!-- Expandiertes Standort-Input mit Autofill (versteckt) -->
@@ -2131,17 +2205,9 @@
         </div>
         
         
-        <!-- Ebene 2: Quick-Filters (Zeit-Filter + In der Nähe + Datum) - große Kapseln -->
+        <!-- Ebene 2: Quick-Filters (In der Nähe + Datum) - große Kapseln -->
         <div id="discoverQuickFilters" style="display:flex; align-items:center; gap:8px; padding:8px 12px; overflow-x:auto; scrollbar-width:none; -webkit-overflow-scrolling:touch;">
-          <!-- Zeit-Filter Pills: 👣 10 min (Standard) | 🚗 15 min (Erweitert) -->
-          <button type="button" id="btnTimeFilterWalking" class="discover-time-filter-pill active" style="flex:0 0 auto; padding:10px 18px; border-radius:20px; border:1.5px solid var(--brand); background:var(--brand); font-size:14px; font-weight:700; color:#1a1a1a; cursor:pointer; transition:all 0.2s ease; display:flex; align-items:center; gap:6px;">
-            <span style="font-size:16px;">👣</span>
-            <span>10 min</span>
-          </button>
-          <button type="button" id="btnTimeFilterDriving" class="discover-time-filter-pill" style="flex:0 0 auto; padding:10px 18px; border-radius:20px; border:1.5px solid rgba(0,0,0,0.15); background:#fff; font-size:14px; font-weight:700; color:#333; cursor:pointer; transition:all 0.2s ease; display:flex; align-items:center; gap:6px;">
-            <span style="font-size:16px;">🚗</span>
-            <span>15 min</span>
-          </button>
+          <!-- Zeit-Filter Pills ENTFERNT: Diese Informationen gehören nur auf die einzelnen Essens-Karten -->
           <button type="button" id="btnDiscoverNear" class="discover-quick-filter-pill" style="flex:0 0 auto; padding:10px 18px; border-radius:20px; border:1.5px solid rgba(0,0,0,0.15); background:#fff; font-size:14px; font-weight:700; color:#333; cursor:pointer; transition:all 0.2s ease; display:flex; align-items:center; gap:6px;">
             <i data-lucide="navigation" style="width:16px;height:16px;"></i>
             <span>In der Nähe</span>
@@ -2272,19 +2338,12 @@
     <!-- CUSTOMER: Favorites -->
     <section class="view customer-view" id="v-fav">
       <div class="panel">
-        <!-- Modern Header mit Subline -->
-        <div id="favHeader" style="padding:48px 24px 24px; border-bottom:1px solid rgba(0,0,0,0.06); margin-bottom:24px;">
-          <h1 style="font-size:36px; font-weight:900; margin:0 0 8px; color:#1a1a1a; font-family:'Inter', 'Montserrat', sans-serif; line-height:1.2; letter-spacing:-0.5px;">Favoriten</h1>
-          <p style="font-size:15px; color:#64748b; margin:0; line-height:1.5; font-weight:500;">Deine Highlights für die Woche.</p>
+        <!-- Heute-Fokus Header: Schlank, statisch, Fokus auf heute -->
+        <div id="favHeader" style="padding:24px 24px 16px; border-bottom:1px solid rgba(0,0,0,0.06); margin-bottom:20px;">
+          <h1 style="font-size:28px; font-weight:900; margin:0; color:#1a1a1a; font-family:'Inter', 'Montserrat', sans-serif; line-height:1.2; letter-spacing:-0.5px;">Dein Menü für heute</h1>
         </div>
         
-        <!-- Day-Switcher (elegante horizontale Scrollbar) -->
-        <div id="favDaySwitcher" style="display:flex; gap:12px; overflow-x:auto; padding:0 24px 24px; margin-bottom:24px; scrollbar-width:none; -webkit-overflow-scrolling:touch;">
-          <!-- Wird dynamisch befüllt -->
-        </div>
-        <style>
-          #favDaySwitcher::-webkit-scrollbar { display: none; }
-        </style>
+        <!-- Day-Switcher ENTFERNT: Fokus zu 100% auf dem aktuellen Tag -->
         
         <!-- Empty State (wenn beide Listen leer) -->
         <div id="favEmptyState" style="display:none; flex-direction:column; align-items:center; text-align:center; padding:60px 20px; gap:24px;">
@@ -2301,18 +2360,34 @@
         </div>
         
         <div id="favContent" style="padding:0 24px 24px;">
-          <div class="section-title" id="sectionProviders" style="display:none; margin-bottom:16px;">Anbieter-Favoriten</div>
-          <div class="grid" id="favProviders" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(160px, 1fr)); gap:16px; justify-items:center;"></div>
-          <div class="hint" id="emptyFavProviders" style="display:none; text-align:center; padding:32px;">
-            <div style="width:80px; height:80px; margin:0 auto 16px; background:rgba(0,0,0,0.03); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:40px; opacity:0.6;">🍽️</div>
-            <p style="font-size:14px; color:#666; margin:0;">Noch keine Anbieter-Favoriten</p>
-          </div>
-          <div class="section-title" id="sectionDishes" style="display:none; margin-top:32px; margin-bottom:16px;">Gericht-Favoriten</div>
-          <!-- Grid-Layout: 2-spaltig, Polaroid-Karten (wie Discovery-Seite) -->
-          <div id="favDishes" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(160px, 1fr)); gap:16px; padding:0; justify-items:center;"></div>
+          <!-- Gericht-Favoriten: 2x2 Grid (Ausschlussspiel) -->
+          <div class="section-title" id="sectionDishes" style="display:none; margin-bottom:16px; font-size:18px; font-weight:700; color:#1a1a1a;">Gericht-Favoriten</div>
+          <!-- Grid-Layout: Exakt 2x2 Grid für Favoriten -->
+          <div id="favDishes" style="display:grid; grid-template-columns:repeat(2, 1fr); gap:12px; padding:0;"></div>
           <div class="hint" id="emptyFavDishes" style="display:none; text-align:center; padding:32px;">
             <div style="width:80px; height:80px; margin:0 auto 16px; background:rgba(0,0,0,0.03); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:40px; opacity:0.6;">🍴</div>
             <p style="font-size:14px; color:#666; margin:0;">Noch keine Gericht-Favoriten</p>
+          </div>
+          
+          <!-- Trennlinie: Optische Trennung zwischen Grid und Anbieter-Sektion -->
+          <div id="favProviderSeparator" style="display:none; margin:32px 0 20px; border-top:1px solid rgba(0,0,0,0.08);"></div>
+          
+          <!-- Anbieter-Favoriten: "Deine Lieblings-Anbieter heute" -->
+          <div id="sectionProvidersWrapper" style="display:none;">
+            <div class="section-title" id="sectionProviders" style="margin-bottom:16px; font-size:18px; font-weight:700; color:#1a1a1a;">Deine Lieblings-Anbieter heute</div>
+            <div id="favProviders" style="display:flex; flex-direction:column; gap:12px;"></div>
+            <div class="hint" id="emptyFavProviders" style="display:none; text-align:center; padding:32px;">
+              <div style="width:80px; height:80px; margin:0 auto 16px; background:rgba(0,0,0,0.03); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:40px; opacity:0.6;">🍽️</div>
+              <p style="font-size:14px; color:#666; margin:0;">Noch keine Anbieter-Favoriten</p>
+            </div>
+          </div>
+          
+          <!-- Vorschau auf die nächsten Tage (erscheint beim Scrollen) -->
+          <div id="favUpcomingPreview" style="display:none; margin-top:40px; padding-top:32px; border-top:1px solid rgba(0,0,0,0.08); opacity:0; transition:opacity 0.4s ease-in-out;">
+            <div class="section-title" style="margin-bottom:16px; font-size:18px; font-weight:700; color:#1a1a1a;">Vorschau auf die nächsten Tage</div>
+            <div id="favUpcomingDays" style="display:flex; flex-direction:column; gap:16px;">
+              <!-- Wird dynamisch befüllt -->
+            </div>
           </div>
         </div>
       </div>
@@ -5575,6 +5650,12 @@
     const toggleTopbar = document.getElementById('discoverViewToggleTopbar');
     if(toggleTopbar) toggleTopbar.style.display = 'none';
     renderFavorites();
+    // Vorschau-Sektion initial verstecken
+    const upcomingPreview = document.getElementById('favUpcomingPreview');
+    if(upcomingPreview){
+      upcomingPreview.style.display = 'none';
+      upcomingPreview.style.opacity = '0';
+    }
     // Browser-Verlauf aktualisieren
     history.pushState({view: 'fav', mode: mode}, '', location.pathname);
   }
@@ -6209,42 +6290,8 @@
     }
     switchDiscoverView(discoverViewMode);
     
-    // Zeit-Filter Pills: 👣 10 min (Standard) | 🚗 15 min (Erweitert)
-    const btnTimeFilterWalking = document.getElementById('btnTimeFilterWalking');
-    const btnTimeFilterDriving = document.getElementById('btnTimeFilterDriving');
-    if(btnTimeFilterWalking && btnTimeFilterDriving){
-      // Initialer Zustand setzen
-      const isWalking = activeTimeFilter === 'walking';
-      btnTimeFilterWalking.className = 'discover-time-filter-pill' + (isWalking ? ' active' : '');
-      btnTimeFilterWalking.style.background = isWalking ? 'var(--brand)' : '#fff';
-      btnTimeFilterWalking.style.borderColor = isWalking ? 'var(--brand)' : 'rgba(0,0,0,0.15)';
-      btnTimeFilterWalking.style.color = isWalking ? '#1a1a1a' : '#333';
-      btnTimeFilterWalking.style.fontWeight = isWalking ? '900' : '700';
-      
-      btnTimeFilterDriving.className = 'discover-time-filter-pill' + (!isWalking ? ' active' : '');
-      btnTimeFilterDriving.style.background = !isWalking ? 'var(--brand)' : '#fff';
-      btnTimeFilterDriving.style.borderColor = !isWalking ? 'var(--brand)' : 'rgba(0,0,0,0.15)';
-      btnTimeFilterDriving.style.color = !isWalking ? '#1a1a1a' : '#333';
-      btnTimeFilterDriving.style.fontWeight = !isWalking ? '900' : '700';
-      
-      // Handler: 👣 10 min (Standard-Aktiv)
-      btnTimeFilterWalking.onclick = () => {
-        triggerHapticFeedback([10]);
-        activeTimeFilter = 'walking';
-        save('mittagio_timeFilter', 'walking');
-        renderDiscover();
-        if(discoverViewMode === 'swipe') renderSwipeCards();
-      };
-      
-      // Handler: 🚗 15 min (Erweitert)
-      btnTimeFilterDriving.onclick = () => {
-        triggerHapticFeedback([10]);
-        activeTimeFilter = 'driving';
-        save('mittagio_timeFilter', 'driving');
-        renderDiscover();
-        if(discoverViewMode === 'swipe') renderSwipeCards();
-      };
-    }
+    // Zeit-Filter Pills ENTFERNT: Diese Informationen gehören nur auf die einzelnen Essens-Karten, nicht in die globale Navigation
+    // Die Filter-Logik bleibt aktiv, aber ohne UI-Elemente im Header
     
     // Quick-Filters: "In der Nähe" Button
     const btnDiscoverNear = document.getElementById('btnDiscoverNear');
@@ -7795,8 +7842,8 @@
     const imgSrc = data.imageUrl || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70';
     
     if(isPolaroid){
-      // Kompakte Polaroid-Karte: Foto nimmt 50% Höhe ein
-      img.style.cssText = 'position:relative; width:100%; height:50%; min-height:180px; overflow:hidden; background:#f0f0f0;';
+      // Kompakte Polaroid-Karte: Foto nimmt exakt 50% Höhe ein
+      img.style.cssText = 'position:relative; width:100%; height:50%; min-height:140px; max-height:140px; overflow:hidden; background:#f0f0f0;';
       img.innerHTML = `<img alt="${esc(data.dish||'')}" src="${esc(imgSrc)}" style="width:100%; height:100%; object-fit:cover;" />`;
       
       const offerProvider = offers.find(p => p.providerId === data.providerId);
@@ -7804,26 +7851,40 @@
       const hasDineIn = offerProvider && (offerProvider.dineInPossible !== false || data.dineInPossible);
       const hasReuse = offerProvider && (offerProvider.reuse && offerProvider.reuse.enabled);
       
-      // Badge-Container oben links (3 kleine Kreise mit Glass-Morphism)
+      // Badge-Container oben links (3 kleine Kreise mit Glass-Morphism) - Overlay auf Bild
       const badgesContainer = document.createElement('div');
-      badgesContainer.style.cssText = 'position:absolute; top:8px; left:8px; display:flex; gap:6px; z-index:10;';
+      badgesContainer.className = 'badge-overlay';
       
-      // Badge 1: Vor Ort 🍴 - Optimierter Stil mit backdrop-filter
+      // Badge 1: Abholnummer (Ticket) - Asset verwenden
       const badge1 = document.createElement('div');
-      badge1.style.cssText = `width:24px; height:24px; border-radius:50%; background:${hasDineIn ? 'rgba(255,255,255,0.7)' : 'rgba(255,255,255,0.4)'}; backdrop-filter:blur(5px); -webkit-backdrop-filter:blur(5px); border:1px solid rgba(255,255,255,0.5); display:flex; align-items:center; justify-content:center; font-size:12px; opacity:${hasDineIn ? '1' : '0.4'}; filter:${hasDineIn ? 'none' : 'grayscale(100%)'};`;
-      badge1.textContent = '🍴';
-      badge1.title = 'Vor Ort essen möglich';
+      badge1.className = 'badge-icon';
+      badge1.style.opacity = orderingEnabled ? '1' : '0.4';
+      badge1.style.filter = orderingEnabled ? 'none' : 'grayscale(100%)';
+      badge1.title = 'Abholnummer verfügbar';
+      // Versuche zuerst die gewünschten Assets, fallback auf vorhandene
+      const ticketAsset = 'assets/image_cce9f3.png';
+      badge1.innerHTML = `<img src="${ticketAsset}" alt="Abholnummer" onerror="this.src='assets/icon-abholnummer.png';" />`;
       badgesContainer.appendChild(badge1);
       
-      // Badge 2: Abholnummer 🧾 - Optimierter Stil mit backdrop-filter
+      // Badge 2: Vor Ort (Besteck) - Asset verwenden
       const badge2 = document.createElement('div');
-      badge2.style.cssText = `width:24px; height:24px; border-radius:50%; background:${orderingEnabled ? 'rgba(255,255,255,0.7)' : 'rgba(255,255,255,0.4)'}; backdrop-filter:blur(5px); -webkit-backdrop-filter:blur(5px); border:1px solid rgba(255,255,255,0.5); display:flex; align-items:center; justify-content:center; font-size:12px; opacity:${orderingEnabled ? '1' : '0.4'}; filter:${orderingEnabled ? 'none' : 'grayscale(100%)'};`;
-      badge2.textContent = '🧾';
-      badge2.title = 'Abholnummer verfügbar';
+      badge2.className = 'badge-icon';
+      badge2.style.opacity = hasDineIn ? '1' : '0.4';
+      badge2.style.filter = hasDineIn ? 'none' : 'grayscale(100%)';
+      badge2.title = 'Vor Ort essen möglich';
+      const besteckAsset = 'assets/image_ccecb9.jpg';
+      badge2.innerHTML = `<img src="${besteckAsset}" alt="Vor Ort" onerror="this.src='assets/icon-essen-vor-ort.png';" />`;
       badgesContainer.appendChild(badge2);
       
-      // Badge 3: Mehrweg 🔄 - ENTFERNT (nur noch im Profil)
-      // Mehrweg-Icon wurde von Kacheln entfernt, da es nur im Profil ("Meins") angezeigt werden soll
+      // Badge 3: Mehrweg (Kreislauf) - Asset verwenden
+      const badge3 = document.createElement('div');
+      badge3.className = 'badge-icon';
+      badge3.style.opacity = hasReuse ? '1' : '0.4';
+      badge3.style.filter = hasReuse ? 'none' : 'grayscale(100%)';
+      badge3.title = 'Mehrweg möglich';
+      const mehrwegAsset = 'assets/image_cce9b5.jpg';
+      badge3.innerHTML = `<img src="${mehrwegAsset}" alt="Mehrweg" onerror="this.src='assets/icon-mehrweg.png';" />`;
+      badgesContainer.appendChild(badge3);
       
       img.appendChild(badgesContainer);
       
@@ -7849,8 +7910,8 @@
     const body=document.createElement('div');
     body.className='body';
     if(isPolaroid){
-      // Polaroid: Weißer Hintergrund für Body (Holz nur im View-Hintergrund)
-      body.style.cssText = 'background:#fff; padding:0; flex:1; display:flex; flex-direction:column;';
+      // Polaroid: Weißer Hintergrund für Body (Holz nur im View-Hintergrund) - Clean-up: Keine grauen Linien/Schattenboxen
+      body.style.cssText = 'background:#fff; padding:0; flex:1; display:flex; flex-direction:column; border:none; box-shadow:none;';
     }
     
     // Polaroid: Gerichtname in Marker-Schrift mit Teilen-Icon
@@ -7906,10 +7967,10 @@
       };
       body.appendChild(providerEl);
       
-      // Mobilitäts-Zeile: Spielerische Icons direkt unter Restaurant-Namen
+      // Mobilitäts-Zeile: Minimalistisch, einzeilig, kleine Schrift (10-12px)
       if(data.distanceKm != null){
         const mobilityRow = document.createElement('div');
-        mobilityRow.style.cssText = 'margin-top:8px; padding:0 16px; display:flex; align-items:center; justify-content:center; gap:12px; font-size:12px; color:#666; font-weight:600;';
+        mobilityRow.style.cssText = 'margin-top:6px; padding:0 16px; display:flex; align-items:center; justify-content:center; gap:10px; font-size:11px; color:#666; font-weight:500; line-height:1.4;';
         
         // Gehzeit: 5 km/h = 12 Minuten pro km
         const walkingMinutes = Math.round(Number(data.distanceKm) * 12);
@@ -7919,20 +7980,25 @@
         // Autofahrt: 50 km/h = 1.2 Minuten pro km
         const carMinutes = Math.round(Number(data.distanceKm) * 1.2);
         const carTimeText = carMinutes < 1 ? '< 1' : carMinutes;
-        const distanceMeters = walkingMeters;
         
+        // Entfernung: Meter oder Kilometer formatieren
+        const distanceText = walkingMeters < 1000 ? `${walkingMeters}m` : `${Number(data.distanceKm).toFixed(1)}km`;
+        
+        // Minimalistisches Design: Icons + Zeiten/Entfernung, einzeilig
         mobilityRow.innerHTML = `
-          <span style="display:flex; align-items:center; gap:4px;">
-            <span style="font-size:16px;">🚶</span>
+          <span style="display:inline-flex; align-items:center; gap:3px; white-space:nowrap;">
+            <span style="font-size:14px; line-height:1;">🚶</span>
             <span>${walkingTimeText} min</span>
           </span>
-          <span style="display:flex; align-items:center; gap:4px;">
-            <span style="font-size:16px;">🚗</span>
+          <span style="color:#999; font-size:10px;">|</span>
+          <span style="display:inline-flex; align-items:center; gap:3px; white-space:nowrap;">
+            <span style="font-size:14px; line-height:1;">🚗</span>
             <span>${carTimeText} min</span>
           </span>
-          <span style="display:flex; align-items:center; gap:4px;">
-            <span style="font-size:16px;">📍</span>
-            <span>${distanceMeters}m</span>
+          <span style="color:#999; font-size:10px;">|</span>
+          <span style="display:inline-flex; align-items:center; gap:3px; white-space:nowrap;">
+            <span style="font-size:14px; line-height:1;">📍</span>
+            <span>${distanceText}</span>
           </span>
         `;
         body.appendChild(mobilityRow);
@@ -8335,7 +8401,8 @@
     }
   }
 
-  let activeFavDay = isoDate(new Date()); // Aktiver Tag in Favoriten
+  // Heute-Fokus: Immer nur heute anzeigen (kein Day-Switcher mehr)
+  let activeFavDay = isoDate(new Date()); // Immer heute
   
   function renderFavorites(){
     const provGrid=document.getElementById('favProviders');
@@ -8346,42 +8413,13 @@
     const favContent = document.getElementById('favContent');
     if(!provGrid || !dishGrid || !provEmpty || !dishEmpty) return;
     
-    // Day-Switcher rendern (elegante Pillen-Navigation)
+    // Day-Switcher ENTFERNT: Fokus zu 100% auf dem aktuellen Tag
+    // activeFavDay wird immer auf heute gesetzt
+    activeFavDay = isoDate(new Date());
+    
+    // Verstecke Day-Switcher falls noch vorhanden
     const daySwitcher = document.getElementById('favDaySwitcher');
-    if(daySwitcher){
-      daySwitcher.innerHTML = '';
-      const today = new Date();
-      for(let i = 0; i < 7; i++){
-        const d = new Date(today);
-        d.setDate(d.getDate() + i);
-        const key = isoDate(d);
-        const btn = document.createElement('button');
-        const isActive = activeFavDay === key;
-        btn.className = 'fav-day-pill' + (isActive ? ' active' : '');
-        btn.style.flex = '0 0 auto';
-        btn.style.padding = '10px 20px';
-        btn.style.borderRadius = '16px';
-        btn.style.border = isActive ? 'none' : '1.5px solid rgba(0,0,0,0.1)';
-        btn.style.fontSize = '13px';
-        btn.style.fontWeight = isActive ? '900' : '600';
-        btn.style.background = isActive ? 'var(--brand)' : '#FFFFFF';
-        btn.style.color = isActive ? '#1a1a1a' : '#64748b';
-        btn.style.cursor = 'pointer';
-        btn.style.transition = 'all 0.2s ease';
-        btn.style.whiteSpace = 'nowrap';
-        btn.style.boxShadow = isActive ? '0 2px 6px rgba(255,204,0,0.3)' : 'none';
-        if(i === 0){
-          btn.textContent = 'Heute';
-        } else {
-          btn.textContent = fmtDay(d).split(',')[0]; // Nur Wochentag
-        }
-        btn.onclick = () => {
-          activeFavDay = key;
-          renderFavorites();
-        };
-        daySwitcher.appendChild(btn);
-      }
-    }
+    if(daySwitcher) daySwitcher.style.display = 'none';
 
     const candidates = offers
       .filter(o => o.active !== false && providerFavs.has(o.providerId) && o.day === activeFavDay)
@@ -8412,23 +8450,66 @@
       favContent.style.display = hasAnyFavorites ? 'block' : 'none';
     }
     
-    // Provider Section - Optional Chaining für Fehlerbehebung
+    // Provider Section - "Deine Lieblings-Anbieter heute"
+    const sectionProvidersWrapper = document.getElementById('sectionProvidersWrapper');
+    const favProviderSeparator = document.getElementById('favProviderSeparator');
     provGrid.innerHTML='';
+    
+    // Zeige Sektion nur wenn es Anbieter-Favoriten gibt
+    if(sectionProvidersWrapper){
+      sectionProvidersWrapper.style.display = providerFavs.size > 0 ? 'block' : 'none';
+    }
+    if(favProviderSeparator){
+      favProviderSeparator.style.display = (providerFavs.size > 0 && dishList.length > 0) ? 'block' : 'none';
+    }
+    
     const sectionProviders = document.getElementById('sectionProviders');
     if(sectionProviders) sectionProviders.style.display = providerList.length > 0 ? 'block' : 'none';
     provEmpty.style.display = providerList.length ? 'none' : 'block';
-    providerList.forEach(o=>{
-      if(o?.id){
+    
+    // Alle favorisierten Anbieter durchgehen (nicht nur die mit Angeboten für heute)
+    const allFavoritedProviders = Array.from(providerFavs);
+    const providerMap = new Map();
+    
+    // Erstelle Map aller Anbieter mit ihren Angeboten für heute
+    allFavoritedProviders.forEach(providerId => {
+      const providerOffers = offers.filter(o => 
+        o.providerId === providerId && 
+        o.active !== false && 
+        o.day === activeFavDay
+      );
+      // Finde erstes Angebot des Providers für Provider-Daten (Name, etc.)
+      const firstOffer = offers.find(p => p.providerId === providerId);
+      if(firstOffer){
+        // Erstelle Provider-Objekt aus Angebot-Daten
+        const providerData = {
+          providerId: providerId,
+          providerName: normalizeOffer(firstOffer).providerName || 'Anbieter',
+          orderingEnabled: firstOffer.hasPickupCode !== false,
+          dineInPossible: firstOffer.dineInPossible !== false,
+          reuse: firstOffer.reuse || {enabled: false}
+        };
+        providerMap.set(providerId, {
+          provider: providerData,
+          offers: providerOffers,
+          hasOfferToday: providerOffers.length > 0
+        });
+      }
+    });
+    
+    // Rendere alle favorisierten Anbieter
+    Array.from(providerMap.values()).forEach(({provider, offers: providerOffers, hasOfferToday}) => {
+      if(provider){
         try {
-          // CRITICAL FIX: Verwende Polaroid-Design wie auf Discovery-Seite
-          provGrid.appendChild(offerCard(o, {context: 'discover', interactive: true}));
+          const providerCard = createFavoriteProviderCard(provider, providerOffers, hasOfferToday);
+          provGrid.appendChild(providerCard);
         } catch(err){
-          console.error('Error rendering provider favorite:', err, o);
+          console.error('Error rendering provider favorite:', err, provider);
         }
       }
     });
 
-    // Dish Section - Optional Chaining für Fehlerbehebung
+    // Dish Section - 2x2 Grid mit Jiggle-Effekt und X-Button
     dishGrid.innerHTML='';
     const sectionDishes = document.getElementById('sectionDishes');
     if(sectionDishes) sectionDishes.style.display = dishList.length > 0 ? 'block' : 'none';
@@ -8436,8 +8517,9 @@
     dishList.forEach(o=>{
       if(o?.id){
         try {
-          // CRITICAL FIX: Verwende Polaroid-Design wie auf Discovery-Seite
-          dishGrid.appendChild(offerCard(o, {context: 'discover', interactive: true}));
+          // Spezielle Favoriten-Karte mit Jiggle-Effekt, X-Button und 3 Icons unten
+          const favCard = createFavoriteGridCard(o);
+          dishGrid.appendChild(favCard);
         } catch(err){
           console.error('Error rendering dish favorite:', err, o);
         }
@@ -8448,6 +8530,400 @@
     if(typeof lucide !== 'undefined'){
       setTimeout(()=> lucide.createIcons(), 50);
     }
+    
+    // Vorschau auf kommende Tage rendern
+    renderFavoritesUpcomingPreview();
+    
+    // Scroll-Listener für Vorschau-Sektion einrichten
+    setupFavoritesScrollListener();
+  }
+  
+  // Vorschau auf kommende Tage (Morgen, Übermorgen)
+  function renderFavoritesUpcomingPreview(){
+    const upcomingPreview = document.getElementById('favUpcomingPreview');
+    const upcomingDays = document.getElementById('favUpcomingDays');
+    if(!upcomingPreview || !upcomingDays) return;
+    
+    upcomingDays.innerHTML = '';
+    
+    const today = new Date();
+    const upcomingDaysList = [];
+    
+    // Morgen und Übermorgen
+    for(let i = 1; i <= 2; i++){
+      const d = new Date(today);
+      d.setDate(d.getDate() + i);
+      const dayKey = isoDate(d);
+      const dayLabel = i === 1 ? 'Morgen' : fmtDay(d).split(',')[0];
+      
+      // Favoriten für diesen Tag finden
+      const dayDishes = offers.filter(o => 
+        o.active !== false && 
+        dishFavs.has(o.id) && 
+        o.day === dayKey
+      );
+      
+      if(dayDishes.length > 0){
+        upcomingDaysList.push({
+          dayKey: dayKey,
+          dayLabel: dayLabel,
+          dishes: dayDishes
+        });
+      }
+    }
+    
+    // Zeige Vorschau nur wenn es Gerichte gibt
+    if(upcomingDaysList.length > 0){
+      upcomingDaysList.forEach(({dayKey, dayLabel, dishes}) => {
+        const daySection = document.createElement('div');
+        daySection.style.cssText = 'margin-bottom:20px;';
+        
+        const dayTitle = document.createElement('div');
+        dayTitle.style.cssText = 'font-size:14px; font-weight:700; color:#666; margin-bottom:10px; text-transform:uppercase; letter-spacing:0.5px;';
+        dayTitle.textContent = dayLabel;
+        daySection.appendChild(dayTitle);
+        
+        // Horizontale Scroll-Liste für kompakte Darstellung
+        const scrollContainer = document.createElement('div');
+        scrollContainer.style.cssText = 'display:flex; gap:10px; overflow-x:auto; padding-bottom:8px; scrollbar-width:thin; -webkit-overflow-scrolling:touch;';
+        scrollContainer.style.scrollbarWidth = 'thin';
+        
+        dishes.forEach(o => {
+          const data = normalizeOffer(o);
+          const miniCard = createUpcomingDayCard(data, dayKey);
+          scrollContainer.appendChild(miniCard);
+        });
+        
+        daySection.appendChild(scrollContainer);
+        upcomingDays.appendChild(daySection);
+      });
+    }
+  }
+  
+  // Kompakte Karte für kommende Tage
+  function createUpcomingDayCard(data, dayKey){
+    const card = document.createElement('div');
+    card.style.cssText = 'flex:0 0 auto; width:140px; background:#fff; border-radius:10px; border:1px solid rgba(0,0,0,0.08); box-shadow:0 1px 3px rgba(0,0,0,0.06); overflow:hidden; cursor:pointer; transition:transform 0.2s ease, box-shadow 0.2s ease;';
+    
+    card.onmouseover = () => {
+      card.style.transform = 'translateY(-2px)';
+      card.style.boxShadow = '0 2px 6px rgba(0,0,0,0.1)';
+    };
+    card.onmouseout = () => {
+      card.style.transform = 'translateY(0)';
+      card.style.boxShadow = '0 1px 3px rgba(0,0,0,0.06)';
+    };
+    
+    card.onclick = () => {
+      openOffer(data.id);
+    };
+    
+    // Mini-Bild (kompakt)
+    const img = document.createElement('div');
+    img.style.cssText = 'width:100%; height:80px; background:#f0f0f0; overflow:hidden; position:relative;';
+    const imgSrc = data.imageUrl || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70';
+    img.innerHTML = `<img src="${esc(imgSrc)}" alt="${esc(data.dish||'')}" style="width:100%; height:100%; object-fit:cover;" />`;
+    card.appendChild(img);
+    
+    // Body
+    const body = document.createElement('div');
+    body.style.cssText = 'padding:8px;';
+    
+    // Gerichtname (kompakt)
+    const title = document.createElement('div');
+    title.style.cssText = "font-family:'Kalam', 'Comic Sans MS', 'Marker Felt', cursive; font-weight:700; font-size:12px; color:#000; margin-bottom:4px; line-height:1.2; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;";
+    title.textContent = data.dish || 'Gericht';
+    body.appendChild(title);
+    
+    // Restaurant-Name (sehr kompakt)
+    const provider = document.createElement('div');
+    provider.style.cssText = 'font-size:10px; color:#999; margin-bottom:6px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;';
+    provider.textContent = data.providerName || 'Anbieter';
+    body.appendChild(provider);
+    
+    // 3 Säulen-Icons (dezent, klein)
+    const offerProvider = offers.find(p => p.providerId === data.providerId);
+    const orderingEnabled = offerProvider && (offerProvider.orderingEnabled !== false && (data.hasPickupCode || offerProvider.hasPickupCode));
+    const hasDineIn = offerProvider && (offerProvider.dineInPossible !== false || data.dineInPossible);
+    const hasReuse = offerProvider && (offerProvider.reuse && offerProvider.reuse.enabled);
+    
+    const iconsRow = document.createElement('div');
+    iconsRow.style.cssText = 'display:flex; align-items:center; justify-content:center; gap:6px;';
+    iconsRow.innerHTML = `
+      <span style="font-size:14px; opacity:${hasDineIn ? '1' : '0.3'};" title="Vor Ort">🍴</span>
+      <span style="font-size:14px; opacity:${orderingEnabled ? '1' : '0.3'};" title="Abholnummer">🧾</span>
+      <span style="font-size:14px; opacity:${hasReuse ? '1' : '0.3'};" title="Mehrweg">🔄</span>
+    `;
+    body.appendChild(iconsRow);
+    
+    card.appendChild(body);
+    return card;
+  }
+  
+  // Scroll-Listener für Vorschau-Sektion
+  function setupFavoritesScrollListener(){
+    const favContent = document.getElementById('favContent');
+    const upcomingPreview = document.getElementById('favUpcomingPreview');
+    if(!favContent || !upcomingPreview) return;
+    
+    let lastScrollTop = 0;
+    let previewShown = false;
+    
+    const checkScroll = () => {
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      const favContentBottom = favContent.offsetTop + favContent.offsetHeight;
+      const viewportBottom = scrollTop + window.innerHeight;
+      
+      // Zeige Vorschau wenn Nutzer unter Anbieter-Favoriten scrollt oder hochzieht
+      if(!previewShown && (scrollTop > favContentBottom - window.innerHeight * 0.8 || scrollTop < lastScrollTop)){
+        previewShown = true;
+        upcomingPreview.style.display = 'block';
+        // Fade-in Animation
+        setTimeout(() => {
+          upcomingPreview.style.opacity = '1';
+        }, 50);
+      }
+      
+      lastScrollTop = scrollTop;
+    };
+    
+    // Initial check
+    checkScroll();
+    
+    // Scroll-Listener
+    window.addEventListener('scroll', checkScroll, {passive: true});
+    
+    // Touch-Listener für "hochziehen"
+    let touchStartY = 0;
+    favContent.addEventListener('touchstart', (e) => {
+      touchStartY = e.touches[0].clientY;
+    }, {passive: true});
+    
+    favContent.addEventListener('touchmove', (e) => {
+      const touchY = e.touches[0].clientY;
+      // Wenn Nutzer nach oben zieht (pull up)
+      if(touchY > touchStartY + 50 && !previewShown){
+        previewShown = true;
+        upcomingPreview.style.display = 'block';
+        setTimeout(() => {
+          upcomingPreview.style.opacity = '1';
+        }, 50);
+      }
+    }, {passive: true});
+  }
+  
+  // Favoriten-Grid-Karte mit Jiggle-Effekt, X-Button und 3 Icons unten
+  function createFavoriteGridCard(o){
+    const data = normalizeOffer(o);
+    const card = document.createElement('div');
+    card.className = 'fav-grid-card card polaroid';
+    card.setAttribute('data-fav-id', data.id);
+    
+    // Basis-Styling für Polaroid-Karte
+    card.style.cssText = 'position:relative; background:#FFFFFF; border:none; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.08); overflow:hidden; cursor:pointer; background:linear-gradient(135deg, #f5f1eb 0%, #ede8e0 100%);';
+    
+    // X-Button oben rechts zum Entfernen
+    const removeBtn = document.createElement('button');
+    removeBtn.type = 'button';
+    removeBtn.style.cssText = 'position:absolute; top:8px; right:8px; z-index:20; width:28px; height:28px; border-radius:50%; background:rgba(255,255,255,0.95); backdrop-filter:blur(8px); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 2px 6px rgba(0,0,0,0.15); transition:transform 0.2s ease, background 0.2s ease;';
+    removeBtn.innerHTML = '<span style="font-size:18px; color:#E34D4D; font-weight:900; line-height:1;">✕</span>';
+    removeBtn.onmouseover = () => {
+      removeBtn.style.transform = 'scale(1.1)';
+      removeBtn.style.background = '#fff';
+    };
+    removeBtn.onmouseout = () => {
+      removeBtn.style.transform = 'scale(1)';
+      removeBtn.style.background = 'rgba(255,255,255,0.95)';
+    };
+    removeBtn.onclick = (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      triggerHapticFeedback([15]);
+      // Entfernen-Animation
+      card.classList.add('removing');
+      setTimeout(() => {
+        toggleDishFav(data.id);
+        renderFavorites();
+      }, 300);
+    };
+    card.appendChild(removeBtn);
+    
+    // Bild (50% Höhe)
+    const img = document.createElement('div');
+    img.className = 'img';
+    img.style.cssText = 'position:relative; width:100%; height:50%; min-height:140px; max-height:140px; overflow:hidden; background:#f0f0f0;';
+    const imgSrc = data.imageUrl || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70';
+    img.innerHTML = `<img alt="${esc(data.dish||'')}" src="${esc(imgSrc)}" style="width:100%; height:100%; object-fit:cover;" />`;
+    
+    // Preis-Sticker: Rechts unten auf Foto
+    const priceSticker = document.createElement('div');
+    priceSticker.style.cssText = 'position:absolute; bottom:8px; right:8px; width:48px; height:48px; border-radius:50%; background:#27AE60; border:3px solid #fff; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:12px; color:#fff; box-shadow:0 2px 8px rgba(0,0,0,0.2); z-index:10;';
+    priceSticker.textContent = euro(data.price);
+    img.appendChild(priceSticker);
+    
+    // Favoriten-Herz: Oben rechts auf Foto (unter X-Button)
+    const dishKey = data.id;
+    const heart = document.createElement('button');
+    heart.className = 'card-heart' + (dishFavs.has(dishKey) ? ' on' : '');
+    heart.type = 'button';
+    heart.style.cssText = 'position:absolute; top:8px; right:44px; z-index:15; width:32px; height:32px; border-radius:50%; background:rgba(255,255,255,0.9); backdrop-filter:blur(5px); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 2px 6px rgba(0,0,0,0.1);';
+    heart.innerHTML = dishFavs.has(dishKey) ? iconMarkup('heart', {fill:true}) : iconMarkup('heart');
+    heart.onclick = (e) => { e.stopPropagation(); toggleDishFav(dishKey); };
+    img.appendChild(heart);
+    
+    card.appendChild(img);
+    
+    // Body
+    const body = document.createElement('div');
+    body.className = 'body';
+    body.style.cssText = 'background:#fff; padding:0; flex:1; display:flex; flex-direction:column; border:none; box-shadow:none;';
+    
+    // Gerichtname
+    const title = document.createElement('h3');
+    title.style.cssText = "font-family:'Kalam', 'Comic Sans MS', 'Marker Felt', cursive; font-weight:700; font-size:16px; color:#000; text-align:center; margin:12px 16px 8px; line-height:1.3;";
+    title.textContent = data.dish || 'Gericht';
+    body.appendChild(title);
+    
+    // Restaurant-Name
+    const providerEl = document.createElement('p');
+    providerEl.style.cssText = 'margin:0 0 8px; padding:0 16px; text-align:center; font-size:12px; font-weight:600; color:#666;';
+    providerEl.innerHTML = `<i data-lucide="store" style="width:12px;height:12px; margin-right:4px;"></i> <span>${esc(data.providerName || 'Anbieter')}</span>`;
+    body.appendChild(providerEl);
+    
+    // 3 Säulen-Icons unten: 🍴, 🧾, 🔄
+    const offerProvider = offers.find(p => p.providerId === data.providerId);
+    const orderingEnabled = offerProvider && (offerProvider.orderingEnabled !== false && (data.hasPickupCode || offerProvider.hasPickupCode));
+    const hasDineIn = offerProvider && (offerProvider.dineInPossible !== false || data.dineInPossible);
+    const hasReuse = offerProvider && (offerProvider.reuse && offerProvider.reuse.enabled);
+    
+    const iconsRow = document.createElement('div');
+    iconsRow.style.cssText = 'display:flex; align-items:center; justify-content:center; gap:16px; padding:0 16px 12px; margin-top:auto;';
+    iconsRow.innerHTML = `
+      <span style="font-size:20px; opacity:${hasDineIn ? '1' : '0.3'};" title="Vor Ort essen möglich">🍴</span>
+      <span style="font-size:20px; opacity:${orderingEnabled ? '1' : '0.3'};" title="Abholnummer verfügbar">🧾</span>
+      <span style="font-size:20px; opacity:${hasReuse ? '1' : '0.3'};" title="Mehrweg möglich">🔄</span>
+    `;
+    body.appendChild(iconsRow);
+    
+    card.appendChild(body);
+    
+    // Klick auf Karte öffnet Detailansicht
+    card.onclick = (e) => {
+      if(e.target.closest('button')) return; // Button-Handler übernimmt
+      openOffer(data.id);
+    };
+    
+    return card;
+  }
+  
+  // Anbieter-Favoriten-Karte: Kompakte Zeile mit Name, Text und 3 Icons
+  function createFavoriteProviderCard(providerData, offersToday, hasOfferToday){
+    const card = document.createElement('div');
+    card.className = 'fav-provider-card';
+    card.style.cssText = `
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:12px 16px;
+      background:#fff;
+      border-radius:12px;
+      border:1px solid rgba(0,0,0,0.08);
+      box-shadow:0 1px 4px rgba(0,0,0,0.05);
+      transition:all 0.2s ease;
+      ${!hasOfferToday ? 'filter:grayscale(100%); opacity:0.5;' : ''}
+    `;
+    
+    // Hover-Effekt nur wenn Angebot vorhanden
+    if(hasOfferToday){
+      card.onmouseover = () => {
+        card.style.transform = 'translateY(-2px)';
+        card.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
+      };
+      card.onmouseout = () => {
+        card.style.transform = 'translateY(0)';
+        card.style.boxShadow = '0 1px 4px rgba(0,0,0,0.05)';
+      };
+    }
+    
+    // Anbieter-Logo/Icon (links)
+    const logo = document.createElement('div');
+    logo.style.cssText = 'width:48px; height:48px; border-radius:12px; background:#f0f0f0; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:24px;';
+    logo.textContent = '🍽️';
+    card.appendChild(logo);
+    
+    // Text-Bereich (Mitte)
+    const textArea = document.createElement('div');
+    textArea.style.cssText = 'flex:1; min-width:0;';
+    
+    const name = document.createElement('div');
+    name.style.cssText = 'font-size:15px; font-weight:700; color:#1a1a1a; margin-bottom:4px; line-height:1.3;';
+    name.textContent = providerData.providerName || 'Anbieter';
+    textArea.appendChild(name);
+    
+    if(hasOfferToday && offersToday.length > 0){
+      const offer = offersToday[0];
+      const data = normalizeOffer(offer);
+      const text = document.createElement('div');
+      text.style.cssText = 'font-size:13px; color:#666; line-height:1.4;';
+      text.textContent = data.dish || 'Heute verfügbar';
+      textArea.appendChild(text);
+    } else {
+      const text = document.createElement('div');
+      text.style.cssText = 'font-size:13px; color:#999; font-style:italic; line-height:1.4;';
+      text.textContent = 'Aktuell kein Angebot für heute hinterlegt.';
+      textArea.appendChild(text);
+    }
+    
+    card.appendChild(textArea);
+    
+    // 3 Säulen-Icons (rechts)
+    const orderingEnabled = providerData.orderingEnabled !== false && (offersToday.length > 0 && offersToday.some(o => normalizeOffer(o).hasPickupCode));
+    const hasDineIn = providerData.dineInPossible !== false || (offersToday.length > 0 && offersToday.some(o => normalizeOffer(o).dineInPossible));
+    const hasReuse = providerData.reuse && providerData.reuse.enabled;
+    
+    const iconsRow = document.createElement('div');
+    iconsRow.style.cssText = 'display:flex; align-items:center; gap:8px; flex-shrink:0;';
+    
+    // Vor Ort 🍴
+    const icon1 = document.createElement('span');
+    icon1.style.cssText = `font-size:20px; opacity:${hasDineIn ? '1' : '0.3'};`;
+    icon1.textContent = '🍴';
+    icon1.title = 'Vor Ort essen möglich';
+    iconsRow.appendChild(icon1);
+    
+    // Abholnummer 🧾 (gelb markiert wenn verfügbar)
+    const icon2 = document.createElement('span');
+    if(orderingEnabled){
+      icon2.style.cssText = 'font-size:20px; opacity:1; background:linear-gradient(135deg, rgba(255,215,0,0.3) 0%, rgba(255,184,0,0.2) 100%); border-radius:50%; padding:4px; display:inline-flex; align-items:center; justify-content:center;';
+    } else {
+      icon2.style.cssText = 'font-size:20px; opacity:0.3;';
+    }
+    icon2.textContent = '🧾';
+    icon2.title = 'Abholnummer verfügbar';
+    iconsRow.appendChild(icon2);
+    
+    // Mehrweg 🔄
+    const icon3 = document.createElement('span');
+    icon3.style.cssText = `font-size:20px; opacity:${hasReuse ? '1' : '0.3'};`;
+    icon3.textContent = '🔄';
+    icon3.title = 'Mehrweg möglich';
+    iconsRow.appendChild(icon3);
+    
+    card.appendChild(iconsRow);
+    
+    // Klick auf Karte: Zu Anbieter-Detail oder Discovery mit Filter
+    if(hasOfferToday && offersToday.length > 0){
+      card.style.cursor = 'pointer';
+      card.onclick = () => {
+        activeDiscoverFilter = 'provider';
+        currentProviderFilter = providerData.providerId;
+        renderDiscover();
+        showDiscover();
+        showToast(`Angebote von ${esc(providerData.providerName || 'Anbieter')}`);
+      };
+    }
+    
+    return card;
   }
 
   // Legacy: genPickupCode (wird durch generatePickupCode ersetzt)
