@@ -274,7 +274,7 @@
     }
     .code-chip.done{background:rgba(31,157,85,.12); border-color:rgba(31,157,85,.4); color:#1f9d55; text-decoration:line-through}
 
-    /* Ticket Card Animation (Pulse/Shimmer) */
+    /* Abholnummer Card Animation (Pulse/Shimmer) */
     /* Match-Screen Animationen */
     @keyframes scaleIn {
       0% { transform: scale(0); opacity: 0; }
@@ -289,7 +289,7 @@
       50% { opacity: 0.5; }
     }
     
-    @keyframes ticketPulse {
+    @keyframes abholnummerPulse {
       0%, 100% {
         transform: scale(1);
         box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
@@ -299,7 +299,7 @@
         box-shadow: 0 25px 30px -5px rgba(255,204,0,0.15), 0 15px 15px -5px rgba(255,204,0,0.08);
       }
     }
-    @keyframes ticketShimmer {
+    @keyframes abholnummerShimmer {
       0% {
         background-position: -200% 0;
       }
@@ -308,7 +308,7 @@
       }
     }
     .ticket-card-pulse {
-      animation: ticketPulse 2s ease-in-out infinite;
+      animation: abholnummerPulse 2s ease-in-out infinite;
     }
     .ticket-card-pulse::before {
       content: '';
@@ -318,7 +318,7 @@
       width: 100%;
       height: 100%;
       background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-      animation: ticketShimmer 3s ease-in-out infinite;
+      animation: abholnummerShimmer 3s ease-in-out infinite;
     }
 
     .dayrow{
@@ -363,7 +363,7 @@
       display:flex;
       flex-direction:column;
       align-items:stretch;
-      max-width:320px;
+      max-width:256px; /* 20% kleiner: 320px * 0.8 = 256px */
       margin:0 auto;
       overflow:hidden;
       /* Helles Holz-Hintergrund (warm, beige) */
@@ -600,6 +600,8 @@
     /* Views */
     .view{display:none}
     .view.active{display:block}
+    /* Abholnummer-Ansicht benötigt flex-Layout */
+    .view.active#v-pickup-code{display:flex !important}
 
     /* Kundenseiten: Einheitlicher Style von Seite 1 (Discovery) – Farben & Look */
     .customer-view{
@@ -800,7 +802,7 @@
     .status-pill.done{background:rgba(31,157,85,.12); color:#1f9d55}
     .code-full{font-size:42px; font-weight:950; text-align:center; margin:10px 0}
 
-    /* Quick-Ticket (bildschirmfüllend) */
+    /* Quick-Abholnummer (bildschirmfüllend) */
     /* Fullscreen Code Modal (extrem groß, 1-2m lesbar) */
     .fullscreen-code{
       position:fixed; top:0; left:0; right:0; bottom:0;
@@ -2100,36 +2102,19 @@
             </div>
         </div>
         
-          <!-- Search + Schöner Umschaltbutton (rechts) -->
-          <div style="display:flex; align-items:center; gap:8px; flex-shrink:0; margin-left:auto;">
-            <!-- Search mit Lupe (kompakt, Touch-Safe: 44px Minimum) -->
-            <button type="button" id="btnDiscoverSearch" aria-label="Suchen" style="width:44px; height:44px; border-radius:10px; border:none; background:rgba(0,0,0,0.05); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s ease;" onmouseover="this.style.background='rgba(0,0,0,0.1)';" onmouseout="this.style.background='rgba(0,0,0,0.05)';">
-              <i data-lucide="search" style="width:18px;height:18px; color:#666;"></i>
+          <!-- Logo (Mitte) -->
+          <div style="position:absolute; left:50%; transform:translateX(-50%); display:flex; align-items:center;">
+            <div class="brand-name" style="font-weight:900; letter-spacing:.06em; font-size:20px; color:#1a1a1a;">MITTAGIO</div>
+          </div>
+          
+          <!-- Ansicht-Button (rechts) - Einfacher Icon-Button -->
+          <div style="display:flex; align-items:center; flex-shrink:0; margin-left:auto;">
+            <button type="button" id="toggleDiscoverViewTopbar" aria-label="Ansicht wechseln" style="width:44px; height:44px; border-radius:10px; border:none; background:rgba(0,0,0,0.05); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s ease;" onmouseover="this.style.background='rgba(0,0,0,0.1)';" onmouseout="this.style.background='rgba(0,0,0,0.05)';">
+              <i data-lucide="grid-3x3" id="toggleDiscoverViewIcon" style="width:18px;height:18px; color:#666;"></i>
             </button>
-            <!-- Premium Umschaltbutton: Liste ↔ Entdecken -->
-            <div class="discover-view-toggle-topbar" id="discoverViewToggleTopbar" style="display:flex;">
-              <button type="button" class="toggle-switch-premium" id="toggleDiscoverViewTopbar" aria-label="Ansicht wechseln" style="display:flex; align-items:center; gap:0; padding:4px; border-radius:28px; border:2px solid rgba(0,0,0,0.1); background:#fff; cursor:pointer; transition:all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); position:relative; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.08); min-width:120px;">
-                <!-- Animierter Slider-Hintergrund (Gold-Gradient) -->
-                <div class="toggle-slider-bg-premium" style="position:absolute; left:4px; top:4px; width:calc(50% - 4px); height:calc(100% - 8px); background:linear-gradient(135deg, #FFD700 0%, #FFA500 100%); border-radius:24px; transition:transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease; transform:translateX(0%); z-index:1; box-shadow:0 2px 8px rgba(255,215,0,0.3);"></div>
-                <!-- Liste-Option -->
-                <div class="toggle-option-premium toggle-option-list" style="position:relative; z-index:2; display:flex; align-items:center; justify-content:center; gap:6px; padding:8px 12px; flex:1; transition:color 0.3s ease, transform 0.2s ease;">
-                  <i data-lucide="list" id="toggleDiscoverViewIconList" style="width:18px;height:18px; transition:color 0.3s ease;"></i>
-                  <span style="font-size:13px; font-weight:700; transition:color 0.3s ease; white-space:nowrap;">Liste</span>
-                </div>
-                <!-- Entdecken-Option -->
-                <div class="toggle-option-premium toggle-option-swipe" style="position:relative; z-index:2; display:flex; align-items:center; justify-content:center; gap:6px; padding:8px 12px; flex:1; transition:color 0.3s ease, transform 0.2s ease;">
-                  <i data-lucide="sparkles" id="toggleDiscoverViewIconSwipe" style="width:18px;height:18px; transition:color 0.3s ease;"></i>
-                  <span style="font-size:13px; font-weight:700; transition:color 0.3s ease; white-space:nowrap;">Entdecken</span>
-                </div>
-              </button>
-            </div>
           </div>
         </div>
         
-        <!-- Expandiertes Suchfeld (versteckt, wird bei Klick auf Lupe angezeigt) -->
-        <div id="discoverSearchExpanded" style="display:none; padding:0 12px 8px;">
-          <input type="text" id="discoverSearchInput" placeholder="Gericht oder Anbieter suchen..." style="width:100%; padding:10px 14px; border-radius:10px; border:2px solid rgba(0,0,0,0.1); font-size:14px; background:#fff; outline:none; transition:border-color 0.2s ease;" onfocus="this.style.borderColor='#FFD700';" onblur="this.style.borderColor='rgba(0,0,0,0.1)';" />
-        </div>
         
         <!-- Ebene 2: Quick-Filters (Zeit-Filter + In der Nähe + Datum) - große Kapseln -->
         <div id="discoverQuickFilters" style="display:flex; align-items:center; gap:8px; padding:8px 12px; overflow-x:auto; scrollbar-width:none; -webkit-overflow-scrolling:touch;">
@@ -2450,7 +2435,7 @@
     </section>
 
     <!-- CUSTOMER: Pickup Code (Ultimative Abholnummer-Ansicht) -->
-    <section class="view" id="v-pickup-code" style="background:#1a1a1a; min-height:100vh; padding:0; display:flex; flex-direction:column; overflow:hidden;">
+    <section class="view" id="v-pickup-code" style="background:#1a1a1a; min-height:100vh; padding:0; display:none; flex-direction:column; overflow:hidden; position:fixed; top:0; left:0; width:100%; z-index:1000;">
       <!-- Hero-Element: Extrem große Abholnummer mit kontrastreichem Hintergrund -->
       <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:40px 20px; background:linear-gradient(135deg, #0d4f1c 0%, #1a1a1a 100%); position:relative; min-height:60vh;">
         <!-- Status-Indikator: Pulsierender grüner Punkt -->
@@ -2596,7 +2581,7 @@
           </details>
           <details>
             <summary>Was ist die Abholnummer?</summary>
-            <p>Dein digitaler Beleg für das Restaurant. Bitte beachte: Wir nutzen keine "Tickets" oder "Abholcodes".</p>
+            <p>Dein digitaler Beleg für das Restaurant. Die Abholnummer dient als Zahlungs-/Abholnachweis.</p>
           </details>
           <details>
             <summary>Kann ich telefonisch anrufen?</summary>
@@ -2654,31 +2639,20 @@
         <div id="profileFooterProviderSection" style="background:#e2e8f0; border-radius:16px; padding:20px; margin-bottom:16px;">
           <div style="font-size:11px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:12px;">Anbieter</div>
           <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:12px 20px; font-size:13px;">
-            <a href="#/faq-provider" onclick="showLegalPage('faq-provider'); return false;" style="color:var(--muted); text-decoration:none; font-weight:500;">FAQ</a>
-            <a href="#/impressum-provider" onclick="showLegalPage('impressum-provider'); return false;" style="color:var(--muted); text-decoration:none; font-weight:500;">Impressum</a>
-            <a href="#/agb-provider" onclick="showLegalPage('agb-provider'); return false;" style="color:var(--muted); text-decoration:none; font-weight:500;">AGB</a>
+            <a href="#" onclick="typeof showProviderLoginModal === 'function' && showProviderLoginModal(); return false;" style="color:var(--muted); text-decoration:none; font-weight:500;">Anbieter-Login</a>
+            <a href="#/faq-provider" onclick="showLegalPage('faq-provider'); return false;" style="color:var(--muted); text-decoration:none; font-weight:500;">Anbieter-FAQ</a>
+            <a href="#/impressum-provider" onclick="showLegalPage('impressum-provider'); return false;" style="color:var(--muted); text-decoration:none; font-weight:500;">Anbieter-Impressum</a>
+            <a href="#/agb-provider" onclick="showLegalPage('agb-provider'); return false;" style="color:var(--muted); text-decoration:none; font-weight:500;">Anbieter-AGB</a>
           </div>
         </div>
         
-        <!-- Branding -->
+        <!-- Copyright -->
         <div style="text-align:center; padding-top:16px; border-top:1px solid rgba(0,0,0,0.06);">
+          <div style="font-size:12px; color:var(--muted); margin-bottom:8px;">
+            Mike Quach, Langäcker 2, 73635 Rudersberg
+          </div>
           <div style="font-size:13px; color:var(--muted); margin-bottom:6px;">
-            Mittagio.de · made with helps · Besteck-Strategie
-          </div>
-          <div style="font-size:10px; color:#94a3b8; font-weight:500;">Version 1.0.0</div>
-        </div>
-        
-        <!-- Kontakt (Kunden / Business getrennt) -->
-        <div style="margin-top:16px; padding-top:16px; border-top:1px solid rgba(0,0,0,0.06); font-size:12px; color:var(--muted); line-height:1.6; text-align:center;">
-          <div style="margin-bottom:6px;">
-            <a href="mailto:info@mittagio.de" style="color:var(--muted); text-decoration:none;">info@mittagio.de</a>
-            <span style="margin:0 6px; color:#cbd5e1;">|</span>
-            <a href="#/faq" onclick="showLegalPage('faq'); return false;" style="color:var(--muted); text-decoration:none;">Kunden-Hilfe</a>
-          </div>
-          <div>
-            <a href="mailto:support@mittagio.de" style="color:var(--muted); text-decoration:none;">support@mittagio.de</a>
-            <span style="margin:0 6px; color:#cbd5e1;">|</span>
-            <a href="#" onclick="typeof showProviderLoginModal === 'function' && showProviderLoginModal(); return false;" style="color:var(--muted); text-decoration:none;">Business-Bereich</a>
+            hageo.de | made with Love by mittagio.de | Strategie & Besteck
           </div>
         </div>
       </div>
@@ -3775,7 +3749,7 @@
           <p>Kommunikation für Business-Partner erfolgt strikt über <a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a>.</p>
           
           <p style="margin-top:24px; font-weight:700;">Abholnummer:</p>
-          <p>Die Abholnummer dient als Zahlungs-/Abholnachweis, zur Zuordnung und zum Missbrauchsschutz. Bitte beachte: Wir nutzen keine "Tickets" oder "Abholcodes".</p>
+          <p>Die Abholnummer dient als Zahlungs-/Abholnachweis, zur Zuordnung und zum Missbrauchsschutz.</p>
           
           <p style="margin-top:24px; font-weight:700;">Online-Zahlung:</p>
           <p>Online-Zahlung erfolgt über externe Zahlungsdienstleister (z.B. Stripe). Wir speichern keine vollständigen Zahlungsdaten (z.B. Kreditkartennummern).</p>
@@ -5408,7 +5382,14 @@
   }
 
   function showView(id){
-    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    // Alle Views verstecken (inklusive explizites display:none für Abholnummer-Ansicht)
+    document.querySelectorAll('.view').forEach(v=>{
+      v.classList.remove('active');
+      // Sicherstellen, dass Abholnummer-Ansicht definitiv versteckt ist, wenn nicht aktiv
+      if(v.id === 'v-pickup-code' && id !== 'v-pickup-code'){
+        v.style.display = 'none';
+      }
+    });
     const view = document.getElementById(id);
     if(!view){
       console.error('View not found:', id);
@@ -5421,6 +5402,7 @@
       return;
     }
     view.classList.add('active');
+    // CSS-Regel übernimmt jetzt das Display (flex für pickup-code, block für andere)
     window.scrollTo({top:0,behavior:'smooth'});
     
     // Fullscreen-Abholnummer-Modal beim View-Wechsel schließen (verhindert grünes Overlay auf allen Seiten)
@@ -5583,6 +5565,14 @@
   }
   function showProfile(){
     setCustomerNavActive('profile');
+    // Abholnummer-Ansicht explizit verstecken, bevor Profil-Seite angezeigt wird
+    const pickupCodeView = document.getElementById('v-pickup-code');
+    if(pickupCodeView){
+      pickupCodeView.style.display = 'none';
+      pickupCodeView.classList.remove('active');
+    }
+    // Fullscreen-Code-Modal schließen, falls offen
+    if(typeof closeFullscreenCode === 'function') closeFullscreenCode();
     showView(views.profile);
     updateProfileView();
     lucide.createIcons();
@@ -6685,11 +6675,11 @@
     const hasDineIn = offerProvider && (offerProvider.dineInPossible !== false || data.dineInPossible);
     
     // 3 Konzept-Icons: Mehrweg, Essen vor Ort, Abholnummer (einheitliche Icon-Grafik)
+    // 2 Konzept-Icons: Essen vor Ort, Abholnummer (Mehrweg nur noch im Profil)
     const iconPillars = `
       <div style="display:flex; justify-content:center; align-items:center; gap:28px; padding:16px 0 8px; border-top:1px solid rgba(0,0,0,0.1);">
         <div style="opacity:${hasDineIn ? '1' : '0.25'};" title="Essen vor Ort möglich"><img src="assets/icon-essen-vor-ort.png" alt="Essen vor Ort" class="concept-icon-xl" style="width:32px;height:32px;"></div>
         <div style="opacity:${orderingEnabled ? '1' : '0.25'};" title="Abholnummer verfügbar"><img src="assets/icon-abholnummer.png" alt="Abholnummer" class="concept-icon-xl" style="width:32px;height:32px;"></div>
-        <div style="opacity:${hasReuseSupport ? '1' : '0.25'};" title="Mehrweg möglich"><img src="assets/icon-mehrweg.png" alt="Mehrweg" class="concept-icon-xl" style="width:32px;height:32px;"></div>
         </div>
     `;
     
@@ -7223,13 +7213,17 @@
       if(isSwipe) toggleDiscoverView.classList.add('active');
       else toggleDiscoverView.classList.remove('active');
     }
-    // Moderner Toggle: Aktiven Zustand setzen
+    // Moderner Toggle: Aktiven Zustand setzen und Icon wechseln
     if(toggleDiscoverViewTopbar){
+      const iconEl = toggleDiscoverViewTopbar.querySelector('#toggleDiscoverViewIcon');
       if(isSwipe){
         toggleDiscoverViewTopbar.classList.add('active');
+        if(iconEl) iconEl.setAttribute('data-lucide', 'list');
       } else {
         toggleDiscoverViewTopbar.classList.remove('active');
+        if(iconEl) iconEl.setAttribute('data-lucide', 'grid-3x3');
       }
+      if(typeof lucide !== 'undefined' && iconEl) lucide.createIcons();
     }
     
     // FAB aktualisieren
@@ -7283,17 +7277,10 @@
     toggleDiscoverViewTopbar.onclick = () => {
       const newMode = discoverViewMode === 'list' ? 'swipe' : 'list';
       // Haptics beim View-Wechsel
-      triggerHapticFeedback([15]);
+      if(typeof triggerHapticFeedback === 'function') triggerHapticFeedback([15]);
       switchDiscoverView(newMode);
       save(LS.discoverView, newMode);
       syncToggleState();
-      
-      // Moderner Toggle: Slider-Animation und aktiven Zustand setzen
-      if(newMode === 'swipe'){
-        toggleDiscoverViewTopbar.classList.add('active');
-      } else {
-        toggleDiscoverViewTopbar.classList.remove('active');
-      }
       
       // Icons aktualisieren (beide Icons im modernen Toggle)
       const toggleIconList = document.getElementById('toggleDiscoverViewIconList');
@@ -7576,25 +7563,8 @@
     pillar2.textContent = '🧾';
     pillarsRow.appendChild(pillar2);
     
-    // Säule 3: Mehrweg 🔄
-    const pillar3 = document.createElement('div');
-    pillar3.style.cssText = `
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: ${hasReuse ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.4)'};
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: 1px solid rgba(255,255,255,0.5);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 16px;
-      opacity: ${hasReuse ? '1' : '0.4'};
-      filter: ${hasReuse ? 'none' : 'grayscale(100%)'};
-    `;
-    pillar3.textContent = '🔄';
-    pillarsRow.appendChild(pillar3);
+    // Säule 3: Mehrweg 🔄 - ENTFERNT (nur noch im Profil)
+    // Mehrweg-Icon wurde von Kacheln entfernt, da es nur im Profil ("Meins") angezeigt werden soll
     
     imgContainer.appendChild(pillarsRow);
     card.appendChild(imgContainer);
@@ -7681,8 +7651,7 @@
             <span style="font-size:10px;">${serviceLabel.icon}</span>
             <span>${serviceLabel.text}</span>
           </div>
-          <!-- Eco-Badge: Mehrweg-Konzept-Icon (unten links, wenn kein Service-Label) -->
-          ${hasReuseSupport && !hasAbholnummer ? `<div style="position:absolute; bottom:4px; left:4px; width:24px; height:24px; border-radius:50%; overflow:hidden; box-shadow:0 2px 4px rgba(0,0,0,0.2); z-index:5; display:flex; align-items:center; justify-content:center; background:#fff;"><img src="assets/icon-mehrweg.png" alt="Mehrweg" class="concept-icon" style="width:18px;height:18px;"></div>` : ''}
+          <!-- Eco-Badge: Mehrweg-Konzept-Icon - ENTFERNT (nur noch im Profil) -->
           <!-- Favorit-Button (oben rechts) -->
           <button class="btn-icon-overlay" onclick="event.stopPropagation(); toggleDishFav('${dishKey}'); const btn=this.querySelector('i'); setTimeout(()=>{const isFav=dishFavs.has('${dishKey}'); btn.style.fill=isFav?'currentColor':''; btn.style.color=isFav?'#e74c3c':'#666'; if(typeof lucide !== 'undefined') lucide.createIcons();}, 10);" title="Favorit" style="position:absolute; top:4px; right:4px; width:28px; height:28px; border-radius:50%; background:rgba(255,255,255,0.95); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 2px 6px rgba(0,0,0,0.15); transition:transform 0.2s ease; z-index:5;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
             <i data-lucide="heart" style="width:14px;height:14px;${isFav ? 'fill:currentColor; color:#e74c3c;' : 'color:#666;'}"></i>
@@ -7774,11 +7743,8 @@
       badge2.textContent = '🧾';
       badgesContainer.appendChild(badge2);
       
-      // Badge 3: Mehrweg 🔄
-      const badge3 = document.createElement('div');
-      badge3.style.cssText = `width:24px; height:24px; border-radius:50%; background:${hasReuse ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.4)'}; backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:1px solid rgba(255,255,255,0.5); display:flex; align-items:center; justify-content:center; font-size:12px; opacity:${hasReuse ? '1' : '0.4'}; filter:${hasReuse ? 'none' : 'grayscale(100%)'};`;
-      badge3.textContent = '🔄';
-      badgesContainer.appendChild(badge3);
+      // Badge 3: Mehrweg 🔄 - ENTFERNT (nur noch im Profil)
+      // Mehrweg-Icon wurde von Kacheln entfernt, da es nur im Profil ("Meins") angezeigt werden soll
       
       img.appendChild(badgesContainer);
       
@@ -7974,14 +7940,14 @@
         // Polaroid: Gelber Button direkt auf weißem Rand (ohne graue Box)
         const orderBtn = document.createElement('button');
         orderBtn.type = 'button';
-        orderBtn.style.cssText = 'width:calc(100% - 32px); margin:12px 16px; min-height:48px; background:var(--brand); color:#1a1a1a; font-weight:900; font-size:16px; border:none; border-radius:12px; box-shadow:0 4px 12px rgba(255,215,0,0.3); display:flex; align-items:center; justify-content:center; gap:8px; cursor:pointer; transition:transform 0.2s ease, box-shadow 0.2s ease;';
+        orderBtn.style.cssText = 'width:calc(100% - 32px); margin:12px 16px; min-height:48px; background:#FFCC00; color:#1a1a1a; font-weight:900; font-size:16px; border:none; border-radius:12px; box-shadow:0 4px 12px rgba(255,204,0,0.3); display:flex; align-items:center; justify-content:center; gap:8px; cursor:pointer; transition:transform 0.2s ease, box-shadow 0.2s ease;';
         orderBtn.onmouseover = () => {
           orderBtn.style.transform = 'translateY(-2px)';
-          orderBtn.style.boxShadow = '0 6px 16px rgba(255,215,0,0.4)';
+          orderBtn.style.boxShadow = '0 6px 16px rgba(255,204,0,0.4)';
         };
         orderBtn.onmouseout = () => {
           orderBtn.style.transform = 'translateY(0)';
-          orderBtn.style.boxShadow = '0 4px 12px rgba(255,215,0,0.3)';
+          orderBtn.style.boxShadow = '0 4px 12px rgba(255,204,0,0.3)';
         };
         orderBtn.innerHTML = `${iconMarkup('shopping-cart')} <span>In die Mittagsbox</span>`;
         orderBtn.disabled = !data.hasPickupCode;
@@ -16367,6 +16333,12 @@
   const btnPickupCodeBack = document.getElementById('btnPickupCodeBack');
   if(btnPickupCodeBack){
     btnPickupCodeBack.onclick = () => {
+      // Abholnummer-Ansicht explizit verstecken
+      const pickupCodeView = document.getElementById('v-pickup-code');
+      if(pickupCodeView){
+        pickupCodeView.style.display = 'none';
+        pickupCodeView.classList.remove('active');
+      }
       showOrders(); // Zurück zu Abholnummern
     };
   }
