@@ -5155,6 +5155,25 @@
     return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#039;'}[c]));
   }
 
+  /** Standardisierte Allergen-Übersetzung (ALLERGENE_OVERLAY_SPEC.md). Anbieter wählt Kürzel; nur zutreffende anzeigen. */
+  const ALLERGENE_STANDARD = {
+    'A':'Glutenhaltiges Getreide (Weizen, Roggen, Gerste etc.)',
+    'B':'Krebstiere und daraus gewonnene Erzeugnisse',
+    'C':'Eier und daraus gewonnene Erzeugnisse',
+    'D':'Fische und daraus gewonnene Erzeugnisse',
+    'E':'Erdnüsse und daraus gewonnene Erzeugnisse',
+    'F':'Sojabohnen und daraus gewonnene Erzeugnisse',
+    'G':'Milch und Milchprodukte (einschließlich Laktose)',
+    'H':'Schalenfrüchte (Mandeln, Haselnüsse, Walnüsse etc.)',
+    'L':'Sellerie und daraus gewonnene Erzeugnisse',
+    'M':'Senf und daraus gewonnene Erzeugnisse',
+    'N':'Sesamsamen und daraus gewonnene Erzeugnisse',
+    'O':'Schwefeldioxid und Sulfite',
+    'P':'Lupinen und daraus gewonnene Erzeugnisse',
+    'R':'Weichtiere und daraus gewonnene Erzeugnisse'
+  };
+  const ALLERGENE_NAME_TO_CODE = { 'Gluten':'A','Laktose':'G','Sellerie':'L','Milch':'G','Eier':'C','Fisch':'D','Erdnüsse':'E','Soja':'F','Senf':'M','Sesam':'N','Schwefeldioxid':'O','Lupinen':'P','Krebstiere':'B','Schalenfrüchte':'H','Weichtiere':'R' };
+
   const ICONS = {
     plus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>',
     book:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v15H6.5A2.5 2.5 0 0 0 4 17.5z"/></svg>',
@@ -8374,17 +8393,23 @@
 
     // Extras
     const ew = document.getElementById('sExtrasWrap');
-    if(o.extras && o.extras.length){
-      ew.style.display='block';
-      document.getElementById('sExtras').textContent = o.extras.map(e=>`${e.name} (+${euro(e.price)})`).join(' · ');
-    } else ew.style.display='none';
+    if(ew){
+      if(o.extras && o.extras.length){
+        ew.style.display='block';
+        const sx = document.getElementById('sExtras');
+        if(sx) sx.textContent = o.extras.map(e=>`${e.name} (+${euro(e.price)})`).join(' · ');
+      } else ew.style.display='none';
+    }
 
     // Reuse
     const rw = document.getElementById('sReuseWrap');
-    if(o.reuse && o.reuse.enabled){
-      rw.style.display='block';
-      document.getElementById('sReuse').textContent = `Pfand ${euro(o.reuse.deposit)}`;
-    } else rw.style.display='none';
+    if(rw){
+      if(o.reuse && o.reuse.enabled){
+        rw.style.display='block';
+        const sr = document.getElementById('sReuse');
+        if(sr) sr.textContent = `Pfand ${euro(o.reuse.deposit)}`;
+      } else rw.style.display='none';
+    }
 
     // Eco-Badge für Mehrweg-Option (zusätzlich zu Reuse-Wrap) - offerProvider bereits oben deklariert
     const ecoBadgeEl = document.getElementById('sEcoBadge');

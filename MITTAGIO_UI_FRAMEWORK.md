@@ -1,7 +1,8 @@
 # 🛑 MITTAGIO UI-Framework (STOP & RESET)
 
 **Stand:** 27.01.2026  
-**Grundregel:** Verwirf alle vorherigen Schiefertafel- oder dunklen Designs. Exakt **Polaroid-Stil auf hellem Grund** – haptisch, hell, warm.
+**Grundregel:** Verwirf Schiefertafel/dunkle Designs – exakt **Polaroid auf hellem Grund** (haptisch, hell, warm).  
+**Ausnahme:** Die **Detailseite Gericht** (Offer-Sheet) behält **Schiefertafel-Optik** und folgt der festen Struktur in `DETAILSEITE_GERICHT_SPEC.md`.
 
 ---
 
@@ -49,14 +50,18 @@
 
 Unter dem Polaroid-Rahmen liegen **drei feste Kacheln**. Diese **rücken niemals nach**.
 
-| Slot | Icon        | Text          |
-|------|-------------|---------------|
-| 1    | Ticket [A1] | **Abholnummer** |
-| 2    | Besteck 🍴  | **Vor Ort**     |
-| 3    | Kreislauf 🔄| **Mehrweg**     |
+### Swipe-Modus: Nur Symbole, kein Text
+In der **Swipe-Karten-Fußzeile** ausschließlich diese drei Symbole **ohne begleitenden Text**:
+
+| Slot | Symbol | Bedeutung |
+|------|--------|-----------|
+| 1 | 🍴 | Vor Ort (Essen vor Ort möglich) |
+| 2 | 🧾 | Abholnummer (wird bei Auswahl generiert) |
+| 3 | 🔄 | Mehrweg (Nachhaltiges Pfandsystem) |
 
 ### Logik
 - Wenn ein Feature **nicht existiert**: Slot bleibt eine **leere, dezente Platzhalter-Box** (kein Wegrücken, kein Umordnen).
+- **Liste/Detail:** weiterhin optional Icon + Text (z. B. „Abholnummer“, „Vor Ort“, „Mehrweg“) erlaubt.
 
 ---
 
@@ -85,10 +90,26 @@ Unter dem Polaroid-Rahmen liegen **drei feste Kacheln**. Diese **rücken niemals
 
 ---
 
-## 6. Dateien & Referenzen
+## 6. Swipe-Modus: Button-Leiste & Stil
+
+- **Karten:** Polaroid, **reinweiß**. Keine Schiefertafel.
+- **Drei zentrale Aktions-Buttons** am unteren Rand:
+  - **Links (Rot):** ❌ Keine Lust
+  - **Mitte (Grau/Blau):** 🔄 Nächstes Gericht
+  - **Rechts (Grün):** ❤️🍴 Will ich / Favorit
+
+---
+
+## 7. System-Beschränkungen
+
+- **Nur eine aktive Sitzung** pro Nutzer.
+- „Vor-Ort-Logik“ **nicht** in Nutzerkommunikation verwenden.
+
+## 8. Dateien & Referenzen
 
 - **UI-Texte:** `CURSOR_UI_TEXTE.md`
 - **Cursor-Regeln:** `.cursorrules`
+- **Detailseite Gericht (Schiefertafel):** `DETAILSEITE_GERICHT_SPEC.md`
 - **Implementierung:** `app/index.html` (SPA).
 
 ---
