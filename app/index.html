@@ -2232,57 +2232,31 @@
 
     <!-- CUSTOMER: Discover - App-like UX (Final Spec) -->
     <section class="view customer-view active" id="v-discover">
-      <!-- Header: Sticky mit Logo zentriert, Standort links, Suche/Grid rechts -->
-      <div class="discover-header-sticky" style="background:rgba(232,224,214,0.92); backdrop-filter:saturate(160%) blur(8px); -webkit-backdrop-filter:saturate(160%) blur(8px);">
-        <!-- Ebene 1: Standort links | Schöner Umschaltbutton rechts -->
-        <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 12px; gap:8px;">
+      <!-- Header: Einziger primärer Header – Standort | Logo | Ansicht-Toggle. Keine Filter-Leisten. -->
+      <div class="discover-header-sticky discover-header-clean" style="background:rgba(232,224,214,0.92); backdrop-filter:saturate(160%) blur(8px); -webkit-backdrop-filter:saturate(160%) blur(8px); border-bottom:1px solid rgba(0,0,0,.06);">
+        <div class="discover-header-row" style="position:relative; display:flex; align-items:center; justify-content:space-between; padding:10px 16px; gap:8px;">
           <!-- Standort (links) -->
-          <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
+          <div style="position:relative; display:flex; align-items:center; gap:6px; flex-shrink:0;">
             <i data-lucide="map-pin" style="width:16px;height:16px; color:#666;"></i>
             <button class="discover-location-pill-clickable" type="button" id="btnDiscoverLocationToggle" style="display:flex; align-items:center; gap:4px; padding:6px 12px; border-radius:16px; background:rgba(0,0,0,.04); border:none; font-size:13px; font-weight:600; color:#333; cursor:pointer; transition:all 0.2s ease;">
               <span id="discoverCurrentLocation" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">Jena</span>
-          </button>
-            <!-- Expandiertes Standort-Input mit Autofill (versteckt) -->
+            </button>
             <div id="discoverLocationExpanded" style="display:none; position:absolute; top:100%; left:0; margin-top:4px; z-index:100; background:#fff; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.15); border:1px solid rgba(0,0,0,0.1); overflow:hidden; min-width:200px;">
               <div style="padding:8px;">
                 <input type="text" id="discoverLocationInput" placeholder="Ort oder PLZ eingeben..." autocomplete="address-line2" style="width:100%; padding:10px 12px; border-radius:8px; border:2px solid rgba(0,0,0,0.1); font-size:14px; background:#fff; outline:none; transition:border-color 0.2s ease;" onfocus="this.style.borderColor='#FFD700';" onblur="this.style.borderColor='rgba(0,0,0,0.1)';" />
-                <!-- Autofill-Vorschläge Container -->
                 <div id="discoverLocationSuggestions" style="max-height:200px; overflow-y:auto; margin-top:4px;"></div>
               </div>
             </div>
-        </div>
-        
-          <!-- Logo (Mitte) -->
-          <div style="position:absolute; left:50%; transform:translateX(-50%); display:flex; align-items:center;">
+          </div>
+          <!-- Logo (Mitte, absolut zentriert) -->
+          <div style="position:absolute; left:50%; transform:translateX(-50%); pointer-events:none;">
             <div class="brand-name" style="font-weight:900; letter-spacing:.06em; font-size:20px; color:#1a1a1a;">MITTAGIO</div>
           </div>
-          
-          <!-- Ansicht-Button (rechts) - Einfacher Icon-Button -->
+          <!-- Ansicht-Toggle (rechts) -->
           <div style="display:flex; align-items:center; flex-shrink:0; margin-left:auto;">
             <button type="button" id="toggleDiscoverViewTopbar" aria-label="Ansicht wechseln" style="width:44px; height:44px; border-radius:10px; border:none; background:rgba(0,0,0,0.05); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s ease;" onmouseover="this.style.background='rgba(0,0,0,0.1)';" onmouseout="this.style.background='rgba(0,0,0,0.05)';">
               <i data-lucide="grid-3x3" id="toggleDiscoverViewIcon" style="width:18px;height:18px; color:#666;"></i>
             </button>
-          </div>
-        </div>
-        
-        
-        <!-- Ebene 2: Quick-Filters (In der Nähe + Datum) - große Kapseln -->
-        <div id="discoverQuickFilters" style="display:flex; align-items:center; gap:8px; padding:8px 12px; overflow-x:auto; scrollbar-width:none; -webkit-overflow-scrolling:touch;">
-          <!-- Zeit-Filter Pills ENTFERNT: Diese Informationen gehören nur auf die einzelnen Essens-Karten -->
-          <button type="button" id="btnDiscoverNear" class="discover-quick-filter-pill" style="flex:0 0 auto; padding:10px 18px; border-radius:20px; border:1.5px solid rgba(0,0,0,0.15); background:#fff; font-size:14px; font-weight:700; color:#333; cursor:pointer; transition:all 0.2s ease; display:flex; align-items:center; gap:6px;">
-            <i data-lucide="navigation" style="width:16px;height:16px;"></i>
-            <span>In der Nähe</span>
-          </button>
-          <!-- Datum-Scroll-Liste (horizontal) -->
-          <div class="discover-calendar-scroll" id="discoverCalendar" style="display:flex; gap:6px; flex:1; min-width:0;">
-            <!-- Wird dynamisch befüllt -->
-          </div>
-        </div>
-        
-        <!-- Ebene 3: Kategorien (horizontal scrollbar mit Food-Icons) - wird im Swipe-Modus ausgeblendet -->
-        <div class="discover-categories-wrapper" id="discoverCategoriesWrapper">
-          <div class="discover-categories-scroll" id="discoverCategories">
-            <!-- Wird dynamisch befüllt -->
           </div>
         </div>
       </div>
@@ -2801,38 +2775,33 @@
         </a>
       </div>
 
-      <!-- Footer: Strikte Trennung Kunden / Anbieter -->
-      <div style="margin-top:32px; padding:0 16px 32px; border-top:2px solid rgba(0,0,0,0.06);">
-        <!-- Bereich KUNDEN (hell) -->
-        <div style="background:#f8fafc; border-radius:16px; padding:20px; margin-bottom:12px;">
-          <div style="font-size:11px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:12px;">Kunden</div>
-          <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:12px 20px; font-size:13px;">
+      <!-- Footer: Kunden | Anbieter-Einstieg | Branding (final) -->
+      <div class="profile-footer" style="margin-top:32px; padding:0 16px 32px; border-top:2px solid rgba(0,0,0,0.06);">
+        <!-- Kunden-Sektion: nur FAQ | Datenschutz | Impressum | AGB -->
+        <div style="margin-bottom:16px;">
+          <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:10px 16px; font-size:14px;">
             <a href="#/faq" id="btnProfileFAQ" onclick="showLegalPage('faq'); return false;" style="color:var(--muted); text-decoration:none; font-weight:500;">FAQ</a>
-            <a href="#/impressum" id="btnProfileImpressum" onclick="showLegalPage('impressum'); return false;" style="color:var(--muted); text-decoration:none; font-weight:500;">Impressum</a>
+            <span style="color:rgba(0,0,0,0.2);">|</span>
             <a href="#/datenschutz" id="btnProfileDatenschutz" onclick="showLegalPage('datenschutz'); return false;" style="color:var(--muted); text-decoration:none; font-weight:500;">Datenschutz</a>
+            <span style="color:rgba(0,0,0,0.2);">|</span>
+            <a href="#/impressum" id="btnProfileImpressum" onclick="showLegalPage('impressum'); return false;" style="color:var(--muted); text-decoration:none; font-weight:500;">Impressum</a>
+            <span style="color:rgba(0,0,0,0.2);">|</span>
             <a href="#/agb-kurz" id="btnProfileAGB" onclick="showLegalPage('agb-kurz'); return false;" style="color:var(--muted); text-decoration:none; font-weight:500;">AGB</a>
           </div>
+          <div style="text-align:center; font-size:11px; color:var(--muted); margin-top:8px;">Impressum: Mike Quach, Langäcker 2, 73635 Rudersberg</div>
         </div>
         
-        <!-- Bereich ANBIETER (grau abgesetzt) -->
-        <div id="profileFooterProviderSection" style="background:#e2e8f0; border-radius:16px; padding:20px; margin-bottom:16px;">
-          <div style="font-size:11px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:12px;">Anbieter</div>
-          <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:12px 20px; font-size:13px;">
-            <a href="#" onclick="typeof showProviderLoginModal === 'function' && showProviderLoginModal(); return false;" style="color:var(--muted); text-decoration:none; font-weight:500;">Anbieter-Login</a>
-            <a href="#/faq-provider" onclick="showLegalPage('faq-provider'); return false;" style="color:var(--muted); text-decoration:none; font-weight:500;">Anbieter-FAQ</a>
-            <a href="#/impressum-provider" onclick="showLegalPage('impressum-provider'); return false;" style="color:var(--muted); text-decoration:none; font-weight:500;">Anbieter-Impressum</a>
-            <a href="#/agb-provider" onclick="showLegalPage('agb-provider'); return false;" style="color:var(--muted); text-decoration:none; font-weight:500;">Anbieter-AGB</a>
-          </div>
+        <!-- Anbieter-Einstieg: grauer Bereich, nur ein CTA (Anbieter-FAQ/Impressum/AGB nur im internen Anbieterbereich) -->
+        <div id="profileFooterProviderSection" style="background:#e8e8e8; border-radius:16px; padding:20px; margin-bottom:20px;">
+          <a href="#" id="btnFooterProviderCTA" onclick="if(typeof showProviderLoginModal === 'function') showProviderLoginModal(); else if(typeof setMode === 'function') setMode('provider'); return false;" style="display:block; text-align:center; font-size:15px; font-weight:700; color:#334155; text-decoration:none;">
+            Dein Mittagessen anbieten – einfach und digital.
+          </a>
         </div>
         
-        <!-- Copyright -->
-        <div style="text-align:center; padding-top:16px; border-top:1px solid rgba(0,0,0,0.06);">
-          <div style="font-size:12px; color:var(--muted); margin-bottom:8px;">
-            Mike Quach, Langäcker 2, 73635 Rudersberg
-          </div>
-          <div style="font-size:13px; color:var(--muted); margin-bottom:6px;">
-            hageo.de | made with Love by mittagio.de | Strategie & Besteck
-          </div>
+        <!-- Branding-Abschluss -->
+        <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px; padding-top:16px; border-top:1px solid rgba(0,0,0,0.06);">
+          <span style="font-size:12px; color:var(--muted);">made with love by mittagio.de ·</span>
+          <a href="#/version" id="btnFooterVersion" style="font-size:12px; color:var(--muted); text-decoration:none;">v1.0.x</a>
         </div>
       </div>
     </section>
