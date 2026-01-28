@@ -1698,11 +1698,20 @@
       background-color: #f1f5f9; /* slate-100 */
     }
     
-    /* Responsive Grid: Auf größeren Screens 3 Spalten */
+    /* Responsive Grid: Polaroid-Karten wie Discovery-Seite */
     @media (min-width: 768px) {
-      #favDishes {
-        grid-template-columns: repeat(3, 1fr) !important;
-        gap: 16px !important;
+      #favDishes, #favProviders {
+        grid-template-columns: repeat(auto-fill, minmax(256px, 1fr)) !important;
+        gap: 20px !important;
+        justify-items: center !important;
+      }
+    }
+    /* Auf kleinen Bildschirmen: 2 Spalten mit 160px Karten */
+    @media (max-width: 480px) {
+      #favDishes, #favProviders {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 12px !important;
+        justify-items: center !important;
       }
     }
     
@@ -2293,14 +2302,14 @@
         
         <div id="favContent" style="padding:0 24px 24px;">
           <div class="section-title" id="sectionProviders" style="display:none; margin-bottom:16px;">Anbieter-Favoriten</div>
-          <div class="grid" id="favProviders" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:24px;"></div>
+          <div class="grid" id="favProviders" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(160px, 1fr)); gap:16px; justify-items:center;"></div>
           <div class="hint" id="emptyFavProviders" style="display:none; text-align:center; padding:32px;">
             <div style="width:80px; height:80px; margin:0 auto 16px; background:rgba(0,0,0,0.03); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:40px; opacity:0.6;">🍽️</div>
             <p style="font-size:14px; color:#666; margin:0;">Noch keine Anbieter-Favoriten</p>
           </div>
           <div class="section-title" id="sectionDishes" style="display:none; margin-top:32px; margin-bottom:16px;">Gericht-Favoriten</div>
-          <!-- Grid-Layout: 2-spaltig, kompakte Kacheln -->
-          <div id="favDishes" style="display:grid; grid-template-columns:repeat(2, 1fr); gap:12px; padding:0;"></div>
+          <!-- Grid-Layout: 2-spaltig, Polaroid-Karten (wie Discovery-Seite) -->
+          <div id="favDishes" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(160px, 1fr)); gap:16px; padding:0; justify-items:center;"></div>
           <div class="hint" id="emptyFavDishes" style="display:none; text-align:center; padding:32px;">
             <div style="width:80px; height:80px; margin:0 auto 16px; background:rgba(0,0,0,0.03); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:40px; opacity:0.6;">🍴</div>
             <p style="font-size:14px; color:#666; margin:0;">Noch keine Gericht-Favoriten</p>
@@ -8401,7 +8410,8 @@
     providerList.forEach(o=>{
       if(o?.id){
         try {
-          provGrid.appendChild(offerCard(o));
+          // CRITICAL FIX: Verwende Polaroid-Design wie auf Discovery-Seite
+          provGrid.appendChild(offerCard(o, {context: 'discover', interactive: true}));
         } catch(err){
           console.error('Error rendering provider favorite:', err, o);
         }
@@ -8416,7 +8426,8 @@
     dishList.forEach(o=>{
       if(o?.id){
         try {
-          dishGrid.appendChild(createFavoriteCard(o));
+          // CRITICAL FIX: Verwende Polaroid-Design wie auf Discovery-Seite
+          dishGrid.appendChild(offerCard(o, {context: 'discover', interactive: true}));
         } catch(err){
           console.error('Error rendering dish favorite:', err, o);
         }
