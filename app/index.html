@@ -1837,7 +1837,7 @@
       user-select:none; touch-action:none;
       transition:transform .2s ease-out, opacity .2s, box-shadow .2s;
       will-change:transform;
-      max-width:85vw; width:85vw;
+      max-width:320px; width:320px; /* Optimiert für S25: 2 Spalten = 160px, 1 Spalte = 320px */
       max-height:75vh; height:auto;
       margin:0 auto;
       display:flex; flex-direction:column;
@@ -1865,8 +1865,8 @@
       }
       .swipe-card{
         border-radius:28px;
-        max-width:88vw !important;
-        width:88vw !important;
+        max-width:280px !important; /* Optimiert für S25 */
+        width:280px !important;
       }
       .swipe-card-image-wrapper{
         width:82% !important;
@@ -2158,7 +2158,7 @@
       </div>
       
       <!-- Swipe-Stack (Polaroid-Design) -->
-      <div id="discoverSwipe" style="display:none; position:relative; height:75vh; min-height:480px; max-height:600px; margin:0 auto; padding:12px 0; background:var(--bg-polaroid);">
+      <div id="discoverSwipe" style="display:none; position:relative; height:75vh; min-height:480px; max-height:600px; margin:0 auto; padding:12px 0; background:var(--bg-polaroid); width:100%; overflow:hidden;">
         <!-- Header: Kategorien-Pills + Exit-Button -->
         <header style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px; position:sticky; top:0; z-index:100; background:rgba(232,224,214,0.95); backdrop-filter:blur(8px); border-bottom:1px solid rgba(0,0,0,0.1);">
           <div id="swipeCategoryPills" style="display:flex; gap:8px; overflow-x:auto; flex:1;">
@@ -2169,7 +2169,7 @@
           </button>
         </header>
         
-        <div id="swipeStack" style="position:relative; width:100%; height:calc(100% - 140px); display:flex; align-items:center; justify-content:center; padding:20px 0;">
+        <div id="swipeStack" style="position:relative; width:100%; height:calc(100% - 140px); min-height:400px; display:flex; align-items:center; justify-content:center; padding:20px 0; overflow:visible;">
           <!-- Polaroid-Karten werden hier eingefügt -->
         </div>
         
@@ -2363,8 +2363,8 @@
     </section>
     
     <!-- CUSTOMER: One-Page Checkout (Checkout-Turbo) -->
-    <section class="view" id="v-checkout" style="display:none;">
-      <div style="padding:16px; padding-bottom:calc(90px + env(safe-area-inset-bottom, 0px));">
+    <section class="view" id="v-checkout" style="min-height:100vh; background:var(--bg);">
+      <div style="padding:16px; padding-bottom:calc(90px + env(safe-area-inset-bottom, 0px)); max-width:600px; margin:0 auto;">
         <div class="panel" style="padding:20px; border-radius:24px; box-shadow:0 4px 16px rgba(0,0,0,.08); background:rgba(255,255,255,0.95); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);">
           <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
             <button class="back-button" type="button" id="btnCheckoutBack" aria-label="Zurück" style="background:none; border:none; padding:8px; cursor:pointer;">
@@ -5409,6 +5409,10 @@
     }
     view.classList.add('active');
     // CSS-Regel übernimmt jetzt das Display (flex für pickup-code, block für andere)
+    // Sicherstellen, dass Checkout-View richtig angezeigt wird
+    if(id === 'v-checkout'){
+      view.style.display = 'block';
+    }
     window.scrollTo({top:0,behavior:'smooth'});
     
     // Fullscreen-Abholnummer-Modal beim View-Wechsel schließen (verhindert grünes Overlay auf allen Seiten)
@@ -6471,12 +6475,15 @@
       if(listEl) listEl.style.display = 'none';
       if(swipeEl) {
         swipeEl.style.display = 'flex';
+        swipeEl.style.flexDirection = 'column';
         swipeEl.style.alignItems = 'center';
         swipeEl.style.justifyContent = 'center';
         swipeEl.style.height = 'calc(100vh - 180px)'; // Platz für Header und Bottom Bar
         swipeEl.style.minHeight = '480px';
         swipeEl.style.maxHeight = 'none';
         swipeEl.style.padding = '12px 0';
+        swipeEl.style.width = '100%';
+        swipeEl.style.overflow = 'hidden';
       }
       // toggleBtn entfernt - nur noch Topbar-Toggle verwendet
       // Filter, Quick-Filters und Kalender im Swipe-Modus komplett ausblenden (immersiver Modus)
@@ -6728,7 +6735,13 @@
       btnReject.onclick = () => {
       const swipeStack = document.getElementById('swipeStack');
       if(!swipeStack) return;
-        const currentCard = swipeStack.querySelector('.swipe-card:not([style*="opacity: 0"])');
+        // Finde die oberste sichtbare Karte (z-index am höchsten oder erste ohne opacity 0)
+        const allCards = Array.from(swipeStack.querySelectorAll('.swipe-card')).filter(c => {
+          if(!c || !c.style) return false;
+          const opacity = c.style.opacity;
+          return opacity !== '0' && opacity !== '0px' && opacity !== 0 && c.style.display !== 'none';
+        });
+        const currentCard = allCards.length > 0 ? allCards[0] : null;
         if(!currentCard || !currentCard.dataset) return;
         const offerId = currentCard.dataset.offerId;
         const offer = offers.find(o => o.id === offerId);
@@ -6737,10 +6750,12 @@
           rejectOffer(offer);
           currentCard.style.transition = 'opacity 0.3s ease';
           currentCard.style.opacity = '0';
+          currentCard.style.pointerEvents = 'none'; // Sofort deaktivieren
             setTimeout(() => {
             if(currentCard.parentNode) currentCard.remove();
                 currentSwipeIndex++;
-                  showNextSwipeCard();
+                  // CRITICAL FIX: Warte kurz, damit DOM-Update abgeschlossen ist
+                  setTimeout(() => showNextSwipeCard(), 50);
         }, 300);
       }
       };
@@ -6752,15 +6767,23 @@
       btnNext.onclick = () => {
       const swipeStack = document.getElementById('swipeStack');
       if(!swipeStack) return;
-        const currentCard = swipeStack.querySelector('.swipe-card:not([style*="opacity: 0"])');
+        // Finde die oberste sichtbare Karte (z-index am höchsten oder erste ohne opacity 0)
+        const allCards = Array.from(swipeStack.querySelectorAll('.swipe-card')).filter(c => {
+          if(!c || !c.style) return false;
+          const opacity = c.style.opacity;
+          return opacity !== '0' && opacity !== '0px' && opacity !== 0 && c.style.display !== 'none';
+        });
+        const currentCard = allCards.length > 0 ? allCards[0] : null;
         if(!currentCard || !currentCard.dataset) return;
         triggerHapticFeedback([10]);
         currentCard.style.transition = 'opacity 0.3s ease';
         currentCard.style.opacity = '0';
+        currentCard.style.pointerEvents = 'none'; // Sofort deaktivieren
         setTimeout(() => {
           if(currentCard.parentNode) currentCard.remove();
           currentSwipeIndex++;
-          showNextSwipeCard();
+          // CRITICAL FIX: Warte kurz, damit DOM-Update abgeschlossen ist
+          setTimeout(() => showNextSwipeCard(), 50);
         }, 300);
       };
     }
@@ -6771,7 +6794,13 @@
       btnLike.onclick = () => {
       const swipeStack = document.getElementById('swipeStack');
       if(!swipeStack) return;
-        const currentCard = swipeStack.querySelector('.swipe-card:not([style*="opacity: 0"])');
+        // Finde die oberste sichtbare Karte (z-index am höchsten oder erste ohne opacity 0)
+        const allCards = Array.from(swipeStack.querySelectorAll('.swipe-card')).filter(c => {
+          if(!c || !c.style) return false;
+          const opacity = c.style.opacity;
+          return opacity !== '0' && opacity !== '0px' && opacity !== 0 && c.style.display !== 'none';
+        });
+        const currentCard = allCards.length > 0 ? allCards[0] : null;
         if(!currentCard || !currentCard.dataset) return;
         const offerId = currentCard.dataset.offerId;
         const offer = offers.find(o => o.id === offerId);
@@ -6780,10 +6809,12 @@
           acceptOffer(offer);
           currentCard.style.transition = 'opacity 0.3s ease';
           currentCard.style.opacity = '0';
+          currentCard.style.pointerEvents = 'none'; // Sofort deaktivieren
             setTimeout(() => {
             if(currentCard.parentNode) currentCard.remove();
                 currentSwipeIndex++;
-                  showNextSwipeCard();
+                  // CRITICAL FIX: Warte kurz, damit DOM-Update abgeschlossen ist
+                  setTimeout(() => showNextSwipeCard(), 50);
         }, 300);
       }
       };
@@ -7108,17 +7139,50 @@
       if(!c || !c.parentNode || !c.style) return false; // Element existiert nicht mehr
       // CRITICAL FIX: Filtere auch display:none Karten aus
       if(c.style.display === 'none') return false;
-      return !c.classList.contains('swipe-left') && !c.classList.contains('swipe-right') && c.style.opacity !== '0';
+      // Filtere Karten mit opacity 0 oder swipe-Klassen
+      const opacity = c.style.opacity;
+      if(opacity === '0' || opacity === '0px') return false;
+      if(c.classList.contains('swipe-left') || c.classList.contains('swipe-right')) return false;
+      return true;
     });
     
     // CRITICAL FIX: Stelle sicher, dass die oberste Karte (index 0) korrekt konfiguriert ist
     // BUGFIX: Index-Problem beheben - stelle sicher, dass currentSwipeIndex korrekt ist
+    // Wenn keine Karten mehr sichtbar sind, aber noch Karten im Array sind, lade die nächste
     if(cards.length === 0 && currentSwipeIndex < swipeCards.length){
-      // Wenn keine Karten mehr sichtbar sind, aber noch Karten im Array sind, lade die nächste
       const nextCard = createSwipeCard(swipeCards[currentSwipeIndex], 0);
-      if(nextCard && swipeStack) swipeStack.appendChild(nextCard);
-      cards = [nextCard].filter(Boolean);
+      if(nextCard && swipeStack) {
+        swipeStack.appendChild(nextCard);
+        cards = [nextCard];
+      }
     }
+    
+    // CRITICAL FIX: Wenn weniger als 3 Karten vorhanden sind UND noch weitere Karten verfügbar sind, lade sie VORHER
+    // Dies verhindert, dass der Stack leer wird
+    while(cards.length < 3 && currentSwipeIndex + cards.length < swipeCards.length){
+      const nextIndex = currentSwipeIndex + cards.length;
+      if(nextIndex < swipeCards.length){
+        const nextCard = createSwipeCard(swipeCards[nextIndex], cards.length);
+        if(nextCard && swipeStack) {
+          swipeStack.appendChild(nextCard);
+          cards.push(nextCard);
+        } else {
+          break; // Verhindere Endlosschleife
+        }
+      } else {
+        break;
+      }
+    }
+    
+    // CRITICAL FIX: Aktualisiere cards-Array nach dem Laden neuer Karten
+    cards = Array.from(swipeStack.querySelectorAll('.swipe-card')).filter(c => {
+      if(!c || !c.parentNode || !c.style) return false;
+      if(c.style.display === 'none') return false;
+      const opacity = c.style.opacity;
+      if(opacity === '0' || opacity === '0px') return false;
+      if(c.classList.contains('swipe-left') || c.classList.contains('swipe-right')) return false;
+      return true;
+    });
     
     cards.forEach((card, i) => {
       if(!card || !card.parentNode || !card.style) return; // Sicherheitscheck
@@ -7151,20 +7215,20 @@
       }
     });
     
-    // Wenn weniger als 3 Karten sichtbar, füge neue hinzu
-    if(cards.length < 3 && currentSwipeIndex + cards.length < swipeCards.length){
-      const nextIndex = currentSwipeIndex + cards.length;
-      if(nextIndex < swipeCards.length){
-        const nextCard = createSwipeCard(swipeCards[nextIndex], cards.length);
-        if(nextCard && swipeStack) swipeStack.appendChild(nextCard);
-      }
-    }
+    // Diese Logik wurde nach oben verschoben, um sicherzustellen, dass Karten VORHER geladen werden
     
     // End-of-Stack: Wenn keine Karten mehr, zeige Abschlusskarte
     const swipeEndOfStack = document.getElementById('swipeEndOfStack');
-      const swipeEmpty = document.getElementById('swipeEmpty');
+    const swipeEmpty = document.getElementById('swipeEmpty');
     
-    if(cards.length === 0 && currentSwipeIndex >= swipeCards.length){
+    // CRITICAL FIX: Prüfe sowohl ob keine Karten mehr sichtbar sind UND ob alle Karten durchgesehen wurden
+    const allCardsVisible = Array.from(swipeStack.querySelectorAll('.swipe-card')).filter(c => {
+      if(!c || !c.style) return false;
+      const opacity = c.style.opacity;
+      return opacity !== '0' && opacity !== '0px' && opacity !== 0 && c.style.display !== 'none';
+    }).length;
+    
+    if(allCardsVisible === 0 && currentSwipeIndex >= swipeCards.length){
       if(swipeEndOfStack) swipeEndOfStack.style.display = 'block';
       if(swipeEmpty) swipeEmpty.style.display = 'none';
     } else {
