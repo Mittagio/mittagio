@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>Mittagio</title>
   <meta name="theme-color" content="#FFD700" />
+  <!-- Konzept-Icons: 1. Mehrweg (assets/icon-mehrweg.png) | 2. Essen vor Ort (assets/icon-essen-vor-ort.png) | 3. Abholnummer (assets/icon-abholnummer.png) -->
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" href="assets/icons/icon-192.png" />
   <link rel="apple-touch-icon" href="assets/icons/icon-192.png" />
@@ -498,6 +499,10 @@
     .card-status-badge.pickup{
       background:rgba(0,0,0,.06); color:#666;
     }
+    /* Konzept-Icons: Mehrweg, Essen vor Ort, Abholnummer (einheitliche Größe) */
+    .concept-icon{ width:22px; height:22px; object-fit:contain; vertical-align:middle; flex-shrink:0; }
+    .concept-icon-lg{ width:28px; height:28px; object-fit:contain; vertical-align:middle; flex-shrink:0; }
+    .concept-icon-xl{ width:36px; height:36px; object-fit:contain; vertical-align:middle; flex-shrink:0; }
 
     .meta{display:flex; justify-content:space-between; align-items:flex-end; gap:12px; margin-top:12px}
     .price{font-weight:950; font-size:18px; color:#0f5c4c}
@@ -588,6 +593,29 @@
     /* Views */
     .view{display:none}
     .view.active{display:block}
+
+    /* Kundenseiten: Einheitlicher Style von Seite 1 (Discovery) – Farben & Look */
+    .customer-view{
+      background:var(--bg-polaroid);
+      min-height:100vh;
+      padding:0 12px 0;
+      padding-bottom:calc(78px + env(safe-area-inset-bottom, 0px));
+    }
+    .customer-view .panel{
+      background:rgba(255,255,255,0.95);
+      backdrop-filter:blur(12px);
+      -webkit-backdrop-filter:blur(12px);
+      border:1px solid rgba(0,0,0,0.06);
+      border-radius:20px;
+      box-shadow:0 4px 16px rgba(0,0,0,.06);
+    }
+    .customer-view .section-title{ color:#334155; }
+    .customer-view .hint{ color:#64748b; }
+    /* Topbar in Kundekontext: gleicher warmer Ton wie Seite 1 */
+    .topbar.customer-context{
+      background:rgba(232,224,214,0.92);
+      border-bottom-color:rgba(0,0,0,0.08);
+    }
 
     /* Sheets / modals */
     .backdrop{position:fixed; inset:0; background:rgba(0,0,0,.38); opacity:0; pointer-events:none; transition:opacity .2s; z-index:30}
@@ -1497,10 +1525,10 @@
       width:18px; height:18px;
     }
     
-    /* Angebots-Liste Container (kompakt) */
+    /* Angebots-Liste Container (kompakt, vertikal) */
     .discover-offers{
-      max-width:980px; margin:0 auto; padding:16px 12px;
-      display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:20px;
+      max-width:980px; margin:0 auto; padding:12px 10px;
+      display:flex; flex-direction:column; gap:6px;
       box-sizing:border-box;
     }
     /* Polaroid-Karten: Zufällige Rotation für natürlichen Look */
@@ -1521,62 +1549,7 @@
       transform:rotate(0deg) scale(1.02);
       z-index:10;
     }
-    .discover-list-card{
-      display:flex; gap:12px; padding:12px;
-      background:#fff; border-radius:16px;
-      box-shadow:0 1px 6px rgba(0,0,0,.06);
-      cursor:pointer; transition:transform .1s, box-shadow .1s;
-      border:1px solid rgba(0,0,0,.04);
-    }
-    .discover-list-card:active{
-      transform:scale(.98);
-      box-shadow:0 1px 4px rgba(0,0,0,.1);
-    }
-    .discover-list-image{
-      flex:0 0 80px; width:80px; height:80px;
-      border-radius:12px; overflow:hidden;
-      background:#f0f0f0; flex-shrink:0;
-    }
-    .discover-list-image img{
-      width:100%; height:100%; object-fit:cover;
-    }
-    .discover-list-content{
-      flex:1; display:flex; flex-direction:column;
-      min-width:0; gap:4px;
-    }
-    .discover-list-title{
-      font-size:16px; font-weight:900; line-height:1.3;
-      color:#111; margin:0;
-      display:-webkit-box; -webkit-line-clamp:2;
-      -webkit-box-orient:vertical; overflow:hidden;
-    }
-    .discover-list-provider{
-      font-size:13px; font-weight:500; color:#666;
-      margin:0; line-height:1.3;
-    }
-    .discover-list-meta{
-      display:flex; align-items:center; gap:8px;
-      margin-top:4px; flex-wrap:wrap;
-    }
-    .discover-list-price{
-      font-size:18px; font-weight:900; color:var(--brand);
-      margin:0;
-    }
-    .discover-list-info{
-      font-size:12px; color:#999;
-      display:flex; align-items:center; gap:4px;
-    }
-    .discover-list-info .ico-inline{
-      width:16px; height:16px; flex-shrink:0;
-      color:var(--muted);
-    }
-    .discover-list-info .ico-inline svg{
-      width:16px; height:16px;
-    }
-    .discover-list-badges{
-      display:flex; gap:6px; flex-wrap:wrap;
-      margin-top:6px;
-    }
+    /* Ungenutzte .discover-list-card Styles entfernt - wir verwenden .dish-card für kompakte Liste */
     /* Kompakte Horizontale Gericht-Karte (Slim-Card) - High Performance */
     .dish-card {
       display: flex;
@@ -1588,12 +1561,13 @@
       overflow: visible;
       border: 1px solid rgba(0,0,0,0.05);
       box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-      margin-bottom: 6px;
+      margin-bottom: 6px; /* Abstand zwischen Karten */
       cursor: pointer;
       transition: transform 0.2s ease, box-shadow 0.2s ease;
       position: relative;
       max-width: 100%;
       box-sizing: border-box;
+      width: 100%; /* Volle Breite für vertikale Liste */
     }
     .dish-card:active {
       transform: scale(0.98);
@@ -1694,40 +1668,17 @@
       }
     }
     
-    /* Responsive Discovery-Grid: Anpassung für verschiedene Bildschirmgrößen */
+    /* Responsive Discovery-Liste: Vertikale Liste für alle Bildschirmgrößen (kompakt) */
     @media (max-width: 374px) {
-      /* Sehr kleine Handys: 1 Spalte */
       .discover-offers {
-        grid-template-columns: 1fr !important;
-        padding: 12px 8px !important;
-      }
-    }
-    @media (min-width: 375px) and (max-width: 413px) {
-      /* Kleine Handys (iPhone SE, etc.): 1-2 Spalten */
-      .discover-offers {
-        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)) !important;
-        gap: 16px !important;
-      }
-    }
-    @media (min-width: 414px) and (max-width: 767px) {
-      /* Große Handys (iPhone 15 Pro Max, S25, etc.): 2 Spalten */
-      .discover-offers {
-        grid-template-columns: repeat(2, 1fr) !important;
-        gap: 18px !important;
+        padding: 10px 8px !important;
+        gap: 5px !important;
       }
     }
     @media (min-width: 768px) {
-      /* Tablets: 3 Spalten */
       .discover-offers {
-        grid-template-columns: repeat(3, 1fr) !important;
-        gap: 20px !important;
-      }
-    }
-    @media (min-width: 1024px) {
-      /* Desktop: 4 Spalten */
-      .discover-offers {
-        grid-template-columns: repeat(4, 1fr) !important;
-        gap: 24px !important;
+        padding: 16px 12px !important;
+        gap: 8px !important;
       }
     }
     .dish-price {
@@ -2085,7 +2036,7 @@
 
   <main>
     <!-- START - Lunch-Feed (Social Style) -->
-    <section class="view" id="v-start">
+    <section class="view customer-view" id="v-start">
       <!-- Standort-Suche -->
       <div class="panel" style="margin-top:12px;">
         <div class="section-title">Entdecken</div>
@@ -2114,7 +2065,7 @@
     </section>
 
     <!-- CUSTOMER: Discover - App-like UX (Final Spec) -->
-    <section class="view active" id="v-discover" style="background:var(--bg-polaroid);">
+    <section class="view customer-view active" id="v-discover">
       <!-- Header: Sticky mit Logo zentriert, Standort links, Suche/Grid rechts -->
       <div class="discover-header-sticky" style="background:rgba(232,224,214,0.92); backdrop-filter:saturate(160%) blur(8px); -webkit-backdrop-filter:saturate(160%) blur(8px);">
         <!-- Ebene 1: Standort links | Schöner Umschaltbutton rechts -->
@@ -2254,7 +2205,7 @@
           Noch keine Mittagsangebote in deiner Nähe
         </div>
         <div style="display:flex; flex-direction:column; gap:12px; max-width:280px; margin:24px auto 0;">
-          <button class="btn" type="button" onclick="const q=prompt('Neuer Standort:'); if(q){locationQuery=q; renderDiscover();}" style="width:100%;">
+          <button class="btn" type="button" onclick="openDiscoverLocationSearch();" style="width:100%;">
             Standort ändern
           </button>
           <button class="btn secondary" type="button" onclick="setMode('provider')" style="width:100%;">
@@ -2296,7 +2247,7 @@
     </section>
 
     <!-- CUSTOMER: Favorites -->
-    <section class="view" id="v-fav">
+    <section class="view customer-view" id="v-fav">
       <div class="panel">
         <!-- Modern Header mit Subline -->
         <div id="favHeader" style="padding:48px 24px 24px; border-bottom:1px solid rgba(0,0,0,0.06); margin-bottom:24px;">
@@ -2345,7 +2296,7 @@
     </section>
 
     <!-- CUSTOMER: Orders -->
-    <section class="view" id="v-orders">
+    <section class="view customer-view" id="v-orders">
       <div class="panel">
         <h3>Aktive Abholnummern</h3>
         <div class="hint">Deine aktiven Abholnummern</div>
@@ -2356,7 +2307,7 @@
     </section>
 
     <!-- CUSTOMER: Cart -->
-    <section class="view" id="v-cart">
+    <section class="view customer-view" id="v-cart">
       <div style="padding:16px; padding-bottom:calc(90px + env(safe-area-inset-bottom, 0px));">
         <!-- Aktive Tickets (Wallet-Look) -->
         <div class="panel" id="cartActiveTickets" style="margin-bottom:16px; padding:20px; display:none; border-radius:24px; box-shadow:0 4px 16px rgba(0,0,0,.08); background:rgba(255,255,255,0.98); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border:2px dashed rgba(255,184,0,0.3); position:relative;">
@@ -2477,7 +2428,8 @@
           <span style="font-size:12px; font-weight:600; color:rgba(255,255,255,0.9);">Aktiv</span>
         </div>
         
-        <!-- Abholnummer (extrem groß, zentriert) -->
+        <!-- Abholnummer-Icon + Nummer (extrem groß, zentriert) -->
+        <div style="display:flex; justify-content:center; margin-bottom:8px;"><img src="assets/icon-abholnummer.png" alt="Abholnummer" class="concept-icon-xl" style="width:48px;height:48px; opacity:0.95;"></div>
         <div id="pickupCodeValue" style="font-size:clamp(4rem, 15vw, 8rem); font-weight:900; font-family:'Courier New', monospace; letter-spacing:0.1em; color:#fff; text-align:center; line-height:1.2; text-shadow:0 4px 20px rgba(0,0,0,0.5), 0 0 40px rgba(39,174,96,0.3); margin-bottom:24px;">
           –
         </div>
@@ -2512,7 +2464,7 @@
     </section>
 
     <!-- CUSTOMER: Profile ("Mein Mittagio") - Zalando-Prinzip -->
-    <section class="view" id="v-profile">
+    <section class="view customer-view" id="v-profile">
       <!-- Header-Card (Identität) -->
       <div class="panel" id="profileHeaderCard" style="margin-top:0; padding:20px; border-radius:24px; box-shadow:0 4px 16px rgba(0,0,0,.08); background:linear-gradient(135deg, rgba(255,215,0,0.1) 0%, rgba(255,184,0,0.05) 100%);">
         <!-- Wird dynamisch befüllt -->
@@ -2545,7 +2497,7 @@
         <!-- Nachhaltigkeit: Mehrweg-Option (zweite Ebene) -->
         <div style="margin-top:24px; padding-top:24px; border-top:2px solid rgba(0,0,0,0.06);">
           <div style="font-weight:700; font-size:16px; margin-bottom:12px; color:#64748b; display:flex; align-items:center; gap:8px;">
-            <span style="font-size:20px;">🌿</span>
+            <img src="assets/icon-mehrweg.png" alt="Mehrweg" class="concept-icon-lg">
             <span>Nachhaltigkeit</span>
           </div>
           <div id="profileReuseSwitch" style="display:flex; flex-direction:column; gap:12px;">
@@ -2616,15 +2568,15 @@
             <p>Dein digitaler Beleg für das Restaurant. Bitte beachte: Wir nutzen keine "Tickets" oder "Abholcodes".</p>
           </details>
           <details>
-            <summary>Kann ich telefonisch bestellen?</summary>
-            <p>Ja, bei Anbietern mit dem Status "Nur Speisekarte" kannst du direkt über den Anruf-Button bestellen.</p>
+            <summary>Kann ich telefonisch anrufen?</summary>
+            <p>Ja, bei Anbietern mit dem Status "Nur Speisekarte" kannst du direkt über den Anruf-Button anrufen.</p>
           </details>
           <details>
             <summary>Wie funktioniert Mehrweg?</summary>
             <p>Aktiviere es unter "Mein Geschmack". Das Restaurant sieht deinen Wunsch sofort in der Mittagsbox.</p>
           </details>
           <details>
-            <summary>Kann ich ohne Abholnummer bestellen?</summary>
+            <summary>Kann ich ohne Abholnummer Gerichte hinzufügen?</summary>
             <p>Nein. Angebote ohne Abholnummer kannst du nur ansehen.</p>
           </details>
           <details>
@@ -2632,8 +2584,8 @@
             <p>Innerhalb der Essenszeit. Wähle eine ungefähre Abholzeit in deiner Mittagsbox.</p>
           </details>
           <details>
-            <summary>Kann ich für mehrere Personen bestellen?</summary>
-            <p>Ja. Du kannst mehrere Gerichte in einem Vorgang bestellen (eine Abholnummer).</p>
+            <summary>Kann ich für mehrere Personen Gerichte hinzufügen?</summary>
+            <p>Ja. Du kannst mehrere Gerichte in einem Vorgang hinzufügen (eine Abholnummer).</p>
           </details>
           <details>
             <summary>Vor Ort essen möglich?</summary>
@@ -4247,7 +4199,7 @@
   <div class="sheet-body">
     <div class="panel">
       <h3 style="margin:0 0 8px;">Anmelden</h3>
-      <div class="hint" style="margin-bottom:20px;">Melde dich an, um zu bestellen</div>
+      <div class="hint" style="margin-bottom:20px;">Melde dich an, um Abholnummer zu sichern</div>
       <input class="field" id="loginModalEmail" type="email" placeholder="E-Mail" autocomplete="email" />
       <div style="height:10px"></div>
       <input class="field" id="loginModalPass" type="password" placeholder="Passwort" autocomplete="current-password" />
@@ -5419,6 +5371,20 @@
     }
     view.classList.add('active');
     window.scrollTo({top:0,behavior:'smooth'});
+    
+    // Topbar: Kundefarben (Seite-1-Style) wenn Kundenseite aktiv
+    const topbar = document.querySelector('.topbar');
+    const customerViewIds = [views.start, views.discover, views.fav, views.orders, views.cart, views.profile].filter(Boolean);
+    if(topbar){
+      if(customerViewIds.indexOf(id) !== -1) topbar.classList.add('customer-context');
+      else topbar.classList.remove('customer-context');
+    }
+    
+    // Topbar-Toggle nur in Discover-View anzeigen
+    const toggleTopbar = document.getElementById('discoverViewToggleTopbar');
+    if(toggleTopbar){
+      toggleTopbar.style.display = (id === views.discover) ? 'flex' : 'none';
+    }
   }
 
   function setMode(next){
@@ -5522,9 +5488,12 @@
     showView(views.discover);
     renderChips();
     renderDiscover();
-    // FAB anzeigen (Toggle im Topbar bleibt versteckt)
+    // FAB anzeigen
     const fabModeToggle = document.getElementById('fabModeToggle');
     if(fabModeToggle) fabModeToggle.style.display = 'flex';
+    // Topbar-Toggle anzeigen (nur in Discover-View)
+    const toggleTopbar = document.getElementById('discoverViewToggleTopbar');
+    if(toggleTopbar) toggleTopbar.style.display = 'flex';
     // Browser-Verlauf aktualisieren
     history.pushState({view: 'discover', mode: mode}, '', location.pathname);
   }
@@ -6057,6 +6026,19 @@
       renderDiscover();
     };
     
+    // Standort-Suchfeld öffnen (z. B. aus leerem Zustand „Standort ändern“ – ohne prompt)
+    window.openDiscoverLocationSearch = function(){
+      const exp = document.getElementById('discoverLocationExpanded');
+      const inp = document.getElementById('discoverLocationInput');
+      if(exp && inp){
+        exp.style.display = 'block';
+        inp.value = (locationQuery && locationQuery !== 'Jena' && locationQuery !== 'Aktueller Standort') ? locationQuery : '';
+        inp.placeholder = 'Ort oder PLZ eingeben...';
+        setTimeout(function(){ inp.focus(); }, 120);
+        showToast('Ort oder PLZ eingeben');
+      }
+    };
+    
     // Search-Button: Expandiert Suchfeld bei Klick
     const btnDiscoverSearch = document.getElementById('btnDiscoverSearch');
     const discoverSearchExpanded = document.getElementById('discoverSearchExpanded');
@@ -6114,11 +6096,17 @@
     const listToggleRow = document.querySelector('.discover-list-toggle-row');
     if(btnDiscoverToList){
       btnDiscoverToList.onclick = ()=>{
-        discoverViewMode = 'list';
+        // Toggle zwischen Liste und Swipe
+        const newMode = discoverViewMode === 'list' ? 'swipe' : 'list';
+        discoverViewMode = newMode;
         save(LS.discoverView, discoverViewMode);
-        switchDiscoverView('list');
-        renderDiscover();
+        switchDiscoverView(newMode);
+        if(newMode === 'list'){
+          renderDiscover(); // Liste neu rendern
+        }
       };
+      // Initiales Label setzen
+      updateToggleButtonLabel(discoverViewMode);
     }
     
     // Scroll-Detection für Sticky-Button Shadow
@@ -6316,6 +6304,25 @@
   let currentSwipeIndex = 0;
   
   // View-Toggle Handler
+  // Hilfsfunktion: Button-Label und Icon aktualisieren
+  function updateToggleButtonLabel(mode){
+    const btnDiscoverToList = document.getElementById('btnDiscoverToList');
+    if(!btnDiscoverToList) return;
+    
+    const iconEl = btnDiscoverToList.querySelector('i');
+    const labelEl = btnDiscoverToList.querySelector('span');
+    
+    if(mode === 'swipe'){
+      // In Swipe-Modus: Button zeigt "Zur Liste wechseln"
+      if(iconEl) iconEl.setAttribute('data-lucide', 'list');
+      if(labelEl) labelEl.textContent = 'Zur Liste wechseln';
+    } else {
+      // In Listen-Modus: Button zeigt "Zum Swipe wechseln"
+      if(iconEl) iconEl.setAttribute('data-lucide', 'flame');
+      if(labelEl) labelEl.textContent = 'Zum Swipe wechseln';
+    }
+  }
+  
   function switchDiscoverView(mode){
     discoverViewMode = mode;
     save(LS.discoverView, mode); // Präferenz speichern
@@ -6359,6 +6366,9 @@
       if(quickFiltersEl) quickFiltersEl.style.display = 'flex';
       if(calendarEl) calendarEl.style.display = 'flex';
     }
+    
+    // Button-Label und Icon aktualisieren
+    updateToggleButtonLabel(mode);
     
     // Icons aktualisieren
     if(typeof lucide !== 'undefined'){
@@ -6518,24 +6528,12 @@
     const hasReuseSupport = offerProvider && (offerProvider.reuseEnabled || offerProvider.reuse || (offerProvider.providerProfile && offerProvider.providerProfile.reuseEnabled));
     const hasDineIn = offerProvider && (offerProvider.dineInPossible !== false || data.dineInPossible);
     
-    // 3 Icon-Säulen: Finale Definition - Nur Symbole, kein Text
-    // Säule 1: Vor Ort (🍴) - Essen vor Ort möglich (Umsatzfokus)
-    // Säule 2: Abholnummer (🧾) - Identifikation für die Abholung (kein "Ticket"/"Code")
-    // Säule 3: Mehrweg (🔄) - Nachhaltiges Pfandsystem
+    // 3 Konzept-Icons: Mehrweg, Essen vor Ort, Abholnummer (einheitliche Icon-Grafik)
     const iconPillars = `
-      <div style="display:flex; justify-content:center; align-items:center; gap:32px; padding:16px 0 8px; border-top:1px solid rgba(0,0,0,0.1);">
-        <!-- Säule 1: Vor Ort (🍴) - Verzehr im Betrieb möglich -->
-        <div style="font-size:32px; opacity:${hasDineIn ? '1' : '0.3'};" title="Vor Ort essen möglich">
-          🍴
-        </div>
-        <!-- Säule 2: Abholnummer (🧾) - Identifikation für Abholung -->
-        <div style="font-size:32px; opacity:${orderingEnabled ? '1' : '0.3'};" title="Abholnummer verfügbar">
-          🧾
-        </div>
-        <!-- Säule 3: Mehrweg (🔄) - Nachhaltiges Pfandsystem -->
-        <div style="font-size:32px; opacity:${hasReuseSupport ? '1' : '0.3'};" title="Mehrweg-System">
-          🔄
-        </div>
+      <div style="display:flex; justify-content:center; align-items:center; gap:28px; padding:16px 0 8px; border-top:1px solid rgba(0,0,0,0.1);">
+        <div style="opacity:${hasDineIn ? '1' : '0.25'};" title="Essen vor Ort möglich"><img src="assets/icon-essen-vor-ort.png" alt="Essen vor Ort" class="concept-icon-xl" style="width:32px;height:32px;"></div>
+        <div style="opacity:${orderingEnabled ? '1' : '0.25'};" title="Abholnummer verfügbar"><img src="assets/icon-abholnummer.png" alt="Abholnummer" class="concept-icon-xl" style="width:32px;height:32px;"></div>
+        <div style="opacity:${hasReuseSupport ? '1' : '0.25'};" title="Mehrweg möglich"><img src="assets/icon-mehrweg.png" alt="Mehrweg" class="concept-icon-xl" style="width:32px;height:32px;"></div>
       </div>
     `;
     
@@ -7304,8 +7302,8 @@
             <span style="font-size:10px;">${serviceLabel.icon}</span>
             <span>${serviceLabel.text}</span>
           </div>
-          <!-- Eco-Badge als Mini-Icon am Bildrand (unten links, wenn kein Service-Label) -->
-          ${hasReuseSupport && !hasAbholnummer ? `<div style="position:absolute; bottom:4px; left:4px; background:#27AE60; color:#fff; width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 4px rgba(0,0,0,0.2); z-index:5; font-size:12px;">🌿</div>` : ''}
+          <!-- Eco-Badge: Mehrweg-Konzept-Icon (unten links, wenn kein Service-Label) -->
+          ${hasReuseSupport && !hasAbholnummer ? `<div style="position:absolute; bottom:4px; left:4px; width:24px; height:24px; border-radius:50%; overflow:hidden; box-shadow:0 2px 4px rgba(0,0,0,0.2); z-index:5; display:flex; align-items:center; justify-content:center; background:#fff;"><img src="assets/icon-mehrweg.png" alt="Mehrweg" class="concept-icon" style="width:18px;height:18px;"></div>` : ''}
           <!-- Favorit-Button (oben rechts) -->
           <button class="btn-icon-overlay" onclick="event.stopPropagation(); toggleDishFav('${dishKey}'); const btn=this.querySelector('i'); setTimeout(()=>{const isFav=dishFavs.has('${dishKey}'); btn.style.fill=isFav?'currentColor':''; btn.style.color=isFav?'#e74c3c':'#666'; if(typeof lucide !== 'undefined') lucide.createIcons();}, 10);" title="Favorit" style="position:absolute; top:4px; right:4px; width:28px; height:28px; border-radius:50%; background:rgba(255,255,255,0.95); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 2px 6px rgba(0,0,0,0.15); transition:transform 0.2s ease; z-index:5;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
             <i data-lucide="heart" style="width:14px;height:14px;${isFav ? 'fill:currentColor; color:#e74c3c;' : 'color:#666;'}"></i>
@@ -7576,7 +7574,7 @@
       body.appendChild(infoRow);
     }
     
-    // Actions: Nur ein Primary CTA "Bestellen"
+    // Actions: Primary CTA "In die Mittagsbox" (statt "Bestellen" - verboten für Endkunden)
     if(interactive){
       const actions=document.createElement('div');
       actions.className='card-actions';
@@ -7584,7 +7582,7 @@
       const orderBtn=document.createElement('button');
       orderBtn.type='button';
       orderBtn.className='card-action primary';
-      orderBtn.innerHTML = `${iconMarkup('shopping-cart')} <span>Bestellen</span>`;
+      orderBtn.innerHTML = `${iconMarkup('shopping-cart')} <span>In die Mittagsbox</span>`;
       orderBtn.disabled = !data.hasPickupCode;
       orderBtn.onclick=(e)=>{ e.stopPropagation(); handleOrderClick(data); };
       
@@ -7857,9 +7855,9 @@
     const confirmed = confirm(`Dieses Gericht für heute wählen?\n\n${esc(data.dish||'Gericht')}\n${euro(data.price)}\n\nNach der Zahlung erhältst du deine Abholnummer.`);
     if(!confirmed) return;
     
-    // Zur Mittagsbox hinzufügen
+    // Gericht hinzufügen (statt "Zur Mittagsbox" - verboten für Endkunden)
     if(addToCart(o)){
-      showToast('Gericht zur Mittagsbox hinzugefügt! 🧺', 2000);
+      showToast('Gericht hinzugefügt! 🧺', 2000);
       updateHeaderBasket();
       
       // Zur Mittagsbox navigieren (dort kann der Nutzer dann zur Kasse gehen)
@@ -8274,7 +8272,9 @@
           badgeEl.style.background = 'rgba(39,174,96,0.1)';
           badgeEl.style.color = '#27AE60';
           badgeEl.style.border = '1px solid rgba(39,174,96,0.2)';
-          badgeEl.innerHTML = `<span style="font-size:14px; margin-right:4px;">${badge.emoji || ''}</span><span>${esc(badge.text)}</span>`;
+          badgeEl.innerHTML = `<img src="assets/icon-mehrweg.png" alt="Mehrweg" class="concept-icon" style="width:16px;height:16px; margin-right:4px;"><span>${esc(badge.text)}</span>`;
+        } else if(badge.class === 'code'){
+          badgeEl.innerHTML = `<img src="assets/icon-abholnummer.png" alt="Abholnummer" class="concept-icon" style="width:16px;height:16px; margin-right:4px;"> <span>${esc(badge.text)}</span>`;
         } else {
           badgeEl.innerHTML = `<i data-lucide="${badge.icon}" style="width:14px;height:14px;"></i> <span>${esc(badge.text)}</span>`;
         }
@@ -8381,7 +8381,7 @@
       const hasReuseSupport = offerProvider && (offerProvider.reuseEnabled || offerProvider.reuse || (offerProvider.providerProfile && offerProvider.providerProfile.reuseEnabled));
       if(hasReuseSupport){
         ecoBadgeEl.style.display = 'block';
-        ecoBadgeEl.innerHTML = `<div style="padding:8px 12px; background:rgba(39,174,96,0.1); border-radius:8px; font-size:13px; font-weight:700; color:#27AE60; display:inline-flex; align-items:center; gap:6px; border:1px solid rgba(39,174,96,0.2);"><span style="font-size:16px;">🌿</span> <span>Mehrweg möglich</span></div>`;
+        ecoBadgeEl.innerHTML = `<div style="padding:8px 12px; background:rgba(39,174,96,0.1); border-radius:8px; font-size:13px; font-weight:700; color:#27AE60; display:inline-flex; align-items:center; gap:6px; border:1px solid rgba(39,174,96,0.2);"><img src="assets/icon-mehrweg.png" alt="Mehrweg" class="concept-icon"> <span>Mehrweg möglich</span></div>`;
       } else {
         ecoBadgeEl.style.display = 'none';
       }
@@ -8435,7 +8435,7 @@
               primaryCTA.classList.remove('loading');
               primaryCTA.classList.add('success');
               primaryCTAText.textContent = 'Erfolgreich!';
-              showToast('Gericht zur Mittagsbox hinzugefügt! 🧺');
+              showToast('Gericht hinzugefügt! 🧺');
               
               // Redirect to cart
               setTimeout(() => {
@@ -9558,18 +9558,6 @@
     };
   }
   
-  // Discover Standort-Button
-  const discoverLocationBtn = document.getElementById('btnDiscoverLocation');
-  if(discoverLocationBtn){
-    discoverLocationBtn.onclick=()=>{
-      const newLoc = prompt('Standort eingeben (Ort oder PLZ):', locationQuery || '');
-      if(newLoc !== null){
-        locationQuery = newLoc.trim();
-        renderDiscover();
-      }
-    };
-  }
-
   const btnAddCart = document.getElementById('btnAddCart');
   if(btnAddCart){
     btnAddCart.onclick=()=>{
@@ -10660,7 +10648,7 @@
         <div style="display:flex; align-items:center; justify-content:space-between; padding:16px; background:${isReuseEnabled ? 'rgba(31,157,85,0.1)' : '#f8f9fa'}; border-radius:16px; border:2px solid ${isReuseEnabled ? '#1f9d55' : 'transparent'}; transition:all 0.2s ease;">
           <div style="flex:1; min-width:0;">
             <div style="display:flex; align-items:center; gap:10px; margin-bottom:4px;">
-              <i data-lucide="recycle" style="width:20px;height:20px; color:${isReuseEnabled ? '#1f9d55' : '#666'};"></i>
+              <img src="assets/icon-mehrweg.png" alt="Mehrweg" class="concept-icon" style="width:20px;height:20px; opacity:${isReuseEnabled ? '1' : '0.5'};">
               <span style="font-weight:700; font-size:15px; color:#2D3436;">Mehrweg-Nutzer</span>
             </div>
             <div style="font-size:12px; color:#666; line-height:1.4;">Ich bringe mein eigenes Gefäß mit</div>
@@ -11852,7 +11840,7 @@
         <p style="font-size:14px; line-height:1.5; margin-top:8px; padding-bottom:12px; color:var(--muted);">Nein. Online-Zahlung ist optional. Eine Abholnummer gibt's nur bei Online-Zahlung.</p>
       </details>
       <details>
-        <summary style="font-size:15px; line-height:1.4; font-weight:500; padding:12px 0;">Kann ich ohne Abholnummer bestellen?</summary>
+        <summary style="font-size:15px; line-height:1.4; font-weight:500; padding:12px 0;">Kann ich ohne Abholnummer Gerichte hinzufügen?</summary>
         <p style="font-size:14px; line-height:1.5; margin-top:8px; padding-bottom:12px; color:var(--muted);">Nein. Angebote ohne Abholnummer kannst du nur ansehen.</p>
       </details>
       <details>
@@ -16493,6 +16481,12 @@
     // Fallback: Icons auch ohne Service Worker initialisieren
     window.addEventListener('load', ()=>{
       initIcons();
+      // Topbar: Kundefarben setzen, wenn initial aktive View eine Kundenseite ist
+      const activeView = document.querySelector('.view.active');
+      const topbar = document.querySelector('.topbar');
+      if(topbar && activeView && activeView.classList.contains('customer-view')){
+        topbar.classList.add('customer-context');
+      }
       // Profile-View aktualisieren
       if(typeof updateProfileView !== 'undefined'){
         updateProfileView();
