@@ -2,7 +2,7 @@
 
 ## Arbeitsverzeichnis (PFLICHT)
 
-- **Alle Änderungen ausschließlich in:** `C:\Projekte\Mittagio.de 27.01.2026 12.00 Uhr\mittagio`
+- **Alle Änderungen ausschließlich in:** `C:\Projekte\mittagio-clean`
 - **Alle anderen Pfade dauerhaft ignorieren** (z. B. `c:\Projekte\mittagio`, andere Workspaces, Obs-Ordner).
 
 ## Projekt-Übersicht
@@ -90,13 +90,38 @@
 
 ## Swipe-Modus & 3-Säulen-System
 
-### 1. Benennung & Begriffe (VERBINDLICH)
-- Die Funktion heißt konsistent **„Swipe-Modus“**.
-- ❌ **Niemals:** „Ticket“, „Abholcode“.
-- ✅ **Nur:** **Abholnummer** (Nutzer-Identifikation).
+### 1. UI-KOMPONENTEN
+- Jede Karte folgt dem **Polaroid-Stil** (Weißer Hintergrund, handgeschriebener Titel in Marker-Schrift).
+- Die **3 Säulen Icons** am Kartenrand sind **Pflicht**: 🍴 (Vor Ort), 🧾 (Abholnummer), 🔄 (Mehrweg).
+- **Keine Begleittexte** für Icons innerhalb der Karte verwenden.
+- **Foto nimmt 50% der Kartenhöhe ein** (kompakte Sammelkarten-Optik).
 
-### 2. Die 3-Säulen-Regel (Emoji-Logik - PFLICHT)
-Jede Karte im Swipe-Modus muss **zwingend** diese drei Symbole **ohne begleitenden Text** in der Fußzeile enthalten:
+### 2. FILTER-LOGIK (HEUTE & NÄHE)
+- Zeige **nur Gerichte für den aktuellen Kalendertag** (heute).
+- **Standard-Filter:** Gehzeit <= 10 Min (walking distance) - **👣 10 min** (Standard-Aktiv).
+- **Optionaler Filter:** Fahrzeit <= 15 Min (driving distance) - **🚗 15 min**.
+- Nutze **Echtzeit-Routing** basierend auf der Nutzer-Geolocation.
+- **Kategorien-Filter:** 🥗 Salat, 🥩 Fleisch, etc. (als Pills im Header).
+
+### 3. TERMINOLOGIE (VERBINDLICH)
+- ❌ **Verbotene Wörter:** "Ticket", "Code", "Abholcode", "Vor-Ort Logik".
+- ✅ **Erlaubte Wörter:** "Abholnummer", "Swipe-Modus".
+- Die Funktion heißt konsistent **"Swipe-Modus"**.
+
+### 4. INTERAKTION (Aktions-Buttons)
+- **Links (Rot):** ❌ Verwirft das Gericht (Keine Lust).
+- **Mitte (Weiß/Blau):** 🔄 Blättert zum nächsten Gericht im Stapel (Nächstes Gericht).
+- **Rechts (Grün):** ❤️🍴 Speichert Favorit und generiert die Abholnummer (Will ich).
+
+### 5. HEADER & NAVIGATION
+- **Zeit-Filter Pills:**
+  - 👣 10 min (Standard-Aktiv für Fußgänger)
+  - 🚗 15 min (Erweiterter Radius)
+- **Kategorien-Pills:** 🥗 Salat, 🥩 Fleisch, etc.
+- **View-Toggle:** Rechts oben (Liste ↔ Entdecken).
+
+### 6. DIE 3-SÄULEN-REGEL (Emoji-Logik - PFLICHT)
+Jede Karte im Swipe-Modus muss **zwingend** diese drei Symbole **ohne begleitenden Text** enthalten:
 
 | Position | Symbol | Bedeutung |
 |----------|--------|-----------|
@@ -109,17 +134,9 @@ Jede Karte im Swipe-Modus muss **zwingend** diese drei Symbole **ohne begleitend
 - Slots bleiben fest; bei fehlendem Feature: **Icon ausgegraut** (opacity: 0.4, grayscale(100%)).
 - **Kein Wegrücken** der Slots, keine Platzhalter-Boxen.
 
-### 3. UI & Interaktion (Design-Standards)
-- **Stil:** Nutze den **Sofortbildkamera-Stil (Polaroid)** für die Gerichte.
-- **Hintergrund:** **Reinweiß**, keine Schiefertafel-Texturen (Schiefer-Design wurde entfernt).
-- **Button-Leiste** (drei zentrale Aktions-Buttons am unteren Rand):
-  - **Links (Rot):** ❌ Keine Lust
-  - **Mitte (Grau/Blau):** 🔄 Nächstes Gericht
-  - **Rechts (Grün):** ❤️🍴 Will ich / Favorit
-
-### 4. System-Beschränkungen
-- Es darf **nur eine aktive Sitzung pro Nutzer** geben.
-- „Vor-Ort-Logik“ **nicht** in Nutzerkommunikation verwenden.
+### 7. SYSTEM-BESCHRÄNKUNGEN
+- Es darf zu jedem Zeitpunkt **nur eine aktive Sitzung pro Nutzer** existieren.
+- ❌ Vermeide die "Vor-Ort-Logik" als Begriff in der Nutzerkommunikation.
 
 ## Datenschutz & Endkunden
 
@@ -150,7 +167,7 @@ Jede Karte im Swipe-Modus muss **zwingend** diese drei Symbole **ohne begleitend
 - **Immer explizite Navigation**
 - Jeder Button muss reagieren (Dead-Click-Regel)
 - **Toast statt Alert**: Immer `showToast('Nachricht')` verwenden, nie `alert()`
-- **Arbeitsverzeichnis**: Immer in `C:\Projekte\mittagio` arbeiten (NICHT OneDrive)
+- **Arbeitsverzeichnis**: Immer in `C:\Projekte\mittagio-clean` arbeiten (NICHT OneDrive)
 
 ### Design-System (Farben & Haptik)
 - **Mittagio-Gelb**: `#FFD700` (Sattes, warmes Gelb – wie eine frische Kruste)
@@ -214,5 +231,5 @@ mittagio/
 
 ---
 
-**Stand:** 26.01.2026  
-**Letzte Aktualisierung:** 24.01.2026 (Kontext-Dateien)
+**Stand:** 28.01.2026  
+**Letzte Aktualisierung:** Swipe-Modus Rules finalisiert (Filter-Logik, Zeit-Filter Pills, Aktions-Buttons)

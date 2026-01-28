@@ -2131,8 +2131,17 @@
           <input type="text" id="discoverSearchInput" placeholder="Gericht oder Anbieter suchen..." style="width:100%; padding:10px 14px; border-radius:10px; border:2px solid rgba(0,0,0,0.1); font-size:14px; background:#fff; outline:none; transition:border-color 0.2s ease;" onfocus="this.style.borderColor='#FFD700';" onblur="this.style.borderColor='rgba(0,0,0,0.1)';" />
         </div>
         
-        <!-- Ebene 2: Quick-Filters (In der Nähe + Datum) - große Kapseln -->
+        <!-- Ebene 2: Quick-Filters (Zeit-Filter + In der Nähe + Datum) - große Kapseln -->
         <div id="discoverQuickFilters" style="display:flex; align-items:center; gap:8px; padding:8px 12px; overflow-x:auto; scrollbar-width:none; -webkit-overflow-scrolling:touch;">
+          <!-- Zeit-Filter Pills: 👣 10 min (Standard) | 🚗 15 min (Erweitert) -->
+          <button type="button" id="btnTimeFilterWalking" class="discover-time-filter-pill active" style="flex:0 0 auto; padding:10px 18px; border-radius:20px; border:1.5px solid var(--brand); background:var(--brand); font-size:14px; font-weight:700; color:#1a1a1a; cursor:pointer; transition:all 0.2s ease; display:flex; align-items:center; gap:6px;">
+            <span style="font-size:16px;">👣</span>
+            <span>10 min</span>
+          </button>
+          <button type="button" id="btnTimeFilterDriving" class="discover-time-filter-pill" style="flex:0 0 auto; padding:10px 18px; border-radius:20px; border:1.5px solid rgba(0,0,0,0.15); background:#fff; font-size:14px; font-weight:700; color:#333; cursor:pointer; transition:all 0.2s ease; display:flex; align-items:center; gap:6px;">
+            <span style="font-size:16px;">🚗</span>
+            <span>15 min</span>
+          </button>
           <button type="button" id="btnDiscoverNear" class="discover-quick-filter-pill" style="flex:0 0 auto; padding:10px 18px; border-radius:20px; border:1.5px solid rgba(0,0,0,0.15); background:#fff; font-size:14px; font-weight:700; color:#333; cursor:pointer; transition:all 0.2s ease; display:flex; align-items:center; gap:6px;">
             <i data-lucide="navigation" style="width:16px;height:16px;"></i>
             <span>In der Nähe</span>
@@ -2654,7 +2663,7 @@
         <!-- Branding -->
         <div style="text-align:center; padding-top:16px; border-top:1px solid rgba(0,0,0,0.06);">
           <div style="font-size:13px; color:var(--muted); margin-bottom:6px;">
-            hageo.de · made with helps · Besteck-Strategie
+            Mittagio.de · made with helps · Besteck-Strategie
           </div>
           <div style="font-size:10px; color:#94a3b8; font-weight:500;">Version 1.0.0</div>
         </div>
@@ -6181,6 +6190,43 @@
     }
     switchDiscoverView(discoverViewMode);
     
+    // Zeit-Filter Pills: 👣 10 min (Standard) | 🚗 15 min (Erweitert)
+    const btnTimeFilterWalking = document.getElementById('btnTimeFilterWalking');
+    const btnTimeFilterDriving = document.getElementById('btnTimeFilterDriving');
+    if(btnTimeFilterWalking && btnTimeFilterDriving){
+      // Initialer Zustand setzen
+      const isWalking = activeTimeFilter === 'walking';
+      btnTimeFilterWalking.className = 'discover-time-filter-pill' + (isWalking ? ' active' : '');
+      btnTimeFilterWalking.style.background = isWalking ? 'var(--brand)' : '#fff';
+      btnTimeFilterWalking.style.borderColor = isWalking ? 'var(--brand)' : 'rgba(0,0,0,0.15)';
+      btnTimeFilterWalking.style.color = isWalking ? '#1a1a1a' : '#333';
+      btnTimeFilterWalking.style.fontWeight = isWalking ? '900' : '700';
+      
+      btnTimeFilterDriving.className = 'discover-time-filter-pill' + (!isWalking ? ' active' : '');
+      btnTimeFilterDriving.style.background = !isWalking ? 'var(--brand)' : '#fff';
+      btnTimeFilterDriving.style.borderColor = !isWalking ? 'var(--brand)' : 'rgba(0,0,0,0.15)';
+      btnTimeFilterDriving.style.color = !isWalking ? '#1a1a1a' : '#333';
+      btnTimeFilterDriving.style.fontWeight = !isWalking ? '900' : '700';
+      
+      // Handler: 👣 10 min (Standard-Aktiv)
+      btnTimeFilterWalking.onclick = () => {
+        triggerHapticFeedback([10]);
+        activeTimeFilter = 'walking';
+        save('mittagio_timeFilter', 'walking');
+        renderDiscover();
+        if(discoverViewMode === 'swipe') renderSwipeCards();
+      };
+      
+      // Handler: 🚗 15 min (Erweitert)
+      btnTimeFilterDriving.onclick = () => {
+        triggerHapticFeedback([10]);
+        activeTimeFilter = 'driving';
+        save('mittagio_timeFilter', 'driving');
+        renderDiscover();
+        if(discoverViewMode === 'swipe') renderSwipeCards();
+      };
+    }
+    
     // Quick-Filters: "In der Nähe" Button
     const btnDiscoverNear = document.getElementById('btnDiscoverNear');
     const quickFiltersEl = document.getElementById('discoverQuickFilters');
@@ -6255,8 +6301,27 @@
       }
     }
     
-    // Angebote filtern
+    // Angebote filtern: Nur heute + Zeit-Filter (10 Min Gehzeit oder 15 Min Fahrzeit)
     let list = offers.filter(o => o.day === activeDay && o.active !== false);
+    
+    // Zeit-Filter: Standard 10 Min Gehzeit (5 km/h = 12 Min/km), optional 15 Min Fahrzeit (50 km/h = 1.2 Min/km)
+    if(activeTimeFilter === 'walking'){
+      // Standard: Gehzeit <= 10 Min
+      list = list.filter(o => {
+        const data = normalizeOffer(o);
+        if(data.distanceKm == null) return false; // Keine Entfernung = ausblenden
+        const walkingMinutes = Math.round(Number(data.distanceKm) * 12);
+        return walkingMinutes <= 10;
+      });
+    } else if(activeTimeFilter === 'driving'){
+      // Erweitert: Fahrzeit <= 15 Min
+      list = list.filter(o => {
+        const data = normalizeOffer(o);
+        if(data.distanceKm == null) return false; // Keine Entfernung = ausblenden
+        const carMinutes = Math.round(Number(data.distanceKm) * 1.2);
+        return carMinutes <= 15;
+      });
+    }
     
     // Ernährungs-Präferenzen Filter (aus Profil)
     if(customer && customer.dietaryPreferences){
@@ -6364,6 +6429,9 @@
   
   // Swipe-View State (mit LocalStorage-Persistenz)
   let discoverViewMode = load(LS.discoverView, 'list'); // 'list' oder 'swipe'
+  
+  // Zeit-Filter State (Standard: 10 Min Gehzeit)
+  let activeTimeFilter = load('mittagio_timeFilter', 'walking'); // 'walking' (10 min) oder 'driving' (15 min)
   
   // Initialisiere FAB State
   setTimeout(() => {
@@ -6479,8 +6547,27 @@
       });
     }
     
-    // Filtere Angebote (gleiche Logik wie renderDiscover)
+    // Filtere Angebote: Nur heute + Zeit-Filter (10 Min Gehzeit oder 15 Min Fahrzeit)
     let list = offers.filter(o => o.day === activeDay && o.active !== false);
+    
+    // Zeit-Filter: Standard 10 Min Gehzeit (5 km/h = 12 Min/km), optional 15 Min Fahrzeit (50 km/h = 1.2 Min/km)
+    if(activeTimeFilter === 'walking'){
+      // Standard: Gehzeit <= 10 Min
+      list = list.filter(o => {
+        const data = normalizeOffer(o);
+        if(data.distanceKm == null) return false; // Keine Entfernung = ausblenden
+        const walkingMinutes = Math.round(Number(data.distanceKm) * 12);
+        return walkingMinutes <= 10;
+      });
+    } else if(activeTimeFilter === 'driving'){
+      // Erweitert: Fahrzeit <= 15 Min
+      list = list.filter(o => {
+        const data = normalizeOffer(o);
+        if(data.distanceKm == null) return false; // Keine Entfernung = ausblenden
+        const carMinutes = Math.round(Number(data.distanceKm) * 1.2);
+        return carMinutes <= 15;
+      });
+    }
     
     // Ernährungs-Präferenzen Filter (aus Profil)
     if(customer && customer.dietaryPreferences){
@@ -6743,7 +6830,7 @@
   }
   
   function acceptOffer(offer){
-    // Ja = Zu Favoriten hinzufügen (LocalStorage)
+    // Ja = Zu Favoriten hinzufügen UND Abholnummer generieren
     if(!offer || !offer.id){
       console.error('Invalid offer in acceptOffer:', offer);
       return;
@@ -6752,42 +6839,42 @@
     const data = normalizeOffer(offer);
     const dishKey = data.id;
     
+    // Prüfe ob Gericht Abholnummer hat
+    if(!data.hasPickupCode){
+      showToast('Dieses Gericht hat keine Abholnummer. Bitte wähle ein anderes Gericht.', 3000);
+      return;
+    }
+    
     // Zu Favoriten hinzufügen (LocalStorage - dauerhaft)
     const favorites = JSON.parse(localStorage.getItem('mittagio_favorites') || '[]');
     if(!favorites.includes(dishKey)){
       favorites.push(dishKey);
       localStorage.setItem('mittagio_favorites', JSON.stringify(favorites));
-      
-      // Visuelles Feedback: Besteck-Icon Overlay
-      showToast('Auf Speiseplan gesetzt', 1500);
-    } else {
-      showToast('Bereits auf deinem Speiseplan', 1000);
     }
     
     // Auch in dishFavs Set hinzufügen (für Kompatibilität mit bestehender Logik)
     if(!dishFavs.has(dishKey)){
       dishFavs.add(dishKey);
       save(LS.dishFavs, Array.from(dishFavs));
+    }
+    
+    // Abholnummer generieren: Gericht in Warenkorb legen (generiert automatisch Abholnummer)
+    if(addToCart(offer)){
+      // Haptic Feedback
+      if(navigator.vibrate) navigator.vibrate([30, 20, 30]);
       
-      // UI Feedback: Zeige kurz ein Herz-Icon oder eine kleine Animation
-      showToast('✓ Zu Favoriten hinzugefügt', 1500);
+      // Toast-Bestätigung
+      showToast('Gericht zu Favoriten hinzugefügt und Abholnummer generiert ❤️🧾', 2000);
       
       // Fly-to-Favorites Animation (falls vorhanden)
       if(typeof triggerFlyToFavoritesAnimation === 'function'){
         triggerFlyToFavoritesAnimation(offer);
       }
       
-      // Haptic Feedback
-      if(navigator.vibrate) navigator.vibrate([30, 20, 30]);
-      
-      // Toast-Bestätigung
-      showToast('Gericht zu Favoriten hinzugefügt ❤️', 2000);
-      
       // Favoriten-Seite aktualisieren (falls sichtbar)
       renderFavorites();
     } else {
-      // Bereits in Favoriten - kurze Bestätigung
-      showToast('Bereits in Favoriten ❤️', 1500);
+      showToast('Fehler beim Hinzufügen. Bitte erneut versuchen.', 2000);
     }
   }
   
