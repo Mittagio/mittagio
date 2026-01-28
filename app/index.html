@@ -356,15 +356,18 @@
     /* Polaroid-Discovery: Weiße Polaroid-Rahmen mit Schlagschatten */
     .card.polaroid{
       background:#FFFFFF;
-      border:1px solid rgba(255,255,255,0.8);
-      border-radius:4px;
-      box-shadow:0 8px 24px rgba(0,0,0,0.15), 0 2px 8px rgba(0,0,0,0.1);
-      padding:10px 10px 16px;
+      border:1px solid rgba(0,0,0,0.08);
+      border-radius:12px;
+      box-shadow:0 4px 16px rgba(0,0,0,0.12), 0 2px 6px rgba(0,0,0,0.08);
+      padding:0;
       display:flex;
       flex-direction:column;
-      align-items:center;
-      transform: scale(0.8);
-      transform-origin: center;
+      align-items:stretch;
+      max-width:320px;
+      margin:0 auto;
+      overflow:hidden;
+      /* Helles Holz-Hintergrund (warm, beige) */
+      background:linear-gradient(135deg, #f5f1eb 0%, #ede8e0 100%);
     }
     .card.playful{
       border-color:rgba(242,183,5,.38);
@@ -379,15 +382,14 @@
     .img img{width:100%; height:100%; object-fit:cover; display:block}
     /* Polaroid: Foto nimmt nur 50% der Kachelhöhe ein */
     .card.polaroid .img{
-      aspect-ratio:4/3;
       width:100%;
-      max-width:100%;
-      height:auto;
-      min-height:auto;
-      max-height:50%;
-      border-radius:2px;
+      height:50%;
+      min-height:180px;
+      max-height:200px;
+      border-radius:0;
       position:relative;
-      overflow:visible;
+      overflow:hidden;
+      flex-shrink:0;
     }
     .card.polaroid .img img{
       width:100%;
@@ -1539,19 +1541,20 @@
     /* Polaroid-Karten: Zufällige Rotation für natürlichen Look */
     .card.polaroid{
       transform:rotate(0deg);
-      transition:transform 0.3s ease;
+      transition:transform 0.3s ease, box-shadow 0.3s ease;
     }
     .card.polaroid:nth-child(3n+1){
-      transform:rotate(-1.5deg);
+      transform:rotate(-1deg);
     }
     .card.polaroid:nth-child(3n+2){
-      transform:rotate(1deg);
+      transform:rotate(0.8deg);
     }
     .card.polaroid:nth-child(3n+3){
-      transform:rotate(-0.8deg);
+      transform:rotate(-0.5deg);
     }
     .card.polaroid:hover{
-      transform:rotate(0deg) scale(1.02);
+      transform:rotate(0deg) scale(1.03);
+      box-shadow:0 6px 20px rgba(0,0,0,0.15), 0 4px 10px rgba(0,0,0,0.1);
       z-index:10;
     }
     /* Ungenutzte .discover-list-card Styles entfernt - wir verwenden .dish-card für kompakte Liste */
@@ -7653,106 +7656,52 @@
       card.style.cursor='default';
     }
 
-    // Image (Polaroid: Quadratisch)
+    // Image (Polaroid: 50% Höhe für kompakte Sammelkarte)
     const img=document.createElement('div');
     img.className='img';
     const imgSrc = data.imageUrl || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70';
-    img.innerHTML = `<img alt="${esc(data.dish||'')}" src="${esc(imgSrc)}" />`;
     
-    // Badges auf Foto (oben links): 3 Säulen als kleine kreisrunde Icons (Glass-Morphism)
     if(isPolaroid){
-      img.style.position = 'relative';
-      
-      // Badge-Container oben links
-      const badgesContainer = document.createElement('div');
-      badgesContainer.style.position = 'absolute';
-      badgesContainer.style.top = '8px';
-      badgesContainer.style.left = '8px';
-      badgesContainer.style.display = 'flex';
-      badgesContainer.style.gap = '6px';
-      badgesContainer.style.zIndex = '10';
+      // Kompakte Polaroid-Karte: Foto nimmt 50% Höhe ein
+      img.style.cssText = 'position:relative; width:100%; height:50%; min-height:180px; overflow:hidden; background:#f0f0f0;';
+      img.innerHTML = `<img alt="${esc(data.dish||'')}" src="${esc(imgSrc)}" style="width:100%; height:100%; object-fit:cover;" />`;
       
       const offerProvider = offers.find(p => p.providerId === data.providerId);
       const orderingEnabled = offerProvider && (offerProvider.orderingEnabled !== false && (data.hasPickupCode || offerProvider.hasPickupCode));
       const hasDineIn = offerProvider && (offerProvider.dineInPossible !== false || data.dineInPossible);
       const hasReuse = offerProvider && (offerProvider.reuse && offerProvider.reuse.enabled);
       
+      // Badge-Container oben links (3 kleine Kreise mit Glass-Morphism)
+      const badgesContainer = document.createElement('div');
+      badgesContainer.style.cssText = 'position:absolute; top:8px; left:8px; display:flex; gap:6px; z-index:10;';
+      
       // Badge 1: Vor Ort 🍴
       const badge1 = document.createElement('div');
-      badge1.style.width = '20px';
-      badge1.style.height = '20px';
-      badge1.style.borderRadius = '50%';
-      badge1.style.background = hasDineIn ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.4)';
-      badge1.style.backdropFilter = 'blur(10px)';
-      badge1.style.webkitBackdropFilter = 'blur(10px)';
-      badge1.style.border = '1px solid rgba(255,255,255,0.5)';
-      badge1.style.display = 'flex';
-      badge1.style.alignItems = 'center';
-      badge1.style.justifyContent = 'center';
-      badge1.style.fontSize = '12px';
-      badge1.style.opacity = hasDineIn ? '1' : '0.4';
-      badge1.style.filter = hasDineIn ? 'none' : 'grayscale(100%)';
+      badge1.style.cssText = `width:24px; height:24px; border-radius:50%; background:${hasDineIn ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.4)'}; backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:1px solid rgba(255,255,255,0.5); display:flex; align-items:center; justify-content:center; font-size:12px; opacity:${hasDineIn ? '1' : '0.4'}; filter:${hasDineIn ? 'none' : 'grayscale(100%)'};`;
       badge1.textContent = '🍴';
       badgesContainer.appendChild(badge1);
       
       // Badge 2: Abholnummer 🧾
       const badge2 = document.createElement('div');
-      badge2.style.width = '20px';
-      badge2.style.height = '20px';
-      badge2.style.borderRadius = '50%';
-      badge2.style.background = orderingEnabled ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.4)';
-      badge2.style.backdropFilter = 'blur(10px)';
-      badge2.style.webkitBackdropFilter = 'blur(10px)';
-      badge2.style.border = '1px solid rgba(255,255,255,0.5)';
-      badge2.style.display = 'flex';
-      badge2.style.alignItems = 'center';
-      badge2.style.justifyContent = 'center';
-      badge2.style.fontSize = '12px';
-      badge2.style.opacity = orderingEnabled ? '1' : '0.4';
-      badge2.style.filter = orderingEnabled ? 'none' : 'grayscale(100%)';
+      badge2.style.cssText = `width:24px; height:24px; border-radius:50%; background:${orderingEnabled ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.4)'}; backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:1px solid rgba(255,255,255,0.5); display:flex; align-items:center; justify-content:center; font-size:12px; opacity:${orderingEnabled ? '1' : '0.4'}; filter:${orderingEnabled ? 'none' : 'grayscale(100%)'};`;
       badge2.textContent = '🧾';
       badgesContainer.appendChild(badge2);
       
       // Badge 3: Mehrweg 🔄
       const badge3 = document.createElement('div');
-      badge3.style.width = '20px';
-      badge3.style.height = '20px';
-      badge3.style.borderRadius = '50%';
-      badge3.style.background = hasReuse ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.4)';
-      badge3.style.backdropFilter = 'blur(10px)';
-      badge3.style.webkitBackdropFilter = 'blur(10px)';
-      badge3.style.border = '1px solid rgba(255,255,255,0.5)';
-      badge3.style.display = 'flex';
-      badge3.style.alignItems = 'center';
-      badge3.style.justifyContent = 'center';
-      badge3.style.fontSize = '12px';
-      badge3.style.opacity = hasReuse ? '1' : '0.4';
-      badge3.style.filter = hasReuse ? 'none' : 'grayscale(100%)';
+      badge3.style.cssText = `width:24px; height:24px; border-radius:50%; background:${hasReuse ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.4)'}; backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:1px solid rgba(255,255,255,0.5); display:flex; align-items:center; justify-content:center; font-size:12px; opacity:${hasReuse ? '1' : '0.4'}; filter:${hasReuse ? 'none' : 'grayscale(100%)'};`;
       badge3.textContent = '🔄';
       badgesContainer.appendChild(badge3);
       
       img.appendChild(badgesContainer);
       
-      // Preis-Sticker: Grüner, runder Sticker direkt auf dem Foto (rechts unten)
+      // Preis-Sticker: Rechts unten auf Foto
       const priceSticker = document.createElement('div');
-      priceSticker.style.position = 'absolute';
-      priceSticker.style.bottom = '8px';
-      priceSticker.style.right = '8px';
-      priceSticker.style.width = '48px';
-      priceSticker.style.height = '48px';
-      priceSticker.style.borderRadius = '50%';
-      priceSticker.style.background = '#27AE60';
-      priceSticker.style.border = '3px solid #fff';
-      priceSticker.style.display = 'flex';
-      priceSticker.style.alignItems = 'center';
-      priceSticker.style.justifyContent = 'center';
-      priceSticker.style.fontWeight = '900';
-      priceSticker.style.fontSize = '12px';
-      priceSticker.style.color = '#fff';
-      priceSticker.style.boxShadow = '0 2px 8px rgba(0,0,0,0.2)';
-      priceSticker.style.zIndex = '10';
+      priceSticker.style.cssText = 'position:absolute; bottom:8px; right:8px; width:48px; height:48px; border-radius:50%; background:#27AE60; border:3px solid #fff; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:12px; color:#fff; box-shadow:0 2px 8px rgba(0,0,0,0.2); z-index:10;';
       priceSticker.textContent = euro(data.price);
       img.appendChild(priceSticker);
+    } else {
+      img.innerHTML = `<img alt="${esc(data.dish||'')}" src="${esc(imgSrc)}" />`;
     }
 
     // Heart Icon (Favorit) - rechts oben (kein Text, nur Icon)
@@ -7767,25 +7716,34 @@
     // Body
     const body=document.createElement('div');
     body.className='body';
+    if(isPolaroid){
+      // Polaroid: Weißer Hintergrund für Body (Holz nur im View-Hintergrund)
+      body.style.cssText = 'background:#fff; padding:0; flex:1; display:flex; flex-direction:column;';
+    }
     
-    // Polaroid: Gerichtname in Marker-Schrift (Handschrift-Stil) auf weißem Polaroid-Rand
+    // Polaroid: Gerichtname in Marker-Schrift mit Teilen-Icon
     if(isPolaroid){
       const titleRow = document.createElement('div');
-      titleRow.style.marginTop = '16px';
-      titleRow.style.width = '100%';
-      titleRow.style.textAlign = 'center';
+      titleRow.style.cssText = 'margin-top:12px; padding:0 16px; display:flex; align-items:center; justify-content:space-between; gap:8px;';
+      
       const title = document.createElement('h3');
-      title.style.fontFamily = "'Kalam', 'Comic Sans MS', 'Marker Felt', cursive";
-      title.style.fontWeight = '700';
-      title.style.fontSize = '18px';
-      title.style.color = '#000';
-      title.style.textTransform = 'none';
-      title.style.letterSpacing = '0.5px';
-      title.style.lineHeight = '1.3';
-      title.style.margin = '0';
-      title.style.padding = '0 8px';
+      title.style.cssText = "font-family:'Kalam', 'Comic Sans MS', 'Marker Felt', cursive; font-weight:700; font-size:18px; color:#000; text-transform:none; letter-spacing:0.5px; line-height:1.3; margin:0; flex:1; text-align:center;";
       title.textContent = data.dish || 'Gericht';
       titleRow.appendChild(title);
+      
+      // Teilen-Icon rechts neben dem Namen
+      const shareBtn = document.createElement('button');
+      shareBtn.type = 'button';
+      shareBtn.style.cssText = 'width:32px; height:32px; border-radius:50%; background:rgba(0,0,0,0.05); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; transition:background 0.2s ease;';
+      shareBtn.onmouseover = () => { shareBtn.style.background = 'rgba(0,0,0,0.1)'; };
+      shareBtn.onmouseout = () => { shareBtn.style.background = 'rgba(0,0,0,0.05)'; };
+      shareBtn.onclick = (e) => {
+        e.stopPropagation();
+        shareOffer(data);
+      };
+      shareBtn.innerHTML = iconMarkup('share-2', {size: 16});
+      titleRow.appendChild(shareBtn);
+      
       body.appendChild(titleRow);
     } else {
       // Standard-Titelzeile: Dish name (max 2 Zeilen)
@@ -7798,68 +7756,76 @@
     body.appendChild(titleRow);
     }
     
-    // Anbieter: Kurzform mit Store-Icon (klickbar)
-    const providerEl = document.createElement('p');
-    providerEl.className='card-provider';
-    providerEl.style.cursor = 'pointer';
-    providerEl.style.textDecoration = 'underline';
-    providerEl.style.textDecorationColor = 'rgba(0,0,0,0.2)';
-    providerEl.style.transition = 'opacity 0.2s ease';
-    providerEl.onmouseover = () => { providerEl.style.opacity = '0.7'; };
-    providerEl.onmouseout = () => { providerEl.style.opacity = '1'; };
-    providerEl.innerHTML = `<i data-lucide="store" style="width:16px;height:16px;"></i> <span>${esc(data.providerName || 'Anbieter')}</span>`;
-    providerEl.onclick = (e) => {
-      e.stopPropagation();
-      // Filtere nach diesem Provider
-      if(data.providerId){
-        activeDiscoverFilter = 'provider';
-        currentProviderFilter = data.providerId;
-        renderDiscover();
-        showToast(`Angebote von ${esc(data.providerName || 'Anbieter')}`);
-      } else {
-        showToast('Anbieter-Informationen nicht verfügbar');
+    // Anbieter: Restaurant-Name (nur bei Polaroid)
+    if(isPolaroid){
+      const providerEl = document.createElement('p');
+      providerEl.style.cssText = 'margin:8px 0 0; padding:0 16px; text-align:center; font-size:13px; font-weight:600; color:#666; cursor:pointer; transition:opacity 0.2s ease;';
+      providerEl.onmouseover = () => { providerEl.style.opacity = '0.7'; };
+      providerEl.onmouseout = () => { providerEl.style.opacity = '1'; };
+      providerEl.innerHTML = `<i data-lucide="store" style="width:14px;height:14px; margin-right:4px;"></i> <span>${esc(data.providerName || 'Anbieter')}</span>`;
+      providerEl.onclick = (e) => {
+        e.stopPropagation();
+        if(data.providerId){
+          activeDiscoverFilter = 'provider';
+          currentProviderFilter = data.providerId;
+          renderDiscover();
+          showToast(`Angebote von ${esc(data.providerName || 'Anbieter')}`);
+        }
+      };
+      body.appendChild(providerEl);
+      
+      // Mobilitäts-Zeile: Spielerische Icons direkt unter Restaurant-Namen
+      if(data.distanceKm != null){
+        const mobilityRow = document.createElement('div');
+        mobilityRow.style.cssText = 'margin-top:8px; padding:0 16px; display:flex; align-items:center; justify-content:center; gap:12px; font-size:12px; color:#666; font-weight:600;';
+        
+        // Gehzeit: 5 km/h = 12 Minuten pro km
+        const walkingMinutes = Math.round(Number(data.distanceKm) * 12);
+        const walkingMeters = Math.round(Number(data.distanceKm) * 1000);
+        const walkingTimeText = walkingMinutes < 1 ? '< 1' : walkingMinutes;
+        
+        // Autofahrt: 50 km/h = 1.2 Minuten pro km
+        const carMinutes = Math.round(Number(data.distanceKm) * 1.2);
+        const carTimeText = carMinutes < 1 ? '< 1' : carMinutes;
+        const distanceMeters = walkingMeters;
+        
+        mobilityRow.innerHTML = `
+          <span style="display:flex; align-items:center; gap:4px;">
+            <span style="font-size:16px;">🚶</span>
+            <span>${walkingTimeText} min</span>
+          </span>
+          <span style="display:flex; align-items:center; gap:4px;">
+            <span style="font-size:16px;">🚗</span>
+            <span>${carTimeText} min</span>
+          </span>
+          <span style="display:flex; align-items:center; gap:4px;">
+            <span style="font-size:16px;">📍</span>
+            <span>${distanceMeters}m</span>
+          </span>
+        `;
+        body.appendChild(mobilityRow);
       }
-    };
-    body.appendChild(providerEl);
-    
-    // Mobilitäts-Info: Wegweiser-Zeile unter dem Gerichtnamen (nur bei Polaroid)
-    if(isPolaroid && data.distanceKm != null){
-      const mobilityRow = document.createElement('div');
-      mobilityRow.style.display = 'flex';
-      mobilityRow.style.alignItems = 'center';
-      mobilityRow.style.justifyContent = 'center';
-      mobilityRow.style.gap = '16px';
-      mobilityRow.style.marginTop = '8px';
-      mobilityRow.style.fontSize = '11px';
-      mobilityRow.style.color = '#666';
-      mobilityRow.style.fontWeight = '500';
-      mobilityRow.style.fontStyle = 'italic';
-      
-      // Gehzeit berechnen: 5 km/h = 12 Minuten pro km
-      const walkingMinutes = Math.round(Number(data.distanceKm) * 12);
-      const walkingMeters = Math.round(Number(data.distanceKm) * 1000);
-      const walkingTimeText = walkingMinutes < 1 ? '< 1 Min' : `${walkingMinutes} Min`;
-      
-      // Autofahrt-Zeit berechnen: 50 km/h Durchschnitt = 1.2 Minuten pro km
-      const carMinutes = Math.round(Number(data.distanceKm) * 1.2);
-      const carTimeText = carMinutes < 1 ? '< 1 Min' : `${carMinutes} Min`;
-      const carKmText = Number(data.distanceKm).toFixed(1);
-      
-      mobilityRow.innerHTML = `
-        <span style="display:flex; align-items:center; gap:4px;">
-          <span style="font-size:14px;">🚶</span>
-          <span>${walkingMeters}m</span>
-          <span style="opacity:0.6;">·</span>
-          <span>${walkingTimeText}</span>
-        </span>
-        <span style="display:flex; align-items:center; gap:4px;">
-          <span style="font-size:14px;">🚗</span>
-          <span>${carKmText}km</span>
-          <span style="opacity:0.6;">·</span>
-          <span>${carTimeText}</span>
-        </span>
-      `;
-      body.appendChild(mobilityRow);
+    } else {
+      // Standard: Anbieter mit Store-Icon
+      const providerEl = document.createElement('p');
+      providerEl.className='card-provider';
+      providerEl.style.cursor = 'pointer';
+      providerEl.style.textDecoration = 'underline';
+      providerEl.style.textDecorationColor = 'rgba(0,0,0,0.2)';
+      providerEl.style.transition = 'opacity 0.2s ease';
+      providerEl.onmouseover = () => { providerEl.style.opacity = '0.7'; };
+      providerEl.onmouseout = () => { providerEl.style.opacity = '1'; };
+      providerEl.innerHTML = `<i data-lucide="store" style="width:16px;height:16px;"></i> <span>${esc(data.providerName || 'Anbieter')}</span>`;
+      providerEl.onclick = (e) => {
+        e.stopPropagation();
+        if(data.providerId){
+          activeDiscoverFilter = 'provider';
+          currentProviderFilter = data.providerId;
+          renderDiscover();
+          showToast(`Angebote von ${esc(data.providerName || 'Anbieter')}`);
+        }
+      };
+      body.appendChild(providerEl);
     }
     
     // Preis: Nur bei Nicht-Polaroid (bei Polaroid ist Preis auf dem Bild)
@@ -7870,65 +7836,92 @@
     body.appendChild(price);
     }
     
-    // Info-Zeile als Icon-Badges (eine Zeile, max 4 Icons, nur Icons + Zahlen)
-    const infoRow = document.createElement('div');
-    infoRow.className='card-info-badges';
-    
-    // clock: timeRange
-    if(data.pickupWindow){
-      const timeBadge = document.createElement('span');
-      timeBadge.className='card-info-badge';
-      timeBadge.innerHTML = `${iconMarkup('clock')} <span>${esc(data.pickupWindow)}</span>`;
-      infoRow.appendChild(timeBadge);
-    }
-    
-    // map-pin: distance
-    if(data.distanceKm != null){
-      const distBadge = document.createElement('span');
-      distBadge.className='card-info-badge';
-      distBadge.innerHTML = `${iconMarkup('map-pin')} <span>${Number(data.distanceKm).toFixed(1)}</span>`;
-      infoRow.appendChild(distBadge);
-    }
-    
-    // No-Limits: Keine Mengenangaben mehr - Status wird über active gesteuert
-    
-    // food type: leaf (Vegan), carrot (Vegetarian), drumstick (Meat), fish (Fish)
-    const foodTypeIcon = data.category === 'Vegan' ? 'leaf' : 
-                         data.category === 'Vegetarisch' ? 'carrot' : 
-                         data.category === 'Mit Fleisch' ? 'drumstick' : 
-                         data.category === 'Fisch' ? 'fish' : '';
-    if(foodTypeIcon){
-      const typeBadge = document.createElement('span');
-      typeBadge.className='card-info-badge';
-      typeBadge.innerHTML = iconMarkup(foodTypeIcon);
-      infoRow.appendChild(typeBadge);
-    }
-    
-    // Max 4 Icons pro Info-Zeile
-    if(infoRow.children.length > 4){
-      while(infoRow.children.length > 4){
-        infoRow.removeChild(infoRow.lastChild);
+    // Info-Zeile: Nur bei Nicht-Polaroid (bei Polaroid wird Mobilitäts-Zeile verwendet)
+    if(!isPolaroid){
+      const infoRow = document.createElement('div');
+      infoRow.className='card-info-badges';
+      
+      // clock: timeRange
+      if(data.pickupWindow){
+        const timeBadge = document.createElement('span');
+        timeBadge.className='card-info-badge';
+        timeBadge.innerHTML = `${iconMarkup('clock')} <span>${esc(data.pickupWindow)}</span>`;
+        infoRow.appendChild(timeBadge);
+      }
+      
+      // map-pin: distance
+      if(data.distanceKm != null){
+        const distBadge = document.createElement('span');
+        distBadge.className='card-info-badge';
+        distBadge.innerHTML = `${iconMarkup('map-pin')} <span>${Number(data.distanceKm).toFixed(1)}</span>`;
+        infoRow.appendChild(distBadge);
+      }
+      
+      // food type: leaf (Vegan), carrot (Vegetarian), drumstick (Meat), fish (Fish)
+      const foodTypeIcon = data.category === 'Vegan' ? 'leaf' : 
+                           data.category === 'Vegetarisch' ? 'carrot' : 
+                           data.category === 'Mit Fleisch' ? 'drumstick' : 
+                           data.category === 'Fisch' ? 'fish' : '';
+      if(foodTypeIcon){
+        const typeBadge = document.createElement('span');
+        typeBadge.className='card-info-badge';
+        typeBadge.innerHTML = iconMarkup(foodTypeIcon);
+        infoRow.appendChild(typeBadge);
+      }
+      
+      // Max 4 Icons pro Info-Zeile
+      if(infoRow.children.length > 4){
+        while(infoRow.children.length > 4){
+          infoRow.removeChild(infoRow.lastChild);
+        }
+      }
+      
+      if(infoRow.children.length > 0){
+        body.appendChild(infoRow);
       }
     }
     
-    if(infoRow.children.length > 0){
-      body.appendChild(infoRow);
-    }
-    
-    // Actions: Primary CTA "In die Mittagsbox" (statt "Bestellen" - verboten für Endkunden)
+    // Actions: Primary CTA "In die Mittagsbox" (gelber Button ohne graue Box)
     if(interactive){
-      const actions=document.createElement('div');
-      actions.className='card-actions';
-      
-      const orderBtn=document.createElement('button');
-      orderBtn.type='button';
-      orderBtn.className='card-action primary';
-      orderBtn.innerHTML = `${iconMarkup('shopping-cart')} <span>In die Mittagsbox</span>`;
-      orderBtn.disabled = !data.hasPickupCode;
-      orderBtn.onclick=(e)=>{ e.stopPropagation(); handleOrderClick(data); };
-      
-      actions.appendChild(orderBtn);
-      body.appendChild(actions);
+      if(isPolaroid){
+        // Polaroid: Gelber Button direkt auf weißem Rand (ohne graue Box)
+        const orderBtn = document.createElement('button');
+        orderBtn.type = 'button';
+        orderBtn.style.cssText = 'width:calc(100% - 32px); margin:12px 16px; min-height:48px; background:var(--brand); color:#1a1a1a; font-weight:900; font-size:16px; border:none; border-radius:12px; box-shadow:0 4px 12px rgba(255,215,0,0.3); display:flex; align-items:center; justify-content:center; gap:8px; cursor:pointer; transition:transform 0.2s ease, box-shadow 0.2s ease;';
+        orderBtn.onmouseover = () => {
+          orderBtn.style.transform = 'translateY(-2px)';
+          orderBtn.style.boxShadow = '0 6px 16px rgba(255,215,0,0.4)';
+        };
+        orderBtn.onmouseout = () => {
+          orderBtn.style.transform = 'translateY(0)';
+          orderBtn.style.boxShadow = '0 4px 12px rgba(255,215,0,0.3)';
+        };
+        orderBtn.innerHTML = `${iconMarkup('shopping-cart')} <span>In die Mittagsbox</span>`;
+        orderBtn.disabled = !data.hasPickupCode;
+        if(orderBtn.disabled){
+          orderBtn.style.opacity = '0.5';
+          orderBtn.style.cursor = 'not-allowed';
+        }
+        orderBtn.onclick = (e) => {
+          e.stopPropagation();
+          if(!orderBtn.disabled) handleOrderClick(data);
+        };
+        body.appendChild(orderBtn);
+      } else {
+        // Standard: Mit grauer Box
+        const actions=document.createElement('div');
+        actions.className='card-actions';
+        
+        const orderBtn=document.createElement('button');
+        orderBtn.type='button';
+        orderBtn.className='card-action primary';
+        orderBtn.innerHTML = `${iconMarkup('shopping-cart')} <span>In die Mittagsbox</span>`;
+        orderBtn.disabled = !data.hasPickupCode;
+        orderBtn.onclick=(e)=>{ e.stopPropagation(); handleOrderClick(data); };
+        
+        actions.appendChild(orderBtn);
+        body.appendChild(actions);
+      }
     }
 
     card.appendChild(img);
