@@ -363,11 +363,17 @@
       display:flex;
       flex-direction:column;
       align-items:stretch;
-      max-width:256px; /* 20% kleiner: 320px * 0.8 = 256px */
+      max-width:256px; /* 20% kleiner: 320px * 0.8 = 256px - für 2 Spalten auf S25: 160px */
       margin:0 auto;
       overflow:hidden;
       /* Helles Holz-Hintergrund (warm, beige) */
       background:linear-gradient(135deg, #f5f1eb 0%, #ede8e0 100%);
+    }
+    /* Responsive: 2 Spalten auf kleinen Bildschirmen */
+    @media (max-width: 480px) {
+      .card.polaroid {
+        max-width: 160px;
+      }
     }
     .card.playful{
       border-color:rgba(242,183,5,.38);
@@ -384,8 +390,8 @@
     .card.polaroid .img{
       width:100%;
       height:50%;
-      min-height:180px;
-      max-height:200px;
+      min-height:140px; /* Reduziert für kompakteres Design */
+      max-height:140px; /* Exakt 50% der Kartenhöhe */
       border-radius:0;
       position:relative;
       overflow:hidden;
@@ -6456,7 +6462,7 @@
     
     const listEl = document.getElementById('discoverOffers');
     const swipeEl = document.getElementById('discoverSwipe');
-    const toggleBtn = document.getElementById('toggleDiscoverView');
+    // toggleDiscoverView wurde entfernt - nur noch toggleDiscoverViewTopbar im Header
     const categoriesWrapper = document.getElementById('discoverCategoriesWrapper');
     const calendarEl = document.getElementById('discoverCalendar');
     const quickFiltersEl = document.getElementById('discoverQuickFilters');
@@ -6472,7 +6478,7 @@
         swipeEl.style.maxHeight = 'none';
         swipeEl.style.padding = '12px 0';
       }
-      if(toggleBtn) toggleBtn.classList.add('active');
+      // toggleBtn entfernt - nur noch Topbar-Toggle verwendet
       // Filter, Quick-Filters und Kalender im Swipe-Modus komplett ausblenden (immersiver Modus)
       if(categoriesWrapper) categoriesWrapper.style.display = 'none';
       if(quickFiltersEl) quickFiltersEl.style.display = 'none';
@@ -6487,7 +6493,7 @@
         swipeEl.style.minHeight = '480px';
         swipeEl.style.maxHeight = '600px';
       }
-      if(toggleBtn) toggleBtn.classList.remove('active');
+      // toggleBtn entfernt - nur noch Topbar-Toggle verwendet
       // Filter, Quick-Filters und Kalender in Listenansicht wieder einblenden
       if(categoriesWrapper) categoriesWrapper.style.display = 'flex';
       if(quickFiltersEl) quickFiltersEl.style.display = 'flex';
@@ -7202,17 +7208,13 @@
   const fabHint = document.getElementById('fabHint');
   
   // Toggle-Switch Handler (Legacy - im Header, wird versteckt)
-  const toggleDiscoverView = document.getElementById('toggleDiscoverView');
+  // toggleDiscoverView wurde entfernt - nur noch toggleDiscoverViewTopbar im Header
   const toggleDiscoverViewTopbar = document.getElementById('toggleDiscoverViewTopbar');
   
   function syncToggleState(){
     const isSwipe = discoverViewMode === 'swipe';
     
-    // Legacy Toggle (versteckt, aber für Kompatibilität)
-    if(toggleDiscoverView){
-      if(isSwipe) toggleDiscoverView.classList.add('active');
-      else toggleDiscoverView.classList.remove('active');
-    }
+    // Legacy Toggle entfernt - nur noch Topbar-Toggle
     // Moderner Toggle: Aktiven Zustand setzen und Icon wechseln
     if(toggleDiscoverViewTopbar){
       const iconEl = toggleDiscoverViewTopbar.querySelector('#toggleDiscoverViewIcon');
@@ -7264,15 +7266,7 @@
     };
   }
   
-  // Legacy Toggle Handler (für Kompatibilität)
-  if(toggleDiscoverView){
-    toggleDiscoverView.onclick = () => {
-      const newMode = discoverViewMode === 'list' ? 'swipe' : 'list';
-      switchDiscoverView(newMode);
-      save(LS.discoverView, newMode);
-      syncToggleState();
-    };
-  }
+  // Legacy Toggle Handler entfernt - nur noch Topbar-Toggle verwendet
   if(toggleDiscoverViewTopbar){
     toggleDiscoverViewTopbar.onclick = () => {
       const newMode = discoverViewMode === 'list' ? 'swipe' : 'list';
@@ -7731,16 +7725,18 @@
       const badgesContainer = document.createElement('div');
       badgesContainer.style.cssText = 'position:absolute; top:8px; left:8px; display:flex; gap:6px; z-index:10;';
       
-      // Badge 1: Vor Ort 🍴
+      // Badge 1: Vor Ort 🍴 - Optimierter Stil mit backdrop-filter
       const badge1 = document.createElement('div');
-      badge1.style.cssText = `width:24px; height:24px; border-radius:50%; background:${hasDineIn ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.4)'}; backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:1px solid rgba(255,255,255,0.5); display:flex; align-items:center; justify-content:center; font-size:12px; opacity:${hasDineIn ? '1' : '0.4'}; filter:${hasDineIn ? 'none' : 'grayscale(100%)'};`;
+      badge1.style.cssText = `width:24px; height:24px; border-radius:50%; background:${hasDineIn ? 'rgba(255,255,255,0.7)' : 'rgba(255,255,255,0.4)'}; backdrop-filter:blur(5px); -webkit-backdrop-filter:blur(5px); border:1px solid rgba(255,255,255,0.5); display:flex; align-items:center; justify-content:center; font-size:12px; opacity:${hasDineIn ? '1' : '0.4'}; filter:${hasDineIn ? 'none' : 'grayscale(100%)'};`;
       badge1.textContent = '🍴';
+      badge1.title = 'Vor Ort essen möglich';
       badgesContainer.appendChild(badge1);
       
-      // Badge 2: Abholnummer 🧾
+      // Badge 2: Abholnummer 🧾 - Optimierter Stil mit backdrop-filter
       const badge2 = document.createElement('div');
-      badge2.style.cssText = `width:24px; height:24px; border-radius:50%; background:${orderingEnabled ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.4)'}; backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:1px solid rgba(255,255,255,0.5); display:flex; align-items:center; justify-content:center; font-size:12px; opacity:${orderingEnabled ? '1' : '0.4'}; filter:${orderingEnabled ? 'none' : 'grayscale(100%)'};`;
+      badge2.style.cssText = `width:24px; height:24px; border-radius:50%; background:${orderingEnabled ? 'rgba(255,255,255,0.7)' : 'rgba(255,255,255,0.4)'}; backdrop-filter:blur(5px); -webkit-backdrop-filter:blur(5px); border:1px solid rgba(255,255,255,0.5); display:flex; align-items:center; justify-content:center; font-size:12px; opacity:${orderingEnabled ? '1' : '0.4'}; filter:${orderingEnabled ? 'none' : 'grayscale(100%)'};`;
       badge2.textContent = '🧾';
+      badge2.title = 'Abholnummer verfügbar';
       badgesContainer.appendChild(badge2);
       
       // Badge 3: Mehrweg 🔄 - ENTFERNT (nur noch im Profil)
@@ -8540,10 +8536,7 @@
 
     const sImg = document.getElementById('sImg');
     const sDish = document.getElementById('sDish');
-    const sProvider = document.getElementById('sProvider');
-    const sPrice = document.getElementById('sPrice');
-    const sCat = document.getElementById('sCat');
-    const sWindow = document.getElementById('sWindow');
+    // Alte IDs entfernt: sProvider, sPrice, sCat, sWindow existieren nicht mehr im neuen Layout
     
     // Foto-Handling mit Platzhalter
     const sImgPlaceholder = document.getElementById('sImgPlaceholder');
@@ -8627,20 +8620,21 @@
       const carTimeText = carMinutes < 1 ? '< 1 Min.' : `${carMinutes} Min.`;
       const carKmText = Number(o.distanceKm).toFixed(1);
       
+      // Spielerische Icons statt Text-basierte Entfernungsangaben
       sDistanceInfo.innerHTML = `
-        <div style="display:flex; align-items:center; gap:8px; color:rgba(255,255,255,0.9); font-size:14px;">
-          <span style="font-size:18px;">🚶</span>
-          <span style="font-weight:600;">Zu Fuß:</span>
-          <span>${walkingMeters} m</span>
-          <span style="color:rgba(255,255,255,0.6);">·</span>
-          <span>${walkingTimeText}</span>
-        </div>
-        <div style="display:flex; align-items:center; gap:8px; color:rgba(255,255,255,0.9); font-size:14px;">
-          <span style="font-size:18px;">🚗</span>
-          <span style="font-weight:600;">Mit dem Auto:</span>
-          <span>${carKmText} km</span>
-          <span style="color:rgba(255,255,255,0.6);">·</span>
-          <span>${carTimeText}</span>
+        <div style="display:flex; align-items:center; justify-content:center; gap:16px; flex-wrap:wrap;">
+          <span style="display:flex; align-items:center; gap:4px; color:rgba(255,255,255,0.9); font-size:14px; font-weight:600;">
+            <span style="font-size:18px;">🚶</span>
+            <span>${walkingTimeText}</span>
+          </span>
+          <span style="display:flex; align-items:center; gap:4px; color:rgba(255,255,255,0.9); font-size:14px; font-weight:600;">
+            <span style="font-size:18px;">🚗</span>
+            <span>${carTimeText}</span>
+          </span>
+          <span style="display:flex; align-items:center; gap:4px; color:rgba(255,255,255,0.9); font-size:14px; font-weight:600;">
+            <span style="font-size:18px;">📍</span>
+            <span>${walkingMeters}m</span>
+          </span>
         </div>
       `;
     } else if(sDistanceInfo){
