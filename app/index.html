@@ -3051,16 +3051,13 @@
       
       <!-- Provider Identity Card (Header) - Profi-Dunkelgrau -->
       <div class="panel" id="providerIdentityCard" style="padding:20px; border-radius:20px; box-shadow:0 4px 16px rgba(0,0,0,.4); background:#2a2a2a; border:1px solid rgba(255,255,255,0.05); margin-bottom:20px;">
-        <div style="display:flex; align-items:center; gap:16px; margin-bottom:16px;">
+        <div style="display:flex; align-items:center; gap:16px;">
           <div class="plogo" id="provCardLogo" style="width:64px; height:64px; border-radius:16px; flex-shrink:0; border:3px solid rgba(255,215,0,0.3);"></div>
           <div style="flex:1; min-width:0;">
             <div style="font-weight:900; font-size:20px; line-height:1.3; margin-bottom:6px; color:#fff;" id="provCardName">Anbieter</div>
             <div class="hint" id="provCardAddr" style="font-size:14px; line-height:1.4; color:rgba(255,255,255,0.7);">Adresse hinzufügen</div>
           </div>
         </div>
-        <button class="btn secondary" type="button" id="btnProviderEditProfile" style="width:100%; min-height:52px; background:#FFD700; color:#334155; font-weight:800; border:none; border-radius:12px;">
-          Profil bearbeiten
-        </button>
       </div>
       
       <!-- Kunden-Nachfrage: Express-Requests (Psychologischer Druck) -->
@@ -11619,7 +11616,7 @@
     if(!content) return;
     
     content.innerHTML = `
-      <h2 style="font-size:20px; font-weight:900; margin-bottom:16px;">AGB (Kurzfassung)</h2>
+      <h2 style="font-size:20px; font-weight:900; margin-bottom:16px;">AGB</h2>
       <div style="line-height:1.7; font-size:14px; max-height:60vh; overflow-y:auto; padding-right:8px;">
         <p><strong>Mittagio ist Plattform, nicht Verkäufer</strong></p>
         <p>Mittagio vermittelt Mittagsangebote lokaler Anbieter. Vertragspartner bei Bestellungen ist ausschließlich der jeweilige Anbieter.</p>
@@ -12150,13 +12147,7 @@
       }
     }
     
-    const btnProviderEditProfile = document.getElementById('btnProviderEditProfile');
-    if(btnProviderEditProfile){
-      btnProviderEditProfile.textContent = buildAddress(profile) ? 'Profil bearbeiten' : 'Adresse hinzufügen';
-      btnProviderEditProfile.onclick = () => {
-        showProviderProfile();
-      };
-    }
+    // btnProviderEditProfile wurde entfernt - "Profil bearbeiten" ist jetzt nur noch im Profil-Bereich (unten)
     
       // KPI Cards (Dark Mode Styling)
       const activeOffersCount = mineActive.length;
@@ -13547,6 +13538,10 @@
     btnProvFaq.onclick=()=>{
       // Navigiere zu Anbieter-FAQ
       showLegalPage('faq-provider');
+      // URL aktualisieren für Provider-Mode
+      if(mode === 'provider'){
+        history.pushState({view: 'provider-faq', mode: mode}, '', '/anbieter/hilfe/faq');
+      }
     };
   }
 
@@ -13567,8 +13562,8 @@
   const rowProfileOverview = document.getElementById('rowProfileOverview');
   if(rowProfileOverview){
     rowProfileOverview.onclick=()=>{
-      // Profilübersicht: Wir sind bereits auf der Profil-Seite
-      // Scroll nach oben für bessere UX
+      // Profilübersicht: Navigiere zu Profil-Seite
+      showProviderProfile();
       window.scrollTo({top: 0, behavior: 'smooth'});
     };
   }
@@ -13629,6 +13624,19 @@
       // Wenn FAQ, auf Anbieter-Tab wechseln wenn Provider-Modus
       if(viewId === 'v-legal-faq' && isProvider){
         setTimeout(() => switchFaqTab('provider'), 100);
+      }
+      // URL aktualisieren für Provider-Mode
+      if(isProvider){
+        const urlMap = {
+          'faq-provider': '/anbieter/hilfe/faq',
+          'impressum-provider': '/anbieter/recht/impressum',
+          'agb-provider': '/anbieter/recht/agb',
+          'datenschutz': '/anbieter/recht/datenschutz'
+        };
+        const url = urlMap[page];
+        if(url){
+          history.pushState({view: `provider-${page}`, mode: mode}, '', url);
+        }
       }
     }
   }
@@ -13706,7 +13714,11 @@
   const btnProviderFAQ = document.getElementById('btnProviderFAQ');
   if(btnProviderFAQ){
     btnProviderFAQ.onclick=()=>{
-      showLegalPage('faq');
+      showLegalPage('faq-provider');
+      // URL aktualisieren für Provider-Mode
+      if(mode === 'provider'){
+        history.pushState({view: 'provider-faq', mode: mode}, '', '/anbieter/hilfe/faq');
+      }
     };
   }
   const btnProviderLegalImpressum = document.getElementById('btnProviderLegalImpressum');
