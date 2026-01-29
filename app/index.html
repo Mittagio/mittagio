@@ -2762,6 +2762,20 @@
         </div>
       </div>
 
+      <!-- Anbieter-Login: Dein Mittagessen anbieten -->
+      <div class="panel" id="profileProviderSection" style="margin-top:20px; padding:20px; border-radius:20px; box-shadow:0 2px 12px rgba(0,0,0,.06); background:rgba(0,0,0,0.03);">
+        <div style="font-weight:700; font-size:16px; margin-bottom:8px; color:#2D3436; display:flex; align-items:center; gap:8px;">
+          <span style="font-size:20px;">🍽️</span>
+          <span>Anbieter werden</span>
+        </div>
+        <div class="hint" style="font-size:13px; color:#64748b; margin-bottom:16px; line-height:1.5;">
+          Dein Mittagessen anbieten – einfach und digital.
+        </div>
+        <button type="button" id="btnProfileProviderLogin" onclick="setMode('provider');" style="width:100%; min-height:48px; padding:12px 20px; border-radius:14px; border:2px solid #4b5563; background:#4b5563; color:#fff; font-weight:700; font-size:15px; cursor:pointer; transition:all 0.2s ease;" onmouseover="this.style.background='#374151'; this.style.borderColor='#374151';" onmouseout="this.style.background='#4b5563'; this.style.borderColor='#4b5563';">
+          Jetzt als Anbieter einloggen
+        </button>
+      </div>
+
       <!-- FAQ für Kunden (alle Fragen) -->
       <div class="panel" style="margin-top:18px; padding:16px; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,.04);">
         <div style="font-weight:600; font-size:17px; margin-bottom:12px; line-height:1.3;">Häufige Fragen</div>
@@ -11928,6 +11942,7 @@
             </div>
             <div style="flex:1; min-width:0;">
               <div style="font-weight:900; font-size:22px; margin-bottom:4px; color:#2D3436; line-height:1.2;">Willkommen bei Mittagio 👋</div>
+              <div style="font-size:12px; font-weight:600; color:#64748b; margin-bottom:6px; text-transform:uppercase; letter-spacing:0.5px;">Anmeldung</div>
               <div class="hint" style="font-size:14px; color:#666; line-height:1.4; margin-bottom:12px;">Bestelle schneller und finde deine Abholnummern wieder.</div>
               <button class="btn-primary" type="button" id="btnProfileCreateAccount" style="width:100%; max-width:200px; min-height:44px; font-weight:700;">
                 Profil anlegen
