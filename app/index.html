@@ -1,4 +1,4 @@
-<!doctype html>
+j<!doctype html>
 <html lang="de">
 <head>
   <base href="/mittagio/app/">
@@ -12490,35 +12490,42 @@
       recentProPhotos = recentProPhotos.slice(0, 10);
       localStorage.setItem('mittagio_recent_pro_photos', JSON.stringify(recentProPhotos));
       
-      // Inseratflow (Listing-Wizard): Foto in w.data übernehmen und Wizard neu bauen
-      if(window.proPhotoContext === 'listing'){
-        window.proPhotoContext = null;
-        window.closeProPhotoGallery();
-        if(typeof w !== 'undefined' && w && w.data){ w.data.photoData = photoUrl; }
-        if(typeof rebuildWizard === 'function') rebuildWizard();
-        if(typeof showToast === 'function') showToast('Profi-Foto ausgewählt.');
-        return;
-      }
-      
-      // Onboarding: Preview anzeigen + Draft speichern
-      const previewEl = document.getElementById('onboardingPhotoPreview');
-      const previewImgEl = document.getElementById('onboardingPhotoPreviewImg');
-      const watermarkEl = document.getElementById('onboardingPhotoWatermark');
-      
-      if(previewEl && previewImgEl){
-        previewEl.style.display = 'block';
-        previewImgEl.src = photoUrl;
-        previewImgEl.style.filter = 'brightness(1.05) contrast(1.1) saturate(1.2)';
-        if(watermarkEl) watermarkEl.style.display = 'block';
-      }
-      
-      if(typeof onboardingDraftDish === 'undefined'){ window.closeProPhotoGallery(); showToast('Profi-Foto ausgewählt.'); return; }
-      onboardingDraftDish = onboardingDraftDish || {};
-      onboardingDraftDish.photoData = photoUrl;
-      if(typeof save === 'function' && typeof LS !== 'undefined') save(LS.onboardingDraft, onboardingDraftDish);
-      
       window.closeProPhotoGallery();
-      showToast('Profi-Foto ausgewählt. Wir markieren es als Serviervorschlag.');
+      
+      // Immer durch Foto-Editor: Filter + Zuschnitt. Listing vs Onboarding unterscheiden.
+      (async ()=>{
+        let dataUrl = photoUrl;
+        if(/^https?:\/\//i.test(photoUrl)){
+          try { dataUrl = await urlToDataUrl(photoUrl); } catch(e){
+            if(typeof showToast === 'function') showToast('Foto konnte nicht geladen werden.');
+            return;
+          }
+        }
+        if(window.proPhotoContext === 'listing'){
+          window.proPhotoContext = null;
+          await openPhotoEditor(dataUrl);
+          if(typeof showToast === 'function') showToast('Profi-Foto übernommen.');
+          return;
+        }
+        await openPhotoEditor(dataUrl, {
+          onAccept: (url)=>{
+            if(typeof onboardingDraftDish === 'undefined') return;
+            onboardingDraftDish = onboardingDraftDish || {};
+            onboardingDraftDish.photoData = url;
+            if(typeof save === 'function' && typeof LS !== 'undefined') save(LS.onboardingDraft, onboardingDraftDish);
+            const previewEl = document.getElementById('onboardingPhotoPreview');
+            const previewImgEl = document.getElementById('onboardingPhotoPreviewImg');
+            const watermarkEl = document.getElementById('onboardingPhotoWatermark');
+            if(previewEl && previewImgEl){
+              previewEl.style.display = 'block';
+              previewImgEl.src = url;
+              previewImgEl.style.filter = '';
+              if(watermarkEl) watermarkEl.style.display = 'block';
+            }
+            if(typeof showToast === 'function') showToast('Profi-Foto übernommen.');
+          }
+        });
+      })();
     };
     
     // Kategorien-Tab Handler
@@ -12546,52 +12553,26 @@
         input.onchange = async (e) => {
           const file = e.target.files[0];
           if(!file) return;
-          
-          // Kamera-Guide Overlay (SVG)
-          const reader = new FileReader();
-          reader.onload = (event) => {
-            const img = new Image();
-            img.onload = () => {
-              // Automatischer Zuschnitt (1:1 oder 4:5)
-              const canvas = document.createElement('canvas');
-              const ctx = canvas.getContext('2d');
-              const size = Math.min(img.width, img.height);
-              canvas.width = size;
-              canvas.height = size;
-              ctx.drawImage(img, (img.width - size) / 2, (img.height - size) / 2, size, size, 0, 0, size, size);
-              
-              // Image Processing Filter
-              const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-              const data = imageData.data;
-              for(let i = 0; i < data.length; i += 4){
-                data[i] = Math.min(255, data[i] * 1.05); // brightness
-                data[i + 1] = Math.min(255, data[i + 1] * 1.05);
-                data[i + 2] = Math.min(255, data[i + 2] * 1.05);
-                // contrast & saturate (vereinfacht)
-                const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
-                data[i] = avg + (data[i] - avg) * 1.1;
-                data[i + 1] = avg + (data[i + 1] - avg) * 1.1;
-                data[i + 2] = avg + (data[i + 2] - avg) * 1.1;
-              }
-              ctx.putImageData(imageData, 0, 0);
-              
-              const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+          const dataUrl = await toDataUrl(file);
+          await openPhotoEditor(dataUrl, {
+            onAccept: (url) => {
+              if(typeof onboardingDraftDish === 'undefined') return;
+              onboardingDraftDish = onboardingDraftDish || {};
+              onboardingDraftDish.photoData = url;
+              if(typeof save === 'function' && typeof LS !== 'undefined') save(LS.onboardingDraft, onboardingDraftDish);
               const previewEl = document.getElementById('onboardingPhotoPreview');
               const previewImgEl = document.getElementById('onboardingPhotoPreviewImg');
               const watermarkEl = document.getElementById('onboardingPhotoWatermark');
-              
               if(previewEl && previewImgEl){
                 previewEl.style.display = 'block';
-                previewImgEl.src = dataUrl;
-                previewImgEl.style.filter = 'brightness(1.05) contrast(1.1) saturate(1.2)';
+                previewImgEl.src = url;
+                previewImgEl.style.filter = '';
                 if(watermarkEl) watermarkEl.style.display = 'none';
               }
-              
-              selectedProPhoto = null; // Eigenes Foto, kein Stock-Photo
-            };
-            img.src = event.target.result;
-          };
-          reader.readAsDataURL(file);
+              selectedProPhoto = null;
+              if(typeof showToast === 'function') showToast('Foto übernommen.');
+            }
+          });
         };
         input.click();
       };
@@ -12604,15 +12585,20 @@
         const file = e.target.files[0];
         if(!file) return;
         const dataUrl = await toDataUrl(file);
-        const photoPreview = document.getElementById('onboardingPhotoPreview');
-        const photoPreviewImg = document.getElementById('onboardingPhotoPreviewImg');
-        if(photoPreview && photoPreviewImg){
-          photoPreview.style.display = 'block';
-          photoPreviewImg.src = dataUrl;
-        }
-        if(!onboardingDraftDish) onboardingDraftDish = {};
-        onboardingDraftDish.photoData = dataUrl;
-        save(LS.onboardingDraft, onboardingDraftDish);
+        await openPhotoEditor(dataUrl, {
+          onAccept: (url) => {
+            if(!onboardingDraftDish) onboardingDraftDish = {};
+            onboardingDraftDish.photoData = url;
+            if(typeof save === 'function' && typeof LS !== 'undefined') save(LS.onboardingDraft, onboardingDraftDish);
+            const photoPreview = document.getElementById('onboardingPhotoPreview');
+            const photoPreviewImg = document.getElementById('onboardingPhotoPreviewImg');
+            if(photoPreview && photoPreviewImg){
+              photoPreview.style.display = 'block';
+              photoPreviewImg.src = url;
+            }
+            if(typeof showToast === 'function') showToast('Foto übernommen.');
+          }
+        });
       };
     }
     
@@ -16732,7 +16718,7 @@
       const box=document.createElement('div');
       const ans=document.createElement('div'); ans.className='answers';
       const b1=document.createElement('button'); b1.type='button'; b1.className='ans'; b1.textContent='Foto auswählen';
-      b1.onclick=async()=>{ const f=await pickImage(); if(!f) return; w.data.photoData = await toDataUrl(f); rebuildWizard(); };
+      b1.onclick=async()=>{ const f=await pickImage(); if(!f) return; const dataUrl = await toDataUrl(f); await openPhotoEditor(dataUrl); };
       const b2=document.createElement('button'); b2.type='button'; b2.className='ans'; b2.textContent='Ohne';
       b2.onclick=()=>{ w.data.photoData=''; rebuildWizard(); };
       ans.appendChild(b1); ans.appendChild(b2);
@@ -17037,7 +17023,10 @@
     return detectedAllergens;
   }
   
-  async function openPhotoEditor(imageDataUrl){
+  async function openPhotoEditor(imageDataUrl, opts){
+    opts = opts || {};
+    const onAccept = opts.onAccept;
+    const useWizard = !onAccept;
     return new Promise(async (resolve)=>{
       const editor = document.createElement('div');
       editor.className='backdrop active';
@@ -17046,88 +17035,132 @@
       const editorContent = document.createElement('div');
       editorContent.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:24px;padding:24px;max-width:90vw;max-height:90vh;overflow:auto;z-index:51;box-shadow:0 8px 32px rgba(0,0,0,.2);';
       
-      // Foto-KI Analyse starten (im Hintergrund)
-      const aiAnalysisPromise = analyzeFoodPhoto(imageDataUrl);
+      const aiAnalysisPromise = useWizard ? analyzeFoodPhoto(imageDataUrl) : Promise.resolve(null);
       
       const img = new Image();
       img.src = imageDataUrl;
       img.onload = async ()=>{
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
         const size = 400;
+        const sourceSize = Math.min(img.width, img.height);
+        const maxOffsetX = Math.max(0, img.width - sourceSize);
+        const maxOffsetY = Math.max(0, img.height - sourceSize);
+        let cropX = 50, cropY = 50;
+        
+        const canvas = document.createElement('canvas');
         canvas.width = size;
         canvas.height = size;
+        const ctx = canvas.getContext('2d');
         
-        // Quadratischer Zuschnitt (zentriert)
-        const sourceSize = Math.min(img.width, img.height);
-        const sourceX = (img.width - sourceSize) / 2;
-        const sourceY = (img.height - sourceSize) / 2;
+        function sourceX(){ return maxOffsetX * (cropX / 100); }
+        function sourceY(){ return maxOffsetY * (cropY / 100); }
         
-        // Filter: Helligkeit + Kontrast (Image Enhancement)
-        ctx.filter = 'brightness(1.1) contrast(1.15) saturate(1.1)';
-        ctx.drawImage(img, sourceX, sourceY, sourceSize, sourceSize, 0, 0, size, size);
+        function draw(){
+          ctx.filter = 'brightness(1.1) contrast(1.15) saturate(1.1)';
+          ctx.drawImage(img, sourceX(), sourceY(), sourceSize, sourceSize, 0, 0, size, size);
+          previewImg.src = canvas.toDataURL('image/jpeg', 0.85);
+        }
         
-        const processedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
+        const previewImg = document.createElement('img');
+        previewImg.alt = '';
+        previewImg.style.cssText = 'width:100%;max-width:400px;display:block;border-radius:12px;';
+        const previewWrap = document.createElement('div');
+        previewWrap.style.cssText = 'border-radius:16px;overflow:hidden;border:1px solid #eee;margin-bottom:16px;background:#f5f5f5';
+        previewWrap.appendChild(previewImg);
         
-        // Warte auf KI-Analyse
+        const heading = document.createElement('h3');
+        heading.style.cssText = 'margin:0 0 16px;font-size:18px;font-weight:900;';
+        heading.textContent = 'Foto bearbeiten';
+        const hint = document.createElement('div');
+        hint.className = 'hint';
+        hint.style.marginBottom = '16px';
+        hint.innerHTML = '✓ Filter: Helligkeit + Kontrast · Quadratischer Zuschnitt, verschiebbar';
+        
+        const slidersWrap = document.createElement('div');
+        slidersWrap.style.marginBottom = '16px';
+        if(maxOffsetX > 0){
+          const rowH = document.createElement('div');
+          rowH.style.marginBottom = '12px';
+          const labelH = document.createElement('label');
+          labelH.style.cssText = 'display:block;font-size:13px;margin-bottom:4px;';
+          labelH.textContent = 'Ausschnitt horizontal';
+          const rangeH = document.createElement('input');
+          rangeH.type = 'range';
+          rangeH.min = 0;
+          rangeH.max = 100;
+          rangeH.value = 50;
+          rangeH.style.width = '100%';
+          rangeH.oninput = ()=>{ cropX = Number(rangeH.value); draw(); };
+          rowH.appendChild(labelH);
+          rowH.appendChild(rangeH);
+          slidersWrap.appendChild(rowH);
+        }
+        if(maxOffsetY > 0){
+          const rowV = document.createElement('div');
+          rowV.style.marginBottom = '12px';
+          const labelV = document.createElement('label');
+          labelV.style.cssText = 'display:block;font-size:13px;margin-bottom:4px;';
+          labelV.textContent = 'Ausschnitt vertikal';
+          const rangeV = document.createElement('input');
+          rangeV.type = 'range';
+          rangeV.min = 0;
+          rangeV.max = 100;
+          rangeV.value = 50;
+          rangeV.style.width = '100%';
+          rangeV.oninput = ()=>{ cropY = Number(rangeV.value); draw(); };
+          rowV.appendChild(labelV);
+          rowV.appendChild(rangeV);
+          slidersWrap.appendChild(rowV);
+        }
+        
+        draw();
+        
         const aiResult = await aiAnalysisPromise;
-        
-        // Wenn KI-Analyse erfolgreich, fülle Felder automatisch
-        if(aiResult && w && w.data){
+        if(useWizard && aiResult && w && w.data){
           if(aiResult.name && !w.data.dish) w.data.dish = aiResult.name;
           if(aiResult.price && !w.data.price) w.data.price = aiResult.price;
           if(aiResult.ingredients && aiResult.ingredients.length > 0){
-            // Allergene automatisch taggen
             const allergens = tagAllergensFromIngredients(aiResult.ingredients);
             if(allergens.length > 0 && !w.data.allergens){
               w.data.allergens = allergens;
               w.data.hasAllergens = true;
             }
           }
-          
-          // Zeige Toast mit KI-Ergebnissen
-          showToast(`KI-Analyse: ${aiResult.name || 'Gericht erkannt'} (${aiResult.calories || '?'} kcal)`);
+          if(typeof showToast === 'function') showToast('KI-Analyse: ' + (aiResult.name || 'Gericht erkannt'));
+        }
+        
+        function finish(dataUrl){
+          editor.remove();
+          if(onAccept){ onAccept(dataUrl); resolve(dataUrl); return; }
+          if(w && w.data){ w.data.photoData = dataUrl; }
+          if(typeof rebuildWizard === 'function') rebuildWizard();
+          resolve(dataUrl);
         }
         
         const acceptBtn = document.createElement('button');
-        acceptBtn.className='btn';
-        acceptBtn.textContent='Übernehmen';
-        acceptBtn.onclick=()=>{
-          w.data.photoData = processedDataUrl;
-          editor.remove();
-          rebuildWizard();
-          resolve(processedDataUrl);
-        };
+        acceptBtn.className = 'btn';
+        acceptBtn.textContent = 'Übernehmen';
+        acceptBtn.onclick = ()=> finish(canvas.toDataURL('image/jpeg', 0.85));
         
         const cancelBtn = document.createElement('button');
-        cancelBtn.className='btn secondary';
-        cancelBtn.textContent='Abbrechen';
-        cancelBtn.style.marginLeft='8px';
-        cancelBtn.onclick=()=>{
-          editor.remove();
-          resolve(null);
-        };
-        
-        editorContent.innerHTML = `
-          <h3 style="margin:0 0 16px;font-size:18px;font-weight:900;">Foto bearbeiten</h3>
-          <div style="border-radius:16px;overflow:hidden;border:1px solid #eee;margin-bottom:16px;background:#f5f5f5">
-            <img src="${processedDataUrl}" alt="" style="width:100%;max-width:400px;display:block" />
-          </div>
-          <div class="hint" style="margin-bottom:16px;">✓ Automatisch optimiert: Helligkeit + Kontrast<br>✓ Quadratischer Zuschnitt (wie in der App)</div>
-        `;
+        cancelBtn.className = 'btn secondary';
+        cancelBtn.textContent = 'Abbrechen';
+        cancelBtn.style.marginLeft = '8px';
+        cancelBtn.onclick = ()=>{ editor.remove(); resolve(null); };
         
         const btnRow = document.createElement('div');
-        btnRow.style.display='flex';
-        btnRow.style.gap='8px';
+        btnRow.style.display = 'flex';
+        btnRow.style.gap = '8px';
         btnRow.appendChild(acceptBtn);
         btnRow.appendChild(cancelBtn);
+        
+        editorContent.appendChild(heading);
+        editorContent.appendChild(previewWrap);
+        editorContent.appendChild(hint);
+        if(slidersWrap.children.length) editorContent.appendChild(slidersWrap);
         editorContent.appendChild(btnRow);
         
-        editor.onclick=(e)=>{
-          if(e.target === editor){
-            editor.remove();
-            resolve(null);
-          }
+        editor.onclick = (e)=>{
+          if(e.target === editor){ editor.remove(); resolve(null); }
         };
         
         editor.appendChild(editorContent);
