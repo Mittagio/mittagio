@@ -375,26 +375,26 @@
       position:relative;
       margin-bottom:16px;
     }
-    /* Polaroid-Discovery: Weiße Polaroid-Rahmen mit Schlagschatten */
+    /* Polaroid-Discovery: Weißer Rand – schmaler an den Seiten, breiter unter dem Text */
     .card.polaroid{
       background:#FFFFFF;
-      border:none; /* Clean-up: Keine störenden Rahmen */
+      border:none;
       border-radius:12px;
-      box-shadow:0 2px 8px rgba(0,0,0,0.08); /* Reduzierter Schatten */
-      padding:0;
+      box-shadow:0 2px 8px rgba(0,0,0,0.08);
+      padding:0 6px 20px 6px; /* schmaler seitlich, breiter unten */
       display:flex;
       flex-direction:column;
       align-items:stretch;
-      max-width:256px; /* Für Desktop */
+      width:100%;
+      max-width:100%;
       margin:0 auto;
       overflow:hidden;
-      /* Helles Holz-Hintergrund (warm, beige) */
       background:linear-gradient(135deg, #f5f1eb 0%, #ede8e0 100%);
+      box-sizing:border-box;
     }
-    /* Responsive: 2 Spalten auf S25 (390px Breite) */
     @media (max-width: 480px) {
       .card.polaroid {
-        max-width: 160px; /* Exakt für 2 Spalten auf S25: (390px - 32px padding) / 2 = 179px, mit gap = 160px */
+        padding:0 5px 16px 5px;
       }
     }
     .card.playful{
@@ -472,9 +472,9 @@
       text-transform: uppercase;
     }
     .pillar-bar--green { background: #27AE60; color: #fff; }
-    .pillar-bar--yellow { background: #FFD700; color: #1a1a1a; }
+    .pillar-bar--yellow { background: #FFD700; color: #fff; }
     .pillar-bar--blue { background: #3498db; color: #fff; }
-    .pillar-bar--inactive { background: #e8e8e8; color: #999; }
+    .pillar-bar--inactive { background: #e8e8e8; color: #666; }
     
     .card.polaroid .img img{
       width:100%;
@@ -2025,24 +2025,23 @@
     /* Polaroid-Karte: Reinweißer Hintergrund, breiter unterer Rand */
     .swipe-card{
       position:absolute; top:50%; left:50%; transform:translate(-50%, -50%);
-      background:#FFFFFF; /* Reinweißer Hintergrund - KEINE Schiefertafel */
+      background:#FFFFFF;
       border-radius:4px;
-      box-shadow:0 8px 24px rgba(0,0,0,0.12), 0 4px 12px rgba(0,0,0,0.08); /* Weicher Drop-Shadow für Tiefe auf beigem Hintergrund */
+      box-shadow:0 8px 24px rgba(0,0,0,0.12), 0 4px 12px rgba(0,0,0,0.08);
       overflow:visible; cursor:default;
-      /* Touch-Optimierung: Keine Swipe-Gesten auf Karte selbst (nur Buttons) */
       touch-action: none;
       -webkit-user-select: none;
       user-select: none;
       user-select:none; touch-action:none;
       transition:transform .2s ease-out, opacity .2s, box-shadow .2s;
       will-change:transform;
-      max-width:320px; width:320px; /* Optimiert für S25: 2 Spalten = 160px, 1 Spalte = 320px */
+      width:95%; max-width:95vw;
       max-height:75vh; height:auto;
       margin:0 auto;
       display:flex; flex-direction:column;
       align-items:center;
       box-sizing:border-box;
-      padding:16px 16px 32px;
+      padding:12px 10px 28px; /* schmaler Seitenrand, breiter unter dem Text */
     }
     
     /* Visueller Glow beim Swipe */
@@ -2055,20 +2054,20 @@
       transition:opacity 0.3s ease;
       z-index:1;
     }
-    /* Responsive für Samsung S25 (390x844) und ähnliche Geräte */
     @media (max-width:420px) and (min-height:800px){
       #discoverSwipe{
         height:calc(100vh - 220px) !important;
         min-height:480px !important;
-        padding:12px 8px !important;
+        padding:8px 6px !important;
       }
       .swipe-card{
         border-radius:28px;
-        max-width:280px !important; /* Optimiert für S25 */
-        width:280px !important;
+        width:95% !important;
+        max-width:95vw !important;
+        padding:10px 8px 24px !important;
       }
       .swipe-card-image-wrapper{
-        width:82% !important;
+        width:100%;
         margin-top:12px !important;
       }
     }
@@ -2166,10 +2165,10 @@
       padding:0;
     }
     
-    /* Logistik-Sektion: Distanzen, Essenszeit & Allergene */
+    /* Logistik-Sektion: Mobilität ganz unten am Kartenrand (keine Trennlinie) */
     .swipe-card-logistics-section{
-      border-top:1px solid rgba(0,0,0,0.08);
       margin-top:12px;
+      padding-top:12px;
     }
     .swipe-card-meta{
       display:flex; align-items:center; justify-content:center;
@@ -4659,11 +4658,11 @@
   function setFavPillars(dishId, pillars){ const m = load(LS.favPillars, {}); m[dishId] = pillars; save(LS.favPillars, m); }
   function renderPillarBars(vorOrt, abholnummer, mehrweg){
     const c1 = vorOrt ? 'pillar-bar--green' : 'pillar-bar--inactive';
-    const t1 = vorOrt ? 'VOR ORT MÖGLICH' : 'KEIN VOR ORT';
+    const t1 = vorOrt ? 'VOR ORT MÖGLICH' : 'NICHT VERFÜGBAR';
     const c2 = abholnummer ? 'pillar-bar--yellow' : 'pillar-bar--inactive';
-    const t2 = abholnummer ? 'MIT ABHOLNUMMER' : 'KEINE ABHOLNUMMER';
+    const t2 = abholnummer ? 'ABHOLNUMMER' : 'NICHT VERFÜGBAR';
     const c3 = mehrweg ? 'pillar-bar--blue' : 'pillar-bar--inactive';
-    const t3 = mehrweg ? 'MEHRWEG VERFÜGBAR' : 'KEIN MEHRWEG';
+    const t3 = mehrweg ? 'MEHRWEG VERFÜGBAR' : 'NICHT VERFÜGBAR';
     return `<div class="pillar-bars"><div class="pillar-bar ${c1}">${t1}</div><div class="pillar-bar ${c2}">${t2}</div><div class="pillar-bar ${c3}">${t3}</div></div>`;
   }
   function clearFavPillars(dishId){ const m = load(LS.favPillars, {}); delete m[dishId]; save(LS.favPillars, m); }
@@ -8954,21 +8953,28 @@
     providerEl.innerHTML = `<i data-lucide="store" style="width:12px;height:12px; margin-right:4px;"></i> <span>${esc(data.providerName || 'Anbieter')}</span>`;
     body.appendChild(providerEl);
     
-    // 3 Säulen: aus gespeicherter Meta (eingefroren) oder aus Offer berechnen
+    // 3 Säulen als High-Contrast-Balken (identisch zu Discovery)
     const stored = getFavPillars(dishKey);
     const vorOrt = stored ? !!stored.vorOrt : (() => { const p = offers.find(x => x.providerId === data.providerId); return !!(p && (p.dineInPossible !== false || data.dineInPossible)); })();
     const abholnummer = stored ? !!stored.abholnummer : (() => { const p = offers.find(x => x.providerId === data.providerId); return !!(p && (p.orderingEnabled !== false && (data.hasPickupCode || p.hasPickupCode))); })();
     const mehrweg = stored ? !!stored.mehrweg : (() => { const p = offers.find(x => x.providerId === data.providerId); return !!(p && (p.reuse && p.reuse.enabled)); })();
-    const opacityOff = '0.25';
     
-    const iconsRow = document.createElement('div');
-    iconsRow.style.cssText = 'display:flex; align-items:center; justify-content:center; gap:16px; padding:0 16px 8px; margin-top:auto;';
-    iconsRow.innerHTML = `
-      <span style="font-size:20px; opacity:${vorOrt ? '1' : opacityOff};" title="Vor Ort">🍴</span>
-      <span style="font-size:20px; opacity:${abholnummer ? '1' : opacityOff};" title="Abholnummer">🧾</span>
-      <span style="font-size:20px; opacity:${mehrweg ? '1' : opacityOff};" title="Mehrweg">🔄</span>
-    `;
-    body.appendChild(iconsRow);
+    const barsWrap = document.createElement('div');
+    barsWrap.style.cssText = 'margin-top:8px; padding:0 12px;';
+    barsWrap.innerHTML = renderPillarBars(vorOrt, abholnummer, mehrweg);
+    body.appendChild(barsWrap);
+    
+    // Mobilitäts-Leiste ganz unten (wenn Entfernung vorhanden)
+    if(data.distanceKm != null){
+      const walkingMinutes = Math.round(Number(data.distanceKm) * 12);
+      const carMinutes = Math.round(Number(data.distanceKm) * 1.2);
+      const walkingMeters = Math.round(Number(data.distanceKm) * 1000);
+      const distanceText = walkingMeters < 1000 ? `${walkingMeters}m` : `${Number(data.distanceKm).toFixed(1)}km`;
+      const mobilityRow = document.createElement('div');
+      mobilityRow.style.cssText = 'margin-top:10px; padding:8px 12px; font-size:11px; color:#666; font-weight:500; display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap;';
+      mobilityRow.innerHTML = `<span>🚶 ${walkingMinutes} min</span><span style="color:#999;">|</span><span>🚗 ${carMinutes} min</span><span style="color:#999;">|</span><span>📍 ${distanceText}</span>`;
+      body.appendChild(mobilityRow);
+    }
     
     // Gelber CTA: "In die Mittagsbox" (nur wenn Abholnummer)
     const ctaWrap = document.createElement('div');
