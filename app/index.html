@@ -8133,6 +8133,10 @@ j<!doctype html>
     const data = normalizeOffer(o);
     const interactive = opts.interactive !== false;
     const isPolaroid = opts.context === 'customer' || opts.context === 'discover';
+    const offerProvider = offers.find(p => p.providerId === data.providerId);
+    const orderingEnabled = offerProvider && (offerProvider.orderingEnabled !== false && (data.hasPickupCode || offerProvider.hasPickupCode));
+    const hasDineIn = offerProvider && (offerProvider.dineInPossible !== false || data.dineInPossible);
+    const hasReuse = offerProvider && (offerProvider.reuse && offerProvider.reuse.enabled);
     const card=document.createElement('div');
     card.className='card';
     if(isPolaroid){
@@ -8155,11 +8159,6 @@ j<!doctype html>
       // Kompakte Polaroid-Karte: Foto nimmt exakt 50% Höhe ein
       img.style.cssText = 'position:relative; width:100%; height:50%; min-height:140px; max-height:140px; overflow:hidden; background:#f0f0f0;';
       img.innerHTML = `<img alt="${esc(data.dish||'')}" src="${esc(imgSrc)}" style="width:100%; height:100%; object-fit:cover;" />`;
-      
-      const offerProvider = offers.find(p => p.providerId === data.providerId);
-      const orderingEnabled = offerProvider && (offerProvider.orderingEnabled !== false && (data.hasPickupCode || offerProvider.hasPickupCode));
-      const hasDineIn = offerProvider && (offerProvider.dineInPossible !== false || data.dineInPossible);
-      const hasReuse = offerProvider && (offerProvider.reuse && offerProvider.reuse.enabled);
       
       // Keine Icons mehr auf dem Bild – 3 Säulen als Balken unter dem Anbieter
       
@@ -17494,12 +17493,12 @@ j<!doctype html>
   function checkConnectivity(){
     const isOnline = navigator.onLine;
     
-    // Zusätzlicher Ping-Test (optional, kann später mit echtem Endpoint erweitert werden)
+    // Zusätzlicher Ping-Test: aktuelle Seite (existiert immer), kein Favicon (404 auf GitHub Pages)
     if(isOnline){
-      // Versuche einen kleinen Request (z.B. Favicon)
-      fetch('/favicon.ico?t=' + Date.now(), { method: 'HEAD', cache: 'no-cache' })
-        .then(() => {
-          updateStatusIndicator('online');
+      const pingUrl = (window.location.origin + (window.location.pathname || '/')) + '?t=' + Date.now();
+      fetch(pingUrl, { method: 'HEAD', cache: 'no-cache' })
+        .then((r) => {
+          updateStatusIndicator(r.ok ? 'online' : 'offline');
         })
         .catch(() => {
           updateStatusIndicator('offline');
