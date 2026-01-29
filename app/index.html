@@ -451,6 +451,31 @@
       height: 18px;
       object-fit: contain;
     }
+    
+    /* 3 Säulen als horizontale Balken (Vor Ort / Abholnummer / Mehrweg) */
+    .pillar-bars {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      width: 100%;
+    }
+    .pillar-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-family: Inter, system-ui, sans-serif;
+      font-weight: 800;
+      font-size: 11px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    .pillar-bar--green { background: #27AE60; color: #fff; }
+    .pillar-bar--yellow { background: #FFD700; color: #1a1a1a; }
+    .pillar-bar--blue { background: #3498db; color: #fff; }
+    .pillar-bar--inactive { background: #e8e8e8; color: #999; }
+    
     .card.polaroid .img img{
       width:100%;
       height:100%;
@@ -4632,6 +4657,15 @@
 
   function getFavPillars(dishId){ const m = load(LS.favPillars, {}); return m[dishId] || null; }
   function setFavPillars(dishId, pillars){ const m = load(LS.favPillars, {}); m[dishId] = pillars; save(LS.favPillars, m); }
+  function renderPillarBars(vorOrt, abholnummer, mehrweg){
+    const c1 = vorOrt ? 'pillar-bar--green' : 'pillar-bar--inactive';
+    const t1 = vorOrt ? 'VOR ORT MÖGLICH' : 'KEIN VOR ORT';
+    const c2 = abholnummer ? 'pillar-bar--yellow' : 'pillar-bar--inactive';
+    const t2 = abholnummer ? 'MIT ABHOLNUMMER' : 'KEINE ABHOLNUMMER';
+    const c3 = mehrweg ? 'pillar-bar--blue' : 'pillar-bar--inactive';
+    const t3 = mehrweg ? 'MEHRWEG VERFÜGBAR' : 'KEIN MEHRWEG';
+    return `<div class="pillar-bars"><div class="pillar-bar ${c1}">${t1}</div><div class="pillar-bar ${c2}">${t2}</div><div class="pillar-bar ${c3}">${t3}</div></div>`;
+  }
   function clearFavPillars(dishId){ const m = load(LS.favPillars, {}); delete m[dishId]; save(LS.favPillars, m); }
 
   // --- Order Store (localStorage MVP) - MUSS VOR VERWENDUNG DEFINIERT SEIN ---
@@ -6676,22 +6710,10 @@
     const dishKey = data.id;
     const isFavorited = favorites.includes(dishKey);
     
-    // Mittagessen-Tinder: 3 Säulen oberhalb des Bildes (Besteck, Nummer, Mehrweg), ausgegraut wenn N/A
+    // Mittagessen-Tinder: 3 Säulen als Balken unter dem Anbieter (keine Icons auf dem Bild)
     card.innerHTML = `
       <div class="swipe-card-content">
-        <!-- 3 Säulen: Besteck (Vor Ort), Nummer (Abholnummer), Mehrweg – permanent oberhalb des Bildes -->
-        <div class="swipe-card-pillars-row" style="display:flex; align-items:center; justify-content:center; gap:12px; padding:12px 0 8px; flex-wrap:wrap;">
-          <div class="swipe-pillar-icon" style="width:40px; height:40px; background:rgba(255,255,255,0.95); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 8px rgba(0,0,0,0.12); opacity:${hasDineIn ? '1' : '0.35'}; filter:${hasDineIn ? 'none' : 'grayscale(100%)'};" title="Vor Ort essen">
-            <span style="font-size:20px;">🍴</span>
-          </div>
-          <div class="swipe-pillar-icon" style="width:40px; height:40px; background:rgba(255,255,255,0.95); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 8px rgba(0,0,0,0.12); opacity:${orderingEnabled ? '1' : '0.35'}; filter:${orderingEnabled ? 'none' : 'grayscale(100%)'};" title="Abholnummer">
-            <span style="font-size:20px;">🧾</span>
-          </div>
-          <div class="swipe-pillar-icon" style="width:40px; height:40px; background:rgba(255,255,255,0.95); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 8px rgba(0,0,0,0.12); opacity:${hasReuseSupport ? '1' : '0.35'}; filter:${hasReuseSupport ? 'none' : 'grayscale(100%)'};" title="Mehrweg">
-            <span style="font-size:20px;">🔄</span>
-          </div>
-        </div>
-        <!-- Bild mit Herz-Icon und Preis-Sticker -->
+        <!-- Bild mit Herz-Icon und Preis-Sticker (ohne Säulen-Overlay) -->
         <div class="swipe-card-image-wrapper">
           <div class="swipe-card-image">
             <img src="${esc(imgSrc)}" alt="${esc(data.dish||'')}" />
@@ -6706,6 +6728,7 @@
         <div class="swipe-card-title-section" style="width:100%; padding:16px 12px 0; text-align:center;">
           <h2 class="swipe-card-title">${esc(data.dish||'Gericht')}</h2>
           <p class="swipe-card-provider">${esc(data.providerName||'Anbieter')}</p>
+          <div style="margin-top:12px; padding:0 8px;">${renderPillarBars(hasDineIn, orderingEnabled, hasReuseSupport)}</div>
         </div>
         
         <!-- Logistik-Sektion: Distanzen, Essenszeit & Allergene -->
@@ -8008,42 +8031,7 @@
       const hasDineIn = offerProvider && (offerProvider.dineInPossible !== false || data.dineInPossible);
       const hasReuse = offerProvider && (offerProvider.reuse && offerProvider.reuse.enabled);
       
-      // Badge-Container oben links (3 kleine Kreise mit Glass-Morphism) - Overlay auf Bild
-      const badgesContainer = document.createElement('div');
-      badgesContainer.className = 'badge-overlay';
-      
-      // Badge 1: Abholnummer (Ticket) - Asset verwenden
-      const badge1 = document.createElement('div');
-      badge1.className = 'badge-icon';
-      badge1.style.opacity = orderingEnabled ? '1' : '0.4';
-      badge1.style.filter = orderingEnabled ? 'none' : 'grayscale(100%)';
-      badge1.title = 'Abholnummer verfügbar';
-      // Versuche zuerst die gewünschten Assets, fallback auf vorhandene
-      const ticketAsset = 'assets/image_cce9f3.png';
-      badge1.innerHTML = `<img src="${ticketAsset}" alt="Abholnummer" onerror="this.src='assets/icon-abholnummer.png';" />`;
-      badgesContainer.appendChild(badge1);
-      
-      // Badge 2: Vor Ort (Besteck) - Asset verwenden
-      const badge2 = document.createElement('div');
-      badge2.className = 'badge-icon';
-      badge2.style.opacity = hasDineIn ? '1' : '0.4';
-      badge2.style.filter = hasDineIn ? 'none' : 'grayscale(100%)';
-      badge2.title = 'Vor Ort essen möglich';
-      const besteckAsset = 'assets/image_ccecb9.jpg';
-      badge2.innerHTML = `<img src="${besteckAsset}" alt="Vor Ort" onerror="this.src='assets/icon-essen-vor-ort.png';" />`;
-      badgesContainer.appendChild(badge2);
-      
-      // Badge 3: Mehrweg (Kreislauf) - Asset verwenden
-      const badge3 = document.createElement('div');
-      badge3.className = 'badge-icon';
-      badge3.style.opacity = hasReuse ? '1' : '0.4';
-      badge3.style.filter = hasReuse ? 'none' : 'grayscale(100%)';
-      badge3.title = 'Mehrweg möglich';
-      const mehrwegAsset = 'assets/image_cce9b5.jpg';
-      badge3.innerHTML = `<img src="${mehrwegAsset}" alt="Mehrweg" onerror="this.src='assets/icon-mehrweg.png';" />`;
-      badgesContainer.appendChild(badge3);
-      
-      img.appendChild(badgesContainer);
+      // Keine Icons mehr auf dem Bild – 3 Säulen als Balken unter dem Anbieter
       
       // Preis-Sticker: Rechts unten auf Foto
       const priceSticker = document.createElement('div');
@@ -8123,6 +8111,12 @@
         }
       };
       body.appendChild(providerEl);
+      
+      // 3 Säulen als Balken (Vor Ort / Abholnummer / Mehrweg)
+      const barsWrap = document.createElement('div');
+      barsWrap.style.cssText = 'margin-top:10px; padding:0 16px;';
+      barsWrap.innerHTML = renderPillarBars(hasDineIn, orderingEnabled, hasReuse);
+      body.appendChild(barsWrap);
       
       // Mobilitäts-Zeile: Minimalistisch, einzeilig, kleine Schrift (10-12px)
       if(data.distanceKm != null){
