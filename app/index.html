@@ -12471,8 +12471,9 @@
       }
       
       gridEl.innerHTML = photos.map(photo => {
+        const cat = (photo.category || category);
         return `
-          <div onclick="selectProPhoto('${photo.id}', '${esc(photo.url)}', '${category}');" style="aspect-ratio:1; border-radius:12px; overflow:hidden; cursor:pointer; border:2px solid #e7e1d5; transition:all 0.2s;" onmouseover="this.style.borderColor='#FFD700'; this.style.transform='scale(1.05)';" onmouseout="this.style.borderColor='#e7e1d5'; this.style.transform='scale(1)';">
+          <div onclick="selectProPhoto('${photo.id}', '${esc(photo.url)}', '${cat}');" style="aspect-ratio:1; border-radius:12px; overflow:hidden; cursor:pointer; border:2px solid #e7e1d5; transition:all 0.2s;" onmouseover="this.style.borderColor='#FFD700'; this.style.transform='scale(1.05)';" onmouseout="this.style.borderColor='#e7e1d5'; this.style.transform='scale(1)';">
             <img src="${esc(photo.url)}" alt="${esc(photo.name)}" style="width:100%; height:100%; object-fit:cover;" />
           </div>
         `;
@@ -12482,13 +12483,24 @@
     window.selectProPhoto = function(photoId, photoUrl, category){
       selectedProPhoto = {id: photoId, url: photoUrl, category: category, isStockPhoto: true};
       
-      // Zu "Zuletzt genutzt" hinzufügen
+      const catKey = (typeof category === 'string' && category !== 'all') ? category : Object.keys(foodLibrary).find(k => (foodLibrary[k] || []).some(p => p.id === photoId)) || 'all';
+      const photoName = (foodLibrary[catKey] || []).find(p => p.id === photoId)?.name || 'Gericht';
       recentProPhotos = recentProPhotos.filter(p => p.id !== photoId);
-      recentProPhotos.unshift({id: photoId, url: photoUrl, category: category, name: foodLibrary[category]?.find(p => p.id === photoId)?.name || 'Gericht'});
+      recentProPhotos.unshift({id: photoId, url: photoUrl, category: catKey, name: photoName});
       recentProPhotos = recentProPhotos.slice(0, 10);
       localStorage.setItem('mittagio_recent_pro_photos', JSON.stringify(recentProPhotos));
       
-      // Preview anzeigen
+      // Inseratflow (Listing-Wizard): Foto in w.data übernehmen und Wizard neu bauen
+      if(window.proPhotoContext === 'listing'){
+        window.proPhotoContext = null;
+        window.closeProPhotoGallery();
+        if(typeof w !== 'undefined' && w && w.data){ w.data.photoData = photoUrl; }
+        if(typeof rebuildWizard === 'function') rebuildWizard();
+        if(typeof showToast === 'function') showToast('Profi-Foto ausgewählt.');
+        return;
+      }
+      
+      // Onboarding: Preview anzeigen + Draft speichern
       const previewEl = document.getElementById('onboardingPhotoPreview');
       const previewImgEl = document.getElementById('onboardingPhotoPreviewImg');
       const watermarkEl = document.getElementById('onboardingPhotoWatermark');
@@ -12499,6 +12511,11 @@
         previewImgEl.style.filter = 'brightness(1.05) contrast(1.1) saturate(1.2)';
         if(watermarkEl) watermarkEl.style.display = 'block';
       }
+      
+      if(typeof onboardingDraftDish === 'undefined'){ window.closeProPhotoGallery(); showToast('Profi-Foto ausgewählt.'); return; }
+      onboardingDraftDish = onboardingDraftDish || {};
+      onboardingDraftDish.photoData = photoUrl;
+      if(typeof save === 'function' && typeof LS !== 'undefined') save(LS.onboardingDraft, onboardingDraftDish);
       
       window.closeProPhotoGallery();
       showToast('Profi-Foto ausgewählt. Wir markieren es als Serviervorschlag.');
@@ -16403,7 +16420,12 @@
           const dataUrl = await toDataUrl(f);
           await openPhotoEditor(dataUrl);
         };
-        ans.appendChild(cam); ans.appendChild(gal);
+        const pro=document.createElement('button'); pro.type='button'; pro.className='ans'; pro.textContent='Profi-Galerie';
+        pro.onclick=()=>{ 
+          window.proPhotoContext = 'listing'; 
+          if(typeof window.openProPhotoGallery === 'function') window.openProPhotoGallery(); 
+        };
+        ans.appendChild(cam); ans.appendChild(gal); ans.appendChild(pro);
         box.appendChild(ans);
       } else {
         // Foto bereits vorhanden - Editor öffnen
@@ -16928,7 +16950,17 @@
       r.readAsDataURL(file);
     });
   }
-  
+  async function urlToDataUrl(url){
+    const r = await fetch(url, { mode: 'cors' });
+    const blob = await r.blob();
+    return new Promise((resolve, reject) => {
+      const fr = new FileReader();
+      fr.onload = () => resolve(fr.result);
+      fr.onerror = reject;
+      fr.readAsDataURL(blob);
+    });
+  }
+
   // Fotoeditor mit Filter & Zuschnitt
   // Foto-KI: Analysiert Foto mit GPT-4o Vision API
   async function analyzeFoodPhoto(imageDataUrl){
