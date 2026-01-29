@@ -5009,7 +5009,7 @@
   let cookbookQuery = '';
   let cookbookTab = 'dishes';
   let weekPlanDay = isoDate(new Date());
-  let locationQuery = '';
+  let locationQuery = 'Jena'; // Default für Demo – 10 Anbieter in Jena erscheinen in Kundenansicht
   let pickupDone = new Set(load(LS.pickupDone, []));
   let activeOrderId = null;
   let ordersFilter = 'offen';
@@ -5052,20 +5052,20 @@
     save(LS.offers, offers);
   }
 
-  // --- Beispieldaten: 10 Anbieter mit je 3 Gerichten und 10 Abholcodes ---
+  // --- Beispieldaten: 10 Anbieter in Jena, je 3 Gerichte – erscheinen in Kundenansicht (Discovery/Swipe) ---
   function seedExampleData(){
     const today = isoDate(new Date());
     const providerNames = [
-      {id: 'p_01', name: 'Pizzeria Bella Vista', address: 'Hauptstraße 45, 70173 Stuttgart', street: 'Hauptstraße 45', zip: '70173', city: 'Stuttgart'},
-      {id: 'p_02', name: 'Asia Wok Express', address: 'Neckarhalde 8, 72070 Tübingen', street: 'Neckarhalde 8', zip: '72070', city: 'Tübingen'},
-      {id: 'p_03', name: 'Burger House', address: 'Wilhelmstraße 12, 71634 Ludwigsburg', street: 'Wilhelmstraße 12', zip: '71634', city: 'Ludwigsburg'},
-      {id: 'p_04', name: 'Green Garden', address: 'Marktplatz 7, 73728 Esslingen', street: 'Marktplatz 7', zip: '73728', city: 'Esslingen'},
-      {id: 'p_05', name: 'La Trattoria', address: 'Königstraße 23, 70173 Stuttgart', street: 'Königstraße 23', zip: '70173', city: 'Stuttgart'},
-      {id: 'p_06', name: 'Sushi Bar Tokyo', address: 'Eberhardstraße 15, 72072 Tübingen', street: 'Eberhardstraße 15', zip: '72072', city: 'Tübingen'},
-      {id: 'p_07', name: 'Curry & Co', address: 'Bahnhofstraße 8, 71634 Ludwigsburg', street: 'Bahnhofstraße 8', zip: '71634', city: 'Ludwigsburg'},
-      {id: 'p_08', name: 'Veggie Delight', address: 'Hafenstraße 12, 73728 Esslingen', street: 'Hafenstraße 12', zip: '73728', city: 'Esslingen'},
-      {id: 'p_09', name: 'Steakhouse Premium', address: 'Schillerplatz 5, 70173 Stuttgart', street: 'Schillerplatz 5', zip: '70173', city: 'Stuttgart'},
-      {id: 'p_10', name: 'Bio Bistro', address: 'Münzgasse 3, 72070 Tübingen', street: 'Münzgasse 3', zip: '72070', city: 'Tübingen'}
+      {id: 'p_01', name: 'Pizzeria Bella Vista', address: 'Kollégienstraße 12, 07743 Jena', street: 'Kollégienstraße 12', zip: '07743', city: 'Jena', distanceKm: 0.4},
+      {id: 'p_02', name: 'Asia Wok Express', address: 'Neugasse 8, 07743 Jena', street: 'Neugasse 8', zip: '07743', city: 'Jena', distanceKm: 0.6},
+      {id: 'p_03', name: 'Burger House', address: 'Johannisplatz 5, 07743 Jena', street: 'Johannisplatz 5', zip: '07743', city: 'Jena', distanceKm: 0.5},
+      {id: 'p_04', name: 'Green Garden', address: 'Leutragraben 4, 07743 Jena', street: 'Leutragraben 4', zip: '07743', city: 'Jena', distanceKm: 0.3},
+      {id: 'p_05', name: 'La Trattoria', address: 'Schillerstraße 22, 07745 Jena', street: 'Schillerstraße 22', zip: '07745', city: 'Jena', distanceKm: 0.8},
+      {id: 'p_06', name: 'Sushi Bar Tokyo', address: 'Wagnergasse 15, 07743 Jena', street: 'Wagnergasse 15', zip: '07743', city: 'Jena', distanceKm: 0.5},
+      {id: 'p_07', name: 'Curry & Co', address: 'Teichgraben 6, 07743 Jena', street: 'Teichgraben 6', zip: '07743', city: 'Jena', distanceKm: 0.7},
+      {id: 'p_08', name: 'Veggie Delight', address: 'Löbdergraben 10, 07743 Jena', street: 'Löbdergraben 10', zip: '07743', city: 'Jena', distanceKm: 0.4},
+      {id: 'p_09', name: 'Steakhouse Premium', address: 'Engelplatz 2, 07743 Jena', street: 'Engelplatz 2', zip: '07743', city: 'Jena', distanceKm: 0.6},
+      {id: 'p_10', name: 'Bio Bistro', address: 'Weigelstraße 18, 07743 Jena', street: 'Weigelstraße 18', zip: '07743', city: 'Jena', distanceKm: 0.9}
     ];
 
     const dishTemplates = [
@@ -5136,7 +5136,7 @@
           lastUsed: Date.now() - (pIdx * 86400000) - (dIdx * 3600000)
         });
 
-        // Offer (Inserat für heute)
+        // Offer (Inserat für heute) – distanceKm für Kundenansicht (Discovery/Swipe, „10 Min“-Filter)
         newOffers.push({
           id: offerId,
           providerId: provider.id,
@@ -5152,10 +5152,11 @@
           day: today,
           imageUrl: template.img,
           hasPickupCode: true,
-          dineInPossible: false, // Keine Vor-Ort-Option - nur Abholnummer
+          dineInPossible: true,
+          distanceKm: provider.distanceKm != null ? provider.distanceKm : (0.3 + (pIdx * 0.07) + (dIdx * 0.02)),
           allergens: [],
           extras: [],
-          reuse: {enabled: false, deposit: 0},
+          reuse: {enabled: (pIdx % 3) === 0, deposit: 0},
           active: true,
           createdAt: Date.now() - (pIdx * 3600000) - (dIdx * 600000)
         });
