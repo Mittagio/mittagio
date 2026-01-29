@@ -1087,6 +1087,37 @@ j<!doctype html>
     .w-actions{display:flex; gap:10px; margin-top:12px}
     .w-actions button{flex:1}
 
+    /* Inseratflow: Küchenmodus-Layout (Create Sheet + Wizard) */
+    #createFlowSheet.sheet--kitchen,
+    #wizard.sheet--kitchen{ background:#1e1e1e; }
+    #createFlowSheet.sheet--kitchen .handle,
+    #wizard.sheet--kitchen .handle{ background:rgba(255,255,255,0.25); }
+    #createFlowSheet.sheet--kitchen .sheet-body{ padding:20px 20px 28px; }
+    #createFlowSheet.sheet--kitchen .create-flow-title{ font-weight:800; font-size:20px; color:#fff; margin-bottom:8px; line-height:1.3; }
+    #createFlowSheet.sheet--kitchen .create-flow-hint{ font-size:13px; color:rgba(255,255,255,0.6); margin-top:12px; }
+    #createFlowSheet.sheet--kitchen .create-flow-btns{ display:flex; flex-direction:column; gap:12px; margin-top:20px; }
+    #createFlowSheet.sheet--kitchen .btn-create-primary{ width:100%; min-height:52px; border-radius:14px; font-weight:800; font-size:16px; border:none; background:#FFD700; color:#1a1a1a; cursor:pointer; display:flex; align-items:center; justify-content:flex-start; padding:0 20px; gap:12px; transition:transform .15s, box-shadow .15s; }
+    #createFlowSheet.sheet--kitchen .btn-create-primary:hover{ transform:translateY(-1px); box-shadow:0 6px 20px rgba(255,215,0,0.35); }
+    #createFlowSheet.sheet--kitchen .btn-create-secondary{ width:100%; min-height:52px; border-radius:14px; font-weight:700; font-size:15px; border:1px solid rgba(255,255,255,0.2); background:#2a2a2a; color:rgba(255,255,255,0.95); cursor:pointer; display:flex; align-items:center; justify-content:flex-start; padding:0 20px; gap:12px; transition:background .15s, border-color .15s; }
+    #createFlowSheet.sheet--kitchen .btn-create-secondary:hover{ background:#333; border-color:rgba(255,255,255,0.3); }
+    #wizard.sheet--kitchen .sheet-body{ padding:16px 20px 24px; }
+    #wizard.sheet--kitchen .wizard{ background:#2a2a2a; border-color:rgba(255,255,255,0.1); border-radius:16px; padding:16px; }
+    #wizard.sheet--kitchen .w-title{ color:#fff; }
+    #wizard.sheet--kitchen .w-step{ color:rgba(255,255,255,0.6); }
+    #wizard.sheet--kitchen .w-q{ color:#fff; }
+    #wizard.sheet--kitchen .w-help{ color:rgba(255,255,255,0.6); }
+    #wizard.sheet--kitchen .hint{ color:rgba(255,255,255,0.55); }
+    #wizard.sheet--kitchen .panel{ background:#1e1e1e; border-color:rgba(255,255,255,0.1); color:rgba(255,255,255,0.9); }
+    #wizard.sheet--kitchen .panel .hint{ color:rgba(255,255,255,0.5); }
+    #wizard.sheet--kitchen .ans{ background:#2a2a2a; border-color:rgba(255,255,255,0.2); color:#fff; }
+    #wizard.sheet--kitchen .ans:hover{ background:#333; border-color:rgba(255,255,255,0.3); }
+    #wizard.sheet--kitchen .ans.on{ border-color:rgba(255,215,0,0.5); background:rgba(255,215,0,0.15); color:#FFD700; }
+    #wizard.sheet--kitchen .field{ background:#1e1e1e; border-color:rgba(255,255,255,0.15); color:#fff; }
+    #wizard.sheet--kitchen .field::placeholder{ color:rgba(255,255,255,0.4); }
+    #wizard.sheet--kitchen .w-actions .btn:not(.secondary){ background:#FFD700; color:#1a1a1a; border:none; }
+    #wizard.sheet--kitchen .w-actions .btn.secondary{ background:#2a2a2a; border:1px solid rgba(255,255,255,0.2); color:#fff; }
+    #wizard.sheet--kitchen .w-actions .btn.secondary:hover{ background:#333; }
+
     /* FAQ accordion */
     .faq{margin-top:12px}
     details{background:#fff;border:1px solid var(--border);border-radius:14px;box-shadow:0 6px 14px rgba(0,0,0,.06);padding:14px 16px}
@@ -4480,23 +4511,23 @@ j<!doctype html>
   </div>
 </div>
 
-<!-- Create Flow Sheet (Gericht hinzufügen) -->
+<!-- Create Flow Sheet (Gericht hinzufügen) – Küchenmodus -->
 <div class="backdrop" id="createFlowBd" onclick="closeCreateFlowSheet()"></div>
-<div class="sheet" id="createFlowSheet">
+<div class="sheet sheet--kitchen" id="createFlowSheet">
   <div class="handle"></div>
-  <div class="sheet-body" style="padding:16px;">
-    <div style="font-weight:600; font-size:18px; margin-bottom:16px; line-height:1.3;">Gericht hinzufügen</div>
-    <div style="display:flex; flex-direction:column; gap:12px;">
-      <button class="btn secondary" type="button" id="btnCreateFromCookbook" style="width:100%; min-height:44px; justify-content:flex-start; text-align:left;">
-        <span style="margin-right:12px;">📖</span>
-        <span>Aus Kochbuch auswählen</span>
-      </button>
-      <button class="btn secondary" type="button" id="btnCreateNewDish" style="width:100%; min-height:44px; justify-content:flex-start; text-align:left;">
-        <span style="margin-right:12px;">➕</span>
+  <div class="sheet-body">
+    <div class="create-flow-title">Gericht hinzufügen</div>
+    <div class="create-flow-btns">
+      <button class="btn-create-primary" type="button" id="btnCreateNewDish">
+        <span>➕</span>
         <span>Neues Gericht erstellen</span>
       </button>
+      <button class="btn-create-secondary" type="button" id="btnCreateFromCookbook">
+        <span>📖</span>
+        <span>Aus Kochbuch auswählen</span>
+      </button>
     </div>
-    <div class="hint" id="createFlowDateHint" style="margin-top:12px; font-size:13px; color:var(--muted); display:none;"></div>
+    <div class="create-flow-hint hint" id="createFlowDateHint" style="display:none;"></div>
   </div>
 </div>
 
@@ -4509,9 +4540,9 @@ j<!doctype html>
 <!-- Print view -->
 <div id="printView" class="print-view"></div>
 
-<!-- Provider Wizard sheet (single reusable) -->
+<!-- Provider Wizard sheet (single reusable) – Küchenmodus -->
 <div class="backdrop" id="wbd" onclick="closeWizard()"></div>
-<div class="sheet" id="wizard">
+<div class="sheet sheet--kitchen" id="wizard">
   <div class="handle"></div>
   <div class="sheet-body">
     <div class="wizard" id="wBox">
