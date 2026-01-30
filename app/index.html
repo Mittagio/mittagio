@@ -1968,6 +1968,28 @@
         gap: 5px !important;
       }
     }
+    /* Provider-Layout: Optimiert für kleine Bildschirme (Samsung S25, ~360-412px) */
+    @media (max-width: 420px) {
+      [id^="v-provider-"]{ padding:16px 12px !important; }
+      [id^="v-provider-"] h1{ font-size:26px !important; }
+      [id^="v-provider-"] .panel{ padding:14px !important; border-radius:16px !important; }
+      #providerStatusIndicator{ top:12px; right:12px; padding:6px 10px; }
+      #providerStatusIndicator span{ font-size:11px; }
+      /* KPI Cards 3er-Grid → kleinere Schrift */
+      #kpiCardInserate, #kpiCardAbholungen, #kpiCardKochbuch{ padding:14px 10px !important; }
+      #kpiCardInserate div:first-child, #kpiCardAbholungen div:first-child, #kpiCardKochbuch div:first-child{ font-size:26px !important; }
+      /* Kacheln: 3er-Grid → gap kleiner */
+      .provider-tile{ padding:12px !important; }
+      .provider-tile div:first-child{ font-size:16px !important; }
+      /* Provider-Nav: kompakter */
+      #providerNav .navbtn{ font-size:10px; padding:8px 4px; }
+      #providerNav .navbtn .ico svg{ width:20px; height:20px; }
+    }
+    @media (max-width: 360px) {
+      [id^="v-provider-"]{ padding:12px 10px !important; }
+      [id^="v-provider-"] h1{ font-size:24px !important; }
+      #kpiCardInserate div:first-child, #kpiCardAbholungen div:first-child, #kpiCardKochbuch div:first-child{ font-size:22px !important; }
+    }
     @media (min-width: 768px) {
       .discover-offers {
         padding: 16px 12px !important;
