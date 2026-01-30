@@ -4045,8 +4045,8 @@
     </section>
     
     <!-- Anbieter-FAQ (Legacy, wird durch v-legal-faq ersetzt) -->
-    <section class="view" id="v-legal-faq-provider" style="background:#1e1e1e; min-height:100vh; padding:20px; padding-bottom:90px;">
-      <div class="panel" style="padding:20px; border-radius:20px; box-shadow:0 4px 16px rgba(0,0,0,.4); background:#2a2a2a; border:1px solid rgba(255,255,255,0.05);">
+    <section class="view" id="v-legal-faq-provider" style="background:#323232; min-height:100vh; padding:20px; padding-bottom:90px;">
+      <div class="panel" style="padding:20px; border-radius:20px; box-shadow:0 4px 20px rgba(0,0,0,.2); background:#404040; border:1px solid rgba(255,255,255,0.1);">
         <h1 style="font-size:24px; font-weight:900; margin-bottom:20px; color:#fff;">FAQ für Anbieter</h1>
         <div style="line-height:1.8; font-size:15px; color:rgba(255,255,255,0.9);">
           
@@ -4074,7 +4074,7 @@
         <div style="margin-top:32px; padding-top:20px; border-top:1px solid rgba(255,255,255,0.1); text-align:center; font-size:14px; color:rgba(255,255,255,0.6);">
           Weitere Fragen? <a href="mailto:support@mittagio.de" style="color:#FFD700;">support@mittagio.de</a>
         </div>
-        <button class="btn ghost" type="button" onclick="goBackFromLegalPage()" style="margin-top:20px; width:100%; background:#1e1e1e; border:1px solid rgba(255,255,255,0.1); color:rgba(255,255,255,0.8);">Zurück</button>
+        <button class="btn ghost" type="button" onclick="goBackFromLegalPage()" style="margin-top:20px; width:100%; background:#383838; border:1px solid rgba(255,255,255,0.12); color:rgba(255,255,255,0.9);">Zurück</button>
       </div>
     </section>
 
@@ -13837,7 +13837,7 @@
           const tileAbholnummern = document.getElementById('tileAbholnummern');
           if(tileAbholnummern){
             tileAbholnummern.style.opacity = '1';
-            tileAbholnummern.style.background = '#2a2a2a';
+            tileAbholnummern.style.background = '#404040';
           }
         } else {
           tileAbholnummernCount.textContent = '–';
@@ -13847,13 +13847,13 @@
       const kpiInserateCount = document.getElementById('kpiInserateCount');
       if(kpiInserateCount) {
         kpiInserateCount.textContent = activeOffersCount;
-        kpiInserateCount.parentElement.style.background = '#2d2d2d';
+        kpiInserateCount.parentElement.style.background = '#404040';
         kpiInserateCount.parentElement.style.color = '#fff';
       }
       const kpiAbholungenCount = document.getElementById('kpiAbholungenCount');
       if(kpiAbholungenCount) {
         kpiAbholungenCount.textContent = todayPickups;
-        kpiAbholungenCount.parentElement.style.background = '#2d2d2d';
+        kpiAbholungenCount.parentElement.style.background = '#404040';
         kpiAbholungenCount.parentElement.style.color = '#fff';
       }
       const kpiKochbuchCount = document.getElementById('kpiKochbuchCount');
