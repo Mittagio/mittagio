@@ -1406,87 +1406,112 @@
       }
     }
 
-    /* Provider-App: Helles, app-ähnliches Layout (Dashboard heller & moderner) */
+    /* Provider-App: MEIN BETRIEB – lesbar, streng, bürokratisch */
     :root{
-      --provider-bg:#f0f2f5;
+      --provider-bg:#e8eaed;
       --provider-surface:#ffffff;
-      --provider-surface-alt:#f8f9fa;
-      --provider-border:rgba(0,0,0,0.08);
-      --provider-text:#1a1a1a;
-      --provider-text-muted:#64748b;
+      --provider-surface-alt:#f1f3f4;
+      --provider-border:#bdc1c6;
+      --provider-text:#202124;
+      --provider-text-muted:#5f6368;
     }
     [id^="v-provider-"]{
       background:var(--provider-bg) !important;
     }
     [id^="v-provider-"] .panel{
       background:var(--provider-surface) !important;
-      color:var(--provider-text);
+      color:var(--provider-text) !important;
       border:1px solid var(--provider-border) !important;
-      box-shadow:0 2px 12px rgba(0,0,0,.06) !important;
-      border-radius:16px !important;
+      box-shadow:none !important;
+      border-radius:6px !important;
     }
-    /* Status-Banner (grün) und Kunden-Nachfrage (gelb) behalten Farbe */
+    [id^="v-provider-"] .panel div,
+    [id^="v-provider-"] .panel span,
+    [id^="v-provider-"] .panel label{
+      color:var(--provider-text) !important;
+    }
+    [id^="v-provider-"] .panel .hint,
+    [id^="v-provider-"] .provider-profile-section-title{
+      color:var(--provider-text-muted) !important;
+    }
+    /* Status-Banner: nur dieser bleibt grün mit Weißtext */
     #providerStatusBanner{
       background:linear-gradient(135deg, #2e7d32 0%, #1f5f23 100%) !important;
       color:#fff !important;
-      box-shadow:0 4px 16px rgba(46,125,50,.25) !important;
+      border:1px solid #1f5f23 !important;
+      box-shadow:none !important;
+      border-radius:6px !important;
     }
     #providerStatusBanner *{ color:#fff !important; }
+    /* Kunden-Nachfrage: heller Hintergrund, dunkle Schrift (lesbar) */
     #providerCustomerDemand{
-      background:linear-gradient(135deg, rgba(255,215,0,0.18) 0%, rgba(255,184,0,0.08) 100%) !important;
-      border:1px solid rgba(255,193,7,0.35) !important;
-      color:#1a1a1a !important;
-    }
-    #providerCustomerDemand #providerRequestCount{ color:var(--brand) !important; }
-    #providerCustomerDemand .btn-primary{ background:#2e7d32 !important; color:#fff !important; }
-    /* Selbstbedienung-Box: dezent grün, dunkle Schrift */
-    #providerPersonalSpar{
-      background:linear-gradient(135deg, rgba(46,125,50,0.08) 0%, rgba(34,139,34,0.05) 100%) !important;
-      border:1px solid rgba(46,125,50,0.2) !important;
+      background:#fffbf0 !important;
+      border:1px solid #e6c200 !important;
       color:var(--provider-text) !important;
+      border-radius:6px !important;
     }
-    #providerPersonalSpar strong{ color:#2e7d32 !important; }
-    /* Header & Titel auf hellem Grund: dunkle Schrift (alle Provider-Views) */
+    #providerCustomerDemand #providerRequestCount{ color:var(--provider-text) !important; font-weight:800 !important; }
+    #providerCustomerDemand .btn-primary{ background:#2e7d32 !important; color:#fff !important; }
+    #providerPersonalSpar,
+    #providerPersonalSpar *{
+      background:var(--provider-surface-alt) !important;
+      color:var(--provider-text) !important;
+      border-color:var(--provider-border) !important;
+    }
+    #providerPersonalSpar strong{ color:var(--provider-text) !important; }
     [id^="v-provider-"] h1,[id^="v-provider-"] h2,[id^="v-provider-"] h3{
       color:var(--provider-text) !important;
     }
-    #v-provider-home > div:nth-of-type(2),
-    #v-provider-home > div:nth-of-type(2) div,
+    #v-provider-home .provider-home-header,
+    #v-provider-home .provider-home-header *,
     #v-provider-home h1{
       color:var(--provider-text) !important;
     }
-    #v-provider-home > div:nth-of-type(2) div:first-child{
+    #v-provider-home .provider-home-header div:first-child{
       color:var(--provider-text-muted) !important;
     }
     [id^="v-provider-"] #provPickupsSubheader,
     [id^="v-provider-"] .hint{
       color:var(--provider-text-muted) !important;
     }
-    /* Status-Indikator (oben rechts): hell, app-ig */
     #providerStatusIndicator{
-      background:rgba(255,255,255,0.95) !important;
-      backdrop-filter:blur(12px);
-      -webkit-backdrop-filter:blur(12px);
+      background:var(--provider-surface) !important;
       border:1px solid var(--provider-border) !important;
-      box-shadow:0 2px 12px rgba(0,0,0,.08) !important;
+      box-shadow:0 1px 3px rgba(0,0,0,.08) !important;
+      border-radius:6px !important;
     }
     #statusIndicatorText{ color:var(--provider-text) !important; }
-    /* KPI-Karten: Zahlen Gold/Brand, Label grau */
+    /* KPI-Karten: dunkle Schrift, lesbar */
+    #kpiCardTagesessen,
+    #kpiCardAbholungen,
+    #kpiCardKochbuch{
+      background:var(--provider-surface) !important;
+      border:1px solid var(--provider-border) !important;
+      border-radius:6px !important;
+    }
     #kpiCardTagesessen div:first-child,
     #kpiCardAbholungen div:first-child,
     #kpiCardKochbuch div:first-child{
-      color:var(--brand) !important;
+      color:var(--provider-text) !important;
     }
     #kpiCardTagesessen div:last-child,
     #kpiCardAbholungen div:last-child,
     #kpiCardKochbuch div:last-child{
       color:var(--provider-text-muted) !important;
     }
-    /* Tagesumsatz & weitere Panels: dunkle Schrift */
-    #providerTimeTracker div{ color:var(--provider-text) !important; }
-    #providerTimeTracker div:first-child{ color:var(--provider-text-muted) !important; }
-    #providerTimeTracker #providerTimeSaved{ color:#2e7d32 !important; }
-    #providerTodayShare .btn{ color:#1a1a1a !important; }
+    #providerTimeTracker,
+    #providerTimeTracker *{
+      color:var(--provider-text) !important;
+      background:var(--provider-surface) !important;
+      border-color:var(--provider-border) !important;
+    }
+    #providerTimeTracker div:first-child,
+    #providerTimeTracker div:last-child{
+      color:var(--provider-text-muted) !important;
+    }
+    #providerTimeTracker #providerTimeSaved{ color:var(--provider-text) !important; }
+    #providerTodayShare,
+    #providerTodayShare .btn{ color:var(--provider-text) !important; background:var(--provider-surface) !important; border-color:var(--provider-border) !important; }
     /* Buttons im Provider-Bereich: app-iger & moderner (S25-tauglich) */
     [id^="v-provider-"] .btn,
     [id^="v-provider-"] .btn-primary,
@@ -1521,9 +1546,22 @@
     #providerNav .navbtn{ color:var(--provider-text-muted); }
     #providerNav .navbtn.active{ color:var(--brand); }
     #providerNav .navbtn.active .ico svg{ color:var(--brand); stroke:var(--brand); }
-    /* Alle Provider-Panels: einheitlich dunkle Schrift */
     [id^="v-provider-"] .panel h1,[id^="v-provider-"] .panel h2,[id^="v-provider-"] .panel h3,[id^="v-provider-"] .panel .section-title{ color:var(--provider-text) !important; }
     [id^="v-provider-"] .panel .hint{ color:var(--provider-text-muted) !important; }
+    /* Dynamisch eingefügter Inhalt: immer lesbar */
+    #providerActiveOffersList,
+    #providerActiveOffersList *,
+    #providerTodayContent,
+    #providerTodayContent *,
+    #providerWeekDayContent,
+    #providerWeekDayContent *{
+      color:var(--provider-text) !important;
+    }
+    #providerActiveOffersList [style*="color:var(--muted)"],
+    #providerTodayContent .hint,
+    #providerWeekDayContent .hint{
+      color:var(--provider-text-muted) !important;
+    }
     /* FAB: moderner Schatten auf hellem Grund */
     #fabProviderAddOffer{
       box-shadow:0 4px 20px rgba(255,215,0,0.4) !important;
@@ -3858,124 +3896,104 @@
       </div>
     </section>
 
-    <!-- PROVIDER APP - Küchenmodus (Home) -->
-    <section class="view" id="v-provider-home" style="background:#323232; min-height:100vh; padding:20px; padding-bottom:90px; position:relative;">
-      <!-- Status-Ampel (oben rechts, fixiert) -->
-      <div id="providerStatusIndicator" style="position:fixed; top:16px; right:16px; z-index:100; display:flex; align-items:center; gap:8px; background:rgba(50,50,50,0.92); backdrop-filter:blur(10px); padding:8px 12px; border-radius:20px; border:1px solid rgba(255,255,255,0.1); cursor:pointer;" onclick="openSupportHelp()" title="In der Küche aktiv">
-        <div id="statusIndicatorDot" style="width:12px; height:12px; border-radius:50%; background:#2ECC71; box-shadow:0 0 8px rgba(46,204,113,0.6); animation:pulse-green 2s infinite;"></div>
-        <span id="statusIndicatorText" style="font-size:12px; font-weight:600; color:rgba(255,255,255,0.9);">In der Küche aktiv</span>
+    <!-- PROVIDER APP - MEIN BETRIEB (streng, bürokratisch, lesbar) -->
+    <section class="view" id="v-provider-home" style="min-height:100vh; padding:20px; padding-bottom:90px; position:relative;">
+      <!-- Status-Indikator (oben rechts) -->
+      <div id="providerStatusIndicator" class="provider-status-indicator" style="position:fixed; top:16px; right:16px; z-index:100; display:flex; align-items:center; gap:8px; padding:8px 12px; border-radius:6px; border:1px solid var(--provider-border); cursor:pointer; background:var(--provider-surface);" onclick="openSupportHelp()" title="Betriebsstatus">
+        <div id="statusIndicatorDot" style="width:10px; height:10px; border-radius:50%; background:#2e7d32;"></div>
+        <span id="statusIndicatorText" style="font-size:12px; font-weight:600; color:var(--provider-text);">Betrieb aktiv</span>
       </div>
       
-      <!-- Header: Deine Küche -->
-      <div style="margin-bottom:20px; text-align:center;">
-        <div style="font-size:11px; color:rgba(255,255,255,0.5); text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">Mittagio – Deine Küche</div>
-        <h1 style="margin:0; font-size:32px; font-weight:900; color:#fff; line-height:1.2;">Live & Bereit</h1>
+      <!-- Header: MEIN BETRIEB -->
+      <div class="provider-home-header" style="margin-bottom:24px; padding-bottom:16px; border-bottom:2px solid var(--provider-border);">
+        <div style="font-size:11px; color:var(--provider-text-muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:4px;">Mittagio · Anbieterbereich</div>
+        <h1 style="margin:0; font-size:24px; font-weight:800; color:var(--provider-text); line-height:1.2; letter-spacing:-0.02em;">MEIN BETRIEB</h1>
       </div>
       
-      <!-- Status-Banner: Live & Bereit -->
-      <div class="panel" id="providerStatusBanner" style="padding:20px; border-radius:20px; box-shadow:0 4px 16px rgba(0,0,0,.3); background:linear-gradient(135deg, #2e7d32 0%, #1f5f23 100%); margin-bottom:20px; text-align:center;">
-        <div style="font-weight:900; font-size:20px; color:#fff; margin-bottom:8px;" id="providerStatusText">Live & Bereit</div>
-        <div style="font-size:14px; color:rgba(255,255,255,0.9);">Bereit für Bestellungen</div>
+      <!-- Status: Live & Bereit (Behörden-Grün) -->
+      <div class="panel" id="providerStatusBanner" style="padding:16px 20px; border-radius:6px; border:1px solid #1f5f23; margin-bottom:20px; text-align:center; background:linear-gradient(135deg, #2e7d32 0%, #1f5f23 100%);">
+        <div style="font-weight:700; font-size:16px; color:#fff; margin-bottom:4px;" id="providerStatusText">Live & Bereit</div>
+        <div style="font-size:13px; color:rgba(255,255,255,0.9);">Bereit für Bestellungen</div>
       </div>
       
-      <!-- Kunden-Nachfrage: Express-Requests (Psychologischer Druck) -->
-      <div class="panel" id="providerCustomerDemand" style="padding:20px; border-radius:20px; box-shadow:0 4px 16px rgba(0,0,0,.4); background:linear-gradient(135deg, rgba(255,215,0,0.2) 0%, rgba(255,184,0,0.1) 100%); border:2px solid rgba(255,215,0,0.4); margin-bottom:20px;">
-        <div style="font-weight:900; font-size:18px; color:#fff; margin-bottom:12px; text-align:center;">
-          Kunden-Nachfrage
-        </div>
-        <div id="providerRequestCount" style="font-weight:900; font-size:32px; color:#FFD700; text-align:center; margin-bottom:8px; text-shadow:0 2px 8px rgba(255,215,0,0.3);">
-          0
-        </div>
-        <div style="font-size:14px; color:rgba(255,255,255,0.9); text-align:center; margin-bottom:16px; line-height:1.4;">
-          Kunden wollten heute bei dir per Abholnummer bestellen!
-        </div>
-        <button class="btn-primary" type="button" id="btnActivateExpress" style="width:100%; min-height:56px; background:#27AE60; color:#fff; font-weight:800; font-size:16px; border:none; border-radius:12px; box-shadow:0 4px 12px rgba(39,174,96,0.3);">
-          <i data-lucide="zap" style="width:20px;height:20px; margin-right:8px;"></i>
-          Aktiviere jetzt Express, um diesen Umsatz zu sichern
+      <!-- Kunden-Nachfrage (nur bei Requests) -->
+      <div class="panel" id="providerCustomerDemand" style="padding:16px 20px; border-radius:6px; border:1px solid rgba(255,193,7,0.5); margin-bottom:20px; background:#fffbf0;">
+        <div style="font-weight:700; font-size:14px; color:#1a1a1a; margin-bottom:8px; text-align:center;">Kunden-Nachfrage</div>
+        <div id="providerRequestCount" style="font-weight:800; font-size:28px; color:#1a1a1a; text-align:center; margin-bottom:6px;">0</div>
+        <div style="font-size:13px; color:#3c4043; text-align:center; margin-bottom:12px; line-height:1.4;">Anfragen heute (Abholnummer)</div>
+        <button class="btn-primary" type="button" id="btnActivateExpress" style="width:100%; min-height:48px; background:#2e7d32; color:#fff; font-weight:700; font-size:14px; border:none; border-radius:6px;">
+          <i data-lucide="zap" style="width:18px;height:18px; margin-right:6px;"></i>
+          Express aktivieren
         </button>
       </div>
       
-      <!-- KPI Dashboard Cards: Meine Tagesessen, Meine Abholungen, Mein Kochbuch -->
-      <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; margin-bottom:20px;">
-        <div class="panel" id="kpiCardTagesessen" style="padding:20px; border-radius:16px; box-shadow:0 4px 20px rgba(0,0,0,.2); background:#404040; border:1px solid rgba(255,215,0,0.25); cursor:pointer; text-align:center; transition:all 0.2s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 24px rgba(0,0,0,.25)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 20px rgba(0,0,0,.2)';">
-          <div style="font-size:20px; font-weight:900; line-height:1.2; margin-bottom:8px; color:#FFD700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" id="kpiTagesessenDish">–</div>
-          <div style="font-size:13px; color:rgba(255,255,255,0.75); font-weight:600;">Meine Tagesessen</div>
-        </div>
-        <div class="panel" id="kpiCardAbholungen" style="padding:20px; border-radius:16px; box-shadow:0 4px 20px rgba(0,0,0,.2); background:#404040; border:1px solid rgba(255,215,0,0.25); cursor:pointer; text-align:center; transition:all 0.2s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 24px rgba(0,0,0,.25)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 20px rgba(0,0,0,.2)';">
-          <div style="font-size:32px; font-weight:900; line-height:1.2; margin-bottom:8px; color:#FFD700;" id="kpiAbholungenCount">0</div>
-          <div style="font-size:13px; color:rgba(255,255,255,0.75); font-weight:600;">Meine Abholungen</div>
-        </div>
-        <div class="panel" id="kpiCardKochbuch" style="padding:20px; border-radius:16px; box-shadow:0 4px 20px rgba(0,0,0,.2); background:#404040; border:1px solid rgba(255,215,0,0.25); cursor:pointer; text-align:center; transition:all 0.2s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 24px rgba(0,0,0,.25)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 20px rgba(0,0,0,.2)';">
-          <div style="font-size:32px; font-weight:900; line-height:1.2; margin-bottom:8px; color:#FFD700;" id="kpiKochbuchCount">0</div>
-          <div style="font-size:13px; color:rgba(255,255,255,0.75); font-weight:600;">Mein Kochbuch</div>
+      <!-- Kennzahlen (KPI) -->
+      <div style="margin-bottom:16px;">
+        <div style="font-size:11px; color:var(--provider-text-muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Kennzahlen</div>
+        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px;">
+          <div class="panel provider-kpi-card" id="kpiCardTagesessen" style="padding:14px; border-radius:6px; border:1px solid var(--provider-border); cursor:pointer; text-align:center;">
+            <div style="font-size:18px; font-weight:800; line-height:1.2; margin-bottom:6px; color:var(--provider-text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" id="kpiTagesessenDish">–</div>
+            <div style="font-size:11px; color:var(--provider-text-muted); font-weight:600;">Tagesessen</div>
+          </div>
+          <div class="panel provider-kpi-card" id="kpiCardAbholungen" style="padding:14px; border-radius:6px; border:1px solid var(--provider-border); cursor:pointer; text-align:center;">
+            <div style="font-size:24px; font-weight:800; line-height:1.2; margin-bottom:6px; color:var(--provider-text);" id="kpiAbholungenCount">0</div>
+            <div style="font-size:11px; color:var(--provider-text-muted); font-weight:600;">Abholungen</div>
+          </div>
+          <div class="panel provider-kpi-card" id="kpiCardKochbuch" style="padding:14px; border-radius:6px; border:1px solid var(--provider-border); cursor:pointer; text-align:center;">
+            <div style="font-size:24px; font-weight:800; line-height:1.2; margin-bottom:6px; color:var(--provider-text);" id="kpiKochbuchCount">0</div>
+            <div style="font-size:11px; color:var(--provider-text-muted); font-weight:600;">Kochbuch</div>
+          </div>
         </div>
       </div>
       
-      <!-- Tagesumsatz (Daily Turnover) -->
-      <div class="panel" id="providerTimeTracker" style="padding:20px; border-radius:20px; box-shadow:0 4px 20px rgba(0,0,0,.2); background:#404040; border:1px solid rgba(46,125,50,0.3); margin-bottom:20px; text-align:center;">
-        <div style="font-size:14px; color:rgba(255,255,255,0.7); margin-bottom:8px; font-weight:600;">Tagesumsatz</div>
-        <div style="font-size:36px; font-weight:900; color:#2ECC71; margin-bottom:8px;" id="providerTimeSaved">
-          0 €
-        </div>
-        <div style="font-size:13px; color:rgba(255,255,255,0.7);">
-          Umsatz heute
-        </div>
+      <!-- Tagesumsatz -->
+      <div class="panel" id="providerTimeTracker" style="padding:16px 20px; border-radius:6px; border:1px solid var(--provider-border); margin-bottom:20px; text-align:center;">
+        <div style="font-size:11px; color:var(--provider-text-muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:6px;">Tagesumsatz</div>
+        <div style="font-size:28px; font-weight:800; color:var(--provider-text); margin-bottom:4px;" id="providerTimeSaved">0 €</div>
+        <div style="font-size:12px; color:var(--provider-text-muted);">Umsatz heute</div>
       </div>
 
-      <!-- Selbstbedienung verdient (mit Abholnummer) -->
-      <div class="panel" id="providerPersonalSpar" style="padding:16px; border-radius:20px; box-shadow:0 4px 16px rgba(0,0,0,.3); background:linear-gradient(135deg, rgba(31,157,85,0.15) 0%, rgba(46,125,50,0.1) 100%); margin-bottom:20px; border:2px solid rgba(31,157,85,0.3);">
-        <div style="font-size:13px; color:rgba(255,255,255,0.9); margin-bottom:6px; font-weight:600; display:flex; align-items:center; gap:6px;">
-          <i data-lucide="users" style="width:16px;height:16px; color:#2ECC71;"></i>
-          Selbstbedienung verdient
-        </div>
-        <div style="font-size:14px; color:rgba(255,255,255,0.8); line-height:1.5;" id="providerPersonalSparText">
-          Heute <strong style="color:#2ECC71; font-weight:700;" id="providerTodayAbholnummernCount">0</strong> Abholnummern – deine Gäste bestellen selbst und holen mit Nummer ab. Weniger Wartezeit an der Theke.
+      <!-- Abholnummern / Selbstbedienung -->
+      <div class="panel" id="providerPersonalSpar" style="padding:14px 20px; border-radius:6px; border:1px solid var(--provider-border); margin-bottom:20px; background:var(--provider-surface-alt);">
+        <div style="font-size:11px; color:var(--provider-text-muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:6px;">Abholnummern heute</div>
+        <div style="font-size:14px; color:var(--provider-text); line-height:1.5;" id="providerPersonalSparText">
+          <strong id="providerTodayAbholnummernCount">0</strong> Abholungen – Gäste bestellen selbst, Abholung mit Nummer.
         </div>
       </div>
       
-      <!-- Tagesessen teilen Button -->
-      <div class="panel" id="providerTodayShare" style="margin-top:18px; padding:16px; border-radius:16px; box-shadow:0 4px 20px rgba(0,0,0,.18); background:#404040; border:1px solid rgba(255,255,255,0.1); display:none;">
-        <button class="btn secondary" type="button" id="btnTodayShare" style="width:100%; min-height:52px; background:#FFD700; color:#334155; font-weight:800; border:none; border-radius:12px; display:flex; align-items:center; justify-content:center; gap:8px;">
-          <i data-lucide="share-2" style="width:20px;height:20px;"></i>
+      <!-- Tagesessen teilen -->
+      <div class="panel" id="providerTodayShare" style="margin-top:16px; padding:14px 20px; border-radius:6px; border:1px solid var(--provider-border); display:none;">
+        <button class="btn secondary" type="button" id="btnTodayShare" style="width:100%; min-height:48px; font-weight:700; font-size:14px; border-radius:6px; display:flex; align-items:center; justify-content:center; gap:8px;">
+          <i data-lucide="share-2" style="width:18px;height:18px;"></i>
           <span>Tagesessen teilen</span>
         </button>
       </div>
       
-      <!-- TODAY Card (Legacy - für Kompatibilität) -->
-      <div class="panel" id="providerTodayCard" style="margin-top:18px; padding:16px; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,.04); display:none;">
-        <div style="font-weight:600; font-size:17px; margin-bottom:12px; line-height:1.3;" id="providerTodayTitle">Heute</div>
-        <div id="providerTodayContent">
-          <!-- Wird dynamisch befüllt -->
-        </div>
+      <!-- TODAY Card -->
+      <div class="panel" id="providerTodayCard" style="margin-top:16px; padding:14px 20px; border-radius:6px; border:1px solid var(--provider-border); display:none;">
+        <div style="font-size:11px; color:var(--provider-text-muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;" id="providerTodayTitle">Heute</div>
+        <div id="providerTodayContent"></div>
       </div>
 
-      <!-- Active Offers Mini List -->
-      <div class="panel" id="providerActiveOffers" style="margin-top:18px; padding:16px; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,.04); display:none;">
-        <div style="font-weight:600; font-size:17px; margin-bottom:12px; line-height:1.3;">Meine Speisekarte</div>
+      <!-- Meine Speisekarte -->
+      <div class="panel" id="providerActiveOffers" style="margin-top:16px; padding:14px 20px; border-radius:6px; border:1px solid var(--provider-border); display:none;">
+        <div style="font-size:11px; color:var(--provider-text-muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:10px;">Meine Speisekarte</div>
         <div id="providerActiveOffersList"></div>
-        <a href="#" id="btnProviderShowAllOffers" style="display:inline-block; font-size:13px; color:var(--muted); text-decoration:none; margin-top:12px;">
-          Alle Gerichte anzeigen →
-        </a>
+        <a href="#" id="btnProviderShowAllOffers" style="display:inline-block; font-size:12px; color:var(--provider-text-muted); text-decoration:underline; margin-top:10px;">Alle Gerichte anzeigen →</a>
       </div>
 
-      <!-- Week Preview -->
-      <div class="panel" id="providerWeekPreview" style="margin-top:18px; padding:16px; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,.04);">
-        <div style="font-weight:600; font-size:17px; margin-bottom:12px; line-height:1.3;">Wochenvorschau</div>
+      <!-- Wochenvorschau -->
+      <div class="panel" id="providerWeekPreview" style="margin-top:16px; padding:14px 20px; border-radius:6px; border:1px solid var(--provider-border);">
+        <div style="font-size:11px; color:var(--provider-text-muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:10px;">Wochenvorschau</div>
         <div class="dayrow" id="providerWeekDays" style="padding:0 0 10px; max-width:none; margin-bottom:12px;"></div>
-        <div id="providerWeekDayContent" style="min-height:60px;">
-          <!-- Wird dynamisch befüllt -->
-        </div>
+        <div id="providerWeekDayContent" style="min-height:60px;"></div>
       </div>
 
-      <!-- Empty Dashboard (Welcome Card) -->
-      <div class="panel" id="providerEmptyDashboard" style="margin-top:18px; padding:20px; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,.04); text-align:center; display:none;">
-        <div style="font-weight:600; font-size:18px; margin-bottom:8px; line-height:1.3;">Willkommen bei Mittagio</div>
-        <div class="hint" style="font-size:14px; line-height:1.4; margin-bottom:16px; color:var(--muted);">
-          Starte mit deinem ersten Gericht.
-        </div>
-        <button class="btn secondary" type="button" id="btnProviderEmptyAddDish" style="width:100%; min-height:44px;">
-          Gericht hinzufügen
-        </button>
+      <!-- Willkommen (leer) -->
+      <div class="panel" id="providerEmptyDashboard" style="margin-top:16px; padding:20px; border-radius:6px; border:1px solid var(--provider-border); text-align:center; display:none;">
+        <div style="font-weight:700; font-size:16px; margin-bottom:8px; line-height:1.3; color:var(--provider-text);">Willkommen bei Mittagio</div>
+        <div class="hint" style="font-size:13px; line-height:1.4; margin-bottom:16px; color:var(--provider-text-muted);">Erstellen Sie Ihr erstes Gericht.</div>
+        <button class="btn secondary" type="button" id="btnProviderEmptyAddDish" style="width:100%; min-height:48px; border-radius:6px;">Gericht hinzufügen</button>
       </div>
 
       <!-- FAB (Floating Action Button) -->
@@ -16662,7 +16680,6 @@
         box.appendChild(h);
       }
       fillSuggestions();
-      attachListingPreview(box);
       setWizardContent(box);
       wNextBtn.textContent='Weiter';
       return;
@@ -16709,7 +16726,6 @@
         remBtn.onclick=()=>{ w.data.photoData=''; rebuildWizard(); };
         box.appendChild(editBtn); box.appendChild(remBtn);
       }
-      attachListingPreview(box);
       setWizardContent(box);
       wNextBtn.textContent='Weiter';
       return;
@@ -16767,7 +16783,6 @@
         el.textContent=`Netto ≈ ${netto.toFixed(2).replace('.',',')} €`;
       }
       refreshVerdienstEl();
-      attachListingPreview(box);
       setWizardContent(box);
       wNextBtn.textContent='Weiter';
       return;
@@ -16851,7 +16866,6 @@
         alRow.appendChild(list);
       }
       box.appendChild(alRow);
-      attachListingPreview(box);
       setWizardContent(box);
       wNextBtn.textContent='Weiter';
       return;
@@ -16895,7 +16909,6 @@
         <div class="hint" style="font-size:12px;margin-top:4px;">Abholzeit – so finden dich deine Gäste.</div>
       `;
       box.appendChild(summary);
-      attachListingPreview(box);
       const cost=document.createElement('div');
       cost.className='listing-cost-block';
       cost.style.cssText='margin-top:16px;padding:16px;border-radius:12px;text-align:center;background:rgba(39,174,96,0.08);border:1px solid rgba(39,174,96,0.2);';
