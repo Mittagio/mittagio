@@ -3,7 +3,9 @@
 <head>
   <base href="/mittagio/app/">
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=5,user-scalable=yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <title>Mittagio</title>
   <meta name="theme-color" content="#FFD700" />
   <!-- Konzept-Icons: 1. Mehrweg (assets/icon-mehrweg.png) | 2. Essen vor Ort (assets/icon-essen-vor-ort.png) | 3. Abholnummer (assets/icon-abholnummer.png) -->
@@ -115,6 +117,8 @@
       -webkit-backdrop-filter:saturate(160%) blur(8px);
       border-bottom:1px solid var(--border);
       padding-top:env(safe-area-inset-top, 0px);
+      padding-left:env(safe-area-inset-left, 0);
+      padding-right:env(safe-area-inset-right, 0);
     }
     .topbar-inner{max-width:980px; margin:0 auto; padding:12px 16px; display:flex; align-items:center; gap:10px;}
     .header-basket-btn{
@@ -650,8 +654,10 @@
     }
     .bottom{
       position:fixed; left:0; right:0; bottom:0; z-index:20;
-      height:calc(60px + env(safe-area-inset-bottom, 16px));
-      padding-bottom:env(safe-area-inset-bottom, 16px);
+      height:calc(60px + env(safe-area-inset-bottom, 20px));
+      padding-bottom:env(safe-area-inset-bottom, 20px);
+      padding-left:env(safe-area-inset-left, 0);
+      padding-right:env(safe-area-inset-right, 0);
       background:rgba(255,255,255,.85);
       backdrop-filter:saturate(180%) blur(20px);
       -webkit-backdrop-filter:saturate(180%) blur(20px);
@@ -711,7 +717,7 @@
       border-bottom-color:rgba(0,0,0,0.08);
     }
 
-    /* Sheets / modals */
+    /* Sheets / modals – Safe-Area für moderne Handys (S25, iPhone, Pixel) */
     .backdrop{position:fixed; inset:0; background:rgba(0,0,0,.38); opacity:0; pointer-events:none; transition:opacity .2s; z-index:30}
     .backdrop.active{opacity:1; pointer-events:auto}
     .sheet{
@@ -720,6 +726,9 @@
       box-shadow:var(--shadow2);
       transition:bottom .28s ease;
       max-height:92vh; overflow:auto;
+      padding-left:env(safe-area-inset-left, 0);
+      padding-right:env(safe-area-inset-right, 0);
+      padding-bottom:env(safe-area-inset-bottom, 0);
     }
     .sheet.active{bottom:0}
     .handle{width:46px; height:5px; background:#ddd; border-radius:999px; margin:10px auto 6px}
@@ -1087,61 +1096,283 @@
     .w-actions{display:flex; gap:10px; margin-top:12px}
     .w-actions button{flex:1}
 
-    /* Inseratflow: Küchenmodus-Layout (Create Sheet + Wizard) */
+    /* Inseratflow: Helles, app-ähnliches Layout (kein Livebild, klares Layout) */
     #createFlowSheet.sheet--kitchen,
-    #wizard.sheet--kitchen{ background:#1e1e1e; }
+    #wizard.sheet--kitchen{
+      background:#f0f2f5 !important;
+      border-radius:20px 20px 0 0;
+      max-height:92vh;
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+    }
     #createFlowSheet.sheet--kitchen .handle,
-    #wizard.sheet--kitchen .handle{ background:rgba(255,255,255,0.25); }
-    #createFlowSheet.sheet--kitchen .sheet-body{ padding:20px 20px 28px; }
-    #createFlowSheet.sheet--kitchen .create-flow-title{ font-weight:800; font-size:20px; color:#fff; margin-bottom:8px; line-height:1.3; }
-    #createFlowSheet.sheet--kitchen .create-flow-hint{ font-size:13px; color:rgba(255,255,255,0.6); margin-top:12px; }
-    #createFlowSheet.sheet--kitchen .create-flow-btns{ display:flex; flex-direction:column; gap:12px; margin-top:20px; }
-    #createFlowSheet.sheet--kitchen .btn-create-primary{ width:100%; min-height:52px; border-radius:14px; font-weight:800; font-size:16px; border:none; background:#FFD700; color:#1a1a1a; cursor:pointer; display:flex; align-items:center; justify-content:flex-start; padding:0 20px; gap:12px; transition:transform .15s, box-shadow .15s; }
-    #createFlowSheet.sheet--kitchen .btn-create-primary:hover{ transform:translateY(-1px); box-shadow:0 6px 20px rgba(255,215,0,0.35); }
-    #createFlowSheet.sheet--kitchen .btn-create-secondary{ width:100%; min-height:52px; border-radius:14px; font-weight:700; font-size:15px; border:1px solid rgba(255,255,255,0.2); background:#2a2a2a; color:rgba(255,255,255,0.95); cursor:pointer; display:flex; align-items:center; justify-content:flex-start; padding:0 20px; gap:12px; transition:background .15s, border-color .15s; }
-    #createFlowSheet.sheet--kitchen .btn-create-secondary:hover{ background:#333; border-color:rgba(255,255,255,0.3); }
-    #wizard.sheet--kitchen .sheet-body{ padding:16px 20px 24px; }
-    #wizard.sheet--kitchen .wizard{ background:#2a2a2a; border-color:rgba(255,255,255,0.1); border-radius:16px; padding:16px; }
-    #wizard.sheet--kitchen .w-title{ color:#fff; }
-    #wizard.sheet--kitchen .w-step{ color:rgba(255,255,255,0.6); }
-    #wizard.sheet--kitchen .w-q{ color:#fff; }
-    #wizard.sheet--kitchen .w-help{ color:rgba(255,255,255,0.6); }
-    #wizard.sheet--kitchen .hint{ color:rgba(255,255,255,0.55); }
-    #wizard.sheet--kitchen .panel{ background:#1e1e1e; border-color:rgba(255,255,255,0.1); color:rgba(255,255,255,0.9); }
-    #wizard.sheet--kitchen .panel .hint{ color:rgba(255,255,255,0.5); }
-    #wizard.sheet--kitchen .ans{ background:#2a2a2a; border-color:rgba(255,255,255,0.2); color:#fff; }
-    #wizard.sheet--kitchen .ans:hover{ background:#333; border-color:rgba(255,255,255,0.3); }
-    #wizard.sheet--kitchen .ans.on{ border-color:rgba(255,215,0,0.5); background:rgba(255,215,0,0.15); color:#FFD700; }
-    #wizard.sheet--kitchen .field{ background:#1e1e1e; border-color:rgba(255,255,255,0.15); color:#fff; }
-    #wizard.sheet--kitchen .field::placeholder{ color:rgba(255,255,255,0.4); }
-    #wizard.sheet--kitchen .w-actions .btn:not(.secondary){ background:#FFD700; color:#1a1a1a; border:none; }
-    #wizard.sheet--kitchen .w-actions .btn.secondary{ background:#2a2a2a; border:1px solid rgba(255,255,255,0.2); color:#fff; }
-    #wizard.sheet--kitchen .w-actions .btn.secondary:hover{ background:#333; }
-    #wizard.sheet--kitchen .btn.ghost{ background:#2a2a2a; border-color:rgba(255,255,255,0.2); color:rgba(255,255,255,0.9); }
-    #wizard.sheet--kitchen .btn.ghost:hover{ background:#333; }
-    #wizard.sheet--kitchen .mini{ color:rgba(255,255,255,0.5); }
-    #wizard.sheet--kitchen #listingPreview .listing-preview-badge{ background:rgba(46,125,50,0.25); border-color:rgba(76,175,80,0.5); }
-    #wizard.sheet--kitchen #listingPreview .listing-preview-badge div{ color:rgba(255,255,255,0.9); }
-    #wizard.sheet--kitchen #listingPreview .listing-preview-subline{ color:rgba(255,255,255,0.55); }
-    #wizard.sheet--kitchen .listing-reuse-preview{ background:rgba(31,157,85,0.15) !important; border-color:rgba(46,175,80,0.5) !important; }
-    #wizard.sheet--kitchen .listing-reuse-preview span{ color:rgba(255,255,255,0.9); }
-    #wizard.sheet--kitchen .listing-foto-live-preview{ background:#2a2a2a !important; border:1px solid rgba(255,255,255,0.1); }
-    #wizard.sheet--kitchen .listing-hint-box{ background:#2a2a2a !important; border-color:rgba(255,255,255,0.15) !important; }
-    #wizard.sheet--kitchen .listing-hint-box div{ color:rgba(255,255,255,0.75) !important; }
-    #wizard.sheet--kitchen .listing-cost-block{ background:#2a2a2a !important; border-radius:12px; }
-    #wizard.sheet--kitchen .listing-cost-block div{ color:rgba(255,255,255,0.9); }
-    #wizard.sheet--kitchen .listing-cost-block .listing-cost-muted{ color:rgba(255,255,255,0.55); }
-    #wizard.sheet--kitchen .listing-cost-block.listing-cost-green{ background:rgba(46,125,50,0.2) !important; border:1px solid rgba(76,175,80,0.4); }
-    #wizard.sheet--kitchen .listing-cost-block.listing-cost-green div{ color:rgba(255,255,255,0.9); }
-    #wizard.sheet--kitchen .listing-datum-summary .listing-datum-day{ color:rgba(255,255,255,0.95); }
-    #wizard.sheet--kitchen .listing-datum-summary .hint{ color:rgba(255,255,255,0.55); }
+    #wizard.sheet--kitchen .handle{ background:rgba(0,0,0,0.15); width:40px; margin:8px auto 4px; }
+    #createFlowSheet.sheet--kitchen .sheet-body{
+      padding:20px 20px 28px;
+      overflow-y:auto;
+      -webkit-overflow-scrolling:touch;
+    }
+    #createFlowSheet.sheet--kitchen .create-flow-title{
+      font-weight:800; font-size:20px; color:#1a1a1a; margin-bottom:8px; line-height:1.3;
+    }
+    #createFlowSheet.sheet--kitchen .create-flow-hint{
+      font-size:13px; color:#64748b; margin-top:12px;
+    }
+    #createFlowSheet.sheet--kitchen .create-flow-btns{
+      display:flex; flex-direction:column; gap:12px; margin-top:20px;
+    }
+    #createFlowSheet.sheet--kitchen .btn-create-primary{
+      width:100%; min-height:52px; border-radius:14px; font-weight:800; font-size:16px; border:none;
+      background:#FFD700; color:#1a1a1a; cursor:pointer; display:flex; align-items:center; justify-content:flex-start;
+      padding:0 20px; gap:12px; transition:transform .15s, box-shadow .15s;
+      box-shadow:0 2px 10px rgba(255,215,0,0.3);
+    }
+    #createFlowSheet.sheet--kitchen .btn-create-primary:active{ transform:scale(0.98); }
+    #createFlowSheet.sheet--kitchen .btn-create-secondary{
+      width:100%; min-height:52px; border-radius:14px; font-weight:700; font-size:15px;
+      border:1px solid rgba(0,0,0,0.1); background:#fff; color:#1a1a1a;
+      cursor:pointer; display:flex; align-items:center; justify-content:flex-start; padding:0 20px; gap:12px;
+      transition:background .15s, border-color .15s; box-shadow:0 2px 8px rgba(0,0,0,.06);
+    }
+    #createFlowSheet.sheet--kitchen .btn-create-secondary:active{ background:#f8f9fa; }
+    /* Wizard: einheitliches, klares Layout */
+    #wizard.sheet--kitchen .sheet-body{
+      padding:20px 20px 28px;
+      overflow-y:auto;
+      -webkit-overflow-scrolling:touch;
+      flex:1;
+      min-height:0;
+    }
+    #wizard.sheet--kitchen .wizard{
+      background:#fff;
+      border:1px solid rgba(0,0,0,0.08);
+      border-radius:16px;
+      padding:20px;
+      box-shadow:0 2px 12px rgba(0,0,0,.06);
+    }
+    #wizard.sheet--kitchen .w-top{ margin-bottom:16px; }
+    #wizard.sheet--kitchen .w-title{ font-weight:800; font-size:18px; color:#1a1a1a; }
+    #wizard.sheet--kitchen .w-step{ font-size:12px; color:#64748b; font-weight:600; }
+    #wizard.sheet--kitchen .w-q{
+      font-size:17px; font-weight:800; color:#1a1a1a; line-height:1.3; margin:0 0 6px;
+    }
+    #wizard.sheet--kitchen .w-help{ font-size:13px; color:#64748b; margin:0 0 16px; line-height:1.4; }
+    #wizard.sheet--kitchen #wContent{
+      margin-bottom:20px;
+      min-height:40px;
+    }
+    #wizard.sheet--kitchen #wContent .answers{
+      display:flex; flex-wrap:wrap; gap:8px; margin-top:8px;
+    }
+    #wizard.sheet--kitchen #wContent .field{
+      margin-top:0; margin-bottom:8px;
+    }
+    #wizard.sheet--kitchen #wContent input[type="checkbox"]{
+      accent-color:var(--brand);
+    }
+    #wizard.sheet--kitchen .w-actions{
+      display:flex; gap:12px; margin-top:20px; padding-top:16px; border-top:1px solid rgba(0,0,0,0.08);
+    }
+    #wizard.sheet--kitchen .w-actions button{ flex:1; min-height:48px; border-radius:14px; font-weight:700; }
+    #wizard.sheet--kitchen .hint{ color:#64748b; font-size:13px; }
+    #wizard.sheet--kitchen .panel{
+      background:#f8f9fa; border:1px solid rgba(0,0,0,0.08); color:#1a1a1a;
+      border-radius:12px; padding:14px; margin-top:12px;
+    }
+    #wizard.sheet--kitchen .panel .hint{ color:#64748b; }
+    #wizard.sheet--kitchen .ans{
+      background:#fff; border:1px solid rgba(0,0,0,0.12); color:#1a1a1a;
+      padding:10px 14px; border-radius:12px; font-weight:700;
+      transition:background .15s, border-color .15s;
+    }
+    #wizard.sheet--kitchen .ans:hover{ background:#f8f9fa; border-color:rgba(0,0,0,0.18); }
+    #wizard.sheet--kitchen .ans.on{
+      border-color:var(--brand); background:rgba(255,215,0,0.15); color:#1a1a1a;
+    }
+    #wizard.sheet--kitchen .field{
+      background:#fff; border:1px solid rgba(0,0,0,0.12); color:#1a1a1a;
+      border-radius:12px; padding:14px 16px; font-size:16px;
+    }
+    #wizard.sheet--kitchen .field::placeholder{ color:#94a3b8; }
+    #wizard.sheet--kitchen .w-actions .btn:not(.secondary){
+      background:#FFD700; color:#1a1a1a; border:none; box-shadow:0 2px 10px rgba(255,215,0,0.3);
+    }
+    #wizard.sheet--kitchen .w-actions .btn.secondary{
+      background:#fff; border:1px solid rgba(0,0,0,0.12); color:#1a1a1a;
+    }
+    #wizard.sheet--kitchen .btn.ghost{
+      background:#f8f9fa; border:1px solid rgba(0,0,0,0.1); color:#1a1a1a;
+    }
+    #wizard.sheet--kitchen .mini{ color:#64748b; font-size:12px; }
+    /* Vorschau-Bereich (kein Livebild): kompakt, klar */
+    #wizard.sheet--kitchen #listingPreview{
+      margin-top:20px; padding-top:16px; border-top:1px solid rgba(0,0,0,0.08);
+    }
+    #wizard.sheet--kitchen #listingPreview .hint{
+      font-size:12px; font-weight:600; color:#64748b; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:10px;
+    }
+    #wizard.sheet--kitchen #listingPreview .listing-preview-badge{
+      background:rgba(46,125,50,0.1); border:1px solid rgba(46,125,50,0.3); border-radius:12px; padding:12px;
+    }
+    #wizard.sheet--kitchen #listingPreview .listing-preview-badge div{ color:#2e7d32; font-weight:700; }
+    #wizard.sheet--kitchen #listingPreview .listing-preview-subline{ color:#64748b; }
+    #wizard.sheet--kitchen .listing-reuse-preview{
+      background:rgba(31,157,85,0.08) !important; border:1px solid rgba(46,175,80,0.25) !important;
+      border-radius:12px; padding:12px;
+    }
+    #wizard.sheet--kitchen .listing-reuse-preview span{ color:#1a1a1a; }
+    #wizard.sheet--kitchen .listing-hint-box{
+      background:#f8f9fa !important; border:1px solid rgba(0,0,0,0.08) !important;
+      border-radius:12px; padding:12px;
+    }
+    #wizard.sheet--kitchen .listing-hint-box div{ color:#1a1a1a !important; }
+    #wizard.sheet--kitchen .listing-cost-block{
+      background:#f8f9fa !important; border:1px solid rgba(0,0,0,0.08); border-radius:12px; padding:14px;
+    }
+    #wizard.sheet--kitchen .listing-cost-block div{ color:#1a1a1a; }
+    #wizard.sheet--kitchen .listing-cost-block .listing-cost-muted{ color:#64748b; }
+    #wizard.sheet--kitchen .listing-cost-block.listing-cost-green{
+      background:rgba(46,125,50,0.1) !important; border:1px solid rgba(46,125,50,0.3);
+    }
+    #wizard.sheet--kitchen .listing-cost-block.listing-cost-green div{ color:#2e7d32; }
+    #wizard.sheet--kitchen .listing-datum-summary .listing-datum-day{ color:#1a1a1a; font-weight:800; }
+    #wizard.sheet--kitchen .listing-datum-summary .hint{ color:#64748b; }
 
-    /* Provider-App: Grautöne, app-like (mehr Grau statt Schwarz) */
-    :root{ --provider-bg:#323232; --provider-surface:#404040; --provider-surface-alt:#383838; --provider-border:rgba(255,255,255,0.1); }
-    [id^="v-provider-"] .panel{ box-shadow:0 4px 20px rgba(0,0,0,.2); }
-    #providerNav .navbtn{ color:rgba(255,255,255,0.85); }
-    #providerNav .navbtn.active{ color:#FFD700; }
-    #providerNav .navbtn.active .ico svg{ color:#FFD700; stroke:#FFD700; }
+    /* Provider-App: Helles, app-ähnliches Layout (Dashboard heller & moderner) */
+    :root{
+      --provider-bg:#f0f2f5;
+      --provider-surface:#ffffff;
+      --provider-surface-alt:#f8f9fa;
+      --provider-border:rgba(0,0,0,0.08);
+      --provider-text:#1a1a1a;
+      --provider-text-muted:#64748b;
+    }
+    [id^="v-provider-"]{
+      background:var(--provider-bg) !important;
+    }
+    [id^="v-provider-"] .panel{
+      background:var(--provider-surface) !important;
+      color:var(--provider-text);
+      border:1px solid var(--provider-border) !important;
+      box-shadow:0 2px 12px rgba(0,0,0,.06) !important;
+      border-radius:16px !important;
+    }
+    /* Status-Banner (grün) und Kunden-Nachfrage (gelb) behalten Farbe */
+    #providerStatusBanner{
+      background:linear-gradient(135deg, #2e7d32 0%, #1f5f23 100%) !important;
+      color:#fff !important;
+      box-shadow:0 4px 16px rgba(46,125,50,.25) !important;
+    }
+    #providerStatusBanner *{ color:#fff !important; }
+    #providerCustomerDemand{
+      background:linear-gradient(135deg, rgba(255,215,0,0.18) 0%, rgba(255,184,0,0.08) 100%) !important;
+      border:1px solid rgba(255,193,7,0.35) !important;
+      color:#1a1a1a !important;
+    }
+    #providerCustomerDemand #providerRequestCount{ color:var(--brand) !important; }
+    #providerCustomerDemand .btn-primary{ background:#2e7d32 !important; color:#fff !important; }
+    /* Selbstbedienung-Box: dezent grün, dunkle Schrift */
+    #providerPersonalSpar{
+      background:linear-gradient(135deg, rgba(46,125,50,0.08) 0%, rgba(34,139,34,0.05) 100%) !important;
+      border:1px solid rgba(46,125,50,0.2) !important;
+      color:var(--provider-text) !important;
+    }
+    #providerPersonalSpar strong{ color:#2e7d32 !important; }
+    /* Header & Titel auf hellem Grund: dunkle Schrift (alle Provider-Views) */
+    [id^="v-provider-"] h1,[id^="v-provider-"] h2,[id^="v-provider-"] h3{
+      color:var(--provider-text) !important;
+    }
+    #v-provider-home > div:nth-of-type(2),
+    #v-provider-home > div:nth-of-type(2) div,
+    #v-provider-home h1{
+      color:var(--provider-text) !important;
+    }
+    #v-provider-home > div:nth-of-type(2) div:first-child{
+      color:var(--provider-text-muted) !important;
+    }
+    [id^="v-provider-"] #provPickupsSubheader,
+    [id^="v-provider-"] .hint{
+      color:var(--provider-text-muted) !important;
+    }
+    /* Status-Indikator (oben rechts): hell, app-ig */
+    #providerStatusIndicator{
+      background:rgba(255,255,255,0.95) !important;
+      backdrop-filter:blur(12px);
+      -webkit-backdrop-filter:blur(12px);
+      border:1px solid var(--provider-border) !important;
+      box-shadow:0 2px 12px rgba(0,0,0,.08) !important;
+    }
+    #statusIndicatorText{ color:var(--provider-text) !important; }
+    /* KPI-Karten: Zahlen Gold/Brand, Label grau */
+    #kpiCardTagesessen div:first-child,
+    #kpiCardAbholungen div:first-child,
+    #kpiCardKochbuch div:first-child{
+      color:var(--brand) !important;
+    }
+    #kpiCardTagesessen div:last-child,
+    #kpiCardAbholungen div:last-child,
+    #kpiCardKochbuch div:last-child{
+      color:var(--provider-text-muted) !important;
+    }
+    /* Tagesumsatz & weitere Panels: dunkle Schrift */
+    #providerTimeTracker div{ color:var(--provider-text) !important; }
+    #providerTimeTracker div:first-child{ color:var(--provider-text-muted) !important; }
+    #providerTimeTracker #providerTimeSaved{ color:#2e7d32 !important; }
+    #providerTodayShare .btn{ color:#1a1a1a !important; }
+    /* Buttons im Provider-Bereich: app-iger & moderner (S25-tauglich) */
+    [id^="v-provider-"] .btn,
+    [id^="v-provider-"] .btn-primary,
+    [id^="v-provider-"] button[class*="btn"]{
+      border-radius:14px !important;
+      min-height:48px !important;
+      font-weight:700 !important;
+      font-size:15px !important;
+      box-shadow:0 2px 10px rgba(0,0,0,.08) !important;
+      transition:transform .15s ease, box-shadow .15s ease !important;
+      -webkit-tap-highlight-color:transparent;
+    }
+    [id^="v-provider-"] .btn:active,
+    [id^="v-provider-"] .btn-primary:active,
+    [id^="v-provider-"] button[class*="btn"]:active{
+      transform:scale(0.98) !important;
+      box-shadow:0 1px 6px rgba(0,0,0,.1) !important;
+    }
+    [id^="v-provider-"] .btn.secondary{
+      background:#fff !important;
+      border:1px solid var(--provider-border) !important;
+      color:var(--provider-text) !important;
+    }
+    /* Bottom-Nav Provider: hell, modern */
+    #providerNav{
+      background:rgba(255,255,255,0.98) !important;
+      backdrop-filter:blur(12px);
+      -webkit-backdrop-filter:blur(12px);
+      border-top:1px solid var(--provider-border) !important;
+      box-shadow:0 -2px 16px rgba(0,0,0,.06) !important;
+    }
+    #providerNav .navbtn{ color:var(--provider-text-muted); }
+    #providerNav .navbtn.active{ color:var(--brand); }
+    #providerNav .navbtn.active .ico svg{ color:var(--brand); stroke:var(--brand); }
+    /* Alle Provider-Panels: einheitlich dunkle Schrift */
+    [id^="v-provider-"] .panel h1,[id^="v-provider-"] .panel h2,[id^="v-provider-"] .panel h3,[id^="v-provider-"] .panel .section-title{ color:var(--provider-text) !important; }
+    [id^="v-provider-"] .panel .hint{ color:var(--provider-text-muted) !important; }
+    /* FAB: moderner Schatten auf hellem Grund */
+    #fabProviderAddOffer{
+      box-shadow:0 4px 20px rgba(255,215,0,0.4) !important;
+      transition:transform .15s ease, box-shadow .15s ease;
+    }
+    #fabProviderAddOffer:active{ transform:scale(0.95); }
+    /* FAB & Status-Indikator: Safe-Area für S25 / moderne Handys */
+    #fabProviderAddOffer{
+      bottom:calc(90px + env(safe-area-inset-bottom, 20px)) !important;
+      right:calc(16px + env(safe-area-inset-right, 0)) !important;
+    }
+    #fabProviderAddOfferLabel{ right:calc(16px + env(safe-area-inset-right, 0)) !important; }
+    #providerStatusIndicator{
+      top:calc(16px + env(safe-area-inset-top, 0)) !important;
+      right:calc(16px + env(safe-area-inset-right, 0)) !important;
+    }
 
     /* FAQ accordion */
     .faq{margin-top:12px}
@@ -1976,11 +2207,8 @@
       #providerStatusIndicator{ top:12px; right:12px; padding:6px 10px; }
       #providerStatusIndicator span{ font-size:11px; }
       /* KPI Cards 3er-Grid → kleinere Schrift */
-      #kpiCardInserate, #kpiCardAbholungen, #kpiCardKochbuch{ padding:14px 10px !important; }
-      #kpiCardInserate div:first-child, #kpiCardAbholungen div:first-child, #kpiCardKochbuch div:first-child{ font-size:26px !important; }
-      /* Kacheln: 3er-Grid → gap kleiner */
-      .provider-tile{ padding:12px !important; }
-      .provider-tile div:first-child{ font-size:16px !important; }
+      #kpiCardTagesessen, #kpiCardAbholungen, #kpiCardKochbuch{ padding:14px 10px !important; }
+      #kpiCardTagesessen div:first-child, #kpiCardAbholungen div:first-child, #kpiCardKochbuch div:first-child{ font-size:26px !important; }
       /* Provider-Nav: kompakter */
       #providerNav .navbtn{ font-size:10px; padding:8px 4px; }
       #providerNav .navbtn .ico svg{ width:20px; height:20px; }
@@ -1988,7 +2216,7 @@
     @media (max-width: 360px) {
       [id^="v-provider-"]{ padding:12px 10px !important; }
       [id^="v-provider-"] h1{ font-size:24px !important; }
-      #kpiCardInserate div:first-child, #kpiCardAbholungen div:first-child, #kpiCardKochbuch div:first-child{ font-size:22px !important; }
+      #kpiCardTagesessen div:first-child, #kpiCardAbholungen div:first-child, #kpiCardKochbuch div:first-child{ font-size:22px !important; }
     }
     @media (min-width: 768px) {
       .discover-offers {
@@ -2151,81 +2379,108 @@
     }
     
     /* ============================================================
-       MODERNE SMARTPHONES (S25, iPhone 15/16, Pixel 8)
-       360-430px Breite, hohe Displays (800px+)
+       MODERNE SMARTPHONES (S25, Galaxy S25, iPhone 15/16, Pixel 8)
+       Touch-Ziele 44–48px, Safe-Area, einhändige Nutzung
        ============================================================ */
-    @media (max-width:430px) and (min-height:750px){
-      /* Provider Home: Kompaktere Kacheln */
-      #v-provider-home{ padding:16px 12px 90px !important; }
-      #v-provider-home h1{ font-size:26px !important; }
-      #providerIdentityCard{ padding:16px !important; border-radius:16px !important; }
-      #providerIdentityCard .plogo{ width:52px !important; height:52px !important; }
-      #providerQuickKill{ padding:16px !important; }
-      #providerQuickKill .btn{ min-height:60px !important; font-size:16px !important; }
+    @media (max-width:430px) and (min-height:700px){
+      /* App: Safe-Area unten für Gestenleiste */
+      .app{ padding-bottom:calc(78px + env(safe-area-inset-bottom, 20px)) !important; }
+      .customer-view{ padding-bottom:calc(78px + env(safe-area-inset-bottom, 20px)) !important; }
       
-      /* KPI Cards: 3er Grid kompakter */
-      #v-provider-home [style*="grid-template-columns:repeat(3"]{
-        gap:8px !important;
+      /* Bottom Nav: höher für S25-Gesten, Touch mind. 48px */
+      .bottom{
+        height:calc(64px + env(safe-area-inset-bottom, 20px)) !important;
+        padding-bottom:env(safe-area-inset-bottom, 20px) !important;
       }
-      #kpiCardInserate, #kpiCardAbholungen, #kpiCardKochbuch{
-        padding:14px 8px !important; border-radius:14px !important;
+      .navbtn{
+        min-height:48px; padding:10px 8px !important;
+        font-size:12px !important; font-weight:600;
       }
-      #kpiCardInserate div[style*="font-size:32px"],
+      .navbtn .ico svg{ width:24px !important; height:24px !important; }
+      
+      /* Provider Home: Abstand oben für Loch/Notch */
+      [id^="v-provider-"]{
+        padding-top:calc(20px + env(safe-area-inset-top, 0)) !important;
+        padding-left:calc(20px + env(safe-area-inset-left, 0)) !important;
+        padding-right:calc(20px + env(safe-area-inset-right, 0)) !important;
+      }
+      #v-provider-home{ padding:16px 16px 100px !important; }
+      #v-provider-home h1{ font-size:28px !important; }
+      
+      /* KPI Cards: 3er Grid, Touch-freundlich */
+      #v-provider-home [style*="grid-template-columns:repeat(3"]{ gap:10px !important; }
+      #kpiCardTagesessen, #kpiCardAbholungen, #kpiCardKochbuch{
+        padding:16px 10px !important; border-radius:16px !important;
+        min-height:72px; display:flex; flex-direction:column; justify-content:center;
+      }
+      #kpiCardTagesessen div[style*="font-size:20px"],
       #kpiCardAbholungen div[style*="font-size:32px"],
       #kpiCardKochbuch div[style*="font-size:32px"]{
         font-size:26px !important;
       }
       
-      /* Provider Tiles: Kompakter */
-      .provider-tile{ padding:12px 8px !important; border-radius:14px !important; }
-      #tileTagesessen div[style*="font-size:20px"]{ font-size:16px !important; }
+      #providerTimeTracker{ padding:18px !important; }
+      #providerTimeTracker div[style*="font-size:36px"]{ font-size:30px !important; }
+      #providerPersonalSpar{ padding:16px !important; }
       
-      /* Time Tracker & Personal Spar */
-      #providerTimeTracker{ padding:16px !important; }
-      #providerTimeTracker div[style*="font-size:36px"]{ font-size:28px !important; }
-      #providerPersonalSpar{ padding:14px !important; }
-      
-      /* Provider Pickups/Week/Cookbook */
       #v-provider-pickups, #v-provider-week, #v-provider-cookbook, #v-provider-profile{
-        padding:16px 12px 90px !important;
+        padding:16px 16px 100px !important;
       }
       #v-provider-pickups h3, #v-provider-cookbook h1, #v-provider-week h1, #v-provider-profile h1{
         font-size:24px !important;
       }
-      
-      /* Provider Profile Panels */
-      #v-provider-profile .panel{ padding:16px !important; border-radius:16px !important; margin-bottom:16px !important; }
+      #v-provider-profile .panel{ padding:18px !important; border-radius:16px !important; margin-bottom:16px !important; }
       #providerEfficiencyBox{ padding:18px !important; }
       #providerEfficiencyBox div[style*="font-size:28px"]{ font-size:22px !important; }
       
-      /* Bottom Nav: Touch-optimiert */
-      #providerNav{ padding-bottom:env(safe-area-inset-bottom, 8px) !important; }
-      #providerNav .navbtn{ padding:10px 8px !important; font-size:11px !important; }
-      #providerNav .navbtn .ico svg{ width:20px !important; height:20px !important; }
+      /* Provider Bottom Nav: Safe-Area, Touch 48px */
+      #providerNav{
+        height:calc(64px + env(safe-area-inset-bottom, 20px)) !important;
+        padding-bottom:env(safe-area-inset-bottom, 20px) !important;
+      }
+      #providerNav .navbtn{
+        min-height:48px; padding:12px 8px !important; font-size:11px !important;
+      }
+      #providerNav .navbtn .ico svg{ width:22px !important; height:22px !important; }
       
-      /* FAB Position */
-      #fabProviderAddOffer{ bottom:100px !important; right:12px !important; width:52px !important; height:52px !important; }
+      /* FAB: über Nav + Safe-Area */
+      #fabProviderAddOffer{
+        bottom:calc(80px + env(safe-area-inset-bottom, 20px)) !important;
+        right:calc(20px + env(safe-area-inset-right, 0)) !important;
+        width:56px !important; height:56px !important;
+        min-width:56px; min-height:56px;
+      }
+      #fabProviderAddOfferLabel{ right:calc(20px + env(safe-area-inset-right, 0)) !important; }
       
-      /* Swipe Cards optimiert */
-      .swipe-card{ border-radius:20px !important; padding:8px 6px 20px !important; }
+      /* Swipe-Actions (Discover): Safe-Area */
+      .swipe-action-buttons-container{
+        padding-bottom:calc(24px + env(safe-area-inset-bottom, 20px)) !important;
+      }
+      
+      /* Sheets: max-height mit Safe-Area */
+      .sheet{ max-height:calc(92vh - env(safe-area-inset-bottom, 0)) !important; }
+      
+      /* Buttons: Mindest-Touch 48px */
+      .btn, .btn-primary, .btn-secondary{
+        min-height:48px !important;
+      }
+      
+      /* Swipe Cards */
+      .swipe-card{ border-radius:20px !important; padding:10px 8px 24px !important; }
       .swipe-card-title{ font-size:20px !important; }
       .swipe-card-provider{ font-size:13px !important; }
-      
-      /* Discover Grid */
-      .discover-offers{ padding:12px 8px !important; gap:10px !important; }
-      .card.polaroid{ border-radius:16px !important; }
+      .discover-offers{ padding:14px 12px !important; gap:12px !important; }
+      .card.polaroid{ border-radius:18px !important; }
     }
     
     /* Extra kleine Phones (<375px, z.B. iPhone SE) */
     @media (max-width:374px){
       #v-provider-home{ padding:12px 8px 90px !important; }
       #v-provider-home h1{ font-size:22px !important; }
-      #kpiCardInserate, #kpiCardAbholungen, #kpiCardKochbuch{ padding:10px 6px !important; }
-      #kpiCardInserate div[style*="font-size:32px"],
+      #kpiCardTagesessen, #kpiCardAbholungen, #kpiCardKochbuch{ padding:10px 6px !important; }
+      #kpiCardTagesessen div[style*="font-size:20px"],
       #kpiCardAbholungen div[style*="font-size:32px"],
       #kpiCardKochbuch div[style*="font-size:32px"]{ font-size:22px !important; }
-      .provider-tile{ padding:10px 6px !important; }
-      #tileTagesessen div[style*="font-size:20px"]{ font-size:14px !important; }
     }
     .swipe-card:active{
       cursor:grabbing;
@@ -3386,32 +3641,21 @@
     <!-- PROVIDER APP - Küchenmodus (Home) -->
     <section class="view" id="v-provider-home" style="background:#323232; min-height:100vh; padding:20px; padding-bottom:90px; position:relative;">
       <!-- Status-Ampel (oben rechts, fixiert) -->
-      <div id="providerStatusIndicator" style="position:fixed; top:16px; right:16px; z-index:100; display:flex; align-items:center; gap:8px; background:rgba(50,50,50,0.92); backdrop-filter:blur(10px); padding:8px 12px; border-radius:20px; border:1px solid rgba(255,255,255,0.1); cursor:pointer;" onclick="openSupportHelp()" title="System-Status: Aktiv">
+      <div id="providerStatusIndicator" style="position:fixed; top:16px; right:16px; z-index:100; display:flex; align-items:center; gap:8px; background:rgba(50,50,50,0.92); backdrop-filter:blur(10px); padding:8px 12px; border-radius:20px; border:1px solid rgba(255,255,255,0.1); cursor:pointer;" onclick="openSupportHelp()" title="In der Küche aktiv">
         <div id="statusIndicatorDot" style="width:12px; height:12px; border-radius:50%; background:#2ECC71; box-shadow:0 0 8px rgba(46,204,113,0.6); animation:pulse-green 2s infinite;"></div>
-        <span id="statusIndicatorText" style="font-size:12px; font-weight:600; color:rgba(255,255,255,0.9);">System aktiv</span>
+        <span id="statusIndicatorText" style="font-size:12px; font-weight:600; color:rgba(255,255,255,0.9);">In der Küche aktiv</span>
       </div>
       
-      <!-- Header: Küchenmodus -->
+      <!-- Header: Deine Küche -->
       <div style="margin-bottom:20px; text-align:center;">
-        <div style="font-size:11px; color:rgba(255,255,255,0.5); text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">Mittagio – dein digitaler Helfer</div>
-        <h1 style="margin:0; font-size:32px; font-weight:900; color:#fff; line-height:1.2;">Küchenmodus</h1>
+        <div style="font-size:11px; color:rgba(255,255,255,0.5); text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">Mittagio – Deine Küche</div>
+        <h1 style="margin:0; font-size:32px; font-weight:900; color:#fff; line-height:1.2;">Live & Bereit</h1>
       </div>
       
-      <!-- Status-Banner: LIVE/PAUSE -->
+      <!-- Status-Banner: Live & Bereit -->
       <div class="panel" id="providerStatusBanner" style="padding:20px; border-radius:20px; box-shadow:0 4px 16px rgba(0,0,0,.3); background:linear-gradient(135deg, #2e7d32 0%, #1f5f23 100%); margin-bottom:20px; text-align:center;">
-        <div style="font-weight:900; font-size:20px; color:#fff; margin-bottom:8px;" id="providerStatusText">Deine Küche ist LIVE</div>
+        <div style="font-weight:900; font-size:20px; color:#fff; margin-bottom:8px;" id="providerStatusText">Live & Bereit</div>
         <div style="font-size:14px; color:rgba(255,255,255,0.9);">Bereit für Bestellungen</div>
-      </div>
-      
-      <!-- Provider Identity Card (Header) - Grau, app-like -->
-      <div class="panel" id="providerIdentityCard" style="padding:20px; border-radius:20px; box-shadow:0 4px 20px rgba(0,0,0,.2); background:#404040; border:1px solid rgba(255,255,255,0.1); margin-bottom:20px;">
-        <div style="display:flex; align-items:center; gap:16px;">
-          <div class="plogo" id="provCardLogo" style="width:64px; height:64px; border-radius:16px; flex-shrink:0; border:3px solid rgba(255,215,0,0.3);"></div>
-          <div style="flex:1; min-width:0;">
-            <div style="font-weight:900; font-size:20px; line-height:1.3; margin-bottom:6px; color:#fff;" id="provCardName">Anbieter</div>
-            <div class="hint" id="provCardAddr" style="font-size:14px; line-height:1.4; color:rgba(255,255,255,0.7);">Adresse hinzufügen</div>
-          </div>
-        </div>
       </div>
       
       <!-- Kunden-Nachfrage: Express-Requests (Psychologischer Druck) -->
@@ -3431,76 +3675,41 @@
         </button>
       </div>
       
-      <!-- Quick-Kill-Widget: ALLES AUSVERKAUFT (Not-Aus) -->
-      <div class="panel" id="providerQuickKill" style="padding:20px; border-radius:20px; box-shadow:0 4px 20px rgba(0,0,0,.2); background:#404040; border:1px solid rgba(255,255,255,0.1); margin-bottom:20px; text-align:center;">
-        <button class="btn" type="button" id="btnQuickKill" style="width:100%; min-height:72px; background:#E34D4D; color:#fff; font-weight:900; font-size:18px; border:none; border-radius:16px; box-shadow:0 4px 16px rgba(227,77,77,0.3);">
-          <i data-lucide="power" style="width:24px;height:24px; margin-right:8px;"></i>
-          NOT-AUS: ALLES AUSVERKAUFT
-        </button>
-          <div style="font-size:13px; color:rgba(255,255,255,0.6); margin-top:12px;">Schließt alle aktiven Gerichte für heute</div>
-      </div>
-
-      <!-- KPI Dashboard Cards (Row of 3) - Dark Mode -->
+      <!-- KPI Dashboard Cards: Meine Tagesessen, Meine Abholungen, Mein Kochbuch -->
       <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; margin-bottom:20px;">
-        <div class="panel" id="kpiCardInserate" style="padding:20px; border-radius:16px; box-shadow:0 4px 20px rgba(0,0,0,.2); background:#404040; border:1px solid rgba(255,215,0,0.25); cursor:pointer; text-align:center; transition:all 0.2s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 24px rgba(0,0,0,.25)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 20px rgba(0,0,0,.2)';">
-          <div style="font-size:32px; font-weight:900; line-height:1.2; margin-bottom:8px; color:#FFD700;" id="kpiInserateCount">0</div>
-          <div style="font-size:13px; color:rgba(255,255,255,0.75); font-weight:600;">Meine Speisekarte</div>
+        <div class="panel" id="kpiCardTagesessen" style="padding:20px; border-radius:16px; box-shadow:0 4px 20px rgba(0,0,0,.2); background:#404040; border:1px solid rgba(255,215,0,0.25); cursor:pointer; text-align:center; transition:all 0.2s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 24px rgba(0,0,0,.25)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 20px rgba(0,0,0,.2)';">
+          <div style="font-size:20px; font-weight:900; line-height:1.2; margin-bottom:8px; color:#FFD700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" id="kpiTagesessenDish">–</div>
+          <div style="font-size:13px; color:rgba(255,255,255,0.75); font-weight:600;">Meine Tagesessen</div>
         </div>
         <div class="panel" id="kpiCardAbholungen" style="padding:20px; border-radius:16px; box-shadow:0 4px 20px rgba(0,0,0,.2); background:#404040; border:1px solid rgba(255,215,0,0.25); cursor:pointer; text-align:center; transition:all 0.2s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 24px rgba(0,0,0,.25)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 20px rgba(0,0,0,.2)';">
           <div style="font-size:32px; font-weight:900; line-height:1.2; margin-bottom:8px; color:#FFD700;" id="kpiAbholungenCount">0</div>
-          <div style="font-size:13px; color:rgba(255,255,255,0.75); font-weight:600;">Abholungen</div>
+          <div style="font-size:13px; color:rgba(255,255,255,0.75); font-weight:600;">Meine Abholungen</div>
         </div>
         <div class="panel" id="kpiCardKochbuch" style="padding:20px; border-radius:16px; box-shadow:0 4px 20px rgba(0,0,0,.2); background:#404040; border:1px solid rgba(255,215,0,0.25); cursor:pointer; text-align:center; transition:all 0.2s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 24px rgba(0,0,0,.25)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 20px rgba(0,0,0,.2)';">
           <div style="font-size:32px; font-weight:900; line-height:1.2; margin-bottom:8px; color:#FFD700;" id="kpiKochbuchCount">0</div>
-          <div style="font-size:13px; color:rgba(255,255,255,0.75); font-weight:600;">Kochbuch</div>
+          <div style="font-size:13px; color:rgba(255,255,255,0.75); font-weight:600;">Mein Kochbuch</div>
         </div>
       </div>
       
-      <!-- Zeit-Gewinn-Tracker Widget -->
+      <!-- Tagesumsatz (Daily Turnover) -->
       <div class="panel" id="providerTimeTracker" style="padding:20px; border-radius:20px; box-shadow:0 4px 20px rgba(0,0,0,.2); background:#404040; border:1px solid rgba(46,125,50,0.3); margin-bottom:20px; text-align:center;">
-        <div style="font-size:14px; color:rgba(255,255,255,0.7); margin-bottom:8px; font-weight:600;">Deine Bilanz</div>
+        <div style="font-size:14px; color:rgba(255,255,255,0.7); margin-bottom:8px; font-weight:600;">Tagesumsatz</div>
         <div style="font-size:36px; font-weight:900; color:#2ECC71; margin-bottom:8px;" id="providerTimeSaved">
-          0h 0min
+          0 €
         </div>
         <div style="font-size:13px; color:rgba(255,255,255,0.7);">
-          Zeit an der Theke gewonnen
+          Umsatz heute
         </div>
       </div>
 
-      <!-- Personal-Spar Bonus Infobox -->
+      <!-- Selbstbedienung verdient (mit Abholnummer) -->
       <div class="panel" id="providerPersonalSpar" style="padding:16px; border-radius:20px; box-shadow:0 4px 16px rgba(0,0,0,.3); background:linear-gradient(135deg, rgba(31,157,85,0.15) 0%, rgba(46,125,50,0.1) 100%); margin-bottom:20px; border:2px solid rgba(31,157,85,0.3);">
         <div style="font-size:13px; color:rgba(255,255,255,0.9); margin-bottom:6px; font-weight:600; display:flex; align-items:center; gap:6px;">
           <i data-lucide="users" style="width:16px;height:16px; color:#2ECC71;"></i>
-          Dein digitaler Kassierer
+          Selbstbedienung verdient
         </div>
         <div style="font-size:14px; color:rgba(255,255,255,0.8); line-height:1.5;" id="providerPersonalSparText">
-          Heute wurden <strong style="color:#2ECC71; font-weight:700;" id="providerTodayAbholnummernCount">0</strong> Abholnummern vollautomatisch abgewickelt. Das entspricht einer geschätzten Entlastung deines Service-Teams von ca. <strong style="color:#2ECC71; font-weight:700;" id="providerTodayTimeSaved">0</strong> Minuten.
-        </div>
-      </div>
-
-      <!-- Kacheln: Kommandozentrale -->
-      <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; margin-bottom:20px;">
-        <!-- Kachel: Mein Tagesessen (mit Status) -->
-        <div class="panel provider-tile" id="tileTagesessen" style="padding:16px; border-radius:16px; box-shadow:0 4px 20px rgba(0,0,0,.18); background:#404040; border:1px solid rgba(255,255,255,0.1); cursor:pointer; text-align:center; position:relative; transition:all 0.2s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 24px rgba(0,0,0,.25)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 20px rgba(0,0,0,.18)';">
-          <div style="font-size:20px; font-weight:900; line-height:1.2; margin-bottom:4px; color:#FFD700;" id="tileTagesessenDish">–</div>
-          <div style="font-size:11px; color:rgba(255,255,255,0.65); margin-bottom:6px;" id="tileTagesessenStatus">Kein Gericht</div>
-          <div style="font-size:10px; color:rgba(255,255,255,0.55); font-weight:600;">Mein Tagesessen</div>
-        </div>
-        
-        <!-- Kachel: Bestellungen -->
-        <div class="panel provider-tile" id="tileBestellungen" style="padding:16px; border-radius:16px; box-shadow:0 4px 20px rgba(0,0,0,.2); background:#404040; border:1px solid rgba(255,255,255,0.1); cursor:pointer; text-align:center; position:relative; transition:all 0.2s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 24px rgba(0,0,0,.25)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 20px rgba(0,0,0,.2)';" onclick="showProviderPickups();">
-          <div style="font-size:28px; font-weight:900; line-height:1.2; margin-bottom:6px; color:#2ECC71;" id="tileBestellungenCount">0</div>
-          <div style="font-size:12px; color:rgba(255,255,255,0.7); font-weight:600;">Bestellungen</div>
-        </div>
-        
-        <!-- Kachel: Abholnummern (ausgegraut mit Info-Popup) -->
-        <div class="panel provider-tile" id="tileAbholnummern" style="padding:16px; border-radius:16px; box-shadow:0 4px 20px rgba(0,0,0,.18); background:#383838; border:1px solid rgba(255,255,255,0.08); cursor:pointer; text-align:center; position:relative; transition:all 0.2s ease; opacity:0.5;" onmouseover="this.style.opacity='0.7'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 24px rgba(0,0,0,.25)'; showTilePopup(this, 'Hier siehst du live die eingehenden Abholnummern – behalte den Überblick über deine Kunden.');" onmouseout="this.style.opacity='0.5'; this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 20px rgba(0,0,0,.18)'; hideTilePopup(this);" onclick="showProviderPickups();">
-          <div style="font-size:28px; font-weight:900; line-height:1.2; margin-bottom:6px; color:rgba(255,255,255,0.4);" id="tileAbholnummernCount">–</div>
-          <div style="font-size:12px; color:rgba(255,255,255,0.4); font-weight:600;">Abholnummern</div>
-          <div class="tile-popup" style="position:absolute; bottom:calc(100% + 8px); left:50%; transform:translateX(-50%); background:#4a4a4a; color:#fff; padding:10px 14px; border-radius:8px; font-size:11px; max-width:200px; text-align:center; opacity:0; pointer-events:none; transition:opacity 0.2s; border:1px solid rgba(255,255,255,0.15); box-shadow:0 4px 16px rgba(0,0,0,.25); z-index:100; white-space:normal; line-height:1.4;">
-            Hier siehst du live die eingehenden Abholnummern – behalte den Überblick über deine Kunden.
-            <div style="position:absolute; top:100%; left:50%; transform:translateX(-50%); width:0; height:0; border-left:6px solid transparent; border-right:6px solid transparent; border-top:6px solid #4a4a4a;"></div>
-          </div>
+          Heute <strong style="color:#2ECC71; font-weight:700;" id="providerTodayAbholnummernCount">0</strong> Abholnummern – deine Gäste bestellen selbst und holen mit Nummer ab. Weniger Wartezeit an der Theke.
         </div>
       </div>
       
@@ -13696,32 +13905,6 @@
       };
     }
     
-    // Provider Identity Card
-    const logoWrap = document.getElementById('provCardLogo');
-    if(logoWrap){
-      if(profile.logoData){
-        logoWrap.innerHTML = `<img src="${esc(profile.logoData)}" alt="Logo" style="width:100%; height:100%; object-fit:cover; border-radius:14px;" />`;
-      } else {
-        const initials = (profile.name || provider.email || 'A').charAt(0).toUpperCase();
-        logoWrap.innerHTML = `<div style="width:100%; height:100%; background:linear-gradient(135deg, var(--brand), var(--brand2)); display:flex; align-items:center; justify-content:center; border-radius:14px; font-size:24px; font-weight:900; color:#111;">${esc(initials)}</div>`;
-      }
-    }
-    const nameEl = document.getElementById('provCardName');
-    if(nameEl) nameEl.textContent = profile.name || provider.email || 'Anbieter';
-    const addrEl = document.getElementById('provCardAddr');
-    if(addrEl){
-      const addr = buildAddress(profile);
-      if(addr){
-        addrEl.textContent = esc(addr);
-        addrEl.style.color = 'var(--muted)';
-      } else {
-        addrEl.textContent = 'Adresse hinzufügen';
-        addrEl.style.color = 'var(--brand)';
-      }
-    }
-    
-    // btnProviderEditProfile wurde entfernt - "Profil bearbeiten" ist jetzt nur noch im Profil-Bereich (unten)
-    
       // KPI Cards (Dark Mode Styling)
       const activeOffersCount = mineActive.length;
       const todayPickups = loadOrders().filter(o => {
@@ -13730,88 +13913,37 @@
       }).length;
       const cookbookCount = cookbook.length;
       
-      // Zeit-Gewinn berechnen (Anzahl Abholungen * 3 Minuten)
-      const allTimePickups = loadOrders().filter(o => {
+      // Tagesumsatz: Summe aller heute bezahlten Bestellungen (PAID) für diesen Anbieter
+      const todayOrders = loadOrders().filter(o => {
         const offer = offers.find(off => off.id === o.dishId || off.providerId === o.providerId);
-        return offer && offer.providerId === providerId() && o.status === 'PICKED_UP';
-      }).length;
-      const timeSavedMinutes = allTimePickups * 3;
-      const timeSavedHours = Math.floor(timeSavedMinutes / 60);
-      const timeSavedMinutesRemainder = timeSavedMinutes % 60;
+        return offer && offer.providerId === providerId() && offer.day === todayKey && o.status === 'PAID';
+      });
+      const tagesumsatzCents = todayOrders.reduce((sum, o) => sum + (o.totalCents || 0), 0);
+      const tagesumsatzEuro = (tagesumsatzCents / 100).toFixed(2);
       
-      // Zeit-Gewinn-Tracker Widget aktualisieren
       const providerTimeTracker = document.getElementById('providerTimeTracker');
       const providerTimeSaved = document.getElementById('providerTimeSaved');
       if(providerTimeTracker && providerTimeSaved){
-        // Animation beim ersten Laden: Von 0 hochzählen
-        const isFirstLoad = !providerTimeSaved.dataset.animated;
-        if(isFirstLoad && timeSavedHours === 0 && timeSavedMinutesRemainder === 0){
-          // Animiertes Hochzählen von 0
-          animateTimeTracker(providerTimeSaved, 0, 0, timeSavedHours, timeSavedMinutesRemainder);
-          providerTimeSaved.dataset.animated = 'true';
-        } else {
-          providerTimeSaved.textContent = `${timeSavedHours}h ${timeSavedMinutesRemainder}min`;
-        }
+        providerTimeSaved.textContent = tagesumsatzEuro.replace('.', ',') + ' €';
       }
       
-      // Personal-Spar Bonus Infobox aktualisieren
-      const todayAbholnummern = loadOrders().filter(o => {
-        const offer = offers.find(off => off.id === o.dishId || off.providerId === o.providerId);
-        return offer && offer.providerId === providerId() && offer.day === todayKey && o.status === 'PAID';
-      }).length;
-      const timeSavedTodayMinutes = Math.round(todayAbholnummern * 1.5);
-      
+      // Selbstbedienung verdient: Abholnummern heute
+      const todayAbholnummern = todayOrders.length;
       const providerPersonalSpar = document.getElementById('providerPersonalSpar');
       const providerTodayAbholnummernCount = document.getElementById('providerTodayAbholnummernCount');
-      const providerTodayTimeSaved = document.getElementById('providerTodayTimeSaved');
-      
-      if(providerPersonalSpar && providerTodayAbholnummernCount && providerTodayTimeSaved){
-        if(todayAbholnummern > 0){
-          providerTodayAbholnummernCount.textContent = todayAbholnummern;
-          providerTodayTimeSaved.textContent = timeSavedTodayMinutes;
-          providerPersonalSpar.style.display = 'block';
-        } else {
-          providerPersonalSpar.style.display = 'none';
-        }
+      if(providerPersonalSpar && providerTodayAbholnummernCount){
+        providerTodayAbholnummernCount.textContent = todayAbholnummern;
+        providerPersonalSpar.style.display = 'block';
       }
       
-      // Kacheln aktualisieren: Mein Tagesessen (mit Status), Bestellungen, Abholnummern
-      const tileTagesessenDish = document.getElementById('tileTagesessenDish');
-      const tileTagesessenStatus = document.getElementById('tileTagesessenStatus');
-      const tileTagesessen = document.getElementById('tileTagesessen');
-      
+      // KPI: Mein Tagesessen (Gerichtname in zweiter Karte)
+      const kpiTagesessenDish = document.getElementById('kpiTagesessenDish');
       if(mineToday.length > 0){
         const firstDish = mineToday[0];
         const dishName = firstDish.dish || firstDish.title || 'Gericht';
-        const isActive = firstDish.active !== false;
-        const statusText = isActive ? 'Live' : 'Ausverkauft';
-        const statusColor = isActive ? '#2ECC71' : 'rgba(255,255,255,0.4)';
-        
-        if(tileTagesessenDish) tileTagesessenDish.textContent = dishName.length > 12 ? dishName.substring(0, 12) + '...' : dishName;
-        if(tileTagesessenStatus){
-          tileTagesessenStatus.textContent = statusText;
-          tileTagesessenStatus.style.color = statusColor;
-        }
-        if(tileTagesessen){
-          tileTagesessen.style.borderColor = isActive ? 'rgba(46,204,113,0.3)' : 'rgba(255,255,255,0.05)';
-        }
+        if(kpiTagesessenDish) kpiTagesessenDish.textContent = dishName.length > 18 ? dishName.substring(0, 18) + '…' : dishName;
       } else {
-        if(tileTagesessenDish) tileTagesessenDish.textContent = '–';
-        if(tileTagesessenStatus){
-          tileTagesessenStatus.textContent = 'Kein Gericht';
-          tileTagesessenStatus.style.color = 'rgba(255,255,255,0.4)';
-        }
-      }
-      
-      if(tileTagesessen){
-        tileTagesessen.onclick = () => {
-          if(mineToday.length > 0){
-            shareTodayOffers();
-          } else {
-            // Öffne Flow zum Gericht hinzufügen
-            openDishFlow();
-          }
-        };
+        if(kpiTagesessenDish) kpiTagesessenDish.textContent = '–';
       }
       
       // Tagesessen teilen Button anzeigen/verstecken
@@ -13826,60 +13958,21 @@
         };
       }
       
-      const tileBestellungenCount = document.getElementById('tileBestellungenCount');
-      if(tileBestellungenCount) tileBestellungenCount.textContent = todayPickups;
-      
-      const tileAbholnummernCount = document.getElementById('tileAbholnummernCount');
-      if(tileAbholnummernCount){
-        if(todayAbholnummern > 0){
-          tileAbholnummernCount.textContent = todayAbholnummern;
-          tileAbholnummernCount.style.color = '#FFD700';
-          const tileAbholnummern = document.getElementById('tileAbholnummern');
-          if(tileAbholnummern){
-            tileAbholnummern.style.opacity = '1';
-            tileAbholnummern.style.background = '#404040';
-          }
-        } else {
-          tileAbholnummernCount.textContent = '–';
-        }
-      }
-      
-      const kpiInserateCount = document.getElementById('kpiInserateCount');
-      if(kpiInserateCount) {
-        kpiInserateCount.textContent = activeOffersCount;
-        kpiInserateCount.parentElement.style.background = '#404040';
-        kpiInserateCount.parentElement.style.color = '#fff';
-      }
       const kpiAbholungenCount = document.getElementById('kpiAbholungenCount');
-      if(kpiAbholungenCount) {
-        kpiAbholungenCount.textContent = todayPickups;
-        kpiAbholungenCount.parentElement.style.background = '#404040';
-        kpiAbholungenCount.parentElement.style.color = '#fff';
-      }
+      if(kpiAbholungenCount) kpiAbholungenCount.textContent = todayPickups;
       const kpiKochbuchCount = document.getElementById('kpiKochbuchCount');
-      if(kpiKochbuchCount) {
-        kpiKochbuchCount.textContent = cookbookCount;
-        kpiKochbuchCount.parentElement.style.background = '#2d2d2d';
-        kpiKochbuchCount.parentElement.style.color = '#fff';
-      }
+      if(kpiKochbuchCount) kpiKochbuchCount.textContent = cookbookCount;
     
     // KPI Card Handlers
-    const kpiCardInserate = document.getElementById('kpiCardInserate');
-    if(kpiCardInserate) kpiCardInserate.onclick = () => {
-      // Scroll to Active Offers section
-      const activeOffers = document.getElementById('providerActiveOffers');
-      if(activeOffers){
-        activeOffers.scrollIntoView({behavior: 'smooth', block: 'start'});
-      }
+    const kpiCardTagesessen = document.getElementById('kpiCardTagesessen');
+    if(kpiCardTagesessen) kpiCardTagesessen.onclick = () => {
+      if(mineToday.length > 0) shareTodayOffers();
+      else openDishFlow();
     };
     const kpiCardAbholungen = document.getElementById('kpiCardAbholungen');
-    if(kpiCardAbholungen) kpiCardAbholungen.onclick = () => {
-      showProviderPickups();
-    };
+    if(kpiCardAbholungen) kpiCardAbholungen.onclick = () => showProviderPickups();
     const kpiCardKochbuch = document.getElementById('kpiCardKochbuch');
-    if(kpiCardKochbuch) kpiCardKochbuch.onclick = () => {
-      showProviderCookbook();
-    };
+    if(kpiCardKochbuch) kpiCardKochbuch.onclick = () => showProviderCookbook();
     
     // TODAY Card
     const providerTodayCard = document.getElementById('providerTodayCard');
@@ -16282,7 +16375,7 @@
     target.innerHTML = '';
     const title = document.createElement('div');
     title.className = 'hint';
-    title.textContent = 'Live-Vorschau';
+    title.textContent = 'Vorschau';
     target.appendChild(title);
     
     // Badge und Subline für Online-Zahlung + Abholcode
@@ -17582,7 +17675,7 @@
       dot.style.background = '#2ECC71';
       dot.style.boxShadow = '0 0 8px rgba(46,204,113,0.6)';
       dot.style.animation = 'pulse-green 2s infinite';
-      text.textContent = 'System aktiv';
+      text.textContent = 'In der Küche aktiv';
       text.style.color = 'rgba(255,255,255,0.9)';
       lastConnectivityStatus = 'online';
     } else if(status === 'offline'){
