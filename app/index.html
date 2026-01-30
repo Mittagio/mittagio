@@ -5887,6 +5887,12 @@
     return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#039;'}[c]));
   }
 
+  /** Erstes Wort aus Allergen-Label (z. B. "Erdnüsse" statt "Erdnüsse und daraus gewonnene Erzeugnisse"). */
+  function allergenFirstWord(label){
+    if(!label) return '';
+    return String(label).trim().split(/\s+/)[0] || label;
+  }
+
   /** Standardisierte Allergen-Übersetzung (ALLERGENE_OVERLAY_SPEC.md). Anbieter wählt Kürzel; nur zutreffende anzeigen. */
   const ALLERGENE_STANDARD = {
     'A':'Glutenhaltiges Getreide (Weizen, Roggen, Gerste etc.)',
@@ -7439,12 +7445,14 @@
     const unique = codes.filter(c => { if(seen[c]) return false; seen[c]=1; return true; });
     
     const allergenList = unique.map(code => {
-      const label = (typeof ALLERGENE_STANDARD !== 'undefined' && ALLERGENE_STANDARD[code]) 
+      const fullLabel = (typeof ALLERGENE_STANDARD !== 'undefined' && ALLERGENE_STANDARD[code]) 
         ? ALLERGENE_STANDARD[code] 
         : `Allergen ${code}`;
-      return `<div style="display:flex; align-items:flex-start; gap:10px; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.1);">
+      const firstWord = typeof allergenFirstWord === 'function' ? allergenFirstWord(fullLabel) : String(fullLabel).trim().split(/\s+/)[0] || fullLabel;
+      return `<div style="display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.1);">
+        <i data-lucide="shield-alert" style="width:20px;height:20px;color:rgba(255,255,255,0.8);flex-shrink:0;"></i>
         <span style="color:rgba(255,255,255,0.9); font-weight:700; font-size:14px; flex-shrink:0;">${esc(code)}</span>
-        <span style="color:rgba(255,255,255,0.85); font-size:14px; line-height:1.4;">${esc(label)}</span>
+        <span style="color:rgba(255,255,255,0.85); font-size:14px;">${esc(firstWord)}</span>
       </div>`;
     }).join('');
     
@@ -10090,10 +10098,16 @@
       const uniq = codes.filter(c => { if(seen[c]) return false; seen[c]=1; return true; });
       if(sAllergensCount) sAllergensCount.textContent = uniq.length.toString();
       if(sAllergens){
-        const list = uniq.map(c => `<div style="display:flex; align-items:center; gap:6px; margin-bottom:4px;">
-          <span style="font-weight:700; color:rgba(255,255,255,0.9);">${esc(c)}</span>
-          <span style="color:rgba(255,255,255,0.75); font-size:12px;">${esc(ALLERGENE_STANDARD[c])}</span>
-        </div>`).join('');
+        const firstWord = (l) => (typeof allergenFirstWord === 'function' ? allergenFirstWord(l) : String(l||'').trim().split(/\s+/)[0]) || l;
+        const list = uniq.map(c => {
+          const label = ALLERGENE_STANDARD[c];
+          const word = firstWord(label);
+          return `<div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+            <i data-lucide="shield-alert" style="width:16px;height:16px;color:rgba(255,255,255,0.7);flex-shrink:0;"></i>
+            <span style="font-weight:700; color:rgba(255,255,255,0.9);">${esc(c)}</span>
+            <span style="color:rgba(255,255,255,0.75); font-size:12px;">${esc(word)}</span>
+          </div>`;
+        }).join('');
         sAllergens.innerHTML = list || '';
         if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
       }
@@ -10377,9 +10391,11 @@
       
       const allergenList = unique.map(code => {
         const label = ALLERGENE_STANDARD[code];
-        return `<div style="display:flex; align-items:flex-start; gap:10px; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.1);">
+        const firstWord = typeof allergenFirstWord === 'function' ? allergenFirstWord(label) : (label||'').trim().split(/\s+/)[0] || label;
+        return `<div style="display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.1);">
+          <i data-lucide="shield-alert" style="width:20px;height:20px;color:rgba(255,255,255,0.8);flex-shrink:0;"></i>
           <span style="color:rgba(255,255,255,0.9); font-weight:700; font-size:14px; flex-shrink:0;">${esc(code)}</span>
-          <span style="color:rgba(255,255,255,0.85); font-size:14px; line-height:1.4;">${esc(label)}</span>
+          <span style="color:rgba(255,255,255,0.85); font-size:14px;">${esc(firstWord)}</span>
         </div>`;
       }).join('');
       
@@ -16090,6 +16106,7 @@
             hasPickupCode: !!o.hasPickupCode,
             dineInPossible: !!o.dineInPossible,
             allergens: Array.isArray(o.allergens) ? [...o.allergens] : [],
+            wantsAllergens: !!(o.allergens && Array.isArray(o.allergens) && o.allergens.length > 0),
             extras: Array.isArray(o.extras) ? JSON.parse(JSON.stringify(o.extras)) : [],
             reuse: o.reuse ? JSON.parse(JSON.stringify(o.reuse)) : {enabled:false, deposit:0},
             photoData: o.imageUrl || '',
@@ -16116,6 +16133,7 @@
             hasPickupCode: !!x.hasPickupCode,
             dineInPossible: !!x.dineInPossible,
             allergens: Array.isArray(x.allergens) ? [...x.allergens] : [],
+            wantsAllergens: !!(x.allergens && Array.isArray(x.allergens) && x.allergens.length > 0),
             extras: Array.isArray(x.extras) ? JSON.parse(JSON.stringify(x.extras)) : [],
             reuse: x.reuse ? JSON.parse(JSON.stringify(x.reuse)) : {enabled:globalReuseEnabled, deposit:globalReuseEnabled ? 2 : 0},
             photoData: x.photoData || '',
@@ -16131,6 +16149,7 @@
             hasPickupCode:true,
             dineInPossible:true,
             allergens:[],
+            wantsAllergens: false,
             extras:[],
             reuse:{enabled:globalReuseEnabled, deposit:globalReuseEnabled ? 2 : 0},
             photoData:'',
@@ -16149,6 +16168,7 @@
           hasPickupCode:true,
           dineInPossible:true,
           allergens:[],
+          wantsAllergens: false,
           extras:[],
           reuse:{enabled:globalReuseEnabled, deposit:globalReuseEnabled ? 2 : 0},
           photoData:'',
@@ -16172,6 +16192,7 @@
       w.data.hasPickupCode = !!w.data.hasPickupCode;
       w.data.dineInPossible = !!w.data.dineInPossible;
       w.data.allergens = Array.isArray(w.data.allergens) ? w.data.allergens : [];
+      if(w.data.wantsAllergens === undefined) w.data.wantsAllergens = !!(w.data.allergens && w.data.allergens.length > 0);
       w.data.extras = Array.isArray(w.data.extras) ? w.data.extras : [];
       // Mehrweg: Verwende globale Einstellung wenn nicht gesetzt
       if(!w.data.reuse || (!w.data.reuse.enabled && !profile.reuseEnabledByDefault)){
@@ -16696,7 +16717,7 @@
     }
 
     if(w.step===3){
-      setWizardQuestion('3 Säulen & Allergene', 'Vor Ort immer an. Mehrweg optional. Abholnummer aus Schritt 2.');
+      setWizardQuestion('3 Säulen & Allergene', 'Vor Ort immer an. Mehrweg optional. Allergene angeben ist keine Pflicht.');
       const box=document.createElement('div');
       w.data.dineInPossible = true;
       const pillars=document.createElement('div');
@@ -16715,25 +16736,44 @@
       `;
       mw.querySelector('input').onchange=()=>{ w.data.reuse.enabled=!!mw.querySelector('input').checked; if(w.data.reuse.enabled && !w.data.reuse.deposit) w.data.reuse.deposit=2; rebuildWizard(); };
       box.appendChild(mw);
-      const alLabel=document.createElement('div');
-      alLabel.className='hint'; alLabel.style.marginTop='16px'; alLabel.textContent='Allergene (A–R)';
-      box.appendChild(alLabel);
-      if(!Array.isArray(w.data.allergens)) w.data.allergens=[];
-      const list=document.createElement('div'); list.className='answers'; list.style.marginTop='6px';
-      const checklist = typeof ALLERGENE_CHECKLIST_A_R !== 'undefined' ? ALLERGENE_CHECKLIST_A_R : Object.entries(ALLERGENE_STANDARD).map(([code,label])=>({code,label}));
-      checklist.forEach(a=>{
-        const b=document.createElement('button');
-        b.type='button';
-        b.className='ans'+(w.data.allergens.includes(a.code)?' on':'');
-        b.textContent=a.code + ' ' + (a.label||'').slice(0,20);
-        b.onclick=()=>{
-          const i=w.data.allergens.indexOf(a.code);
-          if(i>=0) w.data.allergens.splice(i,1); else w.data.allergens.push(a.code);
-          rebuildWizard();
-        };
-        list.appendChild(b);
-      });
-      box.appendChild(list);
+      // Allergene angeben? Ja / Nein (optional, keine Pflicht)
+      const alQuestion=document.createElement('div');
+      alQuestion.className='hint'; alQuestion.style.marginTop='16px'; alQuestion.textContent='Allergene angeben? (optional)';
+      box.appendChild(alQuestion);
+      const alYesNo=document.createElement('div');
+      alYesNo.className='answers'; alYesNo.style.marginTop='6px';
+      const wantsAllergens = !!w.data.wantsAllergens;
+      const btnJa=document.createElement('button'); btnJa.type='button'; btnJa.className='ans'+(wantsAllergens?' on':'');
+      btnJa.textContent='Ja';
+      btnJa.onclick=()=>{ w.data.wantsAllergens=true; rebuildWizard(); };
+      const btnNein=document.createElement('button'); btnNein.type='button'; btnNein.className='ans'+(!wantsAllergens?' on':'');
+      btnNein.textContent='Nein';
+      btnNein.onclick=()=>{ w.data.wantsAllergens=false; w.data.allergens=[]; rebuildWizard(); };
+      alYesNo.appendChild(btnJa); alYesNo.appendChild(btnNein);
+      box.appendChild(alYesNo);
+      if(wantsAllergens){
+        const alLabel=document.createElement('div');
+        alLabel.className='hint'; alLabel.style.marginTop='12px'; alLabel.textContent='Allergene (A–R)';
+        box.appendChild(alLabel);
+        if(!Array.isArray(w.data.allergens)) w.data.allergens=[];
+        const list=document.createElement('div'); list.className='answers'; list.style.marginTop='6px';
+        const checklist = typeof ALLERGENE_CHECKLIST_A_R !== 'undefined' ? ALLERGENE_CHECKLIST_A_R : Object.entries(ALLERGENE_STANDARD).map(([code,label])=>({code,label}));
+        checklist.forEach(a=>{
+          const b=document.createElement('button');
+          b.type='button';
+          b.className='ans allergen-ans'+(w.data.allergens.includes(a.code)?' on':'');
+          b.style.display='flex'; b.style.alignItems='center'; b.style.gap='8px';
+          const firstWord = typeof allergenFirstWord === 'function' ? allergenFirstWord(a.label||'') : (a.label||'').trim().split(/\s+/)[0] || (a.label||'').slice(0,15);
+          b.innerHTML = `<i data-lucide="shield-alert" style="width:18px;height:18px;flex-shrink:0;"></i><span>${esc(a.code)} ${esc(firstWord)}</span>`;
+          b.onclick=()=>{
+            const i=w.data.allergens.indexOf(a.code);
+            if(i>=0) w.data.allergens.splice(i,1); else w.data.allergens.push(a.code);
+            rebuildWizard();
+          };
+          list.appendChild(b);
+        });
+        box.appendChild(list);
+      }
       attachListingPreview(box);
       setWizardContent(box);
       wNextBtn.textContent='Weiter';
@@ -17361,7 +17401,7 @@
             const allergens = tagAllergensFromIngredients(aiResult.ingredients);
             if(allergens.length > 0 && !w.data.allergens){
               w.data.allergens = allergens;
-              w.data.hasAllergens = true;
+              w.data.wantsAllergens = true;
             }
           }
           if(typeof showToast === 'function') showToast('KI-Analyse: ' + (aiResult.name || 'Gericht erkannt'));
