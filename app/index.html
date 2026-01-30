@@ -3381,10 +3381,10 @@
       <!-- Kacheln: Kommandozentrale -->
       <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; margin-bottom:20px;">
         <!-- Kachel: Mein Tagesessen (mit Status) -->
-        <div class="panel provider-tile" id="tileTagesessen" style="padding:16px; border-radius:16px; box-shadow:0 4px 16px rgba(0,0,0,.4); background:#2a2a2a; border:1px solid rgba(255,255,255,0.05); cursor:pointer; text-align:center; position:relative; transition:all 0.2s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(0,0,0,.5)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 16px rgba(0,0,0,.4)';">
+        <div class="panel provider-tile" id="tileTagesessen" style="padding:16px; border-radius:16px; box-shadow:0 4px 20px rgba(0,0,0,.18); background:#404040; border:1px solid rgba(255,255,255,0.1); cursor:pointer; text-align:center; position:relative; transition:all 0.2s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 24px rgba(0,0,0,.25)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 20px rgba(0,0,0,.18)';">
           <div style="font-size:20px; font-weight:900; line-height:1.2; margin-bottom:4px; color:#FFD700;" id="tileTagesessenDish">–</div>
-          <div style="font-size:11px; color:rgba(255,255,255,0.6); margin-bottom:6px;" id="tileTagesessenStatus">Kein Gericht</div>
-          <div style="font-size:10px; color:rgba(255,255,255,0.5); font-weight:600;">Mein Tagesessen</div>
+          <div style="font-size:11px; color:rgba(255,255,255,0.65); margin-bottom:6px;" id="tileTagesessenStatus">Kein Gericht</div>
+          <div style="font-size:10px; color:rgba(255,255,255,0.55); font-weight:600;">Mein Tagesessen</div>
         </div>
         
         <!-- Kachel: Bestellungen -->
@@ -3394,18 +3394,18 @@
         </div>
         
         <!-- Kachel: Abholnummern (ausgegraut mit Info-Popup) -->
-        <div class="panel provider-tile" id="tileAbholnummern" style="padding:16px; border-radius:16px; box-shadow:0 4px 16px rgba(0,0,0,.4); background:#1a1a1a; border:1px solid rgba(255,255,255,0.05); cursor:pointer; text-align:center; position:relative; transition:all 0.2s ease; opacity:0.5;" onmouseover="this.style.opacity='0.7'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(0,0,0,.5)'; showTilePopup(this, 'Hier siehst du live die eingehenden Abholnummern – behalte den Überblick über deine Kunden.');" onmouseout="this.style.opacity='0.5'; this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 16px rgba(0,0,0,.4)'; hideTilePopup(this);" onclick="showProviderPickups();">
+        <div class="panel provider-tile" id="tileAbholnummern" style="padding:16px; border-radius:16px; box-shadow:0 4px 20px rgba(0,0,0,.18); background:#383838; border:1px solid rgba(255,255,255,0.08); cursor:pointer; text-align:center; position:relative; transition:all 0.2s ease; opacity:0.5;" onmouseover="this.style.opacity='0.7'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 24px rgba(0,0,0,.25)'; showTilePopup(this, 'Hier siehst du live die eingehenden Abholnummern – behalte den Überblick über deine Kunden.');" onmouseout="this.style.opacity='0.5'; this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 20px rgba(0,0,0,.18)'; hideTilePopup(this);" onclick="showProviderPickups();">
           <div style="font-size:28px; font-weight:900; line-height:1.2; margin-bottom:6px; color:rgba(255,255,255,0.4);" id="tileAbholnummernCount">–</div>
           <div style="font-size:12px; color:rgba(255,255,255,0.4); font-weight:600;">Abholnummern</div>
-          <div class="tile-popup" style="position:absolute; bottom:calc(100% + 8px); left:50%; transform:translateX(-50%); background:#1e1e1e; color:#fff; padding:10px 14px; border-radius:8px; font-size:11px; max-width:200px; text-align:center; opacity:0; pointer-events:none; transition:opacity 0.2s; border:1px solid rgba(255,255,255,0.1); box-shadow:0 4px 12px rgba(0,0,0,.3); z-index:100; white-space:normal; line-height:1.4;">
+          <div class="tile-popup" style="position:absolute; bottom:calc(100% + 8px); left:50%; transform:translateX(-50%); background:#4a4a4a; color:#fff; padding:10px 14px; border-radius:8px; font-size:11px; max-width:200px; text-align:center; opacity:0; pointer-events:none; transition:opacity 0.2s; border:1px solid rgba(255,255,255,0.15); box-shadow:0 4px 16px rgba(0,0,0,.25); z-index:100; white-space:normal; line-height:1.4;">
             Hier siehst du live die eingehenden Abholnummern – behalte den Überblick über deine Kunden.
-            <div style="position:absolute; top:100%; left:50%; transform:translateX(-50%); width:0; height:0; border-left:6px solid transparent; border-right:6px solid transparent; border-top:6px solid #1e1e1e;"></div>
+            <div style="position:absolute; top:100%; left:50%; transform:translateX(-50%); width:0; height:0; border-left:6px solid transparent; border-right:6px solid transparent; border-top:6px solid #4a4a4a;"></div>
           </div>
         </div>
       </div>
       
       <!-- Tagesessen teilen Button -->
-      <div class="panel" id="providerTodayShare" style="margin-top:18px; padding:16px; border-radius:16px; box-shadow:0 4px 16px rgba(0,0,0,.4); background:#2a2a2a; border:1px solid rgba(255,255,255,0.05); display:none;">
+      <div class="panel" id="providerTodayShare" style="margin-top:18px; padding:16px; border-radius:16px; box-shadow:0 4px 20px rgba(0,0,0,.18); background:#404040; border:1px solid rgba(255,255,255,0.1); display:none;">
         <button class="btn secondary" type="button" id="btnTodayShare" style="width:100%; min-height:52px; background:#FFD700; color:#334155; font-weight:800; border:none; border-radius:12px; display:flex; align-items:center; justify-content:center; gap:8px;">
           <i data-lucide="share-2" style="width:20px;height:20px;"></i>
           <span>Tagesessen teilen</span>
@@ -3458,7 +3458,7 @@
       </div>
     </section>
 
-    <section class="view" id="v-provider-pickups" style="background:#1e1e1e; min-height:100vh; padding:20px; padding-bottom:90px;">
+    <section class="view" id="v-provider-pickups" style="background:#323232; min-height:100vh; padding:20px; padding-bottom:90px;">
       <div style="margin-bottom:20px; display:flex; justify-content:space-between; align-items:flex-start; gap:12px;">
         <div style="flex:1;">
           <h3 style="margin:0 0 8px; font-size:28px; font-weight:900; line-height:1.2; color:#fff;">Abholungen</h3>
@@ -3498,7 +3498,7 @@
       </div>
     </section>
 
-    <section class="view" id="v-provider-week" style="background:#1e1e1e; min-height:100vh; padding:20px; padding-bottom:90px;">
+    <section class="view" id="v-provider-week" style="background:#323232; min-height:100vh; padding:20px; padding-bottom:90px;">
       <!-- Header: Küchenmodus -->
       <div style="margin-bottom:20px; text-align:center;">
         <div style="font-size:11px; color:rgba(255,255,255,0.5); text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">Mittagio – dein digitaler Helfer</div>
@@ -3524,7 +3524,7 @@
       </div>
     </section>
 
-    <section class="view" id="v-provider-cookbook" style="background:#1e1e1e; min-height:100vh; padding:20px; padding-bottom:90px;">
+    <section class="view" id="v-provider-cookbook" style="background:#323232; min-height:100vh; padding:20px; padding-bottom:90px;">
       <!-- Header: Küchenmodus -->
       <div style="margin-bottom:20px; text-align:center;">
         <div style="font-size:11px; color:rgba(255,255,255,0.5); text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">Mittagio – dein digitaler Helfer</div>
@@ -3547,7 +3547,7 @@
     </section>
 
     <!-- Provider-Profil: Küchenmodus (Professionelles Grau-Design) -->
-    <section class="view" id="v-provider-profile" style="background:#1e1e1e; min-height:100vh; padding:20px; padding-bottom:90px;">
+    <section class="view" id="v-provider-profile" style="background:#323232; min-height:100vh; padding:20px; padding-bottom:90px;">
       <!-- Header -->
       <div style="margin-bottom:20px; text-align:center;">
         <div style="font-size:11px; color:rgba(255,255,255,0.5); text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">Mittagio – dein digitaler Helfer</div>
@@ -3600,7 +3600,7 @@
       </div>
       
       <!-- Stammdaten & Branding -->
-      <div class="panel" style="padding:20px; border-radius:20px; box-shadow:0 4px 16px rgba(0,0,0,.4); background:#2a2a2a; border:1px solid rgba(255,255,255,0.05); margin-bottom:20px;">
+      <div class="panel" style="padding:20px; border-radius:20px; box-shadow:0 4px 20px rgba(0,0,0,.18); background:#404040; border:1px solid rgba(255,255,255,0.1); margin-bottom:20px;">
         <div style="font-weight:700; font-size:16px; color:#fff; margin-bottom:16px; display:flex; align-items:center; gap:8px;">
           <i data-lucide="store" style="width:20px;height:20px;"></i>
           Stammdaten & Branding
@@ -3623,7 +3623,7 @@
       </div>
       
       <!-- Automatisierung -->
-      <div class="panel" style="padding:20px; border-radius:20px; box-shadow:0 4px 16px rgba(0,0,0,.4); background:#2a2a2a; border:1px solid rgba(255,255,255,0.05); margin-bottom:20px;">
+      <div class="panel" style="padding:20px; border-radius:20px; box-shadow:0 4px 20px rgba(0,0,0,.18); background:#404040; border:1px solid rgba(255,255,255,0.1); margin-bottom:20px;">
         <div style="font-weight:700; font-size:16px; color:#fff; margin-bottom:16px; display:flex; align-items:center; gap:8px;">
           <i data-lucide="zap" style="width:20px;height:20px;"></i>
           Automatisierung
@@ -3633,7 +3633,7 @@
         <div style="margin-bottom:20px; padding-bottom:20px; border-bottom:1px solid rgba(255,255,255,0.1);">
           <div style="font-weight:600; font-size:14px; color:rgba(255,255,255,0.9); margin-bottom:8px;">Küchen-Zeiten</div>
           <div style="font-size:13px; color:rgba(255,255,255,0.6); margin-bottom:12px;">Automatischer Ausverkauf aller Gerichte</div>
-          <input type="time" id="providerAutoSelloutTime" style="width:100%; padding:12px 16px; border-radius:12px; border:1px solid rgba(255,255,255,0.1); background:#1e1e1e; color:#fff; font-size:16px; font-weight:600;" />
+          <input type="time" id="providerAutoSelloutTime" style="width:100%; padding:12px 16px; border-radius:12px; border:1px solid rgba(255,255,255,0.15); background:#383838; color:#fff; font-size:16px; font-weight:600;" />
           <div style="font-size:12px; color:rgba(255,255,255,0.5); margin-top:6px;">Alle Gerichte werden automatisch um diese Uhrzeit deaktiviert</div>
         </div>
         
@@ -3641,19 +3641,19 @@
         <div>
           <div style="font-weight:600; font-size:14px; color:rgba(255,255,255,0.9); margin-bottom:8px;">Küchen-E-Mail</div>
           <div style="font-size:13px; color:rgba(255,255,255,0.6); margin-bottom:12px;">Für automatischen PDF-Versand der Abholnummer-Liste</div>
-          <input type="email" id="providerKitchenEmail" placeholder="kueche@betrieb.de" style="width:100%; padding:12px 16px; border-radius:12px; border:1px solid rgba(255,255,255,0.1); background:#1e1e1e; color:#fff; font-size:16px;" />
+          <input type="email" id="providerKitchenEmail" placeholder="kueche@betrieb.de" style="width:100%; padding:12px 16px; border-radius:12px; border:1px solid rgba(255,255,255,0.15); background:#383838; color:#fff; font-size:16px;" />
         </div>
       </div>
       
       <!-- Mehrweg-Konfiguration -->
-      <div class="panel" style="padding:20px; border-radius:20px; box-shadow:0 4px 16px rgba(0,0,0,.4); background:#2a2a2a; border:1px solid rgba(255,255,255,0.05); margin-bottom:20px;">
+      <div class="panel" style="padding:20px; border-radius:20px; box-shadow:0 4px 20px rgba(0,0,0,.18); background:#404040; border:1px solid rgba(255,255,255,0.1); margin-bottom:20px;">
         <div style="font-weight:700; font-size:16px; color:#fff; margin-bottom:16px; display:flex; align-items:center; gap:8px;">
           <i data-lucide="leaf" style="width:20px;height:20px; color:#27AE60;"></i>
           Mehrweg-Konfiguration
         </div>
         
         <!-- Globaler Switch: Mehrweg-Pfandsystem -->
-        <div style="display:flex; align-items:center; justify-content:space-between; padding:16px; background:#1e1e1e; border-radius:12px; border:1px solid rgba(255,255,255,0.1);">
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:16px; background:#383838; border-radius:12px; border:1px solid rgba(255,255,255,0.12);">
           <div style="flex:1;">
             <div style="font-weight:600; font-size:15px; color:#fff; margin-bottom:4px;">Mehrweg-Pfandsystem aktiv</div>
             <div style="font-size:12px; color:rgba(255,255,255,0.6);">Standardmäßig bei jedem neuen Gericht vorausgewählt</div>
@@ -3666,20 +3666,20 @@
       </div>
       
       <!-- Finanz-Dashboard Link -->
-      <div class="panel" style="padding:20px; border-radius:20px; box-shadow:0 4px 16px rgba(0,0,0,.4); background:#2a2a2a; border:1px solid rgba(255,255,255,0.05); margin-bottom:20px;">
+      <div class="panel" style="padding:20px; border-radius:20px; box-shadow:0 4px 20px rgba(0,0,0,.18); background:#404040; border:1px solid rgba(255,255,255,0.1); margin-bottom:20px;">
         <div style="font-weight:700; font-size:16px; color:#fff; margin-bottom:16px; display:flex; align-items:center; gap:8px;">
           <i data-lucide="wallet" style="width:20px;height:20px; color:#FFD700;"></i>
           Abrechnung & Erfolg
         </div>
         
         <!-- Heute gesparte Zeit -->
-        <div style="padding:16px; background:#1e1e1e; border-radius:12px; border:1px solid rgba(255,255,255,0.1); margin-bottom:12px;">
+        <div style="padding:16px; background:#383838; border-radius:12px; border:1px solid rgba(255,255,255,0.12); margin-bottom:12px;">
           <div style="font-size:13px; color:rgba(255,255,255,0.6); margin-bottom:4px;">Heute gesparte Zeit</div>
           <div style="font-size:24px; font-weight:900; color:#2ECC71;" id="providerProfileTimeSaved">0 Minuten</div>
         </div>
         
         <!-- Bankgebühren -->
-        <div style="padding:16px; background:#1e1e1e; border-radius:12px; border:1px solid rgba(255,255,255,0.1); margin-bottom:12px;">
+        <div style="padding:16px; background:#383838; border-radius:12px; border:1px solid rgba(255,255,255,0.12); margin-bottom:12px;">
           <div style="font-size:13px; color:rgba(255,255,255,0.6); margin-bottom:4px;">Gezahlte Bankgebühren durch Mittagio</div>
           <div style="font-size:24px; font-weight:900; color:#2ECC71;">0,00 €</div>
           <div style="font-size:11px; color:rgba(255,255,255,0.5); margin-top:4px;">(Übernommen)</div>
@@ -4119,7 +4119,7 @@
   </nav>
 
     <!-- PROVIDER bottom nav - Dunkler Küchenmodus -->
-  <nav class="bottom" id="providerNav" style="display:none; background:#1e1e1e; border-top:1px solid rgba(255,255,255,0.1); backdrop-filter:saturate(180%) blur(20px); -webkit-backdrop-filter:saturate(180%) blur(20px); position:relative;">
+  <nav class="bottom" id="providerNav" style="display:none; background:#2d2d2d; border-top:1px solid rgba(255,255,255,0.12); backdrop-filter:saturate(180%) blur(20px); -webkit-backdrop-filter:saturate(180%) blur(20px); position:relative;">
     <!-- Support-Button (fixiert, rot) -->
     <button class="btn" type="button" id="btnProviderSupportEmergency" style="position:fixed; bottom:90px; right:16px; width:56px; height:56px; border-radius:28px; background:#E34D4D; color:#fff; border:none; box-shadow:0 4px 16px rgba(227,77,77,0.4); cursor:pointer; display:none; align-items:center; justify-content:center; z-index:30;" onclick="openSupportHelp()" title="Probleme? Hilfe via WhatsApp">
       <i data-lucide="message-circle" style="width:28px;height:28px;"></i>
