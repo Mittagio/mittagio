@@ -4031,30 +4031,16 @@
         </div>
       </div>
       
-      <!-- Rechtliches & Hilfe (Footer) -->
-      <div style="margin-top:32px; padding-top:24px; border-top:1px solid rgba(255,255,255,0.1);">
-        <div style="font-weight:700; font-size:14px; color:rgba(255,255,255,0.9); margin-bottom:12px; display:flex; align-items:center; gap:8px;">
-          <i data-lucide="help-circle" style="width:18px;height:18px;"></i>
-          Hilfe & Rechtliches
+      <!-- Footer: AGB | Datenschutz | Impressum (wie Kundenseite) -->
+      <div class="profile-footer" style="margin-top:32px; padding:0 16px 24px; border-top:2px solid rgba(255,255,255,0.1);">
+        <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:10px 16px; font-size:14px; margin-bottom:12px;">
+          <a href="#/anbieter/recht/agb" onclick="showLegalPage('agb-provider'); return false;" style="color:rgba(255,255,255,0.75); text-decoration:none; font-weight:500;">AGB</a>
+          <span style="color:rgba(255,255,255,0.3);">|</span>
+          <a href="#/anbieter/recht/datenschutz" onclick="showLegalPage('datenschutz-provider'); return false;" style="color:rgba(255,255,255,0.75); text-decoration:none; font-weight:500;">Datenschutz</a>
+          <span style="color:rgba(255,255,255,0.3);">|</span>
+          <a href="#/anbieter/recht/impressum" onclick="showLegalPage('impressum-provider'); return false;" style="color:rgba(255,255,255,0.75); text-decoration:none; font-weight:500;">Impressum</a>
         </div>
-        <div style="display:flex; flex-direction:column; gap:8px;">
-          <button class="btn ghost" type="button" id="btnProviderFAQ" style="justify-content:flex-start; padding:12px 16px; color:rgba(255,255,255,0.8); font-size:14px; text-align:left;">
-            <i data-lucide="help-circle" style="width:18px;height:18px; margin-right:8px;"></i>
-            FAQ
-          </button>
-          <button class="btn ghost" type="button" id="btnProviderLegalImpressum" style="justify-content:flex-start; padding:12px 16px; color:rgba(255,255,255,0.8); font-size:14px; text-align:left;">
-            <i data-lucide="file-text" style="width:18px;height:18px; margin-right:8px;"></i>
-            Impressum
-          </button>
-          <button class="btn ghost" type="button" id="btnProviderLegalAGB" style="justify-content:flex-start; padding:12px 16px; color:rgba(255,255,255,0.8); font-size:14px; text-align:left;">
-            <i data-lucide="file-text" style="width:18px;height:18px; margin-right:8px;"></i>
-            AGB
-          </button>
-          <button class="btn ghost" type="button" id="btnProviderLegalDatenschutz" style="justify-content:flex-start; padding:12px 16px; color:rgba(255,255,255,0.8); font-size:14px; text-align:left;">
-            <i data-lucide="shield" style="width:18px;height:18px; margin-right:8px;"></i>
-            Datenschutz
-          </button>
-        </div>
+        <div style="text-align:center; font-size:12px; color:rgba(255,255,255,0.5);">made with <span style="color:#e74c3c;">♥</span> by mittagio.de</div>
       </div>
 
       <!-- Abmelden (ganz unten) -->
@@ -4327,6 +4313,37 @@
       </div>
     </section>
 
+    <!-- Datenschutz für Anbieter (rechtlich eigenes Dokument, Anbieter-spezifische Texte) -->
+    <section class="view" id="v-legal-datenschutz-provider" style="background:#323232; min-height:100vh; padding:20px; padding-bottom:90px;">
+      <div class="panel" style="padding:20px; border-radius:20px; box-shadow:0 4px 20px rgba(0,0,0,.2); background:#404040; border:1px solid rgba(255,255,255,0.1);">
+        <h1 style="font-size:24px; font-weight:900; margin-bottom:20px; color:#fff;">Datenschutzerklärung (Anbieter)</h1>
+        <div style="line-height:1.8; font-size:15px; color:rgba(255,255,255,0.9);">
+          <p style="font-weight:700; margin-bottom:12px;">Verantwortlicher:</p>
+          <p>
+            MQ Mittagio UG (haftungsbeschränkt)<br>
+            Langäcker 2, 73635 Rudersberg<br>
+            <strong>Business-Support:</strong> <a href="mailto:support@mittagio.de" style="color:#FFD700;">support@mittagio.de</a><br>
+            Kunden-Hilfe: <a href="mailto:info@mittagio.de" style="color:#FFD700;">info@mittagio.de</a>
+          </p>
+          <p style="margin-top:24px; font-weight:700;">Anbieter-Daten & Zugang:</p>
+          <p>Für deinen Anbieter-Zugang speichern wir E-Mail, Passwort (verschlüsselt) und alle von dir angelegten Inhalte (Betrieb, Gerichte, Speisekarte). Diese Daten dienen ausschließlich der Bereitstellung der Plattform und der Abwicklung von Bestellungen.</p>
+          <p style="margin-top:24px; font-weight:700;">Sitzung & Sicherheit:</p>
+          <p>Pro Anbieter-Account ist nur eine aktive Sitzung erlaubt. Eine neue Anmeldung beendet andere Geräte – das schützt dein Konto vor Missbrauch.</p>
+          <p style="margin-top:24px; font-weight:700;">Bestell- & Abholdaten:</p>
+          <p>Bestellungen und Abholnummern werden zur Abwicklung und zum Nachweis gespeichert. Kundenbezogene Daten (z. B. Abholnummer, Name bei Bestellung) werden nur im erforderlichen Umfang und nicht für Werbezwecke genutzt.</p>
+          <p style="margin-top:24px; font-weight:700;">Zahlungsdienstleister:</p>
+          <p>Online-Zahlungen laufen über externe Anbieter (z. B. Stripe). Wir speichern keine vollständigen Zahlungsdaten (z. B. Kreditkartennummern).</p>
+          <p style="margin-top:24px; font-weight:700;">Weitergabe:</p>
+          <p>Daten werden nur an Zahlungsdienstleister und bei gesetzlicher Verpflichtung weitergegeben. Keine Weitergabe zu Werbezwecken.</p>
+          <p style="margin-top:24px; font-weight:700;">Deine Rechte:</p>
+          <p>Auskunft, Berichtigung, Löschung, Einschränkung und Widerspruch. Anbieter-Anfragen bitte an <a href="mailto:support@mittagio.de" style="color:#FFD700;">support@mittagio.de</a>.</p>
+        </div>
+        <div style="margin-top:32px; padding-top:20px; border-top:1px solid rgba(255,255,255,0.1); text-align:center; font-size:14px; color:rgba(255,255,255,0.6);">
+          <a href="mailto:support@mittagio.de" style="color:#FFD700;">support@mittagio.de</a> · Business-Bereich
+        </div>
+        <button class="btn ghost" type="button" onclick="goBackFromLegalPage()" style="margin-top:20px; width:100%; background:#383838; border:1px solid rgba(255,255,255,0.12); color:rgba(255,255,255,0.9);">Zurück</button>
+      </div>
+    </section>
 
     <section class="view" id="v-legal-agb-onboarding">
       <div class="panel">
@@ -15279,7 +15296,8 @@
       'agb-kurz': isProvider ? 'v-legal-agb-provider' : 'v-legal-agb-kurz',
       'agb-provider': 'v-legal-agb-provider',
       'impressum-provider': 'v-legal-impressum-provider',
-      'datenschutz': 'v-legal-datenschutz',
+      'datenschutz': isProvider ? 'v-legal-datenschutz-provider' : 'v-legal-datenschutz',
+      'datenschutz-provider': 'v-legal-datenschutz-provider',
       'faq': 'v-legal-faq',
       'faq-provider': 'v-legal-faq-provider'
     };
@@ -15297,7 +15315,8 @@
           'faq-provider': '/anbieter/hilfe/faq',
           'impressum-provider': '/anbieter/recht/impressum',
           'agb-provider': '/anbieter/recht/agb',
-          'datenschutz': '/anbieter/recht/datenschutz'
+          'datenschutz': '/anbieter/recht/datenschutz',
+          'datenschutz-provider': '/anbieter/recht/datenschutz'
         };
         const url = urlMap[page];
         if(url){
@@ -15376,35 +15395,7 @@
     };
   }
   
-  // Provider Profil: Rechtliches & Hilfe Links
-  const btnProviderFAQ = document.getElementById('btnProviderFAQ');
-  if(btnProviderFAQ){
-    btnProviderFAQ.onclick=()=>{
-      showLegalPage('faq-provider');
-      // URL aktualisieren für Provider-Mode
-      if(mode === 'provider'){
-        history.pushState({view: 'provider-faq', mode: mode}, '', '/anbieter/hilfe/faq');
-      }
-    };
-  }
-  const btnProviderLegalImpressum = document.getElementById('btnProviderLegalImpressum');
-  if(btnProviderLegalImpressum){
-    btnProviderLegalImpressum.onclick=()=>{
-      showLegalPage('impressum-provider');
-    };
-  }
-  const btnProviderLegalAGB = document.getElementById('btnProviderLegalAGB');
-  if(btnProviderLegalAGB){
-    btnProviderLegalAGB.onclick=()=>{
-      showLegalPage('agb-provider');
-    };
-  }
-  const btnProviderLegalDatenschutz = document.getElementById('btnProviderLegalDatenschutz');
-  if(btnProviderLegalDatenschutz){
-    btnProviderLegalDatenschutz.onclick=()=>{
-      showLegalPage('datenschutz');
-    };
-  }
+  // Provider-Profil: AGB | Datenschutz | Impressum sind im Footer per onclick gebunden (showLegalPage 'agb-provider', 'datenschutz-provider', 'impressum-provider').
   
   // Support-Kontakt öffnen (von Vertrauens-Segment)
   // Funktion ist bereits oben definiert: openSupportContact()
