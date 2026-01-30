@@ -16717,63 +16717,83 @@
     }
 
     if(w.step===3){
-      setWizardQuestion('3 Säulen & Allergene', 'Vor Ort immer an. Mehrweg optional. Allergene angeben ist keine Pflicht.');
+      setWizardQuestion('Mehrweg & Allergene', 'Beides optional. Alles auf einem Screen.');
       const box=document.createElement('div');
+      box.style.cssText='display:flex;flex-direction:column;gap:10px;max-height:min(65vh,420px);overflow-y:auto;';
       w.data.dineInPossible = true;
+      // Kompakte Säulen (eine Zeile)
       const pillars=document.createElement('div');
-      pillars.style.cssText='display:flex;flex-direction:column;gap:8px;margin-bottom:16px;';
+      pillars.style.cssText='display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px;';
       pillars.innerHTML=`
-        <div style="padding:10px 12px; background:rgba(39,174,96,0.15); border-radius:10px; border:1px solid rgba(39,174,96,0.3); font-weight:700; font-size:14px;">🍴 Vor Ort: immer aktiv</div>
-        <div style="padding:10px 12px; background:${w.data.hasPickupCode?'rgba(255,215,0,0.2)':'#eee'}; border-radius:10px; border:1px solid ${w.data.hasPickupCode?'rgba(255,215,0,0.4)':'#ddd'}; font-weight:700; font-size:14px;">🧾 Abholnummer: ${w.data.hasPickupCode?'an':'aus'}</div>
+        <span style="padding:6px 10px;background:rgba(39,174,96,0.15);border-radius:8px;font-size:12px;font-weight:700;">🍴 Vor Ort</span>
+        <span style="padding:6px 10px;background:${w.data.hasPickupCode?'rgba(255,215,0,0.2)':'#eee'};border-radius:8px;font-size:12px;font-weight:700;">🧾 Abholnr. ${w.data.hasPickupCode?'an':'aus'}</span>
       `;
       box.appendChild(pillars);
       if(!w.data.reuse) w.data.reuse={enabled:false,deposit:0};
-      const mw=document.createElement('label');
-      mw.style.cssText='display:flex;align-items:center;gap:10px;cursor:pointer;padding:10px 0;';
-      mw.innerHTML=`
-        <input type="checkbox" ${w.data.reuse.enabled?'checked':''} id="listingMehrweg" style="width:20px;height:20px;" />
-        <span style="font-weight:700;">🔄 Mehrweg / eigene Behälter möglich</span>
-      `;
-      mw.querySelector('input').onchange=()=>{ w.data.reuse.enabled=!!mw.querySelector('input').checked; if(w.data.reuse.enabled && !w.data.reuse.deposit) w.data.reuse.deposit=2; rebuildWizard(); };
-      box.appendChild(mw);
-      // Allergene angeben? Ja / Nein (optional, keine Pflicht)
-      const alQuestion=document.createElement('div');
-      alQuestion.className='hint'; alQuestion.style.marginTop='16px'; alQuestion.textContent='Allergene angeben? (optional)';
-      box.appendChild(alQuestion);
-      const alYesNo=document.createElement('div');
-      alYesNo.className='answers'; alYesNo.style.marginTop='6px';
-      const wantsAllergens = !!w.data.wantsAllergens;
-      const btnJa=document.createElement('button'); btnJa.type='button'; btnJa.className='ans'+(wantsAllergens?' on':'');
-      btnJa.textContent='Ja';
-      btnJa.onclick=()=>{ w.data.wantsAllergens=true; rebuildWizard(); };
-      const btnNein=document.createElement('button'); btnNein.type='button'; btnNein.className='ans'+(!wantsAllergens?' on':'');
-      btnNein.textContent='Nein';
-      btnNein.onclick=()=>{ w.data.wantsAllergens=false; w.data.allergens=[]; rebuildWizard(); };
-      alYesNo.appendChild(btnJa); alYesNo.appendChild(btnNein);
-      box.appendChild(alYesNo);
+      // Mehrweg: Bietest du Mehrweg an? Ja / Nein
+      const mwRow=document.createElement('div');
+      mwRow.style.marginTop='4px';
+      const mwLabel=document.createElement('div'); mwLabel.className='hint'; mwLabel.style.marginBottom='4px'; mwLabel.textContent='Bietest du Mehrweg an?';
+      mwRow.appendChild(mwLabel);
+      const mwYesNo=document.createElement('div'); mwYesNo.className='answers'; mwYesNo.style.display='flex'; mwYesNo.style.gap='8px'; mwYesNo.style.flexWrap='wrap';
+      const reuseOn=!!w.data.reuse.enabled;
+      const MEHRWEG_PRESETS=[2,3,5];
+      const btnMwJa=document.createElement('button'); btnMwJa.type='button'; btnMwJa.className='ans'+(reuseOn?' on':'');
+      btnMwJa.textContent='Ja';
+      btnMwJa.onclick=()=>{ w.data.reuse.enabled=true; if(!w.data.reuse.deposit) w.data.reuse.deposit=2; rebuildWizard(); };
+      const btnMwNein=document.createElement('button'); btnMwNein.type='button'; btnMwNein.className='ans'+(!reuseOn?' on':'');
+      btnMwNein.textContent='Nein';
+      btnMwNein.onclick=()=>{ w.data.reuse.enabled=false; w.data.reuse.deposit=0; rebuildWizard(); };
+      mwYesNo.appendChild(btnMwJa); mwYesNo.appendChild(btnMwNein);
+      mwRow.appendChild(mwYesNo);
+      if(reuseOn){
+        const pfandLabel=document.createElement('div'); pfandLabel.className='hint'; pfandLabel.style.marginTop='8px'; pfandLabel.style.marginBottom='4px'; pfandLabel.textContent='Pfand (vorgeschlagen)';
+        mwRow.appendChild(pfandLabel);
+        const pfandRow=document.createElement('div'); pfandRow.className='answers'; pfandRow.style.display='flex'; pfandRow.style.gap='8px'; pfandRow.style.flexWrap='wrap';
+        MEHRWEG_PRESETS.forEach(euro=>{
+          const b=document.createElement('button');
+          b.type='button'; b.className='ans'+(Number(w.data.reuse.deposit)===euro?' on':'');
+          b.textContent=euro+' €';
+          b.onclick=()=>{ w.data.reuse.deposit=euro; rebuildWizard(); };
+          pfandRow.appendChild(b);
+        });
+        mwRow.appendChild(pfandRow);
+      }
+      box.appendChild(mwRow);
+      // Allergene angeben? Ja / Nein
+      const alRow=document.createElement('div');
+      alRow.style.marginTop='6px';
+      const alQuestion=document.createElement('div'); alQuestion.className='hint'; alQuestion.style.marginBottom='4px'; alQuestion.textContent='Allergene angeben? (optional)';
+      alRow.appendChild(alQuestion);
+      const alYesNo=document.createElement('div'); alYesNo.className='answers'; alYesNo.style.display='flex'; alYesNo.style.gap='8px'; alYesNo.style.flexWrap='wrap';
+      const wantsAllergens=!!w.data.wantsAllergens;
+      const btnAlJa=document.createElement('button'); btnAlJa.type='button'; btnAlJa.className='ans'+(wantsAllergens?' on':'');
+      btnAlJa.textContent='Ja';
+      btnAlJa.onclick=()=>{ w.data.wantsAllergens=true; rebuildWizard(); };
+      const btnAlNein=document.createElement('button'); btnAlNein.type='button'; btnAlNein.className='ans'+(!wantsAllergens?' on':'');
+      btnAlNein.textContent='Nein';
+      btnAlNein.onclick=()=>{ w.data.wantsAllergens=false; w.data.allergens=[]; rebuildWizard(); };
+      alYesNo.appendChild(btnAlJa); alYesNo.appendChild(btnAlNein);
+      alRow.appendChild(alYesNo);
       if(wantsAllergens){
-        const alLabel=document.createElement('div');
-        alLabel.className='hint'; alLabel.style.marginTop='12px'; alLabel.textContent='Allergene (A–R)';
-        box.appendChild(alLabel);
         if(!Array.isArray(w.data.allergens)) w.data.allergens=[];
-        const list=document.createElement('div'); list.className='answers'; list.style.marginTop='6px';
-        const checklist = typeof ALLERGENE_CHECKLIST_A_R !== 'undefined' ? ALLERGENE_CHECKLIST_A_R : Object.entries(ALLERGENE_STANDARD).map(([code,label])=>({code,label}));
+        const list=document.createElement('div');
+        list.className='answers';
+        list.style.cssText='margin-top:6px;display:grid;grid-template-columns:repeat(2,1fr);gap:6px;max-height:180px;overflow-y:auto;';
+        const checklist=typeof ALLERGENE_CHECKLIST_A_R!=='undefined'?ALLERGENE_CHECKLIST_A_R:Object.entries(ALLERGENE_STANDARD).map(([code,label])=>({code,label}));
         checklist.forEach(a=>{
           const b=document.createElement('button');
           b.type='button';
           b.className='ans allergen-ans'+(w.data.allergens.includes(a.code)?' on':'');
-          b.style.display='flex'; b.style.alignItems='center'; b.style.gap='8px';
-          const firstWord = typeof allergenFirstWord === 'function' ? allergenFirstWord(a.label||'') : (a.label||'').trim().split(/\s+/)[0] || (a.label||'').slice(0,15);
-          b.innerHTML = `<i data-lucide="shield-alert" style="width:18px;height:18px;flex-shrink:0;"></i><span>${esc(a.code)} ${esc(firstWord)}</span>`;
-          b.onclick=()=>{
-            const i=w.data.allergens.indexOf(a.code);
-            if(i>=0) w.data.allergens.splice(i,1); else w.data.allergens.push(a.code);
-            rebuildWizard();
-          };
+          b.style.display='flex'; b.style.alignItems='center'; b.style.gap='6px'; b.style.justifyContent='flex-start'; b.style.padding='8px 10px'; b.style.fontSize='13px';
+          const firstWord=typeof allergenFirstWord==='function'?allergenFirstWord(a.label||''):(a.label||'').trim().split(/\s+/)[0]||(a.label||'').slice(0,15);
+          b.innerHTML=`<i data-lucide="shield-alert" style="width:16px;height:16px;flex-shrink:0;"></i><span>${esc(a.code)} ${esc(firstWord)}</span>`;
+          b.onclick=()=>{ const i=w.data.allergens.indexOf(a.code); if(i>=0) w.data.allergens.splice(i,1); else w.data.allergens.push(a.code); rebuildWizard(); };
           list.appendChild(b);
         });
-        box.appendChild(list);
+        alRow.appendChild(list);
       }
+      box.appendChild(alRow);
       attachListingPreview(box);
       setWizardContent(box);
       wNextBtn.textContent='Weiter';
@@ -16781,7 +16801,7 @@
     }
 
     if(w.step===4){
-      setWizardQuestion('Zeitfenster & Abschluss', 'Abholzeit wählen, dann für 4,99 € inserieren.');
+      setWizardQuestion('Dein Tagessen jetzt veröffentlichen', 'Noch die Abholzeit wählen – dann geht’s live.');
       const box=document.createElement('div');
       const pw = w.data.pickupWindow || profile.mealWindow || DEFAULT_MEAL_WINDOW;
       const parts = pw.includes('–') ? pw.split('–') : pw.split('-');
@@ -16790,7 +16810,7 @@
       if(!w.data.mealStart) w.data.mealStart = start;
       if(!w.data.mealEnd) w.data.mealEnd = end;
       const updateWindow=()=>{ w.data.pickupWindow = (w.data.mealStart||'11:30') + ' – ' + (w.data.mealEnd||'14:00'); refreshListingPreview(); };
-      const startL=document.createElement('div'); startL.className='hint'; startL.textContent='Start';
+      const startL=document.createElement('div'); startL.className='hint'; startL.textContent='Abholzeit von';
       const startR=document.createElement('div'); startR.className='answers';
       ['10:30','11:00','11:30','12:00'].forEach(t=>{
         const b=document.createElement('button');
@@ -16799,7 +16819,7 @@
         b.onclick=()=>{ w.data.mealStart=t; updateWindow(); rebuildWizard(); };
         startR.appendChild(b);
       });
-      const endL=document.createElement('div'); endL.className='hint'; endL.style.marginTop='12px'; endL.textContent='Ende';
+      const endL=document.createElement('div'); endL.className='hint'; endL.style.marginTop='12px'; endL.textContent='Abholzeit bis';
       const endR=document.createElement('div'); endR.className='answers';
       ['13:00','13:30','14:00','14:30'].forEach(t=>{
         const b=document.createElement('button');
@@ -16811,34 +16831,42 @@
       box.appendChild(startL); box.appendChild(startR); box.appendChild(endL); box.appendChild(endR);
       const summary=document.createElement('div');
       summary.className='panel listing-datum-summary';
-      summary.style.cssText='margin-top:16px;padding:16px;text-align:center;';
+      summary.style.cssText='margin-top:16px;padding:16px;text-align:center;border-radius:12px;background:linear-gradient(135deg,rgba(255,215,0,0.08),rgba(255,180,0,0.06));border:1px solid rgba(255,215,0,0.25);';
       summary.innerHTML=`
-        <div class="listing-datum-day">${esc(w.data.pickupWindow || DEFAULT_MEAL_WINDOW)}</div>
-        <div class="hint">Abholzeit</div>
+        <div style="font-size:13px;color:#666;margin-bottom:4px;">Dein Gericht ist bereit</div>
+        <div class="listing-datum-day" style="font-size:18px;font-weight:800;color:#2d3436;">${esc(w.data.pickupWindow || DEFAULT_MEAL_WINDOW)}</div>
+        <div class="hint" style="font-size:12px;margin-top:4px;">Abholzeit – so finden dich deine Gäste.</div>
       `;
       box.appendChild(summary);
       attachListingPreview(box);
       const cost=document.createElement('div');
       cost.className='listing-cost-block';
-      cost.style.cssText='margin-top:16px;padding:12px;border-radius:12px;';
-      cost.innerHTML=`<div style="font-weight:700;">Inseratsgebühr</div><div style="font-size:18px;font-weight:900;color:var(--brand);">4,99 €</div>`;
+      cost.style.cssText='margin-top:16px;padding:16px;border-radius:12px;text-align:center;background:rgba(39,174,96,0.08);border:1px solid rgba(39,174,96,0.2);';
+      cost.innerHTML=`
+        <div style="font-size:22px;font-weight:900;color:var(--brand);letter-spacing:-0.02em;">4,99 €</div>
+        <div style="font-size:13px;color:#666;margin-top:4px;">Einmal zahlen – heute Gäste gewinnen. Kein Abo, keine versteckten Kosten.</div>
+      `;
       box.appendChild(cost);
       const btnPub=document.createElement('button');
       btnPub.className='btn';
       btnPub.type='button';
-      btnPub.textContent = 'Jetzt für 4,99 € inserieren';
-      btnPub.style.cssText = 'width:100%; min-height:56px; font-size:16px; font-weight:700; margin-top:16px;';
+      btnPub.textContent = 'Dein Tagessen jetzt veröffentlichen · 4,99 €';
+      btnPub.style.cssText = 'width:100%; min-height:56px; font-size:16px; font-weight:700; margin-top:16px; border-radius:12px;';
       btnPub.onclick=()=>{ const o=previewOfferFromWizard(); closeWizard(); showPublishFeeModal(o); };
       box.appendChild(btnPub);
       const btnSave=document.createElement('button');
       btnSave.className='btn secondary';
       btnSave.type='button';
-      btnSave.textContent='Im Kochbuch speichern';
+      btnSave.textContent='Erst im Kochbuch speichern';
       btnSave.style.cssText='width:100%;margin-top:8px;';
       btnSave.onclick=()=>{ saveToCookbookFromWizard(); closeWizard(); showProviderCookbook(); };
       box.appendChild(btnSave);
+      const relax=document.createElement('p');
+      relax.style.cssText='margin-top:12px;font-size:12px;color:#999;text-align:center;line-height:1.4;';
+      relax.textContent='Alles klar? Ein Klick – und dein Gericht ist live. Du kannst jederzeit bearbeiten oder deaktivieren.';
+      box.appendChild(relax);
       setWizardContent(box);
-      wNextBtn.textContent='Schließen';
+      wNextBtn.textContent='Später';
       wNextBtn.onclick=()=>{ closeWizard(); showProviderHome(); };
       return;
     }
