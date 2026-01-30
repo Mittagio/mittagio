@@ -1330,6 +1330,82 @@
     #wizard.sheet--kitchen .listing-datum-summary .listing-datum-day{ color:#1a1a1a; font-weight:800; }
     #wizard.sheet--kitchen .listing-datum-summary .hint{ color:#64748b; }
 
+    /* Inseratflow: S25, blind-tap, <15s – app-like, große Touch-Ziele, intuitiv */
+    #wizard[data-flow="listing"].sheet--kitchen .wizard-scroll{
+      padding-bottom:12px;
+    }
+    #wizard[data-flow="listing"].sheet--kitchen .w-q{
+      font-size:16px; margin-bottom:4px;
+    }
+    #wizard[data-flow="listing"].sheet--kitchen .w-help{
+      font-size:12px; margin-bottom:12px; line-height:1.35;
+    }
+    #wizard[data-flow="listing"].sheet--kitchen #wContent .answers{
+      display:grid;
+      grid-template-columns:repeat(2, 1fr);
+      gap:10px;
+      margin-top:8px;
+    }
+    #wizard[data-flow="listing"].sheet--kitchen #wContent .answers.answers--full{
+      grid-template-columns:1fr;
+    }
+    #wizard[data-flow="listing"].sheet--kitchen #wContent .ans{
+      min-height:52px !important;
+      padding:14px 16px !important;
+      font-size:15px !important;
+      font-weight:800;
+      border-radius:14px;
+      -webkit-tap-highlight-color:transparent;
+      touch-action:manipulation;
+      justify-content:center;
+      display:flex;
+      align-items:center;
+    }
+    #wizard[data-flow="listing"].sheet--kitchen #wContent .ans.ans--thumb{
+      min-height:80px !important;
+      min-width:80px !important;
+      border-radius:14px;
+      padding:0;
+    }
+    #wizard[data-flow="listing"].sheet--kitchen #wContent .field{
+      min-height:52px !important;
+      padding:16px 18px !important;
+      font-size:16px !important;
+      border-radius:14px;
+      -webkit-tap-highlight-color:transparent;
+    }
+    #wizard[data-flow="listing"].sheet--kitchen .w-actions{
+      padding:12px 20px calc(12px + env(safe-area-inset-bottom, 20px)) !important;
+      gap:10px;
+    }
+    #wizard[data-flow="listing"].sheet--kitchen .w-actions .btn{
+      min-height:54px !important;
+      font-size:16px !important;
+      font-weight:800;
+      border-radius:14px;
+      touch-action:manipulation;
+      -webkit-tap-highlight-color:transparent;
+    }
+    #wizard[data-flow="listing"].sheet--kitchen .w-actions .btn:not(.secondary){
+      flex:1;
+      min-width:0;
+    }
+    #wizard[data-flow="listing"].sheet--kitchen .hint{
+      font-size:12px; margin-bottom:6px;
+    }
+    /* S25 / schmale Displays: noch größere Tap-Ziele, safe-area */
+    @media (max-width:430px){
+      #wizard[data-flow="listing"].sheet--kitchen #wContent .ans{
+        min-height:54px !important;
+      }
+      #wizard[data-flow="listing"].sheet--kitchen .w-actions .btn{
+        min-height:56px !important;
+      }
+      #wizard[data-flow="listing"].sheet--kitchen .w-actions{
+        padding:12px 16px calc(12px + env(safe-area-inset-bottom, 24px)) !important;
+      }
+    }
+
     /* Provider-App: Helles, app-ähnliches Layout (Dashboard heller & moderner) */
     :root{
       --provider-bg:#f0f2f5;
@@ -16001,12 +16077,12 @@
     const wizard = document.getElementById('wizard');
     if(wbd) wbd.classList.add('active');
     if(wizard) wizard.classList.add('active');
-    // Push state for browser back button
     history.pushState({wizard: true}, '', location.pathname);
   }
   function closeWizard(){
+    const wizard = document.getElementById('wizard');
     document.getElementById('wbd').classList.remove('active');
-    document.getElementById('wizard').classList.remove('active');
+    if(wizard){ wizard.classList.remove('active'); wizard.removeAttribute('data-flow'); }
   }
 
   /**
@@ -16049,6 +16125,8 @@
 
   function startWizard(kind, ctx={}){
     w = { kind, step:0, data:{}, ctx };
+    const wizardEl = document.getElementById('wizard');
+    if(wizardEl) wizardEl.setAttribute('data-flow', kind === 'listing' ? 'listing' : (kind || ''));
 
     if(kind==='provider'){
       w.data = normalizeProviderProfile(JSON.parse(JSON.stringify(provider.profile||{})));
@@ -16539,7 +16617,7 @@
     w.data.dineInPossible = true;
 
     if(w.step===0){
-      setWizardQuestion('Gerichtsname', 'Eigenhistorie zuerst, dann Vorschläge. Auswahl setzt Kategorie.');
+      setWizardQuestion('Gerichtsname', 'Tippen oder Vorschlag antippen – Kategorie wird gesetzt.');
       const box=document.createElement('div');
       const cookbookEntry = w.data.cookbookId ? cookbook.find(c => c.id === w.data.cookbookId) : null;
       const isFromCookbook = !!cookbookEntry;
@@ -16555,7 +16633,7 @@
         suggestWrap.innerHTML='';
         const q=(input.value||'').trim();
         const list = typeof getDishSuggestionsSmartInput==='function' ? getDishSuggestionsSmartInput(q) : [];
-        list.slice(0,8).forEach(s=>{
+        list.slice(0,6).forEach(s=>{
           const cat = (s.category==='Fleisch') ? 'Mit Fleisch' : (s.category||'Vegetarisch');
           const b=document.createElement('button');
           b.type='button'; b.className='ans';
@@ -16568,7 +16646,7 @@
       input.onfocus=fillSuggestions;
       box.appendChild(input);
       box.appendChild(suggestWrap);
-      const catLabel=document.createElement('div'); catLabel.className='hint'; catLabel.style.marginTop='12px'; catLabel.textContent='Kategorie';
+      const catLabel=document.createElement('div'); catLabel.className='hint'; catLabel.style.marginTop='10px'; catLabel.textContent='Kategorie';
       box.appendChild(catLabel);
       const catRow=document.createElement('div'); catRow.className='answers';
       CATEGORIES.forEach(c=>{
@@ -16580,7 +16658,7 @@
       });
       box.appendChild(catRow);
       if(isFromCookbook){
-        const h=document.createElement('div'); h.className='hint'; h.style.marginTop='8px'; h.textContent='✓ Aus Kochbuch geladen';
+        const h=document.createElement('div'); h.className='hint'; h.style.marginTop='6px'; h.textContent='✓ Aus Kochbuch';
         box.appendChild(h);
       }
       fillSuggestions();
@@ -16591,36 +16669,35 @@
     }
 
     if(w.step===1){
-      setWizardQuestion('Bild', 'Kamera, Upload oder vorbereitete Bilder aus unserer Galerie.');
+      setWizardQuestion('Bild', 'Optional – Kamera, Galerie oder ohne Foto weiter.');
       const box=document.createElement('div');
       if(!w.data.photoData){
         const ans=document.createElement('div'); ans.className='answers';
         const cam=document.createElement('button'); cam.type='button'; cam.className='ans'; cam.textContent='📷 Kamera';
         cam.onclick=async()=>{ const f=await pickImage({capture:true}); if(!f) return; const dataUrl=await toDataUrl(f); await openPhotoEditor(dataUrl); };
-        const up=document.createElement('button'); up.type='button'; up.className='ans'; up.textContent='📤 Upload';
+        const up=document.createElement('button'); up.type='button'; up.className='ans'; up.textContent='📤 Galerie';
         up.onclick=async()=>{ const f=await pickImage(); if(!f) return; const dataUrl=await toDataUrl(f); await openPhotoEditor(dataUrl); };
         ans.appendChild(cam); ans.appendChild(up);
-        const libLabel=document.createElement('div'); libLabel.className='hint'; libLabel.style.marginTop='12px'; libLabel.textContent='Passende Bilder zum Gerichtsnamen';
-        box.appendChild(ans); box.appendChild(libLabel);
-        const lib=document.createElement('div'); lib.className='answers'; lib.style.marginTop='6px';
+        const lib=document.createElement('div'); lib.className='answers'; lib.style.marginTop='8px';
         const imgs = typeof getDishImagesForName==='function' ? getDishImagesForName(w.data.dish) : [];
-        imgs.slice(0,3).forEach(url=>{
+        imgs.slice(0,4).forEach(url=>{
           const wrap=document.createElement('button');
-          wrap.type='button'; wrap.className='ans ans--thumb'; wrap.style.padding='0'; wrap.style.overflow='hidden'; wrap.style.aspectRatio='1'; wrap.style.minWidth='72px'; wrap.style.minHeight='72px'; wrap.style.maxWidth='100px';
+          wrap.type='button'; wrap.className='ans ans--thumb'; wrap.style.padding='0'; wrap.style.overflow='hidden'; wrap.style.aspectRatio='1';
           wrap.innerHTML=`<img src="${url}" alt="" style="width:100%;height:100%;object-fit:cover;display:block" crossorigin="anonymous" />`;
           wrap.onclick=async()=>{
             try{ const dataUrl=await urlToDataUrl(url); await openPhotoEditor(dataUrl); }catch(e){ if(typeof showToast==='function') showToast('Bild konnte nicht geladen werden.'); }
           };
           lib.appendChild(wrap);
         });
-        box.appendChild(lib);
-        const proLabel=document.createElement('div'); proLabel.className='hint'; proLabel.style.marginTop='14px'; proLabel.textContent='Vorbereitete Bilder aus unserer Galerie';
-        box.appendChild(proLabel);
-        const proBtn=document.createElement('button');
-        proBtn.type='button'; proBtn.className='ans'; proBtn.style.marginTop='6px';
-        proBtn.textContent='📚 Profi-Galerie öffnen';
-        proBtn.onclick=()=>{ window.proPhotoContext='listing'; if(typeof window.openProPhotoGallery==='function') window.openProPhotoGallery(); };
-        box.appendChild(proBtn);
+        if(lib.children.length) box.appendChild(lib);
+        const skipRow=document.createElement('div');
+        skipRow.style.marginTop='10px';
+        const skipBtn=document.createElement('button');
+        skipBtn.type='button'; skipBtn.className='btn ghost'; skipBtn.textContent='Ohne Foto weiter';
+        skipBtn.style.cssText='width:100%;min-height:48px;font-size:14px;';
+        skipBtn.onclick=()=>{ w.data.photoData=''; rebuildWizard(); };
+        skipRow.appendChild(skipBtn);
+        box.appendChild(skipRow);
       } else {
         const prev=document.createElement('div');
         prev.style.marginTop='10px';
@@ -16639,7 +16716,7 @@
     }
 
     if(w.step===2){
-      setWizardQuestion('Preis & Abholnummer', 'Verkaufspreis, optional Abholnummer +0,89 €, Extras. Verdienst = Verkaufspreis − 0,89 €.');
+      setWizardQuestion('Preis & Abholnummer', 'Preis antippen. Abholnummer Ja/Nein. Extras optional.');
       const box=document.createElement('div');
       const presets=document.createElement('div'); presets.className='answers';
       [4.5,5.5,6.5,7.5,8.5].forEach(val=>{
@@ -16649,31 +16726,20 @@
         b.onclick=()=>{ w.data.price=val; rebuildWizard(); };
         presets.appendChild(b);
       });
-      const input=document.createElement('input');
-      input.className='field';
-      input.inputMode='decimal';
-      input.placeholder='0,00';
-      input.value = formatPriceInput(w.data.price);
-      input.oninput=()=>{ w.data.price = parsePriceInput(input.value); refreshListingPreview(); refreshVerdienstEl(); };
       box.appendChild(presets);
-      box.appendChild(document.createElement('div')).style.height='8px';
-      box.appendChild(input);
-      const abhRow=document.createElement('div');
-      abhRow.style.cssText='margin-top:16px; padding:12px; background:rgba(255,215,0,0.1); border-radius:12px; border:1px solid rgba(255,215,0,0.3);';
-      abhRow.innerHTML=`
-        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
-          <input type="checkbox" ${w.data.hasPickupCode?'checked':''} id="listingAbhToggle" style="width:20px;height:20px;" />
-          <span style="font-weight:700;">🧾 Abholnummer für 0,89 € hinzufügen</span>
-        </label>
-        <div class="hint" style="margin-top:6px;">All-In Erfolgsgebühr inkl. Stripe, Bank, Verwaltung.</div>
-      `;
+      const abhLabel=document.createElement('div'); abhLabel.className='hint'; abhLabel.style.marginTop='12px'; abhLabel.textContent='Abholnummer +0,89 €';
+      box.appendChild(abhLabel);
+      const abhRow=document.createElement('div'); abhRow.className='answers'; abhRow.style.marginTop='6px';
+      const btnAbhJa=document.createElement('button'); btnAbhJa.type='button'; btnAbhJa.className='ans'+(w.data.hasPickupCode?' on':''); btnAbhJa.textContent='Ja';
+      btnAbhJa.onclick=()=>{ w.data.hasPickupCode=true; rebuildWizard(); };
+      const btnAbhNein=document.createElement('button'); btnAbhNein.type='button'; btnAbhNein.className='ans'+(!w.data.hasPickupCode?' on':''); btnAbhNein.textContent='Nein';
+      btnAbhNein.onclick=()=>{ w.data.hasPickupCode=false; rebuildWizard(); };
+      abhRow.appendChild(btnAbhJa); abhRow.appendChild(btnAbhNein);
       box.appendChild(abhRow);
-      const abhCheck = abhRow.querySelector('input[type="checkbox"]');
-      if(abhCheck) abhCheck.onchange=()=>{ w.data.hasPickupCode=!!abhCheck.checked; rebuildWizard(); };
-      if(!Array.isArray(w.data.extras)) w.data.extras=[];
-      const exLabel=document.createElement('div'); exLabel.className='hint'; exLabel.style.marginTop='12px'; exLabel.textContent='Extras (optional)';
+      const exLabel=document.createElement('div'); exLabel.className='hint'; exLabel.style.marginTop='10px'; exLabel.textContent='Extras (optional)';
       box.appendChild(exLabel);
-      const extrasAns=document.createElement('div'); extrasAns.className='answers';
+      if(!Array.isArray(w.data.extras)) w.data.extras=[];
+      const extrasAns=document.createElement('div'); extrasAns.className='answers'; extrasAns.style.marginTop='6px';
       ['Beilagensalat','Extrasosse','Sonstiges'].forEach(name=>{
         const active=w.data.extras.some(e=>e.name===name);
         const b=document.createElement('button');
@@ -16687,18 +16753,9 @@
         extrasAns.appendChild(b);
       });
       box.appendChild(extrasAns);
-      w.data.extras.forEach(extra=>{
-        const row=document.createElement('div');
-        row.style.marginTop='8px';
-        const lab=document.createElement('div'); lab.className='hint'; lab.textContent=extra.name;
-        const inp=document.createElement('input'); inp.className='field'; inp.inputMode='decimal'; inp.placeholder='Preis €'; inp.value=formatPriceInput(extra.price);
-        inp.oninput=()=>{ extra.price=parsePriceInput(inp.value); refreshListingPreview(); refreshVerdienstEl(); };
-        row.appendChild(lab); row.appendChild(inp);
-        box.appendChild(row);
-      });
       const verdienstEl=document.createElement('div');
       verdienstEl.id='listingVerdienstEl';
-      verdienstEl.style.cssText='margin-top:16px; padding:14px; background:rgba(46,204,113,0.12); border-radius:12px; border:1px solid rgba(46,204,113,0.35); font-weight:800; font-size:15px;';
+      verdienstEl.style.cssText='margin-top:12px; padding:12px; background:rgba(46,204,113,0.12); border-radius:12px; border:1px solid rgba(46,204,113,0.35); font-weight:800; font-size:14px;';
       box.appendChild(verdienstEl);
       function refreshVerdienstEl(){
         const el=document.getElementById('listingVerdienstEl');
@@ -16707,7 +16764,7 @@
         const exSum=(w.data.extras||[]).reduce((s,e)=>s+Number(e.price||0),0);
         const geb=w.data.hasPickupCode ? SUCCESS_FEE : 0;
         const netto=p+exSum-geb;
-        el.textContent=`Netto-Auszahlung ≈ ${netto.toFixed(2).replace('.',',')} € (Verkaufspreis + Extras − ${geb ? '0,89 €' : '0 €'})`;
+        el.textContent=`Netto ≈ ${netto.toFixed(2).replace('.',',')} €`;
       }
       refreshVerdienstEl();
       attachListingPreview(box);
@@ -16851,7 +16908,7 @@
       btnPub.className='btn';
       btnPub.type='button';
       btnPub.textContent = 'Dein Tagessen jetzt veröffentlichen · 4,99 €';
-      btnPub.style.cssText = 'width:100%; min-height:56px; font-size:16px; font-weight:700; margin-top:16px; border-radius:12px;';
+      btnPub.style.cssText = 'width:100%; min-height:56px; font-size:16px; font-weight:800; margin-top:16px; border-radius:14px; touch-action:manipulation; -webkit-tap-highlight-color:transparent;';
       btnPub.onclick=()=>{ const o=previewOfferFromWizard(); closeWizard(); showPublishFeeModal(o); };
       box.appendChild(btnPub);
       const btnSave=document.createElement('button');
