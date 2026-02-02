@@ -1,0 +1,30 @@
+---
+description: Layout Kundenseite und Anbieterseite getrennt beibehalten – keine Vermischung
+alwaysApply: true
+---
+
+# Layout: Kundenseite vs. Anbieterseite (verbindlich)
+
+## Grundprinzip
+
+- **Kundenseite** und **Anbieterseite** haben **getrennte Layouts**.
+- Beide Layouts bleiben **so wie sie jetzt sind** – keine Vermischung, kein angleichen der Struktur.
+- Änderungen auf der Kunden-UI betreffen **nur** Kunden-Views; Änderungen auf der Anbieter-UI betreffen **nur** Anbieter-Views.
+
+## Kundenseite (Customer Mode)
+
+- Discover/Entdecken, Gericht-Detailansicht, Favoriten/Mittagsbox, Profil (Kundenkontext).
+- Design-Vorgaben: Clean, modern, keine Schiefertafeln. 3 Säulen (🍴 Vor Ort, 🔄 Mehrweg, 🧾 Abholnummer) wie in `docs/GERICHT_DETAILANSICHT_KONZEPT.md` und Favoritenseiten-Spec.
+- Referenzdokumente: `docs/GERICHT_DETAILANSICHT_KONZEPT.md`, Master-Dokumentation Favoritenseite (2x2 Grid, Jiggle, Abholnummer hervorgehoben).
+
+## Anbieterseite (Provider Mode)
+
+- Dashboard (Mein Betrieb), Abholungen, Wochenplan, Kochbuch, Inseratsflow/Wizard.
+- Design-Vorgaben: Helles, aufgeräumtes Layout (kein dunkles Theme). Inseratsflow wie in `docs/INSERATSFLOW_KONZEPT.md`.
+- Referenzdokumente: `docs/INSERATSFLOW_KONZEPT.md`, `docs/INSERATSFLOW_KONZEPT.md` (Fixkosten 4,99 €, Verdienst-Vorschau, CTA „Jetzt für 4,99 € inserieren“).
+
+## Bei Änderungen
+
+- Prüfen: Betrifft die Änderung **Kunden-** oder **Anbieter-**UI?
+- Nur die jeweilige Seite anpassen; Layout-Logik der anderen Seite nicht übernehmen oder vereinheitlichen.
+- Bestehende Konzept-Docs in `docs/*.md` einhalten (Gericht-Detailansicht, Inseratsflow, Favoritenseite).
