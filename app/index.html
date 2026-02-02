@@ -3432,9 +3432,6 @@
             <div class="brand-name" style="font-weight:900; letter-spacing:.06em; font-size:20px; color:#1a1a1a;">MITTAGIO</div>
           </div>
           <!-- Ansicht-Toggle (rechts) - ENTFERNT -->
-          <!-- <div style="display:flex; align-items:center; flex-shrink:0; margin-left:auto;">
-            <button type="button" id="toggleDiscoverViewTopbar" ...> ... </button>
-          </div> -->
         </div>
       </div>
 
@@ -3781,50 +3778,8 @@
       </div>
     </section>
 
-    <!-- CUSTOMER: Pickup Code (Ultimative Abholnummer-Ansicht) -->
-    <section class="view" id="v-pickup-code" style="background:#1a1a1a; min-height:100vh; padding:0; display:none; flex-direction:column; overflow:hidden; position:fixed; top:0; left:0; width:100%; z-index:1000;">
-      <!-- Hero-Element: Extrem große Abholnummer mit kontrastreichem Hintergrund -->
-      <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:40px 20px; background:linear-gradient(135deg, #0d4f1c 0%, #1a1a1a 100%); position:relative; min-height:60vh;">
-        <!-- Status-Indikator: Pulsierender grüner Punkt -->
-        <div style="position:absolute; top:20px; right:20px; display:flex; align-items:center; gap:8px; z-index:10;">
-          <div id="pickupCodeStatusDot" style="width:12px; height:12px; border-radius:50%; background:#27AE60; box-shadow:0 0 12px rgba(39,174,96,0.8); animation:pulse-green-dot 2s infinite;"></div>
-          <span style="font-size:12px; font-weight:600; color:rgba(255,255,255,0.9);">Aktiv</span>
-        </div>
-        
-        <!-- Abholnummer-Icon + Nummer (extrem groß, zentriert) -->
-        <div style="display:flex; justify-content:center; margin-bottom:8px;"><img src="assets/icon-abholnummer.png" alt="Abholnummer" class="concept-icon-xl" style="width:48px;height:48px; opacity:0.95;"></div>
-        <div id="pickupCodeValue" style="font-size:clamp(4rem, 15vw, 8rem); font-weight:900; font-family:'Courier New', monospace; letter-spacing:0.1em; color:#fff; text-align:center; line-height:1.2; text-shadow:0 4px 20px rgba(0,0,0,0.5), 0 0 40px rgba(39,174,96,0.3); margin-bottom:24px;">
-          –
-          </div>
-        
-        <!-- Klare Handlungsanweisung -->
-        <div style="text-align:center; margin-bottom:32px;">
-          <p style="font-size:18px; font-weight:700; color:#fff; margin:0; text-shadow:0 2px 8px rgba(0,0,0,0.3);">
-            Bitte direkt beim Personal vorzeigen.
-          </p>
-        </div>
-        
-        <!-- Kontext-Infos (dezent, klein) -->
-        <div id="pickupCodeContext" style="text-align:center; padding:16px 24px; background:rgba(255,255,255,0.1); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border-radius:16px; border:1px solid rgba(255,255,255,0.1); max-width:400px; width:100%;">
-          <div style="font-size:14px; color:rgba(255,255,255,0.9); margin-bottom:4px;">
-            <span id="pickupCodeDish" style="font-weight:600;">–</span>
-          </div>
-          <div style="font-size:16px; font-weight:700; color:#FFD700; margin-top:4px;">
-            <span id="pickupCodeTotal">–</span>
-        </div>
-        </div>
-        </div>
-        
-      <!-- Sekundäre Aktionen (unten, dezent) -->
-      <div style="padding:20px; background:#1a1a1a; border-top:1px solid rgba(255,255,255,0.1);">
-        <button class="btn secondary" type="button" id="btnCopyCode" style="width:100%; min-height:48px; background:rgba(255,255,255,0.1); color:#fff; border:1px solid rgba(255,255,255,0.2); margin-bottom:12px;">
-          <i data-lucide="copy"></i> Abholnummer kopieren
-          </button>
-        <button class="btn ghost" type="button" id="btnPickupCodeBack" style="width:100%; min-height:44px; color:rgba(255,255,255,0.7);">
-          <i data-lucide="arrow-left"></i> Zurück
-          </button>
-      </div>
-    </section>
+    <!-- CUSTOMER: Pickup Code (Dynamisch generiert) -->
+    <div id="pickupCodeContainer"></div>
 
     <!-- CUSTOMER: Profile ("Mein Mittagio") - Zalando-Prinzip -->
     <section class="view customer-view" id="v-profile">
@@ -7004,112 +6959,84 @@
     history.pushState({view: 'profile', mode: mode}, '', location.pathname);
   }
   
-  // --- Pickup Code Screen ---
+  // --- Pickup Code Screen (Dynamisch) ---
   let currentPickupOrderId = null;
   
-  /**
-   * Show pickup code screen (with guard)
-   * Route: /abholcode/:orderId
-   * @param {string} orderId
-   */
   function showPickupCode(orderId){
     const order = getOrderById(orderId);
     
     // Guard: Order nicht gefunden
     if(!order){
-      // Fehler-UI: "Bestellung nicht gefunden" + CTA "Zur Entdecken"
-      const errorView = document.createElement('div');
-      errorView.className = 'panel';
-      errorView.style.padding = '40px 20px';
-      errorView.style.textAlign = 'center';
-      errorView.innerHTML = `
-        <div style="font-size:48px; margin-bottom:20px;">⚠️</div>
-        <h3 style="margin-bottom:12px;">Bestellung nicht gefunden</h3>
-        <p class="hint" style="margin-bottom:24px;">Die Bestellung konnte nicht gefunden werden.</p>
-        <button class="btn" type="button" onclick="showDiscover()" style="width:100%; min-height:44px;">
-          <i data-lucide="compass"></i> Zur Entdecken-Seite
-        </button>
-      `;
-      document.body.appendChild(errorView);
-      showView(null); // Hide all views
-      if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
+      showToast('Bestellung nicht gefunden');
+      showDiscover();
       return;
     }
     
     // GUARD: Code nur anzeigen wenn PAID
     if(order.status !== 'PAID'){
-      // Info UI: "Zahlung noch nicht bestätigt" + Button "Zurück"
-      const infoView = document.createElement('div');
-      infoView.className = 'panel';
-      infoView.style.padding = '40px 20px';
-      infoView.style.textAlign = 'center';
-      
-      const statusLabel = order.status === 'PAYMENT_PENDING' ? 'Zahlung ausstehend' :
-                         order.status === 'CREATED' ? 'Bestellung erstellt' :
-                         order.status === 'CANCELLED' ? 'Bestellung abgebrochen' :
-                         'Unbekannter Status';
-      
-      infoView.innerHTML = `
-        <div style="font-size:48px; margin-bottom:20px;">⏳</div>
-        <h3 style="margin-bottom:12px;">Zahlung noch nicht bestätigt</h3>
-        <p class="hint" style="margin-bottom:8px;">Status: ${statusLabel}</p>
-        <p class="hint" style="margin-bottom:24px;">Die Abholnummer wird nach erfolgreicher Zahlung angezeigt.</p>
-        <button class="btn" type="button" onclick="showOrders()" style="width:100%; min-height:44px;">
-          <i data-lucide="arrow-left"></i> Zurück
-        </button>
-      `;
-      document.body.appendChild(infoView);
-      showView(null); // Hide all views
-      if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
+      showToast('Zahlung noch nicht bestätigt');
+      showOrders();
       return;
     }
     
-    // PAID: Zeige Code
     currentPickupOrderId = orderId;
-    setCustomerNavActive('profile'); // Navigation auf Meins setzen
-    showView(views.pickupCode);
-    renderPickupCode(order);
+    
+    // Screen bauen
+    let container = document.getElementById('pickupCodeContainer');
+    if(!container){
+        container = document.createElement('div');
+        container.id = 'pickupCodeContainer';
+        document.body.appendChild(container);
+    }
+    
+    const code = order.pickupCode || order.code || '';
+    const formattedCode = code ? code.split('').join('  ') : '–';
+    const dishName = order.dishName || order.summary || '–';
+    
+    container.innerHTML = `
+    <section class="view active" id="v-pickup-code-dynamic" style="background:#1a1a1a; min-height:100vh; padding:0; display:flex; flex-direction:column; overflow:hidden; position:fixed; top:0; left:0; width:100%; z-index:9999;">
+      <!-- Hero-Element -->
+      <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:40px 20px; background:linear-gradient(135deg, #0d4f1c 0%, #1a1a1a 100%); position:relative; min-height:60vh;">
+        <!-- Status-Indikator -->
+        <div style="position:absolute; top:20px; right:20px; display:flex; align-items:center; gap:8px; z-index:10;">
+          <div style="width:12px; height:12px; border-radius:50%; background:#27AE60; box-shadow:0 0 12px rgba(39,174,96,0.8); animation:pulse-green-dot 2s infinite;"></div>
+          <span style="font-size:12px; font-weight:600; color:rgba(255,255,255,0.9);">Aktiv</span>
+        </div>
+        
+        <!-- Abholnummer -->
+        <div style="display:flex; justify-content:center; margin-bottom:8px;"><img src="assets/icon-abholnummer.png" alt="Abholnummer" class="concept-icon-xl" style="width:48px;height:48px; opacity:0.95;"></div>
+        <div style="font-size:clamp(4rem, 15vw, 8rem); font-weight:900; font-family:'Courier New', monospace; letter-spacing:0.1em; color:#fff; text-align:center; line-height:1.2; text-shadow:0 4px 20px rgba(0,0,0,0.5), 0 0 40px rgba(39,174,96,0.3); margin-bottom:24px; cursor:pointer;" onclick="openFullscreenCode('${esc(code)}', null);">
+          ${esc(formattedCode)}
+        </div>
+        
+        <div style="text-align:center; margin-bottom:32px;">
+          <p style="font-size:18px; font-weight:700; color:#fff; margin:0; text-shadow:0 2px 8px rgba(0,0,0,0.3);">
+            Bitte direkt beim Personal vorzeigen.
+          </p>
+        </div>
+        
+        <!-- Kontext -->
+        <div style="text-align:center; padding:16px 24px; background:rgba(255,255,255,0.1); backdrop-filter:blur(10px); border-radius:16px; border:1px solid rgba(255,255,255,0.1); max-width:400px; width:100%;">
+          <div style="font-size:14px; color:rgba(255,255,255,0.9); margin-bottom:4px;">
+            <span style="font-weight:600;">${esc(dishName)}</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Actions -->
+      <div style="padding:20px; background:#1a1a1a; border-top:1px solid rgba(255,255,255,0.1);">
+        <button class="btn ghost" type="button" onclick="document.getElementById('pickupCodeContainer').innerHTML=''; showOrders();" style="width:100%; min-height:44px; color:rgba(255,255,255,0.7);">
+          <i data-lucide="arrow-left"></i> Zurück
+        </button>
+      </div>
+    </section>
+    `;
+    
+    if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
   }
   
-  /**
-   * Render pickup code screen
-   * @param {Order} order
-   */
-  function renderPickupCode(order){
-    // Code anzeigen (nur wenn PAID - Guard bereits in showPickupCode)
-    const codeEl = document.getElementById('pickupCodeValue');
-    if(codeEl){
-      const code = order.pickupCode || order.code || '';
-      // Code mit Zwischenräumen formatieren: "A  B  1  2  C"
-      const formattedCode = code ? code.split('').join('  ') : '–';
-      codeEl.textContent = formattedCode;
-    }
-    
-    // Kontext-Infos (kompakt)
-    const dishEl = document.getElementById('pickupCodeDish');
-    if(dishEl) dishEl.textContent = order.dishName || order.summary || '–';
-    
-    const totalEl = document.getElementById('pickupCodeTotal');
-    if(totalEl){
-      // Total in EUR formatieren (cents → € mit 2 Dezimalstellen)
-      const totalCents = order.totalCents || (order.total ? Math.round(order.total * 100) : 0);
-      const totalEur = totalCents / 100;
-      totalEl.textContent = totalEur > 0 ? euro(totalEur) : '–';
-    }
-    
-    // Klick auf Code öffnet Fullscreen-Modal
-    if(codeEl && (order.pickupCode || order.code)){
-      codeEl.style.cursor = 'pointer';
-      codeEl.onclick = () => {
-        openFullscreenCode(order.pickupCode || order.code, order);
-      };
-    }
-    
-    // Icons aktualisieren
-    if(typeof lucide !== 'undefined'){
-      setTimeout(()=> lucide.createIcons(), 50);
-    }
-  }
+  // Dummy renderPickupCode (nicht mehr benötigt, da dynamisch)
+  function renderPickupCode(order){}
 
   // --- Provider views ---
   function showProviderHome(){
