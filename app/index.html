@@ -5457,13 +5457,43 @@
   function getFavPillars(dishId){ const m = load(LS.favPillars, {}); return m[dishId] || null; }
   function setFavPillars(dishId, pillars){ const m = load(LS.favPillars, {}); m[dishId] = pillars; save(LS.favPillars, m); }
   function renderPillarBars(vorOrt, abholnummer, mehrweg){
-    const c1 = vorOrt ? 'pillar-bar--green' : 'pillar-bar--inactive';
-    const t1 = vorOrt ? 'VOR ORT MÖGLICH' : 'NICHT VERFÜGBAR';
-    const c2 = abholnummer ? 'pillar-bar--yellow' : 'pillar-bar--inactive';
-    const t2 = abholnummer ? 'ABHOLNUMMER' : 'NICHT VERFÜGBAR';
-    const c3 = mehrweg ? 'pillar-bar--blue' : 'pillar-bar--inactive';
-    const t3 = mehrweg ? 'MEHRWEG VERFÜGBAR' : 'NICHT VERFÜGBAR';
-    return `<div class="pillar-bars"><div class="pillar-bar ${c1}">${t1}</div><div class="pillar-bar ${c2}">${t2}</div><div class="pillar-bar ${c3}">${t3}</div></div>`;
+    // Hochwertige, app-like Icons mit Labels (statt Balken)
+    // Design: Runde Badges mit Icon + Text darunter, horizontal angeordnet
+    
+    const styleBadge = (active, color) => `
+      display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;
+      opacity:${active ? '1' : '0.4'}; filter:${active ? 'none' : 'grayscale(100%)'};
+      transition:all 0.2s ease;
+    `;
+    
+    const styleIcon = (color) => `
+      width:36px; height:36px; border-radius:50%; background:${color}15; color:${color};
+      display:flex; align-items:center; justify-content:center; border:1px solid ${color}30;
+    `;
+    
+    const styleText = `font-size:10px; font-weight:600; color:#333; text-align:center; line-height:1.2; max-width:60px;`;
+
+    return `
+      <div style="display:flex; justify-content:center; gap:24px; padding:8px 0;">
+        <!-- Vor Ort -->
+        <div style="${styleBadge(vorOrt, '#27AE60')}">
+          <div style="${styleIcon('#27AE60')}"><i data-lucide="utensils" style="width:18px;height:18px;"></i></div>
+          <div style="${styleText}">Vor Ort</div>
+        </div>
+        
+        <!-- Abholnummer -->
+        <div style="${styleBadge(abholnummer, '#F39C12')}">
+          <div style="${styleIcon('#F39C12')}"><i data-lucide="ticket" style="width:18px;height:18px;"></i></div>
+          <div style="${styleText}">Abhol-Nummer</div>
+        </div>
+        
+        <!-- Mehrweg -->
+        <div style="${styleBadge(mehrweg, '#2980B9')}">
+          <div style="${styleIcon('#2980B9')}"><i data-lucide="leaf" style="width:18px;height:18px;"></i></div>
+          <div style="${styleText}">Mehrweg</div>
+        </div>
+      </div>
+    `;
   }
   function clearFavPillars(dishId){ const m = load(LS.favPillars, {}); delete m[dishId]; save(LS.favPillars, m); }
 
@@ -8991,6 +9021,9 @@
       barsWrap.style.cssText = 'margin-top:10px; padding:0 16px;';
       barsWrap.innerHTML = renderPillarBars(hasDineIn, orderingEnabled, hasReuse);
       body.appendChild(barsWrap);
+      
+      // Icons initialisieren (für die neuen Badges)
+      if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
       
       // Mobilitäts-Zeile: Minimalistisch, einzeilig, kleine Schrift (10-12px)
       if(data.distanceKm != null){
