@@ -3431,12 +3431,10 @@
           <div style="position:absolute; left:50%; transform:translateX(-50%); pointer-events:none;">
             <div class="brand-name" style="font-weight:900; letter-spacing:.06em; font-size:20px; color:#1a1a1a;">MITTAGIO</div>
           </div>
-          <!-- Ansicht-Toggle (rechts) -->
-          <div style="display:flex; align-items:center; flex-shrink:0; margin-left:auto;">
-            <button type="button" id="toggleDiscoverViewTopbar" aria-label="Ansicht wechseln" style="width:44px; height:44px; border-radius:10px; border:none; background:rgba(0,0,0,0.05); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s ease;" onmouseover="this.style.background='rgba(0,0,0,0.1)';" onmouseout="this.style.background='rgba(0,0,0,0.05)';">
-              <i data-lucide="grid-3x3" id="toggleDiscoverViewIcon" style="width:18px;height:18px; color:#666;"></i>
-            </button>
-          </div>
+          <!-- Ansicht-Toggle (rechts) - ENTFERNT -->
+          <!-- <div style="display:flex; align-items:center; flex-shrink:0; margin-left:auto;">
+            <button type="button" id="toggleDiscoverViewTopbar" ...> ... </button>
+          </div> -->
         </div>
       </div>
 
@@ -3545,35 +3543,45 @@
       </div>
     </section>
 
-    <section class="view" id="v-provider-billing">
-      <!-- Kosten-Info-Box (ganz oben) -->
-      <div class="panel" id="billingCostInfo" style="background:#f0f7f0; border:1px solid #4caf50; margin-bottom:12px;">
+    <!-- Provider-Billing: Modern Dark Mode -->
+    <section class="view" id="v-provider-billing" style="background:#121212; min-height:100vh; padding:20px; padding-bottom:90px;">
+      <!-- Sticky Header -->
+      <div style="background:rgba(28,28,30,0.95); backdrop-filter:blur(20px); position:sticky; top:0; z-index:50; border-bottom:1px solid rgba(255,255,255,0.08); padding:16px 20px; margin:-20px -20px 24px; display:flex; align-items:center; justify-content:center;">
+        <h1 style="margin:0; font-size:17px; font-weight:600; color:#fff;">Finanzen & Abrechnung</h1>
+        <button id="btnBillingBack" class="btn ghost" type="button" style="position:absolute; left:10px; color:#0A84FF; font-size:16px; padding:8px; display:flex; align-items:center; gap:4px;">
+          <i data-lucide="chevron-left" style="width:24px; height:24px;"></i> Zurück
+        </button>
+      </div>
+
+      <!-- Kosten-Info-Box (wenn nötig) -->
+      <div id="billingCostInfo" style="background:rgba(46, 204, 113, 0.1); border:1px solid rgba(46, 204, 113, 0.3); border-radius:12px; padding:12px 16px; margin-bottom:24px; display:none;">
         <!-- Wird dynamisch befüllt -->
       </div>
       
-      <div class="panel">
-        <h3>Abrechnungen</h3>
-        <div class="hint">Auszahlbarer Betrag</div>
-        <div style="font-size:24px;font-weight:900; color:#2ECC71;" id="billingAmount">0,00 €</div>
-        <div class="hint" id="billingLast">Letzte Auszahlung: –</div>
+      <!-- Balance Card -->
+      <div class="panel" style="background:linear-gradient(135deg, #2c3e50 0%, #000000 100%); border-radius:20px; padding:24px; margin-bottom:24px; border:1px solid rgba(255,255,255,0.1); position:relative; overflow:hidden;">
+        <div style="font-size:13px; color:rgba(255,255,255,0.6); margin-bottom:8px; text-transform:uppercase; letter-spacing:1px; font-weight:600;">Auszahlbarer Betrag</div>
+        <div style="font-size:36px; font-weight:800; color:#fff; margin-bottom:16px; font-variant-numeric: tabular-nums;" id="billingAmount">0,00 €</div>
+        <div class="hint" id="billingLast" style="color:rgba(255,255,255,0.5); font-size:13px;">Letzte Auszahlung: –</div>
+        <i data-lucide="coins" style="position:absolute; right:-10px; bottom:-10px; width:100px; height:100px; color:rgba(255,255,255,0.05); transform:rotate(-15deg);"></i>
       </div>
 
-      <div style="height:12px"></div>
-      <div class="panel">
-        <div class="hint">Filter</div>
-        <div class="answers" id="billingFilters"></div>
-        <div style="height:8px"></div>
-        <select class="field" id="billingMonth">
-          <option value="2026-01">Januar 2026</option>
-          <option value="2025-12">Dezember 2025</option>
-          <option value="2025-11">November 2025</option>
-        </select>
-        <div style="height:10px"></div>
-        <div id="billingList" class="hint">Noch keine Abrechnungen.</div>
+      <!-- Filters & List -->
+      <div class="panel" style="background:#1c1c1e; border-radius:18px; padding:20px; border:1px solid rgba(255,255,255,0.05);">
+        <div style="margin-bottom:16px;">
+          <div style="font-size:13px; color:rgba(255,255,255,0.4); margin-bottom:8px; font-weight:600;">Zeitraum & Status</div>
+          <div class="answers" id="billingFilters" style="background:#2c2c2e; padding:4px; border-radius:10px; display:flex; gap:4px; margin-bottom:12px;"></div>
+          <select class="field" id="billingMonth" style="background:#2c2c2e; border:none; color:#fff; border-radius:10px; padding:10px 14px; width:100%; font-size:15px; font-weight:500;">
+            <option value="2026-01">Januar 2026</option>
+            <option value="2025-12">Dezember 2025</option>
+            <option value="2025-11">November 2025</option>
+          </select>
+        </div>
+        
+        <div id="billingList" class="hint" style="color:rgba(255,255,255,0.4); text-align:center; padding:32px 0;">
+          Noch keine Abrechnungen vorhanden.
+        </div>
       </div>
-
-      <div style="height:12px"></div>
-      <button class="btn ghost" type="button" id="btnBillingBack">Zurück</button>
     </section>
 
     <!-- CUSTOMER: Favorites -->
@@ -4455,38 +4463,47 @@
       </div>
     </section>
 
-    <section class="view" id="v-provider-week" style="background:#323232; min-height:100vh; padding:20px; padding-bottom:90px;">
-      <!-- Header: Küchenmodus -->
-      <div style="margin-bottom:20px; text-align:center;">
-        <div style="font-size:11px; color:rgba(255,255,255,0.5); text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">Mittagio – dein digitaler Helfer</div>
-        <h1 style="margin:0; font-size:32px; font-weight:900; color:#fff; line-height:1.2;">Wochenplan</h1>
+    <!-- Provider-Wochenplan: Modern Dark Mode -->
+    <section class="view" id="v-provider-week" style="background:#121212; min-height:100vh; padding:20px; padding-bottom:90px;">
+      <!-- Sticky Header -->
+      <div style="background:rgba(28,28,30,0.95); backdrop-filter:blur(20px); position:sticky; top:0; z-index:50; border-bottom:1px solid rgba(255,255,255,0.08); padding:16px 20px; margin:-20px -20px 24px; display:flex; align-items:center; justify-content:center;">
+        <h1 style="margin:0; font-size:17px; font-weight:600; color:#fff;">Wochenplan</h1>
+        <button id="btnWeekBack" class="btn ghost" type="button" style="position:absolute; left:10px; color:#0A84FF; font-size:16px; padding:8px; display:flex; align-items:center; gap:4px;">
+          <i data-lucide="chevron-left" style="width:24px; height:24px;"></i> Zurück
+        </button>
       </div>
-      <div class="panel" style="background:#404040; border:1px solid rgba(255,255,255,0.1); box-shadow:0 4px 20px rgba(0,0,0,.2);">
+
+      <div class="panel" style="background:#1c1c1e; border-radius:18px; padding:20px; border:1px solid rgba(255,255,255,0.05); box-shadow:0 4px 24px rgba(0,0,0,0.2);">
         <h3 style="color:#fff; display:none;">Wochenplan</h3>
-        <div class="dayrow" id="weekDays" style="padding:0 0 10px; max-width:none;"></div>
+        <!-- Days Row -->
+        <div class="dayrow" id="weekDays" style="padding:0 0 16px; max-width:none; border-bottom:1px solid rgba(255,255,255,0.1); margin-bottom:16px; gap:8px;"></div>
+        
+        <!-- Content List -->
         <div id="weekList" style="text-align:center; padding:40px 20px;">
-          <div style="font-weight:600; font-size:16px; margin-bottom:8px; color:#fff;">Keine Inserate geplant</div>
-          <div class="hint" style="font-size:14px; line-height:1.4; margin-bottom:16px; color:rgba(255,255,255,0.7);">
-            Plane deine Woche und erstelle Inserate.
+          <div style="width:64px; height:64px; background:rgba(255,255,255,0.05); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 16px;">
+            <i data-lucide="calendar" style="width:32px; height:32px; color:rgba(255,255,255,0.3);"></i>
           </div>
-          <button class="btn secondary" type="button" id="btnWeekEmptyAdd" style="width:100%; min-height:44px; background:#FFD700; color:#334155; font-weight:700;">
-            Inserat erstellen
+          <div style="font-weight:600; font-size:16px; margin-bottom:8px; color:#fff;">Keine Inserate geplant</div>
+          <div class="hint" style="font-size:14px; line-height:1.4; margin-bottom:24px; color:rgba(255,255,255,0.5);">
+            Wähle einen Tag, um Gerichte vorzuplanen.
+          </div>
+          <button class="btn secondary" type="button" id="btnWeekEmptyAdd" style="width:100%; min-height:48px; background:#FFD700; color:#000; font-weight:700; border-radius:12px; border:none;">
+            Inserat hinzufügen
           </button>
         </div>
-        <div style="display:flex; gap:8px; margin-top:12px;">
-          <button class="btn secondary" type="button" id="btnWeekPdf" data-icon="print" style="display:none; flex:1; min-height:44px; background:#404040; border:1px solid rgba(255,255,255,0.12); color:#fff;">PDF-Wochenkarte</button>
-          <button class="btn secondary" type="button" id="btnWeekShare" data-icon="share-2" style="display:none; flex:1; min-height:44px; background:#FFD700; color:#334155; font-weight:700;">Wochenplan teilen</button>
+        
+        <!-- Actions -->
+        <div style="display:flex; gap:12px; margin-top:24px; border-top:1px solid rgba(255,255,255,0.1); padding-top:20px;">
+          <button class="btn secondary" type="button" id="btnWeekPdf" data-icon="print" style="display:none; flex:1; min-height:44px; background:rgba(255,255,255,0.1); border:none; color:#fff; border-radius:12px; font-size:14px; font-weight:600;">PDF</button>
+          <button class="btn secondary" type="button" id="btnWeekShare" data-icon="share-2" style="display:none; flex:1; min-height:44px; background:rgba(255,255,255,0.1); border:none; color:#fff; border-radius:12px; font-size:14px; font-weight:600;">Teilen</button>
         </div>
-        <button class="btn ghost" type="button" id="btnWeekBack" style="margin-top:12px; color:rgba(255,255,255,0.7);">Zurück</button>
       </div>
     </section>
 
-    <section class="view" id="v-provider-cookbook" style="background:#323232; min-height:100vh; padding:20px; padding-bottom:90px;">
-      <!-- Header -->
-      <div class="cookbook-header" style="margin-bottom:24px;">
-        <div style="font-size:11px; color:rgba(255,255,255,0.5); text-transform:uppercase; letter-spacing:1px; margin-bottom:4px; font-weight:700;">Dein Archiv</div>
-        <h1 style="margin:0; font-size:32px; font-weight:900; color:#fff; line-height:1.1;">Mein Kochbuch</h1>
-        <p class="cookbook-subtitle" style="margin:8px 0 0; font-size:15px; color:rgba(255,255,255,0.7); line-height:1.5;">Deine Bestseller auf Abruf. Wähle ein Gericht und stelle es in Sekunden online.</p>
+    <section class="view" id="v-provider-cookbook" style="background:#121212; min-height:100vh; padding:20px; padding-bottom:90px;">
+      <!-- Sticky Header -->
+      <div style="background:rgba(28,28,30,0.95); backdrop-filter:blur(20px); position:sticky; top:0; z-index:50; border-bottom:1px solid rgba(255,255,255,0.08); padding:16px 20px; margin:-20px -20px 24px; display:flex; align-items:center; justify-content:center;">
+        <h1 style="margin:0; font-size:17px; font-weight:600; color:#fff;">Mein Kochbuch</h1>
       </div>
       
       <!-- CTA: Gericht hinzufügen -->
@@ -4531,7 +4548,7 @@
     <section class="view" id="v-provider-profile" style="background:#121212; min-height:100vh; padding-bottom:100px;">
       
       <!-- Header (Sticky) -->
-      <div style="background:rgba(28,28,30,0.95); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); position:sticky; top:0; z-index:50; border-bottom:1px solid rgba(255,255,255,0.08); padding:16px 20px; display:flex; align-items:center; justify-content:center;">
+      <div style="background:rgba(28,28,30,0.95); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); position:sticky; top:0; z-index:50; border-bottom:1px solid rgba(255,255,255,0.08); padding:16px 20px; margin:-20px -20px 0; display:flex; align-items:center; justify-content:center;">
         <h1 style="margin:0; font-size:17px; font-weight:600; color:#fff;">Mein Profil</h1>
       </div>
 
