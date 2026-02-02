@@ -5722,8 +5722,13 @@
     card.onclick = () => openOffer(data.id);
     
     const imgSrc = data.imageUrl || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80';
-    const logoSrc = data.providerLogoData || 'app/assets/icons/icon-192.png'; // Fallback
     
+    // Heart State
+    const favorites = JSON.parse(localStorage.getItem('mittagio_favorites') || '[]');
+    const isLiked = favorites.includes(data.id);
+    const heartClass = isLiked ? 'active' : '';
+    const heartStyle = isLiked ? 'fill:#e74c3c; color:#e74c3c;' : '';
+
     // Badges für 3 Säulen
     const offerProvider = offers.find(p => p.providerId === data.providerId);
     const orderingEnabled = offerProvider && (offerProvider.orderingEnabled !== false && (data.hasPickupCode || offerProvider.hasPickupCode));
@@ -5750,18 +5755,16 @@
       <div class="ocm-image-container">
         <img src="${imgSrc}" class="ocm-image" loading="lazy" alt="${esc(data.dish)}" />
         <div class="ocm-provider-badge">
-          <!-- Logo als Bild oder Initiale -->
           ${data.providerLogoData ? `<img src="${data.providerLogoData}" class="ocm-provider-logo" />` : '<div class="ocm-provider-logo" style="display:flex;align-items:center;justify-content:center;font-size:10px;">🍽️</div>'}
           <span>${esc(data.providerName)}</span>
         </div>
-        <button class="ocm-like-btn" onclick="event.stopPropagation(); toggleLike('${data.id}', this);">
-          <i data-lucide="heart"></i>
+        <button class="ocm-like-btn ${heartClass}" onclick="event.stopPropagation(); toggleLike('${data.id}', this);">
+          <i data-lucide="heart" style="${heartStyle}"></i>
         </button>
         <div class="ocm-price-tag">${euro(data.price)}</div>
       </div>
       <div class="ocm-content">
         <h3 class="ocm-title">${esc(data.dish)}</h3>
-        <!-- Die neuen runden 3-Säulen-Badges -->
         ${renderPillarBars(hasDineIn, orderingEnabled, hasReuse)}
         
         <div class="ocm-meta">
@@ -9871,8 +9874,8 @@
     dishList.forEach(o=>{
       if(o?.id){
         try {
-          // Spezielle Favoriten-Karte mit Jiggle-Effekt, X-Button und 3 Icons unten
-          const favCard = createFavoriteGridCard(o);
+          // Moderne Karte für Favoriten nutzen
+          const favCard = createModernOfferCard(o);
           dishGrid.appendChild(favCard);
         } catch(err){
           console.error('Error rendering dish favorite:', err, o);
