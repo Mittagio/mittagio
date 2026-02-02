@@ -3419,83 +3419,8 @@
         <!-- Wird dynamisch befüllt -->
       </div>
       
-      <!-- Swipe-Stack (Mittagessen-Tinder: Polaroid + dunkler Anthrazit-Header) -->
-      <div id="discoverSwipe" style="display:none; position:relative; height:75vh; min-height:480px; max-height:600px; margin:0 auto; padding:0; padding-bottom:100px; background:#f5ebe0; width:100%; overflow:hidden;">
-        <!-- Dunkler Anthrazit-Header -->
-        <div class="swipe-header-dark" style="background:#2d2d2d; border-bottom:1px solid rgba(255,255,255,0.08);">
-          <div class="nav-bar" style="display:flex; justify-content:space-between; align-items:center; padding:12px 16px; position:relative;">
-            <div class="location" id="swipeLocationCity" style="display:flex; align-items:center; gap:6px; flex-shrink:0; font-size:14px; font-weight:600; color:#fff;">
-              <span class="icon">📍</span>
-              <span class="city">Jena</span>
-            </div>
-            <div class="brand" style="position:absolute; left:50%; transform:translateX(-50%); font-size:1.3rem; font-weight:900; letter-spacing:2px; color:#fff;">
-              MITTAGIO
-            </div>
-            <button type="button" id="btnSwipeMenu" aria-label="Menü" style="background:none; border:none; cursor:pointer; color:#fff; padding:8px; display:flex; flex-direction:column; gap:4px;" onclick="toggleSwipeMenu();">
-              <span style="width:20px; height:2px; background:#fff; border-radius:2px;"></span>
-              <span style="width:20px; height:2px; background:#fff; border-radius:2px;"></span>
-              <span style="width:20px; height:2px; background:#fff; border-radius:2px;"></span>
-            </button>
-          </div>
-        </div>
-        
-        <!-- Initial-Filter: "Worauf hast du heute Lust?" – erst Auswahl, dann Karten -->
-        <div id="swipeFilterIntro" style="text-align:center; padding:24px 16px 16px;">
-          <h2 style="font-size:22px; font-weight:900; color:#1a1a1a; margin:0 0 24px; line-height:1.3;">Worauf hast du heute Lust?</h2>
-          <div id="swipeFilterBar" style="display:flex; flex-wrap:wrap; justify-content:center; gap:12px; margin-bottom:20px;">
-            <button type="button" class="swipe-pref-btn" data-pref="fleisch" style="padding:14px 22px; border-radius:16px; border:2px solid transparent; background:#fff; font-size:15px; font-weight:700; color:#334155; cursor:pointer; transition:all 0.25s ease; box-shadow:0 2px 8px rgba(0,0,0,0.08); display:flex; align-items:center; gap:8px;"><span style="font-size:22px;">🥩</span> Fleisch</button>
-            <button type="button" class="swipe-pref-btn" data-pref="vegetarisch" style="padding:14px 22px; border-radius:16px; border:2px solid transparent; background:#fff; font-size:15px; font-weight:700; color:#334155; cursor:pointer; transition:all 0.25s ease; box-shadow:0 2px 8px rgba(0,0,0,0.08); display:flex; align-items:center; gap:8px;"><span style="font-size:22px;">🌿</span> Vegetarisch</button>
-            <button type="button" class="swipe-pref-btn" data-pref="salat" style="padding:14px 22px; border-radius:16px; border:2px solid transparent; background:#fff; font-size:15px; font-weight:700; color:#334155; cursor:pointer; transition:all 0.25s ease; box-shadow:0 2px 8px rgba(0,0,0,0.08); display:flex; align-items:center; gap:8px;"><span style="font-size:22px;">🥗</span> Salat</button>
-          </div>
-          <p style="font-size:14px; font-weight:600; color:#64748b; margin:0 0 12px;">Erreichbarkeit</p>
-          <div style="display:flex; justify-content:center; gap:12px;">
-            <button type="button" class="swipe-dist-btn" data-dist="walking" style="padding:12px 20px; border-radius:16px; border:2px solid transparent; background:#fff; font-size:15px; font-weight:700; color:#334155; cursor:pointer; transition:all 0.25s ease; box-shadow:0 2px 8px rgba(0,0,0,0.08); display:flex; align-items:center; gap:8px;"><span style="font-size:18px;">👣</span> Zu Fuss</button>
-            <button type="button" class="swipe-dist-btn" data-dist="driving" style="padding:12px 20px; border-radius:16px; border:2px solid transparent; background:#fff; font-size:15px; font-weight:700; color:#334155; cursor:pointer; transition:all 0.25s ease; box-shadow:0 2px 8px rgba(0,0,0,0.08); display:flex; align-items:center; gap:8px;"><span style="font-size:18px;">🚗</span> Auto</button>
-          </div>
-        </div>
-        
-        <!-- Stack + Actions: erst nach erster Filter-Auswahl sichtbar -->
-        <div id="swipeStackArea" style="display:none; flex:1; flex-direction:column; width:100%; min-height:0;">
-        <div id="swipeStack" style="position:relative; width:100%; flex:1; min-height:320px; display:flex; align-items:center; justify-content:center; padding:16px 0; overflow:visible;">
-          <!-- Polaroid-Karten werden hier eingefügt -->
-        </div>
-        
-        <!-- Action-Buttons: Nur X und Herz (Tinder-Style), fixiert unten, haptisches Feedback -->
-        <div id="swipeActionButtons" class="swipe-action-buttons-container" style="position:fixed; bottom:0; left:0; right:0; display:flex; justify-content:center; gap:32px; align-items:center; z-index:1000; padding:24px; background:linear-gradient(to top, rgba(232,224,214,0.95) 0%, rgba(232,224,214,0.8) 80%, transparent 100%); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);">
-          <button type="button" id="btnSwipeReject" class="swipe-action-btn btn-x" style="width:72px; height:72px; border-radius:50%; border:none; background:#E34D4D; color:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:transform 0.2s ease, box-shadow 0.2s; box-shadow:0 4px 16px rgba(227,77,77,0.45); font-size:32px; line-height:1;" aria-label="Ablehnen" onmouseover="this.style.transform='scale(1.12)'; this.style.boxShadow='0 6px 20px rgba(227,77,77,0.5)';" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 16px rgba(227,77,77,0.45)';">
-            ✕
-          </button>
-          <button type="button" id="btnSwipeLike" class="swipe-action-btn btn-heart" style="width:72px; height:72px; border-radius:50%; border:none; background:#27AE60; color:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:transform 0.2s ease, box-shadow 0.2s; box-shadow:0 4px 16px rgba(39,174,96,0.45); font-size:28px; line-height:1;" aria-label="Zustimmen" onmouseover="this.style.transform='scale(1.12)'; this.style.boxShadow='0 6px 20px rgba(39,174,96,0.5)';" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 16px rgba(39,174,96,0.45)';">
-            ❤️
-          </button>
-        </div>
-        
-        <!-- End-of-Stack Karte (wenn alle Gerichte durchgesehen wurden) -->
-        <div id="swipeEndOfStack" style="display:none; position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); text-align:center; padding:40px 24px; background:#fff; border-radius:24px; box-shadow:0 8px 32px rgba(0,0,0,0.15); max-width:320px; z-index:200;">
-          <div style="font-size:64px; margin-bottom:20px;">🍽️</div>
-          <h3 style="font-size:22px; font-weight:900; margin-bottom:12px; color:#1a1a1a;">Das war's für heute!</h3>
-          <p style="font-size:15px; color:#64748b; margin-bottom:24px; line-height:1.5;">Du hast alle Inspirationen für deine Region gesehen.</p>
-          <div style="display:flex; flex-direction:column; gap:12px;">
-            <button class="btn" type="button" id="btnSwipeReset" style="width:100%; min-height:48px; background:#FFD700; color:#1a1a1a; font-weight:800;">
-              Nochmal von vorne
-            </button>
-            <button class="btn secondary" type="button" id="btnSwipeToList" style="width:100%; min-height:48px;">
-              Alle Angebote anzeigen
-            </button>
-          </div>
-        </div>
-        
-        <div id="swipeEmpty" style="display:none; text-align:center; padding:80px 20px; position:absolute; top:50%; left:50%; transform:translate(-50%, -50%);">
-          <div style="font-size:64px; margin-bottom:20px; opacity:.6;">🍽️</div>
-          <div style="font-size:18px; font-weight:900; margin-bottom:10px; color:#333; line-height:1.4;">
-            Keine weiteren Angebote
-          </div>
-          <button class="btn secondary" type="button" onclick="switchDiscoverView('list')" style="margin-top:20px;">
-            Zur Liste wechseln
-          </button>
-        </div>
-        </div>
-      </div>
+      <!-- Swipe-Stack (Mittagessen-Tinder) - ENTFERNT -->
+
       
       <!-- Leerer Zustand (wenn keine Angebote) -->
       <div id="discoverEmpty" style="display:none; text-align:center; padding:80px 20px;">
@@ -5672,75 +5597,175 @@
     const data = normalizeOffer(o);
     const card = document.createElement('div');
     card.className = 'offer-card-modern';
-    card.onclick = () => openOffer(data.id);
+    card.style.cursor = 'pointer';
     
-    const imgSrc = data.imageUrl || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80';
-    
-    // Heart State
+    // Prüfe ob favorisiert
     const favorites = JSON.parse(localStorage.getItem('mittagio_favorites') || '[]');
-    const isLiked = favorites.includes(data.id);
-    const heartClass = isLiked ? 'active' : '';
-    const heartStyle = isLiked ? 'fill:#e74c3c; color:#e74c3c;' : '';
-
-    // Badges für 3 Säulen
-    const offerProvider = offers.find(p => p.providerId === data.providerId);
-    const orderingEnabled = offerProvider && (offerProvider.orderingEnabled !== false && (data.hasPickupCode || offerProvider.hasPickupCode));
-    const hasDineIn = offerProvider && (offerProvider.dineInPossible !== false || data.dineInPossible);
-    const hasReuse = offerProvider && (offerProvider.reuse && offerProvider.reuse.enabled);
+    const dishKey = data.id;
+    const isFavorited = favorites.includes(dishKey);
     
-    // Mobility Info
-    let mobilityHtml = '';
-    if(data.distanceKm != null){
-      const walkMin = Math.round(Number(data.distanceKm) * 12);
-      mobilityHtml = `
-        <div class="ocm-meta-item">
-          <i data-lucide="map-pin"></i>
-          <span>${Number(data.distanceKm).toFixed(1)} km</span>
-        </div>
-        <div class="ocm-meta-item">
-          <i data-lucide="footprints"></i>
-          <span>${walkMin} min</span>
-        </div>
-      `;
+    // Image Container
+    const imageContainer = document.createElement('div');
+    imageContainer.className = 'ocm-image-container';
+    
+    const img = document.createElement('img');
+    img.className = 'ocm-image';
+    img.src = data.imageUrl || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=800&q=80';
+    img.loading = 'lazy';
+    imageContainer.appendChild(img);
+    
+    // Provider Badge
+    const providerBadge = document.createElement('div');
+    providerBadge.className = 'ocm-provider-badge';
+    // Logo (Simuliert)
+    const logo = document.createElement('div');
+    logo.className = 'ocm-provider-logo';
+    if(data.providerLogoData){
+       logo.innerHTML = `<img src="${data.providerLogoData}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;" />`;
+    } else {
+       logo.innerHTML = `<span style="font-size:10px; font-weight:900; color:#666; display:flex; align-items:center; justify-content:center; width:100%; height:100%;">${(data.providerName||'A').charAt(0)}</span>`;
     }
-
-    card.innerHTML = `
-      <div class="ocm-image-container">
-        <img src="${imgSrc}" class="ocm-image" loading="lazy" alt="${esc(data.dish)}" />
-        <div class="ocm-provider-badge">
-          ${data.providerLogoData ? `<img src="${data.providerLogoData}" class="ocm-provider-logo" />` : '<div class="ocm-provider-logo" style="display:flex;align-items:center;justify-content:center;font-size:10px;">🍽️</div>'}
-          <span>${esc(data.providerName)}</span>
-        </div>
-        <button class="ocm-like-btn ${heartClass}" onclick="event.stopPropagation(); toggleLike('${data.id}', this);">
-          <i data-lucide="heart" style="${heartStyle}"></i>
-        </button>
-        <div class="ocm-price-tag">${euro(data.price)}</div>
-      </div>
-      <div class="ocm-content">
-        <h3 class="ocm-title">${esc(data.dish)}</h3>
-        ${renderPillarBars(hasDineIn, orderingEnabled, hasReuse)}
+    providerBadge.appendChild(logo);
+    
+    const pName = document.createElement('span');
+    pName.textContent = data.providerName || 'Anbieter';
+    providerBadge.appendChild(pName);
+    imageContainer.appendChild(providerBadge);
+    
+    // Herz-Button (Like)
+    const likeBtn = document.createElement('button');
+    likeBtn.className = `ocm-like-btn ${isFavorited ? 'active' : ''}`;
+    likeBtn.innerHTML = `<i data-lucide="heart" style="width:20px; height:20px; stroke-width:2.5; ${isFavorited ? 'fill:#e74c3c; color:#e74c3c;' : ''}"></i>`;
+    
+    // Favoriten-Handler
+    likeBtn.onclick = (e) => {
+        e.stopPropagation();
+        e.preventDefault();
         
-        <div class="ocm-meta">
-          ${mobilityHtml}
-          <div class="ocm-meta-item" style="margin-left:auto;">
-            <i data-lucide="clock"></i>
-            <span>${data.pickupWindow || '11:30 - 14:00'}</span>
-          </div>
-        </div>
-      </div>
-    `;
+        // Toggle State
+        const favorites = JSON.parse(localStorage.getItem('mittagio_favorites') || '[]');
+        const dishKey = data.id;
+        const index = favorites.indexOf(dishKey);
+        
+        if (index > -1) {
+            // Entfernen
+            favorites.splice(index, 1);
+            localStorage.setItem('mittagio_favorites', JSON.stringify(favorites));
+            
+            // UI Update
+            likeBtn.classList.remove('active');
+            const icon = likeBtn.querySelector('svg') || likeBtn.querySelector('i'); // Support Lucide SVG or i
+            if(icon){
+                icon.style.fill = 'none';
+                icon.style.color = 'currentColor';
+            }
+            
+            showToast('Aus Favoriten entfernt');
+        } else {
+            // Hinzufügen
+            favorites.push(dishKey);
+            localStorage.setItem('mittagio_favorites', JSON.stringify(favorites));
+            if(typeof dishFavs !== 'undefined' && !dishFavs.has(dishKey)){ dishFavs.add(dishKey); save(LS.dishFavs, Array.from(dishFavs)); }
+            
+            // UI Update
+            likeBtn.classList.add('active');
+            const icon = likeBtn.querySelector('svg') || likeBtn.querySelector('i');
+            if(icon){
+                icon.style.fill = '#e74c3c';
+                icon.style.color = '#e74c3c';
+            }
+            
+            if(typeof triggerFavoritesIconBounce === 'function') triggerFavoritesIconBounce();
+            showToast('Zu Favoriten hinzugefügt ❤️');
+            if(navigator.vibrate) navigator.vibrate(10);
+            
+            // Speichere 3-Säulen Status
+            const offerProvider = offers.find(p => p.providerId === data.providerId);
+            const vorOrt = !!(offerProvider && (offerProvider.dineInPossible !== false || data.dineInPossible));
+            const abholnummer = !!(offerProvider && (offerProvider.orderingEnabled !== false && (data.hasPickupCode || offerProvider.hasPickupCode)));
+            const mehrweg = !!(offerProvider && (offerProvider.reuseEnabled || offerProvider.reuse));
+            if(typeof setFavPillars === 'function') setFavPillars(dishKey, { vorOrt, abholnummer, mehrweg });
+        }
+    };
+    
+    imageContainer.appendChild(likeBtn);
+    
+    // Price Tag
+    const priceTag = document.createElement('div');
+    priceTag.className = 'ocm-price-tag';
+    priceTag.textContent = euro(data.price);
+    imageContainer.appendChild(priceTag);
+    
+    card.appendChild(imageContainer);
+    
+    // Content
+    const body = document.createElement('div');
+    body.className = 'ocm-content';
+    
+    const title = document.createElement('h3');
+    title.className = 'ocm-title';
+    title.textContent = data.dish || 'Gericht';
+    body.appendChild(title);
+    
+    // 3 Säulen als High-Contrast-Balken
+    const stored = typeof getFavPillars === 'function' ? getFavPillars(dishKey) : null;
+    const vorOrt = stored ? !!stored.vorOrt : (() => { const p = offers.find(x => x.providerId === data.providerId); return !!(p && (p.dineInPossible !== false || data.dineInPossible)); })();
+    const abholnummer = stored ? !!stored.abholnummer : (() => { const p = offers.find(x => x.providerId === data.providerId); return !!(p && (p.orderingEnabled !== false && (data.hasPickupCode || p.hasPickupCode))); })();
+    const mehrweg = stored ? !!stored.mehrweg : (() => { const p = offers.find(x => x.providerId === data.providerId); return !!(p && (p.reuse && p.reuse.enabled)); })();
+    
+    const barsWrap = document.createElement('div');
+    barsWrap.style.cssText = 'margin-top:8px; padding:0 12px;';
+    barsWrap.innerHTML = renderPillarBars(vorOrt, abholnummer, mehrweg);
+    body.appendChild(barsWrap);
+    
+    // Mobilitäts-Leiste ganz unten
+    if(data.distanceKm != null){
+      const walkingMinutes = Math.round(Number(data.distanceKm) * 12);
+      const carMinutes = Math.round(Number(data.distanceKm) * 1.2);
+      const walkingMeters = Math.round(Number(data.distanceKm) * 1000);
+      const distanceText = walkingMeters < 1000 ? `${walkingMeters}m` : `${Number(data.distanceKm).toFixed(1)}km`;
+      const mobilityRow = document.createElement('div');
+      mobilityRow.style.cssText = 'margin-top:10px; padding:8px 12px; font-size:11px; color:#666; font-weight:500; display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap;';
+      mobilityRow.innerHTML = `<span>🚶 ${walkingMinutes} min</span><span style="color:#999;">|</span><span>🚗 ${carMinutes} min</span><span style="color:#999;">|</span><span>📍 ${distanceText}</span>`;
+      body.appendChild(mobilityRow);
+    }
+    
+    // Gelber CTA: "In die Mittagsbox" (nur wenn Abholnummer)
+    const ctaWrap = document.createElement('div');
+    ctaWrap.style.cssText = 'padding:0 16px 16px;';
+    const ctaBtn = document.createElement('button');
+    ctaBtn.type = 'button';
+    ctaBtn.className = 'btn';
+    ctaBtn.style.cssText = 'width:100%; min-height:44px; border-radius:12px; background:#FFD700; color:#1a1a1a; font-weight:800; font-size:14px; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; transition:transform 0.2s, box-shadow 0.2s;';
+    ctaBtn.innerHTML = '🧺 In die Mittagsbox';
+    ctaBtn.onmouseover = () => { ctaBtn.style.transform = 'scale(1.02)'; ctaBtn.style.boxShadow = '0 4px 12px rgba(255,215,0,0.4)'; };
+    ctaBtn.onmouseout = () => { ctaBtn.style.transform = 'scale(1)'; ctaBtn.style.boxShadow = 'none'; };
+    ctaBtn.onclick = (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      if(!abholnummer){ showToast('Keine Abholnummer – nur ansehen.', 2000); return; }
+      if(!addToCart(o)){ showToast('Fehler beim Hinzufügen.', 2000); return; }
+      triggerHapticFeedback([20]);
+      if(typeof triggerCartIconGlow === 'function') triggerCartIconGlow();
+      showToast('In die Mittagsbox gelegt 🧺', 1500);
+      if(typeof updateHeaderBasket === 'function') updateHeaderBasket();
+    };
+    if(!abholnummer){ ctaBtn.style.background = '#e5e5e5'; ctaBtn.style.color = '#888'; ctaBtn.style.cursor = 'not-allowed'; ctaBtn.disabled = true; }
+    ctaWrap.appendChild(ctaBtn);
+    body.appendChild(ctaWrap);
+    
+    card.appendChild(body);
+    
+    card.onclick = (e) => {
+      if(e.target.closest('button')) return;
+      openOffer(data.id);
+    };
     
     return card;
   }
   
-  window.toggleLike = function(id, btn){
-    // Mock Like
-    btn.classList.toggle('active');
-    btn.querySelector('i').style.fill = btn.classList.contains('active') ? '#e74c3c' : 'none';
-    btn.querySelector('i').style.color = btn.classList.contains('active') ? '#e74c3c' : '#333';
-    triggerHapticFeedback([10]);
-    showToast('Gespeichert ❤️');
-  };
+  // Legacy toggleLike entfernt (in createModernOfferCard integriert)
+
 
   // --- Order Store (localStorage MVP) - MUSS VOR VERWENDUNG DEFINIERT SEIN ---
   /**
