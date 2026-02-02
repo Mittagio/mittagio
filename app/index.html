@@ -3547,57 +3547,55 @@
 
     <!-- CUSTOMER: Favorites -->
     <section class="view customer-view" id="v-fav">
-      <div class="panel">
-        <!-- Heute-Fokus Header: Schlank, statisch, Fokus auf heute -->
-        <div id="favHeader" style="padding:24px 24px 16px; border-bottom:1px solid rgba(0,0,0,0.06); margin-bottom:20px;">
-          <h1 style="font-size:28px; font-weight:900; margin:0; color:#1a1a1a; font-family:'Inter', 'Montserrat', sans-serif; line-height:1.2; letter-spacing:-0.5px;">Dein Menü für heute</h1>
+      <div style="padding-bottom:100px;">
+        <!-- Modern Header -->
+        <div id="favHeader" style="padding:24px 20px 16px; background:rgba(255,255,255,0.95); backdrop-filter:blur(10px); position:sticky; top:0; z-index:80; border-bottom:1px solid rgba(0,0,0,0.05);">
+          <h1 style="font-size:28px; font-weight:900; margin:0; color:#1a1a1a; letter-spacing:-0.5px;">Meine Lieblinge</h1>
+          <p style="margin:4px 0 0; font-size:14px; color:#666; font-weight:500;">Hier schlägt dein Herz höher ❤️</p>
         </div>
         
-        <!-- Day-Switcher ENTFERNT: Fokus zu 100% auf dem aktuellen Tag -->
-        
-        <!-- Empty State (wenn beide Listen leer) -->
-        <div id="favEmptyState" style="display:none; flex-direction:column; align-items:center; text-align:center; padding:60px 20px; gap:24px;">
-          <div style="width:120px; height:120px; background:linear-gradient(135deg, rgba(255,215,0,0.1) 0%, rgba(255,184,0,0.15) 100%); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:64px; flex-shrink:0;">
-            🍴
+        <!-- Empty State -->
+        <div id="favEmptyState" style="display:none; flex-direction:column; align-items:center; text-align:center; padding:60px 20px;">
+          <div style="width:140px; height:140px; margin-bottom:24px; background:linear-gradient(135deg, #FFF5F5 0%, #FFE0E0 100%); border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 10px 30px rgba(231,76,60,0.15);">
+            <i data-lucide="heart" style="width:64px; height:64px; color:#E34D4D; fill:#E34D4D;"></i>
           </div>
-          <div style="display:flex; flex-direction:column; align-items:center; gap:12px; max-width:100%;">
-            <h3 style="font-size:22px; font-weight:900; margin:0; color:#111; font-family:'Inter', 'Montserrat', sans-serif; line-height:1.3;">Noch keine Favoriten</h3>
-            <p style="font-size:15px; color:#666; margin:0; line-height:1.6; max-width:320px; padding:0 12px;">Zeit, dich zu verlieben! Entdecke leckere Gerichte und markiere deine Favoriten.</p>
-          </div>
-          <button class="btn-primary" type="button" onclick="showDiscover();" style="width:100%; max-width:280px; min-height:52px; font-size:16px; font-weight:700; margin-top:8px;">
-            <i data-lucide="compass" style="width:20px;height:20px;"></i> <span>Jetzt Gerichte entdecken</span>
+          <h3 style="font-size:22px; font-weight:900; margin:0 0 12px; color:#1a1a1a;">Noch keine Favoriten?</h3>
+          <p style="font-size:16px; color:#666; margin:0 0 32px; line-height:1.6; max-width:300px;">
+            Markiere Gerichte und Anbieter mit einem Herz, um sie hier wiederzufinden.
+          </p>
+          <button class="btn-primary" type="button" onclick="showDiscover();" style="width:100%; max-width:260px; min-height:56px; border-radius:16px; font-size:16px; font-weight:700; box-shadow:0 8px 20px rgba(0,0,0,0.1);">
+            Jetzt entdecken
           </button>
         </div>
         
-        <div id="favContent" style="padding:0 24px 24px;">
-          <!-- Gericht-Favoriten: 2x2 Grid (Ausschlussspiel) -->
-          <div class="section-title" id="sectionDishes" style="display:none; margin-bottom:16px; font-size:18px; font-weight:700; color:#1a1a1a;">Gericht-Favoriten</div>
-          <!-- Grid-Layout: Exakt 2x2 Grid für Favoriten -->
-          <div id="favDishes" style="display:grid; grid-template-columns:repeat(2, 1fr); gap:12px; padding:0;"></div>
-          <div class="hint" id="emptyFavDishes" style="display:none; text-align:center; padding:32px;">
-            <div style="width:80px; height:80px; margin:0 auto 16px; background:rgba(0,0,0,0.03); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:40px; opacity:0.6;">🍴</div>
-            <p style="font-size:14px; color:#666; margin:0;">Noch keine Gericht-Favoriten</p>
+        <div id="favContent" style="padding:20px; display:none;">
+          <!-- 1. Lieblings-Gerichte (Priorität) -->
+          <div id="sectionDishesWrapper">
+            <div class="section-title" id="sectionDishes" style="margin-bottom:16px; font-size:18px; font-weight:800; color:#1a1a1a; display:flex; align-items:center; gap:8px;">
+              <span>Lieblings-Gerichte</span>
+              <span style="font-size:11px; background:#f0f0f0; padding:4px 8px; border-radius:10px; color:#666; font-weight:600; text-transform:uppercase;">Heute verfügbar</span>
+            </div>
+            <!-- Liste statt Grid für moderne Karten -->
+            <div id="favDishes" style="display:flex; flex-direction:column; gap:24px;"></div>
+            <div class="hint" id="emptyFavDishes" style="display:none; text-align:center; padding:24px; background:#f9f9f9; border-radius:16px; margin-bottom:20px;">
+              <p style="font-size:14px; color:#666; margin:0;">Heute sind keine deiner Lieblingsgerichte verfügbar.</p>
+            </div>
           </div>
           
-          <!-- Trennlinie: Optische Trennung zwischen Grid und Anbieter-Sektion -->
-          <div id="favProviderSeparator" style="display:none; margin:32px 0 20px; border-top:1px solid rgba(0,0,0,0.08);"></div>
+          <!-- Trenner -->
+          <div id="favProviderSeparator" style="height:32px; border-bottom:1px solid rgba(0,0,0,0.05); margin-bottom:32px;"></div>
           
-          <!-- Anbieter-Favoriten: "Deine Lieblings-Anbieter heute" -->
-          <div id="sectionProvidersWrapper" style="display:none;">
-            <div class="section-title" id="sectionProviders" style="margin-bottom:16px; font-size:18px; font-weight:700; color:#1a1a1a;">Deine Lieblings-Anbieter heute</div>
+          <!-- 2. Lieblings-Orte (Anbieter) -->
+          <div id="sectionProvidersWrapper">
+            <div class="section-title" id="sectionProviders" style="margin-bottom:16px; font-size:18px; font-weight:800; color:#1a1a1a;">Lieblings-Orte</div>
             <div id="favProviders" style="display:flex; flex-direction:column; gap:12px;"></div>
-            <div class="hint" id="emptyFavProviders" style="display:none; text-align:center; padding:32px;">
-              <div style="width:80px; height:80px; margin:0 auto 16px; background:rgba(0,0,0,0.03); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:40px; opacity:0.6;">🍽️</div>
-              <p style="font-size:14px; color:#666; margin:0;">Noch keine Anbieter-Favoriten</p>
-            </div>
+            <div class="hint" id="emptyFavProviders" style="display:none;"></div>
           </div>
           
-          <!-- Vorschau auf die nächsten Tage (erscheint beim Scrollen) -->
-          <div id="favUpcomingPreview" style="display:none; margin-top:40px; padding-top:32px; border-top:1px solid rgba(0,0,0,0.08); opacity:0; transition:opacity 0.4s ease-in-out;">
-            <div class="section-title" style="margin-bottom:16px; font-size:18px; font-weight:700; color:#1a1a1a;">Vorschau auf die nächsten Tage</div>
-            <div id="favUpcomingDays" style="display:flex; flex-direction:column; gap:16px;">
-              <!-- Wird dynamisch befüllt -->
-            </div>
+          <!-- Upcoming -->
+          <div id="favUpcomingPreview" style="margin-top:40px; display:none;">
+            <div class="section-title" style="margin-bottom:16px; font-size:18px; font-weight:800; color:#1a1a1a;">Vorschau</div>
+            <div id="favUpcomingDays" style="display:flex; flex-direction:column; gap:16px;"></div>
           </div>
         </div>
       </div>
