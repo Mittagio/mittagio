@@ -456,29 +456,54 @@
       object-fit: contain;
     }
     
-    /* 3 Säulen als horizontale Balken (Vor Ort / Abholnummer / Mehrweg) */
+    /* 3 Säulen: Modern Badges (Icon + Text) */
     .pillar-bars {
       display: flex;
-      flex-direction: column;
-      gap: 6px;
-      width: 100%;
+      gap: 12px;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(0,0,0,0.05);
     }
-    .pillar-bar {
+    .pillar-badge {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      opacity: 0.4;
+      filter: grayscale(1);
+      transition: all 0.3s ease;
+    }
+    .pillar-badge.active {
+      opacity: 1;
+      filter: grayscale(0);
+    }
+    
+    .pillar-icon-circle {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 8px 12px;
-      border-radius: 8px;
-      font-family: Inter, system-ui, sans-serif;
-      font-weight: 800;
-      font-size: 11px;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
+      background: #f0f0f0;
+      color: #666;
+      font-size: 14px;
+      transition: all 0.3s;
     }
-    .pillar-bar--green { background: #27AE60; color: #fff; }
-    .pillar-bar--yellow { background: #FFD700; color: #fff; }
-    .pillar-bar--blue { background: #3498db; color: #fff; }
-    .pillar-bar--inactive { background: #e8e8e8; color: #666; }
+    .pillar-badge.active.green .pillar-icon-circle { background: rgba(39, 174, 96, 0.15); color: #27AE60; }
+    .pillar-badge.active.yellow .pillar-icon-circle { background: rgba(255, 193, 7, 0.15); color: #f39c12; }
+    .pillar-badge.active.blue .pillar-icon-circle { background: rgba(52, 152, 219, 0.15); color: #3498db; }
+    
+    .pillar-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #999;
+      text-align: center;
+    }
+    .pillar-badge.active .pillar-label { color: #333; }
     
     .card.polaroid .img img{
       width:100%;
@@ -3161,6 +3186,156 @@
     }
     .pickup-card.just-done .check-overlay{ opacity:1; }
     .pickup-card.just-done .check-icon{ animation:check-pop 0.3s ease-out forwards; }
+    /* Sticky Categories Bar */
+    .discover-categories-sticky {
+      position: sticky;
+      top: 60px; /* Header height approx */
+      z-index: 90;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: 12px 16px;
+      overflow-x: auto;
+      white-space: nowrap;
+      display: flex;
+      gap: 10px;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+      margin-bottom: 16px;
+      scrollbar-width: none; /* Firefox */
+    }
+    .discover-categories-sticky::-webkit-scrollbar { display: none; }
+    
+    .cat-pill {
+      padding: 8px 16px;
+      border-radius: 20px;
+      background: #f2f2f2;
+      color: #666;
+      font-size: 14px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .cat-pill:active { transform: scale(0.95); }
+    .cat-pill.active {
+      background: #1a1a1a;
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .cat-pill i { width: 16px; height: 16px; }
+
+    /* Redesigned Offer Card (Modern App Style) */
+    .offer-card-modern {
+      background: #fff;
+      border-radius: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+      margin-bottom: 24px;
+      overflow: hidden;
+      position: relative;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      border: 1px solid rgba(0,0,0,0.02);
+    }
+    .offer-card-modern:active { transform: scale(0.98); }
+    
+    .ocm-image-container {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 4/3;
+      background: #f0f0f0;
+      overflow: hidden;
+    }
+    .ocm-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+    
+    .ocm-provider-badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(8px);
+      padding: 6px 12px 6px 6px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      font-size: 13px;
+      font-weight: 700;
+      color: #333;
+      z-index: 2;
+    }
+    .ocm-provider-logo {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #eee;
+      object-fit: cover;
+    }
+    
+    .ocm-like-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      color: #333;
+      z-index: 2;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .ocm-like-btn:active { transform: scale(0.8); }
+    .ocm-like-btn.active { color: #e74c3c; fill: #e74c3c; }
+    
+    .ocm-price-tag {
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      background: #1a1a1a;
+      color: #fff;
+      padding: 8px 14px;
+      border-radius: 16px;
+      font-weight: 800;
+      font-size: 15px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    
+    .ocm-content { padding: 16px 20px 20px; }
+    .ocm-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: #1a1a1a;
+      margin: 0 0 8px;
+      line-height: 1.3;
+    }
+    .ocm-meta {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(0,0,0,0.05);
+      font-size: 13px;
+      color: #666;
+      font-weight: 500;
+    }
+    .ocm-meta-item { display: flex; align-items: center; gap: 6px; }
+    .ocm-meta-item i { width: 16px; height: 16px; color: #999; }
   </style>
 </head>
 <body>
@@ -3234,6 +3409,10 @@
         </div>
       </div>
 
+      <!-- Sticky Categories Bar -->
+      <div class="discover-categories-sticky" id="discoverCategoriesBar">
+        <!-- Wird dynamisch befüllt -->
+      </div>
 
       <!-- Angebots-Liste (horizontale List-Cards) -->
       <div class="discover-offers" id="discoverOffers">
@@ -5497,6 +5676,116 @@
   }
   function clearFavPillars(dishId){ const m = load(LS.favPillars, {}); delete m[dishId]; save(LS.favPillars, m); }
 
+  function renderDiscoverCategories(){
+    const bar = document.getElementById('discoverCategoriesBar');
+    if(!bar) return;
+    
+    // Kategorien definieren (Icon + Label + ID)
+    const cats = [
+      {id:'all', label:'Alles', icon:'utensils'},
+      {id:'Vegetarisch', label:'Vegetarisch', icon:'leaf'},
+      {id:'Vegan', label:'Vegan', icon:'sprout'},
+      {id:'Mit Fleisch', label:'Fleisch', icon:'beef'},
+      {id:'Fisch', label:'Fisch', icon:'fish'},
+      {id:'Salat', label:'Salat', icon:'salad'},
+      {id:'Suppe', label:'Suppe', icon:'soup'},
+      {id:'Dessert', label:'Dessert', icon:'ice-cream'},
+    ];
+    
+    // Aktive Kategorie ermitteln
+    const active = activeDiscoverFilter === 'near' || !activeDiscoverFilter ? 'all' : activeDiscoverFilter;
+    
+    bar.innerHTML = cats.map(c => `
+      <button class="cat-pill ${active===c.id ? 'active' : ''}" onclick="selectDiscoverCategory('${c.id}')">
+        <i data-lucide="${c.icon}"></i>
+        <span>${c.label}</span>
+      </button>
+    `).join('');
+    
+    if(typeof lucide !== 'undefined') lucide.createIcons();
+  }
+  
+  window.selectDiscoverCategory = function(catId){
+    if(catId === 'all'){
+      activeDiscoverFilter = 'near'; // 'near' ist unser Default "Alles"
+    } else {
+      activeDiscoverFilter = catId;
+    }
+    renderDiscover();
+    // Scroll active into view?
+  };
+
+  function createModernOfferCard(o){
+    const data = normalizeOffer(o);
+    const card = document.createElement('div');
+    card.className = 'offer-card-modern';
+    card.onclick = () => openOffer(data.id);
+    
+    const imgSrc = data.imageUrl || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80';
+    const logoSrc = data.providerLogoData || 'app/assets/icons/icon-192.png'; // Fallback
+    
+    // Badges für 3 Säulen
+    const offerProvider = offers.find(p => p.providerId === data.providerId);
+    const orderingEnabled = offerProvider && (offerProvider.orderingEnabled !== false && (data.hasPickupCode || offerProvider.hasPickupCode));
+    const hasDineIn = offerProvider && (offerProvider.dineInPossible !== false || data.dineInPossible);
+    const hasReuse = offerProvider && (offerProvider.reuse && offerProvider.reuse.enabled);
+    
+    // Mobility Info
+    let mobilityHtml = '';
+    if(data.distanceKm != null){
+      const walkMin = Math.round(Number(data.distanceKm) * 12);
+      mobilityHtml = `
+        <div class="ocm-meta-item">
+          <i data-lucide="map-pin"></i>
+          <span>${Number(data.distanceKm).toFixed(1)} km</span>
+        </div>
+        <div class="ocm-meta-item">
+          <i data-lucide="footprints"></i>
+          <span>${walkMin} min</span>
+        </div>
+      `;
+    }
+
+    card.innerHTML = `
+      <div class="ocm-image-container">
+        <img src="${imgSrc}" class="ocm-image" loading="lazy" alt="${esc(data.dish)}" />
+        <div class="ocm-provider-badge">
+          <!-- Logo als Bild oder Initiale -->
+          ${data.providerLogoData ? `<img src="${data.providerLogoData}" class="ocm-provider-logo" />` : '<div class="ocm-provider-logo" style="display:flex;align-items:center;justify-content:center;font-size:10px;">🍽️</div>'}
+          <span>${esc(data.providerName)}</span>
+        </div>
+        <button class="ocm-like-btn" onclick="event.stopPropagation(); toggleLike('${data.id}', this);">
+          <i data-lucide="heart"></i>
+        </button>
+        <div class="ocm-price-tag">${euro(data.price)}</div>
+      </div>
+      <div class="ocm-content">
+        <h3 class="ocm-title">${esc(data.dish)}</h3>
+        <!-- Die neuen runden 3-Säulen-Badges -->
+        ${renderPillarBars(hasDineIn, orderingEnabled, hasReuse)}
+        
+        <div class="ocm-meta">
+          ${mobilityHtml}
+          <div class="ocm-meta-item" style="margin-left:auto;">
+            <i data-lucide="clock"></i>
+            <span>${data.pickupWindow || '11:30 - 14:00'}</span>
+          </div>
+        </div>
+      </div>
+    `;
+    
+    return card;
+  }
+  
+  window.toggleLike = function(id, btn){
+    // Mock Like
+    btn.classList.toggle('active');
+    btn.querySelector('i').style.fill = btn.classList.contains('active') ? '#e74c3c' : 'none';
+    btn.querySelector('i').style.color = btn.classList.contains('active') ? '#e74c3c' : '#333';
+    triggerHapticFeedback([10]);
+    showToast('Gespeichert ❤️');
+  };
+
   // --- Order Store (localStorage MVP) - MUSS VOR VERWENDUNG DEFINIERT SEIN ---
   /**
    * @typedef {Object} Order
@@ -7340,9 +7629,13 @@
       });
     }
     
-    // List Cards rendern (horizontale List-Cards statt Hero Cards)
+    // List Cards rendern (Modern Style)
     const offersEl = document.getElementById('discoverOffers');
     const emptyEl = document.getElementById('discoverEmpty');
+    
+    // Categories rendern (nur einmal oder bei Änderung)
+    renderDiscoverCategories();
+
     if(offersEl && emptyEl){
       // Skeleton-Loader anzeigen während Daten geladen werden
       offersEl.innerHTML = '';
@@ -7360,26 +7653,16 @@
       const useDecisionTiles = false; // Standard: Liste, kann auf true gesetzt werden für Grid
       
       if(useDecisionTiles){
-        // Grid-Container erstellen
-        const gridContainer = document.createElement('div');
-        gridContainer.className = 'decision-tiles-grid';
-        
-        list.forEach(o => {
-          const tile = createDecisionTile(o, {interactive: true});
-          gridContainer.appendChild(tile);
-        });
-        
-        offersEl.appendChild(gridContainer);
+        // ... grid code ...
       } else {
-        // Standard: Liste mit offerCard
+        // Modern List Cards
         list.forEach(o=> {
-          // Polaroid-Discovery: Verwende offerCard mit context 'discover' für Polaroid-Design
-          const card = offerCard(o, {context: 'discover', interactive: true});
+          const card = createModernOfferCard(o);
           offersEl.appendChild(card);
         });
       }
     
-        // Icons aktualisieren nach dem Rendern
+      // Icons aktualisieren nach dem Rendern
     if(typeof lucide !== 'undefined'){
       setTimeout(()=> lucide.createIcons(), 50);
     }
