@@ -4149,10 +4149,10 @@
     </section>
 
     <section class="view" id="v-provider-onboarding-signup">
-      <div class="panel" style="padding:20px;">
+      <div class="panel" style="padding:20px; padding-bottom:120px;">
         <h2 style="font-size:20px; font-weight:900; margin-bottom:8px;">Speichern & weitermachen</h2>
-        <p style="font-size:14px; line-height:1.5; margin-bottom:24px; color:var(--muted);">
-          Erstelle ein Konto, um dein Gericht zu speichern und jederzeit weiterzumachen.
+        <p style="font-size:14px; line-height:1.5; margin-bottom:24px; color:rgba(0,0,0,0.5);">
+          Erstelle ein Konto, um dein Gericht zu speichern.
         </p>
         
         <div style="margin-bottom:16px;">
@@ -4169,7 +4169,7 @@
           Konto erstellen
         </button>
         <button class="btn secondary" type="button" id="btnOnboardingSignupLater" style="width:100%; min-height:44px;">
-          Später
+          Ich habe schon ein Konto
         </button>
         
         <div style="margin-top:16px; font-size:12px; color:var(--muted); text-align:center;">
@@ -13959,8 +13959,14 @@
     };
     save(LS.onboardingDraft, onboardingDraftDish);
     
-    // Check if user wants to leave
-    showOnboardingSignup();
+    // Check where to go
+    if(provider.loggedIn){
+      // Wenn eingeloggt: Abkürzung zur Vorschau (überspringe Account & Business)
+      showOnboardingPreview(null);
+    } else {
+      // Wenn neu: Konto erstellen
+      showOnboardingSignup();
+    }
   };
 
   // --- AUTO-SAVE / CACHE FOR ONBOARDING STEP 1 ---
@@ -14039,6 +14045,15 @@
     // Keep draft, go to login
     showView(views.providerLogin);
   };
+
+  // --- AUTO-SAVE STEP 2 ---
+  const elEmail = document.getElementById('onboardingEmail');
+  if(elEmail){
+    const cachedEmail = localStorage.getItem('cache_onboardingEmail');
+    if(cachedEmail) elEmail.value = cachedEmail;
+    elEmail.addEventListener('input', () => localStorage.setItem('cache_onboardingEmail', elEmail.value));
+  }
+  // -----------------------
   
   const btnOnboardingBusinessBack = document.getElementById('btnOnboardingBusinessBack');
   if(btnOnboardingBusinessBack) btnOnboardingBusinessBack.onclick = () => showOnboardingSignup();
@@ -14103,10 +14118,38 @@
   
   const btnOnboardingPreviewDashboard = document.getElementById('btnOnboardingPreviewDashboard');
   if(btnOnboardingPreviewDashboard) btnOnboardingPreviewDashboard.onclick = () => {
+    // Falls noch ein Entwurf da ist (z.B. weil wir eingeloggt waren und Account-Erstellung übersprungen haben), jetzt speichern!
+    if(onboardingDraftDish){
+      const newDish = {
+        id: cryptoId(),
+        providerId: providerId(),
+        dish: onboardingDraftDish.dishName,
+        category: onboardingDraftDish.dishDiet || 'Vegetarisch',
+        description: onboardingDraftDish.dishDesc || '',
+        price: parseFloat(onboardingDraftDish.dishPrice.replace(',', '.')) || 0,
+        pickupWindow: `${onboardingDraftDish.pickupTimeStart} – ${onboardingDraftDish.pickupTimeEnd}`,
+        photoData: onboardingDraftDish.photoData || '',
+        hasPickupCode: false,
+        dineInPossible: false,
+        allergens: [],
+        extras: [],
+        reuse: {enabled: false, deposit: 0},
+        createdAt: Date.now(),
+        lastUsed: null
+      };
+      cookbook.push(newDish);
+      save(LS.cookbook, cookbook);
+      
+      // Clear draft
+      onboardingDraftDish = null;
+      save(LS.onboardingDraft, null);
+      ['onboardingDishName', 'onboardingDishPrice', 'onboardingDishDesc', 'onboardingPickupTimeStart', 'onboardingPickupTimeEnd'].forEach(id => localStorage.removeItem('cache_' + id));
+    }
+
     provider.onboardingCompleted = true;
     save(LS.provider, provider);
-    // Direkt ins Kochbuch führen (erstes Gericht sehen)
-    showProviderCookbook();
+    // Zurück zum Dashboard
+    showProviderHome();
   };
   
   const btnOnboardingPreviewEdit = document.getElementById('btnOnboardingPreviewEdit');
