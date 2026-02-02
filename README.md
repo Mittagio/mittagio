@@ -1,5 +1,7 @@
 # Mittagio
 
+[![Deploy GitHub Pages](https://github.com/Mittagio/mittagio/actions/workflows/pages.yml/badge.svg)](https://github.com/Mittagio/mittagio/actions/workflows/pages.yml)
+
 Digitale Plattform für strukturierte Mittagstische.
 Dieses Repository enthält:
 - Produkt- & UX-Konzept (docs/)
