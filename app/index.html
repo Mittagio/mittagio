@@ -4040,6 +4040,41 @@
           <label style="display:block; font-size:14px; font-weight:600; margin-bottom:8px;">Preis (€) *</label>
           <input class="field" type="number" id="onboardingDishPrice" placeholder="z.B. 8,50" step="0.10" inputmode="decimal" required />
         </div>
+
+        <div style="margin-bottom:16px;">
+          <label style="display:block; font-size:14px; font-weight:600; margin-bottom:8px;">Kategorie *</label>
+          <div style="display:flex; gap:8px;">
+            <label class="radio-pill">
+              <input type="radio" name="dishDiet" value="Fleisch" required>
+              <span>Fleisch</span>
+            </label>
+            <label class="radio-pill">
+              <input type="radio" name="dishDiet" value="Vegetarisch">
+              <span>Veggie</span>
+            </label>
+            <label class="radio-pill">
+              <input type="radio" name="dishDiet" value="Vegan">
+              <span>Vegan</span>
+            </label>
+          </div>
+          <style>
+            .radio-pill input { display:none; }
+            .radio-pill span {
+              display:inline-block; padding:8px 16px; border-radius:20px;
+              background:#f0f0f0; color:#333; font-weight:600; font-size:14px;
+              border:1px solid transparent; cursor:pointer; transition:all 0.2s;
+            }
+            .radio-pill input:checked + span {
+              background:#FFD700; color:#000; border-color:#e6c200;
+              box-shadow:0 2px 4px rgba(0,0,0,0.1);
+            }
+          </style>
+        </div>
+
+        <div style="margin-bottom:16px;">
+          <label style="display:block; font-size:14px; font-weight:600; margin-bottom:8px;">Beschreibung <span style="font-weight:400; color:#666;">(optional)</span></label>
+          <textarea class="field" id="onboardingDishDesc" rows="3" placeholder="z.B. mit frischen Kräutern und Croutons" style="resize:none;"></textarea>
+        </div>
         
         <div style="display:flex; gap:12px; margin-bottom:16px;">
           <div style="flex:1;">
@@ -13902,11 +13937,13 @@
   if(btnOnboardingFirstDishNext) btnOnboardingFirstDishNext.onclick = () => {
     const dishName = document.getElementById('onboardingDishName')?.value.trim();
     const dishPrice = document.getElementById('onboardingDishPrice')?.value.trim();
+    const dishDiet = document.querySelector('input[name="dishDiet"]:checked')?.value;
+    const dishDesc = document.getElementById('onboardingDishDesc')?.value.trim();
     const timeStart = document.getElementById('onboardingPickupTimeStart')?.value;
     const timeEnd = document.getElementById('onboardingPickupTimeEnd')?.value;
     
-    if(!dishName || !dishPrice || !timeStart || !timeEnd){
-      alert('Bitte fülle alle Pflichtfelder aus.');
+    if(!dishName || !dishPrice || !timeStart || !timeEnd || !dishDiet){
+      alert('Bitte fülle alle Pflichtfelder aus (Name, Preis, Kategorie, Zeit).');
       return;
     }
     
@@ -13914,6 +13951,8 @@
     onboardingDraftDish = {
       dishName,
       dishPrice,
+      dishDiet,
+      dishDesc,
       pickupTimeStart: timeStart,
       pickupTimeEnd: timeEnd,
       photoData: onboardingDraftDish?.photoData || null
@@ -13925,20 +13964,23 @@
   };
 
   // --- AUTO-SAVE / CACHE FOR ONBOARDING STEP 1 ---
-  // Speichert Eingaben sofort bei jedem Tastendruck
-  const obCacheIds = ['onboardingDishName', 'onboardingDishPrice', 'onboardingPickupTimeStart', 'onboardingPickupTimeEnd'];
+  const obCacheIds = ['onboardingDishName', 'onboardingDishPrice', 'onboardingDishDesc', 'onboardingPickupTimeStart', 'onboardingPickupTimeEnd'];
   obCacheIds.forEach(id => {
     const el = document.getElementById(id);
     if(el){
-      // 1. Wiederherstellen beim Laden
       const cached = localStorage.getItem('cache_' + id);
       if(cached) el.value = cached;
-      
-      // 2. Speichern bei jeder Änderung
-      el.addEventListener('input', () => {
-        localStorage.setItem('cache_' + id, el.value);
-      });
+      el.addEventListener('input', () => localStorage.setItem('cache_' + id, el.value));
     }
+  });
+  // Radio Buttons Cache (Kategorie)
+  const dietRadios = document.querySelectorAll('input[name="dishDiet"]');
+  const cachedDiet = localStorage.getItem('cache_dishDiet');
+  if(cachedDiet) {
+    dietRadios.forEach(r => { if(r.value === cachedDiet) r.checked = true; });
+  }
+  dietRadios.forEach(r => {
+    r.addEventListener('change', () => localStorage.setItem('cache_dishDiet', r.value));
   });
   // ------------------------------------------------
   
@@ -13964,7 +14006,8 @@
         id: cryptoId(),
         providerId: providerId(),
         dish: onboardingDraftDish.dishName,
-        category: 'Vegetarisch',
+        category: onboardingDraftDish.dishDiet || 'Vegetarisch',
+        description: onboardingDraftDish.dishDesc || '',
         price: parseFloat(onboardingDraftDish.dishPrice.replace(',', '.')) || 0,
         pickupWindow: `${onboardingDraftDish.pickupTimeStart} – ${onboardingDraftDish.pickupTimeEnd}`,
         photoData: onboardingDraftDish.photoData || '',
