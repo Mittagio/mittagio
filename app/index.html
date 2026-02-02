@@ -1349,29 +1349,37 @@
     #wizard[data-flow="listing"].sheet--kitchen #wContent .answers.answers--full{
       grid-template-columns:1fr;
     }
+    /* Inseratflow: Support-Layout (Buttons wie Support-Sheet) */
     #wizard[data-flow="listing"].sheet--kitchen #wContent .ans{
       min-height:52px !important;
-      padding:14px 16px !important;
+      padding:var(--support-padding) var(--support-padding-lg) !important;
       font-size:15px !important;
-      font-weight:800;
-      border-radius:14px;
+      font-weight:700;
+      border-radius:var(--support-border-radius);
+      border:2px solid var(--support-border);
+      background:#fff;
       -webkit-tap-highlight-color:transparent;
       touch-action:manipulation;
       justify-content:center;
       display:flex;
       align-items:center;
     }
+    #wizard[data-flow="listing"].sheet--kitchen #wContent .ans.on{
+      border:2px solid var(--brand);
+      background:rgba(255,215,0,0.08);
+    }
     #wizard[data-flow="listing"].sheet--kitchen #wContent .ans.ans--thumb{
       min-height:80px !important;
       min-width:80px !important;
-      border-radius:14px;
+      border-radius:var(--support-border-radius);
       padding:0;
     }
     #wizard[data-flow="listing"].sheet--kitchen #wContent .field{
       min-height:52px !important;
-      padding:16px 18px !important;
+      padding:12px var(--support-padding) !important;
       font-size:16px !important;
-      border-radius:14px;
+      border-radius:var(--support-border-radius);
+      border:1px solid #ddd;
       -webkit-tap-highlight-color:transparent;
     }
     #wizard[data-flow="listing"].sheet--kitchen .w-actions{
@@ -1382,9 +1390,14 @@
       min-height:54px !important;
       font-size:16px !important;
       font-weight:800;
-      border-radius:14px;
+      border-radius:var(--support-border-radius);
+      padding:var(--support-padding) var(--support-padding-lg);
       touch-action:manipulation;
       -webkit-tap-highlight-color:transparent;
+    }
+    #wizard[data-flow="listing"].sheet--kitchen .w-actions .btn.secondary{
+      border:2px solid var(--support-border);
+      background:#fff;
     }
     #wizard[data-flow="listing"].sheet--kitchen .w-actions .btn:not(.secondary){
       flex:1;
@@ -1406,13 +1419,20 @@
       }
     }
 
-    /* Provider-App: MEIN BETRIEB – lesbar, streng, bürokratisch */
+    /* Einheitliches Support-Layout: Anbieter + Inseratsflow (Buttons, Panels, Abstände wie Support-Sheet) */
+    :root{
+      --support-border:#e5e7eb;
+      --support-border-radius:12px;
+      --support-padding:16px;
+      --support-padding-lg:24px;
+    }
+    /* Provider-App: MEIN BETRIEB – Support-Layout überall */
     :root{
       --provider-bg:#e8eaed;
       --provider-surface:#ffffff;
       --provider-surface-alt:#f1f3f4;
-      --provider-border:#bdc1c6;
-      --provider-text:#202124;
+      --provider-border:#e5e7eb;
+      --provider-text:#2D3436;
       --provider-text-muted:#5f6368;
     }
     [id^="v-provider-"]{
@@ -1421,9 +1441,10 @@
     [id^="v-provider-"] .panel{
       background:var(--provider-surface) !important;
       color:var(--provider-text) !important;
-      border:1px solid var(--provider-border) !important;
+      border:2px solid var(--provider-border) !important;
       box-shadow:none !important;
-      border-radius:6px !important;
+      border-radius:var(--support-border-radius) !important;
+      padding:var(--support-padding) var(--support-padding-lg) !important;
     }
     [id^="v-provider-"] .panel div,
     [id^="v-provider-"] .panel span,
@@ -1434,13 +1455,13 @@
     [id^="v-provider-"] .provider-profile-section-title{
       color:var(--provider-text-muted) !important;
     }
-    /* Status-Banner: nur dieser bleibt grün mit Weißtext */
+    /* Status-Banner: nur dieser bleibt grün mit Weißtext (Support-Layout) */
     #providerStatusBanner{
       background:linear-gradient(135deg, #2e7d32 0%, #1f5f23 100%) !important;
       color:#fff !important;
-      border:1px solid #1f5f23 !important;
+      border:2px solid #1f5f23 !important;
       box-shadow:none !important;
-      border-radius:6px !important;
+      border-radius:var(--support-border-radius) !important;
     }
     #providerStatusBanner *{ color:#fff !important; }
     /* Kunden-Nachfrage: heller Hintergrund, dunkle Schrift (lesbar) */
@@ -1476,9 +1497,9 @@
     }
     #providerStatusIndicator{
       background:var(--provider-surface) !important;
-      border:1px solid var(--provider-border) !important;
+      border:2px solid var(--provider-border) !important;
       box-shadow:0 1px 3px rgba(0,0,0,.08) !important;
-      border-radius:6px !important;
+      border-radius:var(--support-border-radius) !important;
     }
     #statusIndicatorText{ color:var(--provider-text) !important; }
     /* KPI-Karten: dunkle Schrift, lesbar */
@@ -1486,8 +1507,8 @@
     #kpiCardAbholungen,
     #kpiCardKochbuch{
       background:var(--provider-surface) !important;
-      border:1px solid var(--provider-border) !important;
-      border-radius:6px !important;
+      border:2px solid var(--provider-border) !important;
+      border-radius:var(--support-border-radius) !important;
     }
     #kpiCardTagesessen div:first-child,
     #kpiCardAbholungen div:first-child,
@@ -1512,28 +1533,33 @@
     #providerTimeTracker #providerTimeSaved{ color:var(--provider-text) !important; }
     #providerTodayShare,
     #providerTodayShare .btn{ color:var(--provider-text) !important; background:var(--provider-surface) !important; border-color:var(--provider-border) !important; }
-    /* Buttons im Provider-Bereich: app-iger & moderner (S25-tauglich) */
+    /* Buttons im Provider-Bereich: Support-Layout (wie Support-Sheet) */
     [id^="v-provider-"] .btn,
     [id^="v-provider-"] .btn-primary,
     [id^="v-provider-"] button[class*="btn"]{
-      border-radius:14px !important;
+      border-radius:var(--support-border-radius) !important;
       min-height:48px !important;
       font-weight:700 !important;
       font-size:15px !important;
-      box-shadow:0 2px 10px rgba(0,0,0,.08) !important;
-      transition:transform .15s ease, box-shadow .15s ease !important;
+      padding:var(--support-padding) var(--support-padding-lg) !important;
+      box-shadow:none !important;
+      transition:border-color .15s, background .15s !important;
       -webkit-tap-highlight-color:transparent;
     }
     [id^="v-provider-"] .btn:active,
     [id^="v-provider-"] .btn-primary:active,
     [id^="v-provider-"] button[class*="btn"]:active{
       transform:scale(0.98) !important;
-      box-shadow:0 1px 6px rgba(0,0,0,.1) !important;
     }
-    [id^="v-provider-"] .btn.secondary{
+    [id^="v-provider-"] .btn.secondary,
+    [id^="v-provider-"] .btn.ghost{
       background:#fff !important;
-      border:1px solid var(--provider-border) !important;
+      border:2px solid var(--support-border) !important;
       color:var(--provider-text) !important;
+    }
+    [id^="v-provider-"] .btn:not(.secondary):not(.ghost),
+    [id^="v-provider-"] .btn-primary{
+      border:2px solid transparent !important;
     }
     /* Bottom-Nav Provider: hell, modern */
     #providerNav{
@@ -3899,7 +3925,7 @@
     <!-- PROVIDER APP - MEIN BETRIEB (streng, bürokratisch, lesbar) -->
     <section class="view" id="v-provider-home" style="min-height:100vh; padding:20px; padding-bottom:90px; position:relative;">
       <!-- Status-Indikator (oben rechts) -->
-      <div id="providerStatusIndicator" class="provider-status-indicator" style="position:fixed; top:16px; right:16px; z-index:100; display:flex; align-items:center; gap:8px; padding:8px 12px; border-radius:6px; border:1px solid var(--provider-border); cursor:pointer; background:var(--provider-surface);" onclick="openSupportHelp()" title="Betriebsstatus">
+      <div id="providerStatusIndicator" class="provider-status-indicator" style="position:fixed; top:16px; right:16px; z-index:100; display:flex; align-items:center; gap:8px; padding:10px 16px; border-radius:12px; border:2px solid var(--provider-border); cursor:pointer; background:var(--provider-surface);" onclick="openSupportHelp()" title="Betriebsstatus">
         <div id="statusIndicatorDot" style="width:10px; height:10px; border-radius:50%; background:#2e7d32;"></div>
         <span id="statusIndicatorText" style="font-size:12px; font-weight:600; color:var(--provider-text);">Betrieb aktiv</span>
       </div>
@@ -3911,7 +3937,7 @@
       </div>
       
       <!-- Status: Live & Bereit (Behörden-Grün) -->
-      <div class="panel" id="providerStatusBanner" style="padding:16px 20px; border-radius:6px; border:1px solid #1f5f23; margin-bottom:20px; text-align:center; background:linear-gradient(135deg, #2e7d32 0%, #1f5f23 100%);">
+      <div class="panel" id="providerStatusBanner" style="padding:16px 20px; border-radius:12px; border:2px solid #1f5f23; margin-bottom:20px; text-align:center; background:linear-gradient(135deg, #2e7d32 0%, #1f5f23 100%);">
         <div style="font-weight:700; font-size:16px; color:#fff; margin-bottom:4px;" id="providerStatusText">Live & Bereit</div>
         <div style="font-size:13px; color:rgba(255,255,255,0.9);">Bereit für Bestellungen</div>
       </div>
@@ -3921,7 +3947,7 @@
         <div style="font-weight:700; font-size:14px; color:#1a1a1a; margin-bottom:8px; text-align:center;">Kunden-Nachfrage</div>
         <div id="providerRequestCount" style="font-weight:800; font-size:28px; color:#1a1a1a; text-align:center; margin-bottom:6px;">0</div>
         <div style="font-size:13px; color:#3c4043; text-align:center; margin-bottom:12px; line-height:1.4;">Anfragen heute (Abholnummer)</div>
-        <button class="btn-primary" type="button" id="btnActivateExpress" style="width:100%; min-height:48px; background:#2e7d32; color:#fff; font-weight:700; font-size:14px; border:none; border-radius:6px;">
+        <button class="btn-primary" type="button" id="btnActivateExpress" style="width:100%; min-height:48px; background:#2e7d32; color:#fff; font-weight:700; font-size:14px; border:none; border-radius:12px;">
           <i data-lucide="zap" style="width:18px;height:18px; margin-right:6px;"></i>
           Express aktivieren
         </button>
@@ -3931,15 +3957,15 @@
       <div style="margin-bottom:16px;">
         <div style="font-size:11px; color:var(--provider-text-muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Kennzahlen</div>
         <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px;">
-          <div class="panel provider-kpi-card" id="kpiCardTagesessen" style="padding:14px; border-radius:6px; border:1px solid var(--provider-border); cursor:pointer; text-align:center;">
+          <div class="panel provider-kpi-card" id="kpiCardTagesessen" style="padding:14px; border-radius:12px; border:2px solid var(--provider-border); cursor:pointer; text-align:center;">
             <div style="font-size:18px; font-weight:800; line-height:1.2; margin-bottom:6px; color:var(--provider-text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" id="kpiTagesessenDish">–</div>
             <div style="font-size:11px; color:var(--provider-text-muted); font-weight:600;">Tagesessen</div>
           </div>
-          <div class="panel provider-kpi-card" id="kpiCardAbholungen" style="padding:14px; border-radius:6px; border:1px solid var(--provider-border); cursor:pointer; text-align:center;">
+          <div class="panel provider-kpi-card" id="kpiCardAbholungen" style="padding:14px; border-radius:12px; border:2px solid var(--provider-border); cursor:pointer; text-align:center;">
             <div style="font-size:24px; font-weight:800; line-height:1.2; margin-bottom:6px; color:var(--provider-text);" id="kpiAbholungenCount">0</div>
             <div style="font-size:11px; color:var(--provider-text-muted); font-weight:600;">Abholungen</div>
           </div>
-          <div class="panel provider-kpi-card" id="kpiCardKochbuch" style="padding:14px; border-radius:6px; border:1px solid var(--provider-border); cursor:pointer; text-align:center;">
+          <div class="panel provider-kpi-card" id="kpiCardKochbuch" style="padding:14px; border-radius:12px; border:2px solid var(--provider-border); cursor:pointer; text-align:center;">
             <div style="font-size:24px; font-weight:800; line-height:1.2; margin-bottom:6px; color:var(--provider-text);" id="kpiKochbuchCount">0</div>
             <div style="font-size:11px; color:var(--provider-text-muted); font-weight:600;">Kochbuch</div>
           </div>
@@ -3947,7 +3973,7 @@
       </div>
       
       <!-- Tagesumsatz -->
-      <div class="panel" id="providerTimeTracker" style="padding:16px 20px; border-radius:6px; border:1px solid var(--provider-border); margin-bottom:20px; text-align:center;">
+      <div class="panel" id="providerTimeTracker" style="padding:16px 20px; border-radius:12px; border:2px solid var(--provider-border); margin-bottom:20px; text-align:center;">
         <div style="font-size:11px; color:var(--provider-text-muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:6px;">Tagesumsatz</div>
         <div style="font-size:28px; font-weight:800; color:var(--provider-text); margin-bottom:4px;" id="providerTimeSaved">0 €</div>
         <div style="font-size:12px; color:var(--provider-text-muted);">Umsatz heute</div>
@@ -3962,8 +3988,8 @@
       </div>
       
       <!-- Tagesessen teilen -->
-      <div class="panel" id="providerTodayShare" style="margin-top:16px; padding:14px 20px; border-radius:6px; border:1px solid var(--provider-border); display:none;">
-        <button class="btn secondary" type="button" id="btnTodayShare" style="width:100%; min-height:48px; font-weight:700; font-size:14px; border-radius:6px; display:flex; align-items:center; justify-content:center; gap:8px;">
+      <div class="panel" id="providerTodayShare" style="margin-top:16px; padding:14px 20px; border-radius:12px; border:2px solid var(--provider-border); display:none;">
+        <button class="btn secondary" type="button" id="btnTodayShare" style="width:100%; min-height:48px; font-weight:700; font-size:14px; border-radius:12px; border:2px solid var(--support-border); display:flex; align-items:center; justify-content:center; gap:8px;">
           <i data-lucide="share-2" style="width:18px;height:18px;"></i>
           <span>Tagesessen teilen</span>
         </button>
@@ -3976,24 +4002,24 @@
       </div>
 
       <!-- Meine Speisekarte -->
-      <div class="panel" id="providerActiveOffers" style="margin-top:16px; padding:14px 20px; border-radius:6px; border:1px solid var(--provider-border); display:none;">
+      <div class="panel" id="providerActiveOffers" style="margin-top:16px; padding:14px 20px; border-radius:12px; border:2px solid var(--provider-border); display:none;">
         <div style="font-size:11px; color:var(--provider-text-muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:10px;">Meine Speisekarte</div>
         <div id="providerActiveOffersList"></div>
         <a href="#" id="btnProviderShowAllOffers" style="display:inline-block; font-size:12px; color:var(--provider-text-muted); text-decoration:underline; margin-top:10px;">Alle Gerichte anzeigen →</a>
       </div>
 
       <!-- Wochenvorschau -->
-      <div class="panel" id="providerWeekPreview" style="margin-top:16px; padding:14px 20px; border-radius:6px; border:1px solid var(--provider-border);">
+      <div class="panel" id="providerWeekPreview" style="margin-top:16px; padding:14px 20px; border-radius:12px; border:2px solid var(--provider-border);">
         <div style="font-size:11px; color:var(--provider-text-muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:10px;">Wochenvorschau</div>
         <div class="dayrow" id="providerWeekDays" style="padding:0 0 10px; max-width:none; margin-bottom:12px;"></div>
         <div id="providerWeekDayContent" style="min-height:60px;"></div>
       </div>
 
       <!-- Willkommen (leer) -->
-      <div class="panel" id="providerEmptyDashboard" style="margin-top:16px; padding:20px; border-radius:6px; border:1px solid var(--provider-border); text-align:center; display:none;">
+      <div class="panel" id="providerEmptyDashboard" style="margin-top:16px; padding:20px; border-radius:12px; border:2px solid var(--provider-border); text-align:center; display:none;">
         <div style="font-weight:700; font-size:16px; margin-bottom:8px; line-height:1.3; color:var(--provider-text);">Willkommen bei Mittagio</div>
         <div class="hint" style="font-size:13px; line-height:1.4; margin-bottom:16px; color:var(--provider-text-muted);">Erstellen Sie Ihr erstes Gericht.</div>
-        <button class="btn secondary" type="button" id="btnProviderEmptyAddDish" style="width:100%; min-height:48px; border-radius:6px;">Gericht hinzufügen</button>
+        <button class="btn secondary" type="button" id="btnProviderEmptyAddDish" style="width:100%; min-height:48px; border-radius:12px; border:2px solid var(--support-border);">Gericht hinzufügen</button>
       </div>
 
       <!-- FAB (Floating Action Button) -->
@@ -4659,6 +4685,7 @@
     <button class="navbtn active" data-pgo="provider-home"><div class="ico" data-icon="utensils" data-icon-only="1"></div><div>Meine Küche</div></button>
     <button class="navbtn" data-pgo="provider-pickups"><div class="ico" data-icon="receipt" data-icon-only="1"></div><div>Abholungen</div></button>
     <button class="navbtn" data-pgo="provider-cookbook"><div class="ico" data-icon="bookOpen" data-icon-only="1"></div><div>Kochbuch</div></button>
+    <button class="navbtn" data-pgo="provider-support"><div class="ico" data-icon="helpCircle" data-icon-only="1"></div><div>Support</div></button>
     <button class="navbtn" data-pgo="provider-profile"><div class="ico" data-icon="user" data-icon-only="1"></div><div>Meins</div></button>
   </nav>
 </div>
@@ -5161,11 +5188,11 @@
   </div>
 </div>
 
-<!-- Support-Kontakt Sheet -->
+<!-- Support-Kontakt Sheet (Layout = Vorlage für Anbieter + Inseratsflow) -->
 <div class="backdrop" id="supportContactBd" onclick="closeSupportContact()" style="background:rgba(0,0,0,0.7); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);"></div>
 <div class="sheet" id="supportContactSheet">
   <div class="handle"></div>
-  <div class="sheet-body" style="padding:24px;">
+  <div class="sheet-body support-layout-body" style="padding:24px;">
     <div style="margin-bottom:24px;">
       <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
         <i data-lucide="heart" style="width:28px;height:28px; color:#E34D4D;"></i>
@@ -5177,7 +5204,7 @@
     </div>
     
     <!-- 24h-Antwort-Garantie Badge -->
-    <div style="padding:16px; background:linear-gradient(135deg, rgba(46,204,113,0.1) 0%, rgba(39,174,96,0.08) 100%); border:2px solid rgba(46,204,113,0.3); border-radius:16px; margin-bottom:24px; text-align:center;">
+    <div class="support-style-badge" style="padding:16px; background:linear-gradient(135deg, rgba(46,204,113,0.1) 0%, rgba(39,174,96,0.08) 100%); border:2px solid rgba(46,204,113,0.3); border-radius:12px; margin-bottom:24px; text-align:center;">
       <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:8px;">
         <i data-lucide="clock" style="width:20px;height:20px; color:#2ECC71;"></i>
         <div style="font-weight:900; font-size:16px; color:#2ECC71;">24h-Antwort-Garantie</div>
@@ -5191,7 +5218,7 @@
     <div style="margin-bottom:24px;">
       <div style="font-weight:700; font-size:15px; color:#2D3436; margin-bottom:12px;">Worum geht es?</div>
       <div style="display:flex; flex-direction:column; gap:12px;">
-        <button class="btn secondary" type="button" onclick="selectSupportTopic('technik')" id="supportTopicTechnik" style="justify-content:flex-start; padding:16px; text-align:left; background:#fff; border:2px solid #eee;">
+        <button class="btn secondary support-style-btn" type="button" onclick="selectSupportTopic('technik')" id="supportTopicTechnik" style="justify-content:flex-start; padding:16px; text-align:left; background:#fff; border:2px solid #e5e7eb; border-radius:12px;">
           <div style="display:flex; align-items:center; gap:12px; width:100%;">
             <i data-lucide="settings" style="width:24px;height:24px; color:#334155; flex-shrink:0;"></i>
             <div style="flex:1;">
@@ -5201,7 +5228,7 @@
           </div>
         </button>
         
-        <button class="btn secondary" type="button" onclick="selectSupportTopic('abrechnung')" id="supportTopicAbrechnung" style="justify-content:flex-start; padding:16px; text-align:left; background:#fff; border:2px solid #eee;">
+        <button class="btn secondary support-style-btn" type="button" onclick="selectSupportTopic('abrechnung')" id="supportTopicAbrechnung" style="justify-content:flex-start; padding:16px; text-align:left; background:#fff; border:2px solid #e5e7eb; border-radius:12px;">
           <div style="display:flex; align-items:center; gap:12px; width:100%;">
             <i data-lucide="wallet" style="width:24px;height:24px; color:#334155; flex-shrink:0;"></i>
             <div style="flex:1;">
@@ -5211,7 +5238,7 @@
           </div>
         </button>
         
-        <button class="btn secondary" type="button" onclick="selectSupportTopic('feedback')" id="supportTopicFeedback" style="justify-content:flex-start; padding:16px; text-align:left; background:#fff; border:2px solid #eee;">
+        <button class="btn secondary support-style-btn" type="button" onclick="selectSupportTopic('feedback')" id="supportTopicFeedback" style="justify-content:flex-start; padding:16px; text-align:left; background:#fff; border:2px solid #e5e7eb; border-radius:12px;">
           <div style="display:flex; align-items:center; gap:12px; width:100%;">
             <i data-lucide="message-square" style="width:24px;height:24px; color:#334155; flex-shrink:0;"></i>
             <div style="flex:1;">
@@ -5230,13 +5257,13 @@
         <textarea id="supportContactMessage" placeholder="Beschreibe dein Anliegen..." style="width:100%; min-height:120px; padding:12px 16px; border-radius:12px; border:1px solid #ddd; font-size:15px; font-family:inherit; resize:vertical;" rows="5"></textarea>
       </div>
       
-      <button class="btn" type="button" onclick="submitSupportContact()" style="width:100%; min-height:52px; background:#E34D4D; color:#fff; font-weight:800; border:none; border-radius:12px;">
+      <button class="btn support-style-primary" type="button" onclick="submitSupportContact()" style="width:100%; min-height:52px; background:#E34D4D; color:#fff; font-weight:800; border:none; border-radius:12px;">
         <i data-lucide="send" style="width:20px;height:20px; margin-right:8px;"></i>
         Nachricht senden
       </button>
     </div>
     
-    <button class="btn ghost" type="button" onclick="closeSupportContact()" style="width:100%; margin-top:16px;">Abbrechen</button>
+    <button class="btn ghost support-style-btn" type="button" onclick="closeSupportContact()" style="width:100%; margin-top:16px; border:2px solid #e5e7eb; border-radius:12px;">Abbrechen</button>
   </div>
 </div>
 
@@ -14027,6 +14054,7 @@
     if(go==='provider-home') showProviderHome();
     if(go==='provider-pickups') showProviderPickups();
     if(go==='provider-cookbook') showProviderCookbook();
+    if(go==='provider-support') openSupportContact();
     if(go==='provider-profile') showProviderProfile();
   });
 
@@ -16635,7 +16663,7 @@
     w.data.dineInPossible = true;
 
     if(w.step===0){
-      setWizardQuestion('Gerichtsname', 'Tippen oder Vorschlag antippen – Kategorie wird gesetzt.');
+      setWizardQuestion('Was kochst du heute?', 'Ein Name, der Appetit macht – Kategorie wird automatisch gesetzt.');
       const box=document.createElement('div');
       const cookbookEntry = w.data.cookbookId ? cookbook.find(c => c.id === w.data.cookbookId) : null;
       const isFromCookbook = !!cookbookEntry;
@@ -16686,7 +16714,7 @@
     }
 
     if(w.step===1){
-      setWizardQuestion('Bild', 'Optional – Kamera, Galerie oder ohne Foto weiter.');
+      setWizardQuestion('Ein Bild sagt mehr als tausend Worte', 'Fotos steigern die Aufmerksamkeit – oder jetzt überspringen und später hinzufügen.');
       const box=document.createElement('div');
       if(!w.data.photoData){
         const ans=document.createElement('div'); ans.className='answers';
@@ -16710,7 +16738,7 @@
         const skipRow=document.createElement('div');
         skipRow.style.marginTop='10px';
         const skipBtn=document.createElement('button');
-        skipBtn.type='button'; skipBtn.className='btn ghost'; skipBtn.textContent='Ohne Foto weiter';
+        skipBtn.type='button'; skipBtn.className='btn ghost'; skipBtn.textContent='Später hinzufügen';
         skipBtn.style.cssText='width:100%;min-height:48px;font-size:14px;';
         skipBtn.onclick=()=>{ w.data.photoData=''; rebuildWizard(); };
         skipRow.appendChild(skipBtn);
@@ -16732,7 +16760,7 @@
     }
 
     if(w.step===2){
-      setWizardQuestion('Preis & Abholnummer', 'Preis antippen. Abholnummer Ja/Nein. Extras optional.');
+      setWizardQuestion('Dein Preis – fair und transparent', 'Wähle deinen Verkaufspreis. Mit Abholnummer bestellen Gäste bequem vorab – du bekommst 0,89 € All-in pro Bestellung.');
       const box=document.createElement('div');
       const presets=document.createElement('div'); presets.className='answers';
       [4.5,5.5,6.5,7.5,8.5].forEach(val=>{
@@ -16743,7 +16771,7 @@
         presets.appendChild(b);
       });
       box.appendChild(presets);
-      const abhLabel=document.createElement('div'); abhLabel.className='hint'; abhLabel.style.marginTop='12px'; abhLabel.textContent='Abholnummer +0,89 €';
+      const abhLabel=document.createElement('div'); abhLabel.className='hint'; abhLabel.style.marginTop='12px'; abhLabel.textContent='Abholnummer anbieten? (Gäste zahlen online, du bekommst die Bestellung)';
       box.appendChild(abhLabel);
       const abhRow=document.createElement('div'); abhRow.className='answers'; abhRow.style.marginTop='6px';
       const btnAbhJa=document.createElement('button'); btnAbhJa.type='button'; btnAbhJa.className='ans'+(w.data.hasPickupCode?' on':''); btnAbhJa.textContent='Ja';
@@ -16752,7 +16780,7 @@
       btnAbhNein.onclick=()=>{ w.data.hasPickupCode=false; rebuildWizard(); };
       abhRow.appendChild(btnAbhJa); abhRow.appendChild(btnAbhNein);
       box.appendChild(abhRow);
-      const exLabel=document.createElement('div'); exLabel.className='hint'; exLabel.style.marginTop='10px'; exLabel.textContent='Extras (optional)';
+      const exLabel=document.createElement('div'); exLabel.className='hint'; exLabel.style.marginTop='10px'; exLabel.textContent='Extras anbieten? (z. B. Beilagensalat, Soße)';
       box.appendChild(exLabel);
       if(!Array.isArray(w.data.extras)) w.data.extras=[];
       const extrasAns=document.createElement('div'); extrasAns.className='answers'; extrasAns.style.marginTop='6px';
@@ -16780,7 +16808,7 @@
         const exSum=(w.data.extras||[]).reduce((s,e)=>s+Number(e.price||0),0);
         const geb=w.data.hasPickupCode ? SUCCESS_FEE : 0;
         const netto=p+exSum-geb;
-        el.textContent=`Netto ≈ ${netto.toFixed(2).replace('.',',')} €`;
+        el.textContent=`Dein Verdienst ≈ ${netto.toFixed(2).replace('.',',')} €`;
       }
       refreshVerdienstEl();
       setWizardContent(box);
@@ -16789,7 +16817,7 @@
     }
 
     if(w.step===3){
-      setWizardQuestion('Mehrweg & Allergene', 'Beides optional. Alles auf einem Screen.');
+      setWizardQuestion('Nachhaltig & transparent', 'Mehrweg schont die Umwelt. Allergene geben Gästen Sicherheit – beides freiwillig.');
       const box=document.createElement('div');
       box.style.cssText='display:flex;flex-direction:column;gap:10px;max-height:min(65vh,420px);overflow-y:auto;';
       w.data.dineInPossible = true;
@@ -16805,7 +16833,7 @@
       // Mehrweg: Bietest du Mehrweg an? Ja / Nein
       const mwRow=document.createElement('div');
       mwRow.style.marginTop='4px';
-      const mwLabel=document.createElement('div'); mwLabel.className='hint'; mwLabel.style.marginBottom='4px'; mwLabel.textContent='Bietest du Mehrweg an?';
+      const mwLabel=document.createElement('div'); mwLabel.className='hint'; mwLabel.style.marginBottom='4px'; mwLabel.textContent='Mehrweg anbieten? (Pfand für Mehrweg-Behälter)';
       mwRow.appendChild(mwLabel);
       const mwYesNo=document.createElement('div'); mwYesNo.className='answers'; mwYesNo.style.display='flex'; mwYesNo.style.gap='8px'; mwYesNo.style.flexWrap='wrap';
       const reuseOn=!!w.data.reuse.enabled;
@@ -16819,7 +16847,7 @@
       mwYesNo.appendChild(btnMwJa); mwYesNo.appendChild(btnMwNein);
       mwRow.appendChild(mwYesNo);
       if(reuseOn){
-        const pfandLabel=document.createElement('div'); pfandLabel.className='hint'; pfandLabel.style.marginTop='8px'; pfandLabel.style.marginBottom='4px'; pfandLabel.textContent='Pfand (vorgeschlagen)';
+        const pfandLabel=document.createElement('div'); pfandLabel.className='hint'; pfandLabel.style.marginTop='8px'; pfandLabel.style.marginBottom='4px'; pfandLabel.textContent='Pfandbetrag wählen';
         mwRow.appendChild(pfandLabel);
         const pfandRow=document.createElement('div'); pfandRow.className='answers'; pfandRow.style.display='flex'; pfandRow.style.gap='8px'; pfandRow.style.flexWrap='wrap';
         MEHRWEG_PRESETS.forEach(euro=>{
@@ -16835,7 +16863,7 @@
       // Allergene angeben? Ja / Nein
       const alRow=document.createElement('div');
       alRow.style.marginTop='6px';
-      const alQuestion=document.createElement('div'); alQuestion.className='hint'; alQuestion.style.marginBottom='4px'; alQuestion.textContent='Allergene angeben? (optional)';
+      const alQuestion=document.createElement('div'); alQuestion.className='hint'; alQuestion.style.marginBottom='4px'; alQuestion.textContent='Allergene anzeigen? (Gäste informieren – freiwillig)';
       alRow.appendChild(alQuestion);
       const alYesNo=document.createElement('div'); alYesNo.className='answers'; alYesNo.style.display='flex'; alYesNo.style.gap='8px'; alYesNo.style.flexWrap='wrap';
       const wantsAllergens=!!w.data.wantsAllergens;
@@ -16872,7 +16900,7 @@
     }
 
     if(w.step===4){
-      setWizardQuestion('Dein Tagessen jetzt veröffentlichen', 'Noch die Abholzeit wählen – dann geht’s live.');
+      setWizardQuestion('Fertig! So geht dein Gericht live', 'Wähle deine Abholzeit – dann entscheidest du: sofort live, ins Kochbuch oder in den Wochenplan.');
       const box=document.createElement('div');
       const pw = w.data.pickupWindow || profile.mealWindow || DEFAULT_MEAL_WINDOW;
       const parts = pw.includes('–') ? pw.split('–') : pw.split('-');
@@ -16904,9 +16932,9 @@
       summary.className='panel listing-datum-summary';
       summary.style.cssText='margin-top:16px;padding:16px;text-align:center;border-radius:12px;background:linear-gradient(135deg,rgba(255,215,0,0.08),rgba(255,180,0,0.06));border:1px solid rgba(255,215,0,0.25);';
       summary.innerHTML=`
-        <div style="font-size:13px;color:#666;margin-bottom:4px;">Dein Gericht ist bereit</div>
+        <div style="font-size:13px;color:#666;margin-bottom:4px;">Alles bereit für deine Gäste</div>
         <div class="listing-datum-day" style="font-size:18px;font-weight:800;color:#2d3436;">${esc(w.data.pickupWindow || DEFAULT_MEAL_WINDOW)}</div>
-        <div class="hint" style="font-size:12px;margin-top:4px;">Abholzeit – so finden dich deine Gäste.</div>
+        <div class="hint" style="font-size:12px;margin-top:4px;">In dieser Zeit können Gäste bei dir abholen.</div>
       `;
       box.appendChild(summary);
       const cost=document.createElement('div');
@@ -16920,20 +16948,27 @@
       const btnPub=document.createElement('button');
       btnPub.className='btn';
       btnPub.type='button';
-      btnPub.textContent = 'Dein Tagessen jetzt veröffentlichen · 4,99 €';
-      btnPub.style.cssText = 'width:100%; min-height:56px; font-size:16px; font-weight:800; margin-top:16px; border-radius:14px; touch-action:manipulation; -webkit-tap-highlight-color:transparent;';
+      btnPub.textContent = 'Jetzt veröffentlichen';
+      btnPub.style.cssText = 'width:100%; min-height:52px; font-size:16px; font-weight:800; margin-top:16px; border-radius:12px; touch-action:manipulation; -webkit-tap-highlight-color:transparent;';
       btnPub.onclick=()=>{ const o=previewOfferFromWizard(); closeWizard(); showPublishFeeModal(o); };
       box.appendChild(btnPub);
-      const btnSave=document.createElement('button');
-      btnSave.className='btn secondary';
-      btnSave.type='button';
-      btnSave.textContent='Erst im Kochbuch speichern';
-      btnSave.style.cssText='width:100%;margin-top:8px;';
-      btnSave.onclick=()=>{ saveToCookbookFromWizard(); closeWizard(); showProviderCookbook(); };
-      box.appendChild(btnSave);
+      const btnCookbook=document.createElement('button');
+      btnCookbook.className='btn secondary';
+      btnCookbook.type='button';
+      btnCookbook.textContent='Im Kochbuch speichern';
+      btnCookbook.style.cssText='width:100%;min-height:52px;margin-top:10px;border-radius:12px;border:2px solid var(--support-border);';
+      btnCookbook.onclick=()=>{ saveToCookbookFromWizard(); closeWizard(); showProviderCookbook(); };
+      box.appendChild(btnCookbook);
+      const btnWeek=document.createElement('button');
+      btnWeek.className='btn secondary';
+      btnWeek.type='button';
+      btnWeek.textContent='Zum Wochenplan hinzufügen';
+      btnWeek.style.cssText='width:100%;min-height:52px;margin-top:10px;border-radius:12px;border:2px solid var(--support-border);';
+      btnWeek.onclick=()=>{ saveToCookbookFromWizard(); closeWizard(); showProviderWeek(); };
+      box.appendChild(btnWeek);
       const relax=document.createElement('p');
-      relax.style.cssText='margin-top:12px;font-size:12px;color:#999;text-align:center;line-height:1.4;';
-      relax.textContent='Alles klar? Ein Klick – und dein Gericht ist live. Du kannst jederzeit bearbeiten oder deaktivieren.';
+      relax.style.cssText='margin-top:14px;font-size:12px;color:#999;text-align:center;line-height:1.4;';
+      relax.textContent='Veröffentlichen: Gericht geht live (4,99 €). Kochbuch: nur speichern. Wochenplan: Gericht zuweisen.';
       box.appendChild(relax);
       setWizardContent(box);
       wNextBtn.textContent='Später';
