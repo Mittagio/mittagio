@@ -7420,26 +7420,24 @@
     const discoverLocationInput = document.getElementById('discoverLocationInput');
     const discoverLocationSuggestions = document.getElementById('discoverLocationSuggestions');
     const discoverCurrentLocation = document.getElementById('discoverCurrentLocation');
-    let locationExpanded = false;
     
     if(btnDiscoverLocationToggle && discoverLocationExpanded && discoverLocationInput){
-      // Toggle Location-Input
+      // Toggle Location-Input (DOM-Zustand lesen – Sync mit openDiscoverLocationSearch)
       btnDiscoverLocationToggle.onclick = (e)=>{
         e.preventDefault();
         e.stopPropagation();
         triggerHapticFeedback([10]);
         
-        if(!locationExpanded){
+        const isExpanded = discoverLocationExpanded.style.display === 'block';
+        if(!isExpanded){
           discoverLocationExpanded.style.display = 'block';
           setTimeout(() => {
             discoverLocationInput.focus();
           }, 100);
-          locationExpanded = true;
         } else {
           discoverLocationExpanded.style.display = 'none';
           discoverLocationInput.value = '';
           discoverLocationSuggestions.innerHTML = '';
-          locationExpanded = false;
         }
       };
       
@@ -7449,20 +7447,30 @@
         if(query.length >= 2){
           const suggestions = filterLocationSuggestions(query);
           if(suggestions.length > 0){
-            discoverLocationSuggestions.innerHTML = suggestions.map(loc => 
-              `<div class="location-suggestion-item" onclick="selectLocation('${loc}');" style="padding:10px 12px; cursor:pointer; border-bottom:1px solid rgba(0,0,0,0.05); transition:background 0.2s ease;" onmouseover="this.style.background='rgba(0,0,0,0.05)';" onmouseout="this.style.background='transparent';">
+            discoverLocationSuggestions.innerHTML = suggestions.map(loc => {
+              const safe = String(loc).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+              return `<div class="location-suggestion-item" data-loc="${safe}" style="padding:10px 12px; cursor:pointer; border-bottom:1px solid rgba(0,0,0,0.05); transition:background 0.2s ease;" onmouseover="this.style.background='rgba(0,0,0,0.05)';" onmouseout="this.style.background='transparent';">
                 <div style="display:flex; align-items:center; gap:8px;">
                   <i data-lucide="map-pin" style="width:14px;height:14px; color:#666;"></i>
-                  <span style="font-size:14px; font-weight:500; color:#333;">${loc}</span>
+                  <span style="font-size:14px; font-weight:500; color:#333;">${safe}</span>
                 </div>
-              </div>`
-            ).join('');
+              </div>`;
+            }).join('');
             if(typeof lucide !== 'undefined') lucide.createIcons();
           } else {
             discoverLocationSuggestions.innerHTML = '';
           }
         } else {
           discoverLocationSuggestions.innerHTML = '';
+        }
+      };
+      
+      // Delegierter Klick auf Vorschläge (data-loc statt onclick – vermeidet Sonderzeichen-Bugs)
+      discoverLocationSuggestions.onclick = (e)=>{
+        const item = e.target.closest('.location-suggestion-item');
+        if(item){
+          const loc = item.getAttribute('data-loc');
+          if(loc) selectLocation(loc);
         }
       };
       
@@ -7478,7 +7486,6 @@
           discoverLocationExpanded.style.display = 'none';
           discoverLocationInput.value = '';
           discoverLocationSuggestions.innerHTML = '';
-          locationExpanded = false;
         }
       };
       
@@ -7495,7 +7502,6 @@
             if(discoverCurrentLocation) discoverCurrentLocation.textContent = 'Aktueller Standort';
             locationQuery = 'Aktueller Standort';
             discoverLocationExpanded.style.display = 'none';
-            locationExpanded = false;
             renderDiscover();
           }, (err)=>{
             showToast('Standort konnte nicht ermittelt werden', 2000);
@@ -10571,15 +10577,15 @@
           <span style="font-size:20px; opacity:${hasDineIn ? '1' : '0.4'}; filter:${hasDineIn ? 'none' : 'grayscale(100%)'};">🍴</span>
           <span style="color:${hasDineIn ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.4)'}; font-size:13px; font-weight:600;">Vor Ort</span>
         </div>
-        <!-- Säule 2: Abholnummer 🧾 -->
-        <div style="display:flex; flex-direction:row; align-items:center; gap:8px; padding:8px 12px; background:${orderingEnabled ? 'rgba(255,215,0,0.15)' : 'rgba(255,255,255,0.05)'}; border-radius:12px; border:1px solid ${orderingEnabled ? 'rgba(255,215,0,0.3)' : 'rgba(255,255,255,0.1)'};">
-          <span style="font-size:20px; opacity:${orderingEnabled ? '1' : '0.4'}; filter:${orderingEnabled ? 'none' : 'grayscale(100%)'};">🧾</span>
-          <span style="color:${orderingEnabled ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.4)'}; font-size:13px; font-weight:600;">Abholnummer</span>
-        </div>
-        <!-- Säule 3: Mehrweg 🔄 -->
+        <!-- Säule 2: Mehrweg 🔄 -->
         <div style="display:flex; flex-direction:row; align-items:center; gap:8px; padding:8px 12px; background:${hasReuseSupport ? 'rgba(39,174,96,0.15)' : 'rgba(255,255,255,0.05)'}; border-radius:12px; border:1px solid ${hasReuseSupport ? 'rgba(39,174,96,0.3)' : 'rgba(255,255,255,0.1)'};">
           <span style="font-size:20px; opacity:${hasReuseSupport ? '1' : '0.4'}; filter:${hasReuseSupport ? 'none' : 'grayscale(100%)'};">🔄</span>
           <span style="color:${hasReuseSupport ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.4)'}; font-size:13px; font-weight:600;">Mehrweg</span>
+        </div>
+        <!-- Säule 3: Abholnummer 🧾 -->
+        <div style="display:flex; flex-direction:row; align-items:center; gap:8px; padding:8px 12px; background:${orderingEnabled ? 'rgba(255,215,0,0.15)' : 'rgba(255,255,255,0.05)'}; border-radius:12px; border:1px solid ${orderingEnabled ? 'rgba(255,215,0,0.3)' : 'rgba(255,255,255,0.1)'};">
+          <span style="font-size:20px; opacity:${orderingEnabled ? '1' : '0.4'}; filter:${orderingEnabled ? 'none' : 'grayscale(100%)'};">🧾</span>
+          <span style="color:${orderingEnabled ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.4)'}; font-size:13px; font-weight:600;">Abholnummer</span>
         </div>
       `;
     }
@@ -10616,20 +10622,16 @@
       const carTimeText = carMinutes < 1 ? '< 1 Min.' : `${carMinutes} Min.`;
       const carKmText = Number(o.distanceKm).toFixed(1);
       
-      // Spielerische Icons statt Text-basierte Entfernungsangaben
+      // Entfernungs-Check: Fuß (Meter + Min) & Auto (Km + Min)
       sDistanceInfo.innerHTML = `
         <div style="display:flex; align-items:center; justify-content:center; gap:16px; flex-wrap:wrap;">
           <span style="display:flex; align-items:center; gap:4px; color:rgba(255,255,255,0.9); font-size:14px; font-weight:600;">
             <span style="font-size:18px;">🚶</span>
-            <span>${walkingTimeText}</span>
+            <span>${walkingMeters}m (${walkingTimeText})</span>
           </span>
           <span style="display:flex; align-items:center; gap:4px; color:rgba(255,255,255,0.9); font-size:14px; font-weight:600;">
             <span style="font-size:18px;">🚗</span>
-            <span>${carTimeText}</span>
-          </span>
-          <span style="display:flex; align-items:center; gap:4px; color:rgba(255,255,255,0.9); font-size:14px; font-weight:600;">
-            <span style="font-size:18px;">📍</span>
-            <span>${walkingMeters}m</span>
+            <span>${carKmText}km (${carTimeText})</span>
           </span>
         </div>
       `;
@@ -17218,53 +17220,80 @@
     w.data.dineInPossible = true;
 
     if(w.step===0){
-      setWizardQuestion('Was kochst du heute?', 'Ein Name, der Appetit macht – Kategorie wird automatisch gesetzt.');
+      setWizardQuestion('Was kochst du heute?', 'Ein Name, der Appetit macht.');
       const box=document.createElement('div');
-      const cookbookEntry = w.data.cookbookId ? cookbook.find(c => c.id === w.data.cookbookId) : null;
-      const isFromCookbook = !!cookbookEntry;
+      
+      // --- NAME ---
+      const labelName=document.createElement('div'); labelName.className='hint'; labelName.textContent='Gerichtname';
+      box.appendChild(labelName);
+      
       const input=document.createElement('input');
       input.className='field';
       input.placeholder='z.B. Kürbissuppe';
       input.value=w.data.dish||'';
       input.autocomplete='off';
-      const suggestWrap=document.createElement('div');
-      suggestWrap.className='answers';
-      suggestWrap.style.marginTop='8px';
-      function fillSuggestions(){
-        suggestWrap.innerHTML='';
-        const q=(input.value||'').trim();
-        const list = typeof getDishSuggestionsSmartInput==='function' ? getDishSuggestionsSmartInput(q) : [];
-        list.slice(0,6).forEach(s=>{
-          const cat = (s.category==='Fleisch') ? 'Mit Fleisch' : (s.category||'Vegetarisch');
-          const b=document.createElement('button');
-          b.type='button'; b.className='ans';
-          b.textContent=s.dish;
-          b.onclick=()=>{ w.data.dish=s.dish; w.data.category=cat; rebuildWizard(); };
-          suggestWrap.appendChild(b);
-        });
-      }
-      input.oninput=()=>{ w.data.dish=input.value; fillSuggestions(); refreshListingPreview(); };
-      input.onfocus=fillSuggestions;
+      input.style.marginBottom='16px';
+      
+      // Auto-Save Handler
+      const saveDraft = () => { localStorage.setItem('wizard_draft', JSON.stringify(w)); };
+
+      input.oninput=()=>{ w.data.dish=input.value; saveDraft(); };
       box.appendChild(input);
-      box.appendChild(suggestWrap);
-      const catLabel=document.createElement('div'); catLabel.className='hint'; catLabel.style.marginTop='10px'; catLabel.textContent='Kategorie';
-      box.appendChild(catLabel);
+
+      // --- PREIS (Neu hier) ---
+      const labelPrice=document.createElement('div'); labelPrice.className='hint'; labelPrice.textContent='Preis (€)';
+      box.appendChild(labelPrice);
+      
+      const inputPrice=document.createElement('input');
+      inputPrice.className='field';
+      inputPrice.type='number';
+      inputPrice.step='0.10';
+      inputPrice.inputmode='decimal';
+      inputPrice.placeholder='z.B. 8,50';
+      inputPrice.value=w.data.price > 0 ? w.data.price : '';
+      inputPrice.style.marginBottom='16px';
+      inputPrice.oninput=()=>{ w.data.price=parseFloat(inputPrice.value.replace(',','.')) || 0; saveDraft(); };
+      box.appendChild(inputPrice);
+
+      // --- KATEGORIE ---
+      const labelCat=document.createElement('div'); labelCat.className='hint'; labelCat.textContent='Kategorie';
+      box.appendChild(labelCat);
+      
       const catRow=document.createElement('div'); catRow.className='answers';
-      CATEGORIES.forEach(c=>{
+      catRow.style.marginBottom='16px';
+      ['Fleisch','Vegetarisch','Vegan'].forEach(c=>{
         const b=document.createElement('button');
         b.type='button'; b.className='ans'+(w.data.category===c?' on':'');
         b.textContent=c;
-        b.onclick=()=>{ w.data.category=c; rebuildWizard(); };
+        b.onclick=()=>{ w.data.category=c; saveDraft(); rebuildWizard(); };
         catRow.appendChild(b);
       });
       box.appendChild(catRow);
-      if(isFromCookbook){
-        const h=document.createElement('div'); h.className='hint'; h.style.marginTop='6px'; h.textContent='✓ Aus Kochbuch';
-        box.appendChild(h);
-      }
-      fillSuggestions();
+
+      // --- BESCHREIBUNG (Neu) ---
+      const labelDesc=document.createElement('div'); labelDesc.className='hint'; labelDesc.textContent='Beschreibung (optional)';
+      box.appendChild(labelDesc);
+      
+      const inputDesc=document.createElement('textarea');
+      inputDesc.className='field';
+      inputDesc.rows=3;
+      inputDesc.placeholder='Zutaten, Besonderheiten...';
+      inputDesc.value=w.data.description||'';
+      inputDesc.style.resize='none';
+      inputDesc.oninput=()=>{ w.data.description=inputDesc.value; saveDraft(); };
+      box.appendChild(inputDesc);
+
       setWizardContent(box);
       wNextBtn.textContent='Weiter';
+      
+      // Load Draft if empty
+      if(!w.data.dish){
+        const draft = JSON.parse(localStorage.getItem('wizard_draft') || 'null');
+        if(draft && draft.kind === 'listing'){
+          // Optional: Restore dialog? For now, silent restore if clean start
+          // w = draft; rebuildWizard();
+        }
+      }
       return;
     }
 
@@ -17315,47 +17344,10 @@
     }
 
     if(w.step===2){
-      setWizardQuestion('Verkaufseinstellungen', 'Lege Preis & Optionen fest. Online-Zahlung spart Zeit & sichert Umsatz.');
+      setWizardQuestion('Verkaufseinstellungen', 'Abholcode & Optionen. Online-Zahlung spart Zeit & sichert Umsatz.');
       const box=document.createElement('div');
       
-      // 1. PREIS SCROLLER (Daumenfreundlich)
-      const priceLabel=document.createElement('div'); priceLabel.className='hint'; priceLabel.style.marginBottom='6px'; priceLabel.textContent='Verkaufspreis wählen';
-      box.appendChild(priceLabel);
-      
-      const priceScroll=document.createElement('div');
-      priceScroll.className='hide-scrollbar';
-      priceScroll.style.cssText='display:flex; gap:8px; overflow-x:auto; padding-bottom:4px; margin-bottom:16px; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch;';
-      
-      const prices=[];
-      for(let p=3.5; p<=15; p+=0.5) prices.push(p);
-      
-      prices.forEach(val=>{
-        const b=document.createElement('button');
-        b.type='button'; 
-        const isActive = Math.abs(Number(w.data.price)-val)<0.1;
-        b.className = isActive ? 'ans on' : 'ans';
-        b.style.cssText=`flex:0 0 auto; min-width:72px; height:48px; display:flex; align-items:center; justify-content:center; scroll-snap-align:center; border:2px solid ${isActive?'#27ae60':'#e5e7eb'}; background:${isActive?'rgba(39,174,96,0.1)':'#fff'}; color:${isActive?'#27ae60':'#333'}; border-radius:12px; font-weight:700; font-size:15px; transition:all 0.2s;`;
-        b.textContent=`${val.toFixed(2).replace('.',',')} €`;
-        b.onclick=()=>{ 
-          w.data.price=val; 
-          Array.from(priceScroll.children).forEach(btn=>{
-             btn.className='ans'; 
-             btn.style.borderColor='#e5e7eb'; btn.style.background='#fff'; btn.style.color='#333';
-          });
-          b.className='ans on';
-          b.style.borderColor='#27ae60'; b.style.background='rgba(39,174,96,0.1)'; b.style.color='#27ae60';
-          refreshVerdienstEl();
-        };
-        priceScroll.appendChild(b);
-      });
-      box.appendChild(priceScroll);
-      
-      setTimeout(()=>{
-        const activeBtn = Array.from(priceScroll.children).find(b=>b.classList.contains('on'));
-        if(activeBtn) activeBtn.scrollIntoView({block:'nearest', inline:'center', behavior:'smooth'});
-      }, 100);
-
-      // 2. ABHOLCODE (Prominent)
+      // 1. ABHOLCODE (Prominent)
       const abhLabel=document.createElement('div'); abhLabel.className='hint'; abhLabel.style.marginBottom='6px'; abhLabel.textContent='Online-Verkauf (Empfohlen)';
       box.appendChild(abhLabel);
       
