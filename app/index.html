@@ -5658,9 +5658,19 @@
     img.loading = 'lazy';
     imageContainer.appendChild(img);
     
-    // Provider Badge
+    // Provider Badge (Klickbar -> Landing Page)
     const providerBadge = document.createElement('div');
     providerBadge.className = 'ocm-provider-badge';
+    // User Request: "Sidecom where the provider page Today's inscriptions and his weekly sermons"
+    providerBadge.style.cursor = 'pointer';
+    providerBadge.onclick = (e) => {
+        e.stopPropagation();
+        // Setze Filter auf diesen Provider und zeige Discovery (Landing Page Simulation)
+        activeDiscoverFilter = 'provider';
+        currentProviderFilter = data.providerId;
+        renderDiscover();
+        showToast(`Zeige alle Angebote von ${data.providerName}`);
+    };
     // Logo (Simuliert)
     const logo = document.createElement('div');
     logo.className = 'ocm-provider-logo';
@@ -5765,11 +5775,12 @@
     // Mobilitäts-Leiste ganz unten
     if(data.distanceKm != null){
       const walkingMinutes = Math.round(Number(data.distanceKm) * 12);
-      const carMinutes = Math.round(Number(data.distanceKm) * 1.2);
+      const carMinutes = Math.round(Number(data.distanceKm) * 1.5); // Etwas realistischer: 40km/h Stadtverkehr (1.5 min/km)
       const walkingMeters = Math.round(Number(data.distanceKm) * 1000);
       const distanceText = walkingMeters < 1000 ? `${walkingMeters}m` : `${Number(data.distanceKm).toFixed(1)}km`;
       const mobilityRow = document.createElement('div');
       mobilityRow.style.cssText = 'margin-top:10px; padding:8px 12px; font-size:11px; color:#666; font-weight:500; display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap;';
+      // User Request: Auto hinzufügen (aber Fußweg behalten)
       mobilityRow.innerHTML = `<span>🚶 ${walkingMinutes} min</span><span style="color:#999;">|</span><span>🚗 ${carMinutes} min</span><span style="color:#999;">|</span><span>📍 ${distanceText}</span>`;
       body.appendChild(mobilityRow);
     }
