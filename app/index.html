@@ -16656,7 +16656,7 @@
   // ============================================================
   function buildListingStep(){
     setWizardNextDefault();
-    const total = 5;
+    const total = 4;
     setWizardHeader('Inserat erstellen', `Schritt ${Math.min(w.step+1,total)} von ${total}`);
     const profile = normalizeProviderProfile(provider.profile || {});
     if(!w.data.pickupWindow){ w.data.pickupWindow = profile.mealWindow || DEFAULT_MEAL_WINDOW; }
@@ -16760,47 +16760,211 @@
     }
 
     if(w.step===2){
-      setWizardQuestion('Dein Preis – fair und transparent', 'Wähle deinen Verkaufspreis. Mit Abholnummer bestellen Gäste bequem vorab – du bekommst 0,89 € All-in pro Bestellung.');
+      setWizardQuestion('Verkaufseinstellungen', 'Lege Preis & Optionen fest. Online-Zahlung spart Zeit & sichert Umsatz.');
       const box=document.createElement('div');
-      const presets=document.createElement('div'); presets.className='answers';
-      [4.5,5.5,6.5,7.5,8.5].forEach(val=>{
+      
+      // 1. PREIS SCROLLER (Daumenfreundlich)
+      const priceLabel=document.createElement('div'); priceLabel.className='hint'; priceLabel.style.marginBottom='6px'; priceLabel.textContent='Verkaufspreis wählen';
+      box.appendChild(priceLabel);
+      
+      const priceScroll=document.createElement('div');
+      priceScroll.className='hide-scrollbar';
+      priceScroll.style.cssText='display:flex; gap:8px; overflow-x:auto; padding-bottom:4px; margin-bottom:16px; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch;';
+      
+      const prices=[];
+      for(let p=3.5; p<=15; p+=0.5) prices.push(p);
+      
+      prices.forEach(val=>{
         const b=document.createElement('button');
-        b.type='button'; b.className='ans'+(Number(w.data.price)===val?' on':'');
+        b.type='button'; 
+        const isActive = Math.abs(Number(w.data.price)-val)<0.1;
+        b.className = isActive ? 'ans on' : 'ans';
+        b.style.cssText=`flex:0 0 auto; min-width:72px; height:48px; display:flex; align-items:center; justify-content:center; scroll-snap-align:center; border:2px solid ${isActive?'#27ae60':'#e5e7eb'}; background:${isActive?'rgba(39,174,96,0.1)':'#fff'}; color:${isActive?'#27ae60':'#333'}; border-radius:12px; font-weight:700; font-size:15px; transition:all 0.2s;`;
         b.textContent=`${val.toFixed(2).replace('.',',')} €`;
-        b.onclick=()=>{ w.data.price=val; rebuildWizard(); };
-        presets.appendChild(b);
+        b.onclick=()=>{ 
+          w.data.price=val; 
+          Array.from(priceScroll.children).forEach(btn=>{
+             btn.className='ans'; 
+             btn.style.borderColor='#e5e7eb'; btn.style.background='#fff'; btn.style.color='#333';
+          });
+          b.className='ans on';
+          b.style.borderColor='#27ae60'; b.style.background='rgba(39,174,96,0.1)'; b.style.color='#27ae60';
+          refreshVerdienstEl();
+        };
+        priceScroll.appendChild(b);
       });
-      box.appendChild(presets);
-      const abhLabel=document.createElement('div'); abhLabel.className='hint'; abhLabel.style.marginTop='12px'; abhLabel.textContent='Abholnummer anbieten? (Gäste zahlen online, du bekommst die Bestellung)';
+      box.appendChild(priceScroll);
+      
+      setTimeout(()=>{
+        const activeBtn = Array.from(priceScroll.children).find(b=>b.classList.contains('on'));
+        if(activeBtn) activeBtn.scrollIntoView({block:'nearest', inline:'center', behavior:'smooth'});
+      }, 100);
+
+      // 2. ABHOLCODE (Prominent)
+      const abhLabel=document.createElement('div'); abhLabel.className='hint'; abhLabel.style.marginBottom='6px'; abhLabel.textContent='Online-Verkauf (Empfohlen)';
       box.appendChild(abhLabel);
-      const abhRow=document.createElement('div'); abhRow.className='answers'; abhRow.style.marginTop='6px';
-      const btnAbhJa=document.createElement('button'); btnAbhJa.type='button'; btnAbhJa.className='ans'+(w.data.hasPickupCode?' on':''); btnAbhJa.textContent='Ja';
+      
+      const abhRow=document.createElement('div'); abhRow.className='answers';
+      const btnAbhJa=document.createElement('button'); btnAbhJa.type='button'; btnAbhJa.className='ans'+(w.data.hasPickupCode?' on':''); 
+      btnAbhJa.style.cssText += w.data.hasPickupCode ? 'background:#2ecc71; color:white; border-color:#2ecc71;' : '';
+      btnAbhJa.innerHTML='<b>Ja, Zeit sparen</b><div style="font-size:11px;opacity:0.9;font-weight:400">0,89 € Gebühr/Verkauf</div>';
       btnAbhJa.onclick=()=>{ w.data.hasPickupCode=true; rebuildWizard(); };
-      const btnAbhNein=document.createElement('button'); btnAbhNein.type='button'; btnAbhNein.className='ans'+(!w.data.hasPickupCode?' on':''); btnAbhNein.textContent='Nein';
+      
+      const btnAbhNein=document.createElement('button'); btnAbhNein.type='button'; btnAbhNein.className='ans'+(!w.data.hasPickupCode?' on':''); 
+      btnAbhNein.textContent='Nein';
       btnAbhNein.onclick=()=>{ w.data.hasPickupCode=false; rebuildWizard(); };
+      
       abhRow.appendChild(btnAbhJa); abhRow.appendChild(btnAbhNein);
       box.appendChild(abhRow);
-      const exLabel=document.createElement('div'); exLabel.className='hint'; exLabel.style.marginTop='10px'; exLabel.textContent='Extras anbieten? (z. B. Beilagensalat, Soße)';
-      box.appendChild(exLabel);
+
+      // 3. EXTRAS, MEHRWEG, ALLERGENE
+      const detailsLabel=document.createElement('div'); detailsLabel.className='hint'; detailsLabel.style.marginTop='16px'; detailsLabel.style.marginBottom='6px'; detailsLabel.textContent='Optionen & Details';
+      box.appendChild(detailsLabel);
+      
+      const detailsContainer = document.createElement('div');
+      detailsContainer.style.cssText='display:flex; flex-direction:column; gap:8px;';
+      
+      const createToggle = (label, isOn, onClick) => {
+        const row = document.createElement('div');
+        row.style.cssText='display:flex; align-items:center; justify-content:space-between; padding:10px 12px; background:#f8f9fa; border-radius:12px;';
+        const txt = document.createElement('div');
+        txt.style.cssText='font-size:14px; font-weight:600; color:#2d3436;';
+        txt.textContent = label;
+        const toggle = document.createElement('button');
+        toggle.type='button';
+        toggle.style.cssText=`width:44px; height:24px; border-radius:12px; background:${isOn?'#2ecc71':'#e5e7eb'}; position:relative; transition:all 0.2s; border:none;`;
+        const knob = document.createElement('div');
+        knob.style.cssText=`width:20px; height:20px; background:#fff; border-radius:50%; position:absolute; top:2px; left:${isOn?'22px':'2px'}; transition:all 0.2s; box-shadow:0 1px 3px rgba(0,0,0,0.2);`;
+        toggle.appendChild(knob);
+        toggle.onclick = onClick;
+        row.appendChild(txt);
+        row.appendChild(toggle);
+        return row;
+      };
+
+      if(!w.data.reuse) w.data.reuse={enabled:false, deposit:0};
+      detailsContainer.appendChild(createToggle('Mehrweg anbieten?', w.data.reuse.enabled, () => {
+         w.data.reuse.enabled = !w.data.reuse.enabled;
+         if(w.data.reuse.enabled && !w.data.reuse.deposit) w.data.reuse.deposit=2;
+         rebuildWizard();
+      }));
+      if(w.data.reuse.enabled){
+         const depRow = document.createElement('div');
+         depRow.style.cssText='display:flex; gap:6px; margin-left:12px; margin-bottom:4px;';
+         [2,3,5].forEach(val=>{
+            const b=document.createElement('button'); b.type='button';
+            const active=w.data.reuse.deposit===val;
+            b.style.cssText=`padding:4px 10px; border-radius:8px; font-size:12px; border:1px solid ${active?'#2ecc71':'#ddd'}; background:${active?'rgba(46,204,113,0.1)':'#fff'}; color:${active?'#27ae60':'#666'}; font-weight:600;`;
+            b.textContent = val+'€ Pfand';
+            b.onclick=()=>{ w.data.reuse.deposit=val; rebuildWizard(); };
+            depRow.appendChild(b);
+         });
+         detailsContainer.appendChild(depRow);
+      }
+
+      detailsContainer.appendChild(createToggle('Allergene angeben?', w.data.wantsAllergens, () => {
+        w.data.wantsAllergens = !w.data.wantsAllergens;
+        if(!w.data.wantsAllergens) w.data.allergens=[];
+        rebuildWizard();
+      }));
+      if(w.data.wantsAllergens){
+         const allgRow = document.createElement('div');
+         allgRow.style.cssText='display:flex; flex-wrap:wrap; gap:6px; margin-left:12px; margin-bottom:4px;';
+         const ALLG_OPTS=['Gluten','Laktose','Nüsse','Ei','Soja'];
+         if(!w.data.allergens) w.data.allergens=[];
+         ALLG_OPTS.forEach(a=>{
+             const active=w.data.allergens.includes(a);
+             const b=document.createElement('button'); b.type='button';
+             b.style.cssText=`padding:4px 8px; border-radius:6px; font-size:11px; border:1px solid ${active?'#2ecc71':'#ddd'}; background:${active?'rgba(46,204,113,0.1)':'#fff'}; color:${active?'#27ae60':'#666'};`;
+             b.textContent=a;
+             b.onclick=()=>{
+                if(active) w.data.allergens = w.data.allergens.filter(x=>x!==a);
+                else w.data.allergens.push(a);
+                rebuildWizard();
+             };
+             allgRow.appendChild(b);
+         });
+         detailsContainer.appendChild(allgRow);
+      }
+
       if(!Array.isArray(w.data.extras)) w.data.extras=[];
-      const extrasAns=document.createElement('div'); extrasAns.className='answers'; extrasAns.style.marginTop='6px';
-      ['Beilagensalat','Extrasosse','Sonstiges'].forEach(name=>{
-        const active=w.data.extras.some(e=>e.name===name);
-        const b=document.createElement('button');
-        b.type='button'; b.className='ans'+(active?' on':'');
-        b.textContent=name;
-        b.onclick=()=>{
-          const idx=w.data.extras.findIndex(e=>e.name===name);
-          if(idx>=0) w.data.extras.splice(idx,1); else w.data.extras.push({name,price:0});
-          refreshVerdienstEl(); rebuildWizard();
-        };
-        extrasAns.appendChild(b);
-      });
-      box.appendChild(extrasAns);
+      const hasExtras = w.data.extras.length > 0;
+      detailsContainer.appendChild(createToggle('Extras (z.B. Salat)?', hasExtras, () => {
+         if(hasExtras) w.data.extras=[];
+         else w.data.extras=[{name:'Beilagensalat', price:0}];
+         refreshVerdienstEl();
+         rebuildWizard();
+      }));
+      if(hasExtras){
+         const exRow = document.createElement('div');
+         exRow.style.cssText='display:flex; flex-wrap:wrap; gap:6px; margin-left:12px; margin-bottom:4px;';
+         
+         // Vordefinierte Extras
+         ['Beilagensalat','Brot','Sauce'].forEach(name=>{
+            const active=w.data.extras.some(e=>e.name===name);
+            const b=document.createElement('button'); b.type='button';
+            b.style.cssText=`padding:4px 8px; border-radius:6px; font-size:11px; border:1px solid ${active?'#2ecc71':'#ddd'}; background:${active?'rgba(46,204,113,0.1)':'#fff'}; color:${active?'#27ae60':'#666'};`;
+            b.textContent=name;
+            b.onclick=()=>{
+               const idx=w.data.extras.findIndex(e=>e.name===name);
+               if(idx>=0) w.data.extras.splice(idx,1); else w.data.extras.push({name, price:0});
+               refreshVerdienstEl();
+               rebuildWizard();
+            };
+            exRow.appendChild(b);
+         });
+         
+         // Sonstiges (Eingabefeld)
+         const customName = 'Sonstiges';
+         const hasCustom = w.data.extras.some(e=> !['Beilagensalat','Brot','Sauce'].includes(e.name));
+         
+         const bCustom = document.createElement('button'); bCustom.type='button';
+         bCustom.style.cssText=`padding:4px 8px; border-radius:6px; font-size:11px; border:1px solid ${hasCustom?'#2ecc71':'#ddd'}; background:${hasCustom?'rgba(46,204,113,0.1)':'#fff'}; color:${hasCustom?'#27ae60':'#666'};`;
+         bCustom.textContent = hasCustom ? 'Sonstiges (aktiv)' : 'Sonstiges';
+         bCustom.onclick = () => {
+             if(hasCustom){
+                 w.data.extras = w.data.extras.filter(e=> ['Beilagensalat','Brot','Sauce'].includes(e.name));
+             } else {
+                 w.data.extras.push({name:'', price:0, isCustom:true});
+             }
+             refreshVerdienstEl();
+             rebuildWizard();
+         };
+         exRow.appendChild(bCustom);
+         detailsContainer.appendChild(exRow);
+
+         // Render Inputs for Custom Extras
+         w.data.extras.filter(e=>e.isCustom).forEach((extra, idx) => {
+             const inputRow = document.createElement('div');
+             inputRow.style.cssText='display:flex; gap:6px; margin-left:12px; margin-top:4px;';
+             
+             const nameInput = document.createElement('input');
+             nameInput.type='text';
+             nameInput.placeholder='Name (z.B. Extra Käse)';
+             nameInput.value = extra.name;
+             nameInput.style.cssText='flex:1; padding:6px; font-size:13px; border:1px solid #ddd; border-radius:6px;';
+             nameInput.oninput = (e) => { extra.name = e.target.value; };
+             
+             const priceInput = document.createElement('input');
+             priceInput.type='number';
+             priceInput.placeholder='€';
+             priceInput.value = extra.price || '';
+             priceInput.style.cssText='width:60px; padding:6px; font-size:13px; border:1px solid #ddd; border-radius:6px;';
+             priceInput.oninput = (e) => { extra.price = parseFloat(e.target.value)||0; refreshVerdienstEl(); };
+
+             inputRow.appendChild(nameInput);
+             inputRow.appendChild(priceInput);
+             detailsContainer.appendChild(inputRow);
+         });
+      }
+
+      box.appendChild(detailsContainer);
+
       const verdienstEl=document.createElement('div');
       verdienstEl.id='listingVerdienstEl';
-      verdienstEl.style.cssText='margin-top:12px; padding:12px; background:rgba(46,204,113,0.12); border-radius:12px; border:1px solid rgba(46,204,113,0.35); font-weight:800; font-size:14px;';
+      verdienstEl.style.cssText='margin-top:20px; padding:12px; background:rgba(46,204,113,0.1); border-radius:12px; font-weight:700; font-size:14px; text-align:center; color:#27ae60;';
       box.appendChild(verdienstEl);
+      
       function refreshVerdienstEl(){
         const el=document.getElementById('listingVerdienstEl');
         if(!el) return;
@@ -16808,98 +16972,18 @@
         const exSum=(w.data.extras||[]).reduce((s,e)=>s+Number(e.price||0),0);
         const geb=w.data.hasPickupCode ? SUCCESS_FEE : 0;
         const netto=p+exSum-geb;
-        el.textContent=`Dein Verdienst ≈ ${netto.toFixed(2).replace('.',',')} €`;
+        el.innerHTML=`Dein Verdienst pro Gericht: <span style="font-size:16px;">${netto.toFixed(2).replace('.',',')} €</span>`;
       }
-      refreshVerdienstEl();
+
       setWizardContent(box);
+      setTimeout(refreshVerdienstEl, 0);
       wNextBtn.textContent='Weiter';
       return;
     }
+
+    // Step 3 (old Step 3 removed, merged into Step 2)
 
     if(w.step===3){
-      setWizardQuestion('Nachhaltig & transparent', 'Mehrweg schont die Umwelt. Allergene geben Gästen Sicherheit – beides freiwillig.');
-      const box=document.createElement('div');
-      box.style.cssText='display:flex;flex-direction:column;gap:10px;max-height:min(65vh,420px);overflow-y:auto;';
-      w.data.dineInPossible = true;
-      // Kompakte Säulen (eine Zeile)
-      const pillars=document.createElement('div');
-      pillars.style.cssText='display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px;';
-      pillars.innerHTML=`
-        <span style="padding:6px 10px;background:rgba(39,174,96,0.15);border-radius:8px;font-size:12px;font-weight:700;">🍴 Vor Ort</span>
-        <span style="padding:6px 10px;background:${w.data.hasPickupCode?'rgba(255,215,0,0.2)':'#eee'};border-radius:8px;font-size:12px;font-weight:700;">🧾 Abholnr. ${w.data.hasPickupCode?'an':'aus'}</span>
-      `;
-      box.appendChild(pillars);
-      if(!w.data.reuse) w.data.reuse={enabled:false,deposit:0};
-      // Mehrweg: Bietest du Mehrweg an? Ja / Nein
-      const mwRow=document.createElement('div');
-      mwRow.style.marginTop='4px';
-      const mwLabel=document.createElement('div'); mwLabel.className='hint'; mwLabel.style.marginBottom='4px'; mwLabel.textContent='Mehrweg anbieten? (Pfand für Mehrweg-Behälter)';
-      mwRow.appendChild(mwLabel);
-      const mwYesNo=document.createElement('div'); mwYesNo.className='answers'; mwYesNo.style.display='flex'; mwYesNo.style.gap='8px'; mwYesNo.style.flexWrap='wrap';
-      const reuseOn=!!w.data.reuse.enabled;
-      const MEHRWEG_PRESETS=[2,3,5];
-      const btnMwJa=document.createElement('button'); btnMwJa.type='button'; btnMwJa.className='ans'+(reuseOn?' on':'');
-      btnMwJa.textContent='Ja';
-      btnMwJa.onclick=()=>{ w.data.reuse.enabled=true; if(!w.data.reuse.deposit) w.data.reuse.deposit=2; rebuildWizard(); };
-      const btnMwNein=document.createElement('button'); btnMwNein.type='button'; btnMwNein.className='ans'+(!reuseOn?' on':'');
-      btnMwNein.textContent='Nein';
-      btnMwNein.onclick=()=>{ w.data.reuse.enabled=false; w.data.reuse.deposit=0; rebuildWizard(); };
-      mwYesNo.appendChild(btnMwJa); mwYesNo.appendChild(btnMwNein);
-      mwRow.appendChild(mwYesNo);
-      if(reuseOn){
-        const pfandLabel=document.createElement('div'); pfandLabel.className='hint'; pfandLabel.style.marginTop='8px'; pfandLabel.style.marginBottom='4px'; pfandLabel.textContent='Pfandbetrag wählen';
-        mwRow.appendChild(pfandLabel);
-        const pfandRow=document.createElement('div'); pfandRow.className='answers'; pfandRow.style.display='flex'; pfandRow.style.gap='8px'; pfandRow.style.flexWrap='wrap';
-        MEHRWEG_PRESETS.forEach(euro=>{
-          const b=document.createElement('button');
-          b.type='button'; b.className='ans'+(Number(w.data.reuse.deposit)===euro?' on':'');
-          b.textContent=euro+' €';
-          b.onclick=()=>{ w.data.reuse.deposit=euro; rebuildWizard(); };
-          pfandRow.appendChild(b);
-        });
-        mwRow.appendChild(pfandRow);
-      }
-      box.appendChild(mwRow);
-      // Allergene angeben? Ja / Nein
-      const alRow=document.createElement('div');
-      alRow.style.marginTop='6px';
-      const alQuestion=document.createElement('div'); alQuestion.className='hint'; alQuestion.style.marginBottom='4px'; alQuestion.textContent='Allergene anzeigen? (Gäste informieren – freiwillig)';
-      alRow.appendChild(alQuestion);
-      const alYesNo=document.createElement('div'); alYesNo.className='answers'; alYesNo.style.display='flex'; alYesNo.style.gap='8px'; alYesNo.style.flexWrap='wrap';
-      const wantsAllergens=!!w.data.wantsAllergens;
-      const btnAlJa=document.createElement('button'); btnAlJa.type='button'; btnAlJa.className='ans'+(wantsAllergens?' on':'');
-      btnAlJa.textContent='Ja';
-      btnAlJa.onclick=()=>{ w.data.wantsAllergens=true; rebuildWizard(); };
-      const btnAlNein=document.createElement('button'); btnAlNein.type='button'; btnAlNein.className='ans'+(!wantsAllergens?' on':'');
-      btnAlNein.textContent='Nein';
-      btnAlNein.onclick=()=>{ w.data.wantsAllergens=false; w.data.allergens=[]; rebuildWizard(); };
-      alYesNo.appendChild(btnAlJa); alYesNo.appendChild(btnAlNein);
-      alRow.appendChild(alYesNo);
-      if(wantsAllergens){
-        if(!Array.isArray(w.data.allergens)) w.data.allergens=[];
-        const list=document.createElement('div');
-        list.className='answers';
-        list.style.cssText='margin-top:6px;display:grid;grid-template-columns:repeat(2,1fr);gap:6px;max-height:180px;overflow-y:auto;';
-        const checklist=typeof ALLERGENE_CHECKLIST_A_R!=='undefined'?ALLERGENE_CHECKLIST_A_R:Object.entries(ALLERGENE_STANDARD).map(([code,label])=>({code,label}));
-        checklist.forEach(a=>{
-          const b=document.createElement('button');
-          b.type='button';
-          b.className='ans allergen-ans'+(w.data.allergens.includes(a.code)?' on':'');
-          b.style.display='flex'; b.style.alignItems='center'; b.style.gap='6px'; b.style.justifyContent='flex-start'; b.style.padding='8px 10px'; b.style.fontSize='13px';
-          const firstWord=typeof allergenFirstWord==='function'?allergenFirstWord(a.label||''):(a.label||'').trim().split(/\s+/)[0]||(a.label||'').slice(0,15);
-          b.innerHTML=`<i data-lucide="shield-alert" style="width:16px;height:16px;flex-shrink:0;"></i><span>${esc(a.code)} ${esc(firstWord)}</span>`;
-          b.onclick=()=>{ const i=w.data.allergens.indexOf(a.code); if(i>=0) w.data.allergens.splice(i,1); else w.data.allergens.push(a.code); rebuildWizard(); };
-          list.appendChild(b);
-        });
-        alRow.appendChild(list);
-      }
-      box.appendChild(alRow);
-      setWizardContent(box);
-      wNextBtn.textContent='Weiter';
-      return;
-    }
-
-    if(w.step===4){
       setWizardQuestion('Fertig! So geht dein Gericht live', 'Wähle deine Abholzeit – dann entscheidest du: sofort live, ins Kochbuch oder in den Wochenplan.');
       const box=document.createElement('div');
       const pw = w.data.pickupWindow || profile.mealWindow || DEFAULT_MEAL_WINDOW;
