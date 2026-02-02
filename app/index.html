@@ -846,22 +846,80 @@
       box-shadow:0 4px 16px rgba(0,0,0,.2);
       display:flex;
       flex-direction:column;
+      position:relative;
+      transition:transform 0.1s;
+    }
+    #v-provider-cookbook .cookbook-item:active{ transform:scale(0.98); }
+    
+    #v-provider-cookbook .cookbook-item-header{
+      position:relative;
+      width:100%;
+      aspect-ratio:1;
     }
     #v-provider-cookbook .cookbook-item-image{
       width:100%;
-      aspect-ratio:1;
-      background:#383838;
+      height:100%;
       object-fit:cover;
+      background:#383838;
     }
-    #v-provider-cookbook .cookbook-item-body{ padding:12px; flex:1; min-width:0; }
-    #v-provider-cookbook .cookbook-item-title{ font-weight:800; font-size:15px; color:#fff; margin-bottom:6px; line-height:1.3; }
-    #v-provider-cookbook .cookbook-item-meta{ display:flex; align-items:center; gap:8px; margin-bottom:10px; flex-wrap:wrap; }
-    #v-provider-cookbook .cookbook-item-price{ font-weight:700; font-size:14px; color:#FFD700; }
-    #v-provider-cookbook .cookbook-item-badge{ font-size:11px; padding:2px 6px; border-radius:6px; background:rgba(255,255,255,0.1); color:rgba(255,255,255,0.8); }
-    #v-provider-cookbook .cookbook-item-btn{ width:100%; min-height:48px; border-radius:12px; font-weight:700; font-size:14px; background:#FFD700; color:#334155; border:none; margin-top:4px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; }
-    #v-provider-cookbook .cookbook-item-menu{ position:absolute; top:8px; right:8px; width:36px; height:36px; border-radius:50%; background:rgba(0,0,0,0.5); color:#fff; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:18px; }
-    #v-provider-cookbook .cookbook-tabs button{ flex:1; min-height:48px; border-radius:10px; font-weight:700; font-size:14px; border:none; background:transparent; color:rgba(255,255,255,0.7); cursor:pointer; transition:all .2s; }
-    #v-provider-cookbook .cookbook-tabs button.on{ background:#FFD700; color:#334155; }
+    #v-provider-cookbook .cookbook-item-price-tag{
+      position:absolute;
+      top:8px;
+      left:8px;
+      background:rgba(0,0,0,0.6);
+      backdrop-filter:blur(4px);
+      color:#FFD700;
+      font-weight:700;
+      font-size:13px;
+      padding:4px 8px;
+      border-radius:8px;
+      border:1px solid rgba(255,255,255,0.1);
+    }
+    #v-provider-cookbook .cookbook-item-menu{
+      position:absolute;
+      top:8px;
+      right:8px;
+      width:32px;
+      height:32px;
+      border-radius:50%;
+      background:rgba(0,0,0,0.6);
+      backdrop-filter:blur(4px);
+      color:#fff;
+      border:1px solid rgba(255,255,255,0.1);
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      z-index:2;
+    }
+    
+    #v-provider-cookbook .cookbook-item-body{ padding:12px; flex:1; display:flex; flex-direction:column; }
+    #v-provider-cookbook .cookbook-item-title{ font-weight:700; font-size:15px; color:#fff; margin-bottom:4px; line-height:1.3; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+    #v-provider-cookbook .cookbook-item-meta{ display:flex; align-items:center; gap:8px; margin-bottom:8px; flex-wrap:wrap; }
+    #v-provider-cookbook .cookbook-item-badge{ font-size:10px; font-weight:600; padding:2px 6px; border-radius:4px; background:rgba(255,255,255,0.1); color:rgba(255,255,255,0.7); text-transform:uppercase; letter-spacing:0.5px; }
+    #v-provider-cookbook .cookbook-item-info{ font-size:11px; color:rgba(255,255,255,0.5); margin-left:auto; }
+    
+    #v-provider-cookbook .cookbook-item-btn{
+      width:100%;
+      min-height:44px;
+      border-radius:12px;
+      font-weight:700;
+      font-size:14px;
+      background:#FFD700;
+      color:#334155;
+      border:none;
+      margin-top:auto;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:6px;
+      box-shadow:0 2px 8px rgba(255,215,0,0.2);
+    }
+    
+    #v-provider-cookbook .cookbook-tabs button{ flex:1; min-height:44px; border-radius:10px; font-weight:600; font-size:14px; border:none; background:transparent; color:rgba(255,255,255,0.6); cursor:pointer; transition:all .2s; }
+    #v-provider-cookbook .cookbook-tabs button.on{ background:#FFD700; color:#334155; font-weight:700; box-shadow:0 2px 8px rgba(0,0,0,0.2); }
+    
     /* Kochbuch Action-Sheet (Bottom Sheet) */
     #cookbookActionSheetBd{ z-index:999; }
     .cookbook-action-sheet{
@@ -4214,28 +4272,35 @@
 
     <section class="view" id="v-provider-cookbook" style="background:#323232; min-height:100vh; padding:20px; padding-bottom:90px;">
       <!-- Header -->
-      <div class="cookbook-header" style="margin-bottom:20px; text-align:center;">
-        <div style="font-size:11px; color:rgba(255,255,255,0.5); text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">Mittagio – dein digitaler Helfer</div>
-        <h1 style="margin:0; font-size:28px; font-weight:900; color:#fff; line-height:1.2;">Mein Kochbuch</h1>
-        <p class="cookbook-subtitle" style="margin:8px 0 0; font-size:14px; color:rgba(255,255,255,0.7); line-height:1.4;">Deine Gerichte – einmal anlegen, immer wieder nutzen.</p>
+      <div class="cookbook-header" style="margin-bottom:24px;">
+        <div style="font-size:11px; color:rgba(255,255,255,0.5); text-transform:uppercase; letter-spacing:1px; margin-bottom:4px; font-weight:700;">Dein Archiv</div>
+        <h1 style="margin:0; font-size:32px; font-weight:900; color:#fff; line-height:1.1;">Mein Kochbuch</h1>
+        <p class="cookbook-subtitle" style="margin:8px 0 0; font-size:15px; color:rgba(255,255,255,0.7); line-height:1.5;">Deine Bestseller auf Abruf. Wähle ein Gericht und stelle es in Sekunden online.</p>
       </div>
+      
       <!-- CTA: Gericht hinzufügen -->
-      <button class="btn cookbook-cta" type="button" id="btnCookbookAdd" style="width:100%; min-height:52px; margin-bottom:20px; background:#FFD700; color:#334155; font-weight:800; font-size:16px; border:none; border-radius:14px; display:flex; align-items:center; justify-content:center; gap:10px; box-shadow:0 4px 16px rgba(255,215,0,0.3);">
-        <i data-lucide="plus" style="width:22px;height:22px;"></i>
-        <span>Gericht hinzufügen</span>
+      <button class="btn cookbook-cta" type="button" id="btnCookbookAdd" style="width:100%; min-height:56px; margin-bottom:24px; background:linear-gradient(135deg, #FFD700 0%, #FFC107 100%); color:#334155; font-weight:800; font-size:16px; border:none; border-radius:16px; display:flex; align-items:center; justify-content:center; gap:10px; box-shadow:0 8px 20px rgba(255,215,0,0.25); transition:transform 0.1s;">
+        <i data-lucide="plus-circle" style="width:24px;height:24px;"></i>
+        <span>Neues Gericht anlegen</span>
       </button>
+
       <!-- Suche + Sort (eine Zeile) -->
       <div class="cookbook-toolbar" style="display:flex; gap:10px; margin-bottom:16px; align-items:center;">
-        <input class="field cookbook-search" id="cookbookSearch" type="text" placeholder="Gericht suchen…" style="flex:1; min-height:48px; background:#404040; border:1px solid rgba(255,255,255,0.12); color:#fff; border-radius:12px; padding:12px 16px; font-size:16px;" />
-        <select id="cookbookSortSelect" style="min-height:48px; padding:12px 14px; border-radius:12px; background:#404040; border:1px solid rgba(255,255,255,0.12); color:#fff; font-size:14px; font-weight:600; min-width:0;">
+        <div style="position:relative; flex:1;">
+          <i data-lucide="search" style="position:absolute; left:14px; top:50%; transform:translateY(-50%); color:rgba(255,255,255,0.4); width:18px; height:18px;"></i>
+          <input class="field cookbook-search" id="cookbookSearch" type="text" placeholder="Suchen…" style="width:100%; min-height:48px; background:#404040; border:1px solid rgba(255,255,255,0.1); color:#fff; border-radius:12px; padding:12px 12px 12px 42px; font-size:16px; font-weight:500;" />
+        </div>
+        <select id="cookbookSortSelect" style="min-height:48px; padding:0 14px; border-radius:12px; background:#404040; border:1px solid rgba(255,255,255,0.1); color:#fff; font-size:14px; font-weight:600; min-width:0; appearance:none; background-image:url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2216%22 height=%2216%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22white%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22><path d=%22m6 9 6 6 6-6%22/></svg>'); background-repeat:no-repeat; background-position:right 10px center; padding-right:32px;">
           <option value="recent">Zuletzt</option>
           <option value="alpha">A–Z</option>
           <option value="priceAsc">Preis ↑</option>
           <option value="priceDesc">Preis ↓</option>
         </select>
       </div>
-      <!-- Tabs: Gerichte | Entwürfe (Segmented Control, zuerst Gerichte) -->
-      <div class="cookbook-tabs" id="cookbookTabs" role="tablist" style="display:flex; background:#404040; border-radius:14px; padding:4px; margin-bottom:20px;"></div>
+      
+      <!-- Tabs: Gerichte | Entwürfe (Segmented Control) -->
+      <div class="cookbook-tabs" id="cookbookTabs" role="tablist" style="display:flex; background:#404040; border-radius:14px; padding:4px; margin-bottom:24px; border:1px solid rgba(255,255,255,0.05);"></div>
+      
       <!-- Grid oder Empty State -->
       <div id="cookbookList" class="cookbook-grid"></div>
     </section>
@@ -15967,7 +16032,7 @@
     if(tabs){
       tabs.innerHTML='';
       [
-        {id:'dishes', label:'Gerichte'},
+        {id:'dishes', label:'Meine Gerichte'},
         {id:'drafts', label:'Entwürfe'}
       ].forEach(t=>{
         const b=document.createElement('button');
@@ -15987,14 +16052,16 @@
       box.className='';
       box.innerHTML = `
         <div class="cookbook-empty" style="text-align:center; padding:48px 24px;">
-          <div style="width:80px; height:80px; margin:0 auto 20px; background:rgba(255,215,0,0.15); border-radius:50%; display:flex; align-items:center; justify-content:center;">
-            <i data-lucide="book-open" style="width:40px; height:40px; color:#FFD700;"></i>
+          <div style="width:96px; height:96px; margin:0 auto 24px; background:rgba(255,215,0,0.1); border-radius:50%; display:flex; align-items:center; justify-content:center; border:1px solid rgba(255,215,0,0.2);">
+            <i data-lucide="chef-hat" style="width:48px; height:48px; color:#FFD700;"></i>
           </div>
-          <div style="font-weight:800; font-size:18px; color:#fff; margin-bottom:8px;">Noch keine Gerichte</div>
-          <div style="font-size:14px; color:rgba(255,255,255,0.7); line-height:1.5; margin-bottom:24px;">Leg dein erstes Gericht an und nutze es immer wieder.</div>
-          <button class="btn" type="button" id="btnCookbookEmptyAdd" style="width:100%; max-width:280px; margin:0 auto; min-height:52px; background:#FFD700; color:#334155; font-weight:800; border:none; border-radius:14px; display:flex; align-items:center; justify-content:center; gap:8px;">
-            <i data-lucide="plus" style="width:20px;height:20px;"></i>
-            Gericht hinzufügen
+          <div style="font-weight:900; font-size:22px; color:#fff; margin-bottom:12px;">Noch leer hier?</div>
+          <div style="font-size:16px; color:rgba(255,255,255,0.7); line-height:1.6; margin-bottom:32px; max-width:300px; margin-left:auto; margin-right:auto;">
+            Starte jetzt deine Erfolgsgeschichte! Lege dein erstes Gericht an – es dauert nur wenige Sekunden.
+          </div>
+          <button class="btn" type="button" id="btnCookbookEmptyAdd" style="width:100%; max-width:280px; margin:0 auto; min-height:56px; background:#FFD700; color:#334155; font-weight:800; border:none; border-radius:16px; display:flex; align-items:center; justify-content:center; gap:10px; box-shadow:0 8px 24px rgba(255,215,0,0.25);">
+            <i data-lucide="plus" style="width:24px;height:24px;"></i>
+            Jetzt Gericht anlegen
           </button>
         </div>
       `;
@@ -16017,42 +16084,47 @@
 
     const list = cookbookTab === 'drafts' ? drafts : dishes;
     const formatDayLabel = (iso)=>{
-      if(!iso) return '—';
+      if(!iso) return 'Neu';
       const d = new Date(iso);
       if(Number.isNaN(d.getTime())) return iso;
       const today = isoDate(new Date());
-      const tomorrow = isoDate(new Date(Date.now()+86400000));
+      const yesterday = isoDate(new Date(Date.now()-86400000));
       if(iso===today) return 'Heute';
-      if(iso===tomorrow) return 'Morgen';
-      return fmtDay(d);
+      if(iso===yesterday) return 'Gestern';
+      return d.toLocaleDateString('de-DE', {day:'2-digit', month:'2-digit'});
     };
 
     const buildItem = (entry, isDraft)=>{
       const item=document.createElement('div');
       item.className='cookbook-item';
-
-      const lastOnline = offers
-        .filter(o=>o.providerId===providerId() && o.dish===entry.dish)
-        .map(o=>o.day)
-        .sort()
-        .slice(-1)[0];
-
+      
+      // Klick auf ganze Karte -> Flow starten (One-Tap-Feeling)
+      // Aber wir haben auch den Menü-Button.
+      
       const imgEl = entry.photoData
-        ? `<img class="cookbook-item-image" src="${esc(entry.photoData)}" alt="${esc(entry.dish)}" />`
+        ? `<img class="cookbook-item-image" src="${esc(entry.photoData)}" alt="${esc(entry.dish)}" loading="lazy" />`
         : `<div class="cookbook-item-image" style="background:#383838; display:flex; align-items:center; justify-content:center;"><i data-lucide="utensils" style="width:32px; height:32px; color:rgba(255,255,255,0.3);"></i></div>`;
+      
       const categoryBadge = entry.category ? `<span class="cookbook-item-badge">${esc(entry.category)}</span>` : '';
+      const lastUsedLabel = isDraft ? 'Entwurf' : 'Zuletzt: ' + esc(formatDayLabel(entry.lastUsed));
 
       item.innerHTML = `
-        ${imgEl}
-        <button type="button" class="cookbook-item-menu" aria-label="Optionen">⋯</button>
+        <div class="cookbook-item-header">
+          ${imgEl}
+          <div class="cookbook-item-price-tag">${euro(entry.price||0)}</div>
+          <button type="button" class="cookbook-item-menu" aria-label="Optionen">
+            <i data-lucide="more-horizontal"></i>
+          </button>
+        </div>
         <div class="cookbook-item-body">
           <div class="cookbook-item-title">${esc(entry.dish||'Gericht')}</div>
           <div class="cookbook-item-meta">
-            <span class="cookbook-item-price">${euro(entry.price||0)}</span>
             ${categoryBadge}
+            <span class="cookbook-item-info">${lastUsedLabel}</span>
           </div>
-          <div class="cookbook-facts">${isDraft ? 'Entwurf' : 'Zuletzt: ' + esc(formatDayLabel(lastOnline))}</div>
-          <button type="button" class="cookbook-item-btn" data-dish-id="${esc(entry.id)}">Inserieren</button>
+          <button type="button" class="cookbook-item-btn" data-dish-id="${esc(entry.id)}">
+            ${isDraft ? 'Weiter bearbeiten' : 'Wieder online stellen'}
+          </button>
         </div>
       `;
 
@@ -16063,6 +16135,11 @@
       }
       const insertBtn = item.querySelector('.cookbook-item-btn');
       if(insertBtn) insertBtn.onclick = ()=>{ startListingFlow({dishId: entry.id, date: createFlowPreselectedDate || isoDate(new Date())}); };
+      
+      // Optional: Klick auf Bild öffnet auch Flow?
+      // const head = item.querySelector('.cookbook-item-header');
+      // if(head) head.onclick = insertBtn.onclick;
+
       return item;
     };
 
@@ -16074,7 +16151,6 @@
       return;
     }
     list.forEach(entry=> box.appendChild(buildItem(entry, cookbookTab==='drafts')));
-    applyStaticIcons();
     if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
   }
 
