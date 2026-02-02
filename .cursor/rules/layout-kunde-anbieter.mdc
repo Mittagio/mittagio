@@ -15,13 +15,13 @@ alwaysApply: true
 
 - Discover/Entdecken, Gericht-Detailansicht, Favoriten/Mittagsbox, Profil (Kundenkontext).
 - Design-Vorgaben: Clean, modern, keine Schiefertafeln. 3 Säulen (🍴 Vor Ort, 🔄 Mehrweg, 🧾 Abholnummer) wie in `docs/GERICHT_DETAILANSICHT_KONZEPT.md` und Favoritenseiten-Spec.
-- Referenzdokumente: `docs/GERICHT_DETAILANSICHT_KONZEPT.md`, Master-Dokumentation Favoritenseite (2x2 Grid, Jiggle, Abholnummer hervorgehoben).
+- Referenzdokumente: `docs/GERICHT_DETAILANSICHT_KONZEPT.md`, `docs/MASTER_FAVORITENSEITE.md` (2x2 Grid, Jiggle, Abholnummer #FFD700).
 
 ## Anbieterseite (Provider Mode)
 
 - Dashboard (Mein Betrieb), Abholungen, Wochenplan, Kochbuch, Inseratsflow/Wizard.
 - Design-Vorgaben: Helles, aufgeräumtes Layout (kein dunkles Theme). Inseratsflow wie in `docs/INSERATSFLOW_KONZEPT.md`.
-- Referenzdokumente: `docs/INSERATSFLOW_KONZEPT.md`, `docs/INSERATSFLOW_KONZEPT.md` (Fixkosten 4,99 €, Verdienst-Vorschau, CTA „Jetzt für 4,99 € inserieren“).
+- Referenzdokumente: `docs/INSERATSFLOW_KONZEPT.md` (Fixkosten 4,99 €, Verdienst-Vorschau, CTA „Jetzt für 4,99 € inserieren“).
 
 ## Bei Änderungen
 
