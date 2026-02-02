@@ -3380,34 +3380,8 @@
   </div>
 
   <main>
-    <!-- START - Lunch-Feed (Social Style) -->
-    <section class="view customer-view" id="v-start">
-      <!-- Standort-Suche -->
-      <div class="panel" style="margin-top:12px;">
-        <div class="section-title">Entdecken</div>
-        <div class="loc-row" style="margin-top:8px;">
-          <input class="field" id="startLocationInput" type="text" placeholder="Ort oder PLZ eingeben" />
-          <button class="pin-btn" type="button" id="btnStartLocationPin" aria-label="Standort setzen"></button>
-        </div>
-      </div>
+    <!-- START - Lunch-Feed (Social Style) - ENTFERNT -->
 
-      <!-- Filter: Kategorien und Tage -->
-      <div style="height:10px"></div>
-      <div class="hint" style="padding:0 14px;">Kategorien</div>
-      <div class="chiprow" id="startCatChips"></div>
-      <div class="hint" style="margin-top:6px; padding:0 14px;">Datum</div>
-      <div class="dayrow" id="startDayChips"></div>
-      <div class="answers" style="margin-top:6px; padding:0 14px;">
-        <button class="ans" type="button" id="btnStartNear" data-icon="location">In der Nähe</button>
-      </div>
-
-      <!-- Angebots-Grid (normale Kacheln) -->
-      <div class="section-title" style="margin-top:8px; padding:0 14px;">Heute in deiner Nähe</div>
-      <div class="grid" id="startOfferGrid"></div>
-      <p class="hint" id="startEmptyOffers" style="display:none; text-align:center; padding:40px 20px;">
-        Noch keine Angebote. Demo: Als Anbieter ein Inserat erstellen.
-      </p>
-    </section>
 
     <!-- CUSTOMER: Discover - App-like UX (Final Spec) -->
     <section class="view customer-view active" id="v-discover">
@@ -6744,7 +6718,7 @@
 
   // --- Navigation ---
   const views = {
-    start:'v-start',
+    start:'v-discover',
     discover:'v-discover', fav:'v-fav', orders:'v-orders', cart:'v-cart', profile:'v-profile',
     pickupCode:'v-pickup-code', // Neuer AbholcodeScreen
     checkout:'v-checkout', // One-Page Checkout
@@ -6836,8 +6810,8 @@
     if(modePill) modePill.style.display = isProv ? 'inline-flex' : 'none';
     if(statusIndicator) statusIndicator.style.display = (isProv && provider.loggedIn) ? 'flex' : 'none';
     
-    const supportBtn = document.getElementById('btnProviderSupportEmergency');
-    if(supportBtn) supportBtn.style.display = (isProv && provider.loggedIn) ? 'flex' : 'none';
+    // Support-Button Logik entfernt
+
     
     if(isProv && provider.loggedIn){
       document.body.classList.add('provider-mode');
@@ -8733,16 +8707,8 @@
     };
   }
   
-  // Legacy Toggle Handler entfernt - nur noch Topbar-Toggle verwendet
-  if(toggleDiscoverViewTopbar){
-    toggleDiscoverViewTopbar.onclick = () => {
-      const newMode = discoverViewMode === 'list' ? 'swipe' : 'list';
-      if(typeof triggerHapticFeedback === 'function') triggerHapticFeedback([15]);
-      switchDiscoverView(newMode);
-      save(LS.discoverView, newMode);
-      syncToggleState();
-    };
-  }
+  // Legacy Toggle Handler entfernt
+
   
   // Micro-Hint beim ersten Start (nur einmal anzeigen)
   const fabHintShown = load('fabHintShown', false);
