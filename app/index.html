@@ -106,6 +106,13 @@
       -webkit-touch-callout: none;
       touch-action: pan-y pinch-zoom; /* Vertikales Scrollen erlauben, horizontales Swipe verhindern */
     }
+    
+    /* Hide Provider Status Indicator in Customer Mode (Fix Green Dot) */
+    body:not(.provider-mode) #providerStatusIndicator,
+    body:not(.provider-mode) #statusIndicatorDot {
+      display: none !important;
+    }
+    
     a{color:inherit}
 
     /* App shell */
@@ -3394,7 +3401,7 @@
             <button class="discover-location-pill-clickable" type="button" id="btnDiscoverLocationToggle" style="display:flex; align-items:center; gap:4px; padding:6px 12px; border-radius:16px; background:rgba(0,0,0,.04); border:none; font-size:13px; font-weight:600; color:#333; cursor:pointer; transition:all 0.2s ease;">
               <span id="discoverCurrentLocation" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">Jena</span>
             </button>
-            <div id="discoverLocationExpanded" style="display:none; position:absolute; top:100%; left:0; margin-top:4px; z-index:100; background:#fff; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.15); border:1px solid rgba(0,0,0,0.1); overflow:hidden; min-width:200px;">
+            <div id="discoverLocationExpanded" style="display:none; position:absolute; top:100%; left:0; margin-top:4px; z-index:9999; background:#fff; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.15); border:1px solid rgba(0,0,0,0.1); overflow:hidden; min-width:200px;">
               <div style="padding:8px;">
                 <input type="text" id="discoverLocationInput" placeholder="Ort oder PLZ eingeben..." autocomplete="address-line2" style="width:100%; padding:10px 12px; border-radius:8px; border:2px solid rgba(0,0,0,0.1); font-size:14px; background:#fff; outline:none; transition:border-color 0.2s ease;" onfocus="this.style.borderColor='#FFD700';" onblur="this.style.borderColor='rgba(0,0,0,0.1)';" />
                 <div id="discoverLocationSuggestions" style="max-height:200px; overflow-y:auto; margin-top:4px;"></div>
@@ -3410,7 +3417,12 @@
       </div>
 
       <!-- Sticky Categories Bar -->
-      <div class="discover-categories-sticky" id="discoverCategoriesBar">
+      <div class="discover-categories-sticky" id="discoverCategoriesBar" style="z-index:90;">
+        <!-- Wird dynamisch befüllt -->
+      </div>
+      
+      <!-- Sticky Days Bar (Second Layer) -->
+      <div class="discover-days-sticky" id="discoverDaysBar" style="position:sticky; top:115px; z-index:89; background:rgba(247,246,240,0.95); backdrop-filter:blur(10px); padding:8px 16px; overflow-x:auto; white-space:nowrap; display:flex; gap:10px; border-bottom:1px solid rgba(0,0,0,0.05); margin-bottom:16px; scrollbar-width:none;">
         <!-- Wird dynamisch befüllt -->
       </div>
 
@@ -4874,10 +4886,8 @@
   </main>
 
   <!-- Floating Action Button (FAB) für Modus-Wechsel -->
-  <button class="fab-mode-toggle" id="fabModeToggle" aria-label="Ansicht wechseln" style="display:none;">
-    <i data-lucide="sparkles" id="fabModeIcon"></i>
-    <div class="fab-hint" id="fabHint">Lust auf Inspiration?</div>
-  </button>
+  <!-- FAB Mode Toggle entfernt -->
+
 
   <!-- CUSTOMER bottom nav - Mittagio-Bar -->
   <nav class="bottom" id="customerNav">
@@ -5558,20 +5568,20 @@
     const bar = document.getElementById('discoverCategoriesBar');
     if(!bar) return;
     
-    // Kategorien definieren (Icon + Label + ID)
+    // Kategorien definieren (User Wunsch: Fleisch, Salat, Veggie, Vegan...)
     const cats = [
-      {id:'all', label:'Alles', icon:'utensils'},
+      {id:'near', label:'In der Nähe', icon:'map-pin'}, // Renamed from "Alles"
+      {id:'Mit Fleisch', label:'Fleisch', icon:'beef'},
+      {id:'Salat', label:'Salat', icon:'salad'},
       {id:'Vegetarisch', label:'Vegetarisch', icon:'leaf'},
       {id:'Vegan', label:'Vegan', icon:'sprout'},
-      {id:'Mit Fleisch', label:'Fleisch', icon:'beef'},
       {id:'Fisch', label:'Fisch', icon:'fish'},
-      {id:'Salat', label:'Salat', icon:'salad'},
       {id:'Suppe', label:'Suppe', icon:'soup'},
       {id:'Dessert', label:'Dessert', icon:'ice-cream'},
     ];
     
     // Aktive Kategorie ermitteln
-    const active = activeDiscoverFilter === 'near' || !activeDiscoverFilter ? 'all' : activeDiscoverFilter;
+    const active = activeDiscoverFilter === 'near' || !activeDiscoverFilter || activeDiscoverFilter === 'all' ? 'near' : activeDiscoverFilter;
     
     bar.innerHTML = cats.map(c => `
       <button class="cat-pill ${active===c.id ? 'active' : ''}" onclick="selectDiscoverCategory('${c.id}')">
@@ -5583,14 +5593,48 @@
     if(typeof lucide !== 'undefined') lucide.createIcons();
   }
   
+  function renderDiscoverDays(){
+    const bar = document.getElementById('discoverDaysBar');
+    if(!bar) return;
+    
+    // Generiere nächste 7 Tage
+    const days = [];
+    const today = new Date();
+    for(let i=0; i<7; i++){
+      const d = new Date(today);
+      d.setDate(today.getDate() + i);
+      const iso = d.toISOString().split('T')[0];
+      
+      let label = i===0 ? 'Heute' : i===1 ? 'Morgen' : getDayName(d);
+      days.push({ id: iso, label: label, date: d });
+    }
+    
+    // Active Day (Global variable activeDay e.g. "2026-01-30")
+    // Falls activeDay nicht gesetzt, nimm Heute
+    if(!activeDay) activeDay = days[0].id;
+    
+    bar.innerHTML = days.map(d => `
+      <button class="cat-pill ${activeDay===d.id ? 'active' : ''}" onclick="selectDiscoverDay('${d.id}')" style="${activeDay===d.id ? 'background:#333; color:#fff;' : 'background:#fff; border:1px solid rgba(0,0,0,0.1);'}">
+        <span>${d.label}</span>
+        <span style="font-size:10px; opacity:0.7;">${d.date.getDate()}.${d.date.getMonth()+1}.</span>
+      </button>
+    `).join('');
+  }
+  
+  window.selectDiscoverDay = function(dayIso){
+    activeDay = dayIso;
+    renderDiscoverDays();
+    renderDiscover();
+  };
+  
   window.selectDiscoverCategory = function(catId){
-    if(catId === 'all'){
-      activeDiscoverFilter = 'near'; // 'near' ist unser Default "Alles"
+    if(catId === 'near' || catId === 'all'){
+      activeDiscoverFilter = 'near';
     } else {
       activeDiscoverFilter = catId;
     }
+    renderDiscoverCategories(); // Update active state
     renderDiscover();
-    // Scroll active into view?
   };
 
   function createModernOfferCard(o){
@@ -7317,6 +7361,12 @@
   }
   
   function renderDiscover(){
+    // Date Bar rendern (neu)
+    renderDiscoverDays();
+    
+    // Date Bar rendern (neu)
+    if(typeof renderDiscoverDays === 'function') renderDiscoverDays();
+    
     // Location-Autofill: Toggle & Input-Handler
     const btnDiscoverLocationToggle = document.getElementById('btnDiscoverLocationToggle');
     const discoverLocationExpanded = document.getElementById('discoverLocationExpanded');
@@ -7674,7 +7724,8 @@
   let currentSwipeIndex = 0;
   
   function switchDiscoverView(mode){
-    discoverViewMode = mode;
+    mode = 'list'; // Force list (Swipe removed)
+    discoverViewMode = 'list';
     save(LS.discoverView, mode); // Präferenz speichern
     
     const listEl = document.getElementById('discoverOffers');
@@ -7716,8 +7767,8 @@
     }
   }
   
-  // SwipeCards rendern - Überraschungs-Modus (nur Umkreis-Filter)
-  function renderSwipeCards(){
+  // SwipeCards rendern - ENTFERNT
+  function renderSwipeCards(){ return;
     // Standort und Erreichbarkeits-Info aktualisieren
     updateSwipeLocationInfo();
     const swipeStack = document.getElementById('swipeStack');
@@ -7814,8 +7865,8 @@
     }
   }
   
-  // SwipeCard erstellen (Mittagessen-Tinder Style)
-  function createSwipeCard(offer, index){
+  // SwipeCard erstellen - ENTFERNT
+  function createSwipeCard(offer, index){ return null;
     const data = normalizeOffer(offer);
     const card = document.createElement('div');
     card.className = 'swipe-card';
