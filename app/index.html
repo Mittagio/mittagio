@@ -17237,8 +17237,27 @@
       // Auto-Save Handler
       const saveDraft = () => { localStorage.setItem('wizard_draft', JSON.stringify(w)); };
 
-      input.oninput=()=>{ w.data.dish=input.value; saveDraft(); };
+      // Intelligente Autovervollständigung (Konzept: Kategorie-Pills getriggert)
+      const suggestWrap=document.createElement('div');
+      suggestWrap.className='answers';
+      suggestWrap.style.marginTop='6px'; suggestWrap.style.marginBottom='16px';
+      function fillSuggestions(){
+        suggestWrap.innerHTML='';
+        const q=(input.value||'').trim();
+        const list = typeof getDishSuggestionsSmartInput==='function' ? getDishSuggestionsSmartInput(q) : [];
+        list.slice(0,6).forEach(s=>{
+          const cat = (s.category==='Fleisch') ? 'Fleisch' : (s.category||'Vegetarisch');
+          const b=document.createElement('button');
+          b.type='button'; b.className='ans';
+          b.textContent=s.dish;
+          b.onclick=()=>{ w.data.dish=s.dish; w.data.category=cat; if(s.allergens) w.data.allergens=[].concat(s.allergens||[]); saveDraft(); rebuildWizard(); };
+          suggestWrap.appendChild(b);
+        });
+      }
+      input.oninput=()=>{ w.data.dish=input.value; saveDraft(); fillSuggestions(); };
+      input.onfocus=fillSuggestions;
       box.appendChild(input);
+      box.appendChild(suggestWrap);
 
       // --- PREIS (Neu hier) ---
       const labelPrice=document.createElement('div'); labelPrice.className='hint'; labelPrice.textContent='Preis (€)';
@@ -17269,6 +17288,48 @@
         catRow.appendChild(b);
       });
       box.appendChild(catRow);
+
+      // --- ABHOLZEITEN ---
+      const pw = (w.data.pickupWindow || '11:00 – 14:00').split(/\s*[–\-]\s*/);
+      const timeStart = (pw[0] || '11:00').trim();
+      const timeEnd = (pw[1] || '14:00').trim();
+
+      const labelTime=document.createElement('div'); labelTime.className='hint'; labelTime.textContent='Abholzeiten';
+      box.appendChild(labelTime);
+      
+      const timeRow=document.createElement('div');
+      timeRow.style.cssText='display:flex; gap:12px; margin-bottom:16px;';
+      
+      const inputTimeStart=document.createElement('input');
+      inputTimeStart.className='field';
+      inputTimeStart.type='time';
+      inputTimeStart.value=timeStart;
+      inputTimeStart.style.flex='1';
+      inputTimeStart.oninput=()=>{
+        const end=inputTimeEnd.value||'14:00';
+        w.data.pickupWindow=(inputTimeStart.value||'11:00')+' – '+end;
+        saveDraft();
+      };
+      
+      const inputTimeEnd=document.createElement('input');
+      inputTimeEnd.className='field';
+      inputTimeEnd.type='time';
+      inputTimeEnd.value=timeEnd;
+      inputTimeEnd.style.flex='1';
+      inputTimeEnd.oninput=()=>{
+        const start=inputTimeStart.value||'11:00';
+        w.data.pickupWindow=start+' – '+(inputTimeEnd.value||'14:00');
+        saveDraft();
+      };
+      
+      const wrapStart=document.createElement('div'); wrapStart.style.flex='1';
+      const lblStart=document.createElement('div'); lblStart.className='hint'; lblStart.style.fontSize='12px'; lblStart.textContent='Von';
+      wrapStart.appendChild(lblStart); wrapStart.appendChild(inputTimeStart);
+      const wrapEnd=document.createElement('div'); wrapEnd.style.flex='1';
+      const lblEnd=document.createElement('div'); lblEnd.className='hint'; lblEnd.style.fontSize='12px'; lblEnd.textContent='Bis';
+      wrapEnd.appendChild(lblEnd); wrapEnd.appendChild(inputTimeEnd);
+      timeRow.appendChild(wrapStart); timeRow.appendChild(wrapEnd);
+      box.appendChild(timeRow);
 
       // --- BESCHREIBUNG (Neu) ---
       const labelDesc=document.createElement('div'); labelDesc.className='hint'; labelDesc.textContent='Beschreibung (optional)';
@@ -17519,7 +17580,7 @@
         const exSum=(w.data.extras||[]).reduce((s,e)=>s+Number(e.price||0),0);
         const geb=w.data.hasPickupCode ? SUCCESS_FEE : 0;
         const netto=p+exSum-geb;
-        el.innerHTML=`Dein Verdienst pro Gericht: <span style="font-size:16px;">${netto.toFixed(2).replace('.',',')} €</span>`;
+        el.innerHTML=`Verdienst-Vorschau (Echtzeit): <span style="font-size:16px;">${netto.toFixed(2).replace('.',',')} €</span>`;
       }
 
       setWizardContent(box);
@@ -17579,7 +17640,7 @@
       const btnPub=document.createElement('button');
       btnPub.className='btn';
       btnPub.type='button';
-      btnPub.textContent = 'Jetzt veröffentlichen – 4,99 €';
+      btnPub.textContent = 'Jetzt für 4,99 € inserieren';
       btnPub.style.cssText = 'width:100%; min-height:52px; font-size:16px; font-weight:800; margin-top:16px; border-radius:12px; touch-action:manipulation; -webkit-tap-highlight-color:transparent;';
       btnPub.onclick=()=>{ const o=previewOfferFromWizard(); closeWizard(); showPublishFeeModal(o); };
       box.appendChild(btnPub);
