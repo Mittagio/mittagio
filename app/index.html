@@ -1211,6 +1211,10 @@
       font-weight:950; font-size:13px;
       box-shadow:0 6px 14px rgba(0,0,0,.06);
     }
+    .prov-pill::after {
+      content: '';
+      display: none; /* X entfernt */
+    }
     .provider-header{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap}
     .provider-logo.compact{padding:0}
     .header-actions{display:flex; gap:8px; flex-wrap:wrap}
@@ -3165,7 +3169,7 @@
       <div class="topbar-inner">
         <!-- View-Toggle wurde in den discover-header verschoben -->
       <div class="spacer"></div>
-      <div id="modePill" class="prov-pill" style="display:none; background:#2a2a2a; border:1px solid rgba(255,255,255,0.1); color:#fff;">Küchenmodus</div>
+<!-- modePill removed -->
     </div>
   </div>
 
@@ -4840,7 +4844,7 @@
   </nav>
 
     <!-- PROVIDER bottom nav - Dunkler Küchenmodus -->
-  <nav class="bottom" id="providerNav" style="display:none; background:#2d2d2d; border-top:1px solid rgba(255,255,255,0.12); backdrop-filter:saturate(180%) blur(20px); -webkit-backdrop-filter:saturate(180%) blur(20px); position:relative;">
+  <nav class="bottom" id="providerNav" style="display:none; background:#2d2d2d; border-top:1px solid rgba(255,255,255,0.12); backdrop-filter:saturate(180%) blur(20px); -webkit-backdrop-filter:saturate(180%) blur(20px); position:fixed; bottom:0; left:0; right:0; z-index:999;">
     <button class="navbtn active" data-pgo="provider-home"><div class="ico" data-icon="utensils" data-icon-only="1"></div><div>Meine Küche</div></button>
     <button class="navbtn" data-pgo="provider-pickups"><div class="ico" data-icon="receipt" data-icon-only="1"></div><div>Abholungen</div></button>
     <button class="navbtn" data-pgo="provider-cookbook"><div class="ico" data-icon="bookOpen" data-icon-only="1"></div><div>Kochbuch</div></button>
@@ -14383,13 +14387,10 @@
       // 3. Push Pickup (Anzeigen wenn Inserat da, aber kein Abholcode)
       const providerPushPickup = document.getElementById('providerPushPickup');
       if(providerPushPickup){
-        const anyMissingCode = mineToday.some(o => !o.hasPickupCode);
-        // Zeigen wenn Inserate da sind, aber bei mindestens einem der Code fehlt
-        if(hasOffers && anyMissingCode){
-           providerPushPickup.style.display = 'block';
-        } else {
-           providerPushPickup.style.display = 'none';
-        }
+        // Wir zeigen die Push-Karte NICHT mehr an, da der User meinte "Bottom ist immer noch nicht immer da"
+        // und das Layout "heller" und "appliker" sein soll.
+        // Die Abholcode-Logik ist jetzt im Inserats-Flow integriert.
+        providerPushPickup.style.display = 'none';
       }
 
       // Alte Elemente ausblenden/aufräumen (falls noch Refs im Code)
