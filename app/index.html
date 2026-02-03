@@ -2610,8 +2610,10 @@
       box-shadow: 0 4px 12px rgba(255,215,0,0.4) !important;
     }
     
-    /* Favoriten-Grid: Immer 2x2 Layout (keine Responsive-Änderungen) */
+    /* Favoriten-Grid: Immer 2x2 Layout, Jiggle auf .fav-grid-card */
+    #favDishes.fav-dishes-grid,
     #favDishes {
+      display: grid !important;
       grid-template-columns: repeat(2, 1fr) !important;
       gap: 12px !important;
     }
@@ -3538,13 +3540,12 @@
       </div>
     </section>
 
-    <!-- CUSTOMER: Favorites -->
+    <!-- CUSTOMER: Favorites – Fokus auf HEUTE, 2x2 Grid, Pull-to-Reveal -->
     <section class="view customer-view" id="v-fav">
       <div style="padding-bottom:100px;">
-        <!-- Modern Header -->
+        <!-- Header: Keine Datums-Navigation, nur „Dein Menü für heute“ -->
         <div id="favHeader" style="padding:24px 20px 16px; background:rgba(255,255,255,0.95); backdrop-filter:blur(10px); position:sticky; top:0; z-index:80; border-bottom:1px solid rgba(0,0,0,0.05);">
-          <h1 style="font-size:28px; font-weight:900; margin:0; color:#1a1a1a; letter-spacing:-0.5px;">Meine Lieblinge</h1>
-          <p style="margin:4px 0 0; font-size:14px; color:#666; font-weight:500;">Hier schlägt dein Herz höher ❤️</p>
+          <h1 style="font-size:28px; font-weight:900; margin:0; color:#1a1a1a; letter-spacing:-0.5px;">Dein Menü für heute</h1>
         </div>
         
         <!-- Empty State -->
@@ -3562,32 +3563,37 @@
         </div>
         
         <div id="favContent" style="padding:20px; display:none;">
-          <!-- 1. Lieblings-Gerichte (Priorität) -->
+          <!-- 1. Ausschlussspiel: 2x2 Grid (oberste 4 Gericht-Favoriten), Jiggle + X -->
           <div id="sectionDishesWrapper">
-            <div class="section-title" id="sectionDishes" style="margin-bottom:16px; font-size:18px; font-weight:800; color:#1a1a1a; display:flex; align-items:center; gap:8px;">
-              <span>Lieblings-Gerichte</span>
-              <span style="font-size:11px; background:#f0f0f0; padding:4px 8px; border-radius:10px; color:#666; font-weight:600; text-transform:uppercase;">Heute verfügbar</span>
-            </div>
-            <!-- Liste statt Grid für moderne Karten -->
-            <div id="favDishes" style="display:flex; flex-direction:column; gap:24px;"></div>
+            <div id="favDishes" class="fav-dishes-grid" style="display:grid; grid-template-columns:repeat(2, 1fr); gap:12px; margin-bottom:20px;"></div>
             <div class="hint" id="emptyFavDishes" style="display:none; text-align:center; padding:24px; background:#f9f9f9; border-radius:16px; margin-bottom:20px;">
               <p style="font-size:14px; color:#666; margin:0;">Heute sind keine deiner Lieblingsgerichte verfügbar.</p>
+            </div>
+            <!-- Share my Lunch: dezenter Button unter dem Grid -->
+            <div id="favShareWrap" style="display:none; margin-bottom:32px; text-align:center;">
+              <button type="button" id="btnShareMyLunch" style="padding:10px 20px; background:rgba(0,0,0,0.05); border:1px solid rgba(0,0,0,0.08); border-radius:20px; font-size:14px; font-weight:600; color:#666; cursor:pointer; display:inline-flex; align-items:center; gap:8px; transition:all 0.2s ease;" onmouseover="this.style.background='rgba(255,215,0,0.15)'; this.style.borderColor='rgba(255,215,0,0.4)'; this.style.color='#1a1a1a';" onmouseout="this.style.background='rgba(0,0,0,0.05)'; this.style.borderColor='rgba(0,0,0,0.08)'; this.style.color='#666';">
+                <i data-lucide="share-2" style="width:18px;height:18px;"></i>
+                <span>Share my Lunch</span>
+              </button>
             </div>
           </div>
           
           <!-- Trenner -->
           <div id="favProviderSeparator" style="height:32px; border-bottom:1px solid rgba(0,0,0,0.05); margin-bottom:32px;"></div>
           
-          <!-- 2. Lieblings-Orte (Anbieter) -->
+          <!-- 2. Anbieter-Favoriten (Grayscale + Text wenn kein Angebot heute) -->
           <div id="sectionProvidersWrapper">
             <div class="section-title" id="sectionProviders" style="margin-bottom:16px; font-size:18px; font-weight:800; color:#1a1a1a;">Lieblings-Orte</div>
             <div id="favProviders" style="display:flex; flex-direction:column; gap:12px;"></div>
             <div class="hint" id="emptyFavProviders" style="display:none;"></div>
           </div>
           
-          <!-- Upcoming -->
-          <div id="favUpcomingPreview" style="margin-top:40px; display:none;">
-            <div class="section-title" style="margin-bottom:16px; font-size:18px; font-weight:800; color:#1a1a1a;">Vorschau</div>
+          <!-- Pull-to-Reveal: Nächste Tage erst nach Nach-unten-ziehen sichtbar -->
+          <div id="favPullHint" style="display:none; text-align:center; padding:16px; margin-top:24px; font-size:13px; color:#999; font-weight:500;">
+            Nach unten ziehen für Morgen &amp; Übermorgen
+          </div>
+          <div id="favUpcomingPreview" style="margin-top:16px; display:none; opacity:0; transition:opacity 0.3s ease;">
+            <div class="section-title" style="margin-bottom:16px; font-size:18px; font-weight:800; color:#1a1a1a;">Morgen &amp; Übermorgen</div>
             <div id="favUpcomingDays" style="display:flex; flex-direction:column; gap:16px;"></div>
           </div>
         </div>
@@ -5628,9 +5634,11 @@
           <div style="${styleText}">Vor Ort</div>
         </div>
         
-        <!-- Abholnummer -->
-        <div style="${styleBadge(abholnummer, '#F39C12')}">
-          <div style="${styleIcon('#F39C12')}"><i data-lucide="ticket" style="width:18px;height:18px;"></i></div>
+        <!-- Abholnummer (Monetarisierung: gelb #FFD700 hervorgehoben) -->
+        <div style="${styleBadge(abholnummer, '#FFD700')}">
+          <div style="width:36px; height:36px; border-radius:50%; background:${abholnummer ? '#FFD700' : 'rgba(0,0,0,0.08)'}; color:${abholnummer ? '#1a1a1a' : '#999'}; display:flex; align-items:center; justify-content:center; border:1px solid ${abholnummer ? 'rgba(255,215,0,0.6)' : 'rgba(0,0,0,0.1)'};">
+            <i data-lucide="ticket" style="width:18px;height:18px;"></i>
+          </div>
           <div style="${styleText}">Abhol-Nummer</div>
         </div>
         
@@ -9992,22 +10000,47 @@
       }
     });
 
-    // Dish Section - 2x2 Grid mit Jiggle-Effekt und X-Button
+    // Dish Section: Oberste 4 Gericht-Favoriten im 2x2 Grid (Jiggle + X)
     dishGrid.innerHTML='';
-    const sectionDishes = document.getElementById('sectionDishes');
-    if(sectionDishes) sectionDishes.style.display = dishList.length > 0 ? 'block' : 'none';
+    const sectionDishesWrapper = document.getElementById('sectionDishesWrapper');
+    if(sectionDishesWrapper) sectionDishesWrapper.style.display = dishList.length > 0 ? 'block' : 'none';
     dishEmpty.style.display = dishList.length ? 'none' : 'block';
-    dishList.forEach(o=>{
+    const topFour = dishList.slice(0, 4);
+    topFour.forEach(o=>{
       if(o?.id){
         try {
-          // Moderne Karte für Favoriten nutzen
-          const favCard = createModernOfferCard(o);
+          const favCard = createFavoriteGridCard(o);
           dishGrid.appendChild(favCard);
         } catch(err){
           console.error('Error rendering dish favorite:', err, o);
         }
       }
     });
+    
+    // Share my Lunch: nur anzeigen wenn mindestens ein Gericht-Favorit heute
+    const favShareWrap = document.getElementById('favShareWrap');
+    const btnShareMyLunch = document.getElementById('btnShareMyLunch');
+    if(favShareWrap) favShareWrap.style.display = topFour.length > 0 ? 'block' : 'none';
+    if(btnShareMyLunch){
+      btnShareMyLunch.onclick = () => {
+        const shareText = 'Schau mal, was ich heute esse! 🍴 Kein Warten dank Abholnummer 🧾.';
+        if(navigator.share){
+          navigator.share({
+            title: 'Mein Mittag – Mittagio',
+            text: shareText,
+            url: window.location.origin || ''
+          }).catch(() => { navigator.clipboard.writeText(shareText); showToast('In Zwischenablage kopiert'); });
+        } else {
+          navigator.clipboard.writeText(shareText);
+          showToast('In Zwischenablage kopiert');
+        }
+      };
+    }
+    
+    // Pull-Hinweis: anzeigen wenn es Favoriten für Morgen/Übermorgen gibt
+    const favPullHint = document.getElementById('favPullHint');
+    const hasUpcoming = offers.some(o => o.active !== false && (dishFavs.has(o.id) || providerFavs.has(o.providerId)) && o.day !== activeFavDay);
+    if(favPullHint) favPullHint.style.display = hasUpcoming ? 'block' : 'none';
     
     // Icons aktualisieren
     if(typeof lucide !== 'undefined'){
