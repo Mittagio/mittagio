@@ -5861,7 +5861,7 @@
     ctaBtn.type = 'button';
     ctaBtn.className = 'btn';
     ctaBtn.style.cssText = 'width:100%; min-height:44px; border-radius:12px; background:#FFD700; color:#1a1a1a; font-weight:800; font-size:14px; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; transition:transform 0.2s, box-shadow 0.2s;';
-    ctaBtn.innerHTML = '🧺 In die Mittagsbox';
+    ctaBtn.innerHTML = (typeof iconMarkup === 'function' ? iconMarkup('shopping-basket') : '') + ' <span>In die Mittagsbox</span>';
     ctaBtn.onmouseover = () => { ctaBtn.style.transform = 'scale(1.02)'; ctaBtn.style.boxShadow = '0 4px 12px rgba(255,215,0,0.4)'; };
     ctaBtn.onmouseout = () => { ctaBtn.style.transform = 'scale(1)'; ctaBtn.style.boxShadow = 'none'; };
     ctaBtn.onclick = (e) => {
@@ -5871,7 +5871,7 @@
       if(!addToCart(o)){ showToast('Fehler beim Hinzufügen.', 2000); return; }
       triggerHapticFeedback([20]);
       if(typeof triggerCartIconGlow === 'function') triggerCartIconGlow();
-      showToast('In die Mittagsbox gelegt 🧺', 1500);
+      showToast('In die Mittagsbox gelegt', 1500);
       if(typeof updateHeaderBasket === 'function') updateHeaderBasket();
     };
     if(!abholnummer){ ctaBtn.style.background = '#e5e5e5'; ctaBtn.style.color = '#888'; ctaBtn.style.cursor = 'not-allowed'; ctaBtn.disabled = true; }
@@ -6633,6 +6633,7 @@
     heartFilled:'<svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><path d="M20.8 6.6a5 5 0 0 0-7.1 0L12 8.3l-1.7-1.7a5 5 0 1 0-7.1 7.1L12 22l8.8-8.3a5 5 0 0 0 0-7.1Z"/></svg>',
     cart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2h12l2 7H4z"/><path d="M4 9h16v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9Z"/></svg>',
     'shopping-cart':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>',
+    'shopping-basket':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 8 3 20h18L19 8"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>',
     location:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s7-7.2 7-12a7 7 0 1 0-14 0c0 4.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg>',
     star:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 2 3 7 7 .6-5.2 4.5 1.6 7L12 17l-6.4 4.1 1.6-7L2 9.6 9 9z"/></svg>',
     box:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7l9-4 9 4-9 4-9-4Z"/><path d="M3 7v10l9 4 9-4V7"/><path d="M12 11v10"/></svg>',
@@ -9538,7 +9539,7 @@
           orderBtn.style.transform = 'translateY(0)';
           orderBtn.style.boxShadow = '0 4px 12px rgba(255,204,0,0.3)';
         };
-        orderBtn.innerHTML = `${iconMarkup('shopping-cart')} <span>In die Mittagsbox</span>`;
+        orderBtn.innerHTML = `${iconMarkup('shopping-basket')} <span>In die Mittagsbox</span>`;
         orderBtn.disabled = !data.hasPickupCode;
         if(orderBtn.disabled){
           orderBtn.style.opacity = '0.5';
@@ -9557,7 +9558,7 @@
         const orderBtn=document.createElement('button');
         orderBtn.type='button';
         orderBtn.className='card-action primary';
-        orderBtn.innerHTML = `${iconMarkup('shopping-cart')} <span>In die Mittagsbox</span>`;
+        orderBtn.innerHTML = `${iconMarkup('shopping-basket')} <span>In die Mittagsbox</span>`;
         orderBtn.disabled = !data.hasPickupCode;
         orderBtn.onclick=(e)=>{ e.stopPropagation(); handleOrderClick(data); };
         
@@ -9846,7 +9847,7 @@
     
     // Gericht hinzufügen (statt "Zur Mittagsbox" - verboten für Endkunden)
     if(addToCart(o)){
-      showToast('Gericht hinzugefügt! 🧺', 2000);
+      showToast('Gericht hinzugefügt!', 2000);
       updateHeaderBasket();
       
       // Zur Mittagsbox navigieren (dort kann der Nutzer dann zur Kasse gehen)
@@ -10277,7 +10278,7 @@
     ctaBtn.type = 'button';
     ctaBtn.className = 'btn';
     ctaBtn.style.cssText = 'width:100%; min-height:44px; border-radius:12px; background:#FFD700; color:#1a1a1a; font-weight:800; font-size:14px; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; transition:transform 0.2s, box-shadow 0.2s;';
-    ctaBtn.innerHTML = '🧺 In die Mittagsbox';
+    ctaBtn.innerHTML = (typeof iconMarkup === 'function' ? iconMarkup('shopping-basket') : '') + ' <span>In die Mittagsbox</span>';
     ctaBtn.onmouseover = () => { ctaBtn.style.transform = 'scale(1.02)'; ctaBtn.style.boxShadow = '0 4px 12px rgba(255,215,0,0.4)'; };
     ctaBtn.onmouseout = () => { ctaBtn.style.transform = 'scale(1)'; ctaBtn.style.boxShadow = 'none'; };
     ctaBtn.onclick = (e) => {
@@ -10287,7 +10288,7 @@
       if(!addToCart(o)){ showToast('Fehler beim Hinzufügen.', 2000); return; }
       triggerHapticFeedback([20]);
       triggerCartIconGlow();
-      showToast('In die Mittagsbox gelegt 🧺', 1500);
+      showToast('In die Mittagsbox gelegt', 1500);
       if(typeof updateHeaderBasket === 'function') updateHeaderBasket();
     };
     if(!abholnummer){ ctaBtn.style.background = '#e5e5e5'; ctaBtn.style.color = '#888'; ctaBtn.style.cursor = 'not-allowed'; ctaBtn.disabled = true; }
@@ -10927,7 +10928,7 @@
               primaryCTA.classList.remove('loading');
               primaryCTA.classList.add('success');
               primaryCTAText.textContent = 'Erfolgreich!';
-              showToast('Gericht hinzugefügt! 🧺');
+              showToast('Gericht hinzugefügt!');
               
               // Redirect to cart
               setTimeout(() => {
@@ -12212,8 +12213,8 @@
       // Empty State: Picknick-Motiv (Verzehrart irrelevant)
       box.innerHTML = `
         <div style="text-align:center; padding:60px 20px;">
-          <div style="width:140px; height:140px; margin:0 auto 24px; background:linear-gradient(135deg, rgba(255,215,0,0.1) 0%, rgba(255,184,0,0.15) 100%); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:80px;">
-            🧺
+          <div style="width:140px; height:140px; margin:0 auto 24px; background:linear-gradient(135deg, rgba(255,215,0,0.1) 0%, rgba(255,184,0,0.15) 100%); border-radius:50%; display:flex; align-items:center; justify-content:center;">
+            <i data-lucide="shopping-basket" style="width:80px;height:80px;color:#1a1a1a;"></i>
           </div>
           <h3 style="font-size:22px; font-weight:900; margin-bottom:12px; color:#111; font-family:'Inter', 'Montserrat', sans-serif;">Dein Korb ist noch leer – Zeit für ein Match!</h3>
           <p style="font-size:15px; color:#666; margin-bottom:32px; line-height:1.6; max-width:320px; margin-left:auto; margin-right:auto;">Swipe dich durch leckere Gerichte und fülle deine Mittagsbox.</p>
