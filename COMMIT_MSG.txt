@@ -1,0 +1,7 @@
+UI: Gericht-Detail helles Layout, Mittagsbox-Flug-Animation, Favoritenseite Master-Doku
+
+- Gericht-Detail: Helles Layout (kein Dunkel), Struktur Gerichtsname -> Anbieter, 3 Säulen unter Bild, Abholnummer #FFD700
+- Animation: Thumbnail fliegt beim Hinzufügen in Mittagsbox-Icon (Sheet + Discover-Karten)
+- Favoritenseite: Header "Dein Menü für heute", 2x2 Grid (oberste 4 Gerichte), Jiggle + X, Share my Lunch, Pull-to-Reveal für Morgen/Übermorgen
+- Abholnummer-Grün: Fullscreen-Modal CSS-Fix, Discover blendet grüne Ansicht zuverlässig aus
+- Header z-index über Kategorie-Leiste, Standort-Dropdown nicht mehr verdeckt
