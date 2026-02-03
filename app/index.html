@@ -7037,8 +7037,11 @@
     const fullscreenBd = document.getElementById('fullscreenCodeBd');
     if(fullscreenEl) fullscreenEl.classList.remove('active');
     if(fullscreenBd) fullscreenBd.classList.remove('active');
-    const pickupContainer = document.getElementById('pickupCodeContainer');
-    if(pickupContainer) pickupContainer.innerHTML = '';
+    // Alle pickupCodeContainer leeren (es kann einen zweiten geben, wenn showPickupCode ein neues Div an body angehängt hat)
+    document.querySelectorAll('[id="pickupCodeContainer"]').forEach(function(el){ el.innerHTML = ''; });
+    // Zusätzlich: dynamische Abholnummer-View (v-pickup-code-dynamic) explizit entfernen, falls sie außerhalb des Containers existiert
+    const dynamicView = document.getElementById('v-pickup-code-dynamic');
+    if(dynamicView && dynamicView.parentNode) dynamicView.parentNode.removeChild(dynamicView);
     // FAB anzeigen
     const fabModeToggle = document.getElementById('fabModeToggle');
     if(fabModeToggle) fabModeToggle.style.display = 'flex';
