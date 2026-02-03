@@ -5135,9 +5135,9 @@
       </button>
     </div>
 
-    <!-- Fußweg 🚶 und Fahrtweg 🚗 parallel als Text -->
-    <div id="sDistanceInfo" style="display:none; margin-bottom:12px; padding:10px 14px; background:rgba(0,0,0,0.04); border-radius:12px; border:1px solid rgba(0,0,0,0.06); font-size:14px; color:#333; font-weight:500;">
-      <!-- Wird dynamisch befüllt: 🚶 8 Min.  ·  🚗 2 Min. -->
+    <!-- Logistik: Klickbare Kacheln 🚶 Fußweg & 🚗 Fahrtweg (öffnen Route in Google Maps) -->
+    <div id="sDistanceInfo" style="display:none; margin-bottom:12px; gap:10px; flex-wrap:wrap; align-items:stretch;">
+      <!-- Wird dynamisch: zwei Kacheln, je onclick → Google Maps -->
     </div>
 
     <!-- Essenszeit: Verfügbarkeit von ... bis ... Uhr -->
@@ -5146,34 +5146,24 @@
       <span style="color:#333; font-size:14px; font-weight:500;">Essenszeit: <span id="sMealTimeRange"></span> Uhr</span>
     </div>
 
-    <!-- Anbieter-Adresse (unter Distanz/Essenszeit) -->
-    <div id="sProviderAddressRow" style="display:flex; align-items:center; gap:8px; margin-bottom:20px;">
+    <!-- Anbieter-Adresse (unter Titel/Logistik) -->
+    <div id="sProviderAddressRow" style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
       <i data-lucide="map-pin" style="width:16px;height:16px; color:#666;"></i>
       <span id="sProviderAddress" style="color:#555; font-size:14px; flex:1;"></span>
     </div>
 
-    <!-- Allergene: Klickbarer Textlink „Allergene anzeigen (ⓘ)“ → Overlay A–R -->
-    <div id="sAllergensWrap" style="margin:20px 0; padding:12px 16px; background:rgba(0,0,0,0.04); border-radius:12px; border:1px solid rgba(0,0,0,0.08);">
-      <div style="display:flex; align-items:center; justify-content:space-between; cursor:pointer;" onclick="showAllergensOverlay();">
-        <div style="display:flex; align-items:center; gap:8px;">
-          <span style="font-size:16px; color:#666;">ⓘ</span>
-          <span style="color:#333; font-size:13px; font-weight:500;">Allergene anzeigen</span>
-        </div>
-        <div id="sAllergensPreview" style="color:#666; font-size:12px; display:flex; align-items:center; gap:4px;">
-          <span id="sAllergensCount">0</span>
-          <i data-lucide="chevron-right" style="width:14px;height:14px;"></i>
-        </div>
-      </div>
-      <div id="sAllergensList" style="display:none; margin-top:8px; padding-top:8px; border-top:1px solid rgba(0,0,0,0.08);">
-        <div id="sAllergens" style="color:#555; font-size:12px; line-height:1.6;"></div>
-      </div>
+    <!-- Allergene: Kürzel (A, C, G...) direkt sichtbar, (ⓘ) öffnet Overlay mit Erklärungen -->
+    <div id="sAllergensWrap" style="margin-bottom:20px; padding:10px 14px; background:rgba(0,0,0,0.04); border-radius:12px; border:1px solid rgba(0,0,0,0.08); display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+      <span id="sAllergensCodes" style="color:#333; font-size:14px; font-weight:600;">–</span>
+      <button type="button" onclick="showAllergensOverlay();" aria-label="Allergen-Legende" style="background:none; border:none; padding:0; cursor:pointer; font-size:16px; color:#666; line-height:1;" onmouseover="this.style.color='#1a1a1a';" onmouseout="this.style.color='#666';">ⓘ</button>
     </div>
+    <div id="sAllergensList" style="display:none;"><div id="sAllergens"></div></div>
     
-    <!-- Sticky Bottom: CTA „In die Mittagsbox legen“ + Prozess-Hinweis -->
+    <!-- Sticky Bottom: Gelber CTA „In die Mittagsbox legen“ + Warnhinweis darunter -->
     <div style="position:sticky; bottom:0; background:transparent; padding:16px 0 24px; margin-top:24px; border-top:1px solid rgba(0,0,0,0.08); z-index:10;">
-      <button class="btn-primary" type="button" id="btnPrimaryCTA" style="width:100%; min-height:56px; max-height:64px; background:#27AE60; color:#fff; font-weight:800; font-size:18px; border:none; border-radius:16px; box-shadow:0 4px 16px rgba(39,174,96,0.4); display:flex; align-items:center; justify-content:center; gap:8px; transition:all 0.2s ease;" onmouseover="this.style.transform='scale(1.02)'; this.style.boxShadow='0 6px 20px rgba(39,174,96,0.5)';" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 16px rgba(39,174,96,0.4)';">
+      <button class="btn-primary" type="button" id="btnPrimaryCTA" style="width:100%; min-height:56px; max-height:64px; background:#FFD700; color:#1a1a1a; font-weight:800; font-size:18px; border:none; border-radius:16px; box-shadow:0 4px 16px rgba(255,215,0,0.4); display:flex; align-items:center; justify-content:center; gap:8px; transition:all 0.2s ease;" onmouseover="this.style.transform='scale(1.02)'; this.style.boxShadow='0 6px 20px rgba(255,215,0,0.5)';" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 16px rgba(255,215,0,0.4)';">
         <i data-lucide="shopping-basket" style="width:22px;height:22px;"></i>
-        <span id="btnPrimaryCTAText">Jetzt Abholnummer sichern</span>
+        <span id="btnPrimaryCTAText">In die Mittagsbox legen</span>
       </button>
       <div id="sInfoHint" style="display:none; margin-top:8px; text-align:center; font-size:12px; color:#666; padding:0 16px; line-height:1.4;"></div>
     </div>
@@ -10744,14 +10734,19 @@
     const addr = buildAddress({address:o.address, street:o.providerStreet, zip:o.providerZip, city:o.providerCity});
     if(sProviderAddress) sProviderAddress.textContent = addr || 'Adresse nicht verfügbar';
     
-    // Fußweg 🚶 und Fahrtweg 🚗 parallel als Text
+    // Logistik: Zwei klickbare Kacheln (🚶 Fußweg, 🚗 Fahrtweg) – Klick öffnet Route in Google Maps
     if(sDistanceInfo && o.distanceKm != null){
       const walkingMinutes = Math.round(Number(o.distanceKm) * 12);
       const carMinutes = Math.round(Number(o.distanceKm) * 1.2);
       const walkingTimeText = walkingMinutes < 1 ? '< 1 Min.' : walkingMinutes + ' Min.';
       const carTimeText = carMinutes < 1 ? '< 1 Min.' : carMinutes + ' Min.';
-      sDistanceInfo.style.display = 'block';
-      sDistanceInfo.innerHTML = '🚶 ' + walkingTimeText + '  ·  🚗 ' + carTimeText;
+      const providerIdForMaps = o.providerId;
+      const tileStyle = 'flex:1; min-width:100px; padding:12px 14px; border-radius:12px; border:1px solid rgba(0,0,0,0.1); background:rgba(0,0,0,0.04); color:#333; font-size:14px; font-weight:600; cursor:pointer; text-align:center; transition:all 0.2s ease; text-decoration:none;';
+      sDistanceInfo.style.display = 'flex';
+      sDistanceInfo.innerHTML = `
+        <button type="button" style="${tileStyle}" onmouseover="this.style.background='rgba(0,0,0,0.08)'; this.style.borderColor='rgba(0,0,0,0.15)';" onmouseout="this.style.background='rgba(0,0,0,0.04)'; this.style.borderColor='rgba(0,0,0,0.1)';" onclick="openGoogleMapsRoute('${esc(providerIdForMaps)}');">🚶 ${walkingTimeText}</button>
+        <button type="button" style="${tileStyle}" onmouseover="this.style.background='rgba(0,0,0,0.08)'; this.style.borderColor='rgba(0,0,0,0.15)';" onmouseout="this.style.background='rgba(0,0,0,0.04)'; this.style.borderColor='rgba(0,0,0,0.1)';" onclick="openGoogleMapsRoute('${esc(providerIdForMaps)}');">🚗 ${carTimeText}</button>
+      `;
     } else if(sDistanceInfo){
       sDistanceInfo.style.display = 'none';
     }
@@ -10839,41 +10834,43 @@
       addressFullEl.textContent = fullAddr || addr || '-';
     }
     
-    // Allergene (dezent, mit Preview)
+    // Allergene: Kürzel (A, C, G...) direkt sichtbar unter Adresse, (ⓘ) öffnet Overlay
     const aw = document.getElementById('sAllergensWrap');
+    const sAllergensCodes = document.getElementById('sAllergensCodes');
     const sAllergens = document.getElementById('sAllergens');
-    const sAllergensCount = document.getElementById('sAllergensCount');
-    const sAllergensList = document.getElementById('sAllergensList');
-    if(o.allergens && o.allergens.length){
-      if(aw) aw.style.display='block';
-      const r = o.allergens.map(a => String(a||'').trim());
-      const codes = [];
-      r.forEach(v => {
-        const u = v.toUpperCase();
-        if(ALLERGENE_STANDARD[u]){ codes.push(u); return; }
-        const nk = Object.keys(ALLERGENE_NAME_TO_CODE).find(k => k.toLowerCase() === v.toLowerCase());
-        const c = nk ? ALLERGENE_NAME_TO_CODE[nk] : null;
-        if(c && ALLERGENE_STANDARD[c]) codes.push(c);
-      });
-      const seen = {};
-      const uniq = codes.filter(c => { if(seen[c]) return false; seen[c]=1; return true; });
-      if(sAllergensCount) sAllergensCount.textContent = uniq.length.toString();
-      if(sAllergens){
-        const firstWord = (l) => (typeof allergenFirstWord === 'function' ? allergenFirstWord(l) : String(l||'').trim().split(/\s+/)[0]) || l;
-        const list = uniq.map(c => {
-          const label = ALLERGENE_STANDARD[c];
-          const word = firstWord(label);
-          return `<div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
-            <i data-lucide="shield-alert" style="width:16px;height:16px;color:rgba(255,255,255,0.7);flex-shrink:0;"></i>
-            <span style="font-weight:700; color:rgba(255,255,255,0.9);">${esc(c)}</span>
-            <span style="color:rgba(255,255,255,0.75); font-size:12px;">${esc(word)}</span>
-          </div>`;
-        }).join('');
-        sAllergens.innerHTML = list || '';
-        if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
+    if(aw){
+      if(o.allergens && o.allergens.length){
+        aw.style.display = 'flex';
+        const r = o.allergens.map(a => String(a||'').trim());
+        const codes = [];
+        r.forEach(v => {
+          const u = v.toUpperCase();
+          if(ALLERGENE_STANDARD[u]){ codes.push(u); return; }
+          const nk = Object.keys(ALLERGENE_NAME_TO_CODE).find(k => k.toLowerCase() === v.toLowerCase());
+          const c = nk ? ALLERGENE_NAME_TO_CODE[nk] : null;
+          if(c && ALLERGENE_STANDARD[c]) codes.push(c);
+        });
+        const seen = {};
+        const uniq = codes.filter(c => { if(seen[c]) return false; seen[c]=1; return true; });
+        if(sAllergensCodes) sAllergensCodes.textContent = uniq.length ? uniq.join(', ') : '–';
+        if(sAllergens){
+          const firstWord = (l) => (typeof allergenFirstWord === 'function' ? allergenFirstWord(l) : String(l||'').trim().split(/\s+/)[0]) || l;
+          const list = uniq.map(c => {
+            const label = ALLERGENE_STANDARD[c];
+            const word = firstWord(label);
+            return `<div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+              <i data-lucide="shield-alert" style="width:16px;height:16px;color:rgba(255,255,255,0.7);flex-shrink:0;"></i>
+              <span style="font-weight:700; color:rgba(255,255,255,0.9);">${esc(c)}</span>
+              <span style="color:rgba(255,255,255,0.75); font-size:12px;">${esc(word)}</span>
+            </div>`;
+          }).join('');
+          sAllergens.innerHTML = list || '';
+          if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
+        }
+      } else {
+        aw.style.display = 'flex';
+        if(sAllergensCodes) sAllergensCodes.textContent = '–';
       }
-    } else {
-      if(aw) aw.style.display='none';
     }
 
     // Extras
@@ -11008,8 +11005,8 @@
         
         primaryCTA.disabled = false;
         primaryCTA.className = 'btn-primary';
-        primaryCTA.style.background = '#27AE60';
-        primaryCTA.style.color = '#fff';
+        primaryCTA.style.background = '#FFD700';
+        primaryCTA.style.color = '#1a1a1a';
         primaryCTA.style.cursor = 'pointer';
         primaryCTA.onclick = () => {
           // Automatisch als Favorit speichern
