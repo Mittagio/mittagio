@@ -2585,6 +2585,21 @@
     .cart-icon-glow {
       animation: cartIconGlow 0.5s ease-out;
     }
+    /* Flug-Animation: Thumbnail fliegt in die Mittagsbox */
+    .fly-thumbnail {
+      position: fixed;
+      z-index: 10001;
+      pointer-events: none;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    }
+    .fly-thumbnail img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
     
     /* Swipe Preference / Distance Button Active State */
     .swipe-pref-btn.active,
@@ -5101,68 +5116,69 @@
   </div>
   
   <div class="sheet-body" style="background:transparent; padding:16px;">
-    <!-- Header-Infos: Gerichtsname (fett) + Share-Icon -->
+    <!-- 1. Gerichtsname (dominant) + Share außerhalb des Bildes -->
     <div style="margin-top:16px; display:flex; align-items:flex-start; justify-content:space-between; gap:12px;">
-      <div style="font-weight:900; font-size:24px; line-height:1.3; margin-bottom:12px; color:#1a1a1a; flex:1;" id="sDish"></div>
+      <div style="font-weight:900; font-size:24px; line-height:1.3; margin-bottom:4px; color:#1a1a1a; flex:1;" id="sDish"></div>
       <button id="sShareBtn" type="button" style="flex-shrink:0; padding:8px 14px; border-radius:20px; background:rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.1); display:flex; align-items:center; justify-content:center; gap:6px; cursor:pointer; transition:all 0.2s ease; color:#1a1a1a; font-size:14px; font-weight:600;" onmouseover="this.style.background='rgba(0,0,0,0.1)';" onmouseout="this.style.background='rgba(0,0,0,0.06)';">
         <i data-lucide="share-2" style="width:18px;height:18px;"></i>
         <span>Teilen</span>
       </button>
     </div>
+    <!-- 2. Anbieter direkt unter dem Titel (klickbar → alle Gerichte dieses Anbieters) -->
+    <div style="margin-bottom:16px;">
+      <button type="button" id="sProviderNameBtn" style="display:flex; align-items:center; gap:8px; background:none; border:none; padding:0; cursor:pointer; text-align:left; width:100%; color:inherit;">
+        <i data-lucide="store" style="width:18px;height:18px; color:var(--brand); flex-shrink:0;"></i>
+        <span id="sProviderName" style="font-weight:700; font-size:16px; color:#1a1a1a;"></span>
+        <i data-lucide="chevron-right" style="width:16px;height:16px; color:#666; margin-left:auto;"></i>
+      </button>
+    </div>
 
-    <!-- Die 3 Säulen (Badges): Abholnummer, Vor Ort, Mehrweg -->
+    <!-- 3. Die 3 Säulen (immer unter dem Bild): Vor Ort, Mehrweg, Abholnummer -->
     <div id="sThreePillars" style="display:flex; justify-content:center; align-items:center; gap:20px; margin:20px 0; padding:16px 0;">
       <!-- Wird dynamisch befüllt -->
     </div>
 
-    <!-- Essenszeit mit Uhr-Icon -->
+    <!-- Doppelte Distanz: Zu Fuß | Mit dem Auto (parallel) -->
+    <div id="sDistanceInfo" style="display:flex; flex-wrap:wrap; align-items:center; gap:12px 16px; margin-bottom:16px; padding:12px 16px; background:rgba(0,0,0,0.04); border-radius:12px; border:1px solid rgba(0,0,0,0.08);">
+      <!-- Wird dynamisch befüllt: 🚶 Zu Fuß (m/Min) | 🚗 Mit dem Auto (km/Min) -->
+    </div>
+
+    <!-- Essenszeit: Verfügbarkeit von ... bis ... Uhr -->
     <div id="sMealTime" style="display:flex; align-items:center; gap:8px; margin-bottom:16px; padding:12px 16px; background:rgba(0,0,0,0.04); border-radius:12px; border:1px solid rgba(0,0,0,0.08);">
       <i data-lucide="clock" style="width:18px;height:18px; color:var(--brand);"></i>
       <span style="color:#333; font-size:14px; font-weight:500;">Essenszeit: <span id="sMealTimeRange"></span> Uhr</span>
     </div>
 
-    <!-- Anbieter-Modul: Name (klickbar → alle Gerichte dieses Anbieters) + Adresse + Entfernungsangaben -->
-    <div id="sProviderModule" style="margin-bottom:20px; padding:16px; background:rgba(255,255,255,0.05); border-radius:12px; border:1px solid rgba(255,255,255,0.1);">
-      <button type="button" id="sProviderNameBtn" style="display:flex; align-items:center; gap:8px; margin-bottom:12px; background:none; border:none; padding:0; cursor:pointer; text-align:left; width:100%; color:inherit;">
-        <i data-lucide="store" style="width:18px;height:18px; color:var(--brand); flex-shrink:0;"></i>
-        <span id="sProviderName" style="font-weight:700; font-size:16px; color:#fff;"></span>
-        <i data-lucide="chevron-right" style="width:16px;height:16px; color:rgba(255,255,255,0.6); margin-left:auto;"></i>
-      </button>
-      <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
-        <i data-lucide="map-pin" style="width:16px;height:16px; color:rgba(255,255,255,0.7);"></i>
-        <span id="sProviderAddress" style="color:rgba(255,255,255,0.8); font-size:14px; flex:1;"></span>
-      </div>
-      <!-- Entfernungsangaben: Zu Fuß & Mit dem Auto -->
-      <div id="sDistanceInfo" style="display:flex; flex-direction:column; gap:8px; margin-top:12px; padding-top:12px; border-top:1px solid rgba(255,255,255,0.1);">
-        <!-- Wird dynamisch befüllt -->
-      </div>
+    <!-- Anbieter-Adresse (unter Distanz/Essenszeit) -->
+    <div id="sProviderAddressRow" style="display:flex; align-items:center; gap:8px; margin-bottom:20px;">
+      <i data-lucide="map-pin" style="width:16px;height:16px; color:#666;"></i>
+      <span id="sProviderAddress" style="color:#555; font-size:14px; flex:1;"></span>
     </div>
 
-    <!-- Allergene & Disclaimer (dezent, mit Overlay bei Klick) -->
-    <div id="sAllergensWrap" style="margin:20px 0; padding:12px 16px; background:rgba(255,255,255,0.03); border-radius:12px; border:1px solid rgba(255,255,255,0.08);">
+    <!-- Allergene: Klickbarer Textlink „Allergene anzeigen (ⓘ)“ → Overlay A–R -->
+    <div id="sAllergensWrap" style="margin:20px 0; padding:12px 16px; background:rgba(0,0,0,0.04); border-radius:12px; border:1px solid rgba(0,0,0,0.08);">
       <div style="display:flex; align-items:center; justify-content:space-between; cursor:pointer;" onclick="showAllergensOverlay();">
         <div style="display:flex; align-items:center; gap:8px;">
-          <span style="font-size:16px; color:rgba(255,255,255,0.7);">ⓘ</span>
-          <span style="color:rgba(255,255,255,0.8); font-size:13px; font-weight:500;">Allergene anzeigen</span>
+          <span style="font-size:16px; color:#666;">ⓘ</span>
+          <span style="color:#333; font-size:13px; font-weight:500;">Allergene anzeigen</span>
         </div>
-        <div id="sAllergensPreview" style="color:rgba(255,255,255,0.6); font-size:12px; display:flex; align-items:center; gap:4px;">
+        <div id="sAllergensPreview" style="color:#666; font-size:12px; display:flex; align-items:center; gap:4px;">
           <span id="sAllergensCount">0</span>
           <i data-lucide="chevron-right" style="width:14px;height:14px;"></i>
         </div>
       </div>
-      <div id="sAllergensList" style="display:none; margin-top:8px; padding-top:8px; border-top:1px solid rgba(255,255,255,0.1);">
-        <div id="sAllergens" style="color:rgba(255,255,255,0.7); font-size:12px; line-height:1.6;"></div>
+      <div id="sAllergensList" style="display:none; margin-top:8px; padding-top:8px; border-top:1px solid rgba(0,0,0,0.08);">
+        <div id="sAllergens" style="color:#555; font-size:12px; line-height:1.6;"></div>
       </div>
     </div>
     
-    <!-- Bottom Sticky Primary CTA: Dynamisch (Express vs. Nur Info) -->
-    <div style="position:sticky; bottom:0; background:transparent; padding:16px 0 24px; margin-top:24px; border-top:1px solid rgba(255,255,255,0.1); z-index:10;">
+    <!-- Sticky Bottom: CTA „In die Mittagsbox legen“ + Prozess-Hinweis -->
+    <div style="position:sticky; bottom:0; background:transparent; padding:16px 0 24px; margin-top:24px; border-top:1px solid rgba(0,0,0,0.08); z-index:10;">
       <button class="btn-primary" type="button" id="btnPrimaryCTA" style="width:100%; min-height:56px; max-height:64px; background:#27AE60; color:#fff; font-weight:800; font-size:18px; border:none; border-radius:16px; box-shadow:0 4px 16px rgba(39,174,96,0.4); display:flex; align-items:center; justify-content:center; gap:8px; transition:all 0.2s ease;" onmouseover="this.style.transform='scale(1.02)'; this.style.boxShadow='0 6px 20px rgba(39,174,96,0.5)';" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 16px rgba(39,174,96,0.4)';">
         <i data-lucide="shopping-basket" style="width:22px;height:22px;"></i>
         <span id="btnPrimaryCTAText">Jetzt Abholnummer sichern</span>
       </button>
-      <!-- Infotext unter Button (Szenario A/B) -->
-      <div id="sInfoHint" style="display:none; margin-top:8px; text-align:center; font-size:12px; color:rgba(255,255,255,0.6); padding:0 16px; line-height:1.4;"></div>
+      <div id="sInfoHint" style="display:none; margin-top:8px; text-align:center; font-size:12px; color:#666; padding:0 16px; line-height:1.4;"></div>
     </div>
   </div>
 </div>
@@ -5869,11 +5885,14 @@
       e.stopPropagation();
       e.preventDefault();
       if(!abholnummer){ showToast('Keine Abholnummer – nur ansehen.', 2000); return; }
-      if(!addToCart(o)){ showToast('Fehler beim Hinzufügen.', 2000); return; }
-      triggerHapticFeedback([20]);
-      if(typeof triggerCartIconGlow === 'function') triggerCartIconGlow();
-      showToast('In die Mittagsbox gelegt', 1500);
-      if(typeof updateHeaderBasket === 'function') updateHeaderBasket();
+      const thumb = card.querySelector('img');
+      flyThumbnailToMittagsbox(thumb, () => {
+        if(!addToCart(o)){ showToast('Fehler beim Hinzufügen.', 2000); return; }
+        triggerHapticFeedback([20]);
+        if(typeof triggerCartIconGlow === 'function') triggerCartIconGlow();
+        showToast('In die Mittagsbox gelegt', 1500);
+        if(typeof updateHeaderBasket === 'function') updateHeaderBasket();
+      });
     };
     if(!abholnummer){ ctaBtn.style.background = '#e5e5e5'; ctaBtn.style.color = '#888'; ctaBtn.style.cursor = 'not-allowed'; ctaBtn.disabled = true; }
     ctaWrap.appendChild(ctaBtn);
@@ -9551,7 +9570,9 @@
         }
         orderBtn.onclick = (e) => {
           e.stopPropagation();
-          if(!orderBtn.disabled) handleOrderClick(data);
+          if(orderBtn.disabled) return;
+          const thumb = card.querySelector('img');
+          flyThumbnailToMittagsbox(thumb, () => handleOrderClick(data));
         };
         body.appendChild(orderBtn);
       } else {
@@ -9564,7 +9585,7 @@
         orderBtn.className='card-action primary';
         orderBtn.innerHTML = `${iconMarkup('shopping-basket')} <span>In die Mittagsbox</span>`;
         orderBtn.disabled = !data.hasPickupCode;
-        orderBtn.onclick=(e)=>{ e.stopPropagation(); handleOrderClick(data); };
+        orderBtn.onclick=(e)=>{ e.stopPropagation(); const thumb = card.querySelector('img'); flyThumbnailToMittagsbox(thumb, () => handleOrderClick(data)); };
         
         actions.appendChild(orderBtn);
         body.appendChild(actions);
@@ -10289,11 +10310,14 @@
       e.stopPropagation();
       e.preventDefault();
       if(!abholnummer){ showToast('Keine Abholnummer – nur ansehen.', 2000); return; }
-      if(!addToCart(o)){ showToast('Fehler beim Hinzufügen.', 2000); return; }
-      triggerHapticFeedback([20]);
-      triggerCartIconGlow();
-      showToast('In die Mittagsbox gelegt', 1500);
-      if(typeof updateHeaderBasket === 'function') updateHeaderBasket();
+      const thumb = card.querySelector('img');
+      flyThumbnailToMittagsbox(thumb, () => {
+        if(!addToCart(o)){ showToast('Fehler beim Hinzufügen.', 2000); return; }
+        triggerHapticFeedback([20]);
+        triggerCartIconGlow();
+        showToast('In die Mittagsbox gelegt', 1500);
+        if(typeof updateHeaderBasket === 'function') updateHeaderBasket();
+      });
     };
     if(!abholnummer){ ctaBtn.style.background = '#e5e5e5'; ctaBtn.style.color = '#888'; ctaBtn.style.cursor = 'not-allowed'; ctaBtn.disabled = true; }
     ctaWrap.appendChild(ctaBtn);
@@ -10315,7 +10339,52 @@
     const ico = btn.querySelector('.ico');
     if(ico){ ico.classList.add('cart-icon-glow'); setTimeout(() => ico.classList.remove('cart-icon-glow'), 600); }
   }
-  
+
+  /**
+   * Animation: Thumbnail verkleinert sich und fliegt in das Mittagsbox-Icon.
+   * sourceEl = Bild-Element (img oder Container mit img); onComplete = Callback nach Ende.
+   */
+  function flyThumbnailToMittagsbox(sourceEl, onComplete){
+    if(typeof onComplete !== 'function') onComplete = function(){};
+    const targetBtn = document.getElementById('bottomNavBasketBtn');
+    if(!targetBtn){ onComplete(); return; }
+    const targetEl = targetBtn.querySelector('.ico') || targetBtn;
+    const imgEl = sourceEl && (sourceEl.tagName === 'IMG' ? sourceEl : sourceEl.querySelector('img'));
+    const src = imgEl && (imgEl.src || imgEl.getAttribute('src'));
+    if(!src || !imgEl){ onComplete(); return; }
+    const srcRect = imgEl.getBoundingClientRect();
+    const targetRect = targetEl.getBoundingClientRect();
+    const fly = document.createElement('div');
+    fly.className = 'fly-thumbnail';
+    const img = document.createElement('img');
+    img.src = src;
+    img.alt = '';
+    fly.appendChild(img);
+    fly.style.left = srcRect.left + 'px';
+    fly.style.top = srcRect.top + 'px';
+    fly.style.width = srcRect.width + 'px';
+    fly.style.height = srcRect.height + 'px';
+    fly.style.transition = 'none';
+    document.body.appendChild(fly);
+    const startCenterX = srcRect.left + srcRect.width / 2;
+    const startCenterY = srcRect.top + srcRect.height / 2;
+    const targetCenterX = targetRect.left + targetRect.width / 2;
+    const targetCenterY = targetRect.top + targetRect.height / 2;
+    const tx = targetCenterX - startCenterX;
+    const ty = targetCenterY - startCenterY;
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){
+        fly.style.transition = 'transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.5s ease';
+        fly.style.transform = 'translate(' + tx + 'px, ' + ty + 'px) scale(0.12)';
+        fly.style.opacity = '0.85';
+        setTimeout(function(){
+          fly.remove();
+          onComplete();
+        }, 520);
+      });
+    });
+  }
+
   // Anbieter-Favoriten-Karte: Kompakte Zeile mit Name, Text und 3 Icons
   function createFavoriteProviderCard(providerData, offersToday, hasOfferToday){
     const card = document.createElement('div');
@@ -10925,19 +10994,18 @@
             }
           }
           
-          // Navigate to cart/checkout
-          setTimeout(() => {
+          // Animation: Thumbnail fliegt in Mittagsbox, dann addToCart
+          const sImg = document.getElementById('sImg');
+          flyThumbnailToMittagsbox(sImg, () => {
             if(addToCart(o)){
-              // Success state
+              triggerCartIconGlow();
               primaryCTA.classList.remove('loading');
               primaryCTA.classList.add('success');
               primaryCTAText.textContent = 'Erfolgreich!';
               showToast('Gericht hinzugefügt!');
-              
-              // Redirect to cart
+              if(typeof updateHeaderBasket === 'function') updateHeaderBasket();
               setTimeout(() => {
                 showCart();
-                // Reset button after navigation
                 setTimeout(() => {
                   primaryCTA.disabled = false;
                   primaryCTA.classList.remove('success');
@@ -10945,13 +11013,12 @@
                 }, 500);
               }, 300);
             } else {
-              // Error: reset to default
               primaryCTA.disabled = false;
               primaryCTA.classList.remove('loading');
               primaryCTAText.textContent = 'In die Mittagsbox legen';
               showToast('Fehler beim Hinzufügen. Bitte erneut versuchen.');
             }
-          }, 200);
+          });
         };
       } else {
         // Info-Anbieter (ordering_enabled = false): Button "In die Mittagsbox legen" mit Disclaimer
