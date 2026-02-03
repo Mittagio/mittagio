@@ -2059,9 +2059,9 @@
       transform:translateX(32px);
     }
     
-    /* Discover Header - Sticky mit korrekter Hierarchie */
+    /* Discover Header - Sticky, immer über Kategorie- und Tage-Leiste (z-index > 90) */
     .discover-header-sticky{
-      position:sticky; top:0; z-index:10;
+      position:sticky; top:0; z-index:100;
       background:rgba(255,255,255,.98); backdrop-filter:blur(20px);
       border-bottom:1px solid rgba(0,0,0,.06);
       box-shadow:0 2px 8px rgba(0,0,0,.04);
