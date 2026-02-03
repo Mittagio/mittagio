@@ -2455,9 +2455,10 @@
       overflow: hidden;
     }
     
-    /* Favoriten Grid-Kachel Styling - Jiggle-Effekt wird in separater Regel definiert */
+    /* Favoriten Grid-Kachel: Basis (Jiggle + relative für X-Button) */
     .fav-grid-card {
       position: relative;
+      background: #fff !important;
     }
     
     @keyframes fadeIn {
@@ -2471,19 +2472,19 @@
       }
     }
     
-    /* Jiggle-Effekt: Leichtes, dauerhaftes Wackeln (Rotation -1 bis 1 Grad) */
+    /* Jiggle-Effekt: Leichtes, dauerhaftes Wackeln (Rotation ±1.2°) */
     @keyframes jiggle {
       0%, 100% {
-        transform: rotate(-1deg);
+        transform: rotate(-1.2deg);
       }
       25% {
-        transform: rotate(1deg);
+        transform: rotate(1.2deg);
       }
       50% {
-        transform: rotate(-1deg);
+        transform: rotate(-1.2deg);
       }
       75% {
-        transform: rotate(1deg);
+        transform: rotate(1.2deg);
       }
     }
     
@@ -2492,7 +2493,7 @@
       animation: fadeIn 0.3s ease-out, jiggle 3s ease-in-out infinite;
     }
     
-    /* Entfernen-Animation */
+    /* Exit-Animation: Kachel skaliert auf 0 und verschwindet, andere rücken flüssig nach */
     @keyframes removeCard {
       0% {
         opacity: 1;
@@ -2500,12 +2501,12 @@
       }
       100% {
         opacity: 0;
-        transform: scale(0.8) rotate(-5deg);
+        transform: scale(0) rotate(0deg);
       }
     }
     
     .fav-grid-card.removing {
-      animation: removeCard 0.3s ease-out forwards;
+      animation: removeCard 0.25s ease-out forwards;
     }
     
     /* Skeleton Loading Animation (Pulse) */
@@ -2610,12 +2611,47 @@
       box-shadow: 0 4px 12px rgba(255,215,0,0.4) !important;
     }
     
-    /* Favoriten-Grid: Immer 2x2 Layout, Jiggle auf .fav-grid-card */
+    /* Favoriten-Grid: Mobile First (S25/390px), 2 Spalten, gap 12px, homogene Kachelhöhe */
     #favDishes.fav-dishes-grid,
     #favDishes {
       display: grid !important;
       grid-template-columns: repeat(2, 1fr) !important;
       gap: 12px !important;
+    }
+    /* Homogenität: Alle Favoriten-Kacheln identische Höhe, abgerundete Karten, dezenter Schatten */
+    .fav-grid-card {
+      height: 100%;
+      min-height: 320px;
+      max-height: 340px;
+      display: flex;
+      flex-direction: column;
+      border-radius: 16px !important;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08) !important;
+      overflow: hidden;
+    }
+    .fav-grid-card .fav-card-img-wrap {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      flex-shrink: 0;
+      overflow: hidden;
+      background: #f0f0f0;
+    }
+    .fav-grid-card .fav-card-img-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .fav-grid-card .fav-card-body {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      padding: 0;
+    }
+    .fav-grid-card .fav-card-title {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     
     /* Responsive Grid für Provider-Favoriten */
@@ -3543,9 +3579,12 @@
     <!-- CUSTOMER: Favorites – Fokus auf HEUTE, 2x2 Grid, Pull-to-Reveal -->
     <section class="view customer-view" id="v-fav">
       <div style="padding-bottom:100px;">
-        <!-- Header: Keine Datums-Navigation, nur „Dein Menü für heute“ -->
-        <div id="favHeader" style="padding:24px 20px 16px; background:rgba(255,255,255,0.95); backdrop-filter:blur(10px); position:sticky; top:0; z-index:80; border-bottom:1px solid rgba(0,0,0,0.05);">
-          <h1 style="font-size:28px; font-weight:900; margin:0; color:#1a1a1a; letter-spacing:-0.5px;">Dein Menü für heute</h1>
+        <!-- Header: Titel linksbündig + Share-Icon rechts (spart vertikalen Platz) -->
+        <div id="favHeader" style="display:flex; align-items:center; justify-content:space-between; gap:12px; padding:24px 20px 16px; background:rgba(255,255,255,0.95); backdrop-filter:blur(10px); position:sticky; top:0; z-index:80; border-bottom:1px solid rgba(0,0,0,0.05);">
+          <h1 style="font-size:22px; font-weight:800; margin:0; color:#1a1a1a; letter-spacing:-0.5px; flex:1; font-family:-apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;">Deine Favoriten für heute:</h1>
+          <button type="button" id="btnFavShareHeader" aria-label="Teilen" style="flex-shrink:0; width:44px; height:44px; border-radius:50%; border:1px solid rgba(0,0,0,0.1); background:rgba(255,255,255,0.9); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s ease; color:#666;" onmouseover="this.style.background='rgba(255,215,0,0.15)'; this.style.borderColor='rgba(255,215,0,0.4)'; this.style.color='#1a1a1a';" onmouseout="this.style.background='rgba(255,255,255,0.9)'; this.style.borderColor='rgba(0,0,0,0.1)'; this.style.color='#666';">
+            <i data-lucide="share-2" style="width:22px;height:22px; stroke-width:2;"></i>
+          </button>
         </div>
         
         <!-- Empty State -->
@@ -3569,8 +3608,8 @@
             <div class="hint" id="emptyFavDishes" style="display:none; text-align:center; padding:24px; background:#f9f9f9; border-radius:16px; margin-bottom:20px;">
               <p style="font-size:14px; color:#666; margin:0;">Heute sind keine deiner Lieblingsgerichte verfügbar.</p>
             </div>
-            <!-- Share my Lunch: dezenter Button unter dem Grid -->
-            <div id="favShareWrap" style="display:none; margin-bottom:32px; text-align:center;">
+            <!-- Share-Logik: Header-Button (btnFavShareHeader) + optionaler Fallback sichtbar nur wenn gewünscht -->
+            <div id="favShareWrap" style="display:none; margin-bottom:24px; text-align:center;">
               <button type="button" id="btnShareMyLunch" style="padding:10px 20px; background:rgba(0,0,0,0.05); border:1px solid rgba(0,0,0,0.08); border-radius:20px; font-size:14px; font-weight:600; color:#666; cursor:pointer; display:inline-flex; align-items:center; gap:8px; transition:all 0.2s ease;" onmouseover="this.style.background='rgba(255,215,0,0.15)'; this.style.borderColor='rgba(255,215,0,0.4)'; this.style.color='#1a1a1a';" onmouseout="this.style.background='rgba(0,0,0,0.05)'; this.style.borderColor='rgba(0,0,0,0.08)'; this.style.color='#666';">
                 <i data-lucide="share-2" style="width:18px;height:18px;"></i>
                 <span>Share my Lunch</span>
@@ -3583,7 +3622,7 @@
           
           <!-- 2. Anbieter-Favoriten (Grayscale + Text wenn kein Angebot heute) -->
           <div id="sectionProvidersWrapper">
-            <div class="section-title" id="sectionProviders" style="margin-bottom:16px; font-size:18px; font-weight:800; color:#1a1a1a;">Lieblings-Orte</div>
+            <div class="section-title" id="sectionProviders" style="margin-bottom:16px; font-size:18px; font-weight:800; color:#1a1a1a;">Deine Lieblings-Anbieter heute</div>
             <div id="favProviders" style="display:flex; flex-direction:column; gap:12px;"></div>
             <div class="hint" id="emptyFavProviders" style="display:none;"></div>
           </div>
@@ -5594,8 +5633,8 @@
           <div style="${styleText}">Vor Ort</div>
         </div>
         
-        <!-- Abholnummer (Monetarisierung: gelb #FFD700 hervorgehoben) -->
-        <div style="${styleBadge(abholnummer, '#FFD700')}">
+        <!-- Abholnummer: Aktiv = gelb #FFD700, Inaktiv = ausgegraut opacity 0.2 -->
+        <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; opacity:${abholnummer ? '1' : '0.2'}; filter:${abholnummer ? 'none' : 'grayscale(100%)'}; transition:all 0.2s ease;">
           <div style="width:36px; height:36px; border-radius:50%; background:${abholnummer ? '#FFD700' : 'rgba(0,0,0,0.08)'}; color:${abholnummer ? '#1a1a1a' : '#999'}; display:flex; align-items:center; justify-content:center; border:1px solid ${abholnummer ? 'rgba(255,215,0,0.6)' : 'rgba(0,0,0,0.1)'};">
             <i data-lucide="ticket" style="width:18px;height:18px;"></i>
           </div>
@@ -9977,25 +10016,44 @@
       }
     });
     
-    // Share my Lunch: nur anzeigen wenn mindestens ein Gericht-Favorit heute
+    // Share (Web Share API) – Logik-Weiche:
+    // IF User wählt 'Team-Bestellung': Variante 2 (Direkt-Warenkorb-Link) – zukünftig
+    // ELSE IF Abholnummer 🧾 vorhanden: Variante 1 (Fokus Zeitersparnis / Skip-the-line)
+    // ELSE (Keine Abholnummer): Variante 3 (Fokus Gericht & Treffen – „Lockerer Lunch“)
     const favShareWrap = document.getElementById('favShareWrap');
-    const btnShareMyLunch = document.getElementById('btnShareMyLunch');
-    if(favShareWrap) favShareWrap.style.display = topFour.length > 0 ? 'block' : 'none';
-    if(btnShareMyLunch){
-      btnShareMyLunch.onclick = () => {
-        const shareText = 'Schau mal, was ich heute esse! 🍴 Kein Warten dank Abholnummer 🧾.';
-        if(navigator.share){
-          navigator.share({
-            title: 'Mein Mittag – Mittagio',
-            text: shareText,
-            url: window.location.origin || ''
-          }).catch(() => { navigator.clipboard.writeText(shareText); showToast('In Zwischenablage kopiert'); });
-        } else {
-          navigator.clipboard.writeText(shareText);
-          showToast('In Zwischenablage kopiert');
-        }
-      };
+    if(favShareWrap) favShareWrap.style.display = 'none';
+    const baseUrl = window.location.href.split('#')[0] || window.location.origin || '';
+    const firstDish = topFour.length > 0 ? normalizeOffer(topFour[0]) : null;
+    const firstHasAbholnummer = firstDish && (() => {
+      const o = topFour[0];
+      const p = offers.find(x => x.providerId === (o && o.providerId));
+      return !!(p && (p.orderingEnabled !== false && ((o && (o.hasPickupCode || o.orderingEnabled)) || (p.hasPickupCode))));
+    })();
+    const shareFavAction = () => {
+      const dishName = (firstDish && (firstDish.dish || firstDish.title)) ? (firstDish.dish || firstDish.title) : 'was Leckeres';
+      const providerName = (firstDish && firstDish.providerName) ? firstDish.providerName : 'dem Laden';
+      const linkToDish = (firstDish && firstDish.id) ? (baseUrl + '#offer=' + firstDish.id) : baseUrl;
+      let shareText;
+      if(firstHasAbholnummer){
+        shareText = `Hey, ich hab mir das hier für heute rausgesucht: ${dishName} 🍴 Ich nehm die Abholnummer 🧾, dann können wir die Schlange einfach überspringen. Kommst du mit? ${linkToDish}`;
+      } else {
+        shareText = `Hey, ich hab mir das hier für heute bei ${providerName} rausgesucht: ${dishName} 🍴 Sieht richtig gut aus, oder? Sollen wir heute zusammen dort Mittag machen? ${linkToDish}`;
+      }
+      if(navigator.share){
+        navigator.share({ title: 'Mein Mittag – Mittagio', text: shareText, url: linkToDish })
+          .catch(() => { navigator.clipboard.writeText(shareText); showToast('In Zwischenablage kopiert'); });
+      } else {
+        navigator.clipboard.writeText(shareText);
+        showToast('In Zwischenablage kopiert');
+      }
+    };
+    const btnFavShareHeader = document.getElementById('btnFavShareHeader');
+    if(btnFavShareHeader){
+      btnFavShareHeader.style.display = topFour.length > 0 ? 'flex' : 'none';
+      btnFavShareHeader.onclick = shareFavAction;
     }
+    const btnShareMyLunch = document.getElementById('btnShareMyLunch');
+    if(btnShareMyLunch) btnShareMyLunch.onclick = shareFavAction;
     
     // Pull-Hinweis: anzeigen wenn es Favoriten für Morgen/Übermorgen gibt
     const favPullHint = document.getElementById('favPullHint');
@@ -10188,114 +10246,69 @@
     }, {passive: true});
   }
   
-  // Favoriten-Grid-Karte mit Jiggle-Effekt, X-Button und 3 Icons unten
+  // Favoriten-Grid-Karte: homogenes Layout (fixe Höhe, 1:1 Bild, 3 Säulen unter Bild, Abholnummer #FFD700, CTA unten)
   function createFavoriteGridCard(o){
     const data = normalizeOffer(o);
     const card = document.createElement('div');
-    card.className = 'fav-grid-card card polaroid';
+    card.className = 'fav-grid-card card';
     card.setAttribute('data-fav-id', data.id);
+    card.style.cssText = 'position:relative; border-radius:16px; overflow:hidden; cursor:pointer;';
     
-    // Basis-Styling für Polaroid-Karte
-    card.style.cssText = 'position:relative; background:#FFFFFF; border:none; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.08); overflow:hidden; cursor:pointer; background:linear-gradient(135deg, #f5f1eb 0%, #ede8e0 100%);';
-    
-    // X-Button oben rechts zum Entfernen
+    // X-Button oben rechts
     const removeBtn = document.createElement('button');
     removeBtn.type = 'button';
-    removeBtn.style.cssText = 'position:absolute; top:8px; right:8px; z-index:20; width:28px; height:28px; border-radius:50%; background:rgba(255,255,255,0.95); backdrop-filter:blur(8px); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 2px 6px rgba(0,0,0,0.15); transition:transform 0.2s ease, background 0.2s ease;';
-    removeBtn.innerHTML = '<span style="font-size:18px; color:#E34D4D; font-weight:900; line-height:1;">✕</span>';
-    removeBtn.onmouseover = () => {
-      removeBtn.style.transform = 'scale(1.1)';
-      removeBtn.style.background = '#fff';
-    };
-    removeBtn.onmouseout = () => {
-      removeBtn.style.transform = 'scale(1)';
-      removeBtn.style.background = 'rgba(255,255,255,0.95)';
-    };
-    removeBtn.onclick = (e) => {
-      e.stopPropagation();
-      e.preventDefault();
-      triggerHapticFeedback([15]);
-      // Entfernen-Animation
-      card.classList.add('removing');
-      setTimeout(() => {
-        toggleDishFav(data.id);
-        renderFavorites();
-      }, 300);
-    };
+    removeBtn.style.cssText = 'position:absolute; top:8px; right:8px; z-index:20; width:28px; height:28px; border-radius:50%; background:rgba(255,255,255,0.95); backdrop-filter:blur(8px); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 2px 6px rgba(0,0,0,0.15);';
+    removeBtn.innerHTML = '<span style="font-size:18px; color:#E34D4D; font-weight:900;">✕</span>';
+    removeBtn.onclick = (e) => { e.stopPropagation(); e.preventDefault(); triggerHapticFeedback([15]); card.classList.add('removing'); setTimeout(() => { toggleDishFav(data.id); renderFavorites(); }, 300); };
     card.appendChild(removeBtn);
     
-    // Bild (50% Höhe)
-    const img = document.createElement('div');
-    img.className = 'img';
-    img.style.cssText = 'position:relative; width:100%; height:50%; min-height:140px; max-height:140px; overflow:hidden; background:#f0f0f0;';
+    // Bild 1:1 (quadratisch)
+    const imgWrap = document.createElement('div');
+    imgWrap.className = 'fav-card-img-wrap';
+    imgWrap.style.cssText = 'position:relative;';
     const imgSrc = data.imageUrl || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70';
-    img.innerHTML = `<img alt="${esc(data.dish||'')}" src="${esc(imgSrc)}" style="width:100%; height:100%; object-fit:cover;" />`;
-    
-    // Preis-Sticker: Rechts unten auf Foto
+    imgWrap.innerHTML = `<img alt="${esc(data.dish||'')}" src="${esc(imgSrc)}" />`;
     const priceSticker = document.createElement('div');
-    priceSticker.style.cssText = 'position:absolute; bottom:8px; right:8px; width:48px; height:48px; border-radius:50%; background:#27AE60; border:3px solid #fff; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:12px; color:#fff; box-shadow:0 2px 8px rgba(0,0,0,0.2); z-index:10;';
+    priceSticker.style.cssText = 'position:absolute; bottom:6px; right:6px; width:40px; height:40px; border-radius:50%; background:#27AE60; border:2px solid #fff; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:11px; color:#fff; box-shadow:0 2px 6px rgba(0,0,0,0.2); z-index:10;';
     priceSticker.textContent = euro(data.price);
-    img.appendChild(priceSticker);
-    
-    // Favoriten-Herz: Oben rechts auf Foto (unter X-Button)
+    imgWrap.appendChild(priceSticker);
     const dishKey = data.id;
     const heart = document.createElement('button');
     heart.className = 'card-heart' + (dishFavs.has(dishKey) ? ' on' : '');
     heart.type = 'button';
-    heart.style.cssText = 'position:absolute; top:8px; right:44px; z-index:15; width:32px; height:32px; border-radius:50%; background:rgba(255,255,255,0.9); backdrop-filter:blur(5px); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 2px 6px rgba(0,0,0,0.1);';
+    heart.style.cssText = 'position:absolute; top:6px; right:42px; z-index:15; width:28px; height:28px; border-radius:50%; background:rgba(255,255,255,0.9); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer;';
     heart.innerHTML = dishFavs.has(dishKey) ? iconMarkup('heart', {fill:true}) : iconMarkup('heart');
     heart.onclick = (e) => { e.stopPropagation(); toggleDishFav(dishKey); };
-    img.appendChild(heart);
+    imgWrap.appendChild(heart);
+    card.appendChild(imgWrap);
     
-    card.appendChild(img);
-    
-    // Body
+    // Body: 3 Säulen direkt unter Bild, dann Titel (ellipsis), dann CTA
     const body = document.createElement('div');
-    body.className = 'body';
-    body.style.cssText = 'background:#fff; padding:0; flex:1; display:flex; flex-direction:column; border:none; box-shadow:none;';
+    body.className = 'fav-card-body body';
+    body.style.cssText = 'background:#fff; padding:8px 10px 12px; flex:1; min-height:0; display:flex; flex-direction:column;';
     
-    // Gerichtname
-    const title = document.createElement('h3');
-    title.style.cssText = "font-family:'Kalam', 'Comic Sans MS', 'Marker Felt', cursive; font-weight:700; font-size:16px; color:#000; text-align:center; margin:12px 16px 8px; line-height:1.3;";
-    title.textContent = data.dish || 'Gericht';
-    body.appendChild(title);
-    
-    // Restaurant-Name
-    const providerEl = document.createElement('p');
-    providerEl.style.cssText = 'margin:0 0 8px; padding:0 16px; text-align:center; font-size:12px; font-weight:600; color:#666;';
-    providerEl.innerHTML = `<i data-lucide="store" style="width:12px;height:12px; margin-right:4px;"></i> <span>${esc(data.providerName || 'Anbieter')}</span>`;
-    body.appendChild(providerEl);
-    
-    // 3 Säulen als High-Contrast-Balken (identisch zu Discovery)
     const stored = getFavPillars(dishKey);
     const vorOrt = stored ? !!stored.vorOrt : (() => { const p = offers.find(x => x.providerId === data.providerId); return !!(p && (p.dineInPossible !== false || data.dineInPossible)); })();
     const abholnummer = stored ? !!stored.abholnummer : (() => { const p = offers.find(x => x.providerId === data.providerId); return !!(p && (p.orderingEnabled !== false && (data.hasPickupCode || p.hasPickupCode))); })();
     const mehrweg = stored ? !!stored.mehrweg : (() => { const p = offers.find(x => x.providerId === data.providerId); return !!(p && (p.reuse && p.reuse.enabled)); })();
     
     const barsWrap = document.createElement('div');
-    barsWrap.style.cssText = 'margin-top:8px; padding:0 12px;';
+    barsWrap.style.cssText = 'flex-shrink:0; padding:4px 0;';
     barsWrap.innerHTML = renderPillarBars(vorOrt, abholnummer, mehrweg);
     body.appendChild(barsWrap);
     
-    // Mobilitäts-Leiste ganz unten (wenn Entfernung vorhanden)
-    if(data.distanceKm != null){
-      const walkingMinutes = Math.round(Number(data.distanceKm) * 12);
-      const carMinutes = Math.round(Number(data.distanceKm) * 1.2);
-      const walkingMeters = Math.round(Number(data.distanceKm) * 1000);
-      const distanceText = walkingMeters < 1000 ? `${walkingMeters}m` : `${Number(data.distanceKm).toFixed(1)}km`;
-      const mobilityRow = document.createElement('div');
-      mobilityRow.style.cssText = 'margin-top:10px; padding:8px 12px; font-size:11px; color:#666; font-weight:500; display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap;';
-      mobilityRow.innerHTML = `<span>🚶 ${walkingMinutes} min</span><span style="color:#999;">|</span><span>🚗 ${carMinutes} min</span><span style="color:#999;">|</span><span>📍 ${distanceText}</span>`;
-      body.appendChild(mobilityRow);
-    }
+    const title = document.createElement('h3');
+    title.className = 'fav-card-title';
+    title.style.cssText = "font-family:'Kalam',cursive; font-weight:700; font-size:14px; color:#1a1a1a; margin:4px 0 0; padding:0; line-height:1.3; text-align:center;";
+    title.textContent = data.dish || 'Gericht';
+    body.appendChild(title);
     
-    // Gelber CTA: "In die Mittagsbox" (nur wenn Abholnummer)
     const ctaWrap = document.createElement('div');
-    ctaWrap.style.cssText = 'padding:0 16px 16px;';
+    ctaWrap.style.cssText = 'margin-top:auto; padding-top:10px;';
     const ctaBtn = document.createElement('button');
     ctaBtn.type = 'button';
     ctaBtn.className = 'btn';
-    ctaBtn.style.cssText = 'width:100%; min-height:44px; border-radius:12px; background:#FFD700; color:#1a1a1a; font-weight:800; font-size:14px; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; transition:transform 0.2s, box-shadow 0.2s;';
+    ctaBtn.style.cssText = 'width:100%; min-height:40px; border-radius:12px; background:#FFD700; color:#1a1a1a; font-weight:800; font-size:13px; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; transition:transform 0.2s, box-shadow 0.2s;';
     ctaBtn.innerHTML = (typeof iconMarkup === 'function' ? iconMarkup('shopping-basket') : '') + ' <span>In die Mittagsbox</span>';
     ctaBtn.onmouseover = () => { ctaBtn.style.transform = 'scale(1.02)'; ctaBtn.style.boxShadow = '0 4px 12px rgba(255,215,0,0.4)'; };
     ctaBtn.onmouseout = () => { ctaBtn.style.transform = 'scale(1)'; ctaBtn.style.boxShadow = 'none'; };

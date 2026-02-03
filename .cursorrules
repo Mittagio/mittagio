@@ -138,6 +138,19 @@ Jede Karte im Swipe-Modus muss **zwingend** diese drei Symbole **ohne begleitend
 - Es darf zu jedem Zeitpunkt **nur eine aktive Sitzung pro Nutzer** existieren.
 - ❌ Vermeide die "Vor-Ort-Logik" als Begriff in der Nutzerkommunikation.
 
+## Favoriten-Layout (strikt)
+
+**Bei jeder Änderung an der Favoritenseite (`v-fav`) oder an Favoriten-Kacheln:**
+
+- **Mobile First (S25/390px):** Exaktes 2-Spalten-Grid mit **gap: 12px**.
+- **Homogenität:** Alle Kacheln im Grid **identische Höhe**; zu lange Texte mit **ellipsis** kürzen.
+- **Header:** Titel "Deine Favoriten für heute:" und Share-Button in **einer flex-Row** ganz oben.
+- **3 Säulen:** 🍴, 🧾, 🔄 als gleich große Icons in einer Reihe **direkt unter dem Bild**; Abholnummer 🧾 **Hintergrund #FFD700**.
+- **Keine Schiefertafeln:** Nur saubere, abgerundete Karten (**border-radius: 16px**) mit dezentem Schatten; Bild **1:1**.
+- **Button:** "In die Mittagsbox" = kompakter, gelber Button am unteren Ende jeder Kachel.
+
+**Vollständige Regel:** Siehe `docs/FAVORITEN_LAYOUT_REGEL.md`.
+
 ## Datenschutz & Endkunden
 
 ### Endkunden-Datenschutz
