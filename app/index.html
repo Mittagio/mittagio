@@ -3484,7 +3484,7 @@
           <div style="position:relative; display:flex; align-items:center; gap:6px; flex-shrink:0;">
             <i data-lucide="map-pin" style="width:16px;height:16px; color:#666;"></i>
             <button class="discover-location-pill-clickable" type="button" id="btnDiscoverLocationToggle" style="display:flex; align-items:center; gap:4px; padding:6px 12px; border-radius:16px; background:rgba(0,0,0,.04); border:none; font-size:13px; font-weight:600; color:#333; cursor:pointer; transition:all 0.2s ease;">
-              <span id="discoverCurrentLocation" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">Jena</span>
+              <span id="discoverCurrentLocation" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">Standort…</span>
             </button>
             <!-- Standort-Dropdown: fixed, damit es immer sichtbar unter dem Button liegt (nicht von sticky-Bars verdeckt) -->
             <div id="discoverLocationExpanded" style="display:none; position:fixed; z-index:99999; background:#fff; border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.2); border:1px solid rgba(0,0,0,0.1); overflow:hidden; min-width:260px; max-width:calc(100vw - 32px);">
@@ -6228,7 +6228,9 @@
   let cookbookQuery = '';
   let cookbookTab = 'dishes';
   let weekPlanDay = isoDate(new Date());
-  let locationQuery = 'Jena'; // Default für Demo – 10 Anbieter in Jena erscheinen in Kundenansicht
+  let locationQuery = ''; // Wird durch Auto-GPS oder manuelle Eingabe gesetzt
+  let userLat = null;
+  let userLng = null;
   let pickupDone = new Set(load(LS.pickupDone, []));
   let activeOrderId = null;
   let ordersFilter = 'offen';
@@ -7556,37 +7558,54 @@
         };
       }
       
-      // GPS-Button: Doppelklick auf Location-Pill aktiviert GPS
-      btnDiscoverLocationToggle.ondblclick = (e)=>{
+      // Auto-GPS: Ein Klick = manueller Refresh. Bei Erfolg: Button zeigt "📍 Aktueller Standort", bei Fehler: Toast + Fallback-Eingabe
+      function requestUserLocation(){
+        if(!navigator.geolocation){
+          showToast('GPS nicht verfügbar', 2000);
+          if(discoverLocationExpanded) discoverLocationExpanded.style.display = 'block';
+          if(discoverLocationInput) discoverLocationInput.focus();
+          return;
+        }
+        if(discoverCurrentLocation) discoverCurrentLocation.textContent = 'Ermitteln…';
+        showToast('Standort wird ermittelt…', 1000);
+        navigator.geolocation.getCurrentPosition(
+          (position)=>{
+            userLat = position.coords.latitude;
+            userLng = position.coords.longitude;
+            locationQuery = 'Aktueller Standort';
+            if(discoverCurrentLocation) discoverCurrentLocation.textContent = '📍 Aktueller Standort';
+            discoverLocationExpanded.style.display = 'none';
+            showToast('Standort aktualisiert', 1500);
+            renderDiscover();
+          },
+          (err)=>{
+            if(discoverCurrentLocation) discoverCurrentLocation.textContent = 'Standort…';
+            showToast('Standort blockiert – Ort eingeben', 2500);
+            discoverLocationExpanded.style.display = 'block';
+            if(discoverLocationInput){ discoverLocationInput.placeholder = 'Ort oder PLZ als Fallback'; discoverLocationInput.focus(); }
+          },
+          { enableHighAccuracy: true, timeout: 12000, maximumAge: 300000 }
+        );
+      }
+      btnDiscoverLocationToggle.onclick = (e)=>{
         e.preventDefault();
         e.stopPropagation();
-        triggerHapticFeedback([10, 20]);
-        
-        if(navigator.geolocation){
-          showToast('Standort wird ermittelt...', 1000);
-          navigator.geolocation.getCurrentPosition((position)=>{
-            showToast('Standort aktualisiert', 2000);
-            if(discoverCurrentLocation) discoverCurrentLocation.textContent = 'Aktueller Standort';
-            locationQuery = 'Aktueller Standort';
-            discoverLocationExpanded.style.display = 'none';
-            renderDiscover();
-          }, (err)=>{
-            showToast('Standort konnte nicht ermittelt werden', 2000);
-          });
-        } else {
-          showToast('GPS nicht verfügbar', 2000);
-        }
+        triggerHapticFeedback([10]);
+        const isExpanded = discoverLocationExpanded.style.display === 'block';
+        if(isExpanded){ discoverLocationExpanded.style.display = 'none'; return; }
+        requestUserLocation();
       };
+      // Auto-GPS beim ersten Laden (HTTPS-kompatibel für GitHub Pages)
+      setTimeout(function(){ requestUserLocation(); }, 800);
     }
     
-    // Aktuellen Standort anzeigen
+    // Aktuellen Standort anzeigen (Fallback: Demo-Text wenn weder GPS noch Eingabe)
     if(discoverCurrentLocation){
-      discoverCurrentLocation.textContent = locationQuery || 'Jena';
+      discoverCurrentLocation.textContent = locationQuery || 'Standort…';
     }
-    // Swipe-Location synchronisieren
     const swipeLocationCity = document.getElementById('swipeLocationCity');
     if(swipeLocationCity){
-      swipeLocationCity.textContent = locationQuery || 'Jena';
+      swipeLocationCity.textContent = locationQuery || 'Standort…';
     }
     
     // Globale Funktion für Location-Auswahl
