@@ -50,6 +50,7 @@
 - `v-legal-faq` - FAQ (Kunden & Anbieter mit Tabs)
 - `v-legal-faq-provider` - FAQ (Anbieter, Legacy)
 - `v-legal-agb-onboarding` - AGB (Onboarding)
+- `v-version` - Versionsseite (Link im Footer: v1.0.x, Route #/version)
 
 ---
 
@@ -204,42 +205,24 @@
 - Heutige Abholnummern (PAID, nicht PICKED_UP)
 - Klick → `showPickupCode()`
 
-**Mein Geschmack (Präferenzen - zweite Reihe):**
-- **Ernährungs-Präferenzen:**
-  - Vegan, Vegetarisch, Glutenfrei, Laktosefrei
-  - Toggle-Switches mit visueller Hervorhebung
-- **Nachhaltigkeit (zweite Ebene):**
-  - Mehrweg-Nutzer Toggle
-  - **Hinweistext:** "Wir arbeiten stetig daran, weitere Partner für unser Mehrweg-System zu gewinnen. Aktuell führen noch nicht alle Anbieter Mehrweg-Optionen; es werden dir weiterhin alle verfügbaren Angebote angezeigt."
-  - Eco-Badge (wenn aktiviert)
+**Mein Geschmack (Präferenzen – zweite Reihe):**
+- **Platzierung:** Unter Profil-Anmeldung / aktiven Abholnummern; kompakt in „zweiter Reihe“.
+- **Ernährungs-Präferenzen:** Vegan, Vegetarisch, Glutenfrei, Laktosefrei (Toggle-Switches).
+- **Mehrweg-Fokus (🔄):** Tiefer im Profil; Hinweistext unverändert: „Wir arbeiten stetig daran, weitere Partner für unser Mehrweg-System zu gewinnen …“
 
-**Support & Vertrauen:**
-- Hilfe & Kontakt
-- Datenschutz
-- Impressum
+**Abholnummer-Logik:**
+- Grüne Ansicht „Bitte direkt beim Personal vorzeigen“ nur temporär bei aktiven Bestellungen; blockiert Profil-Einstellungen nicht.
 
-**MITTAGIO Business (für Partner):**
-- **Design:** Dunkles Design (Gradient #1a1a1a → #2a2a2a)
-- **Button:** Grauer Gradient (#6b7280 → #4b5563)
-- **Text:** "Dein Mittagessen anbieten – einfach und digital."
-- **Keine E-Mail-Adresse** (wurde entfernt)
-- **Handler:** `showProviderLoginModal()`
+**Kein Slate-Board / keine Overlays:** Kein Schiefertafel-Icon, keine grafischen Overlays auf der Profilseite.
 
-**Häufige Fragen (FAQ):**
-- Reduzierte FAQ-Liste
-- "Weitere Fragen anzeigen →" Link
+**Footer (strikte Struktur – siehe [KONZEPTE_PROFIL_UND_FOOTER.md](KONZEPTE_PROFIL_UND_FOOTER.md)):**
+- **Kunden-Rechtliches (oben):** FAQ | Datenschutz | Impressum | AGB (nur Kunden-Links).
+- **Anbieter-Bereich (Mitte, grau):** Text „Dein Mittagessen anbieten – einfach und digital.“ + Button „Jetzt als Anbieter einloggen“. **Keine** Links zu Anbieter-FAQ, Anbieter-Impressum, Anbieter-AGB im öffentlichen Footer.
+- **Branding & System (unten):** Zentriert: „www.Mittagio.de made with Love by mittagio.de · Strategie & Besteck“. Rechtsbündig: „v1.0.x“ (Link zu #/version).
+- **Impressum (Kunden):** Mike Quach, Langäcker 2, 73635 Rudersberg (v-legal-impressum).
+- **Versionsseite:** v-version, Route #/version.
 
-**Footer: Professionalisierung & Branding:**
-- **Kunden-Bereich:**
-  - FAQ | Impressum | Datenschutz | AGB
-- **Anbieter-Bereich:**
-  - FAQ | Impressum | AGB
-- **Branding:**
-  - hageo.de · made with helps · Besteck-Strategie
-  - Version 1.0.0
-- **Kontakt:**
-  - info@mittagio.de (Kunden-Hilfe)
-  - support@mittagio.de (Business)
+**Terminologie:** Überall ausschließlich **Abholnummer** (nicht „Ticket“, nicht „Code“) in FAQs und App-Texten.
 
 **Funktionen:**
 - `updateProfileView()` - Aktualisiert Profil-Ansicht
