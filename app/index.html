@@ -5629,6 +5629,10 @@
     if(typeof lucide !== 'undefined') lucide.createIcons();
   }
   
+  function getDayName(date){
+    return ['So','Mo','Di','Mi','Do','Fr','Sa'][date.getDay()];
+  }
+  
   function renderDiscoverDays(){
     const bar = document.getElementById('discoverDaysBar');
     if(!bar) return;
@@ -5641,7 +5645,7 @@
       d.setDate(today.getDate() + i);
       const iso = d.toISOString().split('T')[0];
       
-      let label = i===0 ? 'Heute' : i===1 ? 'Morgen' : getDayName(d);
+      let label = i===0 ? 'Heute' : i===1 ? 'Morgen' : i===2 ? 'Übermorgen' : getDayName(d);
       days.push({ id: iso, label: label, date: d });
     }
     
