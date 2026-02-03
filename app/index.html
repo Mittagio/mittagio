@@ -3776,16 +3776,14 @@
         </div>
       </div>
 
-      <!-- Anbieter-Login: Dein Mittagessen anbieten -->
-      <div class="panel" id="profileProviderSection" style="margin-top:20px; padding:20px; border-radius:20px; box-shadow:0 2px 12px rgba(0,0,0,.06); background:rgba(0,0,0,0.03);">
+      <!-- Anbieter-Einstieg: leicht grauer Hintergrund, nur Text + Login-Button (keine Anbieter-FAQ/Impressum-Links) -->
+      <div class="panel" id="profileProviderSection" style="margin-top:20px; padding:20px; border-radius:20px; box-shadow:0 2px 12px rgba(0,0,0,.06); background:#e8e8e8;">
         <div style="font-weight:700; font-size:16px; margin-bottom:8px; color:#2D3436; display:flex; align-items:center; gap:8px;">
           <span style="font-size:20px;">🍽️</span>
           <span>Anbieter werden</span>
         </div>
-        <div class="hint" style="font-size:13px; color:#64748b; margin-bottom:16px; line-height:1.5;">
-          Dein Mittagessen anbieten – einfach und digital.
-        </div>
-        <button type="button" id="btnProfileProviderLogin" onclick="setMode('provider');" style="width:100%; min-height:48px; padding:12px 20px; border-radius:14px; border:2px solid #4b5563; background:#4b5563; color:#fff; font-weight:700; font-size:15px; cursor:pointer; transition:all 0.2s ease;" onmouseover="this.style.background='#374151'; this.style.borderColor='#374151';" onmouseout="this.style.background='#4b5563'; this.style.borderColor='#4b5563';">
+        <p style="font-size:14px; color:#555; margin-bottom:16px; line-height:1.5;">Dein Mittagessen anbieten – einfach und digital.</p>
+        <button type="button" id="btnProfileProviderLogin" onclick="setMode('provider');" style="width:100%; min-height:48px; padding:12px 20px; border-radius:14px; border:none; background:#6b7280; color:#fff; font-weight:700; font-size:15px; cursor:pointer; transition:all 0.2s ease;" onmouseover="this.style.background='#4b5563';" onmouseout="this.style.background='#6b7280';">
           Jetzt als Anbieter einloggen
         </button>
       </div>
