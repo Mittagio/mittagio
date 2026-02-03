@@ -9,7 +9,7 @@
   <title>Mittagio</title>
   <meta name="theme-color" content="#FFD700" />
   <!-- Konzept-Icons: 1. Mehrweg (assets/icon-mehrweg.png) | 2. Essen vor Ort (assets/icon-essen-vor-ort.png) | 3. Abholnummer (assets/icon-abholnummer.png) -->
-  <!-- Build: 2026-02-04 (Deploy: Fix btnSwipeToList, Stand von gestern live) -->
+  <!-- Build: 2026-02-04 -->
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" href="assets/icons/icon-192.png" />
   <link rel="apple-touch-icon" href="assets/icons/icon-192.png" />
@@ -2781,24 +2781,6 @@
       transition:opacity 0.3s ease;
       z-index:1;
     }
-    @media (max-width:420px) and (min-height:800px){
-      #discoverSwipe{
-        height:calc(100vh - 220px) !important;
-        min-height:480px !important;
-        padding:8px 6px !important;
-      }
-      .swipe-card{
-        border-radius:28px;
-        width:95% !important;
-        max-width:95vw !important;
-        padding:10px 8px 24px !important;
-      }
-      .swipe-card-image-wrapper{
-        width:100%;
-        margin-top:12px !important;
-      }
-    }
-    
     /* ============================================================
        MODERNE SMARTPHONES (S25, Galaxy S25, iPhone 15/16, Pixel 8)
        Daumenfreundlich: Touch-Ziele mind. 48px, Safe-Area, einhändig
@@ -3431,9 +3413,6 @@
       <div class="discover-offers" id="discoverOffers">
         <!-- Wird dynamisch befüllt -->
       </div>
-      
-      <!-- Swipe-Stack (Mittagessen-Tinder) - ENTFERNT -->
-
       
       <!-- Leerer Zustand (wenn keine Angebote) -->
       <div id="discoverEmpty" style="display:none; text-align:center; padding:80px 20px;">
