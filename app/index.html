@@ -3249,6 +3249,51 @@
     }
     .cat-pill i { width: 16px; height: 16px; }
 
+    /* Kalender/Day-Pills – moderner Look */
+    .discover-days-sticky {
+      gap: 10px;
+      padding: 12px 16px;
+      background: linear-gradient(180deg, rgba(255,248,240,0.98) 0%, rgba(247,246,240,0.95) 100%);
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    }
+    .day-pill {
+      flex-shrink: 0;
+      min-width: 72px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      border: 2px solid transparent;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      background: #fff;
+      color: #64748b;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .day-pill:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+      color: #334155;
+    }
+    .day-pill:active { transform: scale(0.97); }
+    .day-pill.day-pill--today {
+      background: linear-gradient(135deg, #FFD700 0%, #f2b705 100%);
+      color: #1a1a1a;
+      border-color: rgba(0,0,0,0.08);
+      box-shadow: 0 4px 16px rgba(255,215,0,0.35);
+    }
+    .day-pill.day-pill--today:hover {
+      box-shadow: 0 6px 20px rgba(255,215,0,0.45);
+      transform: translateY(-2px);
+    }
+    .day-pill .day-pill-label { font-weight: 800; letter-spacing: -0.02em; }
+    .day-pill .day-pill-date { font-size: 11px; font-weight: 600; opacity: 0.85; }
+
     /* Redesigned Offer Card (Modern App Style) */
     .offer-card-modern {
       background: #fff;
@@ -3384,10 +3429,11 @@
             <button class="discover-location-pill-clickable" type="button" id="btnDiscoverLocationToggle" style="display:flex; align-items:center; gap:4px; padding:6px 12px; border-radius:16px; background:rgba(0,0,0,.04); border:none; font-size:13px; font-weight:600; color:#333; cursor:pointer; transition:all 0.2s ease;">
               <span id="discoverCurrentLocation" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">Jena</span>
             </button>
-            <div id="discoverLocationExpanded" style="display:none; position:absolute; top:100%; left:0; margin-top:4px; z-index:9999; background:#fff; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.15); border:1px solid rgba(0,0,0,0.1); overflow:hidden; min-width:200px;">
-              <div style="padding:8px;">
-                <input type="text" id="discoverLocationInput" placeholder="Ort oder PLZ eingeben..." autocomplete="address-line2" style="width:100%; padding:10px 12px; border-radius:8px; border:2px solid rgba(0,0,0,0.1); font-size:14px; background:#fff; outline:none; transition:border-color 0.2s ease;" onfocus="this.style.borderColor='#FFD700';" onblur="this.style.borderColor='rgba(0,0,0,0.1)';" />
-                <div id="discoverLocationSuggestions" style="max-height:200px; overflow-y:auto; margin-top:4px;"></div>
+            <!-- Standort-Dropdown: fixed, damit es immer sichtbar unter dem Button liegt (nicht von sticky-Bars verdeckt) -->
+            <div id="discoverLocationExpanded" style="display:none; position:fixed; z-index:99999; background:#fff; border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.2); border:1px solid rgba(0,0,0,0.1); overflow:hidden; min-width:260px; max-width:calc(100vw - 32px);">
+              <div style="padding:12px;">
+                <input type="text" id="discoverLocationInput" placeholder="Ort oder PLZ eingeben..." autocomplete="address-line2" style="width:100%; padding:12px 14px; border-radius:8px; border:2px solid rgba(0,0,0,0.1); font-size:16px; background:#fff; outline:none; transition:border-color 0.2s ease; box-sizing:border-box;" onfocus="this.style.borderColor='#FFD700';" onblur="this.style.borderColor='rgba(0,0,0,0.1)';" />
+                <div id="discoverLocationSuggestions" style="max-height:min(200px, 40vh); overflow-y:auto; margin-top:8px;"></div>
               </div>
             </div>
           </div>
@@ -5120,11 +5166,6 @@
     <i data-lucide="x" style="width:24px;height:24px;"></i>
   </button>
   <div class="fullscreen-code-content" style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; padding:40px;">
-    <!-- Status-Indikator -->
-    <div style="position:absolute; top:20px; left:20px; display:flex; align-items:center; gap:8px;">
-      <div style="width:12px; height:12px; border-radius:50%; background:#27AE60; box-shadow:0 0 12px rgba(39,174,96,0.8); animation:pulse-green-dot 2s infinite;"></div>
-      <span style="font-size:12px; font-weight:600; color:rgba(255,255,255,0.9);">Aktiv</span>
-    </div>
     <!-- Abholnummer (extrem groß) -->
     <div class="fullscreen-code-value" id="fullscreenCodeValue" style="font-size:clamp(6rem, 25vw, 12rem); font-weight:900; font-family:'Courier New', monospace; letter-spacing:0.15em; color:#fff; text-align:center; line-height:1.2; text-shadow:0 4px 20px rgba(0,0,0,0.5), 0 0 40px rgba(39,174,96,0.3); margin-bottom:32px;">A  B  1  2  C</div>
     <!-- Handlungsanweisung -->
@@ -5585,14 +5626,13 @@
     
     // Kategorien definieren (User Wunsch: Fleisch, Salat, Veggie, Vegan...)
     const cats = [
-      {id:'near', label:'In der Nähe', icon:'map-pin'}, // Renamed from "Alles"
+      {id:'near', label:'In der Nähe', icon:'map-pin'},
       {id:'Mit Fleisch', label:'Fleisch', icon:'beef'},
       {id:'Salat', label:'Salat', icon:'salad'},
       {id:'Vegetarisch', label:'Vegetarisch', icon:'leaf'},
       {id:'Vegan', label:'Vegan', icon:'sprout'},
       {id:'Fisch', label:'Fisch', icon:'fish'},
       {id:'Suppe', label:'Suppe', icon:'soup'},
-      {id:'Dessert', label:'Dessert', icon:'ice-cream'},
     ];
     
     // Aktive Kategorie ermitteln
@@ -5633,12 +5673,14 @@
     // Falls activeDay nicht gesetzt, nimm Heute
     if(!activeDay) activeDay = days[0].id;
     
-    bar.innerHTML = days.map(d => `
-      <button class="cat-pill ${activeDay===d.id ? 'active' : ''}" onclick="selectDiscoverDay('${d.id}')" style="${activeDay===d.id ? 'background:#333; color:#fff;' : 'background:#fff; border:1px solid rgba(0,0,0,0.1);'}">
-        <span>${d.label}</span>
-        <span style="font-size:10px; opacity:0.7;">${d.date.getDate()}.${d.date.getMonth()+1}.</span>
-      </button>
-    `).join('');
+    bar.innerHTML = days.map(d => {
+      const isToday = activeDay === d.id;
+      const dateStr = d.date.getDate() + '.' + (d.date.getMonth() + 1) + '.';
+      return `<button class="day-pill ${isToday ? 'day-pill--today' : ''}" onclick="selectDiscoverDay('${d.id}')">
+        <span class="day-pill-label">${d.label}</span>
+        <span class="day-pill-date">${dateStr}</span>
+      </button>`;
+    }).join('');
   }
   
   window.selectDiscoverDay = function(dayIso){
@@ -7071,12 +7113,6 @@
     <section class="view active" id="v-pickup-code-dynamic" style="background:#1a1a1a; min-height:100vh; padding:0; display:flex; flex-direction:column; overflow:hidden; position:fixed; top:0; left:0; width:100%; z-index:9999;">
       <!-- Hero-Element -->
       <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:40px 20px; background:linear-gradient(135deg, #0d4f1c 0%, #1a1a1a 100%); position:relative; min-height:60vh;">
-        <!-- Status-Indikator -->
-        <div style="position:absolute; top:20px; right:20px; display:flex; align-items:center; gap:8px; z-index:10;">
-          <div style="width:12px; height:12px; border-radius:50%; background:#27AE60; box-shadow:0 0 12px rgba(39,174,96,0.8); animation:pulse-green-dot 2s infinite;"></div>
-          <span style="font-size:12px; font-weight:600; color:rgba(255,255,255,0.9);">Aktiv</span>
-        </div>
-        
         <!-- Abholnummer -->
         <div style="display:flex; justify-content:center; margin-bottom:8px;"><img src="assets/icon-abholnummer.png" alt="Abholnummer" class="concept-icon-xl" style="width:48px;height:48px; opacity:0.95;"></div>
         <div style="font-size:clamp(4rem, 15vw, 8rem); font-weight:900; font-family:'Courier New', monospace; letter-spacing:0.1em; color:#fff; text-align:center; line-height:1.2; text-shadow:0 4px 20px rgba(0,0,0,0.5), 0 0 40px rgba(39,174,96,0.3); margin-bottom:24px; cursor:pointer;" onclick="openFullscreenCode('${esc(code)}', null);">
@@ -7414,6 +7450,11 @@
         
         const isExpanded = discoverLocationExpanded.style.display === 'block';
         if(!isExpanded){
+          const btn = btnDiscoverLocationToggle;
+          const rect = btn.getBoundingClientRect();
+          discoverLocationExpanded.style.top = (rect.bottom + 6) + 'px';
+          discoverLocationExpanded.style.left = Math.max(16, rect.left) + 'px';
+          discoverLocationExpanded.style.right = 'auto';
           discoverLocationExpanded.style.display = 'block';
           setTimeout(() => {
             discoverLocationInput.focus();
