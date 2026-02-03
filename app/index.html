@@ -780,6 +780,9 @@
       background:rgba(232,224,214,0.92);
       border-bottom-color:rgba(0,0,0,0.08);
     }
+    /* Provider-FAB und Abholnummer-Overlay in Kundenansicht nie anzeigen (auch beim Runterscrollen) */
+    body:not(.provider-mode) #fabProviderAddOffer,
+    body:not(.provider-mode) #fabProviderAddOfferLabel { display: none !important; }
 
     /* Sheets / modals – Safe-Area für moderne Handys (S25, iPhone, Pixel) */
     .backdrop{position:fixed; inset:0; background:rgba(0,0,0,.38); opacity:0; pointer-events:none; transition:opacity .2s; z-index:30}
@@ -7028,6 +7031,13 @@
     const fabProviderLabel = document.getElementById('fabProviderAddOfferLabel');
     if(fabProvider) fabProvider.style.display = 'none';
     if(fabProviderLabel) fabProviderLabel.style.display = 'none';
+    // Abholnummer-Fullscreen und dynamischer Container ausblenden, damit beim Runterscrollen nichts Grünes/Plus erscheint
+    const fullscreenEl = document.getElementById('fullscreenCode');
+    const fullscreenBd = document.getElementById('fullscreenCodeBd');
+    if(fullscreenEl) fullscreenEl.classList.remove('active');
+    if(fullscreenBd) fullscreenBd.classList.remove('active');
+    const pickupContainer = document.getElementById('pickupCodeContainer');
+    if(pickupContainer) pickupContainer.innerHTML = '';
     // FAB anzeigen
     const fabModeToggle = document.getElementById('fabModeToggle');
     if(fabModeToggle) fabModeToggle.style.display = 'flex';
