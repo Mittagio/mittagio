@@ -2,8 +2,8 @@
 
 ## Arbeitsverzeichnis (PFLICHT)
 
-- **Alle Änderungen ausschließlich in:** `C:\Projekte\mittagio-clean`
-- **Alle anderen Pfade dauerhaft ignorieren** (z. B. `c:\Projekte\mittagio`, andere Workspaces, Obs-Ordner).
+- **Alle Änderungen ausschließlich in:** `C:\Users\quach\Documents\GitHub\mittagio` (dieses Repository)
+- **Alle anderen Pfade dauerhaft ignorieren** (z. B. andere Workspaces, Obs-Ordner).
 
 ## Projekt-Übersicht
 
@@ -84,9 +84,9 @@
 - ✅ Exakt so: AGB, Impressum, Datenschutz
 - ❌ Nie: AGB-Kurzfassung, Hinweise wie "öffnet dein E-Mail-Programm"
 
-**Vollständige UI-Texte:** Siehe `CURSOR_UI_TEXTE.md`  
-**Design-System (STOP & RESET, Polaroid):** Siehe `MITTAGIO_UI_FRAMEWORK.md`  
-**Detailseite Gericht (Schiefertafel, finale Struktur):** Siehe `DETAILSEITE_GERICHT_SPEC.md`
+**Vollständige UI-Texte:** Siehe `docs/texte/ui-texte-mittagio.md`  
+**Design-System (STOP & RESET, Polaroid):** Siehe `docs/specs/ui-framework.md`  
+**Detailseite Gericht (Schiefertafel, finale Struktur):** Siehe `docs/specs/detailseite-gericht.md`
 
 ## Swipe-Modus & 3-Säulen-System
 
@@ -167,7 +167,7 @@ Jede Karte im Swipe-Modus muss **zwingend** diese drei Symbole **ohne begleitend
 - **Immer explizite Navigation**
 - Jeder Button muss reagieren (Dead-Click-Regel)
 - **Toast statt Alert**: Immer `showToast('Nachricht')` verwenden, nie `alert()`
-- **Arbeitsverzeichnis**: Immer in `C:\Projekte\mittagio-clean` arbeiten (NICHT OneDrive)
+- **Arbeitsverzeichnis**: Immer in diesem Repository arbeiten (`C:\Users\quach\Documents\GitHub\mittagio`)
 
 ### Design-System (Farben & Haptik)
 - **Mittagio-Gelb**: `#FFD700` (Sattes, warmes Gelb – wie eine frische Kruste)
@@ -201,16 +201,26 @@ mittagio/
 │   ├── manifest.json      # PWA Manifest
 │   ├── assets/            # Bilder, Icons
 │   └── sw.js.disabled     # Service Worker (deaktiviert)
-├── docs/                  # Produkt- & UX-Konzept
-├── tickets/               # Feature-Tickets
+├── docs/                  # Konzept, Specs, Kontext
+│   ├── specs/             # Technische Specs (UI-Framework, Detailseite, Swipe, Allergene)
+│   ├── kontext/           # Cursor-Kontext (voll, kurz)
+│   ├── texte/             # Verbindliche UI-Texte (eine Quelle)
+│   └── analysen/           # Analysen, Fehlerberichte
+├── tickets/               # Feature-Tickets (A_, B_, C_, D_)
 └── .cursorrules           # Diese Datei
 ```
 
-### Wichtige Dateien für Kontext
-- `CURSOR_CONTEXT_MITTAGIO.md` - Vollständige Projektzusammenfassung
-- `CURSOR_UI_TEXTE.md` - Verbindliche UI-Texte
-- `CURSOR_CONTEXT_MITTAGIO_KURZ.md` - Kurzfassung
-- `PROMPTS.md` - Wiederverwendbare Master-Prompts (Prompt-Library)
+### Wo steht was? (Single Source of Truth)
+| Thema | Datei |
+|-------|--------|
+| Vollständige Projektzusammenfassung | `docs/kontext/mittagio-voll.md` |
+| Kurzfassung Kontext | `docs/kontext/mittagio-kurz.md` |
+| Verbindliche UI-Texte | `docs/texte/ui-texte-mittagio.md` |
+| Design-System / Polaroid | `docs/specs/ui-framework.md` |
+| Detailseite Gericht | `docs/specs/detailseite-gericht.md` |
+| Swipe & 3-Säulen | `docs/specs/swipe-3saeulen.md` |
+| Allergene-Overlay | `docs/specs/allergene-overlay.md` |
+| Prompt-Library | `PROMPTS.md` (Root) |
 
 ## Golden Rules (für Cursor)
 

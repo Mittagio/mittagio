@@ -15,6 +15,19 @@ http://localhost:8000/app/
 
 Stand: Konzept-first, App in Umsetzung.
 
+## Projektstruktur & wichtige Dateien
+
+| Was | Wo |
+|-----|-----|
+| **Regeln, Routing, UI-Kurzfassung** | `.cursorrules` (Root) |
+| **Vollständiger Kontext** | `docs/kontext/mittagio-voll.md` |
+| **Kurzfassung Kontext** | `docs/kontext/mittagio-kurz.md` |
+| **Verbindliche UI-Texte** | `docs/texte/ui-texte-mittagio.md` |
+| **Specs** (UI-Framework, Detailseite, Swipe, Allergene) | `docs/specs/` |
+| **Analysen & Fehlerberichte** | `docs/analysen/` |
+| **Feature-Tickets** (A–D) | `tickets/` |
+| **Aufräum-Vorschlag & Struktur** | `PROJEKT_STRUKTUR_UND_AUFRÄUMEN.md` |
+
 ## 🔄 Synchronisation (Multi-PC-Arbeit)
 
 **WICHTIG:** Alle Änderungen müssen committed und gepusht werden, damit sie auf anderen PCs verfügbar sind!
