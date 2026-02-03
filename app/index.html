@@ -1127,6 +1127,7 @@
     }
     .pickup-card.just-done .check-overlay{ opacity:1; }
     .pickup-card.just-done .check-icon{ animation:check-pop 0.3s ease-out forwards; }
+    .fullscreen-code{
       position:fixed; top:0; left:0; right:0; bottom:0;
       background:linear-gradient(135deg, #0d4f1c 0%, #000 100%); z-index:1000;
       display:none; align-items:center; justify-content:center;
@@ -7035,8 +7036,8 @@
     // Abholnummer-Fullscreen und dynamischer Container ausblenden, damit beim Runterscrollen nichts Grünes/Plus erscheint
     const fullscreenEl = document.getElementById('fullscreenCode');
     const fullscreenBd = document.getElementById('fullscreenCodeBd');
-    if(fullscreenEl) fullscreenEl.classList.remove('active');
-    if(fullscreenBd) fullscreenBd.classList.remove('active');
+    if(fullscreenEl){ fullscreenEl.classList.remove('active'); fullscreenEl.style.display = 'none'; fullscreenEl.style.opacity = '0'; fullscreenEl.style.pointerEvents = 'none'; }
+    if(fullscreenBd){ fullscreenBd.classList.remove('active'); fullscreenBd.style.display = 'none'; fullscreenBd.style.opacity = '0'; fullscreenBd.style.pointerEvents = 'none'; }
     // Alle pickupCodeContainer leeren (es kann einen zweiten geben, wenn showPickupCode ein neues Div an body angehängt hat)
     document.querySelectorAll('[id="pickupCodeContainer"]').forEach(function(el){ el.innerHTML = ''; });
     // Zusätzlich: dynamische Abholnummer-View (v-pickup-code-dynamic) explizit entfernen, falls sie außerhalb des Containers existiert
@@ -18490,8 +18491,8 @@
     const modal = document.getElementById('fullscreenCode');
     const backdrop = document.getElementById('fullscreenCodeBd');
     
-    if(modal) modal.classList.remove('active');
-    if(backdrop) backdrop.classList.remove('active');
+    if(modal){ modal.classList.remove('active'); modal.style.display = 'none'; modal.style.opacity = '0'; modal.style.pointerEvents = 'none'; }
+    if(backdrop){ backdrop.classList.remove('active'); backdrop.style.display = 'none'; backdrop.style.opacity = '0'; backdrop.style.pointerEvents = 'none'; }
     
     // WakeLock freigeben
     if(wakeLock){
