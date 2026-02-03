@@ -5069,18 +5069,18 @@
 
 <!-- Offer sheet - Clean Design (Schiefertafel-Design entfernt) -->
 <div class="backdrop" id="bd" onclick="closeSheet()" style="background:rgba(0,0,0,0.7);"></div>
-<div class="sheet" id="sheet" style="background:linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); color:#fff; border-top:2px solid rgba(255,255,255,0.1);">
-  <div class="sheet-header" style="position:sticky; top:0; z-index:10; background:transparent; padding:12px 16px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.1);">
-    <button class="back-button" type="button" onclick="closeSheet()" aria-label="Zurück" style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); border-radius:50%; width:40px; height:40px; padding:0; cursor:pointer; display:flex; align-items:center; justify-content:center; color:#fff; transition:all 0.2s ease;" onmouseover="this.style.background='rgba(255,255,255,0.2)';" onmouseout="this.style.background='rgba(255,255,255,0.1)';">
+<div class="sheet" id="sheet" style="background:rgba(255,255,255,0.98); color:#1a1a1a; border-top:2px solid rgba(0,0,0,0.08); box-shadow:0 -4px 20px rgba(0,0,0,0.08);">
+  <div class="sheet-header" style="position:sticky; top:0; z-index:10; background:rgba(255,255,255,0.98); padding:12px 16px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid rgba(0,0,0,0.08);">
+    <button class="back-button" type="button" onclick="closeSheet()" aria-label="Zurück" style="background:rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.1); border-radius:50%; width:40px; height:40px; padding:0; cursor:pointer; display:flex; align-items:center; justify-content:center; color:#1a1a1a; transition:all 0.2s ease;" onmouseover="this.style.background='rgba(0,0,0,0.1)';" onmouseout="this.style.background='rgba(0,0,0,0.06)';">
       <i data-lucide="arrow-left" style="width:20px;height:20px;"></i>
     </button>
-    <div style="font-weight:600; font-size:16px; color:#fff;">Angebot</div>
-    <button class="share-button-header" type="button" id="btnShareHeader" aria-label="Teilen" style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); border-radius:20px; padding:8px 14px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; color:#fff; font-size:14px; font-weight:600; transition:all 0.2s ease;" onmouseover="this.style.background='rgba(255,255,255,0.2)';" onmouseout="this.style.background='rgba(255,255,255,0.1)';">
+    <div style="font-weight:600; font-size:16px; color:#1a1a1a;">Angebot</div>
+    <button class="share-button-header" type="button" id="btnShareHeader" aria-label="Teilen" style="background:rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.1); border-radius:20px; padding:8px 14px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; color:#1a1a1a; font-size:14px; font-weight:600; transition:all 0.2s ease;" onmouseover="this.style.background='rgba(0,0,0,0.1)';" onmouseout="this.style.background='rgba(0,0,0,0.06)';">
       <i data-lucide="share-2" style="width:18px;height:18px;"></i>
       <span>Teilen</span>
     </button>
   </div>
-  <div class="handle" style="background:rgba(255,255,255,0.3);"></div>
+  <div class="handle" style="background:rgba(0,0,0,0.15);"></div>
   
   <!-- Hero-Image (Kompaktes Thumbnail, clean Design - kein Schiefertafel-Hintergrund) -->
   <div style="padding:16px 16px 0;">
