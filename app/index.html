@@ -18495,7 +18495,8 @@
     };
   }
   
-  // Zur Liste wechseln Button
+  // Zur Liste wechseln Button (falls Swipe-UI vorhanden)
+  const btnSwipeToList = document.getElementById('btnSwipeToList');
   if(btnSwipeToList){
     btnSwipeToList.onclick = () => {
       switchDiscoverView('list');
