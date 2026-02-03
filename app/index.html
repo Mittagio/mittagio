@@ -5135,21 +5135,21 @@
       </button>
     </div>
 
-    <!-- Logistik: Klickbare Kacheln 🚶 Fußweg & 🚗 Fahrtweg (öffnen Route in Google Maps) -->
-    <div id="sDistanceInfo" style="display:none; margin-bottom:12px; gap:10px; flex-wrap:wrap; align-items:stretch;">
+    <!-- Logistik: Klickbare Kacheln 🚶 Fußweg & 🚗 Fahrtweg (öffnen Route in Google Maps), ohne blaue Link-Optik -->
+    <div id="sDistanceInfo" style="margin-bottom:12px; gap:10px; flex-wrap:wrap; align-items:stretch;">
       <!-- Wird dynamisch: zwei Kacheln, je onclick → Google Maps -->
+    </div>
+
+    <!-- Anbieter-Adresse (direkt unter Logistik-Kacheln) -->
+    <div id="sProviderAddressRow" style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
+      <i data-lucide="map-pin" style="width:16px;height:16px; color:#666;"></i>
+      <span id="sProviderAddress" style="color:#555; font-size:14px; flex:1;"></span>
     </div>
 
     <!-- Essenszeit: Verfügbarkeit von ... bis ... Uhr -->
     <div id="sMealTime" style="display:flex; align-items:center; gap:8px; margin-bottom:16px; padding:12px 16px; background:rgba(0,0,0,0.04); border-radius:12px; border:1px solid rgba(0,0,0,0.08);">
       <i data-lucide="clock" style="width:18px;height:18px; color:var(--brand);"></i>
       <span style="color:#333; font-size:14px; font-weight:500;">Essenszeit: <span id="sMealTimeRange"></span> Uhr</span>
-    </div>
-
-    <!-- Anbieter-Adresse (unter Titel/Logistik) -->
-    <div id="sProviderAddressRow" style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
-      <i data-lucide="map-pin" style="width:16px;height:16px; color:#666;"></i>
-      <span id="sProviderAddress" style="color:#555; font-size:14px; flex:1;"></span>
     </div>
 
     <!-- Allergene: Kürzel (A, C, G...) direkt sichtbar, (ⓘ) öffnet Overlay mit Erklärungen -->
