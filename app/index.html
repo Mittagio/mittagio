@@ -1599,6 +1599,7 @@
     #v-legal-impressum-provider .panel a,
     #v-legal-faq-provider .panel a,
     #v-legal-datenschutz-provider .panel a{ color:#0A84FF !important; }
+    #v-legal-agb-provider{ background:var(--provider-bg) !important; }
     [id^="v-provider-"] .panel{
       background:var(--provider-surface) !important;
       color:var(--provider-text) !important;
@@ -4403,8 +4404,8 @@
       <button type="button" class="cookbook-action-sheet-btn" onclick="closeCookbookActionSheet()">Abbrechen</button>
     </div>
 
-    <!-- Provider-Profil: Silicon Valley Design – Progressive Disclosure (#F2F2F7, weiße Cards 16px) -->
-    <section class="view" id="v-provider-profile" style="background:#F2F2F7; min-height:100vh; padding-bottom:100px;">
+    <!-- Provider-Profil: einheitliches Layout -->
+    <section class="view" id="v-provider-profile" style="min-height:100vh; padding:20px; padding-bottom:100px;">
       
       <!-- Hauptseite: Mein Profil (Menü-Liste mit Chevron) -->
       <div id="providerProfileMain" style="display:block;">
@@ -4553,28 +4554,28 @@
       </div>
     </section>
 
-    <!-- Impressum für Anbieter (rechtlich eigenes Dokument) -->
-    <section class="view" id="v-legal-impressum-provider" style="background:#323232; min-height:100vh; padding:20px; padding-bottom:90px;">
-      <div class="panel" style="padding:20px; border-radius:20px; box-shadow:0 4px 20px rgba(0,0,0,.2); background:#404040; border:1px solid rgba(255,255,255,0.1);">
-        <h1 style="font-size:24px; font-weight:900; margin-bottom:20px; color:#fff;">Impressum</h1>
-        <div style="line-height:1.8; font-size:15px; color:rgba(255,255,255,0.9);">
+    <!-- Impressum für Anbieter: einheitlich helles Layout -->
+    <section class="view" id="v-legal-impressum-provider" style="min-height:100vh; padding:20px; padding-bottom:90px;">
+      <div class="panel" style="padding:20px; border-radius:16px; box-shadow:0 2px 12px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.06);">
+        <h1 style="font-size:24px; font-weight:900; margin-bottom:20px; color:#1a1a1a;">Impressum</h1>
+        <div style="line-height:1.8; font-size:15px; color:#334155;">
           <p>
             <strong>Betreiber:</strong> Mike Quach<br>
             <strong>Adresse:</strong> Langäcker 2, 73635 Rudersberg<br>
-            <strong>Kontakt:</strong> <a href="mailto:info@mittagio.de" style="color:#FFD700;">info@mittagio.de</a>
+            <strong>Kontakt:</strong> <a href="mailto:info@mittagio.de" style="color:#0A84FF;">info@mittagio.de</a>
           </p>
-          <p style="margin-top:20px; padding-top:20px; border-top:1px solid rgba(255,255,255,0.1); font-size:13px; color:rgba(255,255,255,0.7);">
+          <p style="margin-top:20px; padding-top:20px; border-top:1px solid rgba(0,0,0,0.08); font-size:13px; color:#64748b;">
             <strong>Plattformhinweis:</strong><br>
             Mittagio ist eine Vermittlungsplattform für lokale Gastronomie. Als Anbieter nutzt du unsere digitale Infrastruktur zur Verwaltung deiner Mittagsangebote und zur Abwicklung von Online-Bestellungen.
           </p>
         </div>
-        <div style="margin-top:24px; padding-top:16px; border-top:1px solid rgba(255,255,255,0.1); text-align:center; font-size:13px; color:rgba(255,255,255,0.6);">
+        <div style="margin-top:24px; padding-top:16px; border-top:1px solid rgba(0,0,0,0.08); text-align:center; font-size:13px; color:#64748b;">
           made with ❤️ by mittagio.de
         </div>
-        <div style="margin-top:16px; text-align:center; font-size:14px; color:rgba(255,255,255,0.7);">
-          <a href="mailto:support@mittagio.de" style="color:#FFD700;">support@mittagio.de</a> · Business-Bereich
+        <div style="margin-top:16px; text-align:center; font-size:14px; color:#64748b;">
+          <a href="mailto:support@mittagio.de" style="color:#0A84FF;">support@mittagio.de</a> · Business-Bereich
         </div>
-        <button class="btn ghost" type="button" onclick="goBackFromLegalPage()" style="margin-top:20px; width:100%; background:#4a4a4a; border:1px solid rgba(255,255,255,0.12); color:rgba(255,255,255,0.85);">Zurück</button>
+        <button class="btn ghost" type="button" onclick="goBackFromLegalPage()" style="margin-top:20px; width:100%;">Zurück</button>
       </div>
     </section>
 
@@ -4608,8 +4609,8 @@
       </div>
     </section>
 
-    <!-- AGB für Anbieter – Interaktiv (Silicon Valley Tech, Accordion) -->
-    <section class="view" id="v-legal-agb-provider" style="background:#F2F2F7; min-height:100vh; padding:20px; padding-bottom:90px;">
+    <!-- AGB für Anbieter: einheitlich helles Layout -->
+    <section class="view" id="v-legal-agb-provider" style="min-height:100vh; padding:20px; padding-bottom:90px;">
       <div style="margin-bottom:24px; display:flex; align-items:center; gap:12px;">
         <button type="button" onclick="goBackFromLegalPage()" aria-label="Zurück" style="width:40px; height:40px; border-radius:50%; background:#fff; border:none; box-shadow:0 2px 8px rgba(0,0,0,0.08); cursor:pointer; display:flex; align-items:center; justify-content:center;"><i data-lucide="chevron-left" style="width:22px; height:22px; color:#1a1a1a;"></i></button>
         <h1 style="margin:0; font-size:22px; font-weight:800; color:#1a1a1a; letter-spacing:-0.02em;">AGB (Anbieter)</h1>
