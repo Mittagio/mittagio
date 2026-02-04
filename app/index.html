@@ -3889,39 +3889,13 @@
         <button type="button" id="btnProfileShowAllOrders" style="display:none; width:100%; margin-top:12px; padding:12px 16px; border-radius:12px; border:2px solid rgba(0,0,0,.08); background:#fff; color:#64748b; font-weight:700; font-size:14px; cursor:pointer;">Alle Bestellungen anzeigen</button>
       </div>
 
-      <!-- 3. Profil-Verwaltung (Name, E-Mail) – sauberer Block -->
+      <!-- 3. Profildaten (Name, E-Mail) – sauberer Block -->
       <div class="panel profile-panel" id="profileVerwaltungSection" style="margin-top:16px; padding:18px; border-radius:24px; box-shadow:0 10px 30px rgba(0,0,0,.06); border:1px solid rgba(0,0,0,.02);">
         <div style="font-family:'Nunito',sans-serif; font-weight:800; font-size:16px; margin-bottom:12px; color:#1a1a1a;">Profil-Verwaltung</div>
         <div id="profileVerwaltungContent" style="font-size:14px; color:#334155; line-height:1.6;">Name und E-Mail – wird dynamisch befüllt.</div>
       </div>
 
-      <!-- 4. Top-FAQs (3 Accordions, ausklappbar) -->
-      <div class="panel profile-panel" style="margin-top:16px; padding:18px; border-radius:24px; box-shadow:0 10px 30px rgba(0,0,0,.06); border:1px solid rgba(0,0,0,.02);">
-        <div style="font-family:'Nunito',sans-serif; font-weight:800; font-size:16px; margin-bottom:12px; color:#1a1a1a;">Häufige Fragen</div>
-        <div id="profileTopFaq" class="profile-faq-accordion" style="display:flex; flex-direction:column; gap:8px;">
-          <details style="background:#fff; border-radius:12px; border:1px solid rgba(0,0,0,.06); overflow:hidden;">
-            <summary style="padding:12px 14px; font-size:14px; font-weight:600; color:#1a1a1a; cursor:pointer; list-style:none; display:flex; align-items:center; gap:8px;">
-              <span style="font-size:18px;">🧾</span> Wie funktioniert die Abholnummer?
-            </summary>
-            <p style="margin:0; padding:0 14px 14px 14px; font-size:14px; line-height:1.5; color:#555;">Ganz einfach: Nach deiner Bestellung findest du hier im Profil deine Abholnummer. Zeige diese beim Anbieter vor Ort einfach auf deinem Smartphone vor, um dein Mittagessen entgegenzunehmen. Ein Ausdruck ist nicht nötig.</p>
-          </details>
-          <details style="background:#fff; border-radius:12px; border:1px solid rgba(0,0,0,.06); overflow:hidden;">
-            <summary style="padding:12px 14px; font-size:14px; font-weight:600; color:#1a1a1a; cursor:pointer; list-style:none; display:flex; align-items:center; gap:8px;">
-              <span style="font-size:18px;">🍴</span> Was mache ich bei Problemen vor Ort?
-            </summary>
-            <p style="margin:0; padding:0 14px 14px 14px; font-size:14px; line-height:1.5; color:#555;">Sollte es einmal Unklarheiten geben, wende dich bitte direkt an das Personal des Anbieters. Deine Abholnummer ist der Beleg für deine Zahlung. Bei technischen Fehlern erreichst du unseren Support über das Kontaktformular im Impressum.</p>
-          </details>
-          <details style="background:#fff; border-radius:12px; border:1px solid rgba(0,0,0,.06); overflow:hidden;">
-            <summary style="padding:12px 14px; font-size:14px; font-weight:600; color:#1a1a1a; cursor:pointer; list-style:none; display:flex; align-items:center; gap:8px;">
-              <span style="font-size:18px;">🔄</span> Wie funktioniert das Mehrweg-System?
-            </summary>
-            <p style="margin:0; padding:0 14px 14px 14px; font-size:14px; line-height:1.5; color:#555;">Wenn ein Anbieter das 🔄-Symbol zeigt, kannst du dein Essen in nachhaltigen Mehrweg-Behältern erhalten. Aktuell bauen wir das Partner-Netzwerk stetig aus. Falls dein Lieblings-Metzger noch kein Mehrweg anbietet, weisen wir ihn gerne darauf hin!</p>
-          </details>
-        </div>
-        <a href="#/faq" onclick="showLegalPage('faq'); return false;" style="display:block; margin-top:12px; text-align:center; font-size:14px; font-weight:600; color:var(--brand); text-decoration:none;">Alle FAQs anzeigen</a>
-      </div>
-
-      <!-- 5. Präferenzen & Mehrweg (nach unten) -->
+      <!-- 4. Geschmack-Filter & Mehrweg-Toggle (🔄) – ohne Erklärungstext (steht in FAQs) -->
       <div class="panel profile-panel" id="profileTasteSection" style="margin-top:16px; padding:18px; border-radius:24px; box-shadow:0 10px 30px rgba(0,0,0,.06); border:1px solid rgba(0,0,0,.02);">
         <div style="font-weight:700; font-size:15px; margin-bottom:8px; color:#64748b;">Mein Geschmack</div>
         <div class="hint" style="font-size:12px; color:#94a3b8; margin-bottom:12px;">Filter für Entdecken (Vegan, Glutenfrei etc.)</div>
@@ -3929,12 +3903,33 @@
         <div id="profileReuseSwitch" style="margin-top:14px;"></div>
       </div>
 
-      <!-- Mehrweg-Hinweis -->
-      <div class="panel profile-panel" style="margin-top:16px; padding:16px; border-radius:24px; background:rgba(31,157,85,0.06); border:1px solid rgba(31,157,85,0.15);">
-        <p style="font-size:13px; color:#334155; margin:0; line-height:1.5;">Wir arbeiten stetig daran, weitere Partner für unser Mehrweg-System zu gewinnen. Aktuell führen noch nicht alle Anbieter Mehrweg-Optionen; es werden dir weiterhin alle verfügbaren Angebote angezeigt.</p>
+      <!-- 5. Die 3 Top-FAQs (Abholnummer, Probleme, Mehrweg) – einklappbar am Ende -->
+      <div class="panel profile-panel" style="margin-top:16px; padding:18px; border-radius:24px; box-shadow:0 10px 30px rgba(0,0,0,.06); border:1px solid rgba(0,0,0,.02);">
+        <div style="font-family:'Nunito',sans-serif; font-weight:800; font-size:16px; margin-bottom:12px; color:#1a1a1a;">Häufige Fragen</div>
+        <div id="profileTopFaq" class="profile-faq-accordion" style="display:flex; flex-direction:column; gap:8px;">
+          <details style="background:#fff; border-radius:12px; border:1px solid rgba(0,0,0,.06); overflow:hidden;">
+            <summary style="padding:12px 14px; font-size:14px; font-weight:600; color:#1a1a1a; cursor:pointer; list-style:none; display:flex; align-items:center; gap:8px;">
+              <span style="font-size:18px;">🧾</span> Wie funktioniert die Abholnummer?
+            </summary>
+            <p style="margin:0; padding:0 14px 14px 14px; font-size:14px; line-height:1.5; color:#555;">Deine Abholnummer ist dein digitaler Bon. Zeige sie nach der Bestellung einfach beim Anbieter vor Ort auf deinem Smartphone vor. Ein Ausdruck ist nicht nötig.</p>
+          </details>
+          <details style="background:#fff; border-radius:12px; border:1px solid rgba(0,0,0,.06); overflow:hidden;">
+            <summary style="padding:12px 14px; font-size:14px; font-weight:600; color:#1a1a1a; cursor:pointer; list-style:none; display:flex; align-items:center; gap:8px;">
+              <span style="font-size:18px;">🍴</span> Was mache ich bei Problemen vor Ort?
+            </summary>
+            <p style="margin:0; padding:0 14px 14px 14px; font-size:14px; line-height:1.5; color:#555;">Wende dich bitte direkt an das Personal des Anbieters. Deine Abholnummer ist dein Zahlungsbeleg. Bei technischen Fragen erreichst du uns über den Support-Link im Impressum.</p>
+          </details>
+          <details style="background:#fff; border-radius:12px; border:1px solid rgba(0,0,0,.06); overflow:hidden;">
+            <summary style="padding:12px 14px; font-size:14px; font-weight:600; color:#1a1a1a; cursor:pointer; list-style:none; display:flex; align-items:center; gap:8px;">
+              <span style="font-size:18px;">🔄</span> Wo finde ich Mehrweg-Optionen?
+            </summary>
+            <p style="margin:0; padding:0 14px 14px 14px; font-size:14px; line-height:1.5; color:#555;">Achte auf das 🔄-Icon beim Gericht. Wir arbeiten stetig daran, weitere Partner für unser Mehrweg-System zu gewinnen. Aktuell führen noch nicht alle Anbieter Mehrweg; dir werden aber weiterhin alle verfügbaren Angebote angezeigt.</p>
+          </details>
+        </div>
+        <a href="#/faq" onclick="showLegalPage('faq'); return false;" style="display:block; margin-top:12px; text-align:center; font-size:14px; font-weight:600; color:var(--brand); text-decoration:none;">Alle FAQs anzeigen</a>
       </div>
 
-      <!-- Footer: Kunden-Links oben | grauer Anbieter-Block | Branding rechtsbündig mit Version -->
+      <!-- Footer: Rechtliche Links | Anbieter-Block | Branding nur "made with ❤️" | Version rechts -->
       <div class="profile-footer" style="margin-top:28px; padding:0 16px 32px; border-top:2px solid rgba(0,0,0,.06);">
         <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:8px 14px; font-size:14px; margin-bottom:16px;">
           <a href="#/faq" id="btnProfileFaq" onclick="showLegalPage('faq'); return false;" style="color:var(--muted); text-decoration:none; font-weight:500;">FAQ</a>
@@ -3945,7 +3940,6 @@
           <span style="color:rgba(0,0,0,.2);">|</span>
           <a href="#/agb-kurz" id="btnProfileAGB" onclick="showLegalPage('agb-kurz'); return false;" style="color:var(--muted); text-decoration:none;">AGB</a>
         </div>
-        <div style="font-size:12px; color:var(--muted); margin-bottom:16px; text-align:center;">Impressum: Mike Quach, Langäcker 2, 73635 Rudersberg</div>
         <div class="panel" id="profileProviderSection" style="margin-bottom:16px; padding:18px; border-radius:16px; background:#e8e8e8; border:1px solid rgba(0,0,0,.06);">
           <p style="font-size:14px; color:#555; margin:0 0 14px; line-height:1.5;">Dein Mittagessen anbieten – einfach und digital.</p>
           <button type="button" id="btnProfileProviderLogin" onclick="setMode('provider');" style="width:100%; min-height:48px; padding:12px 20px; border-radius:14px; border:none; background:#6b7280; color:#fff; font-weight:700; font-size:15px; cursor:pointer;" onmouseover="this.style.background='#4b5563';" onmouseout="this.style.background='#6b7280';">
@@ -3953,7 +3947,7 @@
           </button>
         </div>
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-          <span style="font-size:12px; color:var(--muted);">www.Mittagio.de · made with Love by mittagio.de</span>
+          <span style="font-size:12px; color:var(--muted);">made with ❤️ by mittagio.de</span>
           <a href="#/version" id="linkVersion" style="font-size:11px; color:var(--muted); text-decoration:none;">v1.0.x</a>
         </div>
       </div>
@@ -4725,7 +4719,7 @@
           </p>
         </div>
         <div style="margin-top:24px; padding-top:16px; border-top:1px solid #eee; text-align:center; font-size:13px; color:#94a3b8;">
-          made with Love by mittagio.de
+          made with ❤️ by mittagio.de
         </div>
         <div style="margin-top:16px; text-align:center; font-size:14px; color:#666;">
           <a href="mailto:info@mittagio.de" style="color:var(--brand);">info@mittagio.de</a> · Kunden-Hilfe | <a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a> · Business-Bereich
@@ -4754,7 +4748,7 @@
           </p>
         </div>
         <div style="margin-top:24px; padding-top:16px; border-top:1px solid rgba(255,255,255,0.1); text-align:center; font-size:13px; color:rgba(255,255,255,0.6);">
-          made with Love by mittagio.de
+          made with ❤️ by mittagio.de
         </div>
         <div style="margin-top:16px; text-align:center; font-size:14px; color:rgba(255,255,255,0.7);">
           <a href="mailto:support@mittagio.de" style="color:#FFD700;">support@mittagio.de</a> · Business-Bereich
@@ -14897,7 +14891,7 @@
             Mittagio vermittelt Mittagsangebote lokaler Anbieter. Vertragspartner bei Bestellungen ist ausschließlich der jeweilige Anbieter.
           </p>
           <p style="margin-top:20px; padding-top:16px; border-top:1px solid #eee; font-size:13px; color:#94a3b8; text-align:center;">
-            made with Love by mittagio.de
+            made with ❤️ by mittagio.de
           </p>
         </div>
       `;
