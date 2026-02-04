@@ -68,6 +68,7 @@
       --color-text: #1A1A1A;
       --color-text-secondary: #6B6B6B;
       --color-brand-yellow: #FFD700;  /* Mittagio Gold */
+      --color-emerald: #10b981;       /* High-Tech-Gastro Akzent (Inseratsflow, Pills) */
       --color-success-green: #2ECC71;  /* Erfolgs-Grün - Profit */
       --color-eco-green: #27AE60;      /* Mehrweg-Grün - Dezent */
       --color-slate-text: #334155;     /* Slate Grey - Texte */
@@ -650,7 +651,7 @@
       font-weight:700;
     }
     .card-status-badge.code .ico-inline{color:#b8860b}
-    /* Badge-Styles (Vor Ort entfernt - nur Abholnummer) */
+    /* Badge-Styles Abholnummer */
     .card-status-badge.dine{
       background:rgba(31,157,85,.12); color:#1f9d55;
     }
@@ -1242,7 +1243,7 @@
     }
     .prov-pill::after {
       content: '';
-      display: none; /* X entfernt */
+      display: none;
     }
     .provider-header{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap}
     .provider-logo.compact{padding:0}
@@ -1792,7 +1793,6 @@
     .ico-inline{display:inline-flex; align-items:center}
     .ico-inline svg{width:14px; height:14px; stroke:currentColor}
     .info-row{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; font-size:12px; color:var(--muted)}
-    /* Legacy: Alte info-row (wird nicht mehr in offerCard verwendet) */
     .info-item{
       display:inline-flex; align-items:center; gap:6px;
       background:#f8f7f3; border:1px solid var(--border);
@@ -1858,7 +1858,7 @@
     .discover-view-toggle{
       margin-left:auto; /* Rechts ausrichten in Quick-Filters */
     }
-    /* View-Toggle im Topbar (oben rechts neben Logo) - Versteckt, wird durch FAB ersetzt */
+    /* View-Toggle im Topbar */
     .discover-view-toggle-topbar{
       display:none;
     }
@@ -2330,7 +2330,6 @@
       box-shadow:0 6px 20px rgba(0,0,0,0.15), 0 4px 10px rgba(0,0,0,0.1);
       z-index:10;
     }
-    /* Ungenutzte .discover-list-card Styles entfernt - wir verwenden .dish-card für kompakte Liste */
     /* Kompakte Horizontale Gericht-Karte (Slim-Card) - High Performance */
     /* Entscheidungs-Kacheln (2x2 Grid) */
     .decision-tiles-grid {
@@ -3967,7 +3966,7 @@
       </div>
     </section>
 
-    <!-- PROVIDER: Onboarding (ALT - wird durch Hybrid Onboarding ersetzt) -->
+    <!-- PROVIDER: Onboarding (ALT) -->
     <section class="view" id="v-provider-onboarding" style="display:none;">
       <!-- Schritt 1: Betriebsname -->
       <div class="panel onboarding-step" data-step="1">
@@ -4503,7 +4502,7 @@
           <!-- Wird dynamisch befüllt -->
         </div>
         
-        <!-- Pickup List (Legacy) -->
+        <!-- Pickup List -->
         <div id="provPickupsList" style="display:none;">
           <!-- Wird dynamisch befüllt -->
         </div>
@@ -4902,7 +4901,7 @@
       </div>
     </section>
     
-    <!-- Anbieter-FAQ (Legacy, wird durch v-legal-faq ersetzt) -->
+    <!-- Anbieter-FAQ -->
     <section class="view" id="v-legal-faq-provider" style="background:#323232; min-height:100vh; padding:20px; padding-bottom:90px;">
       <div class="panel" style="padding:20px; border-radius:20px; box-shadow:0 4px 20px rgba(0,0,0,.2); background:#404040; border:1px solid rgba(255,255,255,0.1);">
         <h1 style="font-size:24px; font-weight:900; margin-bottom:20px; color:#fff;">FAQ für Anbieter</h1>
@@ -5091,7 +5090,6 @@
   </main>
 
   <!-- Floating Action Button (FAB) für Modus-Wechsel -->
-  <!-- FAB Mode Toggle entfernt -->
 
 
   <!-- CUSTOMER bottom nav - Mittagio-Bar -->
@@ -6083,7 +6081,6 @@
     return card;
   }
   
-  // Legacy toggleLike entfernt (in createModernOfferCard integriert)
 
 
   // --- Order Store (localStorage MVP) - MUSS VOR VERWENDUNG DEFINIERT SEIN ---
@@ -6997,8 +6994,9 @@
   }
 
   const DEFAULT_MEAL_WINDOW = '11:30 – 14:00';
-  const INSERT_FEE = 4.99;
-  const SUCCESS_FEE = 0.89;
+  const INSERT_FEE = 4.99;       // Inseratsgebühr fix (€)
+  const ABHOLNUMMER_FEE = 0.89;  // Abholnummer-Gebühr pro Verkauf (inkl. Stripe/Bank)
+  const SUCCESS_FEE = ABHOLNUMMER_FEE; // Alias
 
   /** Dish-DB für Smart-Input + Bibliothek (name → 3 Bilder). Semantisch sortiert. */
   const DISH_DB = [
@@ -7115,7 +7113,7 @@
     if(out.distanceKm == null) out.distanceKm = info.distanceKm;
     if(out.rating == null) out.rating = info.rating;
     if(out.ratingCount == null) out.ratingCount = info.ratingCount;
-    // No-Limits: availableCount entfernt - Status wird nur über active gesteuert
+    // Status wird nur über active gesteuert
     return out;
   }
 
@@ -7214,7 +7212,6 @@
     if(modePill) modePill.style.display = isProv ? 'inline-flex' : 'none';
     if(statusIndicator) statusIndicator.style.display = (isProv && provider.loggedIn) ? 'flex' : 'none';
     
-    // Support-Button Logik entfernt
 
     
     if(isProv && provider.loggedIn){
@@ -8547,7 +8544,7 @@
     }
   }
   
-  // Alte Swipe-Gesten wurden entfernt - jetzt nur noch Button-basierte Interaktion
+  // Button-basierte Interaktion
   
   // Haptic Feedback (verbessert: kurze, dezent Vibration)
   function triggerHapticFeedback(pattern = [15]){
@@ -9081,14 +9078,13 @@
   const fabModeIcon = document.getElementById('fabModeIcon');
   const fabHint = document.getElementById('fabHint');
   
-  // Toggle-Switch Handler (Legacy - im Header, wird versteckt)
-  // toggleDiscoverView wurde entfernt - nur noch toggleDiscoverViewTopbar im Header
+  // Toggle-Switch Handler im Header
   const toggleDiscoverViewTopbar = document.getElementById('toggleDiscoverViewTopbar');
   
   function syncToggleState(){
     const isSwipe = discoverViewMode === 'swipe';
     
-    // Legacy Toggle entfernt - nur noch Topbar-Toggle
+    // Topbar-Toggle
     // Moderner Toggle: Aktiven Zustand setzen und Icon wechseln
     if(toggleDiscoverViewTopbar){
       const iconEl = toggleDiscoverViewTopbar.querySelector('#toggleDiscoverViewIcon');
@@ -9140,7 +9136,6 @@
     };
   }
   
-  // Legacy Toggle Handler entfernt
 
   
   // Micro-Hint beim ersten Start (nur einmal anzeigen)
@@ -9409,7 +9404,6 @@
     pillarsRow.appendChild(pillar2);
     
     // Säule 3: Mehrweg 🔄 - ENTFERNT (nur noch im Profil)
-    // Mehrweg-Icon wurde von Kacheln entfernt, da es nur im Profil ("Meins") angezeigt werden soll
     
     imgContainer.appendChild(pillarsRow);
     card.appendChild(imgContainer);
@@ -9596,6 +9590,15 @@
       }
     }
 
+    // Polaroid: 3 Säulen (🍴 🔄 🧾) direkt unter dem Bild – Konzept: Icons unter Bild, dann Name/Preis/Zeit
+    if(isPolaroid){
+      const barsWrap = document.createElement('div');
+      barsWrap.style.cssText = 'padding:10px 16px; background:#fff; border-top:1px solid rgba(0,0,0,0.04);';
+      barsWrap.innerHTML = renderPillarBars(hasDineIn, orderingEnabled, hasReuse);
+      card.appendChild(img);
+      card.appendChild(barsWrap);
+    }
+
     // Heart Icon (Favorit) - rechts oben (kein Text, nur Icon)
     const dishKey = data.id;
     const heart=document.createElement('button');
@@ -9604,6 +9607,7 @@
     heart.innerHTML = dishFavs.has(dishKey) ? iconMarkup('heart', {fill:true}) : iconMarkup('heart');
     heart.onclick=(e)=>{ e.stopPropagation(); toggleDishFav(dishKey); };
     if(interactive){ card.appendChild(heart); }
+    if(!isPolaroid){ card.appendChild(img); }
 
     // Body
     const body=document.createElement('div');
@@ -9648,7 +9652,7 @@
     body.appendChild(titleRow);
     }
     
-    // Anbieter: Restaurant-Name (nur bei Polaroid)
+    // Anbieter: Restaurant-Name (nur bei Polaroid) – Säulen bereits unter Bild
     if(isPolaroid){
       const providerEl = document.createElement('p');
       providerEl.style.cssText = 'margin:8px 0 0; padding:0 16px; text-align:center; font-size:13px; font-weight:600; color:#666; cursor:pointer; transition:opacity 0.2s ease;';
@@ -9665,12 +9669,6 @@
         }
       };
       body.appendChild(providerEl);
-      
-      // 3 Säulen als Balken (Vor Ort / Abholnummer / Mehrweg)
-      const barsWrap = document.createElement('div');
-      barsWrap.style.cssText = 'margin-top:10px; padding:0 16px;';
-      barsWrap.innerHTML = renderPillarBars(hasDineIn, orderingEnabled, hasReuse);
-      body.appendChild(barsWrap);
       
       // Icons initialisieren (für die neuen Badges)
       if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
@@ -9832,7 +9830,7 @@
       }
     }
 
-    card.appendChild(img);
+    if(!isPolaroid) card.appendChild(img);
     card.appendChild(body);
     
     // Icons aktualisieren (für Heart Icon)
@@ -10749,7 +10747,6 @@
     return card;
   }
 
-  // Legacy: genPickupCode (wird durch generatePickupCode ersetzt)
   function genPickupCode(){
     return generatePickupCode();
   }
@@ -10936,7 +10933,6 @@
 
     const sImg = document.getElementById('sImg');
     const sDish = document.getElementById('sDish');
-    // Alte IDs entfernt: sProvider, sPrice, sCat, sWindow existieren nicht mehr im neuen Layout
     
     // Foto-Handling mit Platzhalter
     const sImgPlaceholder = document.getElementById('sImgPlaceholder');
@@ -12333,7 +12329,6 @@
     shareOffer(o);
   };
   
-  // Share Button im Body (legacy, kann entfernt werden)
   const btnShare = document.getElementById('btnShare');
   if(btnShare) btnShare.onclick=()=>{
     const o = offers.find(x=>x.id===activeOfferId);
@@ -12780,7 +12775,6 @@
       };
     });
     
-    // Verzehrart-Buttons (alte Buttons im Cart-Inhalt - werden nicht mehr verwendet, da jetzt im Header)
     // Die Logik ist jetzt im Header-Bereich implementiert (cartBtnVorOrt, cartBtnMitnehmen)
     
     // Icons aktualisieren
@@ -13295,7 +13289,7 @@
       dishLetter: undefined, // Wird bei PAID gesetzt
       runningNumber: undefined, // Wird bei PAID gesetzt
       isGuest: true,
-      // Legacy-Felder für Kompatibilität
+      // Kompatibilität
       summary: items.map(i => `${i.dishName} x ${i.quantity}`).join(', '),
       code: null,
       pickupTime: cartData.pickupTime || '',
@@ -13495,7 +13489,7 @@
       pickupWindow: pickupWindow,
       dishLetter: dishLetter,
       runningNumber: runningNumber,
-      // Legacy-Felder für Kompatibilität
+      // Kompatibilität
       code: pickupCode,
       paymentStatus: 'PAID',
       paymentIntentId: paymentData.paymentIntentId
@@ -14409,7 +14403,7 @@
       };
     }
     
-    // Legacy: photoInput.onchange (falls vorhanden - prüfe ob Element existiert)
+    // photoInput.onchange
     const existingPhotoInput = document.getElementById('photoInput');
     if(existingPhotoInput){
       existingPhotoInput.onchange = async (e) => {
@@ -15195,7 +15189,7 @@
     document.getElementById('faqSheet').classList.remove('active');
   }
   
-  // Legal Links (alte IDs)
+  // Legal Links
   const btnImpressum = document.getElementById('btnImpressum');
   if(btnImpressum) btnImpressum.onclick=()=>{ openLegalSheet('impressum'); };
   const btnAGB = document.getElementById('btnAGB');
@@ -15423,7 +15417,7 @@
 
       // Alte Elemente ausblenden/aufräumen (falls noch Refs im Code)
       const providerTimeSaved = document.getElementById('providerTimeSaved');
-      if(providerTimeSaved) providerTimeSaved.textContent = tagesumsatzEuro.replace('.', ',') + ' €'; // Fallback für altes Panel
+      if(providerTimeSaved) providerTimeSaved.textContent = tagesumsatzEuro.replace('.', ',') + ' €';
       
       const todayPickups = todayOrders.length;
       const cookbookCount = cookbook.length;
@@ -15814,7 +15808,7 @@
     if(typeof lucide !== 'undefined') setTimeout(()=> lucide.createIcons(), 50);
   }
 
-  // Week Preview (7 Tage)
+  // Week Preview (7 Tage) – Wochenplaner: Grün = Live, Blau = geplant, Grau = leer
   function renderProviderWeekPreviewNew(){
     const dayWrap = document.getElementById('providerWeekDays');
     const dayContent = document.getElementById('providerWeekDayContent');
@@ -15828,11 +15822,18 @@
       const d = new Date(today);
       d.setDate(d.getDate() + i);
       const key = isoDate(d);
+      const liveCount = offers.filter(o => o.providerId === providerId() && o.day === key && o.active !== false).length;
+      const plannedCount = (week[key] || []).filter(x => x.providerId === providerId() && x.active !== false).length;
+      const isLive = liveCount > 0;
+      const isPlanned = !isLive && plannedCount > 0;
+      const statusColor = isLive ? '#10b981' : (isPlanned ? '#3b82f6' : '#9ca3af');
       const b = document.createElement('button');
       b.className = 'day' + (selectedDay === key ? ' active' : '');
+      b.style.cssText = 'min-width:44px; min-height:44px; padding:8px 10px; border-radius:12px; border:2px solid ' + (selectedDay === key ? 'var(--color-emerald,#10b981)' : 'transparent') + '; background:' + statusColor + '; color:#fff; font-size:12px; font-weight:700; transition:all 0.2s;';
       const weekday = ['So','Mo','Di','Mi','Do','Fr','Sa'][d.getDay()];
       const dateStr = `${d.getDate()}.${String(d.getMonth()+1).padStart(2,'0')}.`;
-      b.textContent = i === 0 ? 'Heute' : `${weekday}, ${dateStr}`;
+      b.textContent = i === 0 ? 'Heute' : `${weekday}\n${dateStr}`;
+      b.title = isLive ? 'Inseriert & Live (4,99 €)' : (isPlanned ? 'Im Kalender geplant' : 'Tag noch leer');
       b.onclick = () => {
         providerWeekDay = key;
         renderProviderWeekPreviewNew();
@@ -15878,7 +15879,7 @@
     }
   }
   
-  // Legacy function (für Kompatibilität)
+  // Kompatibilität
   function renderProviderWeekPreview(){
     const dayWrap = document.getElementById('provWeekDays');
     const list = document.getElementById('provWeekPreview');
@@ -16235,7 +16236,7 @@
         
     }
     
-    // Render list (Legacy, falls Grid nicht verfügbar)
+    // Render list (falls Grid nicht verfügbar)
     listEl.innerHTML='';
     listEl.style.display = gridEl ? 'none' : (filteredPickups.length > 0 ? 'block' : 'none');
     list.forEach(p=>{
@@ -16859,7 +16860,7 @@
   // Funktion ist bereits oben definiert: openSupportContact()
   // Wird automatisch von onclick="openSupportContact()" im HTML aufgerufen
 
-  // --- Provider actions (alte Buttons entfernt, jetzt über Create Flow Sheet) ---
+  // Provider actions (Create Flow Sheet)
   // btnNewListing und btnFromCookbook werden nicht mehr verwendet
   const btnNewListing = document.getElementById('btnNewListing');
   if(btnNewListing) btnNewListing.style.display = 'none';
@@ -16892,8 +16893,6 @@
     closeCookbookActionSheet();
   };
 
-  // btnProvSetup wurde entfernt - jetzt btnProfileEdit verwendet
-  // btnOpenWeekPlan wird nicht mehr verwendet (Week Preview ist jetzt im Dashboard)
   const btnOpenWeekPlan = document.getElementById('btnOpenWeekPlan');
   if(btnOpenWeekPlan) btnOpenWeekPlan.style.display = 'none';
   const btnPickupsFaq = document.getElementById('btnPickupsFaq');
@@ -17562,7 +17561,7 @@
       buildListingStep();
     }
     if(kind==='week'){
-      // Legacy: schedule cookbook item to a date
+      // Cookbook-Eintrag für Datum planen
       // Should use startListingFlow({dishId, date}) instead
       const x = cookbook.find(c=>c.id===ctx.fromCookbookId);
       if(!x){ alert('Bitte erst ein Gericht im Kochbuch speichern.'); return; }
@@ -17847,9 +17846,9 @@
     if(w.data.hasPickupCode){
       const badgeContainer = document.createElement('div');
       badgeContainer.className = 'listing-preview-badge';
-      badgeContainer.style.cssText = 'margin-bottom:12px; padding:12px; background:#f0f7f0; border-radius:12px; border:1px solid #4caf50;';
+      badgeContainer.style.cssText = 'margin-bottom:12px; padding:12px; background:rgba(16,185,129,0.1); border-radius:12px; border:1px solid var(--color-emerald,#10b981);';
       const badge = document.createElement('div');
-      badge.style.cssText = 'font-weight:600; font-size:14px; color:#2e7d32; margin-bottom:4px; display:flex; align-items:center; gap:6px;';
+      badge.style.cssText = 'font-weight:600; font-size:14px; color:var(--color-emerald,#10b981); margin-bottom:4px; display:flex; align-items:center; gap:6px;';
       badge.innerHTML = '🟢 Online bezahlt · Abholung mit Abholnummer';
       const subline = document.createElement('div');
       subline.className = 'listing-preview-subline';
@@ -17899,25 +17898,21 @@
     if(!w.data.pickupWindow){ w.data.pickupWindow = profile.mealWindow || DEFAULT_MEAL_WINDOW; }
     w.data.dineInPossible = true;
 
+    // Schritt 1: Basis (Quick-Input) – Name, 3-Slot Bild, Abholzeit 11:30–14:00 (+/- 15min), Preis
     if(w.step===0){
-      setWizardQuestion('Was kochst du heute?', 'Ein Name, der Appetit macht.');
+      setWizardQuestion('Was kochst du heute?', 'Basis: Name, Bild, Zeit, Preis.');
       const box=document.createElement('div');
-      
-      // --- NAME ---
+      const saveDraft = () => { localStorage.setItem('wizard_draft', JSON.stringify(w)); };
+
+      // --- NAME + Autocomplete ---
       const labelName=document.createElement('div'); labelName.className='hint'; labelName.textContent='Gerichtname';
       box.appendChild(labelName);
-      
       const input=document.createElement('input');
       input.className='field';
       input.placeholder='z.B. Kürbissuppe';
       input.value=w.data.dish||'';
       input.autocomplete='off';
-      input.style.marginBottom='16px';
-      
-      // Auto-Save Handler
-      const saveDraft = () => { localStorage.setItem('wizard_draft', JSON.stringify(w)); };
-
-      // Intelligente Autovervollständigung (Konzept: Kategorie-Pills getriggert)
+      input.style.marginBottom='8px';
       const suggestWrap=document.createElement('div');
       suggestWrap.className='answers';
       suggestWrap.style.marginTop='6px'; suggestWrap.style.marginBottom='16px';
@@ -17928,7 +17923,7 @@
         list.slice(0,6).forEach(s=>{
           const cat = (s.category==='Fleisch') ? 'Fleisch' : (s.category||'Vegetarisch');
           const b=document.createElement('button');
-          b.type='button'; b.className='ans';
+          b.type='button'; b.className='ans'; b.style.minHeight='44px';
           b.textContent=s.dish;
           b.onclick=()=>{ w.data.dish=s.dish; w.data.category=cat; if(s.allergens) w.data.allergens=[].concat(s.allergens||[]); saveDraft(); rebuildWizard(); };
           suggestWrap.appendChild(b);
@@ -17939,30 +17934,85 @@
       box.appendChild(input);
       box.appendChild(suggestWrap);
 
-      // --- PREIS (Neu hier) ---
+      // --- 3-Slot Bild: Kamera | Galerie | KI ---
+      const labelImg=document.createElement('div'); labelImg.className='hint'; labelImg.textContent='Bild';
+      box.appendChild(labelImg);
+      const imgRow=document.createElement('div'); imgRow.className='answers'; imgRow.style.marginBottom='16px';
+      ['📷 Kamera','📤 Galerie','🖼️ KI-Vorschläge'].forEach((txt,i)=>{
+        const btn=document.createElement('button');
+        btn.type='button'; btn.className='ans'; btn.style.minHeight='44px';
+        btn.textContent=txt;
+        btn.onclick=async function(){
+          if(i===0){ const f=await pickImage({capture:true}); if(!f) return; const dataUrl=await toDataUrl(f); w.data.photoData=dataUrl; w.data.photoDataIsStandard=false; }
+          else if(i===1){ const f=await pickImage(); if(!f) return; const dataUrl=await toDataUrl(f); w.data.photoData=dataUrl; w.data.photoDataIsStandard=false; }
+          else { const imgs=typeof getDishImagesForName==='function'?getDishImagesForName(w.data.dish||''):[]; if(imgs.length>0){ w.data.photoData=imgs[0]; w.data.photoDataIsStandard=true; } }
+          saveDraft(); rebuildWizard();
+        };
+        imgRow.appendChild(btn);
+      });
+      box.appendChild(imgRow);
+      if(w.data.photoData){
+        const prev=document.createElement('div');
+        prev.style.cssText='width:100%; height:80px; border-radius:12px; overflow:hidden; margin-bottom:16px; background:#f0f0f0;';
+        prev.innerHTML='<img src="'+w.data.photoData+'" style="width:100%; height:100%; object-fit:cover;">';
+        const rem=document.createElement('button');
+        rem.type='button'; rem.textContent='× Bild entfernen'; rem.style.cssText='font-size:12px; color:#64748b; background:none; border:none; margin-bottom:16px; cursor:pointer;';
+        rem.onclick=()=>{ w.data.photoData=''; w.data.photoDataIsStandard=false; saveDraft(); rebuildWizard(); };
+        box.appendChild(prev); box.appendChild(rem);
+      }
+
+      // --- Abholzeit: Standard 11:30 – 14:00, +/- 15min (kein Abend) ---
+      const labelTime=document.createElement('div'); labelTime.className='hint'; labelTime.textContent='Abholzeit (Mittagstisch)';
+      box.appendChild(labelTime);
+      const pw=(w.data.pickupWindow||DEFAULT_MEAL_WINDOW).split(/\s*[–\-]\s*/);
+      let timeStart=(pw[0]||'11:30').trim(); let timeEnd=(pw[1]||'14:00').trim();
+      if(timeStart.length===4) timeStart='0'+timeStart; if(timeEnd.length===4) timeEnd='0'+timeEnd;
+      const timeRow=document.createElement('div');
+      timeRow.style.cssText='display:flex; align-items:center; gap:12px; margin-bottom:16px;';
+      const timeDisplay=document.createElement('span');
+      timeDisplay.style.cssText='font-size:18px; font-weight:800; color:#1a1a1a; flex:1; text-align:center;';
+      timeDisplay.textContent=timeStart+' – '+timeEnd;
+      function parseTime(s){ const [h,m]=s.split(':').map(Number); return (h||0)*60+(m||0); }
+      function fmtTime(m){ const h=Math.floor(m/60), min=m%60; return (h<10?'0':'')+h+':'+(min<10?'0':'')+min; }
+      const minusBtn=document.createElement('button');
+      minusBtn.type='button'; minusBtn.className='btn secondary'; minusBtn.style.cssText='min-width:44px; min-height:44px;';
+      minusBtn.textContent='−';
+      minusBtn.onclick=()=>{
+        let start=parseTime(timeStart), end=parseTime(timeEnd);
+        if(end-start>15){ end-=15; w.data.pickupWindow=timeStart+' – '+fmtTime(end); timeEnd=fmtTime(end); timeDisplay.textContent=timeStart+' – '+timeEnd; saveDraft(); }
+      };
+      const plusBtn=document.createElement('button');
+      plusBtn.type='button'; plusBtn.className='btn secondary'; plusBtn.style.cssText='min-width:44px; min-height:44px;';
+      plusBtn.textContent='+';
+      plusBtn.onclick=()=>{
+        let start=parseTime(timeStart), end=parseTime(timeEnd);
+        if(end<14*60&&end-start<4*60){ end+=15; w.data.pickupWindow=timeStart+' – '+fmtTime(end); timeEnd=fmtTime(end); timeDisplay.textContent=timeStart+' – '+timeEnd; saveDraft(); }
+      };
+      timeRow.appendChild(minusBtn); timeRow.appendChild(timeDisplay); timeRow.appendChild(plusBtn);
+      box.appendChild(timeRow);
+
+      // --- PREIS ---
       const labelPrice=document.createElement('div'); labelPrice.className='hint'; labelPrice.textContent='Preis (€)';
       box.appendChild(labelPrice);
-      
       const inputPrice=document.createElement('input');
       inputPrice.className='field';
       inputPrice.type='number';
       inputPrice.step='0.10';
       inputPrice.inputmode='decimal';
       inputPrice.placeholder='z.B. 8,50';
-      inputPrice.value=w.data.price > 0 ? w.data.price : '';
+      inputPrice.value=w.data.price>0?w.data.price:'';
       inputPrice.style.marginBottom='16px';
-      inputPrice.oninput=()=>{ w.data.price=parseFloat(inputPrice.value.replace(',','.')) || 0; saveDraft(); };
+      inputPrice.oninput=()=>{ w.data.price=parseFloat(inputPrice.value.replace(',','.'))||0; saveDraft(); };
       box.appendChild(inputPrice);
 
       // --- KATEGORIE ---
       const labelCat=document.createElement('div'); labelCat.className='hint'; labelCat.textContent='Kategorie';
       box.appendChild(labelCat);
-      
       const catRow=document.createElement('div'); catRow.className='answers';
       catRow.style.marginBottom='16px';
       ['Fleisch','Vegetarisch','Vegan'].forEach(c=>{
         const b=document.createElement('button');
-        b.type='button'; b.className='ans'+(w.data.category===c?' on':'');
+        b.type='button'; b.className='ans'+(w.data.category===c?' on':''); b.style.minHeight='44px';
         b.textContent=c;
         b.onclick=()=>{ w.data.category=c; saveDraft(); rebuildWizard(); };
         catRow.appendChild(b);
@@ -17975,171 +18025,20 @@
       return;
     }
 
-    // STUFE 2: Wann gibt's Essen? (15-Min-Takt, Verdienst-Vorschau, Schorndorf-Context)
+    // Schritt 2: Service & Details – Toggles Vor Ort (🍴), Mehrweg (🔄), Allergene optional, Extra-Pills
     if(w.step===1){
-      setWizardHeader('Wann gibt\'s Essen?', 'Schritt 2 von 5');
-      setWizardQuestion('Wann gibt\'s Essen?', 'Schritt 2 von 5');
-      const saveDraft = () => { localStorage.setItem('wizard_draft', JSON.stringify(w)); };
-      function generateTimeSlots(){
-        const slots = [];
-        for(let h = 10; h <= 20; h++){
-          for(let m = 0; m < 60; m += 15){
-            slots.push((h < 10 ? '0' : '') + h + ':' + (m === 0 ? '00' : m));
-          }
-        }
-        return slots;
-      }
-      const timeSlots = generateTimeSlots();
-      const pw = (w.data.pickupWindow || '11:30 – 13:45').split(/\s*[–\-]\s*/);
-      let timeStart = (pw[0] || '11:30').trim();
-      let timeEnd = (pw[1] || '13:45').trim();
-      if(timeStart.length === 4) timeStart = '0' + timeStart;
-      if(timeEnd.length === 4) timeEnd = '0' + timeEnd;
-
-      const box = document.createElement('div');
-      box.style.cssText = 'padding-bottom:100px;';
-      const grid = document.createElement('div');
-      grid.style.cssText = 'display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:24px;';
-      const cardStart = document.createElement('div');
-      cardStart.style.cssText = 'background:#fff; padding:16px; border-radius:32px; box-shadow:0 2px 8px rgba(0,0,0,0.04); border:1px solid rgba(0,0,0,0.06);';
-      const lblStart = document.createElement('label');
-      lblStart.style.cssText = 'display:block; font-size:10px; font-weight:800; text-transform:uppercase; color:#9ca3af; margin-bottom:8px; margin-left:4px;';
-      lblStart.textContent = 'Startzeit';
-      const selectStart = document.createElement('select');
-      selectStart.style.cssText = 'width:100%; background:transparent; font-size:20px; font-weight:700; color:#1a1a1a; border:none; outline:none; cursor:pointer;';
-      timeSlots.forEach(s => {
-        const opt = document.createElement('option');
-        opt.value = s;
-        opt.textContent = s + ' Uhr';
-        if(s === timeStart) opt.selected = true;
-        selectStart.appendChild(opt);
-      });
-      selectStart.onchange = function(){
-        timeStart = selectStart.value;
-        w.data.pickupWindow = timeStart + ' – ' + timeEnd;
-        saveDraft();
-      };
-      cardStart.appendChild(lblStart);
-      cardStart.appendChild(selectStart);
-      const cardEnd = document.createElement('div');
-      cardEnd.style.cssText = 'background:#fff; padding:16px; border-radius:32px; box-shadow:0 2px 8px rgba(0,0,0,0.04); border:1px solid rgba(0,0,0,0.06);';
-      const lblEnd = document.createElement('label');
-      lblEnd.style.cssText = 'display:block; font-size:10px; font-weight:800; text-transform:uppercase; color:#9ca3af; margin-bottom:8px; margin-left:4px;';
-      lblEnd.textContent = 'Endzeit';
-      const selectEnd = document.createElement('select');
-      selectEnd.style.cssText = 'width:100%; background:transparent; font-size:20px; font-weight:700; color:#1a1a1a; border:none; outline:none; cursor:pointer;';
-      timeSlots.forEach(s => {
-        const opt = document.createElement('option');
-        opt.value = s;
-        opt.textContent = s + ' Uhr';
-        if(s === timeEnd) opt.selected = true;
-        selectEnd.appendChild(opt);
-      });
-      selectEnd.onchange = function(){
-        timeEnd = selectEnd.value;
-        w.data.pickupWindow = timeStart + ' – ' + timeEnd;
-        saveDraft();
-      };
-      cardEnd.appendChild(lblEnd);
-      cardEnd.appendChild(selectEnd);
-      grid.appendChild(cardStart);
-      grid.appendChild(cardEnd);
-      box.appendChild(grid);
-
-      const verdienstCard = document.createElement('div');
-      verdienstCard.style.cssText = 'background:#1a1a1a; border-radius:40px; padding:24px; margin-bottom:24px; position:relative; overflow:hidden;';
-      const price = Number(w.data.price) || 0;
-      const estimatedPortions = 20;
-      const estimatedEarnings = (price * 0.85 * estimatedPortions).toFixed(2);
-      verdienstCard.innerHTML = '<div style="position:relative;z-index:10;"><span style="font-size:10px;font-weight:800;text-transform:uppercase;opacity:0.6;color:#fff;">Deine Verdienst-Vorschau</span><div style="display:flex;align-items:baseline;gap:8px;margin-top:4px;"><span style="font-size:36px;font-weight:800;color:#fff;">' + (estimatedEarnings.replace('.', ',')) + ' €</span><span style="font-size:14px;opacity:0.6;color:#fff;">geschätzt</span></div></div><div style="position:absolute;right:-10px;bottom:-10px;font-size:48px;opacity:0.1;">📈</div>';
-      box.appendChild(verdienstCard);
-
-      setWizardContent(box);
-      wNextBtn.textContent = 'Weiter zum Bild';
-      if(wBackBtn) wBackBtn.textContent = '← Zurück zum Namen';
-      if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
-      return;
-    }
-
-    // STUFE 3: Bild & Beschreibung (Zeit kommt aus Schritt 2)
-    if(w.step===2){
-      setWizardHeader('Bild & Beschreibung', 'Schritt 3 von 5');
-      setWizardQuestion('Bild & Beschreibung', 'Optional: Foto und Zutaten.');
-      const saveDraft = () => { localStorage.setItem('wizard_draft', JSON.stringify(w)); };
-      const box = document.createElement('div');
-
-      const labelImg = document.createElement('div');
-      labelImg.className = 'hint';
-      labelImg.textContent = 'Bild';
-      box.appendChild(labelImg);
-      const imgRow = document.createElement('div');
-      imgRow.className = 'answers';
-      imgRow.style.marginBottom = '16px';
-      const btnCam = document.createElement('button');
-      btnCam.className = 'ans';
-      btnCam.textContent = '📷 Kamera';
-      btnCam.onclick = async function(){ const f = await pickImage({capture:true}); if(!f) return; const dataUrl = await toDataUrl(f); w.data.photoData = dataUrl; w.data.photoDataIsStandard = false; saveDraft(); rebuildWizard(); };
-      const btnGal = document.createElement('button');
-      btnGal.className = 'ans';
-      btnGal.textContent = '📤 Galerie';
-      btnGal.onclick = async function(){ const f = await pickImage(); if(!f) return; const dataUrl = await toDataUrl(f); w.data.photoData = dataUrl; w.data.photoDataIsStandard = false; saveDraft(); rebuildWizard(); };
-      const btnStd = document.createElement('button');
-      btnStd.className = 'ans';
-      btnStd.textContent = '🖼️ Standard';
-      btnStd.onclick = function(){ const imgs = typeof getDishImagesForName === 'function' ? getDishImagesForName(w.data.dish || '') : []; if(imgs.length > 0){ w.data.photoData = imgs[0]; w.data.photoDataIsStandard = true; } saveDraft(); rebuildWizard(); };
-      imgRow.appendChild(btnCam);
-      imgRow.appendChild(btnGal);
-      imgRow.appendChild(btnStd);
-      box.appendChild(imgRow);
-      if(w.data.photoData){
-        const preview = document.createElement('div');
-        preview.style.cssText = 'position:relative; width:100%; height:120px; border-radius:12px; overflow:hidden; margin-bottom:16px; background:#f0f0f0;';
-        preview.innerHTML = '<img src="' + w.data.photoData + '" style="width:100%; height:100%; object-fit:cover;">';
-        const btnRem = document.createElement('button');
-        btnRem.innerHTML = '&times;';
-        btnRem.style.cssText = 'position:absolute; top:8px; right:8px; width:28px; height:28px; background:rgba(0,0,0,0.5); color:#fff; border-radius:50%; border:none; font-size:18px; display:flex; align-items:center; justify-content:center; cursor:pointer;';
-        btnRem.onclick = function(){ w.data.photoData = ''; w.data.photoDataIsStandard = false; saveDraft(); rebuildWizard(); };
-        preview.appendChild(btnRem);
-        if(w.data.photoDataIsStandard){
-          const hint = document.createElement('div');
-          hint.style.cssText = 'position:absolute; bottom:8px; left:8px; right:8px; background:rgba(255,255,255,0.85); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); padding:6px 12px; border-radius:12px; border:1px solid rgba(255,255,255,0.4);';
-          hint.innerHTML = '<p style="margin:0; font-size:10px; font-weight:800; color:#1a1a1a; text-transform:uppercase; display:flex; align-items:center; gap:6px;"><span>ℹ️</span> Symbolbild: Abweichungen zum Original möglich</p>';
-          preview.appendChild(hint);
-        }
-        box.appendChild(preview);
-      }
-      const labelDesc = document.createElement('div');
-      labelDesc.className = 'hint';
-      labelDesc.textContent = 'Beschreibung (optional)';
-      box.appendChild(labelDesc);
-      const inputDesc = document.createElement('textarea');
-      inputDesc.className = 'field';
-      inputDesc.rows = 3;
-      inputDesc.placeholder = 'Zutaten, Besonderheiten...';
-      inputDesc.value = w.data.description || '';
-      inputDesc.style.resize = 'none';
-      inputDesc.oninput = function(){ w.data.description = inputDesc.value; saveDraft(); };
-      box.appendChild(inputDesc);
-
-      setWizardContent(box);
-      wNextBtn.textContent = 'Weiter';
-      if(wBackBtn) wBackBtn.textContent = 'Zurück';
-      return;
-    }
-
-    // STUFE 4: SERVICE & EXTRAS
-    if(w.step===3){
-      setWizardQuestion('Service & Extras', 'Biete deinen Gästen mehr.');
+      setWizardQuestion('Service & Details', 'Kann man bei dir vor Ort essen? Bietest du Mehrweg an?');
       const box=document.createElement('div');
+      const saveDraft = () => { localStorage.setItem('wizard_draft', JSON.stringify(w)); };
       
-      // Toggles Container
+      // Toggles Container (min 44px Tap-Targets)
       const toggleWrap = document.createElement('div');
       toggleWrap.style.cssText = 'display:flex; flex-direction:column; gap:12px; margin-bottom:24px;';
       
-      // 1. Vor Ort
+      // 1. Vor Ort (🍴)
       const rowDine = document.createElement('div');
-      rowDine.style.cssText = 'display:flex; align-items:center; justify-content:space-between; padding:12px; background:#f8f9fa; border-radius:12px;';
-      rowDine.innerHTML = '<div style="font-weight:600;display:flex;align-items:center;gap:8px"><i data-lucide="utensils-crossed" style="width:18px"></i> Essen vor Ort</div>';
+      rowDine.style.cssText = 'display:flex; align-items:center; justify-content:space-between; padding:14px 16px; min-height:44px; background:#f8f9fa; border-radius:12px;';
+      rowDine.innerHTML = '<div style="font-weight:600;display:flex;align-items:center;gap:8px"><span style="font-size:18px;">🍴</span> Kann man bei dir vor Ort essen?</div>';
       // Toggle Switch (simulated)
       const togDine = document.createElement('button');
       togDine.type='button';
@@ -18149,10 +18048,10 @@
       rowDine.appendChild(togDine);
       toggleWrap.appendChild(rowDine);
 
-      // 2. Mehrweg
+      // 2. Mehrweg (🔄)
       const rowReuse = document.createElement('div');
-      rowReuse.style.cssText = 'display:flex; align-items:center; justify-content:space-between; padding:12px; background:#f8f9fa; border-radius:12px;';
-      rowReuse.innerHTML = '<div style="font-weight:600;display:flex;align-items:center;gap:8px"><i data-lucide="repeat" style="width:18px"></i> Mehrweg</div>';
+      rowReuse.style.cssText = 'display:flex; align-items:center; justify-content:space-between; padding:14px 16px; min-height:44px; background:#f8f9fa; border-radius:12px;';
+      rowReuse.innerHTML = '<div style="font-weight:600;display:flex;align-items:center;gap:8px"><span style="font-size:18px;">🔄</span> Bietest du Mehrweg an?</div>';
       const togReuse = document.createElement('button');
       togReuse.type='button';
       togReuse.style.cssText = `width:44px; height:24px; border-radius:12px; background:${w.data.reuse.enabled?'#10b981':'#e5e7eb'}; position:relative; border:none; transition:0.2s;`;
@@ -18167,8 +18066,8 @@
       
       box.appendChild(toggleWrap);
 
-      // Allergene
-      const labelAll=document.createElement('div'); labelAll.className='hint'; labelAll.textContent='Allergene angeben?';
+      // Allergene (optional)
+      const labelAll=document.createElement('div'); labelAll.className='hint'; labelAll.textContent='Willst du Allergene angeben?';
       box.appendChild(labelAll);
       const allRow=document.createElement('div'); allRow.className='answers'; allRow.style.marginBottom='24px';
       const btnAllYes=document.createElement('button'); btnAllYes.className='ans'+(w.data.wantsAllergens?' on':''); btnAllYes.textContent='Ja';
@@ -18196,200 +18095,62 @@
         box.appendChild(allList);
       }
 
+      // Extra-Pills (Beilagensalat, Extra Sauce, Brot, Ketchup, Mayo) + Verdienst-Vorschau
+      if(!Array.isArray(w.data.extras)) w.data.extras=[];
+      const hasExtras = w.data.extras.length > 0;
+      const extLabel=document.createElement('div'); extLabel.className='hint'; extLabel.style.marginTop='16px'; extLabel.textContent='Extras (Aufpreis)';
+      box.appendChild(extLabel);
+      const extRow=document.createElement('div'); extRow.style.cssText='display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px;';
+      ['Beilagensalat','Extra Sauce','Brot','Ketchup','Mayo'].forEach(name=>{
+        const extra=w.data.extras.find(e=>e.name===name);
+        const hasPrice=!!extra && Number(extra.price||0)>0;
+        const b=document.createElement('button'); b.type='button'; b.style.cssText=`min-height:44px; padding:8px 12px; border-radius:8px; font-size:13px; font-weight:600; border:2px solid ${hasPrice?'var(--color-emerald,#10b981)':(extra?'#94a3b8':'#e5e7eb')}; background:${hasPrice?'rgba(16,185,129,0.12)':'#fff'}; color:${hasPrice?'var(--color-emerald,#10b981)':'#475569'};`;
+        b.textContent=extra && extra.price ? name+' +'+Number(extra.price).toFixed(2).replace('.',',')+' €' : name;
+        b.onclick=()=>{
+          const idx=w.data.extras.findIndex(e=>e.name===name);
+          if(idx>=0){ w.data.extras.splice(idx,1); rebuildWizard(); return; }
+          const priceStr=prompt('Aufpreis in € (z.B. 1,50):','0');
+          const priceVal=parseFloat((priceStr||'0').replace(',','.'))||0;
+          w.data.extras.push({name, price:priceVal});
+          rebuildWizard();
+        };
+        extRow.appendChild(b);
+      });
+      box.appendChild(extRow);
+      const verdienstEl=document.createElement('div');
+      verdienstEl.id='listingVerdienstEl';
+      verdienstEl.style.cssText='margin-top:12px; padding:12px; background:rgba(16,185,129,0.12); border-radius:12px; font-weight:700; font-size:14px; text-align:center; color:var(--color-emerald,#10b981);';
+      function refreshVerdienstEl(){
+        const el=document.getElementById('listingVerdienstEl');
+        if(!el) return;
+        const p=Number(w.data.price||0);
+        const exSum=(w.data.extras||[]).reduce((s,e)=>s+Number(e.price||0),0);
+        const nettoProVerkauf = p + exSum - (w.data.hasPickupCode ? ABHOLNUMMER_FEE : 0);
+        el.innerHTML=`Verdienst pro Verkauf: <span style="font-size:16px;">${nettoProVerkauf.toFixed(2).replace('.',',')} €</span> (abzgl. 4,99 € Inseratsgebühr einmalig)`;
+      }
+      verdienstEl.innerHTML='Verdienst pro Verkauf: – (abzgl. 4,99 € Inseratsgebühr einmalig)';
+      box.appendChild(verdienstEl);
+      setTimeout(refreshVerdienstEl, 0);
+
       setWizardContent(box);
       wNextBtn.textContent='Weiter';
       if(typeof lucide!=='undefined') lucide.createIcons();
       return;
     }
 
+    // Schritt 3: Vorschau (Erfolgsmoment) – Discovery-Card wie Kunde sie sieht, 🍴🔄🧾 unter Bild
     if(w.step===2){
-      setWizardQuestion('Verkaufseinstellungen', 'Abholnummer & Optionen. Online-Zahlung spart Zeit & sichert Umsatz.');
+      setWizardQuestion('So wirkt dein Inserat', 'Genau so sehen es deine Gäste.');
       const box=document.createElement('div');
-      
-      // 1. Abholnummer (Prominent)
-      const abhLabel=document.createElement('div'); abhLabel.className='hint'; abhLabel.style.marginBottom='6px'; abhLabel.textContent='Online-Verkauf (Empfohlen)';
-      box.appendChild(abhLabel);
-      
-      const abhRow=document.createElement('div'); abhRow.className='answers';
-      const btnAbhJa=document.createElement('button'); btnAbhJa.type='button'; btnAbhJa.className='ans'+(w.data.hasPickupCode?' on':''); 
-      btnAbhJa.style.cssText += w.data.hasPickupCode ? 'background:#2ecc71; color:white; border-color:#2ecc71;' : '';
-      btnAbhJa.innerHTML='<b>Ja, Zeit sparen</b><div style="font-size:11px;opacity:0.9;font-weight:400">0,89 € Gebühr/Verkauf</div>';
-      btnAbhJa.onclick=()=>{ w.data.hasPickupCode=true; rebuildWizard(); };
-      
-      const btnAbhNein=document.createElement('button'); btnAbhNein.type='button'; btnAbhNein.className='ans'+(!w.data.hasPickupCode?' on':''); 
-      btnAbhNein.textContent='Nein';
-      btnAbhNein.onclick=()=>{ w.data.hasPickupCode=false; rebuildWizard(); };
-      
-      abhRow.appendChild(btnAbhJa); abhRow.appendChild(btnAbhNein);
-      box.appendChild(abhRow);
-
-      // 3. EXTRAS, MEHRWEG, ALLERGENE
-      const detailsLabel=document.createElement('div'); detailsLabel.className='hint'; detailsLabel.style.marginTop='16px'; detailsLabel.style.marginBottom='6px'; detailsLabel.textContent='Optionen & Details';
-      box.appendChild(detailsLabel);
-      
-      const detailsContainer = document.createElement('div');
-      detailsContainer.style.cssText='display:flex; flex-direction:column; gap:8px;';
-      
-      const createToggle = (label, isOn, onClick) => {
-        const row = document.createElement('div');
-        row.style.cssText='display:flex; align-items:center; justify-content:space-between; padding:10px 12px; background:#f8f9fa; border-radius:12px;';
-        const txt = document.createElement('div');
-        txt.style.cssText='font-size:14px; font-weight:600; color:#2d3436;';
-        txt.textContent = label;
-        const toggle = document.createElement('button');
-        toggle.type='button';
-        toggle.style.cssText=`width:44px; height:24px; border-radius:12px; background:${isOn?'#2ecc71':'#e5e7eb'}; position:relative; transition:all 0.2s; border:none;`;
-        const knob = document.createElement('div');
-        knob.style.cssText=`width:20px; height:20px; background:#fff; border-radius:50%; position:absolute; top:2px; left:${isOn?'22px':'2px'}; transition:all 0.2s; box-shadow:0 1px 3px rgba(0,0,0,0.2);`;
-        toggle.appendChild(knob);
-        toggle.onclick = onClick;
-        row.appendChild(txt);
-        row.appendChild(toggle);
-        return row;
-      };
-
-      if(!w.data.reuse) w.data.reuse={enabled:false, deposit:0};
-      detailsContainer.appendChild(createToggle('Mehrweg anbieten?', w.data.reuse.enabled, () => {
-         w.data.reuse.enabled = !w.data.reuse.enabled;
-         if(w.data.reuse.enabled && !w.data.reuse.deposit) w.data.reuse.deposit=2;
-         rebuildWizard();
-      }));
-      if(w.data.reuse.enabled){
-         const depRow = document.createElement('div');
-         depRow.style.cssText='display:flex; gap:6px; margin-left:12px; margin-bottom:4px;';
-         [2,3,5].forEach(val=>{
-            const b=document.createElement('button'); b.type='button';
-            const active=w.data.reuse.deposit===val;
-            b.style.cssText=`padding:4px 10px; border-radius:8px; font-size:12px; border:1px solid ${active?'#2ecc71':'#ddd'}; background:${active?'rgba(46,204,113,0.1)':'#fff'}; color:${active?'#27ae60':'#666'}; font-weight:600;`;
-            b.textContent = val+'€ Pfand';
-            b.onclick=()=>{ w.data.reuse.deposit=val; rebuildWizard(); };
-            depRow.appendChild(b);
-         });
-         detailsContainer.appendChild(depRow);
-      }
-
-      detailsContainer.appendChild(createToggle('Allergene angeben?', w.data.wantsAllergens, () => {
-        w.data.wantsAllergens = !w.data.wantsAllergens;
-        if(!w.data.wantsAllergens) w.data.allergens=[];
-        rebuildWizard();
-      }));
-      if(w.data.wantsAllergens){
-         const allgRow = document.createElement('div');
-         allgRow.style.cssText='display:flex; flex-wrap:wrap; gap:6px; margin-left:12px; margin-bottom:4px;';
-         const ALLG_OPTS=['Gluten','Laktose','Nüsse','Ei','Soja'];
-         if(!w.data.allergens) w.data.allergens=[];
-         ALLG_OPTS.forEach(a=>{
-             const active=w.data.allergens.includes(a);
-             const b=document.createElement('button'); b.type='button';
-             b.style.cssText=`padding:4px 8px; border-radius:6px; font-size:11px; border:1px solid ${active?'#2ecc71':'#ddd'}; background:${active?'rgba(46,204,113,0.1)':'#fff'}; color:${active?'#27ae60':'#666'};`;
-             b.textContent=a;
-             b.onclick=()=>{
-                if(active) w.data.allergens = w.data.allergens.filter(x=>x!==a);
-                else w.data.allergens.push(a);
-                rebuildWizard();
-             };
-             allgRow.appendChild(b);
-         });
-         detailsContainer.appendChild(allgRow);
-      }
-
-      if(!Array.isArray(w.data.extras)) w.data.extras=[];
-      const hasExtras = w.data.extras.length > 0;
-      detailsContainer.appendChild(createToggle('Extras (z.B. Salat)?', hasExtras, () => {
-         if(hasExtras) w.data.extras=[];
-         else w.data.extras=[{name:'Beilagensalat', price:0}];
-         refreshVerdienstEl();
-         rebuildWizard();
-      }));
-      if(hasExtras){
-         const exRow = document.createElement('div');
-         exRow.style.cssText='display:flex; flex-wrap:wrap; gap:6px; margin-left:12px; margin-bottom:4px;';
-         
-         // Vordefinierte Extras
-         ['Beilagensalat','Brot','Sauce'].forEach(name=>{
-            const active=w.data.extras.some(e=>e.name===name);
-            const b=document.createElement('button'); b.type='button';
-            b.style.cssText=`padding:4px 8px; border-radius:6px; font-size:11px; border:1px solid ${active?'#2ecc71':'#ddd'}; background:${active?'rgba(46,204,113,0.1)':'#fff'}; color:${active?'#27ae60':'#666'};`;
-            b.textContent=name;
-            b.onclick=()=>{
-               const idx=w.data.extras.findIndex(e=>e.name===name);
-               if(idx>=0) w.data.extras.splice(idx,1); else w.data.extras.push({name, price:0});
-               refreshVerdienstEl();
-               rebuildWizard();
-            };
-            exRow.appendChild(b);
-         });
-         
-         // Sonstiges (Eingabefeld)
-         const customName = 'Sonstiges';
-         const hasCustom = w.data.extras.some(e=> !['Beilagensalat','Brot','Sauce'].includes(e.name));
-         
-         const bCustom = document.createElement('button'); bCustom.type='button';
-         bCustom.style.cssText=`padding:4px 8px; border-radius:6px; font-size:11px; border:1px solid ${hasCustom?'#2ecc71':'#ddd'}; background:${hasCustom?'rgba(46,204,113,0.1)':'#fff'}; color:${hasCustom?'#27ae60':'#666'};`;
-         bCustom.textContent = hasCustom ? 'Sonstiges (aktiv)' : 'Sonstiges';
-         bCustom.onclick = () => {
-             if(hasCustom){
-                 w.data.extras = w.data.extras.filter(e=> ['Beilagensalat','Brot','Sauce'].includes(e.name));
-             } else {
-                 w.data.extras.push({name:'', price:0, isCustom:true});
-             }
-             refreshVerdienstEl();
-             rebuildWizard();
-         };
-         exRow.appendChild(bCustom);
-         detailsContainer.appendChild(exRow);
-
-         // Render Inputs for Custom Extras
-         w.data.extras.filter(e=>e.isCustom).forEach((extra, idx) => {
-             const inputRow = document.createElement('div');
-             inputRow.style.cssText='display:flex; gap:6px; margin-left:12px; margin-top:4px;';
-             
-             const nameInput = document.createElement('input');
-             nameInput.type='text';
-             nameInput.placeholder='Name (z.B. Extra Käse)';
-             nameInput.value = extra.name;
-             nameInput.style.cssText='flex:1; padding:6px; font-size:13px; border:1px solid #ddd; border-radius:6px;';
-             nameInput.oninput = (e) => { extra.name = e.target.value; };
-             
-             const priceInput = document.createElement('input');
-             priceInput.type='number';
-             priceInput.placeholder='€';
-             priceInput.value = extra.price || '';
-             priceInput.style.cssText='width:60px; padding:6px; font-size:13px; border:1px solid #ddd; border-radius:6px;';
-             priceInput.oninput = (e) => { extra.price = parseFloat(e.target.value)||0; refreshVerdienstEl(); };
-
-             inputRow.appendChild(nameInput);
-             inputRow.appendChild(priceInput);
-             detailsContainer.appendChild(inputRow);
-         });
-      }
-
-      box.appendChild(detailsContainer);
-
-      const verdienstEl=document.createElement('div');
-      verdienstEl.id='listingVerdienstEl';
-      verdienstEl.style.cssText='margin-top:20px; padding:12px; background:rgba(46,204,113,0.1); border-radius:12px; font-weight:700; font-size:14px; text-align:center; color:#27ae60;';
-      box.appendChild(verdienstEl);
-      
-      function refreshVerdienstEl(){
-        const el=document.getElementById('listingVerdienstEl');
-        if(!el) return;
-        const p=Number(w.data.price||0);
-        const exSum=(w.data.extras||[]).reduce((s,e)=>s+Number(e.price||0),0);
-        const geb=w.data.hasPickupCode ? SUCCESS_FEE : 0;
-        const netto=p+exSum-geb;
-        el.innerHTML=`Verdienst-Vorschau (Echtzeit): <span style="font-size:16px;">${netto.toFixed(2).replace('.',',')} €</span>`;
-      }
-
+      attachListingPreview(box);
       setWizardContent(box);
-      setTimeout(refreshVerdienstEl, 0);
       wNextBtn.textContent='Weiter';
+      if(wBackBtn) wBackBtn.textContent='Zurück';
+      if(typeof lucide!=='undefined') lucide.createIcons();
       return;
     }
 
-    // Step 3 (old Step 3 removed, merged into Step 2)
-
-    // STUFE 4: PLANUNG (Entscheidung)
+    // Schritt 4: Entscheidung & Planung (3 Kacheln)
     if(w.step===3){
       setWizardQuestion('Wie möchtest du starten?', 'Veröffentliche sofort oder plane für später.');
       const box=document.createElement('div');
@@ -18403,8 +18164,8 @@
       tilePub.style.cssText = 'display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; border-radius:20px; background:#FFD700; color:#1a1a1a; border:none; box-shadow:0 8px 20px rgba(255,215,0,0.2); transition:transform 0.1s;';
       tilePub.innerHTML = `
         <i data-lucide="rocket" style="width:32px; height:32px; margin-bottom:12px;"></i>
-        <div style="font-size:18px; font-weight:900;">Jetzt Inserieren</div>
-        <div style="font-size:13px; font-weight:600; opacity:0.8; margin-top:4px;">für 4,99 €</div>
+        <div style="font-size:18px; font-weight:900;">Jetzt für 4,99 € inserieren</div>
+        <div style="font-size:13px; font-weight:600; opacity:0.8; margin-top:4px;">Führt zum Checkout</div>
       `;
       tilePub.onclick = () => { w.step++; rebuildWizard(); }; // Go to Upsell
       grid.appendChild(tilePub);
@@ -18440,7 +18201,7 @@
       return;
     }
 
-    // STUFE 5: ABHOLNUMMER-UPSELL (Final Step)
+    // Schritt 5: Abholnummer-Upsell & Checkout
     if(w.step===4){
       setWizardQuestion('Turbo-Modus aktivieren?', 'Abholnummern sparen Zeit und schaffen Ordnung.');
       const box=document.createElement('div');
@@ -18451,7 +18212,7 @@
       emoImg.innerHTML = '<img src="assets/icon-abholnummer.png" style="width:80px; opacity:0.8;">'; // Placeholder
       // Badge
       const badge = document.createElement('div');
-      badge.style.cssText = 'position:absolute; top:12px; right:12px; background:#2ecc71; color:#fff; padding:6px 12px; border-radius:20px; font-weight:700; font-size:12px; box-shadow:0 4px 12px rgba(46,204,113,0.3);';
+      badge.style.cssText = 'position:absolute; top:12px; right:12px; background:var(--color-emerald,#10b981); color:#fff; padding:6px 12px; border-radius:20px; font-weight:700; font-size:12px; box-shadow:0 4px 12px rgba(16,185,129,0.3);';
       badge.textContent = 'Empfohlen';
       emoImg.appendChild(badge);
       box.appendChild(emoImg);
@@ -18462,7 +18223,7 @@
       ['Stressfrei: Kein Anstehen, kein Chaos', 'Speed: Schnelle Ausgabe per Nummer', 'Ordnung: Automatische Liste für die Küche'].forEach(t => {
         const row = document.createElement('div');
         row.style.cssText = 'display:flex; align-items:center; gap:10px; font-size:14px; color:#333; font-weight:500;';
-        row.innerHTML = '<i data-lucide="check-circle-2" style="width:18px; color:#2ecc71;"></i> ' + t;
+        row.innerHTML = '<i data-lucide="check-circle-2" style="width:18px; color:var(--color-emerald,#10b981);"></i> ' + t;
         benefits.appendChild(row);
       });
       box.appendChild(benefits);
@@ -18470,8 +18231,8 @@
       // Options
       const btnYes = document.createElement('button');
       btnYes.className = 'btn-primary';
-      btnYes.style.cssText = 'width:100%; min-height:56px; margin-bottom:12px; background:#2ecc71; box-shadow:0 4px 16px rgba(46,204,113,0.3); font-size:16px; font-weight:700; border-radius:16px; border:none; color:#fff; display:flex; align-items:center; justify-content:center; gap:8px;';
-      btnYes.innerHTML = '<span>Abholnummer hinzufügen</span> <span style="background:rgba(0,0,0,0.15); padding:2px 8px; border-radius:8px; font-size:13px;">+ 0,89 €</span>';
+      btnYes.style.cssText = 'width:100%; min-height:56px; margin-bottom:12px; background:var(--color-emerald,#10b981); box-shadow:0 4px 16px rgba(16,185,129,0.3); font-size:16px; font-weight:700; border-radius:16px; border:none; color:#fff; display:flex; align-items:center; justify-content:center; gap:8px;';
+      btnYes.innerHTML = '<span>Abholnummer für 0,89 € hinzufügen</span>';
       btnYes.onclick = () => {
         w.data.hasPickupCode = true;
         const o = previewOfferFromWizard();
@@ -18482,7 +18243,7 @@
       const btnNo = document.createElement('button');
       btnNo.className = 'btn ghost';
       btnNo.style.cssText = 'width:100%; min-height:48px; font-size:14px; color:#666; font-weight:600; border-radius:12px;';
-      btnNo.textContent = 'Ohne Abholnummer fortfahren';
+      btnNo.textContent = 'Ohne fortfahren';
       btnNo.onclick = () => {
         w.data.hasPickupCode = false;
         const o = previewOfferFromWizard();
@@ -19293,7 +19054,7 @@
   
   // --- boot ---
   // Testdaten erstellen (nur wenn keine vorhanden oder für Demo)
-  // Alte seed() Funktion - wird durch seedExampleData() ersetzt
+  // seedExampleData()
   // seed(); // Auskommentiert, da seedExampleData() die neuen Beispieldaten lädt
   
   // Neue Beispieldaten laden (10 Anbieter, je 3 Gerichte, je 10 Abholnummers)
