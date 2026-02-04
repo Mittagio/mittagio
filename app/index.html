@@ -5570,7 +5570,8 @@
     orderHistory: 'mittagio_order_history_v1',
     swipeOnboardingShown: 'mittagio_swipe_onboarding_shown_v1',
     providerSession: 'mittagio_provider_session_v1',
-    favPillars: 'mittagio_fav_pillars_v1' // { [dishId]: { vorOrt, abholnummer, mehrweg } } – 3-Säulen beim Favorisieren einfrieren
+    favPillars: 'mittagio_fav_pillars_v1', // { [dishId]: { vorOrt, abholnummer, mehrweg } } – 3-Säulen beim Favorisieren einfrieren
+    transactions: 'mittagio_transactions_v1' // Transaktionen pro Inserat: id, vendor_id, base_price, addon_pickup, addon_price, total_amount, timestamp
   };
   const load = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } };
   const save = (k, v) => localStorage.setItem(k, JSON.stringify(v));
@@ -18523,6 +18524,32 @@
     };
   }
 
+  // Transaktions-Schema (pro Inserat): id, vendor_id, base_price, addon_pickup, addon_price, total_amount, timestamp
+  const TX_BASE_PRICE = 4.99;
+  const TX_ADDON_PRICE = 0.89;
+  function createInseratTransaction(offer){
+    const addon_pickup = !!(offer && offer.hasPickupCode);
+    const addon_price = addon_pickup ? TX_ADDON_PRICE : 0;
+    const total_amount = TX_BASE_PRICE + addon_price;
+    const txId = 'TX-' + (typeof cryptoId === 'function' ? cryptoId().slice(0, 8) : Date.now().toString(36).toUpperCase());
+    return {
+      id: txId,
+      vendor_id: offer && offer.providerId,
+      inserat_id: offer && offer.id,
+      base_price: TX_BASE_PRICE,
+      addon_pickup: addon_pickup,
+      addon_price: addon_price,
+      total_amount: total_amount,
+      timestamp: new Date().toISOString()
+    };
+  }
+  function loadTransactions(){ return load(LS.transactions, []); }
+  function saveTransaction(tx){
+    const list = loadTransactions();
+    list.unshift(tx);
+    save(LS.transactions, list);
+  }
+
   function publishOffer(o){
     const existingId = w.ctx && w.ctx.editOfferId ? w.ctx.editOfferId : null;
     const id = existingId || cryptoId();
@@ -18542,6 +18569,8 @@
       }
     } else {
       offers.unshift(out);
+      var tx = createInseratTransaction(out);
+      saveTransaction(tx);
     }
     save(LS.offers, offers);
     
