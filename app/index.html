@@ -3628,14 +3628,14 @@
 
       <!-- 3. Profildaten (Name, E-Mail) – sauberer Block -->
       <div class="panel profile-panel" id="profileVerwaltungSection" style="margin-top:16px; padding:18px; border-radius:24px; box-shadow:0 10px 30px rgba(0,0,0,.06); border:1px solid rgba(0,0,0,.02);">
-        <div style="font-family:'Nunito',sans-serif; font-weight:800; font-size:16px; margin-bottom:12px; color:#1a1a1a;">Profil-Verwaltung</div>
+        <div style="font-family:'Nunito',sans-serif; font-weight:800; font-size:16px; margin-bottom:12px; color:#1a1a1a;">Profildaten</div>
         <div id="profileVerwaltungContent" style="font-size:14px; color:#334155; line-height:1.6;">Name und E-Mail – wird dynamisch befüllt.</div>
       </div>
 
-      <!-- 4. Geschmack-Filter & Mehrweg-Toggle (🔄) – ohne Erklärungstext (steht in FAQs) -->
+      <!-- 4. Einstellungen: Mein Geschmack & Mehrweg (🔄) – ohne Erklärungstext -->
       <div class="panel profile-panel" id="profileTasteSection" style="margin-top:16px; padding:18px; border-radius:24px; box-shadow:0 10px 30px rgba(0,0,0,.06); border:1px solid rgba(0,0,0,.02);">
+        <div style="font-family:'Nunito',sans-serif; font-weight:800; font-size:16px; margin-bottom:12px; color:#1a1a1a;">Einstellungen</div>
         <div style="font-weight:700; font-size:15px; margin-bottom:8px; color:#64748b;">Mein Geschmack</div>
-        <div class="hint" style="font-size:12px; color:#94a3b8; margin-bottom:12px;">Filter für Entdecken (Vegan, Glutenfrei etc.)</div>
         <div id="profileDietSwitches" style="display:flex; flex-direction:column; gap:10px;"></div>
         <div id="profileReuseSwitch" style="margin-top:14px;"></div>
       </div>
@@ -3663,22 +3663,22 @@
             <p style="margin:0; padding:0 14px 14px 14px; font-size:14px; line-height:1.5; color:#555;">Achte auf das 🔄-Icon beim Gericht. Wir arbeiten stetig daran, weitere Partner für unser Mehrweg-System zu gewinnen. Aktuell führen noch nicht alle Anbieter Mehrweg; dir werden aber weiterhin alle verfügbaren Angebote angezeigt.</p>
           </details>
         </div>
-        <a href="#/faq" onclick="showLegalPage('faq'); return false;" style="display:block; margin-top:12px; text-align:center; font-size:14px; font-weight:600; color:var(--brand); text-decoration:none;">Alle FAQs anzeigen</a>
+        <button type="button" onclick="showLegalPage('support'); return false;" style="width:100%; margin-top:12px; padding:14px 16px; border-radius:12px; border:2px solid var(--brand); background:#fff; color:var(--brand); font-weight:700; font-size:15px; cursor:pointer;">Weitere Fragen &amp; Hilfe</button>
       </div>
 
-      <!-- Footer: Rechtliche Links | Anbieter-Block | Branding nur "made with ❤️" | Version rechts -->
+      <!-- Footer: eine Zeile Datenschutz | Impressum | AGB -->
       <div class="profile-footer" style="margin-top:28px; padding:0 16px 32px; border-top:2px solid rgba(0,0,0,.06);">
-        <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:8px 14px; font-size:14px; margin-bottom:16px;">
-          <a href="#/faq" id="btnProfileFaq" onclick="showLegalPage('faq'); return false;" style="color:var(--muted); text-decoration:none; font-weight:500;">FAQ</a>
-          <span style="color:rgba(0,0,0,.2);">|</span>
+        <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:6px 10px; font-size:14px; margin-bottom:16px;">
           <a href="#/datenschutz" id="btnProfileDatenschutz" onclick="showLegalPage('datenschutz'); return false;" style="color:var(--muted); text-decoration:none;">Datenschutz</a>
           <span style="color:rgba(0,0,0,.2);">|</span>
           <a href="#/impressum" id="btnProfileImpressum" onclick="showLegalPage('impressum'); return false;" style="color:var(--muted); text-decoration:none;">Impressum</a>
           <span style="color:rgba(0,0,0,.2);">|</span>
           <a href="#/agb-kurz" id="btnProfileAGB" onclick="showLegalPage('agb-kurz'); return false;" style="color:var(--muted); text-decoration:none;">AGB</a>
         </div>
+        <!-- Anbieter-Integration (Business-Modul) -->
         <div class="panel" id="profileProviderSection" style="margin-bottom:16px; padding:18px; border-radius:16px; background:#e8e8e8; border:1px solid rgba(0,0,0,.06);">
-          <p style="font-size:14px; color:#555; margin:0 0 14px; line-height:1.5;">Dein Mittagessen anbieten – einfach und digital.</p>
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;"><span style="font-size:20px;">💼</span><span style="font-weight:700; font-size:15px; color:#334155;">Dein Mittagessen anbieten</span></div>
+          <p style="font-size:14px; color:#555; margin:0 0 14px; line-height:1.5;">Einfach und digital.</p>
           <button type="button" id="btnProfileProviderLogin" onclick="setMode('provider');" style="width:100%; min-height:48px; padding:12px 20px; border-radius:14px; border:none; background:#6b7280; color:#fff; font-weight:700; font-size:15px; cursor:pointer;" onmouseover="this.style.background='#4b5563';" onmouseout="this.style.background='#6b7280';">
             Zum Anbieter-Login
           </button>
@@ -4633,8 +4633,56 @@
         </div>
         
         <div style="margin-top:32px; padding:20px; border-top:1px solid #eee; text-align:center; font-size:14px; color:#666; background:#f9f9f9;">
-          Weitere Fragen? <a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a>
+          Weitere Fragen? Nutze den Button „Weitere Fragen &amp; Hilfe“ in deinem Profil (Meins).
         </div>
+        <button class="btn ghost" type="button" onclick="goBackFromLegalPage()" style="margin:0 20px 20px; width:calc(100% - 40px);">Zurück</button>
+      </div>
+    </section>
+
+    <!-- Support-Seite (Kunden): erweiterte FAQs + Kontaktformular, keine E-Mail im UI -->
+    <section class="view" id="v-support" style="background:#F7F6F0; min-height:100vh; padding:20px; padding-bottom:90px;">
+      <div class="panel" style="padding:0; overflow:hidden;">
+        <h1 style="font-size:24px; font-weight:900; margin:20px 20px 0; padding-bottom:20px;">Support &amp; Hilfe</h1>
+
+        <!-- Erweiterte Kunden-FAQs (Zahlung, Stornierung, Account) -->
+        <div style="padding:0 20px 20px;">
+          <h2 style="font-size:16px; font-weight:800; margin:0 0 12px; color:#1a1a1a;">Häufige Fragen</h2>
+          <details style="background:#fff; border-radius:12px; border:1px solid rgba(0,0,0,.06); overflow:hidden; margin-bottom:8px;">
+            <summary style="padding:12px 14px; font-size:14px; font-weight:600; color:#1a1a1a; cursor:pointer; list-style:none;">Wie bezahle ich mein Essen?</summary>
+            <p style="margin:0; padding:0 14px 14px 14px; font-size:14px; line-height:1.5; color:#555;">Die Bezahlung erfolgt digital direkt über die Plattform. Nach erfolgreicher Zahlung erhältst du deine Abholnummer.</p>
+          </details>
+          <details style="background:#fff; border-radius:12px; border:1px solid rgba(0,0,0,.06); overflow:hidden; margin-bottom:8px;">
+            <summary style="padding:12px 14px; font-size:14px; font-weight:600; color:#1a1a1a; cursor:pointer; list-style:none;">Kann ich eine Bestellung stornieren?</summary>
+            <p style="margin:0; padding:0 14px 14px 14px; font-size:14px; line-height:1.5; color:#555;">Da die Mahlzeiten frisch für dich vorbereitet werden, ist eine Stornierung nach Ablauf des Zeitfensters leider nicht möglich. Details findest du in der Bestellübersicht.</p>
+          </details>
+          <details style="background:#fff; border-radius:12px; border:1px solid rgba(0,0,0,.06); overflow:hidden; margin-bottom:8px;">
+            <summary style="padding:12px 14px; font-size:14px; font-weight:600; color:#1a1a1a; cursor:pointer; list-style:none;">Wo finde ich meine Bestellungen / Account?</summary>
+            <p style="margin:0; padding:0 14px 14px 14px; font-size:14px; line-height:1.5; color:#555;">Alle Bestellungen und deine Profildaten findest du unter „Meins“ in der App.</p>
+          </details>
+        </div>
+
+        <!-- Kontaktformular -->
+        <div style="padding:20px; border-top:1px solid #eee;">
+          <h2 style="font-size:16px; font-weight:800; margin:0 0 16px; color:#1a1a1a;">Nachricht senden</h2>
+          <form id="supportForm" style="display:flex; flex-direction:column; gap:14px;">
+            <label style="font-size:14px; font-weight:600; color:#334155;">Betreff</label>
+            <select id="supportSubject" required style="width:100%; padding:14px 16px; border-radius:12px; border:2px solid rgba(0,0,0,.1); font-size:15px; background:#fff;">
+              <option value="">Bitte wählen</option>
+              <option value="bestellung">Frage zu meiner Bestellung</option>
+              <option value="abholnummer">Problem mit Abholnummer</option>
+              <option value="lob">Lob &amp; Kritik</option>
+              <option value="technisch">Technischer Fehler</option>
+              <option value="sonstiges">Sonstiges</option>
+            </select>
+            <label style="font-size:14px; font-weight:600; color:#334155;">Abholnummer (optional)</label>
+            <input type="text" id="supportPickupRef" placeholder="z.B. #1A" style="width:100%; padding:14px 16px; border-radius:12px; border:2px solid rgba(0,0,0,.1); font-size:15px; box-sizing:border-box;">
+            <label style="font-size:14px; font-weight:600; color:#334155;">Nachricht</label>
+            <textarea id="supportMessage" required rows="4" placeholder="Deine Nachricht…" style="width:100%; padding:14px 16px; border-radius:12px; border:2px solid rgba(0,0,0,.1); font-size:15px; resize:vertical; box-sizing:border-box;"></textarea>
+            <button type="submit" class="btn" id="btnSupportSubmit" style="width:100%; min-height:52px; font-weight:800; font-size:16px; border-radius:14px; background:var(--brand); color:#1a1a1a; border:none; cursor:pointer;">Nachricht senden</button>
+          </form>
+        </div>
+
+        <div style="margin-top:24px; padding:20px; text-align:center; font-size:13px; color:#94a3b8;">made with ❤️ by mittagio.de</div>
         <button class="btn ghost" type="button" onclick="goBackFromLegalPage()" style="margin:0 20px 20px; width:calc(100% - 40px);">Zurück</button>
       </div>
     </section>
@@ -5129,22 +5177,42 @@
   </div>
 </div>
 
-<!-- Pickup Confirmation Sheet -->
+<!-- Pickup Detail Sheet (Sammel-Ansicht: Abholnummer + Gerichte + Vor Ort/Mehrweg + Alles übergeben) -->
 <div class="backdrop" id="pickupConfirmBd" onclick="closePickupConfirmSheet()"></div>
 <div class="sheet" id="pickupConfirmSheet">
   <div class="handle"></div>
   <div class="sheet-body" style="padding:24px;">
-    <div style="font-weight:600; font-size:18px; margin-bottom:20px; line-height:1.3; text-align:center;">Abholung bestätigen</div>
-    <div style="font-size:48px; font-weight:900; font-family:monospace; color:var(--brand); margin-bottom:12px; text-align:center; line-height:1;" id="pickupConfirmCode">–</div>
-    <div style="font-size:16px; color:var(--muted); margin-bottom:24px; text-align:center;" id="pickupConfirmDish">–</div>
+    <div style="font-weight:700; font-size:14px; color:var(--muted); margin-bottom:4px;">Abholnummer</div>
+    <div style="font-size:40px; font-weight:900; font-family:monospace; color:var(--brand); margin-bottom:8px; line-height:1;" id="pickupConfirmCode">#–</div>
+    <div id="pickupConfirmIcons" style="display:flex; align-items:center; gap:10px; margin-bottom:20px; font-size:18px;">
+      <span title="Vor Ort">🍴</span><span title="Mehrweg">🔄</span><span title="Abholnummer">🧾</span>
+    </div>
+    <div style="font-weight:700; font-size:15px; margin-bottom:10px; color:#1a1a1a;">Bestellte Gerichte</div>
+    <div id="pickupConfirmDishes" style="display:flex; flex-direction:column; gap:10px; margin-bottom:24px;">
+      <!-- Pro Gericht: Name + 🍴 Vor Ort oder 🔄 Mehrweg + Extras -->
+    </div>
     <div style="display:flex; flex-direction:column; gap:12px;">
-      <button class="btn" type="button" id="btnPickupConfirmYes" style="width:100%; min-height:56px; font-size:16px; font-weight:600;">
-        Als abgeholt markieren
+      <button class="btn" type="button" id="btnPickupConfirmYes" style="width:100%; min-height:56px; font-size:16px; font-weight:800; background:#2e7d32; color:#fff; border:none;">
+        Alles übergeben &amp; Abgeholt
       </button>
       <button class="btn secondary" type="button" id="btnPickupConfirmNo" style="width:100%; min-height:50px; font-size:16px;">
-        ❓ Doch nicht
+        Abbrechen
       </button>
     </div>
+  </div>
+</div>
+<!-- Erfolgs-Screen (nach Alles übergeben) -->
+<div id="pickupSuccessOverlay" style="display:none; position:fixed; inset:0; background:rgba(34,139,34,0.95); z-index:9999; align-items:center; justify-content:center; flex-direction:column; padding:24px;">
+  <div style="font-size:64px; margin-bottom:16px;">✅</div>
+  <div style="font-size:28px; font-weight:900; color:#fff; margin-bottom:8px;">Erfolgreich abgeholt!</div>
+  <div id="pickupSuccessNetto" style="font-size:20px; font-weight:700; color:rgba(255,255,255,0.95);">Netto-Verdienst: 0,00 €</div>
+</div>
+<!-- Next-Step Popup (nächste Abholnummern) -->
+<div id="pickupNextStepOverlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:10000; align-items:center; justify-content:center; padding:24px;">
+  <div style="background:#fff; border-radius:24px; padding:24px; max-width:360px; width:100%; box-shadow:0 8px 32px rgba(0,0,0,0.2);">
+    <div id="pickupNextStepTitle" style="font-size:20px; font-weight:800; margin-bottom:16px; color:#1a1a1a;">🎉 Noch 0 Essen offen!</div>
+    <div id="pickupNextStepList" style="display:flex; flex-direction:column; gap:10px; margin-bottom:20px;"></div>
+    <button type="button" id="btnPickupNextStepClose" style="width:100%; padding:14px; border-radius:14px; border:2px solid rgba(0,0,0,.1); background:#fff; font-weight:700; font-size:15px; cursor:pointer;">Fertig</button>
   </div>
 </div>
 
@@ -6048,15 +6116,29 @@
     'Vegan':'Vegan',
     'Vegetarisch':'Vegetarisch',
     'Fisch':'Fisch',
-    'Mit Fleisch':'Fleisch'
+    'Mit Fleisch':'Fleisch',
+    'Fleisch':'Fleisch',
+    'Geflügel':'Geflügel',
+    'Pasta':'Pasta',
+    'Suppe':'Suppe',
+    'Salat':'Salat',
+    'Burger':'Burger',
+    'Beilage':'Beilage'
   };
-  /** Kategorie → Emoji (Pills wie im Inseratsflow) */
+  /** Kategorie → Emoji (Bestellhistorie & Pills) */
   const CAT_EMOJI = {
-    'Vegan':'🥬',
+    'Vegan':'🌱',
     'Vegetarisch':'🌿',
     'Fisch':'🐟',
     'Mit Fleisch':'🥩',
-    'Fleisch':'🥩'
+    'Fleisch':'🥩',
+    'Geflügel':'🍗',
+    'Pasta':'🍝',
+    'Suppe':'🥣',
+    'Salat':'🥗',
+    'Burger':'🍔',
+    'Beilage':'🍟',
+    '🥩':'🥩','🍗':'🍗','🐟':'🐟','🌿':'🌿','🌱':'🌱','🍝':'🍝','🥣':'🥣','🥗':'🥗','🍔':'🍔','🍟':'🍟'
   };
   const DISH_SUGGESTIONS = [
     {name:'Kürbissuppe', category:'Vegan'},
@@ -6820,7 +6902,7 @@
     providerOnboardingPreview:'v-provider-onboarding-preview',
     providerHome:'v-provider-home', providerPickups:'v-provider-pickups', providerCookbook:'v-provider-cookbook',
     providerProfile:'v-provider-profile', providerBilling:'v-provider-billing', providerWeek:'v-provider-week',
-    legalImpressum:'v-legal-impressum', legalImpressumProvider:'v-legal-impressum-provider', legalAgbKurz:'v-legal-agb-kurz', legalAgbProvider:'v-legal-agb-provider', legalDatenschutz:'v-legal-datenschutz', legalAgbOnboarding:'v-legal-agb-onboarding', legalFaq:'v-legal-faq', legalFaqProvider:'v-legal-faq-provider', version:'v-version'
+    legalImpressum:'v-legal-impressum', legalImpressumProvider:'v-legal-impressum-provider', legalAgbKurz:'v-legal-agb-kurz', legalAgbProvider:'v-legal-agb-provider', legalDatenschutz:'v-legal-datenschutz', legalAgbOnboarding:'v-legal-agb-onboarding', legalFaq:'v-legal-faq', legalSupport:'v-support', legalFaqProvider:'v-legal-faq-provider', version:'v-version'
   };
 
   function setCustomerNavActive(go){
@@ -13520,10 +13602,10 @@
       const prefs = customer.dietaryPreferences;
       
       const switches = [
-        { key: 'vegan', label: 'Vegan', icon: 'leaf', desc: 'Nur vegane Gerichte anzeigen' },
-        { key: 'vegetarian', label: 'Vegetarisch', icon: 'sprout', desc: 'Nur vegetarische Gerichte anzeigen' },
-        { key: 'glutenFree', label: 'Glutenfrei', icon: 'wheat-off', desc: 'Nur glutenfreie Gerichte anzeigen' },
-        { key: 'lactoseFree', label: 'Laktosefrei', icon: 'milk-off', desc: 'Nur laktosefreie Gerichte anzeigen' }
+        { key: 'vegan', label: 'Vegan', icon: 'leaf' },
+        { key: 'vegetarian', label: 'Vegetarisch', icon: 'sprout' },
+        { key: 'glutenFree', label: 'Glutenfrei', icon: 'wheat-off' },
+        { key: 'lactoseFree', label: 'Laktosefrei', icon: 'milk-off' }
       ];
       
       dietSection.innerHTML = switches.map(s => {
@@ -13531,11 +13613,10 @@
         return `
           <div style="display:flex; align-items:center; justify-content:space-between; padding:16px; background:${isActive ? 'rgba(255,215,0,0.1)' : '#f8f9fa'}; border-radius:16px; border:2px solid ${isActive ? '#FFD700' : 'transparent'}; transition:all 0.2s ease;">
             <div style="flex:1; min-width:0;">
-              <div style="display:flex; align-items:center; gap:10px; margin-bottom:4px;">
+              <div style="display:flex; align-items:center; gap:10px;">
                 <i data-lucide="${s.icon}" style="width:20px;height:20px; color:${isActive ? '#FFD700' : '#666'};"></i>
                 <span style="font-weight:700; font-size:15px; color:#2D3436;">${esc(s.label)}</span>
               </div>
-              <div style="font-size:12px; color:#666; line-height:1.4;">${esc(s.desc)}</div>
             </div>
             <label style="position:relative; width:52px; height:32px; cursor:pointer; flex-shrink:0;">
               <input type="checkbox" ${isActive ? 'checked' : ''} style="opacity:0; position:absolute; width:0; height:0;" onchange="toggleDietaryPreference('${s.key}', this.checked);">
@@ -13564,11 +13645,10 @@
       reuseSection.innerHTML = `
         <div style="display:flex; align-items:center; justify-content:space-between; padding:16px; background:${isReuseEnabled ? 'rgba(31,157,85,0.1)' : '#f8f9fa'}; border-radius:16px; border:2px solid ${isReuseEnabled ? '#1f9d55' : 'transparent'}; transition:all 0.2s ease;">
           <div style="flex:1; min-width:0;">
-            <div style="display:flex; align-items:center; gap:10px; margin-bottom:4px;">
-              <img src="assets/icon-mehrweg.png" alt="Mehrweg" class="concept-icon" style="width:20px;height:20px; opacity:${isReuseEnabled ? '1' : '0.5'};">
-              <span style="font-weight:700; font-size:15px; color:#2D3436;">Mehrweg-Nutzer</span>
+            <div style="display:flex; align-items:center; gap:10px;">
+              <span style="font-size:18px;">🔄</span>
+              <span style="font-weight:700; font-size:15px; color:#2D3436;">Mehrweg</span>
             </div>
-            <div style="font-size:12px; color:#666; line-height:1.4;">Ich bringe mein eigenes Gefäß mit</div>
           </div>
           <label style="position:relative; width:52px; height:32px; cursor:pointer; flex-shrink:0;">
             <input type="checkbox" ${isReuseEnabled ? 'checked' : ''} style="opacity:0; position:absolute; width:0; height:0;" onchange="toggleReuseOption(this.checked);">
@@ -14895,6 +14975,22 @@
   if(btnProfileAGB) btnProfileAGB.onclick=(e)=>{ e.preventDefault(); showLegalPage('agb-kurz'); };
   const btnProfileDatenschutz = document.getElementById('btnProfileDatenschutz');
   if(btnProfileDatenschutz) btnProfileDatenschutz.onclick=(e)=>{ e.preventDefault(); showLegalPage('datenschutz'); };
+
+  // Support-Formular (Kunden): Nachricht senden – Bestätigung ohne E-Mail im UI
+  const supportForm = document.getElementById('supportForm');
+  if(supportForm){
+    supportForm.addEventListener('submit', function(e){
+      e.preventDefault();
+      const subjectEl = document.getElementById('supportSubject');
+      const messageEl = document.getElementById('supportMessage');
+      const pickupRefEl = document.getElementById('supportPickupRef');
+      if(!messageEl || !messageEl.value.trim()){ showToast('Bitte Nachricht eingeben.', 2000); return; }
+      showToast('Vielen Dank. Deine Nachricht wurde übermittelt. Wir melden uns in Kürze.', 4000);
+      if(subjectEl) subjectEl.value = '';
+      if(messageEl) messageEl.value = '';
+      if(pickupRefEl) pickupRefEl.value = '';
+    });
+  }
   
   // Profil anlegen Sheet: Submit & Abbrechen
   const btnProfileCreateSubmit = document.getElementById('btnProfileCreateSubmit');
@@ -15758,17 +15854,19 @@
     
     if(!todayOrders.length) return [];
     
-    // Map orders to pickup items (simple list, no grouping)
+    // Map orders to pickup items (one Abholnummer = one order; Icons aus Verzehr/Verpackung)
     return todayOrders.map(order => {
-      // Check status (single source of truth: Order record)
       const isPickedUp = order.status === 'PICKED_UP' || order.status === 'COMPLETED' || order.pickupStatus === 'PICKED_UP';
-      
+      const hasEatIn = order.verzehrmodus === 'vor_ort';
+      const hasReuse = order.verpackung === 'mehrweg' || (order.verpackung && String(order.verpackung).toLowerCase().includes('mehrweg'));
       return {
         orderId: order.id,
         code: order.pickupCode || order.code || '',
-        dishName: order.dishName || 'Gericht',
-        pickupTime: order.pickupWindow || order.etaTime || '',
+        dishName: order.dishName || order.summary || 'Gericht',
+        pickupTime: order.pickupWindow || order.etaTime || order.abholzeit || '',
         status: isPickedUp ? 'PICKED_UP' : 'OPEN',
+        hasEatIn: !!hasEatIn,
+        hasReuse: !!hasReuse,
         order: order
       };
     });
@@ -15802,7 +15900,7 @@
     // Filter Toggle
     filterEl.innerHTML='';
     [
-      {id:'offen', label:'Bezahlt'},
+      {id:'offen', label:'Offen'},
       {id:'abgeholt', label:'Abgeholt'}
     ].forEach(f=>{
       const b=document.createElement('button');
@@ -15883,45 +15981,39 @@
       
       list.forEach(p=>{
         const isDone = p.status === 'PICKED_UP';
-        const isPaid = p.status === 'PAID';
+        const isPaid = !isDone;
+        const codeDisplay = (p.code ? '#' + String(p.code).replace(/\s/g,'') : '#–');
+        const icons = [];
+        if(p.hasEatIn) icons.push('<span style="font-size:18px;" title="Vor Ort">🍴</span>');
+        if(p.hasReuse) icons.push('<span style="font-size:18px;" title="Mehrweg">🔄</span>');
+        icons.push('<span style="font-size:18px;" title="Abholnummer">🧾</span>');
+        const iconsHtml = icons.join(' ');
         
         const card = document.createElement('div');
-        card.className = `pickup-card ${isDone ? 'status-done' : (isPaid ? 'status-paid' : 'status-open')}`;
-        
-        // Code Formatierung (12A -> 12 A)
-        const codeDisplay = p.code.replace(/([0-9]+)([a-zA-Z]+)/, '$1 $2');
-        
+        card.className = `pickup-card ${isDone ? 'status-done' : 'status-paid'}`;
         card.innerHTML = `
           <div class="pickup-card-header">
-            <div class="pickup-card-code">${codeDisplay}</div>
-            <div class="pickup-card-time">${p.pickupTime || 'Sofort'}</div>
+            <div class="pickup-card-code">${esc(codeDisplay)}</div>
+            <div class="pickup-card-time">${esc(p.pickupTime || 'Sofort')}</div>
           </div>
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px; font-size:16px;">${iconsHtml}</div>
           <div class="pickup-card-body">
-            <div class="pickup-card-dish">${p.dishName || 'Gericht'}</div>
-            <div class="pickup-card-customer">${p.customerName || 'Gast'}</div>
+            <div class="pickup-card-dish">${esc((p.dishName || 'Gericht').split(',')[0])}</div>
+            <div class="pickup-card-customer">${p.order && p.order.customerName ? esc(p.order.customerName) : 'Gast'}</div>
           </div>
-          ${!isDone && isPaid ? '<div class="pickup-card-badge">Bezahlt</div>' : ''}
+          ${!isDone ? '<div class="pickup-card-badge">Bezahlt</div>' : ''}
           <div class="check-overlay"><i data-lucide="check" class="check-icon" style="width:48px;height:48px;color:#fff;stroke-width:4;"></i></div>
         `;
-        
-        // Interaction
         card.onclick = () => {
           if(isDone){
-             // Re-Open (Undo)
-             if(confirm('Bestellung wieder als "Offen" markieren?')){
-               setOrderPickedUp(p.id, false);
-             }
+            if(confirm('Abholnummer wieder als „Offen“ markieren?')){
+              updateOrder(p.orderId, { status: 'PAID', pickupStatus: undefined, completedAt: undefined });
+              renderProviderPickups();
+            }
           } else {
-             // Mark as Done with Animation
-             card.classList.add('just-done');
-             if(typeof lucide!=='undefined') lucide.createIcons();
-             // Wait for animation then execute
-             setTimeout(()=>{
-               setOrderPickedUp(p.id, true);
-             }, 350);
+            openPickupDetailSheet(p.orderId);
           }
         };
-        
         gridEl.appendChild(card);
       });
         
@@ -15932,49 +16024,22 @@
     listEl.style.display = gridEl ? 'none' : (filteredPickups.length > 0 ? 'block' : 'none');
     list.forEach(p=>{
       const isPickedUp = p.status === 'PICKED_UP';
+      const codeDisplay = p.code ? '#' + String(p.code).replace(/\s/g,'') : '#–';
+      const icons = (p.hasEatIn ? '🍴 ' : '') + (p.hasReuse ? '🔄 ' : '') + '🧾';
       const row = document.createElement('div');
       row.className = 'pickup-row' + (isPickedUp ? ' picked-up' : '');
       row.style.cssText = 'display:flex; align-items:center; gap:16px; padding:16px; border-bottom:1px solid var(--border); ' + (isPickedUp ? 'opacity:0.5; background:#f8f8f8;' : 'cursor:pointer;');
       row.innerHTML = `
-        <div style="font-size:48px; font-weight:900; font-family:monospace; color:var(--brand); min-width:90px; text-align:center; line-height:1; letter-spacing:2px;">
-          ${esc(p.code)}
-        </div>
+        <div style="font-size:32px; font-weight:900; font-family:monospace; color:var(--brand); min-width:70px; text-align:center; line-height:1;">${esc(codeDisplay)}</div>
+        <div style="font-size:16px; margin-right:8px;">${icons}</div>
         <div style="flex:1; min-width:0;">
-          <div style="font-weight:600; font-size:16px; line-height:1.3; margin-bottom:6px;">${esc(p.dishName)}</div>
-          <div style="font-size:14px; color:var(--muted); margin-bottom:6px;">${esc(p.pickupTime || '')}</div>
-          <div style="font-size:13px; color:${isPickedUp ? 'var(--muted)' : '#2e7d32'}; font-weight:500; display:flex; align-items:center; gap:4px;">
-            ${isPickedUp ? '✅ Abgeholt' : '🟢 Bezahlt'}
-          </div>
+          <div style="font-weight:600; font-size:16px; line-height:1.3; margin-bottom:4px;">${esc((p.dishName||'').split(',')[0])}</div>
+          <div style="font-size:14px; color:var(--muted); margin-bottom:4px;">${esc(p.pickupTime || '')}</div>
+          <div style="font-size:13px; color:${isPickedUp ? 'var(--muted)' : '#2e7d32'}; font-weight:500;">${isPickedUp ? '✅ Abgeholt' : '🟢 Bezahlt'}</div>
         </div>
       `;
       if(!isPickedUp){
-        row.onclick = () => {
-          // Tap-to-Complete: Ein-Hand-Check-in (USP)
-          // Haptisches Feedback
-          if(navigator.vibrate){
-            navigator.vibrate([50, 30, 50]);
-          }
-          
-          // Visuelles Feedback: Grüner Flash
-          const originalBg = row.style.background;
-          row.style.background = '#4caf50';
-          row.style.transition = 'all 0.3s ease-out';
-          setTimeout(() => {
-            row.style.opacity = '0';
-            row.style.transform = 'translateX(-20px)';
-          }, 200);
-          
-          const order = getOrderById(p.orderId);
-          if(order){
-            updateOrder(p.orderId, {
-              status: 'PICKED_UP',
-              pickupStatus: 'PICKED_UP',
-              completedAt: Date.now()
-            });
-            showToast(`✓ ${p.code}`, 2000);
-            setTimeout(() => renderProviderPickups(), 400);
-          }
-        };
+        row.onclick = () => openPickupDetailSheet(p.orderId);
       }
       listEl.appendChild(row);
     });
@@ -15997,16 +16062,34 @@
     if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
   }
   
-  // Pickup Confirmation Sheet
+  // Pickup Detail Sheet (Sammel-Ansicht: Abholnummer, Gerichte, Vor Ort/Mehrweg, Alles übergeben)
   let currentPickupConfirmOrderId = null;
   
   function openPickupConfirmSheet(orderId, code, dishName){
+    openPickupDetailSheet(orderId);
+  }
+  
+  function openPickupDetailSheet(orderId){
+    const order = getOrderById(orderId);
+    if(!order) return;
     currentPickupConfirmOrderId = orderId;
+    const code = order.pickupCode || order.code || '–';
+    const codeDisplay = code ? '#' + String(code).replace(/\s/g,'') : '#–';
     const codeEl = document.getElementById('pickupConfirmCode');
-    const dishEl = document.getElementById('pickupConfirmDish');
-    if(codeEl) codeEl.textContent = code;
-    if(dishEl) dishEl.textContent = dishName;
-    
+    if(codeEl) codeEl.textContent = codeDisplay;
+    const hasEatIn = order.verzehrmodus === 'vor_ort';
+    const hasReuse = order.verpackung === 'mehrweg' || (order.verpackung && String(order.verpackung).toLowerCase().includes('mehrweg'));
+    const iconsRow = document.getElementById('pickupConfirmIcons');
+    if(iconsRow) iconsRow.innerHTML = (hasEatIn ? '<span title="Vor Ort">🍴</span>' : '') + (hasReuse ? '<span title="Mehrweg">🔄</span>' : '') + '<span title="Abholnummer">🧾</span>';
+    const dishesEl = document.getElementById('pickupConfirmDishes');
+    if(dishesEl){
+      const dishLines = (order.dishName || order.summary || 'Gericht').split(',').map(s => s.trim()).filter(Boolean);
+      if(!dishLines.length) dishLines.push('Gericht');
+      dishesEl.innerHTML = dishLines.map(line => {
+        const icon = hasEatIn ? '🍴 Vor Ort' : (hasReuse ? '🔄 Mehrweg' : '🧾');
+        return `<div style="display:flex; align-items:center; justify-content:space-between; padding:12px 14px; background:#f8f9fa; border-radius:12px; font-size:15px;"><span>${esc(line)}</span><span style="font-size:14px; color:#64748b;">${esc(icon)}</span></div>`;
+      }).join('');
+    }
     document.getElementById('pickupConfirmBd').classList.add('active');
     document.getElementById('pickupConfirmSheet').classList.add('active');
   }
@@ -16017,36 +16100,60 @@
     currentPickupConfirmOrderId = null;
   }
   
-  // Pickup Confirmation Handlers
+  function showPickupSuccessThenNextStep(orderId){
+    const order = getOrderById(orderId);
+    if(!order) return;
+    const totalEur = (order.total || 0) / 100;
+    const netto = Math.max(0, totalEur - ABHOLNUMMER_FEE);
+    const nettoStr = netto.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+    const overlay = document.getElementById('pickupSuccessOverlay');
+    const nettoEl = document.getElementById('pickupSuccessNetto');
+    if(overlay){ overlay.style.display = 'flex'; }
+    if(nettoEl){ nettoEl.textContent = 'Netto-Verdienst: ' + nettoStr; }
+    setTimeout(() => {
+      if(overlay) overlay.style.display = 'none';
+      const allPickups = buildPickupList();
+      const openPickups = allPickups.filter(p => p.status === 'OPEN');
+      const nextEl = document.getElementById('pickupNextStepOverlay');
+      const titleEl = document.getElementById('pickupNextStepTitle');
+      const listEl = document.getElementById('pickupNextStepList');
+      if(nextEl) nextEl.style.display = 'flex';
+      if(titleEl) titleEl.textContent = openPickups.length ? '🎉 Noch ' + openPickups.length + ' Essen offen!' : '🎉 Alles erledigt!';
+      if(listEl){
+        const next3 = openPickups.slice(0, 3);
+        listEl.innerHTML = next3.length ? next3.map(p => {
+          const codeDisplay = p.code ? '#' + String(p.code).replace(/\s/g,'') : '#–';
+          return '<button type="button" data-order-id="' + esc(p.orderId) + '" style="display:flex; align-items:center; justify-content:space-between; padding:14px 16px; background:#f1f5f9; border:none; border-radius:14px; font-size:16px; font-weight:700; cursor:pointer; text-align:left;">' + esc(codeDisplay) + ' <span style="color:#64748b; font-weight:500;">→</span></button>';
+        }).join('') : '<p style="margin:0; color:#64748b; font-size:15px;">Keine weiteren Abholnummern.</p>';
+        listEl.querySelectorAll('button[data-order-id]').forEach(btn => {
+          btn.onclick = () => {
+            const id = btn.getAttribute('data-order-id');
+            document.getElementById('pickupNextStepOverlay').style.display = 'none';
+            if(id) openPickupDetailSheet(id);
+          };
+        });
+      }
+      const btnClose = document.getElementById('btnPickupNextStepClose');
+      if(btnClose) btnClose.onclick = () => { document.getElementById('pickupNextStepOverlay').style.display = 'none'; renderProviderPickups(); };
+    }, 2200);
+  }
+  
   const btnPickupConfirmYes = document.getElementById('btnPickupConfirmYes');
   if(btnPickupConfirmYes){
     btnPickupConfirmYes.onclick = () => {
       if(!currentPickupConfirmOrderId) return;
-      
       const order = getOrderById(currentPickupConfirmOrderId);
       if(!order) return;
-      
-      // Mark as picked up (status = PICKED_UP)
-      // Single source of truth: Order record in ordersStore
-      updateOrder(currentPickupConfirmOrderId, {
-        status: 'PICKED_UP', // Use PICKED_UP as status
-        pickupStatus: 'PICKED_UP',
-        completedAt: Date.now()
-      });
-      
+      updateOrder(currentPickupConfirmOrderId, { status: 'PICKED_UP', pickupStatus: 'PICKED_UP', completedAt: Date.now() });
       closePickupConfirmSheet();
       renderProviderPickups();
-      
-      // Show toast
-      showToast(`Abholung ${order.pickupCode || order.code || ''} bestätigt`);
+      showPickupSuccessThenNextStep(currentPickupConfirmOrderId);
     };
   }
   
   const btnPickupConfirmNo = document.getElementById('btnPickupConfirmNo');
   if(btnPickupConfirmNo){
-    btnPickupConfirmNo.onclick = () => {
-      closePickupConfirmSheet();
-    };
+    btnPickupConfirmNo.onclick = () => { closePickupConfirmSheet(); };
   }
 
   function showPickupUndo(key){
@@ -16449,6 +16556,7 @@
       'datenschutz': isProvider ? 'v-legal-datenschutz-provider' : 'v-legal-datenschutz',
       'datenschutz-provider': 'v-legal-datenschutz-provider',
       'faq': 'v-legal-faq',
+      'support': 'v-support',
       'faq-provider': 'v-legal-faq-provider'
     };
     const viewId = pageMap[page];
@@ -18798,7 +18906,8 @@
         '#/impressum': 'impressum',
         '#/agb-kurz': 'agb-kurz',
         '#/datenschutz': 'datenschutz',
-        '#/faq': 'faq'
+        '#/faq': 'faq',
+        '#/support': 'support'
       };
       if(legalRoutes[hash]){
         showLegalPage(legalRoutes[hash]);
@@ -18814,7 +18923,8 @@
         '#/impressum': 'impressum',
         '#/agb-kurz': 'agb-kurz',
         '#/datenschutz': 'datenschutz',
-        '#/faq': 'faq'
+        '#/faq': 'faq',
+        '#/support': 'support'
       };
       if(legalRoutes[hash]){
         showLegalPage(legalRoutes[hash]);
