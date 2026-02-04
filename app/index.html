@@ -4570,37 +4570,72 @@
       </div>
     </section>
 
-    <!-- AGB für Anbieter -->
-    <section class="view" id="v-legal-agb-provider" style="background:#323232; min-height:100vh; padding:20px; padding-bottom:90px;">
-      <div class="panel" style="padding:20px; border-radius:20px; box-shadow:0 4px 20px rgba(0,0,0,.2); background:#404040; border:1px solid rgba(255,255,255,0.1);">
-        <h1 style="font-size:24px; font-weight:900; margin-bottom:20px; color:#fff;">AGB (Anbieter)</h1>
-        <div style="line-height:1.8; font-size:15px; color:rgba(255,255,255,0.9);">
-          <p><strong>Mittagio ist Plattform, nicht Verkäufer</strong></p>
-          <p>Mittagio stellt dir eine digitale Infrastruktur zur Verwaltung deiner Mittagsangebote und zur Abwicklung von Online-Bestellungen zur Verfügung.</p>
-          
-          <p style="margin-top:20px;"><strong>Kosten für Anbieter:</strong></p>
-          <ul style="padding-left:20px; margin:8px 0;">
-            <li>4,99 € zzgl. MwSt. pro Veröffentlichung</li>
-            <li>0,89 € zzgl. MwSt. pro Online-Bestellung inkl. aller Bank- & Zahlungsgebühren (pro Bestellung, egal wie viele Gerichte)</li>
-          </ul>
-          
-          <p style="margin-top:20px;"><strong>Service-Pauschale:</strong></p>
-          <p>Die Service-Pauschale von 0,89 € ist eine Gebühr für die Bereitstellung der digitalen Infrastruktur und Zahlungsabwicklung. Diese Gebühr fällt bei jeder Bestellung an und wird auch bei Stornierungen zur Deckung der System- und Bankkosten einbehalten, da die Transaktions- und Systemkosten bereits bei der Buchung entstehen.</p>
-          
-          <p style="margin-top:20px;"><strong>Abholnummer:</strong></p>
-          <p>Die Abholnummer dient als zentrales Beweismittel für die Warenausgabe und als Zahlungs- & Abholnachweis. Die Abwicklungsgebühr fällt auch bei Nicht-Abholung an.</p>
-          
-          <p style="margin-top:20px;"><strong>Verantwortung:</strong></p>
-          <p>Du bist verantwortlich für Inhalte, Speisen und gesetzliche Vorgaben. Mittagio übernimmt keine Haftung für deine Angebote.</p>
-          
-          <p style="margin-top:20px;"><strong>Support:</strong></p>
-          <p><a href="mailto:support@mittagio.de" style="color:#FFD700;">support@mittagio.de</a></p>
-        </div>
-        <div style="margin-top:32px; padding-top:20px; border-top:1px solid rgba(255,255,255,0.1); text-align:center; font-size:14px; color:rgba(255,255,255,0.7);">
-          Fragen, Hilfe oder Vorschläge? <a href="mailto:support@mittagio.de" style="color:#FFD700;">support@mittagio.de</a>
-        </div>
-        <button class="btn ghost" type="button" onclick="goBackFromLegalPage()" style="margin-top:20px; width:100%; background:#4a4a4a; border:1px solid rgba(255,255,255,0.12); color:rgba(255,255,255,0.85);">Zurück</button>
+    <!-- AGB für Anbieter – Interaktiv (Silicon Valley Tech, Accordion) -->
+    <section class="view" id="v-legal-agb-provider" style="background:#F2F2F7; min-height:100vh; padding:20px; padding-bottom:90px;">
+      <div style="margin-bottom:24px; display:flex; align-items:center; gap:12px;">
+        <button type="button" onclick="goBackFromLegalPage()" aria-label="Zurück" style="width:40px; height:40px; border-radius:50%; background:#fff; border:none; box-shadow:0 2px 8px rgba(0,0,0,0.08); cursor:pointer; display:flex; align-items:center; justify-content:center;"><i data-lucide="chevron-left" style="width:22px; height:22px; color:#1a1a1a;"></i></button>
+        <h1 style="margin:0; font-size:22px; font-weight:800; color:#1a1a1a; letter-spacing:-0.02em;">AGB (Anbieter)</h1>
       </div>
+      <p style="margin:0 0 20px; font-size:14px; color:#8e8e93;">Klick auf eine Zeile öffnet den rechtlichen Text.</p>
+      <div id="agbProviderAccordion" style="display:flex; flex-direction:column; gap:12px;">
+        <details class="agb-provider-item" style="background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
+          <summary style="padding:18px 20px; font-size:16px; font-weight:600; color:#1a1a1a; cursor:pointer; list-style:none; display:flex; align-items:center; gap:10px;"><span style="color:#8e8e93;">§ 1</span> Geltungsbereich &amp; Plattform-Modell</summary>
+          <div style="padding:0 20px 20px; font-size:15px; line-height:1.7; color:#3a3a3c;">
+            <p style="margin:0 0 12px;">Wir bieten eine Plattform zur Vermittlung von Mahlzeiten für Gastronomie und Handwerk an.</p>
+            <p style="margin:0;">Ziel ist die Maximierung deines Umsatzes durch effiziente Inserate. Eine Nutzung als reines Informationstool ohne Verkaufsabsicht ist nicht gestattet.</p>
+          </div>
+        </details>
+        <details class="agb-provider-item" style="background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
+          <summary style="padding:18px 20px; font-size:16px; font-weight:600; color:#1a1a1a; cursor:pointer; list-style:none; display:flex; align-items:center; gap:10px;"><span style="color:#8e8e93;">§ 2</span> Inserate &amp; Kosten (Das 4,99 € Modell)</summary>
+          <div style="padding:0 20px 20px; font-size:15px; line-height:1.7; color:#3a3a3c;">
+            <p style="margin:0 0 12px;"><strong>Fixpreis:</strong> Jedes Inserat wird mit einer Pauschale von 4,99 € berechnet.</p>
+            <p style="margin:0 0 12px;"><strong>Zusatzleistung:</strong> Die Abholnummer kann für 0,89 € pro Vorgang optional hinzugebucht werden. Dieser Preis deckt alle Transaktionsgebühren ab.</p>
+            <p style="margin:0;"><strong>Fälligkeit:</strong> Die Gebühr wird mit Veröffentlichung des Inserats fällig.</p>
+          </div>
+        </details>
+        <details class="agb-provider-item" style="background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
+          <summary style="padding:18px 20px; font-size:16px; font-weight:600; color:#1a1a1a; cursor:pointer; list-style:none; display:flex; align-items:center; gap:10px;"><span style="color:#8e8e93;">§ 3</span> Zeitfenster-Logik (Keine Bestandsführung)</summary>
+          <div style="padding:0 20px 20px; font-size:15px; line-height:1.7; color:#3a3a3c;">
+            <p style="margin:0 0 12px;"><strong>Mittags-Fokus:</strong> Inserate sind streng an das gewählte Mittags-Zeitfenster gebunden.</p>
+            <p style="margin:0;"><strong>Automatisierung:</strong> Das Angebot endet automatisch mit Ablauf der Endzeit. Eine manuelle Bestandsführung (Stückzahlen) ist systemseitig nicht vorgesehen.</p>
+          </div>
+        </details>
+        <details class="agb-provider-item" style="background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
+          <summary style="padding:18px 20px; font-size:16px; font-weight:600; color:#1a1a1a; cursor:pointer; list-style:none; display:flex; align-items:center; gap:10px;"><span style="color:#8e8e93;">§ 4</span> Die 3 Säulen &amp; Emoji-Regeln</summary>
+          <div style="padding:0 20px 20px; font-size:15px; line-height:1.7; color:#3a3a3c;">
+            <p style="margin:0 0 12px;">Der Anbieter ist für die korrekte Kennzeichnung verantwortlich:</p>
+            <ul style="margin:0 0 12px; padding-left:20px;">
+              <li><strong>🍴 Vor Ort essen:</strong> Optionaler Toggle.</li>
+              <li><strong>🔄 Mehrweg:</strong> Nachhaltigkeits-Toggle.</li>
+              <li><strong>🧾 Abholnummer:</strong> Zusatzservice für 0,89 €.</li>
+            </ul>
+            <p style="margin:0;"><strong>Wording:</strong> Die Verwendung der Begriffe „Ticket“ oder „Abholcode“ ist untersagt. Es gilt ausschließlich die Abholnummer.</p>
+          </div>
+        </details>
+        <details class="agb-provider-item" style="background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
+          <summary style="padding:18px 20px; font-size:16px; font-weight:600; color:#1a1a1a; cursor:pointer; list-style:none; display:flex; align-items:center; gap:10px;"><span style="color:#8e8e93;">§ 5</span> Account-Sicherheit &amp; Session-Limit</summary>
+          <div style="padding:0 20px 20px; font-size:15px; line-height:1.7; color:#3a3a3c;">
+            <p style="margin:0 0 12px;"><strong>Single-Session:</strong> Um die Integrität des Systems zu wahren, ist nur eine aktive Sitzung pro Account erlaubt. Bei Anmeldung auf einem neuen Gerät wird die bestehende Sitzung nach Bestätigung beendet.</p>
+            <p style="margin:0;"><strong>Löschung:</strong> Das Konto kann jederzeit im Profil gelöscht werden. Mit der Löschung enden alle aktiven Inserate sofort.</p>
+          </div>
+        </details>
+        <details class="agb-provider-item" style="background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
+          <summary style="padding:18px 20px; font-size:16px; font-weight:600; color:#1a1a1a; cursor:pointer; list-style:none; display:flex; align-items:center; gap:10px;"><span style="color:#8e8e93;">§ 6</span> Datenschutz &amp; Standort (Silicon Valley Standard)</summary>
+          <div style="padding:0 20px 20px; font-size:15px; line-height:1.7; color:#3a3a3c;">
+            <p style="margin:0 0 12px;"><strong>Geodaten:</strong> Wir nutzen deinen Standort nur, um Kunden im Umkreis dein Angebot anzuzeigen.</p>
+            <p style="margin:0;"><strong>Transparenz:</strong> Es erfolgt kein Tracking der Nutzer außerhalb der App-Nutzung. Daten werden nicht an Dritte verkauft.</p>
+          </div>
+        </details>
+      </div>
+      <!-- Globaler Footer (Big Tech Design) – Ende jeder rechtlichen Seite -->
+      <footer style="margin-top:32px; padding:24px; background:#fff; border-radius:16px; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
+        <h2 style="margin:0 0 12px; font-size:14px; font-weight:700; color:#8e8e93; text-transform:uppercase; letter-spacing:0.05em;">Impressum</h2>
+        <p style="margin:0; font-size:15px; line-height:1.6; color:#3a3a3c;">
+          <strong>Betreiber:</strong> Mike Quach<br>
+          <strong>Anschrift:</strong> Langäcker 2, 73635 Rudersberg<br>
+          <strong>Kontakt:</strong> <a href="mailto:info@mittagio.de" style="color:#007aff; text-decoration:none;">info@mittagio.de</a>
+        </p>
+      </footer>
     </section>
 
     <!-- FAQ mit Reitern (Kunden & Anbieter) -->
