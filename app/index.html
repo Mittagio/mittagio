@@ -16854,6 +16854,102 @@
     if(typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
   }
 
+  // --- Admin: Guard + View + Render + CSV ---
+  const ADMIN_FLAG_KEY = 'mittagio_admin';
+  function isAdmin(){
+    const urlParams = new URLSearchParams(window.location.search);
+    if(urlParams.get('admin') === '1') return true;
+    try { return localStorage.getItem(ADMIN_FLAG_KEY) === '1'; } catch(e){ return false; }
+  }
+  function showAdminView(){
+    if(!isAdmin()){
+      if(typeof showToast === 'function') showToast('Zugriff nur für Admins.');
+      if(typeof showDiscover === 'function') showDiscover();
+      else if(typeof showView === 'function') showView(views.discover || 'v-discover');
+      return;
+    }
+    showView(views.admin || 'v-admin');
+    renderAdmin();
+    if(typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+  }
+  function renderAdmin(){
+    const kpiUmsatz = document.getElementById('adminKpiUmsatz');
+    const kpiInserate = document.getElementById('adminKpiInserate');
+    const kpiAbholnummern = document.getElementById('adminKpiAbholnummern');
+    const feedList = document.getElementById('adminFeedList');
+    const tableBody = document.getElementById('adminTableBody');
+    const tableSum = document.getElementById('adminTableSum');
+    const btnCsv = document.getElementById('adminBtnCsvExport');
+
+    var txs = typeof loadTransactions === 'function' ? loadTransactions() : [];
+    var allOffers = typeof load === 'function' ? load(LS.offers, []) : [];
+    var activeOffers = allOffers.filter(function(o){ return o && o.active !== false; });
+    var todayStr = typeof isoDate === 'function' ? isoDate(new Date()) : new Date().toISOString().slice(0,10);
+    var todayTxs = txs.filter(function(t){ return t.timestamp && t.timestamp.slice(0,10) === todayStr; });
+    var tagesumsatz = todayTxs.reduce(function(s, t){ return s + (Number(t.total_amount) || 0); }, 0);
+    var ordersAll = typeof loadOrders === 'function' ? loadOrders() : [];
+    var abholnummernCount = ordersAll.filter(function(o){ return o.status === 'PAID' || o.status === 'PICKED_UP'; }).length;
+
+    if(kpiUmsatz) kpiUmsatz.textContent = (tagesumsatz.toFixed(2)).replace('.', ',') + ' €';
+    if(kpiInserate) kpiInserate.textContent = String(activeOffers.length);
+    if(kpiAbholnummern) kpiAbholnummern.textContent = String(abholnummernCount);
+
+    if(feedList){
+      feedList.innerHTML = activeOffers.slice(0, 20).map(function(o){
+        var name = (o.dishName || o.dish || o.name || 'Inserat').substring(0, 40);
+        var day = o.day || '–';
+        var id = o.id || '–';
+        return '<div style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px; background:#f8f7f2; border-radius:12px;">' +
+          '<div><div style="font-weight:700; color:#1a1a1a;">' + esc(name) + '</div><div style="font-size:12px; color:#64748b;">' + esc(day) + ' · ID ' + esc(id) + '</div></div>' +
+          '<span style="font-size:12px; font-weight:700; color:#16a34a;">Live</span></div>';
+      }).join('');
+      if(activeOffers.length === 0) feedList.innerHTML = '<div class="hint" style="color:#64748b; padding:16px;">Keine aktiven Inserate.</div>';
+    }
+
+    txs = txs.slice().sort(function(a,b){ return (new Date(b.timestamp)) - (new Date(a.timestamp)); });
+    var sumTotal = txs.reduce(function(s, t){ return s + (Number(t.total_amount) || 0); }, 0);
+    if(tableBody){
+      tableBody.innerHTML = txs.map(function(t){
+        var datum = t.timestamp ? new Date(t.timestamp).toLocaleDateString('de-DE', { day:'2-digit', month:'2-digit', year:'numeric' }) : '–';
+        var basis = (t.base_price != null) ? Number(t.base_price).toFixed(2).replace('.', ',') + ' €' : '–';
+        var addon = (t.addon_price != null && Number(t.addon_price) > 0) ? Number(t.addon_price).toFixed(2).replace('.', ',') + ' €' : '–';
+        var gesamt = (t.total_amount != null) ? Number(t.total_amount).toFixed(2).replace('.', ',') + ' €' : '–';
+        return '<tr style="border-bottom:1px solid #e5e7eb;">' +
+          '<td style="padding:12px 8px;">' + esc(datum) + '</td>' +
+          '<td style="padding:12px 8px;">' + esc(t.vendor_id || '–') + '</td>' +
+          '<td style="padding:12px 8px;">' + esc(t.inserat_id || '–') + '</td>' +
+          '<td style="text-align:right; padding:12px 8px;">' + basis + '</td>' +
+          '<td style="text-align:right; padding:12px 8px;">' + addon + '</td>' +
+          '<td style="text-align:right; padding:12px 8px; font-weight:700;">' + gesamt + '</td></tr>';
+      }).join('');
+      if(txs.length === 0) tableBody.innerHTML = '<tr><td colspan="6" style="padding:24px; color:#64748b; text-align:center;">Keine Transaktionen.</td></tr>';
+    }
+    if(tableSum){
+      tableSum.innerHTML = '<td style="padding:12px 8px;" colspan="3">Gesamt</td><td colspan="2"></td><td style="text-align:right; padding:12px 8px;">' + (sumTotal.toFixed(2)).replace('.', ',') + ' €</td>';
+    }
+
+    if(btnCsv){
+      btnCsv.onclick = function(){
+        var csvRows = ['Datum;Anbieter;Inserat-ID;Basis (€);Abholnummer (€);Gesamtbetrag (€)'];
+        txs.forEach(function(t){
+          var datum = t.timestamp ? new Date(t.timestamp).toLocaleDateString('de-DE') : '';
+          var basis = (t.base_price != null) ? String(Number(t.base_price).toFixed(2).replace('.', ',')) : '';
+          var addon = (t.addon_price != null) ? String(Number(t.addon_price).toFixed(2).replace('.', ',')) : '';
+          var gesamt = (t.total_amount != null) ? String(Number(t.total_amount).toFixed(2).replace('.', ',')) : '';
+          csvRows.push([datum, (t.vendor_id || ''), (t.inserat_id || ''), basis, addon, gesamt].join(';'));
+        });
+        var csv = '\uFEFF' + csvRows.join('\r\n');
+        var blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'Umsaetze_Export_' + todayStr + '.csv';
+        a.click();
+        URL.revokeObjectURL(a.href);
+        if(typeof showToast === 'function') showToast('CSV exportiert.');
+      };
+    }
+  }
+
   const btnProvFaq = document.getElementById('btnProvFaq');
   if(btnProvFaq){
     btnProvFaq.onclick=()=>{
@@ -19465,7 +19561,7 @@
       }
     }
     
-    // Legal Pages Routes: /impressum, /agb-kurz, /datenschutz, /faq; Version: /version
+    // Legal Pages Routes: /impressum, /agb-kurz, /datenschutz, /faq; Version: /version; Admin: /admin
     if(hash){
       const legalRoutes = {
         '#/impressum': 'impressum',
@@ -19478,10 +19574,12 @@
         showLegalPage(legalRoutes[hash]);
       } else if(hash === '#/version'){
         showView(views.version || 'v-version');
+      } else if(hash === '#/admin' && typeof showAdminView === 'function'){
+        showAdminView();
       }
     }
     
-    // Hash-Change Listener für Legal Pages & Version
+    // Hash-Change Listener für Legal Pages, Version & Admin
     window.addEventListener('hashchange', function(){
       const hash = window.location.hash;
       const legalRoutes = {
@@ -19495,6 +19593,8 @@
         showLegalPage(legalRoutes[hash]);
       } else if(hash === '#/version'){
         showView(views.version || 'v-version');
+      } else if(hash === '#/admin' && typeof showAdminView === 'function'){
+        showAdminView();
       }
     });
     
