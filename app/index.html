@@ -3508,10 +3508,12 @@
       <!-- Header: Einziger primärer Header – Standort | Logo | Ansicht-Toggle. Keine Filter-Leisten. -->
       <div class="discover-header-sticky discover-header-clean" style="background:rgba(232,224,214,0.92); backdrop-filter:saturate(160%) blur(8px); -webkit-backdrop-filter:saturate(160%) blur(8px); border-bottom:1px solid rgba(0,0,0,.06);">
         <div class="discover-header-row" style="position:relative; display:flex; align-items:center; justify-content:space-between; padding:10px 16px; gap:8px;">
-          <!-- Standort (links) -->
-          <div style="position:relative; display:flex; align-items:center; gap:6px; flex-shrink:0;">
-            <i data-lucide="map-pin" style="width:16px;height:16px; color:#666;"></i>
-            <button class="discover-location-pill-clickable" type="button" id="btnDiscoverLocationToggle" style="display:flex; align-items:center; gap:4px; padding:6px 12px; border-radius:16px; background:rgba(0,0,0,.04); border:none; font-size:13px; font-weight:600; color:#333; cursor:pointer; transition:all 0.2s ease;">
+          <!-- Standort (links): Nadel-Logik – Klick auf 📍 = GPS, Klick auf Text = manuelle Eingabe -->
+          <div style="position:relative; display:flex; align-items:center; gap:4px; flex-shrink:0;">
+            <button type="button" id="btnDiscoverLocationGPS" aria-label="Standort per GPS" style="display:flex; align-items:center; justify-content:center; width:36px; height:36px; border-radius:50%; border:none; background:rgba(0,0,0,.04); color:#666; cursor:pointer; transition:all 0.2s ease; flex-shrink:0;">
+              <i data-lucide="map-pin" style="width:18px;height:18px;"></i>
+            </button>
+            <button type="button" id="btnDiscoverLocationText" class="discover-location-pill-clickable" style="display:flex; align-items:center; gap:4px; padding:6px 12px; border-radius:16px; background:rgba(0,0,0,.04); border:none; font-size:13px; font-weight:600; color:#333; cursor:pointer; transition:all 0.2s ease; min-width:0;">
               <span id="discoverCurrentLocation" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">Standort…</span>
             </button>
             <!-- Standort-Dropdown: fixed, damit es immer sichtbar unter dem Button liegt (nicht von sticky-Bars verdeckt) -->
@@ -6256,9 +6258,12 @@
   let cookbookQuery = '';
   let cookbookTab = 'dishes';
   let weekPlanDay = isoDate(new Date());
-  let locationQuery = ''; // Wird durch Auto-GPS oder manuelle Eingabe gesetzt
+  let locationQuery = ''; // Wird durch Auto-GPS oder manuelle Eingabe gesetzt; Fallback: Schorndorf (73614)
   let userLat = null;
   let userLng = null;
+  const SCHORNDORF_LAT = 48.8014;
+  const SCHORNDORF_LNG = 9.5282;
+  const DEFAULT_LOCATION_FALLBACK = 'Schorndorf';
   let pickupDone = new Set(load(LS.pickupDone, []));
   let activeOrderId = null;
   let ordersFilter = 'offen';
@@ -7474,6 +7479,7 @@
   
   // Location-Autofill: Deutsche Städte & PLZ (Demo-Daten)
   const locationSuggestions = [
+    'Schorndorf', '73614', '73614 Schorndorf',
     'Jena', 'Erfurt', 'Weimar', 'Gera', 'Leipzig', 'Dresden', 'Berlin', 'München', 'Hamburg', 'Köln',
     'Frankfurt', 'Stuttgart', 'Düsseldorf', 'Dortmund', 'Essen', 'Bremen', 'Hannover', 'Nürnberg',
     '07743', '07745', '07747', '07749', '99084', '99085', '99086', '99087', '99088', '99089', '99090',
@@ -7497,34 +7503,34 @@
     if(typeof renderDiscoverDays === 'function') renderDiscoverDays();
     
     // Location-Autofill: Toggle & Input-Handler
-    const btnDiscoverLocationToggle = document.getElementById('btnDiscoverLocationToggle');
+    const btnDiscoverLocationGPS = document.getElementById('btnDiscoverLocationGPS');
+    const btnDiscoverLocationText = document.getElementById('btnDiscoverLocationText');
     const discoverLocationExpanded = document.getElementById('discoverLocationExpanded');
     const discoverLocationInput = document.getElementById('discoverLocationInput');
     const discoverLocationSuggestions = document.getElementById('discoverLocationSuggestions');
     const discoverCurrentLocation = document.getElementById('discoverCurrentLocation');
     
-    if(btnDiscoverLocationToggle && discoverLocationExpanded && discoverLocationInput){
-      // Toggle Location-Input (DOM-Zustand lesen – Sync mit openDiscoverLocationSearch)
-      btnDiscoverLocationToggle.onclick = (e)=>{
+    if(!locationQuery && !userLat){ locationQuery = DEFAULT_LOCATION_FALLBACK; userLat = SCHORNDORF_LAT; userLng = SCHORNDORF_LNG; if(discoverCurrentLocation) discoverCurrentLocation.textContent = DEFAULT_LOCATION_FALLBACK; }
+    
+    if(btnDiscoverLocationText && discoverLocationExpanded && discoverLocationInput){
+      // Klick auf Text = manuelle Eingabe mit Autovervollständigung
+      btnDiscoverLocationText.onclick = (e)=>{
         e.preventDefault();
         e.stopPropagation();
         triggerHapticFeedback([10]);
-        
         const isExpanded = discoverLocationExpanded.style.display === 'block';
         if(!isExpanded){
-          const btn = btnDiscoverLocationToggle;
-          const rect = btn.getBoundingClientRect();
+          const rect = btnDiscoverLocationText.getBoundingClientRect();
           discoverLocationExpanded.style.top = (rect.bottom + 6) + 'px';
           discoverLocationExpanded.style.left = Math.max(16, rect.left) + 'px';
           discoverLocationExpanded.style.right = 'auto';
           discoverLocationExpanded.style.display = 'block';
-          setTimeout(() => {
-            discoverLocationInput.focus();
-          }, 100);
+          discoverLocationInput.value = (locationQuery && locationQuery !== 'Aktueller Standort') ? locationQuery : '';
+          setTimeout(() => discoverLocationInput.focus(), 100);
         } else {
           discoverLocationExpanded.style.display = 'none';
           discoverLocationInput.value = '';
-          discoverLocationSuggestions.innerHTML = '';
+          if(discoverLocationSuggestions) discoverLocationSuggestions.innerHTML = '';
         }
       };
       
@@ -7607,23 +7613,19 @@
             renderDiscover();
           },
           (err)=>{
-            if(discoverCurrentLocation) discoverCurrentLocation.textContent = 'Standort…';
-            showToast('Standort blockiert – Ort eingeben', 2500);
+            locationQuery = DEFAULT_LOCATION_FALLBACK;
+            userLat = SCHORNDORF_LAT;
+            userLng = SCHORNDORF_LNG;
+            if(discoverCurrentLocation) discoverCurrentLocation.textContent = DEFAULT_LOCATION_FALLBACK;
+            showToast('Standort: Schorndorf (Fallback)', 2000);
             discoverLocationExpanded.style.display = 'block';
-            if(discoverLocationInput){ discoverLocationInput.placeholder = 'Ort oder PLZ als Fallback'; discoverLocationInput.focus(); }
+            if(discoverLocationInput){ discoverLocationInput.placeholder = 'Ort oder PLZ eingeben'; discoverLocationInput.focus(); }
+            renderDiscover();
           },
           { enableHighAccuracy: true, timeout: 12000, maximumAge: 300000 }
         );
       }
-      btnDiscoverLocationToggle.onclick = (e)=>{
-        e.preventDefault();
-        e.stopPropagation();
-        triggerHapticFeedback([10]);
-        const isExpanded = discoverLocationExpanded.style.display === 'block';
-        if(isExpanded){ discoverLocationExpanded.style.display = 'none'; return; }
-        requestUserLocation();
-      };
-      // Auto-GPS beim ersten Laden (HTTPS-kompatibel für GitHub Pages)
+      if(btnDiscoverLocationGPS){ btnDiscoverLocationGPS.onclick = (e)=>{ e.preventDefault(); e.stopPropagation(); triggerHapticFeedback([10]); requestUserLocation(); }; }
       setTimeout(function(){ requestUserLocation(); }, 800);
     }
     
@@ -7636,9 +7638,13 @@
       swipeLocationCity.textContent = locationQuery || 'Standort…';
     }
     
-    // Globale Funktion für Location-Auswahl
+    // Globale Funktion für Location-Auswahl (Schorndorf setzt Koordinaten für Filter)
     window.selectLocation = function(loc){
       locationQuery = loc;
+      if(/schorndorf|73614/i.test(String(loc))){
+        userLat = SCHORNDORF_LAT;
+        userLng = SCHORNDORF_LNG;
+      }
       if(discoverCurrentLocation) discoverCurrentLocation.textContent = loc;
       // Swipe-Location synchronisieren
       const swipeLocationCity = document.getElementById('swipeLocationCity');
