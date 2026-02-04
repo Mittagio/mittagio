@@ -4463,15 +4463,25 @@
 
       <!-- Sub-Seite: FAQ & Support -->
       <div id="providerProfileSubFaq" style="display:none; padding:0 20px 24px;">
-        <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;"><button type="button" id="providerProfileBackFaq" aria-label="Zurück" style="width:40px; height:40px; border-radius:50%; background:#fff; border:none; box-shadow:0 2px 8px rgba(0,0,0,0.08); cursor:pointer;"><i data-lucide="chevron-left" style="width:22px; height:22px;"></i></button><h2 style="margin:0; font-size:20px; font-weight:700; color:#1a1a1a;">FAQ &amp; Support</h2></div>
-        <div id="providerFaqAccordion" style="background:#fff; border-radius:16px; overflow:hidden; margin-bottom:16px; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
-          <details style="padding:16px 20px; border-bottom:1px solid #f2f2f7;"><summary style="font-weight:600; color:#1a1a1a; cursor:pointer;">Kosten (4,99 € / 0,89 €)</summary><p style="margin:12px 0 0; font-size:14px; color:#8e8e93; line-height:1.5;">Fixpreis 4,99 € pro Inserat. Abholnummer optional + 0,89 € pro Vorgang inkl. Gebühren.</p></details>
-          <details style="padding:16px 20px; border-bottom:1px solid #f2f2f7;"><summary style="font-weight:600; color:#1a1a1a; cursor:pointer;">Zeitfenster-Logik</summary><p style="margin:12px 0 0; font-size:14px; color:#8e8e93; line-height:1.5;">Nach Ende der Mittagszeit ist das Inserat automatisch offline. Keine Bestandsführung.</p></details>
-          <details style="padding:16px 20px;"><summary style="font-weight:600; color:#1a1a1a; cursor:pointer;">Keine Bestandsführung</summary><p style="margin:12px 0 0; font-size:14px; color:#8e8e93; line-height:1.5;">Das System arbeitet zeitbasiert. Es wird nur das Zeitfenster verwaltet.</p></details>
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;"><button type="button" id="providerProfileBackFaq" aria-label="Zurück" style="width:40px; height:40px; border-radius:50%; background:#fff; border:none; box-shadow:0 2px 8px rgba(0,0,0,0.08); cursor:pointer;"><i data-lucide="chevron-left" style="width:22px; height:22px;"></i></button><h2 style="margin:0; font-size:20px; font-weight:700; color:#1a1a1a;">Hilfe &amp; Support</h2></div>
+        <p style="margin:0 0 16px; font-size:15px; color:#8e8e93;">Wobei können wir dir helfen?</p>
+        <div id="providerSupportTiles" style="display:grid; gap:12px; margin-bottom:24px;">
+          <button type="button" class="provider-support-tile" data-topic="inserieren" data-subject="Probleme beim Inserieren" style="display:flex; align-items:center; gap:12px; padding:16px 20px; background:#fff; border-radius:16px; border:1px solid #f2f2f7; box-shadow:0 2px 12px rgba(0,0,0,0.06); font-size:16px; font-weight:600; color:#1a1a1a; text-align:left; cursor:pointer; width:100%;"><span style="font-size:22px;">✍️</span> Probleme beim Inserieren</button>
+          <button type="button" class="provider-support-tile" data-topic="zahlung" data-subject="Zahlung &amp; Abrechnung" style="display:flex; align-items:center; gap:12px; padding:16px 20px; background:#fff; border-radius:16px; border:1px solid #f2f2f7; box-shadow:0 2px 12px rgba(0,0,0,0.06); font-size:16px; font-weight:600; color:#1a1a1a; text-align:left; cursor:pointer; width:100%;"><span style="font-size:22px;">💳</span> Zahlung &amp; Abrechnung</button>
+          <button type="button" class="provider-support-tile" data-topic="abholnummer" data-subject="Abholnummer &amp; Icons" style="display:flex; align-items:center; gap:12px; padding:16px 20px; background:#fff; border-radius:16px; border:1px solid #f2f2f7; box-shadow:0 2px 12px rgba(0,0,0,0.06); font-size:16px; font-weight:600; color:#1a1a1a; text-align:left; cursor:pointer; width:100%;"><span style="font-size:22px;">🧾</span> Abholnummer &amp; Icons</button>
+          <button type="button" class="provider-support-tile" data-topic="profil" data-subject="Mein Profil / Standort" style="display:flex; align-items:center; gap:12px; padding:16px 20px; background:#fff; border-radius:16px; border:1px solid #f2f2f7; box-shadow:0 2px 12px rgba(0,0,0,0.06); font-size:16px; font-weight:600; color:#1a1a1a; text-align:left; cursor:pointer; width:100%;"><span style="font-size:22px;">📍</span> Mein Profil / Standort</button>
+          <button type="button" class="provider-support-tile" data-topic="feedback" data-subject="Feedback: Vorschläge" style="display:flex; align-items:center; gap:12px; padding:16px 20px; background:#fff; border-radius:16px; border:1px solid #f2f2f7; box-shadow:0 2px 12px rgba(0,0,0,0.06); font-size:16px; font-weight:600; color:#1a1a1a; text-align:left; cursor:pointer; width:100%;"><span style="font-size:22px;">💡</span> Vorschläge &amp; Feedback</button>
         </div>
-        <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:24px;">
-          <a href="#" id="providerSupportChat" style="display:flex; align-items:center; justify-content:center; gap:10px; padding:18px; background:#fff; border-radius:16px; font-size:17px; font-weight:600; color:#1a1a1a; text-decoration:none; box-shadow:0 2px 12px rgba(0,0,0,0.06);">Chat mit uns</a>
-          <a href="mailto:support@mittagio.de" style="display:flex; align-items:center; justify-content:center; gap:10px; padding:18px; background:#fff; border-radius:16px; font-size:17px; font-weight:600; color:#1a1a1a; text-decoration:none; box-shadow:0 2px 12px rgba(0,0,0,0.06);">E-Mail schreiben</a>
+        <div id="providerSupportSolution" style="display:none; background:#fff; border-radius:16px; padding:20px; margin-bottom:16px; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
+          <p id="providerSupportSolutionText" style="margin:0 0 16px; font-size:15px; line-height:1.6; color:#3a3a3c;"></p>
+          <button type="button" id="providerSupportContactBtn" style="width:100%; padding:14px; font-size:15px; font-weight:600; color:#007aff; background:#f2f2f7; border:none; border-radius:10px; cursor:pointer;">Problem nicht gelöst? Nachricht an uns</button>
+        </div>
+        <div id="providerSupportFormWrap" style="display:none; background:#fff; border-radius:16px; padding:20px; margin-bottom:24px; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
+          <label style="display:block; font-size:13px; color:#8e8e93; margin-bottom:6px;">Betreff</label>
+          <input type="text" id="providerSupportSubject" readonly style="width:100%; padding:12px 14px; border:1px solid #e5e5ea; border-radius:10px; font-size:16px; margin-bottom:16px; background:#f9f9f9; box-sizing:border-box;">
+          <label style="display:block; font-size:13px; color:#8e8e93; margin-bottom:6px;">Nachricht</label>
+          <textarea id="providerSupportMessage" rows="4" placeholder="Beschreibe uns kurz dein Anliegen..." style="width:100%; padding:12px 14px; border:1px solid #e5e5ea; border-radius:10px; font-size:16px; resize:vertical; box-sizing:border-box;"></textarea>
+          <button type="button" id="providerSupportSendBtn" style="width:100%; margin-top:16px; padding:18px; font-size:17px; font-weight:800; color:#fff; background:#007aff; border:none; border-radius:12px; cursor:pointer;">E-Mail senden</button>
         </div>
         <div style="background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
           <a href="#" onclick="showLegalPage('impressum-provider'); return false;" style="display:flex; justify-content:space-between; align-items:center; padding:16px 20px; text-decoration:none; color:#1a1a1a; font-size:16px; border-bottom:1px solid #f2f2f7;">Impressum <i data-lucide="chevron-right" style="color:#c7c7cc; width:18px;"></i></a>
@@ -16336,8 +16346,46 @@
     });
     var btnBillingArchive = document.getElementById('btnBillingArchive');
     if(btnBillingArchive) btnBillingArchive.onclick = function(){ showView(views.providerBilling); renderBilling(); };
-    var providerSupportChat = document.getElementById('providerSupportChat');
-    if(providerSupportChat){ providerSupportChat.onclick = function(e){ e.preventDefault(); showToast('Chat wird geöffnet'); }; }
+    // Hilfe & Support: Themen-Kacheln → Smart-Lösung → Kontaktformular
+    var supportSolutions = {
+      inserieren: 'Prüfe, ob dein Gericht im Kochbuch angelegt ist. Öffne „Meine Küche“ und tippe auf „Jetzt für 4,99 € inserieren“. Wähle Gericht, Bild und Zeitfenster – das Inserat geht in unter 30 Sekunden live.',
+      zahlung: 'Die Inseratsgebühr (4,99 €) wird mit Veröffentlichung fällig. Die optionale Abholnummer (0,89 €) pro Vorgang wird bei jeder Bestellung abgerechnet. Alle Beträge siehst du unter „Zahlung & Abrechnung“.',
+      abholnummer: 'Die drei Säulen (Vor Ort, Mehrweg, Abholnummer) stellst du im Profil unter „Voreinstellungen: Service-Optionen“ ein. Die Abholnummer ist optional und kostet 0,89 € pro Vorgang.',
+      profil: 'Standort und Kontaktdaten bearbeitest du im Profil unter „Betrieb & Sicherheit“. Die Mittagszeiten und Wochentage findest du unter „Voreinstellungen: Mittagszeiten“.',
+      feedback: 'Wir lieben Feedback! Wir bauen diese App für das Handwerk. Hast du eine Idee für ein neues Icon oder eine Funktion? Schreib uns unten!'
+    };
+    document.querySelectorAll('.provider-support-tile').forEach(function(btn){
+      btn.onclick = function(){
+        var topic = btn.getAttribute('data-topic');
+        var subject = (btn.getAttribute('data-subject') || '').replace(/&amp;/g, '&');
+        var textEl = document.getElementById('providerSupportSolutionText');
+        var solutionWrap = document.getElementById('providerSupportSolution');
+        var formWrap = document.getElementById('providerSupportFormWrap');
+        if(textEl) textEl.textContent = supportSolutions[topic] || '';
+        if(solutionWrap){ solutionWrap.style.display = 'block'; solutionWrap.setAttribute('data-subject', subject); }
+        if(formWrap) formWrap.style.display = 'none';
+      };
+    });
+    var contactBtn = document.getElementById('providerSupportContactBtn');
+    if(contactBtn) contactBtn.onclick = function(){
+      var solutionWrap = document.getElementById('providerSupportSolution');
+      var formWrap = document.getElementById('providerSupportFormWrap');
+      var subjectInput = document.getElementById('providerSupportSubject');
+      if(subjectInput && solutionWrap) subjectInput.value = (solutionWrap.getAttribute('data-subject') || 'Support').replace(/&amp;/g, '&');
+      if(formWrap) formWrap.style.display = 'block';
+    };
+    var sendBtn = document.getElementById('providerSupportSendBtn');
+    var supportMessage = document.getElementById('providerSupportMessage');
+    if(sendBtn && supportMessage){
+      sendBtn.onclick = function(){
+        var subjectInput = document.getElementById('providerSupportSubject');
+        var subj = (subjectInput && subjectInput.value) ? subjectInput.value : 'Support';
+        var body = (supportMessage.value || '').trim();
+        var mailto = 'mailto:support@mittagio.de?subject=' + encodeURIComponent(subj) + (body ? '&body=' + encodeURIComponent(body) : '');
+        window.location.href = mailto;
+        showToast('E-Mail wird geöffnet.');
+      };
+    }
     var btnProviderDeleteAccount = document.getElementById('btnProviderDeleteAccount');
     if(btnProviderDeleteAccount){ btnProviderDeleteAccount.onclick = function(){ if(confirm('Account wirklich dauerhaft löschen? Diese Aktion kann nicht rückgängig gemacht werden.')) { showToast('Account-Löschung angefragt.'); } }; }
 
