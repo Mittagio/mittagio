@@ -3713,12 +3713,12 @@
     <section class="view customer-view" id="v-cart">
       <div style="padding:16px; padding-bottom:calc(90px + env(safe-area-inset-bottom, 0px));">
         <!-- Aktive Abholnummern (Wallet-Look) -->
-        <div class="panel" id="cartActiveTickets" style="margin-bottom:16px; padding:20px; display:none; border-radius:24px; box-shadow:0 4px 16px rgba(0,0,0,.08); background:rgba(255,255,255,0.98); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border:2px dashed rgba(255,184,0,0.3); position:relative;">
+        <div class="panel" id="cartActiveAbholnummern" style="margin-bottom:16px; padding:20px; display:none; border-radius:24px; box-shadow:0 4px 16px rgba(0,0,0,.08); background:rgba(255,255,255,0.98); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border:2px dashed rgba(255,184,0,0.3); position:relative;">
           <h3 style="font-weight:900; font-size:22px; margin:0 0 20px; line-height:1.3; color:#2D3436; display:flex; align-items:center; gap:10px;">
             <span style="font-size:28px;">🧾</span>
             <span>Aktive Abholnummern</span>
           </h3>
-          <div id="cartActiveTicketsList" style="display:flex; flex-direction:column; gap:16px;"></div>
+          <div id="cartActiveAbholnummernList" style="display:flex; flex-direction:column; gap:16px;"></div>
         </div>
         
         <!-- Warenkorb -->
@@ -3735,26 +3735,18 @@
           </div>
           
           <div id="cartBox" class="hint">Deine Mittagsbox ist leer.</div>
-          <button class="btn" id="btnCheckout" type="button" style="display:none; width:100%; min-height:56px; font-size:18px; font-weight:800; margin-top:20px; background:#FFD700; color:#334155; border:none; border-radius:16px; box-shadow:0 4px 16px rgba(255,215,0,0.25); display:flex; align-items:center; justify-content:center; gap:8px;">
+          <button class="btn" id="btnCheckout" type="button" style="display:none; width:100%; min-height:56px; font-size:18px; font-weight:800; margin-top:24px; padding:0 16px; background:#FFD700; color:#334155; border:none; border-radius:16px; box-shadow:0 4px 16px rgba(255,215,0,0.25); align-items:center; justify-content:center; gap:8px;">
             <span style="font-size:22px;">🧾</span>
             <span>Abholnummer jetzt sichern</span>
           </button>
           <div class="mini" id="cartNote" style="display:none; margin-top:12px; padding:12px; background:rgba(255,184,0,0.08); border-radius:12px; font-size:12px; color:#666; line-height:1.5; text-align:center;">
             Du erhältst deine Abholnummer direkt nach der Bestätigung.
           </div>
-          <!-- Trust-Icons (horizontal) -->
-          <div id="cartTrustIcons" style="display:none; margin-top:16px; display:flex; justify-content:center; gap:24px; padding:12px 0; border-top:1px solid rgba(0,0,0,.06);">
-            <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
-              <i data-lucide="shield-check" style="width:24px;height:24px; color:#1f9d55;"></i>
-              <span style="font-size:11px; color:#666; font-weight:600;">Sichere Zahlung</span>
-            </div>
-            <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
-              <i data-lucide="store" style="width:24px;height:24px; color:#666;"></i>
-              <span style="font-size:11px; color:#666; font-weight:600;">Ein Anbieter</span>
-            </div>
-            <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
-              <span style="font-size:24px;">🧾</span>
-              <span style="font-size:11px; color:#666; font-weight:600;">Abholnummer sofort</span>
+          <!-- Footer: Nur Abholnummer (Säule 2) – minimalistisch -->
+          <div id="cartTrustIcons" style="display:none; margin-top:16px; padding:12px 0; border-top:1px solid rgba(0,0,0,.06); justify-content:center; align-items:center;">
+            <div style="display:flex; align-items:center; justify-content:center; gap:10px;">
+              <span style="font-size:22px;">🧾</span>
+              <span style="font-size:13px; color:#64748b; font-weight:600;">Deine Abholnummer wird sofort generiert</span>
             </div>
           </div>
         </div>
@@ -3783,6 +3775,14 @@
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
               <button type="button" id="checkoutBtnVorOrt" class="verzehrmodus-checkout-btn" data-mode="vor_ort" style="padding:14px 16px; border-radius:14px; border:2px solid #e7e1d5; background:#fff; color:#666; font-weight:600; font-size:15px; cursor:pointer; transition:all 0.2s ease;">🍴 Vor Ort essen</button>
               <button type="button" id="checkoutBtnMitnehmen" class="verzehrmodus-checkout-btn" data-mode="mitnehmen" style="padding:14px 16px; border-radius:14px; border:2px solid #e7e1d5; background:#fff; color:#666; font-weight:600; font-size:15px; cursor:pointer; transition:all 0.2s ease;">🔄 Mitnehmen</button>
+            </div>
+          </div>
+          <!-- Verpackung (nur bei Mitnehmen) – Säule 3 🔄 -->
+          <div id="checkoutVerpackung" style="display:none; margin-bottom:24px;">
+            <label style="display:block; font-weight:700; font-size:15px; margin-bottom:12px; color:#2D3436;">Verpackung</label>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+              <button type="button" id="checkoutBtnEigenerBehaeltner" class="verpackung-btn" data-verpackung="eigener_behaeltner" style="padding:12px 14px; border-radius:12px; border:2px solid #e7e1d5; background:#fff; color:#666; font-weight:600; font-size:14px; cursor:pointer; transition:all 0.2s ease; text-align:center;">Eigener Behälter<br><span style="font-size:12px; font-weight:700; color:#27AE60;">0,00 €</span></button>
+              <button type="button" id="checkoutBtnMehrweg" class="verpackung-btn" data-verpackung="mehrweg" style="padding:12px 14px; border-radius:12px; border:2px solid #e7e1d5; background:#fff; color:#666; font-weight:600; font-size:14px; cursor:pointer; transition:all 0.2s ease; text-align:center;">Mehrweg-System 🔄<br><span style="font-size:12px; font-weight:700; color:#64748b;">Pfand/Aufpreis</span></button>
             </div>
           </div>
           <!-- Abholzeit-Auswahl (15-Minuten-Takt) -->
@@ -3842,6 +3842,28 @@
     <!-- CUSTOMER: Pickup Code (Dynamisch generiert) -->
     <div id="pickupCodeContainer"></div>
 
+    <!-- CUSTOMER: AbholBestätigung (Success-View nach Zahlung) -->
+    <section class="view customer-view" id="v-order-success" style="display:none; padding:24px 16px calc(90px + env(safe-area-inset-bottom, 0px)); min-height:100vh; background:var(--bg);">
+      <div class="panel" style="padding:28px; border-radius:24px; box-shadow:0 10px 30px rgba(0,0,0,.06); background:#fff; border:1px solid rgba(0,0,0,.02); max-width:420px; margin:0 auto;">
+        <div style="text-align:center; margin-bottom:24px;">
+          <span style="font-size:48px;">🧾</span>
+          <h2 style="font-family:'Nunito',sans-serif; font-weight:800; font-size:20px; margin:16px 0 8px; color:#1a1a1a;">Zahlung erfolgreich</h2>
+          <p class="hint" style="font-size:14px; color:#64748b; margin:0;">Zeige diese Nummer beim Abholen vor.</p>
+        </div>
+        <div style="text-align:center; padding:20px; background:rgba(255,215,0,0.12); border-radius:16px; border:2px solid rgba(255,215,0,0.3); margin-bottom:24px;">
+          <div style="font-size:13px; font-weight:700; color:#64748b; margin-bottom:6px;">Deine Nummer</div>
+          <div id="orderSuccessAbholnummer" style="font-family:monospace; font-size:32px; font-weight:900; letter-spacing:4px; color:#1a1a1a;">#1A</div>
+        </div>
+        <div id="orderSuccessSummary" style="display:flex; flex-direction:column; gap:12px; margin-bottom:24px;">
+          <div id="orderSuccessZeit" style="display:flex; align-items:center; gap:10px; padding:12px 16px; background:#f8f9fa; border-radius:12px; font-size:15px; font-weight:600; color:#334155;"><span style="font-size:20px;">🕒</span> Abholung um 12:15 Uhr</div>
+          <div id="orderSuccessModus" style="display:flex; align-items:center; gap:10px; padding:12px 16px; background:#f8f9fa; border-radius:12px; font-size:15px; font-weight:600; color:#334155;"><span style="font-size:20px;">🍴</span> Vor Ort essen</div>
+          <div id="orderSuccessVerpackung" style="display:none; align-items:center; gap:10px; padding:12px 16px; background:#f8f9fa; border-radius:12px; font-size:15px; font-weight:600; color:#334155;"><span style="font-size:20px;">🔄</span> Mehrweg-System</div>
+        </div>
+        <p class="hint" style="text-align:center; font-size:13px; color:#94a3b8; margin:0 0 24px;">Der Anbieter wurde informiert und bereitet deine Bestellung vor.</p>
+        <button type="button" id="btnOrderSuccessDone" style="width:100%; min-height:52px; padding:0 20px; border-radius:16px; border:none; background:#FFD700; color:#1a1a1a; font-weight:800; font-size:16px; cursor:pointer; box-shadow:0 4px 0 0 #d1b600;">Erledigt</button>
+      </div>
+    </section>
+
     <!-- CUSTOMER: Profile "Meins" – UI-Restore: Abholnummer, Bestellungen, Profil, Präferenzen, FAQ, Footer -->
     <section class="view customer-view" id="v-profile" style="padding:0 16px 100px;">
       <!-- Header (Logo & Nutzer-Avatar) – Identität -->
@@ -3855,7 +3877,7 @@
           <span style="font-size:18px;">🧾</span>
           <span>Aktive Abholnummer</span>
         </div>
-        <div id="profileActiveTicketsList" style="display:flex; flex-direction:column; gap:10px;"></div>
+        <div id="profileActiveAbholnummernList" style="display:flex; flex-direction:column; gap:10px;"></div>
       </div>
 
       <!-- 2. Meine Bestellungen (chronologische Historie) -->
@@ -6905,7 +6927,7 @@
   function getMittagioMasterIcon(type){
     // type: 'pickup-code' | 'dine-in' | 'reuse'
     if(type === 'pickup-code'){
-      // Abholnummer: Ticket mit "A1", Schwarz-Weiß-Kontrast
+      // Abholnummer: "A1", Schwarz-Weiß-Kontrast
       return `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="stroke-width:2.5;">
         <rect x="4" y="6" width="16" height="12" rx="2" stroke="currentColor" fill="none"/>
         <path d="M4 10h16" stroke="currentColor" stroke-linecap="round"/>
@@ -7094,8 +7116,9 @@
   const views = {
     start:'v-discover',
     discover:'v-discover', fav:'v-fav', orders:'v-orders', cart:'v-cart', profile:'v-profile',
-    pickupCode:'v-pickup-code', // Neuer AbholnummerScreen
-    checkout:'v-checkout', // One-Page Checkout
+    pickupCode:'v-pickup-code',
+    checkout:'v-checkout',
+    orderSuccess:'v-order-success', // AbholBestätigung nach Zahlung
     providerLogin:'v-provider-login',
     providerOnboardingEntry:'v-provider-onboarding-entry',
     providerOnboardingFirstDish:'v-provider-onboarding-first-dish',
@@ -7136,8 +7159,7 @@
     }
     view.classList.add('active');
     // CSS-Regel übernimmt jetzt das Display (flex für pickup-code, block für andere)
-    // Sicherstellen, dass Checkout-View richtig angezeigt wird
-    if(id === 'v-checkout'){
+    if(id === 'v-checkout' || id === 'v-order-success'){
       view.style.display = 'block';
     }
     window.scrollTo({top:0,behavior:'smooth'});
@@ -7147,7 +7169,7 @@
     
     // Topbar: Kundefarben (Seite-1-Style) wenn Kundenseite aktiv
     const topbar = document.querySelector('.topbar');
-    const customerViewIds = [views.start, views.discover, views.fav, views.orders, views.cart, views.profile].filter(Boolean);
+    const customerViewIds = [views.start, views.discover, views.fav, views.orders, views.cart, views.profile, views.orderSuccess].filter(Boolean);
     if(topbar){
       if(customerViewIds.indexOf(id) !== -1) topbar.classList.add('customer-context');
       else topbar.classList.remove('customer-context');
@@ -12662,10 +12684,9 @@
         </div>
       `;
       })() : ''}
-      <div class="row" style="margin-top:24px; padding-top:20px; padding-right:60px; border-top:2px solid #eee; position:relative; display:flex; justify-content:space-between; align-items:center;">
+      <div class="row" style="margin-top:24px; padding-top:20px; padding-right:48px; border-top:2px solid #eee; position:relative; display:flex; justify-content:space-between; align-items:center;">
         <span style="font-size:18px; font-weight:900;">Gesamt</span>
-        <b style="font-size:20px; color:var(--brand); margin-right:8px;">${euro(total)}</b>
-        <!-- Mülleimer-Icon oben rechts (dezentes Design) - Abstand erhöht für keine Überlappung -->
+        <b style="font-size:20px; color:var(--brand); padding-right:8px; min-width:4em; text-align:right;">${euro(total)}</b>
         <button type="button" id="clearCartIcon" class="cart-clear-icon" style="position:absolute; top:20px; right:0; width:36px; height:36px; border-radius:50%; border:none; background:rgba(0,0,0,0.05); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s ease; color:#666;" onmouseover="this.style.background='rgba(227,77,77,0.1)'; this.style.color='#e74c3c';" onmouseout="this.style.background='rgba(0,0,0,0.05)'; this.style.color='#666';" title="Mittagsbox leeren">
           <i data-lucide="trash-2" style="width:18px;height:18px;"></i>
         </button>
@@ -13023,19 +13044,52 @@
     if(btnMitnehmen){
       btnMitnehmen.onclick = () => {
         cart.verzehrmodus = 'mitnehmen';
+        if(!cart.verpackung) cart.verpackung = 'mehrweg';
         save(LS.cart, cart);
         
         // Signal an Anbieter: Einpacken in Box/Mehrweg
         cart.items.forEach(item => {
           const offer = offers.find(o => o.id === item.offerId);
           if(offer && offer.providerId){
-            // Verzehrart wird beim Erstellen der Bestellung an den Anbieter übermittelt
-            // Der Anbieter sieht in seinem Dashboard: "Mitnehmen" für diese Bestellung
             console.log(`[Anbieter-Signal] ${offer.providerId}: Mitnehmen gewählt - Einpacken in Box/Mehrweg`);
           }
         });
         
         renderCheckout(total);
+      };
+    }
+    
+    // Verpackung (nur bei Mitnehmen) – Anzeige + Buttons im Time-Slot-Stil
+    const verpackungWrap = document.getElementById('checkoutVerpackung');
+    const btnEigenerBehaeltner = document.getElementById('checkoutBtnEigenerBehaeltner');
+    const btnMehrweg = document.getElementById('checkoutBtnMehrweg');
+    const isMitnehmen = (cart.verzehrmodus || 'mitnehmen') === 'mitnehmen';
+    if(verpackungWrap) verpackungWrap.style.display = isMitnehmen ? 'block' : 'none';
+    
+    const verpackung = cart.verpackung || 'mehrweg';
+    const setVerpackungActive = (btn, active) => {
+      if(!btn) return;
+      btn.style.borderColor = active ? '#FFD700' : '#e7e1d5';
+      btn.style.background = active ? '#FFD700' : '#fff';
+      btn.style.color = active ? '#2D3436' : '#666';
+      btn.style.fontWeight = active ? '900' : '600';
+    };
+    if(btnEigenerBehaeltner){
+      setVerpackungActive(btnEigenerBehaeltner, verpackung === 'eigener_behaeltner');
+      btnEigenerBehaeltner.onclick = () => {
+        cart.verpackung = 'eigener_behaeltner';
+        save(LS.cart, cart);
+        setVerpackungActive(btnEigenerBehaeltner, true);
+        setVerpackungActive(btnMehrweg, false);
+      };
+    }
+    if(btnMehrweg){
+      setVerpackungActive(btnMehrweg, verpackung === 'mehrweg');
+      btnMehrweg.onclick = () => {
+        cart.verpackung = 'mehrweg';
+        save(LS.cart, cart);
+        setVerpackungActive(btnMehrweg, true);
+        setVerpackungActive(btnEigenerBehaeltner, false);
       };
     }
     
@@ -13220,7 +13274,8 @@
       pickupWindow: firstOfferNormalized && firstOfferNormalized.pickupWindow ? firstOfferNormalized.pickupWindow : '',
       unitPriceCents: items[0]?.unitPriceCents || 0,
       totalCents: totalCents,
-      paymentIntentId: null
+      paymentIntentId: null,
+      verpackung: cartData.verpackung || null // Säule 3: eigener_behaeltner | mehrweg (nur bei Mitnehmen)
     };
     
     return addOrder(order);
@@ -13445,24 +13500,82 @@
       renderProviderPickups();
     }
     
-    // Navigiere zu AbholnummerScreen mit Animation
-    showPickupCode(updatedOrder.id);
+    // Anbieter-Schnittstelle: Datensatz für Dashboard (Metzger/Gastro weiß sofort, wie anrichten)
+    sendOrderToProviderDashboard(updatedOrder);
     
-    // Animation: "Zahlung bestätigt – Dein Gericht wird reserviert!"
-    setTimeout(() => {
-      const pickupCodeView = document.getElementById('v-pickup-code');
-      if(pickupCodeView){
-        const animationEl = document.createElement('div');
-        animationEl.style.cssText = 'position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:rgba(0,0,0,0.9); color:#fff; padding:24px 32px; border-radius:20px; font-size:18px; font-weight:700; z-index:10000; text-align:center; box-shadow:0 8px 32px rgba(0,0,0,0.3);';
-        animationEl.textContent = '✓ Zahlung bestätigt – Dein Gericht wird reserviert!';
-        document.body.appendChild(animationEl);
-        setTimeout(() => {
-          animationEl.style.transition = 'opacity 0.3s';
-          animationEl.style.opacity = '0';
-          setTimeout(() => animationEl.remove(), 300);
-        }, 1500);
+    // AbholBestätigung (Success-View) anzeigen
+    showOrderSuccess(updatedOrder);
+  }
+  
+  /**
+   * AbholBestätigung: Success-View nach Zahlung (Abholnummer, Zeit, Modus, Verpackung).
+   * @param {Order} order - Bestellung mit status PAID, pickupCode, pickupTime, verzehrmodus, verpackung
+   */
+  function showOrderSuccess(order){
+    if(!order){
+      showDiscover();
+      return;
+    }
+    const code = order.pickupCode || order.abholnummer || order.code || '–';
+    const zeit = order.pickupTime || order.abholzeit || order.etaTime || '–';
+    const modus = order.verzehrmodus || 'mitnehmen';
+    const verpackung = order.verpackung || null;
+    const isMitnehmen = modus === 'mitnehmen';
+    
+    const abholnummerEl = document.getElementById('orderSuccessAbholnummer');
+    const zeitEl = document.getElementById('orderSuccessZeit');
+    const modusEl = document.getElementById('orderSuccessModus');
+    const verpackungWrap = document.getElementById('orderSuccessVerpackung');
+    const btnDone = document.getElementById('btnOrderSuccessDone');
+    
+    if(abholnummerEl) abholnummerEl.textContent = '#' + code;
+    if(zeitEl) zeitEl.innerHTML = '<span style="font-size:20px;">🕒</span> Abholung um ' + (zeit.indexOf('Uhr') >= 0 ? zeit : zeit + ' Uhr');
+    if(modusEl){
+      if(modus === 'vor_ort'){
+        modusEl.innerHTML = '<span style="font-size:20px;">🍴</span> Vor Ort essen';
+      } else {
+        modusEl.innerHTML = '<span style="font-size:20px;">🔄</span> Mitnehmen';
       }
-    }, 100);
+    }
+    if(verpackungWrap){
+      if(isMitnehmen && verpackung){
+        verpackungWrap.style.display = 'flex';
+        verpackungWrap.innerHTML = verpackung === 'eigener_behaeltner'
+          ? '<span style="font-size:20px;">🔄</span> Eigener Behälter'
+          : '<span style="font-size:20px;">🔄</span> Mehrweg-System';
+      } else {
+        verpackungWrap.style.display = 'none';
+      }
+    }
+    if(btnDone){
+      btnDone.onclick = () => {
+        showDiscover();
+      };
+    }
+    
+    showView(views.orderSuccess);
+    setCustomerNavActive('cart');
+  }
+  
+  /**
+   * Simuliert Übermittlung an Anbieter-Dashboard (abholnummer, zeit, modus, verpackung).
+   * In Production: POST an Backend → Anbieter-Dashboard aktualisiert sich.
+   */
+  function sendOrderToProviderDashboard(order){
+    const payload = {
+      abholnummer: order.pickupCode || order.abholnummer || order.code,
+      zeit: order.pickupTime || order.abholzeit || order.etaTime,
+      modus: order.verzehrmodus === 'vor_ort' ? 'vor_ort' : 'mitnehmen',
+      verpackung: order.verpackung || (order.verzehrmodus === 'mitnehmen' ? 'mehrweg' : null),
+      providerId: order.providerId,
+      dishName: order.dishName,
+      quantity: order.quantity
+    };
+    if(typeof console !== 'undefined' && console.log){
+      console.log('[Anbieter-Dashboard] Bestellung übermittelt:', payload);
+    }
+    // Optional: In Production hier z.B. EventBus oder API-Call
+    // window.dispatchEvent(new CustomEvent('order-paid', { detail: payload }));
   }
 
   // --- Start actions ---
@@ -13538,23 +13651,23 @@
     if(tasteSection) tasteSection.style.display = isLoggedIn ? 'block' : 'none';
     
     // Quick-History (Aktive Abholnummern)
-    const ticketsSection = document.getElementById('profileTicketsSection');
-    const ticketsList = document.getElementById('profileActiveTicketsList');
+    const abholnummerSection = document.getElementById('profileTicketsSection');
+    const abholnummerList = document.getElementById('profileActiveAbholnummernList');
     const allOrders = loadOrders();
     const hasOrders = Array.isArray(allOrders) && allOrders.length > 0; // Bug-Fix: Sauber definiert
     
     // Heutige aktive Abholnummern (PAID, nicht PICKED_UP)
     const today = isoDate(new Date());
-    const activeTickets = allOrders.filter(o => 
+    const activeAbholnummern = allOrders.filter(o => 
       o.status === 'PAID' && 
       o.pickupDate === today && 
       (!o.pickupCodeActivatedAt || o.pickupCodeActivatedAt === null) // Noch nicht abgeholt
     );
     
-    if(ticketsSection && ticketsList){
-      if(activeTickets.length > 0){
-        ticketsSection.style.display = 'block';
-        ticketsList.innerHTML = activeTickets.map(order => {
+    if(abholnummerSection && abholnummerList){
+      if(activeAbholnummern.length > 0){
+        abholnummerSection.style.display = 'block';
+        abholnummerList.innerHTML = activeAbholnummern.map(order => {
           const code = order.pickupCode || '–';
           return `
             <div style="display:flex; align-items:center; justify-content:space-between; padding:16px; background:#f8f9fa; border-radius:16px; border:2px solid rgba(255,215,0,0.2); cursor:pointer; transition:all 0.2s ease;" onclick="showPickupCode('${esc(order.id)}');" onmouseover="this.style.borderColor='rgba(255,215,0,0.5)'; this.style.transform='translateY(-2px)';" onmouseout="this.style.borderColor='rgba(255,215,0,0.2)'; this.style.transform='translateY(0)';">
@@ -13570,7 +13683,7 @@
           `;
         }).join('');
       } else {
-        ticketsSection.style.display = 'none';
+        abholnummerSection.style.display = 'none';
       }
     }
     
