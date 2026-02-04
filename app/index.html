@@ -5212,12 +5212,14 @@
   <div style="font-size:64px; margin-bottom:16px;">✅</div>
   <div style="font-size:28px; font-weight:900; color:#fff; margin-bottom:8px;">Erfolgreich abgeholt!</div>
   <div id="pickupSuccessNetto" style="font-size:20px; font-weight:700; color:rgba(255,255,255,0.95);">Netto-Verdienst: 0,00 €</div>
+  <button type="button" id="btnPickupSuccessUndo" style="margin-top:24px; padding:10px 20px; background:rgba(255,255,255,0.2); color:#fff; border:1px solid rgba(255,255,255,0.5); border-radius:12px; font-size:14px; font-weight:600; cursor:pointer;">Versehentlich? Rückgängig</button>
 </div>
 <!-- Next-Step Popup (nächste Abholnummern) -->
 <div id="pickupNextStepOverlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:10000; align-items:center; justify-content:center; padding:24px;">
   <div style="background:#fff; border-radius:24px; padding:24px; max-width:360px; width:100%; box-shadow:0 8px 32px rgba(0,0,0,0.2);">
     <div id="pickupNextStepTitle" style="font-size:20px; font-weight:800; margin-bottom:16px; color:#1a1a1a;">🎉 Noch 0 Essen offen!</div>
     <div id="pickupNextStepList" style="display:flex; flex-direction:column; gap:10px; margin-bottom:20px;"></div>
+    <button type="button" id="btnPickupNextStepUndo" style="width:100%; margin-bottom:10px; padding:12px; border-radius:14px; border:1px solid #e2e8f0; background:#f8fafc; font-size:14px; font-weight:600; color:#64748b; cursor:pointer;">Zuletzt rückgängig (versehentlich abgeholt)</button>
     <button type="button" id="btnPickupNextStepClose" style="width:100%; padding:14px; border-radius:14px; border:2px solid rgba(0,0,0,.1); background:#fff; font-weight:700; font-size:15px; cursor:pointer;">Fertig</button>
   </div>
 </div>
