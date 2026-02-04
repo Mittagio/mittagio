@@ -20149,7 +20149,7 @@
   }
 
   function refreshCurrentView(silent=false){
-    const activeView = document.querySelector('.view[style*="display: block"]');
+    const activeView = document.querySelector('.view.active');
     if(!activeView) return;
     if(activeView.id === 'v-provider-home'){ if(typeof renderProviderHome==='function') renderProviderHome(); }
     else if(activeView.id === 'v-provider-pickups'){ if(typeof renderProviderPickups==='function') renderProviderPickups(); }
