@@ -1550,18 +1550,55 @@
       --support-padding:16px;
       --support-padding-lg:24px;
     }
-    /* Provider-App: MEIN BETRIEB – Support-Layout überall */
+    /* Provider-App: einheitlich helles Layout (kein dunkles Theme) */
     :root{
-      --provider-bg:#e8eaed;
+      --provider-bg:#f8f7f2;
       --provider-surface:#ffffff;
-      --provider-surface-alt:#f1f3f4;
-      --provider-border:#e5e7eb;
-      --provider-text:#2D3436;
-      --provider-text-muted:#5f6368;
+      --provider-surface-alt:#f0f0eb;
+      --provider-border:rgba(0,0,0,0.06);
+      --provider-text:#1a1a1a;
+      --provider-text-muted:#64748b;
     }
     [id^="v-provider-"]{
       background:var(--provider-bg) !important;
     }
+    /* Einheitlicher Sticky-Header für Anbieter-Subseiten */
+    .provider-header-bar{
+      background:#fff !important;
+      position:sticky; top:0; z-index:50;
+      border-bottom:1px solid rgba(0,0,0,0.06);
+      padding:16px 20px;
+      margin:-20px -20px 24px -20px;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .provider-header-bar h1{ margin:0; font-size:18px; font-weight:700; color:#1a1a1a !important; }
+    .provider-header-bar .btn-back{ position:absolute; left:10px; color:#0A84FF; font-size:16px; padding:8px; display:flex; align-items:center; gap:4px; background:none; border:none; cursor:pointer; }
+    /* Legal-Anbieter-Seiten: gleiches helles Layout */
+    #v-legal-impressum-provider,
+    #v-legal-faq-provider,
+    #v-legal-datenschutz-provider{
+      background:var(--provider-bg) !important;
+    }
+    #v-legal-impressum-provider .panel,
+    #v-legal-faq-provider .panel,
+    #v-legal-datenschutz-provider .panel{
+      background:#fff !important;
+      color:#1a1a1a !important;
+      border:1px solid rgba(0,0,0,0.06) !important;
+      box-shadow:0 2px 12px rgba(0,0,0,0.06) !important;
+    }
+    #v-legal-impressum-provider .panel h1,
+    #v-legal-faq-provider .panel h1,
+    #v-legal-datenschutz-provider .panel h1{ color:#1a1a1a !important; }
+    #v-legal-impressum-provider .panel div,
+    #v-legal-impressum-provider .panel p,
+    #v-legal-faq-provider .panel div,
+    #v-legal-faq-provider .panel p,
+    #v-legal-datenschutz-provider .panel div,
+    #v-legal-datenschutz-provider .panel p{ color:#334155 !important; }
+    #v-legal-impressum-provider .panel a,
+    #v-legal-faq-provider .panel a,
+    #v-legal-datenschutz-provider .panel a{ color:#0A84FF !important; }
     [id^="v-provider-"] .panel{
       background:var(--provider-surface) !important;
       color:var(--provider-text) !important;
@@ -3343,36 +3380,35 @@
       </div>
     </section>
 
-    <!-- Provider-Billing: Modern Dark Mode -->
-    <section class="view" id="v-provider-billing" style="background:#121212; min-height:100vh; padding:20px; padding-bottom:90px;">
-      <!-- Sticky Header -->
-      <div style="background:rgba(28,28,30,0.95); backdrop-filter:blur(20px); position:sticky; top:0; z-index:50; border-bottom:1px solid rgba(255,255,255,0.08); padding:16px 20px; margin:-20px -20px 24px; display:flex; align-items:center; justify-content:center;">
-        <h1 style="margin:0; font-size:17px; font-weight:600; color:#fff;">Finanzen & Abrechnung</h1>
-        <button id="btnBillingBack" class="btn ghost" type="button" style="position:absolute; left:10px; color:#0A84FF; font-size:16px; padding:8px; display:flex; align-items:center; gap:4px;">
+    <!-- Provider-Billing: einheitlich helles Layout -->
+    <section class="view" id="v-provider-billing" style="min-height:100vh; padding:20px; padding-bottom:90px;">
+      <div class="provider-header-bar">
+        <h1>Finanzen & Abrechnung</h1>
+        <button id="btnBillingBack" class="btn-back" type="button">
           <i data-lucide="chevron-left" style="width:24px; height:24px;"></i> Zurück
         </button>
       </div>
 
       <!-- Karte 1: Meine Kontodaten -->
-      <div class="panel" id="billingCardKontodaten" style="background:#1c1c1e; border-radius:20px; padding:24px; margin-bottom:20px; border:1px solid rgba(255,255,255,0.08);">
+      <div class="panel" id="billingCardKontodaten" style="border-radius:16px; padding:24px; margin-bottom:20px; box-shadow:0 2px 12px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04);">
         <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
-          <span style="font-size:15px; font-weight:700; color:#fff;">Meine Kontodaten</span>
-          <span id="billingKontodatenStatus" style="font-size:12px; font-weight:700; padding:6px 12px; border-radius:20px; background:rgba(46,204,113,0.2); color:#2ecc71;">Hinterlegt</span>
+          <span style="font-size:15px; font-weight:700; color:#1a1a1a;">Meine Kontodaten</span>
+          <span id="billingKontodatenStatus" style="font-size:12px; font-weight:700; padding:6px 12px; border-radius:20px; background:rgba(34,197,94,0.15); color:#16a34a;">Hinterlegt</span>
         </div>
-        <div style="background:rgba(0,0,0,0.2); border-radius:12px; padding:16px 20px; margin-bottom:16px;">
-          <div style="font-size:14px; color:rgba(255,255,255,0.6); margin-bottom:4px;">Kartenvorschau</div>
-          <div id="billingKartenvorschau" style="font-size:18px; font-weight:700; color:#fff; letter-spacing:2px;">•••• •••• •••• 1234</div>
+        <div style="background:#f8f7f2; border-radius:12px; padding:16px 20px; margin-bottom:16px; border:1px solid rgba(0,0,0,0.06);">
+          <div style="font-size:14px; color:#64748b; margin-bottom:4px;">Kartenvorschau</div>
+          <div id="billingKartenvorschau" style="font-size:18px; font-weight:700; color:#1a1a1a; letter-spacing:2px;">•••• •••• •••• 1234</div>
         </div>
-        <button type="button" id="btnBillingZahlungsmittel" style="width:100%; padding:14px; border-radius:12px; border:2px solid rgba(255,255,255,0.2); background:transparent; color:#0A84FF; font-weight:700; font-size:15px; cursor:pointer;">Zahlungsmittel ändern</button>
+        <button type="button" id="btnBillingZahlungsmittel" style="width:100%; padding:14px; border-radius:12px; border:2px solid rgba(0,0,0,0.1); background:#fff; color:#0A84FF; font-weight:700; font-size:15px; cursor:pointer;">Zahlungsmittel ändern</button>
       </div>
 
       <!-- Karte 2: Meine Abrechnungen -->
-      <div class="panel" style="background:#1c1c1e; border-radius:20px; padding:24px; border:1px solid rgba(255,255,255,0.08);">
-        <div style="font-size:15px; font-weight:700; color:#fff; margin-bottom:16px;">Meine Abrechnungen</div>
+      <div class="panel" style="border-radius:16px; padding:24px; box-shadow:0 2px 12px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04);">
+        <div style="font-size:15px; font-weight:700; color:#1a1a1a; margin-bottom:16px;">Meine Abrechnungen</div>
         <div id="billingList" style="display:flex; flex-direction:column; gap:0;">
           <!-- Zeilen: Datum, Posten, Betrag, PDF-Icon – wird von renderBilling befüllt -->
         </div>
-        <div id="billingListEmpty" class="hint" style="color:rgba(255,255,255,0.4); text-align:center; padding:32px 16px; display:none;">Noch keine Abrechnungen vorhanden.</div>
+        <div id="billingListEmpty" class="hint" style="color:#64748b; text-align:center; padding:32px 16px; display:none;">Noch keine Abrechnungen vorhanden.</div>
       </div>
     </section>
 
@@ -4249,11 +4285,9 @@
       </div>
     </section>
 
-    <section class="view" id="v-provider-pickups" style="background:#f4f4f4; min-height:100vh; padding-bottom:100px;">
-      
-      <!-- Modern Header (Light) -->
-      <div style="background:rgba(255,255,255,0.98); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); position:sticky; top:0; z-index:50; border-bottom:1px solid rgba(0,0,0,0.06); padding:16px 20px; display:flex; align-items:center; justify-content:space-between;">
-        <h1 style="margin:0; font-size:20px; font-weight:700; color:#1a1a1a;">Abholungen</h1>
+    <section class="view" id="v-provider-pickups" style="min-height:100vh; padding:20px; padding-bottom:100px;">
+      <div class="provider-header-bar" style="justify-content:space-between; margin:-20px -20px 24px -20px;">
+        <h1 style="margin:0;">Abholungen</h1>
         <div style="display:flex; gap:8px;">
           <button id="btnKitchenListPDF" style="background:rgba(0,0,0,0.05); border:none; width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; color:#333;">
             <i data-lucide="file-text" style="width:18px; height:18px;"></i>
@@ -4292,12 +4326,11 @@
       </div>
     </section>
 
-    <!-- Provider-Wochenplan: Modern Light Mode -->
-    <section class="view" id="v-provider-week" style="background:#f4f4f4; min-height:100vh; padding:20px; padding-bottom:90px;">
-      <!-- Sticky Header -->
-      <div style="background:rgba(255,255,255,0.98); backdrop-filter:blur(20px); position:sticky; top:0; z-index:50; border-bottom:1px solid rgba(0,0,0,0.06); padding:16px 20px; margin:-20px -20px 24px; display:flex; align-items:center; justify-content:center;">
-        <h1 style="margin:0; font-size:17px; font-weight:600; color:#1a1a1a;">Wochenplan</h1>
-        <button id="btnWeekBack" class="btn ghost" type="button" style="position:absolute; left:10px; color:#0A84FF; font-size:16px; padding:8px; display:flex; align-items:center; gap:4px;">
+    <!-- Provider-Wochenplan: einheitliches Layout -->
+    <section class="view" id="v-provider-week" style="min-height:100vh; padding:20px; padding-bottom:90px;">
+      <div class="provider-header-bar">
+        <h1>Wochenplan</h1>
+        <button id="btnWeekBack" class="btn-back" type="button">
           <i data-lucide="chevron-left" style="width:24px; height:24px;"></i> Zurück
         </button>
       </div>
@@ -4329,17 +4362,16 @@
       </div>
     </section>
 
-    <!-- Kochbuch: Fixed Layout (Header + Suche | Card-System | Sticky CTA unten) -->
-    <section class="view" id="v-provider-cookbook" style="background:#F5F5F5; min-height:100vh; padding:20px; padding-bottom:100px;">
-      <!-- Oben: Kontext + Suche (starres Raster) -->
-      <div style="background:#fff; border-radius:0; border-bottom:1px solid rgba(0,0,0,0.06); padding:16px 20px; margin:-20px -20px 20px -20px;">
-        <h1 style="margin:0 0 16px 0; font-size:18px; font-weight:700; color:#1a1a1a; font-family:system-ui,-apple-system,sans-serif;">Mein Kochbuch</h1>
+    <!-- Kochbuch: einheitliches Layout -->
+    <section class="view" id="v-provider-cookbook" style="min-height:100vh; padding:20px; padding-bottom:100px;">
+      <div class="provider-header-bar" style="flex-direction:column; align-items:stretch; margin:-20px -20px 20px -20px;">
+        <h1 style="margin:0 0 16px 0;">Mein Kochbuch</h1>
         <div style="position:relative;">
           <i data-lucide="search" style="position:absolute; left:14px; top:50%; transform:translateY(-50%); color:rgba(0,0,0,0.4); width:18px; height:18px;"></i>
-          <input class="field cookbook-search" id="cookbookSearch" type="text" placeholder="Suchen…" style="width:100%; min-height:48px; background:#F5F5F5; border:1px solid rgba(0,0,0,0.08); color:#1a1a1a; border-radius:12px; padding:12px 12px 12px 42px; font-size:16px; font-weight:500; font-family:system-ui,-apple-system,sans-serif;" />
+          <input class="field cookbook-search" id="cookbookSearch" type="text" placeholder="Suchen…" style="width:100%; min-height:48px; background:#f0f0eb; border:1px solid rgba(0,0,0,0.08); color:#1a1a1a; border-radius:12px; padding:12px 12px 12px 42px; font-size:16px; font-weight:500; font-family:system-ui,-apple-system,sans-serif;" />
         </div>
         <div style="display:flex; gap:10px; margin-top:12px; align-items:center;">
-          <select id="cookbookSortSelect" style="min-height:48px; padding:0 14px; border-radius:12px; background:#F5F5F5; border:1px solid rgba(0,0,0,0.08); color:#334155; font-size:14px; font-weight:600; min-width:0; flex:1; appearance:none; background-image:url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2216%22 height=%2216%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%23334155%22 stroke-width=%222%22><path d=%22m6 9 6 6 6-6%22/></svg>'); background-repeat:no-repeat; background-position:right 10px center; padding-right:32px;">
+          <select id="cookbookSortSelect" style="min-height:48px; padding:0 14px; border-radius:12px; background:#f0f0eb; border:1px solid rgba(0,0,0,0.08); color:#334155; font-size:14px; font-weight:600; min-width:0; flex:1; appearance:none; background-image:url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2216%22 height=%2216%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%23334155%22 stroke-width=%222%22><path d=%22m6 9 6 6 6-6%22/></svg>'); background-repeat:no-repeat; background-position:right 10px center; padding-right:32px;">
             <option value="recent">Zuletzt</option>
             <option value="alpha">A–Z</option>
             <option value="priceAsc">Preis ↑</option>
@@ -16842,10 +16874,10 @@
       var datum = t.timestamp ? new Date(t.timestamp).toLocaleDateString('de-DE', { day:'2-digit', month:'2-digit', year:'numeric' }) : '–';
       var posten = t.inserat_id ? ('Inserat ' + t.inserat_id) : (t.id || '–');
       var betrag = (t.total_amount != null) ? Number(t.total_amount).toFixed(2).replace('.', ',') + ' €' : '–';
-      return '<div style="display:flex; align-items:center; justify-content:space-between; padding:14px 0; border-bottom:1px solid rgba(255,255,255,0.06);">' +
-        '<div><div style="font-weight:700; color:#fff;">' + esc(datum) + '</div><div style="font-size:13px; color:rgba(255,255,255,0.5);">' + esc(posten) + '</div></div>' +
-        '<div style="display:flex; align-items:center; gap:12px;"><span style="font-weight:800; color:#2ecc71;">' + betrag + '</span>' +
-        '<button type="button" aria-label="PDF" style="width:36px; height:36px; border-radius:50%; border:none; background:rgba(255,255,255,0.1); color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center;" data-tx-id="' + esc(t.id || '') + '"><i data-lucide="file-down" style="width:18px;height:18px;"></i></button></div></div>';
+      return '<div style="display:flex; align-items:center; justify-content:space-between; padding:14px 0; border-bottom:1px solid rgba(0,0,0,0.06);">' +
+        '<div><div style="font-weight:700; color:#1a1a1a;">' + esc(datum) + '</div><div style="font-size:13px; color:#64748b;">' + esc(posten) + '</div></div>' +
+        '<div style="display:flex; align-items:center; gap:12px;"><span style="font-weight:800; color:#16a34a;">' + betrag + '</span>' +
+        '<button type="button" aria-label="PDF" style="width:36px; height:36px; border-radius:50%; border:none; background:rgba(0,0,0,0.06); color:#1a1a1a; cursor:pointer; display:flex; align-items:center; justify-content:center;" data-tx-id="' + esc(t.id || '') + '"><i data-lucide="file-down" style="width:18px;height:18px;"></i></button></div></div>';
     }).join('');
 
     listEl.querySelectorAll('button[data-tx-id]').forEach(function(btn){
