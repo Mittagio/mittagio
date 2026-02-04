@@ -5092,6 +5092,7 @@
         </div>
       </div>
       <p style="margin:0; font-size:11px; color:#9ca3af; text-align:center;">Jeder Link und jedes Bild enthält „Mittagio – Zeit gespart mit der Abholnummer“.</p>
+      <button type="button" id="inseratSuccessBtnEmailCopy" style="width:100%; margin-top:12px; padding:12px; border-radius:12px; border:2px solid #e5e7eb; background:#fff; font-weight:700; font-size:14px; color:#374151; cursor:pointer;">E-Mail-Vorschau kopieren</button>
     </div>
   </div>
   <div style="position:fixed; bottom:0; left:0; right:0; padding:24px; background:linear-gradient(to top, #f8f7f2, transparent); text-align:center;">
@@ -18637,6 +18638,23 @@
     save(LS.transactions, list);
   }
 
+  // E-Mail-Template „Dein Inserat ist live!“ – für Backend/Versand oder Kopieren
+  function getInseratLiveEmailTemplate(offer){
+    const o = offer ? normalizeOffer(offer) : {};
+    const dishName = o.dish || o.dishName || o.title || 'Dein Gericht';
+    const providerName = o.providerName || (provider && provider.profile && provider.profile.name) || 'Anbieter';
+    const day = o.day || (typeof isoDate === 'function' ? isoDate(new Date()) : '');
+    const offerUrl = typeof buildOfferShareUrl === 'function' ? buildOfferShareUrl(offer) : (window.location.origin + window.location.pathname + '#/offer/' + (o.id || ''));
+    const subject = 'Dein Inserat ist live! 🚀';
+    const body = 'Hallo ' + providerName + ',\n\n' +
+      'dein Gericht „' + dishName + '“ ist ab sofort auf Mittagio sichtbar.\n\n' +
+      '🔗 Link zum Angebot: ' + offerUrl + '\n' +
+      '📅 Datum: ' + day + '\n\n' +
+      'Viel Erfolg beim Verkaufen!\n\n' +
+      'Dein Mittagio-Team';
+    return { subject: subject, body: body, offerUrl: offerUrl };
+  }
+
   function publishOffer(o){
     const existingId = w.ctx && w.ctx.editOfferId ? w.ctx.editOfferId : null;
     const id = existingId || cryptoId();
@@ -18824,6 +18842,21 @@
     if(btnPrintQR){ btnPrintQR.onclick = function(){ openQRPrintWindow(inseratSuccessCurrentOffer || publishedOffer); }; }
     var btnSocialImage = document.getElementById('inseratSuccessBtnSocialImage');
     if(btnSocialImage){ btnSocialImage.onclick = function(){ exportOfferSocialImage(inseratSuccessCurrentOffer || publishedOffer); }; }
+    var btnEmailCopy = document.getElementById('inseratSuccessBtnEmailCopy');
+    if(btnEmailCopy){
+      btnEmailCopy.onclick = function(){
+        var tpl = getInseratLiveEmailTemplate(inseratSuccessCurrentOffer || publishedOffer);
+        var text = 'Betreff: ' + tpl.subject + '\n\n' + tpl.body;
+        if(navigator.clipboard && navigator.clipboard.writeText){
+          navigator.clipboard.writeText(text).then(function(){ if(typeof showToast === 'function') showToast('E-Mail-Vorschau in Zwischenablage.'); }).catch(function(){ fallbackCopy(text, btnEmailCopy); });
+        } else { fallbackCopy(text, btnEmailCopy); }
+      };
+    }
+    function fallbackCopy(str, btn){
+      var ta = document.createElement('textarea'); ta.value = str; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select();
+      try { document.execCommand('copy'); if(typeof showToast === 'function') showToast('E-Mail-Vorschau kopiert.'); } catch(e){ if(typeof showToast === 'function') showToast('Bitte manuell kopieren.'); }
+      document.body.removeChild(ta);
+    }
     const bd = document.getElementById('inseratSuccessBd');
     const sheet = document.getElementById('inseratSuccessSheet');
     if(bd) bd.style.display = 'block';
