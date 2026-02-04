@@ -3353,34 +3353,26 @@
         </button>
       </div>
 
-      <!-- Kosten-Info-Box (wenn nötig) -->
-      <div id="billingCostInfo" style="background:rgba(46, 204, 113, 0.1); border:1px solid rgba(46, 204, 113, 0.3); border-radius:12px; padding:12px 16px; margin-bottom:24px; display:none;">
-        <!-- Wird dynamisch befüllt -->
-      </div>
-      
-      <!-- Balance Card -->
-      <div class="panel" style="background:linear-gradient(135deg, #2c3e50 0%, #000000 100%); border-radius:20px; padding:24px; margin-bottom:24px; border:1px solid rgba(255,255,255,0.1); position:relative; overflow:hidden;">
-        <div style="font-size:13px; color:rgba(255,255,255,0.6); margin-bottom:8px; text-transform:uppercase; letter-spacing:1px; font-weight:600;">Auszahlbarer Betrag</div>
-        <div style="font-size:36px; font-weight:800; color:#fff; margin-bottom:16px; font-variant-numeric: tabular-nums;" id="billingAmount">0,00 €</div>
-        <div class="hint" id="billingLast" style="color:rgba(255,255,255,0.5); font-size:13px;">Letzte Auszahlung: –</div>
-        <i data-lucide="coins" style="position:absolute; right:-10px; bottom:-10px; width:100px; height:100px; color:rgba(255,255,255,0.05); transform:rotate(-15deg);"></i>
+      <!-- Karte 1: Meine Kontodaten -->
+      <div class="panel" id="billingCardKontodaten" style="background:#1c1c1e; border-radius:20px; padding:24px; margin-bottom:20px; border:1px solid rgba(255,255,255,0.08);">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+          <span style="font-size:15px; font-weight:700; color:#fff;">Meine Kontodaten</span>
+          <span id="billingKontodatenStatus" style="font-size:12px; font-weight:700; padding:6px 12px; border-radius:20px; background:rgba(46,204,113,0.2); color:#2ecc71;">Hinterlegt</span>
+        </div>
+        <div style="background:rgba(0,0,0,0.2); border-radius:12px; padding:16px 20px; margin-bottom:16px;">
+          <div style="font-size:14px; color:rgba(255,255,255,0.6); margin-bottom:4px;">Kartenvorschau</div>
+          <div id="billingKartenvorschau" style="font-size:18px; font-weight:700; color:#fff; letter-spacing:2px;">•••• •••• •••• 1234</div>
+        </div>
+        <button type="button" id="btnBillingZahlungsmittel" style="width:100%; padding:14px; border-radius:12px; border:2px solid rgba(255,255,255,0.2); background:transparent; color:#0A84FF; font-weight:700; font-size:15px; cursor:pointer;">Zahlungsmittel ändern</button>
       </div>
 
-      <!-- Filters & List -->
-      <div class="panel" style="background:#1c1c1e; border-radius:18px; padding:20px; border:1px solid rgba(255,255,255,0.05);">
-        <div style="margin-bottom:16px;">
-          <div style="font-size:13px; color:rgba(255,255,255,0.4); margin-bottom:8px; font-weight:600;">Zeitraum & Status</div>
-          <div class="answers" id="billingFilters" style="background:#2c2c2e; padding:4px; border-radius:10px; display:flex; gap:4px; margin-bottom:12px;"></div>
-          <select class="field" id="billingMonth" style="background:#2c2c2e; border:none; color:#fff; border-radius:10px; padding:10px 14px; width:100%; font-size:15px; font-weight:500;">
-            <option value="2026-01">Januar 2026</option>
-            <option value="2025-12">Dezember 2025</option>
-            <option value="2025-11">November 2025</option>
-          </select>
+      <!-- Karte 2: Meine Abrechnungen -->
+      <div class="panel" style="background:#1c1c1e; border-radius:20px; padding:24px; border:1px solid rgba(255,255,255,0.08);">
+        <div style="font-size:15px; font-weight:700; color:#fff; margin-bottom:16px;">Meine Abrechnungen</div>
+        <div id="billingList" style="display:flex; flex-direction:column; gap:0;">
+          <!-- Zeilen: Datum, Posten, Betrag, PDF-Icon – wird von renderBilling befüllt -->
         </div>
-        
-        <div id="billingList" class="hint" style="color:rgba(255,255,255,0.4); text-align:center; padding:32px 0;">
-          Noch keine Abrechnungen vorhanden.
-        </div>
+        <div id="billingListEmpty" class="hint" style="color:rgba(255,255,255,0.4); text-align:center; padding:32px 16px; display:none;">Noch keine Abrechnungen vorhanden.</div>
       </div>
     </section>
 
@@ -16777,90 +16769,35 @@
   setInterval(checkAutoSellout, 5 * 60 * 1000);
 
   function renderBilling(){
-    // Kosten-Info-Box (ganz oben) - Neue Terminologie
-    const costInfoEl = document.getElementById('billingCostInfo');
-    if(costInfoEl){
-      costInfoEl.innerHTML = `
-        <div style="font-weight:600; font-size:16px; margin-bottom:12px; color:#2e7d32;">Gebühren – kurz erklärt</div>
-        <div style="font-size:14px; line-height:1.6; color:#333; margin-bottom:8px;">
-          <div style="margin-bottom:8px;">
-            <strong>Inseratsgebühr: 4,99 €</strong> (einmalig pro Gericht)
-          </div>
-          <div>
-            <strong>All-In Erfolgsgebühr: 0,89 €</strong> pro verkaufter Abholnummer<br>
-            <span style="font-size:12px; color:#666; font-style:italic;">
-              Beinhaltet bereits alle Bank-, Stripe- und Verwaltungsgebühren
-            </span>
-          </div>
-        </div>
-        <div style="margin-top:12px; padding:12px; background:rgba(31,157,85,0.1); border-radius:12px; border-left:4px solid #1f9d55;">
-          <div style="font-size:13px; color:#2D3436; font-weight:600; margin-bottom:4px;">💡 Wichtig:</div>
-          <div style="font-size:12px; color:#666; line-height:1.5;">
-            Alle Beträge sind Netto-Auszahlungen inkl. abgegoltenen Transaktionsgebühren.
-          </div>
-        </div>
-        <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
-          <a href="#/datenschutz" onclick="showLegalPage('datenschutz'); return false;" style="font-size:13px; color:var(--brand); text-decoration:none;">Datenschutz</a>
-        </div>
-      `;
-    }
-    
-    const amountEl = document.getElementById('billingAmount');
-    const lastEl = document.getElementById('billingLast');
-    const filtersEl = document.getElementById('billingFilters');
-    const monthEl = document.getElementById('billingMonth');
     const listEl = document.getElementById('billingList');
-    if(!amountEl || !lastEl || !filtersEl || !monthEl || !listEl) return;
+    const emptyEl = document.getElementById('billingListEmpty');
+    const btnZahlungsmittel = document.getElementById('btnBillingZahlungsmittel');
+    if(btnZahlungsmittel) btnZahlungsmittel.onclick = function(){ showToast('Zahlungsmittel ändern (Demo – später Stripe/Backend).'); };
+    if(!listEl) return;
 
-    // Demo-Daten: Berechnung nach Formel (Verkaufspreis - 0,89 € pro Abholnummer)
-    // Beispiel: 18 Verkäufe à 8,50 € = 153,00 € Gesamt
-    // Gebühren: 18 × 0,89 € = 16,02 €
-    // Auszahlung: 153,00 € - 16,02 € = 136,98 €
-    const demo = [
-      {range:'06.01.–12.01.2026', sales:18, total:153.00, fee:16.02, payout:136.98, status:'Nächste Auszahlung geplant'},
-      {range:'30.12.–05.01.2026', sales:12, total:102.00, fee:10.68, payout:91.32, status:'Auszahlung erfolgt'}
-    ];
+    var txs = typeof loadTransactions === 'function' ? loadTransactions() : [];
+    var pid = typeof providerId === 'function' ? providerId() : '';
+    var myTxs = txs.filter(function(t){ return t.vendor_id === pid; });
+    myTxs.sort(function(a,b){ return (new Date(b.timestamp)) - (new Date(a.timestamp)); });
 
-    amountEl.textContent = euro(demo[0].payout);
-    lastEl.textContent = `Letzte Auszahlung: ${demo[1].range} · ${euro(demo[1].payout)}`;
+    if(emptyEl){ emptyEl.style.display = myTxs.length ? 'none' : 'block'; }
+    listEl.style.display = myTxs.length ? 'flex' : 'none';
 
-    const filters = [
-      {id:'today', label:'Heute'},
-      {id:'week', label:'Woche'},
-      {id:'month', label:'Monat'},
-      {id:'custom', label:'Benutzerdefiniert'}
-    ];
-    filtersEl.innerHTML = '';
-    filters.forEach(f=>{
-      const b=document.createElement('button');
-      b.type='button';
-      b.className='ans'+(billingFilter===f.id?' on':'');
-      b.textContent=f.label;
-      b.onclick=()=>{ billingFilter = f.id; renderBilling(); };
-      filtersEl.appendChild(b);
+    listEl.innerHTML = myTxs.map(function(t){
+      var datum = t.timestamp ? new Date(t.timestamp).toLocaleDateString('de-DE', { day:'2-digit', month:'2-digit', year:'numeric' }) : '–';
+      var posten = t.inserat_id ? ('Inserat ' + t.inserat_id) : (t.id || '–');
+      var betrag = (t.total_amount != null) ? Number(t.total_amount).toFixed(2).replace('.', ',') + ' €' : '–';
+      return '<div style="display:flex; align-items:center; justify-content:space-between; padding:14px 0; border-bottom:1px solid rgba(255,255,255,0.06);">' +
+        '<div><div style="font-weight:700; color:#fff;">' + esc(datum) + '</div><div style="font-size:13px; color:rgba(255,255,255,0.5);">' + esc(posten) + '</div></div>' +
+        '<div style="display:flex; align-items:center; gap:12px;"><span style="font-weight:800; color:#2ecc71;">' + betrag + '</span>' +
+        '<button type="button" aria-label="PDF" style="width:36px; height:36px; border-radius:50%; border:none; background:rgba(255,255,255,0.1); color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center;" data-tx-id="' + esc(t.id || '') + '"><i data-lucide="file-down" style="width:18px;height:18px;"></i></button></div></div>';
+    }).join('');
+
+    listEl.querySelectorAll('button[data-tx-id]').forEach(function(btn){
+      btn.onclick = function(){ showToast('PDF-Download (Transaktion ' + (btn.getAttribute('data-tx-id') || '') + ') – Demo.'); };
     });
-
-    monthEl.value = billingMonth;
-    monthEl.onchange = ()=>{ billingMonth = monthEl.value; renderBilling(); };
-
-    listEl.innerHTML = demo.map(d=>`
-      <div class="cookbook-item">
-        <div style="font-weight:900">${esc(d.range)}</div>
-        <div class="cookbook-facts">
-          Abholnummern verkauft: ${d.sales} · Gesamtumsatz: ${euro(d.total)}<br>
-          All-In Erfolgsgebühren: ${euro(d.fee)} · <b style="color:#2ECC71;">Auszahlung: ${euro(d.payout)}</b><br>
-          <span style="font-size:11px; color:#666;">Netto-Auszahlung inkl. abgegoltenen Transaktionsgebühren</span><br>
-          Status: ${esc(d.status)}
-        </div>
-        <div class="cookbook-actions">
-          <button class="card-action" type="button" data-icon="print">PDF-Download</button>
-        </div>
-      </div>
-    `).join('');
-    listEl.querySelectorAll('button').forEach(btn=>{
-      btn.onclick=()=> alert('PDF-Download (Demo).');
-    });
-    applyStaticIcons();
+    if(typeof applyStaticIcons === 'function') applyStaticIcons();
+    if(typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
   }
 
   const btnProvFaq = document.getElementById('btnProvFaq');
