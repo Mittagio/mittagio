@@ -3495,11 +3495,18 @@
               <span id="discoverCurrentLocation" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">Standort…</span>
             </button>
             <!-- Standort-Dropdown: fixed, damit es immer sichtbar unter dem Button liegt (nicht von sticky-Bars verdeckt) -->
-            <div id="discoverLocationExpanded" style="display:none; position:fixed; z-index:99999; background:#fff; border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.2); border:1px solid rgba(0,0,0,0.1); overflow:hidden; min-width:260px; max-width:calc(100vw - 32px);">
-              <div style="padding:12px;">
-                <input type="text" id="discoverLocationInput" placeholder="Ort oder PLZ eingeben..." autocomplete="address-line2" style="width:100%; padding:12px 14px; border-radius:8px; border:2px solid rgba(0,0,0,0.1); font-size:16px; background:#fff; color:#1a1a1a; outline:none; transition:border-color 0.2s ease; box-sizing:border-box; -webkit-text-fill-color:#1a1a1a;" onfocus="this.style.borderColor='#FFD700';" onblur="this.style.borderColor='rgba(0,0,0,0.1)';" />
+            <div id="discoverLocationExpanded" style="display:none; position:fixed; z-index:99999; background:#fff; border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.2); border:1px solid rgba(0,0,0,0.1); overflow:hidden; min-width:280px; max-width:calc(100vw - 32px);">
+              <div style="padding:16px;">
+                <div style="font-size:10px; font-weight:800; color:#9ca3af; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:12px;">Standort</div>
+                <button type="button" id="discoverLocationBtnNadel" style="width:100%; padding:14px 16px; border-radius:12px; border:2px solid rgba(0,0,0,0.08); background:rgba(255,222,0,0.12); font-size:15px; font-weight:700; color:#1a1a1a; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:16px;">
+                  <i data-lucide="map-pin" style="width:20px;height:20px;"></i>
+                  <span>Mit Nadel (GPS)</span>
+                </button>
+                <div style="font-size:12px; color:#9ca3af; text-align:center; margin-bottom:12px;">Oder</div>
+                <div style="font-size:11px; font-weight:700; color:#6b7280; margin-bottom:8px;">PLZ / Ort eingeben</div>
+                <input type="text" id="discoverLocationInput" placeholder="PLZ oder Ort eingeben..." autocomplete="address-line2" style="width:100%; padding:12px 14px; border-radius:8px; border:2px solid rgba(0,0,0,0.1); font-size:16px; background:#fff; color:#1a1a1a; outline:none; transition:border-color 0.2s ease; box-sizing:border-box; -webkit-text-fill-color:#1a1a1a;" onfocus="this.style.borderColor='#FFD700';" onblur="this.style.borderColor='rgba(0,0,0,0.1)';" />
                 <div id="discoverLocationSuggestions" style="max-height:min(200px, 40vh); overflow-y:auto; margin-top:8px;"></div>
-                <button type="button" id="discoverLocationClose" style="margin-top:10px; width:100%; padding:10px; background:rgba(0,0,0,0.06); border:none; border-radius:8px; font-size:14px; font-weight:600; color:#333; cursor:pointer;">Schließen</button>
+                <button type="button" id="discoverLocationClose" style="margin-top:12px; width:100%; padding:10px; background:rgba(0,0,0,0.06); border:none; border-radius:8px; font-size:14px; font-weight:600; color:#333; cursor:pointer;">Schließen</button>
               </div>
             </div>
           </div>
@@ -7317,7 +7324,7 @@
     const providerNavBackRow = document.getElementById('providerNavBackRow');
     if(providerNavBackRow) providerNavBackRow.style.display = 'none';
     
-    history.pushState({view: 'provider-home', mode: mode}, '', location.pathname);
+    pushViewState({view: 'provider-home', mode: mode}, location.pathname);
   }
   function showProviderPickups(){
     setProviderNavActive('provider-pickups');
@@ -7329,7 +7336,7 @@
     if(fabLabel) fabLabel.style.display = 'none';
     const providerNavBackRow = document.getElementById('providerNavBackRow');
     if(providerNavBackRow) providerNavBackRow.style.display = 'block';
-    history.pushState({view: 'provider-pickups', mode: mode}, '', location.pathname);
+    pushViewState({view: 'provider-pickups', mode: mode}, location.pathname);
   }
   function showProviderWeek(){
     setProviderNavActive('provider-home');
@@ -7342,7 +7349,7 @@
     if(fabLabel) fabLabel.style.display = 'none';
     
     // Browser-Verlauf aktualisieren
-    history.pushState({view: 'provider-week', mode: mode}, '', location.pathname);
+    pushViewState({view: 'provider-week', mode: mode}, location.pathname);
   }
   function showProviderCookbook(){
     setProviderNavActive('provider-cookbook');
@@ -7354,7 +7361,7 @@
     if(fabLabel) fabLabel.style.display = 'none';
     const providerNavBackRow = document.getElementById('providerNavBackRow');
     if(providerNavBackRow) providerNavBackRow.style.display = 'block';
-    history.pushState({view: 'provider-cookbook', mode: mode}, '', location.pathname);
+    pushViewState({view: 'provider-cookbook', mode: mode}, location.pathname);
   }
   function showProviderProfile(){
     setProviderNavActive('provider-profile');
@@ -7366,7 +7373,7 @@
     if(fabLabel) fabLabel.style.display = 'none';
     const providerNavBackRow = document.getElementById('providerNavBackRow');
     if(providerNavBackRow) providerNavBackRow.style.display = 'block';
-    history.pushState({view: 'provider-profile', mode: mode}, '', location.pathname);
+    pushViewState({view: 'provider-profile', mode: mode}, location.pathname);
   }
   function showProviderBilling(){
     setProviderNavActive('provider-profile');
@@ -7374,7 +7381,7 @@
     renderBilling();
     
     // Browser-Verlauf aktualisieren
-    history.pushState({view: 'provider-billing', mode: mode}, '', location.pathname);
+    pushViewState({view: 'provider-billing', mode: mode}, location.pathname);
   }
 
   // --- Chips render ---
@@ -7597,6 +7604,7 @@
           discoverLocationExpanded.style.right = 'auto';
           discoverLocationExpanded.style.display = 'block';
           discoverLocationInput.value = (locationQuery && locationQuery !== 'Aktueller Standort') ? locationQuery : '';
+          if(typeof lucide !== 'undefined') lucide.createIcons();
           setTimeout(() => discoverLocationInput.focus(), 100);
         } else {
           discoverLocationExpanded.style.display = 'none';
@@ -7663,24 +7671,24 @@
         };
       }
       
-      // Auto-GPS: Ein Klick = manueller Refresh. Bei Erfolg: Button zeigt "📍 Aktueller Standort", bei Fehler: Toast + Fallback-Eingabe
+      // Standort: Nadel (GPS) nur auf Klick – kein Auto-GPS (vermeidet Flimmern/Fehler auf dem Handy)
       function requestUserLocation(){
         if(!navigator.geolocation){
-          showToast('GPS nicht verfügbar', 2000);
+          if(typeof showToast === 'function') showToast('GPS nicht verfügbar', 2000);
           if(discoverLocationExpanded) discoverLocationExpanded.style.display = 'block';
           if(discoverLocationInput) discoverLocationInput.focus();
           return;
         }
         if(discoverCurrentLocation) discoverCurrentLocation.textContent = 'Ermitteln…';
-        showToast('Standort wird ermittelt…', 1000);
+        if(typeof showToast === 'function') showToast('Standort wird ermittelt…', 1000);
         navigator.geolocation.getCurrentPosition(
           (position)=>{
             userLat = position.coords.latitude;
             userLng = position.coords.longitude;
             locationQuery = 'Aktueller Standort';
             if(discoverCurrentLocation) discoverCurrentLocation.textContent = '📍 Aktueller Standort';
-            discoverLocationExpanded.style.display = 'none';
-            showToast('Standort aktualisiert', 1500);
+            if(discoverLocationExpanded) discoverLocationExpanded.style.display = 'none';
+            if(typeof showToast === 'function') showToast('Standort aktualisiert', 1500);
             renderDiscover();
           },
           (err)=>{
@@ -7688,16 +7696,15 @@
             userLat = SCHORNDORF_LAT;
             userLng = SCHORNDORF_LNG;
             if(discoverCurrentLocation) discoverCurrentLocation.textContent = DEFAULT_LOCATION_FALLBACK;
-            showToast('Standort: Schorndorf (Fallback)', 2000);
-            discoverLocationExpanded.style.display = 'block';
-            if(discoverLocationInput){ discoverLocationInput.placeholder = 'Ort oder PLZ eingeben'; discoverLocationInput.focus(); }
+            if(discoverLocationExpanded) discoverLocationExpanded.style.display = 'none';
             renderDiscover();
           },
           { enableHighAccuracy: true, timeout: 12000, maximumAge: 300000 }
         );
       }
       if(btnDiscoverLocationGPS){ btnDiscoverLocationGPS.onclick = (e)=>{ e.preventDefault(); e.stopPropagation(); triggerHapticFeedback([10]); requestUserLocation(); }; }
-      setTimeout(function(){ requestUserLocation(); }, 800);
+      var discoverLocationBtnNadel = document.getElementById('discoverLocationBtnNadel');
+      if(discoverLocationBtnNadel){ discoverLocationBtnNadel.onclick = function(){ triggerHapticFeedback([10]); requestUserLocation(); }; }
     }
     
     // Aktuellen Standort anzeigen (Fallback: Demo-Text wenn weder GPS noch Eingabe)
@@ -7735,9 +7742,9 @@
       if(exp && inp){
         exp.style.display = 'block';
         inp.value = (locationQuery && locationQuery !== DEFAULT_LOCATION_FALLBACK && locationQuery !== 'Aktueller Standort') ? locationQuery : '';
-        inp.placeholder = 'Ort oder PLZ eingeben...';
+        inp.placeholder = 'PLZ oder Ort eingeben...';
         setTimeout(function(){ inp.focus(); }, 120);
-        showToast('Ort oder PLZ eingeben');
+        if(typeof lucide !== 'undefined') lucide.createIcons();
       }
     };
     
@@ -11499,49 +11506,49 @@
     if(document.getElementById('pickupConfirmSheet') && document.getElementById('pickupConfirmSheet').classList.contains('active')){
       closePickupConfirmSheet();
       e.preventDefault();
-      history.pushState(null, '', location.pathname);
+      pushViewState(null, location.pathname);
       return;
     }
     // Create Flow Sheet schließen
     if(document.getElementById('createFlowSheet') && document.getElementById('createFlowSheet').classList.contains('active')){
       closeCreateFlowSheet();
       e.preventDefault();
-      history.pushState(null, '', location.pathname);
+      pushViewState(null, location.pathname);
       return;
     }
     // FAQ Sheet schließen
     if(document.getElementById('faqSheet') && document.getElementById('faqSheet').classList.contains('active')){
       closeFaqSheet();
       e.preventDefault();
-      history.pushState(null, '', location.pathname);
+      pushViewState(null, location.pathname);
       return;
     }
     // Login Modal schließen
     if(document.getElementById('loginSheet') && document.getElementById('loginSheet').classList.contains('active')){
       closeLoginSheet();
       e.preventDefault();
-      history.pushState(null, '', location.pathname);
+      pushViewState(null, location.pathname);
       return;
     }
     // Provider Login Modal schließen
     if(document.getElementById('providerLoginSheet') && document.getElementById('providerLoginSheet').style.display !== 'none'){
       closeProviderLoginModal();
       e.preventDefault();
-      history.pushState(null, '', location.pathname);
+      pushViewState(null, location.pathname);
       return;
     }
     // Wizard schließen
     if(document.getElementById('wizard') && document.getElementById('wizard').classList.contains('active')){
       closeWizard();
       e.preventDefault();
-      history.pushState(null, '', location.pathname);
+      pushViewState(null, location.pathname);
       return;
     }
     // Sheet schließen
     if(document.getElementById('sheet') && document.getElementById('sheet').classList.contains('active')){
       closeSheet();
       e.preventDefault();
-      history.pushState(null, '', location.pathname);
+      pushViewState(null, location.pathname);
       return;
     }
     // Onboarding back navigation
@@ -11550,22 +11557,22 @@
       if(currentView.id === 'v-provider-onboarding-preview'){
         showOnboardingBusiness();
         e.preventDefault();
-        history.pushState(null, '', location.pathname);
+        pushViewState(null, location.pathname);
         return;
       } else if(currentView.id === 'v-provider-onboarding-business'){
         showOnboardingSignup();
         e.preventDefault();
-        history.pushState(null, '', location.pathname);
+        pushViewState(null, location.pathname);
         return;
       } else if(currentView.id === 'v-provider-onboarding-signup'){
         showOnboardingFirstDish(!!onboardingDraftDish);
         e.preventDefault();
-        history.pushState(null, '', location.pathname);
+        pushViewState(null, location.pathname);
         return;
       } else if(currentView.id === 'v-provider-onboarding-first-dish'){
         showOnboardingEntry(!!onboardingDraftDish);
         e.preventDefault();
-        history.pushState(null, '', location.pathname);
+        pushViewState(null, location.pathname);
         return;
       } else if(currentView.id === 'v-provider-onboarding-entry'){
         // Animation für 3-Punkt-Erklärung
@@ -11588,7 +11595,7 @@
           showProfile();
         }
         e.preventDefault();
-        history.pushState(null, '', location.pathname);
+        pushViewState(null, location.pathname);
         return;
       }
     }
@@ -12713,7 +12720,7 @@
         activeFilter: activeDiscoverFilter || 'near',
         scrollY: window.scrollY
       });
-      history.pushState({view: 'checkout'}, '', '#checkout');
+      pushViewState({view: 'checkout'}, '#checkout');
     }
   }
   
@@ -13856,7 +13863,7 @@
     showView(views.providerOnboardingFirstDish);
     
     // Push state for browser back button
-    history.pushState({onboarding: 'first-dish'}, '', location.pathname);
+    pushViewState({onboarding: 'first-dish'}, location.pathname);
     
     if(prefill && onboardingDraftDish){
       const dishName = document.getElementById('onboardingDishName');
@@ -14117,17 +14124,17 @@
   
   function showOnboardingSignup(){
     showView(views.providerOnboardingSignup);
-    history.pushState({onboarding: 'signup'}, '', location.pathname);
+    pushViewState({onboarding: 'signup'}, location.pathname);
   }
   
   function showOnboardingBusiness(){
     showView(views.providerOnboardingBusiness);
-    history.pushState({onboarding: 'business'}, '', location.pathname);
+    pushViewState({onboarding: 'business'}, location.pathname);
   }
   
   function showOnboardingPreview(dishId){
     showView(views.providerOnboardingPreview);
-    history.pushState({onboarding: 'preview'}, '', location.pathname);
+    pushViewState({onboarding: 'preview'}, location.pathname);
     
     // Load saved dish and show preview
     const savedDish = dishId ? cookbook.find(c => c.id === dishId) : cookbook.find(c => c.providerId === providerId());
@@ -16345,7 +16352,7 @@
       showLegalPage('faq-provider');
       // URL aktualisieren für Provider-Mode
       if(mode === 'provider'){
-        history.pushState({view: 'provider-faq', mode: mode}, '', '/anbieter/hilfe/faq');
+        pushViewState({view: 'provider-faq', mode: mode}, '/anbieter/hilfe/faq');
       }
     };
   }
@@ -16356,7 +16363,7 @@
       showView(views.providerBilling);
       renderBilling();
       // Browser-Verlauf aktualisieren
-      history.pushState({view: 'provider-billing', mode: mode}, '', location.pathname);
+      pushViewState({view: 'provider-billing', mode: mode}, location.pathname);
     };
   }
   const btnBillingBack = document.getElementById('btnBillingBack');
@@ -16442,7 +16449,7 @@
         };
         const url = urlMap[page];
         if(url){
-          history.pushState({view: `provider-${page}`, mode: mode}, '', url);
+          pushViewState({view: `provider-${page}`, mode: mode}, url);
         }
       }
     }
@@ -17022,7 +17029,7 @@
     const wizard = document.getElementById('wizard');
     if(wbd) wbd.classList.add('active');
     if(wizard) wizard.classList.add('active');
-    history.pushState({wizard: true}, '', location.pathname);
+    pushViewState({wizard: true}, location.pathname);
   }
   function closeWizard(){
     const wizard = document.getElementById('wizard');
