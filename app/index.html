@@ -3376,6 +3376,59 @@
       </div>
     </section>
 
+    <!-- Admin-Dashboard: /admin – Clean, modern, KPIs, Inserats-Feed, Buchhaltung, CSV-Export -->
+    <section class="view" id="v-admin" style="display:none; min-height:100vh; padding:20px; padding-bottom:90px; background:#f8f7f2;">
+      <div style="max-width:900px; margin:0 auto;">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:24px;">
+          <h1 style="margin:0; font-size:24px; font-weight:900; color:#1a1a1a;">Admin</h1>
+          <a href="#" onclick="location.hash=''; showDiscover(); return false;" style="font-size:14px; font-weight:700; color:#64748b; text-decoration:none;">← Zurück</a>
+        </div>
+        <!-- KPI-Sektion -->
+        <div id="adminKpis" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:16px; margin-bottom:24px;">
+          <div style="background:#fff; border-radius:16px; padding:20px; box-shadow:0 2px 12px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04);">
+            <div style="font-size:12px; font-weight:700; color:#64748b; text-transform:uppercase; margin-bottom:4px;">Tagesumsatz</div>
+            <div id="adminKpiUmsatz" style="font-size:28px; font-weight:900; color:#16a34a;">0,00 €</div>
+          </div>
+          <div style="background:#fff; border-radius:16px; padding:20px; box-shadow:0 2px 12px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04);">
+            <div style="font-size:12px; font-weight:700; color:#64748b; text-transform:uppercase; margin-bottom:4px;">Aktive Inserate</div>
+            <div id="adminKpiInserate" style="font-size:28px; font-weight:900; color:#1a1a1a;">0</div>
+          </div>
+          <div style="background:#fff; border-radius:16px; padding:20px; box-shadow:0 2px 12px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04);">
+            <div style="font-size:12px; font-weight:700; color:#64748b; text-transform:uppercase; margin-bottom:4px;">Abholnummern gebucht</div>
+            <div id="adminKpiAbholnummern" style="font-size:28px; font-weight:900; color:#3b82f6;">0</div>
+          </div>
+        </div>
+        <!-- Inserats-Feed (Live-Angebote, 3 Säulen) -->
+        <div style="background:#fff; border-radius:16px; padding:20px; margin-bottom:24px; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
+          <div style="font-size:15px; font-weight:800; color:#1a1a1a; margin-bottom:16px;">Inserats-Feed (Live)</div>
+          <div id="adminFeedList" style="display:flex; flex-direction:column; gap:12px;"></div>
+        </div>
+        <!-- Buchhaltungs-Tabelle + Summenzeile + CSV -->
+        <div style="background:#fff; border-radius:16px; padding:20px; margin-bottom:24px; box-shadow:0 2px 12px rgba(0,0,0,0.06); overflow-x:auto;">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+            <div style="font-size:15px; font-weight:800; color:#1a1a1a;">Buchhaltung</div>
+            <button type="button" id="adminBtnCsvExport" style="padding:10px 18px; border-radius:10px; border:none; background:#FFD700; color:#1a1a1a; font-weight:800; font-size:14px; cursor:pointer;">CSV-Export</button>
+          </div>
+          <table style="width:100%; border-collapse:collapse; font-size:14px;">
+            <thead>
+              <tr style="border-bottom:2px solid #e5e7eb;">
+                <th style="text-align:left; padding:12px 8px; color:#64748b; font-weight:700;">Datum</th>
+                <th style="text-align:left; padding:12px 8px; color:#64748b; font-weight:700;">Anbieter</th>
+                <th style="text-align:left; padding:12px 8px; color:#64748b; font-weight:700;">Inserat-ID</th>
+                <th style="text-align:right; padding:12px 8px; color:#64748b; font-weight:700;">Basis (4,99 €)</th>
+                <th style="text-align:right; padding:12px 8px; color:#64748b; font-weight:700;">Abholnummer (0,89 €)</th>
+                <th style="text-align:right; padding:12px 8px; color:#64748b; font-weight:700;">Gesamtbetrag</th>
+              </tr>
+            </thead>
+            <tbody id="adminTableBody"></tbody>
+            <tfoot>
+              <tr id="adminTableSum" style="border-top:2px solid #1a1a1a; font-weight:800; background:#f8f7f2;"></tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </section>
+
     <!-- CUSTOMER: Favorites – Fokus auf HEUTE, 2x2 Grid, Pull-to-Reveal -->
     <section class="view customer-view" id="v-fav">
       <div style="padding-bottom:100px;">
@@ -7030,7 +7083,8 @@
     providerOnboardingPreview:'v-provider-onboarding-preview',
     providerHome:'v-provider-home', providerPickups:'v-provider-pickups', providerCookbook:'v-provider-cookbook',
     providerProfile:'v-provider-profile', providerBilling:'v-provider-billing', providerWeek:'v-provider-week',
-    legalImpressum:'v-legal-impressum', legalImpressumProvider:'v-legal-impressum-provider', legalAgbKurz:'v-legal-agb-kurz', legalAgbProvider:'v-legal-agb-provider', legalDatenschutz:'v-legal-datenschutz', legalAgbOnboarding:'v-legal-agb-onboarding', legalFaq:'v-legal-faq', legalSupport:'v-support', legalFaqProvider:'v-legal-faq-provider', version:'v-version'
+    legalImpressum:'v-legal-impressum', legalImpressumProvider:'v-legal-impressum-provider', legalAgbKurz:'v-legal-agb-kurz', legalAgbProvider:'v-legal-agb-provider', legalDatenschutz:'v-legal-datenschutz', legalAgbOnboarding:'v-legal-agb-onboarding', legalFaq:'v-legal-faq', legalSupport:'v-support', legalFaqProvider:'v-legal-faq-provider', version:'v-version',
+    admin:'v-admin'
   };
 
   function setCustomerNavActive(go){
