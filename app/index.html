@@ -5575,6 +5575,36 @@
   const load = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } };
   const save = (k, v) => localStorage.setItem(k, JSON.stringify(v));
 
+  // Cookie-Helfer für Single-Session (Session-ID im Cookie + DB)
+  const SESSION_COOKIE_NAME = 'mittagio_session_id';
+  const SESSION_COOKIE_DAYS = 30;
+  function getCookie(name){
+    const m = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+    return m ? decodeURIComponent(m[2]) : null;
+  }
+  function setCookie(name, value, days){
+    const maxAge = (days || SESSION_COOKIE_DAYS) * 24 * 60 * 60;
+    document.cookie = name + '=' + encodeURIComponent(value) + '; path=/; max-age=' + maxAge + '; SameSite=Lax';
+  }
+  function deleteCookie(name){
+    document.cookie = name + '=; path=/; max-age=0';
+  }
+
+  // Single-Session: Cookie-Helfer (Session-ID im Cookie + in User-Modell)
+  const SESSION_COOKIE_NAME = 'mittagio_session_id';
+  const SESSION_COOKIE_DAYS = 30;
+  function getSessionCookie(){
+    const match = document.cookie.match(new RegExp('(^| )' + SESSION_COOKIE_NAME + '=([^;]+)'));
+    return match ? match[2] : null;
+  }
+  function setSessionCookie(sessionId){
+    const maxAge = SESSION_COOKIE_DAYS * 24 * 60 * 60;
+    document.cookie = SESSION_COOKIE_NAME + '=' + encodeURIComponent(sessionId) + '; path=/; max-age=' + maxAge + '; SameSite=Lax';
+  }
+  function clearSessionCookie(){
+    document.cookie = SESSION_COOKIE_NAME + '=; path=/; max-age=0';
+  }
+
   function getFavPillars(dishId){ const m = load(LS.favPillars, {}); return m[dishId] || null; }
   function setFavPillars(dishId, pillars){ const m = load(LS.favPillars, {}); m[dishId] = pillars; save(LS.favPillars, m); }
   function renderPillarBars(vorOrt, abholnummer, mehrweg){
@@ -6189,7 +6219,8 @@
   let dishFavs = new Set(load(LS.dishFavs, []));
   let cart = load(LS.cart, null); // {providerId, items:[{offerId, qty}]} or null
   let orders = loadOrders(); // Load via Order Store
-  let customer = load(LS.customer, { 
+  let customer = load(LS.customer, {
+    current_session_id: null, 
     loggedIn:false, 
     name:null,
     email:null,
@@ -6201,7 +6232,7 @@
     },
     reuseEnabled: false
   });
-  let provider = load(LS.provider, { loggedIn:false, email:null, profile:{ name:'', address:'', street:'', zip:'', city:'', mealWindow:'11:30 – 14:00', mealStart:'11:30', mealEnd:'14:00', lunchWeekdays:[1,2,3,4,5], phone:'', email:'', website:'', logoData:'', reuseEnabledByDefault:false, abholnummerEnabledByDefault:false } });
+  let provider = load(LS.provider, { loggedIn:false, email:null, current_session_id:null, profile:{ name:'', address:'', street:'', zip:'', city:'', mealWindow:'11:30 – 14:00', mealStart:'11:30', mealEnd:'14:00', lunchWeekdays:[1,2,3,4,5], phone:'', email:'', website:'', logoData:'', reuseEnabledByDefault:false, abholnummerEnabledByDefault:false } });
   let cookbook = load(LS.cookbook, []); // [{id, dish, category, price, allergens[], extras?, reuse? , photoData?}]
   let week = load(LS.week, {}); // { 'YYYY-MM-DD': [cookbookId,...] }
 
@@ -13590,10 +13621,38 @@
     const tasteSection = document.getElementById('profileTasteSection');
     if(tasteSection) tasteSection.style.display = isLoggedIn ? 'block' : 'none';
     
+    // Viralitäts-Badge: "Ich habe mit Mittagio bereits [X] Minuten gespart" (teilbar)
+    const minutesSavedSection = document.getElementById('profileMinutesSavedSection');
+    const minutesSavedCountEl = document.getElementById('profileMinutesSavedCount');
+    const MINUTES_PER_ORDER = 5;
+    const allOrdersForProfile = loadOrders();
+    const orderCount = Array.isArray(allOrdersForProfile) ? allOrdersForProfile.filter(function(o){ return o.status === 'PAID' || o.status === 'PICKED_UP'; }).length : 0;
+    const minutesSaved = orderCount * MINUTES_PER_ORDER;
+    if(minutesSavedSection && minutesSavedCountEl){
+      if(minutesSaved > 0){
+        minutesSavedSection.style.display = 'block';
+        minutesSavedCountEl.textContent = String(minutesSaved);
+        var btnShareMinutes = document.getElementById('btnProfileShareMinutesSaved');
+        if(btnShareMinutes){
+          btnShareMinutes.onclick = function(){
+            var text = 'Ich habe mit Mittagio bereits ' + minutesSaved + ' Minuten gespart.';
+            var shareUrl = (location.origin || '') + (location.pathname || '/').replace(/\/$/, '');
+            if(navigator.share){
+              navigator.share({ title: 'Mittagio', text: text, url: shareUrl }).then(function(){ if(typeof showToast === 'function') showToast('Geteilt!'); }).catch(function(){});
+            } else {
+              navigator.clipboard.writeText(text + ' ' + shareUrl).then(function(){ if(typeof showToast === 'function') showToast('Kopiert!'); });
+            }
+          };
+        }
+      } else {
+        minutesSavedSection.style.display = 'none';
+      }
+    }
+    
     // Quick-History (Aktive Abholnummern)
     const abholnummerSection = document.getElementById('profileAbholnummerSection');
     const abholnummerList = document.getElementById('profileActiveAbholnummernList');
-    const allOrders = loadOrders();
+    const allOrders = allOrdersForProfile || loadOrders();
     const hasOrders = Array.isArray(allOrders) && allOrders.length > 0; // Bug-Fix: Sauber definiert
     
     // Heutige aktive Abholnummern (PAID, nicht PICKED_UP)
@@ -13949,7 +14008,7 @@
     };
   }
   
-  // Provider-Login durchführen (mit Session-Management)
+  // Provider-Login durchführen (mit Single-Session: Session-ID in DB + Cookie)
   function performProviderLogin(email){
     const newSessionId = cryptoId();
     const sessionData = {
@@ -13960,8 +14019,10 @@
     };
     save(LS.providerSession, sessionData);
     save('mittagio_current_session_id', newSessionId);
+    setCookie(SESSION_COOKIE_NAME, newSessionId, SESSION_COOKIE_DAYS);
     provider.loggedIn = true;
     provider.email = email;
+    provider.current_session_id = newSessionId;
     save(LS.provider, provider);
     closeProviderLoginModal();
     showToast('Erfolgreich eingeloggt! 🎉', 2000);
@@ -14004,31 +14065,47 @@
     if(sheet) sheet.classList.remove('active');
   }
   
-  // Session-Validität prüfen (bei App-Start und regelmäßig)
+  // Single-Session-Middleware: Cookie mit current_session_id in DB vergleichen
+  function checkSingleSession(){
+    if(mode !== 'provider' || !provider.loggedIn) return true;
+    const cookieSessionId = getCookie(SESSION_COOKIE_NAME);
+    const dbSessionId = provider.current_session_id || load('mittagio_current_session_id', null);
+    if(cookieSessionId && dbSessionId && cookieSessionId === dbSessionId){
+      return true;
+    }
+    deleteCookie(SESSION_COOKIE_NAME);
+    localStorage.removeItem(LS.providerSession);
+    localStorage.removeItem('mittagio_current_session_id');
+    provider.loggedIn = false;
+    provider.current_session_id = null;
+    save(LS.provider, provider);
+    showToast('Du wurdest auf einem anderen Gerät angemeldet.', 4000);
+    setMode('provider');
+    showView(views.providerLogin);
+    return false;
+  }
+
+  // Session-Validität prüfen (bei App-Start und regelmäßig) – nutzt checkSingleSession
   function checkSessionValidity(){
     if(mode !== 'provider' || !provider.loggedIn) return true;
-    
-    const currentSessionId = load('mittagio_current_session_id', null);
+    if(!checkSingleSession()) return false;
+    const currentSessionId = getCookie(SESSION_COOKIE_NAME) || load('mittagio_current_session_id', null);
     const storedSession = load(LS.providerSession, null);
-    
-    // Wenn keine Session-ID vorhanden oder Session nicht mehr gültig
     if(!currentSessionId || !storedSession || storedSession.sessionId !== currentSessionId){
-      // Session ungültig: Ausloggen
       provider.loggedIn = false;
+      provider.current_session_id = null;
       save(LS.provider, provider);
+      deleteCookie(SESSION_COOKIE_NAME);
       localStorage.removeItem('mittagio_current_session_id');
-      showToast('Deine Sitzung wurde auf einem anderen Gerät beendet.', 3000);
-      setMode('customer');
-      showProfile();
+      showToast('Du wurdest auf einem anderen Gerät angemeldet.', 4000);
+      setMode('provider');
+      showView(views.providerLogin);
       return false;
     }
-    
-    // Session aktualisieren (lastActivity) - nur wenn noch aktiv
     if(storedSession.email === provider.email){
       storedSession.lastActivity = Date.now();
       save(LS.providerSession, storedSession);
     }
-    
     return true;
   }
   
@@ -14749,11 +14826,11 @@
   const btnProvLogout = document.getElementById('btnProvLogout');
   if(btnProvLogout){
     btnProvLogout.onclick=()=>{
-      // Session löschen
+      deleteCookie(SESSION_COOKIE_NAME);
       localStorage.removeItem(LS.providerSession);
       localStorage.removeItem('mittagio_current_session_id');
-      
-      provider.loggedIn=false;
+      provider.loggedIn = false;
+      provider.current_session_id = null;
       save(LS.provider, provider);
       setMode('customer');
       showProfile();
@@ -19740,7 +19817,12 @@
   if(mode==='provider' && !provider.loggedIn) mode='customer';
   if(mode==='start') mode='customer';
   
-  // Session-Validität prüfen BEVOR setMode aufgerufen wird
+  // Single-Session: Cookie aus DB wiederherstellen, falls fehlt (z. B. nach Reload)
+  if(mode === 'provider' && provider.loggedIn && provider.current_session_id && !getCookie(SESSION_COOKIE_NAME)){
+    setCookie(SESSION_COOKIE_NAME, provider.current_session_id, SESSION_COOKIE_DAYS);
+  }
+  
+  // Session-Validität prüfen BEVOR setMode aufgerufen wird (checkSingleSession)
   if(mode === 'provider' && provider.loggedIn){
     if(!checkSessionValidity()){
       // Session ungültig, wurde bereits ausgeloggt
