@@ -3383,6 +3383,10 @@
     .offer-card-modern {
       background: #fff;
       border-radius: 24px;
+      width: 95%;
+      max-width: 95%;
+      margin-left: auto;
+      margin-right: auto;
       box-shadow: 0 10px 30px rgba(0,0,0,0.06);
       margin-bottom: 24px;
       overflow: hidden;
@@ -4310,29 +4314,35 @@
         <h1 style="margin:0; font-size:26px; font-weight:800; color:#1a1a1a; letter-spacing:-0.5px;">Hallo, <span id="providerDashboardName">Anbieter</span> 👋</h1>
       </div>
 
-      <div style="padding:20px;">
+      <div style="padding:20px; max-width:28rem; margin:0 auto;">
 
-        <!-- Status Card (Umsatz & Bestellungen) - Light & Clean -->
-        <div style="background:#fff; border-radius:24px; padding:24px; color:#1a1a1a; box-shadow:0 8px 24px rgba(0,0,0,0.06); margin-bottom:24px; position:relative; overflow:hidden; border:1px solid rgba(0,0,0,0.04);">
-          <div style="position:relative; z-index:2;">
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:20px;">
-              <div>
-                <div style="font-size:13px; font-weight:600; opacity:0.6; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Tagesumsatz</div>
-                <div id="providerTimeSaved" style="font-size:36px; font-weight:800; line-height:1; letter-spacing:-1px;">0 €</div>
-              </div>
-              <div style="background:rgba(0,0,0,0.04); padding:8px 12px; border-radius:12px;">
-                <div style="font-size:11px; font-weight:600; opacity:0.6; margin-bottom:2px;">Bestellungen</div>
-                <div id="kpiAbholungenCount" style="font-size:18px; font-weight:800; text-align:center;">0</div>
-              </div>
-            </div>
-            
-            <div style="display:flex; gap:12px;">
-              <button id="btnTodayShare" style="flex:1; background:#f8f8f8; color:#333; border:1px solid rgba(0,0,0,0.05); border-radius:12px; height:44px; font-size:14px; font-weight:600; display:flex; align-items:center; justify-content:center; gap:6px; transition:background 0.2s;">
-                <i data-lucide="share-2" style="width:16px; height:16px;"></i> Teilen
-              </button>
+        <!-- Primärer CTA: Neues Gericht inserieren (Clean, 4,99 €, < 30 Sek.) -->
+        <section style="margin-bottom:24px;">
+          <button type="button" id="btnProviderDashboardCTA" style="width:100%; background:#2563eb; color:#fff; padding:16px 20px; border-radius:16px; border:none; box-shadow:0 4px 14px rgba(37,99,235,0.35); font-size:18px; font-weight:700; cursor:pointer; transition:all 0.2s; display:flex; flex-direction:column; align-items:center; gap:4px; text-align:center;">
+            <span>Neues Gericht inserieren</span>
+            <span style="font-size:12px; font-weight:400; opacity:0.9;">Dauer: &lt; 30 Sek. | 4,99 €</span>
+          </button>
+        </section>
+
+        <!-- Aktive Inserate (3 Säulen unter Bild: 🍴 🔄 🧾) -->
+        <section style="margin-bottom:24px;" id="providerActiveListingsSection">
+          <h3 style="font-size:12px; font-weight:600; color:rgba(0,0,0,0.5); text-transform:uppercase; letter-spacing:0.5px; margin:0 0 12px;">Aktive Inserate</h3>
+          <div id="providerActiveListings" style="display:flex; flex-direction:column; gap:12px;"></div>
+        </section>
+
+        <!-- Abhol-Monitor & Heutiger Verdienst (Clean, No Slate) -->
+        <section style="background:#f8f8f8; border-radius:16px; padding:16px; margin-bottom:24px; border:1px solid rgba(0,0,0,0.04);">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <span style="font-size:13px; font-weight:600; color:rgba(0,0,0,0.5);">Heutiger Verdienst</span>
+            <span id="providerTimeSaved" style="font-size:22px; font-weight:800; color:#1a1a1a;">0 €</span>
+          </div>
+          <div style="margin-top:12px;">
+            <h4 style="font-size:11px; font-weight:700; color:rgba(0,0,0,0.4); text-transform:uppercase; margin:0 0 8px;">Nächste Abholnummern</h4>
+            <div id="providerNextPickupPills" style="display:flex; gap:8px; overflow-x:auto; padding-bottom:4px; scrollbar-width:none;">
+              <!-- Wird von renderProviderHome befüllt -->
             </div>
           </div>
-        </div>
+        </section>
 
         <!-- Quick Actions Grid - Light -->
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:24px;">
@@ -5661,6 +5671,17 @@
       </div>
     `;
   }
+  /** 3-Balken Discovery: Lange Labels (VOR ORT MÖGLICH, ABHOLNUMMER AKTIV, MEHRWEG VERFÜGBAR / KEINE ABHOLNUMMER, KEIN MEHRWEG). Inaktiv: Helles Grau opacity 0.3, weiße Schrift. */
+  function renderPillarBarsDiscovery(vorOrt, abholnummer, mehrweg){
+    const bar = (active, bg) => `padding:8px 12px; border-radius:10px; font-size:11px; font-weight:800; color:#fff; text-align:center; letter-spacing:0.3px; opacity:${active ? '1' : '0.3'}; background:${active ? bg : 'rgba(0,0,0,0.2)'};`;
+    return `
+      <div style="display:flex; flex-direction:column; gap:6px; margin-top:8px;">
+        <div style="${bar(vorOrt, '#27AE60')}">VOR ORT MÖGLICH</div>
+        <div style="${bar(abholnummer, '#FFD700')}">${abholnummer ? 'ABHOLNUMMER AKTIV' : 'KEINE ABHOLNUMMER'}</div>
+        <div style="${bar(mehrweg, '#2980B9')}">${mehrweg ? 'MEHRWEG VERFÜGBAR' : 'KEIN MEHRWEG'}</div>
+      </div>
+    `;
+  }
   function clearFavPillars(dishId){ const m = load(LS.favPillars, {}); delete m[dishId]; save(LS.favPillars, m); }
 
   function renderDiscoverCategories(){
@@ -5874,7 +5895,7 @@
     
     const barsWrap = document.createElement('div');
     barsWrap.style.cssText = 'margin-top:8px; padding:0 12px;';
-    barsWrap.innerHTML = renderPillarBars(vorOrt, abholnummer, mehrweg);
+    barsWrap.innerHTML = renderPillarBarsDiscovery(vorOrt, abholnummer, mehrweg);
     body.appendChild(barsWrap);
     
     // Mobilitäts-Leiste ganz unten
@@ -6415,6 +6436,51 @@
           createdAt: Date.now() - (pIdx * 3600000) - (dIdx * 600000)
         });
       });
+    });
+
+    // Schorndorf Test-Karten (3-Balken-Vergleich): Karte A Full Service, Karte B Basic Service
+    const schorndorfAddress = 'Marktplatz 1, 73614 Schorndorf';
+    newOffers.push({
+      id: cryptoId(),
+      providerId: 'p_schorndorf_metzgerei',
+      providerName: 'Metzgerei aus Schorndorf',
+      providerStreet: 'Marktplatz 1',
+      providerZip: '73614',
+      providerCity: 'Schorndorf',
+      address: schorndorfAddress,
+      dish: 'Leberkäse mit Kartoffelsalat',
+      category: 'Mit Fleisch',
+      price: 7.90,
+      pickupWindow: '11:30 – 14:00',
+      day: today,
+      imageUrl: 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=1200&q=60',
+      hasPickupCode: true,
+      dineInPossible: true,
+      distanceKm: 0.3,
+      allergens: [],
+      reuse: { enabled: true, deposit: 0 },
+      active: true
+    });
+    newOffers.push({
+      id: cryptoId(),
+      providerId: 'p_schorndorf_baecker',
+      providerName: 'Bäcker am Marktplatz',
+      providerStreet: 'Hauptstraße 10',
+      providerZip: '73614',
+      providerCity: 'Schorndorf',
+      address: 'Hauptstraße 10, 73614 Schorndorf',
+      dish: 'Belegtes Brötchen mit Salat',
+      category: 'Vegetarisch',
+      price: 5.20,
+      pickupWindow: '08:00 – 12:00',
+      day: today,
+      imageUrl: 'https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?auto=format&fit=crop&w=1200&q=60',
+      hasPickupCode: false,
+      dineInPossible: true,
+      distanceKm: 0.2,
+      allergens: [],
+      reuse: { enabled: false, deposit: 0 },
+      active: true
     });
 
     // Zuerst Offers speichern, damit assignPickupCode sie verwenden kann
@@ -7663,7 +7729,7 @@
       const inp = document.getElementById('discoverLocationInput');
       if(exp && inp){
         exp.style.display = 'block';
-        inp.value = (locationQuery && locationQuery !== 'Jena' && locationQuery !== 'Aktueller Standort') ? locationQuery : '';
+        inp.value = (locationQuery && locationQuery !== DEFAULT_LOCATION_FALLBACK && locationQuery !== 'Aktueller Standort') ? locationQuery : '';
         inp.placeholder = 'Ort oder PLZ eingeben...';
         setTimeout(function(){ inp.focus(); }, 120);
         showToast('Ort oder PLZ eingeben');
@@ -7865,17 +7931,17 @@
     if(swipeLocationCity && discoverCurrentLocation){
       const citySpan = swipeLocationCity.querySelector('.city');
       if(citySpan){
-        citySpan.textContent = discoverCurrentLocation.textContent || 'Jena';
+        citySpan.textContent = discoverCurrentLocation.textContent || DEFAULT_LOCATION_FALLBACK;
       } else {
         // Fallback: Falls .city nicht existiert, gesamten Text aktualisieren
-        swipeLocationCity.innerHTML = `<span class="icon">📍</span><span class="city">${discoverCurrentLocation.textContent || 'Jena'}</span>`;
+        swipeLocationCity.innerHTML = `<span class="icon">📍</span><span class="city">${discoverCurrentLocation.textContent || DEFAULT_LOCATION_FALLBACK}</span>`;
       }
     } else if(swipeLocationCity){
       const citySpan = swipeLocationCity.querySelector('.city');
       if(citySpan){
-        citySpan.textContent = locationQuery || 'Jena';
+        citySpan.textContent = locationQuery || DEFAULT_LOCATION_FALLBACK;
       } else {
-        swipeLocationCity.innerHTML = `<span class="icon">📍</span><span class="city">${locationQuery || 'Jena'}</span>`;
+        swipeLocationCity.innerHTML = `<span class="icon">📍</span><span class="city">${locationQuery || DEFAULT_LOCATION_FALLBACK}</span>`;
       }
     }
     
@@ -14985,6 +15051,64 @@
           kpiTagesessenDish.textContent = dishName.length > 18 ? dishName.substring(0, 18) + '…' : dishName;
         } else {
           kpiTagesessenDish.textContent = '–';
+        }
+      }
+
+      // Aktive Inserate: Karten mit Bild, 3 Säulen (🍴 🔄 🧾), Verdienst-Vorschau
+      const providerActiveListings = document.getElementById('providerActiveListings');
+      const providerActiveListingsSection = document.getElementById('providerActiveListingsSection');
+      if(providerActiveListings && providerActiveListingsSection){
+        providerActiveListingsSection.style.display = mineToday.length > 0 ? 'block' : 'none';
+        providerActiveListings.innerHTML = '';
+        mineToday.forEach(function(o){
+          const d = normalizeOffer(o);
+          const imgUrl = d.imageUrl || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=400&q=70';
+          const hasReusable = !!(o.reuse && o.reuse.enabled);
+          const hasPickupNumber = !!o.hasPickupCode;
+          const timeRange = (o.pickupWindow || d.pickupWindow || '11:30 – 14:00').replace('–', '-');
+          const previewEarnings = (Number(d.price) || 0).toFixed(2);
+          const card = document.createElement('div');
+          card.style.cssText = 'display:flex; gap:12px; align-items:flex-start; background:#fff; border:1px solid rgba(0,0,0,0.06); border-radius:12px; padding:12px; box-shadow:0 2px 8px rgba(0,0,0,0.04);';
+          card.innerHTML = `
+            <div style="flex-shrink:0;">
+              <div style="width:80px; height:80px; background:#eee; border-radius:8px; overflow:hidden;">
+                <img src="${esc(imgUrl)}" alt="" style="width:100%; height:100%; object-fit:cover;" />
+              </div>
+              <div style="display:flex; gap:4px; margin-top:6px; font-size:14px; justify-content:center;">🍴 ${hasReusable ? '🔄' : ''} ${hasPickupNumber ? '🧾' : ''}</div>
+            </div>
+            <div style="flex:1; min-width:0;">
+              <h4 style="margin:0 0 4px; font-size:16px; font-weight:700; color:#1a1a1a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${esc(d.dish || d.title || 'Gericht')}</h4>
+              <p style="margin:0; font-size:13px; color:rgba(0,0,0,0.5);">${esc(timeRange)} Uhr</p>
+              <div style="margin-top:8px; font-size:14px; font-weight:700; color:#16a34a;">Verdienst-Vorschau: ${previewEarnings} €</div>
+            </div>
+          `;
+          card.onclick = function(){ openOffer(o.id); };
+          card.style.cursor = 'pointer';
+          providerActiveListings.appendChild(card);
+        });
+      }
+
+      // CTA-Button: Neues Gericht inserieren (wie FAB → openDishFlow)
+      const btnProviderDashboardCTA = document.getElementById('btnProviderDashboardCTA');
+      if(btnProviderDashboardCTA) btnProviderDashboardCTA.onclick = function(){ openDishFlow(); };
+
+      // Nächste Abholnummern: Pills (0,89 € Vorgänge)
+      const providerNextPickupPills = document.getElementById('providerNextPickupPills');
+      if(providerNextPickupPills){
+        providerNextPickupPills.innerHTML = '';
+        const paidOrders = todayOrders.filter(function(o){ return o.status === 'PAID' && o.pickupCode; });
+        paidOrders.slice(0, 10).forEach(function(ord, i){
+          const pill = document.createElement('div');
+          const isNext = i === 0;
+          pill.style.cssText = 'flex-shrink:0; padding:8px 14px; border-radius:999px; font-size:14px; font-weight:700; white-space:nowrap; border:2px solid ' + (isNext ? '#2563eb' : 'rgba(0,0,0,0.1)') + '; background:#fff; color:' + (isNext ? '#2563eb' : 'rgba(0,0,0,0.4)') + ';';
+          pill.textContent = '#' + (ord.pickupCode || ord.id.slice(-3));
+          providerNextPickupPills.appendChild(pill);
+        });
+        if(paidOrders.length === 0){
+          const empty = document.createElement('div');
+          empty.style.cssText = 'font-size:13px; color:rgba(0,0,0,0.4);';
+          empty.textContent = 'Heute noch keine Abholnummern';
+          providerNextPickupPills.appendChild(empty);
         }
       }
     
