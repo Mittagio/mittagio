@@ -1727,6 +1727,10 @@
     #providerNav .navbtn{ color:var(--provider-text-muted); }
     #providerNav .navbtn.active{ color:var(--brand); }
     #providerNav .navbtn.active .ico svg{ color:var(--brand); stroke:var(--brand); }
+    /* Provider Nav Light (App-Style): heller Tab-Bar */
+    .provider-nav-light .navbtn{ color:#9ca3af; }
+    .provider-nav-light .navbtn.active{ color:var(--brand); font-weight:800; }
+    .provider-nav-light .navbtn.active .ico svg{ color:var(--brand); stroke:var(--brand); }
     [id^="v-provider-"] .panel h1,[id^="v-provider-"] .panel h2,[id^="v-provider-"] .panel h3,[id^="v-provider-"] .panel .section-title{ color:var(--provider-text) !important; }
     [id^="v-provider-"] .panel .hint{ color:var(--provider-text-muted) !important; }
     /* Dynamisch eingefügter Inhalt: immer lesbar */
@@ -1749,6 +1753,10 @@
       transition:transform .15s ease, box-shadow .15s ease;
     }
     #fabProviderAddOffer:active{ transform:scale(0.95); }
+    /* Provider Dashboard CTA: Hover/Active Scale (App-Style) */
+    .provider-dashboard-cta:hover{ transform:scale(0.98); }
+    .provider-dashboard-cta:active{ transform:scale(0.95); }
+
     /* FAB & Status-Indikator: Safe-Area für S25 / moderne Handys */
     #fabProviderAddOffer{
       bottom:calc(90px + env(safe-area-inset-bottom, 20px)) !important;
@@ -4302,20 +4310,20 @@
       </div>
     </section>
 
-    <!-- PROVIDER APP - MEIN BETRIEB (Referenz 97525: #f4f1ea, gelber CTA, große Inserat-Karten) -->
-    <section class="view" id="v-provider-home" style="min-height:100vh; padding-bottom:100px; background:#f4f1ea;">
+    <!-- PROVIDER APP - MEIN BETRIEB (App-Style: #f8f7f2, Pills, 15-Min-Takt, fixer Zurück) -->
+    <section class="view" id="v-provider-home" style="min-height:100vh; padding-bottom:120px; background:#f8f7f2;">
       
-      <!-- Top Section – ohne Begrüßung (Referenz 97525) -->
-      <div style="padding:16px; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,0.06); margin-bottom:16px;">
-        <button type="button" id="btnProviderDashboardCTA" style="width:100%; background:#ffde00; color:#000; padding:16px 20px; border-radius:16px; border:none; box-shadow:0 2px 8px rgba(0,0,0,0.1); font-size:17px; font-weight:700; cursor:pointer; transition:all 0.2s; display:flex; align-items:center; justify-content:center; gap:8px;">
-          <span style="font-size:20px;">➕</span>
-          Jetzt für 4,99 € inserieren
+      <!-- Dashboard Headless (kein „Hallo“) – CTA App-Style -->
+      <div style="padding:20px;">
+        <button type="button" id="btnProviderDashboardCTA" class="provider-dashboard-cta" style="width:100%; background:#ffde00; color:#1a1a1a; padding:20px 24px; border-radius:20px; border:none; box-shadow:0 4px 0 0 #d1b600; font-size:17px; font-weight:800; cursor:pointer; transition:transform 0.15s; display:flex; align-items:center; justify-content:center; gap:12px; letter-spacing:0.02em;">
+          <span style="font-size:24px;">＋</span>
+          JETZT FÜR 4,99 € INSERIEREN
         </button>
       </div>
 
-      <div style="padding:0 16px 20px; max-width:28rem; margin:0 auto;">
+      <div style="padding:0 20px 24px; max-width:28rem; margin:0 auto;">
 
-        <!-- Aktive Inserate: große Karte mit Bild, Preis-Badge, 3 Säulen, Zeit + Verdienst (Referenz 97525) -->
+        <!-- Aktive Inserate: App-Style Card (rounded-2.5rem, 3 Säulen Pills, Zeit-Slot) -->
         <section style="margin-bottom:24px;" id="providerActiveListingsSection">
           <div id="providerActiveListings" style="display:flex; flex-direction:column; gap:20px;"></div>
         </section>
@@ -5034,13 +5042,18 @@
     </button>
   </nav>
 
-    <!-- PROVIDER bottom nav - Dunkler Küchenmodus -->
-  <nav class="bottom" id="providerNav" style="display:none; background:#2d2d2d; border-top:1px solid rgba(255,255,255,0.12); backdrop-filter:saturate(180%) blur(20px); -webkit-backdrop-filter:saturate(180%) blur(20px); position:fixed; bottom:0; left:0; right:0; z-index:999;">
-    <button class="navbtn active" data-pgo="provider-home"><div class="ico" data-icon="utensils" data-icon-only="1"></div><div>Meine Küche</div></button>
-    <button class="navbtn" data-pgo="provider-pickups"><div class="ico" data-icon="receipt" data-icon-only="1"></div><div>Abholungen</div></button>
-    <button class="navbtn" data-pgo="provider-cookbook"><div class="ico" data-icon="bookOpen" data-icon-only="1"></div><div>Kochbuch</div></button>
-    <button class="navbtn" data-pgo="provider-profile"><div class="ico" data-icon="user" data-icon-only="1"></div><div>Meins</div></button>
-  </nav>
+    <!-- PROVIDER bottom nav: fixer Zurück-Button darüber, heller Tab-Bar (App-Style) -->
+  <div id="providerNavWrap" style="display:none; position:fixed; bottom:0; left:0; right:0; z-index:999; padding:0 env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0);">
+    <div id="providerNavBackRow" style="padding:0 20px 16px; display:none;">
+      <button type="button" id="btnProviderNavBack" aria-label="Zurück" style="background:rgba(255,255,255,0.9); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:1px solid rgba(0,0,0,0.08); color:#1a1a1a; padding:10px 24px; border-radius:999px; font-size:15px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:8px; box-shadow:0 2px 8px rgba(0,0,0,0.06);">← Zurück</button>
+    </div>
+    <nav class="bottom provider-nav-light" id="providerNav" style="background:rgba(255,255,255,0.95); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border-top:1px solid rgba(0,0,0,0.06); padding:16px 24px calc(16px + env(safe-area-inset-bottom, 0)); display:flex; justify-content:space-between; align-items:center;">
+      <button class="navbtn active" data-pgo="provider-home"><div class="ico" data-icon="utensils" data-icon-only="1"></div><div>Meine Küche</div></button>
+      <button class="navbtn" data-pgo="provider-pickups"><div class="ico" data-icon="receipt" data-icon-only="1"></div><div>Abholungen</div></button>
+      <button class="navbtn" data-pgo="provider-cookbook"><div class="ico" data-icon="bookOpen" data-icon-only="1"></div><div>Kochbuch</div></button>
+      <button class="navbtn" data-pgo="provider-profile"><div class="ico" data-icon="user" data-icon-only="1"></div><div>Meins</div></button>
+    </nav>
+  </div>
 </div>
 
 <!-- Publish Fee Modal (vor Inserats-Veröffentlichung) -->
@@ -7034,12 +7047,13 @@
     const isStart = mode==='start';
     const isCustomer = mode==='customer';
     const customerNav = document.getElementById('customerNav');
+    const providerNavWrap = document.getElementById('providerNavWrap');
     const providerNav = document.getElementById('providerNav');
     const modePill = document.getElementById('modePill');
     const statusIndicator = document.getElementById('providerStatusIndicator');
     
     if(customerNav) customerNav.style.display = (isCustomer || isStart) ? 'flex' : 'none';
-    if(providerNav) providerNav.style.display = isProv ? 'flex' : 'none';
+    if(providerNavWrap) providerNavWrap.style.display = isProv ? 'block' : 'none';
     if(modePill) modePill.style.display = isProv ? 'inline-flex' : 'none';
     if(statusIndicator) statusIndicator.style.display = (isProv && provider.loggedIn) ? 'flex' : 'none';
     
@@ -7255,21 +7269,22 @@
     const fabLabel = document.getElementById('fabProviderAddOfferLabel');
     if(fab) fab.style.display = 'flex';
     if(fabLabel) fabLabel.style.display = 'block';
+    // Zurück-Zeile über der Nav ausblenden (nur auf Sub-Views sichtbar)
+    const providerNavBackRow = document.getElementById('providerNavBackRow');
+    if(providerNavBackRow) providerNavBackRow.style.display = 'none';
     
-    // Browser-Verlauf aktualisieren
     history.pushState({view: 'provider-home', mode: mode}, '', location.pathname);
   }
   function showProviderPickups(){
     setProviderNavActive('provider-pickups');
     showView(views.providerPickups);
     renderProviderPickups();
-    // FAB ausblenden
     const fab = document.getElementById('fabProviderAddOffer');
     const fabLabel = document.getElementById('fabProviderAddOfferLabel');
     if(fab) fab.style.display = 'none';
     if(fabLabel) fabLabel.style.display = 'none';
-    
-    // Browser-Verlauf aktualisieren
+    const providerNavBackRow = document.getElementById('providerNavBackRow');
+    if(providerNavBackRow) providerNavBackRow.style.display = 'block';
     history.pushState({view: 'provider-pickups', mode: mode}, '', location.pathname);
   }
   function showProviderWeek(){
@@ -7289,26 +7304,24 @@
     setProviderNavActive('provider-cookbook');
     showView(views.providerCookbook);
     renderCookbook();
-    // FAB ausblenden
     const fab = document.getElementById('fabProviderAddOffer');
     const fabLabel = document.getElementById('fabProviderAddOfferLabel');
     if(fab) fab.style.display = 'none';
     if(fabLabel) fabLabel.style.display = 'none';
-    
-    // Browser-Verlauf aktualisieren
+    const providerNavBackRow = document.getElementById('providerNavBackRow');
+    if(providerNavBackRow) providerNavBackRow.style.display = 'block';
     history.pushState({view: 'provider-cookbook', mode: mode}, '', location.pathname);
   }
   function showProviderProfile(){
     setProviderNavActive('provider-profile');
     showView(views.providerProfile);
     renderProviderProfile();
-    // FAB ausblenden
     const fab = document.getElementById('fabProviderAddOffer');
     const fabLabel = document.getElementById('fabProviderAddOfferLabel');
     if(fab) fab.style.display = 'none';
     if(fabLabel) fabLabel.style.display = 'none';
-    
-    // Browser-Verlauf aktualisieren
+    const providerNavBackRow = document.getElementById('providerNavBackRow');
+    if(providerNavBackRow) providerNavBackRow.style.display = 'block';
     history.pushState({view: 'provider-profile', mode: mode}, '', location.pathname);
   }
   function showProviderBilling(){
@@ -14849,6 +14862,8 @@
     if(go==='provider-support') openSupportContact();
     if(go==='provider-profile') showProviderProfile();
   });
+  const btnProviderNavBack = document.getElementById('btnProviderNavBack');
+  if(btnProviderNavBack) btnProviderNavBack.onclick = function(){ showProviderHome(); };
 
   // Customer nav handlers - Robuster Event-Delegation-Ansatz
   document.addEventListener('click', function(e){
@@ -15044,35 +15059,34 @@
           const imgUrl = d.imageUrl || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=800&q=70';
           const hasReusable = !!(o.reuse && o.reuse.enabled);
           const hasPickupNumber = !!o.hasPickupCode;
-          const timeRange = (o.pickupWindow || d.pickupWindow || '11:30 – 14:00').replace('–', '-');
+          const timeRange = (o.pickupWindow || d.pickupWindow || '11:30 – 14:00').replace('–', ' – ');
           const previewEarnings = (Number(d.price) || 0).toFixed(2);
           const dishName = d.dish || d.title || 'Gericht';
           const card = document.createElement('div');
-          card.style.cssText = 'background:#fff; border-radius:24px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04); cursor:pointer;';
+          card.style.cssText = 'background:#fff; border-radius:40px; overflow:hidden; box-shadow:0 10px 40px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.02); border:1px solid rgba(0,0,0,0.04); cursor:pointer;';
           card.innerHTML = `
-            <div style="position:relative; height:192px; width:100%; background:#e5e5e5;">
+            <div style="position:relative; height:224px; width:100%; background:#e5e5e5;">
               <img src="${esc(imgUrl)}" alt="" style="width:100%; height:100%; object-fit:cover;" />
-              <div style="position:absolute; bottom:16px; right:16px; background:#1a1a1a; color:#fff; padding:6px 14px; border-radius:999px; font-size:14px; font-weight:700;">${euro(d.price)}</div>
+              <div style="position:absolute; top:16px; right:16px; background:rgba(255,255,255,0.9); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); padding:8px 16px; border-radius:16px; font-size:14px; font-weight:800; color:#1a1a1a; box-shadow:0 2px 8px rgba(0,0,0,0.06);">${euro(d.price)}</div>
             </div>
-            <div style="padding:20px 24px;">
-              <h2 style="margin:0 0 20px; font-size:22px; font-weight:700; color:#1a1a1a;">${esc(dishName)}</h2>
-              <div style="display:flex; justify-content:space-around; margin-bottom:20px; padding-bottom:20px; border-bottom:1px solid rgba(0,0,0,0.06);">
+            <div style="padding:32px 24px; text-align:center;">
+              <h2 style="margin:0 0 32px; font-size:28px; font-weight:800; color:#1a1a1a; letter-spacing:-0.02em;">${esc(dishName)}</h2>
+              <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; margin-bottom:32px;">
                 <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
-                  <div style="width:48px; height:48px; border-radius:50%; border:1px solid rgba(0,0,0,0.1); display:flex; align-items:center; justify-content:center; font-size:20px;">🍴</div>
-                  <span style="font-size:10px; font-weight:700; text-transform:uppercase; color:rgba(0,0,0,0.5);">Vor Ort</span>
+                  <div style="width:64px; height:64px; border-radius:16px; background:#f0f9f4; border:1px solid #e3f2e8; display:flex; align-items:center; justify-content:center; font-size:24px;">🍴</div>
+                  <span style="font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:0.05em; color:#9ca3af;">Vor Ort</span>
                 </div>
                 <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
-                  <div style="width:48px; height:48px; border-radius:50%; background:${hasPickupNumber ? '#ffde00' : 'transparent'}; border:1px solid ${hasPickupNumber ? '#ffde00' : 'rgba(0,0,0,0.1)'}; display:flex; align-items:center; justify-content:center; font-size:20px; box-shadow:${hasPickupNumber ? '0 1px 4px rgba(0,0,0,0.1)' : 'none'};">🧾</div>
-                  <span style="font-size:10px; font-weight:700; text-transform:uppercase; color:#1a1a1a;">Abholnummer</span>
+                  <div style="width:64px; height:64px; border-radius:16px; background:#fff9db; border:1px solid #ffec8a; box-shadow:0 4px 0 0 #ffde00; display:flex; align-items:center; justify-content:center; font-size:24px;">🧾</div>
+                  <span style="font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:0.05em; color:#1a1a1a;">Abholnummer</span>
                 </div>
                 <div style="display:flex; flex-direction:column; align-items:center; gap:8px; opacity:${hasReusable ? '1' : '0.4'};">
-                  <div style="width:48px; height:48px; border-radius:50%; border:1px solid rgba(0,0,0,0.1); display:flex; align-items:center; justify-content:center; font-size:20px;">🔄</div>
-                  <span style="font-size:10px; font-weight:700; text-transform:uppercase; color:rgba(0,0,0,0.5);">Mehrweg</span>
+                  <div style="width:64px; height:64px; border-radius:16px; background:#f0f7ff; border:1px solid #e3efff; display:flex; align-items:center; justify-content:center; font-size:24px;">🔄</div>
+                  <span style="font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:0.05em; color:#9ca3af;">Mehrweg</span>
                 </div>
               </div>
-              <div style="display:flex; justify-content:space-between; align-items:center; font-size:14px; font-weight:600;">
-                <span style="color:rgba(0,0,0,0.5);">🕒 ${esc(timeRange)} Uhr</span>
-                <span style="color:#16a34a;">Vorschau: + ${previewEarnings} €</span>
+              <div style="display:inline-flex; align-items:center; gap:12px; padding:12px 24px; background:#f9fafb; border-radius:999px; font-size:14px; font-weight:700; color:#4b5563;">
+                <span style="font-size:18px;">🕒</span> ${esc(timeRange)}
               </div>
             </div>
           `;
