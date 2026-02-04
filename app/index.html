@@ -2654,6 +2654,10 @@
       font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
       letter-spacing: 0.4px !important;
     }
+    /* Meins: letzte Bestellzeile ohne unteren Rand */
+    #profileOrderHistoryList .profile-order-item:last-child {
+      border-bottom: none !important;
+    }
     
     /* Responsive Grid für Provider-Favoriten */
     @media (min-width: 768px) {
@@ -3801,14 +3805,14 @@
     <div id="pickupCodeContainer"></div>
 
     <!-- CUSTOMER: Profile "Meins" – UI-Restore: Abholnummer, Bestellungen, Profil, Präferenzen, FAQ, Footer -->
-    <section class="view customer-view" id="v-profile">
+    <section class="view customer-view" id="v-profile" style="padding:0 16px 100px;">
       <!-- Header (Logo & Nutzer-Avatar) – Identität -->
-      <div class="panel" id="profileHeaderCard" style="margin-top:0; padding:20px; border-radius:24px; box-shadow:0 4px 16px rgba(0,0,0,.08); background:#fff; border:1px solid rgba(0,0,0,.04);">
+      <div class="panel profile-panel" id="profileHeaderCard" style="margin-top:0; padding:20px; border-radius:24px; box-shadow:0 10px 30px rgba(0,0,0,.06); background:#fff; border:1px solid rgba(0,0,0,.02);">
         <!-- Wird dynamisch befüllt -->
       </div>
 
       <!-- 1. Aktive Abholnummer (kompakte Kachel 🧾, keine Overlays/Schiefertafel) -->
-      <div class="panel" id="profileTicketsSection" style="margin-top:16px; padding:16px; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,.05); border:1px solid rgba(0,0,0,.04); display:none;">
+      <div class="panel profile-panel" id="profileTicketsSection" style="margin-top:16px; padding:18px; border-radius:24px; box-shadow:0 10px 30px rgba(0,0,0,.06); border:1px solid rgba(0,0,0,.02); display:none;">
         <div style="font-weight:800; font-size:15px; margin-bottom:12px; color:#1a1a1a; display:flex; align-items:center; gap:8px;">
           <span style="font-size:18px;">🧾</span>
           <span>Aktive Abholnummer</span>
@@ -3817,19 +3821,19 @@
       </div>
 
       <!-- 2. Meine Bestellungen (chronologische Historie) -->
-      <div class="panel" id="profileOrderHistorySection" style="margin-top:16px; padding:16px; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,.05); border:1px solid rgba(0,0,0,.04);">
-        <div style="font-weight:800; font-size:15px; margin-bottom:12px; color:#1a1a1a;">Meine Bestellungen</div>
+      <div class="panel profile-panel" id="profileOrderHistorySection" style="margin-top:16px; padding:18px; border-radius:24px; box-shadow:0 10px 30px rgba(0,0,0,.06); border:1px solid rgba(0,0,0,.02);">
+        <div style="font-family:'Nunito',sans-serif; font-weight:800; font-size:16px; margin-bottom:14px; color:#1a1a1a;">Meine Bestellungen</div>
         <div id="profileOrderHistoryList" class="hint" style="font-size:14px; color:#64748b;">Chronologische Historie vergangener Käufe – wird dynamisch befüllt.</div>
       </div>
 
       <!-- 3. Profil-Verwaltung (Name, E-Mail) -->
-      <div class="panel" id="profileVerwaltungSection" style="margin-top:16px; padding:16px; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,.05); border:1px solid rgba(0,0,0,.04);">
-        <div style="font-weight:800; font-size:15px; margin-bottom:12px; color:#1a1a1a;">Profil-Verwaltung</div>
+      <div class="panel profile-panel" id="profileVerwaltungSection" style="margin-top:16px; padding:18px; border-radius:24px; box-shadow:0 10px 30px rgba(0,0,0,.06); border:1px solid rgba(0,0,0,.02);">
+        <div style="font-family:'Nunito',sans-serif; font-weight:800; font-size:16px; margin-bottom:12px; color:#1a1a1a;">Profil-Verwaltung</div>
         <div id="profileVerwaltungContent" style="font-size:14px; color:#334155; line-height:1.6;">Name und E-Mail – wird dynamisch befüllt.</div>
       </div>
 
       <!-- 4. Präferenzen: Mein Geschmack + Mehrweg-Fokus (Zweite Ebene, Mehrweg am Ende) -->
-      <div class="panel" id="profileTasteSection" style="margin-top:16px; padding:16px; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,.05); border:1px solid rgba(0,0,0,.04);">
+      <div class="panel profile-panel" id="profileTasteSection" style="margin-top:16px; padding:18px; border-radius:24px; box-shadow:0 10px 30px rgba(0,0,0,.06); border:1px solid rgba(0,0,0,.02);">
         <div style="font-weight:700; font-size:15px; margin-bottom:8px; color:#64748b;">Mein Geschmack</div>
         <div class="hint" style="font-size:12px; color:#94a3b8; margin-bottom:12px;">Filter für Entdecken (Vegan, Glutenfrei etc.)</div>
         <div id="profileDietSwitches" style="display:flex; flex-direction:column; gap:10px;"></div>
@@ -3837,13 +3841,13 @@
       </div>
 
       <!-- Mehrweg-Hinweis -->
-      <div class="panel" style="margin-top:16px; padding:14px; border-radius:12px; background:rgba(31,157,85,0.06); border:1px solid rgba(31,157,85,0.15);">
+      <div class="panel profile-panel" style="margin-top:16px; padding:16px; border-radius:24px; background:rgba(31,157,85,0.06); border:1px solid rgba(31,157,85,0.15);">
         <p style="font-size:13px; color:#334155; margin:0; line-height:1.5;">Wir arbeiten stetig daran, weitere Partner für unser Mehrweg-System zu gewinnen. Aktuell führen noch nicht alle Anbieter Mehrweg-Optionen; es werden dir weiterhin alle verfügbaren Angebote angezeigt.</p>
       </div>
 
       <!-- Top-FAQs (3 Accordion-Elemente, ausklappbar) -->
       <div style="margin-top:16px;">
-        <div style="font-weight:800; font-size:15px; margin-bottom:10px; color:#1a1a1a;">Häufige Fragen</div>
+        <div style="font-family:'Nunito',sans-serif; font-weight:800; font-size:16px; margin-bottom:12px; color:#1a1a1a;">Häufige Fragen</div>
         <div id="profileTopFaq" class="profile-faq-accordion" style="display:flex; flex-direction:column; gap:8px;">
           <details style="background:#fff; border-radius:12px; border:1px solid rgba(0,0,0,.06); overflow:hidden;">
             <summary style="padding:12px 14px; font-size:14px; font-weight:600; color:#1a1a1a; cursor:pointer; list-style:none; display:flex; align-items:center; gap:8px;">
@@ -13403,18 +13407,13 @@
         `;
       } else {
         headerCard.innerHTML = `
-          <div style="display:flex; align-items:center; gap:16px;">
-            <div style="width:64px; height:64px; border-radius:50%; background:linear-gradient(135deg, rgba(255,215,0,0.2) 0%, rgba(255,184,0,0.1) 100%); display:flex; align-items:center; justify-content:center; font-size:24px; flex-shrink:0;">
-              👤
-            </div>
-            <div style="flex:1; min-width:0;">
-              <div style="font-weight:900; font-size:22px; margin-bottom:4px; color:#2D3436; line-height:1.2;">Willkommen bei Mittagio 👋</div>
-              <div style="font-size:12px; font-weight:600; color:#64748b; margin-bottom:6px; text-transform:uppercase; letter-spacing:0.5px;">Anmeldung</div>
-              <div class="hint" style="font-size:14px; color:#666; line-height:1.4; margin-bottom:12px;">Bestelle schneller und finde deine Abholnummern wieder.</div>
-              <button class="btn-primary" type="button" id="btnProfileCreateAccount" style="width:100%; max-width:200px; min-height:44px; font-weight:700;">
-                Profil anlegen
-              </button>
-            </div>
+          <div>
+            <div style="font-family:'Nunito',sans-serif; font-weight:800; font-size:20px; margin-bottom:2px; color:#1a1a1a; line-height:1.25; letter-spacing:0.02em;">Willkommen bei Mittagio 👋</div>
+            <div style="font-size:11px; font-weight:600; color:#94a3b8; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.06em;">Anmeldung</div>
+            <p class="hint" style="font-size:14px; color:#64748b; line-height:1.45; margin:0 0 14px;">Bestelle schneller und finde deine Abholnummern wieder.</p>
+            <button class="btn-primary" type="button" id="btnProfileCreateAccount" style="width:100%; max-width:220px; min-height:46px; font-weight:800; font-size:15px; border-radius:14px; background:#FFD700; color:#1a1a1a; border:none; box-shadow:0 4px 0 0 #d1b600;">
+              Profil anlegen
+            </button>
           </div>
         `;
         const btn = document.getElementById('btnProfileCreateAccount');
@@ -13490,12 +13489,12 @@
           const dateStr = o.pickupDate || (o.createdAt ? new Date(o.createdAt).toLocaleDateString('de-DE') : '–');
           const statusText = o.status === 'PICKED_UP' || o.status === 'abgeholt' ? 'Abgeholt' : (o.status === 'PAID' ? 'Bezahlt' : o.status || '–');
           return `
-            <div style="padding:12px 0; border-bottom:1px solid rgba(0,0,0,.06); display:flex; justify-content:space-between; align-items:start; gap:12px;">
+            <div class="profile-order-item" style="padding:14px 0; border-bottom:1px solid rgba(0,0,0,.06); display:flex; justify-content:space-between; align-items:start; gap:12px;">
               <div style="flex:1; min-width:0;">
-                <div style="font-weight:700; color:#1a1a1a;">${esc(o.dishName || o.summary || 'Bestellung')}</div>
-                <div style="font-size:12px; color:#64748b;">${esc(o.providerName || 'Anbieter')} · ${esc(dateStr)}</div>
+                <div style="font-weight:800; font-size:15px; color:#1a1a1a;">${esc(o.dishName || o.summary || 'Bestellung')}</div>
+                <div style="font-size:13px; color:#64748b; margin-top:2px;">${esc(o.providerName || 'Anbieter')} · ${esc(dateStr)}</div>
               </div>
-              <span style="font-size:12px; color:#64748b; flex-shrink:0;">${esc(statusText)}</span>
+              <span style="font-size:12px; font-weight:600; color:#64748b; flex-shrink:0;">${esc(statusText)}</span>
             </div>
           `;
         }).join('');
