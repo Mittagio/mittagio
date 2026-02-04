@@ -18722,7 +18722,7 @@
     const qrImg = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(url);
     const w = window.open('', '_blank', 'width=400,height=520');
     if(!w) return;
-    w.document.write('<!DOCTYPE html><html><head><title>QR-Code – Mittagio</title><style>body{font-family:Inter,sans-serif;margin:24px;text-align:center;} .logo{font-size:22px;font-weight:900;color:#1a1a1a;margin-bottom:4px;} .slogan{font-size:12px;color:#6b7280;} img{margin:16px 0;} .dish{font-size:16px;font-weight:700;margin-top:8px;}</style></head><body><div class="logo">Mittagio</div><div class="slogan">Zeit gespart mit der Abholnummer</div><img src="' + qrImg + '" alt="QR-Code" width="200" height="200" /><div class="dish">' + dish + '</div><p style="font-size:11px;color:#9ca3af;margin-top:16px;">Scannen &rarr; Gericht öffnen &amp; Abholnummer sichern</p><script>window.onload=function(){window.print();};</script></body></html>');
+    w.document.write('<!DOCTYPE html><html><head><title>QR-Code – Mittagio</title><style>body{font-family:Inter,sans-serif;margin:24px;text-align:center;} .logo{font-size:22px;font-weight:900;color:#1a1a1a;margin-bottom:4px;} .slogan{font-size:12px;color:#6b7280;} img{margin:16px 0;} .dish{font-size:16px;font-weight:700;margin-top:8px;}</style></head><body><div class="logo">Mittagio</div><div class="slogan">Zeit gespart mit der Abholnummer</div><img src="' + qrImg + '" alt="QR-Code" width="200" height="200" /><div class="dish">' + dish + '</div><p style="font-size:11px;color:#9ca3af;margin-top:16px;">Scannen &rarr; Gericht öffnen &amp; Abholnummer sichern</p><script>window.onload=function(){window.print();};<\/script></body></html>');
     w.document.close();
   }
 
@@ -20001,6 +20001,11 @@
 </script>
 
 <script>
+  // Zweites Script: Zugriff auf Mode/LS nur über localStorage (eigener Scope)
+  var MODE_KEY = 'mittagio_mode_v1';
+  var ORDERS_KEY = 'mittagio_orders_v1';
+  var OFFERS_KEY = 'mittagio_offers_v2';
+  function getMode(){ try { return localStorage.getItem(MODE_KEY) || 'customer'; } catch(e){ return 'customer'; } }
   // Icon-Initialisierung (immer, nicht nur bei Service Worker)
   function initIcons(){
     if(typeof lucide !== 'undefined' && typeof lucide.createIcons === 'function'){
@@ -20043,7 +20048,7 @@
         updateProfileView();
       }
       // Startseite rendern, falls im start-Mode
-      if(typeof mode !== 'undefined' && mode === 'start' && typeof renderStart !== 'undefined'){
+      if(getMode() === 'start' && typeof renderStart !== 'undefined'){
         setTimeout(()=>{
           renderStart();
           initIcons();
@@ -20065,7 +20070,7 @@
         updateProfileView();
       }
       // Startseite rendern, falls im start-Mode
-      if(typeof mode !== 'undefined' && mode === 'start' && typeof renderStart !== 'undefined'){
+      if(getMode() === 'start' && typeof renderStart !== 'undefined'){
         setTimeout(()=>{
           renderStart();
           initIcons();
@@ -20082,7 +20087,7 @@
       showToast('Verbindung wiederhergestellt', 2000);
     }
     // Optional: Daten neu laden
-    if(mode === 'customer'){
+    if(getMode() === 'customer' && typeof renderDiscover === 'function'){
       renderDiscover();
     }
   });
@@ -20109,14 +20114,14 @@
   // ---------------------------------------------------------
   function setupLiveSync(){
     window.addEventListener('storage', (e) => {
-      if(e.key === LS.orders || e.key === LS.offers){
-        refreshCurrentView();
+      if(e.key === ORDERS_KEY || e.key === OFFERS_KEY){
+        if(typeof refreshCurrentView === 'function') refreshCurrentView();
       }
     });
 
     setInterval(() => {
-      if(document.visibilityState === 'visible' && mode === 'provider'){
-        refreshCurrentView(true);
+      if(document.visibilityState === 'visible' && getMode() === 'provider'){
+        if(typeof refreshCurrentView === 'function') refreshCurrentView(true);
       }
     }, 10000);
 
