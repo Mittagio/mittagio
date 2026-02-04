@@ -2593,15 +2593,16 @@
       gap: 12px !important;
       max-width: 100%;
     }
-    /* Homogenität: Kacheln ~85 % der Standardgröße, identisch zu Discovery (Abrundung 16px, Schatten) */
+    /* Kacheln ~85 % + identisch zu Discovery: Abrundung 24px, Schatten wie offer-card-modern */
     .fav-grid-card {
       height: 100%;
-      min-height: 272px;
-      max-height: 289px;
+      min-height: 230px;
+      max-height: 248px;
       display: flex;
       flex-direction: column;
-      border-radius: 16px !important;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.12) !important;
+      border-radius: 24px !important;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.06) !important;
+      border: 1px solid rgba(0,0,0,0.02);
       overflow: hidden;
     }
     .fav-grid-card .fav-card-img-wrap {
@@ -2628,23 +2629,21 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    /* Preis-Badge Favoriten: exakt wie Discovery (grüner Kreis, weiße Schrift) */
+    /* Preis-Badge Favoriten: exakt wie Discovery (schwarzes Badge, weiße Schrift) */
     .fav-card-price-sticker {
       position: absolute;
       bottom: 8px;
       right: 8px;
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      background: var(--sticker-green);
-      border: 3px solid #fff;
+      padding: 8px 14px;
+      border-radius: 16px;
+      background: #1a1a1a;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: 900;
-      font-size: 12px;
+      font-weight: 800;
+      font-size: 15px;
       color: #fff;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
       z-index: 10;
     }
     /* Favoriten-Header: verspielter Titel (Nunito, letter-spacing) */
@@ -3465,6 +3464,14 @@
     }
     .ocm-meta-item { display: flex; align-items: center; gap: 6px; }
     .ocm-meta-item i { width: 16px; height: 16px; color: #999; }
+    /* Silicon-Valley Pills: dezente Pop-Animation beim Laden */
+    .ocm-pills-row {
+      animation: ocmPillPop 0.35s ease-out;
+    }
+    @keyframes ocmPillPop {
+      from { opacity: 0; transform: scale(0.96); }
+      to { opacity: 1; transform: scale(1); }
+    }
   </style>
 </head>
 <body>
@@ -3485,7 +3492,7 @@
     <section class="view customer-view active" id="v-discover">
       <!-- Header: Einziger primärer Header – Standort | Logo | Ansicht-Toggle. Keine Filter-Leisten. -->
       <div class="discover-header-sticky discover-header-clean" style="background:rgba(232,224,214,0.92); backdrop-filter:saturate(160%) blur(8px); -webkit-backdrop-filter:saturate(160%) blur(8px); border-bottom:1px solid rgba(0,0,0,.06);">
-        <div class="discover-header-row" style="position:relative; display:flex; align-items:center; justify-content:space-between; padding:10px 16px; gap:8px;">
+        <div class="discover-header-row" style="position:relative; display:flex; align-items:center; padding:10px 16px; gap:8px;">
           <!-- Standort (links): Nadel-Logik – Klick auf 📍 = GPS, Klick auf Text = manuelle Eingabe -->
           <div style="position:relative; display:flex; align-items:center; gap:4px; flex-shrink:0;">
             <button type="button" id="btnDiscoverLocationGPS" aria-label="Standort per GPS" style="display:flex; align-items:center; justify-content:center; width:36px; height:36px; border-radius:50%; border:none; background:rgba(0,0,0,.04); color:#666; cursor:pointer; transition:all 0.2s ease; flex-shrink:0;">
@@ -3510,12 +3517,6 @@
               </div>
             </div>
           </div>
-          <!-- Logo (Mitte, absolut zentriert) -->
-          <div style="position:absolute; left:50%; transform:translateX(-50%); pointer-events:none;">
-            <div class="brand-name" style="font-weight:900; letter-spacing:.06em; font-size:20px; color:#1a1a1a;">MITTAGIO</div>
-          </div>
-          <!-- Nutzer-Avatar (rechts) → Meins -->
-          <button type="button" id="btnDiscoverProfileAvatar" aria-label="Meins" onclick="showProfile();" style="flex-shrink:0; width:40px; height:40px; border-radius:50%; border:none; background:rgba(0,0,0,.06); color:#333; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:700;">👤</button>
         </div>
       </div>
 
@@ -5708,14 +5709,18 @@
       </div>
     `;
   }
-  /** 3-Balken Discovery: Lange Labels (VOR ORT MÖGLICH, ABHOLNUMMER AKTIV, MEHRWEG VERFÜGBAR / KEINE ABHOLNUMMER, KEIN MEHRWEG). Inaktiv: Helles Grau opacity 0.3, weiße Schrift. */
+  /** Silicon-Valley Pills: Drei kompakte Status-Pills nebeneinander (🍴 VOR ORT, 🧾 ABHOLNUMMER, 🔄 MEHRWEG). Inaktiv: #eeeeee + grauer Text. */
   function renderPillarBarsDiscovery(vorOrt, abholnummer, mehrweg){
-    const bar = (active, bg) => `padding:8px 12px; border-radius:10px; font-size:11px; font-weight:800; color:#fff; text-align:center; letter-spacing:0.3px; opacity:${active ? '1' : '0.3'}; background:${active ? bg : 'rgba(0,0,0,0.2)'};`;
+    const pill = (active, bg, emoji, labelActive, labelInactive) => {
+      const bgColor = active ? bg : '#eeeeee';
+      const textColor = active ? '#fff' : '#999';
+      return `display:inline-flex; align-items:center; justify-content:center; gap:4px; height:24px; max-height:24px; padding:0 10px; border-radius:12px; font-size:11px; font-weight:800; color:${textColor}; letter-spacing:0.02em; white-space:nowrap; background:${bgColor};`;
+    };
     return `
-      <div style="display:flex; flex-direction:column; gap:6px; margin-top:8px;">
-        <div style="${bar(vorOrt, '#27AE60')}">VOR ORT MÖGLICH</div>
-        <div style="${bar(abholnummer, '#FFD700')}">${abholnummer ? 'ABHOLNUMMER AKTIV' : 'KEINE ABHOLNUMMER'}</div>
-        <div style="${bar(mehrweg, '#2980B9')}">${mehrweg ? 'MEHRWEG VERFÜGBAR' : 'KEIN MEHRWEG'}</div>
+      <div class="ocm-pills-row" style="display:flex; flex-wrap:wrap; gap:6px; margin-top:8px;">
+        <span style="${pill(vorOrt, '#27AE60', '🍴', 'VOR ORT', 'Kein Vor Ort')}">🍴 ${vorOrt ? 'VOR ORT' : 'Kein Vor Ort'}</span>
+        <span style="${pill(abholnummer, '#FFD700', '🧾', 'ABHOLNUMMER', 'Keine Abholnummer')}">🧾 ${abholnummer ? 'ABHOLNUMMER' : 'Keine Abholnummer'}</span>
+        <span style="${pill(mehrweg, '#2980B9', '🔄', 'MEHRWEG', 'Kein Mehrweg')}">🔄 ${mehrweg ? 'MEHRWEG' : 'Kein Mehrweg'}</span>
       </div>
     `;
   }
@@ -5931,26 +5936,13 @@
     const mehrweg = stored ? !!stored.mehrweg : (() => { const p = offers.find(x => x.providerId === data.providerId); return !!(p && (p.reuse && p.reuse.enabled)); })();
     
     const barsWrap = document.createElement('div');
-    barsWrap.style.cssText = 'margin-top:8px; padding:0 12px;';
+    barsWrap.style.cssText = 'padding:0 4px 0 0;';
     barsWrap.innerHTML = renderPillarBarsDiscovery(vorOrt, abholnummer, mehrweg);
     body.appendChild(barsWrap);
     
-    // Mobilitäts-Leiste ganz unten
-    if(data.distanceKm != null){
-      const walkingMinutes = Math.round(Number(data.distanceKm) * 12);
-      const carMinutes = Math.round(Number(data.distanceKm) * 1.5); // Etwas realistischer: 40km/h Stadtverkehr (1.5 min/km)
-      const walkingMeters = Math.round(Number(data.distanceKm) * 1000);
-      const distanceText = walkingMeters < 1000 ? `${walkingMeters}m` : `${Number(data.distanceKm).toFixed(1)}km`;
-      const mobilityRow = document.createElement('div');
-      mobilityRow.style.cssText = 'margin-top:10px; padding:8px 12px; font-size:11px; color:#666; font-weight:500; display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap;';
-      // User Request: Auto hinzufügen (aber Fußweg behalten)
-      mobilityRow.innerHTML = `<span>🚶 ${walkingMinutes} min</span><span style="color:#999;">|</span><span>🚗 ${carMinutes} min</span><span style="color:#999;">|</span><span>📍 ${distanceText}</span>`;
-      body.appendChild(mobilityRow);
-    }
-    
     // Gelber CTA: "In die Mittagsbox" (nur wenn Abholnummer)
     const ctaWrap = document.createElement('div');
-    ctaWrap.style.cssText = 'padding:0 16px 16px;';
+    ctaWrap.style.cssText = 'padding:12px 16px 0;';
     const ctaBtn = document.createElement('button');
     ctaBtn.type = 'button';
     ctaBtn.className = 'btn';
@@ -5974,6 +5966,18 @@
     if(!abholnummer){ ctaBtn.style.background = '#e5e5e5'; ctaBtn.style.color = '#888'; ctaBtn.style.cursor = 'not-allowed'; ctaBtn.disabled = true; }
     ctaWrap.appendChild(ctaBtn);
     body.appendChild(ctaWrap);
+    
+    // Entfernungsangaben (🚶/🚗) dezent ganz unten
+    if(data.distanceKm != null){
+      const walkingMinutes = Math.round(Number(data.distanceKm) * 12);
+      const carMinutes = Math.round(Number(data.distanceKm) * 1.5);
+      const walkingMeters = Math.round(Number(data.distanceKm) * 1000);
+      const distanceText = walkingMeters < 1000 ? walkingMeters + 'm' : Number(data.distanceKm).toFixed(1) + 'km';
+      const mobilityRow = document.createElement('div');
+      mobilityRow.style.cssText = 'margin-top:12px; padding:8px 16px 0; font-size:11px; color:#999; font-weight:500; display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap; border-top:1px solid rgba(0,0,0,0.04);';
+      mobilityRow.innerHTML = `<span>🚶 ${walkingMinutes} min</span><span style="color:#ccc;">|</span><span>🚗 ${carMinutes} min</span><span style="color:#ccc;">|</span><span>📍 ${distanceText}</span>`;
+      body.appendChild(mobilityRow);
+    }
     
     card.appendChild(body);
     
@@ -10379,7 +10383,7 @@
     const card = document.createElement('div');
     card.className = 'fav-grid-card card';
     card.setAttribute('data-fav-id', data.id);
-    card.style.cssText = 'position:relative; border-radius:16px; overflow:hidden; cursor:pointer;';
+    card.style.cssText = 'position:relative; border-radius:24px; overflow:hidden; cursor:pointer;';
     
     // X-Button oben rechts
     const removeBtn = document.createElement('button');
@@ -10414,7 +10418,7 @@
     
     const barsWrap = document.createElement('div');
     barsWrap.style.cssText = 'flex-shrink:0; padding:4px 0;';
-    barsWrap.innerHTML = renderPillarBars(vorOrt, abholnummer, mehrweg);
+    barsWrap.innerHTML = typeof renderPillarBarsDiscovery === 'function' ? renderPillarBarsDiscovery(vorOrt, abholnummer, mehrweg) : renderPillarBars(vorOrt, abholnummer, mehrweg);
     body.appendChild(barsWrap);
     
     const title = document.createElement('h3');
