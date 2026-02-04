@@ -5017,6 +5017,27 @@
       <span style="font-weight:700; color:#6b7280;">Heutiger Umsatz:</span>
       <span id="inseratSuccessRevenue" style="font-size:24px; font-weight:900; color:#16a34a;">+ 0,00 €</span>
     </div>
+    <!-- Growth: WhatsApp, QR-Code, Social-Export (Branding: Mittagio + Slogan) -->
+    <div id="inseratSuccessGrowth" style="margin-top:24px; padding-top:20px; border-top:1px solid rgba(0,0,0,0.08);">
+      <div style="font-size:11px; font-weight:800; color:#9ca3af; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:12px;">Angebot bekannt machen</div>
+      <a id="inseratSuccessBtnWhatsApp" href="#" target="_blank" rel="noopener" style="display:flex; align-items:center; justify-content:center; gap:10px; width:100%; min-height:52px; padding:14px 20px; border-radius:16px; background:#25D366; color:#fff; font-weight:800; font-size:16px; text-decoration:none; margin-bottom:12px; box-shadow:0 4px 12px rgba(37,211,102,0.3);">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Angebot bei WhatsApp teilen
+      </a>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
+        <div style="background:#fff; border-radius:16px; padding:16px; border:1px solid rgba(0,0,0,0.06); text-align:center;">
+          <div style="font-size:10px; font-weight:700; color:#9ca3af; margin-bottom:8px;">QR-Code für Laden</div>
+          <div id="inseratSuccessQRWrap" style="min-height:120px; display:flex; align-items:center; justify-content:center;"><img id="inseratSuccessQR" alt="QR-Code" style="width:120px; height:120px; border-radius:8px;" /></div>
+          <button type="button" id="inseratSuccessBtnPrintQR" style="width:100%; margin-top:10px; padding:10px; border-radius:12px; border:2px solid #e5e7eb; background:#fff; font-weight:700; font-size:13px; color:#374151; cursor:pointer;">Druckansicht</button>
+        </div>
+        <div style="background:#fff; border-radius:16px; padding:16px; border:1px solid rgba(0,0,0,0.06); text-align:center;">
+          <div style="font-size:10px; font-weight:700; color:#9ca3af; margin-bottom:8px;">Instagram / Facebook</div>
+          <p style="font-size:12px; color:#6b7280; margin:0 0 12px;">Bild mit Gericht &amp; Mittagio-Branding</p>
+          <button type="button" id="inseratSuccessBtnSocialImage" style="width:100%; padding:12px; border-radius:12px; border:none; background:#FFD700; color:#1a1a1a; font-weight:800; font-size:14px; cursor:pointer;">Bild herunterladen</button>
+        </div>
+      </div>
+      <p style="margin:0; font-size:11px; color:#9ca3af; text-align:center;">Jeder Link und jedes Bild enthält „Mittagio – Zeit gespart mit der Abholnummer“.</p>
+    </div>
   </div>
   <div style="position:fixed; bottom:0; left:0; right:0; padding:24px; background:linear-gradient(to top, #f8f7f2, transparent); text-align:center;">
     <button type="button" id="inseratSuccessBtnBack" style="color:#9ca3af; font-weight:700; font-size:14px; background:none; border:none; padding:12px;">Zurück zur Übersicht (Dashboard)</button>
@@ -18379,7 +18400,107 @@
     if(bd) bd.style.display = 'none';
     if(sheet) sheet.style.display = 'none';
   }
+  var inseratSuccessCurrentOffer = null; // für WhatsApp / QR / Social-Export
+
+  function buildOfferShareUrl(offer){
+    const id = offer && (offer.id || offer);
+    const base = location.origin + (location.pathname || '/');
+    return base + (base.indexOf('#') >= 0 ? '' : (base.endsWith('/') ? '' : '/')) + '#offer/' + (id || '');
+  }
+
+  function buildWhatsAppShareText(offer){
+    const d = normalizeOffer(offer);
+    const dish = d.dish || d.title || 'Gericht';
+    const price = typeof d.price === 'number' ? d.price.toFixed(2).replace('.', ',') : (d.price || '0,00');
+    const link = buildOfferShareUrl(offer);
+    return 'Heute bei uns: ' + dish + ' für nur ' + price + ' €! Jetzt schnell die Abholnummer sichern und Schlange überspringen: ' + link + ' – Mittagio: Zeit gespart mit der Abholnummer.';
+  }
+
+  function openQRPrintWindow(offer){
+    const url = buildOfferShareUrl(offer);
+    const d = normalizeOffer(offer);
+    const dish = (d.dish || d.title || 'Gericht').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    const qrImg = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(url);
+    const w = window.open('', '_blank', 'width=400,height=520');
+    if(!w) return;
+    w.document.write('<!DOCTYPE html><html><head><title>QR-Code – Mittagio</title><style>body{font-family:Inter,sans-serif;margin:24px;text-align:center;} .logo{font-size:22px;font-weight:900;color:#1a1a1a;margin-bottom:4px;} .slogan{font-size:12px;color:#6b7280;} img{margin:16px 0;} .dish{font-size:16px;font-weight:700;margin-top:8px;}</style></head><body><div class="logo">Mittagio</div><div class="slogan">Zeit gespart mit der Abholnummer</div><img src="' + qrImg + '" alt="QR-Code" width="200" height="200" /><div class="dish">' + dish + '</div><p style="font-size:11px;color:#9ca3af;margin-top:16px;">Scannen &rarr; Gericht öffnen &amp; Abholnummer sichern</p><script>window.onload=function(){window.print();};</script></body></html>');
+    w.document.close();
+  }
+
+  function drawOfferSocialFallback(ctx, size, d){
+    ctx.fillStyle = '#f8f7f2';
+    ctx.fillRect(0, 0, size, size);
+    ctx.fillStyle = '#e5e7eb';
+    ctx.fillRect(40, 40, size - 80, size - 280);
+    ctx.fillStyle = '#1a1a1a';
+    ctx.font = 'bold 48px Inter, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(d.dish || d.title || 'Gericht', size/2, size - 220);
+    ctx.font = 'bold 36px Inter, sans-serif';
+    ctx.fillStyle = '#16a34a';
+    ctx.fillText((d.price != null ? Number(d.price).toFixed(2) : '0,00') + ' €', size/2, size - 168);
+    ctx.fillStyle = '#6b7280';
+    ctx.font = '24px Inter, sans-serif';
+    ctx.fillText('Mittagio – Zeit gespart mit der Abholnummer', size/2, size - 80);
+  }
+
+  function exportOfferSocialImage(offer, done){
+    const d = normalizeOffer(offer);
+    const size = 1080;
+    const canvas = document.createElement('canvas');
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext('2d');
+    function finishExport(){
+      try {
+        canvas.toBlob(function(blob){
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(blob);
+          a.download = 'mittagio-' + (d.dish || 'gericht').replace(/\s+/g, '-').toLowerCase() + '.jpg';
+          a.click();
+          URL.revokeObjectURL(a.href);
+          if(typeof showToast === 'function') showToast('Bild heruntergeladen');
+          if(done) done();
+        }, 'image/jpeg', 0.9);
+      } catch(e){ if(done) done(); }
+    }
+    const imgSrc = d.imageUrl || d.photoData || d.img || '';
+    if(!imgSrc){
+      drawOfferSocialFallback(ctx, size, d);
+      finishExport();
+      return;
+    }
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = function(){
+      ctx.fillStyle = '#f8f7f2';
+      ctx.fillRect(0, 0, size, size);
+      const pad = 40;
+      const imgW = size - pad * 2;
+      const imgH = Math.round(imgW * (img.height / img.width));
+      let sy = 0, sh = img.height;
+      if(imgH > size - 280){ const scale = (size - 280) / imgH; sh = img.height / scale; sy = (img.height - sh) / 2; }
+      ctx.drawImage(img, 0, sy, img.width, sh, pad, pad, imgW, Math.min(imgH, size - 280));
+      const yText = size - 220;
+      ctx.fillStyle = '#1a1a1a';
+      ctx.font = 'bold 48px Inter, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(d.dish || d.title || 'Gericht', size/2, yText);
+      const priceStr = (typeof d.price === 'number' ? d.price.toFixed(2) : d.price) + ' €';
+      ctx.font = 'bold 36px Inter, sans-serif';
+      ctx.fillStyle = '#16a34a';
+      ctx.fillText(priceStr, size/2, yText + 52);
+      ctx.fillStyle = '#6b7280';
+      ctx.font = '24px Inter, sans-serif';
+      ctx.fillText('Mittagio – Zeit gespart mit der Abholnummer', size/2, size - 80);
+      finishExport();
+    };
+    img.onerror = function(){ drawOfferSocialFallback(ctx, size, d); finishExport(); };
+    img.src = imgSrc;
+  }
+
   function showInseratSuccessSheet(publishedOffer){
+    inseratSuccessCurrentOffer = publishedOffer;
     const d = normalizeOffer(publishedOffer);
     const dishNameEl = document.getElementById('inseratSuccessDishName');
     const nextCodeEl = document.getElementById('inseratSuccessNextCode');
@@ -18398,6 +18519,16 @@
     if(nextBtnEl) nextBtnEl.textContent = 'Nächste: #' + (todayOrders.length + 2);
     if(revenueEl) revenueEl.textContent = '+ ' + tagesumsatzEuro + ' €';
     if(abholSection) abholSection.style.display = (d.hasPickupCode ? '' : 'none');
+    var offerLink = buildOfferShareUrl(publishedOffer);
+    var whatsAppText = buildWhatsAppShareText(publishedOffer);
+    var whatsAppBtn = document.getElementById('inseratSuccessBtnWhatsApp');
+    if(whatsAppBtn){ whatsAppBtn.href = 'https://wa.me/?text=' + encodeURIComponent(whatsAppText); }
+    var qrImg = document.getElementById('inseratSuccessQR');
+    if(qrImg){ qrImg.src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(offerLink); qrImg.style.display = 'block'; }
+    var btnPrintQR = document.getElementById('inseratSuccessBtnPrintQR');
+    if(btnPrintQR){ btnPrintQR.onclick = function(){ openQRPrintWindow(inseratSuccessCurrentOffer || publishedOffer); }; }
+    var btnSocialImage = document.getElementById('inseratSuccessBtnSocialImage');
+    if(btnSocialImage){ btnSocialImage.onclick = function(){ exportOfferSocialImage(inseratSuccessCurrentOffer || publishedOffer); }; }
     const bd = document.getElementById('inseratSuccessBd');
     const sheet = document.getElementById('inseratSuccessSheet');
     if(bd) bd.style.display = 'block';
@@ -19190,32 +19321,19 @@
       }
     }
     
-    // Share Route: /share/:offerId
-    // Support: /share?offerId=xxx OR hash #share/:offerId
-    if(path.includes('/share/') || hash.includes('#share/') || urlParams.has('share')){
-      let offerId = null;
-      
-      // Try path: /share/:offerId
-      if(path.includes('/share/')){
-        offerId = path.split('/share/')[1]?.split('?')[0]?.split('#')[0];
-      }
-      
-      // Try hash: #share/:offerId
-      if(!offerId && hash.includes('#share/')){
-        offerId = hash.split('#share/')[1]?.split('?')[0]?.split('#')[0];
-      }
-      
-      // Try query param: ?share=xxx or ?offerId=xxx
-      if(!offerId){
-        offerId = urlParams.get('share') || urlParams.get('offerId');
-      }
-      
-      if(offerId){
-        // Öffne das Gericht direkt
-        openOffer(offerId);
-        // Clean URL
-        window.history.replaceState({}, '', window.location.pathname);
-      }
+    // Share Route: /share/:offerId ODER #offer/:offerId (Deep Link aus WhatsApp/QR)
+    let offerId = null;
+    if(hash && hash.indexOf('#offer/') === 0){
+      offerId = hash.replace('#offer/', '').split('?')[0].split('#')[0];
+    }
+    if(!offerId && (path.includes('/share/') || hash.includes('#share/') || urlParams.has('share'))){
+      if(path.includes('/share/')) offerId = path.split('/share/')[1]?.split('?')[0]?.split('#')[0];
+      if(!offerId && hash.includes('#share/')) offerId = hash.split('#share/')[1]?.split('?')[0]?.split('#')[0];
+      if(!offerId) offerId = urlParams.get('share') || urlParams.get('offerId');
+    }
+    if(offerId){
+      openOffer(offerId);
+      window.history.replaceState({}, '', window.location.pathname);
     }
   } // Ende Route Handler Block
   
