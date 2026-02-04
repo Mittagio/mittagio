@@ -3621,7 +3621,7 @@
       </div>
 
       <!-- 1. Aktive Abholnummer (kompakte Kachel 🧾) -->
-      <div class="panel profile-panel" id="profileTicketsSection" style="margin-top:16px; padding:18px; border-radius:24px; box-shadow:0 10px 30px rgba(0,0,0,.06); border:1px solid rgba(0,0,0,.02); display:none;">
+      <div class="panel profile-panel" id="profileAbholnummerSection" style="margin-top:16px; padding:18px; border-radius:24px; box-shadow:0 10px 30px rgba(0,0,0,.06); border:1px solid rgba(0,0,0,.02); display:none;">
         <div style="font-weight:800; font-size:15px; margin-bottom:12px; color:#1a1a1a; display:flex; align-items:center; gap:8px;">
           <span style="font-size:18px;">🧾</span>
           <span>Aktive Abholnummer</span>
@@ -4132,20 +4132,50 @@
       </div>
     </section>
 
-    <!-- PROVIDER APP - MEIN BETRIEB (App-Style: #f8f7f2, Pills, 15-Min-Takt, fixer Zurück) -->
+    <!-- PROVIDER APP - Dashboard 2.1 "Stolz & Performance" (#f8f7f2, klare Kennzahlen, 3 Säulen Pills) -->
     <section class="view" id="v-provider-home" style="min-height:100vh; padding-bottom:120px; background:#f8f7f2;">
       
-      <!-- Dashboard Headless (kein „Hallo“) – CTA App-Style -->
-      <div style="padding:20px;">
-        <button type="button" id="btnProviderDashboardCTA" class="provider-dashboard-cta" style="width:100%; background:#ffde00; color:#1a1a1a; padding:20px 24px; border-radius:20px; border:none; box-shadow:0 4px 0 0 #d1b600; font-size:17px; font-weight:800; cursor:pointer; transition:transform 0.15s; display:flex; align-items:center; justify-content:center; gap:12px; letter-spacing:0.02em;">
-          <span style="font-size:24px;">＋</span>
-          JETZT FÜR 4,99 € INSERIEREN
+      <!-- 1. Header: Meine Küche & Kennzahlen -->
+      <header style="background:#fff; padding:24px 20px; box-shadow:0 1px 3px rgba(0,0,0,0.06);">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:24px;">
+          <span style="font-size:28px;">🔪</span>
+          <h1 style="margin:0; font-size:24px; font-weight:900; letter-spacing:-0.02em; color:#1a1a1a;">Meine Küche</h1>
+        </div>
+        <!-- Top Navigation / Archiv-Übersicht: 3 Kennzahlen -->
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:0; margin-bottom:24px; border-bottom:1px solid #f1f1f1; padding-bottom:24px;">
+          <div style="display:flex; flex-direction:column; align-items:center;">
+            <span style="font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:0.1em; color:#9ca3af; margin-bottom:4px;">Tagesessen</span>
+            <span id="dashboardTagesessenCount" style="font-size:24px; font-weight:900; color:#1a1a1a;">0</span>
+          </div>
+          <div style="display:flex; flex-direction:column; align-items:center; border-left:1px solid #f1f1f1; border-right:1px solid #f1f1f1;">
+            <span style="font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:0.1em; color:#9ca3af; margin-bottom:4px;">Abholungen</span>
+            <span id="dashboardAbholungenCount" style="font-size:24px; font-weight:900; color:#3b82f6;">0</span>
+          </div>
+          <div style="display:flex; flex-direction:column; align-items:center;">
+            <span style="font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:0.1em; color:#9ca3af; margin-bottom:4px;">Kochbuch</span>
+            <span id="dashboardKochbuchCount" style="font-size:24px; font-weight:900; color:#1a1a1a; opacity:0.4;">0</span>
+          </div>
+        </div>
+        <!-- Finanzen: Umsatz heute (Netto nach Gebühren) -->
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:0 8px;">
+          <span style="font-size:14px; font-weight:700; color:#9ca3af;">Mein Umsatz heute:</span>
+          <div style="text-align:right;">
+            <span id="dashboardUmsatzToday" style="font-size:24px; font-weight:900; color:#16a34a;">0,00 €</span>
+            <p style="margin:4px 0 0; font-size:9px; font-weight:700; color:#9ca3af; text-transform:uppercase;">Netto nach Gebühren</p>
+          </div>
+        </div>
+      </header>
+
+      <!-- CTA: Jetzt inserieren (kompakt) -->
+      <div style="padding:16px 20px;">
+        <button type="button" id="btnProviderDashboardCTA" class="provider-dashboard-cta" style="width:100%; background:#ffde00; color:#1a1a1a; padding:16px 20px; border-radius:20px; border:none; box-shadow:0 4px 0 0 #d1b600; font-size:16px; font-weight:800; cursor:pointer; transition:transform 0.15s; display:flex; align-items:center; justify-content:center; gap:10px;">
+          <span style="font-size:22px;">＋</span> JETZT FÜR 4,99 € INSERIEREN
         </button>
       </div>
 
       <div style="padding:0 20px 24px; max-width:28rem; margin:0 auto;">
 
-        <!-- Aktive Inserate: App-Style Card (rounded-2.5rem, 3 Säulen Pills, Zeit-Slot) -->
+        <!-- 2. Aktives Inserat: ImmoScout-Style (Bild + Live-Badge + Preis, Titel + Auge/Herz/Check, 3 Säulen Pills) -->
         <section style="margin-bottom:24px;" id="providerActiveListingsSection">
           <div id="providerActiveListings" style="display:flex; flex-direction:column; gap:20px;"></div>
         </section>
@@ -5040,30 +5070,37 @@
   </div>
   <div class="handle" style="background:rgba(0,0,0,0.15);"></div>
   
-  <!-- Thumbnail-Bild (klein, clean) -->
-  <div style="padding:12px 16px 0;">
-    <div style="width:100%; max-width:200px; margin:0 auto; aspect-ratio:1; max-height:120px; border-radius:16px; overflow:hidden; background:#f0f0f0; box-shadow:0 2px 8px rgba(0,0,0,0.08); position:relative; border:1px solid rgba(0,0,0,0.06);">
-      <img id="sImg" alt="" style="width:100%; height:100%; object-fit:cover; display:block;" />
-      <div id="sImgPlaceholder" style="position:absolute; top:0; left:0; right:0; bottom:0; background:#f0f0f0; display:none; align-items:center; justify-content:center; color:rgba(0,0,0,0.3); font-size:14px;">
-        <i data-lucide="image" style="width:32px;height:32px;"></i>
-      </div>
-      <button id="sFavoriteBtn" type="button" style="position:absolute; top:6px; right:6px; width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,0.95); backdrop-filter:blur(8px); border:1px solid rgba(231,76,60,0.4); display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:10; box-shadow:0 2px 6px rgba(0,0,0,0.15);" onmouseover="this.style.transform='scale(1.1)';" onmouseout="this.style.transform='scale(1)';">
-        <i data-lucide="heart" style="width:18px;height:18px; color:#e74c3c; fill:none;"></i>
-      </button>
-      <div id="sPriceBadge" style="position:absolute; bottom:6px; left:6px; background:var(--brand); color:#000; padding:4px 10px; border-radius:12px; font-weight:900; font-size:14px; box-shadow:0 2px 6px rgba(255,215,0,0.35); z-index:10;"></div>
+  <!-- Bild-Sektion: volle Breite, keine Overlays (UI-Spec Inserats-Detailansicht) -->
+  <div style="position:relative; width:100%; aspect-ratio:16/10; max-height:280px; overflow:hidden; background:#f0f0f0;">
+    <img id="sImg" alt="" style="width:100%; height:100%; object-fit:cover; display:block;" />
+    <div id="sImgPlaceholder" style="position:absolute; top:0; left:0; right:0; bottom:0; background:#f0f0f0; display:none; align-items:center; justify-content:center; color:rgba(0,0,0,0.3); font-size:14px;">
+      <i data-lucide="image" style="width:48px;height:48px;"></i>
     </div>
   </div>
+  <!-- Favorit-Button neben Bild (nicht auf dem Bild) -->
+  <div style="padding:8px 16px 0; display:flex; justify-content:flex-end;">
+    <button id="sFavoriteBtn" type="button" aria-label="Favorit" style="width:40px; height:40px; border-radius:50%; background:rgba(255,255,255,0.95); border:1px solid rgba(0,0,0,0.08); display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 2px 6px rgba(0,0,0,0.08);" onmouseover="this.style.background='rgba(0,0,0,0.04)';" onmouseout="this.style.background='rgba(255,255,255,0.95)';">
+      <i data-lucide="heart" style="width:20px;height:20px; color:#e74c3c; fill:none;"></i>
+    </button>
+  </div>
   
-  <!-- 3 Säulen (🍴 🔄 🧾) groß und lesbar direkt unter dem Bild -->
-  <div id="sThreePillars" style="display:flex; justify-content:center; align-items:center; gap:16px; margin:12px 16px 16px; padding:12px 0; flex-wrap:wrap;">
+  <!-- 3 Säulen: direkt unter dem Bild (🍴 immer, 🧾 nur bei Abholnummer, 🔄 nur bei Mehrweg) -->
+  <div id="sThreePillars" style="display:flex; justify-content:center; align-items:center; gap:12px; margin:0 16px 16px; padding:12px 0; flex-wrap:wrap; border-bottom:1px solid rgba(0,0,0,0.06);">
     <!-- Wird dynamisch befüllt -->
   </div>
   
+  <!-- Mittags-Zeitfenster (Pill): "Abholung heute Mittag von X – Y Uhr" -->
+  <div id="sMealTime" style="display:flex; align-items:center; justify-content:center; margin:0 16px 16px; padding:10px 16px; background:rgba(0,0,0,0.04); border-radius:999px; border:1px solid rgba(0,0,0,0.08);">
+    <span style="color:#333; font-size:14px; font-weight:600;"><span id="sMealTimeRange">–</span></span>
+  </div>
+  
   <div class="sheet-body" style="background:transparent; padding:16px;">
-    <!-- Gerichtsname (nur ein Teilen-Icon oben im Header) -->
-    <div style="margin-top:0; margin-bottom:8px;">
+    <!-- Gerichtsname: fett und groß -->
+    <div style="margin-top:0; margin-bottom:4px;">
       <div style="font-weight:900; font-size:22px; line-height:1.3; color:#1a1a1a;" id="sDish"></div>
     </div>
+    <!-- Preis (aus Overlay hier in Details) -->
+    <div id="sPriceRow" style="margin-bottom:12px; font-size:18px; font-weight:800; color:var(--brand);"></div>
     <!-- Anbieter (klickbar) -->
     <div style="margin-bottom:12px;">
       <button type="button" id="sProviderNameBtn" style="display:flex; align-items:center; gap:8px; background:none; border:none; padding:0; cursor:pointer; text-align:left; width:100%; color:inherit;">
@@ -5091,12 +5128,6 @@
     </div>
     <div id="sAllergensList" style="display:none;"><div id="sAllergens"></div></div>
 
-    <!-- Essenszeit: Verfügbarkeit von ... bis ... Uhr -->
-    <div id="sMealTime" style="display:flex; align-items:center; gap:8px; margin-bottom:16px; padding:12px 16px; background:rgba(0,0,0,0.04); border-radius:12px; border:1px solid rgba(0,0,0,0.08);">
-      <i data-lucide="clock" style="width:18px;height:18px; color:var(--brand);"></i>
-      <span style="color:#333; font-size:14px; font-weight:500;">Essenszeit: <span id="sMealTimeRange"></span> Uhr</span>
-    </div>
-    
     <!-- Sticky Bottom: Gelber CTA „In die Mittagsbox legen“ + Warnhinweis darunter -->
     <div style="position:sticky; bottom:0; background:transparent; padding:16px 0 24px; margin-top:24px; border-top:1px solid rgba(0,0,0,0.08); z-index:10;">
       <button class="btn-primary" type="button" id="btnPrimaryCTA" style="width:100%; min-height:56px; max-height:64px; background:#FFD700; color:#1a1a1a; font-weight:800; font-size:18px; border:none; border-radius:16px; box-shadow:0 4px 16px rgba(255,215,0,0.4); display:flex; align-items:center; justify-content:center; gap:8px; transition:all 0.2s ease;" onmouseover="this.style.transform='scale(1.02)'; this.style.boxShadow='0 6px 20px rgba(255,215,0,0.5)';" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 16px rgba(255,215,0,0.4)';">
@@ -10770,46 +10801,33 @@
     }
     if(sDish) sDish.textContent = o.dish || '';
     
-    // Preis-Badge oben rechts auf Bild
-    const sPriceBadge = document.getElementById('sPriceBadge');
-    if(sPriceBadge){
-      sPriceBadge.textContent = euro(o.price);
-      sPriceBadge.style.display = 'block';
-    }
+    // Preis in Details (nicht auf dem Bild)
+    const sPriceRow = document.getElementById('sPriceRow');
+    if(sPriceRow){ sPriceRow.textContent = euro(o.price); sPriceRow.style.display = 'block'; }
     
-    // Die 3 Säulen (🍴 🔄 🧾) groß und lesbar, direkt unter dem Bild, heller Hintergrund
+    // 3 Säulen: nur anzeigen was gilt – 🍴 immer, 🧾 nur bei Abholnummer, 🔄 nur bei Mehrweg
     const sThreePillars = document.getElementById('sThreePillars');
     if(sThreePillars){
       const offerProvider = offers.find(p => p.providerId === o.providerId);
       const orderingEnabled = offerProvider && (offerProvider.orderingEnabled !== false && (o.hasPickupCode || offerProvider.hasPickupCode));
       const hasReuseSupport = offerProvider && (offerProvider.reuseEnabled || offerProvider.reuse || (offerProvider.providerProfile && offerProvider.providerProfile.reuseEnabled));
       const hasDineIn = o.dineInPossible !== false;
-      sThreePillars.innerHTML = `
-        <div style="display:flex; align-items:center; gap:10px; padding:10px 14px; background:${hasDineIn ? 'rgba(0,0,0,0.06)' : 'rgba(0,0,0,0.04)'}; border-radius:14px; border:1px solid rgba(0,0,0,0.08); opacity:${hasDineIn ? '1' : '0.5'};">
-          <span style="font-size:28px; line-height:1;">🍴</span>
-          <span style="color:#1a1a1a; font-size:15px; font-weight:700;">Vor Ort</span>
-        </div>
-        <div style="display:flex; align-items:center; gap:10px; padding:10px 14px; background:${hasReuseSupport ? 'rgba(39,174,96,0.12)' : 'rgba(0,0,0,0.04)'}; border-radius:14px; border:1px solid ${hasReuseSupport ? 'rgba(39,174,96,0.25)' : 'rgba(0,0,0,0.08)'}; opacity:${hasReuseSupport ? '1' : '0.5'};">
-          <span style="font-size:28px; line-height:1;">🔄</span>
-          <span style="color:#1a1a1a; font-size:15px; font-weight:700;">Mehrweg</span>
-        </div>
-        <div style="display:flex; align-items:center; gap:10px; padding:10px 14px; background:${orderingEnabled ? '#FFD700' : 'rgba(0,0,0,0.04)'}; border-radius:14px; border:1px solid ${orderingEnabled ? 'rgba(255,215,0,0.5)' : 'rgba(0,0,0,0.08)'}; opacity:${orderingEnabled ? '1' : '0.5'};">
-          <span style="font-size:28px; line-height:1;">🧾</span>
-          <span style="color:${orderingEnabled ? '#1a1a1a' : '#666'}; font-size:15px; font-weight:700;">Abholnummer</span>
-        </div>
-      `;
+      const pillars = [];
+      pillars.push(`<div style="display:flex; align-items:center; gap:10px; padding:10px 14px; background:rgba(0,0,0,0.06); border-radius:14px; border:1px solid rgba(0,0,0,0.08);"><span style="font-size:24px;">🍴</span><span style="color:#1a1a1a; font-size:14px; font-weight:700;">Vor Ort</span></div>`);
+      if(hasReuseSupport) pillars.push(`<div style="display:flex; align-items:center; gap:10px; padding:10px 14px; background:rgba(39,174,96,0.12); border-radius:14px; border:1px solid rgba(39,174,96,0.25);"><span style="font-size:24px;">🔄</span><span style="color:#1a1a1a; font-size:14px; font-weight:700;">Mehrweg</span></div>`);
+      if(orderingEnabled) pillars.push(`<div style="display:flex; align-items:center; gap:10px; padding:10px 14px; background:rgba(255,215,0,0.2); border-radius:14px; border:1px solid rgba(255,215,0,0.4);"><span style="font-size:24px;">🧾</span><span style="color:#1a1a1a; font-size:14px; font-weight:700;">Abholnummer</span></div>`);
+      sThreePillars.innerHTML = pillars.join('');
     }
     
-    // Essenszeit
+    // Mittags-Zeitfenster (Pill): "Abholung heute Mittag von X – Y Uhr"
     const sMealTimeRange = document.getElementById('sMealTimeRange');
-    if(sMealTimeRange && o.pickupWindow){
-      // Extrahiere Start- und Endzeit aus "11:30 – 14:30" Format
-      const timeMatch = o.pickupWindow.match(/(\d{1,2}:\d{2})\s*[–-]\s*(\d{1,2}:\d{2})/);
-      if(timeMatch && timeMatch[1] && timeMatch[2]){
-        sMealTimeRange.textContent = `von ${timeMatch[1]} bis ${timeMatch[2]}`;
-      } else {
-        sMealTimeRange.textContent = o.pickupWindow;
-      }
+    const sMealTimeWrap = document.getElementById('sMealTime');
+    if(sMealTimeRange && sMealTimeWrap){
+      if(o.pickupWindow){
+        const timeMatch = o.pickupWindow.match(/(\d{1,2}:\d{2})\s*[–-]\s*(\d{1,2}:\d{2})/);
+        sMealTimeRange.textContent = timeMatch && timeMatch[1] && timeMatch[2] ? `Abholung heute Mittag von ${timeMatch[1]} – ${timeMatch[2]} Uhr` : `Abholung heute Mittag ${o.pickupWindow} Uhr`;
+        sMealTimeWrap.style.display = 'flex';
+      } else { sMealTimeRange.textContent = '–'; sMealTimeWrap.style.display = 'flex'; }
     }
     
     // Anbieter-Modul: Name (klickbar → alle Gerichte dieses Anbieters) + Adresse + Entfernungsangaben
@@ -11650,13 +11668,38 @@
     if(!raw) return;
     const o = normalizeOffer(raw);
     activeProviderOfferId = id;
+    const profile = normalizeProviderProfile(provider.profile || {});
+    const offerProvider = offers.find(p => p.providerId === o.providerId);
+    const orderingEnabled = offerProvider && (offerProvider.orderingEnabled !== false && (o.hasPickupCode || offerProvider.hasPickupCode));
+    const hasReuse = offerProvider && (offerProvider.reuseEnabled || offerProvider.reuse || (offerProvider.providerProfile && offerProvider.providerProfile.reuseEnabled));
+    const windowText = o.pickupWindow || profile.mealWindow || '11:30 – 14:00';
+    const timeMatch = windowText.match(/(\d{1,2}:\d{2})\s*[–-]\s*(\d{1,2}:\d{2})/);
+    const timePillText = timeMatch && timeMatch[1] && timeMatch[2] ? `Abholung heute Mittag von ${timeMatch[1]} – ${timeMatch[2]} Uhr` : `Abholung heute Mittag ${windowText} Uhr`;
+    const imgSrc = o.imageUrl || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70';
+    const pillars = [];
+    pillars.push('<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:rgba(0,0,0,0.06);border-radius:12px;"><span style="font-size:20px;">🍴</span><span style="font-size:13px;font-weight:700;color:#1a1a1a;">Vor Ort</span></div>');
+    if(hasReuse) pillars.push('<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:rgba(39,174,96,0.12);border-radius:12px;"><span style="font-size:20px;">🔄</span><span style="font-size:13px;font-weight:700;color:#1a1a1a;">Mehrweg</span></div>');
+    if(orderingEnabled) pillars.push('<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:rgba(255,215,0,0.2);border-radius:12px;"><span style="font-size:20px;">🧾</span><span style="font-size:13px;font-weight:700;color:#1a1a1a;">Abholnummer</span></div>');
+    const catLabel = (o.category && CAT_EMOJI[o.category]) ? (CAT_EMOJI[o.category] + ' ' + (o.category || '')) : (o.category || '');
+    const allergenStr = (o.allergens && o.allergens.length) ? (Array.isArray(o.allergens) ? o.allergens.slice(0,5).join(', ') : String(o.allergens)) : '';
 
     const preview = document.getElementById('pPreview');
-    preview.innerHTML = '';
-    preview.appendChild(offerCard(o, {interactive:false}));
+    preview.innerHTML = `
+      <div style="width:100%; background:#fff; border-radius:16px; overflow:hidden; border:1px solid rgba(0,0,0,0.06);">
+        <div style="position:relative; width:100%; aspect-ratio:16/10; max-height:200px; overflow:hidden; background:#f0f0f0;"><img src="${esc(imgSrc)}" alt="${esc(o.dish||'')}" style="width:100%; height:100%; object-fit:cover;" /></div>
+        <div style="display:flex; align-items:center; gap:10px; padding:12px 16px; border-bottom:1px solid rgba(0,0,0,0.06); flex-wrap:wrap;">${pillars.join('')}</div>
+        <div style="display:flex; justify-content:center; padding:10px 16px; background:rgba(0,0,0,0.04); border-bottom:1px solid rgba(0,0,0,0.06);"><span style="font-size:13px; font-weight:600; color:#333;">${esc(timePillText)}</span></div>
+        <div style="padding:16px;">
+          <div style="font-weight:900; font-size:18px; color:#1a1a1a; margin-bottom:8px;">${esc(o.dish || 'Gericht')}</div>
+          ${catLabel ? `<span style="display:inline-block; padding:4px 10px; border-radius:8px; background:#e2e8f0; font-size:12px; font-weight:600; color:#475569; margin-bottom:8px;">${esc(catLabel)}</span>` : ''}
+          ${allergenStr ? `<div style="font-size:12px; color:#64748b; margin-bottom:8px;">${esc(allergenStr)}</div>` : ''}
+          <div style="font-size:18px; font-weight:800; color:var(--brand);">${euro(o.price || 0)}</div>
+        </div>
+      </div>
+    `;
 
     document.getElementById('pStatus').textContent = o.active===false ? 'Ausverkauft' : 'Noch da';
-    document.getElementById('pWindow').textContent = o.pickupWindow || '-';
+    document.getElementById('pWindow').textContent = o.pickupWindow || profile.mealWindow || '-';
     
     // No-Limits: Prominenter "Ausverkauft" / "Noch da" Toggle
     const toggleBtn = document.getElementById('btnToggleOffer');
@@ -13497,7 +13540,7 @@
     if(tasteSection) tasteSection.style.display = isLoggedIn ? 'block' : 'none';
     
     // Quick-History (Aktive Abholnummern)
-    const abholnummerSection = document.getElementById('profileTicketsSection');
+    const abholnummerSection = document.getElementById('profileAbholnummerSection');
     const abholnummerList = document.getElementById('profileActiveAbholnummernList');
     const allOrders = loadOrders();
     const hasOrders = Array.isArray(allOrders) && allOrders.length > 0; // Bug-Fix: Sauber definiert
@@ -15274,7 +15317,18 @@
         }
       }
 
-      // Aktive Inserate: große Karte (Referenz 97525) – Bild mit Preis-Badge, Titel, 3 Säulen, Zeit + Verdienst
+      // Dashboard 2.1: Header-Kennzahlen (Tagesessen, Abholungen, Kochbuch, Umsatz)
+      const dashTagesessen = document.getElementById('dashboardTagesessenCount');
+      const dashAbholungen = document.getElementById('dashboardAbholungenCount');
+      const dashKochbuch = document.getElementById('dashboardKochbuchCount');
+      const dashUmsatz = document.getElementById('dashboardUmsatzToday');
+      if(dashTagesessen) dashTagesessen.textContent = mineToday.length;
+      if(dashAbholungen) dashAbholungen.textContent = todayPickups;
+      if(dashKochbuch) dashKochbuch.textContent = cookbookCount;
+      const nettoEuro = (tagesumsatzCents / 100 - todayOrders.length * 0.89).toFixed(2);
+      if(dashUmsatz){ dashUmsatz.textContent = nettoEuro.replace('.', ',') + ' €'; dashUmsatz.style.color = hasRevenue ? '#16a34a' : '#1a1a1a'; }
+
+      // Aktive Inserate: Dashboard 2.1 – ImmoScout-Style (Live-Badge, Preis auf Bild, Titel + Auge/Herz/Check, 3 Säulen Pills)
       const providerActiveListings = document.getElementById('providerActiveListings');
       const providerActiveListingsSection = document.getElementById('providerActiveListingsSection');
       if(providerActiveListings && providerActiveListingsSection){
@@ -15285,40 +15339,37 @@
           const imgUrl = d.imageUrl || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=800&q=70';
           const hasReusable = !!(o.reuse && o.reuse.enabled);
           const hasPickupNumber = !!o.hasPickupCode;
-          const timeRange = (o.pickupWindow || d.pickupWindow || '11:30 – 14:00').replace('–', ' – ');
-          const previewEarnings = (Number(d.price) || 0).toFixed(2);
           const dishName = d.dish || d.title || 'Gericht';
-          const hasStandardImage = !!(o.photoDataIsStandard || d.photoDataIsStandard);
+          const isLive = o.active !== false;
+          const viewsCount = parseInt(localStorage.getItem('mittagio_views_' + o.id) || '0', 10);
+          const favCount = (JSON.parse(localStorage.getItem('mittagio_favorites') || '[]')).filter(function(id){ return id === o.id; }).length ? 1 : 0;
+          const pickupsForOffer = todayOrders.filter(function(ord){ const off = offers.find(function(x){ return x.id === ord.dishId || x.providerId === ord.providerId; }); return off && off.id === o.id; });
+          const checkCount = pickupsForOffer.length;
+          const pillars = [];
+          pillars.push('<div style="width:100%; background:#34c759; color:#fff; padding:10px 16px; border-radius:12px; font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:0.1em; text-align:center; box-shadow:0 1px 3px rgba(0,0,0,0.1);">Vor Ort möglich</div>');
+          if(hasPickupNumber) pillars.push('<div style="width:100%; background:#ffde00; color:#1a1a1a; padding:10px 16px; border-radius:12px; font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:0.1em; text-align:center; box-shadow:0 1px 3px rgba(0,0,0,0.1);">Abholnummer aktiv</div>');
+          if(hasReusable) pillars.push('<div style="width:100%; background:#007aff; color:#fff; padding:10px 16px; border-radius:12px; font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:0.1em; text-align:center; box-shadow:0 1px 3px rgba(0,0,0,0.1);">Mehrweg verfügbar</div>');
           const card = document.createElement('div');
-          card.style.cssText = 'background:#fff; border-radius:40px; overflow:hidden; box-shadow:0 10px 40px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.02); border:1px solid rgba(0,0,0,0.04); cursor:pointer;';
+          card.style.cssText = 'background:#fff; border-radius:2.5rem; overflow:hidden; box-shadow:0 10px 40px rgba(0,0,0,0.08); border:1px solid rgba(0,0,0,0.04); cursor:pointer;';
           card.innerHTML = `
-            <div style="position:relative; height:224px; width:100%; background:#e5e5e5;">
+            <div style="position:relative; height:240px; width:100%; background:#e5e5e5;">
               <img src="${esc(imgUrl)}" alt="" style="width:100%; height:100%; object-fit:cover;" />
-              <div style="position:absolute; top:16px; right:16px; background:rgba(255,255,255,0.9); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); padding:8px 16px; border-radius:16px; font-size:14px; font-weight:800; color:#1a1a1a; box-shadow:0 2px 8px rgba(0,0,0,0.06);">${euro(d.price)}</div>
-              ${hasStandardImage ? '<div style="position:absolute; bottom:16px; left:16px; right:16px; background:rgba(255,255,255,0.85); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); padding:8px 12px; border-radius:12px; border:1px solid rgba(255,255,255,0.4);"><p style="margin:0; font-size:10px; font-weight:800; color:#1a1a1a; text-transform:uppercase; display:flex; align-items:center; gap:6px;"><span>ℹ️</span> Symbolbild: Abweichungen zum Original möglich</p></div>' : ''}
+              ${isLive ? '<div style="position:absolute; top:16px; left:16px; background:rgba(255,255,255,0.95); backdrop-filter:blur(8px); padding:8px 14px; border-radius:999px; display:flex; align-items:center; gap:8px; box-shadow:0 2px 8px rgba(0,0,0,0.08);"><span style="width:10px; height:10px; background:#22c55e; border-radius:50%; animation:pulse 1.5s ease-in-out infinite;"></span><span style="font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:0.1em; color:#1a1a1a;">Live</span></div>' : ''}
+              <div style="position:absolute; bottom:16px; right:16px; background:#1a1a1a; color:#fff; padding:8px 20px; border-radius:16px; font-size:18px; font-weight:900; box-shadow:0 4px 12px rgba(0,0,0,0.2);">${euro(d.price)}</div>
             </div>
-            <div style="padding:32px 24px; text-align:center;">
-              <h2 style="margin:0 0 32px; font-size:28px; font-weight:800; color:#1a1a1a; letter-spacing:-0.02em;">${esc(dishName)}</h2>
-              <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; margin-bottom:32px;">
-                <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
-                  <div style="width:64px; height:64px; border-radius:16px; background:#f0f9f4; border:1px solid #e3f2e8; display:flex; align-items:center; justify-content:center; font-size:24px;">🍴</div>
-                  <span style="font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:0.05em; color:#9ca3af;">Vor Ort</span>
-                </div>
-                <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
-                  <div style="width:64px; height:64px; border-radius:16px; background:#fff9db; border:1px solid #ffec8a; box-shadow:0 4px 0 0 #ffde00; display:flex; align-items:center; justify-content:center; font-size:24px;">🧾</div>
-                  <span style="font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:0.05em; color:#1a1a1a;">Abholnummer</span>
-                </div>
-                <div style="display:flex; flex-direction:column; align-items:center; gap:8px; opacity:${hasReusable ? '1' : '0.4'};">
-                  <div style="width:64px; height:64px; border-radius:16px; background:#f0f7ff; border:1px solid #e3efff; display:flex; align-items:center; justify-content:center; font-size:24px;">🔄</div>
-                  <span style="font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:0.05em; color:#9ca3af;">Mehrweg</span>
+            <div style="padding:24px 24px 32px;">
+              <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:20px;">
+                <h2 style="margin:0; font-size:22px; font-weight:900; color:#1a1a1a; line-height:1.25; flex:1; padding-right:16px;">${esc(dishName)}</h2>
+                <div style="display:flex; gap:20px; flex-shrink:0;">
+                  <div style="display:flex; flex-direction:column; align-items:center;"><span style="font-size:18px;">👁️</span><span style="font-size:13px; font-weight:800; color:#1a1a1a;">${viewsCount}</span></div>
+                  <div style="display:flex; flex-direction:column; align-items:center;"><span style="font-size:18px;">❤️</span><span style="font-size:13px; font-weight:800; color:#1a1a1a;">${favCount}</span></div>
+                  <div style="display:flex; flex-direction:column; align-items:center;"><span style="font-size:18px;">✅</span><span style="font-size:13px; font-weight:800; color:#1a1a1a;">${checkCount}</span></div>
                 </div>
               </div>
-              <div style="display:inline-flex; align-items:center; gap:12px; padding:12px 24px; background:#f9fafb; border-radius:999px; font-size:14px; font-weight:700; color:#4b5563;">
-                <span style="font-size:18px;">🕒</span> ${esc(timeRange)}
-              </div>
+              <div style="display:flex; flex-direction:column; gap:8px;">${pillars.join('')}</div>
             </div>
           `;
-          card.onclick = function(){ openOffer(o.id); };
+          card.onclick = function(){ openProviderOffer(o.id); };
           providerActiveListings.appendChild(card);
         });
       }
