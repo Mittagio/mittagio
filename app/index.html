@@ -5666,21 +5666,6 @@
     document.cookie = name + '=; path=/; max-age=0';
   }
 
-  // Single-Session: Cookie-Helfer (Session-ID im Cookie + in User-Modell)
-  const SESSION_COOKIE_NAME = 'mittagio_session_id';
-  const SESSION_COOKIE_DAYS = 30;
-  function getSessionCookie(){
-    const match = document.cookie.match(new RegExp('(^| )' + SESSION_COOKIE_NAME + '=([^;]+)'));
-    return match ? match[2] : null;
-  }
-  function setSessionCookie(sessionId){
-    const maxAge = SESSION_COOKIE_DAYS * 24 * 60 * 60;
-    document.cookie = SESSION_COOKIE_NAME + '=' + encodeURIComponent(sessionId) + '; path=/; max-age=' + maxAge + '; SameSite=Lax';
-  }
-  function clearSessionCookie(){
-    document.cookie = SESSION_COOKIE_NAME + '=; path=/; max-age=0';
-  }
-
   function getFavPillars(dishId){ const m = load(LS.favPillars, {}); return m[dishId] || null; }
   function setFavPillars(dishId, pillars){ const m = load(LS.favPillars, {}); m[dishId] = pillars; save(LS.favPillars, m); }
   function renderPillarBars(vorOrt, abholnummer, mehrweg){
@@ -13698,38 +13683,10 @@
     const tasteSection = document.getElementById('profileTasteSection');
     if(tasteSection) tasteSection.style.display = isLoggedIn ? 'block' : 'none';
     
-    // Viralitäts-Badge: "Ich habe mit Mittagio bereits [X] Minuten gespart" (teilbar)
-    const minutesSavedSection = document.getElementById('profileMinutesSavedSection');
-    const minutesSavedCountEl = document.getElementById('profileMinutesSavedCount');
-    const MINUTES_PER_ORDER = 5;
-    const allOrdersForProfile = loadOrders();
-    const orderCount = Array.isArray(allOrdersForProfile) ? allOrdersForProfile.filter(function(o){ return o.status === 'PAID' || o.status === 'PICKED_UP'; }).length : 0;
-    const minutesSaved = orderCount * MINUTES_PER_ORDER;
-    if(minutesSavedSection && minutesSavedCountEl){
-      if(minutesSaved > 0){
-        minutesSavedSection.style.display = 'block';
-        minutesSavedCountEl.textContent = String(minutesSaved);
-        var btnShareMinutes = document.getElementById('btnProfileShareMinutesSaved');
-        if(btnShareMinutes){
-          btnShareMinutes.onclick = function(){
-            var text = 'Ich habe mit Mittagio bereits ' + minutesSaved + ' Minuten gespart.';
-            var shareUrl = (location.origin || '') + (location.pathname || '/').replace(/\/$/, '');
-            if(navigator.share){
-              navigator.share({ title: 'Mittagio', text: text, url: shareUrl }).then(function(){ if(typeof showToast === 'function') showToast('Geteilt!'); }).catch(function(){});
-            } else {
-              navigator.clipboard.writeText(text + ' ' + shareUrl).then(function(){ if(typeof showToast === 'function') showToast('Kopiert!'); });
-            }
-          };
-        }
-      } else {
-        minutesSavedSection.style.display = 'none';
-      }
-    }
-    
-    // Quick-History (Aktive Abholnummern)
+    // Quick-History: Bestellungen einmal laden (für Abholnummern + Minuten-gespart)
+    const allOrders = loadOrders();
     const abholnummerSection = document.getElementById('profileAbholnummerSection');
     const abholnummerList = document.getElementById('profileActiveAbholnummernList');
-    const allOrders = allOrdersForProfile || loadOrders();
     const hasOrders = Array.isArray(allOrders) && allOrders.length > 0; // Bug-Fix: Sauber definiert
     
     // Heutige aktive Abholnummern (PAID, nicht PICKED_UP)
