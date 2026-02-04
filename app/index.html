@@ -7090,6 +7090,15 @@
     }
   }
   
+  /** Verhindert Browser-Warnung "pushState in trivial session history": bei nur einem Eintrag replaceState nutzen. */
+  function pushViewState(state, url){
+    url = url || location.pathname;
+    if (typeof history.replaceState === 'function' && history.length === 1)
+      history.replaceState(state, '', url);
+    else if (typeof history.pushState === 'function')
+      history.pushState(state, '', url);
+  }
+
   // --- Start ---
   function showStart(){
     // Navigation auf "Entdecken" setzen (auch wenn wir auf Startseite sind)
@@ -7100,8 +7109,7 @@
     }
     showView(views.start);
     renderStart();
-    // Browser-Verlauf aktualisieren
-    history.pushState({view: 'start', mode: mode}, '', location.pathname);
+    pushViewState({view: 'start', mode: mode}, location.pathname);
   }
 
   // --- Customer views ---
@@ -7126,8 +7134,7 @@
     // Topbar-Toggle anzeigen (nur in Discover-View)
     const toggleTopbar = document.getElementById('toggleDiscoverViewTopbar');
     if(toggleTopbar) toggleTopbar.style.display = 'flex';
-    // Browser-Verlauf aktualisieren
-    history.pushState({view: 'discover', mode: mode}, '', location.pathname);
+    pushViewState({view: 'discover', mode: mode}, location.pathname);
   }
   function showFav(){
     setCustomerNavActive('fav');
@@ -7142,22 +7149,19 @@
       upcomingPreview.style.display = 'none';
       upcomingPreview.style.opacity = '0';
     }
-    // Browser-Verlauf aktualisieren
-    history.pushState({view: 'fav', mode: mode}, '', location.pathname);
+    pushViewState({view: 'fav', mode: mode}, location.pathname);
   }
   function showOrders(){
     setCustomerNavActive('orders');
     showView(views.orders);
     renderOrders();
-    // Browser-Verlauf aktualisieren
-    history.pushState({view: 'orders', mode: mode}, '', location.pathname);
+    pushViewState({view: 'orders', mode: mode}, location.pathname);
   }
   function showCart(){
     setCustomerNavActive('cart');
     showView(views.cart);
     renderCart();
-    // Browser-Verlauf aktualisieren
-    history.pushState({view: 'cart', mode: mode}, '', location.pathname);
+    pushViewState({view: 'cart', mode: mode}, location.pathname);
   }
   function showProfile(){
     setCustomerNavActive('profile');
@@ -7170,8 +7174,7 @@
     showView(views.profile);
     updateProfileView();
     lucide.createIcons();
-    // Browser-Verlauf aktualisieren
-    history.pushState({view: 'profile', mode: mode}, '', location.pathname);
+    pushViewState({view: 'profile', mode: mode}, location.pathname);
   }
   
   // --- Abholnummer: nur kompakte Kachel + codeSheet (kein Fullscreen/Schiefertafel) ---
@@ -10325,7 +10328,8 @@
     body.className = 'fav-card-body body';
     body.style.cssText = 'background:#fff; padding:8px 10px 12px; flex:1; min-height:0; display:flex; flex-direction:column;';
     
-    const stored = getFavPillars(dishKey);
+    const dishKey = data.id;
+    const stored = typeof getFavPillars === 'function' ? getFavPillars(dishKey) : null;
     const vorOrt = stored ? !!stored.vorOrt : (() => { const p = offers.find(x => x.providerId === data.providerId); return !!(p && (p.dineInPossible !== false || data.dineInPossible)); })();
     const abholnummer = stored ? !!stored.abholnummer : (() => { const p = offers.find(x => x.providerId === data.providerId); return !!(p && (p.orderingEnabled !== false && (data.hasPickupCode || p.hasPickupCode))); })();
     const mehrweg = stored ? !!stored.mehrweg : (() => { const p = offers.find(x => x.providerId === data.providerId); return !!(p && (p.reuse && p.reuse.enabled)); })();
