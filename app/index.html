@@ -1765,7 +1765,9 @@
     details{background:#fff;border:1px solid var(--border);border-radius:14px;box-shadow:0 6px 14px rgba(0,0,0,.06);padding:14px 16px}
     details+details{margin-top:10px}
     summary{cursor:pointer;font-weight:950;font-size:15px;line-height:1.4}
+    summary::-webkit-details-marker{display:none}
     details p{margin:10px 0 0;color:var(--muted);font-size:14px;line-height:1.6}
+    .profile-faq-accordion details summary::-webkit-details-marker{display:none}
 
     /* helper */
     .hint{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.25}
@@ -4752,26 +4754,40 @@
           </button>
         </div>
         
-        <!-- FAQ-Inhalt: Kunden -->
+        <!-- FAQ-Inhalt: Kunden (vollständige Liste) -->
         <div id="faqContentCustomer" style="display:block; padding:20px; line-height:1.8; font-size:15px;">
-          <div style="margin-bottom:24px; padding-bottom:20px; border-bottom:1px solid #eee;">
-            <h3 style="font-size:18px; font-weight:700; margin-bottom:8px; color:#2D3436;">Was ist Mittagio?</h3>
-            <p style="margin:0; color:#666;">Mittagio ist eine Plattform, die dir lokale Mittagsangebote zeigt. Du bestellst online, zahlst sicher und holst dein Essen mit der Abholnummer ab.</p>
+          <h2 style="font-size:16px; font-weight:800; margin:0 0 12px; color:#1a1a1a; text-transform:uppercase; letter-spacing:0.5px;">Bestellungen &amp; Bezahlung</h2>
+          <div style="margin-bottom:20px; padding-bottom:16px; border-bottom:1px solid #eee;">
+            <h3 style="font-size:16px; font-weight:700; margin-bottom:6px; color:#2D3436;">Muss ich mich registrieren?</h3>
+            <p style="margin:0; color:#666;">Ja, damit wir deine Abholnummer sicher zuordnen und dir deine Bestellhistorie anzeigen können.</p>
           </div>
-          
-          <div style="margin-bottom:24px; padding-bottom:20px; border-bottom:1px solid #eee;">
-            <h3 style="font-size:18px; font-weight:700; margin-bottom:8px; color:#2D3436;">Was ist eine Abholnummer?</h3>
-            <p style="margin:0; color:#666;">Die Abholnummer ist dein Zahlungs- und Abholnachweis. Du zeigst sie beim Abholen vor und erhältst dein Essen – schnell und ohne Wartezeit.</p>
+          <div style="margin-bottom:20px; padding-bottom:16px; border-bottom:1px solid #eee;">
+            <h3 style="font-size:16px; font-weight:700; margin-bottom:6px; color:#2D3436;">Wie bezahle ich mein Essen?</h3>
+            <p style="margin:0; color:#666;">Die Bezahlung erfolgt digital direkt über die Plattform, damit du vor Ort keine Wartezeit an der Kasse hast.</p>
           </div>
-          
-          <div style="margin-bottom:24px; padding-bottom:20px; border-bottom:1px solid #eee;">
-            <h3 style="font-size:18px; font-weight:700; margin-bottom:8px; color:#2D3436;">Wie funktioniert die Zahlung?</h3>
-            <p style="margin:0; color:#666;">Die Zahlung erfolgt sicher online über etablierte Zahlungsdienstleister. Du erhältst nach erfolgreicher Zahlung deine Abholnummer.</p>
+          <div style="margin-bottom:24px; padding-bottom:16px; border-bottom:1px solid #eee;">
+            <h3 style="font-size:16px; font-weight:700; margin-bottom:6px; color:#2D3436;">Kann ich eine Bestellung stornieren?</h3>
+            <p style="margin:0; color:#666;">Da die Mahlzeiten frisch für dich vorbereitet werden, ist eine Stornierung nach Ablauf des Zeitfensters leider nicht möglich.</p>
           </div>
-          
-          <div style="margin-bottom:24px; padding-bottom:20px; border-bottom:1px solid #eee;">
-            <h3 style="font-size:18px; font-weight:700; margin-bottom:8px; color:#2D3436;">Kann ich stornieren?</h3>
-            <p style="margin:0; color:#666;">Ja, Stornierungen sind möglich. Die Service-Pauschale von 0,89 € wird zur Deckung der Transaktionskosten einbehalten.</p>
+
+          <h2 style="font-size:16px; font-weight:800; margin:0 0 12px; color:#1a1a1a; text-transform:uppercase; letter-spacing:0.5px;">Anbieter &amp; Auswahl</h2>
+          <div style="margin-bottom:20px; padding-bottom:16px; border-bottom:1px solid #eee;">
+            <h3 style="font-size:16px; font-weight:700; margin-bottom:6px; color:#2D3436;">Warum sehe ich keine Mehrweg-Option bei meinem Anbieter?</h3>
+            <p style="margin:0; color:#666;">Wir arbeiten daran, dass bald alle Partner Mehrweg anbieten. Aktuell liegt die Entscheidung noch beim jeweiligen Anbieter.</p>
+          </div>
+          <div style="margin-bottom:24px; padding-bottom:16px; border-bottom:1px solid #eee;">
+            <h3 style="font-size:16px; font-weight:700; margin-bottom:6px; color:#2D3436;">Sind die Allergene (Glutenfrei etc.) verlässlich?</h3>
+            <p style="margin:0; color:#666;">Ja, die Angaben stammen direkt vom Anbieter. Du kannst diese Filter in deinem Profil unter „Mein Geschmack“ voreinstellen.</p>
+          </div>
+
+          <h2 style="font-size:16px; font-weight:800; margin:0 0 12px; color:#1a1a1a; text-transform:uppercase; letter-spacing:0.5px;">Technik &amp; Account</h2>
+          <div style="margin-bottom:20px; padding-bottom:16px; border-bottom:1px solid #eee;">
+            <h3 style="font-size:16px; font-weight:700; margin-bottom:6px; color:#2D3436;">Wo finde ich meine alten Bestellungen?</h3>
+            <p style="margin:0; color:#666;">Alle vergangenen Mahlzeiten sind in deinem Profil unter „Meine Bestellungen“ chronologisch aufgelistet.</p>
+          </div>
+          <div style="margin-bottom:24px; padding-bottom:16px; border-bottom:1px solid #eee;">
+            <h3 style="font-size:16px; font-weight:700; margin-bottom:6px; color:#2D3436;">Wie ändere ich meine Mail-Adresse?</h3>
+            <p style="margin:0; color:#666;">Gehe in deinem Profil zum Bereich „Profildaten“ – dort kannst du deine E-Mail und deinen Namen jederzeit aktualisieren.</p>
           </div>
         </div>
         
