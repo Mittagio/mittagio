@@ -18256,37 +18256,66 @@
       return;
     }
 
-    // Schritt 5: Abholnummer-Upsell & Checkout
+    // Schritt 5: Abholnummer Power-Up (nach Klick „Jetzt für 4,99 € inserieren“) – Emerald #10b981, keine Schiefertafeln
     if(w.step===4){
-      setWizardQuestion('Turbo-Modus aktivieren?', 'Abholnummern sparen Zeit und schaffen Ordnung.');
+      setWizardQuestion('An der Schlange vorbei mit der Abholnummer.', 'Optional: +0,89 € pro Vorgang – klare Zuordnung, weniger Stress.');
       const box=document.createElement('div');
-      
-      // Emotional Image
+      const EMERALD = '#10b981';
+
+      // Großformatiges Bild (Referenz: Kunde zeigt Abholnummer, Metzger reicht Essen) – Fallback: Icon
       const emoImg = document.createElement('div');
-      emoImg.style.cssText = 'width:100%; height:160px; background:#f0f0f0; border-radius:16px; overflow:hidden; margin-bottom:20px; display:flex; align-items:center; justify-content:center; position:relative;';
-      emoImg.innerHTML = '<img src="assets/icon-abholnummer.png" style="width:80px; opacity:0.8;">'; // Placeholder
-      // Badge
-      const badge = document.createElement('div');
-      badge.style.cssText = 'position:absolute; top:12px; right:12px; background:var(--color-emerald,#10b981); color:#fff; padding:6px 12px; border-radius:20px; font-weight:700; font-size:12px; box-shadow:0 4px 12px rgba(16,185,129,0.3);';
-      badge.textContent = 'Empfohlen';
-      emoImg.appendChild(badge);
+      emoImg.style.cssText = 'width:100%; height:180px; background:linear-gradient(135deg, rgba(16,185,129,0.15) 0%, rgba(16,185,129,0.05) 100%); border-radius:16px; overflow:hidden; margin-bottom:20px; position:relative; border:1px solid rgba(16,185,129,0.2);';
+      const img = document.createElement('img');
+      img.alt = 'Abholnummer vorzeigen – entspannt an der Theke';
+      img.style.cssText = 'width:100%; height:100%; object-fit:cover; display:block;';
+      img.src = 'assets/abholnummer-powerup.jpg';
+      img.onerror = function(){ this.style.display='none'; emoImg.style.background='linear-gradient(135deg,#10b981 0%,#059669 100%)'; emoImg.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100%;"><img src="assets/icon-abholnummer.png" style="width:88px;height:88px;filter:brightness(0) invert(1);opacity:0.9;"></div>'; };
+      emoImg.appendChild(img);
       box.appendChild(emoImg);
 
-      // Benefits
+      // Vorteile (Listenform) – exakt laut Master-Prompt
       const benefits = document.createElement('div');
-      benefits.style.cssText = 'display:flex; flex-direction:column; gap:12px; margin-bottom:24px;';
-      ['Stressfrei: Kein Anstehen, kein Chaos', 'Speed: Schnelle Ausgabe per Nummer', 'Ordnung: Automatische Liste für die Küche'].forEach(t => {
+      benefits.style.cssText = 'display:flex; flex-direction:column; gap:14px; margin-bottom:20px;';
+      [
+        'Kein Stress: Klare Zuordnung statt lauter Zurufe.',
+        'Höherer Durchsatz: Kürzere Wartezeiten an der Theke.',
+        'Zufriedene Kunden: Schneller „Fast-Pass“-Service.'
+      ].forEach(t => {
         const row = document.createElement('div');
-        row.style.cssText = 'display:flex; align-items:center; gap:10px; font-size:14px; color:#333; font-weight:500;';
-        row.innerHTML = '<i data-lucide="check-circle-2" style="width:18px; color:var(--color-emerald,#10b981);"></i> ' + t;
+        row.style.cssText = 'display:flex; align-items:flex-start; gap:10px; font-size:14px; color:#1a1a1a; font-weight:500; line-height:1.4;';
+        row.innerHTML = '<span style="color:' + EMERALD + '; font-weight:700;">✅</span><span>' + t + '</span>';
         benefits.appendChild(row);
       });
       box.appendChild(benefits);
 
-      // Options
+      // Verdienst-Vorschau live: (Basis + Extras) − 4,99 € (einmalig) − 0,89 € pro Vorgang falls Abholnummer aktiv
+      const basePrice = Number(w.data.price) || 0;
+      const extras = 0;
+      const abholnummerFee = 0.89;
+      function getProfitPerSale(hasAbholnummer){ return Math.max(0, basePrice + extras - (hasAbholnummer ? abholnummerFee : 0)); }
+      const profitWrap = document.createElement('div');
+      profitWrap.style.cssText = 'background:#f8faf9; border-radius:12px; padding:14px 16px; margin-bottom:20px; border:1px solid rgba(16,185,129,0.2);';
+      const profitLabel = document.createElement('div');
+      profitLabel.className = 'hint';
+      profitLabel.style.marginBottom = '4px';
+      profitLabel.textContent = 'Dein Gewinn pro verkaufter Portion (live)';
+      const profitValue = document.createElement('div');
+      profitValue.style.cssText = 'font-size:20px; font-weight:900; color:#10b981; font-variant-numeric:tabular-nums;';
+      function updateProfit(){ profitValue.textContent = getProfitPerSale(!!w.data.hasPickupCode).toFixed(2).replace('.', ',') + ' €'; }
+      updateProfit();
+      const profitHint = document.createElement('div');
+      profitHint.className = 'hint';
+      profitHint.style.cssText = 'font-size:11px; margin-top:6px;';
+      profitHint.textContent = '4,99 € Inseratsgebühr ist einmalig, nicht pro Portion.';
+      profitWrap.appendChild(profitLabel);
+      profitWrap.appendChild(profitValue);
+      profitWrap.appendChild(profitHint);
+      box.appendChild(profitWrap);
+
+      // Option: Abholnummer für 0,89 € hinzufügen
       const btnYes = document.createElement('button');
       btnYes.className = 'btn-primary';
-      btnYes.style.cssText = 'width:100%; min-height:56px; margin-bottom:12px; background:var(--color-emerald,#10b981); box-shadow:0 4px 16px rgba(16,185,129,0.3); font-size:16px; font-weight:700; border-radius:16px; border:none; color:#fff; display:flex; align-items:center; justify-content:center; gap:8px;';
+      btnYes.style.cssText = 'width:100%; min-height:56px; margin-bottom:12px; background:' + EMERALD + '; box-shadow:0 4px 16px rgba(16,185,129,0.35); font-size:16px; font-weight:700; border-radius:16px; border:none; color:#fff; display:flex; align-items:center; justify-content:center; gap:8px;';
       btnYes.innerHTML = '<span>Abholnummer für 0,89 € hinzufügen</span>';
       btnYes.onclick = () => {
         w.data.hasPickupCode = true;
@@ -18294,11 +18323,11 @@
         closeWizard();
         showPublishFeeModal(o);
       };
-      
+
       const btnNo = document.createElement('button');
       btnNo.className = 'btn ghost';
-      btnNo.style.cssText = 'width:100%; min-height:48px; font-size:14px; color:#666; font-weight:600; border-radius:12px;';
-      btnNo.textContent = 'Ohne fortfahren';
+      btnNo.style.cssText = 'width:100%; min-height:48px; font-size:14px; color:#64748b; font-weight:600; border-radius:12px; border:2px solid #e5e7eb; background:#fff;';
+      btnNo.textContent = 'Ohne Abholnummer fortfahren (nur 4,99 €)';
       btnNo.onclick = () => {
         w.data.hasPickupCode = false;
         const o = previewOfferFromWizard();
