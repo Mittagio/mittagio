@@ -3608,7 +3608,10 @@
           <div id="orderSuccessModus" style="display:flex; align-items:center; gap:10px; padding:12px 16px; background:#f8f9fa; border-radius:12px; font-size:15px; font-weight:600; color:#334155;"><span style="font-size:20px;">🍴</span> Vor Ort essen</div>
           <div id="orderSuccessVerpackung" style="display:none; align-items:center; gap:10px; padding:12px 16px; background:#f8f9fa; border-radius:12px; font-size:15px; font-weight:600; color:#334155;"><span style="font-size:20px;">🔄</span> Mehrweg-System</div>
         </div>
-        <p class="hint" style="text-align:center; font-size:13px; color:#94a3b8; margin:0 0 24px;">Der Anbieter wurde informiert und bereitet deine Bestellung vor.</p>
+        <p class="hint" style="text-align:center; font-size:13px; color:#94a3b8; margin:0 0 16px;">Der Anbieter wurde informiert und bereitet deine Bestellung vor.</p>
+        <button type="button" id="btnOrderSuccessKollegen" style="width:100%; min-height:48px; padding:0 20px; border-radius:14px; border:2px solid #e5e7eb; background:#fff; color:#64748b; font-weight:700; font-size:15px; cursor:pointer; margin-bottom:12px; display:flex; align-items:center; justify-content:center; gap:8px;">
+          <i data-lucide="users" style="width:20px;height:20px;"></i> Kollegen bescheid geben
+        </button>
         <button type="button" id="btnOrderSuccessDone" style="width:100%; min-height:52px; padding:0 20px; border-radius:16px; border:none; background:#FFD700; color:#1a1a1a; font-weight:800; font-size:16px; cursor:pointer; box-shadow:0 4px 0 0 #d1b600;">Erledigt</button>
       </div>
     </section>
@@ -3620,6 +3623,13 @@
         <!-- Wird dynamisch befüllt -->
       </div>
 
+      <!-- Viralitäts-Badge: Minuten gespart (teilbar/exportierbar) -->
+      <div class="panel profile-panel" id="profileMinutesSavedSection" style="margin-top:16px; padding:20px; border-radius:24px; box-shadow:0 10px 30px rgba(0,0,0,.06); border:1px solid rgba(255,215,0,0.25); background:linear-gradient(135deg, rgba(255,215,0,0.08) 0%, #fff 100%); display:none;">
+        <div id="profileMinutesSavedText" style="font-weight:800; font-size:18px; color:#1a1a1a; margin-bottom:12px; line-height:1.3;">Ich habe mit Mittagio bereits <span id="profileMinutesSavedCount">0</span> Minuten gespart.</div>
+        <button type="button" id="btnProfileShareMinutesSaved" style="display:flex; align-items:center; justify-content:center; gap:8px; width:100%; padding:12px 16px; border-radius:12px; border:2px solid #FFD700; background:#fff; color:#1a1a1a; font-weight:700; font-size:14px; cursor:pointer;">
+          <i data-lucide="share-2" style="width:18px;height:18px;"></i> Badge teilen
+        </button>
+      </div>
       <!-- 1. Aktive Abholnummer (kompakte Kachel 🧾) -->
       <div class="panel profile-panel" id="profileAbholnummerSection" style="margin-top:16px; padding:18px; border-radius:24px; box-shadow:0 10px 30px rgba(0,0,0,.06); border:1px solid rgba(0,0,0,.02); display:none;">
         <div style="font-weight:800; font-size:15px; margin-bottom:12px; color:#1a1a1a; display:flex; align-items:center; gap:8px;">
@@ -5823,6 +5833,26 @@
     };
     
     imageContainer.appendChild(likeBtn);
+    
+    // Share-Button (dezentes Icon) – Web Share API
+    const shareBtn = document.createElement('button');
+    shareBtn.className = 'ocm-share-btn';
+    shareBtn.type = 'button';
+    shareBtn.setAttribute('aria-label', 'Teilen');
+    shareBtn.style.cssText = 'position:absolute; top:12px; right:48px; width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,0.9); border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 8px rgba(0,0,0,0.12); color:#555;';
+    shareBtn.innerHTML = '<i data-lucide="share-2" style="width:18px;height:18px;stroke-width:2;"></i>';
+    shareBtn.onclick = (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      const shareUrl = (location.origin || '') + (location.pathname || '/') + '#offer/' + (data.id || '');
+      const text = 'Schau mal, das gibt es heute bei ' + (data.providerName || 'Metzger') + ': ' + (data.dish || 'Gericht') + '. Sollen wir hin? Ich sicher uns die Abholnummer!';
+      if(navigator.share){
+        navigator.share({ title: data.dish || 'Gericht', text: text, url: shareUrl }).then(() => { if(typeof showToast === 'function') showToast('Geteilt!'); }).catch(() => {});
+      } else {
+        navigator.clipboard.writeText(text + ' ' + shareUrl).then(() => { if(typeof showToast === 'function') showToast('Link kopiert!'); });
+      }
+    };
+    imageContainer.appendChild(shareBtn);
     
     // Price Tag
     const priceTag = document.createElement('div');
@@ -13446,7 +13476,23 @@
         showDiscover();
       };
     }
-    
+    var orderSuccessCurrentOrder = order;
+    var btnKollegen = document.getElementById('btnOrderSuccessKollegen');
+    if(btnKollegen){
+      btnKollegen.onclick = function(){
+        var o = orderSuccessCurrentOrder;
+        if(!o) return;
+        var dishId = o.dishId || o.offerId || '';
+        var shareUrl = (location.origin || '') + (location.pathname || '/').replace(/\/$/, '') + '#offer/' + dishId;
+        var text = 'Schau mal, das gibt es heute bei ' + (o.providerName || 'Metzger') + ': ' + (o.dishName || 'Gericht') + '. Sollen wir hin? Ich sicher uns die Abholnummer! ' + shareUrl;
+        if(navigator.share){
+          navigator.share({ title: o.dishName || 'Gericht', text: text, url: shareUrl }).then(function(){ if(typeof showToast === 'function') showToast('Geteilt!'); }).catch(function(){});
+        } else {
+          navigator.clipboard.writeText(text).then(function(){ if(typeof showToast === 'function') showToast('Link kopiert!'); });
+        }
+      };
+    }
+    if(typeof lucide !== 'undefined') lucide.createIcons();
     showView(views.orderSuccess);
     setCustomerNavActive('cart');
   }
@@ -13557,6 +13603,33 @@
       o.pickupDate === today && 
       (!o.pickupCodeActivatedAt || o.pickupCodeActivatedAt === null) // Noch nicht abgeholt
     );
+    
+    // Viralitäts-Badge: "Ich habe mit Mittagio bereits [X] Minuten gespart" (teilbar)
+    const MINUTES_PER_ORDER = 5;
+    const minutesSavedSection = document.getElementById('profileMinutesSavedSection');
+    const minutesSavedCountEl = document.getElementById('profileMinutesSavedCount');
+    const completedOrders = Array.isArray(allOrders) ? allOrders.filter(o => o.status === 'PAID' || o.status === 'PICKED_UP' || o.status === 'COMPLETED') : [];
+    const minutesSaved = completedOrders.length * MINUTES_PER_ORDER;
+    if(minutesSavedSection && minutesSavedCountEl){
+      if(minutesSaved > 0){
+        minutesSavedSection.style.display = 'block';
+        minutesSavedCountEl.textContent = String(minutesSaved);
+      } else {
+        minutesSavedSection.style.display = 'none';
+      }
+    }
+    const btnShareMinutesSaved = document.getElementById('btnProfileShareMinutesSaved');
+    if(btnShareMinutesSaved){
+      btnShareMinutesSaved.onclick = function(){
+        var text = 'Ich habe mit Mittagio bereits ' + minutesSaved + ' Minuten gespart. Mittagio – Zeit gespart mit der Abholnummer.';
+        var shareUrl = (location.origin || '') + (location.pathname || '/').replace(/\/$/, '');
+        if(navigator.share){
+          navigator.share({ title: 'Mittagio', text: text, url: shareUrl }).then(function(){ if(typeof showToast === 'function') showToast('Geteilt!'); }).catch(function(){});
+        } else {
+          navigator.clipboard.writeText(text + ' ' + shareUrl).then(function(){ if(typeof showToast === 'function') showToast('Kopiert!'); });
+        }
+      };
+    }
     
     if(abholnummerSection && abholnummerList){
       if(activeAbholnummern.length > 0){
