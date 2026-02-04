@@ -202,52 +202,6 @@
       display:flex; gap:8px; overflow:auto; -webkit-overflow-scrolling:touch;
     }
     
-    /* Moderner Toggle-Switch für Liste/Swipe-Modus */
-    .toggle-switch-modern{
-      box-shadow:0 2px 8px rgba(0,0,0,0.08);
-    }
-    .toggle-switch-modern:hover{
-      box-shadow:0 4px 12px rgba(0,0,0,0.12);
-    }
-    .toggle-switch-modern.active{
-      background:rgba(255,215,0,0.1) !important;
-      box-shadow:0 2px 8px rgba(255,215,0,0.2);
-    }
-    .toggle-switch-modern.active .toggle-slider-bg{
-      transform:translateX(100%) !important;
-    }
-    .toggle-switch-modern.active .toggle-option-list{
-      color:#666 !important;
-    }
-    .toggle-switch-modern.active .toggle-option-list i,
-    .toggle-switch-modern.active .toggle-option-list span{
-      color:#666 !important;
-    }
-    .toggle-switch-modern.active .toggle-option-swipe{
-      color:#111 !important;
-    }
-    .toggle-switch-modern.active .toggle-option-swipe i,
-    .toggle-switch-modern.active .toggle-option-swipe span{
-      color:#111 !important;
-    }
-    .toggle-switch-modern:not(.active) .toggle-option-list{
-      color:#111 !important;
-    }
-    .toggle-switch-modern:not(.active) .toggle-option-list i,
-    .toggle-switch-modern:not(.active) .toggle-option-list span{
-      color:#111 !important;
-    }
-    .toggle-switch-modern:not(.active) .toggle-option-swipe{
-      color:#666 !important;
-    }
-    .toggle-switch-modern:not(.active) .toggle-option-swipe i,
-    .toggle-switch-modern:not(.active) .toggle-option-swipe span{
-      color:#666 !important;
-    }
-    .toggle-switch-modern:active{
-      transform:scale(0.98);
-    }
-    
     /* Verzehrart-Buttons: Active-State mit gelber Hintergrundfarbe */
     .verzehrmodus-checkout-btn.active,
     .verzehrmodus-cart-btn.active{
@@ -2501,47 +2455,6 @@
       background-color: #f1f5f9; /* slate-100 */
     }
     
-    /* === MITTAGESSEN-TINDER ANIMATIONEN === */
-    
-    /* Float/Waber-Animation für aktive Karte */
-    @keyframes cardFloat {
-      0%, 100% { transform: translate(-50%, -50%) translateY(0px); }
-      50% { transform: translate(-50%, -50%) translateY(-8px); }
-    }
-    .swipe-card.active-float {
-      animation: cardFloat 3s ease-in-out infinite;
-    }
-    
-    /* Fly-Out Animation (Karten fliegen links raus) */
-    @keyframes flyOutLeft {
-      0% { transform: translate(-50%, -50%) rotate(0deg); opacity:1; }
-      100% { transform: translate(-250%, -50%) rotate(-25deg); opacity:0; }
-    }
-    .swipe-card.fly-out-left {
-      animation: flyOutLeft 0.4s ease-in forwards;
-      pointer-events: none;
-    }
-    
-    /* Fly-Out rechts (für Like) */
-    @keyframes flyOutRight {
-      0% { transform: translate(-50%, -50%) rotate(0deg); opacity:1; }
-      100% { transform: translate(150%, -50%) rotate(25deg); opacity:0; }
-    }
-    .swipe-card.fly-out-right {
-      animation: flyOutRight 0.4s ease-in forwards;
-      pointer-events: none;
-    }
-    
-    /* Match/Lecker-Overlay Animation */
-    @keyframes matchPopIn {
-      0% { transform: translate(-50%, -50%) scale(0.5); opacity:0; }
-      50% { transform: translate(-50%, -50%) scale(1.1); }
-      100% { transform: translate(-50%, -50%) scale(1); opacity:1; }
-    }
-    .match-overlay {
-      animation: matchPopIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-    }
-    
     /* Favoriten-Icon Bounce */
     @keyframes favBounce {
       0%, 100% { transform: scale(1); }
@@ -2573,15 +2486,6 @@
       height: 100%;
       object-fit: cover;
       display: block;
-    }
-    
-    /* Swipe Preference / Distance Button Active State */
-    .swipe-pref-btn.active,
-    .swipe-dist-btn.active {
-      background: #FFD700 !important;
-      border-color: #FFD700 !important;
-      color: #1a1a1a !important;
-      box-shadow: 0 4px 12px rgba(255,215,0,0.4) !important;
     }
     
     /* Favoriten-Grid: Radikale Verkleinerung S25/iPhone – 4 Kacheln ohne Scroll */
@@ -2849,38 +2753,6 @@
       background:#e6b800;
     }
     
-    /* Polaroid-Karte: Reinweißer Hintergrund, breiter unterer Rand */
-    .swipe-card{
-      position:absolute; top:50%; left:50%; transform:translate(-50%, -50%);
-      background:#FFFFFF;
-      border-radius:4px;
-      box-shadow:0 8px 24px rgba(0,0,0,0.12), 0 4px 12px rgba(0,0,0,0.08);
-      overflow:visible; cursor:default;
-      touch-action: none;
-      -webkit-user-select: none;
-      user-select: none;
-      user-select:none; touch-action:none;
-      transition:transform .2s ease-out, opacity .2s, box-shadow .2s;
-      will-change:transform;
-      width:95%; max-width:95vw;
-      max-height:75vh; height:auto;
-      margin:0 auto;
-      display:flex; flex-direction:column;
-      align-items:center;
-      box-sizing:border-box;
-      padding:12px 10px 28px; /* schmaler Seitenrand, breiter unter dem Text */
-    }
-    
-    /* Visueller Glow beim Swipe */
-    .swipe-card::before{
-      content:'';
-      position:absolute; top:0; left:0; right:0; bottom:0;
-      border-radius:24px;
-      pointer-events:none;
-      opacity:0;
-      transition:opacity 0.3s ease;
-      z-index:1;
-    }
     /* ============================================================
        MODERNE SMARTPHONES (S25, Galaxy S25, iPhone 15/16, Pixel 8)
        Daumenfreundlich: Touch-Ziele mind. 48px, Safe-Area, einhändig
@@ -2958,11 +2830,6 @@
       }
       #fabProviderAddOfferLabel{ right:calc(20px + env(safe-area-inset-right, 0)) !important; }
       
-      /* Swipe-Actions (Discover): Safe-Area */
-      .swipe-action-buttons-container{
-        padding-bottom:calc(24px + env(safe-area-inset-bottom, 20px)) !important;
-      }
-      
       /* Sheets: max-height mit Safe-Area */
       .sheet{ max-height:calc(92vh - env(safe-area-inset-bottom, 0)) !important; }
       
@@ -3021,10 +2888,6 @@
       #v-provider-cookbook .cookbook-item-menu{ width:44px !important; height:44px !important; }
       #v-provider-cookbook .cookbook-action-sheet-btn{ min-height:52px !important; }
       
-      /* Swipe Cards */
-      .swipe-card{ border-radius:20px !important; padding:10px 8px 24px !important; }
-      .swipe-card-title{ font-size:20px !important; }
-      .swipe-card-provider{ font-size:13px !important; }
       .discover-offers{ padding:14px 12px !important; gap:12px !important; }
       .card.polaroid{ border-radius:18px !important; }
     }
@@ -3038,126 +2901,13 @@
       #kpiCardAbholungen div[style*="font-size:32px"],
       #kpiCardKochbuch div[style*="font-size:32px"]{ font-size:22px !important; }
     }
-    .swipe-card:active{
-      cursor:grabbing;
-      box-shadow:0 15px 45px rgba(0,0,0,.25), 0 0 0 1px rgba(0,0,0,.08);
-    }
-    .swipe-card.swiping{
-      transition:none;
-    }
-    /* Polaroid: Titel-Sektion direkt unter dem Bild */
-    .swipe-card-title-section{
-      margin-top:0;
-      padding-top:16px;
-    }
-    
-    /* Gerichtsname: Prägnant und fett */
-    .swipe-card-title{
-      font-size:24px; 
-      font-weight:900; /* Sehr fett für Prägnanz */
-      margin:0 0 6px; /* Unmittelbar unter dem Titel */
-      line-height:1.2;
-      color:#1a1a1a;
-      font-family:var(--font-polaroid-marker), 'Permanent Marker', 'Kalam', 'Comic Sans MS', 'Marker Felt', cursive; /* Handwriting-Font */
-      text-align:center;
-      padding:0;
-    }
-    /* Bild-Container: Quadratisch, zentriert */
-    .swipe-card-image-wrapper{
+    /* Bild-Container (Discover-Karten): Quadratisch, zentriert */
+    .card .img{
       width:100%; margin:0 0 12px;
       display:flex; justify-content:center; align-items:center;
       background:transparent;
       position:relative;
     }
-    .swipe-card-image{
-      width:100%; aspect-ratio:1;
-      background:#f0f0f0; position:relative;
-      overflow:hidden;
-      border-radius:8px; /* Moderner Look */
-      display:flex; align-items:center; justify-content:center;
-    }
-    .swipe-card-image img{
-      width:100%; height:100%; object-fit:cover; object-position:center;
-    }
-    /* Preis-Sticker auf Bild (rechts unten) - Grüner Kreis mit weißer Schrift */
-    .swipe-card-price-sticker{
-      position:absolute; bottom:12px; right:12px;
-      width:56px; height:56px;
-      border-radius:50%;
-      background:var(--sticker-green); /* Grüner Kreis */
-      border:3px solid #fff;
-      display:flex; align-items:center; justify-content:center;
-      font-weight:900; font-size:14px; color:#fff; /* Weiße Schrift */
-      box-shadow:0 4px 12px rgba(0,0,0,0.25);
-      z-index:15;
-    }
-    
-    /* Herz-Icon Overlay (oben rechts) */
-    .swipe-card-heart-icon{
-      transition:transform 0.2s ease, box-shadow 0.2s ease;
-    }
-    .swipe-card-heart-icon:hover{
-      box-shadow:0 4px 12px rgba(0,0,0,0.2);
-    }
-    
-    /* Schwebende Säulen-Icons (oben links) */
-    .swipe-card-pillars-overlay{
-      animation:fadeIn 0.3s ease-out;
-    }
-    .swipe-pillar-icon{
-      transition:transform 0.2s ease, opacity 0.2s ease;
-    }
-    .swipe-pillar-icon:hover{
-      transform:scale(1.1);
-    }
-    /* Content-Bereich: Bild oben, Titel-Sektion darunter */
-    .swipe-card-content{
-      width:100%; 
-      padding:0;
-      padding-bottom:16px; /* Abstand nach unten */
-      display:flex; 
-      flex-direction:column;
-      align-items:center;
-      background:transparent;
-      text-align:center;
-    }
-    /* Anbieter-Name: Unmittelbar unter dem Titel */
-    .swipe-card-provider{
-      font-size:15px; 
-      color:#666;
-      margin:0; /* Unmittelbar unter dem Titel */
-      font-weight:500;
-      font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; /* Schlichte Sans-Serif */
-      text-align:center;
-      padding:0;
-    }
-    
-    /* Logistik-Sektion: Mobilität ganz unten am Kartenrand (keine Trennlinie) */
-    .swipe-card-logistics-section{
-      margin-top:12px;
-      padding-top:12px;
-    }
-    .swipe-card-meta{
-      display:flex; align-items:center; justify-content:center;
-      gap:12px; margin-bottom:12px;
-      flex-wrap:wrap;
-    }
-    .swipe-card-badges{
-      display:flex; gap:8px; flex-wrap:wrap;
-      margin-bottom:16px;
-    }
-    .swipe-card-badge{
-      padding:6px 12px; border-radius:8px;
-      font-size:12px; font-weight:700;
-      background:rgba(0,0,0,.05); color:#666;
-    }
-    .swipe-card-badge.code{
-      background:rgba(255,204,0,.15); color:#b8860b;
-    }
-    .swipe-card-badge.dine{
-      background:rgba(31,157,85,.1); color:#1f9d55;
-    }
-    
     /* Back Navigation */
     .back-button{
       position:absolute; top:12px; left:12px;
@@ -3236,18 +2986,6 @@
       max-width:980px; margin:0 auto;
     }
     
-    /* Swipe Action-Buttons Hover-Effekte */
-    .swipe-action-btn:active{
-      transform:scale(0.95) !important;
-    }
-    .swipe-action-btn-reject:hover{
-      background:#C0392B !important;
-      box-shadow:0 6px 20px rgba(227,77,77,0.5) !important;
-    }
-    .swipe-action-btn-like:hover{
-      background:#27AE60 !important;
-      box-shadow:0 6px 20px rgba(46,204,113,0.5) !important;
-    }
     /* Pickup Card (Theken-Ansicht 2.0) */
     .pickup-card{
       background:#fff;
@@ -3871,7 +3609,7 @@
         <!-- Wird dynamisch befüllt -->
       </div>
 
-      <!-- 1. Aktive Abholnummer (kompakte Kachel 🧾, keine Overlays/Schiefertafel) -->
+      <!-- 1. Aktive Abholnummer (kompakte Kachel 🧾) -->
       <div class="panel profile-panel" id="profileTicketsSection" style="margin-top:16px; padding:18px; border-radius:24px; box-shadow:0 10px 30px rgba(0,0,0,.06); border:1px solid rgba(0,0,0,.02); display:none;">
         <div style="font-weight:800; font-size:15px; margin-bottom:12px; color:#1a1a1a; display:flex; align-items:center; gap:8px;">
           <span style="font-size:18px;">🧾</span>
@@ -5200,57 +4938,7 @@
   </div>
 </div>
 
-<!-- Match Success Modal (nach Rechts-Swipe) -->
-<div class="backdrop" id="matchBd" onclick="closeMatchModal()" style="background:rgba(0,0,0,0.7); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);"></div>
-<div class="sheet" id="matchSheet" style="max-width:400px; border-radius:24px; overflow:hidden;">
-  <div style="position:relative; padding:40px 24px; text-align:center; background:linear-gradient(135deg, #FFD700 0%, #FFD700 100%);">
-    <!-- Konfetti-Animation (Canvas) -->
-    <canvas id="matchConfetti" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none;"></canvas>
-    
-    <div style="font-size:64px; margin-bottom:16px; animation:scaleIn 0.5s ease-out;">🔥</div>
-    <h2 style="font-size:32px; font-weight:900; margin:0 0 8px; color:#2D3436; animation:slideUp 0.5s ease-out;">It's a Match!</h2>
-    <div id="matchDistance" style="font-size:16px; color:#2D3436; font-weight:600; opacity:0.9; animation:slideUp 0.6s ease-out;">
-      <!-- Wird dynamisch befüllt -->
-    </div>
-  </div>
-  
-  <div style="padding:32px 24px; background:#fff;">
-    <div id="matchDishImage" style="width:100%; height:200px; border-radius:16px; overflow:hidden; margin-bottom:24px; background:#f0f0f0;">
-      <!-- Wird dynamisch befüllt -->
-    </div>
-    
-    <div id="matchDishName" style="font-size:24px; font-weight:900; margin-bottom:8px; color:#2D3436;">
-      <!-- Wird dynamisch befüllt -->
-    </div>
-    <div id="matchProviderName" style="font-size:16px; color:#666; margin-bottom:24px;">
-      <!-- Wird dynamisch befüllt -->
-    </div>
-    
-    <!-- Fast weg Badge (wenn ausverkauft) -->
-    <div id="matchFastWeg" style="display:none; padding:12px; background:rgba(227,77,77,0.15); border-radius:12px; margin-bottom:24px; text-align:center; animation:blink 1s infinite;">
-      <div style="font-size:14px; font-weight:700; color:#E34D4D;">⚡ Fast weg!</div>
-    </div>
-    
-    <!-- Quick-Action Frage -->
-    <div style="margin-bottom:20px; text-align:center;">
-      <div style="font-size:18px; font-weight:700; color:#2D3436; margin-bottom:16px;">
-        Heute essen oder für später planen?
-      </div>
-    </div>
-    
-    <!-- CTA Buttons -->
-    <div style="display:flex; flex-direction:column; gap:12px;">
-      <button class="btn" type="button" id="btnMatchReserve" style="width:100%; min-height:56px; background:#FFD700; color:#334155; font-weight:800; font-size:18px; border:none; border-radius:16px; box-shadow:0 4px 16px rgba(255,215,0,0.3);">
-        Heute essen
-      </button>
-      <button class="btn secondary" type="button" id="btnMatchLater" style="width:100%; min-height:52px; background:transparent; color:#666; font-weight:700; border:2px solid #e7e1d5; border-radius:16px;">
-        Für später planen
-      </button>
-    </div>
-  </div>
-</div>
-
-<!-- Offer sheet - Clean Design (keine Schiefertafel) -->
+<!-- Offer sheet -->
 <div class="backdrop" id="bd" onclick="closeSheet()" style="background:rgba(0,0,0,0.7);"></div>
 <div class="sheet" id="sheet" style="background:rgba(255,255,255,0.98); color:#1a1a1a; border-top:2px solid rgba(0,0,0,0.08); box-shadow:0 -4px 20px rgba(0,0,0,0.08);">
   <div class="sheet-header" style="position:sticky; top:0; z-index:10; background:rgba(255,255,255,0.98); padding:12px 16px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid rgba(0,0,0,0.08); min-height:56px; overflow:visible; flex-shrink:0;">
@@ -7345,10 +7033,10 @@
     pushViewState({view: 'profile', mode: mode}, location.pathname);
   }
   
-  // --- Abholnummer: nur kompakte Kachel + codeSheet (kein Fullscreen/Schiefertafel) ---
+  // --- Abholnummer: kompakte Kachel + codeSheet ---
   let currentPickupOrderId = null;
   
-  /** Öffnet das Abholnummer-Sheet (quick-ticket) mit Order-Daten – keine Schiefertafel/Fullscreen. */
+  /** Öffnet das Abholnummer-Sheet mit Order-Daten. */
   function openCodeSheetWithOrder(order){
     if(!order) return;
     const code = order.pickupCode || order.code || '';
@@ -8553,7 +8241,6 @@
     }
   }
   
-  // Einfache Ja/Nein-Logik für Schiefertafel-Modus
   function rejectOffer(offer){
     // Nein = Ablehnen - In SessionStorage speichern
     if(!offer || !offer.id){
@@ -8628,7 +8315,7 @@
         <p style="color:rgba(255,255,255,0.8); font-size:16px; margin:0 0 24px; line-height:1.5;">${esc(data.dish || 'Gericht')} wurde zu deinen Favoriten hinzugefügt.</p>
         <div style="display:flex; gap:12px; justify-content:center;">
           <button type="button" onclick="document.getElementById('matchOverlayTinder').remove(); showFav();" style="padding:14px 28px; background:#FFD700; color:#1a1a1a; font-weight:800; font-size:15px; border:none; border-radius:12px; cursor:pointer;">Zu Favoriten</button>
-          <button type="button" onclick="document.getElementById('matchOverlayTinder').remove();" style="padding:14px 28px; background:rgba(255,255,255,0.15); color:#fff; font-weight:700; font-size:15px; border:none; border-radius:12px; cursor:pointer;">Weiter swipen</button>
+          <button type="button" onclick="document.getElementById('matchOverlayTinder').remove();" style="padding:14px 28px; background:rgba(255,255,255,0.15); color:#fff; font-weight:700; font-size:15px; border:none; border-radius:12px; cursor:pointer;">Weiter</button>
         </div>
       </div>
     `;
@@ -11528,12 +11215,14 @@
   
   function showMatchModal(offer){
     if(!offer) return;
+    const matchBd = document.getElementById('matchBd');
+    const matchSheet = document.getElementById('matchSheet');
+    if(!matchBd || !matchSheet) return; // Match-Modal (Swipe) entfernt
     currentMatchOffer = offer;
     const data = normalizeOffer(offer);
     
-    // Modal öffnen
-    document.getElementById('matchBd').classList.add('active');
-    document.getElementById('matchSheet').classList.add('active');
+    matchBd.classList.add('active');
+    matchSheet.classList.add('active');
     
     // Daten füllen
     const dishImageEl = document.getElementById('matchDishImage');
@@ -11569,8 +11258,10 @@
   }
   
   function closeMatchModal(){
-    document.getElementById('matchBd').classList.remove('active');
-    document.getElementById('matchSheet').classList.remove('active');
+    const matchBd = document.getElementById('matchBd');
+    const matchSheet = document.getElementById('matchSheet');
+    if(matchBd) matchBd.classList.remove('active');
+    if(matchSheet) matchSheet.classList.remove('active');
     currentMatchOffer = null;
   }
   
