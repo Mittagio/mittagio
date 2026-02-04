@@ -15,7 +15,7 @@
   <link rel="apple-touch-icon" href="assets/icons/icon-192.png" />
   <script src="https://unpkg.com/lucide@latest" onload="if(typeof lucide !== 'undefined') lucide.createIcons();"></script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Montserrat:wght@400;600;700;900&family=Kalam:wght@400;700&family=Permanent+Marker&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Montserrat:wght@400;600;700;900&family=Kalam:wght@400;700&family=Permanent+Marker&family=Nunito:wght@600;700;800&display=swap');
     :root{
       /* Mittagio High-End Farbpalette */
       --bg:#F7F6F0; /* Standard-Hintergrund */
@@ -2611,22 +2611,23 @@
       box-shadow: 0 4px 12px rgba(255,215,0,0.4) !important;
     }
     
-    /* Favoriten-Grid: Mobile First (S25/390px), 2 Spalten, gap 12px, homogene Kachelhöhe */
+    /* Favoriten-Grid: Mobile First (S25/iPhone 16), 2 Spalten, gap 12px, kompakt (~85 %) für Spiel-Charakter */
     #favDishes.fav-dishes-grid,
     #favDishes {
       display: grid !important;
       grid-template-columns: repeat(2, 1fr) !important;
       gap: 12px !important;
+      max-width: 100%;
     }
-    /* Homogenität: Alle Favoriten-Kacheln identische Höhe, abgerundete Karten, dezenter Schatten */
+    /* Homogenität: Kacheln ~85 % der Standardgröße, identisch zu Discovery (Abrundung 16px, Schatten) */
     .fav-grid-card {
       height: 100%;
-      min-height: 320px;
-      max-height: 340px;
+      min-height: 272px;
+      max-height: 289px;
       display: flex;
       flex-direction: column;
       border-radius: 16px !important;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.08) !important;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.12) !important;
       overflow: hidden;
     }
     .fav-grid-card .fav-card-img-wrap {
@@ -2652,6 +2653,33 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+    }
+    /* Preis-Badge Favoriten: exakt wie Discovery (grüner Kreis, weiße Schrift) */
+    .fav-card-price-sticker {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--sticker-green);
+      border: 3px solid #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 12px;
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+      z-index: 10;
+    }
+    /* Favoriten-Header: verspielter Titel (Nunito, letter-spacing) */
+    .fav-header-wrap {
+      background: linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(255,250,240,0.96) 100%) !important;
+    }
+    .fav-header-title {
+      font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+      letter-spacing: 0.4px !important;
     }
     
     /* Responsive Grid für Provider-Favoriten */
@@ -3579,9 +3607,9 @@
     <!-- CUSTOMER: Favorites – Fokus auf HEUTE, 2x2 Grid, Pull-to-Reveal -->
     <section class="view customer-view" id="v-fav">
       <div style="padding-bottom:100px;">
-        <!-- Header: Titel linksbündig + Share-Icon rechts (spart vertikalen Platz) -->
-        <div id="favHeader" style="display:flex; align-items:center; justify-content:space-between; gap:12px; padding:24px 20px 16px; background:rgba(255,255,255,0.95); backdrop-filter:blur(10px); position:sticky; top:0; z-index:80; border-bottom:1px solid rgba(0,0,0,0.05);">
-          <h1 style="font-size:22px; font-weight:800; margin:0; color:#1a1a1a; letter-spacing:-0.5px; flex:1; font-family:-apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;">Deine Favoriten für heute:</h1>
+        <!-- Header: Titel linksbündig + Share-Icon rechts (verspielter App-Charakter) -->
+        <div id="favHeader" class="fav-header-wrap" style="display:flex; align-items:center; justify-content:space-between; gap:12px; padding:24px 20px 16px; backdrop-filter:blur(10px); position:sticky; top:0; z-index:80; border-bottom:1px solid rgba(0,0,0,0.05);">
+          <h1 id="favHeaderTitle" class="fav-header-title" style="font-size:22px; font-weight:800; margin:0; color:#1a1a1a; flex:1;">Deine Favoriten für heute:</h1>
           <button type="button" id="btnFavShareHeader" aria-label="Teilen" style="flex-shrink:0; width:44px; height:44px; border-radius:50%; border:1px solid rgba(0,0,0,0.1); background:rgba(255,255,255,0.9); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s ease; color:#666;" onmouseover="this.style.background='rgba(255,215,0,0.15)'; this.style.borderColor='rgba(255,215,0,0.4)'; this.style.color='#1a1a1a';" onmouseout="this.style.background='rgba(255,255,255,0.9)'; this.style.borderColor='rgba(0,0,0,0.1)'; this.style.color='#666';">
             <i data-lucide="share-2" style="width:22px;height:22px; stroke-width:2;"></i>
           </button>
@@ -10270,17 +10298,9 @@
     const imgSrc = data.imageUrl || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70';
     imgWrap.innerHTML = `<img alt="${esc(data.dish||'')}" src="${esc(imgSrc)}" />`;
     const priceSticker = document.createElement('div');
-    priceSticker.style.cssText = 'position:absolute; bottom:6px; right:6px; width:40px; height:40px; border-radius:50%; background:#27AE60; border:2px solid #fff; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:11px; color:#fff; box-shadow:0 2px 6px rgba(0,0,0,0.2); z-index:10;';
+    priceSticker.className = 'fav-card-price-sticker';
     priceSticker.textContent = euro(data.price);
     imgWrap.appendChild(priceSticker);
-    const dishKey = data.id;
-    const heart = document.createElement('button');
-    heart.className = 'card-heart' + (dishFavs.has(dishKey) ? ' on' : '');
-    heart.type = 'button';
-    heart.style.cssText = 'position:absolute; top:6px; right:42px; z-index:15; width:28px; height:28px; border-radius:50%; background:rgba(255,255,255,0.9); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer;';
-    heart.innerHTML = dishFavs.has(dishKey) ? iconMarkup('heart', {fill:true}) : iconMarkup('heart');
-    heart.onclick = (e) => { e.stopPropagation(); toggleDishFav(dishKey); };
-    imgWrap.appendChild(heart);
     card.appendChild(imgWrap);
     
     // Body: 3 Säulen direkt unter Bild, dann Titel (ellipsis), dann CTA
