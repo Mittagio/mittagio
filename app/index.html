@@ -4337,106 +4337,139 @@
       <button type="button" class="cookbook-action-sheet-btn" onclick="closeCookbookActionSheet()">Abbrechen</button>
     </div>
 
-    <!-- Provider-Profil: Modernes Design -->
-    <section class="view" id="v-provider-profile" style="background:#121212; min-height:100vh; padding-bottom:100px;">
+    <!-- Provider-Profil: Clean, helles Layout (Anbieter-Spec) -->
+    <section class="view" id="v-provider-profile" style="background:#F5F5F5; min-height:100vh; padding-bottom:100px;">
       
-      <!-- Header (Sticky) -->
-      <div style="background:rgba(28,28,30,0.95); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); position:sticky; top:0; z-index:50; border-bottom:1px solid rgba(255,255,255,0.08); padding:16px 20px; margin:-20px -20px 0; display:flex; align-items:center; justify-content:center;">
-        <h1 style="margin:0; font-size:17px; font-weight:600; color:#fff;">Mein Profil</h1>
+      <!-- Header (Sticky, hell) -->
+      <div style="background:#fff; position:sticky; top:0; z-index:50; border-bottom:1px solid rgba(0,0,0,0.06); padding:16px 20px; margin:-20px -20px 0; display:flex; align-items:center; justify-content:center;">
+        <h1 style="margin:0; font-size:17px; font-weight:600; color:#1a1a1a;">Mein Profil</h1>
       </div>
 
-      <!-- Profile Header Card -->
-      <div style="padding:32px 20px; text-align:center; border-bottom:1px solid rgba(255,255,255,0.05); background:linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(18,18,18,0) 100%);">
-        <div class="plogo" id="providerProfileLogo" style="width:96px; height:96px; border-radius:28px; margin:0 auto 20px; border:1px solid rgba(255,255,255,0.1); box-shadow:0 8px 24px rgba(0,0,0,0.2); background-size:cover; background-position:center; background-color:#2c2c2e;"></div>
-        <h2 id="providerProfileName" style="margin:0 0 6px; font-size:24px; font-weight:800; color:#fff; letter-spacing:-0.5px;">Betriebsname</h2>
-        <p id="providerProfileAddress" style="margin:0 0 24px; font-size:15px; color:rgba(255,255,255,0.6);">Adresse wird geladen...</p>
-        
-        <div style="display:flex; gap:12px; justify-content:center;">
-           <button id="btnProfileEdit" style="background:rgba(255,255,255,0.1); border:none; color:#fff; border-radius:14px; font-size:14px; font-weight:600; padding:0 20px; height:42px; display:flex; align-items:center; gap:8px; transition:all 0.2s;">
-             <i data-lucide="edit-3" style="width:16px; height:16px;"></i> Bearbeiten
-           </button>
-           <button id="btnProviderShareMenu" style="background:#FFD700; color:#000; border:none; border-radius:14px; font-size:14px; font-weight:700; padding:0 20px; height:42px; display:flex; align-items:center; gap:8px; box-shadow:0 4px 12px rgba(255, 215, 0, 0.2);">
-             <i data-lucide="share-2" style="width:16px; height:16px;"></i> Karte teilen
-           </button>
+      <!-- Identität: Logo, Betriebsname, Kontaktdaten (editierbar) -->
+      <div style="padding:24px 20px; text-align:center; border-bottom:1px solid rgba(0,0,0,0.06); background:#fff;">
+        <div class="plogo" id="providerProfileLogo" style="width:96px; height:96px; border-radius:28px; margin:0 auto 16px; border:1px solid rgba(0,0,0,0.08); box-shadow:0 4px 12px rgba(0,0,0,0.06); background-size:cover; background-position:center; background-color:#e7e1d5;"></div>
+        <h2 id="providerProfileName" style="margin:0 0 16px; font-size:22px; font-weight:800; color:#1a1a1a; letter-spacing:-0.5px;">Betriebsname</h2>
+        <p id="providerProfileAddress" style="margin:0 0 16px; font-size:14px; color:#666;">Adresse wird geladen...</p>
+        <!-- Kontaktdaten (editierbar) -->
+        <div style="text-align:left; max-width:320px; margin:0 auto 20px; font-size:14px; color:#333;">
+          <div style="margin-bottom:10px;"><strong>Telefon:</strong> <input type="tel" id="providerProfilePhone" placeholder="z.B. 07181 12345" style="width:100%; padding:8px 12px; border:1px solid #e7e1d5; border-radius:10px; font-size:14px;"></div>
+          <div style="margin-bottom:10px;"><strong>E-Mail:</strong> <input type="email" id="providerProfileEmail" placeholder="geschaeft@betrieb.de" style="width:100%; padding:8px 12px; border:1px solid #e7e1d5; border-radius:10px; font-size:14px;"></div>
+          <div><strong>Internetseite:</strong> <input type="url" id="providerProfileWebsite" placeholder="https://..." style="width:100%; padding:8px 12px; border:1px solid #e7e1d5; border-radius:10px; font-size:14px;"></div>
+        </div>
+        <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+          <button id="btnProfileEdit" style="background:#e7e1d5; border:none; color:#333; border-radius:14px; font-size:14px; font-weight:600; padding:0 20px; height:42px; display:flex; align-items:center; gap:8px; transition:all 0.2s; cursor:pointer;">
+            <i data-lucide="edit-3" style="width:16px; height:16px;"></i> Bearbeiten
+          </button>
+          <button id="btnProviderShareMenu" style="background:#FFD700; color:#111; border:none; border-radius:14px; font-size:14px; font-weight:700; padding:0 20px; height:42px; display:flex; align-items:center; gap:8px; box-shadow:0 4px 12px rgba(255,215,0,0.25); cursor:pointer;">
+            <i data-lucide="share-2" style="width:16px; height:16px;"></i> Karte teilen
+          </button>
         </div>
       </div>
 
       <div style="padding:24px 20px;">
         
-        <!-- Finance Card -->
-        <div style="background:linear-gradient(135deg, #2c3e50 0%, #1a252f 100%); border-radius:20px; padding:24px; margin-bottom:32px; position:relative; overflow:hidden; border:1px solid rgba(255,255,255,0.05); box-shadow:0 8px 24px rgba(0,0,0,0.2);">
-          <div style="position:relative; z-index:2;">
-            <div style="font-size:13px; font-weight:600; color:rgba(255,255,255,0.6); margin-bottom:8px; text-transform:uppercase; letter-spacing:1px;">Dein Guthaben</div>
-            <div id="providerProfileNetPayout" style="font-size:32px; font-weight:800; color:#fff; margin-bottom:20px; font-variant-numeric: tabular-nums;">0,00 €</div>
-            <button id="btnBilling" style="background:rgba(255,255,255,0.15); border:none; color:#fff; font-size:14px; font-weight:600; padding:10px 16px; border-radius:10px; display:inline-flex; align-items:center; gap:8px; backdrop-filter:blur(5px);">
-              <i data-lucide="file-text" style="width:16px; height:16px;"></i>
-              Abrechnungen
-            </button>
+        <!-- Meine Mittagszeiten (ein Zeitfenster, Wochentage) -->
+        <div class="provider-profile-section-title" style="margin-bottom:12px; font-size:13px; font-weight:700; color:#666; text-transform:uppercase; letter-spacing:0.5px;">Meine Mittagszeiten</div>
+        <div style="background:#fff; border-radius:18px; padding:20px; margin-bottom:24px; border:1px solid rgba(0,0,0,0.06);">
+          <p style="margin:0 0 16px; font-size:14px; color:#666;">Standard-Abholfenster für dein Mittagsangebot (z.B. 11:30 – 13:30 Uhr). Wird im Inserat automatisch vorgeschlagen.</p>
+          <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom:16px;">
+            <label style="font-size:14px; color:#333;">Start:</label>
+            <input type="time" id="providerMealStart" style="padding:10px 14px; border:1px solid #e7e1d5; border-radius:10px; font-size:16px; background:#fff;">
+            <span style="color:#666;">–</span>
+            <label style="font-size:14px; color:#333;">Ende:</label>
+            <input type="time" id="providerMealEnd" style="padding:10px 14px; border:1px solid #e7e1d5; border-radius:10px; font-size:16px; background:#fff;">
           </div>
-          <i data-lucide="wallet" style="position:absolute; right:-20px; bottom:-30px; width:140px; height:140px; color:rgba(255,255,255,0.03); transform:rotate(-10deg);"></i>
+          <div style="font-size:14px; color:#333; margin-bottom:8px;">An welchen Tagen bietest du Mittagessen an?</div>
+          <div id="providerLunchWeekdays" style="display:flex; gap:8px; flex-wrap:wrap;">
+            <!-- Mo–So Checkboxen werden per JS befüllt -->
+          </div>
         </div>
 
-        <div style="margin-bottom:12px; font-size:13px; font-weight:700; color:rgba(255,255,255,0.4); text-transform:uppercase; letter-spacing:1px; padding-left:12px;">Einstellungen</div>
-        
-        <!-- Settings Group -->
-        <div style="background:#1c1c1e; border-radius:18px; overflow:hidden; margin-bottom:32px;">
-          <!-- Auto Sellout -->
-          <div style="padding:16px 20px; border-bottom:1px solid rgba(255,255,255,0.08);">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-              <div style="font-weight:600; color:#fff; font-size:16px;">Automatischer Ausverkauf</div>
-              <i data-lucide="clock" style="color:#FFD700; width:20px; height:20px;"></i>
+        <!-- Voreinstellungen: 3 Säulen (Effizienz-Zentrale) -->
+        <div class="provider-profile-section-title" style="margin-bottom:12px; font-size:13px; font-weight:700; color:#666; text-transform:uppercase; letter-spacing:0.5px;">Voreinstellungen</div>
+        <div style="background:#fff; border-radius:18px; overflow:hidden; margin-bottom:24px; border:1px solid rgba(0,0,0,0.06);">
+          <div style="padding:16px 20px; border-bottom:1px solid rgba(0,0,0,0.06); display:flex; align-items:center; gap:12px;">
+            <span style="font-size:20px;">🍴</span>
+            <div style="flex:1;">
+              <div style="font-weight:600; color:#1a1a1a; font-size:16px;">Vor Ort</div>
+              <div style="font-size:13px; color:#666;">Immer aktiv</div>
             </div>
-            <div style="font-size:13px; color:rgba(255,255,255,0.5); margin-bottom:12px;">Gerichte automatisch deaktivieren um:</div>
-            <input type="time" id="providerAutoSelloutTime" style="background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); color:#fff; border-radius:10px; padding:10px 14px; width:100%; font-size:16px; font-family:inherit;">
+            <span style="font-size:14px; color:#1f9d55; font-weight:600;">Aktiv</span>
           </div>
-
-          <!-- Kitchen Email -->
-          <div style="padding:16px 20px; border-bottom:1px solid rgba(255,255,255,0.08);">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-              <div style="font-weight:600; color:#fff; font-size:16px;">Küchen-E-Mail</div>
-              <i data-lucide="mail" style="color:rgba(255,255,255,0.4); width:20px; height:20px;"></i>
-            </div>
-             <div style="font-size:13px; color:rgba(255,255,255,0.5); margin-bottom:12px;">Für Bestellbestätigungen & PDFs:</div>
-            <input type="email" id="providerKitchenEmail" placeholder="email@betrieb.de" style="background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); color:#fff; border-radius:10px; padding:10px 14px; width:100%; font-size:16px; font-family:inherit;">
-          </div>
-
-          <!-- Reuse System -->
-          <div style="padding:16px 20px; display:flex; justify-content:space-between; align-items:center;">
-            <div>
-              <div style="font-weight:600; color:#fff; font-size:16px;">Mehrweg-Pfand</div>
-              <div style="font-size:13px; color:rgba(255,255,255,0.5); margin-top:2px;">Standardmäßig aktiv</div>
+          <div style="padding:16px 20px; border-bottom:1px solid rgba(0,0,0,0.06); display:flex; justify-content:space-between; align-items:center;">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <span style="font-size:20px;">🔄</span>
+              <div>
+                <div style="font-weight:600; color:#1a1a1a; font-size:16px;">Mehrweg</div>
+                <div style="font-size:13px; color:#666;">Standard für Mitnehmen</div>
+              </div>
             </div>
             <label class="toggle-switch">
               <input type="checkbox" id="providerReuseEnabled">
               <span class="toggle-slider"></span>
             </label>
           </div>
+          <div style="padding:16px 20px; display:flex; justify-content:space-between; align-items:flex-start;">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <span style="font-size:20px;">🧾</span>
+              <div>
+                <div style="font-weight:600; color:#1a1a1a; font-size:16px;">Abholnummer</div>
+                <div style="font-size:13px; color:#666;">Optional zubuchbar für 0,89 € pro Vorgang inkl. Gebühren.</div>
+              </div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="providerAbholnummerEnabled">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
         </div>
 
-        <div style="margin-bottom:12px; font-size:13px; font-weight:700; color:rgba(255,255,255,0.4); text-transform:uppercase; letter-spacing:1px; padding-left:12px;">Rechtliches & Account</div>
+        <!-- Einstellungen: Auto-Sellout, Küchen-E-Mail -->
+        <div class="provider-profile-section-title" style="margin-bottom:12px; font-size:13px; font-weight:700; color:#666; text-transform:uppercase; letter-spacing:0.5px;">Einstellungen</div>
+        <div style="background:#fff; border-radius:18px; overflow:hidden; margin-bottom:24px; border:1px solid rgba(0,0,0,0.06);">
+          <div style="padding:16px 20px; border-bottom:1px solid rgba(0,0,0,0.06);">
+            <div style="font-weight:600; color:#1a1a1a; font-size:16px; margin-bottom:8px;">Automatischer Ausverkauf</div>
+            <div style="font-size:13px; color:#666; margin-bottom:12px;">Gerichte automatisch deaktivieren um:</div>
+            <input type="time" id="providerAutoSelloutTime" style="background:#fff; border:1px solid #e7e1d5; color:#1a1a1a; border-radius:10px; padding:10px 14px; width:100%; font-size:16px;">
+          </div>
+          <div style="padding:16px 20px;">
+            <div style="font-weight:600; color:#1a1a1a; font-size:16px; margin-bottom:8px;">Küchen-E-Mail</div>
+            <div style="font-size:13px; color:#666; margin-bottom:12px;">Für Bestellbestätigungen &amp; PDFs:</div>
+            <input type="email" id="providerKitchenEmail" placeholder="email@betrieb.de" style="background:#fff; border:1px solid #e7e1d5; color:#1a1a1a; border-radius:10px; padding:10px 14px; width:100%; font-size:16px;">
+          </div>
+        </div>
 
-        <!-- Legal & Actions -->
-        <div style="background:#1c1c1e; border-radius:18px; overflow:hidden;">
-          <a href="#" onclick="showLegalPage('agb-provider'); return false;" style="display:flex; justify-content:space-between; align-items:center; padding:18px 20px; text-decoration:none; border-bottom:1px solid rgba(255,255,255,0.08); transition:background 0.2s;">
-            <span style="color:#fff; font-size:16px; font-weight:500;">AGB</span>
-            <i data-lucide="chevron-right" style="color:rgba(255,255,255,0.2); width:18px;"></i>
-          </a>
-          <a href="#" onclick="showLegalPage('datenschutz-provider'); return false;" style="display:flex; justify-content:space-between; align-items:center; padding:18px 20px; text-decoration:none; border-bottom:1px solid rgba(255,255,255,0.08); transition:background 0.2s;">
-            <span style="color:#fff; font-size:16px; font-weight:500;">Datenschutz</span>
-            <i data-lucide="chevron-right" style="color:rgba(255,255,255,0.2); width:18px;"></i>
-          </a>
-          <a href="#" onclick="showLegalPage('impressum-provider'); return false;" style="display:flex; justify-content:space-between; align-items:center; padding:18px 20px; text-decoration:none; border-bottom:1px solid rgba(255,255,255,0.08); transition:background 0.2s;">
-            <span style="color:#fff; font-size:16px; font-weight:500;">Impressum</span>
-            <i data-lucide="chevron-right" style="color:rgba(255,255,255,0.2); width:18px;"></i>
-          </a>
-          <button id="btnProvLogout" style="width:100%; text-align:left; background:none; border:none; padding:18px 20px; display:flex; justify-content:space-between; align-items:center; cursor:pointer; transition:background 0.2s;">
-            <span style="color:#FF453A; font-size:16px; font-weight:600;">Abmelden</span>
-            <i data-lucide="log-out" style="color:#FF453A; width:18px;"></i>
+        <!-- Zahlungsabwicklung -->
+        <div class="provider-profile-section-title" style="margin-bottom:12px; font-size:13px; font-weight:700; color:#666; text-transform:uppercase; letter-spacing:0.5px;">Zahlungsabwicklung</div>
+        <div style="background:#fff; border-radius:18px; padding:20px; margin-bottom:24px; border:1px solid rgba(0,0,0,0.06);">
+          <div style="font-size:14px; color:#333; margin-bottom:12px;"><strong>Fix:</strong> 4,99 € pro Inserat · <strong>Optional:</strong> 0,89 € pro Abholnummer-Vorgang</div>
+          <button id="btnBilling" style="background:#10b981; color:#fff; border:none; font-size:14px; font-weight:600; padding:12px 20px; border-radius:12px; display:inline-flex; align-items:center; gap:8px; cursor:pointer;">
+            <i data-lucide="file-text" style="width:18px; height:18px;"></i> Abrechnungen &amp; Rechnungsarchiv
+          </button>
+        </div>
+
+        <!-- Account-Verwaltung & Sicherheit -->
+        <div class="provider-profile-section-title" style="margin-bottom:12px; font-size:13px; font-weight:700; color:#666; text-transform:uppercase; letter-spacing:0.5px;">Account</div>
+        <div style="background:#fff; border-radius:18px; overflow:hidden; margin-bottom:24px; border:1px solid rgba(0,0,0,0.06);">
+          <div style="padding:16px 20px; border-bottom:1px solid rgba(0,0,0,0.06); font-size:14px; color:#333;">Status: <strong id="providerSessionStatus">1 aktive Sitzung</strong></div>
+          <a href="#" id="btnProviderChangeEmail" style="display:flex; justify-content:space-between; align-items:center; padding:16px 20px; text-decoration:none; color:#1a1a1a; font-size:16px; border-bottom:1px solid rgba(0,0,0,0.06);">E-Mail &amp; Passwort ändern <i data-lucide="chevron-right" style="color:#999; width:18px;"></i></a>
+        </div>
+
+        <!-- Fußbereich: Support, Rechtliches, Logout -->
+        <div class="provider-profile-section-title" style="margin-bottom:12px; font-size:13px; font-weight:700; color:#666; text-transform:uppercase; letter-spacing:0.5px;">Support &amp; Rechtliches</div>
+        <div style="background:#fff; border-radius:18px; overflow:hidden; border:1px solid rgba(0,0,0,0.06);">
+          <a href="mailto:support@mittagio.de" style="display:flex; justify-content:space-between; align-items:center; padding:18px 20px; text-decoration:none; color:#1a1a1a; font-size:16px; border-bottom:1px solid rgba(0,0,0,0.06);">Support <i data-lucide="chevron-right" style="color:#999; width:18px;"></i></a>
+          <a href="#" onclick="showLegalPage('agb-provider'); return false;" style="display:flex; justify-content:space-between; align-items:center; padding:18px 20px; text-decoration:none; color:#1a1a1a; font-size:16px; border-bottom:1px solid rgba(0,0,0,0.06);">AGB <i data-lucide="chevron-right" style="color:#999; width:18px;"></i></a>
+          <a href="#" onclick="showLegalPage('impressum-provider'); return false;" style="display:flex; justify-content:space-between; align-items:center; padding:18px 20px; text-decoration:none; color:#1a1a1a; font-size:16px; border-bottom:1px solid rgba(0,0,0,0.06);">Impressum <i data-lucide="chevron-right" style="color:#999; width:18px;"></i></a>
+          <a href="#" onclick="showLegalPage('datenschutz-provider'); return false;" style="display:flex; justify-content:space-between; align-items:center; padding:18px 20px; text-decoration:none; color:#1a1a1a; font-size:16px; border-bottom:1px solid rgba(0,0,0,0.06);">Datenschutz <i data-lucide="chevron-right" style="color:#999; width:18px;"></i></a>
+          <button id="btnProvLogout" style="width:100%; text-align:left; background:none; border:none; padding:18px 20px; display:flex; justify-content:space-between; align-items:center; cursor:pointer;">
+            <span style="color:#dc2626; font-size:16px; font-weight:600;">Abmelden</span>
+            <i data-lucide="log-out" style="color:#dc2626; width:18px;"></i>
           </button>
         </div>
         
-        <div style="text-align:center; margin-top:40px; margin-bottom:20px;">
-           <span style="font-size:12px; color:rgba(255,255,255,0.2); font-weight:500;">Version 2.0.0 • Mittagio Provider App</span>
+        <div style="text-align:center; margin-top:32px; margin-bottom:20px;">
+          <span style="font-size:12px; color:#999; font-weight:500;">Version 2.0.0 • Mittagio Provider App</span>
         </div>
 
       </div>
@@ -6115,7 +6148,7 @@
     },
     reuseEnabled: false
   });
-  let provider = load(LS.provider, { loggedIn:false, email:null, profile:{ name:'', address:'', street:'', zip:'', city:'', mealWindow:'11:30 – 14:00', logoData:'' } });
+  let provider = load(LS.provider, { loggedIn:false, email:null, profile:{ name:'', address:'', street:'', zip:'', city:'', mealWindow:'11:30 – 14:00', mealStart:'11:30', mealEnd:'14:00', lunchWeekdays:[1,2,3,4,5], phone:'', email:'', website:'', logoData:'', reuseEnabledByDefault:false, abholnummerEnabledByDefault:false } });
   let cookbook = load(LS.cookbook, []); // [{id, dish, category, price, allergens[], extras?, reuse? , photoData?}]
   let week = load(LS.week, {}); // { 'YYYY-MM-DD': [cookbookId,...] }
 
@@ -6861,11 +6894,21 @@
   }
 
   function normalizeProviderProfile(p){
-    const base = { name:'', address:'', street:'', zip:'', city:'', mealWindow:DEFAULT_MEAL_WINDOW, logoData:'' };
+    const base = { name:'', address:'', street:'', zip:'', city:'', mealWindow:DEFAULT_MEAL_WINDOW, mealStart:'11:30', mealEnd:'14:00', lunchWeekdays:[1,2,3,4,5], phone:'', email:'', website:'', logoData:'', kitchenEmail:'', autoSelloutTime:'', reuseEnabledByDefault:false, abholnummerEnabledByDefault:false };
     const out = {...base, ...(p||{})};
     if(!out.address){ out.address = buildAddress(out); }
     if(!out.mealWindow){ out.mealWindow = DEFAULT_MEAL_WINDOW; }
+    if(!Array.isArray(out.lunchWeekdays)){ out.lunchWeekdays = [1,2,3,4,5]; }
     return out;
+  }
+  /** Wochentage-Array zu Anzeige-Text (1=Mo … 7=So) */
+  function formatLunchWeekdays(arr){
+    const labels = ['','Mo','Di','Mi','Do','Fr','Sa','So'];
+    if(!arr || arr.length===0) return '–';
+    const sorted = [...arr].sort((a,b)=>a-b);
+    if(sorted.length===7) return 'Mo–So';
+    if(sorted.length===5 && sorted[0]===1 && sorted[4]===5) return 'Mo–Fr';
+    return sorted.map(d=>labels[d]).filter(Boolean).join(', ');
   }
 
   function normalizeOffer(o){
@@ -16200,7 +16243,7 @@
     const addr = buildAddress(p);
     const name = p.name || provider.email || 'Anbieter';
     
-    // Logo rendern
+    // Logo rendern (helles Theme: Platzhalter mit Initialen)
     const logoWrap = document.getElementById('providerProfileLogo');
     if(logoWrap){
       if(p.logoData){
@@ -16209,7 +16252,7 @@
       } else {
         const initials = name.charAt(0).toUpperCase();
         logoWrap.style.backgroundImage = 'none';
-        logoWrap.innerHTML = `<div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-size:32px; font-weight:900; color:#fff;">${esc(initials)}</div>`;
+        logoWrap.innerHTML = `<div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-size:32px; font-weight:900; color:#666;">${esc(initials)}</div>`;
       }
     }
     
@@ -16220,12 +16263,79 @@
     if(addrEl){
       if(addr){
         addrEl.textContent = esc(addr);
-        addrEl.style.color = 'rgba(255,255,255,0.6)';
+        addrEl.style.color = '#666';
       } else {
         addrEl.textContent = 'Standort-Adresse hinzufügen';
-        addrEl.style.color = 'rgba(255,215,0,0.7)';
+        addrEl.style.color = '#b45309';
       }
     }
+    
+    // Kontaktdaten (Telefon, E-Mail, Internetseite)
+    const profilePhone = document.getElementById('providerProfilePhone');
+    const profileEmail = document.getElementById('providerProfileEmail');
+    const profileWebsite = document.getElementById('providerProfileWebsite');
+    if(profilePhone){ profilePhone.value = p.phone || ''; profilePhone.onchange = ()=>{ if(!provider.profile) provider.profile = {}; provider.profile.phone = profilePhone.value; save(LS.provider, provider); showToast('Telefon gespeichert'); }; }
+    if(profileEmail){ profileEmail.value = p.email || ''; profileEmail.onchange = ()=>{ if(!provider.profile) provider.profile = {}; provider.profile.email = profileEmail.value; save(LS.provider, provider); showToast('E-Mail gespeichert'); }; }
+    if(profileWebsite){ profileWebsite.value = p.website || ''; profileWebsite.onchange = ()=>{ if(!provider.profile) provider.profile = {}; provider.profile.website = profileWebsite.value; save(LS.provider, provider); showToast('Internetseite gespeichert'); }; }
+    
+    // Meine Mittagszeiten: Start/Ende
+    const mealStartEl = document.getElementById('providerMealStart');
+    const mealEndEl = document.getElementById('providerMealEnd');
+    const saveMealWindow = () => {
+      if(!provider.profile) provider.profile = {};
+      const start = mealStartEl ? mealStartEl.value : p.mealStart || '11:30';
+      const end = mealEndEl ? mealEndEl.value : p.mealEnd || '14:00';
+      provider.profile.mealStart = start;
+      provider.profile.mealEnd = end;
+      provider.profile.mealWindow = `${start} – ${end}`;
+      save(LS.provider, provider);
+      showToast('Mittagszeiten gespeichert');
+    };
+    if(mealStartEl){ mealStartEl.value = p.mealStart || '11:30'; mealStartEl.onchange = saveMealWindow; }
+    if(mealEndEl){ mealEndEl.value = p.mealEnd || '14:00'; mealEndEl.onchange = saveMealWindow; }
+    
+    // Wochentage (Mo=1 … So=7)
+    const weekdaysWrap = document.getElementById('providerLunchWeekdays');
+    if(weekdaysWrap){
+      const labels = [{d:1,l:'Mo'},{d:2,l:'Di'},{d:3,l:'Mi'},{d:4,l:'Do'},{d:5,l:'Fr'},{d:6,l:'Sa'},{d:7,l:'So'}];
+      const arr = Array.isArray(p.lunchWeekdays) ? p.lunchWeekdays : [1,2,3,4,5];
+      weekdaysWrap.innerHTML = labels.map(({d,l}) => `<label style="display:inline-flex; align-items:center; gap:6px; padding:8px 12px; border-radius:10px; border:2px solid ${arr.includes(d)?'#10b981':'#e7e1d5'}; background:${arr.includes(d)?'rgba(16,185,129,0.1)':'#fff'}; cursor:pointer; font-size:14px; font-weight:600;"><input type="checkbox" data-wd="${d}" ${arr.includes(d)?'checked':''} style="width:18px; height:18px;">${l}</label>`).join('');
+      weekdaysWrap.querySelectorAll('input[type=checkbox]').forEach(cb => {
+        cb.onchange = () => {
+          const wd = parseInt(cb.dataset.wd, 10);
+          if(!provider.profile) provider.profile = {};
+          if(!Array.isArray(provider.profile.lunchWeekdays)) provider.profile.lunchWeekdays = [1,2,3,4,5];
+          if(cb.checked) { if(!provider.profile.lunchWeekdays.includes(wd)) provider.profile.lunchWeekdays.push(wd); }
+          else provider.profile.lunchWeekdays = provider.profile.lunchWeekdays.filter(x => x !== wd);
+          provider.profile.lunchWeekdays.sort((a,b)=>a-b);
+          save(LS.provider, provider);
+          showToast('Wochentage gespeichert');
+          renderProviderProfile();
+        };
+      });
+    }
+    
+    // Abholnummer-Standard-Toggle
+    const abholnummerEnabled = document.getElementById('providerAbholnummerEnabled');
+    const abholnummerSwitch = abholnummerEnabled ? abholnummerEnabled.closest('.toggle-switch') : null;
+    if(abholnummerEnabled){
+      abholnummerEnabled.checked = p.abholnummerEnabledByDefault || false;
+      if(abholnummerSwitch){ abholnummerEnabled.checked ? abholnummerSwitch.classList.add('active') : abholnummerSwitch.classList.remove('active'); }
+      abholnummerEnabled.onchange = () => {
+        if(!provider.profile) provider.profile = {};
+        provider.profile.abholnummerEnabledByDefault = abholnummerEnabled.checked;
+        save(LS.provider, provider);
+        if(abholnummerSwitch){ abholnummerEnabled.checked ? abholnummerSwitch.classList.add('active') : abholnummerSwitch.classList.remove('active'); }
+        showToast(abholnummerEnabled.checked ? 'Abholnummer standardmäßig an' : 'Abholnummer standardmäßig aus');
+      };
+      if(abholnummerSwitch){ abholnummerSwitch.onclick = () => { abholnummerEnabled.checked = !abholnummerEnabled.checked; abholnummerEnabled.onchange(); }; }
+    }
+    
+    // Account: Status 1 aktive Sitzung
+    const sessionStatusEl = document.getElementById('providerSessionStatus');
+    if(sessionStatusEl) sessionStatusEl.textContent = '1 aktive Sitzung';
+    const btnChangeEmail = document.getElementById('btnProviderChangeEmail');
+    if(btnChangeEmail){ btnChangeEmail.onclick = (e) => { e.preventDefault(); showToast('E-Mail & Passwort ändern: In der App unter Account verfügbar.'); }; }
     
     // Küchen-Zeiten: Automatischer Ausverkauf
     const autoSelloutTime = document.getElementById('providerAutoSelloutTime');
@@ -17296,17 +17406,17 @@
         const cookbookId = ctx.dishId || ctx.fromCookbookId;
         const x = cookbook.find(c=>c.id===cookbookId);
         if(x){
-          // Prefill from cookbook entry
-          // Mehrweg: Verwende globale Einstellung wenn nicht im Kochbuch gesetzt
+          // Prefill from cookbook entry – Abholnummer: Profil-Default wenn im Kochbuch nicht gesetzt
           const globalReuseEnabled = profile.reuseEnabledByDefault || false;
+          const defaultAbholnummer = !!profile.abholnummerEnabledByDefault;
           w.data = {
             providerId: providerId(),
             dish: x.dish || '',
             category: x.category || 'Vegetarisch',
             price: Number(x.price||0),
             pickupWindow: profile.mealWindow || DEFAULT_MEAL_WINDOW,
-            hasPickupCode: !!x.hasPickupCode,
-            dineInPossible: !!x.dineInPossible,
+            hasPickupCode: x.hasPickupCode !== undefined ? !!x.hasPickupCode : defaultAbholnummer,
+            dineInPossible: x.dineInPossible !== undefined ? !!x.dineInPossible : true,
             allergens: Array.isArray(x.allergens) ? [...x.allergens] : [],
             wantsAllergens: !!(x.allergens && Array.isArray(x.allergens) && x.allergens.length > 0),
             extras: Array.isArray(x.extras) ? JSON.parse(JSON.stringify(x.extras)) : [],
@@ -17321,8 +17431,8 @@
             providerId: providerId(),
             dish:'', category:'Vegetarisch', price:0,
             pickupWindow: profile.mealWindow || DEFAULT_MEAL_WINDOW,
-            hasPickupCode:true,
-            dineInPossible:true,
+            hasPickupCode: !!profile.abholnummerEnabledByDefault,
+            dineInPossible: true,
             allergens:[],
             wantsAllergens: false,
             extras:[],
@@ -17451,7 +17561,15 @@
       zip,
       city,
       mealWindow: w.data.mealWindow || DEFAULT_MEAL_WINDOW,
-      logoData: w.data.logoData||''
+      mealStart: w.data.mealStart || '11:30',
+      mealEnd: w.data.mealEnd || '14:00',
+      lunchWeekdays: Array.isArray(w.data.lunchWeekdays) ? w.data.lunchWeekdays : [1,2,3,4,5],
+      phone: w.data.phone||'',
+      email: w.data.email||'',
+      website: w.data.website||'',
+      logoData: w.data.logoData||'',
+      reuseEnabledByDefault: !!w.data.reuseEnabledByDefault,
+      abholnummerEnabledByDefault: !!w.data.abholnummerEnabledByDefault
     };
     save(LS.provider, provider);
     renderProviderProfile();
