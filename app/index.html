@@ -1127,45 +1127,6 @@
     }
     .pickup-card.just-done .check-overlay{ opacity:1; }
     .pickup-card.just-done .check-icon{ animation:check-pop 0.3s ease-out forwards; }
-    .fullscreen-code{
-      position:fixed; top:0; left:0; right:0; bottom:0;
-      background:linear-gradient(135deg, #0d4f1c 0%, #000 100%); z-index:1000;
-      display:none; align-items:center; justify-content:center;
-      flex-direction:column; padding:40px 20px;
-      opacity:0; pointer-events:none; transition:opacity .2s;
-    }
-    .fullscreen-code.active{
-      display:flex; opacity:1; pointer-events:auto;
-    }
-    .fullscreen-code-close{
-      position:absolute; top:20px; right:20px;
-      width:48px; height:48px; border-radius:50%;
-      background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2);
-      color:#fff; display:flex; align-items:center; justify-content:center;
-      cursor:pointer; transition:all .2s;
-      z-index:1001;
-    }
-    .fullscreen-code-close:hover{background:rgba(255,255,255,0.2)}
-    .fullscreen-code-close i{width:24px; height:24px}
-    .fullscreen-code-content{
-      text-align:center; width:100%; max-width:800px;
-      display:flex; flex-direction:column; align-items:center; justify-content:center;
-    }
-    .fullscreen-code-value{
-      font-size:clamp(6rem, 25vw, 12rem);
-      font-weight:900; font-family:'Courier New', monospace;
-      letter-spacing:0.15em;
-      color:#fff; line-height:1.2;
-      margin-bottom:32px;
-      text-shadow:0 4px 20px rgba(0,0,0,0.5), 0 0 40px rgba(39,174,96,0.3);
-    }
-    .fullscreen-code-subtext{
-      font-size:clamp(1.2rem, 4vw, 2rem);
-      color:#fff; font-weight:700;
-      text-shadow:0 2px 8px rgba(0,0,0,0.3);
-      margin-bottom:24px;
-    }
-    
     .quick-ticket{
       position:fixed; inset:0; z-index:31;
       background:linear-gradient(135deg, var(--brand) 0%, #FFD700 100%);
@@ -3533,7 +3494,8 @@
           <div style="position:absolute; left:50%; transform:translateX(-50%); pointer-events:none;">
             <div class="brand-name" style="font-weight:900; letter-spacing:.06em; font-size:20px; color:#1a1a1a;">MITTAGIO</div>
           </div>
-          <!-- Ansicht-Toggle (rechts) - ENTFERNT -->
+          <!-- Nutzer-Avatar (rechts) → Meins -->
+          <button type="button" id="btnDiscoverProfileAvatar" aria-label="Meins" onclick="showProfile();" style="flex-shrink:0; width:40px; height:40px; border-radius:50%; border:none; background:rgba(0,0,0,.06); color:#333; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:700;">👤</button>
         </div>
       </div>
 
@@ -3690,7 +3652,7 @@
         <!-- Aktive Abholnummern (Wallet-Look) -->
         <div class="panel" id="cartActiveTickets" style="margin-bottom:16px; padding:20px; display:none; border-radius:24px; box-shadow:0 4px 16px rgba(0,0,0,.08); background:rgba(255,255,255,0.98); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border:2px dashed rgba(255,184,0,0.3); position:relative;">
           <h3 style="font-weight:900; font-size:22px; margin:0 0 20px; line-height:1.3; color:#2D3436; display:flex; align-items:center; gap:10px;">
-            <span style="font-size:28px;">🎫</span>
+            <span style="font-size:28px;">🧾</span>
             <span>Aktive Abholnummern</span>
           </h3>
           <div id="cartActiveTicketsList" style="display:flex; flex-direction:column; gap:16px;"></div>
@@ -3858,14 +3820,30 @@
         <p style="font-size:13px; color:#334155; margin:0; line-height:1.5;">Wir arbeiten stetig daran, weitere Partner für unser Mehrweg-System zu gewinnen. Aktuell führen noch nicht alle Anbieter Mehrweg-Optionen; es werden dir weiterhin alle verfügbaren Angebote angezeigt.</p>
       </div>
 
-      <!-- Top-FAQs (3 kompakte Elemente) -->
+      <!-- Top-FAQs (3 Accordion-Elemente, ausklappbar) -->
       <div style="margin-top:16px;">
         <div style="font-weight:800; font-size:15px; margin-bottom:10px; color:#1a1a1a;">Häufige Fragen</div>
-        <div id="profileTopFaq" style="display:flex; flex-direction:column; gap:8px;">
-          <a href="#/faq" onclick="showLegalPage('faq'); return false;" style="display:block; padding:12px 14px; background:#fff; border-radius:12px; border:1px solid rgba(0,0,0,.06); font-size:14px; font-weight:600; color:#1a1a1a; text-decoration:none;">🧾 Was ist die Abholnummer?</a>
-          <a href="#/faq" onclick="showLegalPage('faq'); return false;" style="display:block; padding:12px 14px; background:#fff; border-radius:12px; border:1px solid rgba(0,0,0,.06); font-size:14px; font-weight:600; color:#1a1a1a; text-decoration:none;">🍴 Probleme vor Ort?</a>
-          <a href="#/faq" onclick="showLegalPage('faq'); return false;" style="display:block; padding:12px 14px; background:#fff; border-radius:12px; border:1px solid rgba(0,0,0,.06); font-size:14px; font-weight:600; color:#1a1a1a; text-decoration:none;">🔄 Mehrweg-System</a>
+        <div id="profileTopFaq" class="profile-faq-accordion" style="display:flex; flex-direction:column; gap:8px;">
+          <details style="background:#fff; border-radius:12px; border:1px solid rgba(0,0,0,.06); overflow:hidden;">
+            <summary style="padding:12px 14px; font-size:14px; font-weight:600; color:#1a1a1a; cursor:pointer; list-style:none; display:flex; align-items:center; gap:8px;">
+              <span style="font-size:18px;">🧾</span> Wie funktioniert die Abholnummer?
+            </summary>
+            <p style="margin:0; padding:0 14px 14px 14px; font-size:14px; line-height:1.5; color:#555;">Ganz einfach: Nach deiner Bestellung findest du hier im Profil deine Abholnummer. Zeige diese beim Anbieter vor Ort einfach auf deinem Smartphone vor, um dein Mittagessen entgegenzunehmen. Ein Ausdruck ist nicht nötig.</p>
+          </details>
+          <details style="background:#fff; border-radius:12px; border:1px solid rgba(0,0,0,.06); overflow:hidden;">
+            <summary style="padding:12px 14px; font-size:14px; font-weight:600; color:#1a1a1a; cursor:pointer; list-style:none; display:flex; align-items:center; gap:8px;">
+              <span style="font-size:18px;">🍴</span> Was mache ich bei Problemen vor Ort?
+            </summary>
+            <p style="margin:0; padding:0 14px 14px 14px; font-size:14px; line-height:1.5; color:#555;">Sollte es einmal Unklarheiten geben, wende dich bitte direkt an das Personal des Anbieters. Deine Abholnummer ist der Beleg für deine Zahlung. Bei technischen Fehlern erreichst du unseren Support über das Kontaktformular im Impressum.</p>
+          </details>
+          <details style="background:#fff; border-radius:12px; border:1px solid rgba(0,0,0,.06); overflow:hidden;">
+            <summary style="padding:12px 14px; font-size:14px; font-weight:600; color:#1a1a1a; cursor:pointer; list-style:none; display:flex; align-items:center; gap:8px;">
+              <span style="font-size:18px;">🔄</span> Wie funktioniert das Mehrweg-System?
+            </summary>
+            <p style="margin:0; padding:0 14px 14px 14px; font-size:14px; line-height:1.5; color:#555;">Wenn ein Anbieter das 🔄-Symbol zeigt, kannst du dein Essen in nachhaltigen Mehrweg-Behältern erhalten. Aktuell bauen wir das Partner-Netzwerk stetig aus. Falls dein Lieblings-Metzger noch kein Mehrweg anbietet, weisen wir ihn gerne darauf hin!</p>
+          </details>
         </div>
+        <a href="#/faq" onclick="showLegalPage('faq'); return false;" style="display:block; margin-top:12px; text-align:center; font-size:14px; font-weight:600; color:var(--brand); text-decoration:none;">Alle FAQs anzeigen</a>
       </div>
 
       <!-- Footer: Kunden-Links | Impressum-Daten | Anbieter-Einstieg | Branding | Version -->
@@ -5214,31 +5192,6 @@
   </div>
 </div>
 
-<!-- Fullscreen Code Modal (Ultimative Ansicht - extrem groß, 1-2m lesbar) -->
-<div class="backdrop" id="fullscreenCodeBd" style="background:#000;"></div>
-<div class="fullscreen-code" id="fullscreenCode" style="background:linear-gradient(135deg, #0d4f1c 0%, #000 100%);">
-  <button class="fullscreen-code-close" aria-label="Schließen" style="position:absolute; top:20px; right:20px; width:48px; height:48px; border-radius:50%; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:10;">
-    <i data-lucide="x" style="width:24px;height:24px;"></i>
-  </button>
-  <div class="fullscreen-code-content" style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; padding:40px;">
-    <!-- Abholnummer (extrem groß) -->
-    <div class="fullscreen-code-value" id="fullscreenCodeValue" style="font-size:clamp(6rem, 25vw, 12rem); font-weight:900; font-family:'Courier New', monospace; letter-spacing:0.15em; color:#fff; text-align:center; line-height:1.2; text-shadow:0 4px 20px rgba(0,0,0,0.5), 0 0 40px rgba(39,174,96,0.3); margin-bottom:32px;">A  B  1  2  C</div>
-    <!-- Handlungsanweisung -->
-    <div class="fullscreen-code-subtext" style="font-size:clamp(1.2rem, 4vw, 2rem); font-weight:700; color:#fff; text-align:center; text-shadow:0 2px 8px rgba(0,0,0,0.3); margin-bottom:24px;">
-      Bitte direkt beim Personal vorzeigen.
-    </div>
-    <!-- Kontext-Infos (dezent) -->
-    <div id="fullscreenCodeContext" style="text-align:center; padding:16px 24px; background:rgba(255,255,255,0.1); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border-radius:16px; border:1px solid rgba(255,255,255,0.1); max-width:500px; width:100%;">
-      <div style="font-size:16px; color:rgba(255,255,255,0.9); margin-bottom:4px;">
-        <span id="fullscreenCodeDish" style="font-weight:600;">–</span>
-      </div>
-      <div style="font-size:18px; font-weight:700; color:#FFD700; margin-top:4px;">
-        <span id="fullscreenCodeTotal">–</span>
-      </div>
-    </div>
-  </div>
-</div>
-
 <!-- Provider offer sheet -->
 <div class="backdrop" id="pbd" onclick="closeProviderSheet()"></div>
 <div class="sheet" id="psheet">
@@ -5664,7 +5617,7 @@
           <div style="width:36px; height:36px; border-radius:50%; background:${abholnummer ? '#FFD700' : 'rgba(0,0,0,0.08)'}; color:${abholnummer ? '#1a1a1a' : '#999'}; display:flex; align-items:center; justify-content:center; border:1px solid ${abholnummer ? 'rgba(255,215,0,0.6)' : 'rgba(0,0,0,0.1)'};">
             <i data-lucide="ticket" style="width:18px;height:18px;"></i>
           </div>
-          <div style="${styleText}">Abhol-Nummer</div>
+          <div style="${styleText}">Abholnummer</div>
         </div>
         
         <!-- Mehrweg -->
@@ -7146,12 +7099,7 @@
     const fabProviderLabel = document.getElementById('fabProviderAddOfferLabel');
     if(fabProvider) fabProvider.style.display = 'none';
     if(fabProviderLabel) fabProviderLabel.style.display = 'none';
-    // Abholnummer-Fullscreen und dynamischer Container ausblenden, damit beim Runterscrollen nichts Grünes/Plus erscheint
-    const fullscreenEl = document.getElementById('fullscreenCode');
-    const fullscreenBd = document.getElementById('fullscreenCodeBd');
-    if(fullscreenEl){ fullscreenEl.classList.remove('active'); fullscreenEl.style.display = 'none'; fullscreenEl.style.opacity = '0'; fullscreenEl.style.pointerEvents = 'none'; }
-    if(fullscreenBd){ fullscreenBd.classList.remove('active'); fullscreenBd.style.display = 'none'; fullscreenBd.style.opacity = '0'; fullscreenBd.style.pointerEvents = 'none'; }
-    // Alle pickupCodeContainer leeren (es kann einen zweiten geben, wenn showPickupCode ein neues Div an body angehängt hat)
+    // Alle pickupCodeContainer leeren (falls vorhanden)
     document.querySelectorAll('[id="pickupCodeContainer"]').forEach(function(el){ el.innerHTML = ''; });
     // Zusätzlich: dynamische Abholnummer-View (v-pickup-code-dynamic) explizit entfernen, falls sie außerhalb des Containers existiert
     const dynamicView = document.getElementById('v-pickup-code-dynamic');
@@ -7203,8 +7151,6 @@
       pickupCodeView.style.display = 'none';
       pickupCodeView.classList.remove('active');
     }
-    // Fullscreen-Code-Modal schließen, falls offen
-    if(typeof closeFullscreenCode === 'function') closeFullscreenCode();
     showView(views.profile);
     updateProfileView();
     lucide.createIcons();
@@ -7212,77 +7158,56 @@
     history.pushState({view: 'profile', mode: mode}, '', location.pathname);
   }
   
-  // --- Pickup Code Screen (Dynamisch) ---
+  // --- Abholnummer: nur kompakte Kachel + codeSheet (kein Fullscreen/Schiefertafel) ---
   let currentPickupOrderId = null;
+  
+  /** Öffnet das Abholnummer-Sheet (quick-ticket) mit Order-Daten – keine Schiefertafel/Fullscreen. */
+  function openCodeSheetWithOrder(order){
+    if(!order) return;
+    const code = order.pickupCode || order.code || '';
+    activeOrderId = order.id;
+    const codeTextEl = document.getElementById('codeText');
+    const codeProviderEl = document.getElementById('codeProvider');
+    const codeSummaryEl = document.getElementById('codeSummary');
+    const codePickupWindowEl = document.getElementById('codePickupWindow');
+    const codePickupTimeEl = document.getElementById('codePickupTime');
+    const codeStatusEl = document.getElementById('codeStatus');
+    const btnToggle = document.getElementById('btnToggleOrderStatus');
+    const isPickedUp = order.status === 'PICKED_UP' || order.status === 'abgeholt';
+    if(codeTextEl) codeTextEl.textContent = code || '–';
+    if(codeProviderEl) codeProviderEl.textContent = order.providerName || 'Anbieter';
+    if(codeSummaryEl) codeSummaryEl.textContent = order.dishName || order.summary || '–';
+    if(codePickupWindowEl) codePickupWindowEl.textContent = order.pickupWindow ? 'Essenszeit: ' + order.pickupWindow : 'Essenszeit: –';
+    if(codePickupTimeEl) codePickupTimeEl.textContent = order.pickupTime || 'offen';
+    if(codeStatusEl) codeStatusEl.textContent = isPickedUp ? 'Status: abgeholt' : 'Status: offen';
+    if(btnToggle) btnToggle.textContent = isPickedUp ? 'Als offen markieren' : 'Als abgeholt markieren';
+    const logoEl = document.getElementById('codeProviderLogo');
+    if(logoEl){
+      const offer = (typeof offers !== 'undefined' && offers && offers.length) ? offers.find(o => o.providerName === order.providerName) : null;
+      if(offer && offer.providerLogo) logoEl.innerHTML = '<img src="' + (offer.providerLogo || '') + '" alt="Logo" />';
+      else logoEl.innerHTML = '';
+    }
+    document.getElementById('codeBd').classList.add('active');
+    document.getElementById('codeSheet').classList.add('active');
+    if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
+  }
   
   function showPickupCode(orderId){
     const order = getOrderById(orderId);
-    
-    // Guard: Order nicht gefunden
     if(!order){
       showToast('Bestellung nicht gefunden');
       showDiscover();
       return;
     }
-    
-    // GUARD: Code nur anzeigen wenn PAID
-    if(order.status !== 'PAID'){
+    if(order.status !== 'PAID' && order.status !== 'PICKED_UP'){
       showToast('Zahlung noch nicht bestätigt');
       showOrders();
       return;
     }
-    
     currentPickupOrderId = orderId;
-    
-    // Screen bauen
-    let container = document.getElementById('pickupCodeContainer');
-    if(!container){
-        container = document.createElement('div');
-        container.id = 'pickupCodeContainer';
-        document.body.appendChild(container);
-    }
-    
-    const code = order.pickupCode || order.code || '';
-    const formattedCode = code ? code.split('').join('  ') : '–';
-    const dishName = order.dishName || order.summary || '–';
-    
-    container.innerHTML = `
-    <section class="view active" id="v-pickup-code-dynamic" style="background:#1a1a1a; min-height:100vh; padding:0; display:flex; flex-direction:column; overflow:hidden; position:fixed; top:0; left:0; width:100%; z-index:9999;">
-      <!-- Hero-Element -->
-      <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:40px 20px; background:linear-gradient(135deg, #0d4f1c 0%, #1a1a1a 100%); position:relative; min-height:60vh;">
-        <!-- Abholnummer -->
-        <div style="display:flex; justify-content:center; margin-bottom:8px;"><img src="assets/icon-abholnummer.png" alt="Abholnummer" class="concept-icon-xl" style="width:48px;height:48px; opacity:0.95;"></div>
-        <div style="font-size:clamp(4rem, 15vw, 8rem); font-weight:900; font-family:'Courier New', monospace; letter-spacing:0.1em; color:#fff; text-align:center; line-height:1.2; text-shadow:0 4px 20px rgba(0,0,0,0.5), 0 0 40px rgba(39,174,96,0.3); margin-bottom:24px; cursor:pointer;" onclick="openFullscreenCode('${esc(code)}', null);">
-          ${esc(formattedCode)}
-        </div>
-        
-        <div style="text-align:center; margin-bottom:32px;">
-          <p style="font-size:18px; font-weight:700; color:#fff; margin:0; text-shadow:0 2px 8px rgba(0,0,0,0.3);">
-            Bitte direkt beim Personal vorzeigen.
-          </p>
-        </div>
-        
-        <!-- Kontext -->
-        <div style="text-align:center; padding:16px 24px; background:rgba(255,255,255,0.1); backdrop-filter:blur(10px); border-radius:16px; border:1px solid rgba(255,255,255,0.1); max-width:400px; width:100%;">
-          <div style="font-size:14px; color:rgba(255,255,255,0.9); margin-bottom:4px;">
-            <span style="font-weight:600;">${esc(dishName)}</span>
-          </div>
-        </div>
-      </div>
-      
-      <!-- Actions -->
-      <div style="padding:20px; background:#1a1a1a; border-top:1px solid rgba(255,255,255,0.1);">
-        <button class="btn ghost" type="button" onclick="document.getElementById('pickupCodeContainer').innerHTML=''; showOrders();" style="width:100%; min-height:44px; color:rgba(255,255,255,0.7);">
-          <i data-lucide="arrow-left"></i> Zurück
-        </button>
-      </div>
-    </section>
-    `;
-    
-    if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
+    openCodeSheetWithOrder(order);
   }
   
-  // Dummy renderPickupCode (nicht mehr benötigt, da dynamisch)
   function renderPickupCode(order){}
 
   // --- Provider views ---
@@ -10703,41 +10628,15 @@
     box.querySelectorAll('.order-code').forEach(btn=>{
       btn.onclick=()=> {
         const orderId = btn.getAttribute('data-id') || '';
-        showPickupCode(orderId); // Navigiere zu AbholnummerScreen statt codeSheet
+        showPickupCode(orderId); // Öffnet Abholnummer-Sheet (quick-ticket)
       };
     });
   }
 
   function openCodeSheet(orderId){
-    const order = orders.find(o=>o.id===orderId);
+    const order = getOrderById(orderId) || (typeof orders !== 'undefined' && orders ? orders.find(o=>o.id===orderId) : null);
     if(!order) return;
-    activeOrderId = orderId;
-    document.getElementById('codeText').textContent = order.code || '';
-    document.getElementById('codeStatus').textContent = order.status === 'abgeholt' ? 'Status: abgeholt' : 'Status: offen';
-    document.getElementById('btnToggleOrderStatus').textContent = order.status === 'abgeholt' ? 'Als offen markieren' : 'Als abgeholt markieren';
-    document.getElementById('codeProvider').textContent = order.providerName || 'Anbieter';
-    document.getElementById('codeSummary').textContent = order.summary || '';
-    document.getElementById('codePickupWindow').textContent = order.pickupWindow ? `Essenszeit: ${order.pickupWindow}` : 'Essenszeit: –';
-    document.getElementById('codePickupTime').textContent = order.pickupTime ? order.pickupTime : 'offen';
-    
-    // Logo rendern (falls vorhanden)
-    const logoEl = document.getElementById('codeProviderLogo');
-    if(logoEl){
-      const providerOffer = offers.find(o=>o.providerName === order.providerName);
-      if(providerOffer && providerOffer.providerLogo){
-        logoEl.innerHTML = `<img src="${providerOffer.providerLogo}" alt="Logo" />`;
-      } else {
-        logoEl.innerHTML = `<img src="assets/provider-placeholder.png" alt="Logo" />`;
-      }
-    }
-    
-    document.getElementById('codeBd').classList.add('active');
-    document.getElementById('codeSheet').classList.add('active');
-    
-    // Icons aktualisieren
-    if(typeof lucide !== 'undefined'){
-      setTimeout(()=> lucide.createIcons(), 50);
-    }
+    openCodeSheetWithOrder(order);
   }
   function closeCodeSheet(){
     document.getElementById('codeBd').classList.remove('active');
@@ -11505,13 +11404,6 @@
       e.preventDefault();
       return;
     }
-    // Fullscreen Code Modal schließen
-    if(document.getElementById('fullscreenCode') && document.getElementById('fullscreenCode').classList.contains('active')){
-      closeFullscreenCode();
-      e.preventDefault();
-      history.pushState(null, '', location.pathname);
-      return;
-    }
     // Pickup Confirmation Sheet schließen
     if(document.getElementById('pickupConfirmSheet') && document.getElementById('pickupConfirmSheet').classList.contains('active')){
       closePickupConfirmSheet();
@@ -12205,12 +12097,21 @@
   const btnToggleOrderStatus = document.getElementById('btnToggleOrderStatus');
   if(btnToggleOrderStatus) btnToggleOrderStatus.onclick=()=>{
     if(!activeOrderId) return;
-    const idx = orders.findIndex(o=>o.id===activeOrderId);
-    if(idx<0) return;
-    orders[idx].status = orders[idx].status === 'abgeholt' ? 'offen' : 'abgeholt';
-    save(LS.orders, orders);
-    renderOrders();
-    openCodeSheet(activeOrderId);
+    const order = getOrderById(activeOrderId);
+    if(order){
+      const newStatus = order.status === 'PICKED_UP' || order.status === 'abgeholt' ? 'PAID' : 'PICKED_UP';
+      updateOrder(activeOrderId, { status: newStatus, pickupCodeActivatedAt: newStatus === 'PICKED_UP' ? Date.now() : null });
+      openCodeSheetWithOrder(getOrderById(activeOrderId));
+      if(typeof updateProfileView === 'function') updateProfileView();
+    } else if(typeof orders !== 'undefined' && orders){
+      const idx = orders.findIndex(o=>o.id===activeOrderId);
+      if(idx>=0){
+        orders[idx].status = orders[idx].status === 'abgeholt' ? 'offen' : 'abgeholt';
+        if(typeof save === 'function') save(LS.orders, orders);
+        if(typeof renderOrders === 'function') renderOrders();
+        openCodeSheet(activeOrderId);
+      }
+    }
   };
   
   // --- Login Modal ---
@@ -13369,6 +13270,20 @@
     // Initialen für Avatar
     const initials = fullName.split(' ').map(n => n[0]?.toUpperCase() || '').join('').slice(0, 2) || '?';
     
+    // Discover-Header-Avatar (rechts) mit Initialen oder Platzhalter
+    const btnDiscoverAvatar = document.getElementById('btnDiscoverProfileAvatar');
+    if(btnDiscoverAvatar){
+      if(isLoggedIn && initials && initials !== '?'){
+        btnDiscoverAvatar.textContent = initials;
+        btnDiscoverAvatar.style.background = 'linear-gradient(135deg, #FFD700 0%, #FFD700 100%)';
+        btnDiscoverAvatar.style.fontSize = '14px';
+      } else {
+        btnDiscoverAvatar.textContent = '👤';
+        btnDiscoverAvatar.style.background = 'rgba(0,0,0,.06)';
+        btnDiscoverAvatar.style.fontSize = '16px';
+      }
+    }
+    
     // Header-Card (Identität)
     const headerCard = document.getElementById('profileHeaderCard');
     if(headerCard){
@@ -13446,6 +13361,45 @@
       }
     }
     
+    // Profil-Verwaltung (Name, E-Mail)
+    const verwaltungEl = document.getElementById('profileVerwaltungContent');
+    if(verwaltungEl){
+      if(isLoggedIn && (customer.name || customer.email)){
+        verwaltungEl.innerHTML = `
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <div><strong>Name</strong><br><span style="color:#334155;">${esc(customer.name || '–')}</span></div>
+            <div><strong>E-Mail</strong><br><span style="color:#334155;">${esc(customer.email || '–')}</span></div>
+          </div>
+        `;
+      } else {
+        verwaltungEl.textContent = 'Name und E-Mail – wird nach Anmeldung angezeigt.';
+      }
+    }
+    
+    // Meine Bestellungen (chronologische Historie)
+    const orderHistoryEl = document.getElementById('profileOrderHistoryList');
+    if(orderHistoryEl){
+      const allOrdersForHistory = loadOrders();
+      const sorted = (allOrdersForHistory || []).slice().sort((a, b) => (b.createdAt || b.updatedAt || 0) - (a.createdAt || a.updatedAt || 0));
+      if(sorted.length === 0){
+        orderHistoryEl.innerHTML = '<p style="margin:0; color:#64748b; font-size:14px;">Noch keine Bestellungen.</p>';
+      } else {
+        orderHistoryEl.innerHTML = sorted.map(o => {
+          const dateStr = o.pickupDate || (o.createdAt ? new Date(o.createdAt).toLocaleDateString('de-DE') : '–');
+          const statusText = o.status === 'PICKED_UP' || o.status === 'abgeholt' ? 'Abgeholt' : (o.status === 'PAID' ? 'Bezahlt' : o.status || '–');
+          return `
+            <div style="padding:12px 0; border-bottom:1px solid rgba(0,0,0,.06); display:flex; justify-content:space-between; align-items:start; gap:12px;">
+              <div style="flex:1; min-width:0;">
+                <div style="font-weight:700; color:#1a1a1a;">${esc(o.dishName || o.summary || 'Bestellung')}</div>
+                <div style="font-size:12px; color:#64748b;">${esc(o.providerName || 'Anbieter')} · ${esc(dateStr)}</div>
+              </div>
+              <span style="font-size:12px; color:#64748b; flex-shrink:0;">${esc(statusText)}</span>
+            </div>
+          `;
+        }).join('');
+      }
+    }
+    
     // Ernährungs-Zentrale (Präferenzen)
     const dietSection = document.getElementById('profileDietSwitches');
     if(dietSection){
@@ -13491,8 +13445,9 @@
       if(!customer.reuseEnabled) customer.reuseEnabled = false;
       const isReuseEnabled = customer.reuseEnabled || false;
       
-      // Zähle Mehrweg-Nutzungen aus Bestellungen
-      const reuseCount = orders.filter(o => o.reuseEnabled === true).length;
+      // Zähle Mehrweg-Nutzungen aus Bestellungen (loadOrders)
+      const ordersForReuse = loadOrders();
+      const reuseCount = Array.isArray(ordersForReuse) ? ordersForReuse.filter(o => o.reuseEnabled === true).length : 0;
       
       reuseSection.innerHTML = `
         <div style="display:flex; align-items:center; justify-content:space-between; padding:16px; background:${isReuseEnabled ? 'rgba(31,157,85,0.1)' : '#f8f9fa'}; border-radius:16px; border:2px solid ${isReuseEnabled ? '#1f9d55' : 'transparent'}; transition:all 0.2s ease;">
@@ -18731,101 +18686,6 @@
     };
   }
   
-  // --- Fullscreen Code Modal Functions ---
-  let wakeLock = null;
-  
-  /**
-   * Open fullscreen code modal
-   * @param {string} code - Pickup code (without spaces)
-   */
-  function openFullscreenCode(code, order = null){
-    if(!code) return;
-    
-    const modal = document.getElementById('fullscreenCode');
-    const valueEl = document.getElementById('fullscreenCodeValue');
-    const backdrop = document.getElementById('fullscreenCodeBd');
-    const closeBtn = modal?.querySelector('.fullscreen-code-close');
-    
-    if(!modal || !valueEl) return;
-    
-    // Code mit Zwischenräumen formatieren: "A  B  1  2  C"
-    const formattedCode = code.split('').join('  ');
-    valueEl.textContent = formattedCode;
-    
-    // Kontext-Infos im Fullscreen-Modal
-    if(order){
-      const dishEl = document.getElementById('fullscreenCodeDish');
-      const totalEl = document.getElementById('fullscreenCodeTotal');
-      if(dishEl) dishEl.textContent = order.dishName || order.summary || '–';
-      if(totalEl){
-        const totalCents = order.totalCents || (order.total ? Math.round(order.total * 100) : 0);
-        const totalEur = totalCents / 100;
-        totalEl.textContent = totalEur > 0 ? euro(totalEur) : '–';
-      }
-    }
-    
-    // Close-Button Handler
-    if(closeBtn){
-      closeBtn.onclick = (e) => {
-        e.stopPropagation();
-        closeFullscreenCode();
-      };
-    }
-    
-    // Backdrop schließt Modal
-    if(backdrop){
-      backdrop.onclick = () => closeFullscreenCode();
-    }
-    
-    // Modal anzeigen
-    modal.classList.add('active');
-    if(backdrop) backdrop.classList.add('active');
-    
-    // Icons aktualisieren
-    if(typeof lucide !== 'undefined'){
-      setTimeout(() => lucide.createIcons(), 50);
-    }
-    
-    // Optional: WakeLock API (MVP+)
-    if(navigator.wakeLock){
-      navigator.wakeLock.request('screen').then(lock => {
-        wakeLock = lock;
-      }).catch(err => {
-        console.log('WakeLock not available:', err);
-      });
-    }
-    
-    // Esc schließt Modal
-    const handleKeyDown = (e) => {
-      if(e.key === 'Escape'){
-        closeFullscreenCode();
-        document.removeEventListener('keydown', handleKeyDown);
-      }
-    };
-    document.addEventListener('keydown', handleKeyDown);
-  }
-  
-  /**
-   * Close fullscreen code modal
-   */
-  function closeFullscreenCode(){
-    const modal = document.getElementById('fullscreenCode');
-    const backdrop = document.getElementById('fullscreenCodeBd');
-    
-    if(modal){ modal.classList.remove('active'); modal.style.display = 'none'; modal.style.opacity = '0'; modal.style.pointerEvents = 'none'; }
-    if(backdrop){ backdrop.classList.remove('active'); backdrop.style.display = 'none'; backdrop.style.opacity = '0'; backdrop.style.pointerEvents = 'none'; }
-    
-    // WakeLock freigeben
-    if(wakeLock){
-      wakeLock.release().catch(err => {
-        console.log('WakeLock release error:', err);
-      });
-      wakeLock = null;
-    }
-  }
-  
-  // Fullscreen-Code wird jetzt direkt durch Klick auf pickupCodeValue geöffnet (in renderPickupCode)
-  
   const btnOpenRoute = document.getElementById('btnOpenRoute');
   if(btnOpenRoute){
     btnOpenRoute.onclick = () => {
@@ -18847,21 +18707,6 @@
   if(btnToOrders){
     btnToOrders.onclick = () => {
       showOrders(); // Zu Abholnummern
-    };
-  }
-  
-  // Fullscreen Code Modal: Tap anywhere to close
-  const fullscreenCodeBd = document.getElementById('fullscreenCodeBd');
-  if(fullscreenCodeBd){
-    fullscreenCodeBd.onclick = () => {
-      closeFullscreenCode();
-    };
-  }
-  
-  const fullscreenCodeClose = document.querySelector('.fullscreen-code-close');
-  if(fullscreenCodeClose){
-    fullscreenCodeClose.onclick = () => {
-      closeFullscreenCode();
     };
   }
   
