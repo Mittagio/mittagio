@@ -2693,7 +2693,8 @@
       border-radius: 10px !important;
     }
     /* Meins: letzte Bestellzeile ohne unteren Rand */
-    #profileOrderHistoryList .profile-order-item:last-child {
+    #profileOrderHistoryList .profile-order-item:last-child,
+    #profileOrderHistoryMore .profile-order-item:last-child {
       border-bottom: none !important;
     }
     
@@ -3880,33 +3881,22 @@
         <div id="profileActiveAbholnummernList" style="display:flex; flex-direction:column; gap:10px;"></div>
       </div>
 
-      <!-- 2. Meine Bestellungen (chronologische Historie) -->
+      <!-- 2. Meine Bestellungen (aufgewertete Historie: Thumbnail, Name, Anbieter, Datum, Preis, Pills) -->
       <div class="panel profile-panel" id="profileOrderHistorySection" style="margin-top:16px; padding:18px; border-radius:24px; box-shadow:0 10px 30px rgba(0,0,0,.06); border:1px solid rgba(0,0,0,.02);">
         <div style="font-family:'Nunito',sans-serif; font-weight:800; font-size:16px; margin-bottom:14px; color:#1a1a1a;">Meine Bestellungen</div>
-        <div id="profileOrderHistoryList" class="hint" style="font-size:14px; color:#64748b;">Chronologische Historie vergangener Käufe – wird dynamisch befüllt.</div>
+        <div id="profileOrderHistoryList" style="display:flex; flex-direction:column; gap:0;"></div>
+        <div id="profileOrderHistoryMore" style="display:none;"></div>
+        <button type="button" id="btnProfileShowAllOrders" style="display:none; width:100%; margin-top:12px; padding:12px 16px; border-radius:12px; border:2px solid rgba(0,0,0,.08); background:#fff; color:#64748b; font-weight:700; font-size:14px; cursor:pointer;">Alle Bestellungen anzeigen</button>
       </div>
 
-      <!-- 3. Profil-Verwaltung (Name, E-Mail) -->
+      <!-- 3. Profil-Verwaltung (Name, E-Mail) – sauberer Block -->
       <div class="panel profile-panel" id="profileVerwaltungSection" style="margin-top:16px; padding:18px; border-radius:24px; box-shadow:0 10px 30px rgba(0,0,0,.06); border:1px solid rgba(0,0,0,.02);">
         <div style="font-family:'Nunito',sans-serif; font-weight:800; font-size:16px; margin-bottom:12px; color:#1a1a1a;">Profil-Verwaltung</div>
         <div id="profileVerwaltungContent" style="font-size:14px; color:#334155; line-height:1.6;">Name und E-Mail – wird dynamisch befüllt.</div>
       </div>
 
-      <!-- 4. Präferenzen: Mein Geschmack + Mehrweg-Fokus (Zweite Ebene, Mehrweg am Ende) -->
-      <div class="panel profile-panel" id="profileTasteSection" style="margin-top:16px; padding:18px; border-radius:24px; box-shadow:0 10px 30px rgba(0,0,0,.06); border:1px solid rgba(0,0,0,.02);">
-        <div style="font-weight:700; font-size:15px; margin-bottom:8px; color:#64748b;">Mein Geschmack</div>
-        <div class="hint" style="font-size:12px; color:#94a3b8; margin-bottom:12px;">Filter für Entdecken (Vegan, Glutenfrei etc.)</div>
-        <div id="profileDietSwitches" style="display:flex; flex-direction:column; gap:10px;"></div>
-        <div id="profileReuseSwitch" style="margin-top:14px;"></div>
-      </div>
-
-      <!-- Mehrweg-Hinweis -->
-      <div class="panel profile-panel" style="margin-top:16px; padding:16px; border-radius:24px; background:rgba(31,157,85,0.06); border:1px solid rgba(31,157,85,0.15);">
-        <p style="font-size:13px; color:#334155; margin:0; line-height:1.5;">Wir arbeiten stetig daran, weitere Partner für unser Mehrweg-System zu gewinnen. Aktuell führen noch nicht alle Anbieter Mehrweg-Optionen; es werden dir weiterhin alle verfügbaren Angebote angezeigt.</p>
-      </div>
-
-      <!-- Top-FAQs (3 Accordion-Elemente, ausklappbar) -->
-      <div style="margin-top:16px;">
+      <!-- 4. Top-FAQs (3 Accordions, ausklappbar) -->
+      <div class="panel profile-panel" style="margin-top:16px; padding:18px; border-radius:24px; box-shadow:0 10px 30px rgba(0,0,0,.06); border:1px solid rgba(0,0,0,.02);">
         <div style="font-family:'Nunito',sans-serif; font-weight:800; font-size:16px; margin-bottom:12px; color:#1a1a1a;">Häufige Fragen</div>
         <div id="profileTopFaq" class="profile-faq-accordion" style="display:flex; flex-direction:column; gap:8px;">
           <details style="background:#fff; border-radius:12px; border:1px solid rgba(0,0,0,.06); overflow:hidden;">
@@ -3931,7 +3921,20 @@
         <a href="#/faq" onclick="showLegalPage('faq'); return false;" style="display:block; margin-top:12px; text-align:center; font-size:14px; font-weight:600; color:var(--brand); text-decoration:none;">Alle FAQs anzeigen</a>
       </div>
 
-      <!-- Footer: Kunden-Links | Impressum-Daten | Anbieter-Einstieg | Branding | Version -->
+      <!-- 5. Präferenzen & Mehrweg (nach unten) -->
+      <div class="panel profile-panel" id="profileTasteSection" style="margin-top:16px; padding:18px; border-radius:24px; box-shadow:0 10px 30px rgba(0,0,0,.06); border:1px solid rgba(0,0,0,.02);">
+        <div style="font-weight:700; font-size:15px; margin-bottom:8px; color:#64748b;">Mein Geschmack</div>
+        <div class="hint" style="font-size:12px; color:#94a3b8; margin-bottom:12px;">Filter für Entdecken (Vegan, Glutenfrei etc.)</div>
+        <div id="profileDietSwitches" style="display:flex; flex-direction:column; gap:10px;"></div>
+        <div id="profileReuseSwitch" style="margin-top:14px;"></div>
+      </div>
+
+      <!-- Mehrweg-Hinweis -->
+      <div class="panel profile-panel" style="margin-top:16px; padding:16px; border-radius:24px; background:rgba(31,157,85,0.06); border:1px solid rgba(31,157,85,0.15);">
+        <p style="font-size:13px; color:#334155; margin:0; line-height:1.5;">Wir arbeiten stetig daran, weitere Partner für unser Mehrweg-System zu gewinnen. Aktuell führen noch nicht alle Anbieter Mehrweg-Optionen; es werden dir weiterhin alle verfügbaren Angebote angezeigt.</p>
+      </div>
+
+      <!-- Footer: Kunden-Links oben | grauer Anbieter-Block | Branding rechtsbündig mit Version -->
       <div class="profile-footer" style="margin-top:28px; padding:0 16px 32px; border-top:2px solid rgba(0,0,0,.06);">
         <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:8px 14px; font-size:14px; margin-bottom:16px;">
           <a href="#/faq" id="btnProfileFaq" onclick="showLegalPage('faq'); return false;" style="color:var(--muted); text-decoration:none; font-weight:500;">FAQ</a>
@@ -3949,8 +3952,10 @@
             Zum Anbieter-Login
           </button>
         </div>
-        <div style="text-align:center; font-size:12px; color:var(--muted); margin-bottom:6px;">www.Mittagio.de · made with Love by mittagio.de</div>
-        <div style="text-align:right; font-size:11px; color:var(--muted);"><a href="#/version" id="linkVersion" style="color:var(--muted); text-decoration:none;">v1.0.x</a></div>
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+          <span style="font-size:12px; color:var(--muted);">www.Mittagio.de · made with Love by mittagio.de</span>
+          <a href="#/version" id="linkVersion" style="font-size:11px; color:var(--muted); text-decoration:none;">v1.0.x</a>
+        </div>
       </div>
     </section>
 
@@ -6365,6 +6370,14 @@
     'Vegetarisch':'Vegetarisch',
     'Fisch':'Fisch',
     'Mit Fleisch':'Fleisch'
+  };
+  /** Kategorie → Emoji (Pills wie im Inseratsflow) */
+  const CAT_EMOJI = {
+    'Vegan':'🥬',
+    'Vegetarisch':'🌿',
+    'Fisch':'🐟',
+    'Mit Fleisch':'🥩',
+    'Fleisch':'🥩'
   };
   const DISH_SUGGESTIONS = [
     {name:'Kürbissuppe', category:'Vegan'},
@@ -10250,34 +10263,55 @@
     if(favShareWrap) favShareWrap.style.display = 'none';
     const baseUrl = window.location.href.split('#')[0] || window.location.origin || '';
     const firstDish = topFour.length > 0 ? normalizeOffer(topFour[0]) : null;
+    const firstProviderName = (providerList.length > 0 && !firstDish) ? (normalizeOffer(providerList[0]).providerName || 'Mittagio') : null;
     const firstHasAbholnummer = firstDish && (() => {
       const o = topFour[0];
       const p = offers.find(x => x.providerId === (o && o.providerId));
       return !!(p && (p.orderingEnabled !== false && ((o && (o.hasPickupCode || o.orderingEnabled)) || (p.hasPickupCode))));
     })();
-    // Smart-Share: Anbietername + Gericht aus Favoriten-Kachel; abholnummer → „skippen“ vs. „Mittag machen“
+    // Smart-Share: Anbietername aus Favoriten-Kachel; abholnummer → „skippen“ vs. „Mittag machen“
     const shareFavAction = () => {
-      const providerName = (firstDish && firstDish.providerName) ? firstDish.providerName : 'Mittagio';
-      const dishName = (firstDish && (firstDish.dish || firstDish.title)) ? (firstDish.dish || firstDish.title) : '';
-      const linkToDish = (firstDish && firstDish.id) ? (baseUrl + '#offer=' + firstDish.id) : baseUrl;
-      let shareText;
-      if(firstHasAbholnummer){
-        shareText = `Schau mal! Hier meine Favoriten heute bei ${providerName}! 🍴 Ich nehm die Abholnummer 🧾, dann können wir die Schlange einfach skippen. Kommst du mit? ${linkToDish}`;
-      } else {
-        shareText = `Schau mal! Hier meine Favoriten heute bei ${providerName}! 🍴 Sieht richtig gut aus, oder? Sollen wir heute dort Mittag machen? ${linkToDish}`;
-      }
-      if(navigator.share){
-        navigator.share({ title: dishName ? `${dishName} – ${providerName} | Mittagio` : 'Mein Mittag – Mittagio', text: shareText, url: linkToDish })
-          .catch(() => { navigator.clipboard.writeText(shareText); showToast('In Zwischenablage kopiert'); });
-      } else {
-        navigator.clipboard.writeText(shareText);
-        showToast('In Zwischenablage kopiert');
+      try {
+        const providerName = (firstDish && firstDish.providerName) ? firstDish.providerName : (firstProviderName || 'Mittagio');
+        const dishName = (firstDish && (firstDish.dish || firstDish.title)) ? (firstDish.dish || firstDish.title) : '';
+        const linkToDish = (firstDish && firstDish.id) ? (baseUrl + '#offer=' + firstDish.id) : baseUrl;
+        let shareText;
+        if(firstHasAbholnummer){
+          shareText = `Schau mal! Hier meine Favoriten heute bei ${providerName}! 🍴 Ich nehm die Abholnummer 🧾, dann können wir die Schlange einfach skippen. Kommst du mit? ${linkToDish}`;
+        } else {
+          shareText = `Schau mal! Hier meine Favoriten heute bei ${providerName}! 🍴 Sieht richtig gut aus, oder? Sollen wir heute dort Mittag machen? ${linkToDish}`;
+        }
+        const shareTitle = dishName ? `${dishName} – ${providerName} | Mittagio` : 'Mein Mittag – Mittagio';
+        const doFallback = () => {
+          try {
+            if(navigator.clipboard && navigator.clipboard.writeText){
+              navigator.clipboard.writeText(shareText).then(() => {
+                if(typeof showToast === 'function') showToast('Link kopiert – zum Teilen einfügen');
+              }).catch(() => {
+                if(typeof showToast === 'function') showToast('Teilen: Link zum Einfügen bereit');
+              });
+            } else {
+              if(typeof showToast === 'function') showToast('Teilen: ' + shareTitle);
+            }
+          } catch(e2){
+            if(typeof showToast === 'function') showToast('Teilen vorbereitet');
+          }
+        };
+        if(navigator.share && typeof navigator.share === 'function'){
+          navigator.share({ title: shareTitle, text: shareText, url: linkToDish })
+            .then(() => { if(typeof showToast === 'function') showToast('Geteilt'); })
+            .catch((err) => { if(err && err.name === 'AbortError') return; doFallback(); });
+        } else {
+          doFallback();
+        }
+      } catch(e){
+        if(typeof showToast === 'function') showToast('Teilen nicht möglich – bitte Link manuell kopieren');
       }
     };
     const btnFavShareHeader = document.getElementById('btnFavShareHeader');
     if(btnFavShareHeader){
-      btnFavShareHeader.style.display = topFour.length > 0 ? 'flex' : 'none';
-      btnFavShareHeader.onclick = shareFavAction;
+      btnFavShareHeader.style.display = (topFour.length > 0 || providerList.length > 0) ? 'flex' : 'none';
+      btnFavShareHeader.onclick = function(e){ e.preventDefault(); e.stopPropagation(); shareFavAction(); };
     }
     const btnShareMyLunch = document.getElementById('btnShareMyLunch');
     if(btnShareMyLunch) btnShareMyLunch.onclick = shareFavAction;
@@ -13702,43 +13736,98 @@
       }
     }
     
-    // Meine Bestellungen (chronologische Historie)
+    // Meine Bestellungen (aufgewertete Historie: Thumbnail, Name, Anbieter, Datum, Preis, Kategorie- und Allergen-Pills)
     const orderHistoryEl = document.getElementById('profileOrderHistoryList');
+    const orderHistoryMore = document.getElementById('profileOrderHistoryMore');
+    const btnShowAllOrders = document.getElementById('btnProfileShowAllOrders');
+    const PROFILE_ORDER_PLACEHOLDER_IMG = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=120&h=120&fit=crop';
+    const buildOrderRow = (o) => {
+      const offer = typeof offers !== 'undefined' && offers ? offers.find(x => x.id === o.dishId || x.id === o.offerId) : null;
+      const data = offer ? normalizeOffer(offer) : {};
+      const imgUrl = data.imageUrl || data.img || PROFILE_ORDER_PLACEHOLDER_IMG;
+      const category = data.category || data.diet || '';
+      const catLabel = CAT_MAP[category] || category || '';
+      const catEmoji = CAT_EMOJI[category] || CAT_EMOJI[catLabel] || '🍽️';
+      const allergens = (data.allergens || []).slice(0, 4);
+      const allergenPills = allergens.map(a => {
+        const label = typeof a === 'string' ? a : (a && a.label) || '';
+        const word = label ? (typeof allergenFirstWord === 'function' ? allergenFirstWord(label) : String(label).trim().split(/\s+/)[0]) : '';
+        return word ? word.charAt(0).toUpperCase() : '';
+      }).filter(Boolean);
+      const dateStr = o.pickupDate || (o.createdAt ? new Date(o.createdAt).toLocaleDateString('de-DE') : '–');
+      const priceStr = o.total != null ? euro(Number(o.total)/100) : (o.unitPrice != null ? euro(Number(o.unitPrice)/100) : '–');
+      const pillsHtml = (catLabel ? `<span style="display:inline-flex; align-items:center; gap:4px; padding:4px 8px; border-radius:8px; background:#f1f5f9; font-size:11px; font-weight:700; color:#475569;">${catEmoji} ${esc(catLabel)}</span>` : '') +
+        (allergenPills.length ? allergenPills.map(c => `<span style="display:inline-flex; align-items:center; justify-content:center; min-width:20px; padding:2px 6px; border-radius:6px; background:#e2e8f0; font-size:11px; font-weight:700; color:#64748b;">${esc(c)}</span>`).join('') : '');
+      return `
+        <div class="profile-order-item" data-order-id="${esc(o.id)}" role="button" tabindex="0" style="padding:12px 0; border-bottom:1px solid rgba(0,0,0,.06); display:flex; align-items:flex-start; gap:12px; cursor:pointer; transition:background 0.2s ease; border-radius:12px; margin:0 -4px; padding-left:4px; padding-right:4px;" onmouseover="this.style.background='rgba(0,0,0,.04)'" onmouseout="this.style.background='transparent'">
+          <div style="width:56px; height:56px; border-radius:12px; overflow:hidden; flex-shrink:0; background:#f0f0f0;">
+            <img src="${esc(imgUrl)}" alt="" style="width:100%; height:100%; object-fit:cover;" loading="lazy" />
+          </div>
+          <div style="flex:1; min-width:0;">
+            <div style="font-weight:800; font-size:15px; color:#1a1a1a;">${esc(o.dishName || o.summary || 'Bestellung')}</div>
+            <div style="font-size:13px; color:#64748b; margin-top:2px;">${esc(o.providerName || 'Anbieter')}</div>
+            ${pillsHtml ? `<div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:8px;">${pillsHtml}</div>` : ''}
+          </div>
+          <div style="text-align:right; flex-shrink:0;">
+            <div style="font-size:12px; color:#64748b;">${esc(dateStr)}</div>
+            <div style="font-weight:800; font-size:15px; color:var(--brand); margin-top:2px;">${esc(priceStr)}</div>
+            <i data-lucide="chevron-right" style="width:18px; height:18px; color:#94a3b8; margin-top:4px; display:block; margin-left:auto;"></i>
+          </div>
+        </div>
+      `;
+    };
     if(orderHistoryEl){
       const allOrdersForHistory = loadOrders();
       const sorted = (allOrdersForHistory || []).slice().sort((a, b) => (b.createdAt || b.updatedAt || 0) - (a.createdAt || a.updatedAt || 0));
       if(sorted.length === 0){
         orderHistoryEl.innerHTML = '<p style="margin:0; color:#64748b; font-size:14px;">Noch keine Bestellungen.</p>';
+        if(orderHistoryMore) orderHistoryMore.style.display = 'none';
+        if(orderHistoryMore) orderHistoryMore.innerHTML = '';
+        if(btnShowAllOrders) btnShowAllOrders.style.display = 'none';
       } else {
-        orderHistoryEl.innerHTML = sorted.map(o => {
-          const dateStr = o.pickupDate || (o.createdAt ? new Date(o.createdAt).toLocaleDateString('de-DE') : '–');
-          const statusText = o.status === 'PICKED_UP' || o.status === 'abgeholt' ? 'Abgeholt' : (o.status === 'PAID' ? 'Bezahlt' : o.status || '–');
-          return `
-            <div class="profile-order-item" data-order-id="${esc(o.id)}" role="button" tabindex="0" style="padding:14px 0; border-bottom:1px solid rgba(0,0,0,.06); display:flex; justify-content:space-between; align-items:start; gap:12px; cursor:pointer; transition:background 0.2s ease; border-radius:12px; margin:0 -8px; padding-left:8px; padding-right:8px;" onmouseover="this.style.background='rgba(0,0,0,.04)'" onmouseout="this.style.background='transparent'">
-              <div style="flex:1; min-width:0;">
-                <div style="font-weight:800; font-size:15px; color:#1a1a1a;">${esc(o.dishName || o.summary || 'Bestellung')}</div>
-                <div style="font-size:13px; color:#64748b; margin-top:2px;">${esc(o.providerName || 'Anbieter')} · ${esc(dateStr)}</div>
-              </div>
-              <span style="font-size:12px; font-weight:600; color:#64748b; flex-shrink:0;">${esc(statusText)}</span>
-              <i data-lucide="chevron-right" style="width:20px; height:20px; color:#94a3b8; flex-shrink:0; margin-left:4px;"></i>
-            </div>
-          `;
-        }).join('');
+        const showCount = 3;
+        const first = sorted.slice(0, showCount);
+        const rest = sorted.slice(showCount);
+        orderHistoryEl.innerHTML = first.map(buildOrderRow).join('');
+        if(orderHistoryMore){
+          orderHistoryMore.innerHTML = rest.map(buildOrderRow).join('');
+          orderHistoryMore.style.display = rest.length > 0 ? 'none' : 'none';
+        }
+        if(btnShowAllOrders){
+          btnShowAllOrders.style.display = rest.length > 0 ? 'block' : 'none';
+          btnShowAllOrders.textContent = 'Alle Bestellungen anzeigen';
+          btnShowAllOrders.onclick = function(){
+            if(orderHistoryMore && orderHistoryMore.style.display === 'none'){
+              orderHistoryMore.style.display = 'flex';
+              orderHistoryMore.style.flexDirection = 'column';
+              orderHistoryMore.style.gap = '0';
+              btnShowAllOrders.textContent = 'Weniger anzeigen';
+            } else {
+              orderHistoryMore.style.display = 'none';
+              btnShowAllOrders.textContent = 'Alle Bestellungen anzeigen';
+            }
+          };
+        }
         if(!orderHistoryEl._orderDetailBound){
           orderHistoryEl._orderDetailBound = true;
-          orderHistoryEl.addEventListener('click', function(e){
-            const row = e.target.closest('.profile-order-item');
-            if(!row) return;
-            const id = row.getAttribute('data-order-id');
-            if(id) showOrderDetail(id);
-          });
-          orderHistoryEl.addEventListener('keydown', function(e){
-            if(e.key !== 'Enter' && e.key !== ' ') return;
-            const row = e.target.closest('.profile-order-item');
-            if(!row) return;
-            const id = row.getAttribute('data-order-id');
-            if(id){ e.preventDefault(); showOrderDetail(id); }
-          });
+          const handleOrderClick = (container) => {
+            if(!container) return;
+            container.addEventListener('click', function(e){
+              const row = e.target.closest('.profile-order-item');
+              if(!row) return;
+              const id = row.getAttribute('data-order-id');
+              if(id) showOrderDetail(id);
+            });
+            container.addEventListener('keydown', function(e){
+              if(e.key !== 'Enter' && e.key !== ' ') return;
+              const row = e.target.closest('.profile-order-item');
+              if(!row) return;
+              const id = row.getAttribute('data-order-id');
+              if(id){ e.preventDefault(); showOrderDetail(id); }
+            });
+          };
+          handleOrderClick(orderHistoryEl);
+          handleOrderClick(orderHistoryMore);
         }
         if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
       }
