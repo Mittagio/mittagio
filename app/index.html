@@ -6470,8 +6470,7 @@
     card.className = 'cust-card';
     card.onclick = () => openOffer(data.id);
     
-    const favorites = JSON.parse(localStorage.getItem('mittagio_favorites') || '[]');
-    const isFavorited = favorites.includes(data.id);
+    const isFavorited = typeof dishFavs !== 'undefined' && dishFavs.has(String(data.id));
     
     // Image Section
     const imgContainer = document.createElement('div');
@@ -6595,23 +6594,22 @@
   }
 
   function toggleFavorite(id, btn){
-    const favorites = JSON.parse(localStorage.getItem('mittagio_favorites') || '[]');
-    const idx = favorites.indexOf(id);
-    if(idx > -1){
-      favorites.splice(idx, 1);
-      btn.querySelector('i').style.fill = 'none';
+    if(!id) return;
+    const sid = String(id);
+    const isRemoving = dishFavs.has(sid);
+    if(isRemoving){
+      dishFavs.delete(sid);
+      if(btn && btn.querySelector('i')) btn.querySelector('i').style.fill = 'none';
       showToast('Favorit entfernt');
     } else {
-      favorites.push(id);
-      btn.querySelector('i').style.fill = '#E34D4D';
+      dishFavs.add(sid);
+      if(btn && btn.querySelector('i')) btn.querySelector('i').style.fill = '#E34D4D';
       showToast('Gemerkt! ❤️');
       if(navigator.vibrate) navigator.vibrate(10);
     }
-    localStorage.setItem('mittagio_favorites', JSON.stringify(favorites));
-    if(typeof dishFavs !== 'undefined') {
-      if(idx > -1) dishFavs.delete(id); else dishFavs.add(id);
-      save(LS.dishFavs, Array.from(dishFavs));
-    }
+    save(LS.dishFavs, Array.from(dishFavs));
+    if(typeof renderFavorites === 'function') renderFavorites();
+    if(typeof renderDiscover === 'function') renderDiscover();
   }
 
   function shareOffer(data){
@@ -10626,20 +10624,21 @@
 
   function toggleDishFav(offerId){
     if(!offerId) return;
+    const sid = String(offerId);
     triggerHapticFeedback([15]);
-    if(dishFavs.has(offerId)){
-      dishFavs.delete(offerId);
-      clearFavPillars(offerId);
+    if(dishFavs.has(sid)){
+      dishFavs.delete(sid);
+      clearFavPillars(sid);
     } else {
-      dishFavs.add(offerId);
-      const offer = offers.find(o => o.id === offerId);
+      dishFavs.add(sid);
+      const offer = offers.find(o => String(o.id) === sid);
       if(offer){
         const data = normalizeOffer(offer);
         const prov = offers.find(p => p.providerId === data.providerId);
         const vorOrt = !!(prov && (prov.dineInPossible !== false || data.dineInPossible));
         const abholnummer = !!(prov && (prov.orderingEnabled !== false && (data.hasPickupCode || prov.hasPickupCode)));
         const mehrweg = !!(prov && (prov.reuseEnabled || prov.reuse || (prov.providerProfile && prov.providerProfile.reuseEnabled)));
-        setFavPillars(offerId, { vorOrt, abholnummer, mehrweg });
+        setFavPillars(sid, { vorOrt, abholnummer, mehrweg });
       }
     }
     save(LS.dishFavs, Array.from(dishFavs));
@@ -10826,7 +10825,7 @@
     const providerList = Array.from(bestByProvider.values());
 
     const dishList = offers
-      .filter(o => o.active !== false && dishFavs.has(o.id) && o.day === activeFavDay)
+      .filter(o => o.active !== false && dishFavs.has(String(o.id)) && o.day === activeFavDay)
       .sort((a,b)=>String(b.day||'').localeCompare(String(a.day||'')));
 
     // Empty State: Wenn beide Listen leer sind, zeige zentrierten Empty State
