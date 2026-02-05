@@ -1348,7 +1348,7 @@
       overflow-y:auto;
       -webkit-overflow-scrolling:touch;
       margin:0 -20px;
-      padding:0 20px 100px; /* Extra padding for sticky actions */
+      padding:0 20px 140px; /* Platz für Zurück/Weiter + Footer, damit Buttons sichtbar bleiben */
     }
     #wizard.sheet--kitchen .w-actions{
       position: absolute;
@@ -1395,18 +1395,14 @@
       transform: scale(0.97);
     }
     #wizard.sheet--kitchen .wizard-footer{
-      position: absolute;
-      bottom: 4px;
-      left: 0;
-      right: 0;
+      margin-top: 8px;
       text-align:center; 
       font-size:9px; 
       font-weight:700; 
       color:#9ca3af; 
       text-transform:uppercase; 
       letter-spacing:0.03em;
-      pointer-events: none;
-      z-index: 11;
+      flex-shrink: 0;
     }
 
     /* Onboarding Views: App-like Sticky Layout */
@@ -1624,7 +1620,7 @@
 
     /* Inseratflow: S25, blind-tap, <15s – app-like, große Touch-Ziele, intuitiv */
     #wizard[data-flow="listing"].sheet--kitchen .wizard-scroll{
-      padding-bottom:12px;
+      padding-bottom:140px;
     }
     #wizard[data-flow="listing"].sheet--kitchen .w-q{
       font-size:16px; margin-bottom:4px;
@@ -3156,7 +3152,7 @@
         padding:16px 18px !important;
       }
       #wizard.sheet--kitchen .wizard-scroll{
-        padding-bottom:24px !important;
+        padding-bottom:140px !important;
       }
       #wizard.sheet--kitchen .handle{
         padding:12px 0 !important;
@@ -18063,35 +18059,7 @@
   // --- Listing wizard (Punkt 6 final) ---
   function updateListingPreviewContent(target){
     target.innerHTML = '';
-    const title = document.createElement('div');
-    title.className = 'hint';
-    title.textContent = 'So wirkt dein Inserat';
-    target.appendChild(title);
-    
-    // Badge und Subline für Online-Zahlung + Abholnummer
-    if(w.data.hasPickupCode){
-      const badgeContainer = document.createElement('div');
-      badgeContainer.className = 'listing-preview-badge';
-      badgeContainer.style.cssText = 'margin-bottom:12px; padding:12px; background:rgba(16,185,129,0.1); border-radius:12px; border:1px solid var(--color-emerald,#10b981);';
-      const badge = document.createElement('div');
-      badge.style.cssText = 'font-weight:600; font-size:14px; color:var(--color-emerald,#10b981); margin-bottom:4px; display:flex; align-items:center; gap:6px;';
-      badge.innerHTML = '🟢 Online bezahlt · Abholung mit Abholnummer';
-      const subline = document.createElement('div');
-      subline.className = 'listing-preview-subline';
-      subline.style.cssText = 'font-size:12px; color:#666;';
-      subline.textContent = 'Zahlung läuft direkt über Mittagio';
-      badgeContainer.appendChild(badge);
-      badgeContainer.appendChild(subline);
-      target.appendChild(badgeContainer);
-    }
-    
     target.appendChild(offerCard(previewOfferFromWizard(), {interactive:false}));
-    if(w.data.hasPickupCode){
-      const note = document.createElement('div');
-      note.className = 'mini';
-      note.textContent = 'Beispiel-Abholnummer: A3';
-      target.appendChild(note);
-    }
   }
 
   function attachListingPreview(box){
@@ -18118,11 +18086,11 @@
   function buildListingStep(){
     setWizardNextDefault();
     if(wNextBtn) wNextBtn.style.display = ''; // Weiter-Button sichtbar (Schritt 4 blendet ihn aus)
-    const total = 5;
+    const total = 4;
     setWizardHeader('Inserat erstellen', `Schritt ${Math.min(w.step+1,total)} von ${total}`);
     const profile = normalizeProviderProfile(provider.profile || {});
     if(!w.data.pickupWindow){ w.data.pickupWindow = profile.mealWindow || DEFAULT_MEAL_WINDOW; }
-    w.data.dineInPossible = true;
+    if(w.data.dineInPossible === undefined) w.data.dineInPossible = !(provider.profile&&provider.profile.dineInPossibleDefault===false);
 
     // Schritt 1: Basis (Quick-Input) – Name, 3-Slot Bild, Abholzeit 11:30–14:00 (+/- 15min), Preis
     if(w.step===0){
@@ -18187,65 +18155,68 @@
         box.appendChild(prev); box.appendChild(rem);
       }
 
-      // --- Abholzeit: Standard 11:30 – 14:00, +/- 15min für Start UND Ende ---
+      // --- Abholzeit: aus Profil, Toggle "immer gleich" ---
       const labelTime=document.createElement('div'); labelTime.className='hint'; labelTime.textContent='Abholzeit (Mittagstisch)';
       box.appendChild(labelTime);
-      const pw=(w.data.pickupWindow||DEFAULT_MEAL_WINDOW).split(/\s*[–\-]\s*/);
+      const profileWindow = profile.mealWindow || DEFAULT_MEAL_WINDOW;
+      if(w.data.pickupWindowUseProfile === undefined) w.data.pickupWindowUseProfile = true;
+      const toggleRow=document.createElement('div');
+      toggleRow.style.cssText='display:flex; align-items:center; justify-content:space-between; padding:12px 14px; background:#f8f9fa; border-radius:12px; margin-bottom:12px;';
+      toggleRow.innerHTML='<span style="font-weight:600; font-size:14px;">Abholzeiten immer gleich wie im Profil?</span>';
+      const togUseProfile=document.createElement('button');
+      togUseProfile.type='button';
+      togUseProfile.style.cssText=`width:44px; height:24px; border-radius:12px; background:${w.data.pickupWindowUseProfile?'#10b981':'#e5e7eb'}; position:relative; border:none; transition:0.2s;`;
+      togUseProfile.innerHTML=`<div style="width:20px; height:20px; background:#fff; border-radius:50%; position:absolute; top:2px; left:${w.data.pickupWindowUseProfile?'22px':'2px'}; transition:0.2s; box-shadow:0 1px 2px rgba(0,0,0,0.2);"></div>`;
+      togUseProfile.onclick=()=>{ w.data.pickupWindowUseProfile=!w.data.pickupWindowUseProfile; if(w.data.pickupWindowUseProfile) w.data.pickupWindow=profileWindow; saveDraft(); rebuildWizard(); };
+      toggleRow.appendChild(togUseProfile);
+      box.appendChild(toggleRow);
+      const pw=(w.data.pickupWindowUseProfile ? profileWindow : (w.data.pickupWindow||DEFAULT_MEAL_WINDOW)).split(/\s*[–\-]\s*/);
       let timeStart=(pw[0]||'11:30').trim(); let timeEnd=(pw[1]||'14:00').trim();
       if(timeStart.length===4) timeStart='0'+timeStart; if(timeEnd.length===4) timeEnd='0'+timeEnd;
+      if(!w.data.pickupWindowUseProfile) w.data.pickupWindow=timeStart+' – '+timeEnd;
       function parseTime(s){ const [h,m]=s.split(':').map(Number); return (h||0)*60+(m||0); }
       function fmtTime(m){ const h=Math.floor(m/60), min=m%60; return (h<10?'0':'')+h+':'+(min<10?'0':'')+min; }
       const updatePickupWindow=()=>{ w.data.pickupWindow=timeStart+' – '+timeEnd; saveDraft(); };
       const timeRow=document.createElement('div');
-      timeRow.style.cssText='display:flex; align-items:center; justify-content:center; gap:8px; flex-wrap:wrap; margin-bottom:16px;';
-      const dispStart=document.createElement('span'); dispStart.style.cssText='font-size:18px; font-weight:800; color:#1a1a1a; min-width:48px; text-align:center;';
+      timeRow.style.cssText='display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:8px; margin-bottom:16px;';
+      const startCell=document.createElement('div'); startCell.style.cssText='display:flex; align-items:center; justify-content:flex-start; gap:6px;';
+      const dispStart=document.createElement('span'); dispStart.style.cssText='font-size:15px; font-weight:800; color:#1a1a1a; min-width:42px; text-align:center;';
       dispStart.textContent=timeStart;
-      const dispEnd=document.createElement('span'); dispEnd.style.cssText='font-size:18px; font-weight:800; color:#1a1a1a; min-width:48px; text-align:center;';
+      const minusStart=document.createElement('button'); minusStart.type='button'; minusStart.className='btn secondary'; minusStart.style.cssText='min-width:36px; min-height:36px; font-size:16px;'; minusStart.textContent='−';
+      minusStart.onclick=()=>{ let start=parseTime(timeStart), end=parseTime(timeEnd); if(start>10*60&&end-start>15){ start-=15; timeStart=fmtTime(start); dispStart.textContent=timeStart; updatePickupWindow(); } };
+      const plusStart=document.createElement('button'); plusStart.type='button'; plusStart.className='btn secondary'; plusStart.style.cssText='min-width:36px; min-height:36px; font-size:16px;'; plusStart.textContent='+';
+      plusStart.onclick=()=>{ let start=parseTime(timeStart), end=parseTime(timeEnd); if(start<end-15){ start+=15; timeStart=fmtTime(start); dispStart.textContent=timeStart; updatePickupWindow(); } };
+      startCell.appendChild(minusStart); startCell.appendChild(dispStart); startCell.appendChild(plusStart);
+      const sep=document.createElement('span'); sep.style.cssText='font-size:14px; font-weight:700; color:#94a3b8;'; sep.textContent='–';
+      const endCell=document.createElement('div'); endCell.style.cssText='display:flex; align-items:center; justify-content:flex-end; gap:6px;';
+      const dispEnd=document.createElement('span'); dispEnd.style.cssText='font-size:15px; font-weight:800; color:#1a1a1a; min-width:42px; text-align:center;';
       dispEnd.textContent=timeEnd;
-      const minusStart=document.createElement('button'); minusStart.type='button'; minusStart.className='btn secondary'; minusStart.style.cssText='min-width:44px; min-height:44px;'; minusStart.textContent='−';
-      minusStart.title='Start früher';
-      minusStart.onclick=()=>{
-        let start=parseTime(timeStart), end=parseTime(timeEnd);
-        if(start>10*60&&end-start>15){ start-=15; timeStart=fmtTime(start); dispStart.textContent=timeStart; updatePickupWindow(); }
-      };
-      const plusStart=document.createElement('button'); plusStart.type='button'; plusStart.className='btn secondary'; plusStart.style.cssText='min-width:44px; min-height:44px;'; plusStart.textContent='+';
-      plusStart.title='Start später';
-      plusStart.onclick=()=>{
-        let start=parseTime(timeStart), end=parseTime(timeEnd);
-        if(start<end-15){ start+=15; timeStart=fmtTime(start); dispStart.textContent=timeStart; updatePickupWindow(); }
-      };
-      const minusEnd=document.createElement('button'); minusEnd.type='button'; minusEnd.className='btn secondary'; minusEnd.style.cssText='min-width:44px; min-height:44px;'; minusEnd.textContent='−';
-      minusEnd.title='Ende früher';
-      minusEnd.onclick=()=>{
-        let start=parseTime(timeStart), end=parseTime(timeEnd);
-        if(end-start>15){ end-=15; timeEnd=fmtTime(end); dispEnd.textContent=timeEnd; updatePickupWindow(); }
-      };
-      const plusEnd=document.createElement('button'); plusEnd.type='button'; plusEnd.className='btn secondary'; plusEnd.style.cssText='min-width:44px; min-height:44px;'; plusEnd.textContent='+';
-      plusEnd.title='Ende später';
-      plusEnd.onclick=()=>{
-        let start=parseTime(timeStart), end=parseTime(timeEnd);
-        if(end<15*60&&end-start<4*60){ end+=15; timeEnd=fmtTime(end); dispEnd.textContent=timeEnd; updatePickupWindow(); }
-      };
-      timeRow.appendChild(minusStart); timeRow.appendChild(dispStart); timeRow.appendChild(plusStart);
-      timeRow.appendChild(document.createTextNode(' – '));
-      timeRow.appendChild(minusEnd); timeRow.appendChild(dispEnd); timeRow.appendChild(plusEnd);
+      const minusEnd=document.createElement('button'); minusEnd.type='button'; minusEnd.className='btn secondary'; minusEnd.style.cssText='min-width:36px; min-height:36px; font-size:16px;'; minusEnd.textContent='−';
+      minusEnd.onclick=()=>{ let start=parseTime(timeStart), end=parseTime(timeEnd); if(end-start>15){ end-=15; timeEnd=fmtTime(end); dispEnd.textContent=timeEnd; updatePickupWindow(); } };
+      const plusEnd=document.createElement('button'); plusEnd.type='button'; plusEnd.className='btn secondary'; plusEnd.style.cssText='min-width:36px; min-height:36px; font-size:16px;'; plusEnd.textContent='+';
+      plusEnd.onclick=()=>{ let start=parseTime(timeStart), end=parseTime(timeEnd); if(end<15*60&&end-start<4*60){ end+=15; timeEnd=fmtTime(end); dispEnd.textContent=timeEnd; updatePickupWindow(); } };
+      endCell.appendChild(minusEnd); endCell.appendChild(dispEnd); endCell.appendChild(plusEnd);
+      timeRow.appendChild(startCell); timeRow.appendChild(sep); timeRow.appendChild(endCell);
+      if(w.data.pickupWindowUseProfile){ w.data.pickupWindow=profileWindow; minusStart.disabled=true; plusStart.disabled=true; minusEnd.disabled=true; plusEnd.disabled=true; minusStart.style.opacity='0.5'; plusStart.style.opacity='0.5'; minusEnd.style.opacity='0.5'; plusEnd.style.opacity='0.5'; }
       box.appendChild(timeRow);
 
-      // --- PREIS (1-Daumen: +/- Buttons, Komma immer gesetzt) ---
+      // --- PREIS: Eingabefeld mit Komma (wie vorher) ---
       const labelPrice=document.createElement('div'); labelPrice.className='hint'; labelPrice.textContent='Preis (€)';
       box.appendChild(labelPrice);
-      let priceVal=Math.round((w.data.price||0)*100)/100;
-      const priceRow=document.createElement('div');
-      priceRow.style.cssText='display:flex; align-items:center; justify-content:center; gap:12px; margin-bottom:16px;';
-      const priceDisplay=document.createElement('span');
-      priceDisplay.style.cssText='font-size:22px; font-weight:900; color:#1a1a1a; min-width:80px; text-align:center; font-variant-numeric:tabular-nums;';
-      priceDisplay.textContent=(priceVal||0).toFixed(2).replace('.',',')+' €';
-      const minusPrice=document.createElement('button'); minusPrice.type='button'; minusPrice.className='btn secondary'; minusPrice.style.cssText='min-width:52px; min-height:52px; font-size:20px; font-weight:800;'; minusPrice.textContent='−'; minusPrice.title='0,50 € weniger';
-      minusPrice.onclick=()=>{ if(priceVal>=0.5){ priceVal=Math.round((priceVal-0.5)*100)/100; w.data.price=priceVal; priceDisplay.textContent=priceVal.toFixed(2).replace('.',',')+' €'; saveDraft(); } };
-      const plusPrice=document.createElement('button'); plusPrice.type='button'; plusPrice.className='btn secondary'; plusPrice.style.cssText='min-width:52px; min-height:52px; font-size:20px; font-weight:800;'; plusPrice.textContent='+'; plusPrice.title='0,50 € mehr';
-      plusPrice.onclick=()=>{ priceVal=Math.round((priceVal+0.5)*100)/100; w.data.price=priceVal; priceDisplay.textContent=priceVal.toFixed(2).replace('.',',')+' €'; saveDraft(); };
-      priceRow.appendChild(minusPrice); priceRow.appendChild(priceDisplay); priceRow.appendChild(plusPrice);
-      box.appendChild(priceRow);
+      const inputPrice=document.createElement('input');
+      inputPrice.className='field';
+      inputPrice.type='text';
+      inputPrice.inputmode='decimal';
+      inputPrice.placeholder='z.B. 8,50';
+      inputPrice.value=(w.data.price>0?Number(w.data.price).toFixed(2).replace('.',','):'');
+      inputPrice.style.marginBottom='16px';
+      inputPrice.oninput=()=>{
+        const v=inputPrice.value.replace(',','.');
+        w.data.price=parseFloat(v)||0;
+        saveDraft();
+      };
+      inputPrice.onblur=()=>{ if(w.data.price>0) inputPrice.value=Number(w.data.price).toFixed(2).replace('.',','); };
+      box.appendChild(inputPrice);
 
       // --- KATEGORIE ---
       const labelCat=document.createElement('div'); labelCat.className='hint'; labelCat.textContent='Kategorie';
@@ -18267,112 +18238,114 @@
       return;
     }
 
-    // Schritt 2: Service & Details – Toggles Vor Ort (🍴), Mehrweg (🔄), Allergene optional, Extra-Pills
+    // Schritt 2: Service & Details – Vor Ort, Mehrweg (Pills 3€/5€/Sonstiges), Allergene (Toggle+Pills), Extras (Pills+Preisfeld)
     if(w.step===1){
       setWizardQuestion('Service & Details', 'Kann man bei dir vor Ort essen? Bietest du Mehrweg an?');
       const box=document.createElement('div');
       const saveDraft = () => { localStorage.setItem('wizard_draft', JSON.stringify(w)); };
+      const profile = normalizeProviderProfile(provider.profile || {});
       
-      // Toggles Container (min 44px Tap-Targets)
-      const toggleWrap = document.createElement('div');
-      toggleWrap.style.cssText = 'display:flex; flex-direction:column; gap:12px; margin-bottom:24px;';
-      
-      // 1. Vor Ort (🍴)
+      // 1. Vor Ort – Toggle Ja/Nein, in Profil hinterlegen
       const rowDine = document.createElement('div');
-      rowDine.style.cssText = 'display:flex; align-items:center; justify-content:space-between; padding:14px 16px; min-height:44px; background:#f8f9fa; border-radius:12px;';
+      rowDine.style.cssText = 'display:flex; align-items:center; justify-content:space-between; padding:14px 16px; min-height:44px; background:#f8f9fa; border-radius:12px; margin-bottom:12px;';
       rowDine.innerHTML = '<div style="font-weight:600;display:flex;align-items:center;gap:8px"><span style="font-size:18px;">🍴</span> Kann man bei dir vor Ort essen?</div>';
-      // Toggle Switch (simulated)
       const togDine = document.createElement('button');
       togDine.type='button';
       togDine.style.cssText = `width:44px; height:24px; border-radius:12px; background:${w.data.dineInPossible?'#10b981':'#e5e7eb'}; position:relative; border:none; transition:0.2s;`;
       togDine.innerHTML = `<div style="width:20px; height:20px; background:#fff; border-radius:50%; position:absolute; top:2px; left:${w.data.dineInPossible?'22px':'2px'}; transition:0.2s; box-shadow:0 1px 2px rgba(0,0,0,0.2);"></div>`;
-      togDine.onclick = ()=>{ w.data.dineInPossible=!w.data.dineInPossible; saveDraft(); rebuildWizard(); };
+      togDine.onclick = ()=>{ w.data.dineInPossible=!w.data.dineInPossible; if(provider.profile) provider.profile.dineInPossibleDefault=w.data.dineInPossible; save(LS.provider, provider); saveDraft(); rebuildWizard(); };
       rowDine.appendChild(togDine);
-      toggleWrap.appendChild(rowDine);
+      box.appendChild(rowDine);
 
-      // 2. Mehrweg (🔄)
+      // 2. Mehrweg – Toggle, dann Pills 3€ / 5€ / Sonstiges (Eingabe mit Komma)
       const rowReuse = document.createElement('div');
-      rowReuse.style.cssText = 'display:flex; align-items:center; justify-content:space-between; padding:14px 16px; min-height:44px; background:#f8f9fa; border-radius:12px;';
+      rowReuse.style.cssText = 'display:flex; align-items:center; justify-content:space-between; padding:14px 16px; min-height:44px; background:#f8f9fa; border-radius:12px; margin-bottom:12px;';
       rowReuse.innerHTML = '<div style="font-weight:600;display:flex;align-items:center;gap:8px"><span style="font-size:18px;">🔄</span> Bietest du Mehrweg an?</div>';
+      if(!w.data.reuse) w.data.reuse={enabled:false, deposit:0};
       const togReuse = document.createElement('button');
       togReuse.type='button';
       togReuse.style.cssText = `width:44px; height:24px; border-radius:12px; background:${w.data.reuse.enabled?'#10b981':'#e5e7eb'}; position:relative; border:none; transition:0.2s;`;
       togReuse.innerHTML = `<div style="width:20px; height:20px; background:#fff; border-radius:50%; position:absolute; top:2px; left:${w.data.reuse.enabled?'22px':'2px'}; transition:0.2s; box-shadow:0 1px 2px rgba(0,0,0,0.2);"></div>`;
-      togReuse.onclick = ()=>{ 
-        w.data.reuse.enabled=!w.data.reuse.enabled; 
-        if(w.data.reuse.enabled && !w.data.reuse.deposit) w.data.reuse.deposit=2; 
-        saveDraft(); rebuildWizard(); 
-      };
+      togReuse.onclick = ()=>{ w.data.reuse.enabled=!w.data.reuse.enabled; if(w.data.reuse.enabled&&!w.data.reuse.deposit) w.data.reuse.deposit=3; saveDraft(); rebuildWizard(); };
       rowReuse.appendChild(togReuse);
-      toggleWrap.appendChild(rowReuse);
-      
-      box.appendChild(toggleWrap);
+      box.appendChild(rowReuse);
+      if(w.data.reuse.enabled){
+        const mehLabel=document.createElement('div'); mehLabel.className='hint'; mehLabel.textContent='Pfand in €'; mehLabel.style.marginBottom='8px'; box.appendChild(mehLabel);
+        const mehRow=document.createElement('div'); mehRow.style.cssText='display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px;';
+        [3,5].forEach(amt=>{
+          const sel=w.data.reuse.deposit===amt;
+          const b=document.createElement('button'); b.type='button'; b.className='ans'+(sel?' on':''); b.style.minHeight='44px'; b.textContent=amt+',00 €';
+          b.onclick=()=>{ w.data.reuse.deposit=amt; saveDraft(); rebuildWizard(); };
+          mehRow.appendChild(b);
+        });
+        const bSonst=document.createElement('button'); bSonst.type='button'; bSonst.className='ans'+(w.data.reuse.deposit&&w.data.reuse.deposit!==3&&w.data.reuse.deposit!==5?' on':'');
+        bSonst.style.cssText='min-height:44px; display:flex; align-items:center; gap:8px;';
+        const inpSonst=document.createElement('input'); inpSonst.type='text'; inpSonst.inputmode='decimal'; inpSonst.placeholder='z.B. 2,50'; inpSonst.style.cssText='width:70px; padding:8px 10px; border-radius:8px; border:2px solid #e5e7eb; font-size:14px; font-weight:600;';
+        if(w.data.reuse.deposit&&w.data.reuse.deposit!==3&&w.data.reuse.deposit!==5) inpSonst.value=Number(w.data.reuse.deposit).toFixed(2).replace('.',',');
+        inpSonst.oninput=()=>{ const v=parseFloat((inpSonst.value||'0').replace(',','.'))||0; w.data.reuse.deposit=v; saveDraft(); };
+        inpSonst.onblur=()=>{ if(w.data.reuse.deposit>0) inpSonst.value=Number(w.data.reuse.deposit).toFixed(2).replace('.',','); rebuildWizard(); };
+        bSonst.appendChild(document.createTextNode('Sonstiges')); bSonst.appendChild(inpSonst);
+        bSonst.onclick=(e)=>{ if(e.target===inpSonst) return; w.data.reuse.deposit=w.data.reuse.deposit||0; inpSonst.focus(); saveDraft(); rebuildWizard(); };
+        mehRow.appendChild(bSonst);
+        box.appendChild(mehRow);
+      }
 
-      // Allergene (optional)
-      const labelAll=document.createElement('div'); labelAll.className='hint'; labelAll.textContent='Willst du Allergene angeben?';
-      box.appendChild(labelAll);
-      const allRow=document.createElement('div'); allRow.className='answers'; allRow.style.marginBottom='24px';
+      // 3. Allergene – Toggle, dann Pills (KI/14-Standard), Verantwortlich-Hinweis grau
+      const labelAll=document.createElement('div'); labelAll.className='hint'; labelAll.textContent='Allergene angeben?'; labelAll.style.marginTop='8px'; box.appendChild(labelAll);
+      const allRow=document.createElement('div'); allRow.className='answers'; allRow.style.marginBottom='12px';
       const btnAllYes=document.createElement('button'); btnAllYes.className='ans'+(w.data.wantsAllergens?' on':''); btnAllYes.textContent='Ja';
       btnAllYes.onclick=()=>{ w.data.wantsAllergens=true; saveDraft(); rebuildWizard(); };
       const btnAllNo=document.createElement('button'); btnAllNo.className='ans'+(!w.data.wantsAllergens?' on':''); btnAllNo.textContent='Nein';
       btnAllNo.onclick=()=>{ w.data.wantsAllergens=false; w.data.allergens=[]; saveDraft(); rebuildWizard(); };
       allRow.appendChild(btnAllYes); allRow.appendChild(btnAllNo);
       box.appendChild(allRow);
-
       if(w.data.wantsAllergens){
         const allList=document.createElement('div');
-        allList.innerHTML='<div class="hint" style="margin-bottom:8px">Wähle Allergene:</div>';
-        const pills=document.createElement('div'); pills.className='answers';
-        ALLERGENS_LIST.forEach(a=>{
-          const active=w.data.allergens.includes(a.code);
-          const p=document.createElement('button'); p.className='ans'+(active?' on':''); p.textContent=`${a.code} ${a.label}`;
-          p.onclick=()=>{
-            if(active) w.data.allergens=w.data.allergens.filter(x=>x!==a.code);
-            else w.data.allergens.push(a.code);
-            saveDraft(); rebuildWizard();
-          };
+        allList.innerHTML='<div class="hint" style="margin-bottom:8px">Wähle Allergene (KI-vordefiniert):</div>';
+        const pills=document.createElement('div'); pills.className='answers'; pills.style.flexWrap='wrap';
+        ALLERGENS_14.forEach(a=>{
+          const code=a.short;
+          const active=(w.data.allergens||[]).includes(code);
+          const p=document.createElement('button'); p.className='ans'+(active?' on':''); p.textContent=`${code} ${a.name}`; p.style.minHeight='40px';
+          p.onclick=()=>{ if(!w.data.allergens) w.data.allergens=[]; if(active) w.data.allergens=w.data.allergens.filter(x=>x!==code); else w.data.allergens.push(code); saveDraft(); rebuildWizard(); };
           pills.appendChild(p);
         });
         allList.appendChild(pills);
+        const verantHint=document.createElement('div'); verantHint.style.cssText='font-size:12px; color:#94a3b8; margin-top:8px;'; verantHint.textContent='Du bist für die Angaben verantwortlich.';
+        allList.appendChild(verantHint);
         box.appendChild(allList);
       }
 
-      // Extra-Pills (Beilagensalat, Extra Sauce, Brot, Ketchup, Mayo) + Verdienst-Vorschau
+      // 4. Extras – Pills inkl. Sonstiges, bei Klick App-Feld mit Preis (Komma)
       if(!Array.isArray(w.data.extras)) w.data.extras=[];
-      const hasExtras = w.data.extras.length > 0;
       const extLabel=document.createElement('div'); extLabel.className='hint'; extLabel.style.marginTop='16px'; extLabel.textContent='Extras (Aufpreis)';
       box.appendChild(extLabel);
-      const extRow=document.createElement('div'); extRow.style.cssText='display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px;';
-      ['Beilagensalat','Extra Sauce','Brot','Ketchup','Mayo'].forEach(name=>{
+      const extRow=document.createElement('div'); extRow.style.cssText='display:flex; flex-direction:column; gap:12px; margin-bottom:0;';
+      ['Beilagensalat','Extra Sauce','Brot','Ketchup','Mayo','Sonstiges'].forEach(name=>{
         const extra=w.data.extras.find(e=>e.name===name);
         const hasPrice=!!extra && Number(extra.price||0)>0;
-        const b=document.createElement('button'); b.type='button'; b.style.cssText=`min-height:44px; padding:8px 12px; border-radius:8px; font-size:13px; font-weight:600; border:2px solid ${hasPrice?'var(--color-emerald,#10b981)':(extra?'#94a3b8':'#e5e7eb')}; background:${hasPrice?'rgba(16,185,129,0.12)':'#fff'}; color:${hasPrice?'var(--color-emerald,#10b981)':'#475569'};`;
+        const pillWrap=document.createElement('div'); pillWrap.style.cssText='display:flex; align-items:center; gap:8px; flex-wrap:wrap;';
+        const b=document.createElement('button'); b.type='button'; b.style.cssText=`min-height:44px; padding:8px 14px; border-radius:10px; font-size:14px; font-weight:600; border:2px solid ${hasPrice?'#10b981':'#e5e7eb'}; background:${hasPrice?'rgba(16,185,129,0.12)':'#fff'}; color:${hasPrice?'#10b981':'#475569'};`;
         b.textContent=extra && extra.price ? name+' +'+Number(extra.price).toFixed(2).replace('.',',')+' €' : name;
         b.onclick=()=>{
           const idx=w.data.extras.findIndex(e=>e.name===name);
           if(idx>=0){ w.data.extras.splice(idx,1); rebuildWizard(); return; }
-          const priceStr=prompt('Aufpreis in € (z.B. 1,50):','0');
-          const priceVal=parseFloat((priceStr||'0').replace(',','.'))||0;
-          w.data.extras.push({name, price:priceVal});
+          w.data.extras.push({name, price:0});
           rebuildWizard();
         };
-        extRow.appendChild(b);
+        pillWrap.appendChild(b);
+        const ex=w.data.extras.find(e=>e.name===name);
+        if(ex){
+          const inp=document.createElement('input'); inp.type='text'; inp.inputmode='decimal'; inp.placeholder='z.B. 1,50'; inp.style.cssText='width:90px; height:44px; padding:0 12px; border-radius:10px; border:2px solid #e5e7eb; font-size:14px; font-weight:600;';
+          inp.value=ex.price>0?Number(ex.price).toFixed(2).replace('.',','):'';
+          inp.oninput=()=>{ ex.price=parseFloat((inp.value||'0').replace(',','.'))||0; saveDraft(); };
+          inp.onblur=()=>{ if(ex.price>0) inp.value=Number(ex.price).toFixed(2).replace('.',','); rebuildWizard(); };
+          pillWrap.appendChild(inp);
+          const euroSpan=document.createElement('span'); euroSpan.style.cssText='font-size:13px; font-weight:700; color:#64748b;'; euroSpan.textContent='€'; pillWrap.appendChild(euroSpan);
+        }
+        extRow.appendChild(pillWrap);
       });
       box.appendChild(extRow);
-      const verdienstEl=document.createElement('div');
-      verdienstEl.id='listingVerdienstEl';
-      verdienstEl.style.cssText='margin-top:12px; padding:12px; background:rgba(16,185,129,0.12); border-radius:12px; font-weight:700; font-size:14px; text-align:center; color:var(--color-emerald,#10b981);';
-      function refreshVerdienstEl(){
-        const el=document.getElementById('listingVerdienstEl');
-        if(!el) return;
-        const p=Number(w.data.price||0);
-        const exSum=(w.data.extras||[]).reduce((s,e)=>s+Number(e.price||0),0);
-        const nettoProVerkauf = p + exSum - (w.data.hasPickupCode ? ABHOLNUMMER_FEE : 0);
-        el.innerHTML=`Verdienst pro Verkauf: <span style="font-size:16px;">${nettoProVerkauf.toFixed(2).replace('.',',')} €</span> (abzgl. 4,99 € Inseratsgebühr einmalig)`;
-      }
-      verdienstEl.innerHTML='Verdienst pro Verkauf: – (abzgl. 4,99 € Inseratsgebühr einmalig)';
-      box.appendChild(verdienstEl);
-      setTimeout(refreshVerdienstEl, 0);
 
       setWizardContent(box);
       setWizardNext('Weiter');
@@ -18380,124 +18353,63 @@
       return;
     }
 
-    // Schritt 3: Vorschau (Erfolgsmoment) – Discovery-Card wie Kunde sie sieht, 🍴🔄🧾 unter Bild
+    // Schritt 3: Vorschau + Entscheidung (3 Optionen)
     if(w.step===2){
       setWizardQuestion('So wirkt dein Inserat', 'Genau so sehen es deine Gäste.');
       const box=document.createElement('div');
       attachListingPreview(box);
-      setWizardContent(box);
-      setWizardNext('Weiter');
-      if(wBackBtn) wBackBtn.textContent='Zurück';
-      if(typeof lucide!=='undefined') lucide.createIcons();
-      return;
-    }
-
-    // Schritt 4: Entscheidung & Planung (3 Kacheln)
-    if(w.step===3){
-      setWizardQuestion('Wie möchtest du starten?', 'Veröffentliche sofort oder plane für später.');
-      const box=document.createElement('div');
-      
       const grid = document.createElement('div');
-      grid.style.cssText = 'display:grid; grid-template-columns:1fr; gap:16px; margin-top:16px;';
+      grid.style.cssText = 'display:grid; grid-template-columns:1fr; gap:16px; margin-top:20px;';
 
-      // 1. Jetzt Inserieren (Primary)
       const tilePub = document.createElement('button');
-      tilePub.className = 'btn'; // Primary
+      tilePub.className = 'btn';
       tilePub.style.cssText = 'display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; border-radius:20px; background:#FFD700; color:#1a1a1a; border:none; box-shadow:0 8px 20px rgba(255,215,0,0.2); transition:transform 0.1s;';
-      tilePub.innerHTML = `
-        <i data-lucide="rocket" style="width:32px; height:32px; margin-bottom:12px;"></i>
-        <div style="font-size:18px; font-weight:900;">Jetzt für 4,99 € inserieren</div>
-        <div style="font-size:13px; font-weight:600; opacity:0.8; margin-top:4px;">Führt zum Checkout</div>
-      `;
-      tilePub.onclick = () => { w.step++; rebuildWizard(); }; // Go to Upsell
+      tilePub.innerHTML = '<i data-lucide="rocket" style="width:32px; height:32px; margin-bottom:12px;"></i><div style="font-size:18px; font-weight:900;">Dein Tagesessen inserieren für einmalig 4,99 €</div>';
+      tilePub.onclick = () => { w.step++; rebuildWizard(); };
       grid.appendChild(tilePub);
 
-      // 2. Kochbuch
       const tileCook = document.createElement('button');
       tileCook.className = 'btn secondary';
       tileCook.style.cssText = 'display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px; border-radius:20px; border:2px solid #e5e7eb; background:#fff; color:#333;';
-      tileCook.innerHTML = `
-        <i data-lucide="book-open" style="width:28px; height:28px; margin-bottom:8px; color:#666;"></i>
-        <div style="font-size:16px; font-weight:700;">Ins Kochbuch</div>
-        <div style="font-size:12px; color:#999; margin-top:2px;">Speichern & später nutzen</div>
-      `;
+      tileCook.innerHTML = '<i data-lucide="book-open" style="width:28px; height:28px; margin-bottom:8px; color:#666;"></i><div style="font-size:16px; font-weight:700;">Ins Kochbuch speichern</div>';
       tileCook.onclick = () => { saveToCookbookFromWizard(); closeWizard(); showProviderCookbook(); };
       grid.appendChild(tileCook);
 
-      // 3. Wochenplan
       const tileWeek = document.createElement('button');
       tileWeek.className = 'btn secondary';
       tileWeek.style.cssText = 'display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px; border-radius:20px; border:2px solid #e5e7eb; background:#fff; color:#333;';
-      tileWeek.innerHTML = `
-        <i data-lucide="calendar" style="width:28px; height:28px; margin-bottom:8px; color:#666;"></i>
-        <div style="font-size:16px; font-weight:700;">Wochenplan</div>
-        <div style="font-size:12px; color:#999; margin-top:2px;">Für einen anderen Tag</div>
-      `;
+      tileWeek.innerHTML = '<i data-lucide="calendar" style="width:28px; height:28px; margin-bottom:8px; color:#666;"></i><div style="font-size:16px; font-weight:700;">In den Wochenplan übernehmen</div><div style="font-size:12px; color:#999; margin-top:2px;">Dann in den Planer</div>';
       tileWeek.onclick = () => { saveToCookbookFromWizard(); closeWizard(); showProviderWeek(); };
       grid.appendChild(tileWeek);
 
       box.appendChild(grid);
       setWizardContent(box);
-      wNextBtn.style.display = 'none'; // Hide default Next button
+      wNextBtn.style.display = 'none';
       if(typeof lucide!=='undefined') lucide.createIcons();
       return;
     }
 
-    // Schritt 5: Abholnummer Power-Up (nach Klick „Jetzt für 4,99 € inserieren“) – Emerald #10b981, keine Schiefertafeln
-    if(w.step===4){
-      setWizardQuestion('An der Schlange vorbei mit der Abholnummer.', 'Optional: +0,89 € pro Vorgang – klare Zuordnung, weniger Stress.');
+    // Schritt 4 (Index 3): Abholnummer dazubuchen? (nach Klick „Dein Tagesessen inserieren“)
+    if(w.step===3){
+      setWizardQuestion('Abholnummer dazubuchen?', 'Für nur 0,89 € pro Vorgang – Zeit sparen, Chaos vermeiden.');
       const box=document.createElement('div');
       const EMERALD = '#10b981';
 
-      // Großformatiges Bild (Referenz: Kunde zeigt Abholnummer, Metzger reicht Essen) – Fallback: Icon
+      // Bild: Abholnummer Kundenansicht als Beispiel
       const emoImg = document.createElement('div');
-      emoImg.style.cssText = 'width:100%; height:180px; background:linear-gradient(135deg, rgba(16,185,129,0.15) 0%, rgba(16,185,129,0.05) 100%); border-radius:16px; overflow:hidden; margin-bottom:20px; position:relative; border:1px solid rgba(16,185,129,0.2);';
-      const img = document.createElement('img');
-      img.alt = 'Abholnummer vorzeigen – entspannt an der Theke';
-      img.style.cssText = 'width:100%; height:100%; object-fit:cover; display:block;';
-      img.src = 'assets/abholnummer-powerup.jpg';
-      img.onerror = function(){ this.style.display='none'; emoImg.style.background='linear-gradient(135deg,#10b981 0%,#059669 100%)'; emoImg.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100%;"><img src="assets/icon-abholnummer.png" style="width:88px;height:88px;filter:brightness(0) invert(1);opacity:0.9;"></div>'; };
-      emoImg.appendChild(img);
+      emoImg.style.cssText = 'width:100%; min-height:140px; background:linear-gradient(135deg, rgba(255,215,0,0.12) 0%, rgba(255,215,0,0.04) 100%); border-radius:16px; margin-bottom:20px; border:1px solid rgba(255,215,0,0.3); display:flex; align-items:center; justify-content:center; padding:24px;';
+      emoImg.innerHTML = '<div style="text-align:center;"><div style="font-size:40px; font-weight:900; font-family:monospace; letter-spacing:6px; color:#1a1a1a;">#A3</div><div style="font-size:11px; font-weight:700; color:#64748b; margin-top:10px; text-transform:uppercase;">Beispiel: So sieht dein Gast die Abholnummer</div></div>';
       box.appendChild(emoImg);
 
-      // Vorteile (Listenform) – exakt laut Master-Prompt
       const benefits = document.createElement('div');
-      benefits.style.cssText = 'display:flex; flex-direction:column; gap:14px; margin-bottom:20px;';
-      [
-        'Kein Stress: Klare Zuordnung statt lauter Zurufe.',
-        'Höherer Durchsatz: Kürzere Wartezeiten an der Theke.',
-        'Zufriedene Kunden: Schneller „Fast-Pass“-Service.'
-      ].forEach(t => {
+      benefits.style.cssText = 'display:flex; flex-direction:column; gap:12px; margin-bottom:20px;';
+      ['Kein Stress: Klare Zuordnung statt lauter Zurufe.', 'Höherer Durchsatz: Kürzere Wartezeiten an der Theke.', 'Zufriedene Kunden: Schneller „Fast-Pass“-Service.'].forEach(t => {
         const row = document.createElement('div');
         row.style.cssText = 'display:flex; align-items:flex-start; gap:10px; font-size:14px; color:#1a1a1a; font-weight:500; line-height:1.4;';
         row.innerHTML = '<span style="color:' + EMERALD + '; font-weight:700;">✅</span><span>' + t + '</span>';
         benefits.appendChild(row);
       });
       box.appendChild(benefits);
-
-      // Verdienst-Vorschau live: (Basis + Extras) − 4,99 € (einmalig) − 0,89 € pro Vorgang falls Abholnummer aktiv
-      const basePrice = Number(w.data.price) || 0;
-      const extras = 0;
-      const abholnummerFee = 0.89;
-      function getProfitPerSale(hasAbholnummer){ return Math.max(0, basePrice + extras - (hasAbholnummer ? abholnummerFee : 0)); }
-      const profitWrap = document.createElement('div');
-      profitWrap.style.cssText = 'background:#f8faf9; border-radius:12px; padding:14px 16px; margin-bottom:20px; border:1px solid rgba(16,185,129,0.2);';
-      const profitLabel = document.createElement('div');
-      profitLabel.className = 'hint';
-      profitLabel.style.marginBottom = '4px';
-      profitLabel.textContent = 'Dein Gewinn pro verkaufter Portion (live)';
-      const profitValue = document.createElement('div');
-      profitValue.style.cssText = 'font-size:20px; font-weight:900; color:#10b981; font-variant-numeric:tabular-nums;';
-      function updateProfit(){ profitValue.textContent = getProfitPerSale(!!w.data.hasPickupCode).toFixed(2).replace('.', ',') + ' €'; }
-      updateProfit();
-      const profitHint = document.createElement('div');
-      profitHint.className = 'hint';
-      profitHint.style.cssText = 'font-size:11px; margin-top:6px;';
-      profitHint.textContent = '4,99 € Inseratsgebühr ist einmalig, nicht pro Portion.';
-      profitWrap.appendChild(profitLabel);
-      profitWrap.appendChild(profitValue);
-      profitWrap.appendChild(profitHint);
-      box.appendChild(profitWrap);
 
       // Option: Abholnummer für 0,89 € hinzufügen
       const btnYes = document.createElement('button');
