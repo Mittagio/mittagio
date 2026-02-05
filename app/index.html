@@ -4657,11 +4657,12 @@
           </div>
         </div>
 
-        <!-- Mein Kochbuch: 3 Kacheln (beste Gerichte, nach lastUsed) -->
+        <!-- Mein Kochbuch: kleine Kacheln zum Inspirieren – ein Tap zum Inserieren -->
         <div style="margin-bottom:32px;">
-          <h3 style="font-size:18px; font-weight:900; color:#1a1a1a; margin:0 0 12px;">Mein Kochbuch</h3>
+          <h3 style="font-size:18px; font-weight:900; color:#1a1a1a; margin:0 0 4px;">Mein Kochbuch</h3>
+          <p id="providerCookbookInspire" style="font-size:13px; color:#64748b; margin:0 0 12px; line-height:1.4;">Noch keine Idee für die Woche? Ein Tap – dein Gericht ist im Angebot.</p>
           <div id="providerCookbookTiles" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px;">
-            <!-- Dynamisch: 3 beste Gerichte (lastUsed) oder Platzhalter -->
+            <!-- Dynamisch: 3 beste Gerichte (lastUsed) mit Bild + Inserieren-Button -->
           </div>
           <div id="kpiKochbuchCountWrap" style="font-size:13px; font-weight:700; color:#9ca3af; margin-top:8px; text-align:center; cursor:pointer;" onclick="typeof showProviderCookbook==='function'&&showProviderCookbook();"><span id="kpiKochbuchCount">0</span> Gerichte</div>
         </div>
@@ -15559,22 +15560,24 @@
       const providerCookbookTiles = document.getElementById('providerCookbookTiles');
       if(providerCookbookTiles){
         const pid = providerId();
+        const todayKey = isoDate(new Date());
         const mine = (cookbook||[]).filter(c=>c.providerId===pid);
         const top3 = mine.slice().sort((a,b)=>(b.lastUsed||0)-(a.lastUsed||0) || (b.createdAt||0)-(a.createdAt||0)).slice(0,3);
         providerCookbookTiles.innerHTML = '';
         for(let i=0;i<3;i++){
           const c = top3[i];
           const tile = document.createElement('div');
-          tile.style.cssText = 'min-height:72px; border-radius:14px; background:#fff; border:1px solid rgba(0,0,0,0.06); padding:12px; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.04); transition:transform 0.15s;';
-          tile.onmouseover = function(){ this.style.transform='scale(1.02)'; };
-          tile.onmouseout = function(){ this.style.transform=''; };
+          tile.style.cssText = 'border-radius:14px; background:#fff; border:1px solid rgba(0,0,0,0.06); overflow:hidden; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.04); transition:transform 0.15s, box-shadow 0.15s; display:flex; flex-direction:column; min-height:0;';
+          tile.onmouseover = function(){ this.style.transform='scale(1.02)'; this.style.boxShadow='0 4px 14px rgba(0,0,0,0.08)'; };
+          tile.onmouseout = function(){ this.style.transform=''; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.04)'; };
           if(c){
-            const name = (c.dish||'Gericht').length > 12 ? (c.dish||'').substring(0,10)+'…' : (c.dish||'Gericht');
-            tile.innerHTML = '<div style="font-size:12px; font-weight:800; color:#1a1a1a; text-align:center; line-height:1.2;">'+esc(name)+'</div><div style="font-size:11px; font-weight:700; color:#10b981; margin-top:4px;">'+euro(c.price||0)+'</div>';
-            tile.onclick = function(){ showProviderCookbook(); };
+            const imgUrl = (c.photoData || c.imageUrl || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=400&q=60').replace(/"/g,'&quot;').replace(/'/g,'%27');
+            const name = (c.dish||'Gericht').length > 14 ? (c.dish||'').substring(0,12)+'…' : (c.dish||'Gericht');
+            tile.innerHTML = '<div style="height:56px; flex-shrink:0; overflow:hidden; background:#f1f3f5;"><img src="'+imgUrl+'" alt="" style="width:100%; height:100%; object-fit:cover; display:block;" onerror="this.style.display=\'none\'"></div><div style="padding:8px 10px; flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;"><div style="font-size:11px; font-weight:800; color:#1a1a1a; text-align:center; line-height:1.2;">'+esc(name)+'</div><div style="font-size:10px; font-weight:700; color:#10b981; margin-top:2px;">'+euro(c.price||0)+'</div><div style="margin-top:6px; font-size:10px; font-weight:800; color:#FFD700; text-transform:uppercase; letter-spacing:0.03em;">Inserieren</div></div>';
+            tile.onclick = function(ev){ if(!ev.target.closest('a')) { if(typeof startListingFlow==='function') startListingFlow({ dishId: c.id, date: todayKey }); } };
           } else {
-            tile.innerHTML = '<i data-lucide="book-open" style="width:20px; height:20px; color:#cbd5e1;"></i><div style="font-size:11px; color:#94a3b8; margin-top:4px;">–</div>';
-            tile.onclick = function(){ showProviderCookbook(); };
+            tile.innerHTML = '<div style="height:56px; background:#f1f3f5; display:flex; align-items:center; justify-content:center;"><i data-lucide="book-open" style="width:22px; height:22px; color:#cbd5e1;"></i></div><div style="padding:10px; text-align:center;"><div style="font-size:11px; color:#94a3b8;">–</div><div style="font-size:10px; color:#94a3b8; margin-top:4px;">Leer</div></div>';
+            tile.onclick = function(){ if(typeof showProviderCookbook==='function') showProviderCookbook(); };
           }
           providerCookbookTiles.appendChild(tile);
         }
