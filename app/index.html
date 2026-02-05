@@ -5737,8 +5737,8 @@
 
   </div>
 
-  <!-- Bottom Navigation -->
-  <div style="position:fixed; bottom:0; left:0; right:0; padding:20px 24px calc(20px + env(safe-area-inset-bottom, 0)); background:linear-gradient(to top, #f8f7f2 80%, transparent); text-align:center;">
+  <!-- Bottom (absolut im Sheet, damit es mit dem Sheet verschwindet – fixed würde auf Discover sichtbar bleiben) -->
+  <div style="position:absolute; bottom:0; left:0; right:0; padding:20px 24px calc(20px + env(safe-area-inset-bottom, 0)); background:linear-gradient(to top, #f8f7f2 80%, transparent); text-align:center;">
     <button type="button" id="inseratSuccessBtnBack" style="width:100%; min-height:52px; border-radius:16px; background:#1a1a1a; color:#fff; font-weight:800; font-size:15px; border:none; box-shadow:0 4px 12px rgba(0,0,0,0.1);">
       Fertig & zum Dashboard
     </button>
