@@ -708,7 +708,32 @@
     }
 
     /* Views */
-    .view{display:none}
+    /* Confetti Animation */
+  @keyframes confetti-fall {
+    0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+  }
+  .confetti {
+    position: fixed; width: 10px; height: 10px; background: #FFD700;
+    top: -20px; z-index: 2000; pointer-events: none;
+    animation: confetti-fall 3s linear forwards;
+  }
+
+  .success-card-preview {
+    background: #fff;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    border: 1px solid rgba(0,0,0,0.04);
+    margin: 20px 0;
+    text-align: left;
+  }
+  .success-card-img {
+    width: 100%; height: 120px; object-fit: cover;
+  }
+  .success-card-body {
+    padding: 16px;
+  }
     .view.active{display:block}
     /* Abholnummer-Ansicht benötigt flex-Layout */
     .view.active#v-pickup-code{display:flex !important}
@@ -5669,65 +5694,65 @@
 </div>
 
 <!-- Inserat Live – Erfolgs- & Monitoring-Sheet (Schritt 5 nach Veröffentlichung) -->
-<div class="backdrop" id="inseratSuccessBd" onclick="closeInseratSuccessSheet()" style="background:rgba(0,0,0,0.7); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); display:none;"></div>
-<div class="sheet" id="inseratSuccessSheet" style="max-width:480px; border-radius:24px; overflow:hidden; display:none; background:#f8f7f2;">
-  <div class="sheet-body" style="padding:24px 24px 120px;">
-    <div style="text-align:center; padding-top:24px;">
-      <div style="width:96px; height:96px; background:#dcfce7; color:#16a34a; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:48px; margin:0 auto 24px; box-shadow:0 2px 12px rgba(0,0,0,0.06); border:2px solid rgba(34,197,94,0.2);">✅</div>
-      <h1 style="margin:0 0 8px; font-size:28px; font-weight:900; color:#1a1a1a; letter-spacing:-0.02em;">Inserat ist Live!</h1>
-      <p style="margin:0 0 24px; font-size:12px; font-weight:700; color:#9ca3af; text-transform:uppercase; letter-spacing:0.05em;">4,99 € erfolgreich abgebucht</p>
+<div class="backdrop" id="inseratSuccessBd" onclick="closeInseratSuccessSheet()" style="background:rgba(0,0,0,0.7); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); display:none; z-index:1200;"></div>
+<div class="sheet" id="inseratSuccessSheet" style="max-width:480px; border-radius:32px; overflow:hidden; display:none; background:#f8f7f2; z-index:1201;">
+  <div id="confettiContainer" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; overflow:hidden;"></div>
+  
+  <div class="sheet-body" style="padding:32px 24px 120px; text-align:center;">
+    
+    <!-- 1. Celebration Header -->
+    <div style="margin-bottom:24px;">
+      <div style="width:80px; height:80px; background:#dcfce7; color:#16a34a; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:40px; margin:0 auto 16px; box-shadow:0 4px 12px rgba(22,163,74,0.15);">🎉</div>
+      <h1 style="margin:0 0 8px; font-size:26px; font-weight:950; color:#1a1a1a; letter-spacing:-0.03em;">Stark! Es ist live.</h1>
+      <p style="margin:0; font-size:15px; color:#64748b; font-weight:500;">Hungrige Gäste können dein Gericht jetzt finden.</p>
     </div>
-    <div id="inseratSuccessMonitoringCard" style="background:#fff; border-radius:40px; padding:24px; margin-bottom:20px; box-shadow:0 10px 40px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04);">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
-        <div style="text-align:left;">
-          <span style="display:block; font-size:10px; font-weight:800; color:#9ca3af; text-transform:uppercase; letter-spacing:0.05em;">Aktueller Status</span>
-          <h3 id="inseratSuccessDishName" style="margin:4px 0 0; font-size:20px; font-weight:900; color:#1a1a1a;">–</h3>
-        </div>
-        <div style="background:#ffde00; padding:8px 16px; border-radius:16px; font-weight:800; font-size:13px; color:#1a1a1a; box-shadow:0 2px 8px rgba(0,0,0,0.06);">LIVE 🕒</div>
-      </div>
-      <div id="inseratSuccessAbholnummerSection" style="margin-bottom:20px;">
-        <div style="display:flex; flex-direction:column; align-items:center; gap:12px; margin-bottom:16px;">
-          <span style="font-size:10px; font-weight:800; color:#3b82f6; text-transform:uppercase; letter-spacing:0.05em;">Nächste Abholnummer</span>
-          <div id="inseratSuccessNextCode" style="font-size:48px; font-weight:900; color:#1a1a1a; letter-spacing:-0.02em; background:#f9fafb; width:100%; padding:24px; text-align:center; border-radius:24px; border:2px dashed #e5e7eb;">#104</div>
-        </div>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-          <button type="button" id="inseratSuccessBtnDone" style="background:#1a1a1a; color:#fff; padding:16px; border-radius:16px; font-weight:700; font-size:14px; border:none;">Erledigt (Ausgabe)</button>
-          <button type="button" id="inseratSuccessBtnNext" style="background:#f3f4f6; color:#9ca3af; padding:16px; border-radius:16px; font-weight:700; font-size:14px; border:none;">Nächste: #105</button>
-        </div>
-      </div>
+
+    <!-- 2. Live Preview (Mini Card) -->
+    <div id="inseratSuccessLivePreview" class="success-card-preview">
+      <!-- Wird dynamisch befüllt -->
     </div>
-    <div id="inseratSuccessRevenueRow" style="background:#fff; border-radius:24px; padding:20px; display:flex; justify-content:space-between; align-items:center; border:1px solid rgba(0,0,0,0.06);">
-      <span style="font-weight:700; color:#6b7280;">Heutiger Umsatz:</span>
-      <span id="inseratSuccessRevenue" style="font-size:24px; font-weight:900; color:#16a34a;">+ 0,00 €</span>
-    </div>
-    <!-- Growth: WhatsApp, QR-Code, Social-Export (Branding: Mittagio + Slogan) -->
-    <div id="inseratSuccessGrowth" style="margin-top:24px; padding-top:20px; border-top:1px solid rgba(0,0,0,0.08);">
-      <div style="font-size:11px; font-weight:800; color:#9ca3af; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:12px;">Angebot bekannt machen</div>
-      <a id="inseratSuccessBtnWhatsApp" href="#" target="_blank" rel="noopener" style="display:flex; align-items:center; justify-content:center; gap:10px; width:100%; min-height:52px; padding:14px 20px; border-radius:16px; background:#25D366; color:#fff; font-weight:800; font-size:16px; text-decoration:none; margin-bottom:12px; box-shadow:0 4px 12px rgba(37,211,102,0.3);">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-        Angebot bei WhatsApp teilen
+
+    <!-- 3. Primary Action: WhatsApp Boost -->
+    <div style="margin-top:32px;">
+      <div style="font-size:11px; font-weight:800; color:#9ca3af; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:12px;">Dein Umsatz-Turbo</div>
+      <a id="inseratSuccessBtnWhatsApp" href="#" target="_blank" rel="noopener" style="display:flex; align-items:center; justify-content:center; gap:12px; width:100%; min-height:64px; padding:14px 24px; border-radius:20px; background:#25D366; color:#fff; font-weight:900; font-size:17px; text-decoration:none; margin-bottom:12px; box-shadow:0 8px 24px rgba(37,211,102,0.3);">
+        <i data-lucide="send" style="width:24px; height:24px;"></i>
+        <span>Bei WhatsApp teilen</span>
       </a>
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
-        <div style="background:#fff; border-radius:16px; padding:16px; border:1px solid rgba(0,0,0,0.06); text-align:center;">
-          <div style="font-size:10px; font-weight:700; color:#9ca3af; margin-bottom:8px;">QR-Code für Laden</div>
-          <div id="inseratSuccessQRWrap" style="min-height:120px; display:flex; align-items:center; justify-content:center;"><img id="inseratSuccessQR" alt="QR-Code" style="width:120px; height:120px; border-radius:8px;" /></div>
-          <button type="button" id="inseratSuccessBtnPrintQR" style="width:100%; margin-top:10px; padding:10px; border-radius:12px; border:2px solid #e5e7eb; background:#fff; font-weight:700; font-size:13px; color:#374151; cursor:pointer;">Druckansicht</button>
-        </div>
-        <div style="background:#fff; border-radius:16px; padding:16px; border:1px solid rgba(0,0,0,0.06); text-align:center;">
-          <div style="font-size:10px; font-weight:700; color:#9ca3af; margin-bottom:8px;">Instagram / Facebook</div>
-          <p style="font-size:12px; color:#6b7280; margin:0 0 12px;">Bild mit Gericht &amp; Mittagio-Branding</p>
-          <button type="button" id="inseratSuccessBtnSocialImage" style="width:100%; padding:12px; border-radius:12px; border:none; background:#FFD700; color:#1a1a1a; font-weight:800; font-size:14px; cursor:pointer;">Bild herunterladen</button>
-        </div>
-      </div>
-      <p style="margin:0; font-size:11px; color:#9ca3af; text-align:center;">Jeder Link und jedes Bild enthält „Mittagio – Zeit gespart mit der Abholnummer“.</p>
-      <button type="button" id="inseratSuccessBtnEmailCopy" style="width:100%; margin-top:12px; padding:12px; border-radius:12px; border:2px solid #e5e7eb; background:#fff; font-weight:700; font-size:14px; color:#374151; cursor:pointer;">E-Mail-Vorschau kopieren</button>
+      <p style="font-size:13px; color:#64748b; font-weight:500; margin-bottom:24px;">Informiere deine Kunden direkt.</p>
     </div>
+
+    <!-- 4. Secondary Tools Grid -->
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:24px;">
+      <button type="button" id="inseratSuccessBtnPrintQR" style="background:#fff; border-radius:20px; padding:16px; border:1px solid rgba(0,0,0,0.06); text-align:center; cursor:pointer;">
+        <i data-lucide="qr-code" style="width:24px; height:24px; color:#1a1a1a; margin-bottom:8px;"></i>
+        <div style="font-size:13px; font-weight:800; color:#1a1a1a;">Für den Tresen</div>
+        <div style="font-size:11px; color:#9ca3af; margin-top:2px;">QR-Code drucken</div>
+      </button>
+      <button type="button" id="inseratSuccessBtnSocialImage" style="background:#fff; border-radius:20px; padding:16px; border:1px solid rgba(0,0,0,0.06); text-align:center; cursor:pointer;">
+        <i data-lucide="instagram" style="width:24px; height:24px; color:#1a1a1a; margin-bottom:8px;"></i>
+        <div style="font-size:13px; font-weight:800; color:#1a1a1a;">Für Instagram</div>
+        <div style="font-size:11px; color:#9ca3af; margin-top:2px;">Bild generieren</div>
+      </button>
+    </div>
+
+    <!-- 5. Abholnummer Monitoring (Optional) -->
+    <div id="inseratSuccessAbholnummerSection" style="background:#fff; border-radius:24px; padding:20px; border:1px solid rgba(59,130,246,0.1); display:none; margin-bottom:24px;">
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px; justify-content:center;">
+        <div style="width:8px; height:8px; background:#3b82f6; border-radius:50%; animation: pulse 2s infinite;"></div>
+        <span style="font-size:12px; font-weight:800; color:#3b82f6; text-transform:uppercase; letter-spacing:0.05em;">Monitoring Aktiv</span>
+      </div>
+      <div style="font-size:32px; font-weight:900; color:#1a1a1a; letter-spacing:-0.02em; margin-bottom:4px;">#<span id="inseratSuccessNextCode">1</span></div>
+      <div style="font-size:12px; color:#64748b; font-weight:600;">Nächste freie Abholnummer</div>
+    </div>
+
   </div>
-  <div style="position:fixed; bottom:0; left:0; right:0; padding:24px; background:linear-gradient(to top, #f8f7f2, transparent); text-align:center;">
-    <button type="button" id="inseratSuccessBtnBack" style="color:#9ca3af; font-weight:700; font-size:14px; background:none; border:none; padding:12px;">Zurück zur Übersicht (Dashboard)</button>
-  </div>
-  <div style="position:fixed; bottom:8px; left:0; right:0; text-align:center;">
-    <!-- Standort entfernt -->
+
+  <!-- Bottom Navigation -->
+  <div style="position:fixed; bottom:0; left:0; right:0; padding:20px 24px calc(20px + env(safe-area-inset-bottom, 0)); background:linear-gradient(to top, #f8f7f2 80%, transparent); text-align:center;">
+    <button type="button" id="inseratSuccessBtnBack" style="width:100%; min-height:52px; border-radius:16px; background:#1a1a1a; color:#fff; font-weight:800; font-size:15px; border:none; box-shadow:0 4px 12px rgba(0,0,0,0.1);">
+      Fertig & zum Dashboard
+    </button>
   </div>
 </div>
 
@@ -19070,53 +19095,76 @@
   function showInseratSuccessSheet(publishedOffer){
     inseratSuccessCurrentOffer = publishedOffer;
     const d = normalizeOffer(publishedOffer);
-    const dishNameEl = document.getElementById('inseratSuccessDishName');
+    
+    // 1. Konfetti zünden
+    createConfetti();
+
+    // 2. Live Preview befüllen
+    const previewEl = document.getElementById('inseratSuccessLivePreview');
+    if(previewEl){
+      const imgUrl = d.imageUrl || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=400&q=60';
+      previewEl.innerHTML = `
+        <img src="${imgUrl}" class="success-card-img" alt="">
+        <div class="success-card-body">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+            <h4 style="margin:0; font-size:17px; font-weight:900; color:#1a1a1a;">${esc(d.dish)}</h4>
+            <div style="background:#1a1a1a; color:#fff; padding:4px 8px; border-radius:8px; font-size:13px; font-weight:800;">${euro(d.price)}</div>
+          </div>
+          <div style="display:flex; align-items:center; gap:6px;">
+            <span style="width:8px; height:8px; background:#22c55e; border-radius:50%;"></span>
+            <span style="font-size:11px; font-weight:800; color:#22c55e; text-transform:uppercase;">Jetzt Live</span>
+          </div>
+        </div>
+      `;
+    }
+
     const nextCodeEl = document.getElementById('inseratSuccessNextCode');
-    const nextBtnEl = document.getElementById('inseratSuccessBtnNext');
-    const revenueEl = document.getElementById('inseratSuccessRevenue');
     const abholSection = document.getElementById('inseratSuccessAbholnummerSection');
     const todayKey = isoDate(new Date());
     const todayOrders = loadOrders().filter(o => {
       const offer = offers.find(off => off.id === o.dishId || (off.providerId === o.providerId && off.day === todayKey));
       return offer && offer.providerId === providerId() && o.status === 'PAID';
     });
-    const tagesumsatzCents = todayOrders.reduce((sum, o) => sum + (o.totalCents || 0), 0);
-    const tagesumsatzEuro = (tagesumsatzCents / 100).toFixed(2).replace('.', ',');
-    if(dishNameEl) dishNameEl.textContent = d.dish || d.title || 'Gericht';
-    if(nextCodeEl) nextCodeEl.textContent = '#' + (todayOrders.length + 1);
-    if(nextBtnEl) nextBtnEl.textContent = 'Nächste: #' + (todayOrders.length + 2);
-    if(revenueEl) revenueEl.textContent = '+ ' + tagesumsatzEuro + ' €';
-    if(abholSection) abholSection.style.display = (d.hasPickupCode ? '' : 'none');
+    
+    if(nextCodeEl) nextCodeEl.textContent = (todayOrders.length + 1);
+    if(abholSection) abholSection.style.display = (d.hasPickupCode ? 'block' : 'none');
+    
     var offerLink = buildOfferShareUrl(publishedOffer);
     var whatsAppText = buildWhatsAppShareText(publishedOffer);
     var whatsAppBtn = document.getElementById('inseratSuccessBtnWhatsApp');
     if(whatsAppBtn){ whatsAppBtn.href = 'https://wa.me/?text=' + encodeURIComponent(whatsAppText); }
-    var qrImg = document.getElementById('inseratSuccessQR');
-    if(qrImg){ qrImg.src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(offerLink); qrImg.style.display = 'block'; }
+    
     var btnPrintQR = document.getElementById('inseratSuccessBtnPrintQR');
-    if(btnPrintQR){ btnPrintQR.onclick = function(){ openQRPrintWindow(inseratSuccessCurrentOffer || publishedOffer); }; }
+    if(btnPrintQR){ btnPrintQR.onclick = function(){ openQRPrintWindow(publishedOffer); }; }
+    
     var btnSocialImage = document.getElementById('inseratSuccessBtnSocialImage');
-    if(btnSocialImage){ btnSocialImage.onclick = function(){ exportOfferSocialImage(inseratSuccessCurrentOffer || publishedOffer); }; }
-    var btnEmailCopy = document.getElementById('inseratSuccessBtnEmailCopy');
-    if(btnEmailCopy){
-      btnEmailCopy.onclick = function(){
-        var tpl = getInseratLiveEmailTemplate(inseratSuccessCurrentOffer || publishedOffer);
-        var text = 'Betreff: ' + tpl.subject + '\n\n' + tpl.body;
-        if(navigator.clipboard && navigator.clipboard.writeText){
-          navigator.clipboard.writeText(text).then(function(){ if(typeof showToast === 'function') showToast('E-Mail-Vorschau in Zwischenablage.'); }).catch(function(){ fallbackCopy(text, btnEmailCopy); });
-        } else { fallbackCopy(text, btnEmailCopy); }
-      };
-    }
-    function fallbackCopy(str, btn){
-      var ta = document.createElement('textarea'); ta.value = str; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select();
-      try { document.execCommand('copy'); if(typeof showToast === 'function') showToast('E-Mail-Vorschau kopiert.'); } catch(e){ if(typeof showToast === 'function') showToast('Bitte manuell kopieren.'); }
-      document.body.removeChild(ta);
-    }
+    if(btnSocialImage){ btnSocialImage.onclick = function(){ exportOfferSocialImage(publishedOffer); }; }
+    
     const bd = document.getElementById('inseratSuccessBd');
     const sheet = document.getElementById('inseratSuccessSheet');
     if(bd) bd.style.display = 'block';
     if(sheet) sheet.style.display = 'block';
+    if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
   }
+
+  function createConfetti() {
+    const container = document.getElementById('confettiContainer');
+    if(!container) return;
+    container.innerHTML = '';
+    const colors = ['#FFD700', '#10b981', '#3b82f6', '#ef4444', '#f59e0b'];
+    for(let i=0; i<40; i++) {
+      const c = document.createElement('div');
+      c.className = 'confetti';
+      c.style.left = Math.random() * 100 + '%';
+      c.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+      c.style.width = (Math.random() * 8 + 5) + 'px';
+      c.style.height = c.style.width;
+      c.style.animationDelay = (Math.random() * 2) + 's';
+      c.style.animationDuration = (Math.random() * 2 + 2) + 's';
+      container.appendChild(c);
+    }
+  }
+
   function closeInseratSuccessSheet(){
     const bd = document.getElementById('inseratSuccessBd');
     const sheet = document.getElementById('inseratSuccessSheet');
