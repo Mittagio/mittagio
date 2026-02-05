@@ -11221,7 +11221,9 @@
     const raw = offers.find(x=>x.id===id);
     if(!raw) return;
     const o = normalizeOffer(raw);
-    activeOfferId=id;
+    const offerProvider = offers.find(p => p.providerId === o.providerId);
+    const orderingEnabled = !!(offerProvider && (offerProvider.orderingEnabled !== false && (o.hasPickupCode || offerProvider.hasPickupCode)));
+    activeOfferId = id;
     
     // UI Elements
     const sImg = document.getElementById('sImg');
@@ -11229,6 +11231,24 @@
     const sPriceRow = document.getElementById('sPriceRow');
     const sImgPlaceholder = document.getElementById('sImgPlaceholder');
     const sFavoriteBtn = document.getElementById('sFavoriteBtn');
+    const sThreePillars = document.getElementById('sThreePillars');
+    const sMealTimeRange = document.getElementById('sMealTimeRange');
+    const sProviderAddress = document.getElementById('sProviderAddress');
+    const sDistanceInfo = document.getElementById('sDistanceInfo');
+    const sAllergensCodes = document.getElementById('sAllergensCodes');
+    const btnCTA = document.getElementById('btnPrimaryCTA');
+    const primaryCTAText = document.getElementById('btnPrimaryCTAText');
+    const sInfoHint = document.getElementById('sInfoHint');
+    const statusBadgeEl = document.getElementById('sStatusBadge');
+    const badgesEl = document.getElementById('sBadges');
+    const infoRowEl = document.getElementById('sInfoRow');
+    const addressFullEl = document.getElementById('sAddressFull');
+    const aw = document.getElementById('sAllergensWrap');
+    const sAllergens = document.getElementById('sAllergens');
+    const ew = document.getElementById('sExtrasWrap');
+    const rw = document.getElementById('sReuseWrap');
+    const ecoBadgeEl = document.getElementById('sEcoBadge');
+    const btnOpenRoute = document.getElementById('btnOpenRoute');
     
     // Foto-Handling
     if(sImg){
@@ -11244,8 +11264,12 @@
     // Favorite State
     const favorites = JSON.parse(localStorage.getItem('mittagio_favorites') || '[]');
     const isFav = favorites.includes(id);
+    const heartIcon = sFavoriteBtn ? sFavoriteBtn.querySelector('i[data-lucide="heart"]') : null;
+    if(heartIcon){
+      heartIcon.style.fill = isFav ? '#e74c3c' : 'none';
+      heartIcon.style.color = '#e74c3c';
+    }
     if(sFavoriteBtn){
-      sFavoriteBtn.querySelector('i').style.fill = isFav ? '#E34D4D' : 'none';
       sFavoriteBtn.onclick = (e) => {
         e.stopPropagation();
         toggleFavorite(id, sFavoriteBtn);
@@ -11253,12 +11277,8 @@
     }
 
     // 3 Säulen Badges
-    const sThreePillars = document.getElementById('sThreePillars');
     if(sThreePillars){
-      const offerProvider = offers.find(p => p.providerId === o.providerId);
-      const orderingEnabled = !!(offerProvider && (offerProvider.orderingEnabled !== false && (o.hasPickupCode || offerProvider.hasPickupCode)));
       const hasReuse = !!(offerProvider && (offerProvider.reuseEnabled || offerProvider.reuse || (offerProvider.providerProfile && offerProvider.providerProfile.reuseEnabled)));
-      
       sThreePillars.innerHTML = `
         <div class="pillar-badge active">
           <div class="pillar-icon-circle">🍴</div>
@@ -11276,15 +11296,12 @@
     }
 
     // Logistik & Zeit
-    const sMealTimeRange = document.getElementById('sMealTimeRange');
     if(sMealTimeRange) sMealTimeRange.textContent = o.pickupWindow ? `Abholung heute: ${o.pickupWindow} Uhr` : 'Abholung heute Mittag';
     
-    const sProviderAddress = document.getElementById('sProviderAddress');
     const addr = buildAddress({address:o.address, street:o.providerStreet, zip:o.providerZip, city:o.providerCity});
     if(sProviderAddress) sProviderAddress.textContent = addr || 'Adresse nicht verfügbar';
 
     // Google Maps Buttons
-    const sDistanceInfo = document.getElementById('sDistanceInfo');
     if(sDistanceInfo && o.distanceKm != null){
       sDistanceInfo.style.display = 'flex';
       const walk = Math.round(o.distanceKm * 12);
@@ -11299,72 +11316,23 @@
       `;
     }
 
-    // Allergene
-    const sAllergensCodes = document.getElementById('sAllergensCodes');
-    if(sAllergensCodes) sAllergensCodes.textContent = (o.allergens && o.allergens.length) ? o.allergens.join(', ') : '–';
-
-    // CTA Button
-    const btnCTA = document.getElementById('btnPrimaryCTA');
-    const hint = document.getElementById('sInfoHint');
-    const offerProvider = offers.find(p => p.providerId === o.providerId);
-    const canOrder = !!(offerProvider && offerProvider.orderingEnabled !== false && (o.hasPickupCode || offerProvider.hasPickupCode));
-    
-    if(btnCTA){
-      btnCTA.onclick = () => {
-        if(!canOrder){ showToast('Nur Info-Angebot'); return; }
-        if(addToCart(o)){
-          showToast('In der Box! 🥗');
-          updateHeaderBasket();
-          closeSheet();
-          showCart();
-        }
-      };
-      btnCTA.style.opacity = canOrder ? '1' : '0.5';
-      const btnText = document.getElementById('btnPrimaryCTAText');
-      if(btnText) btnText.textContent = canOrder ? 'In die Mittagsbox legen' : 'Nur Info-Angebot';
-    }
-    if(hint){
-      hint.style.display = canOrder ? 'none' : 'block';
-      hint.textContent = 'Dieser Anbieter bietet aktuell keine Abholnummer an.';
-    }
-
-    // Open Sheet
-    const sheet = document.getElementById('sheet');
-    const backdrop = document.getElementById('bd');
-    if(sheet && backdrop){
-      backdrop.style.display = 'block';
-      sheet.classList.add('open');
-      document.body.style.overflow = 'hidden';
-    }
-    
-    if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
-  }
-    
-    // Status Badge (dynamisch basierend auf ordering_enabled)
-    const statusBadgeEl = document.getElementById('sStatusBadge');
-    const offerProvider = offers.find(p => p.providerId === o.providerId);
-    const orderingEnabled = offerProvider && (offerProvider.orderingEnabled !== false && (o.hasPickupCode || offerProvider.hasPickupCode));
-    
+    // Status Badge
     if(statusBadgeEl){
       if(orderingEnabled){
-        // Express-Anbieter: Badge "Nur mit Abholnummer"
         statusBadgeEl.innerHTML = '<span style="display:inline-flex; align-items:center; gap:6px; padding:6px 12px; background:rgba(39,174,96,0.12); border-radius:8px; color:#27AE60; font-size:13px; font-weight:700; border:1px solid rgba(39,174,96,0.2);">⚡ Nur mit Abholnummer</span>';
       } else {
-        // Info-Anbieter: Status "Nur Info"
         statusBadgeEl.innerHTML = '<span style="display:inline-flex; align-items:center; gap:6px; padding:6px 12px; background:rgba(100,116,139,0.1); border-radius:8px; color:#64748b; font-size:13px; font-weight:600; border:1px solid rgba(100,116,139,0.2);">👁️ Nur Info</span>';
       }
     }
 
-    // Badges Row (max 3) - Eco-Badge für Mehrweg-Option
-    const badgesEl = document.getElementById('sBadges');
+    // Badges Row
     if(badgesEl){
       badgesEl.innerHTML = '';
       const badges = [];
-      // Mehrweg-Badge (höchste Priorität) - offerProvider bereits oben deklariert
-      const hasReuseSupport = offerProvider && (offerProvider.reuseEnabled || offerProvider.reuse || (offerProvider.providerProfile && offerProvider.providerProfile.reuseEnabled));
-      if(hasReuseSupport && badges.length < 3) badges.push({class:'eco', text:'Mehrweg möglich', icon:'leaf', emoji:'🌿'});
-      if(orderingEnabled && badges.length < 3) badges.push({class:'code', text:'Abholnummer', icon:'hash'});
-      if(!orderingEnabled && badges.length < 3) badges.push({class:'pickup', text:'Zum Mitnehmen', icon:'shopping-bag'});
+      const hasReuseSupport = !!(offerProvider && (offerProvider.reuseEnabled || offerProvider.reuse || (offerProvider.providerProfile && offerProvider.providerProfile.reuseEnabled)));
+      if(hasReuseSupport) badges.push({class:'eco', text:'Mehrweg möglich', icon:'leaf'});
+      if(orderingEnabled) badges.push({class:'code', text:'Abholnummer', icon:'hash'});
+      if(!orderingEnabled) badges.push({class:'pickup', text:'Zum Mitnehmen', icon:'shopping-bag'});
       
       badges.slice(0, 3).forEach(badge => {
         const badgeEl = document.createElement('span');
@@ -11383,8 +11351,7 @@
       });
     }
     
-    // Info Row (Icons: clock, map-pin, food icon)
-    const infoRowEl = document.getElementById('sInfoRow');
+    // Info Row
     if(infoRowEl){
       infoRowEl.innerHTML = '';
       if(o.pickupWindow){
@@ -11397,8 +11364,6 @@
         timeEl.innerHTML = `${iconMarkup('clock')} <span>${esc(dateStr)}</span>`;
         infoRowEl.appendChild(timeEl);
       }
-      // Entfernt: Einzelnes Navi-Icon - Entfernungsangaben werden in sDistanceInfo angezeigt
-      // Food type icon (exactly one)
       const foodTypeIcon = o.category === 'Vegan' ? 'leaf' : 
                            o.category === 'Vegetarisch' ? 'carrot' : 
                            o.category === 'Fisch' ? 'fish' :
@@ -11410,23 +11375,13 @@
       }
     }
     
-    // Address Card (addr bereits oben deklariert, wiederverwenden)
-    const maps = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr)}`;
-    const addressFullEl = document.getElementById('sAddressFull');
+    // Address Full
     if(addressFullEl){
-      const fullAddr = [
-        o.providerName || '',
-        o.providerStreet || '',
-        o.providerZip || '',
-        o.providerCity || ''
-      ].filter(Boolean).join(', ');
+      const fullAddr = [o.providerName, o.providerStreet, o.providerZip, o.providerCity].filter(Boolean).join(', ');
       addressFullEl.textContent = fullAddr || addr || '-';
     }
     
-    // Allergene: Kürzel (A, C, G...) direkt sichtbar unter Adresse, (ⓘ) öffnet Overlay
-    const aw = document.getElementById('sAllergensWrap');
-    const sAllergensCodes = document.getElementById('sAllergensCodes');
-    const sAllergens = document.getElementById('sAllergens');
+    // Allergene
     if(aw){
       if(o.allergens && o.allergens.length){
         aw.style.display = 'flex';
@@ -11443,10 +11398,9 @@
         const uniq = codes.filter(c => { if(seen[c]) return false; seen[c]=1; return true; });
         if(sAllergensCodes) sAllergensCodes.textContent = uniq.length ? uniq.join(', ') : '–';
         if(sAllergens){
-          const firstWord = (l) => (typeof allergenFirstWord === 'function' ? allergenFirstWord(l) : String(l||'').trim().split(/\s+/)[0]) || l;
           const list = uniq.map(c => {
             const label = ALLERGENE_STANDARD[c];
-            const word = firstWord(label);
+            const word = typeof allergenFirstWord === 'function' ? allergenFirstWord(label) : String(label||'').trim().split(/\s+/)[0];
             return `<div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
               <i data-lucide="shield-alert" style="width:16px;height:16px;color:rgba(255,255,255,0.7);flex-shrink:0;"></i>
               <span style="font-weight:700; color:rgba(255,255,255,0.9);">${esc(c)}</span>
@@ -11454,7 +11408,6 @@
             </div>`;
           }).join('');
           sAllergens.innerHTML = list || '';
-          if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
         }
       } else {
         aw.style.display = 'flex';
@@ -11463,7 +11416,6 @@
     }
 
     // Extras
-    const ew = document.getElementById('sExtrasWrap');
     if(ew){
       if(o.extras && o.extras.length){
         ew.style.display='block';
@@ -11473,7 +11425,6 @@
     }
 
     // Reuse
-    const rw = document.getElementById('sReuseWrap');
     if(rw){
       if(o.reuse && o.reuse.enabled){
         rw.style.display='block';
@@ -11482,290 +11433,149 @@
       } else rw.style.display='none';
     }
 
-    // Eco-Badge für Mehrweg-Option (zusätzlich zu Reuse-Wrap) - offerProvider bereits oben deklariert
-    const ecoBadgeEl = document.getElementById('sEcoBadge');
+    // Eco-Badge
     if(ecoBadgeEl){
-      const hasReuseSupport = offerProvider && (offerProvider.reuseEnabled || offerProvider.reuse || (offerProvider.providerProfile && offerProvider.providerProfile.reuseEnabled));
+      const hasReuseSupport = !!(offerProvider && (offerProvider.reuseEnabled || offerProvider.reuse || (offerProvider.providerProfile && offerProvider.providerProfile.reuseEnabled)));
+      ecoBadgeEl.style.display = hasReuseSupport ? 'block' : 'none';
       if(hasReuseSupport){
-        ecoBadgeEl.style.display = 'block';
         ecoBadgeEl.innerHTML = `<div style="padding:8px 12px; background:rgba(39,174,96,0.1); border-radius:8px; font-size:13px; font-weight:700; color:#27AE60; display:inline-flex; align-items:center; gap:6px; border:1px solid rgba(39,174,96,0.2);"><img src="assets/icon-mehrweg.png" alt="Mehrweg" class="concept-icon"> <span>Mehrweg möglich</span></div>`;
-      } else {
-        ecoBadgeEl.style.display = 'none';
       }
     }
 
-    // Primary CTA (dynamisch basierend auf Abholnummer) - offerProvider und orderingEnabled bereits oben deklariert
-    const primaryCTA = document.getElementById('btnPrimaryCTA');
-    const primaryCTAText = document.getElementById('btnPrimaryCTAText');
-    const sInfoHint = document.getElementById('sInfoHint');
-    
-    if(primaryCTA && primaryCTAText){
-      // Reset states
-      primaryCTA.disabled = false;
-      primaryCTA.className = 'btn-primary';
-      primaryCTA.classList.remove('loading', 'success');
+    // CTA Button Logic
+    if(btnCTA && primaryCTAText){
+      btnCTA.disabled = false;
+      btnCTA.className = 'btn-primary';
+      btnCTA.classList.remove('loading', 'success');
       
-      // Check if offer is active/available
       const isActive = o.active !== false;
-      const todayKey = isoDate(new Date());
-      const isToday = o.day === todayKey;
+      const isToday = o.day === isoDate(new Date());
       const isAvailable = isActive && isToday;
       
       if(!isAvailable){
-        // Disabled state with reason
-        primaryCTA.disabled = true;
-        if(!isActive){
-          primaryCTAText.textContent = 'Angebot nicht verfügbar';
-        } else if(!isToday){
-          primaryCTAText.textContent = 'Angebot nicht mehr verfügbar';
-        } else {
-          primaryCTAText.textContent = 'Nicht verfügbar';
-        }
-        primaryCTA.onclick = null;
+        btnCTA.disabled = true;
+        primaryCTAText.textContent = !isActive ? 'Angebot nicht verfügbar' : 'Angebot nicht mehr verfügbar';
+        btnCTA.onclick = null;
       } else if(orderingEnabled){
-        // Express-Anbieter (ordering_enabled): CTA "In die Mittagsbox legen"
         primaryCTAText.textContent = 'In die Mittagsbox legen';
-        if(sInfoHint){
-          sInfoHint.textContent = '';
-          sInfoHint.style.display = 'none';
-        }
-        primaryCTA.onclick = () => {
-          // Loading state
-          primaryCTA.disabled = true;
-          primaryCTA.classList.add('loading');
+        if(sInfoHint) sInfoHint.style.display = 'none';
+        btnCTA.onclick = () => {
+          btnCTA.disabled = true;
+          btnCTA.classList.add('loading');
           primaryCTAText.textContent = 'Wird hinzugefügt...';
           
-          // Automatisch als Favorit speichern
-          const favorites = JSON.parse(localStorage.getItem('mittagio_favorites') || '[]');
-          const dishKey = o.id;
-          if(!favorites.includes(dishKey)){
-            favorites.push(dishKey);
-            localStorage.setItem('mittagio_favorites', JSON.stringify(favorites));
-            // Auch in dishFavs Set hinzufügen
-            if(!dishFavs.has(dishKey)){
-              dishFavs.add(dishKey);
-              save(LS.dishFavs, Array.from(dishFavs));
-            }
-            // Herz-Icon aktualisieren (rot leuchtend)
-            const favBtn = document.getElementById('sFavoriteBtn');
-            if(favBtn){
-              const heartIcon = favBtn.querySelector('i[data-lucide="heart"]');
-              if(heartIcon){
-                heartIcon.style.fill = '#e74c3c';
-                heartIcon.style.color = '#e74c3c';
-              }
-            }
+          // Auto-Favorite
+          const favs = JSON.parse(localStorage.getItem('mittagio_favorites') || '[]');
+          if(!favs.includes(o.id)){
+            favs.push(o.id);
+            localStorage.setItem('mittagio_favorites', JSON.stringify(favs));
+            dishFavs.add(o.id);
+            save(LS.dishFavs, Array.from(dishFavs));
+            if(heartIcon) heartIcon.style.fill = '#e74c3c';
           }
           
-          // Animation: Thumbnail fliegt in Mittagsbox, dann addToCart
-          const sImg = document.getElementById('sImg');
           flyThumbnailToMittagsbox(sImg, () => {
             if(addToCart(o)){
               triggerCartIconGlow();
-              primaryCTA.classList.remove('loading');
-              primaryCTA.classList.add('success');
+              btnCTA.classList.remove('loading');
+              btnCTA.classList.add('success');
               primaryCTAText.textContent = 'Erfolgreich!';
               showToast('Gericht hinzugefügt!');
-              if(typeof updateHeaderBasket === 'function') updateHeaderBasket();
+              updateHeaderBasket();
               setTimeout(() => {
                 showCart();
                 setTimeout(() => {
-                  primaryCTA.disabled = false;
-                  primaryCTA.classList.remove('success');
+                  btnCTA.disabled = false;
+                  btnCTA.classList.remove('success');
                   primaryCTAText.textContent = 'In die Mittagsbox legen';
                 }, 500);
               }, 300);
             } else {
-              primaryCTA.disabled = false;
-              primaryCTA.classList.remove('loading');
+              btnCTA.disabled = false;
+              btnCTA.classList.remove('loading');
               primaryCTAText.textContent = 'In die Mittagsbox legen';
-              showToast('Fehler beim Hinzufügen. Bitte erneut versuchen.');
+              showToast('Fehler beim Hinzufügen.');
             }
           });
         };
       } else {
-        // Info-Anbieter (ordering_enabled = false): Button "In die Mittagsbox legen" mit Disclaimer
         primaryCTAText.textContent = 'In die Mittagsbox legen';
         if(sInfoHint){
           sInfoHint.textContent = 'Anbieter nimmt nicht an Abholnummer teil';
           sInfoHint.style.display = 'block';
-          sInfoHint.style.color = '#666';
         }
-        
-        primaryCTA.disabled = false;
-        primaryCTA.className = 'btn-primary';
-        primaryCTA.style.background = '#FFD700';
-        primaryCTA.style.color = '#1a1a1a';
-        primaryCTA.style.cursor = 'pointer';
-        primaryCTA.onclick = () => {
-          // Automatisch als Favorit speichern
-          const favorites = JSON.parse(localStorage.getItem('mittagio_favorites') || '[]');
-          const dishKey = o.id;
-          if(!favorites.includes(dishKey)){
-            favorites.push(dishKey);
-            localStorage.setItem('mittagio_favorites', JSON.stringify(favorites));
-            // Auch in dishFavs Set hinzufügen
-            if(!dishFavs.has(dishKey)){
-              dishFavs.add(dishKey);
-              save(LS.dishFavs, Array.from(dishFavs));
-            }
-            // Herz-Icon aktualisieren (rot leuchtend)
-            const favBtn = document.getElementById('sFavoriteBtn');
-            if(favBtn){
-              const heartIcon = favBtn.querySelector('i[data-lucide="heart"]');
-              if(heartIcon){
-                heartIcon.style.fill = '#e74c3c';
-                heartIcon.style.color = '#e74c3c';
-              }
-            }
+        btnCTA.onclick = () => {
+          const favs = JSON.parse(localStorage.getItem('mittagio_favorites') || '[]');
+          if(!favs.includes(o.id)){
+            favs.push(o.id);
+            localStorage.setItem('mittagio_favorites', JSON.stringify(favs));
+            dishFavs.add(o.id);
+            save(LS.dishFavs, Array.from(dishFavs));
+            if(heartIcon) heartIcon.style.fill = '#e74c3c';
           }
-          
-          // Request-Counter erhöhen (LocalStorage für Demo)
-          const requestKey = `abholnummer_request_${o.providerId}_${isoDate(new Date())}`;
           const currentCount = parseInt(localStorage.getItem(`provider_${o.providerId}_requests`) || '0', 10);
           localStorage.setItem(`provider_${o.providerId}_requests`, String(currentCount + 1));
-          localStorage.setItem(requestKey, 'true');
-          
-          // Haptics
           triggerHapticFeedback([10, 20]);
-          
-          // Success-Feedback
-          primaryCTA.disabled = true;
-          primaryCTA.classList.add('success');
+          btnCTA.disabled = true;
+          btnCTA.classList.add('success');
           primaryCTAText.textContent = 'Vielen Dank! ✓';
-          showToast('Deine Anfrage wurde übermittelt. Der Anbieter wird benachrichtigt.', 3000);
-          
-          // Reset nach 2 Sekunden
+          showToast('Anfrage übermittelt.');
           setTimeout(() => {
-            primaryCTA.disabled = false;
-            primaryCTA.classList.remove('success');
+            btnCTA.disabled = false;
+            btnCTA.classList.remove('success');
             primaryCTAText.textContent = 'In die Mittagsbox legen';
           }, 2000);
         };
       }
     }
-    
-    // Herz-Icon Handler (Favorit)
-    const sFavoriteBtn = document.getElementById('sFavoriteBtn');
-    if(sFavoriteBtn){
-      const favorites = JSON.parse(localStorage.getItem('mittagio_favorites') || '[]');
-      const dishKey = o.id;
-      const isFavorite = favorites.includes(dishKey);
-      
-      // Initial state: Herz gefüllt wenn Favorit (rot leuchtend)
-      const heartIcon = sFavoriteBtn.querySelector('i[data-lucide="heart"]');
-      if(heartIcon){
-        if(isFavorite){
-          heartIcon.style.fill = '#e74c3c';
-          heartIcon.style.color = '#e74c3c';
-        } else {
-          heartIcon.style.fill = 'none';
-          heartIcon.style.color = '#e74c3c';
-        }
-      }
-      
-      sFavoriteBtn.onclick = (e) => {
-        e.stopPropagation();
-        const favorites = JSON.parse(localStorage.getItem('mittagio_favorites') || '[]');
-        const dishKey = o.id;
-        const isFavorite = favorites.includes(dishKey);
-        
-        if(isFavorite){
-          // Entfernen
-          const index = favorites.indexOf(dishKey);
-          favorites.splice(index, 1);
-          localStorage.setItem('mittagio_favorites', JSON.stringify(favorites));
-          dishFavs.delete(dishKey);
-          save(LS.dishFavs, Array.from(dishFavs));
-          if(heartIcon){
-            heartIcon.style.fill = 'none';
-          }
-          showToast('Von Favoriten entfernt');
-        } else {
-          // Hinzufügen
-          favorites.push(dishKey);
-          localStorage.setItem('mittagio_favorites', JSON.stringify(favorites));
-          dishFavs.add(dishKey);
-          save(LS.dishFavs, Array.from(dishFavs));
-          if(heartIcon){
-            heartIcon.style.fill = '#e74c3c';
-          }
-          showToast('Zu Favoriten hinzugefügt ❤️');
-        }
-        if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
-      };
-    }
-    
-    // Share nur im Header (btnShareHeader) – kein doppeltes Teilen-Icon mehr
-    
-    // Allergene-Overlay (ALLERGENE_OVERLAY_SPEC.md): Titel, Sticky-Disclaimer, standardisierte Kürzel-Liste
+
+    // Allergene Overlay
     window.showAllergensOverlay = function(){
-      const o = normalizeOffer(offers.find(x => x.id === activeOfferId));
-      if(!o || !o.allergens || o.allergens.length === 0) return;
-      
-      const overlay = document.createElement('div');
-      overlay.style.cssText = 'position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.8); z-index:2000; display:flex; align-items:center; justify-content:center; padding:20px;';
-      overlay.onclick = (e) => {
-        if(e.target === overlay) {
-          document.body.removeChild(overlay);
-        }
-      };
+      const ov = document.createElement('div');
+      ov.style.cssText = 'position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.8); z-index:2000; display:flex; align-items:center; justify-content:center; padding:20px;';
+      ov.onclick = (e) => { if(e.target === ov) ov.remove(); };
       
       const content = document.createElement('div');
       content.style.cssText = 'background:linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border-radius:24px; padding:24px; max-width:420px; width:100%; border:2px solid rgba(255,255,255,0.1); box-shadow:0 8px 32px rgba(0,0,0,0.5); max-height:90vh; overflow:hidden; display:flex; flex-direction:column;';
       content.onclick = (e) => e.stopPropagation();
       
-      const raw = o.allergens.map(a => String(a||'').trim());
-      const codes = [];
-      raw.forEach(v => {
-        const u = v.toUpperCase();
-        if(ALLERGENE_STANDARD[u]){ codes.push(u); return; }
-        const nameKey = Object.keys(ALLERGENE_NAME_TO_CODE).find(k => k.toLowerCase() === v.toLowerCase());
-        const c = nameKey ? ALLERGENE_NAME_TO_CODE[nameKey] : null;
-        if(c && ALLERGENE_STANDARD[c]) codes.push(c);
-      });
-      const seen = {};
-      const unique = codes.filter(c => { if(seen[c]) return false; seen[c]=1; return true; });
+      const codes = (o.allergens || []).map(a => {
+        const u = String(a).toUpperCase();
+        if(ALLERGENE_STANDARD[u]) return u;
+        const nk = Object.keys(ALLERGENE_NAME_TO_CODE).find(k => k.toLowerCase() === String(a).toLowerCase());
+        return nk ? ALLERGENE_NAME_TO_CODE[nk] : null;
+      }).filter(Boolean);
+      const uniq = [...new Set(codes)];
       
-      const allergenList = unique.map(code => {
-        const label = ALLERGENE_STANDARD[code];
-        const firstWord = typeof allergenFirstWord === 'function' ? allergenFirstWord(label) : (label||'').trim().split(/\s+/)[0] || label;
+      const listHtml = uniq.map(c => {
+        const label = ALLERGENE_STANDARD[c];
+        const word = typeof allergenFirstWord === 'function' ? allergenFirstWord(label) : String(label||'').trim().split(/\s+/)[0];
         return `<div style="display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.1);">
           <i data-lucide="shield-alert" style="width:20px;height:20px;color:rgba(255,255,255,0.8);flex-shrink:0;"></i>
-          <span style="color:rgba(255,255,255,0.9); font-weight:700; font-size:14px; flex-shrink:0;">${esc(code)}</span>
-          <span style="color:rgba(255,255,255,0.85); font-size:14px;">${esc(firstWord)}</span>
+          <span style="color:rgba(255,255,255,0.9); font-weight:700; font-size:14px; flex-shrink:0;">${esc(c)}</span>
+          <span style="color:rgba(255,255,255,0.85); font-size:14px;">${esc(word)}</span>
         </div>`;
       }).join('');
       
-      const disclaimer = 'Für die Richtigkeit und Aktualität der Angaben ist ausschließlich der Anbieter verantwortlich. Bei schweren Allergien halten Sie bitte Rücksprache mit dem Personal vor Ort.';
-      
       content.innerHTML = `
         <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; flex-shrink:0;">
-          <h3 style="color:#fff; font-size:20px; font-weight:900; margin:0;">Allergene & Informationen</h3>
-          <button type="button" onclick="this.closest('[style*=\\'position:fixed\\']').remove();" style="background:none; border:none; color:#fff; cursor:pointer; padding:4px; display:flex; align-items:center; justify-content:center;">
-            <i data-lucide="x" style="width:20px;height:20px;"></i>
-          </button>
+          <h3 style="color:#fff; font-size:20px; font-weight:900; margin:0;">Allergene</h3>
+          <button type="button" onclick="this.closest('[style*=\\'position:fixed\\']').remove();" style="background:none; border:none; color:#fff; cursor:pointer;"><i data-lucide="x"></i></button>
         </div>
-        <div style="padding:12px 14px; background:rgba(255,255,255,0.06); border-radius:12px; border:1px solid rgba(255,255,255,0.1); margin-bottom:16px; flex-shrink:0; font-size:12px; color:rgba(255,255,255,0.85); line-height:1.5;">
-          ${esc(disclaimer)}
-        </div>
-        <div style="max-height:280px; overflow-y:auto; flex:1; min-height:0;">
-          ${allergenList || '<p style="color:rgba(255,255,255,0.5); font-size:14px;">Keine passenden Allergene in der Standard-Liste.</p>'}
+        <div style="max-height:280px; overflow-y:auto; flex:1;">
+          ${listHtml || '<p style="color:rgba(255,255,255,0.5);">Keine Allergene hinterlegt.</p>'}
         </div>
       `;
-      
-      overlay.appendChild(content);
-      document.body.appendChild(overlay);
-      if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
+      ov.appendChild(content);
+      document.body.appendChild(ov);
+      if(typeof lucide !== 'undefined') lucide.createIcons();
     };
-    
-    // Route Button in Address Card (nur bei OHNE Abholnummer sichtbar)
-    // offerProvider bereits oben deklariert
+
+    // Route Button
     if(btnOpenRoute){
       if(!o.hasPickupCode){
         btnOpenRoute.style.display = 'block';
         btnOpenRoute.onclick = () => {
-          // Verwende bereits vorhandene addr-Variable für Maps-Link
           const routeMaps = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr)}`;
           window.open(routeMaps, '_blank');
         };
@@ -11775,14 +11585,9 @@
     }
 
     updateSheetFavs();
-
     document.getElementById('bd').classList.add('active');
     document.getElementById('sheet').classList.add('active');
-    
-    // Icons aktualisieren
-    if(typeof lucide !== 'undefined'){
-      setTimeout(()=> lucide.createIcons(), 50);
-    }
+    if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
   }
 
   function updateSheetFavs(){
@@ -11974,7 +11779,7 @@
       closeMatchModal();
     };
   }
-  
+
   // Android Hardware-Back unterstützen
   window.addEventListener('popstate', function(e){
     // AGB Onboarding Modal schließen
