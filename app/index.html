@@ -958,9 +958,14 @@
     #v-provider-cookbook .cookbook-item-pillars .pillar-gray{ opacity:0.4; }
     #v-provider-cookbook .cookbook-item-body{ padding:12px; flex:1; display:flex; flex-direction:column; }
     #v-provider-cookbook .cookbook-item-title{ font-weight:800; font-size:15px; color:#1a1a1a; margin-bottom:6px; line-height:1.3; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
-    #v-provider-cookbook .cookbook-item-meta{ display:flex; align-items:center; gap:6px; margin-bottom:6px; flex-wrap:wrap; }
+    #v-provider-cookbook .cookbook-item-meta{ display:flex; align-items:center; gap:6px; margin-bottom:8px; flex-wrap:wrap; }
     #v-provider-cookbook .cookbook-item-badge{ font-size:11px; font-weight:600; padding:3px 8px; border-radius:6px; background:#e2e8f0; color:#475569; }
     #v-provider-cookbook .cookbook-item-allergens{ font-size:11px; color:#94a3b8; margin-bottom:4px; letter-spacing:0.02em; }
+    #v-provider-cookbook .cookbook-item-allergens:empty{ display:none; }
+    #v-provider-cookbook .cookbook-item-stats{ display:flex; flex-direction:column; gap:4px; margin-bottom:12px; padding:10px 12px; background:#f8fafc; border-radius:10px; font-size:12px; }
+    #v-provider-cookbook .cookbook-item-stats-row{ display:flex; justify-content:space-between; align-items:center; gap:8px; }
+    #v-provider-cookbook .cookbook-item-stats-label{ color:#64748b; font-weight:600; }
+    #v-provider-cookbook .cookbook-item-stats-value{ color:#1a1a1a; font-weight:700; }
     #v-provider-cookbook .cookbook-item-info{ font-size:11px; color:#64748b; margin-left:auto; }
     #v-provider-cookbook .cookbook-item-revenue{ font-weight:800; font-size:14px; color:#1a1a1a; margin-top:4px; }
     #v-provider-cookbook .cookbook-item-cta-wrap{ margin-top:auto; }
@@ -17700,10 +17705,10 @@
         ? `<img class="cookbook-item-image" src="${esc(entry.photoData)}" alt="${esc(entry.dish)}" loading="lazy" />`
         : `<div class="cookbook-item-image" style="background:#e5e7eb; display:flex; align-items:center; justify-content:center;"><i data-lucide="utensils" style="width:36px; height:36px; color:#94a3b8;"></i></div>`;
       const categoryBadge = entry.category ? `<span class="cookbook-item-badge">${esc(entry.category)}</span>` : '';
-      const lastUsedLabel = isDraft ? 'Entwurf' : ('Zuletzt am ' + esc(formatDayLabel(entry.lastUsed)));
-      const lastPriceLabel = entry.price != null ? ('Letzter Preis: ' + euro(entry.price)) : '';
+      const lastUsedLabel = isDraft ? 'Entwurf' : formatDayLabel(entry.lastUsed);
+      const lastPrice = entry.price != null ? euro(entry.price) : '–';
       const allergens = (entry.allergens || []).slice(0, 5);
-      const allergenStr = allergens.map(a => typeof a === 'string' ? (a.trim().split(/\s+/)[0] || '').slice(0, 2).toUpperCase() : '').filter(Boolean).join(' ') || '–';
+      const allergenStr = allergens.map(a => typeof a === 'string' ? (a.trim().split(/\s+/)[0] || '').slice(0, 2).toUpperCase() : '').filter(Boolean).join(' ');
       const allOrders = (typeof loadOrders === 'function' ? loadOrders() : []) || [];
       const soldCount = (typeof offers !== 'undefined' && offers) ? allOrders.filter(ord => {
         const o = offers.find(x => x.id === ord.dishId);
@@ -17712,8 +17717,22 @@
         const edish = String(entry.dish || '').trim();
         return odish === edish;
       }).length : 0;
-      const soldLabel = '📦 Zuletzt verkauft: ' + soldCount;
       const pillarClass = (on) => on ? '' : ' pillar-gray';
+      const statsHtml = `
+        <div class="cookbook-item-stats">
+          <div class="cookbook-item-stats-row">
+            <span class="cookbook-item-stats-label">Aktiv</span>
+            <span class="cookbook-item-stats-value">${esc(isDraft ? 'Entwurf' : lastUsedLabel)}</span>
+          </div>
+          <div class="cookbook-item-stats-row">
+            <span class="cookbook-item-stats-label">Preis</span>
+            <span class="cookbook-item-stats-value">${esc(lastPrice)}</span>
+          </div>
+          <div class="cookbook-item-stats-row">
+            <span class="cookbook-item-stats-label">Verkäufe</span>
+            <span class="cookbook-item-stats-value">${soldCount}</span>
+          </div>
+        </div>`;
       item.innerHTML = `
         <div class="cookbook-item-header">
           ${imgEl}
@@ -17729,13 +17748,9 @@
         </div>
         <div class="cookbook-item-body">
           <div class="cookbook-item-title">${esc(entry.dish||'Gericht')}</div>
-          <div class="cookbook-item-meta">
-            ${categoryBadge}
-            <span class="cookbook-item-info">${lastUsedLabel}</span>
-          </div>
-          <div class="cookbook-item-allergens">${esc(allergenStr)}</div>
-          ${lastPriceLabel ? '<div class="cookbook-item-info">' + esc(lastPriceLabel) + '</div>' : ''}
-          <div class="cookbook-item-info">${esc(soldLabel)}</div>
+          <div class="cookbook-item-meta">${categoryBadge}</div>
+          ${allergenStr ? '<div class="cookbook-item-allergens">' + esc(allergenStr) + '</div>' : '<div class="cookbook-item-allergens"></div>'}
+          ${statsHtml}
           <div class="cookbook-item-cta-wrap">
             <button type="button" class="cookbook-item-btn" data-dish-id="${esc(entry.id)}">
               Jetzt für 4,99 € inserieren
