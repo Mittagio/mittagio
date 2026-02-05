@@ -10007,9 +10007,10 @@
     const interactive = opts.interactive !== false;
     const isPolaroid = opts.context === 'customer' || opts.context === 'discover';
     const offerProvider = offers.find(p => p.providerId === data.providerId);
-    const orderingEnabled = offerProvider && (offerProvider.orderingEnabled !== false && (data.hasPickupCode || offerProvider.hasPickupCode));
-    const hasDineIn = offerProvider && (offerProvider.dineInPossible !== false || data.dineInPossible);
-    const hasReuse = offerProvider && (offerProvider.reuse && offerProvider.reuse.enabled);
+    const usePreviewData = opts.previewFromWizard || opts.interactive === false && data.id === 'preview';
+    const orderingEnabled = usePreviewData ? !!data.hasPickupCode : (offerProvider && (offerProvider.orderingEnabled !== false && (data.hasPickupCode || offerProvider.hasPickupCode)));
+    const hasDineIn = usePreviewData ? !!data.dineInPossible : (offerProvider && (offerProvider.dineInPossible !== false || data.dineInPossible));
+    const hasReuse = usePreviewData ? !!(data.reuse && data.reuse.enabled) : (offerProvider && (offerProvider.reuse && offerProvider.reuse.enabled));
     const card=document.createElement('div');
     card.className='card';
     if(isPolaroid){
@@ -18059,7 +18060,7 @@
   // --- Listing wizard (Punkt 6 final) ---
   function updateListingPreviewContent(target){
     target.innerHTML = '';
-    target.appendChild(offerCard(previewOfferFromWizard(), {interactive:false}));
+    target.appendChild(offerCard(previewOfferFromWizard(), {interactive:false, previewFromWizard:true}));
   }
 
   function attachListingPreview(box){
@@ -18285,7 +18286,7 @@
         inpSonst.oninput=()=>{ const v=parseFloat((inpSonst.value||'0').replace(',','.'))||0; w.data.reuse.deposit=v; saveDraft(); };
         inpSonst.onblur=()=>{ if(w.data.reuse.deposit>0) inpSonst.value=Number(w.data.reuse.deposit).toFixed(2).replace('.',','); rebuildWizard(); };
         bSonst.appendChild(document.createTextNode('Sonstiges')); bSonst.appendChild(inpSonst);
-        bSonst.onclick=(e)=>{ if(e.target===inpSonst) return; w.data.reuse.deposit=w.data.reuse.deposit||0; inpSonst.focus(); saveDraft(); rebuildWizard(); };
+        bSonst.onclick=(e)=>{ if(e.target===inpSonst) return; if(!w.data.reuse.deposit||w.data.reuse.deposit===3||w.data.reuse.deposit===5) w.data.reuse.deposit=2; saveDraft(); rebuildWizard(); };
         mehRow.appendChild(bSonst);
         box.appendChild(mehRow);
       }
