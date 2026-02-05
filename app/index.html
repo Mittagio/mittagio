@@ -1312,7 +1312,7 @@
       font-weight:800; font-size:20px; color:#1a1a1a; margin-bottom:8px; line-height:1.3;
     }
     #createFlowSheet.sheet--kitchen .create-flow-hint{
-      font-size:13px; color:#64748b; margin-top:12px;
+      font-size:13px; font-weight:600; color:#475569; margin-top:10px; margin-left:auto; margin-right:auto; padding:10px 16px; background:#f1f5f9; border-radius:12px; display:inline-flex; align-items:center; justify-content:center; gap:8px; letter-spacing:0.02em;
     }
     #createFlowSheet.sheet--kitchen .create-flow-btns{
       display:flex; flex-direction:column; gap:12px; margin-top:20px;
@@ -4873,8 +4873,8 @@
 
       <div style="padding:20px; max-width:500px; margin:0 auto; flex:1;">
         <!-- Profile Header -->
-        <div style="background:#fff; border-radius:32px; padding:32px 24px; text-align:center; border:1px solid rgba(0,0,0,0.04); box-shadow:0 10px 30px rgba(0,0,0,0.03); margin-bottom:32px;">
-          <div class="plogo" id="providerProfileLogo" style="width:100px; height:100px; border-radius:35px; margin:0 auto 20px; border:4px solid #fff; box-shadow:0 8px 24px rgba(0,0,0,0.1); background-size:cover; background-position:center; background-color:#f1f3f5;"></div>
+        <div style="background:#fff; border-radius:32px; padding:24px 24px 20px; text-align:center; border:1px solid rgba(0,0,0,0.04); box-shadow:0 10px 30px rgba(0,0,0,0.03); margin-bottom:16px;">
+          <div class="plogo" id="providerProfileLogo" style="width:100px; height:100px; border-radius:35px; margin:0 auto 12px; border:4px solid #fff; box-shadow:0 8px 24px rgba(0,0,0,0.1); background-size:cover; background-position:center; background-color:#f1f3f5;"></div>
           <h2 id="providerProfileName" style="margin:0 0 8px; font-size:24px; font-weight:950; color:#1a1a1a; letter-spacing:-0.02em;">Betriebsname</h2>
           <div id="providerProfileBadge" style="display:inline-block; padding:6px 12px; border-radius:99px; background:rgba(16,185,129,0.1); color:#10b981; font-size:13px; font-weight:800;">
             <i data-lucide="check-circle" style="width:14px;height:14px;display:inline-block;vertical-align:middle;margin-right:4px;"></i> Verifiziert
@@ -4923,6 +4923,21 @@
           <div style="background:#fff; border-radius:24px; padding:24px; border:1px solid rgba(0,0,0,0.04); box-shadow:0 4px 12px rgba(0,0,0,0.02); margin-bottom:20px;">
             <h3 style="margin:0 0 4px; font-size:17px; font-weight:800; color:#1a1a1a;">Kontaktdaten</h3>
             <p style="margin:0 0 24px; font-size:14px; color:#64748b;">Werden ins Inserat übernommen.</p>
+            
+            <div style="margin-bottom:20px;">
+              <label style="display:block; font-size:13px; font-weight:700; color:#64748b; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.05em;">Straße & Hausnummer</label>
+              <input type="text" id="providerProfileStreet" placeholder="z.B. Hauptstraße 12" style="width:100%; height:56px; padding:0 16px; border:2px solid #f1f3f5; border-radius:16px; font-size:16px; font-weight:600; background:#f8f9fa; color:#1a1a1a; transition:all 0.2s;">
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 2fr; gap:12px; margin-bottom:20px;">
+              <div>
+                <label style="display:block; font-size:13px; font-weight:700; color:#64748b; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.05em;">PLZ</label>
+                <input type="text" id="providerProfileZip" placeholder="70173" maxlength="10" style="width:100%; height:56px; padding:0 16px; border:2px solid #f1f3f5; border-radius:16px; font-size:16px; font-weight:600; background:#f8f9fa; color:#1a1a1a; transition:all 0.2s;">
+              </div>
+              <div>
+                <label style="display:block; font-size:13px; font-weight:700; color:#64748b; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.05em;">Ort</label>
+                <input type="text" id="providerProfileCity" placeholder="Stuttgart" style="width:100%; height:56px; padding:0 16px; border:2px solid #f1f3f5; border-radius:16px; font-size:16px; font-weight:600; background:#f8f9fa; color:#1a1a1a; transition:all 0.2s;">
+              </div>
+            </div>
             
             <div style="margin-bottom:20px;">
               <label style="display:block; font-size:13px; font-weight:700; color:#64748b; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.05em;">Telefon</label>
@@ -5684,10 +5699,10 @@
 
 <!-- Inserat Live – Erfolgs- & Monitoring-Sheet (Schritt 5 nach Veröffentlichung) -->
 <div class="backdrop" id="inseratSuccessBd" onclick="closeInseratSuccessSheet()" style="background:rgba(0,0,0,0.7); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); z-index:1200;"></div>
-<div class="sheet" id="inseratSuccessSheet" style="max-width:480px; border-radius:32px; overflow:hidden; background:#f8f7f2; z-index:1201;">
+<div class="sheet" id="inseratSuccessSheet" style="max-width:480px; border-radius:32px; background:#f8f7f2; z-index:1201; display:flex; flex-direction:column; max-height:92vh;">
   <div id="confettiContainer" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; overflow:hidden;"></div>
   
-  <div class="sheet-body" style="padding:32px 24px 120px; text-align:center;">
+  <div class="sheet-body" style="padding:32px 24px 100px; text-align:center; overflow-y:auto; flex:1; min-height:0; -webkit-overflow-scrolling:touch;">
     
     <!-- 1. Celebration Header -->
     <div style="margin-bottom:24px;">
@@ -5697,14 +5712,12 @@
     </div>
 
     <!-- 2. Live Preview (Mini Card) -->
-    <div id="inseratSuccessLivePreview" class="success-card-preview">
-      <!-- Wird dynamisch befüllt -->
-    </div>
+    <div id="inseratSuccessLivePreview" class="success-card-preview" style="margin-bottom:8px;"></div>
 
-    <!-- 3. Primary Action: WhatsApp Boost -->
-    <div style="margin-top:32px;">
+    <!-- 3. Primary Action: WhatsApp Boost (gut sichtbar, direkt unter Vorschau) -->
+    <div style="margin-top:16px;">
       <div style="font-size:11px; font-weight:800; color:#9ca3af; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:12px;">Dein Umsatz-Turbo</div>
-      <a id="inseratSuccessBtnWhatsApp" href="#" target="_blank" rel="noopener" style="display:flex; align-items:center; justify-content:center; gap:12px; width:100%; min-height:64px; padding:14px 24px; border-radius:20px; background:#25D366; color:#fff; font-weight:900; font-size:17px; text-decoration:none; margin-bottom:12px; box-shadow:0 8px 24px rgba(37,211,102,0.3);">
+      <a id="inseratSuccessBtnWhatsApp" href="#" target="_blank" rel="noopener" style="display:flex; align-items:center; justify-content:center; gap:12px; width:100%; min-height:56px; padding:14px 24px; border-radius:20px; background:#25D366; color:#fff; font-weight:900; font-size:17px; text-decoration:none; margin-bottom:12px; box-shadow:0 8px 24px rgba(37,211,102,0.3); cursor:pointer;">
         <i data-lucide="send" style="width:24px; height:24px;"></i>
         <span>Bei WhatsApp teilen</span>
       </a>
@@ -6100,7 +6113,7 @@
         <span>📖 Zum Kochbuch wechseln</span>
       </button>
     </div>
-    <div class="create-flow-hint hint" id="createFlowDateHint" style="display:none; margin-top:16px; text-align:center;"></div>
+    <div class="create-flow-hint hint" id="createFlowDateHint" style="display:none;"></div>
   </div>
 </div>
 
@@ -12475,8 +12488,9 @@
         const d = new Date(createFlowPreselectedDate);
         const weekday = ['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'][d.getDay()];
         const dateStr = `${d.getDate()}.${String(d.getMonth()+1).padStart(2,'0')}.`;
-        hint.textContent = `Für: ${weekday}, ${dateStr}`;
-        hint.style.display = 'block';
+        hint.innerHTML = `<i data-lucide="calendar" style="width:16px;height:16px;color:#64748b;flex-shrink:0;"></i><span>Für ${weekday}, ${dateStr}</span>`;
+        hint.style.display = 'inline-flex';
+        if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
       } else {
         hint.style.display = 'none';
       }
@@ -16783,10 +16797,17 @@
       }
     }
     
-    // Kontaktdaten (Telefon, E-Mail, Internetseite)
+    // Kontaktdaten (Adresse, Telefon, E-Mail, Internetseite)
+    const profileStreet = document.getElementById('providerProfileStreet');
+    const profileZip = document.getElementById('providerProfileZip');
+    const profileCity = document.getElementById('providerProfileCity');
     const profilePhone = document.getElementById('providerProfilePhone');
     const profileEmail = document.getElementById('providerProfileEmail');
     const profileWebsite = document.getElementById('providerProfileWebsite');
+    function saveProfileAddress(){ if(!provider.profile) provider.profile = {}; provider.profile.street = profileStreet ? profileStreet.value.trim() : ''; provider.profile.zip = profileZip ? profileZip.value.trim() : ''; provider.profile.city = profileCity ? profileCity.value.trim() : ''; provider.profile.address = buildAddress(provider.profile); save(LS.provider, provider); showToast('Adresse gespeichert'); }
+    if(profileStreet){ profileStreet.value = p.street || ''; profileStreet.onchange = saveProfileAddress; profileStreet.onblur = saveProfileAddress; }
+    if(profileZip){ profileZip.value = p.zip || ''; profileZip.onchange = saveProfileAddress; profileZip.onblur = saveProfileAddress; }
+    if(profileCity){ profileCity.value = p.city || ''; profileCity.onchange = saveProfileAddress; profileCity.onblur = saveProfileAddress; }
     if(profilePhone){ profilePhone.value = p.phone || ''; profilePhone.onchange = ()=>{ if(!provider.profile) provider.profile = {}; provider.profile.phone = profilePhone.value; save(LS.provider, provider); showToast('Telefon gespeichert'); }; }
     if(profileEmail){ profileEmail.value = p.email || ''; profileEmail.onchange = ()=>{ if(!provider.profile) provider.profile = {}; provider.profile.email = profileEmail.value; save(LS.provider, provider); showToast('E-Mail gespeichert'); }; }
     if(profileWebsite){ profileWebsite.value = p.website || ''; profileWebsite.onchange = ()=>{ if(!provider.profile) provider.profile = {}; provider.profile.website = profileWebsite.value; save(LS.provider, provider); showToast('Internetseite gespeichert'); }; }
@@ -18791,21 +18812,35 @@
         
         const textSpan = document.createElement('span');
         textSpan.style.cssText = `font-size:13px; font-weight:600; color:${hasPrice?'#10b981':'#64748b'};`;
-        textSpan.textContent = extra && extra.price ? name+' +'+Number(extra.price).toFixed(2).replace('.',',')+' €' : name;
+        const displayName = (extra && name==='Sonstiges' && extra.name && extra.name!=='Sonstiges') ? extra.name : name;
+        textSpan.textContent = extra && extra.price ? displayName+' +'+Number(extra.price).toFixed(2).replace('.',',')+' €' : displayName;
         
         b.appendChild(emojiSpan);
         b.appendChild(textSpan);
         
         b.onclick=()=>{
-          const idx=w.data.extras.findIndex(e=>e.name===name);
+          const idx=w.data.extras.findIndex(e=>e.name===name || (name==='Sonstiges' && e.name&&e.name!=='Sonstiges'&&!extraOptions.find(o=>o.name!=='Sonstiges'&&o.name===e.name)));
           if(idx>=0){ w.data.extras.splice(idx,1); rebuildWizard(); return; }
           w.data.extras.push({name, price:0});
           rebuildWizard();
         };
         pillWrap.appendChild(b);
         
-        const ex=w.data.extras.find(e=>e.name===name);
+        const ex=w.data.extras.find(e=>e.name===name || (name==='Sonstiges' && (e.name==='Sonstiges' || !extraOptions.find(o=>o.name!=='Sonstiges'&&o.name===e.name))));
         if(ex){
+          if(name==='Sonstiges'){
+            const nameGroup = document.createElement('div');
+            nameGroup.style.cssText = 'display:flex; align-items:center; gap:6px; flex:1; min-width:0;';
+            const nameInp = document.createElement('input');
+            nameInp.type = 'text';
+            nameInp.placeholder = 'z.B. Extra Käse';
+            nameInp.style.cssText = 'flex:1; min-width:80px; height:32px; padding:0 10px; border-radius:8px; border:2px solid #e5e7eb; font-size:13px; font-weight:600; outline:none; background:#fff;';
+            nameInp.value = (ex.name && ex.name!=='Sonstiges') ? ex.name : '';
+            nameInp.oninput = ()=>{ ex.name = nameInp.value.trim() || 'Sonstiges'; saveDraft(); textSpan.textContent = ex.name + (ex.price ? ' +'+Number(ex.price).toFixed(2).replace('.',',')+' €' : ''); };
+            nameInp.onclick = (e)=> e.stopPropagation();
+            nameGroup.appendChild(nameInp);
+            pillWrap.appendChild(nameGroup);
+          }
           const inpGroup = document.createElement('div');
           inpGroup.style.cssText = 'display:flex; align-items:center; gap:4px;';
           
@@ -18828,8 +18863,11 @@
               textSpan.style.color = '#64748b';
               emojiSpan.style.opacity = '0.6';
             }
+            const dn = (name==='Sonstiges' && ex.name && ex.name!=='Sonstiges') ? ex.name : name;
+            textSpan.textContent = ex.price ? dn+' +'+Number(ex.price).toFixed(2).replace('.',',')+' €' : dn;
           };
           inp.onblur=()=>{ if(ex.price>0) inp.value=Number(ex.price).toFixed(2).replace('.',','); rebuildWizard(); };
+          inp.onclick = (e)=> e.stopPropagation();
           
           const euroLabel = document.createElement('span');
           euroLabel.style.cssText = 'font-size:12px; font-weight:800; color:#64748b;';
@@ -19225,7 +19263,11 @@
     var offerLink = buildOfferShareUrl(publishedOffer);
     var whatsAppText = buildWhatsAppShareText(publishedOffer);
     var whatsAppBtn = document.getElementById('inseratSuccessBtnWhatsApp');
-    if(whatsAppBtn){ whatsAppBtn.href = 'https://wa.me/?text=' + encodeURIComponent(whatsAppText); }
+    if(whatsAppBtn){
+      var whatsAppUrl = 'https://api.whatsapp.com/send?text=' + encodeURIComponent(whatsAppText);
+      whatsAppBtn.href = whatsAppUrl;
+      whatsAppBtn.onclick = function(e){ e.preventDefault(); window.open(whatsAppUrl, '_blank', 'noopener'); return false; };
+    }
     
     var btnPrintQR = document.getElementById('inseratSuccessBtnPrintQR');
     if(btnPrintQR){ btnPrintQR.onclick = function(){ openQRPrintWindow(publishedOffer); }; }
