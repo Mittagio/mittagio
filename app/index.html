@@ -6323,47 +6323,7 @@
     footer.appendChild(pillars);
     
     body.appendChild(footer);
-    card.appendChild(body);
-    
-    return card;
-  }
 
-  function toggleFavorite(id, btn){
-    const favorites = JSON.parse(localStorage.getItem('mittagio_favorites') || '[]');
-    const idx = favorites.indexOf(id);
-    if(idx > -1){
-      favorites.splice(idx, 1);
-      btn.querySelector('i').style.fill = 'none';
-      showToast('Favorit entfernt');
-    } else {
-      favorites.push(id);
-      btn.querySelector('i').style.fill = '#E34D4D';
-      showToast('Gemerkt! ❤️');
-      if(navigator.vibrate) navigator.vibrate(10);
-    }
-    localStorage.setItem('mittagio_favorites', JSON.stringify(favorites));
-    if(typeof dishFavs !== 'undefined') {
-      if(idx > -1) dishFavs.delete(id); else dishFavs.add(id);
-      save(LS.dishFavs, Array.from(dishFavs));
-    }
-  }
-
-  function shareOffer(data){
-    const shareUrl = location.origin + location.pathname + '#offer/' + data.id;
-    const text = `Schau mal, das gibt es heute bei ${data.providerName}: ${data.dish}. Sollen wir hin?`;
-    if(navigator.share){
-      navigator.share({ title: data.dish, text: text, url: shareUrl });
-    } else {
-      navigator.clipboard.writeText(text + ' ' + shareUrl);
-      showToast('Link kopiert!');
-    }
-  }
-
-    const title = document.createElement('h3');
-    title.className = 'ocm-title';
-    title.textContent = data.dish || 'Gericht';
-    body.appendChild(title);
-    
     // Gelber CTA: "In die Mittagsbox" (nur wenn Abholnummer)
     const ctaWrap = document.createElement('div');
     ctaWrap.style.cssText = 'padding:12px 16px 0;';
@@ -6412,6 +6372,38 @@
     
     return card;
   }
+
+  function toggleFavorite(id, btn){
+    const favorites = JSON.parse(localStorage.getItem('mittagio_favorites') || '[]');
+    const idx = favorites.indexOf(id);
+    if(idx > -1){
+      favorites.splice(idx, 1);
+      btn.querySelector('i').style.fill = 'none';
+      showToast('Favorit entfernt');
+    } else {
+      favorites.push(id);
+      btn.querySelector('i').style.fill = '#E34D4D';
+      showToast('Gemerkt! ❤️');
+      if(navigator.vibrate) navigator.vibrate(10);
+    }
+    localStorage.setItem('mittagio_favorites', JSON.stringify(favorites));
+    if(typeof dishFavs !== 'undefined') {
+      if(idx > -1) dishFavs.delete(id); else dishFavs.add(id);
+      save(LS.dishFavs, Array.from(dishFavs));
+    }
+  }
+
+  function shareOffer(data){
+    const shareUrl = location.origin + location.pathname + '#offer/' + data.id;
+    const text = `Schau mal, das gibt es heute bei ${data.providerName}: ${data.dish}. Sollen wir hin?`;
+    if(navigator.share){
+      navigator.share({ title: data.dish, text: text, url: shareUrl });
+    } else {
+      navigator.clipboard.writeText(text + ' ' + shareUrl);
+      showToast('Link kopiert!');
+    }
+  }
+
   
 
 
