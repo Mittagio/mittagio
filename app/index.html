@@ -5622,8 +5622,8 @@
 </div>
 
     <!-- Quick-Post Modal (direkt aus Kochbuch) -->
-    <div class="backdrop" id="quickPostBd" onclick="closeQuickPostSheet()" style="background:rgba(0,0,0,0.5); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); display:none; z-index:1100;"></div>
-    <div class="sheet" id="quickPostSheet" style="max-width:480px; border-radius:28px; overflow:hidden; display:none; z-index:1101;">
+    <div class="backdrop" id="quickPostBd" onclick="closeQuickPostSheet()" style="background:rgba(0,0,0,0.5); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); z-index:1100;"></div>
+    <div class="sheet" id="quickPostSheet" style="max-width:480px; border-radius:28px; overflow:hidden; z-index:1101;">
       <div class="sheet-body" style="padding:28px;">
         <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
           <div style="width:48px; height:48px; background:rgba(16,185,129,0.1); border-radius:14px; display:flex; align-items:center; justify-content:center;">
@@ -5651,8 +5651,8 @@
     </div>
 
     <!-- Publish Fee Modal (vor Inserats-Veröffentlichung) -->
-    <div class="backdrop" id="publishFeeBd" onclick="closePublishFeeModal()" style="background:rgba(0,0,0,0.7); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); display:none;"></div>
-<div class="sheet" id="publishFeeSheet" style="max-width:480px; border-radius:24px; overflow:hidden; display:none;">
+    <div class="backdrop" id="publishFeeBd" onclick="closePublishFeeModal()" style="background:rgba(0,0,0,0.7); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);"></div>
+<div class="sheet" id="publishFeeSheet" style="max-width:480px; border-radius:24px; overflow:hidden;">
   <div class="sheet-body" style="padding:28px;">
     <h3 style="margin:0 0 20px; font-size:22px; font-weight:900; color:#2D3436;">Inserat veröffentlichen</h3>
     <div style="margin-bottom:24px; padding:20px; background:rgba(255,215,0,0.1); border-radius:16px; border:2px solid rgba(255,215,0,0.3);">
@@ -5683,8 +5683,8 @@
 </div>
 
 <!-- Inserat Live – Erfolgs- & Monitoring-Sheet (Schritt 5 nach Veröffentlichung) -->
-<div class="backdrop" id="inseratSuccessBd" onclick="closeInseratSuccessSheet()" style="background:rgba(0,0,0,0.7); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); display:none; z-index:1200;"></div>
-<div class="sheet" id="inseratSuccessSheet" style="max-width:480px; border-radius:32px; overflow:hidden; display:none; background:#f8f7f2; z-index:1201;">
+<div class="backdrop" id="inseratSuccessBd" onclick="closeInseratSuccessSheet()" style="background:rgba(0,0,0,0.7); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); z-index:1200;"></div>
+<div class="sheet" id="inseratSuccessSheet" style="max-width:480px; border-radius:32px; overflow:hidden; background:#f8f7f2; z-index:1201;">
   <div id="confettiContainer" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; overflow:hidden;"></div>
   
   <div class="sheet-body" style="padding:32px 24px 120px; text-align:center;">
@@ -17728,8 +17728,8 @@
   function closeQuickPostSheet(){
     const bd = document.getElementById('quickPostBd');
     const sheet = document.getElementById('quickPostSheet');
-    if(bd) bd.style.display = 'none';
-    if(sheet) sheet.style.display = 'none';
+    if(bd) bd.classList.remove('active');
+    if(sheet) sheet.classList.remove('active');
   }
 
   function openQuickPostSheet(entryId, date){
@@ -17792,8 +17792,8 @@
       startWizard('listing', { dishId: entryId, date: date, skipQuickPost: true });
     };
 
-    bd.style.display = 'block';
-    sheet.style.display = 'block';
+    bd.classList.add('active');
+    sheet.classList.add('active');
     if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
   }
 
@@ -19063,15 +19063,15 @@
     publishFeePendingOffer = offer;
     const bd = document.getElementById('publishFeeBd');
     const sheet = document.getElementById('publishFeeSheet');
-    if(bd) bd.style.display = 'block';
-    if(sheet) sheet.style.display = 'block';
+    if(bd) bd.classList.add('active');
+    if(sheet) sheet.classList.add('active');
   }
   function closePublishFeeModal(){
     publishFeePendingOffer = null;
     const bd = document.getElementById('publishFeeBd');
     const sheet = document.getElementById('publishFeeSheet');
-    if(bd) bd.style.display = 'none';
-    if(sheet) sheet.style.display = 'none';
+    if(bd) bd.classList.remove('active');
+    if(sheet) sheet.classList.remove('active');
   }
   var inseratSuccessCurrentOffer = null; // für WhatsApp / QR / Social-Export
 
@@ -19222,8 +19222,8 @@
     
     const bd = document.getElementById('inseratSuccessBd');
     const sheet = document.getElementById('inseratSuccessSheet');
-    if(bd) bd.style.display = 'block';
-    if(sheet) sheet.style.display = 'block';
+    if(bd) bd.classList.add('active');
+    if(sheet) sheet.classList.add('active');
     if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
   }
 
@@ -19248,8 +19248,8 @@
   function closeInseratSuccessSheet(){
     const bd = document.getElementById('inseratSuccessBd');
     const sheet = document.getElementById('inseratSuccessSheet');
-    if(bd) bd.style.display = 'none';
-    if(sheet) sheet.style.display = 'none';
+    if(bd) bd.classList.remove('active');
+    if(sheet) sheet.classList.remove('active');
     showProviderHome();
   }
   (function wirePublishAndSuccessSheets(){
