@@ -7819,6 +7819,14 @@
     if(fabModeToggle && id !== views.discover){
       fabModeToggle.style.display = 'none';
     }
+
+    // Bottom-Nav jeweils sichtbar halten (Customer vs. Provider)
+    const isProv = mode === 'provider';
+    const isCustomerOrStart = mode === 'customer' || mode === 'start';
+    const customerNavEl = document.getElementById('customerNav');
+    const providerNavWrapEl = document.getElementById('providerNavWrap');
+    if(customerNavEl) customerNavEl.style.display = isCustomerOrStart ? 'flex' : 'none';
+    if(providerNavWrapEl) providerNavWrapEl.style.display = isProv ? 'block' : 'none';
   }
 
   function setMode(next, opts){
