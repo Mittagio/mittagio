@@ -3447,6 +3447,192 @@
     button, .btn, .btn-primary, .cat-pill, .day-pill, .ocm-like-btn, .chip {
       transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.2s, box-shadow 0.2s;
     }
+    /* --- MODERN CUSTOMER UI --- */
+    .customer-view {
+      background: var(--bg);
+      min-height: 100vh;
+    }
+
+    /* Modern Sticky Header */
+    .cust-header-sticky {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+      padding-top: env(safe-area-inset-top, 0px);
+    }
+
+    /* Discovery Card - Modernized */
+    .cust-card {
+      background: #fff;
+      border-radius: 24px;
+      overflow: hidden;
+      border: 1px solid rgba(0,0,0,0.04);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.03);
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s;
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 16px;
+    }
+    .cust-card:active {
+      transform: scale(0.97);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+    }
+
+    .cust-card-img {
+      width: 100%;
+      aspect-ratio: 16/10;
+      object-fit: cover;
+      background: #f1f3f5;
+    }
+
+    .cust-card-body {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .cust-card-title {
+      font-size: 18px;
+      font-weight: 850;
+      color: #1a1a1a;
+      letter-spacing: -0.02em;
+      margin: 0;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .cust-card-meta {
+      font-size: 13px;
+      font-weight: 600;
+      color: #64748b;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .cust-card-price {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--brand);
+      margin-top: 8px;
+    }
+
+    /* Favorites Grid (Strict 2x2) */
+    .fav-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      padding: 0 16px;
+    }
+
+    .fav-card {
+      background: #fff;
+      border-radius: 20px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid rgba(0,0,0,0.04);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+      height: 100%; /* Homogene Höhe */
+    }
+
+    .fav-card-img {
+      width: 100%;
+      aspect-ratio: 1/1; /* Quadratisch laut Spec */
+      object-fit: cover;
+    }
+
+    /* Segmented Control / Chips */
+    .cust-chip-bar {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 12px 16px;
+      scrollbar-width: none;
+    }
+    .cust-chip-bar::-webkit-scrollbar { display: none; }
+
+    .cust-chip {
+      flex: 0 0 auto;
+      padding: 8px 16px;
+      border-radius: 14px;
+      background: #fff;
+      border: 1px solid rgba(0,0,0,0.05);
+      font-size: 14px;
+      font-weight: 700;
+      color: #64748b;
+      transition: all 0.2s;
+    }
+    .cust-chip.active {
+      background: #1a1a1a;
+      color: #fff;
+      border-color: #1a1a1a;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    /* Bottom Navigation Modernization */
+    .bottom-nav {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      border-top: 1px solid rgba(0,0,0,0.05);
+      height: calc(70px + env(safe-area-inset-bottom, 0px));
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    .nav-item i {
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .nav-item.active i {
+      transform: translateY(-2px) scale(1.1);
+      color: var(--brand);
+    }
+
+    /* 3 Pillars in Card */
+    .card-pillars {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .pillar-mini {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      background: #f1f3f5;
+    }
+    .pillar-mini.active.yellow { background: #FFD700; }
+    .pillar-mini.active.green { background: rgba(39, 174, 96, 0.15); color: #27AE60; }
+
+    /* Button Refinement */
+    .btn-cust-primary {
+      height: 56px;
+      border-radius: 18px;
+      background: var(--brand);
+      color: #1a1a1a;
+      border: none;
+      font-weight: 850;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 8px 24px rgba(255, 215, 0, 0.25);
+      transition: transform 0.15s;
+    }
+    .btn-cust-primary:active { transform: scale(0.96); }
+
+    /* --- END MODERN CUSTOMER UI --- */
   </style>
 </head>
 <body>
