@@ -5016,8 +5016,8 @@
               <div style="display:flex; align-items:center; gap:16px;">
                 <div style="width:44px; height:44px; border-radius:14px; background:rgba(255,215,0,0.15); display:flex; align-items:center; justify-content:center; font-size:22px;">🧾</div>
                 <div>
-                  <div style="font-weight:800; color:#1a1a1a; font-size:16px;">weniger Chaos & mehr Zeit</div>
-                  <div style="font-size:13px; color:#64748b;">Abholnummer (Service-Pauschale 0,89 €)</div>
+                  <div style="font-weight:800; color:#1a1a1a; font-size:16px;">Abholnummer</div>
+                  <div style="font-size:13px; color:#64748b;">Weniger Chaos & mehr Zeit</div>
                 </div>
               </div>
               <label class="toggle-switch"><input type="checkbox" id="providerAbholnummerEnabled"><span class="toggle-slider"></span></label>
@@ -12347,7 +12347,7 @@
       const items = (week[key]||[])
         .filter(x=>x.providerId===providerId() && x.active !== false)
         .map(entry=>{
-          const cb = cookbook.find(c=>c.id===entry.cookbookId);
+          const cb = cookbook.find(c => String(c.id) === String(entry.cookbookId));
           const name = cb?.dish || entry.dish || 'Gericht';
           const price = cb?.price || 0;
           const windowText = cb?.pickupWindow || profile.mealWindow || '';
@@ -12495,9 +12495,9 @@
             `;
             
             card.onclick = () => {
+              const selectedDate = createFlowPreselectedDate;
               closeCreateFlowSheet();
-              // Unified Flow: openDishFlow mit GerichtID und Datum
-              startListingFlow({ dishId: c.id, date: createFlowPreselectedDate || isoDate(new Date()) });
+              startListingFlow({ dishId: c.id, date: selectedDate || isoDate(new Date()) });
             };
             
             cookbookList.appendChild(card);
@@ -16242,7 +16242,7 @@
     
     list.innerHTML = '';
     providerEntries.forEach(({entry, idx})=>{
-      const cb = cookbook.find(c=>c.id===entry.cookbookId);
+      const cb = cookbook.find(c => String(c.id) === String(entry.cookbookId));
       const name = cb?.dish || entry.dish || 'Gericht';
       const price = cb?.price || 0;
       const isActive = entry.active !== false;
@@ -17361,7 +17361,7 @@
     const ent = window._cookbookActionEntry;
     if(!ent) return;
     if(confirm(`"${ent.dish}" wirklich löschen?`)){
-      const idx = cookbook.findIndex(c => c.id === ent.id);
+      const idx = cookbook.findIndex(c => String(c.id) === String(ent.id));
       if(idx >= 0){ cookbook.splice(idx, 1); save(LS.cookbook, cookbook); renderCookbook(); showToast('Gericht gelöscht'); }
     }
     closeCookbookActionSheet();
@@ -17659,8 +17659,8 @@
         ? `<img class="cookbook-item-image" src="${esc(entry.photoData)}" alt="${esc(entry.dish)}" loading="lazy" />`
         : `<div class="cookbook-item-image" style="background:#e5e7eb; display:flex; align-items:center; justify-content:center;"><i data-lucide="utensils" style="width:36px; height:36px; color:#94a3b8;"></i></div>`;
       const categoryBadge = entry.category ? `<span class="cookbook-item-badge">${esc(entry.category)}</span>` : '';
-      const lastUsedLabel = isDraft ? 'Entwurf' : ('🕒 Zuletzt am ' + esc(formatDayLabel(entry.lastUsed)));
-      const lastPriceLabel = entry.price != null ? ('💶 Letzter Preis: ' + euro(entry.price)) : '';
+      const lastUsedLabel = isDraft ? 'Entwurf' : ('Zuletzt am ' + esc(formatDayLabel(entry.lastUsed)));
+      const lastPriceLabel = entry.price != null ? ('Letzter Preis: ' + euro(entry.price)) : '';
       const allergens = (entry.allergens || []).slice(0, 5);
       const allergenStr = allergens.map(a => typeof a === 'string' ? (a.trim().split(/\s+/)[0] || '').slice(0, 2).toUpperCase() : '').filter(Boolean).join(' ') || '–';
       const allOrders = (typeof loadOrders === 'function' ? loadOrders() : []) || [];
@@ -17676,7 +17676,7 @@
       item.innerHTML = `
         <div class="cookbook-item-header">
           ${imgEl}
-          <div class="cookbook-item-price-tag">💰 ${euro(entry.price||0)}</div>
+          <div class="cookbook-item-price-tag">${euro(entry.price||0)}</div>
           <button type="button" class="cookbook-item-menu" aria-label="Optionen">
             <i data-lucide="more-horizontal"></i>
           </button>
@@ -17733,8 +17733,13 @@
   }
 
   function openQuickPostSheet(entryId, date){
-    const entry = cookbook.find(c=>c.id===entryId && c.providerId===providerId());
-    if(!entry) return;
+    // Suche im Kochbuch nach dem Gericht
+    const entry = cookbook.find(c => String(c.id) === String(entryId));
+    if(!entry) {
+      // Fallback: Wenn nicht im Kochbuch gefunden, direkt in den Wizard
+      startWizard('listing', { dishId: entryId, date: date, skipQuickPost: true });
+      return;
+    }
 
     const bd = document.getElementById('quickPostBd');
     const sheet = document.getElementById('quickPostSheet');
@@ -17742,7 +17747,11 @@
     const btnConfirm = document.getElementById('btnQuickPostConfirm');
     const btnWizard = document.getElementById('btnQuickPostWizard');
 
-    if(!bd || !sheet || !summary) return;
+    if(!bd || !sheet || !summary) {
+      // Fallback: Wenn UI-Elemente fehlen, in den Wizard
+      startWizard('listing', { dishId: entryId, date: date, skipQuickPost: true });
+      return;
+    }
 
     const profile = normalizeProviderProfile(provider.profile || {});
     const time = profile.mealWindow || DEFAULT_MEAL_WINDOW;
@@ -17780,17 +17789,20 @@
 
     btnWizard.onclick = () => {
       closeQuickPostSheet();
-      startListingFlow({ dishId: entry.id, date: date, skipQuickPost: true });
+      startWizard('listing', { dishId: entryId, date: date, skipQuickPost: true });
     };
 
     bd.style.display = 'block';
     sheet.style.display = 'block';
-    if(typeof lucide !== 'undefined') lucide.createIcons();
+    if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
   }
 
   function publishCookbookEntry(entryId, customDate = null){
-    const entry = cookbook.find(c=>c.id===entryId && c.providerId===providerId());
-    if(!entry) return;
+    const entry = cookbook.find(c => String(c.id) === String(entryId));
+    if(!entry) {
+      console.warn('publishCookbookEntry: Entry not found', entryId);
+      return;
+    }
 
     const profile = normalizeProviderProfile(provider.profile || {});
     const offer = normalizeOffer({
@@ -17821,8 +17833,8 @@
 
     const published = publishOffer(offer);
     
-    const idx = cookbook.findIndex(c=>c.id===entryId);
-    if(idx>=0){ cookbook[idx].lastUsed = Date.now(); }
+    const idx = cookbook.findIndex(c => String(c.id) === String(entryId));
+    if(idx >= 0){ cookbook[idx].lastUsed = Date.now(); }
     save(LS.cookbook, cookbook);
 
     renderCookbook();
@@ -17830,7 +17842,7 @@
   }
 
   function publishWeekEntry(dayKey, entry){
-    const cb = cookbook.find(c=>c.id===entry.cookbookId);
+    const cb = cookbook.find(c => String(c.id) === String(entry.cookbookId));
     if(!cb){
       alert('Gericht nicht gefunden.');
       return;
@@ -17866,7 +17878,7 @@
     offers.unshift(offer);
     save(LS.offers, offers);
 
-    const idx = cookbook.findIndex(c=>c.id===entry.cookbookId);
+    const idx = cookbook.findIndex(c => String(c.id) === String(entry.cookbookId));
     if(idx>=0){ cookbook[idx].lastUsed = Date.now(); }
     save(LS.cookbook, cookbook);
 
@@ -18008,7 +18020,7 @@
       // Cookbook editing only (not for creating new dishes)
       // For creating new dishes, use startListingFlow() instead
       if(ctx.editId){
-        const existing = cookbook.find(c=>c.id===ctx.editId);
+        const existing = cookbook.find(c => String(c.id) === String(ctx.editId));
         if(existing){ w.data = JSON.parse(JSON.stringify(existing)); }
       }
       if(!w.data || !w.data.providerId){
@@ -18070,7 +18082,7 @@
       // Case 2: From cookbook (context.dishId or ctx.fromCookbookId)
       else if(ctx.dishId || ctx.fromCookbookId){
         const cookbookId = ctx.dishId || ctx.fromCookbookId;
-        const x = cookbook.find(c=>c.id===cookbookId);
+        const x = cookbook.find(c => String(c.id) === String(cookbookId));
         if(x){
           // Prefill from cookbook entry – Abholnummer: Profil-Default wenn im Kochbuch nicht gesetzt
           const globalReuseEnabled = profile.reuseEnabledByDefault || false;
@@ -18155,7 +18167,7 @@
     if(kind==='week'){
       // Cookbook-Eintrag für Datum planen
       // Should use startListingFlow({dishId, date}) instead
-      const x = cookbook.find(c=>c.id===ctx.fromCookbookId);
+      const x = cookbook.find(c => String(c.id) === String(ctx.fromCookbookId));
       if(!x){ alert('Bitte erst ein Gericht im Kochbuch speichern.'); return; }
       w.data = { cookbookId:x.id, date: isoDate(new Date()) };
       buildWeekStep();
@@ -19481,7 +19493,7 @@
     btn.type='button';
     btn.textContent='Zum Wochenplan hinzufügen';
     btn.onclick=()=>{
-      const cb = cookbook.find(c=>c.id===w.data.cookbookId);
+      const cb = cookbook.find(c => String(c.id) === String(w.data.cookbookId));
       if(!cb){ alert('Gericht nicht gefunden'); return; }
       const entry = { providerId:providerId(), dish:cb.dish, cookbookId:cb.id, active:true };
       if(!week[w.data.date]) week[w.data.date]=[];
