@@ -1317,6 +1317,7 @@
       display:flex;
       flex-direction:column;
       overflow:hidden;
+      position: relative;
     }
     #wizard.sheet--kitchen .wizard-progress-dots{
       display:flex;
@@ -1341,26 +1342,59 @@
       overflow-y:auto;
       -webkit-overflow-scrolling:touch;
       margin:0 -20px;
-      padding:0 20px 16px;
+      padding:0 20px 80px; /* Extra padding for sticky actions */
     }
     #wizard.sheet--kitchen .w-actions{
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
       flex-shrink:0;
-      margin:0 -20px -20px;
-      padding:16px 20px calc(16px + env(safe-area-inset-bottom, 0));
-      background:#fff;
-      border-top:1px solid rgba(0,0,0,0.05);
+      padding:16px 20px calc(16px + env(safe-area-inset-bottom, 20px));
+      background:rgba(255,255,255,0.98);
+      backdrop-filter:blur(10px);
+      -webkit-backdrop-filter:blur(10px);
+      border-top:1px solid rgba(0,0,0,0.08);
       border-radius:0 0 20px 20px;
-      position:sticky; bottom:0; z-index:10;
+      z-index:10;
       display:flex; gap:12px;
     }
     #wizard.sheet--kitchen .w-actions button{
       flex:1;
-      height:52px; border-radius:14px; font-weight:700; font-size:16px; letter-spacing:0.02em;
+      height:54px; 
+      border-radius:16px; 
+      font-weight:800; 
+      font-size:16px; 
+      letter-spacing:0.01em;
+      border:none;
+      cursor:pointer;
+      transition: transform 0.1s, background-color 0.2s;
     }
-    #wizard.sheet--kitchen .w-actions button.secondary{ background:#f5f5f7; color:#1d1d1f; border:none; }
-    #wizard.sheet--kitchen .w-actions button:not(.secondary){ background:var(--brand); color:#1d1d1f; box-shadow:0 4px 12px rgba(255,215,0,0.25); }
+    #wizard.sheet--kitchen .w-actions button.secondary{ 
+      background:#f1f3f5; 
+      color:#495057; 
+    }
+    #wizard.sheet--kitchen .w-actions button:not(.secondary){ 
+      background:#FFD700; 
+      color:#1a1a1a; 
+      box-shadow:0 4px 12px rgba(255,215,0,0.3); 
+    }
+    #wizard.sheet--kitchen .w-actions button:active{
+      transform: scale(0.97);
+    }
     #wizard.sheet--kitchen .wizard-footer{
-      text-align:center; padding:8px 0 4px; font-size:9px; font-weight:700; color:#9ca3af; text-transform:uppercase; letter-spacing:0.03em;
+      position: absolute;
+      bottom: 4px;
+      left: 0;
+      right: 0;
+      text-align:center; 
+      font-size:9px; 
+      font-weight:700; 
+      color:#9ca3af; 
+      text-transform:uppercase; 
+      letter-spacing:0.03em;
+      pointer-events: none;
+      z-index: 11;
     }
     #wizard.sheet--kitchen .w-top{ margin-bottom:16px; }
     #wizard.sheet--kitchen .w-title{ font-weight:800; font-size:18px; color:#1a1a1a; }
@@ -1382,10 +1416,6 @@
     #wizard.sheet--kitchen #wContent input[type="checkbox"]{
       accent-color:var(--brand);
     }
-    #wizard.sheet--kitchen .w-actions{
-      display:flex; gap:12px; margin-top:20px; padding-top:16px; border-top:1px solid rgba(0,0,0,0.08);
-    }
-    #wizard.sheet--kitchen .w-actions button{ flex:1; min-height:48px; border-radius:14px; font-weight:700; }
     #wizard.sheet--kitchen .hint{ color:#64748b; font-size:13px; }
     #wizard.sheet--kitchen .panel{
       background:#f8f9fa; border:1px solid rgba(0,0,0,0.08); color:#1a1a1a;
@@ -1411,12 +1441,6 @@
       border-radius:12px; padding:14px 16px; font-size:16px;
     }
     #wizard.sheet--kitchen .field::placeholder{ color:#94a3b8; }
-    #wizard.sheet--kitchen .w-actions .btn:not(.secondary){
-      background:#FFD700; color:#1a1a1a; border:none; box-shadow:0 2px 10px rgba(255,215,0,0.3);
-    }
-    #wizard.sheet--kitchen .w-actions .btn.secondary{
-      background:#fff; border:1px solid rgba(0,0,0,0.12); color:#1a1a1a;
-    }
     #wizard.sheet--kitchen .btn.ghost{
       background:#f8f9fa; border:1px solid rgba(0,0,0,0.1); color:#1a1a1a;
     }
@@ -1506,27 +1530,6 @@
       border-radius:var(--support-border-radius);
       border:1px solid #ddd;
       -webkit-tap-highlight-color:transparent;
-    }
-    #wizard[data-flow="listing"].sheet--kitchen .w-actions{
-      padding:12px 20px calc(12px + env(safe-area-inset-bottom, 20px)) !important;
-      gap:10px;
-    }
-    #wizard[data-flow="listing"].sheet--kitchen .w-actions .btn{
-      min-height:54px !important;
-      font-size:16px !important;
-      font-weight:800;
-      border-radius:var(--support-border-radius);
-      padding:var(--support-padding) var(--support-padding-lg);
-      touch-action:manipulation;
-      -webkit-tap-highlight-color:transparent;
-    }
-    #wizard[data-flow="listing"].sheet--kitchen .w-actions .btn.secondary{
-      border:2px solid var(--support-border);
-      background:#fff;
-    }
-    #wizard[data-flow="listing"].sheet--kitchen .w-actions .btn:not(.secondary){
-      flex:1;
-      min-width:0;
     }
     #wizard[data-flow="listing"].sheet--kitchen .hint{
       font-size:12px; margin-bottom:6px;
