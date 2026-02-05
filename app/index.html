@@ -18793,9 +18793,11 @@
         { name: 'Sonstiges', emoji: '✨' }
       ];
 
+      const otherExtraNames = ['Beilagensalat','Extra Sauce','Brot','Ketchup','Mayo'];
+      const findSonstigesExtra = ()=> w.data.extras.find(e=>e.name==='Sonstiges' || !otherExtraNames.includes(e.name));
       extraOptions.forEach(opt=>{
         const name = opt.name;
-        const extra=w.data.extras.find(e=>e.name===name);
+        const extra = name === 'Sonstiges' ? findSonstigesExtra() : w.data.extras.find(e=>e.name===name);
         const hasPrice=!!extra && Number(extra.price||0)>0;
         
         const pillWrap=document.createElement('div'); 
@@ -18819,14 +18821,14 @@
         b.appendChild(textSpan);
         
         b.onclick=()=>{
-          const idx=w.data.extras.findIndex(e=>e.name===name || (name==='Sonstiges' && e.name&&e.name!=='Sonstiges'&&!extraOptions.find(o=>o.name!=='Sonstiges'&&o.name===e.name)));
+          const idx = name === 'Sonstiges' ? w.data.extras.findIndex(e=>e.name==='Sonstiges'||!otherExtraNames.includes(e.name)) : w.data.extras.findIndex(e=>e.name===name);
           if(idx>=0){ w.data.extras.splice(idx,1); rebuildWizard(); return; }
           w.data.extras.push({name, price:0});
           rebuildWizard();
         };
         pillWrap.appendChild(b);
         
-        const ex=w.data.extras.find(e=>e.name===name || (name==='Sonstiges' && (e.name==='Sonstiges' || !extraOptions.find(o=>o.name!=='Sonstiges'&&o.name===e.name))));
+        const ex = name === 'Sonstiges' ? findSonstigesExtra() : w.data.extras.find(e=>e.name===name);
         if(ex){
           if(name==='Sonstiges'){
             const nameGroup = document.createElement('div');
