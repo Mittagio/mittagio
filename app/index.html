@@ -1262,7 +1262,8 @@
     #wizard.sheet--kitchen{
       background:#f0f2f5 !important;
       border-radius:20px 20px 0 0;
-      max-height:92vh;
+      max-height:96vh !important;
+      height: 96vh !important;
       overflow:hidden;
       display:flex;
       flex-direction:column;
@@ -1305,6 +1306,7 @@
       min-height:0;
       display:flex;
       flex-direction:column;
+      padding-bottom: env(safe-area-inset-bottom, 20px);
     }
     #wizard.sheet--kitchen .wizard{
       background:#fff;
@@ -1342,7 +1344,7 @@
       overflow-y:auto;
       -webkit-overflow-scrolling:touch;
       margin:0 -20px;
-      padding:0 20px 80px; /* Extra padding for sticky actions */
+      padding:0 20px 100px; /* Extra padding for sticky actions */
     }
     #wizard.sheet--kitchen .w-actions{
       position: absolute;
