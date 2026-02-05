@@ -486,7 +486,7 @@
       transition: all 0.3s;
     }
     .pillar-badge.active.green .pillar-icon-circle { background: rgba(39, 174, 96, 0.15); color: #27AE60; }
-    .pillar-badge.active.yellow .pillar-icon-circle { background: rgba(255, 193, 7, 0.15); color: #f39c12; }
+    .pillar-badge.active.yellow .pillar-icon-circle { background: rgba(255, 215, 0, 0.2); color: #1a1a1a; }
     .pillar-badge.active.blue .pillar-icon-circle { background: rgba(52, 152, 219, 0.15); color: #3498db; }
     
     .pillar-label {
@@ -2786,8 +2786,8 @@
     #v-fav #favDishes {
       display: grid !important;
       grid-template-columns: 1fr 1fr !important;
-      gap: 8px !important;
-      padding: 8px !important;
+      gap: 12px !important;
+      padding: 0 16px !important;
       max-width: 100%;
     }
     #v-fav .fav-grid-card {
@@ -2798,7 +2798,7 @@
       margin: 0 auto;
       display: flex;
       flex-direction: column;
-      border-radius: 12px !important;
+      border-radius: 16px !important;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
       border: 1px solid rgba(0,0,0,0.06);
       overflow: hidden;
@@ -3586,6 +3586,8 @@
       -webkit-backdrop-filter: saturate(180%) blur(20px);
       border-bottom: 1px solid rgba(0,0,0,0.05);
       padding-top: env(safe-area-inset-top, 0px);
+      padding-left: env(safe-area-inset-left, 0);
+      padding-right: env(safe-area-inset-right, 0);
     }
 
     /* Discovery Card - Modernized */
@@ -3647,7 +3649,7 @@
       margin-top: 8px;
     }
 
-    /* Favorites Grid (Strict 2x2) */
+    /* Favorites Grid (Strict 2x2 per FAVORITEN_LAYOUT_REGEL: gap 12px, border-radius 16px) */
     .fav-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -3927,7 +3929,7 @@
     <section class="view customer-view" id="v-fav">
       <header class="cust-header-sticky">
         <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px;">
-          <h1 style="font-size:20px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a; margin:0;">Deine Favoriten</h1>
+          <h1 style="font-size:20px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a; margin:0;">Deine Favoriten für heute</h1>
           <button type="button" id="btnFavShareHeader" aria-label="Teilen" style="width:40px; height:40px; border-radius:12px; background:#f1f3f5; border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#1a1a1a;">
             <i data-lucide="share-2" style="width:20px;height:20px;"></i>
           </button>
@@ -4436,7 +4438,12 @@
 
         <div style="margin-bottom:20px;">
           <label style="display:block; font-size:13px; font-weight:700; color:#9ca3af; text-transform:uppercase; margin-bottom:8px; letter-spacing:0.03em;">Preis (€) *</label>
-          <input class="field" type="number" id="onboardingDishPrice" placeholder="z.B. 8,50" step="0.10" inputmode="decimal" required style="width:100%; height:52px; border-radius:12px; border:1.5px solid #eee; padding:0 16px; font-size:16px;" />
+          <input type="hidden" id="onboardingDishPrice" value="8.50" required />
+          <div id="onboardingDishPriceControl" style="display:flex; align-items:center; justify-content:center; gap:12px;">
+            <button type="button" class="btn secondary" id="btnOnboardingPriceMinus" style="min-width:52px; min-height:52px; font-size:20px; font-weight:800;">−</button>
+            <span id="onboardingDishPriceDisplay" style="font-size:22px; font-weight:900; color:#1a1a1a; min-width:80px; text-align:center; font-variant-numeric:tabular-nums;">8,50 €</span>
+            <button type="button" class="btn secondary" id="btnOnboardingPricePlus" style="min-width:52px; min-height:52px; font-size:20px; font-weight:800;">+</button>
+          </div>
         </div>
 
         <div style="margin-bottom:20px;">
@@ -5747,8 +5754,8 @@
         </div>
       </div>
 
-      <!-- Sticky Bottom CTA -->
-      <div style="position:sticky; bottom:0; padding:20px; background:rgba(255,255,255,0.9); backdrop-filter:blur(10px); border-top:1px solid rgba(0,0,0,0.05); z-index:100;">
+      <!-- Sticky Bottom CTA (3 Säulen + CTA per GERICHT_DETAILANSICHT_KONZEPT) -->
+      <div style="position:sticky; bottom:0; padding:20px; padding-bottom:calc(20px + env(safe-area-inset-bottom, 0px)); background:rgba(255,255,255,0.9); backdrop-filter:blur(10px); border-top:1px solid rgba(0,0,0,0.05); z-index:100;">
         <button class="btn-cust-primary" id="btnPrimaryCTA" style="width:100%;">
           <i data-lucide="shopping-basket"></i>
           <span id="btnPrimaryCTAText">In die Mittagsbox legen</span>
@@ -14526,9 +14533,28 @@
     if(el){
       const cached = localStorage.getItem('cache_' + id);
       if(cached) el.value = cached;
-      el.addEventListener('input', () => localStorage.setItem('cache_' + id, el.value));
+      if(id !== 'onboardingDishPrice') el.addEventListener('input', () => localStorage.setItem('cache_' + id, el.value));
     }
   });
+  // Onboarding Preis: +/- Buttons, Komma immer gesetzt, 1-Daumen
+  (function(){
+    const inp = document.getElementById('onboardingDishPrice');
+    const disp = document.getElementById('onboardingDishPriceDisplay');
+    const btnMinus = document.getElementById('btnOnboardingPriceMinus');
+    const btnPlus = document.getElementById('btnOnboardingPricePlus');
+    if(!inp || !disp || !btnMinus || !btnPlus) return;
+    function updatePrice(val){
+      val = Math.round(val*100)/100;
+      inp.value = String(val);
+      inp.setAttribute('value', val);
+      disp.textContent = val.toFixed(2).replace('.',',')+' €';
+      localStorage.setItem('cache_onboardingDishPrice', String(val));
+    }
+    const cached = localStorage.getItem('cache_onboardingDishPrice');
+    if(cached){ const v = parseFloat(cached.replace(',','.'))||8.5; updatePrice(v); }
+    btnMinus.onclick = () => { let v = parseFloat((inp.value||'8.5').replace(',','.'))||0; if(v>=0.5) updatePrice(v-0.5); };
+    btnPlus.onclick = () => { let v = parseFloat((inp.value||'8.5').replace(',','.'))||0; updatePrice(v+0.5); };
+  })();
   // Radio Buttons Cache (Kategorie)
   const dietRadios = document.querySelectorAll('input[name="dishDiet"]');
   const cachedDiet = localStorage.getItem('cache_dishDiet');
@@ -18205,19 +18231,21 @@
       timeRow.appendChild(minusEnd); timeRow.appendChild(dispEnd); timeRow.appendChild(plusEnd);
       box.appendChild(timeRow);
 
-      // --- PREIS ---
+      // --- PREIS (1-Daumen: +/- Buttons, Komma immer gesetzt) ---
       const labelPrice=document.createElement('div'); labelPrice.className='hint'; labelPrice.textContent='Preis (€)';
       box.appendChild(labelPrice);
-      const inputPrice=document.createElement('input');
-      inputPrice.className='field';
-      inputPrice.type='number';
-      inputPrice.step='0.10';
-      inputPrice.inputmode='decimal';
-      inputPrice.placeholder='z.B. 8,50';
-      inputPrice.value=w.data.price>0?w.data.price:'';
-      inputPrice.style.marginBottom='16px';
-      inputPrice.oninput=()=>{ w.data.price=parseFloat(inputPrice.value.replace(',','.'))||0; saveDraft(); };
-      box.appendChild(inputPrice);
+      let priceVal=Math.round((w.data.price||0)*100)/100;
+      const priceRow=document.createElement('div');
+      priceRow.style.cssText='display:flex; align-items:center; justify-content:center; gap:12px; margin-bottom:16px;';
+      const priceDisplay=document.createElement('span');
+      priceDisplay.style.cssText='font-size:22px; font-weight:900; color:#1a1a1a; min-width:80px; text-align:center; font-variant-numeric:tabular-nums;';
+      priceDisplay.textContent=(priceVal||0).toFixed(2).replace('.',',')+' €';
+      const minusPrice=document.createElement('button'); minusPrice.type='button'; minusPrice.className='btn secondary'; minusPrice.style.cssText='min-width:52px; min-height:52px; font-size:20px; font-weight:800;'; minusPrice.textContent='−'; minusPrice.title='0,50 € weniger';
+      minusPrice.onclick=()=>{ if(priceVal>=0.5){ priceVal=Math.round((priceVal-0.5)*100)/100; w.data.price=priceVal; priceDisplay.textContent=priceVal.toFixed(2).replace('.',',')+' €'; saveDraft(); } };
+      const plusPrice=document.createElement('button'); plusPrice.type='button'; plusPrice.className='btn secondary'; plusPrice.style.cssText='min-width:52px; min-height:52px; font-size:20px; font-weight:800;'; plusPrice.textContent='+'; plusPrice.title='0,50 € mehr';
+      plusPrice.onclick=()=>{ priceVal=Math.round((priceVal+0.5)*100)/100; w.data.price=priceVal; priceDisplay.textContent=priceVal.toFixed(2).replace('.',',')+' €'; saveDraft(); };
+      priceRow.appendChild(minusPrice); priceRow.appendChild(priceDisplay); priceRow.appendChild(plusPrice);
+      box.appendChild(priceRow);
 
       // --- KATEGORIE ---
       const labelCat=document.createElement('div'); labelCat.className='hint'; labelCat.textContent='Kategorie';
