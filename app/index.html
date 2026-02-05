@@ -1402,6 +1402,120 @@
       pointer-events: none;
       z-index: 11;
     }
+
+    /* Onboarding Views: App-like Sticky Layout */
+    .onboarding-view {
+      background: var(--provider-bg) !important;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .onboarding-view .panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 24px 20px 100px !important; /* Space for sticky footer */
+      max-width: 500px;
+      margin: 0 auto;
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
+    .onboarding-actions {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 16px 20px calc(16px + env(safe-area-inset-bottom, 20px));
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border-top: 1px solid rgba(0, 0, 0, 0.06);
+      display: flex;
+      gap: 12px;
+      z-index: 100;
+    }
+    .onboarding-actions button {
+      flex: 1;
+      height: 56px;
+      border-radius: 16px;
+      font-weight: 800;
+      font-size: 16px;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.1s;
+    }
+    .onboarding-actions button.btn-primary {
+      background: var(--brand);
+      color: #1a1a1a;
+      box-shadow: 0 4px 14px rgba(255, 215, 0, 0.4);
+    }
+    .onboarding-actions button.secondary {
+      background: rgba(0, 0, 0, 0.05);
+      color: #64748b;
+    }
+    .onboarding-actions button:active {
+      transform: scale(0.97);
+    }
+    
+    /* Dashboard KPIs & Cards */
+    .provider-kpi-card {
+      background: #fff;
+      padding: 20px;
+      border-radius: 24px;
+      border: 1px solid rgba(0,0,0,0.04);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+      transition: transform 0.1s, box-shadow 0.2s;
+    }
+    .provider-kpi-card:active {
+      transform: scale(0.98);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.01);
+    }
+    .provider-kpi-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+    
+    /* Modern FAB */
+    .fab-provider {
+      position: fixed;
+      bottom: calc(90px + env(safe-area-inset-bottom, 0px));
+      right: 20px;
+      height: 60px;
+      padding: 0 24px;
+      border-radius: 30px;
+      background: #1a1a1a;
+      color: #fff;
+      border: none;
+      box-shadow: 0 12px 32px rgba(0,0,0,0.25);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      font-size: 16px;
+      z-index: 100;
+      transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .fab-provider:active {
+      transform: scale(0.92);
+    }
+    .fab-provider i {
+      width: 24px;
+      height: 24px;
+      stroke-width: 3;
+    }
+
+    @media (min-width: 501px) {
+      .fab-provider {
+        right: calc(50% - 230px);
+      }
+    }
     #wizard.sheet--kitchen .w-top{ margin-bottom:20px; }
     #wizard.sheet--kitchen .w-title{ font-weight:800; font-size:14px; color:#9ca3af; text-transform:uppercase; letter-spacing:0.05em; }
     #wizard.sheet--kitchen .w-step{ font-size:12px; color:#64748b; font-weight:600; margin-top:2px; }
@@ -3970,383 +4084,322 @@
     </section>
 
     <!-- PROVIDER: Onboarding Entry – Speed-Einstieg (unter 30 Sekunden zum Live-Inserat) -->
-    <section class="view" id="v-provider-onboarding-entry" style="background:linear-gradient(135deg, #121826 0%, #1a1a1a 100%); min-height:100vh; padding:20px; position:relative;">
-      <div style="position:absolute; top:0; left:0; right:0; bottom:0; z-index:0; background:linear-gradient(180deg, rgba(255,215,0,0.06) 0%, transparent 40%);"></div>
-      <div style="position:relative; z-index:1;">
-      <div class="panel" id="onboardingEntryPanel" style="padding:32px; max-width:480px; margin:0 auto; background:rgba(255,255,255,0.98); border-radius:24px; box-shadow:0 8px 32px rgba(0,0,0,0.2);">
-        <h1 style="font-size:26px; font-weight:900; margin-bottom:8px; line-height:1.25; color:#1a1a1a; text-align:center;">Sofort verkaufen. Ohne Abo. Ohne Vertrag.</h1>
-        <p style="font-size:15px; color:#666; margin-bottom:24px; text-align:center;">Einmalig 4,99 € pro Inserat – unabhängig von der Portionsmenge.</p>
-        
-        <!-- Einstieg: Direktes Eingabefeld triggert den Flow -->
-        <label style="display:block; font-size:14px; font-weight:600; color:#1a1a1a; margin-bottom:8px;">Was bieten Sie heute an?</label>
-        <div style="display:flex; gap:8px; margin-bottom:20px;">
-          <input type="text" id="onboardingEntryDishInput" class="field" placeholder="z.B. Kürbissuppe, Schnitzel, Bowl …" autocomplete="off" style="flex:1; padding:16px 18px; font-size:17px; border-radius:14px; border:2px solid #e5e5ea;" />
-          <button type="button" id="btnOnboardingEntryGo" style="flex-shrink:0; width:52px; height:52px; border-radius:14px; background:#FFD700; color:#111; border:none; font-weight:800; font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center;">→</button>
+    <section class="view" id="v-provider-onboarding-entry" style="background:var(--provider-bg); min-height:100vh; padding:20px; display:flex; align-items:center; justify-content:center;">
+      <div class="panel" id="onboardingEntryPanel" style="padding:32px 24px; max-width:440px; width:100%; background:#fff; border-radius:28px; box-shadow:0 12px 40px rgba(0,0,0,0.08); border:1px solid rgba(0,0,0,0.04);">
+        <div style="width:64px; height:64px; background:var(--brand); border-radius:20px; display:flex; align-items:center; justify-content:center; margin:0 auto 24px; box-shadow:0 8px 20px rgba(255,215,0,0.3);">
+          <i data-lucide="zap" style="width:32px; height:32px; color:#1a1a1a;"></i>
         </div>
-        <p class="hint" style="font-size:13px; color:#8e8e93; margin-bottom:24px;">Einfach Gericht eintippen – Kategorie und Allergene werden automatisch vorgeschlagen.</p>
+        <h1 style="font-size:26px; font-weight:950; margin-bottom:12px; line-height:1.2; color:#1a1a1a; text-align:center; letter-spacing:-0.03em;">Sofort verkaufen. <br>Ohne Abo & Vertrag.</h1>
+        <p style="font-size:15px; color:#64748b; margin-bottom:32px; text-align:center; line-height:1.5;">Einmalig 4,99 € pro Inserat – <br>unabhängig von der Portionsmenge.</p>
         
-        <button class="btn-primary" type="button" id="btnOnboardingEntryStart" style="width:100%; min-height:56px; background:#FFD700; color:#111; font-weight:800; font-size:17px; border:none; border-radius:16px; box-shadow:0 4px 16px rgba(255,215,0,0.3); margin-bottom:12px;">
-          Jetzt Inserat starten
-        </button>
-        <button class="btn secondary" type="button" id="btnOnboardingEntryLater" style="width:100%; min-height:48px; background:transparent; color:#666; border:2px solid #e5e5ea; border-radius:14px;">
-          Später starten
-        </button>
-        <div style="margin-top:20px; padding:12px 16px; background:#f8f7f2; border-radius:12px; font-size:13px; color:#666; line-height:1.5;">
-          <strong style="color:#1a1a1a;">4,99 €</strong> pro Inserat · Kein Abo · Kein Vertrag · In unter 30 Sekunden live.
+        <div style="margin-bottom:24px;">
+          <label style="display:block; font-size:13px; font-weight:700; color:#9ca3af; text-transform:uppercase; margin-bottom:8px; letter-spacing:0.03em;">Was bietest du heute an?</label>
+          <div style="display:flex; gap:10px;">
+            <input type="text" id="onboardingEntryDishInput" class="field" placeholder="z.B. Kürbissuppe …" autocomplete="off" style="flex:1; height:56px; padding:0 18px; font-size:17px; border-radius:16px; border:2px solid #eee;" />
+            <button type="button" id="btnOnboardingEntryGo" style="flex-shrink:0; width:56px; height:56px; border-radius:16px; background:#1a1a1a; color:#fff; border:none; display:flex; align-items:center; justify-content:center; cursor:pointer;">
+              <i data-lucide="arrow-right" style="width:24px;height:24px;"></i>
+            </button>
+          </div>
         </div>
-      </div>
+        
+        <button class="btn-primary" type="button" id="btnOnboardingEntryStart" style="width:100%; min-height:60px; background:var(--brand); color:#1a1a1a; font-weight:900; font-size:17px; border:none; border-radius:18px; box-shadow:0 8px 24px rgba(255,215,0,0.4); margin-bottom:16px; display:flex; align-items:center; justify-content:center; gap:10px;">
+          <span>Jetzt Inserat starten</span>
+        </button>
+        
+        <button class="btn secondary" type="button" id="btnOnboardingEntryLater" style="width:100%; min-height:52px; background:transparent; color:#64748b; border:none; font-weight:700; font-size:15px;">
+          Schon ein Konto? Login
+        </button>
+        
+        <div style="margin-top:32px; padding:16px; background:rgba(0,0,0,0.02); border-radius:16px; font-size:12px; color:#9ca3af; text-align:center; line-height:1.4;">
+          <i data-lucide="check" style="width:14px;height:14px;display:inline-block;vertical-align:middle;margin-right:4px;"></i> In unter 30 Sekunden live.
+        </div>
       </div>
     </section>
 
-    <section class="view" id="v-provider-onboarding-first-dish">
-      <div class="panel" style="padding:20px; padding-bottom:120px;">
-        <h2 style="font-size:20px; font-weight:900; margin-bottom:20px;">Erstes Gericht anlegen</h2>
+    <section class="view onboarding-view" id="v-provider-onboarding-first-dish">
+      <div class="panel">
+        <h2 style="font-size:24px; font-weight:900; margin-bottom:8px; letter-spacing:-0.02em;">Erstes Gericht anlegen</h2>
+        <p style="font-size:15px; color:#64748b; margin-bottom:24px;">Was bietest du heute an? Basis-Infos genügen.</p>
         
-        <div style="margin-bottom:16px;">
-          <label style="display:block; font-size:14px; font-weight:600; margin-bottom:8px;">Gerichtname *</label>
-          <input class="field" type="text" id="onboardingDishName" placeholder="z.B. Kürbissuppe" required />
+        <div style="margin-bottom:20px;">
+          <label style="display:block; font-size:13px; font-weight:700; color:#9ca3af; text-transform:uppercase; margin-bottom:8px; letter-spacing:0.03em;">Gerichtname *</label>
+          <input class="field" type="text" id="onboardingDishName" placeholder="z.B. Kürbissuppe" required style="width:100%; height:52px; border-radius:12px; border:1.5px solid #eee; padding:0 16px; font-size:16px;" />
         </div>
 
-        <div style="margin-bottom:16px;">
-          <label style="display:block; font-size:14px; font-weight:600; margin-bottom:8px;">Preis (€) *</label>
-          <input class="field" type="number" id="onboardingDishPrice" placeholder="z.B. 8,50" step="0.10" inputmode="decimal" required />
+        <div style="margin-bottom:20px;">
+          <label style="display:block; font-size:13px; font-weight:700; color:#9ca3af; text-transform:uppercase; margin-bottom:8px; letter-spacing:0.03em;">Preis (€) *</label>
+          <input class="field" type="number" id="onboardingDishPrice" placeholder="z.B. 8,50" step="0.10" inputmode="decimal" required style="width:100%; height:52px; border-radius:12px; border:1.5px solid #eee; padding:0 16px; font-size:16px;" />
         </div>
 
-        <div style="margin-bottom:16px;">
-          <label style="display:block; font-size:14px; font-weight:600; margin-bottom:8px;">Kategorie *</label>
-          <div style="display:flex; gap:8px;">
+        <div style="margin-bottom:20px;">
+          <label style="display:block; font-size:13px; font-weight:700; color:#9ca3af; text-transform:uppercase; margin-bottom:8px; letter-spacing:0.03em;">Kategorie *</label>
+          <div style="display:flex; gap:10px;">
             <label class="radio-pill">
               <input type="radio" name="dishDiet" value="Fleisch" required>
-              <span>Fleisch</span>
+              <span style="min-width:80px; text-align:center;">Fleisch</span>
             </label>
             <label class="radio-pill">
               <input type="radio" name="dishDiet" value="Vegetarisch">
-              <span>Veggie</span>
+              <span style="min-width:80px; text-align:center;">Veggie</span>
             </label>
             <label class="radio-pill">
               <input type="radio" name="dishDiet" value="Vegan">
-              <span>Vegan</span>
+              <span style="min-width:80px; text-align:center;">Vegan</span>
             </label>
           </div>
-          <style>
-            .radio-pill input { display:none; }
-            .radio-pill span {
-              display:inline-block; padding:8px 16px; border-radius:20px;
-              background:#f0f0f0; color:#333; font-weight:600; font-size:14px;
-              border:1px solid transparent; cursor:pointer; transition:all 0.2s;
-            }
-            .radio-pill input:checked + span {
-              background:#FFD700; color:#000; border-color:#e6c200;
-              box-shadow:0 2px 4px rgba(0,0,0,0.1);
-            }
-          </style>
         </div>
 
-        <div style="margin-bottom:16px;">
-          <label style="display:block; font-size:14px; font-weight:600; margin-bottom:8px;">Beschreibung <span style="font-weight:400; color:#666;">(optional)</span></label>
-          <textarea class="field" id="onboardingDishDesc" rows="3" placeholder="z.B. mit frischen Kräutern und Croutons" style="resize:none;"></textarea>
+        <div style="margin-bottom:20px;">
+          <label style="display:block; font-size:13px; font-weight:700; color:#9ca3af; text-transform:uppercase; margin-bottom:8px; letter-spacing:0.03em;">Beschreibung <span style="font-weight:400; color:#9ca3af; text-transform:none;">(optional)</span></label>
+          <textarea class="field" id="onboardingDishDesc" rows="2" placeholder="z.B. mit frischen Kräutern" style="width:100%; border-radius:12px; border:1.5px solid #eee; padding:12px 16px; font-size:15px; resize:none;"></textarea>
         </div>
         
-        <div style="display:flex; gap:12px; margin-bottom:16px;">
+        <div style="display:flex; gap:12px; margin-bottom:20px;">
           <div style="flex:1;">
-            <label style="display:block; font-size:14px; font-weight:600; margin-bottom:8px;">Abholzeit von *</label>
-            <input class="field" type="time" id="onboardingPickupTimeStart" required />
+            <label style="display:block; font-size:13px; font-weight:700; color:#9ca3af; text-transform:uppercase; margin-bottom:8px;">Von</label>
+            <input class="field" type="time" id="onboardingPickupTimeStart" required style="width:100%; height:52px; border-radius:12px; border:1.5px solid #eee; padding:0 16px; font-size:16px;" />
           </div>
           <div style="flex:1;">
-            <label style="display:block; font-size:14px; font-weight:600; margin-bottom:8px;">bis *</label>
-            <input class="field" type="time" id="onboardingPickupTimeEnd" required />
+            <label style="display:block; font-size:13px; font-weight:700; color:#9ca3af; text-transform:uppercase; margin-bottom:8px;">Bis</label>
+            <input class="field" type="time" id="onboardingPickupTimeEnd" required style="width:100%; height:52px; border-radius:12px; border:1.5px solid #eee; padding:0 16px; font-size:16px;" />
           </div>
         </div>
         
         <div style="margin-bottom:24px;">
           <div style="display:flex; gap:12px; margin-bottom:12px;">
-            <button class="btn secondary" type="button" id="btnOnboardingAddPhoto" style="flex:1; min-height:52px; background:#FFD700; color:#334155; font-weight:700; border:none;">
-              <i data-lucide="camera"></i><span>Foto aufnehmen</span>
+            <button class="btn secondary" type="button" id="btnOnboardingAddPhoto" style="flex:1; min-height:52px; background:white; color:#1a1a1a; font-weight:700; border:2px solid #eee; border-radius:14px; display:flex; align-items:center; justify-content:center; gap:8px;">
+              <i data-lucide="camera" style="width:20px;height:20px;"></i><span>Kamera</span>
             </button>
-            <button class="btn secondary" type="button" id="btnOnboardingChooseProPhoto" style="flex:1; min-height:52px; background:#2d2d2d; color:#fff; font-weight:700; border:none;">
-              <i data-lucide="image"></i><span>Aus Profi-Galerie</span>
+            <button class="btn secondary" type="button" id="btnOnboardingChooseProPhoto" style="flex:1; min-height:52px; background:#1a1a1a; color:white; font-weight:700; border:none; border-radius:14px; display:flex; align-items:center; justify-content:center; gap:8px;">
+              <i data-lucide="image" style="width:20px;height:20px;"></i><span>Galerie</span>
             </button>
           </div>
           <div id="onboardingPhotoPreview" style="display:none; margin-top:12px; position:relative;">
-            <img id="onboardingPhotoPreviewImg" style="width:100%; max-height:200px; object-fit:cover; border-radius:12px;" />
-            <div id="onboardingPhotoWatermark" style="display:none; position:absolute; bottom:8px; left:8px; right:8px; background:rgba(0,0,0,0.7); color:#fff; padding:6px 12px; border-radius:8px; font-size:11px; text-align:center;">
-              Serviervorschlag – Original weicht ab
-            </div>
+            <img id="onboardingPhotoPreviewImg" style="width:100%; max-height:200px; object-fit:cover; border-radius:16px; border:1px solid #eee;" />
           </div>
         </div>
-        
-        <!-- Profi-Galerie Modal -->
-        <div class="backdrop" id="proPhotoBd" onclick="closeProPhotoGallery()" style="display:none;"></div>
-        <div class="sheet" id="proPhotoSheet" style="max-width:600px; max-height:80vh; overflow:hidden; display:flex; flex-direction:column;">
-          <div style="padding:20px; border-bottom:1px solid var(--border);">
-            <h3 style="margin:0; font-size:20px; font-weight:900;">Profi-Galerie</h3>
-            <p style="margin:8px 0 0; font-size:14px; color:#666;">Wähle ein hochwertiges Stock-Foto aus</p>
-          </div>
-          
-          <!-- Kategorien-Tabs -->
-          <div style="display:flex; gap:8px; padding:16px; border-bottom:1px solid var(--border); overflow-x:auto; scrollbar-width:none;">
-            <button class="pro-photo-category-tab active" data-category="all" style="padding:8px 16px; border-radius:12px; background:#FFD700; color:#334155; font-weight:700; border:none; white-space:nowrap;">Alle</button>
-            <button class="pro-photo-category-tab" data-category="klassiker" style="padding:8px 16px; border-radius:12px; background:#f5f5f5; color:#666; font-weight:600; border:none; white-space:nowrap;">Klassiker</button>
-            <button class="pro-photo-category-tab" data-category="deftig" style="padding:8px 16px; border-radius:12px; background:#f5f5f5; color:#666; font-weight:600; border:none; white-space:nowrap;">Deftig</button>
-            <button class="pro-photo-category-tab" data-category="eintoepfe" style="padding:8px 16px; border-radius:12px; background:#f5f5f5; color:#666; font-weight:600; border:none; white-space:nowrap;">Eintöpfe</button>
-            <button class="pro-photo-category-tab" data-category="modern" style="padding:8px 16px; border-radius:12px; background:#f5f5f5; color:#666; font-weight:600; border:none; white-space:nowrap;">Modern</button>
-          </div>
-          
-          <!-- Zuletzt genutzt -->
-          <div id="proPhotoRecent" style="padding:16px; border-bottom:1px solid var(--border); display:none;">
-            <div style="font-size:14px; font-weight:700; margin-bottom:12px; color:#666;">Zuletzt genutzt</div>
-            <div id="proPhotoRecentGrid" style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px;">
-              <!-- Wird dynamisch befüllt -->
-            </div>
-          </div>
-          
-          <!-- Galerie-Grid -->
-          <div style="flex:1; overflow-y:auto; padding:16px;">
-            <div id="proPhotoGrid" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:12px;">
-              <!-- Wird dynamisch befüllt -->
-            </div>
-          </div>
-        </div>
-        
-        <div style="display:flex; gap:12px;">
-          <button class="btn secondary" type="button" id="btnOnboardingFirstDishBack" style="flex:1; min-height:44px;">
-            Zurück
-          </button>
-          <button class="btn-primary" type="button" id="btnOnboardingFirstDishNext" style="flex:1; min-height:56px;">
-            Weiter
-          </button>
-        </div>
+      </div>
+
+      <div class="onboarding-actions">
+        <button class="secondary" type="button" id="btnOnboardingFirstDishBack">Zurück</button>
+        <button class="btn-primary" type="button" id="btnOnboardingFirstDishNext">Weiter</button>
       </div>
     </section>
 
-    <section class="view" id="v-provider-onboarding-signup">
-      <div class="panel" style="padding:20px; padding-bottom:120px;">
-        <h2 style="font-size:20px; font-weight:900; margin-bottom:8px;">Speichern & weitermachen</h2>
-        <p style="font-size:14px; line-height:1.5; margin-bottom:24px; color:rgba(0,0,0,0.5);">
-          Erstelle ein Konto, um dein Gericht zu speichern.
-        </p>
+    <section class="view onboarding-view" id="v-provider-onboarding-signup">
+      <div class="panel">
+        <h2 style="font-size:24px; font-weight:900; margin-bottom:8px; letter-spacing:-0.02em;">Speichern & weitermachen</h2>
+        <p style="font-size:15px; color:#64748b; margin-bottom:24px;">Erstelle ein kostenloses Konto, um dein Inserat zu sichern.</p>
         
-        <div style="margin-bottom:16px;">
-          <label style="display:block; font-size:14px; font-weight:600; margin-bottom:8px;">E-Mail *</label>
-          <input class="field" type="email" id="onboardingEmail" placeholder="deine@email.de" required autocomplete="email" />
+        <div style="margin-bottom:20px;">
+          <label style="display:block; font-size:13px; font-weight:700; color:#9ca3af; text-transform:uppercase; margin-bottom:8px; letter-spacing:0.03em;">E-Mail *</label>
+          <input class="field" type="email" id="onboardingEmail" placeholder="deine@email.de" required autocomplete="email" style="width:100%; height:52px; border-radius:12px; border:1.5px solid #eee; padding:0 16px; font-size:16px;" />
         </div>
         
         <div style="margin-bottom:24px;">
-          <label style="display:block; font-size:14px; font-weight:600; margin-bottom:8px;">Passwort *</label>
-          <input class="field" type="password" id="onboardingPassword" placeholder="Mindestens 8 Zeichen" required autocomplete="new-password" />
+          <label style="display:block; font-size:13px; font-weight:700; color:#9ca3af; text-transform:uppercase; margin-bottom:8px; letter-spacing:0.03em;">Passwort *</label>
+          <input class="field" type="password" id="onboardingPassword" placeholder="Mindestens 8 Zeichen" required autocomplete="new-password" style="width:100%; height:52px; border-radius:12px; border:1.5px solid #eee; padding:0 16px; font-size:16px;" />
         </div>
         
-        <button class="btn-primary" type="button" id="btnOnboardingSignupCreate" style="width:100%; min-height:56px; margin-bottom:12px;">
-          Konto erstellen
-        </button>
-        <button class="btn secondary" type="button" id="btnOnboardingSignupLater" style="width:100%; min-height:44px;">
-          Ich habe schon ein Konto
-        </button>
-        
-        <div style="margin-top:16px; font-size:12px; color:var(--muted); text-align:center;">
-          Inseratsgebühr nur bei Veröffentlichung · keine Mindestlaufzeit
+        <div style="margin-top:auto; padding:16px; background:#f8f7f2; border-radius:16px; font-size:13px; color:#64748b; line-height:1.5; border:1px solid rgba(0,0,0,0.03);">
+          <i data-lucide="shield-check" style="width:16px;height:16px;display:inline-block;vertical-align:middle;margin-right:4px;color:#10b981;"></i>
+          Inseratsgebühr fällt erst bei Veröffentlichung an. Keine versteckten Kosten.
         </div>
+      </div>
+
+      <div class="onboarding-actions">
+        <button class="secondary" type="button" id="btnOnboardingSignupLater">Login</button>
+        <button class="btn-primary" type="button" id="btnOnboardingSignupCreate">Konto erstellen</button>
       </div>
     </section>
 
-    <section class="view" id="v-provider-onboarding-business">
-      <div class="panel" style="padding:20px;">
-        <h2 style="font-size:20px; font-weight:900; margin-bottom:20px;">Dein Betrieb</h2>
+    <section class="view onboarding-view" id="v-provider-onboarding-business">
+      <div class="panel">
+        <h2 style="font-size:24px; font-weight:900; margin-bottom:8px; letter-spacing:-0.02em;">Dein Betrieb</h2>
+        <p style="font-size:15px; color:#64748b; margin-bottom:24px;">Fast fertig! Nur noch ein paar Details zu deinem Standort.</p>
         
-        <div style="margin-bottom:16px;">
-          <label style="display:block; font-size:14px; font-weight:600; margin-bottom:8px;">Betriebsname *</label>
-          <input class="field" type="text" id="onboardingBusinessName" placeholder="z.B. Café Sonnenschein" required />
+        <div style="margin-bottom:20px;">
+          <label style="display:block; font-size:13px; font-weight:700; color:#9ca3af; text-transform:uppercase; margin-bottom:8px; letter-spacing:0.03em;">Betriebsname *</label>
+          <input class="field" type="text" id="onboardingBusinessName" placeholder="z.B. Café Sonnenschein" required style="width:100%; height:52px; border-radius:12px; border:1.5px solid #eee; padding:0 16px; font-size:16px;" />
         </div>
         
         <div style="margin-bottom:24px;">
-          <label style="display:block; font-size:14px; font-weight:600; margin-bottom:8px;">Stadt oder Adresse *</label>
-          <input class="field" type="text" id="onboardingCityOrAddress" placeholder="z.B. Stuttgart oder Hauptstraße 1, 70173 Stuttgart" required />
+          <label style="display:block; font-size:13px; font-weight:700; color:#9ca3af; text-transform:uppercase; margin-bottom:8px; letter-spacing:0.03em;">Stadt oder Adresse *</label>
+          <input class="field" type="text" id="onboardingCityOrAddress" placeholder="z.B. Stuttgart" required style="width:100%; height:52px; border-radius:12px; border:1.5px solid #eee; padding:0 16px; font-size:16px;" />
         </div>
         
-        <div class="hint" style="font-size:13px; margin-bottom:24px; color:var(--muted);">
-          Diese Angaben kannst du jederzeit ändern.
+        <div class="hint" style="font-size:14px; margin-bottom:24px; color:#64748b; line-height:1.5; padding:16px; background:white; border-radius:16px; border:1px solid #eee;">
+          <i data-lucide="info" style="width:18px;height:18px;display:inline-block;vertical-align:middle;margin-right:8px;color:var(--brand);"></i>
+          Diese Angaben kannst du später in deinem Profil jederzeit verfeinern.
         </div>
-        
-        <div style="display:flex; gap:12px;">
-          <button class="btn secondary" type="button" id="btnOnboardingBusinessBack" style="flex:1; min-height:44px;">
-            Zurück
-          </button>
-          <button class="btn-primary" type="button" id="btnOnboardingBusinessNext" style="flex:1; min-height:56px;">
-            Weiter
-          </button>
-        </div>
+      </div>
+
+      <div class="onboarding-actions">
+        <button class="secondary" type="button" id="btnOnboardingBusinessBack">Zurück</button>
+        <button class="btn-primary" type="button" id="btnOnboardingBusinessNext">Weiter</button>
       </div>
     </section>
 
-    <section class="view" id="v-provider-onboarding-preview">
-      <div class="panel" style="padding:20px;">
-        <h2 style="font-size:20px; font-weight:900; margin-bottom:8px;">So sehen Kunden dein Gericht</h2>
-        <p style="font-size:14px; line-height:1.5; margin-bottom:20px; color:var(--muted);">
-          So erscheint dein Gericht später für Kunden.
-        </p>
+    <section class="view onboarding-view" id="v-provider-onboarding-preview">
+      <div class="panel">
+        <h2 style="font-size:24px; font-weight:900; margin-bottom:8px; letter-spacing:-0.02em;">Vorschau</h2>
+        <p style="font-size:15px; color:#64748b; margin-bottom:24px;">So erscheint dein Gericht für Kunden in der App.</p>
         
-        <div style="margin-bottom:20px; padding:12px; background:#f0f7f0; border-radius:12px; border:1px solid #4caf50;">
-          <div style="font-weight:600; font-size:13px; color:#2e7d32; margin-bottom:4px;">Vorschau · noch nicht veröffentlicht</div>
+        <div style="margin-bottom:24px; padding:14px 16px; background:#f0f9ff; border-radius:16px; border:1px solid #bae6fd; display:flex; align-items:center; gap:12px;">
+          <i data-lucide="eye" style="width:20px;height:20px;color:#0ea5e9;"></i>
+          <div style="font-weight:700; font-size:14px; color:#0369a1;">Vorschau-Modus</div>
         </div>
         
         <div id="onboardingPreviewCard" style="margin-bottom:24px;">
           <!-- Wird dynamisch befüllt -->
         </div>
-        
-        <button class="btn-primary" type="button" id="btnOnboardingPreviewDashboard" style="width:100%; min-height:56px; margin-bottom:12px;">
-          Weiter zum Dashboard
-        </button>
-        <button class="btn secondary" type="button" id="btnOnboardingPreviewEdit" style="width:100%; min-height:44px;">
-          Gericht bearbeiten
-        </button>
+      </div>
+
+      <div class="onboarding-actions">
+        <button class="secondary" type="button" id="btnOnboardingPreviewEdit">Bearbeiten</button>
+        <button class="btn-primary" type="button" id="btnOnboardingPreviewDashboard">Fertigstellen</button>
       </div>
     </section>
 
     <!-- PROVIDER APP - Dashboard 2.1 "Stolz & Performance" (#f8f7f2, klare Kennzahlen, 3 Säulen Pills) -->
-    <section class="view" id="v-provider-home" style="min-height:100vh; padding-bottom:120px; background:#f8f7f2;">
+    <section class="view" id="v-provider-home" style="min-height:100vh; padding-bottom:140px; background:var(--provider-bg);">
       
       <!-- 1. Header: Meine Küche & Kennzahlen -->
-      <header style="background:#fff; padding:24px 20px; box-shadow:0 1px 3px rgba(0,0,0,0.06);">
-        <div style="display:flex; align-items:center; gap:12px; margin-bottom:24px;">
-          <span style="font-size:28px;">🔪</span>
-          <h1 style="margin:0; font-size:24px; font-weight:900; letter-spacing:-0.02em; color:#1a1a1a;">Meine Küche</h1>
+      <header style="background:#fff; padding:24px 20px 20px; border-bottom:1px solid rgba(0,0,0,0.05); position:sticky; top:0; z-index:50;">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:24px;">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <div style="width:40px; height:40px; background:var(--brand); border-radius:12px; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(255,215,0,0.2);">
+              <i data-lucide="chef-hat" style="width:22px; height:22px; color:#1a1a1a;"></i>
+            </div>
+            <h1 style="margin:0; font-size:22px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a;">Meine Küche</h1>
+          </div>
+          <button id="btnProviderHomeRefresh" style="background:rgba(0,0,0,0.03); border:none; width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; color:#64748b;">
+            <i data-lucide="refresh-cw" style="width:18px; height:18px;"></i>
+          </button>
         </div>
-        <!-- Top Navigation / Archiv-Übersicht: 3 Kennzahlen -->
-        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:0; margin-bottom:24px; border-bottom:1px solid #f1f1f1; padding-bottom:24px;">
-          <div style="display:flex; flex-direction:column; align-items:center;">
-            <span style="font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:0.1em; color:#9ca3af; margin-bottom:4px;">Tagesessen</span>
-            <span id="dashboardTagesessenCount" style="font-size:24px; font-weight:900; color:#1a1a1a;">0</span>
+
+        <!-- Top Stats: 3 Kennzahlen -->
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px;">
+          <div style="text-align:center;">
+            <span id="dashboardTagesessenCount" style="display:block; font-size:24px; font-weight:950; color:#1a1a1a; line-height:1;">0</span>
+            <span style="font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:0.05em; color:#9ca3af; margin-top:6px; display:block;">Live</span>
           </div>
-          <div style="display:flex; flex-direction:column; align-items:center; border-left:1px solid #f1f1f1; border-right:1px solid #f1f1f1;">
-            <span style="font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:0.1em; color:#9ca3af; margin-bottom:4px;">Abholungen</span>
-            <span id="dashboardAbholungenCount" style="font-size:24px; font-weight:900; color:#3b82f6;">0</span>
+          <div style="text-align:center; border-left:1px solid #eee; border-right:1px solid #eee;">
+            <span id="dashboardAbholungenCount" style="display:block; font-size:24px; font-weight:950; color:var(--brand2); line-height:1;">0</span>
+            <span style="font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:0.05em; color:#9ca3af; margin-top:6px; display:block;">Abholungen</span>
           </div>
-          <div style="display:flex; flex-direction:column; align-items:center;">
-            <span style="font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:0.1em; color:#9ca3af; margin-bottom:4px;">Kochbuch</span>
-            <span id="dashboardKochbuchCount" style="font-size:24px; font-weight:900; color:#1a1a1a; opacity:0.4;">0</span>
-          </div>
-        </div>
-        <!-- Finanzen: Umsatz heute (Netto nach Gebühren) -->
-        <div style="display:flex; justify-content:space-between; align-items:center; padding:0 8px;">
-          <span style="font-size:14px; font-weight:700; color:#9ca3af;">Mein Umsatz heute:</span>
-          <div style="text-align:right;">
-            <span id="dashboardUmsatzToday" style="font-size:24px; font-weight:900; color:#16a34a;">0,00 €</span>
-            <p style="margin:4px 0 0; font-size:9px; font-weight:700; color:#9ca3af; text-transform:uppercase;">Netto nach Gebühren</p>
+          <div style="text-align:center;">
+            <span id="dashboardUmsatzToday" style="display:block; font-size:20px; font-weight:950; color:#1a1a1a; line-height:1;">0,00 €</span>
+            <span style="font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:0.05em; color:#9ca3af; margin-top:6px; display:block;">Umsatz</span>
           </div>
         </div>
       </header>
 
-      <!-- UI-Highlight: 100% Flexibel Badge (Pay-as-you-go Versprechen) -->
-      <div style="padding:0 20px 12px; text-align:center;">
-        <span style="display:inline-block; padding:8px 16px; border-radius:999px; background:rgba(16,185,129,0.12); color:#059669; font-size:13px; font-weight:700;">100% Flexibel: Kein Abo. Keine Laufzeit.</span>
-      </div>
+      <div style="padding:20px; max-width:500px; margin:0 auto;">
+        
+        <!-- Status & Flex-Versprechen -->
+        <div style="margin-bottom:24px; padding:16px; background:white; border-radius:20px; border:1px solid rgba(0,0,0,0.04); display:flex; align-items:center; gap:12px;">
+          <div style="width:10px; height:10px; background:#10b981; border-radius:50%; box-shadow:0 0 0 4px rgba(16,185,129,0.1);"></div>
+          <span style="font-size:14px; font-weight:700; color:#1a1a1a;">100% Flexibel: Kein Abo.</span>
+          <span style="font-size:13px; color:#64748b; margin-left:auto;">Standort aktiv</span>
+        </div>
 
-      <!-- CTA: Jetzt inserieren (kompakt) -->
-      <div style="padding:16px 20px;">
-        <button type="button" id="btnProviderDashboardCTA" class="provider-dashboard-cta" style="width:100%; background:#ffde00; color:#1a1a1a; padding:16px 20px; border-radius:20px; border:none; box-shadow:0 4px 0 0 #d1b600; font-size:16px; font-weight:800; cursor:pointer; transition:transform 0.15s; display:flex; align-items:center; justify-content:center; gap:10px;">
-          <span style="font-size:22px;">＋</span> JETZT FÜR 4,99 € INSERIEREN
-        </button>
-      </div>
-
-      <div style="padding:0 20px 24px; max-width:28rem; margin:0 auto;">
-
-        <!-- 2. Aktives Inserat: ImmoScout-Style (Bild + Live-Badge + Preis, Titel + Auge/Herz/Check, 3 Säulen Pills) -->
-        <section style="margin-bottom:24px;" id="providerActiveListingsSection">
-          <div id="providerActiveListings" style="display:flex; flex-direction:column; gap:20px;"></div>
-        </section>
-
-        <!-- Quick-Info Leiste: Live Abholnummern (Referenz 97525) -->
-        <section style="padding:16px; background:#fff; border-radius:16px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 1px 3px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04);">
-          <span style="font-size:12px; font-weight:700; color:rgba(0,0,0,0.4); text-transform:uppercase;">Live Abholnummern</span>
-          <div id="providerNextPickupPills" style="display:flex; gap:8px; overflow-x:auto; scrollbar-width:none;">
-            <!-- Wird von renderProviderHome befüllt -->
+        <!-- 2. Aktives Inserat -->
+        <div style="margin-bottom:32px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+            <h3 style="font-size:18px; font-weight:900; color:#1a1a1a; margin:0;">Aktive Inserate</h3>
+            <span class="badge" style="background:#ffde00; color:#1a1a1a; font-weight:800;">LIVE</span>
           </div>
-        </section>
-
-        <!-- Quick Actions Grid - Light -->
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:24px;">
-          <div id="kpiCardTagesessen" style="background:#fff; padding:16px; border-radius:20px; border:1px solid rgba(0,0,0,0.04); cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.03); transition:transform 0.1s;">
-            <div style="width:40px; height:40px; background:rgba(255, 184, 0, 0.1); border-radius:12px; display:flex; align-items:center; justify-content:center; margin-bottom:12px;">
-              <i data-lucide="utensils" style="color:#FFB800; width:20px; height:20px;"></i>
-            </div>
-            <div style="font-size:13px; font-weight:600; color:rgba(0,0,0,0.5); margin-bottom:4px;">Dein Tagesessen</div>
-            <div id="kpiTagesessenDish" style="font-size:15px; font-weight:700; color:#1a1a1a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">–</div>
-          </div>
-          
-          <div id="kpiCardKochbuch" style="background:#fff; padding:16px; border-radius:20px; border:1px solid rgba(0,0,0,0.04); cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.03); transition:transform 0.1s;">
-            <div style="width:40px; height:40px; background:rgba(76, 175, 80, 0.1); border-radius:12px; display:flex; align-items:center; justify-content:center; margin-bottom:12px;">
-              <i data-lucide="book-open" style="color:#4CAF50; width:20px; height:20px;"></i>
-            </div>
-            <div style="font-size:13px; font-weight:600; color:rgba(0,0,0,0.5); margin-bottom:4px;">Kochbuch</div>
-            <div id="kpiKochbuchCount" style="font-size:15px; font-weight:700; color:#1a1a1a;">0 Gerichte</div>
+          <div id="providerActiveListings" style="display:flex; flex-direction:column; gap:16px;">
+            <!-- Wird dynamisch befüllt -->
           </div>
         </div>
 
-        <!-- Wochenvorschau Section - Light -->
-        <div style="margin-bottom:24px;">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; padding:0 4px;">
-            <h3 style="font-size:18px; font-weight:800; color:#1a1a1a; margin:0;">Deine Woche</h3>
-            <span style="font-size:13px; color:rgba(0,0,0,0.4); font-weight:500;">Planung</span>
+        <!-- Quick Actions Grid -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:32px;">
+          <div class="provider-kpi-card" id="kpiCardKochbuch">
+            <div class="provider-kpi-icon" style="background:rgba(76, 175, 80, 0.1);">
+              <i data-lucide="book-open" style="color:#4CAF50; width:22px; height:22px;"></i>
+            </div>
+            <div style="font-size:13px; font-weight:700; color:#9ca3af; text-transform:uppercase; letter-spacing:0.03em; margin-bottom:4px;">Kochbuch</div>
+            <div id="kpiKochbuchCount" style="font-size:18px; font-weight:900; color:#1a1a1a;">0 Gerichte</div>
           </div>
           
-          <div style="background:#fff; border-radius:24px; padding:20px; border:1px solid rgba(0,0,0,0.04); box-shadow:0 2px 12px rgba(0,0,0,0.03);">
-            <div class="dayrow" id="providerWeekDays" style="margin-bottom:16px; gap:8px; justify-content:space-between;"></div>
-            <div id="providerWeekDayContent" style="min-height:80px; display:flex; align-items:center; justify-content:center; border:2px dashed rgba(0,0,0,0.08); border-radius:16px; color:rgba(0,0,0,0.3); font-size:14px; font-weight:500;">
-              Wähle einen Tag
+          <div class="provider-kpi-card" id="kpiCardProfile">
+            <div class="provider-kpi-icon" style="background:rgba(59, 130, 246, 0.1);">
+              <i data-lucide="settings" style="color:#3b82f6; width:22px; height:22px;"></i>
+            </div>
+            <div style="font-size:13px; font-weight:700; color:#9ca3af; text-transform:uppercase; letter-spacing:0.03em; margin-bottom:4px;">Einstellungen</div>
+            <div style="font-size:18px; font-weight:900; color:#1a1a1a;">Profil</div>
+          </div>
+        </div>
+
+        <!-- Wochenvorschau Section -->
+        <div style="margin-bottom:32px;">
+          <h3 style="font-size:18px; font-weight:900; color:#1a1a1a; margin:0 0 16px;">Deine Woche</h3>
+          <div style="background:#fff; border-radius:28px; padding:24px; border:1px solid rgba(0,0,0,0.04); box-shadow:0 4px 20px rgba(0,0,0,0.02);">
+            <div class="dayrow" id="providerWeekDays" style="margin-bottom:20px; gap:8px; justify-content:space-between;"></div>
+            <div id="providerWeekDayContent" style="min-height:100px; display:flex; flex-direction:column; align-items:center; justify-content:center; border:2px dashed #f1f1f1; border-radius:20px; color:#9ca3af; font-size:14px; font-weight:600; text-align:center; padding:20px;">
+              <i data-lucide="calendar" style="width:24px;height:24px;margin-bottom:8px;opacity:0.3;"></i>
+              Wähle einen Tag zur Planung
             </div>
           </div>
         </div>
 
-        <!-- Empty State (Hidden by default) - Light -->
-        <div id="providerEmptyDashboard" style="display:none; text-align:center; padding:40px 20px;">
-          <div style="width:80px; height:80px; background:rgba(0,0,0,0.03); border-radius:50%; margin:0 auto 20px; display:flex; align-items:center; justify-content:center;">
-            <i data-lucide="chef-hat" style="width:40px; height:40px; color:rgba(0,0,0,0.3);"></i>
+        <!-- Empty State -->
+        <div id="providerEmptyDashboard" style="display:none; text-align:center; padding:60px 24px; background:white; border-radius:32px; border:1px solid rgba(0,0,0,0.04);">
+          <div style="width:80px; height:80px; background:var(--brand); border-radius:30px; margin:0 auto 24px; display:flex; align-items:center; justify-content:center; box-shadow:0 8px 24px rgba(255,215,0,0.2);">
+            <i data-lucide="plus" style="width:40px; height:40px; color:#1a1a1a;"></i>
           </div>
-          <h3 style="font-size:20px; font-weight:800; color:#1a1a1a; margin-bottom:8px;">Willkommen!</h3>
-          <p style="color:rgba(0,0,0,0.5); margin-bottom:24px;">Starte jetzt und erstelle dein erstes Gericht.</p>
-          <button id="btnProviderEmptyAddDish" style="background:#FFD700; color:#000; border:none; padding:14px 24px; border-radius:14px; font-weight:700;">
-            Erstes Gericht erstellen
+          <h3 style="font-size:22px; font-weight:950; color:#1a1a1a; margin-bottom:12px; letter-spacing:-0.02em;">Willkommen!</h3>
+          <p style="color:#64748b; margin-bottom:32px; line-height:1.5;">Du hast noch keine Inserate erstellt. Starte jetzt und werde für Kunden sichtbar.</p>
+          <button class="btn-primary" id="btnProviderEmptyAddDish" style="width:100%; min-height:56px; border-radius:16px;">
+            Erstes Inserat erstellen
           </button>
         </div>
 
       </div>
 
-      <!-- FAB (Floating Action Button) -->
-      <button class="fab" id="fabProviderAddOffer" type="button" aria-label="Gericht hinzufügen" style="position:fixed; bottom:90px; right:16px; width:56px; height:56px; border-radius:28px; background:var(--brand); color:#111; border:none; box-shadow:0 4px 12px rgba(0,0,0,.2); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:24px; font-weight:900; z-index:20;">
-        +
+      <!-- Modern FAB -->
+      <button class="fab-provider" id="fabProviderAddOffer" type="button">
+        <i data-lucide="plus"></i>
+        <span>Inserat erstellen</span>
       </button>
-      <div id="fabProviderAddOfferLabel" style="position:fixed; bottom:154px; right:16px; background:rgba(0,0,0,.8); color:#fff; padding:6px 12px; border-radius:8px; font-size:13px; white-space:nowrap; pointer-events:none; opacity:0; transition:opacity .2s; z-index:21;">
-        + Inserat
-      </div>
     </section>
 
-    <section class="view" id="v-provider-pickups" style="min-height:100vh; padding:20px; padding-bottom:100px;">
-      <div class="provider-header-bar" style="justify-content:space-between; margin:-20px -20px 24px -20px;">
-        <h1 style="margin:0;">Abholungen</h1>
-        <div style="display:flex; gap:8px;">
-          <button id="btnKitchenListPDF" style="background:rgba(0,0,0,0.05); border:none; width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; color:#333;">
-            <i data-lucide="file-text" style="width:18px; height:18px;"></i>
-          </button>
-          <button id="btnKitchenListEmail" style="background:rgba(0,0,0,0.05); border:none; width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; color:#333;">
-            <i data-lucide="mail" style="width:18px; height:18px;"></i>
-          </button>
-        </div>
-      </div>
-
-      <div style="padding:20px;">
-        <!-- Subheader Status -->
-        <div id="provPickupsSubheader" style="margin-bottom:20px; font-size:14px; color:rgba(0,0,0,0.6);">
-          <!-- Wird dynamisch befüllt -->
+    <section class="view onboarding-view" id="v-provider-pickups">
+      <header style="background:#fff; padding:24px 20px 20px; border-bottom:1px solid rgba(0,0,0,0.05); position:sticky; top:0; z-index:50;">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
+          <h1 style="margin:0; font-size:24px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a;">Abholungen</h1>
+          <div style="display:flex; gap:8px;">
+            <button id="btnKitchenListPDF" style="background:rgba(0,0,0,0.03); border:none; width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; color:#64748b;">
+              <i data-lucide="file-text" style="width:20px; height:20px;"></i>
+            </button>
+            <button id="btnKitchenListEmail" style="background:rgba(0,0,0,0.03); border:none; width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; color:#64748b;">
+              <i data-lucide="mail" style="width:20px; height:20px;"></i>
+            </button>
+          </div>
         </div>
         
-        <!-- Filter Toggle (Segmented Control Style - Light) -->
-        <div class="answers" id="provPickupFilter" style="margin-bottom:24px; background:#fff; padding:4px; border-radius:12px; display:flex; border:1px solid rgba(0,0,0,0.06); box-shadow:0 2px 8px rgba(0,0,0,0.03);">
+        <!-- Filter Toggle (Segmented Control) -->
+        <div class="answers" id="provPickupFilter" style="background:#f1f3f5; padding:4px; border-radius:14px; display:flex; gap:4px; border:none; box-shadow:none;">
+          <!-- Wird dynamisch befüllt -->
+        </div>
+      </header>
+
+      <div style="padding:20px; max-width:500px; margin:0 auto; flex:1;">
+        <!-- Subheader Status -->
+        <div id="provPickupsSubheader" style="margin-bottom:20px; font-size:13px; font-weight:700; color:#9ca3af; text-transform:uppercase; letter-spacing:0.05em;">
           <!-- Wird dynamisch befüllt -->
         </div>
         
         <!-- Empty States -->
-        <div id="provPickupsEmpty" style="text-align:center; padding:60px 20px; display:none; color:rgba(0,0,0,0.5);">
-          <!-- Wird dynamisch befüllt -->
+        <div id="provPickupsEmpty" style="text-align:center; padding:80px 24px; display:none;">
+          <div style="width:80px; height:80px; background:rgba(0,0,0,0.03); border-radius:50%; margin:0 auto 20px; display:flex; align-items:center; justify-content:center;">
+            <i data-lucide="receipt" style="width:40px; height:40px; color:#cbd5e1;"></i>
+          </div>
+          <h3 style="font-size:18px; font-weight:800; color:#1a1a1a; margin-bottom:8px;">Noch keine Abholungen</h3>
+          <p style="color:#64748b; font-size:15px; line-height:1.5;">Sobald Kunden bestellen, erscheinen sie hier in Echtzeit.</p>
         </div>
         
         <!-- Pickup Grid (Theken-Grid) -->
@@ -4355,44 +4408,48 @@
         </div>
         
         <!-- Pickup List -->
-        <div id="provPickupsList" style="display:none;">
+        <div id="provPickupsList" style="display:none; flex-direction:column; gap:12px;">
           <!-- Wird dynamisch befüllt -->
         </div>
       </div>
     </section>
 
-    <!-- Provider-Wochenplan: einheitliches Layout -->
-    <section class="view" id="v-provider-week" style="min-height:100vh; padding:20px; padding-bottom:90px;">
-      <div class="provider-header-bar">
-        <h1>Wochenplan</h1>
-        <button id="btnWeekBack" class="btn-back" type="button">
-          <i data-lucide="chevron-left" style="width:24px; height:24px;"></i> Zurück
-        </button>
-      </div>
-
-      <div class="panel" style="background:#fff; border-radius:18px; padding:20px; border:1px solid rgba(0,0,0,0.05); box-shadow:0 4px 24px rgba(0,0,0,0.04);">
-        <h3 style="color:#333; display:none;">Wochenplan</h3>
-        <!-- Days Row -->
-        <div class="dayrow" id="weekDays" style="padding:0 0 16px; max-width:none; border-bottom:1px solid rgba(0,0,0,0.06); margin-bottom:16px; gap:8px;"></div>
-        
-        <!-- Content List -->
-        <div id="weekList" style="text-align:center; padding:40px 20px;">
-          <div style="width:64px; height:64px; background:rgba(0,0,0,0.03); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 16px;">
-            <i data-lucide="calendar" style="width:32px; height:32px; color:rgba(0,0,0,0.3);"></i>
-          </div>
-          <div style="font-weight:600; font-size:16px; margin-bottom:8px; color:#1a1a1a;">Keine Inserate geplant</div>
-          <div class="hint" style="font-size:14px; line-height:1.4; margin-bottom:24px; color:rgba(0,0,0,0.5);">
-            Wähle einen Tag, um Gerichte vorzuplanen.
-          </div>
-          <button class="btn secondary" type="button" id="btnWeekEmptyAdd" style="width:100%; min-height:48px; background:#FFD700; color:#000; font-weight:700; border-radius:12px; border:none;">
-            Inserat hinzufügen
+    <section class="view onboarding-view" id="v-provider-week">
+      <header style="background:#fff; padding:24px 20px 20px; border-bottom:1px solid rgba(0,0,0,0.05); position:sticky; top:0; z-index:50;">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <button id="btnWeekBack" style="background:rgba(0,0,0,0.03); border:none; width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; color:#1a1a1a;">
+            <i data-lucide="chevron-left" style="width:24px; height:24px; stroke-width:3;"></i>
           </button>
+          <h1 style="margin:0; font-size:24px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a;">Wochenplan</h1>
         </div>
-        
-        <!-- Actions -->
-        <div style="display:flex; gap:12px; margin-top:24px; border-top:1px solid rgba(0,0,0,0.06); padding-top:20px;">
-          <button class="btn secondary" type="button" id="btnWeekPdf" data-icon="print" style="display:none; flex:1; min-height:44px; background:rgba(0,0,0,0.05); border:none; color:#333; border-radius:12px; font-size:14px; font-weight:600;">PDF</button>
-          <button class="btn secondary" type="button" id="btnWeekShare" data-icon="share-2" style="display:none; flex:1; min-height:44px; background:rgba(0,0,0,0.05); border:none; color:#333; border-radius:12px; font-size:14px; font-weight:600;">Teilen</button>
+      </header>
+
+      <div style="padding:20px; max-width:500px; margin:0 auto; flex:1;">
+        <div style="background:#fff; border-radius:28px; padding:24px; border:1px solid rgba(0,0,0,0.04); box-shadow:0 4px 20px rgba(0,0,0,0.02);">
+          <!-- Days Row -->
+          <div class="dayrow" id="weekDays" style="padding:0 0 20px; border-bottom:1px solid #f1f1f1; margin-bottom:20px; gap:8px; justify-content:space-between;"></div>
+          
+          <!-- Content List -->
+          <div id="weekList" style="text-align:center; padding:40px 20px;">
+            <div style="width:80px; height:80px; background:rgba(0,0,0,0.03); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 20px;">
+              <i data-lucide="calendar" style="width:40px; height:40px; color:#cbd5e1;"></i>
+            </div>
+            <h3 style="font-size:18px; font-weight:800; color:#1a1a1a; margin-bottom:8px;">Noch nichts geplant</h3>
+            <p style="color:#64748b; font-size:15px; line-height:1.5; margin-bottom:32px;">Wähle einen Tag, um Gerichte für die Woche vorzuplanen.</p>
+            <button class="btn-primary" type="button" id="btnWeekEmptyAdd" style="width:100%; border-radius:16px;">
+              Inserat planen
+            </button>
+          </div>
+          
+          <!-- Actions -->
+          <div style="display:flex; gap:12px; margin-top:24px; border-top:1px solid #f1f1f1; padding-top:24px;">
+            <button class="btn secondary" type="button" id="btnWeekPdf" style="display:none; flex:1; min-height:52px; border-radius:14px;">
+              <i data-lucide="printer" style="width:18px;height:18px;margin-right:8px;"></i>Drucken
+            </button>
+            <button class="btn secondary" type="button" id="btnWeekShare" style="display:none; flex:1; min-height:52px; border-radius:14px;">
+              <i data-lucide="share-2" style="width:18px;height:18px;margin-right:8px;"></i>Teilen
+            </button>
+          </div>
         </div>
       </div>
     </section>
@@ -7163,6 +7220,7 @@
     
     view.classList.add('active');
     window.scrollTo({top:0,behavior:'smooth'});
+    if(typeof lucide !== 'undefined') lucide.createIcons();
     
     // Fullscreen-Abholnummer-Modal beim View-Wechsel schließen (verhindert grünes Overlay auf allen Seiten)
     if(typeof closeFullscreenCode === 'function') closeFullscreenCode();
@@ -18337,7 +18395,7 @@
       box.appendChild(catRow);
 
       setWizardContent(box);
-      wNextBtn.textContent='Weiter';
+      setWizardNext('Weiter');
       if(wBackBtn) wBackBtn.textContent='Zurück';
       return;
     }
@@ -18450,7 +18508,7 @@
       setTimeout(refreshVerdienstEl, 0);
 
       setWizardContent(box);
-      wNextBtn.textContent='Weiter';
+      setWizardNext('Weiter');
       if(typeof lucide!=='undefined') lucide.createIcons();
       return;
     }
@@ -18461,7 +18519,7 @@
       const box=document.createElement('div');
       attachListingPreview(box);
       setWizardContent(box);
-      wNextBtn.textContent='Weiter';
+      setWizardNext('Weiter');
       if(wBackBtn) wBackBtn.textContent='Zurück';
       if(typeof lucide!=='undefined') lucide.createIcons();
       return;
@@ -18968,7 +19026,7 @@
       });
       box.appendChild(ans);
       setWizardContent(box);
-      wNextBtn.textContent='Weiter';
+      setWizardNext('Weiter');
       return;
     }
 
@@ -18983,7 +19041,7 @@
       ans.appendChild(b1); ans.appendChild(b2);
       box.appendChild(ans);
       setWizardContent(box);
-      wNextBtn.textContent='Weiter';
+      setWizardNext('Weiter');
       return;
     }
 
@@ -18994,7 +19052,7 @@
       input.oninput=()=>{ w.data.dish=input.value; };
       box.appendChild(input);
       setWizardContent(box);
-      wNextBtn.textContent='Weiter';
+      setWizardNext('Weiter');
       return;
     }
 
@@ -19017,7 +19075,7 @@
       });
       box.appendChild(ans);
       setWizardContent(box);
-      wNextBtn.textContent='Weiter';
+      setWizardNext('Weiter');
       return;
     }
 
@@ -19033,7 +19091,7 @@
       ans.appendChild(yes); ans.appendChild(no);
       box.appendChild(ans);
       setWizardContent(box);
-      wNextBtn.textContent='Weiter';
+      setWizardNext('Weiter');
       return;
     }
 
@@ -19050,7 +19108,7 @@
       ans.appendChild(yes); ans.appendChild(no);
       box.appendChild(ans);
       setWizardContent(box);
-      wNextBtn.textContent='Weiter';
+      setWizardNext('Weiter');
       return;
     }
 
@@ -19063,7 +19121,7 @@
       input.oninput=()=>{ w.data.price = smartNumberToEuro(input.value); };
       box.appendChild(input);
       setWizardContent(box);
-      wNextBtn.textContent='Weiter';
+      setWizardNext('Weiter');
       return;
     }
 
@@ -19099,7 +19157,7 @@
       };
       box.appendChild(btn);
       setWizardContent(box);
-      wNextBtn.textContent='Fertig';
+      setWizardNext('Fertig', 'check');
       wNextBtn.onclick=()=>{ closeWizard(); showProviderCookbook(); };
       return;
     }
@@ -19149,7 +19207,7 @@
     box.appendChild(btn);
 
     setWizardContent(box);
-    wNextBtn.textContent='Fertig';
+    setWizardNext('Fertig', 'check');
     wNextBtn.onclick=()=>{ closeWizard(); showProviderHome(); };
   }
 
