@@ -3651,66 +3651,68 @@
 
     <!-- CUSTOMER: Discover - App-like UX (Final Spec) -->
     <section class="view customer-view active" id="v-discover">
-      <!-- Header: Einziger primärer Header – Standort | Logo | Ansicht-Toggle. Keine Filter-Leisten. -->
-      <div class="discover-header-sticky discover-header-clean" style="background:rgba(232,224,214,0.92); backdrop-filter:saturate(160%) blur(8px); -webkit-backdrop-filter:saturate(160%) blur(8px); border-bottom:1px solid rgba(0,0,0,.06);">
-        <div class="discover-header-row" style="position:relative; display:flex; align-items:center; padding:10px 16px; gap:8px;">
-          <!-- Standort (links): Nadel-Logik – Klick auf 📍 = GPS, Klick auf Text = manuelle Eingabe -->
-          <div style="position:relative; display:flex; align-items:center; gap:4px; flex-shrink:0;">
-            <button type="button" id="btnDiscoverLocationGPS" aria-label="Standort per GPS" style="display:flex; align-items:center; justify-content:center; width:36px; height:36px; border-radius:50%; border:none; background:rgba(0,0,0,.04); color:#666; cursor:pointer; transition:all 0.2s ease; flex-shrink:0;">
-              <i data-lucide="map-pin" style="width:18px;height:18px;"></i>
+      <!-- Modern Sticky Header -->
+      <header class="cust-header-sticky">
+        <div style="display:flex; align-items:center; padding:12px 16px; gap:12px;">
+          <!-- Standort-Logik -->
+          <div style="display:flex; align-items:center; gap:8px; flex:1; min-width:0;">
+            <button type="button" id="btnDiscoverLocationGPS" aria-label="Standort per GPS" style="display:flex; align-items:center; justify-content:center; width:40px; height:40px; border-radius:12px; border:none; background:#f1f3f5; color:#1a1a1a; cursor:pointer;">
+              <i data-lucide="map-pin" style="width:20px;height:20px;"></i>
             </button>
-            <button type="button" id="btnDiscoverLocationText" class="discover-location-pill-clickable" style="display:flex; align-items:center; gap:4px; padding:6px 12px; border-radius:16px; background:rgba(0,0,0,.04); border:none; font-size:13px; font-weight:600; color:#333; cursor:pointer; transition:all 0.2s ease; min-width:0;">
-              <span id="discoverCurrentLocation" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">Standort…</span>
+            <button type="button" id="btnDiscoverLocationText" style="display:flex; flex-direction:column; background:none; border:none; padding:0; cursor:pointer; min-width:0; text-align:left;">
+              <span style="font-size:11px; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:0.05em;">Dein Standort</span>
+              <span id="discoverCurrentLocation" style="font-size:15px; font-weight:700; color:#1a1a1a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Standort wählen...</span>
             </button>
-            <!-- Standort-Dropdown: fixed, damit es immer sichtbar unter dem Button liegt (nicht von sticky-Bars verdeckt) -->
-            <div id="discoverLocationExpanded" style="display:none; position:fixed; z-index:99999; background:#fff; border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.2); border:1px solid rgba(0,0,0,0.1); overflow:hidden; min-width:280px; max-width:calc(100vw - 32px);">
-              <div style="padding:16px;">
-                <div style="font-size:10px; font-weight:800; color:#9ca3af; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:12px;">Standort</div>
-                <button type="button" id="discoverLocationBtnNadel" style="width:100%; padding:14px 16px; border-radius:12px; border:2px solid rgba(0,0,0,0.08); background:rgba(255,222,0,0.12); font-size:15px; font-weight:700; color:#1a1a1a; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:16px;">
-                  <i data-lucide="map-pin" style="width:20px;height:20px;"></i>
-                  <span>Mit Nadel (GPS)</span>
-                </button>
-                <div style="font-size:12px; color:#9ca3af; text-align:center; margin-bottom:12px;">Oder</div>
-                <div style="font-size:11px; font-weight:700; color:#6b7280; margin-bottom:8px;">PLZ / Ort eingeben</div>
-                <input type="text" id="discoverLocationInput" placeholder="PLZ oder Ort eingeben..." autocomplete="address-line2" style="width:100%; padding:12px 14px; border-radius:8px; border:2px solid rgba(0,0,0,0.1); font-size:16px; background:#fff; color:#1a1a1a; outline:none; transition:border-color 0.2s ease; box-sizing:border-box; -webkit-text-fill-color:#1a1a1a;" onfocus="this.style.borderColor='#FFD700';" onblur="this.style.borderColor='rgba(0,0,0,0.1)';" />
-                <div id="discoverLocationSuggestions" style="max-height:min(200px, 40vh); overflow-y:auto; margin-top:8px;"></div>
-                <button type="button" id="discoverLocationClose" style="margin-top:12px; width:100%; padding:10px; background:rgba(0,0,0,0.06); border:none; border-radius:8px; font-size:14px; font-weight:600; color:#333; cursor:pointer;">Schließen</button>
-              </div>
+          </div>
+          <!-- Logo / Branding -->
+          <div style="font-family:'Montserrat',sans-serif; font-weight:900; font-size:18px; color:#1a1a1a; letter-spacing:-0.03em;">mittagio</div>
+        </div>
+
+        <!-- Standort-Dropdown (Bleibt funktional gleich, nur Design-Update) -->
+        <div id="discoverLocationExpanded" style="display:none; position:fixed; z-index:99999; background:#fff; border-radius:24px; box-shadow:0 20px 40px rgba(0,0,0,0.15); border:1px solid rgba(0,0,0,0.05); overflow:hidden; min-width:300px; max-width:calc(100vw - 32px); top:80px; left:16px;">
+          <div style="padding:24px;">
+            <h3 style="margin:0 0 16px; font-size:18px; font-weight:850; letter-spacing:-0.02em;">Wo suchst du?</h3>
+            <button type="button" id="discoverLocationBtnNadel" style="width:100%; height:56px; border-radius:16px; border:none; background:var(--brand); font-size:16px; font-weight:800; color:#1a1a1a; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:16px; box-shadow:0 4px 12px rgba(255,215,0,0.3);">
+              <i data-lucide="navigation" style="width:20px;height:20px;"></i>
+              <span>Aktueller Standort</span>
+            </button>
+            <div style="font-size:12px; font-weight:700; color:#94a3b8; text-align:center; margin-bottom:16px; display:flex; align-items:center; gap:10px;">
+              <div style="flex:1; height:1px; background:#f1f3f5;"></div><span>ODER</span><div style="flex:1; height:1px; background:#f1f3f5;"></div>
             </div>
+            <input type="text" id="discoverLocationInput" placeholder="PLZ oder Stadt..." style="width:100%; height:52px; padding:0 16px; border-radius:14px; border:2px solid #f1f3f5; font-size:16px; background:#f8f9fa; color:#1a1a1a; outline:none; transition:border-color 0.2s; box-sizing:border-box;" />
+            <div id="discoverLocationSuggestions" style="max-height:200px; overflow-y:auto; margin-top:8px;"></div>
+            <button type="button" id="discoverLocationClose" style="margin-top:16px; width:100%; height:44px; background:none; border:none; font-size:14px; font-weight:700; color:#64748b; cursor:pointer;">Abbrechen</button>
           </div>
         </div>
-      </div>
 
-      <!-- Sticky Categories Bar -->
-      <div class="discover-categories-sticky" id="discoverCategoriesBar" style="z-index:90;">
-        <!-- Wird dynamisch befüllt -->
-      </div>
-      
-      <!-- Sticky Days Bar (Second Layer) -->
-      <div class="discover-days-sticky" id="discoverDaysBar" style="position:sticky; top:115px; z-index:89; background:rgba(247,246,240,0.95); backdrop-filter:blur(10px); padding:8px 16px; overflow-x:auto; white-space:nowrap; display:flex; gap:10px; border-bottom:1px solid rgba(0,0,0,0.05); margin-bottom:16px; scrollbar-width:none;">
-        <!-- Wird dynamisch befüllt -->
-      </div>
-
-      <!-- Angebots-Liste (horizontale List-Cards) -->
-      <div class="discover-offers" id="discoverOffers">
-        <!-- Wird dynamisch befüllt -->
-      </div>
-      
-      <!-- Leerer Zustand (wenn keine Angebote) -->
-      <div id="discoverEmpty" style="display:none; text-align:center; padding:80px 20px;">
-        <div style="font-size:64px; margin-bottom:20px; opacity:.6;">🍽️</div>
-        <div style="font-size:18px; font-weight:900; margin-bottom:10px; color:#333; line-height:1.4;">
-          Noch keine Mittagsangebote in deiner Nähe
+        <!-- Sticky Bars (Kategorien & Tage) -->
+        <div id="discoverCategoriesBar" class="cust-chip-bar" style="padding-top:0; padding-bottom:8px; border-bottom:1px solid rgba(0,0,0,0.03);">
+          <!-- Dynamisch befüllt -->
         </div>
-        <div style="display:flex; flex-direction:column; gap:12px; max-width:280px; margin:24px auto 0;">
-          <button class="btn" type="button" onclick="openDiscoverLocationSearch();" style="width:100%;">
-            Standort ändern
-          </button>
-          <button class="btn secondary" type="button" onclick="setMode('provider')" style="width:100%;">
-            Als Anbieter starten
+        <div id="discoverDaysBar" class="cust-chip-bar" style="padding-top:8px; padding-bottom:12px;">
+          <!-- Dynamisch befüllt -->
+        </div>
+      </header>
+
+      <!-- Angebots-Liste -->
+      <main style="padding:16px; padding-bottom:120px;">
+        <div id="discoverOffers" style="display:flex; flex-direction:column; gap:16px;">
+          <!-- Dynamisch befüllt -->
+        </div>
+
+        <!-- Leerer Zustand -->
+        <div id="discoverEmpty" style="display:none; text-align:center; padding:60px 20px;">
+          <div style="width:120px; height:120px; margin:0 auto 24px; background:#f1f3f5; border-radius:40px; display:flex; align-items:center; justify-content:center;">
+            <i data-lucide="utensils-crosshaven" style="width:48px; height:48px; color:#94a3b8;"></i>
+          </div>
+          <h2 style="font-size:22px; font-weight:850; margin:0 0 12px; color:#1a1a1a; letter-spacing:-0.02em;">Hier ist es noch leer</h2>
+          <p style="font-size:15px; color:#64748b; line-height:1.6; margin-bottom:32px;">Versuche es an einem anderen Standort oder schau später wieder vorbei.</p>
+          <button class="btn-cust-primary" type="button" onclick="openDiscoverLocationSearch();" style="width:100%; max-width:280px; margin:0 auto;">
+            <i data-lucide="search"></i>
+            <span>Andere Stadt suchen</span>
           </button>
         </div>
-      </div>
+      </main>
     </section>
 
     <!-- Provider-Billing: einheitlich helles Layout -->
@@ -3800,55 +3802,51 @@
 
     <!-- CUSTOMER: Favorites – Fokus auf HEUTE, 2x2 Grid, Pull-to-Reveal -->
     <section class="view customer-view" id="v-fav">
-      <div style="padding-bottom:100px;">
-        <!-- Header: Titel linksbündig + Share-Icon rechts (verspielter App-Charakter) -->
-        <div id="favHeader" class="fav-header-wrap" style="display:flex; align-items:center; justify-content:space-between; gap:12px; padding:20px 16px 12px; backdrop-filter:blur(10px); position:sticky; top:0; z-index:80; border-bottom:1px solid rgba(0,0,0,0.05);">
-          <h1 id="favHeaderTitle" class="fav-header-title" style="font-size:20px; font-weight:700; margin:0; color:#1a1a1a; flex:1;">Deine Favoriten heute ⚡</h1>
-          <button type="button" id="btnFavShareHeader" aria-label="Teilen" style="flex-shrink:0; width:40px; height:40px; border-radius:50%; border:none; background:transparent; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s ease; color:#666;" onmouseover="this.style.color='#1a1a1a';" onmouseout="this.style.color='#666';">
-            <i data-lucide="share-2" style="width:20px;height:20px; stroke-width:2;"></i>
+      <header class="cust-header-sticky">
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px;">
+          <h1 style="font-size:20px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a; margin:0;">Deine Favoriten</h1>
+          <button type="button" id="btnFavShareHeader" aria-label="Teilen" style="width:40px; height:40px; border-radius:12px; background:#f1f3f5; border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#1a1a1a;">
+            <i data-lucide="share-2" style="width:20px;height:20px;"></i>
           </button>
         </div>
-        
+      </header>
+
+      <div style="padding-bottom:120px;">
         <!-- Empty State -->
-        <div id="favEmptyState" style="display:none; flex-direction:column; align-items:center; text-align:center; padding:60px 20px;">
-          <div style="width:140px; height:140px; margin-bottom:24px; background:linear-gradient(135deg, #FFF5F5 0%, #FFE0E0 100%); border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 10px 30px rgba(231,76,60,0.15);">
-            <i data-lucide="heart" style="width:64px; height:64px; color:#E34D4D; fill:#E34D4D;"></i>
+        <div id="favEmptyState" style="display:none; flex-direction:column; align-items:center; text-align:center; padding:80px 20px;">
+          <div style="width:120px; height:120px; margin-bottom:24px; background:rgba(227,77,77,0.05); border-radius:40px; display:flex; align-items:center; justify-content:center;">
+            <i data-lucide="heart" style="width:48px; height:48px; color:#E34D4D; fill:#E34D4D;"></i>
           </div>
-          <h3 style="font-size:22px; font-weight:900; margin:0 0 12px; color:#1a1a1a;">Noch keine Favoriten?</h3>
-          <p style="font-size:16px; color:#666; margin:0 0 32px; line-height:1.6; max-width:300px;">
-            Markiere Gerichte und Anbieter mit einem Herz, um sie hier wiederzufinden.
-          </p>
-          <button class="btn-primary" type="button" onclick="showDiscover();" style="width:100%; max-width:260px; min-height:56px; border-radius:16px; font-size:16px; font-weight:700; box-shadow:0 8px 20px rgba(0,0,0,0.1);">
-            Jetzt entdecken
+          <h2 style="font-size:22px; font-weight:850; margin:0 0 12px; color:#1a1a1a; letter-spacing:-0.02em;">Noch keine Favoriten?</h2>
+          <p style="font-size:15px; color:#64748b; line-height:1.6; margin-bottom:32px; max-width:280px;">Markiere Gerichte mit einem Herz, um sie hier direkt im Zugriff zu haben.</p>
+          <button class="btn-cust-primary" type="button" onclick="showDiscover();" style="width:100%; max-width:260px; margin:0 auto;">
+            <i data-lucide="search"></i>
+            <span>Gerichte entdecken</span>
           </button>
         </div>
         
-        <div id="favContent" style="padding:20px; display:none;">
-          <!-- 1. Ausschlussspiel: 2x2 Grid (oberste 4 Gericht-Favoriten), Jiggle + X -->
-          <div id="sectionDishesWrapper">
-            <div id="favDishes" class="fav-dishes-grid" style="display:grid; grid-template-columns:repeat(2, 1fr); gap:12px; margin-bottom:20px;"></div>
-            <div class="hint" id="emptyFavDishes" style="display:none; text-align:center; padding:32px 24px; background:rgba(0,0,0,0.03); border-radius:24px; margin-bottom:20px;">
-              <span style="font-size:32px; display:block; margin-bottom:12px;">⭐️</span>
-              <p style="font-size:15px; font-weight:600; color:#334155; margin:0 0 4px;">Noch kein Favorit heute?</p>
-              <p style="font-size:13px; color:#64748b; margin:0;">Entdecke jetzt die besten Gerichte in deiner Nähe.</p>
+        <div id="favContent" style="display:none;">
+          <!-- 2x2 Grid für Gerichte -->
+          <div id="sectionDishesWrapper" style="padding:20px 0;">
+            <h3 style="padding:0 20px; margin:0 0 16px; font-size:15px; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:0.05em;">Heute verfügbar</h3>
+            <div id="favDishes" class="fav-grid">
+              <!-- Dynamisch befüllt (fav-card) -->
             </div>
-            <!-- Share-Logik: Header-Button (btnFavShareHeader) + optionaler Fallback sichtbar nur wenn gewünscht -->
-            <div id="favShareWrap" style="display:none; margin-bottom:24px; text-align:center;">
-              <button type="button" id="btnShareMyLunch" style="padding:10px 20px; background:rgba(0,0,0,0.05); border:1px solid rgba(0,0,0,0.08); border-radius:20px; font-size:14px; font-weight:600; color:#666; cursor:pointer; display:inline-flex; align-items:center; gap:8px; transition:all 0.2s ease;" onmouseover="this.style.background='rgba(255,215,0,0.15)'; this.style.borderColor='rgba(255,215,0,0.4)'; this.style.color='#1a1a1a';" onmouseout="this.style.background='rgba(0,0,0,0.05)'; this.style.borderColor='rgba(0,0,0,0.08)'; this.style.color='#666';">
-                <i data-lucide="share-2" style="width:18px;height:18px;"></i>
-                <span>Share my Lunch</span>
-              </button>
+            
+            <div id="emptyFavDishes" style="display:none; text-align:center; padding:40px 20px; margin:0 20px; background:#f8f9fa; border-radius:24px; border:2px dashed #e2e8f0;">
+              <p style="font-size:14px; font-weight:700; color:#64748b; margin:0;">Keiner deiner Favoriten ist heute im Angebot.</p>
             </div>
           </div>
           
           <!-- Trenner -->
           <div id="favProviderSeparator" style="height:32px; border-bottom:1px solid rgba(0,0,0,0.05); margin-bottom:32px;"></div>
           
-          <!-- 2. Anbieter-Favoriten (Grayscale + Text wenn kein Angebot heute) -->
-          <div id="sectionProvidersWrapper">
-            <div class="section-title" id="sectionProviders" style="margin-bottom:16px; font-size:18px; font-weight:800; color:#1a1a1a;">Deine Lieblings-Anbieter heute</div>
-            <div id="favProviders" style="display:flex; flex-direction:column; gap:12px;"></div>
-            <div class="hint" id="emptyFavProviders" style="display:none;"></div>
+          <!-- Lieblings-Anbieter -->
+          <div id="sectionProvidersWrapper" style="padding:20px 0; border-top:1px solid rgba(0,0,0,0.03);">
+            <h3 style="padding:0 20px; margin:0 0 16px; font-size:15px; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:0.05em;">Deine Betriebe</h3>
+            <div id="favProviders" style="display:flex; flex-direction:column; gap:12px; padding:0 20px;">
+              <!-- Dynamisch befüllt -->
+            </div>
           </div>
           
           <!-- Pull-to-Reveal: Nächste Tage erst nach Nach-unten-ziehen sichtbar -->
@@ -3856,8 +3854,8 @@
             Nach unten ziehen für Morgen &amp; Übermorgen
           </div>
           <div id="favUpcomingPreview" style="margin-top:16px; display:none; opacity:0; transition:opacity 0.3s ease;">
-            <div class="section-title" style="margin-bottom:16px; font-size:18px; font-weight:800; color:#1a1a1a;">Morgen &amp; Übermorgen</div>
-            <div id="favUpcomingDays" style="display:flex; flex-direction:column; gap:16px;"></div>
+            <div class="section-title" style="margin-bottom:16px; font-size:18px; font-weight:800; color:#1a1a1a; padding:0 20px;">Morgen &amp; Übermorgen</div>
+            <div id="favUpcomingDays" style="display:flex; flex-direction:column; gap:16px; padding:0 20px;"></div>
           </div>
         </div>
       </div>
@@ -4033,96 +4031,97 @@
     </section>
 
     <!-- CUSTOMER: Profile "Meins" – UI-Restore: Abholnummer, Bestellungen, Profil, Präferenzen, FAQ, Footer -->
-    <section class="view customer-view" id="v-profile" style="padding:0 16px 100px;">
-      <!-- Header (Logo & Nutzer-Avatar) – Identität -->
-      <div class="panel profile-panel" id="profileHeaderCard" style="margin-top:0; padding:20px; border-radius:24px; box-shadow:0 10px 30px rgba(0,0,0,.06); background:#fff; border:1px solid rgba(0,0,0,.02);">
-        <!-- Wird dynamisch befüllt -->
-      </div>
-
-      <!-- Viralitäts-Badge: Minuten gespart (teilbar/exportierbar) -->
-      <div class="panel profile-panel" id="profileMinutesSavedSection" style="margin-top:16px; padding:20px; border-radius:24px; box-shadow:0 10px 30px rgba(0,0,0,.06); border:1px solid rgba(255,215,0,0.25); background:linear-gradient(135deg, rgba(255,215,0,0.08) 0%, #fff 100%); display:none;">
-        <div id="profileMinutesSavedText" style="font-weight:800; font-size:18px; color:#1a1a1a; margin-bottom:12px; line-height:1.3;">Ich habe mit Mittagio bereits <span id="profileMinutesSavedCount">0</span> Minuten gespart.</div>
-        <button type="button" id="btnProfileShareMinutesSaved" style="display:flex; align-items:center; justify-content:center; gap:8px; width:100%; padding:12px 16px; border-radius:12px; border:2px solid #FFD700; background:#fff; color:#1a1a1a; font-weight:700; font-size:14px; cursor:pointer;">
-          <i data-lucide="share-2" style="width:18px;height:18px;"></i> Badge teilen
-        </button>
-      </div>
-      <!-- 1. Aktive Abholnummer (kompakte Kachel 🧾) -->
-      <div class="panel profile-panel" id="profileAbholnummerSection" style="margin-top:16px; padding:18px; border-radius:24px; box-shadow:0 10px 30px rgba(0,0,0,.06); border:1px solid rgba(0,0,0,.02); display:none;">
-        <div style="font-weight:800; font-size:15px; margin-bottom:12px; color:#1a1a1a; display:flex; align-items:center; gap:8px;">
-          <span style="font-size:18px;">🧾</span>
-          <span>Aktive Abholnummer</span>
-        </div>
-        <div id="profileActiveAbholnummernList" style="display:flex; flex-direction:column; gap:10px;"></div>
-      </div>
-
-      <!-- 2. Meine Bestellungen (aufgewertete Historie: Thumbnail, Name, Anbieter, Datum, Preis, Pills) -->
-      <div class="panel profile-panel" id="profileOrderHistorySection" style="margin-top:16px; padding:18px; border-radius:24px; box-shadow:0 10px 30px rgba(0,0,0,.06); border:1px solid rgba(0,0,0,.02);">
-        <div style="font-family:'Nunito',sans-serif; font-weight:800; font-size:16px; margin-bottom:14px; color:#1a1a1a;">Historie</div>
-        <div id="profileOrderHistoryList" style="display:flex; flex-direction:column; gap:0;"></div>
-        <div id="profileOrderHistoryMore" style="display:none;"></div>
-        <button type="button" id="btnProfileShowAllOrders" style="display:none; width:100%; margin-top:12px; padding:12px 16px; border-radius:12px; border:2px solid rgba(0,0,0,.08); background:#fff; color:#64748b; font-weight:700; font-size:14px; cursor:pointer;">Alle Bestellungen anzeigen</button>
-      </div>
-
-      <!-- 3. Profildaten (Name, E-Mail) – sauberer Block -->
-      <div class="panel profile-panel" id="profileVerwaltungSection" style="margin-top:16px; padding:18px; border-radius:24px; box-shadow:0 10px 30px rgba(0,0,0,.06); border:1px solid rgba(0,0,0,.02);">
-        <div style="font-family:'Nunito',sans-serif; font-weight:800; font-size:16px; margin-bottom:12px; color:#1a1a1a;">Profildaten</div>
-        <div id="profileVerwaltungContent" style="font-size:14px; color:#334155; line-height:1.6;">Name und E-Mail – wird dynamisch befüllt.</div>
-      </div>
-
-      <!-- 4. Einstellungen: Mein Geschmack & Mehrweg (🔄) – ohne Erklärungstext -->
-      <div class="panel profile-panel" id="profileTasteSection" style="margin-top:16px; padding:18px; border-radius:24px; box-shadow:0 10px 30px rgba(0,0,0,.06); border:1px solid rgba(0,0,0,.02);">
-        <div style="font-family:'Nunito',sans-serif; font-weight:800; font-size:16px; margin-bottom:12px; color:#1a1a1a;">Einstellungen</div>
-        <div style="font-weight:700; font-size:15px; margin-bottom:8px; color:#64748b;">Mein Geschmack</div>
-        <div id="profileDietSwitches" style="display:flex; flex-direction:column; gap:10px;"></div>
-        <div id="profileReuseSwitch" style="margin-top:14px;"></div>
-      </div>
-
-      <!-- 5. Die 3 Top-FAQs (Abholnummer, Probleme, Mehrweg) – einklappbar am Ende -->
-      <div class="panel profile-panel" style="margin-top:16px; padding:18px; border-radius:24px; box-shadow:0 10px 30px rgba(0,0,0,.06); border:1px solid rgba(0,0,0,.02);">
-        <div style="font-family:'Nunito',sans-serif; font-weight:800; font-size:16px; margin-bottom:12px; color:#1a1a1a;">Häufige Fragen</div>
-        <div id="profileTopFaq" class="profile-faq-accordion" style="display:flex; flex-direction:column; gap:8px;">
-          <details style="background:#fff; border-radius:12px; border:1px solid rgba(0,0,0,.06); overflow:hidden;">
-            <summary style="padding:12px 14px; font-size:14px; font-weight:600; color:#1a1a1a; cursor:pointer; list-style:none; display:flex; align-items:center; gap:8px;">
-              <span style="font-size:18px;">🧾</span> Wie funktioniert die Abholnummer?
-            </summary>
-            <p style="margin:0; padding:0 14px 14px 14px; font-size:14px; line-height:1.5; color:#555;">Deine Abholnummer ist dein digitaler Bon. Zeige sie nach der Bestellung einfach beim Anbieter vor Ort auf deinem Smartphone vor. Ein Ausdruck ist nicht nötig.</p>
-          </details>
-          <details style="background:#fff; border-radius:12px; border:1px solid rgba(0,0,0,.06); overflow:hidden;">
-            <summary style="padding:12px 14px; font-size:14px; font-weight:600; color:#1a1a1a; cursor:pointer; list-style:none; display:flex; align-items:center; gap:8px;">
-              <span style="font-size:18px;">🍴</span> Was mache ich bei Problemen vor Ort?
-            </summary>
-            <p style="margin:0; padding:0 14px 14px 14px; font-size:14px; line-height:1.5; color:#555;">Wende dich bitte direkt an das Personal des Anbieters. Deine Abholnummer ist dein Zahlungsbeleg. Bei technischen Fragen erreichst du uns über den Support-Link im Impressum.</p>
-          </details>
-          <details style="background:#fff; border-radius:12px; border:1px solid rgba(0,0,0,.06); overflow:hidden;">
-            <summary style="padding:12px 14px; font-size:14px; font-weight:600; color:#1a1a1a; cursor:pointer; list-style:none; display:flex; align-items:center; gap:8px;">
-              <span style="font-size:18px;">🔄</span> Wo finde ich Mehrweg-Optionen?
-            </summary>
-            <p style="margin:0; padding:0 14px 14px 14px; font-size:14px; line-height:1.5; color:#555;">Achte auf das 🔄-Icon beim Gericht. Wir arbeiten stetig daran, weitere Partner für unser Mehrweg-System zu gewinnen. Aktuell führen noch nicht alle Anbieter Mehrweg; dir werden aber weiterhin alle verfügbaren Angebote angezeigt.</p>
-          </details>
-        </div>
-        <button type="button" onclick="showLegalPage('support'); return false;" style="width:100%; margin-top:12px; padding:14px 16px; border-radius:12px; border:2px solid var(--brand); background:#fff; color:var(--brand); font-weight:700; font-size:15px; cursor:pointer;">Weitere Fragen &amp; Hilfe</button>
-      </div>
-
-      <!-- Footer: eine Zeile Datenschutz | Impressum | AGB -->
-      <div class="profile-footer" style="margin-top:28px; padding:0 16px 32px; border-top:2px solid rgba(0,0,0,.06);">
-        <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:6px 10px; font-size:14px; margin-bottom:16px;">
-          <a href="#/datenschutz" id="btnProfileDatenschutz" onclick="showLegalPage('datenschutz'); return false;" style="color:var(--muted); text-decoration:none;">Datenschutz</a>
-          <span style="color:rgba(0,0,0,.2);">|</span>
-          <a href="#/impressum" id="btnProfileImpressum" onclick="showLegalPage('impressum'); return false;" style="color:var(--muted); text-decoration:none;">Impressum</a>
-          <span style="color:rgba(0,0,0,.2);">|</span>
-          <a href="#/agb-kurz" id="btnProfileAGB" onclick="showLegalPage('agb-kurz'); return false;" style="color:var(--muted); text-decoration:none;">AGB</a>
-        </div>
-        <!-- Anbieter-Integration (Business-Modul) -->
-        <div class="panel" id="profileProviderSection" style="margin-bottom:16px; padding:18px; border-radius:16px; background:#e8e8e8; border:1px solid rgba(0,0,0,.06);">
-          <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;"><span style="font-size:20px;">💼</span><span style="font-weight:700; font-size:15px; color:#334155;">Dein Mittagessen anbieten</span></div>
-          <p style="font-size:14px; color:#555; margin:0 0 14px; line-height:1.5;">Einfach und digital.</p>
-          <button type="button" id="btnProfileProviderLogin" onclick="setMode('provider');" style="width:100%; min-height:48px; padding:12px 20px; border-radius:14px; border:none; background:#6b7280; color:#fff; font-weight:700; font-size:15px; cursor:pointer;" onmouseover="this.style.background='#4b5563';" onmouseout="this.style.background='#6b7280';">
-            Zum Anbieter-Login
+    <!-- CUSTOMER: Profile -->
+    <section class="view customer-view" id="v-profile">
+      <header class="cust-header-sticky">
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px;">
+          <h1 style="font-size:20px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a; margin:0;">Profil & Einstellungen</h1>
+          <button type="button" onclick="showView('v-discover')" style="width:40px; height:40px; border-radius:12px; background:#f1f3f5; border:none; display:flex; align-items:center; justify-content:center; cursor:pointer;">
+            <i data-lucide="x" style="width:20px;height:20px;color:#1a1a1a;"></i>
           </button>
         </div>
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-          <span style="font-size:12px; color:var(--muted);">made with ❤️ by mittagio.de</span>
-          <a href="#/version" id="linkVersion" style="font-size:11px; color:var(--muted); text-decoration:none;">v1.0.x</a>
+      </header>
+
+      <div style="padding:16px; padding-bottom:120px; display:flex; flex-direction:column; gap:16px;">
+        <!-- Identität -->
+        <div class="cust-card" id="profileHeaderCard" style="padding:24px; flex-direction:row; align-items:center; gap:16px; margin-bottom:0;">
+          <!-- Wird dynamisch befüllt (Avatar, Name, E-Mail) -->
+        </div>
+
+        <!-- Viralitäts-Badge: Minuten gespart -->
+        <div class="cust-card" id="profileMinutesSavedSection" style="padding:20px; background:linear-gradient(135deg, #FFD700 0%, #FFB800 100%); border:none; display:none;">
+          <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+            <div style="width:44px; height:44px; border-radius:12px; background:rgba(255,255,255,0.3); display:flex; align-items:center; justify-content:center; font-size:24px;">⏳</div>
+            <div style="font-weight:850; font-size:16px; color:#1a1a1a; letter-spacing:-0.01em;">Zeitsparer-Badge</div>
+          </div>
+          <div style="font-size:15px; font-weight:700; color:#1a1a1a; line-height:1.4; margin-bottom:16px;">
+            Du hast mit Mittagio bereits <span id="profileMinutesSavedCount" style="font-size:20px; font-weight:950;">0</span> Minuten gespart!
+          </div>
+          <button class="btn-cust-primary" id="btnProfileShareMinutesSaved" style="height:44px; background:#1a1a1a; color:#fff; box-shadow:none; font-size:14px;">
+            <i data-lucide="share-2" style="width:16px;height:16px;"></i> Badge teilen
+          </button>
+        </div>
+
+        <!-- Abholnummern-Wallet (Nur wenn aktive da sind) -->
+        <div id="profileAbholnummerSection" style="display:none;">
+          <h3 style="font-size:13px; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:0.05em; margin:0 4px 12px;">Aktive Tickets</h3>
+          <div id="profileActiveAbholnummernList" style="display:flex; flex-direction:column; gap:12px;"></div>
+        </div>
+
+        <!-- Historie -->
+        <div class="cust-card" style="padding:20px; margin-bottom:0;">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+            <h3 style="margin:0; font-size:15px; font-weight:850; color:#1a1a1a;">Letzte Bestellungen</h3>
+            <i data-lucide="history" style="width:18px;height:18px;color:#cbd5e1;"></i>
+          </div>
+          <div id="profileOrderHistoryList" style="display:flex; flex-direction:column; gap:0;"></div>
+          <button class="btn-cust-primary" id="btnProfileShowAllOrders" style="display:none; margin-top:16px; height:44px; background:#f1f3f5; color:#1a1a1a; box-shadow:none; font-size:14px;">
+            Alle anzeigen
+          </button>
+        </div>
+
+        <!-- Einstellungen -->
+        <div class="cust-card" style="padding:20px; margin-bottom:0;">
+          <h3 style="margin:0 0 16px; font-size:15px; font-weight:850; color:#1a1a1a;">Dein Geschmack</h3>
+          <div id="profileDietSwitches" style="display:flex; flex-direction:column; gap:12px;">
+            <!-- Wird dynamisch befüllt -->
+          </div>
+          <div id="profileReuseSwitch" style="margin-top:20px; padding-top:20px; border-top:1px solid #f1f3f5;">
+            <!-- Wird dynamisch befüllt -->
+          </div>
+        </div>
+
+        <!-- FAQ Accordion -->
+        <div class="cust-card" style="padding:20px; margin-bottom:0;">
+          <h3 style="margin:0 0 16px; font-size:15px; font-weight:850; color:#1a1a1a;">Häufige Fragen</h3>
+          <div id="profileTopFaq" style="display:flex; flex-direction:column; gap:12px;">
+            <!-- Wird dynamisch befüllt -->
+          </div>
+          <button class="btn-cust-primary" onclick="showLegalPage('support');" style="margin-top:20px; height:48px; background:none; border:2px solid #f1f3f5; color:#1a1a1a; box-shadow:none; font-size:14px;">
+            <i data-lucide="help-circle"></i> Hilfe-Center
+          </button>
+        </div>
+
+        <!-- Anbieter Wechsel -->
+        <div class="cust-card" style="padding:24px; background:#1a1a1a; border:none;">
+          <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+            <div style="width:40px; height:40px; border-radius:12px; background:rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; font-size:20px;">🏢</div>
+            <div style="font-weight:850; font-size:16px; color:#fff;">Anbieter-Portal</div>
+          </div>
+          <p style="font-size:14px; color:rgba(255,255,255,0.6); margin:0 0 20px; line-height:1.5;">Du möchtest dein eigenes Mittagessen über mittagio anbieten?</p>
+          <button class="btn-cust-primary" onclick="setMode('provider');" style="width:100%; background:#fff; color:#1a1a1a; box-shadow:none;">
+            Zum Anbieter-Modus
+          </button>
+        </div>
+
+        <!-- Rechtliches Footer -->
+        <div style="margin-top:12px; text-align:center;">
+          <div style="display:flex; justify-content:center; gap:16px; margin-bottom:16px;">
+            <button onclick="showLegalPage('impressum')" style="background:none; border:none; font-size:12px; font-weight:700; color:#94a3b8; cursor:pointer;">Impressum</button>
+            <button onclick="showLegalPage('datenschutz')" style="background:none; border:none; font-size:12px; font-weight:700; color:#94a3b8; cursor:pointer;">Datenschutz</button>
+            <button onclick="showLegalPage('agb-kurz')" style="background:none; border:none; font-size:12px; font-weight:700; color:#94a3b8; cursor:pointer;">AGB</button>
+          </div>
+          <div style="font-size:11px; color:#cbd5e1; font-weight:600;">mittagio v1.0.x • made with ❤️</div>
         </div>
       </div>
     </section>
@@ -5560,89 +5559,95 @@
   </div>
 </div>
 
-<!-- Offer sheet -->
-<div class="backdrop" id="bd" onclick="closeSheet()" style="background:rgba(0,0,0,0.7);"></div>
-<div class="sheet" id="sheet" style="background:rgba(255,255,255,0.98); color:#1a1a1a; border-top:2px solid rgba(0,0,0,0.08); box-shadow:0 -4px 20px rgba(0,0,0,0.08);">
-  <div class="sheet-header" style="position:sticky; top:0; z-index:10; background:rgba(255,255,255,0.98); padding:12px 16px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid rgba(0,0,0,0.08); min-height:56px; overflow:visible; flex-shrink:0;">
-    <button class="back-button" type="button" onclick="closeSheet()" aria-label="Zurück" style="background:rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.1); border-radius:50%; width:40px; height:40px; padding:0; cursor:pointer; display:flex; align-items:center; justify-content:center; color:#1a1a1a; transition:all 0.2s ease;" onmouseover="this.style.background='rgba(0,0,0,0.1)';" onmouseout="this.style.background='rgba(0,0,0,0.06)';">
-      <i data-lucide="arrow-left" style="width:20px;height:20px;"></i>
-    </button>
-    <div style="font-weight:600; font-size:16px; color:#1a1a1a;">Angebot</div>
-    <button class="share-button-header" type="button" id="btnShareHeader" aria-label="Teilen" style="background:rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.1); border-radius:20px; padding:8px 14px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; color:#1a1a1a; font-size:14px; font-weight:600; transition:all 0.2s ease;" onmouseover="this.style.background='rgba(0,0,0,0.1)';" onmouseout="this.style.background='rgba(0,0,0,0.06)';">
-      <i data-lucide="share-2" style="width:18px;height:18px;"></i>
-      <span>Teilen</span>
-    </button>
-  </div>
-  <div class="handle" style="background:rgba(0,0,0,0.15);"></div>
-  
-  <!-- Bild-Sektion: volle Breite, keine Overlays (UI-Spec Inserats-Detailansicht) -->
-  <div style="position:relative; width:100%; aspect-ratio:16/10; max-height:280px; overflow:hidden; background:#f0f0f0;">
-    <img id="sImg" alt="" style="width:100%; height:100%; object-fit:cover; display:block;" />
-    <div id="sImgPlaceholder" style="position:absolute; top:0; left:0; right:0; bottom:0; background:#f0f0f0; display:none; align-items:center; justify-content:center; color:rgba(0,0,0,0.3); font-size:14px;">
-      <i data-lucide="image" style="width:48px;height:48px;"></i>
-    </div>
-  </div>
-  <!-- Favorit-Button neben Bild (nicht auf dem Bild) -->
-  <div style="padding:8px 16px 0; display:flex; justify-content:flex-end;">
-    <button id="sFavoriteBtn" type="button" aria-label="Favorit" style="width:40px; height:40px; border-radius:50%; background:rgba(255,255,255,0.95); border:1px solid rgba(0,0,0,0.08); display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 2px 6px rgba(0,0,0,0.08);" onmouseover="this.style.background='rgba(0,0,0,0.04)';" onmouseout="this.style.background='rgba(255,255,255,0.95)';">
-      <i data-lucide="heart" style="width:20px;height:20px; color:#e74c3c; fill:none;"></i>
-    </button>
-  </div>
-  
-  <!-- 3 Säulen: direkt unter dem Bild (🍴 immer, 🧾 nur bei Abholnummer, 🔄 nur bei Mehrweg) -->
-  <div id="sThreePillars" style="display:flex; justify-content:center; align-items:center; gap:12px; margin:0 16px 16px; padding:12px 0; flex-wrap:wrap; border-bottom:1px solid rgba(0,0,0,0.06);">
-    <!-- Wird dynamisch befüllt -->
-  </div>
-  
-  <!-- Mittags-Zeitfenster (Pill): "Abholung heute Mittag von X – Y Uhr" -->
-  <div id="sMealTime" style="display:flex; align-items:center; justify-content:center; margin:0 16px 16px; padding:10px 16px; background:rgba(0,0,0,0.04); border-radius:999px; border:1px solid rgba(0,0,0,0.08);">
-    <span style="color:#333; font-size:14px; font-weight:600;"><span id="sMealTimeRange">–</span></span>
-  </div>
-  
-  <div class="sheet-body" style="background:transparent; padding:16px;">
-    <!-- Gerichtsname: fett und groß -->
-    <div style="margin-top:0; margin-bottom:4px;">
-      <div style="font-weight:900; font-size:22px; line-height:1.3; color:#1a1a1a;" id="sDish"></div>
-    </div>
-    <!-- Preis (aus Overlay hier in Details) -->
-    <div id="sPriceRow" style="margin-bottom:12px; font-size:18px; font-weight:800; color:var(--brand);"></div>
-    <!-- Anbieter (klickbar) -->
-    <div style="margin-bottom:12px;">
-      <button type="button" id="sProviderNameBtn" style="display:flex; align-items:center; gap:8px; background:none; border:none; padding:0; cursor:pointer; text-align:left; width:100%; color:inherit;">
-        <i data-lucide="store" style="width:18px;height:18px; color:var(--brand); flex-shrink:0;"></i>
-        <span id="sProviderName" style="font-weight:700; font-size:16px; color:#1a1a1a;"></span>
-        <i data-lucide="chevron-right" style="width:16px;height:16px; color:#666; margin-left:auto;"></i>
+  <!-- Offer sheet -->
+  <div class="backdrop" id="bd" onclick="closeSheet()"></div>
+  <div class="sheet" id="sheet">
+    <div class="handle"></div>
+    
+    <div class="sheet-header" style="display:flex; align-items:center; justify-content:space-between; padding:16px 20px; border-bottom:1px solid rgba(0,0,0,0.05); position:sticky; top:0; z-index:100; background:rgba(255,255,255,0.9); backdrop-filter:blur(10px);">
+      <button type="button" onclick="closeSheet()" style="width:40px; height:40px; border-radius:12px; background:#f1f3f5; border:none; display:flex; align-items:center; justify-content:center; cursor:pointer;">
+        <i data-lucide="chevron-down" style="width:24px;height:24px;color:#1a1a1a;"></i>
+      </button>
+      <div style="font-weight:850; font-size:16px; color:#1a1a1a; letter-spacing:-0.01em;">Details</div>
+      <button type="button" id="btnShareHeader" style="width:40px; height:40px; border-radius:12px; background:#f1f3f5; border:none; display:flex; align-items:center; justify-content:center; cursor:pointer;">
+        <i data-lucide="share-2" style="width:20px;height:20px;color:#1a1a1a;"></i>
       </button>
     </div>
 
-    <!-- Logistik: Klickbare Kacheln 🚶 Fußweg & 🚗 Fahrtweg (öffnen Route in Google Maps), ohne blaue Link-Optik -->
-    <div id="sDistanceInfo" style="display:none; margin-bottom:12px; gap:10px; flex-wrap:wrap; align-items:stretch;">
-      <!-- Wird dynamisch: zwei Kacheln, je onclick → Google Maps -->
-    </div>
+    <div class="sheet-body" style="padding:0; overflow-y:auto; flex:1;">
+      <!-- Bild Sektion (Thumbnail Style laut Konzept) -->
+      <div style="padding:24px 20px; text-align:center; background:linear-gradient(180deg, #f8f9fa 0%, #fff 100%);">
+        <div style="position:relative; width:160px; height:160px; margin:0 auto; border-radius:40px; overflow:hidden; box-shadow:0 12px 32px rgba(0,0,0,0.1); border:4px solid #fff;">
+          <img id="sImg" alt="" style="width:100%; height:100%; object-fit:cover;" />
+          <div id="sImgPlaceholder" style="position:absolute; inset:0; background:#f1f3f5; display:none; align-items:center; justify-content:center;">
+            <i data-lucide="image" style="width:48px;height:48px;color:#cbd5e1;"></i>
+          </div>
+          <!-- Favorit Button auf dem Bild-Rand -->
+          <button id="sFavoriteBtn" style="position:absolute; top:8px; right:8px; width:36px; height:36px; border-radius:10px; background:rgba(255,255,255,0.9); border:none; display:flex; align-items:center; justify-content:center; color:#E34D4D; box-shadow:0 4px 12px rgba(0,0,0,0.1);">
+            <i data-lucide="heart" style="width:20px;height:20px;"></i>
+          </button>
+        </div>
+        
+        <!-- Preis Badge -->
+        <div id="sPriceRow" style="display:inline-block; margin-top:20px; padding:8px 16px; border-radius:99px; background:rgba(255,215,0,0.15); color:#1a1a1a; font-weight:900; font-size:18px;"></div>
+      </div>
 
-    <!-- Anbieter-Adresse (direkt unter Logistik-Kacheln) -->
-    <div id="sProviderAddressRow" style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
-      <i data-lucide="map-pin" style="width:16px;height:16px; color:#666;"></i>
-      <span id="sProviderAddress" style="color:#555; font-size:14px; flex:1;"></span>
-    </div>
+      <!-- 3 Säulen (Funktionale Badges) -->
+      <div id="sThreePillars" style="display:flex; justify-content:center; gap:16px; padding:0 20px 24px; border-bottom:1px solid rgba(0,0,0,0.03);">
+        <!-- Wird dynamisch befüllt (Pillar Badges) -->
+      </div>
 
-    <!-- Allergene: Kürzel (A, C, G...) zwingend direkt unter Adresse, (ⓘ) öffnet Overlay mit Erklärungen -->
-    <div id="sAllergensWrap" style="margin-bottom:16px; padding:10px 14px; background:rgba(0,0,0,0.04); border-radius:12px; border:1px solid rgba(0,0,0,0.08); display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-      <span id="sAllergensCodes" style="color:#333; font-size:14px; font-weight:600;">–</span>
-      <button type="button" onclick="showAllergensOverlay();" aria-label="Allergen-Legende" style="background:none; border:none; padding:0; cursor:pointer; font-size:16px; color:#666; line-height:1;" onmouseover="this.style.color='#1a1a1a';" onmouseout="this.style.color='#666';">ⓘ</button>
-    </div>
-    <div id="sAllergensList" style="display:none;"><div id="sAllergens"></div></div>
+      <!-- Info Sektion -->
+      <div style="padding:24px 20px;">
+        <h2 id="sDish" style="margin:0 0 8px; font-size:24px; font-weight:950; color:#1a1a1a; letter-spacing:-0.03em; line-height:1.2;">Gerichtsname</h2>
+        
+        <button id="sProviderNameBtn" style="display:flex; align-items:center; gap:8px; background:none; border:none; padding:0; cursor:pointer; margin-bottom:24px; text-align:left; width:100%;">
+          <div style="width:32px; height:32px; border-radius:8px; background:#f1f3f5; display:flex; align-items:center; justify-content:center; font-size:16px;">🏢</div>
+          <span id="sProviderName" style="font-weight:700; font-size:16px; color:#64748b;">Anbieter</span>
+          <i data-lucide="chevron-right" style="width:16px;height:16px;color:#cbd5e1; margin-left:auto;"></i>
+        </button>
 
-    <!-- Sticky Bottom: Gelber CTA „In die Mittagsbox legen“ + Warnhinweis darunter -->
-    <div style="position:sticky; bottom:0; background:transparent; padding:16px 0 24px; margin-top:24px; border-top:1px solid rgba(0,0,0,0.08); z-index:10;">
-      <button class="btn-primary" type="button" id="btnPrimaryCTA" style="width:100%; min-height:56px; max-height:64px; background:#FFD700; color:#1a1a1a; font-weight:800; font-size:18px; border:none; border-radius:16px; box-shadow:0 4px 16px rgba(255,215,0,0.4); display:flex; align-items:center; justify-content:center; gap:8px; transition:all 0.2s ease;" onmouseover="this.style.transform='scale(1.02)'; this.style.boxShadow='0 6px 20px rgba(255,215,0,0.5)';" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 16px rgba(255,215,0,0.4)';">
-        <i data-lucide="shopping-basket" style="width:22px;height:22px;"></i>
-        <span id="btnPrimaryCTAText">In die Mittagsbox legen</span>
-      </button>
-      <div id="sInfoHint" style="display:none; margin-top:8px; text-align:center; font-size:12px; color:#666; padding:0 16px; line-height:1.4;"></div>
+        <div style="display:flex; flex-direction:column; gap:16px; background:#f8f9fa; border-radius:24px; padding:20px; border:1px solid rgba(0,0,0,0.02);">
+          <!-- Logistik & Zeit -->
+          <div id="sMealTime" style="display:flex; align-items:center; gap:12px;">
+            <div style="width:36px; height:36px; border-radius:10px; background:#fff; display:flex; align-items:center; justify-content:center;">
+              <i data-lucide="clock" style="width:18px;height:18px;color:var(--brand);"></i>
+            </div>
+            <span id="sMealTimeRange" style="font-size:14px; font-weight:700; color:#1a1a1a;">Zeitfenster</span>
+          </div>
+
+          <div id="sProviderAddressRow" style="display:flex; align-items:center; gap:12px;">
+            <div style="width:36px; height:36px; border-radius:10px; background:#fff; display:flex; align-items:center; justify-content:center;">
+              <i data-lucide="map-pin" style="width:18px;height:18px;color:#64748b;"></i>
+            </div>
+            <span id="sProviderAddress" style="font-size:14px; font-weight:600; color:#1a1a1a;">Adresse</span>
+          </div>
+
+          <div id="sDistanceInfo" style="display:none; gap:10px; margin-top:4px;">
+            <!-- Wird dynamisch: zwei Kacheln -->
+          </div>
+        </div>
+
+        <!-- Allergene -->
+        <div id="sAllergensWrap" style="margin-top:24px; padding:16px; border-radius:16px; background:rgba(0,0,0,0.03); display:flex; align-items:center; justify-content:space-between; cursor:pointer;" onclick="showAllergensOverlay();">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:12px; font-weight:800; color:#64748b; text-transform:uppercase;">Allergene:</span>
+            <span id="sAllergensCodes" style="font-size:14px; font-weight:700; color:#1a1a1a;">–</span>
+          </div>
+          <i data-lucide="info" style="width:18px;height:18px;color:#94a3b8;"></i>
+        </div>
+      </div>
+
+      <!-- Sticky Bottom CTA -->
+      <div style="position:sticky; bottom:0; padding:20px; background:rgba(255,255,255,0.9); backdrop-filter:blur(10px); border-top:1px solid rgba(0,0,0,0.05); z-index:100;">
+        <button class="btn-cust-primary" id="btnPrimaryCTA" style="width:100%;">
+          <i data-lucide="shopping-basket"></i>
+          <span id="btnPrimaryCTAText">In die Mittagsbox legen</span>
+        </button>
+        <p id="sInfoHint" style="margin:12px 0 0; text-align:center; font-size:12px; font-weight:600; color:#94a3b8; line-height:1.4; display:none;"></p>
+      </div>
     </div>
   </div>
-</div>
 
 <!-- Provider offer sheet -->
 <div class="backdrop" id="pbd" onclick="closeProviderSheet()"></div>
@@ -6171,7 +6176,6 @@
     const bar = document.getElementById('discoverCategoriesBar');
     if(!bar) return;
     
-    // Kategorien definieren (User Wunsch: Fleisch, Salat, Veggie, Vegan...)
     const cats = [
       {id:'near', label:'In der Nähe', icon:'map-pin'},
       {id:'Mit Fleisch', label:'Fleisch', icon:'beef'},
@@ -6182,29 +6186,22 @@
       {id:'Suppe', label:'Suppe', icon:'soup'},
     ];
     
-    // Aktive Kategorie ermitteln
     const active = activeDiscoverFilter === 'near' || !activeDiscoverFilter || activeDiscoverFilter === 'all' ? 'near' : activeDiscoverFilter;
     
     bar.innerHTML = cats.map(c => `
-      <button class="cat-pill ${active===c.id ? 'active' : ''}" onclick="selectDiscoverCategory('${c.id}')">
-        <i data-lucide="${c.icon}"></i>
+      <button class="cust-chip ${active===c.id ? 'active' : ''}" onclick="selectDiscoverCategory('${c.id}')">
+        <i data-lucide="${c.icon}" style="width:16px;height:16px;display:inline-block;vertical-align:middle;margin-right:6px;"></i>
         <span>${c.label}</span>
       </button>
     `).join('');
     
     if(typeof lucide !== 'undefined') lucide.createIcons();
   }
-  
-  function getDayName(date){
-    if(!date) return '';
-    return ['So','Mo','Di','Mi','Do','Fr','Sa'][date.getDay()];
-  }
-  
+
   function renderDiscoverDays(){
     const bar = document.getElementById('discoverDaysBar');
     if(!bar) return;
     
-    // Generiere nächste 7 Tage
     const days = [];
     const today = new Date();
     for(let i=0; i<7; i++){
@@ -6216,16 +6213,14 @@
       days.push({ id: iso, label: label, date: d });
     }
     
-    // Active Day (Global variable activeDay e.g. "2026-01-30")
-    // Falls activeDay nicht gesetzt, nimm Heute
     if(!activeDay) activeDay = days[0].id;
     
     bar.innerHTML = days.map(d => {
-      const isToday = activeDay === d.id;
+      const isActive = activeDay === d.id;
       const dateStr = d.date.getDate() + '.' + (d.date.getMonth() + 1) + '.';
-      return `<button class="day-pill ${isToday ? 'day-pill--today' : ''}" onclick="selectDiscoverDay('${d.id}')">
-        <span class="day-pill-label">${d.label}</span>
-        <span class="day-pill-date">${dateStr}</span>
+      return `<button class="cust-chip ${isActive ? 'active' : ''}" onclick="selectDiscoverDay('${d.id}')">
+        <span style="font-weight:800;">${d.label}</span>
+        <span style="font-size:11px; opacity:0.7; margin-left:4px;">${dateStr}</span>
       </button>`;
     }).join('');
   }
@@ -6249,152 +6244,118 @@
   function createModernOfferCard(o){
     const data = normalizeOffer(o);
     const card = document.createElement('div');
-    card.className = 'offer-card-modern';
-    card.style.cursor = 'pointer';
+    card.className = 'cust-card';
+    card.onclick = () => openOffer(data.id);
     
-    // Prüfe ob favorisiert
     const favorites = JSON.parse(localStorage.getItem('mittagio_favorites') || '[]');
-    const dishKey = data.id;
-    const isFavorited = favorites.includes(dishKey);
+    const isFavorited = favorites.includes(data.id);
     
-    // Image Container
-    const imageContainer = document.createElement('div');
-    imageContainer.className = 'ocm-image-container';
+    // Image Section
+    const imgContainer = document.createElement('div');
+    imgContainer.style.position = 'relative';
     
     const img = document.createElement('img');
-    img.className = 'ocm-image';
+    img.className = 'cust-card-img';
     img.src = data.imageUrl || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=800&q=80';
     img.loading = 'lazy';
-    imageContainer.appendChild(img);
+    imgContainer.appendChild(img);
     
-    // Provider Badge (Klickbar -> Landing Page)
-    const providerBadge = document.createElement('div');
-    providerBadge.className = 'ocm-provider-badge';
-    // User Request: "Sidecom where the provider page Today's inscriptions and his weekly sermons"
-    providerBadge.style.cursor = 'pointer';
-    providerBadge.onclick = (e) => {
-        e.stopPropagation();
-        // Setze Filter auf diesen Provider und zeige Discovery (Landing Page Simulation)
-        activeDiscoverFilter = 'provider';
-        currentProviderFilter = data.providerId;
-        renderDiscover();
-        showToast(`Zeige alle Angebote von ${data.providerName}`);
-    };
-    // Logo (Simuliert)
-    const logo = document.createElement('div');
-    logo.className = 'ocm-provider-logo';
-    if(data.providerLogoData){
-       logo.innerHTML = `<img src="${data.providerLogoData}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;" />`;
-    } else {
-       logo.innerHTML = `<span style="font-size:10px; font-weight:900; color:#666; display:flex; align-items:center; justify-content:center; width:100%; height:100%;">${(data.providerName||'A').charAt(0)}</span>`;
-    }
-    providerBadge.appendChild(logo);
-    
-    const pName = document.createElement('span');
-    pName.textContent = data.providerName || 'Anbieter';
-    providerBadge.appendChild(pName);
-    imageContainer.appendChild(providerBadge);
-    
-    // Herz-Button (Like)
+    // Like Button
     const likeBtn = document.createElement('button');
-    likeBtn.className = `ocm-like-btn ${isFavorited ? 'active' : ''}`;
-    likeBtn.innerHTML = `<i data-lucide="heart" style="width:20px; height:20px; stroke-width:2.5; ${isFavorited ? 'fill:#e74c3c; color:#e74c3c;' : ''}"></i>`;
-    
-    // Favoriten-Handler
+    likeBtn.style.cssText = 'position:absolute; top:12px; right:12px; width:36px; height:36px; border-radius:10px; background:rgba(255,255,255,0.9); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#E34D4D; box-shadow:0 4px 12px rgba(0,0,0,0.1);';
+    likeBtn.innerHTML = `<i data-lucide="heart" style="width:20px; height:20px; ${isFavorited ? 'fill:#E34D4D;' : ''}"></i>`;
     likeBtn.onclick = (e) => {
-        e.stopPropagation();
-        e.preventDefault();
-        
-        // Toggle State
-        const favorites = JSON.parse(localStorage.getItem('mittagio_favorites') || '[]');
-        const dishKey = data.id;
-        const index = favorites.indexOf(dishKey);
-        
-        if (index > -1) {
-            // Entfernen
-            favorites.splice(index, 1);
-            localStorage.setItem('mittagio_favorites', JSON.stringify(favorites));
-            
-            // UI Update
-            likeBtn.classList.remove('active');
-            const icon = likeBtn.querySelector('svg') || likeBtn.querySelector('i'); // Support Lucide SVG or i
-            if(icon){
-                icon.style.fill = 'none';
-                icon.style.color = 'currentColor';
-            }
-            
-            showToast('Aus Favoriten entfernt');
-        } else {
-            // Hinzufügen
-            favorites.push(dishKey);
-            localStorage.setItem('mittagio_favorites', JSON.stringify(favorites));
-            if(typeof dishFavs !== 'undefined' && !dishFavs.has(dishKey)){ dishFavs.add(dishKey); save(LS.dishFavs, Array.from(dishFavs)); }
-            
-            // UI Update
-            likeBtn.classList.add('active');
-            const icon = likeBtn.querySelector('svg') || likeBtn.querySelector('i');
-            if(icon){
-                icon.style.fill = '#e74c3c';
-                icon.style.color = '#e74c3c';
-            }
-            
-            if(typeof triggerFavoritesIconBounce === 'function') triggerFavoritesIconBounce();
-            showToast('Zu Favoriten hinzugefügt ❤️');
-            if(navigator.vibrate) navigator.vibrate(10);
-            
-            // Speichere 3-Säulen Status
-            const offerProvider = offers.find(p => p.providerId === data.providerId);
-            const vorOrt = !!(offerProvider && (offerProvider.dineInPossible !== false || data.dineInPossible));
-            const abholnummer = !!(offerProvider && (offerProvider.orderingEnabled !== false && (data.hasPickupCode || offerProvider.hasPickupCode)));
-            const mehrweg = !!(offerProvider && (offerProvider.reuseEnabled || offerProvider.reuse));
-            if(typeof setFavPillars === 'function') setFavPillars(dishKey, { vorOrt, abholnummer, mehrweg });
-        }
+      e.stopPropagation();
+      toggleFavorite(data.id, likeBtn);
     };
-    
-    imageContainer.appendChild(likeBtn);
-    
-    // Share-Button (dezentes Icon) – Web Share API
+    imgContainer.appendChild(likeBtn);
+
+    // Share Button
     const shareBtn = document.createElement('button');
-    shareBtn.className = 'ocm-share-btn';
-    shareBtn.type = 'button';
-    shareBtn.setAttribute('aria-label', 'Teilen');
-    shareBtn.style.cssText = 'position:absolute; top:12px; right:48px; width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,0.9); border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 8px rgba(0,0,0,0.12); color:#555;';
-    shareBtn.innerHTML = '<i data-lucide="share-2" style="width:18px;height:18px;stroke-width:2;"></i>';
+    shareBtn.style.cssText = 'position:absolute; top:12px; right:56px; width:36px; height:36px; border-radius:10px; background:rgba(255,255,255,0.9); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#1a1a1a; box-shadow:0 4px 12px rgba(0,0,0,0.1);';
+    shareBtn.innerHTML = '<i data-lucide="share-2" style="width:18px;height:18px;"></i>';
     shareBtn.onclick = (e) => {
       e.stopPropagation();
-      e.preventDefault();
-      const shareUrl = (location.origin || '') + (location.pathname || '/') + '#offer/' + (data.id || '');
-      const text = 'Schau mal, das gibt es heute bei ' + (data.providerName || 'Metzger') + ': ' + (data.dish || 'Gericht') + '. Sollen wir hin? Ich sicher uns die Abholnummer!';
-      if(navigator.share){
-        navigator.share({ title: data.dish || 'Gericht', text: text, url: shareUrl }).then(() => { if(typeof showToast === 'function') showToast('Geteilt!'); }).catch(() => {});
-      } else {
-        navigator.clipboard.writeText(text + ' ' + shareUrl).then(() => { if(typeof showToast === 'function') showToast('Link kopiert!'); });
-      }
+      shareOffer(data);
     };
-    imageContainer.appendChild(shareBtn);
+    imgContainer.appendChild(shareBtn);
     
-    // Price Tag
-    const priceTag = document.createElement('div');
-    priceTag.className = 'ocm-price-tag';
-    priceTag.textContent = euro(data.price);
-    imageContainer.appendChild(priceTag);
+    card.appendChild(imgContainer);
     
-    card.appendChild(imageContainer);
-    
-    // Content
+    // Body
     const body = document.createElement('div');
-    body.className = 'ocm-content';
+    body.className = 'cust-card-body';
     
-    // 3 Säulen als High-Contrast-Balken
-    const stored = typeof getFavPillars === 'function' ? getFavPillars(dishKey) : null;
-    const vorOrt = stored ? !!stored.vorOrt : (() => { const p = offers.find(x => x.providerId === data.providerId); return !!(p && (p.dineInPossible !== false || data.dineInPossible)); })();
-    const abholnummer = stored ? !!stored.abholnummer : (() => { const p = offers.find(x => x.providerId === data.providerId); return !!(p && (p.orderingEnabled !== false && (data.hasPickupCode || p.hasPickupCode))); })();
-    const mehrweg = stored ? !!stored.mehrweg : (() => { const p = offers.find(x => x.providerId === data.providerId); return !!(p && (p.reuse && p.reuse.enabled)); })();
+    const title = document.createElement('h3');
+    title.className = 'cust-card-title';
+    title.textContent = data.dish || 'Gericht';
+    body.appendChild(title);
     
-    const barsWrap = document.createElement('div');
-    barsWrap.style.cssText = 'padding:0 4px 8px 0;';
-    barsWrap.innerHTML = renderPillarBarsDiscovery(vorOrt, abholnummer, mehrweg);
-    body.appendChild(barsWrap);
+    const meta = document.createElement('div');
+    meta.className = 'cust-card-meta';
+    meta.innerHTML = `<i data-lucide="store" style="width:14px;height:14px;"></i> <span>${data.providerName || 'Anbieter'}</span>`;
+    body.appendChild(meta);
+    
+    const footer = document.createElement('div');
+    footer.style.cssText = 'display:flex; align-items:flex-end; justify-content:space-between; margin-top:12px;';
+    
+    const price = document.createElement('div');
+    price.className = 'cust-card-price';
+    price.textContent = euro(data.price);
+    footer.appendChild(price);
+    
+    // 3 Pillars Mini
+    const pillars = document.createElement('div');
+    pillars.className = 'card-pillars';
+    
+    const p = offers.find(x => x.providerId === data.providerId);
+    const vorOrt = !!(p && p.dineInPossible !== false);
+    const abholnummer = !!(p && p.orderingEnabled !== false && (data.hasPickupCode || p.hasPickupCode));
+    const mehrweg = !!(p && (p.reuse && p.reuse.enabled));
+    
+    pillars.innerHTML = `
+      <div class="pillar-mini active" title="Vor Ort essen">🍴</div>
+      <div class="pillar-mini ${abholnummer ? 'active yellow' : ''}" title="Abholnummer">🧾</div>
+      <div class="pillar-mini ${mehrweg ? 'active green' : ''}" title="Mehrweg">🔄</div>
+    `;
+    footer.appendChild(pillars);
+    
+    body.appendChild(footer);
+    card.appendChild(body);
+    
+    return card;
+  }
+
+  function toggleFavorite(id, btn){
+    const favorites = JSON.parse(localStorage.getItem('mittagio_favorites') || '[]');
+    const idx = favorites.indexOf(id);
+    if(idx > -1){
+      favorites.splice(idx, 1);
+      btn.querySelector('i').style.fill = 'none';
+      showToast('Aus Favoriten entfernt');
+    } else {
+      favorites.push(id);
+      btn.querySelector('i').style.fill = '#E34D4D';
+      showToast('Zu Favoriten hinzugefügt ❤️');
+      if(navigator.vibrate) navigator.vibrate(10);
+    }
+    localStorage.setItem('mittagio_favorites', JSON.stringify(favorites));
+    if(typeof dishFavs !== 'undefined') {
+      if(idx > -1) dishFavs.delete(id); else dishFavs.add(id);
+      save(LS.dishFavs, Array.from(dishFavs));
+    }
+  }
+
+  function shareOffer(data){
+    const shareUrl = location.origin + location.pathname + '#offer/' + data.id;
+    const text = `Schau mal, das gibt es heute bei ${data.providerName}: ${data.dish}. Sollen wir hin?`;
+    if(navigator.share){
+      navigator.share({ title: data.dish, text: text, url: shareUrl });
+    } else {
+      navigator.clipboard.writeText(text + ' ' + shareUrl);
+      showToast('Link kopiert!');
+    }
+  }
 
     const title = document.createElement('h3');
     title.className = 'ocm-title';
@@ -10906,85 +10867,76 @@
   function createFavoriteGridCard(o){
     const data = normalizeOffer(o);
     const card = document.createElement('div');
-    card.className = 'fav-grid-card card';
-    card.setAttribute('data-fav-id', data.id);
-    card.style.cssText = 'position:relative; border-radius:24px; overflow:hidden; cursor:pointer;';
+    card.className = 'fav-card';
+    card.onclick = () => openOffer(data.id);
     
-    // X-Button oben rechts
+    // Remove Button
     const removeBtn = document.createElement('button');
-    removeBtn.type = 'button';
-    removeBtn.style.cssText = 'position:absolute; top:8px; right:8px; z-index:20; width:28px; height:28px; border-radius:50%; background:rgba(255,255,255,0.95); backdrop-filter:blur(8px); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 2px 6px rgba(0,0,0,0.15);';
-    removeBtn.innerHTML = '<span style="font-size:18px; color:#E34D4D; font-weight:900;">✕</span>';
-    removeBtn.onclick = (e) => { e.stopPropagation(); e.preventDefault(); triggerHapticFeedback([15]); card.classList.add('removing'); setTimeout(() => { toggleDishFav(data.id); renderFavorites(); }, 300); };
+    removeBtn.style.cssText = 'position:absolute; top:8px; right:8px; z-index:20; width:28px; height:28px; border-radius:10px; background:rgba(255,255,255,0.9); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.1);';
+    removeBtn.innerHTML = '<i data-lucide="x" style="width:16px; height:16px; color:#E34D4D;"></i>';
+    removeBtn.onclick = (e) => {
+      e.stopPropagation();
+      toggleDishFav(data.id);
+      renderFavorites();
+    };
     card.appendChild(removeBtn);
+
+    const img = document.createElement('img');
+    img.className = 'fav-card-img';
+    img.src = data.imageUrl || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=800&q=80';
+    img.loading = 'lazy';
+    card.appendChild(img);
     
-    // Bild 1:1 (quadratisch)
-    const imgWrap = document.createElement('div');
-    imgWrap.className = 'fav-card-img-wrap';
-    imgWrap.style.cssText = 'position:relative;';
-    const imgSrc = data.imageUrl || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70';
-    imgWrap.innerHTML = `<img alt="${esc(data.dish||'')}" src="${esc(imgSrc)}" />`;
-    const priceSticker = document.createElement('div');
-    priceSticker.className = 'fav-card-price-sticker';
-    priceSticker.textContent = euro(data.price);
-    imgWrap.appendChild(priceSticker);
-    card.appendChild(imgWrap);
-    
-    // Body: 3 Säulen direkt unter Bild, dann Titel (ellipsis), dann CTA
     const body = document.createElement('div');
-    body.className = 'fav-card-body body';
-    body.style.cssText = 'background:#fff; padding:8px 10px 12px; flex:1; min-height:0; display:flex; flex-direction:column;';
+    body.style.padding = '12px';
+    body.style.flex = '1';
+    body.style.display = 'flex';
+    body.style.flexDirection = 'column';
     
-    const dishKey = data.id;
-    const stored = typeof getFavPillars === 'function' ? getFavPillars(dishKey) : null;
-    const vorOrt = stored ? !!stored.vorOrt : (() => { const p = offers.find(x => x.providerId === data.providerId); return !!(p && (p.dineInPossible !== false || data.dineInPossible)); })();
-    const abholnummer = stored ? !!stored.abholnummer : (() => { const p = offers.find(x => x.providerId === data.providerId); return !!(p && (p.orderingEnabled !== false && (data.hasPickupCode || p.hasPickupCode))); })();
-    const mehrweg = stored ? !!stored.mehrweg : (() => { const p = offers.find(x => x.providerId === data.providerId); return !!(p && (p.reuse && p.reuse.enabled)); })();
-    
-    const barsWrap = document.createElement('div');
-    barsWrap.style.cssText = 'flex-shrink:0;';
-    barsWrap.innerHTML = typeof renderPillarBarsFavMini === 'function' ? renderPillarBarsFavMini(vorOrt, abholnummer, mehrweg) : (typeof renderPillarBarsDiscovery === 'function' ? renderPillarBarsDiscovery(vorOrt, abholnummer, mehrweg) : '');
-    body.appendChild(barsWrap);
-    
-    const title = document.createElement('h3');
-    title.className = 'fav-card-title';
-    title.style.cssText = "font-family:'Kalam',cursive; font-weight:700; font-size:14px; color:#1a1a1a; margin:4px 0 0; padding:0; line-height:1.3; text-align:center;";
+    const title = document.createElement('div');
+    title.style.cssText = 'font-size:14px; font-weight:850; color:#1a1a1a; margin-bottom:4px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; line-height:1.3; letter-spacing:-0.01em;';
     title.textContent = data.dish || 'Gericht';
     body.appendChild(title);
     
-    const ctaWrap = document.createElement('div');
-    ctaWrap.style.cssText = 'margin-top:auto; padding-top:10px;';
-    const ctaBtn = document.createElement('button');
-    ctaBtn.type = 'button';
-    ctaBtn.className = 'btn';
-    ctaBtn.style.cssText = 'width:100%; min-height:40px; border-radius:12px; background:#FFD700; color:#1a1a1a; font-weight:800; font-size:13px; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; transition:transform 0.2s, box-shadow 0.2s;';
-    ctaBtn.innerHTML = (typeof iconMarkup === 'function' ? iconMarkup('shopping-basket') : '') + ' <span>In die Mittagsbox</span>';
-    ctaBtn.onmouseover = () => { ctaBtn.style.transform = 'scale(1.02)'; ctaBtn.style.boxShadow = '0 4px 12px rgba(255,215,0,0.4)'; };
-    ctaBtn.onmouseout = () => { ctaBtn.style.transform = 'scale(1)'; ctaBtn.style.boxShadow = 'none'; };
-    ctaBtn.onclick = (e) => {
+    const meta = document.createElement('div');
+    meta.style.cssText = 'font-size:11px; font-weight:700; color:#64748b; margin-bottom:8px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;';
+    meta.textContent = data.providerName || 'Anbieter';
+    body.appendChild(meta);
+    
+    // 3 Pillars Mini
+    const pillars = document.createElement('div');
+    pillars.className = 'card-pillars';
+    pillars.style.marginTop = 'auto';
+    
+    const p = offers.find(x => x.providerId === data.providerId);
+    const abholnummer = !!(p && p.orderingEnabled !== false && (data.hasPickupCode || p.hasPickupCode));
+    const mehrweg = !!(p && (p.reuse && p.reuse.enabled));
+    
+    pillars.innerHTML = `
+      <div class="pillar-mini active" style="width:20px; height:20px; font-size:12px;">🍴</div>
+      <div class="pillar-mini ${abholnummer ? 'active yellow' : ''}" style="width:20px; height:20px; font-size:12px;">🧾</div>
+      <div class="pillar-mini ${mehrweg ? 'active green' : ''}" style="width:20px; height:20px; font-size:12px;">🔄</div>
+    `;
+    body.appendChild(pillars);
+    
+    const btn = document.createElement('button');
+    btn.className = 'btn-cust-primary';
+    btn.style.cssText = 'width:100%; margin-top:12px; height:40px; border-radius:12px; font-size:13px; box-shadow:none;';
+    btn.textContent = 'In die Box';
+    btn.onclick = (e) => {
       e.stopPropagation();
-      e.preventDefault();
-      if(!abholnummer){ showToast('Keine Abholnummer – nur ansehen.', 2000); return; }
-      const thumb = card.querySelector('img');
-      flyThumbnailToMittagsbox(thumb, () => {
-        if(!addToCart(o)){ showToast('Fehler beim Hinzufügen.', 2000); return; }
-        triggerHapticFeedback([20]);
-        triggerCartIconGlow();
-        showToast('In die Mittagsbox gelegt', 1500);
-        if(typeof updateHeaderBasket === 'function') updateHeaderBasket();
+      if(!abholnummer){ showToast('Keine Abholnummer verfügbar'); return; }
+      flyThumbnailToMittagsbox(img, () => {
+        if(addToCart(o)){
+          showToast('In die Mittagsbox gelegt');
+          updateHeaderBasket();
+        }
       });
     };
-    if(!abholnummer){ ctaBtn.style.background = '#e5e5e5'; ctaBtn.style.color = '#888'; ctaBtn.style.cursor = 'not-allowed'; ctaBtn.disabled = true; }
-    ctaWrap.appendChild(ctaBtn);
-    body.appendChild(ctaWrap);
+    body.appendChild(btn);
     
     card.appendChild(body);
-    
-    card.onclick = (e) => {
-      if(e.target.closest('button')) return;
-      openOffer(data.id);
-    };
-    
+    if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons({props: { 'stroke-width': 3 }, elements: [removeBtn]}), 10);
     return card;
   }
   
@@ -11043,109 +10995,62 @@
   // Anbieter-Favoriten-Karte: Kompakte Zeile mit Name, Text und 3 Icons
   function createFavoriteProviderCard(providerData, offersToday, hasOfferToday){
     const card = document.createElement('div');
-    card.className = 'fav-provider-card';
-    card.style.cssText = `
-      display:flex;
-      align-items:center;
-      gap:12px;
-      padding:12px 16px;
-      background:#fff;
-      border-radius:12px;
-      border:1px solid rgba(0,0,0,0.08);
-      box-shadow:0 1px 4px rgba(0,0,0,0.05);
-      transition:all 0.2s ease;
-      ${!hasOfferToday ? 'filter:grayscale(100%); opacity:0.5;' : ''}
-    `;
+    card.className = 'cust-card';
+    card.style.cssText = 'flex-direction:row; padding:12px; align-items:center; gap:16px; margin-bottom:12px;';
+    if(!hasOfferToday) card.style.opacity = '0.6';
     
-    // Hover-Effekt nur wenn Angebot vorhanden
-    if(hasOfferToday){
-      card.onmouseover = () => {
-        card.style.transform = 'translateY(-2px)';
-        card.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
-      };
-      card.onmouseout = () => {
-        card.style.transform = 'translateY(0)';
-        card.style.boxShadow = '0 1px 4px rgba(0,0,0,0.05)';
-      };
-    }
-    
-    // Anbieter-Logo/Icon (links)
     const logo = document.createElement('div');
-    logo.style.cssText = 'width:48px; height:48px; border-radius:12px; background:#f0f0f0; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:24px;';
+    logo.style.cssText = 'width:56px; height:56px; border-radius:16px; background:#f1f3f5; display:flex; align-items:center; justify-content:center; font-size:28px; flex-shrink:0;';
     logo.textContent = '🍽️';
     card.appendChild(logo);
     
-    // Text-Bereich (Mitte)
-    const textArea = document.createElement('div');
-    textArea.style.cssText = 'flex:1; min-width:0;';
+    const body = document.createElement('div');
+    body.style.flex = '1';
+    body.style.minWidth = '0';
     
-    const name = document.createElement('div');
-    name.style.cssText = 'font-size:15px; font-weight:700; color:#1a1a1a; margin-bottom:4px; line-height:1.3;';
+    const name = document.createElement('h4');
+    name.style.cssText = 'margin:0 0 2px; font-size:16px; font-weight:850; color:#1a1a1a; letter-spacing:-0.01em;';
     name.textContent = providerData.providerName || 'Anbieter';
-    textArea.appendChild(name);
+    body.appendChild(name);
     
-    if(hasOfferToday && offersToday.length > 0){
+    const status = document.createElement('div');
+    status.style.cssText = 'font-size:13px; font-weight:600; color:#64748b;';
+    if(hasOfferToday){
       const offer = offersToday[0];
-      const data = normalizeOffer(offer);
-      const text = document.createElement('div');
-      text.style.cssText = 'font-size:13px; color:#666; line-height:1.4;';
-      text.textContent = data.dish || 'Heute verfügbar';
-      textArea.appendChild(text);
+      status.textContent = offer.dish || 'Heute im Angebot';
+      status.style.color = 'var(--brand2)';
     } else {
-      const text = document.createElement('div');
-      text.style.cssText = 'font-size:13px; color:#999; font-style:italic; line-height:1.4;';
-      text.textContent = 'Aktuell kein Angebot für heute hinterlegt.';
-      textArea.appendChild(text);
+      status.textContent = 'Heute kein Angebot';
     }
+    body.appendChild(status);
+    card.appendChild(body);
     
-    card.appendChild(textArea);
+    const pillars = document.createElement('div');
+    pillars.className = 'card-pillars';
+    pillars.style.marginTop = '0';
     
-    // 3 Säulen-Icons (rechts)
     const orderingEnabled = providerData.orderingEnabled !== false && (offersToday.length > 0 && offersToday.some(o => normalizeOffer(o).hasPickupCode));
     const hasDineIn = providerData.dineInPossible !== false || (offersToday.length > 0 && offersToday.some(o => normalizeOffer(o).dineInPossible));
     const hasReuse = providerData.reuse && providerData.reuse.enabled;
     
-    const iconsRow = document.createElement('div');
-    iconsRow.style.cssText = 'display:flex; align-items:center; gap:8px; flex-shrink:0;';
+    pillars.innerHTML = `
+      <div class="pillar-mini ${hasDineIn ? 'active' : ''}" style="width:24px; height:24px;">🍴</div>
+      <div class="pillar-mini ${orderingEnabled ? 'active yellow' : ''}" style="width:24px; height:24px;">🧾</div>
+      <div class="pillar-mini ${hasReuse ? 'active green' : ''}" style="width:24px; height:24px;">🔄</div>
+    `;
+    card.appendChild(pillars);
     
-    // Vor Ort 🍴
-    const icon1 = document.createElement('span');
-    icon1.style.cssText = `font-size:20px; opacity:${hasDineIn ? '1' : '0.3'};`;
-    icon1.textContent = '🍴';
-    icon1.title = 'Vor Ort essen möglich';
-    iconsRow.appendChild(icon1);
-    
-    // Abholnummer 🧾 (gelb markiert wenn verfügbar)
-    const icon2 = document.createElement('span');
-    if(orderingEnabled){
-      icon2.style.cssText = 'font-size:20px; opacity:1; background:linear-gradient(135deg, rgba(255,215,0,0.3) 0%, rgba(255,184,0,0.2) 100%); border-radius:50%; padding:4px; display:inline-flex; align-items:center; justify-content:center;';
-    } else {
-      icon2.style.cssText = 'font-size:20px; opacity:0.3;';
-    }
-    icon2.textContent = '🧾';
-    icon2.title = 'Abholnummer verfügbar';
-    iconsRow.appendChild(icon2);
-    
-    // Mehrweg 🔄
-    const icon3 = document.createElement('span');
-    icon3.style.cssText = `font-size:20px; opacity:${hasReuse ? '1' : '0.3'};`;
-    icon3.textContent = '🔄';
-    icon3.title = 'Mehrweg möglich';
-    iconsRow.appendChild(icon3);
-    
-    card.appendChild(iconsRow);
-    
-    // Klick auf Karte: Zu Anbieter-Detail oder Discovery mit Filter
-    if(hasOfferToday && offersToday.length > 0){
-      card.style.cursor = 'pointer';
-      card.onclick = () => {
+    card.onclick = () => {
+      if(hasOfferToday){
         activeDiscoverFilter = 'provider';
         currentProviderFilter = providerData.providerId;
         renderDiscover();
         showDiscover();
-        showToast(`Angebote von ${esc(providerData.providerName || 'Anbieter')}`);
-      };
-    }
+        showToast(`Angebote von ${providerData.providerName}`);
+      } else {
+        showToast('Aktuell kein Angebot für heute.');
+      }
+    };
     
     return card;
   }
@@ -11324,100 +11229,122 @@
     const o = normalizeOffer(raw);
     activeOfferId=id;
     
-    // History speichern (inkl. Scroll-Position)
-    navigationHistory.push({
-      view: mode === 'start' ? 'start' : 'discover',
-      locationQuery: locationQuery,
-      activeCat: activeCat,
-      activeDay: activeDay,
-      activeFilter: activeDiscoverFilter,
-      scrollY: window.scrollY
-    });
-
+    // UI Elements
     const sImg = document.getElementById('sImg');
     const sDish = document.getElementById('sDish');
-    
-    // Foto-Handling mit Platzhalter
+    const sPriceRow = document.getElementById('sPriceRow');
     const sImgPlaceholder = document.getElementById('sImgPlaceholder');
+    const sFavoriteBtn = document.getElementById('sFavoriteBtn');
+    
+    // Foto-Handling
     if(sImg){
-      const imgSrc = o.imageUrl || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70';
-      sImg.src = imgSrc;
-      sImg.onerror = () => {
-        if(sImgPlaceholder) sImgPlaceholder.style.display = 'flex';
-        if(sImg) sImg.style.display = 'none';
-      };
-      sImg.onload = () => {
-        if(sImgPlaceholder) sImgPlaceholder.style.display = 'none';
-        if(sImg) sImg.style.display = 'block';
+      sImg.src = o.imageUrl || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70';
+      sImg.style.display = 'block';
+      sImg.onerror = () => { if(sImgPlaceholder) sImgPlaceholder.style.display = 'flex'; sImg.style.display = 'none'; };
+      sImg.onload = () => { if(sImgPlaceholder) sImgPlaceholder.style.display = 'none'; };
+    }
+    
+    if(sDish) sDish.textContent = o.dish || '';
+    if(sPriceRow) sPriceRow.textContent = euro(o.price);
+    
+    // Favorite State
+    const favorites = JSON.parse(localStorage.getItem('mittagio_favorites') || '[]');
+    const isFav = favorites.includes(id);
+    if(sFavoriteBtn){
+      sFavoriteBtn.querySelector('i').style.fill = isFav ? '#E34D4D' : 'none';
+      sFavoriteBtn.onclick = (e) => {
+        e.stopPropagation();
+        toggleFavorite(id, sFavoriteBtn);
       };
     }
-    if(sDish) sDish.textContent = o.dish || '';
-    
-    // Preis in Details (nicht auf dem Bild)
-    const sPriceRow = document.getElementById('sPriceRow');
-    if(sPriceRow){ sPriceRow.textContent = euro(o.price); sPriceRow.style.display = 'block'; }
-    
-    // 3 Säulen: nur anzeigen was gilt – 🍴 immer, 🧾 nur bei Abholnummer, 🔄 nur bei Mehrweg
+
+    // 3 Säulen Badges
     const sThreePillars = document.getElementById('sThreePillars');
     if(sThreePillars){
       const offerProvider = offers.find(p => p.providerId === o.providerId);
-      const orderingEnabled = offerProvider && (offerProvider.orderingEnabled !== false && (o.hasPickupCode || offerProvider.hasPickupCode));
-      const hasReuseSupport = offerProvider && (offerProvider.reuseEnabled || offerProvider.reuse || (offerProvider.providerProfile && offerProvider.providerProfile.reuseEnabled));
-      const hasDineIn = o.dineInPossible !== false;
-      const pillars = [];
-      pillars.push(`<div style="display:flex; align-items:center; gap:10px; padding:10px 14px; background:rgba(0,0,0,0.06); border-radius:14px; border:1px solid rgba(0,0,0,0.08);"><span style="font-size:24px;">🍴</span><span style="color:#1a1a1a; font-size:14px; font-weight:700;">Vor Ort</span></div>`);
-      if(hasReuseSupport) pillars.push(`<div style="display:flex; align-items:center; gap:10px; padding:10px 14px; background:rgba(39,174,96,0.12); border-radius:14px; border:1px solid rgba(39,174,96,0.25);"><span style="font-size:24px;">🔄</span><span style="color:#1a1a1a; font-size:14px; font-weight:700;">Mehrweg</span></div>`);
-      if(orderingEnabled) pillars.push(`<div style="display:flex; align-items:center; gap:10px; padding:10px 14px; background:rgba(255,215,0,0.2); border-radius:14px; border:1px solid rgba(255,215,0,0.4);"><span style="font-size:24px;">🧾</span><span style="color:#1a1a1a; font-size:14px; font-weight:700;">Abholnummer</span></div>`);
-      sThreePillars.innerHTML = pillars.join('');
+      const orderingEnabled = !!(offerProvider && (offerProvider.orderingEnabled !== false && (o.hasPickupCode || offerProvider.hasPickupCode)));
+      const hasReuse = !!(offerProvider && (offerProvider.reuseEnabled || offerProvider.reuse || (offerProvider.providerProfile && offerProvider.providerProfile.reuseEnabled)));
+      
+      sThreePillars.innerHTML = `
+        <div class="pillar-badge active">
+          <div class="pillar-icon-circle">🍴</div>
+          <div class="pillar-label">Vor Ort</div>
+        </div>
+        <div class="pillar-badge ${orderingEnabled ? 'active yellow' : ''}">
+          <div class="pillar-icon-circle">🧾</div>
+          <div class="pillar-label">Abhol-Nr.</div>
+        </div>
+        <div class="pillar-badge ${hasReuse ? 'active green' : ''}">
+          <div class="pillar-icon-circle">🔄</div>
+          <div class="pillar-label">Mehrweg</div>
+        </div>
+      `;
     }
-    
-    // Mittags-Zeitfenster (Pill): "Abholung heute Mittag von X – Y Uhr"
+
+    // Logistik & Zeit
     const sMealTimeRange = document.getElementById('sMealTimeRange');
-    const sMealTimeWrap = document.getElementById('sMealTime');
-    if(sMealTimeRange && sMealTimeWrap){
-      if(o.pickupWindow){
-        const timeMatch = o.pickupWindow.match(/(\d{1,2}:\d{2})\s*[–-]\s*(\d{1,2}:\d{2})/);
-        sMealTimeRange.textContent = timeMatch && timeMatch[1] && timeMatch[2] ? `Abholung heute Mittag von ${timeMatch[1]} – ${timeMatch[2]} Uhr` : `Abholung heute Mittag ${o.pickupWindow} Uhr`;
-        sMealTimeWrap.style.display = 'flex';
-      } else { sMealTimeRange.textContent = '–'; sMealTimeWrap.style.display = 'flex'; }
-    }
+    if(sMealTimeRange) sMealTimeRange.textContent = o.pickupWindow ? `Abholung heute: ${o.pickupWindow} Uhr` : 'Abholung heute Mittag';
     
-    // Anbieter-Modul: Name (klickbar → alle Gerichte dieses Anbieters) + Adresse + Entfernungsangaben
-    const sProviderName = document.getElementById('sProviderName');
-    const sProviderNameBtn = document.getElementById('sProviderNameBtn');
     const sProviderAddress = document.getElementById('sProviderAddress');
-    const sDistanceInfo = document.getElementById('sDistanceInfo');
-    if(sProviderName) sProviderName.textContent = o.providerName || 'Anbieter';
-    if(sProviderNameBtn){
-      sProviderNameBtn.onclick = () => {
-        closeSheet();
-        activeDiscoverFilter = 'provider';
-        currentProviderFilter = o.providerId;
-        if(typeof showView === 'function') showView(views.discover || 'v-discover');
-        if(typeof renderDiscover === 'function') renderDiscover();
-        if(typeof renderDiscoverCategories === 'function') renderDiscoverCategories();
-        showToast('Alle Gerichte von ' + (o.providerName || 'Anbieter'), 2000);
-      };
-    }
     const addr = buildAddress({address:o.address, street:o.providerStreet, zip:o.providerZip, city:o.providerCity});
     if(sProviderAddress) sProviderAddress.textContent = addr || 'Adresse nicht verfügbar';
-    
-    // Logistik: Zwei klickbare Kacheln (🚶 Fußweg, 🚗 Fahrtweg) – Klick öffnet Route in Google Maps, ohne blaue Link-Optik
+
+    // Google Maps Buttons
+    const sDistanceInfo = document.getElementById('sDistanceInfo');
     if(sDistanceInfo && o.distanceKm != null){
-      const walkingMinutes = Math.round(Number(o.distanceKm) * 12);
-      const carMinutes = Math.round(Number(o.distanceKm) * 1.2);
-      const walkingTimeText = walkingMinutes < 1 ? '< 1 Min.' : walkingMinutes + ' Min.';
-      const carTimeText = carMinutes < 1 ? '< 1 Min.' : carMinutes + ' Min.';
-      const providerIdForMaps = o.providerId;
-      const tileStyle = 'flex:1; min-width:100px; padding:12px 14px; border-radius:12px; border:1px solid rgba(0,0,0,0.1); background:rgba(0,0,0,0.04); color:#333; font-size:14px; font-weight:600; cursor:pointer; text-align:center; transition:all 0.2s ease; text-decoration:none;';
       sDistanceInfo.style.display = 'flex';
+      const walk = Math.round(o.distanceKm * 12);
+      const car = Math.round(o.distanceKm * 1.5);
       sDistanceInfo.innerHTML = `
-        <button type="button" style="${tileStyle}" onmouseover="this.style.background='rgba(0,0,0,0.08)'; this.style.borderColor='rgba(0,0,0,0.15)';" onmouseout="this.style.background='rgba(0,0,0,0.04)'; this.style.borderColor='rgba(0,0,0,0.1)';" onclick="openGoogleMapsRoute('${esc(providerIdForMaps)}');">🚶 Fußweg · ${walkingTimeText}</button>
-        <button type="button" style="${tileStyle}" onmouseover="this.style.background='rgba(0,0,0,0.08)'; this.style.borderColor='rgba(0,0,0,0.15)';" onmouseout="this.style.background='rgba(0,0,0,0.04)'; this.style.borderColor='rgba(0,0,0,0.1)';" onclick="openGoogleMapsRoute('${esc(providerIdForMaps)}');">🚗 Fahrtweg · ${carTimeText}</button>
+        <button onclick="openGoogleMapsRoute('${o.providerId}')" style="flex:1; height:44px; border-radius:12px; border:none; background:#fff; font-size:13px; font-weight:700; color:#1a1a1a; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow:0 2px 8px rgba(0,0,0,0.05);">
+          🚶 ${walk} Min.
+        </button>
+        <button onclick="openGoogleMapsRoute('${o.providerId}')" style="flex:1; height:44px; border-radius:12px; border:none; background:#fff; font-size:13px; font-weight:700; color:#1a1a1a; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow:0 2px 8px rgba(0,0,0,0.05);">
+          🚗 ${car} Min.
+        </button>
       `;
-    } else if(sDistanceInfo){
-      sDistanceInfo.style.display = 'none';
     }
+
+    // Allergene
+    const sAllergensCodes = document.getElementById('sAllergensCodes');
+    if(sAllergensCodes) sAllergensCodes.textContent = (o.allergens && o.allergens.length) ? o.allergens.join(', ') : '–';
+
+    // CTA Button
+    const btnCTA = document.getElementById('btnPrimaryCTA');
+    const hint = document.getElementById('sInfoHint');
+    const offerProvider = offers.find(p => p.providerId === o.providerId);
+    const canOrder = !!(offerProvider && offerProvider.orderingEnabled !== false && (o.hasPickupCode || offerProvider.hasPickupCode));
+    
+    if(btnCTA){
+      btnCTA.onclick = () => {
+        if(!canOrder){ showToast('Nur Info-Angebot'); return; }
+        if(addToCart(o)){
+          showToast('In die Mittagsbox gelegt! 🧾');
+          updateHeaderBasket();
+          closeSheet();
+          showCart();
+        }
+      };
+      btnCTA.style.opacity = canOrder ? '1' : '0.5';
+      const btnText = document.getElementById('btnPrimaryCTAText');
+      if(btnText) btnText.textContent = canOrder ? 'In die Mittagsbox legen' : 'Nur Info-Angebot';
+    }
+    if(hint){
+      hint.style.display = canOrder ? 'none' : 'block';
+      hint.textContent = 'Dieser Anbieter bietet aktuell keine Abholnummer an.';
+    }
+
+    // Open Sheet
+    const sheet = document.getElementById('sheet');
+    const backdrop = document.getElementById('bd');
+    if(sheet && backdrop){
+      backdrop.style.display = 'block';
+      sheet.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
+  }
     
     // Status Badge (dynamisch basierend auf ordering_enabled)
     const statusBadgeEl = document.getElementById('sStatusBadge');
@@ -14077,23 +14004,20 @@
     if(headerCard){
       if(isLoggedIn){
         headerCard.innerHTML = `
-          <div style="display:flex; align-items:center; gap:16px;">
-            <div style="width:64px; height:64px; border-radius:50%; background:linear-gradient(135deg, #FFD700 0%, #FFD700 100%); display:flex; align-items:center; justify-content:center; font-size:24px; font-weight:900; color:#334155; box-shadow:0 4px 12px rgba(255,215,0,0.3); flex-shrink:0;">
-              ${initials}
-            </div>
-            <div style="flex:1; min-width:0;">
-              <div style="font-weight:900; font-size:22px; margin-bottom:4px; color:#2D3436; line-height:1.2;">Hallo ${esc(firstName || 'Kunde')} 👋</div>
-              <div class="hint" style="font-size:14px; color:#666; line-height:1.4;">Dein persönlicher Mittagsbereich</div>
-            </div>
+          <div style="width:64px; height:64px; border-radius:24px; background:var(--brand); display:flex; align-items:center; justify-content:center; font-size:24px; font-weight:900; color:#1a1a1a; box-shadow:0 8px 24px rgba(255,215,0,0.3); flex-shrink:0;">
+            ${initials}
+          </div>
+          <div style="flex:1; min-width:0;">
+            <div style="font-weight:950; font-size:22px; color:#1a1a1a; letter-spacing:-0.02em; line-height:1.2;">Hallo ${esc(firstName || 'Kunde')} 👋</div>
+            <div style="font-size:14px; font-weight:600; color:#64748b; margin-top:2px;">${esc(customer.email || 'Persönlicher Bereich')}</div>
           </div>
         `;
       } else {
         headerCard.innerHTML = `
-          <div>
-            <div style="font-family:'Nunito',sans-serif; font-weight:800; font-size:20px; margin-bottom:2px; color:#1a1a1a; line-height:1.25; letter-spacing:0.02em;">Willkommen bei Mittagio 👋</div>
-            <div style="font-size:11px; font-weight:600; color:#94a3b8; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.06em;">Anmeldung</div>
-            <p class="hint" style="font-size:14px; color:#64748b; line-height:1.45; margin:0 0 14px;">Bestelle schneller und finde deine Abholnummern wieder.</p>
-            <button class="btn-primary" type="button" id="btnProfileCreateAccount" style="width:100%; max-width:220px; min-height:46px; font-weight:800; font-size:15px; border-radius:14px; background:#FFD700; color:#1a1a1a; border:none; box-shadow:0 4px 0 0 #d1b600;">
+          <div style="flex:1;">
+            <div style="font-weight:950; font-size:22px; color:#1a1a1a; letter-spacing:-0.02em; line-height:1.2; margin-bottom:8px;">Willkommen 👋</div>
+            <p style="font-size:14px; color:#64748b; line-height:1.5; margin:0 0 20px;">Melde dich an, um deine Bestellungen und Favoriten zu speichern.</p>
+            <button class="btn-cust-primary" type="button" id="btnProfileCreateAccount" style="height:48px; font-size:15px;">
               Profil anlegen
             </button>
           </div>
@@ -14154,15 +14078,13 @@
         abholnummerList.innerHTML = activeAbholnummern.map(order => {
           const code = order.pickupCode || '–';
           return `
-            <div style="display:flex; align-items:center; justify-content:space-between; padding:16px; background:#f8f9fa; border-radius:16px; border:2px solid rgba(255,215,0,0.2); cursor:pointer; transition:all 0.2s ease;" onclick="showPickupCode('${esc(order.id)}');" onmouseover="this.style.borderColor='rgba(255,215,0,0.5)'; this.style.transform='translateY(-2px)';" onmouseout="this.style.borderColor='rgba(255,215,0,0.2)'; this.style.transform='translateY(0)';">
+            <div class="cust-card" style="flex-direction:row; padding:16px; align-items:center; gap:16px; margin-bottom:0; border:2px solid rgba(255,215,0,0.3); background:rgba(255,215,0,0.05);" onclick="showPickupCode('${esc(order.id)}');">
+              <div style="width:48px; height:48px; border-radius:12px; background:var(--brand); display:flex; align-items:center; justify-content:center; font-size:24px;">🧾</div>
               <div style="flex:1; min-width:0;">
-                <div style="font-weight:900; font-size:18px; color:#2D3436; margin-bottom:4px; font-family:monospace; letter-spacing:2px;">${esc(code)}</div>
-                <div style="font-size:13px; color:#666; display:flex; align-items:center; gap:6px;">
-                  <i data-lucide="store" style="width:14px;height:14px;"></i>
-                  <span>${esc(order.providerName || 'Anbieter')}</span>
-                </div>
+                <div style="font-weight:950; font-size:18px; color:#1a1a1a; letter-spacing:2px; font-family:monospace;">${esc(code)}</div>
+                <div style="font-size:13px; font-weight:600; color:#64748b;">${esc(order.providerName || 'Anbieter')}</div>
               </div>
-              <i data-lucide="chevron-right" style="width:20px;height:20px; color:#999; flex-shrink:0;"></i>
+              <i data-lucide="chevron-right" style="width:20px;height:20px; color:var(--brand);"></i>
             </div>
           `;
         }).join('');
