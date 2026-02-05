@@ -738,6 +738,7 @@
     /* Provider-FAB und Abholnummer-Overlay in Kundenansicht nie anzeigen (auch beim Runterscrollen) */
     body:not(.provider-mode) #fabProviderAddOffer,
     body:not(.provider-mode) #fabProviderAddOfferLabel { display: none !important; }
+    #fabProviderAddOfferLabel { display: none !important; }
 
     /* Sheets / modals – Safe-Area für moderne Handys (S25, iPhone, Pixel) */
     .backdrop{position:fixed; inset:0; background:rgba(0,0,0,.38); opacity:0; pointer-events:none; transition:opacity .2s; z-index:30}
@@ -1257,6 +1258,9 @@
     .w-actions{display:flex; gap:10px; margin-top:12px}
     .w-actions button{flex:1}
 
+    /* Inseratflow: Über Provider-Bottom-Nav (z-index 999) legen */
+    #wbd.active, #createFlowBd.active { z-index: 1000 !important; }
+    #wizard.sheet--kitchen.active, #createFlowSheet.sheet--kitchen.active { z-index: 1001 !important; }
     /* Inseratflow: Helles, app-ähnliches Layout (kein Livebild, klares Layout) */
     #createFlowSheet.sheet--kitchen,
     #wizard.sheet--kitchen{
@@ -1511,6 +1515,23 @@
       width: 24px;
       height: 24px;
       stroke-width: 3;
+    }
+    /* FAB Plus-only: rund, pulsierend */
+    #fabProviderAddOffer.fab-provider-plus {
+      width: 56px;
+      height: 56px;
+      min-width: 56px;
+      padding: 0;
+      border-radius: 50%;
+      justify-content: center;
+      animation: fab-pulse 2s ease-in-out infinite;
+    }
+    #fabProviderAddOffer.fab-provider-plus:active {
+      animation: none;
+    }
+    @keyframes fab-pulse {
+      0%, 100% { box-shadow: 0 4px 20px rgba(255,215,0,0.5), 0 8px 24px rgba(0,0,0,0.15); }
+      50% { box-shadow: 0 4px 28px rgba(255,215,0,0.7), 0 8px 32px rgba(0,0,0,0.2); }
     }
 
     @media (min-width: 501px) {
@@ -4569,11 +4590,11 @@
         <div class="prov-stats-grid">
           <div class="prov-stat-item">
             <span id="dashboardTagesessenCount" class="prov-stat-value">0</span>
-            <span class="prov-stat-label">Live</span>
+            <span class="prov-stat-label">Meine Tagesessen</span>
           </div>
           <div class="prov-stat-item" style="border-left:1px solid #eee; border-right:1px solid #eee;">
             <span id="dashboardAbholungenCount" class="prov-stat-value" style="color:var(--brand2);">0</span>
-            <span class="prov-stat-label">Orders</span>
+            <span class="prov-stat-label">Meine Bestellungen</span>
           </div>
           <div class="prov-stat-item">
             <span id="dashboardUmsatzToday" class="prov-stat-value">0,00 €</span>
@@ -4584,13 +4605,6 @@
 
       <div style="padding:20px; max-width:500px; margin:0 auto;">
         
-        <!-- Status & Versprechen -->
-        <div style="margin-bottom:24px; padding:16px; background:white; border-radius:24px; border:1px solid rgba(0,0,0,0.04); display:flex; align-items:center; gap:12px; box-shadow: 0 4px 12px rgba(0,0,0,0.02);">
-          <div style="width:10px; height:10px; background:var(--prov-success); border-radius:50%; box-shadow:0 0 0 4px rgba(16,185,129,0.1);"></div>
-          <span style="font-size:14px; font-weight:700; color:#1a1a1a;">Standort live & aktiv</span>
-          <span style="font-size:12px; color:#64748b; margin-left:auto; font-weight:600; text-transform:uppercase; letter-spacing:0.03em;">Gebührenfrei</span>
-        </div>
-
         <!-- 2. Aktives Inserat Section -->
         <div id="providerActiveListingsSection" style="margin-bottom:32px;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
@@ -4603,7 +4617,7 @@
         </div>
 
         <!-- Quick Actions Grid -->
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:32px;">
+        <div style="display:grid; grid-template-columns:1fr; gap:16px; margin-bottom:32px;">
           <div class="prov-action-btn" id="kpiCardKochbuch">
             <div class="prov-action-icon" style="background:rgba(76, 175, 80, 0.1);">
               <i data-lucide="book-open" style="color:#4CAF50; width:22px; height:22px;"></i>
@@ -4611,16 +4625,6 @@
             <div>
               <div style="font-size:11px; font-weight:800; color:#9ca3af; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:4px;">Kochbuch</div>
               <div id="kpiKochbuchCount" style="font-size:16px; font-weight:900; color:#1a1a1a;">0 Gerichte</div>
-            </div>
-          </div>
-          
-          <div class="prov-action-btn" id="kpiCardProfile">
-            <div class="prov-action-icon" style="background:rgba(59, 130, 246, 0.1);">
-              <i data-lucide="settings" style="color:#3b82f6; width:22px; height:22px;"></i>
-            </div>
-            <div>
-              <div style="font-size:11px; font-weight:800; color:#9ca3af; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:4px;">Account</div>
-              <div style="font-size:16px; font-weight:900; color:#1a1a1a;">Einstellungen</div>
             </div>
           </div>
         </div>
@@ -4651,10 +4655,9 @@
 
       </div>
 
-      <!-- Modern FAB -->
-      <button class="fab-provider" id="fabProviderAddOffer" type="button" style="background:#1a1a1a; color:#fff; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
-        <i data-lucide="plus" style="width:24px; height:24px;"></i>
-        <span style="font-weight:800;">Neues Inserat</span>
+      <!-- Modern FAB: nur pulsierendes Plus -->
+      <button class="fab-provider fab-provider-plus" id="fabProviderAddOffer" type="button" aria-label="Neues Inserat erstellen" style="background:#1a1a1a; color:#fff;">
+        <i data-lucide="plus" style="width:28px; height:28px;"></i>
       </button>
     </section>
 
@@ -14756,6 +14759,21 @@
     };
   }
 
+  const btnProviderLogout = document.getElementById('btnProviderLogout');
+  if(btnProviderLogout){
+    btnProviderLogout.onclick=()=>{
+      deleteCookie(SESSION_COOKIE_NAME);
+      localStorage.removeItem(LS.providerSession);
+      localStorage.removeItem('mittagio_current_session_id');
+      provider.loggedIn = false;
+      provider.current_session_id = null;
+      save(LS.provider, provider);
+      setMode('customer');
+      showProfile();
+      showToast('Du wurdest abgemeldet.');
+    };
+  }
+
   // Rechtliches
   // --- AGB Onboarding Modal (1-Screen) ---
   function openAgbOnboardingModal(callback){
@@ -18143,34 +18161,48 @@
         box.appendChild(prev); box.appendChild(rem);
       }
 
-      // --- Abholzeit: Standard 11:30 – 14:00, +/- 15min (kein Abend) ---
+      // --- Abholzeit: Standard 11:30 – 14:00, +/- 15min für Start UND Ende ---
       const labelTime=document.createElement('div'); labelTime.className='hint'; labelTime.textContent='Abholzeit (Mittagstisch)';
       box.appendChild(labelTime);
       const pw=(w.data.pickupWindow||DEFAULT_MEAL_WINDOW).split(/\s*[–\-]\s*/);
       let timeStart=(pw[0]||'11:30').trim(); let timeEnd=(pw[1]||'14:00').trim();
       if(timeStart.length===4) timeStart='0'+timeStart; if(timeEnd.length===4) timeEnd='0'+timeEnd;
-      const timeRow=document.createElement('div');
-      timeRow.style.cssText='display:flex; align-items:center; gap:12px; margin-bottom:16px;';
-      const timeDisplay=document.createElement('span');
-      timeDisplay.style.cssText='font-size:18px; font-weight:800; color:#1a1a1a; flex:1; text-align:center;';
-      timeDisplay.textContent=timeStart+' – '+timeEnd;
       function parseTime(s){ const [h,m]=s.split(':').map(Number); return (h||0)*60+(m||0); }
       function fmtTime(m){ const h=Math.floor(m/60), min=m%60; return (h<10?'0':'')+h+':'+(min<10?'0':'')+min; }
-      const minusBtn=document.createElement('button');
-      minusBtn.type='button'; minusBtn.className='btn secondary'; minusBtn.style.cssText='min-width:44px; min-height:44px;';
-      minusBtn.textContent='−';
-      minusBtn.onclick=()=>{
+      const updatePickupWindow=()=>{ w.data.pickupWindow=timeStart+' – '+timeEnd; saveDraft(); };
+      const timeRow=document.createElement('div');
+      timeRow.style.cssText='display:flex; align-items:center; justify-content:center; gap:8px; flex-wrap:wrap; margin-bottom:16px;';
+      const dispStart=document.createElement('span'); dispStart.style.cssText='font-size:18px; font-weight:800; color:#1a1a1a; min-width:48px; text-align:center;';
+      dispStart.textContent=timeStart;
+      const dispEnd=document.createElement('span'); dispEnd.style.cssText='font-size:18px; font-weight:800; color:#1a1a1a; min-width:48px; text-align:center;';
+      dispEnd.textContent=timeEnd;
+      const minusStart=document.createElement('button'); minusStart.type='button'; minusStart.className='btn secondary'; minusStart.style.cssText='min-width:44px; min-height:44px;'; minusStart.textContent='−';
+      minusStart.title='Start früher';
+      minusStart.onclick=()=>{
         let start=parseTime(timeStart), end=parseTime(timeEnd);
-        if(end-start>15){ end-=15; w.data.pickupWindow=timeStart+' – '+fmtTime(end); timeEnd=fmtTime(end); timeDisplay.textContent=timeStart+' – '+timeEnd; saveDraft(); }
+        if(start>10*60&&end-start>15){ start-=15; timeStart=fmtTime(start); dispStart.textContent=timeStart; updatePickupWindow(); }
       };
-      const plusBtn=document.createElement('button');
-      plusBtn.type='button'; plusBtn.className='btn secondary'; plusBtn.style.cssText='min-width:44px; min-height:44px;';
-      plusBtn.textContent='+';
-      plusBtn.onclick=()=>{
+      const plusStart=document.createElement('button'); plusStart.type='button'; plusStart.className='btn secondary'; plusStart.style.cssText='min-width:44px; min-height:44px;'; plusStart.textContent='+';
+      plusStart.title='Start später';
+      plusStart.onclick=()=>{
         let start=parseTime(timeStart), end=parseTime(timeEnd);
-        if(end<14*60&&end-start<4*60){ end+=15; w.data.pickupWindow=timeStart+' – '+fmtTime(end); timeEnd=fmtTime(end); timeDisplay.textContent=timeStart+' – '+timeEnd; saveDraft(); }
+        if(start<end-15){ start+=15; timeStart=fmtTime(start); dispStart.textContent=timeStart; updatePickupWindow(); }
       };
-      timeRow.appendChild(minusBtn); timeRow.appendChild(timeDisplay); timeRow.appendChild(plusBtn);
+      const minusEnd=document.createElement('button'); minusEnd.type='button'; minusEnd.className='btn secondary'; minusEnd.style.cssText='min-width:44px; min-height:44px;'; minusEnd.textContent='−';
+      minusEnd.title='Ende früher';
+      minusEnd.onclick=()=>{
+        let start=parseTime(timeStart), end=parseTime(timeEnd);
+        if(end-start>15){ end-=15; timeEnd=fmtTime(end); dispEnd.textContent=timeEnd; updatePickupWindow(); }
+      };
+      const plusEnd=document.createElement('button'); plusEnd.type='button'; plusEnd.className='btn secondary'; plusEnd.style.cssText='min-width:44px; min-height:44px;'; plusEnd.textContent='+';
+      plusEnd.title='Ende später';
+      plusEnd.onclick=()=>{
+        let start=parseTime(timeStart), end=parseTime(timeEnd);
+        if(end<15*60&&end-start<4*60){ end+=15; timeEnd=fmtTime(end); dispEnd.textContent=timeEnd; updatePickupWindow(); }
+      };
+      timeRow.appendChild(minusStart); timeRow.appendChild(dispStart); timeRow.appendChild(plusStart);
+      timeRow.appendChild(document.createTextNode(' – '));
+      timeRow.appendChild(minusEnd); timeRow.appendChild(dispEnd); timeRow.appendChild(plusEnd);
       box.appendChild(timeRow);
 
       // --- PREIS ---
