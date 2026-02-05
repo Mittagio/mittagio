@@ -4887,12 +4887,8 @@
               <div style="display:flex;align-items:center;gap:12px;"><i data-lucide="building" style="width:20px;height:20px;color:#64748b;"></i><span>Meine Daten</span></div>
               <i data-lucide="chevron-right" style="width:20px; height:20px; color:#cbd5e1;"></i>
             </button>
-            <button type="button" id="providerProfileRowTimes" class="provider-profile-row" style="width:100%; display:flex; align-items:center; justify-content:space-between; padding:20px; background:none; border:none; border-bottom:1px solid #f8f9fa; font-size:16px; font-weight:700; color:#1a1a1a; text-align:left; cursor:pointer;">
-              <div style="display:flex;align-items:center;gap:12px;"><i data-lucide="clock" style="width:20px;height:20px;color:#64748b;"></i><span>Mittagszeiten</span></div>
-              <i data-lucide="chevron-right" style="width:20px; height:20px; color:#cbd5e1;"></i>
-            </button>
             <button type="button" id="providerProfileRowService" class="provider-profile-row" style="width:100%; display:flex; align-items:center; justify-content:space-between; padding:20px; background:none; border:none; border-bottom:1px solid #f8f9fa; font-size:16px; font-weight:700; color:#1a1a1a; text-align:left; cursor:pointer;">
-              <div style="display:flex;align-items:center;gap:12px;"><i data-lucide="star" style="width:20px;height:20px;color:#64748b;"></i><span>Präferenzen</span></div>
+              <div style="display:flex;align-items:center;gap:12px;"><i data-lucide="star" style="width:20px;height:20px;color:#64748b;"></i><span>Präferenzen & Zeiten</span></div>
               <i data-lucide="chevron-right" style="width:20px; height:20px; color:#cbd5e1;"></i>
             </button>
             <button type="button" id="providerProfileRowPayment" class="provider-profile-row" style="width:100%; display:flex; align-items:center; justify-content:space-between; padding:20px; background:none; border:none; border-bottom:1px solid #f8f9fa; font-size:16px; font-weight:700; color:#1a1a1a; text-align:left; cursor:pointer;">
@@ -4958,49 +4954,41 @@
         </div>
       </div>
 
-      <!-- Sub-Seite: Voreinstellungen Mittagszeiten (15-Min-Wheel) -->
-      <div id="providerProfileSubTimes" style="display:none; flex-direction:column; height:100%;">
-        <header style="background:#fff; padding:24px 20px 20px; border-bottom:1px solid rgba(0,0,0,0.05); position:sticky; top:0; z-index:50; display:flex; align-items:center; gap:16px;">
-          <button type="button" id="providerProfileBackTimes" aria-label="Zurück" style="width:40px; height:40px; border-radius:12px; background:#f8f9fa; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center;">
-            <i data-lucide="chevron-left" style="width:24px; height:24px; color:#1a1a1a;"></i>
-          </button>
-          <h1 style="margin:0; font-size:20px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a;">Mittagszeiten</h1>
-        </header>
-
-        <div style="padding:24px 20px; flex:1;">
-          <div style="background:#fff; border-radius:24px; padding:24px; border:1px solid rgba(0,0,0,0.04); box-shadow:0 4px 12px rgba(0,0,0,0.02);">
-            <p style="margin:0 0 24px; font-size:14px; color:#64748b; line-height:1.5;">Wird als Standard in jedes neue Inserat geladen. Spart Zeit beim täglichen Inserieren.</p>
-            
-            <div style="display:flex; align-items:center; gap:12px; margin-bottom:24px;">
-              <div style="flex:1;">
-                <label style="display:block; font-size:13px; font-weight:700; color:#64748b; margin-bottom:8px; text-transform:uppercase;">Start</label>
-                <select id="providerMealStart" style="width:100%; height:56px; padding:0 16px; border:2px solid #f1f3f5; border-radius:16px; font-size:16px; font-weight:700; background:#f8f9fa; color:#1a1a1a; cursor:pointer;"></select>
-              </div>
-              <span style="color:#cbd5e1; font-weight:900; margin-top:24px;">–</span>
-              <div style="flex:1;">
-                <label style="display:block; font-size:13px; font-weight:700; color:#64748b; margin-bottom:8px; text-transform:uppercase;">Ende</label>
-                <select id="providerMealEnd" style="width:100%; height:56px; padding:0 16px; border:2px solid #f1f3f5; border-radius:16px; font-size:16px; font-weight:700; background:#f8f9fa; color:#1a1a1a; cursor:pointer;"></select>
-              </div>
-            </div>
-
-            <div style="margin-top:24px;">
-              <label style="display:block; font-size:13px; font-weight:700; color:#64748b; margin-bottom:12px; text-transform:uppercase;">An welchen Tagen?</label>
-              <div id="providerLunchWeekdays" style="display:flex; gap:10px; flex-wrap:wrap;"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Sub-Seite: Service-Optionen (3 Säulen Toggles) -->
+      <!-- Sub-Seite: Service-Optionen & Zeiten (3 Säulen Toggles + Mittagszeiten) -->
       <div id="providerProfileSubService" style="display:none; flex-direction:column; height:100%;">
         <header style="background:#fff; padding:24px 20px 20px; border-bottom:1px solid rgba(0,0,0,0.05); position:sticky; top:0; z-index:50; display:flex; align-items:center; gap:16px;">
           <button type="button" id="providerProfileBackService" aria-label="Zurück" style="width:40px; height:40px; border-radius:12px; background:#f8f9fa; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center;">
             <i data-lucide="chevron-left" style="width:24px; height:24px; color:#1a1a1a;"></i>
           </button>
-          <h1 style="margin:0; font-size:20px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a;">Präferenzen</h1>
+          <h1 style="margin:0; font-size:20px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a;">Präferenzen & Zeiten</h1>
         </header>
 
-        <div style="padding:24px 20px; flex:1;">
+        <div style="padding:24px 20px; flex:1; overflow-y:auto;">
+          
+          <!-- 1. Mittagszeiten (oben) -->
+          <div style="background:#fff; border-radius:24px; padding:24px; border:1px solid rgba(0,0,0,0.04); box-shadow:0 4px 12px rgba(0,0,0,0.02); margin-bottom:20px;">
+            <h3 style="margin:0 0 16px; font-size:17px; font-weight:800; color:#1a1a1a;">Mittagszeiten</h3>
+            <p style="margin:0 0 24px; font-size:14px; color:#64748b; line-height:1.5;">Standard-Zeitfenster für neue Inserate.</p>
+            
+            <div style="display:flex; align-items:center; gap:12px; margin-bottom:24px;">
+              <div style="flex:1;">
+                <label style="display:block; font-size:11px; font-weight:700; color:#9ca3af; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.05em;">Start</label>
+                <select id="providerMealStart" style="width:100%; height:52px; padding:0 12px; border:2px solid #f1f3f5; border-radius:14px; font-size:15px; font-weight:700; background:#f8f9fa; color:#1a1a1a; cursor:pointer;"></select>
+              </div>
+              <span style="color:#cbd5e1; font-weight:900; margin-top:20px;">–</span>
+              <div style="flex:1;">
+                <label style="display:block; font-size:11px; font-weight:700; color:#9ca3af; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.05em;">Ende</label>
+                <select id="providerMealEnd" style="width:100%; height:52px; padding:0 12px; border:2px solid #f1f3f5; border-radius:14px; font-size:15px; font-weight:700; background:#f8f9fa; color:#1a1a1a; cursor:pointer;"></select>
+              </div>
+            </div>
+
+            <div style="margin-top:24px;">
+              <label style="display:block; font-size:11px; font-weight:700; color:#9ca3af; margin-bottom:12px; text-transform:uppercase; letter-spacing:0.05em;">An welchen Tagen?</label>
+              <div id="providerLunchWeekdays" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
+            </div>
+          </div>
+
+          <!-- 2. Service-Optionen -->
           <div style="background:#fff; border-radius:24px; overflow:hidden; border:1px solid rgba(0,0,0,0.04); box-shadow:0 4px 12px rgba(0,0,0,0.02);">
             <div style="padding:20px; border-bottom:1px solid #f8f9fa; display:flex; justify-content:space-between; align-items:center;">
               <div style="display:flex; align-items:center; gap:16px;">
@@ -5028,15 +5016,15 @@
               <div style="display:flex; align-items:center; gap:16px;">
                 <div style="width:44px; height:44px; border-radius:14px; background:rgba(255,215,0,0.15); display:flex; align-items:center; justify-content:center; font-size:22px;">🧾</div>
                 <div>
-                  <div style="font-weight:800; color:#1a1a1a; font-size:16px;">Abholnummer</div>
-                  <div style="font-size:13px; color:#64748b;">Optional + 0,89 €. Standard: AUS.</div>
+                  <div style="font-weight:800; color:#1a1a1a; font-size:16px;">weniger Chaos & mehr Zeit</div>
+                  <div style="font-size:13px; color:#64748b;">Abholnummer (Service-Pauschale 0,89 €)</div>
                 </div>
               </div>
               <label class="toggle-switch"><input type="checkbox" id="providerAbholnummerEnabled"><span class="toggle-slider"></span></label>
             </div>
           </div>
           
-          <p style="margin:20px; font-size:13px; color:#94a3b8; text-align:center; line-height:1.5;">Diese Einstellungen gelten als Standard für neue Inserate, können aber bei jedem Inserat individuell angepasst werden.</p>
+          <p style="margin:20px; font-size:13px; color:#94a3b8; text-align:center; line-height:1.5;">Diese Einstellungen gelten als Standard für neue Inserate.</p>
         </div>
       </div>
 
@@ -8103,14 +8091,14 @@
   }
   function showProviderProfileSub(subId){
     const main = document.getElementById('providerProfileMain');
-    const subs = ['providerProfileSubBusiness','providerProfileSubTimes','providerProfileSubService','providerProfileSubPayment','providerProfileSubFaq'];
+    const subs = ['providerProfileSubBusiness','providerProfileSubService','providerProfileSubPayment','providerProfileSubFaq'];
     if(main) main.style.display = subId ? 'none' : 'block';
     var targetId = subId ? 'providerProfileSub' + subId.charAt(0).toUpperCase() + subId.slice(1) : '';
     subs.forEach(function(id){
       var el = document.getElementById(id);
       if(el) el.style.display = (subId && id === targetId) ? 'block' : 'none';
     });
-    if(subId === 'times' && typeof renderProviderProfileMealSelects === 'function') renderProviderProfileMealSelects();
+    if((subId === 'times' || subId === 'service') && typeof renderProviderProfileMealSelects === 'function') renderProviderProfileMealSelects();
     if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
   }
   function showProviderProfile(){
@@ -16081,6 +16069,22 @@
         if(fabProviderAddOfferLabel) fabProviderAddOfferLabel.style.opacity = '0';
       };
     }
+
+    // Refresh Button Handler
+    const btnRefresh = document.getElementById('btnProviderHomeRefresh');
+    if(btnRefresh){
+      btnRefresh.onclick = () => {
+        // Visuelles Feedback: Icon drehen
+        const icon = btnRefresh.querySelector('i');
+        if(icon) {
+          icon.style.transition = 'transform 0.5s ease-in-out';
+          icon.style.transform = 'rotate(360deg)';
+          setTimeout(() => { icon.style.transform = 'rotate(0deg)'; icon.style.transition = 'none'; }, 500);
+        }
+        renderProviderHome();
+        if(typeof showToast === 'function') showToast('Daten aktualisiert');
+      };
+    }
     
     // Icons aktualisieren
     if(typeof lucide !== 'undefined') setTimeout(()=> lucide.createIcons(), 50);
@@ -16686,7 +16690,7 @@
     // Progressive Disclosure: Menü-Zeilen und Zurück-Buttons
     function goProfileSub(id){ showProviderProfileSub(id); }
     function goProfileBack(){ showProviderProfileSub(null); }
-    ['Business','Times','Service','Payment','Faq'].forEach(function(cap){
+    ['Business','Service','Payment','Faq'].forEach(function(cap){
       var row = document.getElementById('providerProfileRow' + cap);
       var back = document.getElementById('providerProfileBack' + cap);
       var subId = cap.toLowerCase();
@@ -16699,8 +16703,8 @@
     var supportSolutions = {
       inserieren: 'Prüfe, ob dein Gericht im Kochbuch angelegt ist. Öffne „Meine Küche“ und tippe auf „Jetzt für 4,99 € inserieren“. Wähle Gericht, Bild und Zeitfenster – das Inserat geht in unter 30 Sekunden live.',
       zahlung: 'Die Inseratsgebühr (4,99 €) wird mit Veröffentlichung fällig. Die optionale Abholnummer (0,89 €) pro Vorgang wird bei jeder Bestellung abgerechnet. Alle Beträge siehst du unter „Zahlung & Abrechnung“.',
-      abholnummer: 'Die drei Säulen (Vor Ort, Mehrweg, Abholnummer) stellst du im Profil unter „Präferenzen“ ein. Die Abholnummer ist optional und kostet 0,89 € pro Vorgang.',
-      profil: 'Standort und Kontaktdaten bearbeitest du im Profil unter „Meine Daten“. Die Mittagszeiten und Wochentage findest du unter „Mittagszeiten“.',
+      abholnummer: 'Die drei Säulen (Vor Ort, Mehrweg, Abholnummer) sowie deine Mittagszeiten stellst du im Profil unter „Präferenzen & Zeiten“ ein. Die Abholnummer ist optional und kostet 0,89 € pro Vorgang.',
+      profil: 'Standort und Kontaktdaten bearbeitest du im Profil unter „Meine Daten“. Deine Mittagszeiten findest du unter „Präferenzen & Zeiten“.',
       feedback: 'Wir lieben Feedback! Wir bauen diese App für das Handwerk. Hast du eine Idee für ein neues Icon oder eine Funktion? Schreib uns unten!'
     };
     document.querySelectorAll('.provider-support-tile').forEach(function(btn){
@@ -16777,6 +16781,20 @@
     // Meine Mittagszeiten: Start/Ende
     const mealStartEl = document.getElementById('providerMealStart');
     const mealEndEl = document.getElementById('providerMealEnd');
+    
+    // Selects mit Zeiten füllen (8:00 - 20:00 in 15min Schritten)
+    if(mealStartEl && mealStartEl.options.length === 0){
+      let options = '';
+      for(let h=8; h<=20; h++){
+        for(let m=0; m<60; m+=15){
+          let t = (h<10?'0'+h:h)+':'+(m===0?'00':m);
+          options += `<option value="${t}">${t} Uhr</option>`;
+        }
+      }
+      mealStartEl.innerHTML = options;
+      if(mealEndEl) mealEndEl.innerHTML = options;
+    }
+    
     const saveMealWindow = () => {
       if(!provider.profile) provider.profile = {};
       const start = mealStartEl ? mealStartEl.value : p.mealStart || '11:30';
