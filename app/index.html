@@ -5727,7 +5727,7 @@
     <button type="button" id="inseratSuccessBtnBack" style="color:#9ca3af; font-weight:700; font-size:14px; background:none; border:none; padding:12px;">Zurück zur Übersicht (Dashboard)</button>
   </div>
   <div style="position:fixed; bottom:8px; left:0; right:0; text-align:center;">
-    <span style="font-size:9px; font-weight:700; color:#d1d5db; text-transform:uppercase; letter-spacing:0.03em;">Schorndorf (Zentrum)</span>
+    <!-- Standort entfernt -->
   </div>
 </div>
 
@@ -17879,6 +17879,29 @@
     startWizard('listing', context);
   }
 
+  /** Wendet einen automatischen Optimierungs-Filter auf ein Bild an (Food-Optimization). */
+  async function applyAppetizerFilter(dataUrl) {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        
+        // CSS-Filter-Logik via Canvas: Sättigung, Kontrast, Helligkeit
+        // Wir nutzen den Filter-Property des Contexts (modernere Browser unterstützen das)
+        // Alternativ: Pixel-Manipulation (aber Filter ist performanter)
+        ctx.filter = 'saturate(1.2) contrast(1.1) brightness(1.05) sepia(0.05)';
+        ctx.drawImage(img, 0, 0);
+        
+        resolve(canvas.toDataURL('image/jpeg', 0.85));
+      };
+      img.onerror = () => resolve(dataUrl); // Fallback auf Original
+      img.src = dataUrl;
+    });
+  }
+
   function startWizard(kind, ctx={}){
     w = { kind, step:0, data:{}, ctx };
     const wizardEl = document.getElementById('wizard');
@@ -18358,14 +18381,14 @@
     setWizardNextDefault();
     if(wNextBtn) wNextBtn.style.display = ''; // Weiter-Button sichtbar (Schritt 4 blendet ihn aus)
     const total = 4;
-    setWizardHeader('Inserat erstellen', `Schritt ${Math.min(w.step+1,total)} von ${total}`);
+    setWizardHeader('', `Schritt ${Math.min(w.step+1,total)} von ${total}`);
     const profile = normalizeProviderProfile(provider.profile || {});
     if(!w.data.pickupWindow){ w.data.pickupWindow = profile.mealWindow || DEFAULT_MEAL_WINDOW; }
     if(w.data.dineInPossible === undefined) w.data.dineInPossible = !(provider.profile&&provider.profile.dineInPossibleDefault===false);
 
     // Schritt 1: Basis (Quick-Input) – Name, 3-Slot Bild, Abholzeit 11:30–14:00 (+/- 15min), Preis
     if(w.step===0){
-      setWizardQuestion('Was kochst du heute?', 'Basis: Name, Bild, Zeit, Preis.');
+      setWizardQuestion('Was kochst du heute?', '');
       const box=document.createElement('div');
       const saveDraft = () => { localStorage.setItem('wizard_draft', JSON.stringify(w)); };
 
@@ -18399,18 +18422,41 @@
       box.appendChild(input);
       box.appendChild(suggestWrap);
 
-      // --- 3-Slot Bild: Kamera | Galerie | KI ---
+      // --- 3-Slot Bild: Kamera | KI | Galerie ---
       const labelImg=document.createElement('div'); labelImg.className='hint'; labelImg.textContent='Bild';
       box.appendChild(labelImg);
       const imgRow=document.createElement('div'); imgRow.className='answers'; imgRow.style.marginBottom='16px';
-      ['📷 Kamera','📤 Galerie','🖼️ KI-Vorschläge'].forEach((txt,i)=>{
+      
+      const slots = [
+        { txt: '📷 Kamera', action: 'camera' },
+        { txt: '🖼️ KI-Vorschläge', action: 'ai' },
+        { txt: '📤 Galerie', action: 'gallery' }
+      ];
+
+      slots.forEach((slot, i) => {
         const btn=document.createElement('button');
         btn.type='button'; btn.className='ans'; btn.style.minHeight='44px';
-        btn.textContent=txt;
+        btn.textContent=slot.txt;
         btn.onclick=async function(){
-          if(i===0){ const f=await pickImage({capture:true}); if(!f) return; const dataUrl=await toDataUrl(f); w.data.photoData=dataUrl; w.data.photoDataIsStandard=false; }
-          else if(i===1){ const f=await pickImage(); if(!f) return; const dataUrl=await toDataUrl(f); w.data.photoData=dataUrl; w.data.photoDataIsStandard=false; }
-          else { const imgs=typeof getDishImagesForName==='function'?getDishImagesForName(w.data.dish||''):[]; if(imgs.length>0){ w.data.photoData=imgs[0]; w.data.photoDataIsStandard=true; } }
+          if(slot.action === 'camera'){ 
+            const f=await pickImage({capture:true}); 
+            if(!f) return; 
+            const dataUrl=await toDataUrl(f); 
+            // Automatischen Filter anwenden
+            w.data.photoData = await applyAppetizerFilter(dataUrl);
+            w.data.photoDataIsStandard=false; 
+          }
+          else if(slot.action === 'gallery'){ 
+            const f=await pickImage(); 
+            if(!f) return; 
+            const dataUrl=await toDataUrl(f); 
+            w.data.photoData=dataUrl; 
+            w.data.photoDataIsStandard=false; 
+          }
+          else { 
+            const imgs=typeof getDishImagesForName==='function'?getDishImagesForName(w.data.dish||''):[]; 
+            if(imgs.length>0){ w.data.photoData=imgs[0]; w.data.photoDataIsStandard=true; } 
+          }
           saveDraft(); rebuildWizard();
         };
         imgRow.appendChild(btn);
@@ -18511,7 +18557,7 @@
 
     // Schritt 2: Service & Details – Vor Ort, Mehrweg (Pills 3€/5€/Sonstiges), Allergene (Toggle+Pills), Extras (Pills+Preisfeld)
     if(w.step===1){
-      setWizardQuestion('Service & Details', 'Kann man bei dir vor Ort essen? Bietest du Mehrweg an?');
+      setWizardQuestion('Service & Details', '');
       const box=document.createElement('div');
       const saveDraft = () => { localStorage.setItem('wizard_draft', JSON.stringify(w)); };
       const profile = normalizeProviderProfile(provider.profile || {});
@@ -18595,15 +18641,43 @@
 
       // 4. Extras – Pills inkl. Sonstiges, bei Klick App-Feld mit Preis (Komma)
       if(!Array.isArray(w.data.extras)) w.data.extras=[];
-      const extLabel=document.createElement('div'); extLabel.className='hint'; extLabel.style.marginTop='16px'; extLabel.textContent='Extras (Aufpreis)';
+      const extLabel=document.createElement('div'); extLabel.className='hint'; extLabel.style.marginTop='24px'; extLabel.textContent='Extras (Aufpreis)';
       box.appendChild(extLabel);
-      const extRow=document.createElement('div'); extRow.style.cssText='display:flex; flex-direction:column; gap:12px; margin-bottom:0;';
-      ['Beilagensalat','Extra Sauce','Brot','Ketchup','Mayo','Sonstiges'].forEach(name=>{
+      const extRow=document.createElement('div'); extRow.style.cssText='display:flex; flex-direction:column; gap:10px; margin-bottom:10px;';
+      
+      const extraOptions = [
+        { name: 'Beilagensalat', emoji: '🥗' },
+        { name: 'Extra Sauce', emoji: '🍯' },
+        { name: 'Brot', emoji: '🥖' },
+        { name: 'Ketchup', emoji: '🍅' },
+        { name: 'Mayo', emoji: '🥚' },
+        { name: 'Sonstiges', emoji: '✨' }
+      ];
+
+      extraOptions.forEach(opt=>{
+        const name = opt.name;
         const extra=w.data.extras.find(e=>e.name===name);
         const hasPrice=!!extra && Number(extra.price||0)>0;
-        const pillWrap=document.createElement('div'); pillWrap.style.cssText='display:flex; align-items:center; gap:8px; flex-wrap:wrap;';
-        const b=document.createElement('button'); b.type='button'; b.style.cssText=`min-height:44px; padding:8px 14px; border-radius:10px; font-size:14px; font-weight:600; border:2px solid ${hasPrice?'#10b981':'#e5e7eb'}; background:${hasPrice?'rgba(16,185,129,0.12)':'#fff'}; color:${hasPrice?'#10b981':'#475569'};`;
-        b.textContent=extra && extra.price ? name+' +'+Number(extra.price).toFixed(2).replace('.',',')+' €' : name;
+        
+        const pillWrap=document.createElement('div'); 
+        pillWrap.style.cssText='display:flex; align-items:center; gap:10px; background:#fff; border-radius:14px; padding:8px 12px; border:1px solid #f1f3f5; box-shadow:0 2px 6px rgba(0,0,0,0.02); transition:all 0.2s;';
+        if(hasPrice) pillWrap.style.borderColor = '#10b981';
+
+        const b=document.createElement('button'); 
+        b.type='button'; 
+        b.style.cssText=`flex:1; display:flex; align-items:center; gap:8px; background:none; border:none; padding:0; cursor:pointer; font-family:inherit; text-align:left;`;
+        
+        const emojiSpan = document.createElement('span');
+        emojiSpan.style.fontSize = '18px';
+        emojiSpan.textContent = opt.emoji;
+        
+        const textSpan = document.createElement('span');
+        textSpan.style.cssText = `font-size:14px; font-weight:700; color:${hasPrice?'#10b981':'#1a1a1a'};`;
+        textSpan.textContent = extra && extra.price ? name+' +'+Number(extra.price).toFixed(2).replace('.',',')+' €' : name;
+        
+        b.appendChild(emojiSpan);
+        b.appendChild(textSpan);
+        
         b.onclick=()=>{
           const idx=w.data.extras.findIndex(e=>e.name===name);
           if(idx>=0){ w.data.extras.splice(idx,1); rebuildWizard(); return; }
@@ -18611,14 +18685,37 @@
           rebuildWizard();
         };
         pillWrap.appendChild(b);
+        
         const ex=w.data.extras.find(e=>e.name===name);
         if(ex){
-          const inp=document.createElement('input'); inp.type='text'; inp.inputmode='decimal'; inp.placeholder='z.B. 1,50'; inp.style.cssText='width:90px; height:44px; padding:0 12px; border-radius:10px; border:2px solid #e5e7eb; font-size:14px; font-weight:600;';
+          const inpGroup = document.createElement('div');
+          inpGroup.style.cssText = 'display:flex; align-items:center; gap:4px;';
+          
+          const inp=document.createElement('input'); 
+          inp.type='text'; inp.inputmode='decimal'; inp.placeholder='0,00'; 
+          inp.style.cssText='width:64px; height:36px; padding:0 8px; border-radius:8px; border:1px solid #e5e7eb; font-size:13px; font-weight:700; text-align:right; outline:none;';
           inp.value=ex.price>0?Number(ex.price).toFixed(2).replace('.',','):'';
-          inp.oninput=()=>{ ex.price=parseFloat((inp.value||'0').replace(',','.'))||0; saveDraft(); };
+          
+          inp.oninput=()=>{ 
+            ex.price=parseFloat((inp.value||'0').replace(',','.'))||0; 
+            saveDraft(); 
+            if(ex.price > 0) {
+              pillWrap.style.borderColor = '#10b981';
+              textSpan.style.color = '#10b981';
+            } else {
+              pillWrap.style.borderColor = '#f1f3f5';
+              textSpan.style.color = '#1a1a1a';
+            }
+          };
           inp.onblur=()=>{ if(ex.price>0) inp.value=Number(ex.price).toFixed(2).replace('.',','); rebuildWizard(); };
-          pillWrap.appendChild(inp);
-          const euroSpan=document.createElement('span'); euroSpan.style.cssText='font-size:13px; font-weight:700; color:#64748b;'; euroSpan.textContent='€'; pillWrap.appendChild(euroSpan);
+          
+          const euroLabel = document.createElement('span');
+          euroLabel.style.cssText = 'font-size:12px; font-weight:800; color:#64748b;';
+          euroLabel.textContent = '€';
+          
+          inpGroup.appendChild(inp);
+          inpGroup.appendChild(euroLabel);
+          pillWrap.appendChild(inpGroup);
         }
         extRow.appendChild(pillWrap);
       });
