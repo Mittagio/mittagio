@@ -3727,7 +3727,7 @@
 
       <!-- 2. Meine Bestellungen (aufgewertete Historie: Thumbnail, Name, Anbieter, Datum, Preis, Pills) -->
       <div class="panel profile-panel" id="profileOrderHistorySection" style="margin-top:16px; padding:18px; border-radius:24px; box-shadow:0 10px 30px rgba(0,0,0,.06); border:1px solid rgba(0,0,0,.02);">
-        <div style="font-family:'Nunito',sans-serif; font-weight:800; font-size:16px; margin-bottom:14px; color:#1a1a1a;">Meine Bestellungen</div>
+        <div style="font-family:'Nunito',sans-serif; font-weight:800; font-size:16px; margin-bottom:14px; color:#1a1a1a;">Historie</div>
         <div id="profileOrderHistoryList" style="display:flex; flex-direction:column; gap:0;"></div>
         <div id="profileOrderHistoryMore" style="display:none;"></div>
         <button type="button" id="btnProfileShowAllOrders" style="display:none; width:100%; margin-top:12px; padding:12px 16px; border-radius:12px; border:2px solid rgba(0,0,0,.08); background:#fff; color:#64748b; font-weight:700; font-size:14px; cursor:pointer;">Alle Bestellungen anzeigen</button>
@@ -4727,7 +4727,7 @@
           <h2 style="font-size:16px; font-weight:800; margin:0 0 12px; color:#1a1a1a; text-transform:uppercase; letter-spacing:0.5px;">Technik &amp; Account</h2>
           <div style="margin-bottom:20px; padding-bottom:16px; border-bottom:1px solid #eee;">
             <h3 style="font-size:16px; font-weight:700; margin-bottom:6px; color:#2D3436;">Wo finde ich meine alten Bestellungen?</h3>
-            <p style="margin:0; color:#666;">Alle vergangenen Mahlzeiten sind in deinem Profil unter „Meine Bestellungen“ chronologisch aufgelistet.</p>
+            <p style="margin:0; color:#666;">Alle vergangenen Mahlzeiten sind in deinem Profil in der „Historie“ chronologisch aufgelistet.</p>
           </div>
           <div style="margin-bottom:24px; padding-bottom:16px; border-bottom:1px solid #eee;">
             <h3 style="font-size:16px; font-weight:700; margin-bottom:6px; color:#2D3436;">Wie ändere ich meine Mail-Adresse?</h3>
@@ -15861,12 +15861,12 @@
         providerEmptyDashboard.style.display = hasAnyData ? 'none' : 'block';
         if(!hasAnyData){
           providerEmptyDashboard.innerHTML = `
-            <div style="font-weight:600; font-size:18px; margin-bottom:8px; line-height:1.3;">Willkommen bei Mittagio</div>
+            <div style="font-weight:600; font-size:18px; margin-bottom:8px; line-height:1.3;">Noch keine aktiven Inserate</div>
             <div class="hint" style="font-size:14px; line-height:1.4; margin-bottom:16px; color:var(--muted);">
-              Starte mit deinem ersten Gericht.
+              Erstelle dein erstes Inserat, um für Kunden sichtbar zu werden.
             </div>
             <button class="btn secondary" type="button" id="btnProviderEmptyAddDish" style="width:100%; min-height:44px;">
-              Gericht hinzufügen
+              Inserat erstellen
             </button>
           `;
         }
