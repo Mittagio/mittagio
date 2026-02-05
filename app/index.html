@@ -788,6 +788,10 @@
       min-height:56px; max-height:64px;
       transition:all .2s;
     }
+    .btn-primary:hover{
+      box-shadow:0 10px 28px rgba(242,183,5,0.35);
+      transform:translateY(-1px);
+    }
     .btn-primary:active{
       background:#e6b800;
       transform:scale(0.98);
@@ -3735,23 +3739,33 @@
     .pillar-mini.active.yellow { background: #FFD700; }
     .pillar-mini.active.green { background: rgba(39, 174, 96, 0.15); color: #27AE60; }
 
-    /* Button Refinement */
+    /* Button Refinement – fancy, klar, ein Haupt-CTA */
     .btn-cust-primary {
       height: 56px;
+      min-height: 56px;
       border-radius: 18px;
       background: var(--brand);
       color: #1a1a1a;
       border: none;
       font-weight: 850;
       font-size: 16px;
-      display: flex;
+      display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 10px;
-      box-shadow: 0 8px 24px rgba(255, 215, 0, 0.25);
-      transition: transform 0.15s;
+      box-shadow: 0 8px 24px rgba(255, 215, 0, 0.28);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      cursor: pointer;
     }
-    .btn-cust-primary:active { transform: scale(0.96); }
+    .btn-cust-primary:hover {
+      box-shadow: 0 12px 32px rgba(255, 215, 0, 0.35);
+      transform: translateY(-1px);
+    }
+    .btn-cust-primary:active { transform: scale(0.97); }
+    .btn-cust-primary:focus-visible {
+      outline: 2px solid #1a1a1a;
+      outline-offset: 2px;
+    }
 
     /* --- END MODERN CUSTOMER UI --- */
   </style>
@@ -3793,7 +3807,7 @@
         <div id="discoverLocationExpanded" style="display:none; position:fixed; z-index:99999; background:#fff; border-radius:24px; box-shadow:0 20px 40px rgba(0,0,0,0.15); border:1px solid rgba(0,0,0,0.05); overflow:hidden; min-width:300px; max-width:calc(100vw - 32px); top:80px; left:16px;">
           <div style="padding:24px;">
             <h3 style="margin:0 0 16px; font-size:18px; font-weight:850; letter-spacing:-0.02em;">Wo suchst du?</h3>
-            <button type="button" id="discoverLocationBtnNadel" style="width:100%; height:56px; border-radius:16px; border:none; background:var(--brand); font-size:16px; font-weight:800; color:#1a1a1a; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:16px; box-shadow:0 4px 12px rgba(255,215,0,0.3);">
+            <button type="button" id="discoverLocationBtnNadel" class="btn-cust-primary" style="width:100%; height:56px; border-radius:16px; margin-bottom:16px;">
               <i data-lucide="navigation" style="width:20px;height:20px;"></i>
               <span>Aktueller Standort</span>
             </button>
@@ -3823,14 +3837,14 @@
 
         <!-- Leerer Zustand -->
         <div id="discoverEmpty" style="display:none; text-align:center; padding:60px 20px;">
-          <div style="width:120px; height:120px; margin:0 auto 24px; background:#f1f3f5; border-radius:40px; display:flex; align-items:center; justify-content:center;">
+          <div style="width:120px; height:120px; margin:0 auto 24px; background:linear-gradient(135deg, #f8f9fa 0%, #f1f3f5 100%); border-radius:40px; display:flex; align-items:center; justify-content:center; box-shadow:0 8px 24px rgba(0,0,0,0.04);">
             <i data-lucide="utensils-crosshaven" style="width:48px; height:48px; color:#94a3b8;"></i>
           </div>
-          <h2 style="font-size:22px; font-weight:850; margin:0 0 12px; color:#1a1a1a; letter-spacing:-0.02em;">Zeit für eine Pause?</h2>
-          <p style="font-size:15px; color:#64748b; line-height:1.6; margin-bottom:32px;">An deinem Standort ist gerade Sendepause. Entdecke Leckeres in der Umgebung oder schau später wieder rein.</p>
+          <h2 style="font-size:22px; font-weight:850; margin:0 0 12px; color:#1a1a1a; letter-spacing:-0.02em;">Pause verdient.</h2>
+          <p style="font-size:15px; color:#64748b; line-height:1.6; margin-bottom:32px;">Hier ist gerade Sendepause. Wechsle den Ort oder schau später wieder rein.</p>
           <button class="btn-cust-primary" type="button" onclick="openDiscoverLocationSearch();" style="width:100%; max-width:280px; margin:0 auto;">
-            <i data-lucide="search"></i>
-            <span>Andere Stadt suchen</span>
+            <i data-lucide="map-pin" style="width:20px;height:20px;"></i>
+            <span>Ort wechseln</span>
           </button>
         </div>
       </main>
@@ -3938,11 +3952,11 @@
           <div style="width:120px; height:120px; margin-bottom:24px; background:rgba(227,77,77,0.05); border-radius:40px; display:flex; align-items:center; justify-content:center;">
             <i data-lucide="heart" style="width:48px; height:48px; color:#E34D4D; fill:#E34D4D;"></i>
           </div>
-          <h2 style="font-size:22px; font-weight:850; margin:0 0 12px; color:#1a1a1a; letter-spacing:-0.02em;">Liebe auf den ersten Klick?</h2>
-          <p style="font-size:15px; color:#64748b; line-height:1.6; margin-bottom:32px; max-width:280px;">Deine Favoritenliste wartet auf Gesellschaft. Markiere Gerichte mit ❤️ und finde sie hier blitzschnell wieder.</p>
+          <h2 style="font-size:22px; font-weight:850; margin:0 0 12px; color:#1a1a1a; letter-spacing:-0.02em;">Liebe auf den ersten Bissen?</h2>
+          <p style="font-size:15px; color:#64748b; line-height:1.6; margin-bottom:32px; max-width:280px;">Markiere Gerichte mit ❤️ – sie landen hier und du findest sie blitzschnell wieder.</p>
           <button class="btn-cust-primary" type="button" onclick="showDiscover();" style="width:100%; max-width:260px; margin:0 auto;">
-            <i data-lucide="search"></i>
-            <span>Gerichte entdecken</span>
+            <i data-lucide="compass" style="width:20px;height:20px;"></i>
+            <span>Entdecken</span>
           </button>
         </div>
         
@@ -4012,7 +4026,7 @@
         
         <!-- Warenkorb Items -->
         <div class="cust-card" style="padding:20px;">
-          <div id="cartBox" class="hint" style="text-align:center; padding:40px 0;">Deine Mittagsbox ist leer.</div>
+          <div id="cartBox" class="hint" style="text-align:center; padding:40px 0;">Deine Box ist noch leer. Such dir was Leckeres aus.</div>
           
           <!-- Verzehrart -->
           <div id="cartVerzehrart" style="margin-top:20px; padding-top:20px; border-top:1px solid #f1f3f5; display:none;">
@@ -4025,7 +4039,7 @@
 
           <button class="btn-cust-primary" id="btnCheckout" style="display:none; width:100%; margin-top:24px;">
             <span>Abholnummer sichern</span>
-            <i data-lucide="arrow-right"></i>
+            <i data-lucide="arrow-right" style="width:20px;height:20px;"></i>
           </button>
         </div>
 
@@ -4395,30 +4409,31 @@
         <div style="width:64px; height:64px; background:var(--brand); border-radius:20px; display:flex; align-items:center; justify-content:center; margin:0 auto 24px; box-shadow:0 8px 20px rgba(255,215,0,0.3);">
           <i data-lucide="zap" style="width:32px; height:32px; color:#1a1a1a;"></i>
         </div>
-        <h1 style="font-size:26px; font-weight:950; margin-bottom:12px; line-height:1.2; color:#1a1a1a; text-align:center; letter-spacing:-0.03em;">Sofort verkaufen. <br>Ohne Abo & Vertrag.</h1>
-        <p style="font-size:15px; color:#64748b; margin-bottom:32px; text-align:center; line-height:1.5;">Einmalig 4,99 € pro Inserat – <br>unabhängig von der Portionsmenge.</p>
+        <h1 style="font-size:26px; font-weight:950; margin-bottom:12px; line-height:1.2; color:#1a1a1a; text-align:center; letter-spacing:-0.03em;">Sofort verkaufen.<br>Ohne Abo & Vertrag.</h1>
+        <p style="font-size:15px; color:#64748b; margin-bottom:28px; text-align:center; line-height:1.5;">Einmalig 4,99 € pro Inserat – unabhängig von der Portionsmenge.</p>
         
         <div style="margin-bottom:24px;">
           <label style="display:block; font-size:13px; font-weight:700; color:#9ca3af; text-transform:uppercase; margin-bottom:8px; letter-spacing:0.03em;">Was bietest du heute an?</label>
           <div style="display:flex; gap:10px;">
             <input type="text" id="onboardingEntryDishInput" class="field" placeholder="z.B. Kürbissuppe …" autocomplete="off" style="flex:1; height:56px; padding:0 18px; font-size:17px; border-radius:16px; border:2px solid #eee;" />
-            <button type="button" id="btnOnboardingEntryGo" style="flex-shrink:0; width:56px; height:56px; border-radius:16px; background:#1a1a1a; color:#fff; border:none; display:flex; align-items:center; justify-content:center; cursor:pointer;">
+            <button type="button" id="btnOnboardingEntryGo" style="flex-shrink:0; width:56px; height:56px; border-radius:16px; background:#1a1a1a; color:#fff; border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:transform 0.15s;">
               <i data-lucide="arrow-right" style="width:24px;height:24px;"></i>
             </button>
           </div>
         </div>
         
-        <button class="btn-primary" type="button" id="btnOnboardingEntryStart" style="width:100%; min-height:60px; background:var(--brand); color:#1a1a1a; font-weight:900; font-size:17px; border:none; border-radius:18px; box-shadow:0 8px 24px rgba(255,215,0,0.4); margin-bottom:16px; display:flex; align-items:center; justify-content:center; gap:10px;">
-          <span>Jetzt Inserat starten</span>
+        <button class="btn-primary" type="button" id="btnOnboardingEntryStart" style="width:100%; min-height:60px; background:var(--brand); color:#1a1a1a; font-weight:900; font-size:17px; border:none; border-radius:18px; box-shadow:0 8px 24px rgba(255,215,0,0.4); margin-bottom:12px; display:flex; align-items:center; justify-content:center; gap:10px; cursor:pointer; transition:transform 0.2s, box-shadow 0.2s;">
+          <span>Inserat starten</span>
+          <i data-lucide="zap" style="width:20px;height:20px;"></i>
         </button>
         
-        <button class="btn secondary" type="button" id="btnOnboardingEntryLater" style="width:100%; min-height:52px; background:transparent; color:#64748b; border:none; font-weight:700; font-size:15px;">
-          Schon ein Konto? Login
+        <button class="btn secondary" type="button" id="btnOnboardingEntryLater" style="width:100%; min-height:48px; background:transparent; color:#64748b; border:none; font-weight:700; font-size:14px; cursor:pointer;">
+          Bereits Konto? Login
         </button>
         
-        <div style="margin-top:32px; padding:16px; background:rgba(0,0,0,0.02); border-radius:16px; font-size:12px; color:#9ca3af; text-align:center; line-height:1.4;">
-          <i data-lucide="check" style="width:14px;height:14px;display:inline-block;vertical-align:middle;margin-right:4px;"></i> In unter 30 Sekunden live.
-        </div>
+        <p style="margin-top:24px; font-size:13px; color:#94a3b8; text-align:center; line-height:1.4;">
+          <i data-lucide="clock" style="width:14px;height:14px;display:inline-block;vertical-align:middle;margin-right:4px;"></i> In unter 30 Sekunden live.
+        </p>
       </div>
     </section>
 
@@ -12757,13 +12772,13 @@
     if(!cart || !cart.items.length){
       box.innerHTML = `
         <div style="text-align:center; padding:60px 20px;">
-          <div style="width:120px; height:120px; margin:0 auto 24px; background:#f1f3f5; border-radius:40px; display:flex; align-items:center; justify-content:center;">
+          <div style="width:120px; height:120px; margin:0 auto 24px; background:linear-gradient(135deg, #f8f9fa 0%, #f1f3f5 100%); border-radius:40px; display:flex; align-items:center; justify-content:center; box-shadow:0 8px 24px rgba(0,0,0,0.04);">
             <i data-lucide="shopping-basket" style="width:48px;height:48px;color:#cbd5e1;"></i>
           </div>
           <h3 style="font-size:22px; font-weight:850; margin-bottom:12px; color:#1a1a1a; letter-spacing:-0.02em;">Deine Box hat Hunger.</h3>
-          <p style="font-size:15px; color:#64748b; margin-bottom:32px; line-height:1.6; max-width:280px; margin-left:auto; margin-right:auto;">Noch gähnende Leere hier. Such dir was Leckeres aus und füll deine Mittagsbox!</p>
+          <p style="font-size:15px; color:#64748b; margin-bottom:32px; line-height:1.6; max-width:280px; margin-left:auto; margin-right:auto;">Such dir was Leckeres aus – in wenigen Klicks ist die Abholnummer sicher.</p>
           <button class="btn-cust-primary" type="button" onclick="showDiscover();" style="width:100%; max-width:260px; margin:0 auto;">
-            <i data-lucide="search"></i> <span>Gerichte entdecken</span>
+            <i data-lucide="compass" style="width:20px;height:20px;"></i> <span>Entdecken</span>
           </button>
         </div>
       `;
