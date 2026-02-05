@@ -6012,7 +6012,7 @@
       </button>
     </div>
     <div class="hint" style="margin-top:20px; padding:12px; background:rgba(255,204,0,0.08); border-radius:12px; font-size:12px; color:#666; line-height:1.5; text-align:center;">
-      Demo: Beliebige E-Mail/Passwort → du bist drin.<br>(Später: Firebase Auth)
+      Demo: Beliebige E-Mail/Passwort → du bist drin.<br><strong>Demo-Anbieter (10 Gerichte, 3 Tagesessen):</strong> demo@mittagio.de
     </div>
   </div>
 </div>
@@ -7184,6 +7184,90 @@
 
     console.log(`✅ Beispieldaten erstellt: ${providerNames.length} Anbieter, ${newCookbook.length} Kochbuch-Einträge, ${newOffers.length} Inserate, ${newOrders.length} Bestellungen`);
     return {providers: providerNames.length, cookbook: newCookbook.length, offers: newOffers.length, orders: newOrders.length};
+  }
+
+  /** Demo-Anbieter: 10 Kochbuchgerichte + 3 Tagesessen (1 Vegan, 1 Vegetarisch, 1 Fleisch). Login: demo@mittagio.de, Passwort beliebig. */
+  function seedDemoProvider(){
+    const DEMO_EMAIL = 'demo@mittagio.de';
+    const demoProviderId = 'prov_' + btoa(unescape(encodeURIComponent(DEMO_EMAIL))).slice(0, 16);
+    const today = isoDate(new Date());
+    const profile = {
+      name: 'Demo Bistro',
+      address: 'Demostraße 1, 73614 Schorndorf',
+      street: 'Demostraße 1',
+      zip: '73614',
+      city: 'Schorndorf',
+      mealWindow: '11:30 – 14:00',
+      distanceKm: 0.2
+    };
+    const demoCookbookTemplates = [
+      { dish: 'Kürbissuppe', category: 'Vegan', price: 6.50, img: 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=1200&q=60' },
+      { dish: 'Falafel Teller', category: 'Vegan', price: 7.50, img: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?auto=format&fit=crop&w=1200&q=60' },
+      { dish: 'Buddha Bowl', category: 'Vegan', price: 8.80, img: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1200&q=60' },
+      { dish: 'Salat Bowl', category: 'Vegetarisch', price: 7.90, img: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1200&q=60' },
+      { dish: 'Käsespätzle', category: 'Vegetarisch', price: 7.20, img: 'https://images.unsplash.com/photo-1546069901-d5bfd2cbfb1f?auto=format&fit=crop&w=1200&q=60' },
+      { dish: 'Pizza Margherita', category: 'Vegetarisch', price: 8.50, img: 'https://images.unsplash.com/photo-1571997478779-2adcbbe9ab2f?auto=format&fit=crop&w=1200&q=60' },
+      { dish: 'Risotto ai Funghi', category: 'Vegetarisch', price: 8.90, img: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=1200&q=60' },
+      { dish: 'Schnitzel mit Pommes', category: 'Mit Fleisch', price: 9.80, img: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=1200&q=60' },
+      { dish: 'Gulasch mit Spätzle', category: 'Mit Fleisch', price: 9.50, img: 'https://images.unsplash.com/photo-1606755962773-d324e0a13086?auto=format&fit=crop&w=1200&q=60' },
+      { dish: 'Hähnchen Teriyaki', category: 'Mit Fleisch', price: 9.20, img: 'https://images.unsplash.com/photo-1603133872878-684f208fb84b?auto=format&fit=crop&w=1200&q=60' }
+    ];
+    const demoCookbook = demoCookbookTemplates.map((t, i) => ({
+      id: cryptoId(),
+      providerId: demoProviderId,
+      dish: t.dish,
+      category: t.category,
+      price: t.price,
+      allergens: [],
+      extras: [],
+      reuse: { enabled: false, deposit: 0 },
+      photoData: t.img,
+      hasPickupCode: true,
+      dineInPossible: true,
+      createdAt: Date.now() - (10 - i) * 3600000,
+      lastUsed: i < 3 ? Date.now() - (3 - i) * 86400000 : null
+    }));
+    var existingCookbook = cookbook.filter(c => c.providerId !== demoProviderId);
+    cookbook = [...existingCookbook, ...demoCookbook];
+    save(LS.cookbook, cookbook);
+
+    var demoOffersTemplates = [
+      { dish: 'Kürbissuppe', category: 'Vegan', price: 6.50, img: 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=1200&q=60' },
+      { dish: 'Käsespätzle', category: 'Vegetarisch', price: 7.20, img: 'https://images.unsplash.com/photo-1546069901-d5bfd2cbfb1f?auto=format&fit=crop&w=1200&q=60' },
+      { dish: 'Schnitzel mit Pommes', category: 'Mit Fleisch', price: 9.80, img: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=1200&q=60' }
+    ];
+    var demoOffers = demoOffersTemplates.map(t => {
+      var offerId = cryptoId();
+      return {
+        id: offerId,
+        providerId: demoProviderId,
+        providerName: profile.name,
+        providerStreet: profile.street,
+        providerZip: profile.zip,
+        providerCity: profile.city,
+        address: profile.address,
+        dish: t.dish,
+        category: t.category,
+        price: t.price,
+        pickupWindow: profile.mealWindow,
+        day: today,
+        imageUrl: t.img,
+        hasPickupCode: true,
+        dineInPossible: true,
+        distanceKm: profile.distanceKm,
+        allergens: [],
+        extras: [],
+        reuse: { enabled: false, deposit: 0 },
+        active: true,
+        createdAt: Date.now()
+      };
+    });
+    var existingOffers = offers.filter(o => o.providerId !== demoProviderId);
+    offers = [...existingOffers, ...demoOffers];
+    save(LS.offers, offers);
+
+    console.log('✅ Demo-Anbieter geladen: 10 Kochbuchgerichte, 3 Tagesessen (Vegan, Vegetarisch, Fleisch). Login: ' + DEMO_EMAIL + ', Passwort beliebig.');
+    return { cookbook: demoCookbook.length, offers: demoOffers.length };
   }
 
   // --- Test-Funktion für Abholnummer-Logik ---
@@ -19522,6 +19606,7 @@
   // Nur wenn keine Offers vorhanden oder für Demo
   if(offers.length === 0 || true){ // true für Demo - immer neu generieren
     seedExampleData();
+    seedDemoProvider(); // Demo-Anbieter: 10 Kochbuchgerichte, 3 Tagesessen (Vegan, Vegetarisch, Fleisch). Login: demo@mittagio.de
   }
   offers = offers.map(normalizeOffer);
   save(LS.offers, offers);
