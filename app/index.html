@@ -1516,7 +1516,22 @@
       height: 24px;
       stroke-width: 3;
     }
-    /* FAB Plus-only: rund, pulsierend */
+    /* Plus-Button einheitlich: gelb, weißes Plus, pulsierend (FAB + überall) */
+    .provider-add-plus-btn,
+    #fabProviderAddOffer.fab-provider-plus {
+      background: var(--brand) !important;
+      color: #1a1a1a !important;
+      border: none !important;
+      animation: fab-pulse 2s ease-in-out infinite;
+    }
+    .provider-add-plus-btn i[data-lucide="plus"],
+    #fabProviderAddOffer.fab-provider-plus i {
+      color: #1a1a1a !important;
+      stroke: #1a1a1a !important;
+    }
+    /* Weißes Plus auf Gelb: Nutzerwunsch „weißes Plus in Schrift“ = heller Kontrast */
+    .provider-add-plus-btn .plus-char,
+    #fabProviderAddOffer.fab-provider-plus .plus-char { color: #fff; font-weight:900; }
     #fabProviderAddOffer.fab-provider-plus {
       width: 56px;
       height: 56px;
@@ -1524,14 +1539,25 @@
       padding: 0;
       border-radius: 50%;
       justify-content: center;
-      animation: fab-pulse 2s ease-in-out infinite;
     }
-    #fabProviderAddOffer.fab-provider-plus:active {
-      animation: none;
-    }
+    #fabProviderAddOffer.fab-provider-plus:active,
+    .provider-add-plus-btn:active { animation: none; transform: scale(0.96); }
     @keyframes fab-pulse {
       0%, 100% { box-shadow: 0 4px 20px rgba(255,215,0,0.5), 0 8px 24px rgba(0,0,0,0.15); }
       50% { box-shadow: 0 4px 28px rgba(255,215,0,0.7), 0 8px 32px rgba(0,0,0,0.2); }
+    }
+    .provider-add-plus-btn {
+      display: inline-flex !important;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      min-height: 52px;
+      padding: 0 20px;
+      border-radius: 14px;
+      font-weight: 800;
+      font-size: 16px;
+      cursor: pointer;
+      transition: transform 0.15s;
     }
 
     @media (min-width: 501px) {
@@ -4634,17 +4660,13 @@
           </div>
         </div>
 
-        <!-- Quick Actions Grid -->
-        <div style="display:grid; grid-template-columns:1fr; gap:16px; margin-bottom:32px;">
-          <div class="prov-action-btn" id="kpiCardKochbuch">
-            <div class="prov-action-icon" style="background:rgba(76, 175, 80, 0.1);">
-              <i data-lucide="book-open" style="color:#4CAF50; width:22px; height:22px;"></i>
-            </div>
-            <div>
-              <div style="font-size:11px; font-weight:800; color:#9ca3af; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:4px;">Kochbuch</div>
-              <div id="kpiKochbuchCount" style="font-size:16px; font-weight:900; color:#1a1a1a;">0 Gerichte</div>
-            </div>
+        <!-- Mein Kochbuch: 3 Kacheln (beste Gerichte, nach lastUsed) -->
+        <div style="margin-bottom:32px;">
+          <h3 style="font-size:18px; font-weight:900; color:#1a1a1a; margin:0 0 12px;">Mein Kochbuch</h3>
+          <div id="providerCookbookTiles" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px;">
+            <!-- Dynamisch: 3 beste Gerichte (lastUsed) oder Platzhalter -->
           </div>
+          <div id="kpiKochbuchCountWrap" style="font-size:13px; font-weight:700; color:#9ca3af; margin-top:8px; text-align:center;"><span id="kpiKochbuchCount">0</span> Gerichte</div>
         </div>
 
         <!-- Wochenvorschau -->
@@ -7501,7 +7523,8 @@
         if(src==='offers' && x.providerId!==pid) return;
         if(qn && !name.toLowerCase().includes(qn)) return;
         seen.add(name.toLowerCase());
-        out.push({ dish: name, category: x.category||x.diet||'Vegetarisch', img: x.photoData||x.imageUrl||x.img });
+        const all = (x.allergens && Array.isArray(x.allergens)) ? x.allergens : (typeof getAllergenSuggestionsForDish==='function' ? getAllergenSuggestionsForDish(name) : []);
+        out.push({ dish: name, category: x.category||x.diet||'Vegetarisch', img: x.photoData||x.imageUrl||x.img, allergens: all });
       });
     });
     DISH_DB.forEach(x=>{
@@ -7509,7 +7532,8 @@
       if(!n || seen.has(n.toLowerCase())) return;
       if(qn && !n.toLowerCase().includes(qn)) return;
       seen.add(n.toLowerCase());
-      out.push({ dish: n, category: x.category||'Vegetarisch', img: x.img });
+      const all = (x.allergens && Array.isArray(x.allergens)) ? x.allergens : (typeof getAllergenSuggestionsForDish==='function' ? getAllergenSuggestionsForDish(n) : []);
+      out.push({ dish: n, category: x.category||'Vegetarisch', img: x.img, allergens: all });
     });
     return out.slice(0, 12);
   }
@@ -15446,6 +15470,30 @@
       if(kpiAbholungenCount) kpiAbholungenCount.textContent = todayPickups;
       const kpiKochbuchCount = document.getElementById('kpiKochbuchCount');
       if(kpiKochbuchCount) kpiKochbuchCount.textContent = cookbookCount;
+      const providerCookbookTiles = document.getElementById('providerCookbookTiles');
+      if(providerCookbookTiles){
+        const pid = providerId();
+        const mine = (cookbook||[]).filter(c=>c.providerId===pid);
+        const top3 = mine.slice().sort((a,b)=>(b.lastUsed||0)-(a.lastUsed||0) || (b.createdAt||0)-(a.createdAt||0)).slice(0,3);
+        providerCookbookTiles.innerHTML = '';
+        for(let i=0;i<3;i++){
+          const c = top3[i];
+          const tile = document.createElement('div');
+          tile.style.cssText = 'min-height:72px; border-radius:14px; background:#fff; border:1px solid rgba(0,0,0,0.06); padding:12px; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.04); transition:transform 0.15s;';
+          tile.onmouseover = function(){ this.style.transform='scale(1.02)'; };
+          tile.onmouseout = function(){ this.style.transform=''; };
+          if(c){
+            const name = (c.dish||'Gericht').length > 12 ? (c.dish||'').substring(0,10)+'…' : (c.dish||'Gericht');
+            tile.innerHTML = '<div style="font-size:12px; font-weight:800; color:#1a1a1a; text-align:center; line-height:1.2;">'+esc(name)+'</div><div style="font-size:11px; font-weight:700; color:#10b981; margin-top:4px;">'+euro(c.price||0)+'</div>';
+            tile.onclick = function(){ showProviderCookbook(); };
+          } else {
+            tile.innerHTML = '<i data-lucide="book-open" style="width:20px; height:20px; color:#cbd5e1;"></i><div style="font-size:11px; color:#94a3b8; margin-top:4px;">–</div>';
+            tile.onclick = function(){ showProviderCookbook(); };
+          }
+          providerCookbookTiles.appendChild(tile);
+        }
+        if(typeof lucide!=='undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
+      }
       const kpiTagesessenDish = document.getElementById('kpiTagesessenDish');
       if(kpiTagesessenDish){
         if(mineToday.length > 0){
@@ -17572,6 +17620,23 @@
     {name:'Lupinen', short:'LU'},
     {name:'Weichtiere', short:'WE'}
   ];
+  /** Emoji pro Allergen (für kleine Pills). */
+  const ALLERGEN_EMOJI = { GL:'🌾', KR:'🦐', EI:'🥚', FI:'🐟', EN:'🥜', SO:'🫘', MI:'🥛', SF:'🌰', SE:'🥬', SN:'🟡', SS:'⚪', SU:'🍷', LU:'🫘', WE:'🦑' };
+  /** Gerichtname (lowercase) → vorgeschlagene Allergen-Codes (short). Bei Eingabe vorauswählen. */
+  const DISH_ALLERGEN_SUGGESTIONS = {
+    kürbissuppe:[], kartoffelsuppe:[], tomatensuppe:[], linsensuppe:[],
+    schnitzel:['GL','EI'], gulasch:['GL'], käsespätzle:['GL','MI'], pasta:['GL','EI'],
+    pizza:['GL','MI'], wrap:['GL'], burger:['GL','EI'], falafel:['SO'],
+    lachs:['FI'], sushi:['FI'], thunfisch:['FI']
+  };
+  function getAllergenSuggestionsForDish(dishName){
+    const n = String(dishName||'').trim().toLowerCase();
+    if(!n) return [];
+    for(const key of Object.keys(DISH_ALLERGEN_SUGGESTIONS)){
+      if(n.includes(key) || key.includes(n)) return DISH_ALLERGEN_SUGGESTIONS[key] || [];
+    }
+    return [];
+  }
 
   function openWizard(){
     const wbd = document.getElementById('wbd');
@@ -18306,23 +18371,29 @@
         box.appendChild(mehRow);
       }
 
-      // 3. Allergene – Toggle, dann Pills (KI/14-Standard), Verantwortlich-Hinweis grau
+      // 3. Allergene – Toggle, dann Pills (klein + Emoji). Vorauswahl bei bekanntem Gericht.
+      const suggestedAllergens = typeof getAllergenSuggestionsForDish==='function' ? getAllergenSuggestionsForDish(w.data.dish) : [];
+      if(suggestedAllergens.length && (!w.data.allergens || !w.data.allergens.length)){
+        w.data.allergens = suggestedAllergens.slice();
+        w.data.wantsAllergens = true;
+      }
       const labelAll=document.createElement('div'); labelAll.className='hint'; labelAll.textContent='Allergene angeben?'; labelAll.style.marginTop='8px'; box.appendChild(labelAll);
       const allRow=document.createElement('div'); allRow.className='answers'; allRow.style.marginBottom='12px';
-      const btnAllYes=document.createElement('button'); btnAllYes.className='ans'+(w.data.wantsAllergens?' on':''); btnAllYes.textContent='Ja';
+      const btnAllYes=document.createElement('button'); btnAllYes.type='button'; btnAllYes.className='ans'+(w.data.wantsAllergens?' on':''); btnAllYes.textContent='Ja';
       btnAllYes.onclick=()=>{ w.data.wantsAllergens=true; saveDraft(); rebuildWizard(); };
-      const btnAllNo=document.createElement('button'); btnAllNo.className='ans'+(!w.data.wantsAllergens?' on':''); btnAllNo.textContent='Nein';
+      const btnAllNo=document.createElement('button'); btnAllNo.type='button'; btnAllNo.className='ans'+(!w.data.wantsAllergens?' on':''); btnAllNo.textContent='Nein';
       btnAllNo.onclick=()=>{ w.data.wantsAllergens=false; w.data.allergens=[]; saveDraft(); rebuildWizard(); };
       allRow.appendChild(btnAllYes); allRow.appendChild(btnAllNo);
       box.appendChild(allRow);
       if(w.data.wantsAllergens){
         const allList=document.createElement('div');
-        allList.innerHTML='<div class="hint" style="margin-bottom:8px">Wähle Allergene (KI-vordefiniert):</div>';
-        const pills=document.createElement('div'); pills.className='answers'; pills.style.flexWrap='wrap';
+        allList.innerHTML='<div class="hint" style="margin-bottom:6px">Wähle Allergene (antippen):</div>';
+        const pills=document.createElement('div'); pills.className='answers'; pills.style.flexWrap='wrap'; pills.style.gap='6px';
         ALLERGENS_14.forEach(a=>{
           const code=a.short;
           const active=(w.data.allergens||[]).includes(code);
-          const p=document.createElement('button'); p.className='ans'+(active?' on':''); p.textContent=`${code} ${a.name}`; p.style.minHeight='40px';
+          const emo = (typeof ALLERGEN_EMOJI!=='undefined' && ALLERGEN_EMOJI[code]) ? ALLERGEN_EMOJI[code] : '•';
+          const p=document.createElement('button'); p.type='button'; p.className='ans'+(active?' on':''); p.textContent=emo+' '+a.name; p.style.minHeight='32px'; p.style.padding='6px 12px'; p.style.fontSize='12px';
           p.onclick=()=>{ if(!w.data.allergens) w.data.allergens=[]; if(active) w.data.allergens=w.data.allergens.filter(x=>x!==code); else w.data.allergens.push(code); saveDraft(); rebuildWizard(); };
           pills.appendChild(p);
         });
@@ -18378,24 +18449,41 @@
       grid.style.cssText = 'display:grid; grid-template-columns:1fr; gap:16px; margin-top:20px;';
 
       const tilePub = document.createElement('button');
+      tilePub.type = 'button';
       tilePub.className = 'btn';
-      tilePub.style.cssText = 'display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; border-radius:20px; background:#FFD700; color:#1a1a1a; border:none; box-shadow:0 8px 20px rgba(255,215,0,0.2); transition:transform 0.1s;';
-      tilePub.innerHTML = '<i data-lucide="rocket" style="width:32px; height:32px; margin-bottom:12px;"></i><div style="font-size:18px; font-weight:900;">Dein Tagesessen inserieren für einmalig 4,99 €</div>';
-      tilePub.onclick = () => { w.step++; rebuildWizard(); };
+      tilePub.style.cssText = 'display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; border-radius:20px; background:#FFD700; color:#1a1a1a; border:none; box-shadow:0 8px 20px rgba(255,215,0,0.2); transition:transform 0.1s; cursor:pointer;';
+      tilePub.innerHTML = '<i data-lucide="rocket" style="width:32px; height:32px; margin-bottom:12px;"></i><div style="font-size:18px; font-weight:900;">Jetzt live inserieren</div><div style="font-size:13px; color:rgba(0,0,0,0.6); margin-top:4px;">einmalig 4,99 €</div>';
+      tilePub.onclick = function(){ w.step++; rebuildWizard(); };
       grid.appendChild(tilePub);
 
       const tileCook = document.createElement('button');
+      tileCook.type = 'button';
       tileCook.className = 'btn secondary';
-      tileCook.style.cssText = 'display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px; border-radius:20px; border:2px solid #e5e7eb; background:#fff; color:#333;';
+      tileCook.style.cssText = 'display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px; border-radius:20px; border:2px solid #e5e7eb; background:#fff; color:#333; cursor:pointer;';
       tileCook.innerHTML = '<i data-lucide="book-open" style="width:28px; height:28px; margin-bottom:8px; color:#666;"></i><div style="font-size:16px; font-weight:700;">Ins Kochbuch speichern</div>';
-      tileCook.onclick = () => { saveToCookbookFromWizard(); closeWizard(); showProviderCookbook(); };
+      tileCook.onclick = function(){
+        try {
+          saveToCookbookFromWizard();
+          closeWizard();
+          if(typeof showToast==='function') showToast('Im Kochbuch gespeichert');
+          setTimeout(function(){ if(typeof showProviderCookbook==='function') showProviderCookbook(); }, 80);
+        } catch(e) { if(typeof showToast==='function') showToast('Fehler beim Speichern'); }
+      };
       grid.appendChild(tileCook);
 
       const tileWeek = document.createElement('button');
+      tileWeek.type = 'button';
       tileWeek.className = 'btn secondary';
-      tileWeek.style.cssText = 'display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px; border-radius:20px; border:2px solid #e5e7eb; background:#fff; color:#333;';
-      tileWeek.innerHTML = '<i data-lucide="calendar" style="width:28px; height:28px; margin-bottom:8px; color:#666;"></i><div style="font-size:16px; font-weight:700;">In den Wochenplan übernehmen</div><div style="font-size:12px; color:#999; margin-top:2px;">Dann in den Planer</div>';
-      tileWeek.onclick = () => { saveToCookbookFromWizard(); closeWizard(); showProviderWeek(); };
+      tileWeek.style.cssText = 'display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px; border-radius:20px; border:2px solid #e5e7eb; background:#fff; color:#333; cursor:pointer;';
+      tileWeek.innerHTML = '<i data-lucide="calendar" style="width:28px; height:28px; margin-bottom:8px; color:#666;"></i><div style="font-size:16px; font-weight:700;">In den Wochenplan</div><div style="font-size:12px; color:#999; margin-top:2px;">Dann in den Planer</div>';
+      tileWeek.onclick = function(){
+        try {
+          saveToCookbookFromWizard();
+          closeWizard();
+          if(typeof showToast==='function') showToast('Gespeichert – öffne Wochenplan');
+          setTimeout(function(){ if(typeof showProviderWeek==='function') showProviderWeek(); }, 80);
+        } catch(e) { if(typeof showToast==='function') showToast('Fehler beim Speichern'); }
+      };
       grid.appendChild(tileWeek);
 
       box.appendChild(grid);
