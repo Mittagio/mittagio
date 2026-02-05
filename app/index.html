@@ -4864,15 +4864,15 @@
         <div id="providerProfileMain">
           <div style="background:#fff; border-radius:24px; overflow:hidden; border:1px solid rgba(0,0,0,0.04); box-shadow:0 4px 12px rgba(0,0,0,0.02);">
             <button type="button" id="providerProfileRowBusiness" class="provider-profile-row" style="width:100%; display:flex; align-items:center; justify-content:space-between; padding:20px; background:none; border:none; border-bottom:1px solid #f8f9fa; font-size:16px; font-weight:700; color:#1a1a1a; text-align:left; cursor:pointer;">
-              <div style="display:flex;align-items:center;gap:12px;"><i data-lucide="building" style="width:20px;height:20px;color:#64748b;"></i><span>Betrieb & Sicherheit</span></div>
+              <div style="display:flex;align-items:center;gap:12px;"><i data-lucide="building" style="width:20px;height:20px;color:#64748b;"></i><span>Meine Daten</span></div>
               <i data-lucide="chevron-right" style="width:20px; height:20px; color:#cbd5e1;"></i>
             </button>
             <button type="button" id="providerProfileRowTimes" class="provider-profile-row" style="width:100%; display:flex; align-items:center; justify-content:space-between; padding:20px; background:none; border:none; border-bottom:1px solid #f8f9fa; font-size:16px; font-weight:700; color:#1a1a1a; text-align:left; cursor:pointer;">
-              <div style="display:flex;align-items:center;gap:12px;"><i data-lucide="clock" style="width:20px;height:20px;color:#64748b;"></i><span>Voreinstellungen: Mittagszeiten</span></div>
+              <div style="display:flex;align-items:center;gap:12px;"><i data-lucide="clock" style="width:20px;height:20px;color:#64748b;"></i><span>Mittagszeiten</span></div>
               <i data-lucide="chevron-right" style="width:20px; height:20px; color:#cbd5e1;"></i>
             </button>
             <button type="button" id="providerProfileRowService" class="provider-profile-row" style="width:100%; display:flex; align-items:center; justify-content:space-between; padding:20px; background:none; border:none; border-bottom:1px solid #f8f9fa; font-size:16px; font-weight:700; color:#1a1a1a; text-align:left; cursor:pointer;">
-              <div style="display:flex;align-items:center;gap:12px;"><i data-lucide="star" style="width:20px;height:20px;color:#64748b;"></i><span>Voreinstellungen: Service-Optionen</span></div>
+              <div style="display:flex;align-items:center;gap:12px;"><i data-lucide="star" style="width:20px;height:20px;color:#64748b;"></i><span>Präferenzen</span></div>
               <i data-lucide="chevron-right" style="width:20px; height:20px; color:#cbd5e1;"></i>
             </button>
             <button type="button" id="providerProfileRowPayment" class="provider-profile-row" style="width:100%; display:flex; align-items:center; justify-content:space-between; padding:20px; background:none; border:none; border-bottom:1px solid #f8f9fa; font-size:16px; font-weight:700; color:#1a1a1a; text-align:left; cursor:pointer;">
@@ -4884,7 +4884,7 @@
               <i data-lucide="chevron-right" style="width:20px; height:20px; color:#cbd5e1;"></i>
             </button>
           </div>
-          <p id="providerProfileAddress" style="margin:16px 20px 0; font-size:13px; color:#8e8e93; text-align:center;"></p>
+          <p id="providerProfileAddress" style="margin:16px 20px 0; font-size:13px; color:#8e8e93; text-align:center; display:none;"></p>
           
           <button id="btnProviderLogout" style="width:100%; margin-top:24px; min-height:56px; background:white; color:#E34D4D; border:2px solid #fee2e2; border-radius:18px; font-weight:800; font-size:16px; display:flex; align-items:center; justify-content:center; gap:10px; cursor:pointer;">
             <i data-lucide="log-out" style="width:20px;height:20px;"></i>
@@ -4900,7 +4900,7 @@
           <button type="button" id="providerProfileBackBusiness" aria-label="Zurück" style="width:40px; height:40px; border-radius:12px; background:#f8f9fa; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center;">
             <i data-lucide="chevron-left" style="width:24px; height:24px; color:#1a1a1a;"></i>
           </button>
-          <h1 style="margin:0; font-size:20px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a;">Betrieb & Sicherheit</h1>
+          <h1 style="margin:0; font-size:20px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a;">Meine Daten</h1>
         </header>
 
         <div style="padding:24px 20px; flex:1;">
@@ -4977,7 +4977,7 @@
           <button type="button" id="providerProfileBackService" aria-label="Zurück" style="width:40px; height:40px; border-radius:12px; background:#f8f9fa; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center;">
             <i data-lucide="chevron-left" style="width:24px; height:24px; color:#1a1a1a;"></i>
           </button>
-          <h1 style="margin:0; font-size:20px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a;">Service-Optionen</h1>
+          <h1 style="margin:0; font-size:20px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a;">Präferenzen</h1>
         </header>
 
         <div style="padding:24px 20px; flex:1;">
@@ -5151,9 +5151,6 @@
         </div>
         <div style="margin-top:24px; padding-top:16px; border-top:1px solid rgba(0,0,0,0.08); text-align:center; font-size:13px; color:#64748b;">
           made with ❤️ by mittagio.de
-        </div>
-        <div style="margin-top:16px; text-align:center; font-size:14px; color:#64748b;">
-          <a href="mailto:support@mittagio.de" style="color:#0A84FF;">support@mittagio.de</a> · Business-Bereich
         </div>
         <button class="btn ghost" type="button" onclick="goBackFromLegalPage()" style="margin-top:20px; width:100%;">Zurück</button>
       </div>
@@ -6018,15 +6015,15 @@
   </div>
 </div>
 
-<!-- Share sheet (MVP: nur WhatsApp + E-Mail) -->
+<!-- Share sheet: Teile es mit deinen Kunden – WhatsApp, Instagram, Link -->
 <div class="backdrop" id="shareBd" onclick="closeShareSheet()"></div>
 <div class="sheet" id="shareSheet">
   <div class="handle"></div>
   <div class="sheet-body">
     <div class="panel">
-      <div style="font-weight:900; font-size:18px;">Inserat teilen</div>
+      <div style="font-weight:900; font-size:18px;" id="shareSheetTitle">Teile es mit deinen Kunden</div>
       <div class="hint" id="shareSheetSubtitle" style="margin-top:4px;">
-        <!-- Wird dynamisch befüllt -->
+        Per WhatsApp, Instagram oder Link – deine Kunden finden das Gericht sofort.
       </div>
     </div>
     <div class="answers" style="margin-top:16px;">
@@ -12522,7 +12519,8 @@
     if(navigator.clipboard && navigator.clipboard.writeText){
       try{ 
         await navigator.clipboard.writeText(url);
-        alert('Link kopiert!');
+        if(typeof showToast === 'function') showToast('Link kopiert!');
+        else alert('Link kopiert!');
         return true;
       }catch{}
     }
@@ -12553,23 +12551,26 @@
   function shareOffer(o, useWebShare = true){
     if(!o) return;
     const data = normalizeOffer(o);
-    // Share-Link Format: https://mittagio.de/share/[Gericht-ID]
-    const shareUrl = `https://mittagio.de/share/${o.id}`;
-    // Fallback-URL für direkten Zugriff in der App
-    const appUrl = `${location.origin}${location.pathname}#offer/${o.id}`;
-    
     const providerName = data.providerName || 'Anbieter';
     const dishName = data.dish || 'Gericht';
     const price = euro(data.price);
-    
-    // Titel für Open Graph / Share-Vorschau
-    const shareTitle = `Schau mal, was es heute bei ${providerName} gibt!`;
-    // Beschreibung für Open Graph / Share-Vorschau
-    const shareDescription = `${dishName} für nur ${price} €. Hol es dir mit deiner Abholnummer über die Mittagio App.`;
-    // Vollständiger Share-Text für WhatsApp & Co.
-    const shareText = `${shareTitle}\n\n${shareDescription}\n\n${shareUrl}`;
-    
-    // Web Share API (wenn verfügbar)
+    const shareUrl = typeof buildOfferShareUrl === 'function' ? buildOfferShareUrl(o) : (location.origin + (location.pathname || '') + '#offer/' + (o.id || ''));
+    const shareTitle = 'Heute bei uns: ' + dishName + ' für nur ' + price + ' €!';
+    const shareDescription = 'Jetzt schnell die Abholnummer sichern und Schlange überspringen – Mittagio: Zeit gespart mit der Abholnummer.';
+
+    // Anbieter: Share-Sheet mit WhatsApp, Instagram, Link öffnen
+    if(typeof getMode === 'function' && getMode() === 'provider'){
+      const titleEl = document.getElementById('shareSheetTitle');
+      if(titleEl) titleEl.textContent = 'Teile es mit deinen Kunden';
+      const subtitleEl = document.getElementById('shareSheetSubtitle');
+      if(subtitleEl) subtitleEl.textContent = 'Per WhatsApp, Instagram oder Link – deine Kunden finden das Gericht sofort.';
+      openShareSheet(shareTitle, shareDescription, shareUrl, 'Per WhatsApp, Instagram oder Link – deine Kunden finden das Gericht sofort.');
+      if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
+      return;
+    }
+
+    // Kunde: Web Share API (wenn verfügbar) oder Link kopieren
+    const shareText = shareTitle + '\n\n' + shareDescription + '\n\n' + shareUrl;
     if(navigator.share && useWebShare){
       navigator.share({
         title: shareTitle,
@@ -12578,7 +12579,6 @@
       }).then(() => {
         showToast('Geteilt!');
       }).catch((err) => {
-        // Fallback: Link kopieren
         if(err.name !== 'AbortError'){
           copyToClipboard(shareText);
           showToast('Link kopiert!');
@@ -12586,8 +12586,6 @@
       });
       return;
     }
-    
-    // Fallback: Link kopieren + Toast
     copyToClipboard(shareText);
     showToast('Link kopiert!');
   }
@@ -15651,12 +15649,20 @@
                 <div style="display:flex; align-items:center; gap:6px;"><span style="font-size:16px;">🧾</span><span style="font-size:13px; font-weight:800;">${orderCount}</span></div>
               </div>
 
-              <div style="display:flex; gap:8px;">${pillars.join('')}</div>
+              <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap;">
+                <div style="display:flex; gap:8px; flex:1; min-width:0;">${pillars.join('')}</div>
+                <button type="button" class="btn-share-tile" style="flex-shrink:0; display:inline-flex; align-items:center; gap:6px; padding:8px 14px; border-radius:10px; border:2px solid #e5e7eb; background:#fff; color:#1a1a1a; font-size:12px; font-weight:800; cursor:pointer;">
+                  <i data-lucide="share-2" style="width:16px;height:16px;"></i><span>Teilen</span>
+                </button>
+              </div>
             </div>
           `;
-          card.onclick = function(){ openProviderOffer(o.id); };
+          card.onclick = function(ev){ if(!ev.target.closest('.btn-share-tile')) openProviderOffer(o.id); };
+          const shareBtn = card.querySelector('.btn-share-tile');
+          if(shareBtn) shareBtn.onclick = function(e){ e.stopPropagation(); e.preventDefault(); if(typeof shareOffer === 'function') shareOffer(o); };
           providerActiveListings.appendChild(card);
         });
+        if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
       }
 
       // CTA-Button: Neues Gericht inserieren (wie FAB → openDishFlow)
@@ -16595,8 +16601,8 @@
     var supportSolutions = {
       inserieren: 'Prüfe, ob dein Gericht im Kochbuch angelegt ist. Öffne „Meine Küche“ und tippe auf „Jetzt für 4,99 € inserieren“. Wähle Gericht, Bild und Zeitfenster – das Inserat geht in unter 30 Sekunden live.',
       zahlung: 'Die Inseratsgebühr (4,99 €) wird mit Veröffentlichung fällig. Die optionale Abholnummer (0,89 €) pro Vorgang wird bei jeder Bestellung abgerechnet. Alle Beträge siehst du unter „Zahlung & Abrechnung“.',
-      abholnummer: 'Die drei Säulen (Vor Ort, Mehrweg, Abholnummer) stellst du im Profil unter „Voreinstellungen: Service-Optionen“ ein. Die Abholnummer ist optional und kostet 0,89 € pro Vorgang.',
-      profil: 'Standort und Kontaktdaten bearbeitest du im Profil unter „Betrieb & Sicherheit“. Die Mittagszeiten und Wochentage findest du unter „Voreinstellungen: Mittagszeiten“.',
+      abholnummer: 'Die drei Säulen (Vor Ort, Mehrweg, Abholnummer) stellst du im Profil unter „Präferenzen“ ein. Die Abholnummer ist optional und kostet 0,89 € pro Vorgang.',
+      profil: 'Standort und Kontaktdaten bearbeitest du im Profil unter „Meine Daten“. Die Mittagszeiten und Wochentage findest du unter „Mittagszeiten“.',
       feedback: 'Wir lieben Feedback! Wir bauen diese App für das Handwerk. Hast du eine Idee für ein neues Icon oder eine Funktion? Schreib uns unten!'
     };
     document.querySelectorAll('.provider-support-tile').forEach(function(btn){
@@ -16655,9 +16661,10 @@
       if(addr){
         addrEl.textContent = esc(addr);
         addrEl.style.color = '#666';
+        addrEl.style.display = '';
       } else {
-        addrEl.textContent = 'Standort-Adresse hinzufügen';
-        addrEl.style.color = '#b45309';
+        addrEl.textContent = '';
+        addrEl.style.display = 'none';
       }
     }
     
