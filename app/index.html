@@ -4694,7 +4694,8 @@
 
         <!-- Wochenvorschau -->
         <div style="margin-bottom:32px;">
-          <h3 style="font-size:18px; font-weight:900; color:#1a1a1a; margin:0 0 16px;">Dein Wochenplan</h3>
+          <h3 style="font-size:18px; font-weight:900; color:#1a1a1a; margin:0 0 4px;">Dein Wochenplan</h3>
+          <p style="font-size:13px; color:#64748b; margin:0 0 16px; line-height:1.4;">Vorausplanen, entspannter kochen. Deine Gäste lieben Verlässlichkeit.</p>
           <div class="prov-card" style="padding:20px;">
             <div class="dayrow" id="providerWeekDays" style="margin-bottom:20px; gap:8px; justify-content:space-between;"></div>
             <div id="providerWeekDayContent" style="min-height:100px; display:flex; flex-direction:column; align-items:center; justify-content:center; background:#f8f9fa; border-radius:20px; color:#9ca3af; font-size:14px; font-weight:600; text-align:center; padding:20px;">
@@ -4784,14 +4785,14 @@
           
           <!-- Content List -->
           <div id="weekList" style="text-align:center; padding:40px 20px;">
-            <div style="width:80px; height:80px; background:rgba(0,0,0,0.03); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 20px;">
-              <i data-lucide="calendar" style="width:40px; height:40px; color:#cbd5e1;"></i>
+            <div style="width:80px; height:80px; background:rgba(255,215,0,0.1); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 20px;">
+              <i data-lucide="calendar-plus" style="width:40px; height:40px; color:#FFD700;"></i>
             </div>
-            <h3 style="font-size:18px; font-weight:800; color:#1a1a1a; margin-bottom:8px;">Noch nichts geplant</h3>
-            <p style="color:#64748b; font-size:15px; line-height:1.5; margin-bottom:32px;">Wähle einen Tag, um Gerichte für die Woche vorzuplanen.</p>
+            <h3 style="font-size:20px; font-weight:900; color:#1a1a1a; margin-bottom:8px;">Noch kein Plan!?</h3>
+            <p style="color:#64748b; font-size:15px; line-height:1.5; margin-bottom:32px;">Sichere dir jetzt schon die besten Plätze in der Woche deiner Gäste.</p>
             <button class="btn-primary provider-add-plus-btn" type="button" id="btnWeekEmptyAdd" style="width:100%; border-radius:16px;">
               <span class="plus-char" style="font-size:20px; line-height:1; color:#fff;">+</span>
-              <span>Inserat planen</span>
+              <span>Jetzt Woche planen</span>
             </button>
           </div>
           
@@ -6094,17 +6095,24 @@
   <div class="handle"></div>
   <div class="sheet-body">
     <div class="create-flow-title">Gericht hinzufügen</div>
+    
+    <div id="createFlowCookbookSelection" style="margin-bottom:24px;">
+      <div class="hint" style="margin-bottom:12px; font-weight:700; color:#1a1a1a; font-size:13px; text-transform:uppercase; letter-spacing:0.05em;">Schnellauswahl aus Kochbuch</div>
+      <div id="createFlowCookbookList" style="display:grid; grid-template-columns:repeat(2, 1fr); gap:12px; max-height:300px; overflow-y:auto; padding:4px;">
+        <!-- Dynamisch befüllt -->
+      </div>
+    </div>
+
     <div class="create-flow-btns">
-      <button class="btn-create-primary provider-add-plus-btn" type="button" id="btnCreateNewDish">
+      <button class="btn-create-primary provider-add-plus-btn" type="button" id="btnCreateNewDish" style="margin-bottom:12px;">
         <span class="plus-char" style="font-size:22px; line-height:1; color:#fff;">+</span>
         <span>Neues Gericht erstellen</span>
       </button>
-      <button class="btn-create-secondary" type="button" id="btnCreateFromCookbook">
-        <span>📖</span>
-        <span>Aus Kochbuch auswählen</span>
+      <button class="btn ghost" type="button" id="btnCreateFromCookbook" style="width:100%; min-height:48px; border:2px solid #e5e7eb; background:#fff; border-radius:14px; font-weight:700; color:#64748b;">
+        <span>📖 Zum Kochbuch wechseln</span>
       </button>
     </div>
-    <div class="create-flow-hint hint" id="createFlowDateHint" style="display:none;"></div>
+    <div class="create-flow-hint hint" id="createFlowDateHint" style="display:none; margin-top:16px; text-align:center;"></div>
   </div>
 </div>
 
@@ -12458,6 +12466,9 @@
   function openCreateFlowSheet(){
     const sheet = document.getElementById('createFlowSheet');
     const hint = document.getElementById('createFlowDateHint');
+    const cookbookList = document.getElementById('createFlowCookbookList');
+    const cookbookSelection = document.getElementById('createFlowCookbookSelection');
+
     if(sheet && hint){
       if(createFlowPreselectedDate){
         const d = new Date(createFlowPreselectedDate);
@@ -12468,8 +12479,47 @@
       } else {
         hint.style.display = 'none';
       }
+
+      // Populiere Kochbuch-Schnellauswahl
+      if(cookbookList){
+        const pid = providerId();
+        const mine = (cookbook||[]).filter(c=>c.providerId===pid);
+        
+        if(mine.length === 0){
+          cookbookSelection.style.display = 'none';
+        } else {
+          cookbookSelection.style.display = 'block';
+          cookbookList.innerHTML = '';
+          mine.forEach(c => {
+            const card = document.createElement('div');
+            card.style.cssText = 'background:#fff; border-radius:16px; border:1px solid #f1f3f5; overflow:hidden; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.04); display:flex; flex-direction:column;';
+            
+            const imgUrl = c.photoData || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=200&q=60';
+            
+            card.innerHTML = `
+              <div style="height:80px; width:100%; background:#f1f3f5;">
+                <img src="${imgUrl}" style="width:100%; height:100%; object-fit:cover;">
+              </div>
+              <div style="padding:10px;">
+                <div style="font-size:13px; font-weight:800; color:#1a1a1a; line-height:1.2; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; height:32px;">${esc(c.dish)}</div>
+                <div style="font-size:11px; font-weight:700; color:#10b981; margin-top:4px;">${euro(c.price||0)}</div>
+              </div>
+            `;
+            
+            card.onclick = () => {
+              closeCreateFlowSheet();
+              // Unified Flow: openDishFlow mit GerichtID und Datum
+              startListingFlow({ dishId: c.id, date: createFlowPreselectedDate || isoDate(new Date()) });
+            };
+            
+            cookbookList.appendChild(card);
+          });
+        }
+      }
+
       document.getElementById('createFlowBd').classList.add('active');
       sheet.classList.add('active');
+      if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
     }
   }
   
@@ -16076,12 +16126,12 @@
     
     if(totalPlanned > 0){
       dayContent.innerHTML = `
-        <div style="padding:12px; background:rgba(255,255,255,0.05); border-radius:12px; margin-bottom:12px; border:1px solid rgba(255,255,255,0.1);">
-          <div style="font-weight:600; font-size:14px; margin-bottom:8px; color:#fff;">${totalPlanned} ${totalPlanned === 1 ? 'Inserat' : 'Inserate'} geplant</div>
-          <div style="font-size:13px; color:rgba(255,255,255,0.5); margin-bottom:12px;">${offersForDay.length} aktiv, ${weekEntries.length} im Wochenplan</div>
+        <div style="padding:12px; background:#f1f5f9; border-radius:12px; margin-bottom:12px; border:1px solid #e2e8f0;">
+          <div style="font-weight:700; font-size:14px; margin-bottom:4px; color:#1a1a1a;">${totalPlanned} ${totalPlanned === 1 ? 'Inserat' : 'Inserate'} geplant</div>
+          <div style="font-size:12px; color:#64748b;">${offersForDay.length} aktiv, ${weekEntries.length} im Wochenplan</div>
         </div>
-        <button class="btn secondary" type="button" id="btnProviderWeekAddDish" style="width:100%; min-height:44px; background:rgba(255,255,255,0.1); color:#fff; border:none; font-weight:600;">
-          Inserat für diesen Tag hinzufügen
+        <button class="btn secondary" type="button" id="btnProviderWeekAddDish" style="width:100%; min-height:44px; background:#fff; color:#1a1a1a; border:2px solid #e5e7eb; font-weight:700; border-radius:12px;">
+          Weiteres Gericht planen
         </button>
       `;
       const btnProviderWeekAddDish = document.getElementById('btnProviderWeekAddDish');
@@ -16091,12 +16141,12 @@
       };
     } else {
       dayContent.innerHTML = `
-        <div style="font-weight:600; font-size:16px; margin-bottom:8px; text-align:center; color:#fff;">Keine Inserate geplant</div>
-        <div class="hint" style="font-size:14px; line-height:1.4; margin-bottom:16px; color:rgba(255,255,255,0.5); text-align:center;">
-          Erstelle ein Inserat für diesen Tag.
+        <div style="font-weight:900; font-size:18px; margin-bottom:8px; text-align:center; color:#1a1a1a;">Noch kein Plan!?</div>
+        <div class="hint" style="font-size:13px; line-height:1.4; margin-bottom:16px; color:#64748b; text-align:center;">
+          Deine Gäste planen schon ihren Lunch. Jetzt Inserat vormerken!
         </div>
-        <button class="btn secondary" type="button" id="btnProviderWeekAddDishEmpty" style="width:100%; min-height:44px; background:#FFD700; color:#000; border:none; font-weight:700;">
-          Inserat für diesen Tag erstellen
+        <button class="btn secondary" type="button" id="btnProviderWeekAddDishEmpty" style="width:100%; min-height:44px; background:#FFD700; color:#1a1a1a; border:none; font-weight:800; border-radius:12px; box-shadow:0 4px 12px rgba(255,215,0,0.2);">
+          Jetzt Woche planen
         </button>
       `;
       const btnProviderWeekAddDishEmpty = document.getElementById('btnProviderWeekAddDishEmpty');
