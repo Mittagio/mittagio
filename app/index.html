@@ -4693,11 +4693,6 @@
         </div>
 
       </div>
-
-      <!-- Modern FAB: gelb, weißes Plus, pulsierend -->
-      <button class="fab-provider fab-provider-plus" id="fabProviderAddOffer" type="button" aria-label="Inserat hinzufügen">
-        <span class="plus-char" style="font-size:28px; line-height:1; color:#fff;">+</span>
-      </button>
     </section>
 
     <section class="view onboarding-view" id="v-provider-pickups">
@@ -4826,13 +4821,12 @@
           </button>
         </div>
       </div>
-
-      <!-- Modern FAB for Cookbook -->
-      <button class="fab-provider" id="btnCookbookAddSticky">
-        <i data-lucide="plus"></i>
-        <span>Hinzufügen</span>
-      </button>
     </section>
+
+    <!-- FAB: gleicher wie Dashboard (Inseratsflow) – sichtbar auf Meine Küche + Kochbuch -->
+    <button class="fab-provider fab-provider-plus" id="fabProviderAddOffer" type="button" aria-label="Inserat hinzufügen">
+      <span class="plus-char" style="font-size:28px; line-height:1; color:#fff;">+</span>
+    </button>
 
     <!-- Kochbuch: Action-Sheet (Bearbeiten / In Wochenplan / Löschen) -->
     <div class="backdrop" id="cookbookActionSheetBd" style="display:none; background:rgba(0,0,0,0.5);" onclick="closeCookbookActionSheet()"></div>
@@ -5613,8 +5607,37 @@
   </div>
 </div>
 
-<!-- Publish Fee Modal (vor Inserats-Veröffentlichung) -->
-<div class="backdrop" id="publishFeeBd" onclick="closePublishFeeModal()" style="background:rgba(0,0,0,0.7); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); display:none;"></div>
+    <!-- Quick-Post Modal (direkt aus Kochbuch) -->
+    <div class="backdrop" id="quickPostBd" onclick="closeQuickPostSheet()" style="background:rgba(0,0,0,0.5); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); display:none; z-index:1100;"></div>
+    <div class="sheet" id="quickPostSheet" style="max-width:480px; border-radius:28px; overflow:hidden; display:none; z-index:1101;">
+      <div class="sheet-body" style="padding:28px;">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
+          <div style="width:48px; height:48px; background:rgba(16,185,129,0.1); border-radius:14px; display:flex; align-items:center; justify-content:center;">
+            <i data-lucide="rocket" style="width:24px; height:24px; color:#10b981;"></i>
+          </div>
+          <h3 style="margin:0; font-size:22px; font-weight:900; color:#1a1a1a;">Jetzt live gehen?</h3>
+        </div>
+
+        <div id="quickPostSummary" style="background:#f8f7f2; border-radius:20px; padding:20px; margin-bottom:24px; border:1px solid rgba(0,0,0,0.05);">
+          <!-- Dynamisch -->
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          <button class="btn-primary" type="button" id="btnQuickPostConfirm" style="width:100%; min-height:60px; font-size:16px; font-weight:800; background:#10b981; border:none; box-shadow:0 4px 16px rgba(16,185,129,0.25);">
+            Für 4,99 € inserieren
+          </button>
+          <button class="btn ghost" type="button" id="btnQuickPostWizard" style="width:100%; min-height:52px; font-weight:700; color:#1a1a1a; border:2px solid #e5e7eb; background:#fff;">
+            Angaben ändern
+          </button>
+          <button class="btn ghost" type="button" onclick="closeQuickPostSheet()" style="width:100%; min-height:44px; color:#64748b; font-weight:600; border:none; background:none;">
+            Abbrechen
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Publish Fee Modal (vor Inserats-Veröffentlichung) -->
+    <div class="backdrop" id="publishFeeBd" onclick="closePublishFeeModal()" style="background:rgba(0,0,0,0.7); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); display:none;"></div>
 <div class="sheet" id="publishFeeSheet" style="max-width:480px; border-radius:24px; overflow:hidden; display:none;">
   <div class="sheet-body" style="padding:28px;">
     <h3 style="margin:0 0 20px; font-size:22px; font-weight:900; color:#2D3436;">Inserat veröffentlichen</h3>
@@ -8039,8 +8062,8 @@
     renderCookbook();
     const fab = document.getElementById('fabProviderAddOffer');
     const fabLabel = document.getElementById('fabProviderAddOfferLabel');
-    if(fab) fab.style.display = 'none';
-    if(fabLabel) fabLabel.style.display = 'none';
+    if(fab) fab.style.display = 'flex';
+    if(fabLabel) fabLabel.style.display = 'block';
     const providerNavBackRow = document.getElementById('providerNavBackRow');
     if(providerNavBackRow) providerNavBackRow.style.display = 'block';
     pushViewState({view: 'provider-cookbook', mode: mode}, location.pathname);
@@ -17543,16 +17566,24 @@
         ? `<img class="cookbook-item-image" src="${esc(entry.photoData)}" alt="${esc(entry.dish)}" loading="lazy" />`
         : `<div class="cookbook-item-image" style="background:#e5e7eb; display:flex; align-items:center; justify-content:center;"><i data-lucide="utensils" style="width:36px; height:36px; color:#94a3b8;"></i></div>`;
       const categoryBadge = entry.category ? `<span class="cookbook-item-badge">${esc(entry.category)}</span>` : '';
-      const lastUsedLabel = isDraft ? 'Entwurf' : ('Zuletzt am ' + esc(formatDayLabel(entry.lastUsed)));
-      const lastPriceLabel = entry.price != null ? 'Letzter Preis: ' + euro(entry.price) : '';
+      const lastUsedLabel = isDraft ? 'Entwurf' : ('🕒 Zuletzt am ' + esc(formatDayLabel(entry.lastUsed)));
+      const lastPriceLabel = entry.price != null ? ('💶 Letzter Preis: ' + euro(entry.price)) : '';
       const allergens = (entry.allergens || []).slice(0, 5);
       const allergenStr = allergens.map(a => typeof a === 'string' ? (a.trim().split(/\s+/)[0] || '').slice(0, 2).toUpperCase() : '').filter(Boolean).join(' ') || '–';
-      const abholZusatz = hasAbholnummer ? '<div class="cookbook-item-abholzusatz">+ 0,89 € Abholnummer</div>' : '';
+      const allOrders = (typeof loadOrders === 'function' ? loadOrders() : []) || [];
+      const soldCount = (typeof offers !== 'undefined' && offers) ? allOrders.filter(ord => {
+        const o = offers.find(x => x.id === ord.dishId);
+        if(!o || o.providerId !== entry.providerId) return false;
+        const odish = String(o.dish || o.title || '').trim();
+        const edish = String(entry.dish || '').trim();
+        return odish === edish;
+      }).length : 0;
+      const soldLabel = '📦 Zuletzt verkauft: ' + soldCount;
       const pillarClass = (on) => on ? '' : ' pillar-gray';
       item.innerHTML = `
         <div class="cookbook-item-header">
           ${imgEl}
-          <div class="cookbook-item-price-tag">${euro(entry.price||0)}</div>
+          <div class="cookbook-item-price-tag">💰 ${euro(entry.price||0)}</div>
           <button type="button" class="cookbook-item-menu" aria-label="Optionen">
             <i data-lucide="more-horizontal"></i>
           </button>
@@ -17570,8 +17601,8 @@
           </div>
           <div class="cookbook-item-allergens">${esc(allergenStr)}</div>
           ${lastPriceLabel ? '<div class="cookbook-item-info">' + esc(lastPriceLabel) + '</div>' : ''}
+          <div class="cookbook-item-info">${esc(soldLabel)}</div>
           <div class="cookbook-item-cta-wrap">
-            ${abholZusatz}
             <button type="button" class="cookbook-item-btn" data-dish-id="${esc(entry.id)}">
               Jetzt für 4,99 € inserieren
             </button>
@@ -17601,7 +17632,70 @@
     if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
   }
 
-  function publishCookbookEntry(entryId){
+  function closeQuickPostSheet(){
+    const bd = document.getElementById('quickPostBd');
+    const sheet = document.getElementById('quickPostSheet');
+    if(bd) bd.style.display = 'none';
+    if(sheet) sheet.style.display = 'none';
+  }
+
+  function openQuickPostSheet(entryId, date){
+    const entry = cookbook.find(c=>c.id===entryId && c.providerId===providerId());
+    if(!entry) return;
+
+    const bd = document.getElementById('quickPostBd');
+    const sheet = document.getElementById('quickPostSheet');
+    const summary = document.getElementById('quickPostSummary');
+    const btnConfirm = document.getElementById('btnQuickPostConfirm');
+    const btnWizard = document.getElementById('btnQuickPostWizard');
+
+    if(!bd || !sheet || !summary) return;
+
+    const profile = normalizeProviderProfile(provider.profile || {});
+    const time = profile.mealWindow || DEFAULT_MEAL_WINDOW;
+    const price = euro(entry.price || 0);
+    const dayLabel = date === isoDate(new Date()) ? 'Heute' : date;
+
+    summary.innerHTML = `
+      <div style="display:flex; gap:16px; align-items:center; margin-bottom:16px;">
+        <img src="${entry.photoData || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=200&q=60'}" style="width:60px; height:60px; border-radius:12px; object-fit:cover;">
+        <div>
+          <div style="font-weight:900; font-size:18px; color:#1a1a1a;">${esc(entry.dish)}</div>
+          <div style="font-size:13px; font-weight:700; color:#10b981;">${price}</div>
+        </div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <div style="display:flex; align-items:center; gap:8px; font-size:14px; font-weight:600; color:#475569;">
+          <i data-lucide="calendar" style="width:16px; height:16px;"></i>
+          <span>${dayLabel}</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px; font-size:14px; font-weight:600; color:#475569;">
+          <i data-lucide="clock" style="width:16px; height:16px;"></i>
+          <span>Abholung: ${time} Uhr</span>
+        </div>
+        <div style="margin-top:8px; padding-top:12px; border-top:1px solid rgba(0,0,0,0.06); display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-size:13px; color:#64748b; font-weight:600;">Gebühr:</span>
+          <span style="font-size:15px; font-weight:900; color:#FFD700;">4,99 €</span>
+        </div>
+      </div>
+    `;
+
+    btnConfirm.onclick = () => {
+      closeQuickPostSheet();
+      publishCookbookEntry(entryId, date);
+    };
+
+    btnWizard.onclick = () => {
+      closeQuickPostSheet();
+      startListingFlow({ dishId: entry.id, date: date, skipQuickPost: true });
+    };
+
+    bd.style.display = 'block';
+    sheet.style.display = 'block';
+    if(typeof lucide !== 'undefined') lucide.createIcons();
+  }
+
+  function publishCookbookEntry(entryId, customDate = null){
     const entry = cookbook.find(c=>c.id===entryId && c.providerId===providerId());
     if(!entry) return;
 
@@ -17624,7 +17718,7 @@
       extras: entry.extras||[],
       reuse: entry.reuse||{enabled:false,deposit:0},
       imageUrl: entry.photoData || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70',
-      day: isoDate(new Date())
+      day: customDate || isoDate(new Date())
     });
 
     if(!offer.providerStreet){
@@ -17632,19 +17726,14 @@
       return;
     }
 
-    offers.unshift(offer);
-    save(LS.offers, offers);
-
+    const published = publishOffer(offer);
+    
     const idx = cookbook.findIndex(c=>c.id===entryId);
     if(idx>=0){ cookbook[idx].lastUsed = Date.now(); }
     save(LS.cookbook, cookbook);
 
     renderCookbook();
-    renderProviderHome();
-    renderProviderPickups();
-    renderDiscover();
-    renderStart();
-    alert('Inserat veröffentlicht.');
+    if(published) showInseratSuccessSheet(published);
   }
 
   function publishWeekEntry(dayKey, entry){
@@ -17781,6 +17870,11 @@
    * @param {string} [context.editOfferId] - Offer ID (wenn bearbeiten)
    */
   function startListingFlow(context = {}){
+    // QUICK-POST: Wenn aus Kochbuch, erst Bestätigung zeigen
+    if(context.dishId && !context.editOfferId && !context.skipQuickPost){
+      openQuickPostSheet(context.dishId, context.date || isoDate(new Date()));
+      return;
+    }
     // Always use listing wizard (Master Flow)
     startWizard('listing', context);
   }
