@@ -3305,6 +3305,31 @@
       from { opacity: 0; transform: scale(0.96); }
       to { opacity: 1; transform: scale(1); }
     }
+
+    /* App-like Transitions & Feedback */
+    .view {
+      display: none;
+      opacity: 0;
+    }
+    .view.active {
+      display: block;
+      animation: viewIn 0.3s ease-out forwards;
+    }
+    .view.active#v-pickup-code {
+      display: flex !important;
+    }
+    @keyframes viewIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Global Button Feedback */
+    button:active, .btn:active, .btn-primary:active, .cat-pill:active, .day-pill:active, .ocm-like-btn:active, .chip:active {
+      transform: scale(0.96) !important;
+    }
+    button, .btn, .btn-primary, .cat-pill, .day-pill, .ocm-like-btn, .chip {
+      transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.2s, box-shadow 0.2s;
+    }
   </style>
 </head>
 <body>
@@ -3418,7 +3443,7 @@
     </section>
 
     <!-- Admin-Dashboard: /admin – Clean, modern, KPIs, Inserats-Feed, Buchhaltung, CSV-Export -->
-    <section class="view" id="v-admin" style="display:none; min-height:100vh; padding:20px; padding-bottom:90px; background:#f8f7f2;">
+    <section class="view" id="v-admin" style="min-height:100vh; padding:20px; padding-bottom:90px; background:#f8f7f2;">
       <div style="max-width:900px; margin:0 auto;">
         <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:24px;">
           <h1 style="margin:0; font-size:24px; font-weight:900; color:#1a1a1a;">Admin</h1>
@@ -3499,8 +3524,10 @@
           <!-- 1. Ausschlussspiel: 2x2 Grid (oberste 4 Gericht-Favoriten), Jiggle + X -->
           <div id="sectionDishesWrapper">
             <div id="favDishes" class="fav-dishes-grid" style="display:grid; grid-template-columns:repeat(2, 1fr); gap:12px; margin-bottom:20px;"></div>
-            <div class="hint" id="emptyFavDishes" style="display:none; text-align:center; padding:24px; background:#f9f9f9; border-radius:16px; margin-bottom:20px;">
-              <p style="font-size:14px; color:#666; margin:0;">Heute sind keine deiner Lieblingsgerichte verfügbar.</p>
+            <div class="hint" id="emptyFavDishes" style="display:none; text-align:center; padding:32px 24px; background:rgba(0,0,0,0.03); border-radius:24px; margin-bottom:20px;">
+              <span style="font-size:32px; display:block; margin-bottom:12px;">⭐️</span>
+              <p style="font-size:15px; font-weight:600; color:#334155; margin:0 0 4px;">Noch kein Favorit heute?</p>
+              <p style="font-size:13px; color:#64748b; margin:0;">Entdecke jetzt die besten Gerichte in deiner Nähe.</p>
             </div>
             <!-- Share-Logik: Header-Button (btnFavShareHeader) + optionaler Fallback sichtbar nur wenn gewünscht -->
             <div id="favShareWrap" style="display:none; margin-bottom:24px; text-align:center;">
@@ -3540,7 +3567,7 @@
         <div class="hint">Deine aktiven Abholnummern</div>
         <div class="answers" id="ordersFilters" style="margin-top:12px;"></div>
         <div style="height:10px"></div>
-        <div id="ordersList" class="hint">Noch keine Bestellungen.</div>
+        <div id="ordersList" class="hint">Deine Abholbox ist noch leer. Sichere dir jetzt dein Mittagessen!</div>
       </div>
     </section>
 
@@ -3812,7 +3839,7 @@
     </section>
 
     <!-- PROVIDER: Onboarding (ALT) -->
-    <section class="view" id="v-provider-onboarding" style="display:none;">
+    <section class="view" id="v-provider-onboarding">
       <!-- Schritt 1: Betriebsname -->
       <div class="panel onboarding-step" data-step="1">
         <div class="onboarding-header">
@@ -5960,11 +5987,6 @@
     const body = document.createElement('div');
     body.className = 'ocm-content';
     
-    const title = document.createElement('h3');
-    title.className = 'ocm-title';
-    title.textContent = data.dish || 'Gericht';
-    body.appendChild(title);
-    
     // 3 Säulen als High-Contrast-Balken
     const stored = typeof getFavPillars === 'function' ? getFavPillars(dishKey) : null;
     const vorOrt = stored ? !!stored.vorOrt : (() => { const p = offers.find(x => x.providerId === data.providerId); return !!(p && (p.dineInPossible !== false || data.dineInPossible)); })();
@@ -5972,9 +5994,14 @@
     const mehrweg = stored ? !!stored.mehrweg : (() => { const p = offers.find(x => x.providerId === data.providerId); return !!(p && (p.reuse && p.reuse.enabled)); })();
     
     const barsWrap = document.createElement('div');
-    barsWrap.style.cssText = 'padding:0 4px 0 0;';
+    barsWrap.style.cssText = 'padding:0 4px 8px 0;';
     barsWrap.innerHTML = renderPillarBarsDiscovery(vorOrt, abholnummer, mehrweg);
     body.appendChild(barsWrap);
+
+    const title = document.createElement('h3');
+    title.className = 'ocm-title';
+    title.textContent = data.dish || 'Gericht';
+    body.appendChild(title);
     
     // Gelber CTA: "In die Mittagsbox" (nur wenn Abholnummer)
     const ctaWrap = document.createElement('div');
@@ -7113,30 +7140,25 @@
   }
 
   function showView(id){
-    // Alle Views verstecken (inklusive explizites display:none für Abholnummer-Ansicht)
-    document.querySelectorAll('.view').forEach(v=>{
+    // Alle Views deaktivieren
+    document.querySelectorAll('.view').forEach(v => {
       v.classList.remove('active');
-      // Sicherstellen, dass Abholnummer-Ansicht definitiv versteckt ist, wenn nicht aktiv
-      if(v.id === 'v-pickup-code' && id !== 'v-pickup-code'){
-        v.style.display = 'none';
+      // Inline-Styles entfernen, damit CSS-Klassen steuern können
+      if(v.id !== 'v-pickup-code' || id !== 'v-pickup-code') {
+        v.style.display = ''; 
       }
     });
+    
     const view = document.getElementById(id);
     if(!view){
       console.error('View not found:', id);
-      // Fallback zur Discover-Seite
       const fallbackView = document.getElementById(views.discover || 'v-discover');
-      if(fallbackView){
-        fallbackView.classList.add('active');
-    window.scrollTo({top:0,behavior:'smooth'});
-      }
+      if(fallbackView) fallbackView.classList.add('active');
+      window.scrollTo({top:0,behavior:'smooth'});
       return;
     }
+    
     view.classList.add('active');
-    // CSS-Regel übernimmt jetzt das Display (flex für pickup-code, block für andere)
-    if(id === 'v-checkout' || id === 'v-order-success'){
-      view.style.display = 'block';
-    }
     window.scrollTo({top:0,behavior:'smooth'});
     
     // Fullscreen-Abholnummer-Modal beim View-Wechsel schließen (verhindert grünes Overlay auf allen Seiten)
