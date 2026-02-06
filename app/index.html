@@ -19674,6 +19674,7 @@
   }
   function closePublishFeeModal(){
     publishFeePendingOffer = null;
+    publishFeeSuccessCallback = null;
     const bd = document.getElementById('publishFeeBd');
     const sheet = document.getElementById('publishFeeSheet');
     if(bd) bd.classList.remove('active');
@@ -19881,9 +19882,14 @@
     if(btnPublishConfirm){
       btnPublishConfirm.onclick = function(){
         if(!publishFeePendingOffer) return;
-        const published = publishOffer(publishFeePendingOffer);
+        const offer = publishFeePendingOffer;
+        const onSuccess = publishFeeSuccessCallback;
+        const published = publishOffer(offer);
         closePublishFeeModal();
-        if(published) showInseratSuccessSheet(published);
+        if(published){
+          showInseratSuccessSheet(published);
+          if(typeof onSuccess === 'function'){ try { onSuccess(); } catch(e){ console.error(e); } }
+        }
       };
     }
     const inseratSuccessBtnBack = document.getElementById('inseratSuccessBtnBack');
