@@ -22,6 +22,7 @@ alwaysApply: true
 - Dashboard (Mein Betrieb), Abholungen, Wochenplan, Kochbuch, Inseratsflow/Wizard.
 - Design-Vorgaben: Helles, aufgeräumtes Layout (kein dunkles Theme). Inseratsflow wie in `docs/INSERATSFLOW_KONZEPT.md`.
 - Referenzdokumente: `docs/INSERATSFLOW_KONZEPT.md` (Fixkosten 4,99 €, Verdienst-Vorschau, CTA „Jetzt für 4,99 € inserieren“).
+- **Teilen-Funktion**: Muss immer einheitlich sein. Marketing-Texte mit Emojis (🚀, 🍴, 📍, 👉) und „Boom“-Effekt (aktivierend). Immer mit Link zur Seite und Hinweis auf die Abholnummer („Schlange überspringen“). Fallback bei fehlendem Web-Share: `copyToClipboard` + Toast.
 
 ## Bei Änderungen
 

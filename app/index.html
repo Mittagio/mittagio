@@ -7835,6 +7835,13 @@
     
     view.classList.add('active');
     window.scrollTo({top:0,behavior:'smooth'});
+    
+    // VIEW PERSISTENCE: Save current view and mode for refresh
+    try {
+      localStorage.setItem('mittagio_last_view', id);
+      localStorage.setItem('mittagio_last_mode', mode);
+    } catch(e) { console.error('Failed to save view state', e); }
+
     if(typeof lucide !== 'undefined') lucide.createIcons();
     
     // Fullscreen-Abholnummer-Modal beim View-Wechsel schließen (verhindert grünes Overlay auf allen Seiten)
@@ -7914,10 +7921,35 @@
       if(!provider.loggedIn){
         showView(views.providerLogin);
       } else {
-        showProviderHome();
+        // RESTORE VIEW OR GO HOME
+        const lastView = localStorage.getItem('mittagio_last_view');
+        const lastMode = localStorage.getItem('mittagio_last_mode');
+        if(lastMode === 'provider' && lastView && document.getElementById(lastView)){
+          showView(lastView);
+          // Trigger rendering for specific views
+          if(lastView === 'v-provider-home') renderProviderHome();
+          else if(lastView === 'v-provider-pickups') renderProviderPickups();
+          else if(lastView === 'v-provider-week') renderWeekPlan();
+          else if(lastView === 'v-provider-cookbook') renderCookbook();
+          else if(lastView === 'v-provider-profile') renderProviderProfile();
+          else if(lastView === 'v-provider-billing') renderBilling();
+        } else {
+          showProviderHome();
+        }
       }
     } else {
-      showDiscover();
+      const lastView = localStorage.getItem('mittagio_last_view');
+      const lastMode = localStorage.getItem('mittagio_last_mode');
+      if((lastMode === 'customer' || lastMode === 'start') && lastView && document.getElementById(lastView)){
+        showView(lastView);
+        if(lastView === views.discover) { renderChips(); renderDiscover(); }
+        else if(lastView === views.fav) renderFavs();
+        else if(lastView === views.orders) renderOrders();
+        else if(lastView === views.profile) renderProfile();
+        else if(lastView === 'v-start') renderStart();
+      } else {
+        showDiscover();
+      }
     }
   }
 
@@ -12792,20 +12824,28 @@
     const data = normalizeOffer(offer);
     const dishName = data.dish || 'Gericht';
     const price = euro(data.price || 0);
+    const profile = normalizeProviderProfile(provider.profile || {});
+    const providerName = profile.name || provider.email || 'Anbieter';
+    const shareUrl = `${location.origin}${location.pathname}#offer/${offer.id}`;
+    const shareText = `🔥 Heißer Tipp für heute: ${dishName}!\n\n📍 ${providerName}\n💰 Nur ${price}\n\nSchnell sein lohnt sich – jetzt Abholnummer sichern & Warteschlange überspringen:\n👉 ${shareUrl}\n\n#mittagio #foodtip #leckeressen #heute`;
     
     if(navigator.share){
       navigator.share({
-        title: `${dishName} - ${price}`,
-        text: `Heute bei mir: ${dishName} für ${price}. Nur online vorbestellbar auf Mittagio.de`,
-        url: `${location.origin}${location.pathname}#offer/${offer.id}`
+        title: dishName,
+        text: shareText,
+        url: shareUrl
       }).then(() => {
         showToast('Geteilt!');
       }).catch((err) => {
-        console.log('Share failed:', err);
+        if(err.name !== 'AbortError'){
+          copyToClipboard(shareText);
+          showToast('Link kopiert!');
+        }
       });
     } else {
-      // Fallback: Share Sheet
-      shareOffer(offer);
+      // Fallback: Link kopieren
+      copyToClipboard(shareText);
+      showToast('Link kopiert!');
     }
   }
 
@@ -17057,7 +17097,7 @@
     }
     
     const shareUrl = `${location.origin}${location.pathname}#provider/${providerIdVal}`;
-    const shareText = `Schau mal, was es bei ${providerName} gibt!\n\n${providerOffers.slice(0, 5).map(o => `• ${o.dish || o.title || 'Gericht'} - ${euro(o.price || 0)}`).join('\n')}${providerOffers.length > 5 ? `\n... und ${providerOffers.length - 5} weitere` : ''}\n\n${shareUrl}`;
+    const shareText = `😋 Lust auf was Richtiges? Entdecke unsere aktuelle Speisekarte!\n\n📍 ${providerName}\n\n${providerOffers.slice(0, 5).map(o => `🍴 ${o.dish || o.title || 'Gericht'} - ${euro(o.price || 0)}`).join('\n')}${providerOffers.length > 5 ? `\n... und viele weitere Highlights!` : ''}\n\nDirekt online bestellen & Zeit sparen:\n👉 ${shareUrl}\n\n#mittagio #speisekarte #foodie #lunchtime`;
     
     if(navigator.share){
       navigator.share({
@@ -17609,7 +17649,7 @@
     }
     
     const shareUrl = `${location.origin}${location.pathname}#provider/${providerId()}/week`;
-    const shareText = `Schau mal, was es diese Woche bei ${providerName} gibt!\n\n${weekOffers.slice(0, 5).map(o => `• ${o.dish} - ${euro(o.price)}`).join('\n')}${weekOffers.length > 5 ? `\n... und ${weekOffers.length - 5} weitere` : ''}\n\n${shareUrl}`;
+    const shareText = `📅 Hunger für die ganze Woche geplant? Schau dir unseren neuen Wochenplan an!\n\n📍 ${providerName}\n\n${weekOffers.slice(0, 5).map(o => `🍴 ${o.day}: ${o.dish} - ${euro(o.price)}`).join('\n')}${weekOffers.length > 5 ? `\n... und ${weekOffers.length - 5} weitere Leckereien!` : ''}\n\nJetzt Favoriten planen & entspannt genießen:\n👉 ${shareUrl}\n\n#mittagio #wochenplan #mittagspause #lecker`;
     
     if(navigator.share){
       navigator.share({
@@ -18081,11 +18121,14 @@
     if(wbd) wbd.classList.add('active');
     if(wizard) wizard.classList.add('active');
     pushViewState({wizard: true}, location.pathname);
+    localStorage.setItem('mittagio_wizard_open', 'true');
   }
   function closeWizard(){
     const wizard = document.getElementById('wizard');
     document.getElementById('wbd').classList.remove('active');
     if(wizard){ wizard.classList.remove('active'); wizard.removeAttribute('data-flow'); }
+    localStorage.removeItem('mittagio_wizard_open');
+    localStorage.removeItem('wizard_draft');
   }
 
   /**
@@ -20561,6 +20604,24 @@
   }
   
   setMode(mode);
+  
+  // WIZARD RESTORATION: Restore open wizard if needed
+  try {
+    const wizardOpen = localStorage.getItem('mittagio_wizard_open') === 'true';
+    const draftStr = localStorage.getItem('wizard_draft');
+    if(wizardOpen && draftStr){
+      const draft = JSON.parse(draftStr);
+      if(draft && draft.kind){
+        // Global 'w' object is used by the wizard
+        w = draft;
+        openWizard();
+        // Restore specific step content
+        if(w.kind === 'listing') buildListingStep();
+        else if(w.kind === 'provider') buildProviderStep();
+        else if(w.kind === 'cookbook') buildCookbookStep();
+      }
+    }
+  } catch(e) { console.error('Failed to restore wizard state', e); }
   
   // Connectivity-Check starten wenn Provider-Modus
   if(mode === 'provider' && provider.loggedIn){
