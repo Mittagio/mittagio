@@ -5673,8 +5673,8 @@
               <p>Mit einem Tap: WhatsApp, Instagram oder Homepage – Text ist automatisch vorbereitet.</p>
             </details>
             <details>
-              <summary>Inseratsgebühr / All-In Erfolgsgebühr?</summary>
-              <p>Inseratsgebühr: 4,99 € einmalig pro Gericht. All-In Erfolgsgebühr: 0,89 € pro verkaufter Abholnummer (inkl. aller Bank- und Stripe-Gebühren). Keine Mindestlaufzeit.</p>
+              <summary>Inseratsgebühr / Abholnummer?</summary>
+              <p>Inseratsgebühr: 4,99 € einmalig heute pro Gericht. Abholnummer: 0,89 € pro Vorgang (inkl. aller Bankgebühren). Keine Mindestlaufzeit.</p>
             </details>
             <details>
               <summary>Wie funktionieren Abholungen?</summary>
@@ -5685,8 +5685,8 @@
               <p>Vorab bezahlt, weniger Chaos an der Ausgabe und ein klarer Ablauf pro Bestellung.</p>
             </details>
             <details>
-              <summary>Was kostet die All-In Erfolgsgebühr?</summary>
-              <p>0,89 € pro verkaufter Abholnummer. Diese Gebühr beinhaltet bereits alle Bank-, Stripe- und Verwaltungsgebühren. (Auch wenn der Kunde mehrere Gerichte in einem Vorgang holt.)</p>
+              <summary>Was kostet die Abholnummer?</summary>
+              <p>0,89 € pro Vorgang. Auch mit mehreren Gerichten. Inkl. aller Bank- & Verwaltungsgebühren für Kartenzahlung.</p>
             </details>
             <details>
               <summary>Wie spare ich Zeit?</summary>
@@ -5779,17 +5779,17 @@
       <div style="font-size:15px; line-height:1.6; color:#2D3436; margin-bottom:16px;">
         <div style="margin-bottom:12px;">
           <strong>Inseratsgebühr:</strong> <span style="color:#FFD700; font-weight:900;">4,99 €</span>
-          <div style="font-size:13px; color:#666; margin-top:4px;">Einmalig pro Gericht für die Sichtbarkeit im Feed</div>
+          <div style="font-size:13px; color:#666; margin-top:4px;">Einmalig heute pro Gericht</div>
         </div>
         <div style="padding-top:12px; border-top:1px solid rgba(0,0,0,0.1);">
-          <strong>All-In Erfolgsgebühr:</strong> <span style="color:#1f9d55; font-weight:900;">0,89 €</span>
-          <div style="font-size:13px; color:#666; margin-top:4px;">Pro verkaufter Abholnummer. Beinhaltet bereits alle Bank-, Stripe- und Verwaltungsgebühren.</div>
+          <strong>Abholnummer:</strong> <span style="color:#1f9d55; font-weight:900;">0,89 €</span>
+          <div style="font-size:13px; color:#666; margin-top:4px;">Pro Vorgang. Auch mit mehreren Gerichten. inkl. aller Bank- & Verwaltungsgebühren für Kartenzahlung.</div>
         </div>
       </div>
     </div>
     <div style="display:flex; flex-direction:column; gap:12px;">
       <button class="btn-primary" type="button" id="btnPublishConfirm" style="width:100%; min-height:56px; font-size:16px; font-weight:700;">
-        Veröffentlichen
+        Jetzt online stellen
       </button>
       <button class="btn ghost" type="button" onclick="closePublishFeeModal();" style="width:100%; min-height:44px;">
         Abbrechen
@@ -8022,9 +8022,9 @@
       if((lastMode === 'customer' || lastMode === 'start') && lastView && document.getElementById(lastView)){
         showView(lastView);
         if(lastView === views.discover) { renderChips(); renderDiscover(); }
-        else if(lastView === views.fav) renderFavs();
+        else if(lastView === views.fav) renderFavorites();
         else if(lastView === views.orders) renderOrders();
-        else if(lastView === views.profile) renderProfile();
+        else if(lastView === views.profile) updateProfileView();
         else if(lastView === 'v-start') renderStart();
       } else {
         showDiscover();
@@ -10476,7 +10476,7 @@
       if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
       
       // Mobilitäts-Zeile: Minimalistisch, einzeilig, kleine Schrift (10-12px)
-      if(data.distanceKm != null){
+      if(data.distanceKm != null && !usePreviewData){
         const mobilityRow = document.createElement('div');
         mobilityRow.style.cssText = 'margin-top:6px; padding:0 16px; display:flex; align-items:center; justify-content:center; gap:10px; font-size:11px; color:#666; font-weight:500; line-height:1.4;';
         
@@ -10556,7 +10556,7 @@
       }
       
       // map-pin: distance
-      if(data.distanceKm != null){
+      if(data.distanceKm != null && !usePreviewData){
         const distBadge = document.createElement('span');
         distBadge.className='card-info-badge';
         distBadge.innerHTML = `${iconMarkup('map-pin')} <span>${Number(data.distanceKm).toFixed(1)}</span>`;
@@ -10568,7 +10568,7 @@
                            data.category === 'Vegetarisch' ? 'carrot' : 
                            data.category === 'Mit Fleisch' ? 'drumstick' : 
                            data.category === 'Fisch' ? 'fish' : '';
-      if(foodTypeIcon){
+      if(foodTypeIcon && !usePreviewData){
         const typeBadge = document.createElement('span');
         typeBadge.className='card-info-badge';
         typeBadge.innerHTML = iconMarkup(foodTypeIcon);
@@ -19494,7 +19494,7 @@
 
     // Schritt 4 (Index 3): Abholnummer dazubuchen? (nach Klick „Dein Tagesessen inserieren“)
     if(w.step===3){
-      setWizardQuestion('Abholnummer dazubuchen?', 'Für nur 0,89 € pro Vorgang – Zeit sparen, Chaos vermeiden.');
+      setWizardQuestion('Abholnummer dazubuchen?', '0,89 € pro Vorgang inkl. aller Bankgebühren');
       const box=document.createElement('div');
       const EMERALD = '#10b981';
 
