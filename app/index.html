@@ -20567,7 +20567,8 @@
   
   // Neue Beispieldaten laden (10 Anbieter, je 3 Gerichte, je 10 Abholnummers)
   // Nur wenn keine Offers vorhanden oder für Demo
-  if(offers.length === 0 || true){ // true für Demo - immer neu generieren
+  // Nur seeden wenn keine Offers vorhanden – sonst bleiben Favoriten (dishFavs) gültig
+  if(offers.length === 0){
     seedExampleData();
     seedDemoProvider(); // Demo-Anbieter: 10 Kochbuchgerichte, 3 Tagesessen (Vegan, Vegetarisch, Fleisch). Login: demo@mittagio.de
   }
