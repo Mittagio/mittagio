@@ -3925,7 +3925,19 @@
         <button type="button" id="btnBillingZahlungsmittel" style="width:100%; padding:14px; border-radius:12px; border:2px solid rgba(0,0,0,0.1); background:#fff; color:#0A84FF; font-weight:700; font-size:15px; cursor:pointer;">Zahlungsmittel ändern</button>
       </div>
 
-      <!-- Karte 2: Meine Abrechnungen -->
+      <!-- Karte 2: Tagesabrechnungen (Live-Umsatz heute) -->
+      <div class="panel" id="billingCardTagesabrechnungen" style="border-radius:16px; padding:24px; margin-bottom:20px; box-shadow:0 2px 12px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04); background:#fff;">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+          <span style="font-size:15px; font-weight:700; color:#1a1a1a;">Tagesumsatz (heute)</span>
+          <span id="billingTodayRevenue" style="font-size:18px; font-weight:950; color:#16a34a;">0,00 €</span>
+        </div>
+        <div id="billingTodayList" style="display:flex; flex-direction:column; gap:8px;">
+          <!-- Heute verkaufte Abholnummern -->
+        </div>
+        <div id="billingTodayEmpty" class="hint" style="color:#64748b; text-align:center; padding:16px 0; display:none;">Noch keine Umsätze heute.</div>
+      </div>
+
+      <!-- Karte 3: Meine Abrechnungen -->
       <div class="panel" style="border-radius:16px; padding:24px; box-shadow:0 2px 12px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04);">
         <div style="font-size:15px; font-weight:700; color:#1a1a1a; margin-bottom:16px;">Meine Abrechnungen</div>
         <div id="billingList" style="display:flex; flex-direction:column; gap:0;">
@@ -4659,16 +4671,16 @@
 
         <!-- Top Stats: 3 Kennzahlen -->
         <div class="prov-stats-grid">
-          <div class="prov-stat-item">
+          <div class="prov-stat-item" id="kpiTagesessen" style="cursor:pointer;" onclick="document.getElementById('providerActiveListingsSection')?.scrollIntoView({behavior:'smooth'})">
             <span id="dashboardTagesessenCount" class="prov-stat-value">0</span>
             <span class="prov-stat-label">Meine Tagesessen</span>
           </div>
-          <div class="prov-stat-item" style="border-left:1px solid #eee; border-right:1px solid #eee;">
+          <div class="prov-stat-item" id="kpiBestellungen" style="border-left:1px solid #eee; border-right:1px solid #eee; cursor:pointer;" onclick="showProviderPickups()">
             <span id="dashboardAbholungenCount" class="prov-stat-value" style="color:var(--brand2);">0</span>
             <span class="prov-stat-label">Meine Bestellungen</span>
           </div>
-          <div class="prov-stat-item">
-            <span id="dashboardUmsatzToday" class="prov-stat-value">0,00 €</span>
+          <div class="prov-stat-item" id="kpiUmsatz" style="cursor:pointer;" onclick="showProviderBilling()">
+            <span id="dashboardUmsatzToday" class="prov-stat-value" style="font-size:16px;">0,00 €</span>
             <span class="prov-stat-label">Umsatz</span>
           </div>
         </div>
@@ -4680,7 +4692,7 @@
         <div id="providerActiveListingsSection" style="margin-bottom:32px;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
             <h3 style="font-size:18px; font-weight:900; color:#1a1a1a; margin:0;">Aktive Angebote</h3>
-            <span class="prov-badge prov-badge-live">Live</span>
+            <span class="prov-badge prov-badge-live">Online</span>
           </div>
           <div id="providerActiveListings" style="display:flex; flex-direction:column; gap:16px;">
             <!-- Dynamische Karten -->
@@ -4877,17 +4889,14 @@
       </header>
 
       <div style="padding:8px 16px 20px; max-width:500px; margin:0 auto;">
-        <div id="providerProfileMain">
-          <!-- Profile Header -->
-          <div style="background:#fff; border-radius:24px; padding:16px 20px; text-align:center; border:1px solid rgba(0,0,0,0.04); box-shadow:0 4px 16px rgba(0,0,0,0.04); margin-bottom:20px;">
-            <div class="plogo" id="providerProfileLogo" style="width:80px; height:80px; border-radius:28px; margin:0 auto 10px; border:4px solid #fff; box-shadow:0 8px 24px rgba(0,0,0,0.1); background-size:cover; background-position:center; background-color:#f1f3f5;"></div>
-            <h2 id="providerProfileName" style="margin:0 0 6px; font-size:20px; font-weight:950; color:#1a1a1a; letter-spacing:-0.02em;">Betriebsname</h2>
-            <div id="providerProfileBadge" style="display:inline-block; padding:4px 10px; border-radius:99px; background:rgba(16,185,129,0.1); color:#10b981; font-size:12px; font-weight:800;">
-              <i data-lucide="check-circle" style="width:14px;height:14px;display:inline-block;vertical-align:middle;margin-right:4px;"></i> Verifiziert
+          <div id="providerProfileMain">
+            <!-- Profile Header -->
+            <div style="background:#fff; border-radius:24px; padding:16px 20px; text-align:center; border:1px solid rgba(0,0,0,0.04); box-shadow:0 4px 16px rgba(0,0,0,0.04); margin-bottom:20px;">
+              <div class="plogo" id="providerProfileLogo" style="width:80px; height:80px; border-radius:28px; margin:0 auto 10px; border:4px solid #fff; box-shadow:0 8px 24px rgba(0,0,0,0.1); background-size:cover; background-position:center; background-color:#f1f3f5;"></div>
+              <h2 id="providerProfileName" style="margin:0; font-size:20px; font-weight:950; color:#1a1a1a; letter-spacing:-0.02em;">Betriebsname</h2>
             </div>
-          </div>
 
-          <div style="background:#fff; border-radius:20px; overflow:hidden; border:1px solid rgba(0,0,0,0.04); box-shadow:0 2px 10px rgba(0,0,0,0.04);">
+            <div style="background:#fff; border-radius:20px; overflow:hidden; border:1px solid rgba(0,0,0,0.04); box-shadow:0 2px 10px rgba(0,0,0,0.04);">
             <button type="button" id="providerProfileRowBusiness" class="provider-profile-row" style="width:100%; display:flex; align-items:center; justify-content:space-between; padding:14px 16px; background:none; border:none; border-bottom:1px solid #f8f9fa; font-size:15px; font-weight:700; color:#1a1a1a; text-align:left; cursor:pointer;">
               <div style="display:flex;align-items:center;gap:10px;"><i data-lucide="building" style="width:18px;height:18px;color:#64748b;"></i><span>Meine Daten</span></div>
               <i data-lucide="chevron-right" style="width:18px; height:18px; color:#cbd5e1;"></i>
@@ -4928,6 +4937,11 @@
           <div style="background:#fff; border-radius:24px; padding:24px; border:1px solid rgba(0,0,0,0.04); box-shadow:0 4px 12px rgba(0,0,0,0.02); margin-bottom:20px;">
             <h3 style="margin:0 0 20px; font-size:17px; font-weight:800; color:#1a1a1a;">Kontaktdaten</h3>
             
+            <div style="margin-bottom:16px;">
+              <label style="display:block; font-size:11px; font-weight:700; color:#9ca3af; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.05em;">Betriebsname</label>
+              <input type="text" id="providerProfileBusinessName" placeholder="Name deines Betriebs" style="width:100%; height:52px; padding:0 16px; border:2px solid #f1f3f5; border-radius:14px; font-size:15px; font-weight:700; background:#f8f9fa; color:#1a1a1a; transition:all 0.2s;">
+            </div>
+
             <div style="margin-bottom:16px;">
               <label style="display:block; font-size:11px; font-weight:700; color:#9ca3af; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.05em;">Straße & Hausnummer</label>
               <input type="text" id="providerProfileStreet" placeholder="z.B. Hauptstraße 12" style="width:100%; height:52px; padding:0 16px; border:2px solid #f1f3f5; border-radius:14px; font-size:15px; font-weight:700; background:#f8f9fa; color:#1a1a1a; transition:all 0.2s;">
@@ -15732,6 +15746,21 @@
       const nettoEuro = (tagesumsatzCents / 100 - todayOrders.length * 0.89).toFixed(2);
       if(dashUmsatz){ dashUmsatz.textContent = nettoEuro.replace('.', ',') + ' €'; dashUmsatz.style.color = hasRevenue ? '#16a34a' : '#1a1a1a'; }
 
+      // KPI Click-Handler
+      const kpiTagesessen = document.getElementById('kpiTagesessen');
+      if(kpiTagesessen) kpiTagesessen.onclick = () => {
+        const target = document.getElementById('providerActiveListingsSection');
+        if(target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      };
+      const kpiBestellungen = document.getElementById('kpiBestellungen');
+      if(kpiBestellungen) kpiBestellungen.onclick = () => {
+        if(typeof showProviderPickups === 'function') showProviderPickups();
+      };
+      const kpiUmsatz = document.getElementById('kpiUmsatz');
+      if(kpiUmsatz) kpiUmsatz.onclick = () => {
+        if(typeof showProviderProfileSub === 'function') showProviderProfileSub('payment');
+      };
+
       // Aktive Inserate: Dashboard 2.1 – ImmoScout-Style
       const providerActiveListings = document.getElementById('providerActiveListings');
       const providerActiveListingsSection = document.getElementById('providerActiveListingsSection');
@@ -16728,7 +16757,7 @@
     updateSessionActivity();
     const p = normalizeProviderProfile(provider.profile || {});
     const addr = buildAddress(p);
-    const name = p.name || provider.email || 'Anbieter';
+    const name = p.name || 'Betriebsname';
     
     // Progressive Disclosure: Menü-Zeilen und Zurück-Buttons
     function goProfileSub(id){ showProviderProfileSub(id); }
@@ -16814,6 +16843,7 @@
     }
     
     // Kontaktdaten (Adresse, Telefon, E-Mail, Internetseite)
+    const profileBusinessName = document.getElementById('providerProfileBusinessName');
     const profileStreet = document.getElementById('providerProfileStreet');
     const profileZip = document.getElementById('providerProfileZip');
     const profileCity = document.getElementById('providerProfileCity');
@@ -16824,6 +16854,7 @@
 
     const saveAllBusinessData = () => {
       if(!provider.profile) provider.profile = {};
+      provider.profile.name = profileBusinessName ? profileBusinessName.value.trim() : (p.name || '');
       provider.profile.street = profileStreet ? profileStreet.value.trim() : (p.street || '');
       provider.profile.zip = profileZip ? profileZip.value.trim() : (p.zip || '');
       provider.profile.city = profileCity ? profileCity.value.trim() : (p.city || '');
@@ -16836,6 +16867,7 @@
       renderProviderProfile(); // UI updaten
     };
 
+    if(profileBusinessName) profileBusinessName.value = p.name || '';
     if(profileStreet) profileStreet.value = p.street || '';
     if(profileZip) profileZip.value = p.zip || '';
     if(profileCity) profileCity.value = p.city || '';
@@ -17578,7 +17610,7 @@
     }
     
     const shareUrl = `${location.origin}${location.pathname}#provider/${providerId()}/today`;
-    const shareText = `Heute bei ${providerName}:\n\n${mineToday.map(o => `• ${o.dish || o.title || 'Gericht'} - ${euro(o.price || 0)}`).join('\n')}\n\n${shareUrl}`;
+    const shareText = `🚀 Hunger? Schau mal, was wir heute Leckeres für dich haben!\n\n📍 ${providerName}\n\n${mineToday.map(o => `🍴 ${o.dish || o.title || 'Gericht'} - ${euro(o.price || 0)}`).join('\n')}\n\nJetzt Schlange überspringen & Abholnummer sichern:\n👉 ${shareUrl}\n\n#mittagio #lunch #heutebeius`;
     
     if(navigator.share){
       navigator.share({
