@@ -8823,9 +8823,9 @@
       if(useDecisionTiles){
         // ... grid code ...
       } else {
-        // Modern List Cards
+        // Slim List Cards (Herz → Favoriten via toggleDishFav/dishFavs)
         list.forEach(o=> {
-          const card = createModernOfferCard(o);
+          const card = createDiscoverListCard(o);
           offersEl.appendChild(card);
         });
       }
@@ -10255,9 +10255,9 @@
     
     const imgSrc = data.imageUrl || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70';
     
-    // Favorit-Status prüfen
-    const dishKey = data.id;
-    const isFav = dishFavs.has(dishKey);
+    // Favorit-Status prüfen (dishFavs speichert Strings)
+    const dishKey = String(data.id || '');
+    const isFav = typeof dishFavs !== 'undefined' && dishFavs.has(dishKey);
     
     // Gehzeit berechnen
     let walkingTimeText = '';
@@ -10291,7 +10291,7 @@
           </div>
           <!-- Eco-Badge: Mehrweg-Konzept-Icon - ENTFERNT (nur noch im Profil) -->
           <!-- Favorit-Button (oben rechts) -->
-          <button class="btn-icon-overlay" onclick="event.stopPropagation(); toggleDishFav('${dishKey}'); const btn=this.querySelector('i'); setTimeout(()=>{const isFav=dishFavs.has('${dishKey}'); btn.style.fill=isFav?'currentColor':''; btn.style.color=isFav?'#e74c3c':'#666'; if(typeof lucide !== 'undefined') lucide.createIcons();}, 10);" title="Favorit" style="position:absolute; top:4px; right:4px; width:28px; height:28px; border-radius:50%; background:rgba(255,255,255,0.95); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 2px 6px rgba(0,0,0,0.15); transition:transform 0.2s ease; z-index:5;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+          <button class="btn-icon-overlay" onclick="event.stopPropagation(); event.preventDefault(); toggleDishFav(${JSON.stringify(dishKey)}); const btn=this.querySelector('i'); if(btn){ const nowFav=typeof dishFavs!=='undefined'&&dishFavs.has(${JSON.stringify(dishKey)}); btn.style.fill=nowFav?'currentColor':''; btn.style.color=nowFav?'#e74c3c':'#666'; if(typeof lucide!=='undefined')lucide.createIcons(); }" title="Favorit" style="position:absolute; top:4px; right:4px; width:28px; height:28px; border-radius:50%; background:rgba(255,255,255,0.95); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 2px 6px rgba(0,0,0,0.15); transition:transform 0.2s ease; z-index:5;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
             <i data-lucide="heart" style="width:14px;height:14px;${isFav ? 'fill:currentColor; color:#e74c3c;' : 'color:#666;'}"></i>
           </button>
         </div>
