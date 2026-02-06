@@ -18293,12 +18293,20 @@
 
   function publishCookbookEntry(entryId, customDate = null){
     const entry = cookbook.find(c => String(c.id) === String(entryId));
-    if(!entry) {
-      console.warn('publishCookbookEntry: Entry not found', entryId);
+    if(!entry) return;
+
+    const profile = normalizeProviderProfile(provider.profile || {});
+    
+    // REGEL: Wenn kein Standard für Abholnummer im Profil, dann immer Abfrage-Wizard zeigen
+    if(profile.abholnummerEnabledByDefault === undefined || profile.abholnummerEnabledByDefault === null){
+      startWizard('listing', { 
+        dishId: entryId, 
+        date: customDate || isoDate(new Date()),
+        skipToAbholnummer: true 
+      });
       return;
     }
 
-    const profile = normalizeProviderProfile(provider.profile || {});
     const offer = normalizeOffer({
       id: cryptoId(),
       providerId: providerId(),
@@ -18311,12 +18319,12 @@
       category: entry.category||'Vegetarisch',
       price: Number(entry.price||0),
       pickupWindow: profile.mealWindow || DEFAULT_MEAL_WINDOW,
-      hasPickupCode: !!entry.hasPickupCode,
-      dineInPossible: !!entry.dineInPossible,
+      hasPickupCode: !!profile.abholnummerEnabledByDefault,
+      dineInPossible: entry.dineInPossible !== false,
       allergens: entry.allergens||[],
       extras: entry.extras||[],
-      reuse: entry.reuse||{enabled:false,deposit:0},
-      imageUrl: entry.photoData || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70',
+      reuse: entry.reuse||{enabled:!!profile.reuseEnabledByDefault, deposit:profile.reuseEnabledByDefault ? 2 : 0},
+      imageUrl: entry.photoData || '',
       day: customDate || isoDate(new Date())
     });
 
@@ -18328,14 +18336,13 @@
       offer.providerZip = p.zip; offer.providerCity = p.city;
     }
 
-    const published = publishOffer(offer);
-    
-    const idx = cookbook.findIndex(c => String(c.id) === String(entryId));
-    if(idx >= 0){ cookbook[idx].lastUsed = Date.now(); }
-    save(LS.cookbook, cookbook);
-
-    renderCookbook();
-    if(published) showInseratSuccessSheet(published);
+    // Gebühren-Modal zeigen (dort wird dann publishOffer + Erfolgs-Sheet aufgerufen)
+    showPublishFeeModal(offer, () => {
+      const idx = cookbook.findIndex(c => String(c.id) === String(entryId));
+      if(idx >= 0){ cookbook[idx].lastUsed = Date.now(); }
+      save(LS.cookbook, cookbook);
+      renderCookbook();
+    });
   }
 
   function publishWeekEntry(dayKey, entry){
@@ -18664,6 +18671,9 @@
       if(!w.data.reuse || (!w.data.reuse.enabled && !profile.reuseEnabledByDefault)){
         const globalReuseEnabled = profile.reuseEnabledByDefault || false;
         w.data.reuse = {enabled:globalReuseEnabled, deposit:globalReuseEnabled ? 2 : 0};
+      }
+      if(ctx.skipToAbholnummer){
+        w.step = 3; // Abholnummer-Schritt im listing flow (0:Basis, 1:Service, 2:Extras, 3:Abholnummer)
       }
       buildListingStep();
     }
