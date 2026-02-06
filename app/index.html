@@ -6113,7 +6113,7 @@
     <div style="text-align:center; margin-bottom:20px;">
       <div style="width:56px; height:56px; margin:0 auto 12px; background:linear-gradient(135deg, rgba(255,215,0,0.2) 0%, rgba(255,184,0,0.1) 100%); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:28px;">👤</div>
       <h3 style="margin:0 0 6px; font-size:20px; font-weight:900; color:#2D3436;">Hallo! 👋</h3>
-      <p class="hint" style="font-size:14px; color:#666; line-height:1.4;">Leg dir ein Profil an, um deine Mittagsbox & Favoriten überall dabei zu haben.</p>
+      <p class="hint" style="font-size:14px; color:#666; line-height:1.4;">Leg dir ein Profil an, um deine Mittagsbox überall dabei zu haben.</p>
     </div>
     <div style="display:flex; flex-direction:column; gap:14px;">
       <label style="font-size:13px; font-weight:600; color:#64748b;">Name (optional)</label>
@@ -9426,7 +9426,7 @@
       <div class="match-overlay" style="text-align:center; padding:40px; max-width:320px;">
         <div style="font-size:80px; margin-bottom:16px;">😋</div>
         <h2 style="color:#fff; font-size:36px; font-weight:900; margin:0 0 12px; letter-spacing:2px;">Lecker!</h2>
-        <p style="color:rgba(255,255,255,0.8); font-size:16px; margin:0 0 24px; line-height:1.5;">${esc(data.dish || 'Gericht')} wurde zu deinen Favoriten hinzugefügt.</p>
+        <p style="color:rgba(255,255,255,0.8); font-size:16px; margin:0 0 24px; line-height:1.5;">${esc(data.dish || 'Gericht')} wurde zu deiner Mittagsbox hinzugefügt.</p>
         <div style="display:flex; gap:12px; justify-content:center;">
           <button type="button" onclick="document.getElementById('matchOverlayTinder').remove(); showFav();" style="padding:14px 28px; background:#FFD700; color:#1a1a1a; font-weight:800; font-size:15px; border:none; border-radius:12px; cursor:pointer;">In die Mittagsbox</button>
           <button type="button" onclick="document.getElementById('matchOverlayTinder').remove();" style="padding:14px 28px; background:rgba(255,255,255,0.15); color:#fff; font-weight:700; font-size:15px; border:none; border-radius:12px; cursor:pointer;">Weiter</button>
@@ -10463,12 +10463,7 @@
       providerEl.innerHTML = `<i data-lucide="store" style="width:14px;height:14px; margin-right:4px;"></i> <span>${esc(data.providerName || 'Anbieter')}</span>`;
       providerEl.onclick = (e) => {
         e.stopPropagation();
-        if(data.providerId){
-          activeDiscoverFilter = 'provider';
-          currentProviderFilter = data.providerId;
-          renderDiscover();
-          showToast(`Angebote von ${esc(data.providerName || 'Anbieter')}`);
-        }
+        if(data.providerId) showProviderProfilePublic(data.providerId);
       };
       body.appendChild(providerEl);
       
@@ -10524,12 +10519,7 @@
       providerEl.innerHTML = `<i data-lucide="store" style="width:16px;height:16px;"></i> <span>${esc(data.providerName || 'Anbieter')}</span>`;
       providerEl.onclick = (e) => {
         e.stopPropagation();
-        if(data.providerId){
-          activeDiscoverFilter = 'provider';
-          currentProviderFilter = data.providerId;
-          renderDiscover();
-          showToast(`Angebote von ${esc(data.providerName || 'Anbieter')}`);
-        }
+        if(data.providerId) showProviderProfilePublic(data.providerId);
       };
       body.appendChild(providerEl);
     }
@@ -11072,9 +11062,9 @@
         const linkToDish = (firstDish && firstDish.id) ? (baseUrl + '#offer=' + firstDish.id) : baseUrl;
         let shareText;
         if(firstHasAbholnummer){
-          shareText = `🚀 Schau mal! Meine Favoriten heute bei ${providerName}! 🍴 Ich hab mir schon die Abholnummer 🧾 gesichert, dann können wir die Schlange einfach skippen. Kommst du mit? ${linkToDish}`;
+          shareText = `🚀 Schau mal! Meine Mittagsbox heute bei ${providerName}! 🍴 Ich hab mir schon die Abholnummer 🧾 gesichert, dann können wir die Schlange einfach skippen. Kommst du mit? ${linkToDish}`;
         } else {
-          shareText = `😋 Schau mal! Meine Favoriten heute bei ${providerName}! 🍴 Sieht richtig gut aus, oder? Sollen wir uns dort heute treffen & Mittag machen? ${linkToDish}`;
+          shareText = `😋 Schau mal! Meine Mittagsbox heute bei ${providerName}! 🍴 Sieht richtig gut aus, oder? Sollen wir uns dort heute treffen & Mittag machen? ${linkToDish}`;
         }
         const shareTitle = dishName ? `${dishName} – ${providerName} | Mittagio` : 'Mein Mittag – Mittagio';
         const doFallback = () => {
@@ -11480,15 +11470,7 @@
     card.appendChild(pillars);
     
     card.onclick = () => {
-      if(hasOfferToday){
-        activeDiscoverFilter = 'provider';
-        currentProviderFilter = providerData.providerId;
-        renderDiscover();
-        showDiscover();
-        showToast(`Angebote von ${providerData.providerName}`);
-      } else {
-        showToast('Aktuell kein Angebot für heute.');
-      }
+      showProviderProfilePublic(providerData.providerId);
     };
     
     return card;
@@ -12233,7 +12215,7 @@
         // Zu Favoriten hinzufügen
         toggleDishFav(currentMatchOffer.id);
         closeMatchModal();
-        showToast('Gericht zu Favoriten hinzugefügt');
+        showToast('Gericht zur Mittagsbox hinzugefügt');
       }
     };
   }
@@ -14219,7 +14201,7 @@
         headerCard.innerHTML = `
           <div style="flex:1;">
             <div style="font-weight:950; font-size:22px; color:#1a1a1a; letter-spacing:-0.02em; line-height:1.2; margin-bottom:8px;">Willkommen 👋</div>
-            <p style="font-size:14px; color:#64748b; line-height:1.5; margin:0 0 20px;">Melde dich an, um deine Bestellungen und Favoriten zu speichern.</p>
+            <p style="font-size:14px; color:#64748b; line-height:1.5; margin:0 0 20px;">Melde dich an, um deine Bestellungen und die Mittagsbox zu speichern.</p>
             <button class="btn-cust-primary" type="button" id="btnProfileCreateAccount" style="height:48px; font-size:15px;">
               Profil anlegen
             </button>
@@ -17953,7 +17935,7 @@
     const shareUrl = `${location.origin}${location.pathname}#provider/${providerId()}/week`;
     let shareText;
     if(hasAbholnummer){
-      shareText = `📅 Hunger für die ganze Woche geplant? Schau dir unseren neuen Wochenplan an!\n\n📍 ${providerName}\n\n${weekOffers.slice(0, 5).map(o => `🍴 ${o.day}: ${o.dish} - ${euro(o.price)}`).join('\n')}${weekOffers.length > 5 ? `\n... und ${weekOffers.length - 5} weitere Leckereien!` : ''}\n\nJetzt Favoriten planen & Schlange überspringen:\n👉 ${shareUrl}\n\n#mittagio #wochenplan #mittagspause #lecker`;
+      shareText = `📅 Hunger für die ganze Woche geplant? Schau dir unseren neuen Wochenplan an!\n\n📍 ${providerName}\n\n${weekOffers.slice(0, 5).map(o => `🍴 ${o.day}: ${o.dish} - ${euro(o.price)}`).join('\n')}${weekOffers.length > 5 ? `\n... und ${weekOffers.length - 5} weitere Leckereien!` : ''}\n\nJetzt für die Mittagsbox planen & Schlange überspringen:\n👉 ${shareUrl}\n\n#mittagio #wochenplan #mittagspause #lecker`;
     } else {
       shareText = `📅 Hunger für die ganze Woche geplant? Schau dir unseren neuen Wochenplan an!\n\n📍 ${providerName}\n\n${weekOffers.slice(0, 5).map(o => `🍴 ${o.day}: ${o.dish} - ${euro(o.price)}`).join('\n')}${weekOffers.length > 5 ? `\n... und ${weekOffers.length - 5} weitere Leckereien!` : ''}\n\nJetzt online entdecken & entspannt genießen:\n👉 ${shareUrl}\n\n#mittagio #wochenplan #mittagspause #lecker`;
     }
@@ -19679,8 +19661,12 @@
     return out;
   }
 
-  function showPublishFeeModal(offer){
+  var publishFeePendingOffer = null;
+  var publishFeeSuccessCallback = null;
+
+  function showPublishFeeModal(offer, onPublished = null){
     publishFeePendingOffer = offer;
+    publishFeeSuccessCallback = onPublished;
     const bd = document.getElementById('publishFeeBd');
     const sheet = document.getElementById('publishFeeSheet');
     if(bd) bd.classList.add('active');
