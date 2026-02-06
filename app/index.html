@@ -4004,7 +4004,7 @@
     <section class="view customer-view" id="v-fav">
       <header class="cust-header-sticky">
         <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px;">
-          <h1 style="font-size:20px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a; margin:0;">Mittagsbox heute ⚡</h1>
+          <h1 style="font-size:20px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a; margin:0;">Deine Favoriten ⚡</h1>
           <button type="button" id="btnFavShareHeader" aria-label="Teilen" style="width:40px; height:40px; border-radius:12px; background:#f1f3f5; border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#1a1a1a;">
             <i data-lucide="share-2" style="width:20px;height:20px;"></i>
           </button>
@@ -4015,10 +4015,10 @@
         <!-- Empty State -->
         <div id="favEmptyState" style="display:none; flex-direction:column; align-items:center; text-align:center; padding:80px 20px;">
           <div style="width:120px; height:120px; margin-bottom:24px; background:rgba(255,215,0,0.1); border-radius:40px; display:flex; align-items:center; justify-content:center;">
-            <i data-lucide="shopping-basket" style="width:48px; height:48px; color:#1a1a1a;"></i>
+            <i data-lucide="heart" style="width:48px; height:48px; color:#1a1a1a;"></i>
           </div>
-          <h2 style="font-size:22px; font-weight:850; margin:0 0 12px; color:#1a1a1a; letter-spacing:-0.02em;">Deine Mittagsbox ist leer</h2>
-          <p style="font-size:15px; color:#64748b; line-height:1.6; margin-bottom:32px; max-width:280px;">Sichere dir dein Mittagessen! Markiere Gerichte mit ❤️ – sie landen hier in deiner Box.</p>
+          <h2 style="font-size:22px; font-weight:850; margin:0 0 12px; color:#1a1a1a; letter-spacing:-0.02em;">Deine Favoriten sind leer</h2>
+          <p style="font-size:15px; color:#64748b; line-height:1.6; margin-bottom:32px; max-width:280px;">Sichere dir dein Mittagessen! Markiere Gerichte mit ❤️ – sie landen hier bei deinen Favoriten.</p>
           <button class="btn-cust-primary" type="button" onclick="showDiscover();" style="width:100%; max-width:260px; margin:0 auto; background:var(--brand); color:#1a1a1a;">
             <i data-lucide="compass" style="width:20px;height:20px;"></i>
             <span>Jetzt entdecken</span>
@@ -4076,7 +4076,7 @@
     <section class="view customer-view" id="v-cart">
       <header class="cust-header-sticky">
         <div style="display:flex; align-items:center; padding:12px 16px;">
-          <h1 style="font-size:20px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a; margin:0;">Meine Bestellungen</h1>
+          <h1 style="font-size:20px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a; margin:0;">Mittagsbox heute ⚡</h1>
         </div>
       </header>
 
@@ -5710,11 +5710,11 @@
     </button>
     <button class="navbtn" data-go="fav" style="background:none; border:none; padding:8px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; transition:all 0.2s;">
       <i data-lucide="heart" style="width:22px;height:22px;"></i>
-      <span style="font-size:11px; font-weight:700;">Mittagsbox</span>
+      <span style="font-size:11px; font-weight:700;">Favoriten</span>
     </button>
     <button class="navbtn" data-go="cart" id="bottomNavBasketBtn" style="background:none; border:none; padding:8px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; transition:all 0.2s; position:relative;">
       <i data-lucide="shopping-basket" style="width:22px;height:22px;"></i>
-      <span style="font-size:11px; font-weight:700;">Bestellungen</span>
+      <span style="font-size:11px; font-weight:700;">Mittagsbox</span>
       <span id="bottomNavBasketBadge" style="position:absolute; top:4px; right:4px; background:#FFD700; color:#1a1a1a; font-size:10px; font-weight:900; width:16px; height:16px; border-radius:50%; display:none; align-items:center; justify-content:center; border:2px solid #fff;">0</span>
     </button>
     <button class="navbtn" data-go="profile" style="background:none; border:none; padding:8px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; transition:all 0.2s;">
