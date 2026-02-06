@@ -10942,9 +10942,16 @@
     });
     const providerList = Array.from(bestByProvider.values());
 
+    // Alle favorisierten Gerichte anzeigen (nicht nur heute) – heute zuerst sortiert
     const dishList = offers
-      .filter(o => o.active !== false && dishFavs.has(String(o.id)) && o.day === activeFavDay)
-      .sort((a,b)=>String(b.day||'').localeCompare(String(a.day||'')));
+      .filter(o => o.active !== false && dishFavs.has(String(o.id)))
+      .sort((a,b)=>{
+        const aDay = a.day || '';
+        const bDay = b.day || '';
+        if(aDay === activeFavDay && bDay !== activeFavDay) return -1;
+        if(aDay !== activeFavDay && bDay === activeFavDay) return 1;
+        return String(bDay).localeCompare(String(aDay));
+      });
 
     // Empty State: Wenn beide Listen leer sind, zeige zentrierten Empty State
     const hasAnyFavorites = providerList.length > 0 || dishList.length > 0;
