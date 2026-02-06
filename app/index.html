@@ -12729,9 +12729,15 @@
     const providerName = data.providerName || 'Anbieter';
     const dishName = data.dish || 'Gericht';
     const price = euro(data.price);
+    const hasAbholnummer = !!data.hasPickupCode;
     const shareUrl = typeof buildOfferShareUrl === 'function' ? buildOfferShareUrl(o) : (location.origin + (location.pathname || '') + '#offer/' + (o.id || ''));
-    const shareTitle = 'Heute bei uns: ' + dishName + ' für nur ' + price + ' €!';
-    const shareDescription = 'Jetzt schnell die Abholnummer sichern und Schlange überspringen – Mittagio: Zeit gespart mit der Abholnummer.';
+    
+    let shareText;
+    if(hasAbholnummer){
+      shareText = `🚀 Lust auf was Richtiges? Schau mal, was wir heute Leckeres für dich haben!\n\n📍 ${providerName}\n🍴 ${dishName} - ${price}\n\nJetzt Schlange überspringen & Abholnummer sichern:\n👉 ${shareUrl}\n\n#mittagio #lunch #heutebeius`;
+    } else {
+      shareText = `😋 Lust auf was Richtiges? Schau mal, was wir heute Leckeres für dich haben!\n\n📍 ${providerName}\n🍴 ${dishName} - ${price}\n\nDirekt online vorbestellen & Zeit sparen:\n👉 ${shareUrl}\n\n#mittagio #lunch #heutebeius`;
+    }
 
     // Anbieter: Share-Sheet mit WhatsApp, Instagram, Link öffnen
     if(typeof getMode === 'function' && getMode() === 'provider'){
@@ -12739,17 +12745,16 @@
       if(titleEl) titleEl.textContent = 'Teile es mit deinen Kunden';
       const subtitleEl = document.getElementById('shareSheetSubtitle');
       if(subtitleEl) subtitleEl.textContent = 'Per WhatsApp, Instagram oder Link – deine Kunden finden das Gericht sofort.';
-      openShareSheet(shareTitle, shareDescription, shareUrl, 'Per WhatsApp, Instagram oder Link – deine Kunden finden das Gericht sofort.');
+      openShareSheet(dishName, shareText, shareUrl, 'Per WhatsApp, Instagram oder Link – deine Kunden finden das Gericht sofort.');
       if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
       return;
     }
 
     // Kunde: Web Share API (wenn verfügbar) oder Link kopieren
-    const shareText = shareTitle + '\n\n' + shareDescription + '\n\n' + shareUrl;
     if(navigator.share && useWebShare){
       navigator.share({
-        title: shareTitle,
-        text: shareDescription,
+        title: dishName,
+        text: shareText,
         url: shareUrl
       }).then(() => {
         showToast('Geteilt!');
@@ -12827,7 +12832,14 @@
     const profile = normalizeProviderProfile(provider.profile || {});
     const providerName = profile.name || provider.email || 'Anbieter';
     const shareUrl = `${location.origin}${location.pathname}#offer/${offer.id}`;
-    const shareText = `🔥 Heißer Tipp für heute: ${dishName}!\n\n📍 ${providerName}\n💰 Nur ${price}\n\nSchnell sein lohnt sich – jetzt Abholnummer sichern & Warteschlange überspringen:\n👉 ${shareUrl}\n\n#mittagio #foodtip #leckeressen #heute`;
+    const hasAbholnummer = !!data.hasPickupCode;
+    
+    let shareText;
+    if(hasAbholnummer){
+      shareText = `🔥 Heißer Tipp für heute: ${dishName}!\n\n📍 ${providerName}\n💰 Nur ${price}\n\nSchnell sein lohnt sich – jetzt Abholnummer sichern & Warteschlange überspringen:\n👉 ${shareUrl}\n\n#mittagio #foodtip #leckeressen #heute`;
+    } else {
+      shareText = `🔥 Heißer Tipp für heute: ${dishName}!\n\n📍 ${providerName}\n💰 Nur ${price}\n\nDirekt online vorbestellen & Zeit sparen:\n👉 ${shareUrl}\n\n#mittagio #foodtip #leckeressen #heute`;
+    }
     
     if(navigator.share){
       navigator.share({
@@ -17746,6 +17758,7 @@
     const profile = normalizeProviderProfile(provider.profile || {});
     const providerName = profile.name || provider.email || 'Anbieter';
     const mineToday = offers.filter(o => o.providerId === providerId() && o.day === todayKey && o.active !== false);
+    const hasAbholnummer = !!profile.abholnummerEnabledByDefault || mineToday.some(o => o.hasPickupCode);
     
     if(mineToday.length === 0){
       showToast('Keine Gerichte für heute');
@@ -17753,7 +17766,12 @@
     }
     
     const shareUrl = `${location.origin}${location.pathname}#provider/${providerId()}/today`;
-    const shareText = `🚀 Hunger? Schau mal, was wir heute Leckeres für dich haben!\n\n📍 ${providerName}\n\n${mineToday.map(o => `🍴 ${o.dish || o.title || 'Gericht'} - ${euro(o.price || 0)}`).join('\n')}\n\nJetzt Schlange überspringen & Abholnummer sichern:\n👉 ${shareUrl}\n\n#mittagio #lunch #heutebeius`;
+    let shareText;
+    if(hasAbholnummer){
+      shareText = `🚀 Hunger? Schau mal, was wir heute Leckeres für dich haben!\n\n📍 ${providerName}\n\n${mineToday.map(o => `🍴 ${o.dish || o.title || 'Gericht'} - ${euro(o.price || 0)}`).join('\n')}\n\nJetzt Schlange überspringen & Abholnummer sichern:\n👉 ${shareUrl}\n\n#mittagio #lunch #heutebeius`;
+    } else {
+      shareText = `🚀 Hunger? Schau mal, was wir heute Leckeres für dich haben!\n\n📍 ${providerName}\n\n${mineToday.map(o => `🍴 ${o.dish || o.title || 'Gericht'} - ${euro(o.price || 0)}`).join('\n')}\n\nDirekt online vorbestellen & Zeit sparen:\n👉 ${shareUrl}\n\n#mittagio #lunch #heutebeius`;
+    }
     
     if(navigator.share){
       navigator.share({
