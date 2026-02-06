@@ -9155,7 +9155,7 @@
           localStorage.setItem('mittagio_favorites', JSON.stringify(favorites));
           heartIcon.querySelector('span').innerHTML = '❤️🍴';
           heartIcon.querySelector('span').style.color = '#E34D4D';
-          showToast('Zu Favoriten hinzugefügt', 1000);
+          showToast('In die Mittagsbox gelegt', 1000);
         }
       };
     }
@@ -9428,7 +9428,7 @@
         <h2 style="color:#fff; font-size:36px; font-weight:900; margin:0 0 12px; letter-spacing:2px;">Lecker!</h2>
         <p style="color:rgba(255,255,255,0.8); font-size:16px; margin:0 0 24px; line-height:1.5;">${esc(data.dish || 'Gericht')} wurde zu deinen Favoriten hinzugefügt.</p>
         <div style="display:flex; gap:12px; justify-content:center;">
-          <button type="button" onclick="document.getElementById('matchOverlayTinder').remove(); showFav();" style="padding:14px 28px; background:#FFD700; color:#1a1a1a; font-weight:800; font-size:15px; border:none; border-radius:12px; cursor:pointer;">Zu Favoriten</button>
+          <button type="button" onclick="document.getElementById('matchOverlayTinder').remove(); showFav();" style="padding:14px 28px; background:#FFD700; color:#1a1a1a; font-weight:800; font-size:15px; border:none; border-radius:12px; cursor:pointer;">In die Mittagsbox</button>
           <button type="button" onclick="document.getElementById('matchOverlayTinder').remove();" style="padding:14px 28px; background:rgba(255,255,255,0.15); color:#fff; font-weight:700; font-size:15px; border:none; border-radius:12px; cursor:pointer;">Weiter</button>
         </div>
       </div>
