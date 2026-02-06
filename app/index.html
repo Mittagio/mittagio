@@ -4872,21 +4872,21 @@
 
     <!-- Provider-Profil: einheitliches Layout -->
     <section class="view onboarding-view" id="v-provider-profile">
-      <header style="background:#fff; padding:12px 16px; border-bottom:1px solid rgba(0,0,0,0.05); position:sticky; top:0; z-index:50;">
+      <header id="providerProfileHeader" style="background:#fff; padding:12px 16px; border-bottom:1px solid rgba(0,0,0,0.05); position:sticky; top:0; z-index:50;">
         <h1 style="margin:0; font-size:22px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a;">Mein Betrieb</h1>
       </header>
 
       <div style="padding:8px 16px 20px; max-width:500px; margin:0 auto;">
-        <!-- Profile Header -->
-        <div style="background:#fff; border-radius:24px; padding:16px 20px; text-align:center; border:1px solid rgba(0,0,0,0.04); box-shadow:0 4px 16px rgba(0,0,0,0.04); margin-bottom:20px;">
-          <div class="plogo" id="providerProfileLogo" style="width:80px; height:80px; border-radius:28px; margin:0 auto 10px; border:4px solid #fff; box-shadow:0 8px 24px rgba(0,0,0,0.1); background-size:cover; background-position:center; background-color:#f1f3f5;"></div>
-          <h2 id="providerProfileName" style="margin:0 0 6px; font-size:20px; font-weight:950; color:#1a1a1a; letter-spacing:-0.02em;">Betriebsname</h2>
-          <div id="providerProfileBadge" style="display:inline-block; padding:4px 10px; border-radius:99px; background:rgba(16,185,129,0.1); color:#10b981; font-size:12px; font-weight:800;">
-            <i data-lucide="check-circle" style="width:14px;height:14px;display:inline-block;vertical-align:middle;margin-right:4px;"></i> Verifiziert
-          </div>
-        </div>
-
         <div id="providerProfileMain">
+          <!-- Profile Header -->
+          <div style="background:#fff; border-radius:24px; padding:16px 20px; text-align:center; border:1px solid rgba(0,0,0,0.04); box-shadow:0 4px 16px rgba(0,0,0,0.04); margin-bottom:20px;">
+            <div class="plogo" id="providerProfileLogo" style="width:80px; height:80px; border-radius:28px; margin:0 auto 10px; border:4px solid #fff; box-shadow:0 8px 24px rgba(0,0,0,0.1); background-size:cover; background-position:center; background-color:#f1f3f5;"></div>
+            <h2 id="providerProfileName" style="margin:0 0 6px; font-size:20px; font-weight:950; color:#1a1a1a; letter-spacing:-0.02em;">Betriebsname</h2>
+            <div id="providerProfileBadge" style="display:inline-block; padding:4px 10px; border-radius:99px; background:rgba(16,185,129,0.1); color:#10b981; font-size:12px; font-weight:800;">
+              <i data-lucide="check-circle" style="width:14px;height:14px;display:inline-block;vertical-align:middle;margin-right:4px;"></i> Verifiziert
+            </div>
+          </div>
+
           <div style="background:#fff; border-radius:20px; overflow:hidden; border:1px solid rgba(0,0,0,0.04); box-shadow:0 2px 10px rgba(0,0,0,0.04);">
             <button type="button" id="providerProfileRowBusiness" class="provider-profile-row" style="width:100%; display:flex; align-items:center; justify-content:space-between; padding:14px 16px; background:none; border:none; border-bottom:1px solid #f8f9fa; font-size:15px; font-weight:700; color:#1a1a1a; text-align:left; cursor:pointer;">
               <div style="display:flex;align-items:center;gap:10px;"><i data-lucide="building" style="width:18px;height:18px;color:#64748b;"></i><span>Meine Daten</span></div>
@@ -4917,54 +4917,57 @@
 
       <!-- Sub-Seite: Betrieb & Sicherheit -->
       <div id="providerProfileSubBusiness" style="display:none; flex-direction:column; height:100%;">
-        <header style="background:#fff; padding:12px 16px; border-bottom:1px solid rgba(0,0,0,0.05); position:sticky; top:0; z-index:50; display:flex; align-items:center; gap:12px;">
-          <button type="button" id="providerProfileBackBusiness" aria-label="Zurück" style="width:36px; height:36px; border-radius:10px; background:#f8f9fa; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center;">
-            <i data-lucide="chevron-left" style="width:20px; height:20px; color:#1a1a1a;"></i>
+        <header style="background:#fff; padding:24px 20px 20px; border-bottom:1px solid rgba(0,0,0,0.05); position:sticky; top:0; z-index:50; display:flex; align-items:center; gap:16px;">
+          <button type="button" id="providerProfileBackBusiness" aria-label="Zurück" style="width:40px; height:40px; border-radius:12px; background:#f8f9fa; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+            <i data-lucide="chevron-left" style="width:24px; height:24px; color:#1a1a1a;"></i>
           </button>
-          <h1 style="margin:0; font-size:18px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a;">Meine Daten</h1>
+          <h1 style="margin:0; font-size:20px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a;">Meine Daten</h1>
         </header>
 
-        <div style="padding:12px 16px 20px;">
-          <div style="background:#fff; border-radius:20px; padding:16px; border:1px solid rgba(0,0,0,0.04); box-shadow:0 2px 10px rgba(0,0,0,0.04); margin-bottom:20px;">
-            <h3 style="margin:0 0 2px; font-size:16px; font-weight:800; color:#1a1a1a;">Kontaktdaten</h3>
-            <p style="margin:0 0 12px; font-size:13px; color:#64748b;">Werden ins Inserat übernommen.</p>
+        <div style="padding:24px 20px; flex:1; overflow-y:auto;">
+          <div style="background:#fff; border-radius:24px; padding:24px; border:1px solid rgba(0,0,0,0.04); box-shadow:0 4px 12px rgba(0,0,0,0.02); margin-bottom:20px;">
+            <h3 style="margin:0 0 20px; font-size:17px; font-weight:800; color:#1a1a1a;">Kontaktdaten</h3>
             
-            <div style="margin-bottom:10px;">
-              <label style="display:block; font-size:12px; font-weight:700; color:#64748b; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.05em;">Straße & Hausnummer</label>
-              <input type="text" id="providerProfileStreet" placeholder="z.B. Hauptstraße 12" style="width:100%; height:48px; padding:0 12px; border:2px solid #f1f3f5; border-radius:12px; font-size:15px; font-weight:600; background:#f8f9fa; color:#1a1a1a; transition:all 0.2s;">
+            <div style="margin-bottom:16px;">
+              <label style="display:block; font-size:11px; font-weight:700; color:#9ca3af; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.05em;">Straße & Hausnummer</label>
+              <input type="text" id="providerProfileStreet" placeholder="z.B. Hauptstraße 12" style="width:100%; height:52px; padding:0 16px; border:2px solid #f1f3f5; border-radius:14px; font-size:15px; font-weight:700; background:#f8f9fa; color:#1a1a1a; transition:all 0.2s;">
             </div>
-            <div style="display:grid; grid-template-columns:1fr 2fr; gap:10px; margin-bottom:10px;">
+            <div style="display:grid; grid-template-columns:1fr 2fr; gap:12px; margin-bottom:16px;">
               <div>
-                <label style="display:block; font-size:12px; font-weight:700; color:#64748b; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.05em;">PLZ</label>
-                <input type="text" id="providerProfileZip" placeholder="70173" maxlength="10" style="width:100%; height:48px; padding:0 12px; border:2px solid #f1f3f5; border-radius:12px; font-size:15px; font-weight:600; background:#f8f9fa; color:#1a1a1a; transition:all 0.2s;">
+                <label style="display:block; font-size:11px; font-weight:700; color:#9ca3af; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.05em;">PLZ</label>
+                <input type="text" id="providerProfileZip" placeholder="70173" maxlength="10" style="width:100%; height:52px; padding:0 16px; border:2px solid #f1f3f5; border-radius:14px; font-size:15px; font-weight:700; background:#f8f9fa; color:#1a1a1a; transition:all 0.2s;">
               </div>
               <div>
-                <label style="display:block; font-size:12px; font-weight:700; color:#64748b; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.05em;">Ort</label>
-                <input type="text" id="providerProfileCity" placeholder="Stuttgart" style="width:100%; height:48px; padding:0 12px; border:2px solid #f1f3f5; border-radius:12px; font-size:15px; font-weight:600; background:#f8f9fa; color:#1a1a1a; transition:all 0.2s;">
+                <label style="display:block; font-size:11px; font-weight:700; color:#9ca3af; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.05em;">Ort</label>
+                <input type="text" id="providerProfileCity" placeholder="Stuttgart" style="width:100%; height:52px; padding:0 16px; border:2px solid #f1f3f5; border-radius:14px; font-size:15px; font-weight:700; background:#f8f9fa; color:#1a1a1a; transition:all 0.2s;">
               </div>
             </div>
             
-            <div style="margin-bottom:10px;">
-              <label style="display:block; font-size:12px; font-weight:700; color:#64748b; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.05em;">Telefon</label>
-              <input type="tel" id="providerProfilePhone" placeholder="z.B. 07181 12345" style="width:100%; height:48px; padding:0 12px; border:2px solid #f1f3f5; border-radius:12px; font-size:15px; font-weight:600; background:#f8f9fa; color:#1a1a1a; transition:all 0.2s;">
+            <div style="margin-bottom:16px;">
+              <label style="display:block; font-size:11px; font-weight:700; color:#9ca3af; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.05em;">Telefon</label>
+              <input type="tel" id="providerProfilePhone" placeholder="z.B. 07181 12345" style="width:100%; height:52px; padding:0 16px; border:2px solid #f1f3f5; border-radius:14px; font-size:15px; font-weight:700; background:#f8f9fa; color:#1a1a1a; transition:all 0.2s;">
             </div>
             
-            <div style="margin-bottom:10px;">
-              <label style="display:block; font-size:12px; font-weight:700; color:#64748b; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.05em;">E-Mail</label>
-              <input type="email" id="providerProfileEmail" placeholder="geschaeft@betrieb.de" style="width:100%; height:48px; padding:0 12px; border:2px solid #f1f3f5; border-radius:12px; font-size:15px; font-weight:600; background:#f8f9fa; color:#1a1a1a; transition:all 0.2s;">
+            <div style="margin-bottom:16px;">
+              <label style="display:block; font-size:11px; font-weight:700; color:#9ca3af; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.05em;">E-Mail</label>
+              <input type="email" id="providerProfileEmail" placeholder="geschaeft@betrieb.de" style="width:100%; height:52px; padding:0 16px; border:2px solid #f1f3f5; border-radius:14px; font-size:15px; font-weight:700; background:#f8f9fa; color:#1a1a1a; transition:all 0.2s;">
             </div>
             
-            <div>
-              <label style="display:block; font-size:12px; font-weight:700; color:#64748b; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.05em;">Webseite</label>
-              <input type="url" id="providerProfileWebsite" placeholder="https://..." style="width:100%; height:48px; padding:0 12px; border:2px solid #f1f3f5; border-radius:12px; font-size:15px; font-weight:600; background:#f8f9fa; color:#1a1a1a; transition:all 0.2s;">
+            <div style="margin-bottom:24px;">
+              <label style="display:block; font-size:11px; font-weight:700; color:#9ca3af; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.05em;">Webseite</label>
+              <input type="url" id="providerProfileWebsite" placeholder="https://..." style="width:100%; height:52px; padding:0 16px; border:2px solid #f1f3f5; border-radius:14px; font-size:15px; font-weight:700; background:#f8f9fa; color:#1a1a1a; transition:all 0.2s;">
             </div>
+
+            <button type="button" id="btnProviderSaveBusiness" class="btn-primary" style="width:100%; min-height:56px; border-radius:16px; font-size:16px; font-weight:800; background:#FFD700; color:#1a1a1a; border:none; box-shadow:0 4px 12px rgba(255,215,0,0.2);">
+              Daten speichern
+            </button>
           </div>
 
-          <div style="background:#fff; border-radius:20px; padding:16px; border:1px solid rgba(0,0,0,0.04); box-shadow:0 2px 10px rgba(0,0,0,0.04); margin-bottom:20px;">
-            <h3 style="margin:0 0 10px; font-size:16px; font-weight:800; color:#1a1a1a;">Sicherheit</h3>
-            <button type="button" id="btnProviderChangeEmail" style="width:100%; display:flex; justify-content:space-between; align-items:center; padding:12px 16px; background:#f8f9fa; border:2px solid #f1f3f5; border-radius:12px; text-decoration:none; color:#1a1a1a; font-size:15px; font-weight:700; cursor:pointer;">
-              <span>E-Mail & Passwort ändern</span>
-              <i data-lucide="chevron-right" style="width:18px; height:18px; color:#cbd5e1;"></i>
+          <div style="background:#fff; border-radius:24px; padding:24px; border:1px solid rgba(0,0,0,0.04); box-shadow:0 4px 12px rgba(0,0,0,0.02); margin-bottom:20px;">
+            <h3 style="margin:0 0 16px; font-size:17px; font-weight:800; color:#1a1a1a;">Sicherheit</h3>
+            <button type="button" id="btnProviderChangePassword" style="width:100%; display:flex; justify-content:space-between; align-items:center; padding:16px; background:#f8f9fa; border:2px solid #f1f3f5; border-radius:14px; text-decoration:none; color:#1a1a1a; font-size:15px; font-weight:700; cursor:pointer;">
+              <div style="display:flex;align-items:center;gap:12px;"><i data-lucide="lock" style="width:20px;height:20px;color:#64748b;"></i><span>Passwort ändern</span></div>
+              <i data-lucide="chevron-right" style="width:20px; height:20px; color:#cbd5e1;"></i>
             </button>
           </div>
 
@@ -8127,8 +8130,10 @@
   }
   function showProviderProfileSub(subId){
     const main = document.getElementById('providerProfileMain');
+    const header = document.getElementById('providerProfileHeader');
     const subs = ['providerProfileSubBusiness','providerProfileSubService','providerProfileSubPayment','providerProfileSubFaq'];
     if(main) main.style.display = subId ? 'none' : 'block';
+    if(header) header.style.display = subId ? 'none' : 'block';
     var targetId = subId ? 'providerProfileSub' + subId.charAt(0).toUpperCase() + subId.slice(1) : '';
     subs.forEach(function(id){
       var el = document.getElementById(id);
@@ -16815,13 +16820,29 @@
     const profilePhone = document.getElementById('providerProfilePhone');
     const profileEmail = document.getElementById('providerProfileEmail');
     const profileWebsite = document.getElementById('providerProfileWebsite');
-    function saveProfileAddress(){ if(!provider.profile) provider.profile = {}; provider.profile.street = profileStreet ? profileStreet.value.trim() : ''; provider.profile.zip = profileZip ? profileZip.value.trim() : ''; provider.profile.city = profileCity ? profileCity.value.trim() : ''; provider.profile.address = buildAddress(provider.profile); save(LS.provider, provider); showToast('Adresse gespeichert'); }
-    if(profileStreet){ profileStreet.value = p.street || ''; profileStreet.onchange = saveProfileAddress; profileStreet.onblur = saveProfileAddress; }
-    if(profileZip){ profileZip.value = p.zip || ''; profileZip.onchange = saveProfileAddress; profileZip.onblur = saveProfileAddress; }
-    if(profileCity){ profileCity.value = p.city || ''; profileCity.onchange = saveProfileAddress; profileCity.onblur = saveProfileAddress; }
-    if(profilePhone){ profilePhone.value = p.phone || ''; profilePhone.onchange = ()=>{ if(!provider.profile) provider.profile = {}; provider.profile.phone = profilePhone.value; save(LS.provider, provider); showToast('Telefon gespeichert'); }; }
-    if(profileEmail){ profileEmail.value = p.email || ''; profileEmail.onchange = ()=>{ if(!provider.profile) provider.profile = {}; provider.profile.email = profileEmail.value; save(LS.provider, provider); showToast('E-Mail gespeichert'); }; }
-    if(profileWebsite){ profileWebsite.value = p.website || ''; profileWebsite.onchange = ()=>{ if(!provider.profile) provider.profile = {}; provider.profile.website = profileWebsite.value; save(LS.provider, provider); showToast('Internetseite gespeichert'); }; }
+    const btnSaveBusiness = document.getElementById('btnProviderSaveBusiness');
+
+    const saveAllBusinessData = () => {
+      if(!provider.profile) provider.profile = {};
+      provider.profile.street = profileStreet ? profileStreet.value.trim() : (p.street || '');
+      provider.profile.zip = profileZip ? profileZip.value.trim() : (p.zip || '');
+      provider.profile.city = profileCity ? profileCity.value.trim() : (p.city || '');
+      provider.profile.phone = profilePhone ? profilePhone.value.trim() : (p.phone || '');
+      provider.profile.email = profileEmail ? profileEmail.value.trim() : (p.email || '');
+      provider.profile.website = profileWebsite ? profileWebsite.value.trim() : (p.website || '');
+      provider.profile.address = buildAddress(provider.profile);
+      save(LS.provider, provider);
+      showToast('Daten gespeichert');
+      renderProviderProfile(); // UI updaten
+    };
+
+    if(profileStreet) profileStreet.value = p.street || '';
+    if(profileZip) profileZip.value = p.zip || '';
+    if(profileCity) profileCity.value = p.city || '';
+    if(profilePhone) profilePhone.value = p.phone || '';
+    if(profileEmail) profileEmail.value = p.email || '';
+    if(profileWebsite) profileWebsite.value = p.website || '';
+    if(btnSaveBusiness) btnSaveBusiness.onclick = saveAllBusinessData;
     
     // Meine Mittagszeiten: Start/Ende
     const mealStartEl = document.getElementById('providerMealStart');
@@ -16893,8 +16914,8 @@
     // Account: Status 1 aktive Sitzung
     const sessionStatusEl = document.getElementById('providerSessionStatus');
     if(sessionStatusEl) sessionStatusEl.textContent = '1 aktive Sitzung';
-    const btnChangeEmail = document.getElementById('btnProviderChangeEmail');
-    if(btnChangeEmail){ btnChangeEmail.onclick = (e) => { e.preventDefault(); showToast('E-Mail & Passwort ändern: In der App unter Account verfügbar.'); }; }
+    const btnChangePassword = document.getElementById('btnProviderChangePassword');
+    if(btnChangePassword){ btnChangePassword.onclick = (e) => { e.preventDefault(); showToast('Passwort ändern: In der App unter Account verfügbar.'); }; }
     
     // Küchen-Zeiten: Automatischer Ausverkauf
     const autoSelloutTime = document.getElementById('providerAutoSelloutTime');
