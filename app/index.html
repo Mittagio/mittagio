@@ -4282,23 +4282,41 @@
             </div>
           </div>
 
-          <!-- 2. Deine Food History (letzte 2) -->
-          <div style="border-bottom:1px solid #f1f3f5; padding:16px 20px;">
-            <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+          <!-- 2. Meine Foody Historie -->
+          <div style="border-bottom:1px solid #f1f3f5;">
+            <button onclick="toggleProfileSection('profileCollapseHistory', this)" style="width:100%; padding:16px 20px; background:none; border:none; display:flex; align-items:center; gap:12px; cursor:pointer; text-align:left;">
               <i data-lucide="history" style="width:20px;height:20px;color:#64748b;"></i>
-              <span style="font-size:15px; font-weight:700; color:#1a1a1a;">Deine Food History</span>
+              <span style="flex:1; font-size:15px; font-weight:700; color:#1a1a1a;">Meine Foody Historie</span>
+              <i data-lucide="chevron-down" class="chevron" style="width:18px;height:18px;color:#cbd5e1;transition:transform 0.2s;"></i>
+            </button>
+            <div id="profileCollapseHistory" style="display:none; padding:0 20px 20px; background:#fafafa;">
+              <div id="profileOrderHistoryList" style="display:flex; flex-direction:column; gap:8px;">
+                <!-- Dynamisch befüllt -->
+              </div>
+              <button class="btn ghost" id="btnProfileShowAllOrders" style="width:100%; margin-top:12px; height:40px; font-size:13px; font-weight:700; color:#64748b; border:1px solid #f1f3f5; border-radius:10px;">Alle Bestellungen anzeigen</button>
             </div>
-            <div id="profileOrderHistoryList" style="display:flex; flex-direction:column; gap:8px;">
-              <!-- Dynamisch befüllt (letzte 2) -->
-            </div>
-            <button class="btn ghost" id="btnProfileShowAllOrders" style="width:100%; margin-top:12px; height:40px; font-size:13px; font-weight:700; color:#64748b; border:1px solid #f1f3f5; border-radius:10px;">Alle Bestellungen anzeigen</button>
           </div>
 
-          <!-- 3. Deine Lieblinge (Collapsible) -->
+          <!-- 3. Meine Food Profil -->
+          <div style="border-bottom:1px solid #f1f3f5;">
+            <button onclick="toggleProfileSection('profileCollapseFoodProfile', this)" style="width:100%; padding:16px 20px; background:none; border:none; display:flex; align-items:center; gap:12px; cursor:pointer; text-align:left;">
+              <i data-lucide="utensils" style="width:20px;height:20px;color:#64748b;"></i>
+              <span style="flex:1; font-size:15px; font-weight:700; color:#1a1a1a;">Meine Food Profil</span>
+              <i data-lucide="chevron-down" class="chevron" style="width:18px;height:18px;color:#cbd5e1;transition:transform 0.2s;"></i>
+            </button>
+            <div id="profileCollapseFoodProfile" style="display:none; padding:0 20px 20px; background:#fafafa;">
+              <p style="font-size:13px; color:#64748b; margin-bottom:16px;">Bevorzugt anzeigen</p>
+              <div id="profileDietCheckboxes" style="display:flex; flex-direction:column; gap:12px;">
+                <!-- Vegan, Vegetarisch, Mehrweg -->
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. Meine Lieblinge (Collapsible) -->
           <div>
             <button onclick="toggleProfileSection('profileCollapseFavs', this)" style="width:100%; padding:16px 20px; background:none; border:none; display:flex; align-items:center; gap:12px; cursor:pointer; text-align:left;">
               <i data-lucide="heart" style="width:20px;height:20px;color:#ef4444;"></i>
-              <span style="flex:1; font-size:15px; font-weight:700; color:#1a1a1a;">Deine Lieblinge</span>
+              <span style="flex:1; font-size:15px; font-weight:700; color:#1a1a1a;">Meine Lieblinge</span>
               <i data-lucide="chevron-down" class="chevron" style="width:18px;height:18px;color:#cbd5e1;transition:transform 0.2s;"></i>
             </button>
             <div id="profileCollapseFavs" style="display:none; padding:0 20px 20px; background:#fafafa;">
@@ -4306,15 +4324,6 @@
                 <!-- Dynamisch befüllt -->
               </div>
             </div>
-          </div>
-        </div>
-
-        <!-- Dein Food Profil -->
-        <div class="cust-card" style="padding:20px; margin-bottom:0;">
-          <h3 style="margin:0 0 4px; font-size:16px; font-weight:900; color:#1a1a1a;">Dein Food Profil</h3>
-          <p style="font-size:13px; color:#64748b; margin-bottom:16px;">Bevorzugt anzeigen</p>
-          <div id="profileDietCheckboxes" style="display:flex; flex-direction:column; gap:12px;">
-            <!-- Vegan, Vegetarisch, Mehrweg -->
           </div>
         </div>
 
@@ -6696,11 +6705,11 @@
     if(isRemoving){
       dishFavs.delete(sid);
       if(btn && btn.querySelector('i')) btn.querySelector('i').style.fill = 'none';
-      showToast('Aus Mittagsbox entfernt');
+      showToast('Aus Favoriten entfernt');
     } else {
       dishFavs.add(sid);
       if(btn && btn.querySelector('i')) btn.querySelector('i').style.fill = '#E34D4D';
-      showToast('In die Mittagsbox gelegt! ❤️');
+      showToast('Zu Favoriten hinzugefügt! ❤️');
       if(navigator.vibrate) navigator.vibrate(10);
     }
     save(LS.dishFavs, Array.from(dishFavs));
@@ -9051,10 +9060,9 @@
     const hasReuseSupport = offerProvider && (offerProvider.reuseEnabled || offerProvider.reuse || (offerProvider.providerProfile && offerProvider.providerProfile.reuseEnabled));
     const hasDineIn = offerProvider && (offerProvider.dineInPossible !== false || data.dineInPossible);
     
-    // Prüfe ob Gericht bereits favorisiert ist
-    const favorites = JSON.parse(localStorage.getItem('mittagio_favorites') || '[]');
+    // Prüfe ob Gericht bereits favorisiert ist (dishFavs = Quelle für Favoriten-Seite)
     const dishKey = data.id;
-    const isFavorited = favorites.includes(dishKey);
+    const isFavorited = typeof dishFavs !== 'undefined' && dishFavs.has(String(dishKey));
     
     // Mittagessen-Tinder: 3 Säulen als Balken unter dem Anbieter (keine Icons auf dem Bild)
     card.innerHTML = `
@@ -9132,30 +9140,20 @@
       </div>
     `;
     
-    // Herz-Icon Click-Handler
+    // Herz-Icon Click-Handler: toggleFavorite nutzt dishFavs → Gericht erscheint in Favoriten-Seite
     const heartIcon = card.querySelector('.swipe-card-heart-icon');
     if(heartIcon){
       heartIcon.onclick = (e) => {
         e.stopPropagation();
+        e.preventDefault();
         triggerHapticFeedback([10]);
-        const favorites = JSON.parse(localStorage.getItem('mittagio_favorites') || '[]');
-        const dishKey = data.id;
-        
-        if(favorites.includes(dishKey)){
-          // Entfernen
-          const index = favorites.indexOf(dishKey);
-          favorites.splice(index, 1);
-          localStorage.setItem('mittagio_favorites', JSON.stringify(favorites));
-          heartIcon.querySelector('span').innerHTML = '🤍🍴';
-          heartIcon.querySelector('span').style.color = '#999';
-          showToast('Aus Favoriten entfernt', 1000);
-        } else {
-          // Hinzufügen
-          favorites.push(dishKey);
-          localStorage.setItem('mittagio_favorites', JSON.stringify(favorites));
-          heartIcon.querySelector('span').innerHTML = '❤️🍴';
-          heartIcon.querySelector('span').style.color = '#E34D4D';
-          showToast('In die Mittagsbox gelegt', 1000);
+        toggleFavorite(data.id, heartIcon);
+        // Swipe-Karte nutzt span mit Emoji, kein Lucide-i – manuell aktualisieren
+        const span = heartIcon.querySelector('span');
+        if(span){
+          const nowFav = dishFavs.has(String(data.id));
+          span.innerHTML = nowFav ? '❤️' : '🤍';
+          span.style.color = nowFav ? '#E34D4D' : '#999';
         }
       };
     }
@@ -15782,22 +15780,8 @@
 
   // Customer nav handlers - Robuster Event-Delegation-Ansatz
   document.addEventListener('click', function(e){
-    // Prüfe ob Klick innerhalb von customerNav
-    const nav = document.getElementById('customerNav');
-    if(!nav || !nav.contains(e.target)) return;
-    
-    // Finde den Button (auch wenn auf Icon/Text geklickt wurde)
-    let target = e.target;
-    let btn = null;
-    
-    while(target && target !== nav){
-      if(target.tagName === 'BUTTON' && target.classList.contains('navbtn')){
-        btn = target;
-        break;
-      }
-      target = target.parentElement;
-    }
-    
+    // Prüfe ob Klick innerhalb von customerNav (closest funktioniert auch bei pointer-events:none auf Kindern)
+    const btn = e.target.closest('#customerNav button.navbtn');
     if(!btn || !btn.dataset.go) return;
     
     const go = btn.dataset.go;
