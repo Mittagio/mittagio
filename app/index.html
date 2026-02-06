@@ -4354,7 +4354,61 @@
       </div>
     </section>
 
-    <!-- PROVIDER: Login-Seite (E-Mail + Passwort), danach Dashboard oder Onboarding -->
+    <section class="view" id="v-provider-detail-public" style="background:#f8f9fa;">
+      <header class="cust-header-sticky">
+        <div style="display:flex; align-items:center; gap:12px; padding:12px 16px;">
+          <button type="button" onclick="showView('v-discover')" style="width:40px; height:40px; border-radius:12px; background:#fff; border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.05);">
+            <i data-lucide="chevron-left" style="width:24px;height:24px;color:#1a1a1a;"></i>
+          </button>
+          <div style="flex:1; min-width:0;">
+            <h1 id="pubProvName" style="font-size:18px; font-weight:900; color:#1a1a1a; margin:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Anbieter</h1>
+          </div>
+          <button type="button" id="btnToggleFavProvider" style="width:40px; height:40px; border-radius:12px; background:#fff; border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.05);">
+            <i data-lucide="heart" style="width:20px;height:20px;color:#E34D4D;"></i>
+          </button>
+        </div>
+      </header>
+
+      <div style="padding:16px; padding-bottom:120px; display:flex; flex-direction:column; gap:24px;">
+        <!-- Anbieter Info Card -->
+        <div class="cust-card" style="padding:24px; display:flex; flex-direction:column; align-items:center; text-align:center; gap:12px; background:#fff; border:none; box-shadow:0 4px 20px rgba(0,0,0,0.04);">
+          <div style="width:80px; height:80px; border-radius:24px; background:#f1f3f5; display:flex; align-items:center; justify-content:center; font-size:32px; box-shadow:0 8px 24px rgba(0,0,0,0.05);">🏢</div>
+          <div>
+            <h2 id="pubProvTitle" style="margin:0; font-size:22px; font-weight:950; color:#1a1a1a; letter-spacing:-0.02em;">Anbieter Name</h2>
+            <div id="pubProvAddress" style="font-size:14px; color:#64748b; font-weight:600; margin-top:4px;">Straße, PLZ Ort</div>
+          </div>
+          <div style="display:flex; gap:8px; margin-top:8px;">
+            <button onclick="openGoogleMapsRoute(currentPublicProviderId)" style="padding:10px 16px; border-radius:12px; border:none; background:#f8f9fa; font-size:13px; font-weight:700; color:#1a1a1a; display:flex; align-items:center; gap:6px;">
+              <i data-lucide="map-pin" style="width:14px;height:14px;"></i> Route
+            </button>
+            <button id="pubProvShare" style="padding:10px 16px; border-radius:12px; border:none; background:#f8f9fa; font-size:13px; font-weight:700; color:#1a1a1a; display:flex; align-items:center; gap:6px;">
+              <i data-lucide="share-2" style="width:14px;height:14px;"></i> Teilen
+            </button>
+          </div>
+        </div>
+
+        <!-- Tagesessen Sektion -->
+        <div>
+          <h3 style="font-size:15px; font-weight:800; color:#1a1a1a; text-transform:uppercase; letter-spacing:0.05em; margin:0 0 16px; display:flex; align-items:center; gap:8px;">
+            <span>Tagesessen heute</span>
+            <span style="padding:2px 8px; background:var(--brand); border-radius:6px; font-size:11px; color:#1a1a1a;">LIVE</span>
+          </h3>
+          <div id="pubProvTodayOffers" style="display:flex; flex-direction:column; gap:12px;">
+            <!-- Heute Angebote -->
+          </div>
+        </div>
+
+        <!-- Wochenplan Sektion -->
+        <div>
+          <h3 style="font-size:15px; font-weight:800; color:#1a1a1a; text-transform:uppercase; letter-spacing:0.05em; margin:0 0 16px;">Wochenplan</h3>
+          <div id="pubProvWeekPlan" style="display:flex; flex-direction:column; gap:12px;">
+            <!-- Wochenangebote -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROVIDER: Login-Seite -->
     <section class="view" id="v-provider-login">
       <div class="panel">
         <h3>Anbieter-Login</h3>
@@ -5656,11 +5710,11 @@
     </button>
     <button class="navbtn" data-go="fav" style="background:none; border:none; padding:8px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; transition:all 0.2s;">
       <i data-lucide="heart" style="width:22px;height:22px;"></i>
-      <span style="font-size:11px; font-weight:700;">Favoriten</span>
+      <span style="font-size:11px; font-weight:700;">Mittagsbox</span>
     </button>
     <button class="navbtn" data-go="cart" id="bottomNavBasketBtn" style="background:none; border:none; padding:8px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; transition:all 0.2s; position:relative;">
       <i data-lucide="shopping-basket" style="width:22px;height:22px;"></i>
-      <span style="font-size:11px; font-weight:700;">Mittagsbox</span>
+      <span style="font-size:11px; font-weight:700;">Bestellungen</span>
       <span id="bottomNavBasketBadge" style="position:absolute; top:4px; right:4px; background:#FFD700; color:#1a1a1a; font-size:10px; font-weight:900; width:16px; height:16px; border-radius:50%; display:none; align-items:center; justify-content:center; border:2px solid #fff;">0</span>
     </button>
     <button class="navbtn" data-go="profile" style="background:none; border:none; padding:8px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; transition:all 0.2s;">
@@ -11673,15 +11727,15 @@
       const hasDineIn = !!(offerProvider && (offerProvider.dineInPossible !== false));
       
       sThreePillars.innerHTML = `
-        <div class="pillar-badge ${hasDineIn ? 'active' : 'disabled'}">
+        <div class="pillar-badge ${hasDineIn ? 'active' : 'disabled'}" style="${!hasDineIn ? 'opacity:0.3; filter:grayscale(1);' : ''}">
           <div class="pillar-icon-circle">🍴</div>
           <div class="pillar-label">Vor Ort</div>
         </div>
-        <div class="pillar-badge ${orderingEnabled ? 'active yellow' : 'disabled'}">
+        <div class="pillar-badge ${orderingEnabled ? 'active yellow' : 'disabled'}" style="${!orderingEnabled ? 'opacity:0.3; filter:grayscale(1);' : ''}">
           <div class="pillar-icon-circle">🧾</div>
           <div class="pillar-label">Abhol-Nr.</div>
         </div>
-        <div class="pillar-badge ${hasReuse ? 'active green' : 'disabled'}">
+        <div class="pillar-badge ${hasReuse ? 'active green' : 'disabled'}" style="${!hasReuse ? 'opacity:0.3; filter:grayscale(1);' : ''}">
           <div class="pillar-icon-circle">🔄</div>
           <div class="pillar-label">Mehrweg</div>
         </div>
