@@ -8823,9 +8823,9 @@
       if(useDecisionTiles){
         // ... grid code ...
       } else {
-        // Slim List Cards (Herz → Favoriten via toggleDishFav/dishFavs)
+        // Modern List Cards
         list.forEach(o=> {
-          const card = createDiscoverListCard(o);
+          const card = createModernOfferCard(o);
           offersEl.appendChild(card);
         });
       }
