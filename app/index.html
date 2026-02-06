@@ -6787,7 +6787,18 @@
     try {
       localStorage.setItem(LS.orders, JSON.stringify(ordersList || []));
     } catch(e){
-      console.error('Error saving orders:', e);
+      if(e.name === 'QuotaExceededError'){
+        // Bei Speicherüberlauf: nur letzte 200 Bestellungen behalten
+        const trimmed = (ordersList || []).slice(-200);
+        try {
+          localStorage.setItem(LS.orders, JSON.stringify(trimmed));
+          console.warn('Orders trimmed to last 200 due to storage quota.');
+        } catch(e2){
+          console.error('Error saving orders (trimmed):', e2);
+        }
+      } else {
+        console.error('Error saving orders:', e);
+      }
     }
   }
   
@@ -7353,9 +7364,8 @@
     cookbook = [...existingCookbook, ...newCookbook];
     save(LS.cookbook, cookbook);
 
-    const existingOrders = loadOrders();
-    const allOrders = [...existingOrders, ...newOrders];
-    saveOrders(allOrders);
+    // Ersetze Bestellungen für Demo (kein Anhängen – vermeidet QuotaExceededError)
+    saveOrders(newOrders);
 
     console.log(`✅ Beispieldaten erstellt: ${providerNames.length} Anbieter, ${newCookbook.length} Kochbuch-Einträge, ${newOffers.length} Inserate, ${newOrders.length} Bestellungen`);
     return {providers: providerNames.length, cookbook: newCookbook.length, offers: newOffers.length, orders: newOrders.length};
