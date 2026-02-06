@@ -6170,7 +6170,7 @@
         <div class="w-q" id="wQ">…</div>
         <p class="w-help" id="wHelp"></p>
         <div id="wContent"></div>
-        <div class="wizard-footer" id="wizardFooter" style="text-align:center; padding:24px 0 12px; font-size:10px; font-weight:700; color:#9ca3af; text-transform:uppercase; letter-spacing:0.03em; opacity:0.6;">Standort: Schorndorf (Zentrum)</div>
+        <div class="wizard-footer" id="wizardFooter" style="display:none;"></div>
       </div>
       <div class="w-actions">
         <button class="btn secondary" type="button" id="wBack">Zurück</button>
@@ -16326,8 +16326,12 @@
     const providerEntries = dayEntries
       .map((entry, idx)=>({entry, idx}))
       .filter(x=>x.entry.providerId===providerId());
+    
+    // Prüfen ob dieser Tag bereits in 'offers' existiert (LIVE)
+    const liveOffers = offers.filter(o => o.providerId === providerId() && o.day === weekPlanDay);
+    const isLive = liveOffers.length > 0;
 
-    if(!providerEntries.length){
+    if(!providerEntries.length && !isLive){
       list.innerHTML = `
         <div style="font-weight:600; font-size:16px; margin-bottom:8px;">Keine Inserate geplant</div>
         <div class="hint" style="font-size:14px; line-height:1.4; margin-bottom:16px; color:var(--muted);">
@@ -16353,77 +16357,121 @@
     if(btnWeekPdf) btnWeekPdf.style.display = 'block';
     
     list.innerHTML = '';
-    providerEntries.forEach(({entry, idx})=>{
+    
+    // Status Header
+    const statusHeader = document.createElement('div');
+    statusHeader.style.cssText = 'display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; padding:12px; background:#f8f9fa; border-radius:14px;';
+    if(isLive){
+      statusHeader.innerHTML = `
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="width:10px; height:10px; border-radius:50%; background:#10b981;"></span>
+          <span style="font-weight:700; font-size:14px; color:#10b981;">ONLINE</span>
+        </div>
+        <button class="btn secondary" style="min-height:32px; padding:0 12px; font-size:12px;" onclick="shareWeekPlan()">Wochenplan teilen</button>
+      `;
+    } else {
+      statusHeader.innerHTML = `
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="width:10px; height:10px; border-radius:50%; background:#9ca3af;"></span>
+          <span style="font-weight:700; font-size:14px; color:#64748b;">ENTWURF (noch nicht live)</span>
+        </div>
+        <button id="btnActivateDay" class="btn-primary" style="min-height:40px; padding:0 16px; font-size:13px; background:#1a1a1a; color:#fff; border-radius:10px;">Jetzt für 4,99 € aktivieren</button>
+      `;
+      setTimeout(() => {
+        const btn = document.getElementById('btnActivateDay');
+        if(btn) btn.onclick = () => activateWeekDay(weekPlanDay);
+      }, 0);
+    }
+    list.appendChild(statusHeader);
+
+    const itemsToShow = isLive ? liveOffers : providerEntries.map(x => x.entry);
+
+    itemsToShow.forEach((entry, idx)=>{
       const cb = cookbook.find(c => String(c.id) === String(entry.cookbookId));
       const name = cb?.dish || entry.dish || 'Gericht';
-      const price = cb?.price || 0;
+      const price = cb?.price || entry.price || 0;
       const isActive = entry.active !== false;
 
       const item = document.createElement('div');
       item.className = 'cookbook-item';
+      item.style.marginBottom = '12px';
       item.innerHTML = `
-        <div style="font-weight:900">${esc(name)}</div>
-        <div class="hint">${euro(price)} - ${isActive ? 'Aktiv' : 'Inaktiv'}</div>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <div style="font-weight:900; font-size:16px;">${esc(name)}</div>
+            <div class="hint" style="font-size:13px;">${euro(price)} ${isLive ? '· Online' : '· Geplant'}</div>
+          </div>
+          ${!isLive ? `
+            <button class="btn secondary" style="width:36px; height:36px; padding:0; display:flex; align-items:center; justify-content:center; border-radius:10px;" onclick="deletePlannedEntry('${weekPlanDay}', ${idx})">
+              <i data-lucide="trash-2" style="width:18px; height:18px; color:#ef4444;"></i>
+            </button>
+          ` : ''}
+        </div>
       `;
-
-      const actions = document.createElement('div');
-      actions.className = 'cookbook-actions';
-
-      const edit = document.createElement('button');
-      edit.type='button';
-      edit.className='ans';
-      edit.textContent='Bearbeiten';
-      edit.onclick=()=>{ if(entry.cookbookId) startWizard('cookbook', {editId: entry.cookbookId}); };
-
-      const toggle = document.createElement('button');
-      toggle.type='button';
-      toggle.className='ans';
-      toggle.textContent = isActive ? 'Deaktivieren' : 'Aktivieren';
-      toggle.onclick=()=>{
-        const updated = (week[weekPlanDay]||[]).map((x,i)=> i===idx ? {...x, active: !(x.active !== false)} : x);
-        if(updated.length) week[weekPlanDay]=updated; else delete week[weekPlanDay];
-        save(LS.week, week);
-        renderWeekPlan();
-        renderProviderWeekPreview();
-      };
-
-      const share = document.createElement('button');
-      share.type='button';
-      share.className='ans';
-      share.textContent='Teilen';
-      share.onclick=()=>{ shareOffer({dish:name, price}); };
-
-      const print = document.createElement('button');
-      print.type='button';
-      print.className='ans';
-      print.textContent='Drucken';
-      print.onclick=()=>{
-        const profile = normalizeProviderProfile(provider.profile || {});
-        const offer = normalizeOffer({
-          providerId: providerId(),
-          providerName: profile.name || provider.email || 'Anbieter',
-          providerStreet: profile.street||'',
-          providerZip: profile.zip||'',
-          providerCity: profile.city||'',
-          providerLogoData: profile.logoData||'',
-          dish: name,
-          category: cb?.category || 'Vegetarisch',
-          price: Number(price||0),
-          pickupWindow: profile.mealWindow || DEFAULT_MEAL_WINDOW,
-          hasPickupCode: !!cb?.hasPickupCode,
-          dineInPossible: !!cb?.dineInPossible,
-          imageUrl: cb?.photoData || ''
-        });
-        printOffer(offer);
-      };
-
-      actions.appendChild(edit);
-      actions.appendChild(toggle);
-      actions.appendChild(share);
-      actions.appendChild(print);
-      item.appendChild(actions);
       list.appendChild(item);
     });
+
+    if(!isLive){
+      const addMore = document.createElement('button');
+      addMore.className = 'btn secondary';
+      addMore.style.cssText = 'width:100%; margin-top:12px; border:2px dashed #e5e7eb; background:none;';
+      addMore.innerHTML = '+ Weiteres Gericht für diesen Tag planen';
+      addMore.onclick = () => {
+        createFlowPreselectedDate = weekPlanDay;
+        openCreateFlowSheet();
+      };
+      list.appendChild(addMore);
+    }
+    
+    if(typeof lucide !== 'undefined') lucide.createIcons();
+  }
+
+  function deletePlannedEntry(date, index){
+    if(!confirm('Gericht aus der Planung entfernen?')) return;
+    if(week[date]){
+      week[date].splice(index, 1);
+      if(week[date].length === 0) delete week[date];
+      save(LS.week, week);
+      renderWeekPlan();
+      renderProviderWeekPreview();
+    }
+  }
+
+  function activateWeekDay(date){
+    const entries = (week[date] || []).filter(e => e.providerId === providerId());
+    if(!entries.length) return;
+    
+    // Simulierter Bezahlvorgang -> Erfolgsschritt zeigen
+    showPublishFeeModal(entries[0]); // Nutze das erste Gericht für die Vorschau im Modal
+    
+    // Nach Bestätigung im Modal werden die Einträge in 'offers' übernommen
+    // Wir überschreiben das Onclick vom Modal-Button für diesen Spezialfall
+    const confirmBtn = document.getElementById('btnPublishConfirm');
+    if(confirmBtn){
+      const oldClick = confirmBtn.onclick;
+      confirmBtn.onclick = () => {
+        // Entries nach 'offers' schieben
+        entries.forEach(e => {
+          const newOffer = {
+            ...normalizeOffer(e),
+            id: 'off_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+            active: true,
+            day: date
+          };
+          offers.push(newOffer);
+        });
+        save(LS.offers, offers);
+        
+        // Aus 'week' entfernen oder als 'published' markieren? 
+        // Für den MVP: In 'week' lassen, aber renderWeekPlan erkennt nun 'isLive'
+        
+        closePublishFeeModal();
+        showInseratSuccessSheet();
+        renderWeekPlan();
+        renderProviderHome();
+      };
+    }
+  }
   }
 
   function pickupCodeCount(dish){
@@ -18648,7 +18696,12 @@
   // --- Listing wizard (Punkt 6 final) ---
   function updateListingPreviewContent(target){
     target.innerHTML = '';
-    target.appendChild(offerCard(previewOfferFromWizard(), {interactive:false, previewFromWizard:true}));
+    const offer = previewOfferFromWizard();
+    // Entfernung/Entfernung-Emoji für Anbieter-Vorschau entfernen (er weiß wo er ist)
+    const card = offerCard(offer, {interactive:false, previewFromWizard:true});
+    const distanceInfo = card.querySelector('.listing-distance-info');
+    if(distanceInfo) distanceInfo.remove();
+    target.appendChild(card);
   }
 
   function attachListingPreview(box){
@@ -18674,6 +18727,19 @@
   // ============================================================
   function buildListingStep(){
     setWizardNextDefault();
+    if(wBackBtn){
+      wBackBtn.onclick = () => {
+        if(w.step === 0) { closeWizard(); return; }
+        // Wenn wir in Schritt 2 sind und Schritt 1 übersprungen haben, zurück zu 0
+        const profile = normalizeProviderProfile(provider.profile || {});
+        if(w.step === 2 && profile.name && (profile.reuseEnabledByDefault !== undefined)) {
+          w.step = 0;
+        } else {
+          w.step -= 1;
+        }
+        rebuildWizard();
+      };
+    }
     if(wNextBtn) wNextBtn.style.display = ''; // Weiter-Button sichtbar (Schritt 4 blendet ihn aus)
     const total = 4;
     setWizardHeader('', `Schritt ${Math.min(w.step+1,total)} von ${total}`);
@@ -18712,7 +18778,29 @@
           suggestWrap.appendChild(b);
         });
       }
-      input.oninput=()=>{ w.data.dish=input.value; saveDraft(); fillSuggestions(); };
+      input.oninput=()=>{ 
+        w.data.dish=input.value; 
+        saveDraft(); 
+        fillSuggestions(); 
+        // Automatischer Bild-Vorschlag (KI-Bild)
+        if(!w.data.photoData || w.data.photoDataIsStandard){
+          const imgs = typeof getDishImagesForName==='function' ? getDishImagesForName(w.data.dish) : [];
+          if(imgs.length > 0){
+            w.data.photoData = imgs[0];
+            w.data.photoDataIsStandard = true;
+            // Wir rendern nicht den ganzen Wizard neu um den Fokus nicht zu verlieren,
+            // aber wir aktualisieren die Bild-Vorschau falls vorhanden
+            const imgPreview = box.querySelector('.wizard-img-preview-container');
+            if(imgPreview){
+              imgPreview.style.display = 'block';
+              imgPreview.querySelector('img').src = w.data.photoData;
+            } else {
+              // Wenn noch keine Vorschau da war, doch rebuild
+              rebuildWizard();
+            }
+          }
+        }
+      };
       input.onfocus=fillSuggestions;
       box.appendChild(input);
       box.appendChild(suggestWrap);
@@ -18846,12 +18934,27 @@
 
       setWizardContent(box);
       setWizardNext('Weiter');
+      if(wNextBtn) {
+        wNextBtn.onclick = () => {
+          // Wenn Profil bereits vollständig (Mehrweg/Vorort gesetzt), überspringe Schritt 2
+          const profile = normalizeProviderProfile(provider.profile || {});
+          if (profile.name && (profile.reuseEnabledByDefault !== undefined)) {
+             w.step = 2; // Direkt zu Schritt 3 (Zusammenfassung)
+          } else {
+             w.step++;
+          }
+          rebuildWizard();
+        };
+      }
       if(wBackBtn) wBackBtn.textContent='Zurück';
       return;
     }
 
     // Schritt 2: Service & Details – Vor Ort, Mehrweg (Pills 3€/5€/Sonstiges), Allergene (Toggle+Pills), Extras (Pills+Preisfeld)
     if(w.step===1){
+      // Wenn bereits Onboarding durchlaufen (Profil-Werte vorhanden), diesen Schritt optional machen oder überspringen
+      // Wir zeigen ihn trotzdem, aber leiten direkt zu Schritt 3 weiter wenn gewünscht.
+      // Vorschlag: Wir lassen ihn da, aber machen ihn super schnell.
       setWizardQuestion('Service & Details', '');
       const box=document.createElement('div');
       const saveDraft = () => { localStorage.setItem('wizard_draft', JSON.stringify(w)); };
