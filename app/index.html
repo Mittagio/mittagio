@@ -17119,12 +17119,45 @@
   function renderBilling(){
     const listEl = document.getElementById('billingList');
     const emptyEl = document.getElementById('billingListEmpty');
+    const todayListEl = document.getElementById('billingTodayList');
+    const todayEmptyEl = document.getElementById('billingTodayEmpty');
+    const todayRevenueEl = document.getElementById('billingTodayRevenue');
     const btnZahlungsmittel = document.getElementById('btnBillingZahlungsmittel');
+    
     if(btnZahlungsmittel) btnZahlungsmittel.onclick = function(){ showToast('Zahlungsmittel ändern (Demo – später Stripe/Backend).'); };
     if(!listEl) return;
 
+    const pid = typeof providerId === 'function' ? providerId() : '';
+    const todayKey = typeof isoDate === 'function' ? isoDate(new Date()) : new Date().toISOString().slice(0,10);
+    
+    // 1. Tagesabrechnungen befüllen
+    const ordersAll = typeof loadOrders === 'function' ? loadOrders() : [];
+    const myTodayOrders = ordersAll.filter(o => o.providerId === pid && o.orderDate === todayKey && (o.status === 'PAID' || o.status === 'PICKED_UP'));
+    const totalToday = myTodayOrders.reduce((sum, o) => sum + (o.totalPrice || 0), 0);
+    
+    if(todayRevenueEl) todayRevenueEl.textContent = totalToday.toFixed(2).replace('.', ',') + ' €';
+    
+    if(todayListEl){
+      if(myTodayOrders.length === 0){
+        todayListEl.style.display = 'none';
+        if(todayEmptyEl) todayEmptyEl.style.display = 'block';
+      } else {
+        todayListEl.style.display = 'flex';
+        if(todayEmptyEl) todayEmptyEl.style.display = 'none';
+        todayListEl.innerHTML = myTodayOrders.map(o => `
+          <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 0; border-bottom:1px solid rgba(0,0,0,0.04);">
+            <div>
+              <div style="font-weight:700; color:#1a1a1a;">${esc(o.dishName || 'Gericht')}</div>
+              <div style="font-size:12px; color:#64748b;">${esc(o.pickupTime || 'Heute')} · #${esc(o.id.slice(-4))}</div>
+            </div>
+            <div style="font-weight:800; color:#16a34a;">+${(o.totalPrice || 0).toFixed(2).replace('.', ',')} €</div>
+          </div>
+        `).join('');
+      }
+    }
+
+    // 2. Historische Abrechnungen befüllen
     var txs = typeof loadTransactions === 'function' ? loadTransactions() : [];
-    var pid = typeof providerId === 'function' ? providerId() : '';
     var myTxs = txs.filter(function(t){ return t.vendor_id === pid; });
     myTxs.sort(function(a,b){ return (new Date(b.timestamp)) - (new Date(a.timestamp)); });
 
