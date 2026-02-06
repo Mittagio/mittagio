@@ -4235,7 +4235,7 @@
     <section class="view customer-view" id="v-profile">
       <header class="cust-header-sticky">
         <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px;">
-          <h1 style="font-size:20px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a; margin:0;">Profil & Einstellungen</h1>
+          <h1 style="font-size:20px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a; margin:0;">Meins</h1>
           <button type="button" onclick="showView('v-discover')" style="width:40px; height:40px; border-radius:12px; background:#f1f3f5; border:none; display:flex; align-items:center; justify-content:center; cursor:pointer;">
             <i data-lucide="x" style="width:20px;height:20px;color:#1a1a1a;"></i>
           </button>
@@ -4244,7 +4244,7 @@
 
       <div style="padding:16px; padding-bottom:120px; display:flex; flex-direction:column; gap:16px;">
         <!-- Identität -->
-        <div class="cust-card" id="profileHeaderCard" style="padding:24px; flex-direction:row; align-items:center; gap:16px; margin-bottom:0;">
+        <div class="cust-card" id="profileHeaderCard" style="padding:24px; flex-direction:row; align-items:center; gap:16px; margin-bottom:0; background:none; border:none; box-shadow:none;">
           <!-- Wird dynamisch befüllt (Avatar, Name, E-Mail) -->
         </div>
 
@@ -4262,7 +4262,7 @@
           
           <!-- 1. Meine Daten (Collapsible) -->
           <div style="border-bottom:1px solid #f1f3f5;">
-            <button onclick="const el = document.getElementById('profileCollapseData'); el.style.display = el.style.display === 'none' ? 'block' : 'none'; this.querySelector('.chevron').style.transform = el.style.display === 'none' ? 'rotate(0deg)' : 'rotate(180deg)';" style="width:100%; padding:16px 20px; background:none; border:none; display:flex; align-items:center; gap:12px; cursor:pointer; text-align:left;">
+            <button onclick="toggleProfileSection('profileCollapseData', this)" style="width:100%; padding:16px 20px; background:none; border:none; display:flex; align-items:center; gap:12px; cursor:pointer; text-align:left;">
               <i data-lucide="user" style="width:20px;height:20px;color:#64748b;"></i>
               <span style="flex:1; font-size:15px; font-weight:700; color:#1a1a1a;">Meine Daten</span>
               <i data-lucide="chevron-down" class="chevron" style="width:18px;height:18px;color:#cbd5e1;transition:transform 0.2s;"></i>
@@ -4282,9 +4282,21 @@
             </div>
           </div>
 
-          <!-- 2. Deine Lieblinge (Anbieter) -->
-          <div style="border-bottom:1px solid #f1f3f5;">
-            <button onclick="const el = document.getElementById('profileCollapseFavs'); el.style.display = el.style.display === 'none' ? 'block' : 'none'; this.querySelector('.chevron').style.transform = el.style.display === 'none' ? 'rotate(0deg)' : 'rotate(180deg)';" style="width:100%; padding:16px 20px; background:none; border:none; display:flex; align-items:center; gap:12px; cursor:pointer; text-align:left;">
+          <!-- 2. Deine Food History (letzte 2) -->
+          <div style="border-bottom:1px solid #f1f3f5; padding:16px 20px;">
+            <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+              <i data-lucide="history" style="width:20px;height:20px;color:#64748b;"></i>
+              <span style="font-size:15px; font-weight:700; color:#1a1a1a;">Deine Food History</span>
+            </div>
+            <div id="profileOrderHistoryList" style="display:flex; flex-direction:column; gap:8px;">
+              <!-- Dynamisch befüllt (letzte 2) -->
+            </div>
+            <button class="btn ghost" id="btnProfileShowAllOrders" style="width:100%; margin-top:12px; height:40px; font-size:13px; font-weight:700; color:#64748b; border:1px solid #f1f3f5; border-radius:10px;">Alle Bestellungen anzeigen</button>
+          </div>
+
+          <!-- 3. Deine Lieblinge (Collapsible) -->
+          <div>
+            <button onclick="toggleProfileSection('profileCollapseFavs', this)" style="width:100%; padding:16px 20px; background:none; border:none; display:flex; align-items:center; gap:12px; cursor:pointer; text-align:left;">
               <i data-lucide="heart" style="width:20px;height:20px;color:#ef4444;"></i>
               <span style="flex:1; font-size:15px; font-weight:700; color:#1a1a1a;">Deine Lieblinge</span>
               <i data-lucide="chevron-down" class="chevron" style="width:18px;height:18px;color:#cbd5e1;transition:transform 0.2s;"></i>
@@ -4295,26 +4307,14 @@
               </div>
             </div>
           </div>
-
-          <!-- 3. Deine Food History (letzte 2) -->
-          <div style="padding:16px 20px;">
-            <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
-              <i data-lucide="history" style="width:20px;height:20px;color:#64748b;"></i>
-              <span style="font-size:15px; font-weight:700; color:#1a1a1a;">Deine Food History</span>
-            </div>
-            <div id="profileOrderHistoryList" style="display:flex; flex-direction:column; gap:8px;">
-              <!-- Dynamisch befüllt (letzte 2) -->
-            </div>
-            <button class="btn ghost" id="btnProfileShowAllOrders" style="width:100%; margin-top:12px; height:40px; font-size:13px; font-weight:700; color:#64748b; border:1px solid #f1f3f5; border-radius:10px;">Alle Bestellungen anzeigen</button>
-          </div>
         </div>
 
-        <!-- Ernährungs-Präferenzen -->
+        <!-- Dein Food Profil -->
         <div class="cust-card" style="padding:20px; margin-bottom:0;">
           <h3 style="margin:0 0 4px; font-size:16px; font-weight:900; color:#1a1a1a;">Dein Food Profil</h3>
           <p style="font-size:13px; color:#64748b; margin-bottom:16px;">Bevorzugt anzeigen</p>
           <div id="profileDietCheckboxes" style="display:flex; flex-direction:column; gap:12px;">
-            <!-- Wird dynamisch befüllt (Vegan, Vegetarisch, Mehrweg) -->
+            <!-- Vegan, Vegetarisch, Mehrweg -->
           </div>
         </div>
 
@@ -4324,13 +4324,14 @@
           <div id="profileTopFaq" style="display:flex; flex-direction:column; gap:12px;">
             <!-- Wird dynamisch befüllt (3 wichtigste FAQ) -->
           </div>
-          <button onclick="showLegalPage('support');" style="width:100%; margin-top:16px; padding:12px; background:none; border:none; color:#94a3b8; font-size:14px; font-weight:700; cursor:pointer; text-decoration:underline;">
-            Weitere Fragen
+          <button onclick="showLegalPage('support');" style="width:100%; margin-top:16px; height:48px; background:#f1f3f5; border:none; border-radius:12px; color:#64748b; font-size:14px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">
+            <span>Weitere Fragen</span>
+            <i data-lucide="chevron-right" style="width:16px;height:16px;"></i>
           </button>
         </div>
 
         <!-- Anbieter Wechsel -->
-        <div class="cust-card" style="padding:24px; background:linear-gradient(135deg, #FFD700 0%, #FFCC00 100%); border:none; box-shadow:0 8px 32px rgba(255,215,0,0.25);">
+        <div class="cust-card" style="padding:24px; background:var(--brand); border:none; box-shadow:0 8px 32px rgba(255,215,0,0.25);">
           <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
             <div style="width:44px; height:44px; border-radius:14px; background:rgba(255,255,255,0.4); display:flex; align-items:center; justify-content:center; font-size:24px;">🏢</div>
             <div style="font-weight:900; font-size:18px; color:#1a1a1a; letter-spacing:-0.02em;">Anbieter-Portal</div>
@@ -4348,7 +4349,7 @@
             <button onclick="showLegalPage('datenschutz')" style="background:none; border:none; font-size:13px; font-weight:800; color:#1a1a1a; cursor:pointer; text-transform:uppercase; letter-spacing:0.05em;">DATENSCHUTZ</button>
             <button onclick="showLegalPage('impressum')" style="background:none; border:none; font-size:13px; font-weight:800; color:#1a1a1a; cursor:pointer; text-transform:uppercase; letter-spacing:0.05em;">IMPRESSUM</button>
           </div>
-          <div style="font-size:11px; color:#cbd5e1; font-weight:700; letter-spacing:0.02em;">mittagio v1.0.x • made with ❤️</div>
+          <div style="font-size:11px; color:#cbd5e1; font-weight:700; letter-spacing:0.02em;">mittagio • made with ❤️ in Rudersberg</div>
         </div>
       </div>
     </section>
@@ -14029,9 +14030,12 @@
           </div>
           <div style="flex:1; min-width:0;">
             <div style="font-weight:950; font-size:22px; color:#1a1a1a; letter-spacing:-0.02em; line-height:1.2;">Hallo ${esc(firstName || 'Kunde')} 👋</div>
-            <div style="font-size:14px; font-weight:600; color:#64748b; margin-top:2px;">${esc(customer.email || 'Persönlicher Bereich')}</div>
+            <div style="font-size:14px; font-weight:600; color:#64748b; margin-top:2px;">Persönlicher Bereich</div>
           </div>
         `;
+        // E-Mail in "Meine Daten" anzeigen
+        const emailDisp = document.getElementById('profileDisplayEmail');
+        if(emailDisp) emailDisp.textContent = customer.email || '-';
       } else {
         headerCard.innerHTML = `
           <div style="flex:1;">
@@ -14047,27 +14051,11 @@
       }
     }
     
-    // Viralitäts-Badge
-    const MINUTES_PER_ORDER = 5;
-    const allOrders = loadOrders();
-    const completedOrders = Array.isArray(allOrders) ? allOrders.filter(o => o.status === 'PAID' || o.status === 'PICKED_UP' || o.status === 'COMPLETED') : [];
-    const minutesSaved = completedOrders.length * MINUTES_PER_ORDER;
-    const minutesSavedSection = document.getElementById('profileMinutesSavedSection');
-    const minutesSavedCountEl = document.getElementById('profileMinutesSavedCount');
-    
-    if(minutesSavedSection && minutesSavedCountEl){
-      if(minutesSaved > 0){
-        minutesSavedSection.style.display = 'block';
-        minutesSavedCountEl.textContent = String(minutesSaved);
-      } else {
-        minutesSavedSection.style.display = 'none';
-      }
-    }
-
     // Aktive Tickets
     const abholnummerSection = document.getElementById('profileAbholnummerSection');
     const abholnummerList = document.getElementById('profileActiveAbholnummernList');
     const today = isoDate(new Date());
+    const allOrders = loadOrders();
     const activeAbholnummern = allOrders.filter(o => o.status === 'PAID' && o.pickupDate === today && !o.pickupCodeActivatedAt);
 
     if(abholnummerSection && abholnummerList){
@@ -14091,17 +14079,17 @@
       }
     }
 
-    // Historie
+    // Historie (letzte 2)
     const orderHistoryEl = document.getElementById('profileOrderHistoryList');
     if(orderHistoryEl){
       const sorted = (allOrders || []).slice().sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
       if(sorted.length === 0){
-        orderHistoryEl.innerHTML = '<p style="margin:0; color:#64748b; font-size:14px;">Noch keine Bestellungen.</p>';
+        orderHistoryEl.innerHTML = '<p style="margin:0; color:#64748b; font-size:14px; text-align:center; padding:10px 0;">Noch keine Bestellungen.</p>';
       } else {
-        const first = sorted.slice(0, 3);
-        orderHistoryEl.innerHTML = first.map(o => `
+        const firstTwo = sorted.slice(0, 2);
+        orderHistoryEl.innerHTML = firstTwo.map(o => `
           <div class="profile-order-item" onclick="showOrderDetail('${o.id}')" style="padding:12px 0; border-bottom:1px solid #f1f3f5; display:flex; align-items:center; gap:12px; cursor:pointer;">
-            <div style="width:44px; height:44px; border-radius:10px; background:#f8f9fa; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:20px;">🍽️</div>
+            <div style="width:40px; height:40px; border-radius:10px; background:#f8f9fa; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:18px;">🍽️</div>
             <div style="flex:1; min-width:0;">
               <div style="font-weight:700; font-size:14px; color:#1a1a1a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${esc(o.dishName || 'Gericht')}</div>
               <div style="font-size:12px; color:#64748b;">${esc(o.providerName || 'Anbieter')} • ${o.pickupDate || ''}</div>
@@ -14112,47 +14100,59 @@
       }
     }
 
-    // Ernährungs-Zentrale
-    const dietSection = document.getElementById('profileDietSwitches');
+    // Deine Lieblinge (Anbieter)
+    const favListEl = document.getElementById('profileFavProvidersList');
+    if(favListEl){
+      const allOffers = load(LS.offers, []);
+      const myFavProviders = Array.from(providerFavs || []).map(pid => {
+        const o = allOffers.find(x => x.providerId === pid);
+        return { id: pid, name: o ? o.providerName : 'Anbieter' };
+      });
+
+      if(myFavProviders.length === 0){
+        favListEl.innerHTML = '<p style="margin:0; color:#64748b; font-size:13px; text-align:center;">Noch keine Lieblinge gespeichert.</p>';
+      } else {
+        favListEl.innerHTML = myFavProviders.map(p => `
+          <div onclick="showProviderProfilePublic('${p.id}')" style="display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:#fff; border-radius:12px; border:1px solid #f1f3f5; cursor:pointer;">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <div style="width:32px; height:32px; border-radius:8px; background:#f8f9fa; display:flex; align-items:center; justify-content:center; font-size:14px;">🏢</div>
+              <span style="font-weight:700; font-size:14px; color:#1a1a1a;">${esc(p.name)}</span>
+            </div>
+            <i data-lucide="chevron-right" style="width:16px;height:16px;color:#cbd5e1;"></i>
+          </div>
+        `).join('');
+      }
+    }
+
+    // Ernährungs-Profil (Checkboxes)
+    const dietSection = document.getElementById('profileDietCheckboxes');
     if(dietSection){
       const prefs = customer.dietaryPreferences || {};
+      const isReuseEnabled = customer.reuseEnabled || false;
       const switches = [
         { key: 'vegan', label: 'Vegan', icon: 'leaf' },
-        { key: 'vegetarian', label: 'Vegetarisch', icon: 'sprout' }
+        { key: 'vegetarian', label: 'Vegetarisch', icon: 'sprout' },
+        { key: 'reuse', label: 'Mehrweg', icon: 'refresh-cw' }
       ];
-      dietSection.innerHTML = switches.map(s => `
-        <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px; background:#f8f9fa; border-radius:14px; border:1px solid transparent;">
-          <div style="display:flex; align-items:center; gap:10px;">
-            <i data-lucide="${s.icon}" style="width:18px;height:18px;color:#64748b;"></i>
-            <span style="font-weight:700; font-size:14px; color:#1a1a1a;">${s.label}</span>
+      dietSection.innerHTML = switches.map(s => {
+        const checked = s.key === 'reuse' ? isReuseEnabled : prefs[s.key];
+        const changeHandler = s.key === 'reuse' ? `toggleReuseOption(this.checked)` : `toggleDietaryPreference('${s.key}', this.checked)`;
+        return `
+          <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px; background:#f8f9fa; border-radius:14px;">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <i data-lucide="${s.icon}" style="width:18px;height:18px;color:#64748b;"></i>
+              <span style="font-weight:700; font-size:14px; color:#1a1a1a;">${s.label}</span>
+            </div>
+            <label class="switch-mini">
+              <input type="checkbox" ${checked ? 'checked' : ''} onchange="${changeHandler}">
+              <span class="slider-mini"></span>
+            </label>
           </div>
-          <label class="switch-mini">
-            <input type="checkbox" ${prefs[s.key] ? 'checked' : ''} onchange="toggleDietaryPreference('${s.key}', this.checked)">
-            <span class="slider-mini"></span>
-          </label>
-        </div>
-      `).join('');
+        `;
+      }).join('');
     }
 
-    // Mehrweg Switch
-    const reuseSection = document.getElementById('profileReuseSwitch');
-    if(reuseSection){
-      const isEnabled = customer.reuseEnabled || false;
-      reuseSection.innerHTML = `
-        <div style="display:flex; align-items:center; justify-content:space-between;">
-          <div style="display:flex; align-items:center; gap:10px;">
-            <div style="width:32px; height:32px; border-radius:8px; background:rgba(39,174,96,0.1); display:flex; align-items:center; justify-content:center; font-size:16px;">🔄</div>
-            <span style="font-weight:700; font-size:14px; color:#1a1a1a;">Mehrweg bevorzugen</span>
-          </div>
-          <label class="switch-mini">
-            <input type="checkbox" ${isEnabled ? 'checked' : ''} onchange="toggleReuseOption(this.checked)">
-            <span class="slider-mini"></span>
-          </label>
-        </div>
-      `;
-    }
-
-    // FAQ Accordion
+    // FAQ Accordion (Die 3 wichtigsten)
     const faqEl = document.getElementById('profileTopFaq');
     if(faqEl){
       const faqs = [
@@ -14173,6 +14173,23 @@
         </div>
       `).join('');
     }
+
+    if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
+  }
+
+  // Toggle Profile Section
+  function toggleProfileSection(id, btn){
+    const el = document.getElementById(id);
+    if(!el) return;
+    const isHidden = el.style.display === 'none';
+    el.style.display = isHidden ? 'block' : 'none';
+    
+    // Chevron drehen
+    if(btn){
+      const chevron = btn.querySelector('.chevron');
+      if(chevron) chevron.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
+    }
+  }
 
     if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
   }
