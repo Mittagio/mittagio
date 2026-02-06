@@ -743,7 +743,7 @@
       background:var(--bg-polaroid);
       min-height:100vh;
       padding:0 12px 0;
-      padding-bottom:calc(78px + env(safe-area-inset-bottom, 0px));
+      padding-bottom:calc(100px + env(safe-area-inset-bottom, 0px));
     }
     .customer-view .panel{
       background:rgba(255,255,255,0.95);
@@ -4004,7 +4004,7 @@
     <section class="view customer-view" id="v-fav">
       <header class="cust-header-sticky">
         <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px;">
-          <h1 style="font-size:20px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a; margin:0;">Deine Favoriten für heute</h1>
+          <h1 style="font-size:20px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a; margin:0;">Mittagsbox heute ⚡</h1>
           <button type="button" id="btnFavShareHeader" aria-label="Teilen" style="width:40px; height:40px; border-radius:12px; background:#f1f3f5; border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#1a1a1a;">
             <i data-lucide="share-2" style="width:20px;height:20px;"></i>
           </button>
@@ -4014,27 +4014,27 @@
       <div style="padding-bottom:120px;">
         <!-- Empty State -->
         <div id="favEmptyState" style="display:none; flex-direction:column; align-items:center; text-align:center; padding:80px 20px;">
-          <div style="width:120px; height:120px; margin-bottom:24px; background:rgba(227,77,77,0.05); border-radius:40px; display:flex; align-items:center; justify-content:center;">
-            <i data-lucide="heart" style="width:48px; height:48px; color:#E34D4D; fill:#E34D4D;"></i>
+          <div style="width:120px; height:120px; margin-bottom:24px; background:rgba(255,215,0,0.1); border-radius:40px; display:flex; align-items:center; justify-content:center;">
+            <i data-lucide="shopping-basket" style="width:48px; height:48px; color:#1a1a1a;"></i>
           </div>
-          <h2 style="font-size:22px; font-weight:850; margin:0 0 12px; color:#1a1a1a; letter-spacing:-0.02em;">Liebe auf den ersten Bissen?</h2>
-          <p style="font-size:15px; color:#64748b; line-height:1.6; margin-bottom:32px; max-width:280px;">Markiere Gerichte mit ❤️ – sie landen hier und du findest sie blitzschnell wieder.</p>
-          <button class="btn-cust-primary" type="button" onclick="showDiscover();" style="width:100%; max-width:260px; margin:0 auto;">
+          <h2 style="font-size:22px; font-weight:850; margin:0 0 12px; color:#1a1a1a; letter-spacing:-0.02em;">Deine Mittagsbox ist leer</h2>
+          <p style="font-size:15px; color:#64748b; line-height:1.6; margin-bottom:32px; max-width:280px;">Sichere dir dein Mittagessen! Markiere Gerichte mit ❤️ – sie landen hier in deiner Box.</p>
+          <button class="btn-cust-primary" type="button" onclick="showDiscover();" style="width:100%; max-width:260px; margin:0 auto; background:var(--brand); color:#1a1a1a;">
             <i data-lucide="compass" style="width:20px;height:20px;"></i>
-            <span>Entdecken</span>
+            <span>Jetzt entdecken</span>
           </button>
         </div>
         
         <div id="favContent" style="display:none;">
           <!-- 2x2 Grid für Gerichte -->
           <div id="sectionDishesWrapper" style="padding:20px 0;">
-            <h3 style="padding:0 20px; margin:0 0 16px; font-size:15px; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:0.05em;">Heute verfügbar</h3>
+            <h3 style="padding:0 20px; margin:0 0 16px; font-size:15px; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:0.05em;">Gerichte in deiner Box</h3>
             <div id="favDishes" class="fav-grid">
               <!-- Dynamisch befüllt (fav-card) -->
             </div>
             
             <div id="emptyFavDishes" style="display:none; text-align:center; padding:40px 20px; margin:0 20px; background:#f8f9fa; border-radius:24px; border:2px dashed #e2e8f0;">
-              <p style="font-size:14px; font-weight:700; color:#64748b; margin:0;">Keiner deiner Favoriten ist heute im Angebot.</p>
+              <p style="font-size:14px; font-weight:700; color:#64748b; margin:0;">Noch keine Gerichte in der Box.</p>
             </div>
           </div>
           
@@ -4043,7 +4043,7 @@
           
           <!-- Lieblings-Anbieter -->
           <div id="sectionProvidersWrapper" style="padding:20px 0; border-top:1px solid rgba(0,0,0,0.03);">
-            <h3 style="padding:0 20px; margin:0 0 16px; font-size:15px; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:0.05em;">Deine Betriebe</h3>
+            <h3 style="padding:0 20px; margin:0 0 16px; font-size:15px; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:0.05em;">Deine Lieblings-Betriebe</h3>
             <div id="favProviders" style="display:flex; flex-direction:column; gap:12px; padding:0 20px;">
               <!-- Dynamisch befüllt -->
             </div>
@@ -4076,7 +4076,7 @@
     <section class="view customer-view" id="v-cart">
       <header class="cust-header-sticky">
         <div style="display:flex; align-items:center; padding:12px 16px;">
-          <h1 style="font-size:20px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a; margin:0;">Meine Mittagsbox</h1>
+          <h1 style="font-size:20px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a; margin:0;">Meine Bestellungen</h1>
         </div>
       </header>
 
@@ -6696,11 +6696,11 @@
     if(isRemoving){
       dishFavs.delete(sid);
       if(btn && btn.querySelector('i')) btn.querySelector('i').style.fill = 'none';
-      showToast('Favorit entfernt');
+      showToast('Aus Mittagsbox entfernt');
     } else {
       dishFavs.add(sid);
       if(btn && btn.querySelector('i')) btn.querySelector('i').style.fill = '#E34D4D';
-      showToast('Gemerkt! ❤️');
+      showToast('In die Mittagsbox gelegt! ❤️');
       if(navigator.vibrate) navigator.vibrate(10);
     }
     save(LS.dishFavs, Array.from(dishFavs));
@@ -11705,6 +11705,15 @@
     
     if(sDish) sDish.textContent = o.dish || '';
     if(sPriceRow) sPriceRow.textContent = euro(o.price);
+
+    // Klick auf Anbieter-Name -> Öffnet öffentliches Profil
+    const sProviderNameBtn = document.getElementById('sProviderNameBtn');
+    if(sProviderNameBtn){
+      sProviderNameBtn.onclick = () => {
+        closeSheet();
+        showProviderProfilePublic(o.providerId);
+      };
+    }
     
     // Favorite State
     const favorites = JSON.parse(localStorage.getItem('mittagio_favorites') || '[]');
@@ -11727,19 +11736,29 @@
       const hasDineIn = !!(offerProvider && (offerProvider.dineInPossible !== false));
       
       sThreePillars.innerHTML = `
-        <div class="pillar-badge ${hasDineIn ? 'active' : 'disabled'}" style="${!hasDineIn ? 'opacity:0.3; filter:grayscale(1);' : ''}">
+        <div class="pillar-badge ${hasDineIn ? 'active' : 'disabled'}" style="${!hasDineIn ? 'opacity:0.25; filter:grayscale(1);' : ''}">
           <div class="pillar-icon-circle">🍴</div>
           <div class="pillar-label">Vor Ort</div>
         </div>
-        <div class="pillar-badge ${orderingEnabled ? 'active yellow' : 'disabled'}" style="${!orderingEnabled ? 'opacity:0.3; filter:grayscale(1);' : ''}">
+        <div class="pillar-badge ${orderingEnabled ? 'active yellow' : 'disabled'}" style="${!orderingEnabled ? 'opacity:0.25; filter:grayscale(1);' : ''}">
           <div class="pillar-icon-circle">🧾</div>
           <div class="pillar-label">Abhol-Nr.</div>
         </div>
-        <div class="pillar-badge ${hasReuse ? 'active green' : 'disabled'}" style="${!hasReuse ? 'opacity:0.3; filter:grayscale(1);' : ''}">
+        <div class="pillar-badge ${hasReuse ? 'active green' : 'disabled'}" style="${!hasReuse ? 'opacity:0.25; filter:grayscale(1);' : ''}">
           <div class="pillar-icon-circle">🔄</div>
           <div class="pillar-label">Mehrweg</div>
         </div>
       `;
+    }
+
+    // Sticky Bottom CTA: Mittagio-Gelb und Text "Mittagsbox"
+    if(btnCTA){
+      btnCTA.style.background = '#FFD700';
+      btnCTA.style.color = '#1a1a1a';
+      btnCTA.style.border = 'none';
+      btnCTA.style.fontWeight = '900';
+      btnCTA.style.boxShadow = '0 8px 24px rgba(255,215,0,0.25)';
+      if(primaryCTAText) primaryCTAText.textContent = 'In die Mittagsbox legen';
     }
 
     // Logistik & Zeit
@@ -14066,6 +14085,113 @@
   }
 
   // --- Profile View ("Mein Mittagio") - Zalando-Prinzip ---
+  let currentPublicProviderId = null;
+
+  function showProviderProfilePublic(providerId){
+    currentPublicProviderId = providerId;
+    showView('v-provider-detail-public');
+    renderPublicProviderProfile();
+  }
+
+  function renderPublicProviderProfile(){
+    const pid = currentPublicProviderId;
+    if(!pid) return;
+
+    // Finde Anbieter-Daten (aus erstem verfügbarem Angebot)
+    const allOffers = load(LS.offers, []);
+    const provOffers = allOffers.filter(o => o.providerId === pid);
+    const first = provOffers[0] || {};
+    const norm = normalizeOffer(first);
+
+    const pubProvName = document.getElementById('pubProvName');
+    const pubProvTitle = document.getElementById('pubProvTitle');
+    const pubProvAddress = document.getElementById('pubProvAddress');
+    
+    if(pubProvName) pubProvName.textContent = norm.providerName || 'Anbieter';
+    if(pubProvTitle) pubProvTitle.textContent = norm.providerName || 'Anbieter';
+    if(pubProvAddress) pubProvAddress.textContent = [norm.providerStreet, norm.providerZip, norm.providerCity].filter(Boolean).join(', ') || 'Adresse nicht verfügbar';
+
+    // Favorite Status
+    const favBtn = document.getElementById('btnToggleFavProvider');
+    if(favBtn){
+      const isFav = providerFavs.has(pid);
+      favBtn.innerHTML = `<i data-lucide="heart" style="width:20px;height:20px;color:#E34D4D;${isFav ? 'fill:#E34D4D;' : ''}"></i>`;
+      favBtn.onclick = () => {
+        toggleProviderFavorite(pid);
+        renderPublicProviderProfile();
+      };
+    }
+
+    // Teilen
+    const shareBtn = document.getElementById('pubProvShare');
+    if(shareBtn){
+      shareBtn.onclick = () => {
+        shareProviderMenu(pid);
+      };
+    }
+
+    // Heute Angebote
+    const today = isoDate(new Date());
+    const todayOffers = provOffers.filter(o => o.day === today && o.active !== false);
+    const todayList = document.getElementById('pubProvTodayOffers');
+    if(todayList){
+      if(todayOffers.length === 0){
+        todayList.innerHTML = '<div class="hint" style="text-align:center; padding:20px;">Heute keine Angebote verfügbar.</div>';
+      } else {
+        todayList.innerHTML = todayOffers.map(o => createPublicOfferRow(o)).join('');
+      }
+    }
+
+    // Wochenplan
+    const weekList = document.getElementById('pubProvWeekPlan');
+    if(weekList){
+      const futureOffers = provOffers.filter(o => o.day > today && o.active !== false).sort((a,b) => a.day.localeCompare(b.day));
+      if(futureOffers.length === 0){
+        weekList.innerHTML = '<div class="hint" style="text-align:center; padding:20px;">Keine weiteren Angebote geplant.</div>';
+      } else {
+        weekList.innerHTML = futureOffers.map(o => createPublicOfferRow(o, true)).join('');
+      }
+    }
+
+    if(typeof lucide !== 'undefined') lucide.createIcons();
+  }
+
+  function createPublicOfferRow(o, showDate = false){
+    const norm = normalizeOffer(o);
+    const dateLabel = showDate ? `<div style="font-size:11px; font-weight:800; color:var(--brand); text-transform:uppercase; margin-bottom:4px;">${fmtDay(o.day)}</div>` : '';
+    return `
+      <div class="cust-card" onclick="showDishDetail('${o.id}')" style="padding:16px; display:flex; gap:16px; align-items:center; cursor:pointer; background:#fff; border:1px solid rgba(0,0,0,0.03);">
+        <div style="width:64px; height:64px; border-radius:14px; overflow:hidden; flex-shrink:0; background:#f1f3f5;">
+          <img src="${o.imageUrl || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=200&q=80'}" style="width:100%; height:100%; object-fit:cover;">
+        </div>
+        <div style="flex:1; min-width:0;">
+          ${dateLabel}
+          <div style="font-weight:800; font-size:15px; color:#1a1a1a; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${esc(o.dish)}</div>
+          <div style="font-size:13px; color:#64748b; font-weight:600;">${o.pickupWindow || 'Mittags'} • ${euro(o.price)}</div>
+        </div>
+        <i data-lucide="chevron-right" style="width:18px;height:18px;color:#cbd5e1;"></i>
+      </div>
+    `;
+  }
+
+  function toggleProviderFavorite(pid){
+    if(providerFavs.has(pid)){
+      providerFavs.delete(pid);
+      showToast('Von Lieblingen entfernt');
+    } else {
+      providerFavs.add(pid);
+      showToast('Zu Lieblingen hinzugefügt');
+    }
+    save(LS.providerFavs, Array.from(providerFavs));
+    updateProfileView(); // Profil aktualisieren
+  }
+
+  function fmtDay(dateStr){
+    const d = new Date(dateStr);
+    const days = ['SO', 'MO', 'DI', 'MI', 'DO', 'FR', 'SA'];
+    return days[d.getDay()] + ' ' + d.getDate() + '.' + (d.getMonth()+1) + '.';
+  }
+
   function updateProfileView(){
     const isLoggedIn = customer.loggedIn;
     const firstName = customer.name ? customer.name.split(' ')[0] : '';
