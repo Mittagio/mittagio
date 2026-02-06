@@ -16361,6 +16361,7 @@
     // Status Header
     const statusHeader = document.createElement('div');
     statusHeader.style.cssText = 'display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; padding:12px; background:#f8f9fa; border-radius:14px;';
+    
     if(isLive){
       statusHeader.innerHTML = `
         <div style="display:flex; align-items:center; gap:8px;">
@@ -16395,17 +16396,27 @@
       const item = document.createElement('div');
       item.className = 'cookbook-item';
       item.style.marginBottom = '12px';
+      item.style.padding = '16px';
       item.innerHTML = `
         <div style="display:flex; justify-content:space-between; align-items:center;">
           <div>
-            <div style="font-weight:900; font-size:16px;">${esc(name)}</div>
-            <div class="hint" style="font-size:13px;">${euro(price)} ${isLive ? '· Online' : '· Geplant'}</div>
+            <div style="font-weight:900; font-size:16px; color:#1a1a1a;">${esc(name)}</div>
+            <div class="hint" style="font-size:13px; color:#64748b; margin-top:2px;">${euro(price)} ${isLive ? '· Online ✅' : '· Geplant ⏳'}</div>
           </div>
           ${!isLive ? `
-            <button class="btn secondary" style="width:36px; height:36px; padding:0; display:flex; align-items:center; justify-content:center; border-radius:10px;" onclick="deletePlannedEntry('${weekPlanDay}', ${idx})">
-              <i data-lucide="trash-2" style="width:18px; height:18px; color:#ef4444;"></i>
+            <div style="display:flex; gap:8px;">
+              <button class="btn secondary" style="width:36px; height:36px; padding:0; display:flex; align-items:center; justify-content:center; border-radius:10px;" onclick="startWizard('listing', {editOfferId: null, fromCookbookId: '${entry.cookbookId}', date: '${weekPlanDay}'})">
+                <i data-lucide="edit-3" style="width:18px; height:18px; color:#64748b;"></i>
+              </button>
+              <button class="btn secondary" style="width:36px; height:36px; padding:0; display:flex; align-items:center; justify-content:center; border-radius:10px;" onclick="deletePlannedEntry('${weekPlanDay}', ${idx})">
+                <i data-lucide="trash-2" style="width:18px; height:18px; color:#ef4444;"></i>
+              </button>
+            </div>
+          ` : `
+            <button class="btn secondary" style="width:36px; height:36px; padding:0; display:flex; align-items:center; justify-content:center; border-radius:10px;" onclick="startListingFlow({editOfferId: '${entry.id}'})">
+              <i data-lucide="edit-3" style="width:18px; height:18px; color:#64748b;"></i>
             </button>
-          ` : ''}
+          `}
         </div>
       `;
       list.appendChild(item);
@@ -16441,36 +16452,47 @@
     const entries = (week[date] || []).filter(e => e.providerId === providerId());
     if(!entries.length) return;
     
-    // Simulierter Bezahlvorgang -> Erfolgsschritt zeigen
-    showPublishFeeModal(entries[0]); // Nutze das erste Gericht für die Vorschau im Modal
+    // Check if we can bypass Abholnummer query
+    const profile = normalizeProviderProfile(provider.profile || {});
+    const hasDefault = profile.abholnummerEnabledByDefault !== undefined && profile.abholnummerEnabledByDefault !== null;
     
-    // Nach Bestätigung im Modal werden die Einträge in 'offers' übernommen
-    // Wir überschreiben das Onclick vom Modal-Button für diesen Spezialfall
-    const confirmBtn = document.getElementById('btnPublishConfirm');
-    if(confirmBtn){
-      const oldClick = confirmBtn.onclick;
-      confirmBtn.onclick = () => {
-        // Entries nach 'offers' schieben
-        entries.forEach(e => {
-          const newOffer = {
-            ...normalizeOffer(e),
-            id: 'off_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
-            active: true,
-            day: date
-          };
-          offers.push(newOffer);
-        });
-        save(LS.offers, offers);
-        
-        // Aus 'week' entfernen oder als 'published' markieren? 
-        // Für den MVP: In 'week' lassen, aber renderWeekPlan erkennt nun 'isLive'
-        
-        closePublishFeeModal();
-        showInseratSuccessSheet();
-        renderWeekPlan();
-        renderProviderHome();
-      };
+    if(!hasDefault){
+      // Open wizard at Abholnummer step
+      // We take the first entry as representative for the flow
+      const entry = entries[0];
+      startWizard('listing', { fromCookbookId: entry.cookbookId, date: date, skipToAbholnummer: true });
+      return;
     }
+
+    // If we have a default, go straight to payment
+    const firstEntry = entries[0];
+    const cb = cookbook.find(c => String(c.id) === String(firstEntry.cookbookId)) || {};
+    const o = normalizeOffer({
+      ...firstEntry,
+      dish: cb.dish || firstEntry.dish,
+      price: cb.price || firstEntry.price,
+      hasPickupCode: !!profile.abholnummerEnabledByDefault
+    });
+    
+    showPublishFeeModal(o, () => {
+      // Success callback
+      entries.forEach(e => {
+        const c = cookbook.find(x => String(x.id) === String(e.cookbookId)) || {};
+        const newOffer = {
+          ...normalizeOffer(e),
+          id: cryptoId(),
+          dish: c.dish || e.dish,
+          price: c.price || e.price,
+          hasPickupCode: !!profile.abholnummerEnabledByDefault,
+          active: true,
+          day: date
+        };
+        offers.push(newOffer);
+      });
+      save(LS.offers, offers);
+      renderWeekPlan();
+      renderProviderHome();
+    });
   }
   }
 
@@ -18699,8 +18721,15 @@
     const offer = previewOfferFromWizard();
     // Entfernung/Entfernung-Emoji für Anbieter-Vorschau entfernen (er weiß wo er ist)
     const card = offerCard(offer, {interactive:false, previewFromWizard:true});
+    
+    // Entferne Entfernungs-Info falls vorhanden
     const distanceInfo = card.querySelector('.listing-distance-info');
     if(distanceInfo) distanceInfo.remove();
+    
+    // Entferne Distanz-Badge (falls es eins gibt, z.B. oben rechts)
+    const distBadge = card.querySelector('.dist-badge');
+    if(distBadge) distBadge.remove();
+
     target.appendChild(card);
   }
 
