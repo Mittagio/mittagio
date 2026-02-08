@@ -3209,30 +3209,49 @@
       #providerTimeTracker div[style*="font-size:36px"]{ font-size:30px !important; }
       #providerPersonalSpar{ padding:16px !important; }
       
-      #v-provider-pickups, #v-provider-week, #v-provider-cookbook, #v-provider-profile{
+      #v-provider-pickups, #v-provider-cookbook, #v-provider-profile{
         padding:16px 16px 100px !important;
       }
       #v-provider-profile{
         padding:0 20px calc(90px + env(safe-area-inset-bottom, 0)) !important;
       }
-      #v-provider-pickups h3, #v-provider-cookbook h1, #v-provider-week h1, #v-provider-profile h1{
+      #v-provider-pickups h3, #v-provider-cookbook h1, #v-provider-profile h1{
         font-size:24px !important;
       }
-      /* Wochenplan Applike-Layout */
-      #v-provider-week .week-plan-wrap{ max-width:500px; margin:0 auto; padding:0 20px 24px; }
+      /* Wochenplan: Applike eingebettet (volle Höhe, Safe-Area, klare Optik) */
+      #v-provider-week{
+        display:flex !important; flex-direction:column !important; min-height:100vh !important; min-height:100dvh !important;
+        padding:0 !important; padding-bottom:calc(80px + env(safe-area-inset-bottom, 0)) !important;
+        background:#f8fafc !important;
+      }
+      #v-provider-week .week-header-compact{
+        flex-shrink:0; background:#fff; border-bottom:1px solid rgba(0,0,0,0.06); position:sticky; top:0; z-index:50;
+        padding:14px 20px; min-height:52px; display:flex; align-items:center; justify-content:center;
+      }
+      #v-provider-week .week-header-compact h1{ margin:0; font-size:20px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a; }
+      #v-provider-week .week-plan-wrap{
+        flex:1; display:flex; flex-direction:column; min-height:0; max-width:500px; margin:0 auto; width:100%;
+        padding:0 20px 16px; box-sizing:border-box;
+      }
+      #v-provider-week .week-list-scroll{ flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:4px 0 16px; }
+      #v-provider-week .week-thumb-zone{
+        flex-shrink:0; padding:16px 20px; padding-bottom:calc(24px + env(safe-area-inset-bottom, 0));
+        background:#fff; border-top:1px solid #e2e8f0; margin:0 -20px 0; padding-left:20px; padding-right:20px;
+      }
+      /* Wochenplan (weiteres Layout) */
       #v-provider-week .week-dayrow{ display:flex; gap:8px; overflow-x:auto; -webkit-overflow-scrolling:touch; padding:0 0 16px; margin-bottom:16px; border-bottom:1px solid #f1f3f5; }
       #v-provider-week .week-day-pill{ flex:0 0 auto; min-width:64px; padding:12px 10px; border-radius:14px; border:2px solid transparent; background:#f8f9fa; font-size:12px; font-weight:800; color:#64748b; cursor:pointer; transition:all 0.2s; line-height:1.25; text-align:center; white-space:pre-line; }
       #v-provider-week .week-day-pill.active{ background:rgba(255,215,0,0.18); border-color:var(--brand,#FFD700); color:#1a1a1a; }
-      #v-provider-week .week-status-block{ display:flex; justify-content:space-between; align-items:center; padding:14px 16px; background:#f8fafc; border-radius:16px; margin-bottom:20px; border:1px solid #e2e8f0; }
+      #v-provider-week .week-status-block{ display:flex; justify-content:space-between; align-items:center; padding:16px 18px; background:#fff; border-radius:16px; margin-bottom:16px; border:1px solid #e2e8f0; box-shadow:0 1px 3px rgba(0,0,0,0.04); }
       #v-provider-week .week-status-online{ display:flex; align-items:center; gap:8px; font-weight:800; font-size:14px; color:#10b981; }
       #v-provider-week .week-status-draft{ display:flex; align-items:center; gap:8px; font-weight:800; font-size:14px; color:#64748b; }
       #v-provider-week .week-status-dot{ width:10px; height:10px; border-radius:50%; }
-      #v-provider-week .week-meal-card{ display:flex; align-items:center; justify-content:space-between; padding:16px; background:#fff; border-radius:16px; border:1px solid #f1f3f5; margin-bottom:10px; box-shadow:0 2px 8px rgba(0,0,0,0.03); }
+      #v-provider-week .week-meal-card{ display:flex; align-items:center; justify-content:space-between; padding:16px 18px; background:#fff; border-radius:16px; border:1px solid #e2e8f0; margin-bottom:12px; box-shadow:0 2px 8px rgba(0,0,0,0.04); }
       #v-provider-week .week-meal-name{ font-weight:900; font-size:16px; color:#1a1a1a; }
       #v-provider-week .week-meal-meta{ font-size:13px; color:#64748b; margin-top:4px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
       #v-provider-week .week-meal-online{ display:inline-flex; align-items:center; gap:4px; font-size:12px; font-weight:700; color:#10b981; }
       #v-provider-week .week-meal-actions{ display:flex; align-items:center; gap:6px; }
-      #v-provider-week .week-add-more{ width:100%; margin-top:12px; padding:14px; border-radius:14px; border:2px dashed #e2e8f0; background:#fafbfc; font-size:14px; font-weight:700; color:#64748b; cursor:pointer; transition:all 0.2s; }
+      #v-provider-week .week-add-more{ width:100%; margin-top:8px; padding:16px; border-radius:16px; border:2px dashed #cbd5e1; background:#fff; font-size:15px; font-weight:700; color:#64748b; cursor:pointer; transition:all 0.2s; }
       #v-provider-week .week-add-more:hover{ border-color:var(--brand); color:var(--brand); background:rgba(255,215,0,0.06); }
       #v-provider-week .week-empty-state{ text-align:center; padding:32px 20px; }
       #v-provider-week .week-empty-state .week-empty-title{ font-size:18px; font-weight:900; color:#1a1a1a; margin-bottom:8px; }
@@ -3267,6 +3286,14 @@
       #v-provider-profile .panel{ padding:18px !important; border-radius:16px !important; margin-bottom:16px !important; }
       #v-provider-profile .provider-profile-section-title{ margin-top:24px; margin-bottom:12px; }
       #v-provider-profile .provider-profile-section-title:first-of-type{ margin-top:0; }
+      /* Meins: einheitliche Abstände der Menüzeilen (Daten, Präferenzen, Zahlung, FAQ) */
+      #v-provider-profile .provider-profile-row{
+        width:100%; display:flex; align-items:center; justify-content:space-between; padding:16px 18px; background:none; border:none;
+        border-bottom:1px solid #f1f3f5; font-size:15px; font-weight:700; color:#1a1a1a; text-align:left; cursor:pointer;
+      }
+      #v-provider-profile .provider-profile-row-last{ border-bottom:none; }
+      #v-provider-profile .provider-profile-sub{ flex:1; min-height:0; overflow:hidden; }
+      #v-provider-profile .provider-profile-sub > div[style*="overflow-y:auto"]{ flex:1; min-height:0; padding-bottom:calc(24px + env(safe-area-inset-bottom, 0)); }
       
       /* Provider Bottom Nav: Safe-Area, Touch 48px */
       #providerNav{
@@ -5020,14 +5047,14 @@
     </section>
 
     <section class="view onboarding-view" id="v-provider-week">
-      <header class="week-header-compact" style="background:#fff; border-bottom:1px solid rgba(0,0,0,0.06); position:sticky; top:0; z-index:50;">
-        <h1 style="margin:0; font-size:20px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a;">Wochenplan</h1>
+      <header class="week-header-compact">
+        <h1>Wochenplan</h1>
       </header>
 
-      <div class="week-plan-wrap" style="flex:1; display:flex; flex-direction:column;">
+      <div class="week-plan-wrap">
         <div class="week-dayrow" id="weekDays"></div>
-        <div id="weekList" style="flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch;"></div>
-        <div id="weekThumbZone" style="padding:16px 20px 24px; padding-bottom:calc(24px + env(safe-area-inset-bottom,0)); background:#fff; border-top:1px solid #f1f3f5;">
+        <div id="weekList" class="week-list-scroll"></div>
+        <div id="weekThumbZone" class="week-thumb-zone">
           <div class="week-activate-block" id="weekActivateBlock" style="display:none;">
             <button type="button" class="week-activate-btn" id="btnWeekActivateThumb">Jetzt für 4,99 € aktivieren</button>
           </div>
@@ -5102,50 +5129,48 @@
       <button type="button" class="cookbook-action-sheet-btn" onclick="closeCookbookActionSheet()">Abbrechen</button>
     </div>
 
-    <!-- Provider-Profil: einheitliches Layout -->
-    <section class="view onboarding-view" id="v-provider-profile">
-      <header id="providerProfileHeader" style="background:#fff; padding:12px 16px; border-bottom:1px solid rgba(0,0,0,0.05); position:sticky; top:0; z-index:50;">
+    <!-- Provider-Profil "Meins": Header + Inhalt (Menü oder Sub) in einer Section, kein Verschieben -->
+    <section class="view onboarding-view" id="v-provider-profile" style="display:flex; flex-direction:column; min-height:0;">
+      <header id="providerProfileHeader" style="background:#fff; padding:12px 16px; border-bottom:1px solid rgba(0,0,0,0.05); position:sticky; top:0; z-index:50; flex-shrink:0;">
         <h1 style="margin:0; font-size:22px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a;">Mein Betrieb</h1>
       </header>
 
-      <div style="padding:8px 16px 20px; max-width:500px; margin:0 auto;">
+      <div id="providerProfileContent" style="flex:1; overflow-y:auto; padding:8px 16px 24px; max-width:500px; margin:0 auto; width:100%; box-sizing:border-box;">
+        <div id="providerProfileMainWrap">
           <div id="providerProfileMain">
-            <!-- Profile Header -->
             <div style="background:#fff; border-radius:24px; padding:16px 20px; text-align:center; border:1px solid rgba(0,0,0,0.04); box-shadow:0 4px 16px rgba(0,0,0,0.04); margin-bottom:20px;">
               <div class="plogo" id="providerProfileLogo" style="width:80px; height:80px; border-radius:28px; margin:0 auto 10px; border:4px solid #fff; box-shadow:0 8px 24px rgba(0,0,0,0.1); background-size:cover; background-position:center; background-color:#f1f3f5;"></div>
               <h2 id="providerProfileName" style="margin:0; font-size:20px; font-weight:950; color:#1a1a1a; letter-spacing:-0.02em;">Betriebsname</h2>
             </div>
 
-            <div style="background:#fff; border-radius:20px; overflow:hidden; border:1px solid rgba(0,0,0,0.04); box-shadow:0 2px 10px rgba(0,0,0,0.04);">
-            <button type="button" id="providerProfileRowBusiness" class="provider-profile-row" style="width:100%; display:flex; align-items:center; justify-content:space-between; padding:14px 16px; background:none; border:none; border-bottom:1px solid #f8f9fa; font-size:15px; font-weight:700; color:#1a1a1a; text-align:left; cursor:pointer;">
+            <div id="providerProfileMenuCard" style="background:#fff; border-radius:20px; overflow:hidden; border:1px solid rgba(0,0,0,0.04); box-shadow:0 2px 10px rgba(0,0,0,0.04);">
+            <button type="button" id="providerProfileRowBusiness" class="provider-profile-row">
               <div style="display:flex;align-items:center;gap:10px;"><i data-lucide="building" style="width:18px;height:18px;color:#64748b;"></i><span>Meine Daten</span></div>
               <i data-lucide="chevron-right" style="width:18px; height:18px; color:#cbd5e1;"></i>
             </button>
-            <button type="button" id="providerProfileRowService" class="provider-profile-row" style="width:100%; display:flex; align-items:center; justify-content:space-between; padding:14px 16px; background:none; border:none; border-bottom:1px solid #f8f9fa; font-size:15px; font-weight:700; color:#1a1a1a; text-align:left; cursor:pointer;">
+            <button type="button" id="providerProfileRowService" class="provider-profile-row">
               <div style="display:flex;align-items:center;gap:10px;"><i data-lucide="star" style="width:18px;height:18px;color:#64748b;"></i><span>Präferenzen & Zeiten</span></div>
               <i data-lucide="chevron-right" style="width:18px; height:18px; color:#cbd5e1;"></i>
             </button>
-            <button type="button" id="providerProfileRowPayment" class="provider-profile-row" style="width:100%; display:flex; align-items:center; justify-content:space-between; padding:14px 16px; background:none; border:none; border-bottom:1px solid #f8f9fa; font-size:15px; font-weight:700; color:#1a1a1a; text-align:left; cursor:pointer;">
+            <button type="button" id="providerProfileRowPayment" class="provider-profile-row">
               <div style="display:flex;align-items:center;gap:10px;"><i data-lucide="credit-card" style="width:18px;height:18px;color:#64748b;"></i><span>Zahlung & Abrechnung</span></div>
               <i data-lucide="chevron-right" style="width:18px; height:18px; color:#cbd5e1;"></i>
             </button>
-            <button type="button" id="providerProfileRowFaq" class="provider-profile-row" style="width:100%; display:flex; align-items:center; justify-content:space-between; padding:14px 16px; background:none; border:none; font-size:15px; font-weight:700; color:#1a1a1a; text-align:left; cursor:pointer;">
+            <button type="button" id="providerProfileRowFaq" class="provider-profile-row provider-profile-row-last">
               <div style="display:flex;align-items:center;gap:10px;"><i data-lucide="help-circle" style="width:18px;height:18px;color:#64748b;"></i><span>FAQ & Support</span></div>
               <i data-lucide="chevron-right" style="width:18px; height:18px; color:#cbd5e1;"></i>
             </button>
           </div>
           <p id="providerProfileAddress" style="margin:12px 16px 0; font-size:12px; color:#8e8e93; text-align:center; display:none;"></p>
-          
           <button id="btnProviderLogout" style="width:100%; margin-top:24px; min-height:48px; background:white; color:#E34D4D; border:2px solid #fee2e2; border-radius:18px; font-weight:800; font-size:16px; display:flex; align-items:center; justify-content:center; gap:10px; cursor:pointer;">
             <i data-lucide="log-out" style="width:20px;height:20px;"></i>
             <span>Abmelden</span>
           </button>
+          </div>
         </div>
-      </div>
-    </section>
 
-      <!-- Sub-Seite: Betrieb & Sicherheit -->
-      <div id="providerProfileSubBusiness" style="display:none; flex-direction:column; height:100%;">
+        <!-- Sub-Seiten: in derselben Content-Area, kein Verschieben / leerer Screen -->
+      <div id="providerProfileSubBusiness" class="provider-profile-sub" style="display:none; flex-direction:column; min-height:0;">
         <header style="background:#fff; padding:24px 20px 20px; border-bottom:1px solid rgba(0,0,0,0.05); position:sticky; top:0; z-index:50; display:flex; align-items:center; gap:16px;">
           <button type="button" id="providerProfileBackBusiness" aria-label="Zurück" style="width:40px; height:40px; border-radius:12px; background:#f8f9fa; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center;">
             <i data-lucide="chevron-left" style="width:24px; height:24px; color:#1a1a1a;"></i>
@@ -5212,7 +5237,7 @@
       </div>
 
       <!-- Sub-Seite: Service-Optionen & Zeiten (3 Säulen Toggles + Mittagszeiten) -->
-      <div id="providerProfileSubService" style="display:none; flex-direction:column; height:100%;">
+      <div id="providerProfileSubService" class="provider-profile-sub" style="display:none; flex-direction:column;">
         <header style="background:#fff; padding:24px 20px 20px; border-bottom:1px solid rgba(0,0,0,0.05); position:sticky; top:0; z-index:50; display:flex; align-items:center; gap:16px;">
           <button type="button" id="providerProfileBackService" aria-label="Zurück" style="width:40px; height:40px; border-radius:12px; background:#f8f9fa; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center;">
             <i data-lucide="chevron-left" style="width:24px; height:24px; color:#1a1a1a;"></i>
@@ -5297,7 +5322,7 @@
       </div>
 
       <!-- Sub-Seite: Zahlung & Abrechnung -->
-      <div id="providerProfileSubPayment" style="display:none; flex-direction:column; height:100%;">
+      <div id="providerProfileSubPayment" class="provider-profile-sub" style="display:none; flex-direction:column;">
         <header style="background:#fff; padding:24px 20px 20px; border-bottom:1px solid rgba(0,0,0,0.05); position:sticky; top:0; z-index:50; display:flex; align-items:center; gap:16px;">
           <button type="button" id="providerProfileBackPayment" aria-label="Zurück" style="width:40px; height:40px; border-radius:12px; background:#f8f9fa; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center;">
             <i data-lucide="chevron-left" style="width:24px; height:24px; color:#1a1a1a;"></i>
@@ -5330,7 +5355,7 @@
       </div>
 
       <!-- Sub-Seite: FAQ & Support -->
-      <div id="providerProfileSubFaq" style="display:none; flex-direction:column; height:100%;">
+      <div id="providerProfileSubFaq" class="provider-profile-sub" style="display:none; flex-direction:column;">
         <header style="background:#fff; padding:24px 20px 20px; border-bottom:1px solid rgba(0,0,0,0.05); position:sticky; top:0; z-index:50; display:flex; align-items:center; gap:16px;">
           <button type="button" id="providerProfileBackFaq" aria-label="Zurück" style="width:40px; height:40px; border-radius:12px; background:#f8f9fa; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center;">
             <i data-lucide="chevron-left" style="width:24px; height:24px; color:#1a1a1a;"></i>
@@ -5382,6 +5407,7 @@
             </a>
           </div>
         </div>
+      </div>
       </div>
     </section>
 
@@ -8440,7 +8466,7 @@
     pushViewState({view: 'provider-pickups', mode: mode}, location.pathname);
   }
   function showProviderWeek(){
-    setProviderNavActive('provider-home');
+    setProviderNavActive('provider-week');
     showView(views.providerWeek);
     renderWeekPlan();
     // FAB anzeigen (öffnet „Inserat hinzufügen“ mit Tag-Vorauswahl)
@@ -8465,16 +8491,18 @@
     pushViewState({view: 'provider-cookbook', mode: mode}, location.pathname);
   }
   function showProviderProfileSub(subId){
-    const main = document.getElementById('providerProfileMain');
-    const header = document.getElementById('providerProfileHeader');
-    const subs = ['providerProfileSubBusiness','providerProfileSubService','providerProfileSubPayment','providerProfileSubFaq'];
-    if(main) main.style.display = subId ? 'none' : 'block';
+    var mainWrap = document.getElementById('providerProfileMainWrap');
+    var header = document.getElementById('providerProfileHeader');
+    var contentEl = document.getElementById('providerProfileContent');
+    var subs = ['providerProfileSubBusiness','providerProfileSubService','providerProfileSubPayment','providerProfileSubFaq'];
+    if(mainWrap) mainWrap.style.display = subId ? 'none' : 'block';
     if(header) header.style.display = subId ? 'none' : 'block';
     var targetId = subId ? 'providerProfileSub' + subId.charAt(0).toUpperCase() + subId.slice(1) : '';
     subs.forEach(function(id){
       var el = document.getElementById(id);
-      if(el) el.style.display = (subId && id === targetId) ? 'block' : 'none';
+      if(el) el.style.display = (subId && id === targetId) ? 'flex' : 'none';
     });
+    if(subId && contentEl) contentEl.scrollTop = 0;
     if((subId === 'times' || subId === 'service') && typeof renderProviderProfileMealSelects === 'function') renderProviderProfileMealSelects();
     if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
   }
