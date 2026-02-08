@@ -2524,6 +2524,71 @@
     .discover-category-chip:active{
       transform:scale(.96);
     }
+    /* S25 / Applike: Thumb-Zone, große Touch-Ziele (min 44–48px) */
+    #v-discover .discover-header-pills{
+      display:flex; gap:10px; overflow-x:auto; -webkit-overflow-scrolling:touch; scroll-snap-type:x mandatory;
+      padding:8px 16px 12px; scrollbar-width:none;
+    }
+    #v-discover .discover-header-pills::-webkit-scrollbar{ display:none; }
+    #v-discover .discover-header-pills .discover-category-chip{
+      flex:0 0 auto; scroll-snap-align:center; min-height:44px; min-width:auto;
+      background:#e5e7eb; color:#64748b; border:none; padding:10px 18px; border-radius:22px; font-size:14px; font-weight:700;
+      cursor:pointer; transition:transform 0.15s, background 0.2s; -webkit-tap-highlight-color:transparent;
+    }
+    #v-discover .discover-header-pills .discover-category-chip:active{ transform:scale(0.96); }
+    #v-discover .discover-header-pills .discover-category-chip.active{
+      background:#2563eb; color:#fff; box-shadow:0 2px 12px rgba(37,99,235,0.4);
+    }
+    #v-discover #discoverDaysBar .cust-chip{ min-height:44px; padding:10px 16px; font-size:14px; border-radius:20px; }
+    #v-discover .cust-card{ -webkit-tap-highlight-color:transparent; transition:transform 0.15s, box-shadow 0.2s; }
+    #v-discover .cust-card:active{ transform:scale(0.99); box-shadow:0 2px 12px rgba(0,0,0,0.06); }
+    .discover-radius-row{ position:relative; }
+    .discover-radius-pill{
+      display:inline-flex; align-items:center; justify-content:center; min-height:48px; min-width:48px; padding:10px 16px;
+      border-radius:24px; border:1px solid #e5e7eb; background:#fff; color:#1a1a1a; font-size:14px; font-weight:700;
+      cursor:pointer; -webkit-tap-highlight-color:transparent;
+    }
+    .discover-radius-opt{
+      display:block; width:100%; min-height:48px; padding:14px 18px; border:none; background:none; text-align:left;
+      font-size:15px; font-weight:600; color:#1a1a1a; cursor:pointer; border-radius:12px;
+    }
+    .discover-radius-opt:hover{ background:#f1f3f5; }
+    .discover-radius-opt:active{ background:#e5e7eb; }
+    /* Switch-Button: Thumb-Zone unten Mitte (S25) */
+    .discover-view-switch{
+      position:fixed; left:50%; transform:translateX(-50%);
+      bottom:calc(76px + env(safe-area-inset-bottom, 24px));
+      min-height:56px; padding:14px 24px; display:flex; align-items:center; justify-content:center; gap:10px;
+      background:#fff; border:2px solid #e5e7eb; border-radius:28px;
+      font-size:16px; font-weight:800; color:#1a1a1a; cursor:pointer;
+      box-shadow:0 6px 24px rgba(0,0,0,0.12); z-index:90;
+      transition:transform 0.15s, box-shadow 0.2s; -webkit-tap-highlight-color:transparent;
+    }
+    .discover-view-switch:active{ transform:translateX(-50%) scale(0.97); box-shadow:0 2px 12px rgba(0,0,0,0.1); }
+    /* Karte: Pins mit großem Touch-Ziel (S25), mind. 56px */
+    .discover-map-canvas .discover-pin{
+      position:absolute; display:flex; flex-direction:column; align-items:center; justify-content:center;
+      min-width:56px; min-height:56px; padding:12px; box-sizing:border-box; cursor:pointer;
+      transform:translate(-50%,-100%); filter:drop-shadow(0 2px 10px rgba(0,0,0,0.2));
+      -webkit-tap-highlight-color:transparent;
+    }
+    .discover-map-canvas .discover-pin-emoji{ font-size:28px; margin-bottom:4px; line-height:1; }
+    .discover-map-canvas .discover-pin-price{
+      background:#fff; padding:6px 12px; border-radius:14px; font-size:14px; font-weight:800; color:#1a1a1a;
+      border:2px solid #2563eb; white-space:nowrap;
+    }
+    /* Pin-Drawer: Applike Slide-Up + Backdrop (S25) */
+    .discover-pin-drawer{
+      transition:transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+      will-change:transform;
+    }
+    .discover-pin-drawer:not(.open){ transform:translateY(100%); pointer-events:none; }
+    .discover-pin-drawer.open{ transform:translateY(0); pointer-events:auto; }
+    #discoverPinDrawerBackdrop{
+      transition:opacity 0.3s ease, visibility 0.3s;
+    }
+    #discoverPinDrawerBackdrop.open{ opacity:1; visibility:visible; }
+    #discoverPinDrawerBackdrop:not(.open){ opacity:0; visibility:hidden; pointer-events:none; }
     
     /* Kalender (horizontal swipebar, ohne Überschrift, distinct style) */
     .discover-calendar{
@@ -3173,6 +3238,23 @@
       #v-provider-week .week-empty-state .week-empty-title{ font-size:18px; font-weight:900; color:#1a1a1a; margin-bottom:8px; }
       #v-provider-week .week-empty-state .week-empty-hint{ font-size:14px; color:#64748b; line-height:1.5; margin-bottom:24px; }
       #v-provider-week .week-actions-bar{ display:flex; gap:12px; margin-top:24px; padding-top:20px; border-top:1px solid #f1f3f5; }
+      /* S25 Thumb-Zone: Date-Picker Snap-Carousel */
+      #v-provider-week .week-dayrow{ scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; }
+      #v-provider-week .week-day-pill{ scroll-snap-align:center; scroll-snap-stop:always; min-width:72px; }
+      /* Swipe-Card: Container für Swipe-Actions */
+      #v-provider-week .week-meal-card-wrap{ position:relative; overflow:hidden; border-radius:16px; margin-bottom:10px; }
+      #v-provider-week .week-meal-card-swipe{ display:flex; align-items:stretch; transition:transform 0.2s ease-out; touch-action:pan-y; }
+      #v-provider-week .week-meal-card-swipe .week-meal-card{ flex:1; margin-bottom:0; min-width:0; position:relative; z-index:1; background:#fff; border-radius:16px; }
+      #v-provider-week .week-swipe-actions{ display:flex; position:absolute; top:0; bottom:0; width:80px; align-items:center; justify-content:center; font-size:12px; font-weight:800; color:#fff; }
+      #v-provider-week .week-swipe-actions.left{ left:0; background:var(--brand); }
+      #v-provider-week .week-swipe-actions.right{ right:0; background:#ef4444; }
+      /* Aktivierung: großer Button in Thumb-Zone */
+      #v-provider-week .week-activate-block{ padding:16px 0; margin-top:8px; }
+      #v-provider-week .week-activate-btn{ width:100%; min-height:56px; border-radius:16px; font-size:16px; font-weight:800; border:none; background:#10b981; color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; box-shadow:0 4px 16px rgba(16,185,129,0.35); }
+      #v-provider-week .week-activate-btn:active{ transform:scale(0.98); }
+      /* Keine kleinen Buttons in Ecken: Header reduziert */
+      #v-provider-week .week-header-compact{ padding:16px 20px; min-height:56px; display:flex; align-items:center; justify-content:center; }
+      #v-provider-week .week-header-compact h1{ margin:0; font-size:20px; font-weight:950; }
       /* Dashboard: Dein Wochenplan Applike */
       #providerWeekDays{ display:flex; gap:8px; overflow-x:auto; -webkit-overflow-scrolling:touch; padding:0 0 16px; margin-bottom:16px; border-bottom:1px solid #f1f3f5; }
       #providerWeekDays .week-preview-pill{ flex:0 0 auto; min-width:56px; padding:10px 8px; border-radius:14px; border:2px solid transparent; background:#f1f3f5; font-size:11px; font-weight:800; color:#64748b; cursor:pointer; transition:all 0.2s; line-height:1.25; text-align:center; white-space:pre-line; }
@@ -3902,20 +3984,49 @@
           </div>
         </div>
 
-        <!-- Sticky Bars (Kategorien & Tage) -->
-        <div id="discoverCategoriesBar" class="cust-chip-bar" style="padding-top:0; padding-bottom:8px; border-bottom:1px solid rgba(0,0,0,0.03);">
-          <!-- Dynamisch befüllt -->
+        <!-- Sticky Bars: Kategorie-Pills (Eintopf, Vesper, Vegetarisch, Snack) + Hunger-Radius -->
+        <div id="discoverCategoriesBar" class="discover-header-pills cust-chip-bar" style="padding-top:0; padding-bottom:8px;">
+          <!-- Dynamisch: [ 🍲 Eintopf ] [ 🥩 Vesper ] [ 🥗 Vegetarisch ] [ 🥪 Snack ] -->
         </div>
-        <div id="discoverDaysBar" class="cust-chip-bar" style="padding-top:8px; padding-bottom:12px;">
+        <div class="discover-radius-row" style="display:flex; align-items:center; gap:8px; padding:6px 16px 10px; flex-wrap:wrap;">
+          <button type="button" id="discoverRadiusBtn" class="discover-radius-pill" aria-label="Hunger-Radius">
+            <span id="discoverRadiusIcon">📍</span>
+            <span id="discoverRadiusLabel">500m</span>
+            <i data-lucide="chevron-down" id="discoverRadiusChevron" style="width:14px;height:14px;margin-left:2px;"></i>
+          </button>
+          <div id="discoverRadiusDropdown" style="display:none; position:absolute; top:100%; left:16px; margin-top:4px; background:#fff; border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.12); border:1px solid rgba(0,0,0,0.06); z-index:100; min-width:120px; padding:6px;">
+            <button type="button" data-radius="500" class="discover-radius-opt">500m</button>
+            <button type="button" data-radius="1000" class="discover-radius-opt">1 km</button>
+            <button type="button" data-radius="3000" class="discover-radius-opt">3 km</button>
+          </div>
+        </div>
+        <div id="discoverDaysBar" class="cust-chip-bar" style="padding-top:4px; padding-bottom:12px; border-bottom:1px solid rgba(0,0,0,0.03);">
           <!-- Dynamisch befüllt -->
         </div>
       </header>
 
-      <!-- Angebots-Liste -->
-      <main style="padding:16px; padding-bottom:120px;">
-        <div id="discoverOffers" style="display:flex; flex-direction:column; gap:16px;">
+      <!-- Listenansicht ("Speisekarte") + Karten-Container (Overlay) – S25 Safe-Area -->
+      <main class="discover-main" style="position:relative; padding:16px; padding-bottom:calc(160px + env(safe-area-inset-bottom, 0));">
+        <div id="discoverOffers" class="discover-offers-list" style="display:flex; flex-direction:column; gap:16px;">
           <!-- Dynamisch befüllt -->
         </div>
+
+        <!-- Kartenansicht (Hunger-Radar) – Pins mit Preis + Emoji, Tap = Drawer -->
+        <div id="discoverMap" class="discover-map-wrap" style="display:none; position:absolute; inset:0; top:0; bottom:80px; padding:16px; padding-bottom:100px;">
+          <div id="discoverMapCanvas" class="discover-map-canvas" style="width:100%; height:100%; background:linear-gradient(180deg, #e8f4f8 0%, #f0f7fa 100%); border-radius:20px; position:relative; overflow:hidden;">
+            <!-- Pins werden dynamisch eingefügt -->
+          </div>
+        </div>
+
+        <!-- Pin-Drawer: Applike Bottom-Sheet (Slide-Up), Bild + 3 Säulen -->
+        <div id="discoverPinDrawer" class="discover-pin-drawer" style="position:fixed; left:0; right:0; bottom:0; visibility:hidden; background:#fff; border-radius:24px 24px 0 0; box-shadow:0 -8px 32px rgba(0,0,0,0.18); z-index:200; padding:16px 20px calc(20px + env(safe-area-inset-bottom)); max-height:55vh; overflow-y:auto;">
+          <div class="discover-pin-drawer-handle" style="width:44px; height:5px; background:#d1d5db; border-radius:3px; margin:0 auto 16px;"></div>
+          <div id="discoverPinDrawerImageWrap" style="width:100%; height:180px; border-radius:16px; background:#f1f3f5; overflow:hidden;"><img id="discoverPinDrawerImage" alt="" style="width:100%; height:100%; object-fit:cover;"></div>
+          <div id="discoverPinDrawerTitle" style="font-size:20px; font-weight:800; margin:14px 0 10px;"></div>
+          <div id="discoverPinDrawerPillars" class="card-pillars" style="display:flex; gap:14px; margin-bottom:16px;"></div>
+          <button type="button" class="btn-cust-primary" id="discoverPinDrawerBtn" style="width:100%; min-height:56px; border-radius:16px; font-size:16px; font-weight:800;">Gericht ansehen</button>
+        </div>
+        <div id="discoverPinDrawerBackdrop" style="position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:199; opacity:0; visibility:hidden;" onclick="closeDiscoverPinDrawer()"></div>
 
         <!-- Leerer Zustand -->
         <div id="discoverEmpty" style="display:none; text-align:center; padding:60px 20px;">
@@ -3929,6 +4040,12 @@
             <span>Ort wechseln</span>
           </button>
         </div>
+
+        <!-- Switch-Button: unten Mitte – [ 🗺️ Karte ] in Liste, [ ☰ Liste ] in Karte -->
+        <button type="button" id="discoverViewSwitchBtn" class="discover-view-switch" aria-label="Ansicht wechseln">
+          <span id="discoverViewSwitchIcon">🗺️</span>
+          <span id="discoverViewSwitchLabel">Karte</span>
+        </button>
       </main>
     </section>
 
@@ -4903,30 +5020,28 @@
     </section>
 
     <section class="view onboarding-view" id="v-provider-week">
-      <header style="background:#fff; padding:20px 20px 16px; border-bottom:1px solid rgba(0,0,0,0.05); position:sticky; top:0; z-index:50;">
-        <div style="display:flex; align-items:center; justify-content:space-between; width:100%; gap:12px;">
-          <div style="display:flex; align-items:center; gap:12px;">
-            <button id="btnWeekBack" style="background:rgba(0,0,0,0.04); border:none; width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; color:#1a1a1a;">
-              <i data-lucide="chevron-left" style="width:24px; height:24px; stroke-width:3;"></i>
-            </button>
-            <h1 style="margin:0; font-size:22px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a;">Wochenplan</h1>
-          </div>
-          <button type="button" id="btnWeekRefresh" aria-label="Aktualisieren" style="background:rgba(0,0,0,0.04); border:none; width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; color:#1a1a1a;">
-            <i data-lucide="refresh-cw" style="width:22px; height:22px; stroke-width:2.5;"></i>
-          </button>
-        </div>
+      <header class="week-header-compact" style="background:#fff; border-bottom:1px solid rgba(0,0,0,0.06); position:sticky; top:0; z-index:50;">
+        <h1 style="margin:0; font-size:20px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a;">Wochenplan</h1>
       </header>
 
-      <div class="week-plan-wrap" style="flex:1;">
+      <div class="week-plan-wrap" style="flex:1; display:flex; flex-direction:column;">
         <div class="week-dayrow" id="weekDays"></div>
-        <div id="weekList"></div>
-        <div class="week-actions-bar" id="weekActionsBar" style="display:none;">
-          <button class="btn secondary" type="button" id="btnWeekPdf" style="flex:1; min-height:48px; border-radius:14px; font-size:14px; font-weight:700;">
-            <i data-lucide="printer" style="width:18px;height:18px;margin-right:8px;"></i>Drucken
-          </button>
-          <button class="btn secondary" type="button" id="btnWeekShare" style="flex:1; min-height:48px; border-radius:14px; font-size:14px; font-weight:700;">
-            <i data-lucide="share-2" style="width:18px;height:18px;margin-right:8px;"></i>Wochenplan teilen
-          </button>
+        <div id="weekList" style="flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch;"></div>
+        <div id="weekThumbZone" style="padding:16px 20px 24px; padding-bottom:calc(24px + env(safe-area-inset-bottom,0)); background:#fff; border-top:1px solid #f1f3f5;">
+          <div class="week-activate-block" id="weekActivateBlock" style="display:none;">
+            <button type="button" class="week-activate-btn" id="btnWeekActivateThumb">Jetzt für 4,99 € aktivieren</button>
+          </div>
+          <div class="week-actions-bar" id="weekActionsBar" style="display:none; margin-top:12px;">
+            <button class="btn secondary" type="button" id="btnWeekRefreshZone" style="flex:0 0 auto; min-height:52px; min-width:52px; padding:0; border-radius:14px;" aria-label="Aktualisieren">
+              <i data-lucide="refresh-cw" style="width:22px;height:22px;"></i>
+            </button>
+            <button class="btn secondary" type="button" id="btnWeekPdf" style="flex:1; min-height:52px; border-radius:14px; font-size:15px; font-weight:700;">
+              <i data-lucide="printer" style="width:20px;height:20px;margin-right:8px;"></i>Drucken
+            </button>
+            <button class="btn secondary" type="button" id="btnWeekShare" style="flex:1; min-height:52px; border-radius:14px; font-size:15px; font-weight:700;">
+              <i data-lucide="share-2" style="width:20px;height:20px;margin-right:8px;"></i>Teilen
+            </button>
+          </div>
         </div>
       </div>
     </section>
@@ -6242,6 +6357,7 @@
     
     <div id="createFlowCookbookSelection" style="margin-bottom:24px;">
       <div class="hint" style="margin-bottom:12px; font-weight:700; color:#1a1a1a; font-size:13px; text-transform:uppercase; letter-spacing:0.05em;">Aus Kochbuch</div>
+      <input type="search" id="createFlowSearch" placeholder="Gericht suchen…" style="width:100%; padding:14px 16px; border:1px solid #e5e7eb; border-radius:12px; font-size:15px; margin-bottom:12px; box-sizing:border-box;" />
       <div id="createFlowCookbookList" style="display:grid; grid-template-columns:repeat(2, 1fr); gap:12px; max-height:300px; overflow-y:auto; padding:4px;">
         <!-- Dynamisch befüllt -->
       </div>
@@ -6524,27 +6640,20 @@
   function renderDiscoverCategories(){
     const bar = document.getElementById('discoverCategoriesBar');
     if(!bar) return;
-    
+    // Pills: Eintopf, Vesper, Vegetarisch, Snack (Hellgrau inaktiv, Blau aktiv)
     const cats = [
-      {id:'near', label:'In der Nähe', icon:'map-pin'},
-      {id:'Mit Fleisch', label:'Fleisch', icon:'beef'},
-      {id:'Salat', label:'Salat', icon:'salad'},
-      {id:'Vegetarisch', label:'Vegetarisch', icon:'leaf'},
-      {id:'Vegan', label:'Vegan', icon:'sprout'},
-      {id:'Fisch', label:'Fisch', icon:'fish'},
-      {id:'Suppe', label:'Suppe', icon:'soup'},
+      {id:'near', label:'Alle', emoji:'✨'},
+      {id:'Suppe', label:'Eintopf', emoji:'🍲'},
+      {id:'Vesper', label:'Vesper', emoji:'🥩'},
+      {id:'Vegetarisch', label:'Vegetarisch', emoji:'🥗'},
+      {id:'Salat', label:'Snack', emoji:'🥪'},
     ];
-    
-    const active = activeDiscoverFilter === 'near' || !activeDiscoverFilter || activeDiscoverFilter === 'all' ? 'near' : activeDiscoverFilter;
-    
+    const active = activeDiscoverFilter === 'near' || !activeDiscoverFilter ? 'near' : activeDiscoverFilter;
     bar.innerHTML = cats.map(c => `
-      <button class="cust-chip ${active===c.id ? 'active' : ''}" onclick="selectDiscoverCategory('${c.id}')">
-        <i data-lucide="${c.icon}" style="width:16px;height:16px;display:inline-block;vertical-align:middle;margin-right:6px;"></i>
-        <span>${c.label}</span>
+      <button type="button" class="discover-category-chip ${active===c.id ? 'active' : ''}" onclick="selectDiscoverCategory('${c.id}')">
+        <span class="discover-pill-emoji">${c.emoji}</span><span>${c.label}</span>
       </button>
     `).join('');
-    
-    if(typeof lucide !== 'undefined') lucide.createIcons();
   }
 
   function getDayName(date){
@@ -6612,7 +6721,14 @@
     img.src = data.imageUrl || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=800&q=80';
     img.loading = 'lazy';
     imgContainer.appendChild(img);
-    
+    // Entfernungs-Tag: oben rechts auf dem Bild, dezent (links positioniert damit keine Überlappung mit Herz/Teilen)
+    if(data.distanceKm != null){
+      const distM = Math.round(Number(data.distanceKm) * 1000);
+      const distTag = document.createElement('div');
+      distTag.style.cssText = 'position:absolute; top:12px; left:12px; padding:5px 10px; border-radius:10px; background:rgba(255,255,255,0.9); color:#64748b; font-size:11px; font-weight:700;';
+      distTag.textContent = distM < 1000 ? distM + 'm entfernt' : (Number(data.distanceKm).toFixed(1) + ' km');
+      imgContainer.appendChild(distTag);
+    }
     // Like Button
     const likeBtn = document.createElement('button');
     likeBtn.style.cssText = 'position:absolute; top:12px; right:12px; width:36px; height:36px; border-radius:10px; background:rgba(255,255,255,0.9); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#E34D4D; box-shadow:0 4px 12px rgba(0,0,0,0.1);';
@@ -6635,9 +6751,32 @@
     
     card.appendChild(imgContainer);
     
+    const p = offers.find(x => x.providerId === data.providerId);
+    const vorOrt = !!(p && p.dineInPossible !== false);
+    const abholnummer = !!(p && p.orderingEnabled !== false && (data.hasPickupCode || p.hasPickupCode));
+    const mehrweg = !!(p && (p.reuse && p.reuse.enabled));
+    
+    // 3-Säulen-Zeile + Preis direkt unter dem Bild (links Icons, rechts Preis in Fettdruck)
+    const pillarsRow = document.createElement('div');
+    pillarsRow.style.cssText = 'display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-bottom:1px solid rgba(0,0,0,0.06);';
+    const pillars = document.createElement('div');
+    pillars.className = 'card-pillars';
+    pillars.innerHTML = `
+      <div class="pillar-mini active" title="Vor Ort essen">🍴</div>
+      <div class="pillar-mini ${abholnummer ? 'active yellow' : ''}" title="Abholnummer">🧾</div>
+      <div class="pillar-mini ${mehrweg ? 'active green' : ''}" title="Mehrweg">🔄</div>
+    `;
+    const price = document.createElement('div');
+    price.className = 'cust-card-price';
+    price.style.fontWeight = '800';
+    price.textContent = euro(data.price);
+    pillarsRow.appendChild(pillars);
+    pillarsRow.appendChild(price);
+    
     // Body
     const body = document.createElement('div');
     body.className = 'cust-card-body';
+    body.appendChild(pillarsRow);
     
     const title = document.createElement('h3');
     title.className = 'cust-card-title';
@@ -6648,32 +6787,6 @@
     meta.className = 'cust-card-meta';
     meta.innerHTML = `<i data-lucide="store" style="width:14px;height:14px;"></i> <span>${data.providerName || 'Anbieter'}</span>`;
     body.appendChild(meta);
-    
-    const footer = document.createElement('div');
-    footer.style.cssText = 'display:flex; align-items:flex-end; justify-content:space-between; margin-top:12px;';
-    
-    const price = document.createElement('div');
-    price.className = 'cust-card-price';
-    price.textContent = euro(data.price);
-    footer.appendChild(price);
-    
-    // 3 Pillars Mini
-    const pillars = document.createElement('div');
-    pillars.className = 'card-pillars';
-    
-    const p = offers.find(x => x.providerId === data.providerId);
-    const vorOrt = !!(p && p.dineInPossible !== false);
-    const abholnummer = !!(p && p.orderingEnabled !== false && (data.hasPickupCode || p.hasPickupCode));
-    const mehrweg = !!(p && (p.reuse && p.reuse.enabled));
-    
-    pillars.innerHTML = `
-      <div class="pillar-mini active" title="Vor Ort essen">🍴</div>
-      <div class="pillar-mini ${abholnummer ? 'active yellow' : ''}" title="Abholnummer">🧾</div>
-      <div class="pillar-mini ${mehrweg ? 'active green' : ''}" title="Mehrweg">🔄</div>
-    `;
-    footer.appendChild(pillars);
-    
-    body.appendChild(footer);
 
     // Gelber CTA: "In die Mittagsbox" (nur wenn Abholnummer)
     const ctaWrap = document.createElement('div');
@@ -8555,8 +8668,10 @@
   }
 
   // --- Discover render (App-like UX, PWA, Light Mode) ---
-  let activeDiscoverFilter = 'near'; // 'near', 'Vegan', 'Vegetarisch', 'Mit Fleisch', 'provider'
-  let currentProviderFilter = null; // Provider-ID für Provider-Filter
+  let activeDiscoverFilter = 'near'; // 'near', 'Suppe', 'Vesper', 'Vegetarisch', 'Salat', 'provider'
+  let currentProviderFilter = null;
+  let discoverRadiusM = parseInt(load('mittagio_discover_radius', '1000'), 10) || 1000; // 500, 1000, 3000
+  const DISCOVER_CAT_MULTI = { Vesper: ['Mit Fleisch','Fisch'], Vegetarisch: ['Vegetarisch','Vegan'], Suppe: ['Suppe'], Salat: ['Salat'] };
   
   // Location-Autofill: Deutsche Städte & PLZ (Demo-Daten)
   const locationSuggestions = [
@@ -8803,11 +8918,34 @@
       };
     }
     
-    // Standard-Start: App öffnet sich immer in Listenform
-    if(discoverViewMode !== 'list'){
-      discoverViewMode = 'list';
-      save(LS.discoverView, discoverViewMode);
+    // Hunger-Radius: 500m / 1km / 3km
+    const radiusLabel = document.getElementById('discoverRadiusLabel');
+    const radiusBtn = document.getElementById('discoverRadiusBtn');
+    const radiusDropdown = document.getElementById('discoverRadiusDropdown');
+    if(radiusLabel) radiusLabel.textContent = discoverRadiusM >= 1000 ? (discoverRadiusM/1000) + ' km' : discoverRadiusM + 'm';
+    if(radiusBtn && radiusDropdown){
+      radiusBtn.onclick = function(e){ e.stopPropagation(); radiusDropdown.style.display = radiusDropdown.style.display === 'block' ? 'none' : 'block'; };
+      radiusDropdown.querySelectorAll('.discover-radius-opt').forEach(function(btn){
+        btn.onclick = function(){
+          discoverRadiusM = parseInt(btn.getAttribute('data-radius'),10);
+          save('mittagio_discover_radius', discoverRadiusM);
+          radiusLabel.textContent = discoverRadiusM >= 1000 ? (discoverRadiusM/1000) + ' km' : discoverRadiusM + 'm';
+          radiusDropdown.style.display = 'none';
+          if(typeof lucide !== 'undefined') lucide.createIcons();
+          renderDiscover();
+        };
+      });
+      if(!radiusDropdown._closedBound){
+        radiusDropdown._closedBound = true;
+        document.addEventListener('click', function(e){
+          if(radiusDropdown.style.display === 'block' && !radiusBtn.contains(e.target) && !radiusDropdown.contains(e.target)){
+            radiusDropdown.style.display = 'none';
+          }
+        });
+      }
     }
+    if(typeof lucide !== 'undefined' && document.getElementById('discoverRadiusChevron')) lucide.createIcons();
+
     switchDiscoverView(discoverViewMode);
     
     // Angebote filtern: Nur heute + Zeit-Filter (10 Min Gehzeit oder 15 Min Fahrzeit)
@@ -8869,12 +9007,23 @@
       list = list.filter(o => o.providerId === currentProviderFilter);
     }
     
-    // Kategorie-Filter (entferne doppelte "In der Nähe" Filterung)
+    // Kategorie-Filter: Pills Eintopf/Vesper/Vegetarisch/Snack
     if(activeDiscoverFilter !== 'near' && activeDiscoverFilter !== 'provider'){
-      const cat = CAT_MAP[activeDiscoverFilter] || activeDiscoverFilter;
-      list = list.filter(o => (o.category||'') === cat);
+      const allowed = DISCOVER_CAT_MULTI[activeDiscoverFilter];
+      if(Array.isArray(allowed)){
+        list = list.filter(o => allowed.includes(o.category||''));
+      } else {
+        const cat = CAT_MAP[activeDiscoverFilter] || activeDiscoverFilter;
+        list = list.filter(o => (o.category||'') === cat);
+      }
     }
-    // "In der Nähe" zeigt alle Angebote (keine zusätzliche Filterung)
+    // Hunger-Radius (500m / 1km / 3km)
+    const radiusKm = discoverRadiusM / 1000;
+    list = list.filter(o => {
+      const data = normalizeOffer(o);
+      const d = data.distanceKm != null ? Number(data.distanceKm) : 0;
+      return d <= radiusKm;
+    });
     
     // Standort-Filter
     const q = String(locationQuery||'').trim().toLowerCase();
@@ -8978,47 +9127,113 @@
   let currentSwipeIndex = 0;
   
   function switchDiscoverView(mode){
-    mode = 'list'; // Force list (Swipe removed)
-    discoverViewMode = 'list';
-    save(LS.discoverView, mode); // Präferenz speichern
+    discoverViewMode = mode === 'map' || mode === 'list' ? mode : 'list';
+    save(LS.discoverView, discoverViewMode);
     
     const listEl = document.getElementById('discoverOffers');
+    const mapWrap = document.getElementById('discoverMap');
     const swipeEl = document.getElementById('discoverSwipe');
+    const switchBtn = document.getElementById('discoverViewSwitchBtn');
+    const switchIcon = document.getElementById('discoverViewSwitchIcon');
+    const switchLabel = document.getElementById('discoverViewSwitchLabel');
     
-    if(mode === 'swipe'){
+    if(discoverViewMode === 'map'){
       if(listEl) listEl.style.display = 'none';
-      if(swipeEl) {
-        swipeEl.style.display = 'flex';
-        swipeEl.style.flexDirection = 'column';
-        swipeEl.style.alignItems = 'center';
-        swipeEl.style.justifyContent = 'flex-start';
-        swipeEl.style.height = 'calc(100vh - 180px)';
-        swipeEl.style.minHeight = '480px';
-        swipeEl.style.maxHeight = 'none';
-        swipeEl.style.padding = '12px 0';
-        swipeEl.style.width = '100%';
-        swipeEl.style.overflow = 'hidden';
-      }
-      swipeFiltersSelected = false;
-      const intro = document.getElementById('swipeFilterIntro');
-      const area = document.getElementById('swipeStackArea');
-      if(intro){ intro.style.display = 'block'; }
-      if(area){ area.style.display = 'none'; }
-      setupSwipeFilterHandlers();
-      updateSwipeLocationInfo();
+      if(mapWrap) { mapWrap.style.display = 'block'; renderDiscoverMap(); }
+      if(swipeEl) swipeEl.style.display = 'none';
+      if(switchIcon) switchIcon.textContent = '☰';
+      if(switchLabel) switchLabel.textContent = 'Liste';
     } else {
-      if(listEl) listEl.style.display = 'block';
-      if(swipeEl) {
-        swipeEl.style.display = 'none';
-        swipeEl.style.height = '75vh';
-        swipeEl.style.minHeight = '480px';
-        swipeEl.style.maxHeight = '600px';
-      }
+      if(listEl) listEl.style.display = 'flex';
+      if(mapWrap) mapWrap.style.display = 'none';
+      if(swipeEl) swipeEl.style.display = 'none';
+      if(switchIcon) switchIcon.textContent = '🗺️';
+      if(switchLabel) switchLabel.textContent = 'Karte';
     }
     
-    if(typeof lucide !== 'undefined'){
-      setTimeout(() => lucide.createIcons(), 50);
+    if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
+  }
+  
+  function renderDiscoverMap(){
+    const canvas = document.getElementById('discoverMapCanvas');
+    if(!canvas) return;
+    canvas.innerHTML = '';
+    var list = offers.filter(function(o){ return o.day === activeDay && o.active !== false; });
+    if(activeDiscoverFilter !== 'near' && activeDiscoverFilter !== 'provider'){
+      var allowed = DISCOVER_CAT_MULTI[activeDiscoverFilter];
+      if(Array.isArray(allowed)) list = list.filter(function(o){ return allowed.includes(o.category||''); });
+      else list = list.filter(function(o){ return (o.category||'') === (CAT_MAP[activeDiscoverFilter] || activeDiscoverFilter); });
     }
+    var radiusKm = discoverRadiusM / 1000;
+    list = list.filter(function(o){
+      var data = normalizeOffer(o);
+      var d = data.distanceKm != null ? Number(data.distanceKm) : 0;
+      return d <= radiusKm;
+    });
+    var q = String(locationQuery||'').trim().toLowerCase();
+    if(q){
+      list = list.filter(function(o){
+        var data = normalizeOffer(o);
+        var addr = buildAddress({address:data.address, street:data.providerStreet, zip:data.providerZip, city:data.providerCity});
+        return String(addr||'').toLowerCase().includes(q);
+      });
+    }
+    if(list.length === 0){
+      canvas.innerHTML = '<div class="discover-map-empty" style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; text-align:center;"><div style="font-size:48px; margin-bottom:16px;">🗺️</div><div style="font-size:18px; font-weight:800; color:#1a1a1a; margin-bottom:8px;">Keine Angebote im Radius</div><div style="font-size:14px; color:#64748b;">Erweitere den Hunger-Radius oder wechsle die Kategorie.</div></div>';
+      return;
+    }
+    var cols = 4;
+    list.forEach(function(o, i){
+      var data = normalizeOffer(o);
+      var pin = document.createElement('div');
+      pin.className = 'discover-pin';
+      var row = Math.floor(i / cols);
+      var col = i % cols;
+      var x = (col + 0.5) * (100 / cols);
+      var y = 20 + (row + 0.5) * (70 / Math.max(1, Math.ceil(list.length / cols)));
+      pin.style.left = x + '%';
+      pin.style.top = y + '%';
+      var emoji = (data.category === 'Suppe') ? '🍲' : (data.category === 'Mit Fleisch' || data.category === 'Fisch') ? '🥩' : (data.category === 'Vegetarisch' || data.category === 'Vegan') ? '🥗' : '🥪';
+      pin.innerHTML = '<div class="discover-pin-emoji">' + emoji + '</div><div class="discover-pin-price">' + euro(data.price) + '</div>';
+      pin.onclick = function(e){ e.stopPropagation(); openDiscoverPinDrawer(o); };
+      canvas.appendChild(pin);
+    });
+  }
+  
+  window.openDiscoverPinDrawer = function(offer){
+    var data = normalizeOffer(offer);
+    var drawer = document.getElementById('discoverPinDrawer');
+    var imgEl = document.getElementById('discoverPinDrawerImage');
+    var titleEl = document.getElementById('discoverPinDrawerTitle');
+    var pillarsEl = document.getElementById('discoverPinDrawerPillars');
+    var btnEl = document.getElementById('discoverPinDrawerBtn');
+    var backdrop = document.getElementById('discoverPinDrawerBackdrop');
+    if(!drawer || !titleEl || !pillarsEl || !btnEl) return;
+    if(imgEl) imgEl.src = data.imageUrl || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=800&q=80';
+    titleEl.textContent = data.dish || 'Gericht';
+    var p = offers.find(function(x){ return x.providerId === data.providerId; });
+    var abholnummer = !!(p && p.orderingEnabled !== false && (data.hasPickupCode || p.hasPickupCode));
+    var mehrweg = !!(p && (p.reuse && p.reuse.enabled));
+    pillarsEl.innerHTML = '<div class="pillar-mini active" title="Vor Ort">🍴</div><div class="pillar-mini ' + (abholnummer ? 'active yellow' : '') + '" title="Abholnummer">🧾</div><div class="pillar-mini ' + (mehrweg ? 'active green' : '') + '" title="Mehrweg">🔄</div>';
+    btnEl.onclick = function(){ closeDiscoverPinDrawer(); openOffer(data.id); };
+    if(backdrop) backdrop.classList.add('open');
+    drawer.classList.add('open');
+  };
+  
+  window.closeDiscoverPinDrawer = function(){
+    var drawer = document.getElementById('discoverPinDrawer');
+    var b = document.getElementById('discoverPinDrawerBackdrop');
+    if(drawer) drawer.classList.remove('open');
+    if(b) b.classList.remove('open');
+  };
+  
+  var discoverViewSwitchBtn = document.getElementById('discoverViewSwitchBtn');
+  if(discoverViewSwitchBtn){
+    discoverViewSwitchBtn.onclick = function(){
+      var newMode = discoverViewMode === 'list' ? 'map' : 'list';
+      switchDiscoverView(newMode);
+      save(LS.discoverView, newMode);
+    };
   }
   
   // SwipeCards rendern - ENTFERNT
@@ -10093,8 +10308,10 @@
   }, 200);
   
   // Initiale Ansicht beim ersten Laden setzen
-  if(discoverViewMode === 'swipe'){
-    switchDiscoverView('swipe');
+  if(discoverViewMode === 'map'){
+    switchDiscoverView('map');
+  } else if(discoverViewMode === 'swipe'){
+    switchDiscoverView('list');
   } else {
     switchDiscoverView('list');
   }
@@ -12733,22 +12950,31 @@
         hint.style.display = 'none';
       }
 
-      // Populiere Kochbuch-Schnellauswahl
+      // Populiere Kochbuch-Schnellauswahl (Top-5 + Suche wenn aus Wochenplan)
+      const searchInput = document.getElementById('createFlowSearch');
+      if(searchInput) searchInput.value = '';
       if(cookbookList){
         const pid = providerId();
-        const mine = (cookbook||[]).filter(c=>c.providerId===pid);
-        
-        if(mine.length === 0){
-          cookbookSelection.style.display = 'none';
-        } else {
-          cookbookSelection.style.display = 'block';
-          cookbookList.innerHTML = '';
-          mine.forEach(c => {
+        let mine = (cookbook||[]).filter(c=>c.providerId===pid);
+        const fromWeek = !!createFlowPreselectedDate;
+        if(searchInput){
+          searchInput.style.display = mine.length > 5 || fromWeek ? 'block' : 'none';
+          searchInput.oninput = function(){ populateCreateFlowCookbookList(cookbookList, mine, fromWeek, searchInput.value.trim()); };
+        }
+        function populateCreateFlowCookbookList(container, items, addToWeekOnly, filter){
+          const q = (filter||'').toLowerCase();
+          const list = q ? items.filter(c=>(c.dish||'').toLowerCase().indexOf(q)>=0) : items;
+          container.innerHTML = '';
+          if(addToWeekOnly && items.length > 0){
+            const topLabel = document.createElement('div');
+            topLabel.style.cssText = 'grid-column:1/-1; font-size:12px; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:4px;';
+            topLabel.textContent = 'Tap = Gericht zum Plan hinzufügen';
+            container.appendChild(topLabel);
+          }
+          list.forEach(c => {
             const card = document.createElement('div');
             card.style.cssText = 'background:#fff; border-radius:16px; border:1px solid #f1f3f5; overflow:hidden; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.04); display:flex; flex-direction:column;';
-            
             const imgUrl = c.photoData || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=200&q=60';
-            
             card.innerHTML = `
               <div style="height:80px; width:100%; background:#f1f3f5;">
                 <img src="${imgUrl}" style="width:100%; height:100%; object-fit:cover;">
@@ -12758,15 +12984,23 @@
                 <div style="font-size:11px; font-weight:700; color:#10b981; margin-top:4px;">${euro(c.price||0)}</div>
               </div>
             `;
-            
             card.onclick = () => {
               const selectedDate = createFlowPreselectedDate;
               closeCreateFlowSheet();
-              startListingFlow({ dishId: c.id, date: selectedDate || isoDate(new Date()) });
+              if(addToWeekOnly && selectedDate){
+                addCookbookEntryToWeek(selectedDate, c.id);
+              } else {
+                startListingFlow({ dishId: c.id, date: selectedDate || isoDate(new Date()) });
+              }
             };
-            
-            cookbookList.appendChild(card);
+            container.appendChild(card);
           });
+        }
+        if(mine.length === 0){
+          cookbookSelection.style.display = 'none';
+        } else {
+          cookbookSelection.style.display = 'block';
+          populateCreateFlowCookbookList(cookbookList, mine, fromWeek, '');
         }
       }
 
@@ -16625,6 +16859,8 @@
     const dayWrap = document.getElementById('weekDays');
     const list = document.getElementById('weekList');
     const actionsBar = document.getElementById('weekActionsBar');
+    const activateBlock = document.getElementById('weekActivateBlock');
+    const btnActivateThumb = document.getElementById('btnWeekActivateThumb');
     if(!dayWrap || !list) return;
 
     dayWrap.innerHTML = '';
@@ -16661,32 +16897,28 @@
       const btnWeekEmptyAdd = document.getElementById('btnWeekEmptyAdd');
       if(btnWeekEmptyAdd) btnWeekEmptyAdd.onclick = () => { createFlowPreselectedDate = weekPlanDay; openCreateFlowSheet(); };
       if(actionsBar) actionsBar.style.display = 'none';
+      if(activateBlock) activateBlock.style.display = 'none';
       if(typeof lucide !== 'undefined') lucide.createIcons();
       return;
     }
 
     if(actionsBar) actionsBar.style.display = 'flex';
+    if(activateBlock){
+      if(!isLive && providerEntries.length > 0){
+        activateBlock.style.display = 'block';
+        if(btnActivateThumb){ btnActivateThumb.onclick = function(){ activateWeekDay(weekPlanDay); }; }
+      } else {
+        activateBlock.style.display = 'none';
+      }
+    }
     list.innerHTML = '';
 
     var statusBlock = document.createElement('div');
     statusBlock.className = 'week-status-block';
     if(isLive){
-      statusBlock.innerHTML = `
-        <div class="week-status-online">
-          <span class="week-status-dot" style="background:#10b981;"></span>
-          <span>ONLINE</span>
-        </div>
-        <button type="button" class="btn secondary" style="min-height:36px; padding:0 14px; font-size:13px; font-weight:700; border-radius:10px;" onclick="shareWeekPlan()">Wochenplan teilen</button>
-      `;
+      statusBlock.innerHTML = '<div class="week-status-online"><span class="week-status-dot" style="background:#10b981;"></span><span>ONLINE</span></div><button type="button" class="btn secondary" style="min-height:40px; padding:0 14px; font-size:14px; font-weight:700; border-radius:12px;" onclick="shareWeekPlan()">Teilen</button>';
     } else {
-      statusBlock.innerHTML = `
-        <div class="week-status-draft">
-          <span class="week-status-dot" style="background:#94a3b8;"></span>
-          <span>ENTWURF</span>
-        </div>
-        <button type="button" id="btnActivateDay" class="btn" style="min-height:40px; padding:0 16px; font-size:13px; font-weight:800; background:#1a1a1a; color:#fff; border:none; border-radius:10px;">Jetzt für 4,99 € aktivieren</button>
-      `;
-      setTimeout(function(){ var btn = document.getElementById('btnActivateDay'); if(btn) btn.onclick = function(){ activateWeekDay(weekPlanDay); }; }, 0);
+      statusBlock.innerHTML = '<div class="week-status-draft"><span class="week-status-dot" style="background:#94a3b8;"></span><span>ENTWURF</span></div>';
     }
     list.appendChild(statusBlock);
 
@@ -16698,19 +16930,37 @@
       var name = (cb && cb.dish) || entry.dish || 'Gericht';
       var price = (cb && cb.price) || entry.price || 0;
       var weekIndex = entryIndices[idx];
+      var wrap = document.createElement('div');
+      wrap.className = 'week-meal-card-wrap';
+      var swipeInner = document.createElement('div');
+      swipeInner.className = 'week-meal-card-swipe';
       var card = document.createElement('div');
       card.className = 'week-meal-card';
       var onlineHtml = isLive
         ? '<span class="week-meal-online"><i data-lucide="check-circle" style="width:14px;height:14px;"></i> Online</span>'
         : '<span style="font-size:12px; font-weight:700; color:#94a3b8;">Geplant</span>';
-      var actionsHtml = !isLive
-        ? '<div class="week-meal-actions">' +
-          '<button type="button" class="btn secondary" style="width:36px;height:36px;padding:0;display:flex;align-items:center;justify-content:center;border-radius:10px;" onclick="startWizard(\'listing\', {editOfferId: null, fromCookbookId: \'' + (entry.cookbookId||'') + '\', date: \'' + weekPlanDay + '\'})"><i data-lucide="edit-3" style="width:18px;height:18px;color:#64748b;"></i></button>' +
-          '<button type="button" class="btn secondary" style="width:36px;height:36px;padding:0;display:flex;align-items:center;justify-content:center;border-radius:10px;" onclick="deletePlannedEntry(\'' + weekPlanDay + '\', ' + weekIndex + ')"><i data-lucide="trash-2" style="width:18px;height:18px;color:#ef4444;"></i></button>' +
-          '</div>'
-        : '<div class="week-meal-actions"><button type="button" class="btn secondary" style="width:36px;height:36px;padding:0;display:flex;align-items:center;justify-content:center;border-radius:10px;" onclick="startListingFlow({editOfferId: \'' + (entry.id||'') + '\'})"><i data-lucide="edit-3" style="width:18px;height:18px;color:#64748b;"></i></button></div>';
+      var actionsHtml = isLive
+        ? '<div class="week-meal-actions"><button type="button" class="btn secondary" style="min-height:44px;min-width:44px;padding:0;border-radius:12px;" onclick="startListingFlow({editOfferId: \'' + (entry.id||'') + '\'})"><i data-lucide="edit-3" style="width:20px;height:20px;color:#64748b;"></i></button></div>'
+        : '';
       card.innerHTML = '<div><div class="week-meal-name">' + esc(name) + '</div><div class="week-meal-meta">' + euro(price) + ' ' + onlineHtml + '</div></div>' + actionsHtml;
-      list.appendChild(card);
+      if(!isLive){
+        var swipeDel = document.createElement('div');
+        swipeDel.className = 'week-swipe-actions right';
+        swipeDel.innerHTML = 'Löschen';
+        swipeDel.onclick = function(){ if(confirm('Gericht entfernen?')) deletePlannedEntry(weekPlanDay, weekIndex); };
+        var swipeCopy = document.createElement('div');
+        swipeCopy.className = 'week-swipe-actions left';
+        swipeCopy.innerHTML = 'Kopieren';
+        swipeCopy.onclick = function(){ copyWeekEntryToOtherDay(weekPlanDay, weekIndex); };
+        swipeInner.appendChild(swipeCopy);
+        swipeInner.appendChild(swipeDel);
+        swipeInner.appendChild(card);
+        attachSwipeToWeekCard(swipeInner, weekPlanDay, weekIndex);
+      } else {
+        swipeInner.appendChild(card);
+      }
+      wrap.appendChild(swipeInner);
+      list.appendChild(wrap);
     });
 
     if(!isLive){
@@ -16723,6 +16973,111 @@
     }
 
     if(typeof lucide !== 'undefined') lucide.createIcons();
+  }
+
+  function attachSwipeToWeekCard(swipeEl, date, index){
+    var cardEl = swipeEl.querySelector && swipeEl.querySelector('.week-meal-card') || swipeEl.children[2];
+    if(!cardEl) return;
+    var startX = 0, currentX = 0, SWIPE_THRESHOLD = 60, mouseActive = false;
+    function onStart(e){
+      startX = (e.touches && e.touches[0] ? e.touches[0].clientX : e.clientX) || 0;
+      currentX = 0;
+      cardEl.style.transition = 'none';
+    }
+    function onMove(e){
+      var x = (e.touches && e.touches[0] ? e.touches[0].clientX : e.clientX) || 0;
+      currentX = x - startX;
+      currentX = Math.max(-100, Math.min(100, currentX));
+      cardEl.style.transform = 'translateX(' + currentX + 'px)';
+    }
+    function onEnd(){
+      cardEl.style.transition = 'transform 0.2s ease-out';
+      if(currentX < -SWIPE_THRESHOLD){
+        if(confirm('Gericht entfernen?')) deletePlannedEntry(date, index);
+        cardEl.style.transform = 'translateX(0)';
+      } else if(currentX > SWIPE_THRESHOLD){
+        copyWeekEntryToOtherDay(date, index);
+        cardEl.style.transform = 'translateX(0)';
+      } else {
+        cardEl.style.transform = 'translateX(0)';
+      }
+    }
+    function onMouseMove(e){
+      if(!mouseActive) return;
+      currentX = e.clientX - startX;
+      currentX = Math.max(-100, Math.min(100, currentX));
+      cardEl.style.transform = 'translateX(' + currentX + 'px)';
+    }
+    function onMouseUp(){
+      if(!mouseActive) return;
+      mouseActive = false;
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+      onEnd();
+    }
+    swipeEl.addEventListener('touchstart', onStart, { passive: true });
+    swipeEl.addEventListener('touchmove', onMove, { passive: true });
+    swipeEl.addEventListener('touchend', onEnd, { passive: false });
+    swipeEl.addEventListener('mousedown', function(e){
+      e.preventDefault();
+      startX = e.clientX;
+      currentX = 0;
+      cardEl.style.transition = 'none';
+      mouseActive = true;
+      document.addEventListener('mousemove', onMouseMove);
+      document.addEventListener('mouseup', onMouseUp);
+    });
+  }
+  function addCookbookEntryToWeek(dayKey, cookbookId){
+    var c = (cookbook||[]).find(function(x){ return String(x.id) === String(cookbookId); });
+    if(!c || c.providerId !== providerId()) return;
+    if(!week[dayKey]) week[dayKey] = [];
+    week[dayKey].push({ providerId: c.providerId, cookbookId: c.id, dish: c.dish, price: c.price });
+    save(LS.week, week);
+    renderWeekPlan();
+    renderProviderWeekPreview();
+    toast((c.dish || 'Gericht') + ' hinzugefügt');
+  }
+
+  function copyWeekEntryToOtherDay(fromDate, entryIndex){
+    var dayArr = week[fromDate] || [];
+    var entry = dayArr[entryIndex];
+    if(!entry || entry.providerId !== providerId()) return;
+    var keys = [];
+    for(var i = 0; i < 7; i++){ var d = new Date(); d.setDate(d.getDate() + i); keys.push(isoDate(d)); }
+    var otherDays = keys.filter(function(k){ return k !== fromDate; });
+    var sheet = document.getElementById('copyDaySheet');
+    if(!sheet){
+      sheet = document.createElement('div');
+      sheet.id = 'copyDaySheet';
+      sheet.className = 'bottom-sheet';
+      sheet.style.cssText = 'position:fixed; left:0; right:0; bottom:0; background:#fff; border-radius:20px 20px 0 0; box-shadow:0 -4px 20px rgba(0,0,0,0.15); z-index:9999; padding:20px 20px calc(20px + env(safe-area-inset-bottom)); display:none;';
+      sheet.innerHTML = '<div style="font-weight:800; font-size:16px; margin-bottom:16px;">An welchen Tag kopieren?</div><div id="copyDayList"></div><button type="button" class="btn secondary" style="margin-top:16px; width:100%; min-height:48px;" id="copyDayCancel">Abbrechen</button>';
+      document.body.appendChild(sheet);
+      document.getElementById('copyDayCancel').onclick = function(){ sheet.style.display = 'none'; };
+    }
+    var list = document.getElementById('copyDayList');
+    list.innerHTML = '';
+    otherDays.forEach(function(key){
+      var d = new Date(key + 'T12:00:00');
+      var label = weekDayShortLabel(d, keys.indexOf(key));
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'btn secondary';
+      btn.style.cssText = 'width:100%; min-height:48px; margin-bottom:8px; border-radius:12px; font-size:15px; font-weight:700;';
+      btn.textContent = label;
+      btn.onclick = function(){
+        if(!week[key]) week[key] = [];
+        week[key].push({ providerId: entry.providerId, cookbookId: entry.cookbookId, dish: entry.dish, price: entry.price });
+        save(LS.week, week);
+        sheet.style.display = 'none';
+        renderWeekPlan();
+        renderProviderWeekPreview();
+        toast('Gericht für ' + label + ' übernommen');
+      };
+      list.appendChild(btn);
+    });
+    sheet.style.display = 'block';
   }
 
   function deletePlannedEntry(date, index){
@@ -17980,10 +18335,11 @@
   }
   const btnWeekRefresh = document.getElementById('btnWeekRefresh');
   if(btnWeekRefresh){
-    btnWeekRefresh.onclick=()=>{
-      renderWeekPlan();
-      if(typeof showToast === 'function') showToast('Aktualisiert');
-    };
+    btnWeekRefresh.onclick=()=>{ renderWeekPlan(); if(typeof showToast === 'function') showToast('Aktualisiert'); };
+  }
+  const btnWeekRefreshZone = document.getElementById('btnWeekRefreshZone');
+  if(btnWeekRefreshZone){
+    btnWeekRefreshZone.onclick=()=>{ renderWeekPlan(); if(typeof showToast === 'function') showToast('Aktualisiert'); };
   }
   const btnWeekPdf = document.getElementById('btnWeekPdf');
   if(btnWeekPdf){

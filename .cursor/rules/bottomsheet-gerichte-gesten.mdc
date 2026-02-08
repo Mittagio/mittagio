@@ -1,0 +1,48 @@
+---
+description: BottomSheet „Gericht hinzufügen“ + Swipe/Tap-Gesten auf Gerichtskarten
+globs: app/index.html
+alwaysApply: false
+---
+
+# BottomSheet: Gerichte hinzufügen & Gesten (Löschen/Bearbeiten)
+
+## Befehl für Cursor
+
+**Cursor, erstelle ein BottomSheet für das Hinzufügen von Gerichten.**
+
+### Aufbau des BottomSheets
+
+- **Oben:** Eine Searchbar und Quick-Pick-Pills aus dem Kochbuch.
+- **Mittig:** Ein Time-Picker (Grid mit 3 Standardzeiten) und Toggle-Icons für die 3 Säulen (Emoji-Regel: 🍴 Vor Ort, 🎫 Abholnummer, 🔄 Mehrweg).
+- **Ganz unten:** Ein fixierter Action-Button: **„Jetzt für 4,99 € einplanen“**.
+
+### Design
+
+- Weißer Hintergrund.
+- Abgerundete Ecken oben.
+- Schatten-Overlay für den Hintergrund (Backdrop).
+- **Keine Schiefertafel** – helles, klares UI.
+
+---
+
+## Gesten auf der Hauptseite (Gerichts-Karten)
+
+### Löschen
+
+- **Swipe-Left** auf der Gerichts-Karte implementieren.
+- Beim Wischen nach links wird ein **rotes Mülleimer-Icon** freigegeben.
+- Bestätigung/Löschen auslösen, wenn der Nutzer auf das Icon tippt oder der Swipe einen Schwellwert überschreitet.
+
+### Bearbeiten
+
+- **Einfacher Tap** auf die Karte öffnet das BottomSheet **erneut mit den geladenen Daten** des jeweiligen Gerichts (Vorauswahl: Gericht, Zeit, 3 Säulen-Toggles).
+
+---
+
+## Kurzreferenz
+
+| Aktion        | Geste / Element | Verhalten                                      |
+|---------------|-----------------|------------------------------------------------|
+| Gericht hinzufügen | FAB / „+“       | BottomSheet öffnen (Searchbar, Pills, Time, 3 Säulen, CTA) |
+| Gericht bearbeiten | Tap auf Karte   | BottomSheet mit geladenen Daten öffnen         |
+| Gericht löschen    | Swipe-Left      | Rotes Mülleimer-Icon freigeben → Löschen       |
