@@ -3153,6 +3153,26 @@
       #v-provider-pickups h3, #v-provider-cookbook h1, #v-provider-week h1, #v-provider-profile h1{
         font-size:24px !important;
       }
+      /* Wochenplan Applike-Layout */
+      #v-provider-week .week-plan-wrap{ max-width:500px; margin:0 auto; padding:0 20px 24px; }
+      #v-provider-week .week-dayrow{ display:flex; gap:8px; overflow-x:auto; -webkit-overflow-scrolling:touch; padding:0 0 16px; margin-bottom:16px; border-bottom:1px solid #f1f3f5; }
+      #v-provider-week .week-day-pill{ flex:0 0 auto; min-width:64px; padding:12px 10px; border-radius:14px; border:2px solid transparent; background:#f8f9fa; font-size:12px; font-weight:800; color:#64748b; cursor:pointer; transition:all 0.2s; line-height:1.25; text-align:center; white-space:pre-line; }
+      #v-provider-week .week-day-pill.active{ background:rgba(255,215,0,0.18); border-color:var(--brand,#FFD700); color:#1a1a1a; }
+      #v-provider-week .week-status-block{ display:flex; justify-content:space-between; align-items:center; padding:14px 16px; background:#f8fafc; border-radius:16px; margin-bottom:20px; border:1px solid #e2e8f0; }
+      #v-provider-week .week-status-online{ display:flex; align-items:center; gap:8px; font-weight:800; font-size:14px; color:#10b981; }
+      #v-provider-week .week-status-draft{ display:flex; align-items:center; gap:8px; font-weight:800; font-size:14px; color:#64748b; }
+      #v-provider-week .week-status-dot{ width:10px; height:10px; border-radius:50%; }
+      #v-provider-week .week-meal-card{ display:flex; align-items:center; justify-content:space-between; padding:16px; background:#fff; border-radius:16px; border:1px solid #f1f3f5; margin-bottom:10px; box-shadow:0 2px 8px rgba(0,0,0,0.03); }
+      #v-provider-week .week-meal-name{ font-weight:900; font-size:16px; color:#1a1a1a; }
+      #v-provider-week .week-meal-meta{ font-size:13px; color:#64748b; margin-top:4px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+      #v-provider-week .week-meal-online{ display:inline-flex; align-items:center; gap:4px; font-size:12px; font-weight:700; color:#10b981; }
+      #v-provider-week .week-meal-actions{ display:flex; align-items:center; gap:6px; }
+      #v-provider-week .week-add-more{ width:100%; margin-top:12px; padding:14px; border-radius:14px; border:2px dashed #e2e8f0; background:#fafbfc; font-size:14px; font-weight:700; color:#64748b; cursor:pointer; transition:all 0.2s; }
+      #v-provider-week .week-add-more:hover{ border-color:var(--brand); color:var(--brand); background:rgba(255,215,0,0.06); }
+      #v-provider-week .week-empty-state{ text-align:center; padding:32px 20px; }
+      #v-provider-week .week-empty-state .week-empty-title{ font-size:18px; font-weight:900; color:#1a1a1a; margin-bottom:8px; }
+      #v-provider-week .week-empty-state .week-empty-hint{ font-size:14px; color:#64748b; line-height:1.5; margin-bottom:24px; }
+      #v-provider-week .week-actions-bar{ display:flex; gap:12px; margin-top:24px; padding-top:20px; border-top:1px solid #f1f3f5; }
       #v-provider-profile .panel{ padding:18px !important; border-radius:16px !important; margin-bottom:16px !important; }
       #v-provider-profile .provider-profile-section-title{ margin-top:24px; margin-bottom:12px; }
       #v-provider-profile .provider-profile-section-title:first-of-type{ margin-top:0; }
@@ -4877,42 +4897,30 @@
     </section>
 
     <section class="view onboarding-view" id="v-provider-week">
-      <header style="background:#fff; padding:24px 20px 20px; border-bottom:1px solid rgba(0,0,0,0.05); position:sticky; top:0; z-index:50;">
-        <div style="display:flex; align-items:center; gap:12px;">
-          <button id="btnWeekBack" style="background:rgba(0,0,0,0.03); border:none; width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; color:#1a1a1a;">
-            <i data-lucide="chevron-left" style="width:24px; height:24px; stroke-width:3;"></i>
+      <header style="background:#fff; padding:20px 20px 16px; border-bottom:1px solid rgba(0,0,0,0.05); position:sticky; top:0; z-index:50;">
+        <div style="display:flex; align-items:center; justify-content:space-between; width:100%; gap:12px;">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <button id="btnWeekBack" style="background:rgba(0,0,0,0.04); border:none; width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; color:#1a1a1a;">
+              <i data-lucide="chevron-left" style="width:24px; height:24px; stroke-width:3;"></i>
+            </button>
+            <h1 style="margin:0; font-size:22px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a;">Wochenplan</h1>
+          </div>
+          <button type="button" id="btnWeekRefresh" aria-label="Aktualisieren" style="background:rgba(0,0,0,0.04); border:none; width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; color:#1a1a1a;">
+            <i data-lucide="refresh-cw" style="width:22px; height:22px; stroke-width:2.5;"></i>
           </button>
-          <h1 style="margin:0; font-size:24px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a;">Wochenplan</h1>
         </div>
       </header>
 
-      <div style="padding:20px; max-width:500px; margin:0 auto; flex:1;">
-        <div style="background:#fff; border-radius:28px; padding:24px; border:1px solid rgba(0,0,0,0.04); box-shadow:0 4px 20px rgba(0,0,0,0.02);">
-          <!-- Days Row -->
-          <div class="dayrow" id="weekDays" style="padding:0 0 20px; border-bottom:1px solid #f1f1f1; margin-bottom:20px; gap:8px; justify-content:space-between;"></div>
-          
-          <!-- Content List -->
-          <div id="weekList" style="text-align:center; padding:40px 20px;">
-            <div style="width:80px; height:80px; background:rgba(255,215,0,0.1); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 20px;">
-              <i data-lucide="calendar-plus" style="width:40px; height:40px; color:#FFD700;"></i>
-            </div>
-            <h3 style="font-size:20px; font-weight:900; color:#1a1a1a; margin-bottom:8px;">Noch kein Plan!?</h3>
-            <p style="color:#64748b; font-size:15px; line-height:1.5; margin-bottom:32px;">Sichere dir jetzt schon die besten Plätze in der Woche deiner Gäste.</p>
-            <button class="btn-primary provider-add-plus-btn" type="button" id="btnWeekEmptyAdd" style="width:100%; border-radius:16px;">
-              <span class="plus-char" style="font-size:20px; line-height:1; color:#fff;">+</span>
-              <span>Jetzt Woche planen</span>
-            </button>
-          </div>
-          
-          <!-- Actions -->
-          <div style="display:flex; gap:12px; margin-top:24px; border-top:1px solid #f1f1f1; padding-top:24px;">
-            <button class="btn secondary" type="button" id="btnWeekPdf" style="display:none; flex:1; min-height:52px; border-radius:14px;">
-              <i data-lucide="printer" style="width:18px;height:18px;margin-right:8px;"></i>Drucken
-            </button>
-            <button class="btn secondary" type="button" id="btnWeekShare" style="display:none; flex:1; min-height:52px; border-radius:14px;">
-              <i data-lucide="share-2" style="width:18px;height:18px;margin-right:8px;"></i>Teilen
-            </button>
-          </div>
+      <div class="week-plan-wrap" style="flex:1;">
+        <div class="week-dayrow" id="weekDays"></div>
+        <div id="weekList"></div>
+        <div class="week-actions-bar" id="weekActionsBar" style="display:none;">
+          <button class="btn secondary" type="button" id="btnWeekPdf" style="flex:1; min-height:48px; border-radius:14px; font-size:14px; font-weight:700;">
+            <i data-lucide="printer" style="width:18px;height:18px;margin-right:8px;"></i>Drucken
+          </button>
+          <button class="btn secondary" type="button" id="btnWeekShare" style="flex:1; min-height:48px; border-radius:14px; font-size:14px; font-weight:700;">
+            <i data-lucide="share-2" style="width:18px;height:18px;margin-right:8px;"></i>Wochenplan teilen
+          </button>
         </div>
       </div>
     </section>
@@ -5140,7 +5148,7 @@
               <label class="toggle-switch"><input type="checkbox" id="providerReuseEnabled"><span class="toggle-slider"></span></label>
             </div>
 
-            <div style="padding:20px; display:flex; justify-content:space-between; align-items:flex-start;">
+            <div style="padding:20px; border-bottom:1px solid #f8f9fa; display:flex; justify-content:space-between; align-items:center;">
               <div style="display:flex; align-items:center; gap:16px;">
                 <div style="width:44px; height:44px; border-radius:14px; background:rgba(255,215,0,0.15); display:flex; align-items:center; justify-content:center; font-size:22px;">🧾</div>
                 <div>
@@ -5149,6 +5157,17 @@
                 </div>
               </div>
               <label class="toggle-switch"><input type="checkbox" id="providerAbholnummerEnabled"><span class="toggle-slider"></span></label>
+            </div>
+
+            <div style="padding:20px; display:flex; justify-content:space-between; align-items:center;">
+              <div style="display:flex; align-items:center; gap:16px;">
+                <div style="width:44px; height:44px; border-radius:14px; background:#f1f3f5; display:flex; align-items:center; justify-content:center; font-size:22px;">🌾</div>
+                <div>
+                  <div style="font-weight:800; color:#1a1a1a; font-size:16px;">Allergene angeben?</div>
+                  <div style="font-size:13px; color:#64748b;">Standard für neue Inserate</div>
+                </div>
+              </div>
+              <label class="toggle-switch"><input type="checkbox" id="providerWantsAllergensEnabled"><span class="toggle-slider"></span></label>
             </div>
           </div>
           
@@ -6213,10 +6232,10 @@
 <div class="sheet sheet--kitchen" id="createFlowSheet">
   <div class="handle"></div>
   <div class="sheet-body">
-    <div class="create-flow-title">Gericht hinzufügen</div>
+    <div class="create-flow-title">Inserat hinzufügen</div>
     
     <div id="createFlowCookbookSelection" style="margin-bottom:24px;">
-      <div class="hint" style="margin-bottom:12px; font-weight:700; color:#1a1a1a; font-size:13px; text-transform:uppercase; letter-spacing:0.05em;">Schnellauswahl aus Kochbuch</div>
+      <div class="hint" style="margin-bottom:12px; font-weight:700; color:#1a1a1a; font-size:13px; text-transform:uppercase; letter-spacing:0.05em;">Aus Kochbuch</div>
       <div id="createFlowCookbookList" style="display:grid; grid-template-columns:repeat(2, 1fr); gap:12px; max-height:300px; overflow-y:auto; padding:4px;">
         <!-- Dynamisch befüllt -->
       </div>
@@ -6225,7 +6244,7 @@
     <div class="create-flow-btns">
       <button class="btn-create-primary provider-add-plus-btn" type="button" id="btnCreateNewDish" style="margin-bottom:12px;">
         <span class="plus-char" style="font-size:22px; line-height:1; color:#fff;">+</span>
-        <span>Neues Gericht erstellen</span>
+        <span>Inseratsflow öffnen</span>
       </button>
       <button class="btn ghost" type="button" id="btnCreateFromCookbook" style="width:100%; min-height:48px; border:2px solid #e5e7eb; background:#fff; border-radius:14px; font-weight:700; color:#64748b;">
         <span>📖 Zum Kochbuch wechseln</span>
@@ -7012,7 +7031,7 @@
     },
     reuseEnabled: false
   });
-  let provider = load(LS.provider, { loggedIn:false, email:null, current_session_id:null, profile:{ name:'', address:'', street:'', zip:'', city:'', mealWindow:'11:30 – 14:00', mealStart:'11:30', mealEnd:'14:00', lunchWeekdays:[1,2,3,4,5], phone:'', email:'', website:'', logoData:'', reuseEnabledByDefault:false, abholnummerEnabledByDefault:false } });
+  let provider = load(LS.provider, { loggedIn:false, email:null, current_session_id:null, profile:{ name:'', address:'', street:'', zip:'', city:'', mealWindow:'11:30 – 14:00', mealStart:'11:30', mealEnd:'14:00', lunchWeekdays:[1,2,3,4,5], phone:'', email:'', website:'', logoData:'', reuseEnabledByDefault:false, abholnummerEnabledByDefault:false, wantsAllergensByDefault:false } });
   let cookbook = load(LS.cookbook, []); // [{id, dish, category, price, allergens[], extras?, reuse? , photoData?}]
   let week = load(LS.week, {}); // { 'YYYY-MM-DD': [cookbookId,...] }
 
@@ -7896,7 +7915,7 @@
   }
 
   function normalizeProviderProfile(p){
-    const base = { name:'', address:'', street:'', zip:'', city:'', mealWindow:DEFAULT_MEAL_WINDOW, mealStart:'11:30', mealEnd:'14:00', lunchWeekdays:[1,2,3,4,5], phone:'', email:'', website:'', logoData:'', kitchenEmail:'', autoSelloutTime:'', reuseEnabledByDefault:false, abholnummerEnabledByDefault:false };
+    const base = { name:'', address:'', street:'', zip:'', city:'', mealWindow:DEFAULT_MEAL_WINDOW, mealStart:'11:30', mealEnd:'14:00', lunchWeekdays:[1,2,3,4,5], phone:'', email:'', website:'', logoData:'', kitchenEmail:'', autoSelloutTime:'', reuseEnabledByDefault:false, abholnummerEnabledByDefault:false, wantsAllergensByDefault:false };
     const out = {...base, ...(p||{})};
     if(!out.address){ out.address = buildAddress(out); }
     if(!out.mealWindow){ out.mealWindow = DEFAULT_MEAL_WINDOW; }
@@ -8305,11 +8324,11 @@
     setProviderNavActive('provider-home');
     showView(views.providerWeek);
     renderWeekPlan();
-    // FAB ausblenden
+    // FAB anzeigen (öffnet „Inserat hinzufügen“ mit Tag-Vorauswahl)
     const fab = document.getElementById('fabProviderAddOffer');
     const fabLabel = document.getElementById('fabProviderAddOfferLabel');
-    if(fab) fab.style.display = 'none';
-    if(fabLabel) fabLabel.style.display = 'none';
+    if(fab) fab.style.display = 'flex';
+    if(fabLabel) fabLabel.style.display = 'block';
     
     // Browser-Verlauf aktualisieren
     pushViewState({view: 'provider-week', mode: mode}, location.pathname);
@@ -16449,13 +16468,18 @@
       }
     }
     
-    // FAB
+    // FAB → „Inserat hinzufügen“ (Aus Kochbuch oder Inseratsflow)
     const fabProviderAddOffer = document.getElementById('fabProviderAddOffer');
     const fabProviderAddOfferLabel = document.getElementById('fabProviderAddOfferLabel');
     if(fabProviderAddOffer){
       fabProviderAddOffer.onclick = () => {
-        // Unified Flow: Ohne Datum = Heute
-        openDishFlow();
+        const weekView = document.getElementById('v-provider-week');
+        if(weekView && weekView.classList.contains('active')){
+          createFlowPreselectedDate = typeof weekPlanDay !== 'undefined' ? weekPlanDay : isoDate(new Date());
+        } else {
+          createFlowPreselectedDate = null;
+        }
+        openCreateFlowSheet();
       };
       fabProviderAddOffer.onmouseenter = () => {
         if(fabProviderAddOfferLabel) fabProviderAddOfferLabel.style.opacity = '1';
@@ -16587,136 +16611,114 @@
     list.innerHTML = items.map(i=>`• ${esc(i.dish)}`).join('<br>');
   }
 
+  function weekDayShortLabel(d, i){
+    if(i === 0) return 'Heute';
+    const days = ['SO','MO','DI','MI','DO','FR','SA'];
+    return days[d.getDay()] + '\n' + d.getDate() + '.' + (d.getMonth()+1) + '.';
+  }
+
   function renderWeekPlan(){
-    // Session-Aktivität aktualisieren
     updateSessionActivity();
     const dayWrap = document.getElementById('weekDays');
     const list = document.getElementById('weekList');
+    const actionsBar = document.getElementById('weekActionsBar');
     if(!dayWrap || !list) return;
 
     dayWrap.innerHTML = '';
-    for(let i=0;i<5;i++){
-      const d = new Date(); d.setDate(d.getDate()+i);
+    for(let i = 0; i < 7; i++){
+      const d = new Date(); d.setDate(d.getDate() + i);
       const key = isoDate(d);
       const b = document.createElement('button');
-      b.className = 'day' + (weekPlanDay===key ? ' active' : '');
-      b.textContent = fmtDay(d);
-      b.onclick=()=>{ weekPlanDay = key; renderWeekPlan(); };
+      b.type = 'button';
+      b.className = 'week-day-pill' + (weekPlanDay === key ? ' active' : '');
+      b.textContent = weekDayShortLabel(d, i);
+      b.onclick = () => { weekPlanDay = key; renderWeekPlan(); };
       dayWrap.appendChild(b);
     }
 
     const dayEntries = week[weekPlanDay] || [];
-    const providerEntries = dayEntries
-      .map((entry, idx)=>({entry, idx}))
-      .filter(x=>x.entry.providerId===providerId());
-    
-    // Prüfen ob dieser Tag bereits in 'offers' existiert (LIVE)
+    const providerEntries = dayEntries.map((entry, idx)=>({entry, idx})).filter(x => x.entry.providerId === providerId());
     const liveOffers = offers.filter(o => o.providerId === providerId() && o.day === weekPlanDay);
     const isLive = liveOffers.length > 0;
 
     if(!providerEntries.length && !isLive){
       list.innerHTML = `
-        <div style="font-weight:600; font-size:16px; margin-bottom:8px;">Keine Inserate geplant</div>
-        <div class="hint" style="font-size:14px; line-height:1.4; margin-bottom:16px; color:var(--muted);">
-          Plane deine Woche und erstelle Inserate.
+        <div class="week-empty-state">
+          <div style="width:72px; height:72px; background:rgba(255,215,0,0.12); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 20px;">
+            <i data-lucide="calendar-plus" style="width:36px; height:36px; color:var(--brand,#FFD700);"></i>
+          </div>
+          <div class="week-empty-title">Noch kein Plan für diesen Tag</div>
+          <div class="week-empty-hint">Plane deine Woche und erstelle Inserate – so sehen Gäste, was du kochst.</div>
+          <button class="btn-primary provider-add-plus-btn" type="button" id="btnWeekEmptyAdd" style="width:100%; max-width:280px; min-height:48px; border-radius:14px;">
+            <span class="plus-char" style="font-size:20px; line-height:1; color:#fff;">+</span>
+            <span>Inserat erstellen</span>
+          </button>
         </div>
-        <button class="btn secondary" type="button" id="btnWeekEmptyAdd" style="width:100%; min-height:44px;">
-          Inserat erstellen
-        </button>
       `;
       const btnWeekEmptyAdd = document.getElementById('btnWeekEmptyAdd');
-      if(btnWeekEmptyAdd) btnWeekEmptyAdd.onclick = () => {
-        createFlowPreselectedDate = weekPlanDay;
-        openCreateFlowSheet();
-      };
-      // Hide PDF button in empty state
-      const btnWeekPdf = document.getElementById('btnWeekPdf');
-      if(btnWeekPdf) btnWeekPdf.style.display = 'none';
+      if(btnWeekEmptyAdd) btnWeekEmptyAdd.onclick = () => { createFlowPreselectedDate = weekPlanDay; openCreateFlowSheet(); };
+      if(actionsBar) actionsBar.style.display = 'none';
+      if(typeof lucide !== 'undefined') lucide.createIcons();
       return;
     }
 
-    // Show PDF button only when there are entries
-    const btnWeekPdf = document.getElementById('btnWeekPdf');
-    if(btnWeekPdf) btnWeekPdf.style.display = 'block';
-    
+    if(actionsBar) actionsBar.style.display = 'flex';
     list.innerHTML = '';
-    
-    // Status Header
-    const statusHeader = document.createElement('div');
-    statusHeader.style.cssText = 'display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; padding:12px; background:#f8f9fa; border-radius:14px;';
-    
+
+    var statusBlock = document.createElement('div');
+    statusBlock.className = 'week-status-block';
     if(isLive){
-      statusHeader.innerHTML = `
-        <div style="display:flex; align-items:center; gap:8px;">
-          <span style="width:10px; height:10px; border-radius:50%; background:#10b981;"></span>
-          <span style="font-weight:700; font-size:14px; color:#10b981;">ONLINE</span>
+      statusBlock.innerHTML = `
+        <div class="week-status-online">
+          <span class="week-status-dot" style="background:#10b981;"></span>
+          <span>ONLINE</span>
         </div>
-        <button class="btn secondary" style="min-height:32px; padding:0 12px; font-size:12px;" onclick="shareWeekPlan()">Wochenplan teilen</button>
+        <button type="button" class="btn secondary" style="min-height:36px; padding:0 14px; font-size:13px; font-weight:700; border-radius:10px;" onclick="shareWeekPlan()">Wochenplan teilen</button>
       `;
     } else {
-      statusHeader.innerHTML = `
-        <div style="display:flex; align-items:center; gap:8px;">
-          <span style="width:10px; height:10px; border-radius:50%; background:#9ca3af;"></span>
-          <span style="font-weight:700; font-size:14px; color:#64748b;">ENTWURF (noch nicht live)</span>
+      statusBlock.innerHTML = `
+        <div class="week-status-draft">
+          <span class="week-status-dot" style="background:#94a3b8;"></span>
+          <span>ENTWURF</span>
         </div>
-        <button id="btnActivateDay" class="btn-primary" style="min-height:40px; padding:0 16px; font-size:13px; background:#1a1a1a; color:#fff; border-radius:10px;">Jetzt für 4,99 € aktivieren</button>
+        <button type="button" id="btnActivateDay" class="btn" style="min-height:40px; padding:0 16px; font-size:13px; font-weight:800; background:#1a1a1a; color:#fff; border:none; border-radius:10px;">Jetzt für 4,99 € aktivieren</button>
       `;
-      setTimeout(() => {
-        const btn = document.getElementById('btnActivateDay');
-        if(btn) btn.onclick = () => activateWeekDay(weekPlanDay);
-      }, 0);
+      setTimeout(function(){ var btn = document.getElementById('btnActivateDay'); if(btn) btn.onclick = function(){ activateWeekDay(weekPlanDay); }; }, 0);
     }
-    list.appendChild(statusHeader);
+    list.appendChild(statusBlock);
 
-    const itemsToShow = isLive ? liveOffers : providerEntries.map(x => x.entry);
+    var itemsToShow = isLive ? liveOffers : providerEntries.map(function(x){ return x.entry; });
+    var entryIndices = isLive ? [] : providerEntries.map(function(x){ return x.idx; });
 
-    itemsToShow.forEach((entry, idx)=>{
-      const cb = cookbook.find(c => String(c.id) === String(entry.cookbookId));
-      const name = cb?.dish || entry.dish || 'Gericht';
-      const price = cb?.price || entry.price || 0;
-      const isActive = entry.active !== false;
-
-      const item = document.createElement('div');
-      item.className = 'cookbook-item';
-      item.style.marginBottom = '12px';
-      item.style.padding = '16px';
-      item.innerHTML = `
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-          <div>
-            <div style="font-weight:900; font-size:16px; color:#1a1a1a;">${esc(name)}</div>
-            <div class="hint" style="font-size:13px; color:#64748b; margin-top:2px;">${euro(price)} ${isLive ? '· Online ✅' : '· Geplant ⏳'}</div>
-          </div>
-          ${!isLive ? `
-            <div style="display:flex; gap:8px;">
-              <button class="btn secondary" style="width:36px; height:36px; padding:0; display:flex; align-items:center; justify-content:center; border-radius:10px;" onclick="startWizard('listing', {editOfferId: null, fromCookbookId: '${entry.cookbookId}', date: '${weekPlanDay}'})">
-                <i data-lucide="edit-3" style="width:18px; height:18px; color:#64748b;"></i>
-              </button>
-              <button class="btn secondary" style="width:36px; height:36px; padding:0; display:flex; align-items:center; justify-content:center; border-radius:10px;" onclick="deletePlannedEntry('${weekPlanDay}', ${idx})">
-                <i data-lucide="trash-2" style="width:18px; height:18px; color:#ef4444;"></i>
-              </button>
-            </div>
-          ` : `
-            <button class="btn secondary" style="width:36px; height:36px; padding:0; display:flex; align-items:center; justify-content:center; border-radius:10px;" onclick="startListingFlow({editOfferId: '${entry.id}'})">
-              <i data-lucide="edit-3" style="width:18px; height:18px; color:#64748b;"></i>
-            </button>
-          `}
-        </div>
-      `;
-      list.appendChild(item);
+    itemsToShow.forEach(function(entry, idx){
+      var cb = cookbook.find(function(c){ return String(c.id) === String(entry.cookbookId); });
+      var name = (cb && cb.dish) || entry.dish || 'Gericht';
+      var price = (cb && cb.price) || entry.price || 0;
+      var weekIndex = entryIndices[idx];
+      var card = document.createElement('div');
+      card.className = 'week-meal-card';
+      var onlineHtml = isLive
+        ? '<span class="week-meal-online"><i data-lucide="check-circle" style="width:14px;height:14px;"></i> Online</span>'
+        : '<span style="font-size:12px; font-weight:700; color:#94a3b8;">Geplant</span>';
+      var actionsHtml = !isLive
+        ? '<div class="week-meal-actions">' +
+          '<button type="button" class="btn secondary" style="width:36px;height:36px;padding:0;display:flex;align-items:center;justify-content:center;border-radius:10px;" onclick="startWizard(\'listing\', {editOfferId: null, fromCookbookId: \'' + (entry.cookbookId||'') + '\', date: \'' + weekPlanDay + '\'})"><i data-lucide="edit-3" style="width:18px;height:18px;color:#64748b;"></i></button>' +
+          '<button type="button" class="btn secondary" style="width:36px;height:36px;padding:0;display:flex;align-items:center;justify-content:center;border-radius:10px;" onclick="deletePlannedEntry(\'' + weekPlanDay + '\', ' + weekIndex + ')"><i data-lucide="trash-2" style="width:18px;height:18px;color:#ef4444;"></i></button>' +
+          '</div>'
+        : '<div class="week-meal-actions"><button type="button" class="btn secondary" style="width:36px;height:36px;padding:0;display:flex;align-items:center;justify-content:center;border-radius:10px;" onclick="startListingFlow({editOfferId: \'' + (entry.id||'') + '\'})"><i data-lucide="edit-3" style="width:18px;height:18px;color:#64748b;"></i></button></div>';
+      card.innerHTML = '<div><div class="week-meal-name">' + esc(name) + '</div><div class="week-meal-meta">' + euro(price) + ' ' + onlineHtml + '</div></div>' + actionsHtml;
+      list.appendChild(card);
     });
 
     if(!isLive){
-      const addMore = document.createElement('button');
-      addMore.className = 'btn secondary';
-      addMore.style.cssText = 'width:100%; margin-top:12px; border:2px dashed #e5e7eb; background:none;';
-      addMore.innerHTML = '+ Weiteres Gericht für diesen Tag planen';
-      addMore.onclick = () => {
-        createFlowPreselectedDate = weekPlanDay;
-        openCreateFlowSheet();
-      };
+      var addMore = document.createElement('button');
+      addMore.type = 'button';
+      addMore.className = 'week-add-more';
+      addMore.textContent = '+ Weiteres Gericht für diesen Tag planen';
+      addMore.onclick = function(){ createFlowPreselectedDate = weekPlanDay; openCreateFlowSheet(); };
       list.appendChild(addMore);
     }
-    
+
     if(typeof lucide !== 'undefined') lucide.createIcons();
   }
 
@@ -17333,6 +17335,22 @@
         showToast(abholnummerEnabled.checked ? 'Abholnummer standardmäßig an' : 'Abholnummer standardmäßig aus');
       };
       if(abholnummerSwitch){ abholnummerSwitch.onclick = () => { abholnummerEnabled.checked = !abholnummerEnabled.checked; abholnummerEnabled.onchange(); }; }
+    }
+
+    // Allergene-Standard-Toggle (Präferenzen)
+    const wantsAllergensEnabled = document.getElementById('providerWantsAllergensEnabled');
+    const wantsAllergensSwitch = wantsAllergensEnabled ? wantsAllergensEnabled.closest('.toggle-switch') : null;
+    if(wantsAllergensEnabled){
+      wantsAllergensEnabled.checked = p.wantsAllergensByDefault || false;
+      if(wantsAllergensSwitch){ wantsAllergensEnabled.checked ? wantsAllergensSwitch.classList.add('active') : wantsAllergensSwitch.classList.remove('active'); }
+      wantsAllergensEnabled.onchange = () => {
+        if(!provider.profile) provider.profile = {};
+        provider.profile.wantsAllergensByDefault = wantsAllergensEnabled.checked;
+        save(LS.provider, provider);
+        if(wantsAllergensSwitch){ wantsAllergensEnabled.checked ? wantsAllergensSwitch.classList.add('active') : wantsAllergensSwitch.classList.remove('active'); }
+        showToast(wantsAllergensEnabled.checked ? 'Allergene standardmäßig angeben' : 'Allergene standardmäßig aus');
+      };
+      if(wantsAllergensSwitch){ wantsAllergensSwitch.onclick = () => { wantsAllergensEnabled.checked = !wantsAllergensEnabled.checked; wantsAllergensEnabled.onchange(); }; }
     }
     
     // Account: Status 1 aktive Sitzung
@@ -17956,6 +17974,13 @@
   const btnWeekBack = document.getElementById('btnWeekBack');
   if(btnWeekBack){
     btnWeekBack.onclick=()=> showProviderHome();
+  }
+  const btnWeekRefresh = document.getElementById('btnWeekRefresh');
+  if(btnWeekRefresh){
+    btnWeekRefresh.onclick=()=>{
+      renderWeekPlan();
+      if(typeof showToast === 'function') showToast('Aktualisiert');
+    };
   }
   const btnWeekPdf = document.getElementById('btnWeekPdf');
   if(btnWeekPdf){
@@ -18723,9 +18748,6 @@
         const globalReuseEnabled = profile.reuseEnabledByDefault || false;
         w.data.reuse = {enabled:globalReuseEnabled, deposit:globalReuseEnabled ? 2 : 0};
       }
-      if(ctx.skipToAbholnummer){
-        w.step = 3; // Abholnummer-Schritt im listing flow (0:Basis, 1:Service, 2:Extras, 3:Abholnummer)
-      }
       buildListingStep();
     }
     if(kind==='week'){
@@ -19063,13 +19085,7 @@
     if(wBackBtn){
       wBackBtn.onclick = () => {
         if(w.step === 0) { closeWizard(); return; }
-        // Wenn wir in Schritt 2 sind und Schritt 1 übersprungen haben, zurück zu 0
-        const profile = normalizeProviderProfile(provider.profile || {});
-        if(w.step === 2 && profile.name && (profile.reuseEnabledByDefault !== undefined)) {
-          w.step = 0;
-        } else {
-          w.step -= 1;
-        }
+        w.step -= 1;
         rebuildWizard();
       };
     }
@@ -19288,13 +19304,7 @@
       setWizardNext('Weiter');
       if(wNextBtn) {
         wNextBtn.onclick = () => {
-          // Wenn Profil bereits vollständig (Mehrweg/Vorort gesetzt), überspringe Schritt 2
-          const profile = normalizeProviderProfile(provider.profile || {});
-          if (profile.name && (profile.reuseEnabledByDefault !== undefined)) {
-             w.step = 2; // Direkt zu Schritt 3 (Zusammenfassung)
-          } else {
-             w.step++;
-          }
+          w.step++;
           rebuildWizard();
         };
       }
@@ -19302,16 +19312,37 @@
       return;
     }
 
-    // Schritt 2: Service & Details – Vor Ort, Mehrweg (Pills 3€/5€/Sonstiges), Allergene (Toggle+Pills), Extras (Pills+Preisfeld)
+    // Schritt 2 von 4: Allergene angeben, Vor Ort, Mehrweg, Extras (Standard aus Profil möglich)
     if(w.step===1){
-      // Wenn bereits Onboarding durchlaufen (Profil-Werte vorhanden), diesen Schritt optional machen oder überspringen
-      // Wir zeigen ihn trotzdem, aber leiten direkt zu Schritt 3 weiter wenn gewünscht.
-      // Vorschlag: Wir lassen ihn da, aber machen ihn super schnell.
-      setWizardQuestion('Service & Details', '');
+      setWizardQuestion('Allergene & Service', 'Allergene angeben (optional), Vor Ort essen, Mehrweg, Extras.');
       const box=document.createElement('div');
       const saveDraft = () => { localStorage.setItem('wizard_draft', JSON.stringify(w)); };
       const profile = normalizeProviderProfile(provider.profile || {});
-      
+      if(w.data.wantsAllergens === undefined && (profile.wantsAllergensByDefault === true || profile.wantsAllergensByDefault === false)) w.data.wantsAllergens = !!profile.wantsAllergensByDefault;
+      if(w.data.dineInPossible === undefined && (provider.profile && provider.profile.dineInPossibleDefault !== undefined)) w.data.dineInPossible = !!provider.profile.dineInPossibleDefault;
+      if((!w.data.reuse || !w.data.reuse.enabled) && profile.reuseEnabledByDefault){ w.data.reuse = w.data.reuse || {}; w.data.reuse.enabled = true; w.data.reuse.deposit = w.data.reuse.deposit || 3; }
+
+      var hasProfileDefaults = profile.reuseEnabledByDefault !== undefined || profile.abholnummerEnabledByDefault !== undefined || profile.wantsAllergensByDefault !== undefined || (provider.profile && provider.profile.dineInPossibleDefault !== undefined);
+      if(hasProfileDefaults){
+        const skipRow = document.createElement('div');
+        skipRow.style.cssText = 'margin-bottom:20px; padding:14px 16px; background:rgba(16,185,129,0.08); border:2px solid rgba(16,185,129,0.3); border-radius:14px;';
+        const skipBtn = document.createElement('button');
+        skipBtn.type = 'button';
+        skipBtn.style.cssText = 'width:100%; min-height:48px; border:none; border-radius:12px; background:#10b981; color:#fff; font-size:15px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;';
+        skipBtn.innerHTML = '<i data-lucide="zap" style="width:20px;height:20px;"></i><span>Mit meinen Standardeinstellungen fortfahren</span>';
+        skipBtn.onclick = () => {
+          w.data.dineInPossible = (provider.profile && provider.profile.dineInPossibleDefault !== undefined) ? !!provider.profile.dineInPossibleDefault : true;
+          w.data.reuse = { enabled: !!profile.reuseEnabledByDefault, deposit: profile.reuseEnabledByDefault ? (3) : 0 };
+          w.data.wantsAllergens = !!profile.wantsAllergensByDefault;
+          if(!w.data.wantsAllergens) w.data.allergens = [];
+          w.step = 2;
+          saveDraft();
+          rebuildWizard();
+        };
+        skipRow.appendChild(skipBtn);
+        box.appendChild(skipRow);
+      }
+
       // 1. Vor Ort – Toggle Ja/Nein, in Profil hinterlegen
       const rowDine = document.createElement('div');
       rowDine.style.cssText = 'display:flex; align-items:center; justify-content:space-between; padding:14px 16px; min-height:44px; background:#f8f9fa; border-radius:12px; margin-bottom:12px;';
