@@ -252,7 +252,30 @@ mittagio/
 - Schnell-Sync: `sync-to-github.bat` (Windows) oder `sync-to-github.sh` (Mac/Linux)
 - Siehe `SYNC_CHECKLIST.md` für Details
 
+## Anbieter: App-First & Wochenplan (Design-Sprache)
+
+### Navigation
+- **Bottom-Nav:** Dashboard (Küche) ganz links, **Wochenplan in der Mitte**, Kochbuch, Meins.
+- **Horizontaler Datums-Wähler:** Oben fixiert, **Snap-Carousel** (physikalisch einrastend), Wochentage Mo, Di, Mi …
+- **Thumb Zone:** Teilen, Drucken, Hinzufügen im unteren Bereich (S25-tauglich).
+
+### Gesten (Wochenplan-Karten)
+- **Keine Edit-Stift-Icons:** Tap auf die Karte öffnet das Bottom-Sheet (Austauschen/Ersetzen oder Bearbeiten bei Live).
+- **Swipe links:** Löschen → roter Hintergrund, Mülleimer-Icon.
+- **Swipe rechts:** Kopieren auf **Folgetag** → blauer Hintergrund, Duplizieren-Icon (kein Tag-Dialog).
+
+### 3-Säulen auf Karten (Inserat/Wochenplan)
+- **Feste Status-Badges unter dem Preis:** 🍴 (Vor Ort), 🎫1️⃣ (Abholnummer), 🔄 (Mehrweg).
+- **Wording:** Nur **Abholnummer** (nie Ticket, nie Code/Abholcode).
+
+### Monetarisierung & Planung
+- **Aktivierung:** 4,99 € pro Inserat; Abholnummer optional 0,89 € pro Vorgang.
+- **Verdienst-Vorschau** in der Planung: Preis − Gebühren = „Verdienst ca. X €“ auf Entwurfs-Karten.
+
+### Design
+- **Keine Schiefertafel:** Clean, modern, hell. Layout für echte Fotos, 3 Säulen sauber unter dem Preis.
+
 ---
 
 **Stand:** 28.01.2026  
-**Letzte Aktualisierung:** Swipe-Modus Rules finalisiert (Filter-Logik, Zeit-Filter Pills, Aktions-Buttons)
+**Letzte Aktualisierung:** App-First/Wochenplan (Gesten, Swipe-Folgetag, Emoji-Badges, Verdienst, Cursor-Regel)

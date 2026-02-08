@@ -3269,8 +3269,8 @@
       #v-provider-week .week-meal-card-wrap{ position:relative; overflow:hidden; border-radius:16px; margin-bottom:10px; }
       #v-provider-week .week-meal-card-swipe{ display:flex; align-items:stretch; transition:transform 0.2s ease-out; touch-action:pan-y; }
       #v-provider-week .week-meal-card-swipe .week-meal-card{ flex:1; margin-bottom:0; min-width:0; position:relative; z-index:1; background:#fff; border-radius:16px; }
-      #v-provider-week .week-swipe-actions{ display:flex; position:absolute; top:0; bottom:0; width:80px; align-items:center; justify-content:center; font-size:12px; font-weight:800; color:#fff; }
-      #v-provider-week .week-swipe-actions.left{ left:0; background:var(--brand); }
+      #v-provider-week .week-swipe-actions{ display:flex; flex-direction:column; gap:4px; position:absolute; top:0; bottom:0; width:80px; align-items:center; justify-content:center; font-size:11px; font-weight:800; color:#fff; }
+      #v-provider-week .week-swipe-actions.left{ left:0; background:#2563eb; }
       #v-provider-week .week-swipe-actions.right{ right:0; background:#ef4444; }
       /* Aktivierung: großer Button in Thumb-Zone */
       #v-provider-week .week-activate-block{ padding:16px 0; margin-top:8px; }
@@ -4440,7 +4440,7 @@
 
         <!-- Abholnummern-Wallet (Nur wenn aktive da sind) -->
         <div id="profileAbholnummerSection" style="display:none;">
-          <h3 style="font-size:13px; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:0.05em; margin:0 4px 12px;">Aktive Tickets</h3>
+          <h3 style="font-size:13px; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:0.05em; margin:0 4px 12px;">Abholnummern</h3>
           <div id="profileActiveAbholnummernList" style="display:flex; flex-direction:column; gap:12px;"></div>
         </div>
 
@@ -14609,7 +14609,7 @@
       }
     }
     
-    // Aktive Tickets
+    // Aktive Abholnummern
     const abholnummerSection = document.getElementById('profileAbholnummerSection');
     const abholnummerList = document.getElementById('profileActiveAbholnummernList');
     const today = isoDate(new Date());
@@ -17035,27 +17035,31 @@
       var onlineHtml = isLive
         ? '<span class="week-meal-online"><i data-lucide="check-circle" style="width:14px;height:14px;"></i> Online</span>'
         : '<span style="font-size:12px; font-weight:700; color:#94a3b8;">Geplant</span>';
-      var actionsHtml = isLive
-        ? '<div class="week-meal-actions"><button type="button" class="btn secondary" style="min-height:44px;min-width:44px;padding:0;border-radius:12px;" onclick="startListingFlow({editOfferId: \'' + (entry.id||'') + '\'})"><i data-lucide="edit-3" style="width:20px;height:20px;color:#64748b;"></i></button></div>'
-        : '';
-      card.innerHTML = '<div><div class="week-meal-name">' + esc(name) + '</div><div class="week-meal-meta">' + euro(price) + ' ' + onlineHtml + '</div></div>' + actionsHtml;
+      var profile = (typeof normalizeProviderProfile === 'function' && provider && provider.profile) ? normalizeProviderProfile(provider.profile) : {};
+      var vorOrt = isLive && (profile.dineInPossible !== false);
+      var abholnummer = isLive && !!(entry.hasPickupCode || profile.hasPickupCode);
+      var mehrweg = isLive && !!(profile.reuse && profile.reuse.enabled);
+      var badgesHtml = '<div class="week-meal-badges" style="display:flex; gap:8px; margin-top:6px; font-size:14px;" title="Vor Ort · Abholnummer · Mehrweg"><span>🍴</span><span>🎫1️⃣</span><span>🔄</span></div>';
+      var verdienstHtml = !isLive ? '<div class="week-meal-verdienst" style="font-size:12px; color:#10b981; margin-top:4px;">Verdienst ca. ' + euro(Math.max(0, (Number(price)||0) - 4.99)) + '</div>' : '';
+      card.innerHTML = '<div><div class="week-meal-name">' + esc(name) + '</div><div class="week-meal-meta">' + euro(price) + ' ' + onlineHtml + '</div>' + badgesHtml + verdienstHtml + '</div>';
+      card.style.cursor = 'pointer';
       if(!isLive){
-        card.style.cursor = 'pointer';
         card.onclick = function(e){ e.preventDefault(); e.stopPropagation(); if(weekJustSwiped) return; if(typeof openWeekAddSheet === 'function') openWeekAddSheet(weekPlanDay, weekIndex); };
         var swipeDel = document.createElement('div');
         swipeDel.className = 'week-swipe-actions right';
-        swipeDel.innerHTML = 'Löschen';
+        swipeDel.innerHTML = '<i data-lucide="trash-2" style="width:22px;height:22px;"></i><span>Löschen</span>';
         swipeDel.onclick = function(){ deletePlannedEntryWithUndo(weekPlanDay, weekIndex); };
         var swipeCopy = document.createElement('div');
         swipeCopy.className = 'week-swipe-actions left';
-        swipeCopy.innerHTML = 'Kopieren';
-        swipeCopy.onclick = function(){ copyWeekEntryToOtherDay(weekPlanDay, weekIndex); };
+        swipeCopy.innerHTML = '<i data-lucide="copy" style="width:22px;height:22px;"></i><span>Folgetag</span>';
+        swipeCopy.onclick = function(){ copyWeekEntryToNextDay(weekPlanDay, weekIndex); };
         swipeInner.appendChild(swipeCopy);
         swipeInner.appendChild(swipeDel);
         swipeInner.appendChild(card);
         attachSwipeToWeekCard(swipeInner, weekPlanDay, weekIndex);
         attachLongPressToWeekCard(wrap);
       } else {
+        card.onclick = function(e){ e.preventDefault(); e.stopPropagation(); if(weekJustSwiped) return; if(typeof startListingFlow === 'function') startListingFlow({ editOfferId: entry.id || '' }); };
         swipeInner.appendChild(card);
       }
       wrap.appendChild(swipeInner);
@@ -17097,7 +17101,7 @@
         cardEl.style.transform = 'translateX(0)';
       } else if(currentX > SWIPE_THRESHOLD){
         weekJustSwiped = true; setTimeout(function(){ weekJustSwiped = false; }, 400);
-        copyWeekEntryToOtherDay(date, index);
+        copyWeekEntryToNextDay(date, index);
         cardEl.style.transform = 'translateX(0)';
       } else {
         cardEl.style.transform = 'translateX(0)';
@@ -17233,6 +17237,21 @@
     if(sheet) sheet.classList.remove('active');
   }
 
+  function copyWeekEntryToNextDay(fromDate, entryIndex){
+    var dayArr = week[fromDate] || [];
+    var entry = dayArr[entryIndex];
+    if(!entry || entry.providerId !== providerId()) return;
+    var d = new Date(fromDate + 'T12:00:00');
+    d.setDate(d.getDate() + 1);
+    var nextKey = isoDate(d);
+    if(!week[nextKey]) week[nextKey] = [];
+    week[nextKey].push({ providerId: entry.providerId, cookbookId: entry.cookbookId, dish: entry.dish, price: entry.price });
+    save(LS.week, week);
+    renderWeekPlan();
+    renderProviderWeekPreview();
+    var nextLabel = weekDayShortLabel(d, 1);
+    if(typeof toast === 'function') toast('Auf ' + nextLabel + ' kopiert');
+  }
   function copyWeekEntryToOtherDay(fromDate, entryIndex){
     var dayArr = week[fromDate] || [];
     var entry = dayArr[entryIndex];
