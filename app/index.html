@@ -3173,6 +3173,15 @@
       #v-provider-week .week-empty-state .week-empty-title{ font-size:18px; font-weight:900; color:#1a1a1a; margin-bottom:8px; }
       #v-provider-week .week-empty-state .week-empty-hint{ font-size:14px; color:#64748b; line-height:1.5; margin-bottom:24px; }
       #v-provider-week .week-actions-bar{ display:flex; gap:12px; margin-top:24px; padding-top:20px; border-top:1px solid #f1f3f5; }
+      /* Dashboard: Dein Wochenplan Applike */
+      #providerWeekDays{ display:flex; gap:8px; overflow-x:auto; -webkit-overflow-scrolling:touch; padding:0 0 16px; margin-bottom:16px; border-bottom:1px solid #f1f3f5; }
+      #providerWeekDays .week-preview-pill{ flex:0 0 auto; min-width:56px; padding:10px 8px; border-radius:14px; border:2px solid transparent; background:#f1f3f5; font-size:11px; font-weight:800; color:#64748b; cursor:pointer; transition:all 0.2s; line-height:1.25; text-align:center; white-space:pre-line; }
+      #providerWeekDays .week-preview-pill.active{ background:rgba(255,215,0,0.18); border-color:var(--brand,#FFD700); color:#1a1a1a; }
+      #providerWeekDayContent{ min-height:120px !important; background:#fff !important; border:1px solid #f1f3f5; border-radius:16px; padding:16px !important; text-align:left !important; }
+      #providerWeekDayContent .week-preview-dish{ font-size:14px; font-weight:700; color:#1a1a1a; padding:8px 0; border-bottom:1px solid #f1f3f5; display:flex; justify-content:space-between; align-items:center; }
+      #providerWeekDayContent .week-preview-dish:last-of-type{ border-bottom:none; }
+      #providerWeekDayContent .week-preview-cta{ margin-top:16px; }
+      #providerWeekDayContent .week-preview-link{ display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:700; color:var(--brand); margin-top:12px; cursor:pointer; }
       #v-provider-profile .panel{ padding:18px !important; border-radius:16px !important; margin-bottom:16px !important; }
       #v-provider-profile .provider-profile-section-title{ margin-top:24px; margin-bottom:12px; }
       #v-provider-profile .provider-profile-section-title:first-of-type{ margin-top:0; }
@@ -4820,16 +4829,13 @@
           <div id="kpiKochbuchCountWrap" style="font-size:13px; font-weight:700; color:#9ca3af; margin-top:8px; text-align:center; cursor:pointer;" onclick="typeof showProviderCookbook==='function'&&showProviderCookbook();"><span id="kpiKochbuchCount">0</span> Gerichte</div>
         </div>
 
-        <!-- Wochenvorschau -->
+        <!-- Wochenvorschau (Applike) -->
         <div style="margin-bottom:32px;">
           <h3 style="font-size:18px; font-weight:900; color:#1a1a1a; margin:0 0 4px;">Dein Wochenplan</h3>
           <p style="font-size:13px; color:#64748b; margin:0 0 16px; line-height:1.4;">Vorausplanen, entspannter kochen. Deine Gäste lieben Verlässlichkeit.</p>
-          <div class="prov-card" style="padding:20px;">
-            <div class="dayrow" id="providerWeekDays" style="margin-bottom:20px; gap:8px; justify-content:space-between;"></div>
-            <div id="providerWeekDayContent" style="min-height:100px; display:flex; flex-direction:column; align-items:center; justify-content:center; background:#f8f9fa; border-radius:20px; color:#9ca3af; font-size:14px; font-weight:600; text-align:center; padding:20px;">
-              <i data-lucide="calendar" style="width:24px;height:24px;margin-bottom:8px;opacity:0.3;"></i>
-              Wähle einen Tag zur Planung
-            </div>
+          <div class="prov-card" style="padding:20px; border-radius:20px; border:1px solid rgba(0,0,0,0.05); box-shadow:0 2px 12px rgba(0,0,0,0.04);">
+            <div id="providerWeekDays"></div>
+            <div id="providerWeekDayContent"></div>
           </div>
         </div>
 
@@ -16509,7 +16515,7 @@
     if(typeof lucide !== 'undefined') setTimeout(()=> lucide.createIcons(), 50);
   }
 
-  // Week Preview (7 Tage) – Wochenplaner: Grün = Live, Blau = geplant, Grau = leer
+  // Week Preview (7 Tage) – Applike: neutrale Pills, gelb aktiv; Gerichteliste + Link zum Wochenplan
   function renderProviderWeekPreviewNew(){
     const dayWrap = document.getElementById('providerWeekDays');
     const dayContent = document.getElementById('providerWeekDayContent');
@@ -16519,65 +16525,62 @@
     let selectedDay = providerWeekDay || isoDate(today);
     
     dayWrap.innerHTML = '';
-    for(let i=0; i<7; i++){
+    for(let i = 0; i < 7; i++){
       const d = new Date(today);
       d.setDate(d.getDate() + i);
       const key = isoDate(d);
-      const liveCount = offers.filter(o => o.providerId === providerId() && o.day === key && o.active !== false).length;
-      const plannedCount = (week[key] || []).filter(x => x.providerId === providerId() && x.active !== false).length;
-      const isLive = liveCount > 0;
-      const isPlanned = !isLive && plannedCount > 0;
-      const statusColor = isLive ? '#10b981' : (isPlanned ? '#3b82f6' : '#9ca3af');
       const b = document.createElement('button');
-      b.className = 'day' + (selectedDay === key ? ' active' : '');
-      b.style.cssText = 'min-width:44px; min-height:44px; padding:8px 10px; border-radius:12px; border:2px solid ' + (selectedDay === key ? 'var(--color-emerald,#10b981)' : 'transparent') + '; background:' + statusColor + '; color:#fff; font-size:12px; font-weight:700; transition:all 0.2s;';
+      b.type = 'button';
+      b.className = 'week-preview-pill' + (selectedDay === key ? ' active' : '');
       const weekday = ['So','Mo','Di','Mi','Do','Fr','Sa'][d.getDay()];
-      const dateStr = `${d.getDate()}.${String(d.getMonth()+1).padStart(2,'0')}.`;
-      b.textContent = i === 0 ? 'Heute' : `${weekday}\n${dateStr}`;
-      b.title = isLive ? 'Inseriert & Live (4,99 €)' : (isPlanned ? 'Im Kalender geplant' : 'Tag noch leer');
-      b.onclick = () => {
-        providerWeekDay = key;
-        renderProviderWeekPreviewNew();
-      };
+      const dateStr = d.getDate() + '.' + String(d.getMonth()+1).padStart(2,'0') + '.';
+      b.textContent = i === 0 ? 'Heute' : (weekday + '\n' + dateStr);
+      b.title = key;
+      b.onclick = function(){ providerWeekDay = key; renderProviderWeekPreviewNew(); };
       dayWrap.appendChild(b);
     }
     
-    // Day Content
-    const offersForDay = offers.filter(o => o.providerId === providerId() && o.active !== false && o.day === selectedDay);
-    const weekEntries = (week[selectedDay] || []).filter(x => x.providerId === providerId() && x.active !== false);
+    const offersForDay = offers.filter(function(o){ return o.providerId === providerId() && o.active !== false && o.day === selectedDay; });
+    const weekEntries = (week[selectedDay] || []).filter(function(x){ return x.providerId === providerId() && x.active !== false; });
     const totalPlanned = offersForDay.length + weekEntries.length;
     
+    function euro(n){ return (Number(n)||0).toFixed(2).replace('.',',') + ' €'; }
+    
     if(totalPlanned > 0){
-      dayContent.innerHTML = `
-        <div style="padding:12px; background:#f1f5f9; border-radius:12px; margin-bottom:12px; border:1px solid #e2e8f0;">
-          <div style="font-weight:700; font-size:14px; margin-bottom:4px; color:#1a1a1a;">${totalPlanned} ${totalPlanned === 1 ? 'Inserat' : 'Inserate'} geplant</div>
-          <div style="font-size:12px; color:#64748b;">${offersForDay.length} aktiv, ${weekEntries.length} im Wochenplan</div>
-        </div>
-        <button class="btn secondary" type="button" id="btnProviderWeekAddDish" style="width:100%; min-height:44px; background:#fff; color:#1a1a1a; border:2px solid #e5e7eb; font-weight:700; border-radius:12px;">
-          Weiteres Gericht planen
-        </button>
-      `;
-      const btnProviderWeekAddDish = document.getElementById('btnProviderWeekAddDish');
-      if(btnProviderWeekAddDish) btnProviderWeekAddDish.onclick = () => {
-        createFlowPreselectedDate = selectedDay;
-        openCreateFlowSheet();
-      };
+      var dishRows = [];
+      offersForDay.forEach(function(o){
+        var dishName = (o.dish || 'Gericht');
+        dishRows.push('<div class="week-preview-dish"><span>' + (typeof esc === 'function' ? esc(dishName) : dishName) + '</span><span style="font-size:12px; font-weight:700; color:#10b981;">Online</span></div>');
+      });
+      weekEntries.forEach(function(e){
+        var cb = cookbook.find(function(c){ return String(c.id) === String(e.cookbookId); });
+        var name = (cb && cb.dish) || e.dish || 'Gericht';
+        dishRows.push('<div class="week-preview-dish"><span>' + (typeof esc === 'function' ? esc(name) : name.replace(/</g,'&lt;')) + '</span><span style="font-size:12px; font-weight:700; color:#64748b;">Geplant</span></div>');
+      });
+      dayContent.innerHTML =
+        '<div>' + dishRows.join('') + '</div>' +
+        '<div class="week-preview-cta">' +
+        '<button type="button" class="btn secondary" id="btnProviderWeekAddDish" style="width:100%; min-height:44px; background:#fff; color:#1a1a1a; border:2px solid #e5e7eb; font-weight:700; border-radius:12px;">Weiteres Gericht planen</button>' +
+        '<div class="week-preview-link" id="linkProviderWeekFull"><span>Zum Wochenplan</span><i data-lucide="chevron-right" style="width:16px;height:16px;"></i></div>' +
+        '</div>';
+      var btn = document.getElementById('btnProviderWeekAddDish');
+      if(btn) btn.onclick = function(){ createFlowPreselectedDate = selectedDay; openCreateFlowSheet(); };
+      var link = document.getElementById('linkProviderWeekFull');
+      if(link) link.onclick = function(){ if(typeof showProviderWeek === 'function') showProviderWeek(); };
     } else {
-      dayContent.innerHTML = `
-        <div style="font-weight:900; font-size:18px; margin-bottom:8px; text-align:center; color:#1a1a1a;">Noch kein Plan!?</div>
-        <div class="hint" style="font-size:13px; line-height:1.4; margin-bottom:16px; color:#64748b; text-align:center;">
-          Deine Gäste planen schon ihren Lunch. Jetzt Inserat vormerken!
-        </div>
-        <button class="btn secondary" type="button" id="btnProviderWeekAddDishEmpty" style="width:100%; min-height:44px; background:#FFD700; color:#1a1a1a; border:none; font-weight:800; border-radius:12px; box-shadow:0 4px 12px rgba(255,215,0,0.2);">
-          Jetzt Woche planen
-        </button>
-      `;
-      const btnProviderWeekAddDishEmpty = document.getElementById('btnProviderWeekAddDishEmpty');
-      if(btnProviderWeekAddDishEmpty) btnProviderWeekAddDishEmpty.onclick = () => {
-        createFlowPreselectedDate = selectedDay;
-        openCreateFlowSheet();
-      };
+      dayContent.innerHTML =
+        '<div style="text-align:center; padding:8px 0;">' +
+        '<div style="font-weight:800; font-size:16px; margin-bottom:6px; color:#1a1a1a;">Noch nichts geplant</div>' +
+        '<div style="font-size:13px; color:#64748b; margin-bottom:16px;">Für diesen Tag siehst du hier deine Gerichte.</div>' +
+        '<button type="button" class="btn primary" id="btnProviderWeekAddDishEmpty" style="width:100%; min-height:48px; border-radius:14px; font-weight:800; background:var(--brand); color:#1a1a1a; border:none;">Jetzt Woche planen</button>' +
+        '<div class="week-preview-link" id="linkProviderWeekFull2" style="justify-content:center; margin-top:12px;"><span>Zum Wochenplan</span><i data-lucide="chevron-right" style="width:16px;height:16px;"></i></div>' +
+        '</div>';
+      var btnEmpty = document.getElementById('btnProviderWeekAddDishEmpty');
+      if(btnEmpty) btnEmpty.onclick = function(){ createFlowPreselectedDate = selectedDay; openCreateFlowSheet(); };
+      var link2 = document.getElementById('linkProviderWeekFull2');
+      if(link2) link2.onclick = function(){ if(typeof showProviderWeek === 'function') showProviderWeek(); };
     }
+    if(typeof lucide !== 'undefined') lucide.createIcons();
   }
   
   // Kompatibilität
