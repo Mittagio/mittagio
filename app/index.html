@@ -17263,9 +17263,9 @@
     const dayEntries = week[weekPlanDay] || [];
     const providerEntries = dayEntries.map((entry, idx)=>({entry, idx})).filter(x => x.entry.providerId === providerId());
     const dayLiveOffers = offers.filter(o => o.providerId === providerId() && o.day === weekPlanDay);
-    const isLive = dayLiveOffers.length > 0;
+    const dayIsLive = dayLiveOffers.length > 0;
 
-    if(!providerEntries.length && !isLive){
+    if(!providerEntries.length && !dayIsLive){
       list.innerHTML = `
         <div class="week-empty-state">
           <div style="width:72px; height:72px; background:rgba(255,215,0,0.12); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 20px;">
@@ -17298,14 +17298,14 @@
 
     var statusBlock = document.createElement('div');
     statusBlock.className = 'week-status-block';
-    if(isLive){
+    if(dayIsLive){
       statusBlock.innerHTML = '<div class="week-status-online"><span class="week-status-dot" style="background:#10b981;"></span><span>ONLINE</span></div><button type="button" class="btn secondary" style="min-height:40px; padding:0 14px; font-size:14px; font-weight:700; border-radius:12px;" onclick="shareWeekPlan()">Teilen</button>';
     } else {
       statusBlock.innerHTML = '<div class="week-status-draft"><span class="week-status-dot" style="background:#94a3b8;"></span><span>ENTWURF</span></div><div style="text-align:right;"><button type="button" class="week-activate-inline" onclick="activateWeekDay(\'' + weekPlanDay + '\')">Live (4,99 €)</button><div class="week-status-activate-hint">Einmal pro Tag – alle Gerichte gehen online.</div></div>';
     }
     list.appendChild(statusBlock);
 
-    if(!isLive && weekSortMode){
+    if(!dayIsLive && weekSortMode){
       var sortBar = document.createElement('div');
       sortBar.className = 'week-sort-bar';
       sortBar.innerHTML = '<div><span style="font-size:14px; font-weight:800; color:#1a1a1a;">Reihenfolge per Drag & Drop ändern</span><div class="week-status-activate-hint" style="margin-top:4px;">Zum Beenden auf „Fertig“ tippen.</div></div><button type="button" class="week-sort-done" id="weekSortDoneBtn">Fertig</button>';
