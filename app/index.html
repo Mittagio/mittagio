@@ -9178,7 +9178,8 @@
     }
     if(typeof lucide !== 'undefined' && document.getElementById('discoverRadiusChevron')) lucide.createIcons();
 
-    switchDiscoverView(discoverViewMode);
+    // Nicht switchDiscoverView(discoverViewMode) hier aufrufen – verursacht Rekursion (switchDiscoverView ruft renderDiscover auf).
+    // Sichtbarkeit Liste/Karte wird beim Toggle und beim Init gesetzt.
     
     // Angebote filtern: Nur heute + Zeit-Filter (10 Min Gehzeit oder 15 Min Fahrzeit)
     let list = offers.filter(o => o.day === activeDay && o.active !== false);
