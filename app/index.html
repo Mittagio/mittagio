@@ -17228,8 +17228,8 @@
 
     const dayEntries = week[weekPlanDay] || [];
     const providerEntries = dayEntries.map((entry, idx)=>({entry, idx})).filter(x => x.entry.providerId === providerId());
-    const liveOffers = offers.filter(o => o.providerId === providerId() && o.day === weekPlanDay);
-    const isLive = liveOffers.length > 0;
+    const dayLiveOffers = offers.filter(o => o.providerId === providerId() && o.day === weekPlanDay);
+    const isLive = dayLiveOffers.length > 0;
 
     if(!providerEntries.length && !isLive){
       list.innerHTML = `
@@ -17283,7 +17283,7 @@
       list.classList.remove('week-sort-mode');
     }
 
-    var itemsToShow = isLive ? liveOffers : providerEntries.map(function(x){ return x.entry; });
+    var itemsToShow = isLive ? dayLiveOffers : providerEntries.map(function(x){ return x.entry; });
     var entryIndices = isLive ? [] : providerEntries.map(function(x){ return x.idx; });
 
     itemsToShow.forEach(function(entry, idx){
