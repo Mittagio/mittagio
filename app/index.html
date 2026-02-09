@@ -4208,18 +4208,18 @@
     <section class="view customer-view active" id="v-discover">
       <!-- Modern Sticky Header -->
       <header class="cust-header-sticky">
-        <div style="display:flex; align-items:center; padding:12px 16px; gap:12px;">
-          <!-- Standort-Logik -->
-          <div style="display:flex; align-items:center; gap:8px; flex:1; min-width:0;">
+        <div style="display:flex; align-items:center; justify-content:center; padding:12px 16px; gap:12px;">
+          <!-- Standort zentriert (Wo suchst du?) -->
+          <div style="display:flex; align-items:center; gap:8px; min-width:0;">
             <button type="button" id="btnDiscoverLocationGPS" aria-label="Standort per GPS" style="display:flex; align-items:center; justify-content:center; width:40px; height:40px; border-radius:12px; border:none; background:#f1f3f5; color:#1a1a1a; cursor:pointer;">
               <i data-lucide="map-pin" style="width:20px;height:20px;"></i>
             </button>
-            <button type="button" id="btnDiscoverLocationText" style="display:flex; flex-direction:column; background:none; border:none; padding:0; cursor:pointer; min-width:0; text-align:left;">
+            <button type="button" id="btnDiscoverLocationText" style="display:flex; flex-direction:column; background:none; border:none; padding:0; cursor:pointer; min-width:0; text-align:center;">
               <span style="font-size:11px; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:0.05em;">Dein Standort</span>
               <span id="discoverCurrentLocation" style="font-size:15px; font-weight:700; color:#1a1a1a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Standort wählen...</span>
             </button>
           </div>
-          <!-- Logo / Branding -->
+          <!-- Logo rechts daneben (optional sichtbar) -->
           <div style="font-family:'Montserrat',sans-serif; font-weight:900; font-size:18px; color:#1a1a1a; letter-spacing:-0.03em;">mittagio</div>
         </div>
 
