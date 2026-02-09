@@ -1,0 +1,8 @@
+{
+  "name": "mittagio",
+  "private": true,
+  "description": "Mittagio – Mittagsangebote & Abholnummer",
+  "dependencies": {
+    "stripe": "^14.0.0"
+  }
+}

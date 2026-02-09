@@ -6854,6 +6854,12 @@
 </div>
 
 <script>
+  // ========== Stripe einrichten (Zahlungen) ==========
+  // 1. Publishable Key von https://dashboard.stripe.com/apikeys hier eintragen (pk_test_... oder pk_live_...).
+  // 2. Secret Key (sk_...) NUR in Netlify: Site settings → Environment variables → STRIPE_SECRET_KEY.
+  const STRIPE_PUBLISHABLE_KEY = 'pk_test_51SyuhZPDULtp9rWO6GTtCQRqfLD7NggIpBa3RaDrBhF68nIwhEoiVkeuebq0llGsONAysRFCb4Hh3ofwcqYGiwri00DLckU2l9';  // Stripe Test – Geheimschlüssel nur in Netlify (STRIPE_SECRET_KEY)
+  window.MITTAGIO_STRIPE = window.MITTAGIO_STRIPE || { publishableKey: STRIPE_PUBLISHABLE_KEY, apiBase: '' };
+
   // --- Storage keys ---
   const LS = {
     offers: 'mittagio_offers_v2',
@@ -14352,31 +14358,59 @@
    * @param {string} orderId - Order ID
    */
   function startStripeCheckout(total, cartData, orderId){
-    // TODO: Replace with real Stripe integration
-    // In Production:
-    //   1. Backend-Endpoint: POST /api/create-checkout-session
-    //   2. Request Body: { orderId, items: cartData.items, total, pickupTime, ... }
-    //   3. Backend erstellt Stripe Checkout Session (mode: 'payment', allow_promotion_codes: true)
-    //   4. Session-URL erhalten: session.url
-    //   5. window.location.href = session.url; (öffnet Stripe Checkout)
-    //   6. Nach Zahlung: Stripe leitet zurück zu success_url?session_id=xxx
-    //   7. Webhook bestätigt Zahlung → handleCheckoutSuccess(session_id)
-    
-    // MVP Demo: Simuliere Stripe Checkout
-    const sessionId = 'demo_session_' + cryptoId();
-    
-    // Speichere session_id in Order (wird später bei Success verwendet)
-    updateOrder(orderId, {
-      stripeCheckoutSessionId: sessionId
-    });
-    
-    // Demo: Simuliere erfolgreiche Zahlung
-    // In Production: window.location.href = session.url;
-    if(confirm(`Stripe Checkout würde jetzt geöffnet.\n\nGesamtbetrag: ${euro(total)}\n\nGastzahlung möglich (E-Mail nur für Zahlungsbeleg, kein Login erforderlich).\n\nDemo: Zahlung erfolgreich simulieren?`)){
-      // Simuliere Success-Return
+    var stripeConfig = window.MITTAGIO_STRIPE || {};
+    var publishableKey = stripeConfig.publishableKey;
+    var apiBase = stripeConfig.apiBase || '';
+
+    if (publishableKey && apiBase !== false) {
+      var endpoint = (apiBase || window.location.origin) + '/.netlify/functions/create-checkout-session';
+      var basePath = (window.location.pathname || '/').replace(/\/?$/, '') || '';
+      var successUrl = window.location.origin + basePath + '/';
+      var cancelUrl = window.location.origin + basePath + '/';
+      var lineItems = (cartData && cartData.items && cartData.items.length) ? cartData.items.map(function(item){
+        var offer = typeof offers !== 'undefined' && offers.find ? offers.find(function(o){ return o.id === item.offerId; }) : null;
+        var name = (offer && offer.dish) ? offer.dish : (item.dish || 'Gericht');
+        var price = (item.total != null) ? item.total : (item.price != null ? item.price * (item.quantity || 1) : total);
+        return { name: name, amount: price, quantity: 1 };
+      }) : null;
+      var payload = {
+        orderId: orderId,
+        total: total,
+        currency: 'eur',
+        successUrl: successUrl,
+        cancelUrl: cancelUrl,
+        lineItems: lineItems && lineItems.length ? lineItems : null
+      };
+
+      fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+          if (data.error) throw new Error(data.error);
+          if (data.url) {
+            updateOrder(orderId, { stripeCheckoutSessionId: data.sessionId || data.url });
+            window.location.href = data.url;
+          } else {
+            throw new Error('Keine Checkout-URL erhalten');
+          }
+        })
+        .catch(function(err){
+          console.error('Stripe Checkout:', err);
+          if (typeof showToast === 'function') showToast('Zahlung konnte nicht gestartet werden. ' + (err.message || ''));
+          else alert('Zahlung konnte nicht gestartet werden. ' + (err.message || ''));
+        });
+      return;
+    }
+
+    // Demo: Kein Stripe konfiguriert – Simuliere Checkout
+    var sessionId = 'demo_session_' + cryptoId();
+    updateOrder(orderId, { stripeCheckoutSessionId: sessionId });
+    if (confirm('Stripe Checkout würde jetzt geöffnet.\n\nGesamtbetrag: ' + euro(total) + '\n\nGastzahlung möglich (E-Mail nur für Zahlungsbeleg).\n\nDemo: Zahlung erfolgreich simulieren?')) {
       handleCheckoutSuccess(sessionId, orderId);
     } else {
-      // Simuliere Cancel
       handleCheckoutCancel(orderId);
     }
   }

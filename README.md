@@ -51,3 +51,17 @@ git pull origin main
 ```
 
 📋 Siehe `SYNC_CHECKLIST.md` für detaillierte Anleitung.
+
+## 💳 Stripe (Zahlungen) einrichten
+
+Für echte Kartenzahlung im Checkout:
+
+1. **Stripe-Konto:** [dashboard.stripe.com](https://dashboard.stripe.com) – API-Keys unter „Developers → API keys“.
+2. **Netlify (Backend):** In deinem Netlify-Site unter **Site settings → Environment variables** hinzufügen:
+   - `STRIPE_SECRET_KEY` = `sk_live_...` (Live) oder `sk_test_...` (Test).
+3. **Frontend (Publishable Key):** In `app/index.html` am Anfang des Script-Blocks setzen:
+   - `window.MITTAGIO_STRIPE = { publishableKey: 'pk_live_...' oder 'pk_test_...', apiBase: '' };`
+   - Oder vor dem Laden der App ein eigenes Script einbinden, das `MITTAGIO_STRIPE` setzt.
+4. **Deployment:** Site bei Netlify bauen (mit `npm install`), damit die Function `create-checkout-session` verfügbar ist.
+
+Ohne Konfiguration läuft der Checkout weiter im **Demo-Modus** (Bestätigungsdialog, keine echte Zahlung).
