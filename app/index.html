@@ -2403,6 +2403,10 @@
     body.provider-mode #providerStatusIndicator {
       display: flex !important;
     }
+    /* Anbieter-Ansichten: Topbar ausblenden, Inhalt beginnt oben ohne Leerraum */
+    body.provider-mode .topbar { display: none !important; }
+    body.provider-mode main { padding-top: 0 !important; }
+    body.provider-mode [id^="v-provider-"] { padding-top: calc(16px + env(safe-area-inset-top, 0px)) !important; }
       transform:translateX(32px);
     }
     
@@ -8389,7 +8393,9 @@
     
     view.classList.add('active');
     document.body.classList.toggle('provider-week-active', id === 'v-provider-week');
-    window.scrollTo({top:0,behavior:'smooth'});
+    /* Bei Anbieter-Views sofort nach oben scrollen, damit kein leerer oberer Bereich sichtbar ist */
+    var isProviderView = id && id.indexOf('v-provider-') === 0;
+    window.scrollTo({ top: 0, behavior: isProviderView ? 'auto' : 'smooth' });
     
     // VIEW PERSISTENCE: Save current view and mode for refresh
     try {
