@@ -20380,7 +20380,7 @@
         const skipBtn = document.createElement('button');
         skipBtn.type = 'button';
         skipBtn.style.cssText = 'width:100%; min-height:48px; border:none; border-radius:12px; background:#10b981; color:#fff; font-size:15px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;';
-        skipBtn.innerHTML = '<i data-lucide="zap" style="width:20px;height:20px;"></i><span>Mit meinen Standardeinstellungen fortfahren <span style="text-decoration:underline; font-weight:800;">(aus meinem Profil)</span></span>';
+        skipBtn.innerHTML = '<i data-lucide="zap" style="width:20px;height:20px;"></i><span>Mit meinen Standardeinstellungen fortfahren <span style="text-decoration:underline; font-weight:800;">(aus dem Profil)</span></span>';
         skipBtn.onclick = () => {
           w.data.dineInPossible = (provider.profile && provider.profile.dineInPossibleDefault !== undefined) ? !!provider.profile.dineInPossibleDefault : true;
           w.data.reuse = { enabled: !!profile.reuseEnabledByDefault, deposit: profile.reuseEnabledByDefault ? (3) : 0 };
@@ -21089,6 +21089,80 @@
     save(LS.cookbook, cookbook);
     if(!keepOpen){ renderCookbook(); }
   }
+
+  function openSlimDayPicker(wizard, saveDraft, rebuildWizard){
+    var w = wizard || w;
+    if(!w || !w.data || !w.data.dish){
+      if(typeof showToast==='function') showToast('Bitte zuerst Gericht und Preis eingeben.');
+      return;
+    }
+    var days = ['Mo','Di','Mi','Do','Fr','Sa','So'];
+    var today = new Date();
+    today.setHours(12,0,0,0);
+    var overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:3500; display:flex; align-items:center; justify-content:center; padding:24px;';
+    var card = document.createElement('div');
+    card.style.cssText = 'background:#fff; border-radius:20px; padding:24px; max-width:360px; width:100%; box-shadow:0 20px 60px rgba(0,0,0,0.25);';
+    var title = document.createElement('div');
+    title.style.cssText = 'font-size:18px; font-weight:800; margin-bottom:20px; color:#1a1a1a;';
+    title.textContent = 'Für welchen Tag planen?';
+    card.appendChild(title);
+    var grid = document.createElement('div');
+    grid.style.cssText = 'display:grid; grid-template-columns:repeat(2, 1fr); gap:12px;';
+    for(var i = 0; i < 7; i++){
+      var d = new Date(today);
+      d.setDate(d.getDate() + i);
+      var dayKey = isoDate(d);
+      var dayIdx = (d.getDay() + 6) % 7;
+      var label = i === 0 ? 'Heute' : (i === 1 ? 'Morgen' : days[dayIdx] + ', ' + String(d.getDate()).padStart(2,'0') + '.' + String(d.getMonth()+1).padStart(2,'0') + '.');
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.style.cssText = 'min-height:52px; border-radius:14px; border:2px solid #e2e8f0; background:#fff; color:#475569; font-size:15px; font-weight:700; cursor:pointer;';
+      btn.textContent = label;
+      btn.onclick = (function(dKey, dayLabel){
+        return function(){
+          var profile = typeof normalizeProviderProfile === 'function' ? normalizeProviderProfile(provider.profile || {}) : {};
+          var now = Date.now();
+          var base = {
+            id: typeof cryptoId === 'function' ? cryptoId() : 'cb_' + now,
+            providerId: typeof providerId === 'function' ? providerId() : '',
+            dish: w.data.dish || '',
+            category: w.data.category || 'Vegetarisch',
+            price: Number(w.data.price || 0),
+            allergens: w.data.allergens || [],
+            extras: w.data.extras || [],
+            reuse: w.data.reuse || { enabled: false, deposit: 0 },
+            photoData: w.data.photoData || '',
+            hasPickupCode: !!w.data.hasPickupCode,
+            dineInPossible: !!w.data.dineInPossible,
+            createdAt: now,
+            lastUsed: null
+          };
+          cookbook.push(base);
+          save(LS.cookbook, cookbook);
+          var entry = { providerId: base.providerId, dish: base.dish, cookbookId: base.id, active: true };
+          if(!week[dKey]) week[dKey] = [];
+          week[dKey].push(entry);
+          save(LS.week, week);
+          if(typeof publishWeekEntry === 'function') publishWeekEntry(dKey, entry);
+          if(typeof showToast === 'function') showToast('Für ' + dayLabel + ' geplant!');
+          if(overlay.parentNode) overlay.parentNode.removeChild(overlay);
+        };
+      })(dayKey, label);
+      grid.appendChild(btn);
+    }
+    card.appendChild(grid);
+    var closeBtn = document.createElement('button');
+    closeBtn.type = 'button';
+    closeBtn.style.cssText = 'width:100%; min-height:48px; margin-top:20px; border-radius:14px; border:2px solid #e2e8f0; background:#f8fafc; color:#64748b; font-size:15px; font-weight:700; cursor:pointer;';
+    closeBtn.textContent = 'Schließen';
+    closeBtn.onclick = function(){ if(overlay.parentNode) overlay.parentNode.removeChild(overlay); };
+    card.appendChild(closeBtn);
+    overlay.appendChild(card);
+    overlay.onclick = function(ev){ if(ev.target === overlay) { if(overlay.parentNode) overlay.parentNode.removeChild(overlay); } };
+    document.body.appendChild(overlay);
+  }
+  if(typeof window !== 'undefined') window.openSlimDayPicker = openSlimDayPicker;
 
   // Cookbook wizard (add recipe)
   function buildCookbookStep(){
