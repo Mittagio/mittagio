@@ -9363,12 +9363,14 @@
     const listEl = document.getElementById('discoverOffers');
     const mapWrap = document.getElementById('discoverMap');
     const swipeEl = document.getElementById('discoverSwipe');
+    const emptyEl = document.getElementById('discoverEmpty');
     const switchBtn = document.getElementById('discoverViewSwitchBtn');
     const switchIcon = document.getElementById('discoverViewSwitchIcon');
     const switchLabel = document.getElementById('discoverViewSwitchLabel');
     
     if(discoverViewMode === 'map'){
       if(listEl) listEl.style.display = 'none';
+      if(emptyEl) emptyEl.style.display = 'none';
       if(mapWrap) { mapWrap.style.display = 'block'; renderDiscoverMap(); }
       if(swipeEl) swipeEl.style.display = 'none';
       if(switchIcon) switchIcon.textContent = '☰';
@@ -9377,8 +9379,10 @@
       if(listEl) listEl.style.display = 'flex';
       if(mapWrap) mapWrap.style.display = 'none';
       if(swipeEl) swipeEl.style.display = 'none';
+      if(emptyEl) emptyEl.style.display = 'none';
       if(switchIcon) switchIcon.textContent = '🗺️';
       if(switchLabel) switchLabel.textContent = 'Karte';
+      if(typeof renderDiscover === 'function') renderDiscover();
     }
     
     if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
