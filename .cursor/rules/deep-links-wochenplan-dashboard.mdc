@@ -1,0 +1,48 @@
+---
+description: Deep-Linking & Navigation zwischen Dashboard und Wochenplan (S25 nahtlos)
+globs: app/index.html
+---
+
+# Deep-Links & Navigation (Dashboard ↔ Wochenplan)
+
+## Regel: Smart-Jump vom Dashboard
+
+- **Dashboard:** Zeigt Tagesansicht (Read-Only). Ein Klick auf „Zum Wochenplan“ übergibt das **aktuell gewählte Datum** als Parameter.
+- **Wochenplan-Tab** öffnet **direkt an der richtigen Stelle** (gewählter Tag vorselektiert), kein erneutes Suchen/Scrollen.
+
+Technisch: `showProviderWeek(preselectDay)` mit Tag (ISO-Datum); Links „Zum Wochenplan“ rufen `showProviderWeek(selectedDay)` auf.
+
+---
+
+## Regel: Quick-Action vom Dashboard
+
+- „+ Weiteres Gericht planen“ / „Jetzt Woche planen“ öffnet das **Bottom-Sheet (Kochbuch-Suche)** direkt über dem Dashboard.
+- Anbieter wählt Gericht, fügt zum Plan hinzu (ggf. 4,99 € Aktivierung).
+- **Ergebnis:** Anbieter bleibt auf dem Dashboard und sieht das neue Gericht sofort in der Live-Vorschau (kein Tab-Wechsel).
+
+Technisch: Dashboard-Buttons rufen `openWeekAddSheet(selectedDay)` auf. Beim Öffnen wird `weekAddSheetOriginView` gesetzt; nach Speichern bleibt die Ansicht erhalten und `renderProviderWeekPreviewNew()` aktualisiert die Vorschau.
+
+---
+
+## Regel: Globales Bottom-Sheet
+
+- Das „+“-Icon (Gericht planen) ist auf **Dashboard (Küche)** und **Wochenplan** verfügbar und greift immer auf das Kochbuch zu.
+- Nach dem Speichern kehrt der User zur **Ursprungsansicht** zurück (Dashboard → Dashboard, Wochenplan → Wochenplan).
+
+Technisch: Beim Öffnen von `openWeekAddSheet(...)` wird die aktive View als Origin gespeichert; nach Add/Replace wird bei Origin „v-provider-home“ nur die Dashboard-Vorschau neu gerendert, kein View-Wechsel.
+
+---
+
+## Wochenplan vs. Dashboard
+
+| Bereich        | Verhalten |
+|----------------|-----------|
+| **Wochenplan** | Voller Funktionsumfang: Swipe-to-Delete, Swipe-to-Copy, Drag-and-Drop-Sortierung. |
+| **Dashboard**  | Read-Only Tagesansicht; Aktionen: „Weiteres Gericht planen“ (Sheet), „Zum Wochenplan“ (Smart-Jump). |
+
+---
+
+## Design-Check
+
+- 3 Säulen unter dem Bild: 🍴 (Vor Ort), 🎫1️⃣ (Abholnummer), 🔄 (Mehrweg).
+- Clean-modernes Layout, keine Schiefertafel.

@@ -3,12 +3,17 @@
 <head>
   <base href="/mittagio/app/">
   <meta charset="utf-8" />
+  <!-- Mobile-Optimierung: viewport für App-like Darstellung (viewport-fit=cover für Notch/Safe-Area) -->
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=5,user-scalable=yes" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <title>Mittagio</title>
   <meta name="theme-color" content="#FFD700" />
-  <!-- Konzept-Icons: 1. Mehrweg (assets/icon-mehrweg.png) | 2. Essen vor Ort (assets/icon-essen-vor-ort.png) | 3. Abholnummer (assets/icon-abholnummer.png) -->
+  <!-- WhatsApp/Link-Vorschau: Standard-OG (provider-spezifisch ggf. per Server) -->
+  <meta property="og:title" content="Mittagio – Wochenplan" />
+  <meta property="og:description" content="Unser Wochenplan ist online! Entdecke Gerichte und bestelle mit Abholnummer." />
+  <meta property="og:image" content="https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&amp;fit=crop&amp;w=1200&amp;q=80" />
+  <meta property="og:type" content="website" />
   <!-- Build: 2026-02-04 -->
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" href="assets/icons/icon-192.png" />
@@ -3996,8 +4001,20 @@
   </div>
 
   <main>
-    <!-- START - Lunch-Feed (Social Style) - ENTFERNT -->
-
+    <!-- Öffentliche Wochenplan-Ansicht (Magic Link): #/plan/[Anbieter-ID] – Read-Only, 3 Säulen, nur Verkaufspreis -->
+    <section class="view" id="v-plan-public" style="display:none; min-height:100vh; background:#f8fafc; padding:0 0 env(safe-area-inset-bottom, 0);">
+      <header style="background:#fff; border-bottom:1px solid rgba(0,0,0,0.06); padding:16px 20px; position:sticky; top:0; z-index:50;">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div id="planPublicLogo" style="width:48px; height:48px; border-radius:14px; background:#f1f3f5; background-size:cover; background-position:center;"></div>
+          <div>
+            <h1 id="planPublicName" style="margin:0; font-size:20px; font-weight:900; color:#1a1a1a; letter-spacing:-0.02em;">Wochenplan</h1>
+            <p style="margin:2px 0 0; font-size:13px; color:#64748b; font-weight:600;">Unser Wochenplan ist online!</p>
+          </div>
+        </div>
+        <a href="#" id="planPublicBack" style="display:inline-flex; align-items:center; gap:6px; margin-top:16px; font-size:14px; font-weight:700; color:var(--brand,#FFD700); text-decoration:none;">← Zur App</a>
+      </header>
+      <div id="planPublicList" style="max-width:500px; margin:0 auto; padding:20px 16px 24px;"></div>
+    </section>
 
     <!-- CUSTOMER: Discover - App-like UX (Final Spec) -->
     <section class="view customer-view active" id="v-discover">
@@ -4079,16 +4096,16 @@
         </div>
         <div id="discoverPinDrawerBackdrop" style="position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:199; opacity:0; visibility:hidden;" onclick="closeDiscoverPinDrawer()"></div>
 
-        <!-- Leerer Zustand -->
-        <div id="discoverEmpty" style="display:none; text-align:center; padding:60px 20px;">
-          <div style="width:120px; height:120px; margin:0 auto 24px; background:linear-gradient(135deg, #f8f9fa 0%, #f1f3f5 100%); border-radius:40px; display:flex; align-items:center; justify-content:center; box-shadow:0 8px 24px rgba(0,0,0,0.04);">
-            <i data-lucide="utensils" style="width:48px; height:48px; color:#94a3b8;"></i>
+        <!-- Leerer Feed (Empty State): kein weißer Schirm – freundliche Ansage + Standort ändern -->
+        <div id="discoverEmpty" style="display:none; text-align:center; padding:48px 24px 60px;">
+          <div style="width:160px; height:160px; margin:0 auto 24px; border-radius:24px; overflow:hidden; box-shadow:0 8px 32px rgba(0,0,0,0.08); background:#f8f9fa;">
+            <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&amp;fit=crop&amp;w=400&amp;q=80" alt="" style="width:100%; height:100%; object-fit:cover;" loading="lazy" />
           </div>
-          <h2 style="font-size:22px; font-weight:850; margin:0 0 12px; color:#1a1a1a; letter-spacing:-0.02em;">Pause verdient.</h2>
-          <p style="font-size:15px; color:#64748b; line-height:1.6; margin-bottom:32px;">Hier ist gerade Sendepause. Wechsle den Ort oder schau später wieder rein.</p>
+          <h2 style="font-size:22px; font-weight:850; margin:0 0 12px; color:#1a1a1a; letter-spacing:-0.02em;">Hunger?</h2>
+          <p style="font-size:15px; color:#64748b; line-height:1.6; margin-bottom:28px; max-width:320px; margin-left:auto; margin-right:auto;">Momentan gibt es keine aktiven Angebote in deiner Nähe. Schau später nochmal vorbei oder ändere deinen Standort.</p>
           <button class="btn-cust-primary" type="button" onclick="openDiscoverLocationSearch();" style="width:100%; max-width:280px; margin:0 auto;">
             <i data-lucide="map-pin" style="width:20px;height:20px;"></i>
-            <span>Ort wechseln</span>
+            <span>Standort ändern</span>
           </button>
         </div>
 
@@ -4534,6 +4551,20 @@
             <span>Weitere Fragen</span>
             <i data-lucide="chevron-right" style="width:16px;height:16px;"></i>
           </button>
+        </div>
+
+        <!-- Add to Home Screen (PWA-Tipp): einmalig anzeigen, ausblendbar -->
+        <div id="profilePwaTip" class="cust-card" style="padding:20px; margin-bottom:16px; background:linear-gradient(135deg, #f8f9fa 0%, #f1f3f5 100%); border:1px solid rgba(0,0,0,0.06);">
+          <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:12px;">
+            <div style="flex:1;">
+              <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+                <span style="font-size:20px;">📱</span>
+                <span style="font-size:15px; font-weight:800; color:#1a1a1a;">App wie aus dem Store</span>
+              </div>
+              <p style="font-size:13px; color:#64748b; line-height:1.5; margin:0;">Tippe im Browser auf <strong>Teilen</strong> und wähle <strong>„Zum Home-Bildschirm hinzufügen“</strong>. Dann verschwindet die Browser-Leiste und Mittagio sieht aus wie eine native App – inkl. Logo auf dem Homescreen.</p>
+            </div>
+            <button type="button" id="btnDismissPwaTip" aria-label="Hinweis schließen" style="flex-shrink:0; width:32px; height:32px; border-radius:10px; border:none; background:rgba(0,0,0,0.06); color:#64748b; font-size:18px; line-height:1; cursor:pointer;">×</button>
+          </div>
         </div>
 
         <!-- Anbieter Wechsel -->
@@ -7581,7 +7612,6 @@
     // Ersetze Bestellungen für Demo (kein Anhängen – vermeidet QuotaExceededError)
     saveOrders(newOrders);
 
-    console.log(`✅ Beispieldaten erstellt: ${providerNames.length} Anbieter, ${newCookbook.length} Kochbuch-Einträge, ${newOffers.length} Inserate, ${newOrders.length} Bestellungen`);
     return {providers: providerNames.length, cookbook: newCookbook.length, offers: newOffers.length, orders: newOrders.length};
   }
 
@@ -7718,13 +7748,11 @@
       provider = p;
     }
 
-    console.log('✅ Demo-Anbieter Metzer Müller: 25 Gerichte, Wochenplan, Probe-Abrechnung. Login: ' + DEMO_EMAIL);
     return { cookbook: demoCookbook.length, offers: demoOffers.length, week: 7, transactions: demoTransactions.length };
   }
 
   // --- Test-Funktion für Abholnummer-Logik ---
   function testPickupCodeLogic(){
-    console.log('🧪 Teste Abholnummer-Logik...');
     const today = isoDate(new Date());
     
     // Test 1: Prüfe ob Beispieldaten vorhanden sind
@@ -7733,127 +7761,49 @@
     const todayOrders = allOrders.filter(o => o.pickupDate === today && o.status === 'PAID');
     const todayOffers = allOffers.filter(o => o.day === today && o.active !== false);
     
-    console.log(`📊 Test 1 - Daten vorhanden:`);
-    console.log(`  - Heutige Bestellungen: ${todayOrders.length}`);
-    console.log(`  - Heutige Inserate: ${todayOffers.length}`);
-    
-    if(todayOrders.length === 0){
-      console.warn('⚠️ Keine Bestellungen für heute gefunden. seedExampleData() ausführen?');
-      return false;
-    }
+    if(todayOrders.length === 0) return false;
     
     // Test 2: Prüfe Abholnummer-Format
-    console.log(`\n📊 Test 2 - Abholnummer-Format:`);
     const codes = todayOrders.map(o => o.pickupCode).filter(Boolean);
     const invalidCodes = codes.filter(c => !/^\d+[A-E]$/.test(c));
-    if(invalidCodes.length > 0){
-      console.error(`❌ Ungültige Codes gefunden: ${invalidCodes.join(', ')}`);
-      return false;
-    }
-    console.log(`  ✅ Alle ${codes.length} Codes haben gültiges Format (z.B. "1A", "2B")`);
+    if(invalidCodes.length > 0) return false;
     
     // Test 3: Prüfe Eindeutigkeit pro Provider/Tag
-    console.log(`\n📊 Test 3 - Eindeutigkeit pro Provider/Tag:`);
     const providers = [...new Set(todayOrders.map(o => o.providerId))];
     let allUnique = true;
     providers.forEach(pid => {
       const providerOrders = todayOrders.filter(o => o.providerId === pid);
       const providerCodes = providerOrders.map(o => o.pickupCode);
       const uniqueCodes = [...new Set(providerCodes)];
-      if(providerCodes.length !== uniqueCodes.length){
-        console.error(`❌ Provider ${pid}: Duplikate gefunden!`);
-        console.error(`  Codes: ${providerCodes.join(', ')}`);
-        allUnique = false;
-      } else {
-        console.log(`  ✅ Provider ${pid}: ${providerCodes.length} eindeutige Codes`);
-      }
+      if(providerCodes.length !== uniqueCodes.length) allUnique = false;
     });
     if(!allUnique) return false;
     
-    // Test 4: Prüfe dishLetter-Zuordnung
-    console.log(`\n📊 Test 4 - dishLetter-Zuordnung:`);
     providers.forEach(pid => {
       const providerOffers = todayOffers.filter(o => o.providerId === pid).sort((a,b) => (a.createdAt || 0) - (b.createdAt || 0));
       const providerOrders = todayOrders.filter(o => o.providerId === pid);
-      
-      // Erwartete Letters: A, B, C (für 3 Gerichte)
       const expectedLetters = ['A', 'B', 'C'];
-      const actualLetters = [...new Set(providerOrders.map(o => o.dishLetter).filter(Boolean))].sort();
-      
-      console.log(`  Provider ${pid}:`);
-      console.log(`    - Inserate: ${providerOffers.length} (erwartet: 3)`);
-      console.log(`    - Bestellungen: ${providerOrders.length} (erwartet: 10)`);
-      console.log(`    - dishLetters: ${actualLetters.join(', ')} (erwartet: A, B, C)`);
-      
-      // Prüfe ob Letters korrekt zugeordnet sind
       providerOffers.forEach((offer, idx) => {
         const expectedLetter = expectedLetters[idx] || 'A';
         const ordersForOffer = providerOrders.filter(o => o.offerId === offer.id);
         const lettersForOffer = [...new Set(ordersForOffer.map(o => o.dishLetter))];
-        if(lettersForOffer.length !== 1 || lettersForOffer[0] !== expectedLetter){
-          console.warn(`    ⚠️ Offer "${offer.dish}" hat unerwartete Letters: ${lettersForOffer.join(', ')} (erwartet: ${expectedLetter})`);
-        } else {
-          console.log(`    ✅ Offer "${offer.dish}": Letter ${expectedLetter}, ${ordersForOffer.length} Bestellungen`);
-        }
+        if(lettersForOffer.length !== 1 || lettersForOffer[0] !== expectedLetter) allUnique = false;
       });
     });
     
-    // Test 5: Prüfe runningNumber-Sequenz
-    console.log(`\n📊 Test 5 - runningNumber-Sequenz:`);
     providers.forEach(pid => {
       const providerOrders = todayOrders.filter(o => o.providerId === pid);
-      const letters = ['A', 'B', 'C'];
-      letters.forEach(letter => {
+      ['A', 'B', 'C'].forEach(letter => {
         const ordersForLetter = providerOrders.filter(o => o.dishLetter === letter).sort((a,b) => a.runningNumber - b.runningNumber);
         if(ordersForLetter.length > 0){
           const numbers = ordersForLetter.map(o => o.runningNumber);
           const expected = Array.from({length: ordersForLetter.length}, (_, i) => i + 1);
-          const isSequential = JSON.stringify(numbers) === JSON.stringify(expected);
-          if(!isSequential){
-            console.error(`❌ Provider ${pid}, Letter ${letter}: Sequenz fehlerhaft!`);
-            console.error(`  Gefunden: ${numbers.join(', ')}`);
-            console.error(`  Erwartet: ${expected.join(', ')}`);
-          } else {
-            console.log(`  ✅ Provider ${pid}, Letter ${letter}: Sequenz korrekt (1-${numbers.length})`);
-          }
+          if(JSON.stringify(numbers) !== JSON.stringify(expected)) allUnique = false;
         }
       });
     });
     
-    // Test 6: Prüfe assignPickupCode Funktion direkt
-    console.log(`\n📊 Test 6 - assignPickupCode Funktion:`);
-    if(todayOffers.length > 0 && providers.length > 0){
-      const testProvider = providers[0];
-      const testOffers = todayOffers.filter(o => o.providerId === testProvider).sort((a,b) => (a.createdAt || 0) - (b.createdAt || 0));
-      if(testOffers.length > 0){
-        const testOffer = testOffers[0];
-        const testResult = assignPickupCode({
-          providerId: testProvider,
-          pickupDate: today,
-          dishId: testOffer.id
-        });
-        console.log(`  Test für Provider ${testProvider}, Offer "${testOffer.dish}":`);
-        console.log(`    - dishLetter: ${testResult.dishLetter} (erwartet: A)`);
-        console.log(`    - runningNumber: ${testResult.runningNumber}`);
-        console.log(`    - pickupCode: ${testResult.pickupCode}`);
-        
-        const existingCount = todayOrders.filter(o => 
-          o.providerId === testProvider && 
-          o.pickupDate === today && 
-          o.dishLetter === testResult.dishLetter &&
-          o.status === 'PAID'
-        ).length;
-        const expectedRunningNumber = existingCount + 1;
-        if(testResult.runningNumber === expectedRunningNumber){
-          console.log(`    ✅ runningNumber korrekt (${testResult.runningNumber} = ${existingCount} + 1)`);
-        } else {
-          console.error(`    ❌ runningNumber falsch! Gefunden: ${testResult.runningNumber}, Erwartet: ${expectedRunningNumber}`);
-        }
-      }
-    }
-    
-    console.log(`\n✅ Alle Tests abgeschlossen!`);
-    return true;
+    return allUnique;
   }
 
   // --- UI helpers ---
@@ -8243,7 +8193,8 @@
   }
 
   function setMode(next, opts){
-    opts = opts || {};
+    if (next == null) return;
+    opts = (opts && typeof opts === 'object') ? opts : {};
     mode = next;
     save(LS.mode, mode);
 
@@ -8515,6 +8466,7 @@
     if(providerNavBackRow) providerNavBackRow.style.display = 'block';
     pushViewState({view: 'provider-pickups', mode: mode}, location.pathname);
   }
+  /** Deep-Link: „Zum Wochenplan“ übergibt gewählten Tag → Wochenplan öffnet direkt an der richtigen Stelle (Smart-Jump). */
   function showProviderWeek(preselectDay){
     if(preselectDay && typeof preselectDay === 'string') weekPlanDay = preselectDay;
     setProviderNavActive('provider-week');
@@ -13301,7 +13253,6 @@
       }).then(() => {
         showToast('Geteilt!');
       }).catch((err) => {
-        console.log('Share failed:', err);
       });
     } else {
       // Fallback: Link kopieren
@@ -13898,7 +13849,6 @@
           if(offer && offer.providerId){
             // Verzehrart wird beim Erstellen der Bestellung an den Anbieter übermittelt
             // Der Anbieter sieht in seinem Dashboard: "Vor Ort essen" für diese Bestellung
-            console.log(`[Anbieter-Signal] ${offer.providerId}: Vor Ort essen gewählt - Porzellan/Besteck vorbereiten`);
           }
         });
         
@@ -13916,7 +13866,6 @@
         cart.items.forEach(item => {
           const offer = offers.find(o => o.id === item.offerId);
           if(offer && offer.providerId){
-            console.log(`[Anbieter-Signal] ${offer.providerId}: Mitnehmen gewählt - Einpacken in Box/Mehrweg`);
           }
         });
         
@@ -14452,9 +14401,6 @@
       dishName: order.dishName,
       quantity: order.quantity
     };
-    if(typeof console !== 'undefined' && console.log){
-      console.log('[Anbieter-Dashboard] Bestellung übermittelt:', payload);
-    }
     // Optional: In Production hier z.B. EventBus oder API-Call
     // window.dispatchEvent(new CustomEvent('order-paid', { detail: payload }));
   }
@@ -14582,6 +14528,10 @@
   }
 
   function updateProfileView(){
+    var pwaTipEl = document.getElementById('profilePwaTip');
+    if(pwaTipEl) pwaTipEl.style.display = (localStorage.getItem('mittagio_pwa_tip_dismissed') === 'true') ? 'none' : 'block';
+    var btnDismissPwa = document.getElementById('btnDismissPwaTip');
+    if(btnDismissPwa && !btnDismissPwa._pwaBound){ btnDismissPwa._pwaBound = true; btnDismissPwa.onclick = function(){ try { localStorage.setItem('mittagio_pwa_tip_dismissed', 'true'); } catch(e) {} var el = document.getElementById('profilePwaTip'); if(el) el.style.display = 'none'; }; }
     const isLoggedIn = customer.loggedIn;
     const firstName = customer.name ? customer.name.split(' ')[0] : '';
     const fullName = customer.name || 'Gast';
@@ -16211,7 +16161,6 @@
     e.preventDefault();
     e.stopPropagation();
     
-    console.log('Navigation clicked:', go, 'mode:', mode);
     
     try {
       if(go==='discover'){
@@ -16877,9 +16826,9 @@
         '<div class="week-preview-link" id="linkProviderWeekFull"><span>Zum Wochenplan</span><i data-lucide="chevron-right" style="width:16px;height:16px;"></i></div>' +
         '</div>';
       var btn = document.getElementById('btnProviderWeekAddDish');
-      if(btn) btn.onclick = function(){ createFlowPreselectedDate = selectedDay; openCreateFlowSheet(); };
+      if(btn) btn.onclick = function(){ if(typeof openWeekAddSheet === 'function') openWeekAddSheet(selectedDay); };
       var link = document.getElementById('linkProviderWeekFull');
-      if(link) link.onclick = function(){ if(typeof showProviderWeek === 'function') showProviderWeek(); };
+      if(link) link.onclick = function(){ if(typeof showProviderWeek === 'function') showProviderWeek(selectedDay); };
     } else {
       dayContent.innerHTML =
         '<div style="text-align:center; padding:8px 0;">' +
@@ -16889,9 +16838,9 @@
         '<div class="week-preview-link" id="linkProviderWeekFull2" style="justify-content:center; margin-top:12px;"><span>Zum Wochenplan</span><i data-lucide="chevron-right" style="width:16px;height:16px;"></i></div>' +
         '</div>';
       var btnEmpty = document.getElementById('btnProviderWeekAddDishEmpty');
-      if(btnEmpty) btnEmpty.onclick = function(){ createFlowPreselectedDate = selectedDay; openCreateFlowSheet(); };
+      if(btnEmpty) btnEmpty.onclick = function(){ if(typeof openWeekAddSheet === 'function') openWeekAddSheet(selectedDay); };
       var link2 = document.getElementById('linkProviderWeekFull2');
-      if(link2) link2.onclick = function(){ if(typeof showProviderWeek === 'function') showProviderWeek(); };
+      if(link2) link2.onclick = function(){ if(typeof showProviderWeek === 'function') showProviderWeek(selectedDay); };
     }
     if(typeof lucide !== 'undefined') lucide.createIcons();
   }
@@ -17194,15 +17143,31 @@
     toast((c.dish || 'Gericht') + ' ersetzt');
   }
 
-  function openWeekAddSheet(replaceIndex){
+  /** Origin-View für Quick-Action: Nach Speichern im Sheet zurück zur Ursprungsansicht (Dashboard oder Wochenplan). */
+  var weekAddSheetOriginView = '';
+  function openWeekAddSheet(dayKeyOrReplaceIndex, replaceIndexParam){
     var bd = document.getElementById('weekAddSheetBd');
     var sheet = document.getElementById('weekAddSheet');
     var list = document.getElementById('weekAddSheetList');
     var searchInput = document.getElementById('weekAddSheetSearch');
     var hint = document.getElementById('weekAddSheetHint');
     if(!bd || !sheet || !list) return;
-    var dayKey = typeof weekPlanDay !== 'undefined' ? weekPlanDay : isoDate(new Date());
-    var isReplace = typeof replaceIndex === 'number' && replaceIndex >= 0;
+    var dayKey;
+    var isReplace;
+    var replaceIndex = -1;
+    if(typeof dayKeyOrReplaceIndex === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(dayKeyOrReplaceIndex)){
+      dayKey = dayKeyOrReplaceIndex;
+      isReplace = typeof replaceIndexParam === 'number' && replaceIndexParam >= 0;
+      if(isReplace) replaceIndex = replaceIndexParam;
+    } else if(typeof dayKeyOrReplaceIndex === 'number' && dayKeyOrReplaceIndex >= 0){
+      dayKey = typeof weekPlanDay !== 'undefined' ? weekPlanDay : isoDate(new Date());
+      isReplace = true;
+      replaceIndex = dayKeyOrReplaceIndex;
+    } else {
+      dayKey = typeof weekPlanDay !== 'undefined' ? weekPlanDay : isoDate(new Date());
+      isReplace = false;
+    }
+    weekAddSheetOriginView = (document.querySelector('.view.active') && document.querySelector('.view.active').id) || 'v-provider-week';
     var titleEl = document.getElementById('weekAddSheetTitle');
     if(titleEl) titleEl.textContent = isReplace ? 'Gericht ersetzen' : 'Gericht zum Plan hinzufügen';
     var d = new Date(dayKey + 'T12:00:00');
@@ -17228,6 +17193,7 @@
         card.onclick = function(){
           if(isReplace) replaceWeekEntry(dayKey, replaceIndex, c.id); else addCookbookEntryToWeek(dayKey, c.id);
           closeWeekAddSheet();
+          if(weekAddSheetOriginView === 'v-provider-home' && typeof renderProviderWeekPreviewNew === 'function') renderProviderWeekPreviewNew();
         };
         list.appendChild(card);
       });
@@ -18627,62 +18593,93 @@
     };
   }
   
-  // Wochenplan teilen-Funktion
+  // Wochenplan teilen – Magic Link: #/plan/[Anbieter-ID], Snapshot für Kunden-Ansicht, Web Share API
+  var PUBLIC_PLAN_KEY = 'public_plan_';
   function shareWeekPlan(){
     const profile = normalizeProviderProfile(provider.profile || {});
     const providerName = profile.name || provider.email || 'Anbieter';
-    const providerAddr = buildAddress(profile) || '';
+    const pid = providerId();
     const hasAbholnummer = !!profile.abholnummerEnabledByDefault;
-    
-    // Alle Gerichte der Woche sammeln
-    const weekOffers = [];
-    for(let i=0; i<7; i++){
-      const d = new Date();
-      d.setDate(d.getDate() + i);
+    const logoUrl = (profile.logoData || '').trim() || (provider.logoData || '');
+    const firstDishImage = (function(){
+      for(let i=0;i<7;i++){
+        const d = new Date(); d.setDate(d.getDate()+i);
+        const key = isoDate(d);
+        const live = (offers||[]).filter(o => o.providerId === pid && o.day === key && o.active !== false);
+        const o = live[0];
+        if(o && (o.photoData || o.imageUrl)) return o.photoData || o.imageUrl;
+      }
+      return (cookbook||[]).find(c => c.providerId === pid && (c.photoData || c.img))?.photoData || (cookbook||[]).find(c => c.providerId === pid)?.photoData || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=400&q=80';
+    })();
+    var weekOffers = [];
+    for(let i=0;i<7;i++){
+      const d = new Date(); d.setDate(d.getDate()+i);
       const key = isoDate(d);
-      const dayOffers = (week[key] || []).filter(x => x.providerId === providerId() && x.active !== false);
-      dayOffers.forEach(entry => {
-        const cb = cookbook.find(c => c.id === entry.cookbookId);
-        weekOffers.push({
-          day: fmtDay(new Date(key)),
-          dish: cb?.dish || entry.dish || 'Gericht',
-          price: cb?.price || 0
-        });
+      (offers||[]).filter(o => o.providerId === pid && o.day === key && o.active !== false).forEach(o => {
+        weekOffers.push({ day: fmtDay(new Date(key)), dayKey: key, dish: o.dish || o.title || 'Gericht', price: o.price || 0, imageUrl: o.photoData || o.imageUrl || firstDishImage, vorOrt: o.dineInPossible !== false, abholnummer: !!o.hasPickupCode, mehrweg: !!(profile.reuse && profile.reuse.enabled) });
       });
     }
-    
     if(weekOffers.length === 0){
-      showToast('Keine Gerichte zum Teilen');
+      showToast('Keine aktivierten Gerichte zum Teilen – zuerst für 4,99 € live schalten.');
       return;
     }
-    
-    const shareUrl = `${location.origin}${location.pathname}#provider/${providerId()}/week`;
-    let shareText;
-    if(hasAbholnummer){
-      shareText = `📅 Hunger für die ganze Woche geplant? Schau dir unseren neuen Wochenplan an!\n\n📍 ${providerName}\n\n${weekOffers.slice(0, 5).map(o => `🍴 ${o.day}: ${o.dish} - ${euro(o.price)}`).join('\n')}${weekOffers.length > 5 ? `\n... und ${weekOffers.length - 5} weitere Leckereien!` : ''}\n\nJetzt für die Mittagsbox planen & Schlange überspringen:\n👉 ${shareUrl}\n\n#mittagio #wochenplan #mittagspause #lecker`;
-    } else {
-      shareText = `📅 Hunger für die ganze Woche geplant? Schau dir unseren neuen Wochenplan an!\n\n📍 ${providerName}\n\n${weekOffers.slice(0, 5).map(o => `🍴 ${o.day}: ${o.dish} - ${euro(o.price)}`).join('\n')}${weekOffers.length > 5 ? `\n... und ${weekOffers.length - 5} weitere Leckereien!` : ''}\n\nJetzt online entdecken & entspannt genießen:\n👉 ${shareUrl}\n\n#mittagio #wochenplan #mittagspause #lecker`;
-    }
-    
+    var snapshot = { providerId: pid, providerName, logoUrl, firstDishImage, offers: weekOffers, updatedAt: Date.now() };
+    try { localStorage.setItem(PUBLIC_PLAN_KEY + pid, JSON.stringify(snapshot)); } catch(e) {}
+    var shareUrl = location.origin + location.pathname.replace(/\/$/, '') + '#/plan/' + encodeURIComponent(pid);
+    var shareTitle = 'Unser Wochenplan ist online!';
+    var shareText = hasAbholnummer
+      ? `📅 Hunger für die ganze Woche geplant? Schau dir unseren neuen Wochenplan an!\n\n📍 ${providerName}\n\n${weekOffers.slice(0, 5).map(o => `🍴 ${o.day}: ${o.dish} - ${euro(o.price)}`).join('\n')}${weekOffers.length > 5 ? `\n... und ${weekOffers.length - 5} weitere Leckereien!` : ''}\n\nJetzt für die Mittagsbox planen & Schlange überspringen:\n👉 ${shareUrl}\n\n#mittagio #wochenplan #mittagspause #lecker`
+      : `📅 Hunger für die ganze Woche geplant? Schau dir unseren neuen Wochenplan an!\n\n📍 ${providerName}\n\n${weekOffers.slice(0, 5).map(o => `🍴 ${o.day}: ${o.dish} - ${euro(o.price)}`).join('\n')}${weekOffers.length > 5 ? `\n... und ${weekOffers.length - 5} weitere Leckereien!` : ''}\n\nJetzt online entdecken & entspannt genießen:\n👉 ${shareUrl}\n\n#mittagio #wochenplan #mittagspause #lecker`;
     if(navigator.share){
-      navigator.share({
-        title: `Wochenplan ${providerName}`,
-        text: shareText,
-        url: shareUrl
-      }).then(() => {
-        showToast('Wochenplan geteilt!');
-      }).catch((err) => {
-        if(err.name !== 'AbortError'){
-          copyToClipboard(shareText);
-          showToast('Link kopiert!');
-        }
+      navigator.share({ title: shareTitle, text: shareText, url: shareUrl }).then(() => { showToast('Wochenplan geteilt!'); }).catch((err) => {
+        if(err.name !== 'AbortError'){ if(typeof copyToClipboard === 'function') copyToClipboard(shareText); showToast('Link kopiert!'); }
       });
     } else {
-      copyToClipboard(shareText);
+      if(typeof copyToClipboard === 'function') copyToClipboard(shareText);
       showToast('Link kopiert!');
     }
   }
-  
+
+  function showPlanPublicView(providerId){
+    var el = document.getElementById('v-plan-public');
+    var list = document.getElementById('planPublicList');
+    var nameEl = document.getElementById('planPublicName');
+    var logoEl = document.getElementById('planPublicLogo');
+    var backEl = document.getElementById('planPublicBack');
+    if(!el || !list) return;
+    document.querySelectorAll('.view').forEach(v => { v.classList.remove('active'); v.style.display = ''; });
+    document.getElementById('customerNav') && (document.getElementById('customerNav').style.display = 'none');
+    document.getElementById('providerNavWrap') && (document.getElementById('providerNavWrap').style.display = 'none');
+    document.body.classList.remove('provider-mode');
+    var raw = null;
+    try { raw = localStorage.getItem(PUBLIC_PLAN_KEY + providerId); } catch(e) {}
+    var data = raw ? (function(){ try { return JSON.parse(raw); } catch(e) { return null; } })() : null;
+    if(!data || !data.offers || data.offers.length === 0){
+      list.innerHTML = '<div style="text-align:center; padding:48px 24px;"><p style="font-size:16px; font-weight:700; color:#1a1a1a; margin-bottom:8px;">Wochenplan nicht verfügbar</p><p style="font-size:14px; color:#64748b;">Der Link ist abgelaufen oder der Anbieter hat den Plan noch nicht geteilt.</p><a href="#" onclick="location.hash=\'\'; if(typeof showDiscover===\'function\') showDiscover(); return false;" style="display:inline-block; margin-top:20px; font-size:15px; font-weight:700; color:var(--brand);">Zur App</a></div>';
+      if(nameEl) nameEl.textContent = 'Wochenplan';
+      if(logoEl) logoEl.style.backgroundImage = '';
+    } else {
+      if(nameEl) nameEl.textContent = data.providerName || 'Wochenplan';
+      if(logoEl){ logoEl.style.backgroundImage = data.logoUrl ? 'url(' + data.logoUrl + ')' : ''; logoEl.style.backgroundColor = data.logoUrl ? 'transparent' : '#f1f3f5'; }
+      function euro(n){ return (Number(n)||0).toFixed(2).replace('.',',') + ' €'; }
+      var html = '';
+      data.offers.forEach(function(o){
+        var img = o.imageUrl || data.firstDishImage || '';
+        var threePillars = '<div class="plan-public-pillars" style="display:flex; justify-content:center; gap:16px; padding:8px 0 12px; border-bottom:1px solid rgba(0,0,0,0.06); font-size:14px;"><span title="Vor Ort">🍴</span><span title="Abholnummer">🎫1️⃣</span><span title="Mehrweg">🔄</span></div>';
+        html += '<div class="plan-public-card" style="background:#fff; border-radius:20px; overflow:hidden; margin-bottom:16px; border:1px solid #e2e8f0; box-shadow:0 2px 12px rgba(0,0,0,0.04);"><div style="height:140px; background:#f1f3f5;"><img src="' + (img || '').replace(/"/g,'&quot;') + '" alt="" style="width:100%; height:100%; object-fit:cover;" onerror="this.style.display=\'none\'"></div>' + threePillars + '<div style="padding:14px 18px;"><div style="font-size:18px; font-weight:900; color:#1a1a1a;">' + (o.dish || 'Gericht').replace(/</g,'&lt;') + '</div><div style="font-size:14px; color:#64748b; margin-top:4px;">' + (o.day || '') + '</div><div style="font-size:16px; font-weight:800; color:#10b981; margin-top:8px;">' + euro(o.price) + '</div></div></div>';
+      });
+      list.innerHTML = html;
+    }
+    if(backEl) backEl.onclick = function(e){ e.preventDefault(); location.hash = ''; if(typeof setMode === 'function') setMode('customer'); if(typeof showDiscover === 'function') showDiscover(); };
+    el.style.display = 'block';
+    el.classList.add('active');
+  }
+
+  function hidePlanPublicView(){
+    var el = document.getElementById('v-plan-public');
+    if(el){ el.style.display = 'none'; el.classList.remove('active'); }
+  }
+
   // Tagesessen teilen-Funktion
   function shareTodayOffers(){
     const todayKey = isoDate(new Date());
@@ -21636,7 +21633,7 @@
     const autoReplySubject = 'Deine Nachricht an das Mittagio-Team 🤝';
     const autoReplyBody = `Hallo ${providerName},\n\nvielen Dank für deine Nachricht! Wir haben deine Anfrage zum Thema ${topicLabels[topic] || 'Allgemein'} erhalten.\n\nDa wir wissen, dass es in der Küche oft stressig zugeht, geben wir Vollgas: Wir schauen uns dein Anliegen sofort an und melden uns innerhalb der nächsten 24 Stunden persönlich bei dir.\n\nIn der Zwischenzeit: Schau gerne in unsere 'Erste-Hilfe'-Checkliste in deinem Profil – oft lässt sich dort schon eine schnelle Lösung finden.\n\nBeste Grüße,\nMike von Mittagio`;
     
-    console.log('[Support Auto-Reply] Sollte gesendet werden:', {
+    if(false && typeof console !== 'undefined') console.log('[Support Auto-Reply]', {
       providerId: providerId(),
       providerName: providerName,
       providerEmail: provider.email,
@@ -21670,7 +21667,7 @@
     // Body: { orderId, providerId, pickupCode, dishName, ... }
     
     // MVP: Log für Debugging
-    console.log('[Backup-Email] Sollte gesendet werden:', {
+    if(false && typeof console !== 'undefined') console.log('[Backup-Email]', {
       orderId: order.id,
       providerId: order.providerId,
       pickupCode: order.pickupCode,
@@ -21728,8 +21725,19 @@
       mode = 'customer';
     }
   }
-  
-  setMode(mode);
+
+  // Magic Link: #/plan/[Anbieter-ID] – öffentliche Wochenplan-Ansicht (Kunde sieht nur Verkaufspreis, 3 Säulen)
+  var planMatch = (location.hash || '').match(/^#\/plan\/(.+)$/);
+  if(planMatch && typeof showPlanPublicView === 'function'){
+    showPlanPublicView(decodeURIComponent(planMatch[1]));
+  } else {
+    setMode(mode);
+  }
+  window.addEventListener('hashchange', function(){
+    var m = (location.hash || '').match(/^#\/plan\/(.+)$/);
+    if(m && typeof showPlanPublicView === 'function') showPlanPublicView(decodeURIComponent(m[1]));
+    else if(typeof hidePlanPublicView === 'function'){ hidePlanPublicView(); setMode(mode); }
+  });
   
   // WIZARD RESTORATION: Restore open wizard if needed
   try {
@@ -21859,7 +21867,6 @@
   
   // Offline/Online Event-Handler (Fallback-Verhalten)
   window.addEventListener('online', () => {
-    console.log('Online-Verbindung wiederhergestellt');
     // Optional: Toast anzeigen
     if(typeof showToast === 'function'){
       showToast('Verbindung wiederhergestellt', 2000);
@@ -21871,7 +21878,6 @@
   });
   
   window.addEventListener('offline', () => {
-    console.log('Offline-Verbindung erkannt');
     // Optional: Toast anzeigen
     if(typeof showToast === 'function'){
       showToast('Keine Internetverbindung', 3000);

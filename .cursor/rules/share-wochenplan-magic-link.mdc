@@ -1,0 +1,43 @@
+---
+description: Wochenplan teilen – Magic Link, Web Share API, öffentliche Kunden-Ansicht
+globs: app/index.html
+---
+
+# Wochenplan „Teilen“ – Magic Link & Kunden-Ansicht
+
+## Regel: Share-URL und Web Share API
+
+- **Teilen-Button** (Wochenplan): Nutzt die **native Web Share API** – auf dem Handy öffnet sich das System-Menü (WhatsApp, Instagram, E-Mail usw.).
+- **Link:** `[Origin]/#/plan/[Anbieter-ID]` (öffentliche URL).
+- **Share-Titel** für WhatsApp/Status: „Unser Wochenplan ist online!“
+- Fallback: Wenn Web Share nicht verfügbar, Link in die Zwischenablage kopieren.
+
+Technisch: `shareWeekPlan()` baut nur **aktivierte (live)** Gerichte der aktuellen Woche, speichert Snapshot in `localStorage` unter `public_plan_[providerId]`, setzt `shareUrl`, `shareTitle`, `shareText` und ruft `navigator.share({ title, text, url })` auf.
+
+---
+
+## Regel: Öffentliche Kunden-Ansicht (#/plan/[Anbieter-ID])
+
+- **Inhalt:** Alle aktivierten Gerichte (Status: Grün) der aktuellen Woche.
+- **Design:** Clean, mobil, mit **Originalbildern** und den **3 Säulen** unter dem Bild: 🍴 (Vor Ort), 🎫1️⃣ (Abholnummer), 🔄 (Mehrweg).
+- **Preise:** Nur der **Verkaufspreis** wird angezeigt – **keine** Gebühren-Logik (4,99 € / 0,89 €) für den Kunden.
+- Wenn kein Snapshot vorhanden (z. B. anderer Gerät/Link abgelaufen): Hinweis „Wochenplan nicht verfügbar“ + Link „Zur App“.
+
+Technisch: Beim Öffnen von `#/plan/[id]` wird `showPlanPublicView(id)` aufgerufen, liest `localStorage.getItem('public_plan_' + id)` und rendert die Karten mit Bild, 3 Säulen, Gerichtsname, Tag, Preis.
+
+---
+
+## Regel: WhatsApp-Vorschau (OG-Image)
+
+- **Standard:** In `index.html` sind feste **og:title**, **og:description**, **og:image** gesetzt (z. B. „Mittagio – Wochenplan“, „Unser Wochenplan ist online!“, Standardbild).
+- **Provider-spezifisch** (Name + eigenes Gerichtsfoto): erfordert serverseitige Auslieferung unterschiedlicher Meta-Tags pro URL (z. B. `/plan/[id]` als eigene Route mit dynamischem HTML oder Meta-API).
+
+---
+
+## Kurz
+
+| Thema              | Umsetzung |
+|--------------------|-----------|
+| Share-API          | `navigator.share` mit title „Unser Wochenplan ist online!“, url `#/plan/[providerId]` |
+| Öffentliche Ansicht| Read-Only, 3 Säulen, nur Verkaufspreis, Snapshot aus localStorage |
+| OG-Vorschau         | Feste og:meta in HTML; provider-spezifisch optional per Server |
