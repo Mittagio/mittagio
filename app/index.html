@@ -5227,7 +5227,7 @@
             <div style="display:flex; align-items:center; gap:10px;">
               <button type="button" class="btn-primary provider-add-plus-btn" id="btnProviderHomeInseratFlow" style="min-height:44px; padding:0 18px; border-radius:14px; font-size:14px; font-weight:800; border:none; display:inline-flex; align-items:center; gap:8px; box-shadow:0 2px 12px rgba(255,215,0,0.35);">
                 <span class="plus-char" style="font-size:18px; line-height:1; color:#fff;">+</span>
-                <span>Zum Inserat-Flow</span>
+                <span>Gericht erstellen</span>
               </button>
               <span class="prov-badge prov-badge-live">Online</span>
             </div>
@@ -5266,7 +5266,7 @@
           <p style="color:#64748b; margin-bottom:32px; line-height:1.6; font-size:15px;">Erstelle dein erstes Inserat und werde sofort für Kunden in deiner Umgebung sichtbar.</p>
           <button class="btn-primary provider-add-plus-btn" id="btnProviderEmptyAddDish" style="width:100%; min-height:60px; border-radius:18px; font-size:16px;">
             <span class="plus-char" style="font-size:22px; line-height:1; color:#fff;">+</span>
-            <span>Jetzt Inserat erstellen</span>
+            <span>Jetzt Gericht erstellen</span>
           </button>
         </div>
 
@@ -5408,7 +5408,7 @@
     </section>
 
     <!-- FAB: gleicher wie Dashboard (Inseratsflow) – sichtbar auf Meine Küche + Kochbuch -->
-    <button class="fab-provider fab-provider-plus" id="fabProviderAddOffer" type="button" aria-label="Inserat hinzufügen">
+    <button class="fab-provider fab-provider-plus" id="fabProviderAddOffer" type="button" aria-label="Gericht erstellen">
       <span class="plus-char" style="font-size:28px; line-height:1; color:#fff;">+</span>
     </button>
 
@@ -6701,7 +6701,7 @@
     <div class="create-flow-btns">
       <button class="btn-create-primary provider-add-plus-btn" type="button" id="btnCreateNewDish" style="margin-bottom:12px;">
         <span class="plus-char" style="font-size:22px; line-height:1; color:#fff;">+</span>
-        <span>Inseratsflow öffnen</span>
+        <span>Gericht erstellen</span>
       </button>
       <button class="btn ghost" type="button" id="btnCreateFromCookbook" style="width:100%; min-height:48px; border:2px solid #e5e7eb; background:#fff; border-radius:14px; font-weight:700; color:#64748b;">
         <span>📖 Zum Kochbuch wechseln</span>
@@ -16979,7 +16979,7 @@
               Erstelle dein erstes Inserat, um für Kunden sichtbar zu werden.
             </div>
             <button class="btn secondary" type="button" id="btnProviderEmptyAddDish" style="width:100%; min-height:44px;">
-              Inserat erstellen
+              Gericht erstellen
             </button>
           `;
         }
@@ -16993,7 +16993,7 @@
       }
     }
     
-    // FAB → „Inserat hinzufügen“ (Aus Kochbuch oder Inseratsflow)
+    // FAB → Gericht erstellen (Kochbuch / Wochenplan / Küche)
     const fabProviderAddOffer = document.getElementById('fabProviderAddOffer');
     const fabProviderAddOfferLabel = document.getElementById('fabProviderAddOfferLabel');
     if(fabProviderAddOffer){
