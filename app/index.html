@@ -8634,6 +8634,18 @@
     showView(views.providerHome);
     renderProviderHome();
     
+    // Dashboard sofort von oben sichtbar (verhindert „Noise Screen“ / leere Ansicht bis zum Scrollen)
+    function scrollProviderHomeToTop(){
+      window.scrollTo(0, 0);
+      if(document.documentElement) document.documentElement.scrollTop = 0;
+      if(document.body) document.body.scrollTop = 0;
+      var home = document.getElementById('v-provider-home');
+      if(home && home.scrollTop) home.scrollTop = 0;
+    }
+    scrollProviderHomeToTop();
+    setTimeout(scrollProviderHomeToTop, 50);
+    requestAnimationFrame(scrollProviderHomeToTop);
+    
     // Connectivity-Check starten wenn Provider-Modus aktiv
     if(mode === 'provider' && provider.loggedIn){
       startConnectivityCheck();
