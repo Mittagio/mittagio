@@ -1,0 +1,31 @@
+---
+description: Inseratsflow "Slim" (Express) – Einseiter, Profil-Automatik, Button-Hierarchie (4,99 € CTA + Planen/Speichern)
+alwaysApply: false
+---
+
+# Slim-Flow: Inserat radikal verschmälern (Express-Modus)
+
+## Ziel
+
+- **Eine Hauptseite** für die Eingabe: Gerichtsname (Autocomplete), Bild (3 Slots: Kamera, Galerie, KI), Preis (groß, `inputmode="decimal"`).
+- **Profil-Automatisierung**: Abholzeiten, Vor Ort, Mehrweg, Allergene-Standard **nicht** abfragen – aus User-Profil laden. Diese Screens überspringen.
+- **Button-Hierarchie**:
+  - **Primary (sticky unten)**: „Jetzt für 4,99 € inserieren“ (Emerald-Grün, volle Breite). Erst nach Klick Upsell-Overlay Abholnummer (0,89 €) mit emotionalem Foto.
+  - **Secondary (darunter)**: horizontale Reihe, dezent (Outline/Slate): „📅 Planen“ (Day-Picker Overlay → „Für [Wochentag] geplant!“), „📖 Im Kochbuch speichern“.
+
+## UI-Reduktion
+
+- Kategorie/Allergene aus Autocomplete oder Profil/Historie **im Hintergrund** setzen, nicht als eigene Schritte.
+- Preis-Input **massiv groß** (lauter Betrieb, schnelles Tippen).
+- Icons (🍴, 🧾, 🔄) nur unter dem Bild in der Discovery-Vorschau; Begriff **„Abholnummer“** verwenden.
+
+## Planer-Integration
+
+- „Planen“: Kein neuer Screen, nur **kompaktes Day-Picker Overlay** (Mo–So). Nach Wahl: Overlay schließen, Toast „Für [Wochentag] geplant!“.
+- „Speichern“: Gericht ins Kochbuch übernehmen (ohne sofort zu inserieren).
+- Planer-Buttons **nicht** vom Haupt-CTA ablenken (dünne Slate-Border, dezentes Grau).
+
+## Technik
+
+- In `buildListingStep()`: Schritt 0 = Einseiter (Name, Bild, Preis); Abholzeit aus `profile.mealWindow`; optional Slim-Flag, sodass Schritt 1 (Allergene & Service) übersprungen wird und Profil-Werte genutzt werden.
+- Sticky-Footer im Wizard/Sheet: Primary CTA + Planer-Zeile; Day-Picker als Overlay mit `id="slimDayPickerBd"` / `id="slimDayPickerSheet"`.

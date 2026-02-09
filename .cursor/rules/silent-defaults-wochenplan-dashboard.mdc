@@ -1,0 +1,32 @@
+---
+description: "Silent Defaults" – Icons (Vor Ort, Abholnummer, Mehrweg) nur bei Abweichung vom Profil anzeigen. Küchentauglich, ruhiges Design.
+alwaysApply: true
+---
+
+# Silent Defaults: Wochenplan & Dashboard (UI-Reduktion)
+
+## Grundprinzip
+
+Die drei Säulen **🍴 Vor Ort**, **🎫 Abholnummer**, **🔄 Mehrweg** sind im Anbieter-Profil als Standard hinterlegt. Im Wochenplan und auf dem Dashboard **nicht** auf jeder Karte wiederholen – nur anzeigen, wenn ein **spezifisches Gericht/Inserat** davon abweicht (Override).
+
+- **Wochenplan**: `renderWeekPlan()` – `week-meal-badges` nur befüllen, wenn `entry.dineInPossible` / `entry.hasPickupCode` / `entry.reuse` gesetzt sind **und** vom Profil-Standard abweichen. Sonst `badgesHtml = ''`.
+- **Dashboard (Aktive Angebote)**: `renderProviderHome()` – Pillars (Vor Ort, Abhol-Nr., Mehrweg) nur rendern, wenn `o.dineInPossible` / `o.hasPickupCode` / `o.reuse` vom Profil abweichen.
+
+## Profil-Standard lesen
+
+- `normalizeProviderProfile(provider.profile)` → `dineInPossible`, `hasPickupCode`, `reuse.enabled`.
+- Defaults: `defaultDineIn = profile.dineInPossible !== false`, `defaultPickup = !!profile.hasPickupCode`, `defaultReuse = !!(profile.reuse && profile.reuse.enabled)`.
+
+## Anzeige-Logik
+
+- Icon/Pillar **nur anzeigen**, wenn für dieses Gericht/Inserat ein **expliziter Wert** vorliegt (`entry.hasPickupCode !== undefined` etc.) **und** dieser Wert vom Profil-Standard abweicht.
+- Kein Override → keine Icons/Pillars auf der Karte. Fokus: **Bild, Name, Preis**, ggf. Status (🟢 Aktiv / 🟡 Entwurf).
+
+## Warum
+
+- Küche: Schnell erfassen „Was koche ich heute?“ – keine Ablenkung durch wiederholte Technik-Icons.
+- Batch-Aktivierung (Tag aktiviert = 4,99 € gebucht, Standards laufen automatisch) bleibt zentral; Icons nur bei Ausnahmen.
+
+## Bei neuen Anbieter-Views
+
+- Neue Listen/Karten mit Vor Ort / Abholnummer / Mehrweg: dieselbe Logik anwenden (Silent Defaults, Abweichung vom Profil = anzeigen).

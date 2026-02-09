@@ -5621,7 +5621,8 @@
             </div>
           </div>
           
-          <p style="margin:20px; font-size:13px; color:#94a3b8; text-align:center; line-height:1.5;">Diese Einstellungen gelten als Standard für neue Inserate.</p>
+          <p style="margin:16px 20px 8px; font-size:13px; color:#0ea5e9; font-weight:700; text-align:center; line-height:1.5; text-decoration:underline; text-underline-offset:2px;">Diese Standards sind in deinem Profil gespeichert.</p>
+          <p style="margin:0 20px 20px; font-size:13px; color:#94a3b8; text-align:center; line-height:1.5;">Sie werden bei jedem neuen Inserat automatisch verwendet.</p>
         </div>
       </div>
 
@@ -16683,11 +16684,16 @@
       if(providerActiveListings && providerActiveListingsSection){
         providerActiveListingsSection.style.display = mineToday.length > 0 ? 'block' : 'none';
         providerActiveListings.innerHTML = '';
+        var provProfile = (typeof normalizeProviderProfile === 'function' && provider && provider.profile) ? normalizeProviderProfile(provider.profile) : {};
+        var defaultDineIn = provProfile.dineInPossible !== false;
+        var defaultPickup = !!(provProfile.hasPickupCode);
+        var defaultReuse = !!(provProfile.reuse && provProfile.reuse.enabled);
         mineToday.forEach(function(o){
           const d = normalizeOffer(o);
           const imgUrl = d.imageUrl || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=800&q=70';
           const hasReusable = !!(o.reuse && o.reuse.enabled);
           const hasPickupNumber = !!o.hasPickupCode;
+          const hasDineIn = o.dineInPossible !== false;
           const dishName = d.dish || d.title || 'Gericht';
           const isLive = o.active !== false;
           
@@ -16697,11 +16703,11 @@
           const pickupsForOffer = todayOrders.filter(function(ord){ return ord.dishId === o.id; });
           const orderCount = pickupsForOffer.length;
 
-          // Pillars
+          // Silent Defaults: Pillars (Vor Ort, Abhol-Nr., Mehrweg) nur bei Abweichung vom Profil anzeigen.
           const pillars = [];
-          pillars.push('<div style="flex:1; background:#f1f5f9; color:#1a1a1a; padding:8px; border-radius:10px; font-size:10px; font-weight:800; text-transform:uppercase; text-align:center;">🍴 Vor Ort</div>');
-          if(hasPickupNumber) pillars.push('<div style="flex:1; background:rgba(255,215,0,0.2); color:#1a1a1a; padding:8px; border-radius:10px; font-size:10px; font-weight:800; text-transform:uppercase; text-align:center;">🧾 Abhol-Nr.</div>');
-          if(hasReusable) pillars.push('<div style="flex:1; background:rgba(16,185,129,0.1); color:#10b981; padding:8px; border-radius:10px; font-size:10px; font-weight:800; text-transform:uppercase; text-align:center;">🔄 Mehrweg</div>');
+          if((o.dineInPossible !== undefined) && (hasDineIn !== defaultDineIn)) pillars.push('<div style="flex:1; background:#f1f5f9; color:#1a1a1a; padding:8px; border-radius:10px; font-size:10px; font-weight:800; text-transform:uppercase; text-align:center;">🍴 ' + (hasDineIn ? 'Vor Ort' : 'Kein Vor Ort') + '</div>');
+          if((o.hasPickupCode !== undefined) && (hasPickupNumber !== defaultPickup)) pillars.push('<div style="flex:1; background:rgba(255,215,0,0.2); color:#1a1a1a; padding:8px; border-radius:10px; font-size:10px; font-weight:800; text-transform:uppercase; text-align:center;">🧾 Abhol-Nr.</div>');
+          if((o.reuse !== undefined) && (hasReusable !== defaultReuse)) pillars.push('<div style="flex:1; background:rgba(16,185,129,0.1); color:#10b981; padding:8px; border-radius:10px; font-size:10px; font-weight:800; text-transform:uppercase; text-align:center;">🔄 Mehrweg</div>');
 
           const card = document.createElement('div');
           card.className = 'prov-card';
@@ -17361,10 +17367,21 @@
         ? '<span class="week-meal-online"><i data-lucide="check-circle" style="width:14px;height:14px;"></i> Online</span>'
         : '<span style="font-size:12px; font-weight:700; color:#94a3b8;">Geplant</span>';
       var profile = (typeof normalizeProviderProfile === 'function' && provider && provider.profile) ? normalizeProviderProfile(provider.profile) : {};
-      var vorOrt = dayIsLive && (profile.dineInPossible !== false);
-      var abholnummer = dayIsLive && !!(entry.hasPickupCode || profile.hasPickupCode);
-      var mehrweg = dayIsLive && !!(profile.reuse && profile.reuse.enabled);
-      var badgesHtml = '<div class="week-meal-badges" style="display:flex; gap:8px; margin-top:6px; font-size:14px;" title="Vor Ort · Abholnummer · Mehrweg"><span>🍴</span><span>🎫1️⃣</span><span>🔄</span></div>';
+      // Silent Defaults: Icons (Vor Ort, Abholnummer, Mehrweg) nur anzeigen, wenn sie vom Profil-Standard abweichen.
+      var defaultDineIn = profile.dineInPossible !== false;
+      var defaultPickup = !!(profile.hasPickupCode);
+      var defaultReuse = !!(profile.reuse && profile.reuse.enabled);
+      var entryDineIn = entry.dineInPossible !== false;
+      var entryPickup = !!(entry.hasPickupCode !== undefined ? entry.hasPickupCode : defaultPickup);
+      var entryReuse = !!(entry.reuse && entry.reuse.enabled);
+      var showVorOrt = (entry.dineInPossible !== undefined) && (entryDineIn !== defaultDineIn);
+      var showAbholnummer = (entry.hasPickupCode !== undefined) && (!!entry.hasPickupCode !== defaultPickup);
+      var showMehrweg = (entry.reuse !== undefined) && (entryReuse !== defaultReuse);
+      var badgeParts = [];
+      if(showVorOrt) badgeParts.push('<span title="Vor Ort (Abweichung)">🍴</span>');
+      if(showAbholnummer) badgeParts.push('<span title="Abholnummer (Abweichung)">🎫</span>');
+      if(showMehrweg) badgeParts.push('<span title="Mehrweg (Abweichung)">🔄</span>');
+      var badgesHtml = badgeParts.length ? '<div class="week-meal-badges" style="display:flex; gap:8px; margin-top:6px; font-size:14px;">' + badgeParts.join('') + '</div>' : '';
       var verdienstHtml = !dayIsLive ? '<div class="week-meal-verdienst" style="font-size:12px; color:#10b981; margin-top:4px;">Verdienst ca. ' + euro(Math.max(0, (Number(price)||0) - 4.99)) + '</div>' : '';
       card.innerHTML = '<div><div class="week-meal-name">' + esc(name) + '</div><div class="week-meal-meta">' + euro(price) + ' ' + onlineHtml + '</div>' + badgesHtml + verdienstHtml + '</div>';
       card.style.cursor = 'pointer';
@@ -20216,14 +20233,18 @@
       prevContainer.appendChild(rem);
       box.appendChild(prevContainer);
 
-      // --- Abholzeit: aus Profil, Toggle "immer gleich" ---
-      const labelTime=document.createElement('div'); labelTime.className='hint'; labelTime.textContent='Abholzeit (Mittagstisch)';
-      box.appendChild(labelTime);
+      // --- Abholzeit: Slim-Flow = aus Profil, keine Abfrage (im Hintergrund) ---
       const profileWindow = profile.mealWindow || DEFAULT_MEAL_WINDOW;
+      w.data.pickupWindow = profileWindow;
+      w.data.pickupWindowUseProfile = true;
+      const labelTime=document.createElement('div');
+      labelTime.className='hint';
+      labelTime.innerHTML='Abholzeit (Mittagstisch) <span style="font-weight:800; color:#0ea5e9; text-decoration:underline; text-underline-offset:2px;">Aus deinem Profil</span>';
+      box.appendChild(labelTime);
       if(w.data.pickupWindowUseProfile === undefined) w.data.pickupWindowUseProfile = true;
       const toggleRow=document.createElement('div');
-      toggleRow.style.cssText='display:flex; align-items:center; justify-content:space-between; padding:12px 14px; background:#f8f9fa; border-radius:12px; margin-bottom:12px;';
-      toggleRow.innerHTML='<span style="font-weight:600; font-size:14px;">Abholzeiten immer gleich wie im Profil?</span>';
+      toggleRow.style.cssText='display:flex; align-items:center; justify-content:space-between; padding:12px 14px; background:#f0f9ff; border-radius:12px; margin-bottom:12px; border:1px solid rgba(14,165,233,0.2);';
+      toggleRow.innerHTML='<span style="font-weight:700; font-size:14px;">Abholzeiten aus deinem Profil</span><span style="font-size:13px; color:#64748b;">' + (profileWindow || '11:30 – 14:00') + '</span>';
       const togUseProfile=document.createElement('button');
       togUseProfile.type='button';
       togUseProfile.style.cssText=`width:44px; height:24px; border-radius:12px; background:${w.data.pickupWindowUseProfile?'#10b981':'#e5e7eb'}; position:relative; border:none; transition:0.2s;`;
@@ -20258,10 +20279,10 @@
       plusEnd.onclick=()=>{ let start=parseTime(timeStart), end=parseTime(timeEnd); if(end<15*60&&end-start<4*60){ end+=15; timeEnd=fmtTime(end); dispEnd.textContent=timeEnd; updatePickupWindow(); } };
       endCell.appendChild(minusEnd); endCell.appendChild(dispEnd); endCell.appendChild(plusEnd);
       timeRow.appendChild(startCell); timeRow.appendChild(sep); timeRow.appendChild(endCell);
-      if(w.data.pickupWindowUseProfile){ w.data.pickupWindow=profileWindow; minusStart.disabled=true; plusStart.disabled=true; minusEnd.disabled=true; plusEnd.disabled=true; minusStart.style.opacity='0.5'; plusStart.style.opacity='0.5'; minusEnd.style.opacity='0.5'; plusEnd.style.opacity='0.5'; }
+      if(w.data.pickupWindowUseProfile){ w.data.pickupWindow=profileWindow; timeRow.style.display='none'; minusStart.disabled=true; plusStart.disabled=true; minusEnd.disabled=true; plusEnd.disabled=true; }
       box.appendChild(timeRow);
 
-      // --- PREIS: Eingabefeld mit Komma (wie vorher) ---
+      // --- PREIS: Slim-Flow = groß, Zahlentastatur (küchentauglich) ---
       const labelPrice=document.createElement('div'); labelPrice.className='hint'; labelPrice.textContent='Preis (€)';
       box.appendChild(labelPrice);
       const inputPrice=document.createElement('input');
@@ -20271,6 +20292,9 @@
       inputPrice.placeholder='z.B. 8,50';
       inputPrice.value=(w.data.price>0?Number(w.data.price).toFixed(2).replace('.',','):'');
       inputPrice.style.marginBottom='16px';
+      inputPrice.style.minHeight='56px';
+      inputPrice.style.fontSize='22px';
+      inputPrice.style.fontWeight='800';
       inputPrice.oninput=()=>{
         const v=inputPrice.value.replace(',','.');
         w.data.price=parseFloat(v)||0;
@@ -20292,6 +20316,40 @@
         catRow.appendChild(b);
       });
       box.appendChild(catRow);
+
+      // Slim-Flow: Primary CTA + Planer-Zeile (4,99 € Star, Planen/Speichern dezent)
+      const slimPrimary = document.createElement('button');
+      slimPrimary.type = 'button';
+      slimPrimary.style.cssText = 'width:100%; min-height:56px; border-radius:16px; font-size:17px; font-weight:800; border:none; background:#10b981; color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; margin-top:24px; margin-bottom:12px; box-shadow:0 4px 16px rgba(16,185,129,0.35);';
+      slimPrimary.innerHTML = '<span>Jetzt für 4,99 € inserieren</span>';
+      slimPrimary.onclick = function(){
+        var p = normalizeProviderProfile(provider.profile || {});
+        w.data.pickupWindow = p.mealWindow || DEFAULT_MEAL_WINDOW;
+        w.data.dineInPossible = (provider.profile && provider.profile.dineInPossibleDefault !== undefined) ? !!provider.profile.dineInPossibleDefault : true;
+        w.data.reuse = { enabled: !!p.reuseEnabledByDefault, deposit: p.reuseEnabledByDefault ? 3 : 0 };
+        w.data.wantsAllergens = !!p.wantsAllergensByDefault;
+        if(!w.data.wantsAllergens) w.data.allergens = [];
+        w.data.hasPickupCode = !!p.abholnummerEnabledByDefault;
+        w.step = 2;
+        if(typeof localStorage !== 'undefined') localStorage.setItem('wizard_draft', JSON.stringify(w));
+        rebuildWizard();
+      };
+      box.appendChild(slimPrimary);
+
+      const planerRow = document.createElement('div');
+      planerRow.style.cssText = 'display:flex; gap:12px; margin-bottom:16px;';
+      const btnPlanen = document.createElement('button');
+      btnPlanen.type = 'button';
+      btnPlanen.style.cssText = 'flex:1; min-height:48px; border-radius:14px; border:2px solid #e2e8f0; background:#fff; color:#475569; font-size:14px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;';
+      btnPlanen.innerHTML = '📅 Planen';
+      btnPlanen.onclick = function(){ if(typeof openSlimDayPicker === "function") openSlimDayPicker(w, saveDraft, rebuildWizard); };
+      const btnSpeichern = document.createElement('button');
+      btnSpeichern.type = 'button';
+      btnSpeichern.style.cssText = 'flex:1; min-height:48px; border-radius:14px; border:2px solid #e2e8f0; background:#fff; color:#475569; font-size:14px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;';
+      btnSpeichern.innerHTML = '📖 Speichern';
+      btnSpeichern.onclick = function(){ try { saveToCookbookFromWizard(); closeWizard(); if(typeof showToast==='function') showToast('Im Kochbuch gespeichert'); setTimeout(function(){ if(typeof showProviderCookbook==='function') showProviderCookbook(); }, 80); } catch(e) { if(typeof showToast==='function') showToast('Fehler beim Speichern'); } };
+      planerRow.appendChild(btnPlanen); planerRow.appendChild(btnSpeichern);
+      box.appendChild(planerRow);
 
       setWizardContent(box);
       setWizardNext('Weiter');
@@ -20322,7 +20380,7 @@
         const skipBtn = document.createElement('button');
         skipBtn.type = 'button';
         skipBtn.style.cssText = 'width:100%; min-height:48px; border:none; border-radius:12px; background:#10b981; color:#fff; font-size:15px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;';
-        skipBtn.innerHTML = '<i data-lucide="zap" style="width:20px;height:20px;"></i><span>Mit meinen Standardeinstellungen fortfahren</span>';
+        skipBtn.innerHTML = '<i data-lucide="zap" style="width:20px;height:20px;"></i><span>Mit meinen Standardeinstellungen fortfahren <span style="text-decoration:underline; font-weight:800;">(aus meinem Profil)</span></span>';
         skipBtn.onclick = () => {
           w.data.dineInPossible = (provider.profile && provider.profile.dineInPossibleDefault !== undefined) ? !!provider.profile.dineInPossibleDefault : true;
           w.data.reuse = { enabled: !!profile.reuseEnabledByDefault, deposit: profile.reuseEnabledByDefault ? (3) : 0 };
