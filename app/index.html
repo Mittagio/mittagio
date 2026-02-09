@@ -3198,9 +3198,11 @@
       }
       #providerProfileHeader,
       #v-provider-cookbook > header,
-      #v-provider-pickups > header{
+      #v-provider-pickups > header,
+      #v-provider-week .week-header-compact{
         padding-top:calc(16px + env(safe-area-inset-top, 0)) !important;
       }
+      #v-provider-week .week-header-compact{ background:#fff !important; }
       #v-provider-home{ padding:16px 16px 100px !important; padding-top:calc(16px + env(safe-area-inset-top, 0)) !important; }
       #v-provider-home h1{ font-size:28px !important; }
       
@@ -3246,24 +3248,27 @@
         flex:1; display:flex; flex-direction:column; min-height:0; max-width:500px; margin:0 auto; width:100%;
         padding:0 20px 16px; box-sizing:border-box;
       }
-      #v-provider-week .week-list-scroll{ flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:4px 0 16px; }
+      #v-provider-week .week-list-scroll{ flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:8px 0 16px; }
       #v-provider-week .week-thumb-zone{
         flex-shrink:0; padding:16px 20px; padding-bottom:calc(24px + env(safe-area-inset-bottom, 0));
         background:#fff; border-top:1px solid #e2e8f0; margin:0 -20px 0; padding-left:20px; padding-right:20px;
       }
       /* Wochenplan (weiteres Layout) */
       #v-provider-week .week-dayrow{ display:flex; gap:8px; overflow-x:auto; -webkit-overflow-scrolling:touch; padding:0 0 16px; margin-bottom:16px; border-bottom:1px solid #f1f3f5; }
-      #v-provider-week .week-day-pill{ flex:0 0 auto; min-width:56px; padding:12px 8px; border-radius:14px; border:2px solid transparent; background:#f8f9fa; font-size:12px; font-weight:800; color:#64748b; cursor:pointer; transition:all 0.2s; line-height:1.25; text-align:center; white-space:nowrap; }
-      #v-provider-week .week-day-pill.active{ background:rgba(255,215,0,0.18); border-color:var(--brand,#FFD700); color:#1a1a1a; }
-      #v-provider-week .week-day-pill.week-day-pill-today{ background:rgba(255,215,0,0.12); border-color:rgba(255,215,0,0.5); font-weight:900; }
-      #v-provider-week .week-day-pill.week-day-pill-today{ border-color:rgba(255,215,0,0.5); background:#fff; box-shadow:0 1px 3px rgba(0,0,0,0.06); }
-      #v-provider-week .week-day-pill.week-day-pill-today.active{ border-color:var(--brand); background:rgba(255,215,0,0.18); }
-      #v-provider-week .week-status-block{ display:flex; justify-content:space-between; align-items:center; padding:16px 18px; background:#fff; border-radius:16px; margin-bottom:16px; border:1px solid #e2e8f0; box-shadow:0 1px 3px rgba(0,0,0,0.04); }
+#v-provider-week .week-day-pill{ flex:0 0 auto; min-width:56px; min-height:48px; padding:12px 10px; border-radius:14px; border:2px solid transparent; background:#f8f9fa; font-size:13px; font-weight:800; color:#64748b; cursor:pointer; transition:all 0.2s; line-height:1.25; text-align:center; white-space:nowrap; display:inline-flex; align-items:center; justify-content:center; }
+    #v-provider-week .week-day-pill.active{ background:rgba(255,215,0,0.18); border-color:var(--brand,#FFD700); color:#1a1a1a; }
+    #v-provider-week .week-day-pill.week-day-pill-today{ background:#fff; border-color:rgba(255,215,0,0.5); font-weight:900; box-shadow:0 1px 3px rgba(0,0,0,0.06); }
+    #v-provider-week .week-day-pill.week-day-pill-today.active{ border-color:var(--brand); background:rgba(255,215,0,0.18); }
+      #v-provider-week .week-status-block{ display:flex; justify-content:space-between; align-items:center; padding:12px 16px; min-height:48px; background:#fff; border-radius:14px; margin-bottom:14px; border:1px solid #e2e8f0; box-shadow:0 1px 3px rgba(0,0,0,0.04); flex-wrap:nowrap; }
       #v-provider-week .week-status-online{ display:flex; align-items:center; gap:8px; font-weight:800; font-size:14px; color:#10b981; }
       #v-provider-week .week-status-draft{ display:flex; align-items:center; gap:8px; font-weight:800; font-size:14px; color:#64748b; }
       #v-provider-week .week-status-dot{ width:10px; height:10px; border-radius:50%; }
-      #v-provider-week .week-meal-card{ display:flex; align-items:center; justify-content:space-between; padding:16px 18px; background:#fff; border-radius:16px; border:1px solid #e2e8f0; margin-bottom:12px; box-shadow:0 2px 8px rgba(0,0,0,0.04); }
-      #v-provider-week .week-meal-name{ font-weight:900; font-size:16px; color:#1a1a1a; }
+#v-provider-week .week-meal-card-wrap{ transition:transform 0.2s ease; }
+    #v-provider-week .week-meal-card-wrap:active{ transform:scale(0.98); }
+    #v-provider-week .week-meal-card{ display:flex; align-items:center; justify-content:space-between; padding:16px 18px; background:#fff; border-radius:16px; border:1px solid #e2e8f0; margin-bottom:12px; box-shadow:0 2px 8px rgba(0,0,0,0.04); }
+    #v-provider-week .week-meal-name{ font-weight:900; font-size:16px; color:#1a1a1a; }
+    #v-provider-week .week-meal-badges{ font-size:16px !important; }
+    #v-provider-week .week-meal-badges span{ font-size:1.1em; }
       #v-provider-week .week-meal-meta{ font-size:13px; color:#64748b; margin-top:4px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
       #v-provider-week .week-meal-online{ display:inline-flex; align-items:center; gap:4px; font-size:12px; font-weight:700; color:#10b981; }
       #v-provider-week .week-meal-actions{ display:flex; align-items:center; gap:6px; }
@@ -3272,7 +3277,9 @@
       #v-provider-week .week-empty-state{ text-align:center; padding:32px 20px; }
       #v-provider-week .week-empty-state .week-empty-title{ font-size:18px; font-weight:900; color:#1a1a1a; margin-bottom:8px; }
       #v-provider-week .week-empty-state .week-empty-hint{ font-size:14px; color:#64748b; line-height:1.5; margin-bottom:24px; }
-      #v-provider-week .week-actions-bar{ display:flex; gap:12px; margin-top:24px; padding-top:20px; border-top:1px solid #f1f3f5; }
+      #v-provider-week .week-actions-bar{ display:flex; align-items:center; gap:10px; margin-top:0; padding-top:16px; padding-bottom:4px; border-top:1px solid #e2e8f0; flex-wrap:nowrap; }
+    #v-provider-week .week-actions-bar .btn{ min-height:48px; flex:1; min-width:0; display:inline-flex; align-items:center; justify-content:center; gap:8px; font-size:14px; font-weight:700; border-radius:14px; }
+    #v-provider-week .week-actions-bar .btn[aria-label="Aktualisieren"]{ flex:0 0 auto; min-width:48px; }
       /* S25 Thumb-Zone: Date-Picker Snap-Carousel */
       #v-provider-week .week-dayrow{ scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; }
       #v-provider-week .week-day-pill{ scroll-snap-align:center; scroll-snap-stop:always; min-width:64px; }
@@ -3298,7 +3305,7 @@
       #v-provider-week .week-status-block .week-activate-inline:active{ transform:scale(0.98); }
       #v-provider-week .week-status-activate-hint{ font-size:11px; color:#64748b; margin-top:6px; line-height:1.3; }
       /* Applike: Header mit Untertitel, eine Scroll-Zone */
-      #v-provider-week .week-header-compact{ padding:16px 20px; min-height:56px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; }
+      #v-provider-week .week-header-compact{ padding:16px 20px; min-height:56px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; background:#fff; border-bottom:1px solid rgba(0,0,0,0.05); }
       #v-provider-week .week-header-compact h1{ margin:0; font-size:20px; font-weight:950; }
       /* Nur #weekList scrollt – Section fix, kein Ganzseiten-Scroll */
       #v-provider-week{ overflow:hidden !important; height:100vh; height:100dvh; max-height:100dvh; }
@@ -3335,11 +3342,11 @@
         padding-bottom:env(safe-area-inset-bottom, 20px) !important;
       }
       #providerNav .navbtn{
-        min-height:48px; padding:12px 8px !important; font-size:11px !important;
+        min-height:52px; padding:12px 8px !important; font-size:12px !important;
         flex:1; min-width:0; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;
       }
-      #providerNav .navbtn.active{ font-weight:600; }
-      #providerNav .navbtn .ico svg{ width:22px !important; height:22px !important; }
+      #providerNav .navbtn.active{ font-weight:700; }
+      #providerNav .navbtn .ico svg{ width:24px !important; height:24px !important; }
       
       /* FAB: über Nav + Safe-Area */
       #fabProviderAddOffer{
