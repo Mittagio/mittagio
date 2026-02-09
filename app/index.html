@@ -4652,152 +4652,136 @@
       </div>
     </section>
 
-    <!-- CUSTOMER: Profile "Meins" – UI-Restore: Abholnummer, Bestellungen, Profil, Präferenzen, FAQ, Footer -->
-    <!-- CUSTOMER: Profile -->
+    <!-- CUSTOMER: Profile "Meins" – App-like: Abholnummer groß oben, dann Historie, Rest im Zahnrad-Menü -->
     <section class="view customer-view" id="v-profile">
       <header class="cust-header-sticky">
         <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px;">
           <h1 style="font-size:20px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a; margin:0;">Meins</h1>
-          <button type="button" onclick="showView('v-discover')" style="width:40px; height:40px; border-radius:12px; background:#f1f3f5; border:none; display:flex; align-items:center; justify-content:center; cursor:pointer;">
-            <i data-lucide="x" style="width:20px;height:20px;color:#1a1a1a;"></i>
-          </button>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <button type="button" id="btnProfileSettings" aria-label="Einstellungen" style="width:40px; height:40px; border-radius:12px; background:#f1f3f5; border:none; display:flex; align-items:center; justify-content:center; cursor:pointer;">
+              <i data-lucide="settings" style="width:20px;height:20px;color:#1a1a1a;"></i>
+            </button>
+            <button type="button" onclick="showView('v-discover')" style="width:40px; height:40px; border-radius:12px; background:#f1f3f5; border:none; display:flex; align-items:center; justify-content:center; cursor:pointer;">
+              <i data-lucide="x" style="width:20px;height:20px;color:#1a1a1a;"></i>
+            </button>
+          </div>
         </div>
       </header>
 
-      <div style="padding:16px; padding-bottom:120px; display:flex; flex-direction:column; gap:16px;">
-        <!-- Identität -->
-        <div class="cust-card" id="profileHeaderCard" style="padding:24px; flex-direction:row; align-items:center; gap:16px; margin-bottom:0; background:none; border:none; box-shadow:none;">
-          <!-- Wird dynamisch befüllt (Avatar, Name, E-Mail) -->
+      <div style="padding:16px; padding-bottom:120px; display:flex; flex-direction:column; gap:20px;">
+        <!-- Kurz Identität (Avatar + Name), nur wenn eingeloggt -->
+        <div class="cust-card" id="profileHeaderCard" style="padding:16px 20px; flex-direction:row; align-items:center; gap:12px; margin-bottom:0; background:none; border:none; box-shadow:none;">
+          <!-- Wird dynamisch befüllt -->
         </div>
 
-        <!-- Abholnummern-Wallet (Nur wenn aktive da sind) -->
+        <!-- Abholnummer GROSS oben (app-like) -->
         <div id="profileAbholnummerSection" style="display:none;">
-          <h3 style="font-size:13px; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:0.05em; margin:0 4px 12px;">Abholnummern</h3>
-          <div id="profileActiveAbholnummernList" style="display:flex; flex-direction:column; gap:12px;"></div>
+          <div id="profileActiveAbholnummernList" style="display:flex; flex-direction:column; gap:16px;"></div>
         </div>
 
-        <!-- Mein Mittagio (Zentrale Sektion) -->
-        <div class="cust-card" style="padding:0; overflow:hidden; margin-bottom:0;">
-          <div style="padding:20px 20px 10px;">
-            <h3 style="margin:0; font-size:16px; font-weight:900; color:#1a1a1a;">Mein Mittagio</h3>
-          </div>
-          
-          <!-- 1. Meine Daten (Collapsible) -->
-          <div style="border-bottom:1px solid #f1f3f5;">
-            <button onclick="toggleProfileSection('profileCollapseData', this)" style="width:100%; padding:16px 20px; background:none; border:none; display:flex; align-items:center; gap:12px; cursor:pointer; text-align:left;">
-              <i data-lucide="user" style="width:20px;height:20px;color:#64748b;"></i>
-              <span style="flex:1; font-size:15px; font-weight:700; color:#1a1a1a;">Meine Daten</span>
-              <i data-lucide="chevron-down" class="chevron" style="width:18px;height:18px;color:#cbd5e1;transition:transform 0.2s;"></i>
-            </button>
-            <div id="profileCollapseData" style="display:none; padding:0 20px 20px; background:#fafafa;">
-              <div style="margin-bottom:12px;">
-                <label style="display:block; font-size:11px; font-weight:700; color:#94a3b8; text-transform:uppercase; margin-bottom:4px;">E-Mail Adresse</label>
-                <div id="profileDisplayEmail" style="font-size:14px; font-weight:600; color:#1a1a1a;">-</div>
-              </div>
-              <div>
-                <label style="display:block; font-size:11px; font-weight:700; color:#94a3b8; text-transform:uppercase; margin-bottom:4px;">Passwort</label>
-                <div style="display:flex; align-items:center; justify-content:space-between;">
-                  <div style="font-size:14px; font-weight:600; color:#1a1a1a;">••••••••</div>
-                  <button onclick="showToast('Funktion in der Demo nicht verfügbar')" style="font-size:12px; font-weight:700; color:var(--brand2); background:none; border:none; padding:0; cursor:pointer;">Ändern</button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- 2. Meine Foody Historie -->
-          <div style="border-bottom:1px solid #f1f3f5;">
-            <button onclick="toggleProfileSection('profileCollapseHistory', this)" style="width:100%; padding:16px 20px; background:none; border:none; display:flex; align-items:center; gap:12px; cursor:pointer; text-align:left;">
-              <i data-lucide="history" style="width:20px;height:20px;color:#64748b;"></i>
-              <span style="flex:1; font-size:15px; font-weight:700; color:#1a1a1a;">Meine Foody Historie</span>
-              <i data-lucide="chevron-down" class="chevron" style="width:18px;height:18px;color:#cbd5e1;transition:transform 0.2s;"></i>
-            </button>
-            <div id="profileCollapseHistory" style="display:none; padding:0 20px 20px; background:#fafafa;">
-              <div id="profileOrderHistoryList" style="display:flex; flex-direction:column; gap:8px;">
-                <!-- Dynamisch befüllt -->
-              </div>
-              <button class="btn ghost" id="btnProfileShowAllOrders" style="width:100%; margin-top:12px; height:40px; font-size:13px; font-weight:700; color:#64748b; border:1px solid #f1f3f5; border-radius:10px;">Alle Bestellungen anzeigen</button>
-            </div>
-          </div>
-
-          <!-- 3. Meine Food Profil -->
-          <div style="border-bottom:1px solid #f1f3f5;">
-            <button onclick="toggleProfileSection('profileCollapseFoodProfile', this)" style="width:100%; padding:16px 20px; background:none; border:none; display:flex; align-items:center; gap:12px; cursor:pointer; text-align:left;">
-              <i data-lucide="utensils" style="width:20px;height:20px;color:#64748b;"></i>
-              <span style="flex:1; font-size:15px; font-weight:700; color:#1a1a1a;">Meine Food Profil</span>
-              <i data-lucide="chevron-down" class="chevron" style="width:18px;height:18px;color:#cbd5e1;transition:transform 0.2s;"></i>
-            </button>
-            <div id="profileCollapseFoodProfile" style="display:none; padding:0 20px 20px; background:#fafafa;">
-              <p style="font-size:13px; color:#64748b; margin-bottom:16px;">Bevorzugt anzeigen</p>
-              <div id="profileDietCheckboxes" style="display:flex; flex-direction:column; gap:12px;">
-                <!-- Vegan, Vegetarisch, Mehrweg -->
-              </div>
-            </div>
-          </div>
-
-          <!-- 4. Meine Lieblinge (Collapsible) -->
-          <div>
-            <button onclick="toggleProfileSection('profileCollapseFavs', this)" style="width:100%; padding:16px 20px; background:none; border:none; display:flex; align-items:center; gap:12px; cursor:pointer; text-align:left;">
-              <i data-lucide="heart" style="width:20px;height:20px;color:#ef4444;"></i>
-              <span style="flex:1; font-size:15px; font-weight:700; color:#1a1a1a;">Meine Lieblinge</span>
-              <i data-lucide="chevron-down" class="chevron" style="width:18px;height:18px;color:#cbd5e1;transition:transform 0.2s;"></i>
-            </button>
-            <div id="profileCollapseFavs" style="display:none; padding:0 20px 20px; background:#fafafa;">
-              <div id="profileFavProvidersList" style="display:flex; flex-direction:column; gap:8px;">
-                <!-- Dynamisch befüllt -->
-              </div>
-            </div>
-          </div>
+        <!-- Keine aktive Abholnummer: Hinweis -->
+        <div id="profileNoAbholnummerHint" style="display:none; padding:24px; text-align:center; background:#f8f9fa; border-radius:20px; border:2px dashed #e2e8f0;">
+          <div style="font-size:40px; margin-bottom:12px;">🧾</div>
+          <div style="font-size:15px; font-weight:700; color:#64748b;">Heute keine Abholnummer</div>
+          <div style="font-size:13px; color:#94a3b8; margin-top:4px;">Bestellungen erscheinen hier</div>
         </div>
 
-        <!-- Gut zu wissen -->
+        <!-- Meine Bestellungen / Food-Historie (immer sichtbar) -->
         <div class="cust-card" style="padding:20px; margin-bottom:0;">
-          <h3 style="margin:0 0 16px; font-size:16px; font-weight:900; color:#1a1a1a;">Gut zu wissen</h3>
-          <div id="profileTopFaq" style="display:flex; flex-direction:column; gap:12px;">
-            <!-- Wird dynamisch befüllt (3 wichtigste FAQ) -->
+          <h3 style="margin:0 0 16px; font-size:16px; font-weight:900; color:#1a1a1a;">Meine Bestellungen</h3>
+          <div id="profileOrderHistoryList" style="display:flex; flex-direction:column; gap:8px;">
+            <!-- Dynamisch befüllt -->
           </div>
-          <button onclick="showLegalPage('support');" style="width:100%; margin-top:16px; height:48px; background:#f1f3f5; border:none; border-radius:12px; color:#64748b; font-size:14px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">
-            <span>Weitere Fragen</span>
-            <i data-lucide="chevron-right" style="width:16px;height:16px;"></i>
-          </button>
+          <button class="btn ghost" id="btnProfileShowAllOrders" style="width:100%; margin-top:12px; height:44px; font-size:14px; font-weight:700; color:#64748b; border:1px solid #f1f3f5; border-radius:12px;">Alle Bestellungen anzeigen</button>
         </div>
 
-        <!-- Add to Home Screen (PWA-Tipp): einmalig anzeigen, ausblendbar -->
-        <div id="profilePwaTip" class="cust-card" style="padding:20px; margin-bottom:16px; background:linear-gradient(135deg, #f8f9fa 0%, #f1f3f5 100%); border:1px solid rgba(0,0,0,0.06);">
-          <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:12px;">
-            <div style="flex:1;">
-              <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
-                <span style="font-size:20px;">📱</span>
-                <span style="font-size:15px; font-weight:800; color:#1a1a1a;">App wie aus dem Store</span>
-              </div>
-              <p style="font-size:13px; color:#64748b; line-height:1.5; margin:0;">Tippe im Browser auf <strong>Teilen</strong> und wähle <strong>„Zum Home-Bildschirm hinzufügen“</strong>. Dann verschwindet die Browser-Leiste und Mittagio sieht aus wie eine native App – inkl. Logo auf dem Homescreen.</p>
+        <!-- Versteckte Bereiche für Zahnrad-Menü (Inhalt wird in Sheet geduplt / per ID referenziert) -->
+        <div id="profileCollapseData" style="display:none;">
+          <div style="margin-bottom:12px;">
+            <label style="display:block; font-size:11px; font-weight:700; color:#94a3b8; text-transform:uppercase; margin-bottom:4px;">E-Mail</label>
+            <div id="profileDisplayEmail" style="font-size:14px; font-weight:600; color:#1a1a1a;">-</div>
+          </div>
+          <div>
+            <label style="display:block; font-size:11px; font-weight:700; color:#94a3b8; text-transform:uppercase; margin-bottom:4px;">Passwort</label>
+            <div style="display:flex; align-items:center; justify-content:space-between;">
+              <div style="font-size:14px; font-weight:600; color:#1a1a1a;">••••••••</div>
+              <button onclick="showToast('Funktion in der Demo nicht verfügbar')" style="font-size:12px; font-weight:700; color:var(--brand2); background:none; border:none; padding:0; cursor:pointer;">Ändern</button>
             </div>
-            <button type="button" id="btnDismissPwaTip" aria-label="Hinweis schließen" style="flex-shrink:0; width:32px; height:32px; border-radius:10px; border:none; background:rgba(0,0,0,0.06); color:#64748b; font-size:18px; line-height:1; cursor:pointer;">×</button>
           </div>
         </div>
-
-        <!-- Anbieter Wechsel -->
-        <div class="cust-card" style="padding:24px; background:var(--brand); border:none; box-shadow:0 8px 32px rgba(255,215,0,0.25);">
-          <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
-            <div style="width:44px; height:44px; border-radius:14px; background:rgba(255,255,255,0.4); display:flex; align-items:center; justify-content:center; font-size:24px;">🏢</div>
-            <div style="font-weight:900; font-size:18px; color:#1a1a1a; letter-spacing:-0.02em;">Anbieter-Portal</div>
-          </div>
-          <p style="font-size:14px; color:rgba(0,0,0,0.7); margin:0 0 20px; line-height:1.5; font-weight:600;">Du möchtest dein eigenes Mittagessen über mittagio anbieten?</p>
-          <button class="btn-cust-primary" onclick="setMode('provider');" style="width:100%; background:#1a1a1a; color:#fff; box-shadow:none; border:none; height:52px; border-radius:16px; font-weight:800; font-size:15px;">
-            Zum Anbieter-Modus wechseln
-          </button>
-        </div>
-
-        <!-- Rechtliches Footer -->
-        <div style="margin-top:12px; text-align:center; padding-bottom:20px;">
-          <div style="display:flex; justify-content:center; gap:20px; margin-bottom:16px;">
-            <button onclick="showLegalPage('agb-kurz')" style="background:none; border:none; font-size:13px; font-weight:800; color:#1a1a1a; cursor:pointer; text-transform:uppercase; letter-spacing:0.05em;">AGB</button>
-            <button onclick="showLegalPage('datenschutz')" style="background:none; border:none; font-size:13px; font-weight:800; color:#1a1a1a; cursor:pointer; text-transform:uppercase; letter-spacing:0.05em;">DATENSCHUTZ</button>
-            <button onclick="showLegalPage('impressum')" style="background:none; border:none; font-size:13px; font-weight:800; color:#1a1a1a; cursor:pointer; text-transform:uppercase; letter-spacing:0.05em;">IMPRESSUM</button>
-          </div>
-          <div style="font-size:11px; color:#cbd5e1; font-weight:700; letter-spacing:0.02em;">mittagio • made with ❤️ in Rudersberg</div>
-        </div>
+        <div id="profileDietCheckboxes" style="display:none;"></div>
+        <div id="profileFavProvidersList" style="display:none;"></div>
+        <div id="profileTopFaq" style="display:none;"></div>
       </div>
     </section>
+
+    <!-- Zahnrad-Menü: Einstellungen, FAQ, Impressum etc. (Bottom Sheet) -->
+    <div id="profileSettingsSheetBd" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:9000; opacity:0; transition:opacity 0.2s;"></div>
+    <div id="profileSettingsSheet" style="display:none; position:fixed; left:0; right:0; bottom:0; max-height:85vh; background:#fff; border-radius:24px 24px 0 0; box-shadow:0 -8px 32px rgba(0,0,0,0.12); z-index:9001; overflow:hidden; padding-bottom:env(safe-area-inset-bottom, 0);">
+      <div style="padding:20px 20px 16px; border-bottom:1px solid #f1f3f5;">
+        <div style="width:40px; height:4px; background:#e2e8f0; border-radius:2px; margin:0 auto 16px;"></div>
+        <h2 style="margin:0; font-size:18px; font-weight:900; color:#1a1a1a;">Einstellungen & mehr</h2>
+      </div>
+      <div style="overflow-y:auto; max-height:calc(85vh - 80px); padding:8px 16px 24px;">
+        <div id="profileSettingsSheetData" style="display:none; padding:12px 0;">
+          <div style="margin-bottom:12px;">
+            <label style="display:block; font-size:11px; font-weight:700; color:#94a3b8; margin-bottom:4px;">E-Mail</label>
+            <div id="profileDisplayEmailSheet" style="font-size:14px; font-weight:600; color:#1a1a1a;">-</div>
+          </div>
+          <div>
+            <label style="display:block; font-size:11px; font-weight:700; color:#94a3b8; margin-bottom:4px;">Passwort</label>
+            <div style="display:flex; align-items:center; justify-content:space-between;">
+              <div style="font-size:14px; font-weight:600; color:#1a1a1a;">••••••••</div>
+              <button onclick="showToast('Funktion in der Demo nicht verfügbar')" style="font-size:12px; font-weight:700; color:var(--brand2); background:none; border:none; padding:0; cursor:pointer;">Ändern</button>
+            </div>
+          </div>
+        </div>
+        <div id="profileSettingsSheetDiet" style="display:none; padding:12px 0;">
+          <p style="font-size:13px; color:#64748b; margin-bottom:12px;">Bevorzugt anzeigen</p>
+          <div id="profileDietCheckboxesSheet" style="display:flex; flex-direction:column; gap:12px;"></div>
+        </div>
+        <div id="profileSettingsSheetFavs" style="display:none; padding:12px 0;">
+          <div id="profileFavProvidersListSheet" style="display:flex; flex-direction:column; gap:8px;"></div>
+        </div>
+        <div id="profileSettingsSheetFaq" style="display:none; padding:12px 0;">
+          <div id="profileTopFaqSheet" style="display:flex; flex-direction:column; gap:12px;"></div>
+          <button onclick="closeProfileSettingsSheet(); showLegalPage('support');" style="width:100%; margin-top:12px; height:48px; background:#f1f3f5; border:none; border-radius:12px; color:#64748b; font-size:14px; font-weight:700; cursor:pointer;">Weitere Fragen (Support)</button>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:4px;">
+          <button onclick="toggleProfileSettingsSection('profileSettingsSheetData')" style="width:100%; padding:16px 20px; background:#f8f9fa; border:none; border-radius:14px; display:flex; align-items:center; gap:12px; cursor:pointer; text-align:left; font-size:15px; font-weight:700; color:#1a1a1a;">
+            <i data-lucide="user" style="width:20px;height:20px;color:#64748b;"></i><span>Meine Daten</span><i data-lucide="chevron-down" class="profile-sheet-chevron" data-section="profileSettingsSheetData" style="width:18px;height:18px;color:#cbd5e1;margin-left:auto;"></i>
+          </button>
+          <button onclick="toggleProfileSettingsSection('profileSettingsSheetDiet')" style="width:100%; padding:16px 20px; background:#f8f9fa; border:none; border-radius:14px; display:flex; align-items:center; gap:12px; cursor:pointer; text-align:left; font-size:15px; font-weight:700; color:#1a1a1a;">
+            <i data-lucide="utensils" style="width:20px;height:20px;color:#64748b;"></i><span>Mein Food-Profil</span><i data-lucide="chevron-down" class="profile-sheet-chevron" data-section="profileSettingsSheetDiet" style="width:18px;height:18px;color:#cbd5e1;margin-left:auto;"></i>
+          </button>
+          <button onclick="toggleProfileSettingsSection('profileSettingsSheetFavs')" style="width:100%; padding:16px 20px; background:#f8f9fa; border:none; border-radius:14px; display:flex; align-items:center; gap:12px; cursor:pointer; text-align:left; font-size:15px; font-weight:700; color:#1a1a1a;">
+            <i data-lucide="heart" style="width:20px;height:20px;color:#ef4444;"></i><span>Meine Lieblinge</span><i data-lucide="chevron-down" class="profile-sheet-chevron" data-section="profileSettingsSheetFavs" style="width:18px;height:18px;color:#cbd5e1;margin-left:auto;"></i>
+          </button>
+          <button onclick="toggleProfileSettingsSection('profileSettingsSheetFaq')" style="width:100%; padding:16px 20px; background:#f8f9fa; border:none; border-radius:14px; display:flex; align-items:center; gap:12px; cursor:pointer; text-align:left; font-size:15px; font-weight:700; color:#1a1a1a;">
+            <i data-lucide="help-circle" style="width:20px;height:20px;color:#64748b;"></i><span>FAQ & Support</span><i data-lucide="chevron-down" class="profile-sheet-chevron" data-section="profileSettingsSheetFaq" style="width:18px;height:18px;color:#cbd5e1;margin-left:auto;"></i>
+          </button>
+          <button onclick="closeProfileSettingsSheet(); showLegalPage('impressum');" style="width:100%; padding:16px 20px; background:#f8f9fa; border:none; border-radius:14px; display:flex; align-items:center; gap:12px; cursor:pointer; text-align:left; font-size:15px; font-weight:700; color:#1a1a1a;">
+            <i data-lucide="info" style="width:20px;height:20px;color:#64748b;"></i><span>Impressum</span>
+          </button>
+          <button onclick="closeProfileSettingsSheet(); showLegalPage('agb-kurz');" style="width:100%; padding:16px 20px; background:#f8f9fa; border:none; border-radius:14px; display:flex; align-items:center; gap:12px; cursor:pointer; text-align:left; font-size:15px; font-weight:700; color:#1a1a1a;">
+            <i data-lucide="file-text" style="width:20px;height:20px;color:#64748b;"></i><span>AGB</span>
+          </button>
+          <button onclick="closeProfileSettingsSheet(); showLegalPage('datenschutz');" style="width:100%; padding:16px 20px; background:#f8f9fa; border:none; border-radius:14px; display:flex; align-items:center; gap:12px; cursor:pointer; text-align:left; font-size:15px; font-weight:700; color:#1a1a1a;">
+            <i data-lucide="shield" style="width:20px;height:20px;color:#64748b;"></i><span>Datenschutz</span>
+          </button>
+          <button onclick="closeProfileSettingsSheet(); openProfilePwaTipSheet();" style="width:100%; padding:16px 20px; background:#f8f9fa; border:none; border-radius:14px; display:flex; align-items:center; gap:12px; cursor:pointer; text-align:left; font-size:15px; font-weight:700; color:#1a1a1a;">
+            <span style="font-size:20px;">📱</span><span>App installieren (PWA)</span>
+          </button>
+          <button onclick="closeProfileSettingsSheet(); setMode('provider');" style="width:100%; padding:16px 20px; background:rgba(255,215,0,0.2); border:none; border-radius:14px; display:flex; align-items:center; gap:12px; cursor:pointer; text-align:left; font-size:15px; font-weight:700; color:#1a1a1a;">
+            <span style="font-size:20px;">🏢</span><span>Zum Anbieter-Portal</span>
+          </button>
+          <button onclick="closeProfileSettingsSheet(); handleSupportAction('logout');" style="width:100%; padding:16px 20px; background:#fef2f2; border:none; border-radius:14px; display:flex; align-items:center; gap:12px; cursor:pointer; text-align:left; font-size:15px; font-weight:700; color:#b91c1c;">
+            <i data-lucide="log-out" style="width:20px;height:20px;"></i><span>Abmelden</span>
+          </button>
+        </div>
+        <p style="text-align:center; font-size:11px; color:#cbd5e1; font-weight:700; margin-top:20px;">mittagio • made with ❤️ in Rudersberg</p>
+      </div>
+    </div>
 
     <section class="view" id="v-provider-detail-public">
       <header class="cust-header-sticky">
@@ -14838,26 +14822,29 @@
     const allOrders = loadOrders();
     const activeAbholnummern = allOrders.filter(o => o.status === 'PAID' && o.pickupDate === today && !o.pickupCodeActivatedAt);
 
+    const noAbholnummerHint = document.getElementById('profileNoAbholnummerHint');
     if(abholnummerSection && abholnummerList){
       if(activeAbholnummern.length > 0){
         abholnummerSection.style.display = 'block';
+        if(noAbholnummerHint) noAbholnummerHint.style.display = 'none';
         abholnummerList.innerHTML = activeAbholnummern.map(order => {
           const code = order.pickupCode || '–';
           return `
-            <div class="cust-card" style="flex-direction:row; padding:16px; align-items:center; gap:16px; margin-bottom:0; border:2px solid rgba(255,215,0,0.3); background:rgba(255,215,0,0.05);" onclick="showPickupCode('${esc(order.id)}');">
-              <div style="width:48px; height:48px; border-radius:12px; background:var(--brand); display:flex; align-items:center; justify-content:center; font-size:24px;">🧾</div>
+            <div class="cust-card" style="flex-direction:row; padding:24px; align-items:center; gap:20px; margin-bottom:0; border:2px solid rgba(255,215,0,0.35); background:rgba(255,215,0,0.08); border-radius:20px; cursor:pointer;" onclick="showPickupCode('${esc(order.id)}');">
+              <div style="width:56px; height:56px; border-radius:16px; background:var(--brand); display:flex; align-items:center; justify-content:center; font-size:28px;">🧾</div>
               <div style="flex:1; min-width:0;">
-                <div style="font-weight:950; font-size:18px; color:#1a1a1a; letter-spacing:2px; font-family:monospace;">${esc(code)}</div>
-                <div style="font-size:13px; font-weight:600; color:#64748b;">${esc(order.providerName || 'Anbieter')}</div>
+                <div style="font-weight:950; font-size:28px; color:#1a1a1a; letter-spacing:3px; font-family:monospace; line-height:1.2;">${esc(code)}</div>
+                <div style="font-size:14px; font-weight:600; color:#64748b; margin-top:6px;">${esc(order.providerName || 'Anbieter')}</div>
               </div>
-              <i data-lucide="chevron-right" style="width:20px;height:20px; color:var(--brand);"></i>
+              <i data-lucide="chevron-right" style="width:24px;height:24px; color:var(--brand);"></i>
             </div>
           `;
         }).join('');
       } else {
         abholnummerSection.style.display = 'none';
+        if(noAbholnummerHint) noAbholnummerHint.style.display = 'block';
       }
-    }
+    } else if(noAbholnummerHint) noAbholnummerHint.style.display = 'block';
 
     // Historie (letzte 2)
     const orderHistoryEl = document.getElementById('profileOrderHistoryList');
@@ -14880,79 +14867,80 @@
       }
     }
 
-    // Deine Lieblinge (Anbieter)
+    // Deine Lieblinge (Anbieter) – Hauptseite + Sheet
     const favListEl = document.getElementById('profileFavProvidersList');
-    if(favListEl){
+    const favListSheet = document.getElementById('profileFavProvidersListSheet');
+    const favHtml = (() => {
       const allOffers = load(LS.offers, []);
       const myFavProviders = Array.from(providerFavs || []).map(pid => {
         const o = allOffers.find(x => x.providerId === pid);
         return { id: pid, name: o ? o.providerName : 'Anbieter' };
       });
-
-      if(myFavProviders.length === 0){
-        favListEl.innerHTML = '<p style="margin:0; color:#64748b; font-size:13px; text-align:center;">Noch keine Lieblinge gespeichert.</p>';
-      } else {
-        favListEl.innerHTML = myFavProviders.map(p => `
-          <div onclick="showProviderProfilePublic('${p.id}')" style="display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:#fff; border-radius:12px; border:1px solid #f1f3f5; cursor:pointer;">
-            <div style="display:flex; align-items:center; gap:10px;">
-              <div style="width:32px; height:32px; border-radius:8px; background:#f8f9fa; display:flex; align-items:center; justify-content:center; font-size:14px;">🏢</div>
-              <span style="font-weight:700; font-size:14px; color:#1a1a1a;">${esc(p.name)}</span>
-            </div>
-            <i data-lucide="chevron-right" style="width:16px;height:16px;color:#cbd5e1;"></i>
+      if(myFavProviders.length === 0) return '<p style="margin:0; color:#64748b; font-size:13px; text-align:center;">Noch keine Lieblinge gespeichert.</p>';
+      return myFavProviders.map(p => `
+        <div onclick="closeProfileSettingsSheet(); showProviderProfilePublic('${p.id}')" style="display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:#fff; border-radius:12px; border:1px solid #f1f3f5; cursor:pointer;">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <div style="width:32px; height:32px; border-radius:8px; background:#f8f9fa; display:flex; align-items:center; justify-content:center; font-size:14px;">🏢</div>
+            <span style="font-weight:700; font-size:14px; color:#1a1a1a;">${esc(p.name)}</span>
           </div>
-        `).join('');
-      }
-    }
-
-    // Ernährungs-Profil (Checkboxes)
-    const dietSection = document.getElementById('profileDietCheckboxes');
-    if(dietSection){
-      const prefs = customer.dietaryPreferences || {};
-      const isReuseEnabled = customer.reuseEnabled || false;
-      const switches = [
-        { key: 'vegan', label: 'Vegan', icon: 'leaf' },
-        { key: 'vegetarian', label: 'Vegetarisch', icon: 'sprout' },
-        { key: 'reuse', label: 'Mehrweg', icon: 'refresh-cw' }
-      ];
-      dietSection.innerHTML = switches.map(s => {
-        const checked = s.key === 'reuse' ? isReuseEnabled : prefs[s.key];
-        const changeHandler = s.key === 'reuse' ? `toggleReuseOption(this.checked)` : `toggleDietaryPreference('${s.key}', this.checked)`;
-        return `
-          <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px; background:#f8f9fa; border-radius:14px;">
-            <div style="display:flex; align-items:center; gap:10px;">
-              <i data-lucide="${s.icon}" style="width:18px;height:18px;color:#64748b;"></i>
-              <span style="font-weight:700; font-size:14px; color:#1a1a1a;">${s.label}</span>
-            </div>
-            <label class="switch-mini">
-              <input type="checkbox" ${checked ? 'checked' : ''} onchange="${changeHandler}">
-              <span class="slider-mini"></span>
-            </label>
-          </div>
-        `;
-      }).join('');
-    }
-
-    // FAQ Accordion (Die 3 wichtigsten)
-    const faqEl = document.getElementById('profileTopFaq');
-    if(faqEl){
-      const faqs = [
-        { q: 'Wie funktioniert die Abholnummer?', a: 'Deine Abholnummer ist dein digitaler Bon. Zeige sie einfach beim Anbieter vor Ort auf deinem Smartphone vor.', icon: 'receipt' },
-        { q: 'Was mache ich bei Problemen?', a: 'Wende dich bitte direkt an das Personal vor Ort. Deine Abholnummer ist dein Zahlungsbeleg.', icon: 'help-circle' },
-        { q: 'Wo finde ich Mehrweg-Optionen?', a: 'Achte auf das 🔄-Icon beim Gericht. Wir bauen unser Mehrweg-Netzwerk stetig aus.', icon: 'refresh-cw' }
-      ];
-      faqEl.innerHTML = faqs.map(f => `
-        <div style="border-radius:14px; border:1px solid #f1f3f5; overflow:hidden;">
-          <button onclick="const a = this.nextElementSibling; a.style.display = a.style.display === 'none' ? 'block' : 'none';" style="width:100%; padding:14px; background:#f8f9fa; border:none; display:flex; align-items:center; gap:12px; cursor:pointer; text-align:left;">
-            <i data-lucide="${f.icon}" style="width:18px;height:18px;color:#64748b;"></i>
-            <span style="flex:1; font-size:14px; font-weight:700; color:#1a1a1a;">${f.q}</span>
-            <i data-lucide="chevron-down" style="width:16px;height:16px;color:#cbd5e1;"></i>
-          </button>
-          <div style="display:none; padding:14px; font-size:14px; line-height:1.5; color:#64748b; background:#fff;">
-            ${f.a}
-          </div>
+          <i data-lucide="chevron-right" style="width:16px;height:16px;color:#cbd5e1;"></i>
         </div>
       `).join('');
-    }
+    })();
+    if(favListEl) favListEl.innerHTML = favHtml;
+    if(favListSheet) favListSheet.innerHTML = favHtml;
+
+    // Ernährungs-Profil (Checkboxes) – Hauptseite + Sheet
+    const dietSection = document.getElementById('profileDietCheckboxes');
+    const dietSheet = document.getElementById('profileDietCheckboxesSheet');
+    const prefs = customer.dietaryPreferences || {};
+    const isReuseEnabled = customer.reuseEnabled || false;
+    const dietSwitches = [
+      { key: 'vegan', label: 'Vegan', icon: 'leaf' },
+      { key: 'vegetarian', label: 'Vegetarisch', icon: 'sprout' },
+      { key: 'reuse', label: 'Mehrweg', icon: 'refresh-cw' }
+    ];
+    const dietHtml = dietSwitches.map(s => {
+      const checked = s.key === 'reuse' ? isReuseEnabled : prefs[s.key];
+      const changeHandler = s.key === 'reuse' ? `toggleReuseOption(this.checked)` : `toggleDietaryPreference('${s.key}', this.checked)`;
+      return `
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px; background:#f8f9fa; border-radius:14px;">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <i data-lucide="${s.icon}" style="width:18px;height:18px;color:#64748b;"></i>
+            <span style="font-weight:700; font-size:14px; color:#1a1a1a;">${s.label}</span>
+          </div>
+          <label class="switch-mini">
+            <input type="checkbox" ${checked ? 'checked' : ''} onchange="${changeHandler}">
+            <span class="slider-mini"></span>
+          </label>
+        </div>
+      `;
+    }).join('');
+    if(dietSection) dietSection.innerHTML = dietHtml;
+    if(dietSheet) dietSheet.innerHTML = dietHtml;
+
+    // FAQ Accordion (Die 3 wichtigsten) – Hauptseite + Sheet
+    const faqEl = document.getElementById('profileTopFaq');
+    const faqSheet = document.getElementById('profileTopFaqSheet');
+    const faqs = [
+      { q: 'Wie funktioniert die Abholnummer?', a: 'Deine Abholnummer ist dein digitaler Bon. Zeige sie einfach beim Anbieter vor Ort auf deinem Smartphone vor.', icon: 'receipt' },
+      { q: 'Was mache ich bei Problemen?', a: 'Wende dich bitte direkt an das Personal vor Ort. Deine Abholnummer ist dein Zahlungsbeleg.', icon: 'help-circle' },
+      { q: 'Wo finde ich Mehrweg-Optionen?', a: 'Achte auf das 🔄-Icon beim Gericht. Wir bauen unser Mehrweg-Netzwerk stetig aus.', icon: 'refresh-cw' }
+    ];
+    const faqHtml = faqs.map(f => `
+      <div style="border-radius:14px; border:1px solid #f1f3f5; overflow:hidden;">
+        <button onclick="const a = this.nextElementSibling; a.style.display = a.style.display === 'none' ? 'block' : 'none';" style="width:100%; padding:14px; background:#f8f9fa; border:none; display:flex; align-items:center; gap:12px; cursor:pointer; text-align:left;">
+          <i data-lucide="${f.icon}" style="width:18px;height:18px;color:#64748b;"></i>
+          <span style="flex:1; font-size:14px; font-weight:700; color:#1a1a1a;">${f.q}</span>
+          <i data-lucide="chevron-down" style="width:16px;height:16px;color:#cbd5e1;"></i>
+        </button>
+        <div style="display:none; padding:14px; font-size:14px; line-height:1.5; color:#64748b; background:#fff;">
+          ${f.a}
+        </div>
+      </div>
+    `).join('');
+    if(faqEl) faqEl.innerHTML = faqHtml;
+    if(faqSheet) faqSheet.innerHTML = faqHtml;
 
     if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
   }
