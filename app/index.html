@@ -17348,18 +17348,18 @@
       swipeInner.className = 'week-meal-card-swipe';
       var card = document.createElement('div');
       card.className = 'week-meal-card';
-      var onlineHtml = isLive
+      var onlineHtml = dayIsLive
         ? '<span class="week-meal-online"><i data-lucide="check-circle" style="width:14px;height:14px;"></i> Online</span>'
         : '<span style="font-size:12px; font-weight:700; color:#94a3b8;">Geplant</span>';
       var profile = (typeof normalizeProviderProfile === 'function' && provider && provider.profile) ? normalizeProviderProfile(provider.profile) : {};
-      var vorOrt = isLive && (profile.dineInPossible !== false);
-      var abholnummer = isLive && !!(entry.hasPickupCode || profile.hasPickupCode);
-      var mehrweg = isLive && !!(profile.reuse && profile.reuse.enabled);
+      var vorOrt = dayIsLive && (profile.dineInPossible !== false);
+      var abholnummer = dayIsLive && !!(entry.hasPickupCode || profile.hasPickupCode);
+      var mehrweg = dayIsLive && !!(profile.reuse && profile.reuse.enabled);
       var badgesHtml = '<div class="week-meal-badges" style="display:flex; gap:8px; margin-top:6px; font-size:14px;" title="Vor Ort · Abholnummer · Mehrweg"><span>🍴</span><span>🎫1️⃣</span><span>🔄</span></div>';
-      var verdienstHtml = !isLive ? '<div class="week-meal-verdienst" style="font-size:12px; color:#10b981; margin-top:4px;">Verdienst ca. ' + euro(Math.max(0, (Number(price)||0) - 4.99)) + '</div>' : '';
+      var verdienstHtml = !dayIsLive ? '<div class="week-meal-verdienst" style="font-size:12px; color:#10b981; margin-top:4px;">Verdienst ca. ' + euro(Math.max(0, (Number(price)||0) - 4.99)) + '</div>' : '';
       card.innerHTML = '<div><div class="week-meal-name">' + esc(name) + '</div><div class="week-meal-meta">' + euro(price) + ' ' + onlineHtml + '</div>' + badgesHtml + verdienstHtml + '</div>';
       card.style.cursor = 'pointer';
-      if(!isLive){
+      if(!dayIsLive){
         card.onclick = function(e){ e.preventDefault(); e.stopPropagation(); if(weekJustSwiped) return; if(typeof openWeekAddSheet === 'function') openWeekAddSheet(weekPlanDay, weekIndex); };
         var swipeDel = document.createElement('div');
         swipeDel.className = 'week-swipe-actions right';
@@ -17382,7 +17382,7 @@
       list.appendChild(wrap);
     });
 
-    if(!isLive){
+    if(!dayIsLive){
       var addMore = document.createElement('button');
       addMore.type = 'button';
       addMore.className = 'week-add-more';
