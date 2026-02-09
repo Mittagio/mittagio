@@ -18,7 +18,7 @@
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" href="assets/icons/icon-192.png" />
   <link rel="apple-touch-icon" href="assets/icons/icon-192.png" />
-  <script src="https://unpkg.com/lucide@latest" onload="if(typeof lucide !== 'undefined') lucide.createIcons();"></script>
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js" onload="if(typeof lucide !== 'undefined') try { lucide.createIcons(); } catch(e) { console.warn('Lucide init:', e); }"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Montserrat:wght@400;600;700;900&family=Kalam:wght@400;700&family=Permanent+Marker&family=Nunito:wght@600;700;800&family=Quicksand:wght@500;600;700&display=swap');
     :root{
@@ -22117,14 +22117,14 @@
   // Icon-Initialisierung (immer, nicht nur bei Service Worker)
   function initIcons(){
     if(typeof lucide !== 'undefined' && typeof lucide.createIcons === 'function'){
-      lucide.createIcons();
+      try { lucide.createIcons(); } catch(e) { console.warn('Lucide createIcons:', e); }
     } else {
       // Warte bis Lucide geladen ist (max. 2 Sekunden)
       let attempts = 0;
       const checkLucide = setInterval(()=>{
         attempts++;
         if(typeof lucide !== 'undefined' && typeof lucide.createIcons === 'function'){
-          lucide.createIcons();
+          try { lucide.createIcons(); } catch(err) { console.warn('Lucide createIcons:', err); }
           clearInterval(checkLucide);
         } else if(attempts > 20){ // Nach 2 Sekunden aufgeben
           clearInterval(checkLucide);
