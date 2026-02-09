@@ -1553,15 +1553,14 @@
       height: 24px;
       stroke-width: 3;
     }
-    /* Plus-Button einheitlich: gelb, weißes Plus, pulsierend (FAB + überall) */
+    /* Plus-Button Anbieter: kühles Blau (--prov-brand), weißes Plus */
     .provider-add-plus-btn,
     #fabProviderAddOffer.fab-provider-plus {
-      background: var(--brand) !important;
-      color: #1a1a1a !important;
+      background: var(--prov-brand) !important;
+      color: #fff !important;
       border: none !important;
-      animation: fab-pulse 2s ease-in-out infinite;
+      animation: fab-pulse-prov 2s ease-in-out infinite;
     }
-    /* Weißes Plus auf Gelb (Nutzerwunsch) */
     .provider-add-plus-btn .plus-char,
     #fabProviderAddOffer.fab-provider-plus .plus-char { color: #fff !important; font-weight:900; text-shadow: 0 1px 2px rgba(0,0,0,0.15); }
     #fabProviderAddOffer.fab-provider-plus {
@@ -1574,9 +1573,9 @@
     }
     #fabProviderAddOffer.fab-provider-plus:active,
     .provider-add-plus-btn:active { animation: none; transform: scale(0.96); }
-    @keyframes fab-pulse {
-      0%, 100% { box-shadow: 0 4px 20px rgba(255,215,0,0.5), 0 8px 24px rgba(0,0,0,0.15); }
-      50% { box-shadow: 0 4px 28px rgba(255,215,0,0.7), 0 8px 32px rgba(0,0,0,0.2); }
+    @keyframes fab-pulse-prov {
+      0%, 100% { box-shadow: 0 4px 20px rgba(14,165,233,0.45), 0 8px 24px rgba(0,0,0,0.15); }
+      50% { box-shadow: 0 4px 28px rgba(14,165,233,0.6), 0 8px 32px rgba(0,0,0,0.2); }
     }
     .provider-add-plus-btn {
       display: inline-flex !important;
@@ -1759,7 +1758,8 @@
       --provider-text-muted:#64748b;
       --provider-shadow: 0 4px 20px rgba(0,0,0,0.04);
       --provider-radius: 20px;
-      --prov-brand: #ffde00;
+      /* Anbieter: kühles Blau (Küche dunkel/hektisch – klar und ruhig abheben) */
+      --prov-brand: #0ea5e9;
       --prov-success: #10b981;
       --prov-danger: #ef4444;
     }
@@ -1808,19 +1808,19 @@
     .prov-page-header .prov-page-header-icon {
       width: 44px;
       height: 44px;
-      background: var(--prov-brand, var(--brand, #FFD700));
+      background: var(--prov-brand);
       border-radius: 14px;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 4px 12px rgba(255,215,0,0.2);
+      box-shadow: 0 4px 12px rgba(14, 165, 233, 0.25);
       flex-shrink: 0;
     }
     .prov-page-header .prov-page-header-icon i,
     .prov-page-header .prov-page-header-icon svg {
       width: 24px;
       height: 24px;
-      color: #1a1a1a;
+      color: #fff;
     }
     .prov-page-header .prov-page-header-title {
       margin: 0;
@@ -2100,13 +2100,13 @@
       box-shadow:0 -2px 16px rgba(0,0,0,.06) !important;
     }
     #providerNav .navbtn{ color:var(--provider-text-muted); }
-    #providerNav .navbtn.active{ color:var(--brand); }
-    #providerNav .navbtn.active .ico svg{ color:var(--brand); stroke:var(--brand); }
-    /* Provider Nav Light (App-Style): gleiche Breite pro Tab, kein Shift – aktiver Tab nur Farbe + Indikator */
+    #providerNav .navbtn.active{ color:var(--prov-brand); }
+    #providerNav .navbtn.active .ico svg{ color:var(--prov-brand); stroke:var(--prov-brand); }
+    /* Provider Nav Light: Anbieter-Akzent (kühles Blau) */
     .provider-nav-light .navbtn{ color:#9ca3af; font-weight:600; flex:1; min-width:0; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; }
     .provider-nav-light .navbtn{ border-top:2px solid transparent; }
-    .provider-nav-light .navbtn.active{ color:var(--brand); font-weight:600; border-top-color:var(--brand); }
-    .provider-nav-light .navbtn.active .ico svg{ color:var(--brand); stroke:var(--brand); }
+    .provider-nav-light .navbtn.active{ color:var(--prov-brand); font-weight:600; border-top-color:var(--prov-brand); }
+    .provider-nav-light .navbtn.active .ico svg{ color:var(--prov-brand); stroke:var(--prov-brand); }
     [id^="v-provider-"] .panel h1,[id^="v-provider-"] .panel h2,[id^="v-provider-"] .panel h3,[id^="v-provider-"] .panel .section-title{ color:var(--provider-text) !important; }
     [id^="v-provider-"] .panel .hint{ color:var(--provider-text-muted) !important; }
     /* Dynamisch eingefügter Inhalt: immer lesbar */
@@ -2125,7 +2125,7 @@
     }
     /* FAB: moderner Schatten auf hellem Grund */
     #fabProviderAddOffer{
-      box-shadow:0 4px 20px rgba(255,215,0,0.4) !important;
+      box-shadow:0 4px 20px rgba(14,165,233,0.4) !important;
       transition:transform .15s ease, box-shadow .15s ease;
     }
     #fabProviderAddOffer:active{ transform:scale(0.95); }
@@ -3327,9 +3327,9 @@
       /* Wochenplan (weiteres Layout) */
       #v-provider-week .week-dayrow{ display:flex; gap:8px; overflow-x:auto; -webkit-overflow-scrolling:touch; padding:0 0 16px; margin-bottom:16px; border-bottom:1px solid #f1f3f5; }
 #v-provider-week .week-day-pill{ flex:0 0 auto; min-width:56px; min-height:48px; padding:12px 10px; border-radius:14px; border:2px solid transparent; background:#f8f9fa; font-size:13px; font-weight:800; color:#64748b; cursor:pointer; transition:all 0.2s; line-height:1.25; text-align:center; white-space:nowrap; display:inline-flex; align-items:center; justify-content:center; }
-    #v-provider-week .week-day-pill.active{ background:rgba(255,215,0,0.18); border-color:var(--brand,#FFD700); color:#1a1a1a; }
-    #v-provider-week .week-day-pill.week-day-pill-today{ background:#fff; border-color:rgba(255,215,0,0.5); font-weight:900; box-shadow:0 1px 3px rgba(0,0,0,0.06); }
-    #v-provider-week .week-day-pill.week-day-pill-today.active{ border-color:var(--brand); background:rgba(255,215,0,0.18); }
+    #v-provider-week .week-day-pill.active{ background:rgba(14,165,233,0.12); border-color:var(--prov-brand); color:#1a1a1a; }
+    #v-provider-week .week-day-pill.week-day-pill-today{ background:#fff; border-color:rgba(14,165,233,0.35); font-weight:900; box-shadow:0 1px 3px rgba(0,0,0,0.06); }
+    #v-provider-week .week-day-pill.week-day-pill-today.active{ border-color:var(--prov-brand); background:rgba(14,165,233,0.12); }
       #v-provider-week .week-status-block{ display:flex; justify-content:space-between; align-items:center; padding:12px 16px; min-height:48px; background:#fff; border-radius:14px; margin-bottom:14px; border:1px solid #e2e8f0; box-shadow:0 1px 3px rgba(0,0,0,0.04); flex-wrap:nowrap; }
       #v-provider-week .week-status-online{ display:flex; align-items:center; gap:8px; font-weight:800; font-size:14px; color:#10b981; }
       #v-provider-week .week-status-draft{ display:flex; align-items:center; gap:8px; font-weight:800; font-size:14px; color:#64748b; }
@@ -3344,7 +3344,7 @@
       #v-provider-week .week-meal-online{ display:inline-flex; align-items:center; gap:4px; font-size:12px; font-weight:700; color:#10b981; }
       #v-provider-week .week-meal-actions{ display:flex; align-items:center; gap:6px; }
       #v-provider-week .week-add-more{ width:100%; margin-top:8px; padding:16px; border-radius:16px; border:2px dashed #cbd5e1; background:#fff; font-size:15px; font-weight:700; color:#64748b; cursor:pointer; transition:all 0.2s; }
-      #v-provider-week .week-add-more:hover{ border-color:var(--brand); color:var(--brand); background:rgba(255,215,0,0.06); }
+      #v-provider-week .week-add-more:hover{ border-color:var(--prov-brand); color:var(--prov-brand); background:rgba(14,165,233,0.08); }
       #v-provider-week .week-empty-state{ text-align:center; padding:32px 20px; }
       #v-provider-week .week-empty-state .week-empty-title{ font-size:18px; font-weight:900; color:#1a1a1a; margin-bottom:8px; }
       #v-provider-week .week-empty-state .week-empty-hint{ font-size:14px; color:#64748b; line-height:1.5; margin-bottom:24px; }
@@ -3366,11 +3366,11 @@
       #v-provider-week .week-activate-btn{ width:100%; min-height:56px; border-radius:16px; font-size:16px; font-weight:800; border:none; background:#10b981; color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; box-shadow:0 4px 16px rgba(16,185,129,0.35); }
       #v-provider-week .week-activate-btn:active{ transform:scale(0.98); }
       /* Sortiermodus: Drag-Handle, Reihenfolge ändern */
-      #v-provider-week .week-sort-bar{ display:flex; align-items:center; justify-content:space-between; padding:12px 16px; background:rgba(255,215,0,0.12); border-radius:14px; margin-bottom:16px; border:1px solid rgba(255,215,0,0.3); }
-      #v-provider-week .week-sort-bar .week-sort-done{ min-height:44px; padding:0 18px; font-size:15px; font-weight:800; border-radius:12px; background:var(--brand); color:#1a1a1a; border:none; cursor:pointer; }
+      #v-provider-week .week-sort-bar{ display:flex; align-items:center; justify-content:space-between; padding:12px 16px; background:rgba(14,165,233,0.1); border-radius:14px; margin-bottom:16px; border:1px solid rgba(14,165,233,0.25); }
+      #v-provider-week .week-sort-bar .week-sort-done{ min-height:44px; padding:0 18px; font-size:15px; font-weight:800; border-radius:12px; background:var(--prov-brand); color:#fff; border:none; cursor:pointer; }
       #v-provider-week .week-meal-card-wrap[draggable="true"]{ cursor:grab; }
       #v-provider-week .week-meal-card-wrap[draggable="true"]:active{ cursor:grabbing; }
-      #v-provider-week .week-meal-card-wrap.week-drag-over{ box-shadow:0 0 0 2px var(--brand); border-radius:16px; }
+      #v-provider-week .week-meal-card-wrap.week-drag-over{ box-shadow:0 0 0 2px var(--prov-brand); border-radius:16px; }
       #v-provider-week .week-meal-card-drag-handle{ width:24px; height:24px; color:#94a3b8; flex-shrink:0; margin-right:10px; }
       #v-provider-week .week-status-block .week-activate-inline{ min-height:44px; padding:0 18px; font-size:14px; font-weight:800; border-radius:12px; background:#10b981; color:#fff; border:none; cursor:pointer; box-shadow:0 2px 12px rgba(16,185,129,0.35); }
       #v-provider-week .week-status-block .week-activate-inline:active{ transform:scale(0.98); }
@@ -3379,7 +3379,7 @@
       #v-provider-week .week-header-compact{ padding-top:calc(12px + env(safe-area-inset-top, 0)); padding-right:20px; padding-bottom:16px; padding-left:20px; min-height:56px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; background:#fff; border-bottom:1px solid rgba(0,0,0,0.05); }
       #v-provider-week .week-header-row{ display:flex; align-items:center; justify-content:space-between; width:100%; max-width:100%; gap:12px; }
       #v-provider-week .week-header-row > div:first-child{ min-width:0; text-align:left; }
-      #v-provider-week .week-header-done-btn{ flex-shrink:0; min-height:44px; padding:0 18px; font-size:15px; font-weight:800; border-radius:12px; background:var(--brand); color:#1a1a1a; border:none; cursor:pointer; box-shadow:0 2px 12px rgba(255,215,0,0.35); }
+      #v-provider-week .week-header-done-btn{ flex-shrink:0; min-height:44px; padding:0 18px; font-size:15px; font-weight:800; border-radius:12px; background:var(--prov-brand); color:#fff; border:none; cursor:pointer; box-shadow:0 2px 12px rgba(14,165,233,0.35); }
       #v-provider-week .week-header-done-btn:active{ transform:scale(0.98); }
       #v-provider-week .week-header-compact h1{ margin:0; font-size:20px; font-weight:950; }
       /* Übersicht: kompakte Tageskarten (nur Lesen), app-first */
@@ -3392,7 +3392,7 @@
       #v-provider-week .week-overview-dishes{ font-size:15px; font-weight:700; color:#1a1a1a; line-height:1.45; }
       #v-provider-week .week-overview-dishes.empty{ color:#94a3b8; font-weight:600; }
       #v-provider-week .week-overview-cta-wrap{ padding:16px 20px calc(24px + env(safe-area-inset-bottom)); background:#fff; border-top:1px solid #e2e8f0; flex-shrink:0; }
-      #v-provider-week .week-overview-cta-wrap .week-edit-primary{ width:100%; min-height:56px; border-radius:16px; font-size:16px; font-weight:800; border:none; background:var(--brand); color:#1a1a1a; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; box-shadow:0 4px 16px rgba(255,215,0,0.35); }
+      #v-provider-week .week-overview-cta-wrap .week-edit-primary{ width:100%; min-height:56px; border-radius:16px; font-size:16px; font-weight:800; border:none; background:var(--prov-brand); color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; box-shadow:0 4px 16px rgba(14,165,233,0.35); }
       #v-provider-week .week-overview-cta-wrap .week-edit-primary:active{ transform:scale(0.98); }
       #v-provider-week .week-overview-scroll{ -webkit-overflow-scrolling:touch; }
       #v-provider-week .week-overview-cta-wrap .week-edit-primary{ min-height:56px; }
@@ -3405,12 +3405,12 @@
       /* Dashboard: Dein Wochenplan Applike */
       #providerWeekDays{ display:flex; gap:8px; overflow-x:auto; -webkit-overflow-scrolling:touch; padding:0 0 16px; margin-bottom:16px; border-bottom:1px solid #f1f3f5; }
       #providerWeekDays .week-preview-pill{ flex:0 0 auto; min-width:56px; padding:10px 8px; border-radius:14px; border:2px solid transparent; background:#f1f3f5; font-size:11px; font-weight:800; color:#64748b; cursor:pointer; transition:all 0.2s; line-height:1.25; text-align:center; white-space:pre-line; }
-      #providerWeekDays .week-preview-pill.active{ background:rgba(255,215,0,0.18); border-color:var(--brand,#FFD700); color:#1a1a1a; }
+      #providerWeekDays .week-preview-pill.active{ background:rgba(14,165,233,0.12); border-color:var(--prov-brand); color:#1a1a1a; }
       #providerWeekDayContent{ min-height:120px !important; background:#fff !important; border:1px solid #f1f3f5; border-radius:16px; padding:16px !important; text-align:left !important; }
       #providerWeekDayContent .week-preview-dish{ font-size:14px; font-weight:700; color:#1a1a1a; padding:8px 0; border-bottom:1px solid #f1f3f5; display:flex; justify-content:space-between; align-items:center; }
       #providerWeekDayContent .week-preview-dish:last-of-type{ border-bottom:none; }
       #providerWeekDayContent .week-preview-cta{ margin-top:16px; }
-      #providerWeekDayContent .week-preview-link{ display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:700; color:var(--brand); margin-top:12px; cursor:pointer; }
+      #providerWeekDayContent .week-preview-link{ display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:700; color:var(--prov-brand); margin-top:12px; cursor:pointer; }
       #v-provider-profile .panel{ padding:18px !important; border-radius:16px !important; margin-bottom:16px !important; }
       #v-provider-profile .provider-profile-section-title{ margin-top:24px; margin-bottom:12px; }
       #v-provider-profile .provider-profile-section-title:first-of-type{ margin-top:0; }
@@ -5680,13 +5680,13 @@
             
             <div id="providerSupportSolution" style="display:none; padding:20px; background:rgba(0,122,255,0.05); border-radius:20px; border:1px solid rgba(0,122,255,0.1); margin-bottom:20px;">
               <p id="providerSupportSolutionText" style="margin:0 0 16px; font-size:15px; line-height:1.6; color:#1a1a1a; font-weight:600;"></p>
-              <button type="button" id="providerSupportContactBtn" style="width:100%; height:44px; font-size:14px; font-weight:800; color:var(--brand); background:#fff; border:none; border-radius:12px; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.05);">Nicht gelöst? Nachricht an uns</button>
+              <button type="button" id="providerSupportContactBtn" style="width:100%; height:44px; font-size:14px; font-weight:800; color:var(--prov-brand); background:#fff; border:none; border-radius:12px; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.05);">Nicht gelöst? Nachricht an uns</button>
             </div>
 
             <div id="providerSupportFormWrap" style="display:none; margin-bottom:20px;">
               <label style="display:block; font-size:12px; font-weight:800; color:#64748b; margin-bottom:6px; text-transform:uppercase;">Nachricht</label>
               <textarea id="providerSupportMessage" rows="4" placeholder="Beschreibe uns kurz dein Anliegen..." style="width:100%; padding:16px; border:2px solid #f1f3f5; border-radius:16px; font-size:16px; background:#f8f9fa; font-weight:600; resize:none; box-sizing:border-box;"></textarea>
-              <button type="button" id="providerSupportSendBtn" style="width:100%; margin-top:16px; height:56px; font-size:16px; font-weight:800; color:#fff; background:var(--brand); border:none; border-radius:18px; cursor:pointer;">E-Mail senden</button>
+              <button type="button" id="providerSupportSendBtn" style="width:100%; margin-top:16px; height:56px; font-size:16px; font-weight:800; color:#fff; background:var(--prov-brand); border:none; border-radius:18px; cursor:pointer;">E-Mail senden</button>
             </div>
           </div>
 
