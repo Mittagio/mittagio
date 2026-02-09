@@ -17317,8 +17317,8 @@
       list.classList.remove('week-sort-mode');
     }
 
-    var itemsToShow = isLive ? dayLiveOffers : providerEntries.map(function(x){ return x.entry; });
-    var entryIndices = isLive ? [] : providerEntries.map(function(x){ return x.idx; });
+    var itemsToShow = dayIsLive ? dayLiveOffers : providerEntries.map(function(x){ return x.entry; });
+    var entryIndices = dayIsLive ? [] : providerEntries.map(function(x){ return x.idx; });
 
     itemsToShow.forEach(function(entry, idx){
       var cb = cookbook.find(function(c){ return String(c.id) === String(entry.cookbookId); });
@@ -17327,7 +17327,7 @@
       var weekIndex = entryIndices[idx];
       var wrap = document.createElement('div');
       wrap.className = 'week-meal-card-wrap';
-      if(!isLive && weekSortMode){
+      if(!dayIsLive && weekSortMode){
         wrap.draggable = true;
         wrap.dataset.index = String(weekIndex);
         wrap.innerHTML = '<div class="week-meal-card" style="display:flex; align-items:center;"><div class="week-meal-card-drag-handle"><i data-lucide="grip-vertical" style="width:24px;height:24px;"></i></div><div><div class="week-meal-name">' + esc(name) + '</div><div class="week-meal-meta">' + euro(price) + '</div></div></div>';
