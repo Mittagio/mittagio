@@ -8515,7 +8515,8 @@
     if(providerNavBackRow) providerNavBackRow.style.display = 'block';
     pushViewState({view: 'provider-pickups', mode: mode}, location.pathname);
   }
-  function showProviderWeek(){
+  function showProviderWeek(preselectDay){
+    if(preselectDay && typeof preselectDay === 'string') weekPlanDay = preselectDay;
     setProviderNavActive('provider-week');
     showView(views.providerWeek);
     renderWeekPlan();
