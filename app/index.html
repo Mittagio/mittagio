@@ -14797,9 +14797,11 @@
             <div style="font-size:14px; font-weight:600; color:#64748b; margin-top:2px;">Persönlicher Bereich</div>
           </div>
         `;
-        // E-Mail in "Meine Daten" anzeigen
+        // E-Mail in "Meine Daten" und im Zahnrad-Sheet anzeigen
         const emailDisp = document.getElementById('profileDisplayEmail');
         if(emailDisp) emailDisp.textContent = customer.email || '-';
+        const emailSheet = document.getElementById('profileDisplayEmailSheet');
+        if(emailSheet) emailSheet.textContent = customer.email || '-';
       } else {
         headerCard.innerHTML = `
           <div style="flex:1;">
@@ -14957,6 +14959,33 @@
       const chevron = btn.querySelector('.chevron');
       if(chevron) chevron.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
     }
+  }
+
+  // Zahnrad-Menü (Einstellungen-Sheet) öffnen/schließen
+  function openProfileSettingsSheet(){
+    const bd = document.getElementById('profileSettingsSheetBd');
+    const sheet = document.getElementById('profileSettingsSheet');
+    if(bd){ bd.style.display = 'block'; bd.style.opacity = '1'; }
+    if(sheet){ sheet.style.display = 'block'; }
+    if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
+  }
+  function closeProfileSettingsSheet(){
+    const bd = document.getElementById('profileSettingsSheetBd');
+    const sheet = document.getElementById('profileSettingsSheet');
+    if(bd){ bd.style.display = 'none'; bd.style.opacity = '0'; }
+    if(sheet){ sheet.style.display = 'none'; }
+  }
+  function toggleProfileSettingsSection(sectionId){
+    const el = document.getElementById(sectionId);
+    if(!el) return;
+    const isHidden = el.style.display === 'none';
+    el.style.display = isHidden ? 'block' : 'none';
+    const chevrons = document.querySelectorAll('.profile-sheet-chevron[data-section="' + sectionId + '"]');
+    chevrons.forEach(c => { c.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)'; });
+    if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
+  }
+  function openProfilePwaTipSheet(){
+    showToast('Tippe im Browser auf Teilen → „Zum Home-Bildschirm hinzufügen“. Dann wirkt Mittagio wie eine App.', 4500);
   }
   
   // Ernährungs-Präferenz Toggle
