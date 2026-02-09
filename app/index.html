@@ -3190,13 +3190,18 @@
       }
       .navbtn .ico svg{ width:24px !important; height:24px !important; }
       
-      /* Provider Home: Abstand oben für Loch/Notch */
+      /* Provider: Safe-Area im Header (kein leerer Raum oben, Inhalt sofort sichtbar) */
       [id^="v-provider-"]{
-        padding-top:calc(20px + env(safe-area-inset-top, 0)) !important;
+        padding-top:0 !important;
         padding-left:calc(20px + env(safe-area-inset-left, 0)) !important;
         padding-right:calc(20px + env(safe-area-inset-right, 0)) !important;
       }
-      #v-provider-home{ padding:16px 16px 100px !important; }
+      #providerProfileHeader,
+      #v-provider-cookbook > header,
+      #v-provider-pickups > header{
+        padding-top:calc(16px + env(safe-area-inset-top, 0)) !important;
+      }
+      #v-provider-home{ padding:16px 16px 100px !important; padding-top:calc(16px + env(safe-area-inset-top, 0)) !important; }
       #v-provider-home h1{ font-size:28px !important; }
       
       /* KPI Cards: 3er Grid, Touch-freundlich */
@@ -3316,6 +3321,11 @@
         border-bottom:1px solid #f1f3f5; font-size:15px; font-weight:700; color:#1a1a1a; text-align:left; cursor:pointer;
       }
       #v-provider-profile .provider-profile-row-last{ border-bottom:none; }
+      /* S25: Menü-Zeilen größer (Touch, Lesbarkeit) */
+      #v-provider-profile .provider-profile-row{
+        min-height:56px !important; padding:18px 20px !important; font-size:16px !important;
+      }
+      #v-provider-profile .provider-profile-row i[data-lucide]{ width:20px !important; height:20px !important; }
       #v-provider-profile .provider-profile-sub{ flex:1; min-height:0; overflow:hidden; }
       #v-provider-profile .provider-profile-sub > div[style*="overflow-y:auto"]{ flex:1; min-height:0; padding-bottom:calc(24px + env(safe-area-inset-bottom, 0)); }
       
