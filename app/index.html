@@ -1784,6 +1784,72 @@
       color: #1a1a1a;
     }
     
+    /* Einheitlicher App-Header für Abholungen, Wochenplan, Kochbuch (wie Küche) */
+    .prov-page-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: #fff;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+      padding: calc(16px + env(safe-area-inset-top, 0)) 20px 16px 20px;
+    }
+    .prov-page-header .prov-page-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .prov-page-header .prov-page-header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+    .prov-page-header .prov-page-header-icon {
+      width: 44px;
+      height: 44px;
+      background: var(--prov-brand, var(--brand, #FFD700));
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(255,215,0,0.2);
+      flex-shrink: 0;
+    }
+    .prov-page-header .prov-page-header-icon i,
+    .prov-page-header .prov-page-header-icon svg {
+      width: 24px;
+      height: 24px;
+      color: #1a1a1a;
+    }
+    .prov-page-header .prov-page-header-title {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 950;
+      letter-spacing: -0.03em;
+      color: #1a1a1a;
+    }
+    .prov-page-header .prov-page-header-actions {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .prov-page-header .prov-page-header-actions button {
+      background: rgba(0,0,0,0.03);
+      border: none;
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #64748b;
+      cursor: pointer;
+    }
+    .prov-page-header .prov-page-header-actions button:active {
+      transform: scale(0.96);
+    }
+    
     .prov-card {
       background: #fff;
       border-radius: 28px;
@@ -3207,6 +3273,7 @@
       #v-provider-cookbook > header h1{ margin-bottom:12px !important; }
       #v-provider-pickups > header{ padding-bottom:14px !important; padding-left:20px !important; padding-right:20px !important; }
       #v-provider-week .week-header-compact{ background:#fff !important; }
+      #v-provider-week .prov-page-header{ padding-top:calc(12px + env(safe-area-inset-top, 0)) !important; }
       #v-provider-home{ padding:16px 16px 100px !important; padding-top:calc(16px + env(safe-area-inset-top, 0)) !important; }
       #v-provider-home h1{ font-size:28px !important; }
       
@@ -3244,7 +3311,7 @@
       }
       #v-provider-week .week-header-compact{
         flex-shrink:0; background:#fff; border-bottom:1px solid rgba(0,0,0,0.06); position:sticky; top:0; z-index:50;
-        padding:14px 20px 16px; min-height:52px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px;
+        padding-top:calc(10px + env(safe-area-inset-top, 0)); padding-right:20px; padding-bottom:16px; padding-left:20px; min-height:52px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px;
       }
       #v-provider-week .week-header-compact h1{ margin:0; font-size:20px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a; }
       #v-provider-week .week-header-subtitle{ margin:0; font-size:12px; font-weight:600; color:#64748b; letter-spacing:0.02em; }
@@ -3308,12 +3375,33 @@
       #v-provider-week .week-status-block .week-activate-inline{ min-height:44px; padding:0 18px; font-size:14px; font-weight:800; border-radius:12px; background:#10b981; color:#fff; border:none; cursor:pointer; box-shadow:0 2px 12px rgba(16,185,129,0.35); }
       #v-provider-week .week-status-block .week-activate-inline:active{ transform:scale(0.98); }
       #v-provider-week .week-status-activate-hint{ font-size:11px; color:#64748b; margin-top:6px; line-height:1.3; }
-      /* Applike: Header mit Untertitel, eine Scroll-Zone */
-      #v-provider-week .week-header-compact{ padding:16px 20px; min-height:56px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; background:#fff; border-bottom:1px solid rgba(0,0,0,0.05); }
+      /* Applike: Header mit Untertitel, Safe-Area oben; Zeile für Titel + Fertig (Edit-Mode) */
+      #v-provider-week .week-header-compact{ padding-top:calc(12px + env(safe-area-inset-top, 0)); padding-right:20px; padding-bottom:16px; padding-left:20px; min-height:56px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; background:#fff; border-bottom:1px solid rgba(0,0,0,0.05); }
+      #v-provider-week .week-header-row{ display:flex; align-items:center; justify-content:space-between; width:100%; max-width:100%; gap:12px; }
+      #v-provider-week .week-header-row > div:first-child{ min-width:0; text-align:left; }
+      #v-provider-week .week-header-done-btn{ flex-shrink:0; min-height:44px; padding:0 18px; font-size:15px; font-weight:800; border-radius:12px; background:var(--brand); color:#1a1a1a; border:none; cursor:pointer; box-shadow:0 2px 12px rgba(255,215,0,0.35); }
+      #v-provider-week .week-header-done-btn:active{ transform:scale(0.98); }
       #v-provider-week .week-header-compact h1{ margin:0; font-size:20px; font-weight:950; }
+      /* Übersicht: kompakte Tageskarten (nur Lesen), app-first */
+      #v-provider-week .week-overview-scroll{ flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:12px 20px 20px; }
+      #v-provider-week .week-overview-day{ background:#fff; border-radius:16px; border:1px solid #e2e8f0; padding:14px 16px; margin-bottom:12px; box-shadow:0 2px 8px rgba(0,0,0,0.04); }
+      #v-provider-week .week-overview-day-label{ font-size:13px; font-weight:800; color:#64748b; margin-bottom:8px; display:flex; align-items:center; gap:8px; }
+      #v-provider-week .week-overview-day-label .week-overview-badge{ font-size:10px; font-weight:800; padding:2px 8px; border-radius:8px; }
+      #v-provider-week .week-overview-day-label .week-overview-badge.online{ background:#dcfce7; color:#166534; }
+      #v-provider-week .week-overview-day-label .week-overview-badge.draft{ background:#f1f5f9; color:#64748b; }
+      #v-provider-week .week-overview-dishes{ font-size:15px; font-weight:700; color:#1a1a1a; line-height:1.45; }
+      #v-provider-week .week-overview-dishes.empty{ color:#94a3b8; font-weight:600; }
+      #v-provider-week .week-overview-cta-wrap{ padding:16px 20px calc(24px + env(safe-area-inset-bottom)); background:#fff; border-top:1px solid #e2e8f0; flex-shrink:0; }
+      #v-provider-week .week-overview-cta-wrap .week-edit-primary{ width:100%; min-height:56px; border-radius:16px; font-size:16px; font-weight:800; border:none; background:var(--brand); color:#1a1a1a; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; box-shadow:0 4px 16px rgba(255,215,0,0.35); }
+      #v-provider-week .week-overview-cta-wrap .week-edit-primary:active{ transform:scale(0.98); }
+      #v-provider-week .week-overview-scroll{ -webkit-overflow-scrolling:touch; }
+      #v-provider-week .week-overview-cta-wrap .week-edit-primary{ min-height:56px; }
       /* Nur #weekList scrollt – Section fix, kein Ganzseiten-Scroll */
       #v-provider-week{ overflow:hidden !important; height:100vh; height:100dvh; max-height:100dvh; }
       body.provider-week-active{ overflow:hidden !important; }
+      /* Wochenplan fullscreen: Topbar ausblenden, main ohne oberes Padding – kein leerer Streifen */
+      body.provider-week-active .topbar{ display:none !important; }
+      body.provider-week-active main{ padding-top:0 !important; padding-left:0 !important; padding-right:0 !important; max-width:none !important; }
       /* Dashboard: Dein Wochenplan Applike */
       #providerWeekDays{ display:flex; gap:8px; overflow-x:auto; -webkit-overflow-scrolling:touch; padding:0 0 16px; margin-bottom:16px; border-bottom:1px solid #f1f3f5; }
       #providerWeekDays .week-preview-pill{ flex:0 0 auto; min-width:56px; padding:10px 8px; border-radius:14px; border:2px solid transparent; background:#f1f3f5; font-size:11px; font-weight:800; color:#64748b; cursor:pointer; transition:all 0.2s; line-height:1.25; text-align:center; white-space:pre-line; }
@@ -3833,6 +3921,41 @@
       padding-top: env(safe-area-inset-top, 0px);
       padding-left: env(safe-area-inset-left, 0);
       padding-right: env(safe-area-inset-right, 0);
+    }
+    /* Kunde: Anbieter-Profil (Restaurant-Seite) – app-like, nicht gequetscht, S25-tauglich */
+    #v-provider-detail-public {
+      display: flex !important;
+      flex-direction: column !important;
+      min-height: 100vh;
+      min-height: 100dvh;
+      background: #f8f9fa !important;
+    }
+    #v-provider-detail-public .pub-prov-scroll {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 20px 16px calc(24px + env(safe-area-inset-bottom, 0));
+    }
+    #v-provider-detail-public .cust-header-sticky {
+      flex-shrink: 0;
+      background: #fff;
+    }
+    #v-provider-detail-public .pub-prov-back-btn,
+    #v-provider-detail-public .pub-prov-fav-btn {
+      min-width: 48px;
+      min-height: 48px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    @media (max-width: 430px) and (min-height: 700px) {
+      #v-provider-detail-public .pub-prov-header-row { padding: 16px 16px !important; }
+      #v-provider-detail-public .pub-prov-back-btn,
+      #v-provider-detail-public .pub-prov-fav-btn { min-width: 52px; min-height: 52px; }
+      #v-provider-detail-public #pubProvName { font-size: 20px !important; }
+      #v-provider-detail-public .pub-prov-hero { padding: 28px 20px !important; }
+      #v-provider-detail-public .pub-prov-scroll { padding: 20px 16px calc(28px + env(safe-area-inset-bottom, 0)) !important; }
     }
 
     /* Discovery Card - Modernized */
@@ -4634,55 +4757,59 @@
       </div>
     </section>
 
-    <section class="view" id="v-provider-detail-public" style="background:#f8f9fa;">
+    <section class="view" id="v-provider-detail-public">
       <header class="cust-header-sticky">
-        <div style="display:flex; align-items:center; gap:12px; padding:12px 16px;">
-          <button type="button" onclick="showView('v-discover')" style="width:40px; height:40px; border-radius:12px; background:#fff; border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.05);">
+        <div class="pub-prov-header-row" style="display:flex; align-items:center; gap:12px; padding:14px 16px;">
+          <button type="button" class="pub-prov-back-btn" onclick="showView('v-discover')" aria-label="Zurück" style="width:48px; height:48px; border-radius:14px; background:#fff; border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
             <i data-lucide="chevron-left" style="width:24px;height:24px;color:#1a1a1a;"></i>
           </button>
           <div style="flex:1; min-width:0;">
-            <h1 id="pubProvName" style="font-size:18px; font-weight:900; color:#1a1a1a; margin:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Anbieter</h1>
+            <h1 id="pubProvName" style="font-size:20px; font-weight:950; color:#1a1a1a; margin:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; letter-spacing:-0.02em;">Anbieter</h1>
           </div>
-          <button type="button" id="btnToggleFavProvider" style="width:40px; height:40px; border-radius:12px; background:#fff; border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.05);">
-            <i data-lucide="heart" style="width:20px;height:20px;color:#E34D4D;"></i>
+          <button type="button" class="pub-prov-fav-btn" id="btnToggleFavProvider" aria-label="Favorit" style="width:48px; height:48px; border-radius:14px; background:#fff; border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+            <i data-lucide="heart" style="width:22px;height:22px;color:#E34D4D;"></i>
           </button>
         </div>
       </header>
 
-      <div style="padding:16px; padding-bottom:120px; display:flex; flex-direction:column; gap:24px;">
-        <!-- Anbieter Info Card -->
-        <div class="cust-card" style="padding:24px; display:flex; flex-direction:column; align-items:center; text-align:center; gap:12px; background:#fff; border:none; box-shadow:0 4px 20px rgba(0,0,0,0.04);">
-          <div style="width:80px; height:80px; border-radius:24px; background:#f1f3f5; display:flex; align-items:center; justify-content:center; font-size:32px; box-shadow:0 8px 24px rgba(0,0,0,0.05);">🏢</div>
+      <div class="pub-prov-scroll">
+        <div style="display:flex; flex-direction:column; gap:24px; max-width:500px; margin:0 auto;">
+          <!-- Anbieter Info Card (App-like Hero) -->
+          <div class="cust-card pub-prov-hero" style="padding:28px 24px; display:flex; flex-direction:column; align-items:center; text-align:center; gap:16px; background:#fff; border:none; box-shadow:0 4px 20px rgba(0,0,0,0.06); border-radius:24px;">
+            <div id="pubProvLogoWrap" style="width:88px; height:88px; border-radius:24px; background:#f1f3f5; display:flex; align-items:center; justify-content:center; font-size:40px; box-shadow:0 8px 24px rgba(0,0,0,0.06); overflow:hidden;">
+              <span id="pubProvLogoEmoji">🏢</span>
+            </div>
+            <div>
+              <h2 id="pubProvTitle" style="margin:0; font-size:24px; font-weight:950; color:#1a1a1a; letter-spacing:-0.03em;">Anbieter Name</h2>
+              <div id="pubProvAddress" style="font-size:15px; color:#64748b; font-weight:600; margin-top:6px; line-height:1.4;">Straße, PLZ Ort</div>
+            </div>
+            <div style="display:flex; gap:10px; margin-top:4px; flex-wrap:wrap; justify-content:center;">
+              <button type="button" onclick="openGoogleMapsRoute(currentPublicProviderId)" style="min-height:48px; padding:0 20px; border-radius:14px; border:none; background:#f1f3f5; font-size:14px; font-weight:700; color:#1a1a1a; display:inline-flex; align-items:center; gap:8px; cursor:pointer;">
+                <i data-lucide="map-pin" style="width:18px;height:18px;"></i> Route
+              </button>
+              <button type="button" id="pubProvShare" style="min-height:48px; padding:0 20px; border-radius:14px; border:none; background:#f1f3f5; font-size:14px; font-weight:700; color:#1a1a1a; display:inline-flex; align-items:center; gap:8px; cursor:pointer;">
+                <i data-lucide="share-2" style="width:18px;height:18px;"></i> Teilen
+              </button>
+            </div>
+          </div>
+
+          <!-- Tagesessen Sektion -->
           <div>
-            <h2 id="pubProvTitle" style="margin:0; font-size:22px; font-weight:950; color:#1a1a1a; letter-spacing:-0.02em;">Anbieter Name</h2>
-            <div id="pubProvAddress" style="font-size:14px; color:#64748b; font-weight:600; margin-top:4px;">Straße, PLZ Ort</div>
+            <h3 style="font-size:14px; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:0.06em; margin:0 0 14px; display:flex; align-items:center; gap:8px;">
+              <span>Tagesessen heute</span>
+              <span style="padding:3px 10px; background:var(--brand); border-radius:8px; font-size:11px; color:#1a1a1a; font-weight:800;">LIVE</span>
+            </h3>
+            <div id="pubProvTodayOffers" style="display:flex; flex-direction:column; gap:12px;">
+              <!-- Heute Angebote -->
+            </div>
           </div>
-          <div style="display:flex; gap:8px; margin-top:8px;">
-            <button onclick="openGoogleMapsRoute(currentPublicProviderId)" style="padding:10px 16px; border-radius:12px; border:none; background:#f8f9fa; font-size:13px; font-weight:700; color:#1a1a1a; display:flex; align-items:center; gap:6px;">
-              <i data-lucide="map-pin" style="width:14px;height:14px;"></i> Route
-            </button>
-            <button id="pubProvShare" style="padding:10px 16px; border-radius:12px; border:none; background:#f8f9fa; font-size:13px; font-weight:700; color:#1a1a1a; display:flex; align-items:center; gap:6px;">
-              <i data-lucide="share-2" style="width:14px;height:14px;"></i> Teilen
-            </button>
-          </div>
-        </div>
 
-        <!-- Tagesessen Sektion -->
-        <div>
-          <h3 style="font-size:15px; font-weight:800; color:#1a1a1a; text-transform:uppercase; letter-spacing:0.05em; margin:0 0 16px; display:flex; align-items:center; gap:8px;">
-            <span>Tagesessen heute</span>
-            <span style="padding:2px 8px; background:var(--brand); border-radius:6px; font-size:11px; color:#1a1a1a;">LIVE</span>
-          </h3>
-          <div id="pubProvTodayOffers" style="display:flex; flex-direction:column; gap:12px;">
-            <!-- Heute Angebote -->
-          </div>
-        </div>
-
-        <!-- Wochenplan Sektion -->
-        <div>
-          <h3 style="font-size:15px; font-weight:800; color:#1a1a1a; text-transform:uppercase; letter-spacing:0.05em; margin:0 0 16px;">Wochenplan</h3>
-          <div id="pubProvWeekPlan" style="display:flex; flex-direction:column; gap:12px;">
-            <!-- Wochenangebote -->
+          <!-- Wochenplan Sektion -->
+          <div>
+            <h3 style="font-size:14px; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:0.06em; margin:0 0 14px;">Wochenplan</h3>
+            <div id="pubProvWeekPlan" style="display:flex; flex-direction:column; gap:12px;">
+              <!-- Wochenangebote -->
+            </div>
           </div>
         </div>
       </div>
@@ -5101,21 +5228,24 @@
     </section>
 
     <section class="view onboarding-view" id="v-provider-pickups">
-      <header style="background:#fff; padding:16px 20px 14px; border-bottom:1px solid rgba(0,0,0,0.05); position:sticky; top:0; z-index:50;">
-        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
-          <h1 style="margin:0; font-size:24px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a;">Abholungen</h1>
-          <div style="display:flex; gap:8px;">
-            <button id="btnKitchenListPDF" style="background:rgba(0,0,0,0.03); border:none; width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; color:#64748b;">
+      <header class="prov-page-header" id="v-provider-pickups-header">
+        <div class="prov-page-header-row">
+          <div class="prov-page-header-left">
+            <div class="prov-page-header-icon">
+              <i data-lucide="receipt" style="width:24px; height:24px;"></i>
+            </div>
+            <h1 class="prov-page-header-title">Abholungen</h1>
+          </div>
+          <div class="prov-page-header-actions">
+            <button type="button" id="btnKitchenListPDF" aria-label="PDF">
               <i data-lucide="file-text" style="width:20px; height:20px;"></i>
             </button>
-            <button id="btnKitchenListEmail" style="background:rgba(0,0,0,0.03); border:none; width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; color:#64748b;">
+            <button type="button" id="btnKitchenListEmail" aria-label="E-Mail">
               <i data-lucide="mail" style="width:20px; height:20px;"></i>
             </button>
           </div>
         </div>
-        
-        <!-- Filter Toggle (Segmented Control) -->
-        <div class="answers" id="provPickupFilter" style="background:#f1f3f5; padding:4px; border-radius:14px; display:flex; gap:4px; border:none; box-shadow:none;">
+        <div class="answers" id="provPickupFilter" style="background:#f1f3f5; padding:4px; border-radius:14px; display:flex; gap:4px; border:none; box-shadow:none; margin-top:12px;">
           <!-- Wird dynamisch befüllt -->
         </div>
       </header>
@@ -5148,9 +5278,19 @@
     </section>
 
     <section class="view onboarding-view" id="v-provider-week">
-      <header class="week-header-compact">
-        <h1>Wochenplan</h1>
-        <p class="week-header-subtitle">Deine Woche · Gerichte planen</p>
+      <header class="week-header-compact prov-page-header" id="weekHeaderCompact">
+        <div class="prov-page-header-row week-header-row">
+          <div class="prov-page-header-left">
+            <div class="prov-page-header-icon">
+              <i data-lucide="calendar" style="width:24px; height:24px;"></i>
+            </div>
+            <div>
+              <h1 class="prov-page-header-title" id="weekHeaderTitle">Wochenplan</h1>
+              <p class="week-header-subtitle" id="weekHeaderSubtitle">Deine Woche · Gerichte planen</p>
+            </div>
+          </div>
+          <button type="button" class="week-header-done-btn" id="weekHeaderDoneBtn" style="display:none;" aria-label="Fertig">Fertig</button>
+        </div>
       </header>
 
       <div class="week-plan-wrap">
@@ -5176,10 +5316,16 @@
     </section>
 
     <section class="view onboarding-view" id="v-provider-cookbook">
-      <header style="background:#fff; padding:16px 20px 14px; border-bottom:1px solid rgba(0,0,0,0.05); position:sticky; top:0; z-index:50;">
-        <h1 style="margin:0 0 12px; font-size:24px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a;">Mein Kochbuch</h1>
-        
-        <div style="position:relative; display:flex; gap:10px;">
+      <header class="prov-page-header" id="v-provider-cookbook-header">
+        <div class="prov-page-header-row">
+          <div class="prov-page-header-left">
+            <div class="prov-page-header-icon">
+              <i data-lucide="book-open" style="width:24px; height:24px;"></i>
+            </div>
+            <h1 class="prov-page-header-title">Mein Kochbuch</h1>
+          </div>
+        </div>
+        <div style="position:relative; display:flex; gap:10px; margin-top:14px;">
           <div style="position:relative; flex:1;">
             <i data-lucide="search" style="position:absolute; left:16px; top:50%; transform:translateY(-50%); color:#9ca3af; width:20px; height:20px;"></i>
             <input type="text" id="cookbookSearch" placeholder="Gericht suchen …" style="width:100%; height:52px; background:#f1f3f5; border:none; border-radius:16px; padding:0 16px 0 48px; font-size:16px; font-weight:600; outline:none;" />
@@ -7380,6 +7526,7 @@
   let cookbookQuery = '';
   let cookbookTab = 'dishes';
   let weekPlanDay = isoDate(new Date());
+  let weekPlanMode = 'overview'; // 'overview' | 'edit' – Zwei-Phasen: Ansehen vs. Bearbeiten (app-first, Sofa)
   let weekSortMode = false;
   let weekUndoPending = null;
   let weekUndoTimer = null;
@@ -8290,7 +8437,8 @@
         const lastMode = localStorage.getItem('mittagio_last_mode');
         if(lastMode === 'provider' && lastView && document.getElementById(lastView)){
           showView(lastView);
-          // Trigger rendering for specific views
+          var navGo = (lastView === 'v-provider-home') ? 'provider-home' : (lastView === 'v-provider-pickups') ? 'provider-pickups' : (lastView === 'v-provider-week') ? 'provider-week' : (lastView === 'v-provider-cookbook') ? 'provider-cookbook' : (lastView === 'v-provider-profile' || lastView === 'v-provider-billing') ? 'provider-profile' : 'provider-home';
+          setProviderNavActive(navGo);
           if(lastView === 'v-provider-home') renderProviderHome();
           else if(lastView === 'v-provider-pickups') renderProviderPickups();
           else if(lastView === 'v-provider-week') renderWeekPlan();
@@ -8516,6 +8664,7 @@
   /** Deep-Link: „Zum Wochenplan“ übergibt gewählten Tag → Wochenplan öffnet direkt an der richtigen Stelle (Smart-Jump). */
   function showProviderWeek(preselectDay){
     if(preselectDay && typeof preselectDay === 'string') weekPlanDay = preselectDay;
+    weekPlanMode = 'overview'; // App-first: zuerst Übersicht, dann „Plan bearbeiten“ für Editor
     setProviderNavActive('provider-week');
     showView(views.providerWeek);
     renderWeekPlan();
@@ -14506,6 +14655,16 @@
     if(pubProvName) pubProvName.textContent = norm.providerName || 'Anbieter';
     if(pubProvTitle) pubProvTitle.textContent = norm.providerName || 'Anbieter';
     if(pubProvAddress) pubProvAddress.textContent = [norm.providerStreet, norm.providerZip, norm.providerCity].filter(Boolean).join(', ') || 'Adresse nicht verfügbar';
+    var logoWrap = document.getElementById('pubProvLogoWrap');
+    var logoEmoji = document.getElementById('pubProvLogoEmoji');
+    if(logoWrap){
+      if(norm.providerLogoData || first.providerLogoData){
+        var src = norm.providerLogoData || first.providerLogoData;
+        logoWrap.innerHTML = '<img src="' + esc(src) + '" alt="" style="width:100%; height:100%; object-fit:cover;" />';
+      } else if(logoEmoji) {
+        logoWrap.innerHTML = '<span id="pubProvLogoEmoji">🏢</span>';
+      }
+    }
 
     // Favorite Status
     const favBtn = document.getElementById('btnToggleFavProvider');
@@ -16947,10 +17106,69 @@
     updateSessionActivity();
     const dayWrap = document.getElementById('weekDays');
     const list = document.getElementById('weekList');
-    const actionsBar = document.getElementById('weekActionsBar');
-    const activateBlock = document.getElementById('weekActivateBlock');
-    const btnActivateThumb = document.getElementById('btnWeekActivateThumb');
+    let actionsBar = document.getElementById('weekActionsBar');
+    let activateBlock = document.getElementById('weekActivateBlock');
+    const thumbZone = document.getElementById('weekThumbZone');
+    const headerTitle = document.getElementById('weekHeaderTitle');
+    const headerSubtitle = document.getElementById('weekHeaderSubtitle');
+    const headerDoneBtn = document.getElementById('weekHeaderDoneBtn');
     if(!dayWrap || !list) return;
+
+    if(weekPlanMode === 'overview'){
+      if(headerTitle) headerTitle.textContent = 'Wochenplan';
+      if(headerSubtitle) headerSubtitle.textContent = 'Deine Woche im Überblick';
+      if(headerDoneBtn) headerDoneBtn.style.display = 'none';
+      dayWrap.style.display = 'none';
+      dayWrap.innerHTML = '';
+      var todayKey = isoDate(new Date());
+      var hasDraftToday = false;
+      var dayCardsHtml = '';
+      for(var i = 0; i < 7; i++){
+        var d = new Date(); d.setDate(d.getDate() + i);
+        var key = isoDate(d);
+        var dayEntries = week[key] || [];
+        var providerEntries = dayEntries.filter(function(x){ return x.providerId === providerId(); });
+        var liveOffers = offers.filter(function(o){ return o.providerId === providerId() && o.day === key; });
+        var isLive = liveOffers.length > 0;
+        if(key === todayKey && !isLive && providerEntries.length > 0) hasDraftToday = true;
+        var label = weekDayShortLabel(d, i);
+        var badge = isLive ? '<span class="week-overview-badge online">ONLINE</span>' : (providerEntries.length ? '<span class="week-overview-badge draft">ENTWURF</span>' : '');
+        var names = [];
+        if(isLive){ liveOffers.forEach(function(o){ var cb = cookbook.find(function(c){ return String(c.id) === String(o.cookbookId); }); names.push(cb && cb.dish ? esc(cb.dish) : (o.dish || 'Gericht')); }); }
+        else { providerEntries.forEach(function(e){ var cb = cookbook.find(function(c){ return String(c.id) === String(e.cookbookId); }); names.push(cb && cb.dish ? esc(cb.dish) : (e.dish || 'Gericht')); }); }
+        var dishesHtml = names.length ? names.join(' · ') : '<span class="empty">Noch nichts geplant</span>';
+        dayCardsHtml += '<div class="week-overview-day"><div class="week-overview-day-label">' + label + ' ' + badge + '</div><div class="week-overview-dishes' + (names.length ? '' : ' empty') + '">' + dishesHtml + '</div></div>';
+      }
+      list.innerHTML = '<div class="week-overview-scroll">' + dayCardsHtml + '</div>';
+      list.classList.add('week-overview-list');
+      if(thumbZone){
+        thumbZone.innerHTML = '<div class="week-overview-cta-wrap"><button type="button" class="week-edit-primary" id="weekOverviewEditBtn"><i data-lucide="pencil" style="width:22px;height:22px;"></i> Plan bearbeiten</button></div><div class="week-actions-bar" id="weekOverviewActions" style="display:flex; align-items:center; gap:10px; margin-top:12px; flex-wrap:nowrap;"><button class="btn secondary" type="button" id="weekOverviewActivate" style="' + (hasDraftToday ? '' : 'display:none;') + ' flex:0 0 auto; min-height:48px; padding:0 16px; border-radius:14px; font-size:14px; font-weight:700;" onclick="activateWeekDay(isoDate(new Date())); renderWeekPlan();">Live</button><button class="btn secondary" type="button" id="weekOverviewPdf" style="flex:1; min-height:48px; border-radius:14px; font-size:14px; font-weight:700;"><i data-lucide="printer" style="width:18px;height:18px;margin-right:6px;"></i>Drucken</button><button class="btn secondary" type="button" id="weekOverviewShare" style="flex:1; min-height:48px; border-radius:14px; font-size:14px; font-weight:700;"><i data-lucide="share-2" style="width:18px;height:18px;margin-right:6px;"></i>Teilen</button></div>';
+        var editBtn = document.getElementById('weekOverviewEditBtn');
+        if(editBtn) editBtn.onclick = function(){ weekPlanMode = 'edit'; renderWeekPlan(); };
+        var pdfBtn = document.getElementById('weekOverviewPdf');
+        if(pdfBtn) pdfBtn.onclick = function(){ if(typeof printWeekCard === 'function') printWeekCard(); };
+        var shareBtn = document.getElementById('weekOverviewShare');
+        if(shareBtn) shareBtn.onclick = function(){ if(typeof shareWeekPlan === 'function') shareWeekPlan(); };
+      }
+      if(typeof lucide !== 'undefined') lucide.createIcons();
+      return;
+    }
+
+    weekPlanMode = weekPlanMode || 'edit';
+    if(headerTitle) headerTitle.textContent = 'Wochenplan';
+    if(headerSubtitle) headerSubtitle.textContent = 'Deine Woche · Gerichte planen';
+    if(headerDoneBtn){ headerDoneBtn.style.display = 'block'; headerDoneBtn.onclick = function(){ weekPlanMode = 'overview'; renderWeekPlan(); }; }
+    dayWrap.style.display = '';
+    list.classList.remove('week-overview-list');
+    if(thumbZone) thumbZone.innerHTML = '<div class="week-activate-block" id="weekActivateBlock" style="display:none;"><button type="button" class="week-activate-btn" id="btnWeekActivateThumb">Jetzt für 4,99 € aktivieren</button></div><div class="week-actions-bar" id="weekActionsBar" style="display:none; margin-top:12px;"><button class="btn secondary" type="button" id="btnWeekRefreshZone" style="flex:0 0 auto; min-height:52px; min-width:52px; padding:0; border-radius:14px;" aria-label="Aktualisieren"><i data-lucide="refresh-cw" style="width:22px;height:22px;"></i></button><button class="btn secondary" type="button" id="btnWeekPdf" style="flex:1; min-height:52px; border-radius:14px; font-size:15px; font-weight:700;"><i data-lucide="printer" style="width:20px;height:20px;margin-right:8px;"></i>Drucken</button><button class="btn secondary" type="button" id="btnWeekShare" style="flex:1; min-height:52px; border-radius:14px; font-size:15px; font-weight:700;"><i data-lucide="share-2" style="width:20px;height:20px;margin-right:8px;"></i>Teilen</button></div>';
+    actionsBar = document.getElementById('weekActionsBar');
+    activateBlock = document.getElementById('weekActivateBlock');
+    var btnRefresh = document.getElementById('btnWeekRefreshZone');
+    if(btnRefresh) btnRefresh.onclick = function(){ renderWeekPlan(); if(typeof showToast === 'function') showToast('Aktualisiert'); };
+    var btnPdf = document.getElementById('btnWeekPdf');
+    if(btnPdf) btnPdf.onclick = function(){ if(typeof printWeekCard === 'function') printWeekCard(); };
+    var btnShare = document.getElementById('btnWeekShare');
+    if(btnShare) btnShare.onclick = function(){ if(typeof shareWeekPlan === 'function') shareWeekPlan(); };
 
     dayWrap.innerHTML = '';
     for(let i = 0; i < 7; i++){
