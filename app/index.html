@@ -3418,14 +3418,18 @@
       background:transparent;
       position:relative;
     }
-    /* Back Navigation */
+    /* Back Navigation – einheitlich: Icon + „Zurück“ */
+    .btn-back{
+      display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    }
+    .btn-back i{ width:18px; height:18px; flex-shrink:0; }
     .back-button{
       position:absolute; top:12px; left:12px;
-      width:40px; height:40px;
+      min-width:40px; height:40px;
       border-radius:50%; border:none;
       background:rgba(255,255,255,.9);
       backdrop-filter:blur(10px);
-      display:flex; align-items:center; justify-content:center;
+      display:flex; align-items:center; justify-content:center; gap:8px;
       cursor:pointer; z-index:10;
       box-shadow:0 2px 8px rgba(0,0,0,.1);
     }
@@ -4166,7 +4170,7 @@
       <div style="max-width:900px; margin:0 auto;">
         <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:24px;">
           <h1 style="margin:0; font-size:24px; font-weight:900; color:#1a1a1a;">Admin</h1>
-          <a href="#" onclick="location.hash=''; showDiscover(); return false;" style="font-size:14px; font-weight:700; color:#64748b; text-decoration:none;">← Zurück</a>
+          <a href="#" onclick="location.hash=''; showDiscover(); return false;" style="display:inline-flex; align-items:center; gap:6px; font-size:14px; font-weight:700; color:#64748b; text-decoration:none;"><i data-lucide="chevron-left" style="width:18px;height:18px;"></i> Zurück</a>
         </div>
         <!-- KPI-Sektion -->
         <div id="adminKpis" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:16px; margin-bottom:24px;">
@@ -4275,14 +4279,32 @@
       </div>
     </section>
 
-    <!-- CUSTOMER: Orders -->
+    <!-- CUSTOMER: Orders (Applike: Sticky Header + Karten wie v-fav/v-cart) -->
     <section class="view customer-view" id="v-orders">
-      <div class="panel">
-        <h3>Aktive Abholnummern</h3>
-        <div class="hint">Deine aktiven Abholnummern</div>
-        <div class="answers" id="ordersFilters" style="margin-top:12px;"></div>
-        <div style="height:10px"></div>
-        <div id="ordersList" class="hint">Deine Abholbox ist noch leer. Sichere dir jetzt dein Mittagessen!</div>
+      <header class="cust-header-sticky">
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px;">
+          <div>
+            <h1 style="font-size:20px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a; margin:0;">Aktive Abholnummern</h1>
+            <p style="font-size:13px; font-weight:600; color:#64748b; margin:4px 0 0;">Deine Bestellungen im Überblick</p>
+          </div>
+        </div>
+      </header>
+
+      <div style="padding:16px; padding-bottom:120px;">
+        <div class="cust-chip-bar" id="ordersFilters" style="margin-bottom:20px; padding:0 0 12px 0;"></div>
+        <!-- Empty State (sichtbar nur wenn keine Bestellungen) -->
+        <div id="ordersEmptyState" style="display:flex; flex-direction:column; align-items:center; text-align:center; padding:48px 20px; background:#f8f9fa; border-radius:24px; border:2px dashed #e2e8f0;">
+          <div style="width:80px; height:80px; margin-bottom:20px; background:rgba(255,215,0,0.12); border-radius:24px; display:flex; align-items:center; justify-content:center;">
+            <i data-lucide="receipt" style="width:36px; height:36px; color:#1a1a1a;"></i>
+          </div>
+          <p style="font-size:16px; font-weight:700; color:#1a1a1a; margin:0 0 8px;">Noch keine Bestellungen</p>
+          <p style="font-size:14px; color:#64748b; line-height:1.5; margin:0 0 24px;">Sichere dir dein Mittagessen in der Mittagsbox.</p>
+          <button class="btn-cust-primary" type="button" onclick="showView('v-cart');" style="max-width:260px;">
+            <i data-lucide="shopping-bag" style="width:18px;height:18px;"></i>
+            <span>Zur Mittagsbox</span>
+          </button>
+        </div>
+        <div id="ordersList" style="display:none;"></div>
       </div>
     </section>
 
@@ -4305,7 +4327,7 @@
         
         <!-- Warenkorb Items -->
         <div class="cust-card" style="padding:20px;">
-          <div id="cartBox" class="hint" style="text-align:center; padding:40px 0;">Deine Box ist noch leer. Such dir was Leckeres aus.</div>
+          <div id="cartBox" class="hint" style="text-align:center; padding:40px 0;">Deine Mittagsbox ist noch leer. Such dir was Leckeres aus.</div>
           
           <!-- Verzehrart -->
           <div id="cartVerzehrart" style="margin-top:20px; padding-top:20px; border-top:1px solid #f1f3f5; display:none;">
@@ -4335,8 +4357,8 @@
       <div style="padding:16px; padding-bottom:calc(90px + env(safe-area-inset-bottom, 0px)); max-width:600px; margin:0 auto;">
         <div class="panel" style="padding:20px; border-radius:24px; box-shadow:0 4px 16px rgba(0,0,0,.08); background:rgba(255,255,255,0.95); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);">
           <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
-            <button class="back-button" type="button" id="btnCheckoutBack" aria-label="Zurück" style="background:none; border:none; padding:8px; cursor:pointer;">
-              <i data-lucide="arrow-left"></i>
+            <button class="back-button btn-back" type="button" id="btnCheckoutBack" aria-label="Zurück" style="background:none; border:none; padding:8px; cursor:pointer; font-size:16px; font-weight:700; color:#2D3436;">
+              <i data-lucide="chevron-left" style="width:22px;height:22px;"></i> Zurück
             </button>
             <h3 style="margin:0; flex:1; font-weight:900; font-size:24px; color:#2D3436;">Zahlung</h3>
           </div>
@@ -4350,7 +4372,7 @@
           <div id="checkoutVerzehrart" style="margin-bottom:24px;">
             <label style="display:block; font-weight:700; font-size:15px; margin-bottom:12px; color:#2D3436;">Wo möchtest du essen?</label>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-              <button type="button" id="checkoutBtnVorOrt" class="verzehrmodus-checkout-btn" data-mode="vor_ort" style="padding:14px 16px; border-radius:14px; border:2px solid #e7e1d5; background:#fff; color:#666; font-weight:600; font-size:15px; cursor:pointer; transition:all 0.2s ease;">🍴 Vor Ort essen</button>
+              <button type="button" id="checkoutBtnVorOrt" class="verzehrmodus-checkout-btn" data-mode="vor_ort" style="padding:14px 16px; border-radius:14px; border:2px solid #e7e1d5; background:#fff; color:#666; font-weight:600; font-size:15px; cursor:pointer; transition:all 0.2s ease;">🍴 Vor Ort</button>
               <button type="button" id="checkoutBtnMitnehmen" class="verzehrmodus-checkout-btn" data-mode="mitnehmen" style="padding:14px 16px; border-radius:14px; border:2px solid #e7e1d5; background:#fff; color:#666; font-weight:600; font-size:15px; cursor:pointer; transition:all 0.2s ease;">🔄 Mitnehmen</button>
             </div>
           </div>
@@ -4433,7 +4455,7 @@
         </div>
         <div id="orderSuccessSummary" style="display:flex; flex-direction:column; gap:12px; margin-bottom:24px;">
           <div id="orderSuccessZeit" style="display:flex; align-items:center; gap:10px; padding:12px 16px; background:#f8f9fa; border-radius:12px; font-size:15px; font-weight:600; color:#334155;"><span style="font-size:20px;">🕒</span> Abholung um 12:15 Uhr</div>
-          <div id="orderSuccessModus" style="display:flex; align-items:center; gap:10px; padding:12px 16px; background:#f8f9fa; border-radius:12px; font-size:15px; font-weight:600; color:#334155;"><span style="font-size:20px;">🍴</span> Vor Ort essen</div>
+          <div id="orderSuccessModus" style="display:flex; align-items:center; gap:10px; padding:12px 16px; background:#f8f9fa; border-radius:12px; font-size:15px; font-weight:600; color:#334155;"><span style="font-size:20px;">🍴</span> Vor Ort</div>
           <div id="orderSuccessVerpackung" style="display:none; align-items:center; gap:10px; padding:12px 16px; background:#f8f9fa; border-radius:12px; font-size:15px; font-weight:600; color:#334155;"><span style="font-size:20px;">🔄</span> Mehrweg-System</div>
         </div>
         <p class="hint" style="text-align:center; font-size:13px; color:#94a3b8; margin:0 0 16px;">Der Anbieter wurde informiert und bereitet deine Bestellung vor.</p>
@@ -4654,8 +4676,11 @@
         <div style="height:10px"></div>
         <input class="field" id="provPass" type="password" placeholder="Passwort" autocomplete="current-password" />
         <button class="btn" type="button" id="btnProvLogin" style="margin-top:16px; background:#6b7280; color:#fff; border:none; transition:all 0.2s ease;" onmouseover="this.style.background='#4b5563';" onmouseout="this.style.background='#6b7280';">Einloggen</button>
-        <button class="btn secondary" type="button" id="btnProvBack" style="margin-top:8px;">Zurück</button>
-        <p class="hint" style="margin-top:12px;">Demo: beliebige E-Mail/Passwort -> du bist drin. (Später: Firebase Auth.)</p>
+        <button class="btn secondary btn-back" type="button" id="btnProvBack" style="margin-top:8px;"><i data-lucide="chevron-left" style="width:18px;height:18px;"></i> Zurück</button>
+        <details class="hint" style="margin-top:16px; padding:12px; background:rgba(0,0,0,0.04); border-radius:12px; font-size:13px;">
+          <summary style="cursor:pointer; font-weight:600; color:#64748b;">Hilfe? Demo-Zugang</summary>
+          <p style="margin:8px 0 0; color:#64748b; line-height:1.5;">Zum Testen: Beliebige E-Mail und Passwort eingeben → Einloggen. (Später: Anmeldung per Firebase.)</p>
+        </details>
       </div>
     </section>
 
@@ -4665,8 +4690,8 @@
       <div class="panel onboarding-step" data-step="1">
         <div class="onboarding-header">
           <div class="onboarding-progress">Schritt 1 von 5</div>
-          <button class="btn ghost" type="button" id="btnOnboardingBack" style="width:auto; padding:8px 12px; margin-top:8px;">
-            ← Zurück
+          <button class="btn ghost btn-back" type="button" id="btnOnboardingBack" style="width:auto; padding:8px 12px; margin-top:8px;">
+            <i data-lucide="chevron-left" style="width:18px;height:18px;"></i> Zurück
           </button>
         </div>
         <h3 style="margin-top:16px;">Wie heißt dein Betrieb?</h3>
@@ -4679,8 +4704,8 @@
       <div class="panel onboarding-step" data-step="2" style="display:none;">
         <div class="onboarding-header">
           <div class="onboarding-progress">Schritt 2 von 5</div>
-          <button class="btn ghost" type="button" id="btnOnboardingStep2Back" style="width:auto; padding:8px 12px; margin-top:8px;">
-            ← Zurück
+          <button class="btn ghost btn-back" type="button" id="btnOnboardingStep2Back" style="width:auto; padding:8px 12px; margin-top:8px;">
+            <i data-lucide="chevron-left" style="width:18px;height:18px;"></i> Zurück
           </button>
         </div>
         <h3 style="margin-top:16px;">Adresse deines Betriebs</h3>
@@ -4698,8 +4723,8 @@
       <div class="panel onboarding-step" data-step="3" style="display:none;">
         <div class="onboarding-header">
           <div class="onboarding-progress">Schritt 3 von 5</div>
-          <button class="btn ghost" type="button" id="btnOnboardingStep3Back" style="width:auto; padding:8px 12px; margin-top:8px;">
-            ← Zurück
+          <button class="btn ghost btn-back" type="button" id="btnOnboardingStep3Back" style="width:auto; padding:8px 12px; margin-top:8px;">
+            <i data-lucide="chevron-left" style="width:18px;height:18px;"></i> Zurück
           </button>
         </div>
         <h3 style="margin-top:16px;">Wann können Gäste dein Essen genießen?</h3>
@@ -4734,8 +4759,8 @@
       <div class="panel onboarding-step" data-step="4" style="display:none;">
         <div class="onboarding-header">
           <div class="onboarding-progress">Schritt 4 von 5</div>
-          <button class="btn ghost" type="button" id="btnOnboardingStep4Back" style="width:auto; padding:8px 12px; margin-top:8px;">
-            ← Zurück
+          <button class="btn ghost btn-back" type="button" id="btnOnboardingStep4Back" style="width:auto; padding:8px 12px; margin-top:8px;">
+            <i data-lucide="chevron-left" style="width:18px;height:18px;"></i> Zurück
           </button>
         </div>
         <h3 style="margin-top:16px;">Logo hochladen</h3>
@@ -4891,7 +4916,7 @@
       </div>
 
       <div class="onboarding-actions">
-        <button class="secondary" type="button" id="btnOnboardingFirstDishBack">Zurück</button>
+        <button class="secondary btn-back" type="button" id="btnOnboardingFirstDishBack"><i data-lucide="chevron-left" style="width:18px;height:18px;"></i> Zurück</button>
         <button class="btn-primary" type="button" id="btnOnboardingFirstDishNext">Weiter</button>
       </div>
     </section>
@@ -4945,7 +4970,7 @@
       </div>
 
       <div class="onboarding-actions">
-        <button class="secondary" type="button" id="btnOnboardingBusinessBack">Zurück</button>
+        <button class="secondary btn-back" type="button" id="btnOnboardingBusinessBack"><i data-lucide="chevron-left" style="width:18px;height:18px;"></i> Zurück</button>
         <button class="btn-primary" type="button" id="btnOnboardingBusinessNext">Weiter</button>
       </div>
     </section>
@@ -5499,7 +5524,7 @@
         <div style="margin-top:24px; padding-top:16px; border-top:1px solid #eee; text-align:center; font-size:13px; color:#94a3b8;">
           mittagio • made with ❤️ in Rudersberg
         </div>
-        <button class="btn ghost" type="button" onclick="goBackFromLegalPage()" style="margin-top:20px; width:100%;">Zurück</button>
+        <button class="btn ghost btn-back" type="button" onclick="goBackFromLegalPage()" style="margin-top:20px; width:100%;"><i data-lucide="chevron-left" style="width:18px;height:18px;"></i> Zurück</button>
       </div>
     </section>
 
@@ -5521,7 +5546,7 @@
         <div style="margin-top:24px; padding-top:16px; border-top:1px solid rgba(0,0,0,0.08); text-align:center; font-size:13px; color:#64748b;">
           made with ❤️ by mittagio.de
         </div>
-        <button class="btn ghost" type="button" onclick="goBackFromLegalPage()" style="margin-top:20px; width:100%;">Zurück</button>
+        <button class="btn ghost btn-back" type="button" onclick="goBackFromLegalPage()" style="margin-top:20px; width:100%;"><i data-lucide="chevron-left" style="width:18px;height:18px;"></i> Zurück</button>
       </div>
     </section>
 
@@ -5551,7 +5576,7 @@
         <div style="margin-top:24px; padding-top:16px; border-top:1px solid #eee; text-align:center; font-size:13px; color:#94a3b8;">
           mittagio • made with ❤️ in Rudersberg
         </div>
-        <button class="btn ghost" type="button" onclick="goBackFromLegalPage()" style="margin-top:20px; width:100%;">Zurück</button>
+        <button class="btn ghost btn-back" type="button" onclick="goBackFromLegalPage()" style="margin-top:20px; width:100%;"><i data-lucide="chevron-left" style="width:18px;height:18px;"></i> Zurück</button>
       </div>
     </section>
 
@@ -5709,7 +5734,7 @@
         <div style="margin-top:32px; padding:20px; border-top:1px solid #eee; text-align:center; font-size:14px; color:#666; background:#f9f9f9;">
           Weitere Fragen? Nutze den Button „Weitere Fragen &amp; Hilfe“ in deinem Profil (Meins).
         </div>
-        <button class="btn ghost" type="button" onclick="goBackFromLegalPage()" style="margin:0 20px 20px; width:calc(100% - 40px);">Zurück</button>
+        <button class="btn ghost btn-back" type="button" onclick="goBackFromLegalPage()" style="margin:0 20px 20px; width:calc(100% - 40px);"><i data-lucide="chevron-left" style="width:18px;height:18px;"></i> Zurück</button>
       </div>
     </section>
 
@@ -5757,10 +5782,10 @@
         </div>
 
         <div style="margin-top:24px; padding:20px; text-align:center; font-size:13px; color:#94a3b8;">made with ❤️ by mittagio.de</div>
-        <button class="btn ghost" type="button" onclick="goBackFromLegalPage()" style="margin:0 20px 20px; width:calc(100% - 40px);">Zurück</button>
+<button class="btn ghost btn-back" type="button" onclick="goBackFromLegalPage()" style="margin:0 20px 20px; width:calc(100% - 40px);"><i data-lucide="chevron-left" style="width:18px;height:18px;"></i> Zurück</button>
       </div>
     </section>
-    
+
     <!-- Anbieter-FAQ: einheitlich helles Layout -->
     <section class="view" id="v-legal-faq-provider" style="min-height:100vh; padding:20px; padding-bottom:90px;">
       <div class="panel" style="padding:20px; border-radius:16px; box-shadow:0 2px 12px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.06);">
@@ -5786,7 +5811,7 @@
         <div style="margin-top:32px; padding-top:20px; border-top:1px solid rgba(0,0,0,0.08); text-align:center; font-size:14px; color:#64748b;">
           Weitere Fragen? <a href="mailto:support@mittagio.de" style="color:#0A84FF;">support@mittagio.de</a>
         </div>
-        <button class="btn ghost" type="button" onclick="goBackFromLegalPage()" style="margin-top:20px; width:100%;">Zurück</button>
+        <button class="btn ghost btn-back" type="button" onclick="goBackFromLegalPage()" style="margin-top:20px; width:100%;"><i data-lucide="chevron-left" style="width:18px;height:18px;"></i> Zurück</button>
       </div>
     </section>
 
@@ -5826,7 +5851,7 @@
         <div style="margin-top:32px; padding-top:20px; border-top:1px solid #eee; text-align:center; font-size:14px; color:#666;">
           Kunden-Hilfe: <a href="mailto:info@mittagio.de" style="color:var(--brand);">info@mittagio.de</a> | Business: <a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a>
         </div>
-        <button class="btn ghost" type="button" onclick="goBackFromLegalPage()" style="margin-top:20px; width:100%;">Zurück</button>
+        <button class="btn ghost btn-back" type="button" onclick="goBackFromLegalPage()" style="margin-top:20px; width:100%;"><i data-lucide="chevron-left" style="width:18px;height:18px;"></i> Zurück</button>
       </div>
     </section>
 
@@ -5858,7 +5883,7 @@
         <div style="margin-top:32px; padding-top:20px; border-top:1px solid rgba(0,0,0,0.08); text-align:center; font-size:14px; color:#64748b;">
           <a href="mailto:support@mittagio.de" style="color:#0A84FF;">support@mittagio.de</a> · Business-Bereich
         </div>
-        <button class="btn ghost" type="button" onclick="goBackFromLegalPage()" style="margin-top:20px; width:100%;">Zurück</button>
+        <button class="btn ghost btn-back" type="button" onclick="goBackFromLegalPage()" style="margin-top:20px; width:100%;"><i data-lucide="chevron-left" style="width:18px;height:18px;"></i> Zurück</button>
       </div>
     </section>
 
@@ -5868,7 +5893,7 @@
         <h1 style="font-size:24px; font-weight:900; margin-bottom:20px;">Version</h1>
         <p style="font-size:16px; color:#555; margin-bottom:16px;">Aktuelle App-Version: <strong>v1.0.0</strong></p>
         <p style="font-size:14px; color:#666; line-height:1.6;">Changelog und technische Details findest du hier. Bei Fragen: <a href="mailto:info@mittagio.de" style="color:var(--brand);">info@mittagio.de</a></p>
-        <button class="btn ghost" type="button" onclick="history.back();" style="margin-top:24px; width:100%;">Zurück</button>
+        <button class="btn ghost btn-back" type="button" onclick="history.back();" style="margin-top:24px; width:100%;"><i data-lucide="chevron-left" style="width:18px;height:18px;"></i> Zurück</button>
       </div>
     </section>
 
@@ -5971,7 +5996,7 @@
     <!-- PROVIDER bottom nav: fixer Zurück-Button darüber, heller Tab-Bar (App-Style) -->
   <div id="providerNavWrap" style="display:none; position:fixed; bottom:0; left:0; right:0; z-index:999; padding:0 env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0);">
     <div id="providerNavBackRow" style="padding:0 20px 16px; display:none;">
-      <button type="button" id="btnProviderNavBack" aria-label="Zurück" style="background:rgba(255,255,255,0.9); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:1px solid rgba(0,0,0,0.08); color:#1a1a1a; padding:10px 24px; border-radius:999px; font-size:15px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:8px; box-shadow:0 2px 8px rgba(0,0,0,0.06);">← Zurück</button>
+      <button type="button" id="btnProviderNavBack" class="btn-back" aria-label="Zurück" style="background:rgba(255,255,255,0.9); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:1px solid rgba(0,0,0,0.08); color:#1a1a1a; padding:10px 24px; border-radius:999px; font-size:15px; font-weight:700; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.06);"><i data-lucide="chevron-left" style="width:20px;height:20px;"></i> Zurück</button>
     </div>
     <nav class="bottom provider-nav-light" id="providerNav" style="background:rgba(255,255,255,0.95); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border-top:1px solid rgba(0,0,0,0.06); padding:16px 24px calc(16px + env(safe-area-inset-bottom, 0)); display:flex; justify-content:space-between; align-items:center;">
       <button class="navbtn active" data-pgo="provider-home"><div class="ico" data-icon="home" data-icon-only="1"></div><div>Küche</div></button>
@@ -6413,9 +6438,10 @@
         Abbrechen
       </button>
     </div>
-    <div class="hint" style="margin-top:20px; padding:12px; background:rgba(255,204,0,0.08); border-radius:12px; font-size:12px; color:#666; line-height:1.5; text-align:center;">
-      Demo: Beliebige E-Mail/Passwort → du bist drin.<br><strong>Demo-Anbieter Metzer Müller:</strong> demo@mittagio.de
-    </div>
+    <details class="hint" style="margin-top:20px; padding:12px; background:rgba(0,0,0,0.04); border-radius:12px; font-size:12px; color:#64748b;">
+      <summary style="cursor:pointer; font-weight:600;">Hilfe? Demo-Zugang</summary>
+      <p style="margin:8px 0 0; line-height:1.5;">Beliebige E-Mail/Passwort → Einloggen. Demo-Anbieter: <strong>demo@mittagio.de</strong></p>
+    </details>
   </div>
 </div>
 
@@ -6504,7 +6530,7 @@
         <div class="wizard-footer" id="wizardFooter" style="display:none;"></div>
       </div>
       <div class="w-actions">
-        <button class="btn secondary" type="button" id="wBack">Zurück</button>
+        <button class="btn secondary btn-back" type="button" id="wBack"><i data-lucide="chevron-left" style="width:18px;height:18px;"></i> Zurück</button>
         <button class="btn" type="button" id="wNext">Weiter</button>
       </div>
     </div>
@@ -11827,6 +11853,7 @@
     orders = loadOrders();
     
     const box = document.getElementById('ordersList');
+    const emptyEl = document.getElementById('ordersEmptyState');
     const filters = document.getElementById('ordersFilters');
     if(!box) return;
     if(filters){
@@ -11838,14 +11865,16 @@
       ].forEach(f=>{
         const b=document.createElement('button');
         b.type='button';
-        b.className='ans'+(ordersFilter===f.id?' on':'');
+        b.className='cust-chip'+(ordersFilter===f.id?' active':'');
         b.textContent=f.label;
         b.onclick=()=>{ ordersFilter=f.id; renderOrders(); };
         filters.appendChild(b);
       });
     }
     if(!orders.length){
-      box.textContent = 'Noch keine Bestellungen.';
+      if(emptyEl) emptyEl.style.display='flex';
+      box.style.display='none';
+      box.innerHTML='';
       return;
     }
     const fmt = (ts)=>{
@@ -11880,9 +11909,20 @@
       return (b.createdAt||0) - (a.createdAt||0);
     });
     if(!list.length){
+      if(emptyEl) emptyEl.style.display='none';
+      box.style.display='block';
+      box.innerHTML='';
       box.textContent = 'Keine passenden Bestellungen.';
+      box.className = 'hint';
+      box.style.padding = '24px';
+      box.style.textAlign = 'center';
       return;
     }
+    if(emptyEl) emptyEl.style.display='none';
+    box.style.display='block';
+    box.className = '';
+    box.style.padding = '';
+    box.style.textAlign = '';
     box.innerHTML = list.map(o=>{
       // Status-Anzeige
       const status = o.status || 'offen';
@@ -13519,7 +13559,7 @@
           <div style="width:120px; height:120px; margin:0 auto 24px; background:linear-gradient(135deg, #f8f9fa 0%, #f1f3f5 100%); border-radius:40px; display:flex; align-items:center; justify-content:center; box-shadow:0 8px 24px rgba(0,0,0,0.04);">
             <i data-lucide="shopping-basket" style="width:48px;height:48px;color:#cbd5e1;"></i>
           </div>
-          <h3 style="font-size:22px; font-weight:850; margin-bottom:12px; color:#1a1a1a; letter-spacing:-0.02em;">Deine Box hat Hunger.</h3>
+          <h3 style="font-size:22px; font-weight:850; margin-bottom:12px; color:#1a1a1a; letter-spacing:-0.02em;">Deine Mittagsbox hat Hunger.</h3>
           <p style="font-size:15px; color:#64748b; margin-bottom:32px; line-height:1.6; max-width:280px; margin-left:auto; margin-right:auto;">Such dir was Leckeres aus – in wenigen Klicks ist die Abholnummer sicher.</p>
           <button class="btn-cust-primary" type="button" onclick="showDiscover();" style="width:100%; max-width:260px; margin:0 auto;">
             <i data-lucide="compass" style="width:20px;height:20px;"></i> <span>Entdecken</span>
@@ -14346,7 +14386,7 @@
     if(zeitEl) zeitEl.innerHTML = '<span style="font-size:20px;">🕒</span> Abholung um ' + (zeit.indexOf('Uhr') >= 0 ? zeit : zeit + ' Uhr');
     if(modusEl){
       if(modus === 'vor_ort'){
-        modusEl.innerHTML = '<span style="font-size:20px;">🍴</span> Vor Ort essen';
+        modusEl.innerHTML = '<span style="font-size:20px;">🍴</span> Vor Ort';
       } else {
         modusEl.innerHTML = '<span style="font-size:20px;">🔄</span> Mitnehmen';
       }
@@ -19935,7 +19975,7 @@
           rebuildWizard();
         };
       }
-      if(wBackBtn) wBackBtn.textContent='Zurück';
+      if(wBackBtn){ wBackBtn.innerHTML='<i data-lucide="chevron-left" style="width:18px;height:18px;"></i> Zurück'; if(typeof lucide!=='undefined'&&lucide.createIcons) lucide.createIcons(); }
       return;
     }
 
