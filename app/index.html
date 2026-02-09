@@ -7626,20 +7626,11 @@
     save(LS.offers, offers);
   }
 
-  // --- Beispieldaten: 10 Anbieter in Jena, je 3 Gerichte – erscheinen in Kundenansicht (Discovery/Swipe) ---
+  // --- Beispieldaten: Nur Metzgerei Fritz (Schorndorf-Weiler). Thomas Kurz kommt aus seedDemoProvider(). ---
   function seedExampleData(){
     const today = isoDate(new Date());
     const providerNames = [
-      {id: 'p_01', name: 'Pizzeria Bella Vista', address: 'Kollégienstraße 12, 07743 Jena', street: 'Kollégienstraße 12', zip: '07743', city: 'Jena', distanceKm: 0.4},
-      {id: 'p_02', name: 'Asia Wok Express', address: 'Neugasse 8, 07743 Jena', street: 'Neugasse 8', zip: '07743', city: 'Jena', distanceKm: 0.6},
-      {id: 'p_03', name: 'Burger House', address: 'Johannisplatz 5, 07743 Jena', street: 'Johannisplatz 5', zip: '07743', city: 'Jena', distanceKm: 0.5},
-      {id: 'p_04', name: 'Green Garden', address: 'Leutragraben 4, 07743 Jena', street: 'Leutragraben 4', zip: '07743', city: 'Jena', distanceKm: 0.3},
-      {id: 'p_05', name: 'La Trattoria', address: 'Schillerstraße 22, 07745 Jena', street: 'Schillerstraße 22', zip: '07745', city: 'Jena', distanceKm: 0.8},
-      {id: 'p_06', name: 'Sushi Bar Tokyo', address: 'Wagnergasse 15, 07743 Jena', street: 'Wagnergasse 15', zip: '07743', city: 'Jena', distanceKm: 0.5},
-      {id: 'p_07', name: 'Curry & Co', address: 'Teichgraben 6, 07743 Jena', street: 'Teichgraben 6', zip: '07743', city: 'Jena', distanceKm: 0.7},
-      {id: 'p_08', name: 'Veggie Delight', address: 'Löbdergraben 10, 07743 Jena', street: 'Löbdergraben 10', zip: '07743', city: 'Jena', distanceKm: 0.4},
-      {id: 'p_09', name: 'Steakhouse Premium', address: 'Engelplatz 2, 07743 Jena', street: 'Engelplatz 2', zip: '07743', city: 'Jena', distanceKm: 0.6},
-      {id: 'p_10', name: 'Bio Bistro', address: 'Weigelstraße 18, 07743 Jena', street: 'Weigelstraße 18', zip: '07743', city: 'Jena', distanceKm: 0.9}
+      {id: 'p_fritz', name: 'Metzgerei Fritz', address: 'Winterbacher Str. 24, 73614 Schorndorf-Weiler', street: 'Winterbacher Str. 24', zip: '73614', city: 'Schorndorf-Weiler', distanceKm: 0.5}
     ];
 
     const dishTemplates = [
@@ -7735,51 +7726,6 @@
           createdAt: Date.now() - (pIdx * 3600000) - (dIdx * 600000)
         });
       });
-    });
-
-    // Schorndorf Test-Karten (3-Balken-Vergleich): Karte A Full Service, Karte B Basic Service
-    const schorndorfAddress = 'Marktplatz 1, 73614 Schorndorf';
-    newOffers.push({
-      id: cryptoId(),
-      providerId: 'p_schorndorf_metzgerei',
-      providerName: 'Metzgerei aus Schorndorf',
-      providerStreet: 'Marktplatz 1',
-      providerZip: '73614',
-      providerCity: 'Schorndorf',
-      address: schorndorfAddress,
-      dish: 'Leberkäse mit Kartoffelsalat',
-      category: 'Mit Fleisch',
-      price: 7.90,
-      pickupWindow: '11:30 – 14:00',
-      day: today,
-      imageUrl: 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=1200&q=60',
-      hasPickupCode: true,
-      dineInPossible: true,
-      distanceKm: 0.3,
-      allergens: [],
-      reuse: { enabled: true, deposit: 0 },
-      active: true
-    });
-    newOffers.push({
-      id: cryptoId(),
-      providerId: 'p_schorndorf_baecker',
-      providerName: 'Bäcker am Marktplatz',
-      providerStreet: 'Hauptstraße 10',
-      providerZip: '73614',
-      providerCity: 'Schorndorf',
-      address: 'Hauptstraße 10, 73614 Schorndorf',
-      dish: 'Belegtes Brötchen mit Salat',
-      category: 'Vegetarisch',
-      price: 5.20,
-      pickupWindow: '08:00 – 12:00',
-      day: today,
-      imageUrl: 'https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?auto=format&fit=crop&w=1200&q=60',
-      hasPickupCode: false,
-      dineInPossible: true,
-      distanceKm: 0.2,
-      allergens: [],
-      reuse: { enabled: false, deposit: 0 },
-      active: true
     });
 
     // Zuerst Offers speichern, damit assignPickupCode sie verwenden kann
@@ -19858,7 +19804,7 @@
       const box=document.createElement('div');
       const input=document.createElement('input');
       input.className='field';
-      input.placeholder='z.B. Metzgerei Müller';
+      input.placeholder='z.B. Metzgerei Kurz';
       input.value = w.data.name || '';
       input.oninput=()=>{ w.data.name=input.value; };
       box.appendChild(input);
