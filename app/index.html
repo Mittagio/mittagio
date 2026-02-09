@@ -3948,6 +3948,40 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    #v-provider-detail-public .pub-prov-back-btn:active,
+    #v-provider-detail-public .pub-prov-fav-btn:active {
+      transform: scale(0.96);
+    }
+    #v-provider-detail-public .pub-prov-hero {
+      border: 1px solid rgba(0,0,0,0.04);
+    }
+    #v-provider-detail-public .pub-prov-section-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin: 0 0 14px;
+    }
+    #v-provider-detail-public .pub-prov-empty {
+      text-align: center;
+      padding: 28px 20px;
+      font-size: 15px;
+      font-weight: 600;
+      color: #94a3b8;
+      line-height: 1.5;
+    }
+    #v-provider-detail-public .pub-prov-offer-card {
+      min-height: 56px;
+      transition: transform 0.2s ease;
+    }
+    #v-provider-detail-public .pub-prov-offer-card:active {
+      transform: scale(0.98);
+    }
+    #v-provider-detail-public .pub-prov-hero button:active {
+      transform: scale(0.98);
     }
     @media (max-width: 430px) and (min-height: 700px) {
       #v-provider-detail-public .pub-prov-header-row { padding: 16px 16px !important; }
@@ -3956,6 +3990,8 @@
       #v-provider-detail-public #pubProvName { font-size: 20px !important; }
       #v-provider-detail-public .pub-prov-hero { padding: 28px 20px !important; }
       #v-provider-detail-public .pub-prov-scroll { padding: 20px 16px calc(28px + env(safe-area-inset-bottom, 0)) !important; }
+      #v-provider-detail-public #pubProvTitle { font-size: 22px !important; }
+      #v-provider-detail-public #pubProvAddress { font-size: 14px !important; }
     }
 
     /* Discovery Card - Modernized */
@@ -4795,7 +4831,7 @@
 
           <!-- Tagesessen Sektion -->
           <div>
-            <h3 style="font-size:14px; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:0.06em; margin:0 0 14px; display:flex; align-items:center; gap:8px;">
+            <h3 class="pub-prov-section-title" style="display:flex; align-items:center; gap:8px;">
               <span>Tagesessen heute</span>
               <span style="padding:3px 10px; background:var(--brand); border-radius:8px; font-size:11px; color:#1a1a1a; font-weight:800;">LIVE</span>
             </h3>
@@ -4806,7 +4842,7 @@
 
           <!-- Wochenplan Sektion -->
           <div>
-            <h3 style="font-size:14px; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:0.06em; margin:0 0 14px;">Wochenplan</h3>
+            <h3 class="pub-prov-section-title">Wochenplan</h3>
             <div id="pubProvWeekPlan" style="display:flex; flex-direction:column; gap:12px;">
               <!-- Wochenangebote -->
             </div>
@@ -14670,7 +14706,7 @@
     const favBtn = document.getElementById('btnToggleFavProvider');
     if(favBtn){
       const isFav = providerFavs.has(pid);
-      favBtn.innerHTML = `<i data-lucide="heart" style="width:20px;height:20px;color:#E34D4D;${isFav ? 'fill:#E34D4D;' : ''}"></i>`;
+      favBtn.innerHTML = `<i data-lucide="heart" style="width:22px;height:22px;color:#E34D4D;${isFav ? 'fill:#E34D4D;' : ''}"></i>`;
       favBtn.onclick = () => {
         toggleProviderFavorite(pid);
         renderPublicProviderProfile();
@@ -14691,7 +14727,7 @@
     const todayList = document.getElementById('pubProvTodayOffers');
     if(todayList){
       if(todayOffers.length === 0){
-        todayList.innerHTML = '<div class="hint" style="text-align:center; padding:20px;">Heute keine Angebote verfügbar.</div>';
+        todayList.innerHTML = '<div class="pub-prov-empty">Heute keine Angebote verfügbar.</div>';
       } else {
         todayList.innerHTML = todayOffers.map(o => createPublicOfferRow(o)).join('');
       }
@@ -14702,7 +14738,7 @@
     if(weekList){
       const futureOffers = provOffers.filter(o => o.day > today && o.active !== false).sort((a,b) => a.day.localeCompare(b.day));
       if(futureOffers.length === 0){
-        weekList.innerHTML = '<div class="hint" style="text-align:center; padding:20px;">Keine weiteren Angebote geplant.</div>';
+        weekList.innerHTML = '<div class="pub-prov-empty">Keine weiteren Angebote geplant.</div>';
       } else {
         weekList.innerHTML = futureOffers.map(o => createPublicOfferRow(o, true)).join('');
       }
@@ -14715,16 +14751,16 @@
     const norm = normalizeOffer(o);
     const dateLabel = showDate ? `<div style="font-size:11px; font-weight:800; color:var(--brand); text-transform:uppercase; margin-bottom:4px;">${fmtDay(o.day)}</div>` : '';
     return `
-      <div class="cust-card" onclick="showDishDetail('${o.id}')" style="padding:16px; display:flex; gap:16px; align-items:center; cursor:pointer; background:#fff; border:1px solid rgba(0,0,0,0.03);">
+      <div class="cust-card pub-prov-offer-card" onclick="showDishDetail('${o.id}')" style="padding:16px; display:flex; gap:16px; align-items:center; cursor:pointer; background:#fff; border:1px solid rgba(0,0,0,0.04); border-radius:18px;">
         <div style="width:64px; height:64px; border-radius:14px; overflow:hidden; flex-shrink:0; background:#f1f3f5;">
-          <img src="${o.imageUrl || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=200&q=80'}" style="width:100%; height:100%; object-fit:cover;">
+          <img src="${o.imageUrl || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=200&q=80'}" alt="" style="width:100%; height:100%; object-fit:cover;">
         </div>
         <div style="flex:1; min-width:0;">
           ${dateLabel}
           <div style="font-weight:800; font-size:15px; color:#1a1a1a; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${esc(o.dish)}</div>
           <div style="font-size:13px; color:#64748b; font-weight:600;">${o.pickupWindow || 'Mittags'} • ${euro(o.price)}</div>
         </div>
-        <i data-lucide="chevron-right" style="width:18px;height:18px;color:#cbd5e1;"></i>
+        <i data-lucide="chevron-right" style="width:20px;height:20px;color:#cbd5e1;flex-shrink:0;"></i>
       </div>
     `;
   }
