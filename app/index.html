@@ -4208,10 +4208,11 @@
     <section class="view customer-view active" id="v-discover">
       <!-- Modern Sticky Header -->
       <header class="cust-header-sticky">
-        <div style="display:flex; align-items:center; justify-content:center; padding:12px 16px; gap:12px;">
-          <!-- Standort zentriert (Wo suchst du?) -->
-          <div style="display:flex; align-items:center; gap:8px; min-width:0;">
-            <button type="button" id="btnDiscoverLocationGPS" aria-label="Standort per GPS" style="display:flex; align-items:center; justify-content:center; width:40px; height:40px; border-radius:12px; border:none; background:#f1f3f5; color:#1a1a1a; cursor:pointer;">
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px; gap:12px;">
+          <div style="flex:1; min-width:0;"></div>
+          <!-- Standort in der Mitte -->
+          <div style="display:flex; align-items:center; gap:8px; min-width:0; justify-content:center; flex:0 1 auto;">
+            <button type="button" id="btnDiscoverLocationGPS" aria-label="Standort per GPS" style="display:flex; align-items:center; justify-content:center; width:40px; height:40px; border-radius:12px; border:none; background:#f1f3f5; color:#1a1a1a; cursor:pointer; flex-shrink:0;">
               <i data-lucide="map-pin" style="width:20px;height:20px;"></i>
             </button>
             <button type="button" id="btnDiscoverLocationText" style="display:flex; flex-direction:column; background:none; border:none; padding:0; cursor:pointer; min-width:0; text-align:center;">
@@ -4219,8 +4220,9 @@
               <span id="discoverCurrentLocation" style="font-size:15px; font-weight:700; color:#1a1a1a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Standort wählen...</span>
             </button>
           </div>
-          <!-- Logo rechts daneben (optional sichtbar) -->
-          <div style="font-family:'Montserrat',sans-serif; font-weight:900; font-size:18px; color:#1a1a1a; letter-spacing:-0.03em;">mittagio</div>
+          <div style="flex:1; display:flex; justify-content:flex-end;">
+            <span style="font-family:'Montserrat',sans-serif; font-weight:900; font-size:18px; color:#1a1a1a; letter-spacing:-0.03em;">mittagio</span>
+          </div>
         </div>
 
         <!-- Standort-Dropdown (Bleibt funktional gleich, nur Design-Update) -->
