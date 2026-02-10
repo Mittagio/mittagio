@@ -1327,15 +1327,31 @@
     #createFlowSheet.sheet--kitchen .create-flow-btns{
       display:flex; flex-direction:column; gap:12px; margin-top:20px;
     }
+    /* Express-Start: Emerald (#10b981) – Neues Gericht erstellen */
     #createFlowSheet.sheet--kitchen .btn-create-primary{
-      width:100%; min-height:52px; border-radius:14px; font-weight:800; font-size:16px; border:none;
-      background:#FFD700; color:#1a1a1a; cursor:pointer; display:flex; align-items:center; justify-content:flex-start;
+      width:100%; min-height:56px; border-radius:16px; font-weight:800; font-size:17px; border:none;
+      background:#10b981; color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center;
       padding:0 20px; gap:12px; transition:transform .15s, box-shadow .15s;
-      box-shadow:0 2px 10px rgba(255,215,0,0.3);
-      animation: fab-pulse 2s ease-in-out infinite;
+      box-shadow:0 4px 16px rgba(16,185,129,0.35);
     }
-    #createFlowSheet.sheet--kitchen .btn-create-primary .plus-char{ font-size:20px; font-weight:900; }
-    #createFlowSheet.sheet--kitchen .btn-create-primary:active{ animation:none; transform:scale(0.98); }
+    #createFlowSheet.sheet--kitchen .btn-create-primary .plus-char{ font-size:22px; font-weight:900; }
+    #createFlowSheet.sheet--kitchen .btn-create-primary:active{ transform:scale(0.98); }
+    /* Bottom Sheet: Spring-Animation beim Aufgleiten */
+    #createFlowSheet.sheet--kitchen{ transition: bottom .35s cubic-bezier(0.34, 1.56, 0.64, 1); }
+    /* Skeleton für Kochbuch-Karten (Shimmer beim Laden) */
+    .create-flow-skeleton-card{
+      background:#fff; border-radius:16px; border:1px solid #f1f3f5; overflow:hidden;
+      display:flex; flex-direction:column; min-height:140px;
+    }
+    .create-flow-skeleton-card .skeleton-img{
+      height:80px; width:100%; background:linear-gradient(95deg, #e2e8f0 0%, #f1f5f9 50%, #e2e8f0 100%);
+      background-size:200% 100%; animation: wizardShimmer 1.2s ease-in-out infinite;
+    }
+    .create-flow-skeleton-card .skeleton-text{ padding:10px; }
+    .create-flow-skeleton-card .skeleton-line{ height:12px; border-radius:6px; background:#e2e8f0; margin-bottom:8px; }
+    .create-flow-skeleton-card .skeleton-line:last-child{ width:60%; margin-bottom:0; }
+    .create-flow-cookbook-card-enter{ animation: createFlowCardFade 0.3s ease-out forwards; }
+    @keyframes createFlowCardFade{ from{ opacity:0; transform:translateY(4px); } to{ opacity:1; transform:translateY(0); } }
     #createFlowSheet.sheet--kitchen .btn-create-secondary{
       width:100%; min-height:52px; border-radius:14px; font-weight:700; font-size:15px;
       border:1px solid rgba(0,0,0,0.1); background:#fff; color:#1a1a1a;
@@ -1678,6 +1694,32 @@
     #wizard.sheet--kitchen .listing-cost-block.listing-cost-green div{ color:#2e7d32; }
     #wizard.sheet--kitchen .listing-datum-summary .listing-datum-day{ color:#1a1a1a; font-weight:800; }
     #wizard.sheet--kitchen .listing-datum-summary .hint{ color:#64748b; }
+
+    /* Inseratflow: Thumb-Zone – Sticky Bottom (JETZT INSERIEREN + Umsatz kleben unten) */
+    .listing-sticky-footer{
+      position:sticky; bottom:0; left:0; right:0;
+      margin:16px -20px 0; padding:14px 20px 20px;
+      padding-bottom:calc(20px + env(safe-area-inset-bottom, 0));
+      background:linear-gradient(to top, #fff 70%, rgba(255,255,255,0.97));
+      box-shadow:0 -4px 20px rgba(0,0,0,0.04);
+      border-radius:20px 20px 0 0;
+    }
+    /* Umsatz-Card: Spring/Bounce beim Einblenden (Preis eingegeben) */
+    .revenue-card-enter{
+      animation: revenueCardBounce 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+    @keyframes revenueCardBounce{
+      0%{ opacity:0; transform:translateY(12px); }
+      60%{ opacity:1; transform:translateY(-2px); }
+      100%{ opacity:1; transform:translateY(0); }
+    }
+    /* Bild-Platzhalter: Shimmer/Skeleton während Laden */
+    .wizard-img-skeleton::after{
+      content:''; position:absolute; inset:0;
+      background:linear-gradient(95deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%);
+      background-size:200% 100%; animation:wizardShimmer 1.2s ease-in-out infinite;
+    }
+    @keyframes wizardShimmer{ 0%{ background-position:200% 0; } 100%{ background-position:-200% 0; } }
 
     /* Inseratflow: S25, blind-tap, <15s – app-like, große Touch-Ziele, intuitiv */
     #wizard[data-flow="listing"].sheet--kitchen .wizard-scroll{
@@ -6310,13 +6352,24 @@
 <div class="sheet" id="inseratSuccessSheet" style="max-width:480px; border-radius:32px; background:#f8f7f2; z-index:1201; display:flex; flex-direction:column; max-height:92vh;">
   <div id="confettiContainer" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; overflow:hidden;"></div>
   
-  <div class="sheet-body" style="padding:32px 24px 100px; text-align:center; overflow-y:auto; flex:1; min-height:0; -webkit-overflow-scrolling:touch;">
+  <div class="sheet-body" style="padding:0 24px 100px; text-align:center; overflow-y:auto; flex:1; min-height:0; -webkit-overflow-scrolling:touch;">
     
+    <!-- Emotional: Kunde zeigt Abholnummer an der Theke (Fullscreen-Feeling) -->
+    <div id="inseratSuccessHero" style="margin:0 -24px 20px; border-radius:0 0 28px 28px; overflow:hidden; background:linear-gradient(180deg, #dcfce7 0%, #f0fdf4 100%); position:relative;">
+      <div style="width:100%; aspect-ratio:4/3; max-height:220px; overflow:hidden;">
+        <img id="inseratSuccessHeroImg" src="assets/success-hero-abholnummer.png" alt="Kunde zeigt an der Theke die App mit der Abholnummer" style="width:100%; height:100%; object-fit:cover; display:block;">
+      </div>
+      <div style="position:absolute; bottom:0; left:0; right:0; padding:16px 20px 20px; background:linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 100%); color:#fff; text-align:left;">
+        <div style="font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:0.08em; opacity:0.95; margin-bottom:4px;">So sieht’s aus bei dir</div>
+        <div style="font-size:15px; font-weight:800;">Dein Gast zeigt die Abholnummer – du übergibst das Gericht. Fertig.</div>
+      </div>
+    </div>
+
     <!-- 1. Celebration Header -->
     <div style="margin-bottom:24px;">
-      <div style="width:80px; height:80px; background:#dcfce7; color:#16a34a; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:40px; margin:0 auto 16px; box-shadow:0 4px 12px rgba(22,163,74,0.15);">🎉</div>
-      <h1 style="margin:0 0 8px; font-size:26px; font-weight:950; color:#1a1a1a; letter-spacing:-0.03em;">Stark! Es ist live.</h1>
-      <p style="margin:0; font-size:15px; color:#64748b; font-weight:500;">Hungrige Gäste können dein Gericht jetzt finden.</p>
+      <div style="width:64px; height:64px; background:#dcfce7; color:#16a34a; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:32px; margin:0 auto 12px; box-shadow:0 4px 12px rgba(22,163,74,0.15);">🎉</div>
+      <h1 style="margin:0 0 6px; font-size:24px; font-weight:950; color:#1a1a1a; letter-spacing:-0.03em;">Stark! Es ist live.</h1>
+      <p style="margin:0; font-size:14px; color:#64748b; font-weight:500;">Hungrige Gäste können dein Gericht jetzt finden.</p>
     </div>
 
     <!-- 2. Live Preview (Mini Card) -->
@@ -6731,9 +6784,9 @@
     </div>
 
     <div class="create-flow-btns">
-      <button class="btn-create-primary provider-add-plus-btn" type="button" id="btnCreateNewDish" style="margin-bottom:12px;">
+      <button class="btn-create-primary" type="button" id="btnCreateNewDish" style="margin-bottom:12px;">
         <span class="plus-char" style="font-size:22px; line-height:1; color:#fff;">+</span>
-        <span>Gericht erstellen</span>
+        <span>Neues Gericht erstellen</span>
       </button>
       <button class="btn ghost" type="button" id="btnCreateFromCookbook" style="width:100%; min-height:48px; border:2px solid #e5e7eb; background:#fff; border-radius:14px; font-weight:700; color:#64748b;">
         <span>📖 Zum Kochbuch wechseln</span>
@@ -7546,6 +7599,11 @@
     'Burger':'Burger',
     'Beilage':'Beilage'
   };
+  /** Platzhalter-Bild im Inserat-Wizard (1x1, hellgrau) */
+  const WIZARD_PLACEHOLDER_IMAGE = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="1" height="1"%3E%3Crect fill="%23f0f0f0" width="1" height="1"/%3E%3C/svg%3E';
+  /** Haptisches Feedback (Vibration) – nur wo erlaubt (z.B. nach Nutzerinteraktion) */
+  function haptic(ms){ try { if(navigator.vibrate) navigator.vibrate(ms || 10); } catch(e){} }
+
   /** Kategorie → Emoji (Bestellhistorie & Pills) */
   const CAT_EMOJI = {
     'Vegan':'🌱',
@@ -13237,8 +13295,9 @@
     document.getElementById('shareSheet').classList.remove('active');
   }
   
-  // Create Flow Sheet
+  // Create Flow Sheet (Express-Start: Bottom Sheet mit Kochbuch-Quick-Select)
   function openCreateFlowSheet(){
+    if(typeof haptic === 'function') haptic(10);
     const sheet = document.getElementById('createFlowSheet');
     const hint = document.getElementById('createFlowDateHint');
     const cookbookList = document.getElementById('createFlowCookbookList');
@@ -13267,31 +13326,66 @@
           searchInput.style.display = mine.length > 5 || fromWeek ? 'block' : 'none';
           searchInput.oninput = function(){ populateCreateFlowCookbookList(cookbookList, mine, fromWeek, searchInput.value.trim()); };
         }
+        function renderSkeletonCards(container, count){
+          container.innerHTML = '';
+          for(var i = 0; i < count; i++){
+            var sk = document.createElement('div');
+            sk.className = 'create-flow-skeleton-card';
+            sk.innerHTML = '<div class="skeleton-img"></div><div class="skeleton-text"><div class="skeleton-line"></div><div class="skeleton-line"></div></div>';
+            container.appendChild(sk);
+          }
+        }
         function populateCreateFlowCookbookList(container, items, addToWeekOnly, filter){
           const q = (filter||'').toLowerCase();
           const list = q ? items.filter(c=>(c.dish||'').toLowerCase().indexOf(q)>=0) : items;
+          if(list.length > 0 && !filter){
+            renderSkeletonCards(container, Math.min(6, list.length));
+            requestAnimationFrame(function(){
+              requestAnimationFrame(function(){
+                container.innerHTML = '';
+                if(addToWeekOnly && items.length > 0){
+                  var topLabel = document.createElement('div');
+                  topLabel.style.cssText = 'grid-column:1/-1; font-size:12px; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:4px;';
+                  topLabel.textContent = 'Tap = Gericht zum Plan hinzufügen';
+                  container.appendChild(topLabel);
+                }
+                list.forEach(function(c, idx){
+                  var card = document.createElement('div');
+                  card.className = 'create-flow-cookbook-card-enter';
+                  card.style.cssText = 'background:#fff; border-radius:16px; border:1px solid #f1f3f5; overflow:hidden; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.04); display:flex; flex-direction:column;';
+                  var imgUrl = c.photoData || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=200&q=60';
+                  card.innerHTML = '<div style="height:80px; width:100%; background:#f1f3f5; position:relative;"><img src="'+imgUrl+'" style="width:100%; height:100%; object-fit:cover;" alt=""></div><div style="padding:10px;"><div style="font-size:13px; font-weight:800; color:#1a1a1a; line-height:1.2; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; height:32px;">'+esc(c.dish)+'</div><div style="font-size:11px; font-weight:700; color:#10b981; margin-top:4px;">'+euro(c.price||0)+'</div></div>';
+                  card.onclick = function(){
+                    if(typeof haptic === 'function') haptic(8);
+                    var selectedDate = createFlowPreselectedDate;
+                    closeCreateFlowSheet();
+                    if(addToWeekOnly && selectedDate){
+                      addCookbookEntryToWeek(selectedDate, c.id);
+                    } else {
+                      startListingFlow({ dishId: c.id, date: selectedDate || isoDate(new Date()) });
+                    }
+                  };
+                  container.appendChild(card);
+                });
+              });
+            });
+            return;
+          }
           container.innerHTML = '';
           if(addToWeekOnly && items.length > 0){
-            const topLabel = document.createElement('div');
+            var topLabel = document.createElement('div');
             topLabel.style.cssText = 'grid-column:1/-1; font-size:12px; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:4px;';
             topLabel.textContent = 'Tap = Gericht zum Plan hinzufügen';
             container.appendChild(topLabel);
           }
-          list.forEach(c => {
-            const card = document.createElement('div');
+          list.forEach(function(c){
+            var card = document.createElement('div');
             card.style.cssText = 'background:#fff; border-radius:16px; border:1px solid #f1f3f5; overflow:hidden; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.04); display:flex; flex-direction:column;';
-            const imgUrl = c.photoData || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=200&q=60';
-            card.innerHTML = `
-              <div style="height:80px; width:100%; background:#f1f3f5;">
-                <img src="${imgUrl}" style="width:100%; height:100%; object-fit:cover;">
-              </div>
-              <div style="padding:10px;">
-                <div style="font-size:13px; font-weight:800; color:#1a1a1a; line-height:1.2; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; height:32px;">${esc(c.dish)}</div>
-                <div style="font-size:11px; font-weight:700; color:#10b981; margin-top:4px;">${euro(c.price||0)}</div>
-              </div>
-            `;
-            card.onclick = () => {
-              const selectedDate = createFlowPreselectedDate;
+            var imgUrl = c.photoData || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=200&q=60';
+            card.innerHTML = '<div style="height:80px; width:100%; background:#f1f3f5;"><img src="'+imgUrl+'" style="width:100%; height:100%; object-fit:cover;" alt=""></div><div style="padding:10px;"><div style="font-size:13px; font-weight:800; color:#1a1a1a; line-height:1.2; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; height:32px;">'+esc(c.dish)+'</div><div style="font-size:11px; font-weight:700; color:#10b981; margin-top:4px;">'+euro(c.price||0)+'</div></div>';
+            card.onclick = function(){
+              if(typeof haptic === 'function') haptic(8);
+              var selectedDate = createFlowPreselectedDate;
               closeCreateFlowSheet();
               if(addToWeekOnly && selectedDate){
                 addCookbookEntryToWeek(selectedDate, c.id);
@@ -20287,6 +20381,11 @@
       prevWrap.style.cssText = 'width:100%; height:80px; border-radius:12px; overflow:hidden; margin-bottom:8px; background:#f0f0f0; position:relative;';
       const prevImgSrc = w.data.photoData || WIZARD_PLACEHOLDER_IMAGE;
       prevWrap.innerHTML = '<img src="'+prevImgSrc+'" style="width:100%; height:100%; object-fit:cover;" alt="">';
+      if(w.data.photoData){
+        prevWrap.classList.add('wizard-img-skeleton');
+        var prevImg = prevWrap.querySelector('img');
+        if(prevImg){ prevImg.onload = function(){ prevWrap.classList.remove('wizard-img-skeleton'); }; if(prevImg.complete) prevWrap.classList.remove('wizard-img-skeleton'); }
+      }
       if(!w.data.photoData){
         const overlay = document.createElement('div');
         overlay.style.cssText = 'position:absolute; inset:0; background:rgba(16,185,129,0.35); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:800; color:#fff; text-shadow:0 1px 2px rgba(0,0,0,0.3);';
@@ -20374,6 +20473,9 @@
             var potenzial = 30 * w.data.price;
             revenueCard.innerHTML = 'Dein Umsatz-Potenzial heute: <strong>' + Number(potenzial).toFixed(2).replace('.',',') + ' €</strong> (bei 30 Portionen)';
             revenueCard.style.display = 'block';
+            revenueCard.classList.remove('revenue-card-enter');
+            void revenueCard.offsetWidth;
+            revenueCard.classList.add('revenue-card-enter');
           } else revenueCard.style.display = 'none';
         }
       };
@@ -20389,28 +20491,32 @@
         const b=document.createElement('button');
         b.type='button'; b.className='ans'+(w.data.category===c?' on':''); b.style.minHeight='44px';
         b.textContent=c;
-        b.onclick=()=>{ w.data.category=c; saveDraft(); rebuildWizard(); };
+        b.onclick=()=>{ if(typeof haptic === 'function') haptic(8); w.data.category=c; saveDraft(); rebuildWizard(); };
         catRow.appendChild(b);
       });
       box.appendChild(catRow);
 
-      // Dynamische Umsatz-Prognose: Card (emerald-50) direkt über dem Button, sobald Preis eingegeben
+      // Thumb-Zone: Sticky Footer mit Umsatz-Vorschau + JETZT INSERIEREN + Planen/Speichern
+      const stickyFooter = document.createElement('div');
+      stickyFooter.className = 'listing-sticky-footer';
+
       const revenueCard = document.createElement('div');
-      revenueCard.style.cssText = 'display:none; margin-top:8px; margin-bottom:16px; padding:14px 16px; background:#ecfdf5; border-radius:14px; border:1px solid rgba(16,185,129,0.2); font-size:14px; font-weight:600; color:#065f46; line-height:1.4;';
+      revenueCard.style.cssText = 'display:none; margin-bottom:12px; padding:14px 16px; background:#ecfdf5; border-radius:14px; border:1px solid rgba(16,185,129,0.2); font-size:14px; font-weight:600; color:#065f46; line-height:1.4;';
       revenueCard.textContent = '';
       if(w.data.price>0){
         var potenzial = 30 * w.data.price;
         revenueCard.innerHTML = 'Dein Umsatz-Potenzial heute: <strong>' + Number(potenzial).toFixed(2).replace('.',',') + ' €</strong> (bei 30 Portionen)';
         revenueCard.style.display = 'block';
+        revenueCard.classList.add('revenue-card-enter');
       }
-      box.appendChild(revenueCard);
+      stickyFooter.appendChild(revenueCard);
 
-      // Slim-Flow: Primary CTA + Planer-Zeile (4,99 € Star, Planen/Speichern dezent)
       const slimPrimary = document.createElement('button');
       slimPrimary.type = 'button';
-      slimPrimary.style.cssText = 'width:100%; min-height:56px; border-radius:16px; font-size:17px; font-weight:800; border:none; background:#10b981; color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; margin-top:24px; margin-bottom:12px; box-shadow:0 4px 16px rgba(16,185,129,0.35);';
+      slimPrimary.style.cssText = 'width:100%; min-height:56px; border-radius:16px; font-size:17px; font-weight:800; border:none; background:#10b981; color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:12px; box-shadow:0 4px 16px rgba(16,185,129,0.35);';
       slimPrimary.innerHTML = '<span>Jetzt für 4,99 € inserieren</span>';
       slimPrimary.onclick = function(){
+        if(typeof haptic === 'function') haptic(12);
         var p = normalizeProviderProfile(provider.profile || {});
         w.data.pickupWindow = p.mealWindow || DEFAULT_MEAL_WINDOW;
         w.data.dineInPossible = (provider.profile && provider.profile.dineInPossibleDefault !== undefined) ? !!provider.profile.dineInPossibleDefault : true;
@@ -20423,22 +20529,24 @@
         closeWizard();
         if(typeof showPublishFeeModal === 'function') showPublishFeeModal(o);
       };
-      box.appendChild(slimPrimary);
+      stickyFooter.appendChild(slimPrimary);
 
       const planerRow = document.createElement('div');
-      planerRow.style.cssText = 'display:flex; gap:12px; margin-bottom:16px;';
+      planerRow.style.cssText = 'display:flex; gap:12px;';
       const btnPlanen = document.createElement('button');
       btnPlanen.type = 'button';
       btnPlanen.style.cssText = 'flex:1; min-height:48px; border-radius:14px; border:2px solid #e2e8f0; background:#fff; color:#475569; font-size:14px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;';
       btnPlanen.innerHTML = '📅 Planen';
-      btnPlanen.onclick = function(){ if(typeof openSlimDayPicker === "function") openSlimDayPicker(w, saveDraft, rebuildWizard); };
+      btnPlanen.onclick = function(){ if(typeof haptic === 'function') haptic(8); if(typeof openSlimDayPicker === "function") openSlimDayPicker(w, saveDraft, rebuildWizard); };
       const btnSpeichern = document.createElement('button');
       btnSpeichern.type = 'button';
       btnSpeichern.style.cssText = 'flex:1; min-height:48px; border-radius:14px; border:2px solid #e2e8f0; background:#fff; color:#475569; font-size:14px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;';
       btnSpeichern.innerHTML = '📖 Speichern';
-      btnSpeichern.onclick = function(){ try { saveToCookbookFromWizard(); closeWizard(); if(typeof showToast==='function') showToast('Im Kochbuch gespeichert'); setTimeout(function(){ if(typeof showProviderCookbook==='function') showProviderCookbook(); }, 80); } catch(e) { if(typeof showToast==='function') showToast('Fehler beim Speichern'); } };
+      btnSpeichern.onclick = function(){ if(typeof haptic === 'function') haptic(8); try { saveToCookbookFromWizard(); closeWizard(); if(typeof showToast==='function') showToast('Im Kochbuch gespeichert'); setTimeout(function(){ if(typeof showProviderCookbook==='function') showProviderCookbook(); }, 80); } catch(e) { if(typeof showToast==='function') showToast('Fehler beim Speichern'); } };
       planerRow.appendChild(btnPlanen); planerRow.appendChild(btnSpeichern);
-      box.appendChild(planerRow);
+      stickyFooter.appendChild(planerRow);
+
+      box.appendChild(stickyFooter);
 
       setWizardContent(box);
       setWizardNext('Weiter');
@@ -21087,6 +21195,7 @@
     const sheet = document.getElementById('inseratSuccessSheet');
     if(bd) bd.classList.add('active');
     if(sheet) sheet.classList.add('active');
+    if(typeof haptic === 'function') haptic([12, 8, 12]);
     if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
   }
 
@@ -21120,6 +21229,7 @@
     if(btnPublishConfirm){
       btnPublishConfirm.onclick = function(){
         if(!publishFeePendingOffer) return;
+        if(typeof haptic === 'function') haptic(12);
         const offer = publishFeePendingOffer;
         const onSuccess = publishFeeSuccessCallback;
         const published = publishOffer(offer);
