@@ -4687,7 +4687,7 @@
         </div>
       </header>
 
-      <div style="padding:16px; padding-bottom:120px; display:flex; flex-direction:column; gap:20px;">
+      <div style="padding:24px 16px 120px; display:flex; flex-direction:column; gap:20px;">
         <!-- Kurz Identität (Avatar + Name), nur wenn eingeloggt -->
         <div class="cust-card" id="profileHeaderCard" style="padding:16px 20px; flex-direction:row; align-items:center; gap:12px; margin-bottom:0; background:none; border:none; box-shadow:none;">
           <!-- Wird dynamisch befüllt -->
@@ -4788,7 +4788,7 @@
           <button onclick="closeProfileSettingsSheet(); showLegalPage('datenschutz');" style="width:100%; padding:16px 20px; background:#f8f9fa; border:none; border-radius:14px; display:flex; align-items:center; gap:12px; cursor:pointer; text-align:left; font-size:15px; font-weight:700; color:#1a1a1a;">
             <i data-lucide="shield" style="width:20px;height:20px;color:#64748b;"></i><span>Datenschutz</span>
           </button>
-          <button onclick="closeProfileSettingsSheet(); openProfilePwaTipSheet();" style="width:100%; padding:16px 20px; background:#f8f9fa; border:none; border-radius:14px; display:flex; align-items:center; gap:12px; cursor:pointer; text-align:left; font-size:15px; font-weight:700; color:#1a1a1a;">
+          <button onclick="closeProfileSettingsSheet(); (window.openProfilePwaTipSheet||function(){})();" style="width:100%; padding:16px 20px; background:#f8f9fa; border:none; border-radius:14px; display:flex; align-items:center; gap:12px; cursor:pointer; text-align:left; font-size:15px; font-weight:700; color:#1a1a1a;">
             <span style="font-size:20px;">📱</span><span>App installieren (PWA)</span>
           </button>
           <button onclick="closeProfileSettingsSheet(); (window.showProviderLoginModal||function(){})();" style="width:100%; padding:16px 20px; background:rgba(255,215,0,0.2); border:none; border-radius:14px; display:flex; align-items:center; gap:12px; cursor:pointer; text-align:left; font-size:15px; font-weight:700; color:#1a1a1a;">
@@ -8418,6 +8418,12 @@
     const providerNavWrapEl = document.getElementById('providerNavWrap');
     if(customerNavEl) customerNavEl.style.display = isCustomerOrStart ? 'flex' : 'none';
     if(providerNavWrapEl) providerNavWrapEl.style.display = isProv ? 'block' : 'none';
+
+    // Bottom-Nav aktiven Tab immer zur aktuellen View synchronisieren
+    if(isCustomerOrStart){
+      var go = (id === 'v-discover') ? 'discover' : (id === 'v-profile') ? 'profile' : (id === 'v-cart') ? 'cart' : (id === 'v-fav') ? 'fav' : (id === 'v-orders') ? 'orders' : null;
+      if(go) setCustomerNavActive(go);
+    }
   }
 
   function setMode(next, opts){
@@ -15017,7 +15023,11 @@
     const bd = document.getElementById('profileSettingsSheetBd');
     const sheet = document.getElementById('profileSettingsSheet');
     if(bd){ bd.style.display = 'block'; bd.style.opacity = '1'; }
-    if(sheet){ sheet.style.display = 'block'; }
+    if(sheet){
+      sheet.style.display = 'block';
+      var scrollEl = sheet.children[1] || sheet.querySelector('div[style*="overflow"]');
+      if(scrollEl) scrollEl.scrollTop = 0;
+    }
     if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
   }
   function closeProfileSettingsSheet(){
@@ -15038,16 +15048,17 @@
   function openProfilePwaTipSheet(){
     var bd = document.getElementById('pwaStartScreenBd');
     var sheet = document.getElementById('pwaStartScreenSheet');
-    if(bd) bd.style.display = 'block';
-    if(sheet) sheet.style.display = 'block';
+    if(bd){ bd.style.display = 'block'; bd.classList.add('active'); }
+    if(sheet){ sheet.style.display = 'block'; sheet.classList.add('active'); }
     if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
   }
   function closePwaStartScreenSheet(){
     var bd = document.getElementById('pwaStartScreenBd');
     var sheet = document.getElementById('pwaStartScreenSheet');
-    if(bd) bd.style.display = 'none';
-    if(sheet) sheet.style.display = 'none';
+    if(bd){ bd.style.display = 'none'; bd.classList.remove('active'); }
+    if(sheet){ sheet.style.display = 'none'; sheet.classList.remove('active'); }
   }
+  if(typeof window !== 'undefined'){ window.openProfilePwaTipSheet = openProfilePwaTipSheet; window.closePwaStartScreenSheet = closePwaStartScreenSheet; }
   
   // Ernährungs-Präferenz Toggle
   function toggleDietaryPreference(key, value){
