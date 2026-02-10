@@ -20381,6 +20381,13 @@
         const v=inputPrice.value.replace(',','.');
         w.data.price=parseFloat(v)||0;
         saveDraft();
+        if(revenueCard){
+          if(w.data.price>0){
+            var potenzial = 30 * w.data.price;
+            revenueCard.innerHTML = 'Dein Umsatz-Potenzial heute: <strong>' + Number(potenzial).toFixed(2).replace('.',',') + ' €</strong> (bei 30 Portionen)';
+            revenueCard.style.display = 'block';
+          } else revenueCard.style.display = 'none';
+        }
       };
       inputPrice.onblur=()=>{ if(w.data.price>0) inputPrice.value=Number(w.data.price).toFixed(2).replace('.',','); };
       box.appendChild(inputPrice);
@@ -20398,6 +20405,17 @@
         catRow.appendChild(b);
       });
       box.appendChild(catRow);
+
+      // Dynamische Umsatz-Prognose: Card (emerald-50) direkt über dem Button, sobald Preis eingegeben
+      const revenueCard = document.createElement('div');
+      revenueCard.style.cssText = 'display:none; margin-top:8px; margin-bottom:16px; padding:14px 16px; background:#ecfdf5; border-radius:14px; border:1px solid rgba(16,185,129,0.2); font-size:14px; font-weight:600; color:#065f46; line-height:1.4;';
+      revenueCard.textContent = '';
+      if(w.data.price>0){
+        var potenzial = 30 * w.data.price;
+        revenueCard.innerHTML = 'Dein Umsatz-Potenzial heute: <strong>' + Number(potenzial).toFixed(2).replace('.',',') + ' €</strong> (bei 30 Portionen)';
+        revenueCard.style.display = 'block';
+      }
+      box.appendChild(revenueCard);
 
       // Slim-Flow: Primary CTA + Planer-Zeile (4,99 € Star, Planen/Speichern dezent)
       const slimPrimary = document.createElement('button');
