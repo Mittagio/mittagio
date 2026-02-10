@@ -15132,23 +15132,20 @@
     }
   }
   
-  // Provider Login Modal
+  // Provider Login Modal (Backdrop + Sheet brauchen Klasse "active" für Sichtbarkeit)
   function showProviderLoginModal(){
     const providerLoginBd = document.getElementById('providerLoginBd');
     const providerLoginSheet = document.getElementById('providerLoginSheet');
-    if(providerLoginBd) providerLoginBd.style.display = 'block';
-    if(providerLoginSheet) providerLoginSheet.style.display = 'block';
-    // Icons aktualisieren
-    if(typeof lucide !== 'undefined'){
-      setTimeout(() => lucide.createIcons(), 50);
-    }
+    if(providerLoginBd){ providerLoginBd.style.display = 'block'; providerLoginBd.classList.add('active'); }
+    if(providerLoginSheet){ providerLoginSheet.style.display = 'block'; providerLoginSheet.classList.add('active'); }
+    if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
   }
   
   function closeProviderLoginModal(){
     const providerLoginBd = document.getElementById('providerLoginBd');
     const providerLoginSheet = document.getElementById('providerLoginSheet');
-    if(providerLoginBd) providerLoginBd.style.display = 'none';
-    if(providerLoginSheet) providerLoginSheet.style.display = 'none';
+    if(providerLoginBd){ providerLoginBd.style.display = 'none'; providerLoginBd.classList.remove('active'); }
+    if(providerLoginSheet){ providerLoginSheet.style.display = 'none'; providerLoginSheet.classList.remove('active'); }
     // Felder leeren
     const emailField = document.getElementById('providerLoginEmail');
     const passField = document.getElementById('providerLoginPass');
