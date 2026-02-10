@@ -22320,6 +22320,25 @@
       }
     }, 200);
   }
+
+  // Health Check (Go-Live): Prüft nach kurzer Verzögerung, ob wichtige Views & Nav da sind. Nur Console, keine Störung für Nutzer.
+  setTimeout(function healthCheck(){
+    var requiredIds = ['v-discover','v-profile','v-cart','v-fav','v-orders','customerNav','discoverOffers','discoverEmpty'];
+    var missing = [];
+    requiredIds.forEach(function(id){
+      if(!document.getElementById(id)) missing.push(id);
+    });
+    var activeViews = document.querySelectorAll('.view.active');
+    var oneActive = activeViews.length === 1;
+    if(missing.length === 0 && oneActive){
+      if(typeof console !== 'undefined' && console.info) console.info('Mittagio Health Check: OK');
+    } else {
+      if(typeof console !== 'undefined' && console.warn){
+        if(missing.length) console.warn('Mittagio Health Check: fehlende Elemente:', missing.join(', '));
+        if(!oneActive) console.warn('Mittagio Health Check: erwartet 1 aktive View, gefunden:', activeViews.length);
+      }
+    }
+  }, 500);
 </script>
 
 <script>
