@@ -2200,6 +2200,7 @@
     details{background:#fff;border:1px solid var(--border);border-radius:14px;box-shadow:0 6px 14px rgba(0,0,0,.06);padding:14px 16px}
     details+details{margin-top:10px}
     summary{cursor:pointer;font-weight:950;font-size:15px;line-height:1.4}
+    summary:focus-visible{outline:2px solid var(--accent,#0A84FF);outline-offset:2px;border-radius:8px}
     summary::-webkit-details-marker{display:none}
     #v-legal-faq details summary::-webkit-details-marker,
     #v-legal-faq-provider details summary::-webkit-details-marker{display:none}
@@ -21303,11 +21304,11 @@
     var posten = t.inserat_id ? ('Inserat · ' + (t.inserat_id || '')) : 'Inseratsgebühr';
     var betrag = (t.total_amount != null) ? Number(t.total_amount).toFixed(2).replace('.', ',') + ' €' : '4,99 €';
     var rechnungsnr = (t.id || 'R-' + (t.timestamp || '').slice(0,10).replace(/-/g,'') || '') + '';
-    var html = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Rechnung Mittagio</title><style>body{font-family:system-ui,-apple-system,sans-serif;padding:40px;max-width:420px;margin:0 auto;color:#1a1a1a;} h1{font-size:22px;font-weight:800;margin:0 0 8px;} .meta{color:#64748b;font-size:13px;line-height:1.5;margin-bottom:28px;} table{width:100%;border-collapse:collapse;} th{text-align:left;padding:10px 0;border-bottom:1px solid #e5e7eb;font-size:12px;font-weight:700;color:#64748b;text-transform:uppercase;} td{padding:10px 0;border-bottom:1px solid #e5e7eb;} tr:last-child td{border-bottom:none;} .total{font-weight:800;font-size:20px;color:#16a34a;} .foot{margin-top:32px;padding-top:20px;border-top:1px solid #e5e7eb;font-size:11px;color:#94a3b8;line-height:1.5;} @media print{body{padding:20px;}}</style></head><body>' +
+    var html = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Rechnung Mittagio</title><style>body{font-family:system-ui,-apple-system,sans-serif;padding:40px;max-width:420px;margin:0 auto;color:#1a1a1a;} h1{font-size:22px;font-weight:800;margin:0 0 8px;} .meta{color:#64748b;font-size:13px;line-height:1.5;margin-bottom:28px;} table{width:100%;border-collapse:collapse;} th{text-align:left;padding:10px 0;border-bottom:1px solid #e5e7eb;font-size:12px;font-weight:700;color:#64748b;text-transform:uppercase;} td{padding:10px 0;border-bottom:1px solid #e5e7eb;} tr:last-child td{border-bottom:none;} .total{font-weight:800;font-size:20px;color:#16a34a;} .foot{margin-top:32px;padding-top:20px;border-top:1px solid #e5e7eb;font-size:11px;color:#94a3b8;line-height:1.5;} .print-hint{margin-top:16px;font-size:13px;color:#0A84FF;} @media print{.print-hint{display:none;} body{padding:20px;}}</style></head><body>' +
       '<h1>Rechnung</h1>' +
       '<div class="meta">Rechnungsnummer: ' + rechnungsnr.replace(/</g,'&lt;') + '<br><br>Mittagio · Mike Quach<br>Langäcker 2, 73635 Rudersberg<br>info@mittagio.de</div>' +
       '<table><tr><th>Datum</th><td>' + datum + '</td></tr><tr><th>Posten</th><td>' + (posten || 'Inseratsgebühr 4,99 €').replace(/</g,'&lt;') + '</td></tr><tr><th>Betrag (zahlbar sofort)</th><td class="total">' + betrag + '</td></tr></table>' +
-      '<p class="foot">Kein Abo. Kein Vertrag. · Einmalige Inseratsgebühr. · USt.-Nr. siehe Impressum auf mittagio.de</p>' +
+      '<p class="foot">Kein Abo. Kein Vertrag. · Einmalige Inseratsgebühr. · USt.-Nr. siehe Impressum auf mittagio.de</p><p class="print-hint">💡 Zum Speichern: Drucken → „Als PDF speichern“ wählen.</p>' +
       '</body></html>';
     var w = window.open('', '_blank', 'noopener');
     if(w){ w.document.write(html); w.document.close(); w.focus(); setTimeout(function(){ w.print(); }, 300); }
