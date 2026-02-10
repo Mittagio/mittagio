@@ -8506,21 +8506,8 @@
         }
       }
     } else {
-      const lastView = localStorage.getItem('mittagio_last_view');
-      const lastMode = localStorage.getItem('mittagio_last_mode');
-      // Kunden-Start: Immer Entdecken beim Öffnen (kein direkter Sprung auf Meins), damit keine „alle Seiten auf einmal“-Ansicht entsteht.
-      var viewToShow = (lastMode === 'customer' || lastMode === 'start') && lastView && document.getElementById(lastView) && lastView !== views.profile
-        ? lastView
-        : null;
-      if(viewToShow){
-        showView(viewToShow);
-        if(viewToShow === views.discover) { renderChips(); renderDiscover(); }
-        else if(viewToShow === views.fav) renderFavorites();
-        else if(viewToShow === views.orders) renderOrders();
-        else if(viewToShow === 'v-start') renderStart();
-      } else {
-        showDiscover();
-      }
+      // Kunde: Immer auf Entdecken starten (kein lastView-Restore), damit Layout stabil bleibt.
+      showDiscover();
     }
   }
 
@@ -22274,12 +22261,6 @@
       mode = 'customer';
     }
   }
-
-  // Einmal alle Views ausblenden, damit nie „alle Seiten auf einmal“ beim Load erscheinen.
-  document.querySelectorAll('.view').forEach(function(v){
-    v.classList.remove('active');
-    v.style.display = 'none';
-  });
 
   // Magic Link: #/plan/[Anbieter-ID] – öffentliche Wochenplan-Ansicht (Kunde sieht nur Verkaufspreis, 3 Säulen)
   var planMatch = (location.hash || '').match(/^#\/plan\/(.+)$/);
