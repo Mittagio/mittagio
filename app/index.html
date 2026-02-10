@@ -8373,12 +8373,13 @@
     }
     // Zuerst neue View aktivieren und anzeigen – kein leerer Bildschirm beim Wechsel
     view.classList.add('active');
-    view.style.display = (id === 'v-pickup-code') ? 'flex' : 'block';
-    // Danach alle anderen Views ausblenden
+    var displayVal = (id === 'v-pickup-code' || id === 'v-provider-profile') ? 'flex' : 'block';
+    view.style.display = displayVal;
+    // Danach alle anderen Views ausblenden (explizit display:none, damit keine Kunden- und Anbieter-Views gleichzeitig sichtbar sind)
     document.querySelectorAll('.view').forEach(v => {
       if(v === view) return;
       v.classList.remove('active');
-      if(v.id !== 'v-pickup-code' || id !== 'v-pickup-code') v.style.display = '';
+      v.style.display = 'none';
     });
     document.body.classList.toggle('provider-week-active', id === 'v-provider-week');
     /* Bei Anbieter-Views sofort nach oben scrollen, damit kein leerer oberer Bereich sichtbar ist */
