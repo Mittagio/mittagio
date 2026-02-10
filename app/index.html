@@ -1764,7 +1764,7 @@
       --prov-danger: #ef4444;
     }
     
-    /* Modern App-Like CSS for Provider – kompakt oben (kein leerer Screen) */
+    /* Modern App-Like CSS for Provider */
     .prov-header {
       position: sticky;
       top: 0;
@@ -1772,10 +1772,9 @@
       background: rgba(255, 255, 255, 0.85);
       backdrop-filter: blur(15px);
       -webkit-backdrop-filter: blur(15px);
-      padding: 12px 20px 16px;
+      padding: 24px 20px 20px;
       border-bottom: 1px solid rgba(0,0,0,0.05);
     }
-    #v-provider-home .prov-header > div:first-of-type { margin-bottom: 14px !important; }
     
     .prov-title {
       margin: 0;
@@ -1792,7 +1791,7 @@
       z-index: 50;
       background: #fff;
       border-bottom: 1px solid rgba(0,0,0,0.05);
-      padding: calc(10px + env(safe-area-inset-top, 0)) 20px 12px 20px;
+      padding: calc(16px + env(safe-area-inset-top, 0)) 20px 16px 20px;
     }
     .prov-page-header .prov-page-header-row {
       display: flex;
@@ -2415,8 +2414,10 @@
     }
     /* Anbieter-Ansichten: Topbar ausblenden, Inhalt beginnt oben ohne Leerraum */
     body.provider-mode .topbar { display: none !important; }
-    body.provider-mode main { padding: 0 !important; max-width: none !important; }
-    body.provider-mode [id^="v-provider-"] { padding-top: calc(8px + env(safe-area-inset-top, 0px)) !important; margin-top: 0 !important; }
+    body.provider-mode main { padding-top: 0 !important; }
+    body.provider-mode [id^="v-provider-"] { padding-top: calc(16px + env(safe-area-inset-top, 0px)) !important; }
+      transform:translateX(32px);
+    }
     
     /* Discover Header - Sticky, immer über Kategorie- und Tage-Leiste (z-index > 90) */
     .discover-header-sticky{
@@ -3268,26 +3269,25 @@
       }
       .navbtn .ico svg{ width:24px !important; height:24px !important; }
       
-      /* Provider: Safe-Area im Header, Inhalt ganz oben (kein leerer Screen) */
+      /* Provider: Safe-Area im Header (kein leerer Raum oben, Inhalt sofort sichtbar) */
       [id^="v-provider-"]{
-        padding-top:calc(6px + env(safe-area-inset-top, 0)) !important;
-        padding-left:calc(16px + env(safe-area-inset-left, 0)) !important;
-        padding-right:calc(16px + env(safe-area-inset-right, 0)) !important;
+        padding-top:0 !important;
+        padding-left:calc(20px + env(safe-area-inset-left, 0)) !important;
+        padding-right:calc(20px + env(safe-area-inset-right, 0)) !important;
       }
       #providerProfileHeader,
       #v-provider-cookbook > header,
       #v-provider-pickups > header,
       #v-provider-week .week-header-compact{
-        padding-top:calc(8px + env(safe-area-inset-top, 0)) !important;
+        padding-top:calc(10px + env(safe-area-inset-top, 0)) !important;
       }
       #providerProfileHeader{ padding-bottom:10px !important; }
       #v-provider-cookbook > header{ padding-bottom:14px !important; }
       #v-provider-cookbook > header h1{ margin-bottom:12px !important; }
       #v-provider-pickups > header{ padding-bottom:14px !important; padding-left:20px !important; padding-right:20px !important; }
       #v-provider-week .week-header-compact{ background:#fff !important; }
-      #v-provider-week .prov-page-header{ padding-top:calc(8px + env(safe-area-inset-top, 0)) !important; }
-      #v-provider-home{ padding:12px 16px 100px !important; padding-top:calc(8px + env(safe-area-inset-top, 0)) !important; }
-      #v-provider-home .prov-header{ margin-bottom:16px !important; }
+      #v-provider-week .prov-page-header{ padding-top:calc(12px + env(safe-area-inset-top, 0)) !important; }
+      #v-provider-home{ padding:16px 16px 100px !important; padding-top:calc(16px + env(safe-area-inset-top, 0)) !important; }
       #v-provider-home h1{ font-size:28px !important; }
       
       /* KPI Cards: 3er Grid, Touch-freundlich */
@@ -3532,7 +3532,7 @@
     
     /* Extra kleine Phones (<375px, z.B. iPhone SE) */
     @media (max-width:374px){
-      #v-provider-home{ padding:8px 8px 90px !important; padding-top:calc(6px + env(safe-area-inset-top, 0)) !important; }
+      #v-provider-home{ padding:12px 8px 90px !important; }
       #v-provider-home h1{ font-size:22px !important; }
       #kpiCardTagesessen, #kpiCardAbholungen, #kpiCardKochbuch{ padding:10px 6px !important; }
       #kpiCardTagesessen div[style*="font-size:20px"],
@@ -4215,7 +4215,7 @@
             <p style="margin:2px 0 0; font-size:13px; color:#64748b; font-weight:600;">Unser Wochenplan ist online!</p>
           </div>
         </div>
-        <a href="#" id="planPublicBack" onclick="event.preventDefault(); location.hash=''; if(typeof setMode==='function') setMode('customer'); if(typeof showDiscover==='function') showDiscover(); return false;" style="display:inline-flex; align-items:center; gap:6px; margin-top:16px; font-size:14px; font-weight:700; color:var(--brand,#FFD700); text-decoration:none; cursor:pointer; -webkit-tap-highlight-color:rgba(0,0,0,0.1);">← Zur App</a>
+        <a href="#" id="planPublicBack" style="display:inline-flex; align-items:center; gap:6px; margin-top:16px; font-size:14px; font-weight:700; color:var(--brand,#FFD700); text-decoration:none;">← Zur App</a>
       </header>
       <div id="planPublicList" style="max-width:500px; margin:0 auto; padding:20px 16px 24px;"></div>
     </section>
@@ -4674,8 +4674,8 @@
         <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px;">
           <h1 style="font-size:20px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a; margin:0;">Meins</h1>
           <div style="display:flex; align-items:center; gap:8px;">
-            <button type="button" id="btnProfileProviderPortal" aria-label="Zum Anbieter-Portal" onclick="(window.showProviderLoginModal||function(){})();" style="width:40px; height:40px; border-radius:12px; background:rgba(255,215,0,0.25); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer;">
-              <i data-lucide="building" style="width:20px;height:20px;color:#1a1a1a; pointer-events:none;"></i>
+            <button type="button" id="btnProfileProviderPortal" aria-label="Zum Anbieter-Portal" onclick="typeof showProviderLoginModal==='function'&&showProviderLoginModal()" style="width:40px; height:40px; border-radius:12px; background:rgba(255,215,0,0.25); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer;">
+              <i data-lucide="building" style="width:20px;height:20px;color:#1a1a1a;"></i>
             </button>
             <button type="button" id="btnProfileSettings" aria-label="Einstellungen" onclick="openProfileSettingsSheet()" style="width:40px; height:40px; border-radius:12px; background:#f1f3f5; border:none; display:flex; align-items:center; justify-content:center; cursor:pointer;">
               <i data-lucide="settings" style="width:20px;height:20px;color:#1a1a1a;"></i>
@@ -4791,7 +4791,7 @@
           <button onclick="closeProfileSettingsSheet(); openProfilePwaTipSheet();" style="width:100%; padding:16px 20px; background:#f8f9fa; border:none; border-radius:14px; display:flex; align-items:center; gap:12px; cursor:pointer; text-align:left; font-size:15px; font-weight:700; color:#1a1a1a;">
             <span style="font-size:20px;">📱</span><span>App installieren (PWA)</span>
           </button>
-          <button onclick="closeProfileSettingsSheet(); (window.showProviderLoginModal||function(){})();" style="width:100%; padding:16px 20px; background:rgba(255,215,0,0.2); border:none; border-radius:14px; display:flex; align-items:center; gap:12px; cursor:pointer; text-align:left; font-size:15px; font-weight:700; color:#1a1a1a;">
+          <button onclick="closeProfileSettingsSheet(); typeof showProviderLoginModal==='function'&&showProviderLoginModal();" style="width:100%; padding:16px 20px; background:rgba(255,215,0,0.2); border:none; border-radius:14px; display:flex; align-items:center; gap:12px; cursor:pointer; text-align:left; font-size:15px; font-weight:700; color:#1a1a1a;">
             <span style="font-size:20px;">🏢</span><span>Zum Anbieter-Portal</span>
           </button>
           <button onclick="closeProfileSettingsSheet(); handleSupportAction('logout');" style="width:100%; padding:16px 20px; background:#fef2f2; border:none; border-radius:14px; display:flex; align-items:center; gap:12px; cursor:pointer; text-align:left; font-size:15px; font-weight:700; color:#b91c1c;">
@@ -6281,17 +6281,9 @@
         </div>
       </div>
     </div>
-    <!-- Umsatz-Vorschau (Checkout) -->
-    <div id="publishFeeUmsatzCard" style="margin-bottom:20px; padding:20px; background:#ecfdf5; border-radius:16px; border:1px solid rgba(16,185,129,0.25);">
-      <div style="font-size:12px; font-weight:700; color:#047857; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:10px;">Dein Umsatz-Potenzial heute</div>
-      <div style="font-size:15px; color:#1a1a1a; font-weight:600;">
-        30 Portionen × <span id="publishFeeUmsatzPrice">8,50</span> € = <span id="publishFeeUmsatzTotal">255,00</span> €
-      </div>
-    </div>
     <div style="display:flex; flex-direction:column; gap:12px;">
-      <button class="btn-primary" type="button" id="btnPublishConfirm" style="width:100%; min-height:64px; background:#10b981; border:none; border-radius:16px; color:#fff; font-weight:800; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; box-shadow:0 4px 16px rgba(16,185,129,0.35);">
-        <span style="font-size:13px; font-weight:600; opacity:0.95;">Einmalig 4,99 €</span>
-        <span style="font-size:18px; letter-spacing:0.02em;">JETZT INSERIEREN</span>
+      <button class="btn-primary" type="button" id="btnPublishConfirm" style="width:100%; min-height:56px; font-size:16px; font-weight:700;">
+        Jetzt online stellen
       </button>
       <button class="btn ghost" type="button" onclick="closePublishFeeModal();" style="width:100%; min-height:44px;">
         Abbrechen
@@ -8373,41 +8365,17 @@
     }
     // Zuerst neue View aktivieren und anzeigen – kein leerer Bildschirm beim Wechsel
     view.classList.add('active');
-    var displayVal = (id === 'v-pickup-code' || id === 'v-provider-profile') ? 'flex' : 'block';
-    view.style.display = displayVal;
-    // Alle anderen Views ausblenden (explizit display:none), damit nie mehrere Views gleichzeitig sichtbar sind.
+    view.style.display = (id === 'v-pickup-code') ? 'flex' : 'block';
+    // Danach alle anderen Views ausblenden
     document.querySelectorAll('.view').forEach(v => {
       if(v === view) return;
       v.classList.remove('active');
-      v.style.display = 'none';
+      if(v.id !== 'v-pickup-code' || id !== 'v-pickup-code') v.style.display = '';
     });
     document.body.classList.toggle('provider-week-active', id === 'v-provider-week');
-    // Nach View-Wechsel Inhalte neu rendern (Discover, Favoriten, Bestellungen, Profil, etc.)
-    if(id === views.discover || id === 'v-discover'){
-      var discoverSection = document.getElementById('v-discover');
-      if(discoverSection){
-        var mainDiscover = discoverSection.querySelector('.discover-main');
-        if(mainDiscover) mainDiscover.style.display = 'block';
-        var offersList = document.getElementById('discoverOffers');
-        if(offersList) offersList.style.display = 'flex';
-        var catBar = document.getElementById('discoverCategoriesBar');
-        if(catBar) catBar.style.display = 'flex';
-        var daysBar = document.getElementById('discoverDaysBar');
-        if(daysBar) daysBar.style.display = 'flex';
-      }
-      if(typeof renderDiscover === 'function') renderDiscover();
-      setTimeout(function(){ if(typeof renderDiscover === 'function') renderDiscover(); }, 80);
-    } else if(id === views.fav || id === 'v-fav'){ setTimeout(function(){ if(typeof renderFavorites === 'function') renderFavorites(); }, 50); }
-    else if(id === views.orders || id === 'v-orders'){ setTimeout(function(){ if(typeof renderOrders === 'function') renderOrders(); }, 50); }
-    else if(id === views.profile || id === 'v-profile'){ setTimeout(function(){ if(typeof updateProfileView === 'function') updateProfileView(); }, 50); }
-    else if(id === views.cart || id === 'v-cart'){ setTimeout(function(){ if(typeof renderCart === 'function') renderCart(); }, 50); }
-    else if(id === 'v-provider-home'){ setTimeout(function(){ if(typeof renderProviderHome === 'function') renderProviderHome(); }, 50); }
-    else if(id === 'v-provider-profile'){ setTimeout(function(){ if(typeof renderProviderProfile === 'function') renderProviderProfile(); }, 50); }
-    else if(id === 'v-provider-pickups'){ setTimeout(function(){ if(typeof renderProviderPickups === 'function') renderProviderPickups(); }, 50); }
-    else if(id === 'v-provider-week'){ setTimeout(function(){ if(typeof renderWeekPlan === 'function') renderWeekPlan(); }, 50); }
-    else if(id === 'v-provider-cookbook'){ setTimeout(function(){ if(typeof renderCookbook === 'function') renderCookbook(); }, 50); }
-    // Immer nach oben scrollen, damit die Seite nicht „nach unten verschoben“ wirkt.
-    window.scrollTo(0, 0);
+    /* Bei Anbieter-Views sofort nach oben scrollen, damit kein leerer oberer Bereich sichtbar ist */
+    var isProviderView = id && id.indexOf('v-provider-') === 0;
+    window.scrollTo({ top: 0, behavior: isProviderView ? 'auto' : 'smooth' });
     if (id === 'v-provider-login') {
       requestAnimationFrame(function(){ requestAnimationFrame(function(){ window.scrollTo({ top: 0, behavior: 'auto' }); }); });
     }
@@ -8516,8 +8484,18 @@
         }
       }
     } else {
-      // Kunde: Immer auf Entdecken starten (kein lastView-Restore), damit Layout stabil bleibt.
-      showDiscover();
+      const lastView = localStorage.getItem('mittagio_last_view');
+      const lastMode = localStorage.getItem('mittagio_last_mode');
+      if((lastMode === 'customer' || lastMode === 'start') && lastView && document.getElementById(lastView)){
+        showView(lastView);
+        if(lastView === views.discover) { renderChips(); renderDiscover(); }
+        else if(lastView === views.fav) renderFavorites();
+        else if(lastView === views.orders) renderOrders();
+        else if(lastView === views.profile) updateProfileView();
+        else if(lastView === 'v-start') renderStart();
+      } else {
+        showDiscover();
+      }
     }
   }
 
@@ -8985,14 +8963,11 @@
   }
   
   function renderDiscover(){
-    // Pills und Tage sofort sichtbar machen
-    var catBar = document.getElementById('discoverCategoriesBar');
-    var daysBar = document.getElementById('discoverDaysBar');
-    if(catBar) catBar.style.display = 'flex';
-    if(daysBar) daysBar.style.display = 'flex';
+    // Date Bar rendern (neu)
     renderDiscoverDays();
+    
+    // Date Bar rendern (neu)
     if(typeof renderDiscoverDays === 'function') renderDiscoverDays();
-    if(typeof renderDiscoverCategories === 'function') renderDiscoverCategories();
     
     // Location-Autofill: Toggle & Input-Handler
     const btnDiscoverLocationGPS = document.getElementById('btnDiscoverLocationGPS');
@@ -9248,18 +9223,20 @@
     // Angebote filtern: Nur heute + Zeit-Filter (10 Min Gehzeit oder 15 Min Fahrzeit)
     let list = offers.filter(o => o.day === activeDay && o.active !== false);
     
-    // Zeit-Filter: Angebote ohne Entfernung anzeigen, damit Bilder/Layout nicht fehlen
+    // Zeit-Filter: Standard 10 Min Gehzeit (5 km/h = 12 Min/km), optional 15 Min Fahrzeit (50 km/h = 1.2 Min/km)
     if(activeTimeFilter === 'walking'){
+      // Standard: Gehzeit <= 10 Min
       list = list.filter(o => {
         const data = normalizeOffer(o);
-        if(data.distanceKm == null) return true;
+        if(data.distanceKm == null) return false; // Keine Entfernung = ausblenden
         const walkingMinutes = Math.round(Number(data.distanceKm) * 12);
         return walkingMinutes <= 10;
       });
     } else if(activeTimeFilter === 'driving'){
+      // Erweitert: Fahrzeit <= 15 Min
       list = list.filter(o => {
         const data = normalizeOffer(o);
-        if(data.distanceKm == null) return true;
+        if(data.distanceKm == null) return false; // Keine Entfernung = ausblenden
         const carMinutes = Math.round(Number(data.distanceKm) * 1.2);
         return carMinutes <= 15;
       });
@@ -9312,20 +9289,15 @@
         list = list.filter(o => (o.category||'') === cat);
       }
     }
-    // Hunger-Radius (500m / 1km / 3km) – ohne Entfernung: anzeigen, damit Karten/Bilder nicht fehlen
+    // Hunger-Radius (500m / 1km / 3km)
     const radiusKm = discoverRadiusM / 1000;
-    var listFiltered = list.filter(o => {
+    list = list.filter(o => {
       const data = normalizeOffer(o);
-      if(data.distanceKm == null) return true;
-      const d = Number(data.distanceKm);
+      const d = data.distanceKm != null ? Number(data.distanceKm) : 0;
       return d <= radiusKm;
     });
-    // Fallback: Wenn alles rausgefiltert, aber es gibt Angebote für den Tag → trotzdem anzeigen
-    if(listFiltered.length === 0 && list.length > 0) listFiltered = list;
-    list = listFiltered;
     
-    // Standort-Filter (nur wenn Suchbegriff; Fallback: bei 0 Treffern Tages-Angebote trotzdem anzeigen)
-    const beforeLocation = list.length;
+    // Standort-Filter
     const q = String(locationQuery||'').trim().toLowerCase();
     if(q){
       list = list.filter(o=>{
@@ -9333,12 +9305,11 @@
         const addr = buildAddress({address:data.address, street:data.providerStreet, zip:data.providerZip, city:data.providerCity});
         return String(addr||'').toLowerCase().includes(q);
       });
-      if(list.length === 0 && beforeLocation > 0) list = offers.filter(o => o.day === activeDay && o.active !== false);
     }
     
     // List Cards rendern (Modern Style)
-    var offersEl = document.getElementById('discoverOffers');
-    var emptyEl = document.getElementById('discoverEmpty');
+    const offersEl = document.getElementById('discoverOffers');
+    const emptyEl = document.getElementById('discoverEmpty');
     
     // Categories rendern (nur einmal oder bei Änderung)
     renderDiscoverCategories();
@@ -9350,28 +9321,30 @@
         offersEl.appendChild(createSlimCardSkeleton());
       }
       
-      // Kurze Verzögerung damit View/Container sichtbar sind (Bilder/Pills rendern korrekt)
+      // Kurze Verzögerung für bessere UX (simuliert Ladezeit)
       setTimeout(() => {
-      if(offersEl) offersEl.style.display = 'flex';
       offersEl.innerHTML = '';
       emptyEl.style.display = list.length ? 'none' : 'block';
       
-      const useDecisionTiles = false;
+      // Entscheidungs-Kacheln (2x2 Grid) - Heute-Fokus mit 3 Säulen
+      // Prüfe ob Grid-Modus aktiviert werden soll (kann später als Toggle implementiert werden)
+      const useDecisionTiles = false; // Standard: Liste, kann auf true gesetzt werden für Grid
       
       if(useDecisionTiles){
         // ... grid code ...
       } else {
+        // Modern List Cards
         list.forEach(o=> {
           const card = createModernOfferCard(o);
           offersEl.appendChild(card);
         });
       }
     
-      if(typeof lucide !== 'undefined') setTimeout(()=> lucide.createIcons(), 50);
-      }, 100);
-    } else {
-      // Container fehlen (z. B. View noch nicht sichtbar) – erneut versuchen
-      if(typeof renderDiscover === 'function') setTimeout(renderDiscover, 100);
+      // Icons aktualisieren nach dem Rendern
+    if(typeof lucide !== 'undefined'){
+      setTimeout(()=> lucide.createIcons(), 50);
+    }
+      }, 300); // 300ms Delay für realistische Ladezeit
     }
     
     // Demo: Match-Screen Test (kann später durch Swipe-System ersetzt werden)
@@ -15125,13 +15098,16 @@
     }
   }
   
-  // Provider Login Modal (global für onclick und Klick auf Icon)
+  // Provider Login Modal
   function showProviderLoginModal(){
     const providerLoginBd = document.getElementById('providerLoginBd');
     const providerLoginSheet = document.getElementById('providerLoginSheet');
     if(providerLoginBd) providerLoginBd.style.display = 'block';
     if(providerLoginSheet) providerLoginSheet.style.display = 'block';
-    if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
+    // Icons aktualisieren
+    if(typeof lucide !== 'undefined'){
+      setTimeout(() => lucide.createIcons(), 50);
+    }
   }
   
   function closeProviderLoginModal(){
@@ -15139,14 +15115,12 @@
     const providerLoginSheet = document.getElementById('providerLoginSheet');
     if(providerLoginBd) providerLoginBd.style.display = 'none';
     if(providerLoginSheet) providerLoginSheet.style.display = 'none';
+    // Felder leeren
     const emailField = document.getElementById('providerLoginEmail');
     const passField = document.getElementById('providerLoginPass');
     if(emailField) emailField.value = '';
     if(passField) passField.value = '';
   }
-  if(typeof window !== 'undefined'){ window.showProviderLoginModal = showProviderLoginModal; window.closeProviderLoginModal = closeProviderLoginModal; }
-  var btnProfileProviderPortal = document.getElementById('btnProfileProviderPortal');
-  if(btnProfileProviderPortal) btnProfileProviderPortal.addEventListener('click', function(e){ e.preventDefault(); showProviderLoginModal(); });
   
   // Provider Login Handler
   const btnProviderLoginModal = document.getElementById('btnProviderLoginModal');
@@ -20201,7 +20175,11 @@
             w.data.dish=s.dish; 
             w.data.category=cat; 
             if(s.allergens) w.data.allergens=[].concat(s.allergens||[]); 
-            // Kein automatisches KI-Bild mehr (war oft nicht sichtbar → Frustration)
+            // Automatisch KI-Bild wenn kein eigenes vorhanden
+            if(!w.data.photoData || w.data.photoDataIsStandard){
+              w.data.photoData = s.img || '';
+              w.data.photoDataIsStandard = true;
+            }
             saveDraft(); 
             rebuildWizard(); 
           };
@@ -20212,19 +20190,37 @@
         w.data.dish=input.value; 
         saveDraft(); 
         fillSuggestions(); 
-        // KI-Bild-Vorschlag beim Tippen deaktiviert (Anzeige war unzuverlässig)
+        // Automatischer Bild-Vorschlag (KI-Bild)
+        if(!w.data.photoData || w.data.photoDataIsStandard){
+          const imgs = typeof getDishImagesForName==='function' ? getDishImagesForName(w.data.dish) : [];
+          if(imgs.length > 0){
+            w.data.photoData = imgs[0];
+            w.data.photoDataIsStandard = true;
+            // Wir rendern nicht den ganzen Wizard neu um den Fokus nicht zu verlieren,
+            // aber wir aktualisieren die Bild-Vorschau falls vorhanden
+            const imgPreview = box.querySelector('.wizard-img-preview-container');
+            if(imgPreview){
+              imgPreview.style.display = 'block';
+              imgPreview.querySelector('img').src = w.data.photoData;
+            } else {
+              // Wenn noch keine Vorschau da war, doch rebuild
+              rebuildWizard();
+            }
+          }
+        }
       };
       input.onfocus=fillSuggestions;
       box.appendChild(input);
       box.appendChild(suggestWrap);
 
-      // --- Bild: Kamera | Galerie (KI-Vorschläge deaktiviert – keine Anzeige/Frustration beim Anbieter) ---
+      // --- 3-Slot Bild: Kamera | KI | Galerie ---
       const labelImg=document.createElement('div'); labelImg.className='hint'; labelImg.textContent='Bild';
       box.appendChild(labelImg);
       const imgRow=document.createElement('div'); imgRow.className='answers'; imgRow.style.marginBottom='16px';
       
       const slots = [
         { txt: '📷 Kamera', action: 'camera' },
+        { txt: '🖼️ KI-Vorschläge', action: 'ai' },
         { txt: '📤 Galerie', action: 'gallery' }
       ];
 
@@ -20859,14 +20855,6 @@
   function showPublishFeeModal(offer, onPublished = null){
     publishFeePendingOffer = offer;
     publishFeeSuccessCallback = onPublished;
-    var price = (offer && typeof offer.price === 'number') ? offer.price : 8.5;
-    var total = 30 * price;
-    var priceStr = price.toFixed(2).replace('.', ',');
-    var totalStr = total.toFixed(2).replace('.', ',');
-    var elPrice = document.getElementById('publishFeeUmsatzPrice');
-    var elTotal = document.getElementById('publishFeeUmsatzTotal');
-    if(elPrice) elPrice.textContent = priceStr;
-    if(elTotal) elTotal.textContent = totalStr;
     const bd = document.getElementById('publishFeeBd');
     const sheet = document.getElementById('publishFeeSheet');
     if(bd) bd.classList.add('active');
@@ -22332,25 +22320,6 @@
       }
     }, 200);
   }
-
-  // Health Check (Go-Live): Prüft nach kurzer Verzögerung, ob wichtige Views & Nav da sind. Nur Console, keine Störung für Nutzer.
-  setTimeout(function healthCheck(){
-    var requiredIds = ['v-discover','v-profile','v-cart','v-fav','v-orders','customerNav','discoverOffers','discoverEmpty'];
-    var missing = [];
-    requiredIds.forEach(function(id){
-      if(!document.getElementById(id)) missing.push(id);
-    });
-    var activeViews = document.querySelectorAll('.view.active');
-    var oneActive = activeViews.length === 1;
-    if(missing.length === 0 && oneActive){
-      if(typeof console !== 'undefined' && console.info) console.info('Mittagio Health Check: OK');
-    } else {
-      if(typeof console !== 'undefined' && console.warn){
-        if(missing.length) console.warn('Mittagio Health Check: fehlende Elemente:', missing.join(', '));
-        if(!oneActive) console.warn('Mittagio Health Check: erwartet 1 aktive View, gefunden:', activeViews.length);
-      }
-    }
-  }, 500);
 </script>
 
 <script>
