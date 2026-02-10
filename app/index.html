@@ -3928,6 +3928,13 @@
       background: var(--bg);
       min-height: 100vh;
     }
+    /* Meins, Mittagsbox, Favoriten: Inhaltsbereich füllt Viewport – kein Leerraum beim Runterscrollen */
+    #v-profile > div:last-child,
+    #v-cart > div:last-child,
+    #v-fav > div:last-child {
+      min-height: calc(100vh - 60px);
+      box-sizing: border-box;
+    }
 
     /* Modern Sticky Header */
     .cust-header-sticky {
