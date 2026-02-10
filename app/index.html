@@ -4674,7 +4674,7 @@
         <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px;">
           <h1 style="font-size:20px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a; margin:0;">Meins</h1>
           <div style="display:flex; align-items:center; gap:8px;">
-            <button type="button" id="btnProfileProviderPortal" aria-label="Zum Anbieter-Portal" onclick="typeof showProviderLoginModal==='function'&&showProviderLoginModal()" style="width:40px; height:40px; border-radius:12px; background:rgba(255,215,0,0.25); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer;">
+            <button type="button" id="btnProfileProviderPortal" aria-label="Zum Anbieter-Portal" onclick="(window.showProviderLoginModal||function(){})();" style="width:40px; height:40px; border-radius:12px; background:rgba(255,215,0,0.25); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer;">
               <i data-lucide="building" style="width:20px;height:20px;color:#1a1a1a;"></i>
             </button>
             <button type="button" id="btnProfileSettings" aria-label="Einstellungen" onclick="openProfileSettingsSheet()" style="width:40px; height:40px; border-radius:12px; background:#f1f3f5; border:none; display:flex; align-items:center; justify-content:center; cursor:pointer;">
@@ -4791,7 +4791,7 @@
           <button onclick="closeProfileSettingsSheet(); openProfilePwaTipSheet();" style="width:100%; padding:16px 20px; background:#f8f9fa; border:none; border-radius:14px; display:flex; align-items:center; gap:12px; cursor:pointer; text-align:left; font-size:15px; font-weight:700; color:#1a1a1a;">
             <span style="font-size:20px;">📱</span><span>App installieren (PWA)</span>
           </button>
-          <button onclick="closeProfileSettingsSheet(); typeof showProviderLoginModal==='function'&&showProviderLoginModal();" style="width:100%; padding:16px 20px; background:rgba(255,215,0,0.2); border:none; border-radius:14px; display:flex; align-items:center; gap:12px; cursor:pointer; text-align:left; font-size:15px; font-weight:700; color:#1a1a1a;">
+          <button onclick="closeProfileSettingsSheet(); (window.showProviderLoginModal||function(){})();" style="width:100%; padding:16px 20px; background:rgba(255,215,0,0.2); border:none; border-radius:14px; display:flex; align-items:center; gap:12px; cursor:pointer; text-align:left; font-size:15px; font-weight:700; color:#1a1a1a;">
             <span style="font-size:20px;">🏢</span><span>Zum Anbieter-Portal</span>
           </button>
           <button onclick="closeProfileSettingsSheet(); handleSupportAction('logout');" style="width:100%; padding:16px 20px; background:#fef2f2; border:none; border-radius:14px; display:flex; align-items:center; gap:12px; cursor:pointer; text-align:left; font-size:15px; font-weight:700; color:#b91c1c;">
@@ -15121,6 +15121,17 @@
     if(emailField) emailField.value = '';
     if(passField) passField.value = '';
   }
+  if(typeof window !== 'undefined'){
+    window.showProviderLoginModal = showProviderLoginModal;
+    window.closeProviderLoginModal = closeProviderLoginModal;
+  }
+  var btnProfileProviderPortalEl = document.getElementById('btnProfileProviderPortal');
+  if(btnProfileProviderPortalEl){
+    btnProfileProviderPortalEl.addEventListener('click', function(e){
+      e.preventDefault();
+      showProviderLoginModal();
+    });
+  }
   
   // Provider Login Handler
   const btnProviderLoginModal = document.getElementById('btnProviderLoginModal');
@@ -22320,6 +22331,29 @@
       }
     }, 200);
   }
+
+  // Health-Check für die ganze Seite (einmal nach 500 ms)
+  setTimeout(function mittagioHealthCheck(){
+    var missing = [];
+    var ids = [
+      'v-discover','v-profile','v-cart','v-fav','v-orders','v-plan-public',
+      'customerNav','discoverOffers','discoverEmpty','discoverCategoriesBar','discoverDaysBar',
+      'providerLoginBd','providerLoginSheet','btnProviderLoginModal','btnProfileProviderPortal',
+      'v-provider-home','v-provider-week','providerNavWrap'
+    ];
+    ids.forEach(function(id){
+      if(!document.getElementById(id)) missing.push(id);
+    });
+    var activeViews = document.querySelectorAll('.view.active');
+    var oneActive = activeViews.length === 1;
+    if(missing.length === 0 && oneActive){
+      if(typeof console !== 'undefined') console.log('Mittagio Health Check: OK');
+    } else {
+      if(typeof console !== 'undefined'){
+        console.warn('Mittagio Health Check:', missing.length ? 'Fehlende IDs: ' + missing.join(', ') : 'OK', oneActive ? '' : 'Aktive Views: ' + activeViews.length + ' (erwartet 1)');
+      }
+    }
+  }, 500);
 </script>
 
 <script>
