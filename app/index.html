@@ -8384,9 +8384,19 @@
     document.body.classList.toggle('provider-week-active', id === 'v-provider-week');
     // Nach View-Wechsel Inhalte neu rendern (Discover, Favoriten, Bestellungen, Profil, etc.)
     if(id === views.discover || id === 'v-discover'){
-      var mainDiscover = document.querySelector('#v-discover .discover-main');
-      if(mainDiscover) mainDiscover.style.display = '';
-      setTimeout(function(){ if(typeof renderDiscover === 'function') renderDiscover(); }, 50);
+      var discoverSection = document.getElementById('v-discover');
+      if(discoverSection){
+        var mainDiscover = discoverSection.querySelector('.discover-main');
+        if(mainDiscover) mainDiscover.style.display = 'block';
+        var offersList = document.getElementById('discoverOffers');
+        if(offersList) offersList.style.display = 'flex';
+        var catBar = document.getElementById('discoverCategoriesBar');
+        if(catBar) catBar.style.display = 'flex';
+        var daysBar = document.getElementById('discoverDaysBar');
+        if(daysBar) daysBar.style.display = 'flex';
+      }
+      if(typeof renderDiscover === 'function') renderDiscover();
+      setTimeout(function(){ if(typeof renderDiscover === 'function') renderDiscover(); }, 80);
     } else if(id === views.fav || id === 'v-fav'){ setTimeout(function(){ if(typeof renderFavorites === 'function') renderFavorites(); }, 50); }
     else if(id === views.orders || id === 'v-orders'){ setTimeout(function(){ if(typeof renderOrders === 'function') renderOrders(); }, 50); }
     else if(id === views.profile || id === 'v-profile'){ setTimeout(function(){ if(typeof updateProfileView === 'function') updateProfileView(); }, 50); }
@@ -8975,11 +8985,14 @@
   }
   
   function renderDiscover(){
-    // Date Bar rendern (neu)
+    // Pills und Tage sofort sichtbar machen
+    var catBar = document.getElementById('discoverCategoriesBar');
+    var daysBar = document.getElementById('discoverDaysBar');
+    if(catBar) catBar.style.display = 'flex';
+    if(daysBar) daysBar.style.display = 'flex';
     renderDiscoverDays();
-    
-    // Date Bar rendern (neu)
     if(typeof renderDiscoverDays === 'function') renderDiscoverDays();
+    if(typeof renderDiscoverCategories === 'function') renderDiscoverCategories();
     
     // Location-Autofill: Toggle & Input-Handler
     const btnDiscoverLocationGPS = document.getElementById('btnDiscoverLocationGPS');
@@ -9235,20 +9248,18 @@
     // Angebote filtern: Nur heute + Zeit-Filter (10 Min Gehzeit oder 15 Min Fahrzeit)
     let list = offers.filter(o => o.day === activeDay && o.active !== false);
     
-    // Zeit-Filter: Standard 10 Min Gehzeit (5 km/h = 12 Min/km), optional 15 Min Fahrzeit (50 km/h = 1.2 Min/km)
+    // Zeit-Filter: Angebote ohne Entfernung anzeigen, damit Bilder/Layout nicht fehlen
     if(activeTimeFilter === 'walking'){
-      // Standard: Gehzeit <= 10 Min
       list = list.filter(o => {
         const data = normalizeOffer(o);
-        if(data.distanceKm == null) return false; // Keine Entfernung = ausblenden
+        if(data.distanceKm == null) return true;
         const walkingMinutes = Math.round(Number(data.distanceKm) * 12);
         return walkingMinutes <= 10;
       });
     } else if(activeTimeFilter === 'driving'){
-      // Erweitert: Fahrzeit <= 15 Min
       list = list.filter(o => {
         const data = normalizeOffer(o);
-        if(data.distanceKm == null) return false; // Keine Entfernung = ausblenden
+        if(data.distanceKm == null) return true;
         const carMinutes = Math.round(Number(data.distanceKm) * 1.2);
         return carMinutes <= 15;
       });
@@ -9301,15 +9312,20 @@
         list = list.filter(o => (o.category||'') === cat);
       }
     }
-    // Hunger-Radius (500m / 1km / 3km)
+    // Hunger-Radius (500m / 1km / 3km) – ohne Entfernung: anzeigen, damit Karten/Bilder nicht fehlen
     const radiusKm = discoverRadiusM / 1000;
-    list = list.filter(o => {
+    var listFiltered = list.filter(o => {
       const data = normalizeOffer(o);
-      const d = data.distanceKm != null ? Number(data.distanceKm) : 0;
+      if(data.distanceKm == null) return true;
+      const d = Number(data.distanceKm);
       return d <= radiusKm;
     });
+    // Fallback: Wenn alles rausgefiltert, aber es gibt Angebote für den Tag → trotzdem anzeigen
+    if(listFiltered.length === 0 && list.length > 0) listFiltered = list;
+    list = listFiltered;
     
-    // Standort-Filter
+    // Standort-Filter (nur wenn Suchbegriff; Fallback: bei 0 Treffern Tages-Angebote trotzdem anzeigen)
+    const beforeLocation = list.length;
     const q = String(locationQuery||'').trim().toLowerCase();
     if(q){
       list = list.filter(o=>{
@@ -9317,6 +9333,7 @@
         const addr = buildAddress({address:data.address, street:data.providerStreet, zip:data.providerZip, city:data.providerCity});
         return String(addr||'').toLowerCase().includes(q);
       });
+      if(list.length === 0 && beforeLocation > 0) list = offers.filter(o => o.day === activeDay && o.active !== false);
     }
     
     // List Cards rendern (Modern Style)
@@ -9333,30 +9350,25 @@
         offersEl.appendChild(createSlimCardSkeleton());
       }
       
-      // Kurze Verzögerung für bessere UX (simuliert Ladezeit)
+      // Kurze Verzögerung damit View/Container sichtbar sind (Bilder/Pills rendern korrekt)
       setTimeout(() => {
+      if(offersEl) offersEl.style.display = 'flex';
       offersEl.innerHTML = '';
       emptyEl.style.display = list.length ? 'none' : 'block';
       
-      // Entscheidungs-Kacheln (2x2 Grid) - Heute-Fokus mit 3 Säulen
-      // Prüfe ob Grid-Modus aktiviert werden soll (kann später als Toggle implementiert werden)
-      const useDecisionTiles = false; // Standard: Liste, kann auf true gesetzt werden für Grid
+      const useDecisionTiles = false;
       
       if(useDecisionTiles){
         // ... grid code ...
       } else {
-        // Modern List Cards
         list.forEach(o=> {
           const card = createModernOfferCard(o);
           offersEl.appendChild(card);
         });
       }
     
-      // Icons aktualisieren nach dem Rendern
-    if(typeof lucide !== 'undefined'){
-      setTimeout(()=> lucide.createIcons(), 50);
-    }
-      }, 300); // 300ms Delay für realistische Ladezeit
+      if(typeof lucide !== 'undefined') setTimeout(()=> lucide.createIcons(), 50);
+      }, 100);
     } else {
       // Container fehlen (z. B. View noch nicht sichtbar) – erneut versuchen
       if(typeof renderDiscover === 'function') setTimeout(renderDiscover, 100);
