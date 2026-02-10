@@ -2417,8 +2417,6 @@
     body.provider-mode .topbar { display: none !important; }
     body.provider-mode main { padding: 0 !important; max-width: none !important; }
     body.provider-mode [id^="v-provider-"] { padding-top: calc(8px + env(safe-area-inset-top, 0px)) !important; margin-top: 0 !important; }
-      transform:translateX(32px);
-    }
     
     /* Discover Header - Sticky, immer über Kategorie- und Tage-Leiste (z-index > 90) */
     .discover-header-sticky{
@@ -20176,11 +20174,7 @@
             w.data.dish=s.dish; 
             w.data.category=cat; 
             if(s.allergens) w.data.allergens=[].concat(s.allergens||[]); 
-            // Automatisch KI-Bild wenn kein eigenes vorhanden
-            if(!w.data.photoData || w.data.photoDataIsStandard){
-              w.data.photoData = s.img || '';
-              w.data.photoDataIsStandard = true;
-            }
+            // Kein automatisches KI-Bild mehr (war oft nicht sichtbar → Frustration)
             saveDraft(); 
             rebuildWizard(); 
           };
@@ -20191,37 +20185,19 @@
         w.data.dish=input.value; 
         saveDraft(); 
         fillSuggestions(); 
-        // Automatischer Bild-Vorschlag (KI-Bild)
-        if(!w.data.photoData || w.data.photoDataIsStandard){
-          const imgs = typeof getDishImagesForName==='function' ? getDishImagesForName(w.data.dish) : [];
-          if(imgs.length > 0){
-            w.data.photoData = imgs[0];
-            w.data.photoDataIsStandard = true;
-            // Wir rendern nicht den ganzen Wizard neu um den Fokus nicht zu verlieren,
-            // aber wir aktualisieren die Bild-Vorschau falls vorhanden
-            const imgPreview = box.querySelector('.wizard-img-preview-container');
-            if(imgPreview){
-              imgPreview.style.display = 'block';
-              imgPreview.querySelector('img').src = w.data.photoData;
-            } else {
-              // Wenn noch keine Vorschau da war, doch rebuild
-              rebuildWizard();
-            }
-          }
-        }
+        // KI-Bild-Vorschlag beim Tippen deaktiviert (Anzeige war unzuverlässig)
       };
       input.onfocus=fillSuggestions;
       box.appendChild(input);
       box.appendChild(suggestWrap);
 
-      // --- 3-Slot Bild: Kamera | KI | Galerie ---
+      // --- Bild: Kamera | Galerie (KI-Vorschläge deaktiviert – keine Anzeige/Frustration beim Anbieter) ---
       const labelImg=document.createElement('div'); labelImg.className='hint'; labelImg.textContent='Bild';
       box.appendChild(labelImg);
       const imgRow=document.createElement('div'); imgRow.className='answers'; imgRow.style.marginBottom='16px';
       
       const slots = [
         { txt: '📷 Kamera', action: 'camera' },
-        { txt: '🖼️ KI-Vorschläge', action: 'ai' },
         { txt: '📤 Galerie', action: 'gallery' }
       ];
 

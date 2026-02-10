@@ -15,11 +15,12 @@
 
 ## 2. Bild-Modul
 
-Drei Optionen zur Auswahl:
+Zwei Optionen zur Auswahl (Stand: Feb 2026):
 
 1. **Kamera** – Direktaufnahme
-2. **Upload** – Galerie/Bibliothek
-3. **3 KI-Vorschläge** – Basierend auf dem Gerichtsnamen
+2. **Galerie** – Upload aus Bibliothek
+
+**Hinweis:** „3 KI-Vorschläge“ (Bilder basierend auf Gerichtsnamen) war im Flow integriert, die Anzeige war jedoch unzuverlässig (z. B. Käsespätzle zeigte kein Bild). Um Frustration beim Anbieter zu vermeiden, ist die KI-Option vorübergehend **deaktiviert**. Kann wieder aktiviert werden, sobald die Bildquelle/Anzeige stabil ist (z. B. 3 sichtbare Thumbnails, zuverlässiges Laden).
 
 ---
 
