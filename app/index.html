@@ -2415,7 +2415,8 @@
     /* Anbieter-Ansichten: Topbar ausblenden, Inhalt beginnt oben ohne Leerraum */
     body.provider-mode .topbar { display: none !important; }
     body.provider-mode main { padding-top: 0 !important; }
-    body.provider-mode [id^="v-provider-"] { padding-top: calc(6px + env(safe-area-inset-top, 0px)) !important; }
+    body.provider-mode [id^="v-provider-"] { padding-top: env(safe-area-inset-top, 0px) !important; }
+    body.provider-mode .prov-header { padding-top: 8px !important; padding-bottom: 12px !important; }
     
     /* Discover Header - Sticky, immer über Kategorie- und Tage-Leiste (z-index > 90) */
     .discover-header-sticky{
