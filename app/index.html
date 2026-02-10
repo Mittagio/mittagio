@@ -2378,7 +2378,8 @@
       z-index:3;
     }
     .toggle-switch.active .toggle-slider{
-    
+      transform:translateX(32px);
+    }
     /* Status-Ampel Animationen */
     @keyframes pulse-green {
       0%, 100% { opacity: 1; transform: scale(1); }
@@ -2415,8 +2416,7 @@
     /* Anbieter-Ansichten: Topbar ausblenden, Inhalt beginnt oben ohne Leerraum */
     body.provider-mode .topbar { display: none !important; }
     body.provider-mode main { padding-top: 0 !important; }
-    body.provider-mode [id^="v-provider-"] { padding-top: env(safe-area-inset-top, 0px) !important; }
-    body.provider-mode .prov-header { padding-top: 8px !important; padding-bottom: 12px !important; }
+    body.provider-mode [id^="v-provider-"] { padding-top: calc(6px + env(safe-area-inset-top, 0px)) !important; }
     
     /* Discover Header - Sticky, immer über Kategorie- und Tage-Leiste (z-index > 90) */
     .discover-header-sticky{
