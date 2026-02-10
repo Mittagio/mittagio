@@ -8375,13 +8375,11 @@
     view.classList.add('active');
     var displayVal = (id === 'v-pickup-code' || id === 'v-provider-profile') ? 'flex' : 'block';
     view.style.display = displayVal;
-    // Danach alle anderen Views ausblenden: Inline-Style leeren, damit CSS .view { display:none } greift.
-    // Nur bei Views mit eigenem Inline-Display (z. B. flex) explizit none setzen, damit sie wirklich verschwinden.
+    // Alle anderen Views ausblenden (explizit display:none), damit nie mehrere Views gleichzeitig sichtbar sind.
     document.querySelectorAll('.view').forEach(v => {
       if(v === view) return;
       v.classList.remove('active');
-      v.style.display = '';
-      if(v.id === 'v-provider-profile' || v.id === 'v-pickup-code') v.style.display = 'none';
+      v.style.display = 'none';
     });
     document.body.classList.toggle('provider-week-active', id === 'v-provider-week');
     // Nach View-Wechsel Inhalte neu rendern (Discover, Favoriten, Bestellungen, Profil, etc.)
@@ -8398,9 +8396,8 @@
     else if(id === 'v-provider-pickups'){ setTimeout(function(){ if(typeof renderProviderPickups === 'function') renderProviderPickups(); }, 50); }
     else if(id === 'v-provider-week'){ setTimeout(function(){ if(typeof renderWeekPlan === 'function') renderWeekPlan(); }, 50); }
     else if(id === 'v-provider-cookbook'){ setTimeout(function(){ if(typeof renderCookbook === 'function') renderCookbook(); }, 50); }
-    /* Bei Anbieter-Views sofort nach oben scrollen, damit kein leerer oberer Bereich sichtbar ist */
-    var isProviderView = id && id.indexOf('v-provider-') === 0;
-    window.scrollTo({ top: 0, behavior: isProviderView ? 'auto' : 'smooth' });
+    // Immer nach oben scrollen, damit die Seite nicht „nach unten verschoben“ wirkt.
+    window.scrollTo(0, 0);
     if (id === 'v-provider-login') {
       requestAnimationFrame(function(){ requestAnimationFrame(function(){ window.scrollTo({ top: 0, behavior: 'auto' }); }); });
     }
@@ -8511,13 +8508,16 @@
     } else {
       const lastView = localStorage.getItem('mittagio_last_view');
       const lastMode = localStorage.getItem('mittagio_last_mode');
-      if((lastMode === 'customer' || lastMode === 'start') && lastView && document.getElementById(lastView)){
-        showView(lastView);
-        if(lastView === views.discover) { renderChips(); renderDiscover(); }
-        else if(lastView === views.fav) renderFavorites();
-        else if(lastView === views.orders) renderOrders();
-        else if(lastView === views.profile) updateProfileView();
-        else if(lastView === 'v-start') renderStart();
+      // Kunden-Start: Immer Entdecken beim Öffnen (kein direkter Sprung auf Meins), damit keine „alle Seiten auf einmal“-Ansicht entsteht.
+      var viewToShow = (lastMode === 'customer' || lastMode === 'start') && lastView && document.getElementById(lastView) && lastView !== views.profile
+        ? lastView
+        : null;
+      if(viewToShow){
+        showView(viewToShow);
+        if(viewToShow === views.discover) { renderChips(); renderDiscover(); }
+        else if(viewToShow === views.fav) renderFavorites();
+        else if(viewToShow === views.orders) renderOrders();
+        else if(viewToShow === 'v-start') renderStart();
       } else {
         showDiscover();
       }
@@ -22274,6 +22274,12 @@
       mode = 'customer';
     }
   }
+
+  // Einmal alle Views ausblenden, damit nie „alle Seiten auf einmal“ beim Load erscheinen.
+  document.querySelectorAll('.view').forEach(function(v){
+    v.classList.remove('active');
+    v.style.display = 'none';
+  });
 
   // Magic Link: #/plan/[Anbieter-ID] – öffentliche Wochenplan-Ansicht (Kunde sieht nur Verkaufspreis, 3 Säulen)
   var planMatch = (location.hash || '').match(/^#\/plan\/(.+)$/);
