@@ -4687,7 +4687,7 @@
         </div>
       </header>
 
-      <div style="padding:24px 16px 120px; display:flex; flex-direction:column; gap:20px;">
+      <div style="padding:40px 16px 120px; display:flex; flex-direction:column; gap:20px;">
         <!-- Kurz Identität (Avatar + Name), nur wenn eingeloggt -->
         <div class="cust-card" id="profileHeaderCard" style="padding:16px 20px; flex-direction:row; align-items:center; gap:12px; margin-bottom:0; background:none; border:none; box-shadow:none;">
           <!-- Wird dynamisch befüllt -->
@@ -4741,7 +4741,7 @@
         <div style="width:40px; height:4px; background:#e2e8f0; border-radius:2px; margin:0 auto 16px;"></div>
         <h2 style="margin:0; font-size:18px; font-weight:900; color:#1a1a1a;">Einstellungen & mehr</h2>
       </div>
-      <div style="overflow-y:auto; max-height:calc(85vh - 80px); padding:8px 16px 24px;">
+      <div id="profileSettingsSheetScroll" style="overflow-y:auto; max-height:calc(85vh - 80px); padding:8px 16px 24px;">
         <div id="profileSettingsSheetData" style="display:none; padding:12px 0;">
           <div style="margin-bottom:12px;">
             <label style="display:block; font-size:11px; font-weight:700; color:#94a3b8; margin-bottom:4px;">E-Mail</label>
@@ -15024,12 +15024,10 @@
   function openProfileSettingsSheet(){
     const bd = document.getElementById('profileSettingsSheetBd');
     const sheet = document.getElementById('profileSettingsSheet');
+    const scrollEl = document.getElementById('profileSettingsSheetScroll');
     if(bd){ bd.style.display = 'block'; bd.style.opacity = '1'; }
-    if(sheet){
-      sheet.style.display = 'block';
-      var scrollEl = sheet.children[1] || sheet.querySelector('div[style*="overflow"]');
-      if(scrollEl) scrollEl.scrollTop = 0;
-    }
+    if(sheet) sheet.style.display = 'block';
+    if(scrollEl) scrollEl.scrollTop = 0;
     if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
   }
   function closeProfileSettingsSheet(){
@@ -15045,6 +15043,8 @@
     el.style.display = isHidden ? 'block' : 'none';
     const chevrons = document.querySelectorAll('.profile-sheet-chevron[data-section="' + sectionId + '"]');
     chevrons.forEach(c => { c.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)'; });
+    var scrollEl = document.getElementById('profileSettingsSheetScroll');
+    if(scrollEl) scrollEl.scrollTop = 0;
     if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
   }
   function openProfilePwaTipSheet(){
