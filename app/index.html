@@ -20182,7 +20182,8 @@
     }
     if(wNextBtn) wNextBtn.style.display = ''; // Weiter-Button sichtbar (Schritt 4 blendet ihn aus)
     const total = 4;
-    setWizardHeader('', `Schritt ${Math.min(w.step+1,total)} von ${total}`);
+    const isSlimStep0 = (w.step === 0);
+    setWizardHeader('', isSlimStep0 ? 'Inserat' : `Schritt ${Math.min(w.step+1,total)} von ${total}`);
     const profile = normalizeProviderProfile(provider.profile || {});
     if(!w.data.pickupWindow){ w.data.pickupWindow = profile.mealWindow || DEFAULT_MEAL_WINDOW; }
     if(w.data.dineInPossible === undefined) w.data.dineInPossible = !(provider.profile&&provider.profile.dineInPossibleDefault===false);
@@ -20411,9 +20412,10 @@
         w.data.wantsAllergens = !!p.wantsAllergensByDefault;
         if(!w.data.wantsAllergens) w.data.allergens = [];
         w.data.hasPickupCode = !!p.abholnummerEnabledByDefault;
-        w.step = 2;
         if(typeof localStorage !== 'undefined') localStorage.setItem('wizard_draft', JSON.stringify(w));
-        rebuildWizard();
+        var o = previewOfferFromWizard();
+        closeWizard();
+        if(typeof showPublishFeeModal === 'function') showPublishFeeModal(o);
       };
       box.appendChild(slimPrimary);
 
@@ -20435,10 +20437,8 @@
       setWizardContent(box);
       setWizardNext('Weiter');
       if(wNextBtn) {
-        wNextBtn.onclick = () => {
-          w.step++;
-          rebuildWizard();
-        };
+        wNextBtn.style.display = 'none';
+        wNextBtn.onclick = () => { w.step++; rebuildWizard(); };
       }
       if(wBackBtn){ wBackBtn.innerHTML='<i data-lucide="chevron-left" style="width:18px;height:18px;"></i> Zurück'; if(typeof lucide!=='undefined'&&lucide.createIcons) lucide.createIcons(); }
       return;
