@@ -4215,7 +4215,7 @@
             <p style="margin:2px 0 0; font-size:13px; color:#64748b; font-weight:600;">Unser Wochenplan ist online!</p>
           </div>
         </div>
-        <a href="#" id="planPublicBack" style="display:inline-flex; align-items:center; gap:6px; margin-top:16px; font-size:14px; font-weight:700; color:var(--brand,#FFD700); text-decoration:none;">← Zur App</a>
+        <a href="#" id="planPublicBack" onclick="event.preventDefault(); location.hash=''; if(typeof setMode==='function') setMode('customer'); if(typeof showDiscover==='function') showDiscover(); return false;" style="display:inline-flex; align-items:center; gap:6px; margin-top:16px; font-size:14px; font-weight:700; color:var(--brand,#FFD700); text-decoration:none; cursor:pointer; -webkit-tap-highlight-color:rgba(0,0,0,0.1);">← Zur App</a>
       </header>
       <div id="planPublicList" style="max-width:500px; margin:0 auto; padding:20px 16px 24px;"></div>
     </section>
