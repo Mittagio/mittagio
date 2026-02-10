@@ -6281,9 +6281,17 @@
         </div>
       </div>
     </div>
+    <!-- Umsatz-Vorschau (Checkout) -->
+    <div id="publishFeeUmsatzCard" style="margin-bottom:20px; padding:20px; background:#ecfdf5; border-radius:16px; border:1px solid rgba(16,185,129,0.25);">
+      <div style="font-size:12px; font-weight:700; color:#047857; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:10px;">Dein Umsatz-Potenzial heute</div>
+      <div style="font-size:15px; color:#1a1a1a; font-weight:600;">
+        30 Portionen × <span id="publishFeeUmsatzPrice">8,50</span> € = <span id="publishFeeUmsatzTotal">255,00</span> €
+      </div>
+    </div>
     <div style="display:flex; flex-direction:column; gap:12px;">
-      <button class="btn-primary" type="button" id="btnPublishConfirm" style="width:100%; min-height:56px; font-size:16px; font-weight:700;">
-        Jetzt online stellen
+      <button class="btn-primary" type="button" id="btnPublishConfirm" style="width:100%; min-height:64px; background:#10b981; border:none; border-radius:16px; color:#fff; font-weight:800; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; box-shadow:0 4px 16px rgba(16,185,129,0.35);">
+        <span style="font-size:13px; font-weight:600; opacity:0.95;">Einmalig 4,99 €</span>
+        <span style="font-size:18px; letter-spacing:0.02em;">JETZT INSERIEREN</span>
       </button>
       <button class="btn ghost" type="button" onclick="closePublishFeeModal();" style="width:100%; min-height:44px;">
         Abbrechen
@@ -20832,6 +20840,14 @@
   function showPublishFeeModal(offer, onPublished = null){
     publishFeePendingOffer = offer;
     publishFeeSuccessCallback = onPublished;
+    var price = (offer && typeof offer.price === 'number') ? offer.price : 8.5;
+    var total = 30 * price;
+    var priceStr = price.toFixed(2).replace('.', ',');
+    var totalStr = total.toFixed(2).replace('.', ',');
+    var elPrice = document.getElementById('publishFeeUmsatzPrice');
+    var elTotal = document.getElementById('publishFeeUmsatzTotal');
+    if(elPrice) elPrice.textContent = priceStr;
+    if(elTotal) elTotal.textContent = totalStr;
     const bd = document.getElementById('publishFeeBd');
     const sheet = document.getElementById('publishFeeSheet');
     if(bd) bd.classList.add('active');
