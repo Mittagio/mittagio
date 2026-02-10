@@ -8202,6 +8202,8 @@
   }
 
   const DEFAULT_MEAL_WINDOW = '11:30 – 14:00';
+  /** Platzhalter-Bild für Inserate ohne Foto (Gastro, unspezifisch) – Overlay „Bild folgt“. */
+  const PLACEHOLDER_IMAGE_URL = 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=800&q=80';
   const INSERT_FEE = 4.99;       // Inseratsgebühr fix (€)
   const ABHOLNUMMER_FEE = 0.89;  // Abholnummer-Gebühr pro Verkauf (inkl. Stripe/Bank)
   const SUCCESS_FEE = ABHOLNUMMER_FEE; // Alias
@@ -20233,42 +20235,23 @@
       input.oninput=()=>{ 
         w.data.dish=input.value; 
         saveDraft(); 
-        fillSuggestions(); 
-        // Automatischer Bild-Vorschlag (KI-Bild)
-        if(!w.data.photoData || w.data.photoDataIsStandard){
-          const imgs = typeof getDishImagesForName==='function' ? getDishImagesForName(w.data.dish) : [];
-          if(imgs.length > 0){
-            w.data.photoData = imgs[0];
-            w.data.photoDataIsStandard = true;
-            // Wir rendern nicht den ganzen Wizard neu um den Fokus nicht zu verlieren,
-            // aber wir aktualisieren die Bild-Vorschau falls vorhanden
-            const imgPreview = box.querySelector('.wizard-img-preview-container');
-            if(imgPreview){
-              imgPreview.style.display = 'block';
-              imgPreview.querySelector('img').src = w.data.photoData;
-            } else {
-              // Wenn noch keine Vorschau da war, doch rebuild
-              rebuildWizard();
-            }
-          }
-        }
+        fillSuggestions();
       };
       input.onfocus=fillSuggestions;
       box.appendChild(input);
       box.appendChild(suggestWrap);
 
-      // --- 3-Slot Bild: Kamera | KI | Galerie ---
+      // --- 2-Slot Bild: Kamera | Galerie (ohne KI) – Platzhalter „Bild folgt“ wenn kein Bild ---
       const labelImg=document.createElement('div'); labelImg.className='hint'; labelImg.textContent='Bild';
       box.appendChild(labelImg);
       const imgRow=document.createElement('div'); imgRow.className='answers'; imgRow.style.marginBottom='16px';
       
       const slots = [
         { txt: '📷 Kamera', action: 'camera' },
-        { txt: '🖼️ KI-Vorschläge', action: 'ai' },
         { txt: '📤 Galerie', action: 'gallery' }
       ];
 
-      slots.forEach((slot, i) => {
+      slots.forEach((slot) => {
         const btn=document.createElement('button');
         btn.type='button'; btn.className='ans'; btn.style.minHeight='44px';
         btn.textContent=slot.txt;
@@ -20277,8 +20260,7 @@
             const f=await pickImage({capture:true}); 
             if(!f) return; 
             const dataUrl=await toDataUrl(f); 
-            // Automatischen Filter anwenden
-            w.data.photoData = await applyAppetizerFilter(dataUrl);
+            w.data.photoData = typeof applyAppetizerFilter==='function' ? await applyAppetizerFilter(dataUrl) : dataUrl;
             w.data.photoDataIsStandard=false; 
           }
           else if(slot.action === 'gallery'){ 
@@ -20288,10 +20270,6 @@
             w.data.photoData=dataUrl; 
             w.data.photoDataIsStandard=false; 
           }
-          else { 
-            const imgs=typeof getDishImagesForName==='function'?getDishImagesForName(w.data.dish||''):[]; 
-            if(imgs.length>0){ w.data.photoData=imgs[0]; w.data.photoDataIsStandard=true; } 
-          }
           saveDraft(); rebuildWizard();
         };
         imgRow.appendChild(btn);
@@ -20300,18 +20278,26 @@
       
       const prevContainer = document.createElement('div');
       prevContainer.className = 'wizard-img-preview-container';
-      prevContainer.style.display = w.data.photoData ? 'block' : 'none';
+      prevContainer.style.display = 'block';
       prevContainer.style.marginBottom = '16px';
       
-      const prev=document.createElement('div');
-      prev.style.cssText='width:100%; height:80px; border-radius:12px; overflow:hidden; margin-bottom:8px; background:#f0f0f0;';
-      prev.innerHTML='<img src="'+(w.data.photoData || '')+'" style="width:100%; height:100%; object-fit:cover;">';
+      const prevWrap = document.createElement('div');
+      prevWrap.style.cssText = 'width:100%; height:80px; border-radius:12px; overflow:hidden; margin-bottom:8px; background:#f0f0f0; position:relative;';
+      const prevImgSrc = w.data.photoData || WIZARD_PLACEHOLDER_IMAGE;
+      prevWrap.innerHTML = '<img src="'+prevImgSrc+'" style="width:100%; height:100%; object-fit:cover;" alt="">';
+      if(!w.data.photoData){
+        const overlay = document.createElement('div');
+        overlay.style.cssText = 'position:absolute; inset:0; background:rgba(16,185,129,0.35); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:800; color:#fff; text-shadow:0 1px 2px rgba(0,0,0,0.3);';
+        overlay.textContent = 'Bild folgt';
+        prevWrap.appendChild(overlay);
+      }
       
       const rem=document.createElement('button');
       rem.type='button'; rem.textContent='× Bild entfernen'; rem.style.cssText='font-size:12px; color:#64748b; background:none; border:none; cursor:pointer;';
       rem.onclick=()=>{ w.data.photoData=''; w.data.photoDataIsStandard=false; saveDraft(); rebuildWizard(); };
+      if(!w.data.photoData) rem.style.display='none';
       
-      prevContainer.appendChild(prev); 
+      prevContainer.appendChild(prevWrap); 
       prevContainer.appendChild(rem);
       box.appendChild(prevContainer);
 
@@ -20805,7 +20791,8 @@
       category: w.data.category||'Vegetarisch',
       price: Number(w.data.price||0),
       pickupWindow,
-      imageUrl: w.data.photoData || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70',
+      imageUrl: w.data.photoData || PLACEHOLDER_IMAGE_URL,
+      imagePlaceholder: !w.data.photoData,
       photoDataIsStandard: !!w.data.photoDataIsStandard,
       hasPickupCode: !!w.data.hasPickupCode,
       dineInPossible: !!w.data.dineInPossible,
