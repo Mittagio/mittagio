@@ -2201,6 +2201,10 @@
     details+details{margin-top:10px}
     summary{cursor:pointer;font-weight:950;font-size:15px;line-height:1.4}
     summary::-webkit-details-marker{display:none}
+    #v-legal-faq details summary::-webkit-details-marker,
+    #v-legal-faq-provider details summary::-webkit-details-marker{display:none}
+    #v-legal-faq details summary::marker,
+    #v-legal-faq-provider details summary::marker{content:''}
     details p{margin:10px 0 0;color:var(--muted);font-size:14px;line-height:1.6}
     .profile-faq-accordion details summary::-webkit-details-marker{display:none}
 
@@ -3380,7 +3384,9 @@
       }
       /* Wochenplan (weiteres Layout) */
       #v-provider-week .week-dayrow{ display:flex; gap:8px; overflow-x:auto; -webkit-overflow-scrolling:touch; padding:0 0 16px; margin-bottom:16px; border-bottom:1px solid #f1f3f5; }
-#v-provider-week .week-day-pill{ flex:0 0 auto; min-width:56px; min-height:48px; padding:12px 10px; border-radius:14px; border:2px solid transparent; background:#f8f9fa; font-size:13px; font-weight:800; color:#64748b; cursor:pointer; transition:all 0.2s; line-height:1.25; text-align:center; white-space:nowrap; display:inline-flex; align-items:center; justify-content:center; }
+#v-provider-week .week-day-pill{ flex:0 0 auto; min-width:60px; min-height:52px; padding:12px 10px; border-radius:14px; border:2px solid transparent; background:#f8f9fa; font-size:14px; font-weight:800; color:#64748b; cursor:pointer; transition:all 0.2s; line-height:1.25; text-align:center; white-space:nowrap; display:inline-flex; align-items:center; justify-content:center; }
+#v-provider-week .week-indicator-dot{ background:transparent; border:none; padding:4px; cursor:pointer; border-radius:50%; }
+#v-provider-week .week-indicator-dot:focus{ outline:none; box-shadow:0 0 0 2px var(--prov-brand); }
     #v-provider-week .week-day-pill.active{ background:rgba(14,165,233,0.12); border-color:var(--prov-brand); color:#1a1a1a; }
     #v-provider-week .week-day-pill.week-day-pill-today{ background:#fff; border-color:rgba(14,165,233,0.35); font-weight:900; box-shadow:0 1px 3px rgba(0,0,0,0.06); }
     #v-provider-week .week-day-pill.week-day-pill-today.active{ border-color:var(--prov-brand); background:rgba(14,165,233,0.12); }
@@ -3397,8 +3403,11 @@
       #v-provider-week .week-meal-meta{ font-size:13px; color:#64748b; margin-top:4px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
       #v-provider-week .week-meal-online{ display:inline-flex; align-items:center; gap:4px; font-size:12px; font-weight:700; color:#10b981; }
       #v-provider-week .week-meal-actions{ display:flex; align-items:center; gap:6px; }
-      #v-provider-week .week-add-more{ width:100%; margin-top:8px; padding:16px; border-radius:16px; border:2px dashed #cbd5e1; background:#fff; font-size:15px; font-weight:700; color:#64748b; cursor:pointer; transition:all 0.2s; }
-      #v-provider-week .week-add-more:hover{ border-color:var(--prov-brand); color:var(--prov-brand); background:rgba(14,165,233,0.08); }
+      #v-provider-week .week-add-more{ width:100%; margin-top:8px; min-height:56px; padding:16px; border-radius:16px; border:none; background:#10b981; color:#fff; font-size:16px; font-weight:800; cursor:pointer; transition:all 0.2s; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(16,185,129,0.3); }
+      #v-provider-week .week-add-more:hover{ background:#0d9668; }
+      #v-provider-week .week-add-more:active{ transform:scale(0.98); }
+      #v-provider-week .week-empty-state #btnWeekEmptyAdd.provider-add-plus-btn{ min-height:56px; background:#10b981; color:#fff; font-weight:800; border:none; box-shadow:0 4px 12px rgba(16,185,129,0.3); }
+      #v-provider-week .week-empty-state #btnWeekEmptyAdd.provider-add-plus-btn .plus-char{ color:#fff; }
       #v-provider-week .week-empty-state{ text-align:center; padding:32px 20px; }
       #v-provider-week .week-empty-state .week-empty-title{ font-size:18px; font-weight:900; color:#1a1a1a; margin-bottom:8px; }
       #v-provider-week .week-empty-state .week-empty-hint{ font-size:14px; color:#64748b; line-height:1.5; margin-bottom:24px; }
@@ -3446,8 +3455,22 @@
       #v-provider-week .week-overview-dishes{ font-size:15px; font-weight:700; color:#1a1a1a; line-height:1.45; }
       #v-provider-week .week-overview-dishes.empty{ color:#94a3b8; font-weight:600; }
       #v-provider-week .week-overview-cta-wrap{ padding:16px 20px calc(24px + env(safe-area-inset-bottom)); background:#fff; border-top:1px solid #e2e8f0; flex-shrink:0; }
-      #v-provider-week .week-overview-cta-wrap .week-edit-primary{ width:100%; min-height:56px; border-radius:16px; font-size:16px; font-weight:800; border:none; background:var(--prov-brand); color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; box-shadow:0 4px 16px rgba(14,165,233,0.35); }
+      /* Küchentauglich: Emerald, große Touch-Fläche */
+      #v-provider-week .week-overview-cta-wrap .week-edit-primary{ width:100%; min-height:56px; border-radius:16px; font-size:17px; font-weight:800; border:none; background:#10b981; color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; box-shadow:0 4px 16px rgba(16,185,129,0.35); }
       #v-provider-week .week-overview-cta-wrap .week-edit-primary:active{ transform:scale(0.98); }
+      /* Wochen-Indikator: Status-Punkte (Grün=aktiv, Gelb=Planung, Grau=leer) */
+      #v-provider-week .week-indicator-row{ display:flex; justify-content:center; gap:10px; padding:8px 0 12px; flex-wrap:wrap; }
+      #v-provider-week .week-indicator-dot{ width:10px; height:10px; border-radius:50%; flex-shrink:0; border:none; padding:0; cursor:pointer; background:inherit; }
+      #v-provider-week .week-indicator-dot.week-dot-active{ background:#10b981; }
+      #v-provider-week .week-indicator-dot.week-dot-draft{ background:#eab308; }
+      #v-provider-week .week-indicator-dot.week-dot-empty{ background:#e2e8f0; }
+      /* Feiertag: dezent mit Schloss */
+      #v-provider-week .week-day-pill.week-day-pill-holiday{ opacity:0.85; }
+      #v-provider-week .week-day-pill.week-day-pill-holiday::after{ content:''; display:inline-block; width:12px; height:12px; margin-left:4px; background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Crect x='3' y='11' width='18' height='11' rx='2'/%3E%3Cpath d='M7 11V7a5 5 0 0110 0v4'/%3E%3C/svg%3E") no-repeat center; background-size:12px 12px; vertical-align:middle; }
+      /* Master-Aktivierung: Sammel-Button */
+      #v-provider-week .week-master-activate-bar{ margin-top:12px; padding:14px 16px; background:#ecfdf5; border:1px solid rgba(16,185,129,0.25); border-radius:14px; }
+      #v-provider-week .week-master-activate-bar .week-master-btn{ width:100%; min-height:56px; border-radius:14px; font-size:16px; font-weight:800; border:none; background:#10b981; color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 4px 12px rgba(16,185,129,0.3); }
+      #v-provider-week .week-master-activate-bar .week-master-btn:active{ transform:scale(0.98); }
       #v-provider-week .week-overview-scroll{ -webkit-overflow-scrolling:touch; }
       #v-provider-week .week-overview-cta-wrap .week-edit-primary{ min-height:56px; }
       /* Nur #weekList scrollt – Section fix, kein Ganzseiten-Scroll */
@@ -3487,6 +3510,16 @@
       #v-provider-profile .provider-profile-logout-btn:active{ transform:scale(0.98); opacity:0.9; }
       #v-provider-profile .provider-profile-sub{ flex:1; min-height:0; overflow:hidden; }
       #v-provider-profile .provider-profile-sub > div[style*="overflow-y:auto"]{ flex:1; min-height:0; padding-bottom:calc(24px + env(safe-area-inset-bottom, 0)); }
+      #v-provider-profile .provider-profile-sub{ background:#F2F2F7 !important; }
+      #v-provider-profile #providerProfileMenuCard{ background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,0.06); }
+      /* Floating Labels (Silicon-Valley-Style) – Betriebsdaten */
+      #v-provider-profile .input-group{ position:relative; border-bottom:1px solid #E5E7EB; padding:20px 0 10px 0; margin-bottom:15px; }
+      #v-provider-profile .input-label{ position:absolute; top:20px; left:0; font-size:16px; color:#9CA3AF; transition:all 0.2s ease; pointer-events:none; text-transform:uppercase; letter-spacing:0.5px; }
+      #v-provider-profile .input-field:focus ~ .input-label,
+      #v-provider-profile .input-field:not(:placeholder-shown) ~ .input-label,
+      #v-provider-profile .input-field.floating-filled ~ .input-label{ top:0; font-size:10px; color:#6B7280; font-weight:bold; }
+      #v-provider-profile .input-field{ width:100%; border:none; outline:none; font-size:18px; background:transparent; color:#1a1a1a; box-sizing:border-box; padding:0; }
+      #v-provider-profile .input-field::placeholder{ color:transparent; }
       
       /* Provider Bottom Nav: Safe-Area, Touch 48px */
       #providerNav{
@@ -5475,6 +5508,7 @@
         <div style="font-size:12px; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Schnell hinzufügen</div>
         <input type="search" id="weekAddSheetSearch" placeholder="… oder suchen" style="width:100%; padding:14px 16px; border:1px solid #e5e7eb; border-radius:14px; font-size:15px; margin-bottom:16px; box-sizing:border-box;" />
         <div id="weekAddSheetList" style="display:grid; grid-template-columns:repeat(2, 1fr); gap:12px; max-height:50vh; overflow-y:auto; -webkit-overflow-scrolling:touch;"></div>
+        <button type="button" class="btn secondary" style="width:100%; min-height:48px; margin-top:12px; border-radius:14px; font-size:14px; font-weight:700; border:1px solid #10b981; color:#10b981; background:transparent;" id="btnWeekAddMulti">Gericht auf mehrere Tage setzen</button>
         <button type="button" class="btn secondary" style="width:100%; min-height:48px; margin-top:16px; border-radius:14px;" onclick="closeWeekAddSheet()">Schließen</button>
       </div>
     </div>
@@ -5490,23 +5524,41 @@
       <button type="button" class="cookbook-action-sheet-btn" onclick="closeCookbookActionSheet()">Abbrechen</button>
     </div>
 
-    <!-- Provider-Profil "Meins" – App-like: klarer Header, Hero-Card, Menü-Karten -->
+    <!-- Provider-Profil "Mein Profil" – Produkt-Schaufenster + Einstellungen hinter Zahnrad -->
     <section class="view onboarding-view" id="v-provider-profile" style="display:flex; flex-direction:column; min-height:0; background:#f8fafc;">
-      <header id="providerProfileHeader" style="background:#fff; padding:10px 20px 12px; padding-top:calc(10px + env(safe-area-inset-top, 0)); border-bottom:1px solid #f1f3f5; position:sticky; top:0; z-index:50; flex-shrink:0;">
-        <h1 style="margin:0; font-size:20px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a;">Mein Betrieb</h1>
-        <p style="margin:2px 0 0; font-size:13px; font-weight:600; color:#64748b;">Einstellungen & Kontakt</p>
+      <header id="providerProfileHeader" style="background:#fff; padding:12px 20px; padding-top:calc(12px + env(safe-area-inset-top, 0)); border-bottom:1px solid #f1f3f5; position:sticky; top:0; z-index:50; flex-shrink:0; display:flex; align-items:center; justify-content:space-between; gap:12px;">
+        <div style="flex:1; min-width:0; display:flex; align-items:center; gap:12px;">
+          <div class="plogo" id="providerProfileLogoHeader" style="width:44px; height:44px; border-radius:14px; flex-shrink:0; background-size:cover; background-position:center; background-color:#f1f3f5;"></div>
+          <h1 id="providerProfileNameHeader" style="margin:0; font-size:18px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">Mein Profil</h1>
+        </div>
+        <button type="button" id="providerProfileGearBtn" aria-label="Einstellungen" style="width:44px; height:44px; border-radius:14px; background:#f1f3f5; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+          <i data-lucide="settings" style="width:22px; height:22px; color:#64748b;"></i>
+        </button>
       </header>
 
       <div id="providerProfileContent" style="flex:1; overflow-y:auto; padding:12px 20px calc(100px + env(safe-area-inset-bottom, 0)); max-width:500px; margin:0 auto; width:100%; box-sizing:border-box;">
         <div id="providerProfileMainWrap">
           <div id="providerProfileMain">
-            <!-- Hero: Logo + Name (app-like, eine Karte) -->
-            <div class="provider-profile-hero" style="background:#fff; border-radius:20px; padding:28px 24px; text-align:center; margin-bottom:20px; border:none; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
-              <div class="plogo" id="providerProfileLogo" style="width:88px; height:88px; border-radius:24px; margin:0 auto 14px; border:none; box-shadow:0 4px 16px rgba(0,0,0,0.08); background-size:cover; background-position:center; background-color:#f1f3f5;"></div>
-              <h2 id="providerProfileName" style="margin:0; font-size:22px; font-weight:950; color:#1a1a1a; letter-spacing:-0.02em; line-height:1.2;">Betriebsname</h2>
-              <p id="providerProfileAddress" style="margin:8px 0 0; font-size:14px; color:#64748b; font-weight:600; display:none;"></p>
+            <!-- Kachel 1: Mittags-Inserat (clean, weiß) -->
+            <div class="provider-profile-card provider-profile-kachel-inserat" style="background:#fff; border-radius:20px; padding:24px; margin-bottom:16px; border:none; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
+              <div style="font-size:17px; font-weight:800; color:#1a1a1a; margin-bottom:6px;">Mittags-Inserat schalten</div>
+              <div style="font-size:24px; font-weight:950; color:#1a1a1a; margin-bottom:8px;">4,99 €</div>
+              <div style="font-size:12px; font-weight:800; color:#10b981; text-transform:uppercase; letter-spacing:0.05em;">Kein Abo. Kein Vertrag.</div>
+            </div>
+            <!-- Kachel 2: Digitale Abholnummer (blau/grau abgesetzt) -->
+            <div class="provider-profile-card provider-profile-kachel-abholnummer" style="background:linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border-radius:20px; padding:24px; margin-bottom:20px; border:1px solid rgba(14,165,233,0.15); box-shadow:0 2px 12px rgba(0,0,0,0.04);">
+              <div style="display:flex; align-items:center; gap:16px;">
+                <div style="width:56px; height:56px; border-radius:16px; background:rgba(255,255,255,0.9); display:flex; align-items:center; justify-content:center; font-size:28px; box-shadow:0 2px 8px rgba(0,0,0,0.06);">🧾</div>
+                <div>
+                  <div style="font-size:17px; font-weight:800; color:#1a1a1a;">Digitale Abholnummer</div>
+                  <div style="font-size:20px; font-weight:950; color:#0ea5e9;">0,89 €</div>
+                  <div style="font-size:12px; color:#64748b;">Weniger Chaos, mehr Zeit</div>
+                </div>
+              </div>
             </div>
 
+            <!-- Einstellungen (Apple-Settings-Stil): Menü-Karte auf #F2F2F7 -->
+            <div id="providerProfileMenuCardWrap" style="background:#F2F2F7; border-radius:20px; padding:12px; margin-bottom:20px;">
             <!-- Menü: eine Karte mit klaren Zeilen (app-like) -->
             <div id="providerProfileMenuCard" style="background:#fff; border-radius:20px; overflow:hidden; margin-bottom:20px; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
             <button type="button" id="providerProfileRowBusiness" class="provider-profile-row provider-profile-row-app">
@@ -5525,6 +5577,7 @@
               <div style="display:flex;align-items:center;gap:14px;"><i data-lucide="help-circle" style="width:22px;height:22px;color:#64748b;"></i><span>FAQ & Support</span></div>
               <i data-lucide="chevron-right" style="width:20px;height:20px;color:#cbd5e1;"></i>
             </button>
+            </div>
             </div>
 
             <button id="btnProviderLogout" class="provider-profile-logout-btn" style="width:100%; min-height:52px; background:#fff; color:#dc2626; border:2px solid #fecaca; border-radius:16px; font-weight:800; font-size:15px; display:flex; align-items:center; justify-content:center; gap:10px; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.04);">
@@ -5545,41 +5598,37 @@
 
         <div style="padding:20px 20px calc(80px + env(safe-area-inset-bottom, 0)); flex:1; overflow-y:auto; max-width:500px; margin:0 auto; width:100%; box-sizing:border-box;">
           <div class="provider-profile-card" style="background:#fff; border-radius:20px; padding:24px; margin-bottom:20px; border:none; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
-            <h3 style="margin:0 0 20px; font-size:17px; font-weight:800; color:#1a1a1a;">Kontaktdaten</h3>
+            <h3 style="margin:0 0 20px; font-size:17px; font-weight:800; color:#1a1a1a;">Betriebsdaten</h3>
             
-            <div style="margin-bottom:16px;">
-              <label style="display:block; font-size:11px; font-weight:700; color:#9ca3af; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.05em;">Betriebsname</label>
-              <input type="text" id="providerProfileBusinessName" placeholder="Name deines Betriebs" style="width:100%; height:52px; padding:0 16px; border:2px solid #f1f3f5; border-radius:14px; font-size:15px; font-weight:700; background:#f8f9fa; color:#1a1a1a; transition:all 0.2s;">
+            <div class="input-group">
+              <input type="text" id="providerProfileBusinessName" class="input-field" placeholder=" " autocomplete="organization" />
+              <label class="input-label" for="providerProfileBusinessName">Betriebsname</label>
             </div>
-
-            <div style="margin-bottom:16px;">
-              <label style="display:block; font-size:11px; font-weight:700; color:#9ca3af; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.05em;">Straße & Hausnummer</label>
-              <input type="text" id="providerProfileStreet" placeholder="z.B. Hauptstraße 12" style="width:100%; height:52px; padding:0 16px; border:2px solid #f1f3f5; border-radius:14px; font-size:15px; font-weight:700; background:#f8f9fa; color:#1a1a1a; transition:all 0.2s;">
+            <div class="input-group">
+              <input type="text" id="providerProfileStreet" class="input-field" placeholder=" " autocomplete="street-address" />
+              <label class="input-label" for="providerProfileStreet">Straße & Hausnummer</label>
             </div>
-            <div style="display:grid; grid-template-columns:1fr 2fr; gap:12px; margin-bottom:16px;">
-              <div>
-                <label style="display:block; font-size:11px; font-weight:700; color:#9ca3af; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.05em;">PLZ</label>
-                <input type="text" id="providerProfileZip" placeholder="70173" maxlength="10" style="width:100%; height:52px; padding:0 16px; border:2px solid #f1f3f5; border-radius:14px; font-size:15px; font-weight:700; background:#f8f9fa; color:#1a1a1a; transition:all 0.2s;">
+            <div style="display:grid; grid-template-columns:1fr 2fr; gap:12px;">
+              <div class="input-group">
+                <input type="text" id="providerProfileZip" class="input-field" placeholder=" " maxlength="10" autocomplete="postal-code" />
+                <label class="input-label" for="providerProfileZip">PLZ</label>
               </div>
-              <div>
-                <label style="display:block; font-size:11px; font-weight:700; color:#9ca3af; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.05em;">Ort</label>
-                <input type="text" id="providerProfileCity" placeholder="Stuttgart" style="width:100%; height:52px; padding:0 16px; border:2px solid #f1f3f5; border-radius:14px; font-size:15px; font-weight:700; background:#f8f9fa; color:#1a1a1a; transition:all 0.2s;">
+              <div class="input-group">
+                <input type="text" id="providerProfileCity" class="input-field" placeholder=" " autocomplete="address-level2" />
+                <label class="input-label" for="providerProfileCity">Ort</label>
               </div>
             </div>
-            
-            <div style="margin-bottom:16px;">
-              <label style="display:block; font-size:11px; font-weight:700; color:#9ca3af; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.05em;">Telefon</label>
-              <input type="tel" id="providerProfilePhone" placeholder="z.B. 07181 12345" style="width:100%; height:52px; padding:0 16px; border:2px solid #f1f3f5; border-radius:14px; font-size:15px; font-weight:700; background:#f8f9fa; color:#1a1a1a; transition:all 0.2s;">
+            <div class="input-group">
+              <input type="tel" id="providerProfilePhone" class="input-field" placeholder=" " autocomplete="tel" />
+              <label class="input-label" for="providerProfilePhone">Telefon</label>
             </div>
-            
-            <div style="margin-bottom:16px;">
-              <label style="display:block; font-size:11px; font-weight:700; color:#9ca3af; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.05em;">E-Mail</label>
-              <input type="email" id="providerProfileEmail" placeholder="geschaeft@betrieb.de" style="width:100%; height:52px; padding:0 16px; border:2px solid #f1f3f5; border-radius:14px; font-size:15px; font-weight:700; background:#f8f9fa; color:#1a1a1a; transition:all 0.2s;">
+            <div class="input-group">
+              <input type="email" id="providerProfileEmail" class="input-field" placeholder=" " autocomplete="email" />
+              <label class="input-label" for="providerProfileEmail">E-Mail</label>
             </div>
-            
-            <div style="margin-bottom:24px;">
-              <label style="display:block; font-size:11px; font-weight:700; color:#9ca3af; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.05em;">Webseite</label>
-              <input type="url" id="providerProfileWebsite" placeholder="https://..." style="width:100%; height:52px; padding:0 16px; border:2px solid #f1f3f5; border-radius:14px; font-size:15px; font-weight:700; background:#f8f9fa; color:#1a1a1a; transition:all 0.2s;">
+            <div class="input-group" style="margin-bottom:24px;">
+              <input type="url" id="providerProfileWebsite" class="input-field" placeholder=" " autocomplete="url" />
+              <label class="input-label" for="providerProfileWebsite">Webseite</label>
             </div>
 
             <button type="button" id="btnProviderSaveBusiness" class="btn-primary" style="width:100%; min-height:56px; border-radius:16px; font-size:16px; font-weight:800; background:#FFD700; color:#1a1a1a; border:none; box-shadow:0 4px 12px rgba(255,215,0,0.2);">
@@ -5872,7 +5921,7 @@
             <p style="margin:0 0 12px;"><strong>Fixpreis:</strong> Jedes Inserat wird mit einer Pauschale von 4,99 € berechnet.</p>
             <p style="margin:0 0 12px;"><strong>Zusatzleistung:</strong> Die Abholnummer kann für 0,89 € pro Vorgang optional hinzugebucht werden. Dieser Preis deckt alle Transaktionsgebühren ab.</p>
             <p style="margin:0 0 12px;"><strong>Fälligkeit:</strong> Die Gebühr wird mit Veröffentlichung des Inserats fällig.</p>
-            <p style="margin:0 0 12px;"><strong>Transparenz-Garantie:</strong> Die Nutzung der Plattform erfolgt ohne vertragliche Mindestlaufzeit. Jede Inseratsgebühr (4,99 €) ist eine Einzeltransaktion.</p>
+            <p style="margin:0 0 12px;"><strong>Kein Abo. Kein Vertrag.</strong> Die Nutzung erfolgt ohne vertragliche Mindestlaufzeit. Jede Inseratsgebühr (4,99 €) ist eine Einzeltransaktion.</p>
             <p style="margin:0;"><strong>Jederzeit flexibel:</strong> Du kannst die App jederzeit deinstallieren oder dein Profil löschen, ohne Kündigungsfristen beachten zu müssen.</p>
           </div>
         </details>
@@ -5936,70 +5985,65 @@
           </button>
         </div>
         
-        <!-- FAQ-Inhalt: Kunden (vollständige Liste) -->
+        <!-- FAQ-Inhalt: Kunden (Accordion – Tippen = Ausklappen) -->
         <div id="faqContentCustomer" style="display:block; padding:20px; line-height:1.8; font-size:15px;">
           <h2 style="font-size:16px; font-weight:800; margin:0 0 12px; color:#1a1a1a; text-transform:uppercase; letter-spacing:0.5px;">Bestellungen &amp; Bezahlung</h2>
-          <div style="margin-bottom:20px; padding-bottom:16px; border-bottom:1px solid #eee;">
-            <h3 style="font-size:16px; font-weight:700; margin-bottom:6px; color:#2D3436;">Muss ich mich registrieren?</h3>
-            <p style="margin:0; color:#666;">Ja, damit wir deine Abholnummer sicher zuordnen und dir deine Bestellhistorie anzeigen können.</p>
-          </div>
-          <div style="margin-bottom:20px; padding-bottom:16px; border-bottom:1px solid #eee;">
-            <h3 style="font-size:16px; font-weight:700; margin-bottom:6px; color:#2D3436;">Wie bezahle ich mein Essen?</h3>
-            <p style="margin:0; color:#666;">Die Bezahlung erfolgt digital direkt über die Plattform, damit du vor Ort keine Wartezeit an der Kasse hast.</p>
-          </div>
-          <div style="margin-bottom:24px; padding-bottom:16px; border-bottom:1px solid #eee;">
-            <h3 style="font-size:16px; font-weight:700; margin-bottom:6px; color:#2D3436;">Kann ich eine Bestellung stornieren?</h3>
-            <p style="margin:0; color:#666;">Da die Mahlzeiten frisch für dich vorbereitet werden, ist eine Stornierung nach Ablauf des Zeitfensters leider nicht möglich.</p>
-          </div>
-
+          <details style="background:#fff; border-radius:12px; border:1px solid rgba(0,0,0,.06); overflow:hidden; margin-bottom:8px;">
+            <summary style="padding:14px 16px; font-size:15px; font-weight:700; color:#2D3436; cursor:pointer; list-style:none;">Muss ich mich registrieren?</summary>
+            <p style="margin:0; padding:0 16px 16px; font-size:15px; color:#666;">Ja, damit wir deine Abholnummer sicher zuordnen und dir deine Bestellhistorie anzeigen können.</p>
+          </details>
+          <details style="background:#fff; border-radius:12px; border:1px solid rgba(0,0,0,.06); overflow:hidden; margin-bottom:8px;">
+            <summary style="padding:14px 16px; font-size:15px; font-weight:700; color:#2D3436; cursor:pointer; list-style:none;">Wie bezahle ich mein Essen?</summary>
+            <p style="margin:0; padding:0 16px 16px; font-size:15px; color:#666;">Die Bezahlung erfolgt digital direkt über die Plattform, damit du vor Ort keine Wartezeit an der Kasse hast.</p>
+          </details>
+          <details style="background:#fff; border-radius:12px; border:1px solid rgba(0,0,0,.06); overflow:hidden; margin-bottom:16px;">
+            <summary style="padding:14px 16px; font-size:15px; font-weight:700; color:#2D3436; cursor:pointer; list-style:none;">Kann ich eine Bestellung stornieren?</summary>
+            <p style="margin:0; padding:0 16px 16px; font-size:15px; color:#666;">Da die Mahlzeiten frisch für dich vorbereitet werden, ist eine Stornierung nach Ablauf des Zeitfensters leider nicht möglich.</p>
+          </details>
           <h2 style="font-size:16px; font-weight:800; margin:0 0 12px; color:#1a1a1a; text-transform:uppercase; letter-spacing:0.5px;">Anbieter &amp; Auswahl</h2>
-          <div style="margin-bottom:20px; padding-bottom:16px; border-bottom:1px solid #eee;">
-            <h3 style="font-size:16px; font-weight:700; margin-bottom:6px; color:#2D3436;">Warum sehe ich keine Mehrweg-Option bei meinem Anbieter?</h3>
-            <p style="margin:0; color:#666;">Wir arbeiten daran, dass bald alle Partner Mehrweg anbieten. Aktuell liegt die Entscheidung noch beim jeweiligen Anbieter.</p>
-          </div>
-          <div style="margin-bottom:24px; padding-bottom:16px; border-bottom:1px solid #eee;">
-            <h3 style="font-size:16px; font-weight:700; margin-bottom:6px; color:#2D3436;">Sind die Allergene (Glutenfrei etc.) verlässlich?</h3>
-            <p style="margin:0; color:#666;">Ja, die Angaben stammen direkt vom Anbieter. Du kannst diese Filter in deinem Profil unter „Mein Geschmack“ voreinstellen.</p>
-          </div>
-
+          <details style="background:#fff; border-radius:12px; border:1px solid rgba(0,0,0,.06); overflow:hidden; margin-bottom:8px;">
+            <summary style="padding:14px 16px; font-size:15px; font-weight:700; color:#2D3436; cursor:pointer; list-style:none;">Warum sehe ich keine Mehrweg-Option bei meinem Anbieter?</summary>
+            <p style="margin:0; padding:0 16px 16px; font-size:15px; color:#666;">Wir arbeiten daran, dass bald alle Partner Mehrweg anbieten. Aktuell liegt die Entscheidung noch beim jeweiligen Anbieter.</p>
+          </details>
+          <details style="background:#fff; border-radius:12px; border:1px solid rgba(0,0,0,.06); overflow:hidden; margin-bottom:16px;">
+            <summary style="padding:14px 16px; font-size:15px; font-weight:700; color:#2D3436; cursor:pointer; list-style:none;">Sind die Allergene (Glutenfrei etc.) verlässlich?</summary>
+            <p style="margin:0; padding:0 16px 16px; font-size:15px; color:#666;">Ja, die Angaben stammen direkt vom Anbieter. Du kannst diese Filter in deinem Profil unter „Mein Geschmack“ voreinstellen.</p>
+          </details>
           <h2 style="font-size:16px; font-weight:800; margin:0 0 12px; color:#1a1a1a; text-transform:uppercase; letter-spacing:0.5px;">Technik &amp; Account</h2>
-          <div style="margin-bottom:20px; padding-bottom:16px; border-bottom:1px solid #eee;">
-            <h3 style="font-size:16px; font-weight:700; margin-bottom:6px; color:#2D3436;">Wo finde ich meine alten Bestellungen?</h3>
-            <p style="margin:0; color:#666;">Alle vergangenen Mahlzeiten sind in deinem Profil in der „Historie“ chronologisch aufgelistet.</p>
-          </div>
-          <div style="margin-bottom:24px; padding-bottom:16px; border-bottom:1px solid #eee;">
-            <h3 style="font-size:16px; font-weight:700; margin-bottom:6px; color:#2D3436;">Wie ändere ich meine Mail-Adresse?</h3>
-            <p style="margin:0; color:#666;">Gehe in deinem Profil zum Bereich „Profildaten“ – dort kannst du deine E-Mail und deinen Namen jederzeit aktualisieren.</p>
-          </div>
+          <details style="background:#fff; border-radius:12px; border:1px solid rgba(0,0,0,.06); overflow:hidden; margin-bottom:8px;">
+            <summary style="padding:14px 16px; font-size:15px; font-weight:700; color:#2D3436; cursor:pointer; list-style:none;">Wo finde ich meine alten Bestellungen?</summary>
+            <p style="margin:0; padding:0 16px 16px; font-size:15px; color:#666;">Alle vergangenen Mahlzeiten sind in deinem Profil in der „Historie“ chronologisch aufgelistet.</p>
+          </details>
+          <details style="background:#fff; border-radius:12px; border:1px solid rgba(0,0,0,.06); overflow:hidden; margin-bottom:16px;">
+            <summary style="padding:14px 16px; font-size:15px; font-weight:700; color:#2D3436; cursor:pointer; list-style:none;">Wie ändere ich meine Mail-Adresse?</summary>
+            <p style="margin:0; padding:0 16px 16px; font-size:15px; color:#666;">Gehe in deinem Profil zum Bereich „Profildaten“ – dort kannst du deine E-Mail und deinen Namen jederzeit aktualisieren.</p>
+          </details>
         </div>
         
-        <!-- FAQ-Inhalt: Anbieter -->
+        <!-- FAQ-Inhalt: Anbieter (Accordion – Tippen = Ausklappen) -->
         <div id="faqContentProvider" style="display:none; padding:20px; line-height:1.8; font-size:15px;">
           <h2 style="font-size:16px; font-weight:800; margin:0 0 12px; color:#1a1a1a; text-transform:uppercase; letter-spacing:0.5px;">Kosten &amp; Flexibilität</h2>
-          <div style="margin-bottom:24px; padding-bottom:20px; border-bottom:1px solid #eee;">
-            <h3 style="font-size:18px; font-weight:700; margin-bottom:8px; color:#2D3436;">Gibt es eine monatliche Grundgebühr oder ein Abo?</h3>
-            <p style="margin:0; color:#666;">Nein. Bei uns gibt es kein Abo, keine Verträge und keine Laufzeiten. Du zahlst nur, wenn du wirklich ein Inserat schaltest. Wenn du nicht inserierst, entstehen dir keinerlei Kosten.</p>
-          </div>
+          <details style="background:#fff; border-radius:12px; border:1px solid rgba(0,0,0,.06); overflow:hidden; margin-bottom:8px;">
+            <summary style="padding:14px 16px; font-size:16px; font-weight:700; color:#2D3436; cursor:pointer; list-style:none;">Gibt es eine monatliche Grundgebühr oder ein Abo?</summary>
+            <p style="margin:0; padding:0 16px 16px; font-size:15px; color:#666;">Nein. Bei uns gibt es kein Abo, keine Verträge und keine Laufzeiten. Du zahlst nur, wenn du wirklich ein Inserat schaltest. Wenn du nicht inserierst, entstehen dir keinerlei Kosten.</p>
+          </details>
           <h2 style="font-size:16px; font-weight:800; margin:0 0 12px; color:#1a1a1a; text-transform:uppercase; letter-spacing:0.5px;">Küche &amp; Ablauf</h2>
-          <div style="margin-bottom:24px; padding-bottom:20px; border-bottom:1px solid #eee;">
-            <h3 style="font-size:18px; font-weight:700; margin-bottom:8px; color:#2D3436;">Wie funktioniert der Küchenmodus?</h3>
-            <p style="margin:0; color:#666;">Der Küchenmodus ist dein digitales Cockpit. Hier siehst du live eingehende Bestellungen, kannst deine Mittagskarte verwalten und die Abholnummer-Liste für deine Küche ausdrucken oder per E-Mail versenden.</p>
-          </div>
-          
-          <div style="margin-bottom:24px; padding-bottom:20px; border-bottom:1px solid #eee;">
-            <h3 style="font-size:18px; font-weight:700; margin-bottom:8px; color:#2D3436;">Warum gibt es eine Service-Pauschale von 0,89 €?</h3>
-            <p style="margin:0; color:#666;">Diese Pauschale ist dein „Rundum-Sorglos-Paket". Wir übernehmen die komplette Zahlungsabwicklung und die Bankgebühren für dich. Zudem sparst du massiv Personalzeit an der Kasse und hast keinen manuellen Buchungsaufwand mehr.</p>
-          </div>
-          
-          <div style="margin-bottom:24px; padding-bottom:20px; border-bottom:1px solid #eee;">
-            <h3 style="font-size:18px; font-weight:700; margin-bottom:8px; color:#2D3436;">Muss ich eine Mindestmenge an Essen angeben?</h3>
-            <p style="margin:0; color:#666;">Nein. Du entscheidest flexibel, wann ein Gericht „Ausverkauft" ist. Ein Klick im Küchenmodus genügt, um das Angebot für den Tag zu beenden.</p>
-          </div>
-          
-          <div style="margin-bottom:24px; padding-bottom:20px; border-bottom:1px solid #eee;">
-            <h3 style="font-size:18px; font-weight:700; margin-bottom:8px; color:#2D3436;">Wie sicher ist die Auszahlung?</h3>
-            <p style="margin:0; color:#666;">Wir arbeiten mit professionellen Zahlungsdienstleistern zusammen. Dein Umsatz wird gesammelt und regelmäßig direkt auf dein Bankkonto überwiesen – sauber aufgeschlüsselt für deine Buchhaltung.</p>
-          </div>
+          <details style="background:#fff; border-radius:12px; border:1px solid rgba(0,0,0,.06); overflow:hidden; margin-bottom:8px;">
+            <summary style="padding:14px 16px; font-size:16px; font-weight:700; color:#2D3436; cursor:pointer; list-style:none;">Wie funktioniert der Küchenmodus?</summary>
+            <p style="margin:0; padding:0 16px 16px; font-size:15px; color:#666;">Der Küchenmodus ist dein digitales Cockpit. Hier siehst du live eingehende Bestellungen, kannst deine Mittagskarte verwalten und die Abholnummer-Liste für deine Küche ausdrucken oder per E-Mail versenden.</p>
+          </details>
+          <details style="background:#fff; border-radius:12px; border:1px solid rgba(0,0,0,.06); overflow:hidden; margin-bottom:8px;">
+            <summary style="padding:14px 16px; font-size:16px; font-weight:700; color:#2D3436; cursor:pointer; list-style:none;">Warum gibt es eine Service-Pauschale von 0,89 €?</summary>
+            <p style="margin:0; padding:0 16px 16px; font-size:15px; color:#666;">Diese Pauschale ist dein „Rundum-Sorglos-Paket". Wir übernehmen die komplette Zahlungsabwicklung und die Bankgebühren für dich. Zudem sparst du massiv Personalzeit an der Kasse und hast keinen manuellen Buchungsaufwand mehr.</p>
+          </details>
+          <details style="background:#fff; border-radius:12px; border:1px solid rgba(0,0,0,.06); overflow:hidden; margin-bottom:8px;">
+            <summary style="padding:14px 16px; font-size:16px; font-weight:700; color:#2D3436; cursor:pointer; list-style:none;">Muss ich eine Mindestmenge an Essen angeben?</summary>
+            <p style="margin:0; padding:0 16px 16px; font-size:15px; color:#666;">Nein. Du entscheidest flexibel, wann ein Gericht „Ausverkauft" ist. Ein Klick im Küchenmodus genügt, um das Angebot für den Tag zu beenden.</p>
+          </details>
+          <details style="background:#fff; border-radius:12px; border:1px solid rgba(0,0,0,.06); overflow:hidden; margin-bottom:16px;">
+            <summary style="padding:14px 16px; font-size:16px; font-weight:700; color:#2D3436; cursor:pointer; list-style:none;">Wie sicher ist die Auszahlung?</summary>
+            <p style="margin:0; padding:0 16px 16px; font-size:15px; color:#666;">Wir arbeiten mit professionellen Zahlungsdienstleistern zusammen. Dein Umsatz wird gesammelt und regelmäßig direkt auf dein Bankkonto überwiesen – sauber aufgeschlüsselt für deine Buchhaltung.</p>
+          </details>
         </div>
         
         <div style="margin-top:32px; padding:20px; border-top:1px solid #eee; text-align:center; font-size:14px; color:#666; background:#f9f9f9;">
@@ -6320,8 +6364,8 @@
       </div>
       <div style="font-size:15px; line-height:1.6; color:#2D3436; margin-bottom:16px;">
         <div style="margin-bottom:12px;">
-          <strong>Inseratsgebühr:</strong> <span style="color:#FFD700; font-weight:900;">4,99 €</span>
-          <div style="font-size:13px; color:#666; margin-top:4px;">Einmalig heute pro Gericht</div>
+          <strong>Inseratsgebühr:</strong> <span id="publishFeeAmount" style="color:#FFD700; font-weight:900;">4,99 €</span>
+          <div id="publishFeeAmountHint" style="font-size:13px; color:#666; margin-top:4px;">Einmalig heute pro Gericht</div>
         </div>
         <div style="padding-top:12px; border-top:1px solid rgba(0,0,0,0.1);">
           <strong>Abholnummer:</strong> <span style="color:#1f9d55; font-weight:900;">0,89 €</span>
@@ -8770,6 +8814,7 @@
     pushViewState({view: 'provider-home', mode: mode}, location.pathname);
   }
   function showProviderPickups(){
+    if(!checkSessionValidity()) return;
     setProviderNavActive('provider-pickups');
     showView(views.providerPickups);
     renderProviderPickups();
@@ -8783,6 +8828,7 @@
   }
   /** Deep-Link: „Zum Wochenplan“ übergibt gewählten Tag → Wochenplan öffnet direkt an der richtigen Stelle (Smart-Jump). */
   function showProviderWeek(preselectDay){
+    if(!checkSessionValidity()) return;
     if(preselectDay && typeof preselectDay === 'string') weekPlanDay = preselectDay;
     weekPlanMode = 'overview'; // App-first: zuerst Übersicht, dann „Plan bearbeiten“ für Editor
     setProviderNavActive('provider-week');
@@ -8798,6 +8844,7 @@
     pushViewState({view: 'provider-week', mode: mode}, location.pathname);
   }
   function showProviderCookbook(){
+    if(!checkSessionValidity()) return;
     setProviderNavActive('provider-cookbook');
     showView(views.providerCookbook);
     renderCookbook();
@@ -8826,6 +8873,7 @@
     if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
   }
   function showProviderProfile(){
+    if(!checkSessionValidity()) return;
     setProviderNavActive('provider-profile');
     showView(views.providerProfile);
     showProviderProfileSub(null);
@@ -8839,6 +8887,7 @@
     pushViewState({view: 'provider-profile', mode: mode}, location.pathname);
   }
   function showProviderBilling(){
+    if(!checkSessionValidity()) return;
     setProviderNavActive('provider-profile');
     showView(views.providerBilling);
     renderBilling();
@@ -16860,10 +16909,10 @@
       if(providerActiveListings && providerActiveListingsSection){
         providerActiveListingsSection.style.display = mineToday.length > 0 ? 'block' : 'none';
         providerActiveListings.innerHTML = '';
-        var provProfile = (typeof normalizeProviderProfile === 'function' && provider && provider.profile) ? normalizeProviderProfile(provider.profile) : {};
-        var defaultDineIn = provProfile.dineInPossible !== false;
-        var defaultPickup = !!(provProfile.hasPickupCode);
-        var defaultReuse = !!(provProfile.reuse && provProfile.reuse.enabled);
+        var p = (provider && provider.profile) ? provider.profile : {};
+        var defaultDineIn = p.dineInPossibleDefault !== false;
+        var defaultPickup = !!p.abholnummerEnabledByDefault;
+        var defaultReuse = !!p.reuseEnabledByDefault;
         mineToday.forEach(function(o){
           const d = normalizeOffer(o);
           const imgUrl = d.imageUrl || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=800&q=70';
@@ -17271,7 +17320,18 @@
     const dayWrap = document.getElementById('providerWeekDays');
     const dayContent = document.getElementById('providerWeekDayContent');
     if(!dayWrap || !dayContent) return;
-    
+    var draftCount = typeof getWeekDraftDays === 'function' ? getWeekDraftDays().length : 0;
+    var draftEl = document.getElementById('providerWeekDraftCount');
+    if(draftCount > 0){
+      if(!draftEl){
+        draftEl = document.createElement('p');
+        draftEl.id = 'providerWeekDraftCount';
+        draftEl.style.cssText = 'font-size:13px; font-weight:700; color:#64748b; margin:0 0 12px;';
+        dayWrap.parentNode.insertBefore(draftEl, dayWrap);
+      }
+      draftEl.textContent = draftCount + ' Entwurf' + (draftCount !== 1 ? 'e' : '') + ' in den nächsten 4 Wochen';
+      draftEl.style.display = '';
+    } else if(draftEl){ draftEl.style.display = 'none'; }
     const today = new Date();
     let selectedDay = providerWeekDay || isoDate(today);
     
@@ -17371,6 +17431,93 @@
     return days[d.getDay()] + ' ' + d.getDate() + '.' + (d.getMonth()+1) + '.';
   }
 
+  /** Bundesland aus Anbieter-Adresse (PLZ). PLZ-Bereiche DE (vereinfacht). */
+  function plzToBundesland(plz){
+    var z = parseInt(String(plz || '').replace(/\D/g, '').slice(0, 2), 10);
+    if(isNaN(z)) return null;
+    if(z >= 1 && z <= 9) return 'BE';
+    if(z >= 10 && z <= 11) return 'BE';
+    if(z >= 12 && z <= 19) return 'BB';
+    if(z === 20) return 'HH';
+    if(z >= 21 && z <= 29) return 'SH';
+    if(z >= 30 && z <= 36) return 'NI';
+    if(z >= 37 && z <= 39) return 'ST';
+    if(z >= 40 && z <= 48) return 'NW';
+    if(z >= 49 && z <= 49) return 'NW';
+    if(z >= 50 && z <= 53) return 'RP';
+    if(z >= 54 && z <= 59) return 'RP';
+    if(z >= 60 && z <= 67) return 'HE';
+    if(z >= 68 && z <= 69) return 'BW';
+    if(z >= 70 && z <= 79) return 'BW';
+    if(z >= 80 && z <= 89) return 'BY';
+    if(z >= 90 && z <= 92) return 'TH';
+    if(z >= 93 && z <= 94) return 'SN';
+    if(z >= 95 && z <= 96) return 'BY';
+    if(z >= 97 && z <= 99) return 'TH';
+    if(z === 0) return 'BE';
+    return null;
+  }
+  function getBundeslandFromProvider(){
+    var p = (typeof provider !== 'undefined' && provider && provider.profile) ? provider.profile : {};
+    return plzToBundesland(p.zip) || plzToBundesland(p.address) || null;
+  }
+
+  /** Feiertage DE nach Bundesland (Adresse). Rückgabe: { 'YYYY-MM-DD': 'Feiertagsname' }. */
+  function getGermanHolidaysForRange(startDate, endDate, bundesland){
+    var out = {};
+    var y1 = startDate.getFullYear(), y2 = endDate.getFullYear();
+    var bl = bundesland || getBundeslandFromProvider();
+    var has0106 = bl === 'BW' || bl === 'BY' || bl === 'ST';
+    var has0815 = bl === 'BY' || bl === 'SL';
+    var has1031 = bl === 'BB' || bl === 'MV' || bl === 'SN' || bl === 'ST' || bl === 'TH' || bl === 'HB' || bl === 'NI' || bl === 'SH' || bl === 'HH';
+    var has1101 = bl === 'BW' || bl === 'BY' || bl === 'NW' || bl === 'RP' || bl === 'SL';
+    var hasBuss = bl === 'SN';
+    for(var y = y1; y <= y2; y++){
+      out[y + '-01-01'] = 'Neujahr';
+      if(has0106) out[y + '-01-06'] = 'Heilige Drei Könige';
+      var oster = getEasterSunday(y);
+      var kf = new Date(oster.getTime()); kf.setDate(kf.getDate() - 2);
+      var om = new Date(oster.getTime()); om.setDate(om.getDate() + 1);
+      var hi = new Date(oster.getTime()); hi.setDate(hi.getDate() + 39);
+      var pf = new Date(oster.getTime()); pf.setDate(pf.getDate() + 50);
+      out[isoDate(kf)] = 'Karfreitag';
+      out[isoDate(oster)] = 'Ostersonntag';
+      out[isoDate(om)] = 'Ostermontag';
+      out[y + '-05-01'] = 'Tag der Arbeit';
+      out[isoDate(hi)] = 'Christi Himmelfahrt';
+      out[isoDate(pf)] = 'Pfingstmontag';
+      if(has0815) out[y + '-08-15'] = 'Mariä Himmelfahrt';
+      out[y + '-10-03'] = 'Tag der Deutschen Einheit';
+      if(has1031) out[y + '-10-31'] = 'Reformationstag';
+      if(has1101) out[y + '-11-01'] = 'Allerheiligen';
+      if(hasBuss){
+        var firstAdvent = getFirstAdvent(y);
+        var buss = new Date(firstAdvent.getTime()); buss.setDate(buss.getDate() - 11);
+        out[isoDate(buss)] = 'Buß- und Bettag';
+      }
+      out[y + '-12-25'] = '1. Weihnachtsfeiertag';
+      out[y + '-12-26'] = '2. Weihnachtsfeiertag';
+    }
+    return out;
+  }
+  function getFirstAdvent(year){
+    var dec24 = new Date(year, 11, 24);
+    var dow = dec24.getDay();
+    var daysBack = (dow === 0 ? 0 : dow) + 21;
+    var d = new Date(year, 11, 24);
+    d.setDate(d.getDate() - daysBack);
+    return d;
+  }
+  function getEasterSunday(year){
+    var a = year % 19, b = Math.floor(year/100), c = year % 100;
+    var d = Math.floor(b/4), e = b % 4, f = Math.floor((b+8)/25);
+    var g = Math.floor((b-f+1)/3), h = (19*a+b-d-g+15) % 30;
+    var i = Math.floor(c/4), k = c % 4, l = (32+2*e+2*i-h-k) % 7;
+    var m = Math.floor((a+11*h+22*l)/451), month = Math.floor((h+l-7*m+114)/31)-1;
+    var day = ((h+l-7*m+114) % 31) + 1;
+    return new Date(year, month, day);
+  }
+
   function renderWeekPlan(){
     updateSessionActivity();
     const dayWrap = document.getElementById('weekDays');
@@ -17389,26 +17536,37 @@
       if(headerDoneBtn) headerDoneBtn.style.display = 'none';
       dayWrap.style.display = 'none';
       dayWrap.innerHTML = '';
+      var ir = document.getElementById('weekIndicatorRow');
+      if(ir) ir.style.display = 'none';
       var todayKey = isoDate(new Date());
       var hasDraftToday = false;
+      var draftCount4Weeks = typeof getWeekDraftDays === 'function' ? getWeekDraftDays().length : 0;
       var dayCardsHtml = '';
-      for(var i = 0; i < 7; i++){
-        var d = new Date(); d.setDate(d.getDate() + i);
-        var key = isoDate(d);
-        var entriesForDay = week[key] || [];
-        var provEntries = entriesForDay.filter(function(x){ return x.providerId === providerId(); });
-        var liveOffers = offers.filter(function(o){ return o.providerId === providerId() && o.day === key; });
-        var isLive = liveOffers.length > 0;
-        if(key === todayKey && !isLive && provEntries.length > 0) hasDraftToday = true;
-        var label = weekDayShortLabel(d, i);
-        var badge = isLive ? '<span class="week-overview-badge online">ONLINE</span>' : (provEntries.length ? '<span class="week-overview-badge draft">ENTWURF</span>' : '');
-        var names = [];
-        if(isLive){ liveOffers.forEach(function(o){ var cb = cookbook.find(function(c){ return String(c.id) === String(o.cookbookId); }); names.push(cb && cb.dish ? esc(cb.dish) : (o.dish || 'Gericht')); }); }
-        else { provEntries.forEach(function(e){ var cb = cookbook.find(function(c){ return String(c.id) === String(e.cookbookId); }); names.push(cb && cb.dish ? esc(cb.dish) : (e.dish || 'Gericht')); }); }
-        var dishesHtml = names.length ? names.join(' · ') : '<span class="empty">Noch nichts geplant</span>';
-        dayCardsHtml += '<div class="week-overview-day"><div class="week-overview-day-label">' + label + ' ' + badge + '</div><div class="week-overview-dishes' + (names.length ? '' : ' empty') + '">' + dishesHtml + '</div></div>';
+      for(var w = 0; w < 4; w++){
+        var weekStart = w * 7;
+        var weekLabel = 'KW ' + (w + 1);
+        var rowHtml = '<div class="week-overview-week-row" style="margin-bottom:16px;"><div class="week-overview-day-label" style="margin-bottom:8px;">' + weekLabel + '</div>';
+        for(var i = 0; i < 7; i++){
+          var idx = weekStart + i;
+          var d = new Date(); d.setDate(d.getDate() + idx);
+          var key = isoDate(d);
+          var entriesForDay = week[key] || [];
+          var provEntries = entriesForDay.filter(function(x){ return x.providerId === providerId(); });
+          var liveOffers = offers.filter(function(o){ return o.providerId === providerId() && o.day === key; });
+          var isLive = liveOffers.length > 0;
+          if(key === todayKey && !isLive && provEntries.length > 0) hasDraftToday = true;
+          var label = weekDayShortLabel(d, idx);
+          var badge = isLive ? '<span class="week-overview-badge online">ONLINE</span>' : (provEntries.length ? '<span class="week-overview-badge draft">ENTWURF</span>' : '');
+          var names = [];
+          if(isLive){ liveOffers.forEach(function(o){ var cb = cookbook.find(function(c){ return String(c.id) === String(o.cookbookId); }); names.push(cb && cb.dish ? esc(cb.dish) : (o.dish || 'Gericht')); }); }
+          else { provEntries.forEach(function(e){ var cb = cookbook.find(function(c){ return String(c.id) === String(e.cookbookId); }); names.push(cb && cb.dish ? esc(cb.dish) : (e.dish || 'Gericht')); }); }
+          var dishesHtml = names.length ? names.join(' · ') : '<span class="empty">—</span>';
+          rowHtml += '<div class="week-overview-day" style="margin-bottom:8px;"><div class="week-overview-day-label">' + label + ' ' + badge + '</div><div class="week-overview-dishes' + (names.length ? '' : ' empty') + '">' + dishesHtml + '</div></div>';
+        }
+        rowHtml += '</div>';
+        dayCardsHtml += rowHtml;
       }
-      list.innerHTML = '<div class="week-overview-scroll">' + dayCardsHtml + '</div>';
+      list.innerHTML = '<div class="week-overview-scroll">' + (draftCount4Weeks > 0 ? '<p class="week-overview-draft-count" style="font-size:13px; font-weight:700; color:#64748b; margin-bottom:12px;">' + draftCount4Weeks + ' Entwurf' + (draftCount4Weeks !== 1 ? 'e' : '') + ' in den nächsten 4 Wochen</p>' : '') + dayCardsHtml + '</div>';
       list.classList.add('week-overview-list');
       if(thumbZone){
         thumbZone.innerHTML = '<div class="week-overview-cta-wrap"><button type="button" class="week-edit-primary" id="weekOverviewEditBtn"><i data-lucide="pencil" style="width:22px;height:22px;"></i> Plan bearbeiten</button></div><div class="week-actions-bar" id="weekOverviewActions" style="display:flex; align-items:center; gap:10px; margin-top:12px; flex-wrap:nowrap;"><button class="btn secondary" type="button" id="weekOverviewActivate" style="' + (hasDraftToday ? '' : 'display:none;') + ' flex:0 0 auto; min-height:48px; padding:0 16px; border-radius:14px; font-size:14px; font-weight:700;" onclick="activateWeekDay(isoDate(new Date())); renderWeekPlan();">Live</button><button class="btn secondary" type="button" id="weekOverviewPdf" style="flex:1; min-height:48px; border-radius:14px; font-size:14px; font-weight:700;"><i data-lucide="printer" style="width:18px;height:18px;margin-right:6px;"></i>Drucken</button><button class="btn secondary" type="button" id="weekOverviewShare" style="flex:1; min-height:48px; border-radius:14px; font-size:14px; font-weight:700;"><i data-lucide="share-2" style="width:18px;height:18px;margin-right:6px;"></i>Teilen</button></div>';
@@ -17429,7 +17587,7 @@
     if(headerDoneBtn){ headerDoneBtn.style.display = 'block'; headerDoneBtn.onclick = function(){ weekPlanMode = 'overview'; renderWeekPlan(); }; }
     dayWrap.style.display = '';
     list.classList.remove('week-overview-list');
-    if(thumbZone) thumbZone.innerHTML = '<div class="week-activate-block" id="weekActivateBlock" style="display:none;"><button type="button" class="week-activate-btn" id="btnWeekActivateThumb">Jetzt für 4,99 € aktivieren</button></div><div class="week-actions-bar" id="weekActionsBar" style="display:none; margin-top:12px;"><button class="btn secondary" type="button" id="btnWeekRefreshZone" style="flex:0 0 auto; min-height:52px; min-width:52px; padding:0; border-radius:14px;" aria-label="Aktualisieren"><i data-lucide="refresh-cw" style="width:22px;height:22px;"></i></button><button class="btn secondary" type="button" id="btnWeekPdf" style="flex:1; min-height:52px; border-radius:14px; font-size:15px; font-weight:700;"><i data-lucide="printer" style="width:20px;height:20px;margin-right:8px;"></i>Drucken</button><button class="btn secondary" type="button" id="btnWeekShare" style="flex:1; min-height:52px; border-radius:14px; font-size:15px; font-weight:700;"><i data-lucide="share-2" style="width:20px;height:20px;margin-right:8px;"></i>Teilen</button></div>';
+    if(thumbZone) thumbZone.innerHTML = '<div id="weekMasterActivateBar" class="week-master-activate-bar" style="display:none;"><button type="button" class="week-master-btn" id="btnWeekMasterActivate"></button></div><div class="week-activate-block" id="weekActivateBlock" style="display:none;"><button type="button" class="week-activate-btn" id="btnWeekActivateThumb">Jetzt für 4,99 € aktivieren</button></div><div class="week-actions-bar" id="weekActionsBar" style="display:none; margin-top:12px;"><button class="btn secondary" type="button" id="btnWeekRefreshZone" style="flex:0 0 auto; min-height:52px; min-width:52px; padding:0; border-radius:14px;" aria-label="Aktualisieren"><i data-lucide="refresh-cw" style="width:22px;height:22px;"></i></button><button class="btn secondary" type="button" id="btnWeekPdf" style="flex:1; min-height:52px; border-radius:14px; font-size:15px; font-weight:700;"><i data-lucide="printer" style="width:20px;height:20px;margin-right:8px;"></i>Drucken</button><button class="btn secondary" type="button" id="btnWeekShare" style="flex:1; min-height:52px; border-radius:14px; font-size:15px; font-weight:700;"><i data-lucide="share-2" style="width:20px;height:20px;margin-right:8px;"></i>Teilen</button></div>';
     actionsBar = document.getElementById('weekActionsBar');
     activateBlock = document.getElementById('weekActivateBlock');
     var btnRefresh = document.getElementById('btnWeekRefreshZone');
@@ -17439,17 +17597,59 @@
     var btnShare = document.getElementById('btnWeekShare');
     if(btnShare) btnShare.onclick = function(){ if(typeof shareWeekPlan === 'function') shareWeekPlan(); };
 
+    var rangeStart = new Date();
+    var rangeEnd = new Date(); rangeEnd.setDate(rangeEnd.getDate() + 27);
+    var holidays = getGermanHolidaysForRange(rangeStart, rangeEnd, getBundeslandFromProvider());
     dayWrap.innerHTML = '';
-    for(let i = 0; i < 7; i++){
-      const d = new Date(); d.setDate(d.getDate() + i);
-      const key = isoDate(d);
-      const b = document.createElement('button');
+    var weekIndicatorRow = document.getElementById('weekIndicatorRow');
+    if(!weekIndicatorRow){
+      weekIndicatorRow = document.createElement('div');
+      weekIndicatorRow.id = 'weekIndicatorRow';
+      weekIndicatorRow.className = 'week-indicator-row';
+      dayWrap.parentNode && dayWrap.parentNode.insertBefore(weekIndicatorRow, dayWrap.nextSibling);
+    }
+    var weekStatuses = [];
+    for(var w = 0; w < 4; w++){
+      var hasLive = false, hasDraft = false;
+      for(var di = 0; di < 7; di++){
+        var wd = new Date(); wd.setDate(wd.getDate() + w * 7 + di);
+        var k = isoDate(wd);
+        var provEntries = (week[k] || []).filter(function(x){ return x.providerId === providerId(); });
+        var liveOffers = offers.filter(function(o){ return o.providerId === providerId() && o.day === k; });
+        if(liveOffers.length > 0) hasLive = true;
+        else if(provEntries.length > 0) hasDraft = true;
+      }
+      weekStatuses.push(hasLive ? 'active' : (hasDraft ? 'draft' : 'empty'));
+    }
+    weekIndicatorRow.style.display = 'flex';
+    weekIndicatorRow.innerHTML = weekStatuses.map(function(s, w){
+      return '<button type="button" class="week-indicator-dot week-dot-' + s + '" data-week="' + w + '" aria-label="Woche ' + (w + 1) + '" aria-hidden="false"></button>';
+    }).join('');
+    for(var i = 0; i < 28; i++){
+      var d = new Date(); d.setDate(d.getDate() + i);
+      var key = isoDate(d);
+      var b = document.createElement('button');
       b.type = 'button';
-      b.className = 'week-day-pill' + (weekPlanDay === key ? ' active' : '') + (i === 0 ? ' week-day-pill-today' : '');
+      b.className = 'week-day-pill' + (weekPlanDay === key ? ' active' : '') + (i === 0 ? ' week-day-pill-today' : '') + (holidays[key] ? ' week-day-pill-holiday' : '');
+      b.setAttribute('data-date', key);
+      if(holidays[key]) b.setAttribute('title', 'Feiertag: ' + holidays[key]);
       b.textContent = weekDayShortLabel(d, i);
-      b.onclick = () => { weekPlanDay = key; renderWeekPlan(); };
+      b.onclick = function(k){ return function(){ if(typeof haptic === 'function') haptic(6); weekPlanDay = k; renderWeekPlan(); }; }(key);
       dayWrap.appendChild(b);
     }
+    weekIndicatorRow.querySelectorAll('.week-indicator-dot').forEach(function(btn){
+      var w = parseInt(btn.getAttribute('data-week'), 10);
+      btn.onclick = function(){
+        if(typeof haptic === 'function') haptic(6);
+        var idx = w * 7;
+        if(dayWrap.children[idx]) dayWrap.children[idx].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      };
+    });
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){
+        dayWrap.scrollLeft = 0;
+      });
+    });
 
     const dayEntries = week[weekPlanDay] || [];
     const providerEntries = dayEntries.map((entry, idx)=>({entry, idx})).filter(x => x.entry.providerId === providerId());
@@ -17464,11 +17664,11 @@
           </div>
           <div class="week-empty-title">Noch kein Plan für diesen Tag</div>
           <div class="week-empty-hint">Wähle ein Gericht aus dem Kochbuch oder lege ein neues an.</div>
-          <button class="btn-primary provider-add-plus-btn" type="button" id="btnWeekEmptyAdd" style="width:100%; max-width:280px; min-height:48px; border-radius:14px; margin-bottom:10px;">
+          <button class="btn-primary provider-add-plus-btn" type="button" id="btnWeekEmptyAdd" style="width:100%; max-width:280px; min-height:56px; border-radius:14px; margin-bottom:10px;">
             <span class="plus-char" style="font-size:20px; line-height:1; color:#fff;">+</span>
             <span>Gericht hinzufügen</span>
           </button>
-          <button class="btn secondary" type="button" id="btnWeekEmptyNew" style="width:100%; max-width:280px; min-height:48px; border-radius:14px;">
+          <button class="btn secondary" type="button" id="btnWeekEmptyNew" style="width:100%; max-width:280px; min-height:56px; border-radius:14px;">
             Neues Gericht anlegen
           </button>
         </div>
@@ -17489,10 +17689,15 @@
 
     var statusBlock = document.createElement('div');
     statusBlock.className = 'week-status-block';
+    var p = (provider && provider.profile) ? provider.profile : {};
+    var stdAbhol = !!p.abholnummerEnabledByDefault;
+    var stdMehrweg = !!p.reuseEnabledByDefault;
+    var stdVorOrt = p.dineInPossibleDefault !== false;
+    var profileStdHtml = '<div class="week-profile-std" style="font-size:11px; color:#94a3b8; margin-top:6px;">Standard: Abholnummer ' + (stdAbhol ? '✓' : '–') + ', Mehrweg ' + (stdMehrweg ? '✓' : '–') + ', Vor Ort ' + (stdVorOrt ? '✓' : '–') + '</div>';
     if(dayIsLive){
-      statusBlock.innerHTML = '<div class="week-status-online"><span class="week-status-dot" style="background:#10b981;"></span><span>ONLINE</span></div><button type="button" class="btn secondary" style="min-height:40px; padding:0 14px; font-size:14px; font-weight:700; border-radius:12px;" onclick="shareWeekPlan()">Teilen</button>';
+      statusBlock.innerHTML = '<div><div class="week-status-online"><span class="week-status-dot" style="background:#10b981;"></span><span>ONLINE</span></div>' + profileStdHtml + '</div><button type="button" class="btn secondary" style="min-height:40px; padding:0 14px; font-size:14px; font-weight:700; border-radius:12px;" onclick="shareWeekPlan()">Teilen</button>';
     } else {
-      statusBlock.innerHTML = '<div class="week-status-draft"><span class="week-status-dot" style="background:#94a3b8;"></span><span>ENTWURF</span></div><div style="text-align:right;"><button type="button" class="week-activate-inline" onclick="activateWeekDay(\'' + weekPlanDay + '\')">Live (4,99 €)</button><div class="week-status-activate-hint">Einmal pro Tag – alle Gerichte gehen online.</div></div>';
+      statusBlock.innerHTML = '<div><div class="week-status-draft"><span class="week-status-dot" style="background:#94a3b8;"></span><span>ENTWURF</span></div>' + profileStdHtml + '</div><div style="text-align:right;"><button type="button" class="week-activate-inline" onclick="activateWeekDay(\'' + weekPlanDay + '\')">Live (4,99 €)</button><div class="week-status-activate-hint">Einmal pro Tag – alle Gerichte gehen online.</div></div>';
     }
     list.appendChild(statusBlock);
 
@@ -17542,11 +17747,11 @@
       var onlineHtml = dayIsLive
         ? '<span class="week-meal-online"><i data-lucide="check-circle" style="width:14px;height:14px;"></i> Online</span>'
         : '<span style="font-size:12px; font-weight:700; color:#94a3b8;">Geplant</span>';
-      var profile = (typeof normalizeProviderProfile === 'function' && provider && provider.profile) ? normalizeProviderProfile(provider.profile) : {};
+      var p = (provider && provider.profile) ? provider.profile : {};
       // Silent Defaults: Icons (Vor Ort, Abholnummer, Mehrweg) nur anzeigen, wenn sie vom Profil-Standard abweichen.
-      var defaultDineIn = profile.dineInPossible !== false;
-      var defaultPickup = !!(profile.hasPickupCode);
-      var defaultReuse = !!(profile.reuse && profile.reuse.enabled);
+      var defaultDineIn = p.dineInPossibleDefault !== false;
+      var defaultPickup = !!p.abholnummerEnabledByDefault;
+      var defaultReuse = !!p.reuseEnabledByDefault;
       var entryDineIn = entry.dineInPossible !== false;
       var entryPickup = !!(entry.hasPickupCode !== undefined ? entry.hasPickupCode : defaultPickup);
       var entryReuse = !!(entry.reuse && entry.reuse.enabled);
@@ -17593,7 +17798,70 @@
       list.appendChild(addMore);
     }
 
+    var draftDays = getWeekDraftDays();
+    var masterBar = document.getElementById('weekMasterActivateBar');
+    var btnMaster = document.getElementById('btnWeekMasterActivate');
+    if(masterBar && btnMaster){
+      if(draftDays.length > 0){
+        masterBar.style.display = 'block';
+        var total = (draftDays.length * 4.99).toFixed(2).replace('.', ',');
+        btnMaster.textContent = 'Gesamte Auswahl aktivieren (' + draftDays.length + ' × 4,99 €)';
+        btnMaster.onclick = function(){ if(typeof haptic === 'function') haptic(10); bulkActivateWeekDrafts(); };
+      } else {
+        masterBar.style.display = 'none';
+      }
+    }
+
     if(typeof lucide !== 'undefined') lucide.createIcons();
+  }
+
+  function getWeekDraftDays(){
+    var out = [];
+    for(var i = 0; i < 28; i++){
+      var d = new Date(); d.setDate(d.getDate() + i);
+      var key = isoDate(d);
+      var provEntries = (week[key] || []).filter(function(x){ return x.providerId === providerId(); });
+      var liveOffers = offers.filter(function(o){ return o.providerId === providerId() && o.day === key; });
+      if(provEntries.length > 0 && liveOffers.length === 0) out.push(key);
+    }
+    return out;
+  }
+
+  function bulkActivateWeekDrafts(){
+    var draftDays = getWeekDraftDays();
+    if(!draftDays.length) return;
+    var profile = normalizeProviderProfile(provider.profile || {});
+    if(profile.abholnummerEnabledByDefault === undefined || profile.abholnummerEnabledByDefault === null){
+      if(typeof showToast === 'function') showToast('Bitte zuerst Abholnummer-Standard im Profil festlegen.');
+      return;
+    }
+    var total = (draftDays.length * 4.99).toFixed(2).replace('.', ',');
+    var msg = draftDays.length + ' Tag(e) mit Entwürfen werden aktiviert. Gesamtbetrag: ' + draftDays.length + ' × 4,99 € = ' + total + ' €. Fortfahren?';
+    if(!confirm(msg)) return;
+    var totalNum = draftDays.length * 4.99;
+    var fakeOffer = { id: 'bulk', dish: 'Gesamte Auswahl (' + draftDays.length + ' Tage)', price: totalNum, providerId: providerId() };
+    showPublishFeeModal(fakeOffer, function(){
+      draftDays.forEach(function(date){
+        var entries = (week[date] || []).filter(function(e){ return e.providerId === providerId(); });
+        entries.forEach(function(e){
+          var c = cookbook.find(function(x){ return String(x.id) === String(e.cookbookId); }) || {};
+          var base = normalizeOffer(e);
+          var newOffer = Object.assign({}, base, {
+            id: cryptoId(),
+            dish: c.dish || e.dish,
+            price: c.price || e.price,
+            hasPickupCode: !!profile.abholnummerEnabledByDefault,
+            active: true,
+            day: date
+          });
+          offers.push(newOffer);
+        });
+      });
+      save(LS.offers, offers);
+      renderWeekPlan();
+      if(typeof renderProviderHome === 'function') renderProviderHome();
+      if(typeof showToast === 'function') showToast('Alle ' + draftDays.length + ' Tage aktiviert. Zum Wochenplan.');
+    });
   }
 
   function attachSwipeToWeekCard(swipeEl, date, index){
@@ -17704,6 +17972,83 @@
 
   /** Origin-View für Quick-Action: Nach Speichern im Sheet zurück zur Ursprungsansicht (Dashboard oder Wochenplan). */
   var weekAddSheetOriginView = '';
+  var weekMultiSelectCookbookId = null;
+  var weekMultiSelectDays = {};
+
+  function openWeekMultiSelectSheet(){
+    var list = document.getElementById('weekAddSheetList');
+    var titleEl = document.getElementById('weekAddSheetTitle');
+    var hintEl = document.getElementById('weekAddSheetHint');
+    var searchWrap = document.getElementById('weekAddSheetSearch') ? document.getElementById('weekAddSheetSearch').parentElement : null;
+    if(!list || !titleEl) return;
+    weekMultiSelectCookbookId = null;
+    weekMultiSelectDays = {};
+    if(document.getElementById('weekAddSheetSearch')) document.getElementById('weekAddSheetSearch').style.display = 'block';
+    titleEl.textContent = 'Gericht auf mehrere Tage setzen';
+    hintEl.textContent = '1. Gericht wählen';
+    var pid = providerId();
+    var mine = (cookbook||[]).filter(function(c){ return c.providerId === pid; });
+    list.innerHTML = '';
+    list.style.display = 'grid';
+    list.style.gridTemplateColumns = 'repeat(2, 1fr)';
+    mine.forEach(function(c){
+      var card = document.createElement('div');
+      card.style.cssText = 'background:#fff; border-radius:16px; border:1px solid #f1f3f5; overflow:hidden; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.04); display:flex; flex-direction:column;';
+      var imgUrl = c.photoData || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=200&q=60';
+      card.innerHTML = '<div style="height:80px; width:100%; background:#f1f3f5;"><img src="' + imgUrl + '" style="width:100%; height:100%; object-fit:cover;"></div><div style="padding:10px;"><div style="font-size:13px; font-weight:800; color:#1a1a1a;">' + esc(c.dish) + '</div><div style="font-size:11px; font-weight:700; color:#10b981;">' + euro(c.price||0) + '</div></div>';
+      card.onclick = function(){
+        if(typeof haptic === 'function') haptic(6);
+        weekMultiSelectCookbookId = c.id;
+        hintEl.textContent = '2. Tage antippen (mehrfach auswählbar)';
+        list.style.gridTemplateColumns = 'repeat(4, 1fr)';
+        list.style.gap = '8px';
+        list.innerHTML = '';
+        for(var i = 0; i < 28; i++){
+          var d = new Date(); d.setDate(d.getDate() + i);
+          var key = isoDate(d);
+          var btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'week-day-pill';
+          btn.setAttribute('data-date', key);
+          btn.textContent = (i === 0 ? 'Heute' : (d.getDate() + '.' + (d.getMonth()+1) + '.'));
+          btn.style.cssText = 'min-height:48px; border-radius:12px; border:2px solid #e2e8f0; background:#f8f9fa; font-size:12px; font-weight:800; color:#64748b;';
+          (function(k){
+            btn.onclick = function(){
+              if(typeof haptic === 'function') haptic(6);
+              weekMultiSelectDays[k] = !weekMultiSelectDays[k];
+              this.style.background = weekMultiSelectDays[k] ? '#10b981' : '#f8f9fa';
+              this.style.color = weekMultiSelectDays[k] ? '#fff' : '#64748b';
+              this.style.borderColor = weekMultiSelectDays[k] ? '#10b981' : '#e2e8f0';
+              var n = Object.keys(weekMultiSelectDays).filter(function(x){ return weekMultiSelectDays[x]; }).length;
+              var doneBtn = document.getElementById('btnWeekMultiDone');
+              if(doneBtn) doneBtn.textContent = n ? 'Fertig – auf ' + n + ' Tage setzen' : 'Fertig';
+            };
+          })(key);
+          list.appendChild(btn);
+        }
+        var doneBtn = document.createElement('button');
+        doneBtn.type = 'button';
+        doneBtn.id = 'btnWeekMultiDone';
+        doneBtn.className = 'week-add-more';
+        doneBtn.style.cssText = 'grid-column:1/-1; margin-top:12px; min-height:56px; border-radius:16px; font-size:16px; font-weight:800; border:none; background:#10b981; color:#fff; cursor:pointer;';
+        doneBtn.textContent = 'Fertig';
+        doneBtn.onclick = function(){
+          var keys = Object.keys(weekMultiSelectDays).filter(function(k){ return weekMultiSelectDays[k]; });
+          if(!keys.length){ if(typeof showToast === 'function') showToast('Bitte mindestens einen Tag wählen'); return; }
+          if(typeof haptic === 'function') haptic(10);
+          keys.forEach(function(k){ addCookbookEntryToWeek(k, weekMultiSelectCookbookId); });
+          closeWeekAddSheet();
+          if(typeof renderWeekPlan === 'function') renderWeekPlan();
+          if(typeof renderProviderWeekPreview === 'function') renderProviderWeekPreview();
+          if(typeof showToast === 'function') showToast('Gericht auf ' + keys.length + ' Tage gesetzt');
+        };
+        list.appendChild(doneBtn);
+      };
+      list.appendChild(card);
+    });
+    if(mine.length === 0) list.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:24px; color:#64748b;">Kein Gericht im Kochbuch</div>';
+  }
+
   function openWeekAddSheet(dayKeyOrReplaceIndex, replaceIndexParam){
     var bd = document.getElementById('weekAddSheetBd');
     var sheet = document.getElementById('weekAddSheet');
@@ -17762,6 +18107,10 @@
       searchInput.oninput = function(){ fillList(searchInput.value.trim()); };
     }
     fillList('');
+    var btnMulti = document.getElementById('btnWeekAddMulti');
+    if(btnMulti) btnMulti.onclick = function(){ openWeekMultiSelectSheet(); };
+    var btnClose = document.querySelector('#weekAddSheet .btn.secondary[onclick="closeWeekAddSheet()"]');
+    if(btnClose) btnClose.style.display = '';
     bd.style.display = 'block';
     sheet.classList.add('active');
   }
@@ -18318,7 +18667,7 @@
       if(back) back.onclick = goProfileBack;
     });
     var btnBillingArchive = document.getElementById('btnBillingArchive');
-    if(btnBillingArchive) btnBillingArchive.onclick = function(){ showView(views.providerBilling); renderBilling(); };
+    if(btnBillingArchive) btnBillingArchive.onclick = function(){ if(!checkSessionValidity()) return; showView(views.providerBilling); renderBilling(); };
     // Hilfe & Support: Themen-Kacheln → Smart-Lösung → Kontaktformular
     var supportSolutions = {
       inserieren: 'Prüfe, ob dein Gericht im Kochbuch angelegt ist. Öffne „Meine Küche“ und tippe auf „Jetzt für 4,99 € inserieren“. Wähle Gericht, Bild und Zeitfenster – das Inserat geht in unter 30 Sekunden live.',
@@ -18362,33 +18711,22 @@
     var btnProviderDeleteAccount = document.getElementById('btnProviderDeleteAccount');
     if(btnProviderDeleteAccount){ btnProviderDeleteAccount.onclick = function(){ if(confirm('Account wirklich dauerhaft löschen? Diese Aktion kann nicht rückgängig gemacht werden.')) { showToast('Account-Löschung angefragt.'); } }; }
 
-    // Logo rendern (helles Theme: Platzhalter mit Initialen)
-    const logoWrap = document.getElementById('providerProfileLogo');
-    if(logoWrap){
+    // Header: Logo + Name (Mein Profil)
+    const logoHeader = document.getElementById('providerProfileLogoHeader');
+    const nameHeader = document.getElementById('providerProfileNameHeader');
+    if(logoHeader){
       if(p.logoData){
-        logoWrap.style.backgroundImage = `url('${esc(p.logoData)}')`;
-        logoWrap.innerHTML = '';
+        logoHeader.style.backgroundImage = `url('${esc(p.logoData)}')`;
+        logoHeader.innerHTML = '';
       } else {
         const initials = name.charAt(0).toUpperCase();
-        logoWrap.style.backgroundImage = 'none';
-        logoWrap.innerHTML = `<div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-size:32px; font-weight:900; color:#666;">${esc(initials)}</div>`;
+        logoHeader.style.backgroundImage = 'none';
+        logoHeader.innerHTML = '<span style="font-size:18px; font-weight:900; color:#64748b;">' + esc(initials) + '</span>';
       }
     }
-    
-    // Name & Adresse
-    const nameEl = document.getElementById('providerProfileName');
-    const addrEl = document.getElementById('providerProfileAddress');
-    if(nameEl) nameEl.textContent = name;
-    if(addrEl){
-      if(addr){
-        addrEl.textContent = esc(addr);
-        addrEl.style.color = '#666';
-        addrEl.style.display = '';
-      } else {
-        addrEl.textContent = '';
-        addrEl.style.display = 'none';
-      }
-    }
+    if(nameHeader) nameHeader.textContent = name || 'Mein Profil';
+    var gearBtn = document.getElementById('providerProfileGearBtn');
+    if(gearBtn) gearBtn.onclick = function(){ var card = document.getElementById('providerProfileMenuCardWrap'); if(card) card.scrollIntoView({ behavior: 'smooth', block: 'start' }); if(typeof haptic === 'function') haptic(6); };
     
     // Kontaktdaten (Adresse, Telefon, E-Mail, Internetseite)
     const profileBusinessName = document.getElementById('providerProfileBusinessName');
@@ -18422,6 +18760,11 @@
     if(profilePhone) profilePhone.value = p.phone || '';
     if(profileEmail) profileEmail.value = p.email || '';
     if(profileWebsite) profileWebsite.value = p.website || '';
+    [profileBusinessName, profileStreet, profileZip, profileCity, profilePhone, profileEmail, profileWebsite].forEach(function(el){
+      if(!el) return;
+      if(el.value && el.value.trim()) el.classList.add('floating-filled'); else el.classList.remove('floating-filled');
+      el.addEventListener('input', function(){ if(this.value && this.value.trim()) this.classList.add('floating-filled'); else this.classList.remove('floating-filled'); });
+    });
     if(btnSaveBusiness) btnSaveBusiness.onclick = saveAllBusinessData;
     
     // Meine Mittagszeiten: Start/Ende
@@ -18451,8 +18794,8 @@
       save(LS.provider, provider);
       showToast('Mittagszeiten gespeichert');
     };
-    if(mealStartEl){ mealStartEl.value = p.mealStart || '11:30'; mealStartEl.onchange = saveMealWindow; }
-    if(mealEndEl){ mealEndEl.value = p.mealEnd || '14:00'; mealEndEl.onchange = saveMealWindow; }
+    if(mealStartEl){ mealStartEl.value = p.mealStart || '11:30'; mealStartEl.onchange = function(){ if(typeof haptic === 'function') haptic(6); saveMealWindow(); }; }
+    if(mealEndEl){ mealEndEl.value = p.mealEnd || '14:00'; mealEndEl.onchange = function(){ if(typeof haptic === 'function') haptic(6); saveMealWindow(); }; }
     
     // Wochentage (Mo=1 … So=7)
     const weekdaysWrap = document.getElementById('providerLunchWeekdays');
@@ -18732,14 +19075,20 @@
       var datum = t.timestamp ? new Date(t.timestamp).toLocaleDateString('de-DE', { day:'2-digit', month:'2-digit', year:'numeric' }) : '–';
       var posten = t.inserat_id ? ('Inserat ' + t.inserat_id) : (t.id || '–');
       var betrag = (t.total_amount != null) ? Number(t.total_amount).toFixed(2).replace('.', ',') + ' €' : '–';
+      var txJson = esc(JSON.stringify({ id: t.id, timestamp: t.timestamp, total_amount: t.total_amount, inserat_id: t.inserat_id }));
       return '<div style="display:flex; align-items:center; justify-content:space-between; padding:14px 0; border-bottom:1px solid rgba(0,0,0,0.06);">' +
         '<div><div style="font-weight:700; color:#1a1a1a;">' + esc(datum) + '</div><div style="font-size:13px; color:#64748b;">' + esc(posten) + '</div></div>' +
         '<div style="display:flex; align-items:center; gap:12px;"><span style="font-weight:800; color:#16a34a;">' + betrag + '</span>' +
-        '<button type="button" aria-label="PDF" style="width:36px; height:36px; border-radius:50%; border:none; background:rgba(0,0,0,0.06); color:#1a1a1a; cursor:pointer; display:flex; align-items:center; justify-content:center;" data-tx-id="' + esc(t.id || '') + '"><i data-lucide="file-down" style="width:18px;height:18px;"></i></button></div></div>';
+        '<button type="button" aria-label="Rechnung als PDF" style="width:36px; height:36px; border-radius:50%; border:none; background:rgba(0,0,0,0.06); color:#1a1a1a; cursor:pointer; display:flex; align-items:center; justify-content:center;" data-tx="' + txJson + '"><i data-lucide="file-down" style="width:18px;height:18px;"></i></button></div></div>';
     }).join('');
 
-    listEl.querySelectorAll('button[data-tx-id]').forEach(function(btn){
-      btn.onclick = function(){ showToast('PDF-Download (Transaktion ' + (btn.getAttribute('data-tx-id') || '') + ') – Demo.'); };
+    listEl.querySelectorAll('button[data-tx]').forEach(function(btn){
+      btn.onclick = function(){
+        try {
+          var t = JSON.parse(btn.getAttribute('data-tx') || '{}');
+          if(typeof openReceiptPrint === 'function') openReceiptPrint(t); else showToast('Rechnung wird geöffnet – Speichern als PDF über Drucken.');
+        } catch(e){ showToast('Rechnung konnte nicht geladen werden.'); }
+      };
     });
     if(typeof applyStaticIcons === 'function') applyStaticIcons();
     if(typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
@@ -18856,6 +19205,7 @@
   const btnBilling = document.getElementById('btnBilling');
   if(btnBilling){
     btnBilling.onclick=()=>{
+      if(!checkSessionValidity()) return;
       showView(views.providerBilling);
       renderBilling();
       // Browser-Verlauf aktualisieren
@@ -19399,8 +19749,16 @@
     const buildItem = (entry, isDraft)=>{
       const item=document.createElement('div');
       item.className='cookbook-item';
-      const hasAbholnummer = !!entry.hasPickupCode;
-      const hasMehrweg = !!(entry.reuse && entry.reuse.enabled);
+      var prof = (typeof provider !== 'undefined' && provider && provider.profile) ? provider.profile : {};
+      var defaultDineIn = prof.dineInPossibleDefault !== false;
+      var defaultPickup = !!prof.abholnummerEnabledByDefault;
+      var defaultReuse = !!prof.reuseEnabledByDefault;
+      var entryDineIn = entry.dineInPossible !== false;
+      var entryPickup = !!(entry.hasPickupCode !== undefined ? entry.hasPickupCode : defaultPickup);
+      var entryReuse = !!(entry.reuse && entry.reuse.enabled);
+      var showVorOrt = (entry.dineInPossible !== undefined) && (entryDineIn !== defaultDineIn);
+      var showAbholnummer = (entry.hasPickupCode !== undefined) && (!!entry.hasPickupCode !== defaultPickup);
+      var showMehrweg = (entry.reuse !== undefined) && (entryReuse !== defaultReuse);
       const imgEl = entry.photoData
         ? `<img class="cookbook-item-image" src="${esc(entry.photoData)}" alt="${esc(entry.dish)}" loading="lazy" />`
         : `<div class="cookbook-item-image" style="background:#e5e7eb; display:flex; align-items:center; justify-content:center;"><i data-lucide="utensils" style="width:36px; height:36px; color:#94a3b8;"></i></div>`;
@@ -19418,6 +19776,9 @@
         return odish === edish;
       }).length : 0;
       const pillarClass = (on) => on ? '' : ' pillar-gray';
+      const pillarVorOrt = showVorOrt ? entryDineIn : false;
+      const pillarAbhol = showAbholnummer ? entryPickup : false;
+      const pillarMehrweg = showMehrweg ? entryReuse : false;
       const statsHtml = `
         <div class="cookbook-item-stats">
           <div class="cookbook-item-stats-row">
@@ -19442,9 +19803,9 @@
           </button>
         </div>
         <div class="cookbook-item-pillars">
-          <span title="Vor Ort"${pillarClass(true)}>🍴</span>
-          <span title="Abholnummer"${pillarClass(hasAbholnummer)}>🧾</span>
-          <span title="Mehrweg"${pillarClass(hasMehrweg)}>🔄</span>
+          <span title="Vor Ort${showVorOrt ? ' (Abweichung)' : ''}"${pillarClass(pillarVorOrt)}>🍴</span>
+          <span title="Abholnummer${showAbholnummer ? ' (Abweichung)' : ''}"${pillarClass(pillarAbhol)}>🧾</span>
+          <span title="Mehrweg${showMehrweg ? ' (Abweichung)' : ''}"${pillarClass(pillarMehrweg)}>🔄</span>
         </div>
         <div class="cookbook-item-body">
           <div class="cookbook-item-title">${esc(entry.dish||'Gericht')}</div>
@@ -20934,6 +21295,24 @@
     };
   }
   function loadTransactions(){ return load(LS.transactions, []); }
+
+  /** Rechnung als Druckansicht öffnen (Nutzer kann „Als PDF speichern“ wählen). */
+  function openReceiptPrint(t){
+    if(!t) return;
+    var datum = t.timestamp ? new Date(t.timestamp).toLocaleDateString('de-DE', { day:'2-digit', month:'2-digit', year:'numeric' }) : '–';
+    var posten = t.inserat_id ? ('Inserat · ' + (t.inserat_id || '')) : 'Inseratsgebühr';
+    var betrag = (t.total_amount != null) ? Number(t.total_amount).toFixed(2).replace('.', ',') + ' €' : '4,99 €';
+    var rechnungsnr = (t.id || 'R-' + (t.timestamp || '').slice(0,10).replace(/-/g,'') || '') + '';
+    var html = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Rechnung Mittagio</title><style>body{font-family:system-ui,-apple-system,sans-serif;padding:40px;max-width:420px;margin:0 auto;color:#1a1a1a;} h1{font-size:22px;font-weight:800;margin:0 0 8px;} .meta{color:#64748b;font-size:13px;line-height:1.5;margin-bottom:28px;} table{width:100%;border-collapse:collapse;} th{text-align:left;padding:10px 0;border-bottom:1px solid #e5e7eb;font-size:12px;font-weight:700;color:#64748b;text-transform:uppercase;} td{padding:10px 0;border-bottom:1px solid #e5e7eb;} tr:last-child td{border-bottom:none;} .total{font-weight:800;font-size:20px;color:#16a34a;} .foot{margin-top:32px;padding-top:20px;border-top:1px solid #e5e7eb;font-size:11px;color:#94a3b8;line-height:1.5;} @media print{body{padding:20px;}}</style></head><body>' +
+      '<h1>Rechnung</h1>' +
+      '<div class="meta">Rechnungsnummer: ' + rechnungsnr.replace(/</g,'&lt;') + '<br><br>Mittagio · Mike Quach<br>Langäcker 2, 73635 Rudersberg<br>info@mittagio.de</div>' +
+      '<table><tr><th>Datum</th><td>' + datum + '</td></tr><tr><th>Posten</th><td>' + (posten || 'Inseratsgebühr 4,99 €').replace(/</g,'&lt;') + '</td></tr><tr><th>Betrag (zahlbar sofort)</th><td class="total">' + betrag + '</td></tr></table>' +
+      '<p class="foot">Kein Abo. Kein Vertrag. · Einmalige Inseratsgebühr. · USt.-Nr. siehe Impressum auf mittagio.de</p>' +
+      '</body></html>';
+    var w = window.open('', '_blank', 'noopener');
+    if(w){ w.document.write(html); w.document.close(); w.focus(); setTimeout(function(){ w.print(); }, 300); }
+  }
+
   function saveTransaction(tx){
     const list = loadTransactions();
     list.unshift(tx);
@@ -21013,6 +21392,17 @@
   function showPublishFeeModal(offer, onPublished = null){
     publishFeePendingOffer = offer;
     publishFeeSuccessCallback = onPublished;
+    const amountEl = document.getElementById('publishFeeAmount');
+    const hintEl = document.getElementById('publishFeeAmountHint');
+    if(amountEl){
+      if(offer && typeof offer.price === 'number' && offer.price !== 4.99){
+        amountEl.textContent = (typeof euro === 'function' ? euro(offer.price) : (offer.price.toFixed(2) + ' €'));
+        if(hintEl) hintEl.textContent = 'Einmalig heute für ' + (offer.dish || 'Auswahl');
+      } else {
+        amountEl.textContent = '4,99 €';
+        if(hintEl) hintEl.textContent = 'Einmalig heute pro Gericht';
+      }
+    }
     const bd = document.getElementById('publishFeeBd');
     const sheet = document.getElementById('publishFeeSheet');
     if(bd) bd.classList.add('active');
