@@ -2412,13 +2412,10 @@
     body.provider-mode #providerStatusIndicator {
       display: flex !important;
     }
-    /* Anbieter-Ansichten: schwarzer Hintergrund oben/unten, kein Leerraum */
+    /* Anbieter-Ansichten: Topbar ausblenden, Inhalt beginnt oben ohne Leerraum */
     body.provider-mode .topbar { display: none !important; }
-    body.provider-mode main { padding-top: 0 !important; background: #000 !important; min-height: 100vh !important; }
-    body.provider-mode [id^="v-provider-"] { padding-top: calc(6px + env(safe-area-inset-top, 0px)) !important; background: #000 !important; min-height: 100vh !important; }
-    html body.provider-mode { background: #000 !important; }
-    body.provider-mode { background: #000 !important; }
-    body.provider-mode .app { background: #000 !important; }
+    body.provider-mode main { padding-top: 0 !important; }
+    body.provider-mode [id^="v-provider-"] { padding-top: calc(6px + env(safe-area-inset-top, 0px)) !important; }
     
     /* Discover Header - Sticky, immer über Kategorie- und Tage-Leiste (z-index > 90) */
     .discover-header-sticky{
