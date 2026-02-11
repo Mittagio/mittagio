@@ -1856,8 +1856,14 @@
     }
     body.provider-mode #v-provider-home > *,
     body.provider-mode #v-provider-week > *{ position:relative; z-index:1; }
+    /* Stolz-Edition: einheitlicher Hintergrund #f8f7f2, kein Verlauf */
+    body.provider-mode #v-provider-home.prov-dashboard-stolz::before{
+      background:#f8f7f2;
+      opacity:1;
+    }
     @media (prefers-color-scheme: dark) {
       body.provider-mode #v-provider-home::before{ opacity:0.25; }
+      body.provider-mode #v-provider-home.prov-dashboard-stolz::before{ background:#f8f7f2; opacity:1; }
       body.provider-mode #v-provider-week::before{ opacity:0.2; }
     }
     
@@ -2215,11 +2221,12 @@
     #providerNav .navbtn{ color:var(--provider-text-muted); }
     #providerNav .navbtn.active{ color:var(--prov-brand); }
     #providerNav .navbtn.active .ico svg{ color:var(--prov-brand); stroke:var(--prov-brand); }
-    /* Provider Nav Light: Anbieter-Akzent (kühles Blau) */
-    .provider-nav-light .navbtn{ color:#9ca3af; font-weight:600; flex:1; min-width:0; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; }
+    /* Provider Nav Light: Stolz-Edition – Gelb (#ffde00) aktiv, inaktive Tabs 20 % Opacity */
+    .provider-nav-light .navbtn{ color:#1a1a1a; font-weight:600; flex:1; min-width:0; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; }
     .provider-nav-light .navbtn{ border-top:2px solid transparent; }
-    .provider-nav-light .navbtn.active{ color:var(--prov-brand); font-weight:600; border-top-color:var(--prov-brand); }
-    .provider-nav-light .navbtn.active .ico svg{ color:var(--prov-brand); stroke:var(--prov-brand); }
+    .provider-nav-light .navbtn:not(.active){ opacity:0.2; }
+    .provider-nav-light .navbtn.active{ color:#ffde00; font-weight:700; border-top-color:#ffde00; opacity:1; }
+    .provider-nav-light .navbtn.active .ico svg{ color:#ffde00 !important; stroke:#ffde00 !important; }
     [id^="v-provider-"] .panel h1,[id^="v-provider-"] .panel h2,[id^="v-provider-"] .panel h3,[id^="v-provider-"] .panel .section-title{ color:var(--provider-text) !important; }
     [id^="v-provider-"] .panel .hint{ color:var(--provider-text-muted) !important; }
     /* Dynamisch eingefügter Inhalt: immer lesbar */
@@ -5541,7 +5548,7 @@
         </div>
       </header>
 
-      <main class="prov-dashboard-main" style="padding:16px 16px 20px; max-width:500px; margin:0 auto;">
+      <div class="prov-dashboard-main" style="padding:16px 16px 20px; max-width:500px; margin:0 auto;">
         
         <!-- 2. Inserat-Karte (Stolz-Edition) -->
         <div id="providerActiveListingsSection" style="margin-bottom:32px;">
@@ -5608,7 +5615,7 @@
           </button>
         </div>
 
-      </main>
+      </div>
     </section>
 
     <section class="view onboarding-view" id="v-provider-pickups">
