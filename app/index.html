@@ -5729,7 +5729,8 @@
     <!-- Provider-Profil "Mein Profil" – Produkt-Schaufenster + Einstellungen hinter Zahnrad -->
     <section class="view onboarding-view" id="v-provider-profile" style="display:flex; flex-direction:column; min-height:0; background:#f8fafc;">
       <header id="providerProfileHeader" style="background:#fff; padding:12px 20px; padding-top:calc(12px + env(safe-area-inset-top, 0)); border-bottom:1px solid #f1f3f5; position:sticky; top:0; z-index:50; flex-shrink:0; display:flex; align-items:center; justify-content:space-between; gap:12px;">
-        <div style="flex:1; min-width:0; display:flex; align-items:center; gap:12px;">
+        <div style="width:44px; flex-shrink:0;"></div>
+        <div style="flex:1; min-width:0; display:flex; align-items:center; justify-content:center; gap:10px;">
           <div class="plogo" id="providerProfileLogoHeader" style="width:44px; height:44px; border-radius:14px; flex-shrink:0; background-size:cover; background-position:center; background-color:#f1f3f5;"></div>
           <h1 id="providerProfileNameHeader" style="margin:0; font-size:18px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">Mein Profil</h1>
         </div>
@@ -5741,20 +5742,29 @@
       <div id="providerProfileContent" style="flex:1; overflow-y:auto; padding:12px 20px calc(100px + env(safe-area-inset-bottom, 0)); max-width:500px; margin:0 auto; width:100%; box-sizing:border-box;">
         <div id="providerProfileMainWrap">
           <div id="providerProfileMain">
-            <!-- Kachel 1: Mittags-Inserat (clean, weiß) -->
-            <div class="provider-profile-card provider-profile-kachel-inserat" style="background:#fff; border-radius:20px; padding:24px; margin-bottom:16px; border:none; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
-              <div style="font-size:17px; font-weight:800; color:#1a1a1a; margin-bottom:6px;">Mittags-Inserat schalten</div>
-              <div style="font-size:24px; font-weight:950; color:#1a1a1a; margin-bottom:8px;">4,99 €</div>
-              <div style="font-size:12px; font-weight:800; color:#10b981; text-transform:uppercase; letter-spacing:0.05em;">Kein Abo. Kein Vertrag.</div>
+            <!-- Kachel 1: Mittags-Inserat (Fokus, ganz oben) -->
+            <div class="provider-profile-card provider-profile-kachel-inserat" style="background:#fff; border-radius:24px; padding:28px; margin-bottom:16px; border:none; box-shadow:0 4px 24px rgba(0,0,0,0.06);">
+              <h2 style="margin:0 0 8px; font-size:18px; font-weight:900; color:#1a1a1a;">Mittags-Inserat schalten</h2>
+              <div style="font-size:28px; font-weight:950; color:#1a1a1a; margin-bottom:12px;">4,99 €</div>
+              <div style="font-size:11px; font-weight:800; color:#10b981; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:16px;">Kein Abo. Kein Vertrag. Keine Laufzeit.</div>
+              <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
+                <span style="font-size:20px;" title="Vor Ort">🍴</span>
+                <span style="font-size:20px;" title="Mehrweg">🔄</span>
+                <span style="font-size:20px;" title="Abholnummer">🧾</span>
+              </div>
+              <button type="button" id="btnProviderProfileInserieren" style="width:100%; min-height:52px; border-radius:16px; font-size:16px; font-weight:800; background:#10b981; color:#fff; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 4px 16px rgba(16,185,129,0.35);">
+                Jetzt inserieren
+              </button>
             </div>
-            <!-- Kachel 2: Digitale Abholnummer (blau/grau abgesetzt) -->
-            <div class="provider-profile-card provider-profile-kachel-abholnummer" style="background:linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border-radius:20px; padding:24px; margin-bottom:20px; border:1px solid rgba(14,165,233,0.15); box-shadow:0 2px 12px rgba(0,0,0,0.04);">
-              <div style="display:flex; align-items:center; gap:16px;">
-                <div style="width:56px; height:56px; border-radius:16px; background:rgba(255,255,255,0.9); display:flex; align-items:center; justify-content:center; font-size:28px; box-shadow:0 2px 8px rgba(0,0,0,0.06);">🧾</div>
-                <div>
-                  <div style="font-size:17px; font-weight:800; color:#1a1a1a;">Digitale Abholnummer</div>
-                  <div style="font-size:20px; font-weight:950; color:#0ea5e9;">0,89 €</div>
-                  <div style="font-size:12px; color:#64748b;">Weniger Chaos, mehr Zeit</div>
+            <!-- Kachel 2: Digitale Abholnummer -->
+            <div class="provider-profile-card provider-profile-kachel-abholnummer" style="background:linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border-radius:24px; padding:24px; margin-bottom:20px; border:1px solid rgba(14,165,233,0.15); box-shadow:0 4px 20px rgba(0,0,0,0.04);">
+              <div style="display:flex; align-items:flex-start; gap:16px;">
+                <div style="flex-shrink:0; width:72px; height:88px; border-radius:12px; background:rgba(255,255,255,0.95); border:1px solid rgba(0,0,0,0.06); display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:900; font-family:ui-monospace, monospace; color:#1a1a1a; letter-spacing:2px;">#B-42</div>
+                <div style="flex:1; min-width:0;">
+                  <div style="font-size:17px; font-weight:800; color:#1a1a1a; margin-bottom:4px;">Digitale Abholnummer</div>
+                  <div style="font-size:22px; font-weight:950; color:#0ea5e9; margin-bottom:8px;">0,89 €</div>
+                  <p style="margin:0 0 8px; font-size:13px; color:#64748b; line-height:1.45;">Schluss mit Chaos bei der Ausgabe. Organisiere deinen Abholprozess wie ein Profi. Inklusive aller Gebühren.</p>
+                  <span style="display:inline-block; font-size:11px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.05em;">Optional zubuchbar</span>
                 </div>
               </div>
             </div>
@@ -5786,22 +5796,37 @@
               <i data-lucide="log-out" style="width:20px;height:20px;"></i>
               <span>Abmelden</span>
             </button>
+
+            <!-- Footer: Vertrauens-Check + Branding -->
+            <footer class="provider-profile-footer" style="margin-top:32px; padding-top:24px; border-top:1px solid #e2e8f0; text-align:center;">
+              <p style="margin:0 0 8px; font-size:14px; font-weight:600; color:#64748b;">Du zahlst nur, was du nutzt. Keine versteckten Kosten.</p>
+              <p style="margin:0; font-size:13px; font-weight:800; color:#1a1a1a;">MITTAGIO</p>
+              <p style="margin:2px 0 0; font-size:12px; color:#94a3b8;">Einfach. Schnell. Organisiert.</p>
+            </footer>
           </div>
         </div>
 
-        <!-- Sub-Seiten: App-like gleicher Stil wie Hauptansicht -->
-      <div id="providerProfileSubBusiness" class="provider-profile-sub" style="display:none; flex-direction:column; min-height:0; background:#f8fafc;">
+        <!-- Einstellungsseite (Zahnrad): Identity + Karten + Danger Zone -->
+      <div id="providerProfileSubSettings" class="provider-profile-sub" style="display:none; flex-direction:column; min-height:0; background:#f1f3f5;">
         <header class="provider-sub-header" style="background:#fff; padding:10px 20px 12px; padding-top:calc(10px + env(safe-area-inset-top, 0)); border-bottom:1px solid #f1f3f5; position:sticky; top:0; z-index:50; display:flex; align-items:center; gap:14px;">
-          <button type="button" id="providerProfileBackBusiness" aria-label="Zurück" style="width:44px; height:44px; border-radius:14px; background:#f1f3f5; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+          <button type="button" id="providerProfileBackSettings" aria-label="Zurück" style="width:44px; height:44px; border-radius:14px; background:#f1f3f5; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center;">
             <i data-lucide="chevron-left" style="width:22px; height:22px; color:#1a1a1a;"></i>
           </button>
-          <h1 style="margin:0; font-size:18px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a;">Meine Daten</h1>
+          <h1 style="margin:0; font-size:18px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a;">Einstellungen</h1>
         </header>
 
         <div style="padding:20px 20px calc(80px + env(safe-area-inset-bottom, 0)); flex:1; overflow-y:auto; max-width:500px; margin:0 auto; width:100%; box-sizing:border-box;">
-          <div class="provider-profile-card" style="background:#fff; border-radius:20px; padding:24px; margin-bottom:20px; border:none; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
-            <h3 style="margin:0 0 20px; font-size:17px; font-weight:800; color:#1a1a1a;">Betriebsdaten</h3>
-            
+          <!-- Identity Section -->
+          <div class="provider-settings-identity" style="text-align:center; padding:28px 20px 24px; margin-bottom:20px; background:#fff; border-radius:24px; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
+            <div class="plogo" id="providerSettingsLogo" style="width:64px; height:64px; border-radius:20px; margin:0 auto 12px; background-size:cover; background-position:center; background-color:#f1f3f5;"></div>
+            <h2 id="providerSettingsName" style="margin:0 0 4px; font-size:20px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a;">Betriebsname</h2>
+            <p id="providerSettingsOrt" style="margin:0 0 12px; font-size:14px; color:#64748b;">Ort</p>
+            <span style="display:inline-block; padding:6px 14px; border-radius:999px; font-size:12px; font-weight:800; color:#059669; background:rgba(5,150,105,0.12);">System Online</span>
+          </div>
+
+          <!-- Kachel: Betriebsdaten -->
+          <div class="provider-profile-card provider-settings-card" style="background:#fff; border-radius:24px; padding:24px; margin-bottom:20px; border:none; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
+            <h3 style="margin:0 0 20px; font-size:17px; font-weight:800; color:#1a1a1a;">🏠 Betriebsdaten</h3>
             <div class="input-group">
               <input type="text" id="providerProfileBusinessName" class="input-field" placeholder=" " autocomplete="organization" />
               <label class="input-label" for="providerProfileBusinessName">Betriebsname</label>
@@ -5832,43 +5857,24 @@
               <input type="url" id="providerProfileWebsite" class="input-field" placeholder=" " autocomplete="url" />
               <label class="input-label" for="providerProfileWebsite">Webseite</label>
             </div>
-
-            <button type="button" id="btnProviderSaveBusiness" class="btn-primary" style="width:100%; min-height:56px; border-radius:16px; font-size:16px; font-weight:800; background:#FFD700; color:#1a1a1a; border:none; box-shadow:0 4px 12px rgba(255,215,0,0.2);">
-              Daten speichern
-            </button>
+            <button type="button" id="btnProviderSaveBusiness" class="btn-primary" style="width:100%; min-height:56px; border-radius:16px; font-size:16px; font-weight:800; background:#FFD700; color:#1a1a1a; border:none; box-shadow:0 4px 12px rgba(255,215,0,0.2);">Daten speichern</button>
+            <div style="margin-top:24px; padding-top:20px; border-top:1px solid #f1f3f5;">
+              <h4 style="margin:0 0 12px; font-size:15px; font-weight:800; color:#1a1a1a;">Sicherheit</h4>
+              <button type="button" id="btnProviderChangePassword" style="width:100%; display:flex; justify-content:space-between; align-items:center; padding:16px; background:#f8f9fa; border:2px solid #f1f3f5; border-radius:14px; text-decoration:none; color:#1a1a1a; font-size:15px; font-weight:700; cursor:pointer;">
+                <div style="display:flex;align-items:center;gap:12px;"><i data-lucide="lock" style="width:20px;height:20px;color:#64748b;"></i><span>Passwort ändern</span></div>
+                <i data-lucide="chevron-right" style="width:20px; height:20px; color:#cbd5e1;"></i>
+              </button>
+            </div>
           </div>
 
-          <div class="provider-profile-card" style="background:#fff; border-radius:20px; padding:24px; margin-bottom:20px; border:none; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
-            <h3 style="margin:0 0 16px; font-size:17px; font-weight:800; color:#1a1a1a;">Sicherheit</h3>
-            <button type="button" id="btnProviderChangePassword" style="width:100%; display:flex; justify-content:space-between; align-items:center; padding:16px; background:#f8f9fa; border:2px solid #f1f3f5; border-radius:14px; text-decoration:none; color:#1a1a1a; font-size:15px; font-weight:700; cursor:pointer;">
-              <div style="display:flex;align-items:center;gap:12px;"><i data-lucide="lock" style="width:20px;height:20px;color:#64748b;"></i><span>Passwort ändern</span></div>
-              <i data-lucide="chevron-right" style="width:20px; height:20px; color:#cbd5e1;"></i>
+          <!-- Kachel: Zeitfenster -->
+          <div class="provider-profile-card provider-settings-card" style="background:#fff; border-radius:24px; padding:24px; margin-bottom:20px; border:none; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
+            <h3 style="margin:0 0 16px; font-size:17px; font-weight:800; color:#1a1a1a;">⏰ Zeitfenster</h3>
+            <p style="margin:0 0 16px; font-size:14px; color:#64748b; line-height:1.5;">Standard-Zeitfenster für neue Inserate.</p>
+            <button type="button" id="providerSettingsTimeTrigger" style="width:100%; padding:20px; border-radius:16px; background:#f8fafc; border:2px solid #f1f3f5; cursor:pointer; text-align:center;">
+              <span id="providerSettingsTimeDisplay" style="font-size:22px; font-weight:900; color:#1a1a1a;">11:30 – 13:30</span>
             </button>
-          </div>
-
-          <button type="button" id="btnProviderDeleteAccount" style="width:100%; height:48px; margin-top:8px; padding:0; font-size:14px; font-weight:800; color:#E34D4D; background:none; border:none; cursor:pointer; text-align:center;">
-            Account dauerhaft löschen
-          </button>
-        </div>
-      </div>
-
-      <!-- Sub-Seite: Service-Optionen & Zeiten (3 Säulen Toggles + Mittagszeiten) -->
-      <div id="providerProfileSubService" class="provider-profile-sub" style="display:none; flex-direction:column;">
-        <header style="background:#fff; padding:24px 20px 20px; border-bottom:1px solid rgba(0,0,0,0.05); position:sticky; top:0; z-index:50; display:flex; align-items:center; gap:16px;">
-          <button type="button" id="providerProfileBackService" aria-label="Zurück" style="width:40px; height:40px; border-radius:12px; background:#f8f9fa; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center;">
-            <i data-lucide="chevron-left" style="width:24px; height:24px; color:#1a1a1a;"></i>
-          </button>
-          <h1 style="margin:0; font-size:20px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a;">Präferenzen & Zeiten</h1>
-        </header>
-
-        <div style="padding:24px 20px; flex:1; overflow-y:auto;">
-          
-          <!-- 1. Mittagszeiten (oben) -->
-          <div style="background:#fff; border-radius:24px; padding:24px; border:1px solid rgba(0,0,0,0.04); box-shadow:0 4px 12px rgba(0,0,0,0.02); margin-bottom:20px;">
-            <h3 style="margin:0 0 16px; font-size:17px; font-weight:800; color:#1a1a1a;">Mittagszeiten</h3>
-            <p style="margin:0 0 24px; font-size:14px; color:#64748b; line-height:1.5;">Standard-Zeitfenster für neue Inserate.</p>
-            
-            <div style="display:flex; align-items:center; gap:12px; margin-bottom:24px;">
+            <div style="display:flex; align-items:center; gap:12px; margin-top:20px; margin-bottom:20px;">
               <div style="flex:1;">
                 <label style="display:block; font-size:11px; font-weight:700; color:#9ca3af; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.05em;">Start</label>
                 <select id="providerMealStart" style="width:100%; height:52px; padding:0 12px; border:2px solid #f1f3f5; border-radius:14px; font-size:15px; font-weight:700; background:#f8f9fa; color:#1a1a1a; cursor:pointer;"></select>
@@ -5879,15 +5885,13 @@
                 <select id="providerMealEnd" style="width:100%; height:52px; padding:0 12px; border:2px solid #f1f3f5; border-radius:14px; font-size:15px; font-weight:700; background:#f8f9fa; color:#1a1a1a; cursor:pointer;"></select>
               </div>
             </div>
-
-            <div style="margin-top:24px;">
-              <label style="display:block; font-size:11px; font-weight:700; color:#9ca3af; margin-bottom:12px; text-transform:uppercase; letter-spacing:0.05em;">An welchen Tagen?</label>
-              <div id="providerLunchWeekdays" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
-            </div>
+            <label style="display:block; font-size:11px; font-weight:700; color:#9ca3af; margin-bottom:12px; text-transform:uppercase; letter-spacing:0.05em;">An welchen Tagen?</label>
+            <div id="providerLunchWeekdays" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
           </div>
 
-          <!-- 2. Service-Optionen -->
-          <div style="background:#fff; border-radius:24px; overflow:hidden; border:1px solid rgba(0,0,0,0.04); box-shadow:0 4px 12px rgba(0,0,0,0.02);">
+          <!-- Kachel: Service-Logik (3 Säulen) -->
+          <div class="provider-profile-card provider-settings-card" style="background:#fff; border-radius:24px; overflow:hidden; margin-bottom:20px; border:none; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
+            <h3 style="margin:0; padding:24px 24px 0; font-size:17px; font-weight:800; color:#1a1a1a;">🏗️ Service-Logik</h3>
             <div style="padding:20px; border-bottom:1px solid #f8f9fa; display:flex; justify-content:space-between; align-items:center;">
               <div style="display:flex; align-items:center; gap:16px;">
                 <div style="width:44px; height:44px; border-radius:14px; background:#f1f3f5; display:flex; align-items:center; justify-content:center; font-size:22px;">🍴</div>
@@ -5898,7 +5902,6 @@
               </div>
               <label class="toggle-switch"><input type="checkbox" id="providerDineInEnabled"><span class="toggle-slider"></span></label>
             </div>
-            
             <div style="padding:20px; border-bottom:1px solid #f8f9fa; display:flex; justify-content:space-between; align-items:center;">
               <div style="display:flex; align-items:center; gap:16px;">
                 <div style="width:44px; height:44px; border-radius:14px; background:#f1f3f5; display:flex; align-items:center; justify-content:center; font-size:22px;">🔄</div>
@@ -5909,7 +5912,6 @@
               </div>
               <label class="toggle-switch"><input type="checkbox" id="providerReuseEnabled"><span class="toggle-slider"></span></label>
             </div>
-
             <div style="padding:20px; border-bottom:1px solid #f8f9fa; display:flex; justify-content:space-between; align-items:center;">
               <div style="display:flex; align-items:center; gap:16px;">
                 <div style="width:44px; height:44px; border-radius:14px; background:rgba(255,215,0,0.15); display:flex; align-items:center; justify-content:center; font-size:22px;">🧾</div>
@@ -5920,7 +5922,6 @@
               </div>
               <label class="toggle-switch"><input type="checkbox" id="providerAbholnummerEnabled"><span class="toggle-slider"></span></label>
             </div>
-
             <div style="padding:20px; display:flex; justify-content:space-between; align-items:center;">
               <div style="display:flex; align-items:center; gap:16px;">
                 <div style="width:44px; height:44px; border-radius:14px; background:#f1f3f5; display:flex; align-items:center; justify-content:center; font-size:22px;">🌾</div>
@@ -5932,9 +5933,53 @@
               <label class="toggle-switch"><input type="checkbox" id="providerWantsAllergensEnabled"><span class="toggle-slider"></span></label>
             </div>
           </div>
-          
-          <p style="margin:16px 20px 8px; font-size:13px; color:#0ea5e9; font-weight:700; text-align:center; line-height:1.5; text-decoration:underline; text-underline-offset:2px;">Diese Standards sind in deinem Profil gespeichert.</p>
-          <p style="margin:0 20px 20px; font-size:13px; color:#94a3b8; text-align:center; line-height:1.5;">Sie werden bei jedem neuen Inserat automatisch verwendet.</p>
+
+          <!-- Kachel: Abrechnung -->
+          <div class="provider-profile-card provider-settings-card" style="background:#fff; border-radius:24px; padding:24px; margin-bottom:20px; border:none; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
+            <h3 style="margin:0 0 8px; font-size:17px; font-weight:800; color:#1a1a1a;">Abrechnung</h3>
+            <p style="margin:0 0 20px; font-size:14px; color:#64748b; line-height:1.5;">Rechnungs-PDFs und Zahlungsmethode.</p>
+            <button type="button" id="btnSettingsBillingArchive" style="width:100%; display:flex; justify-content:space-between; align-items:center; padding:16px 20px; background:#f8f9fa; border:2px solid #f1f3f5; border-radius:16px; color:#1a1a1a; font-size:16px; font-weight:700; cursor:pointer;">
+              <span>Rechnungsarchiv & PDFs</span>
+              <i data-lucide="chevron-right" style="width:20px; height:20px; color:#cbd5e1;"></i>
+            </button>
+          </div>
+
+          <!-- Danger Zone -->
+          <div class="provider-settings-danger-zone" style="padding:24px 0; border-top:1px solid #e2e8f0;">
+            <button type="button" id="btnSettingsSupport" style="width:100%; display:flex; justify-content:space-between; align-items:center; padding:16px 20px; margin-bottom:12px; background:#fff; border:2px solid #f1f3f5; border-radius:16px; color:#1a1a1a; font-size:16px; font-weight:700; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+              <div style="display:flex;align-items:center;gap:12px;"><i data-lucide="help-circle" style="width:20px;height:20px;color:#64748b;"></i><span>Support & FAQ</span></div>
+              <i data-lucide="chevron-right" style="width:20px; height:20px; color:#cbd5e1;"></i>
+            </button>
+            <button type="button" id="btnProviderDeleteAccount" style="width:100%; min-height:48px; padding:0; font-size:14px; font-weight:800; color:#dc2626; background:transparent; border:none; cursor:pointer; text-align:center;">
+              Profil dauerhaft löschen
+            </button>
+          </div>
+        </div>
+      </div>
+
+        <!-- Sub-Seiten: App-like gleicher Stil wie Hauptansicht -->
+      <div id="providerProfileSubBusiness" class="provider-profile-sub" style="display:none; flex-direction:column; min-height:0; background:#f8fafc;">
+        <header class="provider-sub-header" style="background:#fff; padding:10px 20px 12px; padding-top:calc(10px + env(safe-area-inset-top, 0)); border-bottom:1px solid #f1f3f5; position:sticky; top:0; z-index:50; display:flex; align-items:center; gap:14px;">
+          <button type="button" id="providerProfileBackBusiness" aria-label="Zurück" style="width:44px; height:44px; border-radius:14px; background:#f1f3f5; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+            <i data-lucide="chevron-left" style="width:22px; height:22px; color:#1a1a1a;"></i>
+          </button>
+          <h1 style="margin:0; font-size:18px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a;">Meine Daten</h1>
+        </header>
+        <div style="padding:20px; flex:1; overflow-y:auto; max-width:500px; margin:0 auto; width:100%; box-sizing:border-box;">
+          <p style="margin:0; font-size:15px; color:#64748b;">Betriebsdaten findest du in den <strong>Einstellungen</strong> (Zahnrad).</p>
+        </div>
+      </div>
+
+      <!-- Sub-Seite: Präferenzen & Zeiten (Weiterleitung zu Einstellungen) -->
+      <div id="providerProfileSubService" class="provider-profile-sub" style="display:none; flex-direction:column;">
+        <header style="background:#fff; padding:24px 20px 20px; border-bottom:1px solid rgba(0,0,0,0.05); position:sticky; top:0; z-index:50; display:flex; align-items:center; gap:16px;">
+          <button type="button" id="providerProfileBackService" aria-label="Zurück" style="width:40px; height:40px; border-radius:12px; background:#f8f9fa; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+            <i data-lucide="chevron-left" style="width:24px; height:24px; color:#1a1a1a;"></i>
+          </button>
+          <h1 style="margin:0; font-size:20px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a;">Präferenzen & Zeiten</h1>
+        </header>
+        <div style="padding:24px 20px; flex:1; overflow-y:auto;">
+          <p style="margin:0; font-size:15px; color:#64748b;">Zeiten und Service-Optionen findest du in den <strong>Einstellungen</strong> (Zahnrad).</p>
         </div>
       </div>
 
@@ -9092,17 +9137,24 @@
     var mainWrap = document.getElementById('providerProfileMainWrap');
     var header = document.getElementById('providerProfileHeader');
     var contentEl = document.getElementById('providerProfileContent');
-    var subs = ['providerProfileSubBusiness','providerProfileSubService','providerProfileSubPayment','providerProfileSubFaq'];
+    var subs = ['providerProfileSubSettings','providerProfileSubBusiness','providerProfileSubService','providerProfileSubPayment','providerProfileSubFaq'];
     if(mainWrap) mainWrap.style.display = subId ? 'none' : 'block';
     if(header) header.style.display = subId ? 'none' : 'block';
-    var targetId = subId ? 'providerProfileSub' + subId.charAt(0).toUpperCase() + subId.slice(1) : '';
+    var targetId = subId ? 'providerProfileSub' + (subId === 'settings' ? 'Settings' : subId.charAt(0).toUpperCase() + subId.slice(1)) : '';
     subs.forEach(function(id){
       var el = document.getElementById(id);
       if(el) el.style.display = (subId && id === targetId) ? 'flex' : 'none';
     });
     if(subId && contentEl) contentEl.scrollTop = 0;
-    if((subId === 'times' || subId === 'service') && typeof renderProviderProfileMealSelects === 'function') renderProviderProfileMealSelects();
+    if((subId === 'settings' || subId === 'times' || subId === 'service') && typeof renderProviderProfileMealSelects === 'function') renderProviderProfileMealSelects();
+    if(subId === 'settings' && typeof updateProviderSettingsTimeDisplay === 'function') updateProviderSettingsTimeDisplay();
     if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
+  }
+  function updateProviderSettingsTimeDisplay(){
+    var startEl = document.getElementById('providerMealStart');
+    var endEl = document.getElementById('providerMealEnd');
+    var displayEl = document.getElementById('providerSettingsTimeDisplay');
+    if(displayEl && startEl && endEl) displayEl.textContent = (startEl.value || '11:30') + ' – ' + (endEl.value || '14:00');
   }
   function showProviderProfile(){
     if(!checkSessionValidity()) return;
@@ -18982,18 +19034,24 @@
     const addr = buildAddress(p);
     const name = p.name || 'Betriebsname';
     
-    // Progressive Disclosure: Menü-Zeilen und Zurück-Buttons
+    // Progressive Disclosure: Menü-Zeilen und Zurück-Buttons (Meine Daten & Präferenzen → Einstellungen)
     function goProfileSub(id){ showProviderProfileSub(id); }
     function goProfileBack(){ showProviderProfileSub(null); }
     ['Business','Service','Payment','Faq'].forEach(function(cap){
       var row = document.getElementById('providerProfileRow' + cap);
       var back = document.getElementById('providerProfileBack' + cap);
-      var subId = cap.toLowerCase();
+      var subId = (cap === 'Business' || cap === 'Service') ? 'settings' : cap.toLowerCase();
       if(row) row.onclick = function(){ goProfileSub(subId); };
       if(back) back.onclick = goProfileBack;
     });
+    var backSettings = document.getElementById('providerProfileBackSettings');
+    if(backSettings) backSettings.onclick = goProfileBack;
     var btnBillingArchive = document.getElementById('btnBillingArchive');
     if(btnBillingArchive) btnBillingArchive.onclick = function(){ if(!checkSessionValidity()) return; showView(views.providerBilling); renderBilling(); };
+    var btnSettingsBillingArchive = document.getElementById('btnSettingsBillingArchive');
+    if(btnSettingsBillingArchive) btnSettingsBillingArchive.onclick = function(){ if(!checkSessionValidity()) return; showView(views.providerBilling); renderBilling(); };
+    var btnSettingsSupport = document.getElementById('btnSettingsSupport');
+    if(btnSettingsSupport) btnSettingsSupport.onclick = function(){ if(typeof haptic === 'function') haptic(6); showProviderProfileSub('faq'); };
     // Hilfe & Support: Themen-Kacheln → Smart-Lösung → Kontaktformular
     var supportSolutions = {
       inserieren: 'Prüfe, ob dein Gericht im Kochbuch angelegt ist. Öffne „Meine Küche“ und tippe auf „Jetzt für 4,99 € inserieren“. Wähle Gericht, Bild und Zeitfenster – das Inserat geht in unter 30 Sekunden live.',
@@ -19051,8 +19109,20 @@
       }
     }
     if(nameHeader) nameHeader.textContent = name || 'Mein Profil';
+    // Identity-Bereich auf der Einstellungsseite
+    var settingsLogo = document.getElementById('providerSettingsLogo');
+    var settingsName = document.getElementById('providerSettingsName');
+    var settingsOrt = document.getElementById('providerSettingsOrt');
+    if(settingsLogo){
+      if(p.logoData){ settingsLogo.style.backgroundImage = `url('${esc(p.logoData)}')`; settingsLogo.innerHTML = ''; }
+      else { settingsLogo.style.backgroundImage = 'none'; settingsLogo.innerHTML = '<span style="font-size:22px; font-weight:900; color:#64748b;">' + esc((name || 'B').charAt(0).toUpperCase()) + '</span>'; }
+    }
+    if(settingsName) settingsName.textContent = name || 'Betriebsname';
+    if(settingsOrt) settingsOrt.textContent = (p.city || (p.zip && p.city ? p.zip + ' ' + p.city : '') || addr || 'Ort').trim() || '—';
     var gearBtn = document.getElementById('providerProfileGearBtn');
-    if(gearBtn) gearBtn.onclick = function(){ var card = document.getElementById('providerProfileMenuCardWrap'); if(card) card.scrollIntoView({ behavior: 'smooth', block: 'start' }); if(typeof haptic === 'function') haptic(6); };
+    if(gearBtn) gearBtn.onclick = function(){ if(typeof haptic === 'function') haptic(6); showProviderProfileSub('settings'); };
+    var btnProfileInserieren = document.getElementById('btnProviderProfileInserieren');
+    if(btnProfileInserieren) btnProfileInserieren.onclick = function(){ if(typeof haptic === 'function') haptic(8); if(typeof openDishFlow === 'function') openDishFlow(); };
     
     // Kontaktdaten (Adresse, Telefon, E-Mail, Internetseite)
     const profileBusinessName = document.getElementById('providerProfileBusinessName');
@@ -19120,8 +19190,15 @@
       save(LS.provider, provider);
       showToast('Mittagszeiten gespeichert');
     };
-    if(mealStartEl){ mealStartEl.value = p.mealStart || '11:30'; mealStartEl.onchange = function(){ if(typeof haptic === 'function') haptic(6); saveMealWindow(); }; }
-    if(mealEndEl){ mealEndEl.value = p.mealEnd || '14:00'; mealEndEl.onchange = function(){ if(typeof haptic === 'function') haptic(6); saveMealWindow(); }; }
+    if(mealStartEl){ mealStartEl.value = p.mealStart || '11:30'; mealStartEl.onchange = function(){ if(typeof haptic === 'function') haptic(6); saveMealWindow(); if(typeof updateProviderSettingsTimeDisplay === 'function') updateProviderSettingsTimeDisplay(); }; }
+    if(mealEndEl){ mealEndEl.value = p.mealEnd || '14:00'; mealEndEl.onchange = function(){ if(typeof haptic === 'function') haptic(6); saveMealWindow(); if(typeof updateProviderSettingsTimeDisplay === 'function') updateProviderSettingsTimeDisplay(); }; }
+    if(typeof updateProviderSettingsTimeDisplay === 'function') updateProviderSettingsTimeDisplay();
+    var timeTrigger = document.getElementById('providerSettingsTimeTrigger');
+    if(timeTrigger) timeTrigger.onclick = function(){
+      if(typeof haptic === 'function') haptic(6);
+      var first = document.getElementById('providerMealStart');
+      if(first){ first.focus(); first.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+    };
     
     // Wochentage (Mo=1 … So=7)
     const weekdaysWrap = document.getElementById('providerLunchWeekdays');
@@ -19158,6 +19235,22 @@
         showToast(abholnummerEnabled.checked ? 'Abholnummer standardmäßig an' : 'Abholnummer standardmäßig aus');
       };
       if(abholnummerSwitch){ abholnummerSwitch.onclick = () => { abholnummerEnabled.checked = !abholnummerEnabled.checked; abholnummerEnabled.onchange(); }; }
+    }
+
+    // Vor-Ort-Standard-Toggle (🍴)
+    const dineInEnabled = document.getElementById('providerDineInEnabled');
+    const dineInSwitch = dineInEnabled ? dineInEnabled.closest('.toggle-switch') : null;
+    if(dineInEnabled){
+      dineInEnabled.checked = p.dineInPossibleDefault !== false;
+      if(dineInSwitch){ dineInEnabled.checked ? dineInSwitch.classList.add('active') : dineInSwitch.classList.remove('active'); }
+      dineInEnabled.onchange = () => {
+        if(!provider.profile) provider.profile = {};
+        provider.profile.dineInPossibleDefault = dineInEnabled.checked;
+        save(LS.provider, provider);
+        if(dineInSwitch){ dineInEnabled.checked ? dineInSwitch.classList.add('active') : dineInSwitch.classList.remove('active'); }
+        showToast(dineInEnabled.checked ? 'Vor Ort standardmäßig an' : 'Vor Ort standardmäßig aus');
+      };
+      if(dineInSwitch){ dineInSwitch.onclick = () => { dineInEnabled.checked = !dineInEnabled.checked; dineInEnabled.onchange(); }; }
     }
 
     // Allergene-Standard-Toggle (Präferenzen)
