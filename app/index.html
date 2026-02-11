@@ -3641,6 +3641,39 @@
       #v-provider-week .week-master-activate-bar .week-master-btn:active{ transform:scale(0.98); }
       #v-provider-week .week-overview-scroll{ -webkit-overflow-scrolling:touch; }
       #v-provider-week .week-overview-cta-wrap .week-edit-primary{ min-height:56px; }
+      /* ========== KW-Board (High-End Wochenplan) ========== */
+      #v-provider-week .kw-board-header{ padding:12px 20px 8px; padding-top:calc(12px + env(safe-area-inset-top, 0)); background:#fff; border-bottom:1px solid #f1f3f5; flex-shrink:0; }
+      #v-provider-week .kw-carousel{ display:flex; gap:10px; overflow-x:auto; -webkit-overflow-scrolling:touch; scroll-snap-type:x mandatory; padding:8px 0 12px; scrollbar-width:none; }
+      #v-provider-week .kw-carousel::-webkit-scrollbar{ display:none; }
+      #v-provider-week .kw-pill{ flex:0 0 auto; min-width:72px; scroll-snap-align:center; scroll-snap-stop:always; min-height:48px; padding:10px 14px; border-radius:16px; border:2px solid #e2e8f0; background:#f8fafc; font-size:14px; font-weight:800; color:#64748b; cursor:pointer; transition:all 0.2s; display:flex; align-items:center; justify-content:center; }
+      #v-provider-week .kw-pill.active{ background:rgba(14,165,233,0.12); border-color:var(--prov-brand,#0ea5e9); color:#0ea5e9; }
+      #v-provider-week .kw-progress-wrap{ padding:0 20px 12px; }
+      #v-provider-week .kw-progress{ height:4px; border-radius:999px; background:#e2e8f0; overflow:hidden; }
+      #v-provider-week .kw-progress-fill{ height:100%; border-radius:999px; background:#10b981; transition:width 0.3s ease; }
+      #v-provider-week .kw-board-scroll{ flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:16px 20px calc(100px + env(safe-area-inset-bottom, 0)); }
+      #v-provider-week .kw-grid{ display:grid; grid-template-columns:repeat(7, 1fr); gap:10px; max-width:900px; margin:0 auto; }
+      @media (max-width:640px){ #v-provider-week .kw-grid{ grid-template-columns:1fr; } }
+      #v-provider-week .kw-day-card{ background:var(--glass-bg, rgba(255,255,255,0.95)); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border-radius:24px; border:1px solid rgba(255,255,255,0.7); box-shadow:0 4px 24px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.02); padding:12px; min-height:140px; display:flex; flex-direction:column; gap:8px; transition:transform 0.2s, box-shadow 0.2s; }
+      #v-provider-week .kw-day-card:active{ transform:scale(0.98); }
+      #v-provider-week .kw-day-card.kw-day-has-live{ box-shadow:0 4px 24px rgba(0,0,0,0.06), 0 0 0 1px rgba(16,185,129,0.2); }
+      #v-provider-week .kw-day-label{ font-size:11px; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:4px; }
+      #v-provider-week .kw-day-date{ font-size:13px; font-weight:700; color:#1a1a1a; }
+      #v-provider-week .kw-slots{ display:flex; flex-direction:column; gap:8px; flex:1; min-height:0; }
+      #v-provider-week .kw-slot{ border-radius:14px; overflow:hidden; min-height:56px; position:relative; cursor:pointer; transition:background 0.2s; }
+      #v-provider-week .kw-slot-main{ display:flex; gap:12px; align-items:center; padding:10px; background:#f8fafc; border-radius:14px; border:1px solid #f1f3f5; min-height:72px; }
+      #v-provider-week .kw-slot-main .kw-slot-thumb{ width:56px; height:56px; border-radius:12px; background:#e2e8f0; flex-shrink:0; background-size:cover; background-position:center; position:relative; }
+      #v-provider-week .kw-slot-main .kw-slot-body{ flex:1; min-width:0; }
+      #v-provider-week .kw-slot-main .kw-slot-name{ font-size:14px; font-weight:800; color:#1a1a1a; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+      #v-provider-week .kw-slot-main .kw-slot-price{ font-size:15px; font-weight:900; color:#1a1a1a; margin-top:2px; }
+      #v-provider-week .kw-slot-override-badges{ position:absolute; top:4px; right:4px; display:flex; gap:2px; font-size:12px; }
+      #v-provider-week .kw-slot-empty{ min-height:52px; border:2px dashed #e2e8f0; border-radius:14px; background:rgba(248,250,252,0.8); display:flex; align-items:center; justify-content:center; color:#94a3b8; font-size:18px; font-weight:300; }
+      #v-provider-week .kw-slot-small{ display:flex; align-items:center; gap:8px; padding:8px 10px; background:#f8fafc; border-radius:12px; border:1px solid #f1f3f5; }
+      #v-provider-week .kw-slot-small .kw-slot-thumb{ width:40px; height:40px; border-radius:10px; background:#e2e8f0; flex-shrink:0; background-size:cover; background-position:center; }
+      #v-provider-week .kw-slot-small .kw-slot-name{ font-size:13px; font-weight:700; color:#1a1a1a; }
+      #v-provider-week .kw-slot-small .kw-slot-price{ font-size:13px; font-weight:800; color:#1a1a1a; margin-left:auto; }
+      #v-provider-week .kw-action-bar-fixed{ position:fixed; bottom:0; left:0; right:0; background:#fff; border-top:1px solid #e2e8f0; padding:12px 20px calc(12px + env(safe-area-inset-bottom, 0)); display:flex; align-items:center; gap:10px; z-index:40; box-shadow:0 -4px 20px rgba(0,0,0,0.06); }
+      #v-provider-week .kw-action-bar-fixed .btn{ min-height:52px; flex:1; min-width:0; border-radius:16px; font-size:15px; font-weight:800; display:inline-flex; align-items:center; justify-content:center; gap:8px; border:2px solid #f1f3f5; background:#f8fafc; color:#1a1a1a; cursor:pointer; }
+      #v-provider-week .kw-action-bar-fixed .btn:active{ transform:scale(0.98); }
       /* Nur #weekList scrollt – nur wenn Wochenplan aktiv */
       #v-provider-week.view.active{ overflow:hidden !important; height:100vh; height:100dvh; max-height:100dvh; }
       body.provider-week-active{ overflow:hidden !important; }
@@ -5627,7 +5660,24 @@
         </div>
       </header>
 
-      <div class="week-plan-wrap">
+      <!-- KW-Board: KW-Carousel + 7-Tage-Grid + Action-Bar -->
+      <div id="kwBoardWrap" style="display:flex; flex-direction:column; flex:1; min-height:0;">
+        <div class="kw-board-header" id="kwBoardHeader">
+          <div class="kw-carousel" id="kwCarousel" role="tablist"></div>
+          <div class="kw-progress-wrap">
+            <div class="kw-progress"><div class="kw-progress-fill" id="kwProgressFill" style="width:0%;"></div></div>
+          </div>
+        </div>
+        <div id="kwBoardScroll" class="kw-board-scroll">
+          <div class="kw-grid" id="kwGrid"></div>
+        </div>
+        <div class="kw-action-bar-fixed" id="kwActionBarFixed">
+          <button type="button" class="btn" id="btnKwPdf"><i data-lucide="printer" style="width:20px;height:20px;"></i> Drucken</button>
+          <button type="button" class="btn" id="btnKwShare"><i data-lucide="share-2" style="width:20px;height:20px;"></i> Teilen</button>
+        </div>
+      </div>
+
+      <div class="week-plan-wrap" id="weekPlanWrapLegacy" style="display:none;">
         <div class="week-dayrow" id="weekDays"></div>
         <div id="weekList" class="week-list-scroll"></div>
         <div id="weekThumbZone" class="week-thumb-zone">
@@ -7960,6 +8010,7 @@
   let cookbookTab = 'dishes';
   let weekPlanDay = isoDate(new Date());
   let weekPlanMode = 'overview'; // 'overview' | 'edit' – Zwei-Phasen: Ansehen vs. Bearbeiten (app-first, Sofa)
+  let weekPlanKWIndex = 0; // 0 = aktuelle KW, 1 = nächste, … (KW-Board)
   let weekSortMode = false;
   let weekUndoPending = null;
   let weekUndoTimer = null;
@@ -8868,7 +8919,7 @@
           requestAnimationFrame(function(){
             if(lastView === 'v-provider-home') renderProviderHome();
             else if(lastView === 'v-provider-pickups') renderProviderPickups();
-            else if(lastView === 'v-provider-week') renderWeekPlan();
+            else if(lastView === 'v-provider-week'){ if(typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard(); else renderWeekPlan(); }
             else if(lastView === 'v-provider-cookbook') renderCookbook();
             else if(lastView === 'v-provider-profile') renderProviderProfile();
             else if(lastView === 'v-provider-billing') renderBilling();
@@ -9107,10 +9158,10 @@
   function showProviderWeek(preselectDay){
     if(!checkSessionValidity()) return;
     if(preselectDay && typeof preselectDay === 'string') weekPlanDay = preselectDay;
-    weekPlanMode = 'overview'; // App-first: zuerst Übersicht, dann „Plan bearbeiten“ für Editor
+    weekPlanMode = 'overview';
     setProviderNavActive('provider-week');
     showView(views.providerWeek);
-    renderWeekPlan();
+    if(typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard(); else renderWeekPlan();
     // FAB anzeigen (öffnet „Inserat hinzufügen“ mit Tag-Vorauswahl)
     const fab = document.getElementById('fabProviderAddOffer');
     const fabLabel = document.getElementById('fabProviderAddOfferLabel');
@@ -17878,8 +17929,142 @@
     return new Date(year, month, day);
   }
 
+  function getWeekMonday(weekIndex){
+    var today = new Date();
+    var day = today.getDay();
+    var diff = today.getDate() - day + (day === 0 ? -6 : 1);
+    var monday = new Date(today.getFullYear(), today.getMonth(), diff + (weekIndex * 7));
+    return monday;
+  }
+  function getISOWeek(d){
+    d = new Date(d);
+    d.setHours(0, 0, 0, 0);
+    var thursday = new Date(d);
+    thursday.setDate(d.getDate() + 4 - (d.getDay() || 7));
+    var jan1 = new Date(thursday.getFullYear(), 0, 1);
+    return Math.ceil((((thursday - jan1) / 86400000) + 1) / 7);
+  }
+  function getWeekDayKeys(weekIndex){
+    var monday = getWeekMonday(weekIndex);
+    var keys = [];
+    for (var i = 0; i < 7; i++) {
+      var d = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + i);
+      keys.push(isoDate(d));
+    }
+    return keys;
+  }
+  function getKWLabel(weekIndex){
+    return 'KW ' + getISOWeek(getWeekMonday(weekIndex));
+  }
+  function getKWProgress(weekIndex){
+    var keys = getWeekDayKeys(weekIndex);
+    var filled = 0;
+    keys.forEach(function(key){
+      var provEntries = (week[key] || []).filter(function(x){ return x.providerId === providerId(); });
+      var liveOffers = offers.filter(function(o){ return o.providerId === providerId() && o.day === key; });
+      if (liveOffers.length > 0 || provEntries.length > 0) filled++;
+    });
+    return Math.min(1, filled / 7);
+  }
+  function renderWeekPlanBoard(){
+    updateSessionActivity();
+    var wrap = document.getElementById('kwBoardWrap');
+    var legacy = document.getElementById('weekPlanWrapLegacy');
+    if (wrap) wrap.style.display = 'flex';
+    if (legacy) legacy.style.display = 'none';
+    var carousel = document.getElementById('kwCarousel');
+    var progressFill = document.getElementById('kwProgressFill');
+    var grid = document.getElementById('kwGrid');
+    if (!carousel || !grid) return;
+    carousel.innerHTML = '';
+    for (var w = 0; w < 4; w++) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'kw-pill' + (w === weekPlanKWIndex ? ' active' : '');
+      btn.textContent = getKWLabel(w);
+      btn.setAttribute('data-kw', String(w));
+      btn.onclick = (function(k){ return function(){ if(typeof haptic === 'function') haptic(6); weekPlanKWIndex = k; renderWeekPlanBoard(); }; })(w);
+      carousel.appendChild(btn);
+    }
+    var progress = getKWProgress(weekPlanKWIndex);
+    if (progressFill) progressFill.style.width = (progress * 100) + '%';
+    var keys = getWeekDayKeys(weekPlanKWIndex);
+    var dayNames = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
+    var p = (provider && provider.profile) ? provider.profile : {};
+    var defaultDineIn = p.dineInPossibleDefault !== false;
+    var defaultPickup = !!p.abholnummerEnabledByDefault;
+    var defaultReuse = !!p.reuseEnabledByDefault;
+    grid.innerHTML = '';
+    keys.forEach(function(key, dayIdx){
+      var d = new Date(key + 'T12:00:00');
+      var dayLabel = dayNames[dayIdx];
+      var dateLabel = d.getDate() + '.' + (d.getMonth() + 1) + '.';
+      var provEntries = (week[key] || []).filter(function(x){ return x.providerId === providerId(); });
+      var liveOffers = offers.filter(function(o){ return o.providerId === providerId() && o.day === key; });
+      var items = liveOffers.length > 0 ? liveOffers : provEntries;
+      var isLive = liveOffers.length > 0;
+      var card = document.createElement('div');
+      card.className = 'kw-day-card' + (isLive ? ' kw-day-has-live' : '');
+      card.setAttribute('data-date', key);
+      card.innerHTML = '<div class="kw-day-label">' + dayLabel + '</div><div class="kw-day-date">' + dateLabel + '</div><div class="kw-slots"></div>';
+      var slotsWrap = card.querySelector('.kw-slots');
+      for (var slot = 0; slot < 3; slot++) {
+        var entry = items[slot];
+        if (entry) {
+          var cb = cookbook.find(function(c){ return String(c.id) === String(entry.cookbookId); });
+          var name = (cb && cb.dish) || entry.dish || 'Gericht';
+          var price = (cb && cb.price) || entry.price || 0;
+          var img = (cb && cb.photoData) || entry.photoData || '';
+          var entryDineIn = entry.dineInPossible !== false;
+          var entryPickup = !!(entry.hasPickupCode !== undefined ? entry.hasPickupCode : defaultPickup);
+          var entryReuse = !!(entry.reuse && entry.reuse.enabled);
+          var showVorOrt = (entry.dineInPossible !== undefined) && (entryDineIn !== defaultDineIn);
+          var showAbholnummer = (entry.hasPickupCode !== undefined) && (!!entry.hasPickupCode !== defaultPickup);
+          var showMehrweg = (entry.reuse !== undefined) && (entryReuse !== defaultReuse);
+          var overrideBadges = [];
+          if (showVorOrt) overrideBadges.push('<span title="Vor Ort (Abweichung)">🍴</span>');
+          if (showAbholnummer) overrideBadges.push('<span title="Abholnummer (Abweichung)">🧾</span>');
+          if (showMehrweg) overrideBadges.push('<span title="Mehrweg (Abweichung)">🔄</span>');
+          var badgeHtml = overrideBadges.length ? '<div class="kw-slot-override-badges">' + overrideBadges.join('') + '</div>' : '';
+          if (slot === 0) {
+            var slotEl = document.createElement('div');
+            slotEl.className = 'kw-slot kw-slot-main';
+            slotEl.innerHTML = '<div class="kw-slot-thumb" style="' + (img ? 'background-image:url(\'' + esc(img) + '\')' : '') + '">' + badgeHtml + '</div><div class="kw-slot-body"><div class="kw-slot-name">' + esc(name) + '</div><div class="kw-slot-price">' + euro(price) + '</div></div>';
+            slotEl.onclick = (function(k, idx){ return function(e){ e.stopPropagation(); if(typeof haptic === 'function') haptic(6); weekPlanDay = k; if(isLive && items[idx] && items[idx].id){ if(typeof startListingFlow === 'function') startListingFlow({ editOfferId: items[idx].id }); } else { if(typeof openWeekAddSheet === 'function') openWeekAddSheet(k, idx); } }; })(key, slot);
+            slotsWrap.appendChild(slotEl);
+          } else {
+            var slotSmall = document.createElement('div');
+            slotSmall.className = 'kw-slot kw-slot-small';
+            slotSmall.innerHTML = '<div class="kw-slot-thumb" style="' + (img ? 'background-image:url(\'' + esc(img) + '\')' : '') + '"></div><div class="kw-slot-name">' + esc(name) + '</div><div class="kw-slot-price">' + euro(price) + '</div>';
+            slotSmall.onclick = (function(k, idx){ return function(e){ e.stopPropagation(); if(typeof haptic === 'function') haptic(6); weekPlanDay = k; if(isLive && items[idx] && items[idx].id){ if(typeof startListingFlow === 'function') startListingFlow({ editOfferId: items[idx].id }); } else { if(typeof openWeekAddSheet === 'function') openWeekAddSheet(k, idx); } }; })(key, slot);
+            slotsWrap.appendChild(slotSmall);
+          }
+        } else {
+          var empty = document.createElement('div');
+          empty.className = 'kw-slot kw-slot-empty';
+          empty.textContent = '+';
+          empty.onclick = (function(k){ return function(e){ e.stopPropagation(); if(typeof haptic === 'function') haptic(6); if(typeof openWeekAddSheet === 'function') openWeekAddSheet(k); }; })(key);
+          slotsWrap.appendChild(empty);
+        }
+      }
+      grid.appendChild(card);
+    });
+    var btnKwPdf = document.getElementById('btnKwPdf');
+    var btnKwShare = document.getElementById('btnKwShare');
+    if (btnKwPdf) btnKwPdf.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(typeof printWeekCard === 'function') printWeekCard(); };
+    if (btnKwShare) btnKwShare.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(typeof shareWeekPlan === 'function') shareWeekPlan(); };
+    var monday = getWeekMonday(weekPlanKWIndex);
+    var sunday = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + 6);
+    var sub = document.getElementById('weekHeaderSubtitle');
+    if (sub) sub.textContent = getKWLabel(weekPlanKWIndex) + ' · ' + monday.getDate() + '. – ' + sunday.getDate() + '.' + (sunday.getMonth() !== monday.getMonth() ? ' ' + ['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'][sunday.getMonth()] : '');
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+  }
   function renderWeekPlan(){
     updateSessionActivity();
+    var boardWrap = document.getElementById('kwBoardWrap');
+    var legacyWrap = document.getElementById('weekPlanWrapLegacy');
+    if (boardWrap) boardWrap.style.display = 'none';
+    if (legacyWrap) legacyWrap.style.display = 'flex';
     const dayWrap = document.getElementById('weekDays');
     const list = document.getElementById('weekList');
     let actionsBar = document.getElementById('weekActionsBar');
@@ -18332,7 +18517,8 @@
     if(!week[dayKey]) week[dayKey] = [];
     week[dayKey].push({ providerId: c.providerId, cookbookId: c.id, dish: c.dish, price: c.price });
     save(LS.week, week);
-    renderWeekPlan();
+    var boardWrap = document.getElementById('kwBoardWrap');
+    if(boardWrap && boardWrap.style.display !== 'none'){ if(typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard(); } else { renderWeekPlan(); }
     renderProviderWeekPreview();
     toast((c.dish || 'Gericht') + ' hinzugefügt');
   }
@@ -18343,7 +18529,8 @@
     if(!arr || index < 0 || index >= arr.length) return;
     arr[index] = { providerId: c.providerId, cookbookId: c.id, dish: c.dish, price: c.price };
     save(LS.week, week);
-    renderWeekPlan();
+    var boardWrap = document.getElementById('kwBoardWrap');
+    if(boardWrap && boardWrap.style.display !== 'none'){ if(typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard(); } else { renderWeekPlan(); }
     renderProviderWeekPreview();
     toast((c.dish || 'Gericht') + ' ersetzt');
   }
@@ -18416,7 +18603,8 @@
           if(typeof haptic === 'function') haptic(10);
           keys.forEach(function(k){ addCookbookEntryToWeek(k, weekMultiSelectCookbookId); });
           closeWeekAddSheet();
-          if(typeof renderWeekPlan === 'function') renderWeekPlan();
+          var boardWrap = document.getElementById('kwBoardWrap');
+          if(boardWrap && boardWrap.style.display !== 'none' && typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard(); else if(typeof renderWeekPlan === 'function') renderWeekPlan();
           if(typeof renderProviderWeekPreview === 'function') renderProviderWeekPreview();
           if(typeof showToast === 'function') showToast('Gericht auf ' + keys.length + ' Tage gesetzt');
         };
