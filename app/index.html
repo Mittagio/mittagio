@@ -5334,11 +5334,16 @@
           <div id="kpiKochbuchCountWrap" style="font-size:13px; font-weight:700; color:#9ca3af; margin-top:8px; text-align:center; cursor:pointer;" onclick="typeof showProviderCookbook==='function'&&showProviderCookbook();"><span id="kpiKochbuchCount">0</span> Gerichte</div>
         </div>
 
-        <!-- Wochenvorschau (Applike) -->
-        <div style="margin-bottom:32px;">
-          <h3 style="font-size:18px; font-weight:900; color:#1a1a1a; margin:0 0 4px;">Dein Wochenplan</h3>
-          <p style="font-size:13px; color:#64748b; margin:0 0 16px; line-height:1.4;">Vorausplanen, entspannter kochen. Deine Gäste lieben Verlässlichkeit.</p>
-          <div class="prov-card" style="padding:20px; border-radius:20px; border:1px solid rgba(0,0,0,0.05); box-shadow:0 2px 12px rgba(0,0,0,0.04);">
+        <!-- Wochenvorschau (Applike) – Karte öffnet vollen Wochenplan -->
+        <div style="margin-bottom:32px;" id="providerWeekSection">
+          <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:4px;">
+            <h3 style="font-size:18px; font-weight:900; color:#1a1a1a; margin:0;">Dein Wochenplan</h3>
+            <button type="button" id="btnDashboardOpenWeekPlan" style="display:inline-flex; align-items:center; gap:6px; padding:8px 14px; border-radius:12px; border:none; background:rgba(14,165,233,0.12); color:var(--prov-brand,#0ea5e9); font-size:14px; font-weight:800; cursor:pointer;">
+              <i data-lucide="calendar" style="width:18px;height:18px;"></i><span>Wochenplan öffnen</span>
+            </button>
+          </div>
+          <p style="font-size:13px; color:#64748b; margin:0 0 16px; line-height:1.4;">Vorausplanen, entspannter kochen. Deine Gäste lieben Verlässlichkeit. Tippe auf die Karte für die volle Ansicht.</p>
+          <div class="prov-card" id="providerWeekCard" style="padding:20px; border-radius:20px; border:1px solid rgba(0,0,0,0.05); box-shadow:0 2px 12px rgba(0,0,0,0.04); cursor:pointer;">
             <div id="providerWeekDays"></div>
             <div id="providerWeekDayContent"></div>
           </div>
@@ -16683,6 +16688,14 @@
   });
   const btnProviderNavBack = document.getElementById('btnProviderNavBack');
   if(btnProviderNavBack) btnProviderNavBack.onclick = function(){ showProviderHome(); };
+
+  // Dashboard: „Wochenplan öffnen“-Button und Klick auf Wochenplan-Karte → volle Wochenplan-Ansicht
+  document.addEventListener('click', function(e){
+    var openBtn = e.target.closest('#btnDashboardOpenWeekPlan');
+    if(openBtn){ e.preventDefault(); if(typeof showProviderWeek === 'function') showProviderWeek(); return; }
+    var card = e.target.closest('#providerWeekCard');
+    if(card && !e.target.closest('button') && !e.target.closest('.week-preview-link')){ e.preventDefault(); if(typeof showProviderWeek === 'function') showProviderWeek(); }
+  }, true);
 
   // Customer nav handlers - Robuster Event-Delegation-Ansatz
   document.addEventListener('click', function(e){
