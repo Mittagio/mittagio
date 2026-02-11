@@ -3297,10 +3297,13 @@
     
     /* Anbieterbereich: Layout-Kette sicherstellen (verhindert leere weiße Seite) */
     html, body{ min-height:100vh; min-height:100dvh; }
-    body.provider-mode main{ min-height:100vh; min-height:100dvh; display:block; background:#f8fafc; }
-    body.provider-mode [id^="v-provider-"].view.active{ min-height:100vh; min-height:100dvh; display:block; visibility:visible; opacity:1; scroll-margin-top:0; }
+    body.provider-mode main{ min-height:100vh; min-height:100dvh; display:block; background:#f8fafc; overflow:visible; }
+    body.provider-mode [id^="v-provider-"].view.active{ min-height:100vh; min-height:100dvh; display:block !important; visibility:visible !important; opacity:1 !important; scroll-margin-top:0; position:relative; }
     /* Erster Viewport sofort gefüllt: Inhalt oben verankern, keine Animation die verschiebt */
     body.provider-mode [id^="v-provider-"].view.active{ animation:none !important; transform:translateY(0) !important; }
+    /* Header/Inhalt der Anbieter-Views immer sichtbar (kein leerer Screen) */
+    body.provider-mode [id^="v-provider-"].view.active .prov-header,
+    body.provider-mode [id^="v-provider-"].view.active header:first-child{ visibility:visible !important; opacity:1 !important; min-height:60px; background:#fff; }
     body.provider-mode [id^="v-provider-"].view.active#v-provider-week{ display:flex !important; flex-direction:column !important; }
     #v-provider-home{ min-height:100vh; min-height:100dvh; background:#f8fafc; }
     #v-provider-pickups{ min-height:100vh; min-height:100dvh; background:#f8fafc; }
@@ -8518,7 +8521,7 @@
     view.classList.add('active');
     if(id === 'v-pickup-code') view.style.display = 'flex';
     else if(id === 'v-provider-week') view.style.cssText = 'display:flex; flex-direction:column; min-height:100vh; visibility:visible; opacity:1;';
-    else if(isProviderView) view.style.cssText = 'display:block; min-height:100vh; visibility:visible; opacity:1; background:#f8fafc;';
+    else if(isProviderView) view.style.cssText = 'display:block !important; min-height:100vh; height:auto; visibility:visible; opacity:1; background:#f8fafc; position:relative;';
     else view.style.display = 'block';
     // Danach alle anderen Views ausblenden
     document.querySelectorAll('.view').forEach(v => {
@@ -8539,6 +8542,10 @@
           if (document.body) document.body.scrollTop = 0;
           var el = document.getElementById(id);
           if (el && el.scrollTop) el.scrollTop = 0;
+          var mainEl = document.querySelector('main');
+          if (mainEl && mainEl.scrollTop) mainEl.scrollTop = 0;
+          var appEl = document.getElementById('app');
+          if (appEl && appEl.scrollTop) appEl.scrollTop = 0;
         });
       });
     } else if (id === 'v-provider-login') {
