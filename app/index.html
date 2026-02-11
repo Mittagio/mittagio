@@ -1827,8 +1827,8 @@
       transition: opacity 0.8s ease;
     }
     body.provider-mode #v-provider-home::before{
-      background: linear-gradient(160deg, #f0f9ff 0%, #f8fafc 35%, #f1f5f9 70%, #e0f2fe 100%);
-      opacity:0.6;
+      background: linear-gradient(160deg, #e0f2fe 0%, #f0f9ff 30%, #f8fafc 60%, #f1f5f9 100%);
+      opacity:0.85;
     }
     body.provider-mode #v-provider-week::before{
       background: linear-gradient(165deg, #f0f9ff 0%, #f8fafc 50%, #ecfdf5 100%);
@@ -3358,14 +3358,18 @@
     body.provider-mode [id^="v-provider-"].view.active{ animation:none !important; transform:translateY(0) !important; }
     /* Header/Inhalt der Anbieter-Views immer sichtbar (kein leerer Screen) */
     body.provider-mode [id^="v-provider-"].view.active .prov-header,
-    body.provider-mode [id^="v-provider-"].view.active header:first-child{ visibility:visible !important; opacity:1 !important; min-height:60px; background:#fff; }
+    body.provider-mode [id^="v-provider-"].view.active header:first-child{ visibility:visible !important; opacity:1 !important; min-height:60px; background:#fff !important; display:block !important; }
     body.provider-mode [id^="v-provider-"].view.active#v-provider-week{ display:flex !important; flex-direction:column !important; }
     /* Meine Küche: minimaler oberer Abstand (nur Safe-Area im Header), kein ganzer Screen Platz */
     #v-provider-home{
       min-height:100vh; min-height:100dvh; background:transparent;
-      display:flex; flex-direction:column; justify-content:flex-start;
+      display:flex !important; flex-direction:column; justify-content:flex-start;
       padding-top:0 !important; padding-left:0; padding-right:0; padding-bottom:140px;
-      position:relative;
+      position:relative; width:100%; box-sizing:border-box;
+    }
+    #v-provider-home.view.active .prov-header,
+    #v-provider-home.view.active > div{
+      position:relative; z-index:1; min-height:0; overflow:visible;
     }
     #v-provider-home .prov-header{
       padding-top:calc(12px + env(safe-area-inset-top, 0)); padding-left:20px; padding-right:20px; padding-bottom:16px;
@@ -3376,8 +3380,18 @@
       padding:12px 4px; border-right:1px solid #eee;
     }
     #v-provider-home .prov-stat-item:last-child{ border-right:none; }
-    #v-provider-pickups{ min-height:100vh; min-height:100dvh; background:#f8fafc; }
-    #v-provider-profile{ min-height:100vh; min-height:100dvh; }
+    #v-provider-pickups{ min-height:100vh; min-height:100dvh; background:#f8fafc; width:100%; box-sizing:border-box; }
+    #v-provider-pickups.view.active{ display:flex !important; flex-direction:column !important; }
+    #v-provider-pickups.view.active > header,
+    #v-provider-pickups.view.active > div{ position:relative; z-index:1; min-height:0; overflow:visible; }
+    #v-provider-profile{ min-height:100vh; min-height:100dvh; width:100%; box-sizing:border-box; }
+    #v-provider-profile.view.active{ display:flex !important; flex-direction:column !important; }
+    #v-provider-profile.view.active > header,
+    #v-provider-profile.view.active > div{ position:relative; z-index:1; min-height:0; overflow:visible; }
+    #v-provider-cookbook{ min-height:100vh; min-height:100dvh; width:100%; box-sizing:border-box; }
+    #v-provider-cookbook.view.active{ display:flex !important; flex-direction:column !important; }
+    #v-provider-cookbook.view.active > header,
+    #v-provider-cookbook.view.active > div{ position:relative; z-index:1; min-height:0; overflow:visible; }
 
     /* Wochenplan: nur auf der Wochenplan-Seite sichtbar; Layout nur wenn .active */
     #v-provider-week.view{ display:none; }
@@ -8672,7 +8686,7 @@
     view.classList.add('active');
     if(id === 'v-pickup-code') view.style.display = 'flex';
     else if(id === 'v-provider-week') view.style.cssText = 'display:flex; flex-direction:column; min-height:100vh; visibility:visible; opacity:1;';
-    else if(isProviderView) view.style.cssText = 'display:block !important; min-height:100vh; height:auto; visibility:visible; opacity:1; background:#f8fafc; position:relative;';
+    else if(isProviderView) view.style.cssText = 'display:block !important; min-height:100vh; height:auto; width:100%; visibility:visible; opacity:1; position:relative;';
     else view.style.display = 'block';
     // Danach alle anderen Views ausblenden
     document.querySelectorAll('.view').forEach(v => {
