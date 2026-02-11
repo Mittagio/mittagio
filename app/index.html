@@ -8504,8 +8504,13 @@
       return;
     }
     // Zuerst neue View aktivieren und anzeigen – kein leerer Bildschirm beim Wechsel
+    var isProviderView = (id && id.indexOf('v-provider-') === 0);
+    if(isProviderView) document.body.classList.add('provider-mode');
     view.classList.add('active');
-    view.style.display = (id === 'v-pickup-code') ? 'flex' : 'block';
+    if(id === 'v-pickup-code') view.style.display = 'flex';
+    else if(id === 'v-provider-week') view.style.cssText = 'display:flex; flex-direction:column; min-height:100vh; visibility:visible; opacity:1;';
+    else if(isProviderView) view.style.cssText = 'display:block; min-height:100vh; visibility:visible; opacity:1; background:#f8fafc;';
+    else view.style.display = 'block';
     // Danach alle anderen Views ausblenden
     document.querySelectorAll('.view').forEach(v => {
       if(v === view) return;
@@ -8514,7 +8519,6 @@
     });
     document.body.classList.toggle('provider-week-active', id === 'v-provider-week');
     /* Bei Anbieter-Views sofort nach oben scrollen, damit kein leerer oberer Bereich sichtbar ist */
-    var isProviderView = id && id.indexOf('v-provider-') === 0;
     window.scrollTo({ top: 0, behavior: isProviderView ? 'auto' : 'smooth' });
     if (id === 'v-provider-login') {
       requestAnimationFrame(function(){ requestAnimationFrame(function(){ window.scrollTo({ top: 0, behavior: 'auto' }); }); });
@@ -8619,12 +8623,15 @@
           showView(lastView);
           var navGo = (lastView === 'v-provider-home') ? 'provider-home' : (lastView === 'v-provider-pickups') ? 'provider-pickups' : (lastView === 'v-provider-week') ? 'provider-week' : (lastView === 'v-provider-cookbook') ? 'provider-cookbook' : (lastView === 'v-provider-profile' || lastView === 'v-provider-billing') ? 'provider-profile' : 'provider-home';
           setProviderNavActive(navGo);
-          if(lastView === 'v-provider-home') renderProviderHome();
-          else if(lastView === 'v-provider-pickups') renderProviderPickups();
-          else if(lastView === 'v-provider-week') renderWeekPlan();
-          else if(lastView === 'v-provider-cookbook') renderCookbook();
-          else if(lastView === 'v-provider-profile') renderProviderProfile();
-          else if(lastView === 'v-provider-billing') renderBilling();
+          requestAnimationFrame(function(){
+            if(lastView === 'v-provider-home') renderProviderHome();
+            else if(lastView === 'v-provider-pickups') renderProviderPickups();
+            else if(lastView === 'v-provider-week') renderWeekPlan();
+            else if(lastView === 'v-provider-cookbook') renderCookbook();
+            else if(lastView === 'v-provider-profile') renderProviderProfile();
+            else if(lastView === 'v-provider-billing') renderBilling();
+            if(typeof lucide !== 'undefined') lucide.createIcons();
+          });
         } else {
           showProviderHome();
         }
