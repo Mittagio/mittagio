@@ -2479,8 +2479,12 @@
     }
     /* Anbieter-Ansichten: Topbar ausblenden, Inhalt beginnt oben ohne Leerraum */
     body.provider-mode .topbar { display: none !important; }
-    body.provider-mode main { padding-top: 0 !important; }
-    body.provider-mode [id^="v-provider-"] { padding-top: calc(6px + env(safe-area-inset-top, 0px)) !important; }
+    body.provider-mode main { padding-top: 0 !important; margin-top: 0 !important; }
+    /* Nuclear: Im Provider-Modus nur die aktive Provider-View sichtbar – alle anderen main-Kinder aus dem Layout */
+    body.provider-mode main > *:not([id^="v-provider-"].view.active) { display: none !important; }
+    /* Anbieter-Views: kein Extra-Platz oben – Inhalt beginnt sofort (Safe-Area nur im Header) */
+    body.provider-mode [id^="v-provider-"] { padding-top: 0 !important; margin-top: 0 !important; }
+    body.provider-mode [id^="v-provider-"].view.active { padding-top: 0 !important; }
     
     /* Discover Header - Sticky, immer über Kategorie- und Tage-Leiste (z-index > 90) */
     .discover-header-sticky{
@@ -3331,15 +3335,14 @@
     body.provider-mode [id^="v-provider-"].view.active .prov-header,
     body.provider-mode [id^="v-provider-"].view.active header:first-child{ visibility:visible !important; opacity:1 !important; min-height:60px; background:#fff; }
     body.provider-mode [id^="v-provider-"].view.active#v-provider-week{ display:flex !important; flex-direction:column !important; }
-    /* Meine Küche: kein oberer Weißraum, Flex-Start, kompaktes Dashboard */
+    /* Meine Küche: minimaler oberer Abstand (nur Safe-Area im Header), kein ganzer Screen Platz */
     #v-provider-home{
       min-height:100vh; min-height:100dvh; background:#f8fafc;
       display:flex; flex-direction:column; justify-content:flex-start;
-      padding-top:calc(20px + env(safe-area-inset-top, 0)) !important;
-      padding-left:0; padding-right:0; padding-bottom:140px;
+      padding-top:0 !important; padding-left:0; padding-right:0; padding-bottom:140px;
     }
     #v-provider-home .prov-header{
-      padding-top:0; padding-left:20px; padding-right:20px; padding-bottom:16px;
+      padding-top:calc(12px + env(safe-area-inset-top, 0)); padding-left:20px; padding-right:20px; padding-bottom:16px;
       margin-bottom:0; flex-shrink:0;
     }
     #v-provider-home .prov-stats-grid{ margin-top:12px; gap:0; }
@@ -3391,17 +3394,18 @@
       }
       .navbtn .ico svg{ width:24px !important; height:24px !important; }
       
-      /* Provider: Safe-Area im Header (kein leerer Raum oben, Inhalt sofort sichtbar) */
+      /* Provider: kein Platz oben – Inhalt beginnt sofort (Safe-Area nur im ersten Header) */
       [id^="v-provider-"]{
-        padding-top:0 !important;
+        padding-top:0 !important; margin-top:0 !important;
         padding-left:calc(20px + env(safe-area-inset-left, 0)) !important;
         padding-right:calc(20px + env(safe-area-inset-right, 0)) !important;
       }
+      #v-provider-home .prov-header,
       #providerProfileHeader,
       #v-provider-cookbook > header,
       #v-provider-pickups > header,
       #v-provider-week .week-header-compact{
-        padding-top:calc(10px + env(safe-area-inset-top, 0)) !important;
+        padding-top:calc(12px + env(safe-area-inset-top, 0)) !important;
       }
       #providerProfileHeader{ padding-bottom:10px !important; }
       #v-provider-cookbook > header{ padding-bottom:14px !important; }
@@ -3409,7 +3413,7 @@
       #v-provider-pickups > header{ padding-bottom:14px !important; padding-left:20px !important; padding-right:20px !important; }
       #v-provider-week .week-header-compact{ background:#fff !important; }
       #v-provider-week .prov-page-header{ padding-top:calc(10px + env(safe-area-inset-top, 0)) !important; }
-      #v-provider-home{ padding:0 16px 100px !important; padding-top:calc(20px + env(safe-area-inset-top, 0)) !important; }
+      #v-provider-home{ padding:0 16px 100px !important; padding-top:0 !important; }
       #v-provider-home h1{ font-size:28px !important; }
       
       /* KPI Cards: 3er Grid, Touch-freundlich */
@@ -3724,7 +3728,7 @@
     
     /* Extra kleine Phones (<375px, z.B. iPhone SE) */
     @media (max-width:374px){
-      #v-provider-home{ padding:0 8px 90px !important; padding-top:calc(20px + env(safe-area-inset-top, 0)) !important; }
+      #v-provider-home{ padding:0 8px 90px !important; padding-top:0 !important; }
       #v-provider-home h1{ font-size:22px !important; }
       #kpiCardTagesessen, #kpiCardAbholungen, #kpiCardKochbuch{ padding:10px 6px !important; }
       #kpiCardTagesessen div[style*="font-size:20px"],
@@ -8600,7 +8604,10 @@
     }
     // Zuerst neue View aktivieren und anzeigen – kein leerer Bildschirm beim Wechsel
     var isProviderView = (id && id.indexOf('v-provider-') === 0);
-    if(isProviderView) document.body.classList.add('provider-mode');
+    if(isProviderView){
+      document.body.classList.add('provider-mode');
+      if(typeof history !== 'undefined' && history.scrollRestoration !== undefined) history.scrollRestoration = 'manual';
+    }
     view.classList.add('active');
     if(id === 'v-pickup-code') view.style.display = 'flex';
     else if(id === 'v-provider-week') view.style.cssText = 'display:flex; flex-direction:column; min-height:100vh; visibility:visible; opacity:1;';
@@ -8619,13 +8626,15 @@
     if (document.documentElement) document.documentElement.scrollTop = 0;
     if (document.body) document.body.scrollTop = 0;
     if (isProviderView) {
+      var activeEl = document.getElementById(id);
+      if (activeEl && activeEl.scrollIntoView) activeEl.scrollIntoView({ block: 'start', inline: 'nearest', behavior: 'auto' });
       requestAnimationFrame(function(){
         requestAnimationFrame(function(){
           window.scrollTo({ top: 0, behavior: 'auto' });
           if (document.documentElement) document.documentElement.scrollTop = 0;
           if (document.body) document.body.scrollTop = 0;
           var el = document.getElementById(id);
-          if (el && el.scrollTop) el.scrollTop = 0;
+          if (el) { if (el.scrollTop) el.scrollTop = 0; if (el.scrollIntoView) el.scrollIntoView({ block: 'start', behavior: 'auto' }); }
           var mainEl = document.querySelector('main');
           if (mainEl && mainEl.scrollTop) mainEl.scrollTop = 0;
           var appEl = document.getElementById('app');
@@ -8706,6 +8715,7 @@
     
     if(isProv && provider.loggedIn){
       document.body.classList.add('provider-mode');
+      if(typeof history !== 'undefined' && history.scrollRestoration !== undefined) history.scrollRestoration = 'manual';
     } else {
       document.body.classList.remove('provider-mode');
     }
@@ -22973,6 +22983,9 @@
       mode = 'customer';
     }
   }
+
+  /* Verhindert, dass der Browser nach Reload die alte Scroll-Position wiederherstellt (Provider-Inhalt oben). */
+  if(typeof history !== 'undefined' && history.scrollRestoration) history.scrollRestoration = 'manual';
 
   // Magic Link: #/plan/[Anbieter-ID] – öffentliche Wochenplan-Ansicht (Kunde sieht nur Verkaufspreis, 3 Säulen)
   var planMatch = (location.hash || '').match(/^#\/plan\/(.+)$/);
