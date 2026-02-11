@@ -1,0 +1,41 @@
+---
+description: Layout-Fixes im Anbieterbereich – nur Wrapper/Provider-Styles anfassen, globale Styles unberührt lassen
+alwaysApply: true
+---
+
+# Layout-Korrekturen Anbieterbereich (Schadensbegrenzung)
+
+## Grundprinzip
+
+**Bei Layout-Fehlern im Anbieterbereich (z. B. Inhalt nach unten geschoben, falsche Zentrierung, zu großes oberes Padding):**
+
+- Analysiere und ändere **ausschließlich** die für den Anbieterbereich zuständigen Wrapper und Styles.
+- **Nicht anfassen:** Globale Styles, Kunden-Views, `body`, Root-Container, `App.css`/`index.css` (sofern vorhanden). In Mittagio: Die **allgemeinen** Regeln am Anfang des `<style>`-Blocks in `app/index.html` (z. B. für `.view`, `body`, Layout-Container ohne `#v-provider-` oder `.prov-`) **nicht** ändern.
+
+## Mittagio: Wo ist „der Anbieter-Wrapper“?
+
+- Es gibt **keine** separate Datei wie `ProviderLayout.tsx`. Alles steckt in **`app/index.html`** (HTML + CSS + JS).
+- **Anbieter-Views** sind `<section class="view" id="v-provider-...">` (z. B. `#v-provider-home`, `#v-provider-profile`, `#v-provider-week`, `#v-provider-cookbook`, `#v-provider-pickups`, `#v-provider-billing`, `#v-provider-login`).
+- **Anbieter-Navigation:** `#providerNavWrap`, `#providerNav`, `.provider-nav-light`, `.navbtn` innerhalb von `#providerNav`.
+- **Anbieter-spezifische CSS-Selektoren:** Alle Regeln, die mit `#v-provider-`, `#providerNav`, `.prov-`, `.provider-`, `body.provider-` beginnen oder explizit `[id^="v-provider-"]` nutzen.
+
+## Erlaubte Änderungen bei Layout-Bugs
+
+- **Nur** CSS anpassen, das **explizit** einen der folgenden Selektoren enthält:
+  - `#v-provider-home`, `#v-provider-profile`, `#v-provider-week`, `#v-provider-cookbook`, `#v-provider-pickups`, `#v-provider-billing`, `#v-provider-login`, …
+  - `#providerNavWrap`, `#providerNav`
+  - `.prov-header`, `.prov-page-header`, `.prov-card`, `.prov-stats-grid`, …
+  - `[id^="v-provider-"]` (alle Anbieter-Views)
+- Ursache typischerweise: **falsche Flexbox-Zentrierung**, **zu großes padding-top/margin-top** oder **min-height** innerhalb genau dieser Anbieter-Sections. Nur dort Werte anpassen.
+
+## Verboten
+
+- **Nicht** ändern: `body`, `.view` (ohne Kontext `#v-provider-`), globale Grid/Flex-Container, die **auch** für die Kunden-Seite gelten.
+- **Nicht** neue globale Regeln einführen (z. B. `body { padding-top: … }`), die Kunden-UI beeinflussen könnten.
+- **Nicht** ganze Abschnitte des Stylesheets umschreiben; nur die **konkreten** Anbieter-Regeln, die den Fehler verursachen.
+
+## Formulierung für Cursor (Copy & Paste)
+
+Wenn du Cursor gezielt anweisen willst, nutze z. B.:
+
+> Analysiere ausschließlich die Wrapper und CSS-Regeln für den Anbieterbereich in `app/index.html` (alle `#v-provider-*`-Sections, `#providerNavWrap`, `.prov-*`, `.provider-*`). Der Fehler (z. B. Inhalt nach unten geschoben) deutet auf falsche Flexbox-Zentrierung oder zu großes oberes Padding in genau diesem Bereich hin. Bitte ändere nur diese Anbieter-spezifischen Selektoren und rühre die globalen Styles (z. B. `body`, `.view` ohne Anbieter-Kontext, obere Teile des Style-Blocks) nicht an.
