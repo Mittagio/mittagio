@@ -3298,7 +3298,9 @@
     /* Anbieterbereich: Layout-Kette sicherstellen (verhindert leere weiße Seite) */
     html, body{ min-height:100vh; min-height:100dvh; }
     body.provider-mode main{ min-height:100vh; min-height:100dvh; display:block; background:#f8fafc; }
-    body.provider-mode [id^="v-provider-"].view.active{ min-height:100vh; min-height:100dvh; display:block; visibility:visible; opacity:1; }
+    body.provider-mode [id^="v-provider-"].view.active{ min-height:100vh; min-height:100dvh; display:block; visibility:visible; opacity:1; scroll-margin-top:0; }
+    /* Erster Viewport sofort gefüllt: Inhalt oben verankern, keine Animation die verschiebt */
+    body.provider-mode [id^="v-provider-"].view.active{ animation:none !important; transform:translateY(0) !important; }
     body.provider-mode [id^="v-provider-"].view.active#v-provider-week{ display:flex !important; flex-direction:column !important; }
     #v-provider-home{ min-height:100vh; min-height:100dvh; background:#f8fafc; }
     #v-provider-pickups{ min-height:100vh; min-height:100dvh; background:#f8fafc; }
@@ -8527,7 +8529,19 @@
     document.body.classList.toggle('provider-week-active', id === 'v-provider-week');
     /* Bei Anbieter-Views sofort nach oben scrollen, damit kein leerer oberer Bereich sichtbar ist */
     window.scrollTo({ top: 0, behavior: isProviderView ? 'auto' : 'smooth' });
-    if (id === 'v-provider-login') {
+    if (document.documentElement) document.documentElement.scrollTop = 0;
+    if (document.body) document.body.scrollTop = 0;
+    if (isProviderView) {
+      requestAnimationFrame(function(){
+        requestAnimationFrame(function(){
+          window.scrollTo({ top: 0, behavior: 'auto' });
+          if (document.documentElement) document.documentElement.scrollTop = 0;
+          if (document.body) document.body.scrollTop = 0;
+          var el = document.getElementById(id);
+          if (el && el.scrollTop) el.scrollTop = 0;
+        });
+      });
+    } else if (id === 'v-provider-login') {
       requestAnimationFrame(function(){ requestAnimationFrame(function(){ window.scrollTo({ top: 0, behavior: 'auto' }); }); });
     }
     
