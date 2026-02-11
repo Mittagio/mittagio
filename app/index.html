@@ -1817,6 +1817,28 @@
       --card-radius-premium: 24px;
       --card-shadow-soft: 0 4px 24px rgba(0,0,0,0.06);
       --card-shadow-hover: 0 12px 40px rgba(0,0,0,0.1);
+      --premium-anthracite: #1a1a1a;
+    }
+    /* Dynamic Background: sanfter Farbverlauf je Tageszeit (Provider) */
+    body.provider-mode [id^="v-provider-"].view{ position:relative; }
+    body.provider-mode #v-provider-home::before,
+    body.provider-mode #v-provider-week::before{
+      content:''; position:absolute; inset:0; pointer-events:none; z-index:0;
+      transition: opacity 0.8s ease;
+    }
+    body.provider-mode #v-provider-home::before{
+      background: linear-gradient(160deg, #f0f9ff 0%, #f8fafc 35%, #f1f5f9 70%, #e0f2fe 100%);
+      opacity:0.6;
+    }
+    body.provider-mode #v-provider-week::before{
+      background: linear-gradient(165deg, #f0f9ff 0%, #f8fafc 50%, #ecfdf5 100%);
+      opacity:0.5;
+    }
+    body.provider-mode #v-provider-home > *,
+    body.provider-mode #v-provider-week > *{ position:relative; z-index:1; }
+    @media (prefers-color-scheme: dark) {
+      body.provider-mode #v-provider-home::before{ opacity:0.25; }
+      body.provider-mode #v-provider-week::before{ opacity:0.2; }
     }
     
     /* Modern App-Like CSS for Provider */
@@ -1906,16 +1928,19 @@
     }
     
     .prov-card {
-      background: #fff;
-      border-radius: 28px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: var(--card-radius-premium, 24px);
       padding: 24px;
-      border: 1px solid rgba(0,0,0,0.04);
-      box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--card-shadow-soft), var(--glass-inner-glow);
       margin-bottom: 20px;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
     }
     .prov-card:active {
       transform: scale(0.98);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.04), var(--glass-inner-glow);
     }
     
     .prov-stats-grid {
@@ -3337,9 +3362,10 @@
     body.provider-mode [id^="v-provider-"].view.active#v-provider-week{ display:flex !important; flex-direction:column !important; }
     /* Meine Küche: minimaler oberer Abstand (nur Safe-Area im Header), kein ganzer Screen Platz */
     #v-provider-home{
-      min-height:100vh; min-height:100dvh; background:#f8fafc;
+      min-height:100vh; min-height:100dvh; background:transparent;
       display:flex; flex-direction:column; justify-content:flex-start;
       padding-top:0 !important; padding-left:0; padding-right:0; padding-bottom:140px;
+      position:relative;
     }
     #v-provider-home .prov-header{
       padding-top:calc(12px + env(safe-area-inset-top, 0)); padding-left:20px; padding-right:20px; padding-bottom:16px;
@@ -3357,8 +3383,8 @@
     #v-provider-week.view{ display:none; }
     #v-provider-week.view.active{
       display:flex !important; flex-direction:column !important; min-height:100vh; min-height:100dvh; height:100vh; height:100dvh;
-      padding:0; padding-bottom:calc(80px + env(safe-area-inset-bottom, 0)); background:#f8fafc; box-sizing:border-box;
-      overflow:visible; visibility:visible !important; opacity:1 !important;
+      padding:0; padding-bottom:calc(80px + env(safe-area-inset-bottom, 0)); background:transparent; box-sizing:border-box;
+      overflow:visible; visibility:visible !important; opacity:1 !important; position:relative;
     }
     #v-provider-week .week-header-compact{
       flex-shrink:0; min-height:56px; background:#fff !important; border-bottom:1px solid rgba(0,0,0,0.06);
@@ -3446,8 +3472,8 @@
       #v-provider-week.view.active{
         display:flex !important; flex-direction:column !important; min-height:100vh !important; min-height:100dvh !important;
         padding:0 !important; padding-bottom:calc(80px + env(safe-area-inset-bottom, 0)) !important;
-        background:#f8fafc !important;
-        overflow:hidden !important;
+        background:transparent !important;
+        overflow:hidden !important; position:relative;
       }
       #v-provider-week .week-header-compact{
         flex-shrink:0; background:#fff; border-bottom:1px solid rgba(0,0,0,0.06); position:sticky; top:0; z-index:50;
@@ -3526,6 +3552,12 @@
       #v-provider-week .week-meal-card-wrap{ position:relative; overflow:hidden; border-radius: var(--card-radius-premium, 24px); margin-bottom:14px; }
       #v-provider-week .week-meal-card-swipe{ display:flex; align-items:stretch; transition:transform 0.2s ease-out; touch-action:pan-y; }
       #v-provider-week .week-meal-card-swipe .week-meal-card{ flex:1; margin-bottom:0; min-width:0; position:relative; z-index:1; background:transparent; border-radius:inherit; }
+      /* Swipe-Exit: Karte gleitet sanft aus dem Bild beim Löschen/Kopieren */
+      #v-provider-week .week-meal-card-wrap.week-meal-card-exit{ transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease; pointer-events:none; }
+      #v-provider-week .week-meal-card-wrap.week-meal-card-exit.week-meal-card-exit-left .week-meal-card-swipe .week-meal-card{ transform: translateX(-120%); }
+      #v-provider-week .week-meal-card-wrap.week-meal-card-exit.week-meal-card-exit-right .week-meal-card-swipe .week-meal-card{ transform: translateX(120%); }
+      #v-provider-week .week-meal-card-wrap.week-meal-card-exit .week-meal-card-swipe .week-meal-card{ transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+      #v-provider-week .week-meal-card-wrap.week-meal-card-exit{ opacity:0; }
       #v-provider-week .week-swipe-actions{ display:flex; flex-direction:column; gap:4px; position:absolute; top:0; bottom:0; width:80px; align-items:center; justify-content:center; font-size:11px; font-weight:800; color:#fff; }
       #v-provider-week .week-swipe-actions.left{ left:0; background:#2563eb; }
       #v-provider-week .week-swipe-actions.right{ right:0; background:#ef4444; }
@@ -3602,9 +3634,20 @@
       body.provider-week-active .topbar{ display:none !important; }
       body.provider-week-active main{ padding-top:0 !important; padding-left:0 !important; padding-right:0 !important; max-width:none !important; }
       /* Dashboard: Dein Wochenplan Applike */
-      #providerWeekDays{ display:flex; gap:8px; overflow-x:auto; -webkit-overflow-scrolling:touch; padding:0 0 16px; margin-bottom:16px; border-bottom:1px solid #f1f3f5; }
-      #providerWeekDays .week-preview-pill{ flex:0 0 auto; min-width:56px; padding:10px 8px; border-radius:14px; border:2px solid transparent; background:#f1f3f5; font-size:11px; font-weight:800; color:#64748b; cursor:pointer; transition:all 0.2s; line-height:1.25; text-align:center; white-space:pre-line; }
+      #providerWeekDays{ display:flex; gap:8px; overflow-x:auto; -webkit-overflow-scrolling:touch; padding:0 0 16px; margin-bottom:16px; border-bottom:1px solid #f1f3f5; scroll-snap-type:x mandatory; }
+      #providerWeekDays .week-preview-pill{ flex:0 0 auto; min-width:56px; min-height:44px; padding:10px 8px; border-radius:14px; border:2px solid transparent; background:#f1f3f5; font-size:11px; font-weight:800; color:#64748b; cursor:pointer; transition:all 0.2s; line-height:1.25; text-align:center; white-space:pre-line; scroll-snap-align:center; scroll-snap-stop:always; }
       #providerWeekDays .week-preview-pill.active{ background:rgba(14,165,233,0.12); border-color:var(--prov-brand); color:#1a1a1a; }
+      #providerWeekDays .week-preview-pill.has-listings{ position:relative; }
+      #providerWeekDays .week-preview-pill.has-listings::after{ content:''; position:absolute; bottom:6px; left:50%; transform:translateX(-50%); width:4px; height:4px; border-radius:50%; background:var(--prov-brand); }
+      .prov-stat-hint{ display:block; font-size:11px; font-weight:600; color:#94a3b8; margin-top:2px; line-height:1.2; }
+      #v-provider-home .prov-stat-item:focus-visible,
+      #v-provider-home button:focus-visible{ outline:2px solid var(--prov-brand,#0ea5e9); outline-offset:2px; }
+      /* Design-System: tiefes Anthrazit für Texte in Provider-Bereich */
+      #v-provider-home h1, #v-provider-home h2, #v-provider-home h3,
+      #v-provider-home .prov-stat-value, #v-provider-home .prov-stat-label{ color: var(--premium-anthracite, #1a1a1a); }
+      .provider-cookbook-tiles{ display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; }
+      @media (min-width:420px){ .provider-cookbook-tiles{ grid-template-columns:repeat(4, 1fr); } }
+      @media (min-width:520px){ .provider-cookbook-tiles{ display:flex; flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch; gap:10px; padding-bottom:4px; } .provider-cookbook-tiles .cookbook-tile{ flex:0 0 auto; min-width:110px; width:110px; } }
       #providerWeekDayContent{ min-height:120px !important; background:#fff !important; border:1px solid #f1f3f5; border-radius:16px; padding:16px !important; text-align:left !important; }
       #providerWeekDayContent .week-preview-dish{ font-size:14px; font-weight:700; color:#1a1a1a; padding:8px 0; border-bottom:1px solid #f1f3f5; display:flex; justify-content:space-between; align-items:center; }
       #providerWeekDayContent .week-preview-dish:last-of-type{ border-bottom:none; }
@@ -5395,76 +5438,94 @@
     <!-- PROVIDER APP - Dashboard 2.1 "Stolz & Performance" -->
     <section class="view" id="v-provider-home" style="min-height:100vh; padding-bottom:140px;">
       
-      <!-- 1. Header: Meine Küche & Kennzahlen -->
+      <!-- 1. Header: Meine Küche, Begrüßung, Datum & Kennzahlen -->
       <header class="prov-header">
-        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:4px;">
           <div style="display:flex; align-items:center; gap:12px;">
             <div style="width:44px; height:44px; background:var(--prov-brand); border-radius:14px; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(14,165,233,0.25);">
               <i data-lucide="chef-hat" style="width:24px; height:24px; color:#fff;"></i>
             </div>
-            <h1 class="prov-title">Meine Küche</h1>
+            <div>
+              <h1 class="prov-title" style="margin:0;">Meine Küche</h1>
+              <div style="display:flex; align-items:center; gap:10px; margin-top:2px; font-size:13px; color:#64748b;">
+                <span id="providerHomeGreeting">Hallo</span>
+                <span id="providerHomeDate" aria-hidden="true"></span>
+              </div>
+            </div>
           </div>
-          <button id="btnProviderHomeRefresh" style="background:rgba(0,0,0,0.03); border:none; width:44px; height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; color:#64748b;">
+          <button type="button" id="btnProviderHomeRefresh" title="Aktualisieren" aria-label="Daten neu laden" style="background:rgba(0,0,0,0.03); border:none; min-width:44px; min-height:44px; width:44px; height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; color:#64748b; cursor:pointer;">
             <i data-lucide="refresh-cw" style="width:20px; height:20px;"></i>
           </button>
         </div>
 
         <!-- Top Stats: 3 Kennzahlen -->
         <div class="prov-stats-grid">
-          <div class="prov-stat-item" id="kpiTagesessen" style="cursor:pointer;" onclick="document.getElementById('providerActiveListingsSection')?.scrollIntoView({behavior:'smooth'})">
+          <div class="prov-stat-item" id="kpiTagesessen" role="button" tabindex="0" style="cursor:pointer; min-height:48px;" onclick="document.getElementById('providerActiveListingsSection')?.scrollIntoView({behavior:'smooth'})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); document.getElementById('providerActiveListingsSection')?.scrollIntoView({behavior:'smooth'});}">
             <span id="dashboardTagesessenCount" class="prov-stat-value">0</span>
             <span class="prov-stat-label">Meine Tagesessen</span>
           </div>
-          <div class="prov-stat-item" id="kpiBestellungen" style="border-left:1px solid #eee; border-right:1px solid #eee; cursor:pointer;" onclick="showProviderPickups()">
+          <div class="prov-stat-item" id="kpiBestellungen" role="button" tabindex="0" style="border-left:1px solid #eee; border-right:1px solid #eee; cursor:pointer; min-height:48px;" onclick="showProviderPickups()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); showProviderPickups();}">
             <span id="dashboardAbholungenCount" class="prov-stat-value" style="color:var(--brand2);">0</span>
             <span class="prov-stat-label">Meine Bestellungen</span>
+            <span id="dashboardAbholungenHint" class="prov-stat-hint" style="display:none;">Sobald Gäste bestellen, siehst du es hier.</span>
           </div>
-          <div class="prov-stat-item" id="kpiUmsatz" style="cursor:pointer;" onclick="showProviderBilling()">
+          <div class="prov-stat-item" id="kpiUmsatz" role="button" tabindex="0" style="cursor:pointer; min-height:48px;" onclick="showProviderBilling()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); showProviderBilling();}">
             <span id="dashboardUmsatzToday" class="prov-stat-value" style="font-size:16px;">0,00 €</span>
             <span class="prov-stat-label">Umsatz</span>
+            <span id="dashboardUmsatzHint" class="prov-stat-hint" style="display:none;">Sobald Gäste bestellen, siehst du es hier.</span>
           </div>
         </div>
       </header>
 
       <div style="padding:12px 20px 20px; max-width:500px; margin:0 auto;">
         
-        <!-- 2. Aktives Inserat Section -->
+        <!-- 2. Aktives Inserat Section (immer sichtbar) -->
         <div id="providerActiveListingsSection" style="margin-bottom:32px;">
           <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:16px;">
             <h3 style="font-size:18px; font-weight:900; color:#1a1a1a; margin:0;">Aktive Angebote</h3>
             <div style="display:flex; align-items:center; gap:10px;">
-              <button type="button" class="btn-primary provider-add-plus-btn" id="btnProviderHomeInseratFlow" style="min-height:44px; padding:0 18px; border-radius:14px; font-size:14px; font-weight:800; border:none; display:inline-flex; align-items:center; gap:8px; box-shadow:0 2px 12px rgba(255,215,0,0.35);">
+              <button type="button" class="btn-primary provider-add-plus-btn" id="btnProviderHomeInseratFlow" style="min-height:44px; padding:0 18px; border-radius:14px; font-size:14px; font-weight:800; border:none; display:inline-flex; align-items:center; gap:8px; box-shadow:0 2px 12px rgba(255,215,0,0.35);" aria-label="Gericht erstellen">
                 <span class="plus-char" style="font-size:18px; line-height:1; color:#fff;">+</span>
                 <span>Gericht erstellen</span>
               </button>
-              <span class="prov-badge prov-badge-live">Online</span>
+              <span id="providerOnlineBadgeWrap" class="prov-badge prov-badge-live" title="Deine Angebote sind sichtbar">Online</span>
             </div>
           </div>
-          <div id="providerActiveListings" style="display:flex; flex-direction:column; gap:16px;">
+          <div id="providerActiveListingsEmptyCard" style="display:none; margin-top:16px;">
+            <div class="prov-card" style="padding:32px 24px; text-align:center; border:2px dashed rgba(0,0,0,0.08); background:#fafafa;">
+              <div style="font-size:15px; font-weight:700; color:#64748b; margin-bottom:8px;">Noch kein Gericht für heute</div>
+              <p style="font-size:13px; color:#94a3b8; margin:0 0 20px;">Erstelle dein erstes Tagesangebot – dann siehst du es hier.</p>
+              <button type="button" class="btn-primary provider-add-plus-btn" id="btnProviderFirstDishToday" style="min-height:48px; padding:0 24px; border-radius:14px; font-size:15px; font-weight:800; border:none; display:inline-flex; align-items:center; justify-content:center; gap:8px;">
+                <span class="plus-char" style="font-size:20px; line-height:1; color:#fff;">+</span>
+                <span>Erstes Gericht für heute</span>
+              </button>
+            </div>
+          </div>
+          <div id="providerActiveListings" style="display:flex; flex-direction:column; gap:16px; margin-top:16px;">
             <!-- Dynamische Karten -->
           </div>
         </div>
 
-        <!-- Mein Kochbuch: kleine Kacheln zum Inspirieren – ein Tap zum Inserieren -->
+        <!-- Mein Kochbuch: Kacheln zum Inspirieren – ein Tap = Heute anbieten -->
         <div style="margin-bottom:32px;">
           <h3 style="font-size:18px; font-weight:900; color:#1a1a1a; margin:0 0 4px;">Mein Kochbuch</h3>
           <p id="providerCookbookInspire" style="font-size:13px; color:#64748b; margin:0 0 12px; line-height:1.4;">Noch keine Idee für die Woche? Ein Tap – dein Gericht ist im Angebot.</p>
-          <div id="providerCookbookTiles" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px;">
-            <!-- Dynamisch: 3 beste Gerichte (lastUsed) mit Bild + Inserieren-Button -->
+          <div id="providerCookbookTiles" class="provider-cookbook-tiles">
+            <!-- Dynamisch: bis zu 6 Gerichte (lastUsed), Label "Heute anbieten" -->
           </div>
-          <div id="kpiKochbuchCountWrap" style="font-size:13px; font-weight:700; color:#9ca3af; margin-top:8px; text-align:center; cursor:pointer;" onclick="typeof showProviderCookbook==='function'&&showProviderCookbook();"><span id="kpiKochbuchCount">0</span> Gerichte</div>
+          <div id="kpiKochbuchCountWrap" role="button" tabindex="0" style="font-size:13px; font-weight:700; color:#9ca3af; margin-top:8px; text-align:center; cursor:pointer; min-height:44px; display:flex; align-items:center; justify-content:center;" onclick="typeof showProviderCookbook==='function'&&showProviderCookbook();" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); typeof showProviderCookbook==='function'&&showProviderCookbook();}"><span id="kpiKochbuchCount">0</span> Gerichte</div>
         </div>
 
-        <!-- Wochenvorschau (Applike) – Karte öffnet vollen Wochenplan -->
+        <!-- Wochenvorschau (Applike) – Tap auf Tag = Gericht für Tag hinzufügen -->
         <div style="margin-bottom:32px;" id="providerWeekSection">
           <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:4px;">
             <h3 style="font-size:18px; font-weight:900; color:#1a1a1a; margin:0;">Dein Wochenplan</h3>
-            <button type="button" id="btnDashboardOpenWeekPlan" style="display:inline-flex; align-items:center; gap:6px; padding:8px 14px; border-radius:12px; border:none; background:rgba(14,165,233,0.12); color:var(--prov-brand,#0ea5e9); font-size:14px; font-weight:800; cursor:pointer;">
-              <i data-lucide="calendar" style="width:18px;height:18px;"></i><span>Wochenplan öffnen</span>
+            <button type="button" id="btnDashboardOpenWeekPlan" style="display:inline-flex; align-items:center; gap:6px; min-height:44px; padding:8px 14px; border-radius:12px; border:none; background:rgba(14,165,233,0.12); color:var(--prov-brand,#0ea5e9); font-size:14px; font-weight:800; cursor:pointer;" aria-label="Wochenplan öffnen">
+              <i data-lucide="calendar" style="width:18px;height:18px;"></i><span id="btnDashboardOpenWeekPlanText">Wochenplan öffnen</span>
             </button>
           </div>
-          <p style="font-size:13px; color:#64748b; margin:0 0 16px; line-height:1.4;">Vorausplanen, entspannter kochen. Deine Gäste lieben Verlässlichkeit. Tippe auf die Karte für die volle Ansicht.</p>
-          <div class="prov-card" id="providerWeekCard" style="padding:20px; border-radius:20px; border:1px solid rgba(0,0,0,0.05); box-shadow:0 2px 12px rgba(0,0,0,0.04); cursor:pointer;">
+          <p style="font-size:13px; color:#64748b; margin:0 0 16px; line-height:1.4;">Vorausplanen, entspannter kochen. Tippe auf einen Tag, um ein Gericht dafür zu planen.</p>
+          <div class="prov-card" id="providerWeekCard" style="padding:20px; cursor:pointer;" role="button" tabindex="0">
             <div id="providerWeekDays"></div>
             <div id="providerWeekDayContent"></div>
           </div>
@@ -16922,6 +16983,17 @@
     const mineActive = mineAll.filter(o => o.active !== false);
     const mineToday = mineActive.filter(o => o.day === todayKey);
     
+    // Header: Begrüßung & Datum
+    const firstName = (profile.name || '').trim().split(/\s+/)[0] || 'Chef';
+    const greetingEl = document.getElementById('providerHomeGreeting');
+    if(greetingEl) greetingEl.textContent = 'Hallo, ' + firstName;
+    const dateEl = document.getElementById('providerHomeDate');
+    if(dateEl){
+      const d = new Date();
+      const wd = ['So','Mo','Di','Mi','Do','Fr','Sa'][d.getDay()];
+      dateEl.textContent = wd + ', ' + d.getDate() + '.' + String(d.getMonth() + 1).padStart(2, '0') + '.';
+    }
+    
     // Kunden-Nachfrage: Request-Count aus LocalStorage
     const requestCountEl = document.getElementById('providerRequestCount');
     if(requestCountEl){
@@ -17010,22 +17082,27 @@
         const pid = providerId();
         const todayKey = isoDate(new Date());
         const mine = (cookbook||[]).filter(c=>c.providerId===pid);
-        const top3 = mine.slice().sort((a,b)=>(b.lastUsed||0)-(a.lastUsed||0) || (b.createdAt||0)-(a.createdAt||0)).slice(0,3);
+        const topN = mine.slice().sort((a,b)=>(b.lastUsed||0)-(a.lastUsed||0) || (b.createdAt||0)-(a.createdAt||0)).slice(0,6);
         providerCookbookTiles.innerHTML = '';
-        for(let i=0;i<3;i++){
-          const c = top3[i];
+        for(let i=0;i<6;i++){
+          const c = topN[i];
           const tile = document.createElement('div');
-          tile.style.cssText = 'border-radius:14px; background:#fff; border:1px solid rgba(0,0,0,0.06); overflow:hidden; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.04); transition:transform 0.15s, box-shadow 0.15s; display:flex; flex-direction:column; min-height:0;';
+          tile.className = 'cookbook-tile';
+          tile.style.cssText = 'border-radius:14px; background:#fff; border:1px solid rgba(0,0,0,0.06); overflow:hidden; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.04); transition:transform 0.15s, box-shadow 0.15s; display:flex; flex-direction:column; min-height:0; min-width:0;';
+          tile.setAttribute('role','button');
+          tile.setAttribute('tabindex','0');
           tile.onmouseover = function(){ this.style.transform='scale(1.02)'; this.style.boxShadow='0 4px 14px rgba(0,0,0,0.08)'; };
           tile.onmouseout = function(){ this.style.transform=''; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.04)'; };
           if(c){
             const imgUrl = (c.photoData || c.imageUrl || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=400&q=60').replace(/"/g,'&quot;').replace(/'/g,'%27');
             const name = (c.dish||'Gericht').length > 14 ? (c.dish||'').substring(0,12)+'…' : (c.dish||'Gericht');
-            tile.innerHTML = '<div style="height:56px; flex-shrink:0; overflow:hidden; background:#f1f3f5;"><img src="'+imgUrl+'" alt="" style="width:100%; height:100%; object-fit:cover; display:block;" onerror="this.style.display=\'none\'"></div><div style="padding:8px 10px; flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;"><div style="font-size:11px; font-weight:800; color:#1a1a1a; text-align:center; line-height:1.2;">'+esc(name)+'</div><div style="font-size:10px; font-weight:700; color:#10b981; margin-top:2px;">'+euro(c.price||0)+'</div><div style="margin-top:6px; font-size:10px; font-weight:800; color:#FFD700; text-transform:uppercase; letter-spacing:0.03em;">Inserieren</div></div>';
+            tile.innerHTML = '<div style="height:56px; flex-shrink:0; overflow:hidden; background:#f1f3f5;"><img src="'+imgUrl+'" alt="" style="width:100%; height:100%; object-fit:cover; display:block;" onerror="this.style.display=\'none\'"></div><div style="padding:8px 10px; flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;"><div style="font-size:11px; font-weight:800; color:#1a1a1a; text-align:center; line-height:1.2;">'+esc(name)+'</div><div style="font-size:10px; font-weight:700; color:#10b981; margin-top:2px;">'+euro(c.price||0)+'</div><div style="margin-top:6px; font-size:10px; font-weight:800; color:#FFD700; text-transform:uppercase; letter-spacing:0.03em;">Heute anbieten</div></div>';
             tile.onclick = function(ev){ if(!ev.target.closest('a')) { if(typeof startListingFlow==='function') startListingFlow({ dishId: c.id, date: todayKey }); } };
+            tile.onkeydown = function(ev){ if(ev.key==='Enter'||ev.key===' '){ ev.preventDefault(); if(typeof startListingFlow==='function') startListingFlow({ dishId: c.id, date: todayKey }); } };
           } else {
             tile.innerHTML = '<div style="height:56px; background:#f1f3f5; display:flex; align-items:center; justify-content:center;"><i data-lucide="book-open" style="width:22px; height:22px; color:#cbd5e1;"></i></div><div style="padding:10px; text-align:center;"><div style="font-size:11px; color:#94a3b8;">–</div><div style="font-size:10px; color:#94a3b8; margin-top:4px;">Leer</div></div>';
             tile.onclick = function(){ if(typeof showProviderCookbook==='function') showProviderCookbook(); };
+            tile.onkeydown = function(ev){ if(ev.key==='Enter'||ev.key===' '){ ev.preventDefault(); if(typeof showProviderCookbook==='function') showProviderCookbook(); } };
           }
           providerCookbookTiles.appendChild(tile);
         }
@@ -17047,11 +17124,15 @@
       const dashAbholungen = document.getElementById('dashboardAbholungenCount');
       const dashKochbuch = document.getElementById('dashboardKochbuchCount');
       const dashUmsatz = document.getElementById('dashboardUmsatzToday');
+      const dashAbholungenHint = document.getElementById('dashboardAbholungenHint');
+      const dashUmsatzHint = document.getElementById('dashboardUmsatzHint');
       if(dashTagesessen) dashTagesessen.textContent = mineToday.length;
       if(dashAbholungen) dashAbholungen.textContent = todayPickups;
+      if(dashAbholungenHint){ dashAbholungenHint.style.display = todayPickups === 0 ? 'block' : 'none'; }
       if(dashKochbuch) dashKochbuch.textContent = cookbookCount;
       const nettoEuro = (tagesumsatzCents / 100 - todayOrders.length * 0.89).toFixed(2);
       if(dashUmsatz){ dashUmsatz.textContent = nettoEuro.replace('.', ',') + ' €'; dashUmsatz.style.color = hasRevenue ? '#16a34a' : '#1a1a1a'; }
+      if(dashUmsatzHint){ dashUmsatzHint.style.display = !hasRevenue ? 'block' : 'none'; }
 
       // KPI Click-Handler
       const kpiTagesessen = document.getElementById('kpiTagesessen');
@@ -17068,12 +17149,17 @@
         if(typeof showProviderProfileSub === 'function') showProviderProfileSub('payment');
       };
 
-      // Aktive Inserate: Dashboard 2.1 – ImmoScout-Style
+      // Aktive Inserate: Sektion immer sichtbar; bei 0 Tagesessen leere Karte mit CTA
       const providerActiveListings = document.getElementById('providerActiveListings');
       const providerActiveListingsSection = document.getElementById('providerActiveListingsSection');
-      if(providerActiveListings && providerActiveListingsSection){
-        providerActiveListingsSection.style.display = mineToday.length > 0 ? 'block' : 'none';
+      const providerActiveListingsEmptyCard = document.getElementById('providerActiveListingsEmptyCard');
+      const providerOnlineBadgeWrap = document.getElementById('providerOnlineBadgeWrap');
+      if(providerActiveListingsSection) providerActiveListingsSection.style.display = 'block';
+      if(providerActiveListingsEmptyCard) providerActiveListingsEmptyCard.style.display = mineToday.length === 0 ? 'block' : 'none';
+      if(providerOnlineBadgeWrap) providerOnlineBadgeWrap.style.display = mineToday.length > 0 ? '' : 'none';
+      if(providerActiveListings){
         providerActiveListings.innerHTML = '';
+        providerActiveListings.style.display = mineToday.length > 0 ? 'flex' : 'none';
         var p = (provider && provider.profile) ? provider.profile : {};
         var defaultDineIn = p.dineInPossibleDefault !== false;
         var defaultPickup = !!p.abholnummerEnabledByDefault;
@@ -17378,6 +17464,32 @@
     // Week Preview
     renderProviderWeekPreviewNew();
     
+    // Wochenplan-Karte: Tastatur (Enter/Space) öffnet volle Ansicht
+    const providerWeekCardEl = document.getElementById('providerWeekCard');
+    if(providerWeekCardEl && !providerWeekCardEl._weekCardKeyBound){
+      providerWeekCardEl._weekCardKeyBound = true;
+      providerWeekCardEl.onkeydown = function(ev){ if(ev.key==='Enter'||ev.key===' '){ ev.preventDefault(); if(!ev.target.closest('button') && typeof showProviderWeek==='function') showProviderWeek(); } };
+    }
+    
+    // Wochenplan-Button: Text mit Anzahl geplanter Gerichte (nächste 7 Tage)
+    const btnWeekPlanText = document.getElementById('btnDashboardOpenWeekPlanText');
+    if(btnWeekPlanText){
+      const pid = providerId();
+      let weekPlannedCount = 0;
+      for(let i = 0; i < 7; i++){
+        const d = new Date();
+        d.setDate(d.getDate() + i);
+        const key = isoDate(d);
+        weekPlannedCount += (offers || []).filter(o => o.providerId === pid && o.active !== false && o.day === key).length;
+        weekPlannedCount += ((week || {})[key] || []).filter(x => x.providerId === pid && x.active !== false).length;
+      }
+      btnWeekPlanText.textContent = weekPlannedCount > 0 ? 'Wochenplan · ' + weekPlannedCount + ' Gerichte geplant' : 'Wochenplan öffnen';
+    }
+    
+    // Leere-Karte CTA: Erstes Gericht für heute
+    const btnFirstDishToday = document.getElementById('btnProviderFirstDishToday');
+    if(btnFirstDishToday) btnFirstDishToday.onclick = function(){ if(typeof openDishFlow === 'function') openDishFlow(); };
+    
     // Post-Onboarding Dashboard State (if just completed onboarding)
     const providerEmptyDashboard = document.getElementById('providerEmptyDashboard');
     if(providerEmptyDashboard){
@@ -17460,19 +17572,25 @@
       };
     }
 
-    // Refresh Button Handler
+    // Refresh Button Handler: Tooltip bereits im HTML; Loading-Feedback (disabled + Spinner)
     const btnRefresh = document.getElementById('btnProviderHomeRefresh');
     if(btnRefresh){
       btnRefresh.onclick = () => {
-        // Visuelles Feedback: Icon drehen
+        if(btnRefresh.getAttribute('aria-busy') === 'true') return;
+        btnRefresh.setAttribute('aria-busy', 'true');
+        btnRefresh.disabled = true;
         const icon = btnRefresh.querySelector('i');
         if(icon) {
           icon.style.transition = 'transform 0.5s ease-in-out';
           icon.style.transform = 'rotate(360deg)';
-          setTimeout(() => { icon.style.transform = 'rotate(0deg)'; icon.style.transition = 'none'; }, 500);
         }
         renderProviderHome();
-        if(typeof showToast === 'function') showToast('Daten aktualisiert');
+        setTimeout(() => {
+          btnRefresh.removeAttribute('aria-busy');
+          btnRefresh.disabled = false;
+          if(icon) { icon.style.transform = 'rotate(0deg)'; icon.style.transition = 'none'; }
+          if(typeof showToast === 'function') showToast('Daten aktualisiert');
+        }, 400);
       };
     }
     
@@ -17500,19 +17618,23 @@
     const today = new Date();
     let selectedDay = providerWeekDay || isoDate(today);
     
+    const pid = typeof providerId === 'function' ? providerId() : '';
     dayWrap.innerHTML = '';
     for(let i = 0; i < 7; i++){
       const d = new Date(today);
       d.setDate(d.getDate() + i);
       const key = isoDate(d);
+      const offersForThisDay = (offers || []).filter(function(o){ return o.providerId === pid && o.active !== false && o.day === key; });
+      const weekEntriesForDay = (week[key] || []).filter(function(x){ return x.providerId === pid && x.active !== false; });
+      const hasListings = offersForThisDay.length + weekEntriesForDay.length > 0;
       const b = document.createElement('button');
       b.type = 'button';
-      b.className = 'week-preview-pill' + (selectedDay === key ? ' active' : '');
+      b.className = 'week-preview-pill' + (selectedDay === key ? ' active' : '') + (hasListings ? ' has-listings' : '');
       const weekday = ['So','Mo','Di','Mi','Do','Fr','Sa'][d.getDay()];
       const dateStr = d.getDate() + '.' + String(d.getMonth()+1).padStart(2,'0') + '.';
       b.textContent = i === 0 ? 'Heute' : (weekday + '\n' + dateStr);
-      b.title = key;
-      b.onclick = function(){ providerWeekDay = key; renderProviderWeekPreviewNew(); };
+      b.title = hasListings ? 'Gericht für ' + key + ' hinzufügen' : key;
+      b.onclick = function(){ providerWeekDay = key; renderProviderWeekPreviewNew(); if(typeof openWeekAddSheet === 'function') openWeekAddSheet(key); };
       dayWrap.appendChild(b);
     }
     
@@ -17555,6 +17677,13 @@
       if(btnEmpty) btnEmpty.onclick = function(){ if(typeof openWeekAddSheet === 'function') openWeekAddSheet(selectedDay); };
       var link2 = document.getElementById('linkProviderWeekFull2');
       if(link2) link2.onclick = function(){ if(typeof showProviderWeek === 'function') showProviderWeek(selectedDay); };
+    }
+    /* Haptik beim Einrasten (Snap-Carousel) – Dashboard-Wochenvorschau */
+    if(dayWrap && !dayWrap._hapticSnapAttached){
+      dayWrap._hapticSnapAttached = true;
+      var snapT;
+      dayWrap.addEventListener('scroll', function(){ clearTimeout(snapT); snapT = setTimeout(function(){ if(typeof haptic === 'function') haptic(6); }, 120); }, { passive: true });
+      try { dayWrap.addEventListener('scrollend', function(){ if(typeof haptic === 'function') haptic(6); }, { passive: true }); } catch(e){}
     }
     if(typeof lucide !== 'undefined') lucide.createIcons();
   }
@@ -18055,16 +18184,24 @@
       cardEl.style.transform = 'translateX(' + currentX + 'px)';
     }
     function onEnd(){
-      cardEl.style.transition = 'transform 0.2s ease-out';
       if(currentX < -SWIPE_THRESHOLD){
-        weekJustSwiped = true; setTimeout(function(){ weekJustSwiped = false; }, 400);
-        deletePlannedEntryWithUndo(date, index);
-        cardEl.style.transform = 'translateX(0)';
+        weekJustSwiped = true; setTimeout(function(){ weekJustSwiped = false; }, 500);
+        swipeEl.classList.add('week-meal-card-exit', 'week-meal-card-exit-left');
+        cardEl.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+        cardEl.style.transform = 'translateX(-120%)';
+        swipeEl.style.transition = 'opacity 0.25s ease';
+        swipeEl.style.opacity = '0';
+        setTimeout(function(){ deletePlannedEntryWithUndo(date, index); }, 320);
       } else if(currentX > SWIPE_THRESHOLD){
-        weekJustSwiped = true; setTimeout(function(){ weekJustSwiped = false; }, 400);
-        copyWeekEntryToNextDay(date, index);
-        cardEl.style.transform = 'translateX(0)';
+        weekJustSwiped = true; setTimeout(function(){ weekJustSwiped = false; }, 500);
+        swipeEl.classList.add('week-meal-card-exit', 'week-meal-card-exit-right');
+        cardEl.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+        cardEl.style.transform = 'translateX(120%)';
+        swipeEl.style.transition = 'opacity 0.25s ease';
+        swipeEl.style.opacity = '0';
+        setTimeout(function(){ copyWeekEntryToNextDay(date, index); }, 320);
       } else {
+        cardEl.style.transition = 'transform 0.2s ease-out';
         cardEl.style.transform = 'translateX(0)';
       }
     }
