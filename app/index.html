@@ -1804,6 +1804,19 @@
       --prov-brand: #0ea5e9;
       --prov-success: #10b981;
       --prov-danger: #ef4444;
+      /* High-End Design-System (Glassmorphism + Premium) */
+      --premium-anthracite: #1a1a1a;
+      --premium-anthracite-soft: #334155;
+      --premium-gold: #d4a853;
+      --premium-gold-bright: #e8c468;
+      --action-blue: #0ea5e9;
+      --glass-bg: rgba(255,255,255,0.72);
+      --glass-border: rgba(255,255,255,0.5);
+      --glass-shadow: 0 8px 32px rgba(0,0,0,0.08);
+      --glass-inner-glow: inset 0 1px 0 rgba(255,255,255,0.8);
+      --card-radius-premium: 24px;
+      --card-shadow-soft: 0 4px 24px rgba(0,0,0,0.06);
+      --card-shadow-hover: 0 12px 40px rgba(0,0,0,0.1);
     }
     
     /* Modern App-Like CSS for Provider */
@@ -3295,9 +3308,18 @@
       background:#e6b800;
     }
     
-    /* Anbieterbereich: Layout-Kette sicherstellen (verhindert leere weiße Seite) */
+    /* Anbieterbereich: Layout-Kette + Dynamic Background (High-End) */
     html, body{ min-height:100vh; min-height:100dvh; }
-    body.provider-mode main{ min-height:100vh; min-height:100dvh; display:block; background:#f8fafc; overflow:visible; }
+    body.provider-mode main{
+      min-height:100vh; min-height:100dvh; display:block; overflow:visible;
+      background: linear-gradient(165deg, #f0f9ff 0%, #f8fafc 35%, #fefce8 70%, #f8fafc 100%);
+      background-size: 200% 200%;
+      animation: providerBgShift 20s ease-in-out infinite;
+    }
+    @keyframes providerBgShift{
+      0%, 100%{ background-position: 0% 50%; }
+      50%{ background-position: 100% 50%; }
+    }
     body.provider-mode [id^="v-provider-"].view.active{ min-height:100vh; min-height:100dvh; display:block !important; visibility:visible !important; opacity:1 !important; scroll-margin-top:0; position:relative; }
     /* Erster Viewport sofort gefüllt: Inhalt oben verankern, keine Animation die verschiebt */
     body.provider-mode [id^="v-provider-"].view.active{ animation:none !important; transform:translateY(0) !important; }
@@ -3309,8 +3331,9 @@
     #v-provider-pickups{ min-height:100vh; min-height:100dvh; background:#f8fafc; }
     #v-provider-profile{ min-height:100vh; min-height:100dvh; }
 
-    /* Wochenplan: Basis-Layout immer (unabhängig von Viewport), verhindert leere Seite */
-    #v-provider-week{
+    /* Wochenplan: nur auf der Wochenplan-Seite sichtbar; Layout nur wenn .active */
+    #v-provider-week.view{ display:none; }
+    #v-provider-week.view.active{
       display:flex !important; flex-direction:column !important; min-height:100vh; min-height:100dvh; height:100vh; height:100dvh;
       padding:0; padding-bottom:calc(80px + env(safe-area-inset-bottom, 0)); background:#f8fafc; box-sizing:border-box;
       overflow:visible; visibility:visible !important; opacity:1 !important;
@@ -3429,10 +3452,33 @@
       #v-provider-week .week-status-online{ display:flex; align-items:center; gap:8px; font-weight:800; font-size:14px; color:#10b981; }
       #v-provider-week .week-status-draft{ display:flex; align-items:center; gap:8px; font-weight:800; font-size:14px; color:#64748b; }
       #v-provider-week .week-status-dot{ width:10px; height:10px; border-radius:50%; }
-#v-provider-week .week-meal-card-wrap{ transition:transform 0.2s ease; }
-    #v-provider-week .week-meal-card-wrap:active{ transform:scale(0.98); }
-    #v-provider-week .week-meal-card{ display:flex; align-items:center; justify-content:space-between; padding:16px 18px; background:#fff; border-radius:16px; border:1px solid #e2e8f0; margin-bottom:12px; box-shadow:0 2px 8px rgba(0,0,0,0.04); }
-    #v-provider-week .week-meal-name{ font-weight:900; font-size:16px; color:#1a1a1a; }
+#v-provider-week .week-meal-card-wrap{
+      transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+      border-radius: var(--card-radius-premium, 24px);
+      margin-bottom: 14px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      box-shadow: var(--card-shadow-soft), var(--glass-inner-glow);
+      border: 1px solid var(--glass-border);
+    }
+    #v-provider-week .week-meal-card-wrap:active{ transform: scale(0.98); box-shadow: 0 2px 12px rgba(0,0,0,0.04), var(--glass-inner-glow); }
+    /* Success-Shimmer: Tag geplant/online – dezent goldener Streifen */
+    #v-provider-week .week-meal-card-wrap.week-card-live::after{
+      content:''; position:absolute; inset:0; border-radius:inherit; pointer-events:none;
+      background: linear-gradient(105deg, transparent 0%, rgba(16,185,129,0.08) 40%, rgba(212,168,83,0.12) 50%, rgba(16,185,129,0.08) 60%, transparent 100%);
+      background-size: 200% 100%; animation: cardSuccessShimmer 2s ease-out 1;
+    }
+    @keyframes cardSuccessShimmer{
+      0%{ background-position: 200% 0; opacity:0; }
+      30%{ opacity:1; }
+      100%{ background-position: -100% 0; opacity:0; }
+    }
+    #v-provider-week .week-meal-card{
+      display:flex; align-items:center; justify-content:space-between; padding:16px 20px;
+      background: transparent; border-radius: inherit; margin-bottom:0;
+      color: var(--premium-anthracite, #1a1a1a);
+    }
+    #v-provider-week .week-meal-name{ font-weight:900; font-size:16px; color: var(--premium-anthracite, #1a1a1a); }
     #v-provider-week .week-meal-badges{ font-size:16px !important; }
     #v-provider-week .week-meal-badges span{ font-size:1.1em; }
       #v-provider-week .week-meal-meta{ font-size:13px; color:#64748b; margin-top:4px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
@@ -3452,17 +3498,32 @@
       /* S25 Thumb-Zone: Date-Picker Snap-Carousel */
       #v-provider-week .week-dayrow{ scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; }
       #v-provider-week .week-day-pill{ scroll-snap-align:center; scroll-snap-stop:always; min-width:64px; }
-      /* Swipe-Card: Container für Swipe-Actions */
-      #v-provider-week .week-meal-card-wrap{ position:relative; overflow:hidden; border-radius:16px; margin-bottom:10px; }
+      /* Swipe-Card: Premium 24px + Glass beibehalten */
+      #v-provider-week .week-meal-card-wrap{ position:relative; overflow:hidden; border-radius: var(--card-radius-premium, 24px); margin-bottom:14px; }
       #v-provider-week .week-meal-card-swipe{ display:flex; align-items:stretch; transition:transform 0.2s ease-out; touch-action:pan-y; }
-      #v-provider-week .week-meal-card-swipe .week-meal-card{ flex:1; margin-bottom:0; min-width:0; position:relative; z-index:1; background:#fff; border-radius:16px; }
+      #v-provider-week .week-meal-card-swipe .week-meal-card{ flex:1; margin-bottom:0; min-width:0; position:relative; z-index:1; background:transparent; border-radius:inherit; }
       #v-provider-week .week-swipe-actions{ display:flex; flex-direction:column; gap:4px; position:absolute; top:0; bottom:0; width:80px; align-items:center; justify-content:center; font-size:11px; font-weight:800; color:#fff; }
       #v-provider-week .week-swipe-actions.left{ left:0; background:#2563eb; }
       #v-provider-week .week-swipe-actions.right{ right:0; background:#ef4444; }
-      /* Aktivierung: großer Button in Thumb-Zone */
+      /* Aktivierung: großer Button – Loading + Success-Checkmark (Premium) */
       #v-provider-week .week-activate-block{ padding:16px 0; margin-top:8px; }
-      #v-provider-week .week-activate-btn{ width:100%; min-height:56px; border-radius:16px; font-size:16px; font-weight:800; border:none; background:#10b981; color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; box-shadow:0 4px 16px rgba(16,185,129,0.35); }
+      #v-provider-week .week-activate-btn{
+        width:100%; min-height:56px; border-radius:18px; font-size:16px; font-weight:800; border:none;
+        background: var(--prov-success); color:#fff; cursor:pointer;
+        display:flex; align-items:center; justify-content:center; gap:10px;
+        box-shadow:0 4px 16px rgba(16,185,129,0.35);
+        transition: background 0.3s, transform 0.2s, opacity 0.3s;
+      }
       #v-provider-week .week-activate-btn:active{ transform:scale(0.98); }
+      #v-provider-week .week-activate-btn.loading{ pointer-events:none; color:transparent; position:relative; }
+      #v-provider-week .week-activate-btn.loading::after{
+        content:''; position:absolute; width:24px; height:24px; border:3px solid rgba(255,255,255,0.3); border-top-color:#fff; border-radius:50%; animation: weekActivateSpin 0.7s linear infinite;
+      }
+      #v-provider-week .week-activate-btn.success{ background:#059669; pointer-events:none; }
+      #v-provider-week .week-activate-btn.success .week-activate-btn-text{ opacity:0; }
+      #v-provider-week .week-activate-btn.success::after{ content:''; position:absolute; width:14px; height:22px; border: solid #fff; border-width: 0 3px 3px 0; transform: rotate(45deg) scale(0); animation: weekActivateCheck 0.35s cubic-bezier(0.34,1.56,0.64,1) 0.1s forwards; margin-top: -4px; }
+      @keyframes weekActivateSpin{ to{ transform: rotate(360deg); } }
+      @keyframes weekActivateCheck{ to{ transform: rotate(45deg) scale(1); } }
       /* Sortiermodus: Drag-Handle, Reihenfolge ändern */
       #v-provider-week .week-sort-bar{ display:flex; align-items:center; justify-content:space-between; padding:12px 16px; background:rgba(14,165,233,0.1); border-radius:14px; margin-bottom:16px; border:1px solid rgba(14,165,233,0.25); }
       #v-provider-week .week-sort-bar .week-sort-done{ min-height:44px; padding:0 18px; font-size:15px; font-weight:800; border-radius:12px; background:var(--prov-brand); color:#fff; border:none; cursor:pointer; }
@@ -3482,7 +3543,9 @@
       #v-provider-week .week-header-compact h1{ margin:0; font-size:20px; font-weight:950; }
       /* Übersicht: kompakte Tageskarten (nur Lesen), app-first */
       #v-provider-week .week-overview-scroll{ flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:12px 20px 20px; }
-      #v-provider-week .week-overview-day{ background:#fff; border-radius:16px; border:1px solid #e2e8f0; padding:14px 16px; margin-bottom:12px; box-shadow:0 2px 8px rgba(0,0,0,0.04); }
+      #v-provider-week .week-overview-day{ background: var(--glass-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-radius: var(--card-radius-premium, 24px); border:1px solid rgba(255,255,255,0.6); padding:14px 16px; margin-bottom:12px; box-shadow: var(--card-shadow-soft), var(--glass-inner-glow); position:relative; overflow:hidden; }
+      #v-provider-week .week-overview-day.week-day-online::before{ content:''; position:absolute; inset:0; background: linear-gradient(105deg, transparent 0%, rgba(16,185,129,0.08) 45%, rgba(212,168,83,0.12) 55%, transparent 100%); background-size: 200% 100%; animation: weekSuccessShimmer 1.5s ease-out 1; pointer-events:none; }
+      @keyframes weekSuccessShimmer{ 0%{ background-position: 200% 0; } 100%{ background-position: -200% 0; } }
       #v-provider-week .week-overview-day-label{ font-size:13px; font-weight:800; color:#64748b; margin-bottom:8px; display:flex; align-items:center; gap:8px; }
       #v-provider-week .week-overview-day-label .week-overview-badge{ font-size:10px; font-weight:800; padding:2px 8px; border-radius:8px; }
       #v-provider-week .week-overview-day-label .week-overview-badge.online{ background:#dcfce7; color:#166534; }
@@ -17632,7 +17695,7 @@
           if(isLive){ liveOffers.forEach(function(o){ var cb = cookbook.find(function(c){ return String(c.id) === String(o.cookbookId); }); names.push(cb && cb.dish ? esc(cb.dish) : (o.dish || 'Gericht')); }); }
           else { provEntries.forEach(function(e){ var cb = cookbook.find(function(c){ return String(c.id) === String(e.cookbookId); }); names.push(cb && cb.dish ? esc(cb.dish) : (e.dish || 'Gericht')); }); }
           var dishesHtml = names.length ? names.join(' · ') : '<span class="empty">—</span>';
-          rowHtml += '<div class="week-overview-day" style="margin-bottom:8px;"><div class="week-overview-day-label">' + label + ' ' + badge + '</div><div class="week-overview-dishes' + (names.length ? '' : ' empty') + '">' + dishesHtml + '</div></div>';
+          rowHtml += '<div class="week-overview-day' + (isLive ? ' week-day-online' : '') + '" style="margin-bottom:8px;"><div class="week-overview-day-label">' + label + ' ' + badge + '</div><div class="week-overview-dishes' + (names.length ? '' : ' empty') + '">' + dishesHtml + '</div></div>';
         }
         rowHtml += '</div>';
         dayCardsHtml += rowHtml;
@@ -17658,7 +17721,7 @@
     if(headerDoneBtn){ headerDoneBtn.style.display = 'block'; headerDoneBtn.onclick = function(){ weekPlanMode = 'overview'; renderWeekPlan(); }; }
     dayWrap.style.display = '';
     list.classList.remove('week-overview-list');
-    if(thumbZone) thumbZone.innerHTML = '<div id="weekMasterActivateBar" class="week-master-activate-bar" style="display:none;"><button type="button" class="week-master-btn" id="btnWeekMasterActivate"></button></div><div class="week-activate-block" id="weekActivateBlock" style="display:none;"><button type="button" class="week-activate-btn" id="btnWeekActivateThumb">Jetzt für 4,99 € aktivieren</button></div><div class="week-actions-bar" id="weekActionsBar" style="display:none; margin-top:12px;"><button class="btn secondary" type="button" id="btnWeekRefreshZone" style="flex:0 0 auto; min-height:52px; min-width:52px; padding:0; border-radius:14px;" aria-label="Aktualisieren"><i data-lucide="refresh-cw" style="width:22px;height:22px;"></i></button><button class="btn secondary" type="button" id="btnWeekPdf" style="flex:1; min-height:52px; border-radius:14px; font-size:15px; font-weight:700;"><i data-lucide="printer" style="width:20px;height:20px;margin-right:8px;"></i>Drucken</button><button class="btn secondary" type="button" id="btnWeekShare" style="flex:1; min-height:52px; border-radius:14px; font-size:15px; font-weight:700;"><i data-lucide="share-2" style="width:20px;height:20px;margin-right:8px;"></i>Teilen</button></div>';
+    if(thumbZone) thumbZone.innerHTML = '<div id="weekMasterActivateBar" class="week-master-activate-bar" style="display:none;"><button type="button" class="week-master-btn" id="btnWeekMasterActivate"></button></div><div class="week-activate-block" id="weekActivateBlock" style="display:none;"><button type="button" class="week-activate-btn" id="btnWeekActivateThumb"><span class="week-activate-btn-text">Jetzt für 4,99 € aktivieren</span></button></div><div class="week-actions-bar" id="weekActionsBar" style="display:none; margin-top:12px;"><button class="btn secondary" type="button" id="btnWeekRefreshZone" style="flex:0 0 auto; min-height:52px; min-width:52px; padding:0; border-radius:14px;" aria-label="Aktualisieren"><i data-lucide="refresh-cw" style="width:22px;height:22px;"></i></button><button class="btn secondary" type="button" id="btnWeekPdf" style="flex:1; min-height:52px; border-radius:14px; font-size:15px; font-weight:700;"><i data-lucide="printer" style="width:20px;height:20px;margin-right:8px;"></i>Drucken</button><button class="btn secondary" type="button" id="btnWeekShare" style="flex:1; min-height:52px; border-radius:14px; font-size:15px; font-weight:700;"><i data-lucide="share-2" style="width:20px;height:20px;margin-right:8px;"></i>Teilen</button></div>';
     actionsBar = document.getElementById('weekActionsBar');
     activateBlock = document.getElementById('weekActivateBlock');
     var btnRefresh = document.getElementById('btnWeekRefreshZone');
@@ -17716,6 +17779,16 @@
         if(dayWrap.children[idx]) dayWrap.children[idx].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
       };
     });
+    /* Haptic beim Einrasten im Snap-Carousel (Magic Slider) */
+    if(!dayWrap._hapticSnapAttached){
+      dayWrap._hapticSnapAttached = true;
+      var snapTimeout;
+      dayWrap.addEventListener('scroll', function(){
+        clearTimeout(snapTimeout);
+        snapTimeout = setTimeout(function(){ if(typeof haptic === 'function') haptic(6); }, 120);
+      }, { passive: true });
+      try { dayWrap.addEventListener('scrollend', function(){ if(typeof haptic === 'function') haptic(6); }, { passive: true }); } catch(e){}
+    }
     requestAnimationFrame(function(){
       requestAnimationFrame(function(){
         dayWrap.scrollLeft = 0;
@@ -17793,7 +17866,7 @@
       var price = (cb && cb.price) || entry.price || 0;
       var weekIndex = entryIndices[idx];
       var wrap = document.createElement('div');
-      wrap.className = 'week-meal-card-wrap';
+      wrap.className = 'week-meal-card-wrap' + (dayIsLive ? ' week-card-live' : '');
       if(!dayIsLive && weekSortMode){
         wrap.draggable = true;
         wrap.dataset.index = String(weekIndex);
