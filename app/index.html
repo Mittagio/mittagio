@@ -3306,14 +3306,21 @@
 
     /* Wochenplan: Basis-Layout immer (unabhängig von Viewport), verhindert leere Seite */
     #v-provider-week{
-      display:flex !important; flex-direction:column !important; min-height:100vh; min-height:100dvh;
+      display:flex !important; flex-direction:column !important; min-height:100vh; min-height:100dvh; height:100vh; height:100dvh;
       padding:0; padding-bottom:calc(80px + env(safe-area-inset-bottom, 0)); background:#f8fafc; box-sizing:border-box;
+      overflow:visible; visibility:visible !important; opacity:1 !important;
     }
-    #v-provider-week .week-header-compact{ flex-shrink:0; }
+    #v-provider-week .week-header-compact{
+      flex-shrink:0; min-height:56px; background:#fff !important; border-bottom:1px solid rgba(0,0,0,0.06);
+      padding:12px 20px 16px; padding-top:calc(12px + env(safe-area-inset-top, 0));
+      display:flex; flex-direction:column; justify-content:center; align-items:center; gap:2px;
+    }
+    #v-provider-week .week-header-compact h1{ margin:0; font-size:20px; font-weight:950; color:#1a1a1a; }
+    #v-provider-week .week-header-subtitle{ margin:0; font-size:12px; font-weight:600; color:#64748b; }
     #v-provider-week .week-plan-wrap{
-      flex:1; display:flex; flex-direction:column; min-height:0; max-width:500px; margin:0 auto; width:100%; padding:0 20px 16px; box-sizing:border-box;
+      flex:1; min-height:0; display:flex; flex-direction:column; max-width:500px; margin:0 auto; width:100%; padding:0 20px 16px; box-sizing:border-box;
     }
-    #v-provider-week .week-list-scroll{ flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:8px 0 16px; }
+    #v-provider-week .week-list-scroll{ flex:1; min-height:120px; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:8px 0 16px; }
     #v-provider-week .week-dayrow{ display:flex; gap:8px; overflow-x:auto; -webkit-overflow-scrolling:touch; padding:0 0 16px; margin-bottom:16px; border-bottom:1px solid #f1f3f5; }
     #v-provider-week .week-thumb-zone{ flex-shrink:0; padding:16px 20px; padding-bottom:calc(24px + env(safe-area-inset-bottom, 0)); background:#fff; border-top:1px solid #e2e8f0; }
 
