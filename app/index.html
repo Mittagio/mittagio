@@ -1921,13 +1921,17 @@
     .prov-stats-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      margin-top: 20px;
+      gap: 0;
+      margin-top: 12px;
     }
     
     .prov-stat-item {
       text-align: center;
       padding: 12px 8px;
+      border-right: 1px solid #eee;
+    }
+    .prov-stat-item:last-child {
+      border-right: none;
     }
     .prov-stat-value {
       display: block;
@@ -3327,7 +3331,22 @@
     body.provider-mode [id^="v-provider-"].view.active .prov-header,
     body.provider-mode [id^="v-provider-"].view.active header:first-child{ visibility:visible !important; opacity:1 !important; min-height:60px; background:#fff; }
     body.provider-mode [id^="v-provider-"].view.active#v-provider-week{ display:flex !important; flex-direction:column !important; }
-    #v-provider-home{ min-height:100vh; min-height:100dvh; background:#f8fafc; }
+    /* Meine Küche: kein oberer Weißraum, Flex-Start, kompaktes Dashboard */
+    #v-provider-home{
+      min-height:100vh; min-height:100dvh; background:#f8fafc;
+      display:flex; flex-direction:column; justify-content:flex-start;
+      padding-top:calc(20px + env(safe-area-inset-top, 0)) !important;
+      padding-left:0; padding-right:0; padding-bottom:140px;
+    }
+    #v-provider-home .prov-header{
+      padding-top:0; padding-left:20px; padding-right:20px; padding-bottom:16px;
+      margin-bottom:0; flex-shrink:0;
+    }
+    #v-provider-home .prov-stats-grid{ margin-top:12px; gap:0; }
+    #v-provider-home .prov-stat-item{
+      padding:12px 4px; border-right:1px solid #eee;
+    }
+    #v-provider-home .prov-stat-item:last-child{ border-right:none; }
     #v-provider-pickups{ min-height:100vh; min-height:100dvh; background:#f8fafc; }
     #v-provider-profile{ min-height:100vh; min-height:100dvh; }
 
@@ -3390,7 +3409,7 @@
       #v-provider-pickups > header{ padding-bottom:14px !important; padding-left:20px !important; padding-right:20px !important; }
       #v-provider-week .week-header-compact{ background:#fff !important; }
       #v-provider-week .prov-page-header{ padding-top:calc(10px + env(safe-area-inset-top, 0)) !important; }
-      #v-provider-home{ padding:8px 16px 100px !important; padding-top:calc(6px + env(safe-area-inset-top, 0)) !important; }
+      #v-provider-home{ padding:0 16px 100px !important; padding-top:calc(20px + env(safe-area-inset-top, 0)) !important; }
       #v-provider-home h1{ font-size:28px !important; }
       
       /* KPI Cards: 3er Grid, Touch-freundlich */
@@ -3418,8 +3437,9 @@
       #v-provider-pickups h3, #v-provider-cookbook h1, #v-provider-profile h1{
         font-size:24px !important;
       }
-      /* Wochenplan: Applike eingebettet (volle Höhe, Safe-Area, klare Optik) */
-      #v-provider-week{
+      /* Wochenplan: nur wenn .active (nicht auf Kochbuch/anderen Seiten) */
+      #v-provider-week.view{ display:none !important; }
+      #v-provider-week.view.active{
         display:flex !important; flex-direction:column !important; min-height:100vh !important; min-height:100dvh !important;
         padding:0 !important; padding-bottom:calc(80px + env(safe-area-inset-bottom, 0)) !important;
         background:#f8fafc !important;
@@ -3571,8 +3591,8 @@
       #v-provider-week .week-master-activate-bar .week-master-btn:active{ transform:scale(0.98); }
       #v-provider-week .week-overview-scroll{ -webkit-overflow-scrolling:touch; }
       #v-provider-week .week-overview-cta-wrap .week-edit-primary{ min-height:56px; }
-      /* Nur #weekList scrollt – Section fix, kein Ganzseiten-Scroll */
-      #v-provider-week{ overflow:hidden !important; height:100vh; height:100dvh; max-height:100dvh; }
+      /* Nur #weekList scrollt – nur wenn Wochenplan aktiv */
+      #v-provider-week.view.active{ overflow:hidden !important; height:100vh; height:100dvh; max-height:100dvh; }
       body.provider-week-active{ overflow:hidden !important; }
       /* Wochenplan fullscreen: Topbar ausblenden, main ohne oberes Padding – kein leerer Streifen */
       body.provider-week-active .topbar{ display:none !important; }
@@ -3704,7 +3724,7 @@
     
     /* Extra kleine Phones (<375px, z.B. iPhone SE) */
     @media (max-width:374px){
-      #v-provider-home{ padding:6px 8px 90px !important; padding-top:calc(6px + env(safe-area-inset-top, 0)) !important; }
+      #v-provider-home{ padding:0 8px 90px !important; padding-top:calc(20px + env(safe-area-inset-top, 0)) !important; }
       #v-provider-home h1{ font-size:22px !important; }
       #kpiCardTagesessen, #kpiCardAbholungen, #kpiCardKochbuch{ padding:10px 6px !important; }
       #kpiCardTagesessen div[style*="font-size:20px"],
@@ -8591,6 +8611,7 @@
       if(v === view) return;
       v.classList.remove('active');
       if(v.id !== 'v-pickup-code' || id !== 'v-pickup-code') v.style.display = '';
+      if(v.id === 'v-provider-week') v.style.setProperty('display', 'none', 'important');
     });
     document.body.classList.toggle('provider-week-active', id === 'v-provider-week');
     /* Bei Anbieter-Views sofort nach oben scrollen, damit kein leerer oberer Bereich sichtbar ist */
