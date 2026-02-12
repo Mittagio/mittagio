@@ -2536,7 +2536,7 @@
     body.provider-mode .topbar { display: none !important; }
     body.provider-mode main { padding-top: 0 !important; margin-top: 0 !important; }
     /* Kein leerer Screen beim Nach-oben-Scrollen: Overscroll/Rubber-Band deaktivieren */
-    body.provider-mode { overscroll-behavior-y: none; -webkit-overflow-scrolling: touch; }
+    body.provider-mode { overscroll-behavior-y: none; -webkit-overflow-scrolling: touch; overflow-x: hidden; }
     /* Nuclear: Im Provider-Modus nur die aktive Provider-View sichtbar – alle anderen main-Kinder aus dem Layout */
     body.provider-mode main > *:not([id^="v-provider-"].view.active) { display: none !important; }
     /* Anbieter-Views: kein Extra-Platz oben – Inhalt beginnt sofort (Safe-Area nur im Header) */
@@ -3376,7 +3376,7 @@
     /* Anbieterbereich: Layout-Kette + Dynamic Background (High-End) */
     html, body{ min-height:100vh; min-height:100dvh; }
     body.provider-mode main{
-      min-height:100vh; min-height:100dvh; display:block; overflow:visible;
+      min-height:100vh; min-height:100dvh; display:block; overflow-x:hidden; overflow-y:auto; max-width:100%; box-sizing:border-box;
       background: linear-gradient(165deg, #f0f9ff 0%, #f8fafc 35%, #fefce8 70%, #f8fafc 100%);
       background-size: 200% 200%;
       animation: providerBgShift 20s ease-in-out infinite;
@@ -3385,15 +3385,15 @@
       0%, 100%{ background-position: 0% 50%; }
       50%{ background-position: 100% 50%; }
     }
-    body.provider-mode [id^="v-provider-"].view.active{ min-height:100vh; min-height:100dvh; display:block !important; visibility:visible !important; opacity:1 !important; scroll-margin-top:0; position:relative; }
+    body.provider-mode [id^="v-provider-"].view.active{ min-height:100vh; min-height:100dvh; display:block !important; visibility:visible !important; opacity:1 !important; scroll-margin-top:0; position:relative; width:100%; max-width:100%; overflow-x:hidden; box-sizing:border-box; }
     /* Erster Viewport sofort gefüllt: Inhalt oben verankern, keine Animation die verschiebt */
     body.provider-mode [id^="v-provider-"].view.active{ animation:none !important; transform:translateY(0) !important; }
     /* Header/Inhalt der Anbieter-Views immer sichtbar (kein leerer Screen) */
     body.provider-mode [id^="v-provider-"].view.active .prov-header,
     body.provider-mode [id^="v-provider-"].view.active header:first-child{ visibility:visible !important; opacity:1 !important; min-height:60px; background:#fff !important; display:block !important; }
     body.provider-mode [id^="v-provider-"].view.active#v-provider-week{ display:flex !important; flex-direction:column !important; }
-    /* Meine Küche: minimaler oberer Abstand (nur Safe-Area im Header), kein ganzer Screen Platz */
-    #v-provider-home{
+    /* Meine Küche: nur wenn aktiv – sonst von Nuclear-Regel ausgeblendet */
+    #v-provider-home.view.active{
       min-height:100vh; min-height:100dvh; background:transparent;
       display:flex !important; flex-direction:column; justify-content:flex-start;
       padding-top:0 !important; padding-left:0; padding-right:0; padding-bottom:140px;
@@ -3682,7 +3682,7 @@
       #v-provider-week .kw-progress-wrap{ padding:0 20px 12px; }
       #v-provider-week .kw-progress{ height:4px; border-radius:999px; background:#e2e8f0; overflow:hidden; }
       #v-provider-week .kw-progress-fill{ height:100%; border-radius:999px; background:#10b981; transition:width 0.3s ease; }
-      #v-provider-week .kw-board-scroll{ flex:1; min-height:0; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; padding:16px 20px calc(140px + env(safe-area-inset-bottom, 0)); }
+      #v-provider-week .kw-board-scroll{ flex:1; min-height:0; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; padding:20px 20px calc(160px + env(safe-area-inset-bottom, 0)); }
       #v-provider-week .kw-grid{ display:grid; grid-template-columns:repeat(7, 1fr); gap:10px; max-width:100%; width:100%; margin:0 auto; box-sizing:border-box; }
       @media (max-width:640px){ #v-provider-week .kw-grid{ grid-template-columns:1fr; } }
       #v-provider-week #kwBoardWrap{ overflow-x:hidden; max-width:100%; }
@@ -3715,11 +3715,12 @@
       .kw-move-day-btn{ width:100%; min-height:52px; padding:14px 16px; border-radius:16px; border:2px solid #e2e8f0; background:#f8fafc; font-size:15px; font-weight:700; color:#1a1a1a; cursor:pointer; text-align:left; }
       .kw-move-day-btn:active{ transform:scale(0.98); }
       .kw-move-cancel{ width:100%; min-height:52px; border-radius:16px; border:2px solid #f1f3f5; background:#fff; font-size:15px; font-weight:700; color:#64748b; cursor:pointer; }
-      /* Action-Bar (Drucken & Teilen) fix über der Tab-Nav – applike */
-      #v-provider-week .kw-action-bar-fixed{ position:fixed; bottom:calc(64px + env(safe-area-inset-bottom, 20px)); left:12px; right:12px; margin:0 auto; max-width:420px; background:rgba(255,255,255,0.92); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border-radius:20px 20px 0 0; padding:12px 16px calc(12px + env(safe-area-inset-bottom, 0)); display:flex; align-items:center; gap:10px; z-index:998; box-shadow:0 -4px 24px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04); }
-      #v-provider-week .kw-action-bar-fixed .btn{ min-height:52px; flex:1; min-width:0; border-radius:14px; font-size:15px; font-weight:800; display:inline-flex; align-items:center; justify-content:center; gap:8px; border:2px solid #e2e8f0; background:#f8fafc; color:#1a1a1a; cursor:pointer; transition:transform 0.15s, box-shadow 0.15s; }
-      #v-provider-week .kw-action-bar-fixed .btn:hover{ background:#f1f5f9; }
-      #v-provider-week .kw-action-bar-fixed .btn:active{ transform:scale(0.98); }
+      /* Action-Bar (Drucken & Teilen) – schlank, Silicon-Valley-Style */
+      #v-provider-week .kw-action-bar-fixed{ position:fixed; bottom:calc(64px + env(safe-area-inset-bottom, 20px)); left:20px; right:20px; margin:0 auto; max-width:400px; background:rgba(255,255,255,0.88); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border-radius:16px; padding:10px 12px; display:flex; align-items:center; gap:12px; z-index:998; box-shadow:0 4px 24px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.03); }
+      #v-provider-week .kw-action-bar-fixed .btn{ min-height:44px; flex:1; min-width:0; border-radius:12px; font-size:14px; font-weight:600; letter-spacing:0.01em; display:inline-flex; align-items:center; justify-content:center; gap:8px; border:none; background:rgba(0,0,0,0.04); color:#1a1a1a; cursor:pointer; transition:background 0.2s, transform 0.15s; }
+      #v-provider-week .kw-action-bar-fixed .btn:hover{ background:rgba(0,0,0,0.07); }
+      #v-provider-week .kw-action-bar-fixed .btn:active{ transform:scale(0.97); }
+      #v-provider-week .kw-action-bar-fixed .btn i{ opacity:0.9; }
       /* Nur .kw-board-scroll scrollt – View und Body ohne Scroll, kein horizontales Ziehen */
       #v-provider-week.view.active{ overflow:hidden !important; height:100vh; height:100dvh; max-height:100dvh; overflow-x:hidden !important; }
       body.provider-week-active{ overflow:hidden !important; overflow-x:hidden !important; }
