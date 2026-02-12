@@ -3795,6 +3795,18 @@
       #v-provider-profile .provider-profile-sub > div[style*="overflow-y:auto"]{ flex:1; min-height:0; padding-bottom:calc(24px + env(safe-area-inset-bottom, 0)); }
       #v-provider-profile .provider-profile-sub{ background:#F2F2F7 !important; }
       #v-provider-profile #providerProfileMenuCard{ background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,0.06); }
+      /* Einstellungen (Zahnrad): wie Kundenseite – Clean Card & Spacing */
+      #v-provider-profile .provider-profile-sub .provider-settings-scroll{ padding:40px 16px calc(100px + env(safe-area-inset-bottom, 0)); display:flex; flex-direction:column; gap:20px; max-width:500px; margin:0 auto; width:100%; box-sizing:border-box; }
+      #v-provider-profile .provider-settings-card{ background:#fff; border-radius:24px; overflow:hidden; border:1px solid rgba(0,0,0,0.04); box-shadow:0 8px 24px rgba(0,0,0,0.03); margin-bottom:0; }
+      #v-provider-profile .provider-settings-identity .plogo{ width:56px !important; height:56px !important; border-radius:18px !important; }
+      #v-provider-profile .provider-settings-card .provider-time-trigger{ width:100%; padding:24px; border-radius:16px; background:#f8fafc; border:1px solid rgba(0,0,0,0.06); cursor:pointer; text-align:center; transition:background 0.2s; }
+      #v-provider-profile .provider-settings-card .provider-time-trigger:active{ background:#f1f3f5; }
+      #v-provider-profile .provider-settings-card .provider-time-inline{ display:flex; align-items:center; gap:12px; margin-top:16px; }
+      #v-provider-profile .provider-settings-card .provider-time-inline select{ width:100%; height:48px; padding:0 12px; border:none; border-bottom:2px solid #e5e7eb; border-radius:0; font-size:16px; font-weight:700; background:transparent; color:#1a1a1a; cursor:pointer; }
+      #v-provider-profile .provider-settings-card .provider-time-inline select:focus{ outline:none; border-bottom-color:var(--brand,#FFD700); }
+      #v-provider-profile .provider-settings-danger-footer .provider-footer-row{ display:flex; justify-content:space-between; align-items:center; padding:18px 20px; background:#fff; border:1px solid rgba(0,0,0,0.04); border-radius:24px; margin-bottom:12px; box-shadow:0 8px 24px rgba(0,0,0,0.03); cursor:pointer; font-size:16px; font-weight:700; color:#1a1a1a; text-decoration:none; color:inherit; }
+      #v-provider-profile .provider-settings-danger-footer .provider-footer-row:active{ background:#f8f9fa; }
+      #v-provider-profile .provider-settings-danger-footer .provider-footer-delete{ display:block; width:100%; padding:16px; font-size:14px; font-weight:800; color:#dc2626; background:transparent; border:none; cursor:pointer; text-align:center; }
       /* Floating Labels (Silicon-Valley-Style) – Betriebsdaten */
       #v-provider-profile .input-group{ position:relative; border-bottom:1px solid #E5E7EB; padding:20px 0 10px 0; margin-bottom:15px; }
       #v-provider-profile .input-label{ position:absolute; top:20px; left:0; font-size:16px; color:#9CA3AF; transition:all 0.2s ease; pointer-events:none; text-transform:uppercase; letter-spacing:0.5px; }
@@ -5971,10 +5983,10 @@
           <h1 style="margin:0; font-size:18px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a;">Einstellungen</h1>
         </header>
 
-        <div style="padding:20px 20px calc(80px + env(safe-area-inset-bottom, 0)); flex:1; overflow-y:auto; max-width:500px; margin:0 auto; width:100%; box-sizing:border-box;">
-          <!-- Identity Section -->
-          <div class="provider-settings-identity" style="text-align:center; padding:28px 20px 24px; margin-bottom:20px; background:#fff; border-radius:24px; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
-            <div class="plogo" id="providerSettingsLogo" style="width:64px; height:64px; border-radius:20px; margin:0 auto 12px; background-size:cover; background-position:center; background-color:#f1f3f5;"></div>
+        <div class="provider-settings-scroll" style="flex:1; overflow-y:auto; background:#F2F2F7;">
+          <!-- Identity Section (wie Kundenseite: zentrales Logo, Name, Ort, Status) -->
+          <div class="provider-settings-identity" style="text-align:center; padding:28px 20px 24px; background:#fff; border-radius:24px; box-shadow:0 2px 12px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04);">
+            <div class="plogo" id="providerSettingsLogo" style="margin:0 auto 12px; background-size:cover; background-position:center; background-color:#f1f3f5;"></div>
             <h2 id="providerSettingsName" style="margin:0 0 4px; font-size:20px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a;">Betriebsname</h2>
             <p id="providerSettingsOrt" style="margin:0 0 12px; font-size:14px; color:#64748b;">Ort</p>
             <span style="display:inline-block; padding:6px 14px; border-radius:999px; font-size:12px; font-weight:800; color:#059669; background:rgba(5,150,105,0.12);">System Online</span>
@@ -6027,7 +6039,7 @@
           <div class="provider-profile-card provider-settings-card" style="background:#fff; border-radius:24px; padding:24px; margin-bottom:20px; border:none; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
             <h3 style="margin:0 0 16px; font-size:17px; font-weight:800; color:#1a1a1a;">⏰ Zeitfenster</h3>
             <p style="margin:0 0 16px; font-size:14px; color:#64748b; line-height:1.5;">Standard-Zeitfenster für neue Inserate.</p>
-            <button type="button" id="providerSettingsTimeTrigger" style="width:100%; padding:20px; border-radius:16px; background:#f8fafc; border:2px solid #f1f3f5; cursor:pointer; text-align:center;">
+            <button type="button" id="providerSettingsTimeTrigger" class="provider-time-trigger">
               <span id="providerSettingsTimeDisplay" style="font-size:22px; font-weight:900; color:#1a1a1a;">11:30 – 13:30</span>
             </button>
             <div style="display:flex; align-items:center; gap:12px; margin-top:20px; margin-bottom:20px;">
@@ -6090,23 +6102,17 @@
             </div>
           </div>
 
-          <!-- Kachel: Abrechnung -->
-          <div class="provider-profile-card provider-settings-card" style="background:#fff; border-radius:24px; padding:24px; margin-bottom:20px; border:none; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
-            <h3 style="margin:0 0 8px; font-size:17px; font-weight:800; color:#1a1a1a;">Abrechnung</h3>
-            <p style="margin:0 0 20px; font-size:14px; color:#64748b; line-height:1.5;">Rechnungs-PDFs und Zahlungsmethode.</p>
-            <button type="button" id="btnSettingsBillingArchive" style="width:100%; display:flex; justify-content:space-between; align-items:center; padding:16px 20px; background:#f8f9fa; border:2px solid #f1f3f5; border-radius:16px; color:#1a1a1a; font-size:16px; font-weight:700; cursor:pointer;">
-              <span>Rechnungsarchiv & PDFs</span>
-              <i data-lucide="chevron-right" style="width:20px; height:20px; color:#cbd5e1;"></i>
+          <!-- Danger Zone (Footer wie Kundenseite: Abrechnung, Support, Account löschen) -->
+          <div class="provider-settings-danger-footer" style="margin-top:8px;">
+            <button type="button" id="btnSettingsBillingArchive" class="provider-footer-row" style="width:100%; text-align:left; border:none; font-family:inherit;">
+              <span>Rechnungsarchiv & PDFs (4,99 € Belege)</span>
+              <i data-lucide="chevron-right" style="width:20px; height:20px; color:#cbd5e1; flex-shrink:0;"></i>
             </button>
-          </div>
-
-          <!-- Danger Zone -->
-          <div class="provider-settings-danger-zone" style="padding:24px 0; border-top:1px solid #e2e8f0;">
-            <button type="button" id="btnSettingsSupport" style="width:100%; display:flex; justify-content:space-between; align-items:center; padding:16px 20px; margin-bottom:12px; background:#fff; border:2px solid #f1f3f5; border-radius:16px; color:#1a1a1a; font-size:16px; font-weight:700; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.04);">
-              <div style="display:flex;align-items:center;gap:12px;"><i data-lucide="help-circle" style="width:20px;height:20px;color:#64748b;"></i><span>Support & FAQ</span></div>
-              <i data-lucide="chevron-right" style="width:20px; height:20px; color:#cbd5e1;"></i>
+            <button type="button" id="btnSettingsSupport" class="provider-footer-row" style="width:100%; text-align:left; border:none; font-family:inherit;">
+              <span>Support & FAQ</span>
+              <i data-lucide="chevron-right" style="width:20px; height:20px; color:#cbd5e1; flex-shrink:0;"></i>
             </button>
-            <button type="button" id="btnProviderDeleteAccount" style="width:100%; min-height:48px; padding:0; font-size:14px; font-weight:800; color:#dc2626; background:transparent; border:none; cursor:pointer; text-align:center;">
+            <button type="button" id="btnProviderDeleteAccount" class="provider-footer-delete">
               Profil dauerhaft löschen
             </button>
           </div>
@@ -19923,8 +19929,9 @@
     const todayEmptyEl = document.getElementById('billingTodayEmpty');
     const todayRevenueEl = document.getElementById('billingTodayRevenue');
     const btnZahlungsmittel = document.getElementById('btnBillingZahlungsmittel');
-    
+    const btnBillingPortal = document.getElementById('btnProviderBillingPortal');
     if(btnZahlungsmittel) btnZahlungsmittel.onclick = function(){ showToast('Zahlungsmittel ändern (Demo – später Stripe/Backend).'); };
+    if(btnBillingPortal) btnBillingPortal.onclick = function(){ if(typeof showToast === 'function') showToast('Stripe Dashboard (Demo – später Link zum Backend).'); };
     if(!listEl) return;
 
     const pid = typeof providerId === 'function' ? providerId() : '';
