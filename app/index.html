@@ -3733,13 +3733,13 @@
       /* Dashboard: Dein Wochenplan – klare Trennung von KPIs, App-Kasten, S25-Safe */
       #providerWeekSection .prov-card{ padding:24px; border-radius:24px; box-shadow:0 4px 20px rgba(0,0,0,0.06); border:none; background:#fff; }
       #providerWeekSection{ margin-top:28px; padding:24px 16px 24px; padding-left:max(16px, env(safe-area-inset-left)); padding-right:max(16px, env(safe-area-inset-right)); background:#fff; border-radius:28px; box-shadow:0 4px 24px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04); }
-      #providerWeekSection .provider-week-title{ margin:0 0 20px; font-size:18px; font-weight:900; color:#1a1a1a; }
-      #providerWeekDays{ display:flex; gap:10px; overflow-x:auto; -webkit-overflow-scrolling:touch; padding:4px 0 24px; margin-bottom:20px; scroll-snap-type:x mandatory; }
-      #providerWeekDays .week-preview-pill{ flex:0 0 auto; min-width:64px; min-height:48px; padding:14px 10px; border-radius:16px; border:2px solid #f1f3f5; background:#fff; font-size:10px; font-weight:900; color:#64748b; cursor:pointer; transition:all 0.2s; line-height:1.25; text-align:center; white-space:pre-line; scroll-snap-align:center; scroll-snap-stop:always; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+      #providerWeekSection .provider-week-title{ margin:0 0 24px; font-size:22px; font-weight:900; color:#1a1a1a; letter-spacing:-0.02em; }
+      #providerWeekDays{ display:flex; gap:10px; overflow-x:auto; -webkit-overflow-scrolling:touch; padding:4px 0 24px; margin-bottom:24px; scroll-snap-type:x mandatory; }
+      #providerWeekDays .week-preview-pill{ flex:0 0 auto; min-width:70px; min-height:52px; padding:18px 10px; border-radius:32px; border:2px solid #f1f3f5; background:#fff; font-size:10px; font-weight:900; color:#64748b; cursor:pointer; transition:all 0.2s; line-height:1.25; text-align:center; white-space:pre-line; scroll-snap-align:center; scroll-snap-stop:always; display:flex; flex-direction:column; align-items:center; justify-content:center; }
       #providerWeekDays .week-preview-pill::after{ content:''; width:8px; height:8px; border-radius:50%; margin-top:4px; background:#e2e8f0; border:none; transition:background 0.2s; }
       #providerWeekDays .week-preview-pill.has-online::after{ background:#10b981; box-shadow:0 0 0 2px rgba(16,185,129,0.3); }
       #providerWeekDays .week-preview-pill.has-listings:not(.has-online)::after{ background:#3b82f6; border:none; }
-      #providerWeekDays .week-preview-pill.active{ background:#ffde00; border-color:#ffde00; color:#1a1a1a; box-shadow:0 2px 8px rgba(255,222,0,0.35); }
+      #providerWeekDays .week-preview-pill.active{ background:#ffde00; border-color:#ffde00; color:#1a1a1a; box-shadow:0 2px 12px rgba(255,222,0,0.4); transform:scale(1.05); }
       #providerWeekDays .week-preview-pill.active::after{ background:#3b82f6; }
       #providerWeekDays .week-preview-pill.active.has-online::after{ background:#10b981; box-shadow:0 0 0 2px rgba(16,185,129,0.3); }
       /* Wochenplan 2.2: Dashboard-Pills minimalistisch – ohne Status-Punkt, Fokus auf Karten */
@@ -3756,17 +3756,21 @@
       @media (min-width:520px){ .provider-cookbook-tiles{ display:flex; flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch; gap:10px; padding-bottom:4px; } .provider-cookbook-tiles .cookbook-tile{ flex:0 0 auto; min-width:110px; width:110px; } }
       #providerWeekDayContent{ min-height:100px; text-align:left; padding:0; }
       #providerWeekDayContent .week-preview-dishes{ display:flex; flex-direction:column; gap:14px; }
-      #providerWeekDayContent .week-preview-dish{ background:#fff; padding:22px 20px; min-height:56px; border-radius:32px; box-shadow:0 2px 12px rgba(0,0,0,0.04); display:flex; justify-content:space-between; align-items:center; border-left:8px solid transparent; cursor:pointer; transition:transform 0.15s, box-shadow 0.15s; }
-      #providerWeekDayContent .week-preview-dish:active{ transform:scale(0.98); }
-      #providerWeekDayContent .week-preview-dish.week-preview-dish-online{ border-left-width:10px; border-left-color:#10b981; }
-      #providerWeekDayContent .week-preview-dish-sold{ background:#f8fafc; border:1px dashed #e2e8f0; border-radius:16px; padding:10px 14px; min-width:52px; text-align:center; }
-      #providerWeekDayContent .week-preview-dish-sold span:first-child{ display:block; font-size:8px; font-weight:800; color:#94a3b8; text-transform:uppercase; letter-spacing:0.05em; }
-      #providerWeekDayContent .week-preview-dish-sold .week-preview-dish-sold-num{ font-size:15px; font-weight:900; color:#1a1a1a; }
+      #providerWeekDayContent .week-preview-section-label{ font-size:10px; font-weight:900; color:#9ca3af; text-transform:uppercase; letter-spacing:0.12em; margin-bottom:12px; padding:0 4px; }
+      #providerWeekDayContent .week-preview-section-label-center{ text-align:center; margin-top:20px; margin-bottom:12px; }
+      #providerWeekDayContent .week-preview-dish{ background:#fff; padding:20px 20px; min-height:56px; border-radius:40px; box-shadow:0 2px 12px rgba(0,0,0,0.04); display:flex; justify-content:space-between; align-items:center; border-left:12px solid transparent; cursor:pointer; transition:transform 0.15s, box-shadow 0.15s; gap:16px; }
+      #providerWeekDayContent .week-preview-dish:active{ transform:scale(0.97); }
+      #providerWeekDayContent .week-preview-dish.week-preview-dish-online{ border-left-color:#10b981; }
+      #providerWeekDayContent .week-preview-dish-thumb{ width:56px; height:56px; min-width:56px; min-height:56px; border-radius:50%; overflow:hidden; border:2px solid #f3f4f6; background:#f1f3f5; flex-shrink:0; }
+      #providerWeekDayContent .week-preview-dish-thumb img{ width:100%; height:100%; object-fit:cover; }
+      #providerWeekDayContent .week-preview-dish-sold{ background:#f8fafc; border:1px dashed #e2e8f0; border-radius:20px; padding:12px 16px; min-width:60px; text-align:center; flex-shrink:0; }
+      #providerWeekDayContent .week-preview-dish-sold span:first-child{ display:block; font-size:8px; font-weight:800; color:#9ca3af; text-transform:uppercase; letter-spacing:0.05em; }
+      #providerWeekDayContent .week-preview-dish-sold .week-preview-dish-sold-num{ font-size:16px; font-weight:900; color:#1a1a1a; }
       #providerWeekDayContent .week-preview-dish-online .week-preview-dish-inner{ flex:1; min-width:0; display:flex; flex-direction:column; align-items:flex-start; gap:2px; }
       #providerWeekDayContent .week-preview-dish-online .week-preview-dish-time{ font-size:12px; font-weight:700; color:#94a3b8; }
       #providerWeekDayContent .week-preview-dish.week-preview-dish-geplant{ opacity:0.9; background:rgba(255,255,255,0.95); border:2px dashed #e2e8f0; border-left-width:8px; border-left-color:#e2e8f0; padding:24px 20px; min-height:60px; }
       #providerWeekDayContent .week-preview-dish.week-preview-dish-geplant .week-preview-dish-name{ color:#64748b; }
-      #providerWeekDayContent .week-preview-dish-name{ font-size:18px; font-weight:900; color:#1a1a1a; }
+      #providerWeekDayContent .week-preview-dish-name{ font-size:20px; font-weight:900; color:#1a1a1a; line-height:1.2; }
       #providerWeekDayContent .week-preview-dish-meta{ display:flex; flex-direction:column; align-items:flex-end; gap:2px; }
       #providerWeekDayContent .week-preview-dish-status{ font-size:10px; font-weight:900; text-transform:uppercase; letter-spacing:0.05em; }
       #providerWeekDayContent .week-preview-dish-status.online{ color:#10b981; }
@@ -3781,12 +3785,12 @@
       #providerWeekDayContent .week-preview-gap-tip-title{ font-size:13px; font-weight:800; color:#1a1a1a; margin-top:2px; }
       #providerWeekDayContent .week-preview-gap-tip-stats{ font-size:11px; font-weight:700; color:#10b981; margin-top:4px; }
       #providerWeekDayContent .week-preview-gap-tip .week-preview-gap-tip-btn{ background:#fff; padding:8px 14px; border-radius:12px; font-size:9px; font-weight:900; text-transform:uppercase; border:none; box-shadow:0 1px 4px rgba(0,0,0,0.06); cursor:pointer; color:#1a1a1a; }
-      /* Leerer Tag – Direkt-Inserieren-Trigger (Wochenplan 2.2) */
-      #providerWeekDayContent .week-preview-empty-trigger{ background:rgba(255,255,255,0.5); border:2px dashed #e2e8f0; border-radius:32px; padding:24px 20px; display:flex; align-items:center; gap:20px; cursor:pointer; transition:background 0.2s, transform 0.1s; }
+      /* Leerer Tag – Direkt-Inserieren-Trigger (Wochenplan 3.0 „Keine Ausreden“) */
+      #providerWeekDayContent .week-preview-empty-trigger{ background:rgba(255,255,255,0.5); border:2px dashed #e2e8f0; border-radius:40px; padding:32px 24px; display:flex; flex-direction:column; align-items:center; text-align:center; gap:16px; cursor:pointer; transition:background 0.2s, transform 0.1s; box-shadow:0 2px 12px rgba(0,0,0,0.04); }
       #providerWeekDayContent .week-preview-empty-trigger:active{ transform:scale(0.98); background:#fff; }
-      #providerWeekDayContent .week-preview-empty-trigger .week-preview-empty-plus{ width:56px; height:56px; min-width:56px; min-height:56px; background:#ffde00; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:28px; font-weight:300; line-height:1; color:#1a1a1a; box-shadow:0 2px 12px rgba(255,222,0,0.4); }
-      #providerWeekDayContent .week-preview-empty-trigger .week-preview-empty-label{ font-size:9px; font-weight:900; color:#94a3b8; text-transform:uppercase; letter-spacing:0.12em; margin-bottom:4px; }
-      #providerWeekDayContent .week-preview-empty-trigger .week-preview-empty-cta{ font-size:15px; font-weight:900; color:#1a1a1a; }
+      #providerWeekDayContent .week-preview-empty-trigger .week-preview-empty-plus{ width:64px; height:64px; min-width:64px; min-height:64px; background:#ffde00; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:32px; font-weight:300; line-height:1; color:#1a1a1a; box-shadow:0 4px 16px rgba(255,222,0,0.45); }
+      #providerWeekDayContent .week-preview-empty-trigger .week-preview-empty-label{ font-size:10px; font-weight:900; color:#9ca3af; text-transform:uppercase; letter-spacing:0.12em; margin-bottom:4px; }
+      #providerWeekDayContent .week-preview-empty-trigger .week-preview-empty-cta{ font-size:16px; font-weight:900; color:#1a1a1a; }
       #v-provider-profile .panel{ padding:18px !important; border-radius:16px !important; margin-bottom:16px !important; }
       #v-provider-profile .provider-profile-section-title{ margin-top:24px; margin-bottom:12px; }
       #v-provider-profile .provider-profile-section-title:first-of-type{ margin-top:0; }
@@ -17915,11 +17919,15 @@
     if(totalPlanned > 0){
       var mealWindow = (provider && provider.profile && provider.profile.mealWindow) ? provider.profile.mealWindow : '11:30 – 14:00';
       var dishRows = [];
+      var hasOnline = offersForDay.length > 0;
+      if(hasOnline) dishRows.push('<p class="week-preview-section-label">Aktiv &amp; Online</p>');
       offersForDay.forEach(function(o){
         var dishName = (typeof esc === 'function' ? esc(o.dish || 'Gericht') : (o.dish || 'Gericht').replace(/</g,'&lt;'));
         var soldCount = allOrdersForSold.filter(function(ord){ var o2 = (offers || []).find(function(x){ return x.id === ord.dishId || x.id === ord.offerId; }); return o2 && String(o2.providerId) === String(providerId()) && String((o2.dish || '').trim()) === String((o.dish || '').trim()); }).length;
         var soldBox = soldCount > 0 ? '<div class="week-preview-dish-sold"><span>Verkauft</span><span class="week-preview-dish-sold-num">' + soldCount + '</span></div>' : '';
-        dishRows.push('<div class="week-preview-dish week-preview-dish-online" data-offer-id="' + (o.id || '') + '"><div class="week-preview-dish-inner"><span class="week-preview-dish-status online">● Online</span><div class="week-preview-dish-name">' + dishName + '</div><span class="week-preview-dish-time">' + (typeof esc === 'function' ? esc(mealWindow) : mealWindow) + '</span></div>' + soldBox + '</div>');
+        var imgSrc = (o.imageUrl || o.img || '').toString().trim();
+        var thumbHtml = '<div class="week-preview-dish-thumb">' + (imgSrc ? '<img src="' + (typeof esc === 'function' ? esc(imgSrc) : String(imgSrc).replace(/"/g,'&quot;')) + '" alt="" loading="lazy"/>' : '') + '</div>';
+        dishRows.push('<div class="week-preview-dish week-preview-dish-online" data-offer-id="' + (o.id || '') + '">' + thumbHtml + '<div class="week-preview-dish-inner"><span class="week-preview-dish-status online">● Online</span><div class="week-preview-dish-name">' + dishName + '</div><span class="week-preview-dish-time">' + (typeof esc === 'function' ? esc(mealWindow) : mealWindow) + '</span></div>' + soldBox + '</div>');
       });
       weekEntries.forEach(function(e, slotIndex){
         var cb = cookbook.find(function(c){ return String(c.id) === String(e.cookbookId); });
@@ -17982,6 +17990,7 @@
       var emptyLabel = (typeof esc === 'function' ? esc(gapDayName) : gapDayName.replace(/</g,'&lt;')) + ' ist noch leer';
       dayContent.innerHTML =
         '<div class="week-preview-dishes">' +
+        '<p class="week-preview-section-label week-preview-section-label-center">Nächste Schritte</p>' +
         '<div class="week-preview-empty-trigger" id="btnProviderWeekEmptyTrigger" role="button" tabindex="0">' +
         '<div class="week-preview-empty-plus" aria-hidden="true">＋</div>' +
         '<div><div class="week-preview-empty-label">' + emptyLabel + '</div><div class="week-preview-empty-cta">JETZT NEUES GERICHT (4,99 €)</div></div>' +
