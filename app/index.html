@@ -1903,13 +1903,15 @@
       color: #1a1a1a;
     }
     
-    /* Einheitlicher App-Header für Abholungen, Wochenplan, Kochbuch (wie Küche) */
-    .prov-page-header {
+    /* Einheitlicher App-Header für Abholungen, Wochenplan, Kochbuch (Glassmorphism) */
+    body.provider-mode .prov-page-header {
       position: sticky;
       top: 0;
       z-index: 50;
-      background: #fff;
-      border-bottom: 1px solid rgba(0,0,0,0.05);
+      background: rgba(255,255,255,0.8) !important;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255,255,255,0.2);
       padding: calc(10px + env(safe-area-inset-top, 0)) 20px 12px 20px;
     }
     .prov-page-header .prov-page-header-row {
@@ -2243,6 +2245,10 @@
     .provider-nav-light .navbtn:not(.active){ opacity:0.2; }
     .provider-nav-light .navbtn.active{ color:#ffde00; font-weight:700; border-top-color:#ffde00; opacity:1; }
     .provider-nav-light .navbtn.active .ico svg{ color:#ffde00 !important; stroke:#ffde00 !important; }
+    /* Schwebende Bottom-Bar (Pille): dunkler Hintergrund, aktiver Tab gelb */
+    .provider-nav-pill .navbtn{ color:rgba(255,255,255,0.4); border-top:none; }
+    .provider-nav-pill .navbtn.active{ color:#ffde00; opacity:1; }
+    .provider-nav-pill .navbtn.active .ico svg{ color:#ffde00 !important; stroke:#ffde00 !important; }
     [id^="v-provider-"] .panel h1,[id^="v-provider-"] .panel h2,[id^="v-provider-"] .panel h3,[id^="v-provider-"] .panel .section-title{ color:var(--provider-text) !important; }
     [id^="v-provider-"] .panel .hint{ color:var(--provider-text-muted) !important; }
     /* Dynamisch eingefügter Inhalt: immer lesbar */
@@ -3390,65 +3396,81 @@
       background:#e6b800;
     }
     
-    /* Anbieterbereich: Layout-Kette + Dynamic Background (High-End) */
+    /* Anbieterbereich: Fixes Gastroküche-Hintergrundbild + Overlay (Emotion & Professionalität) */
     html, body{ min-height:100vh; min-height:100dvh; }
     body.provider-mode main{
       min-height:100vh; min-height:100dvh; display:block; overflow-x:hidden; overflow-y:auto; max-width:100%; box-sizing:border-box;
-      background: linear-gradient(165deg, #f0f9ff 0%, #f8fafc 35%, #fefce8 70%, #f8fafc 100%);
-      background-size: 200% 200%;
-      animation: providerBgShift 20s ease-in-out infinite;
+      position:relative;
+      background-image: url('assets/gastro-bg.png');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
     }
-    @keyframes providerBgShift{
-      0%, 100%{ background-position: 0% 50%; }
-      50%{ background-position: 100% 50%; }
+    body.provider-mode main::before{
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background: rgba(0,0,0,0.2);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
     }
+    body.provider-mode main > *{ position: relative; z-index: 1; }
     body.provider-mode [id^="v-provider-"].view.active{ min-height:100vh; min-height:100dvh; display:block !important; visibility:visible !important; opacity:1 !important; scroll-margin-top:0; position:relative; width:100%; max-width:100%; overflow-x:hidden; box-sizing:border-box; }
     /* Erster Viewport sofort gefüllt: Inhalt oben verankern, keine Animation die verschiebt */
     body.provider-mode [id^="v-provider-"].view.active{ animation:none !important; transform:translateY(0) !important; }
-    /* Header/Inhalt der Anbieter-Views immer sichtbar (kein leerer Screen) */
+    /* Header/Inhalt der Anbieter-Views immer sichtbar; Header = Glassmorphism */
     body.provider-mode [id^="v-provider-"].view.active .prov-header,
-    body.provider-mode [id^="v-provider-"].view.active header:first-child{ visibility:visible !important; opacity:1 !important; min-height:60px; background:#fff !important; display:block !important; }
+    body.provider-mode [id^="v-provider-"].view.active header:first-child{ visibility:visible !important; opacity:1 !important; min-height:60px; background:rgba(255,255,255,0.8) !important; backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); display:block !important; border-bottom:1px solid rgba(255,255,255,0.2) !important; }
     body.provider-mode [id^="v-provider-"].view.active#v-provider-week{ display:flex !important; flex-direction:column !important; }
-    /* Meine Küche: nur wenn aktiv – sonst von Nuclear-Regel ausgeblendet; kein leerer Bereich oben */
+    /* Meine Küche: 4 schwebende Kästen mit Abstand (App-like) */
     #v-provider-home.view.active{
       min-height:100vh; min-height:100dvh; background:transparent;
       display:flex !important; flex-direction:column; justify-content:flex-start; align-items:stretch;
       padding:0 !important; margin:0 !important; padding-bottom:140px !important;
       position:relative; width:100%; box-sizing:border-box;
     }
-    #v-provider-home.view.active .prov-header,
-    #v-provider-home.view.active > div{
-      position:relative; z-index:1; min-height:0; overflow:visible; flex-shrink:0;
+    #v-provider-home .dashboard-floating-wrap{
+      display:flex; flex-direction:column; gap:16px;
+      padding:16px 20px 28px; padding-left:max(20px, env(safe-area-inset-left, 0)); padding-right:max(20px, env(safe-area-inset-right, 0));
+      padding-bottom:calc(28px + env(safe-area-inset-bottom, 0));
+      max-width:500px; margin:0 auto; width:100%; box-sizing:border-box;
     }
-    /* Header am oberen Rand: sticky + top-0; Safe-Area nur im inneren Content, Hintergrund bis ganz oben */
-    #v-provider-home .prov-header{
+    /* Einzelne Kästen: schwebend, weiß, Schatten, Abstand */
+    #v-provider-home .dashboard-kasten{
+      background:#fff;
+      border-radius:24px;
+      box-shadow:0 4px 24px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04);
+      border:1px solid rgba(0,0,0,0.04);
+      overflow:hidden;
+    }
+    #v-provider-home .dashboard-kasten-header{
       position:sticky; top:0; z-index:100;
-      padding:0; margin:0; flex-shrink:0;
-      background:#fff; box-shadow:0 1px 3px rgba(0,0,0,0.06);
+      background:rgba(255,255,255,0.92) !important;
+      backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
     }
-    #v-provider-home .prov-header .prov-header-inner{
-      padding-top:calc(14px + env(safe-area-inset-top, 0)); padding-bottom:16px;
-      padding-left:max(20px, env(safe-area-inset-left, 0)); padding-right:max(20px, env(safe-area-inset-right, 0));
-      min-height:60px;
+    #v-provider-home .dashboard-kasten-kpis{
+      padding:20px max(20px, env(safe-area-inset-left, 0)) 20px max(20px, env(safe-area-inset-right, 0));
     }
-    /* S25 / Handy: Dashboard-Abstände einheitlich (Safe-Area + 16/20/24/28px) */
-    #v-provider-home .prov-stats-stolz{
-      padding-top:20px; margin-top:20px; border-top:1px solid #f3f4f6;
+    #v-provider-home .dashboard-kasten-angebote{
+      padding:20px; padding-left:max(20px, env(safe-area-inset-left, 0)); padding-right:max(20px, env(safe-area-inset-right, 0));
     }
-    #v-provider-home .prov-dashboard-main{
-      padding:16px 0 28px; padding-left:max(20px, env(safe-area-inset-left, 0)); padding-right:max(20px, env(safe-area-inset-right, 0));
-      padding-bottom:calc(28px + env(safe-area-inset-bottom, 0)); max-width:500px; margin:0 auto; box-sizing:border-box;
+    #v-provider-home .dashboard-kasten-wochenplan{
+      padding:20px; padding-left:max(20px, env(safe-area-inset-left, 0)); padding-right:max(20px, env(safe-area-inset-right, 0));
+      padding-bottom:24px;
     }
-    #v-provider-home #providerWeekSection{
-      margin-top:24px; padding:24px 20px 28px;
-      padding-left:max(20px, env(safe-area-inset-left, 0)); padding-right:max(20px, env(safe-area-inset-right, 0));
-      padding-bottom:28px;
+    #v-provider-home.view.active .prov-header,
+    #v-provider-home.view.active .dashboard-floating-wrap,
+    #v-provider-home.view.active .dashboard-kasten{
+      position:relative; z-index:1; min-height:0; overflow:visible; flex-shrink:0;
     }
     #v-provider-home #providerActiveListingsSection{ margin-bottom:0; }
     #v-provider-home #providerActiveListingsSection .provider-week-title{ margin-bottom:12px; }
-    #v-provider-home #providerWeekSection > .provider-week-title{ margin-top:24px; margin-bottom:20px; }
+    #v-provider-home .dashboard-kasten-wochenplan .provider-week-title{ margin:0 0 16px; }
     #v-provider-home .provider-week-footer{
-      padding:24px 0; padding-bottom:max(28px, calc(28px + env(safe-area-inset-bottom, 0)));
+      padding-top:20px; padding-bottom:0;
     }
     #v-provider-home .provider-week-footer #btnProviderWeekFooter{ min-height:48px; }
     #v-provider-home .prov-stats-grid{ margin-top:12px; gap:0; }
@@ -5628,46 +5650,46 @@
       </div>
     </section>
 
-    <!-- PROVIDER APP - Dashboard 2.1 "Stolz-Edition" (Keine Wüste) -->
-    <section class="view prov-dashboard-stolz" id="v-provider-home" style="min-height:100vh; padding:0 0 140px; background:#f8f7f2;">
-      
-      <!-- 1. Kompakter Header (Stolz): sticky top-0, Safe-Area nur innen → Hintergrund bis ganz oben -->
-      <header class="prov-header prov-header-stolz">
-        <div class="prov-header-inner">
-        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0;">
-          <div style="display:flex; align-items:center; gap:8px;">
-            <span style="font-size:28px;" aria-hidden="true">🔪</span>
-            <h1 class="prov-title" style="margin:0; font-size:20px; font-weight:900;">Meine Küche</h1>
+    <!-- PROVIDER APP - Dashboard 2.1: 4 schwebende Kästen (App-like) -->
+    <section class="view prov-dashboard-stolz" id="v-provider-home" style="min-height:100vh; padding:0 0 140px; background:transparent;">
+      <div class="dashboard-floating-wrap">
+        <!-- KASTEN 1: Meine Küche Header -->
+        <header class="dashboard-kasten dashboard-kasten-header prov-header prov-header-stolz">
+          <div class="prov-header-inner" style="border:none; padding-top:calc(14px + env(safe-area-inset-top, 0)); padding-bottom:16px; padding-left:max(20px, env(safe-area-inset-left, 0)); padding-right:max(20px, env(safe-area-inset-right, 0));">
+            <div style="display:flex; align-items:center; justify-content:space-between;">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span style="font-size:28px;" aria-hidden="true">🔪</span>
+                <h1 class="prov-title" style="margin:0; font-size:20px; font-weight:900;">Meine Küche</h1>
+              </div>
+              <button type="button" id="btnProviderHomeRefresh" title="Aktualisieren" aria-label="Daten neu laden" style="background:rgba(0,0,0,0.04); border:none; min-width:44px; min-height:44px; width:44px; height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; color:#64748b; cursor:pointer;">
+                <i data-lucide="refresh-cw" style="width:20px; height:20px;"></i>
+              </button>
+            </div>
+            <div id="providerHomeGreeting" style="display:none;"></div>
+            <div id="providerHomeDate" style="display:none;" aria-hidden="true"></div>
           </div>
-          <button type="button" id="btnProviderHomeRefresh" title="Aktualisieren" aria-label="Daten neu laden" style="background:rgba(0,0,0,0.04); border:none; min-width:44px; min-height:44px; width:44px; height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; color:#64748b; cursor:pointer;">
-            <i data-lucide="refresh-cw" style="width:20px; height:20px;"></i>
-          </button>
-        </div>
-        <div id="providerHomeGreeting" style="display:none;"></div>
-        <div id="providerHomeDate" style="display:none;" aria-hidden="true"></div>
+        </header>
 
-        <!-- 3 Kennzahlen: nur Zahlen (Labels ausblenden sobald Gäste bestellen) -->
-        <div class="prov-stats-stolz" style="display:flex; justify-content:space-between; align-items:flex-end; border-top:1px solid #f3f4f6;">
-          <div id="kpiTagesessen" role="button" tabindex="0" style="text-align:left; cursor:pointer; min-height:44px;" onclick="document.getElementById('providerActiveListingsSection')?.scrollIntoView({behavior:'smooth'})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); document.getElementById('providerActiveListingsSection')?.scrollIntoView({behavior:'smooth'});}" title="Tagesessen">
-            <p id="kpiLabelTagesessen" class="kpi-label" style="margin:0 0 2px; font-size:9px; font-weight:800; color:#d1d5db; text-transform:uppercase; letter-spacing:0.05em;">Tagesessen</p>
-            <p id="dashboardTagesessenCount" style="margin:0; font-size:20px; font-weight:900; color:#1a1a1a;">0</p>
-          </div>
-          <div id="kpiBestellungen" role="button" tabindex="0" style="text-align:center; padding:0 24px; border-left:1px solid #f3f4f6; border-right:1px solid #f3f4f6; cursor:pointer; min-height:44px;" onclick="showProviderPickups()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); showProviderPickups();}" title="Abholnummer / Abholungen">
-            <p id="kpiLabelAbholungen" class="kpi-label" style="margin:0 0 2px; font-size:9px; font-weight:800; color:#d1d5db; text-transform:uppercase; letter-spacing:0.05em;">Abholungen</p>
-            <p id="dashboardAbholungenCount" style="margin:0; font-size:20px; font-weight:900; color:#3b82f6;">0</p>
-          </div>
-          <div id="kpiUmsatz" role="button" tabindex="0" style="text-align:right; cursor:pointer; min-height:44px;" onclick="showProviderBilling()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); showProviderBilling();}" title="Tagesumsatz">
-            <p id="kpiLabelUmsatz" class="kpi-label" style="margin:0 0 2px; font-size:9px; font-weight:800; color:#d1d5db; text-transform:uppercase; letter-spacing:0.05em;">Umsatz heute</p>
-            <p id="dashboardUmsatzToday" style="margin:0; font-size:20px; font-weight:900; color:#16a34a;">0,00 €</p>
+        <!-- KASTEN 2: KPIs -->
+        <div class="dashboard-kasten dashboard-kasten-kpis">
+          <div class="prov-stats-stolz" style="display:flex; justify-content:space-between; align-items:flex-end; border:none; padding:0;">
+            <div id="kpiTagesessen" role="button" tabindex="0" style="text-align:left; cursor:pointer; min-height:44px; flex:1;" onclick="document.getElementById('providerActiveListingsSection')?.scrollIntoView({behavior:'smooth'})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); document.getElementById('providerActiveListingsSection')?.scrollIntoView({behavior:'smooth'});}" title="Tagesessen">
+              <p id="kpiLabelTagesessen" class="kpi-label" style="margin:0 0 2px; font-size:9px; font-weight:800; color:#d1d5db; text-transform:uppercase; letter-spacing:0.05em;">Tagesessen</p>
+              <p id="dashboardTagesessenCount" style="margin:0; font-size:20px; font-weight:900; color:#1a1a1a;">0</p>
+            </div>
+            <div id="kpiBestellungen" role="button" tabindex="0" style="text-align:center; padding:0 24px; border-left:1px solid #f3f4f6; border-right:1px solid #f3f4f6; cursor:pointer; min-height:44px; flex:1;" onclick="showProviderPickups()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); showProviderPickups();}" title="Abholnummer / Abholungen">
+              <p id="kpiLabelAbholungen" class="kpi-label" style="margin:0 0 2px; font-size:9px; font-weight:800; color:#d1d5db; text-transform:uppercase; letter-spacing:0.05em;">Abholungen</p>
+              <p id="dashboardAbholungenCount" style="margin:0; font-size:20px; font-weight:900; color:#3b82f6;">0</p>
+            </div>
+            <div id="kpiUmsatz" role="button" tabindex="0" style="text-align:right; cursor:pointer; min-height:44px; flex:1;" onclick="showProviderBilling()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); showProviderBilling();}" title="Tagesumsatz">
+              <p id="kpiLabelUmsatz" class="kpi-label" style="margin:0 0 2px; font-size:9px; font-weight:800; color:#d1d5db; text-transform:uppercase; letter-spacing:0.05em;">Umsatz heute</p>
+              <p id="dashboardUmsatzToday" style="margin:0; font-size:20px; font-weight:900; color:#16a34a;">0,00 €</p>
+            </div>
           </div>
         </div>
-        </div>
-      </header>
 
-      <div class="prov-dashboard-main">
-        
-        <!-- Ein Kasten: Aktive Angebote heute + Dein Wochenplan (ohne „Gericht erstellen“) -->
-        <div id="providerWeekSection" class="provider-week-section">
+        <!-- KASTEN 3: Aktive Angebote heute -->
+        <div class="dashboard-kasten dashboard-kasten-angebote" id="providerActiveListingsSectionWrap">
           <div id="providerActiveListingsSection">
             <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
               <h3 class="provider-week-title" style="margin:0; font-size:18px;">Aktive Angebote heute</h3>
@@ -5686,7 +5708,11 @@
               <!-- Dynamische Karten -->
             </div>
           </div>
-          <h3 class="provider-week-title">Dein Wochenplan</h3>
+        </div>
+
+        <!-- KASTEN 4: Dein Wochenplan -->
+        <div class="dashboard-kasten dashboard-kasten-wochenplan">
+          <h3 class="provider-week-title" style="margin:0 0 16px;">Dein Wochenplan</h3>
           <div class="provider-week-card" id="providerWeekCard" role="button" tabindex="0">
             <div id="providerWeekDays" class="provider-week-days"></div>
             <div id="providerWeekDayContent" class="provider-week-day-content"></div>
@@ -6778,11 +6804,11 @@
   </nav>
 
     <!-- PROVIDER bottom nav: fixer Zurück-Button darüber, heller Tab-Bar (App-Style) -->
-  <div id="providerNavWrap" style="display:none; position:fixed; bottom:0; left:0; right:0; z-index:999; padding:0 env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0);">
+  <div id="providerNavWrap" class="provider-nav-wrap-pill" style="display:none; position:fixed; bottom:24px; left:16px; right:16px; max-width:500px; margin-left:auto; margin-right:auto; z-index:999; padding:0 env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0);">
     <div id="providerNavBackRow" style="padding:0 20px 16px; display:none;">
       <button type="button" id="btnProviderNavBack" class="btn-back" aria-label="Zurück" style="background:rgba(255,255,255,0.9); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:1px solid rgba(0,0,0,0.08); color:#1a1a1a; padding:10px 24px; border-radius:999px; font-size:15px; font-weight:700; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.06);"><i data-lucide="chevron-left" style="width:20px;height:20px;"></i> Zurück</button>
     </div>
-    <nav class="bottom provider-nav-light" id="providerNav" style="background:rgba(255,255,255,0.95); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border-top:1px solid rgba(0,0,0,0.06); padding:16px 24px calc(16px + env(safe-area-inset-bottom, 0)); display:flex; justify-content:space-between; align-items:center;">
+    <nav class="bottom provider-nav-light provider-nav-pill" id="providerNav" style="background:rgba(26,26,26,0.9); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border:1px solid rgba(255,255,255,0.1); border-radius:2.5rem; padding:16px 32px calc(16px + env(safe-area-inset-bottom, 0)); box-shadow:0 25px 50px rgba(0,0,0,0.25); display:flex; justify-content:space-between; align-items:center;">
       <button class="navbtn active" data-pgo="provider-home"><div class="ico" data-icon="home" data-icon-only="1"></div><div>Küche</div></button>
       <button class="navbtn" data-pgo="provider-pickups"><div class="ico" data-icon="receipt" data-icon-only="1"></div><div>Abholungen</div></button>
       <button class="navbtn" data-pgo="provider-week"><div class="ico" data-icon="calendar" data-icon-only="1"></div><div>Wochenplan</div></button>
