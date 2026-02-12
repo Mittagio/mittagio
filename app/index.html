@@ -3732,8 +3732,10 @@
       body.provider-week-active #providerNavWrap{ position:fixed !important; bottom:0 !important; left:0 !important; right:0 !important; z-index:999 !important; }
       /* Dashboard: Dein Wochenplan – Planer-Fokus (gelb Heute, Karten pro Gericht) */
       #providerWeekSection .prov-card{ padding:24px; border-radius:24px; box-shadow:0 4px 20px rgba(0,0,0,0.06); border:none; background:#fff; }
-      #providerWeekDays{ display:flex; gap:8px; overflow-x:auto; -webkit-overflow-scrolling:touch; padding:0 0 20px; margin-bottom:20px; scroll-snap-type:x mandatory; }
-      #providerWeekDays .week-preview-pill{ flex:0 0 auto; min-width:60px; min-height:52px; padding:12px 8px; border-radius:16px; border:2px solid #f1f3f5; background:#fff; font-size:10px; font-weight:900; color:#64748b; cursor:pointer; transition:all 0.2s; line-height:1.25; text-align:center; white-space:pre-line; scroll-snap-align:center; scroll-snap-stop:always; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+      #providerWeekSection{ padding:0 12px; margin-top:0; }
+      #providerWeekSection .provider-week-title{ margin:0 0 16px; font-size:18px; font-weight:900; color:#1a1a1a; }
+      #providerWeekDays{ display:flex; gap:10px; overflow-x:auto; -webkit-overflow-scrolling:touch; padding:4px 0 24px; margin-bottom:20px; scroll-snap-type:x mandatory; }
+      #providerWeekDays .week-preview-pill{ flex:0 0 auto; min-width:64px; min-height:56px; padding:14px 10px; border-radius:16px; border:2px solid #f1f3f5; background:#fff; font-size:10px; font-weight:900; color:#64748b; cursor:pointer; transition:all 0.2s; line-height:1.25; text-align:center; white-space:pre-line; scroll-snap-align:center; scroll-snap-stop:always; display:flex; flex-direction:column; align-items:center; justify-content:center; }
       #providerWeekDays .week-preview-pill::after{ content:''; width:8px; height:8px; border-radius:50%; margin-top:4px; background:#e2e8f0; border:none; transition:background 0.2s; }
       #providerWeekDays .week-preview-pill.has-online::after{ background:#10b981; box-shadow:0 0 0 2px rgba(16,185,129,0.3); }
       #providerWeekDays .week-preview-pill.has-listings:not(.has-online)::after{ background:#3b82f6; border:none; }
@@ -3749,12 +3751,12 @@
       .provider-cookbook-tiles{ display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; }
       @media (min-width:420px){ .provider-cookbook-tiles{ grid-template-columns:repeat(4, 1fr); } }
       @media (min-width:520px){ .provider-cookbook-tiles{ display:flex; flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch; gap:10px; padding-bottom:4px; } .provider-cookbook-tiles .cookbook-tile{ flex:0 0 auto; min-width:110px; width:110px; } }
-      #providerWeekDayContent{ min-height:100px; text-align:left; }
-      #providerWeekDayContent .week-preview-dishes{ display:flex; flex-direction:column; gap:12px; }
-      #providerWeekDayContent .week-preview-dish{ background:#fff; padding:20px; border-radius:32px; box-shadow:0 2px 12px rgba(0,0,0,0.04); display:flex; justify-content:space-between; align-items:center; border-left:8px solid transparent; cursor:pointer; transition:transform 0.15s, box-shadow 0.15s; }
+      #providerWeekDayContent{ min-height:100px; text-align:left; padding:0; }
+      #providerWeekDayContent .week-preview-dishes{ display:flex; flex-direction:column; gap:14px; }
+      #providerWeekDayContent .week-preview-dish{ background:#fff; padding:22px 20px; min-height:56px; border-radius:32px; box-shadow:0 2px 12px rgba(0,0,0,0.04); display:flex; justify-content:space-between; align-items:center; border-left:8px solid transparent; cursor:pointer; transition:transform 0.15s, box-shadow 0.15s; }
       #providerWeekDayContent .week-preview-dish:active{ transform:scale(0.98); }
       #providerWeekDayContent .week-preview-dish.week-preview-dish-online{ border-left-color:#10b981; }
-      #providerWeekDayContent .week-preview-dish.week-preview-dish-geplant{ opacity:0.85; background:rgba(255,255,255,0.95); border:2px dashed #e2e8f0; border-left-width:8px; border-left-color:#e2e8f0; }
+      #providerWeekDayContent .week-preview-dish.week-preview-dish-geplant{ opacity:0.9; background:rgba(255,255,255,0.95); border:2px dashed #e2e8f0; border-left-width:8px; border-left-color:#e2e8f0; padding:24px 20px; min-height:60px; }
       #providerWeekDayContent .week-preview-dish.week-preview-dish-geplant .week-preview-dish-name{ color:#64748b; }
       #providerWeekDayContent .week-preview-dish-name{ font-size:18px; font-weight:900; color:#1a1a1a; }
       #providerWeekDayContent .week-preview-dish-meta{ display:flex; flex-direction:column; align-items:flex-end; gap:2px; }
@@ -3762,9 +3764,9 @@
       #providerWeekDayContent .week-preview-dish-status.online{ color:#10b981; }
       #providerWeekDayContent .week-preview-dish-status.geplant{ color:#94a3b8; }
       #providerWeekDayContent .week-preview-dish-time{ font-size:13px; font-weight:700; color:#94a3b8; }
-      #providerWeekDayContent .week-preview-cta{ margin-top:20px; }
+      #providerWeekDayContent .week-preview-cta{ margin-top:24px; }
       #providerWeekDayContent .week-preview-cta .btn{ width:100%; min-height:48px; border-radius:14px; font-weight:700; border:2px solid #e5e7eb; background:#fff; color:#1a1a1a; }
-      #providerWeekDayContent .week-preview-link{ display:inline-flex; align-items:center; gap:6px; font-size:14px; font-weight:700; color:#1a1a1a; margin-top:14px; cursor:pointer; color:var(--prov-brand,#0ea5e9); }
+      #providerWeekDayContent .week-preview-link{ display:inline-flex; align-items:center; gap:6px; font-size:14px; font-weight:700; color:#1a1a1a; margin-top:20px; margin-bottom:24px; cursor:pointer; color:var(--prov-brand,#0ea5e9); padding-bottom:env(safe-area-inset-bottom, 0); }
       #providerWeekDayContent .week-preview-gap-tip{ display:flex; align-items:center; justify-content:space-between; gap:12px; background:#eff6ff; border:1px solid #bfdbfe; padding:20px; border-radius:24px; margin-top:16px; box-shadow:0 0 0 1px rgba(59,130,246,0.08), 0 4px 20px rgba(59,130,246,0.12); }
       #providerWeekDayContent .week-preview-gap-tip-inner{ display:flex; align-items:center; gap:12px; }
       #providerWeekDayContent .week-preview-gap-tip-label{ font-size:9px; font-weight:900; text-transform:uppercase; letter-spacing:0.08em; color:#3b82f6; }
@@ -5601,11 +5603,11 @@
         </div>
       </header>
 
-      <div class="prov-dashboard-main" style="padding:16px 16px 20px; max-width:500px; margin:0 auto;">
+      <div class="prov-dashboard-main" style="padding:8px 20px 24px; max-width:500px; margin:0 auto;">
         
         <!-- 2. Inserat-Karte (Stolz-Edition) -->
-        <div id="providerActiveListingsSection" style="margin-bottom:32px;">
-          <div id="providerActiveListingsHeader" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:16px;">
+        <div id="providerActiveListingsSection" style="margin-bottom:20px;">
+          <div id="providerActiveListingsHeader" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
             <h3 style="font-size:18px; font-weight:900; color:#1a1a1a; margin:0;">Aktive Angebote</h3>
             <div style="display:flex; align-items:center; gap:10px;">
               <button type="button" class="btn-primary provider-add-plus-btn" id="btnProviderHomeInseratFlow" style="min-height:44px; padding:0 18px; border-radius:14px; font-size:14px; font-weight:800; border:none; display:inline-flex; align-items:center; gap:8px; box-shadow:0 2px 12px rgba(255,215,0,0.35);" aria-label="Gericht erstellen">
