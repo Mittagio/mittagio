@@ -2270,7 +2270,7 @@
     .provider-nav-pill .navbtn.active{ color:#ffde00; opacity:1; }
     .provider-nav-pill .navbtn.active .ico{ background:#ffde00; width:48px; height:48px; border-radius:16px; box-shadow:0 4px 16px rgba(255,222,0,0.35); }
     .provider-nav-pill .navbtn.active .ico svg{ color:#1a1a1a !important; stroke:#1a1a1a !important; }
-    .provider-nav-pill .navbtn div:last-child{ font-size:10px; font-weight:900; text-transform:uppercase; letter-spacing:0.02em; }
+    .provider-nav-pill .navbtn .ico + div{ font-size:10px; font-weight:900; text-transform:uppercase; letter-spacing:0.02em; }
     /* Schwebende Bar: Abstand vom Rand (FloatingAppDashboard bottom-10 left-10 right-10) */
     #providerNavWrap.provider-nav-wrap-pill{ bottom:2.5rem !important; left:2.5rem !important; right:2.5rem !important; max-width:32rem; margin-left:auto; margin-right:auto; z-index:100 !important; }
     #providerNavWrap #providerNav{ min-height:80px; }
@@ -3460,19 +3460,18 @@
       padding:0 !important; margin:0 !important; padding-bottom:140px !important;
       position:relative; width:100%; box-sizing:border-box;
     }
-    /* Dashboard 3.0: Schwebender Glas-Kasten (emotionale Bühne + Gastro-Hintergrund) */
+    /* Dashboard: Kein großer Kasten – Inhalt volle Breite, Kästen einzeln sichtbar */
     #v-provider-home .dashboard-floating-wrap{
       display:flex; flex-direction:column; gap:20px;
-      padding:20px 20px 28px; padding-top:max(20px, env(safe-area-inset-top, 0)); padding-left:max(20px, env(safe-area-inset-left, 0)); padding-right:max(20px, env(safe-area-inset-right, 0));
+      padding:16px 16px 28px; padding-top:max(16px, env(safe-area-inset-top, 0)); padding-left:max(16px, env(safe-area-inset-left, 0)); padding-right:max(16px, env(safe-area-inset-right, 0));
       padding-bottom:calc(28px + env(safe-area-inset-bottom, 0));
-      max-width:28rem; margin:0 auto; width:100%; box-sizing:border-box;
-      min-height:85vh;
-      background:rgba(255,255,255,0.72);
-      backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px);
-      border-radius:3rem;
-      box-shadow:0 25px 50px rgba(0,0,0,0.15), 0 12px 24px rgba(0,0,0,0.08);
-      border:1px solid rgba(255,255,255,0.45);
-      overflow:hidden;
+      width:100%; max-width:100%; margin:0; box-sizing:border-box;
+      min-height:0;
+      background:transparent;
+      border-radius:0;
+      box-shadow:none;
+      border:none;
+      overflow:visible;
     }
     /* Vier Kästen: einzeln schwebend über Hintergrundbild, kleinere Schrift */
     #v-provider-home .dashboard-kasten{
@@ -5738,7 +5737,7 @@
         <!-- KASTEN 2: KPIs -->
         <div class="dashboard-kasten dashboard-kasten-kpis">
           <div class="prov-stats-stolz" style="display:flex; justify-content:space-between; align-items:flex-end; border:none; padding:0;">
-            <div id="kpiTagesessen" role="button" tabindex="0" style="text-align:left; cursor:pointer; min-height:40px; flex:1;" onclick="document.getElementById('providerActiveListingsSection')?.scrollIntoView({behavior:'smooth'})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); document.getElementById('providerActiveListingsSection')?.scrollIntoView({behavior:'smooth'});}" title="Tagesessen">
+            <div id="kpiTagesessen" role="button" tabindex="0" style="text-align:center; cursor:pointer; min-height:40px; flex:1;" onclick="document.getElementById('providerActiveListingsSection')?.scrollIntoView({behavior:'smooth'})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); document.getElementById('providerActiveListingsSection')?.scrollIntoView({behavior:'smooth'});}" title="Tagesessen">
               <p id="kpiLabelTagesessen" class="kpi-label" style="margin:0 0 2px; font-size:8px; font-weight:800; color:#9ca3af; text-transform:uppercase; letter-spacing:0.05em;">Tagesessen</p>
               <p id="dashboardTagesessenCount" style="margin:0; font-size:16px; font-weight:900; color:#1a1a1a;">0</p>
             </div>
@@ -5779,7 +5778,12 @@
 
         <!-- KASTEN 4: Dein Wochenplan -->
         <div class="dashboard-kasten dashboard-kasten-wochenplan">
-          <h3 class="provider-week-title" style="margin:0 0 16px;">Dein Wochenplan</h3>
+          <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:16px;">
+            <h3 class="provider-week-title" style="margin:0; font-size:18px;">Dein Wochenplan</h3>
+            <button type="button" id="btnProviderShareWeekPlanTitle" title="Wochenplan teilen" aria-label="Wochenplan teilen" style="background:rgba(0,0,0,0.06); border:none; min-width:44px; min-height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; color:#1a1a1a; cursor:pointer;">
+              <i data-lucide="share-2" style="width:20px; height:20px;"></i>
+            </button>
+          </div>
           <div class="provider-week-card" id="providerWeekCard" role="button" tabindex="0">
             <div id="providerWeekDays" class="provider-week-days"></div>
             <div id="providerWeekDayContent" class="provider-week-day-content"></div>
@@ -5789,7 +5793,7 @@
               <span>Zum Wochenplan</span>
               <i data-lucide="chevron-right" style="width:20px; height:20px;"></i>
             </button>
-            <button type="button" id="btnProviderShareWeekPlan" title="Wochenplan teilen" style="width:100%; min-height:44px; border-radius:22px; border:2px solid #e5e7eb; background:#fff; color:#64748b; font-size:14px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">
+            <button type="button" id="btnProviderShareWeekPlan" title="Wochenplan teilen" style="display:none; width:100%; min-height:44px; border-radius:22px; border:2px solid #e5e7eb; background:#fff; color:#64748b; font-size:14px; font-weight:700; cursor:pointer; align-items:center; justify-content:center; gap:8px;">
               <i data-lucide="share-2" style="width:18px; height:18px;"></i>
               <span>Teilen</span>
             </button>
@@ -6880,11 +6884,11 @@
       <button type="button" id="btnProviderNavBack" class="btn-back" aria-label="Zurück" style="background:rgba(255,255,255,0.9); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:1px solid rgba(0,0,0,0.08); color:#1a1a1a; padding:10px 24px; border-radius:999px; font-size:15px; font-weight:700; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.06);"><i data-lucide="chevron-left" style="width:20px;height:20px;"></i> Zurück</button>
     </div>
     <nav class="bottom provider-nav-light provider-nav-pill" id="providerNav" style="background:rgba(26,26,26,0.9); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border:1px solid rgba(255,255,255,0.1); border-radius:2.5rem; padding:16px 32px calc(16px + env(safe-area-inset-bottom, 0)); box-shadow:0 25px 50px rgba(0,0,0,0.25); display:flex; justify-content:space-between; align-items:center;">
-      <button class="navbtn active" data-pgo="provider-home"><div class="ico" data-icon="home" data-icon-only="1"></div><div>Küche</div></button>
-      <button class="navbtn" data-pgo="provider-pickups"><div class="ico" data-icon="receipt" data-icon-only="1"></div><div>Abholungen</div></button>
-      <button class="navbtn" data-pgo="provider-week"><div class="ico" data-icon="calendar" data-icon-only="1"></div><div>Wochenplan</div></button>
-      <button class="navbtn" data-pgo="provider-cookbook"><div class="ico" data-icon="bookOpen" data-icon-only="1"></div><div>Kochbuch</div></button>
-      <button class="navbtn" data-pgo="provider-profile"><div class="ico" data-icon="user" data-icon-only="1"></div><div>Meins</div></button>
+      <button class="navbtn active" data-pgo="provider-home" title="Küche"><div class="ico" data-icon="utensils-crossed" data-icon-only="1"></div></button>
+      <button class="navbtn" data-pgo="provider-pickups" title="Abholungen"><div class="ico" data-icon="receipt" data-icon-only="1"></div></button>
+      <button class="navbtn" data-pgo="provider-week" title="Wochenplan"><div class="ico" data-icon="calendar" data-icon-only="1"></div></button>
+      <button class="navbtn" data-pgo="provider-cookbook" title="Kochbuch"><div class="ico" data-icon="bookOpen" data-icon-only="1"></div></button>
+      <button class="navbtn" data-pgo="provider-profile" title="Meins"><div class="ico" data-icon="user" data-icon-only="1"></div></button>
     </nav>
   </div>
 </div>
@@ -17893,6 +17897,8 @@
     }
     const btnProviderShareWeekPlan = document.getElementById('btnProviderShareWeekPlan');
     if(btnProviderShareWeekPlan) btnProviderShareWeekPlan.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(typeof shareWeekPlan === 'function') shareWeekPlan(); };
+    const btnProviderShareWeekPlanTitle = document.getElementById('btnProviderShareWeekPlanTitle');
+    if(btnProviderShareWeekPlanTitle) btnProviderShareWeekPlanTitle.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(typeof shareWeekPlan === 'function') shareWeekPlan(); };
 
     // Wochenplan-Button: Text mit Anzahl geplanter Gerichte (nächste 7 Tage)
     const btnWeekPlanText = document.getElementById('btnDashboardOpenWeekPlanText');
@@ -21912,9 +21918,9 @@
       // --- Auto-Pilot: 🍴 Vor Ort, 🔄 Mehrweg, 🧾 Abholnummer (aus Profil, bestätigend auf Glas) ---
       const autoPilotRow = document.createElement('div');
       autoPilotRow.style.cssText = 'display:flex; align-items:center; justify-content:center; gap:16px; padding:12px 16px; margin-bottom:20px; background:rgba(255,255,255,0.5); border-radius:16px; border:1px solid rgba(255,255,255,0.6);';
-      const vorOrt = !!profile.dineInPossibleDefault; if(w.data.dineInPossible !== undefined) vorOrt = !!w.data.dineInPossible;
-      const mehrweg = !!profile.reuseEnabledByDefault; if(w.data.reuse && w.data.reuse.enabled) mehrweg = true;
-      const abhol = !!profile.abholnummerEnabledByDefault; if(w.data.hasPickupCode !== undefined) abhol = !!w.data.hasPickupCode;
+      let vorOrt = !!profile.dineInPossibleDefault; if(w.data.dineInPossible !== undefined) vorOrt = !!w.data.dineInPossible;
+      let mehrweg = !!profile.reuseEnabledByDefault; if(w.data.reuse && w.data.reuse.enabled) mehrweg = true;
+      let abhol = !!profile.abholnummerEnabledByDefault; if(w.data.hasPickupCode !== undefined) abhol = !!w.data.hasPickupCode;
       autoPilotRow.innerHTML = '<span style="display:inline-flex; align-items:center; gap:6px; padding:6px 12px; border-radius:12px; font-size:12px; font-weight:800; background:' + (vorOrt ? 'rgba(16,185,129,0.15)' : 'rgba(0,0,0,0.06)') + '; color:' + (vorOrt ? '#059669' : '#64748b') + ';">🍴 Vor Ort</span><span style="display:inline-flex; align-items:center; gap:6px; padding:6px 12px; border-radius:12px; font-size:12px; font-weight:800; background:' + (mehrweg ? 'rgba(16,185,129,0.15)' : 'rgba(0,0,0,0.06)') + '; color:' + (mehrweg ? '#059669' : '#64748b') + ';">🔄 Mehrweg</span><span style="display:inline-flex; align-items:center; gap:6px; padding:6px 12px; border-radius:12px; font-size:12px; font-weight:800; background:' + (abhol ? 'rgba(16,185,129,0.15)' : 'rgba(0,0,0,0.06)') + '; color:' + (abhol ? '#059669' : '#64748b') + ';">🧾 Abholnummer</span>';
       box.appendChild(autoPilotRow);
 
