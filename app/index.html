@@ -775,6 +775,9 @@
     /* Sheets / modals – Safe-Area für moderne Handys (S25, iPhone, Pixel) */
     .backdrop{position:fixed; inset:0; background:rgba(0,0,0,.6); opacity:0; pointer-events:none; transition:opacity .2s; z-index:2000}
     .backdrop.active{opacity:1; pointer-events:auto}
+    /* Quick-Post-Modal: nur sichtbar wenn .active – verhindert leeren Screen über Dashboard */
+    #quickPostBd:not(.active){ display:none !important; opacity:0 !important; pointer-events:none !important; }
+    #quickPostSheet:not(.active){ visibility:hidden !important; pointer-events:none !important; }
     .sheet{
       position:fixed; left:0; right:0; bottom:-120%; z-index:2001;
       background:#fff; border-radius:22px 22px 0 0;
@@ -3432,13 +3435,15 @@
       padding:0 !important; margin:0 !important; padding-bottom:140px !important;
       position:relative; width:100%; box-sizing:border-box;
     }
+    /* Nur Layout-Container – kein großer Kasten außen rum, nur Abstand zwischen den Kästen */
     #v-provider-home .dashboard-floating-wrap{
-      display:flex; flex-direction:column; gap:16px;
+      display:flex; flex-direction:column; gap:20px;
       padding:16px 20px 28px; padding-left:max(20px, env(safe-area-inset-left, 0)); padding-right:max(20px, env(safe-area-inset-right, 0));
       padding-bottom:calc(28px + env(safe-area-inset-bottom, 0));
       max-width:500px; margin:0 auto; width:100%; box-sizing:border-box;
+      background:transparent; border:none; box-shadow:none;
     }
-    /* Einzelne Kästen: schwebend, weiß, Schatten, Abstand */
+    /* Nur die vier Kästen sind sichtbare Karten – einzeln, schwebend */
     #v-provider-home .dashboard-kasten{
       background:#fff;
       border-radius:24px;
@@ -9021,7 +9026,10 @@
     
     // Fullscreen-Abholnummer-Modal beim View-Wechsel schließen (verhindert grünes Overlay auf allen Seiten)
     if(typeof closeFullscreenCode === 'function') closeFullscreenCode();
-    
+    // Quick-Post- und Publish-Fee-Modals schließen – verhindert leeren Screen oben auf allen Seiten außer Wochenplan
+    if(typeof closeQuickPostSheet === 'function') closeQuickPostSheet();
+    if(typeof closePublishFeeModal === 'function') closePublishFeeModal();
+
     // Topbar: Kundefarben (Seite-1-Style) wenn Kundenseite aktiv
     const topbar = document.querySelector('.topbar');
     const customerViewIds = [views.start, views.discover, views.fav, views.orders, views.cart, views.profile, views.orderSuccess].filter(Boolean);
@@ -17278,7 +17286,7 @@
   }
   
   function renderProviderHome(){
-    // Session-Aktivität aktualisieren
+    closeQuickPostSheet();
     updateSessionActivity();
     
     const profile = normalizeProviderProfile(provider.profile || {});
@@ -22747,6 +22755,7 @@
       window.closeInseratSuccessSheet = closeInseratSuccessSheet;
     }
     closePublishFeeModal();
+    if(typeof closeQuickPostSheet === 'function') closeQuickPostSheet();
   })();
 
   function saveToCookbookFromWizard(keepOpen=false){
