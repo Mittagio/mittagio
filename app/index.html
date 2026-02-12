@@ -1489,6 +1489,26 @@
     #wizard.sheet--kitchen .w-actions button:active{
       transform: scale(0.97);
     }
+    /* Inserat Step 0: daumenfreundlich, alle Ziele mind. 48px */
+    #wizard.sheet--kitchen #wContent .field{
+      min-height: 52px !important;
+      padding: 0 18px !important;
+      font-size: 18px !important;
+      -webkit-tap-highlight-color: transparent;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    #wizard.sheet--kitchen #wContent .field:focus{
+      outline: none;
+      border-color: #10b981;
+      box-shadow: 0 0 0 3px rgba(16,185,129,0.2);
+    }
+    #wizard.sheet--kitchen #wContent button[type="button"]{
+      -webkit-tap-highlight-color: transparent;
+      transition: transform 0.12s ease, background 0.2s, border-color 0.2s;
+    }
+    #wizard.sheet--kitchen #wContent button[type="button"]:active{
+      transform: scale(0.97);
+    }
     #wizard.sheet--kitchen .wizard-footer{
       margin-top: 8px;
       text-align:center; 
@@ -1679,7 +1699,9 @@
     #wizard.sheet--kitchen #wContent{
       margin-bottom:32px;
       min-height:40px;
+      scroll-margin-top:16px;
     }
+    #wizard.sheet--kitchen .panel{ scroll-behavior:smooth; }
     #wizard.sheet--kitchen #wContent .answers{
       display:flex; flex-wrap:wrap; gap:8px; margin-top:8px;
     }
@@ -21611,7 +21633,15 @@
     if(titleEl) titleEl.textContent = title;
     if(stepEl) stepEl.textContent = stepText;
     const dotsEl = document.getElementById('wizardProgressDots');
-    if(dotsEl){
+    const wTop = document.querySelector('#wBox .w-top');
+    const wQ = document.getElementById('wQ');
+    const wHelp = document.getElementById('wHelp');
+    const hideTop = (w.kind === 'listing' && w.step === 0);
+    if(dotsEl) dotsEl.style.display = hideTop ? 'none' : '';
+    if(wTop) wTop.style.display = hideTop ? 'none' : '';
+    if(wQ) wQ.style.display = hideTop ? 'none' : '';
+    if(wHelp) wHelp.style.display = hideTop ? 'none' : '';
+    if(dotsEl && !hideTop){
       const m = String(stepText).match(/Schritt\s*(\d+)\s*von\s*(\d+)|(\d+)\/(\d+)/);
       const step = m ? parseInt(m[1] || m[3], 10) : 1;
       const total = m ? parseInt(m[2] || m[4], 10) : 5;
@@ -21913,288 +21943,183 @@
     if(wNextBtn) wNextBtn.style.display = ''; // Weiter-Button sichtbar (Schritt 4 blendet ihn aus)
     const total = 4;
     const isSlimStep0 = (w.step === 0);
-    setWizardHeader('', isSlimStep0 ? 'Inserat' : `Schritt ${Math.min(w.step+1,total)} von ${total}`);
+    setWizardHeader('', isSlimStep0 ? '' : `Schritt ${Math.min(w.step+1,total)} von ${total}`);
     const profile = normalizeProviderProfile(provider.profile || {});
     if(!w.data.pickupWindow){ w.data.pickupWindow = profile.mealWindow || DEFAULT_MEAL_WINDOW; }
     if(w.data.dineInPossible === undefined) w.data.dineInPossible = !(provider.profile&&provider.profile.dineInPossibleDefault===false);
 
-    // Schritt 1: Basis (Quick-Input) – Name, Bild, Abholzeit, Preis | Auto-Pilot aus Profil
+    // Schritt 0: Ein Screen – High-End, daumenfreundlich, intuitiv
     if(w.step===0){
-      setWizardQuestion('Was kochst du heute?', '');
+      setWizardQuestion('', '');
       const box=document.createElement('div');
+      box.style.cssText='padding-bottom:8px;';
       const saveDraft = () => { localStorage.setItem('wizard_draft', JSON.stringify(w)); };
       const profile = normalizeProviderProfile(provider.profile || {});
+      const scrollToEl = (el)=>{ if(el && el.scrollIntoView) setTimeout(()=> el.scrollIntoView({ behavior:'smooth', block:'center' }), 120); };
 
-      // --- Auto-Pilot: 🍴 Vor Ort, 🔄 Mehrweg, 🧾 Abholnummer (aus Profil, bestätigend auf Glas) ---
-      const autoPilotRow = document.createElement('div');
-      autoPilotRow.style.cssText = 'display:flex; align-items:center; justify-content:center; gap:16px; padding:12px 16px; margin-bottom:20px; background:rgba(255,255,255,0.5); border-radius:16px; border:1px solid rgba(255,255,255,0.6);';
-      let vorOrt = !!profile.dineInPossibleDefault; if(w.data.dineInPossible !== undefined) vorOrt = !!w.data.dineInPossible;
-      let mehrweg = !!profile.reuseEnabledByDefault; if(w.data.reuse && w.data.reuse.enabled) mehrweg = true;
-      let abhol = !!profile.abholnummerEnabledByDefault; if(w.data.hasPickupCode !== undefined) abhol = !!w.data.hasPickupCode;
-      autoPilotRow.innerHTML = '<span style="display:inline-flex; align-items:center; gap:6px; padding:6px 12px; border-radius:12px; font-size:12px; font-weight:800; background:' + (vorOrt ? 'rgba(16,185,129,0.15)' : 'rgba(0,0,0,0.06)') + '; color:' + (vorOrt ? '#059669' : '#64748b') + ';">🍴 Vor Ort</span><span style="display:inline-flex; align-items:center; gap:6px; padding:6px 12px; border-radius:12px; font-size:12px; font-weight:800; background:' + (mehrweg ? 'rgba(16,185,129,0.15)' : 'rgba(0,0,0,0.06)') + '; color:' + (mehrweg ? '#059669' : '#64748b') + ';">🔄 Mehrweg</span><span style="display:inline-flex; align-items:center; gap:6px; padding:6px 12px; border-radius:12px; font-size:12px; font-weight:800; background:' + (abhol ? 'rgba(16,185,129,0.15)' : 'rgba(0,0,0,0.06)') + '; color:' + (abhol ? '#059669' : '#64748b') + ';">🧾 Abholnummer</span>';
-      box.appendChild(autoPilotRow);
-
-      // --- NAME + Autocomplete ---
-      const labelName=document.createElement('div'); labelName.className='hint'; labelName.textContent='Gerichtname';
-      box.appendChild(labelName);
+      // --- Gericht: Eingabefeld (groß, klar) ---
       const input=document.createElement('input');
       input.className='field';
-      input.placeholder='z.B. Kürbissuppe';
+      input.placeholder='Gericht z.B. Kürbissuppe';
       input.value=w.data.dish||'';
       input.autocomplete='off';
-      input.style.cssText='margin-bottom:8px; min-height:52px; font-size:18px; font-weight:700;';
+      input.style.cssText='margin-bottom:8px; min-height:52px; font-size:18px; font-weight:700; border-radius:16px; border:2px solid #e5e7eb; padding:0 18px;';
       const suggestWrap=document.createElement('div');
       suggestWrap.className='answers';
-      suggestWrap.style.marginTop='6px'; suggestWrap.style.marginBottom='16px';
+      suggestWrap.style.marginTop='6px'; suggestWrap.style.marginBottom='12px'; suggestWrap.style.gap='8px';
       function fillSuggestions(){
         suggestWrap.innerHTML='';
         const q=(input.value||'').trim();
         const list = typeof getDishSuggestionsSmartInput==='function' ? getDishSuggestionsSmartInput(q) : [];
         list.slice(0,6).forEach(s=>{
-          const cat = (s.category==='Fleisch') ? 'Fleisch' : (s.category||'Vegetarisch');
+          const raw = (s.category==='Fleisch') ? 'Fleisch' : (s.category||'Vegetarisch');
+          const cat = raw==='Fleisch' ? 'Mit Fleisch' : (raw==='Salat'?raw:(raw||'Vegetarisch'));
           const b=document.createElement('button');
-          b.type='button'; b.className='ans'; b.style.minHeight='44px';
+          b.type='button'; b.className='ans'; b.style.cssText='min-height:48px; padding:0 16px; border-radius:14px; font-size:15px; font-weight:700; border:2px solid #e5e7eb; background:#fff;';
           b.textContent=s.dish;
           b.onclick=()=>{ 
+            if(typeof haptic==='function') haptic(10);
             w.data.dish=s.dish; 
             w.data.category=cat; 
             if(s.allergens) w.data.allergens=[].concat(s.allergens||[]); 
-            // Automatisch KI-Bild wenn kein eigenes vorhanden
-            if(!w.data.photoData || w.data.photoDataIsStandard){
-              w.data.photoData = s.img || '';
-              w.data.photoDataIsStandard = true;
-            }
+            if(!w.data.photoData || w.data.photoDataIsStandard){ w.data.photoData = s.img || ''; w.data.photoDataIsStandard = true; }
             saveDraft(); 
-            rebuildWizard(); 
+            rebuildWizard();
+            setTimeout(()=>{ const next = document.querySelector('#wContent .field[inputmode="decimal"]'); scrollToEl(next); }, 80);
           };
           suggestWrap.appendChild(b);
         });
       }
-      input.oninput=()=>{ 
-        w.data.dish=input.value; 
-        saveDraft(); 
-        fillSuggestions();
-      };
-      input.onfocus=fillSuggestions;
+      input.oninput=()=>{ w.data.dish=input.value; saveDraft(); fillSuggestions(); };
+      input.onfocus=()=>{ fillSuggestions(); };
       box.appendChild(input);
       box.appendChild(suggestWrap);
 
-      // --- 2-Slot Bild: Kamera | Galerie (ohne KI) – Platzhalter „Bild folgt“ wenn kein Bild ---
-      const labelImg=document.createElement('div'); labelImg.className='hint'; labelImg.textContent='Bild';
-      box.appendChild(labelImg);
-      const imgRow=document.createElement('div'); imgRow.className='answers'; imgRow.style.marginBottom='16px';
-      
-      const slots = [
-        { txt: '📷 Kamera', action: 'camera' },
-        { txt: '📤 Galerie', action: 'gallery' }
-      ];
+      // --- Preis (Zahlentastatur, groß für Daumen) ---
+      const inputPrice=document.createElement('input');
+      inputPrice.className='field';
+      inputPrice.type='text';
+      inputPrice.inputmode='decimal';
+      inputPrice.placeholder='Preis z.B. 8,50 €';
+      inputPrice.value=(w.data.price>0?Number(w.data.price).toFixed(2).replace('.',','):'');
+      inputPrice.style.cssText='margin-bottom:12px; min-height:58px; font-size:24px; font-weight:800; border-radius:16px; border:2px solid #e5e7eb; padding:0 18px;';
+      inputPrice.oninput=()=>{ const v=inputPrice.value.replace(',','.'); w.data.price=parseFloat(v)||0; saveDraft(); };
+      inputPrice.onblur=()=>{ if(w.data.price>0) inputPrice.value=Number(w.data.price).toFixed(2).replace('.',','); };
+      inputPrice.onfocus=()=>{ if(typeof haptic==='function') haptic(6); scrollToEl(inputPrice); };
+      box.appendChild(inputPrice);
 
-      slots.forEach((slot) => {
+      // --- Kamera + Galerie (große Pills, daumenfreundlich) ---
+      const imgRow=document.createElement('div');
+      imgRow.style.cssText='display:flex; gap:10px; margin-bottom:12px;';
+      [{ txt:'📷 Kamera', action:'camera' },{ txt:'📤 Galerie', action:'gallery' }].forEach(slot=>{
         const btn=document.createElement('button');
-        btn.type='button'; btn.className='ans'; btn.style.minHeight='44px';
+        btn.type='button'; btn.style.cssText='flex:1; min-height:50px; border-radius:16px; border:2px solid #e5e7eb; background:#fff; font-size:15px; font-weight:800; cursor:pointer;';
         btn.textContent=slot.txt;
         btn.onclick=async function(){
-          if(slot.action === 'camera'){ 
-            const f=await pickImage({capture:true}); 
-            if(!f) return; 
-            const dataUrl=await toDataUrl(f); 
-            w.data.photoData = typeof applyAppetizerFilter==='function' ? await applyAppetizerFilter(dataUrl) : dataUrl;
-            w.data.photoDataIsStandard=false; 
-          }
-          else if(slot.action === 'gallery'){ 
-            const f=await pickImage(); 
-            if(!f) return; 
-            const dataUrl=await toDataUrl(f); 
-            w.data.photoData=dataUrl; 
-            w.data.photoDataIsStandard=false; 
-          }
+          if(typeof haptic==='function') haptic(10);
+          if(slot.action==='camera'){ const f=await pickImage({capture:true}); if(!f) return; const dataUrl=await toDataUrl(f); w.data.photoData=typeof applyAppetizerFilter==='function'?await applyAppetizerFilter(dataUrl):dataUrl; w.data.photoDataIsStandard=false; }
+          else{ const f=await pickImage(); if(!f) return; w.data.photoData=await toDataUrl(f); w.data.photoDataIsStandard=false; }
           saveDraft(); rebuildWizard();
         };
         imgRow.appendChild(btn);
       });
       box.appendChild(imgRow);
-      
-      const prevContainer = document.createElement('div');
-      prevContainer.className = 'wizard-img-preview-container';
-      prevContainer.style.display = 'block';
-      prevContainer.style.marginBottom = '16px';
-      
-      const prevWrap = document.createElement('div');
-      prevWrap.style.cssText = 'width:100%; height:80px; border-radius:12px; overflow:hidden; margin-bottom:8px; background:#f0f0f0; position:relative;';
-      const prevImgSrc = w.data.photoData || WIZARD_PLACEHOLDER_IMAGE;
-      prevWrap.innerHTML = '<img src="'+prevImgSrc+'" style="width:100%; height:100%; object-fit:cover;" alt="">';
       if(w.data.photoData){
-        prevWrap.classList.add('wizard-img-skeleton');
-        var prevImg = prevWrap.querySelector('img');
-        if(prevImg){ prevImg.onload = function(){ prevWrap.classList.remove('wizard-img-skeleton'); }; if(prevImg.complete) prevWrap.classList.remove('wizard-img-skeleton'); }
+        const prev=document.createElement('div');
+        prev.style.cssText='height:56px; border-radius:12px; overflow:hidden; margin-bottom:10px; background:#f0f0f0;';
+        prev.innerHTML='<img src="'+w.data.photoData+'" style="width:100%; height:100%; object-fit:cover;" alt="">';
+        const rem=document.createElement('button');
+        rem.type='button'; rem.textContent='×'; rem.style.cssText='position:absolute; top:4px; right:4px; font-size:12px; color:#64748b; background:none; border:none; cursor:pointer; min-width:36px; min-height:36px;';
+        rem.onclick=()=>{ if(typeof haptic==='function') haptic(6); w.data.photoData=''; w.data.photoDataIsStandard=false; saveDraft(); rebuildWizard(); };
+        prev.style.position='relative'; prev.appendChild(rem);
+        box.appendChild(prev);
       }
-      if(!w.data.photoData){
-        const overlay = document.createElement('div');
-        overlay.style.cssText = 'position:absolute; inset:0; background:rgba(16,185,129,0.35); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:800; color:#fff; text-shadow:0 1px 2px rgba(0,0,0,0.3);';
-        overlay.textContent = 'Bild folgt';
-        prevWrap.appendChild(overlay);
-      }
-      
-      const rem=document.createElement('button');
-      rem.type='button'; rem.textContent='× Bild entfernen'; rem.style.cssText='font-size:12px; color:#64748b; background:none; border:none; cursor:pointer;';
-      rem.onclick=()=>{ w.data.photoData=''; w.data.photoDataIsStandard=false; saveDraft(); rebuildWizard(); };
-      if(!w.data.photoData) rem.style.display='none';
-      
-      prevContainer.appendChild(prevWrap); 
-      prevContainer.appendChild(rem);
-      box.appendChild(prevContainer);
 
-      // --- Abholzeit: Slim-Flow = aus Profil, keine Abfrage (im Hintergrund) ---
-      const profileWindow = profile.mealWindow || DEFAULT_MEAL_WINDOW;
-      w.data.pickupWindow = profileWindow;
-      w.data.pickupWindowUseProfile = true;
-      const labelTime=document.createElement('div');
-      labelTime.className='hint';
-      labelTime.innerHTML='Abholzeit (Mittagstisch) <span style="font-weight:800; color:#0ea5e9; text-decoration:underline; text-underline-offset:2px;">Aus deinem Profil</span>';
-      box.appendChild(labelTime);
-      if(w.data.pickupWindowUseProfile === undefined) w.data.pickupWindowUseProfile = true;
-      const toggleRow=document.createElement('div');
-      toggleRow.style.cssText='display:flex; align-items:center; justify-content:space-between; padding:12px 14px; background:#f0f9ff; border-radius:12px; margin-bottom:12px; border:1px solid rgba(14,165,233,0.2);';
-      toggleRow.innerHTML='<span style="font-weight:700; font-size:14px;">Abholzeiten aus deinem Profil</span><span style="font-size:13px; color:#64748b;">' + (profileWindow || '11:30 – 14:00') + '</span>';
-      const togUseProfile=document.createElement('button');
-      togUseProfile.type='button';
-      togUseProfile.style.cssText=`width:44px; height:24px; border-radius:12px; background:${w.data.pickupWindowUseProfile?'#10b981':'#e5e7eb'}; position:relative; border:none; transition:0.2s;`;
-      togUseProfile.innerHTML=`<div style="width:20px; height:20px; background:#fff; border-radius:50%; position:absolute; top:2px; left:${w.data.pickupWindowUseProfile?'22px':'2px'}; transition:0.2s; box-shadow:0 1px 2px rgba(0,0,0,0.2);"></div>`;
-      togUseProfile.onclick=()=>{ w.data.pickupWindowUseProfile=!w.data.pickupWindowUseProfile; if(w.data.pickupWindowUseProfile) w.data.pickupWindow=profileWindow; saveDraft(); rebuildWizard(); };
-      toggleRow.appendChild(togUseProfile);
-      box.appendChild(toggleRow);
-      const pw=(w.data.pickupWindowUseProfile ? profileWindow : (w.data.pickupWindow||DEFAULT_MEAL_WINDOW)).split(/\s*[–\-]\s*/);
-      let timeStart=(pw[0]||'11:30').trim(); let timeEnd=(pw[1]||'14:00').trim();
-      if(timeStart.length===4) timeStart='0'+timeStart; if(timeEnd.length===4) timeEnd='0'+timeEnd;
-      if(!w.data.pickupWindowUseProfile) w.data.pickupWindow=timeStart+' – '+timeEnd;
-      function parseTime(s){ const [h,m]=s.split(':').map(Number); return (h||0)*60+(m||0); }
-      function fmtTime(m){ const h=Math.floor(m/60), min=m%60; return (h<10?'0':'')+h+':'+(min<10?'0':'')+min; }
-      const updatePickupWindow=()=>{ w.data.pickupWindow=timeStart+' – '+timeEnd; saveDraft(); };
-      const timeRow=document.createElement('div');
-      timeRow.style.cssText='display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:8px; margin-bottom:16px;';
-      const startCell=document.createElement('div'); startCell.style.cssText='display:flex; align-items:center; justify-content:flex-start; gap:6px;';
-      const dispStart=document.createElement('span'); dispStart.style.cssText='font-size:15px; font-weight:800; color:#1a1a1a; min-width:42px; text-align:center;';
-      dispStart.textContent=timeStart;
-      const minusStart=document.createElement('button'); minusStart.type='button'; minusStart.className='btn secondary'; minusStart.style.cssText='min-width:36px; min-height:36px; font-size:16px;'; minusStart.textContent='−';
-      minusStart.onclick=()=>{ let start=parseTime(timeStart), end=parseTime(timeEnd); if(start>10*60&&end-start>15){ start-=15; timeStart=fmtTime(start); dispStart.textContent=timeStart; updatePickupWindow(); } };
-      const plusStart=document.createElement('button'); plusStart.type='button'; plusStart.className='btn secondary'; plusStart.style.cssText='min-width:36px; min-height:36px; font-size:16px;'; plusStart.textContent='+';
-      plusStart.onclick=()=>{ let start=parseTime(timeStart), end=parseTime(timeEnd); if(start<end-15){ start+=15; timeStart=fmtTime(start); dispStart.textContent=timeStart; updatePickupWindow(); } };
-      startCell.appendChild(minusStart); startCell.appendChild(dispStart); startCell.appendChild(plusStart);
-      const sep=document.createElement('span'); sep.style.cssText='font-size:14px; font-weight:700; color:#94a3b8;'; sep.textContent='–';
-      const endCell=document.createElement('div'); endCell.style.cssText='display:flex; align-items:center; justify-content:flex-end; gap:6px;';
-      const dispEnd=document.createElement('span'); dispEnd.style.cssText='font-size:15px; font-weight:800; color:#1a1a1a; min-width:42px; text-align:center;';
-      dispEnd.textContent=timeEnd;
-      const minusEnd=document.createElement('button'); minusEnd.type='button'; minusEnd.className='btn secondary'; minusEnd.style.cssText='min-width:36px; min-height:36px; font-size:16px;'; minusEnd.textContent='−';
-      minusEnd.onclick=()=>{ let start=parseTime(timeStart), end=parseTime(timeEnd); if(end-start>15){ end-=15; timeEnd=fmtTime(end); dispEnd.textContent=timeEnd; updatePickupWindow(); } };
-      const plusEnd=document.createElement('button'); plusEnd.type='button'; plusEnd.className='btn secondary'; plusEnd.style.cssText='min-width:36px; min-height:36px; font-size:16px;'; plusEnd.textContent='+';
-      plusEnd.onclick=()=>{ let start=parseTime(timeStart), end=parseTime(timeEnd); if(end<15*60&&end-start<4*60){ end+=15; timeEnd=fmtTime(end); dispEnd.textContent=timeEnd; updatePickupWindow(); } };
-      endCell.appendChild(minusEnd); endCell.appendChild(dispEnd); endCell.appendChild(plusEnd);
-      timeRow.appendChild(startCell); timeRow.appendChild(sep); timeRow.appendChild(endCell);
-      if(w.data.pickupWindowUseProfile){ w.data.pickupWindow=profileWindow; timeRow.style.display='none'; minusStart.disabled=true; plusStart.disabled=true; minusEnd.disabled=true; plusEnd.disabled=true; }
-      box.appendChild(timeRow);
-
-      // --- PREIS: Slim-Flow = groß, Zahlentastatur (küchentauglich) ---
-      const labelPrice=document.createElement('div'); labelPrice.className='hint'; labelPrice.textContent='Preis (€)';
-      box.appendChild(labelPrice);
-      const inputPrice=document.createElement('input');
-      inputPrice.className='field';
-      inputPrice.type='text';
-      inputPrice.inputmode='decimal';
-      inputPrice.placeholder='z.B. 8,50';
-      inputPrice.value=(w.data.price>0?Number(w.data.price).toFixed(2).replace('.',','):'');
-      inputPrice.style.cssText='margin-bottom:16px; min-height:64px; font-size:26px; font-weight:800;';
-      inputPrice.oninput=()=>{
-        const v=inputPrice.value.replace(',','.');
-        w.data.price=parseFloat(v)||0;
-        saveDraft();
-        if(revenueCard){
-          if(w.data.price>0){
-            var potenzial = 30 * w.data.price;
-            var potStr = Number(potenzial).toFixed(2).replace('.',',');
-            revenueCard.innerHTML = '<span style="font-size:11px; font-weight:800; color:#047857; text-transform:uppercase; letter-spacing:0.05em;">Dein Potenzial heute</span><div style="display:flex; align-items:baseline; gap:10px; flex-wrap:wrap;"><span style="font-size:28px; font-weight:900; color:#10b981; text-shadow:0 1px 2px rgba(255,255,255,0.8);">' + potStr + ' €</span><span style="font-size:12px; font-weight:600; color:#94a3b8;">4,99 € Gebühr</span></div>';
-            revenueCard.style.display = 'block';
-            revenueCard.classList.remove('revenue-card-enter');
-            void revenueCard.offsetWidth;
-            revenueCard.classList.add('revenue-card-enter');
-          } else revenueCard.style.display = 'none';
-        }
-      };
-      inputPrice.onblur=()=>{ if(w.data.price>0) inputPrice.value=Number(w.data.price).toFixed(2).replace('.',','); };
-      box.appendChild(inputPrice);
-
-      // --- KATEGORIE ---
-      const labelCat=document.createElement('div'); labelCat.className='hint'; labelCat.textContent='Kategorie';
-      box.appendChild(labelCat);
-      const catRow=document.createElement('div'); catRow.className='answers';
-      catRow.style.marginBottom='16px';
-      ['Fleisch','Vegetarisch','Vegan'].forEach(c=>{
+      // --- Kategorie: Pills (daumenfreundlich min 48px) ---
+      const catLabels = ['Vegetarisch','Vegan','Mit Fleisch','Salat'];
+      const catMap = { 'Fleisch':'Mit Fleisch', 'Mit Fleisch':'Mit Fleisch', 'Vegetarisch':'Vegetarisch', 'Vegan':'Vegan', 'Salat':'Salat' };
+      const currentCat = catMap[w.data.category] || w.data.category || 'Vegetarisch';
+      const catRow=document.createElement('div');
+      catRow.style.cssText='display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px;';
+      catLabels.forEach(c=>{
         const b=document.createElement('button');
-        b.type='button'; b.className='ans'+(w.data.category===c?' on':''); b.style.minHeight='44px';
+        b.type='button'; b.style.cssText='min-height:48px; padding:0 18px; border-radius:999px; border:2px solid ' + (currentCat===c?'#10b981':'#e5e7eb') + '; background:' + (currentCat===c?'rgba(16,185,129,0.12)':'#fff') + '; font-size:14px; font-weight:700; cursor:pointer;';
         b.textContent=c;
-        b.onclick=()=>{ if(typeof haptic === 'function') haptic(8); w.data.category=c; saveDraft(); rebuildWizard(); };
+        b.onclick=()=>{ if(typeof haptic==='function') haptic(8); w.data.category=c; saveDraft(); rebuildWizard(); };
         catRow.appendChild(b);
       });
       box.appendChild(catRow);
 
-      // Thumb-Zone: Sticky Footer mit Umsatz-Vorschau + JETZT INSERIEREN + Planen/Speichern
-      const stickyFooter = document.createElement('div');
-      stickyFooter.className = 'listing-sticky-footer';
-
-      const revenueCard = document.createElement('div');
-      revenueCard.style.cssText = 'display:none; margin-bottom:14px; padding:16px 18px; background:rgba(16,185,129,0.12); border-radius:18px; border:1px solid rgba(16,185,129,0.25); line-height:1.4;';
-      revenueCard.textContent = '';
-      if(w.data.price>0){
-        var potenzial = 30 * w.data.price;
-        var potStr = Number(potenzial).toFixed(2).replace('.',',');
-        revenueCard.innerHTML = '<span style="font-size:11px; font-weight:800; color:#047857; text-transform:uppercase; letter-spacing:0.05em;">Dein Potenzial heute</span><div style="display:flex; align-items:baseline; gap:10px; flex-wrap:wrap;"><span style="font-size:28px; font-weight:900; color:#10b981; text-shadow:0 1px 2px rgba(255,255,255,0.8);">' + potStr + ' €</span><span style="font-size:12px; font-weight:600; color:#94a3b8;">4,99 € Gebühr</span></div>';
-        revenueCard.style.display = 'block';
-        revenueCard.classList.add('revenue-card-enter');
+      // --- Allergene angeben? Toggle (große Buttons) ---
+      const suggestedAllergens = typeof getAllergenSuggestionsForDish==='function' ? getAllergenSuggestionsForDish(w.data.dish) : [];
+      if(suggestedAllergens.length && (!w.data.allergens||!w.data.allergens.length)){ w.data.allergens=suggestedAllergens.slice(); w.data.wantsAllergens=true; }
+      const allRow=document.createElement('div');
+      allRow.style.cssText='display:flex; align-items:center; gap:12px; margin-bottom:10px;';
+      const allLabel=document.createElement('span'); allLabel.style.cssText='font-size:14px; font-weight:700; color:#64748b;'; allLabel.textContent='Allergene angeben?';
+      const btnAllYes=document.createElement('button');
+      btnAllYes.type='button'; btnAllYes.style.cssText='min-height:48px; padding:0 20px; border-radius:999px; border:2px solid ' + (w.data.wantsAllergens?'#10b981':'#e5e7eb') + '; background:' + (w.data.wantsAllergens?'rgba(16,185,129,0.12)':'#fff') + '; font-size:14px; font-weight:700; cursor:pointer;';
+      btnAllYes.textContent='Ja';
+      btnAllYes.onclick=()=>{ if(typeof haptic==='function') haptic(8); w.data.wantsAllergens=true; saveDraft(); rebuildWizard(); };
+      const btnAllNo=document.createElement('button');
+      btnAllNo.type='button'; btnAllNo.style.cssText='min-height:48px; padding:0 20px; border-radius:999px; border:2px solid ' + (!w.data.wantsAllergens?'#10b981':'#e5e7eb') + '; background:' + (!w.data.wantsAllergens?'rgba(16,185,129,0.12)':'#fff') + '; font-size:14px; font-weight:700; cursor:pointer;';
+      btnAllNo.textContent='Nein';
+      btnAllNo.onclick=()=>{ if(typeof haptic==='function') haptic(8); w.data.wantsAllergens=false; w.data.allergens=[]; saveDraft(); rebuildWizard(); };
+      allRow.appendChild(allLabel); allRow.appendChild(btnAllYes); allRow.appendChild(btnAllNo);
+      box.appendChild(allRow);
+      if(w.data.wantsAllergens){
+        const pills=document.createElement('div');
+        pills.style.cssText='display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px;';
+        (typeof ALLERGENS_14!=='undefined'?ALLERGENS_14:[]).forEach(a=>{
+          const code=a.short;
+          const active=(w.data.allergens||[]).includes(code);
+          const emo=(typeof ALLERGEN_EMOJI!=='undefined'&&ALLERGEN_EMOJI[code])?ALLERGEN_EMOJI[code]:'•';
+          const p=document.createElement('button');
+          p.type='button'; p.style.cssText='min-height:44px; padding:0 14px; border-radius:999px; border:2px solid ' + (active?'#10b981':'#e5e7eb') + '; background:' + (active?'rgba(16,185,129,0.12)':'#fff') + '; font-size:13px; font-weight:700; cursor:pointer;';
+          p.textContent=emo+' '+a.name;
+          p.onclick=()=>{ if(typeof haptic==='function') haptic(6); if(!w.data.allergens) w.data.allergens=[]; if(active) w.data.allergens=w.data.allergens.filter(x=>x!==code); else w.data.allergens.push(code); saveDraft(); rebuildWizard(); };
+          pills.appendChild(p);
+        });
+        box.appendChild(pills);
       }
-      stickyFooter.appendChild(revenueCard);
 
-      const slimPrimary = document.createElement('button');
-      slimPrimary.type = 'button';
-      slimPrimary.style.cssText = 'width:100%; min-height:58px; border-radius:18px; font-size:17px; font-weight:900; border:none; background:#10b981; color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:12px; box-shadow:0 4px 20px rgba(16,185,129,0.4); text-transform:uppercase; letter-spacing:0.04em;';
-      slimPrimary.innerHTML = '<span>JETZT INSERIEREN</span>';
-      slimPrimary.onclick = function(){
-        if(typeof haptic === 'function') haptic(50);
-        var p = normalizeProviderProfile(provider.profile || {});
-        w.data.pickupWindow = p.mealWindow || DEFAULT_MEAL_WINDOW;
-        w.data.dineInPossible = (provider.profile && provider.profile.dineInPossibleDefault !== undefined) ? !!provider.profile.dineInPossibleDefault : true;
-        w.data.reuse = { enabled: !!p.reuseEnabledByDefault, deposit: p.reuseEnabledByDefault ? 3 : 0 };
-        w.data.wantsAllergens = !!p.wantsAllergensByDefault;
-        if(!w.data.wantsAllergens) w.data.allergens = [];
-        w.data.hasPickupCode = !!p.abholnummerEnabledByDefault;
-        if(typeof localStorage !== 'undefined') localStorage.setItem('wizard_draft', JSON.stringify(w));
-        var o = previewOfferFromWizard();
-        closeWizard();
-        if(typeof showPublishFeeModal === 'function') showPublishFeeModal(o);
-      };
-      stickyFooter.appendChild(slimPrimary);
+      // --- Unten: 3 Säulen + Abholzeiten + Ändern (daumenfreundlich) ---
+      const profileWindow = profile.mealWindow || DEFAULT_MEAL_WINDOW;
+      w.data.pickupWindow = w.data.pickupWindow || profileWindow;
+      w.data.pickupWindowUseProfile = (w.data.pickupWindowUseProfile !== false);
+      let vorOrt = !!profile.dineInPossibleDefault; if(w.data.dineInPossible !== undefined) vorOrt = !!w.data.dineInPossible;
+      let mehrweg = !!profile.reuseEnabledByDefault; if(w.data.reuse && w.data.reuse.enabled) mehrweg = true;
+      let abhol = !!profile.abholnummerEnabledByDefault; if(w.data.hasPickupCode !== undefined) abhol = !!w.data.hasPickupCode;
+      const bottomRow=document.createElement('div');
+      bottomRow.style.cssText='display:flex; align-items:center; flex-wrap:wrap; gap:10px; padding:14px 0; margin-top:10px; border-top:1px solid #f1f3f5;';
+      bottomRow.innerHTML='<span style="display:inline-flex; align-items:center; gap:4px; padding:6px 12px; border-radius:12px; font-size:13px; font-weight:700; background:'+(vorOrt?'rgba(16,185,129,0.12)':'rgba(0,0,0,0.06)')+'; color:'+(vorOrt?'#059669':'#94a3b8')+';">🍴</span><span style="display:inline-flex; align-items:center; gap:4px; padding:6px 12px; border-radius:12px; font-size:13px; font-weight:700; background:'+(mehrweg?'rgba(16,185,129,0.12)':'rgba(0,0,0,0.06)')+'; color:'+(mehrweg?'#059669':'#94a3b8')+';">🔄</span><span style="display:inline-flex; align-items:center; gap:4px; padding:6px 12px; border-radius:12px; font-size:13px; font-weight:700; background:'+(abhol?'rgba(16,185,129,0.12)':'rgba(0,0,0,0.06)')+'; color:'+(abhol?'#059669':'#94a3b8')+';">🧾</span><span style="font-size:13px; font-weight:600; color:#94a3b8;">'+(w.data.pickupWindow||profileWindow)+'</span>';
+      const aendernLink=document.createElement('button');
+      aendernLink.type='button'; aendernLink.style.cssText='background:none; border:none; font-size:14px; font-weight:700; color:#0ea5e9; cursor:pointer; text-decoration:underline; min-height:44px; padding:8px 4px; display:inline-flex; align-items:center;';
+      aendernLink.textContent='Ändern';
+      aendernLink.onclick=()=>{ if(typeof haptic==='function') haptic(8); w.data.pickupWindowEdit=!w.data.pickupWindowEdit; saveDraft(); rebuildWizard(); };
+      bottomRow.appendChild(aendernLink);
+      box.appendChild(bottomRow);
 
-      const planerRow = document.createElement('div');
-      planerRow.style.cssText = 'display:flex; gap:12px;';
-      const btnPlanen = document.createElement('button');
-      btnPlanen.type = 'button';
-      btnPlanen.style.cssText = 'flex:1; min-height:48px; border-radius:14px; border:2px solid #e2e8f0; background:#fff; color:#475569; font-size:14px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;';
-      btnPlanen.innerHTML = '📅 Planen';
-      btnPlanen.onclick = function(){ if(typeof haptic === 'function') haptic(8); if(typeof openSlimDayPicker === "function") openSlimDayPicker(w, saveDraft, rebuildWizard); };
-      const btnSpeichern = document.createElement('button');
-      btnSpeichern.type = 'button';
-      btnSpeichern.style.cssText = 'flex:1; min-height:48px; border-radius:14px; border:2px solid #e2e8f0; background:#fff; color:#475569; font-size:14px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;';
-      btnSpeichern.innerHTML = '📖 Speichern';
-      btnSpeichern.onclick = function(){ if(typeof haptic === 'function') haptic(8); try { saveToCookbookFromWizard(); closeWizard(); if(typeof showToast==='function') showToast('Im Kochbuch gespeichert'); setTimeout(function(){ if(typeof showProviderCookbook==='function') showProviderCookbook(); }, 80); } catch(e) { if(typeof showToast==='function') showToast('Fehler beim Speichern'); } };
-      planerRow.appendChild(btnPlanen); planerRow.appendChild(btnSpeichern);
-      stickyFooter.appendChild(planerRow);
-
-      box.appendChild(stickyFooter);
+      if(w.data.pickupWindowEdit){
+        const pw=(w.data.pickupWindow||profileWindow).split(/\s*[–\-]\s*/);
+        let timeStart=(pw[0]||'11:30').trim(); let timeEnd=(pw[1]||'14:00').trim();
+        if(timeStart.length===4) timeStart='0'+timeStart; if(timeEnd.length===4) timeEnd='0'+timeEnd;
+        function parseTime(s){ const [h,m]=s.split(':').map(Number); return (h||0)*60+(m||0); }
+        function fmtTime(m){ const h=Math.floor(m/60), min=m%60; return (h<10?'0':'')+h+':'+(min<10?'0':'')+min; }
+        const timeRow=document.createElement('div');
+        timeRow.style.cssText='display:flex; align-items:center; gap:8px; margin-bottom:10px; flex-wrap:wrap;';
+        const inpStart=document.createElement('input');
+        inpStart.type='time'; inpStart.value=timeStart; inpStart.style.cssText='padding:8px 12px; border-radius:10px; border:2px solid #e5e7eb; font-size:14px; font-weight:700;';
+        inpStart.onchange=()=>{ timeStart=inpStart.value; w.data.pickupWindow=timeStart+' – '+timeEnd; saveDraft(); };
+        const inpEnd=document.createElement('input');
+        inpEnd.type='time'; inpEnd.value=timeEnd; inpEnd.style.cssText='padding:8px 12px; border-radius:10px; border:2px solid #e5e7eb; font-size:14px; font-weight:700;';
+        inpEnd.onchange=()=>{ timeEnd=inpEnd.value; w.data.pickupWindow=timeStart+' – '+timeEnd; saveDraft(); };
+        timeRow.appendChild(inpStart); timeRow.appendChild(document.createTextNode(' – ')); timeRow.appendChild(inpEnd);
+        box.appendChild(timeRow);
+      }
 
       setWizardContent(box);
       setWizardNext('Weiter');
-      if(wNextBtn) {
-        wNextBtn.style.display = 'none';
-        wNextBtn.onclick = () => { w.step++; rebuildWizard(); };
-      }
+      if(wNextBtn){ wNextBtn.style.display='flex'; wNextBtn.onclick=()=>{ if(typeof haptic==='function') haptic(50); w.step++; rebuildWizard(); }; }
       if(wBackBtn){ wBackBtn.innerHTML='<i data-lucide="chevron-left" style="width:18px;height:18px;"></i> Zurück'; if(typeof lucide!=='undefined'&&lucide.createIcons) lucide.createIcons(); }
       return;
     }
