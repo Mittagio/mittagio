@@ -2534,7 +2534,8 @@
     }
     /* Anbieter-Ansichten: Topbar ausblenden, Inhalt beginnt oben ohne Leerraum */
     body.provider-mode .topbar { display: none !important; }
-    body.provider-mode main { padding-top: 0 !important; margin-top: 0 !important; }
+    body.provider-mode main { padding-top: 0 !important; margin-top: 0 !important; padding-left: 16px; padding-right: 16px; padding-bottom: 16px; box-sizing: border-box; }
+    body.provider-mode main > [id^="v-provider-"].view.active { margin-top: 0 !important; padding-top: 0 !important; }
     /* Kein leerer Screen beim Nach-oben-Scrollen: Overscroll/Rubber-Band deaktivieren */
     body.provider-mode { overscroll-behavior-y: none; -webkit-overflow-scrolling: touch; overflow-x: hidden; }
     /* Nuclear: Im Provider-Modus nur die aktive Provider-View sichtbar – alle anderen main-Kinder aus dem Layout */
@@ -3392,20 +3393,20 @@
     body.provider-mode [id^="v-provider-"].view.active .prov-header,
     body.provider-mode [id^="v-provider-"].view.active header:first-child{ visibility:visible !important; opacity:1 !important; min-height:60px; background:#fff !important; display:block !important; }
     body.provider-mode [id^="v-provider-"].view.active#v-provider-week{ display:flex !important; flex-direction:column !important; }
-    /* Meine Küche: nur wenn aktiv – sonst von Nuclear-Regel ausgeblendet */
+    /* Meine Küche: nur wenn aktiv – sonst von Nuclear-Regel ausgeblendet; kein leerer Bereich oben */
     #v-provider-home.view.active{
       min-height:100vh; min-height:100dvh; background:transparent;
-      display:flex !important; flex-direction:column; justify-content:flex-start;
-      padding-top:0 !important; padding-left:0; padding-right:0; padding-bottom:140px;
+      display:flex !important; flex-direction:column; justify-content:flex-start; align-items:stretch;
+      padding-top:0 !important; margin-top:0 !important; padding-left:0; padding-right:0; padding-bottom:140px;
       position:relative; width:100%; box-sizing:border-box;
     }
     #v-provider-home.view.active .prov-header,
     #v-provider-home.view.active > div{
-      position:relative; z-index:1; min-height:0; overflow:visible;
+      position:relative; z-index:1; min-height:0; overflow:visible; flex-shrink:0;
     }
     #v-provider-home .prov-header{
       padding-top:calc(12px + env(safe-area-inset-top, 0)); padding-left:20px; padding-right:20px; padding-bottom:16px;
-      margin-bottom:0; flex-shrink:0;
+      margin-bottom:0; flex-shrink:0; min-height:60px;
     }
     #v-provider-home .prov-stats-grid{ margin-top:12px; gap:0; }
     #v-provider-home .prov-stat-item{
