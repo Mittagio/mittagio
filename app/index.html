@@ -22558,8 +22558,53 @@
       return;
     }
 
-    // Schritt 4 (Index 3): Abholnummer dazubuchen? (nach Klick „Dein Tagesessen inserieren“)
+    // Schritt 4 (Index 3): Abholnummer – Voll-Upsell ODER kurze Abfrage wenn Profil-Standard (Frage 6 A)
     if(w.step===3){
+      const profile = normalizeProviderProfile(provider.profile || {});
+      const abholIsProfileDefault = !!profile.abholnummerEnabledByDefault;
+
+      if(abholIsProfileDefault){
+        // Kurze Abfrage: Anbieter hat Abholnummer schon als Standard – trotzdem kurz bestätigen
+        setWizardQuestion('Abholnummer', 'Wie in deinem Profil – diesmal dazubuchen?');
+        const box = document.createElement('div');
+        const EMERALD = '#10b981';
+        const p = document.createElement('p');
+        p.style.cssText = 'font-size:14px; color:#64748b; margin:0 0 16px;';
+        p.textContent = '0,89 € inkl. Bankgebühren. Du kannst jederzeit „Diesmal ohne“ wählen.';
+        box.appendChild(p);
+        const btnRow = document.createElement('div');
+        btnRow.style.cssText = 'display:flex; flex-direction:column; gap:10px;';
+        const btnYes = document.createElement('button');
+        btnYes.type = 'button';
+        btnYes.className = 'btn primary';
+        btnYes.style.cssText = 'min-height:48px; border-radius:14px; font-size:15px; font-weight:700; background:' + EMERALD + '; color:#fff; border:none; cursor:pointer;';
+        btnYes.textContent = 'Ja, Abholnummer dazubuchen (0,89 €)';
+        btnYes.onclick = () => {
+          w.data.hasPickupCode = true;
+          const o = previewOfferFromWizard();
+          closeWizard(true);
+          showPublishFeeModal(o);
+        };
+        const btnNo = document.createElement('button');
+        btnNo.type = 'button';
+        btnNo.className = 'btn secondary';
+        btnNo.style.cssText = 'min-height:48px; border-radius:14px; font-size:14px; font-weight:600; border:2px solid #e5e7eb; background:#fff; color:#64748b; cursor:pointer;';
+        btnNo.textContent = 'Diesmal ohne (nur 4,99 €)';
+        btnNo.onclick = () => {
+          w.data.hasPickupCode = false;
+          const o = previewOfferFromWizard();
+          closeWizard(true);
+          showPublishFeeModal(o);
+        };
+        btnRow.appendChild(btnYes);
+        btnRow.appendChild(btnNo);
+        box.appendChild(btnRow);
+        setWizardContent(box);
+        wNextBtn.style.display = 'none';
+        return;
+      }
+
+      // Voll-Upsell: Anbieter hat Abholnummer NICHT als Standard – ausführliche Step-3-Seite
       setWizardQuestion('Abholnummer dazubuchen?', '0,89 € pro Vorgang inkl. aller Bankgebühren');
       const box=document.createElement('div');
       const EMERALD = '#10b981';
