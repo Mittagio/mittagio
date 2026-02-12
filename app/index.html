@@ -3729,12 +3729,16 @@
       body.provider-week-active main{ padding-top:0 !important; padding-left:0 !important; padding-right:0 !important; max-width:none !important; overflow-x:hidden !important; }
       /* Tab-Nav bleibt fix sichtbar (z-index über Action-Bar) */
       body.provider-week-active #providerNavWrap{ position:fixed !important; bottom:0 !important; left:0 !important; right:0 !important; z-index:999 !important; }
-      /* Dashboard: Dein Wochenplan Applike */
-      #providerWeekDays{ display:flex; gap:8px; overflow-x:auto; -webkit-overflow-scrolling:touch; padding:0 0 16px; margin-bottom:16px; border-bottom:1px solid #f1f3f5; scroll-snap-type:x mandatory; }
-      #providerWeekDays .week-preview-pill{ flex:0 0 auto; min-width:56px; min-height:44px; padding:10px 8px; border-radius:14px; border:2px solid transparent; background:#f1f3f5; font-size:11px; font-weight:800; color:#64748b; cursor:pointer; transition:all 0.2s; line-height:1.25; text-align:center; white-space:pre-line; scroll-snap-align:center; scroll-snap-stop:always; }
-      #providerWeekDays .week-preview-pill.active{ background:rgba(14,165,233,0.12); border-color:var(--prov-brand); color:#1a1a1a; }
-      #providerWeekDays .week-preview-pill.has-listings{ position:relative; }
-      #providerWeekDays .week-preview-pill.has-listings::after{ content:''; position:absolute; bottom:6px; left:50%; transform:translateX(-50%); width:4px; height:4px; border-radius:50%; background:var(--prov-brand); }
+      /* Dashboard: Dein Wochenplan – Planer-Fokus (gelb Heute, Karten pro Gericht) */
+      #providerWeekSection .prov-card{ padding:24px; border-radius:24px; box-shadow:0 4px 20px rgba(0,0,0,0.06); border:none; background:#fff; }
+      #providerWeekDays{ display:flex; gap:8px; overflow-x:auto; -webkit-overflow-scrolling:touch; padding:0 0 20px; margin-bottom:20px; scroll-snap-type:x mandatory; }
+      #providerWeekDays .week-preview-pill{ flex:0 0 auto; min-width:60px; min-height:52px; padding:12px 8px; border-radius:16px; border:2px solid #f1f3f5; background:#fff; font-size:10px; font-weight:900; color:#64748b; cursor:pointer; transition:all 0.2s; line-height:1.25; text-align:center; white-space:pre-line; scroll-snap-align:center; scroll-snap-stop:always; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+      #providerWeekDays .week-preview-pill::after{ content:''; width:8px; height:8px; border-radius:50%; margin-top:4px; background:#e2e8f0; border:none; transition:background 0.2s; }
+      #providerWeekDays .week-preview-pill.has-online::after{ background:#10b981; box-shadow:0 0 0 2px rgba(16,185,129,0.3); }
+      #providerWeekDays .week-preview-pill.has-listings:not(.has-online)::after{ background:#3b82f6; border:none; }
+      #providerWeekDays .week-preview-pill.active{ background:#ffde00; border-color:#ffde00; color:#1a1a1a; }
+      #providerWeekDays .week-preview-pill.active::after{ background:#3b82f6; }
+      #providerWeekDays .week-preview-pill.active.has-online::after{ background:#10b981; box-shadow:0 0 0 2px rgba(16,185,129,0.3); }
       .prov-stat-hint{ display:block; font-size:11px; font-weight:600; color:#94a3b8; margin-top:2px; line-height:1.2; }
       #v-provider-home .prov-stat-item:focus-visible,
       #v-provider-home button:focus-visible{ outline:2px solid var(--prov-brand,#0ea5e9); outline-offset:2px; }
@@ -3744,11 +3748,28 @@
       .provider-cookbook-tiles{ display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; }
       @media (min-width:420px){ .provider-cookbook-tiles{ grid-template-columns:repeat(4, 1fr); } }
       @media (min-width:520px){ .provider-cookbook-tiles{ display:flex; flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch; gap:10px; padding-bottom:4px; } .provider-cookbook-tiles .cookbook-tile{ flex:0 0 auto; min-width:110px; width:110px; } }
-      #providerWeekDayContent{ min-height:120px !important; background:#fff !important; border:1px solid #f1f3f5; border-radius:16px; padding:16px !important; text-align:left !important; }
-      #providerWeekDayContent .week-preview-dish{ font-size:14px; font-weight:700; color:#1a1a1a; padding:8px 0; border-bottom:1px solid #f1f3f5; display:flex; justify-content:space-between; align-items:center; }
-      #providerWeekDayContent .week-preview-dish:last-of-type{ border-bottom:none; }
-      #providerWeekDayContent .week-preview-cta{ margin-top:16px; }
-      #providerWeekDayContent .week-preview-link{ display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:700; color:var(--prov-brand); margin-top:12px; cursor:pointer; }
+      #providerWeekDayContent{ min-height:100px; text-align:left; }
+      #providerWeekDayContent .week-preview-dishes{ display:flex; flex-direction:column; gap:12px; }
+      #providerWeekDayContent .week-preview-dish{ background:#fff; padding:20px; border-radius:32px; box-shadow:0 2px 12px rgba(0,0,0,0.04); display:flex; justify-content:space-between; align-items:center; border-left:8px solid transparent; cursor:pointer; transition:transform 0.15s, box-shadow 0.15s; }
+      #providerWeekDayContent .week-preview-dish:active{ transform:scale(0.98); }
+      #providerWeekDayContent .week-preview-dish.week-preview-dish-online{ border-left-color:#10b981; }
+      #providerWeekDayContent .week-preview-dish.week-preview-dish-geplant{ opacity:0.85; background:rgba(255,255,255,0.95); border:2px dashed #e2e8f0; border-left-width:8px; border-left-color:#e2e8f0; }
+      #providerWeekDayContent .week-preview-dish.week-preview-dish-geplant .week-preview-dish-name{ color:#64748b; }
+      #providerWeekDayContent .week-preview-dish-name{ font-size:18px; font-weight:900; color:#1a1a1a; }
+      #providerWeekDayContent .week-preview-dish-meta{ display:flex; flex-direction:column; align-items:flex-end; gap:2px; }
+      #providerWeekDayContent .week-preview-dish-status{ font-size:10px; font-weight:900; text-transform:uppercase; letter-spacing:0.05em; }
+      #providerWeekDayContent .week-preview-dish-status.online{ color:#10b981; }
+      #providerWeekDayContent .week-preview-dish-status.geplant{ color:#94a3b8; }
+      #providerWeekDayContent .week-preview-dish-time{ font-size:13px; font-weight:700; color:#94a3b8; }
+      #providerWeekDayContent .week-preview-cta{ margin-top:20px; }
+      #providerWeekDayContent .week-preview-cta .btn{ width:100%; min-height:48px; border-radius:14px; font-weight:700; border:2px solid #e5e7eb; background:#fff; color:#1a1a1a; }
+      #providerWeekDayContent .week-preview-link{ display:inline-flex; align-items:center; gap:6px; font-size:14px; font-weight:700; color:#1a1a1a; margin-top:14px; cursor:pointer; color:var(--prov-brand,#0ea5e9); }
+      #providerWeekDayContent .week-preview-gap-tip{ display:flex; align-items:center; justify-content:space-between; gap:12px; background:#eff6ff; border:1px solid #bfdbfe; padding:20px; border-radius:24px; margin-top:16px; box-shadow:0 0 0 1px rgba(59,130,246,0.08), 0 4px 20px rgba(59,130,246,0.12); }
+      #providerWeekDayContent .week-preview-gap-tip-inner{ display:flex; align-items:center; gap:12px; }
+      #providerWeekDayContent .week-preview-gap-tip-label{ font-size:9px; font-weight:900; text-transform:uppercase; letter-spacing:0.08em; color:#3b82f6; }
+      #providerWeekDayContent .week-preview-gap-tip-title{ font-size:13px; font-weight:800; color:#1a1a1a; margin-top:2px; }
+      #providerWeekDayContent .week-preview-gap-tip-stats{ font-size:11px; font-weight:700; color:#10b981; margin-top:4px; }
+      #providerWeekDayContent .week-preview-gap-tip .week-preview-gap-tip-btn{ background:#fff; padding:8px 14px; border-radius:12px; font-size:9px; font-weight:900; text-transform:uppercase; border:none; box-shadow:0 1px 4px rgba(0,0,0,0.06); cursor:pointer; color:#1a1a1a; }
       #v-provider-profile .panel{ padding:18px !important; border-radius:16px !important; margin-bottom:16px !important; }
       #v-provider-profile .provider-profile-section-title{ margin-top:24px; margin-bottom:12px; }
       #v-provider-profile .provider-profile-section-title:first-of-type{ margin-top:0; }
@@ -5596,18 +5617,12 @@
           </div>
         </div>
 
-        <!-- Wochenvorschau (Applike) – Tap auf Tag = Gericht für Tag hinzufügen -->
-        <div style="margin-bottom:32px;" id="providerWeekSection">
-          <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:4px;">
-            <h3 style="font-size:18px; font-weight:900; color:#1a1a1a; margin:0;">Dein Wochenplan</h3>
-            <button type="button" id="btnDashboardOpenWeekPlan" style="display:inline-flex; align-items:center; gap:6px; min-height:44px; padding:8px 14px; border-radius:12px; border:none; background:rgba(14,165,233,0.12); color:var(--prov-brand,#0ea5e9); font-size:14px; font-weight:800; cursor:pointer;" aria-label="Wochenplan öffnen">
-              <i data-lucide="calendar" style="width:18px;height:18px;"></i><span id="btnDashboardOpenWeekPlanText">Wochenplan öffnen</span>
-            </button>
-          </div>
-          <p style="font-size:13px; color:#64748b; margin:0 0 16px; line-height:1.4;">Vorausplanen, entspannter kochen. Tippe auf einen Tag, um ein Gericht dafür zu planen.</p>
-          <div class="prov-card" id="providerWeekCard" style="padding:20px; cursor:pointer;" role="button" tabindex="0">
-            <div id="providerWeekDays"></div>
-            <div id="providerWeekDayContent"></div>
+        <!-- Wochenvorschau – Nur der Planer: Klarheit & Status (Applike) -->
+        <div id="providerWeekSection" class="provider-week-section">
+          <h3 class="provider-week-title">Dein Wochenplan</h3>
+          <div class="provider-week-card" id="providerWeekCard" role="button" tabindex="0">
+            <div id="providerWeekDays" class="provider-week-days"></div>
+            <div id="providerWeekDayContent" class="provider-week-day-content"></div>
           </div>
         </div>
 
@@ -5888,12 +5903,12 @@
               <div style="font-size:28px; font-weight:950; color:#1a1a1a; margin-bottom:12px;">4,99 €</div>
               <div style="font-size:11px; font-weight:800; color:#10b981; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:16px;">Kein Abo. Kein Vertrag. Keine Laufzeit.</div>
               <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
-                <span style="font-size:20px;" title="Vor Ort">🍴</span>
-                <span style="font-size:20px;" title="Mehrweg">🔄</span>
-                <span style="font-size:20px;" title="Abholnummer">🧾</span>
+                <span style="font-size:20px;" title="Vor Ort möglich">🍴</span>
+                <span style="font-size:20px;" title="Mehrweg verfügbar">🔄</span>
+                <span style="font-size:20px;" title="Abholnummer aktiv">🧾</span>
               </div>
               <button type="button" id="btnProviderProfileInserieren" style="width:100%; min-height:52px; border-radius:16px; font-size:16px; font-weight:800; background:#10b981; color:#fff; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 4px 16px rgba(16,185,129,0.35);">
-                Jetzt inserieren
+                Jetzt für 4,99 € inserieren
               </button>
             </div>
             <!-- Kachel 2: Digitale Abholnummer -->
@@ -7056,7 +7071,7 @@
     <div style="font-weight:700; font-size:14px; color:var(--muted); margin-bottom:4px;">Abholnummer</div>
     <div style="font-size:40px; font-weight:900; font-family:monospace; color:var(--brand); margin-bottom:8px; line-height:1;" id="pickupConfirmCode">#–</div>
     <div id="pickupConfirmIcons" style="display:flex; align-items:center; gap:10px; margin-bottom:20px; font-size:18px;">
-      <span title="Vor Ort">🍴</span><span title="Mehrweg">🔄</span><span title="Abholnummer">🧾</span>
+      <span title="Vor Ort möglich">🍴</span><span title="Mehrweg verfügbar">🔄</span><span title="Abholnummer aktiv">🧾</span>
     </div>
     <div style="font-weight:700; font-size:15px; margin-bottom:10px; color:#1a1a1a;">Bestellte Gerichte</div>
     <div id="pickupConfirmDishes" style="display:flex; flex-direction:column; gap:10px; margin-bottom:24px;">
@@ -7625,8 +7640,8 @@
     pillars.className = 'card-pillars';
     pillars.innerHTML = `
       <div class="pillar-mini active" title="Vor Ort essen">🍴</div>
-      <div class="pillar-mini ${abholnummer ? 'active yellow' : ''}" title="Abholnummer">🧾</div>
-      <div class="pillar-mini ${mehrweg ? 'active green' : ''}" title="Mehrweg">🔄</div>
+      <div class="pillar-mini ${abholnummer ? 'active yellow' : ''}" title="Abholnummer aktiv">🧾</div>
+      <div class="pillar-mini ${mehrweg ? 'active green' : ''}" title="Mehrweg verfügbar">🔄</div>
     `;
     const price = document.createElement('div');
     price.className = 'cust-card-price';
@@ -10053,7 +10068,7 @@
     var p = offers.find(function(x){ return x.providerId === data.providerId; });
     var abholnummer = !!(p && p.orderingEnabled !== false && (data.hasPickupCode || p.hasPickupCode));
     var mehrweg = !!(p && (p.reuse && p.reuse.enabled));
-    pillarsEl.innerHTML = '<div class="pillar-mini active" title="Vor Ort">🍴</div><div class="pillar-mini ' + (abholnummer ? 'active yellow' : '') + '" title="Abholnummer">🧾</div><div class="pillar-mini ' + (mehrweg ? 'active green' : '') + '" title="Mehrweg">🔄</div>';
+    pillarsEl.innerHTML = '<div class="pillar-mini active" title="Vor Ort möglich">🍴</div><div class="pillar-mini ' + (abholnummer ? 'active yellow' : '') + '" title="Abholnummer aktiv">🧾</div><div class="pillar-mini ' + (mehrweg ? 'active green' : '') + '" title="Mehrweg verfügbar">🔄</div>';
     btnEl.onclick = function(){ closeDiscoverPinDrawer(); openOffer(data.id); };
     if(backdrop) backdrop.classList.add('open');
     drawer.classList.add('open');
@@ -12884,15 +12899,15 @@
       sThreePillars.innerHTML = `
         <div class="pillar-badge ${hasDineIn ? 'active' : 'disabled'}" style="${!hasDineIn ? 'opacity:0.25; filter:grayscale(1);' : ''}">
           <div class="pillar-icon-circle">🍴</div>
-          <div class="pillar-label">Vor Ort</div>
+          <div class="pillar-label">Vor Ort möglich</div>
         </div>
         <div class="pillar-badge ${orderingEnabled ? 'active yellow' : 'disabled'}" style="${!orderingEnabled ? 'opacity:0.25; filter:grayscale(1);' : ''}">
           <div class="pillar-icon-circle">🧾</div>
-          <div class="pillar-label">Abhol-Nr.</div>
+          <div class="pillar-label">Abholnummer aktiv</div>
         </div>
         <div class="pillar-badge ${hasReuse ? 'active green' : 'disabled'}" style="${!hasReuse ? 'opacity:0.25; filter:grayscale(1);' : ''}">
           <div class="pillar-icon-circle">🔄</div>
-          <div class="pillar-label">Mehrweg</div>
+          <div class="pillar-label">Mehrweg verfügbar</div>
         </div>
       `;
     }
@@ -17413,7 +17428,7 @@
           // Säulen nur bei Abweichung vom Profil
           const pillars = [];
           if((o.dineInPossible !== undefined) && (hasDineIn !== defaultDineIn)) pillars.push('<div style="flex:1; background:#f1f5f9; color:#1a1a1a; padding:8px; border-radius:10px; font-size:10px; font-weight:800; text-transform:uppercase; text-align:center;">🍴 ' + (hasDineIn ? 'Vor Ort' : 'Kein Vor Ort') + '</div>');
-          if((o.hasPickupCode !== undefined) && (hasPickupNumber !== defaultPickup)) pillars.push('<div style="flex:1; background:rgba(255,215,0,0.2); color:#1a1a1a; padding:8px; border-radius:10px; font-size:10px; font-weight:800; text-transform:uppercase; text-align:center;">🧾 Abhol-Nr.</div>');
+          if((o.hasPickupCode !== undefined) && (hasPickupNumber !== defaultPickup)) pillars.push('<div style="flex:1; background:rgba(255,215,0,0.2); color:#1a1a1a; padding:8px; border-radius:10px; font-size:10px; font-weight:800; text-transform:uppercase; text-align:center;">🧾 Abholnummer aktiv</div>');
           if((o.reuse !== undefined) && (hasReusable !== defaultReuse)) pillars.push('<div style="flex:1; background:rgba(16,185,129,0.1); color:#10b981; padding:8px; border-radius:10px; font-size:10px; font-weight:800; text-transform:uppercase; text-align:center;">🔄 Mehrweg</div>');
 
           const card = document.createElement('div');
@@ -17855,14 +17870,15 @@
       const offersForThisDay = (offers || []).filter(function(o){ return o.providerId === pid && o.active !== false && o.day === key; });
       const weekEntriesForDay = (week[key] || []).filter(function(x){ return x.providerId === pid && x.active !== false; });
       const hasListings = offersForThisDay.length + weekEntriesForDay.length > 0;
+      const hasOnline = offersForThisDay.length > 0;
       const b = document.createElement('button');
       b.type = 'button';
-      b.className = 'week-preview-pill' + (selectedDay === key ? ' active' : '') + (hasListings ? ' has-listings' : '');
+      b.className = 'week-preview-pill' + (selectedDay === key ? ' active' : '') + (hasListings ? ' has-listings' : '') + (hasOnline ? ' has-online' : '');
       const weekday = ['So','Mo','Di','Mi','Do','Fr','Sa'][d.getDay()];
       const dateStr = d.getDate() + '.' + String(d.getMonth()+1).padStart(2,'0') + '.';
       b.textContent = i === 0 ? 'Heute' : (weekday + '\n' + dateStr);
-      b.title = hasListings ? 'Gericht für ' + key + ' hinzufügen' : key;
-      b.onclick = function(){ providerWeekDay = key; renderProviderWeekPreviewNew(); if(typeof openWeekAddSheet === 'function') openWeekAddSheet(key); };
+      b.title = hasOnline ? 'Online' : (hasListings ? 'Geplant' : 'Kein Gericht');
+      b.onclick = function(){ if(typeof haptic === 'function') haptic(6); providerWeekDay = key; renderProviderWeekPreviewNew(); };
       dayWrap.appendChild(b);
     }
     
@@ -17873,38 +17889,83 @@
     function euro(n){ return (Number(n)||0).toFixed(2).replace('.',',') + ' €'; }
     
     if(totalPlanned > 0){
+      var mealWindow = (provider && provider.profile && provider.profile.mealWindow) ? provider.profile.mealWindow : '11:30 – 14:00';
       var dishRows = [];
       offersForDay.forEach(function(o){
-        var dishName = (o.dish || 'Gericht');
-        dishRows.push('<div class="week-preview-dish"><span>' + (typeof esc === 'function' ? esc(dishName) : dishName) + '</span><span style="font-size:12px; font-weight:700; color:#10b981;">Online</span></div>');
+        var dishName = (typeof esc === 'function' ? esc(o.dish || 'Gericht') : (o.dish || 'Gericht').replace(/</g,'&lt;'));
+        dishRows.push('<div class="week-preview-dish week-preview-dish-online" data-offer-id="' + (o.id || '') + '"><div class="week-preview-dish-name">' + dishName + '</div><div class="week-preview-dish-meta"><span class="week-preview-dish-status online">● Online</span><span class="week-preview-dish-time">' + (typeof esc === 'function' ? esc(mealWindow) : mealWindow) + '</span></div></div>');
       });
-      weekEntries.forEach(function(e){
+      weekEntries.forEach(function(e, slotIndex){
         var cb = cookbook.find(function(c){ return String(c.id) === String(e.cookbookId); });
-        var name = (cb && cb.dish) || e.dish || 'Gericht';
-        dishRows.push('<div class="week-preview-dish"><span>' + (typeof esc === 'function' ? esc(name) : name.replace(/</g,'&lt;')) + '</span><span style="font-size:12px; font-weight:700; color:#64748b;">Geplant</span></div>');
+        var name = (typeof esc === 'function' ? esc((cb && cb.dish) || e.dish || 'Gericht') : ((cb && cb.dish) || e.dish || 'Gericht').replace(/</g,'&lt;'));
+        dishRows.push('<div class="week-preview-dish week-preview-dish-geplant" data-day="' + (typeof esc === 'function' ? esc(selectedDay) : selectedDay) + '" data-slot="' + slotIndex + '"><div class="week-preview-dish-name">' + name + '</div><div class="week-preview-dish-meta"><span class="week-preview-dish-status geplant">Geplant</span></div></div>');
       });
       dayContent.innerHTML =
-        '<div>' + dishRows.join('') + '</div>' +
+        '<div class="week-preview-dishes">' + dishRows.join('') + '</div>' +
         '<div class="week-preview-cta">' +
-        '<button type="button" class="btn secondary" id="btnProviderWeekAddDish" style="width:100%; min-height:44px; background:#fff; color:#1a1a1a; border:2px solid #e5e7eb; font-weight:700; border-radius:12px;">Weiteres Gericht planen</button>' +
+        '<button type="button" class="btn secondary" id="btnProviderWeekAddDish" style="width:100%; min-height:48px; background:#fff; color:#1a1a1a; border:2px solid #e5e7eb; font-weight:700; border-radius:14px;">Weiteres Gericht planen</button>' +
         '<div class="week-preview-link" id="linkProviderWeekFull"><span>Zum Wochenplan</span><i data-lucide="chevron-right" style="width:16px;height:16px;"></i></div>' +
         '</div>';
       var btn = document.getElementById('btnProviderWeekAddDish');
       if(btn) btn.onclick = function(){ if(typeof openWeekAddSheet === 'function') openWeekAddSheet(selectedDay); };
       var link = document.getElementById('linkProviderWeekFull');
       if(link) link.onclick = function(){ if(typeof showProviderWeek === 'function') showProviderWeek(selectedDay); };
+      /* Direkt-Edit: Klick auf Gerichtskarte */
+      var dishes = dayContent.querySelectorAll('.week-preview-dish');
+      dishes.forEach(function(el){
+        el.onclick = function(){
+          if(typeof haptic === 'function') haptic(6);
+          if(el.classList.contains('week-preview-dish-online')){
+            var offerId = el.getAttribute('data-offer-id');
+            if(offerId && typeof startListingFlow === 'function') startListingFlow({ editOfferId: offerId });
+          } else if(el.classList.contains('week-preview-dish-geplant')){
+            var day = el.getAttribute('data-day');
+            var slot = parseInt(el.getAttribute('data-slot'), 10);
+            if(typeof openWeekAddSheet === 'function') openWeekAddSheet(day, isNaN(slot) ? undefined : slot);
+          }
+        };
+      });
     } else {
+      var wdNames = ['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
+      var gapDayName = wdNames[new Date(selectedDay + 'T12:00:00').getDay()];
+      /* Stolz-Archiv: Vorschlag aus Kochbuch (Erfolgsgericht mit Verkäufen oder zuletzt genutzt) */
+      var suggested = null;
+      var allOrders = (typeof loadOrders === 'function' ? loadOrders() : []) || [];
+      var mine = (cookbook || []).filter(function(c){ return String(c.providerId) === String(pid); });
+      for(var si = 0; si < mine.length; si++){
+        var e = mine[si];
+        if(!e.lastUsed) continue;
+        var sold = (offers || []).length ? allOrders.filter(function(ord){
+          var o = offers.find(function(x){ return x.id === ord.dishId || x.id === ord.offerId; });
+          if(!o || String(o.providerId) !== String(pid)) return false;
+          return String(o.dish || '').trim() === String(e.dish || '').trim();
+        }).length : 0;
+        if(!suggested || sold > (suggested.soldCount || 0) || (sold === (suggested.soldCount || 0) && (e.lastUsed || 0) > (suggested.lastUsed || 0))) suggested = { dish: e.dish || 'Gericht', id: e.id, lastUsed: e.lastUsed, soldCount: sold };
+      }
+      if(!suggested && mine.length) suggested = { dish: mine[0].dish || 'Gericht', id: mine[0].id, lastUsed: mine[0].lastUsed, soldCount: 0 };
+      var successLabel = 'Lücke am ' + gapDayName;
+      var successTitle = suggested ? (typeof esc === 'function' ? esc(suggested.dish) : (suggested.dish || '').replace(/</g,'&lt;')) : 'Gericht planen?';
+      var successStats = (suggested && suggested.soldCount > 0) ? ('✅ ' + suggested.soldCount + ' Portion' + (suggested.soldCount !== 1 ? 'en' : '') + ' verkauft') : '';
+      if(suggested && suggested.lastUsed){
+        var lu = new Date(suggested.lastUsed);
+        if(!Number.isNaN(lu.getTime())) successLabel = 'Dein Erfolg vom letzten ' + wdNames[lu.getDay()];
+      }
+      var gapTipHtml = '<div class="week-preview-gap-tip">' +
+        '<div class="week-preview-gap-tip-inner"><span style="font-size:24px;">📖</span><div><div class="week-preview-gap-tip-label">' + (typeof esc === 'function' ? esc(successLabel) : successLabel.replace(/</g,'&lt;')) + '</div><div class="week-preview-gap-tip-title">' + successTitle + '</div>' + (successStats ? '<div class="week-preview-gap-tip-stats">' + (typeof esc === 'function' ? esc(successStats) : successStats.replace(/</g,'&lt;')) + '</div>' : '') + '</div></div>' +
+        '<button type="button" class="week-preview-gap-tip-btn" id="btnProviderWeekGapTip"' + (suggested && suggested.id ? ' data-dish-id="' + (typeof esc === 'function' ? esc(suggested.id) : String(suggested.id).replace(/"/g,'&quot;')) + '"' : '') + '>JETZT</button></div>';
       dayContent.innerHTML =
         '<div style="text-align:center; padding:8px 0;">' +
         '<div style="font-weight:800; font-size:16px; margin-bottom:6px; color:#1a1a1a;">Noch nichts geplant</div>' +
         '<div style="font-size:13px; color:#64748b; margin-bottom:16px;">Für diesen Tag siehst du hier deine Gerichte.</div>' +
         '<button type="button" class="btn primary" id="btnProviderWeekAddDishEmpty" style="width:100%; min-height:48px; border-radius:14px; font-weight:800; background:var(--brand); color:#1a1a1a; border:none;">Jetzt Woche planen</button>' +
         '<div class="week-preview-link" id="linkProviderWeekFull2" style="justify-content:center; margin-top:12px;"><span>Zum Wochenplan</span><i data-lucide="chevron-right" style="width:16px;height:16px;"></i></div>' +
-        '</div>';
+        '</div>' + gapTipHtml;
       var btnEmpty = document.getElementById('btnProviderWeekAddDishEmpty');
       if(btnEmpty) btnEmpty.onclick = function(){ if(typeof openWeekAddSheet === 'function') openWeekAddSheet(selectedDay); };
       var link2 = document.getElementById('linkProviderWeekFull2');
       if(link2) link2.onclick = function(){ if(typeof showProviderWeek === 'function') showProviderWeek(selectedDay); };
+      var btnGap = document.getElementById('btnProviderWeekGapTip');
+      if(btnGap) btnGap.onclick = function(){ if(typeof haptic === 'function') haptic(6); var did = btnGap.getAttribute('data-dish-id'); if(did && typeof startListingFlow === 'function') startListingFlow({ dishId: did, date: selectedDay, source: 'weekplan' }); else if(typeof openWeekAddSheet === 'function') openWeekAddSheet(selectedDay); };
     }
     /* Haptik beim Einrasten (Snap-Carousel) – Dashboard-Wochenvorschau */
     if(dayWrap && !dayWrap._hapticSnapAttached){
@@ -20405,7 +20466,7 @@
       var html = '';
       data.offers.forEach(function(o){
         var img = o.imageUrl || data.firstDishImage || '';
-        var threePillars = '<div class="plan-public-pillars" style="display:flex; justify-content:center; gap:16px; padding:8px 0 12px; border-bottom:1px solid rgba(0,0,0,0.06); font-size:14px;"><span title="Vor Ort">🍴</span><span title="Abholnummer">🎫1️⃣</span><span title="Mehrweg">🔄</span></div>';
+        var threePillars = '<div class="plan-public-pillars" style="display:flex; justify-content:center; gap:16px; padding:8px 0 12px; border-bottom:1px solid rgba(0,0,0,0.06); font-size:14px;"><span title="Vor Ort möglich">🍴</span><span title="Abholnummer aktiv">🧾</span><span title="Mehrweg verfügbar">🔄</span></div>';
         html += '<div class="plan-public-card" style="background:#fff; border-radius:20px; overflow:hidden; margin-bottom:16px; border:1px solid #e2e8f0; box-shadow:0 2px 12px rgba(0,0,0,0.04);"><div style="height:140px; background:#f1f3f5;"><img src="' + (img || '').replace(/"/g,'&quot;') + '" alt="" style="width:100%; height:100%; object-fit:cover;" onerror="this.style.display=\'none\'"></div>' + threePillars + '<div style="padding:14px 18px;"><div style="font-size:18px; font-weight:900; color:#1a1a1a;">' + (o.dish || 'Gericht').replace(/</g,'&lt;') + '</div><div style="font-size:14px; color:#64748b; margin-top:4px;">' + (o.day || '') + '</div><div style="font-size:16px; font-weight:800; color:#10b981; margin-top:8px;">' + euro(o.price) + '</div></div></div>';
       });
       list.innerHTML = html;
@@ -20703,7 +20764,7 @@
       if(list) list.classList.remove('cookbook-list-has-selection');
     }
     if(primary){
-      if(selectedCookbookId){ primary.classList.add('cookbook-bar-inserieren'); if(primaryText) primaryText.textContent = 'Auswählen & Inserieren (4,99 €)'; }
+      if(selectedCookbookId){ primary.classList.add('cookbook-bar-inserieren'); if(primaryText) primaryText.textContent = 'Jetzt für 4,99 € inserieren'; }
       else { primary.classList.remove('cookbook-bar-inserieren'); if(primaryText) primaryText.textContent = 'Neues Gericht'; }
     }
   }
@@ -22140,7 +22201,7 @@
       tilePub.type = 'button';
       tilePub.className = 'btn';
       tilePub.style.cssText = 'display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; border-radius:20px; background:#FFD700; color:#1a1a1a; border:none; box-shadow:0 8px 20px rgba(255,215,0,0.2); transition:transform 0.1s; cursor:pointer;';
-      tilePub.innerHTML = '<i data-lucide="rocket" style="width:32px; height:32px; margin-bottom:12px;"></i><div style="font-size:18px; font-weight:900;">Jetzt live inserieren</div><div style="font-size:13px; color:rgba(0,0,0,0.6); margin-top:4px;">einmalig 4,99 €</div>';
+      tilePub.innerHTML = '<i data-lucide="rocket" style="width:32px; height:32px; margin-bottom:12px;"></i><div style="font-size:18px; font-weight:900;">Jetzt für 4,99 € inserieren</div>';
       tilePub.onclick = function(){ w.step++; rebuildWizard(); };
       grid.appendChild(tilePub);
 
