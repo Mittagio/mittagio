@@ -5718,27 +5718,6 @@
           <button type="button" class="btn" id="btnKwShare"><i data-lucide="share-2" style="width:20px;height:20px;"></i> Teilen</button>
         </div>
       </div>
-
-      <div class="week-plan-wrap" id="weekPlanWrapLegacy" style="display:none;">
-        <div class="week-dayrow" id="weekDays"></div>
-        <div id="weekList" class="week-list-scroll"></div>
-        <div id="weekThumbZone" class="week-thumb-zone">
-          <div class="week-activate-block" id="weekActivateBlock" style="display:none;">
-            <button type="button" class="week-activate-btn" id="btnWeekActivateThumb">Jetzt für 4,99 € aktivieren</button>
-          </div>
-          <div class="week-actions-bar" id="weekActionsBar" style="display:none; margin-top:12px;">
-            <button class="btn secondary" type="button" id="btnWeekRefreshZone" style="flex:0 0 auto; min-height:52px; min-width:52px; padding:0; border-radius:14px;" aria-label="Aktualisieren">
-              <i data-lucide="refresh-cw" style="width:22px;height:22px;"></i>
-            </button>
-            <button class="btn secondary" type="button" id="btnWeekPdf" style="flex:1; min-height:52px; border-radius:14px; font-size:15px; font-weight:700;">
-              <i data-lucide="printer" style="width:20px;height:20px;margin-right:8px;"></i>Drucken
-            </button>
-            <button class="btn secondary" type="button" id="btnWeekShare" style="flex:1; min-height:52px; border-radius:14px; font-size:15px; font-weight:700;">
-              <i data-lucide="share-2" style="width:20px;height:20px;margin-right:8px;"></i>Teilen
-            </button>
-          </div>
-        </div>
-      </div>
     </section>
 
     <section class="view onboarding-view" id="v-provider-cookbook">
@@ -9267,6 +9246,16 @@
   }
   function showProviderPickups(){
     if(!checkSessionValidity()) return;
+    document.body.classList.remove('provider-week-active');
+    if(typeof closeWeekAddSheet === 'function') closeWeekAddSheet();
+    if(typeof hideWeekUndoSnackbar === 'function') hideWeekUndoSnackbar();
+    document.querySelectorAll('.kw-move-overlay').forEach(function(o){ o.remove(); });
+    var wb = document.getElementById('weekAddSheetBd');
+    var ws = document.getElementById('weekAddSheet');
+    if(wb) wb.style.display = 'none';
+    if(ws){ ws.classList.remove('active'); ws.style.display = 'none'; }
+    var wu = document.getElementById('weekUndoSnackbar');
+    if(wu){ wu.classList.remove('active'); wu.style.display = 'none'; }
     setProviderNavActive('provider-pickups');
     showView(views.providerPickups);
     renderProviderPickups();
@@ -18291,17 +18280,23 @@
     updateSessionActivity();
     var boardWrap = document.getElementById('kwBoardWrap');
     var legacyWrap = document.getElementById('weekPlanWrapLegacy');
-    if (boardWrap) boardWrap.style.display = 'none';
-    if (legacyWrap) legacyWrap.style.display = 'flex';
     const dayWrap = document.getElementById('weekDays');
     const list = document.getElementById('weekList');
+    if(!dayWrap || !list){
+      if (boardWrap) boardWrap.style.display = 'flex';
+      if (legacyWrap) legacyWrap.style.display = 'none';
+      if (boardWrap && typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard();
+      if (typeof renderProviderWeekPreview === 'function') renderProviderWeekPreview();
+      return;
+    }
+    if (boardWrap) boardWrap.style.display = 'none';
+    if (legacyWrap) legacyWrap.style.display = 'flex';
     let actionsBar = document.getElementById('weekActionsBar');
     let activateBlock = document.getElementById('weekActivateBlock');
     const thumbZone = document.getElementById('weekThumbZone');
     const headerTitle = document.getElementById('weekHeaderTitle');
     const headerSubtitle = document.getElementById('weekHeaderSubtitle');
     const headerDoneBtn = document.getElementById('weekHeaderDoneBtn');
-    if(!dayWrap || !list) return;
 
     if(weekPlanMode === 'overview'){
       if(headerTitle) headerTitle.textContent = 'Wochenplan';
@@ -18906,6 +18901,7 @@
     var btnClose = document.querySelector('#weekAddSheet .btn.secondary[onclick="closeWeekAddSheet()"]');
     if(btnClose) btnClose.style.display = '';
     bd.style.display = 'block';
+    sheet.style.display = '';
     sheet.classList.add('active');
   }
   function closeWeekAddSheet(){
@@ -19135,6 +19131,12 @@
   function renderProviderPickups(){
     // Session-Aktivität aktualisieren
     updateSessionActivity();
+    // Wochenplan-UI auf Abholungen-Seite ausblenden (keine Sheet/Snackbar/Overlay-Reste)
+    if(typeof closeWeekAddSheet === 'function') closeWeekAddSheet();
+    if(typeof hideWeekUndoSnackbar === 'function') hideWeekUndoSnackbar();
+    document.querySelectorAll('.kw-move-overlay').forEach(function(o){ o.remove(); });
+    var wu = document.getElementById('weekUndoSnackbar');
+    if(wu){ wu.classList.remove('active'); wu.style.display = 'none'; }
     const subheader = document.getElementById('provPickupsSubheader');
     const filterEl = document.getElementById('provPickupFilter');
     const empty = document.getElementById('provPickupsEmpty');
