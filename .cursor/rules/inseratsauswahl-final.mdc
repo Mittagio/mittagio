@@ -1,0 +1,34 @@
+---
+description: Inseratsauswahl (Final) – Zwei Buttons, Deine Renner, Drei-Säulen-Logik, keine Preise/Bewertungen
+alwaysApply: false
+globs: app/index.html
+---
+
+# Inseratsauswahl (Final)
+
+## Grundstruktur
+- **View-Name:** Inseratsauswahl (createFlowSheet)
+- **Zwei Haupt-Buttons oben:**
+  1. **+ Neues Gericht erstellen** → Schneller Inseratsflow (openDishFlow / startListingFlow)
+  2. **📖 Aus dem Kochbuch hinzufügen** → Komplette Kochbuch-Liste (showProviderCookbook)
+- **Keine Preise (4,99 €) im UI** der Inseratsauswahl anzeigen.
+
+## Sektion „Deine Renner“
+- Top-Gerichte als Kacheln (horizontal scroll).
+- **Kachel-Aufbau:** Bild oben → **Drei-Säulen-Icons** direkt unter dem Bild → Name (fett) → Success-Fact (nur Fakten) → CTA „Heute anbieten“.
+- **Drei Säulen (immer gleich):**
+  - 🍴 Vor Ort (immer sichtbar)
+  - 🧾 Abholnummer (nur sichtbar, wenn im Gericht-Profil hinterlegt)
+  - 🔄 Mehrweg (nur sichtbar, wenn Toggle aktiv)
+- **Success-Facts:** Rein datenbasiert, **keine Bewertungen/Sterne**.
+  - z. B. „Top-Seller am [Wochentag]“, „Zuletzt am [Datum] erfolgreich angeboten“, „Hohe Wiederkaufsrate (> 70%)“ sofern Daten vorhanden.
+- **CTA:** Button „Heute anbieten“ (nicht „Kaufen“ oder „Inserieren“).
+
+## Hintergrund-Monetarisierung (Abholnummer)
+- **Basis-Inserat:** Jede Aktivierung löst im Hintergrund die Standardgebühr (INSERT_FEE = 4,99 €) aus.
+- **Zusatz Abholnummer:** Wenn 🧾 aktiv (Kochbuch/Voreinstellung oder Toggle), addiert das System automatisch 0,89 € (ABHOLNUMMER_FEE) zum Vorgang.
+- **UI-Regel:** Beim Klick auf „Heute anbieten“ nur Bestätigung der Planung anzeigen (z. B. Toast „XY wurde für heute geplant!“). Kein Zahlungsdialog in der Inseratsauswahl. Abrechnung gesammelt in Monatsübersicht / Verdienst-Bereich.
+
+## Design
+- Clean & modern, keine Schiefertafeln oder unnötige Dekoration.
+- Icons 🍴 🧾 🔄 dienen der Prozess-Klarheit (Drei-Säulen-Logik).

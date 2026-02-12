@@ -786,6 +786,7 @@
       padding-bottom:env(safe-area-inset-bottom, 0);
     }
     .sheet.active{bottom:0}
+    #publishFeeSheet.active{ bottom:0 !important; visibility:visible !important; }
     .handle{width:46px; height:5px; background:#ddd; border-radius:999px; margin:10px auto 6px}
     .sheet-img{height:260px; background:#eee}
     .sheet-img img{width:100%; height:100%; object-fit:cover; display:block}
@@ -1367,6 +1368,14 @@
     .create-flow-skeleton-card .skeleton-line:last-child{ width:60%; margin-bottom:0; }
     .create-flow-cookbook-card-enter{ animation: createFlowCardFade 0.3s ease-out forwards; }
     @keyframes createFlowCardFade{ from{ opacity:0; transform:translateY(4px); } to{ opacity:1; transform:translateY(0); } }
+    .create-flow-renner-scroll .renner-card{ flex:0 0 auto; width:160px; scroll-snap-align:start; background:#fff; border-radius:16px; border:1px solid #f1f3f5; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,0.06); display:flex; flex-direction:column; cursor:pointer; transition:transform 0.15s, box-shadow 0.15s; }
+    .create-flow-renner-scroll .renner-card:active{ transform:scale(0.98); }
+    .create-flow-renner-scroll .renner-card-img{ height:100px; width:100%; background:#f1f3f5; object-fit:cover; }
+    .create-flow-renner-scroll .renner-card-icons{ display:flex; align-items:center; gap:6px; padding:8px 10px; background:#f8fafc; border-bottom:1px solid #f1f3f5; font-size:14px; }
+    .create-flow-renner-scroll .renner-card-body{ padding:10px; flex:1; display:flex; flex-direction:column; gap:6px; }
+    .create-flow-renner-scroll .renner-card-name{ font-size:14px; font-weight:900; color:#1a1a1a; line-height:1.2; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+    .create-flow-renner-scroll .renner-card-fact{ font-size:11px; font-weight:600; color:#64748b; line-height:1.3; }
+    .create-flow-renner-scroll .renner-card-btn{ width:100%; min-height:40px; border-radius:12px; border:none; background:#10b981; color:#fff; font-size:13px; font-weight:800; cursor:pointer; margin-top:4px; }
     #createFlowSheet.sheet--kitchen .btn-create-secondary{
       width:100%; min-height:52px; border-radius:14px; font-weight:700; font-size:15px;
       border:1px solid rgba(0,0,0,0.1); background:#fff; color:#1a1a1a;
@@ -6812,9 +6821,9 @@
       </div>
     </div>
 
-    <!-- Publish Fee Modal (vor Inserats-Veröffentlichung) -->
-    <div class="backdrop" id="publishFeeBd" onclick="closePublishFeeModal()" style="background:rgba(0,0,0,0.7); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);"></div>
-<div class="sheet" id="publishFeeSheet" style="max-width:480px; border-radius:24px; overflow:hidden;">
+    <!-- Publish Fee Modal (vor Inserats-Veröffentlichung) – Backdrop + Sheet immer gemeinsam anzeigen -->
+    <div class="backdrop" id="publishFeeBd" onclick="closePublishFeeModal()" style="background:rgba(0,0,0,0.7); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); z-index:2000;"></div>
+    <div class="sheet" id="publishFeeSheet" style="max-width:480px; border-radius:24px; overflow:hidden; z-index:2001;">
   <div class="sheet-body" style="padding:28px;">
     <h3 style="margin:0 0 20px; font-size:22px; font-weight:900; color:#2D3436;">Inserat veröffentlichen</h3>
     <div style="margin-bottom:24px; padding:20px; background:rgba(255,215,0,0.1); border-radius:16px; border:2px solid rgba(255,215,0,0.3);">
@@ -7272,30 +7281,31 @@
   </div>
 </div>
 
-<!-- Create Flow Sheet (Gericht hinzufügen) – Küchenmodus -->
+<!-- Inseratsauswahl (Final): Zwei Buttons + Deine Renner, keine Preise/Bewertungen -->
 <div class="backdrop" id="createFlowBd" onclick="closeCreateFlowSheet()"></div>
 <div class="sheet sheet--kitchen" id="createFlowSheet">
   <div class="handle"></div>
   <div class="sheet-body">
-    <div class="create-flow-title">Inserat hinzufügen</div>
-    
-    <div id="createFlowCookbookSelection" style="margin-bottom:24px;">
-      <div class="hint" style="margin-bottom:12px; font-weight:700; color:#1a1a1a; font-size:13px; text-transform:uppercase; letter-spacing:0.05em;">Aus Kochbuch</div>
-      <input type="search" id="createFlowSearch" placeholder="Gericht suchen…" style="width:100%; padding:14px 16px; border:1px solid #e5e7eb; border-radius:12px; font-size:15px; margin-bottom:12px; box-sizing:border-box;" />
-      <div id="createFlowCookbookList" style="display:grid; grid-template-columns:repeat(2, 1fr); gap:12px; max-height:300px; overflow-y:auto; padding:4px;">
-        <!-- Dynamisch befüllt -->
-      </div>
-    </div>
+    <div class="create-flow-title">Inseratsauswahl</div>
 
-    <div class="create-flow-btns">
+    <div class="create-flow-btns" style="margin-bottom:24px;">
       <button class="btn-create-primary" type="button" id="btnCreateNewDish" style="margin-bottom:12px;">
         <span class="plus-char" style="font-size:22px; line-height:1; color:#fff;">+</span>
         <span>Neues Gericht erstellen</span>
       </button>
-      <button class="btn ghost" type="button" id="btnCreateFromCookbook" style="width:100%; min-height:48px; border:2px solid #e5e7eb; background:#fff; border-radius:14px; font-weight:700; color:#64748b;">
-        <span>📖 Zum Kochbuch wechseln</span>
+      <button class="btn ghost" type="button" id="btnCreateFromCookbook" style="width:100%; min-height:52px; border:2px solid #e5e7eb; background:#fff; border-radius:14px; font-weight:700; color:#1a1a1a;">
+        <span>📖 Aus dem Kochbuch hinzufügen</span>
       </button>
     </div>
+
+    <div id="createFlowRennerSection" style="margin-top:8px;">
+      <div class="hint" style="margin-bottom:10px; font-weight:800; color:#1a1a1a; font-size:14px;">Deine Renner</div>
+      <div id="createFlowRennerScroll" class="create-flow-renner-scroll" style="display:flex; gap:14px; overflow-x:auto; -webkit-overflow-scrolling:touch; padding:4px 0 16px; scroll-snap-type:x proximity;">
+        <!-- Kacheln: Bild, 3 Säulen (🍴🧾🔄), Name, Success-Fact, Heute anbieten -->
+      </div>
+      <div id="createFlowRennerEmpty" style="display:none; text-align:center; padding:24px 16px; color:#64748b; font-size:14px;">Noch keine Renner – leg Gerichte im Kochbuch an oder biete sie an.</div>
+    </div>
+
     <div class="create-flow-hint hint" id="createFlowDateHint" style="display:none;"></div>
   </div>
 </div>
@@ -8758,10 +8768,7 @@
   function seededInfo(str){
     const h = seededInfoKey(str);
     const distanceKm = Number((0.5 + (h % 80) / 10).toFixed(1));
-    const rating = Number((4 + (h % 9) / 10).toFixed(1));
-    const ratingCount = 30 + (h % 400);
-    // No-Limits: Keine Mengenangaben mehr
-    return {distanceKm, rating, ratingCount};
+    return { distanceKm };
   }
 
   const DEFAULT_MEAL_WINDOW = '11:30 – 14:00';
@@ -8896,8 +8903,6 @@
     if(out.active === undefined) out.active = true;
     const info = seededInfo(out.dish || out.providerName || out.providerId);
     if(out.distanceKm == null) out.distanceKm = info.distanceKm;
-    if(out.rating == null) out.rating = info.rating;
-    if(out.ratingCount == null) out.ratingCount = info.ratingCount;
     // Status wird nur über active gesteuert
     return out;
   }
@@ -13857,118 +13862,86 @@
     document.getElementById('shareSheet').classList.remove('active');
   }
   
-  // Create Flow Sheet (Express-Start: Bottom Sheet mit Kochbuch-Quick-Select)
+  function getSuccessFactForRenner(c, allOrders){
+    var wd = ['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
+    if(c.lastUsed && !Number.isNaN(new Date(c.lastUsed).getTime())){
+      var d = new Date(c.lastUsed);
+      return 'Zuletzt am ' + d.getDate() + '.' + String(d.getMonth()+1).padStart(2,'0') + ' erfolgreich angeboten';
+    }
+    if(allOrders && allOrders.length){
+      var byDay = {};
+      allOrders.forEach(function(o){
+        var day = o.day || (o.createdAt ? (typeof isoDate === 'function' ? isoDate(new Date(o.createdAt)) : '') : '');
+        if(!day) return;
+        var match = (o.dishId && String(o.dishId)===String(c.id)) || (o.dish && String((o.dish||'').trim())===String((c.dish||'').trim()));
+        if(match) byDay[day] = (byDay[day]||0) + 1;
+      });
+      var bestDay = '';
+      var best = 0;
+      for(var k in byDay){ if(byDay[k]>best){ best=byDay[k]; bestDay=k; } }
+      if(bestDay){
+        var d = new Date(bestDay+'T12:00:00');
+        if(!Number.isNaN(d.getTime())) return 'Top-Seller am ' + wd[d.getDay()];
+      }
+    }
+    return 'Im Kochbuch';
+  }
+
+  function populateCreateFlowRenner(){
+    var scroll = document.getElementById('createFlowRennerScroll');
+    var emptyEl = document.getElementById('createFlowRennerEmpty');
+    if(!scroll) return;
+    var pid = typeof providerId === 'function' ? providerId() : '';
+    var mine = (cookbook||[]).filter(function(c){ return String(c.providerId)===String(pid); });
+    var allOrders = typeof loadOrders === 'function' ? loadOrders() : [];
+    mine.sort(function(a,b){
+      var au = a.lastUsed || 0, bu = b.lastUsed || 0;
+      if(bu!==au) return bu-au;
+      return (b.dish||'').localeCompare(a.dish||'');
+    });
+    var topGerichte = mine.slice(0, 10);
+    scroll.innerHTML = '';
+    if(emptyEl) emptyEl.style.display = topGerichte.length ? 'none' : 'block';
+    topGerichte.forEach(function(c){
+      var card = document.createElement('div');
+      card.className = 'renner-card';
+      var imgUrl = c.photoData || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=200&q=60';
+      var hasAbhol = !!(c.hasPickupCode !== undefined ? c.hasPickupCode : true);
+      var hasMehrweg = !!(c.reuse && c.reuse.enabled);
+      var icons = '<span title="Vor Ort">🍴</span>';
+      if(hasAbhol) icons += '<span title="Abholnummer">🧾</span>';
+      if(hasMehrweg) icons += '<span title="Mehrweg">🔄</span>';
+      var fact = getSuccessFactForRenner(c, allOrders);
+      card.innerHTML = '<img class="renner-card-img" src="'+(typeof esc==='function'?esc(imgUrl):String(imgUrl).replace(/"/g,'&quot;'))+'" alt=""><div class="renner-card-icons">'+icons+'</div><div class="renner-card-body"><div class="renner-card-name">'+(typeof esc==='function'?esc(c.dish||'Gericht'):String(c.dish||'Gericht').replace(/</g,'&lt;'))+'</div><div class="renner-card-fact">'+fact+'</div><button type="button" class="renner-card-btn">Heute anbieten</button></div>';
+      var btn = card.querySelector('.renner-card-btn');
+      if(btn) btn.onclick = function(e){ e.stopPropagation(); if(typeof haptic==='function') haptic(8); closeCreateFlowSheet(); startListingFlow({ dishId: c.id, date: createFlowPreselectedDate || (typeof isoDate==='function'?isoDate(new Date()):'') }); };
+      card.onclick = function(e){ if(e.target===btn || btn.contains(e.target)) return; if(typeof haptic==='function') haptic(8); closeCreateFlowSheet(); startListingFlow({ dishId: c.id, date: createFlowPreselectedDate || (typeof isoDate==='function'?isoDate(new Date()):'') }); };
+      scroll.appendChild(card);
+    });
+  }
+
   function openCreateFlowSheet(){
     if(typeof haptic === 'function') haptic(10);
     const sheet = document.getElementById('createFlowSheet');
     const hint = document.getElementById('createFlowDateHint');
-    const cookbookList = document.getElementById('createFlowCookbookList');
-    const cookbookSelection = document.getElementById('createFlowCookbookSelection');
 
     if(sheet && hint){
       if(createFlowPreselectedDate){
         const d = new Date(createFlowPreselectedDate);
         const weekday = ['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'][d.getDay()];
-        const dateStr = `${d.getDate()}.${String(d.getMonth()+1).padStart(2,'0')}.`;
-        hint.innerHTML = `<i data-lucide="calendar" style="width:16px;height:16px;color:#64748b;flex-shrink:0;"></i><span>Für ${weekday}, ${dateStr}</span>`;
+        const dateStr = d.getDate() + '.' + String(d.getMonth()+1).padStart(2,'0') + '.';
+        hint.innerHTML = '<i data-lucide="calendar" style="width:16px;height:16px;color:#64748b;flex-shrink:0;"></i><span>Für ' + weekday + ', ' + dateStr + '</span>';
         hint.style.display = 'inline-flex';
-        if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
+        if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
       } else {
         hint.style.display = 'none';
       }
 
-      // Populiere Kochbuch-Schnellauswahl (Top-5 + Suche wenn aus Wochenplan)
-      const searchInput = document.getElementById('createFlowSearch');
-      if(searchInput) searchInput.value = '';
-      if(cookbookList){
-        const pid = providerId();
-        let mine = (cookbook||[]).filter(c=>c.providerId===pid);
-        const fromWeek = !!createFlowPreselectedDate;
-        if(searchInput){
-          searchInput.style.display = mine.length > 5 || fromWeek ? 'block' : 'none';
-          searchInput.oninput = function(){ populateCreateFlowCookbookList(cookbookList, mine, fromWeek, searchInput.value.trim()); };
-        }
-        function renderSkeletonCards(container, count){
-          container.innerHTML = '';
-          for(var i = 0; i < count; i++){
-            var sk = document.createElement('div');
-            sk.className = 'create-flow-skeleton-card';
-            sk.innerHTML = '<div class="skeleton-img"></div><div class="skeleton-text"><div class="skeleton-line"></div><div class="skeleton-line"></div></div>';
-            container.appendChild(sk);
-          }
-        }
-        function populateCreateFlowCookbookList(container, items, addToWeekOnly, filter){
-          const q = (filter||'').toLowerCase();
-          const list = q ? items.filter(c=>(c.dish||'').toLowerCase().indexOf(q)>=0) : items;
-          if(list.length > 0 && !filter){
-            renderSkeletonCards(container, Math.min(6, list.length));
-            requestAnimationFrame(function(){
-              requestAnimationFrame(function(){
-                container.innerHTML = '';
-                if(addToWeekOnly && items.length > 0){
-                  var topLabel = document.createElement('div');
-                  topLabel.style.cssText = 'grid-column:1/-1; font-size:12px; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:4px;';
-                  topLabel.textContent = 'Tap = Gericht zum Plan hinzufügen';
-                  container.appendChild(topLabel);
-                }
-                list.forEach(function(c, idx){
-                  var card = document.createElement('div');
-                  card.className = 'create-flow-cookbook-card-enter';
-                  card.style.cssText = 'background:#fff; border-radius:16px; border:1px solid #f1f3f5; overflow:hidden; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.04); display:flex; flex-direction:column;';
-                  var imgUrl = c.photoData || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=200&q=60';
-                  card.innerHTML = '<div style="height:80px; width:100%; background:#f1f3f5; position:relative;"><img src="'+imgUrl+'" style="width:100%; height:100%; object-fit:cover;" alt=""></div><div style="padding:10px;"><div style="font-size:13px; font-weight:800; color:#1a1a1a; line-height:1.2; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; height:32px;">'+esc(c.dish)+'</div><div style="font-size:11px; font-weight:700; color:#10b981; margin-top:4px;">'+euro(c.price||0)+'</div></div>';
-                  card.onclick = function(){
-                    if(typeof haptic === 'function') haptic(8);
-                    var selectedDate = createFlowPreselectedDate;
-                    closeCreateFlowSheet();
-                    if(addToWeekOnly && selectedDate){
-                      addCookbookEntryToWeek(selectedDate, c.id);
-                    } else {
-                      startListingFlow({ dishId: c.id, date: selectedDate || isoDate(new Date()) });
-                    }
-                  };
-                  container.appendChild(card);
-                });
-              });
-            });
-            return;
-          }
-          container.innerHTML = '';
-          if(addToWeekOnly && items.length > 0){
-            var topLabel = document.createElement('div');
-            topLabel.style.cssText = 'grid-column:1/-1; font-size:12px; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:4px;';
-            topLabel.textContent = 'Tap = Gericht zum Plan hinzufügen';
-            container.appendChild(topLabel);
-          }
-          list.forEach(function(c){
-            var card = document.createElement('div');
-            card.style.cssText = 'background:#fff; border-radius:16px; border:1px solid #f1f3f5; overflow:hidden; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.04); display:flex; flex-direction:column;';
-            var imgUrl = c.photoData || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=200&q=60';
-            card.innerHTML = '<div style="height:80px; width:100%; background:#f1f3f5;"><img src="'+imgUrl+'" style="width:100%; height:100%; object-fit:cover;" alt=""></div><div style="padding:10px;"><div style="font-size:13px; font-weight:800; color:#1a1a1a; line-height:1.2; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; height:32px;">'+esc(c.dish)+'</div><div style="font-size:11px; font-weight:700; color:#10b981; margin-top:4px;">'+euro(c.price||0)+'</div></div>';
-            card.onclick = function(){
-              if(typeof haptic === 'function') haptic(8);
-              var selectedDate = createFlowPreselectedDate;
-              closeCreateFlowSheet();
-              if(addToWeekOnly && selectedDate){
-                addCookbookEntryToWeek(selectedDate, c.id);
-              } else {
-                startListingFlow({ dishId: c.id, date: selectedDate || isoDate(new Date()) });
-              }
-            };
-            container.appendChild(card);
-          });
-        }
-        if(mine.length === 0){
-          cookbookSelection.style.display = 'none';
-        } else {
-          cookbookSelection.style.display = 'block';
-          populateCreateFlowCookbookList(cookbookList, mine, fromWeek, '');
-        }
-      }
+      populateCreateFlowRenner();
 
       document.getElementById('createFlowBd').classList.add('active');
       sheet.classList.add('active');
-      if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
+      if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
     }
   }
   
@@ -22514,8 +22487,8 @@
     }
     const bd = document.getElementById('publishFeeBd');
     const sheet = document.getElementById('publishFeeSheet');
+    if(sheet){ sheet.style.display = ''; sheet.style.visibility = ''; sheet.classList.add('active'); }
     if(bd) bd.classList.add('active');
-    if(sheet) sheet.classList.add('active');
   }
   function closePublishFeeModal(){
     publishFeePendingOffer = null;
@@ -22523,7 +22496,7 @@
     const bd = document.getElementById('publishFeeBd');
     const sheet = document.getElementById('publishFeeSheet');
     if(bd) bd.classList.remove('active');
-    if(sheet) sheet.classList.remove('active');
+    if(sheet){ sheet.classList.remove('active'); }
   }
   function showAddressRequiredModal(){
     closePublishFeeModal();
@@ -22747,6 +22720,7 @@
       window.closePublishFeeModal = closePublishFeeModal;
       window.closeInseratSuccessSheet = closeInseratSuccessSheet;
     }
+    closePublishFeeModal();
   })();
 
   function saveToCookbookFromWizard(keepOpen=false){
