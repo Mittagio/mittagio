@@ -3486,7 +3486,7 @@
     /* Anbieterbereich: Fixes Gastroküche-Hintergrundbild + Overlay (Emotion & Professionalität) */
     html, body{ min-height:100vh; min-height:100dvh; }
     body.provider-mode main{
-      min-height:100vh; min-height:100dvh; height:100vh; height:100dvh; max-height:100vh; max-height:100dvh; display:block; overflow:hidden; max-width:100%; box-sizing:border-box;
+      min-height:100vh; min-height:100dvh; min-height:100svh; display:block; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; max-width:100%; box-sizing:border-box;
       position:relative;
       background-image: url('assets/gastro-bg.png');
       background-size: cover;
@@ -3512,20 +3512,20 @@
     body.provider-mode [id^="v-provider-"].view.active .prov-header,
     body.provider-mode [id^="v-provider-"].view.active header:first-child{ visibility:visible !important; opacity:1 !important; min-height:60px; background:rgba(255,255,255,0.8) !important; backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); display:block !important; border-bottom:1px solid rgba(255,255,255,0.2) !important; }
     body.provider-mode [id^="v-provider-"].view.active#v-provider-week{ display:flex !important; flex-direction:column !important; }
-    /* Meine Küche: feste View-Höhe, Scroll nur in .dashboard-floating-wrap – kein main/body-Scroll, kein Extra-Platz */
+    /* Meine Küche: Scroll über main – Inhalt kann nach oben gescrollt werden (Fix: Hintergrund sichtbar, Inhalt erreichbar) */
     #v-provider-home.view.active{
-      min-height:100vh; min-height:100dvh; height:100vh; height:100dvh; max-height:100vh; max-height:100dvh;
+      min-height:100vh; min-height:100dvh;
       background:transparent;
-      display:flex !important; flex-direction:column !important; justify-content:flex-start; align-items:stretch;
+      display:block !important;
       padding:0 !important; margin:0 !important;
       position:relative; width:100%; box-sizing:border-box;
-      overflow:hidden;
+      overflow:visible;
     }
-    /* Dashboard: einziger Scroll-Container – füllt Resthöhe, unten Abstand für Bottom-Nav */
+    /* Dashboard: Inhalt fließt normal, main scrollt – unten Abstand für Bottom-Nav */
     #v-provider-home .dashboard-floating-wrap{
       display:flex; flex-direction:column; gap:20px;
-      flex:1 1 0; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch;
       padding:0 16px calc(24px + 72px + env(safe-area-inset-bottom, 0)); padding-left:max(16px, env(safe-area-inset-left, 0)); padding-right:max(16px, env(safe-area-inset-right, 0));
+      padding-top:max(12px, env(safe-area-inset-top, 0));
       width:100%; max-width:100%; margin:0; box-sizing:border-box;
       background:transparent;
       border-radius:0;
@@ -3590,8 +3590,7 @@
     #v-provider-home.view.active .dashboard-kasten{
       position:relative; z-index:1; min-height:0; overflow:visible; flex-shrink:0;
     }
-    /* Wrap darf schrumpfen, damit innerer Scroll funktioniert */
-    #v-provider-home.view.active .dashboard-floating-wrap{ flex-shrink:1; min-height:0; }
+    /* Dashboard-Wrap: Block-Layout, main scrollt */
     #v-provider-home #providerActiveListingsSection{ margin-bottom:0; }
     #v-provider-home #providerActiveListingsSection .provider-week-title{ margin-bottom:12px; }
     #v-provider-home .dashboard-kasten-wochenplan .provider-week-title{ margin:0 0 16px; }
