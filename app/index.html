@@ -3462,12 +3462,12 @@
       position:relative; width:100%; box-sizing:border-box;
       overflow:hidden;
     }
-    /* Dashboard: scrollbarer Inhalt innerhalb der View */
+    /* Dashboard: scrollbarer Inhalt innerhalb der View – kein Extra-Platz oben, unten Platz für Nav */
     #v-provider-home .dashboard-floating-wrap{
       display:flex; flex-direction:column; gap:20px;
-      flex:1; min-height:0;
+      flex:1; min-height:0; flex-shrink:1;
       overflow-y:auto; -webkit-overflow-scrolling:touch;
-      padding:16px 16px calc(28px + 80px + env(safe-area-inset-bottom, 0)); padding-top:max(16px, env(safe-area-inset-top, 0)); padding-left:max(16px, env(safe-area-inset-left, 0)); padding-right:max(16px, env(safe-area-inset-right, 0));
+      padding:0 16px calc(28px + 88px + env(safe-area-inset-bottom, 0)); padding-left:max(16px, env(safe-area-inset-left, 0)); padding-right:max(16px, env(safe-area-inset-right, 0));
       width:100%; max-width:100%; margin:0; box-sizing:border-box;
       background:transparent;
       border-radius:0;
@@ -3524,10 +3524,11 @@
     }
     #v-provider-home .dashboard-kasten-wochenplan .provider-week-title{ font-size:15px !important; }
     #v-provider-home.view.active .prov-header,
-    #v-provider-home.view.active .dashboard-floating-wrap,
     #v-provider-home.view.active .dashboard-kasten{
       position:relative; z-index:1; min-height:0; overflow:visible; flex-shrink:0;
     }
+    /* Wrap darf schrumpfen, damit innerer Scroll funktioniert */
+    #v-provider-home.view.active .dashboard-floating-wrap{ flex-shrink:1; min-height:0; }
     #v-provider-home #providerActiveListingsSection{ margin-bottom:0; }
     #v-provider-home #providerActiveListingsSection .provider-week-title{ margin-bottom:12px; }
     #v-provider-home .dashboard-kasten-wochenplan .provider-week-title{ margin:0 0 16px; }
@@ -5721,7 +5722,7 @@
       <div class="dashboard-floating-wrap">
         <!-- KASTEN 1: Meine Küche Header -->
         <header class="dashboard-kasten dashboard-kasten-header prov-header prov-header-stolz">
-          <div class="prov-header-inner" style="border:none; padding-top:calc(14px + env(safe-area-inset-top, 0)); padding-bottom:16px; padding-left:max(20px, env(safe-area-inset-left, 0)); padding-right:max(20px, env(safe-area-inset-right, 0));">
+          <div class="prov-header-inner" style="border:none; padding-top:max(12px, env(safe-area-inset-top, 0)); padding-bottom:16px; padding-left:max(20px, env(safe-area-inset-left, 0)); padding-right:max(20px, env(safe-area-inset-right, 0));">
             <div style="display:flex; align-items:center; justify-content:space-between;">
               <div style="display:flex; align-items:center; gap:8px;">
                 <h1 class="prov-title" style="margin:0; font-size:20px; font-weight:900;">Meine Küche</h1>
