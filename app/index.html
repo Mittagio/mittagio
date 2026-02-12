@@ -22243,7 +22243,12 @@
         box.appendChild(potenzialDiv);
       }
 
-      // Sekundär-Buttons je entryPoint (kein Layout-Shift: gleiche Zeile)
+      // Frage 7+8 A: Validierung Gericht + Preis für Primär und Sekundär
+      var hasDish = !!(w.data.dish && String(w.data.dish).trim());
+      var hasPrice = Number(w.data.price) > 0;
+      var primaryValid = hasDish && hasPrice;
+
+      // Sekundär-Buttons je entryPoint (Frage 8 A: gleiche Validierung wie Primär)
       var secRow=document.createElement('div');
       secRow.style.cssText='display:flex; gap:12px; margin-top:18px;';
       var secondaryConfig = [];
@@ -22254,13 +22259,19 @@
         var btn=document.createElement('button');
         btn.type='button'; btn.className='btn-glass-secondary'; btn.style.cssText='flex:1; min-height:48px; border-radius:14px; font-size:14px; font-weight:700; border:2px solid rgba(255,255,255,0.6); background:rgba(255,255,255,0.4); color:#1a1a1a; cursor:pointer;';
         btn.textContent=s.label;
-        btn.onclick=function(){
-          if(typeof haptic==='function') haptic(10);
-          if(s.action==='cookbook'){ var id=saveToCookbookFromWizard(); if(id){ showListingSuccessOverlay(function(){ closeWizard(true); if(typeof showToast==='function') showToast('Im Kochbuch gespeichert'); if(typeof showProviderCookbook==='function') showProviderCookbook(); }); } }
-          else if(s.action==='cookbook_week'){ var id=saveToCookbookFromWizard(); if(id && w.data.day){ if(!week[w.data.day]) week[w.data.day]=[]; var c=cookbook.find(function(x){ return x.id===id; }); if(c) week[w.data.day].push({ providerId:c.providerId, cookbookId:c.id, dish:c.dish, price:c.price }); save(LS.week, week); showListingSuccessOverlay(function(){ closeWizard(true); if(typeof showToast==='function') showToast('Im Wochenplan gespeichert'); if(typeof showProviderWeek==='function') showProviderWeek(); }); } }
-          else if(s.action==='inserieren'){ w.ctx.entryPoint='dashboard'; saveDraft(); rebuildWizard(); }
-          else if(s.action==='abbrechen'){ closeWizard(); if(typeof showProviderWeek==='function') showProviderWeek(); }
-        };
+        var needsValidation = (s.action !== 'abbrechen');
+        if(!primaryValid && needsValidation){
+          btn.disabled = true; btn.style.opacity = '0.5'; btn.style.cursor = 'not-allowed';
+          btn.onclick = function(){ if(typeof haptic==='function') haptic(4); if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); };
+        } else {
+          btn.onclick=function(){
+            if(typeof haptic==='function') haptic(10);
+            if(s.action==='cookbook'){ var id=saveToCookbookFromWizard(); if(id){ showListingSuccessOverlay(function(){ closeWizard(true); if(typeof showToast==='function') showToast('Im Kochbuch gespeichert'); if(typeof showProviderCookbook==='function') showProviderCookbook(); }); } }
+            else if(s.action==='cookbook_week'){ var id=saveToCookbookFromWizard(); if(id && w.data.day){ if(!week[w.data.day]) week[w.data.day]=[]; var c=cookbook.find(function(x){ return x.id===id; }); if(c) week[w.data.day].push({ providerId:c.providerId, cookbookId:c.id, dish:c.dish, price:c.price }); save(LS.week, week); showListingSuccessOverlay(function(){ closeWizard(true); if(typeof showToast==='function') showToast('Im Wochenplan gespeichert'); if(typeof showProviderWeek==='function') showProviderWeek(); }); } }
+            else if(s.action==='inserieren'){ w.ctx.entryPoint='dashboard'; saveDraft(); rebuildWizard(); }
+            else if(s.action==='abbrechen'){ closeWizard(); if(typeof showProviderWeek==='function') showProviderWeek(); }
+          };
+        }
         secRow.appendChild(btn);
       });
       box.appendChild(secRow);
@@ -22275,12 +22286,24 @@
       setWizardNext(primaryLabel);
       if(wNextBtn){
         wNextBtn.style.display='flex';
-        if(primaryIsYellow){ wNextBtn.className='btn listing-express-primary'; wNextBtn.style.background='#FACC15'; wNextBtn.style.color='#1a1a1a'; wNextBtn.style.fontWeight='800'; wNextBtn.onclick=function(){ if(typeof haptic==='function') haptic(50); w.step++; rebuildWizard(); }; }
-        else{ wNextBtn.classList.remove('listing-express-primary'); wNextBtn.style.background='#10b981'; wNextBtn.style.color='#fff'; wNextBtn.style.fontWeight='800'; wNextBtn.onclick=function(){
-          if(typeof haptic==='function') haptic(50);
-          if(entryPoint==='cookbook'){ var id=saveToCookbookFromWizard(); if(id){ showListingSuccessOverlay(function(){ closeWizard(true); if(typeof showToast==='function') showToast('Im Kochbuch gespeichert'); if(typeof showProviderCookbook==='function') showProviderCookbook(); }); } }
-          else if(entryPoint==='week'){ var id=saveToCookbookFromWizard(); if(id && w.data.day){ if(!week[w.data.day]) week[w.data.day]=[]; var c=cookbook.find(function(x){ return x.id===id; }); if(c) week[w.data.day].push({ providerId:c.providerId, cookbookId:c.id, dish:c.dish, price:c.price }); save(LS.week, week); showListingSuccessOverlay(function(){ closeWizard(true); if(typeof showToast==='function') showToast('Im Wochenplan gespeichert'); if(typeof showProviderWeek==='function') showProviderWeek(); }); } }
-        }; }
+        if(!primaryValid){
+          wNextBtn.disabled = true;
+          wNextBtn.style.opacity = '0.5';
+          wNextBtn.style.cursor = 'not-allowed';
+          if(primaryIsYellow){ wNextBtn.className='btn listing-express-primary'; wNextBtn.style.background='#FACC15'; wNextBtn.style.color='#1a1a1a'; wNextBtn.style.fontWeight='800'; }
+          else{ wNextBtn.classList.remove('listing-express-primary'); wNextBtn.style.background='#10b981'; wNextBtn.style.color='#fff'; wNextBtn.style.fontWeight='800'; }
+          wNextBtn.onclick = function(){ if(typeof haptic==='function') haptic(4); if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); };
+        } else {
+          wNextBtn.disabled = false;
+          wNextBtn.style.opacity = '';
+          wNextBtn.style.cursor = '';
+          if(primaryIsYellow){ wNextBtn.className='btn listing-express-primary'; wNextBtn.style.background='#FACC15'; wNextBtn.style.color='#1a1a1a'; wNextBtn.style.fontWeight='800'; wNextBtn.onclick=function(){ if(typeof haptic==='function') haptic(50); w.step++; rebuildWizard(); }; }
+          else{ wNextBtn.classList.remove('listing-express-primary'); wNextBtn.style.background='#10b981'; wNextBtn.style.color='#fff'; wNextBtn.style.fontWeight='800'; wNextBtn.onclick=function(){
+            if(typeof haptic==='function') haptic(50);
+            if(entryPoint==='cookbook'){ var id=saveToCookbookFromWizard(); if(id){ showListingSuccessOverlay(function(){ closeWizard(true); if(typeof showToast==='function') showToast('Im Kochbuch gespeichert'); if(typeof showProviderCookbook==='function') showProviderCookbook(); }); } }
+            else if(entryPoint==='week'){ var id=saveToCookbookFromWizard(); if(id && w.data.day){ if(!week[w.data.day]) week[w.data.day]=[]; var c=cookbook.find(function(x){ return x.id===id; }); if(c) week[w.data.day].push({ providerId:c.providerId, cookbookId:c.id, dish:c.dish, price:c.price }); save(LS.week, week); showListingSuccessOverlay(function(){ closeWizard(true); if(typeof showToast==='function') showToast('Im Wochenplan gespeichert'); if(typeof showProviderWeek==='function') showProviderWeek(); }); } }
+          }; }
+        }
       }
       if(wBackBtn){ wBackBtn.innerHTML='<i data-lucide="chevron-left" style="width:18px;height:18px;"></i> Zurück'; if(typeof lucide!=='undefined'&&lucide.createIcons) lucide.createIcons(); }
       return;
