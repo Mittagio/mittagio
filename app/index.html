@@ -3453,25 +3453,26 @@
     body.provider-mode [id^="v-provider-"].view.active .prov-header,
     body.provider-mode [id^="v-provider-"].view.active header:first-child{ visibility:visible !important; opacity:1 !important; min-height:60px; background:rgba(255,255,255,0.8) !important; backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); display:block !important; border-bottom:1px solid rgba(255,255,255,0.2) !important; }
     body.provider-mode [id^="v-provider-"].view.active#v-provider-week{ display:flex !important; flex-direction:column !important; }
-    /* Meine Küche: 4 schwebende Kästen mit Abstand (App-like) */
+    /* Meine Küche: wie Wochenplan – feste View-Höhe, Scroll nur im Inhalt (kein Haupt-Scroll, keine Luft nach oben) */
     #v-provider-home.view.active{
-      min-height:100vh; min-height:100dvh; background:transparent;
+      min-height:100vh; min-height:100dvh; height:100vh; height:100dvh; max-height:100vh; max-height:100dvh;
+      background:transparent;
       display:flex !important; flex-direction:column; justify-content:flex-start; align-items:stretch;
-      padding:0 !important; margin:0 !important; padding-bottom:140px !important;
+      padding:0 !important; margin:0 !important;
       position:relative; width:100%; box-sizing:border-box;
+      overflow:hidden;
     }
-    /* Dashboard: Kein großer Kasten – Inhalt volle Breite, Kästen einzeln sichtbar */
+    /* Dashboard: scrollbarer Inhalt innerhalb der View */
     #v-provider-home .dashboard-floating-wrap{
       display:flex; flex-direction:column; gap:20px;
-      padding:16px 16px 28px; padding-top:max(16px, env(safe-area-inset-top, 0)); padding-left:max(16px, env(safe-area-inset-left, 0)); padding-right:max(16px, env(safe-area-inset-right, 0));
-      padding-bottom:calc(28px + env(safe-area-inset-bottom, 0));
+      flex:1; min-height:0;
+      overflow-y:auto; -webkit-overflow-scrolling:touch;
+      padding:16px 16px calc(28px + 80px + env(safe-area-inset-bottom, 0)); padding-top:max(16px, env(safe-area-inset-top, 0)); padding-left:max(16px, env(safe-area-inset-left, 0)); padding-right:max(16px, env(safe-area-inset-right, 0));
       width:100%; max-width:100%; margin:0; box-sizing:border-box;
-      min-height:0;
       background:transparent;
       border-radius:0;
       box-shadow:none;
       border:none;
-      overflow:visible;
     }
     /* Vier Kästen: einzeln schwebend über Hintergrundbild, kleinere Schrift */
     #v-provider-home .dashboard-kasten{
@@ -3540,17 +3541,17 @@
     }
     #v-provider-home .prov-stat-item:last-child{ border-right:none; }
     #v-provider-pickups{ min-height:100vh; min-height:100dvh; background:#f8fafc; width:100%; box-sizing:border-box; }
-    #v-provider-pickups.view.active{ display:flex !important; flex-direction:column !important; }
-    #v-provider-pickups.view.active > header,
-    #v-provider-pickups.view.active > div{ position:relative; z-index:1; min-height:0; overflow:visible; }
+    #v-provider-pickups.view.active{ display:flex !important; flex-direction:column !important; height:100vh; height:100dvh; max-height:100vh; max-height:100dvh; overflow:hidden; }
+    #v-provider-pickups.view.active > header{ position:relative; z-index:1; flex-shrink:0; }
+    #v-provider-pickups.view.active > div{ position:relative; z-index:1; min-height:0; flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; }
     #v-provider-profile{ min-height:100vh; min-height:100dvh; width:100%; box-sizing:border-box; }
     #v-provider-profile.view.active{ display:flex !important; flex-direction:column !important; }
     #v-provider-profile.view.active > header,
     #v-provider-profile.view.active > div{ position:relative; z-index:1; min-height:0; overflow:visible; }
     #v-provider-cookbook{ min-height:100vh; min-height:100dvh; width:100%; box-sizing:border-box; }
-    #v-provider-cookbook.view.active{ display:flex !important; flex-direction:column !important; }
-    #v-provider-cookbook.view.active > header,
-    #v-provider-cookbook.view.active > div{ position:relative; z-index:1; min-height:0; overflow:visible; }
+    #v-provider-cookbook.view.active{ display:flex !important; flex-direction:column !important; height:100vh; height:100dvh; max-height:100vh; max-height:100dvh; overflow:hidden; }
+    #v-provider-cookbook.view.active > header{ position:relative; z-index:1; flex-shrink:0; }
+    #v-provider-cookbook.view.active > div{ position:relative; z-index:1; min-height:0; flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; }
 
     /* Wochenplan: nur auf der Wochenplan-Seite sichtbar; Layout nur wenn .active */
     #v-provider-week.view{ display:none; }
