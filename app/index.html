@@ -18282,6 +18282,7 @@
     var legacyWrap = document.getElementById('weekPlanWrapLegacy');
     const dayWrap = document.getElementById('weekDays');
     const list = document.getElementById('weekList');
+    /* Legacy-Listenansicht entfernt: nur KW-Board. Ohne weekDays/weekList → Board anzeigen. */
     if(!dayWrap || !list){
       if (boardWrap) boardWrap.style.display = 'flex';
       if (legacyWrap) legacyWrap.style.display = 'none';
