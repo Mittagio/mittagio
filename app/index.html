@@ -1323,16 +1323,22 @@
     /* Inseratflow: Über Provider-Bottom-Nav (z-index 999) legen */
     #wbd.active, #createFlowBd.active { z-index: 1000 !important; }
     #wizard.sheet--kitchen.active, #createFlowSheet.sheet--kitchen.active { z-index: 1001 !important; }
-    /* Inseratflow: Helles, app-ähnliches Layout (kein Livebild, klares Layout) */
+    /* Inseratflow: High-End Glassmorphism – Schwebe, Abstände, Hintergrund durchschimmern */
     #createFlowSheet.sheet--kitchen,
     #wizard.sheet--kitchen{
-      background:#f0f2f5 !important;
-      border-radius:20px 20px 0 0;
+      background:rgba(255,255,255,0.65) !important;
+      backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px);
+      border-radius:28px 28px 0 0;
+      border:1px solid rgba(255,255,255,0.6);
+      border-bottom:none;
+      box-shadow:0 -8px 32px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.8);
       max-height:90vh !important;
       height: 90vh !important;
       overflow:hidden;
       display:flex;
       flex-direction:column;
+      margin-left:12px; margin-right:12px;
+      max-width:calc(100% - 24px);
     }
     #createFlowSheet.sheet--kitchen .handle,
     #wizard.sheet--kitchen .handle{ background:rgba(0,0,0,0.15); width:40px; margin:8px auto 4px; }
@@ -1401,11 +1407,12 @@
       padding-bottom: env(safe-area-inset-bottom, 20px);
     }
     #wizard.sheet--kitchen .wizard{
-      background:#fff;
-      border:1px solid rgba(0,0,0,0.08);
-      border-radius:20px;
-      padding:12px 20px 20px;
-      box-shadow:0 2px 16px rgba(0,0,0,.08);
+      background:rgba(255,255,255,0.72);
+      backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+      border:1px solid rgba(255,255,255,0.5);
+      border-radius:24px;
+      padding:16px 20px 20px;
+      box-shadow:0 4px 24px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.9);
       flex:1;
       min-height:0;
       display:flex;
@@ -1471,9 +1478,9 @@
       font-weight: 700;
     }
     #wizard.sheet--kitchen .w-actions button:not(.secondary){ 
-      background:#FFD700; 
-      color:#1a1a1a; 
-      box-shadow:0 4px 14px rgba(255, 215, 0, 0.4);
+      background:#10b981; 
+      color:#fff; 
+      box-shadow:0 4px 16px rgba(16,185,129,0.4);
       font-weight: 900;
       text-transform: uppercase;
       font-size: 15px;
@@ -1745,16 +1752,18 @@
     #wizard.sheet--kitchen .listing-datum-summary .listing-datum-day{ color:#1a1a1a; font-weight:800; }
     #wizard.sheet--kitchen .listing-datum-summary .hint{ color:#64748b; }
 
-    /* Inseratflow: Thumb-Zone – Sticky Bottom (JETZT INSERIEREN + Umsatz kleben unten) */
+    /* Inseratflow: Sticky Bottom – Glas, Emerald-Button (JETZT INSERIEREN) */
     .listing-sticky-footer{
       position:sticky; bottom:0; left:0; right:0;
       margin:16px -20px 0; padding:14px 20px 20px;
       padding-bottom:calc(20px + env(safe-area-inset-bottom, 0));
-      background:linear-gradient(to top, #fff 70%, rgba(255,255,255,0.97));
-      box-shadow:0 -4px 20px rgba(0,0,0,0.04);
-      border-radius:20px 20px 0 0;
+      background:linear-gradient(to top, rgba(255,255,255,0.92) 60%, rgba(255,255,255,0.85));
+      backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+      box-shadow:0 -4px 24px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.8);
+      border-radius:24px 24px 0 0;
+      border-top:1px solid rgba(255,255,255,0.5);
     }
-    /* Umsatz-Card: Spring/Bounce beim Einblenden (Preis eingegeben) */
+    /* Potenzial heute: groß Emerald, 4,99 € daneben klein */
     .revenue-card-enter{
       animation: revenueCardBounce 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
     }
@@ -21893,11 +21902,21 @@
     if(!w.data.pickupWindow){ w.data.pickupWindow = profile.mealWindow || DEFAULT_MEAL_WINDOW; }
     if(w.data.dineInPossible === undefined) w.data.dineInPossible = !(provider.profile&&provider.profile.dineInPossibleDefault===false);
 
-    // Schritt 1: Basis (Quick-Input) – Name, 3-Slot Bild, Abholzeit 11:30–14:00 (+/- 15min), Preis
+    // Schritt 1: Basis (Quick-Input) – Name, Bild, Abholzeit, Preis | Auto-Pilot aus Profil
     if(w.step===0){
       setWizardQuestion('Was kochst du heute?', '');
       const box=document.createElement('div');
       const saveDraft = () => { localStorage.setItem('wizard_draft', JSON.stringify(w)); };
+      const profile = normalizeProviderProfile(provider.profile || {});
+
+      // --- Auto-Pilot: 🍴 Vor Ort, 🔄 Mehrweg, 🧾 Abholnummer (aus Profil, bestätigend auf Glas) ---
+      const autoPilotRow = document.createElement('div');
+      autoPilotRow.style.cssText = 'display:flex; align-items:center; justify-content:center; gap:16px; padding:12px 16px; margin-bottom:20px; background:rgba(255,255,255,0.5); border-radius:16px; border:1px solid rgba(255,255,255,0.6);';
+      const vorOrt = !!profile.dineInPossibleDefault; if(w.data.dineInPossible !== undefined) vorOrt = !!w.data.dineInPossible;
+      const mehrweg = !!profile.reuseEnabledByDefault; if(w.data.reuse && w.data.reuse.enabled) mehrweg = true;
+      const abhol = !!profile.abholnummerEnabledByDefault; if(w.data.hasPickupCode !== undefined) abhol = !!w.data.hasPickupCode;
+      autoPilotRow.innerHTML = '<span style="display:inline-flex; align-items:center; gap:6px; padding:6px 12px; border-radius:12px; font-size:12px; font-weight:800; background:' + (vorOrt ? 'rgba(16,185,129,0.15)' : 'rgba(0,0,0,0.06)') + '; color:' + (vorOrt ? '#059669' : '#64748b') + ';">🍴 Vor Ort</span><span style="display:inline-flex; align-items:center; gap:6px; padding:6px 12px; border-radius:12px; font-size:12px; font-weight:800; background:' + (mehrweg ? 'rgba(16,185,129,0.15)' : 'rgba(0,0,0,0.06)') + '; color:' + (mehrweg ? '#059669' : '#64748b') + ';">🔄 Mehrweg</span><span style="display:inline-flex; align-items:center; gap:6px; padding:6px 12px; border-radius:12px; font-size:12px; font-weight:800; background:' + (abhol ? 'rgba(16,185,129,0.15)' : 'rgba(0,0,0,0.06)') + '; color:' + (abhol ? '#059669' : '#64748b') + ';">🧾 Abholnummer</span>';
+      box.appendChild(autoPilotRow);
 
       // --- NAME + Autocomplete ---
       const labelName=document.createElement('div'); labelName.className='hint'; labelName.textContent='Gerichtname';
@@ -21907,7 +21926,7 @@
       input.placeholder='z.B. Kürbissuppe';
       input.value=w.data.dish||'';
       input.autocomplete='off';
-      input.style.marginBottom='8px';
+      input.style.cssText='margin-bottom:8px; min-height:52px; font-size:18px; font-weight:700;';
       const suggestWrap=document.createElement('div');
       suggestWrap.className='answers';
       suggestWrap.style.marginTop='6px'; suggestWrap.style.marginBottom='16px';
@@ -22067,10 +22086,7 @@
       inputPrice.inputmode='decimal';
       inputPrice.placeholder='z.B. 8,50';
       inputPrice.value=(w.data.price>0?Number(w.data.price).toFixed(2).replace('.',','):'');
-      inputPrice.style.marginBottom='16px';
-      inputPrice.style.minHeight='56px';
-      inputPrice.style.fontSize='22px';
-      inputPrice.style.fontWeight='800';
+      inputPrice.style.cssText='margin-bottom:16px; min-height:64px; font-size:26px; font-weight:800;';
       inputPrice.oninput=()=>{
         const v=inputPrice.value.replace(',','.');
         w.data.price=parseFloat(v)||0;
@@ -22078,7 +22094,8 @@
         if(revenueCard){
           if(w.data.price>0){
             var potenzial = 30 * w.data.price;
-            revenueCard.innerHTML = 'Dein Umsatz-Potenzial heute: <strong>' + Number(potenzial).toFixed(2).replace('.',',') + ' €</strong> (bei 30 Portionen)';
+            var potStr = Number(potenzial).toFixed(2).replace('.',',');
+            revenueCard.innerHTML = '<span style="font-size:11px; font-weight:800; color:#047857; text-transform:uppercase; letter-spacing:0.05em;">Dein Potenzial heute</span><div style="display:flex; align-items:baseline; gap:10px; flex-wrap:wrap;"><span style="font-size:28px; font-weight:900; color:#10b981; text-shadow:0 1px 2px rgba(255,255,255,0.8);">' + potStr + ' €</span><span style="font-size:12px; font-weight:600; color:#94a3b8;">4,99 € Gebühr</span></div>';
             revenueCard.style.display = 'block';
             revenueCard.classList.remove('revenue-card-enter');
             void revenueCard.offsetWidth;
@@ -22108,11 +22125,12 @@
       stickyFooter.className = 'listing-sticky-footer';
 
       const revenueCard = document.createElement('div');
-      revenueCard.style.cssText = 'display:none; margin-bottom:12px; padding:14px 16px; background:#ecfdf5; border-radius:14px; border:1px solid rgba(16,185,129,0.2); font-size:14px; font-weight:600; color:#065f46; line-height:1.4;';
+      revenueCard.style.cssText = 'display:none; margin-bottom:14px; padding:16px 18px; background:rgba(16,185,129,0.12); border-radius:18px; border:1px solid rgba(16,185,129,0.25); line-height:1.4;';
       revenueCard.textContent = '';
       if(w.data.price>0){
         var potenzial = 30 * w.data.price;
-        revenueCard.innerHTML = 'Dein Umsatz-Potenzial heute: <strong>' + Number(potenzial).toFixed(2).replace('.',',') + ' €</strong> (bei 30 Portionen)';
+        var potStr = Number(potenzial).toFixed(2).replace('.',',');
+        revenueCard.innerHTML = '<span style="font-size:11px; font-weight:800; color:#047857; text-transform:uppercase; letter-spacing:0.05em;">Dein Potenzial heute</span><div style="display:flex; align-items:baseline; gap:10px; flex-wrap:wrap;"><span style="font-size:28px; font-weight:900; color:#10b981; text-shadow:0 1px 2px rgba(255,255,255,0.8);">' + potStr + ' €</span><span style="font-size:12px; font-weight:600; color:#94a3b8;">4,99 € Gebühr</span></div>';
         revenueCard.style.display = 'block';
         revenueCard.classList.add('revenue-card-enter');
       }
@@ -22120,10 +22138,10 @@
 
       const slimPrimary = document.createElement('button');
       slimPrimary.type = 'button';
-      slimPrimary.style.cssText = 'width:100%; min-height:56px; border-radius:16px; font-size:17px; font-weight:800; border:none; background:#10b981; color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:12px; box-shadow:0 4px 16px rgba(16,185,129,0.35);';
-      slimPrimary.innerHTML = '<span>Jetzt für 4,99 € inserieren</span>';
+      slimPrimary.style.cssText = 'width:100%; min-height:58px; border-radius:18px; font-size:17px; font-weight:900; border:none; background:#10b981; color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:12px; box-shadow:0 4px 20px rgba(16,185,129,0.4); text-transform:uppercase; letter-spacing:0.04em;';
+      slimPrimary.innerHTML = '<span>JETZT INSERIEREN</span>';
       slimPrimary.onclick = function(){
-        if(typeof haptic === 'function') haptic(12);
+        if(typeof haptic === 'function') haptic(50);
         var p = normalizeProviderProfile(provider.profile || {});
         w.data.pickupWindow = p.mealWindow || DEFAULT_MEAL_WINDOW;
         w.data.dineInPossible = (provider.profile && provider.profile.dineInPossibleDefault !== undefined) ? !!provider.profile.dineInPossibleDefault : true;
