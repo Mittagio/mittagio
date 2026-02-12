@@ -3686,27 +3686,39 @@
       #v-provider-week .kw-grid{ display:grid; grid-template-columns:repeat(7, 1fr); gap:10px; max-width:100%; width:100%; margin:0 auto; box-sizing:border-box; }
       @media (max-width:640px){ #v-provider-week .kw-grid{ grid-template-columns:1fr; } }
       #v-provider-week #kwBoardWrap{ overflow-x:hidden; max-width:100%; }
-      #v-provider-week .kw-day-card{ background:var(--glass-bg, rgba(255,255,255,0.95)); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border-radius:24px; border:1px solid rgba(255,255,255,0.7); box-shadow:0 4px 24px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.02); padding:12px; min-height:140px; display:flex; flex-direction:column; gap:8px; transition:transform 0.2s, box-shadow 0.2s; }
+      #v-provider-week .kw-day-card{ background:var(--glass-bg, rgba(255,255,255,0.98)); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border-radius:24px; border:1px solid rgba(0,0,0,0.04); box-shadow:0 8px 32px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.03); padding:12px; min-height:140px; display:flex; flex-direction:column; gap:8px; transition:transform 0.2s ease, box-shadow 0.2s ease; }
       #v-provider-week .kw-day-card:active{ transform:scale(0.98); }
-      #v-provider-week .kw-day-card.kw-day-has-live{ box-shadow:0 4px 24px rgba(0,0,0,0.06), 0 0 0 1px rgba(16,185,129,0.2); }
+      #v-provider-week .kw-day-card.kw-day-has-live{ box-shadow:0 8px 32px rgba(0,0,0,0.06), 0 0 0 1px rgba(16,185,129,0.25); }
       #v-provider-week .kw-day-label{ font-size:11px; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:4px; }
       #v-provider-week .kw-day-date{ font-size:13px; font-weight:700; color:#1a1a1a; }
       #v-provider-week .kw-slots{ display:flex; flex-direction:column; gap:8px; flex:1; min-height:0; }
       #v-provider-week .kw-slot{ border-radius:14px; overflow:hidden; min-height:56px; position:relative; cursor:pointer; transition:background 0.2s; }
-      #v-provider-week .kw-slot-main{ display:flex; gap:12px; align-items:center; padding:10px; background:#f8fafc; border-radius:14px; border:1px solid #f1f3f5; min-height:72px; }
-      #v-provider-week .kw-slot-main .kw-slot-thumb{ width:56px; height:56px; border-radius:12px; background:#e2e8f0; flex-shrink:0; background-size:cover; background-position:center; position:relative; }
+      #v-provider-week .kw-slot-main{ display:flex; gap:12px; align-items:center; padding:10px; background:#f8fafc; border-radius:14px; border:1px solid #f1f3f5; min-height:80px; }
+      #v-provider-week .kw-slot-main .kw-slot-thumb{ width:64px; height:64px; border-radius:14px; background:#e2e8f0; flex-shrink:0; background-size:cover; background-position:center; position:relative; }
       #v-provider-week .kw-slot-main .kw-slot-body{ flex:1; min-width:0; }
       #v-provider-week .kw-slot-main .kw-slot-name{ font-size:14px; font-weight:800; color:#1a1a1a; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
       #v-provider-week .kw-slot-main .kw-slot-price{ font-size:15px; font-weight:900; color:#1a1a1a; margin-top:2px; }
       #v-provider-week .kw-slot-override-badges{ position:absolute; top:4px; right:4px; display:flex; gap:2px; font-size:12px; }
-      #v-provider-week .kw-slot-empty{ min-height:52px; border:2px dashed #e2e8f0; border-radius:14px; background:rgba(248,250,252,0.8); display:flex; align-items:center; justify-content:center; color:#94a3b8; font-size:18px; font-weight:300; }
+      #v-provider-week .kw-slot-empty{ min-height:52px; border:2px dashed #e2e8f0; border-radius:14px; background:rgba(248,250,252,0.6); display:flex; align-items:center; justify-content:center; color:#cbd5e1; font-size:24px; font-weight:200; letter-spacing:0.08em; transition:color 0.2s, border-color 0.2s, background 0.2s; }
+      #v-provider-week .kw-slot-empty:active{ color:#94a3b8; border-color:#cbd5e1; background:rgba(241,245,249,0.9); }
       #v-provider-week .kw-slot-small{ display:flex; align-items:center; gap:8px; padding:8px 10px; background:#f8fafc; border-radius:12px; border:1px solid #f1f3f5; }
-      #v-provider-week .kw-slot-small .kw-slot-thumb{ width:40px; height:40px; border-radius:10px; background:#e2e8f0; flex-shrink:0; background-size:cover; background-position:center; }
+      #v-provider-week .kw-slot-small .kw-slot-thumb{ width:40px; height:40px; border-radius:10px; background:#e2e8f0; flex-shrink:0; background-size:cover; background-position:center; position:relative; }
       #v-provider-week .kw-slot-small .kw-slot-name{ font-size:13px; font-weight:700; color:#1a1a1a; }
       #v-provider-week .kw-slot-small .kw-slot-price{ font-size:13px; font-weight:800; color:#1a1a1a; margin-left:auto; }
+      #v-provider-week .kw-slot{ transition:transform 0.2s ease; }
+      #v-provider-week .kw-slot.kw-slot-swipe-delete{ background:rgba(239,68,68,0.08); }
+      /* Verschieben-Sheet (Long-Press) */
+      .kw-move-overlay{ position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:1100; display:flex; align-items:flex-end; justify-content:center; padding:0 20px  calc(80px + env(safe-area-inset-bottom)); animation:fadeIn 0.2s ease; }
+      .kw-move-sheet{ background:#fff; border-radius:24px 24px 0 0; padding:24px 20px calc(20px + env(safe-area-inset-bottom)); width:100%; max-width:400px; max-height:70vh; overflow:auto; box-shadow:0 -8px 32px rgba(0,0,0,0.12); }
+      .kw-move-title{ font-size:15px; font-weight:800; color:#1a1a1a; margin-bottom:16px; }
+      .kw-move-days{ display:flex; flex-direction:column; gap:8px; margin-bottom:16px; }
+      .kw-move-day-btn{ width:100%; min-height:52px; padding:14px 16px; border-radius:16px; border:2px solid #e2e8f0; background:#f8fafc; font-size:15px; font-weight:700; color:#1a1a1a; cursor:pointer; text-align:left; }
+      .kw-move-day-btn:active{ transform:scale(0.98); }
+      .kw-move-cancel{ width:100%; min-height:52px; border-radius:16px; border:2px solid #f1f3f5; background:#fff; font-size:15px; font-weight:700; color:#64748b; cursor:pointer; }
       /* Action-Bar (Drucken & Teilen) fix über der Tab-Nav – applike */
-      #v-provider-week .kw-action-bar-fixed{ position:fixed; bottom:calc(64px + env(safe-area-inset-bottom, 20px)); left:0; right:0; background:#fff; border-top:1px solid #e2e8f0; padding:12px 20px calc(12px + env(safe-area-inset-bottom, 0)); display:flex; align-items:center; gap:10px; z-index:998; box-shadow:0 -4px 20px rgba(0,0,0,0.06); }
-      #v-provider-week .kw-action-bar-fixed .btn{ min-height:52px; flex:1; min-width:0; border-radius:16px; font-size:15px; font-weight:800; display:inline-flex; align-items:center; justify-content:center; gap:8px; border:2px solid #f1f3f5; background:#f8fafc; color:#1a1a1a; cursor:pointer; }
+      #v-provider-week .kw-action-bar-fixed{ position:fixed; bottom:calc(64px + env(safe-area-inset-bottom, 20px)); left:12px; right:12px; margin:0 auto; max-width:420px; background:rgba(255,255,255,0.92); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border-radius:20px 20px 0 0; padding:12px 16px calc(12px + env(safe-area-inset-bottom, 0)); display:flex; align-items:center; gap:10px; z-index:998; box-shadow:0 -4px 24px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04); }
+      #v-provider-week .kw-action-bar-fixed .btn{ min-height:52px; flex:1; min-width:0; border-radius:14px; font-size:15px; font-weight:800; display:inline-flex; align-items:center; justify-content:center; gap:8px; border:2px solid #e2e8f0; background:#f8fafc; color:#1a1a1a; cursor:pointer; transition:transform 0.15s, box-shadow 0.15s; }
+      #v-provider-week .kw-action-bar-fixed .btn:hover{ background:#f1f5f9; }
       #v-provider-week .kw-action-bar-fixed .btn:active{ transform:scale(0.98); }
       /* Nur .kw-board-scroll scrollt – View und Body ohne Scroll, kein horizontales Ziehen */
       #v-provider-week.view.active{ overflow:hidden !important; height:100vh; height:100dvh; max-height:100dvh; overflow-x:hidden !important; }
@@ -5781,7 +5793,7 @@
             <i data-lucide="search" style="width:20px;height:20px;"></i>
             <span>Suche</span>
           </button>
-          <button type="button" id="cookbookBarPrimary" class="cookbook-bar-btn cookbook-bar-primary">
+          <button type="button" id="cookbookBarPrimary" class="cookbook-bar-btn cookbook-bar-primary" data-action="cookbook-add-dish" aria-label="Neues Gericht anlegen">
             <span class="plus-char" style="font-size:20px; line-height:1;">+</span>
             <span id="cookbookBarPrimaryText">Neues Gericht</span>
           </button>
@@ -9285,6 +9297,7 @@
   }
   function showProviderCookbook(){
     if(!checkSessionValidity()) return;
+    document.body.classList.remove('provider-week-active');
     setProviderNavActive('provider-cookbook');
     showView(views.providerCookbook);
     renderCookbook();
@@ -17127,6 +17140,16 @@
     if(go==='provider-support') openSupportContact();
     if(go==='provider-profile') showProviderProfile();
   });
+  // Kochbuch: Plus / „Neues Gericht“ – Delegation damit Tap immer den Gericht-anlegen-Flow öffnet
+  document.addEventListener('click', function(e){
+    var btn = e.target.closest('[data-action="cookbook-add-dish"]');
+    if(!btn || !document.getElementById('v-provider-cookbook') || !document.getElementById('v-provider-cookbook').classList.contains('active')) return;
+    e.preventDefault();
+    e.stopPropagation();
+    if(typeof haptic === 'function') haptic(6);
+    if(selectedCookbookId){ if(typeof openCookbookLiveSheet === 'function') openCookbookLiveSheet(); }
+    else { if(typeof openDishFlow === 'function') openDishFlow(); }
+  }, true);
   const btnProviderNavBack = document.getElementById('btnProviderNavBack');
   if(btnProviderNavBack) btnProviderNavBack.onclick = function(){ showProviderHome(); };
 
@@ -18074,6 +18097,96 @@
     });
     return Math.min(1, filled / 7);
   }
+  function moveWeekEntryToDay(dayFrom, slotFrom, dayTo){
+    var arr = week[dayFrom];
+    if (!arr || !arr[slotFrom]) return;
+    var entry = arr[slotFrom];
+    if (entry.providerId !== providerId()) return;
+    arr.splice(slotFrom, 1);
+    if (arr.length === 0) delete week[dayFrom];
+    if (!week[dayTo]) week[dayTo] = [];
+    week[dayTo].push(entry);
+    save(LS.week, week);
+    var boardWrap = document.getElementById('kwBoardWrap');
+    if (boardWrap && boardWrap.style.display !== 'none' && typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard();
+    renderWeekPlan();
+    renderProviderWeekPreview();
+    if (typeof toast === 'function') toast('Gericht verschoben');
+  }
+  function attachKWBoardSlotGestures(grid){
+    if (!grid) return;
+    var SWIPE_THRESHOLD = 56;
+    var LONG_PRESS_MS = 500;
+    var slots = grid.querySelectorAll('.kw-slot[data-draft="1"]');
+    slots.forEach(function(slotEl){
+      var dayKey = slotEl.getAttribute('data-day');
+      var slotIdx = parseInt(slotEl.getAttribute('data-slot'), 10) || 0;
+      var startX = 0, currentX = 0, longPressTimer = null;
+      function clearLongPress(){ if (longPressTimer) { clearTimeout(longPressTimer); longPressTimer = null; } }
+      function handleSwipeEnd(){
+        if (currentX < -SWIPE_THRESHOLD && typeof haptic === 'function') haptic(6);
+        if (currentX < -SWIPE_THRESHOLD && typeof deletePlannedEntryWithUndo === 'function') deletePlannedEntryWithUndo(dayKey, slotIdx);
+        slotEl.style.transform = '';
+        slotEl.classList.remove('kw-slot-swipe-delete');
+      }
+      slotEl.addEventListener('touchstart', function(e){
+        startX = e.touches[0].clientX;
+        currentX = 0;
+        clearLongPress();
+        longPressTimer = setTimeout(function(){ longPressTimer = null; if (typeof haptic === 'function') haptic(6); openKWBoardMoveSheet(dayKey, slotIdx); }, LONG_PRESS_MS);
+      }, { passive: true });
+      slotEl.addEventListener('touchmove', function(e){
+        currentX = e.touches[0].clientX - startX;
+        if (currentX < -20) clearLongPress();
+        if (currentX < 0) { slotEl.style.transform = 'translateX(' + currentX + 'px)'; if (Math.abs(currentX) >= SWIPE_THRESHOLD) slotEl.classList.add('kw-slot-swipe-delete'); }
+      }, { passive: true });
+      slotEl.addEventListener('touchend', function(){
+        clearLongPress();
+        handleSwipeEnd();
+      }, { passive: true });
+      slotEl.addEventListener('mousedown', function(e){
+        if (e.button !== 0) return;
+        startX = e.clientX;
+        currentX = 0;
+        clearLongPress();
+        longPressTimer = setTimeout(function(){ longPressTimer = null; if (typeof haptic === 'function') haptic(6); openKWBoardMoveSheet(dayKey, slotIdx); }, LONG_PRESS_MS);
+      });
+      slotEl.addEventListener('mousemove', function(e){
+        if (e.buttons !== 1) return;
+        currentX = e.clientX - startX;
+        if (currentX < -20) clearLongPress();
+        if (currentX < 0) { slotEl.style.transform = 'translateX(' + currentX + 'px)'; if (Math.abs(currentX) >= SWIPE_THRESHOLD) slotEl.classList.add('kw-slot-swipe-delete'); }
+      });
+      slotEl.addEventListener('mouseup', function(){ clearLongPress(); handleSwipeEnd(); });
+      slotEl.addEventListener('mouseleave', function(){ clearLongPress(); slotEl.style.transform = ''; slotEl.classList.remove('kw-slot-swipe-delete'); });
+    });
+  }
+  function openKWBoardMoveSheet(fromDay, fromSlot){
+    var arr = week[fromDay];
+    if (!arr || !arr[fromSlot]) return;
+    var entry = arr[fromSlot];
+    if (entry.providerId !== providerId()) return;
+    var keys = getWeekDayKeys(weekPlanKWIndex);
+    var dayNames = ['Mo','Di','Mi','Do','Fr','Sa','So'];
+    var overlay = document.createElement('div');
+    overlay.className = 'kw-move-overlay';
+    overlay.innerHTML = '<div class="kw-move-sheet"><div class="kw-move-title">Gericht verschieben nach</div><div class="kw-move-days"></div><button type="button" class="kw-move-cancel">Abbrechen</button></div>';
+    var sheet = overlay.querySelector('.kw-move-sheet');
+    var daysWrap = overlay.querySelector('.kw-move-days');
+    keys.forEach(function(key, i){
+      if (key === fromDay) return;
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'kw-move-day-btn';
+      var d = new Date(key + 'T12:00:00');
+      btn.textContent = dayNames[i] + ', ' + d.getDate() + '.';
+      btn.onclick = function(){ if (typeof haptic === 'function') haptic(6); moveWeekEntryToDay(fromDay, fromSlot, key); overlay.remove(); };
+      daysWrap.appendChild(btn);
+    });
+    overlay.querySelector('.kw-move-cancel').onclick = function(){ if (typeof haptic === 'function') haptic(6); overlay.remove(); };
+    overlay.onclick = function(e){ if (e.target === overlay) overlay.remove(); };
+    document.body.appendChild(overlay);
+  }
   function renderWeekPlanBoard(){
     updateSessionActivity();
     var wrap = document.getElementById('kwBoardWrap');
@@ -18137,14 +18250,20 @@
           if (slot === 0) {
             var slotEl = document.createElement('div');
             slotEl.className = 'kw-slot kw-slot-main';
+            slotEl.setAttribute('data-day', key);
+            slotEl.setAttribute('data-slot', String(slot));
+            if (!isLive) slotEl.setAttribute('data-draft', '1');
             slotEl.innerHTML = '<div class="kw-slot-thumb" style="' + (img ? 'background-image:url(\'' + esc(img) + '\')' : '') + '">' + badgeHtml + '</div><div class="kw-slot-body"><div class="kw-slot-name">' + esc(name) + '</div><div class="kw-slot-price">' + euro(price) + '</div></div>';
-            slotEl.onclick = (function(k, idx){ return function(e){ e.stopPropagation(); if(typeof haptic === 'function') haptic(6); weekPlanDay = k; if(isLive && items[idx] && items[idx].id){ if(typeof startListingFlow === 'function') startListingFlow({ editOfferId: items[idx].id }); } else { if(typeof openWeekAddSheet === 'function') openWeekAddSheet(k, idx); } }; })(key, slot);
+            slotEl.onclick = (function(k, idx){ return function(e){ e.stopPropagation(); if(slotEl.classList.contains('kw-slot-swipe-delete')) return; if(typeof haptic === 'function') haptic(6); weekPlanDay = k; if(isLive && items[idx] && items[idx].id){ if(typeof startListingFlow === 'function') startListingFlow({ editOfferId: items[idx].id }); } else { if(typeof openWeekAddSheet === 'function') openWeekAddSheet(k, idx); } }; })(key, slot);
             slotsWrap.appendChild(slotEl);
           } else {
             var slotSmall = document.createElement('div');
             slotSmall.className = 'kw-slot kw-slot-small';
-            slotSmall.innerHTML = '<div class="kw-slot-thumb" style="' + (img ? 'background-image:url(\'' + esc(img) + '\')' : '') + '"></div><div class="kw-slot-name">' + esc(name) + '</div><div class="kw-slot-price">' + euro(price) + '</div>';
-            slotSmall.onclick = (function(k, idx){ return function(e){ e.stopPropagation(); if(typeof haptic === 'function') haptic(6); weekPlanDay = k; if(isLive && items[idx] && items[idx].id){ if(typeof startListingFlow === 'function') startListingFlow({ editOfferId: items[idx].id }); } else { if(typeof openWeekAddSheet === 'function') openWeekAddSheet(k, idx); } }; })(key, slot);
+            slotSmall.setAttribute('data-day', key);
+            slotSmall.setAttribute('data-slot', String(slot));
+            if (!isLive) slotSmall.setAttribute('data-draft', '1');
+            slotSmall.innerHTML = '<div class="kw-slot-thumb" style="' + (img ? 'background-image:url(\'' + esc(img) + '\')' : '') + '">' + badgeHtml + '</div><div class="kw-slot-name">' + esc(name) + '</div><div class="kw-slot-price">' + euro(price) + '</div>';
+            slotSmall.onclick = (function(k, idx){ return function(e){ e.stopPropagation(); if(slotSmall.classList.contains('kw-slot-swipe-delete')) return; if(typeof haptic === 'function') haptic(6); weekPlanDay = k; if(isLive && items[idx] && items[idx].id){ if(typeof startListingFlow === 'function') startListingFlow({ editOfferId: items[idx].id }); } else { if(typeof openWeekAddSheet === 'function') openWeekAddSheet(k, idx); } }; })(key, slot);
             slotsWrap.appendChild(slotSmall);
           }
         } else {
@@ -18157,6 +18276,7 @@
       }
       grid.appendChild(card);
     });
+    attachKWBoardSlotGestures(grid);
     var btnKwPdf = document.getElementById('btnKwPdf');
     var btnKwShare = document.getElementById('btnKwShare');
     if (btnKwPdf) btnKwPdf.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(typeof printWeekCard === 'function') printWeekCard(); };
@@ -18869,6 +18989,8 @@
     if(arr.length === 0) delete week[date];
     save(LS.week, week);
     renderWeekPlan();
+    var boardWrap = document.getElementById('kwBoardWrap');
+    if(boardWrap && boardWrap.style.display !== 'none' && typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard();
     renderProviderWeekPreview();
     if(weekUndoTimer) clearTimeout(weekUndoTimer);
     weekUndoPending = { date: date, index: index, entry: entry };
@@ -20404,7 +20526,7 @@
       ].forEach(t=>{
         const b=document.createElement('button');
         b.type='button';
-        b.className=cookbookTab===t.id?' on':'';
+        b.className=(cookbookTab===t.id?'on':'');
         b.textContent=t.label;
         b.onclick=()=>{ cookbookTab=t.id; renderCookbook(); };
         tabs.appendChild(b);
@@ -20419,21 +20541,24 @@
       box.className='';
       box.innerHTML = `
         <div class="cookbook-empty" style="text-align:center; padding:48px 24px;">
-          <div style="width:96px; height:96px; margin:0 auto 24px; background:rgba(255,215,0,0.1); border-radius:50%; display:flex; align-items:center; justify-content:center; border:1px solid rgba(255,215,0,0.2);">
-            <i data-lucide="chef-hat" style="width:48px; height:48px; color:#FFD700;"></i>
+          <div style="width:96px; height:96px; margin:0 auto 24px; background:rgba(255,215,0,0.12); border-radius:50%; display:flex; align-items:center; justify-content:center; border:1px solid rgba(255,215,0,0.25);">
+            <i data-lucide="chef-hat" style="width:48px; height:48px; color:#eab308;"></i>
           </div>
-          <div style="font-weight:900; font-size:22px; color:#fff; margin-bottom:12px;">Noch leer hier?</div>
-          <div style="font-size:16px; color:rgba(255,255,255,0.7); line-height:1.6; margin-bottom:32px; max-width:300px; margin-left:auto; margin-right:auto;">
-            Starte jetzt deine Erfolgsgeschichte! Lege dein erstes Gericht an – es dauert nur wenige Sekunden.
+          <div style="font-weight:900; font-size:22px; color:#1a1a1a; margin-bottom:12px;">Noch leer hier?</div>
+          <div style="font-size:16px; color:#64748b; line-height:1.6; margin-bottom:32px; max-width:300px; margin-left:auto; margin-right:auto;">
+            Starte jetzt, indem du dein erstes Gericht anlegst – es dauert nur wenige Sekunden.
           </div>
-          <button class="btn provider-add-plus-btn" type="button" id="btnCookbookEmptyAdd" style="width:100%; max-width:280px; margin:0 auto; min-height:56px; border-radius:16px; display:flex; align-items:center; justify-content:center; gap:10px;">
+          <button class="btn provider-add-plus-btn" type="button" id="btnCookbookEmptyAdd" style="width:100%; max-width:280px; margin:0 auto; min-height:56px; border-radius:16px; display:flex; align-items:center; justify-content:center; gap:10px; background:#10b981; color:#fff; font-weight:800; border:none; box-shadow:0 4px 16px rgba(16,185,129,0.35);">
             <span class="plus-char" style="font-size:22px; line-height:1; color:#fff;">+</span>
             <span>Jetzt Gericht anlegen</span>
           </button>
         </div>
       `;
       const btnCookbookEmptyAdd = document.getElementById('btnCookbookEmptyAdd');
-      if(btnCookbookEmptyAdd) btnCookbookEmptyAdd.onclick = () => openDishFlow();
+      if(btnCookbookEmptyAdd){
+        btnCookbookEmptyAdd.onclick = function(e){ e.preventDefault(); e.stopPropagation(); if(typeof openDishFlow === 'function') openDishFlow(); };
+        btnCookbookEmptyAdd.setAttribute('data-action', 'cookbook-add-dish');
+      }
       selectedCookbookId = null;
       updateCookbookActionBar();
       wireCookbookActionBar();
@@ -20603,7 +20728,9 @@
       barFilter.onclick = function(){ if(typeof haptic === 'function') haptic(6); searchInput.focus(); };
     }
     if(barPrimary){
-      barPrimary.onclick = function(){
+      barPrimary.onclick = function(e){
+        e.preventDefault();
+        e.stopPropagation();
         if(typeof haptic === 'function') haptic(6);
         if(selectedCookbookId){
           if(typeof openCookbookLiveSheet === 'function') openCookbookLiveSheet();
@@ -20954,7 +21081,7 @@
    *                                  Wenn vom Wochenplan: Gewählter Tag
    */
   function openDishFlow(defaultDate = null){
-    // CRITICAL FIX: openDishFlow sollte startListingFlow verwenden für konsistenten Inseratsflow
+    if(!provider || !provider.loggedIn){ if(typeof showToast === 'function') showToast('Bitte zuerst anmelden'); return; }
     startListingFlow({date: defaultDate || isoDate(new Date())});
     return;
     // Normalisiere Datum: null/undefined = Heute
@@ -20979,6 +21106,7 @@
    * @param {string} [context.editOfferId] - Offer ID (wenn bearbeiten)
    */
   function startListingFlow(context = {}){
+    if(!provider || !provider.loggedIn){ if(typeof showToast === 'function') showToast('Bitte zuerst anmelden'); return; }
     // QUICK-POST: Wenn aus Kochbuch, erst Bestätigung zeigen
     if(context.dishId && !context.editOfferId && !context.skipQuickPost){
       openQuickPostSheet(context.dishId, context.date || isoDate(new Date()));
