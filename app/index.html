@@ -1611,6 +1611,18 @@
     #fabProviderAddOffer.fab-provider-plus .plus-char { color: #1a1a1a !important; text-shadow: none !important; }
     #fabProviderAddOffer.fab-provider-plus:active,
     .provider-add-plus-btn:active { animation: none; transform: scale(0.96); }
+    /* REGEL: Gelbes Plus – einheitlich in der ganzen App für „Hinzufügen“ (Anbieter erkennt sofort: hier kann ich was hinzufügen) */
+    .prov-add-plus-icon {
+      width: 64px; height: 64px; min-width: 64px; min-height: 64px;
+      background: #ffde00;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 32px; font-weight: 300; line-height: 1;
+      color: #1a1a1a;
+      box-shadow: 0 4px 16px rgba(255,222,0,0.45);
+    }
+    .prov-add-plus-trigger { display: inline-flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.1s; padding: 8px; }
+    .prov-add-plus-trigger:active { transform: scale(0.98); }
     @keyframes fab-pulse-prov {
       0%, 100% { box-shadow: 0 4px 20px rgba(14,165,233,0.45), 0 8px 24px rgba(0,0,0,0.15); }
       50% { box-shadow: 0 4px 28px rgba(14,165,233,0.6), 0 8px 32px rgba(0,0,0,0.2); }
@@ -1848,9 +1860,9 @@
       content:''; position:absolute; inset:0; pointer-events:none; z-index:0;
       transition: opacity 0.8s ease;
     }
+    /* Kein leerer farbiger Bereich oben: ::before auf Meine Küche aus, Inhalt beginnt sofort */
     body.provider-mode #v-provider-home::before{
-      background: linear-gradient(160deg, #e0f2fe 0%, #f0f9ff 30%, #f8fafc 60%, #f1f5f9 100%);
-      opacity:0.85;
+      display: none !important;
     }
     body.provider-mode #v-provider-week::before{
       background: linear-gradient(165deg, #f0f9ff 0%, #f8fafc 50%, #ecfdf5 100%);
@@ -1858,14 +1870,7 @@
     }
     body.provider-mode #v-provider-home > *,
     body.provider-mode #v-provider-week > *{ position:relative; z-index:1; }
-    /* Stolz-Edition: einheitlicher Hintergrund #f8f7f2, kein Verlauf */
-    body.provider-mode #v-provider-home.prov-dashboard-stolz::before{
-      background:#f8f7f2;
-      opacity:1;
-    }
     @media (prefers-color-scheme: dark) {
-      body.provider-mode #v-provider-home::before{ opacity:0.25; }
-      body.provider-mode #v-provider-home.prov-dashboard-stolz::before{ background:#f8f7f2; opacity:1; }
       body.provider-mode #v-provider-week::before{ opacity:0.2; }
     }
     
@@ -3818,7 +3823,6 @@
       /* Leerer Tag – Direkt-Inserieren-Trigger (Wochenplan 3.0 „Keine Ausreden“) */
       #providerWeekDayContent .week-preview-empty-trigger{ background:rgba(255,255,255,0.5); border:2px dashed #e2e8f0; border-radius:40px; padding:32px 24px; display:flex; flex-direction:column; align-items:center; text-align:center; gap:16px; cursor:pointer; transition:background 0.2s, transform 0.1s; box-shadow:0 2px 12px rgba(0,0,0,0.04); }
       #providerWeekDayContent .week-preview-empty-trigger:active{ transform:scale(0.98); background:#fff; }
-      #providerWeekDayContent .week-preview-empty-trigger .week-preview-empty-plus{ width:64px; height:64px; min-width:64px; min-height:64px; background:#ffde00; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:32px; font-weight:300; line-height:1; color:#1a1a1a; box-shadow:0 4px 16px rgba(255,222,0,0.45); }
       #providerWeekDayContent .week-preview-empty-trigger .week-preview-empty-label{ font-size:10px; font-weight:900; color:#9ca3af; text-transform:uppercase; letter-spacing:0.12em; margin-bottom:4px; }
       #providerWeekDayContent .week-preview-empty-trigger .week-preview-empty-cta{ font-size:16px; font-weight:900; color:#1a1a1a; }
       #v-provider-profile .panel{ padding:18px !important; border-radius:16px !important; margin-bottom:16px !important; }
@@ -5664,10 +5668,9 @@
               <div class="prov-card" style="padding:32px 24px; text-align:center; border:2px dashed rgba(0,0,0,0.08); background:#fafafa; border-radius:24px;">
                 <div style="font-size:15px; font-weight:700; color:#64748b; margin-bottom:8px;">Noch kein Gericht für heute</div>
                 <p style="font-size:13px; color:#94a3b8; margin:0 0 20px;">Erstelle dein erstes Tagesangebot – dann siehst du es hier.</p>
-                <button type="button" class="btn-primary provider-add-plus-btn" id="btnProviderFirstDishToday" style="min-height:48px; padding:0 24px; border-radius:14px; font-size:15px; font-weight:800; border:none; display:inline-flex; align-items:center; justify-content:center; gap:8px;">
-                  <span class="plus-char" style="font-size:20px; line-height:1; color:#fff;">+</span>
-                  <span>Erstes Gericht für heute</span>
-                </button>
+                <div class="prov-add-plus-trigger" id="btnProviderFirstDishToday" role="button" tabindex="0" aria-label="Gericht für heute hinzufügen" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); document.getElementById('btnProviderFirstDishToday').click();}">
+                  <span class="prov-add-plus-icon" aria-hidden="true">＋</span>
+                </div>
               </div>
             </div>
             <div id="providerActiveListings" style="display:flex; flex-direction:column; gap:14px; margin-top:12px;">
@@ -5679,14 +5682,12 @@
             <div id="providerWeekDays" class="provider-week-days"></div>
             <div id="providerWeekDayContent" class="provider-week-day-content"></div>
           </div>
-        </div>
-
-        <!-- Ganz unten: Link zum Wochenplan (App-like Button) -->
-        <div class="provider-week-footer">
-          <button type="button" id="btnProviderWeekFooter" style="width:100%; min-height:48px; border-radius:26px; border:2px solid #e5e7eb; background:#fff; color:#1a1a1a; font-size:16px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; box-shadow:0 2px 12px rgba(0,0,0,0.06); transition:transform 0.1s, box-shadow 0.15s;" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); document.getElementById('btnProviderWeekFooter').click();}">
-            <span>Zum Wochenplan</span>
-            <i data-lucide="chevron-right" style="width:20px; height:20px;"></i>
-          </button>
+          <div class="provider-week-footer">
+            <button type="button" id="btnProviderWeekFooter" style="width:100%; min-height:48px; border-radius:26px; border:2px solid #e5e7eb; background:#fff; color:#1a1a1a; font-size:16px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; box-shadow:0 2px 12px rgba(0,0,0,0.06); transition:transform 0.1s, box-shadow 0.15s;" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); document.getElementById('btnProviderWeekFooter').click();}">
+              <span>Zum Wochenplan</span>
+              <i data-lucide="chevron-right" style="width:20px; height:20px;"></i>
+            </button>
+          </div>
         </div>
 
         <!-- Empty State -->
@@ -17802,7 +17803,7 @@
     
     // Leere-Karte CTA: Erstes Gericht für heute
     const btnFirstDishToday = document.getElementById('btnProviderFirstDishToday');
-    if(btnFirstDishToday) btnFirstDishToday.onclick = function(){ if(typeof openDishFlow === 'function') openDishFlow(); };
+    if(btnFirstDishToday) btnFirstDishToday.onclick = function(){ createFlowPreselectedDate = typeof isoDate === 'function' ? isoDate(new Date()) : null; if(typeof openCreateFlowSheet === 'function') openCreateFlowSheet(); };
     
     // Post-Onboarding Dashboard State (if just completed onboarding)
     const providerEmptyDashboard = document.getElementById('providerEmptyDashboard');
@@ -17864,18 +17865,13 @@
       }
     }
     
-    // FAB → Gericht erstellen (Kochbuch / Wochenplan / Küche)
+    // FAB → immer dieselbe Seite: Gericht erstellen oder aus dem Kochbuch (createFlowSheet)
     const fabProviderAddOffer = document.getElementById('fabProviderAddOffer');
     const fabProviderAddOfferLabel = document.getElementById('fabProviderAddOfferLabel');
     if(fabProviderAddOffer){
       fabProviderAddOffer.onclick = () => {
-        const weekView = document.getElementById('v-provider-week');
-        if(weekView && weekView.classList.contains('active')){
-          if(typeof openWeekAddSheet === 'function') openWeekAddSheet();
-        } else {
-          createFlowPreselectedDate = null;
-          openCreateFlowSheet();
-        }
+        createFlowPreselectedDate = null;
+        if(typeof openCreateFlowSheet === 'function') openCreateFlowSheet();
       };
       fabProviderAddOffer.onmouseenter = () => {
         if(fabProviderAddOfferLabel) fabProviderAddOfferLabel.style.opacity = '1';
@@ -17981,12 +17977,9 @@
         '<div class="week-preview-dishes">' + dishRows.join('') + '</div>' +
         '<div class="week-preview-cta">' +
         '<button type="button" class="btn secondary" id="btnProviderWeekAddDish" style="width:100%; min-height:48px; background:#fff; color:#1a1a1a; border:2px solid #e5e7eb; font-weight:700; border-radius:14px;">Weiteres Gericht planen</button>' +
-        '<div class="week-preview-link" id="linkProviderWeekFull"><span>Zum Wochenplan</span><i data-lucide="chevron-right" style="width:16px;height:16px;"></i></div>' +
         '</div>';
       var btn = document.getElementById('btnProviderWeekAddDish');
       if(btn) btn.onclick = function(){ if(typeof openWeekAddSheet === 'function') openWeekAddSheet(selectedDay); };
-      var link = document.getElementById('linkProviderWeekFull');
-      if(link) link.onclick = function(){ if(typeof showProviderWeek === 'function') showProviderWeek(selectedDay); };
       /* Direkt-Edit: Klick auf Gerichtskarte */
       var dishes = dayContent.querySelectorAll('.week-preview-dish');
       dishes.forEach(function(el){
@@ -18020,33 +18013,16 @@
         if(!suggested || sold > (suggested.soldCount || 0) || (sold === (suggested.soldCount || 0) && (e.lastUsed || 0) > (suggested.lastUsed || 0))) suggested = { dish: e.dish || 'Gericht', id: e.id, lastUsed: e.lastUsed, soldCount: sold };
       }
       if(!suggested && mine.length) suggested = { dish: mine[0].dish || 'Gericht', id: mine[0].id, lastUsed: mine[0].lastUsed, soldCount: 0 };
-      var successLabel = 'Lücke am ' + gapDayName;
-      var successTitle = suggested ? (typeof esc === 'function' ? esc(suggested.dish) : (suggested.dish || '').replace(/</g,'&lt;')) : 'Gericht planen?';
-      var successStats = (suggested && suggested.soldCount > 0) ? ('✅ ' + suggested.soldCount + ' Portion' + (suggested.soldCount !== 1 ? 'en' : '') + ' verkauft') : '';
-      if(suggested && suggested.lastUsed){
-        var lu = new Date(suggested.lastUsed);
-        if(!Number.isNaN(lu.getTime())) successLabel = 'Dein Erfolg vom letzten ' + wdNames[lu.getDay()];
-      }
-      var gapTipHtml = '<div class="week-preview-gap-tip">' +
-        '<div class="week-preview-gap-tip-inner"><span style="font-size:24px;">📖</span><div><div class="week-preview-gap-tip-label">' + (typeof esc === 'function' ? esc(successLabel) : successLabel.replace(/</g,'&lt;')) + '</div><div class="week-preview-gap-tip-title">' + successTitle + '</div>' + (successStats ? '<div class="week-preview-gap-tip-stats">' + (typeof esc === 'function' ? esc(successStats) : successStats.replace(/</g,'&lt;')) + '</div>' : '') + '</div></div>' +
-        '<button type="button" class="week-preview-gap-tip-btn" id="btnProviderWeekGapTip"' + (suggested && suggested.id ? ' data-dish-id="' + (typeof esc === 'function' ? esc(suggested.id) : String(suggested.id).replace(/"/g,'&quot;')) + '"' : '') + '>JETZT</button></div>';
       var emptyLabel = (typeof esc === 'function' ? esc(gapDayName) : gapDayName.replace(/</g,'&lt;')) + ' ist noch leer';
       dayContent.innerHTML =
         '<div class="week-preview-dishes">' +
-        '<p class="week-preview-section-label week-preview-section-label-center">Nächste Schritte</p>' +
         '<div class="week-preview-empty-trigger" id="btnProviderWeekEmptyTrigger" role="button" tabindex="0">' +
-        '<div class="week-preview-empty-plus" aria-hidden="true">＋</div>' +
-        '<div><div class="week-preview-empty-label">' + emptyLabel + '</div><div class="week-preview-empty-cta">JETZT NEUES GERICHT (4,99 €)</div></div>' +
-        '</div></div>' +
-        gapTipHtml +
-        '<div class="week-preview-cta" style="margin-top:20px;"><div class="week-preview-link" id="linkProviderWeekFull2" style="justify-content:center; margin-bottom:24px;"><span>Zum Wochenplan</span><i data-lucide="chevron-right" style="width:16px;height:16px;"></i></div></div>';
+        '<div class="week-preview-empty-plus prov-add-plus-icon" aria-hidden="true">＋</div>' +
+        '<div><div class="week-preview-empty-label">' + emptyLabel + '</div><div class="week-preview-empty-cta">JETZT NEUES GERICHT</div></div>' +
+        '</div></div>';
       var btnEmpty = document.getElementById('btnProviderWeekEmptyTrigger');
-      if(btnEmpty) btnEmpty.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(typeof openWeekAddSheet === 'function') openWeekAddSheet(selectedDay); };
+      if(btnEmpty) btnEmpty.onclick = function(){ if(typeof haptic === 'function') haptic(6); createFlowPreselectedDate = selectedDay; if(typeof openCreateFlowSheet === 'function') openCreateFlowSheet(); };
       if(btnEmpty) btnEmpty.onkeydown = function(e){ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); btnEmpty.click(); } };
-      var link2 = document.getElementById('linkProviderWeekFull2');
-      if(link2) link2.onclick = function(){ if(typeof showProviderWeek === 'function') showProviderWeek(selectedDay); };
-      var btnGap = document.getElementById('btnProviderWeekGapTip');
-      if(btnGap) btnGap.onclick = function(){ if(typeof haptic === 'function') haptic(6); var did = btnGap.getAttribute('data-dish-id'); if(did && typeof startListingFlow === 'function') startListingFlow({ dishId: did, date: selectedDay, source: 'weekplan' }); else if(typeof openWeekAddSheet === 'function') openWeekAddSheet(selectedDay); };
     }
     /* Haptik beim Einrasten (Snap-Carousel) – Dashboard-Wochenvorschau */
     if(dayWrap && !dayWrap._hapticSnapAttached){
