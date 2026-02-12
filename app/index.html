@@ -1406,13 +1406,15 @@
       flex-direction:column;
       padding-bottom: env(safe-area-inset-bottom, 20px);
     }
+    @keyframes wizardContentEnter{ from{ opacity:0; transform:translateY(6px); } to{ opacity:1; transform:translateY(0); } }
+    #wizard.sheet--kitchen #wContent > *{ animation:wizardContentEnter 0.22s ease-out forwards; }
     #wizard.sheet--kitchen .wizard{
-      background:rgba(255,255,255,0.72);
-      backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
-      border:1px solid rgba(255,255,255,0.5);
+      background:rgba(255,255,255,0.78);
+      backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+      border:1px solid rgba(255,255,255,0.6);
       border-radius:24px;
       padding:16px 20px 20px;
-      box-shadow:0 4px 24px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.9);
+      box-shadow:0 8px 32px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.02), inset 0 1px 0 rgba(255,255,255,0.95);
       flex:1;
       min-height:0;
       display:flex;
@@ -1423,20 +1425,22 @@
     #wizard.sheet--kitchen .wizard-progress-dots{
       display:flex;
       justify-content:center;
-      gap:8px;
-      margin-bottom:10px;
+      gap:6px;
+      margin-bottom:8px;
       flex-shrink:0;
     }
     #wizard.sheet--kitchen .wizard-dot{
-      width:8px;
-      height:8px;
+      width:6px;
+      height:6px;
       border-radius:50%;
-      background:rgba(0,0,0,0.15);
-      transition:background .2s, transform .2s;
+      background:rgba(0,0,0,0.12);
+      transition:background .25s ease, transform .25s ease, width .25s ease;
     }
     #wizard.sheet--kitchen .wizard-dot.active{
-      background:#FFD700;
-      transform:scale(1.2);
+      background:#10b981;
+      transform:scale(1.15);
+      width:16px;
+      border-radius:3px;
     }
     #wizard.sheet--kitchen .wizard-scroll{
       flex:1;
@@ -1497,13 +1501,16 @@
     }
     #wizard.sheet--kitchen .glass-express-step0 .glass-pill{
       -webkit-tap-highlight-color:transparent;
-      backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
-      transition: border-color 0.2s, background 0.2s, transform 0.1s;
+      backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+      transition: border-color 0.2s, background 0.2s, transform 0.12s ease;
+      box-shadow:0 2px 8px rgba(0,0,0,0.04);
     }
     #wizard.sheet--kitchen .glass-express-step0 .glass-pill:active{ transform:scale(0.97); }
     #wizard.sheet--kitchen .glass-express-step0 .glass-express-field{
-      border:2px solid rgba(255,255,255,0.6); background:rgba(255,255,255,0.5);
-      backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+      border:2px solid rgba(255,255,255,0.65); background:rgba(255,255,255,0.55);
+      backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+      box-shadow:0 2px 8px rgba(0,0,0,0.03);
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
     #wizard.sheet--kitchen .glass-express-step0 .glass-express-field:focus{
       outline:none; border-color:#10b981; box-shadow:0 0 0 3px rgba(16,185,129,0.2);
@@ -21774,8 +21781,13 @@
   }
   function setWizardContent(node){
     const c = document.getElementById('wContent');
+    if(!c) return;
+    c.style.opacity='0';
+    c.style.transform='translateY(8px)';
+    c.style.transition='opacity 0.2s ease, transform 0.2s ease';
     c.innerHTML='';
     c.appendChild(node);
+    requestAnimationFrame(function(){ requestAnimationFrame(function(){ c.style.opacity='1'; c.style.transform='translateY(0)'; }); });
   }
 
   function rebuildWizard(){
