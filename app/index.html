@@ -775,9 +775,13 @@
     /* Sheets / modals – Safe-Area für moderne Handys (S25, iPhone, Pixel) */
     .backdrop{position:fixed; inset:0; background:rgba(0,0,0,.6); opacity:0; pointer-events:none; transition:opacity .2s; z-index:2000}
     .backdrop.active{opacity:1; pointer-events:auto}
-    /* Quick-Post-Modal: nur sichtbar wenn .active – verhindert leeren Screen über Dashboard */
-    #quickPostBd:not(.active){ display:none !important; opacity:0 !important; pointer-events:none !important; }
-    #quickPostSheet:not(.active){ visibility:hidden !important; pointer-events:none !important; }
+    /* Modals: nur sichtbar wenn .active – verhindert leeren Screen auf allen Anbieter-Seiten */
+    #quickPostBd:not(.active),
+    #publishFeeBd:not(.active),
+    #inseratSuccessBd:not(.active){ display:none !important; opacity:0 !important; pointer-events:none !important; }
+    #quickPostSheet:not(.active),
+    #publishFeeSheet:not(.active),
+    #inseratSuccessSheet:not(.active){ visibility:hidden !important; pointer-events:none !important; }
     .sheet{
       position:fixed; left:0; right:0; bottom:-120%; z-index:2001;
       background:#fff; border-radius:22px 22px 0 0;
@@ -1872,16 +1876,18 @@
       content:''; position:absolute; inset:0; pointer-events:none; z-index:0;
       transition: opacity 0.8s ease;
     }
-    /* Kein leerer farbiger Bereich oben: ::before auf Meine Küche aus, Inhalt beginnt sofort */
-    body.provider-mode #v-provider-home::before{
-      display: none !important;
+    /* Wie beim Wochenplan: Jede Anbieter-View bekommt einen hellen Top-Verlauf, damit main::before (Blur) nicht als „leerer Screen“ durchscheint. Wochenplan hat bereits eigenen ::before. */
+    body.provider-mode [id^="v-provider-"].view.active:not(#v-provider-week)::before{
+      content:''; position:absolute; inset:0; pointer-events:none; z-index:0;
+      background: linear-gradient(180deg, rgba(255,255,255,0.97) 0%, transparent 100px);
     }
     body.provider-mode #v-provider-week::before{
       background: linear-gradient(165deg, #f0f9ff 0%, #f8fafc 50%, #ecfdf5 100%);
       opacity:0.5;
     }
     body.provider-mode #v-provider-home > *,
-    body.provider-mode #v-provider-week > *{ position:relative; z-index:1; }
+    body.provider-mode #v-provider-week > *,
+    body.provider-mode [id^="v-provider-"].view.active > *{ position:relative; z-index:1; }
     @media (prefers-color-scheme: dark) {
       body.provider-mode #v-provider-week::before{ opacity:0.2; }
     }
@@ -3443,7 +3449,7 @@
       max-width:500px; margin:0 auto; width:100%; box-sizing:border-box;
       background:transparent; border:none; box-shadow:none;
     }
-    /* Nur die vier Kästen sind sichtbare Karten – einzeln, schwebend */
+    /* Vier Kästen: einzeln schwebend über Hintergrundbild, kleinere Schrift */
     #v-provider-home .dashboard-kasten{
       background:#fff;
       border-radius:24px;
@@ -3456,16 +3462,21 @@
       background:rgba(255,255,255,0.92) !important;
       backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
     }
+    #v-provider-home .dashboard-kasten-header .prov-title{ font-size:17px !important; }
     #v-provider-home .dashboard-kasten-kpis{
-      padding:20px max(20px, env(safe-area-inset-left, 0)) 20px max(20px, env(safe-area-inset-right, 0));
+      padding:14px max(16px, env(safe-area-inset-left, 0)) 14px max(16px, env(safe-area-inset-right, 0));
     }
+    #v-provider-home .dashboard-kasten-kpis .kpi-label{ font-size:8px !important; }
+    #v-provider-home .dashboard-kasten-kpis [id^="dashboard"]{ font-size:16px !important; }
     #v-provider-home .dashboard-kasten-angebote{
-      padding:20px; padding-left:max(20px, env(safe-area-inset-left, 0)); padding-right:max(20px, env(safe-area-inset-right, 0));
+      padding:14px 16px; padding-left:max(16px, env(safe-area-inset-left, 0)); padding-right:max(16px, env(safe-area-inset-right, 0));
     }
+    #v-provider-home .dashboard-kasten-angebote .provider-week-title{ font-size:15px !important; }
     #v-provider-home .dashboard-kasten-wochenplan{
-      padding:20px; padding-left:max(20px, env(safe-area-inset-left, 0)); padding-right:max(20px, env(safe-area-inset-right, 0));
-      padding-bottom:24px;
+      padding:14px 16px; padding-left:max(16px, env(safe-area-inset-left, 0)); padding-right:max(16px, env(safe-area-inset-right, 0));
+      padding-bottom:18px;
     }
+    #v-provider-home .dashboard-kasten-wochenplan .provider-week-title{ font-size:15px !important; }
     #v-provider-home.view.active .prov-header,
     #v-provider-home.view.active .dashboard-floating-wrap,
     #v-provider-home.view.active .dashboard-kasten{
@@ -3609,7 +3620,8 @@
       }
       /* Wochenplan (weiteres Layout) */
       #v-provider-week .week-dayrow{ display:flex; gap:8px; overflow-x:auto; -webkit-overflow-scrolling:touch; padding:0 0 16px; margin-bottom:16px; border-bottom:1px solid #f1f3f5; }
-#v-provider-week .week-day-pill{ flex:0 0 auto; min-width:60px; min-height:52px; padding:12px 10px; border-radius:14px; border:2px solid transparent; background:#f8f9fa; font-size:14px; font-weight:800; color:#64748b; cursor:pointer; transition:all 0.2s; line-height:1.25; text-align:center; white-space:nowrap; display:inline-flex; align-items:center; justify-content:center; }
+/* Wochenplan: Tag-Kacheln alle gleich groß */
+#v-provider-week .week-day-pill{ flex:0 0 auto; width:56px; min-width:56px; height:52px; min-height:52px; padding:0 6px; border-radius:14px; border:2px solid transparent; background:#f8f9fa; font-size:12px; font-weight:800; color:#64748b; cursor:pointer; transition:all 0.2s; line-height:1.2; text-align:center; white-space:nowrap; display:inline-flex; align-items:center; justify-content:center; box-sizing:border-box; }
 #v-provider-week .week-indicator-dot{ background:transparent; border:none; padding:4px; cursor:pointer; border-radius:50%; }
 #v-provider-week .week-indicator-dot:focus{ outline:none; box-shadow:0 0 0 2px var(--prov-brand); }
     #v-provider-week .week-day-pill.active{ background:rgba(14,165,233,0.12); border-color:var(--prov-brand); color:#1a1a1a; }
@@ -3664,9 +3676,10 @@
     #v-provider-week .week-actions-bar .btn[aria-label="Aktualisieren"]{ flex:0 0 auto; min-width:48px; }
       /* S25 Thumb-Zone: Date-Picker Snap-Carousel */
       #v-provider-week .week-dayrow{ scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; }
-      #v-provider-week .week-day-pill{ scroll-snap-align:center; scroll-snap-stop:always; min-width:64px; }
+      #v-provider-week .week-day-pill{ scroll-snap-align:center; scroll-snap-stop:always; width:56px; min-width:56px; }
+      /* Wochenplan: Gericht-Kacheln einheitliche Mindesthöhe */
+      #v-provider-week .week-meal-card-wrap{ position:relative; overflow:hidden; border-radius: var(--card-radius-premium, 24px); margin-bottom:14px; min-height:72px; }
       /* Swipe-Card: Premium 24px + Glass beibehalten */
-      #v-provider-week .week-meal-card-wrap{ position:relative; overflow:hidden; border-radius: var(--card-radius-premium, 24px); margin-bottom:14px; }
       #v-provider-week .week-meal-card-swipe{ display:flex; align-items:stretch; transition:transform 0.2s ease-out; touch-action:pan-y; }
       #v-provider-week .week-meal-card-swipe .week-meal-card{ flex:1; margin-bottom:0; min-width:0; position:relative; z-index:1; background:transparent; border-radius:inherit; }
       /* Swipe-Exit: Karte gleitet sanft aus dem Bild beim Löschen/Kopieren */
@@ -3716,7 +3729,8 @@
       #v-provider-week .week-header-compact h1{ margin:0; font-size:20px; font-weight:950; }
       /* Übersicht: kompakte Tageskarten (nur Lesen), app-first */
       #v-provider-week .week-overview-scroll{ flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:12px 20px 20px; }
-      #v-provider-week .week-overview-day{ background: var(--glass-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-radius: var(--card-radius-premium, 24px); border:1px solid rgba(255,255,255,0.6); padding:14px 16px; margin-bottom:12px; box-shadow: var(--card-shadow-soft), var(--glass-inner-glow); position:relative; overflow:hidden; }
+      /* Wochenplan Übersicht: Tages-Kacheln einheitlich */
+      #v-provider-week .week-overview-day{ background: var(--glass-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-radius: var(--card-radius-premium, 24px); border:1px solid rgba(255,255,255,0.6); padding:14px 16px; margin-bottom:12px; min-height:72px; box-shadow: var(--card-shadow-soft), var(--glass-inner-glow); position:relative; overflow:hidden; }
       #v-provider-week .week-overview-day.week-day-online::before{ content:''; position:absolute; inset:0; background: linear-gradient(105deg, transparent 0%, rgba(16,185,129,0.08) 45%, rgba(212,168,83,0.12) 55%, transparent 100%); background-size: 200% 100%; animation: weekSuccessShimmer 1.5s ease-out 1; pointer-events:none; }
       @keyframes weekSuccessShimmer{ 0%{ background-position: 200% 0; } 100%{ background-position: -200% 0; } }
       #v-provider-week .week-overview-day-label{ font-size:13px; font-weight:800; color:#64748b; margin-bottom:8px; display:flex; align-items:center; gap:8px; }
@@ -3806,7 +3820,8 @@
       #providerWeekSection .provider-week-title{ margin:0 0 24px; font-size:22px; font-weight:900; color:#1a1a1a; letter-spacing:-0.02em; }
       .provider-week-footer #btnProviderWeekFooter:active{ transform:scale(0.98); box-shadow:0 1px 6px rgba(0,0,0,0.08); }
       #providerWeekDays{ display:flex; gap:10px; overflow-x:auto; -webkit-overflow-scrolling:touch; padding:4px 0 24px; margin-bottom:24px; scroll-snap-type:x mandatory; }
-      #providerWeekDays .week-preview-pill{ flex:0 0 auto; min-width:70px; min-height:52px; padding:18px 10px; border-radius:32px; border:2px solid #f1f3f5; background:#fff; font-size:10px; font-weight:900; color:#64748b; cursor:pointer; transition:all 0.2s; line-height:1.25; text-align:center; white-space:pre-line; scroll-snap-align:center; scroll-snap-stop:always; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+      /* Dashboard + Wochenplan: Tag-Pills (Mo–So) alle gleich groß */
+      #providerWeekDays .week-preview-pill{ flex:0 0 auto; width:52px; min-width:52px; height:52px; min-height:52px; padding:0 6px; border-radius:32px; border:2px solid #f1f3f5; background:#fff; font-size:10px; font-weight:900; color:#64748b; cursor:pointer; transition:all 0.2s; line-height:1.2; text-align:center; white-space:pre-line; scroll-snap-align:center; scroll-snap-stop:always; display:flex; flex-direction:column; align-items:center; justify-content:center; box-sizing:border-box; }
       #providerWeekDays .week-preview-pill::after{ content:''; width:8px; height:8px; border-radius:50%; margin-top:4px; background:#e2e8f0; border:none; transition:background 0.2s; }
       #providerWeekDays .week-preview-pill.has-online::after{ background:#10b981; box-shadow:0 0 0 2px rgba(16,185,129,0.3); }
       #providerWeekDays .week-preview-pill.has-listings:not(.has-online)::after{ background:#3b82f6; border:none; }
@@ -3815,7 +3830,7 @@
       #providerWeekDays .week-preview-pill.active.has-online::after{ background:#10b981; box-shadow:0 0 0 2px rgba(16,185,129,0.3); }
       /* Wochenplan 2.2: Dashboard-Pills minimalistisch – ohne Status-Punkt, Fokus auf Karten */
       #v-provider-home #providerWeekDays .week-preview-pill::after{ display:none !important; }
-      #v-provider-home #providerWeekDays .week-preview-pill{ min-height:52px; }
+      #v-provider-home #providerWeekDays .week-preview-pill{ width:52px; min-width:52px; height:52px; min-height:52px; }
       .prov-stat-hint{ display:block; font-size:11px; font-weight:600; color:#94a3b8; margin-top:2px; line-height:1.2; }
       #v-provider-home .prov-stat-item:focus-visible,
       #v-provider-home button:focus-visible{ outline:2px solid var(--prov-brand,#0ea5e9); outline-offset:2px; }
@@ -3838,15 +3853,15 @@
       #providerWeekDayContent .week-preview-dish-sold span:first-child{ display:block; font-size:8px; font-weight:800; color:#9ca3af; text-transform:uppercase; letter-spacing:0.05em; }
       #providerWeekDayContent .week-preview-dish-sold .week-preview-dish-sold-num{ font-size:16px; font-weight:900; color:#1a1a1a; }
       #providerWeekDayContent .week-preview-dish-online .week-preview-dish-inner{ flex:1; min-width:0; display:flex; flex-direction:column; align-items:flex-start; gap:2px; }
-      #providerWeekDayContent .week-preview-dish-online .week-preview-dish-time{ font-size:12px; font-weight:700; color:#94a3b8; }
+      #providerWeekDayContent .week-preview-dish-time{ display:none; }
+      #providerWeekDayContent .week-preview-dish-online .week-preview-dish-time{ display:none; }
       #providerWeekDayContent .week-preview-dish.week-preview-dish-geplant{ opacity:0.9; background:rgba(255,255,255,0.95); border:2px dashed #e2e8f0; border-left-width:8px; border-left-color:#e2e8f0; padding:24px 20px; min-height:60px; }
       #providerWeekDayContent .week-preview-dish.week-preview-dish-geplant .week-preview-dish-name{ color:#64748b; }
       #providerWeekDayContent .week-preview-dish-name{ font-size:20px; font-weight:900; color:#1a1a1a; line-height:1.2; }
       #providerWeekDayContent .week-preview-dish-meta{ display:flex; flex-direction:column; align-items:flex-end; gap:2px; }
       #providerWeekDayContent .week-preview-dish-status{ font-size:10px; font-weight:900; text-transform:uppercase; letter-spacing:0.05em; }
-      #providerWeekDayContent .week-preview-dish-status.online{ color:#10b981; }
+      #providerWeekDayContent .week-preview-dish-status.online{ display:none; }
       #providerWeekDayContent .week-preview-dish-status.geplant{ color:#94a3b8; }
-      #providerWeekDayContent .week-preview-dish-time{ font-size:13px; font-weight:700; color:#94a3b8; }
       #providerWeekDayContent .week-preview-cta{ margin-top:24px; }
       #providerWeekDayContent .week-preview-cta .btn{ width:100%; min-height:48px; border-radius:14px; font-weight:700; border:2px solid #e5e7eb; background:#fff; color:#1a1a1a; }
       #providerWeekDayContent .week-preview-link{ display:inline-flex; align-items:center; gap:6px; font-size:14px; font-weight:700; color:#1a1a1a; margin-top:20px; margin-bottom:24px; cursor:pointer; color:var(--prov-brand,#0ea5e9); padding-bottom:env(safe-area-inset-bottom, 0); }
@@ -5663,7 +5678,6 @@
           <div class="prov-header-inner" style="border:none; padding-top:calc(14px + env(safe-area-inset-top, 0)); padding-bottom:16px; padding-left:max(20px, env(safe-area-inset-left, 0)); padding-right:max(20px, env(safe-area-inset-right, 0));">
             <div style="display:flex; align-items:center; justify-content:space-between;">
               <div style="display:flex; align-items:center; gap:8px;">
-                <span style="font-size:28px;" aria-hidden="true">🔪</span>
                 <h1 class="prov-title" style="margin:0; font-size:20px; font-weight:900;">Meine Küche</h1>
               </div>
               <button type="button" id="btnProviderHomeRefresh" title="Aktualisieren" aria-label="Daten neu laden" style="background:rgba(0,0,0,0.04); border:none; min-width:44px; min-height:44px; width:44px; height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; color:#64748b; cursor:pointer;">
@@ -5678,17 +5692,17 @@
         <!-- KASTEN 2: KPIs -->
         <div class="dashboard-kasten dashboard-kasten-kpis">
           <div class="prov-stats-stolz" style="display:flex; justify-content:space-between; align-items:flex-end; border:none; padding:0;">
-            <div id="kpiTagesessen" role="button" tabindex="0" style="text-align:left; cursor:pointer; min-height:44px; flex:1;" onclick="document.getElementById('providerActiveListingsSection')?.scrollIntoView({behavior:'smooth'})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); document.getElementById('providerActiveListingsSection')?.scrollIntoView({behavior:'smooth'});}" title="Tagesessen">
-              <p id="kpiLabelTagesessen" class="kpi-label" style="margin:0 0 2px; font-size:9px; font-weight:800; color:#d1d5db; text-transform:uppercase; letter-spacing:0.05em;">Tagesessen</p>
-              <p id="dashboardTagesessenCount" style="margin:0; font-size:20px; font-weight:900; color:#1a1a1a;">0</p>
+            <div id="kpiTagesessen" role="button" tabindex="0" style="text-align:left; cursor:pointer; min-height:40px; flex:1;" onclick="document.getElementById('providerActiveListingsSection')?.scrollIntoView({behavior:'smooth'})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); document.getElementById('providerActiveListingsSection')?.scrollIntoView({behavior:'smooth'});}" title="Tagesessen">
+              <p id="kpiLabelTagesessen" class="kpi-label" style="margin:0 0 2px; font-size:8px; font-weight:800; color:#9ca3af; text-transform:uppercase; letter-spacing:0.05em;">Tagesessen</p>
+              <p id="dashboardTagesessenCount" style="margin:0; font-size:16px; font-weight:900; color:#1a1a1a;">0</p>
             </div>
-            <div id="kpiBestellungen" role="button" tabindex="0" style="text-align:center; padding:0 24px; border-left:1px solid #f3f4f6; border-right:1px solid #f3f4f6; cursor:pointer; min-height:44px; flex:1;" onclick="showProviderPickups()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); showProviderPickups();}" title="Abholnummer / Abholungen">
-              <p id="kpiLabelAbholungen" class="kpi-label" style="margin:0 0 2px; font-size:9px; font-weight:800; color:#d1d5db; text-transform:uppercase; letter-spacing:0.05em;">Abholungen</p>
-              <p id="dashboardAbholungenCount" style="margin:0; font-size:20px; font-weight:900; color:#3b82f6;">0</p>
+            <div id="kpiBestellungen" role="button" tabindex="0" style="text-align:center; padding:0 16px; border-left:1px solid #f3f4f6; border-right:1px solid #f3f4f6; cursor:pointer; min-height:40px; flex:1;" onclick="showProviderPickups()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); showProviderPickups();}" title="Abholnummer / Abholungen">
+              <p id="kpiLabelAbholungen" class="kpi-label" style="margin:0 0 2px; font-size:8px; font-weight:800; color:#9ca3af; text-transform:uppercase; letter-spacing:0.05em;">Abholungen</p>
+              <p id="dashboardAbholungenCount" style="margin:0; font-size:16px; font-weight:900; color:#3b82f6;">0</p>
             </div>
-            <div id="kpiUmsatz" role="button" tabindex="0" style="text-align:right; cursor:pointer; min-height:44px; flex:1;" onclick="showProviderBilling()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); showProviderBilling();}" title="Tagesumsatz">
-              <p id="kpiLabelUmsatz" class="kpi-label" style="margin:0 0 2px; font-size:9px; font-weight:800; color:#d1d5db; text-transform:uppercase; letter-spacing:0.05em;">Umsatz heute</p>
-              <p id="dashboardUmsatzToday" style="margin:0; font-size:20px; font-weight:900; color:#16a34a;">0,00 €</p>
+            <div id="kpiUmsatz" role="button" tabindex="0" style="text-align:right; cursor:pointer; min-height:40px; flex:1;" onclick="showProviderBilling()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); showProviderBilling();}" title="Tagesumsatz">
+              <p id="kpiLabelUmsatz" class="kpi-label" style="margin:0 0 2px; font-size:8px; font-weight:800; color:#9ca3af; text-transform:uppercase; letter-spacing:0.05em;">Umsatz heute</p>
+              <p id="dashboardUmsatzToday" style="margin:0; font-size:16px; font-weight:900; color:#16a34a;">0,00 €</p>
             </div>
           </div>
         </div>
@@ -5698,7 +5712,9 @@
           <div id="providerActiveListingsSection">
             <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
               <h3 class="provider-week-title" style="margin:0; font-size:18px;">Aktive Angebote heute</h3>
-              <span id="providerOnlineBadgeWrap" class="prov-badge prov-badge-live" title="Deine Angebote sind sichtbar" style="display:none;">Online</span>
+              <button type="button" id="btnProviderShareToday" title="Heutige Angebote teilen" aria-label="Angebote teilen" style="background:rgba(0,0,0,0.06); border:none; min-width:44px; min-height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; color:#1a1a1a; cursor:pointer;">
+                <i data-lucide="share-2" style="width:20px; height:20px;"></i>
+              </button>
             </div>
             <div id="providerActiveListingsEmptyCard" style="display:none; margin-top:8px;">
               <div class="prov-card" style="padding:32px 24px; text-align:center; border:2px dashed rgba(0,0,0,0.08); background:#fafafa; border-radius:24px;">
@@ -5722,10 +5738,14 @@
             <div id="providerWeekDays" class="provider-week-days"></div>
             <div id="providerWeekDayContent" class="provider-week-day-content"></div>
           </div>
-          <div class="provider-week-footer">
+          <div class="provider-week-footer" style="display:flex; flex-direction:column; gap:10px;">
             <button type="button" id="btnProviderWeekFooter" style="width:100%; min-height:48px; border-radius:26px; border:2px solid #e5e7eb; background:#fff; color:#1a1a1a; font-size:16px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; box-shadow:0 2px 12px rgba(0,0,0,0.06); transition:transform 0.1s, box-shadow 0.15s;" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); document.getElementById('btnProviderWeekFooter').click();}">
               <span>Zum Wochenplan</span>
               <i data-lucide="chevron-right" style="width:20px; height:20px;"></i>
+            </button>
+            <button type="button" id="btnProviderShareWeekPlan" title="Wochenplan teilen" style="width:100%; min-height:44px; border-radius:22px; border:2px solid #e5e7eb; background:#fff; color:#64748b; font-size:14px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">
+              <i data-lucide="share-2" style="width:18px; height:18px;"></i>
+              <span>Teilen</span>
             </button>
           </div>
         </div>
@@ -6846,6 +6866,31 @@
             Angaben ändern
           </button>
           <button class="btn ghost" type="button" onclick="closeQuickPostSheet()" style="width:100%; min-height:44px; color:#64748b; font-weight:600; border:none; background:none;">
+            Abbrechen
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Share-Preview-Modal (WhatsApp-Vorschau vor dem Teilen) -->
+    <div id="sharePreviewBd" class="share-preview-backdrop" style="display:none; position:fixed; inset:0; z-index:2100; background:rgba(26,26,26,0.8); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); padding:20px; box-sizing:border-box;" onclick="if(event.target===this) closeSharePreviewModal();">
+      <div class="share-preview-sheet" style="background:#fff; border-radius:2.5rem; width:100%; max-width:380px; overflow:hidden; box-shadow:0 24px 60px rgba(0,0,0,0.25);">
+        <div style="background:#25D366; padding:20px 24px; display:flex; align-items:center; gap:12px;">
+          <div style="width:40px; height:40px; background:rgba(255,255,255,0.2); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:20px;">💬</div>
+          <div>
+            <h3 style="margin:0; font-size:11px; font-weight:900; text-transform:uppercase; letter-spacing:0.15em; color:#fff;">Vorschau</h3>
+            <p style="margin:2px 0 0; font-size:10px; opacity:0.9; color:#fff;">So sieht es bei WhatsApp aus</p>
+          </div>
+        </div>
+        <div style="padding:24px;">
+          <div id="sharePreviewBubble" style="background:#e7f3ef; padding:16px 18px; border-radius:20px; border-top-left-radius:4px; border:1px solid rgba(0,0,0,0.05); margin-bottom:24px;">
+            <p id="sharePreviewText" style="margin:0; font-size:14px; color:#1a1a1a; white-space:pre-line; line-height:1.5; font-weight:500;"></p>
+          </div>
+          <button type="button" id="btnSharePreviewSend" onclick="sharePreviewSendWhatsApp()" style="width:100%; min-height:56px; border:none; border-radius:1.5rem; background:#25D366; color:#fff; font-size:16px; font-weight:900; box-shadow:0 4px 20px rgba(37,211,102,0.4); cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px;">
+            <span>JETZT TEILEN</span>
+            <span style="font-size:20px;">🚀</span>
+          </button>
+          <button type="button" id="btnSharePreviewCancel" onclick="closeSharePreviewModal()" style="width:100%; margin-top:16px; padding:12px; border:none; background:none; color:#94a3b8; font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:0.1em; cursor:pointer;">
             Abbrechen
           </button>
         </div>
@@ -17446,11 +17491,11 @@
       if(dashUmsatz){ dashUmsatz.textContent = nettoEuro.replace('.', ',') + ' €'; dashUmsatz.style.color = hasRevenue ? '#16a34a' : '#1a1a1a'; }
       if(dashUmsatzHint){ dashUmsatzHint.style.display = !hasRevenue ? 'block' : 'none'; }
 
-      // KPI: Nur Zahlen – Labels ausblenden sobald Gäste bestellen (bei beiden: Abholungen + Umsatz)
+      // KPI: Tagesessen-Label immer anzeigen; Abholungen/Umsatz-Labels ausblenden sobald Aktivität
       const kpiLabelTagesessen = document.getElementById('kpiLabelTagesessen');
       const kpiLabelAbholungen = document.getElementById('kpiLabelAbholungen');
       const kpiLabelUmsatz = document.getElementById('kpiLabelUmsatz');
-      if(kpiLabelTagesessen) kpiLabelTagesessen.style.display = mineToday.length > 0 ? 'none' : '';
+      if(kpiLabelTagesessen) kpiLabelTagesessen.style.display = '';
       if(kpiLabelAbholungen) kpiLabelAbholungen.style.display = todayPickups > 0 ? 'none' : '';
       if(kpiLabelUmsatz) kpiLabelUmsatz.style.display = hasRevenue ? 'none' : '';
 
@@ -17474,10 +17519,10 @@
       const providerActiveListings = document.getElementById('providerActiveListings');
       const providerActiveListingsSection = document.getElementById('providerActiveListingsSection');
       const providerActiveListingsEmptyCard = document.getElementById('providerActiveListingsEmptyCard');
-      const providerOnlineBadgeWrap = document.getElementById('providerOnlineBadgeWrap');
       if(providerActiveListingsSection) providerActiveListingsSection.style.display = 'block';
       if(providerActiveListingsEmptyCard) providerActiveListingsEmptyCard.style.display = mineToday.length === 0 ? 'block' : 'none';
-      if(providerOnlineBadgeWrap) providerOnlineBadgeWrap.style.display = mineToday.length > 0 ? '' : 'none';
+      var btnShareToday = document.getElementById('btnProviderShareToday');
+      if(btnShareToday) btnShareToday.onclick = function(){ if(typeof shareTodayOffers === 'function') shareTodayOffers(); };
       if(providerActiveListings){
         providerActiveListings.innerHTML = '';
         providerActiveListings.style.display = mineToday.length > 0 ? 'flex' : 'none';
@@ -17497,10 +17542,13 @@
           const favCount = (JSON.parse(localStorage.getItem('mittagio_favorites') || '[]')).filter(function(id){ return id === o.id; }).length;
           const pickupsForOffer = todayOrders.filter(function(ord){ return ord.dishId === o.id; });
           const orderCount = pickupsForOffer.length;
-          // Säulen nur bei Abweichung vom Profil
+          const paidWithCode = pickupsForOffer.filter(function(ord){ return ord.status === 'PAID' && ord.pickupCode; });
+          const firstPickupCode = paidWithCode.length ? ('#' + (paidWithCode[0].pickupCode || String(paidWithCode[0].id || '').slice(-2))) : null;
+          const abholnummerLabel = hasPickupNumber ? (firstPickupCode || '–') : '–';
+          const abholnummerGray = !hasPickupNumber;
+          // Säulen nur bei Abweichung vom Profil (ohne Abholnummer – wird separat angezeigt)
           const pillars = [];
           if((o.dineInPossible !== undefined) && (hasDineIn !== defaultDineIn)) pillars.push('<div style="flex:1; background:#f1f5f9; color:#1a1a1a; padding:8px; border-radius:10px; font-size:10px; font-weight:800; text-transform:uppercase; text-align:center;">🍴 ' + (hasDineIn ? 'Vor Ort' : 'Kein Vor Ort') + '</div>');
-          if((o.hasPickupCode !== undefined) && (hasPickupNumber !== defaultPickup)) pillars.push('<div style="flex:1; background:rgba(255,215,0,0.2); color:#1a1a1a; padding:8px; border-radius:10px; font-size:10px; font-weight:800; text-transform:uppercase; text-align:center;">🧾 Abholnummer aktiv</div>');
           if((o.reuse !== undefined) && (hasReusable !== defaultReuse)) pillars.push('<div style="flex:1; background:rgba(16,185,129,0.1); color:#10b981; padding:8px; border-radius:10px; font-size:10px; font-weight:800; text-transform:uppercase; text-align:center;">🔄 Mehrweg</div>');
 
           const card = document.createElement('div');
@@ -17515,10 +17563,15 @@
             </div>
             <div style="padding:20px;">
               <h2 style="margin:0 0 16px; font-size:18px; font-weight:900; color:#1a1a1a;">${esc(dishName)}</h2>
-              <div style="display:flex; gap:16px; margin-bottom:20px; padding-bottom:16px; border-bottom:1px solid #f1f1f1;">
+              <div style="display:flex; gap:16px; margin-bottom:12px; padding-bottom:12px; border-bottom:1px solid #f1f1f1;">
                 <div style="display:flex; align-items:center; gap:6px;"><span style="font-size:16px;">👁️</span><span style="font-size:13px; font-weight:800;">${viewsCount}</span></div>
                 <div style="display:flex; align-items:center; gap:6px;"><span style="font-size:16px;">❤️</span><span style="font-size:13px; font-weight:800;">${favCount}</span></div>
                 <div style="display:flex; align-items:center; gap:6px;"><span style="font-size:16px;">🧾</span><span style="font-size:13px; font-weight:800;">${orderCount}</span></div>
+              </div>
+              <div style="margin-bottom:12px; padding:8px 12px; border-radius:10px; background:${abholnummerGray ? '#f1f5f9' : 'rgba(255,215,0,0.15)'}; color:${abholnummerGray ? '#94a3b8' : '#1a1a1a'}; font-size:12px; font-weight:800; display:flex; align-items:center; gap:8px;">
+                <span style="font-size:14px;">🧾</span>
+                <span>Abholnummer</span>
+                <span style="margin-left:auto; font-family:monospace; letter-spacing:0.05em;">${abholnummerLabel}</span>
               </div>
               <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap;">
                 <div style="display:flex; gap:8px; flex:1; min-width:0;">${pillars.join('')}</div>
@@ -17792,7 +17845,9 @@
       btnProviderWeekFooter.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(typeof showProviderWeek === 'function') showProviderWeek(); };
       btnProviderWeekFooter.onkeydown = function(e){ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); btnProviderWeekFooter.click(); } };
     }
-    
+    const btnProviderShareWeekPlan = document.getElementById('btnProviderShareWeekPlan');
+    if(btnProviderShareWeekPlan) btnProviderShareWeekPlan.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(typeof shareWeekPlan === 'function') shareWeekPlan(); };
+
     // Wochenplan-Button: Text mit Anzahl geplanter Gerichte (nächste 7 Tage)
     const btnWeekPlanText = document.getElementById('btnDashboardOpenWeekPlanText');
     if(btnWeekPlanText){
@@ -17973,20 +18028,14 @@
         var soldBox = soldCount > 0 ? '<div class="week-preview-dish-sold"><span>Verkauft</span><span class="week-preview-dish-sold-num">' + soldCount + '</span></div>' : '';
         var imgSrc = (o.imageUrl || o.img || '').toString().trim();
         var thumbHtml = '<div class="week-preview-dish-thumb">' + (imgSrc ? '<img src="' + (typeof esc === 'function' ? esc(imgSrc) : String(imgSrc).replace(/"/g,'&quot;')) + '" alt="" loading="lazy"/>' : '') + '</div>';
-        dishRows.push('<div class="week-preview-dish week-preview-dish-online" data-offer-id="' + (o.id || '') + '">' + thumbHtml + '<div class="week-preview-dish-inner"><span class="week-preview-dish-status online">● Online</span><div class="week-preview-dish-name">' + dishName + '</div><span class="week-preview-dish-time">' + (typeof esc === 'function' ? esc(mealWindow) : mealWindow) + '</span></div>' + soldBox + '</div>');
+        dishRows.push('<div class="week-preview-dish week-preview-dish-online" data-offer-id="' + (o.id || '') + '">' + thumbHtml + '<div class="week-preview-dish-inner"><div class="week-preview-dish-name">' + dishName + '</div></div>' + soldBox + '</div>');
       });
       weekEntries.forEach(function(e, slotIndex){
         var cb = cookbook.find(function(c){ return String(c.id) === String(e.cookbookId); });
         var name = (typeof esc === 'function' ? esc((cb && cb.dish) || e.dish || 'Gericht') : ((cb && cb.dish) || e.dish || 'Gericht').replace(/</g,'&lt;'));
         dishRows.push('<div class="week-preview-dish week-preview-dish-geplant" data-day="' + (typeof esc === 'function' ? esc(selectedDay) : selectedDay) + '" data-slot="' + slotIndex + '"><div class="week-preview-dish-name">' + name + '</div><div class="week-preview-dish-meta"><span class="week-preview-dish-status geplant">Geplant</span></div></div>');
       });
-      dayContent.innerHTML =
-        '<div class="week-preview-dishes">' + dishRows.join('') + '</div>' +
-        '<div class="week-preview-cta">' +
-        '<button type="button" class="btn secondary" id="btnProviderWeekAddDish" style="width:100%; min-height:48px; background:#fff; color:#1a1a1a; border:2px solid #e5e7eb; font-weight:700; border-radius:14px;">Weiteres Gericht planen</button>' +
-        '</div>';
-      var btn = document.getElementById('btnProviderWeekAddDish');
-      if(btn) btn.onclick = function(){ if(typeof openWeekAddSheet === 'function') openWeekAddSheet(selectedDay); };
+      dayContent.innerHTML = '<div class="week-preview-dishes">' + dishRows.join('') + '</div>';
       /* Direkt-Edit: Klick auf Gerichtskarte */
       var dishes = dayContent.querySelectorAll('.week-preview-dish');
       dishes.forEach(function(el){
@@ -18684,14 +18733,7 @@
       list.appendChild(wrap);
     });
 
-    if(!dayIsLive){
-      var addMore = document.createElement('button');
-      addMore.type = 'button';
-      addMore.className = 'week-add-more';
-      addMore.textContent = '+ Weiteres Gericht für diesen Tag planen';
-      addMore.onclick = function(){ createFlowPreselectedDate = weekPlanDay; openCreateFlowSheet(); };
-      list.appendChild(addMore);
-    }
+    /* "Weiteres Gericht planen" entfernt – Nutzer nutzt gelbes Plus oder Wochenplan-Karte */
 
     var draftDays = getWeekDraftDays();
     var masterBar = document.getElementById('weekMasterActivateBar');
@@ -20493,6 +20535,8 @@
     try { localStorage.setItem(PUBLIC_PLAN_KEY + pid, JSON.stringify(snapshot)); } catch(e) {}
     var shareUrl = location.origin + location.pathname.replace(/\/$/, '') + '#/plan/' + encodeURIComponent(pid);
     var shareTitle = 'Unser Wochenplan ist online!';
+    var weekMsg = typeof generateWhatsAppShareMessage === 'function' ? generateWhatsAppShareMessage('week') : null;
+    if(weekMsg){ openSharePreviewModal(weekMsg); return; }
     var shareText = hasAbholnummer
       ? `📅 Hunger für die ganze Woche geplant? Schau dir unseren neuen Wochenplan an!\n\n📍 ${providerName}\n\n${weekOffers.slice(0, 5).map(o => `🍴 ${o.day}: ${o.dish} - ${euro(o.price)}`).join('\n')}${weekOffers.length > 5 ? `\n... und ${weekOffers.length - 5} weitere Leckereien!` : ''}\n\nJetzt für die Mittagsbox planen & Schlange überspringen:\n👉 ${shareUrl}\n\n#mittagio #wochenplan #mittagspause #lecker`
       : `📅 Hunger für die ganze Woche geplant? Schau dir unseren neuen Wochenplan an!\n\n📍 ${providerName}\n\n${weekOffers.slice(0, 5).map(o => `🍴 ${o.day}: ${o.dish} - ${euro(o.price)}`).join('\n')}${weekOffers.length > 5 ? `\n... und ${weekOffers.length - 5} weitere Leckereien!` : ''}\n\nJetzt online entdecken & entspannt genießen:\n👉 ${shareUrl}\n\n#mittagio #wochenplan #mittagspause #lecker`;
@@ -20546,44 +20590,93 @@
     if(el){ el.style.display = 'none'; el.classList.remove('active'); }
   }
 
-  // Tagesessen teilen-Funktion
+  // WhatsApp-Share-Vorschau: Message für Heute oder Woche generieren (mit *fett* für WhatsApp)
+  function generateWhatsAppShareMessage(type){
+    const profile = normalizeProviderProfile(provider.profile || {});
+    const providerName = profile.name || provider.email || 'Anbieter';
+    const pid = providerId();
+    const shareUrlToday = (location.origin + (location.pathname || '').replace(/\/$/, '')) + '#provider/' + pid + '/today';
+    const shareUrlWeek = (location.origin + (location.pathname || '').replace(/\/$/, '')) + '#/plan/' + encodeURIComponent(pid);
+    const hasMehrweg = !!(profile.reuse && profile.reuse.enabled);
+
+    if(type === 'today'){
+      const todayKey = isoDate(new Date());
+      const mineToday = (offers || []).filter(function(o){ return o.providerId === pid && o.day === todayKey && o.active !== false; });
+      if(mineToday.length === 0) return null;
+      const hasAbholnummer = !!profile.abholnummerEnabledByDefault || mineToday.some(function(o){ return o.hasPickupCode; });
+      const todayOrders = typeof loadOrders === 'function' ? loadOrders() : [];
+      const todayOfferIds = mineToday.map(function(o){ return o.id; });
+      const firstPaidCode = todayOrders.filter(function(ord){ return ord.status === 'PAID' && ord.pickupCode && todayOfferIds.indexOf(ord.dishId) !== -1; })[0];
+      const abholnummerStr = hasAbholnummer ? (firstPaidCode ? ('#' + (firstPaidCode.pickupCode || '')) : 'verfügbar') : '–';
+      const dishesBlock = mineToday.map(function(o){ return '🥘 *' + (o.dish || o.title || 'Gericht').replace(/\*/g,'') + '* — ' + (typeof euro === 'function' ? euro(o.price || 0) : (Number(o.price)||0).toFixed(2).replace('.',',') + ' €'); }).join('\n');
+      let msg = '🔪 *Frisch aus unserer Küche für heute!* 👨‍🍳\n\n' + dishesBlock + '\n\n*Service:*\n🍴 Vor Ort genießen\n🧾 Abholnummer: *' + abholnummerStr + '*\n';
+      if(hasMehrweg) msg += '🔄 Mehrweg verfügbar\n';
+      msg += '\nGuten Appetit! 📍\n' + shareUrlToday;
+      return msg;
+    }
+
+    if(type === 'week'){
+      const dayShort = ['So','Mo','Di','Mi','Do','Fr','Sa'];
+      var weekOffers = [];
+      for(var i = 0; i < 7; i++){
+        var d = new Date(); d.setDate(d.getDate() + i);
+        var key = isoDate(d);
+        var dayName = dayShort[d.getDay()];
+        var live = (offers || []).filter(function(o){ return o.providerId === pid && o.day === key && o.active !== false; });
+        var dishStr = live.length ? live.map(function(o){ return o.dish || o.title || 'Gericht'; }).join(', ') : '–';
+        weekOffers.push({ day: dayName, dish: dishStr });
+      }
+      var weekBlock = weekOffers.map(function(o){ return '🗓 ' + o.day + ': ' + o.dish; }).join('\n');
+      var msg = '📅 *Dein Genuss-Plan für diese Woche!* 🥘\n\n' + weekBlock + '\n\n📲 Nutze die Abholnummer für schnellen Service! 🧾\n';
+      if(hasMehrweg) msg += '🔄 Mehrweg-System aktiv.\n';
+      msg += '\n' + shareUrlWeek;
+      return msg;
+    }
+    return null;
+  }
+
+  var _sharePreviewCurrentMessage = '';
+  function openSharePreviewModal(message){
+    _sharePreviewCurrentMessage = message || '';
+    var bd = document.getElementById('sharePreviewBd');
+    var textEl = document.getElementById('sharePreviewText');
+    if(!bd || !textEl) return;
+    textEl.textContent = message;
+    bd.style.display = 'flex';
+    bd.style.alignItems = 'center';
+    bd.style.justifyContent = 'center';
+  }
+  function closeSharePreviewModal(){
+    var bd = document.getElementById('sharePreviewBd');
+    if(bd) bd.style.display = 'none';
+    _sharePreviewCurrentMessage = '';
+  }
+  function sharePreviewSendWhatsApp(){
+    if(_sharePreviewCurrentMessage){
+      window.open('whatsapp://send?text=' + encodeURIComponent(_sharePreviewCurrentMessage));
+      closeSharePreviewModal();
+      if(typeof showToast === 'function') showToast('WhatsApp geöffnet – Nachricht einfügen & senden!');
+    }
+  }
+
+  // Tagesessen teilen: öffnet Share-Preview-Modal mit WhatsApp-Text
   function shareTodayOffers(){
+    var msg = generateWhatsAppShareMessage('today');
+    if(!msg){ showToast('Keine Gerichte für heute'); return; }
+    openSharePreviewModal(msg);
+  }
+  // Fallback: direkter Share (wenn gewünscht)
+  function shareTodayOffersDirect(){
     const todayKey = isoDate(new Date());
     const profile = normalizeProviderProfile(provider.profile || {});
     const providerName = profile.name || provider.email || 'Anbieter';
     const mineToday = offers.filter(o => o.providerId === providerId() && o.day === todayKey && o.active !== false);
     const hasAbholnummer = !!profile.abholnummerEnabledByDefault || mineToday.some(o => o.hasPickupCode);
-    
-    if(mineToday.length === 0){
-      showToast('Keine Gerichte für heute');
-      return;
-    }
-    
+    if(mineToday.length === 0){ showToast('Keine Gerichte für heute'); return; }
     const shareUrl = `${location.origin}${location.pathname}#provider/${providerId()}/today`;
-    let shareText;
-    if(hasAbholnummer){
-      shareText = `🚀 Hunger? Schau mal, was wir heute Leckeres für dich haben!\n\n📍 ${providerName}\n\n${mineToday.map(o => `🍴 ${o.dish || o.title || 'Gericht'} - ${euro(o.price || 0)}`).join('\n')}\n\nJetzt Schlange überspringen & Abholnummer sichern:\n👉 ${shareUrl}\n\n#mittagio #lunch #heutebeius`;
-    } else {
-      shareText = `🚀 Hunger? Schau mal, was wir heute Leckeres für dich haben!\n\n📍 ${providerName}\n\n${mineToday.map(o => `🍴 ${o.dish || o.title || 'Gericht'} - ${euro(o.price || 0)}`).join('\n')}\n\nJetzt online entdecken & vorbeikommen:\n👉 ${shareUrl}\n\n#mittagio #lunch #heutebeius`;
-    }
-    
-    if(navigator.share){
-      navigator.share({
-        title: `Heute bei ${providerName}`,
-        text: shareText,
-        url: shareUrl
-      }).then(() => {
-        showToast('Tagesessen geteilt!');
-      }).catch((err) => {
-        if(err.name !== 'AbortError'){
-          copyToClipboard(shareText);
-          showToast('Link kopiert!');
-        }
-      });
-    } else {
-      copyToClipboard(shareText);
-      showToast('Link kopiert!');
-    }
+    let shareText = `🚀 Hunger? Schau mal, was wir heute Leckeres für dich haben!\n\n📍 ${providerName}\n\n${mineToday.map(o => `🍴 ${o.dish || o.title || 'Gericht'} - ${euro(o.price || 0)}`).join('\n')}\n\nJetzt Schlange überspringen & Abholnummer sichern:\n👉 ${shareUrl}\n\n#mittagio #lunch #heutebeius`;
+    if(!hasAbholnummer) shareText = `🚀 Hunger? Schau mal, was wir heute Leckeres für dich haben!\n\n📍 ${providerName}\n\n${mineToday.map(o => `🍴 ${o.dish || o.title || 'Gericht'} - ${euro(o.price || 0)}`).join('\n')}\n\nJetzt online entdecken & vorbeikommen:\n👉 ${shareUrl}\n\n#mittagio #lunch #heutebeius`;
+    if(navigator.share){ navigator.share({ title: `Heute bei ${providerName}`, text: shareText, url: shareUrl }).then(() => showToast('Tagesessen geteilt!')).catch((err) => { if(err.name !== 'AbortError'){ copyToClipboard(shareText); showToast('Link kopiert!'); } }); } else { copyToClipboard(shareText); showToast('Link kopiert!'); }
   }
 
   // Provider ID (for demo)
