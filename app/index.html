@@ -9328,10 +9328,12 @@
       if(!provider.loggedIn){
         showView(views.providerLogin);
       } else {
-        // RESTORE VIEW OR GO HOME
+        // RESTORE NUR HAUPT-TABS (Dashboard, Abholungen, Wochenplan, Kochbuch, Profil) – keine Detail-/Login-Views
         const lastView = localStorage.getItem('mittagio_last_view');
         const lastMode = localStorage.getItem('mittagio_last_mode');
-        if(lastMode === 'provider' && lastView && document.getElementById(lastView)){
+        const providerMainViews = ['v-provider-home','v-provider-pickups','v-provider-week','v-provider-cookbook','v-provider-profile','v-provider-billing'];
+        const canRestore = lastMode === 'provider' && lastView && providerMainViews.indexOf(lastView) !== -1 && document.getElementById(lastView);
+        if(canRestore){
           showView(lastView);
           var navGo = (lastView === 'v-provider-home') ? 'provider-home' : (lastView === 'v-provider-pickups') ? 'provider-pickups' : (lastView === 'v-provider-week') ? 'provider-week' : (lastView === 'v-provider-cookbook') ? 'provider-cookbook' : (lastView === 'v-provider-profile' || lastView === 'v-provider-billing') ? 'provider-profile' : 'provider-home';
           setProviderNavActive(navGo);
