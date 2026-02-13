@@ -1772,7 +1772,8 @@
 
     @media (min-width: 501px) {
       .fab-provider {
-        right: calc(50% - 230px);
+        right: calc(20px + env(safe-area-inset-right, 0));
+        left: auto;
       }
     }
     #wizard.sheet--kitchen .w-top{ margin-bottom:12px; }
@@ -3571,20 +3572,21 @@
     /* Meine Küche: View füllt main (height:100%), Wrap = absoluter Scroll-Bereich (immer sichtbar + scrollbar) */
     #v-provider-home.view.active{
       position:relative !important;
-      height:100% !important; min-height:100% !important;
+      height:100% !important; min-height:0 !important; max-height:100% !important;
       background:#fff;
       display:block !important;
       padding:0 !important; margin:0 !important;
       width:100%; box-sizing:border-box;
-      overflow:hidden;
+      overflow:hidden !important;
     }
     /* Dashboard: absoluter Scroll-Container – füllt die View, Inhalt immer sichtbar und scrollbar */
     #v-provider-home .dashboard-floating-wrap{
-      position:absolute; top:0; left:0; right:0; bottom:0;
+      position:absolute !important; top:0 !important; left:0 !important; right:0 !important; bottom:0 !important;
       display:flex; flex-direction:column; gap:20px;
-      overflow-y:auto; overflow-x:hidden;
+      overflow-y:auto !important; overflow-x:hidden !important;
       -webkit-overflow-scrolling:touch;
       overscroll-behavior-y:contain;
+      min-height:0;
       padding:0 16px calc(24px + 72px + env(safe-area-inset-bottom, 0)); padding-left:max(16px, env(safe-area-inset-left, 0)); padding-right:max(16px, env(safe-area-inset-right, 0));
       padding-top:env(safe-area-inset-top, 0);
       width:100%; max-width:100%; margin:0; box-sizing:border-box;
