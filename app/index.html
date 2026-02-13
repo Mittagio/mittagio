@@ -4550,7 +4550,9 @@
       padding-right: env(safe-area-inset-right, 0);
     }
     /* Kunde: Anbieter-Profil (Restaurant-Seite) – app-like, nicht gequetscht, S25-tauglich */
-    #v-provider-detail-public {
+    /* Immer ausblenden wenn nicht aktiv (verhindert Anzeige in Kundenmodus z. B. unter „Meins“ sowie auf Provider-Login/Onboarding) */
+    #v-provider-detail-public:not(.view.active) { display: none !important; }
+    #v-provider-detail-public.view.active {
       display: flex !important;
       flex-direction: column !important;
       min-height: 100vh;
