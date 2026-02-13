@@ -22176,7 +22176,8 @@
     if(w.step===0){
       setWizardQuestion('', '');
       const box=document.createElement('div');
-      box.className='glass-express-step0 inserat-universal-mask';
+      box.className='glass-express-step0 inserat-universal-mask inserat-high-end';
+      box.style.cssText='background:rgba(255,255,255,0.72); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border:1px solid rgba(255,255,255,0.45); border-radius:24px; padding:20px; box-shadow:0 8px 32px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.04);';
       const saveDraft = () => { localStorage.setItem('wizard_draft', JSON.stringify(w)); };
       const profile = normalizeProviderProfile(provider.profile || {});
       const profileWindow = profile.mealWindow || DEFAULT_MEAL_WINDOW;
@@ -22189,20 +22190,25 @@
       const dismissKeyboard = ()=>{ try { if(document.activeElement && document.activeElement.blur) document.activeElement.blur(); } catch(e){} };
       const hapticLight = ()=>{ try { if(typeof haptic==='function') haptic(8); else if(navigator.vibrate) navigator.vibrate(8); } catch(e){} };
 
-      // —— Master: Header = Foto (ganz oben), dann 3 Säulen (Vor Ort, Mehrweg, Abholnummer) ——
+      // —— Liquid UI: Headline (Marketing, nicht langweilig) ——
+      const headline=document.createElement('p');
+      headline.style.cssText='font-size:13px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.06em; margin:0 0 16px;';
+      headline.textContent='Dein Gericht – in unter 30 Sekunden live';
+      box.appendChild(headline);
+      // —— Bild-Modul: Ganz oben (High-End: 3 Säulen direkt darunter) ——
       const photoTile=document.createElement('div');
       photoTile.className='inserat-photo-tile';
-      photoTile.style.cssText='border-radius:20px; overflow:hidden; margin-bottom:16px; border:2px solid rgba(255,255,255,0.4); background:rgba(255,255,255,0.5); min-height:100px; backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);';
+      photoTile.style.cssText='border-radius:20px; overflow:hidden; margin-bottom:12px; border:2px solid rgba(255,255,255,0.45); background:rgba(255,255,255,0.7); min-height:100px; backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); box-shadow:0 4px 16px rgba(0,0,0,0.04);';
       if(w.data.photoData){
         photoTile.style.minHeight='160px';
         photoTile.innerHTML='<img src="'+w.data.photoData+'" style="width:100%; height:160px; object-fit:cover; display:block;" alt=""><div style="padding:10px 14px; display:flex; align-items:center; justify-content:space-between;"><span style="font-size:13px; font-weight:600; color:#64748b;">Foto</span><button type="button" class="inserat-photo-remove" style="background:none; border:none; color:#64748b; font-size:14px; font-weight:700; cursor:pointer;">× Entfernen</button></div>';
         const rem=photoTile.querySelector('.inserat-photo-remove');
         if(rem) rem.onclick=()=>{ hapticLight(); w.data.photoData=''; w.data.photoDataIsStandard=false; saveDraft(); rebuildWizard(); };
       } else {
-        photoTile.innerHTML='<div style="padding:20px; display:flex; gap:12px; flex-wrap:wrap; justify-content:center;">'+
-          '<button type="button" class="glass-pill inserat-photo-btn" style="min-height:56px; padding:0 24px; border-radius:16px; font-size:15px; font-weight:800; border:2px solid rgba(255,255,255,0.6); background:rgba(255,255,255,0.5); cursor:pointer;">📷 Kamera</button>'+
-          '<button type="button" class="glass-pill inserat-photo-btn" style="min-height:56px; padding:0 24px; border-radius:16px; font-size:15px; font-weight:800; border:2px solid rgba(255,255,255,0.6); background:rgba(255,255,255,0.5); cursor:pointer;">📤 Galerie</button>'+
-        '</div>';
+        photoTile.innerHTML='<div style="padding:20px; text-align:center;"><p style="font-size:12px; font-weight:600; color:#94a3b8; margin:0 0 14px;">Zeig deinen Gästen, was sie erwartet</p><div style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center;">'+
+          '<button type="button" class="glass-pill inserat-photo-btn" style="min-height:56px; padding:0 24px; border-radius:16px; font-size:15px; font-weight:800; border:2px solid rgba(255,255,255,0.6); background:rgba(255,255,255,0.6); backdrop-filter:blur(14px); cursor:pointer;">📷 Kamera</button>'+
+          '<button type="button" class="glass-pill inserat-photo-btn" style="min-height:56px; padding:0 24px; border-radius:16px; font-size:15px; font-weight:800; border:2px solid rgba(255,255,255,0.6); background:rgba(255,255,255,0.6); backdrop-filter:blur(14px); cursor:pointer;">📤 Galerie</button>'+
+        '</div></div>';
         photoTile.querySelectorAll('.inserat-photo-btn').forEach((btn,i)=>{
           const action = i===0 ? 'camera' : 'gallery';
           btn.onclick=async function(){ hapticLight(); const f=await (action==='camera' ? pickImage({capture:true}) : pickImage()); if(!f) return; let dataUrl=await toDataUrl(f); if(typeof applyAppetizerFilter==='function') dataUrl=await applyAppetizerFilter(dataUrl); w.data.photoData=dataUrl; w.data.photoDataIsStandard=false; saveDraft(); rebuildWizard(); };
@@ -22351,14 +22357,37 @@
       const inputPrice=document.createElement('input');
       inputPrice.className='field glass-express-field inserat-price-field';
       inputPrice.type='text'; inputPrice.inputmode='decimal';
-      inputPrice.placeholder='Preis z.B. 8,50 €';
+      inputPrice.placeholder='Was nimmst du dafür? z.B. 8,50 €';
       inputPrice.value=(w.data.price>0?Number(w.data.price).toFixed(2).replace('.',','):'');
       inputPrice.style.cssText='margin-bottom:16px; min-height:64px; font-size:26px; font-weight:800; border-radius:16px; padding:0 18px;';
-      inputPrice.oninput=()=>{ const v=inputPrice.value.replace(',','.'); w.data.price=parseFloat(v)||0; saveDraft(); };
+      inputPrice.oninput=()=>{ const v=inputPrice.value.replace(',','.'); w.data.price=parseFloat(v)||0; saveDraft(); var uw=box.querySelector('.inserat-umsatz-vorschau'); if(uw){ var p=Number(w.data.price)||0; var pot=Math.round(p*30*100)/100; uw.innerHTML='<div style="font-size:12px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.04em;">Verdienst-Vorschau</div><div style="font-size:20px; font-weight:800; color:#0d9668; margin-top:4px;">Bei ~30 Abnahmen: <strong>ca. '+(pot>0?pot.toFixed(2).replace(\'.\',\',\')+\' €\':\'–\')+'</strong></div>'; } };
       inputPrice.onblur=()=>{ if(w.data.price>0) inputPrice.value=Number(w.data.price).toFixed(2).replace('.',','); };
       inputPrice.onfocus=()=>{ hapticLight(); scrollToEl(inputPrice); };
-      inputPrice.onkeydown=function(e){ if(e.key==='Enter'){ e.preventDefault(); dismissKeyboard(); setTimeout(()=>{ const to=document.querySelector('#wContent .inserat-pricing-weiche, #wContent .inserat-save-wrap, #wContent .w-actions'); if(to) scrollToEl(to); }, 80); } };
+      inputPrice.onkeydown=function(e){ if(e.key==='Enter'){ e.preventDefault(); dismissKeyboard(); setTimeout(()=>{ const to=document.querySelector('#wContent .inserat-umsatz-vorschau, #wContent .inserat-pricing-weiche, #wContent .inserat-save-wrap, #wContent .w-actions'); if(to) scrollToEl(to); }, 80); } };
       box.appendChild(inputPrice);
+
+      // Extras mit Aufpreis (optional) – Liquid UI
+      const extrasWrap=document.createElement('div');
+      extrasWrap.className='inserat-extras-wrap';
+      extrasWrap.style.cssText='margin-bottom:16px;';
+      const inputExtras=document.createElement('input');
+      inputExtras.className='field glass-express-field';
+      inputExtras.placeholder='Extras mit Aufpreis (optional), z.B. Beilage +1,00 €';
+      inputExtras.value=w.data.extrasLabel||'';
+      inputExtras.style.cssText='min-height:44px; font-size:14px; font-weight:500; border-radius:12px; padding:0 16px; border:2px solid rgba(255,255,255,0.5); background:rgba(255,255,255,0.5); backdrop-filter:blur(12px);';
+      inputExtras.oninput=()=>{ w.data.extrasLabel=inputExtras.value; saveDraft(); };
+      inputExtras.onfocus=()=>{ hapticLight(); };
+      extrasWrap.appendChild(inputExtras);
+      box.appendChild(extrasWrap);
+
+      // Verdienst-Vorschau: Bei ~30 Abnahmen (Marketing, High-End Architect)
+      const umsatzWrap=document.createElement('div');
+      umsatzWrap.className='inserat-umsatz-vorschau listing-umsatz-potenzial';
+      umsatzWrap.style.cssText='margin-bottom:20px; padding:14px 18px; border-radius:16px; background:rgba(16,185,129,0.08); border:1px solid rgba(16,185,129,0.25);';
+      const priceNum=Number(w.data.price)||0;
+      const potenzial=Math.round(priceNum*30*100)/100;
+      umsatzWrap.innerHTML='<div style="font-size:12px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.04em;">Verdienst-Vorschau</div><div style="font-size:20px; font-weight:800; color:#0d9668; margin-top:4px;">Bei ~30 Abnahmen: <strong>ca. '+(potenzial>0?potenzial.toFixed(2).replace('.',',')+' €':'–')+'</strong></div>';
+      box.appendChild(umsatzWrap);
 
       // 8) Pricing-Weiche (nur Modus „Jetzt Inserieren“) ODER Emerald Speichern (Kochbuch/Wochenplan)
       var entryPoint = (w.ctx && w.ctx.entryPoint) || 'dashboard';
@@ -22376,7 +22405,7 @@
         btnA.type='button'; btnA.className='btn listing-express-primary';
         btnA.style.cssText='width:100%; min-height:58px; border-radius:18px; font-size:17px; font-weight:800; border:none; cursor:pointer; background:#FACC15; color:#1a1a1a; box-shadow:0 4px 20px rgba(250,204,21,0.4);';
         btnA.textContent='Jetzt für 4,99 € einmalig inserieren';
-        btnA.onclick=function(){ if(typeof haptic==='function') haptic(50); w.data.pricingOption=undefined; w.data.inseratFeeWaived=false; w.step++; saveDraft(); rebuildWizard(); };
+        btnA.onclick=function(){ if(typeof haptic==='function') haptic(50); w.data.pricingOption=undefined; w.data.inseratFeeWaived=false; var o=previewOfferFromWizard(); closeWizard(true); showPublishFeeModal(o); };
         weicheWrap.appendChild(btnA);
         // Option B (Grüner Rahmen/Glas): 0,00 € mit Abholnummer (0,89 € pro Vorgang)
         const btnB=document.createElement('button');
