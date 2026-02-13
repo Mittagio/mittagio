@@ -1,0 +1,52 @@
+---
+description: Option 1 – Layout-Regeln immer nach Kunde oder Anbieter scopen (keine globalen Layout-Fixes).
+alwaysApply: true
+---
+
+# Option 1: Layout-Scope Kunde / Anbieter (technisch)
+
+## Ziel
+
+Kundenseite und Anbieterseite sind **im gleichen Projekt** getrennt, indem **alle layout-kritischen CSS- und JS-Regeln** strikt nach Kontext gescoped werden. So bricht ein Fix auf einer Seite die andere nicht (z. B. Dashboard-Scroll vs. Discover-Scroll).
+
+## Layout-kritisch = immer scopen
+
+Als layout-kritisch gelten u. a.:
+
+- **height, min-height, max-height** (außer bei rein dekorativen Elementen)
+- **overflow, overflow-x, overflow-y**
+- **Scroll-Verhalten** (scroll-behavior, -webkit-overflow-scrolling, overscroll-behavior)
+- **display: flex** auf Container, die die Gesamthöhe/Scroll bestimmen (#app, main, .dashboard-floating-wrap)
+- **flex: 1, min-height: 0** in Flex-Ketten, die Scroll-Container erzeugen
+
+Solche Regeln **dürfen nicht global** für `#app`, `main`, `body` oder `.view` gelten, wenn sie beide Modi betreffen.
+
+## Wie scopen
+
+| Ziel | Scope im CSS |
+|------|----------------|
+| **Nur Anbieter** | `body.provider-mode …` oder `[id^="v-provider-"]` oder `#v-provider-home` etc. |
+| **Nur Kunde** | `body:not(.provider-mode) …` oder `.customer-view` oder `#v-discover` etc. |
+
+Beispiele:
+
+- Richtig: `body.provider-mode #app { height: 100dvh; overflow: hidden; }`
+- Richtig: `body:not(.provider-mode) main { overflow-y: visible; }`
+- Falsch: `#app { height: 100dvh; overflow: hidden; }` (betrifft auch Kunde)
+- Falsch: `main { overflow-y: auto; }` (betrifft beide)
+
+## Gemeinsam erlaubt
+
+- Keine layout-kritischen Werte: z. B. `#app { display: flex; flex-direction: column; box-sizing: border-box; overflow-x: hidden; }` (overflow-x verhindert nur Horizontal-Scroll).
+- View-Switch: `#app .view:not(.active) { display: none !important; }` und `#app .view.active { display: block !important; }` (keine Höhe/Scroll).
+- Typo, Farben, Abstände ohne Einfluss auf Viewport/Scroll.
+
+## Referenz im Code
+
+In `app/index.html` steht oben im `<style>` ein Block **„OPTION 1: KUNDE / ANBIETER LAYOUT TRENNUNG“** mit Kurz-Checkliste. Bei jeder Änderung an Layout/Scroll/Höhe dort prüfen und Regeln nach Kunde vs. Anbieter scopen.
+
+## Bei neuen Features
+
+- Neue Kunden-Views: Layout nur unter `body:not(.provider-mode)` oder `.customer-view` / konkrete View-IDs.
+- Neue Anbieter-Views: Layout nur unter `body.provider-mode` oder `#v-provider-*`.
+- Keine neuen globalen Regeln für `body`, `#app`, `main`, die Höhe oder Scroll für beide Modi setzen.
