@@ -4,11 +4,11 @@ Kurz-Checkliste, damit Kundenseite und Anbieterseite getrennt, ordentlich und st
 
 ## Bereits umgesetzt
 
-- **Option 1 (Layout):** Layout-kritische CSS-Regeln sind nach `body.provider-mode` bzw. `body:not(.provider-mode)` gescoped (siehe `.cursor/rules/option1-layout-scope-kunde-anbieter.mdc`).
-- **View-Switch:** Nur eine `.view` ist sichtbar (`#app .view:not(.active)` → `display:none !important`); inaktive Views werden per JS mit `setProperty('display','none','important')` ausgeblendet.
-- **Modus-Sync:** Beim Wechsel in eine Kunden-View (Discover, Favoriten, Profil, …) wird `provider-mode` vom Body entfernt und `mode = 'customer'` gesetzt; beim Wechsel in eine Anbieter-View wird `provider-mode` gesetzt.
+- **Trennung (Layout):** Layout-kritische CSS-Regeln sind strikt getrennt: **NUR ANBIETER** (`body.provider-mode` / `#v-provider-*`) und **NUR KUNDE** (`body:not(.provider-mode)`). Keine gemeinsamen height/overflow-Regeln für #app oder main (siehe `.cursor/rules/option1-layout-scope-kunde-anbieter.mdc`).
+- **View-Switch:** Nur eine `.view` ist sichtbar; inaktive Views werden per JS mit `setProperty('display','none','important')` ausgeblendet.
+- **Modus-Sync:** Beim Wechsel in eine Kunden-View wird `provider-mode` entfernt und `mode = 'customer'` gesetzt; beim Wechsel in eine Anbieter-View wird `provider-mode` gesetzt.
 - **Init:** Nach `setMode()` wird `document.body.style.visibility = 'visible'` gesetzt (Init-Gate gegen Flackern).
-- **Dashboard:** Anbieter-Dashboard nutzt eine klare Flex-Kette (main → #v-provider-home → .dashboard-floating-wrap) mit Scroll nur im Wrap.
+- **Dashboard Meine Küche:** Robuster Scroll mit **absolut positioniertem** `.dashboard-floating-wrap` (position:absolute; inset:0; overflow-y:auto). View füllt main mit height:100%; Inhalt immer sichtbar und scrollbar. FAB von der „main > * ausblenden“-Regel ausgenommen.
 
 ## Checkliste bei Änderungen
 
