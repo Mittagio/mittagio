@@ -920,13 +920,7 @@
 
     .tabrow{display:flex; gap:8px; flex-wrap:wrap}
     .tabrow .ans{font-size:12px; padding:8px 10px}
-    /*
-     * Kochbuch: Minimal – Bild 16:9, Titel, Facts-Zeile. Keine Emojis/Säulen.
-     * Haptik & Bewegung (Physik):
-     * - Karten-Klick: cubic-bezier(0.2, 0.8, 0.2, 1), Heavy Tap 18ms
-     * - Bottom-Bar Slide: Spring ~(400,28) → cubic-bezier(0.33, 0.6, 0.2, 1), 320ms, Light Impact 8ms beim Stopp
-     * - Success-Check: Spring ~(500,15) → scale 0.8→1.05→1, Double-Tap Haptik [12,55,12]
-     */
+    /* Kochbuch: Stand – #F2F2F7, Karten weiche Schatten 20px, Tabs/Bottom-Bar aktuell */
     #v-provider-cookbook .cookbook-bestseller-strip{
       display:flex;
       gap:12px;
@@ -945,10 +939,10 @@
     }
     #v-provider-cookbook .cookbook-item{
       background:#fff;
-      border:none;
-      border-radius:24px;
+      border:1px solid rgba(0,0,0,0.04);
+      border-radius:20px;
       overflow:hidden;
-      box-shadow:0 4px 20px rgba(0,0,0,0.05);
+      box-shadow:0 8px 24px rgba(0,0,0,0.03);
       display:flex;
       flex-direction:column;
       position:relative;
@@ -981,7 +975,6 @@
     #v-provider-cookbook .cookbook-item-cta-wrap{ display:none !important; }
     #v-provider-cookbook .cookbook-item.cookbook-item-selected{ box-shadow:0 0 0 2px var(--prov-brand); border-radius:24px; }
     #v-provider-cookbook .cookbook-list-has-selection .cookbook-item:not(.cookbook-item-selected){ opacity:0.55; }
-    /* Bottom-Bar: Spring (Stiffness 400, Damping 28) – sattes Einrasten, kein Nachschwingen */
     #v-provider-cookbook .cookbook-action-bar{ max-width:500px; margin:0 auto; box-sizing:border-box; transition:transform 0.32s cubic-bezier(0.33, 0.6, 0.2, 1); }
     #v-provider-cookbook .cookbook-action-bar.cookbook-bar-visible{ transform:translateY(0); }
     #v-provider-cookbook .cookbook-bar-btn{ min-height:52px; border-radius:16px; font-size:14px; font-weight:800; display:inline-flex; align-items:center; justify-content:center; gap:6px; cursor:pointer; border:none; transition:transform 0.12s cubic-bezier(0.2, 0.8, 0.2, 1), background 0.2s; flex:1; min-width:0; }
@@ -1009,10 +1002,9 @@
       justify-content:center;
       gap:6px;
     }
-    #v-provider-cookbook .cookbook-tabs button{ flex:1; min-height:48px; border-radius:10px; font-weight:600; font-size:14px; border:none; background:transparent; color:#64748b; cursor:pointer; transition:all .2s; font-family:system-ui,-apple-system,sans-serif; }
+    #v-provider-cookbook .cookbook-tabs button{ flex:1; min-height:48px; border-radius:12px; font-weight:600; font-size:14px; border:none; background:transparent; color:#64748b; cursor:pointer; transition:all .2s; font-family:system-ui,-apple-system,sans-serif; }
     #v-provider-cookbook .cookbook-tabs button.on{ background:var(--prov-brand); color:#1a1a1a; font-weight:700; }
-    
-    /* Kochbuch Action-Sheet (Bottom Sheet) */
+    /* Kochbuch Action-Sheet */
     #cookbookActionSheetBd{ z-index:999; }
     .cookbook-action-sheet{
       position:fixed;
@@ -1028,7 +1020,7 @@
     }
     .cookbook-action-sheet-handle{ width:40px; height:4px; background:rgba(0,0,0,0.15); border-radius:2px; margin:0 auto 16px; }
     .cookbook-action-sheet-title{ font-weight:800; font-size:18px; color:#1a1a1a; margin-bottom:16px; text-align:center; }
-    .cookbook-action-sheet-btn{ width:100%; min-height:52px; border-radius:14px; background:#f8f7f2; border:1px solid rgba(0,0,0,0.08); color:#1a1a1a; font-weight:700; font-size:15px; margin-bottom:10px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; }
+    .cookbook-action-sheet-btn{ width:100%; min-height:52px; border-radius:14px; background:#fff; border:1px solid rgba(0,0,0,0.06); color:#1a1a1a; font-weight:700; font-size:15px; margin-bottom:10px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; box-shadow:0 2px 8px rgba(0,0,0,0.03); }
     .cookbook-action-sheet-btn-danger{ color:#dc2626; border-color:rgba(220,38,38,0.3); }
     .cookbook-week-sheet.cookbook-week-visible{ transform:translateY(0); }
     #cookbookWeekSheetBd.cookbook-week-bd-visible{ opacity:1; }
@@ -2046,8 +2038,7 @@
       color: #1a1a1a;
     }
     
-    /* Einheitlicher App-Header für Abholungen, Wochenplan, Kochbuch (Glassmorphism) – wie Wochenplan */
-    /* Wie Wochenplan: wenig Platz oben */
+    /* App-Header Abholungen/Wochenplan (Kochbuch: eigene Overrides unter #v-provider-cookbook) */
     body.provider-mode .prov-page-header {
       position: sticky;
       top: 0;
@@ -3709,17 +3700,16 @@
     #v-provider-profile .provider-profile-hero-cta--yellow{ background:#FFD700; color:#1a1a1a; box-shadow:0 4px 16px rgba(255,215,0,0.35); }
     #v-provider-profile .provider-profile-hero-cta--emerald{ background:#10b981; color:#fff; box-shadow:0 4px 16px rgba(16,185,129,0.25); }
     #v-provider-profile .provider-profile-hero-icon-wrap{ width:56px; height:56px; border-radius:16px; background:#f1f3f5; display:flex; align-items:center; justify-content:center; font-size:28px; margin-bottom:8px; }
-    #v-provider-cookbook{ min-height:100vh; min-height:100dvh; width:100%; box-sizing:border-box; background:#F2F2F7 !important; }
+    #v-provider-cookbook{ min-height:100vh; min-height:100dvh; width:100%; box-sizing:border-box; }
     #v-provider-cookbook.view.active{ display:flex !important; flex-direction:column !important; height:100vh; height:100dvh; max-height:100vh; max-height:100dvh; overflow:hidden; }
     #v-provider-cookbook.view.active > header{ position:relative; z-index:1; flex-shrink:0; }
     #v-provider-cookbook.view.active > div{ position:relative; z-index:1; min-height:0; flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; }
-    /* Kochbuch: Silicon-Valley-Style wie Profil – Reinweiß auf Hellgrau, weiche Schatten */
+    /* Kochbuch Overrides: Header, Tabs, Bottom-Bar (Stand #F2F2F7) */
     #v-provider-cookbook .prov-page-header{ background:rgba(255,255,255,0.9) !important; backdrop-filter:blur(12px); border-bottom:1px solid rgba(0,0,0,0.04) !important; }
     #v-provider-cookbook .prov-page-header-icon{ background:var(--prov-brand) !important; box-shadow:0 4px 12px rgba(255,222,0,0.25) !important; }
     #v-provider-cookbook #cookbookScrollWrap{ background:transparent; }
     #v-provider-cookbook .cookbook-tabs{ background:#fff !important; border:1px solid rgba(0,0,0,0.04) !important; box-shadow:0 2px 8px rgba(0,0,0,0.03) !important; border-radius:16px !important; padding:6px !important; }
     #v-provider-cookbook .cookbook-tabs button.on{ background:var(--prov-brand); color:#1a1a1a; border-radius:12px; }
-    #v-provider-cookbook .cookbook-item{ background:#fff; border:1px solid rgba(0,0,0,0.04); box-shadow:0 8px 24px rgba(0,0,0,0.03); border-radius:20px; }
     #v-provider-cookbook .cookbook-action-bar{ background:rgba(255,255,255,0.95); backdrop-filter:blur(12px); border-top:1px solid rgba(0,0,0,0.04) !important; box-shadow:0 -4px 24px rgba(0,0,0,0.04); }
 
     /* Wochenplan: nur auf der Wochenplan-Seite sichtbar; Layout nur wenn .active */
@@ -4206,7 +4196,7 @@
         padding:16px 20px !important;
       }
       
-      /* Kochbuch: Daumenfreundlich (S25) */
+      /* Kochbuch: Touch-Ziele kleine Viewports */
       #v-provider-cookbook .cookbook-cta{ min-height:56px !important; }
       #v-provider-cookbook .cookbook-search,
       #v-provider-cookbook #cookbookSortSelect{ min-height:48px !important; }
@@ -6102,7 +6092,7 @@
 
       <div id="cookbookScrollWrap" style="flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:12px 20px calc(140px + env(safe-area-inset-bottom, 0)); max-width:500px; margin:0 auto; width:100%; box-sizing:border-box;">
         <!-- Tabs: Gerichte | Entwürfe -->
-        <div class="cookbook-tabs" id="cookbookTabs" role="tablist" style="display:flex; background:#fff; border-radius:14px; padding:4px; margin-bottom:24px; border:1px solid rgba(0,0,0,0.05); box-shadow:0 2px 8px rgba(0,0,0,0.02);"></div>
+        <div class="cookbook-tabs" id="cookbookTabs" role="tablist" style="display:flex; padding:6px; margin-bottom:24px;"></div>
         
         <div id="cookbookList" style="gap:16px;">
           <!-- Wird dynamisch befüllt (Klasse cookbook-grid setzt 2 Spalten) -->
