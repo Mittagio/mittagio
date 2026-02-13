@@ -101,23 +101,26 @@
       --badge-px-lg: 12px;
     }
     *{box-sizing:border-box}
-    /* Layout-Fix: Kein Leerraum über Header – Reset + Safe-Area nur innen */
-    html,body{height:100%; margin:0; padding:0}
+    /* Layout-Fix: Ein Scroll-Container – body scrollt nicht, #app scrollt */
+    html{ height:100%; margin:0; padding:0; }
     body{
-      margin:0;
-      padding:0;
+      margin:0; padding:0;
+      height:100%; min-height:100dvh;
+      overflow:hidden; /* Body scrollt nicht – nur #app */
       font-family:'Inter', 'Montserrat', system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      font-size:16px;
-      line-height:1.5;
-      background:var(--bg);
-      color:var(--text);
-      /* Touch-Optimierungen für Mobile */
+      font-size:16px; line-height:1.5;
+      background:var(--bg); color:var(--text);
       -webkit-tap-highlight-color: transparent;
       -webkit-touch-callout: none;
-      touch-action: pan-y pinch-zoom; /* Vertikales Scrollen erlauben, horizontales Swipe verhindern */
-      overscroll-behavior-y: none; /* Verhindert "Pull-to-Refresh" / Gelbe Leiste */
+      touch-action: pan-y pinch-zoom;
+      overscroll-behavior-y: none;
     }
     
+    /* Init-Gate: Flackern beim Hard-Reload reduzieren – sichtbar erst nach erstem showView() */
+    body{ visibility:visible; }
+    body:not(.app-ready){ opacity:0; pointer-events:none; }
+    body.app-ready{ opacity:1; pointer-events:auto; transition:opacity .15s ease-out; }
+
     /* Hide Provider Status Indicator in Customer Mode (Fix Green Dot) */
     body:not(.provider-mode) #providerStatusIndicator,
     body:not(.provider-mode) #statusIndicatorDot {
@@ -126,8 +129,14 @@
     
     a{color:inherit}
 
-    /* App shell */
-    .app{min-height:100%; padding-bottom:calc(78px + env(safe-area-inset-bottom, 0px));}
+    /* App shell: einziger Scroll-Container, Viewport-Höhe */
+    .app,#app{
+      height:100%; min-height:100dvh; max-height:100dvh;
+      overflow-y:auto; overflow-x:hidden;
+      -webkit-overflow-scrolling:touch;
+      padding-bottom:calc(78px + env(safe-area-inset-bottom, 0px));
+      box-sizing:border-box;
+    }
     .topbar{
       position:sticky; top:0; z-index:10;
       background:rgba(247,246,240,.92);
@@ -743,9 +752,10 @@
   .success-card-body {
     padding: 16px;
   }
-    .view.active{display:block}
-    /* Abholnummer-Ansicht benötigt flex-Layout */
-    .view.active#v-pickup-code{display:flex !important}
+    /* SPA View-Switch: nur eine View sichtbar, verhindert #app > Viewport (leerer Screen oben) */
+    .view{ display:none !important; min-height:0; }
+    .view.active{ display:block !important; min-height:100dvh; }
+    .view.active#v-pickup-code{ display:flex !important; min-height:100dvh; }
 
     /* Kundenseiten: Einheitlicher Style von Seite 1 (Discovery) – Farben & Look */
     .customer-view{
@@ -774,9 +784,9 @@
     body:not(.provider-mode) #fabProviderAddOfferLabel { display: none !important; }
     #fabProviderAddOfferLabel { display: none !important; }
 
-    /* Sheets / modals – Safe-Area für moderne Handys (S25, iPhone, Pixel) */
-    .backdrop{position:fixed; inset:0; background:rgba(0,0,0,.6); opacity:0; pointer-events:none; transition:opacity .2s; z-index:2000}
-    .backdrop.active{opacity:1; pointer-events:auto}
+    /* Sheets/Modals: position:fixed, aus dem Layout-Flow (beeinflussen #app-Höhe nicht) */
+    .backdrop{ position:fixed; inset:0; box-sizing:border-box; background:rgba(0,0,0,.6); opacity:0; pointer-events:none; transition:opacity .2s; z-index:2000; }
+    .backdrop.active{ opacity:1; pointer-events:auto; }
     /* Modals: nur sichtbar wenn .active – verhindert leeren Screen / leeren Bereich oben */
     #bd:not(.active),
     #quickPostBd:not(.active),
@@ -3495,11 +3505,10 @@
       background:#e6b800;
     }
     
-    /* Anbieterbereich: Fixes Gastroküche-Hintergrundbild + Overlay (Emotion & Professionalität) */
-    html, body{ min-height:100vh; min-height:100dvh; }
+    /* Anbieterbereich: Hintergrund auf main, Scroll nur in #app (ein Scroll-Container) */
     body.provider-mode main{
-      min-height:100vh; min-height:100dvh; min-height:100svh; display:block; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; max-width:100%; box-sizing:border-box;
-      overflow-anchor:none; /* Verhindert Scroll-Anchoring beim Laden */
+      min-height:100vh; min-height:100dvh; display:block; overflow:visible; max-width:100%; box-sizing:border-box;
+      overflow-anchor:none;
       position:relative;
       background-image: url('assets/gastro-bg.png');
       background-size: cover;
@@ -4492,18 +4501,10 @@
       to { opacity: 1; transform: scale(1); }
     }
 
-    /* App-like Transitions & Feedback */
-    .view {
-      display: none;
-      opacity: 0;
-    }
+    /* App-like Transitions (Basis: .view/.view.active bereits oben mit display:none/block gesetzt) */
     .view.active {
-      display: block;
       opacity: 1;
       animation: viewIn 0.2s ease-out forwards;
-    }
-    .view.active#v-pickup-code {
-      display: flex !important;
     }
     /* Applike: Wochenplan ohne Verschieben – nur Einblendung */
     #v-provider-week.active { animation: viewInFade 0.2s ease-out forwards; }
@@ -9153,6 +9154,7 @@
   }
 
   function showView(id){
+    document.body.classList.add('app-ready'); /* Init-Gate: UI erst nach erstem View-Switch sichtbar (vermindert Flackern) */
     const view = document.getElementById(id);
     if(!view){
       console.error('View not found:', id);
@@ -9361,6 +9363,8 @@
       }
     }
   }
+  /* Fallback: UI nach 2s sichtbar, falls showView() noch nicht gelaufen (Init-Gate) */
+  setTimeout(function(){ if(document.body && !document.body.classList.contains('app-ready')) document.body.classList.add('app-ready'); }, 2000);
 
   // Logo-Click Handler (Home-Button)
   function handleLogoClick(){
