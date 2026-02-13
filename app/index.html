@@ -979,7 +979,7 @@
     #v-provider-cookbook .cookbook-item-stats{ display:none !important; }
     #v-provider-cookbook .cookbook-item-revenue{ display:none; }
     #v-provider-cookbook .cookbook-item-cta-wrap{ display:none !important; }
-    #v-provider-cookbook .cookbook-item.cookbook-item-selected{ box-shadow:0 0 0 2px #007AFF; border-radius:24px; }
+    #v-provider-cookbook .cookbook-item.cookbook-item-selected{ box-shadow:0 0 0 2px var(--prov-brand); border-radius:24px; }
     #v-provider-cookbook .cookbook-list-has-selection .cookbook-item:not(.cookbook-item-selected){ opacity:0.55; }
     /* Bottom-Bar: Spring (Stiffness 400, Damping 28) – sattes Einrasten, kein Nachschwingen */
     #v-provider-cookbook .cookbook-action-bar{ max-width:500px; margin:0 auto; box-sizing:border-box; transition:transform 0.32s cubic-bezier(0.33, 0.6, 0.2, 1); }
@@ -987,8 +987,8 @@
     #v-provider-cookbook .cookbook-bar-btn{ min-height:52px; border-radius:16px; font-size:14px; font-weight:800; display:inline-flex; align-items:center; justify-content:center; gap:6px; cursor:pointer; border:none; transition:transform 0.12s cubic-bezier(0.2, 0.8, 0.2, 1), background 0.2s; flex:1; min-width:0; }
     #v-provider-cookbook .cookbook-bar-btn:active{ transform:scale(0.97); }
     #v-provider-cookbook .cookbook-bar-secondary{ background:#f1f3f5; color:#475569; border:2px solid #e2e8f0; }
-    #v-provider-cookbook .cookbook-bar-primary{ background:#007AFF; color:#fff; box-shadow:0 4px 16px rgba(0,122,255,0.3); }
-    #v-provider-cookbook .cookbook-bar-primary.cookbook-bar-inserieren{ background:#FFD700; color:#1a1a1a; box-shadow:0 4px 16px rgba(255,215,0,0.4); }
+    #v-provider-cookbook .cookbook-bar-primary{ background:var(--prov-brand); color:#1a1a1a; box-shadow:0 4px 16px rgba(255,222,0,0.35); }
+    #v-provider-cookbook .cookbook-bar-primary.cookbook-bar-inserieren{ background:var(--prov-brand); color:#1a1a1a; box-shadow:0 4px 16px rgba(255,222,0,0.4); }
     #v-provider-cookbook #cookbookBarSelected{ display:none; transform:translateY(20px); opacity:0; transition:transform 0.32s cubic-bezier(0.33, 0.6, 0.2, 1), opacity 0.28s; }
     #v-provider-cookbook #cookbookBarSelected.cookbook-bar-selected-visible{ display:flex !important; transform:translateY(0); opacity:1; }
     #v-provider-cookbook #cookbookBarDefault.cookbook-bar-default-hidden{ display:none !important; }
@@ -1010,7 +1010,7 @@
       gap:6px;
     }
     #v-provider-cookbook .cookbook-tabs button{ flex:1; min-height:48px; border-radius:10px; font-weight:600; font-size:14px; border:none; background:transparent; color:#64748b; cursor:pointer; transition:all .2s; font-family:system-ui,-apple-system,sans-serif; }
-    #v-provider-cookbook .cookbook-tabs button.on{ background:#10b981; color:#fff; font-weight:700; }
+    #v-provider-cookbook .cookbook-tabs button.on{ background:var(--prov-brand); color:#1a1a1a; font-weight:700; }
     
     /* Kochbuch Action-Sheet (Bottom Sheet) */
     #cookbookActionSheetBd{ z-index:999; }
@@ -1043,8 +1043,8 @@
     @keyframes cookbookWeekStagger{ from{ opacity:0; transform:translateY(12px); } to{ opacity:1; transform:translateY(0); } }
     .cookbook-victory-overlay{ position:fixed; inset:0; z-index:1100; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,0.9); backdrop-filter:blur(8px); animation:cookbookVictoryFade 0.2s ease-out; }
     /* Success-Check: Spring (500, 15) – leichtes Nachfedern */
-    .cookbook-victory-overlay .check-wrap{ width:72px; height:72px; border-radius:50%; background:rgba(16,185,129,0.2); border:3px solid #10b981; display:flex; align-items:center; justify-content:center; animation:cookbookVictoryPop 0.48s cubic-bezier(0.34, 1.4, 0.64, 1) forwards; }
-    .cookbook-victory-overlay .check-wrap span{ font-size:40px; color:#10b981; }
+    .cookbook-victory-overlay .check-wrap{ width:72px; height:72px; border-radius:50%; background:rgba(255,222,0,0.2); border:3px solid var(--prov-brand); display:flex; align-items:center; justify-content:center; animation:cookbookVictoryPop 0.48s cubic-bezier(0.34, 1.4, 0.64, 1) forwards; }
+    .cookbook-victory-overlay .check-wrap span{ font-size:40px; color:#1a1a1a; }
     @keyframes cookbookVictoryPop{ 0%{ transform:scale(0.8); opacity:0.9; } 70%{ transform:scale(1.05); } 100%{ transform:scale(1); opacity:1; } }
     @keyframes cookbookVictoryFade{ from{ opacity:0; } to{ opacity:1; } }
     .toast-soft-error{ background:#FF9500 !important; color:#fff !important; }
@@ -1549,8 +1549,8 @@
       backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
     }
     #wizard.sheet--kitchen .w-actions button.listing-express-primary{
-      background:#FACC15 !important; color:#1a1a1a !important; font-weight:800 !important;
-      box-shadow:0 4px 16px rgba(250,204,21,0.4);
+      background:var(--prov-brand) !important; color:#1a1a1a !important; font-weight:800 !important;
+      box-shadow:0 4px 16px rgba(255,222,0,0.4);
       min-height:54px;
       border-radius:16px;
     }
@@ -1970,53 +1970,40 @@
       --support-padding:16px;
       --support-padding-lg:24px;
     }
-    /* Provider-App: einheitlich helles Layout (kein dunkles Theme) */
+    /* Provider-App: Systemweite Design-Vorgabe – Warmes Beige, Dein Gelb, Weiß */
     :root{
-      --provider-bg:#f8f7f2;
-      --provider-surface:#ffffff;
-      --provider-surface-alt:#f0f0eb;
-      --provider-border:rgba(0,0,0,0.04);
-      --provider-text:#1a1a1a;
-      --provider-text-muted:#64748b;
-      --provider-shadow: 0 4px 20px rgba(0,0,0,0.04);
+      --provider-bg: #F8F7F2;
+      --provider-surface: #ffffff;
+      --provider-surface-alt: #f0f0eb;
+      --provider-border: rgba(0,0,0,0.06);
+      --provider-text: #1a1a1a;
+      --provider-text-muted: #64748b;
+      --provider-shadow: 0 4px 20px rgba(0,0,0,0.05);
       --provider-radius: 20px;
-      /* Anbieter: kühles Blau (Küche dunkel/hektisch – klar und ruhig abheben) */
-      --prov-brand: #0ea5e9;
-      --prov-success: #10b981;
+      --prov-brand: #FFDE00;
+      --prov-success: #FFDE00;
       --prov-danger: #ef4444;
-      /* High-End Design-System (Glassmorphism + Premium) */
       --premium-anthracite: #1a1a1a;
       --premium-anthracite-soft: #334155;
-      --premium-gold: #d4a853;
-      --premium-gold-bright: #e8c468;
-      --action-blue: #0ea5e9;
-      --glass-bg: rgba(255,255,255,0.72);
-      --glass-border: rgba(255,255,255,0.5);
-      --glass-shadow: 0 8px 32px rgba(0,0,0,0.08);
+      --glass-bg: rgba(255,255,255,0.75);
+      --glass-border: rgba(255,255,255,0.4);
+      --glass-shadow: 0 8px 32px rgba(0,0,0,0.06);
       --glass-inner-glow: inset 0 1px 0 rgba(255,255,255,0.8);
       --card-radius-premium: 24px;
-      --card-shadow-soft: 0 4px 24px rgba(0,0,0,0.06);
-      --card-shadow-hover: 0 12px 40px rgba(0,0,0,0.1);
-      --premium-anthracite: #1a1a1a;
+      --card-shadow-soft: 0 4px 20px rgba(0,0,0,0.05);
+      --card-shadow-hover: 0 12px 40px rgba(0,0,0,0.08);
     }
-    /* Dynamic Background: sanfter Farbverlauf je Tageszeit (Provider) */
-    body.provider-mode [id^="v-provider-"].view{ position:relative; }
-    body.provider-mode #v-provider-home::before,
-    body.provider-mode #v-provider-week::before{
-      content:''; position:absolute; inset:0; pointer-events:none; z-index:0;
-      transition: opacity 0.8s ease;
-    }
-    /* Kein heller Top-Verlauf mehr: Er hat oben einen „leeren Screen“ erzeugt (nur Wochenplan war ausgenommen). Header decken den Blur mit eigenem Hintergrund ab. */
-    body.provider-mode #v-provider-week::before{
-      background: linear-gradient(165deg, #f0f9ff 0%, #f8fafc 50%, #ecfdf5 100%);
-      opacity:0.5;
-    }
+    /* Provider: einheitlich Warmes Beige #F8F7F2 – kein Farbsprung zwischen Dashboard/Wochenplan/Inserat */
+    body.provider-mode [id^="v-provider-"].view{ position:relative; background: var(--provider-bg) !important; }
+    body.provider-mode #v-provider-home,
+    body.provider-mode #v-provider-week,
+    body.provider-mode #v-provider-cookbook,
+    body.provider-mode #v-provider-pickups,
+    body.provider-mode #v-provider-profile,
+    body.provider-mode #v-provider-billing{ background: var(--provider-bg) !important; }
     body.provider-mode #v-provider-home > *,
     body.provider-mode #v-provider-week > *,
     body.provider-mode [id^="v-provider-"].view.active > *{ position:relative; z-index:1; }
-    @media (prefers-color-scheme: dark) {
-      body.provider-mode #v-provider-week::before{ opacity:0.2; }
-    }
     
     /* Modern App-Like CSS for Provider */
     .prov-header {
@@ -2066,6 +2053,7 @@
       width: 44px;
       height: 44px;
       background: var(--prov-brand);
+      color: #1a1a1a;
       border-radius: 14px;
       display: flex;
       align-items: center;
