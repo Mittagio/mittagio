@@ -105,19 +105,19 @@
     *{box-sizing:border-box}
     /* === VIEW-SWITCH: Nur eine View sichtbar, #app nicht höher als Viewport (Bug-Reload-Fix) === */
     #app .view:not(.active){ display:none !important; min-height:0 !important; visibility:hidden !important; }
-    #app .view.active{ display:block !important; min-height:100dvh; min-height:100vh; }
+    #app .view.active{ display:block !important; }
+    body.provider-mode #app .view.active{ min-height:100dvh; min-height:100vh; }
     #app .view.active#v-pickup-code{ display:flex !important; }
     #app .view.active[id^="v-provider-"]{ display:block !important; }
     #app .view.active#v-provider-week{ display:flex !important; }
     /* Sheets/Backdrops: position:fixed (kein Layout-Flow), nur wenn .active sichtbar */
     .backdrop:not(.active){ display:none !important; opacity:0 !important; }
     .sheet:not(.active){ visibility:hidden !important; pointer-events:none !important; }
-    /* Layout-Fix: Kein Leerraum über Header – Reset + Safe-Area nur innen. Ein Scroll-Container: #app. */
+    /* Layout: Kunde = normal scroll (body/#app); Provider = ein Scroll-Container (Reload-Fix) */
     html,body{height:100%; margin:0; padding:0; overflow-x:hidden}
     body{
       margin:0;
       padding:0;
-      overflow-y:hidden; /* Body scrollt nicht – nur #app scrollt (verhindert #app > Viewport) */
       font-family:'Inter', 'Montserrat', system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
       font-size:16px;
       line-height:1.5;
@@ -128,6 +128,7 @@
       touch-action: pan-y pinch-zoom;
       overscroll-behavior-y: none;
     }
+    body.provider-mode{ overflow-y:hidden; }
     
     /* Hide Provider Status Indicator in Customer Mode (Fix Green Dot) */
     body:not(.provider-mode) #providerStatusIndicator,
@@ -137,9 +138,12 @@
     
     a{color:inherit}
 
-    /* App shell: max. Viewport-Höhe, Scroll nur innen (main / .dashboard-floating-wrap) */
-    .app,#app{min-height:100dvh; height:100dvh; max-height:100dvh; overflow:hidden; overflow-x:hidden; display:flex; flex-direction:column; box-sizing:border-box;}
-    .app main,#app main{flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; display:block;}
+    /* App shell: Kunde = normal (min-height, wächst mit Inhalt); Provider = feste Höhe + Scroll innen */
+    .app,#app{min-height:100%; min-height:100dvh; overflow-x:hidden; display:flex; flex-direction:column; box-sizing:border-box;}
+    .app main,#app main{flex:1; min-height:0; display:block;}
+    body.provider-mode .app, body.provider-mode #app{ height:100dvh; max-height:100dvh; overflow:hidden; }
+    body.provider-mode .app main, body.provider-mode #app main{ overflow-y:auto; -webkit-overflow-scrolling:touch; }
+    body:not(.provider-mode) .app main, body:not(.provider-mode) #app main{ overflow-y:visible; min-height:auto; }
     .app{ padding-bottom:calc(78px + env(safe-area-inset-bottom, 0px));}
     .topbar{
       position:sticky; top:0; z-index:10;
