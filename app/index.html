@@ -20,7 +20,6 @@
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" href="assets/icons/icon-192.png" />
   <link rel="apple-touch-icon" href="assets/icons/icon-192.png" />
-  <!-- gastro-bg.png nur in Provider-Modus genutzt; kein Preload, um Warnung zu vermeiden wenn Seite als Kunde startet -->
   <script>if(typeof history!=='undefined'&&history.scrollRestoration)history.scrollRestoration='manual';</script>
   <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js" onload="if(typeof lucide !== 'undefined') try { lucide.createIcons(); } catch(e) { console.warn('Lucide init:', e); }"></script>
   <style>
@@ -920,27 +919,19 @@
 
     .tabrow{display:flex; gap:8px; flex-wrap:wrap}
     .tabrow .ans{font-size:12px; padding:8px 10px}
-    /* Kochbuch: Stand – #F2F2F7, Karten weiche Schatten 20px, Tabs/Bottom-Bar aktuell */
-    #v-provider-cookbook .cookbook-bestseller-strip{
-      display:flex;
-      gap:12px;
-      overflow-x:auto;
-      padding:8px 0 20px;
-      margin-bottom:8px;
-      -webkit-overflow-scrolling:touch;
-      scroll-snap-type:x mandatory;
-    }
-    #v-provider-cookbook .cookbook-bestseller-strip .cookbook-item{ scroll-snap-align:start; flex:0 0 72%; max-width:280px; border:1px solid rgba(0,0,0,0.04); box-shadow:0 8px 24px rgba(0,0,0,0.03); }
-    #v-provider-cookbook .cookbook-grid{
-      display:grid;
-      grid-template-columns:repeat(2, 1fr);
-      gap:16px;
-      margin-bottom:120px;
-    }
+    /* Kochbuch: Referenz Kochbuch.tsx – Untertitel, Bestseller-Strip, 1-Spalte, 24px Karten */
+    #v-provider-cookbook .cookbook-header-subtitle{ font-size:14px; font-weight:600; color:#86868B; margin:4px 0 0; line-height:1.3; }
+    #v-provider-cookbook .cookbook-bestseller-strip{ display:flex; gap:16px; overflow-x:auto; padding:0 0 24px; margin-bottom:8px; -webkit-overflow-scrolling:touch; scroll-snap-type:x mandatory; scrollbar-width:none; }
+    #v-provider-cookbook .cookbook-bestseller-strip .cookbook-item{ scroll-snap-align:start; flex:0 0 160px; min-width:160px; max-width:180px; border:1px solid rgba(0,0,0,0.05); box-shadow:0 2px 8px rgba(0,0,0,0.03); border-radius:24px; overflow:hidden; }
+    #v-provider-cookbook .cookbook-bestseller-strip .cookbook-item-header{ aspect-ratio:1; }
+    #v-provider-cookbook .cookbook-bestseller-strip .cookbook-item-body{ padding:12px; }
+    #v-provider-cookbook .cookbook-bestseller-strip .cookbook-item-title{ font-size:13px; -webkit-line-clamp:1; }
+    #v-provider-cookbook .cookbook-bestseller-strip .cookbook-item-facts{ font-size:12px; font-weight:700; color:#1a1a1a; }
+    #v-provider-cookbook .cookbook-grid{ display:grid; grid-template-columns:1fr; gap:16px; margin-bottom:120px; }
     #v-provider-cookbook .cookbook-item{
       background:#fff;
       border:1px solid rgba(0,0,0,0.04);
-      border-radius:20px;
+      border-radius:24px;
       overflow:hidden;
       box-shadow:0 8px 24px rgba(0,0,0,0.03);
       display:flex;
@@ -973,7 +964,7 @@
     #v-provider-cookbook .cookbook-item-stats{ display:none !important; }
     #v-provider-cookbook .cookbook-item-revenue{ display:none; }
     #v-provider-cookbook .cookbook-item-cta-wrap{ display:none !important; }
-    #v-provider-cookbook .cookbook-item.cookbook-item-selected{ box-shadow:0 0 0 2px var(--prov-brand); border-radius:24px; }
+    #v-provider-cookbook .cookbook-item.cookbook-item-selected{ box-shadow:0 0 0 2px var(--prov-brand); border-radius:24px; border-color:var(--prov-brand); }
     #v-provider-cookbook .cookbook-list-has-selection .cookbook-item:not(.cookbook-item-selected){ opacity:0.55; }
     #v-provider-cookbook .cookbook-action-bar{ max-width:500px; margin:0 auto; box-sizing:border-box; transition:transform 0.32s cubic-bezier(0.33, 0.6, 0.2, 1); }
     #v-provider-cookbook .cookbook-action-bar.cookbook-bar-visible{ transform:translateY(0); }
@@ -985,23 +976,6 @@
     #v-provider-cookbook #cookbookBarSelected{ display:none; transform:translateY(20px); opacity:0; transition:transform 0.32s cubic-bezier(0.33, 0.6, 0.2, 1), opacity 0.28s; }
     #v-provider-cookbook #cookbookBarSelected.cookbook-bar-selected-visible{ display:flex !important; transform:translateY(0); opacity:1; }
     #v-provider-cookbook #cookbookBarDefault.cookbook-bar-default-hidden{ display:none !important; }
-    #v-provider-cookbook .cookbook-bar-close{ display:none; }
-    #v-provider-cookbook .cookbook-item-abholzusatz{ font-size:11px; color:#64748b; margin-bottom:4px; }
-    #v-provider-cookbook .cookbook-item-btn{
-      width:100%;
-      min-height:48px;
-      border-radius:12px;
-      font-weight:800;
-      font-size:14px;
-      background:var(--prov-brand);
-      color:#1a1a1a;
-      border:none;
-      cursor:pointer;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap:6px;
-    }
     #v-provider-cookbook .cookbook-tabs button{ flex:1; min-height:48px; border-radius:12px; font-weight:600; font-size:14px; border:none; background:transparent; color:#64748b; cursor:pointer; transition:all .2s; font-family:system-ui,-apple-system,sans-serif; }
     #v-provider-cookbook .cookbook-tabs button.on{ background:var(--prov-brand); color:#1a1a1a; font-weight:700; }
     /* Kochbuch Action-Sheet */
@@ -2012,8 +1986,8 @@
     body.provider-mode #v-provider-pickups,
     body.provider-mode #v-provider-profile,
     body.provider-mode #v-provider-billing{ background: var(--provider-bg) !important; }
-    /* Kochbuch: eigener Hintergrund #F2F2F7 (Silicon-Valley-Style), nicht --provider-bg */
-    body.provider-mode #v-provider-cookbook{ background: #F2F2F7 !important; }
+    /* Kochbuch: einheitlich mit Konzept (--provider-bg #F8F7F2), kein Farbsprung */
+    body.provider-mode #v-provider-cookbook{ background: var(--provider-bg) !important; }
     body.provider-mode #v-provider-home > *,
     body.provider-mode #v-provider-week > *,
     body.provider-mode [id^="v-provider-"].view.active > *{ position:relative; z-index:1; }
@@ -2038,7 +2012,7 @@
       color: #1a1a1a;
     }
     
-    /* App-Header Abholungen/Wochenplan (Kochbuch: eigene Overrides unter #v-provider-cookbook) */
+    /* App-Header Abholungen/Wochenplan/Kochbuch */
     body.provider-mode .prov-page-header {
       position: sticky;
       top: 0;
@@ -3543,35 +3517,20 @@
       background:#e6b800;
     }
     
-    /* Anbieterbereich: Fixes Gastroküche-Hintergrundbild + Overlay (Emotion & Professionalität) */
+    /* Anbieterbereich: Layout main – einheitlich #F2F2F7, kein Hintergrundbild */
     html, body{ min-height:100vh; min-height:100dvh; }
     body.provider-mode main{
       min-height:100vh; min-height:100dvh; min-height:100svh; display:block; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; max-width:100%; box-sizing:border-box;
-      overflow-anchor:none; /* Verhindert Scroll-Anchoring beim Laden */
+      overflow-anchor:none;
       position:relative;
-      background-image: url('assets/gastro-bg.png');
-      background-size: cover;
-      background-position: center;
-      background-attachment: fixed;
-      background-repeat: no-repeat;
+      background:#F2F2F7;
     }
-    /* Dashboard aktiv: main hat feste Höhe, View füllt main, Wrap scrollt (robust, unabhängig von Flex) */
     body.provider-mode main:has(#v-provider-home.view.active){
       overflow:hidden !important;
       height:100vh !important; height:100dvh !important; min-height:0;
     }
     body.provider-mode main:has(#v-provider-home.view.active) > #v-provider-home.view.active{
       height:100% !important; min-height:100% !important;
-    }
-    body.provider-mode main::before{
-      content: '';
-      position: absolute;
-      inset: 0;
-      z-index: 0;
-      pointer-events: none;
-      background: rgba(0,0,0,0.2);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
     }
     body.provider-mode main > *{ position: relative; z-index: 1; }
     body.provider-mode [id^="v-provider-"].view.active{ min-height:100vh; min-height:100dvh; display:block !important; visibility:visible !important; opacity:1 !important; scroll-margin-top:0; position:relative; width:100%; max-width:100%; overflow-x:hidden; box-sizing:border-box; }
@@ -3704,7 +3663,7 @@
     #v-provider-cookbook.view.active{ display:flex !important; flex-direction:column !important; height:100vh; height:100dvh; max-height:100vh; max-height:100dvh; overflow:hidden; }
     #v-provider-cookbook.view.active > header{ position:relative; z-index:1; flex-shrink:0; }
     #v-provider-cookbook.view.active > div{ position:relative; z-index:1; min-height:0; flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; }
-    /* Kochbuch Overrides: Header, Tabs, Bottom-Bar (Stand #F2F2F7) */
+    /* Kochbuch Overrides: Header, Tabs, Bottom-Bar */
     #v-provider-cookbook .prov-page-header{ background:rgba(255,255,255,0.9) !important; backdrop-filter:blur(12px); border-bottom:1px solid rgba(0,0,0,0.04) !important; }
     #v-provider-cookbook .prov-page-header-icon{ background:var(--prov-brand) !important; box-shadow:0 4px 12px rgba(255,222,0,0.25) !important; }
     #v-provider-cookbook #cookbookScrollWrap{ background:transparent; }
@@ -4197,12 +4156,9 @@
       }
       
       /* Kochbuch: Touch-Ziele kleine Viewports */
-      #v-provider-cookbook .cookbook-cta{ min-height:56px !important; }
       #v-provider-cookbook .cookbook-search,
       #v-provider-cookbook #cookbookSortSelect{ min-height:48px !important; }
       #v-provider-cookbook .cookbook-tabs button{ min-height:48px !important; }
-      #v-provider-cookbook .cookbook-item-btn{ min-height:52px !important; }
-      #v-provider-cookbook .cookbook-item-menu{ width:44px !important; height:44px !important; }
       #v-provider-cookbook .cookbook-action-sheet-btn{ min-height:52px !important; }
       
       .discover-offers{ padding:14px 12px !important; gap:12px !important; }
@@ -6066,7 +6022,7 @@
       </div>
     </section>
 
-    <section class="view onboarding-view" id="v-provider-cookbook" style="background:#F2F2F7;">
+    <section class="view" id="v-provider-cookbook" style="background:var(--provider-bg);">
       <header class="prov-page-header" id="v-provider-cookbook-header">
         <div class="prov-page-header-row">
           <div class="prov-page-header-left">
@@ -6074,6 +6030,7 @@
               <i data-lucide="book-open" style="width:24px; height:24px;"></i>
             </div>
             <h1 class="prov-page-header-title">Mein Kochbuch</h1>
+            <p class="cookbook-header-subtitle">Deine Umsatz-Könige</p>
           </div>
         </div>
         <div style="position:relative; display:flex; gap:10px; margin-top:14px;">
@@ -6095,7 +6052,7 @@
         <div class="cookbook-tabs" id="cookbookTabs" role="tablist" style="display:flex; padding:6px; margin-bottom:24px;"></div>
         
         <div id="cookbookList" style="gap:16px;">
-          <!-- Wird dynamisch befüllt (Klasse cookbook-grid setzt 2 Spalten) -->
+          <!-- Dynamisch: cookbook-grid (1 Spalte), ggf. Bestseller-Strip oben -->
         </div>
 
         <div id="cookbookEmpty" style="text-align:center; padding:80px 24px; display:none;">
@@ -21252,7 +21209,7 @@
       if(list) list.classList.remove('cookbook-list-has-selection');
     }
     if(primary){
-      if(selectedCookbookId){ primary.classList.add('cookbook-bar-inserieren'); if(primaryText) primaryText.textContent = 'Jetzt für 4,99 € inserieren'; }
+      if(selectedCookbookId){ primary.classList.add('cookbook-bar-inserieren'); if(primaryText) primaryText.textContent = 'Auswählen'; }
       else { primary.classList.remove('cookbook-bar-inserieren'); if(primaryText) primaryText.textContent = 'Neues Gericht'; }
     }
   }
