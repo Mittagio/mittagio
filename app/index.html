@@ -101,26 +101,23 @@
       --badge-px-lg: 12px;
     }
     *{box-sizing:border-box}
-    /* Layout-Fix: Ein Scroll-Container – body scrollt nicht, #app scrollt */
-    html{ height:100%; margin:0; padding:0; }
+    /* Layout-Fix: Kein Leerraum über Header – Reset + Safe-Area nur innen */
+    html,body{height:100%; margin:0; padding:0}
     body{
-      margin:0; padding:0;
-      height:100%; min-height:100dvh;
-      overflow:hidden; /* Body scrollt nicht – nur #app */
+      margin:0;
+      padding:0;
       font-family:'Inter', 'Montserrat', system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      font-size:16px; line-height:1.5;
-      background:var(--bg); color:var(--text);
+      font-size:16px;
+      line-height:1.5;
+      background:var(--bg);
+      color:var(--text);
+      /* Touch-Optimierungen für Mobile */
       -webkit-tap-highlight-color: transparent;
       -webkit-touch-callout: none;
-      touch-action: pan-y pinch-zoom;
-      overscroll-behavior-y: none;
+      touch-action: pan-y pinch-zoom; /* Vertikales Scrollen erlauben, horizontales Swipe verhindern */
+      overscroll-behavior-y: none; /* Verhindert "Pull-to-Refresh" / Gelbe Leiste */
     }
     
-    /* Init-Gate: Flackern beim Hard-Reload reduzieren – sichtbar erst nach erstem showView() */
-    body{ visibility:visible; }
-    body:not(.app-ready){ opacity:0; pointer-events:none; }
-    body.app-ready{ opacity:1; pointer-events:auto; transition:opacity .15s ease-out; }
-
     /* Hide Provider Status Indicator in Customer Mode (Fix Green Dot) */
     body:not(.provider-mode) #providerStatusIndicator,
     body:not(.provider-mode) #statusIndicatorDot {
@@ -129,14 +126,8 @@
     
     a{color:inherit}
 
-    /* App shell: einziger Scroll-Container, Viewport-Höhe */
-    .app,#app{
-      height:100%; min-height:100dvh; max-height:100dvh;
-      overflow-y:auto; overflow-x:hidden;
-      -webkit-overflow-scrolling:touch;
-      padding-bottom:calc(78px + env(safe-area-inset-bottom, 0px));
-      box-sizing:border-box;
-    }
+    /* App shell */
+    .app{min-height:100%; padding-bottom:calc(78px + env(safe-area-inset-bottom, 0px));}
     .topbar{
       position:sticky; top:0; z-index:10;
       background:rgba(247,246,240,.92);
@@ -752,10 +743,9 @@
   .success-card-body {
     padding: 16px;
   }
-    /* SPA View-Switch: nur eine View sichtbar, verhindert #app > Viewport (leerer Screen oben) */
-    .view{ display:none !important; min-height:0; }
-    .view.active{ display:block !important; min-height:100dvh; }
-    .view.active#v-pickup-code{ display:flex !important; min-height:100dvh; }
+    .view.active{display:block}
+    /* Abholnummer-Ansicht benötigt flex-Layout */
+    .view.active#v-pickup-code{display:flex !important}
 
     /* Kundenseiten: Einheitlicher Style von Seite 1 (Discovery) – Farben & Look */
     .customer-view{
@@ -784,15 +774,13 @@
     body:not(.provider-mode) #fabProviderAddOfferLabel { display: none !important; }
     #fabProviderAddOfferLabel { display: none !important; }
 
-    /* Sheets/Modals: position:fixed, aus dem Layout-Flow (beeinflussen #app-Höhe nicht) */
-    .backdrop{ position:fixed; inset:0; box-sizing:border-box; background:rgba(0,0,0,.6); opacity:0; pointer-events:none; transition:opacity .2s; z-index:2000; }
-    .backdrop.active{ opacity:1; pointer-events:auto; }
-    /* Modals: nur sichtbar wenn .active – verhindert leeren Screen / leeren Bereich oben */
-    #bd:not(.active),
+    /* Sheets / modals – Safe-Area für moderne Handys (S25, iPhone, Pixel) */
+    .backdrop{position:fixed; inset:0; background:rgba(0,0,0,.6); opacity:0; pointer-events:none; transition:opacity .2s; z-index:2000}
+    .backdrop.active{opacity:1; pointer-events:auto}
+    /* Modals: nur sichtbar wenn .active – verhindert leeren Screen auf allen Anbieter-Seiten */
     #quickPostBd:not(.active),
     #publishFeeBd:not(.active),
     #inseratSuccessBd:not(.active){ display:none !important; opacity:0 !important; pointer-events:none !important; }
-    #sheet:not(.active),
     #quickPostSheet:not(.active),
     #publishFeeSheet:not(.active),
     #inseratSuccessSheet:not(.active){ visibility:hidden !important; pointer-events:none !important; }
@@ -1707,11 +1695,16 @@
       border-radius: 50%;
       justify-content: center;
     }
-    /* Stolz-Edition: FAB gelb mit weißem Rand */
+    /* Stolz-Edition: FAB gelb mit weißem Rand, animiert (führt zu Inseratsauswahl) */
+    @keyframes fab-plus-float {
+      0%, 100% { transform: scale(1); box-shadow: 0 4px 20px rgba(0,0,0,0.2), 0 8px 24px rgba(0,0,0,0.12); }
+      50% { transform: scale(1.06); box-shadow: 0 6px 26px rgba(255,222,0,0.4), 0 10px 30px rgba(0,0,0,0.15); }
+    }
     #fabProviderAddOffer.fab-provider-plus {
       background: #ffde00 !important;
       border: 4px solid #fff !important;
       box-shadow: 0 4px 20px rgba(0,0,0,0.2), 0 8px 24px rgba(0,0,0,0.12) !important;
+      animation: fab-plus-float 2.2s ease-in-out infinite;
     }
     #fabProviderAddOffer.fab-provider-plus .plus-char { color: #1a1a1a !important; text-shadow: none !important; }
     #fabProviderAddOffer.fab-provider-plus:active,
@@ -2671,8 +2664,6 @@
     body.provider-mode { overscroll-behavior-y: none; -webkit-overflow-scrolling: touch; overflow-x: hidden; }
     /* Nuclear: Im Provider-Modus nur die aktive Provider-View sichtbar – alle anderen main-Kinder aus dem Layout */
     body.provider-mode main > *:not([id^="v-provider-"].view.active) { display: none !important; }
-    /* Anbieter-Detail (Kundenansicht) hat eigenes display:flex !important – nur ausblenden wenn nicht .active (verhindert Anzeige auf Login/Onboarding) */
-    body.provider-mode main > #v-provider-detail-public:not(.view.active) { display: none !important; }
     /* Anbieter-Views: kein Extra-Platz oben – Inhalt beginnt sofort (Safe-Area nur im Header) */
     body.provider-mode [id^="v-provider-"] { padding-top: 0 !important; margin-top: 0 !important; }
     body.provider-mode [id^="v-provider-"].view.active { padding-top: 0 !important; }
@@ -3507,10 +3498,11 @@
       background:#e6b800;
     }
     
-    /* Anbieterbereich: Hintergrund auf main, Scroll nur in #app (ein Scroll-Container) */
+    /* Anbieterbereich: Fixes Gastroküche-Hintergrundbild + Overlay (Emotion & Professionalität) */
+    html, body{ min-height:100vh; min-height:100dvh; }
     body.provider-mode main{
-      min-height:100vh; min-height:100dvh; display:block; overflow:visible; max-width:100%; box-sizing:border-box;
-      overflow-anchor:none;
+      min-height:100vh; min-height:100dvh; min-height:100svh; display:block; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; max-width:100%; box-sizing:border-box;
+      overflow-anchor:none; /* Verhindert Scroll-Anchoring beim Laden */
       position:relative;
       background-image: url('assets/gastro-bg.png');
       background-size: cover;
@@ -3536,19 +3528,19 @@
     body.provider-mode [id^="v-provider-"].view.active .prov-header,
     body.provider-mode [id^="v-provider-"].view.active header:first-child{ visibility:visible !important; opacity:1 !important; min-height:60px; background:rgba(255,255,255,0.8) !important; backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); display:block !important; border-bottom:1px solid rgba(255,255,255,0.2) !important; }
     body.provider-mode [id^="v-provider-"].view.active#v-provider-week{ display:flex !important; flex-direction:column !important; }
-    /* Meine Küche: Inhalt wächst mit – Scroll in #app (wie andere Views), damit Dashboard runterscrollbar ist */
+    /* Meine Küche: wie Wochenplan – feste Höhe, Scroll innen, kein main-Scroll (kein Verrutschen) */
     #v-provider-home.view.active{
-      min-height:100vh; min-height:100dvh;
+      min-height:100vh; min-height:100dvh; height:100vh; height:100dvh; max-height:100vh; max-height:100dvh;
       background:transparent;
       display:flex !important; flex-direction:column !important;
       padding:0 !important; margin:0 !important;
       position:relative; width:100%; box-sizing:border-box;
-      overflow:visible;
+      overflow:hidden;
     }
-    /* Dashboard: Block-Layout, kein innerer Scroll – #app scrollt */
+    /* Dashboard: Scroll-Container innen (wie week-list-scroll), Header sticky */
     #v-provider-home .dashboard-floating-wrap{
       display:flex; flex-direction:column; gap:20px;
-      min-height:0; overflow:visible;
+      flex:1 1 0; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch;
       padding:0 16px calc(24px + 72px + env(safe-area-inset-bottom, 0)); padding-left:max(16px, env(safe-area-inset-left, 0)); padding-right:max(16px, env(safe-area-inset-right, 0));
       padding-top:0;
       width:100%; max-width:100%; margin:0; box-sizing:border-box;
@@ -4503,10 +4495,18 @@
       to { opacity: 1; transform: scale(1); }
     }
 
-    /* App-like Transitions (Basis: .view/.view.active bereits oben mit display:none/block gesetzt) */
+    /* App-like Transitions & Feedback */
+    .view {
+      display: none;
+      opacity: 0;
+    }
     .view.active {
+      display: block;
       opacity: 1;
       animation: viewIn 0.2s ease-out forwards;
+    }
+    .view.active#v-pickup-code {
+      display: flex !important;
     }
     /* Applike: Wochenplan ohne Verschieben – nur Einblendung */
     #v-provider-week.active { animation: viewInFade 0.2s ease-out forwards; }
@@ -4550,9 +4550,7 @@
       padding-right: env(safe-area-inset-right, 0);
     }
     /* Kunde: Anbieter-Profil (Restaurant-Seite) – app-like, nicht gequetscht, S25-tauglich */
-    /* Immer ausblenden wenn nicht aktiv (verhindert Anzeige in Kundenmodus z. B. unter „Meins“ sowie auf Provider-Login/Onboarding) */
-    #v-provider-detail-public:not(.view.active) { display: none !important; }
-    #v-provider-detail-public.view.active {
+    #v-provider-detail-public {
       display: flex !important;
       flex-direction: column !important;
       min-height: 100vh;
@@ -6991,8 +6989,8 @@
   </div>
 </div>
 
-    <!-- Quick-Post Modal (direkt aus Kochbuch) – Standard: ausgeblendet, nur bei .active sichtbar -->
-    <div class="backdrop" id="quickPostBd" onclick="closeQuickPostSheet()" style="display:none; background:rgba(0,0,0,0.5); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); z-index:1100;"></div>
+    <!-- Quick-Post Modal (direkt aus Kochbuch) -->
+    <div class="backdrop" id="quickPostBd" onclick="closeQuickPostSheet()" style="background:rgba(0,0,0,0.5); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); z-index:1100;"></div>
     <div class="sheet" id="quickPostSheet" style="max-width:480px; border-radius:28px; overflow:hidden; z-index:1101;">
       <div class="sheet-body" style="padding:28px;">
         <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
@@ -7045,8 +7043,8 @@
       </div>
     </div>
 
-    <!-- Publish Fee Modal (vor Inserats-Veröffentlichung) – Standard: ausgeblendet -->
-    <div class="backdrop" id="publishFeeBd" onclick="closePublishFeeModal()" style="display:none; background:rgba(0,0,0,0.7); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); z-index:2000;"></div>
+    <!-- Publish Fee Modal (vor Inserats-Veröffentlichung) – Backdrop + Sheet immer gemeinsam anzeigen -->
+    <div class="backdrop" id="publishFeeBd" onclick="closePublishFeeModal()" style="background:rgba(0,0,0,0.7); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); z-index:2000;"></div>
     <div class="sheet" id="publishFeeSheet" style="max-width:480px; border-radius:24px; overflow:hidden; z-index:2001;">
   <div class="sheet-body" style="padding:28px;">
     <h3 style="margin:0 0 20px; font-size:22px; font-weight:900; color:#2D3436;">Inserat veröffentlichen</h3>
@@ -7085,7 +7083,7 @@
 </div>
 
 <!-- Inserat Live – Erfolgs- & Monitoring-Sheet (Schritt 5 nach Veröffentlichung) -->
-<div class="backdrop" id="inseratSuccessBd" onclick="closeInseratSuccessSheet()" style="display:none; background:rgba(0,0,0,0.7); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); z-index:1200;"></div>
+<div class="backdrop" id="inseratSuccessBd" onclick="closeInseratSuccessSheet()" style="background:rgba(0,0,0,0.7); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); z-index:1200;"></div>
 <div class="sheet" id="inseratSuccessSheet" style="max-width:480px; border-radius:32px; background:#f8f7f2; z-index:1201; display:flex; flex-direction:column; max-height:92vh;">
   <div id="confettiContainer" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; overflow:hidden;"></div>
   
@@ -7156,8 +7154,8 @@
   </div>
 </div>
 
-  <!-- Offer sheet (Kunden-Gerichtdetails) – Standard: ausgeblendet -->
-  <div class="backdrop" id="bd" onclick="closeSheet()" style="display:none;"></div>
+  <!-- Offer sheet -->
+  <div class="backdrop" id="bd" onclick="closeSheet()"></div>
   <div class="sheet" id="sheet">
     <div class="handle"></div>
     
@@ -9158,7 +9156,6 @@
   }
 
   function showView(id){
-    document.body.classList.add('app-ready'); /* Init-Gate: UI erst nach erstem View-Switch sichtbar (vermindert Flackern) */
     const view = document.getElementById(id);
     if(!view){
       console.error('View not found:', id);
@@ -9172,23 +9169,13 @@
     if(isProviderView){
       document.body.classList.add('provider-mode');
       if(typeof history !== 'undefined' && history.scrollRestoration !== undefined) history.scrollRestoration = 'manual';
-      // Backdrops sofort ausblenden (aktiv + display:none), damit Dashboard-Inhalt sichtbar bleibt
-      function hideProviderModals(){
-        var bd = document.getElementById('bd'), sheet = document.getElementById('sheet');
-        var qb = document.getElementById('quickPostBd'), qs = document.getElementById('quickPostSheet');
-        var pb = document.getElementById('publishFeeBd'), ps = document.getElementById('publishFeeSheet');
-        var ib = document.getElementById('inseratSuccessBd'), is_ = document.getElementById('inseratSuccessSheet');
-        if(bd){ bd.classList.remove('active'); bd.style.display = 'none'; }
-        if(sheet) sheet.classList.remove('active');
-        if(qb){ qb.classList.remove('active'); qb.style.display = 'none'; }
-        if(qs) qs.classList.remove('active');
-        if(pb){ pb.classList.remove('active'); pb.style.display = 'none'; }
-        if(ps) ps.classList.remove('active');
-        if(ib){ ib.classList.remove('active'); ib.style.display = 'none'; }
-        if(is_) is_.classList.remove('active');
-      }
-      try { hideProviderModals(); } catch(e) {}
-      setTimeout(hideProviderModals, 80);
+      // Backdrops sofort ausblenden, damit nichts Klicks blockiert (unabhängig von closeQuickPostSheet/closePublishFeeModal)
+      try {
+        document.getElementById('quickPostBd')?.classList.remove('active');
+        document.getElementById('quickPostSheet')?.classList.remove('active');
+        document.getElementById('publishFeeBd')?.classList.remove('active');
+        document.getElementById('publishFeeSheet')?.classList.remove('active');
+      } catch(e) {}
     }
     view.classList.add('active');
     if(id === 'v-pickup-code') view.style.display = 'flex';
@@ -9261,14 +9248,13 @@
       fabModeToggle.style.display = 'none';
     }
 
-    // Bottom-Nav jeweils sichtbar halten (Customer vs. Provider) – Provider-Nav nicht auf Login/Onboarding
+    // Bottom-Nav jeweils sichtbar halten (Customer vs. Provider)
     const isProv = mode === 'provider';
     const isCustomerOrStart = mode === 'customer' || mode === 'start';
-    const providerLoginOrOnboarding = (id && (id === views.providerLogin || id === views.providerOnboardingEntry || id === views.providerOnboardingFirstDish || id === views.providerOnboardingSignup || id === views.providerOnboardingBusiness || id === views.providerOnboardingPreview || (String(id).indexOf('v-provider-onboarding') === 0)));
     const customerNavEl = document.getElementById('customerNav');
     const providerNavWrapEl = document.getElementById('providerNavWrap');
     if(customerNavEl) customerNavEl.style.display = isCustomerOrStart ? 'flex' : 'none';
-    if(providerNavWrapEl) providerNavWrapEl.style.display = (isProv && !providerLoginOrOnboarding) ? 'block' : 'none';
+    if(providerNavWrapEl) providerNavWrapEl.style.display = isProv ? 'block' : 'none';
 
     // Bottom-Nav aktiven Tab immer zur aktuellen View synchronisieren
     if(isCustomerOrStart){
@@ -9292,7 +9278,7 @@
     const statusIndicator = document.getElementById('providerStatusIndicator');
     
     if(customerNav) customerNav.style.display = (isCustomer || isStart) ? 'flex' : 'none';
-    if(providerNavWrap) providerNavWrap.style.display = (isProv && provider.loggedIn) ? 'block' : 'none';
+    if(providerNavWrap) providerNavWrap.style.display = isProv ? 'block' : 'none';
     if(statusIndicator) statusIndicator.style.display = (isProv && provider.loggedIn) ? 'flex' : 'none';
     
 
@@ -9300,16 +9286,12 @@
     if(isProv && provider.loggedIn){
       document.body.classList.add('provider-mode');
       if(typeof history !== 'undefined' && history.scrollRestoration !== undefined) history.scrollRestoration = 'manual';
-      // Modals/Backdrops aus (inkl. Offer-Sheet #bd/#sheet), damit Dashboard-Inhalt sichtbar bleibt
+      // Modals/Backdrops aus, damit die Oberfläche klickbar bleibt
       try {
-        var bd = document.getElementById('bd'), sheet = document.getElementById('sheet');
-        var qb = document.getElementById('quickPostBd'), pb = document.getElementById('publishFeeBd'), ib = document.getElementById('inseratSuccessBd');
-        if(bd){ bd.classList.remove('active'); bd.style.display = 'none'; }
-        if(sheet) sheet.classList.remove('active');
-        [document.getElementById('quickPostSheet'), document.getElementById('publishFeeSheet'), document.getElementById('inseratSuccessSheet')].forEach(function(s){ if(s) s.classList.remove('active'); });
-        if(qb){ qb.classList.remove('active'); qb.style.display = 'none'; }
-        if(pb){ pb.classList.remove('active'); pb.style.display = 'none'; }
-        if(ib){ ib.classList.remove('active'); ib.style.display = 'none'; }
+        document.getElementById('quickPostBd')?.classList.remove('active');
+        document.getElementById('quickPostSheet')?.classList.remove('active');
+        document.getElementById('publishFeeBd')?.classList.remove('active');
+        document.getElementById('publishFeeSheet')?.classList.remove('active');
       } catch(e) {}
     } else {
       document.body.classList.remove('provider-mode');
@@ -9333,7 +9315,7 @@
       if(!provider.loggedIn){
         showView(views.providerLogin);
       } else {
-        // RESTORE NUR HAUPT-TABS (Dashboard, Abholungen, Wochenplan, Kochbuch, Profil) – keine Detail-/Login-Views
+        // RESTORE NUR HAUPT-TABS – nie v-provider-detail-public / Login / Onboarding
         const lastView = localStorage.getItem('mittagio_last_view');
         const lastMode = localStorage.getItem('mittagio_last_mode');
         const providerMainViews = ['v-provider-home','v-provider-pickups','v-provider-week','v-provider-cookbook','v-provider-profile','v-provider-billing'];
@@ -9370,8 +9352,6 @@
       }
     }
   }
-  /* Fallback: UI nach 2s sichtbar, falls showView() noch nicht gelaufen (Init-Gate) */
-  setTimeout(function(){ if(document.body && !document.body.classList.contains('app-ready')) document.body.classList.add('app-ready'); }, 2000);
 
   // Logo-Click Handler (Home-Button)
   function handleLogoClick(){
@@ -13534,8 +13514,6 @@
     }
 
     updateSheetFavs();
-    const bd = document.getElementById('bd');
-    if(bd) bd.style.display = '';
     document.getElementById('bd').classList.add('active');
     document.getElementById('sheet').classList.add('active');
     if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
@@ -13564,10 +13542,8 @@
   }
 
   function closeSheet(){
-    const bd = document.getElementById('bd');
-    const sheet = document.getElementById('sheet');
-    if(bd){ bd.classList.remove('active'); bd.style.display = 'none'; }
-    if(sheet) sheet.classList.remove('active');
+    document.getElementById('bd').classList.remove('active');
+    document.getElementById('sheet').classList.remove('active');
     
     // Zurück zur vorherigen Ansicht (inkl. Scroll-Position)
     if(navigationHistory.length > 0){
@@ -17757,17 +17733,10 @@
                 <span>Abholnummer</span>
                 <span style="margin-left:auto; font-family:monospace; letter-spacing:0.05em;">${abholnummerLabel}</span>
               </div>
-              <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap;">
-                <div style="display:flex; gap:8px; flex:1; min-width:0;">${pillars.join('')}</div>
-                <button type="button" class="btn-share-tile" style="flex-shrink:0; display:inline-flex; align-items:center; gap:6px; padding:8px 14px; border-radius:10px; border:2px solid #e5e7eb; background:#fff; color:#1a1a1a; font-size:12px; font-weight:800; cursor:pointer;">
-                  <i data-lucide="share-2" style="width:16px;height:16px;"></i><span>Teilen</span>
-                </button>
-              </div>
+              <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; min-height:0;">${pillars.join('')}</div>
             </div>
           `;
-          card.onclick = function(ev){ if(!ev.target.closest('.btn-share-tile')) openProviderOffer(o.id); };
-          const shareBtn = card.querySelector('.btn-share-tile');
-          if(shareBtn) shareBtn.onclick = function(e){ e.stopPropagation(); e.preventDefault(); if(typeof shareOffer === 'function') shareOffer(o); };
+          card.onclick = function(){ openProviderOffer(o.id); };
           providerActiveListings.appendChild(card);
         });
         if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
@@ -21268,7 +21237,7 @@
   function closeQuickPostSheet(){
     const bd = document.getElementById('quickPostBd');
     const sheet = document.getElementById('quickPostSheet');
-    if(bd){ bd.classList.remove('active'); bd.style.display = 'none'; }
+    if(bd) bd.classList.remove('active');
     if(sheet) sheet.classList.remove('active');
   }
 
@@ -21332,7 +21301,6 @@
       startWizard('listing', { dishId: entryId, date: date, skipQuickPost: true });
     };
 
-    if(bd) bd.style.display = '';
     bd.classList.add('active');
     sheet.classList.add('active');
     if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
@@ -22330,16 +22298,38 @@
       });
       box.appendChild(secRow);
 
+      // Pricing-Weiche (nur bei „Jetzt Inserieren“ / dashboard): Option A 4,99 € / Option B 0,00 € mit Abholnummer
+      if(isInserierenRoute && primaryValid){
+        var weicheRow = document.createElement('div');
+        weicheRow.className = 'listing-pricing-weiche';
+        weicheRow.style.cssText = 'display:flex; flex-direction:column; gap:12px; margin-top:20px;';
+        var btnA = document.createElement('button');
+        btnA.type = 'button';
+        btnA.className = 'btn listing-express-primary';
+        btnA.style.cssText = 'width:100%; min-height:56px; border-radius:16px; font-size:16px; font-weight:800; border:none; cursor:pointer; background:#FACC15; color:#1a1a1a; box-shadow:0 4px 16px rgba(250,204,21,0.4);';
+        btnA.textContent = 'Jetzt für 4,99 € einmalig inserieren';
+        btnA.onclick = function(){ if(typeof haptic==='function') haptic(50); w.data.pricingOption = undefined; w.data.inseratFeeWaived = false; w.step++; saveDraft(); rebuildWizard(); };
+        var btnB = document.createElement('button');
+        btnB.type = 'button';
+        btnB.style.cssText = 'width:100%; min-height:56px; border-radius:16px; font-size:15px; font-weight:800; border:2px solid #10b981; background:rgba(16,185,129,0.12); color:#0d9668; cursor:pointer;';
+        btnB.textContent = 'Jetzt für 0,00 € inserieren mit Abholnummer (0,89 € pro Vorgang)';
+        btnB.onclick = function(){ if(typeof haptic==='function') haptic(50); w.data.pricingOption = 'abholnummer'; w.data.inseratFeeWaived = true; w.data.hasPickupCode = true; w.step++; saveDraft(); rebuildWizard(); };
+        weicheRow.appendChild(btnA);
+        weicheRow.appendChild(btnB);
+        box.appendChild(weicheRow);
+      }
+
       setWizardContent(box);
 
-      // Primär-Button je entryPoint (Gelb = Inserieren, Emerald = Speichern)
+      // Primär-Button je entryPoint (Gelb = Inserieren, Emerald = Speichern); bei dashboard mit Weiche: Sticky-Button ausblenden
       var primaryLabel = 'JETZT FÜR 4,99 € INSERIEREN';
       var primaryIsYellow = true;
       if(entryPoint==='cookbook'){ primaryLabel='IM KOCHBUCH SPEICHERN'; primaryIsYellow=false; }
       else if(entryPoint==='week'){ primaryLabel='IN WOCHENPLAN SPEICHERN'; primaryIsYellow=false; }
       setWizardNext(primaryLabel);
       if(wNextBtn){
-        wNextBtn.style.display='flex';
+        if(isInserierenRoute && primaryValid){ wNextBtn.style.display='none'; }
+        else { wNextBtn.style.display='flex'; }
         if(!primaryValid){
           wNextBtn.disabled = true;
           wNextBtn.style.opacity = '0.5';
@@ -22582,7 +22572,7 @@
       return;
     }
 
-    // Schritt 3: Vorschau + Entscheidung (3 Optionen)
+    // Schritt 3: Vorschau + Entscheidung (3 Optionen); bei Option B (0,00 €) direkter Weg zum Publish-Modal
     if(w.step===2){
       setWizardQuestion('So wirkt dein Inserat', 'Genau so sehen es deine Gäste.');
       const box=document.createElement('div');
@@ -22590,13 +22580,28 @@
       const grid = document.createElement('div');
       grid.style.cssText = 'display:grid; grid-template-columns:1fr; gap:16px; margin-top:20px;';
 
-      const tilePub = document.createElement('button');
+      var isAbholnummerPath = w.data.pricingOption === 'abholnummer' || w.data.inseratFeeWaived;
+      var tilePub = document.createElement('button');
       tilePub.type = 'button';
       tilePub.className = 'btn';
-      tilePub.style.cssText = 'display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; border-radius:20px; background:#FFD700; color:#1a1a1a; border:none; box-shadow:0 8px 20px rgba(255,215,0,0.2); transition:transform 0.1s; cursor:pointer;';
-      tilePub.innerHTML = '<i data-lucide="rocket" style="width:32px; height:32px; margin-bottom:12px;"></i><div style="font-size:18px; font-weight:900;">Jetzt für 4,99 € inserieren</div>';
-      tilePub.onclick = function(){ w.step++; rebuildWizard(); };
+      if(isAbholnummerPath){
+        tilePub.style.cssText = 'display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; border-radius:20px; background:rgba(16,185,129,0.15); color:#0d9668; border:2px solid #10b981; box-shadow:0 4px 16px rgba(16,185,129,0.2); transition:transform 0.1s; cursor:pointer;';
+        tilePub.innerHTML = '<i data-lucide="receipt" style="width:32px; height:32px; margin-bottom:12px;"></i><div style="font-size:18px; font-weight:900;">Mit Abholnummer live schalten</div><div style="font-size:13px; margin-top:4px; opacity:0.9;">0,00 € Inserat · 0,89 € pro Vorgang</div>';
+        tilePub.onclick = function(){ var o = previewOfferFromWizard(); closeWizard(true); showPublishFeeModal(o); };
+      } else {
+        tilePub.style.cssText = 'display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; border-radius:20px; background:#FFD700; color:#1a1a1a; border:none; box-shadow:0 8px 20px rgba(255,215,0,0.2); transition:transform 0.1s; cursor:pointer;';
+        tilePub.innerHTML = '<i data-lucide="rocket" style="width:32px; height:32px; margin-bottom:12px;"></i><div style="font-size:18px; font-weight:900;">Jetzt für 4,99 € inserieren</div>';
+        tilePub.onclick = function(){ w.step++; rebuildWizard(); };
+      }
       grid.appendChild(tilePub);
+      if(isAbholnummerPath){
+        var switchLink = document.createElement('button');
+        switchLink.type = 'button';
+        switchLink.style.cssText = 'background:none; border:none; font-size:13px; font-weight:600; color:#64748b; cursor:pointer; text-decoration:underline; padding:8px 0; margin-top:-8px;';
+        switchLink.textContent = 'Stattdessen mit 4,99 € inserieren (ohne Abholnummer)';
+        switchLink.onclick = function(){ w.data.pricingOption = undefined; w.data.inseratFeeWaived = false; w.data.hasPickupCode = false; rebuildWizard(); };
+        grid.appendChild(switchLink);
+      }
 
       const tileCook = document.createElement('button');
       tileCook.type = 'button';
@@ -22754,13 +22759,15 @@
       imageUrl: w.data.photoData || PLACEHOLDER_IMAGE_URL,
       imagePlaceholder: !w.data.photoData,
       photoDataIsStandard: !!w.data.photoDataIsStandard,
-      hasPickupCode: !!w.data.hasPickupCode,
+      hasPickupCode: !!w.data.hasPickupCode || w.data.pricingOption === 'abholnummer',
       dineInPossible: !!w.data.dineInPossible,
       allergens: w.data.allergens||[],
       extras: w.data.extras||[],
       reuse: w.data.reuse||{enabled:false,deposit:0},
       day: w.data.day || isoDate(new Date()),
-      active: w.data.active !== false
+      active: w.data.active !== false,
+      pricingOption: w.data.pricingOption || null,
+      inseratFeeWaived: !!w.data.inseratFeeWaived || w.data.pricingOption === 'abholnummer'
     };
   }
 
@@ -22769,18 +22776,21 @@
   const TX_BASE_PRICE = 4.99;   // fixed_fee (Inseratsgebühr)
   const TX_ADDON_PRICE = 0.89; // abholnummer_fee pro Vorgang
   function createInseratTransaction(offer){
+    const inseratWaived = !!(offer && offer.inseratFeeWaived);
+    const base = inseratWaived ? 0 : TX_BASE_PRICE;
     const addon_pickup = !!(offer && offer.hasPickupCode);
     const addon_price = addon_pickup ? TX_ADDON_PRICE : 0;
-    const total_amount = TX_BASE_PRICE + addon_price;
+    const total_amount = base + addon_price;
     const txId = 'TX-' + (typeof cryptoId === 'function' ? cryptoId().slice(0, 8) : Date.now().toString(36).toUpperCase());
     return {
       id: txId,
       vendor_id: offer && offer.providerId,
       inserat_id: offer && offer.id,
-      base_price: TX_BASE_PRICE,
+      base_price: base,
       addon_pickup: addon_pickup,
       addon_price: addon_price,
       total_amount: total_amount,
+      inserat_fee_waived: inseratWaived,
       timestamp: new Date().toISOString()
     };
   }
@@ -22885,7 +22895,10 @@
     const amountEl = document.getElementById('publishFeeAmount');
     const hintEl = document.getElementById('publishFeeAmountHint');
     if(amountEl){
-      if(offer && typeof offer.price === 'number' && offer.price !== 4.99){
+      if(offer && (offer.inseratFeeWaived || offer.pricingOption === 'abholnummer')){
+        amountEl.textContent = '0,00 €';
+        if(hintEl) hintEl.textContent = 'Inserat kostenlos – Abholnummer 0,89 € pro Vorgang';
+      } else if(offer && typeof offer.price === 'number' && offer.price !== 4.99){
         amountEl.textContent = (typeof euro === 'function' ? euro(offer.price) : (offer.price.toFixed(2) + ' €'));
         if(hintEl) hintEl.textContent = 'Einmalig heute für ' + (offer.dish || 'Auswahl');
       } else {
@@ -22895,7 +22908,6 @@
     }
     const bd = document.getElementById('publishFeeBd');
     const sheet = document.getElementById('publishFeeSheet');
-    if(bd) bd.style.display = '';
     if(sheet){ sheet.style.display = ''; sheet.style.visibility = ''; sheet.classList.add('active'); }
     if(bd) bd.classList.add('active');
   }
@@ -22904,7 +22916,7 @@
     publishFeeSuccessCallback = null;
     const bd = document.getElementById('publishFeeBd');
     const sheet = document.getElementById('publishFeeSheet');
-    if(bd){ bd.classList.remove('active'); bd.style.display = 'none'; }
+    if(bd) bd.classList.remove('active');
     if(sheet){ sheet.classList.remove('active'); }
   }
   function showAddressRequiredModal(){
@@ -23074,7 +23086,6 @@
     
     const bd = document.getElementById('inseratSuccessBd');
     const sheet = document.getElementById('inseratSuccessSheet');
-    if(bd) bd.style.display = '';
     if(bd) bd.classList.add('active');
     if(sheet) sheet.classList.add('active');
     if(typeof haptic === 'function') haptic([12, 8, 12]);
@@ -23102,7 +23113,7 @@
   function closeInseratSuccessSheet(){
     const bd = document.getElementById('inseratSuccessBd');
     const sheet = document.getElementById('inseratSuccessSheet');
-    if(bd){ bd.classList.remove('active'); bd.style.display = 'none'; }
+    if(bd) bd.classList.remove('active');
     if(sheet) sheet.classList.remove('active');
     showProviderHome();
   }
