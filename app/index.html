@@ -9,6 +9,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <title>Mittagio</title>
   <meta name="theme-color" content="#FFD700" />
+  <!-- Init-Gate: kein Flackern beim Hard-Reload – Body erst nach View-Switch sichtbar -->
+  <style>body{visibility:hidden;}</style>
   <!-- WhatsApp/Link-Vorschau: Standard-OG (provider-spezifisch ggf. per Server) -->
   <meta property="og:title" content="Mittagio – Wochenplan" />
   <meta property="og:description" content="Unser Wochenplan ist online! Entdecke Gerichte und bestelle mit Abholnummer." />
@@ -101,21 +103,30 @@
       --badge-px-lg: 12px;
     }
     *{box-sizing:border-box}
-    /* Layout-Fix: Kein Leerraum über Header – Reset + Safe-Area nur innen */
-    html,body{height:100%; margin:0; padding:0}
+    /* === VIEW-SWITCH: Nur eine View sichtbar, #app nicht höher als Viewport (Bug-Reload-Fix) === */
+    #app .view:not(.active){ display:none !important; min-height:0 !important; visibility:hidden !important; }
+    #app .view.active{ display:block !important; min-height:100dvh; min-height:100vh; }
+    #app .view.active#v-pickup-code{ display:flex !important; }
+    #app .view.active[id^="v-provider-"]{ display:block !important; }
+    #app .view.active#v-provider-week{ display:flex !important; }
+    /* Sheets/Backdrops: position:fixed (kein Layout-Flow), nur wenn .active sichtbar */
+    .backdrop:not(.active){ display:none !important; opacity:0 !important; }
+    .sheet:not(.active){ visibility:hidden !important; pointer-events:none !important; }
+    /* Layout-Fix: Kein Leerraum über Header – Reset + Safe-Area nur innen. Ein Scroll-Container: #app. */
+    html,body{height:100%; margin:0; padding:0; overflow-x:hidden}
     body{
       margin:0;
       padding:0;
+      overflow-y:hidden; /* Body scrollt nicht – nur #app scrollt (verhindert #app > Viewport) */
       font-family:'Inter', 'Montserrat', system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
       font-size:16px;
       line-height:1.5;
       background:var(--bg);
       color:var(--text);
-      /* Touch-Optimierungen für Mobile */
       -webkit-tap-highlight-color: transparent;
       -webkit-touch-callout: none;
-      touch-action: pan-y pinch-zoom; /* Vertikales Scrollen erlauben, horizontales Swipe verhindern */
-      overscroll-behavior-y: none; /* Verhindert "Pull-to-Refresh" / Gelbe Leiste */
+      touch-action: pan-y pinch-zoom;
+      overscroll-behavior-y: none;
     }
     
     /* Hide Provider Status Indicator in Customer Mode (Fix Green Dot) */
@@ -126,8 +137,10 @@
     
     a{color:inherit}
 
-    /* App shell */
-    .app{min-height:100%; padding-bottom:calc(78px + env(safe-area-inset-bottom, 0px));}
+    /* App shell: max. Viewport-Höhe, Scroll nur innen (main / .dashboard-floating-wrap) */
+    .app,#app{min-height:100dvh; height:100dvh; max-height:100dvh; overflow:hidden; overflow-x:hidden; display:flex; flex-direction:column; box-sizing:border-box;}
+    .app main,#app main{flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; display:block;}
+    .app{ padding-bottom:calc(78px + env(safe-area-inset-bottom, 0px));}
     .topbar{
       position:sticky; top:0; z-index:10;
       background:rgba(247,246,240,.92);
@@ -9199,12 +9212,11 @@
     else if(id === 'v-provider-week') view.style.cssText = 'display:flex; flex-direction:column; min-height:100vh; visibility:visible; opacity:1;';
     else if(isProviderView) view.style.cssText = 'display:block !important; min-height:100vh; height:auto; width:100%; visibility:visible; opacity:1; position:relative;';
     else view.style.display = 'block';
-    // Danach alle anderen Views ausblenden
+    // Danach alle anderen Views ausblenden (explizit display:none – verhindert Aufsummierung mehrerer 100vh)
     document.querySelectorAll('.view').forEach(v => {
       if(v === view) return;
       v.classList.remove('active');
-      if(v.id !== 'v-pickup-code' || id !== 'v-pickup-code') v.style.display = '';
-      if(v.id === 'v-provider-week') v.style.setProperty('display', 'none', 'important');
+      v.style.setProperty('display', 'none', 'important');
     });
     document.body.classList.toggle('provider-week-active', id === 'v-provider-week');
     /* Bei Anbieter-Views sofort nach oben scrollen, damit kein leerer oberer Bereich sichtbar ist */
@@ -20794,7 +20806,7 @@
     var logoEl = document.getElementById('planPublicLogo');
     var backEl = document.getElementById('planPublicBack');
     if(!el || !list) return;
-    document.querySelectorAll('.view').forEach(v => { v.classList.remove('active'); v.style.display = ''; });
+    document.querySelectorAll('.view').forEach(v => { v.classList.remove('active'); v.style.setProperty('display', 'none', 'important'); });
     document.getElementById('customerNav') && (document.getElementById('customerNav').style.display = 'none');
     document.getElementById('providerNavWrap') && (document.getElementById('providerNavWrap').style.display = 'none');
     document.body.classList.remove('provider-mode');
@@ -24428,6 +24440,7 @@
     setMode(mode);
     if(mode==='provider') providerScrollReset();
   }
+  document.body.style.visibility = 'visible'; /* Init-Gate: nach View-Switch anzeigen */
   window.addEventListener('hashchange', function(){
     var m = (location.hash || '').match(/^#\/plan\/(.+)$/);
     if(m && typeof showPlanPublicView === 'function') showPlanPublicView(decodeURIComponent(m[1]));

@@ -1,0 +1,35 @@
+---
+description: Die App ist High-End – keine trostlosen Tabellen oder Layouts.
+alwaysApply: true
+---
+
+# High-End App – Keine trostlosen Tabellen oder Layouts
+
+## Grundprinzip
+
+**Mittagio ist eine Premium-Gastronomie-App.** Jede neue oder geänderte Oberfläche muss sich **hochwertig und app-like** anfühlen. Trostlose Tabellen, nackte Listen oder bürohafte Layouts sind **verboten**.
+
+## Verboten
+
+- **Reine HTML-Tabellen** für Listen oder Übersichten (z. B. `<table>` mit Zeilen/Spalten für Gerichte, Abholungen, Rechnungen).
+- **Flache Listen** ohne Karten, Abstände oder visuelle Hierarchie.
+- **Graue/weiße Raster** ohne Glas-Effekte, Schatten, Rundungen oder Akzentfarben.
+- **Formulare** die wie Behörden-Formulare aussehen (nur Labels + Inputs untereinander ohne Gruppierung oder Stil).
+
+## Erwünscht
+
+- **Karten-basierte Layouts:** Inhalte in Kacheln/Cards mit Rundungen, Schatten, optional Backdrop-Blur.
+- **Glassmorphism** wo passend: `backdrop-filter: blur(...)`, halbtransparente Flächen, feine Lichtkanten.
+- **Klare visuelle Hierarchie:** Überschriften, Pills/Chips, Icons, Emojis, Akzentfarben (z. B. Emerald #10b981, Gelb #FACC15).
+- **App-like Interaktion:** Große Touch-Ziele, Haptik, sanfte Scrolls/Transitions, Bottom-Sheets statt voller Seiten wo sinnvoll.
+- **Listen als Karten-Reihen:** z. B. jede Abholung / jedes Gericht als eigene Karte mit Bild, Titel, Preis, Badges – nicht als Tabellenzeile.
+
+## Bei neuen Views oder Refactors
+
+- Prüfen: Wirkt das wie eine **Premium-App** oder wie ein **internes Verwaltungstool**?
+- Wenn Tabellen nötig erscheinen: Ersetzen durch **Karten-Grid**, **gestapelte Karten** oder **horizontale Scroll-Bereiche** mit großen Kacheln.
+- Bestehende High-End-Bereiche (z. B. Inseratsflow, Gericht-Detail, Favoriten) als Referenz nutzen.
+
+## Kurzformel
+
+**Keine Tabellen. Keine trostlosen Layouts. Alles kartenbasiert, gestuft, mit Atmosphäre.**
