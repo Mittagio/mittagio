@@ -3534,10 +3534,10 @@
     body.provider-mode [id^="v-provider-"].view.active .prov-header,
     body.provider-mode [id^="v-provider-"].view.active header:first-child{ visibility:visible !important; opacity:1 !important; min-height:60px; background:rgba(255,255,255,0.8) !important; backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); display:block !important; border-bottom:1px solid rgba(255,255,255,0.2) !important; }
     body.provider-mode [id^="v-provider-"].view.active#v-provider-week{ display:flex !important; flex-direction:column !important; }
-    /* Meine Küche: wie Wochenplan – feste Höhe, Scroll innen, kein main-Scroll (kein Verrutschen) */
+    /* Meine Küche: wie Wochenplan – feste Höhe, Scroll innen, oben kein leerer Screen */
     #v-provider-home.view.active{
       min-height:100vh; min-height:100dvh; height:100vh; height:100dvh; max-height:100vh; max-height:100dvh;
-      background:transparent;
+      background:#fff;
       display:flex !important; flex-direction:column !important;
       padding:0 !important; margin:0 !important;
       position:relative; width:100%; box-sizing:border-box;
@@ -17520,6 +17520,15 @@
   function renderProviderHome(){
     closeQuickPostSheet();
     updateSessionActivity();
+
+    // Oben kein leerer Screen: Scroll sofort auf 0
+    var homeEl = document.getElementById('v-provider-home');
+    var wrapEl = homeEl && homeEl.querySelector('.dashboard-floating-wrap');
+    if(wrapEl) wrapEl.scrollTop = 0;
+    var mainEl = document.querySelector('main');
+    if(mainEl) mainEl.scrollTop = 0;
+    if(document.documentElement) document.documentElement.scrollTop = 0;
+    if(document.body) document.body.scrollTop = 0;
     
     const profile = normalizeProviderProfile(provider.profile || {});
     const todayKey = isoDate(new Date());
@@ -18109,13 +18118,13 @@
       }
     }
     
-    // FAB → immer dieselbe Seite: Gericht erstellen oder aus dem Kochbuch (createFlowSheet)
+    // FAB → direkt neuer Inseratsflow (High-End Universal-Flow), kein createFlowSheet
     const fabProviderAddOffer = document.getElementById('fabProviderAddOffer');
     const fabProviderAddOfferLabel = document.getElementById('fabProviderAddOfferLabel');
     if(fabProviderAddOffer){
       fabProviderAddOffer.onclick = () => {
         createFlowPreselectedDate = null;
-        if(typeof openCreateFlowSheet === 'function') openCreateFlowSheet();
+        if(typeof openDishFlow === 'function') openDishFlow(null, 'dashboard');
       };
       fabProviderAddOffer.onmouseenter = () => {
         if(fabProviderAddOfferLabel) fabProviderAddOfferLabel.style.opacity = '1';
@@ -18149,6 +18158,15 @@
     
     // Icons aktualisieren
     if(typeof lucide !== 'undefined') setTimeout(()=> lucide.createIcons(), 50);
+
+    // FAB auf Dashboard immer anzeigen (Gerichte anlegen)
+    var activeView = document.querySelector('.view.active');
+    if(activeView && activeView.id === 'v-provider-home'){
+      var fab = document.getElementById('fabProviderAddOffer');
+      var fabLbl = document.getElementById('fabProviderAddOfferLabel');
+      if(fab){ fab.style.display = 'flex'; }
+      if(fabLbl){ fabLbl.style.display = 'block'; }
+    }
   }
 
   // Week Preview (7 Tage) – Applike: neutrale Pills, gelb aktiv; Gerichteliste + Link zum Wochenplan
