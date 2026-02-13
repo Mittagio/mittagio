@@ -936,7 +936,7 @@
       -webkit-overflow-scrolling:touch;
       scroll-snap-type:x mandatory;
     }
-    #v-provider-cookbook .cookbook-bestseller-strip .cookbook-item{ scroll-snap-align:start; flex:0 0 72%; max-width:280px; }
+    #v-provider-cookbook .cookbook-bestseller-strip .cookbook-item{ scroll-snap-align:start; flex:0 0 72%; max-width:280px; border:1px solid rgba(0,0,0,0.04); box-shadow:0 8px 24px rgba(0,0,0,0.03); }
     #v-provider-cookbook .cookbook-grid{
       display:grid;
       grid-template-columns:repeat(2, 1fr);
@@ -3708,10 +3708,18 @@
     #v-provider-profile .provider-profile-hero-cta--yellow{ background:#FFD700; color:#1a1a1a; box-shadow:0 4px 16px rgba(255,215,0,0.35); }
     #v-provider-profile .provider-profile-hero-cta--emerald{ background:#10b981; color:#fff; box-shadow:0 4px 16px rgba(16,185,129,0.25); }
     #v-provider-profile .provider-profile-hero-icon-wrap{ width:56px; height:56px; border-radius:16px; background:#f1f3f5; display:flex; align-items:center; justify-content:center; font-size:28px; margin-bottom:8px; }
-    #v-provider-cookbook{ min-height:100vh; min-height:100dvh; width:100%; box-sizing:border-box; }
+    #v-provider-cookbook{ min-height:100vh; min-height:100dvh; width:100%; box-sizing:border-box; background:#F2F2F7 !important; }
     #v-provider-cookbook.view.active{ display:flex !important; flex-direction:column !important; height:100vh; height:100dvh; max-height:100vh; max-height:100dvh; overflow:hidden; }
     #v-provider-cookbook.view.active > header{ position:relative; z-index:1; flex-shrink:0; }
     #v-provider-cookbook.view.active > div{ position:relative; z-index:1; min-height:0; flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; }
+    /* Kochbuch: Silicon-Valley-Style wie Profil – Reinweiß auf Hellgrau, weiche Schatten */
+    #v-provider-cookbook .prov-page-header{ background:rgba(255,255,255,0.9) !important; backdrop-filter:blur(12px); border-bottom:1px solid rgba(0,0,0,0.04) !important; }
+    #v-provider-cookbook .prov-page-header-icon{ background:var(--prov-brand) !important; box-shadow:0 4px 12px rgba(255,222,0,0.25) !important; }
+    #v-provider-cookbook #cookbookScrollWrap{ background:transparent; }
+    #v-provider-cookbook .cookbook-tabs{ background:#fff !important; border:1px solid rgba(0,0,0,0.04) !important; box-shadow:0 2px 8px rgba(0,0,0,0.03) !important; border-radius:16px !important; padding:6px !important; }
+    #v-provider-cookbook .cookbook-tabs button.on{ background:var(--prov-brand); color:#1a1a1a; border-radius:12px; }
+    #v-provider-cookbook .cookbook-item{ background:#fff; border:1px solid rgba(0,0,0,0.04); box-shadow:0 8px 24px rgba(0,0,0,0.03); border-radius:20px; }
+    #v-provider-cookbook .cookbook-action-bar{ background:rgba(255,255,255,0.95); backdrop-filter:blur(12px); border-top:1px solid rgba(0,0,0,0.04) !important; box-shadow:0 -4px 24px rgba(0,0,0,0.04); }
 
     /* Wochenplan: nur auf der Wochenplan-Seite sichtbar; Layout nur wenn .active */
     #v-provider-week.view{ display:none; }
@@ -6079,10 +6087,10 @@
         </div>
         <div style="position:relative; display:flex; gap:10px; margin-top:14px;">
           <div style="position:relative; flex:1;">
-            <i data-lucide="search" style="position:absolute; left:16px; top:50%; transform:translateY(-50%); color:#9ca3af; width:20px; height:20px;"></i>
-            <input type="text" id="cookbookSearch" placeholder="Gericht suchen …" style="width:100%; height:52px; background:#f1f3f5; border:none; border-radius:16px; padding:0 16px 0 48px; font-size:16px; font-weight:600; outline:none;" />
+            <i data-lucide="search" style="position:absolute; left:16px; top:50%; transform:translateY(-50%); color:#94a3b8; width:20px; height:20px;"></i>
+            <input type="text" id="cookbookSearch" placeholder="Gericht suchen …" class="cookbook-search" style="width:100%; height:52px; background:#fff; border:1px solid rgba(0,0,0,0.06); border-radius:16px; padding:0 16px 0 48px; font-size:16px; font-weight:600; outline:none; box-shadow:0 2px 8px rgba(0,0,0,0.02);" />
           </div>
-          <select id="cookbookSortSelect" style="width:52px; height:52px; background:#f1f3f5; border:none; border-radius:16px; appearance:none; padding:0; text-align:center; cursor:pointer;">
+          <select id="cookbookSortSelect" style="width:52px; height:52px; background:#fff; border:1px solid rgba(0,0,0,0.06); border-radius:16px; appearance:none; padding:0; text-align:center; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.02);">
             <option value="recent">🕒</option>
             <option value="alpha">AZ</option>
             <option value="priceAsc">€↑</option>
@@ -6095,13 +6103,13 @@
         <!-- Tabs: Gerichte | Entwürfe -->
         <div class="cookbook-tabs" id="cookbookTabs" role="tablist" style="display:flex; background:#fff; border-radius:14px; padding:4px; margin-bottom:24px; border:1px solid rgba(0,0,0,0.05); box-shadow:0 2px 8px rgba(0,0,0,0.02);"></div>
         
-        <div id="cookbookList" style="display:grid; grid-template-columns:1fr; gap:16px;">
-          <!-- Wird dynamisch befüllt -->
+        <div id="cookbookList" style="gap:16px;">
+          <!-- Wird dynamisch befüllt (Klasse cookbook-grid setzt 2 Spalten) -->
         </div>
 
         <div id="cookbookEmpty" style="text-align:center; padding:80px 24px; display:none;">
-          <div style="width:80px; height:80px; background:rgba(0,0,0,0.03); border-radius:50%; margin:0 auto 20px; display:flex; align-items:center; justify-content:center;">
-            <i data-lucide="book-open" style="width:40px; height:40px; color:#cbd5e1;"></i>
+          <div style="width:80px; height:80px; background:#fff; border-radius:50%; margin:0 auto 20px; display:flex; align-items:center; justify-content:center; box-shadow:0 8px 24px rgba(0,0,0,0.03); border:1px solid rgba(0,0,0,0.04);">
+            <i data-lucide="book-open" style="width:40px; height:40px; color:#94a3b8;"></i>
           </div>
           <h3 style="font-size:18px; font-weight:800; color:#1a1a1a; margin-bottom:8px;">Dein Kochbuch ist leer</h3>
           <p style="color:#64748b; font-size:15px; line-height:1.5; margin-bottom:32px;">Speichere deine besten Gerichte, um sie später mit einem Klick zu inserieren.</p>
@@ -6113,7 +6121,7 @@
       </div>
 
       <!-- Sticky Bottom Bar: Standard (Suche · Neues Gericht · Sortieren) oder 3-Wege bei Selektion -->
-      <div id="cookbookActionBar" class="cookbook-action-bar" style="position:fixed; bottom:calc(64px + env(safe-area-inset-bottom, 20px)); left:0; right:0; background:#fff; border-top:1px solid #e2e8f0; padding:12px 20px 12px; display:flex; flex-direction:column; gap:10px; z-index:40; box-shadow:0 -4px 20px rgba(0,0,0,0.06);">
+      <div id="cookbookActionBar" class="cookbook-action-bar" style="position:fixed; bottom:calc(64px + env(safe-area-inset-bottom, 20px)); left:0; right:0; padding:12px 20px 12px; display:flex; flex-direction:column; gap:10px; z-index:40;">
         <div id="cookbookBarDefault" style="display:flex; align-items:center; gap:10px;">
           <button type="button" id="cookbookBarFilter" class="cookbook-bar-btn cookbook-bar-secondary" aria-label="Suche fokussieren">
             <i data-lucide="search" style="width:20px;height:20px;"></i>
