@@ -14,7 +14,8 @@ Wochenübersicht: Anbieter plant Gerichte pro Tag. Helles Layout, Tag-Pills, Ins
 
 - **Header:** „Wochenplan“, Zurück-Button.
 - **Tag-Pills:** Mo, Di, Mi, … (auswählbar).
-- **Inhalt:** Liste der geplanten Inserate für den gewählten Tag; „Inserat hinzufügen“ (öffnet Inseratsflow mit vorgewähltem Datum).
+- **Inhalt:** KW-Board mit Tages-Kacheln; pro Tag Slots (Gerichte) oder **Plus-Kachel** (+).
+- **Plus-Button auf den Kacheln:** Führt zur **Inseratsauswahl** (Sheet `#createFlowSheet`, Titel „Inseratsauswahl“ – nicht Kochbuch). Dort: „Neues Gericht erstellen“, „Aus dem Kochbuch hinzufügen“, „Beliebte Gerichte“. Der gewählte Tag wird als `weekPlanDay` und `createFlowPreselectedDate` gesetzt.
 - **Aktionen:** PDF, Teilen (optional).
 
 ---

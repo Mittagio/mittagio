@@ -89,6 +89,12 @@ Der Inseratsflow ist **eine** universelle Eingabemaske in allen Modi (Dashboard,
 
 ---
 
+## 7. Wochenplan → Inseratsauswahl (Anbieter)
+
+- **Plus-Button auf den Wochenplan-Kacheln:** Führt zur **Inseratsauswahl** (Sheet `#createFlowSheet`, Titel „Inseratsauswahl“). Das ist **nicht** die Kochbuch-Seite, sondern das Sheet mit „Neues Gericht erstellen“, „Aus dem Kochbuch hinzufügen“, „Beliebte Gerichte“.
+- Ablauf: Klick auf „+“ im KW-Board → `weekPlanDay` und `createFlowPreselectedDate` werden auf den gewählten Tag gesetzt → Sheet Inseratsauswahl öffnet sich (`openCreateFlowSheet()`).
+- Spezifikation: `docs/_archive/seiten/10_provider_wochenplan.md`.
+
 ---
 
 ## System-Prompt Referenz: „Mittagio High-End Architect“

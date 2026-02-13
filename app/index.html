@@ -3956,7 +3956,7 @@
       #v-provider-week .kw-slot-main .kw-slot-name{ font-size:14px; font-weight:800; color:#1a1a1a; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
       #v-provider-week .kw-slot-main .kw-slot-price{ font-size:15px; font-weight:900; color:#1a1a1a; margin-top:2px; }
       #v-provider-week .kw-slot-override-badges{ position:absolute; top:4px; right:4px; display:flex; gap:2px; font-size:12px; }
-      #v-provider-week .kw-slot-empty{ min-height:52px; border:2px dashed #e2e8f0; border-radius:14px; background:rgba(248,250,252,0.6); display:flex; align-items:center; justify-content:center; color:#cbd5e1; font-size:24px; font-weight:200; letter-spacing:0.08em; transition:color 0.2s, border-color 0.2s, background 0.2s; }
+      #v-provider-week .kw-slot-empty{ min-height:52px; border:2px dashed #e2e8f0; border-radius:14px; background:rgba(248,250,252,0.6); display:flex; align-items:center; justify-content:center; color:#cbd5e1; font-size:24px; font-weight:200; letter-spacing:0.08em; transition:color 0.2s, border-color 0.2s, background 0.2s; cursor:pointer; font-family:inherit; padding:0; margin:0; width:100%; box-sizing:border-box; -webkit-appearance:none; appearance:none; }
       #v-provider-week .kw-slot-empty:active{ color:#94a3b8; border-color:#cbd5e1; background:rgba(241,245,249,0.9); }
       #v-provider-week .kw-slot-small{ display:flex; align-items:center; gap:8px; padding:8px 10px; background:#f8fafc; border-radius:12px; border:1px solid #f1f3f5; }
       #v-provider-week .kw-slot-small .kw-slot-thumb{ width:40px; height:40px; border-radius:10px; background:#e2e8f0; flex-shrink:0; background-size:cover; background-position:center; position:relative; }
@@ -18664,10 +18664,13 @@
             slotsWrap.appendChild(slotSmall);
           }
         } else {
-          var empty = document.createElement('div');
+          var empty = document.createElement('button');
+          empty.type = 'button';
           empty.className = 'kw-slot kw-slot-empty';
+          empty.setAttribute('data-day', key);
+          empty.setAttribute('aria-label', 'Gericht hinzufügen für ' + dayLabel + ', ' + dateLabel);
           empty.textContent = '+';
-          empty.onclick = (function(k){ return function(e){ e.stopPropagation(); if(typeof haptic === 'function') haptic(6); if(typeof openWeekAddSheet === 'function') openWeekAddSheet(k); }; })(key);
+          empty.onclick = (function(k){ return function(e){ e.preventDefault(); e.stopPropagation(); if(typeof haptic === 'function') haptic(6); weekPlanDay = k; createFlowPreselectedDate = k; if(typeof openCreateFlowSheet === 'function') openCreateFlowSheet(); }; })(key);
           slotsWrap.appendChild(empty);
         }
       }
