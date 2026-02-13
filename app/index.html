@@ -4802,7 +4802,6 @@
       <div class="topbar-inner">
         <!-- View-Toggle wurde in den discover-header verschoben -->
       <div class="spacer"></div>
-<!-- modePill removed -->
     </div>
   </div>
 
@@ -9165,6 +9164,13 @@
     if(isProviderView){
       document.body.classList.add('provider-mode');
       if(typeof history !== 'undefined' && history.scrollRestoration !== undefined) history.scrollRestoration = 'manual';
+      // Backdrops sofort ausblenden, damit nichts Klicks blockiert (unabhängig von closeQuickPostSheet/closePublishFeeModal)
+      try {
+        document.getElementById('quickPostBd')?.classList.remove('active');
+        document.getElementById('quickPostSheet')?.classList.remove('active');
+        document.getElementById('publishFeeBd')?.classList.remove('active');
+        document.getElementById('publishFeeSheet')?.classList.remove('active');
+      } catch(e) {}
     }
     view.classList.add('active');
     if(id === 'v-pickup-code') view.style.display = 'flex';
@@ -9264,12 +9270,10 @@
     const customerNav = document.getElementById('customerNav');
     const providerNavWrap = document.getElementById('providerNavWrap');
     const providerNav = document.getElementById('providerNav');
-    const modePill = document.getElementById('modePill');
     const statusIndicator = document.getElementById('providerStatusIndicator');
     
     if(customerNav) customerNav.style.display = (isCustomer || isStart) ? 'flex' : 'none';
     if(providerNavWrap) providerNavWrap.style.display = isProv ? 'block' : 'none';
-    if(modePill) modePill.style.display = isProv ? 'inline-flex' : 'none';
     if(statusIndicator) statusIndicator.style.display = (isProv && provider.loggedIn) ? 'flex' : 'none';
     
 
@@ -9277,6 +9281,13 @@
     if(isProv && provider.loggedIn){
       document.body.classList.add('provider-mode');
       if(typeof history !== 'undefined' && history.scrollRestoration !== undefined) history.scrollRestoration = 'manual';
+      // Modals/Backdrops aus, damit die Oberfläche klickbar bleibt
+      try {
+        document.getElementById('quickPostBd')?.classList.remove('active');
+        document.getElementById('quickPostSheet')?.classList.remove('active');
+        document.getElementById('publishFeeBd')?.classList.remove('active');
+        document.getElementById('publishFeeSheet')?.classList.remove('active');
+      } catch(e) {}
     } else {
       document.body.classList.remove('provider-mode');
     }
@@ -18488,9 +18499,7 @@
   function renderWeekPlanBoard(){
     updateSessionActivity();
     var wrap = document.getElementById('kwBoardWrap');
-    var legacy = document.getElementById('weekPlanWrapLegacy');
     if (wrap) wrap.style.display = 'flex';
-    if (legacy) legacy.style.display = 'none';
     var carousel = document.getElementById('kwCarousel');
     var progressFill = document.getElementById('kwProgressFill');
     var grid = document.getElementById('kwGrid');
@@ -18589,19 +18598,16 @@
   function renderWeekPlan(){
     updateSessionActivity();
     var boardWrap = document.getElementById('kwBoardWrap');
-    var legacyWrap = document.getElementById('weekPlanWrapLegacy');
     const dayWrap = document.getElementById('weekDays');
     const list = document.getElementById('weekList');
-    /* Legacy-Listenansicht entfernt: nur KW-Board. Ohne weekDays/weekList → Board anzeigen. */
+    /* Nur KW-Board. Ohne weekDays/weekList → Board anzeigen. */
     if(!dayWrap || !list){
       if (boardWrap) boardWrap.style.display = 'flex';
-      if (legacyWrap) legacyWrap.style.display = 'none';
       if (boardWrap && typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard();
       if (typeof renderProviderWeekPreview === 'function') renderProviderWeekPreview();
       return;
     }
     if (boardWrap) boardWrap.style.display = 'none';
-    if (legacyWrap) legacyWrap.style.display = 'flex';
     let actionsBar = document.getElementById('weekActionsBar');
     let activateBlock = document.getElementById('weekActivateBlock');
     const thumbZone = document.getElementById('weekThumbZone');
