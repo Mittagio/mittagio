@@ -3690,10 +3690,24 @@
     #v-provider-pickups.view.active{ display:flex !important; flex-direction:column !important; height:100vh; height:100dvh; max-height:100vh; max-height:100dvh; overflow:hidden; }
     #v-provider-pickups.view.active > header{ position:relative; z-index:1; flex-shrink:0; }
     #v-provider-pickups.view.active > div{ position:relative; z-index:1; min-height:0; flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; }
-    #v-provider-profile{ min-height:100vh; min-height:100dvh; width:100%; box-sizing:border-box; }
+    #v-provider-profile{ min-height:100vh; min-height:100dvh; width:100%; box-sizing:border-box; background:#F2F2F7 !important; }
     #v-provider-profile.view.active{ display:flex !important; flex-direction:column !important; }
     #v-provider-profile.view.active > header,
     #v-provider-profile.view.active > div{ position:relative; z-index:1; min-height:0; overflow:visible; }
+    /* Silicon Valley Style: Hero Carousel */
+    #v-provider-profile .provider-profile-hero{ display:flex; overflow-x:auto; overflow-y:hidden; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; gap:16px; padding:16px 20px 24px; padding-left:calc(20px + env(safe-area-inset-left, 0)); padding-right:calc(20px + env(safe-area-inset-right, 0)); scrollbar-width:none; }
+    #v-provider-profile .provider-profile-hero::-webkit-scrollbar{ display:none; }
+    #v-provider-profile .provider-profile-hero-slide{ flex:0 0 calc(100% - 32px); min-width:calc(100% - 32px); scroll-snap-align:start; scroll-snap-stop:always; border-radius:20px; overflow:hidden; background:#fff; box-shadow:0 8px 24px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04); display:flex; flex-direction:column; min-height:280px; }
+    #v-provider-profile .provider-profile-hero-slide-img{ width:100%; aspect-ratio:16/10; object-fit:cover; background:#f1f3f5; }
+    #v-provider-profile .provider-profile-hero-slide-body{ padding:20px; flex:1; display:flex; flex-direction:column; gap:12px; }
+    #v-provider-profile .provider-profile-hero-slide-title{ margin:0; font-size:18px; font-weight:900; color:#1a1a1a; line-height:1.3; font-family:system-ui,-apple-system,sans-serif; }
+    #v-provider-profile .provider-profile-hero-slide-sub{ margin:0; font-size:13px; color:#64748b; line-height:1.45; }
+    #v-provider-profile .provider-profile-hero-badge{ display:inline-block; font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:0.06em; color:#64748b; margin-bottom:4px; }
+    #v-provider-profile .provider-profile-hero-cta{ min-height:52px; border-radius:14px; font-size:15px; font-weight:800; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; font-family:system-ui,-apple-system,sans-serif; transition:transform 0.12s, box-shadow 0.2s; }
+    #v-provider-profile .provider-profile-hero-cta:active{ transform:scale(0.98); }
+    #v-provider-profile .provider-profile-hero-cta--yellow{ background:#FFD700; color:#1a1a1a; box-shadow:0 4px 16px rgba(255,215,0,0.35); }
+    #v-provider-profile .provider-profile-hero-cta--emerald{ background:#10b981; color:#fff; box-shadow:0 4px 16px rgba(16,185,129,0.25); }
+    #v-provider-profile .provider-profile-hero-icon-wrap{ width:56px; height:56px; border-radius:16px; background:#f1f3f5; display:flex; align-items:center; justify-content:center; font-size:28px; margin-bottom:8px; }
     #v-provider-cookbook{ min-height:100vh; min-height:100dvh; width:100%; box-sizing:border-box; }
     #v-provider-cookbook.view.active{ display:flex !important; flex-direction:column !important; height:100vh; height:100dvh; max-height:100vh; max-height:100dvh; overflow:hidden; }
     #v-provider-cookbook.view.active > header{ position:relative; z-index:1; flex-shrink:0; }
@@ -6201,82 +6215,155 @@
       <button type="button" class="cookbook-action-sheet-btn" onclick="closeCookbookActionSheet()">Abbrechen</button>
     </div>
 
-    <!-- Provider-Profil "Mein Profil" – Produkt-Schaufenster + Einstellungen hinter Zahnrad -->
-    <section class="view onboarding-view" id="v-provider-profile" style="display:flex; flex-direction:column; min-height:0; background:#f8fafc;">
-      <header id="providerProfileHeader" style="background:#fff; padding:12px 20px; padding-top:calc(12px + env(safe-area-inset-top, 0)); border-bottom:1px solid #f1f3f5; position:sticky; top:0; z-index:50; flex-shrink:0; display:flex; align-items:center; justify-content:space-between; gap:12px;">
-        <div style="width:44px; flex-shrink:0;"></div>
-        <div style="flex:1; min-width:0; display:flex; align-items:center; justify-content:center; gap:10px;">
-          <div class="plogo" id="providerProfileLogoHeader" style="width:44px; height:44px; border-radius:14px; flex-shrink:0; background-size:cover; background-position:center; background-color:#f1f3f5;"></div>
-          <h1 id="providerProfileNameHeader" style="margin:0; font-size:18px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">Mein Profil</h1>
-        </div>
+    <!-- Provider-Profil "Mein Profil" – Silicon Valley Style: Hero-Carousel + Zahnrad-Sektionen -->
+    <section class="view onboarding-view" id="v-provider-profile" style="display:flex; flex-direction:column; min-height:0; background:#F2F2F7;">
+      <header id="providerProfileHeader" style="background:rgba(255,255,255,0.9); backdrop-filter:blur(12px); padding:12px 20px; padding-top:calc(12px + env(safe-area-inset-top, 0)); border-bottom:1px solid rgba(0,0,0,0.04); position:sticky; top:0; z-index:50; flex-shrink:0; display:flex; align-items:center; justify-content:space-between; gap:12px;">
+        <div id="providerProfileHeaderBrand" style="font-size:18px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a; cursor:pointer;">MITTAGIO</div>
         <button type="button" id="providerProfileGearBtn" aria-label="Einstellungen" style="width:44px; height:44px; border-radius:14px; background:#f1f3f5; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
           <i data-lucide="settings" style="width:22px; height:22px; color:#64748b;"></i>
         </button>
       </header>
 
-      <div id="providerProfileContent" style="flex:1; overflow-y:auto; padding:12px 20px calc(100px + env(safe-area-inset-bottom, 0)); max-width:500px; margin:0 auto; width:100%; box-sizing:border-box;">
+      <div id="providerProfileContent" style="flex:1; overflow-y:auto; padding:0 0 calc(100px + env(safe-area-inset-bottom, 0)); max-width:500px; margin:0 auto; width:100%; box-sizing:border-box;">
         <div id="providerProfileMainWrap">
           <div id="providerProfileMain">
-            <!-- Kachel 1: Mittags-Inserat (Fokus, ganz oben) -->
-            <div class="provider-profile-card provider-profile-kachel-inserat" style="background:#fff; border-radius:24px; padding:28px; margin-bottom:16px; border:none; box-shadow:0 4px 24px rgba(0,0,0,0.06);">
-              <h2 style="margin:0 0 8px; font-size:18px; font-weight:900; color:#1a1a1a;">Mittags-Inserat schalten</h2>
-              <div style="font-size:28px; font-weight:950; color:#1a1a1a; margin-bottom:12px;">4,99 €</div>
-              <div style="font-size:11px; font-weight:800; color:#1a1a1a; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:16px;">Kein Abo. Kein Vertrag. Keine Laufzeit.</div>
-              <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
-                <span style="font-size:20px;" title="Vor Ort möglich">🍴</span>
-                <span style="font-size:20px;" title="Mehrweg verfügbar">🔄</span>
-                <span style="font-size:20px;" title="Abholnummer aktiv">🧾</span>
+            <!-- Hero Carousel: 6 Screens (Snap, 20px Radius) -->
+            <div class="provider-profile-hero" id="providerProfileHero">
+              <!-- Screen 1: Inserat -->
+              <div class="provider-profile-hero-slide">
+                <img class="provider-profile-hero-slide-img" src="https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=1200&q=60" alt="Mittagessen" />
+                <div class="provider-profile-hero-slide-body">
+                  <span class="provider-profile-hero-badge">KEIN ABO. KEIN VERTRAG.</span>
+                  <h2 class="provider-profile-hero-slide-title">Jetzt für 4,99 € inserieren</h2>
+                  <div style="display:flex;align-items:center;gap:10px;"><span title="Vor Ort möglich">🍴</span><span title="Abholnummer aktiv">🧾</span><span title="Mehrweg verfügbar">🔄</span></div>
+                  <button type="button" id="btnProviderProfileInserieren" class="provider-profile-hero-cta provider-profile-hero-cta--yellow">Jetzt für 4,99 € inserieren</button>
+                </div>
               </div>
-              <button type="button" id="btnProviderProfileInserieren" style="width:100%; min-height:52px; border-radius:16px; font-size:16px; font-weight:800; background:#FFDE00; color:#1a1a1a; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 4px 16px rgba(255,222,0,0.35);">
-                Jetzt für 4,99 € inserieren
-              </button>
-            </div>
-            <!-- Kachel 2: Digitale Abholnummer -->
-            <div class="provider-profile-card provider-profile-kachel-abholnummer" style="background:linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border-radius:24px; padding:24px; margin-bottom:20px; border:1px solid rgba(14,165,233,0.15); box-shadow:0 4px 20px rgba(0,0,0,0.04);">
-              <div style="display:flex; align-items:flex-start; gap:16px;">
-                <div style="flex-shrink:0; width:72px; height:88px; border-radius:12px; background:rgba(255,255,255,0.95); border:1px solid rgba(0,0,0,0.06); display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:900; font-family:ui-monospace, monospace; color:#1a1a1a; letter-spacing:2px;">#B-42</div>
-                <div style="flex:1; min-width:0;">
-                  <div style="font-size:17px; font-weight:800; color:#1a1a1a; margin-bottom:4px;">Digitale Abholnummer</div>
-                  <div style="font-size:22px; font-weight:950; color:#0ea5e9; margin-bottom:8px;">0,89 €</div>
-                  <p style="margin:0 0 8px; font-size:13px; color:#64748b; line-height:1.45;">Schluss mit Chaos bei der Ausgabe. Organisiere deinen Abholprozess wie ein Profi. Inklusive aller Gebühren.</p>
-                  <span style="display:inline-block; font-size:11px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.05em;">Optional zubuchbar</span>
+              <!-- Screen 2: Abholnummer -->
+              <div class="provider-profile-hero-slide">
+                <div style="width:100%;aspect-ratio:16/10;background:linear-gradient(135deg,#f0f9ff 0%,#e0f2fe 100%);display:flex;align-items:center;justify-content:center;">
+                  <div style="width:120px;height:160px;border-radius:16px;background:#fff;box-shadow:0 8px 24px rgba(0,0,0,0.1);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:900;font-family:ui-monospace,monospace;color:#1a1a1a;">#B-42</div>
+                </div>
+                <div class="provider-profile-hero-slide-body">
+                  <h2 class="provider-profile-hero-slide-title">Premium-Service: Abholnummer</h2>
+                  <p class="provider-profile-hero-slide-sub">Nur 0,89 € inkl. Gebühren. Schlange überspringen, sauber organisiert.</p>
+                </div>
+              </div>
+              <!-- Screen 3: Wochenplan -->
+              <div class="provider-profile-hero-slide">
+                <div class="provider-profile-hero-slide-body" style="padding:24px;">
+                  <div class="provider-profile-hero-icon-wrap">📅</div>
+                  <h2 class="provider-profile-hero-slide-title">Deine Woche in 2 Min. geplant.</h2>
+                  <p class="provider-profile-hero-slide-sub">Copy-Vorwoche Funktion – einmal einrichten, jede Woche nutzen.</p>
+                  <button type="button" onclick="showProviderWeek()" class="provider-profile-hero-cta provider-profile-hero-cta--emerald">Zum Wochenplan</button>
+                </div>
+              </div>
+              <!-- Screen 4: Kochbuch -->
+              <div class="provider-profile-hero-slide">
+                <div class="provider-profile-hero-slide-body" style="padding:24px;">
+                  <div class="provider-profile-hero-icon-wrap">📖</div>
+                  <h2 class="provider-profile-hero-slide-title">Rezepte speichern & blitzschnell abrufen.</h2>
+                  <p class="provider-profile-hero-slide-sub">Kochbuch als Zentrale für alle Gerichte – ein Tipp zum Inserieren.</p>
+                  <button type="button" onclick="showProviderCookbook()" class="provider-profile-hero-cta provider-profile-hero-cta--emerald">Zum Kochbuch</button>
+                </div>
+              </div>
+              <!-- Screen 5: Allergene -->
+              <div class="provider-profile-hero-slide">
+                <div class="provider-profile-hero-slide-body" style="padding:24px;">
+                  <div class="provider-profile-hero-icon-wrap">🔍</div>
+                  <h2 class="provider-profile-hero-slide-title">Intelligente Autovervollständigung für Allergene.</h2>
+                  <p class="provider-profile-hero-slide-sub">Schnell auswählen, was zutrifft – Kunden sehen es sofort.</p>
+                </div>
+              </div>
+              <!-- Screen 6: Erfolg -->
+              <div class="provider-profile-hero-slide">
+                <div class="provider-profile-hero-slide-body" style="padding:24px;">
+                  <div class="provider-profile-hero-icon-wrap">📊</div>
+                  <h2 class="provider-profile-hero-slide-title">Deine Inserate & Einnahmen im Blick.</h2>
+                  <p class="provider-profile-hero-slide-sub">Zahlung & Abrechnung – Rechnungen, PDFs, Übersicht.</p>
+                  <button type="button" onclick="showProviderBilling()" class="provider-profile-hero-cta provider-profile-hero-cta--emerald">Zur Abrechnung</button>
                 </div>
               </div>
             </div>
 
-            <!-- Einstellungen (Apple-Settings-Stil): Menü-Karte auf #F2F2F7 -->
-            <div id="providerProfileMenuCardWrap" style="background:#F2F2F7; border-radius:20px; padding:12px; margin-bottom:20px;">
-            <!-- Menü: eine Karte mit klaren Zeilen (app-like) -->
-            <div id="providerProfileMenuCard" style="background:#fff; border-radius:20px; overflow:hidden; margin-bottom:20px; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
-            <button type="button" id="providerProfileRowBusiness" class="provider-profile-row provider-profile-row-app">
-              <div style="display:flex;align-items:center;gap:14px;"><i data-lucide="building" style="width:22px;height:22px;color:#64748b;"></i><span>Meine Daten</span></div>
-              <i data-lucide="chevron-right" style="width:20px;height:20px;color:#cbd5e1;"></i>
-            </button>
-            <button type="button" id="providerProfileRowService" class="provider-profile-row provider-profile-row-app">
-              <div style="display:flex;align-items:center;gap:14px;"><i data-lucide="clock" style="width:22px;height:22px;color:#64748b;"></i><span>Präferenzen & Zeiten</span></div>
-              <i data-lucide="chevron-right" style="width:20px;height:20px;color:#cbd5e1;"></i>
-            </button>
-            <button type="button" id="providerProfileRowPayment" class="provider-profile-row provider-profile-row-app">
-              <div style="display:flex;align-items:center;gap:14px;"><i data-lucide="credit-card" style="width:22px;height:22px;color:#64748b;"></i><span>Zahlung & Abrechnung</span></div>
-              <i data-lucide="chevron-right" style="width:20px;height:20px;color:#cbd5e1;"></i>
-            </button>
-            <button type="button" id="providerProfileRowFaq" class="provider-profile-row provider-profile-row-app provider-profile-row-last">
-              <div style="display:flex;align-items:center;gap:14px;"><i data-lucide="help-circle" style="width:22px;height:22px;color:#64748b;"></i><span>FAQ & Support</span></div>
-              <i data-lucide="chevron-right" style="width:20px;height:20px;color:#cbd5e1;"></i>
-            </button>
+            <!-- Zahnrad-Sektionen (sichtbar bei Scroll oder nach Klick auf Zahnrad) -->
+            <div id="providerProfileGearSection" class="provider-settings-scroll" style="padding:0 20px 24px; display:flex; flex-direction:column; gap:20px;">
+            <!-- Sektion A: Betriebsdaten (Floating Labels) -->
+            <div class="provider-settings-card" style="background:#fff; border-radius:24px; padding:24px; border:1px solid rgba(0,0,0,0.04); box-shadow:0 8px 24px rgba(0,0,0,0.03);">
+              <h3 style="margin:0 0 20px; font-size:17px; font-weight:800; color:#1a1a1a;">Betriebsdaten</h3>
+              <div class="input-group">
+                <input type="text" id="providerProfileBusinessName" class="input-field" placeholder=" " autocomplete="organization" />
+                <label class="input-label" for="providerProfileBusinessName">Betriebsname</label>
+              </div>
+              <div class="input-group">
+                <input type="text" id="providerProfileStreet" class="input-field" placeholder=" " autocomplete="street-address" />
+                <label class="input-label" for="providerProfileStreet">Anschrift</label>
+              </div>
+              <div style="display:grid; grid-template-columns:1fr 2fr; gap:12px;">
+                <div class="input-group">
+                  <input type="text" id="providerProfileZip" class="input-field" placeholder=" " maxlength="10" autocomplete="postal-code" />
+                  <label class="input-label" for="providerProfileZip">PLZ</label>
+                </div>
+                <div class="input-group">
+                  <input type="text" id="providerProfileCity" class="input-field" placeholder=" " autocomplete="address-level2" />
+                  <label class="input-label" for="providerProfileCity">Ort</label>
+                </div>
+              </div>
+              <div class="input-group">
+                <input type="tel" id="providerProfilePhone" class="input-field" placeholder=" " autocomplete="tel" />
+                <label class="input-label" for="providerProfilePhone">Telefon</label>
+              </div>
+              <div class="input-group">
+                <input type="email" id="providerProfileEmail" class="input-field" placeholder=" " autocomplete="email" />
+                <label class="input-label" for="providerProfileEmail">E-Mail</label>
+              </div>
+              <div class="input-group" style="margin-bottom:0;">
+                <input type="url" id="providerProfileWebsite" class="input-field" placeholder=" " autocomplete="url" />
+                <label class="input-label" for="providerProfileWebsite">Webseite</label>
+              </div>
+              <button type="button" id="btnProviderSaveBusiness" class="btn-primary" style="width:100%; min-height:56px; border-radius:16px; font-size:16px; font-weight:800; background:#FFD700; color:#1a1a1a; border:none; box-shadow:0 4px 12px rgba(255,215,0,0.2); margin-top:20px;">Daten speichern</button>
             </div>
+            <!-- Sektion B: Voreinstellungen (Zeit + 3 Säulen) -->
+            <div class="provider-settings-card" style="background:#fff; border-radius:24px; padding:24px; border:1px solid rgba(0,0,0,0.04); box-shadow:0 8px 24px rgba(0,0,0,0.03);">
+              <h3 style="margin:0 0 16px; font-size:17px; font-weight:800; color:#1a1a1a;">Mittagszeiten</h3>
+              <button type="button" id="providerSettingsTimeTrigger" class="provider-time-trigger">
+                <span id="providerSettingsTimeDisplay" style="font-size:22px; font-weight:900; color:#1a1a1a;">11:30 – 14:00</span>
+              </button>
+              <div style="display:flex; align-items:center; gap:12px; margin-top:16px;">
+                <div style="flex:1;"><label style="display:block; font-size:11px; font-weight:700; color:#9ca3af; margin-bottom:8px; text-transform:uppercase;">Start</label><select id="providerMealStart" style="width:100%; height:48px; padding:0 12px; border:2px solid #f1f3f5; border-radius:14px; font-size:15px; font-weight:700; background:#f8f9fa; color:#1a1a1a; cursor:pointer;"></select></div>
+                <span style="color:#cbd5e1; font-weight:900;">–</span>
+                <div style="flex:1;"><label style="display:block; font-size:11px; font-weight:700; color:#9ca3af; margin-bottom:8px; text-transform:uppercase;">Ende</label><select id="providerMealEnd" style="width:100%; height:48px; padding:0 12px; border:2px solid #f1f3f5; border-radius:14px; font-size:15px; font-weight:700; background:#f8f9fa; color:#1a1a1a; cursor:pointer;"></select></div>
+              </div>
+              <label style="display:block; font-size:11px; font-weight:700; color:#9ca3af; margin:20px 0 12px; text-transform:uppercase;">An welchen Tagen?</label>
+              <div id="providerLunchWeekdays" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
+              <h3 style="margin:24px 0 12px; font-size:17px; font-weight:800; color:#1a1a1a;">Die 3 Säulen</h3>
+              <div style="border-top:1px solid #f1f3f5; padding-top:16px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:14px 0; border-bottom:1px solid #f8f9fa;"><div style="display:flex;align-items:center;gap:12px;"><span style="font-size:22px;">🍴</span><span style="font-weight:700; color:#1a1a1a;">Vor Ort</span></div><label class="toggle-switch"><input type="checkbox" id="providerDineInEnabled"><span class="toggle-slider"></span></label></div>
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:14px 0; border-bottom:1px solid #f8f9fa;"><div style="display:flex;align-items:center;gap:12px;"><span style="font-size:22px;">🔄</span><span style="font-weight:700; color:#1a1a1a;">Mehrweg</span></div><label class="toggle-switch"><input type="checkbox" id="providerReuseEnabled"><span class="toggle-slider"></span></label></div>
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:14px 0;"><div style="display:flex;align-items:center;gap:12px;"><span style="font-size:22px;">🧾</span><span style="font-weight:700; color:#1a1a1a;">Abholnummer</span></div><label class="toggle-switch"><input type="checkbox" id="providerAbholnummerEnabled"><span class="toggle-slider"></span></label></div>
+              </div>
+            </div>
+            <!-- Sektion C: Abrechnung & Support -->
+            <div class="provider-settings-card" style="background:#fff; border-radius:24px; padding:24px; border:1px solid rgba(0,0,0,0.04); box-shadow:0 8px 24px rgba(0,0,0,0.03);">
+              <h3 style="margin:0 0 16px; font-size:17px; font-weight:800; color:#1a1a1a;">Zahlung & Abrechnung</h3>
+              <div id="providerStripeStatus" style="padding:16px; border-radius:16px; background:#f8f9fa; border:1px solid #f1f3f5; margin-bottom:16px; font-size:14px; font-weight:600; color:#64748b; display:flex; align-items:center; gap:10px;"><i data-lucide="credit-card" style="width:20px;height:20px;"></i><span>Hinterlegte Karten</span></div>
+              <button type="button" id="btnProviderBillingPortal" style="width:100%; min-height:52px; border-radius:14px; font-size:15px; font-weight:800; background:#1a1a1a; color:#fff; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">Zahlungsmittel verwalten</button>
+              <p style="margin:16px 0 8px; font-size:14px; color:#64748b;">Rechnungen (4,99 €) – PDF-Download.</p>
+              <button type="button" id="btnSettingsBillingArchive" style="width:100%; display:flex; justify-content:space-between; align-items:center; padding:16px 20px; background:#f8f9fa; border-radius:14px; border:none; color:#1a1a1a; font-size:15px; font-weight:700; cursor:pointer;">
+                <span>Rechnungsarchiv & PDFs</span><i data-lucide="chevron-right" style="width:20px;height:20px;color:#cbd5e1;"></i>
+              </button>
+              <h3 style="margin:24px 0 12px; font-size:17px; font-weight:800; color:#1a1a1a;">Support</h3>
+              <p style="margin:0 0 12px; font-size:14px; color:#64748b;">Standort, Zahlung, Feedback – klickbare Fehlerquellen.</p>
+              <button type="button" id="btnSettingsSupport" style="width:100%; min-height:52px; border-radius:14px; font-size:15px; font-weight:800; background:#f1f3f5; color:#1a1a1a; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">FAQ & Support öffnen</button>
             </div>
 
             <button id="btnProviderLogout" class="provider-profile-logout-btn" style="width:100%; min-height:52px; background:#fff; color:#dc2626; border:2px solid #fecaca; border-radius:16px; font-weight:800; font-size:15px; display:flex; align-items:center; justify-content:center; gap:10px; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.04);">
               <i data-lucide="log-out" style="width:20px;height:20px;"></i>
               <span>Abmelden</span>
             </button>
-
-            <!-- Footer: Vertrauens-Check + Branding -->
-            <footer class="provider-profile-footer" style="margin-top:32px; padding-top:24px; border-top:1px solid #e2e8f0; text-align:center;">
-              <p style="margin:0 0 8px; font-size:14px; font-weight:600; color:#64748b;">Du zahlst nur, was du nutzt. Keine versteckten Kosten.</p>
-              <p style="margin:0; font-size:13px; font-weight:800; color:#1a1a1a;">MITTAGIO</p>
-              <p style="margin:2px 0 0; font-size:12px; color:#94a3b8;">Einfach. Schnell. Organisiert.</p>
+            </div>
+            <footer class="provider-profile-footer" style="margin-top:24px; padding:20px 0; text-align:center; font-size:12px; color:#94a3b8; font-weight:600;">
+              Impressum Mike Quach, Rudersberg
             </footer>
           </div>
         </div>
@@ -8477,46 +8564,16 @@
   let billingFilter = 'month';
   let billingMonth = '2026-01';
 
-  // --- Seed demo offers (Testanbieter) ---
+  // --- Seed: Keine weiteren Demo-Anbieter (nur Thomas Kurz über seedDemoProvider) ---
   function seed(){
-    // Testdaten immer erstellen (zum Testen)
-    const today = isoDate(new Date());
-    offers = [
-      // 4 Testanbieter × 4 Gerichte (mit Bildern & je Abholnummers)
-      
-      // 1. Pizzeria Bella Vista (Stuttgart)
-      {id: cryptoId(), providerId: 'p_bellavista', providerName: 'Pizzeria Bella Vista', address: 'Hauptstraße 45, 70173 Stuttgart', title: 'Leberkäse mit Spätzle', price: 6.90, time: '11:30 – 14:30', diet: 'Fleisch', day: today, img: 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 3},
-      {id: cryptoId(), providerId: 'p_bellavista', providerName: 'Pizzeria Bella Vista', address: 'Hauptstraße 45, 70173 Stuttgart', title: 'Pizza Quattro Formaggi', price: 8.50, time: '11:30 – 14:30', diet: 'Vegetarisch', day: today, img: 'https://images.unsplash.com/photo-1571997478779-2adcbbe9ab2f?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 4},
-      {id: cryptoId(), providerId: 'p_bellavista', providerName: 'Pizzeria Bella Vista', address: 'Hauptstraße 45, 70173 Stuttgart', title: 'Pasta Carbonara', price: 8.80, time: '11:30 – 14:30', diet: 'Fleisch', day: today, img: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 2},
-      {id: cryptoId(), providerId: 'p_bellavista', providerName: 'Pizzeria Bella Vista', address: 'Hauptstraße 45, 70173 Stuttgart', title: 'Insalata Caprese', price: 7.20, time: '11:30 – 14:30', diet: 'Vegetarisch', day: today, img: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 3},
-
-      // 2. Asia Wok Express (Tübingen)
-      {id: cryptoId(), providerId: 'p_asiawok', providerName: 'Asia Wok Express', address: 'Neckarhalde 8, 72070 Tübingen', title: 'Hähnchen Teriyaki', price: 8.90, time: '11:00 – 14:00', diet: 'Fleisch', day: today, img: 'https://images.unsplash.com/photo-1603133872878-684f208fb84b?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 5},
-      {id: cryptoId(), providerId: 'p_asiawok', providerName: 'Asia Wok Express', address: 'Neckarhalde 8, 72070 Tübingen', title: 'Gebratene Nudeln mit Gemüse', price: 7.50, time: '11:00 – 14:00', diet: 'Vegetarisch', day: today, img: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 4},
-      {id: cryptoId(), providerId: 'p_asiawok', providerName: 'Asia Wok Express', address: 'Neckarhalde 8, 72070 Tübingen', title: 'Pad Thai', price: 8.40, time: '11:00 – 14:00', diet: 'Vegetarisch', day: today, img: 'https://images.unsplash.com/photo-1559314809-0d155014e29e?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 3},
-      {id: cryptoId(), providerId: 'p_asiawok', providerName: 'Asia Wok Express', address: 'Neckarhalde 8, 72070 Tübingen', title: 'Frühlingsrollen (4 Stück)', price: 6.80, time: '11:00 – 14:00', diet: 'Vegetarisch', day: today, img: 'https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 6},
-
-      // 3. Burger House (Ludwigsburg)
-      {id: cryptoId(), providerId: 'p_burgerhouse', providerName: 'Burger House', address: 'Wilhelmstraße 12, 71634 Ludwigsburg', title: 'Classic Cheeseburger', price: 8.90, time: '11:30 – 14:00', diet: 'Fleisch', day: today, img: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 4},
-      {id: cryptoId(), providerId: 'p_burgerhouse', providerName: 'Burger House', address: 'Wilhelmstraße 12, 71634 Ludwigsburg', title: 'Veggie Burger', price: 7.90, time: '11:30 – 14:00', diet: 'Vegetarisch', day: today, img: 'https://images.unsplash.com/photo-1525059696034-4967a7290027?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 3},
-      {id: cryptoId(), providerId: 'p_burgerhouse', providerName: 'Burger House', address: 'Wilhelmstraße 12, 71634 Ludwigsburg', title: 'Chicken Burger', price: 9.20, time: '11:30 – 14:00', diet: 'Fleisch', day: today, img: 'https://images.unsplash.com/photo-1606755962773-d324e0a13086?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 5},
-      {id: cryptoId(), providerId: 'p_burgerhouse', providerName: 'Burger House', address: 'Wilhelmstraße 12, 71634 Ludwigsburg', title: 'Sweet Potato Fries', price: 4.50, time: '11:30 – 14:00', diet: 'Vegan', day: today, img: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 8},
-
-      // 4. Green Garden (Esslingen)
-      {id: cryptoId(), providerId: 'p_greengarden', providerName: 'Green Garden', address: 'Marktplatz 7, 73728 Esslingen', title: 'Avocado-Bowl', price: 9.50, time: '11:00 – 14:00', diet: 'Vegan', day: today, img: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 4},
-      {id: cryptoId(), providerId: 'p_greengarden', providerName: 'Green Garden', address: 'Marktplatz 7, 73728 Esslingen', title: 'Quinoa-Salat', price: 8.20, time: '11:00 – 14:00', diet: 'Vegan', day: today, img: 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 5},
-      {id: cryptoId(), providerId: 'p_greengarden', providerName: 'Green Garden', address: 'Marktplatz 7, 73728 Esslingen', title: 'Falafel-Wrap', price: 7.80, time: '11:00 – 14:00', diet: 'Vegan', day: today, img: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 6},
-      {id: cryptoId(), providerId: 'p_greengarden', providerName: 'Green Garden', address: 'Marktplatz 7, 73728 Esslingen', title: 'Gemüse-Curry', price: 8.60, time: '11:00 – 14:00', diet: 'Vegan', day: today, img: 'https://images.unsplash.com/photo-1546069901-d5bfd2cbfb1f?auto=format&fit=crop&w=1200&q=60', hasPickupCode: true, pickupCodeCount: 3},
-    ];
+    offers = [];
     save(LS.offers, offers);
   }
 
-  // --- Beispieldaten: Nur Metzgerei Fritz (Schorndorf-Weiler). Thomas Kurz kommt aus seedDemoProvider(). ---
+  // --- Beispieldaten: Keine weiteren Demo-Anbieter (nur Thomas Kurz über seedDemoProvider). ---
   function seedExampleData(){
     const today = isoDate(new Date());
-    const providerNames = [
-      {id: 'p_fritz', name: 'Metzgerei Fritz', address: 'Winterbacher Str. 24, 73614 Schorndorf-Weiler', street: 'Winterbacher Str. 24', zip: '73614', city: 'Schorndorf-Weiler', distanceKm: 0.5}
-    ];
+    const providerNames = []; // Alle Demo-Anbieter außer Thomas Kurz entfernt
 
     const dishTemplates = [
       // Verschiedene Kategorien
@@ -8706,7 +8763,7 @@
       distanceKm: 0.2,
       logoData: ''
     };
-    /* Metzgerei Thomas Kurz: 20 Gerichte im Kochbuch (editierbar), Wochenplan & Inserate daraus. */
+    /* Metzgerei Thomas Kurz: 40 Gerichte im Kochbuch, 3 Tagesinserate (heute), 1 Woche voll mit je 3 Tagesessen. */
     const demoCookbookTemplates = [
       { dish: 'Steak in Pfifferling-Rahmsoße mit Spirelli und Salat', category: 'Mit Fleisch', price: 9.50, img: 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=1200&q=60' },
       { dish: 'Kartoffelsuppe mit Würstchen', category: 'Mit Fleisch', price: 8.50, img: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&w=1200&q=60' },
@@ -8728,7 +8785,29 @@
       { dish: 'Tomatensuppe mit Brot', category: 'Vegetarisch', price: 5.90, img: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&w=1200&q=60' },
       { dish: 'Spinat mit Spiegelei und Kartoffeln', category: 'Vegetarisch', price: 7.50, img: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=1200&q=60' },
       { dish: 'Risotto mit Pilzen', category: 'Vegetarisch', price: 8.90, img: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=1200&q=60' },
-      { dish: 'Fleischkäse mit Bratkartoffeln', category: 'Mit Fleisch', price: 8.20, img: 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=1200&q=60' }
+      { dish: 'Fleischkäse mit Bratkartoffeln', category: 'Mit Fleisch', price: 8.20, img: 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=1200&q=60' },
+      { dish: 'Pasta Carbonara', category: 'Mit Fleisch', price: 8.80, img: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=1200&q=60' },
+      { dish: 'Hähnchen Teriyaki', category: 'Mit Fleisch', price: 9.20, img: 'https://images.unsplash.com/photo-1603133872878-684f208fb84b?auto=format&fit=crop&w=1200&q=60' },
+      { dish: 'Falafel Teller', category: 'Vegan', price: 7.50, img: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?auto=format&fit=crop&w=1200&q=60' },
+      { dish: 'Pizza Margherita', category: 'Vegetarisch', price: 8.50, img: 'https://images.unsplash.com/photo-1571997478779-2adcbbe9ab2f?auto=format&fit=crop&w=1200&q=60' },
+      { dish: 'Lachs mit Gemüse', category: 'Fisch', price: 10.50, img: 'https://images.unsplash.com/photo-1559314809-0d155014e29e?auto=format&fit=crop&w=1200&q=60' },
+      { dish: 'Veggie Burger', category: 'Vegan', price: 7.90, img: 'https://images.unsplash.com/photo-1525059696034-4967a7290027?auto=format&fit=crop&w=1200&q=60' },
+      { dish: 'Quinoa-Salat', category: 'Vegan', price: 8.20, img: 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=1200&q=60' },
+      { dish: 'Thunfisch-Steak', category: 'Fisch', price: 11.20, img: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=1200&q=60' },
+      { dish: 'Risotto ai Funghi', category: 'Vegetarisch', price: 8.90, img: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=1200&q=60' },
+      { dish: 'Sushi Platte', category: 'Fisch', price: 12.50, img: 'https://images.unsplash.com/photo-1559314809-0d155014e29e?auto=format&fit=crop&w=1200&q=60' },
+      { dish: 'Steak mit Beilagen', category: 'Mit Fleisch', price: 13.90, img: 'https://images.unsplash.com/photo-1606755962773-d324e0a13086?auto=format&fit=crop&w=1200&q=60' },
+      { dish: 'Buddha Bowl', category: 'Vegan', price: 8.80, img: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1200&q=60' },
+      { dish: 'Caprese Salat', category: 'Vegetarisch', price: 7.40, img: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=1200&q=60' },
+      { dish: 'Fischfilet mit Kartoffeln', category: 'Fisch', price: 10.80, img: 'https://images.unsplash.com/photo-1559314809-0d155014e29e?auto=format&fit=crop&w=1200&q=60' },
+      { dish: 'Chili con Carne', category: 'Mit Fleisch', price: 8.70, img: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=1200&q=60' },
+      { dish: 'Avocado-Bowl', category: 'Vegan', price: 9.50, img: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1200&q=60' },
+      { dish: 'Mozzarella-Pasta', category: 'Vegetarisch', price: 8.30, img: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=1200&q=60' },
+      { dish: 'Lachs-Tartar', category: 'Fisch', price: 11.90, img: 'https://images.unsplash.com/photo-1559314809-0d155014e29e?auto=format&fit=crop&w=1200&q=60' },
+      { dish: 'Hamburger Classic', category: 'Mit Fleisch', price: 8.90, img: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=1200&q=60' },
+      { dish: 'Tofu-Wrap', category: 'Vegan', price: 7.60, img: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?auto=format&fit=crop&w=1200&q=60' },
+      { dish: 'Forelle blau', category: 'Fisch', price: 10.40, img: 'https://images.unsplash.com/photo-1559314809-0d155014e29e?auto=format&fit=crop&w=1200&q=60' },
+      { dish: 'Power-Smoothie Bowl', category: 'Vegan', price: 6.90, img: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1200&q=60' }
     ];
     const demoCookbook = demoCookbookTemplates.map((t, i) => ({
       id: cryptoId(),
@@ -8742,11 +8821,10 @@
       photoData: t.img,
       hasPickupCode: true,
       dineInPossible: true,
-      createdAt: Date.now() - (25 - i) * 3600000,
-      lastUsed: i < 5 ? Date.now() - (5 - i) * 86400000 : null
+      createdAt: Date.now() - (45 - i) * 3600000,
+      lastUsed: i < 8 ? Date.now() - (8 - i) * 86400000 : null
     }));
-    var existingCookbook = cookbook.filter(c => c.providerId !== demoProviderId);
-    cookbook = [...existingCookbook, ...demoCookbook];
+    cookbook = [...demoCookbook];
     save(LS.cookbook, cookbook);
 
     var demoOffers = [];
@@ -8788,14 +8866,10 @@
       demoOffers = demoOffers.concat(dayOffers);
       weekEntries[dayKey] = dayWeekEntries;
     }
-    var existingOffers = offers.filter(o => o.providerId !== demoProviderId);
-    offers = [...existingOffers, ...demoOffers];
+    offers = [...demoOffers];
     save(LS.offers, offers);
 
-    var existingWeek = load(LS.week, {});
-    var mergedWeek = { ...existingWeek };
-    Object.keys(weekEntries).forEach(k => { mergedWeek[k] = weekEntries[k]; });
-    week = mergedWeek;
+    week = { ...weekEntries };
     save(LS.week, week);
 
     var demoTransactions = [
@@ -19907,16 +19981,7 @@
     const addr = buildAddress(p);
     const name = p.name || 'Betriebsname';
     
-    // Progressive Disclosure: Menü-Zeilen und Zurück-Buttons (Meine Daten & Präferenzen → Einstellungen)
-    function goProfileSub(id){ showProviderProfileSub(id); }
     function goProfileBack(){ showProviderProfileSub(null); }
-    ['Business','Service','Payment','Faq'].forEach(function(cap){
-      var row = document.getElementById('providerProfileRow' + cap);
-      var back = document.getElementById('providerProfileBack' + cap);
-      var subId = (cap === 'Business' || cap === 'Service') ? 'settings' : cap.toLowerCase();
-      if(row) row.onclick = function(){ goProfileSub(subId); };
-      if(back) back.onclick = goProfileBack;
-    });
     var backSettings = document.getElementById('providerProfileBackSettings');
     if(backSettings) backSettings.onclick = goProfileBack;
     var btnBillingArchive = document.getElementById('btnBillingArchive');
@@ -19968,21 +20033,7 @@
     var btnProviderDeleteAccount = document.getElementById('btnProviderDeleteAccount');
     if(btnProviderDeleteAccount){ btnProviderDeleteAccount.onclick = function(){ if(confirm('Account wirklich dauerhaft löschen? Diese Aktion kann nicht rückgängig gemacht werden.')) { showToast('Account-Löschung angefragt.'); } }; }
 
-    // Header: Logo + Name (Mein Profil)
-    const logoHeader = document.getElementById('providerProfileLogoHeader');
-    const nameHeader = document.getElementById('providerProfileNameHeader');
-    if(logoHeader){
-      if(p.logoData){
-        logoHeader.style.backgroundImage = `url('${esc(p.logoData)}')`;
-        logoHeader.innerHTML = '';
-      } else {
-        const initials = name.charAt(0).toUpperCase();
-        logoHeader.style.backgroundImage = 'none';
-        logoHeader.innerHTML = '<span style="font-size:18px; font-weight:900; color:#64748b;">' + esc(initials) + '</span>';
-      }
-    }
-    if(nameHeader) nameHeader.textContent = name || 'Mein Profil';
-    // Identity-Bereich auf der Einstellungsseite
+    // Identity-Bereich auf der Einstellungsseite (Sub Settings)
     var settingsLogo = document.getElementById('providerSettingsLogo');
     var settingsName = document.getElementById('providerSettingsName');
     var settingsOrt = document.getElementById('providerSettingsOrt');
@@ -19993,7 +20044,13 @@
     if(settingsName) settingsName.textContent = name || 'Betriebsname';
     if(settingsOrt) settingsOrt.textContent = (p.city || (p.zip && p.city ? p.zip + ' ' + p.city : '') || addr || 'Ort').trim() || '—';
     var gearBtn = document.getElementById('providerProfileGearBtn');
-    if(gearBtn) gearBtn.onclick = function(){ if(typeof haptic === 'function') haptic(6); showProviderProfileSub('settings'); };
+    if(gearBtn) gearBtn.onclick = function(){
+      if(typeof haptic === 'function') haptic(6);
+      var section = document.getElementById('providerProfileGearSection');
+      if(section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+    var headerBrand = document.getElementById('providerProfileHeaderBrand');
+    if(headerBrand){ headerBrand.onclick = function(){ if(typeof showProviderHome === 'function') showProviderHome(); }; headerBrand.style.cursor = 'pointer'; }
     var btnProfileInserieren = document.getElementById('btnProviderProfileInserieren');
     if(btnProfileInserieren) btnProfileInserieren.onclick = function(){ if(typeof haptic === 'function') haptic(8); if(typeof openDishFlow === 'function') openDishFlow(); };
     
@@ -23650,16 +23707,10 @@
   }
   
   // --- boot ---
-  // Testdaten erstellen (nur wenn keine vorhanden oder für Demo)
-  // seedExampleData()
-  // seed(); // Auskommentiert, da seedExampleData() die neuen Beispieldaten lädt
-  
-  // Neue Beispieldaten laden (10 Anbieter, je 3 Gerichte, je 10 Abholnummers)
-  // Nur wenn keine Offers vorhanden oder für Demo
-  // Nur seeden wenn keine Offers vorhanden – sonst bleiben Favoriten (dishFavs) gültig
+  // Einziger Demo-Anbieter: Thomas Kurz (40 Kochbuch, 3 Tagesinserate heute, 1 Woche × 3 Tagesessen). Kundenansicht zeigt nur ihn.
   if(offers.length === 0){
-    seedExampleData();
-    seedDemoProvider(); // Demo-Anbieter Thomas Kurz: Mittagstisch, Adresse Schorndorf. Login: thomas@thomas-kurz.de oder demo@mittagio.de
+    seedExampleData(); // Leer – keine weiteren Demo-Anbieter
+    seedDemoProvider(); // Metzgerei Thomas Kurz. Login: thomas@thomas-kurz.de oder demo@mittagio.de
   }
   offers = offers.map(normalizeOffer);
   save(LS.offers, offers);
