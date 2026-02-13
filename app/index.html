@@ -21761,56 +21761,61 @@
         const cookbookId = ctx.dishId || ctx.fromCookbookId;
         const x = cookbook.find(c => String(c.id) === String(cookbookId));
         if(x){
-          // Prefill from cookbook entry – Abholnummer: Profil-Default wenn im Kochbuch nicht gesetzt
-          const globalReuseEnabled = profile.reuseEnabledByDefault || false;
+          // Prefill from cookbook – 3 Säulen/Abholzeiten: wo nicht im Kochbuch gesetzt, aus Profil
+          const defaultVorOrt = (provider.profile && provider.profile.dineInPossibleDefault !== undefined) ? !!provider.profile.dineInPossibleDefault : true;
           const defaultAbholnummer = !!profile.abholnummerEnabledByDefault;
+          const globalReuseEnabled = !!profile.reuseEnabledByDefault;
+          const defaultReuseDeposit = (provider.profile && typeof provider.profile.reuseDepositDefault === 'number') ? provider.profile.reuseDepositDefault : 3;
           w.data = {
             providerId: providerId(),
             dish: x.dish || '',
             category: x.category || 'Vegetarisch',
             price: Number(x.price||0),
-            pickupWindow: profile.mealWindow || DEFAULT_MEAL_WINDOW,
+            pickupWindow: x.pickupWindow || profile.mealWindow || DEFAULT_MEAL_WINDOW,
             hasPickupCode: x.hasPickupCode !== undefined ? !!x.hasPickupCode : defaultAbholnummer,
-            dineInPossible: x.dineInPossible !== undefined ? !!x.dineInPossible : true,
+            dineInPossible: x.dineInPossible !== undefined ? !!x.dineInPossible : defaultVorOrt,
             allergens: Array.isArray(x.allergens) ? [...x.allergens] : [],
             wantsAllergens: !!(x.allergens && Array.isArray(x.allergens) && x.allergens.length > 0),
             extras: Array.isArray(x.extras) ? JSON.parse(JSON.stringify(x.extras)) : [],
-            reuse: x.reuse ? JSON.parse(JSON.stringify(x.reuse)) : {enabled:globalReuseEnabled, deposit:globalReuseEnabled ? 2 : 0},
+            reuse: x.reuse && (x.reuse.enabled !== undefined || x.reuse.deposit !== undefined) ? JSON.parse(JSON.stringify(x.reuse)) : { enabled: globalReuseEnabled, deposit: globalReuseEnabled ? defaultReuseDeposit : 0 },
             photoData: x.photoData || '',
             cookbookId: x.id,
             day: ctx.date || createFlowPreselectedDate || isoDate(new Date())
           };
         } else {
-          const globalReuseEnabled = profile.reuseEnabledByDefault || false;
+          const defaultVorOrt = (provider.profile && provider.profile.dineInPossibleDefault !== undefined) ? !!provider.profile.dineInPossibleDefault : true;
+          const globalReuseEnabled = !!profile.reuseEnabledByDefault;
           w.data = {
             providerId: providerId(),
             dish:'', category:'Vegetarisch', price:0,
             pickupWindow: profile.mealWindow || DEFAULT_MEAL_WINDOW,
             hasPickupCode: !!profile.abholnummerEnabledByDefault,
-            dineInPossible: true,
+            dineInPossible: defaultVorOrt,
             allergens:[],
             wantsAllergens: false,
             extras:[],
-            reuse:{enabled:globalReuseEnabled, deposit:globalReuseEnabled ? 2 : 0},
+            reuse:{ enabled: globalReuseEnabled, deposit: globalReuseEnabled ? 3 : 0 },
             photoData:'',
             cookbookId:null,
             day: ctx.date || createFlowPreselectedDate || isoDate(new Date())
           };
         }
       } 
-      // Case 3: New dish (default) - Spec: Vor Ort immer, Abholnummer default ON
+      // Case 3: Neues Gericht – 3 Säulen und Abholzeiten aus Profil übernehmen
       else {
-        const globalReuseEnabled = profile.reuseEnabledByDefault || false;
+        const globalReuseEnabled = !!profile.reuseEnabledByDefault;
+        const defaultVorOrt = (provider.profile && provider.profile.dineInPossibleDefault !== undefined) ? !!provider.profile.dineInPossibleDefault : true;
+        const defaultAbholnummer = !!profile.abholnummerEnabledByDefault;
         w.data = {
           providerId: providerId(),
           dish:'', category:'Vegetarisch', price:0,
           pickupWindow: profile.mealWindow || DEFAULT_MEAL_WINDOW,
-          hasPickupCode:true,
-          dineInPossible:true,
+          hasPickupCode: defaultAbholnummer,
+          dineInPossible: defaultVorOrt,
           allergens:[],
           wantsAllergens: false,
           extras:[],
-          reuse:{enabled:globalReuseEnabled, deposit:globalReuseEnabled ? 2 : 0},
+          reuse:{ enabled: globalReuseEnabled, deposit: globalReuseEnabled ? (provider.profile && typeof provider.profile.reuseDepositDefault === 'number' ? provider.profile.reuseDepositDefault : 3) : 0 },
           photoData:'',
           cookbookId:null,
           day: ctx.date || createFlowPreselectedDate || isoDate(new Date())
@@ -21834,11 +21839,10 @@
       w.data.allergens = Array.isArray(w.data.allergens) ? w.data.allergens : [];
       if(w.data.wantsAllergens === undefined) w.data.wantsAllergens = !!(w.data.allergens && w.data.allergens.length > 0);
       w.data.extras = Array.isArray(w.data.extras) ? w.data.extras : [];
-      // Mehrweg: Verwende globale Einstellung wenn nicht gesetzt
-      if(!w.data.reuse || (!w.data.reuse.enabled && !profile.reuseEnabledByDefault)){
-        const globalReuseEnabled = profile.reuseEnabledByDefault || false;
-        w.data.reuse = {enabled:globalReuseEnabled, deposit:globalReuseEnabled ? 2 : 0};
-      }
+      // Mehrweg: aus Profil wenn nicht gesetzt
+      if(!w.data.reuse) w.data.reuse = { enabled: !!profile.reuseEnabledByDefault, deposit: profile.reuseEnabledByDefault ? 3 : 0 };
+      else if(w.data.reuse.enabled === undefined) w.data.reuse.enabled = !!profile.reuseEnabledByDefault;
+      if(w.data.reuse.enabled && (w.data.reuse.deposit === undefined || w.data.reuse.deposit === 0)) w.data.reuse.deposit = (provider.profile && typeof provider.profile.reuseDepositDefault === 'number') ? provider.profile.reuseDepositDefault : 3;
       buildListingStep();
     }
     if(kind==='week'){
@@ -22195,741 +22199,296 @@
       };
     }
     if(wNextBtn) wNextBtn.style.display = ''; // Weiter-Button sichtbar (Schritt 4 blendet ihn aus)
-    const total = 5; // Highend: 1=BASIS, 2=SERVICE, 3=Vorschau, 4=Planung, 5=Abholnummer
+    const total = 1; // Inseratsflow: nur ein Schritt (Single-Page)
     const isSlimStep0 = (w.step === 0);
     setWizardHeader('', isSlimStep0 ? '' : `Schritt ${Math.min(w.step+1,total)} von ${total}`);
     const profile = normalizeProviderProfile(provider.profile || {});
-    if(!w.data.pickupWindow){ w.data.pickupWindow = profile.mealWindow || DEFAULT_MEAL_WINDOW; }
-    if(w.data.dineInPossible === undefined) w.data.dineInPossible = !(provider.profile&&provider.profile.dineInPossibleDefault===false);
+    // 3 Säulen + Abholzeiten: aus Profil übernehmen, wenn noch nicht gesetzt
+    if(!w.data.pickupWindow) w.data.pickupWindow = profile.mealWindow || DEFAULT_MEAL_WINDOW;
+    if(w.data.dineInPossible === undefined) w.data.dineInPossible = (provider.profile && provider.profile.dineInPossibleDefault !== undefined) ? !!provider.profile.dineInPossibleDefault : true;
+    if(w.data.hasPickupCode === undefined) w.data.hasPickupCode = !!profile.abholnummerEnabledByDefault;
+    if(!w.data.reuse) w.data.reuse = { enabled: !!profile.reuseEnabledByDefault, deposit: 3 };
+    else if(w.data.reuse.enabled === undefined) w.data.reuse.enabled = !!profile.reuseEnabledByDefault;
 
-    // Schritt 0: High-End Universal-Flow (Salatsoße) – eine Maske, gleicher Aufbau in allen Modi
-    // Design: Glassmorphism, Dein Gelb #FFDE00, nur „Abholnummer“ (nie Ticket/Code)
-    // Step-0-Check: (1) Icons 🍴🔄🧾 sofort sichtbar als Glas-Hüllen direkt unter Foto. (2) Preis: inputmode=decimal, fester Bereich. (3) Abholnummer-Check: nirgendwo „Ticket“ – nur Abholnummer.
+    // Schritt 0: Master Inseratsflow – Reihenfolge Foto(1)→Name(2)→Beschreibung(3)→Kategorie(4)→Preis(5)→Logistik(6)→Allergene(7)→Extras(8)→Buttons(9)
     if(w.step===0){
       setWizardQuestion('', '');
       const box=document.createElement('div');
-      box.className='glass-express-step0 inserat-universal-mask inserat-high-end universal-flow-2026';
-      box.style.cssText='background:rgba(255,255,255,0.7); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border:1px solid rgba(255,255,255,0.4); border-radius:2.5rem; padding:20px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.12);';
+      box.className='glass-express-step0 inserat-universal-mask inserat-master-flow';
+      box.style.cssText='background:rgba(255,255,255,0.7); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border:1px solid rgba(255,255,255,0.4); border-radius:2.5rem; padding:0; box-shadow:0 25px 50px -12px rgba(0,0,0,0.12); overflow:hidden;';
       const saveDraft = () => { localStorage.setItem('wizard_draft', JSON.stringify(w)); };
       const profile = normalizeProviderProfile(provider.profile || {});
       const profileWindow = profile.mealWindow || DEFAULT_MEAL_WINDOW;
-      w.data.pickupWindow = w.data.pickupWindow || profileWindow;
-      let vorOrt = !!profile.dineInPossibleDefault; if(w.data.dineInPossible !== undefined) vorOrt = !!w.data.dineInPossible;
-      let mehrweg = !!profile.reuseEnabledByDefault; if(w.data.reuse && w.data.reuse.enabled) mehrweg = true;
-      let abhol = !!profile.abholnummerEnabledByDefault; if(w.data.hasPickupCode !== undefined) abhol = !!w.data.hasPickupCode;
+      // Abholzeiten: aus Profil, wenn nicht gesetzt
+      if(!w.data.pickupWindow) w.data.pickupWindow = profileWindow;
+      // 3 Säulen: aus Profil übernehmen, wenn nicht gesetzt
+      if(w.data.dineInPossible === undefined) w.data.dineInPossible = (provider.profile && provider.profile.dineInPossibleDefault !== undefined) ? !!provider.profile.dineInPossibleDefault : true;
+      if(w.data.hasPickupCode === undefined) w.data.hasPickupCode = !!profile.abholnummerEnabledByDefault;
+      if(!w.data.reuse) w.data.reuse = { enabled: !!profile.reuseEnabledByDefault, deposit: (provider.profile && typeof provider.profile.reuseDepositDefault === 'number') ? provider.profile.reuseDepositDefault : 3 };
+      else if(w.data.reuse.enabled === undefined) w.data.reuse.enabled = !!profile.reuseEnabledByDefault;
       if(typeof w.data.allergeneExpanded === 'undefined') w.data.allergeneExpanded = !!w.data.wantsAllergens;
-      const scrollToEl = (el)=>{ if(el && el.scrollIntoView) setTimeout(()=> el.scrollIntoView({ behavior:'smooth', block:'center' }), 120); };
+      const scrollToNext = (id)=>{ setTimeout(()=>{ var el=document.getElementById(id); if(el) el.scrollIntoView({ behavior:'smooth', block:'center' }); }, 150); };
       const dismissKeyboard = ()=>{ try { if(document.activeElement && document.activeElement.blur) document.activeElement.blur(); } catch(e){} };
       const hapticLight = ()=>{ try { if(typeof haptic==='function') haptic(8); else if(navigator.vibrate) navigator.vibrate(8); } catch(e){} };
 
-      // —— Liquid UI: Headline (Marketing, nicht langweilig) ——
-      const headline=document.createElement('p');
-      headline.style.cssText='font-size:13px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.06em; margin:0 0 16px;';
-      headline.textContent='Dein Gericht – in unter 30 Sekunden live';
-      box.appendChild(headline);
-      // —— Schritt 1 (Foto): Ganz oben – Kamera/Galerie, nach Upload: Auto-Gastro-Filter + Crop ——
+      // 1. FOTO-HEADER [cite: 2026-02-02]
       const photoTile=document.createElement('div');
       photoTile.className='inserat-photo-tile';
-      photoTile.style.cssText='border-radius:1.5rem; overflow:hidden; margin-bottom:12px; border:2px solid rgba(255,255,255,0.4); background:rgba(255,255,255,0.7); min-height:100px; backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); box-shadow:0 8px 24px -4px rgba(0,0,0,0.06);';
+      photoTile.style.cssText='width:100%; height:208px; background:rgba(0,0,0,0.06); overflow:hidden; cursor:pointer; position:relative;';
       if(w.data.photoData){
-        photoTile.style.minHeight='160px';
-        photoTile.innerHTML='<img src="'+w.data.photoData+'" style="width:100%; height:160px; object-fit:cover; display:block;" alt=""><div style="padding:10px 14px; display:flex; align-items:center; justify-content:space-between;"><span style="font-size:13px; font-weight:600; color:#64748b;">Foto</span><button type="button" class="inserat-photo-remove" style="background:none; border:none; color:#64748b; font-size:14px; font-weight:700; cursor:pointer;">× Entfernen</button></div>';
+        photoTile.innerHTML='<img src="'+w.data.photoData+'" style="width:100%; height:100%; object-fit:cover; display:block;" alt=""><div style="position:absolute; bottom:0; left:0; right:0; padding:10px 14px; display:flex; align-items:center; justify-content:space-between; background:linear-gradient(transparent,rgba(0,0,0,0.4));"><span style="font-size:13px; font-weight:600; color:rgba(255,255,255,0.95);">Foto</span><button type="button" class="inserat-photo-remove" style="background:none; border:none; color:rgba(255,255,255,0.95); font-size:14px; font-weight:700; cursor:pointer;">× Entfernen</button></div>';
         const rem=photoTile.querySelector('.inserat-photo-remove');
-        if(rem) rem.onclick=()=>{ hapticLight(); w.data.photoData=''; w.data.photoDataIsStandard=false; saveDraft(); rebuildWizard(); };
+        if(rem) rem.onclick=(e)=>{ e.stopPropagation(); hapticLight(); w.data.photoData=''; w.data.photoDataIsStandard=false; saveDraft(); rebuildWizard(); };
       } else {
-        photoTile.innerHTML='<div style="padding:20px; text-align:center;"><p style="font-size:12px; font-weight:600; color:#94a3b8; margin:0 0 14px;">Zeig deinen Gästen, was sie erwartet</p><div style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center;">'+
-          '<button type="button" class="glass-pill inserat-photo-btn" style="min-height:56px; padding:0 24px; border-radius:16px; font-size:15px; font-weight:800; border:2px solid rgba(255,255,255,0.4); background:rgba(255,255,255,0.6); backdrop-filter:blur(14px); cursor:pointer;">📷 Kamera</button>'+
-          '<button type="button" class="glass-pill inserat-photo-btn" style="min-height:56px; padding:0 24px; border-radius:16px; font-size:15px; font-weight:800; border:2px solid rgba(255,255,255,0.4); background:rgba(255,255,255,0.6); backdrop-filter:blur(14px); cursor:pointer;">📤 Galerie</button>'+
-        '</div></div>';
-        photoTile.querySelectorAll('.inserat-photo-btn').forEach((btn,i)=>{
-          const action = i===0 ? 'camera' : 'gallery';
-          btn.onclick=async function(){ hapticLight(); const f=await (action==='camera' ? pickImage({capture:true}) : pickImage()); if(!f) return; let dataUrl=await toDataUrl(f); if(typeof applyAppetizerFilter==='function') dataUrl=await applyAppetizerFilter(dataUrl); if(typeof openPhotoEditor==='function') dataUrl=await openPhotoEditor(dataUrl, { onAccept: function(){} }); w.data.photoData=dataUrl; w.data.photoDataIsStandard=false; saveDraft(); rebuildWizard(); };
-        });
+        photoTile.innerHTML='<div style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;"><span style="font-size:40px; opacity:0.4;">📸</span><span style="font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:0.05em; margin-top:8px; color:#9ca3af;">Foto hinzufügen</span></div>';
+        photoTile.onclick=async function(){ hapticLight(); const f=await pickImage(); if(!f) return; let dataUrl=await toDataUrl(f); if(typeof applyAppetizerFilter==='function') dataUrl=await applyAppetizerFilter(dataUrl); if(typeof openPhotoEditor==='function') dataUrl=await openPhotoEditor(dataUrl, { onAccept: function(){} }); w.data.photoData=dataUrl; w.data.photoDataIsStandard=false; saveDraft(); rebuildWizard(); };
       }
       box.appendChild(photoTile);
 
-      // 3 Säulen: 🍴 Vor Ort, 🔄 Mehrweg, 🧾 Abholnummer (nur diese drei – Terminologie „Abholnummer“)
-      const smartGrid=document.createElement('div');
-      smartGrid.className='inserat-smart-tiles inserat-three-pillars';
-      smartGrid.style.cssText='display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; margin-bottom:20px;';
-      function addSmartTile(emo, title, active, onClick){
-        const btn=document.createElement('button');
-        btn.type='button'; btn.title=title; btn.style.cssText='min-height:64px; border-radius:18px; font-size:26px; border:2px solid ' + (active?'#FFDE00':'rgba(255,255,255,0.5)') + '; background:' + (active?'rgba(255,222,0,0.25)':'rgba(255,255,255,0.5)') + '; cursor:pointer; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); transition:transform 0.32s cubic-bezier(0.34,1.2,0.64,1), border-color 0.2s, background 0.2s;';
-        btn.textContent=emo;
-        btn.onclick=()=>{ hapticLight(); onClick(); saveDraft(); rebuildWizard(); };
-        smartGrid.appendChild(btn);
-      }
-      addSmartTile('🍴','Vor Ort', vorOrt, ()=>{ w.data.dineInPossible=!vorOrt; });
-      addSmartTile('🔄','Mehrweg', mehrweg, ()=>{ w.data.reuse=w.data.reuse||{}; w.data.reuse.enabled=!mehrweg; });
-      addSmartTile('🧾','Abholnummer', abhol, ()=>{ w.data.hasPickupCode=!abhol; });
-      box.appendChild(smartGrid);
-      if(w.data.pickupWindowEdit){
-        const pw=(w.data.pickupWindow||profileWindow).split(/\s*[–\-]\s*/);
-        let timeStart=(pw[0]||'11:30').trim(); let timeEnd=(pw[1]||'14:00').trim();
-        if(timeStart.length===4) timeStart='0'+timeStart; if(timeEnd.length===4) timeEnd='0'+timeEnd;
-        const timeRow=document.createElement('div');
-        timeRow.style.cssText='display:flex; align-items:center; gap:10px; margin-bottom:12px; flex-wrap:wrap;';
-        timeRow.innerHTML='<input type="time" value="'+timeStart+'" style="padding:10px 14px; border-radius:12px; border:2px solid rgba(255,255,255,0.6); background:rgba(255,255,255,0.5); font-size:14px; font-weight:700;"><span style="color:#64748b;">–</span><input type="time" value="'+timeEnd+'" style="padding:10px 14px; border-radius:12px; border:2px solid rgba(255,255,255,0.6); background:rgba(255,255,255,0.5); font-size:14px; font-weight:700;">';
-        const inpStart=timeRow.querySelector('input[type="time"]'); const inpEnd=timeRow.querySelectorAll('input[type="time"]')[1];
-        inpStart.onchange=()=>{ w.data.pickupWindow=inpStart.value+' – '+inpEnd.value; saveDraft(); };
-        inpEnd.onchange=()=>{ w.data.pickupWindow=inpStart.value+' – '+inpEnd.value; saveDraft(); };
-        box.appendChild(timeRow);
-      }
-      const pickupEditTrigger=document.createElement('button');
-      pickupEditTrigger.type='button';
-      pickupEditTrigger.className='inserat-pickup-time-trigger';
-      pickupEditTrigger.style.cssText='width:100%; margin-bottom:16px; padding:10px 14px; border-radius:12px; border:1px solid rgba(0,0,0,0.08); background:rgba(255,255,255,0.4); font-size:13px; font-weight:600; color:#64748b; cursor:pointer; text-align:left;';
-      pickupEditTrigger.innerHTML='🕒 Abholzeiten: ' + (w.data.pickupWindow||profileWindow) + ' <span style="float:right;">▶</span>';
-      pickupEditTrigger.onclick=()=>{ hapticLight(); w.data.pickupWindowEdit=!w.data.pickupWindowEdit; saveDraft(); rebuildWizard(); };
-      if(!w.data.pickupWindowEdit) box.appendChild(pickupEditTrigger);
+      const scrollArea=document.createElement('div');
+      scrollArea.style.cssText='padding:24px; overflow-y:auto; max-height:70vh;';
 
-      // —— Liquid Input Flow: Gericht → Kategorie → Beschreibung → Allergene → Preis ——
-      const input=document.createElement('input');
-      input.className='field glass-express-field';
-      input.placeholder='Was kochst du heute?';
-      input.value=w.data.dish||'';
-      input.autocomplete='off';
-      input.style.cssText='margin-bottom:12px; min-height:52px; font-size:18px; font-weight:700; border-radius:16px; padding:0 18px;';
-      const suggestWrap=document.createElement('div');
-      suggestWrap.className='answers';
-      suggestWrap.style.cssText='margin-top:8px; margin-bottom:16px; gap:10px;';
-      function fillSuggestions(){
-        suggestWrap.innerHTML='';
-        const q=(input.value||'').trim();
-        const list = typeof getDishSuggestionsSmartInput==='function' ? getDishSuggestionsSmartInput(q) : [];
-        list.slice(0,6).forEach(s=>{
-          const raw = (s.category==='Fleisch') ? 'Fleisch' : (s.category||'Vegetarisch');
-          const cat = raw==='Fleisch' ? 'Mit Fleisch' : (raw==='Salat'?raw:(raw||'Vegetarisch'));
-          const b=document.createElement('button');
-          b.type='button'; b.className='ans glass-pill'; b.style.cssText='min-height:48px; padding:0 16px; border-radius:14px; font-size:15px; font-weight:700;';
-          b.textContent=s.dish;
-          b.onclick=()=>{ hapticLight(); w.data.dish=s.dish; w.data.category=cat; if(s.allergens) w.data.allergens=[].concat(s.allergens||[]); if(!w.data.photoData || w.data.photoDataIsStandard){ w.data.photoData = s.img || ''; w.data.photoDataIsStandard = true; } saveDraft(); dismissKeyboard(); rebuildWizard(); setTimeout(function(){ var next = document.querySelector('#wContent .inserat-allergene-wrap'); if(next) scrollToEl(next); }, 150); };
-          suggestWrap.appendChild(b);
-        });
-      }
-      input.oninput=()=>{ w.data.dish=input.value; saveDraft(); fillSuggestions(); };
-      input.onfocus=()=>{ fillSuggestions(); };
-      input.onblur=()=>{ dismissKeyboard(); hapticLight(); setTimeout(function(){ var next=box.querySelector('.inserat-cat-scroll'); if(next) scrollToEl(next); }, 80); };
-      input.onkeydown=function(e){ if(e.key==='Enter'){ e.preventDefault(); dismissKeyboard(); hapticLight(); setTimeout(function(){ var next=box.querySelector('.inserat-cat-scroll'); if(next) scrollToEl(next); }, 80); } };
-      box.appendChild(input);
-      box.appendChild(suggestWrap);
+      // 2. GERICHTSNAME & 3. BESCHREIBUNG [cite: 2026-01-29]
+      const stepName=document.createElement('div');
+      stepName.id='step-name';
+      stepName.style.cssText='margin-bottom:20px;';
+      const inputDish=document.createElement('input');
+      inputDish.type='text';
+      inputDish.placeholder='Was kochst du heute?';
+      inputDish.value=w.data.dish||'';
+      inputDish.autocomplete='off';
+      inputDish.style.cssText='width:100%; background:transparent; font-size:24px; font-weight:800; border:none; padding:0; outline:none; color:#1a1a1a;';
+      inputDish.oninput=()=>{ w.data.dish=inputDish.value; saveDraft(); };
+      inputDish.onblur=()=>{ dismissKeyboard(); hapticLight(); scrollToNext('step-cat'); };
+      const inputDesc=document.createElement('input');
+      inputDesc.type='text';
+      inputDesc.placeholder='Kurze Beschreibung (optional)';
+      inputDesc.value=w.data.description||'';
+      inputDesc.style.cssText='width:100%; background:transparent; font-size:14px; color:#94a3b8; border:none; padding:0; margin-top:4px; outline:none;';
+      inputDesc.oninput=()=>{ w.data.description=inputDesc.value; saveDraft(); };
+      inputDesc.onblur=()=>{ dismissKeyboard(); hapticLight(); };
+      stepName.appendChild(inputDish);
+      stepName.appendChild(inputDesc);
+      scrollArea.appendChild(stepName);
 
-      const catLabels = ['Mit Fleisch','Vegetarisch','Vegan','Salat'];
-      const catMap = { 'Fleisch':'Mit Fleisch', 'Mit Fleisch':'Mit Fleisch', 'Vegetarisch':'Vegetarisch', 'Vegan':'Vegan', 'Salat':'Salat' };
-      const currentCat = catMap[w.data.category] || w.data.category || 'Vegetarisch';
-      const catScroll=document.createElement('div');
-      catScroll.className='inserat-cat-scroll';
-      catScroll.style.cssText='display:flex; gap:12px; margin-bottom:16px; overflow-x:auto; padding:4px 0; -webkit-overflow-scrolling:touch; scroll-snap-type:x proximity;';
+      // 4. KATEGORIE PILLS [cite: 2026-01-29] – Emerald aktiv
+      const catLabels = ['Fleisch','Vegetarisch','Vegan','Salat'];
+      const currentCat = w.data.category || 'Fleisch';
+      if(!catLabels.includes(currentCat)) w.data.category = 'Fleisch';
+      const stepCat=document.createElement('div');
+      stepCat.id='step-cat';
+      stepCat.style.cssText='display:flex; gap:8px; overflow-x:auto; padding:4px 0; margin-bottom:24px; -webkit-overflow-scrolling:touch;';
       catLabels.forEach(c=>{
         const b=document.createElement('button');
-        b.type='button'; b.className='glass-pill inserat-cat-tile'; b.style.cssText='flex:0 0 auto; min-height:52px; min-width:120px; padding:0 20px; border-radius:16px; font-size:15px; font-weight:800; cursor:pointer; scroll-snap-align:start;';
-        b.style.border='2px solid ' + (currentCat===c?'#FFDE00':'rgba(255,255,255,0.6)'); b.style.background=(currentCat===c?'rgba(255,222,0,0.25)':'rgba(255,255,255,0.5)');
+        b.type='button';
+        b.style.cssText='flex:0 0 auto; padding:12px 24px; border-radius:16px; font-size:14px; font-weight:800; cursor:pointer; border:2px solid ' + (w.data.category===c?'#10b981':'rgba(255,255,255,0.6)') + '; background:' + (w.data.category===c?'#10b981':'rgba(255,255,255,0.4)') + '; color:' + (w.data.category===c?'#fff':'#64748b') + ';';
         b.textContent=c;
-        b.onclick=()=>{ hapticLight(); w.data.category=c; saveDraft(); dismissKeyboard(); rebuildWizard(); };
-        catScroll.appendChild(b);
+        b.onclick=()=>{ hapticLight(); w.data.category=c; saveDraft(); scrollToNext('step-price'); rebuildWizard(); };
+        stepCat.appendChild(b);
       });
-      box.appendChild(catScroll);
+      scrollArea.appendChild(stepCat);
 
-      const descWrap=document.createElement('div');
-      descWrap.className='inserat-desc';
-      const inputDesc=document.createElement('input');
-      inputDesc.className='field glass-express-field';
-      inputDesc.placeholder='Beschreibung (optional), z.B. frisch aus dem Garten';
-      inputDesc.value=w.data.description||'';
-      inputDesc.style.cssText='margin-bottom:16px; min-height:44px; font-size:14px; font-weight:500; border-radius:12px; padding:0 16px;';
-      inputDesc.oninput=()=>{ w.data.description=inputDesc.value; saveDraft(); };
-      inputDesc.onfocus=()=>{ hapticLight(); };
-      inputDesc.onblur=()=>{ dismissKeyboard(); hapticLight(); setTimeout(function(){ var next=box.querySelector('.inserat-allergene-wrap'); if(next) scrollToEl(next); }, 100); };
-      inputDesc.onkeydown=function(e){ if(e.key==='Enter'){ e.preventDefault(); dismissKeyboard(); hapticLight(); setTimeout(function(){ var next=box.querySelector('.inserat-allergene-wrap'); if(next) scrollToEl(next); }, 100); } };
-      descWrap.appendChild(inputDesc);
-      box.appendChild(descWrap);
-
-      const suggestedAllergens = typeof getAllergenSuggestionsForDish==='function' ? getAllergenSuggestionsForDish(w.data.dish) : [];
-      if(suggestedAllergens.length && (!w.data.allergens||!w.data.allergens.length)){ w.data.allergens=suggestedAllergens.slice(); w.data.wantsAllergens=true; }
-      const allWrap=document.createElement('div');
-      allWrap.className='inserat-allergene-wrap';
-      allWrap.style.cssText='margin-bottom:16px;';
-      const allCodes = (w.data.allergens||[]).length ? (w.data.allergens||[]).join(', ') : '–';
-      const allTrigger=document.createElement('button');
-      allTrigger.type='button';
-      allTrigger.style.cssText='width:100%; display:flex; align-items:center; justify-content:space-between; padding:14px 16px; border-radius:14px; border:2px solid rgba(255,255,255,0.6); background:rgba(255,255,255,0.5); font-size:14px; font-weight:700; color:#64748b; cursor:pointer; text-align:left; backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);';
-      allTrigger.innerHTML = '<span>Allergene</span><span class="inserat-allergene-summary">' + (w.data.allergeneExpanded ? '▼' : (allCodes !== '–' ? 'Allergene: ' + allCodes : '▶ angeben')) + '</span>';
-      allTrigger.onclick=()=>{ hapticLight(); w.data.allergeneExpanded=!w.data.allergeneExpanded; saveDraft(); rebuildWizard(); };
-      allWrap.appendChild(allTrigger);
-      if(w.data.allergeneExpanded){
-        const allRow=document.createElement('div');
-        allRow.style.cssText='display:flex; align-items:center; gap:10px; margin-top:10px; margin-bottom:8px;';
-        const btnAllYes=document.createElement('button');
-        btnAllYes.type='button'; btnAllYes.className='glass-pill'; btnAllYes.style.cssText='min-height:44px; padding:0 16px; border-radius:999px; font-size:13px; font-weight:700; cursor:pointer;';
-        btnAllYes.style.border='2px solid ' + (w.data.wantsAllergens?'#FFDE00':'rgba(255,255,255,0.6)'); btnAllYes.style.background=(w.data.wantsAllergens?'rgba(255,222,0,0.2)':'rgba(255,255,255,0.5)');
-        btnAllYes.textContent='Ja';
-        btnAllYes.onclick=()=>{ hapticLight(); w.data.wantsAllergens=true; saveDraft(); rebuildWizard(); };
-        const btnAllNo=document.createElement('button');
-        btnAllNo.type='button'; btnAllNo.className='glass-pill'; btnAllNo.style.cssText='min-height:44px; padding:0 16px; border-radius:999px; font-size:13px; font-weight:700; cursor:pointer;';
-        btnAllNo.style.border='2px solid ' + (!w.data.wantsAllergens?'#FFDE00':'rgba(255,255,255,0.6)'); btnAllNo.style.background=(!w.data.wantsAllergens?'rgba(255,222,0,0.2)':'rgba(255,255,255,0.5)');
-        btnAllNo.textContent='Nein';
-        btnAllNo.onclick=()=>{ hapticLight(); w.data.wantsAllergens=false; w.data.allergens=[]; w.data.allergeneExpanded=false; saveDraft(); rebuildWizard(); };
-        allRow.appendChild(btnAllYes); allRow.appendChild(btnAllNo);
-        allWrap.appendChild(allRow);
-        if(w.data.wantsAllergens){
-          const pills=document.createElement('div');
-          pills.style.cssText='display:flex; flex-wrap:wrap; gap:8px; margin-top:8px;';
-          (typeof ALLERGENS_14!=='undefined'?ALLERGENS_14:[]).forEach(a=>{
-            const code=a.short;
-            const active=(w.data.allergens||[]).includes(code);
-            const emo=(typeof ALLERGEN_EMOJI!=='undefined'&&ALLERGEN_EMOJI[code])?ALLERGEN_EMOJI[code]:'•';
-            const p=document.createElement('button');
-            p.type='button'; p.className='glass-pill'; p.style.cssText='min-height:40px; padding:0 12px; border-radius:999px; font-size:12px; font-weight:700; cursor:pointer;';
-            p.style.border='2px solid ' + (active?'#FFDE00':'rgba(255,255,255,0.6)'); p.style.background=(active?'rgba(255,222,0,0.2)':'rgba(255,255,255,0.5)');
-            p.textContent=emo+' '+a.name;
-            p.onclick=()=>{ hapticLight(); if(!w.data.allergens) w.data.allergens=[]; if(active) w.data.allergens=w.data.allergens.filter(x=>x!==code); else w.data.allergens.push(code); saveDraft(); rebuildWizard(); setTimeout(function(){ w.data.allergeneExpanded=false; saveDraft(); rebuildWizard(); }, 500); };
-            pills.appendChild(p);
-          });
-          allWrap.appendChild(pills);
-        }
-      }
-      box.appendChild(allWrap);
-
-      /* Tastatur-Check: Zahlentastatur sofort, Layout stabil – inputmode decimal, fester Bereich */
-      const priceWrap=document.createElement('div');
-      priceWrap.className='inserat-price-wrap';
-      priceWrap.style.cssText='margin-bottom:16px; min-height:72px; scroll-margin-bottom:80px;';
+      // 5. HAUPT-PREIS & VERDIENST-VORSCHAU (30x Emerald) [cite: 2026-01-29]
+      const stepPrice=document.createElement('div');
+      stepPrice.id='step-price';
+      stepPrice.style.cssText='text-align:center; margin-bottom:24px; padding:16px 0;';
+      const priceRow=document.createElement('div');
+      priceRow.style.cssText='display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:8px;';
       const inputPrice=document.createElement('input');
-      inputPrice.className='field glass-express-field inserat-price-field';
       inputPrice.type='text';
       inputPrice.setAttribute('inputmode','decimal');
-      inputPrice.autocomplete='off';
-      inputPrice.placeholder='Was nimmst du dafür? z.B. 8,50 €';
+      inputPrice.placeholder='0,00';
       inputPrice.value=(w.data.price>0?Number(w.data.price).toFixed(2).replace('.',','):'');
-      inputPrice.style.cssText='margin-bottom:0; min-height:72px; font-size:28px; font-weight:800; border-radius:16px; padding:0 18px; width:100%; box-sizing:border-box;';
-      inputPrice.oninput=()=>{ const v=inputPrice.value.replace(',','.'); w.data.price=parseFloat(v)||0; saveDraft(); var uw=box.querySelector('.inserat-umsatz-vorschau'); if(uw){ var p=Number(w.data.price)||0; var pot=Math.round(p*30*100)/100; var potStr=pot>0?pot.toFixed(2).replace('.',',')+' €':'\u2013'; uw.innerHTML='<div style="font-size:12px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.04em;">Verdienst-Vorschau</div><div style="font-size:20px; font-weight:800; color:#1a1a1a; margin-top:4px;">Bei ~30 Abnahmen: <strong>ca. '+potStr+'</strong></div>'; } };
-      inputPrice.onblur=()=>{ if(w.data.price>0) inputPrice.value=Number(w.data.price).toFixed(2).replace('.',','); dismissKeyboard(); hapticLight(); setTimeout(function(){ var to=document.querySelector('#wContent .inserat-umsatz-vorschau, #wContent .inserat-pricing-weiche, #wContent .inserat-save-wrap, #wContent .w-actions'); if(to) scrollToEl(to); }, 120); };
-      inputPrice.onfocus=()=>{ hapticLight(); scrollToEl(inputPrice); };
-      inputPrice.onkeydown=function(e){ if(e.key==='Enter'){ e.preventDefault(); dismissKeyboard(); hapticLight(); setTimeout(function(){ var to=document.querySelector('#wContent .inserat-umsatz-vorschau, #wContent .inserat-pricing-weiche, #wContent .inserat-save-wrap, #wContent .w-actions'); if(to) scrollToEl(to); }, 80); } };
-      priceWrap.appendChild(inputPrice);
-      box.appendChild(priceWrap);
+      inputPrice.style.cssText='width:50%; max-width:160px; background:rgba(255,255,255,0.5); border:none; border-radius:24px; padding:16px; font-size:28px; font-weight:800; text-align:center; outline:none; box-shadow:0 0 0 1px rgba(0,0,0,0.05);';
+      inputPrice.oninput=()=>{ const v=inputPrice.value.replace(',','.'); w.data.price=parseFloat(v)||0; saveDraft(); var ew=stepPrice.querySelector('.inserat-earnings'); if(ew){ var p=Number(w.data.price)||0; ew.textContent='Dein Verdienst (30x): ' + (p*30).toFixed(2) + ' €'; } };
+      inputPrice.onblur=()=>{ if(w.data.price>0) inputPrice.value=Number(w.data.price).toFixed(2).replace('.',','); dismissKeyboard(); hapticLight(); scrollToNext('step-logistics'); };
+      const euroSpan=document.createElement('span');
+      euroSpan.style.cssText='font-size:24px; font-weight:800; color:#94a3b8;';
+      euroSpan.textContent='€';
+      priceRow.appendChild(inputPrice);
+      priceRow.appendChild(euroSpan);
+      stepPrice.appendChild(priceRow);
+      const earningsEl=document.createElement('p');
+      earningsEl.className='inserat-earnings';
+      earningsEl.style.cssText='font-size:11px; font-weight:800; color:#10b981; text-transform:uppercase; letter-spacing:0.08em; margin:0;';
+      var p0=Number(w.data.price)||0;
+      earningsEl.textContent='Dein Verdienst (30x): ' + (p0*30).toFixed(2) + ' €';
+      stepPrice.appendChild(earningsEl);
+      scrollArea.appendChild(stepPrice);
 
-      // Extras mit Aufpreis (optional) – Liquid UI
-      const extrasWrap=document.createElement('div');
-      extrasWrap.className='inserat-extras-wrap';
-      extrasWrap.style.cssText='margin-bottom:16px;';
-      const inputExtras=document.createElement('input');
-      inputExtras.className='field glass-express-field';
-      inputExtras.placeholder='Extras mit Aufpreis (optional), z.B. Beilage +1,00 €';
-      inputExtras.value=w.data.extrasLabel||'';
-      inputExtras.style.cssText='min-height:44px; font-size:14px; font-weight:500; border-radius:12px; padding:0 16px; border:2px solid rgba(255,255,255,0.5); background:rgba(255,255,255,0.5); backdrop-filter:blur(12px);';
-      inputExtras.oninput=()=>{ w.data.extrasLabel=inputExtras.value; saveDraft(); };
-      inputExtras.onfocus=()=>{ hapticLight(); };
-      extrasWrap.appendChild(inputExtras);
-      box.appendChild(extrasWrap);
+      // 6. LOGISTIK-BAR (DEZENT) [cite: 2026-01-27] – 🍴 🧾 🔄 + 🕒
+      const stepLog=document.createElement('div');
+      stepLog.id='step-logistics';
+      stepLog.style.cssText='display:flex; align-items:center; justify-content:space-around; background:rgba(255,255,255,0.3); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,0.5); border-radius:24px; padding:16px; margin-bottom:24px; box-shadow:inset 0 1px 0 rgba(255,255,255,0.5);';
+      [{ id:'dineInPossible', key:'dineInPossible', emo:'🍴' }, { id:'hasPickupCode', key:'hasPickupCode', emo:'🧾' }, { id:'mehrweg', key:'reuse', emo:'🔄' }].forEach(function(item){
+        var active = item.key==='reuse' ? !!(w.data.reuse && w.data.reuse.enabled) : !!w.data[item.key];
+        const btn=document.createElement('button');
+        btn.type='button';
+        btn.style.cssText='font-size:24px; background:none; border:none; cursor:pointer; padding:4px; transition:transform 0.2s, filter 0.2s; ' + (active ? 'transform:scale(1.1); filter:grayscale(0);' : 'filter:grayscale(1); opacity:0.35; transform:scale(0.9);');
+        btn.textContent=item.emo;
+        btn.onclick=()=>{
+          hapticLight();
+          if(item.key==='reuse'){ w.data.reuse=w.data.reuse||{}; w.data.reuse.enabled=!w.data.reuse.enabled; } else w.data[item.key]=!w.data[item.key];
+          saveDraft(); rebuildWizard();
+        };
+        stepLog.appendChild(btn);
+      });
+      var pwParts=(w.data.pickupWindow||profileWindow).split(/\s*[–\-]\s*/);
+      var timeStart=(pwParts[0]||'11:30').trim();
+      var timeEnd=(pwParts[1]||'14:00').trim();
+      if(timeStart.length===4) timeStart='0'+timeStart;
+      if(timeEnd.length===4) timeEnd='0'+timeEnd;
+      if(w.data.pickupWindowEdit){
+        const timeRow=document.createElement('div');
+        timeRow.style.cssText='display:flex; align-items:center; gap:8px;';
+        const inpStart=document.createElement('input');
+        inpStart.type='time';
+        inpStart.value=timeStart;
+        inpStart.style.cssText='padding:6px 10px; border-radius:10px; border:1px solid rgba(0,0,0,0.1); font-size:12px; font-weight:700;';
+        const inpEnd=document.createElement('input');
+        inpEnd.type='time';
+        inpEnd.value=timeEnd;
+        inpEnd.style.cssText='padding:6px 10px; border-radius:10px; border:1px solid rgba(0,0,0,0.1); font-size:12px; font-weight:700;';
+        inpStart.onchange=()=>{ w.data.pickupWindow=inpStart.value+' – '+inpEnd.value; saveDraft(); };
+        inpEnd.onchange=()=>{ w.data.pickupWindow=inpStart.value+' – '+inpEnd.value; saveDraft(); };
+        timeRow.appendChild(inpStart);
+        timeRow.appendChild(document.createTextNode(' – '));
+        timeRow.appendChild(inpEnd);
+        stepLog.appendChild(timeRow);
+      } else {
+        const timeDiv=document.createElement('button');
+        timeDiv.type='button';
+        timeDiv.style.cssText='font-size:14px; font-weight:800; color:#64748b; background:none; border:none; cursor:pointer; display:flex; align-items:center; gap:4px; opacity:0.7;';
+        timeDiv.innerHTML='🕒 <span style="font-size:10px;">' + (w.data.pickupWindow||profileWindow).split(/\s*[–\-]\s*/)[0] + '</span>';
+        timeDiv.onclick=()=>{ hapticLight(); w.data.pickupWindowEdit=!w.data.pickupWindowEdit; saveDraft(); rebuildWizard(); };
+        stepLog.appendChild(timeDiv);
+      }
+      scrollArea.appendChild(stepLog);
 
-      // Verdienst-Vorschau: Bei ~30 Abnahmen (Marketing, High-End Architect)
-      const umsatzWrap=document.createElement('div');
-      umsatzWrap.className='inserat-umsatz-vorschau listing-umsatz-potenzial';
-      umsatzWrap.style.cssText='margin-bottom:20px; padding:14px 18px; border-radius:16px; background:rgba(255,222,0,0.12); border:1px solid rgba(255,222,0,0.35);';
-      const priceNum=Number(w.data.price)||0;
-      const potenzial=Math.round(priceNum*30*100)/100;
-      umsatzWrap.innerHTML='<div style="font-size:12px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.04em;">Verdienst-Vorschau</div><div style="font-size:20px; font-weight:800; color:#1a1a1a; margin-top:4px;">Bei ~30 Abnahmen: <strong>ca. '+(potenzial>0?potenzial.toFixed(2).replace('.',',')+' €':'–')+'</strong></div>';
-      box.appendChild(umsatzWrap);
+      // 7. ALLERGENE (COLLAPSIBLE) [cite: 2026-01-29]
+      const stepAll=document.createElement('div');
+      stepAll.id='step-allergens';
+      stepAll.style.cssText='margin-bottom:24px;';
+      const allTrigger=document.createElement('button');
+      allTrigger.type='button';
+      allTrigger.style.cssText='width:100%; text-align:center; font-size:10px; font-weight:800; color:#94a3b8; text-transform:uppercase; letter-spacing:0.1em; padding:12px 0; border:none; border-top:1px solid rgba(0,0,0,0.06); border-bottom:1px solid rgba(0,0,0,0.06); background:transparent; cursor:pointer;';
+      allTrigger.textContent=w.data.allergeneExpanded ? 'Allergene schließen ↑' : 'Allergene hinzufügen +';
+      allTrigger.onclick=()=>{ hapticLight(); w.data.allergeneExpanded=!w.data.allergeneExpanded; saveDraft(); if(w.data.allergeneExpanded) scrollToNext('step-extras'); rebuildWizard(); };
+      stepAll.appendChild(allTrigger);
+      if(w.data.allergeneExpanded){
+        const allInner=document.createElement('div');
+        allInner.style.cssText='display:flex; flex-wrap:wrap; gap:8px; padding:16px 0; justify-content:center;';
+        (typeof ALLERGENS_14!=='undefined'?ALLERGENS_14:[]).forEach(a=>{
+          const code=a.short;
+          const active=(w.data.allergens||[]).includes(code);
+          const emo=(typeof ALLERGEN_EMOJI!=='undefined'&&ALLERGEN_EMOJI[code])?ALLERGEN_EMOJI[code]:'•';
+          const p=document.createElement('button');
+          p.type='button';
+          p.style.cssText='width:40px; height:40px; border-radius:50%; font-size:10px; font-weight:800; cursor:pointer; border:1px solid rgba(255,255,255,0.6); background:' + (active?'#10b981':'rgba(255,255,255,0.4)') + '; color:' + (active?'#fff':'#64748b') + ';';
+          p.textContent=emo||code;
+          p.onclick=()=>{ hapticLight(); if(!w.data.allergens) w.data.allergens=[]; if(active) w.data.allergens=w.data.allergens.filter(x=>x!==code); else w.data.allergens.push(code); w.data.wantsAllergens=true; saveDraft(); rebuildWizard(); };
+          allInner.appendChild(p);
+        });
+        stepAll.appendChild(allInner);
+      }
+      scrollArea.appendChild(stepAll);
 
-      // 8) Pricing-Weiche (nur Modus „Jetzt Inserieren“) ODER Emerald Speichern (Kochbuch/Wochenplan)
+      // 8. EXTRAS (PILLS MIT PREIS) [cite: 2026-01-29]
+      var defaultExtras = [{ name:'Beilagensalat', price:2.5 }, { name:'Mayo', price:0.5 }, { name:'Ketchup', price:0.5 }, { name:'Soße', price:1 }, { name:'Brot', price:1.5 }];
+      if(!Array.isArray(w.data.extras)) w.data.extras=[];
+      const stepExtras=document.createElement('div');
+      stepExtras.id='step-extras';
+      stepExtras.style.cssText='margin-bottom:24px;';
+      const extLabel=document.createElement('p');
+      extLabel.style.cssText='font-size:10px; font-weight:800; color:#94a3b8; text-transform:uppercase; letter-spacing:0.1em; text-align:center; margin:0 0 12px;';
+      extLabel.textContent='Optionale Extras';
+      stepExtras.appendChild(extLabel);
+      const extWrap=document.createElement('div');
+      extWrap.style.cssText='display:flex; flex-wrap:wrap; gap:8px; justify-content:center;';
+      defaultExtras.forEach(function(opt){
+        var ex=w.data.extras.find(function(e){ return e.name===opt.name; });
+        var active=!!ex && Number(ex.price||0)>0;
+        if(!ex) ex={ name:opt.name, price:0 };
+        const pillWrap=document.createElement('div');
+        pillWrap.style.cssText='display:flex; align-items:center; gap:6px;';
+        const btn=document.createElement('button');
+        btn.type='button';
+        btn.style.cssText='padding:8px 16px; border-radius:999px; font-size:12px; font-weight:800; cursor:pointer; border:2px solid ' + (active?'#10b981':'rgba(255,255,255,0.6)') + '; background:' + (active?'#10b981':'rgba(255,255,255,0.4)') + '; color:' + (active?'#fff':'#64748b') + ';';
+        btn.textContent=opt.name;
+        btn.onclick=()=>{ hapticLight(); var idx=w.data.extras.findIndex(function(e){ return e.name===opt.name; }); if(idx>=0){ w.data.extras.splice(idx,1); } else { w.data.extras.push({ name:opt.name, price:opt.price }); } saveDraft(); rebuildWizard(); };
+        pillWrap.appendChild(btn);
+        if(active){
+          const inpWrap=document.createElement('span');
+          inpWrap.style.cssText='display:inline-flex; align-items:center; background:rgba(255,255,255,0.6); border-radius:999px; padding:4px 8px;';
+          const plus=document.createElement('span');
+          plus.style.cssText='font-size:10px; font-weight:800; color:#10b981; margin-right:4px;';
+          plus.textContent='+';
+          const inp=document.createElement('input');
+          inp.type='text';
+          inp.inputMode='decimal';
+          inp.style.cssText='width:36px; background:transparent; border:none; padding:0; font-size:12px; font-weight:800; color:#10b981; outline:none;';
+          inp.value=Number(ex.price).toFixed(2).replace('.',',');
+          inp.oninput=()=>{ ex.price=parseFloat((inp.value||'0').replace(',','.'))||0; saveDraft(); };
+          inp.onclick=(e)=> e.stopPropagation();
+          const eur=document.createElement('span');
+          eur.style.cssText='font-size:10px; font-weight:800; color:#10b981; margin-left:2px;';
+          eur.textContent='€';
+          inpWrap.appendChild(plus);
+          inpWrap.appendChild(inp);
+          inpWrap.appendChild(eur);
+          pillWrap.appendChild(inpWrap);
+        }
+        extWrap.appendChild(pillWrap);
+      });
+      stepExtras.appendChild(extWrap);
+      scrollArea.appendChild(stepExtras);
+
+      box.appendChild(scrollArea);
+
+      // 9. ACTION BUTTONS [cite: 2026-01-29]
       var entryPoint = (w.ctx && w.ctx.entryPoint) || 'dashboard';
       var isInserierenRoute = (entryPoint === 'dashboard');
       var hasDish = !!(w.data.dish && String(w.data.dish).trim());
       var hasPrice = Number(w.data.price) > 0;
       var primaryValid = hasDish && hasPrice;
 
-      if(isInserierenRoute && primaryValid){
-        // Keine Abos – jede Aktion einmalig [cite: 2026-02-04]
-        const noAboHint=document.createElement('p');
-        noAboHint.className='inserat-no-abo-hint';
-        noAboHint.style.cssText='margin-top:20px; margin-bottom:0; font-size:12px; font-weight:600; color:#94a3b8;';
-        noAboHint.textContent='Keine Verträge, keine Laufzeiten – jede Aktion ist einmalig.';
-        box.appendChild(noAboHint);
-        // Option A (Gelb): Jetzt für 4,99 € einmalig inserieren
-        const weicheWrap=document.createElement('div');
-        weicheWrap.className='inserat-pricing-weiche';
-        weicheWrap.style.cssText='margin-top:16px; padding-top:20px; border-top:1px solid rgba(0,0,0,0.08); display:flex; flex-direction:column; gap:14px;';
-        const btnA=document.createElement('button');
-        btnA.type='button'; btnA.className='btn listing-express-primary';
-        btnA.style.cssText='width:100%; min-height:58px; border-radius:18px; font-size:17px; font-weight:800; border:none; cursor:pointer; background:#FFDE00; color:#1a1a1a; box-shadow:0 4px 20px rgba(255,222,0,0.4);';
-        btnA.textContent='Jetzt für 4,99 € einmalig inserieren';
-        btnA.onclick=function(){ if(typeof haptic==='function') haptic(50); w.data.pricingOption=undefined; w.data.inseratFeeWaived=false; var o=previewOfferFromWizard(); closeWizard(true); showPublishFeeModal(o); };
-        weicheWrap.appendChild(btnA);
-        // Option B (Grüner Rahmen/Glas): 0,00 € mit Abholnummer (0,89 € pro Vorgang)
-        const btnB=document.createElement('button');
-        btnB.type='button';
-        btnB.style.cssText='width:100%; min-height:56px; border-radius:18px; font-size:15px; font-weight:800; cursor:pointer; border:2px solid #FFDE00; background:rgba(255,255,255,0.5); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); color:#1a1a1a;';
-        btnB.textContent='Oder jetzt für 0,00 € inserieren (mit Abholnummer 0,89 €/Vorgang)';
-        btnB.onclick=function(){ if(typeof haptic==='function') haptic(50); w.data.hasPickupCode=true; w.data.inseratFeeWaived=true; w.data.pricingOption='abholnummer'; var o=previewOfferFromWizard(); closeWizard(true); showPublishFeeModal(o); };
-        weicheWrap.appendChild(btnB);
-        box.appendChild(weicheWrap);
-        setWizardContent(box);
-        if(wNextBtn) wNextBtn.style.display='none';
-      } else if(!isInserierenRoute){
-        // Kochbuch / Wochenplan: Emerald Speichern + Sekundär
-        const noAboHint=document.createElement('p');
-        noAboHint.className='inserat-no-abo-hint';
-        noAboHint.style.cssText='margin-top:20px; margin-bottom:0; font-size:12px; font-weight:600; color:#94a3b8;';
-        noAboHint.textContent='Keine Verträge, keine Laufzeiten – jede Aktion ist einmalig.';
-        box.appendChild(noAboHint);
-        const saveWrap=document.createElement('div');
-        saveWrap.className='inserat-save-wrap';
-        saveWrap.style.cssText='margin-top:16px; padding-top:20px; border-top:1px solid rgba(0,0,0,0.08); display:flex; flex-direction:column; gap:12px;';
+      const actionSection=document.createElement('section');
+      actionSection.style.cssText='padding:24px; background:rgba(255,255,255,0.5); border-top:1px solid rgba(255,255,255,0.4); display:flex; flex-direction:column; gap:12px;';
+
+      if(isInserierenRoute){
+        const btn499=document.createElement('button');
+        btn499.type='button';
+        btn499.style.cssText='width:100%; padding:20px; background:#FACC15; color:#1a1a1a; font-size:16px; font-weight:800; border:none; border-radius:24px; cursor:pointer; box-shadow:0 10px 30px rgba(250,204,21,0.35); text-transform:uppercase; letter-spacing:0.02em;';
+        btn499.textContent='Jetzt für 4,99 € inserieren';
+        btn499.onclick=function(){ if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; } if(typeof haptic==='function') haptic(50); w.data.pricingOption=undefined; w.data.inseratFeeWaived=false; var o=previewOfferFromWizard(); closeWizard(true); showPublishFeeModal(o); };
+        actionSection.appendChild(btn499);
+        const btnGratis=document.createElement('button');
+        btnGratis.type='button';
+        btnGratis.style.cssText='width:100%; padding:16px; border-radius:24px; border:2px solid #10b981; background:rgba(16,185,129,0.08); color:#065f46; font-size:14px; font-weight:800; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:2px;';
+        btnGratis.innerHTML='<span style="text-transform:uppercase;">Gratis inserieren</span><span style="font-size:9px; font-weight:700; opacity:0.7; font-style:italic;">Inkl. Abholnummer (0,89 € pro Gast)</span>';
+        btnGratis.onclick=function(){ if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; } if(typeof haptic==='function') haptic(50); w.data.hasPickupCode=true; w.data.inseratFeeWaived=true; w.data.pricingOption='abholnummer'; var o=previewOfferFromWizard(); closeWizard(true); showPublishFeeModal(o); };
+        actionSection.appendChild(btnGratis);
+      } else {
         const btnSave=document.createElement('button');
-        btnSave.type='button'; btnSave.style.cssText='width:100%; min-height:56px; border-radius:18px; font-size:16px; font-weight:800; border:none; cursor:pointer; background:#FFDE00; color:#1a1a1a; box-shadow:0 4px 16px rgba(255,222,0,0.35);';
-        if(entryPoint==='cookbook') btnSave.textContent='Im Kochbuch speichern';
-        else if(entryPoint==='week') btnSave.textContent='Im Wochenplan speichern';
-        else btnSave.textContent='Speichern';
+        btnSave.type='button';
+        btnSave.style.cssText='width:100%; padding:20px; background:#10b981; color:#fff; font-size:16px; font-weight:800; border:none; border-radius:24px; cursor:pointer; box-shadow:0 10px 30px rgba(16,185,129,0.35); text-transform:uppercase;';
+        btnSave.textContent=entryPoint==='cookbook' ? 'Im Kochbuch speichern' : 'Im Wochenplan speichern';
         btnSave.onclick=function(){
           if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; }
           if(typeof haptic==='function') haptic(50);
           if(entryPoint==='cookbook'){ var id=saveToCookbookFromWizard(); if(id){ showListingSuccessOverlay(function(){ closeWizard(true); if(typeof showToast==='function') showToast('Im Kochbuch gespeichert'); if(typeof showProviderCookbook==='function') showProviderCookbook(); }); } }
           else if(entryPoint==='week'){ var id=saveToCookbookFromWizard(); if(id && w.data.day){ if(!week[w.data.day]) week[w.data.day]=[]; var c=cookbook.find(function(x){ return x.id===id; }); if(c) week[w.data.day].push({ providerId:c.providerId, cookbookId:c.id, dish:c.dish, price:c.price }); save(LS.week, week); showListingSuccessOverlay(function(){ closeWizard(true); if(typeof showToast==='function') showToast('Im Wochenplan gespeichert'); if(typeof showProviderWeek==='function') showProviderWeek(); }); } }
         };
-        saveWrap.appendChild(btnSave);
-        const linkInserieren=document.createElement('button');
-        linkInserieren.type='button'; linkInserieren.style.cssText='background:none; border:none; font-size:14px; font-weight:700; color:#1a1a1a; cursor:pointer; text-decoration:underline;';
-        linkInserieren.textContent='Stattdessen jetzt für 4,99 € inserieren';
-        linkInserieren.onclick=function(){ hapticLight(); w.ctx.entryPoint='dashboard'; saveDraft(); rebuildWizard(); };
-        saveWrap.appendChild(linkInserieren);
-        box.appendChild(saveWrap);
-        setWizardContent(box);
-        if(wNextBtn) wNextBtn.style.display='none';
-      } else {
-        setWizardContent(box);
-        setWizardNext('Weiter');
-        if(wNextBtn){
-          wNextBtn.style.display='flex';
-          if(!primaryValid){ wNextBtn.disabled=true; wNextBtn.style.opacity='0.5'; wNextBtn.onclick=function(){ var wBox=document.getElementById('wBox'); if(typeof showSoftError==='function') showSoftError('Preis fehlt noch. Bitte Gericht und Preis eingeben.', wBox); else if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); }; }
-          else { wNextBtn.disabled=false; wNextBtn.style.opacity=''; wNextBtn.onclick=function(){ if(typeof haptic==='function') haptic(10); w.step++; saveDraft(); rebuildWizard(); }; }
-        }
+        actionSection.appendChild(btnSave);
       }
+      box.appendChild(actionSection);
+
+      setWizardContent(box);
+      if(wNextBtn) wNextBtn.style.display='none';
       if(wBackBtn){ wBackBtn.innerHTML='<i data-lucide="chevron-left" style="width:18px;height:18px;"></i> Zurück'; if(typeof lucide!=='undefined'&&lucide.createIcons) lucide.createIcons(); }
       return;
     }
 
-    // Schritt 2 von 4: Allergene angeben, Vor Ort, Mehrweg, Extras (Standard aus Profil möglich)
-    if(w.step===1){
-      setWizardQuestion('Allergene & Service', 'Allergene angeben (optional), Vor Ort essen, Mehrweg, Extras.');
-      const box=document.createElement('div');
-      const saveDraft = () => { localStorage.setItem('wizard_draft', JSON.stringify(w)); };
-      const profile = normalizeProviderProfile(provider.profile || {});
-      if(w.data.wantsAllergens === undefined && (profile.wantsAllergensByDefault === true || profile.wantsAllergensByDefault === false)) w.data.wantsAllergens = !!profile.wantsAllergensByDefault;
-      if(w.data.dineInPossible === undefined && (provider.profile && provider.profile.dineInPossibleDefault !== undefined)) w.data.dineInPossible = !!provider.profile.dineInPossibleDefault;
-      if((!w.data.reuse || !w.data.reuse.enabled) && profile.reuseEnabledByDefault){ w.data.reuse = w.data.reuse || {}; w.data.reuse.enabled = true; w.data.reuse.deposit = w.data.reuse.deposit || 3; }
-
-      var hasProfileDefaults = profile.reuseEnabledByDefault !== undefined || profile.abholnummerEnabledByDefault !== undefined || profile.wantsAllergensByDefault !== undefined || (provider.profile && provider.profile.dineInPossibleDefault !== undefined);
-      if(hasProfileDefaults){
-        const skipRow = document.createElement('div');
-        skipRow.style.cssText = 'margin-bottom:20px; padding:14px 16px; background:rgba(255,222,0,0.12); border:2px solid rgba(255,222,0,0.35); border-radius:14px;';
-        const skipBtn = document.createElement('button');
-        skipBtn.type = 'button';
-        skipBtn.style.cssText = 'width:100%; min-height:48px; border:none; border-radius:12px; background:#FFDE00; color:#1a1a1a; font-size:15px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;';
-        skipBtn.innerHTML = '<i data-lucide="zap" style="width:20px;height:20px;"></i><span>Mit meinen Standardeinstellungen fortfahren <span style="text-decoration:underline; font-weight:800;">(aus dem Profil)</span></span>';
-        skipBtn.onclick = () => {
-          w.data.dineInPossible = (provider.profile && provider.profile.dineInPossibleDefault !== undefined) ? !!provider.profile.dineInPossibleDefault : true;
-          w.data.reuse = { enabled: !!profile.reuseEnabledByDefault, deposit: profile.reuseEnabledByDefault ? (3) : 0 };
-          w.data.wantsAllergens = !!profile.wantsAllergensByDefault;
-          if(!w.data.wantsAllergens) w.data.allergens = [];
-          w.step = 2;
-          saveDraft();
-          rebuildWizard();
-        };
-        skipRow.appendChild(skipBtn);
-        box.appendChild(skipRow);
-      }
-
-      // 1. Vor Ort – Toggle Ja/Nein, in Profil hinterlegen
-      const rowDine = document.createElement('div');
-      rowDine.style.cssText = 'display:flex; align-items:center; justify-content:space-between; padding:14px 16px; min-height:44px; background:#f8f9fa; border-radius:12px; margin-bottom:12px;';
-      rowDine.innerHTML = '<div style="font-weight:600;display:flex;align-items:center;gap:8px"><span style="font-size:18px;">🍴</span> Kann man bei dir vor Ort essen?</div>';
-      const togDine = document.createElement('button');
-      togDine.type='button';
-      togDine.style.cssText = `width:44px; height:24px; border-radius:12px; background:${w.data.dineInPossible?'#FFDE00':'#e5e7eb'}; position:relative; border:none; transition:0.2s;`;
-      togDine.innerHTML = `<div style="width:20px; height:20px; background:#fff; border-radius:50%; position:absolute; top:2px; left:${w.data.dineInPossible?'22px':'2px'}; transition:0.2s; box-shadow:0 1px 2px rgba(0,0,0,0.2);"></div>`;
-      togDine.onclick = ()=>{ w.data.dineInPossible=!w.data.dineInPossible; if(provider.profile) provider.profile.dineInPossibleDefault=w.data.dineInPossible; save(LS.provider, provider); saveDraft(); rebuildWizard(); };
-      rowDine.appendChild(togDine);
-      box.appendChild(rowDine);
-
-      // 2. Mehrweg – Toggle, dann Pills 3€ / 5€ / Sonstiges (Eingabe mit Komma)
-      const rowReuse = document.createElement('div');
-      rowReuse.style.cssText = 'display:flex; align-items:center; justify-content:space-between; padding:14px 16px; min-height:44px; background:#f8f9fa; border-radius:12px; margin-bottom:12px;';
-      rowReuse.innerHTML = '<div style="font-weight:600;display:flex;align-items:center;gap:8px"><span style="font-size:18px;">🔄</span> Bietest du Mehrweg an?</div>';
-      if(!w.data.reuse) w.data.reuse={enabled:false, deposit:0};
-      const togReuse = document.createElement('button');
-      togReuse.type='button';
-      togReuse.style.cssText = `width:44px; height:24px; border-radius:12px; background:${w.data.reuse.enabled?'#FFDE00':'#e5e7eb'}; position:relative; border:none; transition:0.2s;`;
-      togReuse.innerHTML = `<div style="width:20px; height:20px; background:#fff; border-radius:50%; position:absolute; top:2px; left:${w.data.reuse.enabled?'22px':'2px'}; transition:0.2s; box-shadow:0 1px 2px rgba(0,0,0,0.2);"></div>`;
-      togReuse.onclick = ()=>{ w.data.reuse.enabled=!w.data.reuse.enabled; if(w.data.reuse.enabled&&!w.data.reuse.deposit) w.data.reuse.deposit=3; saveDraft(); rebuildWizard(); };
-      rowReuse.appendChild(togReuse);
-      box.appendChild(rowReuse);
-      if(w.data.reuse.enabled){
-        const mehLabel=document.createElement('div'); mehLabel.className='hint'; mehLabel.textContent='Pfand in €'; mehLabel.style.marginBottom='8px'; box.appendChild(mehLabel);
-        const mehRow=document.createElement('div'); mehRow.style.cssText='display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px;';
-        [3,5].forEach(amt=>{
-          const sel=w.data.reuse.deposit===amt;
-          const b=document.createElement('button'); b.type='button'; b.className='ans'+(sel?' on':''); b.style.minHeight='44px'; b.textContent=amt+',00 €';
-          b.onclick=()=>{ w.data.reuse.deposit=amt; saveDraft(); rebuildWizard(); };
-          mehRow.appendChild(b);
-        });
-        const bSonst=document.createElement('button'); bSonst.type='button'; bSonst.className='ans'+(w.data.reuse.deposit&&w.data.reuse.deposit!==3&&w.data.reuse.deposit!==5?' on':'');
-        bSonst.style.cssText='min-height:44px; display:flex; align-items:center; gap:8px;';
-        const inpSonst=document.createElement('input'); inpSonst.type='text'; inpSonst.inputmode='decimal'; inpSonst.placeholder='z.B. 2,50'; inpSonst.style.cssText='width:70px; padding:8px 10px; border-radius:8px; border:2px solid #e5e7eb; font-size:14px; font-weight:600;';
-        if(w.data.reuse.deposit&&w.data.reuse.deposit!==3&&w.data.reuse.deposit!==5) inpSonst.value=Number(w.data.reuse.deposit).toFixed(2).replace('.',',');
-        inpSonst.oninput=()=>{ const v=parseFloat((inpSonst.value||'0').replace(',','.'))||0; w.data.reuse.deposit=v; saveDraft(); };
-        inpSonst.onblur=()=>{ if(w.data.reuse.deposit>0) inpSonst.value=Number(w.data.reuse.deposit).toFixed(2).replace('.',','); rebuildWizard(); };
-        bSonst.appendChild(document.createTextNode('Sonstiges')); bSonst.appendChild(inpSonst);
-        bSonst.onclick=(e)=>{ if(e.target===inpSonst) return; if(!w.data.reuse.deposit||w.data.reuse.deposit===3||w.data.reuse.deposit===5) w.data.reuse.deposit=2; saveDraft(); rebuildWizard(); };
-        mehRow.appendChild(bSonst);
-        box.appendChild(mehRow);
-      }
-
-      // 3. Allergene – Toggle, dann Pills (klein + Emoji). Vorauswahl bei bekanntem Gericht.
-      const suggestedAllergens = typeof getAllergenSuggestionsForDish==='function' ? getAllergenSuggestionsForDish(w.data.dish) : [];
-      if(suggestedAllergens.length && (!w.data.allergens || !w.data.allergens.length)){
-        w.data.allergens = suggestedAllergens.slice();
-        w.data.wantsAllergens = true;
-      }
-      const labelAll=document.createElement('div'); labelAll.className='hint'; labelAll.textContent='Allergene angeben?'; labelAll.style.marginTop='8px'; box.appendChild(labelAll);
-      const allRow=document.createElement('div'); allRow.className='answers'; allRow.style.marginBottom='12px';
-      const btnAllYes=document.createElement('button'); btnAllYes.type='button'; btnAllYes.className='ans'+(w.data.wantsAllergens?' on':''); btnAllYes.textContent='Ja';
-      btnAllYes.onclick=()=>{ w.data.wantsAllergens=true; saveDraft(); rebuildWizard(); };
-      const btnAllNo=document.createElement('button'); btnAllNo.type='button'; btnAllNo.className='ans'+(!w.data.wantsAllergens?' on':''); btnAllNo.textContent='Nein';
-      btnAllNo.onclick=()=>{ w.data.wantsAllergens=false; w.data.allergens=[]; saveDraft(); rebuildWizard(); };
-      allRow.appendChild(btnAllYes); allRow.appendChild(btnAllNo);
-      box.appendChild(allRow);
-      if(w.data.wantsAllergens){
-        const allList=document.createElement('div');
-        allList.innerHTML='<div class="hint" style="margin-bottom:6px">Wähle Allergene (antippen):</div>';
-        const pills=document.createElement('div'); pills.className='answers'; pills.style.flexWrap='wrap'; pills.style.gap='6px';
-        ALLERGENS_14.forEach(a=>{
-          const code=a.short;
-          const active=(w.data.allergens||[]).includes(code);
-          const emo = (typeof ALLERGEN_EMOJI!=='undefined' && ALLERGEN_EMOJI[code]) ? ALLERGEN_EMOJI[code] : '•';
-          const p=document.createElement('button'); p.type='button'; p.className='ans'+(active?' on':''); p.textContent=emo+' '+a.name; p.style.minHeight='32px'; p.style.padding='6px 12px'; p.style.fontSize='12px';
-          p.onclick=()=>{ if(!w.data.allergens) w.data.allergens=[]; if(active) w.data.allergens=w.data.allergens.filter(x=>x!==code); else w.data.allergens.push(code); saveDraft(); rebuildWizard(); };
-          pills.appendChild(p);
-        });
-        allList.appendChild(pills);
-        const verantHint=document.createElement('div'); verantHint.style.cssText='font-size:12px; color:#94a3b8; margin-top:8px;'; verantHint.textContent='Du bist für die Angaben verantwortlich.';
-        allList.appendChild(verantHint);
-        box.appendChild(allList);
-      }
-
-      // 4. Extras – Pills inkl. Sonstiges, bei Klick App-Feld mit Preis (Komma)
-      if(!Array.isArray(w.data.extras)) w.data.extras=[];
-      const extLabel=document.createElement('div'); extLabel.className='hint'; extLabel.style.marginTop='24px'; extLabel.textContent='Extras (Aufpreis)';
-      box.appendChild(extLabel);
-      const extRow=document.createElement('div'); extRow.style.cssText='display:flex; flex-direction:column; gap:10px; margin-bottom:10px;';
-      
-      const extraOptions = [
-        { name: 'Beilagensalat', emoji: '🥗' },
-        { name: 'Extra Sauce', emoji: '🍯' },
-        { name: 'Brot', emoji: '🥖' },
-        { name: 'Ketchup', emoji: '🍅' },
-        { name: 'Mayo', emoji: '🥚' },
-        { name: 'Sonstiges', emoji: '✨' }
-      ];
-
-      const otherExtraNames = ['Beilagensalat','Extra Sauce','Brot','Ketchup','Mayo'];
-      const findSonstigesExtra = ()=> w.data.extras.find(e=>e.name==='Sonstiges' || !otherExtraNames.includes(e.name));
-      extraOptions.forEach(opt=>{
-        const name = opt.name;
-        const extra = name === 'Sonstiges' ? findSonstigesExtra() : w.data.extras.find(e=>e.name===name);
-        const hasPrice=!!extra && Number(extra.price||0)>0;
-        
-        const pillWrap=document.createElement('div'); 
-        pillWrap.style.cssText=`display:flex; align-items:center; gap:10px; background:${hasPrice?'#fff':'#f9fafb'}; border-radius:12px; padding:6px 12px; border:1px solid ${hasPrice?'#FFDE00':'#f1f3f5'}; transition:all 0.2s;`;
-
-        const b=document.createElement('button'); 
-        b.type='button'; 
-        b.style.cssText=`flex:1; display:flex; align-items:center; gap:8px; background:none; border:none; padding:0; cursor:pointer; font-family:inherit; text-align:left;`;
-        
-        const emojiSpan = document.createElement('span');
-        emojiSpan.style.fontSize = '16px';
-        emojiSpan.style.opacity = hasPrice ? '1' : '0.6';
-        emojiSpan.textContent = opt.emoji;
-        
-        const textSpan = document.createElement('span');
-        textSpan.style.cssText = `font-size:13px; font-weight:600; color:${hasPrice?'#1a1a1a':'#64748b'};`;
-        const displayName = (extra && name==='Sonstiges' && extra.name && extra.name!=='Sonstiges') ? extra.name : name;
-        textSpan.textContent = extra && extra.price ? displayName+' +'+Number(extra.price).toFixed(2).replace('.',',')+' €' : displayName;
-        
-        b.appendChild(emojiSpan);
-        b.appendChild(textSpan);
-        
-        b.onclick=()=>{
-          const idx = name === 'Sonstiges' ? w.data.extras.findIndex(e=>e.name==='Sonstiges'||!otherExtraNames.includes(e.name)) : w.data.extras.findIndex(e=>e.name===name);
-          if(idx>=0){ w.data.extras.splice(idx,1); rebuildWizard(); return; }
-          w.data.extras.push({name, price:0});
-          rebuildWizard();
-        };
-        pillWrap.appendChild(b);
-        
-        const ex = name === 'Sonstiges' ? findSonstigesExtra() : w.data.extras.find(e=>e.name===name);
-        if(ex){
-          if(name==='Sonstiges'){
-            const nameGroup = document.createElement('div');
-            nameGroup.style.cssText = 'display:flex; align-items:center; gap:6px; flex:1; min-width:0;';
-            const nameInp = document.createElement('input');
-            nameInp.type = 'text';
-            nameInp.placeholder = 'z.B. Extra Käse';
-            nameInp.style.cssText = 'flex:1; min-width:80px; height:32px; padding:0 10px; border-radius:8px; border:2px solid #e5e7eb; font-size:13px; font-weight:600; outline:none; background:#fff;';
-            nameInp.value = (ex.name && ex.name!=='Sonstiges') ? ex.name : '';
-            nameInp.oninput = ()=>{ ex.name = nameInp.value.trim() || 'Sonstiges'; saveDraft(); textSpan.textContent = ex.name + (ex.price ? ' +'+Number(ex.price).toFixed(2).replace('.',',')+' €' : ''); };
-            nameInp.onclick = (e)=> e.stopPropagation();
-            nameGroup.appendChild(nameInp);
-            pillWrap.appendChild(nameGroup);
-          }
-          const inpGroup = document.createElement('div');
-          inpGroup.style.cssText = 'display:flex; align-items:center; gap:4px;';
-          
-          const inp=document.createElement('input'); 
-          inp.type='text'; inp.inputmode='decimal'; inp.placeholder='0,00'; 
-          inp.style.cssText='width:56px; height:32px; padding:0 6px; border-radius:8px; border:1px solid #e5e7eb; font-size:12px; font-weight:700; text-align:right; outline:none; background:#fff;';
-          inp.value=ex.price>0?Number(ex.price).toFixed(2).replace('.',','):'';
-          
-          inp.oninput=()=>{ 
-            ex.price=parseFloat((inp.value||'0').replace(',','.'))||0; 
-            saveDraft(); 
-            if(ex.price > 0) {
-              pillWrap.style.background = '#fff';
-              pillWrap.style.borderColor = '#FFDE00';
-              textSpan.style.color = '#1a1a1a';
-              emojiSpan.style.opacity = '1';
-            } else {
-              pillWrap.style.background = '#f9fafb';
-              pillWrap.style.borderColor = '#f1f3f5';
-              textSpan.style.color = '#64748b';
-              emojiSpan.style.opacity = '0.6';
-            }
-            const dn = (name==='Sonstiges' && ex.name && ex.name!=='Sonstiges') ? ex.name : name;
-            textSpan.textContent = ex.price ? dn+' +'+Number(ex.price).toFixed(2).replace('.',',')+' €' : dn;
-          };
-          inp.onblur=()=>{ if(ex.price>0) inp.value=Number(ex.price).toFixed(2).replace('.',','); rebuildWizard(); };
-          inp.onclick = (e)=> e.stopPropagation();
-          
-          const euroLabel = document.createElement('span');
-          euroLabel.style.cssText = 'font-size:12px; font-weight:800; color:#64748b;';
-          euroLabel.textContent = '€';
-          
-          inpGroup.appendChild(inp);
-          inpGroup.appendChild(euroLabel);
-          pillWrap.appendChild(inpGroup);
-        }
-        extRow.appendChild(pillWrap);
-      });
-      box.appendChild(extRow);
-
-      setWizardContent(box);
-      setWizardNext('Weiter');
-      if(typeof lucide!=='undefined') lucide.createIcons();
-      return;
-    }
-
-    // Highend Schritt 2: Vorschau (Discovery-Card) – nur Anzeige, dann Weiter zu Planung
-    if(w.step===2){
-      setWizardQuestion('So wirkt dein Inserat', 'Genau so sehen es deine Gäste.');
-      const box=document.createElement('div');
-      attachListingPreview(box);
-      setWizardContent(box);
-      setWizardNext('Weiter');
-      if(wNextBtn){ wNextBtn.style.display='flex'; wNextBtn.onclick=function(){ if(typeof haptic==='function') haptic(10); w.step++; rebuildWizard(); }; }
-      if(typeof lucide!=='undefined') lucide.createIcons();
-      return;
-    }
-
-    // Highend Schritt 3: PLANUNG – 3 Kacheln; Money vs Save je nach entryPoint (Inseratsflow Money / Save)
-    if(w.step===3){
-      var entryPoint = (w.ctx && w.ctx.entryPoint) || 'dashboard';
-      var isInserierenRoute = (entryPoint === 'dashboard');
-      var wizEl = document.getElementById('wizard');
-      if(wizEl){
-        if(isInserierenRoute){ wizEl.setAttribute('data-screen','inseratsflow-money'); wizEl.setAttribute('aria-label','Inseratsflow Money'); }
-        else { wizEl.setAttribute('data-screen','inseratsflow-save'); wizEl.setAttribute('aria-label','Inseratsflow Save'); }
-      }
-      setWizardQuestion('Was möchtest du tun?', 'Inserieren, speichern oder planen.');
-      const box=document.createElement('div');
-      attachListingPreview(box);
-      const grid = document.createElement('div');
-      grid.style.cssText = 'display:grid; grid-template-columns:1fr; gap:16px; margin-top:20px;';
-
-      var isAbholnummerPath = w.data.pricingOption === 'abholnummer' || w.data.inseratFeeWaived;
-      // Tile 1: Jetzt für 4,99 € inserieren (Money) ODER primär Kochbuch/Wochenplan (Save)
-      var tilePub = document.createElement('button');
-      tilePub.type = 'button';
-      tilePub.className = 'btn';
-      if(isInserierenRoute && !isAbholnummerPath){
-        tilePub.style.cssText = 'display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; border-radius:20px; background:#FFDE00; color:#1a1a1a; border:none; box-shadow:0 8px 20px rgba(255,222,0,0.35); transition:transform 0.1s; cursor:pointer;';
-        tilePub.innerHTML = '<i data-lucide="rocket" style="width:32px; height:32px; margin-bottom:12px;"></i><div style="font-size:18px; font-weight:900;">Jetzt für 4,99 € inserieren</div><div style="font-size:13px; margin-top:4px; opacity:0.9;">Einmalig heute</div>';
-        tilePub.onclick = function(){ if(typeof haptic==='function') haptic(50); w.step++; rebuildWizard(); };
-        grid.appendChild(tilePub);
-      } else if(isAbholnummerPath){
-        tilePub.style.cssText = 'display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; border-radius:20px; background:rgba(255,222,0,0.2); color:#1a1a1a; border:2px solid #FFDE00; box-shadow:0 4px 16px rgba(255,222,0,0.25); transition:transform 0.1s; cursor:pointer;';
-        tilePub.innerHTML = '<i data-lucide="receipt" style="width:32px; height:32px; margin-bottom:12px;"></i><div style="font-size:18px; font-weight:900;">Mit Abholnummer live schalten</div><div style="font-size:13px; margin-top:4px; opacity:0.9;">0,00 € Inserat · 0,89 € pro Vorgang</div>';
-        tilePub.onclick = function(){ var o = previewOfferFromWizard(); closeWizard(true); showPublishFeeModal(o); };
-        grid.appendChild(tilePub);
-        var switchLink = document.createElement('button');
-        switchLink.type = 'button';
-        switchLink.style.cssText = 'background:none; border:none; font-size:13px; font-weight:600; color:#64748b; cursor:pointer; text-decoration:underline; padding:8px 0; margin-top:-8px;';
-        switchLink.textContent = 'Stattdessen mit 4,99 € inserieren (ohne Abholnummer)';
-        switchLink.onclick = function(){ w.data.pricingOption = undefined; w.data.inseratFeeWaived = false; w.data.hasPickupCode = false; rebuildWizard(); };
-        grid.appendChild(switchLink);
-      }
-
-      // Save-Route: Primär „Im Kochbuch speichern“ oder „In den Wochenplan“
-      if(entryPoint==='cookbook'){
-        var tileCookFirst = document.createElement('button');
-        tileCookFirst.type = 'button';
-        tileCookFirst.className = 'btn primary';
-        tileCookFirst.style.cssText = 'display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; border-radius:20px; background:#FFDE00; color:#1a1a1a; border:none; box-shadow:0 8px 20px rgba(255,222,0,0.35); cursor:pointer;';
-        tileCookFirst.innerHTML = '<i data-lucide="book-open" style="width:32px; height:32px; margin-bottom:12px;"></i><div style="font-size:18px; font-weight:900;">Im Kochbuch speichern</div>';
-        tileCookFirst.onclick = function(){ try { saveToCookbookFromWizard(); closeWizard(true); if(typeof showToast==='function') showToast('Im Kochbuch gespeichert'); setTimeout(function(){ if(typeof showProviderCookbook==='function') showProviderCookbook(); }, 80); } catch(e) { if(typeof showToast==='function') showToast('Fehler beim Speichern'); } };
-        grid.appendChild(tileCookFirst);
-      } else if(entryPoint==='week'){
-        var tileWeekFirst = document.createElement('button');
-        tileWeekFirst.type = 'button';
-        tileWeekFirst.className = 'btn primary';
-        tileWeekFirst.style.cssText = 'display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; border-radius:20px; background:#FFDE00; color:#1a1a1a; border:none; box-shadow:0 8px 20px rgba(255,222,0,0.35); cursor:pointer;';
-        tileWeekFirst.innerHTML = '<i data-lucide="calendar" style="width:32px; height:32px; margin-bottom:12px;"></i><div style="font-size:18px; font-weight:900;">Wochenplan</div><div style="font-size:13px; margin-top:4px; opacity:0.9;">Dann in den Planer</div>';
-        tileWeekFirst.onclick = function(){ try { saveToCookbookFromWizard(); closeWizard(true); if(typeof showToast==='function') showToast('Gespeichert – öffne Wochenplan'); setTimeout(function(){ if(typeof showProviderWeek==='function') showProviderWeek(); }, 80); } catch(e) { if(typeof showToast==='function') showToast('Fehler beim Speichern'); } };
-        grid.appendChild(tileWeekFirst);
-      }
-
-      // Tile: Ins Kochbuch (Sekundär bei Money oder bei week)
-      const tileCook = document.createElement('button');
-      tileCook.type = 'button';
-      tileCook.className = 'btn secondary';
-      tileCook.style.cssText = 'display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px; border-radius:20px; border:2px solid #e5e7eb; background:#fff; color:#333; cursor:pointer;';
-      tileCook.innerHTML = '<i data-lucide="book-open" style="width:28px; height:28px; margin-bottom:8px; color:#666;"></i><div style="font-size:16px; font-weight:700;">Ins Kochbuch speichern</div>';
-      tileCook.onclick = function(){ try { saveToCookbookFromWizard(); closeWizard(true); if(typeof showToast==='function') showToast('Im Kochbuch gespeichert'); setTimeout(function(){ if(typeof showProviderCookbook==='function') showProviderCookbook(); }, 80); } catch(e) { if(typeof showToast==='function') showToast('Fehler beim Speichern'); } };
-      if(entryPoint!=='cookbook') grid.appendChild(tileCook);
-
-      // Tile: In den Wochenplan (Sekundär bei Money oder bei cookbook)
-      const tileWeek = document.createElement('button');
-      tileWeek.type = 'button';
-      tileWeek.className = 'btn secondary';
-      tileWeek.style.cssText = 'display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px; border-radius:20px; border:2px solid #e5e7eb; background:#fff; color:#333; cursor:pointer;';
-      tileWeek.innerHTML = '<i data-lucide="calendar" style="width:28px; height:28px; margin-bottom:8px; color:#666;"></i><div style="font-size:16px; font-weight:700;">Wochenplan</div><div style="font-size:12px; color:#999; margin-top:2px;">Dann in den Planer</div>';
-      tileWeek.onclick = function(){ try { saveToCookbookFromWizard(); closeWizard(true); if(typeof showToast==='function') showToast('Gespeichert – öffne Wochenplan'); setTimeout(function(){ if(typeof showProviderWeek==='function') showProviderWeek(); }, 80); } catch(e) { if(typeof showToast==='function') showToast('Fehler beim Speichern'); } };
-      if(entryPoint!=='week') grid.appendChild(tileWeek);
-
-      // Bei Save: Link „Jetzt für 4,99 € inserieren“ (wechselt zu Money)
-      if(!isInserierenRoute){
-        var inserierenLink = document.createElement('button');
-        inserierenLink.type = 'button';
-        inserierenLink.style.cssText = 'background:none; border:none; font-size:14px; font-weight:700; color:#1a1a1a; cursor:pointer; text-decoration:underline; padding:12px 0; margin-top:8px;';
-        inserierenLink.textContent = 'Stattdessen jetzt für 4,99 € inserieren';
-        inserierenLink.onclick = function(){ w.ctx.entryPoint = 'dashboard'; saveDraft(); rebuildWizard(); };
-        grid.appendChild(inserierenLink);
-      }
-
-      box.appendChild(grid);
-      setWizardContent(box);
-      if(wNextBtn) wNextBtn.style.display = 'none';
-      if(typeof lucide!=='undefined') lucide.createIcons();
-      return;
-    }
-
-    // Highend Schritt 4: Abholnummer-Upsell (nur nach „Jetzt für 4,99 € inserieren“ – Money-Pfad)
-    if(w.step===4){
-      const profile = normalizeProviderProfile(provider.profile || {});
-      const abholIsProfileDefault = !!profile.abholnummerEnabledByDefault;
-
-      if(abholIsProfileDefault){
-        // Kurze Abfrage: Anbieter hat Abholnummer schon als Standard – trotzdem kurz bestätigen
-        setWizardQuestion('Abholnummer', 'Wie in deinem Profil – diesmal dazubuchen?');
-        const box = document.createElement('div');
-        const BRAND = '#FFDE00';
-        const p = document.createElement('p');
-        p.style.cssText = 'font-size:14px; color:#64748b; margin:0 0 16px;';
-        p.textContent = '0,89 € inkl. Bankgebühren. Du kannst jederzeit „Diesmal ohne“ wählen.';
-        box.appendChild(p);
-        const btnRow = document.createElement('div');
-        btnRow.style.cssText = 'display:flex; flex-direction:column; gap:10px;';
-        const btnYes = document.createElement('button');
-        btnYes.type = 'button';
-        btnYes.className = 'btn primary';
-        btnYes.style.cssText = 'min-height:48px; border-radius:14px; font-size:15px; font-weight:700; background:' + BRAND + '; color:#1a1a1a; border:none; cursor:pointer;';
-        btnYes.textContent = 'Ja, Abholnummer dazubuchen (0,89 €)';
-        btnYes.onclick = () => {
-          w.data.hasPickupCode = true;
-          const o = previewOfferFromWizard();
-          closeWizard(true);
-          showPublishFeeModal(o);
-        };
-        const btnNo = document.createElement('button');
-        btnNo.type = 'button';
-        btnNo.className = 'btn secondary';
-        btnNo.style.cssText = 'min-height:48px; border-radius:14px; font-size:14px; font-weight:600; border:2px solid #e5e7eb; background:#fff; color:#64748b; cursor:pointer;';
-        btnNo.textContent = 'Diesmal ohne (nur 4,99 €)';
-        btnNo.onclick = () => {
-          w.data.hasPickupCode = false;
-          const o = previewOfferFromWizard();
-          closeWizard(true);
-          showPublishFeeModal(o);
-        };
-        btnRow.appendChild(btnYes);
-        btnRow.appendChild(btnNo);
-        box.appendChild(btnRow);
-        setWizardContent(box);
-        wNextBtn.style.display = 'none';
-        return;
-      }
-
-      // Voll-Upsell: Anbieter hat Abholnummer NICHT als Standard – Highend Step 4
-      setWizardQuestion('Abholnummer dazubuchen?', '0,89 € pro Vorgang inkl. aller Bankgebühren');
-      const box=document.createElement('div');
-      const BRAND = '#FFDE00';
-
-      // Bild: Abholnummer Kundenansicht als Beispiel
-      const emoImg = document.createElement('div');
-      emoImg.style.cssText = 'width:100%; min-height:140px; background:linear-gradient(135deg, rgba(255,215,0,0.12) 0%, rgba(255,215,0,0.04) 100%); border-radius:16px; margin-bottom:20px; border:1px solid rgba(255,215,0,0.3); display:flex; align-items:center; justify-content:center; padding:24px;';
-      emoImg.innerHTML = '<div style="text-align:center;"><div style="font-size:40px; font-weight:900; font-family:monospace; letter-spacing:6px; color:#1a1a1a;">#A3</div><div style="font-size:11px; font-weight:700; color:#64748b; margin-top:10px; text-transform:uppercase;">Beispiel: So sieht dein Gast die Abholnummer</div></div>';
-      box.appendChild(emoImg);
-
-      const benefits = document.createElement('div');
-      benefits.style.cssText = 'display:flex; flex-direction:column; gap:12px; margin-bottom:20px;';
-      ['Kein Stress: Klare Zuordnung statt lauter Zurufe.', 'Höherer Durchsatz: Kürzere Wartezeiten an der Theke.', 'Zufriedene Kunden: Schneller „Fast-Pass“-Service.'].forEach(t => {
-        const row = document.createElement('div');
-        row.style.cssText = 'display:flex; align-items:flex-start; gap:10px; font-size:14px; color:#1a1a1a; font-weight:500; line-height:1.4;';
-        row.innerHTML = '<span style="color:#1a1a1a; font-weight:700;">✅</span><span>' + t + '</span>';
-        benefits.appendChild(row);
-      });
-      box.appendChild(benefits);
-
-      // Option: Abholnummer für 0,89 € hinzufügen
-      const btnYes = document.createElement('button');
-      btnYes.className = 'btn-primary';
-      btnYes.style.cssText = 'width:100%; min-height:56px; margin-bottom:12px; background:' + BRAND + '; box-shadow:0 4px 16px rgba(255,222,0,0.35); font-size:16px; font-weight:700; border-radius:16px; border:none; color:#1a1a1a; display:flex; align-items:center; justify-content:center; gap:8px;';
-      btnYes.innerHTML = '<span>Abholnummer für 0,89 € hinzufügen</span>';
-      btnYes.onclick = () => {
-        w.data.hasPickupCode = true;
-        const o = previewOfferFromWizard();
-        closeWizard(true);
-        showPublishFeeModal(o);
-      };
-
-      const btnNo = document.createElement('button');
-      btnNo.className = 'btn ghost';
-      btnNo.style.cssText = 'width:100%; min-height:48px; font-size:14px; color:#64748b; font-weight:600; border-radius:12px; border:2px solid #e5e7eb; background:#fff;';
-      btnNo.textContent = 'Ohne Abholnummer fortfahren (nur 4,99 €)';
-      btnNo.onclick = () => {
-        w.data.hasPickupCode = false;
-        const o = previewOfferFromWizard();
-        closeWizard(true);
-        showPublishFeeModal(o);
-      };
-
-      box.appendChild(btnYes);
-      box.appendChild(btnNo);
-
-      setWizardContent(box);
-      wNextBtn.style.display = 'none';
-      if(typeof lucide!=='undefined') lucide.createIcons();
-      return;
-    }
   }
 
   function previewOfferFromWizard(){

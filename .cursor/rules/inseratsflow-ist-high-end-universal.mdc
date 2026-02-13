@@ -1,27 +1,28 @@
 ---
-description: Der Inseratsflow ist der High-End Universal-Flow (Salatsoße) – verbindliche Definition.
+description: DAS IST DER INSERATSFLOW – einzige verbindliche Definition. Alle anderen Inseratsflow-/Slim-Regeln sind hiermit überholt.
 alwaysApply: true
 ---
 
-# DAS IST JETZT DER INSERATSFLOW
+# DAS IST DER INSERATSFLOW
 
-Der **Inseratsflow** ist ausschließlich der **High-End Universal-Flow** („Salatsoße“). Es gibt keinen anderen Inseratsflow.
+**Dies ist die einzige verbindliche Definition des Inseratsflows.** Es gibt keinen anderen Flow und keine weiteren Schritte (1–4). Alle Regeln oder Docs, die von mehreren Schritten, „Slim-Flow“ oder alter Reihenfolge sprechen, sind durch diese Regel ersetzt.
+
+Der **Inseratsflow** ist ausschließlich der **High-End Universal-Flow** (Single-Page, eine Maske).
 
 ## Verbindlich
 
 - **Eine universelle Eingabemaske** in allen Modi (Dashboard/Kochbuch/Wochenplan): gleicher Aufbau, gleiche Reihenfolge.
-- **Reihenfolge:** Gerichtsname → Kategorie (große Kacheln, horizontal scrollbar) → Beschreibung (optional) → Preis → Allergene (collapsible) → Foto (eine Kachel) → 4 Smart-Icons (🕒 🍴 🔄 🧾).
-- **Pricing-Weiche** (nur Modus „Jetzt Inserieren“): **Option A** Gelb „Jetzt für 4,99 € einmalig inserieren“ | **Option B** Grün „Jetzt für 0,00 € inserieren mit Abholnummer (0,89 € pro Vorgang)“.
+- **Reihenfolge (Master):** Foto (1) → Gerichtsname (2) → Beschreibung optional (3) → Kategorie-Pills (4) → Preis + Verdienst 30x (5) → Logistik-Bar 🍴🧾🔄 + 🕒 (6) → Allergene collapsible (7) → Extras-Pills mit Aufpreis (8) → Action-Buttons (9).
+- **Pricing-Weiche** (nur Modus „Jetzt Inserieren“): **Option A** Gelb „Jetzt für 4,99 € inserieren“ | **Option B** Emerald-Rahmen „Gratis inserieren“ + „Inkl. Abholnummer (0,89 € pro Gast)“.
 - **Kochbuch/Wochenplan:** Nur Emerald „Speichern“, keine Weiche.
 - **Terminologie:** Nur **Abholnummer** – nie „Ticket“ oder „Code“.
 - **Design:** Glassmorphism, Emerald #10b981, Gelb #FACC15 für den 4,99-€-CTA.
 
 ## Referenz
 
-- **Spezifikation:** `docs/INSERATSFLOW_HIGHEND_UNIVERSAL.md`
-- **Umsetzung:** `app/index.html` – `buildListingStep()` Step 0 = Universal-Maske inkl. Weiche.
+- **Umsetzung:** `app/index.html` – `buildListingStep()`: **nur ein Schritt** (Single-Page). Keine Schritte 1–4 mehr; alles in einer Maske (Master-Reihenfolge 1–9).
 
 ## Bei Änderungen
 
-- Keine Rückkehr zu mehreren getrennten „Flows“ oder alter Weiche-Logik.
+- Keine Rückkehr zu mehreren Schritten oder alter Weiche-Logik.
 - Neue Features im Inseratsflow müssen die universelle Maske und die Pricing-Weiche (A/B bzw. Speichern) respektieren.

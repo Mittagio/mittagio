@@ -59,4 +59,4 @@ Cursor soll künftig nur noch diese 6 Dateien als Kontext nutzen. Alle weiteren 
 
 ---
 
-*Technische Details und Checklisten: `.cursor/rules/*.mdc` (option1-layout-scope, layout-kunde-anbieter, layout-fix-anbieter-nur-wrapper, silent-defaults, inseratsflow-ist-high-end-universal, app-high-end-keine-tabellen).*
+*Technische Details: `.cursor/rules/*.mdc`. **Inseratsflow (einzige verbindliche Quelle):** `inseratsflow-ist-high-end-universal.mdc` – DAS IST DER INSERATSFLOW. Weitere: option1-layout-scope, layout-kunde-anbieter, layout-fix-anbieter-nur-wrapper, silent-defaults, app-high-end-keine-tabellen.*

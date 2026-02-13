@@ -6,6 +6,8 @@
 
 ## 1. Inseratsflow (High-End Universal – „Salatsoße“)
 
+**Verbindliche Definition:** `.cursor/rules/inseratsflow-ist-high-end-universal.mdc` – **DAS IST DER INSERATSFLOW.** Single-Page, eine Maske, keine Schritte 1–4.
+
 Der Inseratsflow ist **eine** universelle Eingabemaske in allen Modi (Dashboard, Kochbuch, Wochenplan). Es gibt keinen anderen Inseratsflow.
 
 ### Visuelles Fundament
@@ -45,7 +47,7 @@ Der Inseratsflow ist **eine** universelle Eingabemaske in allen Modi (Dashboard,
 
 ### Technik
 
-- Eine universelle Maske (Step 0 in `buildListingStep()`). Option A und B führen direkt in `showPublishFeeModal(previewOfferFromWizard())`.
+- Eine Maske, **nur ein Schritt** in `buildListingStep()`. Option A und B führen direkt in `showPublishFeeModal(previewOfferFromWizard())`.
 - Verdienst-Vorschau: `box.querySelector('.inserat-umsatz-vorschau')` wird bei `inputPrice.oninput` live aktualisiert (30 × Preis).
 
 ---

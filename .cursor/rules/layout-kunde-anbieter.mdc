@@ -20,8 +20,8 @@ alwaysApply: true
 ## Anbieterseite (Provider Mode)
 
 - Dashboard (Mein Betrieb), Abholungen, Wochenplan, Kochbuch, Inseratsflow/Wizard.
-- Design-Vorgaben: Helles, aufgeräumtes Layout (kein dunkles Theme). Inseratsflow wie in `docs/INSERATSFLOW_KONZEPT.md`.
-- Referenzdokumente: `docs/INSERATSFLOW_KONZEPT.md` (Fixkosten 4,99 €, Verdienst-Vorschau, CTA „Jetzt für 4,99 € inserieren“).
+- Design-Vorgaben: Helles, aufgeräumtes Layout (kein dunkles Theme). Inseratsflow: **`.cursor/rules/inseratsflow-ist-high-end-universal.mdc`** (Single-Page, Master-Reihenfolge, 4,99 € / Gratis mit Abholnummer).
+- Referenz: Inseratsflow = eine Maske, Pricing-Weiche 4,99 € bzw. „Gratis inserieren“ (0,89 € pro Gast).
 - **Teilen-Funktion**: Muss immer einheitlich sein. Marketing-Texte mit Emojis (🚀, 🍴, 📍, 👉) und „Boom“-Effekt (aktivierend). Immer mit Link zur Seite und Hinweis auf die Abholnummer („Schlange überspringen“). Fallback bei fehlendem Web-Share: `copyToClipboard` + Toast.
 
 ## Bei Änderungen
