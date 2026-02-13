@@ -2017,10 +2017,11 @@
     body.provider-mode [id^="v-provider-"].view{ position:relative; background: var(--provider-bg) !important; }
     body.provider-mode #v-provider-home,
     body.provider-mode #v-provider-week,
-    body.provider-mode #v-provider-cookbook,
     body.provider-mode #v-provider-pickups,
     body.provider-mode #v-provider-profile,
     body.provider-mode #v-provider-billing{ background: var(--provider-bg) !important; }
+    /* Kochbuch: eigener Hintergrund #F2F2F7 (Silicon-Valley-Style), nicht --provider-bg */
+    body.provider-mode #v-provider-cookbook{ background: #F2F2F7 !important; }
     body.provider-mode #v-provider-home > *,
     body.provider-mode #v-provider-week > *,
     body.provider-mode [id^="v-provider-"].view.active > *{ position:relative; z-index:1; }
