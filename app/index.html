@@ -1672,7 +1672,7 @@
       margin-bottom: 16px;
     }
     
-    /* Modern FAB */
+    /* Modern FAB – über Bottom-Nav (z-index 999), damit auf Dashboard/Kochbuch/Wochenplan sichtbar */
     .fab-provider {
       position: fixed;
       bottom: calc(90px + env(safe-area-inset-bottom, 0px));
@@ -1690,7 +1690,7 @@
       gap: 10px;
       font-weight: 800;
       font-size: 16px;
-      z-index: 100;
+      z-index: 1000;
       transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
     .fab-provider:active {
@@ -3566,13 +3566,13 @@
       position:relative; width:100%; box-sizing:border-box;
       overflow:hidden;
     }
-    /* Dashboard: Wrap = Scroll-Container mit sicherer Höhe, damit KPIs/Angebote/Wochenplan sichtbar sind */
+    /* Dashboard: Scroll nur im Wrap (Flex-Trick: height:0 + flex:1 = scrollbarer Bereich), touch-scroll */
     #v-provider-home .dashboard-floating-wrap{
       display:flex; flex-direction:column; gap:20px;
-      flex:1 1 0; min-height:0;
-      min-height:60vh; /* Sicherheit: Inhalt bleibt sichtbar auch wenn Flex-Berechnung fehlschlägt */
-      height:100%;
-      overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch;
+      flex:1 1 0; min-height:0; height:0;
+      overflow-y:scroll; overflow-x:hidden;
+      -webkit-overflow-scrolling:touch;
+      overscroll-behavior-y:contain;
       padding:0 16px calc(24px + 72px + env(safe-area-inset-bottom, 0)); padding-left:max(16px, env(safe-area-inset-left, 0)); padding-right:max(16px, env(safe-area-inset-right, 0));
       padding-top:env(safe-area-inset-top, 0);
       width:100%; max-width:100%; margin:0; box-sizing:border-box;
@@ -9293,13 +9293,13 @@
       if(go) setCustomerNavActive(go);
     }
 
-    // Provider-FAB: auf Meine Küche, Wochenplan, Kochbuch anzeigen; sonst ausblenden (auch bei Restore)
+    // Provider-FAB: auf Meine Küche, Wochenplan, Kochbuch anzeigen; sonst ausblenden (Label optional)
     var fabProv = document.getElementById('fabProviderAddOffer');
     var fabProvLabel = document.getElementById('fabProviderAddOfferLabel');
-    if(isProv && fabProv && fabProvLabel){
+    if(isProv && fabProv){
       var showFabOnView = (id === 'v-provider-home' || id === 'v-provider-week' || id === 'v-provider-cookbook');
       fabProv.style.display = showFabOnView ? 'flex' : 'none';
-      fabProvLabel.style.display = showFabOnView ? 'block' : 'none';
+      if(fabProvLabel) fabProvLabel.style.display = showFabOnView ? 'block' : 'none';
     }
   }
 
