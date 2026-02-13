@@ -3516,6 +3516,11 @@
       background-attachment: fixed;
       background-repeat: no-repeat;
     }
+    /* Dashboard aktiv: main nicht scrollen, nur innerer Wrap – verhindert leeren oberen Screen + Scroll-Probleme */
+    body.provider-mode main:has(#v-provider-home.view.active){
+      overflow:hidden !important;
+      height:100vh; height:100dvh;
+    }
     body.provider-mode main::before{
       content: '';
       position: absolute;
@@ -3543,10 +3548,11 @@
       position:relative; width:100%; box-sizing:border-box;
       overflow:hidden;
     }
-    /* Dashboard: Scroll-Container innen (wie week-list-scroll), Header sticky – oben kein leerer Blur */
+    /* Dashboard: Scroll nur im Wrap (Flex-Trick: height:0 + flex:1 = scrollbarer Bereich), oben weiß */
     #v-provider-home .dashboard-floating-wrap{
       display:flex; flex-direction:column; gap:20px;
-      flex:1 1 0; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch;
+      flex:1 1 0; min-height:0; height:0;
+      overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch;
       padding:0 16px calc(24px + 72px + env(safe-area-inset-bottom, 0)); padding-left:max(16px, env(safe-area-inset-left, 0)); padding-right:max(16px, env(safe-area-inset-right, 0));
       padding-top:env(safe-area-inset-top, 0);
       width:100%; max-width:100%; margin:0; box-sizing:border-box;
