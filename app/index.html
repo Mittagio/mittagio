@@ -2671,6 +2671,8 @@
     body.provider-mode { overscroll-behavior-y: none; -webkit-overflow-scrolling: touch; overflow-x: hidden; }
     /* Nuclear: Im Provider-Modus nur die aktive Provider-View sichtbar – alle anderen main-Kinder aus dem Layout */
     body.provider-mode main > *:not([id^="v-provider-"].view.active) { display: none !important; }
+    /* Anbieter-Detail (Kundenansicht) hat eigenes display:flex !important – nur ausblenden wenn nicht .active (verhindert Anzeige auf Login/Onboarding) */
+    body.provider-mode main > #v-provider-detail-public:not(.view.active) { display: none !important; }
     /* Anbieter-Views: kein Extra-Platz oben – Inhalt beginnt sofort (Safe-Area nur im Header) */
     body.provider-mode [id^="v-provider-"] { padding-top: 0 !important; margin-top: 0 !important; }
     body.provider-mode [id^="v-provider-"].view.active { padding-top: 0 !important; }
@@ -9257,13 +9259,14 @@
       fabModeToggle.style.display = 'none';
     }
 
-    // Bottom-Nav jeweils sichtbar halten (Customer vs. Provider)
+    // Bottom-Nav jeweils sichtbar halten (Customer vs. Provider) – Provider-Nav nicht auf Login/Onboarding
     const isProv = mode === 'provider';
     const isCustomerOrStart = mode === 'customer' || mode === 'start';
+    const providerLoginOrOnboarding = (id && (id === views.providerLogin || id === views.providerOnboardingEntry || id === views.providerOnboardingFirstDish || id === views.providerOnboardingSignup || id === views.providerOnboardingBusiness || id === views.providerOnboardingPreview || (String(id).indexOf('v-provider-onboarding') === 0)));
     const customerNavEl = document.getElementById('customerNav');
     const providerNavWrapEl = document.getElementById('providerNavWrap');
     if(customerNavEl) customerNavEl.style.display = isCustomerOrStart ? 'flex' : 'none';
-    if(providerNavWrapEl) providerNavWrapEl.style.display = isProv ? 'block' : 'none';
+    if(providerNavWrapEl) providerNavWrapEl.style.display = (isProv && !providerLoginOrOnboarding) ? 'block' : 'none';
 
     // Bottom-Nav aktiven Tab immer zur aktuellen View synchronisieren
     if(isCustomerOrStart){
@@ -9287,7 +9290,7 @@
     const statusIndicator = document.getElementById('providerStatusIndicator');
     
     if(customerNav) customerNav.style.display = (isCustomer || isStart) ? 'flex' : 'none';
-    if(providerNavWrap) providerNavWrap.style.display = isProv ? 'block' : 'none';
+    if(providerNavWrap) providerNavWrap.style.display = (isProv && provider.loggedIn) ? 'block' : 'none';
     if(statusIndicator) statusIndicator.style.display = (isProv && provider.loggedIn) ? 'flex' : 'none';
     
 
