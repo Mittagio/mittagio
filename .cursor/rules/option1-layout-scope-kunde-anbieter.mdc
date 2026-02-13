@@ -5,9 +5,11 @@ alwaysApply: true
 
 # Option 1: Layout-Scope Kunde / Anbieter (technisch)
 
+**Layouts bleiben unverändert.** Neue oder geänderte layout-kritische Regeln nur gescoped setzen (Kunde vs. Anbieter).
+
 ## Ziel
 
-Kundenseite und Anbieterseite sind **im gleichen Projekt** getrennt, indem **alle layout-kritischen CSS- und JS-Regeln** strikt nach Kontext gescoped werden. So bricht ein Fix auf einer Seite die andere nicht (z. B. Dashboard-Scroll vs. Discover-Scroll).
+Kundenseite und Anbieterbereich sind **im gleichen Projekt** getrennt, indem **alle layout-kritischen CSS- und JS-Regeln** strikt nach Kontext gescoped werden. So bricht ein Fix auf einer Seite die andere nicht (z. B. Dashboard/Meine Küche vs. Discover).
 
 ## Layout-kritisch = immer scopen
 

@@ -5,6 +5,8 @@ alwaysApply: true
 
 # Layout-Korrekturen Anbieterbereich (Schadensbegrenzung)
 
+**Bestehende Layouts bleiben unverändert.** Diese Regel gilt nur bei gezielten Bugfixes (z. B. Scroll, Zentrierung), nicht für Neugestaltung.
+
 ## Grundprinzip
 
 **Bei Layout-Fehlern im Anbieterbereich (z. B. Inhalt nach unten geschoben, falsche Zentrierung, zu großes oberes Padding):**

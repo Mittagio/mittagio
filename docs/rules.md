@@ -2,6 +2,8 @@
 
 **Stand:** Februar 2026 · Quelle: konsolidierte Projekt-Dokumentation.
 
+**Layouts und Flows bleiben unverändert.** Keine strukturellen Layout-Änderungen an Kunden- oder Anbieter-Views; Inseratsflow = eine Maske (Master); Dashboard = Meine Küche. Nur Bugfixes und gezielte Anpassungen in bestehenden Selektoren.
+
 ---
 
 ## Source of Truth (verbindlich)
@@ -21,7 +23,7 @@ Cursor soll künftig nur noch diese 6 Dateien als Kontext nutzen. Alle weiteren 
 
 ## 1. Layout: Kunde vs. Anbieter
 
-- **Kundenseite** und **Anbieterseite** haben getrennte Layouts; keine Vermischung, kein angleichen.
+- **Kundenseite** und **Anbieterbereich** haben getrennte Layouts; keine Vermischung, kein Angleichen. **Layouts bleiben wie sie sind.**
 - Änderungen auf Kunden-UI betreffen **nur** Kunden-Views; Änderungen auf Anbieter-UI **nur** Anbieter-Views.
 - Layout-kritische CSS-Regeln (height, overflow, scroll, flex für #app/main) **immer** scopen:
   - **Nur Anbieter:** `body.provider-mode`, `#v-provider-*`, `.prov-*`
@@ -32,8 +34,9 @@ Cursor soll künftig nur noch diese 6 Dateien als Kontext nutzen. Alle weiteren 
 
 ## 2. Silent Defaults (Wochenplan & Dashboard)
 
+- **Dashboard** = Anbieterbereich **Meine Küche** (`v-provider-home`); Layout unverändert.
 - Die drei Säulen 🍴 Vor Ort, 🧾 Abholnummer, 🔄 Mehrweg sind im **Anbieter-Profil** als Standard hinterlegt.
-- Im **Wochenplan** und auf dem **Dashboard** Icons/Pillars **nur** anzeigen, wenn das **spezifische Gericht/Inserat** vom Profil-Standard **abweicht** (Override).
+- Im **Wochenplan** und auf dem **Dashboard (Meine Küche)** Icons/Pillars **nur** anzeigen, wenn das **spezifische Gericht/Inserat** vom Profil-Standard **abweicht** (Override).
 - Kein Override → keine Säulen-Icons auf der Karte. Fokus: Bild, Name, Preis, ggf. Status (🟢 Aktiv / 🟡 Entwurf).
 - Profil-Standard: `normalizeProviderProfile(provider.profile)` → `dineInPossible`, `hasPickupCode`, `reuse.enabled`. Badges nur, wenn `entry.*` gesetzt und abweichend.
 

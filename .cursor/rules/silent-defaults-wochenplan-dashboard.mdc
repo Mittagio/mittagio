@@ -1,16 +1,18 @@
 ---
-description: "Silent Defaults" – Icons (Vor Ort, Abholnummer, Mehrweg) nur bei Abweichung vom Profil anzeigen. Küchentauglich, ruhiges Design.
+description: "Silent Defaults" – Icons (Vor Ort, Abholnummer, Mehrweg) nur bei Abweichung vom Profil. Gilt für Wochenplan und Dashboard (Anbieterbereich Meine Küche).
 alwaysApply: true
 ---
 
 # Silent Defaults: Wochenplan & Dashboard (UI-Reduktion)
 
+**Dashboard** = Anbieterbereich **Meine Küche** (`v-provider-home`). **Layout bleibt unverändert.** Diese Regel betrifft nur die Anzeige der 3 Säulen-Icons.
+
 ## Grundprinzip
 
-Die drei Säulen **🍴 Vor Ort**, **🎫 Abholnummer**, **🔄 Mehrweg** sind im Anbieter-Profil als Standard hinterlegt. Im Wochenplan und auf dem Dashboard **nicht** auf jeder Karte wiederholen – nur anzeigen, wenn ein **spezifisches Gericht/Inserat** davon abweicht (Override).
+Die drei Säulen **🍴 Vor Ort**, **🧾 Abholnummer**, **🔄 Mehrweg** sind im Anbieter-Profil als Standard hinterlegt. Im Wochenplan und auf dem Dashboard (Meine Küche) **nicht** auf jeder Karte wiederholen – nur anzeigen, wenn ein **spezifisches Gericht/Inserat** davon abweicht (Override).
 
 - **Wochenplan**: `renderWeekPlan()` – `week-meal-badges` nur befüllen, wenn `entry.dineInPossible` / `entry.hasPickupCode` / `entry.reuse` gesetzt sind **und** vom Profil-Standard abweichen. Sonst `badgesHtml = ''`.
-- **Dashboard (Aktive Angebote)**: `renderProviderHome()` – Pillars (Vor Ort, Abhol-Nr., Mehrweg) nur rendern, wenn `o.dineInPossible` / `o.hasPickupCode` / `o.reuse` vom Profil abweichen.
+- **Dashboard (Meine Küche, Aktive Angebote)**: `renderProviderHome()` – Pillars nur rendern, wenn `o.dineInPossible` / `o.hasPickupCode` / `o.reuse` vom Profil abweichen.
 
 ## Profil-Standard lesen
 

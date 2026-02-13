@@ -8,7 +8,7 @@
 
 **Verbindliche Definition:** `.cursor/rules/inseratsflow-ist-high-end-universal.mdc` – **DAS IST DER INSERATSFLOW.** Single-Page, eine Maske, keine Schritte 1–4.
 
-Der Inseratsflow ist **eine** universelle Eingabemaske in allen Modi (Dashboard, Kochbuch, Wochenplan). Es gibt keinen anderen Inseratsflow.
+Der Inseratsflow ist **eine** universelle Eingabemaske in allen Modi (Dashboard/Meine Küche, Kochbuch, Wochenplan). Es gibt keinen anderen Inseratsflow.
 
 ### Visuelles Fundament
 

@@ -30,7 +30,7 @@ Reihenfolge fest: **🍴 Vor Ort** | **🧾 Abholnummer** | **🔄 Mehrweg**.
 
 - **Kunde (Listen/Detail):** Icons farbig (aktiv) oder ausgegraut (inaktiv). Abholnummer-Badge auf Favoriten: Hintergrund #FFD700.
 - **Swipe/Discover:** Nur Symbole, kein Text in der Fußzeile; bei fehlendem Feature dezente Platzhalter-Box, Slots rücken nicht nach.
-- **Anbieter (Wochenplan/Dashboard):** Silent Defaults – Pillars nur anzeigen, wenn das Gericht vom Profil-Standard abweicht (siehe `docs/rules.md`).
+- **Anbieter (Wochenplan / Dashboard Meine Küche):** Silent Defaults – Pillars nur anzeigen, wenn das Gericht vom Profil-Standard abweicht (siehe `docs/rules.md`).
 
 ---
 

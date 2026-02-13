@@ -8,7 +8,7 @@
 
 | Seite | View-ID | Stand |
 |-------|---------|--------|
-| **Dashboard (Mein Betrieb)** | `v-provider-home` | Karten (dashboard-kasten), KPIs, Wochenplan-Teaser, einheitlicher BG #F8F7F2, Akzent #FFDE00. |
+| **Dashboard (Anbieterbereich Meine Küche)** | `v-provider-home` | Karten (dashboard-kasten), KPIs, Wochenplan-Teaser, einheitlicher BG #F8F7F2, Akzent #FFDE00. Unverändert beibehalten. |
 | **Wochenplan** | `v-provider-week` | KW-Navigation, Tageskarten, Aktivieren-Buttons, Glass/rounded, #FFDE00. |
 | **Kochbuch** | `v-provider-cookbook` | Bestseller-Strip, Karten-Grid, Sticky Action-Bar, Auswahl #FFDE00. |
 | **Inseratsflow (Step 0)** | Wizard | Liquid UI, Glass 2.5rem, 3 Säulen, Preis-Feld, Drei-Wege-Footer, Haptik, nur „Abholnummer“. |

@@ -1,9 +1,11 @@
 ---
-description: Wochenplan teilen – Magic Link, Web Share API, öffentliche Kunden-Ansicht
+description: Wochenplan teilen – Magic Link, Web Share API (bleibt wie umgesetzt)
 globs: app/index.html
 ---
 
 # Wochenplan „Teilen“ – Magic Link & Kunden-Ansicht
+
+**Bleibt wie umgesetzt.** Nur Referenz für Share-Logik und öffentliche Plan-Ansicht.
 
 ## Regel: Share-URL und Web Share API
 
@@ -19,7 +21,7 @@ Technisch: `shareWeekPlan()` baut nur **aktivierte (live)** Gerichte der aktuell
 ## Regel: Öffentliche Kunden-Ansicht (#/plan/[Anbieter-ID])
 
 - **Inhalt:** Alle aktivierten Gerichte (Status: Grün) der aktuellen Woche.
-- **Design:** Clean, mobil, mit **Originalbildern** und den **3 Säulen** unter dem Bild: 🍴 (Vor Ort), 🎫1️⃣ (Abholnummer), 🔄 (Mehrweg).
+- **Design:** Clean, mobil, mit **Originalbildern** und den **3 Säulen** unter dem Bild: 🍴 (Vor Ort), 🧾 (Abholnummer), 🔄 (Mehrweg).
 - **Preise:** Nur der **Verkaufspreis** wird angezeigt – **keine** Gebühren-Logik (4,99 € / 0,89 €) für den Kunden.
 - Wenn kein Snapshot vorhanden (z. B. anderer Gerät/Link abgelaufen): Hinweis „Wochenplan nicht verfügbar“ + Link „Zur App“.
 

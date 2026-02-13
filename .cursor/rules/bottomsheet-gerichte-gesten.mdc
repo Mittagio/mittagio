@@ -1,20 +1,18 @@
 ---
-description: BottomSheet „Gericht hinzufügen“ + Swipe/Tap-Gesten auf Gerichtskarten
+description: BottomSheet „Gericht hinzufügen“ + Swipe/Tap-Gesten (Referenz; Umsetzung bleibt wie sie ist)
 globs: app/index.html
 alwaysApply: false
 ---
 
 # BottomSheet: Gerichte hinzufügen & Gesten (Löschen/Bearbeiten)
 
-## Befehl für Cursor
+**Bleibt wie umgesetzt.** Diese Regel dient nur als Referenz; keine Layout-Umstellung.
 
-**Cursor, erstelle ein BottomSheet für das Hinzufügen von Gerichten.**
+### Aufbau des BottomSheets (Referenz)
 
-### Aufbau des BottomSheets
-
-- **Oben:** Eine Searchbar und Quick-Pick-Pills aus dem Kochbuch.
-- **Mittig:** Ein Time-Picker (Grid mit 3 Standardzeiten) und Toggle-Icons für die 3 Säulen (Emoji-Regel: 🍴 Vor Ort, 🎫 Abholnummer, 🔄 Mehrweg).
-- **Ganz unten:** Ein fixierter Action-Button: **„Jetzt für 4,99 € einplanen“**.
+- **Oben:** Searchbar und Quick-Pick-Pills aus dem Kochbuch.
+- **Mittig:** Time-Picker (3 Standardzeiten) und Toggle-Icons für die 3 Säulen: 🍴 Vor Ort, 🧾 Abholnummer, 🔄 Mehrweg.
+- **Ganz unten:** Fixierter Action-Button: **„Jetzt für 4,99 € einplanen“**.
 
 ### Design
 

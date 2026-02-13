@@ -1,24 +1,26 @@
 ---
-description: Deep-Linking & Navigation zwischen Dashboard und Wochenplan (S25 nahtlos)
+description: Deep-Linking & Navigation zwischen Dashboard (Anbieterbereich Meine Küche) und Wochenplan.
 globs: app/index.html
 ---
 
 # Deep-Links & Navigation (Dashboard ↔ Wochenplan)
 
+**Dashboard** = Anbieterbereich **Meine Küche** (`v-provider-home`). **Layout bleibt unverändert.** Diese Regel betrifft nur Navigation und Quick-Actions.
+
 ## Regel: Smart-Jump vom Dashboard
 
-- **Dashboard:** Zeigt Tagesansicht (Read-Only). Ein Klick auf „Zum Wochenplan“ übergibt das **aktuell gewählte Datum** als Parameter.
+- **Dashboard (Meine Küche):** Tagesansicht (Read-Only). Klick „Zum Wochenplan“ übergibt das **aktuell gewählte Datum** als Parameter.
 - **Wochenplan-Tab** öffnet **direkt an der richtigen Stelle** (gewählter Tag vorselektiert), kein erneutes Suchen/Scrollen.
 
 Technisch: `showProviderWeek(preselectDay)` mit Tag (ISO-Datum); Links „Zum Wochenplan“ rufen `showProviderWeek(selectedDay)` auf.
 
 ---
 
-## Regel: Quick-Action vom Dashboard
+## Regel: Quick-Action vom Dashboard (Meine Küche)
 
-- „+ Weiteres Gericht planen“ / „Jetzt Woche planen“ öffnet das **Bottom-Sheet (Kochbuch-Suche)** direkt über dem Dashboard.
+- „+ Weiteres Gericht planen“ / „Jetzt Woche planen“ öffnet das **Bottom-Sheet (Kochbuch-Suche)** direkt über Meine Küche.
 - Anbieter wählt Gericht, fügt zum Plan hinzu (ggf. 4,99 € Aktivierung).
-- **Ergebnis:** Anbieter bleibt auf dem Dashboard und sieht das neue Gericht sofort in der Live-Vorschau (kein Tab-Wechsel).
+- **Ergebnis:** Anbieter bleibt auf Meine Küche und sieht das neue Gericht sofort in der Live-Vorschau (kein Tab-Wechsel).
 
 Technisch: Dashboard-Buttons rufen `openWeekAddSheet(selectedDay)` auf. Beim Öffnen wird `weekAddSheetOriginView` gesetzt; nach Speichern bleibt die Ansicht erhalten und `renderProviderWeekPreviewNew()` aktualisiert die Vorschau.
 
@@ -26,19 +28,19 @@ Technisch: Dashboard-Buttons rufen `openWeekAddSheet(selectedDay)` auf. Beim Öf
 
 ## Regel: Globales Bottom-Sheet
 
-- Das „+“-Icon (Gericht planen) ist auf **Dashboard (Küche)** und **Wochenplan** verfügbar und greift immer auf das Kochbuch zu.
-- Nach dem Speichern kehrt der User zur **Ursprungsansicht** zurück (Dashboard → Dashboard, Wochenplan → Wochenplan).
+- Das „+“-Icon (Gericht planen) ist auf **Dashboard (Meine Küche)** und **Wochenplan** verfügbar und greift immer auf das Kochbuch zu.
+- Nach dem Speichern kehrt der User zur **Ursprungsansicht** zurück (Meine Küche → Meine Küche, Wochenplan → Wochenplan).
 
-Technisch: Beim Öffnen von `openWeekAddSheet(...)` wird die aktive View als Origin gespeichert; nach Add/Replace wird bei Origin „v-provider-home“ nur die Dashboard-Vorschau neu gerendert, kein View-Wechsel.
+Technisch: Beim Öffnen von `openWeekAddSheet(...)` wird die aktive View als Origin gespeichert; bei Origin `v-provider-home` wird nur die Vorschau neu gerendert, kein View-Wechsel.
 
 ---
 
-## Wochenplan vs. Dashboard
+## Wochenplan vs. Dashboard (Meine Küche)
 
 | Bereich        | Verhalten |
 |----------------|-----------|
 | **Wochenplan** | Voller Funktionsumfang: Swipe-to-Delete, Swipe-to-Copy, Drag-and-Drop-Sortierung. |
-| **Dashboard**  | Read-Only Tagesansicht; Aktionen: „Weiteres Gericht planen“ (Sheet), „Zum Wochenplan“ (Smart-Jump). |
+| **Dashboard (Meine Küche)** | Read-Only Tagesansicht; Aktionen: „Weiteres Gericht planen“ (Sheet), „Zum Wochenplan“ (Smart-Jump). |
 
 ---
 

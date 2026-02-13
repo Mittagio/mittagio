@@ -26,7 +26,7 @@
 
 ## 3. Kunde / Anbieter: technische Trennung
 
-- **Layout:** Alle layout-kritischen CSS-Regeln sind strikt gescoped:
+- **Layouts bleiben unverändert.** Alle layout-kritischen CSS-Regeln sind strikt gescoped:
   - **Nur Anbieter:** `body.provider-mode`, `#v-provider-*`, `#providerNavWrap`, `.prov-*`
   - **Nur Kunde:** `body:not(.provider-mode)`, `.customer-view`, `#v-discover`, `#v-fav`, etc.
 - **Layout-kritisch** (immer scopen): height, min-height, max-height, overflow, scroll, display:flex auf #app/main, flex:1/min-height:0 in Scroll-Ketten.
@@ -66,7 +66,7 @@ Neue Kunden-Views in `customerViewIds` in `showView()` ergänzen.
 
 - **body.provider-mode main:** `padding: 0 !important`, `max-width: none !important`.
 - **body.provider-mode [id^="v-provider-"]:** `padding-top: calc(8px + env(safe-area-inset-top, 0px)) !important`.
-- **Dashboard:** `.prov-header` mit reduziertem Padding; `.dashboard-floating-wrap` absolut positioniert, `overflow-y: auto` für Scroll.
+- **Dashboard (Anbieterbereich Meine Küche,** `v-provider-home`): `.prov-header`, `.dashboard-floating-wrap` absolut, `overflow-y: auto` für Scroll.
 - **Routing/Hash:** Magic-Link `#/plan/…` nutzt eigene Logik und entfernt `provider-mode`; sonst `setMode` + `showView`.
 
 ---
