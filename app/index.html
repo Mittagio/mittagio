@@ -777,10 +777,12 @@
     /* Sheets / modals – Safe-Area für moderne Handys (S25, iPhone, Pixel) */
     .backdrop{position:fixed; inset:0; background:rgba(0,0,0,.6); opacity:0; pointer-events:none; transition:opacity .2s; z-index:2000}
     .backdrop.active{opacity:1; pointer-events:auto}
-    /* Modals: nur sichtbar wenn .active – verhindert leeren Screen auf allen Anbieter-Seiten */
+    /* Modals: nur sichtbar wenn .active – verhindert leeren Screen / leeren Bereich oben */
+    #bd:not(.active),
     #quickPostBd:not(.active),
     #publishFeeBd:not(.active),
     #inseratSuccessBd:not(.active){ display:none !important; opacity:0 !important; pointer-events:none !important; }
+    #sheet:not(.active),
     #quickPostSheet:not(.active),
     #publishFeeSheet:not(.active),
     #inseratSuccessSheet:not(.active){ visibility:hidden !important; pointer-events:none !important; }
@@ -7149,8 +7151,8 @@
   </div>
 </div>
 
-  <!-- Offer sheet -->
-  <div class="backdrop" id="bd" onclick="closeSheet()"></div>
+  <!-- Offer sheet (Kunden-Gerichtdetails) – Standard: ausgeblendet -->
+  <div class="backdrop" id="bd" onclick="closeSheet()" style="display:none;"></div>
   <div class="sheet" id="sheet">
     <div class="handle"></div>
     
@@ -9166,9 +9168,12 @@
       if(typeof history !== 'undefined' && history.scrollRestoration !== undefined) history.scrollRestoration = 'manual';
       // Backdrops sofort ausblenden (aktiv + display:none), damit Dashboard-Inhalt sichtbar bleibt
       function hideProviderModals(){
+        var bd = document.getElementById('bd'), sheet = document.getElementById('sheet');
         var qb = document.getElementById('quickPostBd'), qs = document.getElementById('quickPostSheet');
         var pb = document.getElementById('publishFeeBd'), ps = document.getElementById('publishFeeSheet');
         var ib = document.getElementById('inseratSuccessBd'), is_ = document.getElementById('inseratSuccessSheet');
+        if(bd){ bd.classList.remove('active'); bd.style.display = 'none'; }
+        if(sheet) sheet.classList.remove('active');
         if(qb){ qb.classList.remove('active'); qb.style.display = 'none'; }
         if(qs) qs.classList.remove('active');
         if(pb){ pb.classList.remove('active'); pb.style.display = 'none'; }
@@ -9288,9 +9293,12 @@
     if(isProv && provider.loggedIn){
       document.body.classList.add('provider-mode');
       if(typeof history !== 'undefined' && history.scrollRestoration !== undefined) history.scrollRestoration = 'manual';
-      // Modals/Backdrops aus (aktiv + display:none), damit Dashboard-Inhalt sichtbar bleibt
+      // Modals/Backdrops aus (inkl. Offer-Sheet #bd/#sheet), damit Dashboard-Inhalt sichtbar bleibt
       try {
+        var bd = document.getElementById('bd'), sheet = document.getElementById('sheet');
         var qb = document.getElementById('quickPostBd'), pb = document.getElementById('publishFeeBd'), ib = document.getElementById('inseratSuccessBd');
+        if(bd){ bd.classList.remove('active'); bd.style.display = 'none'; }
+        if(sheet) sheet.classList.remove('active');
         [document.getElementById('quickPostSheet'), document.getElementById('publishFeeSheet'), document.getElementById('inseratSuccessSheet')].forEach(function(s){ if(s) s.classList.remove('active'); });
         if(qb){ qb.classList.remove('active'); qb.style.display = 'none'; }
         if(pb){ pb.classList.remove('active'); pb.style.display = 'none'; }
@@ -13515,6 +13523,8 @@
     }
 
     updateSheetFavs();
+    const bd = document.getElementById('bd');
+    if(bd) bd.style.display = '';
     document.getElementById('bd').classList.add('active');
     document.getElementById('sheet').classList.add('active');
     if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
@@ -13543,8 +13553,10 @@
   }
 
   function closeSheet(){
-    document.getElementById('bd').classList.remove('active');
-    document.getElementById('sheet').classList.remove('active');
+    const bd = document.getElementById('bd');
+    const sheet = document.getElementById('sheet');
+    if(bd){ bd.classList.remove('active'); bd.style.display = 'none'; }
+    if(sheet) sheet.classList.remove('active');
     
     // Zurück zur vorherigen Ansicht (inkl. Scroll-Position)
     if(navigationHistory.length > 0){
