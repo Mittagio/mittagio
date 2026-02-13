@@ -1,0 +1,27 @@
+---
+description: Der Inseratsflow ist der High-End Universal-Flow (Salatsoße) – verbindliche Definition.
+alwaysApply: true
+---
+
+# DAS IST JETZT DER INSERATSFLOW
+
+Der **Inseratsflow** ist ausschließlich der **High-End Universal-Flow** („Salatsoße“). Es gibt keinen anderen Inseratsflow.
+
+## Verbindlich
+
+- **Eine universelle Eingabemaske** in allen Modi (Dashboard/Kochbuch/Wochenplan): gleicher Aufbau, gleiche Reihenfolge.
+- **Reihenfolge:** Gerichtsname → Kategorie (große Kacheln, horizontal scrollbar) → Beschreibung (optional) → Preis → Allergene (collapsible) → Foto (eine Kachel) → 4 Smart-Icons (🕒 🍴 🔄 🧾).
+- **Pricing-Weiche** (nur Modus „Jetzt Inserieren“): **Option A** Gelb „Jetzt für 4,99 € einmalig inserieren“ | **Option B** Grün „Jetzt für 0,00 € inserieren mit Abholnummer (0,89 € pro Vorgang)“.
+- **Kochbuch/Wochenplan:** Nur Emerald „Speichern“, keine Weiche.
+- **Terminologie:** Nur **Abholnummer** – nie „Ticket“ oder „Code“.
+- **Design:** Glassmorphism, Emerald #10b981, Gelb #FACC15 für den 4,99-€-CTA.
+
+## Referenz
+
+- **Spezifikation:** `docs/INSERATSFLOW_HIGHEND_UNIVERSAL.md`
+- **Umsetzung:** `app/index.html` – `buildListingStep()` Step 0 = Universal-Maske inkl. Weiche.
+
+## Bei Änderungen
+
+- Keine Rückkehr zu mehreren getrennten „Flows“ oder alter Weiche-Logik.
+- Neue Features im Inseratsflow müssen die universelle Maske und die Pricing-Weiche (A/B bzw. Speichern) respektieren.

@@ -1569,6 +1569,12 @@
       letter-spacing:0.03em;
       flex-shrink: 0;
     }
+    /* High-End Universal-Flow: Kategorie horizontal, Smart-Tiles, Pricing-Weiche */
+    #wizard.sheet--kitchen .inserat-cat-scroll::-webkit-scrollbar{ height:6px; }
+    #wizard.sheet--kitchen .inserat-cat-scroll::-webkit-scrollbar-thumb{ background:rgba(0,0,0,0.15); border-radius:3px; }
+    #wizard.sheet--kitchen .inserat-cat-tile:active{ transform:scale(0.98); }
+    #wizard.sheet--kitchen .inserat-smart-tiles button:active{ transform:scale(0.96); }
+    #wizard.sheet--kitchen .inserat-photo-tile .inserat-photo-remove:hover{ color:#1a1a1a; }
 
     /* Onboarding Views: App-like Sticky Layout */
     .onboarding-view {
@@ -3537,14 +3543,14 @@
       position:relative; width:100%; box-sizing:border-box;
       overflow:hidden;
     }
-    /* Dashboard: Scroll-Container innen (wie week-list-scroll), Header sticky */
+    /* Dashboard: Scroll-Container innen (wie week-list-scroll), Header sticky – oben kein leerer Blur */
     #v-provider-home .dashboard-floating-wrap{
       display:flex; flex-direction:column; gap:20px;
       flex:1 1 0; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch;
       padding:0 16px calc(24px + 72px + env(safe-area-inset-bottom, 0)); padding-left:max(16px, env(safe-area-inset-left, 0)); padding-right:max(16px, env(safe-area-inset-right, 0));
-      padding-top:0;
+      padding-top:env(safe-area-inset-top, 0);
       width:100%; max-width:100%; margin:0; box-sizing:border-box;
-      background:transparent;
+      background:#fff;
       border-radius:0;
       box-shadow:none;
       border:none;
@@ -3557,10 +3563,10 @@
       border:1px solid rgba(0,0,0,0.04);
       overflow:hidden;
     }
-    /* Header „Meine Küche“: kein großer Kasten, nur Leiste (volle Breite, kein Radius/Schatten) */
+    /* Header „Meine Küche“: kein großer Kasten, nur Leiste – oben deckend, kein leerer Screen */
     #v-provider-home .dashboard-kasten-header{
       position:sticky; top:0; z-index:100;
-      background:rgba(255,255,255,0.92) !important;
+      background:#fff !important;
       backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
       border-radius:0 !important;
       box-shadow:none !important;
@@ -9261,6 +9267,15 @@
       var go = (id === 'v-discover') ? 'discover' : (id === 'v-profile') ? 'profile' : (id === 'v-cart') ? 'cart' : (id === 'v-fav') ? 'fav' : (id === 'v-orders') ? 'orders' : null;
       if(go) setCustomerNavActive(go);
     }
+
+    // Provider-FAB: auf Meine Küche, Wochenplan, Kochbuch anzeigen; sonst ausblenden (auch bei Restore)
+    var fabProv = document.getElementById('fabProviderAddOffer');
+    var fabProvLabel = document.getElementById('fabProviderAddOfferLabel');
+    if(isProv && fabProv && fabProvLabel){
+      var showFabOnView = (id === 'v-provider-home' || id === 'v-provider-week' || id === 'v-provider-cookbook');
+      fabProv.style.display = showFabOnView ? 'flex' : 'none';
+      fabProvLabel.style.display = showFabOnView ? 'block' : 'none';
+    }
   }
 
   function setMode(next, opts){
@@ -9324,6 +9339,11 @@
           showView(lastView);
           var navGo = (lastView === 'v-provider-home') ? 'provider-home' : (lastView === 'v-provider-pickups') ? 'provider-pickups' : (lastView === 'v-provider-week') ? 'provider-week' : (lastView === 'v-provider-cookbook') ? 'provider-cookbook' : (lastView === 'v-provider-profile' || lastView === 'v-provider-billing') ? 'provider-profile' : 'provider-home';
           setProviderNavActive(navGo);
+          if(lastView === 'v-provider-home'){
+            var homeEl = document.getElementById('v-provider-home');
+            var wrapEl = homeEl && homeEl.querySelector('.dashboard-floating-wrap');
+            if(wrapEl && wrapEl.scrollTop) wrapEl.scrollTop = 0;
+          }
           requestAnimationFrame(function(){
             if(lastView === 'v-provider-home') renderProviderHome();
             else if(lastView === 'v-provider-pickups') renderProviderPickups();
@@ -9331,6 +9351,11 @@
             else if(lastView === 'v-provider-cookbook') renderCookbook();
             else if(lastView === 'v-provider-profile') renderProviderProfile();
             else if(lastView === 'v-provider-billing') renderBilling();
+            if(lastView === 'v-provider-home'){
+              var h = document.getElementById('v-provider-home');
+              var w = h && h.querySelector('.dashboard-floating-wrap');
+              if(w && w.scrollTop) w.scrollTop = 0;
+            }
             if(typeof lucide !== 'undefined') lucide.createIcons();
           });
         } else {
@@ -9524,6 +9549,8 @@
       if(document.body) document.body.scrollTop = 0;
       var home = document.getElementById('v-provider-home');
       if(home && home.scrollTop) home.scrollTop = 0;
+      var wrap = home && home.querySelector('.dashboard-floating-wrap');
+      if(wrap && wrap.scrollTop) wrap.scrollTop = 0;
       var mainEl = document.querySelector('main');
       if(mainEl && mainEl.scrollTop) mainEl.scrollTop = 0;
     }
@@ -22077,18 +22104,19 @@
       };
     }
     if(wNextBtn) wNextBtn.style.display = ''; // Weiter-Button sichtbar (Schritt 4 blendet ihn aus)
-    const total = 4;
+    const total = 5; // Highend: 1=BASIS, 2=SERVICE, 3=Vorschau, 4=Planung, 5=Abholnummer
     const isSlimStep0 = (w.step === 0);
     setWizardHeader('', isSlimStep0 ? '' : `Schritt ${Math.min(w.step+1,total)} von ${total}`);
     const profile = normalizeProviderProfile(provider.profile || {});
     if(!w.data.pickupWindow){ w.data.pickupWindow = profile.mealWindow || DEFAULT_MEAL_WINDOW; }
     if(w.data.dineInPossible === undefined) w.data.dineInPossible = !(provider.profile&&provider.profile.dineInPossibleDefault===false);
 
-    // Schritt 0: Glass-Express-Flow (Master) – Gericht → Kategorie → Preis → Bild → Smart-Bar → Allergene
+    // Schritt 0: High-End Universal-Flow (Salatsoße) – eine Maske, gleicher Aufbau in allen Modi
+    // Design: Glassmorphism, Emerald #10b981 + Gelb #FACC15, nur „Abholnummer“ (nie Ticket/Code)
     if(w.step===0){
       setWizardQuestion('', '');
       const box=document.createElement('div');
-      box.className='glass-express-step0';
+      box.className='glass-express-step0 inserat-universal-mask';
       const saveDraft = () => { localStorage.setItem('wizard_draft', JSON.stringify(w)); };
       const profile = normalizeProviderProfile(provider.profile || {});
       const profileWindow = profile.mealWindow || DEFAULT_MEAL_WINDOW;
@@ -22096,9 +22124,11 @@
       let vorOrt = !!profile.dineInPossibleDefault; if(w.data.dineInPossible !== undefined) vorOrt = !!w.data.dineInPossible;
       let mehrweg = !!profile.reuseEnabledByDefault; if(w.data.reuse && w.data.reuse.enabled) mehrweg = true;
       let abhol = !!profile.abholnummerEnabledByDefault; if(w.data.hasPickupCode !== undefined) abhol = !!w.data.hasPickupCode;
+      if(typeof w.data.allergeneExpanded === 'undefined') w.data.allergeneExpanded = !!w.data.wantsAllergens;
       const scrollToEl = (el)=>{ if(el && el.scrollIntoView) setTimeout(()=> el.scrollIntoView({ behavior:'smooth', block:'center' }), 120); };
+      const dismissKeyboard = ()=>{ try { if(document.activeElement && document.activeElement.blur) document.activeElement.blur(); } catch(e){} };
 
-      // 1) Gericht – Placeholder „Was kochst du heute?“ (Master)
+      // 1) Gerichtsname + Autocomplete (Auto-Advance nach Wahl)
       const input=document.createElement('input');
       input.className='field glass-express-field';
       input.placeholder='Was kochst du heute?';
@@ -22118,7 +22148,7 @@
           const b=document.createElement('button');
           b.type='button'; b.className='ans glass-pill'; b.style.cssText='min-height:48px; padding:0 16px; border-radius:14px; font-size:15px; font-weight:700;';
           b.textContent=s.dish;
-          b.onclick=()=>{ if(typeof haptic==='function') haptic(10); w.data.dish=s.dish; w.data.category=cat; if(s.allergens) w.data.allergens=[].concat(s.allergens||[]); if(!w.data.photoData || w.data.photoDataIsStandard){ w.data.photoData = s.img || ''; w.data.photoDataIsStandard = true; } saveDraft(); rebuildWizard(); setTimeout(()=>{ const next = document.querySelector('#wContent .field[inputmode="decimal"]'); scrollToEl(next); }, 80); };
+          b.onclick=()=>{ if(typeof haptic==='function') haptic(10); w.data.dish=s.dish; w.data.category=cat; if(s.allergens) w.data.allergens=[].concat(s.allergens||[]); if(!w.data.photoData || w.data.photoDataIsStandard){ w.data.photoData = s.img || ''; w.data.photoDataIsStandard = true; } saveDraft(); dismissKeyboard(); rebuildWizard(); setTimeout(()=>{ const next = document.querySelector('#wContent .inserat-desc'); if(next) scrollToEl(next); }, 100); };
           suggestWrap.appendChild(b);
         });
       }
@@ -22126,229 +22156,205 @@
       input.onfocus=()=>{ fillSuggestions(); };
       box.appendChild(input);
 
-      // 2) Kategorie – Glas-Pills (Fleisch, Vegetarisch, Vegan + Salat)
-      const catLabels = ['Vegetarisch','Vegan','Mit Fleisch','Salat'];
+      // 2) Kategorie – große Kacheln, horizontal scrollbar (High-End)
+      const catLabels = ['Mit Fleisch','Vegetarisch','Vegan','Salat'];
       const catMap = { 'Fleisch':'Mit Fleisch', 'Mit Fleisch':'Mit Fleisch', 'Vegetarisch':'Vegetarisch', 'Vegan':'Vegan', 'Salat':'Salat' };
       const currentCat = catMap[w.data.category] || w.data.category || 'Vegetarisch';
-      const catRow=document.createElement('div');
-      catRow.style.cssText='display:flex; flex-wrap:wrap; gap:10px; margin-bottom:16px;';
+      const catScroll=document.createElement('div');
+      catScroll.className='inserat-cat-scroll';
+      catScroll.style.cssText='display:flex; gap:12px; margin-bottom:16px; overflow-x:auto; padding:4px 0; -webkit-overflow-scrolling:touch; scroll-snap-type:x proximity;';
       catLabels.forEach(c=>{
         const b=document.createElement('button');
-        b.type='button'; b.className='glass-pill'; b.style.cssText='min-height:48px; padding:0 18px; border-radius:999px; font-size:14px; font-weight:700; cursor:pointer;';
-        b.style.border='2px solid ' + (currentCat===c?'#10b981':'rgba(255,255,255,0.6)'); b.style.background=(currentCat===c?'rgba(16,185,129,0.2)':'rgba(255,255,255,0.5)');
+        b.type='button'; b.className='glass-pill inserat-cat-tile'; b.style.cssText='flex:0 0 auto; min-height:52px; min-width:120px; padding:0 20px; border-radius:16px; font-size:15px; font-weight:800; cursor:pointer; scroll-snap-align:start;';
+        b.style.border='2px solid ' + (currentCat===c?'#10b981':'rgba(255,255,255,0.6)'); b.style.background=(currentCat===c?'rgba(16,185,129,0.25)':'rgba(255,255,255,0.5)');
         b.textContent=c;
-        b.onclick=()=>{ if(typeof haptic==='function') haptic(8); w.data.category=c; saveDraft(); rebuildWizard(); };
-        catRow.appendChild(b);
+        b.onclick=()=>{ if(typeof haptic==='function') haptic(8); w.data.category=c; saveDraft(); dismissKeyboard(); rebuildWizard(); };
+        catScroll.appendChild(b);
       });
-      box.appendChild(catRow);
+      box.appendChild(catScroll);
 
-      // 3) Preis – Zahlentastatur
+      // 3) Beschreibung – optional, dezent
+      const descWrap=document.createElement('div');
+      descWrap.className='inserat-desc';
+      const inputDesc=document.createElement('input');
+      inputDesc.className='field glass-express-field';
+      inputDesc.placeholder='Beschreibung (optional), z.B. frisch aus dem Garten';
+      inputDesc.value=w.data.description||'';
+      inputDesc.style.cssText='margin-bottom:16px; min-height:44px; font-size:14px; font-weight:500; border-radius:12px; padding:0 16px;';
+      inputDesc.oninput=()=>{ w.data.description=inputDesc.value; saveDraft(); };
+      inputDesc.onfocus=()=>{ if(typeof haptic==='function') haptic(6); };
+      descWrap.appendChild(inputDesc);
+      box.appendChild(descWrap);
+
+      // 4) Preis – maximale Präsenz, Zahlentastatur
       const inputPrice=document.createElement('input');
       inputPrice.className='field glass-express-field';
       inputPrice.type='text'; inputPrice.inputmode='decimal';
       inputPrice.placeholder='Preis z.B. 8,50 €';
       inputPrice.value=(w.data.price>0?Number(w.data.price).toFixed(2).replace('.',','):'');
-      inputPrice.style.cssText='margin-bottom:16px; min-height:58px; font-size:24px; font-weight:800; border-radius:16px; padding:0 18px;';
+      inputPrice.style.cssText='margin-bottom:16px; min-height:60px; font-size:26px; font-weight:800; border-radius:16px; padding:0 18px;';
       inputPrice.oninput=()=>{ const v=inputPrice.value.replace(',','.'); w.data.price=parseFloat(v)||0; saveDraft(); };
       inputPrice.onblur=()=>{ if(w.data.price>0) inputPrice.value=Number(w.data.price).toFixed(2).replace('.',','); };
       inputPrice.onfocus=()=>{ if(typeof haptic==='function') haptic(6); scrollToEl(inputPrice); };
+      inputPrice.onkeydown=function(e){ if(e.key==='Enter'){ dismissKeyboard(); scrollToEl(document.querySelector('#wContent .inserat-allergene-wrap')); } };
       box.appendChild(inputPrice);
 
-      // 4) Bild – Kamera + Galerie
-      const imgRow=document.createElement('div');
-      imgRow.style.cssText='display:flex; gap:12px; margin-bottom:16px;';
-      [{ txt:'📷 Kamera', action:'camera' },{ txt:'📤 Galerie', action:'gallery' }].forEach(slot=>{
-        const btn=document.createElement('button');
-        btn.type='button'; btn.className='glass-pill'; btn.style.cssText='flex:1; min-height:50px; border-radius:16px; font-size:15px; font-weight:800; cursor:pointer; border:2px solid rgba(255,255,255,0.6); background:rgba(255,255,255,0.5);';
-        btn.textContent=slot.txt;
-        btn.onclick=async function(){ if(typeof haptic==='function') haptic(10); if(slot.action==='camera'){ const f=await pickImage({capture:true}); if(!f) return; const dataUrl=await toDataUrl(f); w.data.photoData=typeof applyAppetizerFilter==='function'?await applyAppetizerFilter(dataUrl):dataUrl; w.data.photoDataIsStandard=false; } else{ const f=await pickImage(); if(!f) return; w.data.photoData=await toDataUrl(f); w.data.photoDataIsStandard=false; } saveDraft(); rebuildWizard(); };
-        imgRow.appendChild(btn);
-      });
-      box.appendChild(imgRow);
-      if(w.data.photoData){
-        const prev=document.createElement('div');
-        prev.style.cssText='height:72px; border-radius:16px; overflow:hidden; margin-bottom:14px; background:rgba(0,0,0,0.06);';
-        prev.innerHTML='<img src="'+w.data.photoData+'" style="width:100%; height:100%; object-fit:cover;" alt="">';
-        const rem=document.createElement('button');
-        rem.type='button'; rem.textContent='×'; rem.style.cssText='position:absolute; top:4px; right:4px; font-size:12px; color:#64748b; background:none; border:none; cursor:pointer; min-width:36px; min-height:36px;';
-        rem.onclick=()=>{ if(typeof haptic==='function') haptic(6); w.data.photoData=''; w.data.photoDataIsStandard=false; saveDraft(); rebuildWizard(); };
-        prev.style.position='relative'; prev.appendChild(rem);
-        box.appendChild(prev);
+      // 5) Allergene – collapsible: ausgeklappt = Pills, eingeklappt = kompakte Zeile „Allergene: A, G“
+      const suggestedAllergens = typeof getAllergenSuggestionsForDish==='function' ? getAllergenSuggestionsForDish(w.data.dish) : [];
+      if(suggestedAllergens.length && (!w.data.allergens||!w.data.allergens.length)){ w.data.allergens=suggestedAllergens.slice(); w.data.wantsAllergens=true; }
+      const allWrap=document.createElement('div');
+      allWrap.className='inserat-allergene-wrap';
+      allWrap.style.cssText='margin-bottom:16px;';
+      const allTrigger=document.createElement('button');
+      allTrigger.type='button';
+      allTrigger.style.cssText='width:100%; display:flex; align-items:center; justify-content:space-between; padding:14px 16px; border-radius:14px; border:2px solid rgba(255,255,255,0.6); background:rgba(255,255,255,0.5); font-size:14px; font-weight:700; color:#64748b; cursor:pointer; text-align:left;';
+      const allCodes = (w.data.allergens||[]).length ? (w.data.allergens||[]).join(', ') : '–';
+      allTrigger.innerHTML = '<span>Allergene</span><span class="inserat-allergene-summary">' + (w.data.allergeneExpanded ? '▼' : (allCodes !== '–' ? allCodes : '▶ angeben')) + '</span>';
+      allTrigger.onclick=()=>{ if(typeof haptic==='function') haptic(8); w.data.allergeneExpanded=!w.data.allergeneExpanded; saveDraft(); rebuildWizard(); };
+      allWrap.appendChild(allTrigger);
+      if(w.data.allergeneExpanded){
+        const allRow=document.createElement('div');
+        allRow.style.cssText='display:flex; align-items:center; gap:10px; margin-top:10px; margin-bottom:8px;';
+        const btnAllYes=document.createElement('button');
+        btnAllYes.type='button'; btnAllYes.className='glass-pill'; btnAllYes.style.cssText='min-height:44px; padding:0 16px; border-radius:999px; font-size:13px; font-weight:700; cursor:pointer;';
+        btnAllYes.style.border='2px solid ' + (w.data.wantsAllergens?'#10b981':'rgba(255,255,255,0.6)'); btnAllYes.style.background=(w.data.wantsAllergens?'rgba(16,185,129,0.2)':'rgba(255,255,255,0.5)');
+        btnAllYes.textContent='Ja';
+        btnAllYes.onclick=()=>{ if(typeof haptic==='function') haptic(8); w.data.wantsAllergens=true; saveDraft(); rebuildWizard(); };
+        const btnAllNo=document.createElement('button');
+        btnAllNo.type='button'; btnAllNo.className='glass-pill'; btnAllNo.style.cssText='min-height:44px; padding:0 16px; border-radius:999px; font-size:13px; font-weight:700; cursor:pointer;';
+        btnAllNo.style.border='2px solid ' + (!w.data.wantsAllergens?'#10b981':'rgba(255,255,255,0.6)'); btnAllNo.style.background=(!w.data.wantsAllergens?'rgba(16,185,129,0.2)':'rgba(255,255,255,0.5)');
+        btnAllNo.textContent='Nein';
+        btnAllNo.onclick=()=>{ if(typeof haptic==='function') haptic(8); w.data.wantsAllergens=false; w.data.allergens=[]; saveDraft(); rebuildWizard(); };
+        allRow.appendChild(btnAllYes); allRow.appendChild(btnAllNo);
+        allWrap.appendChild(allRow);
+        if(w.data.wantsAllergens){
+          const pills=document.createElement('div');
+          pills.style.cssText='display:flex; flex-wrap:wrap; gap:8px; margin-top:8px;';
+          (typeof ALLERGENS_14!=='undefined'?ALLERGENS_14:[]).forEach(a=>{
+            const code=a.short;
+            const active=(w.data.allergens||[]).includes(code);
+            const emo=(typeof ALLERGEN_EMOJI!=='undefined'&&ALLERGEN_EMOJI[code])?ALLERGEN_EMOJI[code]:'•';
+            const p=document.createElement('button');
+            p.type='button'; p.className='glass-pill'; p.style.cssText='min-height:40px; padding:0 12px; border-radius:999px; font-size:12px; font-weight:700; cursor:pointer;';
+            p.style.border='2px solid ' + (active?'#10b981':'rgba(255,255,255,0.6)'); p.style.background=(active?'rgba(16,185,129,0.2)':'rgba(255,255,255,0.5)');
+            p.textContent=emo+' '+a.name;
+            p.onclick=()=>{ if(typeof haptic==='function') haptic(6); if(!w.data.allergens) w.data.allergens=[]; if(active) w.data.allergens=w.data.allergens.filter(x=>x!==code); else w.data.allergens.push(code); saveDraft(); rebuildWizard(); };
+            pills.appendChild(p);
+          });
+          allWrap.appendChild(pills);
+        }
       }
+      box.appendChild(allWrap);
 
-      // 5) Smart-Confirm-Bar – 🕒 🍴 🔄 🧾 (alle klickbar, Abholnummer)
-      const smartBar=document.createElement('div');
-      smartBar.className='smart-confirm-bar';
-      smartBar.style.cssText='display:flex; align-items:center; flex-wrap:wrap; gap:10px; padding:16px 0; margin-bottom:16px; border-top:1px solid rgba(0,0,0,0.08);';
-      function addSmartBtn(emo, title, active, onClick){
+      // 6) Foto – eine große Kachel (Kamera | Galerie), nach Upload Auto-Filter
+      const photoTile=document.createElement('div');
+      photoTile.className='inserat-photo-tile';
+      photoTile.style.cssText='border-radius:20px; overflow:hidden; margin-bottom:16px; border:2px solid rgba(255,255,255,0.6); background:rgba(255,255,255,0.4); min-height:100px;';
+      if(w.data.photoData){
+        photoTile.style.minHeight='140px';
+        photoTile.innerHTML='<img src="'+w.data.photoData+'" style="width:100%; height:140px; object-fit:cover; display:block;" alt=""><div style="padding:10px 14px; display:flex; align-items:center; justify-content:space-between;"><span style="font-size:13px; font-weight:600; color:#64748b;">Foto</span><button type="button" class="inserat-photo-remove" style="background:none; border:none; color:#64748b; font-size:14px; font-weight:700; cursor:pointer;">× Entfernen</button></div>';
+        const rem=photoTile.querySelector('.inserat-photo-remove');
+        if(rem) rem.onclick=()=>{ if(typeof haptic==='function') haptic(6); w.data.photoData=''; w.data.photoDataIsStandard=false; saveDraft(); rebuildWizard(); };
+      } else {
+        photoTile.innerHTML='<div style="padding:20px; display:flex; gap:12px; flex-wrap:wrap; justify-content:center;">'+
+          '<button type="button" class="glass-pill inserat-photo-btn" style="min-height:56px; padding:0 24px; border-radius:16px; font-size:15px; font-weight:800; border:2px solid rgba(255,255,255,0.6); background:rgba(255,255,255,0.5); cursor:pointer;">📷 Kamera</button>'+
+          '<button type="button" class="glass-pill inserat-photo-btn" style="min-height:56px; padding:0 24px; border-radius:16px; font-size:15px; font-weight:800; border:2px solid rgba(255,255,255,0.6); background:rgba(255,255,255,0.5); cursor:pointer;">📤 Galerie</button>'+
+        '</div>';
+        photoTile.querySelectorAll('.inserat-photo-btn').forEach((btn,i)=>{
+          const action = i===0 ? 'camera' : 'gallery';
+          btn.onclick=async function(){ if(typeof haptic==='function') haptic(10); const f=await (action==='camera' ? pickImage({capture:true}) : pickImage()); if(!f) return; let dataUrl=await toDataUrl(f); if(typeof applyAppetizerFilter==='function') dataUrl=await applyAppetizerFilter(dataUrl); w.data.photoData=dataUrl; w.data.photoDataIsStandard=false; saveDraft(); rebuildWizard(); };
+        });
+      }
+      box.appendChild(photoTile);
+
+      // 7) Smart-Icons – vier große Kacheln (🕒 🍴 🔄 🧾), nur Abholnummer-Begriff
+      const smartGrid=document.createElement('div');
+      smartGrid.className='inserat-smart-tiles';
+      smartGrid.style.cssText='display:grid; grid-template-columns:repeat(4, 1fr); gap:10px; margin-bottom:20px;';
+      function addSmartTile(emo, title, active, onClick){
         const btn=document.createElement('button');
-        btn.type='button'; btn.title=title; btn.style.cssText='min-height:44px; min-width:44px; padding:0 12px; border-radius:14px; font-size:18px; border:2px solid ' + (active?'#10b981':'rgba(255,255,255,0.5)') + '; background:' + (active?'rgba(16,185,129,0.2)':'rgba(255,255,255,0.4)') + '; cursor:pointer;';
+        btn.type='button'; btn.title=title; btn.style.cssText='min-height:56px; border-radius:16px; font-size:22px; border:2px solid ' + (active?'#10b981':'rgba(255,255,255,0.6)') + '; background:' + (active?'rgba(16,185,129,0.25)':'rgba(255,255,255,0.5)') + '; cursor:pointer; display:flex; align-items:center; justify-content:center;';
         btn.textContent=emo;
         btn.onclick=()=>{ if(typeof haptic==='function') haptic(8); onClick(); saveDraft(); rebuildWizard(); };
-        smartBar.appendChild(btn);
+        smartGrid.appendChild(btn);
       }
-      addSmartBtn('🕒','Abholzeiten', !!w.data.pickupWindowEdit, ()=>{ w.data.pickupWindowEdit=!w.data.pickupWindowEdit; });
-      addSmartBtn('🍴','Vor Ort', vorOrt, ()=>{ w.data.dineInPossible=!vorOrt; });
-      addSmartBtn('🔄','Mehrweg', mehrweg, ()=>{ w.data.reuse=w.data.reuse||{}; w.data.reuse.enabled=!mehrweg; });
-      addSmartBtn('🧾','Abholnummer', abhol, ()=>{ w.data.hasPickupCode=!abhol; });
-      const timeSpan=document.createElement('span');
-      timeSpan.style.cssText='font-size:13px; font-weight:600; color:#64748b; margin-left:6px;';
-      timeSpan.textContent=w.data.pickupWindow||profileWindow;
-      smartBar.appendChild(timeSpan);
-      box.appendChild(smartBar);
+      addSmartTile('🕒','Abholzeiten', !!w.data.pickupWindowEdit, ()=>{ w.data.pickupWindowEdit=!w.data.pickupWindowEdit; });
+      addSmartTile('🍴','Vor Ort', vorOrt, ()=>{ w.data.dineInPossible=!vorOrt; });
+      addSmartTile('🔄','Mehrweg', mehrweg, ()=>{ w.data.reuse=w.data.reuse||{}; w.data.reuse.enabled=!mehrweg; });
+      addSmartTile('🧾','Abholnummer', abhol, ()=>{ w.data.hasPickupCode=!abhol; });
+      box.appendChild(smartGrid);
       if(w.data.pickupWindowEdit){
         const pw=(w.data.pickupWindow||profileWindow).split(/\s*[–\-]\s*/);
         let timeStart=(pw[0]||'11:30').trim(); let timeEnd=(pw[1]||'14:00').trim();
         if(timeStart.length===4) timeStart='0'+timeStart; if(timeEnd.length===4) timeEnd='0'+timeEnd;
         const timeRow=document.createElement('div');
         timeRow.style.cssText='display:flex; align-items:center; gap:10px; margin-bottom:12px; flex-wrap:wrap;';
-        const inpStart=document.createElement('input');
-        inpStart.type='time'; inpStart.value=timeStart; inpStart.style.cssText='padding:8px 12px; border-radius:12px; border:2px solid rgba(255,255,255,0.6); background:rgba(255,255,255,0.5); font-size:14px; font-weight:700;';
-        inpStart.onchange=()=>{ timeStart=inpStart.value; w.data.pickupWindow=timeStart+' – '+timeEnd; saveDraft(); };
-        const inpEnd=document.createElement('input');
-        inpEnd.type='time'; inpEnd.value=timeEnd; inpEnd.style.cssText='padding:8px 12px; border-radius:12px; border:2px solid rgba(255,255,255,0.6); background:rgba(255,255,255,0.5); font-size:14px; font-weight:700;';
-        inpEnd.onchange=()=>{ timeEnd=inpEnd.value; w.data.pickupWindow=timeStart+' – '+timeEnd; saveDraft(); };
-        timeRow.appendChild(inpStart); timeRow.appendChild(document.createTextNode(' – ')); timeRow.appendChild(inpEnd);
+        timeRow.innerHTML='<input type="time" value="'+timeStart+'" style="padding:10px 14px; border-radius:12px; border:2px solid rgba(255,255,255,0.6); background:rgba(255,255,255,0.5); font-size:14px; font-weight:700;"><span style="color:#64748b;">–</span><input type="time" value="'+timeEnd+'" style="padding:10px 14px; border-radius:12px; border:2px solid rgba(255,255,255,0.6); background:rgba(255,255,255,0.5); font-size:14px; font-weight:700;">';
+        const inpStart=timeRow.querySelector('input[type="time"]'); const inpEnd=timeRow.querySelectorAll('input[type="time"]')[1];
+        inpStart.onchange=()=>{ w.data.pickupWindow=inpStart.value+' – '+inpEnd.value; saveDraft(); };
+        inpEnd.onchange=()=>{ w.data.pickupWindow=inpStart.value+' – '+inpEnd.value; saveDraft(); };
         box.appendChild(timeRow);
       }
 
-      // 6) Allergene prüfen? (Master)
-      const suggestedAllergens = typeof getAllergenSuggestionsForDish==='function' ? getAllergenSuggestionsForDish(w.data.dish) : [];
-      if(suggestedAllergens.length && (!w.data.allergens||!w.data.allergens.length)){ w.data.allergens=suggestedAllergens.slice(); w.data.wantsAllergens=true; }
-      const allRow=document.createElement('div');
-      allRow.style.cssText='display:flex; align-items:center; gap:12px; margin-top:4px; margin-bottom:12px;';
-      const allLabel=document.createElement('span'); allLabel.style.cssText='font-size:14px; font-weight:700; color:#64748b;'; allLabel.textContent='Allergene prüfen?';
-      const btnAllYes=document.createElement('button');
-      btnAllYes.type='button'; btnAllYes.className='glass-pill'; btnAllYes.style.cssText='min-height:48px; padding:0 20px; border-radius:999px; font-size:14px; font-weight:700; cursor:pointer;';
-      btnAllYes.style.border='2px solid ' + (w.data.wantsAllergens?'#10b981':'rgba(255,255,255,0.6)'); btnAllYes.style.background=(w.data.wantsAllergens?'rgba(16,185,129,0.2)':'rgba(255,255,255,0.5)');
-      btnAllYes.textContent='Ja';
-      btnAllYes.onclick=()=>{ if(typeof haptic==='function') haptic(8); w.data.wantsAllergens=true; saveDraft(); rebuildWizard(); };
-      const btnAllNo=document.createElement('button');
-      btnAllNo.type='button'; btnAllNo.className='glass-pill'; btnAllNo.style.cssText='min-height:48px; padding:0 20px; border-radius:999px; font-size:14px; font-weight:700; cursor:pointer;';
-      btnAllNo.style.border='2px solid ' + (!w.data.wantsAllergens?'#10b981':'rgba(255,255,255,0.6)'); btnAllNo.style.background=(!w.data.wantsAllergens?'rgba(16,185,129,0.2)':'rgba(255,255,255,0.5)');
-      btnAllNo.textContent='Nein';
-      btnAllNo.onclick=()=>{ if(typeof haptic==='function') haptic(8); w.data.wantsAllergens=false; w.data.allergens=[]; saveDraft(); rebuildWizard(); };
-      allRow.appendChild(allLabel); allRow.appendChild(btnAllYes); allRow.appendChild(btnAllNo);
-      box.appendChild(allRow);
-      if(w.data.wantsAllergens){
-        const pills=document.createElement('div');
-        pills.style.cssText='display:flex; flex-wrap:wrap; gap:10px; margin-bottom:16px;';
-        (typeof ALLERGENS_14!=='undefined'?ALLERGENS_14:[]).forEach(a=>{
-          const code=a.short;
-          const active=(w.data.allergens||[]).includes(code);
-          const emo=(typeof ALLERGEN_EMOJI!=='undefined'&&ALLERGEN_EMOJI[code])?ALLERGEN_EMOJI[code]:'•';
-          const p=document.createElement('button');
-          p.type='button'; p.className='glass-pill'; p.style.cssText='min-height:44px; padding:0 14px; border-radius:999px; font-size:13px; font-weight:700; cursor:pointer;';
-          p.style.border='2px solid ' + (active?'#10b981':'rgba(255,255,255,0.6)'); p.style.background=(active?'rgba(16,185,129,0.2)':'rgba(255,255,255,0.5)');
-          p.textContent=emo+' '+a.name;
-          p.onclick=()=>{ if(typeof haptic==='function') haptic(6); if(!w.data.allergens) w.data.allergens=[]; if(active) w.data.allergens=w.data.allergens.filter(x=>x!==code); else w.data.allergens.push(code); saveDraft(); rebuildWizard(); };
-          pills.appendChild(p);
-        });
-        box.appendChild(pills);
-      }
-
-      // Frage 4 A: Maske identisch für alle Einstiege (Dashboard/Kochbuch/Wochenplan). Nur Primär/Sekundär-Buttons und Umsatz-Hervorhebung hängen von entryPoint ab.
-      // Action-Controller: entryPoint steuert Primär/Sekundär und Umsatz-Anzeige (Layout unverändert)
+      // 8) Pricing-Weiche (nur Modus „Jetzt Inserieren“) ODER Emerald Speichern (Kochbuch/Wochenplan)
       var entryPoint = (w.ctx && w.ctx.entryPoint) || 'dashboard';
       var isInserierenRoute = (entryPoint === 'dashboard');
-
-      // Umsatz-Potenzial: nur bei Gelb-Button (Inserieren) aktiv leuchtend; sonst dezent
-      var priceNum = Number(w.data.price)||0;
-      if(priceNum>0){
-        var potenzialDiv=document.createElement('div');
-        potenzialDiv.className='listing-umsatz-potenzial' + (isInserierenRoute ? ' listing-umsatz-potenzial--active' : '');
-        potenzialDiv.style.cssText='margin-top:20px; padding:16px 20px; border-radius:16px;';
-        if(isInserierenRoute){ potenzialDiv.style.background='rgba(16,185,129,0.12)'; potenzialDiv.style.border='2px solid rgba(16,185,129,0.3)'; }
-        else{ potenzialDiv.style.background='rgba(0,0,0,0.04)'; potenzialDiv.style.border='2px solid rgba(0,0,0,0.06)'; }
-        var potenzialVal = (30 * priceNum).toFixed(2).replace('.',',');
-        potenzialDiv.innerHTML='<div style="font-size:12px; font-weight:800; ' + (isInserierenRoute ? 'color:#059669;' : 'color:#64748b;') + ' text-transform:uppercase; letter-spacing:0.04em; margin-bottom:4px;">Dein Umsatz-Potenzial heute</div><div style="font-size:28px; font-weight:900; ' + (isInserierenRoute ? 'color:#0d9668;' : 'color:#94a3b8;') + '">' + potenzialVal + ' €</div><div style="font-size:12px; color:#64748b; margin-top:2px;">30 × dein Preis</div>';
-        box.appendChild(potenzialDiv);
-      }
-
-      // Frage 7+8 A: Validierung Gericht + Preis für Primär und Sekundär
       var hasDish = !!(w.data.dish && String(w.data.dish).trim());
       var hasPrice = Number(w.data.price) > 0;
       var primaryValid = hasDish && hasPrice;
 
-      // Sekundär-Buttons je entryPoint (Frage 8 A: gleiche Validierung wie Primär)
-      var secRow=document.createElement('div');
-      secRow.style.cssText='display:flex; gap:12px; margin-top:18px;';
-      var secondaryConfig = [];
-      if(entryPoint==='dashboard') secondaryConfig = [{ label:'In Kochbuch speichern', action:'cookbook' }, { label:'Wochenplan', action:'cookbook_week' }];
-      else if(entryPoint==='cookbook') secondaryConfig = [{ label:'Jetzt direkt inserieren', action:'inserieren' }];
-      else if(entryPoint==='week') secondaryConfig = [{ label:'Nur Planung ändern', action:'abbrechen' }];
-      secondaryConfig.forEach(function(s){
-        var btn=document.createElement('button');
-        btn.type='button'; btn.className='btn-glass-secondary'; btn.style.cssText='flex:1; min-height:48px; border-radius:14px; font-size:14px; font-weight:700; border:2px solid rgba(255,255,255,0.6); background:rgba(255,255,255,0.4); color:#1a1a1a; cursor:pointer;';
-        btn.textContent=s.label;
-        var needsValidation = (s.action !== 'abbrechen');
-        if(!primaryValid && needsValidation){
-          btn.disabled = true; btn.style.opacity = '0.5'; btn.style.cursor = 'not-allowed';
-          btn.onclick = function(){ if(typeof haptic==='function') haptic(4); if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); };
-        } else {
-          btn.onclick=function(){
-            if(typeof haptic==='function') haptic(10);
-            if(s.action==='cookbook'){ var id=saveToCookbookFromWizard(); if(id){ showListingSuccessOverlay(function(){ closeWizard(true); if(typeof showToast==='function') showToast('Im Kochbuch gespeichert'); if(typeof showProviderCookbook==='function') showProviderCookbook(); }); } }
-            else if(s.action==='cookbook_week'){ var id=saveToCookbookFromWizard(); if(id && w.data.day){ if(!week[w.data.day]) week[w.data.day]=[]; var c=cookbook.find(function(x){ return x.id===id; }); if(c) week[w.data.day].push({ providerId:c.providerId, cookbookId:c.id, dish:c.dish, price:c.price }); save(LS.week, week); showListingSuccessOverlay(function(){ closeWizard(true); if(typeof showToast==='function') showToast('Im Wochenplan gespeichert'); if(typeof showProviderWeek==='function') showProviderWeek(); }); } }
-            else if(s.action==='inserieren'){ w.ctx.entryPoint='dashboard'; saveDraft(); rebuildWizard(); }
-            else if(s.action==='abbrechen'){ closeWizard(); if(typeof showProviderWeek==='function') showProviderWeek(); }
-          };
-        }
-        secRow.appendChild(btn);
-      });
-      box.appendChild(secRow);
-
-      // Inseratsflow Money (nur bei „Jetzt Inserieren“ / dashboard): 4,99 € – Option B (0,00 € mit Abholnummer) kommt als Live-Seite später
       if(isInserierenRoute && primaryValid){
-        var weicheRow = document.createElement('div');
-        weicheRow.className = 'listing-pricing-weiche';
-        weicheRow.setAttribute('data-screen','inseratsflow-money');
-        weicheRow.setAttribute('aria-label','Inseratsflow Money');
-        weicheRow.style.cssText = 'display:flex; flex-direction:column; gap:12px; margin-top:20px;';
-        var btnA = document.createElement('button');
-        btnA.type = 'button';
-        btnA.className = 'btn listing-express-primary';
-        btnA.style.cssText = 'width:100%; min-height:56px; border-radius:16px; font-size:16px; font-weight:800; border:none; cursor:pointer; background:#FACC15; color:#1a1a1a; box-shadow:0 4px 16px rgba(250,204,21,0.4);';
-        btnA.textContent = 'Jetzt für 4,99 € einmalig inserieren';
-        btnA.onclick = function(){ if(typeof haptic==='function') haptic(50); w.data.pricingOption = undefined; w.data.inseratFeeWaived = false; w.step++; saveDraft(); rebuildWizard(); };
-        weicheRow.appendChild(btnA);
-        // Option B (0,00 € mit Abholnummer) erstmal gestrichen – kommt als Live-Seite, Bearbeitung später
-        box.appendChild(weicheRow);
-      }
-      var wizEl = document.getElementById('wizard');
-      if(wizEl){
-        if(isInserierenRoute){ wizEl.setAttribute('data-screen','inseratsflow-money'); wizEl.setAttribute('aria-label','Inseratsflow Money'); }
-        else { wizEl.setAttribute('data-screen','inseratsflow-save'); wizEl.setAttribute('aria-label','Inseratsflow Save'); }
-      }
-
-      setWizardContent(box);
-
-      // Primär-Button je entryPoint (Gelb = Inserieren, Emerald = Speichern); bei dashboard mit Weiche: Sticky-Button ausblenden
-      var primaryLabel = 'JETZT FÜR 4,99 € INSERIEREN';
-      var primaryIsYellow = true;
-      if(entryPoint==='cookbook'){ primaryLabel='IM KOCHBUCH SPEICHERN'; primaryIsYellow=false; }
-      else if(entryPoint==='week'){ primaryLabel='IN WOCHENPLAN SPEICHERN'; primaryIsYellow=false; }
-      setWizardNext(primaryLabel);
-      if(wNextBtn){
-        if(isInserierenRoute && primaryValid){ wNextBtn.style.display='none'; }
-        else { wNextBtn.style.display='flex'; }
-        if(!primaryValid){
-          wNextBtn.disabled = true;
-          wNextBtn.style.opacity = '0.5';
-          wNextBtn.style.cursor = 'not-allowed';
-          if(primaryIsYellow){ wNextBtn.className='btn listing-express-primary'; wNextBtn.style.background='#FACC15'; wNextBtn.style.color='#1a1a1a'; wNextBtn.style.fontWeight='800'; }
-          else{ wNextBtn.classList.remove('listing-express-primary'); wNextBtn.style.background='#10b981'; wNextBtn.style.color='#fff'; wNextBtn.style.fontWeight='800'; }
-          wNextBtn.onclick = function(){ if(typeof haptic==='function') haptic(4); if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); };
-        } else {
-          wNextBtn.disabled = false;
-          wNextBtn.style.opacity = '';
-          wNextBtn.style.cursor = '';
-          if(primaryIsYellow){ wNextBtn.className='btn listing-express-primary'; wNextBtn.style.background='#FACC15'; wNextBtn.style.color='#1a1a1a'; wNextBtn.style.fontWeight='800'; wNextBtn.onclick=function(){ if(typeof haptic==='function') haptic(50); w.step++; rebuildWizard(); }; }
-          else{ wNextBtn.classList.remove('listing-express-primary'); wNextBtn.style.background='#10b981'; wNextBtn.style.color='#fff'; wNextBtn.style.fontWeight='800'; wNextBtn.onclick=function(){
-            if(typeof haptic==='function') haptic(50);
-            if(entryPoint==='cookbook'){ var id=saveToCookbookFromWizard(); if(id){ showListingSuccessOverlay(function(){ closeWizard(true); if(typeof showToast==='function') showToast('Im Kochbuch gespeichert'); if(typeof showProviderCookbook==='function') showProviderCookbook(); }); } }
-            else if(entryPoint==='week'){ var id=saveToCookbookFromWizard(); if(id && w.data.day){ if(!week[w.data.day]) week[w.data.day]=[]; var c=cookbook.find(function(x){ return x.id===id; }); if(c) week[w.data.day].push({ providerId:c.providerId, cookbookId:c.id, dish:c.dish, price:c.price }); save(LS.week, week); showListingSuccessOverlay(function(){ closeWizard(true); if(typeof showToast==='function') showToast('Im Wochenplan gespeichert'); if(typeof showProviderWeek==='function') showProviderWeek(); }); } }
-          }; }
+        // Option A (Gelb): Jetzt für 4,99 € einmalig inserieren
+        const weicheWrap=document.createElement('div');
+        weicheWrap.className='inserat-pricing-weiche';
+        weicheWrap.style.cssText='margin-top:24px; padding-top:20px; border-top:1px solid rgba(0,0,0,0.08); display:flex; flex-direction:column; gap:14px;';
+        const btnA=document.createElement('button');
+        btnA.type='button'; btnA.className='btn listing-express-primary';
+        btnA.style.cssText='width:100%; min-height:58px; border-radius:18px; font-size:17px; font-weight:800; border:none; cursor:pointer; background:#FACC15; color:#1a1a1a; box-shadow:0 4px 20px rgba(250,204,21,0.4);';
+        btnA.textContent='Jetzt für 4,99 € einmalig inserieren';
+        btnA.onclick=function(){ if(typeof haptic==='function') haptic(50); w.data.pricingOption=undefined; w.data.inseratFeeWaived=false; w.step++; saveDraft(); rebuildWizard(); };
+        weicheWrap.appendChild(btnA);
+        // Option B (Grüner Rahmen/Glas): 0,00 € mit Abholnummer (0,89 € pro Vorgang)
+        const btnB=document.createElement('button');
+        btnB.type='button';
+        btnB.style.cssText='width:100%; min-height:56px; border-radius:18px; font-size:15px; font-weight:800; cursor:pointer; border:2px solid #10b981; background:rgba(16,185,129,0.12); color:#0d9668;';
+        btnB.textContent='Jetzt für 0,00 € inserieren mit Abholnummer (0,89 € pro Vorgang)';
+        btnB.onclick=function(){ if(typeof haptic==='function') haptic(50); w.data.hasPickupCode=true; w.data.inseratFeeWaived=true; w.data.pricingOption='abholnummer'; var o=previewOfferFromWizard(); closeWizard(true); showPublishFeeModal(o); };
+        weicheWrap.appendChild(btnB);
+        box.appendChild(weicheWrap);
+        setWizardContent(box);
+        if(wNextBtn) wNextBtn.style.display='none';
+      } else if(!isInserierenRoute){
+        // Kochbuch / Wochenplan: Emerald Speichern + Sekundär
+        const saveWrap=document.createElement('div');
+        saveWrap.style.cssText='margin-top:24px; padding-top:20px; border-top:1px solid rgba(0,0,0,0.08); display:flex; flex-direction:column; gap:12px;';
+        const btnSave=document.createElement('button');
+        btnSave.type='button'; btnSave.style.cssText='width:100%; min-height:56px; border-radius:18px; font-size:16px; font-weight:800; border:none; cursor:pointer; background:#10b981; color:#fff; box-shadow:0 4px 16px rgba(16,185,129,0.35);';
+        if(entryPoint==='cookbook') btnSave.textContent='Im Kochbuch speichern';
+        else if(entryPoint==='week') btnSave.textContent='In den Wochenplan';
+        else btnSave.textContent='Speichern';
+        btnSave.onclick=function(){
+          if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; }
+          if(typeof haptic==='function') haptic(50);
+          if(entryPoint==='cookbook'){ var id=saveToCookbookFromWizard(); if(id){ showListingSuccessOverlay(function(){ closeWizard(true); if(typeof showToast==='function') showToast('Im Kochbuch gespeichert'); if(typeof showProviderCookbook==='function') showProviderCookbook(); }); } }
+          else if(entryPoint==='week'){ var id=saveToCookbookFromWizard(); if(id && w.data.day){ if(!week[w.data.day]) week[w.data.day]=[]; var c=cookbook.find(function(x){ return x.id===id; }); if(c) week[w.data.day].push({ providerId:c.providerId, cookbookId:c.id, dish:c.dish, price:c.price }); save(LS.week, week); showListingSuccessOverlay(function(){ closeWizard(true); if(typeof showToast==='function') showToast('Im Wochenplan gespeichert'); if(typeof showProviderWeek==='function') showProviderWeek(); }); } }
+        };
+        saveWrap.appendChild(btnSave);
+        const linkInserieren=document.createElement('button');
+        linkInserieren.type='button'; linkInserieren.style.cssText='background:none; border:none; font-size:14px; font-weight:700; color:#10b981; cursor:pointer; text-decoration:underline;';
+        linkInserieren.textContent='Stattdessen jetzt für 4,99 € inserieren';
+        linkInserieren.onclick=function(){ w.ctx.entryPoint='dashboard'; saveDraft(); rebuildWizard(); };
+        saveWrap.appendChild(linkInserieren);
+        box.appendChild(saveWrap);
+        setWizardContent(box);
+        if(wNextBtn) wNextBtn.style.display='none';
+      } else {
+        setWizardContent(box);
+        setWizardNext('Weiter');
+        if(wNextBtn){
+          wNextBtn.style.display='flex';
+          if(!primaryValid){ wNextBtn.disabled=true; wNextBtn.style.opacity='0.5'; wNextBtn.onclick=function(){ if(typeof haptic==='function') haptic(4); if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); }; }
+          else { wNextBtn.disabled=false; wNextBtn.style.opacity=''; wNextBtn.onclick=function(){ if(typeof haptic==='function') haptic(10); w.step++; saveDraft(); rebuildWizard(); }; }
         }
       }
       if(wBackBtn){ wBackBtn.innerHTML='<i data-lucide="chevron-left" style="width:18px;height:18px;"></i> Zurück'; if(typeof lucide!=='undefined'&&lucide.createIcons) lucide.createIcons(); }
@@ -22574,29 +22580,48 @@
       return;
     }
 
-    // Schritt 3: Vorschau + Entscheidung (3 Optionen); bei Option B (0,00 €) direkter Weg zum Publish-Modal
+    // Highend Schritt 2: Vorschau (Discovery-Card) – nur Anzeige, dann Weiter zu Planung
     if(w.step===2){
       setWizardQuestion('So wirkt dein Inserat', 'Genau so sehen es deine Gäste.');
+      const box=document.createElement('div');
+      attachListingPreview(box);
+      setWizardContent(box);
+      setWizardNext('Weiter');
+      if(wNextBtn){ wNextBtn.style.display='flex'; wNextBtn.onclick=function(){ if(typeof haptic==='function') haptic(10); w.step++; rebuildWizard(); }; }
+      if(typeof lucide!=='undefined') lucide.createIcons();
+      return;
+    }
+
+    // Highend Schritt 3: PLANUNG – 3 Kacheln; Money vs Save je nach entryPoint (Inseratsflow Money / Save)
+    if(w.step===3){
+      var entryPoint = (w.ctx && w.ctx.entryPoint) || 'dashboard';
+      var isInserierenRoute = (entryPoint === 'dashboard');
+      var wizEl = document.getElementById('wizard');
+      if(wizEl){
+        if(isInserierenRoute){ wizEl.setAttribute('data-screen','inseratsflow-money'); wizEl.setAttribute('aria-label','Inseratsflow Money'); }
+        else { wizEl.setAttribute('data-screen','inseratsflow-save'); wizEl.setAttribute('aria-label','Inseratsflow Save'); }
+      }
+      setWizardQuestion('Was möchtest du tun?', 'Inserieren, speichern oder planen.');
       const box=document.createElement('div');
       attachListingPreview(box);
       const grid = document.createElement('div');
       grid.style.cssText = 'display:grid; grid-template-columns:1fr; gap:16px; margin-top:20px;';
 
       var isAbholnummerPath = w.data.pricingOption === 'abholnummer' || w.data.inseratFeeWaived;
+      // Tile 1: Jetzt für 4,99 € inserieren (Money) ODER primär Kochbuch/Wochenplan (Save)
       var tilePub = document.createElement('button');
       tilePub.type = 'button';
       tilePub.className = 'btn';
-      if(isAbholnummerPath){
+      if(isInserierenRoute && !isAbholnummerPath){
+        tilePub.style.cssText = 'display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; border-radius:20px; background:#10b981; color:#fff; border:none; box-shadow:0 8px 20px rgba(16,185,129,0.35); transition:transform 0.1s; cursor:pointer;';
+        tilePub.innerHTML = '<i data-lucide="rocket" style="width:32px; height:32px; margin-bottom:12px;"></i><div style="font-size:18px; font-weight:900;">Jetzt für 4,99 € inserieren</div><div style="font-size:13px; margin-top:4px; opacity:0.9;">Einmalig heute</div>';
+        tilePub.onclick = function(){ if(typeof haptic==='function') haptic(50); w.step++; rebuildWizard(); };
+        grid.appendChild(tilePub);
+      } else if(isAbholnummerPath){
         tilePub.style.cssText = 'display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; border-radius:20px; background:rgba(16,185,129,0.15); color:#0d9668; border:2px solid #10b981; box-shadow:0 4px 16px rgba(16,185,129,0.2); transition:transform 0.1s; cursor:pointer;';
         tilePub.innerHTML = '<i data-lucide="receipt" style="width:32px; height:32px; margin-bottom:12px;"></i><div style="font-size:18px; font-weight:900;">Mit Abholnummer live schalten</div><div style="font-size:13px; margin-top:4px; opacity:0.9;">0,00 € Inserat · 0,89 € pro Vorgang</div>';
         tilePub.onclick = function(){ var o = previewOfferFromWizard(); closeWizard(true); showPublishFeeModal(o); };
-      } else {
-        tilePub.style.cssText = 'display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; border-radius:20px; background:#FFD700; color:#1a1a1a; border:none; box-shadow:0 8px 20px rgba(255,215,0,0.2); transition:transform 0.1s; cursor:pointer;';
-        tilePub.innerHTML = '<i data-lucide="rocket" style="width:32px; height:32px; margin-bottom:12px;"></i><div style="font-size:18px; font-weight:900;">Jetzt für 4,99 € inserieren</div>';
-        tilePub.onclick = function(){ w.step++; rebuildWizard(); };
-      }
-      grid.appendChild(tilePub);
-      if(isAbholnummerPath){
+        grid.appendChild(tilePub);
         var switchLink = document.createElement('button');
         switchLink.type = 'button';
         switchLink.style.cssText = 'background:none; border:none; font-size:13px; font-weight:600; color:#64748b; cursor:pointer; text-decoration:underline; padding:8px 0; margin-top:-8px;';
@@ -22605,45 +22630,62 @@
         grid.appendChild(switchLink);
       }
 
+      // Save-Route: Primär „Im Kochbuch speichern“ oder „In den Wochenplan“
+      if(entryPoint==='cookbook'){
+        var tileCookFirst = document.createElement('button');
+        tileCookFirst.type = 'button';
+        tileCookFirst.className = 'btn primary';
+        tileCookFirst.style.cssText = 'display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; border-radius:20px; background:#10b981; color:#fff; border:none; box-shadow:0 8px 20px rgba(16,185,129,0.35); cursor:pointer;';
+        tileCookFirst.innerHTML = '<i data-lucide="book-open" style="width:32px; height:32px; margin-bottom:12px;"></i><div style="font-size:18px; font-weight:900;">Im Kochbuch speichern</div>';
+        tileCookFirst.onclick = function(){ try { saveToCookbookFromWizard(); closeWizard(true); if(typeof showToast==='function') showToast('Im Kochbuch gespeichert'); setTimeout(function(){ if(typeof showProviderCookbook==='function') showProviderCookbook(); }, 80); } catch(e) { if(typeof showToast==='function') showToast('Fehler beim Speichern'); } };
+        grid.appendChild(tileCookFirst);
+      } else if(entryPoint==='week'){
+        var tileWeekFirst = document.createElement('button');
+        tileWeekFirst.type = 'button';
+        tileWeekFirst.className = 'btn primary';
+        tileWeekFirst.style.cssText = 'display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; border-radius:20px; background:#10b981; color:#fff; border:none; box-shadow:0 8px 20px rgba(16,185,129,0.35); cursor:pointer;';
+        tileWeekFirst.innerHTML = '<i data-lucide="calendar" style="width:32px; height:32px; margin-bottom:12px;"></i><div style="font-size:18px; font-weight:900;">In den Wochenplan</div><div style="font-size:13px; margin-top:4px; opacity:0.9;">Dann in den Planer</div>';
+        tileWeekFirst.onclick = function(){ try { saveToCookbookFromWizard(); closeWizard(true); if(typeof showToast==='function') showToast('Gespeichert – öffne Wochenplan'); setTimeout(function(){ if(typeof showProviderWeek==='function') showProviderWeek(); }, 80); } catch(e) { if(typeof showToast==='function') showToast('Fehler beim Speichern'); } };
+        grid.appendChild(tileWeekFirst);
+      }
+
+      // Tile: Ins Kochbuch (Sekundär bei Money oder bei week)
       const tileCook = document.createElement('button');
       tileCook.type = 'button';
       tileCook.className = 'btn secondary';
       tileCook.style.cssText = 'display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px; border-radius:20px; border:2px solid #e5e7eb; background:#fff; color:#333; cursor:pointer;';
       tileCook.innerHTML = '<i data-lucide="book-open" style="width:28px; height:28px; margin-bottom:8px; color:#666;"></i><div style="font-size:16px; font-weight:700;">Ins Kochbuch speichern</div>';
-      tileCook.onclick = function(){
-        try {
-          saveToCookbookFromWizard();
-          closeWizard(true);
-          if(typeof showToast==='function') showToast('Im Kochbuch gespeichert');
-          setTimeout(function(){ if(typeof showProviderCookbook==='function') showProviderCookbook(); }, 80);
-        } catch(e) { if(typeof showToast==='function') showToast('Fehler beim Speichern'); }
-      };
-      grid.appendChild(tileCook);
+      tileCook.onclick = function(){ try { saveToCookbookFromWizard(); closeWizard(true); if(typeof showToast==='function') showToast('Im Kochbuch gespeichert'); setTimeout(function(){ if(typeof showProviderCookbook==='function') showProviderCookbook(); }, 80); } catch(e) { if(typeof showToast==='function') showToast('Fehler beim Speichern'); } };
+      if(entryPoint!=='cookbook') grid.appendChild(tileCook);
 
+      // Tile: In den Wochenplan (Sekundär bei Money oder bei cookbook)
       const tileWeek = document.createElement('button');
       tileWeek.type = 'button';
       tileWeek.className = 'btn secondary';
       tileWeek.style.cssText = 'display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px; border-radius:20px; border:2px solid #e5e7eb; background:#fff; color:#333; cursor:pointer;';
       tileWeek.innerHTML = '<i data-lucide="calendar" style="width:28px; height:28px; margin-bottom:8px; color:#666;"></i><div style="font-size:16px; font-weight:700;">In den Wochenplan</div><div style="font-size:12px; color:#999; margin-top:2px;">Dann in den Planer</div>';
-      tileWeek.onclick = function(){
-        try {
-          saveToCookbookFromWizard();
-          closeWizard(true);
-          if(typeof showToast==='function') showToast('Gespeichert – öffne Wochenplan');
-          setTimeout(function(){ if(typeof showProviderWeek==='function') showProviderWeek(); }, 80);
-        } catch(e) { if(typeof showToast==='function') showToast('Fehler beim Speichern'); }
-      };
-      grid.appendChild(tileWeek);
+      tileWeek.onclick = function(){ try { saveToCookbookFromWizard(); closeWizard(true); if(typeof showToast==='function') showToast('Gespeichert – öffne Wochenplan'); setTimeout(function(){ if(typeof showProviderWeek==='function') showProviderWeek(); }, 80); } catch(e) { if(typeof showToast==='function') showToast('Fehler beim Speichern'); } };
+      if(entryPoint!=='week') grid.appendChild(tileWeek);
+
+      // Bei Save: Link „Jetzt für 4,99 € inserieren“ (wechselt zu Money)
+      if(!isInserierenRoute){
+        var inserierenLink = document.createElement('button');
+        inserierenLink.type = 'button';
+        inserierenLink.style.cssText = 'background:none; border:none; font-size:14px; font-weight:700; color:#10b981; cursor:pointer; text-decoration:underline; padding:12px 0; margin-top:8px;';
+        inserierenLink.textContent = 'Stattdessen jetzt für 4,99 € inserieren';
+        inserierenLink.onclick = function(){ w.ctx.entryPoint = 'dashboard'; saveDraft(); rebuildWizard(); };
+        grid.appendChild(inserierenLink);
+      }
 
       box.appendChild(grid);
       setWizardContent(box);
-      wNextBtn.style.display = 'none';
+      if(wNextBtn) wNextBtn.style.display = 'none';
       if(typeof lucide!=='undefined') lucide.createIcons();
       return;
     }
 
-    // Schritt 4 (Index 3): Abholnummer – Voll-Upsell ODER kurze Abfrage wenn Profil-Standard (Frage 6 A)
-    if(w.step===3){
+    // Highend Schritt 4: Abholnummer-Upsell (nur nach „Jetzt für 4,99 € inserieren“ – Money-Pfad)
+    if(w.step===4){
       const profile = normalizeProviderProfile(provider.profile || {});
       const abholIsProfileDefault = !!profile.abholnummerEnabledByDefault;
 
@@ -22688,7 +22730,7 @@
         return;
       }
 
-      // Voll-Upsell: Anbieter hat Abholnummer NICHT als Standard – ausführliche Step-3-Seite
+      // Voll-Upsell: Anbieter hat Abholnummer NICHT als Standard – Highend Step 4
       setWizardQuestion('Abholnummer dazubuchen?', '0,89 € pro Vorgang inkl. aller Bankgebühren');
       const box=document.createElement('div');
       const EMERALD = '#10b981';
@@ -22755,6 +22797,7 @@
       providerCity: p.city||'',
       providerLogoData: p.logoData||'',
       dish: w.data.dish||'Gericht',
+      description: w.data.description||'',
       category: w.data.category||'Vegetarisch',
       price: Number(w.data.price||0),
       pickupWindow,
