@@ -920,27 +920,42 @@
 
     .tabrow{display:flex; gap:8px; flex-wrap:wrap}
     .tabrow .ans{font-size:12px; padding:8px 10px}
-    /* Kochbuch: Fixed Layout – Card = Bild (16:9) -> Säulen (🍴🧾🔄) -> Daten */
+    /*
+     * Kochbuch: Minimal – Bild 16:9, Titel, Facts-Zeile. Keine Emojis/Säulen.
+     * Haptik & Bewegung (Physik):
+     * - Karten-Klick: cubic-bezier(0.2, 0.8, 0.2, 1), Heavy Tap 18ms
+     * - Bottom-Bar Slide: Spring ~(400,28) → cubic-bezier(0.33, 0.6, 0.2, 1), 320ms, Light Impact 8ms beim Stopp
+     * - Success-Check: Spring ~(500,15) → scale 0.8→1.05→1, Double-Tap Haptik [12,55,12]
+     */
+    #v-provider-cookbook .cookbook-bestseller-strip{
+      display:flex;
+      gap:12px;
+      overflow-x:auto;
+      padding:8px 0 20px;
+      margin-bottom:8px;
+      -webkit-overflow-scrolling:touch;
+      scroll-snap-type:x mandatory;
+    }
+    #v-provider-cookbook .cookbook-bestseller-strip .cookbook-item{ scroll-snap-align:start; flex:0 0 72%; max-width:280px; }
     #v-provider-cookbook .cookbook-grid{
       display:grid;
       grid-template-columns:repeat(2, 1fr);
       gap:16px;
-      margin-bottom:100px;
+      margin-bottom:120px;
     }
     #v-provider-cookbook .cookbook-item{
       background:#fff;
-      border:1px solid rgba(0,0,0,0.06);
-      border-radius:16px;
+      border:none;
+      border-radius:24px;
       overflow:hidden;
-      box-shadow:0 2px 12px rgba(0,0,0,0.06);
+      box-shadow:0 4px 20px rgba(0,0,0,0.05);
       display:flex;
       flex-direction:column;
       position:relative;
-      transition:transform 0.1s;
+      transition:transform 0.12s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.2s;
       font-family:system-ui,-apple-system,sans-serif;
     }
-    #v-provider-cookbook .cookbook-item:active{ transform:scale(0.98); }
-    /* Bild: 16:9 Querformat, clean (keine Schiefertafel) */
+    #v-provider-cookbook .cookbook-item:active{ transform:scale(0.97); }
     #v-provider-cookbook .cookbook-item-header{
       position:relative;
       width:100%;
@@ -953,72 +968,31 @@
       object-fit:cover;
       display:block;
     }
-    #v-provider-cookbook .cookbook-item-price-tag{
-      position:absolute;
-      bottom:8px;
-      right:8px;
-      background:rgba(0,0,0,0.7);
-      color:#fff;
-      font-weight:700;
-      font-size:13px;
-      padding:4px 8px;
-      border-radius:8px;
-    }
-    #v-provider-cookbook .cookbook-item-menu{
-      position:absolute;
-      top:8px;
-      right:8px;
-      width:44px;
-      height:44px;
-      border-radius:50%;
-      background:rgba(255,255,255,0.95);
-      color:#334155;
-      border:1px solid rgba(0,0,0,0.08);
-      cursor:pointer;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      z-index:2;
-      box-shadow:0 2px 8px rgba(0,0,0,0.1);
-    }
-    /* Säulen: direkt unter dem Bild (🍴 immer farbig, 🧾 bei Abholnummer farbig, 🔄 bei Mehrweg farbig) */
-    #v-provider-cookbook .cookbook-item-pillars{
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap:12px;
-      padding:8px 12px;
-      background:#f8fafc;
-      border-bottom:1px solid rgba(0,0,0,0.04);
-      font-size:18px;
-    }
-    #v-provider-cookbook .cookbook-item-pillars .pillar-gray{ opacity:0.4; }
-    #v-provider-cookbook .cookbook-item-body{ padding:12px; flex:1; display:flex; flex-direction:column; }
-    #v-provider-cookbook .cookbook-item-title{ font-weight:800; font-size:15px; color:#1a1a1a; margin-bottom:6px; line-height:1.3; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
-    #v-provider-cookbook .cookbook-item-meta{ display:flex; align-items:center; gap:6px; margin-bottom:8px; flex-wrap:wrap; }
-    #v-provider-cookbook .cookbook-item-badge{ font-size:11px; font-weight:600; padding:3px 8px; border-radius:6px; background:#e2e8f0; color:#475569; }
-    #v-provider-cookbook .cookbook-item-allergens{ font-size:11px; color:#94a3b8; margin-bottom:4px; letter-spacing:0.02em; }
-    #v-provider-cookbook .cookbook-item-allergens:empty{ display:none; }
-    #v-provider-cookbook .cookbook-item-stats{ display:flex; flex-direction:column; gap:4px; margin-bottom:12px; padding:10px 12px; background:#f8fafc; border-radius:10px; font-size:12px; }
-    #v-provider-cookbook .cookbook-item-stats-row{ display:flex; justify-content:space-between; align-items:center; gap:8px; }
-    #v-provider-cookbook .cookbook-item-stats-label{ color:#64748b; font-weight:600; }
-    #v-provider-cookbook .cookbook-item-stats-value{ color:#1a1a1a; font-weight:700; }
-    #v-provider-cookbook .cookbook-item-info{ font-size:11px; color:#64748b; margin-left:auto; }
-    #v-provider-cookbook .cookbook-item-revenue{ font-weight:800; font-size:14px; color:#1a1a1a; margin-top:4px; }
-    #v-provider-cookbook .cookbook-item-cta-wrap{ margin-top:auto; }
-    #v-provider-cookbook .cookbook-item-cta-wrap.cookbook-cta-hidden{ display:none !important; }
-    #v-provider-cookbook .cookbook-item.cookbook-item-selected{ box-shadow:0 0 0 3px var(--prov-brand,#0ea5e9); border-radius:var(--card-radius-premium, 20px); }
-    #v-provider-cookbook .cookbook-list-has-selection .cookbook-item:not(.cookbook-item-selected){ opacity:0.5; }
-    #v-provider-cookbook .cookbook-action-bar{ max-width:500px; margin:0 auto; box-sizing:border-box; }
-    #v-provider-cookbook .cookbook-bar-btn{ min-height:52px; border-radius:16px; font-size:14px; font-weight:800; display:inline-flex; align-items:center; justify-content:center; gap:8px; cursor:pointer; border:none; transition:transform 0.2s, background 0.2s; flex:1; min-width:0; }
-    #v-provider-cookbook .cookbook-bar-btn:active{ transform:scale(0.98); }
+    #v-provider-cookbook .cookbook-item-price-tag,
+    #v-provider-cookbook .cookbook-item-menu,
+    #v-provider-cookbook .cookbook-item-pillars{ display:none !important; }
+    #v-provider-cookbook .cookbook-item-body{ padding:14px; flex:1; display:flex; flex-direction:column; }
+    #v-provider-cookbook .cookbook-item-title{ font-weight:600; font-size:18px; color:#1a1a1a; margin:0 0 6px; line-height:1.3; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+    #v-provider-cookbook .cookbook-item-facts{ font-size:13px; color:#64748b; font-weight:500; }
+    #v-provider-cookbook .cookbook-item-meta,
+    #v-provider-cookbook .cookbook-item-allergens,
+    #v-provider-cookbook .cookbook-item-stats{ display:none !important; }
+    #v-provider-cookbook .cookbook-item-revenue{ display:none; }
+    #v-provider-cookbook .cookbook-item-cta-wrap{ display:none !important; }
+    #v-provider-cookbook .cookbook-item.cookbook-item-selected{ box-shadow:0 0 0 2px #007AFF; border-radius:24px; }
+    #v-provider-cookbook .cookbook-list-has-selection .cookbook-item:not(.cookbook-item-selected){ opacity:0.55; }
+    /* Bottom-Bar: Spring (Stiffness 400, Damping 28) – sattes Einrasten, kein Nachschwingen */
+    #v-provider-cookbook .cookbook-action-bar{ max-width:500px; margin:0 auto; box-sizing:border-box; transition:transform 0.32s cubic-bezier(0.33, 0.6, 0.2, 1); }
+    #v-provider-cookbook .cookbook-action-bar.cookbook-bar-visible{ transform:translateY(0); }
+    #v-provider-cookbook .cookbook-bar-btn{ min-height:52px; border-radius:16px; font-size:14px; font-weight:800; display:inline-flex; align-items:center; justify-content:center; gap:6px; cursor:pointer; border:none; transition:transform 0.12s cubic-bezier(0.2, 0.8, 0.2, 1), background 0.2s; flex:1; min-width:0; }
+    #v-provider-cookbook .cookbook-bar-btn:active{ transform:scale(0.97); }
     #v-provider-cookbook .cookbook-bar-secondary{ background:#f1f3f5; color:#475569; border:2px solid #e2e8f0; }
-    #v-provider-cookbook .cookbook-bar-primary{ background:#10b981; color:#fff; box-shadow:0 4px 16px rgba(16,185,129,0.35); flex:1.5; }
+    #v-provider-cookbook .cookbook-bar-primary{ background:#007AFF; color:#fff; box-shadow:0 4px 16px rgba(0,122,255,0.3); }
     #v-provider-cookbook .cookbook-bar-primary.cookbook-bar-inserieren{ background:#FFD700; color:#1a1a1a; box-shadow:0 4px 16px rgba(255,215,0,0.4); }
-    #v-provider-cookbook #cookbookBarSelected{ display:none; }
-    #v-provider-cookbook #cookbookBarSelected.cookbook-bar-selected-visible{ display:flex !important; }
+    #v-provider-cookbook #cookbookBarSelected{ display:none; transform:translateY(20px); opacity:0; transition:transform 0.32s cubic-bezier(0.33, 0.6, 0.2, 1), opacity 0.28s; }
+    #v-provider-cookbook #cookbookBarSelected.cookbook-bar-selected-visible{ display:flex !important; transform:translateY(0); opacity:1; }
     #v-provider-cookbook #cookbookBarDefault.cookbook-bar-default-hidden{ display:none !important; }
-    #v-provider-cookbook .cookbook-bar-close{ background:#f1f3f5; color:#64748b; border:2px solid #e2e8f0; }
+    #v-provider-cookbook .cookbook-bar-close{ display:none; }
     #v-provider-cookbook .cookbook-item-abholzusatz{ font-size:11px; color:#64748b; margin-bottom:4px; }
     #v-provider-cookbook .cookbook-item-btn{
       width:100%;
@@ -1056,6 +1030,26 @@
     .cookbook-action-sheet-title{ font-weight:800; font-size:18px; color:#1a1a1a; margin-bottom:16px; text-align:center; }
     .cookbook-action-sheet-btn{ width:100%; min-height:52px; border-radius:14px; background:#f8f7f2; border:1px solid rgba(0,0,0,0.08); color:#1a1a1a; font-weight:700; font-size:15px; margin-bottom:10px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; }
     .cookbook-action-sheet-btn-danger{ color:#dc2626; border-color:rgba(220,38,38,0.3); }
+    .cookbook-week-sheet.cookbook-week-visible{ transform:translateY(0); }
+    #cookbookWeekSheetBd.cookbook-week-bd-visible{ opacity:1; }
+    #cookbookWeekSheet .cookbook-week-day-btn{ animation:cookbookWeekStagger 0.35s ease-out backwards; }
+    #cookbookWeekSheet .cookbook-week-day-btn:nth-child(1){ animation-delay:0.03s; }
+    #cookbookWeekSheet .cookbook-week-day-btn:nth-child(2){ animation-delay:0.06s; }
+    #cookbookWeekSheet .cookbook-week-day-btn:nth-child(3){ animation-delay:0.09s; }
+    #cookbookWeekSheet .cookbook-week-day-btn:nth-child(4){ animation-delay:0.12s; }
+    #cookbookWeekSheet .cookbook-week-day-btn:nth-child(5){ animation-delay:0.15s; }
+    #cookbookWeekSheet .cookbook-week-day-btn:nth-child(6){ animation-delay:0.18s; }
+    #cookbookWeekSheet .cookbook-week-day-btn:nth-child(7){ animation-delay:0.21s; }
+    @keyframes cookbookWeekStagger{ from{ opacity:0; transform:translateY(12px); } to{ opacity:1; transform:translateY(0); } }
+    .cookbook-victory-overlay{ position:fixed; inset:0; z-index:1100; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,0.9); backdrop-filter:blur(8px); animation:cookbookVictoryFade 0.2s ease-out; }
+    /* Success-Check: Spring (500, 15) – leichtes Nachfedern */
+    .cookbook-victory-overlay .check-wrap{ width:72px; height:72px; border-radius:50%; background:rgba(16,185,129,0.2); border:3px solid #10b981; display:flex; align-items:center; justify-content:center; animation:cookbookVictoryPop 0.48s cubic-bezier(0.34, 1.4, 0.64, 1) forwards; }
+    .cookbook-victory-overlay .check-wrap span{ font-size:40px; color:#10b981; }
+    @keyframes cookbookVictoryPop{ 0%{ transform:scale(0.8); opacity:0.9; } 70%{ transform:scale(1.05); } 100%{ transform:scale(1); opacity:1; } }
+    @keyframes cookbookVictoryFade{ from{ opacity:0; } to{ opacity:1; } }
+    .toast-soft-error{ background:#FF9500 !important; color:#fff !important; }
+    .shake-horizontal{ animation:shakeH 0.3s ease-in-out; }
+    @keyframes shakeH{ 0%,100%{ transform:translateX(0); } 20%{ transform:translateX(-5px); } 40%{ transform:translateX(5px); } 60%{ transform:translateX(-5px); } 80%{ transform:translateX(5px); } }
     .cookbook-item{ position:relative; }
     .cookbook-actions{ display:none; }
     .cookbook-facts{ font-size:11px; color:#64748b; margin-top:4px; }
@@ -1562,15 +1556,21 @@
     }
     #wizard.sheet--kitchen .w-actions button.btn-glass-secondary{ background:rgba(255,255,255,0.4); }
     .listing-success-overlay span{ color:#10b981 !important; }
+    /* Success-Check: Spring (Stiffness 500, Damping 15) – leichtes, freudiges Nachfedern */
     .listing-success-overlay .success-check-wrap{
-      animation: listing-success-shimmer 1.2s ease-in-out 2;
+      animation: listing-success-pop 0.48s cubic-bezier(0.34, 1.4, 0.64, 1) forwards, listing-success-shimmer 1.2s ease-in-out 2 0.3s;
+    }
+    @keyframes listing-success-pop{
+      0%{ transform:scale(0.8); opacity:0.9; }
+      70%{ transform:scale(1.05); }
+      100%{ transform:scale(1); opacity:1; }
     }
     @keyframes listing-success-shimmer{
       0%,100%{ box-shadow: 0 0 0 0 rgba(16,185,129,0.35); }
       50%{ box-shadow: 0 0 0 16px rgba(16,185,129,0); }
     }
     .listing-success-overlay.slide-exit{
-      transition: transform 0.35s ease-out, opacity 0.35s ease-out;
+      transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.35s ease-out;
       transform: translateY(-24px);
       opacity: 0;
     }
@@ -6106,26 +6106,10 @@
             <span>Sortieren</span>
           </button>
         </div>
-        <div id="cookbookBarSelected" style="display:none; flex-direction:column; gap:10px;">
-          <div style="display:flex; align-items:center; gap:10px;">
-            <button type="button" id="cookbookBarClose" class="cookbook-bar-btn cookbook-bar-close" aria-label="Auswahl aufheben" style="flex:0 0 52px;">
-              <i data-lucide="x" style="width:22px;height:22px;"></i>
-            </button>
-            <button type="button" id="cookbookBarLive" class="cookbook-bar-btn cookbook-bar-primary" style="flex:1;">
-              <i data-lucide="zap" style="width:20px;height:20px;"></i>
-              <span>Jetzt live schalten</span>
-            </button>
-          </div>
-          <div style="display:flex; gap:10px;">
-            <button type="button" id="cookbookBarWeek" class="cookbook-bar-btn cookbook-bar-secondary" style="flex:1;">
-              <i data-lucide="calendar" style="width:20px;height:20px;"></i>
-              <span>In den Wochenplan</span>
-            </button>
-            <button type="button" id="cookbookBarEdit" class="cookbook-bar-btn cookbook-bar-secondary" style="flex:1;">
-              <i data-lucide="edit" style="width:20px;height:20px;"></i>
-              <span>Bearbeiten</span>
-            </button>
-          </div>
+        <div id="cookbookBarSelected" style="display:none; flex-direction:row; gap:10px; align-items:stretch;">
+          <button type="button" id="cookbookBarEdit" class="cookbook-bar-btn cookbook-bar-secondary" style="flex:1;">Bearbeiten</button>
+          <button type="button" id="cookbookBarWeek" class="cookbook-bar-btn cookbook-bar-secondary" style="flex:1;">📅 Wochenplan</button>
+          <button type="button" id="cookbookBarLive" class="cookbook-bar-btn cookbook-bar-primary" style="flex:1.2;">Auswählen</button>
         </div>
       </div>
     </section>
@@ -6135,7 +6119,7 @@
     <div class="sheet sheet--kitchen" id="cookbookLiveSheet" style="max-width:480px; border-radius:28px 28px 0 0; overflow:hidden; z-index:1051;">
       <div class="handle"></div>
       <div class="sheet-body" style="padding:20px 20px calc(24px + env(safe-area-inset-bottom));">
-        <h3 id="cookbookLiveSheetTitle" style="margin:0 0 8px; font-size:18px; font-weight:900; color:#1a1a1a;">Jetzt live schalten</h3>
+        <h3 id="cookbookLiveSheetTitle" style="margin:0 0 8px; font-size:18px; font-weight:900; color:#1a1a1a;">Auswählen</h3>
         <p id="cookbookLiveSheetDish" style="margin:0 0 16px; font-size:15px; color:#64748b;"></p>
         <div style="margin-bottom:16px;">
           <label style="display:block; font-size:11px; font-weight:800; color:#64748b; text-transform:uppercase; margin-bottom:6px;">Preis (aus Kochbuch)</label>
@@ -6156,12 +6140,12 @@
       </div>
     </div>
 
-    <!-- Kochbuch: Bottom-Sheet "In den Wochenplan" (Mo–So, Ein-Klick) -->
-    <div class="backdrop" id="cookbookWeekSheetBd" style="display:none; background:rgba(0,0,0,0.5); z-index:1050;" onclick="closeCookbookWeekSheet()"></div>
-    <div class="sheet sheet--kitchen" id="cookbookWeekSheet" style="max-width:480px; border-radius:28px 28px 0 0; overflow:hidden; z-index:1051;">
+    <!-- Kochbuch: Bottom-Sheet "Wochenplan" (Mo–So, Backdrop-Blur, Stagger) -->
+    <div class="backdrop cookbook-week-bd" id="cookbookWeekSheetBd" style="display:none; background:rgba(0,0,0,0.4); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); z-index:1050; transition:opacity 0.4s;" onclick="closeCookbookWeekSheet()"></div>
+    <div class="sheet sheet--kitchen cookbook-week-sheet" id="cookbookWeekSheet" style="max-width:480px; border-radius:28px 28px 0 0; overflow:hidden; z-index:1051; transition:transform 0.4s cubic-bezier(0.4,0,0.2,1);">
       <div class="handle"></div>
       <div class="sheet-body" style="padding:20px 20px calc(24px + env(safe-area-inset-bottom));">
-        <h3 style="margin:0 0 4px; font-size:18px; font-weight:900; color:#1a1a1a;">In den Wochenplan</h3>
+        <h3 style="margin:0 0 4px; font-size:18px; font-weight:900; color:#1a1a1a;">Wochenplan</h3>
         <p id="cookbookWeekSheetDish" style="margin:0 0 20px; font-size:14px; color:#64748b;"></p>
         <p style="margin:0 0 16px; font-size:13px; color:#64748b;">Tippe auf einen Tag – das Gericht wird dort eingetragen.</p>
         <div id="cookbookWeekSheetDays" style="display:flex; gap:10px; flex-wrap:wrap;"></div>
@@ -14356,6 +14340,22 @@
       toast.style.opacity = '0';
     }, 3000);
   }
+  /** High-End Error: Haptik 100ms, optional Shake am Element, Toast am oberen Rand (mattes Orange). */
+  function showSoftError(message, element){
+    try { if(navigator.vibrate) navigator.vibrate(100); else if(typeof haptic === 'function') haptic(100); } catch(e){}
+    if(element && element.classList){ element.classList.add('shake-horizontal'); setTimeout(function(){ element.classList.remove('shake-horizontal'); }, 300); }
+    var el = document.getElementById('toastSoftError');
+    if(!el){
+      el = document.createElement('div');
+      el.id = 'toastSoftError';
+      el.className = 'toast-soft-error';
+      el.style.cssText = 'position:fixed; top:calc(60px + env(safe-area-inset-top)); left:16px; right:16px; background:#FF9500; color:#fff; padding:14px 18px; border-radius:14px; font-size:14px; font-weight:600; z-index:1100; opacity:0; transition:opacity .25s; pointer-events:none; text-align:center; box-shadow:0 4px 20px rgba(255,149,0,0.35);';
+      document.body.appendChild(el);
+    }
+    el.textContent = message || 'Etwas ist schiefgelaufen.';
+    el.style.opacity = '1';
+    setTimeout(function(){ el.style.opacity = '0'; }, 3500);
+  }
 
   async function copyShareLink(){
     const url = sharePayload.url || location.href;
@@ -20991,11 +20991,29 @@
     if(sheet) sheet.style.display = 'none';
   }
 
+  /** Gesamtumsatz für ein Kochbuch-Gericht (aus Orders: gleicher Provider + gleicher Gerichtsname). */
+  function getCookbookEntryRevenue(entry){
+    var orders = typeof loadOrders === 'function' ? loadOrders() : [];
+    var pid = typeof providerId === 'function' ? providerId() : '';
+    var dishName = String(entry.dish || '').trim();
+    var totalCents = 0;
+    orders.forEach(function(ord){
+      if(ord.status !== 'PAID' && ord.status !== 'PICKED_UP' && ord.status !== 'COMPLETED') return;
+      if(String(ord.providerId) !== String(pid)) return;
+      if(String(ord.providerId) !== String(pid)) return;
+      var nameMatch = ord.dishName && String(ord.dishName).trim() === dishName;
+      if(!nameMatch && typeof offers !== 'undefined' && offers && ord.dishId){ var o = offers.find(function(x){ return x.id === ord.dishId; }); nameMatch = o && String((o.dish||'').trim()) === dishName; }
+      if(nameMatch) totalCents += (ord.total || 0);
+    });
+    return totalCents / 100;
+  }
+
   function renderCookbook(){
     const box = document.getElementById('cookbookList');
     const tabs = document.getElementById('cookbookTabs');
     const sortSelect = document.getElementById('cookbookSortSelect');
     const search = document.getElementById('cookbookSearch');
+    const scrollWrap = document.getElementById('cookbookScrollWrap');
     if(!box) return;
 
     let updated = false;
@@ -21086,107 +21104,68 @@
       const yesterday = isoDate(new Date(Date.now()-86400000));
       if(iso===today) return 'Heute';
       if(iso===yesterday) return 'Gestern';
-      return d.toLocaleDateString('de-DE', {day:'2-digit', month:'2-digit'});
+      return d.toLocaleDateString('de-DE', {day:'2-digit', month:'short'});
     };
 
     const buildItem = (entry, isDraft)=>{
       const item=document.createElement('div');
       item.className='cookbook-item';
-      var prof = (typeof provider !== 'undefined' && provider && provider.profile) ? provider.profile : {};
-      var defaultDineIn = prof.dineInPossibleDefault !== false;
-      var defaultPickup = !!prof.abholnummerEnabledByDefault;
-      var defaultReuse = !!prof.reuseEnabledByDefault;
-      var entryDineIn = entry.dineInPossible !== false;
-      var entryPickup = !!(entry.hasPickupCode !== undefined ? entry.hasPickupCode : defaultPickup);
-      var entryReuse = !!(entry.reuse && entry.reuse.enabled);
-      var showVorOrt = (entry.dineInPossible !== undefined) && (entryDineIn !== defaultDineIn);
-      var showAbholnummer = (entry.hasPickupCode !== undefined) && (!!entry.hasPickupCode !== defaultPickup);
-      var showMehrweg = (entry.reuse !== undefined) && (entryReuse !== defaultReuse);
       const imgEl = entry.photoData
-        ? `<img class="cookbook-item-image" src="${esc(entry.photoData)}" alt="${esc(entry.dish)}" loading="lazy" />`
-        : `<div class="cookbook-item-image" style="background:#e5e7eb; display:flex; align-items:center; justify-content:center;"><i data-lucide="utensils" style="width:36px; height:36px; color:#94a3b8;"></i></div>`;
-      const categoryBadge = entry.category ? `<span class="cookbook-item-badge">${esc(entry.category)}</span>` : '';
+        ? '<img class="cookbook-item-image" src="'+esc(entry.photoData)+'" alt="'+esc(entry.dish)+'" loading="lazy" />'
+        : '<div class="cookbook-item-image" style="background:#e5e7eb; display:flex; align-items:center; justify-content:center;"></div>';
       const lastUsedLabel = isDraft ? 'Entwurf' : formatDayLabel(entry.lastUsed);
       const lastPrice = entry.price != null ? euro(entry.price) : '–';
-      const allergens = (entry.allergens || []).slice(0, 5);
-      const allergenStr = allergens.map(a => typeof a === 'string' ? (a.trim().split(/\s+/)[0] || '').slice(0, 2).toUpperCase() : '').filter(Boolean).join(' ');
-      const allOrders = (typeof loadOrders === 'function' ? loadOrders() : []) || [];
-      const soldCount = (typeof offers !== 'undefined' && offers) ? allOrders.filter(ord => {
-        const o = offers.find(x => x.id === ord.dishId);
-        if(!o || o.providerId !== entry.providerId) return false;
-        const odish = String(o.dish || o.title || '').trim();
-        const edish = String(entry.dish || '').trim();
-        return odish === edish;
-      }).length : 0;
-      const pillarClass = (on) => on ? '' : ' pillar-gray';
-      const pillarVorOrt = showVorOrt ? entryDineIn : false;
-      const pillarAbhol = showAbholnummer ? entryPickup : false;
-      const pillarMehrweg = showMehrweg ? entryReuse : false;
-      const statsHtml = `
-        <div class="cookbook-item-stats">
-          <div class="cookbook-item-stats-row">
-            <span class="cookbook-item-stats-label">Aktiv</span>
-            <span class="cookbook-item-stats-value">${esc(isDraft ? 'Entwurf' : lastUsedLabel)}</span>
-          </div>
-          <div class="cookbook-item-stats-row">
-            <span class="cookbook-item-stats-label">Preis</span>
-            <span class="cookbook-item-stats-value">${esc(lastPrice)}</span>
-          </div>
-          <div class="cookbook-item-stats-row">
-            <span class="cookbook-item-stats-label">Verkäufe</span>
-            <span class="cookbook-item-stats-value">${soldCount}</span>
-          </div>
-        </div>`;
+      const revenue = typeof getCookbookEntryRevenue === 'function' ? getCookbookEntryRevenue(entry) : 0;
+      const revenueStr = revenue > 0 ? (Math.round(revenue*100)/100).toFixed(2).replace('.',',') + ' €' : '–';
+      const factsLine = lastUsedLabel + ' • ' + lastPrice + ' • ' + revenueStr;
       item.dataset.dishId = entry.id;
       if(selectedCookbookId === entry.id) item.classList.add('cookbook-item-selected'); else item.classList.remove('cookbook-item-selected');
-      item.innerHTML = `
-        <div class="cookbook-item-header">
-          ${imgEl}
-          <div class="cookbook-item-price-tag">${euro(entry.price||0)}</div>
-          <button type="button" class="cookbook-item-menu" aria-label="Optionen">
-            <i data-lucide="more-horizontal"></i>
-          </button>
-        </div>
-        <div class="cookbook-item-pillars">
-          <span title="Vor Ort${showVorOrt ? ' (Abweichung)' : ''}"${pillarClass(pillarVorOrt)}>🍴</span>
-          <span title="Abholnummer${showAbholnummer ? ' (Abweichung)' : ''}"${pillarClass(pillarAbhol)}>🧾</span>
-          <span title="Mehrweg${showMehrweg ? ' (Abweichung)' : ''}"${pillarClass(pillarMehrweg)}>🔄</span>
-        </div>
-        <div class="cookbook-item-body">
-          <div class="cookbook-item-title">${esc(entry.dish||'Gericht')}</div>
-          <div class="cookbook-item-meta">${categoryBadge}</div>
-          ${allergenStr ? '<div class="cookbook-item-allergens">' + esc(allergenStr) + '</div>' : '<div class="cookbook-item-allergens"></div>'}
-          ${statsHtml}
-          <div class="cookbook-item-cta-wrap cookbook-cta-hidden"></div>
-        </div>
-      `;
-      const menuBtn = item.querySelector('.cookbook-item-menu');
-      if(menuBtn){
-        const ent = entry;
-        menuBtn.onclick = (e)=>{ e.stopPropagation(); if(typeof haptic === 'function') haptic(6); openCookbookActionSheet(ent); };
-      }
+      item.innerHTML = '<div class="cookbook-item-header">'+imgEl+'</div><div class="cookbook-item-body"><div class="cookbook-item-title">'+esc(entry.dish||'Gericht')+'</div><div class="cookbook-item-facts">'+esc(factsLine)+'</div></div>';
       item.style.cursor = 'pointer';
-      item.onclick = (e)=>{
-        if(e.target.closest('.cookbook-item-menu')) return;
-        if(typeof haptic === 'function') haptic(6);
+      item.onclick = function(e){
+        try { if(typeof haptic === 'function') haptic(18); else if(navigator.vibrate) navigator.vibrate(18); } catch(err){}
         selectedCookbookId = (selectedCookbookId === entry.id) ? null : entry.id;
         updateCookbookActionBar();
         box.querySelectorAll('.cookbook-item').forEach(function(el){ el.classList.toggle('cookbook-item-selected', el.dataset.dishId === selectedCookbookId); });
+        if(scrollWrap) scrollWrap.querySelectorAll('.cookbook-item').forEach(function(el){ el.classList.toggle('cookbook-item-selected', el.dataset.dishId === selectedCookbookId); });
       };
       return item;
     };
 
+    var bestsellerWrap = document.getElementById('cookbookBestsellerWrap');
+    if(!bestsellerWrap && scrollWrap){
+      bestsellerWrap = document.createElement('div');
+      bestsellerWrap.id = 'cookbookBestsellerWrap';
+      bestsellerWrap.style.marginBottom = '16px';
+      if(box.nextSibling) scrollWrap.insertBefore(bestsellerWrap, box); else scrollWrap.appendChild(bestsellerWrap);
+    }
+    if(bestsellerWrap){
+      if(cookbookTab === 'dishes' && list.length > 0){
+        var withRevenue = list.map(function(e){ return { entry: e, revenue: typeof getCookbookEntryRevenue === 'function' ? getCookbookEntryRevenue(e) : 0 }; });
+        withRevenue.sort(function(a,b){ return b.revenue - a.revenue; });
+        var top3 = withRevenue.slice(0, 3).map(function(x){ return x.entry; });
+        bestsellerWrap.style.display = 'block';
+        bestsellerWrap.innerHTML = '';
+        var strip = document.createElement('div');
+        strip.className = 'cookbook-bestseller-strip';
+        top3.forEach(function(entry){ strip.appendChild(buildItem(entry, false)); });
+        bestsellerWrap.appendChild(strip);
+      } else { bestsellerWrap.style.display = 'none'; bestsellerWrap.innerHTML = ''; }
+    }
+
     box.className='cookbook-grid';
     box.innerHTML = '';
     if(!list.length){
-      box.innerHTML = `<div class="cookbook-empty hint" style="grid-column:1/-1; text-align:center; padding:32px 16px; color:#64748b; font-size:15px;">In dieser Ansicht sind noch keine ${cookbookTab==='drafts' ? 'Entwürfe' : 'Gerichte'}.</div>`;
+      var bw = document.getElementById('cookbookBestsellerWrap');
+      if(bw){ bw.style.display = 'none'; bw.innerHTML = ''; }
+      box.innerHTML = '<div class="cookbook-empty hint" style="grid-column:1/-1; text-align:center; padding:32px 16px; color:#64748b; font-size:15px;">In dieser Ansicht sind noch keine '+(cookbookTab==='drafts' ? 'Entwürfe' : 'Gerichte')+'.</div>';
       selectedCookbookId = null;
       updateCookbookActionBar();
       wireCookbookActionBar();
-      if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
+      if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
       return;
     }
-    list.forEach(entry=> box.appendChild(buildItem(entry, cookbookTab==='drafts')));
+    list.forEach(function(entry){ box.appendChild(buildItem(entry, cookbookTab==='drafts')); });
     updateCookbookActionBar();
     wireCookbookActionBar();
     if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
@@ -21202,6 +21181,7 @@
       if(defaultBar) defaultBar.classList.add('cookbook-bar-default-hidden');
       if(selectedBar) selectedBar.classList.add('cookbook-bar-selected-visible');
       if(list) list.classList.add('cookbook-list-has-selection');
+      setTimeout(function(){ try { if(navigator.vibrate) navigator.vibrate(8); } catch(e){} }, 320);
     } else {
       if(defaultBar) defaultBar.classList.remove('cookbook-bar-default-hidden');
       if(selectedBar) selectedBar.classList.remove('cookbook-bar-selected-visible');
@@ -21249,10 +21229,14 @@
         renderCookbook();
       };
     }
-    var barClose = document.getElementById('cookbookBarClose');
-    if(barClose) barClose.onclick = function(){ if(typeof haptic === 'function') haptic(6); clearCookbookSelection(); };
     var barLive = document.getElementById('cookbookBarLive');
-    if(barLive) barLive.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(selectedCookbookId && typeof openCookbookLiveSheet === 'function') openCookbookLiveSheet(); };
+    if(barLive) barLive.onclick = function(){
+      if(typeof haptic === 'function') haptic(6);
+      if(!selectedCookbookId) return;
+      var id = selectedCookbookId;
+      clearCookbookSelection();
+      if(typeof startListingFlow === 'function') startListingFlow({ dishId: id, date: typeof isoDate === 'function' ? isoDate(new Date()) : '', skipQuickPost: true, entryPoint: 'dashboard' });
+    };
     var barWeek = document.getElementById('cookbookBarWeek');
     if(barWeek) barWeek.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(selectedCookbookId && typeof openCookbookWeekSheet === 'function') openCookbookWeekSheet(); };
     var barEdit = document.getElementById('cookbookBarEdit');
@@ -21309,6 +21293,15 @@
     if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
   }
   function closeCookbookLiveSheet(){ var bd = document.getElementById('cookbookLiveSheetBd'); var sheet = document.getElementById('cookbookLiveSheet'); if(bd) bd.style.display = 'none'; if(sheet) sheet.classList.remove('active'); }
+  function showCookbookVictoryOverlay(dayLabel, thenCallback){
+    try { if(typeof haptic === 'function') haptic([12, 55, 12]); else if(navigator.vibrate) navigator.vibrate([12, 55, 12]); } catch(e){}
+    var overlay = document.createElement('div');
+    overlay.className = 'cookbook-victory-overlay';
+    overlay.innerHTML = '<div class="check-wrap"><span>✓</span></div>';
+    document.body.appendChild(overlay);
+    if(typeof showToast === 'function') showToast('Gericht für ' + dayLabel + ' geplant!');
+    setTimeout(function(){ overlay.remove(); if(thenCallback) thenCallback(); }, 1500);
+  }
   function openCookbookWeekSheet(){
     if(!selectedCookbookId) return;
     var entry = (cookbook||[]).find(function(c){ return String(c.id) === String(selectedCookbookId); });
@@ -21327,17 +21320,29 @@
       var label = (i === 0 ? 'Heute, ' : '') + dayNames[d.getDay() ? d.getDay()-1 : 6] + ' ' + d.getDate() + '.' + (d.getMonth()+1) + '.';
       var btnDay = document.createElement('button');
       btnDay.type = 'button';
-      btnDay.className = 'cookbook-bar-btn cookbook-bar-secondary';
+      btnDay.className = 'cookbook-bar-btn cookbook-bar-secondary cookbook-week-day-btn';
       btnDay.style.flex = '1 1 40%';
       btnDay.textContent = label;
-      (function(k, dayLabel){ btnDay.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(typeof addCookbookEntryToWeek === 'function') addCookbookEntryToWeek(k, selectedCookbookId); if(typeof showToast === 'function') showToast('Gericht für ' + dayLabel + ' gespeichert'); closeCookbookWeekSheet(); clearCookbookSelection(); if(typeof renderCookbook === 'function') renderCookbook(); if(typeof renderProviderWeekPreviewNew === 'function') renderProviderWeekPreviewNew(); }; })(key, label);
+      (function(k, dayLabel){
+        btnDay.onclick = function(){
+          if(typeof addCookbookEntryToWeek === 'function') addCookbookEntryToWeek(k, selectedCookbookId);
+          if(typeof showCookbookVictoryOverlay === 'function') showCookbookVictoryOverlay(dayLabel, function(){ closeCookbookWeekSheet(); clearCookbookSelection(); if(typeof renderCookbook === 'function') renderCookbook(); if(typeof renderProviderWeekPreviewNew === 'function') renderProviderWeekPreviewNew(); });
+          else { closeCookbookWeekSheet(); clearCookbookSelection(); if(typeof renderCookbook === 'function') renderCookbook(); if(typeof renderProviderWeekPreviewNew === 'function') renderProviderWeekPreviewNew(); }
+        };
+      })(key, label);
       daysWrap.appendChild(btnDay);
     }
     bd.style.display = 'block';
-    sheet.classList.add('active');
+    bd.classList.add('cookbook-week-bd-visible');
+    sheet.classList.add('active', 'cookbook-week-visible');
     if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
   }
-  function closeCookbookWeekSheet(){ var bd = document.getElementById('cookbookWeekSheetBd'); var sheet = document.getElementById('cookbookWeekSheet'); if(bd) bd.style.display = 'none'; if(sheet) sheet.classList.remove('active'); }
+  function closeCookbookWeekSheet(){
+    var bd = document.getElementById('cookbookWeekSheetBd');
+    var sheet = document.getElementById('cookbookWeekSheet');
+    if(bd){ bd.style.display = 'none'; bd.classList.remove('cookbook-week-bd-visible'); }
+    if(sheet) sheet.classList.remove('active', 'cookbook-week-visible');
+  }
 
   function closeQuickPostSheet(){
     const bd = document.getElementById('quickPostBd');
@@ -22478,7 +22483,7 @@
         setWizardNext('Weiter');
         if(wNextBtn){
           wNextBtn.style.display='flex';
-          if(!primaryValid){ wNextBtn.disabled=true; wNextBtn.style.opacity='0.5'; wNextBtn.onclick=function(){ if(typeof haptic==='function') haptic(4); if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); }; }
+          if(!primaryValid){ wNextBtn.disabled=true; wNextBtn.style.opacity='0.5'; wNextBtn.onclick=function(){ var wBox=document.getElementById('wBox'); if(typeof showSoftError==='function') showSoftError('Preis fehlt noch. Bitte Gericht und Preis eingeben.', wBox); else if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); }; }
           else { wNextBtn.disabled=false; wNextBtn.style.opacity=''; wNextBtn.onclick=function(){ if(typeof haptic==='function') haptic(10); w.step++; saveDraft(); rebuildWizard(); }; }
         }
       }
@@ -22769,7 +22774,7 @@
         tileWeekFirst.type = 'button';
         tileWeekFirst.className = 'btn primary';
         tileWeekFirst.style.cssText = 'display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; border-radius:20px; background:#10b981; color:#fff; border:none; box-shadow:0 8px 20px rgba(16,185,129,0.35); cursor:pointer;';
-        tileWeekFirst.innerHTML = '<i data-lucide="calendar" style="width:32px; height:32px; margin-bottom:12px;"></i><div style="font-size:18px; font-weight:900;">In den Wochenplan</div><div style="font-size:13px; margin-top:4px; opacity:0.9;">Dann in den Planer</div>';
+        tileWeekFirst.innerHTML = '<i data-lucide="calendar" style="width:32px; height:32px; margin-bottom:12px;"></i><div style="font-size:18px; font-weight:900;">Wochenplan</div><div style="font-size:13px; margin-top:4px; opacity:0.9;">Dann in den Planer</div>';
         tileWeekFirst.onclick = function(){ try { saveToCookbookFromWizard(); closeWizard(true); if(typeof showToast==='function') showToast('Gespeichert – öffne Wochenplan'); setTimeout(function(){ if(typeof showProviderWeek==='function') showProviderWeek(); }, 80); } catch(e) { if(typeof showToast==='function') showToast('Fehler beim Speichern'); } };
         grid.appendChild(tileWeekFirst);
       }
@@ -22788,7 +22793,7 @@
       tileWeek.type = 'button';
       tileWeek.className = 'btn secondary';
       tileWeek.style.cssText = 'display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px; border-radius:20px; border:2px solid #e5e7eb; background:#fff; color:#333; cursor:pointer;';
-      tileWeek.innerHTML = '<i data-lucide="calendar" style="width:28px; height:28px; margin-bottom:8px; color:#666;"></i><div style="font-size:16px; font-weight:700;">In den Wochenplan</div><div style="font-size:12px; color:#999; margin-top:2px;">Dann in den Planer</div>';
+      tileWeek.innerHTML = '<i data-lucide="calendar" style="width:28px; height:28px; margin-bottom:8px; color:#666;"></i><div style="font-size:16px; font-weight:700;">Wochenplan</div><div style="font-size:12px; color:#999; margin-top:2px;">Dann in den Planer</div>';
       tileWeek.onclick = function(){ try { saveToCookbookFromWizard(); closeWizard(true); if(typeof showToast==='function') showToast('Gespeichert – öffne Wochenplan'); setTimeout(function(){ if(typeof showProviderWeek==='function') showProviderWeek(); }, 80); } catch(e) { if(typeof showToast==='function') showToast('Fehler beim Speichern'); } };
       if(entryPoint!=='week') grid.appendChild(tileWeek);
 
@@ -23356,9 +23361,9 @@
     return base.id;
   }
 
-  /** Erfolgs-Overlay: Schimmer-Checkmark, Haptik, nach 1,5s Slide-Exit und callback. */
+  /** Erfolgs-Overlay: Spring-Checkmark, Double-Tap-Haptik (Herzschlag), nach 1,5s Slide-Exit. */
   function showListingSuccessOverlay(thenCallback){
-    try { if(typeof haptic==='function') haptic(20); else if(navigator.vibrate) navigator.vibrate(20); } catch(e){}
+    try { if(typeof haptic==='function') haptic([12, 55, 12]); else if(navigator.vibrate) navigator.vibrate([12, 55, 12]); } catch(e){}
     var box = document.getElementById('wBox');
     if(!box) { if(thenCallback) thenCallback(); return; }
     var overlay = document.createElement('div');
