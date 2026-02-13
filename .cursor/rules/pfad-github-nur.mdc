@@ -1,0 +1,11 @@
+---
+description: Projekt-Pfad – nur GitHub, nie Desktop.
+alwaysApply: true
+---
+
+# Pfad-Regel (verbindlich)
+
+- **Einziger gültiger Projektpfad:** `C:\Users\quach\Documents\GitHub\mittagio`
+- **Nicht verwenden:** `c:\Users\quach\Desktop\Mittagio 13.02.2026\mittagio` (Desktop-Pfad – ignorieren/löschen)
+- Alle Befehle (Terminal, Dateipfade, Git) nur im GitHub-Ordner ausführen.
+- Bei geöffnetem Workspace auf dem Desktop: trotzdem alle Änderungen und Git-Operationen auf den GitHub-Pfad beziehen (Nutzer arbeitet dort).
