@@ -20,7 +20,7 @@
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" href="assets/icons/icon-192.png" />
   <link rel="apple-touch-icon" href="assets/icons/icon-192.png" />
-  <link rel="preload" href="assets/gastro-bg.png" as="image" />
+  <!-- gastro-bg.png nur in Provider-Modus genutzt; kein Preload, um Warnung zu vermeiden wenn Seite als Kunde startet -->
   <script>if(typeof history!=='undefined'&&history.scrollRestoration)history.scrollRestoration='manual';</script>
   <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js" onload="if(typeof lucide !== 'undefined') try { lucide.createIcons(); } catch(e) { console.warn('Lucide init:', e); }"></script>
   <style>
@@ -9283,7 +9283,6 @@
 
     // Topbar: Kundefarben (Seite-1-Style) wenn Kundenseite aktiv
     const topbar = document.querySelector('.topbar');
-    const customerViewIds = [views.start, views.discover, views.fav, views.orders, views.cart, views.profile, views.orderSuccess, views.pickupCode, views.checkout].filter(Boolean);
     if(topbar){
       if(customerViewIds.indexOf(id) !== -1) topbar.classList.add('customer-context');
       else topbar.classList.remove('customer-context');
