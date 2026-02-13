@@ -1325,15 +1325,15 @@
     /* Inseratflow: Über Provider-Bottom-Nav (z-index 999) legen */
     #wbd.active, #createFlowBd.active { z-index: 1000 !important; }
     #wizard.sheet--kitchen.active, #createFlowSheet.sheet--kitchen.active { z-index: 1001 !important; }
-    /* Inseratflow: High-End Glassmorphism – Schwebe, Abstände, Hintergrund durchschimmern */
+    /* Inseratflow: High-End Glassmorphism (Master) – backdrop-blur-2xl, bg-white/70, border-white/40, shadow-2xl */
     #createFlowSheet.sheet--kitchen,
     #wizard.sheet--kitchen{
-      background:rgba(255,255,255,0.65) !important;
+      background:rgba(255,255,255,0.7) !important;
       backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px);
       border-radius:28px 28px 0 0;
-      border:1px solid rgba(255,255,255,0.6);
+      border:1px solid rgba(255,255,255,0.4);
       border-bottom:none;
-      box-shadow:0 -8px 32px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.8);
+      box-shadow:0 -12px 40px rgba(0,0,0,0.12), 0 4px 24px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.9);
       max-height:90vh !important;
       height: 90vh !important;
       overflow:hidden;
@@ -1409,14 +1409,17 @@
       padding-bottom: env(safe-area-inset-bottom, 20px);
     }
     @keyframes wizardContentEnter{ from{ opacity:0; transform:translateY(6px); } to{ opacity:1; transform:translateY(0); } }
-    #wizard.sheet--kitchen #wContent > *{ animation:wizardContentEnter 0.22s ease-out forwards; }
+    #wizard.sheet--kitchen #wContent > *{
+      animation:wizardContentEnter 0.32s cubic-bezier(0.34, 1.2, 0.64, 1) forwards;
+      transition: transform 0.25s cubic-bezier(0.34, 1.2, 0.64, 1);
+    }
     #wizard.sheet--kitchen .wizard{
-      background:rgba(255,255,255,0.78);
-      backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
-      border:1px solid rgba(255,255,255,0.6);
+      background:rgba(255,255,255,0.7);
+      backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px);
+      border:1px solid rgba(255,255,255,0.4);
       border-radius:24px;
       padding:16px 20px 20px;
-      box-shadow:0 8px 32px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.02), inset 0 1px 0 rgba(255,255,255,0.95);
+      box-shadow:0 12px 40px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.95);
       flex:1;
       min-height:0;
       display:flex;
@@ -1574,7 +1577,9 @@
     #wizard.sheet--kitchen .inserat-cat-scroll::-webkit-scrollbar-thumb{ background:rgba(0,0,0,0.15); border-radius:3px; }
     #wizard.sheet--kitchen .inserat-cat-tile:active{ transform:scale(0.98); }
     #wizard.sheet--kitchen .inserat-smart-tiles button:active{ transform:scale(0.96); }
+    #wizard.sheet--kitchen .inserat-three-pillars button:active{ transform:scale(0.95); }
     #wizard.sheet--kitchen .inserat-photo-tile .inserat-photo-remove:hover{ color:#1a1a1a; }
+    #wizard.sheet--kitchen .inserat-pickup-time-trigger:active{ opacity:0.9; }
 
     /* Onboarding Views: App-like Sticky Layout */
     .onboarding-view {
@@ -22151,8 +22156,65 @@
       if(typeof w.data.allergeneExpanded === 'undefined') w.data.allergeneExpanded = !!w.data.wantsAllergens;
       const scrollToEl = (el)=>{ if(el && el.scrollIntoView) setTimeout(()=> el.scrollIntoView({ behavior:'smooth', block:'center' }), 120); };
       const dismissKeyboard = ()=>{ try { if(document.activeElement && document.activeElement.blur) document.activeElement.blur(); } catch(e){} };
+      const hapticLight = ()=>{ try { if(typeof haptic==='function') haptic(8); else if(navigator.vibrate) navigator.vibrate(8); } catch(e){} };
 
-      // 1) Gerichtsname + Autocomplete (Auto-Advance nach Wahl)
+      // —— Master: Header = Foto (ganz oben), dann 3 Säulen (Vor Ort, Mehrweg, Abholnummer) ——
+      const photoTile=document.createElement('div');
+      photoTile.className='inserat-photo-tile';
+      photoTile.style.cssText='border-radius:20px; overflow:hidden; margin-bottom:16px; border:2px solid rgba(255,255,255,0.4); background:rgba(255,255,255,0.5); min-height:100px; backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);';
+      if(w.data.photoData){
+        photoTile.style.minHeight='160px';
+        photoTile.innerHTML='<img src="'+w.data.photoData+'" style="width:100%; height:160px; object-fit:cover; display:block;" alt=""><div style="padding:10px 14px; display:flex; align-items:center; justify-content:space-between;"><span style="font-size:13px; font-weight:600; color:#64748b;">Foto</span><button type="button" class="inserat-photo-remove" style="background:none; border:none; color:#64748b; font-size:14px; font-weight:700; cursor:pointer;">× Entfernen</button></div>';
+        const rem=photoTile.querySelector('.inserat-photo-remove');
+        if(rem) rem.onclick=()=>{ hapticLight(); w.data.photoData=''; w.data.photoDataIsStandard=false; saveDraft(); rebuildWizard(); };
+      } else {
+        photoTile.innerHTML='<div style="padding:20px; display:flex; gap:12px; flex-wrap:wrap; justify-content:center;">'+
+          '<button type="button" class="glass-pill inserat-photo-btn" style="min-height:56px; padding:0 24px; border-radius:16px; font-size:15px; font-weight:800; border:2px solid rgba(255,255,255,0.6); background:rgba(255,255,255,0.5); cursor:pointer;">📷 Kamera</button>'+
+          '<button type="button" class="glass-pill inserat-photo-btn" style="min-height:56px; padding:0 24px; border-radius:16px; font-size:15px; font-weight:800; border:2px solid rgba(255,255,255,0.6); background:rgba(255,255,255,0.5); cursor:pointer;">📤 Galerie</button>'+
+        '</div>';
+        photoTile.querySelectorAll('.inserat-photo-btn').forEach((btn,i)=>{
+          const action = i===0 ? 'camera' : 'gallery';
+          btn.onclick=async function(){ hapticLight(); const f=await (action==='camera' ? pickImage({capture:true}) : pickImage()); if(!f) return; let dataUrl=await toDataUrl(f); if(typeof applyAppetizerFilter==='function') dataUrl=await applyAppetizerFilter(dataUrl); w.data.photoData=dataUrl; w.data.photoDataIsStandard=false; saveDraft(); rebuildWizard(); };
+        });
+      }
+      box.appendChild(photoTile);
+
+      // 3 Säulen: 🍴 Vor Ort, 🔄 Mehrweg, 🧾 Abholnummer (nur diese drei – Terminologie „Abholnummer“)
+      const smartGrid=document.createElement('div');
+      smartGrid.className='inserat-smart-tiles inserat-three-pillars';
+      smartGrid.style.cssText='display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; margin-bottom:20px;';
+      function addSmartTile(emo, title, active, onClick){
+        const btn=document.createElement('button');
+        btn.type='button'; btn.title=title; btn.style.cssText='min-height:64px; border-radius:18px; font-size:26px; border:2px solid ' + (active?'#10b981':'rgba(255,255,255,0.5)') + '; background:' + (active?'rgba(16,185,129,0.25)':'rgba(255,255,255,0.5)') + '; cursor:pointer; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); transition:transform 0.2s cubic-bezier(0.34,1.56,0.64,1), border-color 0.2s, background 0.2s;';
+        btn.textContent=emo;
+        btn.onclick=()=>{ hapticLight(); onClick(); saveDraft(); rebuildWizard(); };
+        smartGrid.appendChild(btn);
+      }
+      addSmartTile('🍴','Vor Ort', vorOrt, ()=>{ w.data.dineInPossible=!vorOrt; });
+      addSmartTile('🔄','Mehrweg', mehrweg, ()=>{ w.data.reuse=w.data.reuse||{}; w.data.reuse.enabled=!mehrweg; });
+      addSmartTile('🧾','Abholnummer', abhol, ()=>{ w.data.hasPickupCode=!abhol; });
+      box.appendChild(smartGrid);
+      if(w.data.pickupWindowEdit){
+        const pw=(w.data.pickupWindow||profileWindow).split(/\s*[–\-]\s*/);
+        let timeStart=(pw[0]||'11:30').trim(); let timeEnd=(pw[1]||'14:00').trim();
+        if(timeStart.length===4) timeStart='0'+timeStart; if(timeEnd.length===4) timeEnd='0'+timeEnd;
+        const timeRow=document.createElement('div');
+        timeRow.style.cssText='display:flex; align-items:center; gap:10px; margin-bottom:12px; flex-wrap:wrap;';
+        timeRow.innerHTML='<input type="time" value="'+timeStart+'" style="padding:10px 14px; border-radius:12px; border:2px solid rgba(255,255,255,0.6); background:rgba(255,255,255,0.5); font-size:14px; font-weight:700;"><span style="color:#64748b;">–</span><input type="time" value="'+timeEnd+'" style="padding:10px 14px; border-radius:12px; border:2px solid rgba(255,255,255,0.6); background:rgba(255,255,255,0.5); font-size:14px; font-weight:700;">';
+        const inpStart=timeRow.querySelector('input[type="time"]'); const inpEnd=timeRow.querySelectorAll('input[type="time"]')[1];
+        inpStart.onchange=()=>{ w.data.pickupWindow=inpStart.value+' – '+inpEnd.value; saveDraft(); };
+        inpEnd.onchange=()=>{ w.data.pickupWindow=inpStart.value+' – '+inpEnd.value; saveDraft(); };
+        box.appendChild(timeRow);
+      }
+      const pickupEditTrigger=document.createElement('button');
+      pickupEditTrigger.type='button';
+      pickupEditTrigger.className='inserat-pickup-time-trigger';
+      pickupEditTrigger.style.cssText='width:100%; margin-bottom:16px; padding:10px 14px; border-radius:12px; border:1px solid rgba(0,0,0,0.08); background:rgba(255,255,255,0.4); font-size:13px; font-weight:600; color:#64748b; cursor:pointer; text-align:left;';
+      pickupEditTrigger.innerHTML='🕒 Abholzeiten: ' + (w.data.pickupWindow||profileWindow) + ' <span style="float:right;">▶</span>';
+      pickupEditTrigger.onclick=()=>{ hapticLight(); w.data.pickupWindowEdit=!w.data.pickupWindowEdit; saveDraft(); rebuildWizard(); };
+      if(!w.data.pickupWindowEdit) box.appendChild(pickupEditTrigger);
+
+      // —— Liquid Input Flow: Gericht → Kategorie → Beschreibung → Allergene → Preis ——
       const input=document.createElement('input');
       input.className='field glass-express-field';
       input.placeholder='Was kochst du heute?';
@@ -22172,15 +22234,15 @@
           const b=document.createElement('button');
           b.type='button'; b.className='ans glass-pill'; b.style.cssText='min-height:48px; padding:0 16px; border-radius:14px; font-size:15px; font-weight:700;';
           b.textContent=s.dish;
-          b.onclick=()=>{ if(typeof haptic==='function') haptic(10); w.data.dish=s.dish; w.data.category=cat; if(s.allergens) w.data.allergens=[].concat(s.allergens||[]); if(!w.data.photoData || w.data.photoDataIsStandard){ w.data.photoData = s.img || ''; w.data.photoDataIsStandard = true; } saveDraft(); dismissKeyboard(); rebuildWizard(); setTimeout(()=>{ const next = document.querySelector('#wContent .inserat-desc'); if(next) scrollToEl(next); }, 100); };
+          b.onclick=()=>{ hapticLight(); w.data.dish=s.dish; w.data.category=cat; if(s.allergens) w.data.allergens=[].concat(s.allergens||[]); if(!w.data.photoData || w.data.photoDataIsStandard){ w.data.photoData = s.img || ''; w.data.photoDataIsStandard = true; } saveDraft(); dismissKeyboard(); rebuildWizard(); setTimeout(()=>{ const next = document.querySelector('#wContent .inserat-price-field'); if(next) scrollToEl(next); }, 150); };
           suggestWrap.appendChild(b);
         });
       }
       input.oninput=()=>{ w.data.dish=input.value; saveDraft(); fillSuggestions(); };
       input.onfocus=()=>{ fillSuggestions(); };
       box.appendChild(input);
+      box.appendChild(suggestWrap);
 
-      // 2) Kategorie – große Kacheln, horizontal scrollbar (High-End)
       const catLabels = ['Mit Fleisch','Vegetarisch','Vegan','Salat'];
       const catMap = { 'Fleisch':'Mit Fleisch', 'Mit Fleisch':'Mit Fleisch', 'Vegetarisch':'Vegetarisch', 'Vegan':'Vegan', 'Salat':'Salat' };
       const currentCat = catMap[w.data.category] || w.data.category || 'Vegetarisch';
@@ -22192,12 +22254,11 @@
         b.type='button'; b.className='glass-pill inserat-cat-tile'; b.style.cssText='flex:0 0 auto; min-height:52px; min-width:120px; padding:0 20px; border-radius:16px; font-size:15px; font-weight:800; cursor:pointer; scroll-snap-align:start;';
         b.style.border='2px solid ' + (currentCat===c?'#10b981':'rgba(255,255,255,0.6)'); b.style.background=(currentCat===c?'rgba(16,185,129,0.25)':'rgba(255,255,255,0.5)');
         b.textContent=c;
-        b.onclick=()=>{ if(typeof haptic==='function') haptic(8); w.data.category=c; saveDraft(); dismissKeyboard(); rebuildWizard(); };
+        b.onclick=()=>{ hapticLight(); w.data.category=c; saveDraft(); dismissKeyboard(); rebuildWizard(); };
         catScroll.appendChild(b);
       });
       box.appendChild(catScroll);
 
-      // 3) Beschreibung – optional, dezent
       const descWrap=document.createElement('div');
       descWrap.className='inserat-desc';
       const inputDesc=document.createElement('input');
@@ -22206,35 +22267,21 @@
       inputDesc.value=w.data.description||'';
       inputDesc.style.cssText='margin-bottom:16px; min-height:44px; font-size:14px; font-weight:500; border-radius:12px; padding:0 16px;';
       inputDesc.oninput=()=>{ w.data.description=inputDesc.value; saveDraft(); };
-      inputDesc.onfocus=()=>{ if(typeof haptic==='function') haptic(6); };
+      inputDesc.onfocus=()=>{ hapticLight(); };
       descWrap.appendChild(inputDesc);
       box.appendChild(descWrap);
 
-      // 4) Preis – maximale Präsenz, Zahlentastatur
-      const inputPrice=document.createElement('input');
-      inputPrice.className='field glass-express-field';
-      inputPrice.type='text'; inputPrice.inputmode='decimal';
-      inputPrice.placeholder='Preis z.B. 8,50 €';
-      inputPrice.value=(w.data.price>0?Number(w.data.price).toFixed(2).replace('.',','):'');
-      inputPrice.style.cssText='margin-bottom:16px; min-height:60px; font-size:26px; font-weight:800; border-radius:16px; padding:0 18px;';
-      inputPrice.oninput=()=>{ const v=inputPrice.value.replace(',','.'); w.data.price=parseFloat(v)||0; saveDraft(); };
-      inputPrice.onblur=()=>{ if(w.data.price>0) inputPrice.value=Number(w.data.price).toFixed(2).replace('.',','); };
-      inputPrice.onfocus=()=>{ if(typeof haptic==='function') haptic(6); scrollToEl(inputPrice); };
-      inputPrice.onkeydown=function(e){ if(e.key==='Enter'){ dismissKeyboard(); scrollToEl(document.querySelector('#wContent .inserat-allergene-wrap')); } };
-      box.appendChild(inputPrice);
-
-      // 5) Allergene – collapsible: ausgeklappt = Pills, eingeklappt = kompakte Zeile „Allergene: A, G“
       const suggestedAllergens = typeof getAllergenSuggestionsForDish==='function' ? getAllergenSuggestionsForDish(w.data.dish) : [];
       if(suggestedAllergens.length && (!w.data.allergens||!w.data.allergens.length)){ w.data.allergens=suggestedAllergens.slice(); w.data.wantsAllergens=true; }
       const allWrap=document.createElement('div');
       allWrap.className='inserat-allergene-wrap';
       allWrap.style.cssText='margin-bottom:16px;';
+      const allCodes = (w.data.allergens||[]).length ? (w.data.allergens||[]).join(', ') : '–';
       const allTrigger=document.createElement('button');
       allTrigger.type='button';
-      allTrigger.style.cssText='width:100%; display:flex; align-items:center; justify-content:space-between; padding:14px 16px; border-radius:14px; border:2px solid rgba(255,255,255,0.6); background:rgba(255,255,255,0.5); font-size:14px; font-weight:700; color:#64748b; cursor:pointer; text-align:left;';
-      const allCodes = (w.data.allergens||[]).length ? (w.data.allergens||[]).join(', ') : '–';
-      allTrigger.innerHTML = '<span>Allergene</span><span class="inserat-allergene-summary">' + (w.data.allergeneExpanded ? '▼' : (allCodes !== '–' ? allCodes : '▶ angeben')) + '</span>';
-      allTrigger.onclick=()=>{ if(typeof haptic==='function') haptic(8); w.data.allergeneExpanded=!w.data.allergeneExpanded; saveDraft(); rebuildWizard(); };
+      allTrigger.style.cssText='width:100%; display:flex; align-items:center; justify-content:space-between; padding:14px 16px; border-radius:14px; border:2px solid rgba(255,255,255,0.6); background:rgba(255,255,255,0.5); font-size:14px; font-weight:700; color:#64748b; cursor:pointer; text-align:left; backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);';
+      allTrigger.innerHTML = '<span>Allergene</span><span class="inserat-allergene-summary">' + (w.data.allergeneExpanded ? '▼' : (allCodes !== '–' ? 'Allergene: ' + allCodes : '▶ angeben')) + '</span>';
+      allTrigger.onclick=()=>{ hapticLight(); w.data.allergeneExpanded=!w.data.allergeneExpanded; saveDraft(); rebuildWizard(); };
       allWrap.appendChild(allTrigger);
       if(w.data.allergeneExpanded){
         const allRow=document.createElement('div');
@@ -22243,12 +22290,12 @@
         btnAllYes.type='button'; btnAllYes.className='glass-pill'; btnAllYes.style.cssText='min-height:44px; padding:0 16px; border-radius:999px; font-size:13px; font-weight:700; cursor:pointer;';
         btnAllYes.style.border='2px solid ' + (w.data.wantsAllergens?'#10b981':'rgba(255,255,255,0.6)'); btnAllYes.style.background=(w.data.wantsAllergens?'rgba(16,185,129,0.2)':'rgba(255,255,255,0.5)');
         btnAllYes.textContent='Ja';
-        btnAllYes.onclick=()=>{ if(typeof haptic==='function') haptic(8); w.data.wantsAllergens=true; saveDraft(); rebuildWizard(); };
+        btnAllYes.onclick=()=>{ hapticLight(); w.data.wantsAllergens=true; saveDraft(); rebuildWizard(); };
         const btnAllNo=document.createElement('button');
         btnAllNo.type='button'; btnAllNo.className='glass-pill'; btnAllNo.style.cssText='min-height:44px; padding:0 16px; border-radius:999px; font-size:13px; font-weight:700; cursor:pointer;';
         btnAllNo.style.border='2px solid ' + (!w.data.wantsAllergens?'#10b981':'rgba(255,255,255,0.6)'); btnAllNo.style.background=(!w.data.wantsAllergens?'rgba(16,185,129,0.2)':'rgba(255,255,255,0.5)');
         btnAllNo.textContent='Nein';
-        btnAllNo.onclick=()=>{ if(typeof haptic==='function') haptic(8); w.data.wantsAllergens=false; w.data.allergens=[]; saveDraft(); rebuildWizard(); };
+        btnAllNo.onclick=()=>{ hapticLight(); w.data.wantsAllergens=false; w.data.allergens=[]; saveDraft(); rebuildWizard(); };
         allRow.appendChild(btnAllYes); allRow.appendChild(btnAllNo);
         allWrap.appendChild(allRow);
         if(w.data.wantsAllergens){
@@ -22262,7 +22309,7 @@
             p.type='button'; p.className='glass-pill'; p.style.cssText='min-height:40px; padding:0 12px; border-radius:999px; font-size:12px; font-weight:700; cursor:pointer;';
             p.style.border='2px solid ' + (active?'#10b981':'rgba(255,255,255,0.6)'); p.style.background=(active?'rgba(16,185,129,0.2)':'rgba(255,255,255,0.5)');
             p.textContent=emo+' '+a.name;
-            p.onclick=()=>{ if(typeof haptic==='function') haptic(6); if(!w.data.allergens) w.data.allergens=[]; if(active) w.data.allergens=w.data.allergens.filter(x=>x!==code); else w.data.allergens.push(code); saveDraft(); rebuildWizard(); };
+            p.onclick=()=>{ hapticLight(); if(!w.data.allergens) w.data.allergens=[]; if(active) w.data.allergens=w.data.allergens.filter(x=>x!==code); else w.data.allergens.push(code); saveDraft(); rebuildWizard(); };
             pills.appendChild(p);
           });
           allWrap.appendChild(pills);
@@ -22270,55 +22317,17 @@
       }
       box.appendChild(allWrap);
 
-      // 6) Foto – eine große Kachel (Kamera | Galerie), nach Upload Auto-Filter
-      const photoTile=document.createElement('div');
-      photoTile.className='inserat-photo-tile';
-      photoTile.style.cssText='border-radius:20px; overflow:hidden; margin-bottom:16px; border:2px solid rgba(255,255,255,0.6); background:rgba(255,255,255,0.4); min-height:100px;';
-      if(w.data.photoData){
-        photoTile.style.minHeight='140px';
-        photoTile.innerHTML='<img src="'+w.data.photoData+'" style="width:100%; height:140px; object-fit:cover; display:block;" alt=""><div style="padding:10px 14px; display:flex; align-items:center; justify-content:space-between;"><span style="font-size:13px; font-weight:600; color:#64748b;">Foto</span><button type="button" class="inserat-photo-remove" style="background:none; border:none; color:#64748b; font-size:14px; font-weight:700; cursor:pointer;">× Entfernen</button></div>';
-        const rem=photoTile.querySelector('.inserat-photo-remove');
-        if(rem) rem.onclick=()=>{ if(typeof haptic==='function') haptic(6); w.data.photoData=''; w.data.photoDataIsStandard=false; saveDraft(); rebuildWizard(); };
-      } else {
-        photoTile.innerHTML='<div style="padding:20px; display:flex; gap:12px; flex-wrap:wrap; justify-content:center;">'+
-          '<button type="button" class="glass-pill inserat-photo-btn" style="min-height:56px; padding:0 24px; border-radius:16px; font-size:15px; font-weight:800; border:2px solid rgba(255,255,255,0.6); background:rgba(255,255,255,0.5); cursor:pointer;">📷 Kamera</button>'+
-          '<button type="button" class="glass-pill inserat-photo-btn" style="min-height:56px; padding:0 24px; border-radius:16px; font-size:15px; font-weight:800; border:2px solid rgba(255,255,255,0.6); background:rgba(255,255,255,0.5); cursor:pointer;">📤 Galerie</button>'+
-        '</div>';
-        photoTile.querySelectorAll('.inserat-photo-btn').forEach((btn,i)=>{
-          const action = i===0 ? 'camera' : 'gallery';
-          btn.onclick=async function(){ if(typeof haptic==='function') haptic(10); const f=await (action==='camera' ? pickImage({capture:true}) : pickImage()); if(!f) return; let dataUrl=await toDataUrl(f); if(typeof applyAppetizerFilter==='function') dataUrl=await applyAppetizerFilter(dataUrl); w.data.photoData=dataUrl; w.data.photoDataIsStandard=false; saveDraft(); rebuildWizard(); };
-        });
-      }
-      box.appendChild(photoTile);
-
-      // 7) Smart-Icons – vier große Kacheln (🕒 🍴 🔄 🧾), nur Abholnummer-Begriff
-      const smartGrid=document.createElement('div');
-      smartGrid.className='inserat-smart-tiles';
-      smartGrid.style.cssText='display:grid; grid-template-columns:repeat(4, 1fr); gap:10px; margin-bottom:20px;';
-      function addSmartTile(emo, title, active, onClick){
-        const btn=document.createElement('button');
-        btn.type='button'; btn.title=title; btn.style.cssText='min-height:56px; border-radius:16px; font-size:22px; border:2px solid ' + (active?'#10b981':'rgba(255,255,255,0.6)') + '; background:' + (active?'rgba(16,185,129,0.25)':'rgba(255,255,255,0.5)') + '; cursor:pointer; display:flex; align-items:center; justify-content:center;';
-        btn.textContent=emo;
-        btn.onclick=()=>{ if(typeof haptic==='function') haptic(8); onClick(); saveDraft(); rebuildWizard(); };
-        smartGrid.appendChild(btn);
-      }
-      addSmartTile('🕒','Abholzeiten', !!w.data.pickupWindowEdit, ()=>{ w.data.pickupWindowEdit=!w.data.pickupWindowEdit; });
-      addSmartTile('🍴','Vor Ort', vorOrt, ()=>{ w.data.dineInPossible=!vorOrt; });
-      addSmartTile('🔄','Mehrweg', mehrweg, ()=>{ w.data.reuse=w.data.reuse||{}; w.data.reuse.enabled=!mehrweg; });
-      addSmartTile('🧾','Abholnummer', abhol, ()=>{ w.data.hasPickupCode=!abhol; });
-      box.appendChild(smartGrid);
-      if(w.data.pickupWindowEdit){
-        const pw=(w.data.pickupWindow||profileWindow).split(/\s*[–\-]\s*/);
-        let timeStart=(pw[0]||'11:30').trim(); let timeEnd=(pw[1]||'14:00').trim();
-        if(timeStart.length===4) timeStart='0'+timeStart; if(timeEnd.length===4) timeEnd='0'+timeEnd;
-        const timeRow=document.createElement('div');
-        timeRow.style.cssText='display:flex; align-items:center; gap:10px; margin-bottom:12px; flex-wrap:wrap;';
-        timeRow.innerHTML='<input type="time" value="'+timeStart+'" style="padding:10px 14px; border-radius:12px; border:2px solid rgba(255,255,255,0.6); background:rgba(255,255,255,0.5); font-size:14px; font-weight:700;"><span style="color:#64748b;">–</span><input type="time" value="'+timeEnd+'" style="padding:10px 14px; border-radius:12px; border:2px solid rgba(255,255,255,0.6); background:rgba(255,255,255,0.5); font-size:14px; font-weight:700;">';
-        const inpStart=timeRow.querySelector('input[type="time"]'); const inpEnd=timeRow.querySelectorAll('input[type="time"]')[1];
-        inpStart.onchange=()=>{ w.data.pickupWindow=inpStart.value+' – '+inpEnd.value; saveDraft(); };
-        inpEnd.onchange=()=>{ w.data.pickupWindow=inpStart.value+' – '+inpEnd.value; saveDraft(); };
-        box.appendChild(timeRow);
-      }
+      const inputPrice=document.createElement('input');
+      inputPrice.className='field glass-express-field inserat-price-field';
+      inputPrice.type='text'; inputPrice.inputmode='decimal';
+      inputPrice.placeholder='Preis z.B. 8,50 €';
+      inputPrice.value=(w.data.price>0?Number(w.data.price).toFixed(2).replace('.',','):'');
+      inputPrice.style.cssText='margin-bottom:16px; min-height:64px; font-size:26px; font-weight:800; border-radius:16px; padding:0 18px;';
+      inputPrice.oninput=()=>{ const v=inputPrice.value.replace(',','.'); w.data.price=parseFloat(v)||0; saveDraft(); };
+      inputPrice.onblur=()=>{ if(w.data.price>0) inputPrice.value=Number(w.data.price).toFixed(2).replace('.',','); };
+      inputPrice.onfocus=()=>{ hapticLight(); scrollToEl(inputPrice); };
+      inputPrice.onkeydown=function(e){ if(e.key==='Enter'){ e.preventDefault(); dismissKeyboard(); setTimeout(()=>{ const to=document.querySelector('#wContent .inserat-pricing-weiche, #wContent .inserat-save-wrap, #wContent .w-actions'); if(to) scrollToEl(to); }, 80); } };
+      box.appendChild(inputPrice);
 
       // 8) Pricing-Weiche (nur Modus „Jetzt Inserieren“) ODER Emerald Speichern (Kochbuch/Wochenplan)
       var entryPoint = (w.ctx && w.ctx.entryPoint) || 'dashboard';
@@ -22341,8 +22350,8 @@
         // Option B (Grüner Rahmen/Glas): 0,00 € mit Abholnummer (0,89 € pro Vorgang)
         const btnB=document.createElement('button');
         btnB.type='button';
-        btnB.style.cssText='width:100%; min-height:56px; border-radius:18px; font-size:15px; font-weight:800; cursor:pointer; border:2px solid #10b981; background:rgba(16,185,129,0.12); color:#0d9668;';
-        btnB.textContent='Jetzt für 0,00 € inserieren mit Abholnummer (0,89 € pro Vorgang)';
+        btnB.style.cssText='width:100%; min-height:56px; border-radius:18px; font-size:15px; font-weight:800; cursor:pointer; border:2px solid #10b981; background:rgba(255,255,255,0.5); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); color:#0d9668;';
+        btnB.textContent='Oder jetzt für 0,00 € inserieren (mit Abholnummer 0,89 €/Vorgang)';
         btnB.onclick=function(){ if(typeof haptic==='function') haptic(50); w.data.hasPickupCode=true; w.data.inseratFeeWaived=true; w.data.pricingOption='abholnummer'; var o=previewOfferFromWizard(); closeWizard(true); showPublishFeeModal(o); };
         weicheWrap.appendChild(btnB);
         box.appendChild(weicheWrap);
@@ -22351,6 +22360,7 @@
       } else if(!isInserierenRoute){
         // Kochbuch / Wochenplan: Emerald Speichern + Sekundär
         const saveWrap=document.createElement('div');
+        saveWrap.className='inserat-save-wrap';
         saveWrap.style.cssText='margin-top:24px; padding-top:20px; border-top:1px solid rgba(0,0,0,0.08); display:flex; flex-direction:column; gap:12px;';
         const btnSave=document.createElement('button');
         btnSave.type='button'; btnSave.style.cssText='width:100%; min-height:56px; border-radius:18px; font-size:16px; font-weight:800; border:none; cursor:pointer; background:#10b981; color:#fff; box-shadow:0 4px 16px rgba(16,185,129,0.35);';

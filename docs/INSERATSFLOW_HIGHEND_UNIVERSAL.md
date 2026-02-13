@@ -13,17 +13,19 @@
 
 ---
 
-## 2. Universelle Eingabemaske („Salatsoße“)
+## 2. Universelle Eingabemaske („Salatsoße“) – Master-Reihenfolge
 
-In allen Modi (Inserat, Kochbuch, Wochenplan) **dieselbe** Maske:
+In allen Modi **dieselbe** Maske; **Reihenfolge (Master):** Header oben, dann Liquid Input, dann Weiche.
 
-1. **Gerichtsname:** Input mit intelligenter Autovervollständigung.
-2. **Kategorie-Pills:** Große Kacheln (Mit Fleisch, Vegetarisch, Vegan, Salat), horizontal scrollbar; Vorwahl durch Autocomplete.
-3. **Beschreibung:** Optional, dezent (z. B. „frisch aus dem Garten“).
-4. **Preis:** Maximale Präsenz, `inputmode="decimal"`.
-5. **Allergene (collapsible):** Ausgeklappt = gläserne Pills; eingeklappt = kompakte Zeile („Allergene: A, G“).
-6. **Foto-Modul:** Eine große Kachel (Kamera | Galerie). Nach Upload: Auto-Filter (Gastro: Wärme/Kontrast) + optional Zuschneiden.
-7. **Smart-Icons (4 Säulen):** Große Kacheln für 🕒 (Zeit), 🍴 (Vor Ort), 🔄 (Mehrweg), 🧾 (Abholnummer).
+1. **Header: Foto & Status (ganz oben)**  
+   Foto-Kachel (Kamera | Galerie). Klick öffnet Auswahl; nach Upload → Auto-Filter (Gastro: Wärme, Sättigung, Kontrast) → optional Zuschneiden.
+2. **3 Säulen (direkt unter Foto):** Drei große quadratische Glas-Kacheln: 🍴 **Vor Ort**, 🔄 **Mehrweg**, 🧾 **Abholnummer**. Klick toggelt Emerald-Aktiv-Status. Abholzeiten (🕒) optional als Zeile darunter.
+3. **Liquid Input Flow:**  
+   - **Gerichtsname** mit Autovervollständigung → nach Wahl: Tastatur zu, Kategorie vorbelegt, sanft zum Preisfeld scrollen.  
+   - **Kategorie-Pills:** Große Kacheln (Mit Fleisch, Vegetarisch, Vegan, Salat), horizontal scrollbar.  
+   - **Beschreibung:** Optional.  
+   - **Allergene (collapsible):** Eingeklappt = kompakte Zeile „Allergene: A, G“.  
+   - **Preis:** Großes Feld, `inputmode="decimal"`; bei Enter → Tastatur zu, Scroll zu den Abschluss-Buttons.
 
 ---
 
@@ -40,7 +42,7 @@ In allen Modi (Inserat, Kochbuch, Wochenplan) **dieselbe** Maske:
 **Modus „Jetzt Inserieren“ (Dashboard):** Zwei Optionen am unteren Ende:
 
 - **Option A (Gelber Button):** „Jetzt für 4,99 € einmalig inserieren“ → führt zum Abholnummer-Upsell-Schritt, dann Publish.
-- **Option B (Grüner Rahmen/Glas):** „Jetzt für 0,00 € inserieren mit Abholnummer (0,89 € pro Vorgang)“ → Abholnummer technisch gesetzt, direkt Publish-Modal.
+- **Option B (Glas-Button, Emerald-Rahmen):** „Oder jetzt für 0,00 € inserieren (mit Abholnummer 0,89 €/Vorgang)“ → Abholnummer technisch gesetzt, direkt Publish-Modal.
 
 **Modi „Wochenplan“ / „Kochbuch“:** Keine Weiche, nur **Emerald-grüner „Speichern“-Button** (+ optional „Stattdessen jetzt für 4,99 € inserieren“).
 
