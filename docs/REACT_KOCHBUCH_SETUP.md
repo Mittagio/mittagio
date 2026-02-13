@@ -1,6 +1,11 @@
-# React Kochbuch – Setup & Integration
+# React Kochbuch & Wochenplan – Setup & Integration
 
-Die Kochbuch-Komponente liegt unter **`src/components/Provider/Kochbuch.tsx`** und ist für eine React-App (z. B. Vite, Next.js, CRA) gedacht. Die aktuelle Mittagio-App ist eine Vanilla-SPA in `app/index.html`; diese Datei dient als Referenz oder für eine spätere React-Migration.
+Die Anbieter-Komponenten liegen unter **`src/components/Provider/`**:
+- **Kochbuch.tsx** – Gerichteliste, Bestseller-Strip, Auswählen → Inseratsflow, Wochenplan-Sheet.
+- **Wochenplan.tsx** – KW-Navigation, 7 Tage × 3 Slots, Gerichte aus dem Kochbuch per Klick in leere Slots (Dashed Boxes) einfügbar; Floating Action Bar (Drucken, Teilen, +).
+- **ProviderApp.tsx** – Einstieg mit Tab-Umschaltung Kochbuch | Wochenplan.
+
+**main.tsx** rendert `<ProviderApp />`. Die aktuelle Mittagio-App ist eine Vanilla-SPA in `app/index.html`; diese React-Dateien dienen als Referenz oder für eine spätere Migration.
 
 ---
 

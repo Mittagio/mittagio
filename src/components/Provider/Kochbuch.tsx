@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// --- Types ---
-interface Dish {
+// --- Types (exportiert für Wochenplan & Inseratsflow) ---
+export interface Dish {
   id: string;
   name: string;
   image: string;
@@ -13,8 +13,8 @@ interface Dish {
 
 // Mittagio Provider-Design: #F8F7F2 (BG), #FFDE00 (Akzent). Apple-Alternative: #F5F5F7, #007AFF.
 
-// --- Mock Data ---
-const DISHES: Dish[] = [
+// --- Mock Data (exportiert für Wochenplan) ---
+export const DISHES: Dish[] = [
   { id: '1', name: 'Zwiebelrostbraten', image: 'https://images.unsplash.com/photo-1598515214211-89d3c73ae83b?q=80&w=500', lastDate: '12. Feb', lastPrice: '14,50 €', totalRevenue: '3.480 €' },
   { id: '2', name: 'Linseneintopf', image: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?q=80&w=500', lastDate: '10. Feb', lastPrice: '7,90 €', totalRevenue: '1.120 €' },
   { id: '3', name: 'Leberkäseweckle', image: 'https://images.unsplash.com/photo-1593504049359-74330189a345?q=80&w=500', lastDate: '11. Feb', lastPrice: '3,50 €', totalRevenue: '2.450 €' },

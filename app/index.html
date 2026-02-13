@@ -1465,6 +1465,7 @@
       flex:1;
       overflow-y:auto;
       -webkit-overflow-scrolling:touch;
+      scroll-behavior:smooth;
       margin:0 -20px;
       padding:0 20px 140px; /* Platz für Zurück/Weiter + Footer, damit Buttons sichtbar bleiben */
     }
@@ -1512,7 +1513,19 @@
     #wizard.sheet--kitchen .w-actions button:active{
       transform: scale(0.97);
     }
-    /* Glass-Express Step 0: Layout-Feintuning – Raster, Hierarchie, Lesbarkeit */
+    /* HIGH-END LIQUID UI: Strict Glassmorphism, rounded-[2.5rem], blur-2xl */
+    #wizard.sheet--kitchen .glass-express-step0,
+    #wizard.sheet--kitchen .inserat-universal-mask{
+      border-radius: 2.5rem;
+      background: rgba(255,255,255,0.7);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255,255,255,0.4);
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.12);
+    }
+    #wizard.sheet--kitchen .glass-express-step0 .inserat-photo-tile{
+      border-radius: 1.5rem;
+    }
     #wizard.sheet--kitchen .glass-express-step0{
       padding-bottom:20px;
       --gex-gap:12px;
@@ -1609,9 +1622,16 @@
     #wizard.sheet--kitchen .inserat-cat-scroll::-webkit-scrollbar-thumb{ background:rgba(0,0,0,0.15); border-radius:3px; }
     #wizard.sheet--kitchen .inserat-cat-tile:active{ transform:scale(0.98); }
     #wizard.sheet--kitchen .inserat-smart-tiles button:active{ transform:scale(0.96); }
+    /* High-End Spring (stiffness 300, damping 20, mass 0.8) – 3 Säulen sofort sichtbar als Glas-Hüllen */
+    #wizard.sheet--kitchen .inserat-three-pillars button{
+      transition: transform 0.32s cubic-bezier(0.34, 1.2, 0.64, 1), border-color 0.2s, background 0.2s;
+    }
     #wizard.sheet--kitchen .inserat-three-pillars button:active{ transform:scale(0.95); }
     #wizard.sheet--kitchen .inserat-photo-tile .inserat-photo-remove:hover{ color:#1a1a1a; }
     #wizard.sheet--kitchen .inserat-pickup-time-trigger:active{ opacity:0.9; }
+    /* Tastatur-Check: Preis-Feld – fester Bereich, kein Layout-Sprung bei Zahlentastatur */
+    #wizard.sheet--kitchen .inserat-price-wrap{ min-height:72px; contain:layout; }
+    #wizard.sheet--kitchen .inserat-price-field{ scroll-margin-bottom:100px; }
 
     /* Onboarding Views: App-like Sticky Layout */
     .onboarding-view {
@@ -7792,7 +7812,7 @@
         <!-- Abholnummer: Aktiv = gelb #FFD700, Inaktiv = ausgegraut opacity 0.2 -->
         <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; opacity:${abholnummer ? '1' : '0.2'}; filter:${abholnummer ? 'none' : 'grayscale(100%)'}; transition:all 0.2s ease;">
           <div style="width:36px; height:36px; border-radius:50%; background:${abholnummer ? '#FFD700' : 'rgba(0,0,0,0.08)'}; color:${abholnummer ? '#1a1a1a' : '#999'}; display:flex; align-items:center; justify-content:center; border:1px solid ${abholnummer ? 'rgba(255,215,0,0.6)' : 'rgba(0,0,0,0.1)'};">
-            <i data-lucide="ticket" style="width:18px;height:18px;"></i>
+            <i data-lucide="receipt" style="width:18px;height:18px;"></i>
           </div>
           <div style="${styleText}">Abholnummer</div>
         </div>
@@ -22184,11 +22204,12 @@
 
     // Schritt 0: High-End Universal-Flow (Salatsoße) – eine Maske, gleicher Aufbau in allen Modi
     // Design: Glassmorphism, Dein Gelb #FFDE00, nur „Abholnummer“ (nie Ticket/Code)
+    // Step-0-Check: (1) Icons 🍴🔄🧾 sofort sichtbar als Glas-Hüllen direkt unter Foto. (2) Preis: inputmode=decimal, fester Bereich. (3) Abholnummer-Check: nirgendwo „Ticket“ – nur Abholnummer.
     if(w.step===0){
       setWizardQuestion('', '');
       const box=document.createElement('div');
       box.className='glass-express-step0 inserat-universal-mask inserat-high-end universal-flow-2026';
-      box.style.cssText='background:rgba(255,255,255,0.7); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border:1px solid rgba(255,255,255,0.4); border-radius:24px; padding:20px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25);';
+      box.style.cssText='background:rgba(255,255,255,0.7); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border:1px solid rgba(255,255,255,0.4); border-radius:2.5rem; padding:20px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.12);';
       const saveDraft = () => { localStorage.setItem('wizard_draft', JSON.stringify(w)); };
       const profile = normalizeProviderProfile(provider.profile || {});
       const profileWindow = profile.mealWindow || DEFAULT_MEAL_WINDOW;
@@ -22209,7 +22230,7 @@
       // —— Schritt 1 (Foto): Ganz oben – Kamera/Galerie, nach Upload: Auto-Gastro-Filter + Crop ——
       const photoTile=document.createElement('div');
       photoTile.className='inserat-photo-tile';
-      photoTile.style.cssText='border-radius:20px; overflow:hidden; margin-bottom:12px; border:2px solid rgba(255,255,255,0.4); background:rgba(255,255,255,0.7); min-height:100px; backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); box-shadow:0 25px 50px -12px rgba(0,0,0,0.08);';
+      photoTile.style.cssText='border-radius:1.5rem; overflow:hidden; margin-bottom:12px; border:2px solid rgba(255,255,255,0.4); background:rgba(255,255,255,0.7); min-height:100px; backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); box-shadow:0 8px 24px -4px rgba(0,0,0,0.06);';
       if(w.data.photoData){
         photoTile.style.minHeight='160px';
         photoTile.innerHTML='<img src="'+w.data.photoData+'" style="width:100%; height:160px; object-fit:cover; display:block;" alt=""><div style="padding:10px 14px; display:flex; align-items:center; justify-content:space-between;"><span style="font-size:13px; font-weight:600; color:#64748b;">Foto</span><button type="button" class="inserat-photo-remove" style="background:none; border:none; color:#64748b; font-size:14px; font-weight:700; cursor:pointer;">× Entfernen</button></div>';
@@ -22233,7 +22254,7 @@
       smartGrid.style.cssText='display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; margin-bottom:20px;';
       function addSmartTile(emo, title, active, onClick){
         const btn=document.createElement('button');
-        btn.type='button'; btn.title=title; btn.style.cssText='min-height:64px; border-radius:18px; font-size:26px; border:2px solid ' + (active?'#FFDE00':'rgba(255,255,255,0.5)') + '; background:' + (active?'rgba(255,222,0,0.25)':'rgba(255,255,255,0.5)') + '; cursor:pointer; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); transition:transform 0.2s cubic-bezier(0.34,1.56,0.64,1), border-color 0.2s, background 0.2s;';
+        btn.type='button'; btn.title=title; btn.style.cssText='min-height:64px; border-radius:18px; font-size:26px; border:2px solid ' + (active?'#FFDE00':'rgba(255,255,255,0.5)') + '; background:' + (active?'rgba(255,222,0,0.25)':'rgba(255,255,255,0.5)') + '; cursor:pointer; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); transition:transform 0.32s cubic-bezier(0.34,1.2,0.64,1), border-color 0.2s, background 0.2s;';
         btn.textContent=emo;
         btn.onclick=()=>{ hapticLight(); onClick(); saveDraft(); rebuildWizard(); };
         smartGrid.appendChild(btn);
@@ -22318,6 +22339,8 @@
       inputDesc.style.cssText='margin-bottom:16px; min-height:44px; font-size:14px; font-weight:500; border-radius:12px; padding:0 16px;';
       inputDesc.oninput=()=>{ w.data.description=inputDesc.value; saveDraft(); };
       inputDesc.onfocus=()=>{ hapticLight(); };
+      inputDesc.onblur=()=>{ dismissKeyboard(); hapticLight(); setTimeout(function(){ var next=box.querySelector('.inserat-allergene-wrap'); if(next) scrollToEl(next); }, 100); };
+      inputDesc.onkeydown=function(e){ if(e.key==='Enter'){ e.preventDefault(); dismissKeyboard(); hapticLight(); setTimeout(function(){ var next=box.querySelector('.inserat-allergene-wrap'); if(next) scrollToEl(next); }, 100); } };
       descWrap.appendChild(inputDesc);
       box.appendChild(descWrap);
 
@@ -22367,17 +22390,24 @@
       }
       box.appendChild(allWrap);
 
+      /* Tastatur-Check: Zahlentastatur sofort, Layout stabil – inputmode decimal, fester Bereich */
+      const priceWrap=document.createElement('div');
+      priceWrap.className='inserat-price-wrap';
+      priceWrap.style.cssText='margin-bottom:16px; min-height:72px; scroll-margin-bottom:80px;';
       const inputPrice=document.createElement('input');
       inputPrice.className='field glass-express-field inserat-price-field';
-      inputPrice.type='text'; inputPrice.inputmode='decimal';
+      inputPrice.type='text';
+      inputPrice.setAttribute('inputmode','decimal');
+      inputPrice.autocomplete='off';
       inputPrice.placeholder='Was nimmst du dafür? z.B. 8,50 €';
       inputPrice.value=(w.data.price>0?Number(w.data.price).toFixed(2).replace('.',','):'');
-      inputPrice.style.cssText='margin-bottom:16px; min-height:72px; font-size:28px; font-weight:800; border-radius:16px; padding:0 18px;';
-      inputPrice.oninput=()=>{ const v=inputPrice.value.replace(',','.'); w.data.price=parseFloat(v)||0; saveDraft(); var uw=box.querySelector('.inserat-umsatz-vorschau'); if(uw){ var p=Number(w.data.price)||0; var pot=Math.round(p*30*100)/100; var potStr=pot>0?pot.toFixed(2).replace('.',',')+' €':'\u2013'; uw.innerHTML='<div style="font-size:12px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.04em;">Verdienst-Vorschau</div><div style="font-size:20px; font-weight:800; color:#0d9668; margin-top:4px;">Bei ~30 Abnahmen: <strong>ca. '+potStr+'</strong></div>'; } };
-      inputPrice.onblur=()=>{ if(w.data.price>0) inputPrice.value=Number(w.data.price).toFixed(2).replace('.',','); };
+      inputPrice.style.cssText='margin-bottom:0; min-height:72px; font-size:28px; font-weight:800; border-radius:16px; padding:0 18px; width:100%; box-sizing:border-box;';
+      inputPrice.oninput=()=>{ const v=inputPrice.value.replace(',','.'); w.data.price=parseFloat(v)||0; saveDraft(); var uw=box.querySelector('.inserat-umsatz-vorschau'); if(uw){ var p=Number(w.data.price)||0; var pot=Math.round(p*30*100)/100; var potStr=pot>0?pot.toFixed(2).replace('.',',')+' €':'\u2013'; uw.innerHTML='<div style="font-size:12px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.04em;">Verdienst-Vorschau</div><div style="font-size:20px; font-weight:800; color:#1a1a1a; margin-top:4px;">Bei ~30 Abnahmen: <strong>ca. '+potStr+'</strong></div>'; } };
+      inputPrice.onblur=()=>{ if(w.data.price>0) inputPrice.value=Number(w.data.price).toFixed(2).replace('.',','); dismissKeyboard(); hapticLight(); setTimeout(function(){ var to=document.querySelector('#wContent .inserat-umsatz-vorschau, #wContent .inserat-pricing-weiche, #wContent .inserat-save-wrap, #wContent .w-actions'); if(to) scrollToEl(to); }, 120); };
       inputPrice.onfocus=()=>{ hapticLight(); scrollToEl(inputPrice); };
       inputPrice.onkeydown=function(e){ if(e.key==='Enter'){ e.preventDefault(); dismissKeyboard(); hapticLight(); setTimeout(function(){ var to=document.querySelector('#wContent .inserat-umsatz-vorschau, #wContent .inserat-pricing-weiche, #wContent .inserat-save-wrap, #wContent .w-actions'); if(to) scrollToEl(to); }, 80); } };
-      box.appendChild(inputPrice);
+      priceWrap.appendChild(inputPrice);
+      box.appendChild(priceWrap);
 
       // Extras mit Aufpreis (optional) – Liquid UI
       const extrasWrap=document.createElement('div');
@@ -22399,7 +22429,7 @@
       umsatzWrap.style.cssText='margin-bottom:20px; padding:14px 18px; border-radius:16px; background:rgba(255,222,0,0.12); border:1px solid rgba(255,222,0,0.35);';
       const priceNum=Number(w.data.price)||0;
       const potenzial=Math.round(priceNum*30*100)/100;
-      umsatzWrap.innerHTML='<div style="font-size:12px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.04em;">Verdienst-Vorschau</div><div style="font-size:20px; font-weight:800; color:#0d9668; margin-top:4px;">Bei ~30 Abnahmen: <strong>ca. '+(potenzial>0?potenzial.toFixed(2).replace('.',',')+' €':'–')+'</strong></div>';
+      umsatzWrap.innerHTML='<div style="font-size:12px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.04em;">Verdienst-Vorschau</div><div style="font-size:20px; font-weight:800; color:#1a1a1a; margin-top:4px;">Bei ~30 Abnahmen: <strong>ca. '+(potenzial>0?potenzial.toFixed(2).replace('.',',')+' €':'–')+'</strong></div>';
       box.appendChild(umsatzWrap);
 
       // 8) Pricing-Weiche (nur Modus „Jetzt Inserieren“) ODER Emerald Speichern (Kochbuch/Wochenplan)
@@ -22422,7 +22452,7 @@
         weicheWrap.style.cssText='margin-top:16px; padding-top:20px; border-top:1px solid rgba(0,0,0,0.08); display:flex; flex-direction:column; gap:14px;';
         const btnA=document.createElement('button');
         btnA.type='button'; btnA.className='btn listing-express-primary';
-        btnA.style.cssText='width:100%; min-height:58px; border-radius:18px; font-size:17px; font-weight:800; border:none; cursor:pointer; background:#FACC15; color:#1a1a1a; box-shadow:0 4px 20px rgba(250,204,21,0.4);';
+        btnA.style.cssText='width:100%; min-height:58px; border-radius:18px; font-size:17px; font-weight:800; border:none; cursor:pointer; background:#FFDE00; color:#1a1a1a; box-shadow:0 4px 20px rgba(255,222,0,0.4);';
         btnA.textContent='Jetzt für 4,99 € einmalig inserieren';
         btnA.onclick=function(){ if(typeof haptic==='function') haptic(50); w.data.pricingOption=undefined; w.data.inseratFeeWaived=false; var o=previewOfferFromWizard(); closeWizard(true); showPublishFeeModal(o); };
         weicheWrap.appendChild(btnA);
@@ -22461,7 +22491,7 @@
         const linkInserieren=document.createElement('button');
         linkInserieren.type='button'; linkInserieren.style.cssText='background:none; border:none; font-size:14px; font-weight:700; color:#1a1a1a; cursor:pointer; text-decoration:underline;';
         linkInserieren.textContent='Stattdessen jetzt für 4,99 € inserieren';
-        linkInserieren.onclick=function(){ w.ctx.entryPoint='dashboard'; saveDraft(); rebuildWizard(); };
+        linkInserieren.onclick=function(){ hapticLight(); w.ctx.entryPoint='dashboard'; saveDraft(); rebuildWizard(); };
         saveWrap.appendChild(linkInserieren);
         box.appendChild(saveWrap);
         setWizardContent(box);
