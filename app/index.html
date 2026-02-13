@@ -7503,7 +7503,7 @@
   </div>
 </div>
 
-<!-- Inseratsauswahl (Final): Zwei Buttons + Deine Renner, keine Preise/Bewertungen -->
+<!-- Inseratsauswahl (Final): Zwei Buttons + Beliebte Gerichte, keine Preise/Bewertungen -->
 <div class="backdrop" id="createFlowBd" onclick="closeCreateFlowSheet()"></div>
 <div class="sheet sheet--kitchen" id="createFlowSheet">
   <div class="handle"></div>
@@ -7521,11 +7521,11 @@
     </div>
 
     <div id="createFlowRennerSection" style="margin-top:8px;">
-      <div class="hint" style="margin-bottom:10px; font-weight:800; color:#1a1a1a; font-size:14px;">Deine Renner</div>
+      <div class="hint" style="margin-bottom:10px; font-weight:800; color:#1a1a1a; font-size:14px;">Beliebte Gerichte</div>
       <div id="createFlowRennerScroll" class="create-flow-renner-scroll" style="display:flex; gap:14px; overflow-x:auto; -webkit-overflow-scrolling:touch; padding:4px 0 16px; scroll-snap-type:x proximity;">
         <!-- Kacheln: Bild, 3 Säulen (🍴🧾🔄), Name, Success-Fact, Heute anbieten -->
       </div>
-      <div id="createFlowRennerEmpty" style="display:none; text-align:center; padding:24px 16px; color:#64748b; font-size:14px;">Noch keine Renner – leg Gerichte im Kochbuch an oder biete sie an.</div>
+      <div id="createFlowRennerEmpty" style="display:none; text-align:center; padding:24px 16px; color:#64748b; font-size:14px;">Noch keine beliebten Gerichte – leg Gerichte im Kochbuch an oder biete sie an.</div>
     </div>
 
     <div class="create-flow-hint hint" id="createFlowDateHint" style="display:none;"></div>
@@ -22298,10 +22298,12 @@
       });
       box.appendChild(secRow);
 
-      // Pricing-Weiche (nur bei „Jetzt Inserieren“ / dashboard): Option A 4,99 € / Option B 0,00 € mit Abholnummer
+      // Inseratsflow Money (nur bei „Jetzt Inserieren“ / dashboard): 4,99 € – Option B (0,00 € mit Abholnummer) kommt als Live-Seite später
       if(isInserierenRoute && primaryValid){
         var weicheRow = document.createElement('div');
         weicheRow.className = 'listing-pricing-weiche';
+        weicheRow.setAttribute('data-screen','inseratsflow-money');
+        weicheRow.setAttribute('aria-label','Inseratsflow Money');
         weicheRow.style.cssText = 'display:flex; flex-direction:column; gap:12px; margin-top:20px;';
         var btnA = document.createElement('button');
         btnA.type = 'button';
@@ -22309,14 +22311,14 @@
         btnA.style.cssText = 'width:100%; min-height:56px; border-radius:16px; font-size:16px; font-weight:800; border:none; cursor:pointer; background:#FACC15; color:#1a1a1a; box-shadow:0 4px 16px rgba(250,204,21,0.4);';
         btnA.textContent = 'Jetzt für 4,99 € einmalig inserieren';
         btnA.onclick = function(){ if(typeof haptic==='function') haptic(50); w.data.pricingOption = undefined; w.data.inseratFeeWaived = false; w.step++; saveDraft(); rebuildWizard(); };
-        var btnB = document.createElement('button');
-        btnB.type = 'button';
-        btnB.style.cssText = 'width:100%; min-height:56px; border-radius:16px; font-size:15px; font-weight:800; border:2px solid #10b981; background:rgba(16,185,129,0.12); color:#0d9668; cursor:pointer;';
-        btnB.textContent = 'Jetzt für 0,00 € inserieren mit Abholnummer (0,89 € pro Vorgang)';
-        btnB.onclick = function(){ if(typeof haptic==='function') haptic(50); w.data.pricingOption = 'abholnummer'; w.data.inseratFeeWaived = true; w.data.hasPickupCode = true; w.step++; saveDraft(); rebuildWizard(); };
         weicheRow.appendChild(btnA);
-        weicheRow.appendChild(btnB);
+        // Option B (0,00 € mit Abholnummer) erstmal gestrichen – kommt als Live-Seite, Bearbeitung später
         box.appendChild(weicheRow);
+      }
+      var wizEl = document.getElementById('wizard');
+      if(wizEl){
+        if(isInserierenRoute){ wizEl.setAttribute('data-screen','inseratsflow-money'); wizEl.setAttribute('aria-label','Inseratsflow Money'); }
+        else { wizEl.setAttribute('data-screen','inseratsflow-save'); wizEl.setAttribute('aria-label','Inseratsflow Save'); }
       }
 
       setWizardContent(box);
