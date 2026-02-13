@@ -2698,7 +2698,8 @@
     /* Kein leerer Screen beim Nach-oben-Scrollen: Overscroll/Rubber-Band deaktivieren */
     body.provider-mode { overscroll-behavior-y: none; -webkit-overflow-scrolling: touch; overflow-x: hidden; }
     /* Nuclear: Im Provider-Modus nur die aktive Provider-View sichtbar – alle anderen main-Kinder aus dem Layout */
-    body.provider-mode main > *:not([id^="v-provider-"].view.active) { display: none !important; }
+    /* Alle main-Kinder ausblenden außer aktive Provider-View + FAB (FAB bleibt sichtbar) */
+    body.provider-mode main > *:not([id^="v-provider-"].view.active):not(#fabProviderAddOffer) { display: none !important; }
     /* Anbieter-Views: kein Extra-Platz oben – Inhalt beginnt sofort (Safe-Area nur im Header) */
     body.provider-mode [id^="v-provider-"] { padding-top: 0 !important; margin-top: 0 !important; }
     body.provider-mode [id^="v-provider-"].view.active { padding-top: 0 !important; }
@@ -3572,19 +3573,19 @@
     body.provider-mode [id^="v-provider-"].view.active .prov-header,
     body.provider-mode [id^="v-provider-"].view.active header:first-child{ visibility:visible !important; opacity:1 !important; min-height:60px; background:rgba(255,255,255,0.8) !important; backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); display:block !important; border-bottom:1px solid rgba(255,255,255,0.2) !important; }
     body.provider-mode [id^="v-provider-"].view.active#v-provider-week{ display:flex !important; flex-direction:column !important; }
-    /* Meine Küche: Flex-Child von main, Scroll nur im Wrap – Inhalt sichtbar + scrollbar */
+    /* Meine Küche: Flex-Child von main, feste Höhe → Scroll nur im Wrap */
     #v-provider-home.view.active{
-      min-height:0;
+      min-height:0; max-height:100%;
       background:#fff;
       display:flex !important; flex-direction:column !important;
       padding:0 !important; margin:0 !important;
       position:relative; width:100%; box-sizing:border-box;
       overflow:hidden;
     }
-    /* Dashboard: Scroll nur im Wrap (Flex-Trick: flex:1 + min-height:0 = scrollbarer Bereich), touch-scroll */
+    /* Dashboard: Scroll nur im Wrap (Flex: height:0 + flex:1 = begrenzter Bereich, dann overflow-y) */
     #v-provider-home .dashboard-floating-wrap{
       display:flex; flex-direction:column; gap:20px;
-      flex:1 1 0; min-height:0;
+      flex:1 1 0; min-height:0; height:0;
       overflow-y:auto; overflow-x:hidden;
       -webkit-overflow-scrolling:touch;
       overscroll-behavior-y:contain;
@@ -9213,6 +9214,12 @@
     }
     // Zuerst neue View aktivieren und anzeigen – kein leerer Bildschirm beim Wechsel
     var isProviderView = (id && id.indexOf('v-provider-') === 0);
+    var customerViewIds = [views.start, views.discover, views.fav, views.orders, views.cart, views.profile, views.orderSuccess, views.pickupCode, views.checkout].filter(Boolean);
+    if(!isProviderView && customerViewIds.indexOf(id) !== -1){
+      document.body.classList.remove('provider-mode');
+      mode = 'customer';
+      try { if(typeof save === 'function' && typeof LS !== 'undefined') save(LS.mode, mode); } catch(e) {}
+    }
     if(isProviderView){
       document.body.classList.add('provider-mode');
       if(typeof history !== 'undefined' && history.scrollRestoration !== undefined) history.scrollRestoration = 'manual';
@@ -9276,7 +9283,7 @@
 
     // Topbar: Kundefarben (Seite-1-Style) wenn Kundenseite aktiv
     const topbar = document.querySelector('.topbar');
-    const customerViewIds = [views.start, views.discover, views.fav, views.orders, views.cart, views.profile, views.orderSuccess].filter(Boolean);
+    const customerViewIds = [views.start, views.discover, views.fav, views.orders, views.cart, views.profile, views.orderSuccess, views.pickupCode, views.checkout].filter(Boolean);
     if(topbar){
       if(customerViewIds.indexOf(id) !== -1) topbar.classList.add('customer-context');
       else topbar.classList.remove('customer-context');
