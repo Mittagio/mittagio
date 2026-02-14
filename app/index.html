@@ -1455,6 +1455,11 @@
       flex-direction: column;
       z-index: 100;
     }
+    /* Foto randlos oben im Rahmen (S25 Ultra-Liquid) */
+    #wizard.sheet--kitchen .glass-express-step0.s25-floating-panel,
+    #wizard.sheet--kitchen .listing-glass-panel.s25-floating-panel{
+      border-top-left-radius: 0; border-top-right-radius: 0;
+    }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-photo-tile,
     #wizard.sheet--kitchen .glass-express-step0 .photo-header{
       height: 240px; background: #e2e8f0; border-radius: 0;
@@ -1475,17 +1480,27 @@
       --gex-gap: 12px;
       --gex-block: 20px;
     }
-    /* liquid-input: Clean Slate – nur Text + dezente Fokus-Linie (S25) */
+    /* Magnet-Input: pulsierende Emerald-Linie – „Tipp mich an!“ */
+    @keyframes magnet-pulse{
+      0%, 100%{ border-bottom-color: rgba(16,185,129,0.5); }
+      50%{ border-bottom-color: var(--emerald); }
+    }
     #wizard.sheet--kitchen .glass-express-step0 #step-name input,
     #wizard.sheet--kitchen .glass-express-step0 .liquid-input,
     #wizard.sheet--kitchen .glass-express-step0 .liquid-input-focus{
       width: 100%; background: transparent; border: none; border-bottom: 2px solid rgba(0,0,0,0.05);
       padding: 0 0 8px 0; outline: none; font-weight: 800; color: #1a1a1a;
-      transition: border-color 0.3s ease;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
     }
     #wizard.sheet--kitchen .glass-express-step0 #step-name input:focus,
     #wizard.sheet--kitchen .glass-express-step0 .liquid-input-focus:focus{
-      border-bottom-color: var(--emerald);
+      animation: magnet-pulse 1.2s ease-in-out infinite;
+    }
+    #wizard.sheet--kitchen .glass-express-step0 #step-name input.magnet-input{
+      border-bottom: 2px solid rgba(0,0,0,0.05);
+    }
+    #wizard.sheet--kitchen .glass-express-step0 #step-name input.magnet-input:focus{
+      animation: magnet-pulse 1.2s ease-in-out infinite;
     }
     #wizard.sheet--kitchen .glass-express-step0 #step-name input:first-of-type{
       font-size: 1.8rem; text-align: center;
@@ -1498,10 +1513,10 @@
     #wizard.sheet--kitchen .glass-express-step0 .price-display{
       font-size: 3.5rem; font-weight: 900; text-align: center; color: #111;
     }
-    /* Kategorie-Pills: haptisch abgerundet, aktiv = Emerald (S25) */
+    /* Pills: haptisch, voll rund (Kategorien + Extras) – kein halber Button */
     #wizard.sheet--kitchen .glass-express-step0 #step-cat button,
     #wizard.sheet--kitchen .glass-express-step0 .extra-pill{
-      padding: 10px 20px; border-radius: 1.2rem; background: rgba(0,0,0,0.05); font-weight: 700;
+      padding: 10px 20px; border-radius: 999px; background: rgba(0,0,0,0.05); font-weight: 700;
       transition: all 0.3s ease; cursor: pointer; border: none;
       -webkit-tap-highlight-color: transparent;
     }
@@ -1510,7 +1525,7 @@
       background: var(--emerald) !important; color: #fff !important; transform: scale(1.05);
     }
     #wizard.sheet--kitchen .glass-express-step0 #step-extras .extra-pill{
-      padding: 8px 15px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; background: rgba(0,0,0,0.05);
+      padding: 8px 16px; border-radius: 999px; font-size: 0.75rem; font-weight: 700; background: rgba(0,0,0,0.05);
     }
     #wizard.sheet--kitchen .glass-express-step0 .glass-pill{
       -webkit-tap-highlight-color:transparent;
@@ -1610,12 +1625,12 @@
     #wizard.sheet--kitchen .inserat-three-pillars button:active{ transform:scale(0.95); }
     #wizard.sheet--kitchen .inserat-photo-tile .inserat-photo-remove:hover,
     #wizard.sheet--kitchen .inserat-photo-tile .inserat-photo-change:hover{ color:#fff; }
-    /* logistics-bar: dezent und flach (S25) */
+    /* 3 Säulen: 🍴 🧾 🔄 exakt unter dem Preis-Bereich, edle Logistik-Bar */
     #wizard.sheet--kitchen .glass-express-step0 #step-logistics,
     #wizard.sheet--kitchen .glass-express-step0 .logistics-bar{
       display: flex; align-items: center; justify-content: space-between; flex-wrap: nowrap;
       background: rgba(0,0,0,0.04); border-radius: 1.2rem; padding: 0.75rem 1rem;
-      border: none; box-shadow: none;
+      border: none; box-shadow: none; margin-top: 4px;
     }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-photo-tile{
       width: 100%; overflow: hidden; cursor: pointer; position: relative;
@@ -1632,7 +1647,7 @@
       display: flex; gap: 8px; overflow-x: auto; padding: 0; margin: 0; -webkit-overflow-scrolling: touch;
     }
     #wizard.sheet--kitchen .glass-express-step0 #step-price{
-      text-align: center; margin: 0; padding: 0;
+      text-align: center; margin: 0; padding: 0; margin-bottom: 2px;
     }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-price-row{
       display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 8px;
@@ -1977,17 +1992,11 @@
     }
     @keyframes wizardShimmer{ 0%{ background-position:200% 0; } 100%{ background-position:-200% 0; } }
 
-    /* Inseratflow: S25, blind-tap, <15s – app-like, große Touch-Ziele, intuitiv */
+    /* Inseratsflow: nur noch schwebendes Silicon-Valley-Panel, <30s bedienbar */
     #wizard[data-flow="listing"].sheet--kitchen .wizard-scroll{
-      padding-bottom:140px;
+      padding-bottom:120px;
     }
-    #wizard[data-flow="listing"].sheet--kitchen .w-q{
-      font-size:16px; margin-bottom:4px;
-    }
-    #wizard[data-flow="listing"].sheet--kitchen .w-help{
-      font-size:12px; margin-bottom:12px; line-height:1.35;
-    }
-    /* Inseratsflow: Nur noch Glassmorphism-System (glass-express-step0 / liquid-panel). Alte .answers/.ans/.field-Regeln entfernt. */
+    /* Inseratsflow: Nur Glassmorphism (glass-express-step0). Keine Altlasten. */
 
     /* Einheitliches Support-Layout: Anbieter + Inseratsflow (Buttons, Panels, Abstände wie Support-Sheet) */
     :root{
@@ -22164,7 +22173,7 @@
       stepName.id='step-name';
       const inputDish=document.createElement('input');
       inputDish.type='text';
-      inputDish.className='liquid-input liquid-input-focus';
+      inputDish.className='liquid-input liquid-input-focus magnet-input';
       inputDish.placeholder='Was kochst du heute?';
       inputDish.value=w.data.dish||'';
       inputDish.autocomplete='off';
@@ -22381,7 +22390,7 @@
         const btnGratis=document.createElement('button');
         btnGratis.type='button';
         btnGratis.style.cssText='width:100%; padding:16px; border-radius:24px; border:2px solid #10b981; background:rgba(16,185,129,0.08); color:#065f46; font-size:14px; font-weight:800; cursor:pointer;';
-        btnGratis.textContent='Oder Gratis mit Abholnummer (0,89 €)';
+        btnGratis.textContent='Gratis mit Abholnummer (0,89 €)';
         btnGratis.onclick=function(){ if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; } if(typeof haptic==='function') haptic(50); w.data.hasPickupCode=true; w.data.inseratFeeWaived=true; w.data.pricingOption='abholnummer'; var o=previewOfferFromWizard(); closeWizard(true); showPublishFeeModal(o); };
         actionSection.appendChild(btnGratis);
       } else {
