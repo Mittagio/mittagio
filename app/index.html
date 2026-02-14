@@ -1445,9 +1445,17 @@
     #wizard.sheet--kitchen .glass-express-step0 .inserat-photo-tile{
       border-radius: 1.5rem;
     }
-    #wizard.sheet--kitchen .glass-express-step0 .inserat-photo-tile .inserat-photo-remove{
-      padding: 8px 18px; border-radius: 999px; background: rgba(0,0,0,0.4); backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px); font-size: 12px; font-weight: 700; letter-spacing: 0.02em;
+    #wizard.sheet--kitchen .glass-express-step0 .inserat-photo-tile .inserat-photo-remove,
+    #wizard.sheet--kitchen .glass-express-step0 .inserat-photo-tile .inserat-photo-change{
+      position: absolute; bottom: 12px; right: 12px; padding: 10px 18px; border-radius: 999px;
+      background: rgba(0,0,0,0.4); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      border: none; color: rgba(255,255,255,0.95); font-size: 11px; font-weight: 700; letter-spacing: 0.04em;
+      text-transform: uppercase; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+    }
+    #wizard.sheet--kitchen .glass-express-step0 .inserat-photo-tile .inserat-photo-change:hover{ color: #fff; }
+    #wizard.sheet--kitchen .glass-express-step0 .inserat-photo-tile .inserat-photo-change:active{ transform: scale(0.98); }
+    #wizard.sheet--kitchen .glass-express-step0 .inserat-photo-tile .inserat-photo-placeholder{
+      position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
     }
     #wizard.sheet--kitchen .glass-express-step0{
       padding-bottom:20px;
@@ -1568,7 +1576,8 @@
       transition: transform 0.32s cubic-bezier(0.34, 1.2, 0.64, 1), border-color 0.2s, background 0.2s;
     }
     #wizard.sheet--kitchen .inserat-three-pillars button:active{ transform:scale(0.95); }
-    #wizard.sheet--kitchen .inserat-photo-tile .inserat-photo-remove:hover{ color:#1a1a1a; }
+    #wizard.sheet--kitchen .inserat-photo-tile .inserat-photo-remove:hover,
+    #wizard.sheet--kitchen .inserat-photo-tile .inserat-photo-change:hover{ color:#fff; }
     #wizard.sheet--kitchen .glass-express-step0 #step-logistics{
       display: flex; align-items: center; justify-content: space-around;
       background: rgba(255,255,255,0.35); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
@@ -1592,10 +1601,10 @@
       display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 8px;
     }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-price-input{
-      width: 50%; max-width: 160px; background: rgba(255,255,255,0.5); border: none; border-radius: 24px;
-      padding: 16px; font-size: 28px; font-weight: 800; text-align: center; outline: none; box-shadow: 0 0 0 1px rgba(0,0,0,0.05);
+      width: 50%; max-width: 180px; background: rgba(255,255,255,0.5); border: none; border-radius: 24px;
+      padding: 16px; font-size: 34px; font-weight: 800; text-align: center; outline: none; box-shadow: 0 0 0 1px rgba(0,0,0,0.05);
     }
-    #wizard.sheet--kitchen .glass-express-step0 .inserat-price-euro{ font-size: 24px; font-weight: 800; color: #94a3b8; }
+    #wizard.sheet--kitchen .glass-express-step0 .inserat-price-euro{ font-size: 28px; font-weight: 800; color: #94a3b8; }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-earnings{
       font-size: 11px; font-weight: 800; color: #10b981; text-transform: uppercase; letter-spacing: 0.08em; margin: 0;
     }
@@ -22092,16 +22101,18 @@
       const dismissKeyboard = ()=>{ try { if(document.activeElement && document.activeElement.blur) document.activeElement.blur(); } catch(e){} };
       const hapticLight = ()=>{ try { if(typeof haptic==='function') haptic(8); else if(navigator.vibrate) navigator.vibrate(8); } catch(e){} };
 
-      // 1. FOTO
+      // 1. FOTO – Referenz: ovaler Button unten rechts „FOTO ÄNDERN“ / „FOTO HINZUFÜGEN“
       const photoTile=document.createElement('div');
       photoTile.className='inserat-photo-tile';
       if(w.data.photoData){
-        photoTile.innerHTML='<img src="'+w.data.photoData+'" style="width:100%; height:100%; object-fit:cover; display:block;" alt=""><div style="position:absolute; bottom:0; left:0; right:0; padding:10px 14px; display:flex; align-items:center; justify-content:space-between; background:linear-gradient(transparent,rgba(0,0,0,0.4));"><span style="font-size:13px; font-weight:600; color:rgba(255,255,255,0.95);">Foto</span><button type="button" class="inserat-photo-remove" style="background:none; border:none; color:rgba(255,255,255,0.95); font-size:14px; font-weight:700; cursor:pointer;">× Entfernen</button></div>';
-        const rem=photoTile.querySelector('.inserat-photo-remove');
+        photoTile.innerHTML='<img src="'+w.data.photoData+'" style="width:100%; height:100%; object-fit:cover; display:block;" alt=""><button type="button" class="inserat-photo-change" aria-label="Foto ändern"><i data-lucide="camera" style="width:14px;height:14px;stroke-width:2.5;"></i> FOTO ÄNDERN</button>';
+        const rem=photoTile.querySelector('.inserat-photo-change');
         if(rem) rem.onclick=(e)=>{ e.stopPropagation(); hapticLight(); w.data.photoData=''; w.data.photoDataIsStandard=false; saveDraft(); rebuildWizard(); };
       } else {
-        photoTile.innerHTML='<div style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;"><span style="font-size:40px; opacity:0.4;">📸</span><span style="font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:0.05em; margin-top:8px; color:#9ca3af;">Foto hinzufügen</span></div>';
-        photoTile.onclick=async function(){ hapticLight(); const f=await pickImage(); if(!f) return; let dataUrl=await toDataUrl(f); if(typeof applyAppetizerFilter==='function') dataUrl=await applyAppetizerFilter(dataUrl); if(typeof openPhotoEditor==='function') dataUrl=await openPhotoEditor(dataUrl, { onAccept: function(){} }); w.data.photoData=dataUrl; w.data.photoDataIsStandard=false; saveDraft(); rebuildWizard(); };
+        photoTile.innerHTML='<div class="inserat-photo-placeholder"><span style="font-size:40px; opacity:0.4;">📸</span><button type="button" class="inserat-photo-change" aria-label="Foto hinzufügen"><i data-lucide="camera" style="width:14px;height:14px;stroke-width:2.5;"></i> FOTO HINZUFÜGEN</button></div>';
+        const addBtn=photoTile.querySelector('.inserat-photo-change');
+        if(addBtn) addBtn.onclick=async function(e){ e.stopPropagation(); hapticLight(); const f=await pickImage(); if(!f) return; let dataUrl=await toDataUrl(f); if(typeof applyAppetizerFilter==='function') dataUrl=await applyAppetizerFilter(dataUrl); if(typeof openPhotoEditor==='function') dataUrl=await openPhotoEditor(dataUrl, { onAccept: function(){} }); w.data.photoData=dataUrl; w.data.photoDataIsStandard=false; saveDraft(); rebuildWizard(); };
+        photoTile.onclick=async function(ev){ if(ev.target.closest('.inserat-photo-change')) return; hapticLight(); const f=await pickImage(); if(!f) return; let dataUrl=await toDataUrl(f); if(typeof applyAppetizerFilter==='function') dataUrl=await applyAppetizerFilter(dataUrl); if(typeof openPhotoEditor==='function') dataUrl=await openPhotoEditor(dataUrl, { onAccept: function(){} }); w.data.photoData=dataUrl; w.data.photoDataIsStandard=false; saveDraft(); rebuildWizard(); };
       }
       box.appendChild(photoTile);
 
@@ -22128,17 +22139,18 @@
       stepName.appendChild(inputDesc);
       scrollArea.appendChild(stepName);
 
-      // 4. KATEGORIE PILLS
-      const catLabels = ['Fleisch','Vegetarisch','Vegan','Salat'];
+      // 4. KATEGORIE PILLS – Referenz: „Mit Fleisch“, Vegetarisch, Vegan, Salat (Wert intern weiter Fleisch)
+      const catValues = ['Fleisch','Vegetarisch','Vegan','Salat'];
+      const catDisplayLabels = ['Mit Fleisch','Vegetarisch','Vegan','Salat'];
       const currentCat = w.data.category || 'Fleisch';
-      if(!catLabels.includes(currentCat)) w.data.category = 'Fleisch';
+      if(!catValues.includes(currentCat)) w.data.category = 'Fleisch';
       const stepCat=document.createElement('div');
       stepCat.id='step-cat';
-      catLabels.forEach(c=>{
+      catValues.forEach((c,i)=>{
         const b=document.createElement('button');
         b.type='button';
         b.style.cssText='flex:0 0 auto; padding:12px 24px; border-radius:16px; font-size:14px; font-weight:800; cursor:pointer; border:2px solid ' + (w.data.category===c?'#10b981':'rgba(255,255,255,0.6)') + '; background:' + (w.data.category===c?'#10b981':'rgba(255,255,255,0.4)') + '; color:' + (w.data.category===c?'#fff':'#64748b') + ';';
-        b.textContent=c;
+        b.textContent=catDisplayLabels[i];
         b.onclick=()=>{ hapticLight(); w.data.category=c; saveDraft(); scrollToNext('step-price'); rebuildWizard(); };
         stepCat.appendChild(b);
       });
@@ -22155,7 +22167,7 @@
       inputPrice.setAttribute('inputmode','decimal');
       inputPrice.placeholder='0,00';
       inputPrice.value=(w.data.price>0?Number(w.data.price).toFixed(2).replace('.',','):'');
-      inputPrice.oninput=()=>{ const v=inputPrice.value.replace(',','.'); w.data.price=parseFloat(v)||0; saveDraft(); var ew=stepPrice.querySelector('.inserat-earnings'); if(ew){ var p=Number(w.data.price)||0; ew.textContent='Dein Verdienst (30x): ' + (p*30).toFixed(2) + ' €'; } };
+      inputPrice.oninput=()=>{ const v=inputPrice.value.replace(',','.'); w.data.price=parseFloat(v)||0; saveDraft(); var ew=stepPrice.querySelector('.inserat-earnings'); if(ew){ var p=Number(w.data.price)||0; ew.textContent='Dein Verdienst (30x): ' + (p*30).toFixed(2).replace('.',',') + ' €'; } };
       inputPrice.onblur=()=>{ if(w.data.price>0) inputPrice.value=Number(w.data.price).toFixed(2).replace('.',','); dismissKeyboard(); hapticLight(); scrollToNext('step-logistics'); };
       const euroSpan=document.createElement('span');
       euroSpan.className='inserat-price-euro';
@@ -22166,7 +22178,7 @@
       const earningsEl=document.createElement('p');
       earningsEl.className='inserat-earnings';
       var p0=Number(w.data.price)||0;
-      earningsEl.textContent='Dein Verdienst (30x): ' + (p0*30).toFixed(2) + ' €';
+      earningsEl.textContent='Dein Verdienst (30x): ' + (p0*30).toFixed(2).replace('.',',') + ' €';
       stepPrice.appendChild(earningsEl);
       scrollArea.appendChild(stepPrice);
 
@@ -22212,7 +22224,7 @@
         const timeDiv=document.createElement('button');
         timeDiv.type='button';
         timeDiv.className='inserat-pickup-time-trigger';
-        timeDiv.innerHTML='🕒 <span style="font-size:10px;">' + (w.data.pickupWindow||profileWindow).split(/\s*[–\-]\s*/)[0] + '</span>';
+        timeDiv.innerHTML='🕒 <span>' + timeStart + '–' + timeEnd + '</span>';
         timeDiv.onclick=()=>{ hapticLight(); w.data.pickupWindowEdit=!w.data.pickupWindowEdit; saveDraft(); rebuildWizard(); };
         stepLog.appendChild(timeDiv);
       }
