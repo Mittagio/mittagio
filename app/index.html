@@ -1628,9 +1628,10 @@
       margin-bottom: 16px;
     }
     
-    /* FAB NUR Dashboard: rechts, Animation Buttons (float/pulse); sonst nirgends im Anbieterbereich */
+    /* FAB NUR Dashboard: rechts (explizit left:auto), Animation Buttons */
     .fab-provider {
       position: fixed;
+      left: auto !important;
       bottom: calc(90px + env(safe-area-inset-bottom, 0px));
       right: 20px;
       height: 60px;
@@ -2349,16 +2350,13 @@
     .provider-dashboard-cta:hover{ transform:scale(0.98); }
     .provider-dashboard-cta:active{ transform:scale(0.95); }
 
-    /* FAB nur Dashboard: rechts über Bottom-Nav-Pill */
+    /* FAB nur Dashboard: rechts über Bottom-Nav-Pill (auf anderen Seiten wird er aus DOM entfernt) */
     #fabProviderAddOffer{
+      left: auto !important;
       bottom:calc(130px + env(safe-area-inset-bottom, 20px)) !important;
       right:calc(16px + env(safe-area-inset-right, 0)) !important;
     }
     #fabProviderAddOfferLabel{ right:calc(16px + env(safe-area-inset-right, 0)) !important; }
-    /* FAB auf Kochbuch/Wochenplan/Abholungen nie anzeigen – nur ein Screen (Action-Bar bzw. kein FAB) */
-    #v-provider-cookbook.view.active ~ #fabProviderAddOffer,
-    #v-provider-week.view.active ~ #fabProviderAddOffer,
-    #v-provider-pickups.view.active ~ #fabProviderAddOffer{ display:none !important; }
     #providerStatusIndicator{
       top:calc(16px + env(safe-area-inset-top, 0)) !important;
       right:calc(16px + env(safe-area-inset-right, 0)) !important;
@@ -4051,8 +4049,9 @@
       #providerNav .navbtn.active{ font-weight:700; }
       #providerNav .navbtn .ico svg{ width:24px !important; height:24px !important; }
       
-      /* FAB nur Dashboard: rechts, Animation Buttons */
+      /* FAB nur Dashboard: rechts */
       #fabProviderAddOffer{
+        left: auto !important;
         bottom:calc(130px + env(safe-area-inset-bottom, 20px)) !important;
         right:calc(20px + env(safe-area-inset-right, 0)) !important;
         width:56px !important; height:56px !important;
@@ -6053,10 +6052,7 @@
       </div>
     </div>
 
-    <!-- FAB nur Dashboard: rechts als Animation Buttons (Inseratsflow); sonst nirgends im Anbieterbereich -->
-    <button class="fab-provider fab-provider-plus" id="fabProviderAddOffer" type="button" aria-label="Gericht erstellen">
-      <span class="plus-char" style="font-size:28px; line-height:1; color:#fff;">+</span>
-    </button>
+    <!-- FAB wird nur auf Dashboard per JS in main eingefügt; auf anderen Anbieter-Seiten nicht im DOM -->
 
     <!-- Wochenplan: Quick-Add Bottom-Sheet (Top 5 + Suche, Tap = zum Plan) -->
     <div class="backdrop" id="weekAddSheetBd" style="display:none; background:rgba(0,0,0,0.5);" onclick="closeWeekAddSheet()"></div>
@@ -9159,6 +9155,26 @@
     document.querySelectorAll('#providerNav .navbtn').forEach(b=>b.classList.toggle('active', b.dataset.pgo===go));
   }
 
+  /** FAB nur auf Dashboard: bei true erstellen und an main hängen, bei false aus DOM entfernen (nicht nur ausblenden). */
+  function ensureProviderFab(visible){
+    var existing = document.getElementById('fabProviderAddOffer');
+    if(visible){
+      if(existing) return;
+      var mainEl = document.querySelector('main');
+      if(!mainEl) return;
+      var btn = document.createElement('button');
+      btn.className = 'fab-provider fab-provider-plus';
+      btn.id = 'fabProviderAddOffer';
+      btn.type = 'button';
+      btn.setAttribute('aria-label', 'Gericht erstellen');
+      btn.innerHTML = '<span class="plus-char" style="font-size:28px; line-height:1; color:#fff;">+</span>';
+      btn.onclick = function(){ createFlowPreselectedDate = null; if(typeof openDishFlow === 'function') openDishFlow(null, 'dashboard'); };
+      mainEl.appendChild(btn);
+    } else {
+      if(existing) existing.remove();
+    }
+  }
+
   function showView(id){
     const view = document.getElementById(id);
     if(!view){
@@ -9270,14 +9286,9 @@
       if(go) setCustomerNavActive(go);
     }
 
-    // Provider-FAB: NUR auf Dashboard (rechts, Animation Buttons); sonst nirgends im Anbieterbereich
-    var fabProv = document.getElementById('fabProviderAddOffer');
-    var fabProvLabel = document.getElementById('fabProviderAddOfferLabel');
-    if(isProv && fabProv){
-      var showFabOnView = (id === 'v-provider-home');
-      fabProv.style.display = showFabOnView ? 'flex' : 'none';
-      if(fabProvLabel) fabProvLabel.style.display = showFabOnView ? 'block' : 'none';
-    }
+    // Provider-FAB: nur auf Dashboard im DOM; auf anderen Anbieter-Seiten entfernen
+    if(mode === 'provider') ensureProviderFab(id === 'v-provider-home');
+    else ensureProviderFab(false);
   }
 
   function setMode(next, opts){
@@ -9421,11 +9432,7 @@
     showView(views.discover);
     renderChips();
     renderDiscover();
-    // Provider-FAB ausblenden (nur für Anbieter sichtbar)
-    const fabProvider = document.getElementById('fabProviderAddOffer');
-    const fabProviderLabel = document.getElementById('fabProviderAddOfferLabel');
-    if(fabProvider) fabProvider.style.display = 'none';
-    if(fabProviderLabel) fabProviderLabel.style.display = 'none';
+    ensureProviderFab(false);
     // Alle pickupCodeContainer leeren (falls vorhanden)
     document.querySelectorAll('[id="pickupCodeContainer"]').forEach(function(el){ el.innerHTML = ''; });
     // Zusätzlich: dynamische Abholnummer-View (v-pickup-code-dynamic) explizit entfernen, falls sie außerhalb des Containers existiert
@@ -9570,11 +9577,7 @@
       }
     }
     
-    // FAB anzeigen
-    const fab = document.getElementById('fabProviderAddOffer');
-    const fabLabel = document.getElementById('fabProviderAddOfferLabel');
-    if(fab) fab.style.display = 'flex';
-    if(fabLabel) fabLabel.style.display = 'block';
+    // FAB ist von showView/ensureProviderFab bereits ins DOM eingefügt
     // Zurück-Zeile über der Nav ausblenden (nur auf Sub-Views sichtbar)
     const providerNavBackRow = document.getElementById('providerNavBackRow');
     if(providerNavBackRow) providerNavBackRow.style.display = 'none';
@@ -9596,10 +9599,6 @@
     setProviderNavActive('provider-pickups');
     showView(views.providerPickups);
     renderProviderPickups();
-    const fab = document.getElementById('fabProviderAddOffer');
-    const fabLabel = document.getElementById('fabProviderAddOfferLabel');
-    if(fab) fab.style.display = 'none';
-    if(fabLabel) fabLabel.style.display = 'none';
     const providerNavBackRow = document.getElementById('providerNavBackRow');
     if(providerNavBackRow) providerNavBackRow.style.display = 'block';
     pushViewState({view: 'provider-pickups', mode: mode}, location.pathname);
@@ -9612,12 +9611,6 @@
     setProviderNavActive('provider-week');
     showView(views.providerWeek);
     if(typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard(); else renderWeekPlan();
-    // FAB nur auf Dashboard – hier ausblenden
-    const fab = document.getElementById('fabProviderAddOffer');
-    const fabLabel = document.getElementById('fabProviderAddOfferLabel');
-    if(fab) fab.style.display = 'none';
-    if(fabLabel) fabLabel.style.display = 'none';
-
     // Browser-Verlauf aktualisieren
     pushViewState({view: 'provider-week', mode: mode}, location.pathname);
   }
@@ -9627,11 +9620,6 @@
     setProviderNavActive('provider-cookbook');
     showView(views.providerCookbook);
     renderCookbook();
-    // FAB nur auf Dashboard – hier ausblenden
-    const fab = document.getElementById('fabProviderAddOffer');
-    const fabLabel = document.getElementById('fabProviderAddOfferLabel');
-    if(fab) fab.style.display = 'none';
-    if(fabLabel) fabLabel.style.display = 'none';
     const providerNavBackRow = document.getElementById('providerNavBackRow');
     if(providerNavBackRow) providerNavBackRow.style.display = 'block';
     pushViewState({view: 'provider-cookbook', mode: mode}, location.pathname);
@@ -9665,10 +9653,6 @@
     showView(views.providerProfile);
     showProviderProfileSub(null);
     renderProviderProfile();
-    const fab = document.getElementById('fabProviderAddOffer');
-    const fabLabel = document.getElementById('fabProviderAddOfferLabel');
-    if(fab) fab.style.display = 'none';
-    if(fabLabel) fabLabel.style.display = 'none';
     const providerNavBackRow = document.getElementById('providerNavBackRow');
     if(providerNavBackRow) providerNavBackRow.style.display = 'block';
     pushViewState({view: 'provider-profile', mode: mode}, location.pathname);
@@ -18137,21 +18121,7 @@
       }
     }
     
-    // FAB → direkt neuer Inseratsflow (High-End Universal-Flow), kein createFlowSheet
-    const fabProviderAddOffer = document.getElementById('fabProviderAddOffer');
-    const fabProviderAddOfferLabel = document.getElementById('fabProviderAddOfferLabel');
-    if(fabProviderAddOffer){
-      fabProviderAddOffer.onclick = () => {
-        createFlowPreselectedDate = null;
-        if(typeof openDishFlow === 'function') openDishFlow(null, 'dashboard');
-      };
-      fabProviderAddOffer.onmouseenter = () => {
-        if(fabProviderAddOfferLabel) fabProviderAddOfferLabel.style.opacity = '1';
-      };
-      fabProviderAddOffer.onmouseleave = () => {
-        if(fabProviderAddOfferLabel) fabProviderAddOfferLabel.style.opacity = '0';
-      };
-    }
+    // FAB wird von ensureProviderFab() erstellt und dort verknüpft
 
     // Refresh Button Handler: Tooltip bereits im HTML; Loading-Feedback (disabled + Spinner)
     const btnRefresh = document.getElementById('btnProviderHomeRefresh');
@@ -18177,15 +18147,6 @@
     
     // Icons aktualisieren
     if(typeof lucide !== 'undefined') setTimeout(()=> lucide.createIcons(), 50);
-
-    // FAB auf Dashboard immer anzeigen (Gerichte anlegen)
-    var activeView = document.querySelector('.view.active');
-    if(activeView && activeView.id === 'v-provider-home'){
-      var fab = document.getElementById('fabProviderAddOffer');
-      var fabLbl = document.getElementById('fabProviderAddOfferLabel');
-      if(fab){ fab.style.display = 'flex'; }
-      if(fabLbl){ fabLbl.style.display = 'block'; }
-    }
   }
 
   // Week Preview (7 Tage) – Applike: neutrale Pills, gelb aktiv; Gerichteliste + Link zum Wochenplan
