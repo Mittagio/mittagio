@@ -22016,30 +22016,23 @@
     }
     setWizardHeader('', '');
     const profile = normalizeProviderProfile(provider.profile || {});
+    const profileWindow = profile.mealWindow || DEFAULT_MEAL_WINDOW;
+    const defaultReuseDeposit = (provider.profile && typeof provider.profile.reuseDepositDefault === 'number') ? provider.profile.reuseDepositDefault : 3;
     // 3 Säulen + Abholzeiten: aus Profil übernehmen, wenn noch nicht gesetzt
-    if(!w.data.pickupWindow) w.data.pickupWindow = profile.mealWindow || DEFAULT_MEAL_WINDOW;
+    if(!w.data.pickupWindow) w.data.pickupWindow = profileWindow;
     if(w.data.dineInPossible === undefined) w.data.dineInPossible = (provider.profile && provider.profile.dineInPossibleDefault !== undefined) ? !!provider.profile.dineInPossibleDefault : true;
     if(w.data.hasPickupCode === undefined) w.data.hasPickupCode = !!profile.abholnummerEnabledByDefault;
-    if(!w.data.reuse) w.data.reuse = { enabled: !!profile.reuseEnabledByDefault, deposit: 3 };
-    else if(w.data.reuse.enabled === undefined) w.data.reuse.enabled = !!profile.reuseEnabledByDefault;
+    if(!w.data.reuse) w.data.reuse = { enabled: !!profile.reuseEnabledByDefault, deposit: defaultReuseDeposit };
+    else { if(w.data.reuse.enabled === undefined) w.data.reuse.enabled = !!profile.reuseEnabledByDefault; if(w.data.reuse.enabled && (w.data.reuse.deposit === undefined || w.data.reuse.deposit === 0)) w.data.reuse.deposit = defaultReuseDeposit; }
+    if(typeof w.data.allergeneExpanded === 'undefined') w.data.allergeneExpanded = !!w.data.wantsAllergens;
 
     // Master Inseratsflow (Single-Page): Foto→Name→Beschreibung→Kategorie→Preis→Logistik→Allergene→Extras→Buttons
     {
       setWizardQuestion('', '');
       const box=document.createElement('div');
       box.className='glass-express-step0 inserat-universal-mask inserat-master-flow';
-      box.style.cssText='background:rgba(255,255,255,0.7); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border:1px solid rgba(255,255,255,0.4); border-radius:2.5rem; padding:0; box-shadow:0 25px 50px -12px rgba(0,0,0,0.12); overflow:hidden;';
+      box.style.cssText='padding:0; overflow:hidden;';
       const saveDraft = () => { localStorage.setItem('wizard_draft', JSON.stringify(w)); };
-      const profile = normalizeProviderProfile(provider.profile || {});
-      const profileWindow = profile.mealWindow || DEFAULT_MEAL_WINDOW;
-      // Abholzeiten: aus Profil, wenn nicht gesetzt
-      if(!w.data.pickupWindow) w.data.pickupWindow = profileWindow;
-      // 3 Säulen: aus Profil übernehmen, wenn nicht gesetzt
-      if(w.data.dineInPossible === undefined) w.data.dineInPossible = (provider.profile && provider.profile.dineInPossibleDefault !== undefined) ? !!provider.profile.dineInPossibleDefault : true;
-      if(w.data.hasPickupCode === undefined) w.data.hasPickupCode = !!profile.abholnummerEnabledByDefault;
-      if(!w.data.reuse) w.data.reuse = { enabled: !!profile.reuseEnabledByDefault, deposit: (provider.profile && typeof provider.profile.reuseDepositDefault === 'number') ? provider.profile.reuseDepositDefault : 3 };
-      else if(w.data.reuse.enabled === undefined) w.data.reuse.enabled = !!profile.reuseEnabledByDefault;
-      if(typeof w.data.allergeneExpanded === 'undefined') w.data.allergeneExpanded = !!w.data.wantsAllergens;
       const scrollToNext = (id)=>{ setTimeout(()=>{ var el=document.getElementById(id); if(el) el.scrollIntoView({ behavior:'smooth', block:'center' }); }, 150); };
       const dismissKeyboard = ()=>{ try { if(document.activeElement && document.activeElement.blur) document.activeElement.blur(); } catch(e){} };
       const hapticLight = ()=>{ try { if(typeof haptic==='function') haptic(8); else if(navigator.vibrate) navigator.vibrate(8); } catch(e){} };
