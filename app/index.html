@@ -1432,9 +1432,10 @@
     #wizard.sheet--kitchen .w-actions button:active{
       transform: scale(0.97);
     }
-    /* Liquid Panel / High-End Glassmorphism (Inseratsflow) */
+    /* Liquid Panel / High-End Glassmorphism (Inseratsflow) – Silicon Valley Flow */
     #wizard.sheet--kitchen .glass-express-step0,
-    #wizard.sheet--kitchen .inserat-universal-mask{
+    #wizard.sheet--kitchen .inserat-universal-mask,
+    #wizard.sheet--kitchen .listing-glass-panel{
       --glass-bg: rgba(255,255,255,0.75);
       --glass-border: rgba(255,255,255,0.4);
       --emerald: #10b981;
@@ -1442,12 +1443,13 @@
       --radius-panel: 3rem;
       border-radius: var(--radius-panel);
       background: var(--glass-bg);
-      backdrop-filter: blur(40px) saturate(150%);
-      -webkit-backdrop-filter: blur(40px) saturate(150%);
+      backdrop-filter: blur(40px) saturate(180%);
+      -webkit-backdrop-filter: blur(40px) saturate(180%);
       border: 1px solid var(--glass-border);
       box-shadow: 0 25px 50px -12px rgba(0,0,0,0.15);
       overflow: hidden;
       max-width: 420px;
+      z-index: 100;
     }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-photo-tile,
     #wizard.sheet--kitchen .glass-express-step0 .photo-header{
@@ -1968,57 +1970,7 @@
     #wizard[data-flow="listing"].sheet--kitchen .w-help{
       font-size:12px; margin-bottom:12px; line-height:1.35;
     }
-    #wizard[data-flow="listing"].sheet--kitchen #wContent .answers{
-      display:grid;
-      grid-template-columns:repeat(2, 1fr);
-      gap:10px;
-      margin-top:8px;
-    }
-    #wizard[data-flow="listing"].sheet--kitchen #wContent .answers.answers--full{
-      grid-template-columns:1fr;
-    }
-    /* Inseratflow: Support-Layout (Buttons wie Support-Sheet) */
-    #wizard[data-flow="listing"].sheet--kitchen #wContent .ans{
-      min-height:52px !important;
-      padding:var(--support-padding) var(--support-padding-lg) !important;
-      font-size:15px !important;
-      font-weight:700;
-      border-radius:var(--support-border-radius);
-      border:2px solid var(--support-border);
-      background:#fff;
-      -webkit-tap-highlight-color:transparent;
-      touch-action:manipulation;
-      justify-content:center;
-      display:flex;
-      align-items:center;
-    }
-    #wizard[data-flow="listing"].sheet--kitchen #wContent .ans.on{
-      border:2px solid var(--brand);
-      background:rgba(255,215,0,0.08);
-    }
-    #wizard[data-flow="listing"].sheet--kitchen #wContent .ans.ans--thumb{
-      min-height:80px !important;
-      min-width:80px !important;
-      border-radius:var(--support-border-radius);
-      padding:0;
-    }
-    #wizard[data-flow="listing"].sheet--kitchen #wContent .field{
-      min-height:52px !important;
-      padding:12px var(--support-padding) !important;
-      font-size:16px !important;
-      border-radius:var(--support-border-radius);
-      border:1px solid #ddd;
-      -webkit-tap-highlight-color:transparent;
-    }
-    #wizard[data-flow="listing"].sheet--kitchen .hint{
-      font-size:12px; margin-bottom:6px;
-    }
-    /* S25 / schmale Displays: noch größere Tap-Ziele, safe-area */
-    @media (max-width:430px){
-      #wizard[data-flow="listing"].sheet--kitchen #wContent .ans{
-        min-height:54px !important;
-      }
-    }
+    /* Inseratsflow: Nur noch Glassmorphism-System (glass-express-step0 / liquid-panel). Alte .answers/.ans/.field-Regeln entfernt. */
 
     /* Einheitliches Support-Layout: Anbieter + Inseratsflow (Buttons, Panels, Abstände wie Support-Sheet) */
     :root{
@@ -21504,6 +21456,8 @@
     const wizard = document.getElementById('wizard');
     document.getElementById('wbd').classList.remove('active');
     if(wizard){ wizard.classList.remove('active'); wizard.removeAttribute('data-flow'); }
+    var wActions = document.querySelector('#wizard .w-actions');
+    if(wActions) wActions.style.display = '';
     localStorage.removeItem('mittagio_wizard_open');
     if(clearDraft) localStorage.removeItem('wizard_draft');
   }
@@ -22110,6 +22064,10 @@
   function buildListingStep(){
     setWizardNextDefault();
     w.step = 0; // Single-Page: immer Schritt 0
+    if(w.kind === 'listing' && w.step === 0){
+      var wActions = document.querySelector('#wizard .w-actions');
+      if(wActions) wActions.style.display = 'none';
+    }
     if(wNextBtn) wNextBtn.style.display = 'none';
     if(wBackBtn){
       wBackBtn.onclick = () => { closeWizard(); return; };
@@ -22130,12 +22088,12 @@
     {
       setWizardQuestion('', '');
       const box=document.createElement('div');
-      box.className='glass-express-step0 inserat-universal-mask inserat-master-flow liquid-panel';
+      box.className='glass-express-step0 inserat-universal-mask inserat-master-flow liquid-panel listing-glass-panel';
       box.style.cssText='padding:0; overflow:hidden; display:flex; flex-direction:column; min-height:0;';
       const saveDraft = () => { localStorage.setItem('wizard_draft', JSON.stringify(w)); };
       const scrollToNext = (id)=>{ setTimeout(()=>{ var el=document.getElementById(id); if(el) el.scrollIntoView({ behavior:'smooth', block:'center' }); }, 150); };
       const dismissKeyboard = ()=>{ try { if(document.activeElement && document.activeElement.blur) document.activeElement.blur(); } catch(e){} };
-      const hapticLight = ()=>{ try { if(typeof haptic==='function') haptic(8); else if(navigator.vibrate) navigator.vibrate(8); } catch(e){} };
+      const hapticLight = ()=>{ try { if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); } catch(e){} };
 
       // 1. FOTO – Liquid Panel: photo-header 240px, Button unten rechts
       const photoTile=document.createElement('div');
@@ -22206,7 +22164,13 @@
       inputPrice.setAttribute('inputmode','decimal');
       inputPrice.placeholder='0,00';
       inputPrice.value=(w.data.price>0?Number(w.data.price).toFixed(2).replace('.',','):'');
-      inputPrice.oninput=()=>{ const v=inputPrice.value.replace(',','.'); w.data.price=parseFloat(v)||0; saveDraft(); var ew=stepPrice.querySelector('.inserat-earnings'); if(ew){ var p=Number(w.data.price)||0; ew.textContent='Dein Verdienst (30x): ' + (p*30).toFixed(2).replace('.',',') + ' €'; } };
+      const updateProfit = function(val){
+        var p = (parseFloat(String(val).replace(',','.')) || 0) * 30;
+        var el = document.getElementById('profit-preview');
+        if(el) el.textContent = 'Dein Verdienst (30x): ' + p.toFixed(2).replace('.',',') + ' €';
+        try { if(navigator.vibrate) navigator.vibrate(5); } catch(e){}
+      };
+      inputPrice.oninput=()=>{ var v=inputPrice.value.replace(',','.'); w.data.price=parseFloat(v)||0; saveDraft(); updateProfit(v); };
       inputPrice.onblur=()=>{ if(w.data.price>0) inputPrice.value=Number(w.data.price).toFixed(2).replace('.',','); dismissKeyboard(); hapticLight(); scrollToNext('step-logistics'); };
       const euroSpan=document.createElement('span');
       euroSpan.className='inserat-price-euro';
@@ -22215,6 +22179,7 @@
       priceRow.appendChild(euroSpan);
       stepPrice.appendChild(priceRow);
       const earningsEl=document.createElement('p');
+      earningsEl.id='profit-preview';
       earningsEl.className='inserat-earnings';
       var p0=Number(w.data.price)||0;
       earningsEl.textContent='Dein Verdienst (30x): ' + (p0*30).toFixed(2).replace('.',',') + ' €';
