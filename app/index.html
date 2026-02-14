@@ -1823,8 +1823,8 @@
     }
     .provider-add-plus-btn .plus-char,
     #fabProviderAddOffer.fab-provider-plus .plus-char { color: #fff !important; font-weight:900; text-shadow: 0 1px 2px rgba(0,0,0,0.15); }
-    /* Rund nur wenn keine Pill-Variante (Dashboard-FAB als Pill mit Label) */
-    #fabProviderAddOffer.fab-provider-plus:not(.fab-provider-pill) {
+    /* FAB: nur runder Plus-Button, rechts (applike) */
+    #fabProviderAddOffer.fab-provider-plus {
       width: 56px;
       height: 56px;
       min-width: 56px;
@@ -1832,7 +1832,7 @@
       border-radius: 50%;
       justify-content: center;
     }
-    /* Stolz-Edition: FAB gelb mit weißem Rand, animiert (führt zu Inseratsauswahl) */
+    /* Stolz-Edition: FAB gelb mit weißem Rand, animiert (applike) */
     @keyframes fab-plus-float {
       0%, 100% { transform: scale(1); box-shadow: 0 4px 20px rgba(0,0,0,0.2), 0 8px 24px rgba(0,0,0,0.12); }
       50% { transform: scale(1.06); box-shadow: 0 6px 26px rgba(255,222,0,0.4), 0 10px 30px rgba(0,0,0,0.15); }
@@ -2454,26 +2454,13 @@
     .provider-dashboard-cta:hover{ transform:scale(0.98); }
     .provider-dashboard-cta:active{ transform:scale(0.95); }
 
-    /* FAB nur Dashboard: rechts über Bottom-Nav-Pill (auf anderen Seiten wird er aus DOM entfernt) */
+    /* FAB nur Dashboard: fest rechts über Bottom-Nav (applike Plus-Button), immer visuell rechts */
     #fabProviderAddOffer{
       left: auto !important;
-      bottom:calc(130px + env(safe-area-inset-bottom, 20px)) !important;
-      right:calc(16px + env(safe-area-inset-right, 0)) !important;
-    }
-    /* FAB als Pill mit Label: klare Haupt-CTA, nicht verwaist */
-    #fabProviderAddOffer.fab-provider-pill{
-      width: auto !important;
-      min-width: 56px;
-      min-height: 52px;
-      padding: 0 20px 0 16px !important;
-      border-radius: 26px !important;
-      justify-content: center;
-    }
-    #fabProviderAddOffer.fab-provider-pill .fab-provider-label{
-      font-size: 15px;
-      font-weight: 800;
-      color: #1a1a1a !important;
-      white-space: nowrap;
+      right: calc(16px + env(safe-area-inset-right, 0)) !important;
+      bottom: calc(130px + env(safe-area-inset-bottom, 20px)) !important;
+      margin-left: 0 !important;
+      direction: ltr;
     }
     #fabProviderAddOfferLabel{ right:calc(16px + env(safe-area-inset-right, 0)) !important; }
     #providerStatusIndicator{
