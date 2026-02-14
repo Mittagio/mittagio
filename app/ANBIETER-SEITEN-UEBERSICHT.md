@@ -90,11 +90,11 @@ Kurze Zusammenfassung jeder Ansicht im Anbieterbereich der Mittagio-App.
 
 ---
 
-## 11. **Mein Kochbuch** (`v-provider-cookbook`)
+## 11. **Mein Kochbuch** (`v-provider-cookbook`) → [docs/KOCHBUCH_KONZEPT.md](../docs/KOCHBUCH_KONZEPT.md)
 
-- **Zweck:** Alle Gerichte verwalten, nach Kategorie filtern, durchsuchen, sortieren, neu anlegen.
-- **Inhalt:** Header „Mein Kochbuch“ + Untertitel „Deine Umsatz-Könige“, Suchfeld, Sortierung (🕒/AZ/€↑/€↓). **Oben: Kategorie-Pills** (Alle, Vegetarisch, Vegan, Fisch, Mit Fleisch). Bestseller-Strip (horizontal), darunter 1-Spalte Karten. Sticky Bottom-Bar: Suche, Neues Gericht, Sortieren; bei Auswahl: Bearbeiten, Wochenplan, Auswählen.
-- **Navigation:** Bottom-Nav; Gericht antippen → Auswahl, dann Bearbeiten / Wochenplan / Auswählen (4,99‑€-Sheet).
+- **Zweck:** Gerichte verwalten, nach Kategorie filtern (Pills), Magazin-Karte bearbeiten / in Wochenplan / auswählen (4,99‑€). Neues Gericht nur über Empty-State-Button.
+- **Inhalt (Konzept):** Header „Mein Kochbuch“, **Kategorie-Pills** (Alle, Fleisch, Eintopf, Snack, Vegetarisch). **Magazin:** eine Karte (Bild, Name, Datum · Preis, GESAMTUMSATZ), ‹ › bei mehreren. **Bottom-Bar:** BEARBEITEN | WOCHENPLAN | AUSWÄHLEN. Kein Suchfeld, kein Sort, kein Bestseller-Strip. Empty: „Dein Erfolgstagebuch ist noch leer.“ + „JETZT ERSTES GERICHT INSERIEREN“. Siehe docs/KOCHBUCH_KONZEPT.md.
+- **Navigation:** Bottom-Nav; aktuelle Magazin-Karte = Kontext für Bar (Bearbeiten / Wochenplan / Auswählen).
 
 ---
 

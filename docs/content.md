@@ -13,7 +13,7 @@
 | **Favoriten**  | Tab „Favoriten“, „Deine Favoriten für heute:“, „Deine Favoriten sind leer“. |
 | **Bestellung** | „Deine Bestellungen“, „Meine Bestellungen“ (Anbieter), AGB „Bestellung & Zahlung“. |
 | **Wochenplan** | Anbieter-Tab „Wochenplan“, „Dein Wochenplan“, „Unser Wochenplan ist online!“. |
-| **Kochbuch**   | Anbieter „Mein Kochbuch“, „Deine Umsatz-Könige“, Kategorie-Pills (Alle, Vegetarisch, Vegan, …), „Dein Kochbuch ist leer“. |
+| **Kochbuch**   | Anbieter „Mein Kochbuch“, Kategorie-Pills (Alle, Fleisch, Eintopf, Snack, Vegetarisch), Magazin-Karte, Bar BEARBEITEN \| WOCHENPLAN \| AUSWÄHLEN, Empty „Dein Erfolgstagebuch ist noch leer.“ → [KOCHBUCH_KONZEPT.md](KOCHBUCH_KONZEPT.md). |
 | **Abholungen** | Anbieter-Tab (Liste der Abholungen). |
 | **Vor Ort**    | Einheitlich „Vor Ort“ (nicht „Vor Ort essen“ variabel); Emoji 🍴. |
 | **Mitnehmen**  | Einheitlich; Emoji 🔄. |

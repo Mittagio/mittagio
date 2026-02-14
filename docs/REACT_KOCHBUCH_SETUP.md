@@ -1,11 +1,14 @@
-# React Kochbuch & Wochenplan – Setup & Integration
+# React Kochbuch – Setup & Referenz
+
+**Verbindliches Konzept (Vanilla + React):** [KOCHBUCH_KONZEPT.md](KOCHBUCH_KONZEPT.md)
 
 Die Anbieter-Komponenten liegen unter **`src/components/Provider/`**:
-- **Kochbuch.tsx** – Gerichteliste, Bestseller-Strip, Auswählen → Inseratsflow, Wochenplan-Sheet. Die Vanilla-App in `app/index.html` hat **Kategorie-Pills** oben (Alle, Vegetarisch, Vegan, Fisch, Mit Fleisch) statt Tabs.
-- **Wochenplan.tsx** – KW-Navigation, 7 Tage × 3 Slots, Gerichte aus dem Kochbuch per Klick in leere Slots (Dashed Boxes) einfügbar; Floating Action Bar (Drucken, Teilen, +).
-- **ProviderApp.tsx** – Einstieg mit Tab-Umschaltung Kochbuch | Wochenplan.
+- **MagazinKochbuch.tsx** – Referenz für das finale Kochbuch: Magazin (eine Karte), Kategorie-Pills (Alle, Fleisch, Eintopf, Snack, Vegetarisch), Bottom-Bar BEARBEITEN | WOCHENPLAN | AUSWÄHLEN, Empty State „Dein Erfolgstagebuch ist noch leer.“
+- **Kochbuch.tsx** – ältere Referenz (Liste/Bestseller); Konzept ersetzt durch MagazinKochbuch.
+- **Wochenplan.tsx** – KW-Navigation, Gerichte aus dem Kochbuch.
+- **ProviderApp.tsx** – Tab-Umschaltung Kochbuch | Magazin | Wochenplan.
 
-**main.tsx** rendert `<ProviderApp />`. Die aktuelle Mittagio-App ist eine Vanilla-SPA in `app/index.html`; diese React-Dateien dienen als Referenz oder für eine spätere Migration.
+Die Vanilla-App in **`app/index.html`** implementiert das [KOCHBUCH_KONZEPT](KOCHBUCH_KONZEPT.md): `#v-provider-cookbook`, `renderCookbook()`, Magazin-Karte, Pills, eine Action-Bar.
 
 ---
 
@@ -17,66 +20,21 @@ npm install -D tailwindcss postcss autoprefixer
 npx tailwindcss init -p
 ```
 
-In **tailwind.config.js** (oder `.ts`) den Pfad zu den React-Dateien angeben, z. B.:
-
-```js
-content: ['./src/**/*.{js,ts,jsx,tsx}'],
-```
-
-Optional – **Farbpalette** (Mittagio Provider vs. Apple-Style):
-
-| Element          | Mittagio (Standard) | Apple-Style      |
-|------------------|----------------------|------------------|
-| Hintergrund     | `#F8F7F2`            | `#F5F5F7`        |
-| Primary / Akzent | `#FFDE00`            | `#007AFF`        |
-| Main Text        | `#1D1D1F`            | `#1D1D1F`        |
-| Secondary Text   | `#86868B`            | `#86868B`        |
-| Success          | `#FFDE00` (Haken)    | `#34C759`        |
-
-Die Komponente nutzt aktuell die **Mittagio-Palette** (#F8F7F2, #FFDE00).
+In **tailwind.config.js**: `content: ['./src/**/*.{js,ts,jsx,tsx}'],`
 
 ---
 
-## Globales CSS
+## Farbpalette (Konzept)
 
-Die Klasse **`no-scrollbar`** und Basis-Styles liegen in **`src/styles/globals.css`**. In der React-App einmal global einbinden, z. B.:
-
-- **Vite/React:** in `main.tsx` / `index.tsx`: `import './styles/globals.css';`
-- **Next.js:** in `app/layout.tsx` oder `pages/_app.tsx`: `import '../styles/globals.css';`
-
-Inhalt von `globals.css`: Body, `.no-scrollbar`, `.glass-effect` (siehe Datei).
-
----
-
-## Integration: Button „Auswählen“ ↔ Inseratsflow
-
-**Option A – React (Router/State):**  
-Die Komponente akzeptiert die Prop **`onInserieren`**:
-
-```tsx
-<Kochbuch onInserieren={({ dishId, dish }) => {
-  // Zum Inseratsflow navigieren oder State setzen
-  navigate('/inserat', { state: { dishId, dish } });
-  // oder: setInseratDraft({ dishId, ... });
-}} />
-```
-
-**Option B – Vanilla-App (app/index.html):**  
-Wenn die React-Komponente in die bestehende SPA eingebunden wird (z. B. über ein React-Root), kann sie die globale Funktion **`startListingFlow`** nutzen. Die Komponente ruft intern auf:
-
-```ts
-window.startListingFlow?.({ dishId: selectedDish.id });
-```
-
-Dafür muss `startListingFlow` im Vanilla-Code global verfügbar sein (z. B. `window.startListingFlow = startListingFlow`).
+| Element       | Kochbuch (Konzept) |
+|---------------|---------------------|
+| Hintergrund   | `#F5F5F7`           |
+| Primary/Aktiv | `#007AFF`           |
+| Text          | `#1D1D1F` / `#86868B` |
 
 ---
 
-## Haptik & Animationen
+## Integration
 
-- **Bottom-Bar:** Spring-Animation beim Ein-/Ausblenden (stiffness: 400, damping: 28).
-- **Wochenplan-Sheet:** Gleiche Spring-Animation; Tage-Buttons erscheinen mit leichtem Hüpfen (y: 10 → 0).
-- **Karten:** `whileTap={{ scale: 0.97 }}` mit kurzer Transition (0.1 s), Rückkehr ohne Verzögerung.
-- **Vibration:** `navigator.vibrate(10)` bei Auswahl, `[10, 30, 10]` beim Speichern im Wochenplan.
-
-Diese Anweisungen sind im Code umgesetzt.
+- **Auswählen:** Vanilla nutzt `openCookbookLiveSheet()` → 4,99‑€-Sheet; React kann `startListingFlow`/`onInserieren` anbinden.
+- **Haptik:** `navigator.vibrate(10)` bei Aktionen; Konzept siehe [KOCHBUCH_KONZEPT.md](KOCHBUCH_KONZEPT.md).

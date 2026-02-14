@@ -10,7 +10,7 @@
 |-------|---------|--------|
 | **Dashboard (Anbieterbereich Meine Küche)** | `v-provider-home` | Karten (dashboard-kasten), KPIs, Wochenplan-Teaser, einheitlicher BG #F8F7F2, Akzent #FFDE00. Unverändert beibehalten. |
 | **Wochenplan** | `v-provider-week` | KW-Navigation, Tageskarten, Aktivieren-Buttons, Glass/rounded, #FFDE00. |
-| **Kochbuch** | `v-provider-cookbook` | Oben Kategorie-Pills (Alle, Vegetarisch, Vegan, Fisch, Mit Fleisch), Bestseller-Strip, 1-Spalte Karten 24px, Sticky Action-Bar, #F8F7F2. |
+| **Kochbuch** | `v-provider-cookbook` | Magazin (eine Karte), Pills Alle/Fleisch/Eintopf/Snack/Vegetarisch, Bar BEARBEITEN \| WOCHENPLAN \| AUSWÄHLEN, #F5F5F7 → [KOCHBUCH_KONZEPT.md](KOCHBUCH_KONZEPT.md). |
 | **Inseratsflow (Step 0)** | Wizard | Liquid UI, Glass 2.5rem, 3 Säulen, Preis-Feld, Drei-Wege-Footer, Haptik, nur „Abholnummer“. |
 
 ---

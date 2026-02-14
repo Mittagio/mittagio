@@ -1,10 +1,11 @@
-# Provider Kochbuch
+# Provider Kochbuch *(archiviert)*
 
-View-ID: `v-provider-cookbook` · Anbieterseite
+> **Veraltet.** Aktuelles Konzept: [docs/KOCHBUCH_KONZEPT.md](../../KOCHBUCH_KONZEPT.md).  
+> View-ID: `v-provider-cookbook` · Anbieterseite.
 
 ---
 
-## Konzept (aktuell)
+## Konzept (damaliger Stand)
 
 Anbieter verwaltet alle Gerichte in einer Liste. **Oben: Kategorie-Pills** zum Filtern (Alle, Vegetarisch, Vegan, Fisch, Mit Fleisch). Bestseller-Strip (Top 3 nach Umsatz), darunter 1-Spalte Karten. Tap = Auswahl → Bottom-Bar: Bearbeiten, Wochenplan, Auswählen (4,99 € inserieren). Helles Layout (#F8F7F2).
 
