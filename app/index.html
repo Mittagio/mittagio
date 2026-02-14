@@ -1432,24 +1432,31 @@
     #wizard.sheet--kitchen .w-actions button:active{
       transform: scale(0.97);
     }
-    /* Silicon-Valley-Glas: 3rem, blur-48px, tiefer Glas-Schatten */
+    /* Liquid Panel / High-End Glassmorphism (Inseratsflow) */
     #wizard.sheet--kitchen .glass-express-step0,
     #wizard.sheet--kitchen .inserat-universal-mask{
-      border-radius: 3rem;
-      background: rgba(255,255,255,0.7);
-      backdrop-filter: blur(48px);
-      -webkit-backdrop-filter: blur(48px);
-      border: 1px solid rgba(255,255,255,0.4);
-      box-shadow: 0 32px 64px -16px rgba(0,0,0,0.18), 0 12px 32px -8px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.9);
+      --glass-bg: rgba(255,255,255,0.75);
+      --glass-border: rgba(255,255,255,0.4);
+      --emerald: #10b981;
+      --signal-yellow: #FACC15;
+      --radius-panel: 3rem;
+      border-radius: var(--radius-panel);
+      background: var(--glass-bg);
+      backdrop-filter: blur(40px) saturate(150%);
+      -webkit-backdrop-filter: blur(40px) saturate(150%);
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.15);
+      overflow: hidden;
+      max-width: 420px;
     }
-    #wizard.sheet--kitchen .glass-express-step0 .inserat-photo-tile{
-      border-radius: 1.5rem;
+    #wizard.sheet--kitchen .glass-express-step0 .inserat-photo-tile,
+    #wizard.sheet--kitchen .glass-express-step0 .photo-header{
+      height: 240px; background: #e2e8f0; border-radius: 0;
     }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-photo-tile .inserat-photo-remove,
     #wizard.sheet--kitchen .glass-express-step0 .inserat-photo-tile .inserat-photo-change{
-      position: absolute; bottom: 12px; right: 12px; padding: 10px 18px; border-radius: 999px;
-      background: rgba(0,0,0,0.4); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-      border: none; color: rgba(255,255,255,0.95); font-size: 11px; font-weight: 700; letter-spacing: 0.04em;
+      position: absolute; bottom: 15px; right: 15px; padding: 5px 12px; border-radius: 20px;
+      background: rgba(0,0,0,0.4); border: none; color: #fff; font-size: 10px; font-weight: 900;
       text-transform: uppercase; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
     }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-photo-tile .inserat-photo-change:hover{ color: #fff; }
@@ -1458,27 +1465,37 @@
       position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
     }
     #wizard.sheet--kitchen .glass-express-step0{
-      padding-bottom:20px;
-      --gex-gap:12px;
-      --gex-block:20px;
+      padding-bottom: 0;
+      --gex-gap: 12px;
+      --gex-block: 20px;
     }
-    #wizard.sheet--kitchen .glass-express-step0 #step-name input{
-      width: 100%; background: transparent; border: none; padding: 0; outline: none;
+    /* liquid-input: Name + Beschreibung */
+    #wizard.sheet--kitchen .glass-express-step0 #step-name input,
+    #wizard.sheet--kitchen .glass-express-step0 .liquid-input{
+      width: 100%; background: transparent; border: none; padding: 0; outline: none; font-weight: 800; color: #1a1a1a;
     }
     #wizard.sheet--kitchen .glass-express-step0 #step-name input:first-of-type{
-      font-size: 30px; font-weight: 800; text-align: center; color: #1a1a1a;
+      font-size: 1.8rem; text-align: center;
     }
     #wizard.sheet--kitchen .glass-express-step0 #step-name input:last-of-type{
-      font-size: 13px; color: #94a3b8; text-align: center; margin-top: 4px;
+      font-size: 0.9rem; color: #888; text-align: center; margin-top: 5px;
     }
-    #wizard.sheet--kitchen .glass-express-step0 #step-price input{
-      font-size: 48px; font-weight: 800;
+    /* price-display */
+    #wizard.sheet--kitchen .glass-express-step0 #step-price .inserat-price-input,
+    #wizard.sheet--kitchen .glass-express-step0 .price-display{
+      font-size: 3.5rem; font-weight: 900; text-align: center; color: #111;
     }
-    #wizard.sheet--kitchen .glass-express-step0 #step-cat button{
-      border-radius: 999px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    #wizard.sheet--kitchen .glass-express-step0 #step-cat button,
+    #wizard.sheet--kitchen .glass-express-step0 .extra-pill{
+      padding: 10px 20px; border-radius: 15px; background: rgba(0,0,0,0.05); font-weight: 700;
+      transition: all 0.3s ease; cursor: pointer; border: none;
     }
-    #wizard.sheet--kitchen .glass-express-step0 #step-cat button[style*="#10b981"]{
-      box-shadow: 0 4px 14px rgba(16,185,129,0.35);
+    #wizard.sheet--kitchen .glass-express-step0 #step-cat button[style*="#10b981"],
+    #wizard.sheet--kitchen .glass-express-step0 .extra-pill.active{
+      background: var(--emerald) !important; color: #fff !important; transform: scale(1.05);
+    }
+    #wizard.sheet--kitchen .glass-express-step0 #step-extras .extra-pill{
+      padding: 8px 15px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; background: rgba(0,0,0,0.05);
     }
     #wizard.sheet--kitchen .glass-express-step0 .glass-pill{
       -webkit-tap-highlight-color:transparent;
@@ -1578,35 +1595,35 @@
     #wizard.sheet--kitchen .inserat-three-pillars button:active{ transform:scale(0.95); }
     #wizard.sheet--kitchen .inserat-photo-tile .inserat-photo-remove:hover,
     #wizard.sheet--kitchen .inserat-photo-tile .inserat-photo-change:hover{ color:#fff; }
-    #wizard.sheet--kitchen .glass-express-step0 #step-logistics{
-      display: flex; align-items: center; justify-content: space-around;
-      background: rgba(255,255,255,0.35); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-      border-radius: 1.5rem; border: 1px solid rgba(255,255,255,0.6); box-shadow: inset 0 1px 0 rgba(255,255,255,0.7);
-      padding: 16px; margin-bottom: 24px;
+    /* logistics-bar */
+    #wizard.sheet--kitchen .glass-express-step0 #step-logistics,
+    #wizard.sheet--kitchen .glass-express-step0 .logistics-bar{
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: nowrap;
+      background: rgba(0,0,0,0.05); border-radius: 1.5rem; padding: 1rem;
     }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-photo-tile{
-      width: 100%; height: 208px; background: rgba(0,0,0,0.06); overflow: hidden; cursor: pointer; position: relative;
+      width: 100%; overflow: hidden; cursor: pointer; position: relative;
     }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-scroll-area{
-      padding: 24px; overflow-y: auto; flex: 1; min-height: 0; -webkit-overflow-scrolling: touch;
+      padding: 30px; overflow-y: auto; flex: 1; min-height: 0; -webkit-overflow-scrolling: touch;
+      display: flex; flex-direction: column; gap: 25px;
     }
-    #wizard.sheet--kitchen .glass-express-step0 #step-name{ margin-bottom: 20px; }
+    #wizard.sheet--kitchen .glass-express-step0 #step-name{ margin-bottom: 0; }
     #wizard.sheet--kitchen .glass-express-step0 #step-cat{
-      display: flex; gap: 8px; overflow-x: auto; padding: 4px 0; margin-bottom: 24px; -webkit-overflow-scrolling: touch;
+      display: flex; gap: 8px; overflow-x: auto; padding: 0; margin: 0; -webkit-overflow-scrolling: touch;
     }
     #wizard.sheet--kitchen .glass-express-step0 #step-price{
-      text-align: center; margin-bottom: 24px; padding: 16px 0;
+      text-align: center; margin: 0; padding: 0;
     }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-price-row{
       display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 8px;
     }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-price-input{
-      width: 50%; max-width: 180px; background: rgba(255,255,255,0.5); border: none; border-radius: 24px;
-      padding: 16px; font-size: 34px; font-weight: 800; text-align: center; outline: none; box-shadow: 0 0 0 1px rgba(0,0,0,0.05);
+      width: 50%; max-width: 180px; background: transparent; border: none; padding: 16px; outline: none;
     }
-    #wizard.sheet--kitchen .glass-express-step0 .inserat-price-euro{ font-size: 28px; font-weight: 800; color: #94a3b8; }
+    #wizard.sheet--kitchen .glass-express-step0 .inserat-price-euro{ font-size: 2rem; font-weight: 900; color: #ccc; margin-left: 10px; }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-earnings{
-      font-size: 11px; font-weight: 800; color: #10b981; text-transform: uppercase; letter-spacing: 0.08em; margin: 0;
+      font-size: 0.75rem; font-weight: 800; color: var(--emerald); text-transform: uppercase; letter-spacing: 1px; margin: 0;
     }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-logistics-btn{
       font-size: 24px; background: none; border: none; cursor: pointer; padding: 4px; transition: transform 0.2s, filter 0.2s;
@@ -1618,26 +1635,34 @@
       padding: 6px 10px; border-radius: 10px; border: 1px solid rgba(0,0,0,0.1); font-size: 12px; font-weight: 700;
     }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-pickup-time-trigger{
-      font-size: 14px; font-weight: 800; color: #64748b; background: none; border: none; cursor: pointer;
-      display: flex; align-items: center; gap: 4px; opacity: 0.7;
+      font-size: 0.8rem; font-weight: 700; color: #666; background: none; border: none; cursor: pointer;
+      display: flex; align-items: center; gap: 4px; white-space: nowrap;
     }
-    #wizard.sheet--kitchen .glass-express-step0 #step-allergens{ margin-bottom: 24px; }
+    #wizard.sheet--kitchen .glass-express-step0 #step-allergens{ margin: 0; }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-allergen-trigger{
-      width: 100%; text-align: center; font-size: 13px; font-weight: 700; color: #10b981;
-      letter-spacing: 0.02em; padding: 12px 0; border: none; background: transparent; cursor: pointer;
-      text-decoration: none; -webkit-tap-highlight-color: transparent;
+      width: 100%; text-align: center; font-size: 0.7rem; font-weight: 800; color: #aaa;
+      text-transform: uppercase; padding: 8px 0; border: none; background: transparent; cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
     }
-    #wizard.sheet--kitchen .glass-express-step0 .inserat-allergen-trigger:hover{ text-decoration: underline; color: #059669; }
+    #wizard.sheet--kitchen .glass-express-step0 .inserat-allergen-trigger:hover{ color: #888; }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-allergen-inner{
       display: flex; flex-wrap: wrap; gap: 8px; padding: 16px 0; justify-content: center;
     }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-action-section{
-      padding: 24px; background: rgba(255,255,255,0.98); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-      border-top: 1px solid rgba(0,0,0,0.06); flex-shrink: 0;
-      display: flex; flex-direction: column; gap: 12px; box-shadow: 0 -4px 12px rgba(0,0,0,0.03);
+      padding: 24px 30px; background: rgba(255,255,255,0.98); border-top: 1px solid rgba(0,0,0,0.06); flex-shrink: 0;
+      display: flex; flex-direction: column; gap: 12px; margin-top: 10px;
+    }
+    #wizard.sheet--kitchen .glass-express-step0 .inserat-action-section.inserat-action-pricing button:first-of-type{
+      background: var(--signal-yellow) !important; color: #1a1a1a !important; border: none;
+      padding: 20px; border-radius: 2rem; font-weight: 900; text-transform: uppercase; font-size: 1rem;
+      box-shadow: 0 10px 20px rgba(250,204,21,0.3);
+    }
+    #wizard.sheet--kitchen .glass-express-step0 .inserat-action-section.inserat-action-pricing button:nth-of-type(2){
+      background: transparent !important; border: 2px solid var(--emerald) !important; color: var(--emerald) !important;
+      padding: 15px; border-radius: 2rem; font-weight: 900; font-size: 0.75rem;
     }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-master-flow > section button{
-      border-radius: 1.5rem;
+      border-radius: 2rem;
     }
     #wizard.sheet--kitchen .inserat-pickup-time-trigger:active{ opacity:0.9; }
     /* Tastatur-Check: Preis-Feld – fester Bereich, kein Layout-Sprung bei Zahlentastatur */
@@ -16067,7 +16092,16 @@
   }
   if(typeof window !== 'undefined'){ window.openProfilePwaTipSheet = openProfilePwaTipSheet; window.closePwaStartScreenSheet = closePwaStartScreenSheet; }
   var pwaDeferredPrompt = null;
-  window.addEventListener('beforeinstallprompt', function(e){ e.preventDefault(); pwaDeferredPrompt = e; });
+  var pwaBannerShownThisSession = false;
+  window.addEventListener('beforeinstallprompt', function(e){
+    e.preventDefault();
+    pwaDeferredPrompt = e;
+    // Einmal pro Session unser Sheet zeigen, damit Nutzer „Zum Startbildschirm hinzufügen“ tippen kann (dann wird prompt() aufgerufen).
+    if(!pwaBannerShownThisSession && typeof openProfilePwaTipSheet === 'function'){
+      pwaBannerShownThisSession = true;
+      setTimeout(function(){ openProfilePwaTipSheet(); }, 1500);
+    }
+  });
   var pwaSheetInstallBtn = document.getElementById('pwaSheetInstallBtn');
   if(pwaSheetInstallBtn){
     pwaSheetInstallBtn.onclick = function(){
@@ -22096,16 +22130,16 @@
     {
       setWizardQuestion('', '');
       const box=document.createElement('div');
-      box.className='glass-express-step0 inserat-universal-mask inserat-master-flow';
+      box.className='glass-express-step0 inserat-universal-mask inserat-master-flow liquid-panel';
       box.style.cssText='padding:0; overflow:hidden; display:flex; flex-direction:column; min-height:0;';
       const saveDraft = () => { localStorage.setItem('wizard_draft', JSON.stringify(w)); };
       const scrollToNext = (id)=>{ setTimeout(()=>{ var el=document.getElementById(id); if(el) el.scrollIntoView({ behavior:'smooth', block:'center' }); }, 150); };
       const dismissKeyboard = ()=>{ try { if(document.activeElement && document.activeElement.blur) document.activeElement.blur(); } catch(e){} };
       const hapticLight = ()=>{ try { if(typeof haptic==='function') haptic(8); else if(navigator.vibrate) navigator.vibrate(8); } catch(e){} };
 
-      // 1. FOTO – Referenz: ovaler Button unten rechts „FOTO ÄNDERN“ / „FOTO HINZUFÜGEN“
+      // 1. FOTO – Liquid Panel: photo-header 240px, Button unten rechts
       const photoTile=document.createElement('div');
-      photoTile.className='inserat-photo-tile';
+      photoTile.className='inserat-photo-tile photo-header';
       if(w.data.photoData){
         photoTile.innerHTML='<img src="'+w.data.photoData+'" style="width:100%; height:100%; object-fit:cover; display:block;" alt=""><button type="button" class="inserat-photo-change" aria-label="Foto ändern"><i data-lucide="camera" style="width:14px;height:14px;stroke-width:2.5;"></i> FOTO ÄNDERN</button>';
         const rem=photoTile.querySelector('.inserat-photo-change');
@@ -22126,6 +22160,7 @@
       stepName.id='step-name';
       const inputDish=document.createElement('input');
       inputDish.type='text';
+      inputDish.className='liquid-input';
       inputDish.placeholder='Was kochst du heute?';
       inputDish.value=w.data.dish||'';
       inputDish.autocomplete='off';
@@ -22133,6 +22168,7 @@
       inputDish.onblur=()=>{ dismissKeyboard(); hapticLight(); scrollToNext('step-cat'); };
       const inputDesc=document.createElement('input');
       inputDesc.type='text';
+      inputDesc.className='liquid-input';
       inputDesc.placeholder='Kurze Beschreibung (optional)';
       inputDesc.value=w.data.description||'';
       inputDesc.oninput=()=>{ w.data.description=inputDesc.value; saveDraft(); };
@@ -22151,7 +22187,8 @@
       catValues.forEach((c,i)=>{
         const b=document.createElement('button');
         b.type='button';
-        b.style.cssText='flex:0 0 auto; padding:12px 24px; border-radius:16px; font-size:14px; font-weight:800; cursor:pointer; border:2px solid ' + (w.data.category===c?'#10b981':'rgba(255,255,255,0.6)') + '; background:' + (w.data.category===c?'#10b981':'rgba(255,255,255,0.4)') + '; color:' + (w.data.category===c?'#fff':'#64748b') + ';';
+        b.className='extra-pill' + (w.data.category===c ? ' active' : '');
+        b.style.cssText='flex:0 0 auto; cursor:pointer;';
         b.textContent=catDisplayLabels[i];
         b.onclick=()=>{ hapticLight(); w.data.category=c; saveDraft(); scrollToNext('step-price'); rebuildWizard(); };
         stepCat.appendChild(b);
@@ -22165,7 +22202,7 @@
       priceRow.className='inserat-price-row';
       const inputPrice=document.createElement('input');
       inputPrice.type='text';
-      inputPrice.className='inserat-price-input';
+      inputPrice.className='inserat-price-input price-display';
       inputPrice.setAttribute('inputmode','decimal');
       inputPrice.placeholder='0,00';
       inputPrice.value=(w.data.price>0?Number(w.data.price).toFixed(2).replace('.',','):'');
@@ -22184,9 +22221,10 @@
       stepPrice.appendChild(earningsEl);
       scrollArea.appendChild(stepPrice);
 
-      // 6. LOGISTIK-BAR: 🍴 🧾 🔄 + 🕒
+      // 6. LOGISTIK-BAR (logistics-bar): 🍴 🧾 🔄 + 🕒
       const stepLog=document.createElement('div');
       stepLog.id='step-logistics';
+      stepLog.className='logistics-bar';
       [{ id:'dineInPossible', key:'dineInPossible', emo:'🍴' }, { id:'hasPickupCode', key:'hasPickupCode', emo:'🧾' }, { id:'mehrweg', key:'reuse', emo:'🔄' }].forEach(function(item){
         var active = item.key==='reuse' ? !!(w.data.reuse && w.data.reuse.enabled) : !!w.data[item.key];
         const btn=document.createElement('button');
@@ -22238,7 +22276,7 @@
       const allTrigger=document.createElement('button');
       allTrigger.type='button';
       allTrigger.className='inserat-allergen-trigger';
-      allTrigger.textContent=w.data.allergeneExpanded ? 'Allergene schließen ↑' : 'Allergene angeben >';
+      allTrigger.textContent=w.data.allergeneExpanded ? 'Allergene schließen ↑' : 'Allergene angeben ›';
       allTrigger.onclick=()=>{ hapticLight(); w.data.allergeneExpanded=!w.data.allergeneExpanded; saveDraft(); if(w.data.allergeneExpanded) scrollToNext('step-extras'); rebuildWizard(); };
       stepAll.appendChild(allTrigger);
       if(w.data.allergeneExpanded){
@@ -22279,7 +22317,8 @@
         pillWrap.style.cssText='display:flex; align-items:center; gap:6px;';
         const btn=document.createElement('button');
         btn.type='button';
-        btn.style.cssText='padding:8px 16px; border-radius:999px; font-size:12px; font-weight:800; cursor:pointer; border:2px solid ' + (active?'#10b981':'rgba(255,255,255,0.6)') + '; background:' + (active?'#10b981':'rgba(255,255,255,0.4)') + '; color:' + (active?'#fff':'#64748b') + ';';
+        btn.className='extra-pill' + (active ? ' active' : '');
+        btn.style.cssText='cursor:pointer;';
         btn.textContent=opt.name;
         btn.onclick=()=>{ hapticLight(); var idx=w.data.extras.findIndex(function(e){ return e.name===opt.name; }); if(idx>=0){ w.data.extras.splice(idx,1); } else { w.data.extras.push({ name:opt.name, price:opt.price }); } saveDraft(); rebuildWizard(); };
         pillWrap.appendChild(btn);
@@ -22319,7 +22358,7 @@
       var primaryValid = hasDish && hasPrice;
 
       const actionSection=document.createElement('section');
-      actionSection.className='inserat-action-section';
+      actionSection.className='inserat-action-section' + (isInserierenRoute ? ' inserat-action-pricing' : '');
 
       if(isInserierenRoute){
         const btn499=document.createElement('button');
