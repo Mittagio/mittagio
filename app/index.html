@@ -1995,9 +1995,35 @@
     }
     @keyframes wizardShimmer{ 0%{ background-position:200% 0; } 100%{ background-position:-200% 0; } }
 
-    /* Inseratsflow: nur noch schwebendes Silicon-Valley-Panel, <30s bedienbar */
+    /* Inseratsflow: Foto oben fix, Mitte scrollbar, Buttons unten fix – 100% App-Feeling */
     #wizard[data-flow="listing"].sheet--kitchen .wizard-scroll{
-      padding-bottom:120px;
+      overflow: hidden;
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    #wizard[data-flow="listing"].sheet--kitchen .wizard-scroll #wContent{
+      height: 100%;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    #wizard[data-flow="listing"].sheet--kitchen .wizard-scroll #wContent > .glass-express-step0{
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    #wizard[data-flow="listing"].sheet--kitchen .glass-express-step0 .inserat-scroll-area{
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    #wizard[data-flow="listing"].sheet--kitchen .glass-express-step0 .inserat-action-section{
+      flex-shrink: 0;
     }
     /* Inseratsflow: Nur Glassmorphism (glass-express-step0). Keine Altlasten. */
 
@@ -2967,7 +2993,7 @@
     #v-discover .discover-restaurant-card .restaurant-name{ font-size:16px; font-weight:800; color:#1a1a1a; }
     #v-discover .discover-restaurant-card .restaurant-meta{ font-size:12px; color:#64748b; font-weight:600; margin-top:2px; }
     #v-discover .discover-tiles-grid{
-      display:grid; grid-template-columns:repeat(2, 1fr); gap:12px; margin-bottom:20px; padding:0 0 8px;
+      display:grid; grid-template-columns:1fr; gap:12px; margin-bottom:20px; padding:0 0 8px;
     }
     #v-discover .discover-tiles-grid .cust-card{ width:100%; margin:0; }
     #v-discover .discover-block{ margin-bottom:24px; }
@@ -4248,6 +4274,14 @@
         padding-bottom: 100px !important;
         -webkit-overflow-scrolling: touch;
       }
+      /* Inseratsflow Mobile: nur Mitte scrollen, Buttons fix mit Safe-Area */
+      #wizard[data-flow="listing"].sheet--kitchen .wizard-scroll{
+        overflow: hidden !important;
+        padding-bottom: 0 !important;
+      }
+      #wizard[data-flow="listing"].sheet--kitchen .glass-express-step0 .inserat-action-section{
+        padding: 20px 20px calc(20px + env(safe-area-inset-bottom, 24px)) !important;
+      }
       #wizard.sheet--kitchen #wContent .ans{
         min-height:48px !important;
         padding:14px 18px !important;
@@ -4266,6 +4300,9 @@
       }
       #wizard.sheet--kitchen .wizard-scroll{
         padding-bottom:140px !important;
+      }
+      #wizard[data-flow="listing"].sheet--kitchen .wizard-scroll{
+        padding-bottom: 0 !important;
       }
       #wizard.sheet--kitchen .handle{
         padding:12px 0 !important;
