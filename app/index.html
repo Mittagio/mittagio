@@ -925,13 +925,13 @@
     #v-provider-cookbook .cookbook-bar-btn:active{ transform:scale(0.97); }
     #v-provider-cookbook .cookbook-bar-secondary{ background:rgba(255,255,255,0.5); color:#475569; border:2px solid rgba(255,255,255,0.6); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); }
     #v-provider-cookbook .cookbook-bar-primary{ background:#FACC15; color:#1a1a1a; box-shadow:0 4px 16px rgba(250,204,21,0.4); }
-    /* Kochbuch: Kategorie-Pills (Glassmorphism: aktiv = Emerald) */
-    #v-provider-cookbook .cookbook-category-pills{ display:flex; gap:8px; overflow-x:auto; padding:4px 0 16px; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+    /* Kochbuch: Kategorie-Pills wie Kundenseite (Discover) – kleiner, einheitliches Layout */
+    #v-provider-cookbook .cookbook-category-pills{ display:flex; gap:10px; overflow-x:auto; padding:8px 16px 12px; -webkit-overflow-scrolling:touch; scrollbar-width:none; scroll-snap-type:x mandatory; }
     #v-provider-cookbook .cookbook-category-pills::-webkit-scrollbar{ display:none; }
-    #v-provider-cookbook .cookbook-category-pills .cookbook-cat-pill{ flex:0 0 auto; min-height:44px; padding:0 20px; border-radius:999px; font-size:14px; font-weight:700; border:1px solid rgba(255,255,255,0.6); background:rgba(255,255,255,0.5); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); color:#64748b; cursor:pointer; transition:all .2s; display:inline-flex; align-items:center; justify-content:center; box-shadow:0 2px 8px rgba(0,0,0,0.04); }
+    #v-provider-cookbook .cookbook-category-pills .cookbook-cat-pill{ flex:0 0 auto; scroll-snap-align:center; min-height:44px; min-width:auto; padding:10px 18px; border-radius:22px; font-size:14px; font-weight:700; border:none; background:#e5e7eb; color:#64748b; cursor:pointer; transition:transform 0.15s, background 0.2s; display:inline-flex; align-items:center; justify-content:center; -webkit-tap-highlight-color:transparent; }
     #v-provider-cookbook .cookbook-category-pills .cookbook-cat-pill:hover{ color:#1D1D1F; }
-    #v-provider-cookbook .cookbook-category-pills .cookbook-cat-pill.on{ background:#10b981; border-color:#10b981; color:#fff; box-shadow:0 4px 14px rgba(16,185,129,0.35); }
-    #v-provider-cookbook .cookbook-category-pills .cookbook-cat-pill:active{ transform:scale(0.97); }
+    #v-provider-cookbook .cookbook-category-pills .cookbook-cat-pill.on{ background:#10b981; border:none; color:#fff; box-shadow:0 2px 12px rgba(16,185,129,0.4); }
+    #v-provider-cookbook .cookbook-category-pills .cookbook-cat-pill:active{ transform:scale(0.96); }
     #v-provider-cookbook #btnCookbookEmptyAdd{ background:#FACC15 !important; color:#1a1a1a !important; box-shadow:0 4px 20px rgba(250,204,21,0.4) !important; }
     /* Kochbuch Action-Sheet */
     #cookbookActionSheetBd{ z-index:999; }
@@ -1823,7 +1823,8 @@
     }
     .provider-add-plus-btn .plus-char,
     #fabProviderAddOffer.fab-provider-plus .plus-char { color: #fff !important; font-weight:900; text-shadow: 0 1px 2px rgba(0,0,0,0.15); }
-    #fabProviderAddOffer.fab-provider-plus {
+    /* Rund nur wenn keine Pill-Variante (Dashboard-FAB als Pill mit Label) */
+    #fabProviderAddOffer.fab-provider-plus:not(.fab-provider-pill) {
       width: 56px;
       height: 56px;
       min-width: 56px;
@@ -2104,10 +2105,29 @@
       height: 24px;
       color: #fff;
     }
+    /* Meine Küche: gleiches Icon wie Wochenplan/Kochbuch (Haus) */
+    #v-provider-home .dashboard-kasten-header .prov-page-header-icon {
+      width: 44px;
+      height: 44px;
+      background: var(--prov-brand);
+      color: #1a1a1a;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(255, 222, 0, 0.25);
+      flex-shrink: 0;
+    }
+    #v-provider-home .dashboard-kasten-header .prov-page-header-icon i,
+    #v-provider-home .dashboard-kasten-header .prov-page-header-icon svg {
+      width: 24px;
+      height: 24px;
+      color: #fff;
+    }
     .prov-page-header .prov-page-header-title {
       margin: 0;
-      font-size: 24px;
-      font-weight: 950;
+      font-size: 20px;
+      font-weight: 900;
       letter-spacing: -0.03em;
       color: #1a1a1a;
     }
@@ -2454,6 +2474,21 @@
       left: auto !important;
       bottom:calc(130px + env(safe-area-inset-bottom, 20px)) !important;
       right:calc(16px + env(safe-area-inset-right, 0)) !important;
+    }
+    /* FAB als Pill mit Label: klare Haupt-CTA, nicht verwaist */
+    #fabProviderAddOffer.fab-provider-pill{
+      width: auto !important;
+      min-width: 56px;
+      min-height: 52px;
+      padding: 0 20px 0 16px !important;
+      border-radius: 26px !important;
+      justify-content: center;
+    }
+    #fabProviderAddOffer.fab-provider-pill .fab-provider-label{
+      font-size: 15px;
+      font-weight: 800;
+      color: #1a1a1a !important;
+      white-space: nowrap;
     }
     #fabProviderAddOfferLabel{ right:calc(16px + env(safe-area-inset-right, 0)) !important; }
     #providerStatusIndicator{
@@ -3644,17 +3679,22 @@
       border:1px solid rgba(0,0,0,0.04);
       overflow:hidden;
     }
-    /* Header „Meine Küche“: kein großer Kasten, nur Leiste – oben deckend, kein leerer Screen */
+    /* Header „Meine Küche“: Layout + Stil wie Wochenplan/Kochbuch (prov-page-header) */
     #v-provider-home .dashboard-kasten-header{
       position:sticky; top:0; z-index:100;
-      background:#fff !important;
-      backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
       border-radius:0 !important;
       box-shadow:none !important;
       border:none !important;
-      border-bottom:1px solid rgba(0,0,0,0.06) !important;
     }
-    #v-provider-home .dashboard-kasten-header .prov-title{ font-size:17px !important; }
+    #v-provider-home .dashboard-kasten-header.prov-page-header{
+      background:rgba(255,255,255,0.8) !important;
+      backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+      border-bottom:1px solid rgba(255,255,255,0.2) !important;
+      padding:calc(8px + env(safe-area-inset-top, 0)) 20px 12px 20px;
+    }
+    #v-provider-home .dashboard-kasten-header .prov-header-inner{ padding:0; }
+    #v-provider-home .dashboard-kasten-header .prov-title,
+    #v-provider-home .dashboard-kasten-header .prov-page-header-title{ font-size:20px !important; font-weight:900 !important; }
     /* KPI-Kasten: Glas-Lesbarkeit (Text-Schatten) + veredelte Zahlen + Trennlinie */
     #v-provider-home .dashboard-kasten-kpis{
       padding:18px max(16px, env(safe-area-inset-left, 0)) 18px max(16px, env(safe-area-inset-right, 0));
@@ -3684,12 +3724,12 @@
     #v-provider-home .dashboard-kasten-angebote{
       padding:14px 16px; padding-left:max(16px, env(safe-area-inset-left, 0)); padding-right:max(16px, env(safe-area-inset-right, 0));
     }
-    #v-provider-home .dashboard-kasten-angebote .provider-week-title{ font-size:15px !important; }
+    #v-provider-home .dashboard-kasten-angebote .provider-week-title{ font-size:16px !important; }
     #v-provider-home .dashboard-kasten-wochenplan{
       padding:14px 16px; padding-left:max(16px, env(safe-area-inset-left, 0)); padding-right:max(16px, env(safe-area-inset-right, 0));
       padding-bottom:18px;
     }
-    #v-provider-home .dashboard-kasten-wochenplan .provider-week-title{ font-size:15px !important; }
+    #v-provider-home .dashboard-kasten-wochenplan .provider-week-title{ font-size:16px !important; }
     #v-provider-home.view.active .prov-header,
     #v-provider-home.view.active .dashboard-kasten{
       position:relative; z-index:1; min-height:0; overflow:visible; flex-shrink:0;
@@ -3801,7 +3841,7 @@
       #v-provider-week .week-header-compact{ background:#fff !important; }
       #v-provider-week .prov-page-header{ padding-top:calc(10px + env(safe-area-inset-top, 0)) !important; }
       #v-provider-home{ padding:0 16px 0 !important; padding-top:0 !important; }
-      #v-provider-home h1{ font-size:28px !important; }
+      #v-provider-home h1{ font-size:20px !important; }
       
       /* KPI Cards: 3er Grid, Touch-freundlich */
       #v-provider-home [style*="grid-template-columns:repeat(3"]{ gap:10px !important; }
@@ -3822,11 +3862,12 @@
       #v-provider-pickups, #v-provider-cookbook, #v-provider-profile{
         padding:0 16px 100px !important;
       }
+      #v-provider-cookbook{ padding-bottom:0 !important; }
       #v-provider-profile{
         padding:0 20px calc(90px + env(safe-area-inset-bottom, 0)) !important;
       }
       #v-provider-pickups h3, #v-provider-cookbook h1, #v-provider-profile h1{
-        font-size:24px !important;
+        font-size:20px !important;
       }
       /* Wochenplan: nur wenn .active (nicht auf Kochbuch/anderen Seiten) */
       #v-provider-week.view{ display:none !important; }
@@ -4225,8 +4266,7 @@
         padding:16px 20px !important;
       }
       
-      /* Kochbuch: Touch-Ziele */
-      #v-provider-cookbook .cookbook-category-pills .cookbook-cat-pill{ min-height:48px !important; }
+      /* Kochbuch: Pills wie Kundenseite beibehalten (min-height 44px) */
       #v-provider-cookbook .cookbook-action-sheet-btn{ min-height:52px !important; }
       
       .discover-offers{ padding:14px 12px !important; gap:12px !important; }
@@ -4236,7 +4276,7 @@
     /* Extra kleine Phones (<375px, z.B. iPhone SE) */
     @media (max-width:374px){
       #v-provider-home{ padding:0 8px 0 !important; padding-top:0 !important; }
-      #v-provider-home h1{ font-size:22px !important; }
+      #v-provider-home h1{ font-size:20px !important; }
       #kpiCardTagesessen, #kpiCardAbholungen, #kpiCardKochbuch{ padding:10px 6px !important; }
       #kpiCardTagesessen div[style*="font-size:20px"],
       #kpiCardAbholungen div[style*="font-size:32px"],
@@ -5901,14 +5941,17 @@
     <!-- PROVIDER APP - Dashboard 2.1: 4 schwebende Kästen (App-like) -->
     <section class="view prov-dashboard-stolz" id="v-provider-home">
       <div class="dashboard-floating-wrap">
-        <!-- KASTEN 1: Meine Küche Header -->
-        <header class="dashboard-kasten dashboard-kasten-header prov-header prov-header-stolz">
-          <div class="prov-header-inner" style="border:none; padding-top:calc(10px + env(safe-area-inset-top, 0)); padding-bottom:16px; padding-left:max(20px, env(safe-area-inset-left, 0)); padding-right:max(20px, env(safe-area-inset-right, 0));">
-            <div style="display:flex; align-items:center; justify-content:space-between;">
-              <div style="display:flex; align-items:center; gap:8px;">
-                <h1 class="prov-title" style="margin:0; font-size:20px; font-weight:900;">Meine Küche</h1>
+        <!-- KASTEN 1: Meine Küche Header (Layout + Stil wie Wochenplan/Kochbuch) -->
+        <header class="dashboard-kasten dashboard-kasten-header prov-header prov-header-stolz prov-page-header">
+          <div class="prov-header-inner">
+            <div class="prov-page-header-row">
+              <div class="prov-page-header-left">
+                <div class="prov-page-header-icon" aria-hidden="true">
+                  <i data-lucide="home" style="width:24px; height:24px;"></i>
+                </div>
+                <h1 class="prov-page-header-title">Meine Küche</h1>
               </div>
-              <button type="button" id="btnProviderHomeRefresh" title="Aktualisieren" aria-label="Daten neu laden" style="background:rgba(0,0,0,0.04); border:none; min-width:44px; min-height:44px; width:44px; height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; color:#64748b; cursor:pointer;">
+              <button type="button" id="btnProviderHomeRefresh" title="Aktualisieren" aria-label="Daten neu laden" class="prov-page-header-action" style="background:rgba(0,0,0,0.06); border:none; min-width:44px; min-height:44px; width:44px; height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; color:#1a1a1a; cursor:pointer;">
                 <i data-lucide="refresh-cw" style="width:20px; height:20px;"></i>
               </button>
             </div>
@@ -5939,7 +5982,7 @@
         <div class="dashboard-kasten dashboard-kasten-angebote" id="providerActiveListingsSectionWrap">
           <div id="providerActiveListingsSection">
             <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
-              <h3 class="provider-week-title" style="margin:0; font-size:18px;">Aktive Angebote heute</h3>
+              <h3 class="provider-week-title" style="margin:0;">Aktive Angebote heute</h3>
               <button type="button" id="btnProviderShareToday" title="Heutige Angebote teilen" aria-label="Angebote teilen" style="background:rgba(0,0,0,0.06); border:none; min-width:44px; min-height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; color:#1a1a1a; cursor:pointer;">
                 <i data-lucide="share-2" style="width:20px; height:20px;"></i>
               </button>
@@ -5962,7 +6005,7 @@
         <!-- KASTEN 4: Dein Wochenplan -->
         <div class="dashboard-kasten dashboard-kasten-wochenplan">
           <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:16px;">
-            <h3 class="provider-week-title" style="margin:0; font-size:18px;">Dein Wochenplan</h3>
+            <h3 class="provider-week-title" style="margin:0;">Dein Wochenplan</h3>
             <button type="button" id="btnProviderShareWeekPlanTitle" title="Wochenplan teilen" aria-label="Wochenplan teilen" style="background:rgba(0,0,0,0.06); border:none; min-width:44px; min-height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; color:#1a1a1a; cursor:pointer;">
               <i data-lucide="share-2" style="width:20px; height:20px;"></i>
             </button>
@@ -6101,7 +6144,7 @@
             <h1 class="prov-page-header-title">Mein Kochbuch</h1>
           </div>
         </div>
-        <div class="cookbook-category-pills" id="cookbookCategoryPills" role="tablist" aria-label="Kategorie filter" style="margin-top:16px;"></div>
+        <div class="cookbook-category-pills" id="cookbookCategoryPills" role="tablist" aria-label="Kategorie filter"></div>
       </header>
 
       <div id="cookbookScrollWrap" style="flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:16px 20px calc(180px + env(safe-area-inset-bottom, 0)); max-width:500px; margin:0 auto; width:100%; box-sizing:border-box;">
@@ -9207,11 +9250,11 @@
       var mainEl = document.querySelector('main');
       if(!mainEl) return;
       var btn = document.createElement('button');
-      btn.className = 'fab-provider fab-provider-plus';
+      btn.className = 'fab-provider fab-provider-plus fab-provider-pill';
       btn.id = 'fabProviderAddOffer';
       btn.type = 'button';
-      btn.setAttribute('aria-label', 'Gericht erstellen');
-      btn.innerHTML = '<span class="plus-char" style="font-size:28px; line-height:1; color:#fff;">+</span>';
+      btn.setAttribute('aria-label', 'Inserat erstellen');
+      btn.innerHTML = '<span class="plus-char" style="font-size:28px; line-height:1; color:#fff;">+</span><span class="fab-provider-label">Inserat erstellen</span>';
       btn.onclick = function(){ createFlowPreselectedDate = null; if(typeof openDishFlow === 'function') openDishFlow(null, 'dashboard'); };
       mainEl.appendChild(btn);
     } else {
