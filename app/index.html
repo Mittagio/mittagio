@@ -1432,22 +1432,22 @@
     #wizard.sheet--kitchen .w-actions button:active{
       transform: scale(0.97);
     }
-    /* Liquid Panel / High-End Glassmorphism (Inseratsflow) – S25 Liquid-Floating */
+    /* Liquid Panel / High-End Glassmorphism (Inseratsflow) – Optik wie Referenz */
     #wizard.sheet--kitchen .glass-express-step0,
     #wizard.sheet--kitchen .inserat-universal-mask,
     #wizard.sheet--kitchen .listing-glass-panel,
     #wizard.sheet--kitchen .s25-floating-panel{
-      --glass-bg: rgba(255,255,255,0.72);
-      --glass-border: rgba(255,255,255,0.5);
+      --glass-bg: rgba(255,255,255,0.95);
+      --glass-border: rgba(255,255,255,0.6);
       --emerald: #10b981;
       --signal-yellow: #FACC15;
-      --radius-panel: 2.8rem;
+      --radius-panel: 2.4rem;
       border-radius: var(--radius-panel);
       background: var(--glass-bg);
-      backdrop-filter: blur(35px) saturate(160%);
-      -webkit-backdrop-filter: blur(35px) saturate(160%);
+      backdrop-filter: blur(40px) saturate(140%);
+      -webkit-backdrop-filter: blur(40px) saturate(140%);
       border: 1px solid var(--glass-border);
-      box-shadow: 0 20px 40px rgba(0,0,0,0.1), inset 0 0 0 1px rgba(255,255,255,0.3);
+      box-shadow: 0 24px 48px rgba(0,0,0,0.12), 0 8px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.8);
       overflow: hidden;
       max-width: 420px;
       max-height: 92vh;
@@ -1462,13 +1462,13 @@
     }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-photo-tile,
     #wizard.sheet--kitchen .glass-express-step0 .photo-header{
-      height: 240px; background: #e2e8f0; border-radius: 0;
+      height: 240px; min-height: 200px; background: #e8ecf0; border-radius: 0; flex-shrink: 0;
     }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-photo-tile .inserat-photo-remove,
     #wizard.sheet--kitchen .glass-express-step0 .inserat-photo-tile .inserat-photo-change{
-      position: absolute; bottom: 15px; right: 15px; padding: 5px 12px; border-radius: 20px;
-      background: rgba(0,0,0,0.4); border: none; color: #fff; font-size: 10px; font-weight: 900;
-      text-transform: uppercase; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+      position: absolute; bottom: 14px; right: 14px; padding: 8px 14px; border-radius: 999px;
+      background: rgba(0,0,0,0.5); border: none; color: #fff; font-size: 11px; font-weight: 800;
+      text-transform: uppercase; letter-spacing: 0.03em; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
     }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-photo-tile .inserat-photo-change:hover{ color: #fff; }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-photo-tile .inserat-photo-change:active{ transform: scale(0.98); }
@@ -1636,11 +1636,12 @@
       width: 100%; overflow: hidden; cursor: pointer; position: relative;
     }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-scroll-area{
-      padding: 30px; overflow-y: auto; flex: 1; min-height: 0; -webkit-overflow-scrolling: touch;
-      display: flex; flex-direction: column; gap: 25px;
+      padding: 28px 24px; overflow-y: auto; flex: 1; min-height: 0; -webkit-overflow-scrolling: touch;
+      display: flex; flex-direction: column; gap: 22px;
+      background: #fff;
     }
     #wizard.sheet--kitchen .glass-express-step0.s25-floating-panel .inserat-scroll-area{
-      padding: 24px; gap: 18px;
+      padding: 26px 24px; gap: 20px;
     }
     #wizard.sheet--kitchen .glass-express-step0 #step-name{ margin-bottom: 0; }
     #wizard.sheet--kitchen .glass-express-step0 #step-cat{
@@ -1683,17 +1684,18 @@
       display: flex; flex-wrap: wrap; gap: 8px; padding: 16px 0; justify-content: center;
     }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-action-section{
-      padding: 24px 30px; background: rgba(255,255,255,0.98); border-top: 1px solid rgba(0,0,0,0.06); flex-shrink: 0;
-      display: flex; flex-direction: column; gap: 12px; margin-top: 10px;
+      padding: 24px 24px 28px; background: #fff; border-top: 1px solid rgba(0,0,0,0.08);
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.04); flex-shrink: 0;
+      display: flex; flex-direction: column; gap: 14px;
     }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-action-section.inserat-action-pricing button:first-of-type{
       background: var(--signal-yellow) !important; color: #1a1a1a !important; border: none;
-      padding: 20px; border-radius: 2rem; font-weight: 900; text-transform: uppercase; font-size: 1rem;
-      box-shadow: 0 10px 20px rgba(250,204,21,0.3);
+      padding: 20px 24px; border-radius: 1.5rem; font-weight: 900; text-transform: uppercase; font-size: 1rem;
+      box-shadow: 0 8px 24px rgba(250,204,21,0.35);
     }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-action-section.inserat-action-pricing button:nth-of-type(2){
-      background: transparent !important; border: 2px solid var(--emerald) !important; color: var(--emerald) !important;
-      padding: 15px; border-radius: 2rem; font-weight: 900; font-size: 0.75rem;
+      background: transparent !important; border: 2px solid var(--emerald) !important; color: #059669 !important;
+      padding: 16px 24px; border-radius: 1.5rem; font-weight: 800; font-size: 0.875rem;
     }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-master-flow > section button{
       border-radius: 2rem;
@@ -22395,14 +22397,14 @@
       if(isInserierenRoute){
         const btn499=document.createElement('button');
         btn499.type='button';
-        btn499.style.cssText='width:100%; padding:20px; background:#FACC15; color:#1a1a1a; font-size:16px; font-weight:800; border:none; border-radius:24px; cursor:pointer; box-shadow:0 10px 30px rgba(250,204,21,0.35); text-transform:uppercase; letter-spacing:0.02em;';
-        btn499.textContent='Jetzt für 4,99 € inserieren';
+        btn499.style.cssText='width:100%; padding:20px; background:#FACC15; color:#1a1a1a; font-size:16px; font-weight:800; border:none; border-radius:24px; cursor:pointer; box-shadow:0 10px 30px rgba(250,204,21,0.35); text-transform:uppercase; letter-spacing:0.02em; line-height:1.3;';
+        btn499.innerHTML='JETZT FÜR 4,99 €<br>INSERIEREN';
         btn499.onclick=function(){ if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; } if(typeof haptic==='function') haptic(50); w.data.pricingOption=undefined; w.data.inseratFeeWaived=false; var o=previewOfferFromWizard(); closeWizard(true); showPublishFeeModal(o); };
         actionSection.appendChild(btn499);
         const btnGratis=document.createElement('button');
         btnGratis.type='button';
         btnGratis.style.cssText='width:100%; padding:16px; border-radius:24px; border:2px solid #10b981; background:rgba(16,185,129,0.08); color:#065f46; font-size:14px; font-weight:800; cursor:pointer;';
-        btnGratis.textContent='Gratis mit Abholnummer (0,89 €)';
+        btnGratis.textContent='Oder Gratis mit Abholnummer (0,89 €)';
         btnGratis.onclick=function(){ if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; } if(typeof haptic==='function') haptic(50); w.data.hasPickupCode=true; w.data.inseratFeeWaived=true; w.data.pricingOption='abholnummer'; var o=previewOfferFromWizard(); closeWizard(true); showPublishFeeModal(o); };
         actionSection.appendChild(btnGratis);
       } else {
