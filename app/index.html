@@ -4019,7 +4019,16 @@
       #v-provider-week .kw-progress-fill{ height:100%; border-radius:999px; background:var(--prov-brand); transition:width 0.3s ease; }
       #v-provider-week .kw-board-scroll{ flex:1; min-height:0; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; padding:20px 20px calc(160px + env(safe-area-inset-bottom, 0)); }
       #v-provider-week .kw-grid{ display:grid; grid-template-columns:repeat(7, 1fr); gap:10px; max-width:100%; width:100%; margin:0 auto; box-sizing:border-box; }
-      @media (max-width:640px){ #v-provider-week .kw-grid{ grid-template-columns:1fr; } }
+      @media (max-width:640px){
+        #v-provider-week .kw-grid{ grid-template-columns:1fr; gap:12px; width:100%; max-width:100%; padding:0; }
+        #v-provider-week .kw-board-scroll{ padding:12px 16px calc(120px + env(safe-area-inset-bottom, 0)); padding-left:max(16px, env(safe-area-inset-left)); padding-right:max(16px, env(safe-area-inset-right)); }
+        #v-provider-week .kw-day-card{ width:100%; max-width:100%; box-sizing:border-box; min-width:0; padding:12px; }
+        #v-provider-week .kw-slots{ min-width:0; width:100%; box-sizing:border-box; }
+        #v-provider-week .kw-slot-empty{ min-width:0; width:100%; box-sizing:border-box; }
+        #v-provider-week #kwBoardWrap{ overflow-x:hidden; max-width:100%; }
+        #v-provider-week .kw-board-header{ padding-left:max(16px, env(safe-area-inset-left)); padding-right:max(16px, env(safe-area-inset-right)); }
+      }
+      @media (max-width:768px){ #v-provider-week .kw-grid{ grid-template-columns:1fr; } }
       #v-provider-week #kwBoardWrap{ overflow-x:hidden; max-width:100%; }
       #v-provider-week .kw-day-card{ background:rgba(255,255,255,0.7); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border-radius:24px; border:1px solid rgba(255,255,255,0.5); box-shadow:0 8px 32px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.03); padding:12px; min-height:140px; display:flex; flex-direction:column; gap:8px; transition:transform 0.2s ease, box-shadow 0.2s ease; }
       #v-provider-week .kw-day-card:active{ transform:scale(0.98); }
@@ -4208,6 +4217,36 @@
       }
       #wizard.sheet--kitchen .w-actions{
         padding:18px 20px calc(20px + env(safe-area-inset-bottom, 24px)) !important;
+      }
+      /* Notfall-Fix: Liquid-Panel auf Mobile – ein sauberes Glas-Panel, kein abgeschnittenes Chaos */
+      #wizard.sheet--kitchen.active{
+        max-height: 100dvh !important;
+        height: 100dvh !important;
+        height: 100vh !important;
+      }
+      #wizard.sheet--kitchen .liquid-panel,
+      #wizard.sheet--kitchen .listing-glass-panel,
+      #wizard.sheet--kitchen .glass-express-step0{
+        z-index: 9999 !important;
+        min-height: 0 !important;
+        max-height: none !important;
+        padding: 15px !important;
+        box-sizing: border-box;
+      }
+      #wizard.sheet--kitchen .glass-express-step0 .inserat-scroll-area{
+        padding: 0 2px;
+      }
+      #wizard.sheet--kitchen .glass-express-step0 .photo-header,
+      #wizard.sheet--kitchen .glass-express-step0 .inserat-photo-tile.photo-header{
+        height: 180px !important;
+        min-height: 180px !important;
+      }
+      #wizard.sheet--kitchen .sheet-body.wizard-sheet-body{
+        padding: 0 !important;
+      }
+      #wizard.sheet--kitchen .wizard-scroll{
+        padding-bottom: 100px !important;
+        -webkit-overflow-scrolling: touch;
       }
       #wizard.sheet--kitchen #wContent .ans{
         min-height:48px !important;
@@ -4947,8 +4986,8 @@
 
     <!-- CUSTOMER: Discover - App-like UX (Final Spec) -->
     <section class="view customer-view active" id="v-discover">
-      <!-- Modern Sticky Header -->
-      <header class="cust-header-sticky">
+      <!-- Modern Sticky Header (Standort + Filter stapeln, bleiben beim Scrollen fixiert) -->
+      <header class="cust-header-sticky discover-header-sticky">
         <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px; gap:12px;">
           <div style="flex:1; min-width:0;"></div>
           <!-- Standort in der Mitte -->
@@ -4997,6 +5036,7 @@
             <button type="button" data-radius="500" class="discover-radius-opt">500m</button>
             <button type="button" data-radius="1000" class="discover-radius-opt">1 km</button>
             <button type="button" data-radius="3000" class="discover-radius-opt">3 km</button>
+            <button type="button" data-radius="5000" class="discover-radius-opt">5 km</button>
           </div>
         </div>
         <div id="discoverDaysBar" class="cust-chip-bar discover-calendar-sticky" style="padding-top:4px; padding-bottom:8px;">
@@ -5238,8 +5278,9 @@
     <!-- CUSTOMER: Cart -->
     <section class="view customer-view" id="v-cart">
       <header class="cust-header-sticky">
-        <div style="display:flex; align-items:center; padding:12px 16px;">
-          <h1 style="font-size:20px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a; margin:0;">Mittagsbox heute ⚡</h1>
+        <div style="display:flex; align-items:center; gap:10px; padding:12px 16px;">
+          <i data-lucide="shopping-basket" style="width:24px;height:24px;color:#1a1a1a;flex-shrink:0;"></i>
+          <h1 style="font-size:20px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a; margin:0;">Mittagsbox heute</h1>
         </div>
       </header>
 
@@ -5273,7 +5314,7 @@
 
         <div id="cartTrustIcons" style="display:none; text-align:center; padding:0 20px;">
           <div style="display:inline-flex; align-items:center; gap:8px; padding:8px 16px; background:#f8f9fa; border-radius:99px; font-size:12px; font-weight:700; color:#64748b;">
-            <span>🧾</span> Abholnummer wird sofort generiert
+            <span>🧾</span> Deine Abholnummer wird sofort generiert
           </div>
         </div>
       </div>
@@ -5287,7 +5328,10 @@
             <button class="back-button btn-back" type="button" id="btnCheckoutBack" aria-label="Zurück" style="background:none; border:none; padding:8px; cursor:pointer; font-size:16px; font-weight:700; color:#2D3436;">
               <i data-lucide="chevron-left" style="width:22px;height:22px;"></i> Zurück
             </button>
-            <h3 style="margin:0; flex:1; font-weight:900; font-size:24px; color:#2D3436;">Zahlung</h3>
+            <div style="display:flex; align-items:center; gap:10px; flex:1;">
+              <i data-lucide="shopping-basket" style="width:24px;height:24px;color:#2D3436;flex-shrink:0;"></i>
+              <h3 style="margin:0; font-weight:900; font-size:24px; color:#2D3436;">Dein Mittagstisch</h3>
+            </div>
           </div>
           
           <!-- Bestellübersicht -->
@@ -5314,7 +5358,7 @@
           <!-- Abholzeit-Auswahl (15-Minuten-Takt) -->
           <div style="margin-bottom:24px;">
             <label style="display:block; font-weight:700; font-size:15px; margin-bottom:12px; color:#2D3436;">Wann holst du dein Essen ab?</label>
-            <div id="checkoutTimeSlots" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; margin-bottom:12px;">
+            <div id="checkoutTimeSlots" style="display:flex; flex-direction:row; flex-wrap:nowrap; overflow-x:auto; gap:10px; margin-bottom:12px; padding-bottom:8px; -webkit-overflow-scrolling:touch;">
               <!-- Wird dynamisch befüllt -->
             </div>
             <button type="button" id="btnOtherTime" class="time-chip-alternative" style="width:100%; min-height:44px; margin-top:8px; background:#f0f0f0; border:2px dashed #e7e1d5; border-radius:12px; color:#666; font-size:14px; font-weight:600; cursor:pointer; transition:all 0.2s ease; display:flex; align-items:center; justify-content:center; gap:8px;" onmouseover="this.style.borderColor='#FFD700'; this.style.background='rgba(255,215,0,0.1)'; this.style.color='#334155';" onmouseout="this.style.borderColor='#e7e1d5'; this.style.background='#f0f0f0'; this.style.color='#666';">
@@ -5322,8 +5366,8 @@
               <span>🕒 Andere Zeit</span>
             </button>
             <div id="customTimeInputWrapper" style="display:none; margin-top:15px; padding:15px; background:#fff9e6; border-radius:12px; text-align:center;">
-              <input type="time" id="checkoutPickupTimeCustom" min="11:30" max="14:00" style="width:100%; padding:14px; border:2px solid #FFD700; border-radius:12px; font-size:18px; font-weight:700; background:#fff; text-align:center; margin-bottom:8px;" />
-              <p class="hint" style="font-size:12px; color:#666; margin:0; line-height:1.5;">Bitte zwischen 11:30 und 14:00 Uhr wählen</p>
+              <input type="time" id="checkoutPickupTimeCustom" min="11:00" max="14:30" style="width:100%; padding:14px; border:2px solid #FFD700; border-radius:12px; font-size:18px; font-weight:700; background:#fff; text-align:center; margin-bottom:8px;" />
+              <p class="hint" style="font-size:12px; color:#666; margin:0; line-height:1.5;">Bitte zwischen 11:00 und 14:30 Uhr wählen</p>
             </div>
             <input type="hidden" id="checkoutPickupTime" value="" />
           </div>
@@ -5352,9 +5396,13 @@
               </button>
               <!-- Standard Zahlung -->
               <button class="btn" type="button" id="btnStandardPayment" style="width:100%; min-height:56px; background:#FFD700; color:#334155; border:none; border-radius:12px; font-size:16px; font-weight:800; box-shadow:0 4px 16px rgba(255,215,0,0.25);">
-                <i data-lucide="credit-card"></i> <span>Mit Karte bezahlen</span>
+                <i data-lucide="credit-card"></i> <span>JETZT BEZAHLEN</span>
               </button>
             </div>
+          </div>
+          
+          <div style="text-align:center; padding:12px 0; font-size:13px; font-weight:700; color:#64748b;">
+            <span>🧾</span> Deine Abholnummer wird sofort generiert
           </div>
           
           <!-- Guest-Checkout Hinweis -->
@@ -5376,10 +5424,11 @@
           <h2 style="font-family:'Nunito',sans-serif; font-weight:800; font-size:20px; margin:16px 0 8px; color:#1a1a1a;">Zahlung erfolgreich</h2>
           <p class="hint" style="font-size:14px; color:#64748b; margin:0;">Zeige diese Nummer beim Abholen vor.</p>
         </div>
-        <div style="text-align:center; padding:20px; background:rgba(255,215,0,0.12); border-radius:16px; border:2px solid rgba(255,215,0,0.3); margin-bottom:24px;">
+        <div id="orderSuccessSingleBlock" style="text-align:center; padding:20px; background:rgba(255,215,0,0.12); border-radius:16px; border:2px solid rgba(255,215,0,0.3); margin-bottom:24px;">
           <div style="font-size:13px; font-weight:700; color:#64748b; margin-bottom:6px;">Deine Nummer</div>
           <div id="orderSuccessAbholnummer" style="font-family:monospace; font-size:32px; font-weight:900; letter-spacing:4px; color:#1a1a1a;">#1A</div>
         </div>
+        <div id="orderSuccessMultiBlock" style="display:none; margin-bottom:24px;"></div>
         <div id="orderSuccessSummary" style="display:flex; flex-direction:column; gap:12px; margin-bottom:24px;">
           <div id="orderSuccessZeit" style="display:flex; align-items:center; gap:10px; padding:12px 16px; background:#f8f9fa; border-radius:12px; font-size:15px; font-weight:600; color:#334155;"><span style="font-size:20px;">🕒</span> Abholung um 12:15 Uhr</div>
           <div id="orderSuccessModus" style="display:flex; align-items:center; gap:10px; padding:12px 16px; background:#f8f9fa; border-radius:12px; font-size:15px; font-weight:600; color:#334155;"><span style="font-size:20px;">🍴</span> Vor Ort</div>
@@ -7791,6 +7840,17 @@
   const load = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } };
   const save = (k, v) => localStorage.setItem(k, JSON.stringify(v));
 
+  // Abholzeit-Slots 11:00–14:30 im 15-Minuten-Takt (zentral für Cart + Checkout)
+  function getTimeSlots(){
+    const slots = [];
+    for(let min = 11 * 60; min <= 14 * 60 + 30; min += 15){
+      const h = Math.floor(min / 60), m = min % 60;
+      slots.push(`${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`);
+    }
+    return slots;
+  }
+  window.TIME_SLOTS = window.TIME_SLOTS || getTimeSlots();
+
   // Cookie-Helfer für Single-Session (Session-ID im Cookie + DB)
   const SESSION_COOKIE_NAME = 'mittagio_session_id';
   const SESSION_COOKIE_DAYS = 30;
@@ -7954,23 +8014,18 @@
     
     const isFavorited = typeof dishFavs !== 'undefined' && dishFavs.has(String(data.id));
     
-    // Image Section
+    // Image Section (Full-Width der Karte)
     const imgContainer = document.createElement('div');
-    imgContainer.style.position = 'relative';
+    imgContainer.style.cssText = 'position:relative; width:100%; overflow:hidden;';
     
     const img = document.createElement('img');
     img.className = 'cust-card-img';
+    img.style.display = 'block';
+    img.style.width = '100%';
+    img.style.objectFit = 'cover';
     img.src = data.imageUrl || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=800&q=80';
     img.loading = 'lazy';
     imgContainer.appendChild(img);
-    // Entfernungs-Tag: oben rechts auf dem Bild, dezent (links positioniert damit keine Überlappung mit Herz/Teilen)
-    if(data.distanceKm != null){
-      const distM = Math.round(Number(data.distanceKm) * 1000);
-      const distTag = document.createElement('div');
-      distTag.style.cssText = 'position:absolute; top:12px; left:12px; padding:5px 10px; border-radius:10px; background:rgba(255,255,255,0.9); color:#64748b; font-size:11px; font-weight:700;';
-      distTag.textContent = distM < 1000 ? distM + 'm entfernt' : (Number(data.distanceKm).toFixed(1) + ' km');
-      imgContainer.appendChild(distTag);
-    }
     // Like Button
     const likeBtn = document.createElement('button');
     likeBtn.style.cssText = 'position:absolute; top:12px; right:12px; width:36px; height:36px; border-radius:10px; background:rgba(255,255,255,0.9); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#E34D4D; box-shadow:0 4px 12px rgba(0,0,0,0.1);';
@@ -8015,20 +8070,21 @@
     pillarsRow.appendChild(pillars);
     pillarsRow.appendChild(price);
     
-    // Body
+    // Body: Restaurantname direkt über Gerichtname (kompakt in der Karte)
     const body = document.createElement('div');
     body.className = 'cust-card-body';
     body.appendChild(pillarsRow);
+    
+    const providerLine = document.createElement('div');
+    providerLine.className = 'cust-card-meta';
+    providerLine.style.marginBottom = '4px';
+    providerLine.innerHTML = `<i data-lucide="store" style="width:14px;height:14px;"></i> <span>${(data.providerName || 'Anbieter').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</span>`;
+    body.appendChild(providerLine);
     
     const title = document.createElement('h3');
     title.className = 'cust-card-title';
     title.textContent = data.dish || 'Gericht';
     body.appendChild(title);
-    
-    const meta = document.createElement('div');
-    meta.className = 'cust-card-meta';
-    meta.innerHTML = `<i data-lucide="store" style="width:14px;height:14px;"></i> <span>${data.providerName || 'Anbieter'}</span>`;
-    body.appendChild(meta);
 
     // Gelber CTA: "In die Mittagsbox" (nur wenn Abholnummer)
     const ctaWrap = document.createElement('div');
@@ -10378,17 +10434,8 @@
       const providerIds = Object.keys(byProvider);
       providerIds.forEach(pid => {
         const group = byProvider[pid];
-        const first = normalizeOffer(group[0]);
         const block = document.createElement('div');
         block.className = 'discover-block';
-        const restaurantCard = document.createElement('div');
-        restaurantCard.className = 'discover-restaurant-card';
-        const nameEl = document.createElement('div');
-        nameEl.innerHTML = '<span class="restaurant-name">' + (first.providerName || 'Anbieter') + '</span>' +
-          (first.distanceKm != null ? '<div class="restaurant-meta">' + (first.distanceKm < 1 ? Math.round(first.distanceKm * 1000) + ' m' : first.distanceKm.toFixed(1) + ' km') + '</div>' : '');
-        restaurantCard.appendChild(nameEl);
-        restaurantCard.onclick = () => openOffer(first.id);
-        block.appendChild(restaurantCard);
         const grid = document.createElement('div');
         grid.className = 'discover-tiles-grid';
         group.forEach(o => { grid.appendChild(createModernOfferCard(o)); });
@@ -14882,7 +14929,7 @@
     if(cartVerzehrart) cartVerzehrart.style.display = 'block';
 
     let total=0;
-    const TIME_SLOTS = ['11:30', '11:45', '12:00', '12:15', '12:30', '12:45', '13:00', '13:15', '13:30', '13:45', '14:00'];
+    const TIME_SLOTS = getTimeSlots();
     const now = new Date();
     const currentMinutes = now.getHours() * 60 + now.getMinutes();
     const availableSlots = TIME_SLOTS.filter(slot => {
@@ -15023,8 +15070,8 @@
     if(!cart.verzehrmodus) cart.verzehrmodus = 'mitnehmen';
     save(LS.cart, cart);
     
-    // Zeitauswahl im 15-Minuten-Takt rendern
-    const TIME_SLOTS = window.TIME_SLOTS || ['11:30', '11:45', '12:00', '12:15', '12:30', '12:45', '13:00', '13:15', '13:30', '13:45', '14:00'];
+    // Zeitauswahl im 15-Minuten-Takt rendern (11:00–14:30)
+    const TIME_SLOTS = getTimeSlots();
     const currentMinutes = window.currentMinutes || (new Date().getHours() * 60 + new Date().getMinutes());
     let selectedTime = cart && cart.pickupTime ? cart.pickupTime : '';
     
@@ -15049,7 +15096,7 @@
         const slotMinutes = h * 60 + m;
         const isAvailable = slotMinutes >= currentMinutes + 15;
         const isSelected = selectedTime === t;
-        return `<button type="button" class="time-slot-btn ${isSelected ? 'selected' : ''} ${!isAvailable ? 'disabled' : ''}" data-time="${t}" style="padding:12px; border-radius:12px; border:2px solid ${isSelected ? '#FFD700' : '#e7e1d5'}; background:${isSelected ? '#FFD700' : '#fff'}; color:${isSelected ? '#2D3436' : isAvailable ? '#666' : '#ccc'}; font-weight:${isSelected ? '900' : '600'}; font-size:14px; cursor:${isAvailable ? 'pointer' : 'not-allowed'}; transition:all 0.2s ease; opacity:${isAvailable ? '1' : '0.5'};">
+        return `<button type="button" class="time-slot-btn ${isSelected ? 'selected' : ''} ${!isAvailable ? 'disabled' : ''}" data-time="${t}" style="flex:0 0 auto; min-width:72px; padding:12px; border-radius:12px; border:2px solid ${isSelected ? '#FFD700' : '#e7e1d5'}; background:${isSelected ? '#FFD700' : '#fff'}; color:${isSelected ? '#2D3436' : isAvailable ? '#666' : '#ccc'}; font-weight:${isSelected ? '900' : '600'}; font-size:14px; cursor:${isAvailable ? 'pointer' : 'not-allowed'}; transition:all 0.2s ease; opacity:${isAvailable ? '1' : '0.5'};">
           ${t}
         </button>`;
       }).join('');
@@ -15118,14 +15165,11 @@
       customTimeInput.onchange = () => {
         const customTime = customTimeInput.value;
         if(customTime){
-          // Validierung: Zwischen 11:30 und 14:00
           const [h, m] = customTime.split(':').map(Number);
           const timeMinutes = h * 60 + m;
-          const minMinutes = 11 * 60 + 30; // 11:30
-          const maxMinutes = 14 * 60; // 14:00
-          
+          const minMinutes = 11 * 60; // 11:00
+          const maxMinutes = 14 * 60 + 30; // 14:30
           if(timeMinutes >= minMinutes && timeMinutes <= maxMinutes){
-            // Format: "HH:MM Uhr"
             const formattedTime = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')} Uhr`;
             if(!cart) cart = {items: []};
             cart.pickupTime = formattedTime;
@@ -15134,7 +15178,7 @@
             if(hiddenInput) hiddenInput.value = formattedTime;
             showToast('Zeit gespeichert ✓', 1500);
           } else {
-            showToast('Bitte wähle eine Zeit zwischen 11:30 und 14:00 Uhr', 3000);
+            showToast('Bitte wähle eine Zeit zwischen 11:00 und 14:30 Uhr', 3000);
             customTimeInput.value = '';
           }
         }
@@ -15145,9 +15189,19 @@
     const hiddenInput = document.getElementById('checkoutPickupTime');
     if(hiddenInput && selectedTime) hiddenInput.value = selectedTime;
     
-    // Verzehrart-Buttons (Vor Ort / Mitnehmen)
+    // Vor Ort nur anzeigen, wenn mindestens ein Anbieter im Cart dineInPossible hat
+    let anyDineIn = false;
+    cart.items.forEach(it => {
+      const o = offers.find(x => x.id === it.offerId);
+      if(o && normalizeOffer(o).dineInPossible) anyDineIn = true;
+    });
     const btnVorOrt = document.getElementById('checkoutBtnVorOrt');
     const btnMitnehmen = document.getElementById('checkoutBtnMitnehmen');
+    if(btnVorOrt) btnVorOrt.style.display = anyDineIn ? '' : 'none';
+    if(!anyDineIn && (cart.verzehrmodus || '') === 'vor_ort'){
+      cart.verzehrmodus = 'mitnehmen';
+      save(LS.cart, cart);
+    }
     const vm = cart.verzehrmodus || 'mitnehmen';
     
     // Active-State: Gelbe Hintergrundfarbe für ausgewählten Button
@@ -15247,8 +15301,20 @@
     const summaryEl = document.getElementById('checkoutSummary');
     if(!summaryEl) return;
     
+    // Anbieter klickbar: Bei [Name1], [Name2] → Profil
+    const providerMap = new Map();
+    cart.items.forEach(it => {
+      const o = offers.find(x => x.id === it.offerId);
+      if(o && o.providerId) providerMap.set(o.providerId, normalizeOffer(o).providerName || 'Anbieter');
+    });
+    let providerLineHtml = '<div style="margin-bottom:12px; font-size:14px; color:#64748b;">Bei: ';
+    const providerEntries = [];
+    providerMap.forEach((name, pid) => providerEntries.push({ pid, name }));
+    providerLineHtml += providerEntries.map(({ pid, name }) => `<button type="button" class="checkout-provider-link" data-provider-id="${esc(pid)}" style="background:none;border:none;padding:0;font-weight:700;color:#1a1a1a;text-decoration:underline;cursor:pointer;font-size:14px;">${esc(name)}</button>`).join(', ');
+    providerLineHtml += '</div>';
+    
     // Bestellübersicht rendern
-    let summaryHTML = '<div style="font-weight:700; font-size:16px; margin-bottom:16px; color:#2D3436;">Bestellübersicht</div>';
+    let summaryHTML = providerLineHtml + '<div style="font-weight:700; font-size:16px; margin-bottom:16px; color:#2D3436;">Bestellübersicht</div>';
     cart.items.forEach(it=>{
       const o = offers.find(x=>x.id===it.offerId);
       if(o){
@@ -15272,6 +15338,10 @@
       </div>
     `;
     summaryEl.innerHTML = summaryHTML;
+    summaryEl.querySelectorAll('.checkout-provider-link').forEach(btn => {
+      const pid = btn.getAttribute('data-provider-id');
+      if(pid) btn.onclick = () => showProviderProfilePublic(pid);
+    });
     
     // Apple Pay / Google Pay Buttons prüfen (wenn verfügbar)
     const btnApplePay = document.getElementById('btnApplePay');
@@ -15332,18 +15402,14 @@
     cart.customerEmail = email;
     save(LS.cart, cart);
     
-    // Order mit Status CREATED erstellen
-    const orderCreated = createOrderFromCart(cart, 'CREATED');
-    if(!orderCreated){
+    // Pro Anbieter eine Order erstellen (eine Zahlung, mehrere Abholnummern)
+    const ordersCreated = createOrdersFromCartByProvider(cart, 'CREATED');
+    if(!ordersCreated || ordersCreated.length === 0){
       alert('Fehler beim Erstellen der Bestellung.');
       return;
     }
-    
-    // Order wird auf PAYMENT_PENDING gesetzt
-    updateOrder(orderCreated.id, { status: 'PAYMENT_PENDING' });
-    
-    // Stripe Checkout starten
-    startStripeCheckout(total, cart, orderCreated.id);
+    ordersCreated.forEach(o => updateOrder(o.id, { status: 'PAYMENT_PENDING' }));
+    startStripeCheckout(total, cart, ordersCreated);
   }
   
   if(btnCheckout){
@@ -15432,14 +15498,88 @@
     return addOrder(order);
   }
   
+  /**
+   * Erstellt pro Anbieter eine Order (eine Zahlung, mehrere Abholnummern).
+   * @param {Object} cartData
+   * @param {'CREATED'|'PAYMENT_PENDING'} initialStatus
+   * @returns {Order[]}
+   */
+  function createOrdersFromCartByProvider(cartData, initialStatus){
+    if(!cartData || !cartData.items || !cartData.items.length) return [];
+    const byProvider = new Map();
+    cartData.items.forEach(it => {
+      const o = offers.find(x => x.id === it.offerId);
+      if(!o || !o.providerId) return;
+      if(!byProvider.has(o.providerId)) byProvider.set(o.providerId, []);
+      byProvider.get(o.providerId).push({ offer: o, qty: it.qty });
+    });
+    const result = [];
+    byProvider.forEach((providerItems, providerId) => {
+      const first = providerItems[0].offer;
+      const firstNorm = normalizeOffer(first);
+      let totalCents = 0;
+      const items = providerItems.map(({ offer, qty }) => {
+        const normalized = normalizeOffer(offer);
+        const unitPriceCents = Math.round(Number(normalized.price || 0) * 100);
+        const lineTotalCents = unitPriceCents * qty;
+        totalCents += lineTotalCents;
+        return { dishId: offer.id, dishName: normalized.dish || normalized.title || 'Gericht', quantity: qty, unitPriceCents };
+      });
+      const now = Date.now();
+      const order = {
+        id: cryptoId(),
+        createdAt: now,
+        updatedAt: now,
+        dishId: items[0]?.dishId || '',
+        verzehrmodus: cartData.verzehrmodus || 'mitnehmen',
+        offerId: items[0]?.dishId || '',
+        dishName: items.map(i => `${i.dishName} x ${i.quantity}`).join(', '),
+        providerId: providerId,
+        providerName: firstNorm.providerName || 'Anbieter',
+        providerAddress: firstNorm ? [firstNorm.providerStreet, firstNorm.providerZip, firstNorm.providerCity].filter(Boolean).join(', ') : '',
+        quantity: providerItems.reduce((s, i) => s + i.qty, 0),
+        unitPrice: items[0]?.unitPriceCents || 0,
+        total: totalCents,
+        fulfillType: cartData.verzehrmodus === 'vor_ort' ? 'DINE_IN' : 'PICKUP',
+        etaTime: cartData.pickupTime || '',
+        abholzeit: cartData.pickupTime || '',
+        status: initialStatus,
+        currency: 'EUR',
+        stripeCheckoutSessionId: undefined,
+        stripePaymentIntentId: undefined,
+        receiptEmail: undefined,
+        pickupCode: undefined,
+        abholnummer: undefined,
+        pickupCodeActivatedAt: undefined,
+        pickupDate: undefined,
+        pickupWindow: firstNorm?.pickupWindow || '',
+        dishLetter: undefined,
+        runningNumber: undefined,
+        isGuest: true,
+        summary: items.map(i => `${i.dishName} x ${i.quantity}`).join(', '),
+        code: null,
+        pickupTime: cartData.pickupTime || '',
+        unitPriceCents: items[0]?.unitPriceCents || 0,
+        totalCents: totalCents,
+        paymentIntentId: null,
+        verpackung: cartData.verpackung || null
+      };
+      const added = addOrder(order);
+      if(added) result.push(added);
+    });
+    return result;
+  }
+  
   // --- Stripe Checkout (Gastzahlung, Zahlung Pflicht) ---
   /**
    * Start Stripe Checkout flow
    * @param {number} total - Total amount in EUR (not cents)
    * @param {Object} cartData - Cart data
-   * @param {string} orderId - Order ID
+   * @param {string|Object[]} orderIdOrOrders - Order ID (single) or array of orders (multi-provider)
    */
-  function startStripeCheckout(total, cartData, orderId){
+  function startStripeCheckout(total, cartData, orderIdOrOrders){
+    const orderIds = Array.isArray(orderIdOrOrders) ? orderIdOrOrders.map(o => o.id) : [orderIdOrOrders];
+    const mainOrderId = orderIds[0];
     var stripeConfig = window.MITTAGIO_STRIPE || {};
     var publishableKey = stripeConfig.publishableKey;
     var apiBase = stripeConfig.apiBase || '';
@@ -15456,7 +15596,7 @@
         return { name: name, amount: price, quantity: 1 };
       }) : null;
       var payload = {
-        orderId: orderId,
+        orderId: mainOrderId,
         total: total,
         currency: 'eur',
         successUrl: successUrl,
@@ -15473,7 +15613,8 @@
         .then(function(data){
           if (data.error) throw new Error(data.error);
           if (data.url) {
-            updateOrder(orderId, { stripeCheckoutSessionId: data.sessionId || data.url });
+            var sessionId = data.sessionId || data.url;
+            orderIds.forEach(function(id){ updateOrder(id, { stripeCheckoutSessionId: sessionId }); });
             window.location.href = data.url;
           } else {
             throw new Error('Keine Checkout-URL erhalten');
@@ -15489,11 +15630,11 @@
 
     // Demo: Kein Stripe konfiguriert – Simuliere Checkout
     var sessionId = 'demo_session_' + cryptoId();
-    updateOrder(orderId, { stripeCheckoutSessionId: sessionId });
+    orderIds.forEach(function(id){ updateOrder(id, { stripeCheckoutSessionId: sessionId }); });
     if (confirm('Stripe Checkout würde jetzt geöffnet.\n\nGesamtbetrag: ' + euro(total) + '\n\nGastzahlung möglich (E-Mail nur für Zahlungsbeleg).\n\nDemo: Zahlung erfolgreich simulieren?')) {
-      handleCheckoutSuccess(sessionId, orderId);
+      handleCheckoutSuccess(sessionId, mainOrderId);
     } else {
-      handleCheckoutCancel(orderId);
+      handleCheckoutCancel(mainOrderId);
     }
   }
   
@@ -15505,21 +15646,12 @@
    */
   function handleCheckoutSuccess(sessionId, orderId){
     // TODO: In Production, verify payment via Webhook
-    // For now: MVP assumes payment is successful if we reach this point
+    const ordersList = loadOrders();
+    let orders = [];
+    if(sessionId) orders = ordersList.filter(o => o.stripeCheckoutSessionId === sessionId);
+    if(orders.length === 0 && orderId) orders = [getOrderById(orderId)].filter(Boolean);
     
-    let order = null;
-    
-    // Find order: priority: orderId > sessionId
-    if(orderId){
-      order = getOrderById(orderId);
-    } else if(sessionId){
-      // Find order by session_id
-      const ordersList = loadOrders();
-      order = ordersList.find(o => o.stripeCheckoutSessionId === sessionId);
-    }
-    
-    // Fehler-UI: Bestellung nicht gefunden
-    if(!order){
+    if(orders.length === 0){
       console.error('Order not found for checkout success', { sessionId, orderId });
       // Zeige Fehler-UI
       const errorView = document.createElement('div');
@@ -15540,22 +15672,23 @@
       return;
     }
     
-    // Wenn Order noch nicht PAID: auf PAID setzen und Code generieren
-    if(order.status !== 'PAID'){
-      if(order.status !== 'PAYMENT_PENDING'){
-        console.warn('Order status is not PAYMENT_PENDING:', order.status);
-      }
-      
-      // Mark as PAID and generate pickup code
-      completePayment(order.id, {
-        stripeCheckoutSessionId: sessionId || order.stripeCheckoutSessionId,
-        paymentIntentId: 'pi_' + cryptoId(), // Would come from Stripe webhook
-        receiptEmail: 'customer@example.com' // Would come from Stripe
-      });
-    } else {
-      // Bereits PAID: direkt zu Abholnummer navigieren
-      showPickupCode(order.id);
-    }
+    const paymentData = {
+      stripeCheckoutSessionId: sessionId || orders[0].stripeCheckoutSessionId,
+      paymentIntentId: 'pi_' + cryptoId(),
+      receiptEmail: 'customer@example.com'
+    };
+    const notPaid = orders.filter(o => o.status !== 'PAID');
+    notPaid.forEach(o => {
+      if(o.status !== 'PAYMENT_PENDING') console.warn('Order status is not PAYMENT_PENDING:', o.id);
+      completePayment(o.id, paymentData, { skipCartClear: true, skipShowSuccess: true });
+    });
+    cart = null;
+    save(LS.cart, cart);
+    if(typeof renderCart === 'function') renderCart();
+    const paidOrders = loadOrders().filter(o => o.stripeCheckoutSessionId === sessionId);
+    if(paidOrders.length === 1 && paidOrders[0].status === 'PAID') showOrderSuccess(paidOrders[0]);
+    else if(paidOrders.length > 1) showOrderSuccess(paidOrders);
+    else if(paidOrders.length === 1) showPickupCode(paidOrders[0].id);
   }
   
   /**
@@ -15607,24 +15740,21 @@
    * Complete payment (set status to PAID and generate pickup code)
    * @param {string} orderId
    * @param {Object} paymentData
-   * @param {string} [paymentData.stripeCheckoutSessionId]
-   * @param {string} [paymentData.paymentIntentId]
-   * @param {string} [paymentData.receiptEmail]
+   * @param {{ skipCartClear?: boolean, skipShowSuccess?: boolean }} [opts] - Bei Mehrfach-Bestellung: Cart/Success vom Aufrufer gesteuert
    */
-  function completePayment(orderId, paymentData){
+  function completePayment(orderId, paymentData, opts){
+    const skipCartClear = opts && opts.skipCartClear;
+    const skipShowSuccess = opts && opts.skipShowSuccess;
     const order = getOrderById(orderId);
     if(!order){
       console.error('Order not found:', orderId);
       return;
     }
     
-    // Get offer to determine day and pickup window
     const offer = offers.find(o => o.id === order.dishId || o.id === order.offerId);
     const pickupDate = offer ? offer.day : isoDate(new Date());
     const pickupWindow = offer ? (offer.pickupWindow || '') : (order.pickupWindow || '');
     
-    // Assign pickup code (deterministic, mock)
-    // Single source of truth: Order record
     const {dishLetter, runningNumber, pickupCode} = assignPickupCode({
       providerId: order.providerId,
       pickupDate: pickupDate,
@@ -15632,8 +15762,6 @@
     });
     const now = Date.now();
     
-    // Order auf PAID setzen (pickupCode wird hier gesetzt, da status=PAID)
-    // WICHTIG: LocalStorage-Persistenz - sofort speichern für Offline-Sicherheit
     const updatedOrder = updateOrder(orderId, {
       status: 'PAID',
       stripeCheckoutSessionId: paymentData.stripeCheckoutSessionId,
@@ -15646,91 +15774,81 @@
       pickupWindow: pickupWindow,
       dishLetter: dishLetter,
       runningNumber: runningNumber,
-      // Kompatibilität
       code: pickupCode,
       paymentStatus: 'PAID',
       paymentIntentId: paymentData.paymentIntentId
     });
     
-    if(!updatedOrder){
-      console.error('Failed to update order');
-      return;
+    if(!updatedOrder) return;
+    
+    if(!skipCartClear){
+      cart = null;
+      save(LS.cart, cart);
+      renderCart();
     }
-    
-    // Warenkorb leeren
-    cart = null;
-    save(LS.cart, cart);
-    renderCart();
-    
-    // Orders aktualisieren
     orders = loadOrders();
     renderOrders();
     
-    // NOTFALL-MAIL: Backup-E-Mail an Anbieter (wenn Provider-Modus)
     if(mode === 'provider' && order.providerId === providerId()){
       sendBackupEmailToProvider(updatedOrder);
-    }
-    
-    // Akustisches "Pling" bei neuem Verkauf (nur für Provider)
-    if(mode === 'provider' && order.providerId === providerId()){
       playSaleSound();
-      // Dashboard aktualisieren
       renderProviderHome();
       renderProviderPickups();
     }
-    
-    // Anbieter-Schnittstelle: Datensatz für Dashboard (Metzger/Gastro weiß sofort, wie anrichten)
     sendOrderToProviderDashboard(updatedOrder);
     
-    // AbholBestätigung (Success-View) anzeigen
-    showOrderSuccess(updatedOrder);
+    if(!skipShowSuccess) showOrderSuccess(updatedOrder);
   }
   
   /**
    * AbholBestätigung: Success-View nach Zahlung (Abholnummer, Zeit, Modus, Verpackung).
-   * @param {Order} order - Bestellung mit status PAID, pickupCode, pickupTime, verzehrmodus, verpackung
+   * @param {Order|Order[]} orderOrOrders - eine Bestellung oder Array (mehrere Anbieter)
    */
-  function showOrderSuccess(order){
-    if(!order){
-      showDiscover();
-      return;
-    }
+  function showOrderSuccess(orderOrOrders){
+    const orders = Array.isArray(orderOrOrders) ? orderOrOrders : [orderOrOrders];
+    if(orders.length === 0){ showDiscover(); return; }
+    const order = orders[0];
     const code = order.pickupCode || order.abholnummer || order.code || '–';
     const zeit = order.pickupTime || order.abholzeit || order.etaTime || '–';
     const modus = order.verzehrmodus || 'mitnehmen';
     const verpackung = order.verpackung || null;
     const isMitnehmen = modus === 'mitnehmen';
     
+    const singleBlock = document.getElementById('orderSuccessSingleBlock');
+    const multiBlock = document.getElementById('orderSuccessMultiBlock');
     const abholnummerEl = document.getElementById('orderSuccessAbholnummer');
     const zeitEl = document.getElementById('orderSuccessZeit');
     const modusEl = document.getElementById('orderSuccessModus');
     const verpackungWrap = document.getElementById('orderSuccessVerpackung');
     const btnDone = document.getElementById('btnOrderSuccessDone');
     
-    if(abholnummerEl) abholnummerEl.textContent = '#' + code;
+    if(orders.length > 1){
+      if(singleBlock) singleBlock.style.display = 'none';
+      if(multiBlock){
+        multiBlock.style.display = 'block';
+        multiBlock.innerHTML = orders.map(o => {
+          const c = o.pickupCode || o.abholnummer || o.code || '–';
+          const name = (o.providerName || 'Anbieter').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+          return '<div style="text-align:center; padding:16px; background:rgba(255,215,0,0.12); border-radius:16px; border:2px solid rgba(255,215,0,0.3); margin-bottom:12px;"><div style="font-size:12px; font-weight:700; color:#64748b; margin-bottom:4px;">Bei ' + name + '</div><div style="font-family:monospace; font-size:28px; font-weight:900; letter-spacing:4px; color:#1a1a1a;">#' + (c + '').replace(/</g, '&lt;') + '</div></div>';
+        }).join('');
+      }
+    } else {
+      if(singleBlock) singleBlock.style.display = 'block';
+      if(multiBlock) multiBlock.style.display = 'none';
+      if(abholnummerEl) abholnummerEl.textContent = '#' + code;
+    }
     if(zeitEl) zeitEl.innerHTML = '<span style="font-size:20px;">🕒</span> Abholung um ' + (zeit.indexOf('Uhr') >= 0 ? zeit : zeit + ' Uhr');
     if(modusEl){
-      if(modus === 'vor_ort'){
-        modusEl.innerHTML = '<span style="font-size:20px;">🍴</span> Vor Ort';
-      } else {
-        modusEl.innerHTML = '<span style="font-size:20px;">🔄</span> Mitnehmen';
-      }
+      if(modus === 'vor_ort') modusEl.innerHTML = '<span style="font-size:20px;">🍴</span> Vor Ort';
+      else modusEl.innerHTML = '<span style="font-size:20px;">🔄</span> Mitnehmen';
     }
     if(verpackungWrap){
       if(isMitnehmen && verpackung){
         verpackungWrap.style.display = 'flex';
-        verpackungWrap.innerHTML = verpackung === 'eigener_behaeltner'
-          ? '<span style="font-size:20px;">🔄</span> Eigener Behälter'
-          : '<span style="font-size:20px;">🔄</span> Mehrweg-System';
-      } else {
-        verpackungWrap.style.display = 'none';
-      }
+        verpackungWrap.innerHTML = verpackung === 'eigener_behaeltner' ? '<span style="font-size:20px;">🔄</span> Eigener Behälter' : '<span style="font-size:20px;">🔄</span> Mehrweg-System';
+      } else verpackungWrap.style.display = 'none';
     }
-    if(btnDone){
-      btnDone.onclick = () => {
-        showDiscover();
-      };
-    }
+    if(btnDone) btnDone.onclick = () => showDiscover();
     var orderSuccessCurrentOrder = order;
     var btnKollegen = document.getElementById('btnOrderSuccessKollegen');
     if(btnKollegen){
@@ -22150,11 +22268,34 @@
   // KEINE Sonderflows bauen!
   // ============================================================
   function buildListingStep(){
+    // Notfall-Fix: Altes Wizard-Korsett neutralisieren, damit das Liquid-Panel den Platz bekommt
+    var sheetBody = document.querySelector('#wizard.sheet--kitchen .sheet-body.wizard-sheet-body');
+    if(sheetBody){
+      sheetBody.style.padding = '0';
+      sheetBody.style.overflow = 'hidden';
+      sheetBody.style.maxHeight = 'none';
+    }
+    var wContent = document.getElementById('wContent');
+    if(wContent){
+      wContent.style.margin = '0';
+      wContent.style.padding = '0';
+      wContent.style.maxHeight = 'none';
+    }
+    var wizardScroll = document.querySelector('#wizard .wizard-scroll');
+    if(wizardScroll){
+      wizardScroll.style.margin = '0';
+      wizardScroll.style.padding = '0';
+      wizardScroll.style.paddingBottom = '120px';
+    }
+    var wBox = document.getElementById('wBox');
+    if(wBox){ wBox.style.padding = '0'; wBox.style.overflow = 'hidden'; }
+    var wActions = document.querySelector('#wizard .w-actions');
+    if(wActions) wActions.style.setProperty('display', 'none', 'important');
+
     setWizardNextDefault();
     w.step = 0; // Single-Page: immer Schritt 0
     if(w.kind === 'listing' && w.step === 0){
-      var wActions = document.querySelector('#wizard .w-actions');
-      if(wActions) wActions.style.display = 'none';
+      if(wActions) wActions.style.setProperty('display', 'none', 'important');
     }
     if(wNextBtn) wNextBtn.style.display = 'none';
     if(wBackBtn){
