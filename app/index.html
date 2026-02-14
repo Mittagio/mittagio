@@ -1432,23 +1432,27 @@
     #wizard.sheet--kitchen .w-actions button:active{
       transform: scale(0.97);
     }
-    /* Liquid Panel / High-End Glassmorphism (Inseratsflow) – Silicon Valley Flow */
+    /* Liquid Panel / High-End Glassmorphism (Inseratsflow) – S25 Liquid-Floating */
     #wizard.sheet--kitchen .glass-express-step0,
     #wizard.sheet--kitchen .inserat-universal-mask,
-    #wizard.sheet--kitchen .listing-glass-panel{
-      --glass-bg: rgba(255,255,255,0.75);
-      --glass-border: rgba(255,255,255,0.4);
+    #wizard.sheet--kitchen .listing-glass-panel,
+    #wizard.sheet--kitchen .s25-floating-panel{
+      --glass-bg: rgba(255,255,255,0.72);
+      --glass-border: rgba(255,255,255,0.5);
       --emerald: #10b981;
       --signal-yellow: #FACC15;
-      --radius-panel: 3rem;
+      --radius-panel: 2.8rem;
       border-radius: var(--radius-panel);
       background: var(--glass-bg);
-      backdrop-filter: blur(40px) saturate(180%);
-      -webkit-backdrop-filter: blur(40px) saturate(180%);
+      backdrop-filter: blur(35px) saturate(160%);
+      -webkit-backdrop-filter: blur(35px) saturate(160%);
       border: 1px solid var(--glass-border);
-      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.15);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1), inset 0 0 0 1px rgba(255,255,255,0.3);
       overflow: hidden;
       max-width: 420px;
+      max-height: 92vh;
+      display: flex;
+      flex-direction: column;
       z-index: 100;
     }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-photo-tile,
@@ -1471,10 +1475,17 @@
       --gex-gap: 12px;
       --gex-block: 20px;
     }
-    /* liquid-input: Name + Beschreibung */
+    /* liquid-input: Clean Slate – nur Text + dezente Fokus-Linie (S25) */
     #wizard.sheet--kitchen .glass-express-step0 #step-name input,
-    #wizard.sheet--kitchen .glass-express-step0 .liquid-input{
-      width: 100%; background: transparent; border: none; padding: 0; outline: none; font-weight: 800; color: #1a1a1a;
+    #wizard.sheet--kitchen .glass-express-step0 .liquid-input,
+    #wizard.sheet--kitchen .glass-express-step0 .liquid-input-focus{
+      width: 100%; background: transparent; border: none; border-bottom: 2px solid rgba(0,0,0,0.05);
+      padding: 0 0 8px 0; outline: none; font-weight: 800; color: #1a1a1a;
+      transition: border-color 0.3s ease;
+    }
+    #wizard.sheet--kitchen .glass-express-step0 #step-name input:focus,
+    #wizard.sheet--kitchen .glass-express-step0 .liquid-input-focus:focus{
+      border-bottom-color: var(--emerald);
     }
     #wizard.sheet--kitchen .glass-express-step0 #step-name input:first-of-type{
       font-size: 1.8rem; text-align: center;
@@ -1487,10 +1498,12 @@
     #wizard.sheet--kitchen .glass-express-step0 .price-display{
       font-size: 3.5rem; font-weight: 900; text-align: center; color: #111;
     }
+    /* Kategorie-Pills: haptisch abgerundet, aktiv = Emerald (S25) */
     #wizard.sheet--kitchen .glass-express-step0 #step-cat button,
     #wizard.sheet--kitchen .glass-express-step0 .extra-pill{
-      padding: 10px 20px; border-radius: 15px; background: rgba(0,0,0,0.05); font-weight: 700;
+      padding: 10px 20px; border-radius: 1.2rem; background: rgba(0,0,0,0.05); font-weight: 700;
       transition: all 0.3s ease; cursor: pointer; border: none;
+      -webkit-tap-highlight-color: transparent;
     }
     #wizard.sheet--kitchen .glass-express-step0 #step-cat button[style*="#10b981"],
     #wizard.sheet--kitchen .glass-express-step0 .extra-pill.active{
@@ -1597,11 +1610,12 @@
     #wizard.sheet--kitchen .inserat-three-pillars button:active{ transform:scale(0.95); }
     #wizard.sheet--kitchen .inserat-photo-tile .inserat-photo-remove:hover,
     #wizard.sheet--kitchen .inserat-photo-tile .inserat-photo-change:hover{ color:#fff; }
-    /* logistics-bar */
+    /* logistics-bar: dezent und flach (S25) */
     #wizard.sheet--kitchen .glass-express-step0 #step-logistics,
     #wizard.sheet--kitchen .glass-express-step0 .logistics-bar{
       display: flex; align-items: center; justify-content: space-between; flex-wrap: nowrap;
-      background: rgba(0,0,0,0.05); border-radius: 1.5rem; padding: 1rem;
+      background: rgba(0,0,0,0.04); border-radius: 1.2rem; padding: 0.75rem 1rem;
+      border: none; box-shadow: none;
     }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-photo-tile{
       width: 100%; overflow: hidden; cursor: pointer; position: relative;
@@ -1609,6 +1623,9 @@
     #wizard.sheet--kitchen .glass-express-step0 .inserat-scroll-area{
       padding: 30px; overflow-y: auto; flex: 1; min-height: 0; -webkit-overflow-scrolling: touch;
       display: flex; flex-direction: column; gap: 25px;
+    }
+    #wizard.sheet--kitchen .glass-express-step0.s25-floating-panel .inserat-scroll-area{
+      padding: 24px; gap: 18px;
     }
     #wizard.sheet--kitchen .glass-express-step0 #step-name{ margin-bottom: 0; }
     #wizard.sheet--kitchen .glass-express-step0 #step-cat{
@@ -2921,6 +2938,21 @@
     #v-discover #discoverDaysBar .cust-chip{ min-height:44px; min-width:65px; width:65px; padding:10px 8px; font-size:13px; border-radius:20px; flex:0 0 65px; box-sizing:border-box; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     #v-discover .cust-card{ width:95%; margin:10px auto; margin-bottom:0; -webkit-tap-highlight-color:transparent; transition:transform 0.15s, box-shadow 0.2s; }
     #v-discover .cust-card:active{ transform:scale(0.99); box-shadow:0 2px 12px rgba(0,0,0,0.06); }
+    /* Discovery: Restaurant-Karte (Anbieter-Block) + Tiles darunter */
+    #v-discover .discover-restaurant-card{
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      padding:14px 16px; margin:0 0 12px 0; border-radius:16px;
+      background:#fff; border:1px solid rgba(0,0,0,0.06); box-shadow:0 2px 12px rgba(0,0,0,0.06);
+      cursor:pointer; -webkit-tap-highlight-color:transparent; transition:transform 0.15s, box-shadow 0.2s;
+    }
+    #v-discover .discover-restaurant-card:active{ transform:scale(0.99); }
+    #v-discover .discover-restaurant-card .restaurant-name{ font-size:16px; font-weight:800; color:#1a1a1a; }
+    #v-discover .discover-restaurant-card .restaurant-meta{ font-size:12px; color:#64748b; font-weight:600; margin-top:2px; }
+    #v-discover .discover-tiles-grid{
+      display:grid; grid-template-columns:repeat(2, 1fr); gap:12px; margin-bottom:20px; padding:0 0 8px;
+    }
+    #v-discover .discover-tiles-grid .cust-card{ width:100%; margin:0; }
+    #v-discover .discover-block{ margin-bottom:24px; }
     #v-discover .status-container{ display:flex; gap:6px; margin-top:8px; flex-wrap:nowrap; overflow-x:auto; }
     .discover-radius-row{ position:relative; }
     .discover-radius-pill{
@@ -10294,19 +10326,33 @@
       offersEl.innerHTML = '';
       emptyEl.style.display = list.length ? 'none' : 'block';
       
-      // Entscheidungs-Kacheln (2x2 Grid) - Heute-Fokus mit 3 Säulen
-      // Prüfe ob Grid-Modus aktiviert werden soll (kann später als Toggle implementiert werden)
-      const useDecisionTiles = false; // Standard: Liste, kann auf true gesetzt werden für Grid
-      
-      if(useDecisionTiles){
-        // ... grid code ...
-      } else {
-        // Modern List Cards
-        list.forEach(o=> {
-          const card = createModernOfferCard(o);
-          offersEl.appendChild(card);
-        });
-      }
+      // Layout: Pills oben (bereits im Header), darunter gruppiert nach Restaurant + Tiles
+      const byProvider = {};
+      list.forEach(o => {
+        const pid = o.providerId || 'unknown';
+        if(!byProvider[pid]) byProvider[pid] = [];
+        byProvider[pid].push(o);
+      });
+      const providerIds = Object.keys(byProvider);
+      providerIds.forEach(pid => {
+        const group = byProvider[pid];
+        const first = normalizeOffer(group[0]);
+        const block = document.createElement('div');
+        block.className = 'discover-block';
+        const restaurantCard = document.createElement('div');
+        restaurantCard.className = 'discover-restaurant-card';
+        const nameEl = document.createElement('div');
+        nameEl.innerHTML = '<span class="restaurant-name">' + (first.providerName || 'Anbieter') + '</span>' +
+          (first.distanceKm != null ? '<div class="restaurant-meta">' + (first.distanceKm < 1 ? Math.round(first.distanceKm * 1000) + ' m' : first.distanceKm.toFixed(1) + ' km') + '</div>' : '');
+        restaurantCard.appendChild(nameEl);
+        restaurantCard.onclick = () => openOffer(first.id);
+        block.appendChild(restaurantCard);
+        const grid = document.createElement('div');
+        grid.className = 'discover-tiles-grid';
+        group.forEach(o => { grid.appendChild(createModernOfferCard(o)); });
+        block.appendChild(grid);
+        offersEl.appendChild(block);
+      });
     
       // Icons aktualisieren nach dem Rendern
     if(typeof lucide !== 'undefined'){
@@ -22088,7 +22134,7 @@
     {
       setWizardQuestion('', '');
       const box=document.createElement('div');
-      box.className='glass-express-step0 inserat-universal-mask inserat-master-flow liquid-panel listing-glass-panel';
+      box.className='glass-express-step0 inserat-universal-mask inserat-master-flow liquid-panel listing-glass-panel s25-floating-panel';
       box.style.cssText='padding:0; overflow:hidden; display:flex; flex-direction:column; min-height:0;';
       const saveDraft = () => { localStorage.setItem('wizard_draft', JSON.stringify(w)); };
       const scrollToNext = (id)=>{ setTimeout(()=>{ var el=document.getElementById(id); if(el) el.scrollIntoView({ behavior:'smooth', block:'center' }); }, 150); };
@@ -22118,7 +22164,7 @@
       stepName.id='step-name';
       const inputDish=document.createElement('input');
       inputDish.type='text';
-      inputDish.className='liquid-input';
+      inputDish.className='liquid-input liquid-input-focus';
       inputDish.placeholder='Was kochst du heute?';
       inputDish.value=w.data.dish||'';
       inputDish.autocomplete='off';
@@ -22126,7 +22172,7 @@
       inputDish.onblur=()=>{ dismissKeyboard(); hapticLight(); scrollToNext('step-cat'); };
       const inputDesc=document.createElement('input');
       inputDesc.type='text';
-      inputDesc.className='liquid-input';
+      inputDesc.className='liquid-input liquid-input-focus';
       inputDesc.placeholder='Kurze Beschreibung (optional)';
       inputDesc.value=w.data.description||'';
       inputDesc.oninput=()=>{ w.data.description=inputDesc.value; saveDraft(); };
