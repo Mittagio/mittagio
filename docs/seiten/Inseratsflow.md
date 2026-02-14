@@ -19,3 +19,13 @@ Universelle Eingabemaske: Gericht erstellen / bearbeiten. Single-Page, eine Mask
 
 **Einzige verbindliche Quelle:** `.cursor/rules/inseratsflow-ist-high-end-universal.mdc`  
 Umsetzung: `buildListingStep()` in `app/index.html`
+
+---
+
+## Layout-Referenz (Silicon-Valley-Glas)
+
+Visuelle Zielvorgabe (nur Optik, Schritte und Inhalt unverändert):
+
+- **Container:** `border-radius: 3rem`, `bg-white/70`, starker `backdrop-blur` (48px), `border-white/40`, tiefer Glas-Schatten
+- **Hintergrund:** warmes Küchen-Ambiente (Backdrop mit warmem Farbverlauf oder verschwommenem Bild)
+- **Farben:** Emerald #10b981 (aktiv), Gelb #FACC15 (4,99-€-Button)

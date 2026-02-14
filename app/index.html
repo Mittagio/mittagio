@@ -923,15 +923,16 @@
     #v-provider-cookbook .cookbook-action-bar{ max-width:500px; margin:0 auto; box-sizing:border-box; }
     #v-provider-cookbook .cookbook-bar-btn{ min-height:52px; border-radius:20px; font-size:10px; font-weight:800; letter-spacing:0.06em; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; border:none; transition:transform 0.12s; flex:1; min-width:0; }
     #v-provider-cookbook .cookbook-bar-btn:active{ transform:scale(0.97); }
-    #v-provider-cookbook .cookbook-bar-secondary{ background:#f1f3f5; color:#475569; border:2px solid #e2e8f0; }
-    #v-provider-cookbook .cookbook-bar-primary{ background:#007AFF; color:#fff; box-shadow:0 4px 16px rgba(0,122,255,0.35); }
-    /* Kochbuch: Kategorie-Pills (Konzept Apple-Style: aktiv = #007AFF) */
+    #v-provider-cookbook .cookbook-bar-secondary{ background:rgba(255,255,255,0.5); color:#475569; border:2px solid rgba(255,255,255,0.6); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); }
+    #v-provider-cookbook .cookbook-bar-primary{ background:#FACC15; color:#1a1a1a; box-shadow:0 4px 16px rgba(250,204,21,0.4); }
+    /* Kochbuch: Kategorie-Pills (Glassmorphism: aktiv = Emerald) */
     #v-provider-cookbook .cookbook-category-pills{ display:flex; gap:8px; overflow-x:auto; padding:4px 0 16px; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
     #v-provider-cookbook .cookbook-category-pills::-webkit-scrollbar{ display:none; }
-    #v-provider-cookbook .cookbook-category-pills .cookbook-cat-pill{ flex:0 0 auto; min-height:44px; padding:0 20px; border-radius:999px; font-size:14px; font-weight:700; border:1px solid rgba(0,0,0,0.06); background:#fff; color:#86868B; cursor:pointer; transition:all .2s; display:inline-flex; align-items:center; justify-content:center; box-shadow:0 2px 8px rgba(0,0,0,0.03); }
+    #v-provider-cookbook .cookbook-category-pills .cookbook-cat-pill{ flex:0 0 auto; min-height:44px; padding:0 20px; border-radius:999px; font-size:14px; font-weight:700; border:1px solid rgba(255,255,255,0.6); background:rgba(255,255,255,0.5); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); color:#64748b; cursor:pointer; transition:all .2s; display:inline-flex; align-items:center; justify-content:center; box-shadow:0 2px 8px rgba(0,0,0,0.04); }
     #v-provider-cookbook .cookbook-category-pills .cookbook-cat-pill:hover{ color:#1D1D1F; }
-    #v-provider-cookbook .cookbook-category-pills .cookbook-cat-pill.on{ background:#007AFF; border-color:#007AFF; color:#fff; box-shadow:0 2px 12px rgba(0,122,255,0.35); }
+    #v-provider-cookbook .cookbook-category-pills .cookbook-cat-pill.on{ background:#10b981; border-color:#10b981; color:#fff; box-shadow:0 4px 14px rgba(16,185,129,0.35); }
     #v-provider-cookbook .cookbook-category-pills .cookbook-cat-pill:active{ transform:scale(0.97); }
+    #v-provider-cookbook #btnCookbookEmptyAdd{ background:#FACC15 !important; color:#1a1a1a !important; box-shadow:0 4px 20px rgba(250,204,21,0.4) !important; }
     /* Kochbuch Action-Sheet */
     #cookbookActionSheetBd{ z-index:999; }
     .cookbook-action-sheet{
@@ -1255,6 +1256,7 @@
 
     /* Inseratflow: Über Provider-Bottom-Nav (z-index 999) legen */
     #wbd.active, #createFlowBd.active { z-index: 1000 !important; }
+    #wbd.active { background: radial-gradient(ellipse at center, rgba(254,243,199,0.35) 0%, rgba(251,191,36,0.08) 35%, rgba(0,0,0,0.65) 100%); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
     #wizard.sheet--kitchen.active, #createFlowSheet.sheet--kitchen.active { z-index: 1001 !important; }
     /* Inseratflow: High-End Glassmorphism (Master) – backdrop-blur-2xl, bg-white/70, border-white/40, shadow-2xl */
     #createFlowSheet.sheet--kitchen,
@@ -1430,23 +1432,42 @@
     #wizard.sheet--kitchen .w-actions button:active{
       transform: scale(0.97);
     }
-    /* HIGH-END LIQUID UI: Strict Glassmorphism, rounded-[2.5rem], blur-2xl */
+    /* Silicon-Valley-Glas: 3rem, blur-48px, tiefer Glas-Schatten */
     #wizard.sheet--kitchen .glass-express-step0,
     #wizard.sheet--kitchen .inserat-universal-mask{
-      border-radius: 2.5rem;
+      border-radius: 3rem;
       background: rgba(255,255,255,0.7);
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
+      backdrop-filter: blur(48px);
+      -webkit-backdrop-filter: blur(48px);
       border: 1px solid rgba(255,255,255,0.4);
-      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.12);
+      box-shadow: 0 32px 64px -16px rgba(0,0,0,0.18), 0 12px 32px -8px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.9);
     }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-photo-tile{
       border-radius: 1.5rem;
+    }
+    #wizard.sheet--kitchen .glass-express-step0 .inserat-photo-tile .inserat-photo-remove{
+      padding: 8px 18px; border-radius: 999px; background: rgba(0,0,0,0.4); backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px); font-size: 12px; font-weight: 700; letter-spacing: 0.02em;
     }
     #wizard.sheet--kitchen .glass-express-step0{
       padding-bottom:20px;
       --gex-gap:12px;
       --gex-block:20px;
+    }
+    #wizard.sheet--kitchen .glass-express-step0 #step-name input:first-of-type{
+      font-size: 30px; font-weight: 800; text-align: center;
+    }
+    #wizard.sheet--kitchen .glass-express-step0 #step-name input:last-of-type{
+      font-size: 13px; color: #94a3b8; text-align: center;
+    }
+    #wizard.sheet--kitchen .glass-express-step0 #step-price input{
+      font-size: 48px; font-weight: 800;
+    }
+    #wizard.sheet--kitchen .glass-express-step0 #step-cat button{
+      border-radius: 999px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    #wizard.sheet--kitchen .glass-express-step0 #step-cat button[style*="#10b981"]{
+      box-shadow: 0 4px 14px rgba(16,185,129,0.35);
     }
     #wizard.sheet--kitchen .glass-express-step0 .glass-pill{
       -webkit-tap-highlight-color:transparent;
@@ -1545,6 +1566,13 @@
     }
     #wizard.sheet--kitchen .inserat-three-pillars button:active{ transform:scale(0.95); }
     #wizard.sheet--kitchen .inserat-photo-tile .inserat-photo-remove:hover{ color:#1a1a1a; }
+    #wizard.sheet--kitchen .glass-express-step0 #step-logistics{
+      background: rgba(255,255,255,0.35); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      border-radius: 1.5rem; border: 1px solid rgba(255,255,255,0.6); box-shadow: inset 0 1px 0 rgba(255,255,255,0.7);
+    }
+    #wizard.sheet--kitchen .glass-express-step0 .inserat-master-flow > section button{
+      border-radius: 1.5rem;
+    }
     #wizard.sheet--kitchen .inserat-pickup-time-trigger:active{ opacity:0.9; }
     /* Tastatur-Check: Preis-Feld – fester Bereich, kein Layout-Sprung bei Zahlentastatur */
     #wizard.sheet--kitchen .inserat-price-wrap{ min-height:72px; contain:layout; }
@@ -1934,12 +1962,12 @@
     /* Provider: einheitlich Warmes Beige #F8F7F2 – kein Farbsprung zwischen Dashboard/Wochenplan/Inserat */
     body.provider-mode [id^="v-provider-"].view{ position:relative; background: var(--provider-bg) !important; }
     body.provider-mode #v-provider-home,
-    body.provider-mode #v-provider-week,
     body.provider-mode #v-provider-pickups,
     body.provider-mode #v-provider-profile,
     body.provider-mode #v-provider-billing{ background: var(--provider-bg) !important; }
-    /* Kochbuch: Konzept-Hintergrund (docs/KOCHBUCH_KONZEPT.md) */
-    body.provider-mode #v-provider-cookbook{ background: #F5F5F7 !important; }
+    /* Kochbuch & Wochenplan: Warmes Glassmorphism-Hintergrund */
+    body.provider-mode #v-provider-cookbook,
+    body.provider-mode #v-provider-week{ background: linear-gradient(180deg, rgba(254,243,199,0.25) 0%, #F5F5F7 35%, #F5F5F7 100%) !important; }
     body.provider-mode #v-provider-home > *,
     body.provider-mode #v-provider-week > *,
     body.provider-mode [id^="v-provider-"].view.active > *{ position:relative; z-index:1; }
@@ -2845,9 +2873,12 @@
     #v-discover .discover-header-pills .discover-category-chip.active{
       background:#2563eb; color:#fff; box-shadow:0 2px 12px rgba(37,99,235,0.4);
     }
-    #v-discover #discoverDaysBar .cust-chip{ min-height:44px; padding:10px 16px; font-size:14px; border-radius:20px; }
-    #v-discover .cust-card{ -webkit-tap-highlight-color:transparent; transition:transform 0.15s, box-shadow 0.2s; }
+    #v-discover #discoverDaysBar{ display:flex; gap:8px; overflow-x:auto; -webkit-overflow-scrolling:touch; padding:0 16px 4px; scrollbar-width:none; }
+    #v-discover #discoverDaysBar::-webkit-scrollbar{ display:none; }
+    #v-discover #discoverDaysBar .cust-chip{ min-height:44px; min-width:65px; width:65px; padding:10px 8px; font-size:13px; border-radius:20px; flex:0 0 65px; box-sizing:border-box; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    #v-discover .cust-card{ width:95%; margin:10px auto; margin-bottom:0; -webkit-tap-highlight-color:transparent; transition:transform 0.15s, box-shadow 0.2s; }
     #v-discover .cust-card:active{ transform:scale(0.99); box-shadow:0 2px 12px rgba(0,0,0,0.06); }
+    #v-discover .status-container{ display:flex; gap:6px; margin-top:8px; flex-wrap:nowrap; overflow-x:auto; }
     .discover-radius-row{ position:relative; }
     .discover-radius-pill{
       display:inline-flex; align-items:center; justify-content:center; min-height:48px; min-width:48px; padding:10px 16px;
@@ -3616,12 +3647,12 @@
     #v-provider-cookbook.view.active{ display:flex !important; flex-direction:column !important; height:100vh; height:100dvh; max-height:100vh; max-height:100dvh; overflow:hidden; }
     #v-provider-cookbook.view.active > header{ position:relative; z-index:1; flex-shrink:0; }
     #v-provider-cookbook.view.active > div{ position:relative; z-index:1; min-height:0; flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; }
-    /* Kochbuch Overrides: Header, Kategorie-Pills, Bottom-Bar */
-    #v-provider-cookbook .prov-page-header{ background:rgba(255,255,255,0.9) !important; backdrop-filter:blur(12px); border-bottom:1px solid rgba(0,0,0,0.04) !important; }
+    /* Kochbuch Overrides: Header, Kategorie-Pills, Bottom-Bar – Glassmorphism */
+    #v-provider-cookbook .prov-page-header{ background:rgba(255,255,255,0.75) !important; backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border-bottom:1px solid rgba(255,255,255,0.4) !important; }
     #v-provider-cookbook .prov-page-header-icon{ background:var(--prov-brand) !important; box-shadow:0 4px 12px rgba(255,222,0,0.25) !important; }
     #v-provider-cookbook #cookbookScrollWrap{ background:transparent; }
     #v-provider-cookbook .cookbook-category-pills{ background:transparent; }
-    #v-provider-cookbook .cookbook-action-bar{ background:rgba(255,255,255,0.95); backdrop-filter:blur(12px); border-top:1px solid rgba(0,0,0,0.04) !important; box-shadow:0 -4px 24px rgba(0,0,0,0.04); }
+    #v-provider-cookbook .cookbook-action-bar{ background:rgba(255,255,255,0.7) !important; backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border-top:1px solid rgba(255,255,255,0.4) !important; box-shadow:0 -4px 24px rgba(0,0,0,0.06); }
 
     /* Wochenplan: nur auf der Wochenplan-Seite sichtbar; Layout nur wenn .active */
     #v-provider-week.view{ display:none; }
@@ -3631,7 +3662,7 @@
       overflow:visible; visibility:visible !important; opacity:1 !important; position:relative;
     }
     #v-provider-week .week-header-compact{
-      flex-shrink:0; min-height:56px; background:#fff !important; border-bottom:1px solid rgba(0,0,0,0.06);
+      flex-shrink:0; min-height:56px; background:rgba(255,255,255,0.75) !important; backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border-bottom:1px solid rgba(255,255,255,0.4);
       padding:12px 20px 16px; padding-top:calc(12px + env(safe-area-inset-top, 0));
       display:flex; flex-direction:column; justify-content:center; align-items:center; gap:2px;
     }
@@ -3642,7 +3673,7 @@
     }
     #v-provider-week .week-list-scroll{ flex:1; min-height:120px; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:8px 0 16px; }
     #v-provider-week .week-dayrow{ display:flex; gap:8px; overflow-x:auto; -webkit-overflow-scrolling:touch; padding:0 0 16px; margin-bottom:16px; border-bottom:1px solid #f1f3f5; }
-    #v-provider-week .week-thumb-zone{ flex-shrink:0; padding:16px 20px; padding-bottom:calc(24px + env(safe-area-inset-bottom, 0)); background:#fff; border-top:1px solid #e2e8f0; }
+    #v-provider-week .week-thumb-zone{ flex-shrink:0; padding:16px 20px; padding-bottom:calc(24px + env(safe-area-inset-bottom, 0)); background:rgba(255,255,255,0.7); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border-top:1px solid rgba(255,255,255,0.4); }
 
     /* ============================================================
        MODERNE SMARTPHONES (S25, Galaxy S25, iPhone 15/16, Pixel 8)
@@ -3737,13 +3768,13 @@
       /* Wochenplan (weiteres Layout) */
       #v-provider-week .week-dayrow{ display:flex; gap:8px; overflow-x:auto; -webkit-overflow-scrolling:touch; padding:0 0 16px; margin-bottom:16px; border-bottom:1px solid #f1f3f5; }
 /* Wochenplan: Tag-Kacheln alle gleich groß */
-#v-provider-week .week-day-pill{ flex:0 0 auto; width:56px; min-width:56px; height:52px; min-height:52px; padding:0 6px; border-radius:14px; border:2px solid transparent; background:#f8f9fa; font-size:12px; font-weight:800; color:#64748b; cursor:pointer; transition:all 0.2s; line-height:1.2; text-align:center; white-space:nowrap; display:inline-flex; align-items:center; justify-content:center; box-sizing:border-box; }
+#v-provider-week .week-day-pill{ flex:0 0 auto; width:56px; min-width:56px; height:52px; min-height:52px; padding:0 6px; border-radius:14px; border:1px solid rgba(255,255,255,0.6); background:rgba(255,255,255,0.5); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); font-size:12px; font-weight:800; color:#64748b; cursor:pointer; transition:all 0.2s; line-height:1.2; text-align:center; white-space:nowrap; display:inline-flex; align-items:center; justify-content:center; box-sizing:border-box; }
 #v-provider-week .week-indicator-dot{ background:transparent; border:none; padding:4px; cursor:pointer; border-radius:50%; }
 #v-provider-week .week-indicator-dot:focus{ outline:none; box-shadow:0 0 0 2px var(--prov-brand); }
-    #v-provider-week .week-day-pill.active{ background:rgba(14,165,233,0.12); border-color:var(--prov-brand); color:#1a1a1a; }
-    #v-provider-week .week-day-pill.week-day-pill-today{ background:#fff; border-color:rgba(14,165,233,0.35); font-weight:900; box-shadow:0 1px 3px rgba(0,0,0,0.06); }
-    #v-provider-week .week-day-pill.week-day-pill-today.active{ border-color:var(--prov-brand); background:rgba(14,165,233,0.12); }
-      #v-provider-week .week-status-block{ display:flex; justify-content:space-between; align-items:center; padding:12px 16px; min-height:48px; background:#fff; border-radius:14px; margin-bottom:14px; border:1px solid #e2e8f0; box-shadow:0 1px 3px rgba(0,0,0,0.04); flex-wrap:nowrap; }
+    #v-provider-week .week-day-pill.active{ background:rgba(16,185,129,0.12); border-color:#10b981; color:#1a1a1a; }
+    #v-provider-week .week-day-pill.week-day-pill-today{ background:rgba(255,255,255,0.6); border-color:rgba(16,185,129,0.35); font-weight:900; box-shadow:0 1px 3px rgba(0,0,0,0.06); }
+    #v-provider-week .week-day-pill.week-day-pill-today.active{ border-color:#10b981; background:rgba(16,185,129,0.12); }
+      #v-provider-week .week-status-block{ display:flex; justify-content:space-between; align-items:center; padding:12px 16px; min-height:48px; background:rgba(255,255,255,0.7); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border-radius:14px; margin-bottom:14px; border:1px solid rgba(255,255,255,0.5); box-shadow:0 1px 3px rgba(0,0,0,0.04); flex-wrap:nowrap; }
       #v-provider-week .week-status-online{ display:flex; align-items:center; gap:8px; font-weight:800; font-size:14px; color:#1a1a1a; }
       #v-provider-week .week-status-draft{ display:flex; align-items:center; gap:8px; font-weight:800; font-size:14px; color:#64748b; }
       #v-provider-week .week-status-dot{ width:10px; height:10px; border-radius:50%; }
@@ -3769,7 +3800,7 @@
       100%{ background-position: -100% 0; opacity:0; }
     }
     #v-provider-week .week-meal-card{
-      display:flex; align-items:center; justify-content:space-between; padding:16px 20px;
+      display:flex; align-items:center; gap:12px; padding:16px 20px;
       background: transparent; border-radius: inherit; margin-bottom:0;
       color: var(--premium-anthracite, #1a1a1a);
     }
@@ -3875,11 +3906,11 @@
       #v-provider-week .week-overview-scroll{ -webkit-overflow-scrolling:touch; }
       #v-provider-week .week-overview-cta-wrap .week-edit-primary{ min-height:56px; }
       /* ========== KW-Board (High-End Wochenplan) ========== */
-      #v-provider-week .kw-board-header{ padding:12px 20px 8px; padding-top:calc(12px + env(safe-area-inset-top, 0)); background:#fff; border-bottom:1px solid #f1f3f5; flex-shrink:0; }
+      #v-provider-week .kw-board-header{ padding:12px 20px 8px; padding-top:calc(12px + env(safe-area-inset-top, 0)); background:rgba(255,255,255,0.75); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border-bottom:1px solid rgba(255,255,255,0.4); flex-shrink:0; }
       #v-provider-week .kw-carousel{ display:flex; gap:10px; overflow-x:auto; -webkit-overflow-scrolling:touch; scroll-snap-type:x mandatory; padding:8px 0 12px; scrollbar-width:none; }
       #v-provider-week .kw-carousel::-webkit-scrollbar{ display:none; }
-      #v-provider-week .kw-pill{ flex:0 0 auto; min-width:72px; scroll-snap-align:center; scroll-snap-stop:always; min-height:48px; padding:10px 14px; border-radius:16px; border:2px solid #e2e8f0; background:#f8fafc; font-size:14px; font-weight:800; color:#64748b; cursor:pointer; transition:all 0.2s; display:flex; align-items:center; justify-content:center; }
-      #v-provider-week .kw-pill.active{ background:rgba(14,165,233,0.12); border-color:var(--prov-brand,#0ea5e9); color:#0ea5e9; }
+      #v-provider-week .kw-pill{ flex:0 0 auto; min-width:72px; scroll-snap-align:center; scroll-snap-stop:always; min-height:48px; padding:10px 14px; border-radius:16px; border:1px solid rgba(255,255,255,0.6); background:rgba(255,255,255,0.5); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); font-size:14px; font-weight:800; color:#64748b; cursor:pointer; transition:all 0.2s; display:flex; align-items:center; justify-content:center; }
+      #v-provider-week .kw-pill.active{ background:rgba(16,185,129,0.12); border-color:#10b981; color:#10b981; }
       #v-provider-week .kw-progress-wrap{ padding:0 20px 12px; }
       #v-provider-week .kw-progress{ height:4px; border-radius:999px; background:#e2e8f0; overflow:hidden; }
       #v-provider-week .kw-progress-fill{ height:100%; border-radius:999px; background:var(--prov-brand); transition:width 0.3s ease; }
@@ -3887,14 +3918,14 @@
       #v-provider-week .kw-grid{ display:grid; grid-template-columns:repeat(7, 1fr); gap:10px; max-width:100%; width:100%; margin:0 auto; box-sizing:border-box; }
       @media (max-width:640px){ #v-provider-week .kw-grid{ grid-template-columns:1fr; } }
       #v-provider-week #kwBoardWrap{ overflow-x:hidden; max-width:100%; }
-      #v-provider-week .kw-day-card{ background:var(--glass-bg, rgba(255,255,255,0.98)); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border-radius:24px; border:1px solid rgba(0,0,0,0.04); box-shadow:0 8px 32px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.03); padding:12px; min-height:140px; display:flex; flex-direction:column; gap:8px; transition:transform 0.2s ease, box-shadow 0.2s ease; }
+      #v-provider-week .kw-day-card{ background:rgba(255,255,255,0.7); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border-radius:24px; border:1px solid rgba(255,255,255,0.5); box-shadow:0 8px 32px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.03); padding:12px; min-height:140px; display:flex; flex-direction:column; gap:8px; transition:transform 0.2s ease, box-shadow 0.2s ease; }
       #v-provider-week .kw-day-card:active{ transform:scale(0.98); }
-      #v-provider-week .kw-day-card.kw-day-has-live{ box-shadow:0 8px 32px rgba(0,0,0,0.06), 0 0 0 1px rgba(255,222,0,0.35); }
+      #v-provider-week .kw-day-card.kw-day-has-live{ box-shadow:0 8px 32px rgba(0,0,0,0.06), 0 0 0 1px rgba(16,185,129,0.35); }
       #v-provider-week .kw-day-label{ font-size:11px; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:4px; }
       #v-provider-week .kw-day-date{ font-size:13px; font-weight:700; color:#1a1a1a; }
       #v-provider-week .kw-slots{ display:flex; flex-direction:column; gap:8px; flex:1; min-height:0; }
       #v-provider-week .kw-slot{ border-radius:14px; overflow:hidden; min-height:56px; position:relative; cursor:pointer; transition:background 0.2s; }
-      #v-provider-week .kw-slot-main{ display:flex; gap:12px; align-items:center; padding:10px; background:#f8fafc; border-radius:14px; border:1px solid #f1f3f5; min-height:80px; }
+      #v-provider-week .kw-slot-main{ display:flex; gap:12px; align-items:center; padding:10px; background:rgba(255,255,255,0.6); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border-radius:14px; border:1px solid rgba(255,255,255,0.5); min-height:80px; }
       #v-provider-week .kw-slot-main .kw-slot-thumb{ width:64px; height:64px; border-radius:14px; background:#e2e8f0; flex-shrink:0; background-size:cover; background-position:center; position:relative; }
       #v-provider-week .kw-slot-main .kw-slot-body{ flex:1; min-width:0; }
       #v-provider-week .kw-slot-main .kw-slot-name{ font-size:14px; font-weight:800; color:#1a1a1a; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
@@ -3902,7 +3933,7 @@
       #v-provider-week .kw-slot-override-badges{ position:absolute; top:4px; right:4px; display:flex; gap:2px; font-size:12px; }
       #v-provider-week .kw-slot-empty{ min-height:52px; border:2px dashed #e2e8f0; border-radius:14px; background:rgba(248,250,252,0.6); display:flex; align-items:center; justify-content:center; color:#cbd5e1; font-size:24px; font-weight:200; letter-spacing:0.08em; transition:color 0.2s, border-color 0.2s, background 0.2s; cursor:pointer; font-family:inherit; padding:0; margin:0; width:100%; box-sizing:border-box; -webkit-appearance:none; appearance:none; }
       #v-provider-week .kw-slot-empty:active{ color:#94a3b8; border-color:#cbd5e1; background:rgba(241,245,249,0.9); }
-      #v-provider-week .kw-slot-small{ display:flex; align-items:center; gap:8px; padding:8px 10px; background:#f8fafc; border-radius:12px; border:1px solid #f1f3f5; }
+      #v-provider-week .kw-slot-small{ display:flex; align-items:center; gap:8px; padding:8px 10px; background:rgba(255,255,255,0.6); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border-radius:12px; border:1px solid rgba(255,255,255,0.5); }
       #v-provider-week .kw-slot-small .kw-slot-thumb{ width:40px; height:40px; border-radius:10px; background:#e2e8f0; flex-shrink:0; background-size:cover; background-position:center; position:relative; }
       #v-provider-week .kw-slot-small .kw-slot-name{ font-size:13px; font-weight:700; color:#1a1a1a; }
       #v-provider-week .kw-slot-small .kw-slot-price{ font-size:13px; font-weight:800; color:#1a1a1a; margin-left:auto; }
@@ -4866,14 +4897,14 @@
             <button type="button" data-radius="3000" class="discover-radius-opt">3 km</button>
           </div>
         </div>
-        <div id="discoverDaysBar" class="cust-chip-bar" style="padding-top:4px; padding-bottom:12px; border-bottom:1px solid rgba(0,0,0,0.03);">
+        <div id="discoverDaysBar" class="cust-chip-bar discover-calendar-sticky" style="padding-top:4px; padding-bottom:8px;">
           <!-- Dynamisch befüllt -->
         </div>
       </header>
 
       <!-- Listenansicht ("Speisekarte") + Karten-Container (Overlay) – S25 Safe-Area -->
       <main class="discover-main" style="position:relative; padding:16px; padding-bottom:calc(160px + env(safe-area-inset-bottom, 0));">
-        <div id="discoverOffers" class="discover-offers-list" style="display:flex; flex-direction:column; gap:16px;">
+        <div id="discoverOffers" class="discover-offers-list" style="display:flex; flex-direction:column; gap:12px; padding:0 0 8px;">
           <!-- Dynamisch befüllt -->
         </div>
 
@@ -5974,7 +6005,7 @@
     </section>
 
     <!-- Kochbuch: MASTER-SPEC MagazinKochbuch – nur Titel + Pills, Magazin-Karte, Bar BEARBEITEN | WOCHENPLAN | AUSWÄHLEN -->
-    <section class="view" id="v-provider-cookbook" style="background:#F5F5F7;">
+    <section class="view" id="v-provider-cookbook" style="background:linear-gradient(180deg, rgba(254,243,199,0.2) 0%, #F5F5F7 30%);">
       <header class="prov-page-header" id="v-provider-cookbook-header">
         <div class="prov-page-header-row">
           <div class="prov-page-header-left">
@@ -5994,10 +6025,10 @@
         <div id="cookbookList" style="display:none; gap:16px;"></div>
 
         <div id="cookbookEmpty" style="text-align:center; padding:80px 24px; display:none;">
-          <div style="width:96px; height:96px; background:#fff; border-radius:50%; margin:0 auto 24px; display:flex; align-items:center; justify-content:center; box-shadow:0 8px 24px rgba(0,0,0,0.06); font-size:48px;">📖</div>
+          <div style="width:96px; height:96px; background:rgba(255,255,255,0.6); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid rgba(255,255,255,0.5); border-radius:50%; margin:0 auto 24px; display:flex; align-items:center; justify-content:center; box-shadow:0 8px 32px rgba(0,0,0,0.08); font-size:48px;">📖</div>
           <h2 style="font-size:24px; font-weight:800; color:#1D1D1F; margin-bottom:8px;">Dein Erfolgstagebuch ist noch leer.</h2>
           <p style="color:#86868B; font-size:14px; line-height:1.5; margin-bottom:32px; max-width:280px; margin-left:auto; margin-right:auto;">Inseriere dein erstes Gericht und wir füllen dein Kochbuch automatisch mit Bestsellern.</p>
-          <button class="btn-primary" id="btnCookbookEmptyAdd" type="button" style="width:100%; min-height:56px; border-radius:24px; font-size:15px; font-weight:800; background:#007AFF; color:#fff; border:none; box-shadow:0 4px 20px rgba(0,122,255,0.4);">
+          <button class="btn-primary" id="btnCookbookEmptyAdd" type="button" style="width:100%; min-height:56px; border-radius:24px; font-size:15px; font-weight:800; background:#FACC15; color:#1a1a1a; border:none; box-shadow:0 4px 20px rgba(250,204,21,0.4);">
             JETZT ERSTES GERICHT INSERIEREN
           </button>
         </div>
@@ -6005,10 +6036,10 @@
 
       <!-- Bottom Action Bar (Konzept): BEARBEITEN | WOCHENPLAN | AUSWÄHLEN -->
       <div id="cookbookActionBar" class="cookbook-action-bar" style="position:fixed; bottom:calc(112px + env(safe-area-inset-bottom, 20px)); left:0; right:0; padding:12px 20px; z-index:40;">
-        <div id="cookbookBarDefault" style="display:flex; align-items:center; gap:10px; width:100%; max-width:500px; margin:0 auto; background:rgba(255,255,255,0.9); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border-radius:28px; padding:12px; box-shadow:0 8px 32px rgba(0,0,0,0.08); border:1px solid rgba(255,255,255,0.5);">
+        <div id="cookbookBarDefault" style="display:flex; align-items:center; gap:10px; width:100%; max-width:500px; margin:0 auto; background:rgba(255,255,255,0.7); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border-radius:2rem; padding:12px; box-shadow:0 8px 32px rgba(0,0,0,0.08); border:1px solid rgba(255,255,255,0.5);">
           <button type="button" id="cookbookBarEdit" class="cookbook-bar-btn cookbook-bar-secondary" style="flex:1; min-height:52px; border-radius:20px; font-size:10px; font-weight:800; letter-spacing:0.08em;">BEARBEITEN</button>
           <button type="button" id="cookbookBarWeek" class="cookbook-bar-btn cookbook-bar-secondary" style="flex:1; min-height:52px; border-radius:20px; font-size:10px; font-weight:800; letter-spacing:0.08em;">WOCHENPLAN</button>
-          <button type="button" id="cookbookBarLive" class="cookbook-bar-btn cookbook-bar-primary" style="flex:1.8; min-height:52px; border-radius:20px; font-size:10px; font-weight:800; letter-spacing:0.12em; background:#007AFF; color:#fff; box-shadow:0 4px 16px rgba(0,122,255,0.35);">AUSWÄHLEN</button>
+          <button type="button" id="cookbookBarLive" class="cookbook-bar-btn cookbook-bar-primary" style="flex:1.8; min-height:52px; border-radius:20px; font-size:10px; font-weight:800; letter-spacing:0.12em;">AUSWÄHLEN</button>
         </div>
       </div>
     </section>
@@ -7937,9 +7968,9 @@
     
     // 3-Säulen-Zeile + Preis direkt unter dem Bild (links Icons, rechts Preis in Fettdruck)
     const pillarsRow = document.createElement('div');
-    pillarsRow.style.cssText = 'display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-bottom:1px solid rgba(0,0,0,0.06);';
+    pillarsRow.style.cssText = 'display:flex; align-items:center; justify-content:space-between; padding:12px 16px;';
     const pillars = document.createElement('div');
-    pillars.className = 'card-pillars';
+    pillars.className = 'card-pillars status-container';
     pillars.innerHTML = `
       <div class="pillar-mini active" title="Vor Ort essen">🍴</div>
       <div class="pillar-mini ${abholnummer ? 'active yellow' : ''}" title="Abholnummer aktiv">🧾</div>
@@ -18571,16 +18602,14 @@
           var cb = cookbook.find(function(c){ return String(c.id) === String(entry.cookbookId); });
           var name = (cb && cb.dish) || entry.dish || 'Gericht';
           var price = (cb && cb.price) || entry.price || 0;
-          var img = (cb && cb.photoData) || entry.photoData || '';
+          var img = (cb && cb.photoData) || entry.photoData || entry.imageUrl || '';
           var entryDineIn = entry.dineInPossible !== false;
           var entryPickup = !!(entry.hasPickupCode !== undefined ? entry.hasPickupCode : defaultPickup);
           var entryReuse = !!(entry.reuse && entry.reuse.enabled);
           var showVorOrt = (entry.dineInPossible !== undefined) && (entryDineIn !== defaultDineIn);
-          var showAbholnummer = (entry.hasPickupCode !== undefined) && (!!entry.hasPickupCode !== defaultPickup);
           var showMehrweg = (entry.reuse !== undefined) && (entryReuse !== defaultReuse);
           var overrideBadges = [];
           if (showVorOrt) overrideBadges.push('<span title="Vor Ort (Abweichung)">🍴</span>');
-          if (showAbholnummer) overrideBadges.push('<span title="Abholnummer (Abweichung)">🧾</span>');
           if (showMehrweg) overrideBadges.push('<span title="Mehrweg (Abweichung)">🔄</span>');
           var badgeHtml = overrideBadges.length ? '<div class="kw-slot-override-badges">' + overrideBadges.join('') + '</div>' : '';
           if (slot === 0) {
@@ -18846,13 +18875,16 @@
       var cb = cookbook.find(function(c){ return String(c.id) === String(entry.cookbookId); });
       var name = (cb && cb.dish) || entry.dish || 'Gericht';
       var price = (cb && cb.price) || entry.price || 0;
+      var img = (cb && cb.photoData) || entry.photoData || entry.imageUrl || '';
       var weekIndex = entryIndices[idx];
       var wrap = document.createElement('div');
       wrap.className = 'week-meal-card-wrap' + (dayIsLive ? ' week-card-live' : '');
       if(!dayIsLive && weekSortMode){
         wrap.draggable = true;
         wrap.dataset.index = String(weekIndex);
-        wrap.innerHTML = '<div class="week-meal-card" style="display:flex; align-items:center;"><div class="week-meal-card-drag-handle"><i data-lucide="grip-vertical" style="width:24px;height:24px;"></i></div><div><div class="week-meal-name">' + esc(name) + '</div><div class="week-meal-meta">' + euro(price) + '</div></div></div>';
+        var imgSort = (cb && cb.photoData) || entry.photoData || entry.imageUrl || '';
+        var thumbSort = '<div class="week-meal-thumb" style="width:56px;min-width:56px;height:56px;border-radius:12px;overflow:hidden;background:#e5e7eb;flex-shrink:0;background-size:cover;background-position:center' + (imgSort ? ';background-image:url(\'' + esc(imgSort) + '\')' : '') + '"></div>';
+        wrap.innerHTML = '<div class="week-meal-card" style="display:flex; align-items:center;"><div class="week-meal-card-drag-handle"><i data-lucide="grip-vertical" style="width:24px;height:24px;"></i></div>' + thumbSort + '<div><div class="week-meal-name">' + esc(name) + '</div><div class="week-meal-meta">' + euro(price) + '</div></div></div>';
         wrap.ondragstart = function(e){ e.dataTransfer.setData('text/plain', weekIndex); e.dataTransfer.effectAllowed = 'move'; };
         wrap.ondragover = function(e){ e.preventDefault(); e.dataTransfer.dropEffect = 'move'; var from = parseInt(e.dataTransfer.getData('text/plain'), 10); var to = parseInt(this.dataset.index, 10); if(from !== to){ this.classList.add('week-drag-over'); } };
         wrap.ondragleave = function(){ this.classList.remove('week-drag-over'); };
@@ -18882,15 +18914,14 @@
       var entryPickup = !!(entry.hasPickupCode !== undefined ? entry.hasPickupCode : defaultPickup);
       var entryReuse = !!(entry.reuse && entry.reuse.enabled);
       var showVorOrt = (entry.dineInPossible !== undefined) && (entryDineIn !== defaultDineIn);
-      var showAbholnummer = (entry.hasPickupCode !== undefined) && (!!entry.hasPickupCode !== defaultPickup);
       var showMehrweg = (entry.reuse !== undefined) && (entryReuse !== defaultReuse);
       var badgeParts = [];
       if(showVorOrt) badgeParts.push('<span title="Vor Ort (Abweichung)">🍴</span>');
-      if(showAbholnummer) badgeParts.push('<span title="Abholnummer (Abweichung)">🎫</span>');
       if(showMehrweg) badgeParts.push('<span title="Mehrweg (Abweichung)">🔄</span>');
       var badgesHtml = badgeParts.length ? '<div class="week-meal-badges" style="display:flex; gap:8px; margin-top:6px; font-size:14px;">' + badgeParts.join('') + '</div>' : '';
       var verdienstHtml = !dayIsLive ? '<div class="week-meal-verdienst" style="font-size:12px; color:#1a1a1a; margin-top:4px;">Verdienst ca. ' + euro(Math.max(0, (Number(price)||0) - 4.99)) + '</div>' : '';
-      card.innerHTML = '<div><div class="week-meal-name">' + esc(name) + '</div><div class="week-meal-meta">' + euro(price) + ' ' + onlineHtml + '</div>' + badgesHtml + verdienstHtml + '</div>';
+      var thumbHtml = '<div class="week-meal-thumb" style="width:56px;min-width:56px;height:56px;border-radius:12px;overflow:hidden;background:#e5e7eb;flex-shrink:0;background-size:cover;background-position:center' + (img ? ';background-image:url(\'' + esc(img) + '\')' : '') + '"></div>';
+      card.innerHTML = thumbHtml + '<div style="flex:1;min-width:0;"><div class="week-meal-name">' + esc(name) + '</div><div class="week-meal-meta">' + euro(price) + ' ' + onlineHtml + '</div>' + badgesHtml + verdienstHtml + '</div>';
       card.style.cursor = 'pointer';
       if(!dayIsLive){
         card.onclick = function(e){ e.preventDefault(); e.stopPropagation(); if(weekJustSwiped) return; if(typeof openWeekAddSheet === 'function') openWeekAddSheet(weekPlanDay, weekIndex); };
@@ -21007,15 +21038,15 @@
       var revenue = typeof getCookbookEntryRevenue === 'function' ? getCookbookEntryRevenue(entry) : 0;
       var revenueStr = revenue > 0 ? (Math.round(revenue*100)/100).toFixed(2).replace('.',',') + ' €' : '–';
       var imgHtml = entry.photoData ? '<img src="'+esc(entry.photoData)+'" alt="" style="width:100%; height:100%; object-fit:cover;" />' : '<div style="width:100%; height:100%; background:#e5e7eb; display:flex; align-items:center; justify-content:center;"></div>';
-      magazineEl.innerHTML = '<div class="cookbook-magazine-card" style="width:88%; max-width:400px; background:#fff; border-radius:32px; box-shadow:0 24px 48px rgba(0,0,0,0.12); overflow:hidden; display:flex; flex-direction:column;">'+
+      magazineEl.innerHTML = '<div class="cookbook-magazine-card" style="width:88%; max-width:400px; background:rgba(255,255,255,0.75); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border:1px solid rgba(255,255,255,0.5); border-radius:32px; box-shadow:0 24px 48px rgba(0,0,0,0.12); overflow:hidden; display:flex; flex-direction:column;">'+
         '<div style="height:55%; min-height:180px; overflow:hidden;">'+imgHtml+'</div>'+
         '<div style="padding:24px 28px 28px; text-align:center; flex:1; display:flex; flex-direction:column; justify-content:space-between;">'+
         '<div><h2 style="margin:0 0 8px; font-size:24px; font-weight:800; color:#1D1D1F; line-height:1.2;">'+esc(entry.dish||'Gericht')+'</h2>'+
-        '<div style="height:1px; width:48px; background:#007AFF; margin:0 auto 12px;"></div>'+
+        '<div style="height:1px; width:48px; background:#10b981; margin:0 auto 12px;"></div>'+
         '<p style="margin:0; color:#86868B; font-size:16px; font-weight:500;">'+esc(lastUsedLabel + ' • ' + lastPrice)+'</p></div>'+
-        '<div style="background:#F5F5F7; border-radius:16px; padding:12px 20px; margin-top:16px; display:inline-block; align-self:center; color:#007AFF; font-weight:800; font-size:12px; letter-spacing:0.05em;">GESAMTUMSATZ: '+esc(revenueStr)+'</div></div></div>'+
-        (list.length > 1 ? '<button type="button" class="cookbook-magazine-nav cookbook-magazine-prev" aria-label="Vorheriges" style="position:absolute; left:8px; top:50%; transform:translateY(-50%); width:48px; height:48px; border-radius:50%; border:none; background:rgba(255,255,255,0.95); box-shadow:0 4px 16px rgba(0,0,0,0.1); cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:5;">‹</button>'+
-        '<button type="button" class="cookbook-magazine-nav cookbook-magazine-next" aria-label="Nächstes" style="position:absolute; right:8px; top:50%; transform:translateY(-50%); width:48px; height:48px; border-radius:50%; border:none; background:rgba(255,255,255,0.95); box-shadow:0 4px 16px rgba(0,0,0,0.1); cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:5;">›</button>' : '');
+        '<div style="background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.25); border-radius:16px; padding:12px 20px; margin-top:16px; display:inline-block; align-self:center; color:#10b981; font-weight:800; font-size:12px; letter-spacing:0.05em;">GESAMTUMSATZ: '+esc(revenueStr)+'</div></div></div>'+
+        (list.length > 1 ? '<button type="button" class="cookbook-magazine-nav cookbook-magazine-prev" aria-label="Vorheriges" style="position:absolute; left:8px; top:50%; transform:translateY(-50%); width:48px; height:48px; border-radius:50%; border:1px solid rgba(255,255,255,0.6); background:rgba(255,255,255,0.7); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); box-shadow:0 4px 16px rgba(0,0,0,0.1); cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:5;">‹</button>'+
+        '<button type="button" class="cookbook-magazine-nav cookbook-magazine-next" aria-label="Nächstes" style="position:absolute; right:8px; top:50%; transform:translateY(-50%); width:48px; height:48px; border-radius:50%; border:1px solid rgba(255,255,255,0.6); background:rgba(255,255,255,0.7); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); box-shadow:0 4px 16px rgba(0,0,0,0.1); cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:5;">›</button>' : '');
       magazineEl.style.position = 'relative';
       var prevBtn = magazineEl.querySelector('.cookbook-magazine-prev');
       var nextBtn = magazineEl.querySelector('.cookbook-magazine-next');
