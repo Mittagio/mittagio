@@ -9239,11 +9239,11 @@
       var mainEl = document.querySelector('main');
       if(!mainEl) return;
       var btn = document.createElement('button');
-      btn.className = 'fab-provider fab-provider-plus fab-provider-pill';
+      btn.className = 'fab-provider fab-provider-plus';
       btn.id = 'fabProviderAddOffer';
       btn.type = 'button';
       btn.setAttribute('aria-label', 'Inserat erstellen');
-      btn.innerHTML = '<span class="plus-char" style="font-size:28px; line-height:1; color:#fff;">+</span><span class="fab-provider-label">Inserat erstellen</span>';
+      btn.innerHTML = '<span class="plus-char" style="font-size:28px; line-height:1; color:#1a1a1a;">+</span>';
       btn.onclick = function(){ createFlowPreselectedDate = null; if(typeof openDishFlow === 'function') openDishFlow(null, 'dashboard'); };
       mainEl.appendChild(btn);
     } else {
