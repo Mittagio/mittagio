@@ -1,7 +1,7 @@
 # React Kochbuch & Wochenplan – Setup & Integration
 
 Die Anbieter-Komponenten liegen unter **`src/components/Provider/`**:
-- **Kochbuch.tsx** – Gerichteliste, Bestseller-Strip, Auswählen → Inseratsflow, Wochenplan-Sheet.
+- **Kochbuch.tsx** – Gerichteliste, Bestseller-Strip, Auswählen → Inseratsflow, Wochenplan-Sheet. Die Vanilla-App in `app/index.html` hat **Kategorie-Pills** oben (Alle, Vegetarisch, Vegan, Fisch, Mit Fleisch) statt Tabs.
 - **Wochenplan.tsx** – KW-Navigation, 7 Tage × 3 Slots, Gerichte aus dem Kochbuch per Klick in leere Slots (Dashed Boxes) einfügbar; Floating Action Bar (Drucken, Teilen, +).
 - **ProviderApp.tsx** – Einstieg mit Tab-Umschaltung Kochbuch | Wochenplan.
 

@@ -1,0 +1,34 @@
+---
+description: Anbieter Bottom-Navigation – Reihenfolge und Tabs sind unveränderbar (in Stein gemeißelt)
+alwaysApply: true
+---
+
+# Anbieter Bottom-Navigation – UNVERÄNDERBAR
+
+## In Stein gemeißelt
+
+Die **Bottom-Navigation im Anbieterbereich** hat **genau fünf Tabs** in **exakt dieser Reihenfolge**. Daran wird **nichts geändert**.
+
+| Position | Tab-Label / Bedeutung | data-pgo | View-ID |
+|----------|------------------------|----------|---------|
+| 1 | **Dashboard** (Küche / Meine Küche) | `provider-home` | `v-provider-home` |
+| 2 | **Abholnummer** (Abholungen) | `provider-pickups` | `v-provider-pickups` |
+| 3 | **Wochenplan** | `provider-week` | `v-provider-week` |
+| 4 | **Kochbuch** | `provider-cookbook` | `v-provider-cookbook` |
+| 5 | **Profil** (Meins) | `provider-profile` | `v-provider-profile` |
+
+## Verboten
+
+- Keine neuen Tabs hinzufügen (z. B. kein „Inserat“-Tab).
+- Keine Tabs entfernen.
+- Keine Reihenfolge ändern.
+- Keine Umbenennung der Navigationseinträge (Dashboard, Abholnummer, Wochenplan, Kochbuch, Profil).
+
+## Referenz im Code
+
+- **HTML:** `app/index.html` – `#providerNav` mit fünf `<button class="navbtn" data-pgo="...">` in obiger Reihenfolge.
+- **JS:** `providerMainViews`, `setProviderNavActive`, Navigation-Logik – Liste und Reihenfolge nicht verändern.
+
+## Inseratflow
+
+Der **Inseratsflow** (Wizard / UniversalFlow) öffnet sich **nur** über Aktionen wie „Hinzufügen“, „Neues Gericht“, FAB „+“ – **nicht** als eigener Tab in der Bottom-Nav.

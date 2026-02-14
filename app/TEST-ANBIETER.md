@@ -50,7 +50,7 @@ Vollständige Checkliste zum manuellen Testen der Anbieter-App. Alle Punkte der 
 
 ## E) Kochbuch
 
-- [ ] **E1** Tab „Kochbuch“ → Liste/Kacheln der Gerichte (Aktiv / Entwürfe).
+- [ ] **E1** Tab „Kochbuch“ → Kategorie-Pills (Alle, Vegetarisch, Vegan, Fisch, Mit Fleisch), Bestseller-Strip, Liste/Kacheln der Gerichte.
 - [ ] **E2** Gericht wählen → Auswahl markiert; **Haupt-Button** zeigt „**Jetzt für 4,99 € inserieren**“ (Preis immer sichtbar).
 - [ ] **E3** Klick „Jetzt für 4,99 € inserieren“ → Flow zum Inserieren (Datum, Zeit, ggf. Abholnummer) → gelber Button mit Preis.
 - [ ] **E4** Kein anderer Begriff für den Zahlungs-Button (z. B. nicht nur „Jetzt inserieren“ ohne Preis).

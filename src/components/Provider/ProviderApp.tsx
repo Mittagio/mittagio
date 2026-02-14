@@ -7,7 +7,7 @@ type ProviderView = 'kochbuch' | 'magazin' | 'wochenplan';
 
 /**
  * Einstieg Anbieter-Bereich: Kochbuch, Magazin-Kochbuch und Wochenplan mit Tab-Umschaltung.
- * Kochbuch → Inseratsflow; Magazin → Flip + Profilkarte; Wochenplan nutzt Kochbuch-Daten.
+ * Inseratflow (UniversalFlow) öffnet sich nur beim Klick auf Hinzufügen/Neues Gericht – kein eigener Tab.
  */
 export const ProviderApp: React.FC = () => {
   const [view, setView] = useState<ProviderView>('kochbuch');

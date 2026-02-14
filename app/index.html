@@ -976,8 +976,13 @@
     #v-provider-cookbook #cookbookBarSelected{ display:none; transform:translateY(20px); opacity:0; transition:transform 0.32s cubic-bezier(0.33, 0.6, 0.2, 1), opacity 0.28s; }
     #v-provider-cookbook #cookbookBarSelected.cookbook-bar-selected-visible{ display:flex !important; transform:translateY(0); opacity:1; }
     #v-provider-cookbook #cookbookBarDefault.cookbook-bar-default-hidden{ display:none !important; }
-    #v-provider-cookbook .cookbook-tabs button{ flex:1; min-height:48px; border-radius:12px; font-weight:600; font-size:14px; border:none; background:transparent; color:#64748b; cursor:pointer; transition:all .2s; font-family:system-ui,-apple-system,sans-serif; }
-    #v-provider-cookbook .cookbook-tabs button.on{ background:var(--prov-brand); color:#1a1a1a; font-weight:700; }
+    /* Kochbuch: Kategorie-Pills oben (horizontal scroll) */
+    #v-provider-cookbook .cookbook-category-pills{ display:flex; gap:10px; overflow-x:auto; padding:4px 0 20px; margin-bottom:8px; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+    #v-provider-cookbook .cookbook-category-pills::-webkit-scrollbar{ display:none; }
+    #v-provider-cookbook .cookbook-category-pills .cookbook-cat-pill{ flex:0 0 auto; min-height:44px; padding:0 18px; border-radius:999px; font-size:14px; font-weight:700; border:2px solid #e2e8f0; background:#fff; color:#64748b; cursor:pointer; transition:all .2s; display:inline-flex; align-items:center; justify-content:center; gap:6px; box-shadow:0 2px 8px rgba(0,0,0,0.03); }
+    #v-provider-cookbook .cookbook-category-pills .cookbook-cat-pill:hover{ border-color:#cbd5e1; color:#475569; }
+    #v-provider-cookbook .cookbook-category-pills .cookbook-cat-pill.on{ background:var(--prov-brand); border-color:var(--prov-brand); color:#1a1a1a; box-shadow:0 2px 12px rgba(255,222,0,0.3); }
+    #v-provider-cookbook .cookbook-category-pills .cookbook-cat-pill:active{ transform:scale(0.97); }
     /* Kochbuch Action-Sheet */
     #cookbookActionSheetBd{ z-index:999; }
     .cookbook-action-sheet{
@@ -2398,10 +2403,14 @@
     .provider-dashboard-cta:hover{ transform:scale(0.98); }
     .provider-dashboard-cta:active{ transform:scale(0.95); }
 
-    /* FAB & Status-Indikator: Safe-Area für S25 / moderne Handys */
+    /* FAB: über Bottom-Nav-Pill (Pill ~88px ab unten), damit kein Überlappen */
     #fabProviderAddOffer{
-      bottom:calc(90px + env(safe-area-inset-bottom, 20px)) !important;
+      bottom:calc(130px + env(safe-area-inset-bottom, 20px)) !important;
       right:calc(16px + env(safe-area-inset-right, 0)) !important;
+    }
+    /* Kochbuch: FAB über Action-Bar (Action-Bar bei 112px), kein Überlappen */
+    #v-provider-cookbook.view.active ~ #fabProviderAddOffer{
+      bottom:calc(200px + env(safe-area-inset-bottom, 20px)) !important;
     }
     #fabProviderAddOfferLabel{ right:calc(16px + env(safe-area-inset-right, 0)) !important; }
     #providerStatusIndicator{
@@ -3663,12 +3672,11 @@
     #v-provider-cookbook.view.active{ display:flex !important; flex-direction:column !important; height:100vh; height:100dvh; max-height:100vh; max-height:100dvh; overflow:hidden; }
     #v-provider-cookbook.view.active > header{ position:relative; z-index:1; flex-shrink:0; }
     #v-provider-cookbook.view.active > div{ position:relative; z-index:1; min-height:0; flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; }
-    /* Kochbuch Overrides: Header, Tabs, Bottom-Bar */
+    /* Kochbuch Overrides: Header, Kategorie-Pills, Bottom-Bar */
     #v-provider-cookbook .prov-page-header{ background:rgba(255,255,255,0.9) !important; backdrop-filter:blur(12px); border-bottom:1px solid rgba(0,0,0,0.04) !important; }
     #v-provider-cookbook .prov-page-header-icon{ background:var(--prov-brand) !important; box-shadow:0 4px 12px rgba(255,222,0,0.25) !important; }
     #v-provider-cookbook #cookbookScrollWrap{ background:transparent; }
-    #v-provider-cookbook .cookbook-tabs{ background:#fff !important; border:1px solid rgba(0,0,0,0.04) !important; box-shadow:0 2px 8px rgba(0,0,0,0.03) !important; border-radius:16px !important; padding:6px !important; }
-    #v-provider-cookbook .cookbook-tabs button.on{ background:var(--prov-brand); color:#1a1a1a; border-radius:12px; }
+    #v-provider-cookbook .cookbook-category-pills{ background:transparent; }
     #v-provider-cookbook .cookbook-action-bar{ background:rgba(255,255,255,0.95); backdrop-filter:blur(12px); border-top:1px solid rgba(0,0,0,0.04) !important; box-shadow:0 -4px 24px rgba(0,0,0,0.04); }
 
     /* Wochenplan: nur auf der Wochenplan-Seite sichtbar; Layout nur wenn .active */
@@ -4097,12 +4105,15 @@
       #providerNav .navbtn.active{ font-weight:700; }
       #providerNav .navbtn .ico svg{ width:24px !important; height:24px !important; }
       
-      /* FAB: über Nav + Safe-Area */
+      /* FAB: über Nav-Pill + Safe-Area (kein Überlappen) */
       #fabProviderAddOffer{
-        bottom:calc(80px + env(safe-area-inset-bottom, 20px)) !important;
+        bottom:calc(130px + env(safe-area-inset-bottom, 20px)) !important;
         right:calc(20px + env(safe-area-inset-right, 0)) !important;
         width:56px !important; height:56px !important;
         min-width:56px; min-height:56px;
+      }
+      #v-provider-cookbook.view.active ~ #fabProviderAddOffer{
+        bottom:calc(200px + env(safe-area-inset-bottom, 20px)) !important;
       }
       #fabProviderAddOfferLabel{ right:calc(20px + env(safe-area-inset-right, 0)) !important; }
       
@@ -4158,7 +4169,7 @@
       /* Kochbuch: Touch-Ziele kleine Viewports */
       #v-provider-cookbook .cookbook-search,
       #v-provider-cookbook #cookbookSortSelect{ min-height:48px !important; }
-      #v-provider-cookbook .cookbook-tabs button{ min-height:48px !important; }
+      #v-provider-cookbook .cookbook-category-pills .cookbook-cat-pill{ min-height:48px !important; }
       #v-provider-cookbook .cookbook-action-sheet-btn{ min-height:52px !important; }
       
       .discover-offers{ padding:14px 12px !important; gap:12px !important; }
@@ -6047,9 +6058,9 @@
         </div>
       </header>
 
-      <div id="cookbookScrollWrap" style="flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:12px 20px calc(140px + env(safe-area-inset-bottom, 0)); max-width:500px; margin:0 auto; width:100%; box-sizing:border-box;">
-        <!-- Tabs: Gerichte | Entwürfe -->
-        <div class="cookbook-tabs" id="cookbookTabs" role="tablist" style="display:flex; padding:6px; margin-bottom:24px;"></div>
+      <div id="cookbookScrollWrap" style="flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:12px 20px calc(200px + env(safe-area-inset-bottom, 0)); max-width:500px; margin:0 auto; width:100%; box-sizing:border-box;">
+        <!-- Kategorie-Pills (horizontal, wie geplant) -->
+        <div class="cookbook-category-pills" id="cookbookCategoryPills" role="tablist" aria-label="Kategorie filter"></div>
         
         <div id="cookbookList" style="gap:16px;">
           <!-- Dynamisch: cookbook-grid (1 Spalte), ggf. Bestseller-Strip oben -->
@@ -6069,7 +6080,7 @@
       </div>
 
       <!-- Sticky Bottom Bar: Standard (Suche · Neues Gericht · Sortieren) oder 3-Wege bei Selektion -->
-      <div id="cookbookActionBar" class="cookbook-action-bar" style="position:fixed; bottom:calc(64px + env(safe-area-inset-bottom, 20px)); left:0; right:0; padding:12px 20px 12px; display:flex; flex-direction:column; gap:10px; z-index:40;">
+      <div id="cookbookActionBar" class="cookbook-action-bar" style="position:fixed; bottom:calc(112px + env(safe-area-inset-bottom, 20px)); left:0; right:0; padding:12px 20px 12px; display:flex; flex-direction:column; gap:10px; z-index:40;">
         <div id="cookbookBarDefault" style="display:flex; align-items:center; gap:10px;">
           <button type="button" id="cookbookBarFilter" class="cookbook-bar-btn cookbook-bar-secondary" aria-label="Suche fokussieren">
             <i data-lucide="search" style="width:20px;height:20px;"></i>
@@ -8496,7 +8507,7 @@
   let pickupFilter = 'offen'; // 'offen' | 'abgeholt'
   let cookbookSort = 'recent';
   let cookbookQuery = '';
-  let cookbookTab = 'dishes';
+  let cookbookCategory = ''; // '' = Alle, sonst Kategorie (Vegan, Vegetarisch, Mit Fleisch, Fisch)
   let selectedCookbookId = null; // Wochenplan-Prinzip: Tap = Auswahl, unten „Auswählen & Inserieren“
   let weekPlanDay = isoDate(new Date());
   let weekPlanMode = 'overview'; // 'overview' | 'edit' – Zwei-Phasen: Ansehen vs. Bearbeiten (app-first, Sofa)
@@ -21031,7 +21042,7 @@
 
   function renderCookbook(){
     const box = document.getElementById('cookbookList');
-    const tabs = document.getElementById('cookbookTabs');
+    const pillsWrap = document.getElementById('cookbookCategoryPills');
     const sortSelect = document.getElementById('cookbookSortSelect');
     const search = document.getElementById('cookbookSearch');
     const scrollWrap = document.getElementById('cookbookScrollWrap');
@@ -21056,24 +21067,35 @@
       sortSelect.onchange=()=>{ cookbookSort = sortSelect.value; renderCookbook(); };
     }
 
-    if(tabs){
-      tabs.innerHTML='';
-      [
-        {id:'dishes', label:'Meine Gerichte'},
-        {id:'drafts', label:'Entwürfe'}
-      ].forEach(t=>{
-        const b=document.createElement('button');
+    if(pillsWrap){
+      pillsWrap.innerHTML='';
+      var pillItems = [{id:'', label:'Alle', emoji:''}];
+      (CATEGORIES||['Vegetarisch','Vegan','Fisch','Mit Fleisch']).forEach(function(cat){
+        var emo = (CAT_EMOJI&&CAT_EMOJI[cat]) ? CAT_EMOJI[cat] : '';
+        pillItems.push({id:cat, label:cat, emoji:emo});
+      });
+      pillItems.forEach(function(t){
+        var b = document.createElement('button');
         b.type='button';
-        b.className=(cookbookTab===t.id?'on':'');
-        b.textContent=t.label;
-        b.onclick=()=>{ cookbookTab=t.id; renderCookbook(); };
-        tabs.appendChild(b);
+        b.className='cookbook-cat-pill' + (cookbookCategory===t.id?' on':'');
+        b.setAttribute('role','tab');
+        b.setAttribute('aria-selected', cookbookCategory===t.id ? 'true' : 'false');
+        b.appendChild(document.createTextNode(t.emoji ? t.emoji + ' ' + t.label : t.label));
+        b.onclick=function(){ if(typeof haptic==='function') haptic(6); cookbookCategory=t.id; renderCookbook(); };
+        pillsWrap.appendChild(b);
       });
     }
 
     const mine = cookbook.filter(x=>x.providerId===providerId());
     const q = String(cookbookQuery||'').trim().toLowerCase();
-    const filtered = mine.filter(x => !q || String(x.dish||'').toLowerCase().includes(q));
+    var filtered = mine.filter(x => !q || String(x.dish||'').toLowerCase().includes(q));
+    if(cookbookCategory){
+      filtered = filtered.filter(function(x){
+        var c = x.category || '';
+        if(cookbookCategory==='Mit Fleisch') return c==='Mit Fleisch'||c==='Fleisch';
+        return c===cookbookCategory;
+      });
+    }
 
     if(!filtered.length){
       box.className='';
@@ -21110,12 +21132,8 @@
     const sortPriceDesc = (a,b)=>(Number(b.price||0) - Number(a.price||0));
     const sortFn = cookbookSort==='alpha' ? sortAlpha : (cookbookSort==='priceAsc' ? sortPriceAsc : (cookbookSort==='priceDesc' ? sortPriceDesc : sortRecent));
 
-    const dishes = filtered.filter(x=>x.lastUsed);
-    const drafts = filtered.filter(x=>!x.lastUsed);
-    dishes.sort(sortFn);
-    drafts.sort(sortFn);
-
-    const list = cookbookTab === 'drafts' ? drafts : dishes;
+    filtered.sort(sortFn);
+    const list = filtered;
     if(selectedCookbookId && !list.some(function(e){ return String(e.id) === String(selectedCookbookId); })) selectedCookbookId = null;
     const formatDayLabel = (iso)=>{
       if(!iso) return 'Neu';
@@ -21161,7 +21179,7 @@
       if(box.nextSibling) scrollWrap.insertBefore(bestsellerWrap, box); else scrollWrap.appendChild(bestsellerWrap);
     }
     if(bestsellerWrap){
-      if(cookbookTab === 'dishes' && list.length > 0){
+      if(list.length > 0){
         var withRevenue = list.map(function(e){ return { entry: e, revenue: typeof getCookbookEntryRevenue === 'function' ? getCookbookEntryRevenue(e) : 0 }; });
         withRevenue.sort(function(a,b){ return b.revenue - a.revenue; });
         var top3 = withRevenue.slice(0, 3).map(function(x){ return x.entry; });
@@ -21179,14 +21197,14 @@
     if(!list.length){
       var bw = document.getElementById('cookbookBestsellerWrap');
       if(bw){ bw.style.display = 'none'; bw.innerHTML = ''; }
-      box.innerHTML = '<div class="cookbook-empty hint" style="grid-column:1/-1; text-align:center; padding:32px 16px; color:#64748b; font-size:15px;">In dieser Ansicht sind noch keine '+(cookbookTab==='drafts' ? 'Entwürfe' : 'Gerichte')+'.</div>';
+      box.innerHTML = '<div class="cookbook-empty hint" style="grid-column:1/-1; text-align:center; padding:32px 16px; color:#64748b; font-size:15px;">'+(cookbookCategory ? 'In dieser Kategorie sind noch keine Gerichte.' : 'In dieser Ansicht sind noch keine Gerichte.')+'</div>';
       selectedCookbookId = null;
       updateCookbookActionBar();
       wireCookbookActionBar();
       if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
       return;
     }
-    list.forEach(function(entry){ box.appendChild(buildItem(entry, cookbookTab==='drafts')); });
+    list.forEach(function(entry){ box.appendChild(buildItem(entry, !entry.lastUsed)); });
     updateCookbookActionBar();
     wireCookbookActionBar();
     if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);

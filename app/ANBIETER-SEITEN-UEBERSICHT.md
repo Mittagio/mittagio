@@ -92,9 +92,9 @@ Kurze Zusammenfassung jeder Ansicht im Anbieterbereich der Mittagio-App.
 
 ## 11. **Mein Kochbuch** (`v-provider-cookbook`)
 
-- **Zweck:** Alle Gerichte verwalten, durchsuchen, sortieren, neu anlegen.
-- **Inhalt:** Header „Mein Kochbuch“, Suchfeld, Sortierung (🕒/AZ/€↑/€↓). Dynamische Liste der Kochbuch-Gerichte (Karten mit Bild, Name, optional Pillars). „Gericht hinzufügen“-Button.
-- **Navigation:** Tab-Leiste; Gericht antippen → bearbeiten/inserieren.
+- **Zweck:** Alle Gerichte verwalten, nach Kategorie filtern, durchsuchen, sortieren, neu anlegen.
+- **Inhalt:** Header „Mein Kochbuch“ + Untertitel „Deine Umsatz-Könige“, Suchfeld, Sortierung (🕒/AZ/€↑/€↓). **Oben: Kategorie-Pills** (Alle, Vegetarisch, Vegan, Fisch, Mit Fleisch). Bestseller-Strip (horizontal), darunter 1-Spalte Karten. Sticky Bottom-Bar: Suche, Neues Gericht, Sortieren; bei Auswahl: Bearbeiten, Wochenplan, Auswählen.
+- **Navigation:** Bottom-Nav; Gericht antippen → Auswahl, dann Bearbeiten / Wochenplan / Auswählen (4,99‑€-Sheet).
 
 ---
 
