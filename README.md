@@ -65,3 +65,5 @@ Für echte Kartenzahlung im Checkout:
 4. **Deployment:** Site bei Netlify bauen (mit `npm install`), damit die Function `create-checkout-session` verfügbar ist.
 
 Ohne Konfiguration läuft der Checkout weiter im **Demo-Modus** (Bestätigungsdialog, keine echte Zahlung).
+
+<!-- Test-Commit -->
