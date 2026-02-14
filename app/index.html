@@ -22331,7 +22331,7 @@
         const btnGratis=document.createElement('button');
         btnGratis.type='button';
         btnGratis.style.cssText='width:100%; padding:16px; border-radius:24px; border:2px solid #10b981; background:rgba(16,185,129,0.08); color:#065f46; font-size:14px; font-weight:800; cursor:pointer;';
-        btnGratis.textContent='Oder gratis mit Abholnummer (0,89 €)';
+        btnGratis.textContent='Oder Gratis mit Abholnummer (0,89 €)';
         btnGratis.onclick=function(){ if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; } if(typeof haptic==='function') haptic(50); w.data.hasPickupCode=true; w.data.inseratFeeWaived=true; w.data.pricingOption='abholnummer'; var o=previewOfferFromWizard(); closeWizard(true); showPublishFeeModal(o); };
         actionSection.appendChild(btnGratis);
       } else {
