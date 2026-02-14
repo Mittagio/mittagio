@@ -1,0 +1,18 @@
+---
+description: Vor jeder Umsetzung: Nutzer nach dem Ziel-MD fragen.
+alwaysApply: true
+---
+
+# Implementierung – MD zuerst fragen
+
+## Regel
+
+**BEVOR du etwas umsetzt, musst du den Nutzer nach dem MD fragen, wo es hinkommt.**
+
+- Keine Änderungen am Code oder an Docs, ohne vorher zu fragen: „In welche MD-Datei soll das?“
+- Nutzer nennt die Datei (z. B. `docs/seiten/Inseratsflow.md` oder `docs/flows.md`).
+- Erst danach umsetzen.
+
+## Ausnahme
+
+- Reine Informationsfragen („Wo steht X?“) – keine Umsetzung nötig.

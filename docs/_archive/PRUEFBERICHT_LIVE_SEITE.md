@@ -1,7 +1,7 @@
 # Prüfbericht: Live-Seite vs. Prompts/Konzepte
 
 **URL:** https://mittagio.github.io/mittagio/app/  
-**Abgleich mit:** FAVORITEN_LAYOUT_REGEL.md, GERICHT_DETAILANSICHT_KONZEPT.md, INSERATSFLOW_KONZEPT.md, Layout-Regel Kunde/Anbieter
+**Abgleich mit:** FAVORITEN_LAYOUT_REGEL.md, GERICHT_DETAILANSICHT_KONZEPT.md, inseratsflow-ist-high-end-universal.mdc, Layout-Regel Kunde/Anbieter
 
 ---
 
@@ -57,7 +57,7 @@
 
 **Fazit:** Onboarding-Einstieg entspricht den Prompts.
 
-### 2.3 Inseratsflow (INSERATSFLOW_KONZEPT.md)
+### 2.3 Inseratsflow (inseratsflow-ist-high-end-universal.mdc)
 | Vorgabe | Erwartung | Live |
 |--------|-----------|------|
 | Fixkosten 4,99 € | Im Flow und Modal | ✅ „Inseratsgebühr: 4,99 €“, „Jetzt für 4,99 € inserieren“ / „Veröffentlichen“ |
@@ -100,4 +100,4 @@
 - **Anbieterseite:** Helles, einheitliches Layout; Onboarding-Einstieg (Sofort verkaufen, 4,99 €, „Was bieten Sie heute an?“); Inseratsflow (4,99 €, 0,89 €, Verdienst-Vorschau, CTA); Inserat-Erfolg (WhatsApp, QR, Bild, E-Mail-Vorschau); Billing; Admin; Single-Session-Hinweis – alles mit den Konzepten abgleichbar.
 - **Offene Punkte:** Nur Detail-Checks vor Ort (2×2-Grid Favoriten, 3 Säulen Gericht-Detail, Abholnummer #FFD700).
 
-*Prüfstand: Abgleich mit FAVORITEN_LAYOUT_REGEL.md, GERICHT_DETAILANSICHT_KONZEPT.md, INSERATSFLOW_KONZEPT.md und Layout-Regel Kunde/Anbieter.*
+*Prüfstand: Abgleich mit FAVORITEN_LAYOUT_REGEL.md, GERICHT_DETAILANSICHT_KONZEPT.md, inseratsflow-ist-high-end-universal.mdc und Layout-Regel Kunde/Anbieter.*

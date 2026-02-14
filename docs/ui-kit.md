@@ -8,7 +8,7 @@
 
 - **Premium-Gastronomie-App:** Karten-basiert, Glassmorphism wo passend, klare Hierarchie. **Keine** reinen Tabellen, keine trostlosen Listen oder Behörden-Formulare.
 - **Kunde:** Clean, modern; keine Schiefertafeln (außer ggf. eine Ausnahme Detailseite nach alter Spec – aktuell clean).
-- **Anbieter:** Helles, aufgeräumtes Layout; Inseratsflow mit Glassmorphism, Emerald, Gelb.
+- **Anbieter:** Helles, aufgeräumtes Layout; Inseratsflow: `.cursor/rules/inseratsflow-ist-high-end-universal.mdc`.
 
 ---
 
@@ -73,7 +73,7 @@ Zurück überall einheitlich: „Zurück“ + Chevron-Icon.
 
 - **Restaurant-Karte (Kunde):** Weißer Rahmen, quadratisches Bild; Gerichtname (z. B. Marker-Schrift), Anbietername darunter; Herz, Preis-Sticker, Teilen.
 - **Favoriten-Grid:** 2×2, gap 12px, homogene Höhe, border-radius 16px, Bild 1:1.
-- **Anbieter:** .prov-card, .prov-stats-grid; Glassmorphism im Inseratsflow.
+- **Anbieter:** .prov-card, .prov-stats-grid; Inseratsflow: Glassmorphism, Emerald, Gelb (siehe Regel).
 - **Listen:** Immer als Karten-Reihen mit Bild, Titel, Preis, Badges – nie als HTML-Tabellen.
 
 ---

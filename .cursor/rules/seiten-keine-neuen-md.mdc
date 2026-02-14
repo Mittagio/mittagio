@@ -1,0 +1,20 @@
+---
+description: Seiten-Dokumentation – keine neuen MD-Dateien. Jede Seite hat genau eine Datei.
+alwaysApply: false
+---
+
+# Seiten-Dokumentation – Regel
+
+## Verboten
+
+- **Keine neuen MD-Dateien** für App-Seiten anlegen.
+- Jede Seite hat **genau eine** Datei in `docs/seiten/`.
+
+## Erlaubt
+
+- Änderungen **nur** in bestehenden Dateien in `docs/seiten/`.
+- Übersicht: `docs/seiten/README.md`
+
+## Liste der Seiten-Dateien
+
+Entdecken, Gericht_Detail, Favoriten, Profil_Kunde, Abholnummer, Bestellungen, Warenkorb, Checkout, Bestell_Erfolg, Plan_Public, Provider_Detail_Public, Provider_Login, Provider_Onboarding, Provider_Dashboard, Provider_Abholungen, Provider_Wochenplan, Provider_Kochbuch, Provider_Profil, Provider_Billing, Rechtliches, Support, Inseratsauswahl, Inseratsflow, Admin, Version.

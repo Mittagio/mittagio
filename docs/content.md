@@ -26,7 +26,7 @@
 - **Favoriten-Header:** „Deine Favoriten für heute:“; Share rechts daneben.
 - **Gericht-Detail CTA:** „In die Mittagsbox legen“.
 - **Cart/Checkout:** „Abholnummer sichern“, „Zur Mittagsbox“, „Deine Mittagsbox ist noch leer“.
-- **Inseratsflow:** „Jetzt für 4,99 € einmalig inserieren“ (Option A); „Oder jetzt für 0,00 € inserieren (mit Abholnummer 0,89 €/Vorgang)“ (Option B); „Speichern“ (Kochbuch/Wochenplan).
+- **Inseratsflow:** Siehe `.cursor/rules/inseratsflow-ist-high-end-universal.mdc` – Texte dort.
 - **Recht:** Bezeichnungen exakt **AGB**, **Impressum**, **Datenschutz** – keine „Kurzfassung“, professioneller Ton.
 - **PWA-Tipp:** „Zum Startbildschirm hinzufügen“; Sheet „App auf dem Startbildschirm“ mit Anleitung (Teilen → Zum Startbildschirm hinzufügen).
 

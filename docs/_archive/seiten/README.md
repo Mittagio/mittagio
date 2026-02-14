@@ -31,7 +31,6 @@ Alte Layout-Dokumente sind durch diese Struktur abgelöst.
 | 9 | v-provider-pickups | [09_provider_abholungen.md](09_provider_abholungen.md) | Abholungen |
 | 10 | v-provider-week | [10_provider_wochenplan.md](10_provider_wochenplan.md) | Wochenplan |
 | 11 | v-provider-cookbook | [11_provider_kochbuch.md](11_provider_kochbuch.md) | Kochbuch |
-| 12 | (Wizard) | [12_provider_inseratsflow.md](12_provider_inseratsflow.md) | Inseratsflow (Gericht hinzufügen) |
 | 13 | v-provider-profile | [13_provider_profil.md](13_provider_profil.md) | Anbieter-Profil (Meins) |
 | 17 | v-provider-billing | [17_provider_billing.md](17_provider_billing.md) | Abrechnung / Guthaben |
 

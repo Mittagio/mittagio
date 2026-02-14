@@ -99,7 +99,7 @@ Nur im Modus **„Jetzt Inserieren“** (direkter Inserats-Flow) erscheinen am u
 
 ## 6. Abgrenzung zu bestehenden Docs
 
-- **INSERATSFLOW_KONZEPT.md** / **INSERATSFLOW_SPEC_2026.md**: Fixkosten 4,99 €, Verdienst-Vorschau, Live-Dashboard – bleiben gültig.  
+- Inseratsflow: Siehe `.cursor/rules/inseratsflow-ist-high-end-universal.mdc` (einzig verbindliche Quelle). Fixkosten 4,99 €, Verdienst-Vorschau.  
 - **Dieses Dokument**: Definiert die **einheitliche Eingabemaske**, das **Visuelle (Glassmorphism)**, die **Interaktion (Liquid Flow)** und die **Pricing-Weiche** als verbindliche Erweiterung/Präzisierung.
 
 ---

@@ -7093,7 +7093,7 @@
   <button type="button" onclick="closeAddressRequiredModal(); showProviderProfile(); setTimeout(function(){ if(typeof showProviderProfileSub==='function') showProviderProfileSub('business'); }, 100);" style="width:100%; min-height:48px; border-radius:14px; background:#1a1a1a; color:#fff; font-weight:800; font-size:15px; border:none; cursor:pointer;">Zu Meine Daten</button>
 </div>
 
-<!-- Inserat Live – Erfolgs- & Monitoring-Sheet (Schritt 5 nach Veröffentlichung) -->
+<!-- Inserat Live – Erfolgs-Sheet nach Veröffentlichung -->
 <div class="backdrop" id="inseratSuccessBd" onclick="closeInseratSuccessSheet()" style="background:rgba(0,0,0,0.7); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); z-index:1200;"></div>
 <div class="sheet" id="inseratSuccessSheet" style="max-width:480px; border-radius:32px; background:#f8f7f2; z-index:1201; display:flex; flex-direction:column; max-height:92vh;">
   <div id="confettiContainer" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; overflow:hidden;"></div>
@@ -14167,8 +14167,8 @@
       var fact = getSuccessFactForRenner(c, allOrders);
       card.innerHTML = '<img class="renner-card-img" src="'+(typeof esc==='function'?esc(imgUrl):String(imgUrl).replace(/"/g,'&quot;'))+'" alt=""><div class="renner-card-icons">'+icons+'</div><div class="renner-card-body"><div class="renner-card-name">'+(typeof esc==='function'?esc(c.dish||'Gericht'):String(c.dish||'Gericht').replace(/</g,'&lt;'))+'</div><div class="renner-card-fact">'+fact+'</div><button type="button" class="renner-card-btn">Heute anbieten</button></div>';
       var btn = card.querySelector('.renner-card-btn');
-      if(btn) btn.onclick = function(e){ e.stopPropagation(); if(typeof haptic==='function') haptic(8); closeCreateFlowSheet(); startListingFlow({ dishId: c.id, date: createFlowPreselectedDate || (typeof isoDate==='function'?isoDate(new Date()):'') }); };
-      card.onclick = function(e){ if(e.target===btn || btn.contains(e.target)) return; if(typeof haptic==='function') haptic(8); closeCreateFlowSheet(); startListingFlow({ dishId: c.id, date: createFlowPreselectedDate || (typeof isoDate==='function'?isoDate(new Date()):'') }); };
+      if(btn) btn.onclick = function(e){ e.stopPropagation(); if(typeof haptic==='function') haptic(8); closeCreateFlowSheet(); startListingFlow({ dishId: c.id, date: createFlowPreselectedDate || (typeof isoDate==='function'?isoDate(new Date()):''), entryPoint: 'dashboard' }); };
+      card.onclick = function(e){ if(e.target===btn || btn.contains(e.target)) return; if(typeof haptic==='function') haptic(8); closeCreateFlowSheet(); startListingFlow({ dishId: c.id, date: createFlowPreselectedDate || (typeof isoDate==='function'?isoDate(new Date()):''), entryPoint: 'dashboard' }); };
       scroll.appendChild(card);
     });
   }
@@ -14202,6 +14202,7 @@
     document.getElementById('createFlowBd').classList.remove('active');
     document.getElementById('createFlowSheet').classList.remove('active');
     createFlowPreselectedDate = null;
+    createFlowOriginView = 'dashboard';
   }
   
   // Create Flow Handlers - Beide öffnen Master-Flow
@@ -14217,9 +14218,10 @@
   const btnCreateNewDish = document.getElementById('btnCreateNewDish');
   if(btnCreateNewDish){
     btnCreateNewDish.onclick = () => {
+      const date = createFlowPreselectedDate;
+      const ep = createFlowOriginView || 'dashboard';
       closeCreateFlowSheet();
-      // Unified Flow: openDishFlow mit Datum
-      openDishFlow(createFlowPreselectedDate);
+      openDishFlow(date, ep);
     };
   }
   
@@ -17491,6 +17493,7 @@
 
   // --- Provider Dashboard (Home) - FINAL MVP ---
   let createFlowPreselectedDate = null; // Für Date-Preselect aus Today/Week
+  let createFlowOriginView = 'dashboard'; // 'dashboard' = Pricing-Weiche (4,99/Gratis) | 'week' = nur Emerald Speichern
   
   // Zeit-Tracker Animation
   function animateTimeTracker(element, startHours, startMinutes, endHours, endMinutes){
@@ -18059,7 +18062,7 @@
     
     // Leere-Karte CTA: Erstes Gericht für heute
     const btnFirstDishToday = document.getElementById('btnProviderFirstDishToday');
-    if(btnFirstDishToday) btnFirstDishToday.onclick = function(){ createFlowPreselectedDate = typeof isoDate === 'function' ? isoDate(new Date()) : null; if(typeof openCreateFlowSheet === 'function') openCreateFlowSheet(); };
+    if(btnFirstDishToday) btnFirstDishToday.onclick = function(){ createFlowPreselectedDate = typeof isoDate === 'function' ? isoDate(new Date()) : null; createFlowOriginView = 'dashboard'; if(typeof openCreateFlowSheet === 'function') openCreateFlowSheet(); };
     
     // Post-Onboarding Dashboard State (if just completed onboarding)
     const providerEmptyDashboard = document.getElementById('providerEmptyDashboard');
@@ -18257,7 +18260,7 @@
         '<div><div class="week-preview-empty-label">' + emptyLabel + '</div><div class="week-preview-empty-cta">JETZT NEUES GERICHT</div></div>' +
         '</div></div>';
       var btnEmpty = document.getElementById('btnProviderWeekEmptyTrigger');
-      if(btnEmpty) btnEmpty.onclick = function(){ if(typeof haptic === 'function') haptic(6); createFlowPreselectedDate = selectedDay; if(typeof openCreateFlowSheet === 'function') openCreateFlowSheet(); };
+      if(btnEmpty) btnEmpty.onclick = function(){ if(typeof haptic === 'function') haptic(6); createFlowPreselectedDate = selectedDay; createFlowOriginView = 'week'; if(typeof openCreateFlowSheet === 'function') openCreateFlowSheet(); };
       if(btnEmpty) btnEmpty.onkeydown = function(e){ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); btnEmpty.click(); } };
     }
     /* Haptik beim Einrasten (Snap-Carousel) – Dashboard-Wochenvorschau */
@@ -18606,7 +18609,7 @@
           empty.setAttribute('data-day', key);
           empty.setAttribute('aria-label', 'Gericht hinzufügen für ' + dayLabel + ', ' + dateLabel);
           empty.textContent = '+';
-          empty.onclick = (function(k){ return function(e){ e.preventDefault(); e.stopPropagation(); if(typeof haptic === 'function') haptic(6); weekPlanDay = k; createFlowPreselectedDate = k; if(typeof openCreateFlowSheet === 'function') openCreateFlowSheet(); }; })(key);
+          empty.onclick = (function(k){ return function(e){ e.preventDefault(); e.stopPropagation(); if(typeof haptic === 'function') haptic(6); weekPlanDay = k; createFlowPreselectedDate = k; createFlowOriginView = 'week'; if(typeof openCreateFlowSheet === 'function') openCreateFlowSheet(); }; })(key);
           slotsWrap.appendChild(empty);
         }
       }
@@ -18799,7 +18802,7 @@
       const btnWeekEmptyAdd = document.getElementById('btnWeekEmptyAdd');
       if(btnWeekEmptyAdd) btnWeekEmptyAdd.onclick = () => { if(typeof openWeekAddSheet === 'function') openWeekAddSheet(); };
       const btnWeekEmptyNew = document.getElementById('btnWeekEmptyNew');
-      if(btnWeekEmptyNew) btnWeekEmptyNew.onclick = () => { createFlowPreselectedDate = weekPlanDay; openCreateFlowSheet(); };
+      if(btnWeekEmptyNew) btnWeekEmptyNew.onclick = () => { createFlowPreselectedDate = weekPlanDay; createFlowOriginView = 'week'; openCreateFlowSheet(); };
       if(actionsBar) actionsBar.style.display = 'none';
       if(activateBlock) activateBlock.style.display = 'none';
       if(typeof lucide !== 'undefined') lucide.createIcons();
@@ -21385,15 +21388,9 @@
   /** entryPoint: 'dashboard' | 'cookbook' | 'week' – steuert Primär-/Sekundär-Buttons im Glass-Express (Action-Controller). */
   function openDishFlow(defaultDate = null, entryPoint = null){
     if(!provider || !provider.loggedIn){ if(typeof showToast === 'function') showToast('Bitte zuerst anmelden'); return; }
-    var ctx = { date: defaultDate || isoDate(new Date()) };
+    var ctx = { date: defaultDate || isoDate(new Date()), fromWeek: entryPoint === 'week' };
     if(entryPoint) ctx.entryPoint = entryPoint;
     startListingFlow(ctx);
-    return;
-    // Normalisiere Datum: null/undefined = Heute
-    const date = defaultDate || isoDate(new Date());
-    
-    // Öffne Master-Flow mit Datum
-    startListingFlow({date: date});
   }
   
   /**
@@ -21419,13 +21416,14 @@
       openQuickPostSheet(context.dishId, context.date || isoDate(new Date()));
       return;
     }
-    // Frage 5 A: Beim neuen Flow (nicht Bearbeiten) ggf. „Letzten Entwurf fortsetzen?“ anzeigen
+    // Entwurf-Wiederherstellung (nur Single-Page Inseratsflow – Schritt 0)
     if(!context.editOfferId){
       try {
         var draftStr = localStorage.getItem('wizard_draft');
         if(draftStr){
           var draft = JSON.parse(draftStr);
           if(draft && draft.kind === 'listing'){
+            if(draft.step !== 0){ draft.step = 0; localStorage.setItem('wizard_draft', JSON.stringify(draft)); }
             showDraftRestorePrompt(function(choice){
               if(choice === 'restore'){
                 draft.ctx = draft.ctx || {};
@@ -21433,6 +21431,7 @@
                 draft.ctx.date = context.date || draft.ctx.date;
                 draft.data = draft.data || {};
                 draft.data.day = context.date || draft.data.day || (typeof isoDate === 'function' ? isoDate(new Date()) : '');
+                draft.step = 0;
                 w = draft;
                 openWizard();
                 buildListingStep();
@@ -21979,18 +21978,12 @@
   // ============================================================
   function buildListingStep(){
     setWizardNextDefault();
-    if(wNextBtn && w.step!==0){ wNextBtn.classList.remove('listing-express-primary'); wNextBtn.style.background=''; wNextBtn.style.color=''; wNextBtn.style.fontWeight=''; }
+    w.step = 0; // Single-Page: immer Schritt 0
+    if(wNextBtn) wNextBtn.style.display = 'none';
     if(wBackBtn){
-      wBackBtn.onclick = () => {
-        if(w.step === 0) { closeWizard(); return; }
-        w.step -= 1;
-        rebuildWizard();
-      };
+      wBackBtn.onclick = () => { closeWizard(); return; };
     }
-    if(wNextBtn) wNextBtn.style.display = ''; // Weiter-Button sichtbar (Schritt 4 blendet ihn aus)
-    const total = 1; // Inseratsflow: nur ein Schritt (Single-Page)
-    const isSlimStep0 = (w.step === 0);
-    setWizardHeader('', isSlimStep0 ? '' : `Schritt ${Math.min(w.step+1,total)} von ${total}`);
+    setWizardHeader('', '');
     const profile = normalizeProviderProfile(provider.profile || {});
     // 3 Säulen + Abholzeiten: aus Profil übernehmen, wenn noch nicht gesetzt
     if(!w.data.pickupWindow) w.data.pickupWindow = profile.mealWindow || DEFAULT_MEAL_WINDOW;
@@ -21999,8 +21992,8 @@
     if(!w.data.reuse) w.data.reuse = { enabled: !!profile.reuseEnabledByDefault, deposit: 3 };
     else if(w.data.reuse.enabled === undefined) w.data.reuse.enabled = !!profile.reuseEnabledByDefault;
 
-    // Schritt 0: Master Inseratsflow – Reihenfolge Foto(1)→Name(2)→Beschreibung(3)→Kategorie(4)→Preis(5)→Logistik(6)→Allergene(7)→Extras(8)→Buttons(9)
-    if(w.step===0){
+    // Master Inseratsflow (Single-Page): Foto→Name→Beschreibung→Kategorie→Preis→Logistik→Allergene→Extras→Buttons
+    {
       setWizardQuestion('', '');
       const box=document.createElement('div');
       box.className='glass-express-step0 inserat-universal-mask inserat-master-flow';
@@ -22020,7 +22013,7 @@
       const dismissKeyboard = ()=>{ try { if(document.activeElement && document.activeElement.blur) document.activeElement.blur(); } catch(e){} };
       const hapticLight = ()=>{ try { if(typeof haptic==='function') haptic(8); else if(navigator.vibrate) navigator.vibrate(8); } catch(e){} };
 
-      // 1. FOTO-HEADER [cite: 2026-02-02]
+      // 1. FOTO
       const photoTile=document.createElement('div');
       photoTile.className='inserat-photo-tile';
       photoTile.style.cssText='width:100%; height:208px; background:rgba(0,0,0,0.06); overflow:hidden; cursor:pointer; position:relative;';
@@ -22037,7 +22030,7 @@
       const scrollArea=document.createElement('div');
       scrollArea.style.cssText='padding:24px; overflow-y:auto; max-height:70vh;';
 
-      // 2. GERICHTSNAME & 3. BESCHREIBUNG [cite: 2026-01-29]
+      // 2. GERICHTSNAME & 3. BESCHREIBUNG
       const stepName=document.createElement('div');
       stepName.id='step-name';
       stepName.style.cssText='margin-bottom:20px;';
@@ -22060,7 +22053,7 @@
       stepName.appendChild(inputDesc);
       scrollArea.appendChild(stepName);
 
-      // 4. KATEGORIE PILLS [cite: 2026-01-29] – Emerald aktiv
+      // 4. KATEGORIE PILLS
       const catLabels = ['Fleisch','Vegetarisch','Vegan','Salat'];
       const currentCat = w.data.category || 'Fleisch';
       if(!catLabels.includes(currentCat)) w.data.category = 'Fleisch';
@@ -22077,7 +22070,7 @@
       });
       scrollArea.appendChild(stepCat);
 
-      // 5. HAUPT-PREIS & VERDIENST-VORSCHAU (30x Emerald) [cite: 2026-01-29]
+      // 5. PREIS & VERDIENST (30x)
       const stepPrice=document.createElement('div');
       stepPrice.id='step-price';
       stepPrice.style.cssText='text-align:center; margin-bottom:24px; padding:16px 0;';
@@ -22105,7 +22098,7 @@
       stepPrice.appendChild(earningsEl);
       scrollArea.appendChild(stepPrice);
 
-      // 6. LOGISTIK-BAR (DEZENT) [cite: 2026-01-27] – 🍴 🧾 🔄 + 🕒
+      // 6. LOGISTIK-BAR: 🍴 🧾 🔄 + 🕒
       const stepLog=document.createElement('div');
       stepLog.id='step-logistics';
       stepLog.style.cssText='display:flex; align-items:center; justify-content:space-around; background:rgba(255,255,255,0.3); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,0.5); border-radius:24px; padding:16px; margin-bottom:24px; box-shadow:inset 0 1px 0 rgba(255,255,255,0.5);';
@@ -22154,7 +22147,7 @@
       }
       scrollArea.appendChild(stepLog);
 
-      // 7. ALLERGENE (COLLAPSIBLE) [cite: 2026-01-29]
+      // 7. ALLERGENE (collapsible)
       const stepAll=document.createElement('div');
       stepAll.id='step-allergens';
       stepAll.style.cssText='margin-bottom:24px;';
@@ -22182,7 +22175,7 @@
       }
       scrollArea.appendChild(stepAll);
 
-      // 8. EXTRAS (PILLS MIT PREIS) [cite: 2026-01-29]
+      // 8. EXTRAS (Pills mit Aufpreis)
       var defaultExtras = [{ name:'Beilagensalat', price:2.5 }, { name:'Mayo', price:0.5 }, { name:'Ketchup', price:0.5 }, { name:'Soße', price:1 }, { name:'Brot', price:1.5 }];
       if(!Array.isArray(w.data.extras)) w.data.extras=[];
       const stepExtras=document.createElement('div');
@@ -22234,7 +22227,7 @@
 
       box.appendChild(scrollArea);
 
-      // 9. ACTION BUTTONS [cite: 2026-01-29]
+      // 9. ACTION BUTTONS
       var entryPoint = (w.ctx && w.ctx.entryPoint) || 'dashboard';
       var isInserierenRoute = (entryPoint === 'dashboard');
       var hasDish = !!(w.data.dish && String(w.data.dish).trim());

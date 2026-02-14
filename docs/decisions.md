@@ -23,9 +23,7 @@
 
 ## 3. Inseratsflow
 
-- **Eine** universelle Eingabemaske („Salatsoße“) für Dashboard, Kochbuch und Wochenplan.
-- **Pricing-Weiche** nur im Modus „Jetzt Inserieren“: Option A (4,99 €) vs. Option B (0,00 € + Abholnummer 0,89 €/Vorgang). In Kochbuch/Wochenplan nur „Speichern“, keine Weiche.
-- Reihenfolge: Gerichtsname → Kategorie → Beschreibung → Preis → Allergene → Foto → 4 Smart-Icons (🕒 🍴 🔄 🧾).
+- **Einzige Quelle:** `.cursor/rules/inseratsflow-ist-high-end-universal.mdc` – Layout, Reihenfolge, Pricing-Weiche, Logik.
 
 ---
 

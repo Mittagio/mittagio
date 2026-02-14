@@ -190,33 +190,9 @@ Häufig verwendete Befehle:
 
 ---
 
-## 🚀 No-Limits Inseratsflow (Keine Mengenangaben)
+## 🚀 Inseratsflow
 
-```
-Überarbeite den Inseratsflow für Anbieter – Hauptregel: Keine Mengenangaben!
-
-1. UI-Reduzierung:
-   - Entferne alle Input-Felder für Mengen, Portionen oder Stückzahlen aus dem CreateListing-Formular
-   - Der Status eines Gerichts ist standardmäßig verfügbar (active=true)
-
-2. Einfache Bestands-Logik:
-   - Implementiere im Anbieter-Dashboard einen prominenten Toggle-Switch oder Button für jedes aktive Inserat: 'Noch da' / 'Ausverkauft'
-   - Sobald der Metzger auf 'Ausverkauft' klickt, verschwindet das Gericht sofort aus dem Tinder-Feed der Kunden (active=false)
-   - Toggle-Button: Rot (#E34D4D) für "Ausverkauft", Grün (#4caf50) für "Wieder verfügbar"
-   - Toast-Feedback: "Als ausverkauft markiert" / "Wieder verfügbar"
-
-3. KI-Anpassung:
-   - Stelle sicher, dass die GPT-4o Vision Integration nur Name, Preis, Beschreibung und Allergene generiert – keine Mengenschätzungen
-   - Prompt: "KEINE Mengenschätzungen oder Kalorien"
-
-4. Code-Bereinigung:
-   - Entferne availableCount aus normalizeOffer() und seededInfo()
-   - Entferne availableCount-Anzeige aus Card-Views
-   - Entferne "Fast weg" Badge-Logik (isAlmostSoldOut)
-
-5. Filterung:
-   - Sicherstellen, dass active=false Gerichte aus Feed verschwinden (bereits implementiert: filter(o => o.active !== false))
-```
+**Einzige Quelle:** `.cursor/rules/inseratsflow-ist-high-end-universal.mdc` – Layout + Logik. Keine separaten Flow-Prompts.
 
 ---
 

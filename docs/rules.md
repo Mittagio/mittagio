@@ -8,7 +8,7 @@
 
 ## Source of Truth (verbindlich)
 
-**Nur diese 6 Dateien sind Source of Truth für die PWA-Dokumentation. Keine neuen MD-Dateien anlegen.**
+**Source of Truth:** 6 Dateien unter `docs/` + `docs/seiten/*.md` für Seiten. **Keine neuen MD für Seiten** (siehe `docs/seiten/README.md`).
 
 - `docs/architecture.md`
 - `docs/flows.md`
@@ -17,7 +17,9 @@
 - `docs/rules.md`
 - `docs/decisions.md`
 
-Cursor soll künftig nur noch diese 6 Dateien als Kontext nutzen. Alle weiteren Markdown-Dokumente liegen in `docs/_archive/` und werden nicht referenziert.
+- `docs/seiten/` – eine MD pro App-Seite (Übersicht: `docs/seiten/README.md`). **Keine neuen MD für Seiten.**
+
+Cursor nutzt diese Dateien als Kontext. Archiv: `docs/_archive/`.
 
 ---
 
@@ -44,7 +46,7 @@ Cursor soll künftig nur noch diese 6 Dateien als Kontext nutzen. Alle weiteren 
 
 ## 3. Inseratsflow
 
-- Der Inseratsflow ist **ausschließlich** der High-End Universal-Flow („Salatsoße“). Eine universelle Maske in allen Modi; Pricing-Weiche nur bei „Jetzt Inserieren“ (Option A 4,99 € / Option B 0,00 € mit Abholnummer). Kochbuch/Wochenplan: nur „Speichern“. Terminologie: nur **Abholnummer**. Design: Glassmorphism, Emerald, Gelb #FACC15. Keine Rückkehr zu mehreren Flows oder alter Weiche-Logik.
+- **Einzige Quelle:** `.cursor/rules/inseratsflow-ist-high-end-universal.mdc`. Umsetzung: `buildListingStep()` in `app/index.html`.
 
 ---
 
@@ -62,4 +64,4 @@ Cursor soll künftig nur noch diese 6 Dateien als Kontext nutzen. Alle weiteren 
 
 ---
 
-*Technische Details: `.cursor/rules/*.mdc`. **Inseratsflow (einzige verbindliche Quelle):** `inseratsflow-ist-high-end-universal.mdc` – DAS IST DER INSERATSFLOW. Weitere: option1-layout-scope, layout-kunde-anbieter, layout-fix-anbieter-nur-wrapper, silent-defaults, app-high-end-keine-tabellen.*
+*Technische Details: `.cursor/rules/*.mdc`. **Inseratsflow:** `inseratsflow-ist-high-end-universal.mdc`. **Seiten:** `seiten-keine-neuen-md.mdc` – keine neuen MD für Seiten. Weitere: option1-layout-scope, layout-kunde-anbieter, layout-fix-anbieter-nur-wrapper, silent-defaults, app-high-end-keine-tabellen.*

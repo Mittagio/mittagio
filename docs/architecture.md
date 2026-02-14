@@ -7,7 +7,7 @@
 ## 1. Projektstruktur
 
 - **App-Code (SPA):** Einziger Ort ist `app/` – `index.html`, `manifest.json`, `assets/`, ggf. `sw.js`.
-- **Dokumentation:** Nur die 6 Dateien unter `docs/` sind Source of Truth (siehe `docs/rules.md`). Keine neuen MDs anlegen.
+- **Dokumentation:** `docs/` (6 Kern-Dateien) + `docs/seiten/*.md` (eine pro Seite). Keine neuen MD für Seiten (siehe `docs/seiten/README.md`).
 - **Cursor-Regeln:** `.cursor/rules/*.mdc` – technische/layout-spezifische Regeln (Layout-Scope, Silent Defaults, Inseratsflow, High-End).
 - **Arbeitspfad:** Einziger gültiger Projektpfad: `C:\Users\quach\Documents\GitHub\mittagio`. Alle Befehle und Git-Operationen nur dort.
 

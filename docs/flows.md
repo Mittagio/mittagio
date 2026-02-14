@@ -4,51 +4,11 @@
 
 ---
 
-## 1. Inseratsflow (High-End Universal – „Salatsoße“)
+## 1. Inseratsflow
 
-**Verbindliche Definition:** `.cursor/rules/inseratsflow-ist-high-end-universal.mdc` – **DAS IST DER INSERATSFLOW.** Single-Page, eine Maske, keine Schritte 1–4.
+**Einzig verbindliche Quelle:** `.cursor/rules/inseratsflow-ist-high-end-universal.mdc`
 
-Der Inseratsflow ist **eine** universelle Eingabemaske in allen Modi (Dashboard/Meine Küche, Kochbuch, Wochenplan). Es gibt keinen anderen Inseratsflow.
-
-### Visuelles Fundament
-
-- Schwebendes Haupt-Panel mit starkem Weichzeichner (`backdrop-blur`), weiße ~70 % Overlays, feine Lichtkanten.
-- Akzente: Emerald #10b981 für aktive Zustände, **Gelb #FACC15** für „Jetzt für 4,99 € inserieren“.
-- Terminologie: Nur **Abholnummer** – nie „Ticket“ oder „Code“.
-
-### Master-Reihenfolge der Maske (Liquid UI, High-End Architect)
-
-1. **Marketing-Headline:** „Dein Gericht – in unter 30 Sekunden live“ (dezent, App-Feel).
-2. **Bild-Modul:** Ganz oben. Kamera / Galerie; Copy „Zeig deinen Gästen, was sie erwartet“. Nach Upload → Auto-Filter. Glassmorphism (bg-white/70, border-white/40, backdrop-blur).
-3. **3 Säulen direkt unter dem Bild:** 🍴 Vor Ort, 🔄 Mehrweg, 🧾 Abholnummer (große Glas-Kacheln, Emerald wenn aktiv). 🕒 Abholzeiten klickbar.
-4. **Gerichtsname:** Intelligente Autovervollständigung (triggert Kategorien/Allergene); Platzhalter z. B. „Was kochst du heute?“.
-5. **Kategorie-Pills:** Große Chips (Mit Fleisch, Vegetarisch, Vegan, Salat), horizontal scrollbar.
-6. **Beschreibung:** Optional.
-7. **Allergene:** Collapsible (Pills); eingeklappt dezente Zeile „Allergene: A, G“.
-8. **Preis:** Großes Feld, `inputmode="decimal"`; Platzhalter „Was nimmst du dafür? z.B. 8,50 €“. Enter → Tastatur zu, Scroll zu Verdienst/Weiche.
-9. **Extras mit Aufpreis:** Optional, z. B. „Beilage +1,00 €“ (`w.data.extrasLabel`).
-10. **Verdienst-Vorschau:** „Bei ~30 Abnahmen: ca. X €“ (30 × Preis), live bei Preiseingabe, Emerald-Box.
-11. **Pricing-Weiche** (nur Modus „Jetzt Inserieren“):
-    - **Option A (Gelb #FACC15):** „Jetzt für 4,99 € einmalig inserieren“ → direkt Publish-Fee-Modal.
-    - **Option B (Glas, Emerald-Rahmen):** „Oder jetzt für 0,00 € inserieren (mit Abholnummer 0,89 €/Vorgang)“ → direkt Publish-Modal.
-12. **Kochbuch/Wochenplan:** Nur Emerald „Speichern“ + „Stattdessen jetzt für 4,99 € inserieren“.
-
-### Design (The High-End Look)
-
-- Keine Schiefertafeln; Glassmorphism: `backdrop-filter:blur(24px)`, `background:rgba(255,255,255,0.72)`, `border:1px solid rgba(255,255,255,0.45)`, weiche Schatten.
-- Farben: Emerald #10b981 (Erfolg/Aktiv), Signal-Gelb #FACC15 (Inserieren-CTA).
-- Terminologie: ausschließlich **Abholnummer** (niemals Ticket oder Abholcode).
-
-### Interaktions-Gesetze
-
-- **Auto-Scroll:** Nach Preis-Enter sanft zu Verdienst-Vorschau / Pricing-Weiche.
-- **Tastatur:** Nach Auswahl (Gericht, Kategorie) oder Enter sofort schließen (`blur`).
-- **Haptik:** Jede Aktion kurze Vibration (`navigator.vibrate` / `haptic()`).
-
-### Technik
-
-- Eine Maske, **nur ein Schritt** in `buildListingStep()`. Option A und B führen direkt in `showPublishFeeModal(previewOfferFromWizard())`.
-- Verdienst-Vorschau: `box.querySelector('.inserat-umsatz-vorschau')` wird bei `inputPrice.oninput` live aktualisiert (30 × Preis).
+Layout + Logik: `app/index.html` → `buildListingStep()` (Single-Page). Keine weiteren Flow-Docs.
 
 ---
 
@@ -99,13 +59,7 @@ Der Inseratsflow ist **eine** universelle Eingabemaske in allen Modi (Dashboard/
 
 ---
 
-## System-Prompt Referenz: „Mittagio High-End Architect“
+## System-Prompt Referenz
 
-Für Agenten (z. B. Custom Gem): Rolle = Chef-Architekt für Mittagio. Ziel = High-End-App-Feel (Liquid UI), im Gastro-Alltag intuitiv, Ästhetik (Glassmorphism), Geschwindigkeit, Haptik.
-
-- **Design:** Keine Schiefertafeln; `backdrop-blur`, `bg-white/70`, `border-white/40`, weiche Schatten; Emerald #10b981, Gelb #FACC15; 3 Icons 🍴 🔄 🧾 immer direkt unter dem Bild.
-- **Liquid Inserat-Flow:** &lt; 30 Sekunden; Bild → Gerichtsname (Autovervollständigung) → Kategorie-Pills → Allergene (collapsible) → Preis (Zahlentastatur) → Extras optional → Verdienst-Vorschau (30 × Preis) → Pricing-Weiche (4,99 € / 0,00 € + Abholnummer 0,89 €).
-- **Wording:** Nur „Abholnummer“, nie „Ticket“ oder „Abholcode“.
-- **Interaktion:** Auto-Scroll zum nächsten Feld; Tastatur nach Auswahl/Enter schließen; Haptik bei jeder Aktion.
-
-*Umsetzung: `app/index.html` – u. a. `buildListingStep()`, `openOffer`, Favoriten-View `v-fav`, `#favDishes`, `.fav-grid-card`.*
+- **Design:** Keine Schiefertafeln; Glassmorphism, Emerald, Gelb; 3 Icons 🍴 🔄 🧾. Wording: nur „Abholnummer“.
+- **Inseratsflow:** Siehe `.cursor/rules/inseratsflow-ist-high-end-universal.mdc` – eine Quelle, keine Duplikate.

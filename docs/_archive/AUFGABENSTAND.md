@@ -14,7 +14,7 @@
 - GPS-Integration (Standort, Anzeige)
 - Code-Robustheit: `getDayName`, `btnSwipeToList` abgesichert
 - Dokumentation: `docs/seiten/` mit README und Seiten-Konzepten (01–18)
-- Master-Specs: INSERATSFLOW_MASTER_V2, GERICHT_DETAILANSICHT, FAVORITENSEITE_MASTER
+- Master-Specs: inseratsflow-ist-high-end-universal.mdc, GERICHT_DETAILANSICHT, FAVORITENSEITE_MASTER
 
 ---
 
