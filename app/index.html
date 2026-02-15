@@ -940,11 +940,10 @@
     #v-provider-cookbook .cookbook-action-bar{ max-width:500px; margin:0 auto; box-sizing:border-box; }
     #v-provider-cookbook .cookbook-bar-btn{ min-height:52px; border-radius:20px; font-size:10px; font-weight:800; letter-spacing:0.06em; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; border:none; transition:transform 0.12s; flex:1; min-width:0; }
     #v-provider-cookbook .cookbook-bar-btn:active{ transform:scale(0.97); }
-    /* Kochbuch Magazin-Karte: Hochglanz (hover/tap wie motion.div) */
-    #v-provider-cookbook .cookbook-magazine-card{ transition:transform 0.2s ease, box-shadow 0.2s ease; }
-    #v-provider-cookbook .cookbook-magazine-card:hover{ transform:scale(1.02); box-shadow:0 24px 48px rgba(0,0,0,0.15); }
-    #v-provider-cookbook .cookbook-magazine-card:active{ transform:scale(0.98); }
-    #v-provider-cookbook .cookbook-magazine-card:hover .cookbook-magazine-img{ transform:scale(1.05); }
+    /* Kochbuch Magazin-Karte: feste Größe wie Magazin – keine Größenänderung beim Swipen/Blättern */
+    #v-provider-cookbook .cookbook-magazine-card{ transition:box-shadow 0.2s ease; }
+    #v-provider-cookbook .cookbook-magazine-card:hover{ box-shadow:0 24px 48px rgba(0,0,0,0.15); }
+    #v-provider-cookbook .cookbook-magazine-card:active{ box-shadow:0 20px 40px rgba(0,0,0,0.12); }
     #v-provider-cookbook .cookbook-bar-secondary{ background:rgba(255,255,255,0.5); color:#475569; border:2px solid rgba(255,255,255,0.6); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); }
     #v-provider-cookbook .cookbook-bar-primary{ background:#FACC15; color:#1a1a1a; box-shadow:0 4px 16px rgba(250,204,21,0.4); }
     /* Kochbuch: Kategorie-Pills wie Kundenseite (Discover) – kleiner, einheitliches Layout */
@@ -21973,7 +21972,7 @@
         magazineEl.addEventListener('touchend', function(e){
           var card = e.target && e.target.closest ? e.target.closest('.cookbook-magazine-card') : null;
           if(!card || e.target.closest('.cookbook-magazine-nav')) return;
-          e.preventDefault();
+          if(e.cancelable) e.preventDefault();
           var id = card.getAttribute('data-cookbook-entry-id');
           if(!id) return;
           var entry = (typeof cookbook !== 'undefined' && cookbook) ? cookbook.find(function(c){ return String(c.id) === String(id); }) : null;
@@ -21996,7 +21995,7 @@
       var orderCount = typeof getCookbookEntryOrderCount === 'function' ? getCookbookEntryOrderCount(entry) : 0;
       var qtyStr = orderCount > 0 ? orderCount + ' Portionen' : '–';
       var imgHtml = entry.photoData ? '<img src="'+esc(entry.photoData)+'" alt="" style="width:100%; height:100%; object-fit:cover; transition:transform 0.7s ease;" class="cookbook-magazine-img" />' : '<div style="width:100%; height:100%; background:#e5e7eb; display:flex; align-items:center; justify-content:center;"></div>';
-      magazineEl.innerHTML = '<div class="cookbook-magazine-card" role="button" tabindex="0" style="width:88%; max-width:400px; background:#fff; border:1px solid rgba(255,255,255,0.5); border-radius:40px; box-shadow:0 20px 40px rgba(0,0,0,0.12); overflow:hidden; display:flex; flex-direction:column; cursor:pointer; position:relative; z-index:2; touch-action:manipulation;">'+
+      magazineEl.innerHTML = '<div class="cookbook-magazine-card" role="button" tabindex="0" style="width:88%; max-width:400px; background:#fff; border:1px solid rgba(255,255,255,0.5); border-radius:40px; box-shadow:0 20px 40px rgba(0,0,0,0.12); overflow:hidden; display:flex; flex-direction:column; cursor:pointer; position:relative; z-index:2; touch-action:none;">'+
         '<div class="cookbook-magazine-gloss" style="position:absolute; inset:0; pointer-events:none; z-index:1; background:linear-gradient(to top right, rgba(255,255,255,0.12) 0%, transparent 50%, rgba(255,255,255,0.06) 100%);"></div>'+
         '<div style="height:60%; min-height:200px; overflow:hidden; position:relative;">'+
         imgHtml+
@@ -22027,7 +22026,7 @@
         cardEl.onclick = function(e){ e.stopPropagation(); openDetail(e); };
         cardEl.onkeydown = function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); openDetail(e); } };
         cardEl.addEventListener('touchend', function(e){
-          e.preventDefault();
+          if(e.cancelable) e.preventDefault();
           e.stopPropagation();
           openDetail(null);
         }, { passive: false });
@@ -22036,7 +22035,7 @@
       magazineEl.addEventListener('touchend', function(e){
         if(e.target.closest('.cookbook-magazine-nav')) return;
         if(e.target.closest('.cookbook-magazine-card') || e.target === magazineEl){
-          e.preventDefault();
+          if(e.cancelable) e.preventDefault();
           openDetail(e);
         }
       }, { passive: false });
