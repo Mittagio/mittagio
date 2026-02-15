@@ -937,10 +937,10 @@
     .tabrow .ans{font-size:12px; padding:8px 10px}
     /* Kochbuch: MASTER-SPEC MagazinKochbuch – nur Pills, Magazin-Karte, Action-Bar (siehe docs/KOCHBUCH_KONZEPT.md) */
     #v-provider-cookbook .cookbook-action-bar{ max-width:500px; margin:0 auto; box-sizing:border-box; }
-    #v-provider-cookbook .cookbook-bar-btn{ min-height:52px; border-radius:20px; font-size:13px; font-weight:700; display:inline-flex; align-items:center; justify-content:center; gap:8px; cursor:pointer; border:none; transition:transform 0.12s; flex:1; min-width:0; }
+    #v-provider-cookbook .cookbook-bar-btn{ min-height:52px; border-radius:20px; font-size:10px; font-weight:800; letter-spacing:0.06em; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; border:none; transition:transform 0.12s; flex:1; min-width:0; }
     #v-provider-cookbook .cookbook-bar-btn:active{ transform:scale(0.97); }
     #v-provider-cookbook .cookbook-bar-secondary{ background:rgba(255,255,255,0.5); color:#475569; border:2px solid rgba(255,255,255,0.6); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); }
-    #v-provider-cookbook .cookbook-bar-primary{ background:#FACC15; color:#1a1a1a; font-size:14px; font-weight:800; box-shadow:0 4px 16px rgba(250,204,21,0.4); }
+    #v-provider-cookbook .cookbook-bar-primary{ background:#FACC15; color:#1a1a1a; box-shadow:0 4px 16px rgba(250,204,21,0.4); }
     /* Kochbuch: Kategorie-Pills wie Kundenseite (Discover) – kleiner, einheitliches Layout */
     #v-provider-cookbook .cookbook-category-pills{ display:flex; gap:10px; overflow-x:auto; padding:8px 16px 12px; -webkit-overflow-scrolling:touch; scrollbar-width:none; scroll-snap-type:x mandatory; }
     #v-provider-cookbook .cookbook-category-pills::-webkit-scrollbar{ display:none; }
@@ -6467,12 +6467,12 @@
         </div>
       </div>
 
-      <!-- Bottom Action Bar (app-like): Bearbeiten | Wochenplan | Auswählen -->
+      <!-- Bottom Action Bar (Konzept): BEARBEITEN | WOCHENPLAN | AUSWÄHLEN -->
       <div id="cookbookActionBar" class="cookbook-action-bar" style="position:fixed; bottom:calc(112px + env(safe-area-inset-bottom, 20px)); left:0; right:0; padding:12px 20px; z-index:40;">
         <div id="cookbookBarDefault" style="display:flex; align-items:center; gap:10px; width:100%; max-width:500px; margin:0 auto; background:rgba(255,255,255,0.7); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border-radius:2rem; padding:12px; box-shadow:0 8px 32px rgba(0,0,0,0.08); border:1px solid rgba(255,255,255,0.5);">
-          <button type="button" id="cookbookBarEdit" class="cookbook-bar-btn cookbook-bar-secondary" style="flex:1; min-height:52px; border-radius:20px; gap:8px;"><i data-lucide="pencil" style="width:18px;height:18px;"></i><span>Bearbeiten</span></button>
-          <button type="button" id="cookbookBarWeek" class="cookbook-bar-btn cookbook-bar-secondary" style="flex:1; min-height:52px; border-radius:20px; gap:8px;"><i data-lucide="calendar" style="width:18px;height:18px;"></i><span>Wochenplan</span></button>
-          <button type="button" id="cookbookBarLive" class="cookbook-bar-btn cookbook-bar-primary" style="flex:1.8; min-height:52px; border-radius:20px; gap:8px;"><i data-lucide="zap" style="width:18px;height:18px;"></i><span>Auswählen</span></button>
+          <button type="button" id="cookbookBarEdit" class="cookbook-bar-btn cookbook-bar-secondary" style="flex:1; min-height:52px; border-radius:20px; font-size:10px; font-weight:800; letter-spacing:0.08em;">BEARBEITEN</button>
+          <button type="button" id="cookbookBarWeek" class="cookbook-bar-btn cookbook-bar-secondary" style="flex:1; min-height:52px; border-radius:20px; font-size:10px; font-weight:800; letter-spacing:0.08em;">WOCHENPLAN</button>
+          <button type="button" id="cookbookBarLive" class="cookbook-bar-btn cookbook-bar-primary" style="flex:1.8; min-height:52px; border-radius:20px; font-size:10px; font-weight:800; letter-spacing:0.12em;">AUSWÄHLEN</button>
         </div>
       </div>
     </section>
