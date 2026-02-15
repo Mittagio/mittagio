@@ -6441,11 +6441,23 @@
     <section class="view" id="v-provider-cookbook" style="background:linear-gradient(180deg, rgba(254,243,199,0.2) 0%, #F5F5F7 30%);">
       <header class="prov-page-header" id="v-provider-cookbook-header">
         <div class="prov-page-header-row">
-          <div class="prov-page-header-left">
-            <div class="prov-page-header-icon">
-              <i data-lucide="book-open" style="width:24px; height:24px;"></i>
+          <div class="prov-page-header-left" style="flex:1; min-width:0;">
+            <div id="cookbookTitleWrap" style="display:flex; align-items:center; gap:12px; min-width:0;">
+              <div class="prov-page-header-icon">
+                <i data-lucide="book-open" style="width:24px; height:24px;"></i>
+              </div>
+              <h1 class="prov-page-header-title" id="cookbookHeaderTitle">Mein Kochbuch</h1>
             </div>
-            <h1 class="prov-page-header-title">Mein Kochbuch</h1>
+            <div id="cookbookSearchWrap" style="display:none; flex:1; min-width:0;">
+              <input type="text" id="cookbookSearchInput" placeholder="Gericht suchen…" style="width:100%; height:40px; border-radius:12px; border:2px solid #e2e8f0; padding:0 14px; font-size:14px; font-weight:500; outline:none; box-sizing:border-box;" />
+            </div>
+          </div>
+          <div class="prov-page-header-right" style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
+            <button type="button" id="cookbookBtnSearch" aria-label="Suchen" class="cookbook-header-btn" style="width:40px; height:40px; border-radius:50%; border:none; background:#F5F5F7; display:flex; align-items:center; justify-content:center; font-size:18px; cursor:pointer;">🔍</button>
+            <div style="position:relative;">
+              <button type="button" id="cookbookBtnSort" aria-label="Sortierung" class="cookbook-header-btn" style="width:40px; height:40px; border-radius:50%; border:none; background:#F5F5F7; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:700; cursor:pointer;">⇅</button>
+              <div id="cookbookSortDropdown" style="display:none; position:absolute; right:0; top:100%; margin-top:6px; width:200px; background:#fff; border-radius:16px; box-shadow:0 10px 40px rgba(0,0,0,0.12); border:1px solid rgba(0,0,0,0.06); padding:6px; z-index:100;"></div>
+            </div>
           </div>
         </div>
         <div class="cookbook-category-pills" id="cookbookCategoryPills" role="tablist" aria-label="Kategorie filter"></div>
@@ -8897,6 +8909,10 @@
   let cookbookCategory = 'Alle'; // Konzept: Alle | Fleisch | Eintopf | Snack | Vegetarisch (docs/KOCHBUCH_KONZEPT.md)
   let cookbookMagazineIndex = 0; // aktuell angezeigte Magazin-Karte (filtered[cookbookMagazineIndex])
   let selectedCookbookId = null; // wird auf aktuelle Magazin-Karte gesetzt (für BEARBEITEN/WOCHENPLAN/AUSWÄHLEN)
+  let cookbookSortBy = 'date'; // 'date' | 'quantity' | 'price' | 'name'
+  let cookbookShowSortMenu = false;
+  let cookbookSearchTerm = '';
+  let cookbookIsSearching = false;
   let weekPlanDay = isoDate(new Date());
   let weekPlanMode = 'overview'; // 'overview' | 'edit' – Zwei-Phasen: Ansehen vs. Bearbeiten (app-first, Sofa)
   let weekPlanKWIndex = 0; // 0 = aktuelle KW, 1 = nächste, … (KW-Board)
@@ -21640,6 +21656,42 @@
     const scrollWrap = document.getElementById('cookbookScrollWrap');
     if(!pillsWrap) return;
 
+    (function wireCookbookHeader(){
+      var titleWrap = document.getElementById('cookbookTitleWrap');
+      var searchWrap = document.getElementById('cookbookSearchWrap');
+      var searchInput = document.getElementById('cookbookSearchInput');
+      var btnSearch = document.getElementById('cookbookBtnSearch');
+      var btnSort = document.getElementById('cookbookBtnSort');
+      var sortDropdown = document.getElementById('cookbookSortDropdown');
+      if(titleWrap) titleWrap.style.display = cookbookIsSearching ? 'none' : 'flex';
+      if(searchWrap) searchWrap.style.display = cookbookIsSearching ? 'flex' : 'none';
+      if(searchInput) searchInput.value = cookbookSearchTerm;
+      if(btnSort){
+        btnSort.style.background = cookbookShowSortMenu ? '#007AFF' : '#F5F5F7';
+        btnSort.style.color = cookbookShowSortMenu ? '#fff' : '';
+        btnSort.onclick = function(e){ e.stopPropagation(); if(typeof haptic==='function') haptic(6); cookbookShowSortMenu = !cookbookShowSortMenu; renderCookbook(); if(cookbookShowSortMenu) setTimeout(function(){ document.addEventListener('click', function closeSort(){ cookbookShowSortMenu = false; document.removeEventListener('click', closeSort); renderCookbook(); }); }, 0); };
+      }
+      if(sortDropdown){
+        sortDropdown.style.display = cookbookShowSortMenu ? 'block' : 'none';
+        var opts = [{ id: 'date', label: 'Neueste zuerst' }, { id: 'quantity', label: 'Meistverkauft' }, { id: 'price', label: 'Höchster Preis' }, { id: 'name', label: 'Alphabetisch' }];
+        sortDropdown.innerHTML = opts.map(function(opt){
+          var active = cookbookSortBy === opt.id;
+          return '<button type="button" class="cookbook-sort-opt' + (active ? ' active' : '') + '" data-sort="' + opt.id + '" style="width:100%; text-align:left; padding:12px 14px; border:none; border-radius:12px; font-size:14px; font-weight:700; cursor:pointer; background:' + (active ? 'rgba(0,122,255,0.1)' : 'transparent') + '; color:' + (active ? '#007AFF' : '#1a1a1a') + ';">' + opt.label + '</button>';
+        }).join('');
+        sortDropdown.querySelectorAll('.cookbook-sort-opt').forEach(function(btn){
+          btn.onclick = function(e){ e.stopPropagation(); if(typeof haptic==='function') haptic(6); cookbookSortBy = this.getAttribute('data-sort') || 'date'; cookbookShowSortMenu = false; cookbookMagazineIndex = 0; renderCookbook(); };
+        });
+      }
+      if(btnSearch){
+        btnSearch.textContent = cookbookIsSearching ? '✕' : '🔍';
+        btnSearch.onclick = function(){ if(typeof haptic==='function') haptic(6); cookbookIsSearching = !cookbookIsSearching; if(!cookbookIsSearching) cookbookSearchTerm = ''; renderCookbook(); if(cookbookIsSearching && searchInput) setTimeout(function(){ searchInput.focus(); }, 50); };
+      }
+      if(searchInput){
+        searchInput.oninput = function(){ cookbookSearchTerm = this.value; cookbookMagazineIndex = 0; renderCookbook(); };
+        searchInput.onkeydown = function(e){ if(e.key === 'Escape'){ cookbookIsSearching = false; cookbookSearchTerm = ''; renderCookbook(); } };
+      }
+    })();
+
     let updated = false;
     cookbook = cookbook.map(entry=>{
       const out = {...entry};
@@ -21672,7 +21724,16 @@
         return c===cookbookCategory;
       });
     }
-    filtered.sort(function(a,b){ return (b.lastUsed||b.createdAt) - (a.lastUsed||a.createdAt); });
+    if((cookbookSearchTerm||'').trim()){
+      filtered = filtered.filter(function(e){ return (e.dish||'').toLowerCase().indexOf((cookbookSearchTerm||'').trim().toLowerCase()) !== -1; });
+    }
+    filtered = filtered.slice().sort(function(a,b){
+      if(cookbookSortBy === 'date') return (b.lastUsed||b.createdAt||0) - (a.lastUsed||a.createdAt||0);
+      if(cookbookSortBy === 'quantity') return (typeof getCookbookEntryRevenue === 'function' ? getCookbookEntryRevenue(b) : 0) - (typeof getCookbookEntryRevenue === 'function' ? getCookbookEntryRevenue(a) : 0);
+      if(cookbookSortBy === 'price') return (Number(b.price)||0) - (Number(a.price)||0);
+      if(cookbookSortBy === 'name') return (a.dish||'').localeCompare(b.dish||'', 'de');
+      return 0;
+    });
     const list = filtered;
 
     if(cookbookMagazineIndex >= list.length) cookbookMagazineIndex = Math.max(0, list.length - 1);
