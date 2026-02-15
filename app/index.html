@@ -6651,7 +6651,7 @@
                   <div style="font-size:13px; color:#64748b;">Platz im Betrieb anbieten</div>
                 </div>
               </div>
-              <label class="toggle-switch"><input type="checkbox" id="providerDineInEnabled"><span class="toggle-slider"></span></label>
+              <label class="toggle-switch"><input type="checkbox" id="providerSettingsDineInEnabled"><span class="toggle-slider"></span></label>
             </div>
             <div style="padding:20px; border-bottom:1px solid #f8f9fa; display:flex; justify-content:space-between; align-items:center;">
               <div style="display:flex; align-items:center; gap:16px;">
@@ -6661,7 +6661,7 @@
                   <div style="font-size:13px; color:#64748b;">Vytal, Recup oder eigenes</div>
                 </div>
               </div>
-              <label class="toggle-switch"><input type="checkbox" id="providerReuseEnabled"><span class="toggle-slider"></span></label>
+              <label class="toggle-switch"><input type="checkbox" id="providerSettingsReuseEnabled"><span class="toggle-slider"></span></label>
             </div>
             <div style="padding:20px; border-bottom:1px solid #f8f9fa; display:flex; justify-content:space-between; align-items:center;">
               <div style="display:flex; align-items:center; gap:16px;">
@@ -6671,7 +6671,7 @@
                   <div style="font-size:13px; color:#64748b;">Weniger Chaos & mehr Zeit</div>
                 </div>
               </div>
-              <label class="toggle-switch"><input type="checkbox" id="providerAbholnummerEnabled"><span class="toggle-slider"></span></label>
+              <label class="toggle-switch"><input type="checkbox" id="providerSettingsAbholnummerEnabled"><span class="toggle-slider"></span></label>
             </div>
             <div style="padding:20px; display:flex; justify-content:space-between; align-items:center;">
               <div style="display:flex; align-items:center; gap:16px;">
@@ -6681,7 +6681,7 @@
                   <div style="font-size:13px; color:#64748b;">Standard für neue Inserate</div>
                 </div>
               </div>
-              <label class="toggle-switch"><input type="checkbox" id="providerWantsAllergensEnabled"><span class="toggle-slider"></span></label>
+              <label class="toggle-switch"><input type="checkbox" id="providerSettingsWantsAllergensEnabled"><span class="toggle-slider"></span></label>
             </div>
           </div>
 
@@ -20534,6 +20534,29 @@
       };
       if(wantsAllergensSwitch){ wantsAllergensSwitch.onclick = () => { wantsAllergensEnabled.checked = !wantsAllergensEnabled.checked; wantsAllergensEnabled.onchange(); }; }
     }
+
+    // Einstellungs-Seite: gleiche Toggles mit eigenen IDs (keine Duplicate-ID), Sync mit Profil + Haupt-Checkbox
+    function bindSettingsToggle(settingsId, mainId, profileKey, getVal, toastOn, toastOff) {
+      const el = document.getElementById(settingsId);
+      if(!el) return;
+      const sw = el.closest('.toggle-switch');
+      el.checked = getVal(p);
+      if(sw){ el.checked ? sw.classList.add('active') : sw.classList.remove('active'); }
+      el.onchange = () => {
+        if(!provider.profile) provider.profile = {};
+        provider.profile[profileKey] = el.checked;
+        save(LS.provider, provider);
+        if(sw){ el.checked ? sw.classList.add('active') : sw.classList.remove('active'); }
+        showToast(el.checked ? toastOn : toastOff);
+        var main = document.getElementById(mainId);
+        if(main){ main.checked = el.checked; var msw = main.closest('.toggle-switch'); if(msw){ main.checked ? msw.classList.add('active') : msw.classList.remove('active'); } }
+      };
+      if(sw){ sw.onclick = () => { el.checked = !el.checked; el.onchange(); }; }
+    }
+    bindSettingsToggle('providerSettingsDineInEnabled', 'providerDineInEnabled', 'dineInPossibleDefault', function(p){ return p.dineInPossibleDefault !== false; }, 'Vor Ort standardmäßig an', 'Vor Ort standardmäßig aus');
+    bindSettingsToggle('providerSettingsReuseEnabled', 'providerReuseEnabled', 'reuseEnabledByDefault', function(p){ return p.reuseEnabledByDefault || false; }, 'Mehrweg-Pfandsystem aktiviert', 'Mehrweg-Pfandsystem deaktiviert');
+    bindSettingsToggle('providerSettingsAbholnummerEnabled', 'providerAbholnummerEnabled', 'abholnummerEnabledByDefault', function(p){ return p.abholnummerEnabledByDefault || false; }, 'Abholnummer standardmäßig an', 'Abholnummer standardmäßig aus');
+    bindSettingsToggle('providerSettingsWantsAllergensEnabled', 'providerWantsAllergensEnabled', 'wantsAllergensByDefault', function(p){ return p.wantsAllergensByDefault || false; }, 'Allergene standardmäßig angeben', 'Allergene standardmäßig aus');
     
     // Account: Status 1 aktive Sitzung
     const sessionStatusEl = document.getElementById('providerSessionStatus');
