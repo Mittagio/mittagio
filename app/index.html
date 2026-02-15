@@ -1737,9 +1737,11 @@
       transition: transform 0.12s ease, background 0.2s, color 0.2s; -webkit-tap-highlight-color: transparent;
     }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-allergen-row .inserat-allergen-emo,
-    #wizard.sheet--kitchen .liquid-master-panel .inserat-allergen-row .inserat-allergen-emo{ font-size: 1rem; }
+    #wizard.sheet--kitchen .liquid-master-panel .inserat-allergen-row .inserat-allergen-emo{ font-size: 1rem; display: inline; }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-allergen-row .inserat-allergen-code,
-    #wizard.sheet--kitchen .liquid-master-panel .inserat-allergen-row .inserat-allergen-code{ font-weight: 800; }
+    #wizard.sheet--kitchen .liquid-master-panel .inserat-allergen-row .inserat-allergen-code{ font-weight: 800; display: inline; color: inherit; }
+    #wizard.sheet--kitchen .glass-express-step0 .inserat-allergen-row .inserat-allergen-name,
+    #wizard.sheet--kitchen .liquid-master-panel .inserat-allergen-row .inserat-allergen-name{ display: inline; color: inherit; }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-allergen-row.active,
     #wizard.sheet--kitchen .liquid-master-panel .inserat-allergen-row.active{ background: #10b981; color: #fff; }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-allergen-row:active,
@@ -22669,6 +22671,10 @@
         const stepAll=document.createElement('div');
         stepAll.id='step-allergens';
         stepAll.className='inserat-section inserat-allergen-dropdown';
+        const allLabel=document.createElement('span');
+        allLabel.className='inserat-section-label';
+        allLabel.textContent='Allergene';
+        stepAll.appendChild(allLabel);
         const allInner=document.createElement('div');
         allInner.className='inserat-allergen-inner';
         (typeof ALLERGENS_14!=='undefined'?ALLERGENS_14:[]).forEach(a=>{
@@ -22679,7 +22685,21 @@
           const row=document.createElement('button');
           row.type='button';
           row.className='inserat-allergen-row' + (active ? ' active' : '');
-          row.innerHTML=(emo ? '<span class="inserat-allergen-emo">'+emo+'</span>' : '') + '<span class="inserat-allergen-code">'+code+'</span> – <span class="inserat-allergen-name">'+name+'</span>';
+          if(emo){
+            const emoSpan=document.createElement('span');
+            emoSpan.className='inserat-allergen-emo';
+            emoSpan.textContent=emo;
+            row.appendChild(emoSpan);
+          }
+          const codeSpan=document.createElement('span');
+          codeSpan.className='inserat-allergen-code';
+          codeSpan.textContent=code;
+          row.appendChild(codeSpan);
+          row.appendChild(document.createTextNode(' – '));
+          const nameSpan=document.createElement('span');
+          nameSpan.className='inserat-allergen-name';
+          nameSpan.textContent=name;
+          row.appendChild(nameSpan);
           row.onclick=()=>{ hapticLight(); if(!w.data.allergens) w.data.allergens=[]; if(active) w.data.allergens=w.data.allergens.filter(x=>x!==code); else w.data.allergens.push(code); w.data.wantsAllergens=true; saveDraft(); rebuildWizard(); };
           allInner.appendChild(row);
         });
