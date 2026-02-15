@@ -21873,12 +21873,27 @@
         (list.length > 1 ? '<button type="button" class="cookbook-magazine-nav cookbook-magazine-prev" aria-label="Vorheriges" style="position:absolute; left:8px; top:50%; transform:translateY(-50%); width:48px; height:48px; border-radius:50%; border:1px solid rgba(255,255,255,0.6); background:rgba(255,255,255,0.7); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); box-shadow:0 4px 16px rgba(0,0,0,0.1); cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:5;">‹</button>'+
         '<button type="button" class="cookbook-magazine-nav cookbook-magazine-next" aria-label="Nächstes" style="position:absolute; right:8px; top:50%; transform:translateY(-50%); width:48px; height:48px; border-radius:50%; border:1px solid rgba(255,255,255,0.6); background:rgba(255,255,255,0.7); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); box-shadow:0 4px 16px rgba(0,0,0,0.1); cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:5;">›</button>' : '');
       magazineEl.style.position = 'relative';
-      var cardEl = magazineEl.querySelector('.cookbook-magazine-card');
-      if(cardEl) cardEl.onclick = function(){ if(typeof haptic==='function') haptic(6); if(typeof openCookbookActionSheet==='function') openCookbookActionSheet(entry); };
+      magazineEl.style.cursor = 'pointer';
+      var openDetail = function(e){
+        if(e.target.closest('.cookbook-magazine-nav')) return;
+        e.preventDefault();
+        e.stopPropagation();
+        if(typeof haptic==='function') haptic(6);
+        if(typeof openCookbookActionSheet==='function') openCookbookActionSheet(entry);
+      };
+      magazineEl.onclick = openDetail;
+      magazineEl.ontouchend = function(e){
+        if(e.target.closest('.cookbook-magazine-nav')) return;
+        if(e.target.closest('.cookbook-magazine-card')){
+          e.preventDefault();
+          if(typeof haptic==='function') haptic(6);
+          if(typeof openCookbookActionSheet==='function') openCookbookActionSheet(entry);
+        }
+      };
       var prevBtn = magazineEl.querySelector('.cookbook-magazine-prev');
       var nextBtn = magazineEl.querySelector('.cookbook-magazine-next');
-      if(prevBtn) prevBtn.onclick = function(e){ e.stopPropagation(); if(typeof haptic==='function') haptic(10); cookbookMagazineIndex = Math.max(0, cookbookMagazineIndex - 1); renderCookbook(); };
-      if(nextBtn) nextBtn.onclick = function(e){ e.stopPropagation(); if(typeof haptic==='function') haptic(10); cookbookMagazineIndex = Math.min(list.length - 1, cookbookMagazineIndex + 1); renderCookbook(); };
+      if(prevBtn) prevBtn.onclick = function(e){ e.stopPropagation(); e.preventDefault(); if(typeof haptic==='function') haptic(10); cookbookMagazineIndex = Math.max(0, cookbookMagazineIndex - 1); renderCookbook(); };
+      if(nextBtn) nextBtn.onclick = function(e){ e.stopPropagation(); e.preventDefault(); if(typeof haptic==='function') haptic(10); cookbookMagazineIndex = Math.min(list.length - 1, cookbookMagazineIndex + 1); renderCookbook(); };
     }
     if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
   }
