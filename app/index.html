@@ -6603,6 +6603,9 @@
           </button>
         </div>
       </div>
+      <div id="cookbookBackBar" style="position:fixed; left:0; right:0; bottom:calc(80px + env(safe-area-inset-bottom, 24px)); z-index:50; padding:12px 20px; max-width:500px; margin:0 auto; box-sizing:border-box; pointer-events:none;">
+        <button type="button" id="btnCookbookBack" style="pointer-events:auto; width:100%; min-height:48px; border-radius:16px; border:2px solid rgba(0,0,0,0.1); background:#fff; color:#1a1a1a; font-size:15px; font-weight:800; cursor:pointer; box-shadow:0 4px 16px rgba(0,0,0,0.08);">Zurück</button>
+      </div>
     </section>
 
     <!-- Kochbuch: Bottom-Sheet "Jetzt live schalten" (Preis, Datum, Zeit, 4,99€-Button) -->
@@ -10244,6 +10247,8 @@
     renderCookbook();
     const providerNavBackRow = document.getElementById('providerNavBackRow');
     if(providerNavBackRow) providerNavBackRow.style.display = 'block';
+    var btnCookbookBack = document.getElementById('btnCookbookBack');
+    if(btnCookbookBack) btnCookbookBack.onclick = function(){ if(typeof haptic === 'function') haptic(6); showProviderHome(); };
     pushViewState({view: 'provider-cookbook', mode: mode}, location.pathname);
   }
   /** Zentrale Formular-Komponente: Felddefinitionen + Rendering, keine Duplikate */
