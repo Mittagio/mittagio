@@ -2243,6 +2243,7 @@
     .liquid-master-panel .inserat-scroll-area {
       flex: 1; min-height: 0; overflow-y: auto; padding: 20px; -webkit-overflow-scrolling: touch;
     }
+    #wizard[data-flow="listing"] .inserat-scroll-area { padding: 24px 20px; }
     /* App-like: ein Bildschirm, klare Sektionen [cite: Plan Inseratsflow] */
     .liquid-master-panel .inserat-scroll-area {
       --inserat-section-gap: 28px;
@@ -2302,6 +2303,11 @@
       background: rgba(0,0,0,0.06); color: #64748b; filter: grayscale(0.5);
     }
     .inserat-status-bar .status-pill:active { transform: scale(0.98); }
+    /* Listing-Flow: 3 Säulen wie Detailseite – kein Hintergrund, Border 0.03 */
+    #wizard[data-flow="listing"] .inserat-status-bar.inserat-three-pillars {
+      background: transparent;
+      border-bottom-color: rgba(0,0,0,0.03);
+    }
     /* Info-Banner: Abholung heute Mittag … */
     .inserat-info-banner {
       padding: 10px 20px; font-size: 14px; font-weight: 600; color: #64748b;
@@ -10241,12 +10247,14 @@
   }
   function showProviderCookbook(){
     if(!checkSessionValidity()) return;
+    if(typeof closeSaveSuccessSheet === 'function') closeSaveSuccessSheet();
+    if(typeof closeCookbookActionSheet === 'function') closeCookbookActionSheet();
     document.body.classList.remove('provider-week-active');
     setProviderNavActive('provider-cookbook');
     showView(views.providerCookbook);
     renderCookbook();
     const providerNavBackRow = document.getElementById('providerNavBackRow');
-    if(providerNavBackRow) providerNavBackRow.style.display = 'block';
+    if(providerNavBackRow) providerNavBackRow.style.display = 'none';
     pushViewState({view: 'provider-cookbook', mode: mode}, location.pathname);
   }
   /** Zentrale Formular-Komponente: Felddefinitionen + Rendering, keine Duplikate */
@@ -21983,7 +21991,7 @@
       var orderCount = typeof getCookbookEntryOrderCount === 'function' ? getCookbookEntryOrderCount(entry) : 0;
       var qtyStr = orderCount > 0 ? orderCount + ' Portionen' : '–';
       var imgHtml = entry.photoData ? '<img src="'+esc(entry.photoData)+'" alt="" style="width:100%; height:100%; object-fit:cover; transition:transform 0.7s ease;" class="cookbook-magazine-img" />' : '<div style="width:100%; height:100%; background:#e5e7eb; display:flex; align-items:center; justify-content:center;"></div>';
-      magazineEl.innerHTML = '<div class="cookbook-magazine-card" role="button" tabindex="0" style="width:88%; max-width:400px; background:#fff; border:1px solid rgba(255,255,255,0.5); border-radius:40px; box-shadow:0 20px 40px rgba(0,0,0,0.12); overflow:hidden; display:flex; flex-direction:column; cursor:pointer; position:relative; z-index:2;">'+
+      magazineEl.innerHTML = '<div class="cookbook-magazine-card" role="button" tabindex="0" style="width:88%; max-width:400px; background:#fff; border:1px solid rgba(255,255,255,0.5); border-radius:40px; box-shadow:0 20px 40px rgba(0,0,0,0.12); overflow:hidden; display:flex; flex-direction:column; cursor:pointer; position:relative; z-index:2; touch-action:manipulation;">'+
         '<div class="cookbook-magazine-gloss" style="position:absolute; inset:0; pointer-events:none; z-index:1; background:linear-gradient(to top right, rgba(255,255,255,0.12) 0%, transparent 50%, rgba(255,255,255,0.06) 100%);"></div>'+
         '<div style="height:60%; min-height:200px; overflow:hidden; position:relative;">'+
         imgHtml+
@@ -23073,21 +23081,15 @@
         statusBar.appendChild(wrap);
       }
       addPillar('🍴','Vor Ort möglich', hasDineIn, '', 'dineInPossible');
-      addPillar('🧾','Abholnummer', true, 'yellow', null);
+      addPillar('🧾','Abholnummer aktiv', true, 'yellow', null);
       addPillar('🔄','Mehrweg verfügbar', hasReuse, 'green', 'reuse');
       box.appendChild(statusBar);
 
-      // Info-Banner: Abholung heute Mittag von 11:30 – 14:00 Uhr (+ 🕒 zum Bearbeiten)
       var pwParts=(w.data.pickupWindow||profileWindow).split(/\s*[–\-]\s*/);
       var timeStart=(pwParts[0]||'11:30').trim();
       var timeEnd=(pwParts[1]||'14:00').trim();
       if(timeStart.length===4) timeStart='0'+timeStart;
       if(timeEnd.length===4) timeEnd='0'+timeEnd;
-      const infoBanner=document.createElement('div');
-      infoBanner.className='inserat-info-banner';
-      infoBanner.innerHTML='<span>Abholung heute Mittag von ' + timeStart + ' – ' + timeEnd + ' Uhr</span><button type="button" class="banner-time-edit" title="Zeit bearbeiten" aria-label="Zeit bearbeiten">🕒</button>';
-      infoBanner.querySelector('.banner-time-edit').onclick=()=>{ hapticLight(); w.data.pickupWindowEdit=!w.data.pickupWindowEdit; saveDraft(); rebuildWizard(); setTimeout(function(){ var el=document.querySelector('.inserat-pickup-time-dropdown'); if(el) el.scrollIntoView({ behavior:'smooth', block:'center' }); }, 80); };
-      box.appendChild(infoBanner);
 
       const scrollArea=document.createElement('div');
       scrollArea.className='inserat-scroll-area scroll-content';
@@ -23131,6 +23133,31 @@
       wrapDesc.appendChild(inputDesc);
       stepName.appendChild(wrapDesc);
       scrollArea.appendChild(stepName);
+
+      // Abholzeit in grauer Karte wie Detailseite (kein separates Banner)
+      const pickupTimeCard=document.createElement('div');
+      pickupTimeCard.className='inserat-section inserat-pickup-time-card';
+      pickupTimeCard.style.cssText='display:flex; flex-direction:column; gap:16px; background:#f8f9fa; border-radius:24px; padding:20px; border:1px solid rgba(0,0,0,0.02);';
+      const pickupTimeRow=document.createElement('div');
+      pickupTimeRow.style.cssText='display:flex; align-items:center; gap:12px;';
+      const clockIconWrap=document.createElement('div');
+      clockIconWrap.style.cssText='width:36px; height:36px; border-radius:10px; background:#fff; display:flex; align-items:center; justify-content:center; flex-shrink:0;';
+      clockIconWrap.innerHTML='<span style="font-size:18px;">🕒</span>';
+      const timeText=document.createElement('span');
+      timeText.style.cssText='font-size:14px; font-weight:700; color:#1a1a1a; flex:1;';
+      timeText.textContent='Abholung heute Mittag von ' + timeStart + ' – ' + timeEnd + ' Uhr';
+      const timeEditBtn=document.createElement('button');
+      timeEditBtn.type='button';
+      timeEditBtn.setAttribute('title','Zeit bearbeiten');
+      timeEditBtn.setAttribute('aria-label','Zeit bearbeiten');
+      timeEditBtn.style.cssText='background:none; border:none; padding:4px 8px; font-size:18px; cursor:pointer; -webkit-tap-highlight-color:transparent;';
+      timeEditBtn.textContent='🕒';
+      timeEditBtn.onclick=()=>{ hapticLight(); w.data.pickupWindowEdit=!w.data.pickupWindowEdit; saveDraft(); rebuildWizard(); setTimeout(function(){ var el=document.querySelector('.inserat-pickup-time-dropdown'); if(el) el.scrollIntoView({ behavior:'smooth', block:'center' }); }, 80); };
+      pickupTimeRow.appendChild(clockIconWrap);
+      pickupTimeRow.appendChild(timeText);
+      pickupTimeRow.appendChild(timeEditBtn);
+      pickupTimeCard.appendChild(pickupTimeRow);
+      scrollArea.appendChild(pickupTimeCard);
 
       const catValues = ['Fleisch','Vegetarisch','Vegan','Salat'];
       const catDisplayLabels = ['Mit Fleisch','Vegetarisch','Vegan','Salat'];
