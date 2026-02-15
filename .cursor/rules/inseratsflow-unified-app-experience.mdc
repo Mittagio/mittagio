@@ -1,0 +1,40 @@
+---
+description: Inseratsflow = einheitliche App-Erfahrung wie Detailseite. Edge-to-Edge Hero, 2 Pills, Info-Banner, Reihenfolge, Abholnummer nur.
+alwaysApply: true
+---
+
+# UNIFIED APP EXPERIENCE – Inseratsflow (Step 0)
+
+**Ziel:** Der Inseratsflow ist visuell und strukturell eine flüssige Einheit mit der Gericht-Detailseite. Zwei Apps werden eine.
+
+## Strukturelle Vorgaben (CSS)
+
+- **Wizard neutralisieren:** `#wizard[data-flow="listing"] .wizard-scroll` hat `overflow: hidden !important`, `display: flex`, `padding: 0`. Kein Layer-Chaos auf S25.
+- **Alte Leiste ausblenden:** `.w-actions` (z. B. Zurück-Button) ist komplett ausgeblendet.
+- **Panel:** Füllt den gesamten Screen – fixierter Header (Bild), nur der mittlere Bereich scrollt, fixierter Footer (Buttons).
+
+## Layout (Top-Down, einheitlich)
+
+1. **Hero-Image:** Randlos oben (Edge-to-Edge). Kein zentriertes 160×160 im Flow; volle Breite wie eine Karte.
+2. **Status-Leiste:** Direkt unter dem Bild **nur zwei** horizontale Pills: 🍴 **Vor Ort** und 🔄 **Mehrweg**. Standardmäßig aus dem Profil. Emerald (#10b981) mit Glow wenn aktiv.
+3. **Info-Banner:** Eine schlichte, flache Zeile: „Abholung heute Mittag von 11:30 – 14:00 Uhr“ (mit optionalem 🕒 zum Bearbeiten).
+4. **Titel-Input:** „Was kochst du heute?“ – Position und Schriftgröße wie auf der Detailseite. Pulsierende Emerald-Unterlinie beim Fokus.
+5. **Kategorie-Pills:** Direkt unter dem Titel. Aktive Pills in Emerald (#10b981) mit Glow wie Detailseite.
+6. **Preis-Sektion:** Elegante Typografie. Darunter in dezentem Grau (#94a3b8): „Umsatzprognose (bei angenommen 30 Portionen): [Summe] €“. Daneben ⓘ; beim Tippen gläserner Tooltip: „Deine Gebühr beträgt immer nur 0,89 € pro Abholnummer, egal wie viele Portionen pro Gast bestellt werden.“
+7. **Funktions-Icons:** Am Ende des scrollbaren Inhalts: 🌾 (Allergene) und ➕ (Extras). Klick öffnet gläsernes Dropdown/Menü.
+8. **Fixierte Action-Buttons:** Primär (Emerald) „Risikofrei inserieren“, Subtext „0,89 € pro Abholnummer (egal wie viele Essen)“; Sekundär (Gelbe Outline) „Einmaliges Inserat für 4,99 €“, Subtext „Fixpreis ohne System-Abholnummer“.
+
+## Imperative Regeln
+
+- **Terminologie:** NUR der Begriff **Abholnummer**. Verbannt: „Code“, „Ticket“, „Abholcode“.
+- **Haptik:** Jede Interaktion (Pills, Icons, Buttons, ⓘ) triggert `navigator.vibrate(10)` (oder vorhandene `hapticLight()`).
+- **Mobile:** Perfektes Layout auf S25; nur der mittlere Bereich ist intern scrollbar.
+
+## Referenz im Code
+
+- **Umsetzung:** `app/index.html` – `buildListingStep()`: Hero edge-to-edge, Status mit `inserat-unified-pills` (nur 🍴 🔄), `inserat-info-banner`, Reihenfolge Titel → Kategorie-Pills → Preis + Umsatzprognose → Funktions-Icons → Fixed Footer.
+
+## Bei Änderungen
+
+- Keine Rückkehr zu zentriertem 160×160-Hero im Flow; kein dritter Pill (🧾) in der Status-Leiste – Abholnummer ist über die Pricing-Buttons abgedeckt.
+- Korrekturen im Chat durch den Nutzer sind erwünscht, damit die KI die Projekt-Präferenzen lernt.

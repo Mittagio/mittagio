@@ -2229,6 +2229,7 @@
     #wizard[data-flow="listing"].sheet--kitchen .liquid-master-panel {
       margin: 0; border-radius: 0; border-left: none; border-right: none; border-bottom: none;
       min-height: 0; flex: 1;
+      font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
     }
     #wizard[data-flow="listing"].sheet--kitchen .wizard-scroll #wContent{
       flex: 1; min-height: 0; height: 100%; display: flex; flex-direction: column;
@@ -2242,7 +2243,7 @@
     .liquid-master-panel .inserat-scroll-area {
       flex: 1; min-height: 0; overflow-y: auto; padding: 20px; -webkit-overflow-scrolling: touch;
     }
-    #wizard[data-flow="listing"] .inserat-scroll-area { padding: 24px 20px; }
+    #wizard[data-flow="listing"] .inserat-scroll-area { padding: 24px 20px; font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif; }
     /* App-like: ein Bildschirm, klare Sektionen [cite: Plan Inseratsflow] */
     .liquid-master-panel .inserat-scroll-area {
       --inserat-section-gap: 28px;
@@ -2282,11 +2283,6 @@
     #wizard[data-flow="listing"].sheet--kitchen .liquid-master-panel .inserat-photo-tile.photo-header {
       border-radius: 0 0 24px 24px; width: 100%;
     }
-    /* Listing-Flow: Hero wie Detailseite – 160x160 zentriert */
-    #wizard[data-flow="listing"] .inserat-hero-detail-style .inserat-photo-tile.inserat-photo-detail-size {
-      width: 160px !important; height: 160px !important; min-height: 160px !important;
-      border-radius: 40px; border: 4px solid #fff; box-shadow: 0 12px 32px rgba(0,0,0,0.1);
-    }
     /* Status-Leiste: Pills direkt unter dem Bild (🍴 Vor Ort, 🔄 Mehrweg) */
     .inserat-status-bar {
       display: flex; gap: 12px; padding: 12px 20px; flex-shrink: 0;
@@ -2307,14 +2303,24 @@
       background: rgba(0,0,0,0.06); color: #64748b; filter: grayscale(0.5);
     }
     .inserat-status-bar .status-pill:active { transform: scale(0.98); }
-    /* Listing-Flow: 3 Säulen wie Detailseite – kein Hintergrund, Border 0.03 */
-    #wizard[data-flow="listing"] .inserat-status-bar.inserat-three-pillars {
-      background: transparent;
-      border-bottom-color: rgba(0,0,0,0.03);
+    /* Listing-Flow: Unified – nur 🍴 🔄 Pills, Emerald wenn aktiv */
+    #wizard[data-flow="listing"] .inserat-status-bar.inserat-unified-pills .status-pill {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 10px 18px; border-radius: 999px; font-size: 14px; font-weight: 700;
+      border: 2px solid transparent; min-height: 44px; cursor: pointer;
+      transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
+      -webkit-tap-highlight-color: transparent;
     }
-    /* Info-Banner: Abholung heute Mittag … */
+    #wizard[data-flow="listing"] .inserat-status-bar.inserat-unified-pills .status-pill.active {
+      background: #10b981; color: #fff; box-shadow: 0 4px 14px rgba(16,185,129,0.4);
+    }
+    #wizard[data-flow="listing"] .inserat-status-bar.inserat-unified-pills .status-pill.inactive {
+      background: rgba(0,0,0,0.06); color: #64748b;
+    }
+    #wizard[data-flow="listing"] .inserat-status-bar.inserat-unified-pills .status-pill:active { transform: scale(0.98); }
+    /* Info-Banner: wie Detailseite sMealTimeRange – 14px, 700, #1a1a1a */
     .inserat-info-banner {
-      padding: 10px 20px; font-size: 14px; font-weight: 600; color: #64748b;
+      padding: 10px 20px; font-size: 14px; font-weight: 700; color: #1a1a1a;
       background: rgba(0,0,0,0.02); border-bottom: 1px solid rgba(0,0,0,0.03);
       display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
     }
@@ -2322,11 +2328,12 @@
       background: none; border: none; padding: 4px 8px; cursor: pointer; font-size: 18px;
       -webkit-tap-highlight-color: transparent;
     }
-    /* Titel wie Detailseite: 24px, 950, pulsierende Emerald-Unterlinie */
+    /* Titel wie Detailseite (h2#sDish): 24px, 950, Abstand 0 0 8px, gleiche Typo */
     .inserat-unified-title-wrap {
-      padding-bottom: 8px;
+      padding-bottom: 0;
     }
     .inserat-unified-title-wrap .inserat-detail-style-title {
+      margin: 0 0 8px;
       font-size: 24px; font-weight: 950; color: #1a1a1a; letter-spacing: -0.03em; line-height: 1.2;
       width: 100%; border: none; border-bottom: 2px solid rgba(0,0,0,0.08);
       background: transparent; padding: 4px 0 8px; outline: none;
@@ -2337,11 +2344,37 @@
       animation: magnet-pulse 1.2s ease-in-out infinite;
     }
     .inserat-unified-title-wrap .inserat-detail-style-title::placeholder { color: #94a3b8; }
-    /* Kategorie-Pills: aktive in Emerald mit Glow wie Detailseite */
+    /* Beschreibung wie Detailseite sProviderName: 16px, 700, Abstand darunter 24px */
+    #wizard[data-flow="listing"] .inserat-unified-title-wrap .inserat-airbnb-desc-wrap {
+      margin-top: 0; margin-bottom: 24px;
+    }
+    #wizard[data-flow="listing"] .inserat-unified-title-wrap .inserat-desc-input,
+    #wizard[data-flow="listing"] .inserat-unified-title-wrap .inserat-airbnb-desc {
+      font-size: 16px; font-weight: 700; color: #1a1a1a;
+    }
+    #wizard[data-flow="listing"] .inserat-unified-title-wrap .inserat-desc-input::placeholder,
+    #wizard[data-flow="listing"] .inserat-unified-title-wrap .inserat-airbnb-desc::placeholder {
+      color: #64748b;
+    }
+    /* Kategorie-Pills: wie Detailseite sAllergensCodes / Karten-Text – 14px, 700, #1a1a1a, gleiche Optik */
+    #wizard[data-flow="listing"].sheet--kitchen .inserat-cat-pills .extra-pill {
+      font-size: 14px; font-weight: 700; color: #1a1a1a;
+      padding: 10px 18px; border-radius: 999px; background: rgba(0,0,0,0.04);
+      border: none; min-height: 44px;
+    }
     #wizard[data-flow="listing"].sheet--kitchen .inserat-cat-pill.active,
     #wizard[data-flow="listing"].sheet--kitchen .inserat-cat-pills .extra-pill.active {
       background: #10b981 !important; color: #fff !important;
       box-shadow: 0 4px 14px rgba(16,185,129,0.4);
+    }
+    /* Preis-Sektion: wie sPriceSticker – 14px, 900, #1a1a1a (ein Guß mit Detailseite) */
+    #wizard[data-flow="listing"] .inserat-price-section .inserat-price-input,
+    #wizard[data-flow="listing"] .inserat-price-section .price-display {
+      font-size: 14px !important; font-weight: 900 !important; color: #1a1a1a !important;
+    }
+    /* Umsatzprognose: wie sInfoHint – 12px, 600, #94a3b8 */
+    #wizard[data-flow="listing"] .inserat-prognose-wrap.inserat-umsatzprognose p {
+      font-size: 12px; font-weight: 600; color: #94a3b8;
     }
     /* Funktions-Icons am Ende: schwebend, gläsernes Dropdown */
     .inserat-func-icons {
@@ -6911,7 +6944,7 @@
               <span>Rechnungsarchiv & PDFs (4,99 € Belege)</span>
               <i data-lucide="chevron-right" style="width:20px; height:20px; color:#cbd5e1; flex-shrink:0;"></i>
             </button>
-            <button type="button" id="btnSettingsSupport" class="provider-footer-row" style="width:100%; text-align:left; border:none; font-family:inherit;">
+            <button type="button" id="btnSettingsSupportFooter" class="provider-footer-row" style="width:100%; text-align:left; border:none; font-family:inherit;">
               <span>Support & FAQ</span>
               <i data-lucide="chevron-right" style="width:20px; height:20px; color:#cbd5e1; flex-shrink:0;"></i>
             </button>
@@ -20672,7 +20705,10 @@
     var btnSettingsBillingArchive = document.getElementById('btnSettingsBillingArchive');
     if(btnSettingsBillingArchive) btnSettingsBillingArchive.onclick = function(){ if(!checkSessionValidity()) return; showView(views.providerBilling); renderBilling(); };
     var btnSettingsSupport = document.getElementById('btnSettingsSupport');
-    if(btnSettingsSupport) btnSettingsSupport.onclick = function(){ if(typeof haptic === 'function') haptic(6); showProviderProfileSub('faq'); };
+    var btnSettingsSupportFooter = document.getElementById('btnSettingsSupportFooter');
+    function openFaqProvider(){ if(typeof haptic === 'function') haptic(6); if(typeof closeProfileSettingsSheet === 'function') closeProfileSettingsSheet(); showLegalPage('faq-provider'); }
+    if(btnSettingsSupport) btnSettingsSupport.onclick = openFaqProvider;
+    if(btnSettingsSupportFooter) btnSettingsSupportFooter.onclick = openFaqProvider;
     // Hilfe & Support: Themen-Kacheln → Smart-Lösung → Kontaktformular
     var supportSolutions = {
       inserieren: 'Prüfe, ob dein Gericht im Kochbuch angelegt ist. Öffne „Meine Küche“ und tippe auf „Jetzt für 4,99 € inserieren“. Wähle Gericht, Bild und Zeitfenster – das Inserat geht in unter 30 Sekunden live.',
@@ -20710,7 +20746,7 @@
         var body = (supportMessage.value || '').trim();
         var mailto = 'mailto:support@mittagio.de?subject=' + encodeURIComponent(subj) + (body ? '&body=' + encodeURIComponent(body) : '');
         window.location.href = mailto;
-        showToast('E-Mail wird geöffnet.');
+        showToast('Support-Kontakt wird geöffnet.');
       };
     }
     var btnProviderDeleteAccount = document.getElementById('btnProviderDeleteAccount');
@@ -23047,13 +23083,10 @@
       const dismissKeyboard = ()=>{ try { if(document.activeElement && document.activeElement.blur) document.activeElement.blur(); } catch(e){} };
       const hapticLight = ()=>{ try { if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); } catch(e){} };
 
-      // 1. FOTO – wie Detailseite: 160x160 zentriert, gleicher Container
-      const heroWrapper=document.createElement('div');
-      heroWrapper.className='inserat-hero-detail-style';
-      heroWrapper.style.cssText='padding:24px 20px; text-align:center; background:linear-gradient(180deg, #f8f9fa 0%, #fff 100%); flex-shrink:0;';
+      // 1. HERO – randlos oben (Edge-to-Edge), fixierter Header
       const photoTile=document.createElement('div');
-      photoTile.className='inserat-photo-tile photo-header inserat-photo-detail-size';
-      photoTile.style.cssText='position:relative; overflow:hidden; width:160px; height:160px; margin:0 auto; border-radius:40px; box-shadow:0 12px 32px rgba(0,0,0,0.1); border:4px solid #fff;';
+      photoTile.className='inserat-photo-tile photo-header';
+      photoTile.style.cssText='position:relative; overflow:hidden; flex-shrink:0; width:100%;';
       if(w.data.photoData){
         photoTile.innerHTML='<img src="'+w.data.photoData+'" style="width:100%; height:100%; object-fit:cover; display:block;" alt=""><button type="button" class="inserat-photo-change" aria-label="Foto ändern"><i data-lucide="camera" style="width:14px;height:14px;stroke-width:2.5;"></i> 📷 Foto ändern</button>';
         const rem=photoTile.querySelector('.inserat-photo-change');
@@ -23069,34 +23102,46 @@
       priceStickerInserat.style.cssText='position:absolute; bottom:8px; right:8px; padding:6px 12px; border-radius:999px; font-weight:900; font-size:14px; background:rgba(255,215,0,0.95); color:#1a1a1a; box-shadow:0 2px 8px rgba(255,215,0,0.3); z-index:10;';
       priceStickerInserat.textContent=(Number(w.data.price)||0).toFixed(2).replace('.',',')+' €';
       photoTile.appendChild(priceStickerInserat);
-      heroWrapper.appendChild(photoTile);
-      box.appendChild(heroWrapper);
+      box.appendChild(photoTile);
 
-      // Status-Leiste: 3 Säulen wie Detailseite (pillar-badge mit pillar-icon-circle + pillar-label)
+      // 2. Status-Leiste: nur 🍴 Vor Ort und 🔄 Mehrweg (standardmäßig aus Profil)
       const statusBar=document.createElement('div');
-      statusBar.className='inserat-status-bar inserat-three-pillars';
-      statusBar.style.display='flex'; statusBar.style.justifyContent='center'; statusBar.style.gap='16px'; statusBar.style.padding='0 20px 24px'; statusBar.style.borderBottom='1px solid rgba(0,0,0,0.03)';
+      statusBar.className='inserat-status-bar inserat-unified-pills';
+      statusBar.style.display='flex'; statusBar.style.justifyContent='center'; statusBar.style.gap='16px'; statusBar.style.padding='12px 20px'; statusBar.style.borderBottom='1px solid rgba(0,0,0,0.04)'; statusBar.style.flexShrink='0';
       var hasDineIn = !!w.data.dineInPossible;
       var hasReuse = !!(w.data.reuse && w.data.reuse.enabled);
-      function addPillar(emo, label, active, colorClass, toggleKey){
+      function addStatusPill(emo, label, active, toggleKey){
         const wrap=document.createElement('button');
         wrap.type='button';
-        wrap.className='pillar-badge '+(active?'active '+(colorClass||''):'disabled');
-        if(!active) wrap.style.cssText='opacity:0.25; filter:grayscale(1);';
-        wrap.innerHTML='<div class="pillar-icon-circle">'+emo+'</div><div class="pillar-label">'+label+'</div>';
-        wrap.onclick=()=>{ if(!toggleKey) return; hapticLight(); if(toggleKey==='reuse'){ w.data.reuse=w.data.reuse||{}; w.data.reuse.enabled=!w.data.reuse.enabled; } else w.data[toggleKey]=!w.data[toggleKey]; saveDraft(); rebuildWizard(); };
+        wrap.className='status-pill '+(active?'active':'inactive');
+        wrap.innerHTML='<span style="font-size:18px;">'+emo+'</span><span>'+label+'</span>';
+        wrap.onclick=()=>{ hapticLight(); if(toggleKey==='reuse'){ w.data.reuse=w.data.reuse||{}; w.data.reuse.enabled=!w.data.reuse.enabled; } else w.data[toggleKey]=!w.data[toggleKey]; saveDraft(); rebuildWizard(); };
         statusBar.appendChild(wrap);
       }
-      addPillar('🍴','Vor Ort möglich', hasDineIn, '', 'dineInPossible');
-      addPillar('🧾','Abholnummer aktiv', true, 'yellow', null);
-      addPillar('🔄','Mehrweg verfügbar', hasReuse, 'green', 'reuse');
+      addStatusPill('🍴','Vor Ort', hasDineIn, 'dineInPossible');
+      addStatusPill('🔄','Mehrweg', hasReuse, 'reuse');
       box.appendChild(statusBar);
 
+      // 3. Info-Banner: eine schlichte Zeile Abholzeit
       var pwParts=(w.data.pickupWindow||profileWindow).split(/\s*[–\-]\s*/);
       var timeStart=(pwParts[0]||'11:30').trim();
       var timeEnd=(pwParts[1]||'14:00').trim();
       if(timeStart.length===4) timeStart='0'+timeStart;
       if(timeEnd.length===4) timeEnd='0'+timeEnd;
+      const infoBanner=document.createElement('div');
+      infoBanner.className='inserat-info-banner';
+      infoBanner.style.cssText='display:flex; align-items:center; justify-content:space-between; padding:10px 20px; font-size:14px; font-weight:700; color:#1a1a1a; background:rgba(0,0,0,0.02); border-bottom:1px solid rgba(0,0,0,0.03); flex-shrink:0;';
+      const bannerTimeText=document.createElement('span');
+      bannerTimeText.textContent='Abholung heute Mittag von ' + timeStart + ' – ' + timeEnd + ' Uhr';
+      const bannerTimeEdit=document.createElement('button');
+      bannerTimeEdit.type='button';
+      bannerTimeEdit.className='banner-time-edit';
+      bannerTimeEdit.setAttribute('aria-label','Zeit bearbeiten');
+      bannerTimeEdit.textContent='🕒';
+      bannerTimeEdit.onclick=()=>{ hapticLight(); w.data.pickupWindowEdit=!w.data.pickupWindowEdit; saveDraft(); rebuildWizard(); };
+      infoBanner.appendChild(bannerTimeText);
+      infoBanner.appendChild(bannerTimeEdit);
+      box.appendChild(infoBanner);
 
       const scrollArea=document.createElement('div');
       scrollArea.className='inserat-scroll-area scroll-content';
@@ -23129,7 +23174,7 @@
       stepName.appendChild(inputDish);
       const wrapDesc=document.createElement('div');
       wrapDesc.className='inserat-airbnb-field-wrap inserat-airbnb-desc-wrap';
-      wrapDesc.style.marginTop='8px';
+      wrapDesc.style.marginTop='0';
       const inputDesc=document.createElement('input');
       inputDesc.type='text';
       inputDesc.className='liquid-input liquid-input-focus inserat-desc-input inserat-airbnb-desc';
@@ -23141,56 +23186,7 @@
       stepName.appendChild(wrapDesc);
       scrollArea.appendChild(stepName);
 
-      // Anbieter-Zeile wie Detailseite (zwischen Titel und grauer Karte)
-      const providerRow=document.createElement('div');
-      providerRow.className='inserat-section inserat-provider-row';
-      providerRow.style.cssText='display:flex; align-items:center; gap:12px; padding:12px 0; min-height:48px;';
-      const provIconBox=document.createElement('div');
-      provIconBox.style.cssText='width:32px; height:32px; border-radius:10px; background:#f0f0f0; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:16px;';
-      provIconBox.textContent='🏢';
-      const provLabel=document.createElement('span');
-      provLabel.style.cssText='font-size:15px; font-weight:600; color:#1a1a1a;';
-      try { provLabel.textContent = (provider && (provider.profile && provider.profile.name)) ? String(provider.profile.name).trim() || 'Dein Angebot' : 'Dein Angebot'; } catch(e){ provLabel.textContent='Dein Angebot'; }
-      providerRow.appendChild(provIconBox);
-      providerRow.appendChild(provLabel);
-      scrollArea.appendChild(providerRow);
-
-      // Abholzeit + Adresse in grauer Karte wie Detailseite (zwei Zeilen)
-      const pickupTimeCard=document.createElement('div');
-      pickupTimeCard.className='inserat-section inserat-pickup-time-card';
-      pickupTimeCard.style.cssText='display:flex; flex-direction:column; gap:16px; background:#f8f9fa; border-radius:24px; padding:20px; border:1px solid rgba(0,0,0,0.02);';
-      const pickupTimeRow=document.createElement('div');
-      pickupTimeRow.style.cssText='display:flex; align-items:center; gap:12px;';
-      const clockIconWrap=document.createElement('div');
-      clockIconWrap.style.cssText='width:36px; height:36px; border-radius:10px; background:#fff; display:flex; align-items:center; justify-content:center; flex-shrink:0;';
-      clockIconWrap.innerHTML='<span style="font-size:18px;">🕒</span>';
-      const timeText=document.createElement('span');
-      timeText.style.cssText='font-size:14px; font-weight:700; color:#1a1a1a; flex:1;';
-      timeText.textContent='Abholung heute Mittag von ' + timeStart + ' – ' + timeEnd + ' Uhr';
-      const timeEditBtn=document.createElement('button');
-      timeEditBtn.type='button';
-      timeEditBtn.setAttribute('title','Zeit bearbeiten');
-      timeEditBtn.setAttribute('aria-label','Zeit bearbeiten');
-      timeEditBtn.style.cssText='background:none; border:none; padding:4px 8px; font-size:18px; cursor:pointer; -webkit-tap-highlight-color:transparent;';
-      timeEditBtn.textContent='🕒';
-      timeEditBtn.onclick=()=>{ hapticLight(); w.data.pickupWindowEdit=!w.data.pickupWindowEdit; saveDraft(); rebuildWizard(); setTimeout(function(){ var el=document.querySelector('.inserat-pickup-time-dropdown'); if(el) el.scrollIntoView({ behavior:'smooth', block:'center' }); }, 80); };
-      pickupTimeRow.appendChild(clockIconWrap);
-      pickupTimeRow.appendChild(timeText);
-      pickupTimeRow.appendChild(timeEditBtn);
-      pickupTimeCard.appendChild(pickupTimeRow);
-      var addressRow=document.createElement('div');
-      addressRow.style.cssText='display:flex; align-items:center; gap:12px;';
-      var addressIconWrap=document.createElement('div');
-      addressIconWrap.style.cssText='width:36px; height:36px; border-radius:10px; background:#fff; display:flex; align-items:center; justify-content:center; flex-shrink:0;';
-      addressIconWrap.innerHTML='<span style="font-size:18px;">📍</span>';
-      var addressText=document.createElement('span');
-      addressText.style.cssText='font-size:14px; font-weight:600; color:#374151; flex:1;';
-      try { addressText.textContent = (typeof buildAddress==='function' && provider && (provider.profile || provider)) ? (buildAddress(provider.profile || provider) || 'Adresse in deinem Profil eintragen').trim() : 'Adresse in deinem Profil eintragen'; } catch(e){ addressText.textContent='Adresse in deinem Profil eintragen'; }
-      addressRow.appendChild(addressIconWrap);
-      addressRow.appendChild(addressText);
-      pickupTimeCard.appendChild(addressRow);
-      scrollArea.appendChild(pickupTimeCard);
-
+      // Kategorie-Pills: direkt unter dem Titel, Emerald-Glow wenn aktiv
       const catValues = ['Fleisch','Vegetarisch','Vegan','Salat'];
       const catDisplayLabels = ['Mit Fleisch','Vegetarisch','Vegan','Salat'];
       const catEmojis = ['🥩','🥗','🌱','🥪'];
@@ -23198,55 +23194,10 @@
       if(!catValues.includes(currentCat)) w.data.category = 'Fleisch';
       var catIdx = catValues.indexOf(w.data.category);
       if(catIdx<0) catIdx=0;
-
-      // Zeile Kategorie + Preis wie Detailseite (eine Zeile: links Kategorie-Pill, rechts Preis in gelber Pill)
-      const catPriceRow=document.createElement('div');
-      catPriceRow.className='inserat-section inserat-cat-price-row';
-      catPriceRow.style.display='flex'; catPriceRow.style.alignItems='center'; catPriceRow.style.justifyContent='space-between'; catPriceRow.style.gap='12px'; catPriceRow.style.flexWrap='wrap';
-      const catPillSingle=document.createElement('button');
-      catPillSingle.type='button';
-      catPillSingle.className='extra-pill inserat-cat-pill active';
-      catPillSingle.style.cssText='flex:0 0 auto; cursor:pointer;';
-      catPillSingle.textContent=(catEmojis[catIdx]||'')+' '+catDisplayLabels[catIdx];
-      catPillSingle.onclick=()=>{ hapticLight(); scrollToNext('step-cat'); };
-      catPriceRow.appendChild(catPillSingle);
-      const pricePillWrap=document.createElement('div');
-      pricePillWrap.className='inserat-price-pill-wrap';
-      pricePillWrap.style.cssText='padding:8px 16px; border-radius:99px; background:rgba(255,215,0,0.15); color:#1a1a1a; font-weight:900; font-size:18px; display:inline-flex; align-items:center; gap:4px;';
-      const priceRow=document.createElement('div');
-      priceRow.className='inserat-price-row';
-      const inputPrice=document.createElement('input');
-      inputPrice.type='text';
-      inputPrice.className='inserat-price-input price-display';
-      inputPrice.setAttribute('inputmode','decimal');
-      inputPrice.placeholder='0,00';
-      inputPrice.value=(w.data.price>0?Number(w.data.price).toFixed(2).replace('.',','):'');
-      inputPrice.style.cssText='width:64px; background:transparent; border:none; font-size:18px; font-weight:900; color:#1a1a1a; outline:none;';
-      const updateProfit = function(val){
-        var p = (parseFloat(String(val).replace(',','.')) || 0) * 30;
-        var calcVal = document.getElementById('calc-val');
-        if(calcVal) calcVal.textContent = p.toFixed(2).replace('.',',');
-      };
-      inputPrice.oninput=()=>{ var v=inputPrice.value.replace(',','.'); w.data.price=parseFloat(v)||0; saveDraft(); updateProfit(v); if(priceStickerInserat) priceStickerInserat.textContent=(Number(w.data.price)||0).toFixed(2).replace('.',',')+' €'; setTimeout(function(){ scrollToNext('step-price'); }, 180); };
-      inputPrice.onblur=()=>{ if(w.data.price>0) inputPrice.value=Number(w.data.price).toFixed(2).replace('.',','); dismissKeyboard(); hapticLight(); scrollToNext('power-bar'); };
-      priceRow.appendChild(inputPrice);
-      const euroSpan=document.createElement('span');
-      euroSpan.className='inserat-price-euro';
-      euroSpan.textContent='€';
-      euroSpan.style.color='#1a1a1a';
-      priceRow.appendChild(euroSpan);
-      pricePillWrap.appendChild(priceRow);
-      catPriceRow.appendChild(pricePillWrap);
-      scrollArea.appendChild(catPriceRow);
-
-      // 4. KATEGORIE PILLS – vier Optionen zum Wechseln
       const stepCat=document.createElement('div');
       stepCat.id='step-cat';
       stepCat.className='inserat-section inserat-cat-pills';
-      const labelCat=document.createElement('span');
-      labelCat.className='inserat-section-label';
-      labelCat.textContent='Kategorie';
-      stepCat.appendChild(labelCat);
+      stepCat.style.display='flex'; stepCat.style.flexWrap='wrap'; stepCat.style.gap='10px';
       catValues.forEach((c,i)=>{
         const b=document.createElement('button');
         b.type='button';
@@ -23258,23 +23209,43 @@
       });
       scrollArea.appendChild(stepCat);
 
-      // 5. UMSATZPROGNOSE (Preis steht in Zeile + auf Bild)
+      // Preis-Sektion: elegante Typografie + darunter Umsatzprognose (#94a3b8) mit ⓘ-Tooltip
       const stepPrice=document.createElement('div');
       stepPrice.id='step-price';
-      stepPrice.className='inserat-section';
+      stepPrice.className='inserat-section inserat-price-section';
+      const priceDisplayWrap=document.createElement('div');
+      priceDisplayWrap.style.cssText='margin-bottom:12px;';
+      const inputPrice=document.createElement('input');
+      inputPrice.type='text';
+      inputPrice.className='inserat-price-input price-display';
+      inputPrice.setAttribute('inputmode','decimal');
+      inputPrice.placeholder='0,00';
+      inputPrice.value=(w.data.price>0?Number(w.data.price).toFixed(2).replace('.',','):'');
+      inputPrice.style.cssText='font-size:14px; font-weight:900; color:#1a1a1a; background:rgba(255,215,0,0.15); border:2px solid rgba(255,215,0,0.4); border-radius:16px; padding:12px 20px; width:120px; outline:none;';
+      const updateProfit = function(val){
+        var p = (parseFloat(String(val).replace(',','.')) || 0) * 30;
+        var calcVal = document.getElementById('calc-val');
+        if(calcVal) calcVal.textContent = p.toFixed(2).replace('.',',');
+      };
+      inputPrice.oninput=()=>{ var v=inputPrice.value.replace(',','.'); w.data.price=parseFloat(v)||0; saveDraft(); updateProfit(v); if(priceStickerInserat) priceStickerInserat.textContent=(Number(w.data.price)||0).toFixed(2).replace('.',',')+' €'; hapticLight(); };
+      inputPrice.onblur=()=>{ if(w.data.price>0) inputPrice.value=Number(w.data.price).toFixed(2).replace('.',','); dismissKeyboard(); hapticLight(); };
+      const euroSpan=document.createElement('span');
+      euroSpan.style.cssText='font-size:14px; font-weight:900; color:#1a1a1a; margin-left:6px;';
+      euroSpan.textContent='€';
+      priceDisplayWrap.appendChild(inputPrice);
+      priceDisplayWrap.appendChild(euroSpan);
+      stepPrice.appendChild(priceDisplayWrap);
       var p0=Number(w.data.price)||0;
       const prognoseWrap=document.createElement('div');
       prognoseWrap.className='inserat-prognose-wrap inserat-earnings inserat-umsatzprognose';
-      prognoseWrap.innerHTML='<p style="margin:0; color:#94a3b8; font-size:0.75rem; display:flex; align-items:center; flex-wrap:wrap; gap:5px;"><span>Umsatzprognose (bei angenommen 30 Portionen): <span id="calc-val">'+(p0*30).toFixed(2).replace('.',',')+'</span> €</span></p><span class="info-trigger" role="button" aria-label="Info zur Umsatzprognose" tabindex="0">ⓘ</span><div id="prognose-tooltip" class="glass-tooltip">Deine Gebühr beträgt immer nur 0,89 € pro Abholnummer, egal wie viele Portionen pro Gast bestellt werden.</div>';
+      prognoseWrap.innerHTML='<p style="margin:0; font-size:12px; font-weight:600; color:#94a3b8; display:flex; align-items:center; flex-wrap:wrap; gap:6px;"><span>Umsatzprognose (bei angenommen 30 Portionen): <span id="calc-val">'+(p0*30).toFixed(2).replace('.',',')+'</span> €</span></p><span class="info-trigger" role="button" aria-label="Info zur Abholnummer-Gebühr" tabindex="0">ⓘ</span><div id="prognose-tooltip" class="glass-tooltip">Deine Gebühr beträgt immer nur 0,89 € pro Abholnummer, egal wie viele Portionen pro Gast bestellt werden.</div>';
       var tooltipEl=prognoseWrap.querySelector('#prognose-tooltip');
-      var togglePrognoseTooltip=function(){
-        try{ if(navigator.vibrate) navigator.vibrate(10); } catch(e){}
-        if(tooltipEl) tooltipEl.classList.toggle('prognose-tooltip-visible');
-      };
+      var togglePrognoseTooltip=function(){ hapticLight(); if(tooltipEl) tooltipEl.classList.toggle('prognose-tooltip-visible'); };
       prognoseWrap.querySelector('.info-trigger').onclick=function(e){ e.preventDefault(); e.stopPropagation(); togglePrognoseTooltip(); };
       prognoseWrap.querySelector('p').onclick=function(e){ e.preventDefault(); togglePrognoseTooltip(); };
       stepPrice.appendChild(prognoseWrap);
       scrollArea.appendChild(stepPrice);
+
 
       // Funktions-Icons am Ende des Inhalts: 🌾 Allergene | ➕ Extras (gläsernes Dropdown per Klick)
       if(typeof w.data.extrasExpanded==='undefined') w.data.extrasExpanded=false;
@@ -25268,7 +25239,11 @@
 
   // Magic Link: #/plan/[Anbieter-ID] – öffentliche Wochenplan-Ansicht (Kunde sieht nur Verkaufspreis, 3 Säulen)
   var planMatch = (location.hash || '').match(/^#\/plan\/(.+)$/);
-  if(planMatch && typeof showPlanPublicView === 'function'){
+  var path = (window.location.pathname || '').replace(/\/$/, '');
+  if(path.indexOf('/anbieter/hilfe/faq') !== -1 && typeof provider !== 'undefined' && provider && provider.loggedIn){
+    setMode('provider');
+    showLegalPage('faq-provider');
+  } else if(planMatch && typeof showPlanPublicView === 'function'){
     showPlanPublicView(decodeURIComponent(planMatch[1]));
   } else {
     setMode(mode);
