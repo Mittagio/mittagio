@@ -800,11 +800,13 @@
     #quickPostBd:not(.active),
     #publishFeeBd:not(.active),
     #inseratSuccessBd:not(.active),
-    #saveSuccessSheetBd:not(.active){ display:none !important; opacity:0 !important; pointer-events:none !important; }
+    #saveSuccessSheetBd:not(.active),
+    #abholnummerExplainBd:not(.active){ display:none !important; opacity:0 !important; pointer-events:none !important; }
     #quickPostSheet:not(.active),
     #publishFeeSheet:not(.active),
     #inseratSuccessSheet:not(.active),
-    #saveSuccessSheet:not(.active){ visibility:hidden !important; pointer-events:none !important; }
+    #saveSuccessSheet:not(.active),
+    #abholnummerExplainSheet:not(.active){ visibility:hidden !important; pointer-events:none !important; }
     .sheet{
       position:fixed; left:0; right:0; bottom:-120%; z-index:2001;
       background:#fff; border-radius:22px 22px 0 0;
@@ -817,7 +819,18 @@
     }
     .sheet.active{bottom:0}
     #publishFeeSheet.active,
-    #saveSuccessSheet.active{ bottom:0 !important; visibility:visible !important; }
+    #saveSuccessSheet.active,
+    #abholnummerExplainSheet.active{ bottom:0 !important; visibility:visible !important; }
+    .abholnummer-explain-hero{ display:flex; overflow-x:auto; overflow-y:hidden; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; gap:0; scrollbar-width:none; }
+    .abholnummer-explain-hero::-webkit-scrollbar{ display:none; }
+    .abholnummer-explain-slide{ flex:0 0 100%; min-width:100%; scroll-snap-align:start; scroll-snap-stop:always; padding:0 24px 20px; box-sizing:border-box; }
+    .abholnummer-explain-slide-img{ width:100%; aspect-ratio:4/3; border-radius:16px; object-fit:cover; background:#f1f3f5; }
+    .abholnummer-explain-slide-body{ padding:16px 0; }
+    .abholnummer-explain-slide-title{ margin:0 0 8px; font-size:20px; font-weight:900; color:#1a1a1a; }
+    .abholnummer-explain-slide-sub{ margin:0; font-size:15px; color:#64748b; line-height:1.5; }
+    .abholnummer-explain-dots{ display:flex; justify-content:center; gap:8px; padding:12px 0 20px; }
+    .abholnummer-explain-dot{ width:8px; height:8px; border-radius:50%; background:#cbd5e1; border:none; padding:0; cursor:pointer; transition:background 0.2s; }
+    .abholnummer-explain-dot.active{ background:#FFD700; }
     .handle{width:46px; height:5px; background:#ddd; border-radius:999px; margin:10px auto 6px}
     .sheet-img{height:260px; background:#eee}
     .sheet-img img{width:100%; height:100%; object-fit:cover; display:block}
@@ -7042,6 +7055,14 @@
         
         <!-- FAQ-Inhalt: Kunden (Accordion – Tippen = Ausklappen) -->
         <div id="faqContentCustomer" style="display:block; padding:20px; line-height:1.8; font-size:15px;">
+          <button type="button" onclick="typeof openAbholnummerExplainSheet==='function'&&openAbholnummerExplainSheet()" style="width:100%; margin-bottom:20px; padding:18px 20px; background:linear-gradient(135deg, rgba(255,215,0,0.15) 0%, rgba(255,215,0,0.08) 100%); border:2px solid rgba(255,215,0,0.4); border-radius:16px; text-align:left; cursor:pointer; display:flex; align-items:center; gap:14px;">
+            <span style="font-size:28px;">🧾</span>
+            <div>
+              <div style="font-size:16px; font-weight:800; color:#1a1a1a;">So funktioniert die Abholnummer</div>
+              <div style="font-size:13px; color:#64748b; margin-top:2px;">5 kurze Schritte – mit Bildern</div>
+            </div>
+            <i data-lucide="chevron-right" style="width:20px;height:20px;color:#94a3b8;margin-left:auto;"></i>
+          </button>
           <h2 style="font-size:16px; font-weight:800; margin:0 0 12px; color:#1a1a1a; text-transform:uppercase; letter-spacing:0.5px;">Bestellungen &amp; Bezahlung</h2>
           <details style="background:#fff; border-radius:12px; border:1px solid rgba(0,0,0,.06); overflow:hidden; margin-bottom:8px;">
             <summary style="padding:14px 16px; font-size:15px; font-weight:700; color:#2D3436; cursor:pointer; list-style:none;">Muss ich mich registrieren?</summary>
@@ -7115,6 +7136,11 @@
 
         <!-- Erweiterte Kunden-FAQs (Zahlung, Stornierung, Account) -->
         <div style="padding:0 20px 20px;">
+          <button type="button" onclick="typeof openAbholnummerExplainSheet==='function'&&openAbholnummerExplainSheet()" style="width:100%; margin-bottom:20px; padding:14px 18px; background:rgba(255,215,0,0.12); border:2px solid rgba(255,215,0,0.35); border-radius:14px; text-align:left; cursor:pointer; display:flex; align-items:center; gap:12px;">
+            <span style="font-size:24px;">🧾</span>
+            <span style="font-size:15px; font-weight:700; color:#1a1a1a;">So funktioniert die Abholnummer (5 Schritte)</span>
+            <i data-lucide="chevron-right" style="width:18px;height:18px;color:#94a3b8;margin-left:auto;"></i>
+          </button>
           <h2 style="font-size:16px; font-weight:800; margin:0 0 12px; color:#1a1a1a;">Häufige Fragen</h2>
           <details style="background:#fff; border-radius:12px; border:1px solid rgba(0,0,0,.06); overflow:hidden; margin-bottom:8px;">
             <summary style="padding:12px 14px; font-size:14px; font-weight:600; color:#1a1a1a; cursor:pointer; list-style:none;">Wie bezahle ich mein Essen?</summary>
@@ -7487,6 +7513,56 @@
   <div style="position:absolute; bottom:0; left:0; right:0; padding:20px 24px calc(20px + env(safe-area-inset-bottom, 0)); background:linear-gradient(to top, #f8f7f2 80%, transparent); display:flex; flex-direction:column; gap:10px;">
     <button type="button" id="saveSuccessSheetBtnLive" style="width:100%; min-height:52px; border-radius:16px; background:#1a1a1a; color:#fff; font-weight:800; font-size:15px; border:none; box-shadow:0 4px 12px rgba(0,0,0,0.1);">Jetzt live stellen</button>
     <button type="button" id="saveSuccessSheetBtnFertig" style="width:100%; min-height:48px; border-radius:16px; background:#fff; color:#1a1a1a; font-weight:700; font-size:15px; border:2px solid rgba(0,0,0,0.1);">Fertig</button>
+  </div>
+</div>
+
+<!-- 5 Screens: So funktioniert die Abholnummer (Marketing/FAQ) – Platzhalterbilder, ersetzbar -->
+<div class="backdrop" id="abholnummerExplainBd" onclick="closeAbholnummerExplainSheet()" style="background:rgba(0,0,0,0.7); backdrop-filter:blur(10px); z-index:1195;"></div>
+<div class="sheet" id="abholnummerExplainSheet" style="max-width:480px; border-radius:28px 28px 0 0; background:#f8f7f2; z-index:1196; display:flex; flex-direction:column; max-height:90vh;">
+  <div style="padding:16px 0 0; border-bottom:1px solid rgba(0,0,0,0.06); display:flex; align-items:center; justify-content:space-between;">
+    <h2 style="margin:0 24px; font-size:18px; font-weight:900; color:#1a1a1a;">So funktioniert die Abholnummer</h2>
+    <button type="button" onclick="closeAbholnummerExplainSheet()" aria-label="Schließen" style="width:44px; height:44px; border:none; background:transparent; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; margin-right:8px;"><i data-lucide="x" style="width:22px;height:22px;color:#64748b;"></i></button>
+  </div>
+  <div class="abholnummer-explain-hero" id="abholnummerExplainCarousel" style="flex:1; min-height:0; padding:20px 0 0;">
+    <div class="abholnummer-explain-slide" data-slide="0">
+      <img class="abholnummer-explain-slide-img" src="https://images.unsplash.com/photo-1504674900247-0877df9cc84e?auto=format&fit=crop&w=800&q=70" alt="Gerichte entdecken">
+      <div class="abholnummer-explain-slide-body">
+        <h3 class="abholnummer-explain-slide-title">1. Gericht entdecken</h3>
+        <p class="abholnummer-explain-slide-sub">Finde dein Mittagsgericht in der Nähe – frisch, von lokalen Anbietern.</p>
+      </div>
+    </div>
+    <div class="abholnummer-explain-slide" data-slide="1">
+      <img class="abholnummer-explain-slide-img" src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=800&q=70" alt="Mittagsbox">
+      <div class="abholnummer-explain-slide-body">
+        <h3 class="abholnummer-explain-slide-title">2. In die Mittagsbox</h3>
+        <p class="abholnummer-explain-slide-sub">Lege Favoriten in deine Mittagsbox – so behältst du den Überblick für heute.</p>
+      </div>
+    </div>
+    <div class="abholnummer-explain-slide" data-slide="2">
+      <img class="abholnummer-explain-slide-img" src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=800&q=70" alt="Abholnummer sichern">
+      <div class="abholnummer-explain-slide-body">
+        <h3 class="abholnummer-explain-slide-title">3. Abholnummer sichern</h3>
+        <p class="abholnummer-explain-slide-sub">Sichere dir deine Abholnummer – nur 0,89 €. Zahlung digital, Schlange überspringen.</p>
+      </div>
+    </div>
+    <div class="abholnummer-explain-slide" data-slide="3">
+      <img class="abholnummer-explain-slide-img" src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=70" alt="An der Theke">
+      <div class="abholnummer-explain-slide-body">
+        <h3 class="abholnummer-explain-slide-title">4. An der Theke zeigen</h3>
+        <p class="abholnummer-explain-slide-sub">Zeig deine Abholnummer beim Abholen – dein Gericht ist sofort zugeordnet. Fertig.</p>
+      </div>
+    </div>
+    <div class="abholnummer-explain-slide" data-slide="4">
+      <img class="abholnummer-explain-slide-img" src="https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=800&q=70" alt="Genießen">
+      <div class="abholnummer-explain-slide-body">
+        <h3 class="abholnummer-explain-slide-title">5. Genießen</h3>
+        <p class="abholnummer-explain-slide-sub">Dein Mittag, ohne Warten – Zeit gespart mit der Abholnummer.</p>
+      </div>
+    </div>
+  </div>
+  <div id="abholnummerExplainDots" class="abholnummer-explain-dots"></div>
+  <div style="padding:0 24px calc(20px + env(safe-area-inset-bottom, 0)); padding-top:0;">
+    <button type="button" id="abholnummerExplainBtnNext" style="width:100%; min-height:52px; border-radius:16px; background:#FFD700; color:#1a1a1a; font-weight:800; font-size:16px; border:none; cursor:pointer; box-shadow:0 4px 12px rgba(255,215,0,0.3);">Weiter</button>
   </div>
 </div>
 
@@ -23497,6 +23573,70 @@
     }
     closePublishFeeModal();
     if(typeof closeQuickPostSheet === 'function') closeQuickPostSheet();
+  })();
+
+  (function wireAbholnummerExplainSheet(){
+    var carousel = document.getElementById('abholnummerExplainCarousel');
+    var dotsWrap = document.getElementById('abholnummerExplainDots');
+    var btnNext = document.getElementById('abholnummerExplainBtnNext');
+    var bd = document.getElementById('abholnummerExplainBd');
+    var sheet = document.getElementById('abholnummerExplainSheet');
+    var currentSlide = 0;
+    var totalSlides = 5;
+    function updateUI(){
+      if(btnNext){
+        btnNext.textContent = currentSlide >= totalSlides - 1 ? 'Fertig' : 'Weiter';
+      }
+      if(dotsWrap){
+        dotsWrap.innerHTML = '';
+        for(var i = 0; i < totalSlides; i++){
+          var dot = document.createElement('button');
+          dot.type = 'button';
+          dot.className = 'abholnummer-explain-dot' + (i === currentSlide ? ' active' : '');
+          dot.setAttribute('aria-label', 'Slide ' + (i + 1));
+          (function(idx){ dot.onclick = function(){ currentSlide = idx; scrollToSlide(); updateUI(); }; })(i);
+          dotsWrap.appendChild(dot);
+        }
+      }
+    }
+    function scrollToSlide(){
+      if(!carousel) return;
+      var slide = carousel.querySelector('.abholnummer-explain-slide[data-slide="' + currentSlide + '"]');
+      if(slide) slide.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+      updateUI();
+    }
+    function openAbholnummerExplainSheet(){
+      currentSlide = 0;
+      updateUI();
+      if(carousel) carousel.scrollLeft = 0;
+      if(bd) bd.classList.add('active');
+      if(sheet) sheet.classList.add('active');
+      if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
+    }
+    function closeAbholnummerExplainSheet(){
+      if(bd) bd.classList.remove('active');
+      if(sheet) sheet.classList.remove('active');
+    }
+    if(btnNext){
+      btnNext.onclick = function(){
+        if(currentSlide >= totalSlides - 1){ closeAbholnummerExplainSheet(); return; }
+        currentSlide++;
+        scrollToSlide();
+      };
+    }
+    if(carousel){
+      carousel.addEventListener('scroll', function(){
+        var scrollLeft = carousel.scrollLeft;
+        var slideWidth = carousel.offsetWidth;
+        var idx = Math.round(scrollLeft / slideWidth);
+        if(idx >= 0 && idx < totalSlides && idx !== currentSlide){ currentSlide = idx; updateUI(); }
+      });
+    }
+    updateUI();
+    if(typeof window !== 'undefined'){
+      window.openAbholnummerExplainSheet = openAbholnummerExplainSheet;
+      window.closeAbholnummerExplainSheet = closeAbholnummerExplainSheet;
+    }
   })();
 
   function saveToCookbookFromWizard(keepOpen=false){
