@@ -1485,6 +1485,10 @@
       0%, 100%{ border-bottom-color: rgba(16,185,129,0.5); }
       50%{ border-bottom-color: var(--emerald); }
     }
+    @keyframes magnet-pulse-idle{
+      0%, 100%{ border-bottom-color: rgba(16,185,129,0.15); }
+      50%{ border-bottom-color: rgba(16,185,129,0.4); }
+    }
     #wizard.sheet--kitchen .glass-express-step0 #step-name input,
     #wizard.sheet--kitchen .glass-express-step0 .liquid-input,
     #wizard.sheet--kitchen .glass-express-step0 .liquid-input-focus{
@@ -1496,10 +1500,13 @@
     #wizard.sheet--kitchen .glass-express-step0 .liquid-input-focus:focus{
       animation: magnet-pulse 1.2s ease-in-out infinite;
     }
-    #wizard.sheet--kitchen .glass-express-step0 #step-name input.magnet-input{
+    #wizard.sheet--kitchen .glass-express-step0 #step-name input.magnet-input,
+    #wizard.sheet--kitchen .glass-master-panel #step-name input.magnet-input{
       border-bottom: 2px solid rgba(0,0,0,0.05);
+      animation: magnet-pulse-idle 2.5s ease-in-out infinite;
     }
-    #wizard.sheet--kitchen .glass-express-step0 #step-name input.magnet-input:focus{
+    #wizard.sheet--kitchen .glass-express-step0 #step-name input.magnet-input:focus,
+    #wizard.sheet--kitchen .glass-master-panel #step-name input.magnet-input:focus{
       animation: magnet-pulse 1.2s ease-in-out infinite;
     }
     #wizard.sheet--kitchen .glass-express-step0 #step-name input:first-of-type{
@@ -1995,13 +2002,15 @@
     }
     @keyframes wizardShimmer{ 0%{ background-position:200% 0; } 100%{ background-position:-200% 0; } }
 
-    /* Inseratsflow: Foto oben fix, Mitte scrollbar, Buttons unten fix – 100% App-Feeling */
+    /* ========== INSERATSFLOW (radikal bereinigt) – S25-Referenz 1:1 ========== */
+    /* Äußeren Scroll töten, w-actions ausblenden [cite: 2026-02-14] */
     #wizard[data-flow="listing"].sheet--kitchen .wizard-scroll{
-      overflow: hidden;
+      overflow: hidden !important;
       flex: 1;
       min-height: 0;
-      display: flex;
-      flex-direction: column;
+      display: flex !important;
+      flex-direction: column !important;
+      padding: 0 !important;
     }
     #wizard[data-flow="listing"].sheet--kitchen .wizard-scroll #wContent{
       height: 100%;
@@ -2009,12 +2018,39 @@
       display: flex;
       flex-direction: column;
     }
-    #wizard[data-flow="listing"].sheet--kitchen .wizard-scroll #wContent > .glass-express-step0{
+    #wizard[data-flow="listing"].sheet--kitchen .wizard-scroll #wContent > .glass-express-step0,
+    #wizard[data-flow="listing"].sheet--kitchen .wizard-scroll #wContent > .glass-master-panel{
       flex: 1;
       min-height: 0;
       overflow: hidden;
       display: flex;
       flex-direction: column;
+    }
+    /* Single-Screen Glassmorphism Panel [cite: 2026-01-29, 2026-02-02] */
+    #wizard[data-flow="listing"].sheet--kitchen .glass-master-panel{
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(45px) saturate(160%);
+      -webkit-backdrop-filter: blur(45px) saturate(160%);
+      border-radius: 3rem;
+      margin: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      overflow: hidden;
+    }
+    #wizard[data-flow="listing"].sheet--kitchen .glass-master-panel .scroll-content,
+    #wizard[data-flow="listing"].sheet--kitchen .glass-master-panel .inserat-scroll-area{
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      padding: 20px;
+      -webkit-overflow-scrolling: touch;
+    }
+    #wizard[data-flow="listing"].sheet--kitchen .glass-master-panel .fixed-footer,
+    #wizard[data-flow="listing"].sheet--kitchen .glass-master-panel .inserat-action-section{
+      flex-shrink: 0;
+      padding: 20px;
+      padding-bottom: calc(20px + env(safe-area-inset-bottom, 24px));
+      background: rgba(255, 255, 255, 0.4);
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
     }
     #wizard[data-flow="listing"].sheet--kitchen .glass-express-step0 .inserat-scroll-area{
       flex: 1;
@@ -2025,7 +2061,16 @@
     #wizard[data-flow="listing"].sheet--kitchen .glass-express-step0 .inserat-action-section{
       flex-shrink: 0;
     }
-    /* Inseratsflow: Nur Glassmorphism (glass-express-step0). Keine Altlasten. */
+    /* Kein Wizard-Chrome – nur Panel + Zurück im Header */
+    #wizard[data-flow="listing"].sheet--kitchen .w-actions,
+    #wizard[data-flow="listing"].sheet--kitchen .wizard-progress-dots,
+    #wizard[data-flow="listing"].sheet--kitchen .w-top,
+    #wizard[data-flow="listing"].sheet--kitchen .w-q,
+    #wizard[data-flow="listing"].sheet--kitchen .w-help{
+      display: none !important;
+    }
+    /* Magnet-Linie: pulsierend für Namen [cite: 2026-01-29] – bereits in .liquid-input.magnet-input :focus */
+    /* Inseratsflow: Nur Glassmorphism. Keine Altlasten. */
 
     /* Einheitliches Support-Layout: Anbieter + Inseratsflow (Buttons, Panels, Abstände wie Support-Sheet) */
     :root{
@@ -8508,7 +8553,7 @@
   /** Platzhalter-Bild im Inserat-Wizard (1x1, hellgrau) */
   const WIZARD_PLACEHOLDER_IMAGE = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="1" height="1"%3E%3Crect fill="%23f0f0f0" width="1" height="1"/%3E%3C/svg%3E';
   /** Haptisches Feedback (Vibration) – nur wo erlaubt (z.B. nach Nutzerinteraktion) */
-  function haptic(ms){ try { if(navigator.vibrate) navigator.vibrate(ms || 10); } catch(e){} }
+  function haptic(ms){ try { if(navigator.vibrate) navigator.vibrate(ms !== undefined ? ms : 10); } catch(e){} }
 
   /** Kategorie → Emoji (Bestellhistorie & Pills) */
   const CAT_EMOJI = {
@@ -22305,39 +22350,11 @@
   // KEINE Sonderflows bauen!
   // ============================================================
   function buildListingStep(){
-    // Notfall-Fix: Altes Wizard-Korsett neutralisieren, damit das Liquid-Panel den Platz bekommt
-    var sheetBody = document.querySelector('#wizard.sheet--kitchen .sheet-body.wizard-sheet-body');
-    if(sheetBody){
-      sheetBody.style.padding = '0';
-      sheetBody.style.overflow = 'hidden';
-      sheetBody.style.maxHeight = 'none';
-    }
-    var wContent = document.getElementById('wContent');
-    if(wContent){
-      wContent.style.margin = '0';
-      wContent.style.padding = '0';
-      wContent.style.maxHeight = 'none';
-    }
-    var wizardScroll = document.querySelector('#wizard .wizard-scroll');
-    if(wizardScroll){
-      wizardScroll.style.margin = '0';
-      wizardScroll.style.padding = '0';
-      wizardScroll.style.paddingBottom = '120px';
-    }
-    var wBox = document.getElementById('wBox');
-    if(wBox){ wBox.style.padding = '0'; wBox.style.overflow = 'hidden'; }
-    var wActions = document.querySelector('#wizard .w-actions');
-    if(wActions) wActions.style.setProperty('display', 'none', 'important');
-
+    // Layout ausschließlich per CSS (#wizard[data-flow="listing"])
     setWizardNextDefault();
     w.step = 0; // Single-Page: immer Schritt 0
-    if(w.kind === 'listing' && w.step === 0){
-      if(wActions) wActions.style.setProperty('display', 'none', 'important');
-    }
     if(wNextBtn) wNextBtn.style.display = 'none';
-    if(wBackBtn){
-      wBackBtn.onclick = () => { closeWizard(); return; };
-    }
+    if(wBackBtn) wBackBtn.onclick = () => { closeWizard(); return; };
     setWizardHeader('', '');
     const profile = normalizeProviderProfile(provider.profile || {});
     const profileWindow = profile.mealWindow || DEFAULT_MEAL_WINDOW;
@@ -22354,7 +22371,7 @@
     {
       setWizardQuestion('', '');
       const box=document.createElement('div');
-      box.className='glass-express-step0 inserat-universal-mask inserat-master-flow liquid-panel listing-glass-panel s25-floating-panel';
+      box.className='glass-express-step0 glass-master-panel inserat-universal-mask inserat-master-flow liquid-panel listing-glass-panel s25-floating-panel';
       box.style.cssText='padding:0; overflow:hidden; display:flex; flex-direction:column; min-height:0;';
       const saveDraft = () => { localStorage.setItem('wizard_draft', JSON.stringify(w)); };
       const scrollToNext = (id)=>{ setTimeout(()=>{ var el=document.getElementById(id); if(el) el.scrollIntoView({ behavior:'smooth', block:'center' }); }, 150); };
@@ -22377,7 +22394,7 @@
       box.appendChild(photoTile);
 
       const scrollArea=document.createElement('div');
-      scrollArea.className='inserat-scroll-area';
+      scrollArea.className='inserat-scroll-area scroll-content';
 
       // 2. GERICHTSNAME & 3. BESCHREIBUNG
       const stepName=document.createElement('div');
@@ -22589,20 +22606,20 @@
       var primaryValid = hasDish && hasPrice;
 
       const actionSection=document.createElement('section');
-      actionSection.className='inserat-action-section' + (isInserierenRoute ? ' inserat-action-pricing' : '');
+      actionSection.className='inserat-action-section fixed-footer' + (isInserierenRoute ? ' inserat-action-pricing' : '');
 
       if(isInserierenRoute){
         const btn499=document.createElement('button');
         btn499.type='button';
         btn499.style.cssText='width:100%; padding:20px; background:#FACC15; color:#1a1a1a; font-size:16px; font-weight:800; border:none; border-radius:24px; cursor:pointer; box-shadow:0 10px 30px rgba(250,204,21,0.35); text-transform:uppercase; letter-spacing:0.02em; line-height:1.3;';
         btn499.innerHTML='JETZT FÜR 4,99 €<br>INSERIEREN';
-        btn499.onclick=function(){ if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; } if(typeof haptic==='function') haptic(50); w.data.pricingOption=undefined; w.data.inseratFeeWaived=false; var o=previewOfferFromWizard(); closeWizard(true); showPublishFeeModal(o); };
+        btn499.onclick=function(){ if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; } if(typeof haptic==='function') haptic([30, 50, 30]); w.data.pricingOption=undefined; w.data.inseratFeeWaived=false; var o=previewOfferFromWizard(); closeWizard(true); showPublishFeeModal(o); };
         actionSection.appendChild(btn499);
         const btnGratis=document.createElement('button');
         btnGratis.type='button';
         btnGratis.style.cssText='width:100%; padding:16px; border-radius:24px; border:2px solid #10b981; background:rgba(16,185,129,0.08); color:#065f46; font-size:14px; font-weight:800; cursor:pointer;';
         btnGratis.textContent='Oder Gratis mit Abholnummer (0,89 €)';
-        btnGratis.onclick=function(){ if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; } if(typeof haptic==='function') haptic(50); w.data.hasPickupCode=true; w.data.inseratFeeWaived=true; w.data.pricingOption='abholnummer'; var o=previewOfferFromWizard(); closeWizard(true); showPublishFeeModal(o); };
+        btnGratis.onclick=function(){ if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; } if(typeof haptic==='function') haptic([30, 50, 30]); w.data.hasPickupCode=true; w.data.inseratFeeWaived=true; w.data.pricingOption='abholnummer'; var o=previewOfferFromWizard(); closeWizard(true); showPublishFeeModal(o); };
         actionSection.appendChild(btnGratis);
       } else {
         const btnSave=document.createElement('button');
