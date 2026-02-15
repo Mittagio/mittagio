@@ -7493,8 +7493,14 @@
       <p style="margin:0; font-size:14px; color:#64748b; font-weight:500;">Hungrige Gäste können dein Gericht jetzt finden.</p>
     </div>
 
-    <!-- 2. Live Preview (Mini Card) -->
-    <div id="inseratSuccessLivePreview" class="success-card-preview" style="margin-bottom:8px;"></div>
+    <!-- 2. Live Preview (Kompakt-Card mit 3 Säulen) -->
+    <div id="inseratSuccessLivePreview" class="success-card-preview" style="margin-bottom:16px;"></div>
+
+    <!-- 2b. Zusammenfassung des Deals -->
+    <div id="inseratSuccessDealSummary" style="background:#fff; border-radius:16px; padding:16px 20px; margin-bottom:16px; border:1px solid rgba(0,0,0,0.06); text-align:left;"></div>
+
+    <!-- 2c. Was passiert jetzt? -->
+    <p id="inseratSuccessWhatNext" style="margin:0 0 20px; font-size:14px; color:#64748b; line-height:1.5; text-align:left;"></p>
 
     <!-- 3. Primary Action: WhatsApp Boost (gut sichtbar, direkt unter Vorschau) -->
     <div style="margin-top:16px;">
@@ -7533,10 +7539,13 @@
 
   </div>
 
-  <!-- Bottom (absolut im Sheet, damit es mit dem Sheet verschwindet – fixed würde auf Discover sichtbar bleiben) -->
-  <div style="position:absolute; bottom:0; left:0; right:0; padding:20px 24px calc(20px + env(safe-area-inset-bottom, 0)); background:linear-gradient(to top, #f8f7f2 80%, transparent); text-align:center;">
+  <!-- Bottom: Zur Übersicht + Weiteres Inserat erstellen -->
+  <div style="position:absolute; bottom:0; left:0; right:0; padding:20px 24px calc(20px + env(safe-area-inset-bottom, 0)); background:linear-gradient(to top, #f8f7f2 80%, transparent); text-align:center; display:flex; flex-direction:column; gap:10px;">
     <button type="button" id="inseratSuccessBtnBack" style="width:100%; min-height:52px; border-radius:16px; background:#1a1a1a; color:#fff; font-weight:800; font-size:15px; border:none; box-shadow:0 4px 12px rgba(0,0,0,0.1);">
-      Fertig & zum Dashboard
+      Zur Übersicht (Dashboard)
+    </button>
+    <button type="button" id="inseratSuccessBtnNewListing" style="width:100%; min-height:48px; border-radius:16px; background:#fff; color:#1a1a1a; font-weight:700; font-size:15px; border:2px solid rgba(0,0,0,0.1);">
+      Weiteres Inserat erstellen
     </button>
   </div>
 </div>
@@ -23246,29 +23255,69 @@
     // 1. Konfetti zünden
     createConfetti();
 
-    // Emotional: Hero mit Gerichtsfoto + Abholnummer-Bestätigung
+    // Hero nur bei Abholnummer („Kunde zeigt Abholnummer“ – sonst irrelevant)
+    const heroBlock = document.getElementById('inseratSuccessHero');
+    if(heroBlock) heroBlock.style.display = d.hasPickupCode ? '' : 'none';
     const heroImg = document.getElementById('inseratSuccessHeroImg');
     if(heroImg && d.hasPickupCode){
       const heroUrl = d.imageUrl || d.photoData || '';
       if(heroUrl) heroImg.src = heroUrl;
     }
-    // 2. Live Preview befüllen
+    // 2. Live Preview (Kompakt-Card: Bild, 3 Säulen, Titel & Preis)
     const previewEl = document.getElementById('inseratSuccessLivePreview');
     if(previewEl){
       const imgUrl = d.imageUrl || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=400&q=60';
+      const vorOrt = !!d.dineInPossible;
+      const abholnummer = !!d.hasPickupCode;
+      const mehrweg = !!(d.reuse && d.reuse.enabled);
+      const pill = (on, label) => on ? '<span style="display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:8px;background:rgba(0,0,0,0.06);font-size:11px;font-weight:700;color:#1a1a1a;">' + label + '</span>' : '<span style="display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:8px;background:rgba(0,0,0,0.04);font-size:11px;font-weight:600;color:#94a3b8;opacity:0.8;">' + label + '</span>';
+      const pillAbhol = abholnummer ? '<span style="display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:8px;background:rgba(59,130,246,0.15);font-size:11px;font-weight:700;color:#2563eb;">🧾 Abholnummer</span>' : pill(false, '🧾 Abholnummer');
       previewEl.innerHTML = `
         <img src="${imgUrl}" class="success-card-img" alt="">
-        <div class="success-card-body">
-          <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
-            <h4 style="margin:0; font-size:17px; font-weight:900; color:#1a1a1a;">${esc(d.dish)}</h4>
-            <div style="background:#1a1a1a; color:#fff; padding:4px 8px; border-radius:8px; font-size:13px; font-weight:800;">${euro(d.price)}</div>
+        <div class="success-card-body" style="padding:12px 16px;">
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px; flex-wrap:wrap;">
+            ${pill(vorOrt, '🍴 Vor Ort')}
+            ${pillAbhol}
+            ${pill(mehrweg, '🔄 Mehrweg')}
           </div>
-          <div style="display:flex; align-items:center; gap:6px;">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+            <h4 style="margin:0; font-size:17px; font-weight:900; color:#1a1a1a;">Dein ${esc(d.dish)} für ${euro(d.price)}</h4>
+          </div>
+          <div style="display:flex; align-items:center; gap:6px; margin-top:6px;">
             <span style="width:8px; height:8px; background:#22c55e; border-radius:50%;"></span>
             <span style="font-size:11px; font-weight:800; color:#22c55e; text-transform:uppercase;">Jetzt Live</span>
           </div>
         </div>
       `;
+    }
+    // 2b. Zusammenfassung des Deals (unterschieden: mit vs. ohne Abholnummer)
+    const dealEl = document.getElementById('inseratSuccessDealSummary');
+    if(dealEl){
+      const feeWaived = !!d.inseratFeeWaived;
+      const withPickup = !!d.hasPickupCode;
+      const rawEnd = ((d.pickupWindow || '').split(/\s*[–\-]\s*/)[1] || (d.pickupWindow || '')).trim() || '14:00';
+      let endTimeDisplay = '14:00';
+      if(/^\d{1,2}:\d{2}$/.test(rawEnd)) endTimeDisplay = rawEnd;
+      else if(/^\d{3,4}$/.test(rawEnd)) endTimeDisplay = rawEnd.slice(0,-2) + ':' + rawEnd.slice(-2);
+      else if(rawEnd) endTimeDisplay = rawEnd;
+      var dealLines = '<div style="font-size:12px; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:0.04em; margin-bottom:10px;">Zusammenfassung des Deals</div>' +
+        '<div style="font-size:14px; color:#1a1a1a; margin-bottom:6px;"><strong>Inseratsgebühr:</strong> ' + (feeWaived ? '0,00 € (Geschenkt!)' : '4,99 €') + '</div>';
+      if(withPickup){
+        dealLines += '<div style="font-size:14px; color:#1a1a1a; margin-bottom:6px;"><strong>Abrechnung:</strong> Du zahlst lediglich 0,89 € pro Abholnummer.</div>';
+      } else {
+        dealLines += '<div style="font-size:14px; color:#1a1a1a; margin-bottom:6px;">Deine Gäste sehen das Gericht <strong>ohne Abholnummer</strong> – Vor Ort oder Mitnehmen. Du zahlst nur die Inseratsgebühr.</div>';
+      }
+      dealLines += '<div style="font-size:14px; color:#1a1a1a;"><strong>Zeitfenster:</strong> Sichtbar bis ' + endTimeDisplay + ' Uhr</div>';
+      dealEl.innerHTML = dealLines;
+    }
+    // 2c. Was passiert jetzt? (Text je nach Abholnummer)
+    const whatNextEl = document.getElementById('inseratSuccessWhatNext');
+    if(whatNextEl){
+      if(d.hasPickupCode){
+        whatNextEl.textContent = 'Sobald ein Kunde bestellt, erhält er eine Abholnummer. Diese wird dir in deiner Übersicht angezeigt, damit du das Gericht direkt zuordnen kannst.';
+      } else {
+        whatNextEl.textContent = 'Deine Gäste finden dein Gericht in der App und können vor Ort essen oder mitnehmen. Es wird keine Abholnummer vergeben – du hast nur die Inseratsgebühr von 4,99 € gezahlt.';
+      }
     }
 
     const nextCodeEl = document.getElementById('inseratSuccessNextCode');
@@ -23348,6 +23397,13 @@
     }
     const inseratSuccessBtnBack = document.getElementById('inseratSuccessBtnBack');
     if(inseratSuccessBtnBack) inseratSuccessBtnBack.onclick = closeInseratSuccessSheet;
+    const inseratSuccessBtnNewListing = document.getElementById('inseratSuccessBtnNewListing');
+    if(inseratSuccessBtnNewListing){
+      inseratSuccessBtnNewListing.onclick = function(){
+        closeInseratSuccessSheet();
+        startListingFlow();
+      };
+    }
     const inseratSuccessBd = document.getElementById('inseratSuccessBd');
     if(inseratSuccessBd) inseratSuccessBd.onclick = closeInseratSuccessSheet;
     if(typeof window !== 'undefined'){
