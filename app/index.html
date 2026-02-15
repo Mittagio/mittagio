@@ -21910,6 +21910,8 @@
                 draft.data.day = context.date || draft.data.day || (typeof isoDate === 'function' ? isoDate(new Date()) : '');
                 draft.step = 0;
                 w = draft;
+                var wizardEl = document.getElementById('wizard');
+                if(wizardEl) wizardEl.setAttribute('data-flow', 'listing');
                 openWizard();
                 buildListingStep();
               } else {
