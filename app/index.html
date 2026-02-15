@@ -21974,13 +21974,32 @@
     pushViewState({wizard: true}, location.pathname);
     localStorage.setItem('mittagio_wizard_open', 'true');
   }
+  /** Im Listing-Flow: .w-actions (Zurück/Weiter) aus dem DOM entfernen statt nur ausblenden. Beim Verlassen wieder einfügen. */
+  var storedWActionsParent = null;
+  var storedWActionsEl = null;
+  function clearWizardActionsBar(){
+    var wActions = document.querySelector('#wizard .w-actions');
+    if(!wActions) return;
+    if(storedWActionsEl) return; /* bereits bereinigt */
+    storedWActionsParent = wActions.parentNode;
+    storedWActionsEl = wActions;
+    wActions.remove();
+  }
+  function restoreWizardActionsBar(){
+    if(storedWActionsParent && storedWActionsEl){
+      storedWActionsParent.appendChild(storedWActionsEl);
+      storedWActionsEl.style.display = '';
+      storedWActionsParent = null;
+      storedWActionsEl = null;
+      if(typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+    }
+  }
   /** @param {boolean} [clearDraft=false] - Bei true Entwurf löschen (z.B. nach erfolgreichem Speichern). Frage 5 A: Sonst Entwurf behalten für "Letzten Entwurf fortsetzen?" */
   function closeWizard(clearDraft){
     const wizard = document.getElementById('wizard');
     document.getElementById('wbd').classList.remove('active');
     if(wizard){ wizard.classList.remove('active'); wizard.removeAttribute('data-flow'); }
-    var wActions = document.querySelector('#wizard .w-actions');
-    if(wActions) wActions.style.display = '';
+    restoreWizardActionsBar();
     localStorage.removeItem('mittagio_wizard_open');
     if(clearDraft) localStorage.removeItem('wizard_draft');
   }
@@ -22043,6 +22062,7 @@
                 w = draft;
                 var wizardEl = document.getElementById('wizard');
                 if(wizardEl) wizardEl.setAttribute('data-flow', 'listing');
+                clearWizardActionsBar();
                 openWizard();
                 buildListingStep();
               } else {
@@ -22086,6 +22106,8 @@
     w = { kind, step:0, data:{}, ctx };
     const wizardEl = document.getElementById('wizard');
     if(wizardEl) wizardEl.setAttribute('data-flow', kind === 'listing' ? 'listing' : (kind || ''));
+    if(kind === 'listing') clearWizardActionsBar();
+    else restoreWizardActionsBar();
 
     if(kind==='provider'){
       w.data = normalizeProviderProfile(JSON.parse(JSON.stringify(provider.profile||{})));
@@ -24544,7 +24566,7 @@
     else if(typeof hidePlanPublicView === 'function'){ hidePlanPublicView(); setMode(mode); }
   });
   
-  // WIZARD RESTORATION: Restore open wizard if needed
+  // WIZARD RESTORATION: Restore open wizard if needed (z. B. nach Refresh)
   try {
     const wizardOpen = localStorage.getItem('mittagio_wizard_open') === 'true';
     const draftStr = localStorage.getItem('wizard_draft');
@@ -24553,6 +24575,8 @@
       if(draft && draft.kind){
         // Global 'w' object is used by the wizard
         w = draft;
+        var wizardEl = document.getElementById('wizard');
+        if(wizardEl && w.kind === 'listing'){ wizardEl.setAttribute('data-flow', 'listing'); if(typeof clearWizardActionsBar === 'function') clearWizardActionsBar(); }
         openWizard();
         // Restore specific step content
         if(w.kind === 'listing') buildListingStep();
