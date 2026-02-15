@@ -6451,7 +6451,7 @@
         <div class="cookbook-category-pills" id="cookbookCategoryPills" role="tablist" aria-label="Kategorie filter"></div>
       </header>
 
-      <div id="cookbookScrollWrap" style="flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:16px 20px calc(180px + env(safe-area-inset-bottom, 0)); max-width:500px; margin:0 auto; width:100%; box-sizing:border-box;">
+      <div id="cookbookScrollWrap" style="flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:16px 20px calc(24px + env(safe-area-inset-bottom, 0)); max-width:500px; margin:0 auto; width:100%; box-sizing:border-box;">
         <div id="cookbookMagazine" style="display:flex; align-items:center; justify-content:center; min-height:320px;">
           <!-- Eine Karte (Magazin-Flip), dynamisch -->
         </div>
@@ -6464,15 +6464,6 @@
           <button class="btn-primary" id="btnCookbookEmptyAdd" type="button" style="width:100%; min-height:56px; border-radius:24px; font-size:15px; font-weight:800; background:#FACC15; color:#1a1a1a; border:none; box-shadow:0 4px 20px rgba(250,204,21,0.4);">
             JETZT ERSTES GERICHT INSERIEREN
           </button>
-        </div>
-      </div>
-
-      <!-- Bottom Action Bar (Konzept): BEARBEITEN | WOCHENPLAN | AUSWÄHLEN -->
-      <div id="cookbookActionBar" class="cookbook-action-bar" style="position:fixed; bottom:calc(112px + env(safe-area-inset-bottom, 20px)); left:0; right:0; padding:12px 20px; z-index:40;">
-        <div id="cookbookBarDefault" style="display:flex; align-items:center; gap:10px; width:100%; max-width:500px; margin:0 auto; background:rgba(255,255,255,0.7); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border-radius:2rem; padding:12px; box-shadow:0 8px 32px rgba(0,0,0,0.08); border:1px solid rgba(255,255,255,0.5);">
-          <button type="button" id="cookbookBarEdit" class="cookbook-bar-btn cookbook-bar-secondary" style="flex:1; min-height:52px; border-radius:20px; font-size:10px; font-weight:800; letter-spacing:0.08em;">BEARBEITEN</button>
-          <button type="button" id="cookbookBarWeek" class="cookbook-bar-btn cookbook-bar-secondary" style="flex:1; min-height:52px; border-radius:20px; font-size:10px; font-weight:800; letter-spacing:0.08em;">WOCHENPLAN</button>
-          <button type="button" id="cookbookBarLive" class="cookbook-bar-btn cookbook-bar-primary" style="flex:1.8; min-height:52px; border-radius:20px; font-size:10px; font-weight:800; letter-spacing:0.12em;">AUSWÄHLEN</button>
         </div>
       </div>
     </section>
@@ -21705,8 +21696,6 @@
         if(box) box.style.display = 'none';
         selectedCookbookId = null;
       }
-      updateCookbookActionBar();
-      wireCookbookActionBar();
       if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
       return;
     }
@@ -21737,7 +21726,12 @@
         '<div><h2 style="margin:0 0 8px; font-size:24px; font-weight:800; color:#1D1D1F; line-height:1.2;">'+esc(entry.dish||'Gericht')+'</h2>'+
         '<div style="height:1px; width:48px; background:#10b981; margin:0 auto 12px;"></div>'+
         '<p style="margin:0; color:#86868B; font-size:16px; font-weight:500;">'+esc(lastUsedLabel + ' • ' + lastPrice)+'</p></div>'+
-        '<div style="background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.25); border-radius:16px; padding:12px 20px; margin-top:16px; display:inline-block; align-self:center; color:#10b981; font-weight:800; font-size:12px; letter-spacing:0.05em;">GESAMTUMSATZ: '+esc(revenueStr)+'</div></div></div>'+
+        '<div style="background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.25); border-radius:16px; padding:12px 20px; margin-top:16px; display:inline-block; align-self:center; color:#10b981; font-weight:800; font-size:12px; letter-spacing:0.05em;">GESAMTUMSATZ: '+esc(revenueStr)+'</div>'+
+        '<div style="display:flex; gap:8px; margin-top:16px; flex-wrap:wrap;">'+
+        '<button type="button" class="cookbook-card-btn-edit" style="flex:1; min-height:48px; border-radius:14px; font-size:13px; font-weight:700; border:2px solid #e2e8f0; background:#fff; color:#475569; cursor:pointer;">Bearbeiten</button>'+
+        '<button type="button" class="cookbook-card-btn-week" style="flex:1; min-height:48px; border-radius:14px; font-size:13px; font-weight:700; border:2px solid #e2e8f0; background:#fff; color:#475569; cursor:pointer;">Wochenplan</button>'+
+        '<button type="button" class="cookbook-card-btn-live" style="flex:1; min-height:48px; border-radius:14px; font-size:14px; font-weight:800; background:#FACC15; color:#1a1a1a; border:none; cursor:pointer; box-shadow:0 2px 12px rgba(250,204,21,0.3);">Auswählen</button>'+
+        '</div></div></div>'+
         (list.length > 1 ? '<button type="button" class="cookbook-magazine-nav cookbook-magazine-prev" aria-label="Vorheriges" style="position:absolute; left:8px; top:50%; transform:translateY(-50%); width:48px; height:48px; border-radius:50%; border:1px solid rgba(255,255,255,0.6); background:rgba(255,255,255,0.7); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); box-shadow:0 4px 16px rgba(0,0,0,0.1); cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:5;">‹</button>'+
         '<button type="button" class="cookbook-magazine-nav cookbook-magazine-next" aria-label="Nächstes" style="position:absolute; right:8px; top:50%; transform:translateY(-50%); width:48px; height:48px; border-radius:50%; border:1px solid rgba(255,255,255,0.6); background:rgba(255,255,255,0.7); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); box-shadow:0 4px 16px rgba(0,0,0,0.1); cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:5;">›</button>' : '');
       magazineEl.style.position = 'relative';
@@ -21745,38 +21739,22 @@
       var nextBtn = magazineEl.querySelector('.cookbook-magazine-next');
       if(prevBtn) prevBtn.onclick = function(){ if(typeof haptic==='function') haptic(10); cookbookMagazineIndex = Math.max(0, cookbookMagazineIndex - 1); renderCookbook(); };
       if(nextBtn) nextBtn.onclick = function(){ if(typeof haptic==='function') haptic(10); cookbookMagazineIndex = Math.min(list.length - 1, cookbookMagazineIndex + 1); renderCookbook(); };
+      var btnEdit = magazineEl.querySelector('.cookbook-card-btn-edit');
+      var btnWeek = magazineEl.querySelector('.cookbook-card-btn-week');
+      var btnLive = magazineEl.querySelector('.cookbook-card-btn-live');
+      if(btnEdit) btnEdit.onclick = function(){ if(typeof haptic==='function') haptic(6); if(selectedCookbookId && typeof startWizard==='function') startWizard('cookbook', { editId: selectedCookbookId }); };
+      if(btnWeek) btnWeek.onclick = function(){ if(typeof haptic==='function') haptic(6); if(selectedCookbookId && typeof openCookbookWeekSheet==='function') openCookbookWeekSheet(); };
+      if(btnLive) btnLive.onclick = function(){ if(typeof haptic==='function') haptic(6); if(selectedCookbookId && typeof openCookbookLiveSheet==='function') openCookbookLiveSheet(); };
     }
-    updateCookbookActionBar();
-    wireCookbookActionBar();
     if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
   }
 
-  function updateCookbookActionBar(){
-    var defaultBar = document.getElementById('cookbookBarDefault');
-    if(defaultBar) defaultBar.style.display = selectedCookbookId ? 'flex' : 'none';
-  }
+  function updateCookbookActionBar(){ /* Bar entfernt – CTAs auf Magazin-Karte */ }
   function clearCookbookSelection(){
     selectedCookbookId = null;
     cookbookMagazineIndex = 0;
-    updateCookbookActionBar();
   }
-  function wireCookbookActionBar(){
-    var barLive = document.getElementById('cookbookBarLive');
-    if(barLive) barLive.onclick = function(){
-      if(typeof haptic === 'function') haptic(6);
-      if(!selectedCookbookId) return;
-      if(typeof openCookbookLiveSheet === 'function') openCookbookLiveSheet();
-    };
-    var barWeek = document.getElementById('cookbookBarWeek');
-    if(barWeek) barWeek.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(selectedCookbookId && typeof openCookbookWeekSheet === 'function') openCookbookWeekSheet(); };
-    var barEdit = document.getElementById('cookbookBarEdit');
-    if(barEdit) barEdit.onclick = function(){
-      if(typeof haptic === 'function') haptic(6);
-      if(!selectedCookbookId) return;
-      var id = selectedCookbookId;
-      if(typeof startWizard === 'function') startWizard('cookbook', { editId: id });
-    };
-  }
+  function wireCookbookActionBar(){ /* Bar entfernt – CTAs auf Magazin-Karte */ }
   var cookbookLiveSheetChosenDate = null;
   function openCookbookLiveSheet(){
     if(!selectedCookbookId) return;
