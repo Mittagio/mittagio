@@ -2742,6 +2742,7 @@
 
     /* FAB nur Dashboard: fest rechts über Bottom-Nav (applike Plus-Button), immer visuell rechts */
     #fabProviderAddOffer{
+      position: fixed !important;
       left: auto !important;
       right: calc(16px + env(safe-area-inset-right, 0)) !important;
       bottom: calc(130px + env(safe-area-inset-bottom, 20px)) !important;
@@ -3895,7 +3896,7 @@
     body.provider-mode main:has(#v-provider-home.view.active) > #v-provider-home.view.active{
       height:100% !important; min-height:100% !important;
     }
-    body.provider-mode main > *{ position: relative; z-index: 1; }
+    body.provider-mode main > *:not(#fabProviderAddOffer){ position: relative; z-index: 1; }
     body.provider-mode [id^="v-provider-"].view.active{ min-height:100vh; min-height:100dvh; display:block !important; visibility:visible !important; opacity:1 !important; scroll-margin-top:0; position:relative; width:100%; max-width:100%; overflow-x:hidden; box-sizing:border-box; }
     /* Erster Viewport sofort gefüllt: Inhalt oben verankern, keine Animation die verschiebt */
     body.provider-mode [id^="v-provider-"].view.active{ animation:none !important; transform:translateY(0) !important; }
