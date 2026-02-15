@@ -2278,7 +2278,7 @@
     }
     #wizard[data-flow="listing"].sheet--kitchen .liquid-master-panel .photo-header,
     #wizard[data-flow="listing"].sheet--kitchen .liquid-master-panel .inserat-photo-tile.photo-header {
-      border-radius: 0; width: 100%;
+      border-radius: 0 0 24px 24px; width: 100%;
     }
     /* Status-Leiste: Pills direkt unter dem Bild (🍴 Vor Ort, 🔄 Mehrweg) */
     .inserat-status-bar {
@@ -7795,7 +7795,7 @@
     </div>
 
     <div class="sheet-body" style="padding:0; overflow-y:auto; flex:1;">
-      <!-- Bild Sektion (Thumbnail Style laut Konzept) -->
+      <!-- Bild Sektion: Preis auf dem Bild wie Dashboard-Kachel -->
       <div style="padding:24px 20px; text-align:center; background:linear-gradient(180deg, #f8f9fa 0%, #fff 100%);">
         <div style="position:relative; width:160px; height:160px; margin:0 auto; border-radius:40px; overflow:hidden; box-shadow:0 12px 32px rgba(0,0,0,0.1); border:4px solid #fff;">
           <img id="sImg" alt="" style="width:100%; height:100%; object-fit:cover;" />
@@ -7806,10 +7806,9 @@
           <button id="sFavoriteBtn" style="position:absolute; top:8px; right:8px; width:36px; height:36px; border-radius:10px; background:rgba(255,255,255,0.9); border:none; display:flex; align-items:center; justify-content:center; color:#E34D4D; box-shadow:0 4px 12px rgba(0,0,0,0.1);">
             <i data-lucide="heart" style="width:20px;height:20px;"></i>
           </button>
+          <!-- Preis-Sticker auf dem Bild (wie Dashboard-Kachel) -->
+          <div id="sPriceSticker" style="position:absolute; bottom:8px; right:8px; padding:6px 12px; border-radius:999px; font-weight:900; font-size:14px; background:rgba(255,215,0,0.95); color:#1a1a1a; box-shadow:0 2px 8px rgba(255,215,0,0.3); z-index:10;"></div>
         </div>
-        
-        <!-- Preis Badge -->
-        <div id="sPriceRow" style="display:inline-block; margin-top:20px; padding:8px 16px; border-radius:99px; background:rgba(255,215,0,0.15); color:#1a1a1a; font-weight:900; font-size:18px;"></div>
       </div>
 
       <!-- 3 Säulen (Funktionale Badges) -->
@@ -13864,7 +13863,6 @@
     // UI Elements
     const sImg = document.getElementById('sImg');
     const sDish = document.getElementById('sDish');
-    const sPriceRow = document.getElementById('sPriceRow');
     const sImgPlaceholder = document.getElementById('sImgPlaceholder');
     const sFavoriteBtn = document.getElementById('sFavoriteBtn');
     const sThreePillars = document.getElementById('sThreePillars');
@@ -13895,7 +13893,8 @@
     }
     
     if(sDish) sDish.textContent = o.dish || '';
-    if(sPriceRow) sPriceRow.textContent = euro(o.price);
+    const sPriceSticker = document.getElementById('sPriceSticker');
+    if(sPriceSticker) sPriceSticker.textContent = euro(o.price);
 
     // Klick auf Anbieter-Name -> Öffnet öffentliches Profil
     const sProviderNameBtn = document.getElementById('sProviderNameBtn');
@@ -23008,9 +23007,11 @@
       const dismissKeyboard = ()=>{ try { if(document.activeElement && document.activeElement.blur) document.activeElement.blur(); } catch(e){} };
       const hapticLight = ()=>{ try { if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); } catch(e){} };
 
-      // 1. FOTO – Liquid Panel: photo-header 240px, Button unten rechts
+      // 1. FOTO – Liquid Panel: photo-header, Preis-Sticker auf dem Bild wie Dashboard-Kachel
       const photoTile=document.createElement('div');
       photoTile.className='inserat-photo-tile photo-header';
+      photoTile.style.position='relative';
+      photoTile.style.overflow='hidden';
       if(w.data.photoData){
         photoTile.innerHTML='<img src="'+w.data.photoData+'" style="width:100%; height:100%; object-fit:cover; display:block;" alt=""><button type="button" class="inserat-photo-change" aria-label="Foto ändern"><i data-lucide="camera" style="width:14px;height:14px;stroke-width:2.5;"></i> 📷 Foto ändern</button>';
         const rem=photoTile.querySelector('.inserat-photo-change');
@@ -23021,21 +23022,31 @@
         if(addBtn) addBtn.onclick=async function(e){ e.stopPropagation(); hapticLight(); const f=await pickImage(); if(!f) return; let dataUrl=await toDataUrl(f); if(typeof applyAppetizerFilter==='function') dataUrl=await applyAppetizerFilter(dataUrl); if(typeof openPhotoEditor==='function') dataUrl=await openPhotoEditor(dataUrl, { onAccept: function(){} }); w.data.photoData=dataUrl; w.data.photoDataIsStandard=false; saveDraft(); rebuildWizard(); };
         photoTile.onclick=async function(ev){ if(ev.target.closest('.inserat-photo-change')) return; hapticLight(); const f=await pickImage(); if(!f) return; let dataUrl=await toDataUrl(f); if(typeof applyAppetizerFilter==='function') dataUrl=await applyAppetizerFilter(dataUrl); if(typeof openPhotoEditor==='function') dataUrl=await openPhotoEditor(dataUrl, { onAccept: function(){} }); w.data.photoData=dataUrl; w.data.photoDataIsStandard=false; saveDraft(); rebuildWizard(); };
       }
+      var priceStickerInserat=document.createElement('div');
+      priceStickerInserat.className='inserat-price-on-image price-pill';
+      priceStickerInserat.style.cssText='position:absolute; bottom:8px; right:8px; padding:6px 12px; border-radius:999px; font-weight:900; font-size:14px; background:rgba(255,215,0,0.95); color:#1a1a1a; box-shadow:0 2px 8px rgba(255,215,0,0.3); z-index:10;';
+      priceStickerInserat.textContent=(Number(w.data.price)||0).toFixed(2).replace('.',',')+' €';
+      photoTile.appendChild(priceStickerInserat);
       box.appendChild(photoTile);
 
-      // Status-Leiste: 🍴 Vor Ort | 🔄 Mehrweg direkt unter dem Bild (Standard aus Profil)
+      // Status-Leiste: 3 Säulen wie Detailseite (pillar-badge mit pillar-icon-circle + pillar-label)
       const statusBar=document.createElement('div');
-      statusBar.className='inserat-status-bar';
-      [{ key:'dineInPossible', emo:'🍴', title:'Vor Ort' }, { key:'reuse', emo:'🔄', title:'Mehrweg' }].forEach(function(item){
-        var active = item.key==='reuse' ? !!(w.data.reuse && w.data.reuse.enabled) : !!w.data[item.key];
-        const btn=document.createElement('button');
-        btn.type='button';
-        btn.className='status-pill ' + (active ? 'active' : 'inactive');
-        btn.textContent=item.emo + ' ' + item.title;
-        btn.title=item.title;
-        btn.onclick=()=>{ hapticLight(); if(item.key==='reuse'){ w.data.reuse=w.data.reuse||{}; w.data.reuse.enabled=!w.data.reuse.enabled; } else w.data[item.key]=!w.data[item.key]; saveDraft(); rebuildWizard(); };
-        statusBar.appendChild(btn);
-      });
+      statusBar.className='inserat-status-bar inserat-three-pillars';
+      statusBar.style.display='flex'; statusBar.style.justifyContent='center'; statusBar.style.gap='16px'; statusBar.style.padding='0 20px 24px'; statusBar.style.borderBottom='1px solid rgba(0,0,0,0.03)';
+      var hasDineIn = !!w.data.dineInPossible;
+      var hasReuse = !!(w.data.reuse && w.data.reuse.enabled);
+      function addPillar(emo, label, active, colorClass, toggleKey){
+        const wrap=document.createElement('button');
+        wrap.type='button';
+        wrap.className='pillar-badge '+(active?'active '+(colorClass||''):'disabled');
+        if(!active) wrap.style.cssText='opacity:0.25; filter:grayscale(1);';
+        wrap.innerHTML='<div class="pillar-icon-circle">'+emo+'</div><div class="pillar-label">'+label+'</div>';
+        wrap.onclick=()=>{ if(!toggleKey) return; hapticLight(); if(toggleKey==='reuse'){ w.data.reuse=w.data.reuse||{}; w.data.reuse.enabled=!w.data.reuse.enabled; } else w.data[toggleKey]=!w.data[toggleKey]; saveDraft(); rebuildWizard(); };
+        statusBar.appendChild(wrap);
+      }
+      addPillar('🍴','Vor Ort möglich', hasDineIn, '', 'dineInPossible');
+      addPillar('🧾','Abholnummer', true, 'yellow', null);
+      addPillar('🔄','Mehrweg verfügbar', hasReuse, 'green', 'reuse');
       box.appendChild(statusBar);
 
       // Info-Banner: Abholung heute Mittag von 11:30 – 14:00 Uhr (+ 🕒 zum Bearbeiten)
@@ -23093,12 +23104,55 @@
       stepName.appendChild(wrapDesc);
       scrollArea.appendChild(stepName);
 
-      // 4. KATEGORIE PILLS – wie Kundenansicht (Discover): gleiche Werte Fleisch/Vegetarisch/Vegan/Salat
       const catValues = ['Fleisch','Vegetarisch','Vegan','Salat'];
       const catDisplayLabels = ['Mit Fleisch','Vegetarisch','Vegan','Salat'];
       const catEmojis = ['🥩','🥗','🌱','🥪'];
       const currentCat = w.data.category || 'Fleisch';
       if(!catValues.includes(currentCat)) w.data.category = 'Fleisch';
+      var catIdx = catValues.indexOf(w.data.category);
+      if(catIdx<0) catIdx=0;
+
+      // Zeile Kategorie + Preis wie Detailseite (eine Zeile: links Kategorie-Pill, rechts Preis in gelber Pill)
+      const catPriceRow=document.createElement('div');
+      catPriceRow.className='inserat-section inserat-cat-price-row';
+      catPriceRow.style.display='flex'; catPriceRow.style.alignItems='center'; catPriceRow.style.justifyContent='space-between'; catPriceRow.style.gap='12px'; catPriceRow.style.flexWrap='wrap';
+      const catPillSingle=document.createElement('button');
+      catPillSingle.type='button';
+      catPillSingle.className='extra-pill inserat-cat-pill active';
+      catPillSingle.style.cssText='flex:0 0 auto; cursor:pointer;';
+      catPillSingle.textContent=(catEmojis[catIdx]||'')+' '+catDisplayLabels[catIdx];
+      catPillSingle.onclick=()=>{ hapticLight(); scrollToNext('step-cat'); };
+      catPriceRow.appendChild(catPillSingle);
+      const pricePillWrap=document.createElement('div');
+      pricePillWrap.className='inserat-price-pill-wrap';
+      pricePillWrap.style.cssText='padding:8px 16px; border-radius:99px; background:rgba(255,215,0,0.15); color:#1a1a1a; font-weight:900; font-size:18px; display:inline-flex; align-items:center; gap:4px;';
+      const priceRow=document.createElement('div');
+      priceRow.className='inserat-price-row';
+      const inputPrice=document.createElement('input');
+      inputPrice.type='text';
+      inputPrice.className='inserat-price-input price-display';
+      inputPrice.setAttribute('inputmode','decimal');
+      inputPrice.placeholder='0,00';
+      inputPrice.value=(w.data.price>0?Number(w.data.price).toFixed(2).replace('.',','):'');
+      inputPrice.style.cssText='width:64px; background:transparent; border:none; font-size:18px; font-weight:900; color:#1a1a1a; outline:none;';
+      const updateProfit = function(val){
+        var p = (parseFloat(String(val).replace(',','.')) || 0) * 30;
+        var calcVal = document.getElementById('calc-val');
+        if(calcVal) calcVal.textContent = p.toFixed(2).replace('.',',');
+      };
+      inputPrice.oninput=()=>{ var v=inputPrice.value.replace(',','.'); w.data.price=parseFloat(v)||0; saveDraft(); updateProfit(v); if(priceStickerInserat) priceStickerInserat.textContent=(Number(w.data.price)||0).toFixed(2).replace('.',',')+' €'; setTimeout(function(){ scrollToNext('step-price'); }, 180); };
+      inputPrice.onblur=()=>{ if(w.data.price>0) inputPrice.value=Number(w.data.price).toFixed(2).replace('.',','); dismissKeyboard(); hapticLight(); scrollToNext('power-bar'); };
+      priceRow.appendChild(inputPrice);
+      const euroSpan=document.createElement('span');
+      euroSpan.className='inserat-price-euro';
+      euroSpan.textContent='€';
+      euroSpan.style.color='#1a1a1a';
+      priceRow.appendChild(euroSpan);
+      pricePillWrap.appendChild(priceRow);
+      catPriceRow.appendChild(pricePillWrap);
+      scrollArea.appendChild(catPriceRow);
+
+      // 4. KATEGORIE PILLS – vier Optionen zum Wechseln
       const stepCat=document.createElement('div');
       stepCat.id='step-cat';
       stepCat.className='inserat-section inserat-cat-pills';
@@ -23117,35 +23171,10 @@
       });
       scrollArea.appendChild(stepCat);
 
-      // 5. PREIS & VERDIENST (30x)
+      // 5. UMSATZPROGNOSE (Preis steht in Zeile + auf Bild)
       const stepPrice=document.createElement('div');
       stepPrice.id='step-price';
       stepPrice.className='inserat-section';
-      const labelPrice=document.createElement('span');
-      labelPrice.className='inserat-section-label';
-      labelPrice.textContent='Preis pro Portion';
-      stepPrice.appendChild(labelPrice);
-      const priceRow=document.createElement('div');
-      priceRow.className='inserat-price-row';
-      const inputPrice=document.createElement('input');
-      inputPrice.type='text';
-      inputPrice.className='inserat-price-input price-display';
-      inputPrice.setAttribute('inputmode','decimal');
-      inputPrice.placeholder='0,00';
-      inputPrice.value=(w.data.price>0?Number(w.data.price).toFixed(2).replace('.',','):'');
-      const updateProfit = function(val){
-        var p = (parseFloat(String(val).replace(',','.')) || 0) * 30;
-        var calcVal = document.getElementById('calc-val');
-        if(calcVal) calcVal.textContent = p.toFixed(2).replace('.',',');
-      };
-      inputPrice.oninput=()=>{ var v=inputPrice.value.replace(',','.'); w.data.price=parseFloat(v)||0; saveDraft(); updateProfit(v); setTimeout(function(){ scrollToNext('power-bar'); }, 180); };
-      inputPrice.onblur=()=>{ if(w.data.price>0) inputPrice.value=Number(w.data.price).toFixed(2).replace('.',','); dismissKeyboard(); hapticLight(); scrollToNext('power-bar'); };
-      const euroSpan=document.createElement('span');
-      euroSpan.className='inserat-price-euro';
-      euroSpan.textContent='€';
-      priceRow.appendChild(inputPrice);
-      priceRow.appendChild(euroSpan);
-      stepPrice.appendChild(priceRow);
       var p0=Number(w.data.price)||0;
       const prognoseWrap=document.createElement('div');
       prognoseWrap.className='inserat-prognose-wrap inserat-earnings inserat-umsatzprognose';
