@@ -1515,14 +1515,63 @@
     #wizard.sheet--kitchen .glass-master-panel #step-name input.magnet-input:focus{
       animation: magnet-pulse 1.2s ease-in-out infinite;
     }
+    /* High-End Airbnb-Style: Gericht + Beschreibung – WOW-Eingaben */
+    #wizard.sheet--kitchen .glass-express-step0 #step-name.inserat-name-airbnb,
+    #wizard.sheet--kitchen .liquid-master-panel #step-name.inserat-name-airbnb{
+      padding: 0; margin-bottom: 4px; border: none; background: transparent;
+    }
+    #wizard.sheet--kitchen .glass-express-step0 .inserat-airbnb-field-wrap,
+    #wizard.sheet--kitchen .liquid-master-panel .inserat-airbnb-field-wrap{
+      margin-bottom: 20px;
+    }
+    #wizard.sheet--kitchen .glass-express-step0 #step-name .inserat-airbnb-dish,
+    #wizard.sheet--kitchen .liquid-master-panel #step-name .inserat-airbnb-dish{
+      width: 100%; min-height: 56px; padding: 18px 20px 14px;
+      font-size: 1.75rem; font-weight: 700; letter-spacing: -0.02em; color: #1a1a1a;
+      background: #fff; border: none; border-bottom: 2px solid rgba(0,0,0,0.06);
+      border-radius: 0; outline: none; transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      box-sizing: border-box;
+    }
+    #wizard.sheet--kitchen .glass-express-step0 #step-name .inserat-airbnb-dish::placeholder,
+    #wizard.sheet--kitchen .liquid-master-panel #step-name .inserat-airbnb-dish::placeholder{
+      color: #94a3b8; font-weight: 600;
+    }
+    #wizard.sheet--kitchen .glass-express-step0 #step-name .inserat-airbnb-dish:focus,
+    #wizard.sheet--kitchen .liquid-master-panel #step-name .inserat-airbnb-dish:focus{
+      border-bottom-color: #1a1a1a; box-shadow: 0 2px 0 0 #1a1a1a;
+    }
+    #wizard.sheet--kitchen .glass-express-step0 #step-name .inserat-airbnb-desc-wrap,
+    #wizard.sheet--kitchen .liquid-master-panel #step-name .inserat-airbnb-desc-wrap{
+      margin-bottom: 8px;
+    }
+    #wizard.sheet--kitchen .glass-express-step0 #step-name .inserat-airbnb-desc,
+    #wizard.sheet--kitchen .liquid-master-panel #step-name .inserat-airbnb-desc,
+    #wizard.sheet--kitchen .glass-express-step0 #step-name input.inserat-desc-input,
+    #wizard.sheet--kitchen .liquid-master-panel #step-name input.inserat-desc-input{
+      width: 100%; min-height: 48px; padding: 14px 20px;
+      font-size: 1rem; font-weight: 500; font-style: italic; color: #64748b;
+      background: rgba(0,0,0,0.02); border: none; border-bottom: 1px solid rgba(0,0,0,0.06);
+      border-radius: 0; outline: none; transition: border-color 0.2s ease;
+      box-sizing: border-box;
+    }
+    #wizard.sheet--kitchen .glass-express-step0 #step-name .inserat-airbnb-desc::placeholder,
+    #wizard.sheet--kitchen .liquid-master-panel #step-name .inserat-airbnb-desc::placeholder,
+    #wizard.sheet--kitchen .glass-express-step0 #step-name .inserat-desc-input::placeholder,
+    #wizard.sheet--kitchen .liquid-master-panel #step-name .inserat-desc-input::placeholder{
+      color: #94a3b8;
+    }
+    #wizard.sheet--kitchen .glass-express-step0 #step-name .inserat-airbnb-desc:focus,
+    #wizard.sheet--kitchen .liquid-master-panel #step-name .inserat-airbnb-desc:focus{
+      border-bottom-color: #10b981; background: rgba(16,185,129,0.03);
+    }
     #wizard.sheet--kitchen .glass-express-step0 #step-name input:first-of-type{
-      font-size: 1.8rem; text-align: center;
+      font-size: 1.75rem; text-align: left;
     }
     #wizard.sheet--kitchen .glass-express-step0 #step-name input:last-of-type,
     #wizard.sheet--kitchen .glass-express-step0 #step-name .inserat-desc-input,
     #wizard.sheet--kitchen .liquid-master-panel #step-name .inserat-desc-input{
-      font-size: 0.85rem; color: #64748b; text-align: center; margin-top: 6px;
-      font-weight: normal; font-style: italic; background: #f1f5f9;
+      font-size: 1rem; color: #64748b; text-align: left; margin-top: 0;
+      font-weight: 500; font-style: italic; background: rgba(0,0,0,0.02);
     }
     #wizard.sheet--kitchen .glass-express-step0 #step-name .inserat-desc-input::placeholder,
     #wizard.sheet--kitchen .liquid-master-panel #step-name .inserat-desc-input::placeholder{
@@ -1661,8 +1710,12 @@
       background: rgba(255,255,255,0.4); border-radius: 20px; padding: 16px 20px;
       box-shadow: 0 4px 20px rgba(0,0,0,0.06); margin-top: 8px;
     }
-    #wizard.sheet--kitchen .glass-express-step0 .inserat-extras-wrap{
+    #wizard.sheet--kitchen .glass-express-step0 .inserat-extras-wrap,
+    #wizard.sheet--kitchen .glass-express-step0 .inserat-allergen-wrap{
       display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
+    }
+    #wizard.sheet--kitchen .glass-express-step0 .inserat-allergen-pill{
+      padding: 8px 16px; border-radius: 999px; font-size: 0.8rem; font-weight: 700;
     }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-allergen-dropdown,
     #wizard.sheet--kitchen .glass-express-step0 .inserat-extras-dropdown{
@@ -1707,14 +1760,17 @@
     #wizard.sheet--kitchen .glass-express-step0 .inserat-logistics-btn.active{ transform: scale(1.1); filter: grayscale(0); }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-logistics-btn.active:active{ transform: scale(0.95); }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-logistics-btn.inactive{ filter: grayscale(1); opacity: 0.35; transform: scale(0.9); }
-    #wizard.sheet--kitchen .glass-express-step0 .inserat-pickup-time-row{ display: flex; align-items: center; gap: 8px; }
+    #wizard.sheet--kitchen .glass-express-step0 .inserat-pickup-time-dropdown{
+      width: 100%; display: flex; justify-content: center; padding: 12px 0 4px;
+    }
+    #wizard.sheet--kitchen .glass-express-step0 .inserat-pickup-time-row{ display: flex; align-items: center; justify-content: center; gap: 10px; }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-pickup-time-input{
-      padding: 6px 10px; border-radius: 10px; border: 1px solid rgba(0,0,0,0.1); font-size: 12px; font-weight: 700;
+      padding: 10px 14px; border-radius: 12px; border: 2px solid rgba(0,0,0,0.08); font-size: 16px; font-weight: 700;
+      background: #fff; color: #1a1a1a;
     }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-pickup-time-trigger{
-      font-size: 0.9rem; font-weight: 700; color: #334155; background: rgba(0,0,0,0.05); border: none; cursor: pointer;
-      display: flex; align-items: center; gap: 6px; white-space: nowrap; padding: 10px 14px; border-radius: 12px;
-      min-height: 44px; transition: transform 0.12s ease; -webkit-tap-highlight-color: transparent;
+      font-size: 24px; background: none; border: none; cursor: pointer; padding: 8px; min-width: 44px; min-height: 44px;
+      display: flex; align-items: center; justify-content: center; transition: transform 0.12s ease; -webkit-tap-highlight-color: transparent;
     }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-pickup-time-trigger:active{ transform: scale(0.98); }
     #wizard.sheet--kitchen .glass-express-step0 #step-allergens{ margin: 0; }
@@ -1759,6 +1815,9 @@
     }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-btn-primary.inserat-btn-emerald{
       background: #10b981; color: #fff; box-shadow: 0 10px 30px rgba(16,185,129,0.35);
+    }
+    #wizard.sheet--kitchen .glass-express-step0 .inserat-btn-primary .inserat-cta-main{
+      text-transform: none;
     }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-btn-primary .inserat-cta-sub{
       display: block; font-size: 0.75rem; font-weight: 700; text-transform: none; letter-spacing: 0; opacity: 0.95; margin-top: 4px;
@@ -22559,31 +22618,33 @@
       const scrollArea=document.createElement('div');
       scrollArea.className='inserat-scroll-area scroll-content';
 
-      // 2. GERICHTSNAME & 3. BESCHREIBUNG
+      // 2. GERICHTSNAME & 3. BESCHREIBUNG (High-End Airbnb-Style)
       const stepName=document.createElement('div');
       stepName.id='step-name';
-      stepName.className='inserat-section';
-      const labelDish=document.createElement('span');
-      labelDish.className='inserat-section-label';
-      labelDish.textContent='Gericht';
-      stepName.appendChild(labelDish);
+      stepName.className='inserat-section inserat-name-airbnb';
+      const wrapDish=document.createElement('div');
+      wrapDish.className='inserat-airbnb-field-wrap';
       const inputDish=document.createElement('input');
       inputDish.type='text';
-      inputDish.className='liquid-input liquid-input-focus magnet-input';
+      inputDish.className='liquid-input liquid-input-focus magnet-input inserat-airbnb-dish';
       inputDish.placeholder='Kürbissuppe';
       inputDish.value=w.data.dish||'';
       inputDish.autocomplete='off';
       inputDish.oninput=()=>{ w.data.dish=inputDish.value; saveDraft(); };
       inputDish.onblur=()=>{ dismissKeyboard(); hapticLight(); scrollToNext('step-cat'); };
+      wrapDish.appendChild(inputDish);
+      const wrapDesc=document.createElement('div');
+      wrapDesc.className='inserat-airbnb-field-wrap inserat-airbnb-desc-wrap';
       const inputDesc=document.createElement('input');
       inputDesc.type='text';
-      inputDesc.className='liquid-input liquid-input-focus inserat-desc-input';
+      inputDesc.className='liquid-input liquid-input-focus inserat-desc-input inserat-airbnb-desc';
       inputDesc.placeholder='Frisch vom Feld';
       inputDesc.value=w.data.description||'';
       inputDesc.oninput=()=>{ w.data.description=inputDesc.value; saveDraft(); };
       inputDesc.onblur=()=>{ dismissKeyboard(); hapticLight(); };
-      stepName.appendChild(inputDish);
-      stepName.appendChild(inputDesc);
+      wrapDesc.appendChild(inputDesc);
+      stepName.appendChild(wrapDish);
+      stepName.appendChild(wrapDesc);
       scrollArea.appendChild(stepName);
 
       // 4. KATEGORIE PILLS – Referenz: „Mit Fleisch“, Vegetarisch, Vegan, Salat (Wert intern weiter Fleisch)
@@ -22669,8 +22730,9 @@
       if(timeEnd.length===4) timeEnd='0'+timeEnd;
       const timeBtn=document.createElement('button');
       timeBtn.type='button';
-      timeBtn.className='inserat-pickup-time-trigger power-bar-btn';
-      timeBtn.innerHTML='🕒 <span>' + timeStart + '–' + timeEnd + '</span>';
+      timeBtn.className='inserat-pickup-time-trigger power-bar-btn inserat-logistics-btn';
+      timeBtn.textContent='🕒';
+      timeBtn.title=timeStart + ' – ' + timeEnd;
       timeBtn.onclick=()=>{ hapticLight(); w.data.pickupWindowEdit=!w.data.pickupWindowEdit; saveDraft(); rebuildWizard(); };
       powerBar.appendChild(timeBtn);
       const allergenBarBtn=document.createElement('button');
@@ -22689,6 +22751,8 @@
       powerBar.appendChild(extrasBarBtn);
       scrollArea.appendChild(powerBar);
       if(w.data.pickupWindowEdit){
+        const timeDrop=document.createElement('div');
+        timeDrop.className='inserat-pickup-time-dropdown';
         const timeRow=document.createElement('div');
         timeRow.className='inserat-pickup-time-row inserat-section';
         const inpStart=document.createElement('input');
@@ -22704,45 +22768,30 @@
         timeRow.appendChild(inpStart);
         timeRow.appendChild(document.createTextNode(' – '));
         timeRow.appendChild(inpEnd);
-        scrollArea.appendChild(timeRow);
+        timeDrop.appendChild(timeRow);
+        scrollArea.appendChild(timeDrop);
       }
       if(w.data.allergeneExpanded){
         const stepAll=document.createElement('div');
         stepAll.id='step-allergens';
         stepAll.className='inserat-section inserat-allergen-dropdown';
-        const allLabel=document.createElement('span');
-        allLabel.className='inserat-section-label';
-        allLabel.textContent='Allergene';
-        stepAll.appendChild(allLabel);
-        const allInner=document.createElement('div');
-        allInner.className='inserat-allergen-inner';
+        const allWrap=document.createElement('div');
+        allWrap.className='inserat-allergen-wrap inserat-extras-wrap';
         (typeof ALLERGENS_14!=='undefined'?ALLERGENS_14:[]).forEach(a=>{
           const code=a.short;
           const name=a.name||code;
           const active=(w.data.allergens||[]).includes(code);
           const emo=(typeof ALLERGEN_EMOJI!=='undefined'&&ALLERGEN_EMOJI[code])?ALLERGEN_EMOJI[code]:'';
-          const row=document.createElement('button');
-          row.type='button';
-          row.className='inserat-allergen-row' + (active ? ' active' : '');
-          if(emo){
-            const emoSpan=document.createElement('span');
-            emoSpan.className='inserat-allergen-emo';
-            emoSpan.textContent=emo;
-            row.appendChild(emoSpan);
-          }
-          const codeSpan=document.createElement('span');
-          codeSpan.className='inserat-allergen-code';
-          codeSpan.textContent=code;
-          row.appendChild(codeSpan);
-          row.appendChild(document.createTextNode(' – '));
-          const nameSpan=document.createElement('span');
-          nameSpan.className='inserat-allergen-name';
-          nameSpan.textContent=name;
-          row.appendChild(nameSpan);
-          row.onclick=()=>{ hapticLight(); if(!w.data.allergens) w.data.allergens=[]; if(active) w.data.allergens=w.data.allergens.filter(x=>x!==code); else w.data.allergens.push(code); w.data.wantsAllergens=true; saveDraft(); rebuildWizard(); };
-          allInner.appendChild(row);
+          const pill=document.createElement('button');
+          pill.type='button';
+          pill.className='extra-pill inserat-allergen-pill' + (active ? ' active' : '');
+          pill.style.cssText='cursor:pointer;';
+          pill.textContent=(emo ? emo + ' ' : '') + name;
+          pill.title=name;
+          pill.onclick=()=>{ hapticLight(); if(!w.data.allergens) w.data.allergens=[]; if(active) w.data.allergens=w.data.allergens.filter(x=>x!==code); else w.data.allergens.push(code); w.data.wantsAllergens=true; saveDraft(); rebuildWizard(); };
+          allWrap.appendChild(pill);
         });
-        stepAll.appendChild(allInner);
+        stepAll.appendChild(allWrap);
         scrollArea.appendChild(stepAll);
       }
       if(w.data.extrasExpanded){
@@ -22809,13 +22858,13 @@
         const btnGratis=document.createElement('button');
         btnGratis.type='button';
         btnGratis.className='inserat-btn-primary inserat-btn-emerald';
-        btnGratis.innerHTML='KOSTENLOS INSERIEREN<br><span class="inserat-cta-sub">Inkl. System-Abholnummer (0,89 € pro Gast)</span>';
+        btnGratis.innerHTML='<span class="inserat-cta-main">Kostenlos inserieren</span><br><span class="inserat-cta-sub">mit Abholnummer (0,89 € pro Vorgang)</span>';
         btnGratis.onclick=function(){ if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; } if(typeof haptic==='function') haptic([30, 50, 30]); w.data.hasPickupCode=true; w.data.inseratFeeWaived=true; w.data.pricingOption='abholnummer'; var o=previewOfferFromWizard(); closeWizard(true); showPublishFeeModal(o); };
         actionSection.appendChild(btnGratis);
         const btn499=document.createElement('button');
         btn499.type='button';
         btn499.className='inserat-btn-secondary inserat-btn-yellow-border';
-        btn499.textContent='Nur Inserat für 4,99 € (ohne Abholnummer)';
+        btn499.textContent='Einmaliges Inserat für 4,99 € heute';
         btn499.onclick=function(){ if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; } if(typeof haptic==='function') haptic([30, 50, 30]); w.data.hasPickupCode=false; w.data.pricingOption=undefined; w.data.inseratFeeWaived=false; var o=previewOfferFromWizard(); closeWizard(true); showPublishFeeModal(o); };
         actionSection.appendChild(btn499);
       } else {
