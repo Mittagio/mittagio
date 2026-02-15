@@ -6545,13 +6545,16 @@
       </div>
     </div>
 
-    <!-- Kochbuch: Action-Sheet (Bearbeiten / In Wochenplan / Löschen) -->
+    <!-- Kochbuch: Action-Sheet (Detailkarte: Bearbeiten, Teilen, Drucken, Inserieren, …) -->
     <div class="backdrop" id="cookbookActionSheetBd" style="display:none; background:rgba(0,0,0,0.5);" onclick="closeCookbookActionSheet()"></div>
     <div class="cookbook-action-sheet" id="cookbookActionSheet" style="display:none;">
       <div class="cookbook-action-sheet-handle"></div>
       <div class="cookbook-action-sheet-title" id="cookbookActionSheetTitle">Gericht</div>
       <button type="button" class="cookbook-action-sheet-btn" id="cookbookActionEdit"><i data-lucide="edit"></i> Bearbeiten</button>
       <button type="button" class="cookbook-action-sheet-btn" id="cookbookActionWeek"><i data-lucide="calendar"></i> In Wochenplan</button>
+      <button type="button" class="cookbook-action-sheet-btn" id="cookbookActionShare"><i data-lucide="share-2"></i> Teilen</button>
+      <button type="button" class="cookbook-action-sheet-btn" id="cookbookActionPrint"><i data-lucide="printer"></i> Drucken</button>
+      <button type="button" class="cookbook-action-sheet-btn cookbook-action-sheet-btn-primary" id="cookbookActionLive" style="background:#FACC15; color:#1a1a1a; border:none; box-shadow:0 2px 12px rgba(250,204,21,0.3);"><i data-lucide="zap"></i> Jetzt inserieren</button>
       <button type="button" class="cookbook-action-sheet-btn cookbook-action-sheet-btn-danger" id="cookbookActionDelete"><i data-lucide="trash-2"></i> Löschen</button>
       <button type="button" class="cookbook-action-sheet-btn" onclick="closeCookbookActionSheet()">Abbrechen</button>
     </div>
@@ -21315,9 +21318,12 @@
   const btnCookbookAddSticky = document.getElementById('btnCookbookAddSticky');
   if(btnCookbookAddSticky) btnCookbookAddSticky.onclick=()=> openDishFlow(null, 'cookbook');
 
-  // Kochbuch Action-Sheet: Bearbeiten, In Wochenplan, Löschen
+  // Kochbuch Action-Sheet: Bearbeiten, In Wochenplan, Teilen, Drucken, Jetzt inserieren, Löschen
   const cookbookActionEdit = document.getElementById('cookbookActionEdit');
   const cookbookActionWeek = document.getElementById('cookbookActionWeek');
+  const cookbookActionShare = document.getElementById('cookbookActionShare');
+  const cookbookActionPrint = document.getElementById('cookbookActionPrint');
+  const cookbookActionLive = document.getElementById('cookbookActionLive');
   const cookbookActionDelete = document.getElementById('cookbookActionDelete');
   if(cookbookActionEdit) cookbookActionEdit.onclick=()=>{
     const ent = window._cookbookActionEntry;
@@ -21326,6 +21332,27 @@
   if(cookbookActionWeek) cookbookActionWeek.onclick=()=>{
     const ent = window._cookbookActionEntry;
     if(ent){ closeCookbookActionSheet(); startListingFlow({dishId: ent.id, source: 'weekplan', date: createFlowPreselectedDate || isoDate(new Date())}); }
+  };
+  if(cookbookActionShare) cookbookActionShare.onclick=()=>{
+    const ent = window._cookbookActionEntry;
+    if(!ent) return;
+    if(typeof haptic==='function') haptic(6);
+    var shareUrl = (typeof getProviderShareUrl === 'function' ? getProviderShareUrl() : '') || (window.location.origin + (window.location.pathname || '') + (window.location.hash || ''));
+    var providerName = (typeof provider !== 'undefined' && provider && provider.profile && provider.profile.businessName) ? provider.profile.businessName : 'Mittagio';
+    var shareText = '🚀 Hunger? ' + (ent.dish || 'Gericht') + ' – ' + (typeof euro === 'function' ? euro(ent.price || 0) : (ent.price || '') + ' €') + '\n\n📍 ' + providerName + '\n\nJetzt Schlange überspringen & Abholnummer sichern:\n👉 ' + shareUrl + '\n\n#mittagio';
+    if(typeof openShareSheet === 'function') openShareSheet(ent.dish || 'Gericht', shareText, shareUrl, 'Gericht teilen');
+    else if(navigator.share) navigator.share({ title: ent.dish || 'Gericht', text: shareText, url: shareUrl }).then(function(){ if(typeof showToast === 'function') showToast('Geteilt!'); }).catch(function(){});
+    else { try{ navigator.clipboard.writeText(shareUrl); if(typeof showToast === 'function') showToast('Link kopiert'); } catch(e){} }
+    closeCookbookActionSheet();
+  };
+  if(cookbookActionPrint) cookbookActionPrint.onclick=()=>{
+    const ent = window._cookbookActionEntry;
+    if(ent && typeof printCookbookEntry === 'function'){ if(typeof haptic==='function') haptic(6); printCookbookEntry(ent); }
+    closeCookbookActionSheet();
+  };
+  if(cookbookActionLive) cookbookActionLive.onclick=()=>{
+    const ent = window._cookbookActionEntry;
+    if(ent){ closeCookbookActionSheet(); selectedCookbookId = ent.id; if(typeof openCookbookLiveSheet === 'function') openCookbookLiveSheet(); }
   };
   if(cookbookActionDelete) cookbookActionDelete.onclick=()=>{
     const ent = window._cookbookActionEntry;
@@ -21615,6 +21642,7 @@
   // --- Cookbook ---
   function openCookbookActionSheet(entry){
     window._cookbookActionEntry = entry;
+    if(entry && entry.id) selectedCookbookId = entry.id;
     const titleEl = document.getElementById('cookbookActionSheetTitle');
     if(titleEl) titleEl.textContent = entry.dish || 'Gericht';
     const bd = document.getElementById('cookbookActionSheetBd');
@@ -21646,6 +21674,22 @@
       if(nameMatch) totalCents += (ord.total || 0);
     });
     return totalCents / 100;
+  }
+
+  /** Anzahl Bestellungen für ein Kochbuch-Gericht (für „Meistverkauft“ / Menge Stk.). */
+  function getCookbookEntryOrderCount(entry){
+    var orders = typeof loadOrders === 'function' ? loadOrders() : [];
+    var pid = typeof providerId === 'function' ? providerId() : '';
+    var dishName = String(entry.dish || '').trim();
+    var count = 0;
+    orders.forEach(function(ord){
+      if(ord.status !== 'PAID' && ord.status !== 'PICKED_UP' && ord.status !== 'COMPLETED') return;
+      if(String(ord.providerId) !== String(pid)) return;
+      var nameMatch = ord.dishName && String(ord.dishName).trim() === dishName;
+      if(!nameMatch && typeof offers !== 'undefined' && offers && ord.dishId){ var o = offers.find(function(x){ return x.id === ord.dishId; }); nameMatch = o && String((o.dish||'').trim()) === dishName; }
+      if(nameMatch) count += 1;
+    });
+    return count;
   }
 
   function renderCookbook(){
@@ -21702,6 +21746,7 @@
     if(updated) save(LS.cookbook, cookbook);
 
     if(pillsWrap){
+      pillsWrap.style.display = cookbookIsSearching ? 'none' : 'flex';
       pillsWrap.innerHTML='';
       (COOKBOOK_CATEGORIES||['Alle','Fleisch','Eintopf','Snack','Vegetarisch']).forEach(function(cat){
         var b = document.createElement('button');
@@ -21729,7 +21774,7 @@
     }
     filtered = filtered.slice().sort(function(a,b){
       if(cookbookSortBy === 'date') return (b.lastUsed||b.createdAt||0) - (a.lastUsed||a.createdAt||0);
-      if(cookbookSortBy === 'quantity') return (typeof getCookbookEntryRevenue === 'function' ? getCookbookEntryRevenue(b) : 0) - (typeof getCookbookEntryRevenue === 'function' ? getCookbookEntryRevenue(a) : 0);
+      if(cookbookSortBy === 'quantity') return (typeof getCookbookEntryOrderCount === 'function' ? getCookbookEntryOrderCount(b) : 0) - (typeof getCookbookEntryOrderCount === 'function' ? getCookbookEntryOrderCount(a) : 0);
       if(cookbookSortBy === 'price') return (Number(b.price)||0) - (Number(a.price)||0);
       if(cookbookSortBy === 'name') return (a.dish||'').localeCompare(b.dish||'', 'de');
       return 0;
@@ -21778,16 +21823,21 @@
       };
       var lastUsedLabel = !entry.lastUsed ? 'Neu' : formatDayLabel(entry.lastUsed);
       var lastPrice = entry.price != null ? (typeof euro === 'function' ? euro(entry.price) : entry.price + ' €') : '–';
-      var revenue = typeof getCookbookEntryRevenue === 'function' ? getCookbookEntryRevenue(entry) : 0;
-      var revenueStr = revenue > 0 ? (Math.round(revenue*100)/100).toFixed(2).replace('.',',') + ' €' : '–';
+      var orderCount = typeof getCookbookEntryOrderCount === 'function' ? getCookbookEntryOrderCount(entry) : 0;
+      var qtyStr = orderCount > 0 ? orderCount + ' Stk.' : '–';
       var imgHtml = entry.photoData ? '<img src="'+esc(entry.photoData)+'" alt="" style="width:100%; height:100%; object-fit:cover;" />' : '<div style="width:100%; height:100%; background:#e5e7eb; display:flex; align-items:center; justify-content:center;"></div>';
-      magazineEl.innerHTML = '<div class="cookbook-magazine-card" style="width:88%; max-width:400px; background:rgba(255,255,255,0.75); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border:1px solid rgba(255,255,255,0.5); border-radius:32px; box-shadow:0 24px 48px rgba(0,0,0,0.12); overflow:hidden; display:flex; flex-direction:column;">'+
+      magazineEl.innerHTML = '<div class="cookbook-magazine-card" style="width:88%; max-width:400px; background:rgba(255,255,255,0.75); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border:1px solid rgba(255,255,255,0.5); border-radius:32px; box-shadow:0 24px 48px rgba(0,0,0,0.12); overflow:hidden; display:flex; flex-direction:column; cursor:pointer;">'+
         '<div style="height:55%; min-height:180px; overflow:hidden;">'+imgHtml+'</div>'+
-        '<div style="padding:24px 28px 28px; text-align:center; flex:1; display:flex; flex-direction:column; justify-content:space-between;">'+
-        '<div><h2 style="margin:0 0 8px; font-size:24px; font-weight:800; color:#1D1D1F; line-height:1.2;">'+esc(entry.dish||'Gericht')+'</h2>'+
-        '<div style="height:1px; width:48px; background:#10b981; margin:0 auto 12px;"></div>'+
-        '<p style="margin:0; color:#86868B; font-size:16px; font-weight:500;">'+esc(lastUsedLabel + ' • ' + lastPrice)+'</p></div>'+
-        '<div style="background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.25); border-radius:16px; padding:12px 20px; margin-top:16px; display:inline-block; align-self:center; color:#10b981; font-weight:800; font-size:12px; letter-spacing:0.05em;">GESAMTUMSATZ: '+esc(revenueStr)+'</div>'+
+        '<div style="padding:24px 28px 28px; flex:1; display:flex; flex-direction:column; justify-content:space-between;">'+
+        '<div><h2 style="margin:0 0 12px; font-size:24px; font-weight:800; color:#1D1D1F; line-height:1.2;">'+esc(entry.dish||'Gericht')+'</h2>'+
+        '<div style="display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:8px;">'+
+        '<div style="display:flex; flex-direction:column; gap:2px;">'+
+        '<p style="margin:0; font-size:10px; font-weight:700; color:#94a3b8; text-transform:uppercase; letter-spacing:0.08em;">Zuletzt verkauft</p>'+
+        '<div style="display:flex; gap:12px; font-size:14px; font-weight:600; color:#475569;">'+
+        '<span>'+esc(lastUsedLabel)+'</span><span>'+esc(qtyStr)+'</span>'+
+        '</div></div>'+
+        '<div style="font-size:26px; font-weight:800; color:#FFD700;">'+esc(lastPrice)+'</div>'+
+        '</div></div>'+
         '<div style="display:flex; gap:8px; margin-top:16px; flex-wrap:wrap;">'+
         '<button type="button" class="cookbook-card-btn-edit" style="flex:1; min-height:48px; border-radius:14px; font-size:13px; font-weight:700; border:2px solid #e2e8f0; background:#fff; color:#475569; cursor:pointer;">Bearbeiten</button>'+
         '<button type="button" class="cookbook-card-btn-week" style="flex:1; min-height:48px; border-radius:14px; font-size:13px; font-weight:700; border:2px solid #e2e8f0; background:#fff; color:#475569; cursor:pointer;">Wochenplan</button>'+
