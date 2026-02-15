@@ -972,6 +972,8 @@
     .cookbook-action-sheet-handle{ width:40px; height:4px; background:rgba(0,0,0,0.15); border-radius:2px; margin:0 auto 16px; }
     .cookbook-action-sheet-title{ font-weight:800; font-size:18px; color:#1a1a1a; margin-bottom:16px; text-align:center; }
     .cookbook-action-sheet-btn{ width:100%; min-height:52px; border-radius:14px; background:#fff; border:1px solid rgba(0,0,0,0.06); color:#1a1a1a; font-weight:700; font-size:15px; margin-bottom:10px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; box-shadow:0 2px 8px rgba(0,0,0,0.03); }
+    .cookbook-action-sheet-btn-yellow{ background:#FACC15; color:#1a1a1a; border:none; box-shadow:0 2px 12px rgba(250,204,21,0.3); }
+    .cookbook-action-sheet-btn-primary{ background:#007AFF; color:#fff; border:none; box-shadow:0 2px 12px rgba(0,122,255,0.35); }
     .cookbook-action-sheet-btn-danger{ color:#dc2626; border-color:rgba(220,38,38,0.3); }
     .cookbook-week-sheet.cookbook-week-visible{ transform:translateY(0); }
     #cookbookWeekSheetBd.cookbook-week-bd-visible{ opacity:1; }
@@ -6603,9 +6605,6 @@
           </button>
         </div>
       </div>
-      <div id="cookbookBackBar" style="position:fixed; left:0; right:0; bottom:calc(80px + env(safe-area-inset-bottom, 24px)); z-index:50; padding:12px 20px; max-width:500px; margin:0 auto; box-sizing:border-box; pointer-events:none;">
-        <button type="button" id="btnCookbookBack" style="pointer-events:auto; width:100%; min-height:48px; border-radius:16px; border:2px solid rgba(0,0,0,0.1); background:#fff; color:#1a1a1a; font-size:15px; font-weight:800; cursor:pointer; box-shadow:0 4px 16px rgba(0,0,0,0.08);">Zurück</button>
-      </div>
     </section>
 
     <!-- Kochbuch: Bottom-Sheet "Jetzt live schalten" (Preis, Datum, Zeit, 4,99€-Button) -->
@@ -6673,16 +6672,17 @@
       </div>
     </div>
 
-    <!-- Kochbuch: Action-Sheet (Detailkarte: Bearbeiten, Teilen, Drucken, Inserieren, …) -->
+    <!-- Kochbuch: Action-Sheet (Detailkarte: Bearbeiten oben gelb, Jetzt Inserieren unten blau) -->
     <div class="backdrop" id="cookbookActionSheetBd" style="display:none; background:rgba(0,0,0,0.5);" onclick="closeCookbookActionSheet()"></div>
     <div class="cookbook-action-sheet" id="cookbookActionSheet" style="display:none;">
       <div class="cookbook-action-sheet-handle"></div>
       <div class="cookbook-action-sheet-title" id="cookbookActionSheetTitle">Gericht</div>
-      <button type="button" class="cookbook-action-sheet-btn" id="cookbookActionEdit"><i data-lucide="edit"></i> Bearbeiten</button>
-      <button type="button" class="cookbook-action-sheet-btn" id="cookbookActionWeek"><i data-lucide="calendar"></i> In Wochenplan</button>
+      <button type="button" class="cookbook-action-sheet-btn cookbook-action-sheet-btn-yellow" id="cookbookActionEdit"><i data-lucide="edit"></i> Bearbeiten</button>
+      <button type="button" class="cookbook-action-sheet-btn" id="cookbookActionWeek"><i data-lucide="calendar"></i> In den Wochenplan</button>
+      <button type="button" class="cookbook-action-sheet-btn" id="cookbookActionSave"><i data-lucide="save"></i> Speichern</button>
       <button type="button" class="cookbook-action-sheet-btn" id="cookbookActionShare"><i data-lucide="share-2"></i> Teilen</button>
       <button type="button" class="cookbook-action-sheet-btn" id="cookbookActionPrint"><i data-lucide="printer"></i> Drucken</button>
-      <button type="button" class="cookbook-action-sheet-btn cookbook-action-sheet-btn-primary" id="cookbookActionLive" style="background:#FACC15; color:#1a1a1a; border:none; box-shadow:0 2px 12px rgba(250,204,21,0.3);"><i data-lucide="zap"></i> Jetzt inserieren</button>
+      <button type="button" class="cookbook-action-sheet-btn cookbook-action-sheet-btn-primary" id="cookbookActionLive"><i data-lucide="zap"></i> Jetzt inserieren</button>
       <button type="button" class="cookbook-action-sheet-btn cookbook-action-sheet-btn-danger" id="cookbookActionDelete"><i data-lucide="trash-2"></i> Löschen</button>
       <button type="button" class="cookbook-action-sheet-btn" onclick="closeCookbookActionSheet()">Abbrechen</button>
     </div>
@@ -10247,8 +10247,6 @@
     renderCookbook();
     const providerNavBackRow = document.getElementById('providerNavBackRow');
     if(providerNavBackRow) providerNavBackRow.style.display = 'block';
-    var btnCookbookBack = document.getElementById('btnCookbookBack');
-    if(btnCookbookBack) btnCookbookBack.onclick = function(){ if(typeof haptic === 'function') haptic(6); showProviderHome(); };
     pushViewState({view: 'provider-cookbook', mode: mode}, location.pathname);
   }
   /** Zentrale Formular-Komponente: Felddefinitionen + Rendering, keine Duplikate */
@@ -21452,20 +21450,25 @@
   const btnCookbookAddSticky = document.getElementById('btnCookbookAddSticky');
   if(btnCookbookAddSticky) btnCookbookAddSticky.onclick=()=> openDishFlow(null, 'cookbook');
 
-  // Kochbuch Action-Sheet: Bearbeiten, In Wochenplan, Teilen, Drucken, Jetzt inserieren, Löschen
+  // Kochbuch Action-Sheet: Bearbeiten (gelb oben), In den Wochenplan, Speichern, Teilen, Drucken, Jetzt inserieren (blau Abschluss), Löschen
   const cookbookActionEdit = document.getElementById('cookbookActionEdit');
   const cookbookActionWeek = document.getElementById('cookbookActionWeek');
+  const cookbookActionSave = document.getElementById('cookbookActionSave');
   const cookbookActionShare = document.getElementById('cookbookActionShare');
   const cookbookActionPrint = document.getElementById('cookbookActionPrint');
   const cookbookActionLive = document.getElementById('cookbookActionLive');
   const cookbookActionDelete = document.getElementById('cookbookActionDelete');
   if(cookbookActionEdit) cookbookActionEdit.onclick=()=>{
     const ent = window._cookbookActionEntry;
-    if(ent){ closeCookbookActionSheet(); startWizard('cookbook', {editId: ent.id}); }
+    if(ent){ if(typeof haptic==='function') haptic(6); closeCookbookActionSheet(); startWizard('cookbook', {editId: ent.id}); }
   };
   if(cookbookActionWeek) cookbookActionWeek.onclick=()=>{
     const ent = window._cookbookActionEntry;
-    if(ent){ closeCookbookActionSheet(); startListingFlow({dishId: ent.id, source: 'weekplan', date: createFlowPreselectedDate || isoDate(new Date())}); }
+    if(ent){ if(typeof haptic==='function') haptic(6); selectedCookbookId = ent.id; closeCookbookActionSheet(); if(typeof openCookbookWeekSheet === 'function') openCookbookWeekSheet(); }
+  };
+  if(cookbookActionSave) cookbookActionSave.onclick=()=>{
+    const ent = window._cookbookActionEntry;
+    if(ent){ if(typeof haptic==='function') haptic(6); save(LS.cookbook, cookbook); closeCookbookActionSheet(); if(typeof showToast==='function') showToast('Gespeichert'); renderCookbook(); }
   };
   if(cookbookActionShare) cookbookActionShare.onclick=()=>{
     const ent = window._cookbookActionEntry;
@@ -21486,7 +21489,7 @@
   };
   if(cookbookActionLive) cookbookActionLive.onclick=()=>{
     const ent = window._cookbookActionEntry;
-    if(ent){ closeCookbookActionSheet(); selectedCookbookId = ent.id; if(typeof openCookbookLiveSheet === 'function') openCookbookLiveSheet(); }
+    if(ent){ try{ if(navigator.vibrate) navigator.vibrate([10, 30, 10]); } catch(e){} closeCookbookActionSheet(); selectedCookbookId = ent.id; if(typeof openCookbookLiveSheet === 'function') openCookbookLiveSheet(); }
   };
   if(cookbookActionDelete) cookbookActionDelete.onclick=()=>{
     const ent = window._cookbookActionEntry;
@@ -21944,6 +21947,26 @@
     if(box) box.style.display = 'none';
     if(magazineEl){
       magazineEl.style.display = 'flex';
+      if(!magazineEl._cookbookCardDelegation){
+        magazineEl._cookbookCardDelegation = true;
+        magazineEl.addEventListener('click', function(e){
+          var card = e.target && e.target.closest ? e.target.closest('.cookbook-magazine-card') : null;
+          if(!card || e.target.closest('.cookbook-magazine-nav')) return;
+          var id = card.getAttribute('data-cookbook-entry-id');
+          if(!id) return;
+          var entry = (typeof cookbook !== 'undefined' && cookbook) ? cookbook.find(function(c){ return String(c.id) === String(id); }) : null;
+          if(entry && typeof openCookbookActionSheet === 'function'){ if(typeof haptic === 'function') haptic(6); openCookbookActionSheet(entry); }
+        });
+        magazineEl.addEventListener('touchend', function(e){
+          var card = e.target && e.target.closest ? e.target.closest('.cookbook-magazine-card') : null;
+          if(!card || e.target.closest('.cookbook-magazine-nav')) return;
+          e.preventDefault();
+          var id = card.getAttribute('data-cookbook-entry-id');
+          if(!id) return;
+          var entry = (typeof cookbook !== 'undefined' && cookbook) ? cookbook.find(function(c){ return String(c.id) === String(id); }) : null;
+          if(entry && typeof openCookbookActionSheet === 'function'){ if(typeof haptic === 'function') haptic(6); openCookbookActionSheet(entry); }
+        }, { passive: false });
+      }
       var entry = list[cookbookMagazineIndex];
       var formatDayLabel = function(iso){
         if(!iso) return 'Neu';
