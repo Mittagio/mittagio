@@ -1466,14 +1466,19 @@
     }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-photo-tile .inserat-photo-remove,
     #wizard.sheet--kitchen .glass-express-step0 .inserat-photo-tile .inserat-photo-change{
-      position: absolute; bottom: 14px; right: 14px; padding: 8px 14px; border-radius: 999px;
-      background: rgba(0,0,0,0.5); border: none; color: #fff; font-size: 11px; font-weight: 800;
-      text-transform: uppercase; letter-spacing: 0.03em; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+      position: absolute; bottom: 14px; right: 14px; padding: 12px 18px; min-height: 48px; border-radius: 999px;
+      background: rgba(0,0,0,0.55); border: none; color: #fff; font-size: 12px; font-weight: 800;
+      text-transform: uppercase; letter-spacing: 0.03em; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.25); transition: transform 0.12s ease, box-shadow 0.2s ease; -webkit-tap-highlight-color: transparent;
     }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-photo-tile .inserat-photo-change:hover{ color: #fff; }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-photo-tile .inserat-photo-change:active{ transform: scale(0.98); }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-photo-tile .inserat-photo-placeholder{
-      position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+      position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
+      background: linear-gradient(160deg, rgba(248,247,242,0.98) 0%, rgba(241,245,249,0.95) 100%);
+    }
+    #wizard.sheet--kitchen .glass-express-step0 .inserat-photo-tile .inserat-photo-placeholder .inserat-photo-placeholder-icon{
+      font-size: 48px; opacity: 0.5;
     }
     #wizard.sheet--kitchen .glass-express-step0{
       padding-bottom: 0;
@@ -1492,9 +1497,9 @@
     #wizard.sheet--kitchen .glass-express-step0 #step-name input,
     #wizard.sheet--kitchen .glass-express-step0 .liquid-input,
     #wizard.sheet--kitchen .glass-express-step0 .liquid-input-focus{
-      width: 100%; background: transparent; border: none; border-bottom: 2px solid rgba(0,0,0,0.05);
-      padding: 0 0 8px 0; outline: none; font-weight: 800; color: #1a1a1a;
-      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      width: 100%; min-height: 48px; background: transparent; border: none; border-bottom: 2px solid rgba(0,0,0,0.05);
+      padding: 12px 0 10px 0; outline: none; font-weight: 800; color: #1a1a1a;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease; box-sizing: border-box;
     }
     #wizard.sheet--kitchen .glass-express-step0 #step-name input:focus,
     #wizard.sheet--kitchen .glass-express-step0 .liquid-input-focus:focus{
@@ -1513,24 +1518,28 @@
       font-size: 1.8rem; text-align: center;
     }
     #wizard.sheet--kitchen .glass-express-step0 #step-name input:last-of-type{
-      font-size: 0.9rem; color: #888; text-align: center; margin-top: 5px;
+      font-size: 0.9rem; color: #888; text-align: center; margin-top: 6px;
     }
     /* price-display */
     #wizard.sheet--kitchen .glass-express-step0 #step-price .inserat-price-input,
     #wizard.sheet--kitchen .glass-express-step0 .price-display{
       font-size: 3.5rem; font-weight: 900; text-align: center; color: #111;
     }
-    /* Pills: haptisch, voll rund (Kategorien + Extras) – kein halber Button */
+    /* Pills: haptisch, voll rund (Kategorien + Extras) – app-like :active */
     #wizard.sheet--kitchen .glass-express-step0 #step-cat button,
     #wizard.sheet--kitchen .glass-express-step0 .extra-pill{
       padding: 10px 20px; border-radius: 999px; background: rgba(0,0,0,0.05); font-weight: 700;
-      transition: all 0.3s ease; cursor: pointer; border: none;
+      transition: transform 0.12s ease, background 0.2s ease; cursor: pointer; border: none;
       -webkit-tap-highlight-color: transparent;
     }
+    #wizard.sheet--kitchen .glass-express-step0 #step-cat button:active,
+    #wizard.sheet--kitchen .glass-express-step0 .extra-pill:active{ transform: scale(0.98); }
     #wizard.sheet--kitchen .glass-express-step0 #step-cat button[style*="#10b981"],
     #wizard.sheet--kitchen .glass-express-step0 .extra-pill.active{
       background: var(--emerald) !important; color: #fff !important; transform: scale(1.05);
     }
+    #wizard.sheet--kitchen .glass-express-step0 #step-cat button.active:active,
+    #wizard.sheet--kitchen .glass-express-step0 .extra-pill.active:active{ transform: scale(0.98); }
     #wizard.sheet--kitchen .glass-express-step0 #step-extras .extra-pill{
       padding: 8px 16px; border-radius: 999px; font-size: 0.75rem; font-weight: 700; background: rgba(0,0,0,0.05);
     }
@@ -1632,12 +1641,23 @@
     #wizard.sheet--kitchen .inserat-three-pillars button:active{ transform:scale(0.95); }
     #wizard.sheet--kitchen .inserat-photo-tile .inserat-photo-remove:hover,
     #wizard.sheet--kitchen .inserat-photo-tile .inserat-photo-change:hover{ color:#fff; }
-    /* 3 Säulen: 🍴 🧾 🔄 exakt unter dem Preis-Bereich, edle Logistik-Bar */
+    /* 3 Säulen: 🍴 🧾 🔄 + Zeit als eine Karte (app-like) */
     #wizard.sheet--kitchen .glass-express-step0 #step-logistics,
-    #wizard.sheet--kitchen .glass-express-step0 .logistics-bar{
+    #wizard.sheet--kitchen .glass-express-step0 .logistics-bar.inserat-logistics-card{
+      display: flex; flex-direction: column; align-items: stretch;
+    }
+    #wizard.sheet--kitchen .glass-express-step0 .inserat-logistics-card-inner,
+    #wizard.sheet--kitchen .glass-express-step0 .power-bar{
       display: flex; align-items: center; justify-content: space-between; flex-wrap: nowrap;
-      background: rgba(0,0,0,0.04); border-radius: 1.2rem; padding: 0.75rem 1rem;
-      border: none; box-shadow: none; margin-top: 4px;
+      background: rgba(255,255,255,0.5); border-radius: 16px; padding: 12px 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04); margin-top: 4px;
+    }
+    #wizard.sheet--kitchen .glass-express-step0 .inserat-extras-wrap{
+      display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
+    }
+    #wizard.sheet--kitchen .glass-express-step0 .inserat-allergen-dropdown,
+    #wizard.sheet--kitchen .glass-express-step0 .inserat-extras-dropdown{
+      background: rgba(255,255,255,0.4); border-radius: 16px; padding: 16px; border: 1px solid rgba(255,255,255,0.5);
     }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-photo-tile{
       width: 100%; overflow: hidden; cursor: pointer; position: relative;
@@ -1665,45 +1685,85 @@
     }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-price-euro{ font-size: 2rem; font-weight: 900; color: #ccc; margin-left: 10px; }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-earnings{
-      font-size: 0.75rem; font-weight: 800; color: var(--emerald); text-transform: uppercase; letter-spacing: 1px; margin: 0;
+      font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin: 0;
+    }
+    #wizard.sheet--kitchen .glass-express-step0 .inserat-umsatzprognose{
+      color: #64748b; font-weight: 700; text-transform: none; letter-spacing: 0;
     }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-logistics-btn{
-      font-size: 24px; background: none; border: none; cursor: pointer; padding: 4px; transition: transform 0.2s, filter 0.2s;
+      font-size: 24px; background: none; border: none; cursor: pointer; padding: 8px; min-width: 44px; min-height: 44px;
+      transition: transform 0.12s ease, filter 0.2s; -webkit-tap-highlight-color: transparent;
     }
+    #wizard.sheet--kitchen .glass-express-step0 .inserat-logistics-btn:active{ transform: scale(0.95); }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-logistics-btn.active{ transform: scale(1.1); filter: grayscale(0); }
+    #wizard.sheet--kitchen .glass-express-step0 .inserat-logistics-btn.active:active{ transform: scale(0.95); }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-logistics-btn.inactive{ filter: grayscale(1); opacity: 0.35; transform: scale(0.9); }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-pickup-time-row{ display: flex; align-items: center; gap: 8px; }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-pickup-time-input{
       padding: 6px 10px; border-radius: 10px; border: 1px solid rgba(0,0,0,0.1); font-size: 12px; font-weight: 700;
     }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-pickup-time-trigger{
-      font-size: 0.8rem; font-weight: 700; color: #666; background: none; border: none; cursor: pointer;
-      display: flex; align-items: center; gap: 4px; white-space: nowrap;
+      font-size: 0.9rem; font-weight: 700; color: #334155; background: rgba(0,0,0,0.05); border: none; cursor: pointer;
+      display: flex; align-items: center; gap: 6px; white-space: nowrap; padding: 10px 14px; border-radius: 12px;
+      min-height: 44px; transition: transform 0.12s ease; -webkit-tap-highlight-color: transparent;
     }
+    #wizard.sheet--kitchen .glass-express-step0 .inserat-pickup-time-trigger:active{ transform: scale(0.98); }
     #wizard.sheet--kitchen .glass-express-step0 #step-allergens{ margin: 0; }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-allergen-trigger{
-      width: 100%; text-align: center; font-size: 0.7rem; font-weight: 800; color: #aaa;
-      text-transform: uppercase; padding: 8px 0; border: none; background: transparent; cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
+      width: 100%; text-align: left; font-size: 0.9rem; font-weight: 700; color: #334155;
+      padding: 14px 16px; border: none; background: rgba(0,0,0,0.04); cursor: pointer; border-radius: 12px;
+      min-height: 48px; display: flex; align-items: center; justify-content: space-between;
+      transition: transform 0.12s ease; -webkit-tap-highlight-color: transparent;
     }
-    #wizard.sheet--kitchen .glass-express-step0 .inserat-allergen-trigger:hover{ color: #888; }
+    #wizard.sheet--kitchen .glass-express-step0 .inserat-allergen-trigger:active{ transform: scale(0.98); }
+    #wizard.sheet--kitchen .glass-express-step0 .inserat-allergen-trigger:hover{ color: #64748b; }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-allergen-inner{
-      display: flex; flex-wrap: wrap; gap: 8px; padding: 16px 0; justify-content: center;
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(44px, 1fr)); gap: 10px; padding: 16px 0; justify-items: center;
     }
+    #wizard.sheet--kitchen .glass-express-step0 .inserat-allergen-pill{
+      width: 44px; height: 44px; border-radius: 50%; font-size: 14px; font-weight: 800; cursor: pointer; border: 1px solid rgba(255,255,255,0.6);
+      background: rgba(255,255,255,0.4); color: #64748b; display: flex; align-items: center; justify-content: center;
+      transition: transform 0.12s ease, background 0.2s, color 0.2s; -webkit-tap-highlight-color: transparent;
+    }
+    #wizard.sheet--kitchen .glass-express-step0 .inserat-allergen-pill.active{ background: #10b981; color: #fff; }
+    #wizard.sheet--kitchen .glass-express-step0 .inserat-allergen-pill:active{ transform: scale(0.95); }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-action-section{
       padding: 24px 24px 28px; background: #fff; border-top: 1px solid rgba(0,0,0,0.08);
       box-shadow: 0 -4px 20px rgba(0,0,0,0.04); flex-shrink: 0;
-      display: flex; flex-direction: column; gap: 14px;
+      display: flex; flex-direction: column; gap: 12px;
     }
+    #wizard.sheet--kitchen .glass-express-step0 .inserat-btn-primary{
+      width: 100%; min-height: 56px; padding: 18px 24px; border-radius: 24px; font-size: 16px; font-weight: 800; border: none; cursor: pointer;
+      text-transform: uppercase; letter-spacing: 0.02em; line-height: 1.3;
+      transition: transform 0.15s ease; -webkit-tap-highlight-color: transparent;
+    }
+    #wizard.sheet--kitchen .glass-express-step0 .inserat-btn-primary.inserat-btn-emerald{
+      background: #10b981; color: #fff; box-shadow: 0 10px 30px rgba(16,185,129,0.35);
+    }
+    #wizard.sheet--kitchen .glass-express-step0 .inserat-btn-primary .inserat-cta-sub{
+      display: block; font-size: 0.75rem; font-weight: 700; text-transform: none; letter-spacing: 0; opacity: 0.95; margin-top: 4px;
+    }
+    #wizard.sheet--kitchen .glass-express-step0 .inserat-btn-primary:active{ transform: scale(0.98); }
+    #wizard.sheet--kitchen .glass-express-step0 .inserat-btn-secondary{
+      width: 100%; min-height: 56px; padding: 16px 24px; border-radius: 24px; font-size: 14px; font-weight: 800; cursor: pointer;
+      transition: transform 0.15s ease; -webkit-tap-highlight-color: transparent;
+    }
+    #wizard.sheet--kitchen .glass-express-step0 .inserat-btn-secondary.inserat-btn-yellow-border{
+      border: 2px solid #FACC15; background: rgba(250,204,21,0.08); color: #1a1a1a;
+    }
+    #wizard.sheet--kitchen .glass-express-step0 .inserat-btn-secondary:active{ transform: scale(0.98); }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-action-section.inserat-action-pricing button:first-of-type{
-      background: var(--signal-yellow) !important; color: #1a1a1a !important; border: none;
-      padding: 20px 24px; border-radius: 1.5rem; font-weight: 900; text-transform: uppercase; font-size: 1rem;
-      box-shadow: 0 8px 24px rgba(250,204,21,0.35);
+      background: #10b981 !important; color: #fff !important; border: none;
+      padding: 18px 24px; min-height: 56px; border-radius: 24px; font-weight: 800; text-transform: uppercase; font-size: 1rem;
+      box-shadow: 0 10px 30px rgba(16,185,129,0.35); transition: transform 0.15s ease;
     }
+    #wizard.sheet--kitchen .glass-express-step0 .inserat-action-section.inserat-action-pricing button:first-of-type:active{ transform: scale(0.98); }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-action-section.inserat-action-pricing button:nth-of-type(2){
-      background: transparent !important; border: 2px solid var(--emerald) !important; color: #059669 !important;
-      padding: 16px 24px; border-radius: 1.5rem; font-weight: 800; font-size: 0.875rem;
+      background: rgba(250,204,21,0.08) !important; border: 2px solid #FACC15 !important; color: #1a1a1a !important;
+      padding: 16px 24px; min-height: 56px; border-radius: 24px; font-weight: 800; font-size: 0.875rem;
+      transition: transform 0.15s ease;
     }
+    #wizard.sheet--kitchen .glass-express-step0 .inserat-action-section.inserat-action-pricing button:nth-of-type(2):active{ transform: scale(0.98); }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-master-flow > section button{
       border-radius: 2rem;
     }
@@ -2051,6 +2111,17 @@
     .liquid-master-panel .inserat-scroll-area {
       flex: 1; min-height: 0; overflow-y: auto; padding: 20px; -webkit-overflow-scrolling: touch;
     }
+    /* App-like: ein Bildschirm, klare Sektionen [cite: Plan Inseratsflow] */
+    .liquid-master-panel .inserat-scroll-area {
+      --inserat-section-gap: 20px;
+    }
+    .liquid-master-panel .inserat-section {
+      margin-bottom: var(--inserat-section-gap, 20px);
+    }
+    .liquid-master-panel .inserat-section-label {
+      font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.1em;
+      margin: 0 0 8px; display: block;
+    }
     .liquid-master-panel .fixed-footer,
     .liquid-master-panel .inserat-action-section {
       flex-shrink: 0; padding: 20px;
@@ -2080,6 +2151,13 @@
     #wizard[data-flow="listing"].sheet--kitchen .w-q,
     #wizard[data-flow="listing"].sheet--kitchen .w-help {
       display: none !important;
+    }
+    /* Handle + Sheet dezent (app-like ein Screen) */
+    #wizard[data-flow="listing"].sheet--kitchen .handle{
+      width: 40px; height: 4px; background: rgba(0,0,0,0.2); border-radius: 999px; margin: 8px auto 6px;
+    }
+    #wizard[data-flow="listing"].sheet--kitchen.active{
+      box-shadow: 0 -2px 24px rgba(0,0,0,0.08); border-top: 1px solid rgba(255,255,255,0.6);
     }
 
     /* Einheitliches Support-Layout: Anbieter + Inseratsflow (Buttons, Panels, Abstände wie Support-Sheet) */
@@ -22404,11 +22482,11 @@
       const photoTile=document.createElement('div');
       photoTile.className='inserat-photo-tile photo-header';
       if(w.data.photoData){
-        photoTile.innerHTML='<img src="'+w.data.photoData+'" style="width:100%; height:100%; object-fit:cover; display:block;" alt=""><button type="button" class="inserat-photo-change" aria-label="Foto ändern"><i data-lucide="camera" style="width:14px;height:14px;stroke-width:2.5;"></i> FOTO ÄNDERN</button>';
+        photoTile.innerHTML='<img src="'+w.data.photoData+'" style="width:100%; height:100%; object-fit:cover; display:block;" alt=""><button type="button" class="inserat-photo-change" aria-label="Foto ändern"><i data-lucide="camera" style="width:14px;height:14px;stroke-width:2.5;"></i> 📷 Foto ändern</button>';
         const rem=photoTile.querySelector('.inserat-photo-change');
         if(rem) rem.onclick=(e)=>{ e.stopPropagation(); hapticLight(); w.data.photoData=''; w.data.photoDataIsStandard=false; saveDraft(); rebuildWizard(); };
       } else {
-        photoTile.innerHTML='<div class="inserat-photo-placeholder"><span style="font-size:40px; opacity:0.4;">📸</span><button type="button" class="inserat-photo-change" aria-label="Foto hinzufügen"><i data-lucide="camera" style="width:14px;height:14px;stroke-width:2.5;"></i> FOTO HINZUFÜGEN</button></div>';
+        photoTile.innerHTML='<div class="inserat-photo-placeholder"><span class="inserat-photo-placeholder-icon">📸</span><button type="button" class="inserat-photo-change" aria-label="Foto hinzufügen"><i data-lucide="camera" style="width:14px;height:14px;stroke-width:2.5;"></i> FOTO HINZUFÜGEN</button></div>';
         const addBtn=photoTile.querySelector('.inserat-photo-change');
         if(addBtn) addBtn.onclick=async function(e){ e.stopPropagation(); hapticLight(); const f=await pickImage(); if(!f) return; let dataUrl=await toDataUrl(f); if(typeof applyAppetizerFilter==='function') dataUrl=await applyAppetizerFilter(dataUrl); if(typeof openPhotoEditor==='function') dataUrl=await openPhotoEditor(dataUrl, { onAccept: function(){} }); w.data.photoData=dataUrl; w.data.photoDataIsStandard=false; saveDraft(); rebuildWizard(); };
         photoTile.onclick=async function(ev){ if(ev.target.closest('.inserat-photo-change')) return; hapticLight(); const f=await pickImage(); if(!f) return; let dataUrl=await toDataUrl(f); if(typeof applyAppetizerFilter==='function') dataUrl=await applyAppetizerFilter(dataUrl); if(typeof openPhotoEditor==='function') dataUrl=await openPhotoEditor(dataUrl, { onAccept: function(){} }); w.data.photoData=dataUrl; w.data.photoDataIsStandard=false; saveDraft(); rebuildWizard(); };
@@ -22421,6 +22499,11 @@
       // 2. GERICHTSNAME & 3. BESCHREIBUNG
       const stepName=document.createElement('div');
       stepName.id='step-name';
+      stepName.className='inserat-section';
+      const labelDish=document.createElement('span');
+      labelDish.className='inserat-section-label';
+      labelDish.textContent='Gericht';
+      stepName.appendChild(labelDish);
       const inputDish=document.createElement('input');
       inputDish.type='text';
       inputDish.className='liquid-input liquid-input-focus magnet-input';
@@ -22447,6 +22530,11 @@
       if(!catValues.includes(currentCat)) w.data.category = 'Fleisch';
       const stepCat=document.createElement('div');
       stepCat.id='step-cat';
+      stepCat.className='inserat-section';
+      const labelCat=document.createElement('span');
+      labelCat.className='inserat-section-label';
+      labelCat.textContent='Kategorie';
+      stepCat.appendChild(labelCat);
       catValues.forEach((c,i)=>{
         const b=document.createElement('button');
         b.type='button';
@@ -22461,6 +22549,11 @@
       // 5. PREIS & VERDIENST (30x)
       const stepPrice=document.createElement('div');
       stepPrice.id='step-price';
+      stepPrice.className='inserat-section';
+      const labelPrice=document.createElement('span');
+      labelPrice.className='inserat-section-label';
+      labelPrice.textContent='Preis';
+      stepPrice.appendChild(labelPrice);
       const priceRow=document.createElement('div');
       priceRow.className='inserat-price-row';
       const inputPrice=document.createElement('input');
@@ -22472,11 +22565,11 @@
       const updateProfit = function(val){
         var p = (parseFloat(String(val).replace(',','.')) || 0) * 30;
         var el = document.getElementById('profit-preview');
-        if(el) el.textContent = 'Dein Verdienst (30x): ' + p.toFixed(2).replace('.',',') + ' €';
+        if(el) el.textContent = 'Umsatzprognose (bei angenommen 30 Portionen): ' + p.toFixed(2).replace('.',',') + ' €';
         try { if(navigator.vibrate) navigator.vibrate(5); } catch(e){}
       };
       inputPrice.oninput=()=>{ var v=inputPrice.value.replace(',','.'); w.data.price=parseFloat(v)||0; saveDraft(); updateProfit(v); };
-      inputPrice.onblur=()=>{ if(w.data.price>0) inputPrice.value=Number(w.data.price).toFixed(2).replace('.',','); dismissKeyboard(); hapticLight(); scrollToNext('step-logistics'); };
+      inputPrice.onblur=()=>{ if(w.data.price>0) inputPrice.value=Number(w.data.price).toFixed(2).replace('.',','); dismissKeyboard(); hapticLight(); scrollToNext('power-bar'); };
       const euroSpan=document.createElement('span');
       euroSpan.className='inserat-price-euro';
       euroSpan.textContent='€';
@@ -22485,37 +22578,56 @@
       stepPrice.appendChild(priceRow);
       const earningsEl=document.createElement('p');
       earningsEl.id='profit-preview';
-      earningsEl.className='inserat-earnings';
+      earningsEl.className='inserat-earnings inserat-umsatzprognose';
       var p0=Number(w.data.price)||0;
-      earningsEl.textContent='Dein Verdienst (30x): ' + (p0*30).toFixed(2).replace('.',',') + ' €';
+      earningsEl.textContent='Umsatzprognose (bei angenommen 30 Portionen): ' + (p0*30).toFixed(2).replace('.',',') + ' €';
       stepPrice.appendChild(earningsEl);
       scrollArea.appendChild(stepPrice);
 
-      // 6. LOGISTIK-BAR (logistics-bar): 🍴 🧾 🔄 + 🕒
-      const stepLog=document.createElement('div');
-      stepLog.id='step-logistics';
-      stepLog.className='logistics-bar';
-      [{ id:'dineInPossible', key:'dineInPossible', emo:'🍴' }, { id:'hasPickupCode', key:'hasPickupCode', emo:'🧾' }, { id:'mehrweg', key:'reuse', emo:'🔄' }].forEach(function(item){
+      // 6. POWER-BAR (Icon-First): 🍴 Vor Ort | 🔄 Mehrweg | 🕒 Zeit | 🌾 Allergene | ➕ Extras [cite: 2026-02-15]
+      if(typeof w.data.extrasExpanded==='undefined') w.data.extrasExpanded=false;
+      const powerBar=document.createElement('div');
+      powerBar.id='power-bar';
+      powerBar.className='inserat-section power-bar inserat-logistics-card-inner';
+      [{ key:'dineInPossible', emo:'🍴', title:'Vor Ort' }, { key:'reuse', emo:'🔄', title:'Mehrweg' }].forEach(function(item){
         var active = item.key==='reuse' ? !!(w.data.reuse && w.data.reuse.enabled) : !!w.data[item.key];
         const btn=document.createElement('button');
         btn.type='button';
-        btn.className='inserat-logistics-btn ' + (active ? 'active' : 'inactive');
+        btn.className='inserat-logistics-btn power-bar-btn ' + (active ? 'active' : 'inactive');
         btn.textContent=item.emo;
-        btn.onclick=()=>{
-          hapticLight();
-          if(item.key==='reuse'){ w.data.reuse=w.data.reuse||{}; w.data.reuse.enabled=!w.data.reuse.enabled; } else w.data[item.key]=!w.data[item.key];
-          saveDraft(); rebuildWizard();
-        };
-        stepLog.appendChild(btn);
+        btn.title=item.title;
+        btn.onclick=()=>{ hapticLight(); if(item.key==='reuse'){ w.data.reuse=w.data.reuse||{}; w.data.reuse.enabled=!w.data.reuse.enabled; } else w.data[item.key]=!w.data[item.key]; saveDraft(); rebuildWizard(); };
+        powerBar.appendChild(btn);
       });
       var pwParts=(w.data.pickupWindow||profileWindow).split(/\s*[–\-]\s*/);
       var timeStart=(pwParts[0]||'11:30').trim();
       var timeEnd=(pwParts[1]||'14:00').trim();
       if(timeStart.length===4) timeStart='0'+timeStart;
       if(timeEnd.length===4) timeEnd='0'+timeEnd;
+      const timeBtn=document.createElement('button');
+      timeBtn.type='button';
+      timeBtn.className='inserat-pickup-time-trigger power-bar-btn';
+      timeBtn.innerHTML='🕒 <span>' + timeStart + '–' + timeEnd + '</span>';
+      timeBtn.onclick=()=>{ hapticLight(); w.data.pickupWindowEdit=!w.data.pickupWindowEdit; saveDraft(); rebuildWizard(); };
+      powerBar.appendChild(timeBtn);
+      const allergenBarBtn=document.createElement('button');
+      allergenBarBtn.type='button';
+      allergenBarBtn.className='power-bar-btn inserat-logistics-btn ' + (w.data.allergeneExpanded ? 'active' : '');
+      allergenBarBtn.textContent='🌾';
+      allergenBarBtn.title='Allergene';
+      allergenBarBtn.onclick=()=>{ hapticLight(); w.data.allergeneExpanded=!w.data.allergeneExpanded; saveDraft(); rebuildWizard(); };
+      powerBar.appendChild(allergenBarBtn);
+      const extrasBarBtn=document.createElement('button');
+      extrasBarBtn.type='button';
+      extrasBarBtn.className='power-bar-btn inserat-logistics-btn ' + (w.data.extrasExpanded ? 'active' : '');
+      extrasBarBtn.textContent='➕';
+      extrasBarBtn.title='Extras';
+      extrasBarBtn.onclick=()=>{ hapticLight(); w.data.extrasExpanded=!w.data.extrasExpanded; saveDraft(); rebuildWizard(); };
+      powerBar.appendChild(extrasBarBtn);
+      scrollArea.appendChild(powerBar);
       if(w.data.pickupWindowEdit){
         const timeRow=document.createElement('div');
-        timeRow.className='inserat-pickup-time-row';
+        timeRow.className='inserat-pickup-time-row inserat-section';
         const inpStart=document.createElement('input');
         inpStart.type='time';
         inpStart.className='inserat-pickup-time-input';
@@ -22524,32 +22636,17 @@
         inpEnd.type='time';
         inpEnd.className='inserat-pickup-time-input';
         inpEnd.value=timeEnd;
-        inpStart.onchange=()=>{ w.data.pickupWindow=inpStart.value+' – '+inpEnd.value; saveDraft(); };
-        inpEnd.onchange=()=>{ w.data.pickupWindow=inpStart.value+' – '+inpEnd.value; saveDraft(); };
+        inpStart.onchange=()=>{ w.data.pickupWindow=inpStart.value+' – '+inpEnd.value; saveDraft(); rebuildWizard(); };
+        inpEnd.onchange=()=>{ w.data.pickupWindow=inpStart.value+' – '+inpEnd.value; saveDraft(); rebuildWizard(); };
         timeRow.appendChild(inpStart);
         timeRow.appendChild(document.createTextNode(' – '));
         timeRow.appendChild(inpEnd);
-        stepLog.appendChild(timeRow);
-      } else {
-        const timeDiv=document.createElement('button');
-        timeDiv.type='button';
-        timeDiv.className='inserat-pickup-time-trigger';
-        timeDiv.innerHTML='🕒 <span>' + timeStart + '–' + timeEnd + '</span>';
-        timeDiv.onclick=()=>{ hapticLight(); w.data.pickupWindowEdit=!w.data.pickupWindowEdit; saveDraft(); rebuildWizard(); };
-        stepLog.appendChild(timeDiv);
+        scrollArea.appendChild(timeRow);
       }
-      scrollArea.appendChild(stepLog);
-
-      // 7. ALLERGENE (collapsible) – Referenz: „Allergene angeben >“ als Link
-      const stepAll=document.createElement('div');
-      stepAll.id='step-allergens';
-      const allTrigger=document.createElement('button');
-      allTrigger.type='button';
-      allTrigger.className='inserat-allergen-trigger';
-      allTrigger.textContent=w.data.allergeneExpanded ? 'Allergene schließen ↑' : 'Allergene angeben ›';
-      allTrigger.onclick=()=>{ hapticLight(); w.data.allergeneExpanded=!w.data.allergeneExpanded; saveDraft(); if(w.data.allergeneExpanded) scrollToNext('step-extras'); rebuildWizard(); };
-      stepAll.appendChild(allTrigger);
       if(w.data.allergeneExpanded){
+        const stepAll=document.createElement('div');
+        stepAll.id='step-allergens';
+        stepAll.className='inserat-section inserat-allergen-dropdown';
         const allInner=document.createElement('div');
         allInner.className='inserat-allergen-inner';
         (typeof ALLERGENS_14!=='undefined'?ALLERGENS_14:[]).forEach(a=>{
@@ -22558,65 +22655,61 @@
           const emo=(typeof ALLERGEN_EMOJI!=='undefined'&&ALLERGEN_EMOJI[code])?ALLERGEN_EMOJI[code]:'•';
           const p=document.createElement('button');
           p.type='button';
-          p.style.cssText='width:40px; height:40px; border-radius:50%; font-size:10px; font-weight:800; cursor:pointer; border:1px solid rgba(255,255,255,0.6); background:' + (active?'#10b981':'rgba(255,255,255,0.4)') + '; color:' + (active?'#fff':'#64748b') + ';';
+          p.className='inserat-allergen-pill' + (active ? ' active' : '');
           p.textContent=emo||code;
           p.onclick=()=>{ hapticLight(); if(!w.data.allergens) w.data.allergens=[]; if(active) w.data.allergens=w.data.allergens.filter(x=>x!==code); else w.data.allergens.push(code); w.data.wantsAllergens=true; saveDraft(); rebuildWizard(); };
           allInner.appendChild(p);
         });
         stepAll.appendChild(allInner);
+        scrollArea.appendChild(stepAll);
       }
-      scrollArea.appendChild(stepAll);
-
-      // 8. EXTRAS (Pills mit Aufpreis)
-      var defaultExtras = [{ name:'Beilagensalat', price:2.5 }, { name:'Mayo', price:0.5 }, { name:'Ketchup', price:0.5 }, { name:'Soße', price:1 }, { name:'Brot', price:1.5 }];
-      if(!Array.isArray(w.data.extras)) w.data.extras=[];
-      const stepExtras=document.createElement('div');
-      stepExtras.id='step-extras';
-      stepExtras.style.cssText='margin-bottom:24px;';
-      const extLabel=document.createElement('p');
-      extLabel.style.cssText='font-size:10px; font-weight:800; color:#94a3b8; text-transform:uppercase; letter-spacing:0.1em; text-align:center; margin:0 0 12px;';
-      extLabel.textContent='Extras:';
-      stepExtras.appendChild(extLabel);
-      const extWrap=document.createElement('div');
-      extWrap.style.cssText='display:flex; flex-wrap:wrap; gap:8px; justify-content:center;';
-      defaultExtras.forEach(function(opt){
-        var ex=w.data.extras.find(function(e){ return e.name===opt.name; });
-        var active=!!ex && Number(ex.price||0)>0;
-        if(!ex) ex={ name:opt.name, price:0 };
-        const pillWrap=document.createElement('div');
-        pillWrap.style.cssText='display:flex; align-items:center; gap:6px;';
-        const btn=document.createElement('button');
-        btn.type='button';
-        btn.className='extra-pill' + (active ? ' active' : '');
-        btn.style.cssText='cursor:pointer;';
-        btn.textContent=opt.name;
-        btn.onclick=()=>{ hapticLight(); var idx=w.data.extras.findIndex(function(e){ return e.name===opt.name; }); if(idx>=0){ w.data.extras.splice(idx,1); } else { w.data.extras.push({ name:opt.name, price:opt.price }); } saveDraft(); rebuildWizard(); };
-        pillWrap.appendChild(btn);
-        if(active){
-          const inpWrap=document.createElement('span');
-          inpWrap.style.cssText='display:inline-flex; align-items:center; background:rgba(255,255,255,0.6); border-radius:999px; padding:4px 8px;';
-          const plus=document.createElement('span');
-          plus.style.cssText='font-size:10px; font-weight:800; color:#10b981; margin-right:4px;';
-          plus.textContent='+';
-          const inp=document.createElement('input');
-          inp.type='text';
-          inp.inputMode='decimal';
-          inp.style.cssText='width:36px; background:transparent; border:none; padding:0; font-size:12px; font-weight:800; color:#10b981; outline:none;';
-          inp.value=Number(ex.price).toFixed(2).replace('.',',');
-          inp.oninput=()=>{ ex.price=parseFloat((inp.value||'0').replace(',','.'))||0; saveDraft(); };
-          inp.onclick=(e)=> e.stopPropagation();
-          const eur=document.createElement('span');
-          eur.style.cssText='font-size:10px; font-weight:800; color:#10b981; margin-left:2px;';
-          eur.textContent='€';
-          inpWrap.appendChild(plus);
-          inpWrap.appendChild(inp);
-          inpWrap.appendChild(eur);
-          pillWrap.appendChild(inpWrap);
-        }
-        extWrap.appendChild(pillWrap);
-      });
-      stepExtras.appendChild(extWrap);
-      scrollArea.appendChild(stepExtras);
+      if(w.data.extrasExpanded){
+        var defaultExtras = [{ name:'Beilagensalat', price:2.5 }, { name:'Mayo', price:0.5 }, { name:'Ketchup', price:0.5 }, { name:'Soße', price:1 }, { name:'Brot', price:1.5 }];
+        if(!Array.isArray(w.data.extras)) w.data.extras=[];
+        const stepExtras=document.createElement('div');
+        stepExtras.id='step-extras';
+        stepExtras.className='inserat-section inserat-extras-dropdown';
+        const extWrap=document.createElement('div');
+        extWrap.className='inserat-extras-wrap';
+        defaultExtras.forEach(function(opt){
+          var ex=w.data.extras.find(function(e){ return e.name===opt.name; });
+          var active=!!ex && Number(ex.price||0)>0;
+          if(!ex) ex={ name:opt.name, price:0 };
+          const pillWrap=document.createElement('div');
+          pillWrap.style.cssText='display:flex; align-items:center; gap:6px;';
+          const btn=document.createElement('button');
+          btn.type='button';
+          btn.className='extra-pill' + (active ? ' active' : '');
+          btn.style.cssText='cursor:pointer;';
+          btn.textContent=opt.name;
+          btn.onclick=()=>{ hapticLight(); var idx=w.data.extras.findIndex(function(e){ return e.name===opt.name; }); if(idx>=0){ w.data.extras.splice(idx,1); } else { w.data.extras.push({ name:opt.name, price:opt.price }); } saveDraft(); rebuildWizard(); };
+          pillWrap.appendChild(btn);
+          if(active){
+            const inpWrap=document.createElement('span');
+            inpWrap.style.cssText='display:inline-flex; align-items:center; background:rgba(255,255,255,0.6); border-radius:999px; padding:4px 8px;';
+            const plus=document.createElement('span');
+            plus.style.cssText='font-size:10px; font-weight:800; color:#10b981; margin-right:4px;';
+            plus.textContent='+';
+            const inp=document.createElement('input');
+            inp.type='text';
+            inp.inputMode='decimal';
+            inp.style.cssText='width:36px; background:transparent; border:none; padding:0; font-size:12px; font-weight:800; color:#10b981; outline:none;';
+            inp.value=Number(ex.price).toFixed(2).replace('.',',');
+            inp.oninput=()=>{ ex.price=parseFloat((inp.value||'0').replace(',','.'))||0; saveDraft(); };
+            inp.onclick=(e)=> e.stopPropagation();
+            const eur=document.createElement('span');
+            eur.style.cssText='font-size:10px; font-weight:800; color:#10b981; margin-left:2px;';
+            eur.textContent='€';
+            inpWrap.appendChild(plus);
+            inpWrap.appendChild(inp);
+            inpWrap.appendChild(eur);
+            pillWrap.appendChild(inpWrap);
+          }
+          extWrap.appendChild(pillWrap);
+        });
+        stepExtras.appendChild(extWrap);
+        scrollArea.appendChild(stepExtras);
+      }
 
       box.appendChild(scrollArea);
 
@@ -22631,18 +22724,18 @@
       actionSection.className='inserat-action-section fixed-footer' + (isInserierenRoute ? ' inserat-action-pricing' : '');
 
       if(isInserierenRoute){
-        const btn499=document.createElement('button');
-        btn499.type='button';
-        btn499.style.cssText='width:100%; padding:20px; background:#FACC15; color:#1a1a1a; font-size:16px; font-weight:800; border:none; border-radius:24px; cursor:pointer; box-shadow:0 10px 30px rgba(250,204,21,0.35); text-transform:uppercase; letter-spacing:0.02em; line-height:1.3;';
-        btn499.innerHTML='JETZT FÜR 4,99 €<br>INSERIEREN';
-        btn499.onclick=function(){ if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; } if(typeof haptic==='function') haptic([30, 50, 30]); w.data.pricingOption=undefined; w.data.inseratFeeWaived=false; var o=previewOfferFromWizard(); closeWizard(true); showPublishFeeModal(o); };
-        actionSection.appendChild(btn499);
         const btnGratis=document.createElement('button');
         btnGratis.type='button';
-        btnGratis.style.cssText='width:100%; padding:16px; border-radius:24px; border:2px solid #10b981; background:rgba(16,185,129,0.08); color:#065f46; font-size:14px; font-weight:800; cursor:pointer;';
-        btnGratis.textContent='Oder Gratis mit Abholnummer (0,89 €)';
+        btnGratis.className='inserat-btn-primary inserat-btn-emerald';
+        btnGratis.innerHTML='KOSTENLOS INSERIEREN<br><span class="inserat-cta-sub">inkl. Abholnummer (0,89 € pro Vorgang)</span>';
         btnGratis.onclick=function(){ if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; } if(typeof haptic==='function') haptic([30, 50, 30]); w.data.hasPickupCode=true; w.data.inseratFeeWaived=true; w.data.pricingOption='abholnummer'; var o=previewOfferFromWizard(); closeWizard(true); showPublishFeeModal(o); };
         actionSection.appendChild(btnGratis);
+        const btn499=document.createElement('button');
+        btn499.type='button';
+        btn499.className='inserat-btn-secondary inserat-btn-yellow-border';
+        btn499.textContent='Nur Inserat für 4,99 € (ohne Abholnummer)';
+        btn499.onclick=function(){ if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; } if(typeof haptic==='function') haptic([30, 50, 30]); w.data.hasPickupCode=false; w.data.pricingOption=undefined; w.data.inseratFeeWaived=false; var o=previewOfferFromWizard(); closeWizard(true); showPublishFeeModal(o); };
+        actionSection.appendChild(btn499);
       } else {
         const btnSave=document.createElement('button');
         btnSave.type='button';
