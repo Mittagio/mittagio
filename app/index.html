@@ -2283,6 +2283,11 @@
     #wizard[data-flow="listing"].sheet--kitchen .liquid-master-panel .inserat-photo-tile.photo-header {
       border-radius: 0 0 24px 24px; width: 100%;
     }
+    /* Listing-Flow: Hero wie Detailseite – 160x160 zentriert */
+    #wizard[data-flow="listing"] .inserat-hero-detail-style .inserat-photo-tile.inserat-photo-detail-size {
+      width: 160px !important; height: 160px !important; min-height: 160px !important;
+      border-radius: 40px; border: 4px solid #fff; box-shadow: 0 12px 32px rgba(0,0,0,0.1);
+    }
     /* Status-Leiste: Pills direkt unter dem Bild (🍴 Vor Ort, 🔄 Mehrweg) */
     .inserat-status-bar {
       display: flex; gap: 12px; padding: 12px 20px; flex-shrink: 0;
@@ -23043,17 +23048,19 @@
       const dismissKeyboard = ()=>{ try { if(document.activeElement && document.activeElement.blur) document.activeElement.blur(); } catch(e){} };
       const hapticLight = ()=>{ try { if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); } catch(e){} };
 
-      // 1. FOTO – Liquid Panel: photo-header, Preis-Sticker auf dem Bild wie Dashboard-Kachel
+      // 1. FOTO – wie Detailseite: 160x160 zentriert, gleicher Container
+      const heroWrapper=document.createElement('div');
+      heroWrapper.className='inserat-hero-detail-style';
+      heroWrapper.style.cssText='padding:24px 20px; text-align:center; background:linear-gradient(180deg, #f8f9fa 0%, #fff 100%); flex-shrink:0;';
       const photoTile=document.createElement('div');
-      photoTile.className='inserat-photo-tile photo-header';
-      photoTile.style.position='relative';
-      photoTile.style.overflow='hidden';
+      photoTile.className='inserat-photo-tile photo-header inserat-photo-detail-size';
+      photoTile.style.cssText='position:relative; overflow:hidden; width:160px; height:160px; margin:0 auto; border-radius:40px; box-shadow:0 12px 32px rgba(0,0,0,0.1); border:4px solid #fff;';
       if(w.data.photoData){
         photoTile.innerHTML='<img src="'+w.data.photoData+'" style="width:100%; height:100%; object-fit:cover; display:block;" alt=""><button type="button" class="inserat-photo-change" aria-label="Foto ändern"><i data-lucide="camera" style="width:14px;height:14px;stroke-width:2.5;"></i> 📷 Foto ändern</button>';
         const rem=photoTile.querySelector('.inserat-photo-change');
         if(rem) rem.onclick=(e)=>{ e.stopPropagation(); hapticLight(); w.data.photoData=''; w.data.photoDataIsStandard=false; saveDraft(); rebuildWizard(); };
       } else {
-        photoTile.innerHTML='<div class="inserat-photo-placeholder"><span class="inserat-photo-placeholder-icon">📸</span><button type="button" class="inserat-photo-change" aria-label="Foto hinzufügen"><i data-lucide="camera" style="width:14px;height:14px;stroke-width:2.5;"></i> FOTO HINZUFÜGEN</button></div>';
+        photoTile.innerHTML='<div class="inserat-photo-placeholder" style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;"><span class="inserat-photo-placeholder-icon">📸</span><button type="button" class="inserat-photo-change" aria-label="Foto hinzufügen"><i data-lucide="camera" style="width:14px;height:14px;stroke-width:2.5;"></i> FOTO HINZUFÜGEN</button></div>';
         const addBtn=photoTile.querySelector('.inserat-photo-change');
         if(addBtn) addBtn.onclick=async function(e){ e.stopPropagation(); hapticLight(); const f=await pickImage(); if(!f) return; let dataUrl=await toDataUrl(f); if(typeof applyAppetizerFilter==='function') dataUrl=await applyAppetizerFilter(dataUrl); if(typeof openPhotoEditor==='function') dataUrl=await openPhotoEditor(dataUrl, { onAccept: function(){} }); w.data.photoData=dataUrl; w.data.photoDataIsStandard=false; saveDraft(); rebuildWizard(); };
         photoTile.onclick=async function(ev){ if(ev.target.closest('.inserat-photo-change')) return; hapticLight(); const f=await pickImage(); if(!f) return; let dataUrl=await toDataUrl(f); if(typeof applyAppetizerFilter==='function') dataUrl=await applyAppetizerFilter(dataUrl); if(typeof openPhotoEditor==='function') dataUrl=await openPhotoEditor(dataUrl, { onAccept: function(){} }); w.data.photoData=dataUrl; w.data.photoDataIsStandard=false; saveDraft(); rebuildWizard(); };
@@ -23063,7 +23070,8 @@
       priceStickerInserat.style.cssText='position:absolute; bottom:8px; right:8px; padding:6px 12px; border-radius:999px; font-weight:900; font-size:14px; background:rgba(255,215,0,0.95); color:#1a1a1a; box-shadow:0 2px 8px rgba(255,215,0,0.3); z-index:10;';
       priceStickerInserat.textContent=(Number(w.data.price)||0).toFixed(2).replace('.',',')+' €';
       photoTile.appendChild(priceStickerInserat);
-      box.appendChild(photoTile);
+      heroWrapper.appendChild(photoTile);
+      box.appendChild(heroWrapper);
 
       // Status-Leiste: 3 Säulen wie Detailseite (pillar-badge mit pillar-icon-circle + pillar-label)
       const statusBar=document.createElement('div');
@@ -23134,7 +23142,21 @@
       stepName.appendChild(wrapDesc);
       scrollArea.appendChild(stepName);
 
-      // Abholzeit in grauer Karte wie Detailseite (kein separates Banner)
+      // Anbieter-Zeile wie Detailseite (zwischen Titel und grauer Karte)
+      const providerRow=document.createElement('div');
+      providerRow.className='inserat-section inserat-provider-row';
+      providerRow.style.cssText='display:flex; align-items:center; gap:12px; padding:12px 0; min-height:48px;';
+      const provIconBox=document.createElement('div');
+      provIconBox.style.cssText='width:32px; height:32px; border-radius:10px; background:#f0f0f0; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:16px;';
+      provIconBox.textContent='🏢';
+      const provLabel=document.createElement('span');
+      provLabel.style.cssText='font-size:15px; font-weight:600; color:#1a1a1a;';
+      try { provLabel.textContent = (provider && (provider.profile && provider.profile.name)) ? String(provider.profile.name).trim() || 'Dein Angebot' : 'Dein Angebot'; } catch(e){ provLabel.textContent='Dein Angebot'; }
+      providerRow.appendChild(provIconBox);
+      providerRow.appendChild(provLabel);
+      scrollArea.appendChild(providerRow);
+
+      // Abholzeit + Adresse in grauer Karte wie Detailseite (zwei Zeilen)
       const pickupTimeCard=document.createElement('div');
       pickupTimeCard.className='inserat-section inserat-pickup-time-card';
       pickupTimeCard.style.cssText='display:flex; flex-direction:column; gap:16px; background:#f8f9fa; border-radius:24px; padding:20px; border:1px solid rgba(0,0,0,0.02);';
@@ -23157,6 +23179,17 @@
       pickupTimeRow.appendChild(timeText);
       pickupTimeRow.appendChild(timeEditBtn);
       pickupTimeCard.appendChild(pickupTimeRow);
+      var addressRow=document.createElement('div');
+      addressRow.style.cssText='display:flex; align-items:center; gap:12px;';
+      var addressIconWrap=document.createElement('div');
+      addressIconWrap.style.cssText='width:36px; height:36px; border-radius:10px; background:#fff; display:flex; align-items:center; justify-content:center; flex-shrink:0;';
+      addressIconWrap.innerHTML='<span style="font-size:18px;">📍</span>';
+      var addressText=document.createElement('span');
+      addressText.style.cssText='font-size:14px; font-weight:600; color:#374151; flex:1;';
+      try { addressText.textContent = (typeof buildAddress==='function' && provider && (provider.profile || provider)) ? (buildAddress(provider.profile || provider) || 'Adresse in deinem Profil eintragen').trim() : 'Adresse in deinem Profil eintragen'; } catch(e){ addressText.textContent='Adresse in deinem Profil eintragen'; }
+      addressRow.appendChild(addressIconWrap);
+      addressRow.appendChild(addressText);
+      pickupTimeCard.appendChild(addressRow);
       scrollArea.appendChild(pickupTimeCard);
 
       const catValues = ['Fleisch','Vegetarisch','Vegan','Salat'];
