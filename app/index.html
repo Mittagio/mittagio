@@ -6628,16 +6628,16 @@
             <div style="display:flex; align-items:center; gap:12px; margin-top:20px; margin-bottom:20px;">
               <div style="flex:1;">
                 <label style="display:block; font-size:11px; font-weight:700; color:#9ca3af; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.05em;">Start</label>
-                <select id="providerMealStart" style="width:100%; height:52px; padding:0 12px; border:2px solid #f1f3f5; border-radius:14px; font-size:15px; font-weight:700; background:#f8f9fa; color:#1a1a1a; cursor:pointer;"></select>
+                <select id="providerSettingsMealStart" style="width:100%; height:52px; padding:0 12px; border:2px solid #f1f3f5; border-radius:14px; font-size:15px; font-weight:700; background:#f8f9fa; color:#1a1a1a; cursor:pointer;"></select>
               </div>
               <span style="color:#cbd5e1; font-weight:900; margin-top:20px;">–</span>
               <div style="flex:1;">
                 <label style="display:block; font-size:11px; font-weight:700; color:#9ca3af; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.05em;">Ende</label>
-                <select id="providerMealEnd" style="width:100%; height:52px; padding:0 12px; border:2px solid #f1f3f5; border-radius:14px; font-size:15px; font-weight:700; background:#f8f9fa; color:#1a1a1a; cursor:pointer;"></select>
+                <select id="providerSettingsMealEnd" style="width:100%; height:52px; padding:0 12px; border:2px solid #f1f3f5; border-radius:14px; font-size:15px; font-weight:700; background:#f8f9fa; color:#1a1a1a; cursor:pointer;"></select>
               </div>
             </div>
             <label style="display:block; font-size:11px; font-weight:700; color:#9ca3af; margin-bottom:12px; text-transform:uppercase; letter-spacing:0.05em;">An welchen Tagen?</label>
-            <div id="providerLunchWeekdays" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
+            <div id="providerSettingsLunchWeekdays" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
           </div>
 
           <!-- Kachel: Service-Logik (3 Säulen) -->
@@ -10049,8 +10049,8 @@
     if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
   }
   function updateProviderSettingsTimeDisplay(){
-    var startEl = document.getElementById('providerMealStart');
-    var endEl = document.getElementById('providerMealEnd');
+    var startEl = document.getElementById('providerSettingsMealStart');
+    var endEl = document.getElementById('providerSettingsMealEnd');
     var displayEl = document.getElementById('providerSettingsTimeDisplay');
     if(displayEl && startEl && endEl) displayEl.textContent = (startEl.value || '11:30') + ' – ' + (endEl.value || '14:00');
   }
@@ -20429,50 +20429,59 @@
     });
     if(btnSaveBusiness) btnSaveBusiness.onclick = saveAllBusinessData;
     
-    // Meine Mittagszeiten: Start/Ende
+    // Meine Mittagszeiten: Start/Ende (Profil + Einstellungen mit eigenen IDs)
     const mealStartEl = document.getElementById('providerMealStart');
     const mealEndEl = document.getElementById('providerMealEnd');
-    
-    // Selects mit Zeiten füllen (8:00 - 20:00 in 15min Schritten)
-    if(mealStartEl && mealStartEl.options.length === 0){
-      let options = '';
-      for(let h=8; h<=20; h++){
-        for(let m=0; m<60; m+=15){
-          let t = (h<10?'0'+h:h)+':'+(m===0?'00':m);
-          options += `<option value="${t}">${t} Uhr</option>`;
-        }
+    const settingsMealStartEl = document.getElementById('providerSettingsMealStart');
+    const settingsMealEndEl = document.getElementById('providerSettingsMealEnd');
+    let timeOptions = '';
+    for(let h=8; h<=20; h++){
+      for(let m=0; m<60; m+=15){
+        let t = (h<10?'0'+h:h)+':'+(m===0?'00':m);
+        timeOptions += `<option value="${t}">${t} Uhr</option>`;
       }
-      mealStartEl.innerHTML = options;
-      if(mealEndEl) mealEndEl.innerHTML = options;
     }
-    
-    const saveMealWindow = () => {
+    if(mealStartEl && mealStartEl.options.length === 0){ mealStartEl.innerHTML = timeOptions; if(mealEndEl) mealEndEl.innerHTML = timeOptions; }
+    if(settingsMealStartEl && settingsMealStartEl.options.length === 0){ settingsMealStartEl.innerHTML = timeOptions; if(settingsMealEndEl) settingsMealEndEl.innerHTML = timeOptions; }
+    const saveMealWindow = (fromStart, fromEnd) => {
       if(!provider.profile) provider.profile = {};
-      const start = mealStartEl ? mealStartEl.value : p.mealStart || '11:30';
-      const end = mealEndEl ? mealEndEl.value : p.mealEnd || '14:00';
+      const start = (fromStart && fromStart.value) ? fromStart.value : (p.mealStart || '11:30');
+      const end = (fromEnd && fromEnd.value) ? fromEnd.value : (p.mealEnd || '14:00');
       provider.profile.mealStart = start;
       provider.profile.mealEnd = end;
       provider.profile.mealWindow = `${start} – ${end}`;
       save(LS.provider, provider);
       showToast('Mittagszeiten gespeichert');
+      if(mealStartEl) mealStartEl.value = start;
+      if(mealEndEl) mealEndEl.value = end;
+      if(settingsMealStartEl) settingsMealStartEl.value = start;
+      if(settingsMealEndEl) settingsMealEndEl.value = end;
+      if(typeof updateProviderSettingsTimeDisplay === 'function') updateProviderSettingsTimeDisplay();
     };
-    if(mealStartEl){ mealStartEl.value = p.mealStart || '11:30'; mealStartEl.onchange = function(){ if(typeof haptic === 'function') haptic(6); saveMealWindow(); if(typeof updateProviderSettingsTimeDisplay === 'function') updateProviderSettingsTimeDisplay(); }; }
-    if(mealEndEl){ mealEndEl.value = p.mealEnd || '14:00'; mealEndEl.onchange = function(){ if(typeof haptic === 'function') haptic(6); saveMealWindow(); if(typeof updateProviderSettingsTimeDisplay === 'function') updateProviderSettingsTimeDisplay(); }; }
+    const startVal = p.mealStart || '11:30';
+    const endVal = p.mealEnd || '14:00';
+    if(mealStartEl){ mealStartEl.value = startVal; mealStartEl.onchange = function(){ if(typeof haptic === 'function') haptic(6); saveMealWindow(mealStartEl, mealEndEl); }; }
+    if(mealEndEl){ mealEndEl.value = endVal; mealEndEl.onchange = function(){ if(typeof haptic === 'function') haptic(6); saveMealWindow(mealStartEl, mealEndEl); }; }
+    if(settingsMealStartEl){ settingsMealStartEl.value = startVal; settingsMealStartEl.onchange = function(){ if(typeof haptic === 'function') haptic(6); saveMealWindow(settingsMealStartEl, settingsMealEndEl); }; }
+    if(settingsMealEndEl){ settingsMealEndEl.value = endVal; settingsMealEndEl.onchange = function(){ if(typeof haptic === 'function') haptic(6); saveMealWindow(settingsMealStartEl, settingsMealEndEl); }; }
     if(typeof updateProviderSettingsTimeDisplay === 'function') updateProviderSettingsTimeDisplay();
     var timeTrigger = document.getElementById('providerSettingsTimeTrigger');
     if(timeTrigger) timeTrigger.onclick = function(){
       if(typeof haptic === 'function') haptic(6);
-      var first = document.getElementById('providerMealStart');
+      var first = document.getElementById('providerSettingsMealStart');
       if(first){ first.focus(); first.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
     };
     
-    // Wochentage (Mo=1 … So=7)
-    const weekdaysWrap = document.getElementById('providerLunchWeekdays');
-    if(weekdaysWrap){
-      const labels = [{d:1,l:'Mo'},{d:2,l:'Di'},{d:3,l:'Mi'},{d:4,l:'Do'},{d:5,l:'Fr'},{d:6,l:'Sa'},{d:7,l:'So'}];
-      const arr = Array.isArray(p.lunchWeekdays) ? p.lunchWeekdays : [1,2,3,4,5];
-      weekdaysWrap.innerHTML = labels.map(({d,l}) => `<label style="display:inline-flex; align-items:center; gap:6px; padding:8px 12px; border-radius:10px; border:2px solid ${arr.includes(d)?'#FFDE00':'#e7e1d5'}; background:${arr.includes(d)?'rgba(255,222,0,0.15)':'#fff'}; cursor:pointer; font-size:14px; font-weight:600;"><input type="checkbox" data-wd="${d}" ${arr.includes(d)?'checked':''} style="width:18px; height:18px;">${l}</label>`).join('');
-      weekdaysWrap.querySelectorAll('input[type=checkbox]').forEach(cb => {
+    // Wochentage (Mo=1 … So=7) – Profil + Einstellungen mit eigenen IDs, Sync bei Änderung
+    const labelsWd = [{d:1,l:'Mo'},{d:2,l:'Di'},{d:3,l:'Mi'},{d:4,l:'Do'},{d:5,l:'Fr'},{d:6,l:'Sa'},{d:7,l:'So'}];
+    const fillWeekdaysWrap = (wrap) => {
+      if(!wrap) return;
+      const arr = Array.isArray(provider.profile && provider.profile.lunchWeekdays) ? provider.profile.lunchWeekdays : [1,2,3,4,5];
+      wrap.innerHTML = labelsWd.map(({d,l}) => `<label style="display:inline-flex; align-items:center; gap:6px; padding:8px 12px; border-radius:10px; border:2px solid ${arr.includes(d)?'#FFDE00':'#e7e1d5'}; background:${arr.includes(d)?'rgba(255,222,0,0.15)':'#fff'}; cursor:pointer; font-size:14px; font-weight:600;"><input type="checkbox" data-wd="${d}" ${arr.includes(d)?'checked':''} style="width:18px; height:18px;">${l}</label>`).join('');
+    };
+    const bindWeekdaysWrap = (wrap, otherWrap) => {
+      if(!wrap) return;
+      wrap.querySelectorAll('input[type=checkbox]').forEach(cb => {
         cb.onchange = () => {
           const wd = parseInt(cb.dataset.wd, 10);
           if(!provider.profile) provider.profile = {};
@@ -20482,10 +20491,17 @@
           provider.profile.lunchWeekdays.sort((a,b)=>a-b);
           save(LS.provider, provider);
           showToast('Wochentage gespeichert');
-          renderProviderProfile();
+          fillWeekdaysWrap(otherWrap);
+          bindWeekdaysWrap(otherWrap, wrap);
         };
       });
-    }
+    };
+    const weekdaysWrap = document.getElementById('providerLunchWeekdays');
+    const weekdaysWrapSettings = document.getElementById('providerSettingsLunchWeekdays');
+    fillWeekdaysWrap(weekdaysWrap);
+    fillWeekdaysWrap(weekdaysWrapSettings);
+    bindWeekdaysWrap(weekdaysWrap, weekdaysWrapSettings);
+    bindWeekdaysWrap(weekdaysWrapSettings, weekdaysWrap);
     
     // Abholnummer-Standard-Toggle
     const abholnummerEnabled = document.getElementById('providerAbholnummerEnabled');
