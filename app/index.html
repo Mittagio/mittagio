@@ -799,10 +799,12 @@
     /* Modals: nur sichtbar wenn .active – verhindert leeren Screen auf allen Anbieter-Seiten */
     #quickPostBd:not(.active),
     #publishFeeBd:not(.active),
-    #inseratSuccessBd:not(.active){ display:none !important; opacity:0 !important; pointer-events:none !important; }
+    #inseratSuccessBd:not(.active),
+    #saveSuccessSheetBd:not(.active){ display:none !important; opacity:0 !important; pointer-events:none !important; }
     #quickPostSheet:not(.active),
     #publishFeeSheet:not(.active),
-    #inseratSuccessSheet:not(.active){ visibility:hidden !important; pointer-events:none !important; }
+    #inseratSuccessSheet:not(.active),
+    #saveSuccessSheet:not(.active){ visibility:hidden !important; pointer-events:none !important; }
     .sheet{
       position:fixed; left:0; right:0; bottom:-120%; z-index:2001;
       background:#fff; border-radius:22px 22px 0 0;
@@ -814,7 +816,8 @@
       padding-bottom:env(safe-area-inset-bottom, 0);
     }
     .sheet.active{bottom:0}
-    #publishFeeSheet.active{ bottom:0 !important; visibility:visible !important; }
+    #publishFeeSheet.active,
+    #saveSuccessSheet.active{ bottom:0 !important; visibility:visible !important; }
     .handle{width:46px; height:5px; background:#ddd; border-radius:999px; margin:10px auto 6px}
     .sheet-img{height:260px; background:#eee}
     .sheet-img img{width:100%; height:100%; object-fit:cover; display:block}
@@ -7466,6 +7469,25 @@
 <div id="addressRequiredSheet" style="position:fixed; left:50%; top:50%; transform:translate(-50%,-50%); width:90%; max-width:340px; background:#fff; border-radius:20px; padding:24px; box-shadow:0 20px 40px rgba(0,0,0,0.15); z-index:1151; display:none;">
   <p style="margin:0 0 20px; font-size:16px; font-weight:600; color:#1a1a1a; line-height:1.45;">Bitte zuerst in <strong>Meine Daten</strong> deine Adresse eintragen (Straße, PLZ, Ort).</p>
   <button type="button" onclick="closeAddressRequiredModal(); showProviderProfile(); setTimeout(function(){ if(typeof showProviderProfileSub==='function') showProviderProfileSub('business'); }, 100);" style="width:100%; min-height:48px; border-radius:14px; background:#1a1a1a; color:#fff; font-weight:800; font-size:15px; border:none; cursor:pointer;">Zu Meine Daten</button>
+</div>
+
+<!-- Speichern-Erfolg + „Jetzt live?“ (Kochbuch/Wochenplan) – ähnlich Inserat-Erfolg -->
+<div class="backdrop" id="saveSuccessSheetBd" onclick="closeSaveSuccessSheet()" style="background:rgba(0,0,0,0.7); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); z-index:1198;"></div>
+<div class="sheet" id="saveSuccessSheet" style="max-width:480px; border-radius:32px; background:#f8f7f2; z-index:1199; display:flex; flex-direction:column; max-height:92vh;">
+  <div class="sheet-body" style="padding:24px 24px 120px; text-align:center; overflow-y:auto; flex:1; min-height:0;">
+    <div style="width:64px; height:64px; background:#dcfce7; color:#16a34a; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:32px; margin:0 auto 16px; box-shadow:0 4px 12px rgba(22,163,74,0.15);">✓</div>
+    <h1 id="saveSuccessSheetTitle" style="margin:0 0 8px; font-size:24px; font-weight:950; color:#1a1a1a; letter-spacing:-0.03em;">Gespeichert!</h1>
+    <p id="saveSuccessSheetSub" style="margin:0 0 20px; font-size:14px; color:#64748b;">Dein Gericht ist gespeichert.</p>
+    <div id="saveSuccessSheetPreview" class="success-card-preview" style="margin-bottom:20px; text-align:left;"></div>
+    <div style="background:#fff; border-radius:16px; padding:20px; margin-bottom:24px; border:1px solid rgba(0,0,0,0.06); text-align:left;">
+      <p style="margin:0; font-size:15px; font-weight:700; color:#1a1a1a;">Willst du es jetzt live stellen mit Abholnummer?</p>
+      <p style="margin:8px 0 0; font-size:13px; color:#64748b; line-height:1.45;">Gäste können dann dein Gericht finden und mit Abholnummer bestellen (0,89 € pro Vorgang).</p>
+    </div>
+  </div>
+  <div style="position:absolute; bottom:0; left:0; right:0; padding:20px 24px calc(20px + env(safe-area-inset-bottom, 0)); background:linear-gradient(to top, #f8f7f2 80%, transparent); display:flex; flex-direction:column; gap:10px;">
+    <button type="button" id="saveSuccessSheetBtnLive" style="width:100%; min-height:52px; border-radius:16px; background:#1a1a1a; color:#fff; font-weight:800; font-size:15px; border:none; box-shadow:0 4px 12px rgba(0,0,0,0.1);">Jetzt live stellen</button>
+    <button type="button" id="saveSuccessSheetBtnFertig" style="width:100%; min-height:48px; border-radius:16px; background:#fff; color:#1a1a1a; font-weight:700; font-size:15px; border:2px solid rgba(0,0,0,0.1);">Fertig</button>
+  </div>
 </div>
 
 <!-- Inserat Live – Erfolgs-Sheet nach Veröffentlichung -->
@@ -19964,46 +19986,72 @@
     const entries = (week[date] || []).filter(e => e.providerId === providerId());
     if(!entries.length) return;
     
-    // Check if we can bypass Abholnummer query
     const profile = normalizeProviderProfile(provider.profile || {});
     const hasDefault = profile.abholnummerEnabledByDefault !== undefined && profile.abholnummerEnabledByDefault !== null;
     
     if(!hasDefault){
-      // Open wizard at Abholnummer step
-      // We take the first entry as representative for the flow
       const entry = entries[0];
       startWizard('listing', { fromCookbookId: entry.cookbookId, date: date, skipToAbholnummer: true });
       return;
     }
 
-    // If we have a default, go straight to payment
+    // Vollständiges Offer (wie publishCookbookEntry) für Modal + Erfolgs-Sheet
     const firstEntry = entries[0];
     const cb = cookbook.find(c => String(c.id) === String(firstEntry.cookbookId)) || {};
     const o = normalizeOffer({
-      ...firstEntry,
-      dish: cb.dish || firstEntry.dish,
-      price: cb.price || firstEntry.price,
-      hasPickupCode: !!profile.abholnummerEnabledByDefault
+      id: cryptoId(),
+      providerId: providerId(),
+      providerName: profile.name || provider.email || 'Anbieter',
+      providerStreet: profile.street||'',
+      providerZip: profile.zip||'',
+      providerCity: profile.city||'',
+      providerLogoData: profile.logoData||'',
+      dish: cb.dish || firstEntry.dish || '',
+      category: cb.category || 'Vegetarisch',
+      price: Number(cb.price != null ? cb.price : firstEntry.price || 0),
+      pickupWindow: profile.mealWindow || DEFAULT_MEAL_WINDOW,
+      hasPickupCode: !!profile.abholnummerEnabledByDefault,
+      dineInPossible: cb.dineInPossible !== false,
+      allergens: cb.allergens || [],
+      extras: cb.extras || [],
+      reuse: cb.reuse || { enabled: !!profile.reuseEnabledByDefault, deposit: profile.reuseEnabledByDefault ? 2 : 0 },
+      imageUrl: cb.photoData || '',
+      day: date,
+      active: true
     });
+    if(!o.providerStreet && (profile.street || profile.zip || profile.city)){
+      o.providerStreet = profile.street || buildAddress(profile);
+      o.providerZip = profile.zip; o.providerCity = profile.city;
+    }
     
     showPublishFeeModal(o, () => {
-      // Success callback
-      entries.forEach(e => {
+      // Erster Eintrag wurde bereits von publishOffer() ins offers-Array geschrieben; nur die übrigen hinzufügen
+      entries.slice(1).forEach(e => {
         const c = cookbook.find(x => String(x.id) === String(e.cookbookId)) || {};
-        const newOffer = {
-          ...normalizeOffer(e),
+        offers.push({
           id: cryptoId(),
+          providerId: providerId(),
+          providerName: profile.name || provider.email || 'Anbieter',
+          providerStreet: o.providerStreet || '',
+          providerZip: o.providerZip || '',
+          providerCity: o.providerCity || '',
           dish: c.dish || e.dish,
-          price: c.price || e.price,
+          price: Number(c.price != null ? c.price : e.price || 0),
+          category: c.category || 'Vegetarisch',
+          pickupWindow: o.pickupWindow,
           hasPickupCode: !!profile.abholnummerEnabledByDefault,
-          active: true,
-          day: date
-        };
-        offers.push(newOffer);
+          dineInPossible: c.dineInPossible !== false,
+          allergens: c.allergens || [],
+          extras: c.extras || [],
+          reuse: c.reuse || { enabled: false, deposit: 0 },
+          imageUrl: c.photoData || '',
+          day: date,
+          active: true
+        });
       });
       save(LS.offers, offers);
       renderWeekPlan();
-      renderProviderHome();
+      if(typeof renderProviderHome === 'function') renderProviderHome();
     });
   }
 
@@ -22940,8 +22988,44 @@
         btnSave.onclick=function(){
           if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; }
           if(typeof haptic==='function') haptic(50);
-          if(entryPoint==='cookbook'){ var id=saveToCookbookFromWizard(); if(id){ showListingSuccessOverlay(function(){ closeWizard(true); if(typeof showToast==='function') showToast('Im Kochbuch gespeichert'); if(typeof showProviderCookbook==='function') showProviderCookbook(); }); } }
-          else if(entryPoint==='week'){ var id=saveToCookbookFromWizard(); if(id && w.data.day){ if(!week[w.data.day]) week[w.data.day]=[]; var c=cookbook.find(function(x){ return x.id===id; }); if(c) week[w.data.day].push({ providerId:c.providerId, cookbookId:c.id, dish:c.dish, price:c.price }); save(LS.week, week); showListingSuccessOverlay(function(){ closeWizard(true); if(typeof showToast==='function') showToast('Im Wochenplan gespeichert'); if(typeof showProviderWeek==='function') showProviderWeek(); }); } }
+          if(entryPoint==='cookbook'){
+            var id=saveToCookbookFromWizard();
+            if(id){
+              closeWizard(true);
+              showSaveSuccessSheet({
+                title:'Im Kochbuch gespeichert',
+                sub:'Dein Gericht ist in deinem Kochbuch.',
+                dishName: w.data.dish||'',
+                price: w.data.price,
+                imageUrl: w.data.photoData||'',
+                savedEntryId: id,
+                savedDay: null,
+                onFertig: function(){ if(typeof showToast==='function') showToast('Im Kochbuch gespeichert'); if(typeof showProviderCookbook==='function') showProviderCookbook(); },
+                onLive: null
+              });
+            }
+          }
+          else if(entryPoint==='week'){
+            var id=saveToCookbookFromWizard();
+            if(id && w.data.day){
+              if(!week[w.data.day]) week[w.data.day]=[];
+              var c=cookbook.find(function(x){ return x.id===id; });
+              if(c) week[w.data.day].push({ providerId:c.providerId, cookbookId:c.id, dish:c.dish, price:c.price });
+              save(LS.week, week);
+              closeWizard(true);
+              showSaveSuccessSheet({
+                title:'Im Wochenplan gespeichert',
+                sub:'Dein Gericht ist im Wochenplan eingetragen.',
+                dishName: w.data.dish||'',
+                price: w.data.price,
+                imageUrl: w.data.photoData||'',
+                savedEntryId: id,
+                savedDay: w.data.day,
+                onFertig: function(){ if(typeof showToast==='function') showToast('Im Wochenplan gespeichert'); if(typeof showProviderWeek==='function') showProviderWeek(); },
+                onLive: null
+              });
+            }
+          }
         };
         actionSection.appendChild(btnSave);
       }
@@ -23409,6 +23493,7 @@
     if(typeof window !== 'undefined'){
       window.closePublishFeeModal = closePublishFeeModal;
       window.closeInseratSuccessSheet = closeInseratSuccessSheet;
+      window.closeSaveSuccessSheet = closeSaveSuccessSheet;
     }
     closePublishFeeModal();
     if(typeof closeQuickPostSheet === 'function') closeQuickPostSheet();
@@ -23449,9 +23534,86 @@
     return base.id;
   }
 
-  /** Erfolgs-Overlay: Spring-Checkmark, Double-Tap-Haptik (Herzschlag), nach 1,5s Slide-Exit. */
+  var saveSuccessSheetCtx = { savedEntryId: null, savedDay: null, onFertig: null, onLive: null };
+  function showSaveSuccessSheet(opts){
+    var title = (opts && opts.title) || 'Gespeichert!';
+    var sub = (opts && opts.sub) || 'Dein Gericht ist gespeichert.';
+    var dishName = (opts && opts.dishName) || '';
+    var price = (opts && opts.price) != null ? (typeof euro === 'function' ? euro(opts.price) : Number(opts.price).toFixed(2).replace('.', ',') + ' €') : '';
+    var imageUrl = (opts && opts.imageUrl) || '';
+    saveSuccessSheetCtx.savedEntryId = opts && opts.savedEntryId;
+    saveSuccessSheetCtx.savedDay = opts && opts.savedDay;
+    saveSuccessSheetCtx.onFertig = opts && opts.onFertig;
+    saveSuccessSheetCtx.onLive = opts && opts.onLive;
+    var titleEl = document.getElementById('saveSuccessSheetTitle');
+    var subEl = document.getElementById('saveSuccessSheetSub');
+    var previewEl = document.getElementById('saveSuccessSheetPreview');
+    if(titleEl) titleEl.textContent = title;
+    if(subEl) subEl.textContent = sub;
+    if(previewEl){
+      var imgSrc = imageUrl || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=400&q=60';
+      var dishEsc = (dishName || 'Gericht').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+      previewEl.innerHTML = '<img src="' + imgSrc + '" class="success-card-img" alt=""><div class="success-card-body" style="padding:12px 16px;"><div style="display:flex; justify-content:space-between; align-items:flex-start;"><h4 style="margin:0; font-size:17px; font-weight:900; color:#1a1a1a;">' + dishEsc + '</h4>' + (price ? '<span style="background:#1a1a1a; color:#fff; padding:4px 10px; border-radius:8px; font-size:13px; font-weight:800;">' + price + '</span>' : '') + '</div></div>';
+    }
+    var bd = document.getElementById('saveSuccessSheetBd');
+    var sheet = document.getElementById('saveSuccessSheet');
+    if(bd) bd.classList.add('active');
+    if(sheet) sheet.classList.add('active');
+    try { if(typeof haptic === 'function') haptic([12, 55, 12]); } catch(e){}
+  }
+  function closeSaveSuccessSheet(){
+    saveSuccessSheetCtx.savedEntryId = null;
+    saveSuccessSheetCtx.savedDay = null;
+    saveSuccessSheetCtx.onFertig = null;
+    saveSuccessSheetCtx.onLive = null;
+    var bd = document.getElementById('saveSuccessSheetBd');
+    var sheet = document.getElementById('saveSuccessSheet');
+    if(bd) bd.classList.remove('active');
+    if(sheet) sheet.classList.remove('active');
+  }
+  (function wireSaveSuccessSheet(){
+    var bd = document.getElementById('saveSuccessSheetBd');
+    var btnFertig = document.getElementById('saveSuccessSheetBtnFertig');
+    var btnLive = document.getElementById('saveSuccessSheetBtnLive');
+    if(btnFertig) btnFertig.onclick = function(){
+      if(typeof haptic === 'function') haptic(8);
+      var onFertig = saveSuccessSheetCtx.onFertig;
+      closeSaveSuccessSheet();
+      if(typeof onFertig === 'function') onFertig();
+    };
+    if(btnLive) btnLive.onclick = function(){
+      if(typeof haptic === 'function') haptic(12);
+      var id = saveSuccessSheetCtx.savedEntryId;
+      var day = saveSuccessSheetCtx.savedDay;
+      closeSaveSuccessSheet();
+      if(id && typeof publishCookbookEntry === 'function') publishCookbookEntry(id, day || (typeof isoDate === 'function' ? isoDate(new Date()) : null));
+    };
+  })();
+
+  /** Erfolgs-Overlay beim Speichern (Kochbuch/Wochenplan): Titel + Check + „Fertig“, an body, kein Auto-Close. */
+  function showSaveSuccessOverlay(title, thenCallback){
+    try { if(typeof haptic==='function') haptic([12, 55, 12]); } catch(e){}
+    var overlay = document.createElement('div');
+    overlay.className = 'save-success-overlay';
+    overlay.setAttribute('role', 'dialog');
+    overlay.setAttribute('aria-label', title);
+    overlay.style.cssText = 'position:fixed; inset:0; background:rgba(255,255,255,0.95); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); z-index:3500; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; box-sizing:border-box;';
+    var titleEsc = (title || 'Gespeichert').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    overlay.innerHTML = '<div style="display:flex; flex-direction:column; align-items:center; gap:20px; text-align:center; max-width:320px;">' +
+      '<div style="width:80px; height:80px; border-radius:50%; background:rgba(16,185,129,0.15); border:3px solid #10b981; display:flex; align-items:center; justify-content:center;"><span style="font-size:44px; color:#059669;">✓</span></div>' +
+      '<div style="font-size:20px; font-weight:900; color:#1a1a1a;">' + titleEsc + '</div>' +
+      '<p style="margin:0; font-size:14px; color:#64748b;">Du findest es in deiner Übersicht.</p>' +
+      '<button type="button" class="save-success-done-btn" style="width:100%; min-height:52px; border-radius:16px; background:#1a1a1a; color:#fff; font-size:16px; font-weight:800; border:none; cursor:pointer; margin-top:8px;">Fertig</button>' +
+      '</div>';
+    document.body.appendChild(overlay);
+    var btn = overlay.querySelector('.save-success-done-btn');
+    function dismiss(){ overlay.remove(); if(thenCallback) thenCallback(); }
+    if(btn){ btn.onclick = function(){ if(typeof haptic==='function') haptic(8); dismiss(); }; }
+  }
+
+  /** Erfolgs-Overlay (Legacy): im Wizard-Container, Auto-Close nach 1,5s. */
   function showListingSuccessOverlay(thenCallback){
-    try { if(typeof haptic==='function') haptic([12, 55, 12]); else if(navigator.vibrate) navigator.vibrate([12, 55, 12]); } catch(e){}
+    try { if(typeof haptic==='function') haptic([12, 55, 12]); } catch(e){}
     var box = document.getElementById('wBox');
     if(!box) { if(thenCallback) thenCallback(); return; }
     var overlay = document.createElement('div');
