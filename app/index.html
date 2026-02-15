@@ -1540,17 +1540,18 @@
     #wizard.sheet--kitchen .liquid-master-panel #step-name .inserat-airbnb-dish:focus{
       border-bottom-color: #1a1a1a; box-shadow: 0 2px 0 0 #1a1a1a;
     }
+    /* Beschreibung: kleiner, dezent, hebt sich nicht ab */
     #wizard.sheet--kitchen .glass-express-step0 #step-name .inserat-airbnb-desc-wrap,
     #wizard.sheet--kitchen .liquid-master-panel #step-name .inserat-airbnb-desc-wrap{
-      margin-bottom: 8px;
+      margin-bottom: 4px; margin-top: -4px;
     }
     #wizard.sheet--kitchen .glass-express-step0 #step-name .inserat-airbnb-desc,
     #wizard.sheet--kitchen .liquid-master-panel #step-name .inserat-airbnb-desc,
     #wizard.sheet--kitchen .glass-express-step0 #step-name input.inserat-desc-input,
     #wizard.sheet--kitchen .liquid-master-panel #step-name input.inserat-desc-input{
-      width: 100%; min-height: 48px; padding: 14px 20px;
-      font-size: 1rem; font-weight: 500; font-style: italic; color: #64748b;
-      background: rgba(0,0,0,0.02); border: none; border-bottom: 1px solid rgba(0,0,0,0.06);
+      width: 100%; min-height: 36px; padding: 8px 20px 6px;
+      font-size: 0.8rem; font-weight: 400; font-style: normal; color: #94a3b8;
+      background: transparent; border: none; border-bottom: 1px solid rgba(0,0,0,0.05);
       border-radius: 0; outline: none; transition: border-color 0.2s ease;
       box-sizing: border-box;
     }
@@ -1558,11 +1559,11 @@
     #wizard.sheet--kitchen .liquid-master-panel #step-name .inserat-airbnb-desc::placeholder,
     #wizard.sheet--kitchen .glass-express-step0 #step-name .inserat-desc-input::placeholder,
     #wizard.sheet--kitchen .liquid-master-panel #step-name .inserat-desc-input::placeholder{
-      color: #94a3b8;
+      color: #cbd5e1;
     }
     #wizard.sheet--kitchen .glass-express-step0 #step-name .inserat-airbnb-desc:focus,
     #wizard.sheet--kitchen .liquid-master-panel #step-name .inserat-airbnb-desc:focus{
-      border-bottom-color: #10b981; background: rgba(16,185,129,0.03);
+      border-bottom-color: rgba(0,0,0,0.12); color: #64748b;
     }
     #wizard.sheet--kitchen .glass-express-step0 #step-name input:first-of-type{
       font-size: 1.75rem; text-align: left;
@@ -1570,12 +1571,12 @@
     #wizard.sheet--kitchen .glass-express-step0 #step-name input:last-of-type,
     #wizard.sheet--kitchen .glass-express-step0 #step-name .inserat-desc-input,
     #wizard.sheet--kitchen .liquid-master-panel #step-name .inserat-desc-input{
-      font-size: 1rem; color: #64748b; text-align: left; margin-top: 0;
-      font-weight: 500; font-style: italic; background: rgba(0,0,0,0.02);
+      font-size: 0.8rem; color: #94a3b8; text-align: left; margin-top: 0;
+      font-weight: 400; font-style: normal; background: transparent;
     }
     #wizard.sheet--kitchen .glass-express-step0 #step-name .inserat-desc-input::placeholder,
     #wizard.sheet--kitchen .liquid-master-panel #step-name .inserat-desc-input::placeholder{
-      color: #94a3b8;
+      color: #cbd5e1;
     }
     /* price-display: elegant, System-Sans / Inter, Bold [cite: Native-Feel] */
     #wizard.sheet--kitchen .glass-express-step0 #step-price .inserat-price-input,
@@ -21941,6 +21942,21 @@
     pizza:['GL','MI'], wrap:['GL'], burger:['GL','EI'], falafel:['SO'],
     lachs:['FI'], sushi:['FI'], thunfisch:['FI']
   };
+  /** Gerichtname (lowercase) → Kategorie (Fleisch|Vegetarisch|Vegan|Salat) für Autovervollständigung. */
+  const DISH_CATEGORY_SUGGESTIONS = {
+    kürbissuppe:'Vegetarisch', kartoffelsuppe:'Vegetarisch', tomatensuppe:'Vegetarisch', linsensuppe:'Vegetarisch',
+    schnitzel:'Fleisch', gulasch:'Fleisch', käsespätzle:'Vegetarisch', pasta:'Fleisch', pizza:'Fleisch',
+    wrap:'Fleisch', burger:'Fleisch', falafel:'Vegan', lachs:'Fleisch', sushi:'Fleisch', thunfisch:'Fleisch',
+    salat:'Salat', curry:'Fleisch', gemüsepfanne:'Vegetarisch', risotto:'Vegetarisch', lasagne:'Fleisch'
+  };
+  function getCategorySuggestionForDish(dishName){
+    var n = String(dishName||'').trim().toLowerCase();
+    if(!n) return null;
+    for(var key in DISH_CATEGORY_SUGGESTIONS){
+      if(n.includes(key) || key.includes(n)) return DISH_CATEGORY_SUGGESTIONS[key];
+    }
+    return null;
+  }
   function getAllergenSuggestionsForDish(dishName){
     const n = String(dishName||'').trim().toLowerCase();
     if(!n) return [];
@@ -22624,37 +22640,54 @@
       stepName.className='inserat-section inserat-name-airbnb';
       const wrapDish=document.createElement('div');
       wrapDish.className='inserat-airbnb-field-wrap';
+      const dishDatalist=document.createElement('datalist');
+      dishDatalist.id='inserat-dish-datalist';
+      const dishSuggestions = ['Kürbissuppe','Kartoffelsuppe','Tomatensuppe','Linsensuppe','Schnitzel','Gulasch','Käsespätzle','Pasta','Pizza','Wrap','Burger','Falafel','Lachs','Sushi','Thunfisch','Salat','Curry','Gemüsepfanne','Risotto','Lasagne'];
+      dishSuggestions.forEach(function(name){ const o=document.createElement('option'); o.value=name; dishDatalist.appendChild(o); });
+      wrapDish.appendChild(dishDatalist);
       const inputDish=document.createElement('input');
       inputDish.type='text';
       inputDish.className='liquid-input liquid-input-focus magnet-input inserat-airbnb-dish';
       inputDish.placeholder='Kürbissuppe';
       inputDish.value=w.data.dish||'';
+      inputDish.setAttribute('list','inserat-dish-datalist');
       inputDish.autocomplete='off';
-      inputDish.oninput=()=>{ w.data.dish=inputDish.value; saveDraft(); };
-      inputDish.onblur=()=>{ dismissKeyboard(); hapticLight(); scrollToNext('step-cat'); };
+      inputDish.oninput=()=>{
+        w.data.dish=inputDish.value; saveDraft();
+        setTimeout(function(){ scrollToNext('step-cat'); }, 200);
+      };
+      inputDish.onblur=()=>{
+        dismissKeyboard(); hapticLight();
+        var catSugg=getCategorySuggestionForDish(inputDish.value);
+        if(catSugg&&['Fleisch','Vegetarisch','Vegan','Salat'].indexOf(catSugg)>=0){ w.data.category=catSugg; saveDraft(); }
+        var suggested=getAllergenSuggestionsForDish(inputDish.value);
+        if(suggested.length&&(!w.data.allergens||w.data.allergens.length===0)){ w.data.allergens=suggested.slice(); w.data.wantsAllergens=true; saveDraft(); rebuildWizard(); }
+        else scrollToNext('step-cat');
+      };
       wrapDish.appendChild(inputDish);
       const wrapDesc=document.createElement('div');
       wrapDesc.className='inserat-airbnb-field-wrap inserat-airbnb-desc-wrap';
       const inputDesc=document.createElement('input');
       inputDesc.type='text';
       inputDesc.className='liquid-input liquid-input-focus inserat-desc-input inserat-airbnb-desc';
-      inputDesc.placeholder='Frisch vom Feld';
+      inputDesc.placeholder='… z.B. mit frischem saisonalen Gemüse …';
       inputDesc.value=w.data.description||'';
-      inputDesc.oninput=()=>{ w.data.description=inputDesc.value; saveDraft(); };
-      inputDesc.onblur=()=>{ dismissKeyboard(); hapticLight(); };
+      inputDesc.oninput=()=>{ w.data.description=inputDesc.value; saveDraft(); setTimeout(function(){ scrollToNext('step-cat'); }, 150); };
+      inputDesc.onblur=()=>{ dismissKeyboard(); hapticLight(); scrollToNext('step-cat'); };
       wrapDesc.appendChild(inputDesc);
       stepName.appendChild(wrapDish);
       stepName.appendChild(wrapDesc);
       scrollArea.appendChild(stepName);
 
-      // 4. KATEGORIE PILLS – Referenz: „Mit Fleisch“, Vegetarisch, Vegan, Salat (Wert intern weiter Fleisch)
+      // 4. KATEGORIE PILLS – wie Kundenansicht (Discover): gleiche Werte Fleisch/Vegetarisch/Vegan/Salat
       const catValues = ['Fleisch','Vegetarisch','Vegan','Salat'];
       const catDisplayLabels = ['Mit Fleisch','Vegetarisch','Vegan','Salat'];
+      const catEmojis = ['🥩','🥗','🌱','🥪'];
       const currentCat = w.data.category || 'Fleisch';
       if(!catValues.includes(currentCat)) w.data.category = 'Fleisch';
       const stepCat=document.createElement('div');
       stepCat.id='step-cat';
-      stepCat.className='inserat-section';
+      stepCat.className='inserat-section inserat-cat-pills';
       const labelCat=document.createElement('span');
       labelCat.className='inserat-section-label';
       labelCat.textContent='Kategorie';
@@ -22662,9 +22695,9 @@
       catValues.forEach((c,i)=>{
         const b=document.createElement('button');
         b.type='button';
-        b.className='extra-pill' + (w.data.category===c ? ' active' : '');
+        b.className='extra-pill inserat-cat-pill' + (w.data.category===c ? ' active' : '');
         b.style.cssText='flex:0 0 auto; cursor:pointer;';
-        b.textContent=catDisplayLabels[i];
+        b.textContent=(catEmojis[i]||'')+' '+catDisplayLabels[i];
         b.onclick=()=>{ hapticLight(); w.data.category=c; saveDraft(); scrollToNext('step-price'); rebuildWizard(); };
         stepCat.appendChild(b);
       });
@@ -22676,7 +22709,7 @@
       stepPrice.className='inserat-section';
       const labelPrice=document.createElement('span');
       labelPrice.className='inserat-section-label';
-      labelPrice.textContent='Preis';
+      labelPrice.textContent='Preis pro Portion';
       stepPrice.appendChild(labelPrice);
       const priceRow=document.createElement('div');
       priceRow.className='inserat-price-row';
@@ -22692,7 +22725,7 @@
         if(el) el.textContent = 'Umsatzprognose (bei angenommen 30 Portionen): ' + p.toFixed(2).replace('.',',') + ' €';
         try { if(navigator.vibrate) navigator.vibrate(5); } catch(e){}
       };
-      inputPrice.oninput=()=>{ var v=inputPrice.value.replace(',','.'); w.data.price=parseFloat(v)||0; saveDraft(); updateProfit(v); };
+      inputPrice.oninput=()=>{ var v=inputPrice.value.replace(',','.'); w.data.price=parseFloat(v)||0; saveDraft(); updateProfit(v); setTimeout(function(){ scrollToNext('power-bar'); }, 180); };
       inputPrice.onblur=()=>{ if(w.data.price>0) inputPrice.value=Number(w.data.price).toFixed(2).replace('.',','); dismissKeyboard(); hapticLight(); scrollToNext('power-bar'); };
       const euroSpan=document.createElement('span');
       euroSpan.className='inserat-price-euro';
@@ -22720,7 +22753,7 @@
         btn.className='inserat-logistics-btn power-bar-btn ' + (active ? 'active' : 'inactive');
         btn.textContent=item.emo;
         btn.title=item.title;
-        btn.onclick=()=>{ hapticLight(); if(item.key==='reuse'){ w.data.reuse=w.data.reuse||{}; w.data.reuse.enabled=!w.data.reuse.enabled; } else w.data[item.key]=!w.data[item.key]; saveDraft(); rebuildWizard(); };
+        btn.onclick=()=>{ hapticLight(); if(item.key==='reuse'){ w.data.reuse=w.data.reuse||{}; w.data.reuse.enabled=!w.data.reuse.enabled; } else w.data[item.key]=!w.data[item.key]; saveDraft(); rebuildWizard(); setTimeout(function(){ scrollToNext('power-bar'); }, 50); };
         powerBar.appendChild(btn);
       });
       var pwParts=(w.data.pickupWindow||profileWindow).split(/\s*[–\-]\s*/);
@@ -22733,21 +22766,21 @@
       timeBtn.className='inserat-pickup-time-trigger power-bar-btn inserat-logistics-btn';
       timeBtn.textContent='🕒';
       timeBtn.title=timeStart + ' – ' + timeEnd;
-      timeBtn.onclick=()=>{ hapticLight(); w.data.pickupWindowEdit=!w.data.pickupWindowEdit; saveDraft(); rebuildWizard(); };
+      timeBtn.onclick=()=>{ hapticLight(); w.data.pickupWindowEdit=!w.data.pickupWindowEdit; saveDraft(); rebuildWizard(); setTimeout(function(){ var el=document.querySelector('.inserat-pickup-time-dropdown'); if(el) el.scrollIntoView({ behavior:'smooth', block:'center' }); }, 80); };
       powerBar.appendChild(timeBtn);
       const allergenBarBtn=document.createElement('button');
       allergenBarBtn.type='button';
       allergenBarBtn.className='power-bar-btn inserat-logistics-btn ' + (w.data.allergeneExpanded ? 'active' : '');
       allergenBarBtn.textContent='🌾';
       allergenBarBtn.title='Allergene';
-      allergenBarBtn.onclick=()=>{ hapticLight(); w.data.allergeneExpanded=!w.data.allergeneExpanded; saveDraft(); rebuildWizard(); };
+      allergenBarBtn.onclick=()=>{ hapticLight(); w.data.allergeneExpanded=!w.data.allergeneExpanded; saveDraft(); rebuildWizard(); setTimeout(function(){ scrollToNext('step-allergens'); }, 80); };
       powerBar.appendChild(allergenBarBtn);
       const extrasBarBtn=document.createElement('button');
       extrasBarBtn.type='button';
       extrasBarBtn.className='power-bar-btn inserat-logistics-btn ' + (w.data.extrasExpanded ? 'active' : '');
       extrasBarBtn.textContent='➕';
       extrasBarBtn.title='Extras';
-      extrasBarBtn.onclick=()=>{ hapticLight(); w.data.extrasExpanded=!w.data.extrasExpanded; saveDraft(); rebuildWizard(); };
+      extrasBarBtn.onclick=()=>{ hapticLight(); w.data.extrasExpanded=!w.data.extrasExpanded; saveDraft(); rebuildWizard(); setTimeout(function(){ scrollToNext('step-extras'); }, 80); };
       powerBar.appendChild(extrasBarBtn);
       scrollArea.appendChild(powerBar);
       if(w.data.pickupWindowEdit){
@@ -22852,6 +22885,7 @@
       var primaryValid = hasDish && hasPrice;
 
       const actionSection=document.createElement('section');
+      actionSection.id='inserat-action-section';
       actionSection.className='inserat-action-section fixed-footer' + (isInserierenRoute ? ' inserat-action-pricing' : '');
 
       if(isInserierenRoute){
