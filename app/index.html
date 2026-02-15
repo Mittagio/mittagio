@@ -2215,7 +2215,7 @@
     }
     #wizard[data-flow="listing"] .w-actions { display: none !important; }
     
-    /* High-End Liquid Panel [cite: 2026-01-29, 2026-02-02] */
+    /* High-End Liquid Panel [cite: 2026-01-29, 2026-02-02] – Listing: Screen füllend, randlos */
     .liquid-master-panel {
       flex: 1; display: flex; flex-direction: column; overflow: hidden;
       background: rgba(255, 255, 255, 0.75);
@@ -2224,6 +2224,10 @@
       border-radius: 3rem; margin: 10px;
       border: 1px solid rgba(255, 255, 255, 0.4);
       box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+    }
+    #wizard[data-flow="listing"].sheet--kitchen .liquid-master-panel {
+      margin: 0; border-radius: 0; border-left: none; border-right: none; border-bottom: none;
+      min-height: 0; flex: 1;
     }
     #wizard[data-flow="listing"].sheet--kitchen .wizard-scroll #wContent{
       flex: 1; min-height: 0; height: 100%; display: flex; flex-direction: column;
@@ -2266,11 +2270,82 @@
       animation: magnet-pulse 1.2s ease-in-out infinite;
     }
     
-    /* Foto-Header randlos oben, ca. 190px [cite: 2026-02-02] */
+    /* Foto-Header randlos oben (Edge-to-Edge) [cite: Unified Detail] */
     .liquid-master-panel .photo-header,
     .liquid-master-panel .inserat-photo-tile.photo-header {
       height: 190px; min-height: 190px; flex-shrink: 0;
       box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    }
+    #wizard[data-flow="listing"].sheet--kitchen .liquid-master-panel .photo-header,
+    #wizard[data-flow="listing"].sheet--kitchen .liquid-master-panel .inserat-photo-tile.photo-header {
+      border-radius: 0; width: 100%;
+    }
+    /* Status-Leiste: Pills direkt unter dem Bild (🍴 Vor Ort, 🔄 Mehrweg) */
+    .inserat-status-bar {
+      display: flex; gap: 12px; padding: 12px 20px; flex-shrink: 0;
+      background: rgba(255,255,255,0.6); border-bottom: 1px solid rgba(0,0,0,0.04);
+      justify-content: center; align-items: center;
+    }
+    .inserat-status-bar .status-pill {
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 8px 16px; border-radius: 999px; font-size: 14px; font-weight: 700;
+      border: 2px solid transparent; min-height: 44px; cursor: pointer;
+      transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .inserat-status-bar .status-pill.active {
+      background: #10b981; color: #fff; box-shadow: 0 4px 14px rgba(16,185,129,0.4);
+    }
+    .inserat-status-bar .status-pill.inactive {
+      background: rgba(0,0,0,0.06); color: #64748b; filter: grayscale(0.5);
+    }
+    .inserat-status-bar .status-pill:active { transform: scale(0.98); }
+    /* Info-Banner: Abholung heute Mittag … */
+    .inserat-info-banner {
+      padding: 10px 20px; font-size: 14px; font-weight: 600; color: #64748b;
+      background: rgba(0,0,0,0.02); border-bottom: 1px solid rgba(0,0,0,0.03);
+      display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
+    }
+    .inserat-info-banner .banner-time-edit {
+      background: none; border: none; padding: 4px 8px; cursor: pointer; font-size: 18px;
+      -webkit-tap-highlight-color: transparent;
+    }
+    /* Titel wie Detailseite: 24px, 950, pulsierende Emerald-Unterlinie */
+    .inserat-unified-title-wrap {
+      padding-bottom: 8px;
+    }
+    .inserat-unified-title-wrap .inserat-detail-style-title {
+      font-size: 24px; font-weight: 950; color: #1a1a1a; letter-spacing: -0.03em; line-height: 1.2;
+      width: 100%; border: none; border-bottom: 2px solid rgba(0,0,0,0.08);
+      background: transparent; padding: 4px 0 8px; outline: none;
+      font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+    }
+    .inserat-unified-title-wrap .inserat-detail-style-title:focus {
+      border-bottom-color: #10b981;
+      animation: magnet-pulse 1.2s ease-in-out infinite;
+    }
+    .inserat-unified-title-wrap .inserat-detail-style-title::placeholder { color: #94a3b8; }
+    /* Kategorie-Pills: aktive in Emerald mit Glow wie Detailseite */
+    #wizard[data-flow="listing"].sheet--kitchen .inserat-cat-pill.active,
+    #wizard[data-flow="listing"].sheet--kitchen .inserat-cat-pills .extra-pill.active {
+      background: #10b981 !important; color: #fff !important;
+      box-shadow: 0 4px 14px rgba(16,185,129,0.4);
+    }
+    /* Funktions-Icons am Ende: schwebend, gläsernes Dropdown */
+    .inserat-func-icons {
+      display: flex; gap: 16px; padding: 20px; justify-content: center; align-items: center;
+      flex-shrink: 0;
+    }
+    .inserat-func-icons .func-icon-btn {
+      width: 48px; height: 48px; border-radius: 14px;
+      background: rgba(255,255,255,0.7); backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.5);
+      display: flex; align-items: center; justify-content: center; font-size: 24px;
+      cursor: pointer; transition: transform 0.12s; -webkit-tap-highlight-color: transparent;
+    }
+    .inserat-func-icons .func-icon-btn:active { transform: scale(0.95); }
+    .inserat-func-icons .func-icon-btn.active {
+      background: rgba(16,185,129,0.2); border-color: rgba(16,185,129,0.4);
     }
     
     /* Kein Wizard-Chrome im Listing – nur Panel */
@@ -14536,10 +14611,11 @@
     const timeMatch = windowText.match(/(\d{1,2}:\d{2})\s*[–-]\s*(\d{1,2}:\d{2})/);
     const timePillText = timeMatch && timeMatch[1] && timeMatch[2] ? `Abholung heute Mittag von ${timeMatch[1]} – ${timeMatch[2]} Uhr` : `Abholung heute Mittag ${windowText} Uhr`;
     const imgSrc = o.imageUrl || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70';
-    const pillars = [];
-    pillars.push('<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:rgba(0,0,0,0.06);border-radius:12px;"><span style="font-size:20px;">🍴</span><span style="font-size:13px;font-weight:700;color:#1a1a1a;">Vor Ort</span></div>');
-    if(hasReuse) pillars.push('<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:rgba(39,174,96,0.12);border-radius:12px;"><span style="font-size:20px;">🔄</span><span style="font-size:13px;font-weight:700;color:#1a1a1a;">Mehrweg</span></div>');
-    if(orderingEnabled) pillars.push('<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:rgba(255,215,0,0.2);border-radius:12px;"><span style="font-size:20px;">🧾</span><span style="font-size:13px;font-weight:700;color:#1a1a1a;">Abholnummer</span></div>');
+    const hasDineIn = o.dineInPossible !== false;
+    const pillarDineIn = hasDineIn ? 'active green' : '';
+    const pillarPickup = orderingEnabled ? 'active yellow' : '';
+    const pillarReuse = hasReuse ? 'active petrol' : '';
+    const pillarsRow = '<div class="card-pillars" style="display:flex; gap:12px; padding:12px 16px; border-bottom:1px solid rgba(0,0,0,0.06);"><div class="pillar-mini ' + pillarDineIn + '" title="Vor Ort">🍴</div><div class="pillar-mini ' + pillarPickup + '" title="Abholnummer">🧾</div><div class="pillar-mini ' + pillarReuse + '" title="Mehrweg">🔄</div></div>';
     const catLabel = (o.category && CAT_EMOJI[o.category]) ? (CAT_EMOJI[o.category] + ' ' + (o.category || '')) : (o.category || '');
     const allergenStr = (o.allergens && o.allergens.length) ? (Array.isArray(o.allergens) ? o.allergens.slice(0,5).join(', ') : String(o.allergens)) : '';
 
@@ -14547,13 +14623,13 @@
     preview.innerHTML = `
       <div style="width:100%; background:#fff; border-radius:16px; overflow:hidden; border:1px solid rgba(0,0,0,0.06);">
         <div style="position:relative; width:100%; aspect-ratio:16/10; max-height:200px; overflow:hidden; background:#f0f0f0;"><img src="${esc(imgSrc)}" alt="${esc(o.dish||'')}" style="width:100%; height:100%; object-fit:cover;" /></div>
-        <div style="display:flex; align-items:center; gap:10px; padding:12px 16px; border-bottom:1px solid rgba(0,0,0,0.06); flex-wrap:wrap;">${pillars.join('')}</div>
+        ${pillarsRow}
         <div style="display:flex; justify-content:center; padding:10px 16px; background:rgba(0,0,0,0.04); border-bottom:1px solid rgba(0,0,0,0.06);"><span style="font-size:13px; font-weight:600; color:#333;">${esc(timePillText)}</span></div>
-        <div style="padding:16px;">
+        <div style="padding:var(--card-padding, 20px);">
           <div style="font-weight:900; font-size:18px; color:#1a1a1a; margin-bottom:8px;">${esc(o.dish || 'Gericht')}</div>
           ${catLabel ? `<span style="display:inline-block; padding:4px 10px; border-radius:8px; background:#e2e8f0; font-size:12px; font-weight:600; color:#475569; margin-bottom:8px;">${esc(catLabel)}</span>` : ''}
           ${allergenStr ? `<div style="font-size:12px; color:#64748b; margin-bottom:8px;">${esc(allergenStr)}</div>` : ''}
-          <div style="font-size:18px; font-weight:800; color:var(--brand);">${euro(o.price || 0)}</div>
+          <span class="price-pill">${euro(o.price || 0)}</span>
         </div>
       </div>
     `;
@@ -19246,6 +19322,9 @@
   }
   function renderWeekPlanBoard(){
     updateSessionActivity();
+    week = load(LS.week, {});
+    offers = load(LS.offers, []);
+    provider = load(LS.provider, provider);
     var wrap = document.getElementById('kwBoardWrap');
     if (wrap) wrap.style.display = 'flex';
     var carousel = document.getElementById('kwCarousel');
@@ -22944,31 +23023,53 @@
       }
       box.appendChild(photoTile);
 
+      // Status-Leiste: 🍴 Vor Ort | 🔄 Mehrweg direkt unter dem Bild (Standard aus Profil)
+      const statusBar=document.createElement('div');
+      statusBar.className='inserat-status-bar';
+      [{ key:'dineInPossible', emo:'🍴', title:'Vor Ort' }, { key:'reuse', emo:'🔄', title:'Mehrweg' }].forEach(function(item){
+        var active = item.key==='reuse' ? !!(w.data.reuse && w.data.reuse.enabled) : !!w.data[item.key];
+        const btn=document.createElement('button');
+        btn.type='button';
+        btn.className='status-pill ' + (active ? 'active' : 'inactive');
+        btn.textContent=item.emo + ' ' + item.title;
+        btn.title=item.title;
+        btn.onclick=()=>{ hapticLight(); if(item.key==='reuse'){ w.data.reuse=w.data.reuse||{}; w.data.reuse.enabled=!w.data.reuse.enabled; } else w.data[item.key]=!w.data[item.key]; saveDraft(); rebuildWizard(); };
+        statusBar.appendChild(btn);
+      });
+      box.appendChild(statusBar);
+
+      // Info-Banner: Abholung heute Mittag von 11:30 – 14:00 Uhr (+ 🕒 zum Bearbeiten)
+      var pwParts=(w.data.pickupWindow||profileWindow).split(/\s*[–\-]\s*/);
+      var timeStart=(pwParts[0]||'11:30').trim();
+      var timeEnd=(pwParts[1]||'14:00').trim();
+      if(timeStart.length===4) timeStart='0'+timeStart;
+      if(timeEnd.length===4) timeEnd='0'+timeEnd;
+      const infoBanner=document.createElement('div');
+      infoBanner.className='inserat-info-banner';
+      infoBanner.innerHTML='<span>Abholung heute Mittag von ' + timeStart + ' – ' + timeEnd + ' Uhr</span><button type="button" class="banner-time-edit" title="Zeit bearbeiten" aria-label="Zeit bearbeiten">🕒</button>';
+      infoBanner.querySelector('.banner-time-edit').onclick=()=>{ hapticLight(); w.data.pickupWindowEdit=!w.data.pickupWindowEdit; saveDraft(); rebuildWizard(); setTimeout(function(){ var el=document.querySelector('.inserat-pickup-time-dropdown'); if(el) el.scrollIntoView({ behavior:'smooth', block:'center' }); }, 80); };
+      box.appendChild(infoBanner);
+
       const scrollArea=document.createElement('div');
       scrollArea.className='inserat-scroll-area scroll-content';
 
-      // 2. GERICHTSNAME & 3. BESCHREIBUNG (High-End Airbnb-Style)
+      // Titel wie Detailseite: „Was kochst du heute?“ + pulsierende Emerald-Unterlinie
       const stepName=document.createElement('div');
       stepName.id='step-name';
-      stepName.className='inserat-section inserat-name-airbnb';
-      const wrapDish=document.createElement('div');
-      wrapDish.className='inserat-airbnb-field-wrap';
+      stepName.className='inserat-section inserat-unified-title-wrap';
       const dishDatalist=document.createElement('datalist');
       dishDatalist.id='inserat-dish-datalist';
       const dishSuggestions = ['Kürbissuppe','Kartoffelsuppe','Tomatensuppe','Linsensuppe','Schnitzel','Gulasch','Käsespätzle','Pasta','Pizza','Wrap','Burger','Falafel','Lachs','Sushi','Thunfisch','Salat','Curry','Gemüsepfanne','Risotto','Lasagne'];
       dishSuggestions.forEach(function(name){ const o=document.createElement('option'); o.value=name; dishDatalist.appendChild(o); });
-      wrapDish.appendChild(dishDatalist);
+      stepName.appendChild(dishDatalist);
       const inputDish=document.createElement('input');
       inputDish.type='text';
-      inputDish.className='liquid-input liquid-input-focus magnet-input inserat-airbnb-dish';
-      inputDish.placeholder='Kürbissuppe';
+      inputDish.className='inserat-detail-style-title magnet-input';
+      inputDish.placeholder='Was kochst du heute?';
       inputDish.value=w.data.dish||'';
       inputDish.setAttribute('list','inserat-dish-datalist');
       inputDish.autocomplete='off';
-      inputDish.oninput=()=>{
-        w.data.dish=inputDish.value; saveDraft();
-        setTimeout(function(){ scrollToNext('step-cat'); }, 200);
-      };
+      inputDish.oninput=()=>{ w.data.dish=inputDish.value; saveDraft(); setTimeout(function(){ scrollToNext('step-cat'); }, 200); };
       inputDish.onblur=()=>{
         dismissKeyboard(); hapticLight();
         var catSugg=getCategorySuggestionForDish(inputDish.value);
@@ -22977,18 +23078,18 @@
         if(suggested.length&&(!w.data.allergens||w.data.allergens.length===0)){ w.data.allergens=suggested.slice(); w.data.wantsAllergens=true; saveDraft(); rebuildWizard(); }
         else scrollToNext('step-cat');
       };
-      wrapDish.appendChild(inputDish);
+      stepName.appendChild(inputDish);
       const wrapDesc=document.createElement('div');
       wrapDesc.className='inserat-airbnb-field-wrap inserat-airbnb-desc-wrap';
+      wrapDesc.style.marginTop='8px';
       const inputDesc=document.createElement('input');
       inputDesc.type='text';
       inputDesc.className='liquid-input liquid-input-focus inserat-desc-input inserat-airbnb-desc';
       inputDesc.placeholder='… z.B. mit frischem saisonalen Gemüse …';
       inputDesc.value=w.data.description||'';
-      inputDesc.oninput=()=>{ w.data.description=inputDesc.value; saveDraft(); setTimeout(function(){ scrollToNext('step-cat'); }, 150); };
-      inputDesc.onblur=()=>{ dismissKeyboard(); hapticLight(); scrollToNext('step-cat'); };
+      inputDesc.oninput=()=>{ w.data.description=inputDesc.value; saveDraft(); };
+      inputDesc.onblur=()=>{ dismissKeyboard(); hapticLight(); };
       wrapDesc.appendChild(inputDesc);
-      stepName.appendChild(wrapDish);
       stepName.appendChild(wrapDesc);
       scrollArea.appendChild(stepName);
 
@@ -23048,10 +23149,10 @@
       var p0=Number(w.data.price)||0;
       const prognoseWrap=document.createElement('div');
       prognoseWrap.className='inserat-prognose-wrap inserat-earnings inserat-umsatzprognose';
-      prognoseWrap.innerHTML='<p style="margin:0; color:#94a3b8; font-size:0.75rem; display:flex; align-items:center; flex-wrap:wrap; gap:5px;"><span>Umsatzprognose (bei angenommen 30 Portionen): <span id="calc-val">'+(p0*30).toFixed(2).replace('.',',')+'</span> €</span></p><span class="info-trigger" role="button" aria-label="Info zur Umsatzprognose" tabindex="0">ⓘ</span><div id="prognose-tooltip" class="glass-tooltip">Basierend auf Durchschnittswerten. Deine Gebühr beträgt immer nur 0,89 € pro Abholnummer, egal wie viele Portionen pro Gast bestellt werden.</div>';
+      prognoseWrap.innerHTML='<p style="margin:0; color:#94a3b8; font-size:0.75rem; display:flex; align-items:center; flex-wrap:wrap; gap:5px;"><span>Umsatzprognose (bei angenommen 30 Portionen): <span id="calc-val">'+(p0*30).toFixed(2).replace('.',',')+'</span> €</span></p><span class="info-trigger" role="button" aria-label="Info zur Umsatzprognose" tabindex="0">ⓘ</span><div id="prognose-tooltip" class="glass-tooltip">Deine Gebühr beträgt immer nur 0,89 € pro Abholnummer, egal wie viele Portionen pro Gast bestellt werden.</div>';
       var tooltipEl=prognoseWrap.querySelector('#prognose-tooltip');
       var togglePrognoseTooltip=function(){
-        try{ if(navigator.vibrate) navigator.vibrate(5); } catch(e){}
+        try{ if(navigator.vibrate) navigator.vibrate(10); } catch(e){}
         if(tooltipEl) tooltipEl.classList.toggle('prognose-tooltip-visible');
       };
       prognoseWrap.querySelector('.info-trigger').onclick=function(e){ e.preventDefault(); e.stopPropagation(); togglePrognoseTooltip(); };
@@ -23059,48 +23160,25 @@
       stepPrice.appendChild(prognoseWrap);
       scrollArea.appendChild(stepPrice);
 
-      // 6. POWER-BAR (Icon-First): 🍴 Vor Ort | 🔄 Mehrweg | 🕒 Zeit | 🌾 Allergene | ➕ Extras [cite: 2026-02-15]
+      // Funktions-Icons am Ende des Inhalts: 🌾 Allergene | ➕ Extras (gläsernes Dropdown per Klick)
       if(typeof w.data.extrasExpanded==='undefined') w.data.extrasExpanded=false;
-      const powerBar=document.createElement('div');
-      powerBar.id='power-bar';
-      powerBar.className='inserat-section power-bar inserat-logistics-card-inner';
-      [{ key:'dineInPossible', emo:'🍴', title:'Vor Ort' }, { key:'reuse', emo:'🔄', title:'Mehrweg' }].forEach(function(item){
-        var active = item.key==='reuse' ? !!(w.data.reuse && w.data.reuse.enabled) : !!w.data[item.key];
-        const btn=document.createElement('button');
-        btn.type='button';
-        btn.className='inserat-logistics-btn power-bar-btn ' + (active ? 'active' : 'inactive');
-        btn.textContent=item.emo;
-        btn.title=item.title;
-        btn.onclick=()=>{ hapticLight(); if(item.key==='reuse'){ w.data.reuse=w.data.reuse||{}; w.data.reuse.enabled=!w.data.reuse.enabled; } else w.data[item.key]=!w.data[item.key]; saveDraft(); rebuildWizard(); setTimeout(function(){ scrollToNext('power-bar'); }, 50); };
-        powerBar.appendChild(btn);
-      });
-      var pwParts=(w.data.pickupWindow||profileWindow).split(/\s*[–\-]\s*/);
-      var timeStart=(pwParts[0]||'11:30').trim();
-      var timeEnd=(pwParts[1]||'14:00').trim();
-      if(timeStart.length===4) timeStart='0'+timeStart;
-      if(timeEnd.length===4) timeEnd='0'+timeEnd;
-      const timeBtn=document.createElement('button');
-      timeBtn.type='button';
-      timeBtn.className='inserat-pickup-time-trigger power-bar-btn inserat-logistics-btn';
-      timeBtn.textContent='🕒';
-      timeBtn.title=timeStart + ' – ' + timeEnd;
-      timeBtn.onclick=()=>{ hapticLight(); w.data.pickupWindowEdit=!w.data.pickupWindowEdit; saveDraft(); rebuildWizard(); setTimeout(function(){ var el=document.querySelector('.inserat-pickup-time-dropdown'); if(el) el.scrollIntoView({ behavior:'smooth', block:'center' }); }, 80); };
-      powerBar.appendChild(timeBtn);
+      const funcIcons=document.createElement('div');
+      funcIcons.className='inserat-func-icons';
       const allergenBarBtn=document.createElement('button');
       allergenBarBtn.type='button';
-      allergenBarBtn.className='power-bar-btn inserat-logistics-btn ' + (w.data.allergeneExpanded ? 'active' : '');
+      allergenBarBtn.className='func-icon-btn ' + (w.data.allergeneExpanded ? 'active' : '');
       allergenBarBtn.textContent='🌾';
       allergenBarBtn.title='Allergene';
       allergenBarBtn.onclick=()=>{ hapticLight(); w.data.allergeneExpanded=!w.data.allergeneExpanded; saveDraft(); rebuildWizard(); setTimeout(function(){ scrollToNext('step-allergens'); }, 80); };
-      powerBar.appendChild(allergenBarBtn);
+      funcIcons.appendChild(allergenBarBtn);
       const extrasBarBtn=document.createElement('button');
       extrasBarBtn.type='button';
-      extrasBarBtn.className='power-bar-btn inserat-logistics-btn ' + (w.data.extrasExpanded ? 'active' : '');
+      extrasBarBtn.className='func-icon-btn ' + (w.data.extrasExpanded ? 'active' : '');
       extrasBarBtn.textContent='➕';
       extrasBarBtn.title='Extras';
       extrasBarBtn.onclick=()=>{ hapticLight(); w.data.extrasExpanded=!w.data.extrasExpanded; saveDraft(); rebuildWizard(); setTimeout(function(){ scrollToNext('step-extras'); }, 80); };
-      powerBar.appendChild(extrasBarBtn);
-      scrollArea.appendChild(powerBar);
+      funcIcons.appendChild(extrasBarBtn);
+      scrollArea.appendChild(funcIcons);
       if(w.data.pickupWindowEdit){
         const timeDrop=document.createElement('div');
         timeDrop.className='inserat-pickup-time-dropdown';
