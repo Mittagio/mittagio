@@ -1518,8 +1518,15 @@
     #wizard.sheet--kitchen .glass-express-step0 #step-name input:first-of-type{
       font-size: 1.8rem; text-align: center;
     }
-    #wizard.sheet--kitchen .glass-express-step0 #step-name input:last-of-type{
-      font-size: 0.85rem; color: #cbd5e1; text-align: center; margin-top: 6px;
+    #wizard.sheet--kitchen .glass-express-step0 #step-name input:last-of-type,
+    #wizard.sheet--kitchen .glass-express-step0 #step-name .inserat-desc-input,
+    #wizard.sheet--kitchen .liquid-master-panel #step-name .inserat-desc-input{
+      font-size: 0.85rem; color: #64748b; text-align: center; margin-top: 6px;
+      font-weight: normal; font-style: italic; background: #f1f5f9;
+    }
+    #wizard.sheet--kitchen .glass-express-step0 #step-name .inserat-desc-input::placeholder,
+    #wizard.sheet--kitchen .liquid-master-panel #step-name .inserat-desc-input::placeholder{
+      color: #94a3b8;
     }
     /* price-display: elegant, System-Sans / Inter, Bold [cite: Native-Feel] */
     #wizard.sheet--kitchen .glass-express-step0 #step-price .inserat-price-input,
@@ -1720,15 +1727,23 @@
     #wizard.sheet--kitchen .glass-express-step0 .inserat-allergen-trigger:active{ transform: scale(0.98); }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-allergen-trigger:hover{ color: #64748b; }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-allergen-inner{
-      display: grid; grid-template-columns: repeat(auto-fill, minmax(44px, 1fr)); gap: 10px; padding: 16px 0; justify-items: center;
+      display: flex; flex-direction: column; gap: 8px; padding: 16px 0;
     }
-    #wizard.sheet--kitchen .glass-express-step0 .inserat-allergen-pill{
-      width: 44px; height: 44px; border-radius: 50%; font-size: 14px; font-weight: 800; cursor: pointer; border: 1px solid rgba(255,255,255,0.6);
-      background: rgba(255,255,255,0.4); color: #64748b; display: flex; align-items: center; justify-content: center;
+    #wizard.sheet--kitchen .glass-express-step0 .inserat-allergen-row,
+    #wizard.sheet--kitchen .liquid-master-panel .inserat-allergen-row{
+      display: flex; align-items: center; gap: 8px; width: 100%; min-height: 44px; padding: 10px 14px;
+      border-radius: 12px; font-size: 0.95rem; font-weight: 600; cursor: pointer; border: 1px solid rgba(255,255,255,0.6);
+      background: rgba(255,255,255,0.4); color: #64748b; text-align: left;
       transition: transform 0.12s ease, background 0.2s, color 0.2s; -webkit-tap-highlight-color: transparent;
     }
-    #wizard.sheet--kitchen .glass-express-step0 .inserat-allergen-pill.active{ background: #10b981; color: #fff; }
-    #wizard.sheet--kitchen .glass-express-step0 .inserat-allergen-pill:active{ transform: scale(0.95); }
+    #wizard.sheet--kitchen .glass-express-step0 .inserat-allergen-row .inserat-allergen-emo,
+    #wizard.sheet--kitchen .liquid-master-panel .inserat-allergen-row .inserat-allergen-emo{ font-size: 1rem; }
+    #wizard.sheet--kitchen .glass-express-step0 .inserat-allergen-row .inserat-allergen-code,
+    #wizard.sheet--kitchen .liquid-master-panel .inserat-allergen-row .inserat-allergen-code{ font-weight: 800; }
+    #wizard.sheet--kitchen .glass-express-step0 .inserat-allergen-row.active,
+    #wizard.sheet--kitchen .liquid-master-panel .inserat-allergen-row.active{ background: #10b981; color: #fff; }
+    #wizard.sheet--kitchen .glass-express-step0 .inserat-allergen-row:active,
+    #wizard.sheet--kitchen .liquid-master-panel .inserat-allergen-row:active{ transform: scale(0.98); }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-action-section{
       padding: 24px 24px calc(20px + env(safe-area-inset-bottom, 24px));
       background: rgba(255,255,255,0.98); border-top: 1px solid rgba(0,0,0,0.06);
@@ -22514,15 +22529,15 @@
       const inputDish=document.createElement('input');
       inputDish.type='text';
       inputDish.className='liquid-input liquid-input-focus magnet-input';
-      inputDish.placeholder='Was kochst du heute?';
+      inputDish.placeholder='Kürbissuppe';
       inputDish.value=w.data.dish||'';
       inputDish.autocomplete='off';
       inputDish.oninput=()=>{ w.data.dish=inputDish.value; saveDraft(); };
       inputDish.onblur=()=>{ dismissKeyboard(); hapticLight(); scrollToNext('step-cat'); };
       const inputDesc=document.createElement('input');
       inputDesc.type='text';
-      inputDesc.className='liquid-input liquid-input-focus';
-      inputDesc.placeholder='Kurze Beschreibung (optional)';
+      inputDesc.className='liquid-input liquid-input-focus inserat-desc-input';
+      inputDesc.placeholder='Frisch vom Feld';
       inputDesc.value=w.data.description||'';
       inputDesc.oninput=()=>{ w.data.description=inputDesc.value; saveDraft(); };
       inputDesc.onblur=()=>{ dismissKeyboard(); hapticLight(); };
@@ -22658,14 +22673,15 @@
         allInner.className='inserat-allergen-inner';
         (typeof ALLERGENS_14!=='undefined'?ALLERGENS_14:[]).forEach(a=>{
           const code=a.short;
+          const name=a.name||code;
           const active=(w.data.allergens||[]).includes(code);
-          const emo=(typeof ALLERGEN_EMOJI!=='undefined'&&ALLERGEN_EMOJI[code])?ALLERGEN_EMOJI[code]:'•';
-          const p=document.createElement('button');
-          p.type='button';
-          p.className='inserat-allergen-pill' + (active ? ' active' : '');
-          p.textContent=emo||code;
-          p.onclick=()=>{ hapticLight(); if(!w.data.allergens) w.data.allergens=[]; if(active) w.data.allergens=w.data.allergens.filter(x=>x!==code); else w.data.allergens.push(code); w.data.wantsAllergens=true; saveDraft(); rebuildWizard(); };
-          allInner.appendChild(p);
+          const emo=(typeof ALLERGEN_EMOJI!=='undefined'&&ALLERGEN_EMOJI[code])?ALLERGEN_EMOJI[code]:'';
+          const row=document.createElement('button');
+          row.type='button';
+          row.className='inserat-allergen-row' + (active ? ' active' : '');
+          row.innerHTML=(emo ? '<span class="inserat-allergen-emo">'+emo+'</span>' : '') + '<span class="inserat-allergen-code">'+code+'</span> – <span class="inserat-allergen-name">'+name+'</span>';
+          row.onclick=()=>{ hapticLight(); if(!w.data.allergens) w.data.allergens=[]; if(active) w.data.allergens=w.data.allergens.filter(x=>x!==code); else w.data.allergens.push(code); w.data.wantsAllergens=true; saveDraft(); rebuildWizard(); };
+          allInner.appendChild(row);
         });
         stepAll.appendChild(allInner);
         scrollArea.appendChild(stepAll);
