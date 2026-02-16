@@ -2515,9 +2515,53 @@
     #psheet .handle { display: none; }
     #psheet .sheet-body.psheet-body { display: flex; flex-direction: column; min-height: 100%; padding: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; }
     #psheet .psheet-photo-header { height: 38vh; min-height: 200px; flex-shrink: 0; }
-    /* Decision Zone: Fertig-Button entfernt – Platz für spätere Inserats-Buttons reserviert */
-    #psheet .psheet-footer-sticky { display: none !important; }
-    #psheet .psheet-btn-fertig { display: none !important; }
+    /* Decision Zone: Mit Abholnummer (Grün) + Nur Inserat (Gelb) – fixiert am unteren Rand */
+    #psheet .psheet-footer-sticky.psheet-decision-zone { display: flex !important; flex-direction: column; gap: 12px; padding: 16px 20px; padding-bottom: max(16px, env(safe-area-inset-bottom)); border-top: 1px solid rgba(0,0,0,0.06); background: rgba(255,255,255,0.98); flex-shrink: 0; }
+    #psheet .psheet-btn-decision { width: 100%; min-height: 52px; border-radius: 16px; font-size: 16px; font-weight: 800; border: none; cursor: pointer; transition: opacity 0.25s ease, transform 0.2s, box-shadow 0.2s; }
+    #psheet .psheet-btn-decision.psheet-btn-green { background: #10b981; color: #fff; box-shadow: 0 4px 14px rgba(16,185,129,0.4); }
+    #psheet .psheet-btn-decision.psheet-btn-green:active { transform: scale(0.98); }
+    #psheet .psheet-btn-decision.psheet-btn-green.psheet-ready { animation: psheet-gentle-pulse 2s ease-in-out infinite; }
+    #psheet .psheet-btn-decision.psheet-btn-yellow { background: #FFD700; color: #1a1a1a; box-shadow: 0 4px 16px rgba(255,215,0,0.35); }
+    #psheet .psheet-btn-decision.psheet-btn-yellow:active { transform: scale(0.98); }
+    #psheet .psheet-btn-decision.psheet-incomplete { opacity: 0.5; pointer-events: none; }
+    @keyframes psheet-gentle-pulse { 0%, 100% { box-shadow: 0 4px 14px rgba(16,185,129,0.4); } 50% { box-shadow: 0 6px 20px rgba(16,185,129,0.5); } }
+    /* Edit-Modus: 1px Emerald-Glow + leichter Pulse auf editierbaren Feldern */
+    #psheet .psheet-card.psheet-edit-mode { box-shadow: 0 0 0 1px #10b981, 0 4px 24px rgba(16,185,129,0.15); border-radius: 16px; transition: box-shadow 0.25s ease; }
+    #psheet .psheet-card.psheet-edit-mode .psheet-price-btn,
+    #psheet .psheet-card.psheet-edit-mode .psheet-power-bar [data-psheet-icon] { animation: psheet-field-pulse 2s ease-in-out infinite; }
+    @keyframes psheet-field-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.85; } }
+    /* Pill-Bounce beim Icon-Klick (Elastic) */
+    #psheet .psheet-power-bar .status-pill.psheet-pill-bounce,
+    #psheet .psheet-power-bar .func-icon-btn.psheet-pill-bounce { animation: psheet-pill-bounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+    @keyframes psheet-pill-bounce { 0% { transform: scale(1) translateY(0); } 30% { transform: scale(1.08) translateY(-6px); } 60% { transform: scale(1.02) translateY(-2px); } 100% { transform: scale(1) translateY(0); } }
+    /* One-Tap Price: Overlay mit 4rem-Zahlenblock, Rest abgedunkelt */
+    .psheet-price-overlay { position: fixed; inset: 0; z-index: 2010; display: flex; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; }
+    .psheet-price-overlay-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.5); }
+    .psheet-price-overlay-inner { position: relative; background: #fff; border-radius: 24px; padding: 32px; width: 100%; max-width: 320px; box-shadow: 0 20px 50px rgba(0,0,0,0.2); display: flex; flex-direction: column; gap: 16px; }
+    .psheet-price-overlay-label { font-size: 12px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; }
+    .psheet-price-input { font-size: 4rem; font-weight: 900; color: #0f172a; border: 2px solid #e2e8f0; border-radius: 16px; padding: 16px 20px; text-align: center; width: 100%; box-sizing: border-box; }
+    .psheet-price-input:focus { outline: none; border-color: #10b981; box-shadow: 0 0 0 3px rgba(16,185,129,0.2); }
+    .psheet-price-overlay-close { min-height: 48px; border-radius: 14px; background: #10b981; color: #fff; border: none; font-size: 16px; font-weight: 800; cursor: pointer; }
+    /* Inline Title (Fintech-Style): Midnight Blue, Emerald-Fokus, Smart-Height [cite: 2026-02-16] */
+    #psheet .dish-title-input { color: #0f172a; font-weight: 800; font-size: 1.6rem; line-height: 1.2; border: none; border-bottom: 2px solid transparent; transition: all 0.2s ease-out; padding: 5px 0; background: transparent; width: 100%; box-sizing: border-box; font-family: inherit; min-height: 1.5em; resize: none; }
+    #psheet .dish-title-input::placeholder { color: #94a3b8; }
+    #psheet .dish-title-input:focus { border-bottom-color: #10b981; background: rgba(16,185,129,0.05); outline: none; transform: scale(1.02); box-shadow: 0 4px 12px rgba(16,185,129,0.12); }
+    /* Category-Pill: Companion-Bounce, Sync mit Titel-Fokus [cite: 2026-02-16] */
+    #psheet .category-pill { transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); display: inline-block; padding: 4px 12px; border-radius: 20px; background: #f1f5f9; font-size: 0.85rem; font-weight: 600; color: #64748b; margin-top: 6px; }
+    #psheet .dish-title-input:focus + .category-pill { transform: translateY(-5px); background: #fff; color: #0f172a; box-shadow: 0 4px 12px rgba(16,185,129,0.2); }
+    @keyframes pill-jiggle { 0% { transform: translateY(-5px) scale(1); } 50% { transform: translateY(-7px) scale(1.05); } 100% { transform: translateY(-5px) scale(1); } }
+    #psheet .category-pill.jiggle { animation: pill-jiggle 0.15s ease-out; }
+    #psheet .dish-title-input:not(:focus) + .category-pill { transform: translateY(0); }
+    /* Price-Button: Harmonic Pulse beim Tippen [cite: 2026-02-16] */
+    #psheet .price-button-yellow { transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); transform-origin: right center; }
+    @keyframes price-pulse { 0% { transform: scale(1) translateX(0); filter: brightness(1); } 50% { transform: scale(1.05) translateX(3px); filter: brightness(1.1); } 100% { transform: scale(1) translateX(0); filter: brightness(1); } }
+    #psheet .price-button-yellow.jiggle { animation: price-pulse 0.15s ease-out; }
+    /* Universal-X: Pop-Away Exit [cite: 2026-02-16] */
+    #psheet .universal-x { position: absolute; top: 12px; right: 12px; z-index: 15; width: 44px; height: 44px; border-radius: 50%; border: none; background: rgba(255,255,255,0.95); color: #64748b; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); transition: transform 0.2s ease; }
+    #psheet .universal-x:hover { color: #1a1a1a; }
+    @keyframes x-pop-away { 0% { transform: scale(1); opacity: 1; } 30% { transform: scale(0.8); opacity: 1; } 60% { transform: scale(1.3); opacity: 0.5; } 100% { transform: scale(0); opacity: 0; } }
+    #psheet .universal-x.exit-active { animation: x-pop-away 0.3s forwards cubic-bezier(0.34, 1.56, 0.64, 1); pointer-events: none; }
+    #psheet .sheet-body.psheet-body { position: relative; }
     #psheet .psheet-legend-popover { position: absolute; left: 0; right: 0; bottom: 0; top: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); z-index: 20; display: flex; align-items: center; justify-content: center; padding: 20px; }
     #psheet .psheet-legend-inner { background: #fff; border-radius: 16px; padding: 20px; max-width: 320px; width: 100%; box-shadow: 0 20px 40px rgba(0,0,0,0.15); }
     #psheet .psheet-legend-print { display: block; width: 100%; margin-bottom: 8px; padding: 12px 16px; background: #10b981; color: #fff; border: none; border-radius: 12px; font-weight: 800; font-size: 14px; cursor: pointer; }
@@ -8218,9 +8262,20 @@
 <div class="sheet" id="psheet">
   <div class="handle"></div>
   <div class="sheet-body psheet-body">
+    <button type="button" class="universal-x" id="psheetCloseX" aria-label="Schließen" title="Schließen">✕</button>
     <div id="pPreview"></div>
-    <div class="psheet-footer-sticky">
-      <button type="button" id="btnPsheetFertig" class="psheet-btn-fertig" aria-label="Fertig">Fertig</button>
+    <div class="psheet-footer-sticky psheet-decision-zone" id="psheetDecisionZone">
+      <button type="button" id="btnPsheetMitAbholnummer" class="psheet-btn-decision psheet-btn-green" aria-label="Mit Abholnummer inserieren">Mit Abholnummer</button>
+      <button type="button" id="btnPsheetNurInserat" class="psheet-btn-decision psheet-btn-yellow" aria-label="Nur Inserat">Nur Inserat</button>
+    </div>
+  </div>
+  <!-- Preis-Overlay: großer Fintech-Zahlenblock (One-Tap Price Edit) -->
+  <div id="psheetPriceOverlay" class="psheet-price-overlay" style="display:none;">
+    <div class="psheet-price-overlay-backdrop"></div>
+    <div class="psheet-price-overlay-inner">
+      <label class="psheet-price-overlay-label">Preis (€)</label>
+      <input type="text" inputmode="decimal" id="psheetPriceInput" class="psheet-price-input" placeholder="0,00" maxlength="8" />
+      <button type="button" id="psheetPriceOverlayClose" class="psheet-price-overlay-close" aria-label="Schließen">Übernehmen</button>
     </div>
   </div>
   <!-- ⓘ-Menü: Legende + Drucken (ausgeblendet, wird bei Klick auf ⓘ geöffnet) -->
@@ -15055,10 +15110,10 @@
       '<div class="psheet-card-body">' +
       '<div class="psheet-card-title-row">' +
       '<div class="psheet-card-title-wrap">' +
-      '<h2 class="psheet-card-title">' + esc(o.dish || 'Gericht') + '</h2>' +
-      (catLabel ? '<span class="psheet-category-pill">' + esc(catLabel) + '</span>' : '') +
+      '<input type="text" class="psheet-card-title dish-title-input" id="psheetTitleInput" value="' + esc(o.dish || '') + '" placeholder="Gerichtname" maxlength="80" />' +
+      (catLabel ? '<span class="psheet-category-pill category-pill">' + esc(catLabel) + '</span>' : '') +
       '</div>' +
-      '<button type="button" class="psheet-price-btn" id="psheetPriceBtn" aria-label="Preis">' + priceStr + ' €</button>' +
+      '<button type="button" class="psheet-price-btn price-button-yellow" id="psheetPriceBtn" aria-label="Preis">' + priceStr + ' €</button>' +
       '</div>' +
       '</div>' +
       '</div>';
@@ -15099,14 +15154,49 @@
         if(pop) pop.style.display = 'block';
       });
     }
-    /* Icon-Leiste: jedes Icon anklickbar – Haptic + Event für späteres Header-Morphing */
+    function enterPsheetEditMode(){
+      if(!cardEl) return;
+      cardEl.classList.add('psheet-edit-mode');
+      try { if(navigator.vibrate) navigator.vibrate(10); if(typeof hapticLight === 'function') hapticLight(); } catch(e){}
+    }
+    function updatePsheetDecisionZone(){
+      var zone = document.getElementById('psheetDecisionZone');
+      var btnGreen = document.getElementById('btnPsheetMitAbholnummer');
+      var btnYellow = document.getElementById('btnPsheetNurInserat');
+      if(!zone || !btnGreen || !btnYellow) return;
+      var dish = (raw.dish || raw.title || '').trim();
+      var priceOk = (Number(raw.price) || 0) > 0;
+      var isComplete = dish.length > 0 && priceOk;
+      btnGreen.classList.toggle('psheet-incomplete', !isComplete);
+      btnYellow.classList.toggle('psheet-incomplete', !isComplete);
+      btnGreen.classList.toggle('psheet-ready', isComplete);
+    }
+    var titleInput = document.getElementById('psheetTitleInput');
+    var categoryPill = preview.querySelector('.category-pill');
+    if(titleInput){
+      titleInput.addEventListener('focus', function(){ enterPsheetEditMode(); try { if(navigator.vibrate) navigator.vibrate(10); } catch(e){} });
+      titleInput.addEventListener('input', function(){
+        raw.dish = titleInput.value.trim(); raw.title = raw.dish;
+        if(typeof save === 'function' && typeof LS !== 'undefined') save(LS.offers, offers);
+        if(categoryPill){ categoryPill.classList.remove('jiggle'); void categoryPill.offsetWidth; categoryPill.classList.add('jiggle'); setTimeout(function(){ categoryPill.classList.remove('jiggle'); }, 150); }
+        if(priceBtn){ priceBtn.classList.remove('jiggle'); void priceBtn.offsetWidth; priceBtn.classList.add('jiggle'); setTimeout(function(){ priceBtn.classList.remove('jiggle'); }, 150); }
+        updatePsheetDecisionZone();
+      });
+      titleInput.addEventListener('blur', function(){ raw.dish = titleInput.value.trim(); raw.title = raw.dish; if(typeof save === 'function' && typeof LS !== 'undefined') save(LS.offers, offers); updatePsheetDecisionZone(); });
+      titleInput.addEventListener('keydown', function(ev){ if(ev.key === 'Enter'){ ev.preventDefault(); titleInput.blur(); } });
+    }
+    /* Icon-Leiste: Bounce + Edit-Modus + Event für Header-Morphing */
     preview.querySelectorAll('.psheet-power-bar [data-psheet-icon]').forEach(function(btn){
       btn.addEventListener('click', function(ev){
         ev.preventDefault();
         ev.stopPropagation();
-        try { if(navigator.vibrate) navigator.vibrate(10); if(typeof hapticLight === 'function') hapticLight(); } catch(e){}
         var icon = btn.getAttribute('data-psheet-icon');
-        if(icon && icon !== 'legend') try { window.dispatchEvent(new CustomEvent('psheet-icon-tap', { detail: { icon: icon, offerId: raw.id } })); } catch(e){}
+        if(icon && icon !== 'legend'){
+          btn.classList.add('psheet-pill-bounce');
+          setTimeout(function(){ btn.classList.remove('psheet-pill-bounce'); }, 500);
+          enterPsheetEditMode();
+          try { window.dispatchEvent(new CustomEvent('psheet-icon-tap', { detail: { icon: icon, offerId: raw.id } })); } catch(e){}
+        }
       });
     });
     var priceBtn = document.getElementById('psheetPriceBtn');
@@ -15114,8 +15204,68 @@
       priceBtn.addEventListener('click', function(ev){
         ev.preventDefault();
         ev.stopPropagation();
-        try { if(navigator.vibrate) navigator.vibrate(10); if(typeof hapticLight === 'function') hapticLight(); } catch(e){}
-        try { window.dispatchEvent(new CustomEvent('psheet-price-tap', { detail: { offerId: raw.id } })); } catch(e){}
+        enterPsheetEditMode();
+        var overlay = document.getElementById('psheetPriceOverlay');
+        var input = document.getElementById('psheetPriceInput');
+        if(overlay && input){
+          input.value = (Number(raw.price)||0).toFixed(2).replace('.',',');
+          overlay.style.display = 'flex';
+          setTimeout(function(){ input.focus(); }, 100);
+        }
+      });
+    }
+    var priceOverlay = document.getElementById('psheetPriceOverlay');
+    var priceInput = document.getElementById('psheetPriceInput');
+    var priceOverlayClose = document.getElementById('psheetPriceOverlayClose');
+    if(priceOverlay && priceInput && priceOverlayClose){
+      priceOverlay.querySelector('.psheet-price-overlay-backdrop').addEventListener('click', function(){ priceOverlay.style.display = 'none'; });
+      priceOverlayClose.addEventListener('click', function(){
+        var val = priceInput.value.replace(',','.').replace(/[^\d.-]/g,'');
+        var num = parseFloat(val) || 0;
+        raw.price = Math.max(0, num);
+        if(typeof save === 'function' && typeof LS !== 'undefined') save(LS.offers, offers);
+        if(priceBtn) priceBtn.textContent = (raw.price).toFixed(2).replace('.',',') + ' €';
+        priceOverlay.style.display = 'none';
+        updatePsheetDecisionZone();
+      });
+    }
+    updatePsheetDecisionZone();
+    var btnGreen = document.getElementById('btnPsheetMitAbholnummer');
+    var btnYellow = document.getElementById('btnPsheetNurInserat');
+    if(btnGreen){
+      btnGreen.addEventListener('click', function(ev){
+        ev.preventDefault();
+        if(btnGreen.classList.contains('psheet-incomplete')) return;
+        try { if(navigator.vibrate) navigator.vibrate(20); if(typeof hapticLight === 'function') hapticLight(); } catch(e){}
+        raw.hasPickupCode = true;
+        if(typeof save === 'function' && typeof LS !== 'undefined') save(LS.offers, offers);
+        if(typeof showToast === 'function') showToast('Mit Abholnummer gespeichert');
+        closeProviderSheet();
+        if(typeof renderProviderHome === 'function') renderProviderHome();
+      });
+    }
+    if(btnYellow){
+      btnYellow.addEventListener('click', function(ev){
+        ev.preventDefault();
+        if(btnYellow.classList.contains('psheet-incomplete')) return;
+        try { if(navigator.vibrate) navigator.vibrate(20); if(typeof hapticLight === 'function') hapticLight(); } catch(e){}
+        raw.hasPickupCode = false;
+        if(typeof save === 'function' && typeof LS !== 'undefined') save(LS.offers, offers);
+        if(typeof showToast === 'function') showToast('Inserat gespeichert');
+        closeProviderSheet();
+        if(typeof renderProviderHome === 'function') renderProviderHome();
+      });
+    }
+    var closeX = document.getElementById('psheetCloseX');
+    if(closeX){
+      closeX.addEventListener('click', function(ev){
+        ev.preventDefault();
+        ev.stopPropagation();
+        if(closeX.classList.contains('exit-active')) return;
+        try { if(navigator.vibrate) navigator.vibrate(20); } catch(e){}
+        if(titleInput) titleInput.blur();
+        closeX.classList.add('exit-active');
+        setTimeout(function(){ closeProviderSheet(); }, 300);
       });
     }
     var longPressTimer;
