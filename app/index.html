@@ -1410,11 +1410,12 @@
     }
     #wizard.sheet--kitchen .wizard-scroll{
       flex:1;
+      min-height:0;
       overflow-y:auto;
       -webkit-overflow-scrolling:touch;
       scroll-behavior:smooth;
       margin:0 -20px;
-      padding:0 20px 140px; /* Platz für Zurück/Weiter + Footer, damit Buttons sichtbar bleiben */
+      padding:0 20px 24px; /* Fußzeile entfernt – Platz nur für Safe Area */
     }
     #wizard.sheet--kitchen .w-actions{
       position: absolute;
@@ -2089,8 +2090,9 @@
     }
     #wizard.sheet--kitchen .w-help{ font-size:15px; color:#64748b; margin:0 0 24px; line-height:1.5; }
     #wizard.sheet--kitchen #wContent{
-      margin-bottom:32px;
-      min-height:40px;
+      flex:1;
+      min-height:0;
+      margin-bottom:0;
       scroll-margin-top:16px;
     }
     #wizard.sheet--kitchen .panel{ scroll-behavior:smooth; }
@@ -2221,6 +2223,20 @@
     }
     #wizard[data-flow="listing"] .w-actions { display: none !important; }
     
+    /* Universal-X: Frosted-Glass Schließen-Button (einziger Ausstieg neben Backdrop) */
+    .close-wizard-x{
+      position:absolute; top:15px; right:15px; width:36px; height:36px;
+      background:rgba(0,0,0,0.3); backdrop-filter:blur(12px) saturate(180%); -webkit-backdrop-filter:blur(12px) saturate(180%);
+      border-radius:50%; display:flex; align-items:center; justify-content:center;
+      border:1px solid rgba(255,255,255,0.2); cursor:pointer; z-index:100; transition:transform 0.2s ease;
+    }
+    .close-wizard-x:active{ transform:scale(0.9); }
+    .close-wizard-x::before,.close-wizard-x::after{
+      content:''; position:absolute; width:16px; height:2px; background:#fff; border-radius:1px;
+    }
+    .close-wizard-x::before{ transform:rotate(45deg); }
+    .close-wizard-x::after{ transform:rotate(-45deg); }
+    
     /* High-End Liquid Panel [cite: 2026-01-29, 2026-02-02] – Listing: Screen füllend, randlos */
     .liquid-master-panel {
       flex: 1; display: flex; flex-direction: column; overflow: hidden;
@@ -2288,6 +2304,16 @@
     #wizard[data-flow="listing"].sheet--kitchen .liquid-master-panel .inserat-photo-tile.photo-header {
       border-radius: 0 0 24px 24px; width: 100%;
     }
+    .liquid-master-panel .photo-header.inserat-photo-tile .inserat-photo-placeholder,
+    .liquid-master-panel .photo-header:not(:has(img[src])) {
+      background: #f8fafc; display: flex; align-items: center; justify-content: center; gap: 15px; overflow: hidden;
+    }
+    /* Smart-Photo: Vorschaubilder (3 Standard-Bilder / imageMap) */
+    .photo-suggestion {
+      width: 60px; height: 60px; border-radius: 12px; object-fit: cover; border: 2px solid transparent;
+      transition: all 0.2s ease; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    .photo-suggestion:active { transform: scale(0.9); border-color: #10b981; }
     /* Status-Leiste: Pills direkt unter dem Bild (🍴 Vor Ort, 🔄 Mehrweg) */
     .inserat-status-bar {
       display: flex; gap: 12px; padding: 12px 20px; flex-shrink: 0;
@@ -4700,7 +4726,7 @@
         padding:16px 18px !important;
       }
       #wizard.sheet--kitchen .wizard-scroll{
-        padding-bottom:140px !important;
+        padding-bottom:24px !important;
       }
       #wizard[data-flow="listing"].sheet--kitchen .wizard-scroll{
         padding-bottom: 0 !important;
@@ -8238,10 +8264,6 @@
         <div id="wContent"></div>
         <div class="wizard-footer" id="wizardFooter" style="display:none;"></div>
       </div>
-      <div class="w-actions">
-        <button class="btn secondary btn-back" type="button" id="wBack"><i data-lucide="chevron-left" style="width:18px;height:18px;"></i> Zurück</button>
-        <button class="btn" type="button" id="wNext">Weiter</button>
-      </div>
     </div>
   </div>
 </div>
@@ -8698,7 +8720,7 @@
       dishFavs.add(sid);
       if(btn && btn.querySelector('i')) btn.querySelector('i').style.fill = '#E34D4D';
       showToast('Zu Favoriten hinzugefügt! ❤️');
-      if(navigator.vibrate) navigator.vibrate(10);
+      if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10);
     }
     save(LS.dishFavs, Array.from(dishFavs));
     if(typeof renderFavorites === 'function') renderFavorites();
@@ -12171,7 +12193,7 @@
       syncToggleState();
       
       // Haptic Feedback (falls unterstützt)
-      if(navigator.vibrate) navigator.vibrate(10);
+      if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10);
     };
   }
   
@@ -22476,26 +22498,9 @@
     pushViewState({wizard: true}, location.pathname);
     localStorage.setItem('mittagio_wizard_open', 'true');
   }
-  /** Im Listing-Flow: .w-actions (Zurück/Weiter) aus dem DOM entfernen statt nur ausblenden. Beim Verlassen wieder einfügen. */
-  var storedWActionsParent = null;
-  var storedWActionsEl = null;
-  function clearWizardActionsBar(){
-    var wActions = document.querySelector('#wizard .w-actions');
-    if(!wActions) return;
-    if(storedWActionsEl) return; /* bereits bereinigt */
-    storedWActionsParent = wActions.parentNode;
-    storedWActionsEl = wActions;
-    wActions.remove();
-  }
-  function restoreWizardActionsBar(){
-    if(storedWActionsParent && storedWActionsEl){
-      storedWActionsParent.appendChild(storedWActionsEl);
-      storedWActionsEl.style.display = '';
-      storedWActionsParent = null;
-      storedWActionsEl = null;
-      if(typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
-    }
-  }
+  /** .w-actions wurde entfernt – Navigation nur noch im #wContent (content-driven). */
+  function clearWizardActionsBar(){ /* no-op */ }
+  function restoreWizardActionsBar(){ /* no-op */ }
   /** @param {boolean} [clearDraft=false] - Bei true Entwurf löschen (z.B. nach erfolgreichem Speichern). Frage 5 A: Sonst Entwurf behalten für "Letzten Entwurf fortsetzen?" */
   function closeWizard(clearDraft){
     const wizard = document.getElementById('wizard');
@@ -22780,7 +22785,7 @@
     if(kind !== 'listing') openWizard();
   }
 
-  // Common wizard buttons
+  // Common wizard buttons (DOM-Elemente #wBack/#wNext wurden entfernt – Navigation nur im #wContent; Refs bleiben für null-sichere No-Ops.)
   const wBackBtn = document.getElementById('wBack');
   const wNextBtn = document.getElementById('wNext');
   function setWizardNext(text, icon = 'chevron-right'){
@@ -22793,9 +22798,9 @@
     if(typeof lucide !== 'undefined') lucide.createIcons();
   }
   const defaultWizardNext = ()=>{ w.step += 1; rebuildWizard(); };
-  function setWizardNextDefault(){ wNextBtn.onclick = defaultWizardNext; }
+  function setWizardNextDefault(){ if(wNextBtn) wNextBtn.onclick = defaultWizardNext; }
 
-  wBackBtn.onclick=()=>{
+  if(wBackBtn) wBackBtn.onclick=()=>{
     if(w.step===0){ closeWizard(); return; }
     w.step -= 1;
     rebuildWizard();
@@ -22903,8 +22908,11 @@
       input.value = w.data.name || '';
       input.oninput=()=>{ w.data.name=input.value; };
       box.appendChild(input);
+      const nav=document.createElement('div'); nav.style.cssText='display:flex;gap:10px;margin-top:20px;';
+      const btnNext=document.createElement('button'); btnNext.type='button'; btnNext.className='btn'; btnNext.textContent='Weiter'; btnNext.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); w.step++; rebuildWizard(); };
+      const btnAbort=document.createElement('button'); btnAbort.type='button'; btnAbort.className='btn secondary'; btnAbort.textContent='Abbrechen'; btnAbort.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); closeWizard(); };
+      nav.appendChild(btnAbort); nav.appendChild(btnNext); box.appendChild(nav);
       setWizardContent(box);
-      setWizardNext('Weiter');
       return;
     }
 
@@ -22919,8 +22927,11 @@
       box.appendChild(input);
       const h=document.createElement('div'); h.className='hint'; h.textContent='Tipp: Straße, PLZ, Ort - getrennt mit Komma.';
       box.appendChild(h);
+      const nav=document.createElement('div'); nav.style.cssText='display:flex;gap:10px;margin-top:20px;';
+      const btnBack=document.createElement('button'); btnBack.type='button'; btnBack.className='btn secondary'; btnBack.textContent='Zurück'; btnBack.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); w.step--; rebuildWizard(); };
+      const btnNext=document.createElement('button'); btnNext.type='button'; btnNext.className='btn'; btnNext.textContent='Weiter'; btnNext.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); w.step++; rebuildWizard(); };
+      nav.appendChild(btnBack); nav.appendChild(btnNext); box.appendChild(nav);
       setWizardContent(box);
-      setWizardNext('Weiter');
       return;
     }
 
@@ -22991,8 +23002,11 @@
         box.appendChild(endRow);
       }
 
+      const nav2=document.createElement('div'); nav2.style.cssText='display:flex;gap:10px;margin-top:20px;';
+      const btnBack2=document.createElement('button'); btnBack2.type='button'; btnBack2.className='btn secondary'; btnBack2.textContent='Zurück'; btnBack2.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); w.step--; rebuildWizard(); };
+      const btnNext2=document.createElement('button'); btnNext2.type='button'; btnNext2.className='btn'; btnNext2.textContent='Weiter'; btnNext2.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); w.step++; rebuildWizard(); };
+      nav2.appendChild(btnBack2); nav2.appendChild(btnNext2); box.appendChild(nav2);
       setWizardContent(box);
-      setWizardNext('Weiter');
       return;
     }
 
@@ -23029,9 +23043,11 @@
         prev.innerHTML = `<div class="hint">Vorschau:</div><div class="plogo" style="width:60px;height:60px;border-radius:14px"><img src="${w.data.logoData}" alt="Logo" /></div>`;
         wrap.appendChild(prev);
       }
-
+      const nav3=document.createElement('div'); nav3.style.cssText='display:flex;gap:10px;margin-top:20px;';
+      const btnBack3=document.createElement('button'); btnBack3.type='button'; btnBack3.className='btn secondary'; btnBack3.textContent='Zurück'; btnBack3.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); w.step--; rebuildWizard(); };
+      const btnNext3=document.createElement('button'); btnNext3.type='button'; btnNext3.className='btn'; btnNext3.textContent='Weiter'; btnNext3.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); w.step++; rebuildWizard(); };
+      nav3.appendChild(btnBack3); nav3.appendChild(btnNext3); wrap.appendChild(nav3);
       setWizardContent(wrap);
-      setWizardNext('Weiter');
       return;
     }
 
@@ -23059,15 +23075,16 @@
       cta.type='button';
       cta.textContent='Erstes Gericht erstellen';
       cta.onclick=()=>{
+        if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10);
         saveProviderProfileFromWizard();
         closeWizard();
         startWizard('listing');
       };
-
+      const btnBack4=document.createElement('button'); btnBack4.type='button'; btnBack4.className='btn secondary'; btnBack4.textContent='Zurück'; btnBack4.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); w.step--; rebuildWizard(); };
       box.appendChild(summary);
+      box.appendChild(btnBack4);
       box.appendChild(cta);
       setWizardContent(box);
-      setWizardNext('Fertig', 'check');
       return;
     }
   }
@@ -23112,11 +23129,9 @@
   // KEINE Sonderflows bauen!
   // ============================================================
   function buildListingStep(){
-    // Layout ausschließlich per CSS (#wizard[data-flow="listing"])
+    // Layout ausschließlich per CSS (#wizard[data-flow="listing"]). Navigation nur im Content (z. B. .close-wizard-x).
     setWizardNextDefault();
     w.step = 0; // Single-Page: immer Schritt 0
-    if(wNextBtn) wNextBtn.style.display = 'none';
-    if(wBackBtn) wBackBtn.onclick = () => { closeWizard(); return; };
     setWizardHeader('', '');
     const profile = normalizeProviderProfile(provider.profile || {});
     const profileWindow = profile.mealWindow || DEFAULT_MEAL_WINDOW;
@@ -23139,21 +23154,56 @@
       const scrollToNext = (id)=>{ setTimeout(()=>{ var el=document.getElementById(id); if(el) el.scrollIntoView({ behavior:'smooth', block:'center' }); }, 150); };
       const dismissKeyboard = ()=>{ try { if(document.activeElement && document.activeElement.blur) document.activeElement.blur(); } catch(e){} };
       const hapticLight = ()=>{ try { if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); } catch(e){} };
+      var listingDebounceTimer = null; /* 300ms Debounce für Smart-Search Bildvorschläge */
+      var listingDebounceTimer = null;
+      var ASSETS_BASE = (typeof PLACEHOLDER_IMAGE_URL !== 'undefined' && PLACEHOLDER_IMAGE_URL) ? '' : 'assets/';
+      var listingImageMap = {
+        schnitzel: ['schnitzel_1.jpg','schnitzel_2.jpg','schnitzel_3.jpg'], gulasch: ['gulasch_1.jpg','gulasch_2.jpg','ragout_1.jpg'], roulade: ['roulade_1.jpg','braten_1.jpg','roulade_2.jpg'],
+        leberkaese: ['lkw_1.jpg','leberkaese_panne.jpg','brotzeit_1.jpg'], linsen: ['linsen_1.jpg','linsen_spaetzle.jpg','eintopf_1.jpg'], kaesespaetzle: ['kaesespaetzle_1.jpg','spaetzle_nah.jpg','veggie_1.jpg'],
+        frikadelle: ['frikadelle_1.jpg','bulette_teller.jpg','fleischkuechle.jpg'], currywurst: ['currywurst_1.jpg','wurst_fritten.jpg','imbiss_1.jpg'],
+        default_meat: ['fleisch_neutral_1.jpg','pfanne_1.jpg','braten_allgemein.jpg'], default_veggie: ['veggie_neutral_1.jpg','salat_1.jpg','nudeln_1.jpg'], default_vegan: ['veggie_neutral_1.jpg','salat_1.jpg','nudeln_1.jpg'], default_salat: ['salat_1.jpg','veggie_bowl.jpg','veggie_neutral_1.jpg']
+      };
+      function getListingSuggestionKey(){
+        var text = (w.data.dish||'').toLowerCase().trim();
+        var cat = w.data.category || 'Fleisch';
+        for(var k in listingImageMap){ if(k.indexOf('default_')===0) continue; if(text.indexOf(k)!==-1) return k; }
+        if(cat==='Fleisch') return 'default_meat'; if(cat==='Vegetarisch'||cat==='Vegan') return 'default_veggie'; if(cat==='Salat') return 'default_salat'; return 'default_meat';
+      }
+      function getListingSuggestionUrls(){
+        var key = w.data.photoSuggestionKey || getListingSuggestionKey();
+        var list = listingImageMap[key];
+        if(!list) return [];
+        var base = ASSETS_BASE || (window.location.pathname.indexOf('/mittagio/')!==-1 ? '/mittagio/app/' : '');
+        return list.map(function(f){ return (f.indexOf('http')===0||f.indexOf('data:')===0) ? f : (base + f); });
+      }
+      function listingSuggestionsVisible(){ var cat = w.data.category; return !!cat || (w.data.photoSuggestionKey && listingImageMap[w.data.photoSuggestionKey]); }
 
-      // 1. HERO – randlos oben (Edge-to-Edge), fixierter Header
+      // 1. HERO – randlos oben (Edge-to-Edge), fixierter Header, 190px, Universal-X
       const photoTile=document.createElement('div');
       photoTile.className='inserat-photo-tile photo-header';
-      photoTile.style.cssText='position:relative; overflow:hidden; flex-shrink:0; width:100%;';
+      photoTile.style.cssText='position:relative; overflow:hidden; flex-shrink:0; width:100%; height:190px;';
+      var closeX=document.createElement('div');
+      closeX.className='close-wizard-x';
+      closeX.setAttribute('role','button');
+      closeX.setAttribute('aria-label','Schließen');
+      closeX.onclick=function(){ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); closeWizard(); };
       if(w.data.photoData){
         photoTile.innerHTML='<img src="'+w.data.photoData+'" style="width:100%; height:100%; object-fit:cover; display:block;" alt=""><button type="button" class="inserat-photo-change" aria-label="Foto ändern"><i data-lucide="camera" style="width:14px;height:14px;stroke-width:2.5;"></i> 📷 Foto ändern</button>';
         const rem=photoTile.querySelector('.inserat-photo-change');
         if(rem) rem.onclick=(e)=>{ e.stopPropagation(); hapticLight(); w.data.photoData=''; w.data.photoDataIsStandard=false; saveDraft(); rebuildWizard(); };
       } else {
-        photoTile.innerHTML='<div class="inserat-photo-placeholder" style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;"><span class="inserat-photo-placeholder-icon">📸</span><button type="button" class="inserat-photo-change" aria-label="Foto hinzufügen"><i data-lucide="camera" style="width:14px;height:14px;stroke-width:2.5;"></i> FOTO HINZUFÜGEN</button></div>';
-        const addBtn=photoTile.querySelector('.inserat-photo-change');
+        var urls = getListingSuggestionUrls();
+        var showSuggestions = listingSuggestionsVisible() && urls.length;
+        var suggestionRow = '<div class="inserat-photo-suggestions-wrap" style="display:flex;gap:15px;justify-content:center;align-items:center;margin-top:8px;transition:opacity 0.3s;opacity:'+(showSuggestions ? '1' : '0')+';pointer-events:'+(showSuggestions ? 'auto' : 'none')+';"><span class="inserat-photo-placeholder-icon">📸</span><button type="button" class="inserat-photo-change" aria-label="Foto hinzufügen"><i data-lucide="camera" style="width:14px;height:14px;stroke-width:2.5;"></i> FOTO HINZUFÜGEN</button>';
+        if(urls.length) for(var si=0;si<urls.length;si++) suggestionRow += '<img class="photo-suggestion" src="'+urls[si]+'" alt="" data-suggestion-index="'+si+'" style="width:60px;height:60px;object-fit:cover;border-radius:12px;">';
+        suggestionRow += '</div>';
+        photoTile.innerHTML='<div class="inserat-photo-placeholder" style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px;box-sizing:border-box;">'+suggestionRow+'</div>';
+        var addBtn=photoTile.querySelector('.inserat-photo-change');
         if(addBtn) addBtn.onclick=async function(e){ e.stopPropagation(); hapticLight(); const f=await pickImage(); if(!f) return; let dataUrl=await toDataUrl(f); if(typeof applyAppetizerFilter==='function') dataUrl=await applyAppetizerFilter(dataUrl); if(typeof openPhotoEditor==='function') dataUrl=await openPhotoEditor(dataUrl, { onAccept: function(){} }); w.data.photoData=dataUrl; w.data.photoDataIsStandard=false; saveDraft(); rebuildWizard(); };
-        photoTile.onclick=async function(ev){ if(ev.target.closest('.inserat-photo-change')) return; hapticLight(); const f=await pickImage(); if(!f) return; let dataUrl=await toDataUrl(f); if(typeof applyAppetizerFilter==='function') dataUrl=await applyAppetizerFilter(dataUrl); if(typeof openPhotoEditor==='function') dataUrl=await openPhotoEditor(dataUrl, { onAccept: function(){} }); w.data.photoData=dataUrl; w.data.photoDataIsStandard=false; saveDraft(); rebuildWizard(); };
+        photoTile.querySelectorAll('.photo-suggestion').forEach(function(img,idx){ img.onclick=function(e){ e.stopPropagation(); hapticLight(); var u=getListingSuggestionUrls()[idx]; if(u) w.data.photoData=u; w.data.photoDataIsStandard=true; saveDraft(); rebuildWizard(); }; });
+        photoTile.onclick=async function(ev){ if(ev.target.closest('.inserat-photo-change')||ev.target.closest('.photo-suggestion')) return; hapticLight(); const f=await pickImage(); if(!f) return; let dataUrl=await toDataUrl(f); if(typeof applyAppetizerFilter==='function') dataUrl=await applyAppetizerFilter(dataUrl); if(typeof openPhotoEditor==='function') dataUrl=await openPhotoEditor(dataUrl, { onAccept: function(){} }); w.data.photoData=dataUrl; w.data.photoDataIsStandard=false; saveDraft(); rebuildWizard(); };
       }
+      photoTile.appendChild(closeX);
       var priceStickerInserat=document.createElement('div');
       priceStickerInserat.className='inserat-price-on-image price-pill';
       priceStickerInserat.style.cssText='position:absolute; bottom:8px; right:8px; padding:6px 12px; border-radius:999px; font-weight:900; font-size:14px; background:rgba(255,215,0,0.95); color:#1a1a1a; box-shadow:0 2px 8px rgba(255,215,0,0.3); z-index:10;';
@@ -23161,44 +23211,49 @@
       photoTile.appendChild(priceStickerInserat);
       box.appendChild(photoTile);
 
-      // 2. Status-Leiste: nur 🍴 Vor Ort und 🔄 Mehrweg (standardmäßig aus Profil)
-      const statusBar=document.createElement('div');
-      statusBar.className='inserat-status-bar inserat-unified-pills';
-      statusBar.style.display='flex'; statusBar.style.justifyContent='center'; statusBar.style.gap='16px'; statusBar.style.padding='12px 20px'; statusBar.style.borderBottom='1px solid rgba(0,0,0,0.04)'; statusBar.style.flexShrink='0';
-      var hasDineIn = !!w.data.dineInPossible;
-      var hasReuse = !!(w.data.reuse && w.data.reuse.enabled);
-      function addStatusPill(emo, label, active, toggleKey){
-        const wrap=document.createElement('button');
-        wrap.type='button';
-        wrap.className='status-pill '+(active?'active':'inactive');
-        wrap.innerHTML='<span style="font-size:18px;">'+emo+'</span><span>'+label+'</span>';
-        wrap.onclick=()=>{ hapticLight(); if(toggleKey==='reuse'){ w.data.reuse=w.data.reuse||{}; w.data.reuse.enabled=!w.data.reuse.enabled; } else w.data[toggleKey]=!w.data[toggleKey]; saveDraft(); rebuildWizard(); };
-        statusBar.appendChild(wrap);
-      }
-      addStatusPill('🍴','Vor Ort', hasDineIn, 'dineInPossible');
-      addStatusPill('🔄','Mehrweg', hasReuse, 'reuse');
-      box.appendChild(statusBar);
-
-      // 3. Info-Banner: eine schlichte Zeile Abholzeit
+      // 2. Unified Power-Bar: [Vor Ort] [Mehrweg] [Zeit] [Allergene] [Extras] – eine Leiste unter dem Foto-Header
       var pwParts=(w.data.pickupWindow||profileWindow).split(/\s*[–\-]\s*/);
       var timeStart=(pwParts[0]||'11:30').trim();
       var timeEnd=(pwParts[1]||'14:00').trim();
       if(timeStart.length===4) timeStart='0'+timeStart;
       if(timeEnd.length===4) timeEnd='0'+timeEnd;
-      const infoBanner=document.createElement('div');
-      infoBanner.className='inserat-info-banner';
-      infoBanner.style.cssText='display:flex; align-items:center; justify-content:space-between; padding:10px 20px; font-size:14px; font-weight:700; color:#1a1a1a; background:rgba(0,0,0,0.02); border-bottom:1px solid rgba(0,0,0,0.03); flex-shrink:0;';
-      const bannerTimeText=document.createElement('span');
-      bannerTimeText.textContent='Abholung heute Mittag von ' + timeStart + ' – ' + timeEnd + ' Uhr';
-      const bannerTimeEdit=document.createElement('button');
-      bannerTimeEdit.type='button';
-      bannerTimeEdit.className='banner-time-edit';
-      bannerTimeEdit.setAttribute('aria-label','Zeit bearbeiten');
-      bannerTimeEdit.textContent='🕒';
-      bannerTimeEdit.onclick=()=>{ hapticLight(); w.data.pickupWindowEdit=!w.data.pickupWindowEdit; saveDraft(); rebuildWizard(); };
-      infoBanner.appendChild(bannerTimeText);
-      infoBanner.appendChild(bannerTimeEdit);
-      box.appendChild(infoBanner);
+      const powerBar=document.createElement('div');
+      powerBar.className='inserat-power-bar inserat-unified-pills';
+      powerBar.style.cssText='display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:10px 16px; padding:12px 20px; border-bottom:1px solid rgba(0,0,0,0.04); flex-shrink:0; background:rgba(0,0,0,0.02);';
+      var hasDineIn = !!w.data.dineInPossible;
+      var hasReuse = !!(w.data.reuse && w.data.reuse.enabled);
+      function addPowerPill(emo, label, active, toggleKey){
+        const wrap=document.createElement('button');
+        wrap.type='button';
+        wrap.className='status-pill '+(active?'active':'inactive');
+        wrap.innerHTML='<span style="font-size:18px;">'+emo+'</span><span>'+label+'</span>';
+        wrap.onclick=()=>{ hapticLight(); if(toggleKey==='reuse'){ w.data.reuse=w.data.reuse||{}; w.data.reuse.enabled=!w.data.reuse.enabled; } else w.data[toggleKey]=!w.data[toggleKey]; saveDraft(); rebuildWizard(); };
+        powerBar.appendChild(wrap);
+      }
+      addPowerPill('🍴','Vor Ort', hasDineIn, 'dineInPossible');
+      addPowerPill('🔄','Mehrweg', hasReuse, 'reuse');
+      const timePill=document.createElement('button');
+      timePill.type='button';
+      timePill.className='status-pill '+(w.data.pickupWindowEdit?'active':'inactive');
+      timePill.setAttribute('aria-label','Abholzeit bearbeiten');
+      timePill.innerHTML='<span style="font-size:18px;">🕒</span><span>Zeit</span>';
+      timePill.onclick=()=>{ hapticLight(); w.data.pickupWindowEdit=!w.data.pickupWindowEdit; saveDraft(); rebuildWizard(); };
+      powerBar.appendChild(timePill);
+      const allergenBarBtn=document.createElement('button');
+      allergenBarBtn.type='button';
+      allergenBarBtn.className='func-icon-btn ' + (w.data.allergeneExpanded ? 'active' : '');
+      allergenBarBtn.textContent='🌾';
+      allergenBarBtn.title='Allergene';
+      allergenBarBtn.onclick=()=>{ hapticLight(); w.data.allergeneExpanded=!w.data.allergeneExpanded; saveDraft(); rebuildWizard(); setTimeout(function(){ scrollToNext('step-allergens'); }, 80); };
+      powerBar.appendChild(allergenBarBtn);
+      const extrasBarBtn=document.createElement('button');
+      extrasBarBtn.type='button';
+      extrasBarBtn.className='func-icon-btn ' + (w.data.extrasExpanded ? 'active' : '');
+      extrasBarBtn.textContent='➕';
+      extrasBarBtn.title='Extras';
+      extrasBarBtn.onclick=()=>{ hapticLight(); w.data.extrasExpanded=!w.data.extrasExpanded; saveDraft(); rebuildWizard(); setTimeout(function(){ scrollToNext('step-extras'); }, 80); };
+      powerBar.appendChild(extrasBarBtn);
+      box.appendChild(powerBar);
 
       const scrollArea=document.createElement('div');
       scrollArea.className='inserat-scroll-area scroll-content';
@@ -23219,7 +23274,7 @@
       inputDish.value=w.data.dish||'';
       inputDish.setAttribute('list','inserat-dish-datalist');
       inputDish.autocomplete='off';
-      inputDish.oninput=()=>{ w.data.dish=inputDish.value; saveDraft(); setTimeout(function(){ scrollToNext('step-cat'); }, 200); };
+      inputDish.oninput=()=>{ w.data.dish=inputDish.value; saveDraft(); if(listingDebounceTimer) clearTimeout(listingDebounceTimer); listingDebounceTimer=setTimeout(function(){ listingDebounceTimer=null; scrollToNext('step-cat'); rebuildWizard(); }, 300); };
       inputDish.onblur=()=>{
         dismissKeyboard(); hapticLight();
         var catSugg=getCategorySuggestionForDish(inputDish.value);
@@ -23295,7 +23350,7 @@
       var p0=Number(w.data.price)||0;
       const prognoseWrap=document.createElement('div');
       prognoseWrap.className='inserat-prognose-wrap inserat-earnings inserat-umsatzprognose';
-      prognoseWrap.innerHTML='<p style="margin:0; font-size:12px; font-weight:600; color:#94a3b8; display:flex; align-items:center; flex-wrap:wrap; gap:6px;"><span>Umsatzprognose (bei angenommen 30 Portionen): <span id="calc-val">'+(p0*30).toFixed(2).replace('.',',')+'</span> €</span></p><span class="info-trigger" role="button" aria-label="Info zur Abholnummer-Gebühr" tabindex="0">ⓘ</span><div id="prognose-tooltip" class="glass-tooltip">Deine Gebühr beträgt immer nur 0,89 € pro Abholnummer, egal wie viele Portionen pro Gast bestellt werden.</div>';
+      prognoseWrap.innerHTML='<p style="margin:0; font-size:12px; font-weight:600; color:#94a3b8; display:flex; align-items:center; flex-wrap:wrap; gap:6px;"><span>Umsatzprognose (bei angenommen 30 Portionen): <span id="calc-val">'+(p0*30).toFixed(2).replace('.',',')+'</span> €</span></p><span class="info-trigger" role="button" aria-label="Info zur Abholnummer-Gebühr" tabindex="0">ⓘ</span><div id="prognose-tooltip" class="glass-tooltip">Abholnummer: 0,89 € pro Vorgang (egal wie viele Portionen). Alternativ: Einmaliges Inserat für 4,99 € ohne Abholnummer.</div>';
       var tooltipEl=prognoseWrap.querySelector('#prognose-tooltip');
       var togglePrognoseTooltip=function(){ hapticLight(); if(tooltipEl) tooltipEl.classList.toggle('prognose-tooltip-visible'); };
       prognoseWrap.querySelector('.info-trigger').onclick=function(e){ e.preventDefault(); e.stopPropagation(); togglePrognoseTooltip(); };
@@ -23304,25 +23359,8 @@
       scrollArea.appendChild(stepPrice);
 
 
-      // Funktions-Icons am Ende des Inhalts: 🌾 Allergene | ➕ Extras (gläsernes Dropdown per Klick)
+      // 🌾 und ➕ sind bereits in der Unified Power-Bar unter dem Foto
       if(typeof w.data.extrasExpanded==='undefined') w.data.extrasExpanded=false;
-      const funcIcons=document.createElement('div');
-      funcIcons.className='inserat-func-icons';
-      const allergenBarBtn=document.createElement('button');
-      allergenBarBtn.type='button';
-      allergenBarBtn.className='func-icon-btn ' + (w.data.allergeneExpanded ? 'active' : '');
-      allergenBarBtn.textContent='🌾';
-      allergenBarBtn.title='Allergene';
-      allergenBarBtn.onclick=()=>{ hapticLight(); w.data.allergeneExpanded=!w.data.allergeneExpanded; saveDraft(); rebuildWizard(); setTimeout(function(){ scrollToNext('step-allergens'); }, 80); };
-      funcIcons.appendChild(allergenBarBtn);
-      const extrasBarBtn=document.createElement('button');
-      extrasBarBtn.type='button';
-      extrasBarBtn.className='func-icon-btn ' + (w.data.extrasExpanded ? 'active' : '');
-      extrasBarBtn.textContent='➕';
-      extrasBarBtn.title='Extras';
-      extrasBarBtn.onclick=()=>{ hapticLight(); w.data.extrasExpanded=!w.data.extrasExpanded; saveDraft(); rebuildWizard(); setTimeout(function(){ scrollToNext('step-extras'); }, 80); };
-      funcIcons.appendChild(extrasBarBtn);
-      scrollArea.appendChild(funcIcons);
       if(w.data.pickupWindowEdit){
         const timeDrop=document.createElement('div');
         timeDrop.className='inserat-pickup-time-dropdown';
@@ -23493,8 +23531,6 @@
       box.appendChild(actionSection);
 
       setWizardContent(box);
-      if(wNextBtn) wNextBtn.style.display='none';
-      if(wBackBtn){ wBackBtn.innerHTML='<i data-lucide="chevron-left" style="width:18px;height:18px;"></i> Zurück'; if(typeof lucide!=='undefined'&&lucide.createIcons) lucide.createIcons(); }
       return;
     }
 
@@ -24244,8 +24280,11 @@
         ans.appendChild(b);
       });
       box.appendChild(ans);
+      const navC=document.createElement('div'); navC.style.cssText='display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;';
+      const btnAbortC=document.createElement('button'); btnAbortC.type='button'; btnAbortC.className='btn secondary'; btnAbortC.textContent='Abbrechen'; btnAbortC.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); closeWizard(); };
+      const btnNextC=document.createElement('button'); btnNextC.type='button'; btnNextC.className='btn'; btnNextC.textContent='Weiter'; btnNextC.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); w.step++; rebuildWizard(); };
+      navC.appendChild(btnAbortC); navC.appendChild(btnNextC); box.appendChild(navC);
       setWizardContent(box);
-      setWizardNext('Weiter');
       return;
     }
 
@@ -24259,8 +24298,12 @@
       b2.onclick=()=>{ w.data.photoData=''; w.data.photoDataIsStandard=false; rebuildWizard(); };
       ans.appendChild(b1); ans.appendChild(b2);
       box.appendChild(ans);
+      const navC1=document.createElement('div'); navC1.style.cssText='display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;';
+      const btnAbortC1=document.createElement('button'); btnAbortC1.type='button'; btnAbortC1.className='btn secondary'; btnAbortC1.textContent='Abbrechen'; btnAbortC1.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); closeWizard(); };
+      const btnBackC1=document.createElement('button'); btnBackC1.type='button'; btnBackC1.className='btn secondary'; btnBackC1.textContent='Zurück'; btnBackC1.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); w.step--; rebuildWizard(); };
+      const btnNextC1=document.createElement('button'); btnNextC1.type='button'; btnNextC1.className='btn'; btnNextC1.textContent='Weiter'; btnNextC1.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); w.step++; rebuildWizard(); };
+      navC1.appendChild(btnAbortC1); navC1.appendChild(btnBackC1); navC1.appendChild(btnNextC1); box.appendChild(navC1);
       setWizardContent(box);
-      setWizardNext('Weiter');
       return;
     }
 
@@ -24270,8 +24313,12 @@
       const input=document.createElement('input'); input.className='field'; input.placeholder='z.B. Lasagne'; input.value=w.data.dish||'';
       input.oninput=()=>{ w.data.dish=input.value; };
       box.appendChild(input);
+      const navC2=document.createElement('div'); navC2.style.cssText='display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;';
+      const btnAbortC2=document.createElement('button'); btnAbortC2.type='button'; btnAbortC2.className='btn secondary'; btnAbortC2.textContent='Abbrechen'; btnAbortC2.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); closeWizard(); };
+      const btnBackC2=document.createElement('button'); btnBackC2.type='button'; btnBackC2.className='btn secondary'; btnBackC2.textContent='Zurück'; btnBackC2.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); w.step--; rebuildWizard(); };
+      const btnNextC2=document.createElement('button'); btnNextC2.type='button'; btnNextC2.className='btn'; btnNextC2.textContent='Weiter'; btnNextC2.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); w.step++; rebuildWizard(); };
+      navC2.appendChild(btnAbortC2); navC2.appendChild(btnBackC2); navC2.appendChild(btnNextC2); box.appendChild(navC2);
       setWizardContent(box);
-      setWizardNext('Weiter');
       return;
     }
 
@@ -24295,8 +24342,12 @@
         ans.appendChild(b);
       });
       box.appendChild(ans);
+      const navC3=document.createElement('div'); navC3.style.cssText='display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;';
+      const btnAbortC3=document.createElement('button'); btnAbortC3.type='button'; btnAbortC3.className='btn secondary'; btnAbortC3.textContent='Abbrechen'; btnAbortC3.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); closeWizard(); };
+      const btnBackC3=document.createElement('button'); btnBackC3.type='button'; btnBackC3.className='btn secondary'; btnBackC3.textContent='Zurück'; btnBackC3.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); w.step--; rebuildWizard(); };
+      const btnNextC3=document.createElement('button'); btnNextC3.type='button'; btnNextC3.className='btn'; btnNextC3.textContent='Weiter'; btnNextC3.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); w.step++; rebuildWizard(); };
+      navC3.appendChild(btnAbortC3); navC3.appendChild(btnBackC3); navC3.appendChild(btnNextC3); box.appendChild(navC3);
       setWizardContent(box);
-      setWizardNext('Weiter');
       return;
     }
 
@@ -24311,8 +24362,12 @@
       no.onclick=()=>{ w.data.extras=[]; rebuildWizard(); };
       ans.appendChild(yes); ans.appendChild(no);
       box.appendChild(ans);
+      const navC4=document.createElement('div'); navC4.style.cssText='display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;';
+      const btnAbortC4=document.createElement('button'); btnAbortC4.type='button'; btnAbortC4.className='btn secondary'; btnAbortC4.textContent='Abbrechen'; btnAbortC4.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); closeWizard(); };
+      const btnBackC4=document.createElement('button'); btnBackC4.type='button'; btnBackC4.className='btn secondary'; btnBackC4.textContent='Zurück'; btnBackC4.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); w.step--; rebuildWizard(); };
+      const btnNextC4=document.createElement('button'); btnNextC4.type='button'; btnNextC4.className='btn'; btnNextC4.textContent='Weiter'; btnNextC4.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); w.step++; rebuildWizard(); };
+      navC4.appendChild(btnAbortC4); navC4.appendChild(btnBackC4); navC4.appendChild(btnNextC4); box.appendChild(navC4);
       setWizardContent(box);
-      setWizardNext('Weiter');
       return;
     }
 
@@ -24328,8 +24383,12 @@
       no.onclick=()=>{ w.data.reuse.enabled=false; w.data.reuse.deposit=0; rebuildWizard(); };
       ans.appendChild(yes); ans.appendChild(no);
       box.appendChild(ans);
+      const navC5=document.createElement('div'); navC5.style.cssText='display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;';
+      const btnAbortC5=document.createElement('button'); btnAbortC5.type='button'; btnAbortC5.className='btn secondary'; btnAbortC5.textContent='Abbrechen'; btnAbortC5.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); closeWizard(); };
+      const btnBackC5=document.createElement('button'); btnBackC5.type='button'; btnBackC5.className='btn secondary'; btnBackC5.textContent='Zurück'; btnBackC5.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); w.step--; rebuildWizard(); };
+      const btnNextC5=document.createElement('button'); btnNextC5.type='button'; btnNextC5.className='btn'; btnNextC5.textContent='Weiter'; btnNextC5.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); w.step++; rebuildWizard(); };
+      navC5.appendChild(btnAbortC5); navC5.appendChild(btnBackC5); navC5.appendChild(btnNextC5); box.appendChild(navC5);
       setWizardContent(box);
-      setWizardNext('Weiter');
       return;
     }
 
@@ -24341,8 +24400,12 @@
       input.value = w.data.price ? String(Math.round(w.data.price*100)) : '';
       input.oninput=()=>{ w.data.price = smartNumberToEuro(input.value); };
       box.appendChild(input);
+      const navC6=document.createElement('div'); navC6.style.cssText='display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;';
+      const btnAbortC6=document.createElement('button'); btnAbortC6.type='button'; btnAbortC6.className='btn secondary'; btnAbortC6.textContent='Abbrechen'; btnAbortC6.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); closeWizard(); };
+      const btnBackC6=document.createElement('button'); btnBackC6.type='button'; btnBackC6.className='btn secondary'; btnBackC6.textContent='Zurück'; btnBackC6.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); w.step--; rebuildWizard(); };
+      const btnNextC6=document.createElement('button'); btnNextC6.type='button'; btnNextC6.className='btn'; btnNextC6.textContent='Weiter'; btnNextC6.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); w.step++; rebuildWizard(); };
+      navC6.appendChild(btnAbortC6); navC6.appendChild(btnBackC6); navC6.appendChild(btnNextC6); box.appendChild(navC6);
       setWizardContent(box);
-      setWizardNext('Weiter');
       return;
     }
 
@@ -24366,20 +24429,20 @@
         day: isoDate(new Date())
       };
       box.appendChild(offerCard(prev, {interactive:false}));
-      const btn=document.createElement('button');
-      btn.className='btn';
-      btn.type='button';
-      btn.textContent = w.ctx && w.ctx.editId ? 'Änderungen speichern' : 'Im Kochbuch speichern';
-      btn.onclick=()=>{
+      const navC7=document.createElement('div'); navC7.style.cssText='display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;';
+      const btnAbortC7=document.createElement('button'); btnAbortC7.type='button'; btnAbortC7.className='btn secondary'; btnAbortC7.textContent='Abbrechen'; btnAbortC7.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); closeWizard(); };
+      const btnBackC7=document.createElement('button'); btnBackC7.type='button'; btnBackC7.className='btn secondary'; btnBackC7.textContent='Zurück'; btnBackC7.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); w.step--; rebuildWizard(); };
+      const btnSaveC7=document.createElement('button'); btnSaveC7.className='btn'; btnSaveC7.type='button'; btnSaveC7.textContent = w.ctx && w.ctx.editId ? 'Änderungen speichern' : 'Im Kochbuch speichern';
+      btnSaveC7.onclick=()=>{
+        if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10);
         saveToCookbookFromWizard();
         closeWizard(true);
+        showProviderCookbook();
         renderCookbook();
         alert('Gespeichert.');
       };
-      box.appendChild(btn);
+      navC7.appendChild(btnAbortC7); navC7.appendChild(btnBackC7); navC7.appendChild(btnSaveC7); box.appendChild(navC7);
       setWizardContent(box);
-      setWizardNext('Fertig', 'check');
-      wNextBtn.onclick=()=>{ closeWizard(true); showProviderCookbook(); };
       return;
     }
   }
@@ -24405,31 +24468,24 @@
     }
     box.appendChild(ans);
 
-    const btn=document.createElement('button');
-    btn.className='btn';
-    btn.type='button';
-    btn.textContent='Zum Wochenplan hinzufügen';
-    btn.onclick=()=>{
+    const navW=document.createElement('div'); navW.style.cssText='display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;';
+    const btnAbortW=document.createElement('button'); btnAbortW.type='button'; btnAbortW.className='btn secondary'; btnAbortW.textContent='Abbrechen'; btnAbortW.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); closeWizard(); };
+    const btnFertigW=document.createElement('button'); btnFertigW.className='btn'; btnFertigW.type='button'; btnFertigW.textContent='Zum Wochenplan hinzufügen';
+    btnFertigW.onclick=()=>{
+      if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10);
       const cb = cookbook.find(c => String(c.id) === String(w.data.cookbookId));
       if(!cb){ alert('Gericht nicht gefunden'); return; }
       const entry = { providerId:providerId(), dish:cb.dish, cookbookId:cb.id, active:true };
       if(!week[w.data.date]) week[w.data.date]=[];
       week[w.data.date].push(entry);
       save(LS.week, week);
-      
-      // Automatisch als Angebot veröffentlichen, damit Kunden es sehen
       publishWeekEntry(w.data.date, entry);
-      
       closeWizard(true);
-      renderProviderHome();
+      showProviderHome();
     };
-
-    box.appendChild(document.createElement('div')).style.height='10px';
-    box.appendChild(btn);
+    navW.appendChild(btnAbortW); navW.appendChild(btnFertigW); box.appendChild(navW);
 
     setWizardContent(box);
-    setWizardNext('Fertig', 'check');
-    wNextBtn.onclick=()=>{ closeWizard(true); showProviderHome(); };
   }
 
   // --- Input helpers (thumb-friendly) ---
