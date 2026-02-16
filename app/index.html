@@ -2478,7 +2478,8 @@
     #wizard[data-flow="listing"] .inserat-power-bar .status-pill:active { transform: scale(0.9); }
     #wizard[data-flow="listing"] .inserat-power-bar .power-bar-legend-trigger:hover,
     #wizard[data-flow="listing"] .inserat-power-bar .power-bar-legend-trigger:focus { color: #64748b; }
-    /* #psheet: Universal Card – gleiche Optik wie Inseratsflow (Power-Bar, Karte) */
+    /* #psheet: No-Scroll – Karte ist das Interface, position:relative für Popover */
+    #psheet { position: relative; }
     #psheet .universal-dish-card.psheet-card { width: 100%; background: #fff; border-radius: 16px; overflow: hidden; border: 1px solid rgba(0,0,0,0.06); }
     #psheet .psheet-photo-header { border-radius: 0; }
     #psheet .psheet-price-sticker { position: absolute; bottom: 8px; right: 8px; padding: 6px 12px; border-radius: 999px; font-weight: 900; font-size: 14px; background: rgba(255,215,0,0.95); color: #1a1a1a; box-shadow: 0 2px 8px rgba(255,215,0,0.3); z-index: 10; }
@@ -2504,13 +2505,17 @@
     #psheet .psheet-price-block { margin-top: 8px; }
     #psheet .psheet-price-block .psheet-price-value { font-size: 4rem; font-weight: 900; color: #1a1a1a; }
     #psheet .psheet-price-block .inserat-price-euro-sup { font-size: 1.5rem; font-weight: 900; color: #1a1a1a; vertical-align: super; margin-left: 4px; }
-    #psheet .psheet-body { display: flex; flex-direction: column; gap: 16px; }
-    #psheet .psheet-actions-primary { display: flex; gap: 12px; flex-wrap: wrap; }
-    #psheet .psheet-actions-primary .psheet-btn-primary { flex: 1; min-width: 140px; font-weight: 900; min-height: 48px; }
-    #psheet .psheet-actions-primary #btnEditOffer { background: #10b981; color: #fff; border: none; }
-    #psheet .psheet-actions-primary #btnToggleOffer { background: var(--brand); color: #1a1a1a; border: none; }
-    #psheet .psheet-actions-secondary { display: flex; gap: 8px; justify-content: center; }
-    #psheet .psheet-actions-secondary .psheet-btn-secondary { font-size: 14px; font-weight: 700; }
+    #psheet .psheet-body { display: flex; flex-direction: column; gap: 0; flex: 1; min-height: 0; }
+    #psheet .psheet-card-body .psheet-info-line { font-size: 15px; font-weight: 700; color: #64748b; margin: 0; }
+    #psheet .psheet-share-on-image { position: absolute; top: 12px; right: 12px; z-index: 11; width: 40px; height: 40px; border-radius: 50%; border: none; background: rgba(255,255,255,0.95); box-shadow: 0 2px 10px rgba(0,0,0,0.12); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; transition: transform 0.1s; }
+    #psheet .psheet-share-on-image:active { transform: scale(0.92); }
+    #psheet .psheet-footer-sticky { flex-shrink: 0; padding: 12px 20px; padding-bottom: max(12px, env(safe-area-inset-bottom)); border-top: 1px solid rgba(0,0,0,0.06); background: rgba(255,255,255,0.98); }
+    #psheet .psheet-btn-fertig { width: 100%; min-height: 48px; border-radius: 14px; border: 2px solid #e5e7eb; background: #fff; color: #475569; font-size: 15px; font-weight: 800; cursor: pointer; transition: background 0.15s, color 0.15s; }
+    #psheet .psheet-btn-fertig:active { background: #f1f5f9; }
+    #psheet .psheet-legend-popover { position: absolute; left: 0; right: 0; bottom: 0; top: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); z-index: 20; display: flex; align-items: center; justify-content: center; padding: 20px; }
+    #psheet .psheet-legend-inner { background: #fff; border-radius: 16px; padding: 20px; max-width: 320px; width: 100%; box-shadow: 0 20px 40px rgba(0,0,0,0.15); }
+    #psheet .psheet-legend-print { display: block; width: 100%; margin-bottom: 8px; padding: 12px 16px; background: #10b981; color: #fff; border: none; border-radius: 12px; font-weight: 800; font-size: 14px; cursor: pointer; }
+    #psheet .psheet-legend-close { display: block; width: 100%; padding: 12px; background: transparent; color: #64748b; border: 1px solid #e2e8f0; border-radius: 12px; font-weight: 700; font-size: 14px; cursor: pointer; }
     #psheet .psheet-state-badge.card-state-badge { position: absolute; top: 12px; left: 12px; padding: 4px 10px; border-radius: 8px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.03em; z-index: 12; display: flex; align-items: center; gap: 6px; }
     #psheet .psheet-state-badge.card-state-live { background: rgba(255,255,255,0.95); color: #1a1a1a; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
     #psheet .psheet-state-badge.card-state-live::before { content: ''; width: 8px; height: 8px; background: #22c55e; border-radius: 50%; }
@@ -2856,12 +2861,14 @@
     /* Legal-Anbieter-Seiten: gleiches helles Layout */
     #v-legal-impressum-provider,
     #v-legal-faq-provider,
-    #v-legal-datenschutz-provider{
+    #v-legal-datenschutz-provider,
+    #v-legal-inserat-info-provider{
       background:var(--provider-bg) !important;
     }
     #v-legal-impressum-provider .panel,
     #v-legal-faq-provider .panel,
-    #v-legal-datenschutz-provider .panel{
+    #v-legal-datenschutz-provider .panel,
+    #v-legal-inserat-info-provider .panel{
       background:#fff !important;
       color:#1a1a1a !important;
       border:1px solid rgba(0,0,0,0.06) !important;
@@ -2869,13 +2876,21 @@
     }
     #v-legal-impressum-provider .panel h1,
     #v-legal-faq-provider .panel h1,
-    #v-legal-datenschutz-provider .panel h1{ color:#1a1a1a !important; }
+    #v-legal-datenschutz-provider .panel h1,
+    #v-legal-inserat-info-provider .panel h1,
+    #v-legal-inserat-info-provider .panel h2{ color:#1a1a1a !important; }
     #v-legal-impressum-provider .panel div,
     #v-legal-impressum-provider .panel p,
     #v-legal-faq-provider .panel div,
     #v-legal-faq-provider .panel p,
     #v-legal-datenschutz-provider .panel div,
-    #v-legal-datenschutz-provider .panel p{ color:#334155 !important; }
+    #v-legal-datenschutz-provider .panel p,
+    #v-legal-inserat-info-provider .panel div,
+    #v-legal-inserat-info-provider .panel p{ color:#334155 !important; }
+    /* Anbieter Infoseite Inseratsflow: Grid 5 Spalten Desktop, 1–2 Spalten Mobile */
+    .inserat-info-grid{ display:grid !important; grid-template-columns:repeat(5, 1fr); gap:20px 16px; max-width:100%; }
+    @media (max-width: 900px){ .inserat-info-grid{ grid-template-columns:repeat(2, 1fr) !important; } }
+    @media (max-width: 480px){ .inserat-info-grid{ grid-template-columns:1fr !important; } }
     #v-legal-impressum-provider .panel a,
     #v-legal-faq-provider .panel a,
     #v-legal-datenschutz-provider .panel a{ color:#0A84FF !important; }
@@ -7631,10 +7646,55 @@
             <p style="margin:0; color:#334155;">Wir arbeiten mit professionellen Zahlungsdienstleistern zusammen. Dein Umsatz wird gesammelt und regelmäßig direkt auf dein Bankkonto überwiesen – sauber aufgeschlüsselt für deine Buchhaltung.</p>
           </div>
         </div>
+        <div style="margin-top:24px; padding:16px; background:#f0fdf4; border-radius:12px; border:1px solid rgba(16,185,129,0.2);">
+          <a href="#" id="linkInseratInfo" style="display:flex; align-items:center; gap:8px; font-size:15px; font-weight:700; color:#059669; text-decoration:none;"><span style="font-size:18px;">📋</span> So funktioniert das Inserieren</a>
+        </div>
         <div style="margin-top:32px; padding-top:20px; border-top:1px solid rgba(0,0,0,0.08); text-align:center; font-size:14px; color:#64748b;">
           Weitere Fragen? <a href="mailto:support@mittagio.de" style="color:#0A84FF;">support@mittagio.de</a>
         </div>
         <button class="btn ghost btn-back" type="button" onclick="goBackFromLegalPage()" style="margin-top:20px; width:100%;"><i data-lucide="chevron-left" style="width:18px;height:18px;"></i> Zurück</button>
+      </div>
+    </section>
+
+    <!-- Anbieter Infoseite Inseratsflow: Hero + 5 Kern-Funktionen -->
+    <section class="view" id="v-legal-inserat-info-provider" style="min-height:100vh; padding:20px; padding-bottom:90px;">
+      <div class="panel inserat-info-panel" style="padding:24px; border-radius:16px; box-shadow:0 2px 12px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.06); background:#fff;">
+        <h1 class="inserat-info-hero-title" style="font-size:26px; font-weight:900; margin:0 0 12px; color:#1a1a1a; letter-spacing:-0.03em; line-height:1.2;">Inserieren in unter 30 Sekunden</h1>
+        <p class="inserat-info-hero-sub" style="font-size:16px; color:#64748b; margin:0 0 24px; line-height:1.5;">Erreiche hungrige Gäste direkt in deiner Umgebung – ohne Bindung, ohne Risiko.</p>
+        <ul class="inserat-info-hero-list" style="margin:0 0 32px; padding-left:20px; font-size:15px; color:#334155; line-height:1.7;">
+          <li style="margin-bottom:10px;"><strong>Gerichtsname:</strong> Intelligente Autovervollständigung (Kategorien &amp; Allergene).</li>
+          <li style="margin-bottom:10px;"><strong>Bild-Modul:</strong> Kamera, Upload oder 3 Profi-Vorschläge.</li>
+          <li style="margin-bottom:0;"><strong>Zeitfenster:</strong> Du bestimmst Start- und Endzeit (keine Bestandsführung).</li>
+        </ul>
+        <h2 class="inserat-info-section-title" style="font-size:18px; font-weight:800; margin:0 0 20px; color:#1a1a1a;">Die 5 Kern-Funktionen</h2>
+        <div class="inserat-info-grid">
+          <div class="inserat-info-card" style="padding:16px; border-radius:14px; background:#f8fafc; border:1px solid rgba(0,0,0,0.06);">
+            <div class="inserat-info-icon" style="font-size:28px; margin-bottom:10px; line-height:1;">🔄</div>
+            <div class="inserat-info-label" style="font-size:12px; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:0.04em; margin-bottom:6px;">Mehrweg</div>
+            <p class="inserat-info-text" style="margin:0; font-size:14px; color:#334155; line-height:1.5;">Aktiviere den Toggle, wenn du nachhaltige Pfandsysteme unterstützt.</p>
+          </div>
+          <div class="inserat-info-card" style="padding:16px; border-radius:14px; background:#f8fafc; border:1px solid rgba(0,0,0,0.06);">
+            <div class="inserat-info-icon" style="font-size:28px; margin-bottom:10px; line-height:1;">🍴</div>
+            <div class="inserat-info-label" style="font-size:12px; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:0.04em; margin-bottom:6px;">Vor Ort</div>
+            <p class="inserat-info-text" style="margin:0; font-size:14px; color:#334155; line-height:1.5;">Standardmäßig aktiv – zeige Gästen, dass sie bei dir Platz nehmen können.</p>
+          </div>
+          <div class="inserat-info-card" style="padding:16px; border-radius:14px; background:#f8fafc; border:1px solid rgba(0,0,0,0.06);">
+            <div class="inserat-info-icon" style="font-size:28px; margin-bottom:10px; line-height:1;">➕</div>
+            <div class="inserat-info-label" style="font-size:12px; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:0.04em; margin-bottom:6px;">Extras</div>
+            <p class="inserat-info-text" style="margin:0; font-size:14px; color:#334155; line-height:1.5;">Füge Beilagen oder Upgrades mit individuellem Aufpreis hinzu.</p>
+          </div>
+          <div class="inserat-info-card" style="padding:16px; border-radius:14px; background:#f8fafc; border:1px solid rgba(0,0,0,0.06);">
+            <div class="inserat-info-icon" style="font-size:28px; margin-bottom:10px; line-height:1;">⚠️</div>
+            <div class="inserat-info-label" style="font-size:12px; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:0.04em; margin-bottom:6px;">Allergene</div>
+            <p class="inserat-info-text" style="margin:0; font-size:14px; color:#334155; line-height:1.5;">Schnelle Auswahl über Kategorie-Pills und Kürzel für maximale Sicherheit.</p>
+          </div>
+          <div class="inserat-info-card" style="padding:16px; border-radius:14px; background:#f8fafc; border:1px solid rgba(0,0,0,0.06);">
+            <div class="inserat-info-icon" style="font-size:28px; margin-bottom:10px; line-height:1;">🕒</div>
+            <div class="inserat-info-label" style="font-size:12px; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:0.04em; margin-bottom:6px;">Abholzeit</div>
+            <p class="inserat-info-text" style="margin:0; font-size:14px; color:#334155; line-height:1.5;">Definiere klar, wann das Gericht bereitsteht – für stressfreie Abläufe.</p>
+          </div>
+        </div>
+        <button class="btn ghost btn-back" type="button" onclick="goBackFromLegalPage()" style="margin-top:28px; width:100%;"><i data-lucide="chevron-left" style="width:18px;height:18px;"></i> Zurück</button>
       </div>
     </section>
 
@@ -8158,19 +8218,23 @@
     </div>
   </div>
 
-<!-- Provider offer sheet: Universal Card + zwei Haupt-CTAs, Teilen/Drucken sekundär -->
+<!-- Provider offer sheet: No-Scroll – Karte ist das Interface, ein Sticky-Button unten -->
 <div class="backdrop" id="pbd" onclick="closeProviderSheet()"></div>
 <div class="sheet" id="psheet">
   <div class="handle"></div>
   <div class="sheet-body psheet-body">
     <div id="pPreview"></div>
-    <div class="psheet-actions-primary">
-      <button class="btn psheet-btn-primary" type="button" id="btnEditOffer" data-icon="edit">Bearbeiten</button>
-      <button class="btn psheet-btn-primary" type="button" id="btnToggleOffer" data-icon="action">Noch da</button>
+    <div class="psheet-footer-sticky">
+      <button type="button" id="btnPsheetFertig" class="psheet-btn-fertig" aria-label="Fertig">Fertig</button>
     </div>
-    <div class="psheet-actions-secondary">
-      <button class="btn ghost psheet-btn-secondary" type="button" id="btnShareOffer" data-icon="share">Teilen</button>
-      <button class="btn ghost psheet-btn-secondary" type="button" id="btnPrintOffer" data-icon="print">Drucken</button>
+  </div>
+  <!-- ⓘ-Menü: Legende + Drucken (ausgeblendet, wird bei Klick auf ⓘ geöffnet) -->
+  <div id="psheetLegendPopover" class="psheet-legend-popover" style="display:none;">
+    <div class="psheet-legend-inner">
+      <div style="font-weight:800; margin-bottom:8px; font-size:14px;">Symbole</div>
+      <p style="margin:0 0 12px; font-size:13px; color:#475569; line-height:1.5;">🍴 Vor Ort · 🔄 Mehrweg · 🕒 Abholzeit · 🌾 Allergene · ➕ Extras</p>
+      <button type="button" id="btnPsheetPrintFromLegend" class="psheet-legend-print">Drucken</button>
+      <button type="button" id="btnPsheetLegendClose" class="psheet-legend-close">Schließen</button>
     </div>
   </div>
 </div>
@@ -10091,7 +10155,7 @@
     providerOnboardingPreview:'v-provider-onboarding-preview',
     providerHome:'v-provider-home', providerPickups:'v-provider-pickups', providerCookbook:'v-provider-cookbook',
     providerProfile:'v-provider-profile', providerBilling:'v-provider-billing', providerWeek:'v-provider-week',
-    legalImpressum:'v-legal-impressum', legalImpressumProvider:'v-legal-impressum-provider', legalAgbKurz:'v-legal-agb-kurz', legalAgbProvider:'v-legal-agb-provider', legalDatenschutz:'v-legal-datenschutz', legalAgbOnboarding:'v-legal-agb-onboarding', legalFaq:'v-legal-faq', legalSupport:'v-support', legalFaqProvider:'v-legal-faq-provider', version:'v-version',
+    legalImpressum:'v-legal-impressum', legalImpressumProvider:'v-legal-impressum-provider', legalAgbKurz:'v-legal-agb-kurz', legalAgbProvider:'v-legal-agb-provider', legalDatenschutz:'v-legal-datenschutz', legalAgbOnboarding:'v-legal-agb-onboarding', legalFaq:'v-legal-faq', legalSupport:'v-support', legalFaqProvider:'v-legal-faq-provider', legalInseratInfoProvider:'v-legal-inserat-info-provider', version:'v-version',
     admin:'v-admin'
   };
 
@@ -14975,46 +15039,69 @@
       pill(hasTimeValue, 'Zeit', '🕒') +
       funcBtn(hasAllergens, 'Allergene', '🌾') +
       funcBtn(hasExtras, 'Extras', '➕') +
-      '<span class="power-bar-legend-trigger" title="Bedeutung der Symbole">ⓘ</span>' +
+      '<span class="power-bar-legend-trigger" id="psheetInfoTrigger" title="Symbole &amp; Drucken" role="button" tabindex="0">ⓘ</span>' +
       '</div>';
+    var infoLine = (catLabel ? esc(catLabel) + ' | ' : '') + priceStr + ' €';
     const preview = document.getElementById('pPreview');
-    preview.innerHTML = '<div class="universal-dish-card psheet-card" data-card-state="' + esc(cardState) + '" role="button" tabindex="0" aria-label="Karte bearbeiten">' +
+    preview.innerHTML = '<div class="universal-dish-card psheet-card" data-card-state="' + esc(cardState) + '" data-offer-id="' + esc(id) + '" role="button" tabindex="0" aria-label="Karte bearbeiten oder long-press für Ausverkauft">' +
       '<div class="inserat-photo-tile photo-header psheet-photo-header psheet-card-click-area" style="position:relative;overflow:hidden;flex-shrink:0;width:100%;height:190px;background:#f0f0f0;">' +
       (cardState === 'LIVE' ? '<div class="psheet-state-badge card-state-badge card-state-live">' + esc(stateLabel) + '</div>' : (cardState === 'PLANNED' ? '<div class="psheet-state-badge card-state-badge card-state-planned">' + esc(stateLabel) + '</div>' : '')) +
+      '<button type="button" class="psheet-share-on-image" id="psheetShareOnImage" aria-label="Teilen" title="Teilen">📤</button>' +
       '<img src="' + esc(imgSrc) + '" alt="' + esc(o.dish||'') + '" style="width:100%;height:100%;object-fit:cover;display:block;" />' +
-      '<div class="inserat-price-on-image price-pill psheet-price-sticker">' + priceStr + ' €</div>' +
       '</div>' +
       powerBarHtml +
       '<div class="psheet-card-body psheet-card-click-area" style="padding:20px;">' +
       '<h2 class="psheet-card-title">' + esc(o.dish || 'Gericht') + '</h2>' +
-      (catLabel ? '<span class="extra-pill inserat-cat-pill active" style="display:inline-block;margin-bottom:12px;">' + esc(catLabel) + '</span>' : '') +
-      '<div class="inserat-price-section psheet-price-block"><span class="inserat-price-fintech psheet-price-value">' + priceStr + '</span><sup class="inserat-price-euro-sup">€</sup></div>' +
+      '<div class="psheet-info-line">' + infoLine + '</div>' +
       '</div>' +
       '</div>';
+    var cardEl = preview.querySelector('.universal-dish-card.psheet-card');
+    var psheetLongPressFired = false;
     preview.querySelectorAll('.psheet-card-click-area').forEach(function(el){
       el.style.cursor = 'pointer';
       el.addEventListener('click', function(ev){
+        if(ev.target.closest('.psheet-share-on-image')) return;
+        if(psheetLongPressFired){ ev.preventDefault(); ev.stopPropagation(); return; }
         ev.preventDefault();
         ev.stopPropagation();
-        if(typeof haptic === 'function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10);
+        if(typeof hapticLight === 'function') hapticLight(); else if(navigator.vibrate) navigator.vibrate(10);
         closeProviderSheet();
         startListingFlow({ editOfferId: id });
       });
     });
-
-    
-    // No-Limits: Prominenter "Ausverkauft" / "Noch da" Toggle
-    const toggleBtn = document.getElementById('btnToggleOffer');
-    if(toggleBtn){
-      if(o.active === false){
-        toggleBtn.textContent = 'Wieder verfügbar';
-        toggleBtn.style.background = '#4caf50';
-        toggleBtn.style.color = '#fff';
-      } else {
-        toggleBtn.textContent = 'Ausverkauft';
-        toggleBtn.style.background = '#E34D4D';
-        toggleBtn.style.color = '#fff';
-      }
+    var shareOnImage = document.getElementById('psheetShareOnImage');
+    if(shareOnImage){
+      shareOnImage.addEventListener('click', function(ev){
+        ev.preventDefault();
+        ev.stopPropagation();
+        if(typeof hapticLight === 'function') hapticLight();
+        var offer = offers.find(x=>x.id===id);
+        if(offer){
+          if(cardEl && typeof shareCardAsImage === 'function') shareCardAsImage(cardEl, offer);
+          else if(typeof shareOffer === 'function') shareOffer(offer);
+        }
+      });
+    }
+    var infoTrigger = document.getElementById('psheetInfoTrigger');
+    if(infoTrigger){
+      infoTrigger.addEventListener('click', function(ev){
+        ev.preventDefault();
+        ev.stopPropagation();
+        if(typeof hapticLight === 'function') hapticLight();
+        var pop = document.getElementById('psheetLegendPopover');
+        if(pop) pop.style.display = 'block';
+      });
+    }
+    var longPressTimer;
+    function startLongPress(){ longPressTimer = setTimeout(function(){ psheetLongPressFired = true; if(typeof hapticLight === 'function') hapticLight(); toggleOfferSoldOut(id); closeProviderSheet(); }, 500); }
+    function cancelLongPress(){ if(longPressTimer){ clearTimeout(longPressTimer); longPressTimer = null; } }
+    if(cardEl){
+      cardEl.addEventListener('touchstart', function(ev){ if(ev.touches.length===1) startLongPress(); });
+      cardEl.addEventListener('touchend', cancelLongPress);
+      cardEl.addEventListener('touchcancel', cancelLongPress);
+      cardEl.addEventListener('mousedown', function(ev){ if(ev.button===0) startLongPress(); });
+      cardEl.addEventListener('mouseup', cancelLongPress);
+      cardEl.addEventListener('mouseleave', cancelLongPress);
     }
 
     document.getElementById('pbd').classList.add('active');
@@ -15022,6 +15109,8 @@
   }
 
   function closeProviderSheet(){
+    var pop = document.getElementById('psheetLegendPopover');
+    if(pop) pop.style.display = 'none';
     document.getElementById('pbd').classList.remove('active');
     document.getElementById('psheet').classList.remove('active');
   }
@@ -21681,13 +21770,15 @@
   const btnProvFaq = document.getElementById('btnProvFaq');
   if(btnProvFaq){
     btnProvFaq.onclick=()=>{
-      // Navigiere zu Anbieter-FAQ
       showLegalPage('faq-provider');
-      // URL aktualisieren für Provider-Mode
       if(mode === 'provider'){
         pushViewState({view: 'provider-faq', mode: mode}, '/anbieter/hilfe/faq');
       }
     };
+  }
+  const linkInseratInfo = document.getElementById('linkInseratInfo');
+  if(linkInseratInfo){
+    linkInseratInfo.onclick=function(e){ e.preventDefault(); if(typeof hapticLight === 'function') hapticLight(); showLegalPage('inserat-info-provider'); };
   }
 
   const btnBilling = document.getElementById('btnBilling');
@@ -21763,7 +21854,8 @@
       'datenschutz-provider': 'v-legal-datenschutz-provider',
       'faq': 'v-legal-faq',
       'support': 'v-support',
-      'faq-provider': 'v-legal-faq-provider'
+      'faq-provider': 'v-legal-faq-provider',
+      'inserat-info-provider': 'v-legal-inserat-info-provider'
     };
     const viewId = pageMap[page];
     if(viewId){
@@ -21777,6 +21869,7 @@
       if(isProvider){
         const urlMap = {
           'faq-provider': '/anbieter/hilfe/faq',
+          'inserat-info-provider': '/anbieter/hilfe/inserat',
           'impressum-provider': '/anbieter/recht/impressum',
           'agb-provider': '/anbieter/recht/agb',
           'datenschutz': '/anbieter/recht/datenschutz',
@@ -21940,59 +22033,42 @@
     };
   }
 
-  const btnEditOffer = document.getElementById('btnEditOffer');
-  if(btnEditOffer){
-    btnEditOffer.onclick=()=>{
-      if(!activeProviderOfferId) return;
-      closeProviderSheet();
-      startListingFlow({editOfferId: activeProviderOfferId});
-    };
-  }
-  // No-Limits: Toggle-Funktion für "Ausverkauft" / "Noch da"
+  // No-Limits: Toggle-Funktion für "Ausverkauft" / "Noch da" (im Psheet per Long-Press auf Karte)
   function toggleOfferSoldOut(offerId){
     const idx = offers.findIndex(x=>x.id===offerId);
     if(idx<0) return;
     const wasActive = offers[idx].active !== false;
     offers[idx].active = !wasActive;
     save(LS.offers, offers);
-    
-    // Toast-Feedback
     showToast(wasActive ? 'Als ausverkauft markiert' : 'Wieder verfügbar', 2000);
-    
-    // Neu rendern
     renderProviderHome();
     renderProviderPickups();
     renderDiscover();
   }
-  
-  const btnToggleOffer = document.getElementById('btnToggleOffer');
-  if(btnToggleOffer){
-    btnToggleOffer.onclick=()=>{
-      if(!activeProviderOfferId) return;
-      toggleOfferSoldOut(activeProviderOfferId);
-      closeProviderSheet();
+
+  const btnPsheetFertig = document.getElementById('btnPsheetFertig');
+  if(btnPsheetFertig) btnPsheetFertig.onclick = closeProviderSheet;
+
+  const btnPsheetLegendClose = document.getElementById('btnPsheetLegendClose');
+  if(btnPsheetLegendClose){
+    btnPsheetLegendClose.onclick = function(){
+      var pop = document.getElementById('psheetLegendPopover');
+      if(pop) pop.style.display = 'none';
     };
   }
-  const btnShareOffer = document.getElementById('btnShareOffer');
-  if(btnShareOffer){
-    btnShareOffer.onclick=function(){
+  const btnPsheetPrintFromLegend = document.getElementById('btnPsheetPrintFromLegend');
+  if(btnPsheetPrintFromLegend){
+    btnPsheetPrintFromLegend.onclick = function(){
       if(!activeProviderOfferId) return;
-      const o = offers.find(x=>x.id===activeProviderOfferId);
-      if(!o) return;
-      const cardEl = document.getElementById('pPreview') && document.getElementById('pPreview').querySelector('.universal-dish-card.psheet-card');
-      if(cardEl && typeof shareCardAsImage === 'function') shareCardAsImage(cardEl, o);
-      else shareOffer(o);
+      var o = offers.find(x=>x.id===activeProviderOfferId);
+      if(o) printOffer(o);
+      var pop = document.getElementById('psheetLegendPopover');
+      if(pop) pop.style.display = 'none';
     };
   }
-  const btnPrintOffer = document.getElementById('btnPrintOffer');
-  if(btnPrintOffer){
-    btnPrintOffer.onclick=()=>{
-      if(!activeProviderOfferId) return;
-      const o = offers.find(x=>x.id===activeProviderOfferId);
-      if(!o) return;
-      printOffer(o);
-    };
-  }
+  document.getElementById('psheetLegendPopover') && document.getElementById('psheetLegendPopover').addEventListener('click', function(e){
+    if(e.target === this){ this.style.display = 'none'; }
+  });
 
   const btnWeekBack = document.getElementById('btnWeekBack');
   if(btnWeekBack){
@@ -25787,6 +25863,9 @@
   if(path.indexOf('/anbieter/hilfe/faq') !== -1 && typeof provider !== 'undefined' && provider && provider.loggedIn){
     setMode('provider');
     showLegalPage('faq-provider');
+  } else if(path.indexOf('/anbieter/hilfe/inserat') !== -1 && typeof provider !== 'undefined' && provider && provider.loggedIn){
+    setMode('provider');
+    showLegalPage('inserat-info-provider');
   } else if(planMatch && typeof showPlanPublicView === 'function'){
     showPlanPublicView(decodeURIComponent(planMatch[1]));
   } else {
