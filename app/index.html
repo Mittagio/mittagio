@@ -2332,16 +2332,37 @@
     #wizard[data-flow="listing"] .photo-header img { transition: transform 0.4s, filter 0.4s; }
     #wizard[data-flow="listing"] .photo-header.is-selecting img { transform: scale(1.1); filter: brightness(0.7); }
     #wizard[data-flow="listing"] .photo-header.is-selecting .inserat-photo-placeholder { filter: blur(25px); opacity: 0.8; }
-    #wizard[data-flow="listing"] .photo-header .selection-overlay-inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; width: 100%; }
-    @media (max-width: 480px) {
-      #wizard[data-flow="listing"] .photo-header .selection-overlay-inner { display: grid; grid-template-columns: 1fr 1fr; justify-items: center; }
+    #wizard[data-flow="listing"] .photo-header .selection-overlay-inner {
+      display: grid; grid-template-columns: 1fr 1fr; justify-items: center; align-items: center; gap: 8px; width: 100%;
     }
     #wizard[data-flow="listing"] .photo-header .selection-overlay .extra-pill,
     #wizard[data-flow="listing"] .photo-header .selection-overlay .inserat-allergen-pill {
       padding: 8px 14px; border-radius: 999px; font-size: 13px; font-weight: 700; border: 2px solid rgba(0,0,0,0.08); background: rgba(255,255,255,0.5); color: #475569; cursor: pointer; transition: background 0.2s, color 0.2s; -webkit-tap-highlight-color: transparent;
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
     }
     #wizard[data-flow="listing"] .photo-header .selection-overlay .extra-pill.active,
     #wizard[data-flow="listing"] .photo-header .selection-overlay .inserat-allergen-pill.active { background: #10b981; color: #fff; border-color: rgba(16,185,129,0.4); box-shadow: 0 2px 10px rgba(16,185,129,0.3); }
+    #wizard[data-flow="listing"] .photo-header .selection-overlay-inner.selection-overlay-inner--time { display: flex; align-items: center; justify-content: center; }
+    /* Foto ändern / FOTO HINZUFÜGEN: Glass-Pill, unten zentriert [cite: 2026-02-16] */
+    #wizard[data-flow="listing"] .liquid-master-panel .photo-header .inserat-photo-change,
+    #wizard[data-flow="listing"] .liquid-master-panel .inserat-photo-tile.photo-header .inserat-photo-change {
+      position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+      z-index: 10;
+      border-radius: 30px;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+      color: #fff;
+      padding: 8px 16px;
+      border: none;
+      font-size: 14px; font-weight: 700;
+      cursor: pointer; display: inline-flex; align-items: center; gap: 8px;
+      -webkit-tap-highlight-color: transparent;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+      transition: transform 0.12s ease, box-shadow 0.2s ease;
+    }
+    #wizard[data-flow="listing"] .liquid-master-panel .photo-header .inserat-photo-change:hover,
+    #wizard[data-flow="listing"] .liquid-master-panel .photo-header .inserat-photo-change:active { color: #fff; }
+    #wizard[data-flow="listing"] .liquid-master-panel .photo-header .inserat-photo-change:active { transform: translateX(-50%) scale(0.98); }
     /* Pricing-Label über Buttons: dezenter Puls; auf schmalen Displays kleiner [cite: 2026-02-16] */
     .pricing-info-label { cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; font-size: 12px; font-weight: 500; color: #94a3b8; margin-bottom: 8px; -webkit-tap-highlight-color: transparent; animation: gentle-pulse 3s infinite ease-in-out; }
     @media (max-width: 400px) {
@@ -2421,7 +2442,7 @@
     }
     .inserat-unified-title-wrap .inserat-detail-style-title {
       margin: 0 0 8px;
-      font-size: 24px; font-weight: 950; color: #1a1a1a; letter-spacing: -0.03em; line-height: 1.2;
+      font-size: 24px; font-weight: 800; color: #0f172a; letter-spacing: -0.03em; line-height: 1.2;
       width: 100%; border: none; border-bottom: 2px solid rgba(0,0,0,0.08);
       background: transparent; padding: 4px 0 8px; outline: none;
       font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
@@ -2435,7 +2456,8 @@
     #wizard[data-flow="listing"].sheet--kitchen .liquid-master-panel #step-name input.inserat-detail-style-title,
     #wizard[data-flow="listing"].sheet--kitchen .glass-express-step0 #step-name input.inserat-detail-style-title {
       font-size: 24px !important;
-      font-weight: 950 !important;
+      font-weight: 800 !important;
+      color: #0f172a !important;
       letter-spacing: -0.03em;
       line-height: 1.2;
     }
@@ -2467,14 +2489,15 @@
     #wizard[data-flow="listing"] .inserat-price-section .price-display:not(.inserat-price-fintech) {
       font-size: 14px !important; font-weight: 900 !important; color: #1a1a1a !important;
     }
-    /* Fintech-Preis (S25): rahmenlos, riesige Zahlen, pulsierende Emerald-Unterlinie beim Fokus */
+    /* Fintech-Preis (S25): massive Zahl 4rem, Hochzahl-€ */
     #wizard[data-flow="listing"] .inserat-price-section input.inserat-price-fintech {
       width: 140px; max-width: 60%; background: transparent !important;
       border: none !important; border-bottom: 2px solid rgba(0,0,0,0.08) !important;
       border-radius: 0 !important; padding: 12px 0 10px !important; outline: none !important;
-      font-size: 2.25rem !important; font-weight: 900 !important; color: #1a1a1a !important;
+      font-size: 4rem !important; font-weight: 900 !important; color: #1a1a1a !important;
       text-align: center; transition: border-color 0.3s ease;
     }
+    #wizard[data-flow="listing"] .inserat-price-section .inserat-price-euro-sup { font-size: 1.5rem; font-weight: 900; color: #1a1a1a; vertical-align: super; margin-left: 4px; }
     #wizard[data-flow="listing"] .inserat-price-section input.inserat-price-fintech:focus {
       border-bottom-color: #10b981 !important;
       animation: magnet-pulse 1.2s ease-in-out infinite;
@@ -23254,12 +23277,20 @@
       const hapticLight = ()=>{ try { if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); } catch(e){} };
       var listingDebounceTimer = null; /* 300ms Debounce für Smart-Search Bildvorschläge */
       var listingDebounceTimer = null;
-      var ASSETS_BASE = (typeof PLACEHOLDER_IMAGE_URL !== 'undefined' && PLACEHOLDER_IMAGE_URL) ? '' : 'assets/';
+      var LISTING_IMAGES_BASE = 'https://images.unsplash.com/';
       var listingImageMap = {
-        schnitzel: ['schnitzel_1.jpg','schnitzel_2.jpg','schnitzel_3.jpg'], gulasch: ['gulasch_1.jpg','gulasch_2.jpg','ragout_1.jpg'], roulade: ['roulade_1.jpg','braten_1.jpg','roulade_2.jpg'],
-        leberkaese: ['lkw_1.jpg','leberkaese_panne.jpg','brotzeit_1.jpg'], linsen: ['linsen_1.jpg','linsen_spaetzle.jpg','eintopf_1.jpg'], kaesespaetzle: ['kaesespaetzle_1.jpg','spaetzle_nah.jpg','veggie_1.jpg'],
-        frikadelle: ['frikadelle_1.jpg','bulette_teller.jpg','fleischkuechle.jpg'], currywurst: ['currywurst_1.jpg','wurst_fritten.jpg','imbiss_1.jpg'],
-        default_meat: ['fleisch_neutral_1.jpg','pfanne_1.jpg','braten_allgemein.jpg'], default_veggie: ['veggie_neutral_1.jpg','salat_1.jpg','nudeln_1.jpg'], default_vegan: ['veggie_neutral_1.jpg','salat_1.jpg','nudeln_1.jpg'], default_salat: ['salat_1.jpg','veggie_bowl.jpg','veggie_neutral_1.jpg']
+        schnitzel: ['photo-1546069901-d5bfd2cbfb1f?w=400&q=80','photo-1565299624946-b28f40a0ae38?w=400&q=80','photo-1603133872878-684f208fb84b?w=400&q=80'],
+        gulasch: ['photo-1547592166-23ac45744acd?w=400&q=80','photo-1544025162-d76694265947?w=400&q=80','photo-1565299624946-b28f40a0ae38?w=400&q=80'],
+        roulade: ['photo-1603133872878-684f208fb84b?w=400&q=80','photo-1546069901-d5bfd2cbfb1f?w=400&q=80','photo-1544025162-d76694265947?w=400&q=80'],
+        leberkaese: ['photo-1565299624946-b28f40a0ae38?w=400&q=80','photo-1546069901-d5bfd2cbfb1f?w=400&q=80','photo-1603133872878-684f208fb84b?w=400&q=80'],
+        linsen: ['photo-1547592166-23ac45744acd?w=400&q=80','photo-1544025162-d76694265947?w=400&q=80','photo-1546069901-eacef0df6022?w=400&q=80'],
+        kaesespaetzle: ['photo-1551183053-bf91a1d81141?w=400&q=80','photo-1546069901-d5bfd2cbfb1f?w=400&q=80','photo-1565299624946-b28f40a0ae38?w=400&q=80'],
+        frikadelle: ['photo-1565299624946-b28f40a0ae38?w=400&q=80','photo-1546069901-d5bfd2cbfb1f?w=400&q=80','photo-1603133872878-684f208fb84b?w=400&q=80'],
+        currywurst: ['photo-1565299624946-b28f40a0ae38?w=400&q=80','photo-1546069901-d5bfd2cbfb1f?w=400&q=80','photo-1603133872878-684f208fb84b?w=400&q=80'],
+        default_meat: ['photo-1546069901-d5bfd2cbfb1f?w=400&q=80','photo-1603133872878-684f208fb84b?w=400&q=80','photo-1544025162-d76694265947?w=400&q=80'],
+        default_veggie: ['photo-1546069901-eacef0df6022?w=400&q=80','photo-1512621776951-a57141f2e7ef?w=400&q=80','photo-1546069901-d5bfd2cbfb1f?w=400&q=80'],
+        default_vegan: ['photo-1546069901-eacef0df6022?w=400&q=80','photo-1512621776951-a57141f2e7ef?w=400&q=80','photo-1546069901-d5bfd2cbfb1f?w=400&q=80'],
+        default_salat: ['photo-1512621776951-a57141f2e7ef?w=400&q=80','photo-1546069901-eacef0df6022?w=400&q=80','photo-1546069901-d5bfd2cbfb1f?w=400&q=80']
       };
       function getListingSuggestionKey(){
         var text = (w.data.dish||'').toLowerCase().trim();
@@ -23271,7 +23302,7 @@
         var key = w.data.photoSuggestionKey || getListingSuggestionKey();
         var list = listingImageMap[key];
         if(!list) return [];
-        var base = ASSETS_BASE || (window.location.pathname.indexOf('/mittagio/')!==-1 ? '/mittagio/app/' : '');
+        var base = LISTING_IMAGES_BASE;
         return list.map(function(f){ return (f.indexOf('http')===0||f.indexOf('data:')===0) ? f : (base + f); });
       }
       function listingSuggestionsVisible(){ var cat = w.data.category; return !!cat || (w.data.photoSuggestionKey && listingImageMap[w.data.photoSuggestionKey]); }
@@ -23315,6 +23346,7 @@
       function closeHeaderSelection(){ hapticLight(); photoTile.classList.remove('is-selecting'); }
       function renderSelectionContent(type){
         selectionOverlayInner.innerHTML='';
+        selectionOverlayInner.classList.remove('selection-overlay-inner--time');
         if(type==='allergens'){
           (typeof ALLERGENS_14!=='undefined'?ALLERGENS_14:[]).forEach(function(a){
             var code=a.short; var name=a.name||code; var active=(w.data.allergens||[]).includes(code);
@@ -23329,12 +23361,31 @@
           defaultExtras.forEach(function(opt){
             var ex=w.data.extras.find(function(e){ return e.name===opt.name; }); var active=!!ex && Number(ex.price||0)>0; if(!ex) ex={ name:opt.name, price:0 };
             var pillWrap=document.createElement('div'); pillWrap.style.cssText='display:flex; align-items:center; gap:6px;';
-            var btn=document.createElement('button'); btn.type='button'; btn.className='extra-pill' + (active ? ' active' : ''); btn.style.cssText='cursor:pointer;'; btn.textContent=opt.name;
+            var btn=document.createElement('button'); btn.type='button'; btn.className='extra-pill' + (active ? ' active' : ''); btn.style.cssText='cursor:pointer;'; btn.textContent='➕ ' + opt.name;
             btn.onclick=function(){ hapticLight(); var idx=w.data.extras.findIndex(function(e){ return e.name===opt.name; }); if(idx>=0){ w.data.extras.splice(idx,1); } else{ w.data.extras.push({ name:opt.name, price:opt.price }); } saveDraft(); var hasEx=!!w.data.extras.find(function(e){ return e.name===opt.name; }) && Number((w.data.extras.find(function(e){ return e.name===opt.name; })||{}).price||0)>0; btn.className='extra-pill' + (hasEx ? ' active' : ''); var bar=photoTile.nextElementSibling; if(bar){ var fb=bar.querySelectorAll('.func-icon-btn'); if(fb[1]) fb[1].className='func-icon-btn ' + (!!(w.data.extras&&w.data.extras.length) ? 'active' : ''); } if(pillWrap.querySelector('input')){ var next=w.data.extras.find(function(e){ return e.name===opt.name; }); if(next&&Number(next.price||0)>0){ pillWrap.querySelector('input').value=Number(next.price).toFixed(2).replace('.',','); } else { var inpWrap=pillWrap.querySelector('span'); if(inpWrap) inpWrap.remove(); } } else if(hasEx){ var inpWrap=document.createElement('span'); inpWrap.style.cssText='display:inline-flex; align-items:center; background:rgba(255,255,255,0.6); border-radius:999px; padding:4px 8px;'; var plus=document.createElement('span'); plus.style.cssText='font-size:10px; font-weight:800; color:#10b981; margin-right:4px;'; plus.textContent='+'; var inp=document.createElement('input'); inp.type='text'; inp.inputMode='decimal'; inp.style.cssText='width:36px; background:transparent; border:none; padding:0; font-size:12px; font-weight:800; color:#10b981; outline:none;'; var e=w.data.extras.find(function(x){ return x.name===opt.name; }); inp.value=Number((e&&e.price)||0).toFixed(2).replace('.',','); inp.oninput=function(){ if(e) e.price=parseFloat((inp.value||'0').replace(',','.'))||0; saveDraft(); }; inp.onclick=function(ev){ ev.stopPropagation(); }; var eur=document.createElement('span'); eur.style.cssText='font-size:10px; font-weight:800; color:#10b981; margin-left:2px;'; eur.textContent='€'; inpWrap.appendChild(plus); inpWrap.appendChild(inp); inpWrap.appendChild(eur); pillWrap.appendChild(inpWrap); } };
             pillWrap.appendChild(btn);
             if(active){ var inpWrap=document.createElement('span'); inpWrap.style.cssText='display:inline-flex; align-items:center; background:rgba(255,255,255,0.6); border-radius:999px; padding:4px 8px;'; var plus=document.createElement('span'); plus.style.cssText='font-size:10px; font-weight:800; color:#10b981; margin-right:4px;'; plus.textContent='+'; var inp=document.createElement('input'); inp.type='text'; inp.inputMode='decimal'; inp.style.cssText='width:36px; background:transparent; border:none; padding:0; font-size:12px; font-weight:800; color:#10b981; outline:none;'; inp.value=Number(ex.price).toFixed(2).replace('.',','); inp.oninput=function(){ ex.price=parseFloat((inp.value||'0').replace(',','.'))||0; saveDraft(); }; inp.onclick=function(ev){ ev.stopPropagation(); }; var eur=document.createElement('span'); eur.style.cssText='font-size:10px; font-weight:800; color:#10b981; margin-left:2px;'; eur.textContent='€'; inpWrap.appendChild(plus); inpWrap.appendChild(inp); inpWrap.appendChild(eur); pillWrap.appendChild(inpWrap); }
             selectionOverlayInner.appendChild(pillWrap);
           });
+        } else if(type==='time'){
+          selectionOverlayInner.classList.add('selection-overlay-inner--time');
+          var pwParts=(w.data.pickupWindow||'11:30 – 14:00').split(/\s*[–\-]\s*/);
+          var tStart=(pwParts[0]||'11:30').trim();
+          var tEnd=(pwParts[1]||'14:00').trim();
+          if(tStart.length===4) tStart='0'+tStart;
+          if(tEnd.length===4) tEnd='0'+tEnd;
+          var row=document.createElement('div'); row.className='inserat-time-morph-row'; row.style.cssText='display:flex; align-items:center; justify-content:center; gap:12px; flex-wrap:wrap; padding:16px;';
+          var inpStart=document.createElement('input'); inpStart.type='time'; inpStart.className='inserat-pickup-time-input'; inpStart.value=tStart; inpStart.style.cssText='padding:10px 14px; border-radius:12px; border:2px solid rgba(0,0,0,0.08); background:rgba(255,255,255,0.7); backdrop-filter:blur(10px); font-size:16px; font-weight:700;';
+          var inpEnd=document.createElement('input'); inpEnd.type='time'; inpEnd.className='inserat-pickup-time-input'; inpEnd.value=tEnd; inpEnd.style.cssText='padding:10px 14px; border-radius:12px; border:2px solid rgba(0,0,0,0.08); background:rgba(255,255,255,0.7); backdrop-filter:blur(10px); font-size:16px; font-weight:700;';
+          var upd=function(){ w.data.pickupWindow=inpStart.value+' – '+inpEnd.value; saveDraft(); var bar=photoTile.nextElementSibling; if(bar){ var pills=bar.querySelectorAll('.status-pill'); if(pills[2]) pills[2].className='status-pill active'; } };
+          inpStart.onchange=function(){ hapticLight(); upd(); };
+          inpEnd.onchange=function(){ hapticLight(); upd(); };
+          row.appendChild(inpStart);
+          row.appendChild(document.createTextNode(' – '));
+          row.appendChild(inpEnd);
+          var btnFertig=document.createElement('button'); btnFertig.type='button'; btnFertig.textContent='Fertig'; btnFertig.style.cssText='padding:10px 20px; border-radius:999px; border:none; background:#10b981; color:#fff; font-weight:700; cursor:pointer; margin-left:8px;'; btnFertig.onclick=function(){ hapticLight(); closeHeaderSelection(); rebuildWizard(); };
+          row.appendChild(btnFertig);
+          selectionOverlayInner.appendChild(row);
         }
       }
       function toggleHeaderSelection(type){ hapticLight(); renderSelectionContent(type); photoTile.classList.add('is-selecting'); }
@@ -23382,7 +23433,7 @@
       timePill.setAttribute('aria-label','Abholzeit bearbeiten');
       timePill.setAttribute('title','Zeit');
       timePill.innerHTML='<span style="font-size:18px;">🕒</span>';
-      timePill.onclick=()=>{ hapticLight(); w.data.pickupWindowEdit=!w.data.pickupWindowEdit; saveDraft(); rebuildWizard(); };
+      timePill.onclick=()=>{ toggleHeaderSelection('time'); };
       powerBar.appendChild(timePill);
       const hasAllergens=!!(w.data.allergens&&w.data.allergens.length);
       const allergenBarBtn=document.createElement('button');
@@ -23493,8 +23544,8 @@
       };
       inputPrice.oninput=()=>{ var v=inputPrice.value.replace(',','.'); w.data.price=parseFloat(v)||0; saveDraft(); updateProfit(v); if(priceStickerInserat) priceStickerInserat.textContent=(Number(w.data.price)||0).toFixed(2).replace('.',',')+' €'; hapticLight(); };
       inputPrice.onblur=()=>{ if(w.data.price>0) inputPrice.value=Number(w.data.price).toFixed(2).replace('.',','); dismissKeyboard(); hapticLight(); };
-      const euroSpan=document.createElement('span');
-      euroSpan.style.cssText='font-size:14px; font-weight:900; color:#1a1a1a; margin-left:6px;';
+      const euroSpan=document.createElement('sup');
+      euroSpan.className='inserat-price-euro-sup';
       euroSpan.textContent='€';
       priceDisplayWrap.appendChild(inputPrice);
       priceDisplayWrap.appendChild(euroSpan);
@@ -23502,33 +23553,10 @@
       var p0=Number(w.data.price)||0;
       const prognoseWrap=document.createElement('div');
       prognoseWrap.className='inserat-prognose-wrap inserat-earnings inserat-umsatzprognose';
-      prognoseWrap.innerHTML='<p style="margin:0; font-size:12px; font-weight:600; color:#94a3b8;"><span>Umsatzprognose (bei angenommen 30 Portionen): <span id="calc-val">'+(p0*30).toFixed(2).replace('.',',')+'</span> €</span></p>';
+      prognoseWrap.innerHTML='<p style="margin:0; font-size:12px; font-weight:600; color:#94a3b8;">Umsatzprognose: <span id="calc-val">'+(p0*30).toFixed(2).replace('.',',')+'</span> €</p>';
       stepPrice.appendChild(prognoseWrap);
       scrollArea.appendChild(stepPrice);
 
-
-      // 🌾 und ➕ öffnen Header-Morph (Allergene/Extras im Header)
-      if(w.data.pickupWindowEdit){
-        const timeDrop=document.createElement('div');
-        timeDrop.className='inserat-pickup-time-dropdown';
-        const timeRow=document.createElement('div');
-        timeRow.className='inserat-pickup-time-row inserat-section';
-        const inpStart=document.createElement('input');
-        inpStart.type='time';
-        inpStart.className='inserat-pickup-time-input';
-        inpStart.value=timeStart;
-        const inpEnd=document.createElement('input');
-        inpEnd.type='time';
-        inpEnd.className='inserat-pickup-time-input';
-        inpEnd.value=timeEnd;
-        inpStart.onchange=()=>{ w.data.pickupWindow=inpStart.value+' – '+inpEnd.value; saveDraft(); rebuildWizard(); };
-        inpEnd.onchange=()=>{ w.data.pickupWindow=inpStart.value+' – '+inpEnd.value; saveDraft(); rebuildWizard(); };
-        timeRow.appendChild(inpStart);
-        timeRow.appendChild(document.createTextNode(' – '));
-        timeRow.appendChild(inpEnd);
-        timeDrop.appendChild(timeRow);
-        scrollArea.appendChild(timeDrop);
-      }
 
       box.appendChild(scrollArea);
 
@@ -23548,19 +23576,19 @@
         pricingLabel.className='pricing-info-label';
         pricingLabel.setAttribute('role','button');
         pricingLabel.setAttribute('aria-label','Preisübersicht anzeigen');
-        pricingLabel.textContent='0,89 € pro Abholnummer oder 4,99 € Fixpreis ⓘ';
+        pricingLabel.textContent='Preisübersicht ⓘ';
         pricingLabel.onclick=function(e){ e.preventDefault(); e.stopPropagation(); hapticLight(); if(typeof openPricingFairnessOverlay==='function') openPricingFairnessOverlay(); };
         actionSection.appendChild(pricingLabel);
         const btnGratis=document.createElement('button');
         btnGratis.type='button';
         btnGratis.className='inserat-btn-primary inserat-btn-emerald';
-        btnGratis.textContent='Risikofrei inserieren';
+        btnGratis.textContent='mit Abholnummer';
         btnGratis.onclick=function(){ if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; } if(typeof haptic==='function') haptic([30, 50, 30]); w.data.hasPickupCode=true; w.data.inseratFeeWaived=true; w.data.pricingOption='abholnummer'; var o=previewOfferFromWizard(); closeWizard(true); showPublishFeeModal(o); };
         actionSection.appendChild(btnGratis);
         const btn499=document.createElement('button');
         btn499.type='button';
         btn499.className='inserat-btn-secondary inserat-btn-yellow-border';
-        btn499.textContent='Einmaliges Inserat';
+        btn499.textContent='Nur Inserat';
         btn499.onclick=function(){ if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; } if(typeof haptic==='function') haptic([30, 50, 30]); w.data.hasPickupCode=false; w.data.pricingOption=undefined; w.data.inseratFeeWaived=false; var o=previewOfferFromWizard(); closeWizard(true); showPublishFeeModal(o); };
         actionSection.appendChild(btn499);
       } else {
