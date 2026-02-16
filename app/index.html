@@ -2383,6 +2383,14 @@
       animation: magnet-pulse 1.2s ease-in-out infinite;
     }
     .inserat-unified-title-wrap .inserat-detail-style-title::placeholder { color: #94a3b8; }
+    /* Listing: Titel exakt wie Detailkarte #sDish (24px, 950) – überschreibt glass-express input:first-of-type */
+    #wizard[data-flow="listing"].sheet--kitchen .liquid-master-panel #step-name input.inserat-detail-style-title,
+    #wizard[data-flow="listing"].sheet--kitchen .glass-express-step0 #step-name input.inserat-detail-style-title {
+      font-size: 24px !important;
+      font-weight: 950 !important;
+      letter-spacing: -0.03em;
+      line-height: 1.2;
+    }
     /* Beschreibung wie Detailseite sProviderName: 16px, 700, Abstand darunter 24px */
     #wizard[data-flow="listing"] .inserat-unified-title-wrap .inserat-airbnb-desc-wrap {
       margin-top: 0; margin-bottom: 24px;
