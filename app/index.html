@@ -4833,6 +4833,13 @@
       #v-provider-week .week-meal-meta .price-pill{ padding:4px 10px; font-size:13px; }
       #v-provider-week .kw-slot{ transition:transform 0.2s ease; }
       #v-provider-week .kw-slot.kw-slot-swipe-delete{ background:rgba(239,68,68,0.08); }
+      #v-provider-week .kw-cookbook-drag-strip{ display:flex; flex-wrap:wrap; align-items:center; gap:8px; padding:12px 0 16px; margin-bottom:8px; border-bottom:1px solid rgba(0,0,0,0.06); }
+      #v-provider-week .kw-cookbook-drag-label{ font-size:13px; font-weight:700; color:#64748b; margin-right:4px; }
+      #v-provider-week .kw-cookbook-drag-pill{ padding:8px 14px; border-radius:12px; background:rgba(255,255,255,0.8); border:1px solid rgba(16,185,129,0.35); color:#0f766e; font-size:13px; font-weight:700; cursor:grab; user-select:none; transition:transform 0.15s, box-shadow 0.15s; }
+      #v-provider-week .kw-cookbook-drag-pill:active{ cursor:grabbing; }
+      #v-provider-week .kw-cookbook-drag-pill:hover{ box-shadow:0 2px 12px rgba(16,185,129,0.2); transform:scale(1.02); }
+      #v-provider-week .kw-slot.kw-slot-drop-over,
+      #v-provider-week .kw-slot-empty.kw-slot-drop-over{ box-shadow:0 0 0 2px #10b981, 0 0 20px rgba(16,185,129,0.35); border-color:#10b981; background:rgba(16,185,129,0.06); }
       /* Verschieben-Sheet (Long-Press) */
       .kw-move-overlay{ position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:1100; display:flex; align-items:flex-end; justify-content:center; padding:0 20px  calc(80px + env(safe-area-inset-bottom)); animation:fadeIn 0.2s ease; }
       .kw-move-sheet{ background:#fff; border-radius:24px 24px 0 0; padding:24px 20px calc(20px + env(safe-area-inset-bottom)); width:100%; max-width:400px; max-height:70vh; overflow:auto; box-shadow:0 -8px 32px rgba(0,0,0,0.12); }
@@ -7085,6 +7092,23 @@
           <button type="button" class="btn secondary" style="width:100%; min-height:48px; margin-top:12px; border-radius:14px; font-size:14px; font-weight:700; border:1px solid #FFDE00; color:#1a1a1a; background:transparent;" id="btnWeekAddMulti">Gericht auf mehrere Tage setzen</button>
           <button type="button" class="btn secondary" style="width:100%; min-height:48px; margin-top:16px; border-radius:14px;" onclick="closeWeekAddSheet()">Schließen</button>
         </div>
+      </div>
+    </div>
+
+    <!-- Wochenplan: Zeit-Overlay (Abholzeit setzen – Karte „scharf“) -->
+    <div class="backdrop" id="weekTimeOverlayBd" style="display:none; background:rgba(0,0,0,0.5); z-index:1101;" onclick="closeWeekTimeOverlay()"></div>
+    <div class="sheet sheet--kitchen" id="weekTimeOverlay" style="max-width:400px; border-radius:20px 20px 0 0; overflow:hidden; z-index:1102;">
+      <div class="handle"></div>
+      <div class="sheet-body" style="padding:20px 20px calc(24px + env(safe-area-inset-bottom));">
+        <h3 style="margin:0 0 8px; font-size:18px; font-weight:800; color:#1a1a1a;">Abholzeit setzen</h3>
+        <p style="margin:0 0 20px; font-size:14px; color:#6B7280;">Erst mit Zeitfenster ist die Karte für den Tag freigegeben.</p>
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
+          <div style="flex:1;"><label style="display:block; font-size:11px; font-weight:700; color:#9ca3af; margin-bottom:6px; text-transform:uppercase;">Start</label><select id="weekTimeOverlayStart" style="width:100%; height:48px; padding:0 12px; border:2px solid #E5E7EB; border-radius:12px; font-size:15px; font-weight:700; background:#fff; color:#1a1a1a; cursor:pointer;"></select></div>
+          <span style="color:#9ca3af; font-weight:800;">–</span>
+          <div style="flex:1;"><label style="display:block; font-size:11px; font-weight:700; color:#9ca3af; margin-bottom:6px; text-transform:uppercase;">Ende</label><select id="weekTimeOverlayEnd" style="width:100%; height:48px; padding:0 12px; border:2px solid #E5E7EB; border-radius:12px; font-size:15px; font-weight:700; background:#fff; color:#1a1a1a; cursor:pointer;"></select></div>
+        </div>
+        <button type="button" id="weekTimeOverlaySave" style="width:100%; min-height:52px; border-radius:16px; font-size:16px; font-weight:800; border:none; background:#22C55E; color:#fff; cursor:pointer;">Speichern</button>
+        <button type="button" class="btn secondary" style="width:100%; min-height:48px; margin-top:12px; border-radius:14px;" onclick="closeWeekTimeOverlay()">Abbrechen</button>
       </div>
     </div>
 
@@ -20128,6 +20152,28 @@
     var defaultDineIn = p.dineInPossibleDefault !== false;
     var defaultPickup = !!p.abholnummerEnabledByDefault;
     var defaultReuse = !!p.reuseEnabledByDefault;
+    var scrollEl = document.getElementById('kwBoardScroll');
+    var strip = document.getElementById('kwCookbookStrip');
+    if (scrollEl && !strip) {
+      strip = document.createElement('div');
+      strip.id = 'kwCookbookStrip';
+      strip.className = 'kw-cookbook-drag-strip';
+      strip.setAttribute('role', 'list');
+      scrollEl.insertBefore(strip, grid);
+    }
+    if (strip) {
+      var mine = (cookbook || []).filter(function(c){ return c.providerId === providerId(); });
+      strip.innerHTML = '<span class="kw-cookbook-drag-label">Aus Kochbuch ziehen:</span>' + (mine.slice(0, 8).map(function(c){
+        return '<div class="kw-cookbook-drag-pill" draggable="true" data-cookbook-id="' + esc(String(c.id)) + '" role="button">' + esc((c.dish || 'Gericht').substring(0, 12)) + (c.dish && c.dish.length > 12 ? '…' : '') + '</div>';
+      }).join(''));
+      strip.querySelectorAll('.kw-cookbook-drag-pill').forEach(function(pill){
+        pill.ondragstart = function(e){
+          e.dataTransfer.setData('text/plain', pill.getAttribute('data-cookbook-id'));
+          e.dataTransfer.effectAllowed = 'copy';
+          if(typeof haptic === 'function') haptic(6);
+        };
+      });
+    }
     grid.innerHTML = '';
     keys.forEach(function(key, dayIdx){
       var d = new Date(key + 'T12:00:00');
@@ -20195,6 +20241,22 @@
       grid.appendChild(card);
     });
     attachKWBoardSlotGestures(grid);
+    grid.querySelectorAll('.kw-slot, .kw-slot-empty').forEach(function(slotEl){
+      var dayKey = slotEl.getAttribute('data-day');
+      if(!dayKey) return;
+      slotEl.ondragover = function(e){ e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; slotEl.classList.add('kw-slot-drop-over'); };
+      slotEl.ondragleave = function(){ slotEl.classList.remove('kw-slot-drop-over'); };
+      slotEl.ondrop = function(e){
+        e.preventDefault();
+        slotEl.classList.remove('kw-slot-drop-over');
+        var cookbookId = e.dataTransfer.getData('text/plain');
+        if(!cookbookId || typeof addCookbookEntryToWeek !== 'function') return;
+        addCookbookEntryToWeek(dayKey, cookbookId);
+        if(typeof haptic === 'function') haptic(6);
+        renderWeekPlanBoard();
+        if(typeof showToast === 'function') showToast('Gericht eingetragen');
+      };
+    });
     var btnKwPdf = document.getElementById('btnKwPdf');
     var btnKwShare = document.getElementById('btnKwShare');
     if (btnKwPdf) btnKwPdf.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(typeof printWeekCard === 'function') printWeekCard(); };
@@ -20402,7 +20464,7 @@
     if(dayIsLive){
       statusBlock.innerHTML = '<div><div class="week-status-online"><span class="week-status-dot" style="background:#FFDE00;"></span><span>ONLINE</span></div>' + profileStdHtml + '</div><button type="button" class="btn secondary" style="min-height:40px; padding:0 14px; font-size:14px; font-weight:700; border-radius:12px;" onclick="shareWeekPlan()">Teilen</button>';
     } else {
-      statusBlock.innerHTML = '<div><div class="week-status-draft"><span class="week-status-dot" style="background:#94a3b8;"></span><span>ENTWURF</span></div>' + profileStdHtml + '</div><div style="text-align:right;"><button type="button" class="week-activate-inline" onclick="activateWeekDay(\'' + weekPlanDay + '\')">Live (4,99 €)</button><div class="week-status-activate-hint">Einmal pro Tag – alle Gerichte gehen online.</div></div>';
+      statusBlock.innerHTML = '<div><div class="week-status-draft"><span class="week-status-dot" style="background:#94a3b8;"></span><span>ENTWURF</span></div>' + profileStdHtml + '</div><div style="text-align:right;"><button type="button" class="week-activate-inline" onclick="activateWeekDay(\'' + weekPlanDay + '\')">Plan aktivieren</button><div class="week-status-activate-hint">Speichert alle Änderungen. Einmal 4,99 € pro Tag – alle Gerichte gehen online.</div></div>';
     }
     list.appendChild(statusBlock);
 
@@ -20472,11 +20534,12 @@
       if(showMehrweg) badgeParts.push('<span title="Mehrweg (Abweichung)">🔄</span>');
       var badgesHtml = badgeParts.length ? '<div class="week-meal-badges" style="display:flex; gap:8px; margin-top:6px; font-size:14px;">' + badgeParts.join('') + '</div>' : '';
       var verdienstHtml = !dayIsLive ? '<div class="week-meal-verdienst" style="font-size:12px; color:#1a1a1a; margin-top:4px;">Verdienst ca. ' + euro(Math.max(0, (Number(price)||0) - 4.99)) + '</div>' : '';
+      var moveBtnHtml = !dayIsLive ? '<div style="margin-top:8px; display:flex; align-items:center; gap:12px; flex-wrap:wrap;"><button type="button" class="week-meal-move-btn" data-day="' + esc(weekPlanDay) + '" data-index="' + weekIndex + '" style="padding:0; background:none; border:none; font-size:12px; font-weight:700; color:#64748b; cursor:pointer; text-decoration:underline;">Verschieben</button><button type="button" class="week-meal-direct-btn" data-day="' + esc(weekPlanDay) + '" data-index="' + weekIndex + '" style="padding:6px 12px; border-radius:10px; font-size:12px; font-weight:800; background:#22C55E; color:#fff; border:none; cursor:pointer;">Direkt Inserieren</button></div>' : '';
       var thumbHtml = '<div class="week-meal-thumb" style="width:56px;min-width:56px;height:56px;border-radius:12px;overflow:hidden;background:#e5e7eb;flex-shrink:0;background-size:cover;background-position:center' + (img ? ';background-image:url(\'' + esc(img) + '\')' : '') + '"></div>';
-      card.innerHTML = thumbHtml + '<div style="flex:1;min-width:0;"><div class="week-meal-name">' + esc(name) + '</div><div class="week-meal-meta"><span class="price-pill">' + euro(price) + '</span> ' + onlineHtml + '</div>' + powerBarHtml + badgesHtml + verdienstHtml + '</div>';
+      card.innerHTML = thumbHtml + '<div style="flex:1;min-width:0;"><div class="week-meal-name">' + esc(name) + '</div><div class="week-meal-meta"><span class="price-pill">' + euro(price) + '</span> ' + onlineHtml + '</div>' + powerBarHtml + badgesHtml + verdienstHtml + moveBtnHtml + '</div>';
       card.style.cursor = 'pointer';
       if(!dayIsLive){
-        card.onclick = function(e){ e.preventDefault(); e.stopPropagation(); if(weekJustSwiped) return; if(typeof openWeekAddSheet === 'function') openWeekAddSheet(weekPlanDay, weekIndex); };
+        card.onclick = function(e){ e.preventDefault(); e.stopPropagation(); if(weekJustSwiped) return; if(e.target.closest && (e.target.closest('.week-meal-move-btn') || e.target.closest('.week-meal-direct-btn'))) return; if(hasTime){ if(typeof openWeekAddSheet === 'function') openWeekAddSheet(weekPlanDay, weekIndex); } else { if(typeof openWeekTimeOverlay === 'function') openWeekTimeOverlay(weekPlanDay, weekIndex); } };
         var swipeDel = document.createElement('div');
         swipeDel.className = 'week-swipe-actions right';
         swipeDel.innerHTML = '<i data-lucide="trash-2" style="width:22px;height:22px;"></i><span>Löschen</span>';
@@ -20488,6 +20551,12 @@
         swipeInner.appendChild(swipeCopy);
         swipeInner.appendChild(swipeDel);
         swipeInner.appendChild(card);
+        card.querySelectorAll('.week-meal-move-btn').forEach(function(btn){
+          btn.onclick = function(ev){ ev.preventDefault(); ev.stopPropagation(); if(typeof haptic === 'function') haptic(6); var d = btn.getAttribute('data-day'); var i = parseInt(btn.getAttribute('data-index'), 10); if(typeof openMoveWeekEntrySheet === 'function') openMoveWeekEntrySheet(d, i); };
+        });
+        card.querySelectorAll('.week-meal-direct-btn').forEach(function(btn){
+          btn.onclick = function(ev){ ev.preventDefault(); ev.stopPropagation(); if(typeof haptic === 'function') haptic(6); var d = btn.getAttribute('data-day'); var i = parseInt(btn.getAttribute('data-index'), 10); if(typeof publishSingleWeekEntry === 'function') publishSingleWeekEntry(d, i); };
+        });
         attachSwipeToWeekCard(swipeInner, weekPlanDay, weekIndex);
         attachLongPressToWeekCard(wrap);
       } else {
@@ -20872,6 +20941,62 @@
     if(sheet) sheet.classList.remove('active');
   }
 
+  var weekTimeOverlayDay = null;
+  var weekTimeOverlayIndex = null;
+  function openWeekTimeOverlay(dayKey, entryIndex){
+    var bd = document.getElementById('weekTimeOverlayBd');
+    var sheet = document.getElementById('weekTimeOverlay');
+    var startEl = document.getElementById('weekTimeOverlayStart');
+    var endEl = document.getElementById('weekTimeOverlayEnd');
+    if(!bd || !sheet || !startEl || !endEl) return;
+    weekTimeOverlayDay = dayKey;
+    weekTimeOverlayIndex = entryIndex;
+    var arr = week[dayKey] || [];
+    var entry = arr[entryIndex];
+    var p = (provider && provider.profile) ? provider.profile : {};
+    var defStart = (entry && entry.timeStart) || p.mealStart || '11:30';
+    var defEnd = (entry && entry.timeEnd) || p.mealEnd || '14:00';
+    if(startEl.options.length === 0){
+      var opts = '';
+      for(var h = 8; h <= 20; h++){ for(var m = 0; m < 60; m += 15){ var t = (h < 10 ? '0' + h : h) + ':' + (m === 0 ? '00' : m); opts += '<option value="' + t + '">' + t + ' Uhr</option>'; } }
+      startEl.innerHTML = opts;
+      endEl.innerHTML = opts;
+    }
+    startEl.value = defStart;
+    endEl.value = defEnd;
+    if(typeof haptic === 'function') haptic(6);
+    bd.style.display = 'block';
+    sheet.style.display = '';
+    sheet.classList.add('active');
+  }
+  function closeWeekTimeOverlay(){
+    var bd = document.getElementById('weekTimeOverlayBd');
+    var sheet = document.getElementById('weekTimeOverlay');
+    if(bd) bd.style.display = 'none';
+    if(sheet) sheet.classList.remove('active');
+    weekTimeOverlayDay = null;
+    weekTimeOverlayIndex = null;
+  }
+  (function(){
+    var saveBtn = document.getElementById('weekTimeOverlaySave');
+    var bd = document.getElementById('weekTimeOverlayBd');
+    if(!saveBtn) return;
+    saveBtn.onclick = function(){
+      if(weekTimeOverlayDay == null || weekTimeOverlayIndex == null) return;
+      var startEl = document.getElementById('weekTimeOverlayStart');
+      var endEl = document.getElementById('weekTimeOverlayEnd');
+      var start = (startEl && startEl.value) ? startEl.value : '11:30';
+      var end = (endEl && endEl.value) ? endEl.value : '14:00';
+      var arr = week[weekTimeOverlayDay];
+      if(arr && arr[weekTimeOverlayIndex]){ arr[weekTimeOverlayIndex].timeStart = start; arr[weekTimeOverlayIndex].timeEnd = end; save(LS.week, week); }
+      if(typeof haptic === 'function') haptic(6);
+      if(typeof showToast === 'function') showToast('Zeitfenster gespeichert');
+      closeWeekTimeOverlay();
+      if(typeof renderWeekPlan === 'function') renderWeekPlan();
+    };
+    if(bd) bd.onclick = closeWeekTimeOverlay;
+  })();
+
   function copyWeekEntryToNextDay(fromDate, entryIndex){
     var dayArr = week[fromDate] || [];
     var entry = dayArr[entryIndex];
@@ -20880,12 +21005,14 @@
     d.setDate(d.getDate() + 1);
     var nextKey = isoDate(d);
     if(!week[nextKey]) week[nextKey] = [];
-    week[nextKey].push({ providerId: entry.providerId, cookbookId: entry.cookbookId, dish: entry.dish, price: entry.price });
+    var newEntry = { providerId: entry.providerId, cookbookId: entry.cookbookId, dish: entry.dish, price: entry.price };
+    if(entry.timeStart != null || entry.timeEnd != null){ newEntry.timeStart = entry.timeStart; newEntry.timeEnd = entry.timeEnd; }
+    week[nextKey].push(newEntry);
     save(LS.week, week);
     renderWeekPlan();
-    renderProviderWeekPreview();
+    if(typeof renderProviderWeekPreview === 'function') renderProviderWeekPreview();
     var nextLabel = weekDayShortLabel(d, 1);
-    if(typeof toast === 'function') toast('Auf ' + nextLabel + ' kopiert');
+    if(typeof showToast === 'function') showToast('Auf ' + nextLabel + ' kopiert'); else if(typeof toast === 'function') toast('Auf ' + nextLabel + ' kopiert');
   }
   function copyWeekEntryToOtherDay(fromDate, entryIndex){
     var dayArr = week[fromDate] || [];
@@ -20916,16 +21043,50 @@
       btn.textContent = label;
       btn.onclick = function(){
         if(!week[key]) week[key] = [];
-        week[key].push({ providerId: entry.providerId, cookbookId: entry.cookbookId, dish: entry.dish, price: entry.price });
+        var newEntry = { providerId: entry.providerId, cookbookId: entry.cookbookId, dish: entry.dish, price: entry.price };
+        if(entry.timeStart != null || entry.timeEnd != null){ newEntry.timeStart = entry.timeStart; newEntry.timeEnd = entry.timeEnd; }
+        week[key].push(newEntry);
         save(LS.week, week);
         sheet.style.display = 'none';
         renderWeekPlan();
-        renderProviderWeekPreview();
-        toast('Gericht für ' + label + ' übernommen');
+        if(typeof renderProviderWeekPreview === 'function') renderProviderWeekPreview();
+        if(typeof showToast === 'function') showToast('Gericht für ' + label + ' übernommen'); else if(typeof toast === 'function') toast('Gericht für ' + label + ' übernommen');
       };
       list.appendChild(btn);
     });
     sheet.style.display = 'block';
+  }
+
+  function openMoveWeekEntrySheet(dayKey, entryIndex){
+    if(!week[dayKey] || !week[dayKey][entryIndex]) return;
+    var entry = week[dayKey][entryIndex];
+    if(!entry || entry.providerId !== providerId()) return;
+    var keys = [];
+    for(var i = 0; i < 28; i++){ var d = new Date(); d.setDate(d.getDate() + i); keys.push(isoDate(d)); }
+    var otherDays = keys.filter(function(k){ return k !== dayKey; });
+    var overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:9998; display:flex; flex-direction:column; justify-content:flex-end; padding:20px; box-sizing:border-box;';
+    overlay.innerHTML = '<div style="background:#fff; border-radius:20px 20px 0 0; padding:20px; max-height:70vh; overflow-y:auto;"><div style="font-weight:800; font-size:16px; margin-bottom:16px;">Auf welchen Tag verschieben?</div><div id="moveDayList"></div><button type="button" class="kw-move-cancel" style="width:100%; min-height:48px; margin-top:16px; border-radius:14px; font-weight:700; background:#f1f3f5; border:none; cursor:pointer;">Abbrechen</button></div>';
+    var list = overlay.querySelector('#moveDayList');
+    otherDays.slice(0, 14).forEach(function(key){
+      var d = new Date(key + 'T12:00:00');
+      var label = ['So','Mo','Di','Mi','Do','Fr','Sa'][d.getDay()] + ', ' + d.getDate() + '.';
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'btn secondary';
+      btn.style.cssText = 'width:100%; min-height:48px; margin-bottom:8px; border-radius:12px; font-size:15px; font-weight:700;';
+      btn.textContent = label;
+      btn.onclick = function(){
+        if(typeof haptic === 'function') haptic(6);
+        moveWeekEntryToDay(dayKey, entryIndex, key);
+        overlay.remove();
+        if(typeof showToast === 'function') showToast('Verschoben'); else if(typeof toast === 'function') toast('Verschoben');
+      };
+      list.appendChild(btn);
+    });
+    overlay.onclick = function(e){ if(e.target === overlay) overlay.remove(); };
+    overlay.querySelector('.kw-move-cancel').onclick = function(){ if(typeof haptic === 'function') haptic(6); overlay.remove(); };
+    document.body.appendChild(overlay);
   }
 
   function deletePlannedEntry(date, index){
@@ -20987,6 +21148,52 @@
     save(LS.week, week);
     renderWeekPlan();
     renderProviderWeekPreview();
+  }
+
+  function publishSingleWeekEntry(dayKey, entryIndex){
+    var arr = week[dayKey] || [];
+    var entry = arr[entryIndex];
+    if(!entry || entry.providerId !== providerId()) return;
+    var profile = normalizeProviderProfile(provider.profile || {});
+    var hasDefault = profile.abholnummerEnabledByDefault !== undefined && profile.abholnummerEnabledByDefault !== null;
+    if(!hasDefault){
+      if(typeof startWizard === 'function') startWizard('listing', { fromCookbookId: entry.cookbookId, date: dayKey, skipToAbholnummer: true });
+      return;
+    }
+    var cb = cookbook.find(function(c){ return String(c.id) === String(entry.cookbookId); }) || {};
+    var o = normalizeOffer({
+      id: cryptoId(),
+      providerId: providerId(),
+      providerName: profile.name || provider.email || 'Anbieter',
+      providerStreet: profile.street || '',
+      providerZip: profile.zip || '',
+      providerCity: profile.city || '',
+      providerLogoData: profile.logoData || '',
+      dish: cb.dish || entry.dish || '',
+      category: cb.category || 'Vegetarisch',
+      price: Number(cb.price != null ? cb.price : entry.price || 0),
+      pickupWindow: profile.mealWindow || (profile.mealStart && profile.mealEnd ? profile.mealStart + ' – ' + profile.mealEnd : '11:30 – 14:00'),
+      hasPickupCode: !!profile.abholnummerEnabledByDefault,
+      dineInPossible: cb.dineInPossible !== false,
+      allergens: cb.allergens || [],
+      extras: cb.extras || [],
+      reuse: cb.reuse || { enabled: !!profile.reuseEnabledByDefault, deposit: profile.reuseEnabledByDefault ? 2 : 0 },
+      imageUrl: cb.photoData || '',
+      day: dayKey,
+      active: true
+    });
+    if(typeof showPublishFeeModal === 'function'){
+      showPublishFeeModal(o, function(){
+        if(typeof publishWeekEntry === 'function') publishWeekEntry(dayKey, entry);
+        if(typeof renderWeekPlan === 'function') renderWeekPlan();
+        if(typeof renderProviderHome === 'function') renderProviderHome();
+        if(typeof showToast === 'function') showToast('Direkt live geschaltet');
+      });
+    } else {
+      if(typeof publishWeekEntry === 'function') publishWeekEntry(dayKey, entry);
+      if(typeof renderWeekPlan === 'function') renderWeekPlan();
+      if(typeof showToast === 'function') showToast('Direkt live geschaltet');
+    }
   }
 
   function activateWeekDay(date){
