@@ -4349,8 +4349,9 @@
     #v-provider-home #providerActiveListingsSection{ margin-bottom:0; }
     #v-provider-home #providerActiveListingsSection .provider-week-title{ margin-bottom:12px; }
     #v-provider-home #providerActiveListings{ display:flex; flex-wrap:wrap; gap:16px; max-width:100%; min-width:0; box-sizing:border-box; }
-    #v-provider-home #providerActiveListings .prov-card{ flex:1 1 min(100%, 280px); }
-    #v-provider-home .prov-card img{ max-width:100%; height:auto; object-fit:cover; display:block; }
+    #v-provider-home #providerActiveListings .prov-card{ flex:1 1 min(100%, 280px); position:relative; z-index:1; cursor:pointer; pointer-events:auto; }
+    #v-provider-home .prov-card img{ max-width:100%; height:auto; object-fit:cover; display:block; pointer-events:none; }
+    #v-provider-home .prov-card .price-pill{ pointer-events:none; }
     #v-provider-home .prov-card > div{ max-width:100%; box-sizing:border-box; }
     /* Drei Säulen (🍴🧾🔄) direkt unter dem Bild – clean, keine Schiefertafel */
     #v-provider-home .prov-card .card-pillars{ display:flex; gap:12px; margin:0 0 12px; flex-shrink:0; }
@@ -14989,8 +14990,15 @@
 
   function openProviderOffer(id){
     var idStr = String(id);
-    const raw = offers.find(x=>String(x.id)===idStr);
-    if(!raw) return;
+    var raw = offers.find(x=>String(x.id)===idStr);
+    if(!raw){
+      var fresh = load(LS.offers, []);
+      raw = fresh.find(x=>String(x.id)===idStr);
+      if(!raw){
+        if(typeof showToast === 'function') showToast('Gericht konnte nicht geladen werden.');
+        return;
+      }
+    }
     const o = normalizeOffer(raw);
     activeProviderOfferId = raw.id;
     const profile = normalizeProviderProfile(provider.profile || {});
@@ -19038,14 +19046,15 @@
               </div>
             </div>
           `;
-          card.onclick = function(ev){
-            ev.preventDefault();
-            ev.stopPropagation();
-            try { if(typeof hapticLight === 'function') hapticLight(); else if(navigator.vibrate) navigator.vibrate(10); } catch(e){}
-            var offerId = this.getAttribute('data-offer-id');
-            var fn = typeof window !== 'undefined' && window.openProviderOffer;
-            if(offerId && fn) fn(offerId);
-          };
+          (function(offerId){
+            card.onclick = function(ev){
+              ev.preventDefault();
+              ev.stopPropagation();
+              try { if(typeof hapticLight === 'function') hapticLight(); else if(navigator.vibrate) navigator.vibrate(10); } catch(e){}
+              var fn = typeof window !== 'undefined' && window.openProviderOffer;
+              if(offerId && fn) fn(offerId);
+            };
+          })(String(o.id));
           providerActiveListings.appendChild(card);
         });
         if(!providerActiveListings._offerClickDelegation){
