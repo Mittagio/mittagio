@@ -4759,6 +4759,8 @@
       /* Wochenplan 2.2: Dashboard-Pills minimalistisch – ohne Status-Punkt, Fokus auf Karten */
       #v-provider-home #providerWeekDays .week-preview-pill::after{ display:none !important; }
       #v-provider-home #providerWeekDays .week-preview-pill{ width:52px; min-width:52px; height:52px; min-height:52px; }
+      /* Wochenplan im Dashboard auf dem Handy: Pills können umbrechen (flex-wrap), horizontaler Scroll bleibt möglich */
+      #v-provider-home #providerWeekDays{ flex-wrap: wrap; gap: 8px; }
       .prov-stat-hint{ display:block; font-size:11px; font-weight:600; color:#94a3b8; margin-top:2px; line-height:1.2; }
       #v-provider-home .prov-stat-item:focus-visible,
       #v-provider-home button:focus-visible{ outline:2px solid var(--prov-brand,#0ea5e9); outline-offset:2px; }
