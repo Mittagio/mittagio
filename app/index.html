@@ -4468,6 +4468,30 @@
     #v-provider-profile .provider-focus-card-abrechnung{ padding:20px; display:flex; align-items:center; gap:16px; cursor:pointer; transition:background 0.2s; }
     #v-provider-profile .provider-focus-card-abrechnung:active{ background:#f3f4f6; }
     #v-provider-profile .provider-focus-card-icon{ font-size:28px; }
+    /* Support & Hilfe: Erste-Hilfe-Karten + Accordion + Mike [Self-Service] */
+    .provider-support-page .provider-support-section-title{ margin:0 0 12px; font-size:15px; font-weight:800; color:#6B7280; text-transform:uppercase; letter-spacing:0.04em; }
+    .provider-support-error-cards{ display:flex; flex-direction:column; gap:12px; margin-bottom:20px; }
+    .provider-support-error-card{ display:flex; align-items:center; gap:14px; padding:16px 20px; background:#fff; border-radius:16px; border:1px solid #E5E7EB; box-shadow:0 1px 3px rgba(0,0,0,0.04); cursor:pointer; text-align:left; font-family:inherit; transition:transform 0.15s, box-shadow 0.15s; }
+    .provider-support-error-card:active{ transform:scale(0.98); }
+    .provider-support-error-icon{ font-size:24px; }
+    .provider-support-error-label{ font-size:15px; font-weight:800; color:#1a1a1a; }
+    .provider-support-solution-box{ padding:16px 20px; margin-bottom:20px; background:#F0FDF4; border-radius:16px; border:1px solid #BBF7D0; }
+    .provider-support-solution-text{ margin:0 0 12px; font-size:14px; line-height:1.6; color:#166534; font-weight:600; }
+    .provider-support-mail-btn{ width:100%; min-height:44px; padding:0 16px; font-size:14px; font-weight:800; color:#15803d; background:#fff; border:1px solid #22C55E; border-radius:12px; cursor:pointer; }
+    .provider-support-accordion{ display:flex; flex-direction:column; gap:0; background:#fff; border-radius:16px; overflow:hidden; border:1px solid #E5E7EB; box-shadow:0 1px 3px rgba(0,0,0,0.04); margin-bottom:24px; }
+    .provider-support-accordion-item{ border-bottom:1px solid #F3F4F6; }
+    .provider-support-accordion-item:last-child{ border-bottom:none; }
+    .provider-support-accordion-trigger{ width:100%; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:16px 20px; background:transparent; border:none; font-size:15px; font-weight:700; color:#1a1a1a; cursor:pointer; text-align:left; font-family:inherit; }
+    .provider-support-accordion-trigger:active{ background:#F9FAFB; }
+    .provider-support-accordion .accordion-content{ max-height:0; overflow:hidden; transition:max-height 0.3s ease-out, padding 0.3s ease; background-color:#F9FAFB; }
+    .provider-support-accordion .accordion-content.open{ max-height:500px; padding:16px 20px; border-top:1px solid #E5E7EB; }
+    .provider-support-accordion .accordion-content p{ margin:0; font-size:14px; line-height:1.6; color:#6B7280; }
+    .provider-support-accordion .chevron-icon{ flex-shrink:0; color:#9ca3af; transition:transform 0.3s ease; }
+    .provider-support-accordion .chevron-icon.rotated{ transform:rotate(180deg); }
+    .provider-support-contact-block{ margin-top:8px; }
+    .provider-support-mike-btn{ width:100%; min-height:56px; border-radius:16px; font-size:16px; font-weight:800; border:none; cursor:pointer; background:#22C55E; color:#fff; display:flex; align-items:center; justify-content:center; gap:8px; transition:transform 0.12s; }
+    .provider-support-mike-btn:active{ transform:scale(0.98); }
+    .provider-support-mike-hint{ margin:12px 0 0; font-size:13px; color:#6B7280; line-height:1.5; text-align:center; }
     /* Legacy hero (Sub-Views) */
     #v-provider-profile .provider-profile-hero{ display:flex; overflow-x:auto; overflow-y:hidden; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; gap:16px; padding:16px 20px 24px; padding-left:calc(20px + env(safe-area-inset-left, 0)); padding-right:calc(20px + env(safe-area-inset-right, 0)); scrollbar-width:none; }
     #v-provider-profile .provider-profile-hero::-webkit-scrollbar{ display:none; }
@@ -7283,57 +7307,74 @@
         </div>
       </div>
 
-      <!-- Sub-Seite: FAQ & Support -->
-      <div id="providerProfileSubFaq" class="provider-profile-sub" style="display:none; flex-direction:column;">
-        <header style="background:#fff; padding:24px 20px 20px; border-bottom:1px solid rgba(0,0,0,0.05); position:sticky; top:0; z-index:50; display:flex; align-items:center; gap:16px;">
-          <button type="button" id="providerProfileBackFaq" aria-label="Zurück" style="width:40px; height:40px; border-radius:12px; background:#f8f9fa; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center;">
-            <i data-lucide="chevron-left" style="width:24px; height:24px; color:#1a1a1a;"></i>
+      <!-- Sub-Seite: Support & Hilfe (Self-Service: Erste Hilfe + Was ist was + Mike kontaktieren) -->
+      <div id="providerProfileSubFaq" class="provider-profile-sub provider-support-page" style="display:none; flex-direction:column; min-height:0; background:#F9FAFB;">
+        <header style="background:#fff; padding:12px 20px; padding-top:calc(12px + env(safe-area-inset-top, 0)); border-bottom:1px solid #E5E7EB; position:sticky; top:0; z-index:50; display:flex; align-items:center; gap:14px;">
+          <button type="button" id="providerProfileBackFaq" aria-label="Zurück" style="width:44px; height:44px; border-radius:14px; background:transparent; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+            <i data-lucide="chevron-left" style="width:22px; height:22px; color:#1a1a1a;"></i>
           </button>
-          <h1 style="margin:0; font-size:20px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a;">FAQ & Support</h1>
+          <h1 style="margin:0; font-size:18px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a;">Support &amp; Hilfe</h1>
         </header>
-        <div style="padding:24px 20px; flex:1;">
-          <div style="background:#fff; border-radius:24px; padding:24px; border:1px solid rgba(0,0,0,0.04); box-shadow:0 4px 12px rgba(0,0,0,0.02); margin-bottom:20px;">
-            <h3 style="margin:0 0 16px; font-size:17px; font-weight:800; color:#1a1a1a;">Häufige Themen</h3>
-            <div id="providerSupportTiles" style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:24px;">
-              <button type="button" class="provider-support-tile" data-topic="inserieren" data-subject="Probleme beim Inserieren" style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; padding:16px; background:#f8f9fa; border-radius:20px; border:2px solid #f1f3f5; font-size:13px; font-weight:800; color:#1a1a1a; cursor:pointer; text-align:center;">
-                <span style="font-size:24px;">✍️</span> Inserieren
-              </button>
-              <button type="button" class="provider-support-tile" data-topic="zahlung" data-subject="Zahlung & Abrechnung" style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; padding:16px; background:#f8f9fa; border-radius:20px; border:2px solid #f1f3f5; font-size:13px; font-weight:800; color:#1a1a1a; cursor:pointer; text-align:center;">
-                <span style="font-size:24px;">💳</span> Zahlung
-              </button>
-              <button type="button" class="provider-support-tile" data-topic="abholnummer" data-subject="Abholnummer & Icons" style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; padding:16px; background:#f8f9fa; border-radius:20px; border:2px solid #f1f3f5; font-size:13px; font-weight:800; color:#1a1a1a; cursor:pointer; text-align:center;">
-                <span style="font-size:24px;">🧾</span> Abholnummer
-              </button>
-              <button type="button" class="provider-support-tile" data-topic="profil" data-subject="Mein Profil / Standort" style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; padding:16px; background:#f8f9fa; border-radius:20px; border:2px solid #f1f3f5; font-size:13px; font-weight:800; color:#1a1a1a; cursor:pointer; text-align:center;">
-                <span style="font-size:24px;">📍</span> Profil
-              </button>
-            </div>
-            
-            <div id="providerSupportSolution" style="display:none; padding:20px; background:rgba(0,122,255,0.05); border-radius:20px; border:1px solid rgba(0,122,255,0.1); margin-bottom:20px;">
-              <p id="providerSupportSolutionText" style="margin:0 0 16px; font-size:15px; line-height:1.6; color:#1a1a1a; font-weight:600;"></p>
-              <button type="button" id="providerSupportContactBtn" style="width:100%; height:44px; font-size:14px; font-weight:800; color:var(--prov-brand); background:#fff; border:none; border-radius:12px; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.05);">Nicht gelöst? Nachricht an uns</button>
-            </div>
+        <div class="provider-support-scroll" style="flex:1; overflow-y:auto; padding:20px; padding-bottom:calc(24px + env(safe-area-inset-bottom));">
+          <!-- Bereich 1: Erste Hilfe (klickbare Fehlerquellen) -->
+          <h2 class="provider-support-section-title">Erste Hilfe</h2>
+          <div class="provider-support-error-cards">
+            <button type="button" class="provider-support-error-card" data-issue="standort" data-subject="Standort">
+              <span class="provider-support-error-icon">📍</span>
+              <span class="provider-support-error-label">Fehler: Standort</span>
+            </button>
+            <button type="button" class="provider-support-error-card" data-issue="zahlung" data-subject="Zahlung">
+              <span class="provider-support-error-icon">💳</span>
+              <span class="provider-support-error-label">Fehler: Zahlung</span>
+            </button>
+            <button type="button" class="provider-support-error-card" data-issue="abholnummer" data-subject="Abholnummer">
+              <span class="provider-support-error-icon">🧾</span>
+              <span class="provider-support-error-label">Fehler: Abholnummer</span>
+            </button>
+            <button type="button" class="provider-support-error-card" data-issue="sichtbarkeit" data-subject="Sichtbarkeit">
+              <span class="provider-support-error-icon">👁️</span>
+              <span class="provider-support-error-label">Fehler: Sichtbarkeit</span>
+            </button>
+          </div>
+          <div id="providerSupportSolution" class="provider-support-solution-box" style="display:none;">
+            <p id="providerSupportSolutionText" class="provider-support-solution-text"></p>
+            <button type="button" id="providerSupportAbholungenBtn" class="provider-support-mail-btn" style="display:none; margin-bottom:8px;">Abholungen anzeigen</button>
+            <button type="button" id="providerSupportMailBtn" class="provider-support-mail-btn">Per E-Mail an Mike melden</button>
+          </div>
 
-            <div id="providerSupportFormWrap" style="display:none; margin-bottom:20px;">
-              <label style="display:block; font-size:12px; font-weight:800; color:#64748b; margin-bottom:6px; text-transform:uppercase;">Nachricht</label>
-              <textarea id="providerSupportMessage" rows="4" placeholder="Beschreibe uns kurz dein Anliegen..." style="width:100%; padding:16px; border:2px solid #f1f3f5; border-radius:16px; font-size:16px; background:#f8f9fa; font-weight:600; resize:none; box-sizing:border-box;"></textarea>
-              <button type="button" id="providerSupportSendBtn" style="width:100%; margin-top:16px; height:56px; font-size:16px; font-weight:800; color:#fff; background:var(--prov-brand); border:none; border-radius:18px; cursor:pointer;">E-Mail senden</button>
+          <!-- Bereich 2: Was ist was (FAQ Accordion) -->
+          <h2 class="provider-support-section-title">Was ist was?</h2>
+          <div class="provider-support-accordion">
+            <div class="provider-support-accordion-item">
+              <button type="button" class="provider-support-accordion-trigger" aria-expanded="false"><span>Was sind intelligente Allergene?</span><i data-lucide="chevron-down" class="chevron-icon" style="width:20px;height:20px;"></i></button>
+              <div class="accordion-content"><p>Intelligente Allergene: Beim Anlegen eines Gerichts schlägt die App automatisch passende Allergene vor (Autovervollständigung). Du wählst nur aus, was zutrifft – Kunden sehen es sofort in der Gerichtsbeschreibung.</p></div>
+            </div>
+            <div class="provider-support-accordion-item">
+              <button type="button" class="provider-support-accordion-trigger" aria-expanded="false"><span>Was ist die „Live-Vorschau“?</span><i data-lucide="chevron-down" class="chevron-icon" style="width:20px;height:20px;"></i></button>
+              <div class="accordion-content"><p>Sobald du ein Inserat veröffentlichst, siehst du in deinem Profil sofort die „Live-Vorschau“. Das ist die exakte Ansicht, die auch deine Kunden auf dem Handy sehen. So kannst du jederzeit prüfen, ob Bild und Preis perfekt sitzen.</p></div>
+            </div>
+            <div class="provider-support-accordion-item">
+              <button type="button" class="provider-support-accordion-trigger" aria-expanded="false"><span>Was ist die „24h-Antwort-Garantie“?</span><i data-lucide="chevron-down" class="chevron-icon" style="width:20px;height:20px;"></i></button>
+              <div class="accordion-content"><p>Wenn du über den Hilfe-Button eine Nachricht schickst, landet diese direkt bei Mike. Wir garantieren dir eine persönliche Antwort innerhalb von 24 Stunden – meistens sogar viel schneller, damit dein Mittagsgeschäft reibungslos weiterläuft.</p></div>
+            </div>
+            <div class="provider-support-accordion-item">
+              <button type="button" class="provider-support-accordion-trigger" aria-expanded="false"><span>Was ist die „Favoriten-Statistik“?</span><i data-lucide="chevron-down" class="chevron-icon" style="width:20px;height:20px;"></i></button>
+              <div class="accordion-content"><p>Unter deinen „Quick Stats“ siehst du, wie viele Kunden dich als Favoriten markiert haben. Das sind deine Stammkunden von morgen. Je höher diese Zahl, desto mehr Leute werden automatisch benachrichtigt, sobald du ein neues Inserat schaltest.</p></div>
+            </div>
+            <div class="provider-support-accordion-item">
+              <button type="button" class="provider-support-accordion-trigger" aria-expanded="false"><span>Wie funktioniert der Wochenplan?</span><i data-lucide="chevron-down" class="chevron-icon" style="width:20px;height:20px;"></i></button>
+              <div class="accordion-content"><p>Im Wochenplan planst du deine Gerichte für Mo–So. Du kannst ein Gericht per „Folgetag“ auf den nächsten Tag kopieren. Einmal einrichten, jede Woche nutzen – ohne Copy-Chaos.</p></div>
+            </div>
+            <div class="provider-support-accordion-item">
+              <button type="button" class="provider-support-accordion-trigger" aria-expanded="false"><span>Kostentransparenz</span><i data-lucide="chevron-down" class="chevron-icon" style="width:20px;height:20px;"></i></button>
+              <div class="accordion-content"><p>Kein Abo, kein Vertrag. 4,99 € pro Inserat. Optional 0,89 € pro Abholnummer. Ende.</p></div>
             </div>
           </div>
 
-          <div style="background:#fff; border-radius:24px; overflow:hidden; border:1px solid rgba(0,0,0,0.04); box-shadow:0 4px 12px rgba(0,0,0,0.02);">
-            <a href="#" onclick="showLegalPage('impressum-provider'); return false;" style="display:flex; justify-content:space-between; align-items:center; padding:20px; text-decoration:none; color:#1a1a1a; font-size:16px; font-weight:700; border-bottom:1px solid #f8f9fa;">
-              <div style="display:flex;align-items:center;gap:12px;"><i data-lucide="info" style="width:20px;height:20px;color:#64748b;"></i><span>Impressum</span></div>
-              <i data-lucide="chevron-right" style="color:#cbd5e1; width:20px;"></i>
-            </a>
-            <a href="#" onclick="showLegalPage('agb-provider'); return false;" style="display:flex; justify-content:space-between; align-items:center; padding:20px; text-decoration:none; color:#1a1a1a; font-size:16px; font-weight:700; border-bottom:1px solid #f8f9fa;">
-              <div style="display:flex;align-items:center;gap:12px;"><i data-lucide="shield-check" style="width:20px;height:20px;color:#64748b;"></i><span>AGB</span></div>
-              <i data-lucide="chevron-right" style="color:#cbd5e1; width:20px;"></i>
-            </a>
-            <a href="#" onclick="showLegalPage('datenschutz-provider'); return false;" style="display:flex; justify-content:space-between; align-items:center; padding:20px; text-decoration:none; color:#1a1a1a; font-size:16px; font-weight:700;">
-              <div style="display:flex;align-items:center;gap:12px;"><i data-lucide="eye" style="width:20px;height:20px;color:#64748b;"></i><span>Datenschutz</span></div>
-              <i data-lucide="chevron-right" style="color:#cbd5e1; width:20px;"></i>
-            </a>
+          <!-- Mike kontaktieren (24h-Garantie) -->
+          <div class="provider-support-contact-block">
+            <button type="button" id="btnProviderSupportMike" class="provider-support-mike-btn">Mike kontaktieren</button>
+            <p class="provider-support-mike-hint">E-Mail an support@mittagio.de – Mike meldet sich garantiert innerhalb von 24h persönlich.</p>
           </div>
         </div>
       </div>
@@ -21403,6 +21444,8 @@
     function goProfileBack(){ showProviderProfileSub(null); }
     var backSettings = document.getElementById('providerProfileBackSettings');
     if(backSettings) backSettings.onclick = goProfileBack;
+    var backFaq = document.getElementById('providerProfileBackFaq');
+    if(backFaq) backFaq.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(typeof showProviderProfileSub === 'function') showProviderProfileSub('settings'); };
     var btnImpressum = document.getElementById('btnProviderImpressum');
     var impressumContent = document.getElementById('providerImpressumContent');
     if(btnImpressum && impressumContent) btnImpressum.onclick = function(){ if(typeof haptic === 'function') haptic(6); impressumContent.style.display = impressumContent.style.display === 'none' ? 'block' : 'none'; };
@@ -21412,49 +21455,67 @@
     if(btnSettingsBillingArchive) btnSettingsBillingArchive.onclick = function(){ if(!checkSessionValidity()) return; showView(views.providerBilling); renderBilling(); };
     var btnSettingsSupport = document.getElementById('btnSettingsSupport');
     var btnSettingsSupportFooter = document.getElementById('btnSettingsSupportFooter');
-    function openFaqProvider(){ if(typeof haptic === 'function') haptic(6); if(typeof closeProfileSettingsSheet === 'function') closeProfileSettingsSheet(); showLegalPage('faq-provider'); }
-    if(btnSettingsSupport) btnSettingsSupport.onclick = openFaqProvider;
-    if(btnSettingsSupportFooter) btnSettingsSupportFooter.onclick = openFaqProvider;
-    // Hilfe & Support: Themen-Kacheln → Smart-Lösung → Kontaktformular
+    function openSupportPage(){ if(typeof haptic === 'function') haptic(6); if(typeof showProviderProfileSub === 'function') showProviderProfileSub('faq'); }
+    if(btnSettingsSupport) btnSettingsSupport.onclick = openSupportPage;
+    if(btnSettingsSupportFooter) btnSettingsSupportFooter.onclick = openSupportPage;
+    // Support & Hilfe: Erste-Hilfe-Karten → Sofort-Lösung → Mail an Mike
     var supportSolutions = {
-      inserieren: 'Prüfe, ob dein Gericht im Kochbuch angelegt ist. Öffne „Meine Küche“ und tippe auf „Jetzt für 4,99 € inserieren“. Wähle Gericht, Bild und Zeitfenster – das Inserat geht in unter 30 Sekunden live.',
-      zahlung: 'Die Inseratsgebühr (4,99 €) wird mit Veröffentlichung fällig. Die optionale Abholnummer (0,89 €) pro Vorgang wird bei jeder Bestellung abgerechnet. Alle Beträge siehst du unter „Zahlung & Abrechnung“.',
-      abholnummer: 'Die drei Säulen (Vor Ort, Mehrweg, Abholnummer) sowie deine Mittagszeiten stellst du im Profil unter „Präferenzen & Zeiten“ ein. Die Abholnummer ist optional und kostet 0,89 € pro Vorgang.',
-      profil: 'Standort und Kontaktdaten bearbeitest du im Profil unter „Meine Daten“. Deine Mittagszeiten findest du unter „Präferenzen & Zeiten“.',
-      feedback: 'Wir lieben Feedback! Wir bauen diese App für das Handwerk. Hast du eine Idee für ein neues Icon oder eine Funktion? Schreib uns unten!'
+      standort: 'Standort kalibrieren: Öffne Einstellungen (Zahnrad) → Betriebsdaten. Prüfe Anschrift, PLZ und Ort. Dein Standort wird für die Kunden-Suche verwendet.',
+      zahlung: 'Zahlung prüfen: In den Einstellungen unter „Abrechnung & Support“ → Zahlungsmethoden. Stelle sicher, dass eine gültige Karte hinterlegt ist.',
+      abholnummer: 'Abholnummer: Sie wird bei jeder Bestellung automatisch generiert. Prüfe unter „Abholnummer“ (Tab in der App) deine heutigen Abholungen. Die Einstellung „Abholnummer“ findest du in den Einstellungen unter den 3 Säulen.',
+      sichtbarkeit: 'Sichtbarkeit: Dein Inserat ist nur während des von dir gesetzten Zeitfensters (Mittagszeiten) für Kunden sichtbar. Außerhalb dieser Zeit erscheint es nicht im Feed – so ist es gewollt.'
     };
-    document.querySelectorAll('.provider-support-tile').forEach(function(btn){
+    var abholungenBtn = document.getElementById('providerSupportAbholungenBtn');
+    document.querySelectorAll('.provider-support-error-card').forEach(function(btn){
       btn.onclick = function(){
-        var topic = btn.getAttribute('data-topic');
-        var subject = (btn.getAttribute('data-subject') || '').replace(/&amp;/g, '&');
+        if(typeof haptic === 'function') haptic(6);
+        var issue = btn.getAttribute('data-issue');
+        var subject = (btn.getAttribute('data-subject') || '').trim();
         var textEl = document.getElementById('providerSupportSolutionText');
         var solutionWrap = document.getElementById('providerSupportSolution');
-        var formWrap = document.getElementById('providerSupportFormWrap');
-        if(textEl) textEl.textContent = supportSolutions[topic] || '';
+        if(textEl) textEl.textContent = supportSolutions[issue] || '';
         if(solutionWrap){ solutionWrap.style.display = 'block'; solutionWrap.setAttribute('data-subject', subject); }
-        if(formWrap) formWrap.style.display = 'none';
+        if(abholungenBtn) abholungenBtn.style.display = issue === 'abholnummer' ? 'block' : 'none';
       };
     });
-    var contactBtn = document.getElementById('providerSupportContactBtn');
-    if(contactBtn) contactBtn.onclick = function(){
-      var solutionWrap = document.getElementById('providerSupportSolution');
-      var formWrap = document.getElementById('providerSupportFormWrap');
-      var subjectInput = document.getElementById('providerSupportSubject');
-      if(subjectInput && solutionWrap) subjectInput.value = (solutionWrap.getAttribute('data-subject') || 'Support').replace(/&amp;/g, '&');
-      if(formWrap) formWrap.style.display = 'block';
+    if(abholungenBtn) abholungenBtn.onclick = function(){
+      if(typeof haptic === 'function') haptic(6);
+      if(typeof setProviderNavActive === 'function') setProviderNavActive('provider-pickups');
+      if(typeof showView === 'function' && typeof views !== 'undefined' && views.providerPickups) showView(views.providerPickups);
     };
-    var sendBtn = document.getElementById('providerSupportSendBtn');
-    var supportMessage = document.getElementById('providerSupportMessage');
-    if(sendBtn && supportMessage){
-      sendBtn.onclick = function(){
-        var subjectInput = document.getElementById('providerSupportSubject');
-        var subj = (subjectInput && subjectInput.value) ? subjectInput.value : 'Support';
-        var body = (supportMessage.value || '').trim();
-        var mailto = 'mailto:support@mittagio.de?subject=' + encodeURIComponent(subj) + (body ? '&body=' + encodeURIComponent(body) : '');
-        window.location.href = mailto;
-        showToast('Support-Kontakt wird geöffnet.');
-      };
+    var supportMailBtn = document.getElementById('providerSupportMailBtn');
+    if(supportMailBtn) supportMailBtn.onclick = function(){
+      if(typeof haptic === 'function') haptic(6);
+      var solutionWrap = document.getElementById('providerSupportSolution');
+      var subj = (solutionWrap && solutionWrap.getAttribute('data-subject')) ? solutionWrap.getAttribute('data-subject') : 'Anfrage';
+      openSupportMail(subj);
+    };
+    function openSupportMail(thema){
+      var p = (provider && provider.profile) ? provider.profile : {};
+      var betrieb = (p.name || p.businessName || 'Betrieb').trim();
+      var subject = '[SUPPORT] - ' + betrieb + ' - ' + (thema || 'Anfrage');
+      var mailto = 'mailto:support@mittagio.de?subject=' + encodeURIComponent(subject);
+      window.location.href = mailto;
+      if(typeof showToast === 'function') showToast('Nachricht gesendet! Mike meldet sich garantiert innerhalb von 24h persönlich.');
     }
+    document.querySelectorAll('.provider-support-accordion-trigger').forEach(function(trigger){
+      trigger.onclick = function(){
+        if(typeof haptic === 'function') haptic(6);
+        var item = trigger.closest('.provider-support-accordion-item');
+        var content = item ? item.querySelector('.accordion-content') : null;
+        var chevron = trigger.querySelector('.chevron-icon');
+        var isOpen = content && content.classList.contains('open');
+        document.querySelectorAll('.provider-support-accordion .accordion-content').forEach(function(c){ c.classList.remove('open'); });
+        document.querySelectorAll('.provider-support-accordion .chevron-icon').forEach(function(ch){ ch.classList.remove('rotated'); });
+        document.querySelectorAll('.provider-support-accordion-trigger').forEach(function(t){ t.setAttribute('aria-expanded', 'false'); });
+        if(!isOpen && content){ content.classList.add('open'); if(chevron) chevron.classList.add('rotated'); if(trigger) trigger.setAttribute('aria-expanded', 'true'); }
+      };
+    });
+    var btnProviderSupportMike = document.getElementById('btnProviderSupportMike');
+    if(btnProviderSupportMike) btnProviderSupportMike.onclick = function(){
+      if(typeof haptic === 'function') haptic(8);
+      openSupportMail('Anfrage');
+    };
     var btnProviderDeleteAccount = document.getElementById('btnProviderDeleteAccount');
     if(btnProviderDeleteAccount){ btnProviderDeleteAccount.onclick = function(){ if(confirm('Account wirklich dauerhaft löschen? Diese Aktion kann nicht rückgängig gemacht werden.')) { showToast('Account-Löschung angefragt.'); } }; }
 
