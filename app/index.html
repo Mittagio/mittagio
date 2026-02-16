@@ -1304,9 +1304,11 @@
     .w-actions button{flex:1}
 
     /* Inseratflow: Über Provider-Bottom-Nav (z-index 999) legen */
-    #wbd.active, #createFlowBd.active { z-index: 1000 !important; }
-    #wbd.active { background: radial-gradient(ellipse at center, rgba(254,243,199,0.35) 0%, rgba(251,191,36,0.08) 35%, rgba(0,0,0,0.65) 100%); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
-    #wizard.sheet--kitchen.active, #createFlowSheet.sheet--kitchen.active { z-index: 1001 !important; }
+    /* Wizard/InseratCard: Backdrop unter Sheet, damit Klicks die Karte treffen (nicht Backdrop) */
+    #wbd.active { z-index: 999 !important; background: radial-gradient(ellipse at center, rgba(254,243,199,0.35) 0%, rgba(251,191,36,0.08) 35%, rgba(0,0,0,0.65) 100%); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+    #createFlowBd.active { z-index: 1000 !important; }
+    #wizard.sheet--kitchen.active { z-index: 1001 !important; }
+    #createFlowSheet.sheet--kitchen.active { z-index: 1000 !important; }
     /* Inseratflow: High-End Glassmorphism (Master) – backdrop-blur-2xl, bg-white/70, border-white/40, shadow-2xl */
     #createFlowSheet.sheet--kitchen,
     #wizard.sheet--kitchen{
@@ -1689,25 +1691,6 @@
       border-radius:16px;
     }
     #wizard.sheet--kitchen .w-actions button.btn-glass-secondary{ background:rgba(255,255,255,0.4); }
-    .listing-success-overlay span{ color:#1a1a1a !important; }
-    /* Success-Check: Spring (Stiffness 500, Damping 15) – leichtes, freudiges Nachfedern */
-    .listing-success-overlay .success-check-wrap{
-      animation: listing-success-pop 0.48s cubic-bezier(0.34, 1.4, 0.64, 1) forwards, listing-success-shimmer 1.2s ease-in-out 2 0.3s;
-    }
-    @keyframes listing-success-pop{
-      0%{ transform:scale(0.8); opacity:0.9; }
-      70%{ transform:scale(1.05); }
-      100%{ transform:scale(1); opacity:1; }
-    }
-    @keyframes listing-success-shimmer{
-      0%,100%{ box-shadow: 0 0 0 0 rgba(255,222,0,0.35); }
-      50%{ box-shadow: 0 0 0 16px rgba(255,222,0,0); }
-    }
-    .listing-success-overlay.slide-exit{
-      transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.35s ease-out;
-      transform: translateY(-24px);
-      opacity: 0;
-    }
     /* Inserat Step 0: daumenfreundlich, alle Ziele mind. 48px */
     #wizard.sheet--kitchen #wContent .field{
       min-height: 52px !important;
@@ -2333,6 +2316,14 @@
     #wizard[data-flow="listing"] .inserat-photo-tile.inserat-card-photo-pulse {
       animation: inserat-card-photo-pulse 1.8s ease-in-out infinite;
     }
+    /* InseratCard klickbar: explizit pointer-events, damit keine Überlagerung Klicks schluckt */
+    #wizard[data-flow="listing"] #wContent > .liquid-master-panel,
+    #wizard[data-flow="listing"] .liquid-master-panel.inserat-card { pointer-events: auto; }
+    #wizard[data-flow="listing"] .liquid-master-panel .photo-header,
+    #wizard[data-flow="listing"] .liquid-master-panel .inserat-power-bar,
+    #wizard[data-flow="listing"] .liquid-master-panel .inserat-cat-price-row,
+    #wizard[data-flow="listing"] .liquid-master-panel .inserat-action-section,
+    #wizard[data-flow="listing"] .liquid-master-panel .inserat-scroll-area { pointer-events: auto; }
     /* Goldene Sammelkarte: Header-Bild Ratio 3:2, No-Scroll S25 [cite: 2026-02-14, 2026-02-16] */
     .liquid-master-panel .photo-header,
     .liquid-master-panel .inserat-photo-tile.photo-header {
@@ -8648,7 +8639,7 @@
 <div id="printView" class="print-view"></div>
 
 <!-- Provider Wizard sheet (single reusable) – Küchenmodus -->
-<div class="backdrop" id="wbd" onclick="closeWizard()"></div>
+<div class="backdrop" id="wbd" onclick="if(event.target===this) closeWizard();"></div>
 <div class="sheet sheet--kitchen" id="wizard">
   <div class="handle"></div>
   <div class="sheet-body wizard-sheet-body">
@@ -25276,98 +25267,7 @@
     if(btn){ btn.onclick = function(){ if(typeof haptic==='function') haptic(8); dismiss(); }; }
   }
 
-  /** Erfolgs-Overlay (Legacy): im Wizard-Container, Auto-Close nach 1,5s. */
-  function showListingSuccessOverlay(thenCallback){
-    try { if(typeof haptic==='function') haptic([12, 55, 12]); } catch(e){}
-    var box = document.getElementById('wBox');
-    if(!box) { if(thenCallback) thenCallback(); return; }
-    var overlay = document.createElement('div');
-    overlay.className = 'listing-success-overlay';
-    overlay.style.cssText = 'position:absolute; inset:0; background:rgba(255,255,255,0.92); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); display:flex; align-items:center; justify-content:center; z-index:100; border-radius:24px; transition:transform 0.35s ease-out, opacity 0.35s ease-out;';
-    overlay.innerHTML = '<div style="display:flex; flex-direction:column; align-items:center; gap:12px;"><div class="success-check-wrap" style="width:72px; height:72px; border-radius:50%; background:rgba(255,222,0,0.2); border:3px solid #FFDE00; display:flex; align-items:center; justify-content:center;"><span style="font-size:40px;">✓</span></div><div style="font-size:18px; font-weight:800; color:#1a1a1a;">Gespeichert</div></div>';
-    box.style.position = 'relative';
-    box.appendChild(overlay);
-    setTimeout(function(){
-      overlay.classList.add('slide-exit');
-      setTimeout(function(){ overlay.remove(); if(thenCallback) thenCallback(); }, 350);
-    }, 1500);
-  }
-
-  function openSlimDayPicker(wizard, saveDraft, rebuildWizard){
-    var w = wizard || w;
-    if(!w || !w.data || !w.data.dish){
-      if(typeof showToast==='function') showToast('Bitte zuerst Gericht und Preis eingeben.');
-      return;
-    }
-    var days = ['Mo','Di','Mi','Do','Fr','Sa','So'];
-    var today = new Date();
-    today.setHours(12,0,0,0);
-    var overlay = document.createElement('div');
-    overlay.style.cssText = 'position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:3500; display:flex; align-items:center; justify-content:center; padding:24px;';
-    var card = document.createElement('div');
-    card.style.cssText = 'background:#fff; border-radius:20px; padding:24px; max-width:360px; width:100%; box-shadow:0 20px 60px rgba(0,0,0,0.25);';
-    var title = document.createElement('div');
-    title.style.cssText = 'font-size:18px; font-weight:800; margin-bottom:20px; color:#1a1a1a;';
-    title.textContent = 'Für welchen Tag planen?';
-    card.appendChild(title);
-    var grid = document.createElement('div');
-    grid.style.cssText = 'display:grid; grid-template-columns:repeat(2, 1fr); gap:12px;';
-    for(var i = 0; i < 7; i++){
-      var d = new Date(today);
-      d.setDate(d.getDate() + i);
-      var dayKey = isoDate(d);
-      var dayIdx = (d.getDay() + 6) % 7;
-      var label = i === 0 ? 'Heute' : (i === 1 ? 'Morgen' : days[dayIdx] + ', ' + String(d.getDate()).padStart(2,'0') + '.' + String(d.getMonth()+1).padStart(2,'0') + '.');
-      var btn = document.createElement('button');
-      btn.type = 'button';
-      btn.style.cssText = 'min-height:52px; border-radius:14px; border:2px solid #e2e8f0; background:#fff; color:#475569; font-size:15px; font-weight:700; cursor:pointer;';
-      btn.textContent = label;
-      btn.onclick = (function(dKey, dayLabel){
-        return function(){
-          var profile = typeof normalizeProviderProfile === 'function' ? normalizeProviderProfile(provider.profile || {}) : {};
-          var now = Date.now();
-          var base = {
-            id: typeof cryptoId === 'function' ? cryptoId() : 'cb_' + now,
-            providerId: typeof providerId === 'function' ? providerId() : '',
-            dish: w.data.dish || '',
-            category: w.data.category || 'Vegetarisch',
-            price: Number(w.data.price || 0),
-            allergens: w.data.allergens || [],
-            extras: w.data.extras || [],
-            reuse: w.data.reuse || { enabled: false, deposit: 0 },
-            photoData: w.data.photoData || '',
-            hasPickupCode: !!w.data.hasPickupCode,
-            dineInPossible: !!w.data.dineInPossible,
-            createdAt: now,
-            lastUsed: null
-          };
-          cookbook.push(base);
-          save(LS.cookbook, cookbook);
-          var entry = { providerId: base.providerId, dish: base.dish, cookbookId: base.id, active: true };
-          if(!week[dKey]) week[dKey] = [];
-          week[dKey].push(entry);
-          save(LS.week, week);
-          if(typeof publishWeekEntry === 'function') publishWeekEntry(dKey, entry);
-          if(typeof showToast === 'function') showToast('Für ' + dayLabel + ' geplant!');
-          if(overlay.parentNode) overlay.parentNode.removeChild(overlay);
-        };
-      })(dayKey, label);
-      grid.appendChild(btn);
-    }
-    card.appendChild(grid);
-    var closeBtn = document.createElement('button');
-    closeBtn.type = 'button';
-    closeBtn.style.cssText = 'width:100%; min-height:48px; margin-top:20px; border-radius:14px; border:2px solid #e2e8f0; background:#f8fafc; color:#64748b; font-size:15px; font-weight:700; cursor:pointer;';
-    closeBtn.textContent = 'Schließen';
-    closeBtn.onclick = function(){ if(overlay.parentNode) overlay.parentNode.removeChild(overlay); };
-    card.appendChild(closeBtn);
-    overlay.appendChild(card);
-    overlay.onclick = function(ev){ if(ev.target === overlay) { if(overlay.parentNode) overlay.parentNode.removeChild(overlay); } };
-    document.body.appendChild(overlay);
-  }
-  if(typeof window !== 'undefined') window.openSlimDayPicker = openSlimDayPicker;
-
-  // Legacy buildCookbookStep & buildWeekStep entfernt – Single-Source: InseratCard (buildListingStep) [cite: 2026-01-29]
+  // Alter Inseratsflow entfernt: showListingSuccessOverlay, openSlimDayPicker – nur noch InseratCard (buildListingStep)
 
   // --- Input helpers (thumb-friendly) ---
   function formatPriceInput(value){
