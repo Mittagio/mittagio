@@ -22158,7 +22158,7 @@
       magazineEl.style.cursor = 'pointer';
       var openDetail = function(e){
         if(e && e.target && e.target.closest && e.target.closest('.cookbook-magazine-nav')) return;
-        if(e){ e.preventDefault(); e.stopPropagation(); }
+        if(e && e.cancelable){ e.preventDefault(); e.stopPropagation(); }
         if(typeof haptic==='function') haptic(6);
         if(typeof openCookbookActionSheet==='function') openCookbookActionSheet(entry);
       };
