@@ -2437,16 +2437,39 @@
     #wizard[data-flow="listing"] .inserat-power-bar .status-pill:active { transform: scale(0.9); }
     #wizard[data-flow="listing"] .inserat-power-bar .power-bar-legend-trigger:hover,
     #wizard[data-flow="listing"] .inserat-power-bar .power-bar-legend-trigger:focus { color: #64748b; }
-    /* Info-Banner: wie Detailseite sMealTimeRange – 14px, 700, #1a1a1a */
-    .inserat-info-banner {
-      padding: 10px 20px; font-size: 14px; font-weight: 700; color: #1a1a1a;
-      background: rgba(0,0,0,0.02); border-bottom: 1px solid rgba(0,0,0,0.03);
-      display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
+    /* #psheet: Universal Card – gleiche Optik wie Inseratsflow (Power-Bar, Karte) */
+    #psheet .universal-dish-card.psheet-card { width: 100%; background: #fff; border-radius: 16px; overflow: hidden; border: 1px solid rgba(0,0,0,0.06); }
+    #psheet .psheet-photo-header { border-radius: 0; }
+    #psheet .psheet-price-sticker { position: absolute; bottom: 8px; right: 8px; padding: 6px 12px; border-radius: 999px; font-weight: 900; font-size: 14px; background: rgba(255,215,0,0.95); color: #1a1a1a; box-shadow: 0 2px 8px rgba(255,215,0,0.3); z-index: 10; }
+    #psheet .psheet-power-bar.inserat-power-bar.inserat-unified-pills {
+      display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px 16px;
+      padding: 12px 16px; border-bottom: 1px solid rgba(0,0,0,0.04); flex-shrink: 0; background: rgba(0,0,0,0.02);
     }
-    .inserat-info-banner .banner-time-edit {
-      background: none; border: none; padding: 4px 8px; cursor: pointer; font-size: 18px;
-      -webkit-tap-highlight-color: transparent;
+    #psheet .psheet-power-bar .status-pill {
+      min-width: 44px; min-height: 44px; padding: 8px; display: inline-flex; align-items: center; justify-content: center;
+      border-radius: 12px; border: 2px solid rgba(0,0,0,0.08); background: rgba(0,0,0,0.04);
+      font-size: 18px; transition: transform 0.1s cubic-bezier(0.4,0,0.2,1);
     }
+    #psheet .psheet-power-bar .status-pill.active { background: #10b981; color: #fff; border-color: rgba(16,185,129,0.4); box-shadow: 0 4px 14px rgba(16,185,129,0.4); }
+    #psheet .psheet-power-bar .status-pill.inactive { opacity: 0.6; filter: grayscale(0.4); }
+    #psheet .psheet-power-bar .func-icon-btn {
+      width: 44px; height: 44px; min-width: 44px; min-height: 44px; border-radius: 12px;
+      display: inline-flex; align-items: center; justify-content: center; font-size: 20px;
+      border: 2px solid rgba(0,0,0,0.08); background: rgba(0,0,0,0.04);
+    }
+    #psheet .psheet-power-bar .func-icon-btn.active { background: #10b981; color: #fff; border-color: rgba(16,185,129,0.4); box-shadow: 0 2px 10px rgba(16,185,129,0.3); }
+    #psheet .psheet-power-bar .power-bar-legend-trigger { min-width: 44px; min-height: 44px; display: inline-flex; align-items: center; justify-content: center; color: #94a3b8; font-size: 14px; }
+    #psheet .psheet-card-title { margin: 0 0 12px; font-size: 24px; font-weight: 800; color: #0f172a; letter-spacing: -0.03em; line-height: 1.2; }
+    #psheet .psheet-price-block { margin-top: 8px; }
+    #psheet .psheet-price-block .psheet-price-value { font-size: 4rem; font-weight: 900; color: #1a1a1a; }
+    #psheet .psheet-price-block .inserat-price-euro-sup { font-size: 1.5rem; font-weight: 900; color: #1a1a1a; vertical-align: super; margin-left: 4px; }
+    #psheet .psheet-body { display: flex; flex-direction: column; gap: 16px; }
+    #psheet .psheet-actions-primary { display: flex; gap: 12px; flex-wrap: wrap; }
+    #psheet .psheet-actions-primary .psheet-btn-primary { flex: 1; min-width: 140px; font-weight: 900; min-height: 48px; }
+    #psheet .psheet-actions-primary #btnEditOffer { background: #10b981; color: #fff; border: none; }
+    #psheet .psheet-actions-primary #btnToggleOffer { background: var(--brand); color: #1a1a1a; border: none; }
+    #psheet .psheet-actions-secondary { display: flex; gap: 8px; justify-content: center; }
+    #psheet .psheet-actions-secondary .psheet-btn-secondary { font-size: 14px; font-weight: 700; }
     /* Titel wie Detailseite (h2#sDish): 24px, 950, Abstand 0 0 8px, gleiche Typo */
     .inserat-unified-title-wrap {
       padding-bottom: 0;
@@ -8047,16 +8070,20 @@
     </div>
   </div>
 
-<!-- Provider offer sheet -->
+<!-- Provider offer sheet: Universal Card + zwei Haupt-CTAs, Teilen/Drucken sekundär -->
 <div class="backdrop" id="pbd" onclick="closeProviderSheet()"></div>
 <div class="sheet" id="psheet">
   <div class="handle"></div>
-  <div class="sheet-body">
+  <div class="sheet-body psheet-body">
     <div id="pPreview"></div>
-    <button class="btn" type="button" id="btnEditOffer" data-icon="edit">Bearbeiten</button>
-    <button class="btn" type="button" id="btnToggleOffer" data-icon="action" style="background:var(--brand); color:#2D3436; font-weight:900;">Noch da</button>
-    <button class="btn ghost" type="button" id="btnShareOffer" data-icon="share">Teilen</button>
-    <button class="btn ghost" type="button" id="btnPrintOffer" data-icon="print">Drucken</button>
+    <div class="psheet-actions-primary">
+      <button class="btn psheet-btn-primary" type="button" id="btnEditOffer" data-icon="edit">Bearbeiten</button>
+      <button class="btn psheet-btn-primary" type="button" id="btnToggleOffer" data-icon="action">Noch da</button>
+    </div>
+    <div class="psheet-actions-secondary">
+      <button class="btn ghost psheet-btn-secondary" type="button" id="btnShareOffer" data-icon="share">Teilen</button>
+      <button class="btn ghost psheet-btn-secondary" type="button" id="btnPrintOffer" data-icon="print">Drucken</button>
+    </div>
   </div>
 </div>
 
@@ -14824,34 +14851,37 @@
     activeProviderOfferId = id;
     const profile = normalizeProviderProfile(provider.profile || {});
     const offerProvider = offers.find(p => p.providerId === o.providerId);
-    const orderingEnabled = offerProvider && (offerProvider.orderingEnabled !== false && (o.hasPickupCode || offerProvider.hasPickupCode));
     const hasReuse = offerProvider && (offerProvider.reuseEnabled || offerProvider.reuse || (offerProvider.providerProfile && offerProvider.providerProfile.reuseEnabled));
-    const windowText = o.pickupWindow || profile.mealWindow || '11:30 – 14:00';
-    const timeMatch = windowText.match(/(\d{1,2}:\d{2})\s*[–-]\s*(\d{1,2}:\d{2})/);
-    const timePillText = timeMatch && timeMatch[1] && timeMatch[2] ? `Abholung heute Mittag von ${timeMatch[1]} – ${timeMatch[2]} Uhr` : `Abholung heute Mittag ${windowText} Uhr`;
     const imgSrc = o.imageUrl || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70';
     const hasDineIn = o.dineInPossible !== false;
-    const pillarDineIn = hasDineIn ? 'active green' : '';
-    const pillarPickup = orderingEnabled ? 'active yellow' : '';
-    const pillarReuse = hasReuse ? 'active petrol' : '';
-    const pillarsRow = '<div class="card-pillars" style="display:flex; gap:12px; padding:12px 16px; border-bottom:1px solid rgba(0,0,0,0.06);"><div class="pillar-mini ' + pillarDineIn + '" title="Vor Ort">🍴</div><div class="pillar-mini ' + pillarPickup + '" title="Abholnummer">🧾</div><div class="pillar-mini ' + pillarReuse + '" title="Mehrweg">🔄</div></div>';
+    const hasTimeValue = !!(o.pickupWindow && String(o.pickupWindow).trim());
+    const hasAllergens = !!(o.allergens && o.allergens.length);
+    const hasExtras = !!(o.extras && o.extras.length);
+    const priceStr = (Number(o.price)||0).toFixed(2).replace('.',',');
     const catLabel = (o.category && CAT_EMOJI[o.category]) ? (CAT_EMOJI[o.category] + ' ' + (o.category || '')) : (o.category || '');
-    const allergenStr = (o.allergens && o.allergens.length) ? (Array.isArray(o.allergens) ? o.allergens.slice(0,5).join(', ') : String(o.allergens)) : '';
-
+    const pill = (active, label, emo) => '<span class="status-pill ' + (active ? 'active' : 'inactive') + '" title="' + esc(label) + '" aria-label="' + esc(label) + '"><span style="font-size:18px;">' + emo + '</span></span>';
+    const funcBtn = (active, title, emo) => '<span class="func-icon-btn ' + (active ? 'active' : '') + '" title="' + esc(title) + '">' + emo + '</span>';
+    const powerBarHtml = '<div class="inserat-power-bar inserat-unified-pills psheet-power-bar">' +
+      pill(hasDineIn, 'Vor Ort', '🍴') +
+      pill(hasReuse, 'Mehrweg', '🔄') +
+      pill(hasTimeValue, 'Zeit', '🕒') +
+      funcBtn(hasAllergens, 'Allergene', '🌾') +
+      funcBtn(hasExtras, 'Extras', '➕') +
+      '<span class="power-bar-legend-trigger" title="Bedeutung der Symbole">ⓘ</span>' +
+      '</div>';
     const preview = document.getElementById('pPreview');
-    preview.innerHTML = `
-      <div style="width:100%; background:#fff; border-radius:16px; overflow:hidden; border:1px solid rgba(0,0,0,0.06);">
-        <div style="position:relative; width:100%; aspect-ratio:16/10; max-height:200px; overflow:hidden; background:#f0f0f0;"><img src="${esc(imgSrc)}" alt="${esc(o.dish||'')}" style="width:100%; height:100%; object-fit:cover;" /></div>
-        ${pillarsRow}
-        <div style="display:flex; justify-content:center; padding:10px 16px; background:rgba(0,0,0,0.04); border-bottom:1px solid rgba(0,0,0,0.06);"><span style="font-size:13px; font-weight:600; color:#333;">${esc(timePillText)}</span></div>
-        <div style="padding:var(--card-padding, 20px);">
-          <div style="font-weight:900; font-size:18px; color:#1a1a1a; margin-bottom:8px;">${esc(o.dish || 'Gericht')}</div>
-          ${catLabel ? `<span style="display:inline-block; padding:4px 10px; border-radius:8px; background:#e2e8f0; font-size:12px; font-weight:600; color:#475569; margin-bottom:8px;">${esc(catLabel)}</span>` : ''}
-          ${allergenStr ? `<div style="font-size:12px; color:#64748b; margin-bottom:8px;">${esc(allergenStr)}</div>` : ''}
-          <span class="price-pill">${euro(o.price || 0)}</span>
-        </div>
-      </div>
-    `;
+    preview.innerHTML = '<div class="universal-dish-card psheet-card">' +
+      '<div class="inserat-photo-tile photo-header psheet-photo-header" style="position:relative;overflow:hidden;flex-shrink:0;width:100%;height:190px;background:#f0f0f0;">' +
+      '<img src="' + esc(imgSrc) + '" alt="' + esc(o.dish||'') + '" style="width:100%;height:100%;object-fit:cover;display:block;" />' +
+      '<div class="inserat-price-on-image price-pill psheet-price-sticker">' + priceStr + ' €</div>' +
+      '</div>' +
+      powerBarHtml +
+      '<div class="psheet-card-body" style="padding:20px;">' +
+      '<h2 class="psheet-card-title">' + esc(o.dish || 'Gericht') + '</h2>' +
+      (catLabel ? '<span class="extra-pill inserat-cat-pill active" style="display:inline-block;margin-bottom:12px;">' + esc(catLabel) + '</span>' : '') +
+      '<div class="inserat-price-section psheet-price-block"><span class="inserat-price-fintech psheet-price-value">' + priceStr + '</span><sup class="inserat-price-euro-sup">€</sup></div>' +
+      '</div>' +
+      '</div>';
 
     
     // No-Limits: Prominenter "Ausverkauft" / "Noch da" Toggle
