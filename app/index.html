@@ -528,6 +528,17 @@
     }
     .pillar-badge.active .pillar-label { color: #333; }
     
+    /* Detailseite Gericht: 5 Icons + ⓘ wie Inseratsflow, Emerald-Glow [cite: 2026-02-16] */
+    #sheet .detail-power-bar { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; padding: 12px 20px 20px; border-bottom: 1px solid rgba(0,0,0,0.03); }
+    #sheet .detail-power-bar .detail-pillar-btn {
+      min-width: 44px; min-height: 44px; width: 44px; height: 44px; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; font-size: 20px;
+      border: 2px solid rgba(0,0,0,0.08); background: rgba(0,0,0,0.04); cursor: pointer; transition: background 0.2s, box-shadow 0.2s, transform 0.1s; -webkit-tap-highlight-color: transparent;
+    }
+    #sheet .detail-power-bar .detail-pillar-btn.active { background: #fff; border-color: #10b981; box-shadow: 0 2px 10px rgba(16,185,129,0.3); color: #1a1a1a; }
+    #sheet .detail-power-bar .detail-pillar-btn:not(.active) { opacity: 0.6; filter: grayscale(0.4); }
+    #sheet .detail-power-bar .detail-pillar-btn:active { transform: scale(0.92); }
+    #sheet .detail-power-bar .detail-legend-btn { min-width: 36px; min-height: 36px; width: 36px; height: 36px; border: none; background: transparent; color: #94a3b8; font-size: 14px; cursor: pointer; border-radius: 50%; display: flex; align-items: center; justify-content: center; -webkit-tap-highlight-color: transparent; }
+    
     .card.polaroid .img img{
       width:100%;
       height:100%;
@@ -7987,9 +7998,9 @@
         </div>
       </div>
 
-      <!-- 3 Säulen (Funktionale Badges) -->
-      <div id="sThreePillars" style="display:flex; justify-content:center; gap:16px; padding:0 20px 24px; border-bottom:1px solid rgba(0,0,0,0.03);">
-        <!-- Wird dynamisch befüllt (Pillar Badges) -->
+      <!-- 5 Icons + ⓘ (wie Inseratsflow): Vor Ort, Mehrweg, Zeit, Allergene, Extras, Legende -->
+      <div id="sThreePillars" class="detail-power-bar">
+        <!-- Wird dynamisch befüllt -->
       </div>
 
       <!-- Info Sektion -->
@@ -8003,14 +8014,6 @@
         </button>
 
         <div style="display:flex; flex-direction:column; gap:16px; background:#f8f9fa; border-radius:24px; padding:20px; border:1px solid rgba(0,0,0,0.02);">
-          <!-- Logistik & Zeit -->
-          <div id="sMealTime" style="display:flex; align-items:center; gap:12px;">
-            <div style="width:36px; height:36px; border-radius:10px; background:#fff; display:flex; align-items:center; justify-content:center;">
-              <i data-lucide="clock" style="width:18px;height:18px;color:var(--brand);"></i>
-            </div>
-            <span id="sMealTimeRange" style="font-size:14px; font-weight:700; color:#1a1a1a;">Zeitfenster</span>
-          </div>
-
           <div id="sProviderAddressRow" style="display:flex; align-items:center; gap:12px;">
             <div style="width:36px; height:36px; border-radius:10px; background:#fff; display:flex; align-items:center; justify-content:center;">
               <i data-lucide="map-pin" style="width:18px;height:18px;color:#64748b;"></i>
@@ -8050,8 +8053,6 @@
   <div class="handle"></div>
   <div class="sheet-body">
     <div id="pPreview"></div>
-    <div class="row"><span>Status</span><b id="pStatus"></b></div>
-    <div class="row"><span>Essenszeit</span><b id="pWindow"></b></div>
     <button class="btn" type="button" id="btnEditOffer" data-icon="edit">Bearbeiten</button>
     <button class="btn" type="button" id="btnToggleOffer" data-icon="action" style="background:var(--brand); color:#2D3436; font-weight:900;">Noch da</button>
     <button class="btn ghost" type="button" id="btnShareOffer" data-icon="share">Teilen</button>
@@ -14059,7 +14060,6 @@
     const sImgPlaceholder = document.getElementById('sImgPlaceholder');
     const sFavoriteBtn = document.getElementById('sFavoriteBtn');
     const sThreePillars = document.getElementById('sThreePillars');
-    const sMealTimeRange = document.getElementById('sMealTimeRange');
     const sProviderAddress = document.getElementById('sProviderAddress');
     const sDistanceInfo = document.getElementById('sDistanceInfo');
     const sAllergensCodes = document.getElementById('sAllergensCodes');
@@ -14113,25 +14113,39 @@
       };
     }
 
-    // 3 Säulen Badges
+    // 5 Icons + ⓘ (wie Inseratsflow): Vor Ort, Mehrweg, Zeit, Allergene, Extras, Legende [cite: 2026-02-16]
     if(sThreePillars){
       const hasReuse = !!(offerProvider && (offerProvider.reuseEnabled || offerProvider.reuse || (offerProvider.providerProfile && offerProvider.providerProfile.reuseEnabled)));
       const hasDineIn = !!(offerProvider && (offerProvider.dineInPossible !== false));
-      
-      sThreePillars.innerHTML = `
-        <div class="pillar-badge ${hasDineIn ? 'active' : 'disabled'}" style="${!hasDineIn ? 'opacity:0.25; filter:grayscale(1);' : ''}">
-          <div class="pillar-icon-circle">🍴</div>
-          <div class="pillar-label">Vor Ort möglich</div>
-        </div>
-        <div class="pillar-badge ${orderingEnabled ? 'active yellow' : 'disabled'}" style="${!orderingEnabled ? 'opacity:0.25; filter:grayscale(1);' : ''}">
-          <div class="pillar-icon-circle">🧾</div>
-          <div class="pillar-label">Abholnummer aktiv</div>
-        </div>
-        <div class="pillar-badge ${hasReuse ? 'active green' : 'disabled'}" style="${!hasReuse ? 'opacity:0.25; filter:grayscale(1);' : ''}">
-          <div class="pillar-icon-circle">🔄</div>
-          <div class="pillar-label">Mehrweg verfügbar</div>
-        </div>
-      `;
+      const hasTime = !!(o.pickupWindow && String(o.pickupWindow).trim());
+      const hasAllergens = !!(o.allergens && o.allergens.length);
+      const hasExtras = !!(o.extras && o.extras.length);
+      function addDetailPillar(emo, title, active, onClick){
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'detail-pillar-btn' + (active ? ' active' : '');
+        btn.setAttribute('aria-label', title);
+        btn.title = title;
+        btn.textContent = emo;
+        if(onClick) btn.onclick = function(e){ e.stopPropagation(); if(typeof hapticLight === 'function') hapticLight(); else if(navigator.vibrate) navigator.vibrate(10); onClick(); };
+        sThreePillars.appendChild(btn);
+      }
+      addDetailPillar('🍴', 'Vor Ort', hasDineIn, null);
+      addDetailPillar('🔄', 'Mehrweg', hasReuse, null);
+      addDetailPillar('🕒', 'Zeitfenster', hasTime, null);
+      addDetailPillar('🌾', 'Allergene', hasAllergens, function(){ if(typeof showAllergensOverlay === 'function') showAllergensOverlay(); });
+      addDetailPillar('➕', 'Extras', hasExtras, function(){
+        if(!(o.extras && o.extras.length)){ if(typeof showToast === 'function') showToast('Keine Extras'); return; }
+        if(typeof showExtrasDetailOverlay === 'function') showExtrasDetailOverlay();
+      });
+      const legendBtn = document.createElement('button');
+      legendBtn.type = 'button';
+      legendBtn.className = 'detail-legend-btn';
+      legendBtn.setAttribute('aria-label', 'Infos zu den Symbolen');
+      legendBtn.title = '🍴 Vor Ort · 🔄 Mehrweg · 🕒 Zeit · 🌾 Allergene · ➕ Extras';
+      legendBtn.textContent = 'ⓘ';
+      legendBtn.onclick = function(e){ e.stopPropagation(); if(typeof hapticLight === 'function') hapticLight(); if(typeof showToast === 'function') showToast('🍴 Vor Ort · 🔄 Mehrweg · 🕒 Zeit · 🌾 Allergene · ➕ Extras'); };
+      sThreePillars.appendChild(legendBtn);
     }
 
     // Sticky Bottom CTA: Mittagio-Gelb und Text "Mittagsbox"
@@ -14144,9 +14158,6 @@
       if(primaryCTAText) primaryCTAText.textContent = 'In die Mittagsbox legen';
     }
 
-    // Logistik & Zeit
-    if(sMealTimeRange) sMealTimeRange.textContent = o.pickupWindow ? `Abholung heute: ${o.pickupWindow} Uhr` : 'Abholung heute Mittag';
-    
     const addr = buildAddress({address:o.address, street:o.providerStreet, zip:o.providerZip, city:o.providerCity});
     if(sProviderAddress) sProviderAddress.textContent = addr || 'Adresse nicht verfügbar';
 
@@ -14415,6 +14426,22 @@
           ${listHtml || '<p style="color:rgba(255,255,255,0.5);">Keine Allergene hinterlegt.</p>'}
         </div>
       `;
+      ov.appendChild(content);
+      document.body.appendChild(ov);
+      if(typeof lucide !== 'undefined') lucide.createIcons();
+    };
+    window.showExtrasDetailOverlay = function(){
+      const ov = document.createElement('div');
+      ov.className = 'extras-detail-overlay';
+      ov.style.cssText = 'position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.8); z-index:2000; display:flex; align-items:center; justify-content:center; padding:20px;';
+      ov.onclick = function(e){ if(e.target === ov) ov.remove(); };
+      const list = (o.extras || []).map(function(e){ return (e.name || '') + (e.price ? ' (+' + (typeof euro === 'function' ? euro(e.price) : e.price + ' €') + ')' : ''); }).filter(Boolean);
+      const content = document.createElement('div');
+      content.style.cssText = 'background:linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border-radius:24px; padding:24px; max-width:420px; width:100%; border:2px solid rgba(255,255,255,0.1); box-shadow:0 8px 32px rgba(0,0,0,0.5);';
+      content.onclick = function(e){ e.stopPropagation(); };
+      content.innerHTML = '<div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;"><h3 style="color:#fff; font-size:20px; font-weight:900; margin:0;">Extras</h3><button type="button" class="extras-overlay-close" style="background:none; border:none; color:#fff; cursor:pointer;"><i data-lucide="x"></i></button></div><div style="color:rgba(255,255,255,0.9); font-size:14px;">' + (list.length ? list.map(function(t){ return '<div style="padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.1);">' + (typeof esc === 'function' ? esc(t) : t) + '</div>'; }).join('') : '<p style="color:rgba(255,255,255,0.5);">Keine Extras.</p>') + '</div>';
+      var closeBtn = content.querySelector('.extras-overlay-close');
+      if(closeBtn) closeBtn.onclick = function(){ ov.remove(); };
       ov.appendChild(content);
       document.body.appendChild(ov);
       if(typeof lucide !== 'undefined') lucide.createIcons();
@@ -14826,8 +14853,6 @@
       </div>
     `;
 
-    document.getElementById('pStatus').textContent = o.active===false ? 'Ausverkauft' : 'Noch da';
-    document.getElementById('pWindow').textContent = o.pickupWindow || profile.mealWindow || '-';
     
     // No-Limits: Prominenter "Ausverkauft" / "Noch da" Toggle
     const toggleBtn = document.getElementById('btnToggleOffer');
