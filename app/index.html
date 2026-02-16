@@ -758,6 +758,11 @@
     top: -20px; z-index: 2000; pointer-events: none;
     animation: confetti-fall 3s linear forwards;
   }
+  @keyframes success-checkmark-pulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 8px 24px rgba(16,185,129,0.25); }
+    50% { transform: scale(1.05); box-shadow: 0 12px 32px rgba(16,185,129,0.35); }
+  }
+  #inseratSuccessSheet .inserat-success-checkmark { animation: success-checkmark-pulse 1.5s ease-in-out infinite; }
 
   .success-card-preview {
     background: #fff;
@@ -1884,6 +1889,12 @@
     #wizard.sheet--kitchen .glass-express-step0 .inserat-btn-primary.inserat-btn-emerald{
       background: #10b981; color: #fff; box-shadow: 0 10px 30px rgba(16,185,129,0.35);
     }
+    #wizard[data-flow="listing"] .inserat-btn-primary.is-loading { pointer-events: none; }
+    #wizard[data-flow="listing"] .inserat-btn-spinner {
+      display: inline-block; width: 22px; height: 22px; border: 3px solid rgba(255,255,255,0.35);
+      border-top-color: #fff; border-radius: 50%; animation: inserat-spin 0.7s linear infinite;
+    }
+    @keyframes inserat-spin { to { transform: rotate(360deg); } }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-btn-primary .inserat-cta-main{
       text-transform: none;
     }
@@ -2341,7 +2352,7 @@
       opacity: 1; pointer-events: auto; backdrop-filter: blur(25px) saturate(160%); -webkit-backdrop-filter: blur(25px) saturate(160%); background: rgba(255,255,255,0.2);
     }
     #wizard[data-flow="listing"] .photo-header img { transition: transform 0.4s, filter 0.4s; }
-    #wizard[data-flow="listing"] .photo-header.is-selecting img { transform: scale(1.1); filter: brightness(0.7); }
+    #wizard[data-flow="listing"] .photo-header.is-selecting img { transform: scale(1.1); filter: brightness(0.7) blur(25px); }
     #wizard[data-flow="listing"] .photo-header.is-selecting .inserat-photo-placeholder { filter: blur(25px); opacity: 0.8; }
     #wizard[data-flow="listing"] .photo-header .selection-overlay-inner {
       display: grid; grid-template-columns: 1fr 1fr; justify-items: center; align-items: center; gap: 8px; width: 100%;
@@ -2379,7 +2390,37 @@
     @media (max-width: 400px) {
       #wizard[data-flow="listing"] .pricing-info-label { font-size: 11px; }
     }
+    /* No-Scroll UI (S25): Karte + Buttons ohne Scrollen sichtbar [cite: 2026-02-14] */
+    @media (max-height: 700px) {
+      #wizard[data-flow="listing"] .liquid-master-panel .photo-header,
+      #wizard[data-flow="listing"] .liquid-master-panel .inserat-photo-tile.photo-header { height: 140px !important; min-height: 140px !important; }
+      #wizard[data-flow="listing"] .liquid-master-panel.inserat-keyboard-active .photo-header,
+      #wizard[data-flow="listing"] .liquid-master-panel.inserat-keyboard-active .inserat-photo-tile.photo-header { height: 100px !important; min-height: 100px !important; }
+      #wizard[data-flow="listing"] .liquid-master-panel .inserat-power-bar { padding: 8px 16px; }
+      #wizard[data-flow="listing"] .liquid-master-panel .inserat-section { padding-top: 8px; padding-bottom: 8px; }
+      #wizard[data-flow="listing"] .liquid-master-panel #step-name input.inserat-detail-style-title { font-size: 20px !important; }
+      #wizard[data-flow="listing"] .liquid-master-panel .inserat-price-section input.inserat-price-fintech { font-size: 3rem !important; }
+    }
     @keyframes gentle-pulse { 0% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.02); opacity: 1; text-shadow: 0 0 8px rgba(16,185,129,0.2); } 100% { transform: scale(1); opacity: 0.8; } }
+    /* Interactive Leberkäse-Onboarding [cite: 2026-02-14, 2026-02-16] */
+    #wizard[data-flow="listing"] .inserat-onboarding-overlay {
+      position: absolute; inset: 0; z-index: 20; display: flex; align-items: center; justify-content: center; padding: 24px; box-sizing: border-box;
+      background: rgba(255,255,255,0.4); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+      transition: opacity 0.3s ease; pointer-events: auto;
+    }
+    #wizard[data-flow="listing"] .inserat-onboarding-overlay.is-dismissed { opacity: 0; pointer-events: none; }
+    #wizard[data-flow="listing"] .inserat-onboarding-card {
+      background: #fff; border-radius: 24px; padding: 28px 24px; max-width: 320px; text-align: center;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.04);
+    }
+    #wizard[data-flow="listing"] .inserat-onboarding-card p { margin: 0 0 20px; font-size: 17px; font-weight: 700; color: #1a1a1a; line-height: 1.4; }
+    #wizard[data-flow="listing"] .inserat-onboarding-card .inserat-onboarding-btn { width: 100%; min-height: 52px; border-radius: 16px; border: none; background: #10b981; color: #fff; font-size: 16px; font-weight: 800; cursor: pointer; box-shadow: 0 10px 30px rgba(16,185,129,0.35); -webkit-tap-highlight-color: transparent; }
+    #wizard[data-flow="listing"] .inserat-onboarding-card .inserat-onboarding-btn:active { transform: scale(0.98); }
+    #wizard[data-flow="listing"] .inserat-onboarding-price-pulse input.inserat-price-fintech { animation: onboarding-price-pulse 2s ease-in-out infinite; }
+    @keyframes onboarding-price-pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(16,185,129,0.2); } 50% { box-shadow: 0 0 0 6px rgba(16,185,129,0.15); } }
+    #wizard[data-flow="listing"] .pricing-info-label.inserat-onboarding-tooltip { position: relative; }
+    #wizard[data-flow="listing"] .pricing-info-label.inserat-onboarding-tooltip::after { content: attr(data-tooltip); position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); margin-bottom: 6px; padding: 6px 10px; background: #1a1a1a; color: #fff; font-size: 11px; font-weight: 600; border-radius: 8px; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+    #wizard[data-flow="listing"] .pricing-info-label.inserat-onboarding-tooltip:hover::after { opacity: 1; }
     /* Smart-Photo: Vorschaubilder (3 Standard-Bilder / imageMap) */
     .photo-suggestion {
       width: 60px; height: 60px; border-radius: 12px; object-fit: cover; border: 2px solid transparent;
@@ -2470,6 +2511,12 @@
     #psheet .psheet-actions-primary #btnToggleOffer { background: var(--brand); color: #1a1a1a; border: none; }
     #psheet .psheet-actions-secondary { display: flex; gap: 8px; justify-content: center; }
     #psheet .psheet-actions-secondary .psheet-btn-secondary { font-size: 14px; font-weight: 700; }
+    #psheet .psheet-state-badge.card-state-badge { position: absolute; top: 12px; left: 12px; padding: 4px 10px; border-radius: 8px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.03em; z-index: 12; display: flex; align-items: center; gap: 6px; }
+    #psheet .psheet-state-badge.card-state-live { background: rgba(255,255,255,0.95); color: #1a1a1a; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    #psheet .psheet-state-badge.card-state-live::before { content: ''; width: 8px; height: 8px; background: #22c55e; border-radius: 50%; }
+    #psheet .psheet-state-badge.card-state-planned { background: rgba(59,130,246,0.9); color: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    #psheet .universal-dish-card.psheet-card .psheet-photo-header { cursor: pointer; }
+    #psheet .universal-dish-card.psheet-card .psheet-card-body { cursor: pointer; }
     /* Titel wie Detailseite (h2#sDish): 24px, 950, Abstand 0 0 8px, gleiche Typo */
     .inserat-unified-title-wrap {
       padding-bottom: 0;
@@ -4239,6 +4286,36 @@
     #v-provider-home .dashboard-kasten-header .prov-header-inner{ padding:0; }
     #v-provider-home .dashboard-kasten-header .prov-title,
     #v-provider-home .dashboard-kasten-header .prov-page-header-title{ font-size:20px !important; font-weight:900 !important; }
+    /* Live-Pille oben rechts: Umsatz + Teilen */
+    .provider-home-live-pill{
+      display:flex; align-items:center;
+      background:rgba(255,255,255,0.8); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+      border:1px solid rgba(0,0,0,0.06); border-radius:999px;
+      padding:4px 4px 4px 14px; box-shadow:0 2px 12px rgba(0,0,0,0.06);
+      cursor:pointer; transition:transform 0.1s, box-shadow 0.15s;
+    }
+    .provider-home-live-pill:active{ transform:scale(0.98); }
+    .provider-home-pill-umsatz{ padding-right:8px; }
+    .provider-home-pill-label{ display:block; font-size:8px; font-weight:800; color:#9ca3af; text-transform:uppercase; letter-spacing:0.05em; line-height:1.1; }
+    .provider-home-pill-value{ font-size:14px; font-weight:900; color:#059669; transition:transform 0.2s ease; }
+    .provider-home-pill-value.turnover-roll{ animation:turnoverRoll 0.35s ease; }
+    @keyframes turnoverRoll{ 0%{ opacity:0.6; transform:translateY(4px); } 100%{ opacity:1; transform:translateY(0); } }
+    .provider-home-pill-share{
+      width:36px; height:36px; border-radius:50%;
+      background:#FFDE00; color:#1a1a1a; border:none; cursor:pointer;
+      display:flex; align-items:center; justify-content:center;
+      box-shadow:inset 0 1px 2px rgba(255,255,255,0.4), 0 2px 6px rgba(0,0,0,0.08);
+      transition:transform 0.1s;
+    }
+    .provider-home-pill-share:active{ transform:scale(0.9); }
+    .provider-home-pill-share span{ font-size:14px; }
+    /* Fairness-Snippet-Leiste (Midnight Blue) */
+    #providerFairnessSnippet{
+      display:block; padding:10px 20px; background:#0f172a; color:#fff;
+      font-size:13px; font-weight:700; text-align:center; cursor:pointer;
+      transition:opacity 0.2s;
+    }
+    #providerFairnessSnippet:active{ opacity:0.9; }
     /* KPI-Kasten: Glas-Lesbarkeit (Text-Schatten) + veredelte Zahlen + Trennlinie */
     #v-provider-home .dashboard-kasten-kpis{
       padding:18px max(16px, env(safe-area-inset-left, 0)) 18px max(16px, env(safe-area-inset-right, 0));
@@ -4264,7 +4341,6 @@
     }
     #v-provider-home .dashboard-kasten-kpis #dashboardTagesessenCount{ color:#1a1a1a !important; }
     #v-provider-home .dashboard-kasten-kpis #dashboardAbholungenCount{ color:#3b82f6 !important; }
-    #v-provider-home .dashboard-kasten-kpis #dashboardUmsatzToday{ color:#16a34a !important; }
     #v-provider-home .dashboard-kasten-angebote{
       padding:14px 16px; padding-left:max(16px, env(safe-area-inset-left, 0)); padding-right:max(16px, env(safe-area-inset-right, 0));
     }
@@ -6589,16 +6665,27 @@
                 </div>
                 <h1 class="prov-page-header-title">Meine Küche</h1>
               </div>
-              <button type="button" id="btnProviderHomeRefresh" title="Aktualisieren" aria-label="Daten neu laden" class="prov-page-header-action" style="background:rgba(0,0,0,0.06); border:none; min-width:44px; min-height:44px; width:44px; height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; color:#1a1a1a; cursor:pointer;">
-                <i data-lucide="refresh-cw" style="width:20px; height:20px;"></i>
-              </button>
+              <div class="provider-home-top-right" style="display:flex; align-items:center; gap:8px;">
+                <div id="providerHomeLivePill" class="provider-home-live-pill" role="button" tabindex="0" title="Fairness &amp; Transparenz" aria-label="Umsatz heute, Fairness öffnen">
+                  <div class="provider-home-pill-umsatz">
+                    <span class="provider-home-pill-label">Umsatz</span>
+                    <span id="dashboardUmsatzPillAmount" class="provider-home-pill-value tabular-nums">0,00 €</span>
+                  </div>
+                  <button type="button" id="btnProviderHomeSharePill" title="Heutige Angebote teilen" aria-label="Angebote teilen" class="provider-home-pill-share">
+                    <span aria-hidden="true">📤</span>
+                  </button>
+                </div>
+                <button type="button" id="btnProviderHomeRefresh" title="Aktualisieren" aria-label="Daten neu laden" class="prov-page-header-action" style="background:rgba(0,0,0,0.06); border:none; min-width:44px; min-height:44px; width:44px; height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; color:#1a1a1a; cursor:pointer;">
+                  <i data-lucide="refresh-cw" style="width:20px; height:20px;"></i>
+                </button>
+              </div>
             </div>
             <div id="providerHomeGreeting" style="display:none;"></div>
             <div id="providerHomeDate" style="display:none;" aria-hidden="true"></div>
           </div>
         </header>
 
-        <!-- KASTEN 2: KPIs -->
+        <!-- KASTEN 2: KPIs (Tagesessen, Abholungen – Umsatz in Live-Pille oben rechts) -->
         <div class="dashboard-kasten dashboard-kasten-kpis">
           <div class="prov-stats-stolz" style="display:flex; justify-content:space-between; align-items:flex-end; border:none; padding:0;">
             <div id="kpiTagesessen" role="button" tabindex="0" style="text-align:center; cursor:pointer; min-height:40px; flex:1;" onclick="document.getElementById('providerActiveListingsSection')?.scrollIntoView({behavior:'smooth'})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); document.getElementById('providerActiveListingsSection')?.scrollIntoView({behavior:'smooth'});}" title="Tagesessen">
@@ -6609,12 +6696,11 @@
               <p id="kpiLabelAbholungen" class="kpi-label" style="margin:0 0 2px; font-size:8px; font-weight:800; color:#9ca3af; text-transform:uppercase; letter-spacing:0.05em;">Abholungen</p>
               <p id="dashboardAbholungenCount" style="margin:0; font-size:16px; font-weight:900; color:#3b82f6;">0</p>
             </div>
-            <div id="kpiUmsatz" role="button" tabindex="0" style="text-align:right; cursor:pointer; min-height:40px; flex:1;" onclick="showProviderBilling()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); showProviderBilling();}" title="Tagesumsatz">
-              <p id="kpiLabelUmsatz" class="kpi-label" style="margin:0 0 2px; font-size:8px; font-weight:800; color:#9ca3af; text-transform:uppercase; letter-spacing:0.05em;">Umsatz heute</p>
-              <p id="dashboardUmsatzToday" style="margin:0; font-size:16px; font-weight:900; color:#16a34a;">0,00 €</p>
-            </div>
           </div>
         </div>
+
+        <!-- Fairness-Snippet: Ersparnis-Leiste (Klick öffnet Fairness-Radar) -->
+        <div id="providerFairnessSnippet" style="display:none;" role="button" tabindex="0" aria-label="Fairness und Ersparnis">🛡️ Bisher gespart: 0,00 €</div>
 
         <!-- KASTEN 3: Aktive Angebote heute -->
         <div class="dashboard-kasten dashboard-kasten-angebote" id="providerActiveListingsSectionWrap">
@@ -7908,7 +7994,7 @@
 </div>
 
 <!-- Inserat Live – Erfolgs-Sheet nach Veröffentlichung -->
-<div class="backdrop" id="inseratSuccessBd" onclick="closeInseratSuccessSheet()" style="background:rgba(0,0,0,0.7); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); z-index:1200;"></div>
+<div class="backdrop inserat-success-backdrop" id="inseratSuccessBd" onclick="closeInseratSuccessSheet()" style="background:rgba(0,0,0,0.5); backdrop-filter:blur(30px); -webkit-backdrop-filter:blur(30px); z-index:1200;"></div>
 <div class="sheet" id="inseratSuccessSheet" style="max-width:480px; border-radius:32px; background:#f8f7f2; z-index:1201; display:flex; flex-direction:column; max-height:92vh;">
   <div id="confettiContainer" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; overflow:hidden;"></div>
   
@@ -7925,11 +8011,13 @@
       </div>
     </div>
 
-    <!-- 1. Celebration Header -->
-    <div style="margin-bottom:24px;">
-      <div style="width:64px; height:64px; background:#dcfce7; color:#16a34a; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:32px; margin:0 auto 12px; box-shadow:0 4px 12px rgba(22,163,74,0.15);">🎉</div>
-      <h1 style="margin:0 0 6px; font-size:24px; font-weight:950; color:#1a1a1a; letter-spacing:-0.03em;">Stark! Es ist live.</h1>
-      <p style="margin:0; font-size:14px; color:#64748b; font-weight:500;">Hungrige Gäste können dein Gericht jetzt finden.</p>
+    <!-- 1. Checkmark + Geschafft (Dopamin-Kick) [cite: 2026-01-26, 2026-01-29, 2026-02-16] -->
+    <div id="inseratSuccessCheckmarkBlock" style="margin-bottom:20px;">
+      <div class="inserat-success-checkmark" style="width:80px; height:80px; margin:0 auto 16px; background:#dcfce7; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 8px 24px rgba(16,185,129,0.25);">
+        <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      </div>
+      <h1 id="inseratSuccessCheckmarkTitle" style="margin:0 0 6px; font-size:22px; font-weight:950; color:#0f172a; letter-spacing:-0.03em;">Geschafft! Deine Abholnummern sind scharfgeschaltet.</h1>
+      <p id="inseratSuccessCheckmarkSub" style="margin:0; font-size:14px; color:#64748b; font-weight:500;">Hungrige Gäste können dein Gericht jetzt finden.</p>
     </div>
 
     <!-- 2. Live Preview (Kompakt-Card mit 3 Säulen) -->
@@ -7978,13 +8066,13 @@
 
   </div>
 
-  <!-- Bottom: Zur Übersicht + Weiteres Inserat erstellen -->
+  <!-- Bottom: Zum Inserat + Nächstes Gericht [cite: 2026-01-29] -->
   <div style="position:absolute; bottom:0; left:0; right:0; padding:20px 24px calc(20px + env(safe-area-inset-bottom, 0)); background:linear-gradient(to top, #f8f7f2 80%, transparent); text-align:center; display:flex; flex-direction:column; gap:10px;">
     <button type="button" id="inseratSuccessBtnBack" style="width:100%; min-height:52px; border-radius:16px; background:#1a1a1a; color:#fff; font-weight:800; font-size:15px; border:none; box-shadow:0 4px 12px rgba(0,0,0,0.1);">
-      Zur Übersicht (Dashboard)
+      Zum Inserat
     </button>
     <button type="button" id="inseratSuccessBtnNewListing" style="width:100%; min-height:48px; border-radius:16px; background:#fff; color:#1a1a1a; font-weight:700; font-size:15px; border:2px solid rgba(0,0,0,0.1);">
-      Weiteres Inserat erstellen
+      Nächstes Gericht inserieren
     </button>
   </div>
 </div>
@@ -14861,6 +14949,8 @@
     const catLabel = (o.category && CAT_EMOJI[o.category]) ? (CAT_EMOJI[o.category] + ' ' + (o.category || '')) : (o.category || '');
     const pill = (active, label, emo) => '<span class="status-pill ' + (active ? 'active' : 'inactive') + '" title="' + esc(label) + '" aria-label="' + esc(label) + '"><span style="font-size:18px;">' + emo + '</span></span>';
     const funcBtn = (active, title, emo) => '<span class="func-icon-btn ' + (active ? 'active' : '') + '" title="' + esc(title) + '">' + emo + '</span>';
+    const cardState = typeof getCardState === 'function' ? getCardState(o) : (o.active !== false && o.day === (typeof isoDate === 'function' ? isoDate(new Date()) : '') ? 'LIVE' : 'PLANNED');
+    const stateLabel = typeof getCardStateLabel === 'function' ? getCardStateLabel(cardState) : (cardState === 'LIVE' ? 'Live' : 'Geplant');
     const powerBarHtml = '<div class="inserat-power-bar inserat-unified-pills psheet-power-bar">' +
       pill(hasDineIn, 'Vor Ort', '🍴') +
       pill(hasReuse, 'Mehrweg', '🔄') +
@@ -14870,18 +14960,29 @@
       '<span class="power-bar-legend-trigger" title="Bedeutung der Symbole">ⓘ</span>' +
       '</div>';
     const preview = document.getElementById('pPreview');
-    preview.innerHTML = '<div class="universal-dish-card psheet-card">' +
-      '<div class="inserat-photo-tile photo-header psheet-photo-header" style="position:relative;overflow:hidden;flex-shrink:0;width:100%;height:190px;background:#f0f0f0;">' +
+    preview.innerHTML = '<div class="universal-dish-card psheet-card" data-card-state="' + esc(cardState) + '" role="button" tabindex="0" aria-label="Karte bearbeiten">' +
+      '<div class="inserat-photo-tile photo-header psheet-photo-header psheet-card-click-area" style="position:relative;overflow:hidden;flex-shrink:0;width:100%;height:190px;background:#f0f0f0;">' +
+      (cardState === 'LIVE' ? '<div class="psheet-state-badge card-state-badge card-state-live">' + esc(stateLabel) + '</div>' : (cardState === 'PLANNED' ? '<div class="psheet-state-badge card-state-badge card-state-planned">' + esc(stateLabel) + '</div>' : '')) +
       '<img src="' + esc(imgSrc) + '" alt="' + esc(o.dish||'') + '" style="width:100%;height:100%;object-fit:cover;display:block;" />' +
       '<div class="inserat-price-on-image price-pill psheet-price-sticker">' + priceStr + ' €</div>' +
       '</div>' +
       powerBarHtml +
-      '<div class="psheet-card-body" style="padding:20px;">' +
+      '<div class="psheet-card-body psheet-card-click-area" style="padding:20px;">' +
       '<h2 class="psheet-card-title">' + esc(o.dish || 'Gericht') + '</h2>' +
       (catLabel ? '<span class="extra-pill inserat-cat-pill active" style="display:inline-block;margin-bottom:12px;">' + esc(catLabel) + '</span>' : '') +
       '<div class="inserat-price-section psheet-price-block"><span class="inserat-price-fintech psheet-price-value">' + priceStr + '</span><sup class="inserat-price-euro-sup">€</sup></div>' +
       '</div>' +
       '</div>';
+    preview.querySelectorAll('.psheet-card-click-area').forEach(function(el){
+      el.style.cursor = 'pointer';
+      el.addEventListener('click', function(ev){
+        ev.preventDefault();
+        ev.stopPropagation();
+        if(typeof haptic === 'function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10);
+        closeProviderSheet();
+        startListingFlow({ editOfferId: id });
+      });
+    });
 
     
     // No-Limits: Prominenter "Ausverkauft" / "Noch da" Toggle
@@ -15299,6 +15400,36 @@
     } else {
       prompt('Text für Instagram kopieren:', text);
     }
+  }
+
+  /** Karten-Layout als Bild für Social Media (Instagram/WhatsApp) teilen. Fallback: shareOffer. */
+  function shareCardAsImage(cardEl, fallbackOffer){
+    if(!cardEl || typeof html2canvas !== 'function'){
+      if(fallbackOffer && typeof shareOffer === 'function') shareOffer(fallbackOffer);
+      return;
+    }
+    html2canvas(cardEl, { scale: 2, useCORS: true, allowTaint: true, backgroundColor: '#ffffff', logging: false })
+      .then(function(canvas){
+        canvas.toBlob(function(blob){
+          if(!blob){ if(fallbackOffer) shareOffer(fallbackOffer); return; }
+          var file = new File([blob], 'mittagio-karte.png', { type: 'image/png' });
+          if(navigator.share && navigator.canShare && navigator.canShare({ files: [file] })){
+            navigator.share({ title: 'Mittagio', text: '', files: [file] })
+              .then(function(){ if(typeof showToast === 'function') showToast('Bild geteilt!'); })
+              .catch(function(err){ if(err.name !== 'AbortError' && fallbackOffer) shareOffer(fallbackOffer); });
+          } else {
+            var a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'mittagio-karte.png';
+            a.click();
+            URL.revokeObjectURL(a.href);
+            if(typeof showToast === 'function') showToast('Bild gespeichert – zum Teilen in Galerie öffnen');
+          }
+        }, 'image/png', 0.95);
+      })
+      .catch(function(){
+        if(fallbackOffer && typeof shareOffer === 'function') shareOffer(fallbackOffer);
+      });
   }
 
   function shareOffer(o, useWebShare = true){
@@ -18720,30 +18851,64 @@
         }
       }
 
-      // Dashboard 2.1: Header-Kennzahlen (Tagesessen, Abholungen, Kochbuch, Umsatz)
+      // Dashboard 2.1: Header-Kennzahlen (Tagesessen, Abholungen; Umsatz in Live-Pille)
       const dashTagesessen = document.getElementById('dashboardTagesessenCount');
       const dashAbholungen = document.getElementById('dashboardAbholungenCount');
       const dashKochbuch = document.getElementById('dashboardKochbuchCount');
-      const dashUmsatz = document.getElementById('dashboardUmsatzToday');
       const dashAbholungenHint = document.getElementById('dashboardAbholungenHint');
-      const dashUmsatzHint = document.getElementById('dashboardUmsatzHint');
       if(dashTagesessen) dashTagesessen.textContent = mineToday.length;
       if(dashAbholungen) dashAbholungen.textContent = todayPickups;
       if(dashAbholungenHint){ dashAbholungenHint.style.display = todayPickups === 0 ? 'block' : 'none'; }
       if(dashKochbuch) dashKochbuch.textContent = cookbookCount;
       const nettoEuro = (tagesumsatzCents / 100 - todayOrders.length * 0.89).toFixed(2);
-      if(dashUmsatz){ dashUmsatz.textContent = nettoEuro.replace('.', ',') + ' €'; dashUmsatz.style.color = hasRevenue ? '#16a34a' : '#1a1a1a'; }
-      if(dashUmsatzHint){ dashUmsatzHint.style.display = !hasRevenue ? 'block' : 'none'; }
+      const nettoStr = nettoEuro.replace('.', ',') + ' €';
 
-      // KPI: Tagesessen-Label immer anzeigen; Abholungen/Umsatz-Labels ausblenden sobald Aktivität
+      // Live-Pille oben rechts: Umsatz mit Hochroll-Animation + Haptik bei Änderung
+      const pillAmount = document.getElementById('dashboardUmsatzPillAmount');
+      if(pillAmount){
+        var lastPill = window._lastProviderPillUmsatz;
+        if(lastPill !== undefined && lastPill !== nettoStr){
+          pillAmount.classList.add('turnover-roll');
+          if(typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
+          setTimeout(function(){ pillAmount.classList.remove('turnover-roll'); }, 400);
+        }
+        window._lastProviderPillUmsatz = nettoStr;
+        pillAmount.textContent = nettoStr;
+        pillAmount.style.color = hasRevenue ? '#059669' : '#6b7280';
+      }
+      // Live-Pill: Klick Umsatz-Bereich → Fairness-Radar; Teilen-Button → shareTodayOffers
+      const livePill = document.getElementById('providerHomeLivePill');
+      if(livePill){
+        livePill.onclick = function(e){
+          if(e.target.closest('.provider-home-pill-share')) return;
+          if(typeof hapticLight === 'function') hapticLight();
+          if(typeof openPricingFairnessOverlay === 'function') openPricingFairnessOverlay();
+        };
+        livePill.onkeydown = function(e){ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); livePill.click(); } };
+      }
+      var btnPillShare = document.getElementById('btnProviderHomeSharePill');
+      if(btnPillShare){
+        btnPillShare.onclick = function(e){ e.preventDefault(); e.stopPropagation(); if(typeof hapticLight === 'function') hapticLight(); if(typeof shareTodayOffers === 'function') shareTodayOffers(); };
+      }
+
+      // Fairness-Snippet: Ersparnis (z. B. vs. 15 % Plattform) – Klick öffnet Fairness-Radar
+      var fairnessSnippet = document.getElementById('providerFairnessSnippet');
+      if(fairnessSnippet){
+        var bruttoEuro = tagesumsatzCents / 100;
+        var savedEuro = (bruttoEuro * 0.15).toFixed(2).replace('.', ','); // Ersparnis vs. 15 %-Plattform
+        fairnessSnippet.textContent = '🛡️ Bisher gespart: ' + savedEuro + ' €';
+        fairnessSnippet.style.display = 'block';
+        fairnessSnippet.onclick = function(){ if(typeof hapticLight === 'function') hapticLight(); if(typeof openPricingFairnessOverlay === 'function') openPricingFairnessOverlay(); };
+        fairnessSnippet.onkeydown = function(e){ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); fairnessSnippet.click(); } };
+      }
+
+      // KPI: Tagesessen-Label immer anzeigen; Abholungen-Label ausblenden bei Aktivität
       const kpiLabelTagesessen = document.getElementById('kpiLabelTagesessen');
       const kpiLabelAbholungen = document.getElementById('kpiLabelAbholungen');
-      const kpiLabelUmsatz = document.getElementById('kpiLabelUmsatz');
       if(kpiLabelTagesessen) kpiLabelTagesessen.style.display = '';
       if(kpiLabelAbholungen) kpiLabelAbholungen.style.display = todayPickups > 0 ? 'none' : '';
-      if(kpiLabelUmsatz) kpiLabelUmsatz.style.display = hasRevenue ? 'none' : '';
 
-      // KPI Click-Handler (Abholungen → Abholnummer, Umsatz → Tagesumsatz)
+      // KPI Click-Handler (Tagesessen → scroll zu Angeboten, Abholungen → Abholungen)
       const kpiTagesessen = document.getElementById('kpiTagesessen');
       if(kpiTagesessen) kpiTagesessen.onclick = () => {
         const target = document.getElementById('providerActiveListingsSection');
@@ -18753,11 +18918,6 @@
       if(kpiBestellungen) kpiBestellungen.onclick = () => {
         if(typeof showProviderPickups === 'function') showProviderPickups();
       };
-      const kpiUmsatz = document.getElementById('kpiUmsatz');
-      if(kpiUmsatz){
-        kpiUmsatz.onclick = () => { if(typeof showProviderBilling === 'function') showProviderBilling(); };
-        kpiUmsatz.onkeydown = function(e){ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); kpiUmsatz.click(); } };
-      }
 
       // Aktive Inserate: Sektion immer sichtbar; bei 0 Tagesessen leere Karte mit CTA
       const providerActiveListings = document.getElementById('providerActiveListings');
@@ -18884,7 +19044,7 @@
           }).length;
           html += `
             <div style="margin-top:8px; padding:10px; background:#f8f7f3; border-radius:12px;">
-              <div style="font-weight:600; font-size:14px;">Nächste Abholung: ${esc(nextPickup.etaTime)} (${pickupCount} ${pickupCount === 1 ? 'Code' : 'Codes'})</div>
+              <div style="font-weight:600; font-size:14px;">Nächste Abholung: ${esc(nextPickup.etaTime)} (${pickupCount} ${pickupCount === 1 ? 'Abholnummer' : 'Abholnummern'})</div>
             </div>
           `;
         }
@@ -21797,11 +21957,13 @@
   }
   const btnShareOffer = document.getElementById('btnShareOffer');
   if(btnShareOffer){
-    btnShareOffer.onclick=()=>{
+    btnShareOffer.onclick=function(){
       if(!activeProviderOfferId) return;
       const o = offers.find(x=>x.id===activeProviderOfferId);
       if(!o) return;
-      shareOffer(o);
+      const cardEl = document.getElementById('pPreview') && document.getElementById('pPreview').querySelector('.universal-dish-card.psheet-card');
+      if(cardEl && typeof shareCardAsImage === 'function') shareCardAsImage(cardEl, o);
+      else shareOffer(o);
     };
   }
   const btnPrintOffer = document.getElementById('btnPrintOffer');
@@ -22905,24 +23067,31 @@
         }
       } 
       // Case 3: Neues Gericht – 3 Säulen und Abholzeiten aus Profil übernehmen
+      // First-Time: Leberkäse-Template laden [cite: 2026-01-29, 2026-02-16]
       else {
         const globalReuseEnabled = !!profile.reuseEnabledByDefault;
         const defaultVorOrt = (provider.profile && provider.profile.dineInPossibleDefault !== undefined) ? !!provider.profile.dineInPossibleDefault : true;
         const defaultAbholnummer = !!profile.abholnummerEnabledByDefault;
+        const isFirstTimeLeberkaese = !localStorage.getItem('mittagio_provider_leberkaese_onboarding_done') && (offers || []).filter(function(o){ return o.providerId === providerId(); }).length === 0;
+        const leberkaeseImageUrl = 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400&q=80';
         w.data = {
           providerId: providerId(),
-          dish:'', category:'Vegetarisch', price:0,
+          dish: isFirstTimeLeberkaese ? 'Dicke Scheibe Leberkäse mit Spätzle' : '',
+          category: isFirstTimeLeberkaese ? 'Fleisch' : 'Vegetarisch',
+          price: isFirstTimeLeberkaese ? 8.5 : 0,
           pickupWindow: profile.mealWindow || DEFAULT_MEAL_WINDOW,
           hasPickupCode: defaultAbholnummer,
-          dineInPossible: defaultVorOrt,
+          dineInPossible: isFirstTimeLeberkaese ? true : defaultVorOrt,
           allergens:[],
           wantsAllergens: false,
           extras:[],
-          reuse:{ enabled: globalReuseEnabled, deposit: globalReuseEnabled ? (provider.profile && typeof provider.profile.reuseDepositDefault === 'number' ? provider.profile.reuseDepositDefault : 3) : 0 },
-          photoData:'',
+          reuse:{ enabled: isFirstTimeLeberkaese ? true : globalReuseEnabled, deposit: (isFirstTimeLeberkaese || globalReuseEnabled) ? (provider.profile && typeof provider.profile.reuseDepositDefault === 'number' ? provider.profile.reuseDepositDefault : 3) : 0 },
+          photoData: isFirstTimeLeberkaese ? leberkaeseImageUrl : '',
+          photoDataIsStandard: !!isFirstTimeLeberkaese,
           cookbookId:null,
           day: ctx.date || createFlowPreselectedDate || isoDate(new Date())
         };
+        if(isFirstTimeLeberkaese) ctx.isLeberkaeseOnboarding = true;
       }
       
       // Normalize data
@@ -23296,6 +23465,25 @@
     if(wrap){ updateListingPreviewContent(wrap); }
   }
 
+  // InseratCard State-Machine: Karte funktioniert in allen Kontexten (DRAFT, ARCHIV, PLANNED, LIVE)
+  var CARD_STATE = { DRAFT: 'DRAFT', ARCHIV: 'ARCHIV', PLANNED: 'PLANNED', LIVE: 'LIVE' };
+  function getCardState(offerOrDish, context){
+    if(!offerOrDish && context !== 'wizard') return CARD_STATE.DRAFT;
+    if(context === 'wizard' || context === 'flow') return CARD_STATE.DRAFT;
+    var o = offerOrDish || {};
+    var isOffer = !!o.day;
+    var todayKey = typeof isoDate === 'function' ? isoDate(new Date()) : '';
+    if(isOffer && o.day === todayKey && o.active !== false) return CARD_STATE.LIVE;
+    if(isOffer && o.day) return CARD_STATE.PLANNED;
+    return CARD_STATE.ARCHIV;
+  }
+  function getCardStateLabel(state){
+    if(state === CARD_STATE.LIVE) return 'Live';
+    if(state === CARD_STATE.PLANNED) return 'Geplant';
+    if(state === CARD_STATE.ARCHIV) return 'Archiv';
+    return 'Entwurf';
+  }
+
   // ============================================================
   // MASTER INSERATSFLOW
   // Wird IMMER verwendet für:
@@ -23610,6 +23798,7 @@
       prognoseWrap.className='inserat-prognose-wrap inserat-earnings inserat-umsatzprognose';
       prognoseWrap.innerHTML='<p style="margin:0; font-size:12px; font-weight:600; color:#94a3b8;">Umsatzprognose: <span id="calc-val">'+(p0*30).toFixed(2).replace('.',',')+'</span> €</p>';
       stepPrice.appendChild(prognoseWrap);
+      if(w.ctx && w.ctx.isLeberkaeseOnboarding) stepPrice.classList.add('inserat-onboarding-price-pulse');
       scrollArea.appendChild(stepPrice);
 
 
@@ -23627,10 +23816,12 @@
       actionSection.className='inserat-action-section fixed-footer' + (isInserierenRoute ? ' inserat-action-pricing' : '');
 
       if(isInserierenRoute){
+        var isLeberkaeseOnboarding = !!(w.ctx && w.ctx.isLeberkaeseOnboarding);
         var pricingLabel=document.createElement('div');
-        pricingLabel.className='pricing-info-label';
+        pricingLabel.className='pricing-info-label' + (isLeberkaeseOnboarding ? ' inserat-onboarding-tooltip' : '');
         pricingLabel.setAttribute('role','button');
         pricingLabel.setAttribute('aria-label','Preisübersicht anzeigen');
+        if(isLeberkaeseOnboarding) pricingLabel.setAttribute('data-tooltip','Hier kriegst du volle Transparenz');
         pricingLabel.textContent='Preisübersicht ⓘ';
         pricingLabel.onclick=function(e){ e.preventDefault(); e.stopPropagation(); hapticLight(); if(typeof openPricingFairnessOverlay==='function') openPricingFairnessOverlay(); };
         actionSection.appendChild(pricingLabel);
@@ -23638,13 +23829,27 @@
         btnGratis.type='button';
         btnGratis.className='inserat-btn-primary inserat-btn-emerald';
         btnGratis.textContent='mit Abholnummer';
-        btnGratis.onclick=function(){ if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; } if(typeof haptic==='function') haptic([30, 50, 30]); w.data.hasPickupCode=true; w.data.inseratFeeWaived=true; w.data.pricingOption='abholnummer'; var o=previewOfferFromWizard(); closeWizard(true); showPublishFeeModal(o); };
+        btnGratis.onclick=function(){
+          if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; }
+          if(btnGratis.classList.contains('is-loading')) return;
+          if(typeof haptic==='function') haptic([30, 50, 30]);
+          w.data.hasPickupCode=true; w.data.inseratFeeWaived=true; w.data.pricingOption='abholnummer';
+          var o=previewOfferFromWizard();
+          btnGratis.classList.add('is-loading');
+          btnGratis.innerHTML='<span class="inserat-btn-spinner"></span>';
+          btnGratis.disabled=true;
+          if(btn499) btn499.disabled=true;
+          setTimeout(function(){
+            closeWizard(true);
+            showPublishFeeModal(o);
+          }, 800);
+        };
         actionSection.appendChild(btnGratis);
         const btn499=document.createElement('button');
         btn499.type='button';
         btn499.className='inserat-btn-secondary inserat-btn-yellow-border';
         btn499.textContent='Nur Inserat';
-        btn499.onclick=function(){ if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; } if(typeof haptic==='function') haptic([30, 50, 30]); w.data.hasPickupCode=false; w.data.pricingOption=undefined; w.data.inseratFeeWaived=false; var o=previewOfferFromWizard(); closeWizard(true); showPublishFeeModal(o); };
+        btn499.onclick=function(){ if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; } if(btn499.disabled) return; if(typeof haptic==='function') haptic([30, 50, 30]); w.data.hasPickupCode=false; w.data.pricingOption=undefined; w.data.inseratFeeWaived=false; var o=previewOfferFromWizard(); closeWizard(true); showPublishFeeModal(o); };
         actionSection.appendChild(btn499);
       } else {
         const btnSave=document.createElement('button');
@@ -23696,6 +23901,18 @@
         actionSection.appendChild(btnSave);
       }
       box.appendChild(actionSection);
+
+      if(w.ctx && w.ctx.isLeberkaeseOnboarding){
+        box.style.position = 'relative';
+        var overlay = document.createElement('div');
+        overlay.className = 'inserat-onboarding-overlay';
+        overlay.setAttribute('role','dialog');
+        overlay.setAttribute('aria-label','Erstes Inserat');
+        overlay.innerHTML = '<div class="inserat-onboarding-card"><p>Dein erstes Inserat ist bereit. Probier es kurz aus!</p><button type="button" class="inserat-onboarding-btn">Probier es aus</button></div>';
+        var btn = overlay.querySelector('.inserat-onboarding-btn');
+        if(btn) btn.onclick = function(){ hapticLight(); overlay.classList.add('is-dismissed'); };
+        box.appendChild(overlay);
+      }
 
       bindKeyboardAvoidance();
       setWizardContent(box);
@@ -24001,8 +24218,25 @@
     inseratSuccessCurrentOffer = publishedOffer;
     const d = normalizeOffer(publishedOffer);
     
-    // 1. Konfetti zünden
+    // 1. Konfetti zünden [cite: 2026-01-26, 2026-02-16]
     createConfetti();
+    try { localStorage.setItem('mittagio_provider_leberkaese_onboarding_done', '1'); } catch(e){}
+    if(navigator.vibrate) navigator.vibrate([50, 30, 50]);
+
+    var isLeberkaeseSuccess = (d.dish || '').indexOf('Leberkäse') !== -1;
+    var checkmarkTitle = document.getElementById('inseratSuccessCheckmarkTitle');
+    var checkmarkSub = document.getElementById('inseratSuccessCheckmarkSub');
+    if(checkmarkTitle) checkmarkTitle.textContent = isLeberkaeseSuccess ? 'Geschafft! Dein Leberkäse ist online.' : 'Geschafft! Deine Abholnummern sind scharfgeschaltet.';
+    if(checkmarkSub) checkmarkSub.textContent = isLeberkaeseSuccess ? 'Das war einfach, sicher – und jetzt verdienen wir Geld.' : 'Hungrige Gäste können dein Gericht jetzt finden.';
+
+    if(typeof Notification !== 'undefined' && Notification.permission === 'granted'){
+      try {
+        new Notification(isLeberkaeseSuccess ? '🚀 Dein Leberkäse ist live!' : '🚀 Dein Inserat ist live!', {
+          body: isLeberkaeseSuccess ? 'Dein erstes Inserat ist online. Ab jetzt können Gäste digital bestellen. Denk dran: Vor-Ort-Gäste kosten dich weiterhin 0,00 €!' : 'Dein Inserat ist online. Gäste können jetzt bestellen.',
+          icon: '/mittagio/app/assets/icons/icon-192.png'
+        });
+      } catch(notifyErr){}
+    }
 
     // Hero nur bei Abholnummer („Kunde zeigt Abholnummer“ – sonst irrelevant)
     const heroBlock = document.getElementById('inseratSuccessHero');
@@ -24099,7 +24333,6 @@
     const sheet = document.getElementById('inseratSuccessSheet');
     if(bd) bd.classList.add('active');
     if(sheet) sheet.classList.add('active');
-    if(typeof haptic === 'function') haptic([12, 8, 12]);
     if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
   }
 
@@ -24107,8 +24340,8 @@
     const container = document.getElementById('confettiContainer');
     if(!container) return;
     container.innerHTML = '';
-    const colors = ['#FFDE00', '#10b981', '#3b82f6', '#ef4444', '#f59e0b'];
-    for(let i=0; i<40; i++) {
+    const colors = ['#10b981', '#059669', '#34d399', '#6ee7b7', '#a7f3d0'];
+    for(let i=0; i<50; i++) {
       const c = document.createElement('div');
       c.className = 'confetti';
       c.style.left = Math.random() * 100 + '%';
@@ -24145,7 +24378,7 @@
       };
     }
     const inseratSuccessBtnBack = document.getElementById('inseratSuccessBtnBack');
-    if(inseratSuccessBtnBack) inseratSuccessBtnBack.onclick = closeInseratSuccessSheet;
+    if(inseratSuccessBtnBack) inseratSuccessBtnBack.onclick = function(){ var id = inseratSuccessCurrentOffer && inseratSuccessCurrentOffer.id; closeInseratSuccessSheet(); if(id && typeof openProviderOffer === 'function') openProviderOffer(id); };
     const inseratSuccessBtnNewListing = document.getElementById('inseratSuccessBtnNewListing');
     if(inseratSuccessBtnNewListing){
       inseratSuccessBtnNewListing.onclick = function(){
@@ -25776,5 +26009,6 @@
 
   setupLiveSync();
 </script>
+  <script src="https://unpkg.com/html2canvas@1.4.1/dist/html2canvas.min.js" async></script>
 </body>
 </html>
