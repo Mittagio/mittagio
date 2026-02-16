@@ -2566,6 +2566,14 @@
     #psheet .psheet-legend-inner { background: #fff; border-radius: 16px; padding: 20px; max-width: 320px; width: 100%; box-shadow: 0 20px 40px rgba(0,0,0,0.15); }
     #psheet .psheet-legend-print { display: block; width: 100%; margin-bottom: 8px; padding: 12px 16px; background: #10b981; color: #fff; border: none; border-radius: 12px; font-weight: 800; font-size: 14px; cursor: pointer; }
     #psheet .psheet-legend-close { display: block; width: 100%; padding: 12px; background: transparent; color: #64748b; border: 1px solid #e2e8f0; border-radius: 12px; font-weight: 700; font-size: 14px; cursor: pointer; }
+    /* Save-Scope-Dialog: Nur aktuell vs. Kochbuch [cite: Asset-Logik] */
+    .save-scope-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 1998; }
+    .save-scope-sheet { position: fixed; left: 50%; bottom: 0; transform: translateX(-50%); width: 100%; max-width: 400px; background: #fff; border-radius: 20px 20px 0 0; padding: 24px 20px max(env(safe-area-inset-bottom), 20px); box-shadow: 0 -10px 40px rgba(0,0,0,0.15); z-index: 1999; display: flex; flex-direction: column; gap: 12px; }
+    .save-scope-title { margin: 0 0 8px; font-size: 16px; font-weight: 800; color: #0f172a; }
+    .save-scope-btn { min-height: 48px; border-radius: 14px; border: none; font-size: 15px; font-weight: 800; cursor: pointer; width: 100%; }
+    .save-scope-btn-current { background: #f1f5f9; color: #0f172a; }
+    .save-scope-btn-cookbook { background: #10b981; color: #fff; }
+    .save-scope-cancel { background: transparent; color: #64748b; border: none; font-size: 14px; font-weight: 700; cursor: pointer; padding: 12px; }
     #psheet .psheet-state-badge.card-state-badge { position: absolute; top: 12px; left: 12px; padding: 4px 10px; border-radius: 8px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.03em; z-index: 12; display: flex; align-items: center; gap: 6px; }
     #psheet .psheet-state-badge.card-state-live { background: rgba(255,255,255,0.95); color: #1a1a1a; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
     #psheet .psheet-state-badge.card-state-live::before { content: ''; width: 8px; height: 8px; background: #22c55e; border-radius: 50%; }
@@ -4619,6 +4627,17 @@
     #v-provider-week .week-meal-name{ font-weight:900; font-size:16px; color: var(--premium-anthracite, #1a1a1a); }
     #v-provider-week .week-meal-badges{ font-size:16px !important; }
     #v-provider-week .week-meal-badges span{ font-size:1.1em; }
+    /* Status-Visualisierung Wochenplan: Power-Bar (🍴🕒🧾🔄), No-Scroll, nur in der Karte [cite: Gold-Assets] */
+    #v-provider-week .week-power-bar{ display:flex; align-items:center; gap:6px; margin-top:8px; font-size:18px; line-height:1; flex-wrap:nowrap; }
+    #v-provider-week .week-power-bar .week-power-icon{ display:inline-flex; align-items:center; justify-content:center; min-width:28px; height:28px; border-radius:8px; transition: opacity 0.2s, box-shadow 0.2s, filter 0.2s; }
+    #v-provider-week .week-power-bar .week-power-icon.week-power-icon-ok{ color:#059669; filter: drop-shadow(0 0 6px rgba(16,185,129,0.4)); }
+    #v-provider-week .week-power-bar .week-power-icon.week-power-icon-muted{ opacity:0.4; filter: grayscale(0.6); }
+    #v-provider-week .week-power-bar .week-power-icon.week-power-time-missing{ animation: weekTimePulse 1.5s ease-in-out infinite; opacity:0.9; color:#94a3b8; filter: drop-shadow(0 0 4px rgba(250,204,21,0.35)); }
+    #v-provider-week .week-power-bar .week-power-icon.week-power-time-ok{ color:#059669; filter: drop-shadow(0 0 6px rgba(16,185,129,0.5)); }
+    @keyframes weekTimePulse{ 0%,100%{ opacity:0.75; transform:scale(1); } 50%{ opacity:1; transform:scale(1.08); } }
+    #v-provider-week .week-meal-card-wrap.week-card-live .week-power-bar{ box-shadow: 0 0 0 1px rgba(16,185,129,0.2), 0 2px 12px rgba(16,185,129,0.15); border-radius:12px; padding:4px 8px; margin-top:8px; }
+    #v-provider-week .week-meal-card-wrap.week-card-live{ box-shadow: var(--card-shadow-soft), 0 0 0 1px rgba(16,185,129,0.12), 0 0 24px -4px rgba(16,185,129,0.2); animation: weekCardLiveGlow 2.5s ease-in-out infinite; }
+    @keyframes weekCardLiveGlow{ 0%,100%{ box-shadow: var(--card-shadow-soft), 0 0 0 1px rgba(16,185,129,0.12), 0 0 24px -4px rgba(16,185,129,0.2); } 50%{ box-shadow: var(--card-shadow-soft), 0 0 0 1px rgba(16,185,129,0.2), 0 0 28px -2px rgba(16,185,129,0.28); } }
       #v-provider-week .week-meal-meta{ font-size:13px; color:#64748b; margin-top:4px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
       #v-provider-week .week-meal-online{ display:inline-flex; align-items:center; gap:4px; font-size:12px; font-weight:700; color:#1a1a1a; }
       #v-provider-week .week-meal-actions{ display:flex; align-items:center; gap:6px; }
@@ -4761,6 +4780,9 @@
       #v-provider-week .kw-slot-small .kw-slot-price{ font-size:13px; font-weight:800; color:#1a1a1a; margin-left:auto; }
       #v-provider-week .kw-slot-main .price-pill{ padding:6px 12px; font-size:15px; }
       #v-provider-week .kw-slot-small .price-pill{ padding:4px 10px; font-size:13px; }
+      #v-provider-week .kw-slot-power{ margin-top:6px; font-size:14px; }
+      #v-provider-week .kw-slot-power .week-power-icon{ min-width:22px; height:22px; }
+      #v-provider-week .kw-slot.kw-slot-live{ box-shadow:0 0 0 1px rgba(16,185,129,0.18), 0 2px 12px rgba(16,185,129,0.14); border-radius:14px; }
       #v-provider-week .week-meal-meta .price-pill{ padding:4px 10px; font-size:13px; }
       #v-provider-week .kw-slot{ transition:transform 0.2s ease; }
       #v-provider-week .kw-slot.kw-slot-swipe-delete{ background:rgba(239,68,68,0.08); }
@@ -8289,6 +8311,15 @@
   </div>
 </div>
 
+<!-- Save-Scope-Dialog: Nur aktuell vs. Im Kochbuch speichern -->
+<div class="save-scope-backdrop" id="saveScopeBackdrop" style="display:none;"></div>
+<div class="save-scope-sheet" id="saveScopeSheet" style="display:none;">
+  <p class="save-scope-title">Wo speichern?</p>
+  <button type="button" id="saveScopeOnlyCurrent" class="save-scope-btn save-scope-btn-current">Nur für dieses Inserat / diesen Tag</button>
+  <button type="button" id="saveScopeToCookbook" class="save-scope-btn save-scope-btn-cookbook">Als Standard im Kochbuch speichern</button>
+  <button type="button" id="saveScopeCancel" class="save-scope-cancel" aria-label="Abbrechen">Abbrechen</button>
+</div>
+
 <!-- Abholnummer (bildschirmfüllend) -->
 <div class="backdrop" id="codeBd" onclick="closeCodeSheet()"></div>
 <div class="quick-ticket" id="codeSheet">
@@ -9388,7 +9419,7 @@
   });
   let provider = load(LS.provider, { loggedIn:false, email:null, current_session_id:null, profile:{ name:'', address:'', street:'', zip:'', city:'', mealWindow:'11:30 – 14:00', mealStart:'11:30', mealEnd:'14:00', lunchWeekdays:[1,2,3,4,5], phone:'', email:'', website:'', logoData:'', reuseEnabledByDefault:false, abholnummerEnabledByDefault:false, wantsAllergensByDefault:false } });
   let cookbook = load(LS.cookbook, []); // [{id, dish, category, price, allergens[], extras?, reuse? , photoData?}]
-  let week = load(LS.week, {}); // { 'YYYY-MM-DD': [cookbookId,...] }
+  let week = load(LS.week, {}); // { 'YYYY-MM-DD': [{ providerId, cookbookId, dish, price, timeStart?, timeEnd? }, ...] }
 
   const CATEGORIES = ['Vegetarisch','Vegan','Fisch','Mit Fleisch'];
   /** Kochbuch MASTER-SPEC (MagazinKochbuch): Pills = Alle, Fleisch, Eintopf, Snack, Vegetarisch */
@@ -15232,16 +15263,34 @@
     updatePsheetDecisionZone();
     var btnGreen = document.getElementById('btnPsheetMitAbholnummer');
     var btnYellow = document.getElementById('btnPsheetNurInserat');
+    function doPsheetSave(withPickup){
+      raw.hasPickupCode = !!withPickup;
+      if(typeof save === 'function' && typeof LS !== 'undefined') save(LS.offers, offers);
+      if(typeof showToast === 'function') showToast(withPickup ? 'Mit Abholnummer gespeichert' : 'Inserat gespeichert');
+      closeProviderSheet();
+      if(typeof renderProviderHome === 'function') renderProviderHome();
+    }
+    function doPsheetSaveAndCookbook(withPickup){
+      var cbId = raw.cookbookId;
+      if(cbId && Array.isArray(cookbook)){
+        var ent = cookbook.find(function(c){ return String(c.id) === String(cbId); });
+        if(ent){ ent.dish = (raw.dish || raw.title || ent.dish || '').trim(); ent.title = ent.dish; if(raw.price != null) ent.price = raw.price; if(typeof save === 'function' && typeof LS !== 'undefined') save(LS.cookbook, cookbook); }
+      }
+      doPsheetSave(withPickup);
+    }
+    function maybeShowSaveScope(withPickup){
+      if(raw.cookbookId && typeof showSaveScopeDialog === 'function'){
+        showSaveScopeDialog({ onlyCurrent: function(){ doPsheetSave(withPickup); }, saveToCookbook: function(){ doPsheetSaveAndCookbook(withPickup); } });
+      } else {
+        doPsheetSave(withPickup);
+      }
+    }
     if(btnGreen){
       btnGreen.addEventListener('click', function(ev){
         ev.preventDefault();
         if(btnGreen.classList.contains('psheet-incomplete')) return;
         try { if(navigator.vibrate) navigator.vibrate(20); if(typeof hapticLight === 'function') hapticLight(); } catch(e){}
-        raw.hasPickupCode = true;
-        if(typeof save === 'function' && typeof LS !== 'undefined') save(LS.offers, offers);
-        if(typeof showToast === 'function') showToast('Mit Abholnummer gespeichert');
-        closeProviderSheet();
-        if(typeof renderProviderHome === 'function') renderProviderHome();
+        maybeShowSaveScope(true);
       });
     }
     if(btnYellow){
@@ -15249,11 +15298,7 @@
         ev.preventDefault();
         if(btnYellow.classList.contains('psheet-incomplete')) return;
         try { if(navigator.vibrate) navigator.vibrate(20); if(typeof hapticLight === 'function') hapticLight(); } catch(e){}
-        raw.hasPickupCode = false;
-        if(typeof save === 'function' && typeof LS !== 'undefined') save(LS.offers, offers);
-        if(typeof showToast === 'function') showToast('Inserat gespeichert');
-        closeProviderSheet();
-        if(typeof renderProviderHome === 'function') renderProviderHome();
+        maybeShowSaveScope(false);
       });
     }
     var closeX = document.getElementById('psheetCloseX');
@@ -15312,6 +15357,36 @@
     document.getElementById('pbd').classList.remove('active');
     document.getElementById('psheet').classList.remove('active');
   }
+
+  var _saveScopeCallbacks = null;
+  function showSaveScopeDialog(opts){
+    if(!opts || (typeof opts.onlyCurrent !== 'function' && typeof opts.saveToCookbook !== 'function')) return;
+    _saveScopeCallbacks = opts;
+    var bd = document.getElementById('saveScopeBackdrop');
+    var sheet = document.getElementById('saveScopeSheet');
+    if(bd) bd.style.display = 'block';
+    if(sheet) sheet.style.display = 'block';
+    try { if(navigator.vibrate) navigator.vibrate(10); if(typeof hapticLight === 'function') hapticLight(); } catch(e){}
+  }
+  function closeSaveScopeDialog(){
+    _saveScopeCallbacks = null;
+    var bd = document.getElementById('saveScopeBackdrop');
+    var sheet = document.getElementById('saveScopeSheet');
+    if(bd) bd.style.display = 'none';
+    if(sheet) sheet.style.display = 'none';
+  }
+  (function(){
+    var bd = document.getElementById('saveScopeBackdrop');
+    var sheet = document.getElementById('saveScopeSheet');
+    var btnOnly = document.getElementById('saveScopeOnlyCurrent');
+    var btnCookbook = document.getElementById('saveScopeToCookbook');
+    var btnCancel = document.getElementById('saveScopeCancel');
+    if(bd) bd.addEventListener('click', closeSaveScopeDialog);
+    if(btnOnly) btnOnly.addEventListener('click', function(){ if(_saveScopeCallbacks && typeof _saveScopeCallbacks.onlyCurrent === 'function'){ _saveScopeCallbacks.onlyCurrent(); } closeSaveScopeDialog(); try { if(navigator.vibrate) navigator.vibrate(20); } catch(e){} });
+    if(btnCookbook) btnCookbook.addEventListener('click', function(){ if(_saveScopeCallbacks && typeof _saveScopeCallbacks.saveToCookbook === 'function'){ _saveScopeCallbacks.saveToCookbook(); } closeSaveScopeDialog(); try { if(navigator.vibrate) navigator.vibrate(20); } catch(e){} });
+    if(btnCancel) btnCancel.addEventListener('click', closeSaveScopeDialog);
+  })();
+  if(typeof window !== 'undefined'){ window.showSaveScopeDialog = showSaveScopeDialog; window.closeSaveScopeDialog = closeSaveScopeDialog; }
 
   function buildShareText(o){
     const dish = o.dish || o.title || 'Gericht';
@@ -20093,28 +20168,31 @@
           var entryDineIn = entry.dineInPossible !== false;
           var entryPickup = !!(entry.hasPickupCode !== undefined ? entry.hasPickupCode : defaultPickup);
           var entryReuse = !!(entry.reuse && entry.reuse.enabled);
+          var hasTime = isLive || !!(entry.timeStart && entry.timeEnd);
           var showVorOrt = (entry.dineInPossible !== undefined) && (entryDineIn !== defaultDineIn);
           var showMehrweg = (entry.reuse !== undefined) && (entryReuse !== defaultReuse);
           var overrideBadges = [];
           if (showVorOrt) overrideBadges.push('<span title="Vor Ort (Abweichung)">🍴</span>');
           if (showMehrweg) overrideBadges.push('<span title="Mehrweg (Abweichung)">🔄</span>');
           var badgeHtml = overrideBadges.length ? '<div class="kw-slot-override-badges">' + overrideBadges.join('') + '</div>' : '';
+          function kwPowerIcon(emoji, ok, timeMissing){ var c = 'week-power-icon'; if(timeMissing) c += ' week-power-time-missing'; else if(ok) c += (emoji === '🕒' ? ' week-power-time-ok' : ' week-power-icon-ok'); else c += ' week-power-icon-muted'; return '<span class="' + c + '">' + emoji + '</span>'; }
+          var kwPowerBar = '<div class="week-power-bar kw-slot-power">' + kwPowerIcon('🍴', entryDineIn, false) + kwPowerIcon('🕒', hasTime, !hasTime) + kwPowerIcon('🧾', entryPickup, false) + kwPowerIcon('🔄', entryReuse, false) + '</div>';
           if (slot === 0) {
             var slotEl = document.createElement('div');
-            slotEl.className = 'kw-slot kw-slot-main';
+            slotEl.className = 'kw-slot kw-slot-main' + (isLive ? ' kw-slot-live' : '');
             slotEl.setAttribute('data-day', key);
             slotEl.setAttribute('data-slot', String(slot));
             if (!isLive) slotEl.setAttribute('data-draft', '1');
-            slotEl.innerHTML = '<div class="kw-slot-thumb" style="' + (img ? 'background-image:url(\'' + esc(img) + '\')' : '') + '">' + badgeHtml + '</div><div class="kw-slot-body"><div class="kw-slot-name">' + esc(name) + '</div><div class="kw-slot-price"><span class="price-pill">' + euro(price) + '</span></div></div>';
+            slotEl.innerHTML = '<div class="kw-slot-thumb" style="' + (img ? 'background-image:url(\'' + esc(img) + '\')' : '') + '">' + badgeHtml + '</div><div class="kw-slot-body"><div class="kw-slot-name">' + esc(name) + '</div><div class="kw-slot-price"><span class="price-pill">' + euro(price) + '</span></div>' + kwPowerBar + '</div>';
             slotEl.onclick = (function(k, idx){ return function(e){ e.stopPropagation(); if(slotEl.classList.contains('kw-slot-swipe-delete')) return; if(typeof haptic === 'function') haptic(6); weekPlanDay = k; if(isLive && items[idx] && items[idx].id){ if(typeof startListingFlow === 'function') startListingFlow({ editOfferId: items[idx].id }); } else { if(typeof openWeekAddSheet === 'function') openWeekAddSheet(k, idx); } }; })(key, slot);
             slotsWrap.appendChild(slotEl);
           } else {
             var slotSmall = document.createElement('div');
-            slotSmall.className = 'kw-slot kw-slot-small';
+            slotSmall.className = 'kw-slot kw-slot-small' + (isLive ? ' kw-slot-live' : '');
             slotSmall.setAttribute('data-day', key);
             slotSmall.setAttribute('data-slot', String(slot));
             if (!isLive) slotSmall.setAttribute('data-draft', '1');
-            slotSmall.innerHTML = '<div class="kw-slot-thumb" style="' + (img ? 'background-image:url(\'' + esc(img) + '\')' : '') + '">' + badgeHtml + '</div><div class="kw-slot-name">' + esc(name) + '</div><div class="kw-slot-price"><span class="price-pill">' + euro(price) + '</span></div>';
+            slotSmall.innerHTML = '<div class="kw-slot-thumb" style="' + (img ? 'background-image:url(\'' + esc(img) + '\')' : '') + '">' + badgeHtml + '</div><div class="kw-slot-name">' + esc(name) + '</div><div class="kw-slot-price"><span class="price-pill">' + euro(price) + '</span></div>' + kwPowerBar + '';
             slotSmall.onclick = (function(k, idx){ return function(e){ e.stopPropagation(); if(slotSmall.classList.contains('kw-slot-swipe-delete')) return; if(typeof haptic === 'function') haptic(6); weekPlanDay = k; if(isLive && items[idx] && items[idx].id){ if(typeof startListingFlow === 'function') startListingFlow({ editOfferId: items[idx].id }); } else { if(typeof openWeekAddSheet === 'function') openWeekAddSheet(k, idx); } }; })(key, slot);
             slotsWrap.appendChild(slotSmall);
           }
@@ -20393,13 +20471,15 @@
         ? '<span class="week-meal-online"><i data-lucide="check-circle" style="width:14px;height:14px;"></i> Online</span>'
         : '<span style="font-size:12px; font-weight:700; color:#94a3b8;">Geplant</span>';
       var p = (provider && provider.profile) ? provider.profile : {};
-      // Silent Defaults: Icons (Vor Ort, Abholnummer, Mehrweg) nur anzeigen, wenn sie vom Profil-Standard abweichen.
       var defaultDineIn = p.dineInPossibleDefault !== false;
       var defaultPickup = !!p.abholnummerEnabledByDefault;
       var defaultReuse = !!p.reuseEnabledByDefault;
       var entryDineIn = entry.dineInPossible !== false;
       var entryPickup = !!(entry.hasPickupCode !== undefined ? entry.hasPickupCode : defaultPickup);
       var entryReuse = !!(entry.reuse && entry.reuse.enabled);
+      var hasTime = !!(entry.timeStart && entry.timeEnd);
+      function powerIcon(emoji, ok, timeMissing){ var c = 'week-power-icon'; if(timeMissing) c += ' week-power-time-missing'; else if(ok) c += (emoji === '🕒' ? ' week-power-time-ok' : ' week-power-icon-ok'); else c += ' week-power-icon-muted'; return '<span class="' + c + '" title="' + (emoji === '🍴' ? 'Vor Ort' : emoji === '🕒' ? (hasTime ? 'Zeit gesetzt' : 'Zeit fehlt') : emoji === '🧾' ? 'Abholnummer' : 'Mehrweg') + '">' + emoji + '</span>'; }
+      var powerBarHtml = '<div class="week-power-bar">' + powerIcon('🍴', entryDineIn, false) + powerIcon('🕒', hasTime, !hasTime) + powerIcon('🧾', entryPickup, false) + powerIcon('🔄', entryReuse, false) + '</div>';
       var showVorOrt = (entry.dineInPossible !== undefined) && (entryDineIn !== defaultDineIn);
       var showMehrweg = (entry.reuse !== undefined) && (entryReuse !== defaultReuse);
       var badgeParts = [];
@@ -20408,7 +20488,7 @@
       var badgesHtml = badgeParts.length ? '<div class="week-meal-badges" style="display:flex; gap:8px; margin-top:6px; font-size:14px;">' + badgeParts.join('') + '</div>' : '';
       var verdienstHtml = !dayIsLive ? '<div class="week-meal-verdienst" style="font-size:12px; color:#1a1a1a; margin-top:4px;">Verdienst ca. ' + euro(Math.max(0, (Number(price)||0) - 4.99)) + '</div>' : '';
       var thumbHtml = '<div class="week-meal-thumb" style="width:56px;min-width:56px;height:56px;border-radius:12px;overflow:hidden;background:#e5e7eb;flex-shrink:0;background-size:cover;background-position:center' + (img ? ';background-image:url(\'' + esc(img) + '\')' : '') + '"></div>';
-      card.innerHTML = thumbHtml + '<div style="flex:1;min-width:0;"><div class="week-meal-name">' + esc(name) + '</div><div class="week-meal-meta"><span class="price-pill">' + euro(price) + '</span> ' + onlineHtml + '</div>' + badgesHtml + verdienstHtml + '</div>';
+      card.innerHTML = thumbHtml + '<div style="flex:1;min-width:0;"><div class="week-meal-name">' + esc(name) + '</div><div class="week-meal-meta"><span class="price-pill">' + euro(price) + '</span> ' + onlineHtml + '</div>' + powerBarHtml + badgesHtml + verdienstHtml + '</div>';
       card.style.cursor = 'pointer';
       if(!dayIsLive){
         card.onclick = function(e){ e.preventDefault(); e.stopPropagation(); if(weekJustSwiped) return; if(typeof openWeekAddSheet === 'function') openWeekAddSheet(weekPlanDay, weekIndex); };
@@ -20595,11 +20675,13 @@
     renderProviderWeekPreview();
     if(typeof toast === 'function') toast('Reihenfolge geändert');
   }
-  function addCookbookEntryToWeek(dayKey, cookbookId){
+  function addCookbookEntryToWeek(dayKey, cookbookId, opts){
     var c = (cookbook||[]).find(function(x){ return String(x.id) === String(cookbookId); });
     if(!c || c.providerId !== providerId()) return;
     if(!week[dayKey]) week[dayKey] = [];
-    week[dayKey].push({ providerId: c.providerId, cookbookId: c.id, dish: c.dish, price: c.price });
+    var entry = { providerId: c.providerId, cookbookId: c.id, dish: c.dish, price: c.price };
+    if(opts && (opts.timeStart != null || opts.timeEnd != null)){ entry.timeStart = opts.timeStart; entry.timeEnd = opts.timeEnd; }
+    week[dayKey].push(entry);
     save(LS.week, week);
     var boardWrap = document.getElementById('kwBoardWrap');
     if(boardWrap && boardWrap.style.display !== 'none'){ if(typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard(); } else { renderWeekPlan(); }
@@ -20611,7 +20693,10 @@
     if(!c || c.providerId !== providerId()) return;
     var arr = week[dayKey];
     if(!arr || index < 0 || index >= arr.length) return;
-    arr[index] = { providerId: c.providerId, cookbookId: c.id, dish: c.dish, price: c.price };
+    var prev = arr[index];
+    var entry = { providerId: c.providerId, cookbookId: c.id, dish: c.dish, price: c.price };
+    if(prev && (prev.timeStart != null || prev.timeEnd != null)){ entry.timeStart = prev.timeStart; entry.timeEnd = prev.timeEnd; }
+    arr[index] = entry;
     save(LS.week, week);
     var boardWrap = document.getElementById('kwBoardWrap');
     if(boardWrap && boardWrap.style.display !== 'none'){ if(typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard(); } else { renderWeekPlan(); }
