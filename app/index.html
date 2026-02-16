@@ -15019,7 +15019,7 @@
     const raw = offers.find(x=>String(x.id)===idStr);
     if(!raw) return;
     const o = normalizeOffer(raw);
-    activeProviderOfferId = id;
+    activeProviderOfferId = raw.id;
     const profile = normalizeProviderProfile(provider.profile || {});
     const offerProvider = offers.find(p => p.providerId === o.providerId);
     const hasReuse = offerProvider && (offerProvider.reuseEnabled || offerProvider.reuse || (offerProvider.providerProfile && offerProvider.providerProfile.reuseEnabled));
@@ -15044,7 +15044,7 @@
       '</div>';
     var infoLine = (catLabel ? esc(catLabel) + ' | ' : '') + priceStr + ' €';
     const preview = document.getElementById('pPreview');
-    preview.innerHTML = '<div class="universal-dish-card psheet-card" data-card-state="' + esc(cardState) + '" data-offer-id="' + esc(id) + '" role="button" tabindex="0" aria-label="Karte bearbeiten oder long-press für Ausverkauft">' +
+    preview.innerHTML = '<div class="universal-dish-card psheet-card" data-card-state="' + esc(cardState) + '" data-offer-id="' + esc(String(raw.id)) + '" role="button" tabindex="0" aria-label="Karte bearbeiten oder long-press für Ausverkauft">' +
       '<div class="inserat-photo-tile photo-header psheet-photo-header psheet-card-click-area" style="position:relative;overflow:hidden;flex-shrink:0;width:100%;height:190px;background:#f0f0f0;">' +
       (cardState === 'LIVE' ? '<div class="psheet-state-badge card-state-badge card-state-live">' + esc(stateLabel) + '</div>' : (cardState === 'PLANNED' ? '<div class="psheet-state-badge card-state-badge card-state-planned">' + esc(stateLabel) + '</div>' : '')) +
       '<button type="button" class="psheet-share-on-image" id="psheetShareOnImage" aria-label="Teilen" title="Teilen">📤</button>' +
@@ -15067,7 +15067,7 @@
         ev.stopPropagation();
         if(typeof hapticLight === 'function') hapticLight(); else if(navigator.vibrate) navigator.vibrate(10);
         closeProviderSheet();
-        startListingFlow({ editOfferId: id });
+        startListingFlow({ editOfferId: raw.id });
       });
     });
     var shareOnImage = document.getElementById('psheetShareOnImage');
@@ -15076,7 +15076,7 @@
         ev.preventDefault();
         ev.stopPropagation();
         if(typeof hapticLight === 'function') hapticLight();
-        var offer = offers.find(x=>x.id===id);
+        var offer = offers.find(x=>x.id===raw.id);
         if(offer){
           if(cardEl && typeof shareCardAsImage === 'function') shareCardAsImage(cardEl, offer);
           else if(typeof shareOffer === 'function') shareOffer(offer);
@@ -15094,7 +15094,7 @@
       });
     }
     var longPressTimer;
-    function startLongPress(){ longPressTimer = setTimeout(function(){ psheetLongPressFired = true; if(typeof hapticLight === 'function') hapticLight(); toggleOfferSoldOut(id); closeProviderSheet(); }, 500); }
+    function startLongPress(){ longPressTimer = setTimeout(function(){ psheetLongPressFired = true; if(typeof hapticLight === 'function') hapticLight(); toggleOfferSoldOut(raw.id); closeProviderSheet(); }, 500); }
     function cancelLongPress(){ if(longPressTimer){ clearTimeout(longPressTimer); longPressTimer = null; } }
     if(cardEl){
       cardEl.addEventListener('touchstart', function(ev){ if(ev.touches.length===1) startLongPress(); });
