@@ -2357,6 +2357,12 @@
     #wizard[data-flow="listing"] .inserat-power-bar .func-icon-btn { width: 44px; height: 44px; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; font-size: 20px; border: 2px solid rgba(0,0,0,0.08); background: rgba(0,0,0,0.04); transition: background 0.2s, color 0.2s; cursor: pointer; -webkit-tap-highlight-color: transparent; }
     #wizard[data-flow="listing"] .inserat-power-bar .func-icon-btn.active { background: #10b981; color: #fff; border-color: rgba(16,185,129,0.4); box-shadow: 0 2px 10px rgba(16,185,129,0.3); }
     #wizard[data-flow="listing"] .inserat-power-bar .func-icon-btn:active { transform: scale(0.96); }
+    /* Power-Bar Icon-Only (S25): symmetrische Reihe ohne Text, min. Touchfläche */
+    #wizard[data-flow="listing"] .inserat-power-bar .status-pill {
+      min-width: 44px; min-height: 44px; padding: 8px; justify-content: center;
+    }
+    #wizard[data-flow="listing"] .inserat-power-bar .power-bar-legend-trigger:hover,
+    #wizard[data-flow="listing"] .inserat-power-bar .power-bar-legend-trigger:focus { color: #64748b; }
     /* Info-Banner: wie Detailseite sMealTimeRange – 14px, 700, #1a1a1a */
     .inserat-info-banner {
       padding: 10px 20px; font-size: 14px; font-weight: 700; color: #1a1a1a;
@@ -2414,10 +2420,22 @@
       background: #10b981 !important; color: #fff !important;
       box-shadow: 0 4px 14px rgba(16,185,129,0.4);
     }
-    /* Preis-Sektion: wie sPriceSticker – 14px, 900, #1a1a1a (ein Guß mit Detailseite) */
-    #wizard[data-flow="listing"] .inserat-price-section .inserat-price-input,
-    #wizard[data-flow="listing"] .inserat-price-section .price-display {
+    /* Preis-Sektion: wie sPriceSticker – 14px, 900 (ohne Fintech-Klasse) */
+    #wizard[data-flow="listing"] .inserat-price-section .inserat-price-input:not(.inserat-price-fintech),
+    #wizard[data-flow="listing"] .inserat-price-section .price-display:not(.inserat-price-fintech) {
       font-size: 14px !important; font-weight: 900 !important; color: #1a1a1a !important;
+    }
+    /* Fintech-Preis (S25): rahmenlos, riesige Zahlen, pulsierende Emerald-Unterlinie beim Fokus */
+    #wizard[data-flow="listing"] .inserat-price-section input.inserat-price-fintech {
+      width: 140px; max-width: 60%; background: transparent !important;
+      border: none !important; border-bottom: 2px solid rgba(0,0,0,0.08) !important;
+      border-radius: 0 !important; padding: 12px 0 10px !important; outline: none !important;
+      font-size: 2.25rem !important; font-weight: 900 !important; color: #1a1a1a !important;
+      text-align: center; transition: border-color 0.3s ease;
+    }
+    #wizard[data-flow="listing"] .inserat-price-section input.inserat-price-fintech:focus {
+      border-bottom-color: #10b981 !important;
+      animation: magnet-pulse 1.2s ease-in-out infinite;
     }
     /* Umsatzprognose: wie sInfoHint – 12px, 600, #94a3b8 */
     #wizard[data-flow="listing"] .inserat-prognose-wrap.inserat-umsatzprognose p {
@@ -8293,7 +8311,7 @@
   </div>
   <div style="margin-bottom:16px; padding:14px; background:rgba(16,185,129,0.08); border-radius:14px; border:1px solid rgba(16,185,129,0.2);">
     <div style="font-size:14px; font-weight:800; color:#1a1a1a; margin-bottom:6px;">Risikofrei</div>
-    <p style="margin:0; font-size:14px; line-height:1.5; color:#475569;">0,89 € pro Abholnummer. Wir übernehmen alle Transaktionsgebühren. Gäste ohne Abholnummer (Vor Ort) sind zu 100 % kostenlos.</p>
+    <p style="margin:0; font-size:14px; line-height:1.5; color:#475569;">0,89 € pro Abholnummer. Wir übernehmen alle Transaktionsgebühren. Gäste vor Ort sind immer kostenlos (0,00 €).</p>
   </div>
   <div style="padding:14px; background:rgba(255,215,0,0.08); border-radius:14px; border:1px solid rgba(255,215,0,0.25);">
     <div style="font-size:14px; font-weight:800; color:#1a1a1a; margin-bottom:6px;">Einmalig</div>
@@ -19905,8 +19923,9 @@
       currentX = Math.max(-100, Math.min(100, currentX));
       cardEl.style.transform = 'translateX(' + currentX + 'px)';
     }
-    function onEnd(){
+    function onEnd(e){
       if(currentX < -SWIPE_THRESHOLD){
+        if(e && e.cancelable) e.preventDefault();
         weekJustSwiped = true; setTimeout(function(){ weekJustSwiped = false; }, 500);
         swipeEl.classList.add('week-meal-card-exit', 'week-meal-card-exit-left');
         cardEl.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
@@ -19915,6 +19934,7 @@
         swipeEl.style.opacity = '0';
         setTimeout(function(){ deletePlannedEntryWithUndo(date, index); }, 320);
       } else if(currentX > SWIPE_THRESHOLD){
+        if(e && e.cancelable) e.preventDefault();
         weekJustSwiped = true; setTimeout(function(){ weekJustSwiped = false; }, 500);
         swipeEl.classList.add('week-meal-card-exit', 'week-meal-card-exit-right');
         cardEl.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
@@ -21919,7 +21939,8 @@
       deltaX = x - startX; deltaY = y - startY;
     }
     function onEnd(e){
-      if(e.target.closest && e.target.closest('.cookbook-magazine-nav')) return;
+      if(!e) return;
+      if(e.target && e.target.closest && e.target.closest('.cookbook-magazine-nav')) return;
       var absX = Math.abs(deltaX), absY = Math.abs(deltaY);
       if(absX >= SWIPE_THRESHOLD && absX > absY){
         window._cookbookSwipeHandled = true;
@@ -23259,7 +23280,9 @@
         const wrap=document.createElement('button');
         wrap.type='button';
         wrap.className='status-pill '+(active?'active':'inactive');
-        wrap.innerHTML='<span style="font-size:18px;">'+emo+'</span><span>'+label+'</span>';
+        wrap.setAttribute('aria-label', label);
+        wrap.setAttribute('title', label);
+        wrap.innerHTML='<span style="font-size:18px;">'+emo+'</span>';
         wrap.onclick=()=>{ hapticLight(); if(toggleKey==='reuse'){ w.data.reuse=w.data.reuse||{}; w.data.reuse.enabled=!w.data.reuse.enabled; } else w.data[toggleKey]=!w.data[toggleKey]; saveDraft(); rebuildWizard(); };
         powerBar.appendChild(wrap);
       }
@@ -23270,7 +23293,8 @@
       timePill.type='button';
       timePill.className='status-pill '+(hasTimeValue?'active':'inactive');
       timePill.setAttribute('aria-label','Abholzeit bearbeiten');
-      timePill.innerHTML='<span style="font-size:18px;">🕒</span><span>Zeit</span>';
+      timePill.setAttribute('title','Zeit');
+      timePill.innerHTML='<span style="font-size:18px;">🕒</span>';
       timePill.onclick=()=>{ hapticLight(); w.data.pickupWindowEdit=!w.data.pickupWindowEdit; saveDraft(); rebuildWizard(); };
       powerBar.appendChild(timePill);
       const hasAllergens=!!(w.data.allergens&&w.data.allergens.length);
@@ -23289,6 +23313,12 @@
       extrasBarBtn.title='Extras';
       extrasBarBtn.onclick=()=>{ hapticLight(); w.data.extrasExpanded=!w.data.extrasExpanded; saveDraft(); rebuildWizard(); setTimeout(function(){ scrollToNext('step-extras'); }, 80); };
       powerBar.appendChild(extrasBarBtn);
+      var legendWrap=document.createElement('div'); legendWrap.style.cssText='position:relative; display:inline-flex; align-items:center;';
+      var legendTrigger=document.createElement('button'); legendTrigger.type='button'; legendTrigger.className='power-bar-legend-trigger'; legendTrigger.setAttribute('aria-label','Legende Symbole'); legendTrigger.setAttribute('title','Bedeutung der Symbole'); legendTrigger.textContent='ⓘ'; legendTrigger.style.cssText='width:32px; height:32px; border:none; background:transparent; color:#94a3b8; font-size:14px; cursor:pointer; border-radius:50%; display:flex; align-items:center; justify-content:center; -webkit-tap-highlight-color:transparent;';
+      var legendPop=document.createElement('div'); legendPop.className='power-bar-legend'; legendPop.setAttribute('role','tooltip'); legendPop.style.cssText='display:none; position:absolute; top:100%; right:0; margin-top:6px; padding:10px 14px; background:rgba(255,255,255,0.95); backdrop-filter:blur(12px); border-radius:12px; border:1px solid rgba(0,0,0,0.06); box-shadow:0 8px 24px rgba(0,0,0,0.1); font-size:11px; font-weight:600; color:#475569; line-height:1.5; z-index:50; white-space:nowrap;';
+      legendPop.innerHTML='🍴 Vor Ort · 🔄 Mehrweg · 🕒 Zeit · 🌾 Allergene · ➕ Extras';
+      legendTrigger.onclick=function(e){ e.stopPropagation(); hapticLight(); var on=legendPop.style.display==='block'; legendPop.style.display=on?'none':'block'; if(!on) setTimeout(function(){ var closeLegend=function(ev){ if(!legendWrap.contains(ev.target)){ legendPop.style.display='none'; document.removeEventListener('click', closeLegend); } }; document.addEventListener('click', closeLegend); }, 0); };
+      legendWrap.appendChild(legendTrigger); legendWrap.appendChild(legendPop); powerBar.appendChild(legendWrap);
       box.appendChild(powerBar);
 
       const scrollArea=document.createElement('div');
@@ -23365,11 +23395,10 @@
       priceDisplayWrap.style.cssText='margin-bottom:12px;';
       const inputPrice=document.createElement('input');
       inputPrice.type='text';
-      inputPrice.className='inserat-price-input price-display';
+      inputPrice.className='inserat-price-input price-display inserat-price-fintech';
       inputPrice.setAttribute('inputmode','decimal');
       inputPrice.placeholder='0,00';
       inputPrice.value=(w.data.price>0?Number(w.data.price).toFixed(2).replace('.',','):'');
-      inputPrice.style.cssText='font-size:14px; font-weight:900; color:#1a1a1a; background:rgba(255,215,0,0.15); border:2px solid rgba(255,215,0,0.4); border-radius:16px; padding:12px 20px; width:120px; outline:none;';
       const updateProfit = function(val){
         var p = (parseFloat(String(val).replace(',','.')) || 0) * 30;
         var calcVal = document.getElementById('calc-val');
