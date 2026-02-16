@@ -21971,15 +21971,16 @@
 
   function attachCookbookMagazineSwipe(cardEl, listLen){
     if(!cardEl || listLen <= 1) return;
-    var startX = 0, startY = 0, deltaX = 0, deltaY = 0, SWIPE_THRESHOLD = 55, mouseActive = false;
-    function getX(e){ return (e.touches && e.touches[0] ? e.touches[0].clientX : e.clientX) || 0; }
-    function getY(e){ return (e.touches && e.touches[0] ? e.touches[0].clientY : e.clientY) || 0; }
+    var startX = 0, startY = 0, deltaX = 0, deltaY = 0, SWIPE_THRESHOLD = 45, HORIZONTAL_LOCK = 12, mouseActive = false;
+    function getX(e){ if(e.touches && e.touches[0]) return e.touches[0].clientX; if(e.changedTouches && e.changedTouches[0]) return e.changedTouches[0].clientX; return e.clientX || 0; }
+    function getY(e){ if(e.touches && e.touches[0]) return e.touches[0].clientY; if(e.changedTouches && e.changedTouches[0]) return e.changedTouches[0].clientY; return e.clientY || 0; }
     function onStart(e){
       startX = getX(e); startY = getY(e); deltaX = 0; deltaY = 0; window._cookbookSwipeHandled = false;
     }
     function onMove(e){
       var x = getX(e), y = getY(e);
       deltaX = x - startX; deltaY = y - startY;
+      if(Math.abs(deltaX) > HORIZONTAL_LOCK && Math.abs(deltaX) >= Math.abs(deltaY) && e.cancelable){ e.preventDefault(); }
     }
     function onEnd(e){
       if(!e) return;
@@ -22002,7 +22003,7 @@
     }
     function onMouseMove(e){ deltaX = e.clientX - startX; deltaY = e.clientY - startY; }
     cardEl.addEventListener('touchstart', onStart, { passive: true });
-    cardEl.addEventListener('touchmove', onMove, { passive: true });
+    cardEl.addEventListener('touchmove', onMove, { passive: false });
     cardEl.addEventListener('touchend', onEnd, { passive: false, capture: true });
     cardEl.addEventListener('mousedown', function(e){
       if(e.target.closest && e.target.closest('.cookbook-magazine-nav')) return;
