@@ -2324,17 +2324,31 @@
       animation: magnet-pulse 1.2s ease-in-out infinite;
     }
     
-    /* Foto-Header randlos oben (Edge-to-Edge) [cite: Unified Detail] */
+    /* Guided Interaction: Pulsieren des Foto-Bereichs bei leerer Karte [cite: 2026-01-29] */
+    @keyframes inserat-card-photo-pulse {
+      0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(16,185,129,0.25); }
+      50% { opacity: 0.92; box-shadow: 0 0 0 8px rgba(16,185,129,0.08); }
+    }
+    #wizard[data-flow="listing"] .photo-header.inserat-card-photo-pulse,
+    #wizard[data-flow="listing"] .inserat-photo-tile.inserat-card-photo-pulse {
+      animation: inserat-card-photo-pulse 1.8s ease-in-out infinite;
+    }
+    /* Goldene Sammelkarte: Header-Bild Ratio 3:2, No-Scroll S25 [cite: 2026-02-14, 2026-02-16] */
     .liquid-master-panel .photo-header,
     .liquid-master-panel .inserat-photo-tile.photo-header {
-      height: 190px; min-height: 190px; flex-shrink: 0;
+      width: 100%; aspect-ratio: 3/2; max-height: min(260px, 38vh); flex-shrink: 0;
+      height: auto; min-height: 0;
       box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-      transition: height 0.25s ease, min-height 0.25s ease;
+      transition: max-height 0.25s ease;
+    }
+    .liquid-master-panel .photo-header img,
+    .liquid-master-panel .inserat-photo-tile.photo-header img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
     }
     /* Keyboard-Avoidance: Header schrumpft bei aktivem Input (Titel/Preis) [cite: 2026-02-16] */
     #wizard[data-flow="listing"] .liquid-master-panel.inserat-keyboard-active .photo-header,
     #wizard[data-flow="listing"] .liquid-master-panel.inserat-keyboard-active .inserat-photo-tile.photo-header {
-      height: 120px !important; min-height: 120px !important;
+      max-height: 120px !important; aspect-ratio: 3/2;
     }
     #wizard[data-flow="listing"].sheet--kitchen .liquid-master-panel .photo-header,
     #wizard[data-flow="listing"].sheet--kitchen .liquid-master-panel .inserat-photo-tile.photo-header {
@@ -2462,10 +2476,11 @@
       background: rgba(0,0,0,0.06); color: #64748b;
     }
     #wizard[data-flow="listing"] .inserat-status-bar.inserat-unified-pills .status-pill:active { transform: scale(0.98); }
-    /* Power-Bar: Zeit-Pill nutzt .status-pill; 🌾 und ➕ nutzen .func-icon-btn – Emerald wenn Wert hinterlegt */
-    #wizard[data-flow="listing"] .inserat-power-bar.inserat-unified-pills .status-pill.active { background: #10b981; color: #fff; box-shadow: 0 4px 14px rgba(16,185,129,0.4); }
+    /* Goldene Sammelkarte: Power-Bar – aktive Icons weiß + Emerald-Border/Shadow, 44x44 [cite: 2026-01-27, 2026-02-16] */
+    #wizard[data-flow="listing"] .inserat-power-bar.inserat-unified-pills .status-pill.active { background: #fff; color: #0f766e; border: 2px solid #10b981; box-shadow: 0 2px 12px rgba(16,185,129,0.35); }
+    #wizard[data-flow="listing"] .inserat-power-bar.inserat-unified-pills .status-pill.inactive { background: rgba(0,0,0,0.06); color: #64748b; border: 2px solid transparent; }
     #wizard[data-flow="listing"] .inserat-power-bar .func-icon-btn { width: 44px; height: 44px; min-width: 44px; min-height: 44px; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; font-size: 20px; border: 2px solid rgba(0,0,0,0.08); background: rgba(0,0,0,0.04); transition: background 0.2s, color 0.2s, transform 0.1s cubic-bezier(0.4,0,0.2,1); cursor: pointer; -webkit-tap-highlight-color: transparent; }
-    #wizard[data-flow="listing"] .inserat-power-bar .func-icon-btn.active { background: #10b981; color: #fff; border-color: rgba(16,185,129,0.4); box-shadow: 0 2px 10px rgba(16,185,129,0.3); }
+    #wizard[data-flow="listing"] .inserat-power-bar .func-icon-btn.active { background: #fff; color: #0f766e; border-color: #10b981; box-shadow: 0 2px 12px rgba(16,185,129,0.35); }
     #wizard[data-flow="listing"] .inserat-power-bar .func-icon-btn:active { transform: scale(0.9); }
     /* Power-Bar Icon-Only (S25): 44x44px Touch-Targets, space-between [cite: 2026-02-16] */
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-unified-pills {
@@ -2631,10 +2646,27 @@
       color: #64748b;
     }
     /* Kategorie-Pills: wie Detailseite sAllergensCodes / Karten-Text – 14px, 700, #1a1a1a, gleiche Optik */
+    /* Goldene Sammelkarte: Kategorie + Preis in einer Zeile, Preis gelbe Pill rechts [cite: 2026-02-16] */
+    #wizard[data-flow="listing"] .inserat-cat-price-row {
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px;
+      margin-bottom: 16px;
+    }
+    #wizard[data-flow="listing"] .inserat-price-pill-wrap {
+      display: inline-flex; align-items: center; flex-shrink: 0;
+      padding: 8px 14px; border-radius: 999px; background: rgba(255,215,0,0.95); box-shadow: 0 2px 8px rgba(255,215,0,0.3);
+    }
+    #wizard[data-flow="listing"] .inserat-price-pill-input {
+      width: 56px; border: none; background: transparent; font-size: 16px; font-weight: 900; color: #1a1a1a;
+      padding: 0; outline: none;
+    }
+    #wizard[data-flow="listing"] .inserat-price-pill-input::placeholder { color: rgba(0,0,0,0.4); }
+    #wizard[data-flow="listing"] .inserat-price-pill-euro { font-size: 14px; font-weight: 800; color: #1a1a1a; margin-left: 2px; }
+    #wizard[data-flow="listing"] .inserat-desc-italic,
+    #wizard[data-flow="listing"] .inserat-airbnb-desc.inserat-desc-italic { font-style: italic; color: #64748b; }
     #wizard[data-flow="listing"].sheet--kitchen .inserat-cat-pills .extra-pill {
-      font-size: 14px; font-weight: 700; color: #1a1a1a;
-      padding: 10px 18px; border-radius: 999px; background: rgba(0,0,0,0.04);
-      border: none; min-height: 44px;
+      font-size: 13px; font-weight: 700; color: #1a1a1a;
+      padding: 8px 14px; border-radius: 999px; background: rgba(0,0,0,0.04);
+      border: none; min-height: 40px;
     }
     #wizard[data-flow="listing"].sheet--kitchen .inserat-cat-pill.active,
     #wizard[data-flow="listing"].sheet--kitchen .inserat-cat-pills .extra-pill.active {
@@ -23412,6 +23444,33 @@
     wrap:'Fleisch', burger:'Fleisch', falafel:'Vegan', lachs:'Fleisch', sushi:'Fleisch', thunfisch:'Fleisch',
     salat:'Salat', curry:'Fleisch', gemüsepfanne:'Vegetarisch', risotto:'Vegetarisch', lasagne:'Fleisch'
   };
+  /** Goldene Sammelkarte: Kurze Beschreibungs-Snippets für Autovervollständigung [cite: 2026-01-29]. */
+  const DISH_DESCRIPTION_SUGGESTIONS = {
+    kürbissuppe:'… cremig, mit frischem Kürbis',
+    kartoffelsuppe:'… hausgemacht, mit Einlage',
+    tomatensuppe:'… frisch vom Feld',
+    linsensuppe:'… würzig, mit Gemüse',
+    schnitzel:'… knusprig paniert, hausgemacht',
+    gulasch:'… nach Art des Hauses',
+    käsespätzle:'… mit Röstzwiebeln',
+    pasta:'… frisch zubereitet',
+    pizza:'… aus dem Ofen',
+    burger:'… mit frischem Salat',
+    falafel:'… knusprig, mit Hummus',
+    salat:'… mit saisonalem Gemüse',
+    curry:'… aromatisch, nach Wahl',
+    gemüsepfanne:'… frisch vom Feld',
+    risotto:'… cremig, saisonal',
+    lasagne:'… hausgemacht, mehrschichtig'
+  };
+  function getDescriptionSuggestionForDish(dishName){
+    var n = String(dishName||'').trim().toLowerCase();
+    if(!n) return null;
+    for(var key in DISH_DESCRIPTION_SUGGESTIONS){
+      if(n.includes(key) || key.includes(n)) return DISH_DESCRIPTION_SUGGESTIONS[key];
+    }
+    return null;
+  }
   function getCategorySuggestionForDish(dishName){
     var n = String(dishName||'').trim().toLowerCase();
     if(!n) return null;
@@ -23559,26 +23618,18 @@
       w.data = normalizeProviderProfile(JSON.parse(JSON.stringify(provider.profile||{})));
       buildProviderStep();
     }
+    // Legacy-Cleanup: Kochbuch = InseratCard (Single-Source-of-Truth) [cite: 2026-01-29]
     if(kind==='cookbook'){
-      // Cookbook editing only (not for creating new dishes)
-      // For creating new dishes, use startListingFlow() instead
+      kind = 'listing';
+      ctx.entryPoint = 'cookbook';
+      w.kind = 'listing';
+      w.ctx = ctx;
       if(ctx.editId){
         const existing = cookbook.find(c => String(c.id) === String(ctx.editId));
-        if(existing){ w.data = JSON.parse(JSON.stringify(existing)); }
+        if(existing) w.data = JSON.parse(JSON.stringify(existing));
       }
       if(!w.data || !w.data.providerId){
-        w.data = {
-          providerId: providerId(),
-          dish:'', category:'Vegetarisch', price:0,
-          allergens:[],
-          extras:[],
-          reuse:{enabled:false, deposit:0},
-          photoData:'',
-          hasPickupCode:false,
-          dineInPossible:false,
-          createdAt: Date.now(),
-          lastUsed: null
-        };
+        w.data = { providerId: providerId(), dish:'', category:'Vegetarisch', price:0, allergens:[], extras:[], reuse:{enabled:false, deposit:0}, photoData:'', hasPickupCode:false, dineInPossible:false, createdAt: Date.now(), lastUsed: null };
       }
       w.data.providerId = providerId();
       w.data.category = w.data.category || 'Vegetarisch';
@@ -23591,7 +23642,11 @@
       w.data.dineInPossible = !!w.data.dineInPossible;
       w.data.createdAt = w.data.createdAt || Date.now();
       if(w.data.lastUsed === undefined) w.data.lastUsed = null;
-      buildCookbookStep();
+      if(wizardEl) wizardEl.setAttribute('data-flow', 'listing');
+      clearWizardActionsBar();
+      openWizard();
+      buildListingStep();
+      return;
     }
     if(kind==='listing'){
       // MASTER INSERATSFLOW - Always the same flow
@@ -23719,13 +23774,42 @@
       openWizard();
       buildListingStep();
     }
+    // Legacy-Cleanup: Wochenplan = InseratCard mit Vorauswahl aus Kochbuch [cite: 2026-01-29]
     if(kind==='week'){
-      // Cookbook-Eintrag für Datum planen
-      // Should use startListingFlow({dishId, date}) instead
       const x = cookbook.find(c => String(c.id) === String(ctx.fromCookbookId));
-      if(!x){ alert('Bitte erst ein Gericht im Kochbuch speichern.'); return; }
-      w.data = { cookbookId:x.id, date: isoDate(new Date()) };
-      buildWeekStep();
+      if(!x){ if(typeof showToast==='function') showToast('Bitte erst ein Gericht im Kochbuch speichern.'); else alert('Bitte erst ein Gericht im Kochbuch speichern.'); return; }
+      kind = 'listing';
+      ctx.entryPoint = 'week';
+      ctx.dishId = ctx.fromCookbookId;
+      ctx.date = ctx.date || isoDate(new Date());
+      w.kind = 'listing';
+      w.ctx = ctx;
+      const profile = normalizeProviderProfile(provider.profile || {});
+      const defaultVorOrt = (provider.profile && provider.profile.dineInPossibleDefault !== undefined) ? !!provider.profile.dineInPossibleDefault : true;
+      const defaultAbholnummer = !!profile.abholnummerEnabledByDefault;
+      const globalReuseEnabled = !!profile.reuseEnabledByDefault;
+      const defaultReuseDeposit = (provider.profile && typeof provider.profile.reuseDepositDefault === 'number') ? provider.profile.reuseDepositDefault : 3;
+      w.data = {
+        providerId: providerId(),
+        dish: x.dish || '',
+        category: x.category || 'Vegetarisch',
+        price: Number(x.price||0),
+        pickupWindow: x.pickupWindow || profile.mealWindow || DEFAULT_MEAL_WINDOW,
+        hasPickupCode: x.hasPickupCode !== undefined ? !!x.hasPickupCode : defaultAbholnummer,
+        dineInPossible: x.dineInPossible !== undefined ? !!x.dineInPossible : defaultVorOrt,
+        allergens: Array.isArray(x.allergens) ? [...x.allergens] : [],
+        wantsAllergens: !!(x.allergens && x.allergens.length),
+        extras: Array.isArray(x.extras) ? JSON.parse(JSON.stringify(x.extras)) : [],
+        reuse: x.reuse ? JSON.parse(JSON.stringify(x.reuse)) : { enabled: globalReuseEnabled, deposit: defaultReuseDeposit },
+        photoData: x.photoData || x.imageUrl || '',
+        cookbookId: x.id,
+        day: ctx.date
+      };
+      if(wizardEl) wizardEl.setAttribute('data-flow', 'listing');
+      clearWizardActionsBar();
+      openWizard();
+      buildListingStep();
+      return;
     }
 
     if(kind !== 'listing') openWizard();
@@ -23797,9 +23881,7 @@
 
   function rebuildWizard(){
     if(w.kind==='provider') return buildProviderStep();
-    if(w.kind==='cookbook') return buildCookbookStep();
     if(w.kind==='listing') return buildListingStep();
-    if(w.kind==='week') return buildWeekStep();
   }
 
   function saveProviderProfileFromWizard(){
@@ -24086,17 +24168,13 @@
   }
 
   // ============================================================
-  // MASTER INSERATSFLOW
-  // Wird IMMER verwendet für:
-  // - Inserat erstellen
-  // - Gericht hinzufügen (Kochbuch)
-  // - Gericht hinzufügen (Wochenplan)
-  // KEINE Sonderflows bauen!
+  // INSERATCARD – Single-Source-of-Truth [cite: 2026-01-29]
+  // Die Karte im Inseratsflow IST die Karte im Kochbuch IST die Karte im Wochenplan.
+  // Keine Formular-Listen; Erstellung nur durch direkte Interaktion mit der Karte.
   // ============================================================
   function buildListingStep(){
-    // Layout ausschließlich per CSS (#wizard[data-flow="listing"]). Navigation nur im Content (z. B. .close-wizard-x).
     setWizardNextDefault();
-    w.step = 0; // Single-Page: immer Schritt 0
+    w.step = 0;
     setWizardHeader('', '');
     const profile = normalizeProviderProfile(provider.profile || {});
     const profileWindow = profile.mealWindow || DEFAULT_MEAL_WINDOW;
@@ -24113,14 +24191,13 @@
     {
       setWizardQuestion('', '');
       const box=document.createElement('div');
-      box.className='liquid-master-panel glass-express-step0 inserat-universal-mask inserat-master-flow liquid-panel listing-glass-panel s25-floating-panel';
+      box.className='liquid-master-panel glass-express-step0 inserat-universal-mask inserat-master-flow liquid-panel listing-glass-panel s25-floating-panel inserat-card';
+      box.setAttribute('data-inserat-card','true');
       box.style.cssText='padding:0; overflow:hidden; display:flex; flex-direction:column; min-height:0;';
       const saveDraft = () => { localStorage.setItem('wizard_draft', JSON.stringify(w)); };
-      const scrollToNext = (id)=>{ setTimeout(()=>{ var el=document.getElementById(id); if(el) el.scrollIntoView({ behavior:'smooth', block:'center' }); }, 150); };
       const dismissKeyboard = ()=>{ try { if(document.activeElement && document.activeElement.blur) document.activeElement.blur(); } catch(e){} };
       const hapticLight = ()=>{ try { if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); } catch(e){} };
-      var listingDebounceTimer = null; /* 300ms Debounce für Smart-Search Bildvorschläge */
-      var listingDebounceTimer = null;
+      var listingDebounceTimer = null; /* Debounce für Autovervollständigung + Bildvorschläge */
       var LISTING_IMAGES_BASE = 'https://images.unsplash.com/';
       var listingImageMap = {
         schnitzel: ['photo-1546069901-d5bfd2cbfb1f?w=400&q=80','photo-1565299624946-b28f40a0ae38?w=400&q=80','photo-1603133872878-684f208fb84b?w=400&q=80'],
@@ -24154,7 +24231,7 @@
       // 1. HERO – randlos oben (Edge-to-Edge), fixierter Header, 190px, Universal-X
       const photoTile=document.createElement('div');
       photoTile.className='inserat-photo-tile photo-header';
-      photoTile.style.cssText='position:relative; overflow:hidden; flex-shrink:0; width:100%; height:190px;';
+      photoTile.style.cssText='position:relative; overflow:hidden; flex-shrink:0; width:100%;';
       var closeX=document.createElement('div');
       closeX.className='close-wizard-x';
       closeX.setAttribute('role','button');
@@ -24322,22 +24399,34 @@
       inputDish.value=w.data.dish||'';
       inputDish.setAttribute('list','inserat-dish-datalist');
       inputDish.autocomplete='off';
-      inputDish.oninput=()=>{ w.data.dish=inputDish.value; saveDraft(); if(listingDebounceTimer) clearTimeout(listingDebounceTimer); listingDebounceTimer=setTimeout(function(){ listingDebounceTimer=null; scrollToNext('step-cat'); rebuildWizard(); }, 300); };
+      inputDish.oninput=()=>{
+        w.data.dish=inputDish.value; saveDraft();
+        if(listingDebounceTimer) clearTimeout(listingDebounceTimer);
+        listingDebounceTimer=setTimeout(function(){
+          listingDebounceTimer=null;
+          var catSugg=getCategorySuggestionForDish(inputDish.value);
+          if(catSugg&&['Fleisch','Vegetarisch','Vegan','Salat'].indexOf(catSugg)>=0){ w.data.category=catSugg; saveDraft(); }
+          var suggested=getAllergenSuggestionsForDish(inputDish.value);
+          if(suggested.length&&(!w.data.allergens||w.data.allergens.length===0)){ w.data.allergens=suggested.slice(); w.data.wantsAllergens=true; saveDraft(); }
+          var descSugg=getDescriptionSuggestionForDish(inputDish.value);
+          if(descSugg&&(!w.data.description||!w.data.description.trim())){ w.data.description=descSugg; saveDraft(); }
+          rebuildWizard();
+        }, 400);
+      };
       inputDish.onblur=()=>{
         dismissKeyboard(); hapticLight();
         var catSugg=getCategorySuggestionForDish(inputDish.value);
         if(catSugg&&['Fleisch','Vegetarisch','Vegan','Salat'].indexOf(catSugg)>=0){ w.data.category=catSugg; saveDraft(); }
         var suggested=getAllergenSuggestionsForDish(inputDish.value);
         if(suggested.length&&(!w.data.allergens||w.data.allergens.length===0)){ w.data.allergens=suggested.slice(); w.data.wantsAllergens=true; saveDraft(); rebuildWizard(); }
-        else scrollToNext('step-cat');
       };
       stepName.appendChild(inputDish);
       const wrapDesc=document.createElement('div');
-      wrapDesc.className='inserat-airbnb-field-wrap inserat-airbnb-desc-wrap';
+      wrapDesc.className='inserat-airbnb-field-wrap inserat-airbnb-desc-wrap inserat-desc-italic-wrap';
       wrapDesc.style.marginTop='0';
       const inputDesc=document.createElement('input');
       inputDesc.type='text';
-      inputDesc.className='liquid-input liquid-input-focus inserat-desc-input inserat-airbnb-desc';
+      inputDesc.className='liquid-input liquid-input-focus inserat-desc-input inserat-airbnb-desc inserat-desc-italic';
       inputDesc.placeholder='… z.B. mit frischem saisonalen Gemüse …';
       inputDesc.value=w.data.description||'';
       inputDesc.oninput=()=>{ w.data.description=inputDesc.value; saveDraft(); };
@@ -24346,38 +24435,34 @@
       stepName.appendChild(wrapDesc);
       scrollArea.appendChild(stepName);
 
-      // Kategorie-Pills: direkt unter dem Titel, Emerald-Glow wenn aktiv
+      // Goldene Sammelkarte: Kategorie-Pills + Preis-Pill in einer Zeile (Preis rechtsbündig) [cite: 2026-02-16]
+      const catPriceRow=document.createElement('div');
+      catPriceRow.className='inserat-cat-price-row';
+      catPriceRow.id='step-cat';
       const catValues = ['Fleisch','Vegetarisch','Vegan','Salat'];
       const catDisplayLabels = ['Mit Fleisch','Vegetarisch','Vegan','Salat'];
       const catEmojis = ['🥩','🥗','🌱','🥪'];
       const currentCat = w.data.category || 'Fleisch';
       if(!catValues.includes(currentCat)) w.data.category = 'Fleisch';
-      var catIdx = catValues.indexOf(w.data.category);
-      if(catIdx<0) catIdx=0;
       const stepCat=document.createElement('div');
-      stepCat.id='step-cat';
-      stepCat.className='inserat-section inserat-cat-pills';
-      stepCat.style.display='flex'; stepCat.style.flexWrap='wrap'; stepCat.style.gap='10px';
+      stepCat.className='inserat-cat-pills';
+      stepCat.style.display='flex'; stepCat.style.flexWrap='wrap'; stepCat.style.gap='8px';
       catValues.forEach((c,i)=>{
         const b=document.createElement('button');
         b.type='button';
         b.className='extra-pill inserat-cat-pill' + (w.data.category===c ? ' active' : '');
         b.style.cssText='flex:0 0 auto; cursor:pointer;';
         b.textContent=(catEmojis[i]||'')+' '+catDisplayLabels[i];
-        b.onclick=()=>{ hapticLight(); w.data.category=c; saveDraft(); scrollToNext('step-price'); rebuildWizard(); };
+        b.onclick=()=>{ hapticLight(); w.data.category=c; saveDraft(); rebuildWizard(); };
         stepCat.appendChild(b);
       });
-      scrollArea.appendChild(stepCat);
-
-      // Preis-Sektion: elegante Typografie + darunter Umsatzprognose (#94a3b8) mit ⓘ-Tooltip
-      const stepPrice=document.createElement('div');
-      stepPrice.id='step-price';
-      stepPrice.className='inserat-section inserat-price-section';
-      const priceDisplayWrap=document.createElement('div');
-      priceDisplayWrap.style.cssText='margin-bottom:12px;';
+      catPriceRow.appendChild(stepCat);
+      const stepPriceWrap=document.createElement('div');
+      stepPriceWrap.id='step-price';
+      stepPriceWrap.className='inserat-price-pill-wrap';
       const inputPrice=document.createElement('input');
       inputPrice.type='text';
-      inputPrice.className='inserat-price-input price-display inserat-price-fintech';
+      inputPrice.className='inserat-price-pill-input inserat-price-fintech inserat-price-input';
       inputPrice.setAttribute('inputmode','decimal');
       inputPrice.placeholder='0,00';
       inputPrice.value=(w.data.price>0?Number(w.data.price).toFixed(2).replace('.',','):'');
@@ -24388,19 +24473,16 @@
       };
       inputPrice.oninput=()=>{ var v=inputPrice.value.replace(',','.'); w.data.price=parseFloat(v)||0; saveDraft(); updateProfit(v); if(priceStickerInserat) priceStickerInserat.textContent=(Number(w.data.price)||0).toFixed(2).replace('.',',')+' €'; hapticLight(); };
       inputPrice.onblur=()=>{ if(w.data.price>0) inputPrice.value=Number(w.data.price).toFixed(2).replace('.',','); dismissKeyboard(); hapticLight(); };
-      const euroSpan=document.createElement('sup');
-      euroSpan.className='inserat-price-euro-sup';
-      euroSpan.textContent='€';
-      priceDisplayWrap.appendChild(inputPrice);
-      priceDisplayWrap.appendChild(euroSpan);
-      stepPrice.appendChild(priceDisplayWrap);
+      stepPriceWrap.appendChild(inputPrice);
+      var eurSpan=document.createElement('span'); eurSpan.className='inserat-price-pill-euro'; eurSpan.textContent=' €'; stepPriceWrap.appendChild(eurSpan);
+      catPriceRow.appendChild(stepPriceWrap);
+      scrollArea.appendChild(catPriceRow);
       var p0=Number(w.data.price)||0;
       const prognoseWrap=document.createElement('div');
       prognoseWrap.className='inserat-prognose-wrap inserat-earnings inserat-umsatzprognose';
       prognoseWrap.innerHTML='<p style="margin:0; font-size:12px; font-weight:600; color:#94a3b8;">Umsatzprognose: <span id="calc-val">'+(p0*30).toFixed(2).replace('.',',')+'</span> €</p>';
-      stepPrice.appendChild(prognoseWrap);
-      if(w.ctx && w.ctx.isLeberkaeseOnboarding) stepPrice.classList.add('inserat-onboarding-price-pulse');
-      scrollArea.appendChild(stepPrice);
+      scrollArea.appendChild(prognoseWrap);
+      if(w.ctx && w.ctx.isLeberkaeseOnboarding) prognoseWrap.classList.add('inserat-onboarding-price-pulse');
 
 
       box.appendChild(scrollArea);
@@ -24517,6 +24599,14 @@
 
       bindKeyboardAvoidance();
       setWizardContent(box);
+      // Guided Interaction: leere Karte → Fokus Namensfeld (blinkender Cursor), kein Foto → Pulsieren [cite: 2026-01-29]
+      setTimeout(function(){
+        var isEmpty = !(w.data.dish && String(w.data.dish).trim()) && !w.data.photoData;
+        var titleInput = box.querySelector('#step-name input.magnet-input, #step-name .inserat-detail-style-title');
+        if(titleInput && isEmpty){ titleInput.focus(); }
+        var photoEl = box.querySelector('.photo-header, .inserat-photo-tile');
+        if(photoEl && !w.data.photoData) photoEl.classList.add('inserat-card-photo-pulse');
+      }, 300);
       return;
     }
 
@@ -25277,230 +25367,7 @@
   }
   if(typeof window !== 'undefined') window.openSlimDayPicker = openSlimDayPicker;
 
-  // Cookbook wizard (add recipe)
-  function buildCookbookStep(){
-    setWizardNextDefault();
-    // reuse listing steps subset: category, photo, name, allergens, extras, reuse, price, preview/save
-    const total = 8;
-    setWizardHeader('Kochbuch', `${Math.min(w.step+1,total)}/${total}`);
-
-    if(w.step===0){
-      setWizardQuestion('Kategorie?', 'Tippe eine Kategorie.');
-      const box=document.createElement('div');
-      const ans=document.createElement('div'); ans.className='answers';
-      ['Vegan','Vegetarisch','Fleisch','Salat'].forEach(c=>{
-        const b=document.createElement('button'); b.type='button'; b.className='ans'+(w.data.category===c?' on':''); b.textContent=c;
-        b.onclick=()=>{ w.data.category=c; rebuildWizard(); };
-        ans.appendChild(b);
-      });
-      box.appendChild(ans);
-      const navC=document.createElement('div'); navC.style.cssText='display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;';
-      const btnAbortC=document.createElement('button'); btnAbortC.type='button'; btnAbortC.className='btn secondary'; btnAbortC.textContent='Abbrechen'; btnAbortC.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); closeWizard(); };
-      const btnNextC=document.createElement('button'); btnNextC.type='button'; btnNextC.className='btn'; btnNextC.textContent='Weiter'; btnNextC.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); w.step++; rebuildWizard(); };
-      navC.appendChild(btnAbortC); navC.appendChild(btnNextC); box.appendChild(navC);
-      setWizardContent(box);
-      return;
-    }
-
-    if(w.step===1){
-      setWizardQuestion('Foto speichern?', 'Optional (für schnelleres Wiederverwenden).');
-      const box=document.createElement('div');
-      const ans=document.createElement('div'); ans.className='answers';
-      const b1=document.createElement('button'); b1.type='button'; b1.className='ans'; b1.textContent='Foto auswählen';
-      b1.onclick=async()=>{ const f=await pickImage(); if(!f) return; const dataUrl = await toDataUrl(f); await openPhotoEditor(dataUrl); };
-      const b2=document.createElement('button'); b2.type='button'; b2.className='ans'; b2.textContent='Ohne';
-      b2.onclick=()=>{ w.data.photoData=''; w.data.photoDataIsStandard=false; rebuildWizard(); };
-      ans.appendChild(b1); ans.appendChild(b2);
-      box.appendChild(ans);
-      const navC1=document.createElement('div'); navC1.style.cssText='display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;';
-      const btnAbortC1=document.createElement('button'); btnAbortC1.type='button'; btnAbortC1.className='btn secondary'; btnAbortC1.textContent='Abbrechen'; btnAbortC1.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); closeWizard(); };
-      const btnBackC1=document.createElement('button'); btnBackC1.type='button'; btnBackC1.className='btn secondary'; btnBackC1.textContent='Zurück'; btnBackC1.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); w.step--; rebuildWizard(); };
-      const btnNextC1=document.createElement('button'); btnNextC1.type='button'; btnNextC1.className='btn'; btnNextC1.textContent='Weiter'; btnNextC1.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); w.step++; rebuildWizard(); };
-      navC1.appendChild(btnAbortC1); navC1.appendChild(btnBackC1); navC1.appendChild(btnNextC1); box.appendChild(navC1);
-      setWizardContent(box);
-      return;
-    }
-
-    if(w.step===2){
-      setWizardQuestion('Gerichtname?', 'Wie im Kochbuch.');
-      const box=document.createElement('div');
-      const input=document.createElement('input'); input.className='field'; input.placeholder='z.B. Lasagne'; input.value=w.data.dish||'';
-      input.oninput=()=>{ w.data.dish=input.value; };
-      box.appendChild(input);
-      const navC2=document.createElement('div'); navC2.style.cssText='display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;';
-      const btnAbortC2=document.createElement('button'); btnAbortC2.type='button'; btnAbortC2.className='btn secondary'; btnAbortC2.textContent='Abbrechen'; btnAbortC2.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); closeWizard(); };
-      const btnBackC2=document.createElement('button'); btnBackC2.type='button'; btnBackC2.className='btn secondary'; btnBackC2.textContent='Zurück'; btnBackC2.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); w.step--; rebuildWizard(); };
-      const btnNextC2=document.createElement('button'); btnNextC2.type='button'; btnNextC2.className='btn'; btnNextC2.textContent='Weiter'; btnNextC2.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); w.step++; rebuildWizard(); };
-      navC2.appendChild(btnAbortC2); navC2.appendChild(btnBackC2); navC2.appendChild(btnNextC2); box.appendChild(navC2);
-      setWizardContent(box);
-      return;
-    }
-
-    if(w.step===3){
-      setWizardQuestion('Allergene?', 'Optional, antippen.');
-      const box=document.createElement('div');
-      const ans=document.createElement('div'); ans.className='answers'; ans.style.flexWrap='wrap'; ans.style.gap='6px';
-      if(!Array.isArray(w.data.allergens)) w.data.allergens=[];
-      ALLERGENS_14.forEach(a=>{
-        const emo = (typeof ALLERGEN_EMOJI!=='undefined' && ALLERGEN_EMOJI[a.short]) ? ALLERGEN_EMOJI[a.short] : '•';
-        const b=document.createElement('button');
-        b.type='button';
-        b.className='ans'+(w.data.allergens.includes(a.short)?' on':'');
-        b.textContent=emo+' '+a.name;
-        b.style.minHeight='32px'; b.style.padding='6px 12px'; b.style.fontSize='12px';
-        b.onclick=()=>{
-          const i=w.data.allergens.indexOf(a.short);
-          if(i>=0) w.data.allergens.splice(i,1); else w.data.allergens.push(a.short);
-          rebuildWizard();
-        };
-        ans.appendChild(b);
-      });
-      box.appendChild(ans);
-      const navC3=document.createElement('div'); navC3.style.cssText='display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;';
-      const btnAbortC3=document.createElement('button'); btnAbortC3.type='button'; btnAbortC3.className='btn secondary'; btnAbortC3.textContent='Abbrechen'; btnAbortC3.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); closeWizard(); };
-      const btnBackC3=document.createElement('button'); btnBackC3.type='button'; btnBackC3.className='btn secondary'; btnBackC3.textContent='Zurück'; btnBackC3.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); w.step--; rebuildWizard(); };
-      const btnNextC3=document.createElement('button'); btnNextC3.type='button'; btnNextC3.className='btn'; btnNextC3.textContent='Weiter'; btnNextC3.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); w.step++; rebuildWizard(); };
-      navC3.appendChild(btnAbortC3); navC3.appendChild(btnBackC3); navC3.appendChild(btnNextC3); box.appendChild(navC3);
-      setWizardContent(box);
-      return;
-    }
-
-    if(w.step===4){
-      // Extras
-      setWizardQuestion('Extras?', 'Optional.');
-      const box=document.createElement('div');
-      const ans=document.createElement('div'); ans.className='answers';
-      const yes=document.createElement('button'); yes.type='button'; yes.className='ans'+(w.data.extras?.length?' on':''); yes.textContent='Ja';
-      const no=document.createElement('button'); no.type='button'; no.className='ans'+(!w.data.extras?.length?' on':''); no.textContent='Nein';
-      yes.onclick=()=>{ w.data.extras = w.data.extras?.length ? w.data.extras : [{name:'Beilagensalat', price:2.0}]; rebuildWizard(); };
-      no.onclick=()=>{ w.data.extras=[]; rebuildWizard(); };
-      ans.appendChild(yes); ans.appendChild(no);
-      box.appendChild(ans);
-      const navC4=document.createElement('div'); navC4.style.cssText='display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;';
-      const btnAbortC4=document.createElement('button'); btnAbortC4.type='button'; btnAbortC4.className='btn secondary'; btnAbortC4.textContent='Abbrechen'; btnAbortC4.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); closeWizard(); };
-      const btnBackC4=document.createElement('button'); btnBackC4.type='button'; btnBackC4.className='btn secondary'; btnBackC4.textContent='Zurück'; btnBackC4.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); w.step--; rebuildWizard(); };
-      const btnNextC4=document.createElement('button'); btnNextC4.type='button'; btnNextC4.className='btn'; btnNextC4.textContent='Weiter'; btnNextC4.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); w.step++; rebuildWizard(); };
-      navC4.appendChild(btnAbortC4); navC4.appendChild(btnBackC4); navC4.appendChild(btnNextC4); box.appendChild(navC4);
-      setWizardContent(box);
-      return;
-    }
-
-    if(w.step===5){
-      // reuse
-      setWizardQuestion('Mehrweg / Pfand?', 'Optional.');
-      const box=document.createElement('div');
-      const ans=document.createElement('div'); ans.className='answers';
-      if(!w.data.reuse) w.data.reuse={enabled:false,deposit:0};
-      const yes=document.createElement('button'); yes.type='button'; yes.className='ans'+(w.data.reuse.enabled?' on':''); yes.textContent='Ja';
-      const no=document.createElement('button'); no.type='button'; no.className='ans'+(!w.data.reuse.enabled?' on':''); no.textContent='Nein';
-      yes.onclick=()=>{ w.data.reuse.enabled=true; if(!w.data.reuse.deposit) w.data.reuse.deposit=5; rebuildWizard(); };
-      no.onclick=()=>{ w.data.reuse.enabled=false; w.data.reuse.deposit=0; rebuildWizard(); };
-      ans.appendChild(yes); ans.appendChild(no);
-      box.appendChild(ans);
-      const navC5=document.createElement('div'); navC5.style.cssText='display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;';
-      const btnAbortC5=document.createElement('button'); btnAbortC5.type='button'; btnAbortC5.className='btn secondary'; btnAbortC5.textContent='Abbrechen'; btnAbortC5.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); closeWizard(); };
-      const btnBackC5=document.createElement('button'); btnBackC5.type='button'; btnBackC5.className='btn secondary'; btnBackC5.textContent='Zurück'; btnBackC5.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); w.step--; rebuildWizard(); };
-      const btnNextC5=document.createElement('button'); btnNextC5.type='button'; btnNextC5.className='btn'; btnNextC5.textContent='Weiter'; btnNextC5.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); w.step++; rebuildWizard(); };
-      navC5.appendChild(btnAbortC5); navC5.appendChild(btnBackC5); navC5.appendChild(btnNextC5); box.appendChild(navC5);
-      setWizardContent(box);
-      return;
-    }
-
-    if(w.step===6){
-      setWizardQuestion('Standardpreis?', 'Nur Zahl - Komma nicht nötig.');
-      const box=document.createElement('div');
-      const input=document.createElement('input');
-      input.className='field'; input.inputMode='numeric'; input.placeholder='z.B. 799';
-      input.value = w.data.price ? String(Math.round(w.data.price*100)) : '';
-      input.oninput=()=>{ w.data.price = smartNumberToEuro(input.value); };
-      box.appendChild(input);
-      const navC6=document.createElement('div'); navC6.style.cssText='display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;';
-      const btnAbortC6=document.createElement('button'); btnAbortC6.type='button'; btnAbortC6.className='btn secondary'; btnAbortC6.textContent='Abbrechen'; btnAbortC6.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); closeWizard(); };
-      const btnBackC6=document.createElement('button'); btnBackC6.type='button'; btnBackC6.className='btn secondary'; btnBackC6.textContent='Zurück'; btnBackC6.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); w.step--; rebuildWizard(); };
-      const btnNextC6=document.createElement('button'); btnNextC6.type='button'; btnNextC6.className='btn'; btnNextC6.textContent='Weiter'; btnNextC6.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); w.step++; rebuildWizard(); };
-      navC6.appendChild(btnAbortC6); navC6.appendChild(btnBackC6); navC6.appendChild(btnNextC6); box.appendChild(navC6);
-      setWizardContent(box);
-      return;
-    }
-
-    if(w.step===7){
-      setWizardQuestion('Speichern?', 'Damit du später mit 2 Taps inserierst.');
-      const box=document.createElement('div');
-      const prev = {
-        id:'preview',
-        providerId:providerId(),
-        providerName: provider.profile.name || provider.email || 'Anbieter',
-        providerStreet:'',providerZip:'',providerCity:'',providerLogoData: provider.profile.logoData||'',
-        dish:w.data.dish||'Gericht',
-        category:w.data.category||'Vegetarisch',
-        price:Number(w.data.price||0),
-        pickupWindow:'',
-        imageUrl: w.data.photoData || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70',
-        hasPickupCode:false,
-        allergens:w.data.allergens||[],
-        extras:w.data.extras||[],
-        reuse:w.data.reuse||{enabled:false,deposit:0},
-        day: isoDate(new Date())
-      };
-      box.appendChild(offerCard(prev, {interactive:false}));
-      const navC7=document.createElement('div'); navC7.style.cssText='display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;';
-      const btnAbortC7=document.createElement('button'); btnAbortC7.type='button'; btnAbortC7.className='btn secondary'; btnAbortC7.textContent='Abbrechen'; btnAbortC7.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); closeWizard(); };
-      const btnBackC7=document.createElement('button'); btnBackC7.type='button'; btnBackC7.className='btn secondary'; btnBackC7.textContent='Zurück'; btnBackC7.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); w.step--; rebuildWizard(); };
-      const btnSaveC7=document.createElement('button'); btnSaveC7.className='btn'; btnSaveC7.type='button'; btnSaveC7.textContent = w.ctx && w.ctx.editId ? 'Änderungen speichern' : 'Im Kochbuch speichern';
-      btnSaveC7.onclick=()=>{
-        if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10);
-        saveToCookbookFromWizard();
-        closeWizard(true);
-        showProviderCookbook();
-        renderCookbook();
-        alert('Gespeichert.');
-      };
-      navC7.appendChild(btnAbortC7); navC7.appendChild(btnBackC7); navC7.appendChild(btnSaveC7); box.appendChild(navC7);
-      setWizardContent(box);
-      return;
-    }
-  }
-
-  // Weekplan wizard (simple date choose)
-  function buildWeekStep(){
-    setWizardNextDefault();
-    setWizardHeader('Wochenplan', '1/1');
-    setWizardQuestion('Für welchen Tag?', 'Wähle einen Tag und füge das Gericht hinzu.');
-
-    const box=document.createElement('div');
-    const ans=document.createElement('div'); ans.className='answers';
-
-    for(let i=0;i<5;i++){
-      const d=new Date(); d.setDate(d.getDate()+i);
-      const key=isoDate(d);
-      const b=document.createElement('button');
-      b.type='button';
-      b.className='ans'+(w.data.date===key?' on':'');
-      b.textContent = i===0?'Heute':(i===1?'Morgen':fmtDay(d));
-      b.onclick=()=>{ w.data.date=key; rebuildWizard(); };
-      ans.appendChild(b);
-    }
-    box.appendChild(ans);
-
-    const navW=document.createElement('div'); navW.style.cssText='display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;';
-    const btnAbortW=document.createElement('button'); btnAbortW.type='button'; btnAbortW.className='btn secondary'; btnAbortW.textContent='Abbrechen'; btnAbortW.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); closeWizard(); };
-    const btnFertigW=document.createElement('button'); btnFertigW.className='btn'; btnFertigW.type='button'; btnFertigW.textContent='Zum Wochenplan hinzufügen';
-    btnFertigW.onclick=()=>{
-      if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10);
-      const cb = cookbook.find(c => String(c.id) === String(w.data.cookbookId));
-      if(!cb){ alert('Gericht nicht gefunden'); return; }
-      const entry = { providerId:providerId(), dish:cb.dish, cookbookId:cb.id, active:true };
-      if(!week[w.data.date]) week[w.data.date]=[];
-      week[w.data.date].push(entry);
-      save(LS.week, week);
-      publishWeekEntry(w.data.date, entry);
-      closeWizard(true);
-      showProviderHome();
-    };
-    navW.appendChild(btnAbortW); navW.appendChild(btnFertigW); box.appendChild(navW);
-
-    setWizardContent(box);
-  }
+  // Legacy buildCookbookStep & buildWeekStep entfernt – Single-Source: InseratCard (buildListingStep) [cite: 2026-01-29]
 
   // --- Input helpers (thumb-friendly) ---
   function formatPriceInput(value){
@@ -26398,10 +26265,10 @@
         var wizardEl = document.getElementById('wizard');
         if(wizardEl && w.kind === 'listing'){ wizardEl.setAttribute('data-flow', 'listing'); if(typeof clearWizardActionsBar === 'function') clearWizardActionsBar(); }
         openWizard();
-        // Restore specific step content
+        // Restore specific step content (Kochbuch = InseratCard)
         if(w.kind === 'listing') buildListingStep();
         else if(w.kind === 'provider') buildProviderStep();
-        else if(w.kind === 'cookbook') buildCookbookStep();
+        else if(w.kind === 'cookbook') { w.kind = 'listing'; if(wizardEl) wizardEl.setAttribute('data-flow', 'listing'); if(typeof clearWizardActionsBar === 'function') clearWizardActionsBar(); buildListingStep(); }
       }
     }
   } catch(e) { console.error('Failed to restore wizard state', e); }
