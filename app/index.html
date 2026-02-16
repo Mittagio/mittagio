@@ -2478,8 +2478,7 @@
     #wizard[data-flow="listing"] .inserat-power-bar .status-pill:active { transform: scale(0.9); }
     #wizard[data-flow="listing"] .inserat-power-bar .power-bar-legend-trigger:hover,
     #wizard[data-flow="listing"] .inserat-power-bar .power-bar-legend-trigger:focus { color: #64748b; }
-    /* #psheet: No-Scroll – Karte ist das Interface, position:relative für Popover */
-    #psheet { position: relative; }
+    /* #psheet: No-Scroll – Karte ist das Interface. Position von .sheet (fixed) bleibt, Popover bezieht sich auf #psheet. */
     #psheet .universal-dish-card.psheet-card { width: 100%; background: #fff; border-radius: 16px; overflow: hidden; border: 1px solid rgba(0,0,0,0.06); }
     #psheet .psheet-photo-header { border-radius: 0; }
     #psheet .psheet-price-sticker { position: absolute; bottom: 8px; right: 8px; padding: 6px 12px; border-radius: 999px; font-weight: 900; font-size: 14px; background: rgba(255,215,0,0.95); color: #1a1a1a; box-shadow: 0 2px 8px rgba(255,215,0,0.3); z-index: 10; }
@@ -15086,10 +15085,31 @@
       cardEl.addEventListener('mouseleave', cancelLongPress);
     }
 
-    document.getElementById('pbd').classList.add('active');
-    document.getElementById('psheet').classList.add('active');
+    var pbd = document.getElementById('pbd');
+    var psheetEl = document.getElementById('psheet');
+    if(pbd) pbd.classList.add('active');
+    if(psheetEl) psheetEl.classList.add('active');
   }
   if(typeof window !== 'undefined') window.openProviderOffer = openProviderOffer;
+
+  /* Dashboard-Karten: Klick in Capture-Phase abfangen, damit die Detailseite zuverlässig öffnet (auch bei Touch/Overlay) */
+  (function(){
+    if(document._providerCardCapture) return;
+    document._providerCardCapture = true;
+    document.addEventListener('click', function(ev){
+      if(!document.body.classList.contains('provider-mode')) return;
+      var list = document.getElementById('providerActiveListings');
+      if(!list || !list.contains(ev.target)) return;
+      var card = ev.target.closest && ev.target.closest('.prov-card[data-offer-id]');
+      if(!card) return;
+      var id = card.getAttribute('data-offer-id');
+      if(!id) return;
+      ev.preventDefault();
+      ev.stopPropagation();
+      try { if(typeof hapticLight === 'function') hapticLight(); else if(navigator.vibrate) navigator.vibrate(10); } catch(e){}
+      if(typeof window.openProviderOffer === 'function') window.openProviderOffer(id);
+    }, true);
+  })();
 
   function closeProviderSheet(){
     var pop = document.getElementById('psheetLegendPopover');
