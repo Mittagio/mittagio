@@ -4301,36 +4301,6 @@
     #v-provider-home .dashboard-kasten-header .prov-header-inner{ padding:0; }
     #v-provider-home .dashboard-kasten-header .prov-title,
     #v-provider-home .dashboard-kasten-header .prov-page-header-title{ font-size:20px !important; font-weight:900 !important; }
-    /* Live-Pille oben rechts: Umsatz + Teilen */
-    .provider-home-live-pill{
-      display:flex; align-items:center;
-      background:rgba(255,255,255,0.8); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
-      border:1px solid rgba(0,0,0,0.06); border-radius:999px;
-      padding:4px 4px 4px 14px; box-shadow:0 2px 12px rgba(0,0,0,0.06);
-      cursor:pointer; transition:transform 0.1s, box-shadow 0.15s;
-    }
-    .provider-home-live-pill:active{ transform:scale(0.98); }
-    .provider-home-pill-umsatz{ padding-right:8px; }
-    .provider-home-pill-label{ display:block; font-size:8px; font-weight:800; color:#9ca3af; text-transform:uppercase; letter-spacing:0.05em; line-height:1.1; }
-    .provider-home-pill-value{ font-size:14px; font-weight:900; color:#059669; transition:transform 0.2s ease; }
-    .provider-home-pill-value.turnover-roll{ animation:turnoverRoll 0.35s ease; }
-    @keyframes turnoverRoll{ 0%{ opacity:0.6; transform:translateY(4px); } 100%{ opacity:1; transform:translateY(0); } }
-    .provider-home-pill-share{
-      width:36px; height:36px; border-radius:50%;
-      background:#FFDE00; color:#1a1a1a; border:none; cursor:pointer;
-      display:flex; align-items:center; justify-content:center;
-      box-shadow:inset 0 1px 2px rgba(255,255,255,0.4), 0 2px 6px rgba(0,0,0,0.08);
-      transition:transform 0.1s;
-    }
-    .provider-home-pill-share:active{ transform:scale(0.9); }
-    .provider-home-pill-share span{ font-size:14px; }
-    /* Fairness-Snippet-Leiste (Midnight Blue) */
-    #providerFairnessSnippet{
-      display:block; padding:10px 20px; background:#0f172a; color:#fff;
-      font-size:13px; font-weight:700; text-align:center; cursor:pointer;
-      transition:opacity 0.2s;
-    }
-    #providerFairnessSnippet:active{ opacity:0.9; }
     /* KPI-Kasten: Glas-Lesbarkeit (Text-Schatten) + veredelte Zahlen + Trennlinie */
     #v-provider-home .dashboard-kasten-kpis{
       padding:18px max(16px, env(safe-area-inset-left, 0)) 18px max(16px, env(safe-area-inset-right, 0));
@@ -4356,6 +4326,7 @@
     }
     #v-provider-home .dashboard-kasten-kpis #dashboardTagesessenCount{ color:#1a1a1a !important; }
     #v-provider-home .dashboard-kasten-kpis #dashboardAbholungenCount{ color:#3b82f6 !important; }
+    #v-provider-home .dashboard-kasten-kpis #dashboardUmsatzToday{ color:#16a34a !important; }
     #v-provider-home .dashboard-kasten-angebote{
       padding:14px 16px; padding-left:max(16px, env(safe-area-inset-left, 0)); padding-right:max(16px, env(safe-area-inset-right, 0));
     }
@@ -6680,27 +6651,16 @@
                 </div>
                 <h1 class="prov-page-header-title">Meine Küche</h1>
               </div>
-              <div class="provider-home-top-right" style="display:flex; align-items:center; gap:8px;">
-                <div id="providerHomeLivePill" class="provider-home-live-pill" role="button" tabindex="0" title="Fairness &amp; Transparenz" aria-label="Umsatz heute, Fairness öffnen">
-                  <div class="provider-home-pill-umsatz">
-                    <span class="provider-home-pill-label">Umsatz</span>
-                    <span id="dashboardUmsatzPillAmount" class="provider-home-pill-value tabular-nums">0,00 €</span>
-                  </div>
-                  <button type="button" id="btnProviderHomeSharePill" title="Heutige Angebote teilen" aria-label="Angebote teilen" class="provider-home-pill-share">
-                    <span aria-hidden="true">📤</span>
-                  </button>
-                </div>
-                <button type="button" id="btnProviderHomeRefresh" title="Aktualisieren" aria-label="Daten neu laden" class="prov-page-header-action" style="background:rgba(0,0,0,0.06); border:none; min-width:44px; min-height:44px; width:44px; height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; color:#1a1a1a; cursor:pointer;">
-                  <i data-lucide="refresh-cw" style="width:20px; height:20px;"></i>
-                </button>
-              </div>
+              <button type="button" id="btnProviderHomeRefresh" title="Aktualisieren" aria-label="Daten neu laden" class="prov-page-header-action" style="background:rgba(0,0,0,0.06); border:none; min-width:44px; min-height:44px; width:44px; height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; color:#1a1a1a; cursor:pointer;">
+                <i data-lucide="refresh-cw" style="width:20px; height:20px;"></i>
+              </button>
             </div>
             <div id="providerHomeGreeting" style="display:none;"></div>
             <div id="providerHomeDate" style="display:none;" aria-hidden="true"></div>
           </div>
         </header>
 
-        <!-- KASTEN 2: KPIs (Tagesessen, Abholungen – Umsatz in Live-Pille oben rechts) -->
+        <!-- KASTEN 2: KPIs -->
         <div class="dashboard-kasten dashboard-kasten-kpis">
           <div class="prov-stats-stolz" style="display:flex; justify-content:space-between; align-items:flex-end; border:none; padding:0;">
             <div id="kpiTagesessen" role="button" tabindex="0" style="text-align:center; cursor:pointer; min-height:40px; flex:1;" onclick="document.getElementById('providerActiveListingsSection')?.scrollIntoView({behavior:'smooth'})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); document.getElementById('providerActiveListingsSection')?.scrollIntoView({behavior:'smooth'});}" title="Tagesessen">
@@ -6711,11 +6671,12 @@
               <p id="kpiLabelAbholungen" class="kpi-label" style="margin:0 0 2px; font-size:8px; font-weight:800; color:#9ca3af; text-transform:uppercase; letter-spacing:0.05em;">Abholungen</p>
               <p id="dashboardAbholungenCount" style="margin:0; font-size:16px; font-weight:900; color:#3b82f6;">0</p>
             </div>
+            <div id="kpiUmsatz" role="button" tabindex="0" style="text-align:right; cursor:pointer; min-height:40px; flex:1;" onclick="showProviderBilling()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); showProviderBilling();}" title="Tagesumsatz">
+              <p id="kpiLabelUmsatz" class="kpi-label" style="margin:0 0 2px; font-size:8px; font-weight:800; color:#9ca3af; text-transform:uppercase; letter-spacing:0.05em;">Umsatz heute</p>
+              <p id="dashboardUmsatzToday" style="margin:0; font-size:16px; font-weight:900; color:#16a34a;">0,00 €</p>
+            </div>
           </div>
         </div>
-
-        <!-- Fairness-Snippet: Ersparnis-Leiste (Klick öffnet Fairness-Radar) -->
-        <div id="providerFairnessSnippet" style="display:none;" role="button" tabindex="0" aria-label="Fairness und Ersparnis">🛡️ Bisher gespart: 0,00 €</div>
 
         <!-- KASTEN 3: Aktive Angebote heute -->
         <div class="dashboard-kasten dashboard-kasten-angebote" id="providerActiveListingsSectionWrap">
@@ -15097,9 +15058,9 @@
     function startLongPress(){ longPressTimer = setTimeout(function(){ psheetLongPressFired = true; if(typeof hapticLight === 'function') hapticLight(); toggleOfferSoldOut(raw.id); closeProviderSheet(); }, 500); }
     function cancelLongPress(){ if(longPressTimer){ clearTimeout(longPressTimer); longPressTimer = null; } }
     if(cardEl){
-      cardEl.addEventListener('touchstart', function(ev){ if(ev.touches.length===1) startLongPress(); });
-      cardEl.addEventListener('touchend', cancelLongPress);
-      cardEl.addEventListener('touchcancel', cancelLongPress);
+      cardEl.addEventListener('touchstart', function(ev){ if(ev.touches.length===1) startLongPress(); }, { passive: true });
+      cardEl.addEventListener('touchend', cancelLongPress, { passive: true });
+      cardEl.addEventListener('touchcancel', cancelLongPress, { passive: true });
       cardEl.addEventListener('mousedown', function(ev){ if(ev.button===0) startLongPress(); });
       cardEl.addEventListener('mouseup', cancelLongPress);
       cardEl.addEventListener('mouseleave', cancelLongPress);
@@ -18959,64 +18920,30 @@
         }
       }
 
-      // Dashboard 2.1: Header-Kennzahlen (Tagesessen, Abholungen; Umsatz in Live-Pille)
+      // Dashboard 2.1: Header-Kennzahlen (Tagesessen, Abholungen, Umsatz)
       const dashTagesessen = document.getElementById('dashboardTagesessenCount');
       const dashAbholungen = document.getElementById('dashboardAbholungenCount');
       const dashKochbuch = document.getElementById('dashboardKochbuchCount');
+      const dashUmsatz = document.getElementById('dashboardUmsatzToday');
       const dashAbholungenHint = document.getElementById('dashboardAbholungenHint');
+      const dashUmsatzHint = document.getElementById('dashboardUmsatzHint');
       if(dashTagesessen) dashTagesessen.textContent = mineToday.length;
       if(dashAbholungen) dashAbholungen.textContent = todayPickups;
       if(dashAbholungenHint){ dashAbholungenHint.style.display = todayPickups === 0 ? 'block' : 'none'; }
       if(dashKochbuch) dashKochbuch.textContent = cookbookCount;
       const nettoEuro = (tagesumsatzCents / 100 - todayOrders.length * 0.89).toFixed(2);
-      const nettoStr = nettoEuro.replace('.', ',') + ' €';
+      if(dashUmsatz){ dashUmsatz.textContent = nettoEuro.replace('.', ',') + ' €'; dashUmsatz.style.color = hasRevenue ? '#16a34a' : '#1a1a1a'; }
+      if(dashUmsatzHint){ dashUmsatzHint.style.display = !hasRevenue ? 'block' : 'none'; }
 
-      // Live-Pille oben rechts: Umsatz mit Hochroll-Animation + Haptik bei Änderung
-      const pillAmount = document.getElementById('dashboardUmsatzPillAmount');
-      if(pillAmount){
-        var lastPill = window._lastProviderPillUmsatz;
-        if(lastPill !== undefined && lastPill !== nettoStr){
-          pillAmount.classList.add('turnover-roll');
-          if(typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
-          setTimeout(function(){ pillAmount.classList.remove('turnover-roll'); }, 400);
-        }
-        window._lastProviderPillUmsatz = nettoStr;
-        pillAmount.textContent = nettoStr;
-        pillAmount.style.color = hasRevenue ? '#059669' : '#6b7280';
-      }
-      // Live-Pill: Klick Umsatz-Bereich → Fairness-Radar; Teilen-Button → shareTodayOffers
-      const livePill = document.getElementById('providerHomeLivePill');
-      if(livePill){
-        livePill.onclick = function(e){
-          if(e.target.closest('.provider-home-pill-share')) return;
-          if(typeof hapticLight === 'function') hapticLight();
-          if(typeof openPricingFairnessOverlay === 'function') openPricingFairnessOverlay();
-        };
-        livePill.onkeydown = function(e){ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); livePill.click(); } };
-      }
-      var btnPillShare = document.getElementById('btnProviderHomeSharePill');
-      if(btnPillShare){
-        btnPillShare.onclick = function(e){ e.preventDefault(); e.stopPropagation(); if(typeof hapticLight === 'function') hapticLight(); if(typeof shareTodayOffers === 'function') shareTodayOffers(); };
-      }
-
-      // Fairness-Snippet: Ersparnis (z. B. vs. 15 % Plattform) – Klick öffnet Fairness-Radar
-      var fairnessSnippet = document.getElementById('providerFairnessSnippet');
-      if(fairnessSnippet){
-        var bruttoEuro = tagesumsatzCents / 100;
-        var savedEuro = (bruttoEuro * 0.15).toFixed(2).replace('.', ','); // Ersparnis vs. 15 %-Plattform
-        fairnessSnippet.textContent = '🛡️ Bisher gespart: ' + savedEuro + ' €';
-        fairnessSnippet.style.display = 'block';
-        fairnessSnippet.onclick = function(){ if(typeof hapticLight === 'function') hapticLight(); if(typeof openPricingFairnessOverlay === 'function') openPricingFairnessOverlay(); };
-        fairnessSnippet.onkeydown = function(e){ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); fairnessSnippet.click(); } };
-      }
-
-      // KPI: Tagesessen-Label immer anzeigen; Abholungen-Label ausblenden bei Aktivität
+      // KPI: Tagesessen-Label immer anzeigen; Abholungen/Umsatz-Labels ausblenden bei Aktivität
       const kpiLabelTagesessen = document.getElementById('kpiLabelTagesessen');
       const kpiLabelAbholungen = document.getElementById('kpiLabelAbholungen');
+      const kpiLabelUmsatz = document.getElementById('kpiLabelUmsatz');
       if(kpiLabelTagesessen) kpiLabelTagesessen.style.display = '';
       if(kpiLabelAbholungen) kpiLabelAbholungen.style.display = todayPickups > 0 ? 'none' : '';
+      if(kpiLabelUmsatz) kpiLabelUmsatz.style.display = hasRevenue ? 'none' : '';
 
-      // KPI Click-Handler (Tagesessen → scroll zu Angeboten, Abholungen → Abholungen)
+      // KPI Click-Handler
       const kpiTagesessen = document.getElementById('kpiTagesessen');
       if(kpiTagesessen) kpiTagesessen.onclick = () => {
         const target = document.getElementById('providerActiveListingsSection');
@@ -19026,6 +18953,11 @@
       if(kpiBestellungen) kpiBestellungen.onclick = () => {
         if(typeof showProviderPickups === 'function') showProviderPickups();
       };
+      const kpiUmsatz = document.getElementById('kpiUmsatz');
+      if(kpiUmsatz){
+        kpiUmsatz.onclick = () => { if(typeof showProviderBilling === 'function') showProviderBilling(); };
+        kpiUmsatz.onkeydown = function(e){ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); kpiUmsatz.click(); } };
+      }
 
       // Aktive Inserate: Sektion immer sichtbar; bei 0 Tagesessen leere Karte mit CTA
       const providerActiveListings = document.getElementById('providerActiveListings');
