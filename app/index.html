@@ -4441,11 +4441,34 @@
     #v-provider-pickups.view.active{ display:flex !important; flex-direction:column !important; height:100vh; height:100dvh; max-height:100vh; max-height:100dvh; overflow:hidden; }
     #v-provider-pickups.view.active > header{ position:relative; z-index:1; flex-shrink:0; }
     #v-provider-pickups.view.active > div{ position:relative; z-index:1; min-height:0; flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; }
-    #v-provider-profile{ min-height:100vh; min-height:100dvh; width:100%; box-sizing:border-box; background:#F2F2F7 !important; }
+    #v-provider-profile{ min-height:100vh; min-height:100dvh; width:100%; box-sizing:border-box; background:#F9FAFB !important; }
     #v-provider-profile.view.active{ display:flex !important; flex-direction:column !important; }
     #v-provider-profile.view.active > header,
     #v-provider-profile.view.active > div{ position:relative; z-index:1; min-height:0; overflow:visible; }
-    /* Silicon Valley Style: Hero Carousel */
+    /* Ebene 1: Business-Dashboard (Master-Prompt) – #22C55E, 16px Radius */
+    #v-provider-profile .provider-profile-header-rebuild{ background:transparent; padding:12px 20px; padding-top:calc(12px + env(safe-area-inset-top, 0)); border-bottom:none; display:flex; align-items:center; justify-content:space-between; flex-shrink:0; }
+    #v-provider-profile .provider-profile-logo{ font-size:18px; font-weight:950; letter-spacing:-0.03em; cursor:pointer; color:#1a1a1a; }
+    #v-provider-profile .provider-profile-logo .logo-io{ color:#6B7280; }
+    #v-provider-profile .provider-profile-gear-btn{ width:40px; height:40px; border:none; background:transparent; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:22px; padding:0; box-shadow:none; }
+    #v-provider-profile .provider-profile-content-rebuild{ flex:1; overflow-y:auto; padding:20px; padding-bottom:calc(100px + env(safe-area-inset-bottom)); max-width:500px; margin:0 auto; width:100%; box-sizing:border-box; }
+    #v-provider-profile .provider-profile-main-rebuild{ display:flex; flex-direction:column; gap:24px; }
+    #v-provider-profile .provider-focus-card{ background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04); }
+    #v-provider-profile .provider-focus-card-inserat{ padding:0 0 20px; }
+    #v-provider-profile .provider-focus-card-img-wrap{ width:100%; padding-bottom:56%; position:relative; overflow:hidden; border-radius:16px 16px 0 0; background:#f1f3f5; height:0; }
+    #v-provider-profile .provider-focus-card-img-wrap img{ position:absolute; left:0; top:0; width:100%; height:100%; object-fit:cover; }
+    #v-provider-profile .provider-focus-card-pillars{ display:flex; justify-content:center; align-items:center; gap:12px; padding:12px 0; font-size:20px; }
+    #v-provider-profile .provider-focus-card-title{ margin:0 20px 8px; font-size:17px; font-weight:800; color:#1a1a1a; line-height:1.3; }
+    #v-provider-profile .provider-focus-badge{ display:inline-block; margin:0 20px 16px; padding:4px 12px; border-radius:8px; font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:0.05em; }
+    #v-provider-profile .provider-focus-badge-green{ background:#22C55E; color:#fff; }
+    #v-provider-profile .provider-focus-btn{ display:block; width:calc(100% - 40px); margin:0 20px; min-height:52px; border-radius:16px; font-size:15px; font-weight:800; border:none; cursor:pointer; background:#22C55E; color:#fff; transition:transform 0.12s; }
+    #v-provider-profile .provider-focus-btn:active{ transform:scale(0.98); }
+    #v-provider-profile .provider-focus-card-abholnummer{ padding:24px 20px; text-align:center; }
+    #v-provider-profile .provider-focus-abholnummer-number{ font-size:2.5rem; font-weight:800; font-family:ui-monospace, monospace; color:#1a1a1a; letter-spacing:0.02em; margin-bottom:8px; }
+    #v-provider-profile .provider-focus-card-info{ margin:0; font-size:14px; color:#6B7280; line-height:1.45; }
+    #v-provider-profile .provider-focus-card-abrechnung{ padding:20px; display:flex; align-items:center; gap:16px; cursor:pointer; transition:background 0.2s; }
+    #v-provider-profile .provider-focus-card-abrechnung:active{ background:#f3f4f6; }
+    #v-provider-profile .provider-focus-card-icon{ font-size:28px; }
+    /* Legacy hero (Sub-Views) */
     #v-provider-profile .provider-profile-hero{ display:flex; overflow-x:auto; overflow-y:hidden; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; gap:16px; padding:16px 20px 24px; padding-left:calc(20px + env(safe-area-inset-left, 0)); padding-right:calc(20px + env(safe-area-inset-right, 0)); scrollbar-width:none; }
     #v-provider-profile .provider-profile-hero::-webkit-scrollbar{ display:none; }
     #v-provider-profile .provider-profile-hero-slide{ flex:0 0 calc(100% - 32px); min-width:calc(100% - 32px); scroll-snap-align:start; scroll-snap-stop:always; border-radius:20px; overflow:hidden; background:#fff; box-shadow:0 8px 24px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04); display:flex; flex-direction:column; min-height:280px; }
@@ -7056,136 +7079,48 @@
       <button type="button" class="cookbook-action-sheet-btn" onclick="closeCookbookActionSheet()">Abbrechen</button>
     </div>
 
-    <!-- Provider-Profil "Mein Profil" – Silicon Valley Style: Hero-Carousel + Zahnrad-Sektionen -->
-    <section class="view onboarding-view" id="v-provider-profile" style="display:flex; flex-direction:column; min-height:0; background:#F2F2F7;">
-      <header id="providerProfileHeader" style="background:rgba(255,255,255,0.9); backdrop-filter:blur(12px); padding:12px 20px; padding-top:calc(12px + env(safe-area-inset-top, 0)); border-bottom:1px solid rgba(0,0,0,0.04); position:sticky; top:0; z-index:50; flex-shrink:0; display:flex; align-items:center; justify-content:space-between; gap:12px;">
-        <div id="providerProfileHeaderBrand" style="font-size:18px; font-weight:950; letter-spacing:-0.03em; cursor:pointer;"><span class="logo-mittag" style="color:#1a1a1a;">mittag</span><span class="logo-io" style="color:#64748b;">io</span></div>
-        <button type="button" id="providerProfileGearBtn" aria-label="Einstellungen" style="width:44px; height:44px; border-radius:14px; background:#f1f3f5; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
-          <i data-lucide="settings" style="width:22px; height:22px; color:#64748b;"></i>
-        </button>
+    <!-- Provider-Profil "Mein Profil" – Ebene 1: Business-Dashboard | Ebene 2: Zahnrad Einstellungen [Master-Prompt] -->
+    <section class="view onboarding-view" id="v-provider-profile" style="display:flex; flex-direction:column; min-height:0; background:#F9FAFB;">
+      <header id="providerProfileHeader" class="provider-profile-header-rebuild">
+        <div id="providerProfileHeaderBrand" class="provider-profile-logo"><span class="logo-mittag">mittag</span><span class="logo-io">io</span></div>
+        <button type="button" id="providerProfileGearBtn" class="provider-profile-gear-btn" aria-label="Einstellungen">⚙️</button>
       </header>
 
-      <div id="providerProfileContent" style="flex:1; overflow-y:auto; padding:0 0 calc(100px + env(safe-area-inset-bottom, 0)); max-width:500px; margin:0 auto; width:100%; box-sizing:border-box;">
+      <div id="providerProfileContent" class="provider-profile-content-rebuild">
         <div id="providerProfileMainWrap">
-          <div id="providerProfileMain">
-            <!-- Hero Carousel: 6 Screens (Snap, 20px Radius) -->
-            <div class="provider-profile-hero" id="providerProfileHero">
-              <!-- Screen 1: Inserat -->
-              <div class="provider-profile-hero-slide">
-                <img class="provider-profile-hero-slide-img" src="https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=1200&q=60" alt="Mittagessen" />
-                <div class="provider-profile-hero-slide-body">
-                  <span class="provider-profile-hero-badge">KEIN ABO. KEIN VERTRAG.</span>
-                  <h2 class="provider-profile-hero-slide-title">Jetzt für 4,99 € inserieren</h2>
-                  <div class="card-pillars" style="margin-top:8px;"><div class="pillar-mini active green" title="Vor Ort möglich">🍴</div><div class="pillar-mini active yellow" title="Abholnummer aktiv">🧾</div><div class="pillar-mini active petrol" title="Mehrweg verfügbar">🔄</div></div>
-                  <button type="button" id="btnProviderProfileInserieren" class="provider-profile-hero-cta provider-profile-hero-cta--yellow">Jetzt für 4,99 € inserieren</button>
-                </div>
-              </div>
-              <!-- Screen 2: Abholnummer -->
-              <div class="provider-profile-hero-slide">
-                <div style="width:100%;aspect-ratio:16/10;background:linear-gradient(135deg,#f0f9ff 0%,#e0f2fe 100%);display:flex;align-items:center;justify-content:center;">
-                  <div style="width:120px;height:160px;border-radius:16px;background:#fff;box-shadow:0 8px 24px rgba(0,0,0,0.1);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:900;font-family:ui-monospace,monospace;color:#1a1a1a;">#B-42</div>
-                </div>
-                <div class="provider-profile-hero-slide-body">
-                  <h2 class="provider-profile-hero-slide-title">Premium-Service: Abholnummer</h2>
-                  <p class="provider-profile-hero-slide-sub">Nur 0,89 € inkl. Gebühren. Schlange überspringen, sauber organisiert.</p>
-                </div>
-              </div>
-              <!-- Screen 3: Wochenplan -->
-              <div class="provider-profile-hero-slide">
-                <div class="provider-profile-hero-slide-body" style="padding:24px;">
-                  <div class="provider-profile-hero-icon-wrap">📅</div>
-                  <h2 class="provider-profile-hero-slide-title">Deine Woche in 2 Min. geplant.</h2>
-                  <p class="provider-profile-hero-slide-sub">Copy-Vorwoche Funktion – einmal einrichten, jede Woche nutzen.</p>
-                  <button type="button" onclick="showProviderWeek()" class="provider-profile-hero-cta provider-profile-hero-cta--emerald">Zum Wochenplan</button>
-                </div>
-              </div>
-              <!-- Screen 4: Kochbuch -->
-              <div class="provider-profile-hero-slide">
-                <div class="provider-profile-hero-slide-body" style="padding:24px;">
-                  <div class="provider-profile-hero-icon-wrap">📖</div>
-                  <h2 class="provider-profile-hero-slide-title">Rezepte speichern & blitzschnell abrufen.</h2>
-                  <p class="provider-profile-hero-slide-sub">Kochbuch als Zentrale für alle Gerichte – ein Tipp zum Inserieren.</p>
-                  <button type="button" onclick="showProviderCookbook()" class="provider-profile-hero-cta provider-profile-hero-cta--emerald">Zum Kochbuch</button>
-                </div>
-              </div>
-              <!-- Screen 5: Allergene -->
-              <div class="provider-profile-hero-slide">
-                <div class="provider-profile-hero-slide-body" style="padding:24px;">
-                  <div class="provider-profile-hero-icon-wrap">🔍</div>
-                  <h2 class="provider-profile-hero-slide-title">Intelligente Autovervollständigung für Allergene.</h2>
-                  <p class="provider-profile-hero-slide-sub">Schnell auswählen, was zutrifft – Kunden sehen es sofort.</p>
-                </div>
-              </div>
-              <!-- Screen 6: Erfolg -->
-              <div class="provider-profile-hero-slide">
-                <div class="provider-profile-hero-slide-body" style="padding:24px;">
-                  <div class="provider-profile-hero-icon-wrap">📊</div>
-                  <h2 class="provider-profile-hero-slide-title">Deine Inserate & Einnahmen im Blick.</h2>
-                  <p class="provider-profile-hero-slide-sub">Zahlung & Abrechnung – Rechnungen, PDFs, Übersicht.</p>
-                  <button type="button" onclick="showProviderBilling()" class="provider-profile-hero-cta provider-profile-hero-cta--emerald">Zur Abrechnung</button>
-                </div>
-              </div>
-            </div>
-
-            <!-- Zahnrad-Sektionen (sichtbar bei Scroll oder nach Klick auf Zahnrad) -->
-            <div id="providerProfileGearSection" class="provider-settings-scroll" style="padding:0 20px 24px; display:flex; flex-direction:column; gap:20px;">
-            <!-- Sektion A: Betriebsdaten (eine Karte, zentral aus MittagioForm gerendert, kein Duplikat) -->
-            <div id="providerBusinessDataCardSlot"></div>
-            <!-- Sektion B: Voreinstellungen (Zeit + 3 Säulen) -->
-            <div class="provider-settings-card" style="background:#fff; border-radius:24px; padding:24px; border:1px solid rgba(0,0,0,0.04); box-shadow:0 8px 24px rgba(0,0,0,0.03);">
-              <h3 style="margin:0 0 16px; font-size:17px; font-weight:800; color:#1a1a1a;">Mittagszeiten</h3>
-              <button type="button" id="providerSettingsTimeTrigger" class="provider-time-trigger">
-                <span id="providerSettingsTimeDisplay" style="font-size:22px; font-weight:900; color:#1a1a1a;">11:30 – 14:00</span>
-              </button>
-              <div style="display:flex; align-items:center; gap:12px; margin-top:16px;">
-                <div style="flex:1;"><label style="display:block; font-size:11px; font-weight:700; color:#9ca3af; margin-bottom:8px; text-transform:uppercase;">Start</label><select id="providerMealStart" style="width:100%; height:48px; padding:0 12px; border:2px solid #f1f3f5; border-radius:14px; font-size:15px; font-weight:700; background:#f8f9fa; color:#1a1a1a; cursor:pointer;"></select></div>
-                <span style="color:#cbd5e1; font-weight:900;">–</span>
-                <div style="flex:1;"><label style="display:block; font-size:11px; font-weight:700; color:#9ca3af; margin-bottom:8px; text-transform:uppercase;">Ende</label><select id="providerMealEnd" style="width:100%; height:48px; padding:0 12px; border:2px solid #f1f3f5; border-radius:14px; font-size:15px; font-weight:700; background:#f8f9fa; color:#1a1a1a; cursor:pointer;"></select></div>
-              </div>
-              <label style="display:block; font-size:11px; font-weight:700; color:#9ca3af; margin:20px 0 12px; text-transform:uppercase;">An welchen Tagen?</label>
-              <div id="providerLunchWeekdays" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
-              <h3 style="margin:24px 0 12px; font-size:17px; font-weight:800; color:#1a1a1a;">Die 3 Säulen</h3>
-              <div style="border-top:1px solid #f1f3f5; padding-top:16px;">
-                <div style="display:flex; justify-content:space-between; align-items:center; padding:14px 0; border-bottom:1px solid #f8f9fa;"><div style="display:flex;align-items:center;gap:12px;"><span style="font-size:22px;">🍴</span><span style="font-weight:700; color:#1a1a1a;">Vor Ort</span></div><label class="toggle-switch"><input type="checkbox" id="providerDineInEnabled"><span class="toggle-slider"></span></label></div>
-                <div style="display:flex; justify-content:space-between; align-items:center; padding:14px 0; border-bottom:1px solid #f8f9fa;"><div style="display:flex;align-items:center;gap:12px;"><span style="font-size:22px;">🔄</span><span style="font-weight:700; color:#1a1a1a;">Mehrweg</span></div><label class="toggle-switch"><input type="checkbox" id="providerReuseEnabled"><span class="toggle-slider"></span></label></div>
-                <div style="display:flex; justify-content:space-between; align-items:center; padding:14px 0;"><div style="display:flex;align-items:center;gap:12px;"><span style="font-size:22px;">🧾</span><span style="font-weight:700; color:#1a1a1a;">Abholnummer</span></div><label class="toggle-switch"><input type="checkbox" id="providerAbholnummerEnabled"><span class="toggle-slider"></span></label></div>
-              </div>
-            </div>
-            <!-- Sektion C: Abrechnung & Support -->
-            <div class="provider-settings-card" style="background:#fff; border-radius:24px; padding:24px; border:1px solid rgba(0,0,0,0.04); box-shadow:0 8px 24px rgba(0,0,0,0.03);">
-              <h3 style="margin:0 0 16px; font-size:17px; font-weight:800; color:#1a1a1a;">Zahlung & Abrechnung</h3>
-              <div id="providerStripeStatus" style="padding:16px; border-radius:16px; background:#f8f9fa; border:1px solid #f1f3f5; margin-bottom:16px; font-size:14px; font-weight:600; color:#64748b; display:flex; align-items:center; gap:10px;"><i data-lucide="credit-card" style="width:20px;height:20px;"></i><span>Hinterlegte Karten</span></div>
-              <button type="button" id="btnProviderBillingPortal" style="width:100%; min-height:52px; border-radius:14px; font-size:15px; font-weight:800; background:#1a1a1a; color:#fff; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">Zahlungsmittel verwalten</button>
-              <p style="margin:16px 0 8px; font-size:14px; color:#64748b;">Rechnungen (4,99 €) – PDF-Download.</p>
-              <button type="button" id="btnSettingsBillingArchive" style="width:100%; display:flex; justify-content:space-between; align-items:center; padding:16px 20px; background:#f8f9fa; border-radius:14px; border:none; color:#1a1a1a; font-size:15px; font-weight:700; cursor:pointer;">
-                <span>Rechnungsarchiv & PDFs</span><i data-lucide="chevron-right" style="width:20px;height:20px;color:#cbd5e1;"></i>
-              </button>
-              <h3 style="margin:24px 0 12px; font-size:17px; font-weight:800; color:#1a1a1a;">Support</h3>
-              <p style="margin:0 0 12px; font-size:14px; color:#64748b;">Standort, Zahlung, Feedback – klickbare Fehlerquellen.</p>
-              <button type="button" id="btnSettingsSupport" style="width:100%; min-height:52px; border-radius:14px; font-size:15px; font-weight:800; background:#f1f3f5; color:#1a1a1a; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">FAQ & Support öffnen</button>
-            </div>
-
-            <button id="btnProviderLogout" class="provider-profile-logout-btn" style="width:100%; min-height:52px; background:#fff; color:#dc2626; border:2px solid #fecaca; border-radius:16px; font-weight:800; font-size:15px; display:flex; align-items:center; justify-content:center; gap:10px; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.04);">
-              <i data-lucide="log-out" style="width:20px;height:20px;"></i>
-              <span>Abmelden</span>
-            </button>
-            </div>
-            <footer class="provider-profile-footer" style="margin-top:24px; padding:20px 0; text-align:center; font-size:12px; color:#94a3b8; font-weight:600;">
-              Impressum Mike Quach, Rudersberg
-            </footer>
+          <div id="providerProfileMain" class="provider-profile-main-rebuild">
+            <!-- Kachel 1: Inserat -->
+            <article class="provider-focus-card provider-focus-card-inserat">
+              <div class="provider-focus-card-img-wrap"><img src="https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=1200&q=60" alt="Mittagessen" /></div>
+              <div class="provider-focus-card-pillars"><span title="Vor Ort">🍴</span><span title="Abholnummer">🧾</span><span title="Mehrweg">🔄</span></div>
+              <p class="provider-focus-card-title">Jetzt für 4,99 € inserieren</p>
+              <span class="provider-focus-badge provider-focus-badge-green">KEIN ABO. KEIN VERTRAG.</span>
+              <button type="button" id="btnProviderProfileInserieren" class="provider-focus-btn provider-focus-btn-green">Jetzt inserieren</button>
+            </article>
+            <!-- Kachel 2: Abholnummer -->
+            <article class="provider-focus-card provider-focus-card-abholnummer">
+              <div class="provider-focus-abholnummer-number">#B-42</div>
+              <p class="provider-focus-card-title">Digitale Abholnummer</p>
+              <p class="provider-focus-card-info">Nur 0,89 € pro Vorgang inkl. aller Gebühren.</p>
+            </article>
+            <!-- Kachel 3: Abrechnung -->
+            <article class="provider-focus-card provider-focus-card-abrechnung" role="button" tabindex="0" id="btnProviderProfileAbrechnung">
+              <span class="provider-focus-card-icon">📄</span>
+              <p class="provider-focus-card-title">Deine Abrechnungen &amp; PDF-Belege</p>
+            </article>
           </div>
         </div>
 
         <!-- Einstellungsseite (Zahnrad): Identity + Karten + Danger Zone -->
-      <div id="providerProfileSubSettings" class="provider-profile-sub" style="display:none; flex-direction:column; min-height:0; background:#f1f3f5;">
-        <header class="provider-sub-header" style="background:#fff; padding:10px 20px 12px; padding-top:calc(10px + env(safe-area-inset-top, 0)); border-bottom:1px solid #f1f3f5; position:sticky; top:0; z-index:50; display:flex; align-items:center; gap:14px;">
-          <button type="button" id="providerProfileBackSettings" aria-label="Zurück" style="width:44px; height:44px; border-radius:14px; background:#f1f3f5; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+      <div id="providerProfileSubSettings" class="provider-profile-sub" style="display:none; flex-direction:column; min-height:0; background:#F9FAFB;">
+        <header class="provider-sub-header" style="background:#fff; padding:10px 20px 12px; padding-top:calc(10px + env(safe-area-inset-top, 0)); border-bottom:1px solid #e5e7eb; position:sticky; top:0; z-index:50; display:flex; align-items:center; gap:14px;">
+          <button type="button" id="providerProfileBackSettings" aria-label="Zurück" style="width:44px; height:44px; border-radius:14px; background:transparent; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center;">
             <i data-lucide="chevron-left" style="width:22px; height:22px; color:#1a1a1a;"></i>
           </button>
           <h1 style="margin:0; font-size:18px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a;">Einstellungen</h1>
         </header>
 
-        <div class="provider-settings-scroll" style="flex:1; overflow-y:auto; background:#F2F2F7;">
+        <div class="provider-settings-scroll provider-settings-scroll-rebuild" style="flex:1; overflow-y:auto; background:#F9FAFB;">
           <!-- Identity Section (wie Kundenseite: zentrales Logo, Name, Ort, Status) -->
           <div class="provider-settings-identity" style="text-align:center; padding:28px 20px 24px; background:#fff; border-radius:24px; box-shadow:0 2px 12px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04);">
             <div class="plogo" id="providerSettingsLogo" style="margin:0 auto 12px; background-size:cover; background-position:center; background-color:#f1f3f5;"></div>
@@ -7264,20 +7199,28 @@
             </div>
           </div>
 
-          <!-- Danger Zone (Footer wie Kundenseite: Abrechnung, Support, Account löschen) -->
-          <div class="provider-settings-danger-footer" style="margin-top:8px;">
-            <button type="button" id="btnSettingsBillingArchive" class="provider-footer-row" style="width:100%; text-align:left; border:none; font-family:inherit;">
-              <span>Rechnungsarchiv & PDFs (4,99 € Belege)</span>
-              <i data-lucide="chevron-right" style="width:20px; height:20px; color:#cbd5e1; flex-shrink:0;"></i>
+          <!-- Abrechnung & Support -->
+          <div class="provider-settings-card provider-settings-card-rebuild" style="background:#fff; border-radius:16px; padding:20px; margin-bottom:20px; box-shadow:0 1px 3px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04);">
+            <h3 style="margin:0 0 12px; font-size:15px; font-weight:800; color:#1a1a1a;">Abrechnung &amp; Support</h3>
+            <button type="button" id="btnProviderBillingPortal" style="width:100%; min-height:48px; border-radius:16px; font-size:15px; font-weight:800; background:#22C55E; color:#fff; border:none; cursor:pointer; margin-bottom:12px;">Zahlungsmethoden</button>
+            <button type="button" id="btnSettingsBillingArchive" class="provider-settings-row-chevron" style="width:100%; display:flex; justify-content:space-between; align-items:center; padding:14px 0; background:transparent; border:none; border-bottom:1px solid #f3f4f6; color:#1a1a1a; font-size:15px; font-weight:700; cursor:pointer; text-align:left;">
+              <span>PDF-Archiv &amp; Belege</span><i data-lucide="chevron-right" style="width:20px; height:20px; color:#9ca3af;"></i>
             </button>
-            <button type="button" id="btnSettingsSupportFooter" class="provider-footer-row" style="width:100%; text-align:left; border:none; font-family:inherit;">
-              <span>Support & FAQ</span>
-              <i data-lucide="chevron-right" style="width:20px; height:20px; color:#cbd5e1; flex-shrink:0;"></i>
-            </button>
-            <button type="button" id="btnProviderDeleteAccount" class="provider-footer-delete">
-              Profil dauerhaft löschen
+            <button type="button" id="btnSettingsSupportFooter" class="provider-settings-row-chevron" style="width:100%; display:flex; justify-content:space-between; align-items:center; padding:14px 0; background:transparent; border:none; color:#1a1a1a; font-size:15px; font-weight:700; cursor:pointer; text-align:left;">
+              <span>Support &amp; FAQ</span><i data-lucide="chevron-right" style="width:20px; height:20px; color:#9ca3af;"></i>
             </button>
           </div>
+          <!-- Rechtliches & Info (AGB, Datenschutz, Impressum) -->
+          <div class="provider-settings-card provider-settings-card-rebuild" style="background:#fff; border-radius:16px; overflow:hidden; margin-bottom:20px; box-shadow:0 1px 3px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04);">
+            <h3 style="margin:0; padding:20px 20px 8px; font-size:15px; font-weight:800; color:#1a1a1a;">Rechtliches &amp; Info</h3>
+            <a href="#/agb" class="provider-settings-row-chevron" style="display:flex; justify-content:space-between; align-items:center; padding:14px 20px; color:#1a1a1a; font-size:15px; font-weight:700; text-decoration:none; border-bottom:1px solid #f3f4f6;"><span>AGB</span><i data-lucide="chevron-right" style="width:20px; height:20px; color:#9ca3af;"></i></a>
+            <a href="#/datenschutz" class="provider-settings-row-chevron" style="display:flex; justify-content:space-between; align-items:center; padding:14px 20px; color:#1a1a1a; font-size:15px; font-weight:700; text-decoration:none; border-bottom:1px solid #f3f4f6;"><span>Datenschutz</span><i data-lucide="chevron-right" style="width:20px; height:20px; color:#9ca3af;"></i></a>
+            <div class="provider-settings-row-chevron" style="display:flex; justify-content:space-between; align-items:center; padding:14px 20px; color:#1a1a1a; font-size:15px; font-weight:700; cursor:pointer;" id="btnProviderImpressum"><span>Impressum</span><i data-lucide="chevron-right" style="width:20px; height:20px; color:#9ca3af;"></i></div>
+            <div id="providerImpressumContent" style="display:none; padding:16px 20px 20px; font-size:14px; color:#6B7280; line-height:1.6; border-top:1px solid #f3f4f6;">Mike Quach, Langäcker 2, 73635 Rudersberg</div>
+          </div>
+          <button type="button" id="btnProviderDeleteAccount" class="provider-footer-delete" style="display:block; width:100%; padding:16px; font-size:14px; font-weight:800; color:#dc2626; background:transparent; border:none; cursor:pointer; text-align:center;">
+            Profil dauerhaft löschen
+          </button>
         </div>
       </div>
 
@@ -10789,11 +10732,12 @@
   }
   function ensureProviderBusinessDataCard(){
     var slot = document.getElementById('providerBusinessDataCardSlot');
-    var card = document.getElementById('providerBusinessDataCardWrap');
-    if(!slot) return;
-    if(!card){ card = createProviderBusinessDataCard(); slot.appendChild(card); }
     var slotSettings = document.getElementById('providerBusinessDataCardSlotSettings');
-    if(slotSettings && card.parentNode !== slot && card.parentNode !== slotSettings) slot.appendChild(card);
+    var targetSlot = slot || slotSettings;
+    if(!targetSlot) return;
+    var card = document.getElementById('providerBusinessDataCardWrap');
+    if(!card){ card = createProviderBusinessDataCard(); targetSlot.appendChild(card); }
+    else if(card.parentNode !== targetSlot && slotSettings){ slotSettings.appendChild(card); }
   }
 
   function showProviderProfileSub(subId){
@@ -10811,9 +10755,9 @@
     var card = document.getElementById('providerBusinessDataCardWrap');
     var slot = document.getElementById('providerBusinessDataCardSlot');
     var slotSettings = document.getElementById('providerBusinessDataCardSlotSettings');
-    if(card && slot && slotSettings){
+    if(card && slotSettings){
       if(subId === 'settings'){ slotSettings.appendChild(card); }
-      else if(!subId){ slot.insertBefore(card, slot.firstChild); }
+      else if(!subId && slot){ slot.insertBefore(card, slot.firstChild); }
     }
     if(subId && contentEl) contentEl.scrollTop = 0;
     if((subId === 'settings' || subId === 'times' || subId === 'service') && typeof renderProviderProfileMealSelects === 'function') renderProviderProfileMealSelects();
@@ -21459,6 +21403,9 @@
     function goProfileBack(){ showProviderProfileSub(null); }
     var backSettings = document.getElementById('providerProfileBackSettings');
     if(backSettings) backSettings.onclick = goProfileBack;
+    var btnImpressum = document.getElementById('btnProviderImpressum');
+    var impressumContent = document.getElementById('providerImpressumContent');
+    if(btnImpressum && impressumContent) btnImpressum.onclick = function(){ if(typeof haptic === 'function') haptic(6); impressumContent.style.display = impressumContent.style.display === 'none' ? 'block' : 'none'; };
     var btnBillingArchive = document.getElementById('btnBillingArchive');
     if(btnBillingArchive) btnBillingArchive.onclick = function(){ if(!checkSessionValidity()) return; showView(views.providerBilling); renderBilling(); };
     var btnSettingsBillingArchive = document.getElementById('btnSettingsBillingArchive');
@@ -21524,13 +21471,15 @@
     var gearBtn = document.getElementById('providerProfileGearBtn');
     if(gearBtn) gearBtn.onclick = function(){
       if(typeof haptic === 'function') haptic(6);
-      var section = document.getElementById('providerProfileGearSection');
-      if(section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if(typeof showProviderProfileSub === 'function') showProviderProfileSub('settings');
     };
     var headerBrand = document.getElementById('providerProfileHeaderBrand');
     if(headerBrand){ headerBrand.onclick = function(){ if(typeof showProviderHome === 'function') showProviderHome(); }; headerBrand.style.cursor = 'pointer'; }
     var btnProfileInserieren = document.getElementById('btnProviderProfileInserieren');
     if(btnProfileInserieren) btnProfileInserieren.onclick = function(){ if(typeof haptic === 'function') haptic(8); if(typeof openDishFlow === 'function') openDishFlow(); };
+    var btnProfileAbrechnung = document.getElementById('btnProviderProfileAbrechnung');
+    if(btnProfileAbrechnung) btnProfileAbrechnung.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(typeof showProviderBilling === 'function') showProviderBilling(); };
+    if(btnProfileAbrechnung) btnProfileAbrechnung.onkeydown = function(e){ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); btnProfileAbrechnung.click(); } };
     
     // Kontaktdaten (Adresse, Telefon, E-Mail, Internetseite)
     const profileBusinessName = document.getElementById('providerProfileBusinessName');
