@@ -2521,6 +2521,15 @@
     #psheet .handle { display: none; }
     #psheet .sheet-body.psheet-body { display: flex; flex-direction: column; min-height: 100%; padding: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; }
     #psheet .psheet-photo-header { height: 38vh; min-height: 200px; flex-shrink: 0; }
+    /* Header-Morph in psheet (Allergene/Extras/Zeit – wie Wizard) */
+    #psheet .psheet-photo-header .selection-overlay { position: absolute; inset: 0; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; padding: 20px 45px 20px 20px; opacity: 0; pointer-events: none; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); overflow-y: auto; z-index: 15; }
+    #psheet .psheet-photo-header.is-selecting .selection-overlay { opacity: 1; pointer-events: auto; backdrop-filter: blur(25px) saturate(160%); -webkit-backdrop-filter: blur(25px) saturate(160%); background: rgba(255,255,255,0.2); }
+    #psheet .psheet-photo-header img { transition: transform 0.4s, filter 0.4s; }
+    #psheet .psheet-photo-header.is-selecting img { transform: scale(1.1); filter: brightness(0.7) blur(25px); }
+    #psheet .psheet-photo-header .selection-overlay-inner { display: grid; grid-template-columns: 1fr 1fr; justify-items: center; align-items: center; gap: 8px; width: 100%; }
+    #psheet .psheet-photo-header .selection-overlay .extra-pill, #psheet .psheet-photo-header .selection-overlay .inserat-allergen-pill { padding: 8px 14px; border-radius: 999px; font-size: 13px; font-weight: 700; border: 2px solid rgba(0,0,0,0.08); background: rgba(255,255,255,0.5); color: #475569; cursor: pointer; transition: background 0.2s, color 0.2s; -webkit-tap-highlight-color: transparent; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+    #psheet .psheet-photo-header .selection-overlay .extra-pill.active, #psheet .psheet-photo-header .selection-overlay .inserat-allergen-pill.active { background: #10b981; color: #fff; border-color: rgba(16,185,129,0.4); box-shadow: 0 2px 10px rgba(16,185,129,0.3); }
+    #psheet .psheet-photo-header .selection-overlay-inner.selection-overlay-inner--time { display: flex; align-items: center; justify-content: center; }
     /* Decision Zone: Mit Abholnummer (Grün) + Nur Inserat (Gelb) – fixiert am unteren Rand */
     #psheet .psheet-footer-sticky.psheet-decision-zone { display: flex !important; flex-direction: column; gap: 12px; padding: 16px 20px; padding-bottom: max(16px, env(safe-area-inset-bottom)); border-top: 1px solid rgba(0,0,0,0.06); background: rgba(255,255,255,0.98); flex-shrink: 0; }
     #psheet .psheet-btn-decision { width: 100%; min-height: 52px; border-radius: 16px; font-size: 16px; font-weight: 800; border: none; cursor: pointer; transition: opacity 0.25s ease, transform 0.2s, box-shadow 0.2s; }
@@ -7334,6 +7343,14 @@
             </div>
           </div>
 
+          <!-- Extras mit Preis (Inserateinstellungen) -->
+          <div class="provider-profile-card provider-settings-card" style="background:#fff; border-radius:24px; padding:24px; margin-bottom:20px; border:none; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
+            <h3 style="margin:0 0 8px; font-size:17px; font-weight:800; color:#1a1a1a;">➕ Extras mit Preis</h3>
+            <p style="margin:0 0 16px; font-size:14px; color:#64748b; line-height:1.5;">Diese Extras stehen in neuen Inseraten zur Auswahl (z.&nbsp;B. Beilagensalat, Soße).</p>
+            <div id="providerSettingsExtrasList" style="display:flex; flex-direction:column; gap:10px;"></div>
+            <button type="button" id="providerSettingsExtrasAdd" style="margin-top:12px; width:100%; min-height:48px; border-radius:14px; font-size:15px; font-weight:700; background:#f1f3f5; color:#475569; border:2px dashed #e2e8f0; cursor:pointer;">+ Extra hinzufügen</button>
+          </div>
+
           <!-- Abrechnung & Support -->
           <div class="provider-settings-card provider-settings-card-rebuild" style="background:#fff; border-radius:16px; padding:20px; margin-bottom:20px; box-shadow:0 1px 3px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04);">
             <h3 style="margin:0 0 12px; font-size:15px; font-weight:800; color:#1a1a1a;">Abrechnung &amp; Support</h3>
@@ -8398,7 +8415,8 @@
     <button type="button" class="universal-x" id="psheetCloseX" aria-label="Schließen" title="Schließen">✕</button>
     <div id="pPreview"></div>
     <div class="psheet-footer-sticky psheet-decision-zone" id="psheetDecisionZone">
-      <button type="button" id="btnPsheetMitAbholnummer" class="psheet-btn-decision psheet-btn-green" aria-label="Mit Abholnummer inserieren">Mit Abholnummer</button>
+      <div class="pricing-info-label" id="psheetPricingLabel" role="button" tabindex="0" aria-label="Preisübersicht anzeigen" style="margin-bottom:8px;">Preisübersicht ⓘ</div>
+      <button type="button" id="btnPsheetMitAbholnummer" class="psheet-btn-decision psheet-btn-green" aria-label="mit Abholnummer">mit Abholnummer</button>
       <button type="button" id="btnPsheetNurInserat" class="psheet-btn-decision psheet-btn-yellow" aria-label="Nur Inserat">Nur Inserat</button>
     </div>
   </div>
@@ -8415,7 +8433,7 @@
   <div id="psheetLegendPopover" class="psheet-legend-popover" style="display:none;">
     <div class="psheet-legend-inner">
       <div style="font-weight:800; margin-bottom:8px; font-size:14px;">Symbole</div>
-      <p style="margin:0 0 12px; font-size:13px; color:#475569; line-height:1.5;">🍴 Vor Ort · 🔄 Mehrweg · 🕒 Abholzeit · 🌾 Allergene · ➕ Extras</p>
+      <p style="margin:0 0 12px; font-size:13px; color:#475569; line-height:1.5;">🍴 Vor Ort · 🔄 Mehrweg · 🕒 Zeit · 🌾 Allergene · ➕ Extras</p>
       <button type="button" id="btnPsheetPrintFromLegend" class="psheet-legend-print">Drucken</button>
       <button type="button" id="btnPsheetLegendClose" class="psheet-legend-close">Schließen</button>
     </div>
@@ -10290,8 +10308,9 @@
   }
 
   function normalizeProviderProfile(p){
-    const base = { name:'', address:'', street:'', zip:'', city:'', mealWindow:DEFAULT_MEAL_WINDOW, mealStart:'11:30', mealEnd:'14:00', lunchWeekdays:[1,2,3,4,5], phone:'', email:'', website:'', logoData:'', kitchenEmail:'', autoSelloutTime:'', reuseEnabledByDefault:false, abholnummerEnabledByDefault:false, wantsAllergensByDefault:false };
+    const base = { name:'', address:'', street:'', zip:'', city:'', mealWindow:DEFAULT_MEAL_WINDOW, mealStart:'11:30', mealEnd:'14:00', lunchWeekdays:[1,2,3,4,5], phone:'', email:'', website:'', logoData:'', kitchenEmail:'', autoSelloutTime:'', reuseEnabledByDefault:false, abholnummerEnabledByDefault:false, wantsAllergensByDefault:false, defaultExtras:[] };
     const out = {...base, ...(p||{})};
+    if(!Array.isArray(out.defaultExtras)) out.defaultExtras = [];
     if(!out.address){ out.address = buildAddress(out); }
     if(!out.mealWindow){ out.mealWindow = DEFAULT_MEAL_WINDOW; }
     if(!Array.isArray(out.lunchWeekdays)){ out.lunchWeekdays = [1,2,3,4,5]; }
@@ -15209,7 +15228,10 @@
     }
   });
 
-  function openProviderOffer(id){
+  var psheetOpenSource = 'dashboard';
+  function openProviderOffer(id, options){
+    options = options || {};
+    psheetOpenSource = options.source || 'dashboard';
     var idStr = String(id);
     var raw = offers.find(x=>String(x.id)===idStr);
     if(!raw){
@@ -15250,12 +15272,13 @@
       (cardState === 'LIVE' ? '<div class="psheet-state-badge card-state-badge card-state-live">' + esc(stateLabel) + '</div>' : (cardState === 'PLANNED' ? '<div class="psheet-state-badge card-state-badge card-state-planned">' + esc(stateLabel) + '</div>' : '')) +
       '<button type="button" class="psheet-share-on-image" id="psheetShareOnImage" aria-label="Teilen" title="Teilen">📤</button>' +
       '<img src="' + esc(imgSrc) + '" alt="' + esc(o.dish||'') + '" style="width:100%;height:100%;object-fit:cover;display:block;" />' +
+      '<div class="selection-overlay"><div class="selection-overlay-inner"></div></div>' +
       '</div>' +
       powerBarHtml +
       '<div class="psheet-card-body">' +
       '<div class="psheet-card-title-row">' +
       '<div class="psheet-card-title-wrap">' +
-      '<input type="text" class="psheet-card-title dish-title-input" id="psheetTitleInput" value="' + esc(o.dish || '') + '" placeholder="Gerichtname" maxlength="80" />' +
+      '<input type="text" class="psheet-card-title dish-title-input" id="psheetTitleInput" value="' + esc(o.dish || '') + '" placeholder="Was kochst du heute?" maxlength="80" />' +
       (catLabel ? '<span class="psheet-category-pill category-pill">' + esc(catLabel) + '</span>' : '') +
       '</div>' +
       '<button type="button" class="psheet-price-btn price-button-yellow" id="psheetPriceBtn" aria-label="Preis">' + priceStr + ' €</button>' +
@@ -15263,6 +15286,55 @@
       '</div>' +
       '</div>';
     var cardEl = preview.querySelector('.universal-dish-card.psheet-card');
+    var photoHeader = preview.querySelector('.psheet-photo-header');
+    var selectionOverlay = photoHeader ? photoHeader.querySelector('.selection-overlay') : null;
+    var selectionOverlayInner = selectionOverlay ? selectionOverlay.querySelector('.selection-overlay-inner') : null;
+    var powerBarEl = preview.querySelector('.psheet-power-bar');
+    function psheetSaveDraft(){ if(typeof save === 'function' && typeof LS !== 'undefined') save(LS.offers, offers); }
+    function closeHeaderSelection(){ try { if(typeof hapticLight === 'function') hapticLight(); else if(navigator.vibrate) navigator.vibrate(10); } catch(e){} if(photoHeader) photoHeader.classList.remove('is-selecting'); }
+    function renderPsheetSelectionContent(type){
+      if(!selectionOverlayInner) return;
+      selectionOverlayInner.innerHTML = '';
+      selectionOverlayInner.classList.remove('selection-overlay-inner--time');
+      var profileWindow = (profile && profile.mealWindow) ? profile.mealWindow : '11:30 – 14:00';
+      if(type === 'allergens'){
+        (typeof ALLERGENS_14 !== 'undefined' ? ALLERGENS_14 : []).forEach(function(a){
+          var code = a.short; var name = a.name || code; var active = (raw.allergens || []).includes(code);
+          var emo = (typeof ALLERGEN_EMOJI !== 'undefined' && ALLERGEN_EMOJI[code]) ? ALLERGEN_EMOJI[code] : '';
+          var pill = document.createElement('button'); pill.type = 'button'; pill.className = 'extra-pill inserat-allergen-pill' + (active ? ' active' : ''); pill.style.cssText = 'cursor:pointer;'; pill.textContent = (emo ? emo + ' ' : '') + name; pill.title = name;
+          pill.onclick = function(){ try { if(typeof hapticLight === 'function') hapticLight(); } catch(e){} if(!raw.allergens) raw.allergens = []; if(active){ raw.allergens = raw.allergens.filter(function(x){ return x !== code; }); } else { raw.allergens.push(code); } psheetSaveDraft(); pill.className = 'extra-pill inserat-allergen-pill' + ((raw.allergens || []).includes(code) ? ' active' : ''); if(powerBarEl){ var fb = powerBarEl.querySelectorAll('.func-icon-btn'); if(fb[0]) fb[0].className = 'func-icon-btn ' + (!!(raw.allergens && raw.allergens.length) ? 'active' : ''); } };
+          selectionOverlayInner.appendChild(pill);
+        });
+      } else if(type === 'extras'){
+        var defaultExtras = (profile.defaultExtras && profile.defaultExtras.length) ? profile.defaultExtras.slice() : [{ name: 'Beilagensalat', price: 2.5 }, { name: 'Mayo', price: 0.5 }, { name: 'Ketchup', price: 0.5 }, { name: 'Soße', price: 1 }, { name: 'Brot', price: 1.5 }];
+        if(!Array.isArray(raw.extras)) raw.extras = [];
+        defaultExtras.forEach(function(opt){
+          var ex = raw.extras.find(function(e){ return e.name === opt.name; }); var active = !!ex && Number(ex.price || 0) > 0; if(!ex) ex = { name: opt.name, price: 0 };
+          var pillWrap = document.createElement('div'); pillWrap.style.cssText = 'display:flex; align-items:center; gap:6px;';
+          var btn = document.createElement('button'); btn.type = 'button'; btn.className = 'extra-pill' + (active ? ' active' : ''); btn.style.cssText = 'cursor:pointer;'; btn.textContent = '➕ ' + opt.name;
+          btn.onclick = function(){ try { if(typeof hapticLight === 'function') hapticLight(); } catch(e){} var idx = raw.extras.findIndex(function(e){ return e.name === opt.name; }); if(idx >= 0){ raw.extras.splice(idx, 1); } else { raw.extras.push({ name: opt.name, price: opt.price }); } psheetSaveDraft(); var hasEx = !!raw.extras.find(function(e){ return e.name === opt.name; }) && Number((raw.extras.find(function(e){ return e.name === opt.name; }) || {}).price || 0) > 0; btn.className = 'extra-pill' + (hasEx ? ' active' : ''); if(powerBarEl){ var fb = powerBarEl.querySelectorAll('.func-icon-btn'); if(fb[1]) fb[1].className = 'func-icon-btn ' + (!!(raw.extras && raw.extras.length) ? 'active' : ''); } if(pillWrap.querySelector('input')){ var next = raw.extras.find(function(e){ return e.name === opt.name; }); if(next && Number(next.price || 0) > 0){ pillWrap.querySelector('input').value = Number(next.price).toFixed(2).replace('.', ','); } else { var inpWrap = pillWrap.querySelector('span'); if(inpWrap) inpWrap.remove(); } } else if(hasEx){ var inpWrap = document.createElement('span'); inpWrap.style.cssText = 'display:inline-flex; align-items:center; background:rgba(255,255,255,0.6); border-radius:999px; padding:4px 8px;'; var plus = document.createElement('span'); plus.style.cssText = 'font-size:10px; font-weight:800; color:#10b981; margin-right:4px;'; plus.textContent = '+'; var inp = document.createElement('input'); inp.type = 'text'; inp.inputMode = 'decimal'; inp.style.cssText = 'width:36px; background:transparent; border:none; padding:0; font-size:12px; font-weight:800; color:#10b981; outline:none;'; var e = raw.extras.find(function(x){ return x.name === opt.name; }); inp.value = Number((e && e.price) || 0).toFixed(2).replace('.', ','); inp.oninput = function(){ if(e) e.price = parseFloat((inp.value || '0').replace(',', '.')) || 0; psheetSaveDraft(); }; inp.onclick = function(ev){ ev.stopPropagation(); }; var eur = document.createElement('span'); eur.style.cssText = 'font-size:10px; font-weight:800; color:#10b981; margin-left:2px;'; eur.textContent = '€'; inpWrap.appendChild(plus); inpWrap.appendChild(inp); inpWrap.appendChild(eur); pillWrap.appendChild(inpWrap); } };
+          pillWrap.appendChild(btn);
+          if(active){ var inpWrap = document.createElement('span'); inpWrap.style.cssText = 'display:inline-flex; align-items:center; background:rgba(255,255,255,0.6); border-radius:999px; padding:4px 8px;'; var plus = document.createElement('span'); plus.style.cssText = 'font-size:10px; font-weight:800; color:#10b981; margin-right:4px;'; plus.textContent = '+'; var inp = document.createElement('input'); inp.type = 'text'; inp.inputMode = 'decimal'; inp.style.cssText = 'width:36px; background:transparent; border:none; padding:0; font-size:12px; font-weight:800; color:#10b981; outline:none;'; inp.value = Number(ex.price).toFixed(2).replace('.', ','); inp.oninput = function(){ ex.price = parseFloat((inp.value || '0').replace(',', '.')) || 0; psheetSaveDraft(); }; inp.onclick = function(ev){ ev.stopPropagation(); }; var eur = document.createElement('span'); eur.style.cssText = 'font-size:10px; font-weight:800; color:#10b981; margin-left:2px;'; eur.textContent = '€'; inpWrap.appendChild(plus); inpWrap.appendChild(inp); inpWrap.appendChild(eur); pillWrap.appendChild(inpWrap); }
+          selectionOverlayInner.appendChild(pillWrap);
+        });
+      } else if(type === 'time'){
+        selectionOverlayInner.classList.add('selection-overlay-inner--time');
+        var pwParts = (raw.pickupWindow || profileWindow).split(/\s*[–\-]\s*/);
+        var tStart = (pwParts[0] || '11:30').trim(); var tEnd = (pwParts[1] || '14:00').trim();
+        if(tStart.length === 4) tStart = '0' + tStart; if(tEnd.length === 4) tEnd = '0' + tEnd;
+        var row = document.createElement('div'); row.className = 'inserat-time-morph-row'; row.style.cssText = 'display:flex; align-items:center; justify-content:center; gap:12px; flex-wrap:wrap; padding:16px;';
+        var inpStart = document.createElement('input'); inpStart.type = 'time'; inpStart.className = 'inserat-pickup-time-input'; inpStart.value = tStart; inpStart.style.cssText = 'padding:10px 14px; border-radius:12px; border:2px solid rgba(0,0,0,0.08); background:rgba(255,255,255,0.7); backdrop-filter:blur(10px); font-size:16px; font-weight:700;';
+        var inpEnd = document.createElement('input'); inpEnd.type = 'time'; inpEnd.className = 'inserat-pickup-time-input'; inpEnd.value = tEnd; inpEnd.style.cssText = 'padding:10px 14px; border-radius:12px; border:2px solid rgba(0,0,0,0.08); background:rgba(255,255,255,0.7); backdrop-filter:blur(10px); font-size:16px; font-weight:700;';
+        var upd = function(){ raw.pickupWindow = inpStart.value + ' – ' + inpEnd.value; psheetSaveDraft(); if(powerBarEl){ var pills = powerBarEl.querySelectorAll('.status-pill'); if(pills[2]) pills[2].className = 'status-pill active'; } };
+        inpStart.onchange = function(){ try { if(typeof hapticLight === 'function') hapticLight(); } catch(e){} upd(); };
+        inpEnd.onchange = function(){ try { if(typeof hapticLight === 'function') hapticLight(); } catch(e){} upd(); };
+        row.appendChild(inpStart); row.appendChild(document.createTextNode(' – ')); row.appendChild(inpEnd);
+        var btnFertig = document.createElement('button'); btnFertig.type = 'button'; btnFertig.textContent = 'Fertig'; btnFertig.style.cssText = 'padding:10px 20px; border-radius:999px; border:none; background:#10b981; color:#fff; font-weight:700; cursor:pointer; margin-left:8px;'; btnFertig.onclick = function(){ try { if(typeof hapticLight === 'function') hapticLight(); } catch(e){} closeHeaderSelection(); };
+        row.appendChild(btnFertig);
+        selectionOverlayInner.appendChild(row);
+      }
+    }
+    function toggleHeaderSelection(type){ try { if(typeof hapticLight === 'function') hapticLight(); } catch(e){} renderPsheetSelectionContent(type); if(photoHeader) photoHeader.classList.add('is-selecting'); }
     var psheetLongPressFired = false;
     preview.querySelectorAll('.psheet-card-click-area').forEach(function(el){
       el.style.cursor = 'pointer';
@@ -15330,12 +15402,16 @@
       titleInput.addEventListener('blur', function(){ raw.dish = titleInput.value.trim(); raw.title = raw.dish; if(typeof save === 'function' && typeof LS !== 'undefined') save(LS.offers, offers); updatePsheetDecisionZone(); });
       titleInput.addEventListener('keydown', function(ev){ if(ev.key === 'Enter'){ ev.preventDefault(); titleInput.blur(); } });
     }
-    /* Icon-Leiste: Bounce + Edit-Modus + Event für Header-Morphing */
+    /* Icon-Leiste: Bounce + Edit-Modus; 🌾/➕/🕒 öffnen Header-Morph (Allergene/Extras/Zeit) */
     preview.querySelectorAll('.psheet-power-bar [data-psheet-icon]').forEach(function(btn){
       btn.addEventListener('click', function(ev){
         ev.preventDefault();
         ev.stopPropagation();
         var icon = btn.getAttribute('data-psheet-icon');
+        if(icon === 'allergens' || icon === 'extras' || icon === 'time'){
+          toggleHeaderSelection(icon);
+          return;
+        }
         if(icon && icon !== 'legend'){
           btn.classList.add('psheet-pill-bounce');
           setTimeout(function(){ btn.classList.remove('psheet-pill-bounce'); }, 500);
@@ -15375,6 +15451,11 @@
       });
     }
     updatePsheetDecisionZone();
+    var pricingLabelEl = document.getElementById('psheetPricingLabel');
+    if(pricingLabelEl){
+      pricingLabelEl.addEventListener('click', function(ev){ ev.preventDefault(); ev.stopPropagation(); try { if(typeof hapticLight === 'function') hapticLight(); else if(navigator.vibrate) navigator.vibrate(10); } catch(e){} if(typeof openPricingFairnessOverlay === 'function') openPricingFairnessOverlay(); });
+      pricingLabelEl.addEventListener('keydown', function(ev){ if(ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); pricingLabelEl.click(); } });
+    }
     var btnGreen = document.getElementById('btnPsheetMitAbholnummer');
     var btnYellow = document.getElementById('btnPsheetNurInserat');
     function doPsheetSave(withPickup){
@@ -15382,7 +15463,15 @@
       if(typeof save === 'function' && typeof LS !== 'undefined') save(LS.offers, offers);
       if(typeof showToast === 'function') showToast(withPickup ? 'Mit Abholnummer gespeichert' : 'Inserat gespeichert');
       closeProviderSheet();
-      if(typeof renderProviderHome === 'function') renderProviderHome();
+      if(psheetOpenSource === 'week'){
+        if(typeof showProviderWeek === 'function') showProviderWeek();
+        if(typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard(); else if(typeof renderProviderWeekPreview === 'function') renderProviderWeekPreview();
+      } else if(psheetOpenSource === 'cookbook'){
+        if(typeof showProviderCookbook === 'function') showProviderCookbook();
+        if(typeof renderCookbook === 'function') renderCookbook();
+      } else {
+        if(typeof renderProviderHome === 'function') renderProviderHome();
+      }
     }
     function doPsheetSaveAndCookbook(withPickup){
       var cbId = raw.cookbookId;
@@ -15422,6 +15511,10 @@
         ev.stopPropagation();
         if(closeX.classList.contains('exit-active')) return;
         try { if(navigator.vibrate) navigator.vibrate(20); } catch(e){}
+        if(photoHeader && photoHeader.classList.contains('is-selecting')){
+          closeHeaderSelection();
+          return;
+        }
         if(titleInput) titleInput.blur();
         closeX.classList.add('exit-active');
         setTimeout(function(){ closeProviderSheet(); }, 300);
@@ -20320,7 +20413,7 @@
             slotEl.setAttribute('data-slot', String(slot));
             if (!isLive) slotEl.setAttribute('data-draft', '1');
             slotEl.innerHTML = '<div class="kw-slot-thumb" style="' + (img ? 'background-image:url(\'' + esc(img) + '\')' : '') + '">' + badgeHtml + '</div><div class="kw-slot-body"><div class="kw-slot-name">' + esc(name) + '</div><div class="kw-slot-price"><span class="price-pill">' + euro(price) + '</span></div>' + kwPowerBar + '</div>';
-            slotEl.onclick = (function(k, idx){ return function(e){ e.stopPropagation(); if(slotEl.classList.contains('kw-slot-swipe-delete')) return; if(typeof haptic === 'function') haptic(6); weekPlanDay = k; if(isLive && items[idx] && items[idx].id){ if(typeof startListingFlow === 'function') startListingFlow({ editOfferId: items[idx].id }); } else { if(typeof openWeekAddSheet === 'function') openWeekAddSheet(k, idx); } }; })(key, slot);
+            slotEl.onclick = (function(k, idx){ return function(e){ e.stopPropagation(); if(slotEl.classList.contains('kw-slot-swipe-delete')) return; if(typeof haptic === 'function') haptic(6); weekPlanDay = k; if(isLive && items[idx] && items[idx].id){ if(typeof openProviderOffer === 'function') openProviderOffer(items[idx].id, { source: 'week' }); } else { if(typeof openWeekAddSheet === 'function') openWeekAddSheet(k, idx); } }; })(key, slot);
             slotsWrap.appendChild(slotEl);
           } else {
             var slotSmall = document.createElement('div');
@@ -20329,7 +20422,7 @@
             slotSmall.setAttribute('data-slot', String(slot));
             if (!isLive) slotSmall.setAttribute('data-draft', '1');
             slotSmall.innerHTML = '<div class="kw-slot-thumb" style="' + (img ? 'background-image:url(\'' + esc(img) + '\')' : '') + '">' + badgeHtml + '</div><div class="kw-slot-name">' + esc(name) + '</div><div class="kw-slot-price"><span class="price-pill">' + euro(price) + '</span></div>' + kwPowerBar + '';
-            slotSmall.onclick = (function(k, idx){ return function(e){ e.stopPropagation(); if(slotSmall.classList.contains('kw-slot-swipe-delete')) return; if(typeof haptic === 'function') haptic(6); weekPlanDay = k; if(isLive && items[idx] && items[idx].id){ if(typeof startListingFlow === 'function') startListingFlow({ editOfferId: items[idx].id }); } else { if(typeof openWeekAddSheet === 'function') openWeekAddSheet(k, idx); } }; })(key, slot);
+            slotSmall.onclick = (function(k, idx){ return function(e){ e.stopPropagation(); if(slotSmall.classList.contains('kw-slot-swipe-delete')) return; if(typeof haptic === 'function') haptic(6); weekPlanDay = k; if(isLive && items[idx] && items[idx].id){ if(typeof openProviderOffer === 'function') openProviderOffer(items[idx].id, { source: 'week' }); } else { if(typeof openWeekAddSheet === 'function') openWeekAddSheet(k, idx); } }; })(key, slot);
             slotsWrap.appendChild(slotSmall);
           }
         } else {
@@ -20665,7 +20758,7 @@
         attachSwipeToWeekCard(swipeInner, weekPlanDay, weekIndex);
         attachLongPressToWeekCard(wrap);
       } else {
-        card.onclick = function(e){ e.preventDefault(); e.stopPropagation(); if(weekJustSwiped) return; if(typeof startListingFlow === 'function') startListingFlow({ editOfferId: entry.id || '' }); };
+        card.onclick = function(e){ e.preventDefault(); e.stopPropagation(); if(weekJustSwiped) return; if(typeof openProviderOffer === 'function') openProviderOffer(entry.id || '', { source: 'week' }); };
         swipeInner.appendChild(card);
       }
       wrap.appendChild(swipeInner);
@@ -22041,6 +22134,83 @@
     bindSettingsToggle('providerSettingsReuseEnabled', 'providerReuseEnabled', 'reuseEnabledByDefault', function(p){ return p.reuseEnabledByDefault || false; }, 'Mehrweg-Pfandsystem aktiviert', 'Mehrweg-Pfandsystem deaktiviert');
     bindSettingsToggle('providerSettingsAbholnummerEnabled', 'providerAbholnummerEnabled', 'abholnummerEnabledByDefault', function(p){ return p.abholnummerEnabledByDefault || false; }, 'Abholnummer standardmäßig an', 'Abholnummer standardmäßig aus');
     bindSettingsToggle('providerSettingsWantsAllergensEnabled', 'providerWantsAllergensEnabled', 'wantsAllergensByDefault', function(p){ return p.wantsAllergensByDefault || false; }, 'Allergene standardmäßig angeben', 'Allergene standardmäßig aus');
+    
+    // Extras mit Preis (Inserateinstellungen)
+    var extrasListEl = document.getElementById('providerSettingsExtrasList');
+    var extrasAddBtn = document.getElementById('providerSettingsExtrasAdd');
+    function renderExtrasRows(){
+      if(!extrasListEl) return;
+      var list = (provider.profile && Array.isArray(provider.profile.defaultExtras)) ? provider.profile.defaultExtras : (Array.isArray(p.defaultExtras) ? p.defaultExtras : []);
+      extrasListEl.innerHTML = '';
+      list.forEach(function(extra, idx){
+        var row = document.createElement('div');
+        row.style.cssText = 'display:flex; align-items:center; gap:10px; padding:12px 14px; background:#f8fafc; border-radius:12px; border:1px solid #e2e8f0;';
+        var nameInp = document.createElement('input');
+        nameInp.type = 'text';
+        nameInp.placeholder = 'z. B. Beilagensalat';
+        nameInp.value = (extra && extra.name) ? String(extra.name) : '';
+        nameInp.style.cssText = 'flex:1; min-width:0; padding:10px 12px; border:2px solid #e2e8f0; border-radius:10px; font-size:15px; font-weight:600;';
+        var priceInp = document.createElement('input');
+        priceInp.type = 'text';
+        priceInp.inputMode = 'decimal';
+        priceInp.placeholder = '0,00';
+        priceInp.value = (extra && typeof extra.price === 'number') ? Number(extra.price).toFixed(2).replace('.', ',') : ((extra && extra.price) ? String(extra.price) : '');
+        priceInp.style.cssText = 'width:72px; padding:10px 8px; border:2px solid #e2e8f0; border-radius:10px; font-size:15px; font-weight:700; text-align:right;';
+        var removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.setAttribute('aria-label', 'Entfernen');
+        removeBtn.textContent = '✕';
+        removeBtn.style.cssText = 'width:40px; height:40px; border:none; border-radius:10px; background:rgba(220,38,38,0.1); color:#dc2626; font-size:18px; font-weight:800; cursor:pointer; flex-shrink:0;';
+        function syncExtra(){
+          if(!provider.profile) provider.profile = {};
+          if(!Array.isArray(provider.profile.defaultExtras)) provider.profile.defaultExtras = [];
+          while(provider.profile.defaultExtras.length <= idx) provider.profile.defaultExtras.push({ name: '', price: 0 });
+          provider.profile.defaultExtras[idx].name = nameInp.value.trim();
+          var priceVal = (priceInp.value || '').replace(',', '.').replace(/[^\d.-]/g, '');
+          provider.profile.defaultExtras[idx].price = Math.max(0, parseFloat(priceVal) || 0);
+          save(LS.provider, provider);
+        }
+        nameInp.oninput = syncExtra;
+        nameInp.onblur = function(){ syncExtra(); if(typeof showToast === 'function') showToast('Extras gespeichert'); };
+        priceInp.oninput = syncExtra;
+        priceInp.onblur = function(){ syncExtra(); priceInp.value = (provider.profile.defaultExtras[idx] && typeof provider.profile.defaultExtras[idx].price === 'number') ? provider.profile.defaultExtras[idx].price.toFixed(2).replace('.', ',') : ''; if(typeof showToast === 'function') showToast('Extras gespeichert'); };
+        removeBtn.onclick = function(){
+          if(typeof haptic === 'function') haptic(6);
+          var cur = (provider.profile && provider.profile.defaultExtras) ? provider.profile.defaultExtras.slice() : [];
+          cur.splice(idx, 1);
+          if(!provider.profile) provider.profile = {};
+          provider.profile.defaultExtras = cur;
+          save(LS.provider, provider);
+          renderExtrasRows();
+          if(typeof showToast === 'function') showToast('Extra entfernt');
+        };
+        var eurLabel = document.createElement('span');
+        eurLabel.style.cssText = 'font-size:14px; font-weight:700; color:#64748b;';
+        eurLabel.textContent = '€';
+        row.appendChild(nameInp);
+        row.appendChild(eurLabel);
+        row.appendChild(priceInp);
+        row.appendChild(removeBtn);
+        extrasListEl.appendChild(row);
+      });
+    }
+    renderExtrasRows();
+    if(extrasAddBtn){
+      extrasAddBtn.onclick = function(){
+        if(typeof haptic === 'function') haptic(6);
+        if(!provider.profile) provider.profile = {};
+        if(!Array.isArray(provider.profile.defaultExtras)) provider.profile.defaultExtras = [];
+        provider.profile.defaultExtras = provider.profile.defaultExtras.slice();
+        provider.profile.defaultExtras.push({ name: '', price: 0 });
+        save(LS.provider, provider);
+        renderExtrasRows();
+        var lastRow = extrasListEl.lastElementChild;
+        if(lastRow){
+          var firstInput = lastRow.querySelector('input[type="text"]:not([inputmode])');
+          if(firstInput) firstInput.focus();
+        }
+      };
+    }
     
     // Account: Status 1 aktive Sitzung
     const sessionStatusEl = document.getElementById('providerSessionStatus');
@@ -24354,7 +24524,7 @@
             selectionOverlayInner.appendChild(pill);
           });
         } else if(type==='extras'){
-          var defaultExtras = [{ name:'Beilagensalat', price:2.5 }, { name:'Mayo', price:0.5 }, { name:'Ketchup', price:0.5 }, { name:'Soße', price:1 }, { name:'Brot', price:1.5 }];
+          var defaultExtras = (profile.defaultExtras && profile.defaultExtras.length) ? profile.defaultExtras.slice() : [{ name:'Beilagensalat', price:2.5 }, { name:'Mayo', price:0.5 }, { name:'Ketchup', price:0.5 }, { name:'Soße', price:1 }, { name:'Brot', price:1.5 }];
           if(!Array.isArray(w.data.extras)) w.data.extras=[];
           defaultExtras.forEach(function(opt){
             var ex=w.data.extras.find(function(e){ return e.name===opt.name; }); var active=!!ex && Number(ex.price||0)>0; if(!ex) ex={ name:opt.name, price:0 };
