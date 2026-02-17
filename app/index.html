@@ -1326,6 +1326,22 @@
     .btn-create-primary:active { transform: scale(0.98); }
     .btn-create-secondary { width: 100%; min-height: 52px; padding: 14px 20px; border: 2px solid #e5e7eb; border-radius: 14px; background: #fff; font-size: 16px; font-weight: 700; color: #1a1a1a; cursor: pointer; transition: transform 0.1s ease; }
     .btn-create-secondary:active { transform: scale(0.98); }
+    /* Renner-Speed-Dial: 2x2 Grid, TOP-Badge, 70% Bild, Midnight Blue Name, grüner Preis [cite: 2026-02-16] */
+    .create-flow-renner-section { margin-bottom: 0; }
+    .create-flow-renner-heading { font-weight: 800; font-size: 15px; color: #1a1a1a; margin-bottom: 12px; }
+    .create-flow-renner-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; min-height: 0; }
+    .create-flow-renner-grid .renner-speed-tile { position: relative; border-radius: 20px; overflow: hidden; background: #f8fafc; box-shadow: 0 4px 16px rgba(0,0,0,0.08); cursor: pointer; transition: transform 0.15s ease, box-shadow 0.2s ease; display: flex; flex-direction: column; min-height: 0; aspect-ratio: 1; }
+    .create-flow-renner-grid .renner-speed-tile:active { transform: scale(0.98); }
+    .renner-speed-tile .renner-speed-img-wrap { height: 70%; min-height: 0; overflow: hidden; background: #e5e7eb; }
+    .renner-speed-tile .renner-speed-img-wrap img { width: 100%; height: 100%; object-fit: cover; }
+    .renner-speed-tile .renner-speed-body { flex: 1; padding: 10px 12px 12px; display: flex; flex-direction: column; justify-content: center; gap: 6px; min-height: 0; }
+    .renner-speed-tile .renner-speed-name { font-weight: 900; font-size: 14px; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .renner-speed-tile .renner-speed-price-wrap { display: flex; align-items: center; gap: 6px; }
+    .renner-speed-tile .renner-speed-price { display: inline-block; padding: 4px 10px; border-radius: 10px; background: rgba(16,185,129,0.15); color: #059669; font-size: 13px; font-weight: 800; }
+    .renner-speed-tile .renner-speed-top-badge { position: absolute; top: 8px; right: 8px; z-index: 2; padding: 4px 10px; border-radius: 10px; background: #FFD700; color: #1a1a1a; font-size: 11px; font-weight: 900; letter-spacing: 0.02em; box-shadow: 0 2px 8px rgba(255,215,0,0.4); animation: rennerBadgePulse 1.8s ease-in-out infinite; }
+    @keyframes rennerBadgePulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.06); opacity: 0.95; } }
+    .create-flow-renner-empty { display: none; text-align: center; padding: 24px 16px; color: #64748b; font-size: 14px; }
+    /* Legacy renner-card (horiz scroll) – falls wo referenziert, weiter nutzbar */
     .create-flow-renner-scroll { scroll-snap-type: x proximity; }
     .create-flow-renner-scroll .renner-card { scroll-snap-align: start; flex-shrink: 0; width: 160px; border-radius: 16px; overflow: hidden; background: #f8fafc; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.06); cursor: pointer; transition: transform 0.15s ease, box-shadow 0.2s ease; }
     .create-flow-renner-scroll .renner-card:active { transform: scale(0.98); }
@@ -1842,6 +1858,10 @@
     #wizard.sheet--kitchen .glass-express-step0 .inserat-btn-primary.inserat-btn-emerald{
       background: #10b981; color: #fff; box-shadow: 0 10px 30px rgba(16,185,129,0.35);
     }
+    #wizard.sheet--kitchen .glass-express-step0 .inserat-btn-primary.renner-fast-pulse{
+      animation: rennerGreenPulse 2s ease-in-out infinite;
+    }
+    @keyframes rennerGreenPulse { 0%, 100% { box-shadow: 0 10px 30px rgba(16,185,129,0.35); transform: scale(1); } 50% { box-shadow: 0 12px 36px rgba(16,185,129,0.45); transform: scale(1.01); } }
     #wizard[data-flow="listing"] .inserat-btn-primary.is-loading { pointer-events: none; }
     #wizard[data-flow="listing"] .inserat-btn-spinner {
       display: inline-block; width: 22px; height: 22px; border: 3px solid rgba(255,255,255,0.35);
@@ -8502,13 +8522,23 @@
   </div>
 </div>
 
-<!-- Save-Scope-Dialog: Nur aktuell vs. Im Kochbuch speichern -->
+<!-- Save-Scope-Dialog: Master & Instanz – Nur Termin vs. Global im Kochbuch [cite: Asset-Logik] -->
 <div class="save-scope-backdrop" id="saveScopeBackdrop" style="display:none;"></div>
 <div class="save-scope-sheet" id="saveScopeSheet" style="display:none;">
   <p class="save-scope-title">Wo speichern?</p>
-  <button type="button" id="saveScopeOnlyCurrent" class="save-scope-btn save-scope-btn-current">Nur für dieses Inserat / diesen Tag</button>
-  <button type="button" id="saveScopeToCookbook" class="save-scope-btn save-scope-btn-cookbook">Als Standard im Kochbuch speichern</button>
+  <button type="button" id="saveScopeOnlyCurrent" class="save-scope-btn save-scope-btn-current">Nur für diesen Termin</button>
+  <button type="button" id="saveScopeToCookbook" class="save-scope-btn save-scope-btn-cookbook">Global im Kochbuch aktualisieren</button>
   <button type="button" id="saveScopeCancel" class="save-scope-cancel" aria-label="Abbrechen">Abbrechen</button>
+</div>
+
+<!-- Universal-X: „In Kochbuch speichern?“ (Speichern für später) [cite: Asset-Logik] -->
+<div class="save-scope-backdrop" id="wizardExitSaveBd" style="display:none;"></div>
+<div class="save-scope-sheet" id="wizardExitSaveSheet" style="display:none; flex-direction:column;">
+  <p class="save-scope-title">In Kochbuch speichern?</p>
+  <p style="margin:0 0 16px; font-size:14px; color:#64748b;">Die Karte wird ins Archiv (Kochbuch) übernommen und kann später per Swipe eingeplant werden.</p>
+  <button type="button" id="wizardExitSaveToCookbook" class="save-scope-btn save-scope-btn-cookbook">In Kochbuch speichern</button>
+  <button type="button" id="wizardExitDiscard" class="save-scope-btn save-scope-btn-current">Verwerfen</button>
+  <button type="button" id="wizardExitCancel" class="save-scope-cancel" aria-label="Abbrechen">Abbrechen</button>
 </div>
 
 <!-- Abholnummer (bildschirmfüllend) -->
@@ -8766,13 +8796,18 @@
   <button type="button" id="weekUndoBtn">Rückgängig</button>
 </div>
 
-<!-- Inseratsauswahl: Zwei Buttons + Beliebte Gerichte (Sheet bleibt, führt zur InseratCard) -->
+<!-- Inseratsauswahl: Deine Renner (Speed-Dial 2x2) oben, dann Buttons [cite: 2026-02-16] -->
 <div class="backdrop" id="createFlowBd" onclick="closeCreateFlowSheet()"></div>
 <div class="sheet sheet--kitchen" id="createFlowSheet">
   <div class="handle"></div>
   <div class="sheet-body">
     <div class="create-flow-title">Inseratsauswahl</div>
-    <div class="create-flow-btns" style="margin-bottom:24px;">
+    <div id="createFlowRennerSection" class="create-flow-renner-section">
+      <div class="create-flow-renner-heading">Deine Renner</div>
+      <div id="createFlowRennerScroll" class="create-flow-renner-grid"></div>
+      <div id="createFlowRennerEmpty" class="create-flow-renner-empty">Noch keine Renner – leg Gerichte im Kochbuch an oder biete sie an.</div>
+    </div>
+    <div class="create-flow-btns" style="margin-top:20px; margin-bottom:24px;">
       <button class="btn-create-primary" type="button" id="btnCreateNewDish" style="margin-bottom:12px;">
         <span class="plus-char" style="font-size:22px; line-height:1; color:#fff;">+</span>
         <span>Neues Gericht erstellen</span>
@@ -8780,12 +8815,6 @@
       <button class="btn btn-create-secondary" type="button" id="btnCreateFromCookbook">
         <span>Aus dem Kochbuch hinzufügen</span>
       </button>
-    </div>
-    <div id="createFlowRennerSection" style="margin-top:8px;">
-      <div class="hint" style="margin-bottom:10px; font-weight:800; color:#1a1a1a; font-size:14px;">Beliebte Gerichte</div>
-      <div id="createFlowRennerScroll" class="create-flow-renner-scroll" style="display:flex; gap:14px; overflow-x:auto; -webkit-overflow-scrolling:touch; padding:4px 0 16px; scroll-snap-type:x proximity;">
-      </div>
-      <div id="createFlowRennerEmpty" style="display:none; text-align:center; padding:24px 16px; color:#64748b; font-size:14px;">Noch keine beliebten Gerichte – leg Gerichte im Kochbuch an oder biete sie an.</div>
     </div>
     <div class="create-flow-hint hint" id="createFlowDateHint" style="display:none;"></div>
   </div>
@@ -15981,6 +16010,35 @@
   })();
   if(typeof window !== 'undefined'){ window.showSaveScopeDialog = showSaveScopeDialog; window.closeSaveScopeDialog = closeSaveScopeDialog; }
 
+  var _wizardExitSaveCallbacks = null;
+  function showWizardExitSavePrompt(onSave, onDiscard){
+    _wizardExitSaveCallbacks = { onSave: onSave, onDiscard: onDiscard };
+    var bd = document.getElementById('wizardExitSaveBd');
+    var sheet = document.getElementById('wizardExitSaveSheet');
+    if(bd) bd.style.display = 'block';
+    if(sheet) sheet.style.display = 'flex';
+    try { if(navigator.vibrate) navigator.vibrate(10); if(typeof hapticLight === 'function') hapticLight(); } catch(e){}
+  }
+  function closeWizardExitSavePrompt(){
+    _wizardExitSaveCallbacks = null;
+    var bd = document.getElementById('wizardExitSaveBd');
+    var sheet = document.getElementById('wizardExitSaveSheet');
+    if(bd) bd.style.display = 'none';
+    if(sheet) sheet.style.display = 'none';
+  }
+  (function(){
+    var bd = document.getElementById('wizardExitSaveBd');
+    var sheet = document.getElementById('wizardExitSaveSheet');
+    var btnSave = document.getElementById('wizardExitSaveToCookbook');
+    var btnDiscard = document.getElementById('wizardExitDiscard');
+    var btnCancel = document.getElementById('wizardExitCancel');
+    if(bd) bd.addEventListener('click', closeWizardExitSavePrompt);
+    if(btnSave) btnSave.addEventListener('click', function(){ if(_wizardExitSaveCallbacks && typeof _wizardExitSaveCallbacks.onSave === 'function') _wizardExitSaveCallbacks.onSave(); closeWizardExitSavePrompt(); try { if(navigator.vibrate) navigator.vibrate(20); } catch(e){} });
+    if(btnDiscard) btnDiscard.addEventListener('click', function(){ if(_wizardExitSaveCallbacks && typeof _wizardExitSaveCallbacks.onDiscard === 'function') _wizardExitSaveCallbacks.onDiscard(); closeWizardExitSavePrompt(); try { if(navigator.vibrate) navigator.vibrate(20); } catch(e){} });
+    if(btnCancel) btnCancel.addEventListener('click', closeWizardExitSavePrompt);
+  })();
+  if(typeof window !== 'undefined'){ window.showWizardExitSavePrompt = showWizardExitSavePrompt; window.closeWizardExitSavePrompt = closeWizardExitSavePrompt; }
+
   function buildShareText(o){
     const dish = o.dish || o.title || 'Gericht';
     const profile = normalizeProviderProfile(provider.profile || {});
@@ -16177,35 +16235,39 @@
   }
 
   function populateCreateFlowRenner(){
-    var scroll = document.getElementById('createFlowRennerScroll');
+    var grid = document.getElementById('createFlowRennerScroll');
     var emptyEl = document.getElementById('createFlowRennerEmpty');
-    if(!scroll) return;
+    if(!grid) return;
     var pid = typeof providerId === 'function' ? providerId() : '';
     var mine = (cookbook||[]).filter(function(c){ return String(c.providerId)===String(pid); });
-    var allOrders = typeof loadOrders === 'function' ? loadOrders() : [];
     mine.sort(function(a,b){
       var au = a.lastUsed || 0, bu = b.lastUsed || 0;
       if(bu!==au) return bu-au;
       return (b.dish||'').localeCompare(a.dish||'');
     });
-    var topGerichte = mine.slice(0, 10);
-    scroll.innerHTML = '';
+    var topGerichte = mine.slice(0, 4);
+    grid.innerHTML = '';
     if(emptyEl) emptyEl.style.display = topGerichte.length ? 'none' : 'block';
     topGerichte.forEach(function(c){
-      var card = document.createElement('div');
-      card.className = 'renner-card';
+      var tile = document.createElement('div');
+      tile.className = 'renner-speed-tile';
+      tile.setAttribute('role', 'button');
+      tile.setAttribute('tabindex', '0');
+      tile.setAttribute('aria-label', (c.dish || 'Gericht') + ' – ' + (typeof euro === 'function' ? euro(c.price || 0) : (c.price || 0) + ' €') + ' – Schnell inserieren');
       var imgUrl = c.photoData || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=200&q=60';
-      var hasAbhol = !!(c.hasPickupCode !== undefined ? c.hasPickupCode : true);
-      var hasMehrweg = !!(c.reuse && c.reuse.enabled);
-      var icons = '<span title="Vor Ort">🍴</span>';
-      if(hasAbhol) icons += '<span title="Abholnummer">🧾</span>';
-      if(hasMehrweg) icons += '<span title="Mehrweg">🔄</span>';
-      var fact = getSuccessFactForRenner(c, allOrders);
-      card.innerHTML = '<img class="renner-card-img" src="'+(typeof esc==='function'?esc(imgUrl):String(imgUrl).replace(/"/g,'&quot;'))+'" alt=""><div class="renner-card-icons">'+icons+'</div><div class="renner-card-body"><div class="renner-card-name">'+(typeof esc==='function'?esc(c.dish||'Gericht'):String(c.dish||'Gericht').replace(/</g,'&lt;'))+'</div><div class="renner-card-fact">'+fact+'</div><button type="button" class="renner-card-btn">Heute anbieten</button></div>';
-      var btn = card.querySelector('.renner-card-btn');
-      if(btn) btn.onclick = function(e){ e.stopPropagation(); if(typeof haptic==='function') haptic(8); closeCreateFlowSheet(); startListingFlow({ dishId: c.id, date: createFlowPreselectedDate || (typeof isoDate==='function'?isoDate(new Date()):''), entryPoint: 'dashboard', skipQuickPost: true }); };
-      card.onclick = function(e){ if(e.target===btn || btn.contains(e.target)) return; if(typeof haptic==='function') haptic(8); closeCreateFlowSheet(); startListingFlow({ dishId: c.id, date: createFlowPreselectedDate || (typeof isoDate==='function'?isoDate(new Date()):''), entryPoint: 'dashboard', skipQuickPost: true }); };
-      scroll.appendChild(card);
+      var imgEsc = typeof esc === 'function' ? esc(imgUrl) : String(imgUrl).replace(/"/g, '&quot;');
+      var nameEsc = typeof esc === 'function' ? esc(c.dish || 'Gericht') : String(c.dish || 'Gericht').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      var priceStr = typeof euro === 'function' ? euro(c.price || 0) : (Number(c.price || 0).toFixed(2).replace('.', ',') + ' €');
+      tile.innerHTML = '<span class="renner-speed-top-badge">TOP</span><div class="renner-speed-img-wrap"><img src="' + imgEsc + '" alt=""></div><div class="renner-speed-body"><div class="renner-speed-name">' + nameEsc + '</div><div class="renner-speed-price-wrap"><span class="renner-speed-price">' + priceStr + '</span></div></div>';
+      var doOpen = function(){
+        try { if(navigator.vibrate) navigator.vibrate(10); } catch(e){}
+        if(typeof haptic === 'function') haptic(10);
+        closeCreateFlowSheet();
+        startListingFlow({ dishId: c.id, date: createFlowPreselectedDate || (typeof isoDate === 'function' ? isoDate(new Date()) : ''), entryPoint: 'dashboard', skipQuickPost: true });
+      };
+      tile.onclick = function(e){ e.preventDefault(); e.stopPropagation(); doOpen(); };
+      tile.onkeydown = function(e){ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); doOpen(); } };
+      grid.appendChild(tile);
     });
   }
 
@@ -20786,7 +20848,7 @@
           var entryDineIn = entry.dineInPossible !== false;
           var entryPickup = !!(entry.hasPickupCode !== undefined ? entry.hasPickupCode : defaultPickup);
           var entryReuse = !!(entry.reuse && entry.reuse.enabled);
-          var hasTime = isLive || !!(entry.timeStart && entry.timeEnd);
+          var hasTime = isLive || !!(entry.pickupWindow && String(entry.pickupWindow).trim()) || !!(entry.timeStart && entry.timeEnd);
           var showVorOrt = (entry.dineInPossible !== undefined) && (entryDineIn !== defaultDineIn);
           var showMehrweg = (entry.reuse !== undefined) && (entryReuse !== defaultReuse);
           var overrideBadges = [];
@@ -21116,7 +21178,7 @@
       var entryDineIn = entry.dineInPossible !== false;
       var entryPickup = !!(entry.hasPickupCode !== undefined ? entry.hasPickupCode : defaultPickup);
       var entryReuse = !!(entry.reuse && entry.reuse.enabled);
-      var hasTime = !!(entry.timeStart && entry.timeEnd);
+      var hasTime = !!(entry.pickupWindow && String(entry.pickupWindow).trim()) || !!(entry.timeStart && entry.timeEnd);
       function powerIcon(emoji, ok, timeMissing){ var c = 'week-power-icon'; if(timeMissing) c += ' week-power-time-missing'; else if(ok) c += (emoji === '🕒' ? ' week-power-time-ok' : ' week-power-icon-ok'); else c += ' week-power-icon-muted'; return '<span class="' + c + '" title="' + (emoji === '🍴' ? 'Vor Ort' : emoji === '🕒' ? (hasTime ? 'Zeit gesetzt' : 'Zeit fehlt') : emoji === '🧾' ? 'Abholnummer' : 'Mehrweg') + '">' + emoji + '</span>'; }
       var powerBarHtml = '<div class="week-power-bar">' + powerIcon('🍴', entryDineIn, false) + powerIcon('🕒', hasTime, !hasTime) + powerIcon('🧾', entryPickup, false) + powerIcon('🔄', entryReuse, false) + '</div>';
       var showVorOrt = (entry.dineInPossible !== undefined) && (entryDineIn !== defaultDineIn);
@@ -24341,13 +24403,14 @@
           const defaultAbholnummer = !!profile.abholnummerEnabledByDefault;
           const globalReuseEnabled = !!profile.reuseEnabledByDefault;
           const defaultReuseDeposit = (provider.profile && typeof provider.profile.reuseDepositDefault === 'number') ? provider.profile.reuseDepositDefault : 3;
+          const isRennerFastTrack = !!(ctx.skipQuickPost && ctx.dishId);
           w.data = {
             providerId: providerId(),
             dish: x.dish || '',
             category: x.category || 'Vegetarisch',
             price: Number(x.price||0),
             pickupWindow: x.pickupWindow || profile.mealWindow || DEFAULT_MEAL_WINDOW,
-            hasPickupCode: x.hasPickupCode !== undefined ? !!x.hasPickupCode : defaultAbholnummer,
+            hasPickupCode: isRennerFastTrack ? true : (x.hasPickupCode !== undefined ? !!x.hasPickupCode : defaultAbholnummer),
             dineInPossible: x.dineInPossible !== undefined ? !!x.dineInPossible : defaultVorOrt,
             allergens: Array.isArray(x.allergens) ? [...x.allergens] : [],
             wantsAllergens: !!(x.allergens && Array.isArray(x.allergens) && x.allergens.length > 0),
@@ -24357,6 +24420,7 @@
             cookbookId: x.id,
             day: ctx.date || createFlowPreselectedDate || isoDate(new Date())
           };
+          if(isRennerFastTrack) w.ctx.rennerFastTrack = true;
         } else {
           const defaultVorOrt = (provider.profile && provider.profile.dineInPossibleDefault !== undefined) ? !!provider.profile.dineInPossibleDefault : true;
           const globalReuseEnabled = !!profile.reuseEnabledByDefault;
@@ -24964,7 +25028,19 @@
         }
       }
       function toggleHeaderSelection(type){ hapticLight(); renderSelectionContent(type); photoTile.classList.add('is-selecting'); }
-      closeX.onclick=function(){ if(photoTile.classList.contains('is-selecting')){ hapticLight(); closeHeaderSelection(); return; } try{ if(typeof haptic==='function') haptic(15); else if(navigator.vibrate) navigator.vibrate(15); }catch(e){} var panel=box; if(panel&&!panel.classList.contains('x-pop-away')){ panel.classList.add('x-pop-away'); setTimeout(function(){ closeWizard(); }, 280); } else { closeWizard(); } };
+      closeX.onclick=function(){
+        if(photoTile.classList.contains('is-selecting')){ hapticLight(); closeHeaderSelection(); return; }
+        try{ if(typeof haptic==='function') haptic(15); else if(navigator.vibrate) navigator.vibrate(15); }catch(e){}
+        var hasDraft = w && w.data && ((w.data.dish && String(w.data.dish).trim()) || (w.data.price != null && w.data.price !== '') || (w.data.photoData));
+        if(hasDraft && typeof showWizardExitSavePrompt==='function'){
+          showWizardExitSavePrompt(
+            function(){ if(typeof saveToCookbookFromWizard==='function') saveToCookbookFromWizard(); if(typeof closeWizard==='function') closeWizard(true); if(typeof showToast==='function') showToast('Im Kochbuch gespeichert'); },
+            function(){ if(typeof closeWizard==='function') closeWizard(true); }
+          );
+          return;
+        }
+        var panel=box; if(panel&&!panel.classList.contains('x-pop-away')){ panel.classList.add('x-pop-away'); setTimeout(function(){ closeWizard(); }, 280); } else { closeWizard(); }
+      };
       /* Keyboard-Avoidance: Header schrumpft bei Fokus auf Titel/Preis [cite: 2026-02-16] */
       function bindKeyboardAvoidance(){
         var panel=box;
@@ -25179,7 +25255,7 @@
         actionSection.appendChild(pricingLabel);
         const btnGratis=document.createElement('button');
         btnGratis.type='button';
-        btnGratis.className='inserat-btn-primary inserat-btn-emerald';
+        btnGratis.className='inserat-btn-primary inserat-btn-emerald' + (w.ctx && w.ctx.rennerFastTrack ? ' renner-fast-pulse' : '');
         btnGratis.textContent='mit Abholnummer';
         btnGratis.onclick=function(){
           if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; }
@@ -25406,6 +25482,27 @@
       offers.unshift(out);
       var tx = createInseratTransaction(out);
       saveTransaction(tx);
+      // Auto-Archive: Neu erstelltes Inserat als Master-Asset ins Kochbuch [cite: Asset-Logik]
+      if(typeof cookbook !== 'undefined' && Array.isArray(cookbook)){
+        var now = Date.now();
+        var masterEntry = {
+          id: typeof cryptoId === 'function' ? cryptoId() : 'cb-' + now,
+          providerId: out.providerId || (typeof providerId === 'function' ? providerId() : ''),
+          dish: out.dish || out.title || '',
+          category: out.category || 'Vegetarisch',
+          price: Number(out.price || 0),
+          allergens: out.allergens || [],
+          extras: out.extras || [],
+          reuse: out.reuse || { enabled: false, deposit: 0 },
+          photoData: out.imageUrl || out.photoData || '',
+          hasPickupCode: !!out.hasPickupCode,
+          dineInPossible: !!out.dineInPossible,
+          createdAt: now,
+          lastUsed: null
+        };
+        cookbook.push(masterEntry);
+        if(typeof save === 'function' && typeof LS !== 'undefined') save(LS.cookbook, cookbook);
+      }
     }
     save(LS.offers, offers);
     
