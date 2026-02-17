@@ -1312,6 +1312,29 @@
     /* Wizard/InseratCard: Backdrop unter Sheet, damit Klicks die Karte treffen (nicht Backdrop) */
     #wbd.active { z-index: 999 !important; background: radial-gradient(ellipse at center, rgba(254,243,199,0.35) 0%, rgba(251,191,36,0.08) 35%, rgba(0,0,0,0.65) 100%); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
     #wizard.sheet--kitchen.active { z-index: 1001 !important; }
+    /* Inseratsauswahl-Sheet (createFlowBd/createFlowSheet) – unter Wizard */
+    #createFlowBd { z-index: 997; opacity: 0; pointer-events: none; transition: opacity 0.25s ease; background: rgba(0,0,0,0.5); }
+    #createFlowBd.active { opacity: 1; pointer-events: auto; }
+    #createFlowSheet { z-index: 998; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.34, 1.2, 0.64, 1); position: fixed; bottom: 0; left: 0; right: 0; max-height: 85vh; border-radius: 24px 24px 0 0; background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.6); box-shadow: 0 -10px 40px rgba(0,0,0,0.12); display: flex; flex-direction: column; overflow: hidden; }
+    #createFlowSheet.active { transform: translateY(0); }
+    #createFlowSheet.sheet--kitchen .handle { background: rgba(0,0,0,0.15); width: 40px; height: 4px; border-radius: 2px; margin: 8px auto 4px; }
+    #createFlowSheet .sheet-body { padding: 12px 20px max(20px, env(safe-area-inset-bottom)); overflow-y: auto; -webkit-overflow-scrolling: touch; }
+    .create-flow-title { font-size: 20px; font-weight: 900; color: #1a1a1a; margin-bottom: 16px; }
+    .create-flow-hint { font-size: 13px; color: #64748b; margin-top: 8px; }
+    .create-flow-btns { display: flex; flex-direction: column; gap: 12px; }
+    .btn-create-primary { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; min-height: 56px; padding: 14px 20px; border: none; border-radius: 16px; background: #FFD700; color: #1a1a1a; font-size: 16px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 20px rgba(255,215,0,0.35); transition: transform 0.1s ease, box-shadow 0.2s ease; }
+    .btn-create-primary:active { transform: scale(0.98); }
+    .btn-create-secondary { width: 100%; min-height: 52px; padding: 14px 20px; border: 2px solid #e5e7eb; border-radius: 14px; background: #fff; font-size: 16px; font-weight: 700; color: #1a1a1a; cursor: pointer; transition: transform 0.1s ease; }
+    .btn-create-secondary:active { transform: scale(0.98); }
+    .create-flow-renner-scroll { scroll-snap-type: x proximity; }
+    .create-flow-renner-scroll .renner-card { scroll-snap-align: start; flex-shrink: 0; width: 160px; border-radius: 16px; overflow: hidden; background: #f8fafc; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.06); cursor: pointer; transition: transform 0.15s ease, box-shadow 0.2s ease; }
+    .create-flow-renner-scroll .renner-card:active { transform: scale(0.98); }
+    .renner-card .renner-card-img { width: 100%; aspect-ratio: 1; object-fit: cover; }
+    .renner-card .renner-card-icons { display: flex; gap: 6px; padding: 8px 10px 0; }
+    .renner-card .renner-card-body { padding: 8px 10px 12px; }
+    .renner-card .renner-card-name { font-weight: 800; font-size: 14px; color: #1a1a1a; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .renner-card .renner-card-fact { font-size: 12px; color: #64748b; }
+    .renner-card .renner-card-btn { margin-top: 8px; width: 100%; padding: 8px 12px; border-radius: 10px; border: none; background: #FFD700; color: #1a1a1a; font-size: 12px; font-weight: 700; cursor: pointer; }
     /* Inseratflow: High-End Glassmorphism (Master) – backdrop-blur-2xl, bg-white/70, border-white/40, shadow-2xl */
     #wizard.sheet--kitchen{
       background:rgba(255,255,255,0.7) !important;
@@ -8743,6 +8766,31 @@
   <button type="button" id="weekUndoBtn">Rückgängig</button>
 </div>
 
+<!-- Inseratsauswahl: Zwei Buttons + Beliebte Gerichte (Sheet bleibt, führt zur InseratCard) -->
+<div class="backdrop" id="createFlowBd" onclick="closeCreateFlowSheet()"></div>
+<div class="sheet sheet--kitchen" id="createFlowSheet">
+  <div class="handle"></div>
+  <div class="sheet-body">
+    <div class="create-flow-title">Inseratsauswahl</div>
+    <div class="create-flow-btns" style="margin-bottom:24px;">
+      <button class="btn-create-primary" type="button" id="btnCreateNewDish" style="margin-bottom:12px;">
+        <span class="plus-char" style="font-size:22px; line-height:1; color:#fff;">+</span>
+        <span>Neues Gericht erstellen</span>
+      </button>
+      <button class="btn btn-create-secondary" type="button" id="btnCreateFromCookbook">
+        <span>Aus dem Kochbuch hinzufügen</span>
+      </button>
+    </div>
+    <div id="createFlowRennerSection" style="margin-top:8px;">
+      <div class="hint" style="margin-bottom:10px; font-weight:800; color:#1a1a1a; font-size:14px;">Beliebte Gerichte</div>
+      <div id="createFlowRennerScroll" class="create-flow-renner-scroll" style="display:flex; gap:14px; overflow-x:auto; -webkit-overflow-scrolling:touch; padding:4px 0 16px; scroll-snap-type:x proximity;">
+      </div>
+      <div id="createFlowRennerEmpty" style="display:none; text-align:center; padding:24px 16px; color:#64748b; font-size:14px;">Noch keine beliebten Gerichte – leg Gerichte im Kochbuch an oder biete sie an.</div>
+    </div>
+    <div class="create-flow-hint hint" id="createFlowDateHint" style="display:none;"></div>
+  </div>
+</div>
+
 <!-- Print view -->
 <div id="printView" class="print-view"></div>
 
@@ -10400,7 +10448,7 @@
       btn.type = 'button';
       btn.setAttribute('aria-label', 'Inserat erstellen');
       btn.innerHTML = '<span class="plus-char" style="font-size:28px; line-height:1; color:#1a1a1a;">+</span>';
-      btn.onclick = function(){ createFlowPreselectedDate = null; if(typeof openDishFlow === 'function') openDishFlow(null, 'dashboard'); };
+      btn.onclick = function(){ createFlowPreselectedDate = null; createFlowOriginView = 'dashboard'; if(typeof openCreateFlowSheet === 'function') openCreateFlowSheet(); };
       mainEl.appendChild(btn);
     } else {
       if(existing) existing.remove();
@@ -20197,7 +20245,7 @@
     
     // Leere-Karte CTA: Erstes Gericht für heute
     const btnFirstDishToday = document.getElementById('btnProviderFirstDishToday');
-    if(btnFirstDishToday) btnFirstDishToday.onclick = function(){ createFlowPreselectedDate = typeof isoDate === 'function' ? isoDate(new Date()) : null; createFlowOriginView = 'dashboard'; if(typeof openDishFlow === 'function') openDishFlow(createFlowPreselectedDate, createFlowOriginView); };
+    if(btnFirstDishToday) btnFirstDishToday.onclick = function(){ createFlowPreselectedDate = typeof isoDate === 'function' ? isoDate(new Date()) : null; createFlowOriginView = 'dashboard'; if(typeof openCreateFlowSheet === 'function') openCreateFlowSheet(); };
     
     // Post-Onboarding Dashboard State (if just completed onboarding)
     const providerEmptyDashboard = document.getElementById('providerEmptyDashboard');
@@ -20395,7 +20443,7 @@
         '<div><div class="week-preview-empty-label">' + emptyLabel + '</div><div class="week-preview-empty-cta">JETZT NEUES GERICHT</div></div>' +
         '</div></div>';
       var btnEmpty = document.getElementById('btnProviderWeekEmptyTrigger');
-      if(btnEmpty) btnEmpty.onclick = function(){ if(typeof haptic === 'function') haptic(6); createFlowPreselectedDate = selectedDay; createFlowOriginView = 'week'; if(typeof openDishFlow === 'function') openDishFlow(createFlowPreselectedDate, createFlowOriginView); };
+      if(btnEmpty) btnEmpty.onclick = function(){ if(typeof haptic === 'function') haptic(6); createFlowPreselectedDate = selectedDay; createFlowOriginView = 'week'; if(typeof openCreateFlowSheet === 'function') openCreateFlowSheet(); };
       if(btnEmpty) btnEmpty.onkeydown = function(e){ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); btnEmpty.click(); } };
     }
     /* Haptik beim Einrasten (Snap-Carousel) – Dashboard-Wochenvorschau */
@@ -20777,7 +20825,7 @@
           empty.setAttribute('data-day', key);
           empty.setAttribute('aria-label', 'Gericht hinzufügen für ' + dayLabel + ', ' + dateLabel);
           empty.textContent = '+';
-          empty.onclick = (function(k){ return function(e){ e.preventDefault(); e.stopPropagation(); if(typeof haptic === 'function') haptic(6); weekPlanDay = k; createFlowPreselectedDate = k; createFlowOriginView = 'week'; if(typeof openDishFlow === 'function') openDishFlow(createFlowPreselectedDate, createFlowOriginView); }; })(key);
+          empty.onclick = (function(k){ return function(e){ e.preventDefault(); e.stopPropagation(); if(typeof haptic === 'function') haptic(6); weekPlanDay = k; createFlowPreselectedDate = k; createFlowOriginView = 'week'; if(typeof openCreateFlowSheet === 'function') openCreateFlowSheet(); }; })(key);
           slotsWrap.appendChild(empty);
         }
       }
@@ -20987,7 +21035,7 @@
       const btnWeekEmptyAdd = document.getElementById('btnWeekEmptyAdd');
       if(btnWeekEmptyAdd) btnWeekEmptyAdd.onclick = () => { if(typeof openWeekAddSheet === 'function') openWeekAddSheet(); };
       const btnWeekEmptyNew = document.getElementById('btnWeekEmptyNew');
-      if(btnWeekEmptyNew) btnWeekEmptyNew.onclick = () => { createFlowPreselectedDate = weekPlanDay; createFlowOriginView = 'week'; if(typeof openDishFlow === 'function') openDishFlow(createFlowPreselectedDate, createFlowOriginView); };
+      if(btnWeekEmptyNew) btnWeekEmptyNew.onclick = () => { createFlowPreselectedDate = weekPlanDay; createFlowOriginView = 'week'; if(typeof openCreateFlowSheet === 'function') openCreateFlowSheet(); };
       if(actionsBar) actionsBar.style.display = 'none';
       if(activateBlock) activateBlock.style.display = 'none';
       if(typeof lucide !== 'undefined') lucide.createIcons();
