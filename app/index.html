@@ -4590,6 +4590,9 @@
     #v-provider-cookbook.view.active > div{ position:relative; z-index:1; min-height:0; flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; }
     /* Kochbuch: gleicher Header-Stil wie Meine Küche/Abholungen (kein eigener Override) */
     #v-provider-cookbook #cookbookScrollWrap{ background:transparent; }
+    /* Kochbuch Magazin-Container: Karte oben, Dots unten; Karte nie schrumpfen (Fix: leere Karten-Anzeige) */
+    #v-provider-cookbook #cookbookMagazine{ flex-direction:column; width:100%; align-items:center; }
+    #v-provider-cookbook #cookbookMagazine .cookbook-magazine-card{ flex-shrink:0; }
     #v-provider-cookbook .cookbook-category-pills{ background:transparent; }
     #v-provider-cookbook .cookbook-action-bar{ background:rgba(255,255,255,0.7) !important; backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border-top:1px solid rgba(255,255,255,0.4) !important; box-shadow:0 -4px 24px rgba(0,0,0,0.06); }
 
@@ -10890,6 +10893,8 @@
     setProviderNavActive('provider-cookbook');
     showView(views.providerCookbook);
     renderCookbook();
+    /* Nach View-Sichtbarkeit erneut rendern, falls Layout (Breite/Höhe) beim ersten Mal noch nicht stimmte */
+    requestAnimationFrame(function(){ requestAnimationFrame(function(){ if(typeof renderCookbook === 'function') renderCookbook(); }); });
     const providerNavBackRow = document.getElementById('providerNavBackRow');
     if(providerNavBackRow) providerNavBackRow.style.display = 'none';
     pushViewState({view: 'provider-cookbook', mode: mode}, location.pathname);
