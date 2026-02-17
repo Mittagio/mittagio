@@ -2519,6 +2519,7 @@
     #psheet .psheet-price-block .inserat-price-euro-sup { font-size: 1.5rem; font-weight: 900; color: #1a1a1a; vertical-align: super; margin-left: 4px; }
     #psheet .psheet-body { display: flex; flex-direction: column; gap: 0; flex: 1; min-height: 0; }
     #psheet .psheet-card-body .psheet-info-line { font-size: 15px; font-weight: 700; color: #64748b; margin: 0; }
+    #psheet .psheet-description-line { font-size: 13px; color: #94a3b8; margin: 0 0 12px; line-height: 1.4; font-weight: 500; }
     #psheet .psheet-share-on-image { position: absolute; top: 12px; right: 12px; z-index: 11; width: 40px; height: 40px; border-radius: 50%; border: none; background: rgba(255,255,255,0.95); box-shadow: 0 2px 10px rgba(0,0,0,0.12); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; transition: transform 0.1s; }
     #psheet .psheet-share-on-image:active { transform: scale(0.92); }
     /* Fullscreen Interactive Card: Psheet füllt den gesamten Bildschirm (ohne Ränder) */
@@ -2561,6 +2562,9 @@
     #psheet .psheet-btn-decision.psheet-btn-green { background: #10b981; color: #fff; box-shadow: 0 4px 14px rgba(16,185,129,0.4); }
     #psheet .psheet-btn-decision.psheet-btn-green:active { transform: scale(0.98); }
     #psheet .psheet-btn-decision.psheet-btn-green.psheet-ready { animation: psheet-gentle-pulse 2s ease-in-out infinite; }
+    #psheet .psheet-btn-decision.psheet-btn-loading { pointer-events: none; }
+    #psheet .psheet-btn-spinner { display: inline-block; width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff; border-radius: 50%; animation: psheet-spin 0.7s linear infinite; }
+    @keyframes psheet-spin { to { transform: rotate(360deg); } }
     #psheet .psheet-btn-decision.psheet-btn-yellow { background: #FFD700; color: #1a1a1a; box-shadow: 0 4px 16px rgba(255,215,0,0.35); }
     #psheet .psheet-btn-decision.psheet-btn-yellow:active { transform: scale(0.98); }
     #psheet .psheet-btn-decision.psheet-incomplete { opacity: 0.5; pointer-events: none; }
@@ -4512,6 +4516,7 @@
     #v-provider-profile .provider-profile-logo .logo-io{ color:#6B7280; }
     #v-provider-profile .provider-profile-gear-btn{ width:40px; height:40px; border:none; background:transparent; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0; box-shadow:none; color:#6B7280; }
     #v-provider-profile .provider-profile-gear-btn i{ stroke:#6B7280; }
+    #v-provider-profile .provider-profile-gear-btn .provider-profile-gear-svg{ color:#6B7280; flex-shrink:0; }
     #v-provider-profile .provider-profile-tiles-wrap{ padding:0 0 24px; }
     #v-provider-profile .provider-profile-content-rebuild{ flex:1; overflow-y:auto; padding:20px; padding-bottom:calc(100px + env(safe-area-inset-bottom)); max-width:500px; margin:0 auto; width:100%; box-sizing:border-box; }
     #v-provider-profile .provider-profile-main-rebuild{ display:flex; flex-direction:column; gap:24px; }
@@ -7207,7 +7212,7 @@
     <section class="view onboarding-view" id="v-provider-profile" style="display:flex; flex-direction:column; min-height:0; background:#F9FAFB;">
       <header id="providerProfileHeader" class="provider-profile-header-rebuild">
         <div id="providerProfileHeaderBrand" class="provider-profile-logo"><span class="logo-mittag">mittag</span><span class="logo-io">io</span></div>
-        <button type="button" id="providerProfileGearBtn" class="provider-profile-gear-btn" aria-label="Einstellungen"><i data-lucide="settings" style="width:22px;height:22px;stroke:#6B7280;"></i></button>
+        <button type="button" id="providerProfileGearBtn" class="provider-profile-gear-btn" aria-label="Einstellungen"><svg class="provider-profile-gear-svg" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
       </header>
 
       <div id="providerProfileContent" class="provider-profile-content-rebuild">
@@ -15361,6 +15366,7 @@
       '</div>' +
       '<button type="button" class="psheet-price-btn price-button-yellow" id="psheetPriceBtn" aria-label="Preis">' + priceStr + ' €</button>' +
       '</div>' +
+      '<p class="psheet-description-line">' + esc((o.description || '').trim() || 'z. B. mit frischem Gemüse…') + '</p>' +
       '</div>' +
       '</div>';
     var cardEl = preview.querySelector('.universal-dish-card.psheet-card');
@@ -15644,9 +15650,23 @@
     }
     var btnGreen = document.getElementById('btnPsheetMitAbholnummer');
     var btnYellow = document.getElementById('btnPsheetNurInserat');
-    function doPsheetSave(withPickup){
+    function doPsheetSave(withPickup, opts){
       raw.hasPickupCode = !!withPickup;
       if(typeof save === 'function' && typeof LS !== 'undefined') save(LS.offers, offers);
+      if(opts && opts.showSuccessSheet && withPickup){
+        closeProviderSheet();
+        if(typeof normalizeOffer === 'function' && typeof showInseratSuccessSheet === 'function') showInseratSuccessSheet(normalizeOffer(raw));
+        if(psheetOpenSource === 'week'){
+          if(typeof showProviderWeek === 'function') showProviderWeek();
+          if(typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard(); else if(typeof renderProviderWeekPreview === 'function') renderProviderWeekPreview();
+        } else if(psheetOpenSource === 'cookbook'){
+          if(typeof showProviderCookbook === 'function') showProviderCookbook();
+          if(typeof renderCookbook === 'function') renderCookbook();
+        } else {
+          if(typeof renderProviderHome === 'function') renderProviderHome();
+        }
+        return;
+      }
       if(typeof showToast === 'function') showToast(withPickup ? 'Mit Abholnummer gespeichert' : 'Inserat gespeichert');
       closeProviderSheet();
       if(psheetOpenSource === 'week'){
@@ -15677,9 +15697,26 @@
     if(btnGreen){
       btnGreen.addEventListener('click', function(ev){
         ev.preventDefault();
-        if(btnGreen.classList.contains('psheet-incomplete')) return;
+        if(btnGreen.classList.contains('psheet-incomplete') || btnGreen.classList.contains('psheet-btn-loading')) return;
         try { if(navigator.vibrate) navigator.vibrate(20); if(typeof hapticLight === 'function') hapticLight(); } catch(e){}
-        maybeShowSaveScope(true);
+        btnGreen.classList.add('psheet-btn-loading');
+        btnGreen.disabled = true;
+        var origText = btnGreen.textContent;
+        btnGreen.textContent = '';
+        btnGreen.setAttribute('aria-busy', 'true');
+        var spinnerWrap = document.createElement('span');
+        spinnerWrap.className = 'psheet-btn-spinner';
+        spinnerWrap.setAttribute('aria-hidden', 'true');
+        btnGreen.appendChild(spinnerWrap);
+        setTimeout(function(){
+          btnGreen.classList.remove('psheet-btn-loading');
+          btnGreen.disabled = false;
+          btnGreen.textContent = origText;
+          btnGreen.removeAttribute('aria-busy');
+          var s = btnGreen.querySelector('.psheet-btn-spinner');
+          if(s) s.remove();
+          doPsheetSave(true, { showSuccessSheet: true });
+        }, 800);
       });
     }
     if(btnYellow){
