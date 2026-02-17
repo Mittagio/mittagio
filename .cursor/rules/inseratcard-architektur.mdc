@@ -1,0 +1,53 @@
+---
+description: Verbindliche Architektur der InseratCard – Aufbau, Modi, Physik, Terminologie. Single Source of Truth: docs/specs/inseratcard-architektur.md
+alwaysApply: true
+---
+
+# InseratCard – Architektur (verbindlich)
+
+Die **InseratCard** ist das universelle Herzstück der App: die **einzige** Komponente, in der Gerichte editiert, geplant oder inseriert werden. Sie wird im **#wizard** gerendert (`buildListingStep()` in `app/index.html`).
+
+## Aufbau (Top-to-Bottom)
+
+1. **Header-Bild (190px):** Bündig oben. „Foto ändern“-Modul; im Live-Zustand pulsierender Live-Badge („LIVE“ + grüner Punkt).
+2. **Power-Bar:** Direkt unter dem Bild. Icons 20 % kleiner. **3 Säulen (Pflicht):**
+   - 🍴 Vor Ort (immer aktiv, 0 €)
+   - 🎫1️⃣ Abholnummer (zeigt Buchung mit Abholnummer)
+   - 🔄 Mehrweg (Toggle)
+   - Zusätzlich: 🕒 Uhrzeit, 🌾 Allergene, ⓘ Info am Ende.
+3. **Content-Block:** Titel (Midnight Blue, fett), Beschreibung (grau), Action-Row: links Vegetarisch-Pill, rechts **gelber Preis-Button**.
+
+## Zwei Modi (strikt trennen)
+
+| Modus | Buttons | Preisübersicht ⓘ |
+|-------|--------|-------------------|
+| **MODE_AD** (Verkauf) | „mit Abholnummer“ (0,89 €) + „Nur Inserat“ (4,99 €) | Sichtbar |
+| **MODE_PLAN** (Kochbuch/Wochenplan) | „Gericht speichern“ (Grün), „Datum für Wochenplan wählen“ (Blau) | **Ausgeblendet** |
+
+## Interaktions-Physik (S25)
+
+- **Hero-Morph:** Gelber Preis-Button → Klick → expandiert zu 4rem-Zahlenfeld (Midnight Blue).
+- **Harmonic-Bounce:** Titel-Fokus → Vegetarisch-Pill und Preis-Button hüpfen synchron.
+- **Universal-X:** X schließt mit Pop-Away-Animation (Implosion).
+- **Header-Morph:** 🕒/🌾 → Header blur, Auswahl zentriert im Bild.
+
+## Logik
+
+- InseratCard = **großes Detail-Blatt**, keine kleine Kachel.
+- Renner-Klick → Auswahl schließen → InseratCard vorbefüllt öffnen.
+- Jeder Flow (Neu, Kochbuch, Renner, Blitz) endet **zwingend** in dieser Karte.
+
+## Terminologie
+
+- ✅ **Abholnummer** (immer).
+- ❌ **Ticket**, **Code**, **Abholcode** (in UI vermeiden).
+
+## Checkliste vor Änderungen an Listing/Inserat-UI
+
+- [ ] InseratCard im **#wizard**? (buildListingStep)
+- [ ] **3 Säulen** (🍴, 🎫1️⃣, 🔄) in der Power-Bar?
+- [ ] **MODE_AD** vs. **MODE_PLAN** sauber getrennt (Buttons + Sichtbarkeit Preisübersicht)?
+- [ ] Preisübersicht ⓘ im Plan-Modus **ausgeblendet**?
+- [ ] Nur **Abholnummer**, nie Ticket/Code?
+
+**Vollständige Spec:** [docs/specs/inseratcard-architektur.md](../docs/specs/inseratcard-architektur.md)

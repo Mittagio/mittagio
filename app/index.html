@@ -5303,12 +5303,8 @@
       #v-provider-profile .provider-profile-sub > div[style*="overflow-y:auto"]{ flex:1; min-height:0; padding-bottom:calc(24px + env(safe-area-inset-bottom, 0)); }
       #v-provider-profile .provider-profile-sub{ background:#F2F2F7 !important; }
       #v-provider-profile #providerProfileMenuCard{ background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,0.06); }
-      /* Einstellungen (Zahnrad): S25-like volle Breite, Clean Card & Spacing [cite: 2026-02-17] */
-      #v-provider-profile .provider-profile-sub .provider-settings-scroll{ padding:20px 12px calc(100px + env(safe-area-inset-bottom, 0)); display:flex; flex-direction:column; gap:16px; width:100%; max-width:100%; box-sizing:border-box; }
-      #v-provider-profile .provider-profile-sub .provider-settings-scroll .provider-settings-identity,
-      #v-provider-profile .provider-profile-sub .provider-settings-scroll .provider-settings-card,
-      #v-provider-profile .provider-profile-sub .provider-settings-scroll .provider-profile-card,
-      #v-provider-profile .provider-profile-sub .provider-settings-scroll #providerBusinessDataCardSlotSettings > *{ width:100%; max-width:100%; }
+      /* Einstellungen (Zahnrad): wie Kundenseite – Clean Card & Spacing */
+      #v-provider-profile .provider-profile-sub .provider-settings-scroll{ padding:40px 16px calc(100px + env(safe-area-inset-bottom, 0)); display:flex; flex-direction:column; gap:20px; max-width:500px; margin:0 auto; width:100%; box-sizing:border-box; }
       #v-provider-profile .provider-settings-card{ background:#fff; border-radius:24px; overflow:hidden; border:1px solid rgba(0,0,0,0.04); box-shadow:0 8px 24px rgba(0,0,0,0.03); margin-bottom:0; }
       #v-provider-profile .provider-settings-identity .plogo{ width:56px !important; height:56px !important; border-radius:18px !important; }
       #v-provider-profile .provider-settings-card .provider-time-trigger{ width:100%; padding:24px; border-radius:16px; background:#f8fafc; border:1px solid rgba(0,0,0,0.06); cursor:pointer; text-align:center; transition:background 0.2s; }
@@ -5339,13 +5335,9 @@
       #v-provider-profile .provider-settings-pillar-row .pillar-emoji{ width:44px; height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0; }
       #v-provider-profile .provider-settings-pillar-row .pillar-text{ min-width:0; }
       #v-provider-profile .provider-settings-pillar-row .toggle-switch{ flex-shrink:0; margin-left:auto; }
-      /* Betriebsdaten: einladende Eingabe, S25-like [cite: 2026-02-17] */
-      #v-provider-profile #providerBusinessDataCardWrap .input-group{ border:none; border-bottom:2px solid #E5E7EB; border-radius:0; box-shadow:none; padding:18px 20px; margin-bottom:0; transition:border-color 0.2s, background 0.2s; }
-      #v-provider-profile #providerBusinessDataCardWrap .input-group:focus-within{ border-bottom-color:#22C55E; background:rgba(34,197,94,0.04); }
-      #v-provider-profile #providerBusinessDataCardWrap .input-group input{ min-height:28px; font-size:17px; }
-      #v-provider-profile #providerBusinessDataCardWrap .input-group input::placeholder{ color:#94a3b8; opacity:0.9; }
+      /* Betriebsdaten: nur untere Linie, keine Box-Rahmen [cite: 2026-01-29] */
+      #v-provider-profile #providerBusinessDataCardWrap .input-group{ border:none; border-bottom:1px solid #E5E7EB; border-radius:0; box-shadow:none; }
       #v-provider-profile #providerBusinessDataCardWrap .input-group:last-of-type{ margin-bottom:0; }
-      #v-provider-profile #providerBusinessDataCardWrap #btnProviderSaveBusiness:active{ transform:scale(0.98); opacity:0.9; }
       /* Wochentage: runde Day-Pills, aktiv = Mittagio-Grün [cite: 2026-01-29] */
       #v-provider-profile .provider-day-pill{ display:inline-flex; align-items:center; justify-content:center; min-width:44px; height:44px; padding:0 16px; border-radius:999px; border:2px solid #e5e7eb; background:#fff; font-size:14px; font-weight:700; color:#6B7280; cursor:pointer; transition:background 0.2s, border-color 0.2s, color 0.2s; }
       #v-provider-profile .provider-day-pill.active{ background:#22C55E; border-color:#22C55E; color:#fff; }
@@ -5354,6 +5346,18 @@
       #v-provider-profile .provider-settings-card .toggle-switch.active .toggle-slider{ transform:translateX(32px); }
       #v-provider-profile .provider-settings-card .toggle-switch{ background:#e5e7eb; }
       #v-provider-profile .provider-settings-card .toggle-switch.active{ background:#22C55E !important; }
+      /* Einstellungen Accordion (Collapsible Sections) [cite: 2026-02-17] */
+      .provider-settings-accordion{ background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04); margin-bottom:20px; }
+      .provider-settings-accordion-item{ border-bottom:1px solid #e5e7eb; }
+      .provider-settings-accordion-item:last-child{ border-bottom:none; }
+      .provider-settings-accordion-trigger{ width:100%; display:flex; align-items:center; justify-content:space-between; padding:16px 20px; background:transparent; border:none; font-size:16px; font-weight:800; color:#1a1a1a; cursor:pointer; text-align:left; transition:background 0.2s; }
+      .provider-settings-accordion-trigger:active{ background:#f8fafc; }
+      .provider-settings-accordion-trigger .accordion-chevron{ width:20px; height:20px; color:#64748b; flex-shrink:0; transition:transform 0.3s ease-out; }
+      .provider-settings-accordion-item.open .provider-settings-accordion-trigger .accordion-chevron{ transform:rotate(180deg); }
+      .provider-settings-accordion-content{ display:grid; grid-template-rows:0fr; transition:grid-template-rows 0.3s ease-out; }
+      .provider-settings-accordion-item.open .provider-settings-accordion-content{ grid-template-rows:1fr; }
+      .provider-settings-accordion-content-inner{ overflow:hidden; }
+      .provider-settings-accordion-content-inner > *{ padding:0 20px 20px; }
       
       /* Provider Bottom Nav: Safe-Area, Touch 48px */
       #providerNav{
@@ -7651,28 +7655,35 @@
 
         <!-- Einstellungsseite (Zahnrad): Identity + Karten + Danger Zone -->
       <div id="providerProfileSubSettings" class="provider-profile-sub" style="display:none; flex-direction:column; min-height:0; background:#F9FAFB;">
-        <header class="provider-sub-header provider-settings-header-s25" style="background:#fff; padding:10px 16px 12px; padding-left:calc(12px + env(safe-area-inset-left, 0)); padding-right:calc(12px + env(safe-area-inset-right, 0)); padding-top:calc(10px + env(safe-area-inset-top, 0)); border-bottom:1px solid #e5e7eb; position:sticky; top:0; z-index:50; display:flex; align-items:center; gap:14px;">
+        <header class="provider-sub-header" style="background:#fff; padding:10px 20px 12px; padding-top:calc(10px + env(safe-area-inset-top, 0)); border-bottom:1px solid #e5e7eb; position:sticky; top:0; z-index:50; display:flex; align-items:center; gap:14px;">
           <button type="button" id="providerProfileBackSettings" aria-label="Zurück" style="width:44px; height:44px; border-radius:14px; background:transparent; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center;">
             <i data-lucide="chevron-left" style="width:22px; height:22px; color:#1a1a1a;"></i>
           </button>
-          <h1 style="margin:0; flex:1; font-size:18px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a;">Einstellungen</h1>
+          <h1 style="margin:0; font-size:18px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a;">Einstellungen</h1>
         </header>
 
         <div class="provider-settings-scroll provider-settings-scroll-rebuild" style="flex:1; overflow-y:auto; background:#F9FAFB;">
-          <!-- Identity Section (S25-like volle Breite: zentrales Logo, Name, Ort, Status) -->
-          <div class="provider-settings-identity" style="text-align:center; padding:24px 20px; background:#fff; border-radius:24px; box-shadow:0 2px 12px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04);">
+          <!-- Identity Section -->
+          <div class="provider-settings-identity" style="text-align:center; padding:28px 20px 24px; background:#fff; border-radius:24px; box-shadow:0 2px 12px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04); margin-bottom:20px;">
             <div class="plogo" id="providerSettingsLogo" style="margin:0 auto 12px; background-size:cover; background-position:center; background-color:#f1f3f5;"></div>
             <h2 id="providerSettingsName" style="margin:0 0 4px; font-size:20px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a;">Betriebsname</h2>
             <p id="providerSettingsOrt" style="margin:0 0 12px; font-size:14px; color:#64748b;">Ort</p>
             <span style="display:inline-block; padding:6px 14px; border-radius:999px; font-size:12px; font-weight:800; color:#059669; background:rgba(5,150,105,0.12);">System Online</span>
           </div>
 
-          <!-- Betriebsdaten-Karte (wird aus providerBusinessDataCardSlot hierher verschoben bei Einstellungen) -->
-          <div id="providerBusinessDataCardSlotSettings" style="margin-bottom:20px;"></div>
-
-          <!-- Kachel: Zeitfenster – 15-Minuten-Wheel-Picker [cite: 2026-01-29] -->
-          <div class="provider-profile-card provider-settings-card" style="background:#fff; border-radius:24px; padding:24px; margin-bottom:20px; border:none; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
-            <h3 style="margin:0 0 16px; font-size:17px; font-weight:800; color:#1a1a1a;">⏰ Mittagszeiten</h3>
+          <!-- Accordion: Betriebsdaten, Sicherheit, Mittagszeiten, Inseratseinstellungen, Abrechnung, FAQ, Rechtliches -->
+          <div class="provider-settings-accordion" id="providerSettingsAccordion">
+            <div class="provider-settings-accordion-item open" data-accordion="betriebsdaten">
+              <button type="button" class="provider-settings-accordion-trigger"><span>Betriebsdaten</span><i data-lucide="chevron-down" class="accordion-chevron"></i></button>
+              <div class="provider-settings-accordion-content"><div class="provider-settings-accordion-content-inner"><div id="providerBusinessDataCardSlotSettings" style="padding-top:0;"></div></div></div>
+            </div>
+            <div class="provider-settings-accordion-item" data-accordion="sicherheit">
+              <button type="button" class="provider-settings-accordion-trigger"><span>Sicherheit</span><i data-lucide="chevron-down" class="accordion-chevron"></i></button>
+              <div class="provider-settings-accordion-content"><div class="provider-settings-accordion-content-inner"><div style="padding-top:0;"><button type="button" id="btnProviderChangePassword" class="provider-settings-row-chevron" style="width:100%; display:flex; justify-content:space-between; align-items:center; padding:16px; background:#f8f9fa; border:2px solid #f1f3f5; border-radius:14px; text-decoration:none; color:#1a1a1a; font-size:15px; font-weight:700; cursor:pointer; text-align:left;"><span style="display:flex; align-items:center; gap:12px;"><i data-lucide="lock" style="width:20px;height:20px;color:#64748b;"></i>Passwort ändern</span><i data-lucide="chevron-right" style="width:20px; height:20px; color:#9ca3af;"></i></button></div></div></div>
+            </div>
+            <div class="provider-settings-accordion-item" data-accordion="mittagszeiten">
+              <button type="button" class="provider-settings-accordion-trigger"><span>Mittagszeiten</span><i data-lucide="chevron-down" class="accordion-chevron"></i></button>
+              <div class="provider-settings-accordion-content"><div class="provider-settings-accordion-content-inner"><div class="provider-mittagszeiten-inner">
             <p style="margin:0 0 16px; font-size:14px; color:#64748b; line-height:1.5;">Standard-Zeitfenster für neue Inserate (15-Minuten-Schritte).</p>
             <button type="button" id="providerSettingsTimeTrigger" class="provider-time-trigger time-picker-display" style="display:block; width:100%; border:none; cursor:pointer; font-family:inherit;">
               <span id="providerSettingsTimeDisplay" style="font-size:24px; font-weight:600; color:#22C55E;">11:30 – 14:00</span>
@@ -7693,12 +7704,13 @@
             </div>
             <label style="display:block; font-size:10px; font-weight:700; color:#6B7280; margin-top:20px; margin-bottom:12px; text-transform:uppercase; letter-spacing:0.05em;">An welchen Tagen?</label>
             <div id="providerSettingsLunchWeekdays" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
-          </div>
-
-          <!-- Kachel: Inseratseinstellungen – Immer Standard + Extras mit Preis -->
+          </div></div></div>
+            </div>
+            <div class="provider-settings-accordion-item" data-accordion="inseratseinstellungen">
+              <button type="button" class="provider-settings-accordion-trigger"><span>Inseratseinstellungen</span><i data-lucide="chevron-down" class="accordion-chevron"></i></button>
+              <div class="provider-settings-accordion-content"><div class="provider-settings-accordion-content-inner"><div class="provider-inseratseinstellungen-inner">
           <div class="provider-profile-card provider-settings-card" style="background:#fff; border-radius:24px; overflow:hidden; margin-bottom:20px; border:none; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
-            <h3 style="margin:0; padding:24px 24px 8px; font-size:17px; font-weight:800; color:#1a1a1a;">Inseratseinstellungen</h3>
-            <p style="margin:0 0 16px; padding:0 24px; font-size:13px; color:#64748b;">Immer Standard für neue Inserate:</p>
+            <h3 style="margin:0; padding:24px 24px 0; font-size:17px; font-weight:800; color:#1a1a1a;">🏗️ Service-Logik</h3>
             <div class="provider-settings-pillar-row" style="border-bottom:1px solid #f8f9fa;">
               <div class="pillar-left">
                 <div class="pillar-emoji" style="background:#f1f3f5;">🍴</div>
@@ -7709,64 +7721,67 @@
               </div>
               <label class="toggle-switch"><input type="checkbox" id="providerSettingsDineInEnabled"><span class="toggle-slider"></span></label>
             </div>
-            <div class="provider-settings-pillar-row provider-settings-reuse-row" style="border-bottom:1px solid #f8f9fa;">
+            <div class="provider-settings-pillar-row" style="border-bottom:1px solid #f8f9fa;">
               <div class="pillar-left">
                 <div class="pillar-emoji" style="background:#f1f3f5;">🔄</div>
                 <div class="pillar-text">
                   <div style="font-weight:800; color:#1a1a1a; font-size:16px;">Mehrweg-System</div>
-                  <div style="font-size:13px; color:#64748b;">Vytal, Recup oder eigenes – Pfand (€)</div>
+                  <div style="font-size:13px; color:#64748b;">Vytal, Recup oder eigenes</div>
                 </div>
               </div>
-              <div style="display:flex; align-items:center; gap:10px; flex-shrink:0;">
-                <input type="text" id="providerSettingsReusePfandPrice" inputmode="decimal" placeholder="0,00" style="width:72px; padding:10px 10px; border:2px solid #e2e8f0; border-radius:10px; font-size:15px; font-weight:700; text-align:right;" />
-                <span style="font-size:14px; font-weight:700; color:#64748b;">€</span>
-                <label class="toggle-switch"><input type="checkbox" id="providerSettingsReuseEnabled"><span class="toggle-slider"></span></label>
+              <label class="toggle-switch"><input type="checkbox" id="providerSettingsReuseEnabled"><span class="toggle-slider"></span></label>
+            </div>
+            <div class="provider-settings-pillar-row" style="border-bottom:1px solid #f8f9fa;">
+              <div class="pillar-left">
+                <div class="pillar-emoji" style="background:rgba(255,215,0,0.15);">🧾</div>
+                <div class="pillar-text">
+                  <div style="font-weight:800; color:#1a1a1a; font-size:16px;">Abholnummer</div>
+                  <div style="font-size:13px; color:#64748b;">Weniger Chaos &amp; mehr Zeit</div>
+                </div>
               </div>
+              <label class="toggle-switch"><input type="checkbox" id="providerSettingsAbholnummerEnabled"><span class="toggle-slider"></span></label>
             </div>
             <div class="provider-settings-pillar-row">
               <div class="pillar-left">
                 <div class="pillar-emoji" style="background:#f1f3f5;">🌾</div>
                 <div class="pillar-text">
-                  <div style="font-weight:800; color:#1a1a1a; font-size:16px;">Allergene angeben</div>
+                  <div style="font-weight:800; color:#1a1a1a; font-size:16px;">Allergene angeben?</div>
                   <div style="font-size:13px; color:#64748b;">Standard für neue Inserate</div>
                 </div>
               </div>
               <label class="toggle-switch"><input type="checkbox" id="providerSettingsWantsAllergensEnabled"><span class="toggle-slider"></span></label>
             </div>
-            <div style="padding:0 24px 24px; border-top:1px solid #f8f9fa; margin-top:8px; padding-top:20px;">
-              <h4 style="margin:0 0 12px; font-size:15px; font-weight:800; color:#1a1a1a;">➕ Extras mit Preis</h4>
-              <p style="margin:0 0 16px; font-size:13px; color:#64748b;">Beilagensalat, Ketchup, Mayonaise, Sauce, Brot – und eigene Extras. Tippen für Preiseingabe.</p>
-              <div id="providerSettingsExtrasList" style="display:flex; flex-direction:column; gap:10px;"></div>
-            </div>
           </div>
 
-          <!-- Abrechnung -->
-          <div class="provider-settings-card provider-settings-card-rebuild" style="background:#fff; border-radius:16px; padding:20px; margin-bottom:20px; box-shadow:0 1px 3px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04);">
-            <h3 style="margin:0 0 12px; font-size:15px; font-weight:800; color:#1a1a1a;">Abrechnung</h3>
-            <button type="button" id="btnSettingsTagesumsatz" class="provider-settings-row-chevron" style="width:100%; display:flex; justify-content:space-between; align-items:center; padding:14px 0; background:transparent; border:none; border-bottom:1px solid #f3f4f6; color:#1a1a1a; font-size:15px; font-weight:700; cursor:pointer; text-align:left;">
-              <span>Tagesumsatz</span><i data-lucide="chevron-right" style="width:20px; height:20px; color:#9ca3af;"></i>
-            </button>
-            <button type="button" id="btnSettingsBillingArchive" class="provider-settings-row-chevron" style="width:100%; display:flex; justify-content:space-between; align-items:center; padding:14px 0; background:transparent; border:none; border-bottom:1px solid #f3f4f6; color:#1a1a1a; font-size:15px; font-weight:700; cursor:pointer; text-align:left;">
-              <span>Rechnungsbelege</span><i data-lucide="chevron-right" style="width:20px; height:20px; color:#9ca3af;"></i>
-            </button>
-            <button type="button" id="btnProviderBillingPortal" class="provider-settings-row-chevron" style="width:100%; display:flex; justify-content:space-between; align-items:center; padding:14px 0; background:transparent; border:none; color:#1a1a1a; font-size:15px; font-weight:700; cursor:pointer; text-align:left;">
-              <span>Bankdaten</span><i data-lucide="chevron-right" style="width:20px; height:20px; color:#9ca3af;"></i>
-            </button>
-          </div>
-          <!-- FAQ & Support -->
-          <div class="provider-settings-card provider-settings-card-rebuild" style="background:#fff; border-radius:16px; padding:20px; margin-bottom:20px; box-shadow:0 1px 3px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04);">
-            <h3 style="margin:0 0 12px; font-size:15px; font-weight:800; color:#1a1a1a;">FAQ &amp; Support</h3>
-            <button type="button" id="btnSettingsSupportFooter" class="provider-settings-row-chevron" style="width:100%; display:flex; justify-content:space-between; align-items:center; padding:14px 0; background:transparent; border:none; color:#1a1a1a; font-size:15px; font-weight:700; cursor:pointer; text-align:left;">
-              <span>Support &amp; FAQ</span><i data-lucide="chevron-right" style="width:20px; height:20px; color:#9ca3af;"></i>
-            </button>
-          </div>
-          <!-- Rechtliches & Info (AGB, Datenschutz, Impressum) -->
-          <div class="provider-settings-card provider-settings-card-rebuild" style="background:#fff; border-radius:16px; overflow:hidden; margin-bottom:20px; box-shadow:0 1px 3px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04);">
-            <h3 style="margin:0; padding:20px 20px 8px; font-size:15px; font-weight:800; color:#1a1a1a;">Rechtliches &amp; Info</h3>
-            <a href="#/agb" class="provider-settings-row-chevron" style="display:flex; justify-content:space-between; align-items:center; padding:14px 20px; color:#1a1a1a; font-size:15px; font-weight:700; text-decoration:none; border-bottom:1px solid #f3f4f6;"><span>AGB</span><i data-lucide="chevron-right" style="width:20px; height:20px; color:#9ca3af;"></i></a>
-            <a href="#/datenschutz" class="provider-settings-row-chevron" style="display:flex; justify-content:space-between; align-items:center; padding:14px 20px; color:#1a1a1a; font-size:15px; font-weight:700; text-decoration:none; border-bottom:1px solid #f3f4f6;"><span>Datenschutz</span><i data-lucide="chevron-right" style="width:20px; height:20px; color:#9ca3af;"></i></a>
-            <div class="provider-settings-row-chevron" style="display:flex; justify-content:space-between; align-items:center; padding:14px 20px; color:#1a1a1a; font-size:15px; font-weight:700; cursor:pointer;" id="btnProviderImpressum"><span>Impressum</span><i data-lucide="chevron-right" style="width:20px; height:20px; color:#9ca3af;"></i></div>
-            <div id="providerImpressumContent" style="display:none; padding:16px 20px 20px; font-size:14px; color:#6B7280; line-height:1.6; border-top:1px solid #f3f4f6;">Mike Quach, Langäcker 2, 73635 Rudersberg</div>
+            <h4 style="margin:0 0 12px; font-size:15px; font-weight:800; color:#1a1a1a;">➕ Extras mit Preis</h4>
+            <p style="margin:0 0 16px; font-size:14px; color:#64748b; line-height:1.5;">Diese Extras stehen in neuen Inseraten zur Auswahl (z.&nbsp;B. Beilagensalat, Soße).</p>
+            <div id="providerSettingsExtrasList" style="display:flex; flex-direction:column; gap:10px;"></div>
+            <button type="button" id="providerSettingsExtrasAdd" style="margin-top:12px; width:100%; min-height:48px; border-radius:14px; font-size:15px; font-weight:700; background:#f1f3f5; color:#475569; border:2px dashed #e2e8f0; cursor:pointer;">+ Extra hinzufügen</button>
+          </div></div></div>
+            </div>
+            <div class="provider-settings-accordion-item" data-accordion="abrechnung">
+              <button type="button" class="provider-settings-accordion-trigger"><span>Abrechnung</span><i data-lucide="chevron-down" class="accordion-chevron"></i></button>
+              <div class="provider-settings-accordion-content"><div class="provider-settings-accordion-content-inner"><div class="provider-abrechnung-inner">
+            <button type="button" id="btnSettingsTagesumsatz" class="provider-settings-row-chevron" style="width:100%; display:flex; justify-content:space-between; align-items:center; padding:14px 0; background:transparent; border:none; border-bottom:1px solid #f3f4f6; color:#1a1a1a; font-size:15px; font-weight:700; cursor:pointer; text-align:left;"><span>Tagesumsatz</span><i data-lucide="chevron-right" style="width:20px; height:20px; color:#9ca3af;"></i></button>
+            <button type="button" id="btnSettingsBillingArchive" class="provider-settings-row-chevron" style="width:100%; display:flex; justify-content:space-between; align-items:center; padding:14px 0; background:transparent; border:none; border-bottom:1px solid #f3f4f6; color:#1a1a1a; font-size:15px; font-weight:700; cursor:pointer; text-align:left;"><span>Rechnungsbelege</span><i data-lucide="chevron-right" style="width:20px; height:20px; color:#9ca3af;"></i></button>
+            <button type="button" id="btnProviderBillingPortal" class="provider-settings-row-chevron" style="width:100%; display:flex; justify-content:space-between; align-items:center; padding:14px 0; background:transparent; border:none; color:#1a1a1a; font-size:15px; font-weight:700; cursor:pointer; text-align:left;"><span>Bankdaten</span><i data-lucide="chevron-right" style="width:20px; height:20px; color:#9ca3af;"></i></button>
+          </div></div></div>
+            </div>
+            <div class="provider-settings-accordion-item" data-accordion="faq">
+              <button type="button" class="provider-settings-accordion-trigger"><span>FAQ</span><i data-lucide="chevron-down" class="accordion-chevron"></i></button>
+              <div class="provider-settings-accordion-content"><div class="provider-settings-accordion-content-inner"><div class="provider-faq-inner">
+            <button type="button" id="btnSettingsSupportFooter" class="provider-settings-row-chevron" style="width:100%; display:flex; justify-content:space-between; align-items:center; padding:14px 0; background:transparent; border:none; color:#1a1a1a; font-size:15px; font-weight:700; cursor:pointer; text-align:left;"><span>Support &amp; FAQ</span><i data-lucide="chevron-right" style="width:20px; height:20px; color:#9ca3af;"></i></button>
+          </div></div></div>
+            </div>
+            <div class="provider-settings-accordion-item" data-accordion="rechtliches">
+              <button type="button" class="provider-settings-accordion-trigger"><span>Rechtliches</span><i data-lucide="chevron-down" class="accordion-chevron"></i></button>
+              <div class="provider-settings-accordion-content"><div class="provider-settings-accordion-content-inner"><div class="provider-rechtliches-inner">
+            <a href="#/agb" class="provider-settings-row-chevron" style="display:flex; justify-content:space-between; align-items:center; padding:14px 0; color:#1a1a1a; font-size:15px; font-weight:700; text-decoration:none; border-bottom:1px solid #f3f4f6;"><span>AGB</span><i data-lucide="chevron-right" style="width:20px; height:20px; color:#9ca3af;"></i></a>
+            <a href="#/datenschutz" class="provider-settings-row-chevron" style="display:flex; justify-content:space-between; align-items:center; padding:14px 0; color:#1a1a1a; font-size:15px; font-weight:700; text-decoration:none; border-bottom:1px solid #f3f4f6;"><span>Datenschutz</span><i data-lucide="chevron-right" style="width:20px; height:20px; color:#9ca3af;"></i></a>
+            <div class="provider-settings-row-chevron" style="display:flex; justify-content:space-between; align-items:center; padding:14px 0; color:#1a1a1a; font-size:15px; font-weight:700; cursor:pointer;" id="btnProviderImpressum"><span>Impressum</span><i data-lucide="chevron-right" style="width:20px; height:20px; color:#9ca3af;"></i></div>
+            <div id="providerImpressumContent" style="display:none; padding:16px 0 0; font-size:14px; color:#6B7280; line-height:1.6; border-top:1px solid #f3f4f6;">Mike Quach, Langäcker 2, 73635 Rudersberg</div>
+          </div></div></div>
+            </div>
           </div>
           <button type="button" id="btnProviderDeleteAccount" class="provider-footer-delete" style="display:block; width:100%; padding:16px; font-size:14px; font-weight:800; color:#dc2626; background:transparent; border:none; cursor:pointer; text-align:center;">
             Profil dauerhaft löschen
@@ -10725,7 +10740,7 @@
   }
 
   function normalizeProviderProfile(p){
-    const base = { name:'', address:'', street:'', zip:'', city:'', mealWindow:DEFAULT_MEAL_WINDOW, mealStart:'11:30', mealEnd:'14:00', lunchWeekdays:[1,2,3,4,5], phone:'', email:'', website:'', logoData:'', kitchenEmail:'', autoSelloutTime:'', reuseEnabledByDefault:false, reusePfandPrice:0, abholnummerEnabledByDefault:false, wantsAllergensByDefault:false, defaultExtras:[] };
+    const base = { name:'', address:'', street:'', zip:'', city:'', mealWindow:DEFAULT_MEAL_WINDOW, mealStart:'11:30', mealEnd:'14:00', lunchWeekdays:[1,2,3,4,5], phone:'', email:'', website:'', logoData:'', kitchenEmail:'', autoSelloutTime:'', reuseEnabledByDefault:false, abholnummerEnabledByDefault:false, wantsAllergensByDefault:false, defaultExtras:[] };
     const out = {...base, ...(p||{})};
     if(!Array.isArray(out.defaultExtras)) out.defaultExtras = [];
     if(!out.address){ out.address = buildAddress(out); }
@@ -11287,9 +11302,10 @@
       var input = document.createElement('input');
       input.type = def.type || 'text';
       input.id = def.id;
+      input.name = def.name || def.id;
       input.placeholder = def.placeholder !== undefined ? def.placeholder : ' ';
       input.className = def.inputClass || 'input-field';
-      if(def.autocomplete) input.autocomplete = def.autocomplete;
+      if(def.autocomplete) input.setAttribute('autocomplete', def.autocomplete);
       if(def.maxlength) input.setAttribute('maxlength', def.maxlength);
       wrap.appendChild(label);
       wrap.appendChild(input);
@@ -11302,31 +11318,31 @@
     }
   };
   var PROVIDER_BUSINESS_FIELDS = [
-    { id: 'providerProfileBusinessName', type: 'text', label: 'Betriebsname', placeholder: 'z.B. Metzgerei Schmidt', autocomplete: 'organization' },
-    { id: 'providerProfileStreet', type: 'text', label: 'Anschrift', placeholder: 'Straße und Hausnummer', autocomplete: 'street-address' },
-    { id: 'providerProfileZip', type: 'text', label: 'PLZ', placeholder: '73614', autocomplete: 'postal-code', maxlength: 10 },
-    { id: 'providerProfileCity', type: 'text', label: 'Ort', placeholder: 'Schorndorf', autocomplete: 'address-level2' },
-    { id: 'providerProfilePhone', type: 'tel', label: 'Telefon', placeholder: '07181 123456', autocomplete: 'tel' },
-    { id: 'providerProfileEmail', type: 'email', label: 'E-Mail', placeholder: 'info@dein-betrieb.de', autocomplete: 'email' },
-    { id: 'providerProfileWebsite', type: 'url', label: 'Webseite', placeholder: 'https://deine-website.de', autocomplete: 'url' }
+    { id: 'providerProfileBusinessName', type: 'text', label: 'Betriebsname', autocomplete: 'organization' },
+    { id: 'providerProfileStreet', type: 'text', label: 'Anschrift', autocomplete: 'street-address' },
+    { id: 'providerProfileZip', type: 'text', label: 'PLZ', autocomplete: 'postal-code', maxlength: 10 },
+    { id: 'providerProfileCity', type: 'text', label: 'Ort', autocomplete: 'address-level2' },
+    { id: 'providerProfilePhone', type: 'tel', label: 'Telefon', autocomplete: 'tel' },
+    { id: 'providerProfileEmail', type: 'email', label: 'E-Mail', autocomplete: 'email' },
+    { id: 'providerProfileWebsite', type: 'url', label: 'Webseite', autocomplete: 'url' }
   ];
   function createProviderBusinessDataCard(){
     var wrap = document.createElement('div');
     wrap.id = 'providerBusinessDataCardWrap';
     wrap.className = 'provider-settings-card provider-business-data-card';
-    wrap.setAttribute('style', 'background:#fff; border-radius:24px; padding:24px 20px; border:none; box-shadow:0 2px 12px rgba(0,0,0,0.06);');
+    wrap.setAttribute('style', 'background:#fff; border-radius:24px; padding:24px; border:none; box-shadow:0 1px 3px rgba(0,0,0,0.06);');
     var title = document.createElement('h3');
     title.setAttribute('style', 'margin:0 0 6px; font-size:17px; font-weight:800; color:#1a1a1a;');
     title.textContent = 'Betriebsdaten';
     wrap.appendChild(title);
     var subtitle = document.createElement('p');
     subtitle.setAttribute('style', 'margin:0 0 20px; font-size:14px; color:#64748b; line-height:1.4;');
-    subtitle.textContent = 'Damit Kunden dich finden – schnell ausgefüllt.';
+    subtitle.textContent = 'Mit Autovervollständigung (Browser/Google) – damit Kunden dich finden.';
     wrap.appendChild(subtitle);
     wrap.appendChild(MittagioForm.createInputGroup(PROVIDER_BUSINESS_FIELDS[0]));
     wrap.appendChild(MittagioForm.createInputGroup(PROVIDER_BUSINESS_FIELDS[1]));
     var row = document.createElement('div');
-    row.setAttribute('style', 'display:grid; grid-template-columns:minmax(72px,1fr) 2fr; gap:12px;');
+    row.setAttribute('style', 'display:grid; grid-template-columns:1fr 2fr; gap:12px;');
     row.appendChild(MittagioForm.createInputGroup(PROVIDER_BUSINESS_FIELDS[2]));
     row.appendChild(MittagioForm.createInputGroup(PROVIDER_BUSINESS_FIELDS[3]));
     wrap.appendChild(row);
@@ -11339,13 +11355,9 @@
     btn.type = 'button';
     btn.id = 'btnProviderSaveBusiness';
     btn.className = 'btn-primary';
-    btn.setAttribute('style', 'width:100%; min-height:56px; border-radius:16px; font-size:16px; font-weight:800; background:#FFD700; color:#1a1a1a; border:none; box-shadow:0 4px 12px rgba(255,215,0,0.2); margin-top:20px; cursor:pointer; transition:transform 0.1s, opacity 0.1s;');
+    btn.setAttribute('style', 'width:100%; min-height:56px; border-radius:16px; font-size:16px; font-weight:800; background:#FFD700; color:#1a1a1a; border:none; box-shadow:0 4px 12px rgba(255,215,0,0.2); margin-top:20px;');
     btn.textContent = 'Daten speichern';
     wrap.appendChild(btn);
-    var securityWrap = document.createElement('div');
-    securityWrap.setAttribute('style', 'margin-top:24px; padding-top:20px; border-top:1px solid #f1f3f5;');
-    securityWrap.innerHTML = '<h4 style="margin:0 0 12px; font-size:15px; font-weight:800; color:#1a1a1a;">Sicherheit</h4><button type="button" id="btnProviderChangePassword" style="width:100%; display:flex; justify-content:space-between; align-items:center; padding:16px; background:#f8f9fa; border:2px solid #f1f3f5; border-radius:14px; text-decoration:none; color:#1a1a1a; font-size:15px; font-weight:700; cursor:pointer;"><div style="display:flex;align-items:center;gap:12px;"><i data-lucide="lock" style="width:20px;height:20px;color:#64748b;"></i><span>Passwort ändern</span></div><i data-lucide="chevron-right" style="width:20px; height:20px; color:#cbd5e1;"></i></button>';
-    wrap.appendChild(securityWrap);
     return wrap;
   }
   function ensureProviderBusinessDataCard(){
@@ -22877,8 +22889,6 @@
     if(btnImpressum && impressumContent) btnImpressum.onclick = function(){ if(typeof haptic === 'function') haptic(6); impressumContent.style.display = impressumContent.style.display === 'none' ? 'block' : 'none'; };
     var btnBillingArchive = document.getElementById('btnBillingArchive');
     if(btnBillingArchive) btnBillingArchive.onclick = function(){ if(!checkSessionValidity()) return; showView(views.providerBilling); renderBilling(); };
-    var btnSettingsTagesumsatz = document.getElementById('btnSettingsTagesumsatz');
-    if(btnSettingsTagesumsatz) btnSettingsTagesumsatz.onclick = function(){ if(!checkSessionValidity()) return; showProviderBilling(); };
     var btnSettingsBillingArchive = document.getElementById('btnSettingsBillingArchive');
     if(btnSettingsBillingArchive) btnSettingsBillingArchive.onclick = function(){ if(!checkSessionValidity()) return; showView(views.providerBilling); renderBilling(); };
     var btnSettingsSupport = document.getElementById('btnSettingsSupport');
@@ -23159,100 +23169,85 @@
     }
     bindSettingsToggle('providerSettingsDineInEnabled', 'providerDineInEnabled', 'dineInPossibleDefault', function(p){ return p.dineInPossibleDefault !== false; }, 'Vor Ort standardmäßig an', 'Vor Ort standardmäßig aus');
     bindSettingsToggle('providerSettingsReuseEnabled', 'providerReuseEnabled', 'reuseEnabledByDefault', function(p){ return p.reuseEnabledByDefault || false; }, 'Mehrweg-Pfandsystem aktiviert', 'Mehrweg-Pfandsystem deaktiviert');
+    bindSettingsToggle('providerSettingsAbholnummerEnabled', 'providerAbholnummerEnabled', 'abholnummerEnabledByDefault', function(p){ return p.abholnummerEnabledByDefault || false; }, 'Abholnummer standardmäßig an', 'Abholnummer standardmäßig aus');
     bindSettingsToggle('providerSettingsWantsAllergensEnabled', 'providerWantsAllergensEnabled', 'wantsAllergensByDefault', function(p){ return p.wantsAllergensByDefault || false; }, 'Allergene standardmäßig angeben', 'Allergene standardmäßig aus');
-    var reusePfandEl = document.getElementById('providerSettingsReusePfandPrice');
-    if(reusePfandEl){
-      reusePfandEl.value = (p.reusePfandPrice != null ? Number(p.reusePfandPrice).toFixed(2).replace('.', ',') : '0,00');
-      reusePfandEl.oninput = reusePfandEl.onblur = function(){
-        if(!provider.profile) provider.profile = {};
-        var v = (reusePfandEl.value || '').replace(',', '.').replace(/[^\d.-]/g, '');
-        provider.profile.reusePfandPrice = Math.max(0, parseFloat(v) || 0);
-        save(LS.provider, provider);
-        reusePfandEl.value = (provider.profile.reusePfandPrice || 0).toFixed(2).replace('.', ',');
-        if(typeof showToast === 'function') showToast('Mehrweg-Pfand gespeichert');
-      };
-    }
     
-    // Extras mit Preis (Inseratseinstellungen): Beilagensalat, Ketchup, Mayonaise, Sauce, Brot + leeres Feld, bei Nutzung weiteres Feld
-    var PREDEFINED_EXTRAS = ['Beilagensalat','Ketchup','Mayonaise','Sauce','Brot'];
+    // Extras mit Preis (Inserateinstellungen)
     var extrasListEl = document.getElementById('providerSettingsExtrasList');
+    var extrasAddBtn = document.getElementById('providerSettingsExtrasAdd');
     function renderExtrasRows(){
       if(!extrasListEl) return;
-      if(!provider.profile) provider.profile = {};
-      if(!Array.isArray(provider.profile.defaultExtras)) provider.profile.defaultExtras = [];
-      var list = provider.profile.defaultExtras.slice();
-      var needPredefined = [];
-      PREDEFINED_EXTRAS.forEach(function(n){ needPredefined.push({ name: n, price: 0 }); });
-      for(var i = 0; i < PREDEFINED_EXTRAS.length; i++){
-        var found = list.find(function(x){ return x && x.name === PREDEFINED_EXTRAS[i]; });
-        if(found) needPredefined[i].price = (typeof found.price === 'number' ? found.price : 0);
-        else{ var alt = list[i]; if(alt && typeof alt.price === 'number') needPredefined[i].price = alt.price; }
-      }
-      var custom = list.filter(function(x){ return x && x.name && PREDEFINED_EXTRAS.indexOf(x.name) < 0; });
-      var merged = needPredefined.concat(custom);
-      var lastHasName = merged.length && merged[merged.length-1] && String(merged[merged.length-1].name || '').trim();
-      if(lastHasName) merged.push({ name: '', price: 0 });
-      provider.profile.defaultExtras = merged;
-      save(LS.provider, provider);
+      var list = (provider.profile && Array.isArray(provider.profile.defaultExtras)) ? provider.profile.defaultExtras : (Array.isArray(p.defaultExtras) ? p.defaultExtras : []);
       extrasListEl.innerHTML = '';
-      merged.forEach(function(extra, idx){
-        var isPredefined = idx < PREDEFINED_EXTRAS.length;
+      list.forEach(function(extra, idx){
         var row = document.createElement('div');
         row.style.cssText = 'display:flex; align-items:center; gap:10px; padding:12px 14px; background:#f8fafc; border-radius:12px; border:1px solid #e2e8f0;';
         var nameInp = document.createElement('input');
         nameInp.type = 'text';
-        nameInp.placeholder = 'Eigenes Extra eingeben';
+        nameInp.placeholder = 'z. B. Beilagensalat';
         nameInp.value = (extra && extra.name) ? String(extra.name) : '';
-        nameInp.readOnly = isPredefined;
-        nameInp.style.cssText = 'flex:1; min-width:0; padding:10px 12px; border:2px solid #e2e8f0; border-radius:10px; font-size:15px; font-weight:600;' + (isPredefined ? ' background:#f1f3f5;' : '');
+        nameInp.style.cssText = 'flex:1; min-width:0; padding:10px 12px; border:2px solid #e2e8f0; border-radius:10px; font-size:15px; font-weight:600;';
         var priceInp = document.createElement('input');
         priceInp.type = 'text';
         priceInp.inputMode = 'decimal';
         priceInp.placeholder = '0,00';
-        priceInp.value = (extra && typeof extra.price === 'number') ? Number(extra.price).toFixed(2).replace('.', ',') : '';
+        priceInp.value = (extra && typeof extra.price === 'number') ? Number(extra.price).toFixed(2).replace('.', ',') : ((extra && extra.price) ? String(extra.price) : '');
         priceInp.style.cssText = 'width:72px; padding:10px 8px; border:2px solid #e2e8f0; border-radius:10px; font-size:15px; font-weight:700; text-align:right;';
+        var removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.setAttribute('aria-label', 'Entfernen');
+        removeBtn.textContent = '✕';
+        removeBtn.style.cssText = 'width:40px; height:40px; border:none; border-radius:10px; background:rgba(220,38,38,0.1); color:#dc2626; font-size:18px; font-weight:800; cursor:pointer; flex-shrink:0;';
         function syncExtra(){
           if(!provider.profile) provider.profile = {};
           if(!Array.isArray(provider.profile.defaultExtras)) provider.profile.defaultExtras = [];
           while(provider.profile.defaultExtras.length <= idx) provider.profile.defaultExtras.push({ name: '', price: 0 });
-          provider.profile.defaultExtras[idx].name = isPredefined ? PREDEFINED_EXTRAS[idx] : nameInp.value.trim();
+          provider.profile.defaultExtras[idx].name = nameInp.value.trim();
           var priceVal = (priceInp.value || '').replace(',', '.').replace(/[^\d.-]/g, '');
           provider.profile.defaultExtras[idx].price = Math.max(0, parseFloat(priceVal) || 0);
           save(LS.provider, provider);
-          if(!isPredefined && nameInp.value.trim()){ renderExtrasRows(); return; }
         }
-        nameInp.oninput = function(){ if(!isPredefined){ syncExtra(); } };
-        nameInp.onblur = function(){ if(!isPredefined) syncExtra(); if(typeof showToast === 'function') showToast('Extras gespeichert'); };
+        nameInp.oninput = syncExtra;
+        nameInp.onblur = function(){ syncExtra(); if(typeof showToast === 'function') showToast('Extras gespeichert'); };
         priceInp.oninput = syncExtra;
         priceInp.onblur = function(){ syncExtra(); priceInp.value = (provider.profile.defaultExtras[idx] && typeof provider.profile.defaultExtras[idx].price === 'number') ? provider.profile.defaultExtras[idx].price.toFixed(2).replace('.', ',') : ''; if(typeof showToast === 'function') showToast('Extras gespeichert'); };
+        removeBtn.onclick = function(){
+          if(typeof haptic === 'function') haptic(6);
+          var cur = (provider.profile && provider.profile.defaultExtras) ? provider.profile.defaultExtras.slice() : [];
+          cur.splice(idx, 1);
+          if(!provider.profile) provider.profile = {};
+          provider.profile.defaultExtras = cur;
+          save(LS.provider, provider);
+          renderExtrasRows();
+          if(typeof showToast === 'function') showToast('Extra entfernt');
+        };
         var eurLabel = document.createElement('span');
         eurLabel.style.cssText = 'font-size:14px; font-weight:700; color:#64748b;';
         eurLabel.textContent = '€';
         row.appendChild(nameInp);
         row.appendChild(eurLabel);
         row.appendChild(priceInp);
-        if(!isPredefined){
-          var removeBtn = document.createElement('button');
-          removeBtn.type = 'button';
-          removeBtn.setAttribute('aria-label', 'Entfernen');
-          removeBtn.textContent = '✕';
-          removeBtn.style.cssText = 'width:40px; height:40px; border:none; border-radius:10px; background:rgba(220,38,38,0.1); color:#dc2626; font-size:18px; font-weight:800; cursor:pointer; flex-shrink:0;';
-          removeBtn.onclick = function(){
-            if(typeof haptic === 'function') haptic(6);
-            var cur = (provider.profile && provider.profile.defaultExtras) ? provider.profile.defaultExtras.slice() : [];
-            cur.splice(idx, 1);
-            if(!provider.profile) provider.profile = {};
-            provider.profile.defaultExtras = cur;
-            save(LS.provider, provider);
-            renderExtrasRows();
-            if(typeof showToast === 'function') showToast('Extra entfernt');
-          };
-          row.appendChild(removeBtn);
-        }
+        row.appendChild(removeBtn);
         extrasListEl.appendChild(row);
       });
     }
     renderExtrasRows();
+    if(extrasAddBtn){
+      extrasAddBtn.onclick = function(){
+        if(typeof haptic === 'function') haptic(6);
+        if(!provider.profile) provider.profile = {};
+        if(!Array.isArray(provider.profile.defaultExtras)) provider.profile.defaultExtras = [];
+        provider.profile.defaultExtras = provider.profile.defaultExtras.slice();
+        provider.profile.defaultExtras.push({ name: '', price: 0 });
+        save(LS.provider, provider);
+        renderExtrasRows();
+        var lastRow = extrasListEl.lastElementChild;
+        if(lastRow){
+          var firstInput = lastRow.querySelector('input[type="text"]:not([inputmode])');
+          if(firstInput) firstInput.focus();
+        }
+      };
+    }
     
     // Account: Status 1 aktive Sitzung
     const sessionStatusEl = document.getElementById('providerSessionStatus');
@@ -24387,26 +24382,34 @@
       var cardEl = magazineEl.querySelector('.cookbook-magazine-card');
       if(cardEl){
         cardEl.style.pointerEvents = 'auto';
+        cardEl.style.touchAction = list.length > 1 ? 'none' : 'auto';
         cardEl.setAttribute('data-cookbook-entry-id', entry.id || '');
         var blitzBtn = cardEl.querySelector('.cookbook-blitz-btn');
         if(blitzBtn){
           blitzBtn.onclick = function(ev){ ev.preventDefault(); ev.stopPropagation(); try { if(navigator.vibrate) navigator.vibrate([10, 50, 10]); } catch(err){} var draftId = typeof createOfferFromCookbook === 'function' ? createOfferFromCookbook(entry.id) : null; if(draftId && typeof openProviderOffer === 'function') openProviderOffer(draftId, { source: 'cookbook', instantLive: true }); };
         }
-        cardEl.onclick = function(e){ e.stopPropagation(); openDetail(e); };
-        cardEl.onkeydown = function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); openDetail(e); } };
+        function handleCardTap(e){
+          if(e && e.target && e.target.closest && (e.target.closest('.cookbook-magazine-nav') || e.target.closest('.cookbook-blitz-btn'))) return;
+          if(e && e.cancelable){ e.preventDefault(); e.stopPropagation(); }
+          if(typeof haptic==='function') haptic(6);
+          if(typeof openCookbookActionSheet==='function') openCookbookActionSheet(entry);
+        }
+        cardEl.onclick = function(e){ e.stopPropagation(); handleCardTap(e); };
+        cardEl.onkeydown = function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); handleCardTap(e); } };
         cardEl.addEventListener('touchend', function(e){
           if(window._cookbookSwipeHandled){ window._cookbookSwipeHandled = false; return; }
+          if(e.target.closest('.cookbook-blitz-btn')) return;
           if(e.cancelable) e.preventDefault();
           e.stopPropagation();
-          openDetail(null);
+          handleCardTap(null);
         }, { passive: false });
         if(list.length > 1) attachCookbookMagazineSwipe(cardEl, list.length);
       }
-      magazineEl.onclick = function(e){ if(e.target.closest('.cookbook-magazine-nav')) return; openDetail(e); };
+      magazineEl.onclick = function(e){ if(e.target.closest('.cookbook-magazine-nav')) return; if(e.target.closest('.cookbook-magazine-card')) openDetail(e); };
       magazineEl.addEventListener('touchend', function(e){
         if(e.target.closest('.cookbook-magazine-nav')) return;
         if(window._cookbookSwipeHandled){ window._cookbookSwipeHandled = false; return; }
-        if(e.target.closest('.cookbook-magazine-card') || e.target === magazineEl){
+        if(e.target.closest('.cookbook-magazine-card') && !e.target.closest('.cookbook-blitz-btn')){
           if(e.cancelable) e.preventDefault();
           openDetail(e);
         }
