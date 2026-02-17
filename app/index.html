@@ -5353,7 +5353,10 @@
       /* Einstellungen (Zahnrad): wie Kundenseite – Clean Card & Spacing */
       #v-provider-profile .provider-profile-sub .provider-settings-scroll{ padding:40px 16px calc(100px + env(safe-area-inset-bottom, 0)); display:flex; flex-direction:column; gap:20px; max-width:500px; margin:0 auto; width:100%; box-sizing:border-box; }
       #v-provider-profile .provider-settings-card{ background:#fff; border-radius:24px; overflow:hidden; border:1px solid rgba(0,0,0,0.04); box-shadow:0 8px 24px rgba(0,0,0,0.03); margin-bottom:0; }
-      #v-provider-profile .provider-settings-identity .plogo{ width:56px !important; height:56px !important; border-radius:18px !important; }
+      #v-provider-profile .provider-settings-identity .plogo{ width:100% !important; height:100% !important; border-radius:18px !important; }
+      #v-provider-profile #providerSettingsLogoBtn{ transition:border-color 0.2s, background 0.2s; }
+      #v-provider-profile #providerSettingsLogoBtn:hover{ border-color:#94a3b8; }
+      #v-provider-profile #providerSettingsLogoBtn:active{ transform:scale(0.98); }
       #v-provider-profile .provider-settings-card .provider-time-trigger{ width:100%; padding:24px; border-radius:16px; background:#f8fafc; border:1px solid rgba(0,0,0,0.06); cursor:pointer; text-align:center; transition:background 0.2s; }
       #v-provider-profile .provider-settings-card .provider-time-trigger.time-picker-display{ padding:16px; background:#F0FDF4; border-radius:12px; min-height:56px; }
       #v-provider-profile .provider-settings-card .provider-time-trigger:active{ background:#f1f3f5; }
@@ -5382,9 +5385,11 @@
       #v-provider-profile .provider-settings-pillar-row .pillar-emoji{ width:44px; height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0; }
       #v-provider-profile .provider-settings-pillar-row .pillar-text{ min-width:0; }
       #v-provider-profile .provider-settings-pillar-row .toggle-switch{ flex-shrink:0; margin-left:auto; }
-      /* Betriebsdaten: nur untere Linie, keine Box-Rahmen [cite: 2026-01-29] */
-      #v-provider-profile #providerBusinessDataCardWrap .input-group{ border:none; border-bottom:1px solid #E5E7EB; border-radius:0; box-shadow:none; }
-      #v-provider-profile #providerBusinessDataCardWrap .input-group:last-of-type{ margin-bottom:0; }
+      /* Betriebsdaten: Card-Design, kein Tabellen-Layout [cite: 2026-02-17] */
+      #v-provider-profile #providerBusinessDataCardWrap .input-group{ margin-bottom:16px; padding:14px 16px; background:#f8fafc; border-radius:14px; border:1px solid #e5e7eb; }
+      #v-provider-profile #providerBusinessDataCardWrap .input-group label{ font-size:11px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.04em; margin-bottom:6px; display:block; }
+      #v-provider-profile #providerBusinessDataCardWrap .input-group input{ width:100%; padding:0; border:none; background:transparent; font-size:16px; font-weight:600; color:#1a1a1a; outline:none; }
+      #v-provider-profile #providerBusinessDataCardWrap .input-group input::placeholder{ color:#94a3b8; font-weight:500; }
       /* Wochentage: runde Day-Pills, aktiv = Mittagio-Grün [cite: 2026-01-29] */
       #v-provider-profile .provider-day-pill{ display:inline-flex; align-items:center; justify-content:center; min-width:44px; height:44px; padding:0 16px; border-radius:999px; border:2px solid #e5e7eb; background:#fff; font-size:14px; font-weight:700; color:#6B7280; cursor:pointer; transition:background 0.2s, border-color 0.2s, color 0.2s; }
       #v-provider-profile .provider-day-pill.active{ background:#22C55E; border-color:#22C55E; color:#fff; }
@@ -7720,7 +7725,10 @@
         <div class="provider-settings-scroll provider-settings-scroll-rebuild" style="flex:1; overflow-y:auto; background:#F9FAFB;">
           <!-- Identity Section -->
           <div class="provider-settings-identity" style="text-align:center; padding:28px 20px 24px; background:#fff; border-radius:24px; box-shadow:0 2px 12px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04); margin-bottom:20px;">
-            <div class="plogo" id="providerSettingsLogo" style="margin:0 auto 12px; background-size:cover; background-position:center; background-color:#f1f3f5;"></div>
+            <button type="button" id="providerSettingsLogoBtn" aria-label="Logo hochladen" style="display:block; margin:0 auto 12px; width:80px; height:80px; border-radius:20px; background:#f1f3f5; border:2px dashed #cbd5e1; cursor:pointer; position:relative; overflow:hidden; padding:0;">
+              <div class="plogo" id="providerSettingsLogo" style="position:absolute; inset:0; background-size:cover; background-position:center; background-color:#f1f3f5;"></div>
+              <span id="providerSettingsLogoPlaceholder" style="font-size:28px; color:#94a3b8; line-height:80px;">📷</span>
+            </button>
             <h2 id="providerSettingsName" style="margin:0 0 4px; font-size:20px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a;">Betriebsname</h2>
             <p id="providerSettingsOrt" style="margin:0 0 12px; font-size:14px; color:#64748b;">Ort</p>
             <span style="display:inline-block; padding:6px 14px; border-radius:999px; font-size:12px; font-weight:800; color:#059669; background:rgba(5,150,105,0.12);">System Online</span>
@@ -10037,6 +10045,7 @@
   let cookbook = load(LS.cookbook, []); // [{id, dish, category, price, allergens[], extras?, reuse? , photoData?}]
   let week = load(LS.week, {}); // { 'YYYY-MM-DD': [{ providerId, cookbookId, dish, price, timeStart?, timeEnd? }, ...] }
 
+  var GOOGLE_PLACES_API_KEY = '';  // Optional: Für Adress-Autocomplete bei Betriebsdaten eintragen
   const CATEGORIES = ['Vegetarisch','Vegan','Fisch','Mit Fleisch'];
   /** Kochbuch MASTER-SPEC (MagazinKochbuch): Pills = Alle, Fleisch, Eintopf, Snack, Vegetarisch */
   const COOKBOOK_CATEGORIES = ['Alle','Fleisch','Eintopf','Snack','Vegetarisch'];
@@ -11398,15 +11407,12 @@
     wrap.appendChild(title);
     var subtitle = document.createElement('p');
     subtitle.setAttribute('style', 'margin:0 0 20px; font-size:14px; color:#64748b; line-height:1.4;');
-    subtitle.textContent = 'Mit Autovervollständigung (Browser/Google) – damit Kunden dich finden.';
+    subtitle.textContent = 'Betriebsname oder Adresse suchen – Adresse wird automatisch ausgefüllt.';
     wrap.appendChild(subtitle);
     wrap.appendChild(MittagioForm.createInputGroup(PROVIDER_BUSINESS_FIELDS[0]));
     wrap.appendChild(MittagioForm.createInputGroup(PROVIDER_BUSINESS_FIELDS[1]));
-    var row = document.createElement('div');
-    row.setAttribute('style', 'display:grid; grid-template-columns:1fr 2fr; gap:12px;');
-    row.appendChild(MittagioForm.createInputGroup(PROVIDER_BUSINESS_FIELDS[2]));
-    row.appendChild(MittagioForm.createInputGroup(PROVIDER_BUSINESS_FIELDS[3]));
-    wrap.appendChild(row);
+    wrap.appendChild(MittagioForm.createInputGroup(PROVIDER_BUSINESS_FIELDS[2]));
+    wrap.appendChild(MittagioForm.createInputGroup(PROVIDER_BUSINESS_FIELDS[3]));
     wrap.appendChild(MittagioForm.createInputGroup(PROVIDER_BUSINESS_FIELDS[4]));
     wrap.appendChild(MittagioForm.createInputGroup(PROVIDER_BUSINESS_FIELDS[5]));
     var webGroup = MittagioForm.createInputGroup(PROVIDER_BUSINESS_FIELDS[6]);
@@ -23245,11 +23251,27 @@
 
     // Identity-Bereich auf der Einstellungsseite (Sub Settings)
     var settingsLogo = document.getElementById('providerSettingsLogo');
+    var settingsLogoPlaceholder = document.getElementById('providerSettingsLogoPlaceholder');
+    var settingsLogoBtn = document.getElementById('providerSettingsLogoBtn');
     var settingsName = document.getElementById('providerSettingsName');
     var settingsOrt = document.getElementById('providerSettingsOrt');
     if(settingsLogo){
-      if(p.logoData){ settingsLogo.style.backgroundImage = `url('${esc(p.logoData)}')`; settingsLogo.innerHTML = ''; }
-      else { settingsLogo.style.backgroundImage = 'none'; settingsLogo.innerHTML = '<span style="font-size:22px; font-weight:900; color:#64748b;">' + esc((name || 'B').charAt(0).toUpperCase()) + '</span>'; }
+      if(p.logoData){ settingsLogo.style.backgroundImage = `url('${esc(p.logoData)}')`; settingsLogo.style.backgroundColor = 'transparent'; if(settingsLogoPlaceholder) settingsLogoPlaceholder.style.display = 'none'; }
+      else { settingsLogo.style.backgroundImage = 'none'; settingsLogo.style.backgroundColor = '#f1f3f5'; if(settingsLogoPlaceholder){ settingsLogoPlaceholder.style.display = 'inline'; settingsLogoPlaceholder.textContent = '📷'; } }
+    }
+    if(settingsLogoBtn){
+      settingsLogoBtn.onclick = async function(){
+        if(typeof haptic === 'function') haptic(10);
+        var f = typeof pickImage === 'function' ? await pickImage() : null;
+        if(!f) return;
+        var dataUrl = typeof toDataUrl === 'function' ? await toDataUrl(f) : null;
+        if(!dataUrl) return;
+        if(!provider.profile) provider.profile = {};
+        provider.profile.logoData = dataUrl;
+        save(LS.provider, provider);
+        showToast('Logo gespeichert');
+        renderProviderProfile();
+      };
     }
     if(settingsName) settingsName.textContent = name || 'Betriebsname';
     if(settingsOrt) settingsOrt.textContent = (p.city || (p.zip && p.city ? p.zip + ' ' + p.city : '') || addr || 'Ort').trim() || '—';
@@ -23306,6 +23328,50 @@
       el.addEventListener('input', function(){ if(this.value && this.value.trim()) this.classList.add('floating-filled'); else this.classList.remove('floating-filled'); });
     });
     if(btnSaveBusiness) btnSaveBusiness.onclick = saveAllBusinessData;
+
+    // Google Places Autocomplete: Betriebsname/Adresse suchen, Rest ausfüllen
+    (function initProviderPlacesAutocomplete(){
+      var nameInput = document.getElementById('providerProfileBusinessName');
+      var streetInput = document.getElementById('providerProfileStreet');
+      var zipInput = document.getElementById('providerProfileZip');
+      var cityInput = document.getElementById('providerProfileCity');
+      if(!nameInput || !GOOGLE_PLACES_API_KEY) return;
+      function attachAutocomplete(){
+        if(typeof google === 'undefined' || !google.maps || !google.maps.places) return;
+        try {
+          var ac = new google.maps.places.Autocomplete(nameInput, { types: ['establishment','geocode'], fields: ['address_components','formatted_address','name'] });
+          ac.addListener('place_changed', function(){
+            var place = ac.getPlace();
+            if(!place || !place.address_components) return;
+            var street = '', zip = '', city = '';
+            for(var i = 0; i < place.address_components.length; i++){
+              var c = place.address_components[i];
+              if(c.types.indexOf('street_number') >= 0) street = (street + ' ' + c.long_name).trim();
+              else if(c.types.indexOf('route') >= 0) street = (c.long_name + ' ' + street).trim();
+              else if(c.types.indexOf('postal_code') >= 0) zip = c.long_name;
+              else if(c.types.indexOf('locality') >= 0) city = c.long_name;
+              else if(c.types.indexOf('sublocality') >= 0 && !city) city = c.long_name;
+            }
+            if(nameInput && place.name) nameInput.value = place.name;
+            if(streetInput) streetInput.value = street;
+            if(zipInput) zipInput.value = zip;
+            if(cityInput) cityInput.value = city;
+            [nameInput, streetInput, zipInput, cityInput].forEach(function(el){ if(el && el.value) el.classList.add('floating-filled'); });
+            if(typeof haptic === 'function') haptic(10);
+            if(typeof showToast === 'function') showToast('Adresse übernommen');
+          });
+        } catch(e){ console.warn('Places Autocomplete:', e); }
+      }
+      if(typeof google !== 'undefined' && google.maps && google.maps.places){ attachAutocomplete(); return; }
+      if(!window._placesScriptLoading){
+        window._placesScriptLoading = true;
+        var s = document.createElement('script');
+        s.src = 'https://maps.googleapis.com/maps/api/js?key=' + GOOGLE_PLACES_API_KEY + '&libraries=places&callback=window._placesAutocompleteCallback';
+        s.async = true;
+        window._placesAutocompleteCallback = function(){ window._placesScriptLoading = false; attachAutocomplete(); };
+        document.head.appendChild(s);
+      }
+    })();
     
     // Meine Mittagszeiten: Start/Ende (Profil + Einstellungen mit eigenen IDs)
     const mealStartEl = document.getElementById('providerMealStart');
