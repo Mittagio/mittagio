@@ -103,6 +103,32 @@
       --badge-height: 24px;
       --badge-px: 10px;
       --badge-px-lg: 12px;
+      
+      /* ========== EINHEITLICH: HEADER & LAYOUT (Kunde + Anbieter) ========== */
+      --header-bg: rgba(255,255,255,0.92);
+      --header-blur: 16px;
+      --header-border: 1px solid rgba(0,0,0,0.06);
+      --header-padding-y: 12px;
+      --header-padding-x: 20px;
+      --header-title-size: 20px;
+      --header-title-weight: 900;
+      --header-title-spacing: -0.03em;
+      --header-title-color: #1a1a1a;
+      --header-subtitle-color: #64748b;
+      --header-input-size: 15px;
+      --header-input-weight: 500;
+      --pill-min-height: 44px;
+      --pill-font-size: 14px;
+      --pill-font-weight: 700;
+      --pill-radius: 22px;
+      --pill-bg-inactive: #e5e7eb;
+      --pill-color-inactive: #64748b;
+      --pill-active-emerald: #2563eb;
+      --section-title-size: 18px;
+      --section-title-weight: 900;
+      --body-text-size: 15px;
+      --body-text-color: #334155;
+      /* Nutzung: .prov-header, .prov-page-header, .discover-header-sticky, Pills (Kunde + Kochbuch) */
     }
     *{box-sizing:border-box}
 
@@ -128,6 +154,7 @@
       margin:0; padding:0;
       font-family:'Inter', 'Montserrat', system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
       font-size:16px; line-height:1.5;
+      color: var(--color-text, #1a1a1a);
       background:var(--bg); color:var(--text);
       -webkit-tap-highlight-color: transparent; -webkit-touch-callout: none;
       touch-action: pan-y pinch-zoom; overscroll-behavior-y: none;
@@ -800,8 +827,8 @@
       border-radius:20px;
       box-shadow:0 4px 16px rgba(0,0,0,.06);
     }
-    .customer-view .section-title{ color:#334155; }
-    .customer-view .hint{ color:#64748b; }
+    .customer-view .section-title{ font-size: var(--section-title-size); font-weight: var(--section-title-weight); color: var(--body-text-color); }
+    .customer-view .hint{ color: var(--header-subtitle-color); }
     /* Topbar in Kundekontext: gleicher warmer Ton wie Seite 1 */
     .topbar.customer-context{
       background:rgba(232,224,214,0.92);
@@ -980,9 +1007,9 @@
     #v-provider-cookbook .cookbook-bar-secondary{ background:rgba(255,255,255,0.5); color:#475569; border:2px solid rgba(255,255,255,0.6); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); }
     #v-provider-cookbook .cookbook-bar-primary{ background:#FACC15; color:#1a1a1a; box-shadow:0 4px 16px rgba(250,204,21,0.4); }
     /* Kochbuch: Kategorie-Pills wie Kundenseite (Discover) – kleiner, einheitliches Layout */
-    #v-provider-cookbook .cookbook-category-pills{ display:flex; gap:10px; overflow-x:auto; padding:8px 16px 12px; -webkit-overflow-scrolling:touch; scrollbar-width:none; scroll-snap-type:x mandatory; }
+    #v-provider-cookbook .cookbook-category-pills{ display:flex; gap:10px; overflow-x:auto; padding:8px var(--header-padding-x) 12px; -webkit-overflow-scrolling:touch; scrollbar-width:none; scroll-snap-type:x mandatory; }
     #v-provider-cookbook .cookbook-category-pills::-webkit-scrollbar{ display:none; }
-    #v-provider-cookbook .cookbook-category-pills .cookbook-cat-pill{ flex:0 0 auto; scroll-snap-align:center; min-height:44px; min-width:auto; padding:10px 18px; border-radius:22px; font-size:14px; font-weight:700; border:none; background:#e5e7eb; color:#64748b; cursor:pointer; transition:transform 0.15s, background 0.2s; display:inline-flex; align-items:center; justify-content:center; -webkit-tap-highlight-color:transparent; }
+    #v-provider-cookbook .cookbook-category-pills .cookbook-cat-pill{ flex:0 0 auto; scroll-snap-align:center; min-height: var(--pill-min-height); min-width:auto; padding:10px 18px; border-radius: var(--pill-radius); font-size: var(--pill-font-size); font-weight: var(--pill-font-weight); border:none; background: var(--pill-bg-inactive); color: var(--pill-color-inactive); cursor:pointer; transition:transform 0.15s, background 0.2s; display:inline-flex; align-items:center; justify-content:center; -webkit-tap-highlight-color:transparent; }
     #v-provider-cookbook .cookbook-category-pills .cookbook-cat-pill:hover{ color:#1D1D1F; }
     #v-provider-cookbook .cookbook-category-pills .cookbook-cat-pill.on{ background:#10b981; border:none; color:#fff; box-shadow:0 2px 12px rgba(16,185,129,0.4); }
     #v-provider-cookbook .cookbook-category-pills .cookbook-cat-pill:active{ transform:scale(0.96); }
@@ -2857,24 +2884,24 @@
     body.provider-mode #v-provider-week > *,
     body.provider-mode [id^="v-provider-"].view.active > *{ position:relative; z-index:1; }
     
-    /* Modern App-Like CSS for Provider */
+    /* Modern App-Like CSS for Provider (Design-Tokens = einheitlich mit Kundenseite) */
     .prov-header {
       position: sticky;
       top: 0;
       z-index: 100;
-      background: rgba(255, 255, 255, 0.85);
-      backdrop-filter: blur(15px);
-      -webkit-backdrop-filter: blur(15px);
-      padding: 12px 20px 16px;
-      border-bottom: 1px solid rgba(0,0,0,0.05);
+      background: var(--header-bg);
+      backdrop-filter: blur(var(--header-blur));
+      -webkit-backdrop-filter: blur(var(--header-blur));
+      padding: var(--header-padding-y) var(--header-padding-x) 16px;
+      border-bottom: var(--header-border);
     }
     
     .prov-title {
       margin: 0;
-      font-size: 24px;
-      font-weight: 950;
-      letter-spacing: -0.03em;
-      color: #1a1a1a;
+      font-size: var(--header-title-size);
+      font-weight: var(--header-title-weight);
+      letter-spacing: var(--header-title-spacing);
+      color: var(--header-title-color);
     }
     
     /* App-Header Abholungen/Wochenplan/Kochbuch */
@@ -2882,11 +2909,11 @@
       position: sticky;
       top: 0;
       z-index: 50;
-      background: rgba(255,255,255,0.8) !important;
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-bottom: 1px solid rgba(255,255,255,0.2);
-      padding: calc(8px + env(safe-area-inset-top, 0)) 20px 12px 20px;
+      background: var(--header-bg) !important;
+      backdrop-filter: blur(var(--header-blur));
+      -webkit-backdrop-filter: blur(var(--header-blur));
+      border-bottom: var(--header-border);
+      padding: calc(8px + env(safe-area-inset-top, 0)) var(--header-padding-x) var(--header-padding-y) var(--header-padding-x);
     }
     .prov-page-header .prov-page-header-row {
       display: flex;
@@ -2921,10 +2948,10 @@
     }
     .prov-page-header .prov-page-header-title {
       margin: 0;
-      font-size: 20px;
-      font-weight: 900;
-      letter-spacing: -0.03em;
-      color: #1a1a1a;
+      font-size: var(--header-title-size);
+      font-weight: var(--header-title-weight);
+      letter-spacing: var(--header-title-spacing);
+      color: var(--header-title-color);
     }
     .prov-page-header .prov-page-header-actions {
       display: flex;
@@ -2933,17 +2960,17 @@
     }
     .prov-page-header .prov-page-header-actions button,
     .prov-page-header .prov-page-header-action {
-      background: rgba(0,0,0,0.06);
+      background: var(--color-soft-grey-bg, rgba(0,0,0,0.06));
       border: none;
       width: 44px;
       height: 44px;
       min-width: 44px;
       min-height: 44px;
-      border-radius: 14px;
+      border-radius: var(--r-md, 14px);
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #1a1a1a;
+      color: var(--header-title-color);
       cursor: pointer;
     }
     .prov-page-header .prov-page-header-actions button:active {
@@ -3042,14 +3069,16 @@
     }
     /* Einheitlicher Sticky-Header für Anbieter-Subseiten */
     .provider-header-bar{
-      background:#fff !important;
+      background: var(--header-bg) !important;
+      backdrop-filter: blur(var(--header-blur));
+      -webkit-backdrop-filter: blur(var(--header-blur));
       position:sticky; top:0; z-index:50;
-      border-bottom:1px solid rgba(0,0,0,0.06);
-      padding:16px 20px;
-      margin:-20px -20px 24px -20px;
+      border-bottom: var(--header-border);
+      padding: var(--header-padding-y) var(--header-padding-x);
+      margin: calc(-1 * var(--header-padding-x)) calc(-1 * var(--header-padding-x)) 24px calc(-1 * var(--header-padding-x));
       display:flex; align-items:center; justify-content:center;
     }
-    .provider-header-bar h1{ margin:0; font-size:18px; font-weight:700; color:#1a1a1a !important; }
+    .provider-header-bar h1{ margin:0; font-size: var(--section-title-size); font-weight: var(--section-title-weight); color: var(--header-title-color) !important; }
     .provider-header-bar .btn-back{ position:absolute; left:10px; color:#0A84FF; font-size:16px; padding:8px; display:flex; align-items:center; gap:4px; background:none; border:none; cursor:pointer; }
     /* Legal-Anbieter-Seiten: gleiches helles Layout */
     #v-legal-impressum-provider,
@@ -3573,12 +3602,14 @@
     body.provider-mode [id^="v-provider-"] { padding-top: 0 !important; margin-top: 0 !important; }
     body.provider-mode [id^="v-provider-"].view.active { padding-top: 0 !important; }
     
-    /* Discover Header - Sticky, immer über Kategorie- und Tage-Leiste (z-index > 90) */
+    /* Discover Header - Sticky (Design-Tokens = einheitlich mit Anbieter-Header) */
     .discover-header-sticky{
       position:sticky; top:0; z-index:100;
-      background:rgba(255,255,255,.98); backdrop-filter:blur(20px);
-      border-bottom:1px solid rgba(0,0,0,.06);
-      box-shadow:0 2px 8px rgba(0,0,0,.04);
+      background: var(--header-bg);
+      backdrop-filter: blur(var(--header-blur));
+      -webkit-backdrop-filter: blur(var(--header-blur));
+      border-bottom: var(--header-border);
+      box-shadow: 0 2px 8px rgba(0,0,0,.04);
     }
     
     /* Ebene 1: Standortsuche (ganz oben) */
@@ -3589,7 +3620,9 @@
     .discover-location-search-input{
       width:100%; padding:12px 16px; border-radius:12px;
       border:1px solid rgba(0,0,0,.1); background:#fff;
-      font-size:15px; font-weight:500; color:#333;
+      font-size: var(--header-input-size);
+      font-weight: var(--header-input-weight);
+      color: var(--body-text-color);
       outline:none; box-sizing:border-box;
     }
     .discover-location-search-input::placeholder{
@@ -3634,7 +3667,9 @@
       display:flex; align-items:center; gap:6px;
       padding:8px 14px; border-radius:20px;
       background:rgba(0,0,0,.04); border:1px solid rgba(0,0,0,.08);
-      font-size:14px; font-weight:600; color:#333;
+      font-size: var(--pill-font-size);
+      font-weight: var(--font-weight-semibold, 600);
+      color: var(--body-text-color);
       cursor:pointer; transition:all 0.2s ease;
       border:none; background:transparent;
     }
@@ -3656,8 +3691,8 @@
       display:flex; align-items:center; gap:6px;
       padding:10px 16px; border-radius:24px;
       border:1px solid rgba(0,0,0,.1);
-      background:#fff; color:#333;
-      font-size:14px; font-weight:600;
+      background:#fff; color: var(--body-text-color);
+      font-size: var(--pill-font-size); font-weight: var(--font-weight-semibold, 600);
       cursor:pointer; transition:all 0.2s ease;
       white-space:nowrap;
       box-shadow:0 2px 4px rgba(0,0,0,.05);
@@ -3694,7 +3729,9 @@
     }
     .discover-location-input{
       flex:1; border:none; background:transparent;
-      font-size:15px; font-weight:500; color:#333;
+      font-size: var(--header-input-size);
+      font-weight: var(--header-input-weight);
+      color: var(--body-text-color);
       outline:none; min-width:0;
     }
     .discover-location-input::placeholder{
@@ -3714,14 +3751,14 @@
       width:18px; height:18px; color:#666;
     }
     
-    /* Filter-Leiste: Kategorien (schmal, dezent, farbige Icons) - Fixiert oben */
+    /* Filter-Leiste: Kategorien – Fixiert oben (Design-Tokens) */
     .discover-categories-wrapper{
       padding:6px 0 8px;
-      border-top:1px solid rgba(0,0,0,.04);
+      border-top: var(--header-border);
       max-width:980px; margin:0 auto;
       position:sticky;
       top:0;
-      background:#fff;
+      background: var(--header-bg);
       z-index:50;
       box-shadow:0 2px 8px rgba(0,0,0,0.02);
     }
@@ -3733,15 +3770,13 @@
     .discover-categories-scroll::-webkit-scrollbar{display:none}
     .discover-category-chip{
       flex:0 0 auto; padding:6px 12px;
-      height:32px; border-radius:16px; border:1px solid rgba(0,0,0,.08);
-      font-size:12px; font-weight:600;
+      min-height: 32px; border-radius:16px; border:1px solid rgba(0,0,0,.08);
+      font-size: var(--font-meta, 12px); font-weight: var(--font-weight-semibold, 600);
       display:flex; align-items:center; gap:6px;
-      background:#f8f8f8; color:#333;
+      background: var(--pill-bg-inactive); color: var(--pill-color-inactive);
       cursor:pointer; transition:all 0.2s ease;
-      background:#f1f5f9; color:#64748b;
-      cursor:pointer; transition:all .2s;
       white-space:nowrap;
-      display:flex; align-items:center; justify-content:center; gap:3px;
+      justify-content:center; gap:3px;
     }
     .discover-category-chip i{
       width:12px; height:12px; flex-shrink:0;
@@ -3751,14 +3786,14 @@
       font-size:11px;
     }
     .discover-category-chip.active{
-      background:var(--brand); color:#000;
-      border-color:var(--brand);
-      font-weight:900;
+      background: var(--brand); color:#000;
+      border-color: var(--brand);
+      font-weight: var(--pill-font-weight);
       box-shadow:0 2px 6px rgba(255,204,0,.3);
     }
     .discover-category-chip:not(.active){
-      border-color:rgba(0,0,0,.08);
-      background:#f1f5f9;
+      border-color: rgba(0,0,0,.08);
+      background: var(--pill-bg-inactive);
     }
     .discover-category-chip:active{
       transform:scale(.96);
@@ -3766,21 +3801,21 @@
     /* S25 / Applike: Thumb-Zone, große Touch-Ziele (min 44–48px) */
     #v-discover .discover-header-pills{
       display:flex; gap:10px; overflow-x:auto; -webkit-overflow-scrolling:touch; scroll-snap-type:x mandatory;
-      padding:8px 16px 12px; scrollbar-width:none;
+      padding:8px var(--header-padding-x) 12px; scrollbar-width:none;
     }
     #v-discover .discover-header-pills::-webkit-scrollbar{ display:none; }
     #v-discover .discover-header-pills .discover-category-chip{
-      flex:0 0 auto; scroll-snap-align:center; min-height:44px; min-width:auto;
-      background:#e5e7eb; color:#64748b; border:none; padding:10px 18px; border-radius:22px; font-size:14px; font-weight:700;
+      flex:0 0 auto; scroll-snap-align:center; min-height: var(--pill-min-height); min-width:auto;
+      background: var(--pill-bg-inactive); color: var(--pill-color-inactive); border:none; padding:10px 18px; border-radius: var(--pill-radius); font-size: var(--pill-font-size); font-weight: var(--pill-font-weight);
       cursor:pointer; transition:transform 0.15s, background 0.2s; -webkit-tap-highlight-color:transparent;
     }
     #v-discover .discover-header-pills .discover-category-chip:active{ transform:scale(0.96); }
     #v-discover .discover-header-pills .discover-category-chip.active{
-      background:#2563eb; color:#fff; box-shadow:0 2px 12px rgba(37,99,235,0.4);
+      background: var(--pill-active-emerald); color:#fff; box-shadow:0 2px 12px rgba(37,99,235,0.4);
     }
-    #v-discover #discoverDaysBar{ display:flex; gap:8px; overflow-x:auto; -webkit-overflow-scrolling:touch; padding:0 16px 4px; scrollbar-width:none; }
+    #v-discover #discoverDaysBar{ display:flex; gap:8px; overflow-x:auto; -webkit-overflow-scrolling:touch; padding:0 var(--header-padding-x) 4px; scrollbar-width:none; }
     #v-discover #discoverDaysBar::-webkit-scrollbar{ display:none; }
-    #v-discover #discoverDaysBar .cust-chip{ min-height:44px; min-width:65px; width:65px; padding:10px 8px; font-size:13px; border-radius:20px; flex:0 0 65px; box-sizing:border-box; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    #v-discover #discoverDaysBar .cust-chip{ min-height: var(--pill-min-height); min-width:65px; width:65px; padding:10px 8px; font-size: var(--font-meta-sm, 13px); border-radius:20px; flex:0 0 65px; box-sizing:border-box; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     #v-discover .cust-card{ width:95%; margin:10px auto; margin-bottom:0; -webkit-tap-highlight-color:transparent; transition:transform 0.15s, box-shadow 0.2s; }
     #v-discover .cust-card:active{ transform:scale(0.99); box-shadow:0 2px 12px rgba(0,0,0,0.06); }
     /* Discovery: Restaurant-Karte (Anbieter-Block) + Tiles darunter */
@@ -3791,8 +3826,8 @@
       cursor:pointer; -webkit-tap-highlight-color:transparent; transition:transform 0.15s, box-shadow 0.2s;
     }
     #v-discover .discover-restaurant-card:active{ transform:scale(0.99); }
-    #v-discover .discover-restaurant-card .restaurant-name{ font-size:16px; font-weight:800; color:#1a1a1a; }
-    #v-discover .discover-restaurant-card .restaurant-meta{ font-size:12px; color:#64748b; font-weight:600; margin-top:2px; }
+    #v-discover .discover-restaurant-card .restaurant-name{ font-size: var(--font-body-lg, 16px); font-weight: 800; color: var(--header-title-color); }
+    #v-discover .discover-restaurant-card .restaurant-meta{ font-size: var(--font-meta); color: var(--header-subtitle-color); font-weight: var(--font-weight-semibold, 600); margin-top:2px; }
     #v-discover .discover-tiles-grid{
       display:grid; grid-template-columns:1fr; gap:12px; margin-bottom:20px; padding:0 0 8px;
     }
