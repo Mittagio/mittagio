@@ -1468,6 +1468,7 @@
       min-height:0;
       overflow-y:auto;
       -webkit-overflow-scrolling:touch;
+      overscroll-behavior-y:contain; /* Pull-to-Refresh in InseratCard gesperrt */
       scroll-behavior:smooth;
       margin:0 -20px;
       padding:0 20px 24px; /* Fußzeile entfernt – Platz nur für Safe Area */
@@ -2960,6 +2961,8 @@
       gap: 12px;
       min-width: 0;
     }
+    .prov-header-reset-trigger { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+    .prov-header-reset-trigger:active { opacity: 0.85; }
     /* Einheitlich: alle Anbieter-Header (Meine Küche, Abholungen, Wochenplan, Kochbuch) */
     .prov-page-header .prov-page-header-icon {
       width: 44px;
@@ -4780,7 +4783,12 @@
     #v-provider-profile.view.active > header,
     #v-provider-profile.view.active > div{ position:relative; z-index:1; min-height:0; overflow:visible; }
     /* Ebene 1: Business-Dashboard (Master-Prompt) – #22C55E, 16px Radius */
-    #v-provider-profile .provider-profile-header-rebuild{ background:transparent; padding:12px 20px; padding-top:calc(12px + env(safe-area-inset-top, 0)); border-bottom:none; display:flex; align-items:center; justify-content:space-between; flex-shrink:0; }
+    #v-provider-profile .provider-profile-header-rebuild{ background:transparent; padding:12px 20px; padding-top:calc(12px + env(safe-area-inset-top, 0)); border-bottom:none; display:flex; flex-direction:column; gap:8px; flex-shrink:0; }
+    #v-provider-profile .provider-profile-header-row1{ position:relative; display:flex; align-items:center; justify-content:center; width:100%; }
+    #v-provider-profile .provider-profile-logo.provider-profile-logo-center{ display:flex; justify-content:center; }
+    #v-provider-profile .provider-profile-gear-btn.provider-profile-gear-btn-tr{ position:absolute; top:0; right:0; }
+    #v-provider-profile .provider-profile-header-row2{ display:flex; align-items:center; }
+    #v-provider-profile .provider-profile-title{ margin:0; font-size:18px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a; }
     #v-provider-profile .provider-profile-logo{ font-size:18px; font-weight:950; letter-spacing:-0.03em; cursor:pointer; color:#1a1a1a; }
     #v-provider-profile .provider-profile-logo .logo-io{ color:#6B7280; }
     #v-provider-profile .provider-profile-logo .app-brand-logo{ height:32px; width:auto; display:block; object-fit:contain; }
@@ -5158,23 +5166,25 @@
       }
       @media (max-width:768px){ #v-provider-week .kw-grid{ grid-template-columns:1fr; } }
       #v-provider-week #kwBoardWrap{ overflow-x:hidden; max-width:100%; }
-      #v-provider-week .kw-day-card{ background:rgba(255,255,255,0.7); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border-radius:24px; border:1px solid rgba(255,255,255,0.5); box-shadow:0 8px 32px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.03); padding:12px; min-height:140px; display:flex; flex-direction:column; gap:8px; transition:transform 0.2s ease, box-shadow 0.2s ease; }
+      #v-provider-week .kw-day-card{ background:rgba(255,255,255,0.7); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border-radius:24px; border:1px solid rgba(255,255,255,0.5); box-shadow:0 8px 32px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.03); padding:12px; min-height:280px; height:280px; display:flex; flex-direction:column; gap:8px; transition:transform 0.2s ease, box-shadow 0.2s ease; box-sizing:border-box; }
       #v-provider-week .kw-day-card:active{ transform:scale(0.98); }
       #v-provider-week .kw-day-card.kw-day-has-live{ box-shadow:0 8px 32px rgba(0,0,0,0.06), 0 0 0 1px rgba(16,185,129,0.35); }
       #v-provider-week .kw-day-label{ font-size:11px; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:4px; }
       #v-provider-week .kw-day-date{ font-size:13px; font-weight:700; color:#1a1a1a; }
-      #v-provider-week .kw-slots{ display:flex; flex-direction:column; gap:8px; flex:1; min-height:0; }
-      #v-provider-week .kw-slot{ border-radius:14px; overflow:hidden; min-height:56px; position:relative; cursor:pointer; transition:background 0.2s; }
-      #v-provider-week .kw-slot-main{ display:flex; gap:12px; align-items:center; padding:10px; backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border-radius:14px; border:1px solid rgba(255,255,255,0.5); min-height:80px; }
+      #v-provider-week .kw-slots{ display:flex; flex-direction:column; gap:8px; flex:1; min-height:220px; max-height:220px; }
+      #v-provider-week .kw-slot{ border-radius:14px; overflow:hidden; min-height:52px; position:relative; cursor:pointer; transition:background 0.2s; flex-shrink:0; box-sizing:border-box; }
+      #v-provider-week .kw-slot-main{ display:flex; gap:12px; align-items:center; padding:10px; backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border-radius:14px; border:1px solid rgba(255,255,255,0.5); min-height:80px; height:80px; flex-shrink:0; }
+      #v-provider-week .kw-slot-small{ min-height:52px; height:52px; flex-shrink:0; }
+      #v-provider-week .kw-slot-empty{ min-height:52px; height:52px; flex-shrink:0; }
       #v-provider-week .kw-slot-main.kw-slot-live{ background:rgba(34,197,94,0.18); border-color:rgba(34,197,94,0.3); }
-      #v-provider-week .kw-slot-main.kw-slot-offline{ background:rgba(239,68,68,0.12); border-color:rgba(239,68,68,0.25); }
+      #v-provider-week .kw-slot-main.kw-slot-offline{ background:rgba(239,68,68,0.12); border-color:rgba(239,68,68,0.25); opacity:0.7; box-shadow:0 0 0 1px rgba(239,68,68,0.2); }
       #v-provider-week .kw-slot-main .kw-slot-thumb{ width:64px; height:64px; border-radius:14px; background:#e2e8f0; flex-shrink:0; background-size:cover; background-position:center; position:relative; }
       #v-provider-week .kw-slot-main .kw-slot-body{ flex:1; min-width:0; }
       #v-provider-week .kw-slot-main .kw-slot-name{ font-size:14px; font-weight:800; color:#1a1a1a; line-height:1.3; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; word-break:break-word; }
       #v-provider-week .kw-slot-main .kw-slot-price{ font-size:15px; font-weight:900; color:#1a1a1a; margin-top:2px; }
       #v-provider-week .kw-slot-override-badges{ position:absolute; top:4px; right:4px; display:flex; gap:2px; font-size:12px; }
       #v-provider-week .kw-slot-small.kw-slot-live{ background:rgba(34,197,94,0.18); border-color:rgba(34,197,94,0.3); }
-      #v-provider-week .kw-slot-small.kw-slot-offline{ background:rgba(239,68,68,0.12); border-color:rgba(239,68,68,0.25); }
+      #v-provider-week .kw-slot-small.kw-slot-offline{ background:rgba(239,68,68,0.12); border-color:rgba(239,68,68,0.25); opacity:0.7; box-shadow:0 0 0 1px rgba(239,68,68,0.2); }
       #v-provider-week .kw-slot-empty{ min-height:52px; border:2px dashed #e2e8f0; border-radius:14px; background:rgba(248,250,252,0.6); display:flex; align-items:center; justify-content:center; color:#cbd5e1; font-size:24px; font-weight:200; letter-spacing:0.08em; transition:color 0.2s, border-color 0.2s, background 0.2s; cursor:pointer; font-family:inherit; padding:0; margin:0; width:100%; box-sizing:border-box; -webkit-appearance:none; appearance:none; }
       #v-provider-week .kw-slot-empty:active{ color:#94a3b8; border-color:#cbd5e1; background:rgba(241,245,249,0.9); }
       #v-provider-week .kw-slot-small{ display:flex; align-items:center; gap:8px; padding:8px 10px; backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border-radius:12px; border:1px solid rgba(255,255,255,0.5); }
@@ -5184,18 +5194,27 @@
       #v-provider-week .kw-slot-main .price-pill{ padding:6px 12px; font-size:15px; }
       #v-provider-week .kw-slot-small .price-pill{ padding:4px 10px; font-size:13px; }
       #v-provider-week .kw-slot.kw-slot-live{ box-shadow:0 0 0 1px rgba(16,185,129,0.2), 0 2px 12px rgba(16,185,129,0.12); border-radius:14px; }
-      #v-provider-week .kw-slot.kw-slot-offline{ box-shadow:0 0 0 1px rgba(239,68,68,0.2), 0 2px 12px rgba(0,0,0,0.04); }
+      #v-provider-week .kw-slot.kw-slot-offline{ box-shadow:0 0 0 1px rgba(239,68,68,0.25), 0 2px 12px rgba(0,0,0,0.04); }
       #v-provider-week .week-meal-meta .price-pill{ padding:4px 10px; font-size:13px; }
       #v-provider-week .kw-slot{ transition:transform 0.2s ease; }
       #v-provider-week .kw-slot.kw-slot-swipe-delete{ background:rgba(239,68,68,0.08); }
-      #v-provider-week .kw-cookbook-drag-strip{ display:flex; flex-wrap:wrap; align-items:center; gap:8px; padding:12px 0 16px; margin-bottom:8px; border-bottom:1px solid rgba(0,0,0,0.06); }
+      #v-provider-week .kw-cookbook-strip-wrap{ flex-shrink:0; background:rgba(255,255,255,0.95); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border-bottom:1px solid rgba(0,0,0,0.06); padding:8px 0 12px; }
+      #v-provider-week .kw-cookbook-drag-strip{ display:flex; flex-wrap:wrap; align-items:center; gap:8px; padding:0; }
       #v-provider-week .kw-cookbook-drag-label{ font-size:13px; font-weight:700; color:#64748b; margin-right:4px; }
       #v-provider-week .kw-cookbook-drag-pill{ padding:8px 14px; border-radius:12px; background:rgba(255,255,255,0.8); border:1px solid rgba(16,185,129,0.35); color:#0f766e; font-size:13px; font-weight:700; cursor:grab; user-select:none; transition:transform 0.15s, box-shadow 0.15s; }
       #v-provider-week .kw-cookbook-drag-pill:active{ cursor:grabbing; }
       #v-provider-week .kw-cookbook-drag-pill.dragging{ transform:scale(0.95); opacity:0.8; cursor:grabbing; }
       #v-provider-week .kw-cookbook-drag-pill:hover{ box-shadow:0 2px 12px rgba(16,185,129,0.2); transform:scale(1.02); }
+      #v-provider-week .kw-cookbook-drag-pill{ position:relative; padding-right:36px; }
+      #v-provider-week .kw-pill-dismiss{ position:absolute; top:4px; right:4px; width:24px; height:24px; border:none; background:rgba(0,0,0,0.08); border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; color:#64748b; font-size:14px; line-height:1; padding:0; flex-shrink:0; transition:background 0.15s, color 0.15s; }
+      #v-provider-week .kw-pill-dismiss:hover{ background:rgba(239,68,68,0.2); color:#dc2626; }
+      #v-provider-week .kw-pill-dismiss:active{ transform:scale(0.95); }
+      #v-provider-week .kw-pill-dismiss i{ width:14px; height:14px; }
       #v-provider-week .kw-slot.kw-slot-drop-over,
       #v-provider-week .kw-slot-empty.kw-slot-drop-over{ box-shadow:0 0 0 2px #10b981, 0 0 20px rgba(16,185,129,0.35); border-color:#10b981; background:rgba(16,185,129,0.06); }
+      #v-provider-week .kw-week-activate-bar{ flex-shrink:0; padding:10px 0 12px; border-top:1px solid rgba(0,0,0,0.06); }
+      #v-provider-week .kw-week-activate-btn{ width:100%; min-height:52px; border-radius:14px; font-size:15px; font-weight:800; border:none; background:var(--prov-brand,#FFD700); color:#1a1a1a; cursor:pointer; box-shadow:0 2px 12px rgba(255,222,0,0.35); transition:transform 0.15s; }
+      #v-provider-week .kw-week-activate-btn:active{ transform:scale(0.98); }
       /* Verschieben-Sheet (Long-Press) */
       .kw-move-overlay{ position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:1100; display:flex; align-items:flex-end; justify-content:center; padding:0 20px  calc(80px + env(safe-area-inset-bottom)); animation:fadeIn 0.2s ease; }
       .kw-move-sheet{ background:#fff; border-radius:24px 24px 0 0; padding:24px 20px calc(20px + env(safe-area-inset-bottom)); width:100%; max-width:400px; max-height:70vh; overflow:auto; box-shadow:0 -8px 32px rgba(0,0,0,0.12); }
@@ -7243,7 +7262,7 @@
         <header class="dashboard-kasten dashboard-kasten-header prov-header prov-header-stolz prov-page-header">
           <div class="prov-header-inner">
             <div class="prov-page-header-row">
-              <div class="prov-page-header-left">
+              <div class="prov-page-header-left prov-header-reset-trigger" data-reset-view="home" role="button" tabindex="0" aria-label="Zum Seitenanfang">
                 <div class="prov-page-header-icon" aria-hidden="true">
                   <i data-lucide="home" style="width:24px; height:24px;"></i>
                 </div>
@@ -7343,7 +7362,7 @@
     <section class="view onboarding-view" id="v-provider-pickups">
       <header class="prov-page-header" id="v-provider-pickups-header">
         <div class="prov-page-header-row">
-          <div class="prov-page-header-left">
+          <div class="prov-page-header-left prov-header-reset-trigger" data-reset-view="pickups" role="button" tabindex="0" aria-label="Zum Seitenanfang">
             <div class="prov-page-header-icon">
               <i data-lucide="receipt" style="width:24px; height:24px;"></i>
             </div>
@@ -7363,7 +7382,7 @@
         </div>
       </header>
 
-      <div style="padding:12px 20px 20px; max-width:500px; margin:0 auto; flex:1;">
+      <div id="provPickupsScroll" style="padding:12px 20px 20px; max-width:500px; margin:0 auto; flex:1;">
         <!-- Subheader Status -->
         <div id="provPickupsSubheader" style="margin-bottom:20px; font-size:13px; font-weight:700; color:#9ca3af; text-transform:uppercase; letter-spacing:0.05em;">
           <!-- Wird dynamisch befüllt -->
@@ -7393,7 +7412,7 @@
     <section class="view onboarding-view" id="v-provider-week">
       <header class="week-header-compact prov-page-header" id="weekHeaderCompact">
         <div class="prov-page-header-row week-header-row">
-          <div class="prov-page-header-left">
+          <div class="prov-page-header-left prov-header-reset-trigger" data-reset-view="week" role="button" tabindex="0" aria-label="Zum Seitenanfang">
             <div class="prov-page-header-icon">
               <i data-lucide="calendar" style="width:24px; height:24px;"></i>
             </div>
@@ -7421,6 +7440,8 @@
           <div class="kw-progress-wrap">
             <div class="kw-progress"><div class="kw-progress-fill" id="kwProgressFill" style="width:0%;"></div></div>
           </div>
+          <div id="kwCookbookStripWrap" class="kw-cookbook-strip-wrap"></div>
+          <div id="kwWeekActivateBar" class="kw-week-activate-bar" style="display:none;"><button type="button" id="btnKwWeekActivate" class="kw-week-activate-btn">Woche aktivieren (0 €)</button></div>
         </div>
         <div id="kwBoardScroll" class="kw-board-scroll">
           <div class="kw-grid" id="kwGrid"></div>
@@ -7435,7 +7456,7 @@
     <section class="view" id="v-provider-cookbook" style="background:linear-gradient(180deg, rgba(254,243,199,0.2) 0%, #F5F5F7 30%);">
       <header class="prov-page-header" id="v-provider-cookbook-header">
         <div class="prov-page-header-row">
-          <div class="prov-page-header-left" style="flex:1; min-width:0;">
+          <div class="prov-page-header-left prov-header-reset-trigger" data-reset-view="cookbook" style="flex:1; min-width:0;" role="button" tabindex="0" aria-label="Zum Seitenanfang">
             <div id="cookbookTitleWrap" style="display:flex; align-items:center; gap:12px; min-width:0;">
               <div class="prov-page-header-icon">
                 <i data-lucide="book-open" style="width:24px; height:24px;"></i>
@@ -7533,6 +7554,7 @@
           <div style="font-size:12px; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Schnell hinzufügen</div>
           <input type="search" id="weekAddSheetSearch" placeholder="… oder suchen" style="width:100%; padding:14px 16px; border:1px solid #e5e7eb; border-radius:14px; font-size:15px; margin-bottom:16px; box-sizing:border-box;" />
           <div id="weekAddSheetList" style="display:grid; grid-template-columns:repeat(2, 1fr); gap:12px; max-height:50vh; overflow-y:auto; -webkit-overflow-scrolling:touch;"></div>
+          <div id="weekAddSheetSingleActivate" style="display:none; margin-top:16px; padding-top:16px; border-top:1px solid #e5e7eb;"><button type="button" id="btnWeekAddSingleActivate" class="btn primary" style="width:100%; min-height:52px; border-radius:14px; font-size:15px; font-weight:800; background:#22C55E; color:#fff; border:none;">Dieses Gericht einzeln aktivieren (4,99 €)</button></div>
           <button type="button" class="btn secondary" style="width:100%; min-height:48px; margin-top:12px; border-radius:14px; font-size:14px; font-weight:700; border:1px solid #FFDE00; color:#1a1a1a; background:transparent;" id="btnWeekAddMulti">Gericht auf mehrere Tage setzen</button>
           <button type="button" class="btn secondary" style="width:100%; min-height:48px; margin-top:16px; border-radius:14px;" onclick="closeWeekAddSheet()">Schließen</button>
         </div>
@@ -7576,8 +7598,13 @@
     <!-- Provider-Profil "Mein Profil" – Ebene 1: Business-Dashboard | Ebene 2: Zahnrad Einstellungen [Master-Prompt] -->
     <section class="view onboarding-view" id="v-provider-profile" style="display:flex; flex-direction:column; min-height:0; background:#F9FAFB;">
       <header id="providerProfileHeader" class="provider-profile-header-rebuild">
-        <div id="providerProfileHeaderBrand" class="provider-profile-logo"><img src="assets/images/mittagio-logo.png" alt="Mittagio" class="app-brand-logo" /></div>
-        <button type="button" id="providerProfileGearBtn" class="provider-profile-gear-btn" aria-label="Einstellungen"><svg class="provider-profile-gear-svg" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
+        <div class="provider-profile-header-row1">
+          <div id="providerProfileHeaderBrand" class="provider-profile-logo provider-profile-logo-center"><img src="assets/images/mittagio-logo.png" alt="Mittagio" class="app-brand-logo" /></div>
+          <button type="button" id="providerProfileGearBtn" class="provider-profile-gear-btn provider-profile-gear-btn-tr" aria-label="Einstellungen"><svg class="provider-profile-gear-svg" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
+        </div>
+        <div class="provider-profile-header-row2">
+          <h1 class="provider-profile-title">Mein Profil</h1>
+        </div>
       </header>
 
       <div id="providerProfileContent" class="provider-profile-content-rebuild">
@@ -7675,15 +7702,15 @@
           <!-- Accordion: Betriebsdaten, Sicherheit, Mittagszeiten, Inseratseinstellungen, Abrechnung, FAQ, Rechtliches -->
           <div class="provider-settings-accordion" id="providerSettingsAccordion">
             <div class="provider-settings-accordion-item open" data-accordion="betriebsdaten">
-              <button type="button" class="provider-settings-accordion-trigger"><span>Betriebsdaten</span><i data-lucide="chevron-down" class="accordion-chevron"></i></button>
+              <button type="button" class="provider-settings-accordion-trigger"><span style="display:flex;align-items:center;gap:12px;"><i data-lucide="building-2" style="width:20px;height:20px;color:#64748b;"></i>Betriebsdaten</span><i data-lucide="chevron-down" class="accordion-chevron"></i></button>
               <div class="provider-settings-accordion-content"><div class="provider-settings-accordion-content-inner"><div id="providerBusinessDataCardSlotSettings" style="padding-top:0;"></div></div></div>
             </div>
             <div class="provider-settings-accordion-item" data-accordion="sicherheit">
-              <button type="button" class="provider-settings-accordion-trigger"><span>Sicherheit</span><i data-lucide="chevron-down" class="accordion-chevron"></i></button>
+              <button type="button" class="provider-settings-accordion-trigger"><span style="display:flex;align-items:center;gap:12px;"><i data-lucide="shield-check" style="width:20px;height:20px;color:#64748b;"></i>Sicherheit</span><i data-lucide="chevron-down" class="accordion-chevron"></i></button>
               <div class="provider-settings-accordion-content"><div class="provider-settings-accordion-content-inner"><div style="padding-top:0;"><button type="button" id="btnProviderChangePassword" class="provider-settings-row-chevron" style="width:100%; display:flex; justify-content:space-between; align-items:center; padding:16px; background:#f8f9fa; border:2px solid #f1f3f5; border-radius:14px; text-decoration:none; color:#1a1a1a; font-size:15px; font-weight:700; cursor:pointer; text-align:left;"><span style="display:flex; align-items:center; gap:12px;"><i data-lucide="lock" style="width:20px;height:20px;color:#64748b;"></i>Passwort ändern</span><i data-lucide="chevron-right" style="width:20px; height:20px; color:#9ca3af;"></i></button></div></div></div>
             </div>
             <div class="provider-settings-accordion-item" data-accordion="mittagszeiten">
-              <button type="button" class="provider-settings-accordion-trigger"><span>Mittagszeiten</span><i data-lucide="chevron-down" class="accordion-chevron"></i></button>
+              <button type="button" class="provider-settings-accordion-trigger"><span style="display:flex;align-items:center;gap:12px;"><i data-lucide="clock" style="width:20px;height:20px;color:#64748b;"></i>Mittagszeiten</span><i data-lucide="chevron-down" class="accordion-chevron"></i></button>
               <div class="provider-settings-accordion-content"><div class="provider-settings-accordion-content-inner"><div class="provider-mittagszeiten-inner">
             <p style="margin:0 0 16px; font-size:14px; color:#64748b; line-height:1.5;">Standard-Zeitfenster für neue Inserate (15-Minuten-Schritte).</p>
             <button type="button" id="providerSettingsTimeTrigger" class="provider-time-trigger time-picker-display" style="display:block; width:100%; border:none; cursor:pointer; font-family:inherit;">
@@ -7708,7 +7735,7 @@
           </div></div></div>
             </div>
             <div class="provider-settings-accordion-item" data-accordion="inseratseinstellungen">
-              <button type="button" class="provider-settings-accordion-trigger"><span>Inseratseinstellungen</span><i data-lucide="chevron-down" class="accordion-chevron"></i></button>
+              <button type="button" class="provider-settings-accordion-trigger"><span style="display:flex;align-items:center;gap:12px;"><i data-lucide="sliders-horizontal" style="width:20px;height:20px;color:#64748b;"></i>Inseratseinstellungen</span><i data-lucide="chevron-down" class="accordion-chevron"></i></button>
               <div class="provider-settings-accordion-content"><div class="provider-settings-accordion-content-inner"><div class="provider-inseratseinstellungen-inner">
           <div class="provider-profile-card provider-settings-card" style="background:#fff; border-radius:24px; overflow:hidden; margin-bottom:20px; border:none; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
             <h3 style="margin:0; padding:24px 24px 0; font-size:17px; font-weight:800; color:#1a1a1a;">🏗️ Service-Logik</h3>
@@ -7761,7 +7788,7 @@
           </div></div></div>
             </div>
             <div class="provider-settings-accordion-item" data-accordion="abrechnung">
-              <button type="button" class="provider-settings-accordion-trigger"><span>Abrechnung</span><i data-lucide="chevron-down" class="accordion-chevron"></i></button>
+              <button type="button" class="provider-settings-accordion-trigger"><span style="display:flex;align-items:center;gap:12px;"><i data-lucide="credit-card" style="width:20px;height:20px;color:#64748b;"></i>Abrechnung</span><i data-lucide="chevron-down" class="accordion-chevron"></i></button>
               <div class="provider-settings-accordion-content"><div class="provider-settings-accordion-content-inner"><div class="provider-abrechnung-inner">
             <button type="button" id="btnSettingsTagesumsatz" class="provider-settings-row-chevron" style="width:100%; display:flex; justify-content:space-between; align-items:center; padding:14px 0; background:transparent; border:none; border-bottom:1px solid #f3f4f6; color:#1a1a1a; font-size:15px; font-weight:700; cursor:pointer; text-align:left;"><span>Tagesumsatz</span><i data-lucide="chevron-right" style="width:20px; height:20px; color:#9ca3af;"></i></button>
             <button type="button" id="btnSettingsBillingArchive" class="provider-settings-row-chevron" style="width:100%; display:flex; justify-content:space-between; align-items:center; padding:14px 0; background:transparent; border:none; border-bottom:1px solid #f3f4f6; color:#1a1a1a; font-size:15px; font-weight:700; cursor:pointer; text-align:left;"><span>Rechnungsbelege</span><i data-lucide="chevron-right" style="width:20px; height:20px; color:#9ca3af;"></i></button>
@@ -7769,13 +7796,13 @@
           </div></div></div>
             </div>
             <div class="provider-settings-accordion-item" data-accordion="faq">
-              <button type="button" class="provider-settings-accordion-trigger"><span>FAQ</span><i data-lucide="chevron-down" class="accordion-chevron"></i></button>
+              <button type="button" class="provider-settings-accordion-trigger"><span style="display:flex;align-items:center;gap:12px;"><i data-lucide="help-circle" style="width:20px;height:20px;color:#64748b;"></i>FAQ</span><i data-lucide="chevron-down" class="accordion-chevron"></i></button>
               <div class="provider-settings-accordion-content"><div class="provider-settings-accordion-content-inner"><div class="provider-faq-inner">
             <button type="button" id="btnSettingsSupportFooter" class="provider-settings-row-chevron" style="width:100%; display:flex; justify-content:space-between; align-items:center; padding:14px 0; background:transparent; border:none; color:#1a1a1a; font-size:15px; font-weight:700; cursor:pointer; text-align:left;"><span>Support &amp; FAQ</span><i data-lucide="chevron-right" style="width:20px; height:20px; color:#9ca3af;"></i></button>
           </div></div></div>
             </div>
             <div class="provider-settings-accordion-item" data-accordion="rechtliches">
-              <button type="button" class="provider-settings-accordion-trigger"><span>Rechtliches</span><i data-lucide="chevron-down" class="accordion-chevron"></i></button>
+              <button type="button" class="provider-settings-accordion-trigger"><span style="display:flex;align-items:center;gap:12px;"><i data-lucide="file-text" style="width:20px;height:20px;color:#64748b;"></i>Rechtliches</span><i data-lucide="chevron-down" class="accordion-chevron"></i></button>
               <div class="provider-settings-accordion-content"><div class="provider-settings-accordion-content-inner"><div class="provider-rechtliches-inner">
             <a href="#/agb" class="provider-settings-row-chevron" style="display:flex; justify-content:space-between; align-items:center; padding:14px 0; color:#1a1a1a; font-size:15px; font-weight:700; text-decoration:none; border-bottom:1px solid #f3f4f6;"><span>AGB</span><i data-lucide="chevron-right" style="width:20px; height:20px; color:#9ca3af;"></i></a>
             <a href="#/datenschutz" class="provider-settings-row-chevron" style="display:flex; justify-content:space-between; align-items:center; padding:14px 0; color:#1a1a1a; font-size:15px; font-weight:700; text-decoration:none; border-bottom:1px solid #f3f4f6;"><span>Datenschutz</span><i data-lucide="chevron-right" style="width:20px; height:20px; color:#9ca3af;"></i></a>
@@ -11267,16 +11294,22 @@
     if(providerNavBackRow) providerNavBackRow.style.display = 'block';
     pushViewState({view: 'provider-pickups', mode: mode}, location.pathname);
   }
-  /** Deep-Link: „Zum Wochenplan“ übergibt gewählten Tag → Wochenplan öffnet direkt an der richtigen Stelle (Smart-Jump). */
-  function showProviderWeek(preselectDay){
+  /** Deep-Link: „Zum Wochenplan“ übergibt gewählten Tag/KW → Wochenplan öffnet direkt an der richtigen Stelle (Smart-Jump). URL: ?week=0&day=2026-02-17 */
+  function showProviderWeek(preselectDay, preselectKW){
     if(!checkSessionValidity()) return;
-    if(preselectDay && typeof preselectDay === 'string') weekPlanDay = preselectDay;
+    var params = new URLSearchParams(location.search);
+    var urlWeek = params.get('week');
+    var urlDay = params.get('day');
+    if (urlWeek !== null && urlWeek !== '') { var w = parseInt(urlWeek, 10); if (!isNaN(w) && w >= 0 && w < 8) weekPlanKWIndex = w; }
+    if (urlDay !== null && urlDay !== '' && /^\d{4}-\d{2}-\d{2}$/.test(urlDay)) weekPlanDay = urlDay;
+    if (preselectDay && typeof preselectDay === 'string') { weekPlanDay = preselectDay; if (typeof getWeekIndexForDate === 'function') weekPlanKWIndex = Math.max(0, getWeekIndexForDate(preselectDay)); }
+    if (typeof preselectKW === 'number' && preselectKW >= 0 && preselectKW < 8) weekPlanKWIndex = preselectKW;
     weekPlanMode = 'overview';
     setProviderNavActive('provider-week');
     showView(views.providerWeek);
     if(typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard(); else renderWeekPlan();
-    // Browser-Verlauf aktualisieren
-    pushViewState({view: 'provider-week', mode: mode}, location.pathname);
+    var newPath = location.pathname + '?week=' + weekPlanKWIndex + '&day=' + weekPlanDay;
+    pushViewState({view: 'provider-week', mode: mode, week: weekPlanKWIndex, day: weekPlanDay}, newPath);
   }
   function showProviderCookbook(){
     if(!checkSessionValidity()) return;
@@ -15853,6 +15886,7 @@
     const hasReuse = offerProvider && (offerProvider.reuseEnabled || offerProvider.reuse || (offerProvider.providerProfile && offerProvider.providerProfile.reuseEnabled));
     const imgSrc = o.imageUrl || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70';
     const hasDineIn = o.dineInPossible !== false;
+    const hasPickup = !!(raw.hasPickupCode || o.hasPickupCode);
     const hasTimeValue = !!(o.pickupWindow && String(o.pickupWindow).trim());
     const hasAllergens = !!(o.allergens && o.allergens.length);
     const hasExtras = !!(o.extras && o.extras.length);
@@ -15866,6 +15900,7 @@
     const powerBarHtml = '<div class="inserat-power-bar inserat-unified-pills psheet-power-bar">' +
       pill(hasDineIn, 'Vor Ort', '🍴', 'dinein') +
       pill(hasReuse, 'Mehrweg', '🔄', 'reuse') +
+      pill(hasPickup, 'Abholnummer', '🎫1️⃣', 'pickup') +
       pill(hasTimeValue, 'Zeit', '🕒', 'time') +
       funcBtn(hasAllergens, 'Allergene', '🌾', 'allergens') +
       funcBtn(hasExtras, 'Extras', '➕', 'extras') +
@@ -15979,7 +16014,7 @@
         var row = document.createElement('div'); row.className = 'inserat-time-morph-row'; row.style.cssText = 'display:flex; align-items:center; justify-content:center; gap:12px; flex-wrap:wrap; padding:16px;';
         var inpStart = document.createElement('input'); inpStart.type = 'time'; inpStart.className = 'inserat-pickup-time-input'; inpStart.value = tStart; inpStart.style.cssText = 'padding:10px 14px; border-radius:12px; border:2px solid rgba(0,0,0,0.08); background:rgba(255,255,255,0.7); backdrop-filter:blur(10px); font-size:16px; font-weight:700;';
         var inpEnd = document.createElement('input'); inpEnd.type = 'time'; inpEnd.className = 'inserat-pickup-time-input'; inpEnd.value = tEnd; inpEnd.style.cssText = 'padding:10px 14px; border-radius:12px; border:2px solid rgba(0,0,0,0.08); background:rgba(255,255,255,0.7); backdrop-filter:blur(10px); font-size:16px; font-weight:700;';
-        var upd = function(){ raw.pickupWindow = inpStart.value + ' – ' + inpEnd.value; psheetSaveDraft(); if(powerBarEl){ var pills = powerBarEl.querySelectorAll('.status-pill'); if(pills[2]) pills[2].className = 'status-pill active'; } };
+        var upd = function(){ raw.pickupWindow = inpStart.value + ' – ' + inpEnd.value; psheetSaveDraft(); if(powerBarEl){ var pills = powerBarEl.querySelectorAll('.status-pill'); if(pills[3]) pills[3].className = 'status-pill active'; } };
         inpStart.onchange = function(){ try { if(typeof hapticLight === 'function') hapticLight(); } catch(e){} upd(); };
         inpEnd.onchange = function(){ try { if(typeof hapticLight === 'function') hapticLight(); } catch(e){} upd(); };
         row.appendChild(inpStart); row.appendChild(document.createTextNode(' – ')); row.appendChild(inpEnd);
@@ -16242,6 +16277,38 @@
       var icon = btn.getAttribute('data-psheet-icon');
       if(icon === 'allergens' || icon === 'extras' || icon === 'time'){
         toggleHeaderSelection(icon);
+        return;
+      }
+      if(icon === 'pickup'){
+        try { if(typeof hapticLight === 'function') hapticLight(); } catch(e){}
+        raw.hasPickupCode = !raw.hasPickupCode;
+        if(typeof save === 'function' && typeof LS !== 'undefined') save(LS.offers, offers);
+        btn.classList.toggle('active', !!raw.hasPickupCode);
+        btn.classList.toggle('inactive', !raw.hasPickupCode);
+        btn.classList.add('psheet-pill-bounce');
+        setTimeout(function(){ btn.classList.remove('psheet-pill-bounce'); }, 500);
+        updatePsheetDecisionZone();
+        return;
+      }
+      if(icon === 'dinein'){
+        try { if(typeof hapticLight === 'function') hapticLight(); } catch(e){}
+        raw.dineInPossible = raw.dineInPossible === false;
+        if(typeof save === 'function' && typeof LS !== 'undefined') save(LS.offers, offers);
+        btn.classList.toggle('active', raw.dineInPossible !== false);
+        btn.classList.toggle('inactive', raw.dineInPossible === false);
+        btn.classList.add('psheet-pill-bounce');
+        setTimeout(function(){ btn.classList.remove('psheet-pill-bounce'); }, 500);
+        return;
+      }
+      if(icon === 'reuse'){
+        try { if(typeof hapticLight === 'function') hapticLight(); } catch(e){}
+        raw.reuse = raw.reuse || { enabled: false, deposit: 0 };
+        raw.reuse.enabled = !raw.reuse.enabled;
+        if(typeof save === 'function' && typeof LS !== 'undefined') save(LS.offers, offers);
+        btn.classList.toggle('active', !!raw.reuse.enabled);
+        btn.classList.toggle('inactive', !raw.reuse.enabled);
+        btn.classList.add('psheet-pill-bounce');
+        setTimeout(function(){ btn.classList.remove('psheet-pill-bounce'); }, 500);
         return;
       }
       if(icon && icon !== 'legend'){
@@ -20230,6 +20297,75 @@
   }
   if(btnProfileCreateCancel) btnProfileCreateCancel.onclick = closeProfileCreateSheet;
   
+  // Reset-Navigation: Klick auf Header-Titel → Scroll nach oben + Untermenüs schließen
+  document.addEventListener('click', function(e){
+    var trig = e.target.closest('.prov-header-reset-trigger');
+    if(!trig || e.target.closest('input') || e.target.closest('button')) return;
+    var view = trig.getAttribute('data-reset-view');
+    if(!view) return;
+    e.preventDefault();
+    try { if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); } catch(err){}
+    var scrollEl = null;
+    if(view === 'home') scrollEl = document.querySelector('#v-provider-home .dashboard-floating-wrap');
+    else if(view === 'pickups') scrollEl = document.getElementById('provPickupsScroll');
+    else if(view === 'week') scrollEl = document.getElementById('kwBoardScroll');
+    else if(view === 'cookbook'){
+      scrollEl = document.getElementById('cookbookScrollWrap');
+      cookbookIsSearching = false;
+      cookbookSearchTerm = '';
+      cookbookShowSortMenu = false;
+      if(typeof renderCookbook === 'function') renderCookbook();
+    }
+    if(scrollEl){ scrollEl.scrollTo({ top: 0, behavior: 'smooth' }); }
+  }, true);
+  document.addEventListener('keydown', function(e){
+    var trig = document.activeElement;
+    if(!trig || !trig.classList || !trig.classList.contains('prov-header-reset-trigger')) return;
+    if(e.key !== 'Enter' && e.key !== ' ') return;
+    e.preventDefault();
+    trig.click();
+  });
+
+  // Pull-to-Refresh: Dashboard und Listen – InseratCard gesperrt (keine PTR im Wizard)
+  (function setupPullToRefresh(){
+    var PTR_THRESHOLD = 80;
+    var startY = 0, pullY = 0, activeEl = null;
+    function isInseratCardOpen(){
+      var w = document.getElementById('wizard');
+      return w && w.classList && w.classList.contains('active') && w.getAttribute('data-flow') === 'listing';
+    }
+    function attachPTR(el, onRefresh){
+      if(!el || !onRefresh) return;
+      el.addEventListener('touchstart', function(e){
+        if(isInseratCardOpen()) return;
+        if(el.scrollTop <= 0){ startY = e.touches[0].clientY; pullY = 0; activeEl = el; }
+      }, { passive: true });
+      el.addEventListener('touchmove', function(e){
+        if(!activeEl || activeEl !== el || isInseratCardOpen()) return;
+        if(el.scrollTop <= 0){ pullY = e.touches[0].clientY - startY; }
+      }, { passive: true });
+      el.addEventListener('touchend', function(){
+        if(!activeEl || activeEl !== el) return;
+        if(pullY >= PTR_THRESHOLD){
+          try { if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); } catch(err){}
+          if(typeof showToast==='function') showToast('Aktualisiere…', 800);
+          onRefresh();
+        }
+        startY = 0; pullY = 0; activeEl = null;
+      }, { passive: true });
+    }
+    setTimeout(function(){
+      var homeWrap = document.querySelector('#v-provider-home .dashboard-floating-wrap');
+      var pickupsScroll = document.getElementById('provPickupsScroll');
+      var weekScroll = document.getElementById('kwBoardScroll');
+      var cookbookScroll = document.getElementById('cookbookScrollWrap');
+      attachPTR(homeWrap, function(){ if(typeof renderProviderHome==='function') renderProviderHome(); });
+      attachPTR(pickupsScroll, function(){ if(typeof renderProviderPickups==='function') renderProviderPickups(); });
+      attachPTR(weekScroll, function(){ if(typeof renderWeekPlanBoard==='function') renderWeekPlanBoard(); else if(typeof renderProviderWeekPreview==='function') renderProviderWeekPreview(); });
+      attachPTR(cookbookScroll, function(){ if(typeof renderCookbook==='function') renderCookbook(); });
+    }, 300);
+  })();
+
   // Provider nav handlers
   document.getElementById('providerNav').addEventListener('click',(e)=>{
     const b = e.target.closest('button');
@@ -20255,12 +20391,12 @@
   const btnProviderNavBack = document.getElementById('btnProviderNavBack');
   if(btnProviderNavBack) btnProviderNavBack.onclick = function(){ showProviderHome(); };
 
-  // Dashboard: „Wochenplan öffnen“-Button und Klick auf Wochenplan-Karte → volle Wochenplan-Ansicht
+  // Dashboard: „Zum Wochenplan“ → Deep-Link zur aktuellen KW und heute
   document.addEventListener('click', function(e){
     var openBtn = e.target.closest('#btnDashboardOpenWeekPlan');
-    if(openBtn){ e.preventDefault(); if(typeof showProviderWeek === 'function') showProviderWeek(); return; }
+    if(openBtn){ e.preventDefault(); if(typeof showProviderWeek === 'function') showProviderWeek(typeof isoDate === 'function' ? isoDate(new Date()) : null); return; }
     var card = e.target.closest('#providerWeekCard');
-    if(card && !e.target.closest('button') && !e.target.closest('.week-preview-link')){ e.preventDefault(); if(typeof showProviderWeek === 'function') showProviderWeek(); }
+    if(card && !e.target.closest('button') && !e.target.closest('.week-preview-link')){ e.preventDefault(); if(typeof showProviderWeek === 'function') showProviderWeek(typeof isoDate === 'function' ? isoDate(new Date()) : null); }
   }, true);
 
   // Customer nav handlers - Robuster Event-Delegation-Ansatz
@@ -20876,7 +21012,7 @@
     // Footer-Button „Zum Wochenplan“ (app-like) → volle Wochenplan-Ansicht
     const btnProviderWeekFooter = document.getElementById('btnProviderWeekFooter');
     if(btnProviderWeekFooter){
-      btnProviderWeekFooter.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(typeof showProviderWeek === 'function') showProviderWeek(); };
+      btnProviderWeekFooter.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(typeof showProviderWeek === 'function') showProviderWeek(typeof isoDate === 'function' ? isoDate(new Date()) : null); };
       btnProviderWeekFooter.onkeydown = function(e){ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); btnProviderWeekFooter.click(); } };
     }
     const btnProviderShareWeekPlan = document.getElementById('btnProviderShareWeekPlan');
@@ -21260,6 +21396,19 @@
     }
     return keys;
   }
+  function getWeekIndexForDate(dateStr){
+    if (!dateStr || !/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return 0;
+    var d = new Date(dateStr + 'T12:00:00');
+    var day = d.getDay();
+    var diff = d.getDate() - day + (day === 0 ? -6 : 1);
+    var thatMonday = new Date(d.getFullYear(), d.getMonth(), diff);
+    var today = new Date();
+    var todayDay = today.getDay();
+    var todayDiff = today.getDate() - todayDay + (todayDay === 0 ? -6 : 1);
+    var thisMonday = new Date(today.getFullYear(), today.getMonth(), todayDiff);
+    var msPerWeek = 7 * 24 * 60 * 60 * 1000;
+    return Math.round((thatMonday - thisMonday) / msPerWeek);
+  }
   function getKWLabel(weekIndex){
     return 'KW ' + getISOWeek(getWeekMonday(weekIndex));
   }
@@ -21375,13 +21524,13 @@
     var grid = document.getElementById('kwGrid');
     if (!carousel || !grid) return;
     carousel.innerHTML = '';
-    for (var w = 0; w < 4; w++) {
+    for (var w = 0; w < 8; w++) {
       var btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'kw-pill' + (w === weekPlanKWIndex ? ' active' : '');
       btn.textContent = getKWLabel(w);
       btn.setAttribute('data-kw', String(w));
-      btn.onclick = (function(k){ return function(){ if(typeof haptic === 'function') haptic(6); weekPlanKWIndex = k; renderWeekPlanBoard(); }; })(w);
+      btn.onclick = (function(k){ return function(){ if(typeof haptic === 'function') haptic(6); weekPlanKWIndex = k; var keys = getWeekDayKeys(k); if(keys.indexOf(weekPlanDay) === -1) weekPlanDay = keys[0]; if(typeof pushViewState === 'function') pushViewState({ view: 'provider-week', mode: typeof mode !== 'undefined' ? mode : 'provider', week: k, day: weekPlanDay }, (typeof location !== 'undefined' && location.pathname) + '?week=' + k + '&day=' + weekPlanDay); renderWeekPlanBoard(); }; })(w);
       carousel.appendChild(btn);
     }
     var progress = getKWProgress(weekPlanKWIndex);
@@ -21392,29 +21541,37 @@
     var defaultDineIn = p.dineInPossibleDefault !== false;
     var defaultPickup = !!p.abholnummerEnabledByDefault;
     var defaultReuse = !!p.reuseEnabledByDefault;
-    var scrollEl = document.getElementById('kwBoardScroll');
+    var stripWrap = document.getElementById('kwCookbookStripWrap');
     var strip = document.getElementById('kwCookbookStrip');
-    if (scrollEl && !strip) {
+    if (stripWrap && !strip) {
       strip = document.createElement('div');
       strip.id = 'kwCookbookStrip';
       strip.className = 'kw-cookbook-drag-strip';
       strip.setAttribute('role', 'list');
-      scrollEl.insertBefore(strip, grid);
+      stripWrap.appendChild(strip);
     }
-    if (strip) {
-      var mine = (cookbook || []).filter(function(c){ return c.providerId === providerId(); });
-      strip.innerHTML = (mine.slice(0, 8).map(function(c){
-        return '<div class="kw-cookbook-drag-pill" draggable="true" data-cookbook-id="' + esc(String(c.id)) + '" role="button">' + esc((c.dish || 'Gericht').substring(0, 12)) + (c.dish && c.dish.length > 12 ? '…' : '') + '</div>';
-      }).join(''));
+    if (strip && stripWrap) {
+      var dismissed = window.__kwCookbookDismissedIds || {};
+      window.__kwCookbookDismissedIds = dismissed;
+      var mine = (cookbook || []).filter(function(c){ return c.providerId === providerId() && !dismissed[String(c.id)]; }).slice(0, 8);
+      strip.innerHTML = mine.map(function(c){
+        var label = (c.dish || 'Gericht').substring(0, 12) + (c.dish && c.dish.length > 12 ? '…' : '');
+        return '<div class="kw-cookbook-drag-pill" draggable="true" data-cookbook-id="' + esc(String(c.id)) + '" role="button"><span class="kw-pill-text">' + esc(label) + '</span><button type="button" class="kw-pill-dismiss" aria-label="Entfernen"><i data-lucide="x" style="width:14px;height:14px;"></i></button></div>';
+      }).join('');
       strip.querySelectorAll('.kw-cookbook-drag-pill').forEach(function(pill){
+        var cookbookId = pill.getAttribute('data-cookbook-id');
         pill.ondragstart = function(e){
-          e.dataTransfer.setData('text/plain', pill.getAttribute('data-cookbook-id'));
+          e.dataTransfer.setData('text/plain', cookbookId);
           e.dataTransfer.effectAllowed = 'copy';
           pill.classList.add('dragging');
           try { if(navigator.vibrate) navigator.vibrate(15); } catch(err){}
           if(typeof haptic === 'function') haptic(6);
         };
         pill.ondragend = function(){ pill.classList.remove('dragging'); };
+        var dismissBtn = pill.querySelector('.kw-pill-dismiss');
+        if (dismissBtn) {
+          dismissBtn.onclick = function(e){ e.preventDefault(); e.stopPropagation(); if(typeof haptic === 'function') haptic(6); dismissed[cookbookId] = true; pill.remove(); };
+        }
       });
     }
     grid.innerHTML = '';
@@ -21499,6 +21656,26 @@
         if(typeof showToast === 'function') showToast('Gericht eingetragen');
       };
     });
+    var draftKeysInKW = keys.filter(function(key){
+      var provEntries = (week[key] || []).filter(function(x){ return x.providerId === providerId(); });
+      var liveOffers = offers.filter(function(o){ return o.providerId === providerId() && o.day === key; });
+      return provEntries.length > 0 && liveOffers.length === 0;
+    });
+    var weekActivateBar = document.getElementById('kwWeekActivateBar');
+    var btnKwWeekActivate = document.getElementById('btnKwWeekActivate');
+    if (weekActivateBar && btnKwWeekActivate) {
+      if (draftKeysInKW.length > 0) {
+        weekActivateBar.style.display = 'block';
+        var sum = (draftKeysInKW.length * 4.99).toFixed(2).replace('.', ',');
+        btnKwWeekActivate.textContent = 'Woche aktivieren (' + sum + ' €)';
+        btnKwWeekActivate.onclick = function(){
+          if (typeof haptic === 'function') haptic(10);
+          if (typeof bulkActivateWeekDraftsForDates === 'function') bulkActivateWeekDraftsForDates(draftKeysInKW);
+        };
+      } else {
+        weekActivateBar.style.display = 'none';
+      }
+    }
     var btnKwPdf = document.getElementById('btnKwPdf');
     var btnKwShare = document.getElementById('btnKwShare');
     if (btnKwPdf) btnKwPdf.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(typeof printWeekCard === 'function') printWeekCard(); };
@@ -21706,7 +21883,7 @@
     if(dayIsLive){
       statusBlock.innerHTML = '<div><div class="week-status-online"><span class="week-status-dot" style="background:#FFDE00;"></span><span>ONLINE</span></div>' + profileStdHtml + '</div><button type="button" class="btn secondary" style="min-height:40px; padding:0 14px; font-size:14px; font-weight:700; border-radius:12px;" onclick="shareWeekPlan()">Teilen</button>';
     } else {
-      statusBlock.innerHTML = '<div><div class="week-status-draft"><span class="week-status-dot" style="background:#94a3b8;"></span><span>ENTWURF</span></div>' + profileStdHtml + '</div><div style="text-align:right;"><button type="button" class="week-activate-inline" onclick="activateWeekDay(\'' + weekPlanDay + '\')">Plan aktivieren</button><div class="week-status-activate-hint">Speichert alle Änderungen. Einmal 4,99 € pro Tag – alle Gerichte gehen online.</div></div>';
+      statusBlock.innerHTML = '<div><div class="week-status-draft"><span class="week-status-dot" style="background:#94a3b8;"></span><span>ENTWURF</span></div>' + profileStdHtml + '</div>';
     }
     list.appendChild(statusBlock);
 
@@ -21768,12 +21945,12 @@
       var entryReuse = !!(entry.reuse && entry.reuse.enabled);
       var hasTime = !!(entry.pickupWindow && String(entry.pickupWindow).trim()) || !!(entry.timeStart && entry.timeEnd);
       var verdienstHtml = !dayIsLive ? '<div class="week-meal-verdienst" style="font-size:12px; color:#1a1a1a; margin-top:4px;">Verdienst ca. ' + euro(Math.max(0, (Number(price)||0) - 4.99)) + '</div>' : '';
-      var moveBtnHtml = !dayIsLive ? '<div style="margin-top:8px; display:flex; align-items:center; gap:12px; flex-wrap:wrap;"><button type="button" class="week-meal-move-btn" data-day="' + esc(weekPlanDay) + '" data-index="' + weekIndex + '" style="padding:0; background:none; border:none; font-size:12px; font-weight:700; color:#64748b; cursor:pointer; text-decoration:underline;">Verschieben</button><button type="button" class="week-meal-direct-btn" data-day="' + esc(weekPlanDay) + '" data-index="' + weekIndex + '" style="padding:6px 12px; border-radius:10px; font-size:12px; font-weight:800; background:#22C55E; color:#fff; border:none; cursor:pointer;">Direkt Inserieren</button></div>' : '';
+      var moveBtnHtml = !dayIsLive ? '<div style="margin-top:8px;"><button type="button" class="week-meal-move-btn" data-day="' + esc(weekPlanDay) + '" data-index="' + weekIndex + '" style="padding:0; background:none; border:none; font-size:12px; font-weight:700; color:#64748b; cursor:pointer; text-decoration:underline;">Verschieben</button></div>' : '';
       var thumbHtml = '<div class="week-meal-thumb" style="width:56px;min-width:56px;height:56px;border-radius:12px;overflow:hidden;background:#e5e7eb;flex-shrink:0;background-size:cover;background-position:center' + (img ? ';background-image:url(\'' + esc(img) + '\')' : '') + '"></div>';
       card.innerHTML = thumbHtml + '<div style="flex:1;min-width:0;"><div class="week-meal-name">' + esc(name) + '</div><div class="week-meal-meta"><span class="price-pill">' + euro(price) + '</span> ' + onlineHtml + '</div>' + verdienstHtml + moveBtnHtml + '</div>';
       card.style.cursor = 'pointer';
       if(!dayIsLive){
-        card.onclick = function(e){ e.preventDefault(); e.stopPropagation(); if(weekJustSwiped) return; if(e.target.closest && (e.target.closest('.week-meal-move-btn') || e.target.closest('.week-meal-direct-btn'))) return; if(hasTime){ if(typeof openWeekAddSheet === 'function') openWeekAddSheet(weekPlanDay, weekIndex); } else { if(typeof openWeekTimeOverlay === 'function') openWeekTimeOverlay(weekPlanDay, weekIndex); } };
+        card.onclick = function(e){ e.preventDefault(); e.stopPropagation(); if(weekJustSwiped) return; if(e.target.closest && e.target.closest('.week-meal-move-btn')) return; if(hasTime){ if(typeof openWeekAddSheet === 'function') openWeekAddSheet(weekPlanDay, weekIndex); } else { if(typeof openWeekTimeOverlay === 'function') openWeekTimeOverlay(weekPlanDay, weekIndex); } };
         var swipeDel = document.createElement('div');
         swipeDel.className = 'week-swipe-actions right';
         swipeDel.innerHTML = '<i data-lucide="trash-2" style="width:22px;height:22px;"></i><span>Löschen</span>';
@@ -21787,9 +21964,6 @@
         swipeInner.appendChild(card);
         card.querySelectorAll('.week-meal-move-btn').forEach(function(btn){
           btn.onclick = function(ev){ ev.preventDefault(); ev.stopPropagation(); if(typeof haptic === 'function') haptic(6); var d = btn.getAttribute('data-day'); var i = parseInt(btn.getAttribute('data-index'), 10); if(typeof openMoveWeekEntrySheet === 'function') openMoveWeekEntrySheet(d, i); };
-        });
-        card.querySelectorAll('.week-meal-direct-btn').forEach(function(btn){
-          btn.onclick = function(ev){ ev.preventDefault(); ev.stopPropagation(); if(typeof haptic === 'function') haptic(6); var d = btn.getAttribute('data-day'); var i = parseInt(btn.getAttribute('data-index'), 10); if(typeof publishSingleWeekEntry === 'function') publishSingleWeekEntry(d, i); };
         });
         attachSwipeToWeekCard(swipeInner, weekPlanDay, weekIndex);
         attachLongPressToWeekCard(wrap);
@@ -21866,6 +22040,42 @@
       renderWeekPlan();
       if(typeof renderProviderHome === 'function') renderProviderHome();
       if(typeof showToast === 'function') showToast('Alle ' + draftDays.length + ' Tage aktiviert. Zum Wochenplan.');
+    });
+  }
+
+  function bulkActivateWeekDraftsForDates(dates){
+    if (!dates || !dates.length) return;
+    var profile = normalizeProviderProfile(provider.profile || {});
+    if (profile.abholnummerEnabledByDefault === undefined || profile.abholnummerEnabledByDefault === null) {
+      if (typeof showToast === 'function') showToast('Bitte zuerst Abholnummer-Standard im Profil festlegen.');
+      return;
+    }
+    var total = (dates.length * 4.99).toFixed(2).replace('.', ',');
+    var msg = dates.length + ' Tag(e) mit Entwürfen werden aktiviert. Gesamtbetrag: ' + dates.length + ' × 4,99 € = ' + total + ' €. Fortfahren?';
+    if (!confirm(msg)) return;
+    var totalNum = dates.length * 4.99;
+    var fakeOffer = { id: 'bulk', dish: 'Woche aktivieren (' + dates.length + ' Tage)', price: totalNum, providerId: providerId() };
+    showPublishFeeModal(fakeOffer, function(){
+      dates.forEach(function(date){
+        var entries = (week[date] || []).filter(function(e){ return e.providerId === providerId(); });
+        entries.forEach(function(e){
+          var c = cookbook.find(function(x){ return String(x.id) === String(e.cookbookId); }) || {};
+          var base = normalizeOffer(e);
+          var newOffer = Object.assign({}, base, {
+            id: cryptoId(),
+            dish: c.dish || e.dish,
+            price: c.price || e.price,
+            hasPickupCode: !!profile.abholnummerEnabledByDefault,
+            active: true,
+            day: date
+          });
+          offers.push(newOffer);
+        });
+      });
+      save(LS.offers, offers);
+      if (typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard();
+      if (typeof renderProviderHome === 'function') renderProviderHome();
+      if (typeof showToast === 'function') showToast('Woche aktiviert.');
     });
   }
 
@@ -22166,6 +22376,23 @@
     }
     var btnMulti = document.getElementById('btnWeekAddMulti');
     if(btnMulti) btnMulti.onclick = function(){ openWeekMultiSelectSheet(); };
+    var singleActivateWrap = document.getElementById('weekAddSheetSingleActivate');
+    var btnSingleActivate = document.getElementById('btnWeekAddSingleActivate');
+    if(singleActivateWrap && btnSingleActivate){
+      if(isReplace){
+        singleActivateWrap.style.display = 'block';
+        btnSingleActivate.onclick = function(){
+          if(typeof haptic === 'function') haptic(6);
+          if(typeof publishSingleWeekEntry === 'function') publishSingleWeekEntry(dayKey, replaceIndex);
+          closeWeekAddSheet();
+          if(weekAddSheetOriginView === 'v-provider-week' && typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard();
+          else if(typeof renderWeekPlan === 'function') renderWeekPlan();
+          if(typeof showToast === 'function') showToast('Gericht aktiviert');
+        };
+      } else {
+        singleActivateWrap.style.display = 'none';
+      }
+    }
     var btnClose = document.querySelector('#weekAddSheet .btn.secondary[onclick="closeWeekAddSheet()"]');
     if(btnClose) btnClose.style.display = '';
     bd.style.display = 'block';
@@ -22954,6 +23181,16 @@
         document.querySelectorAll('.provider-support-accordion .chevron-icon').forEach(function(ch){ ch.classList.remove('rotated'); });
         document.querySelectorAll('.provider-support-accordion-trigger').forEach(function(t){ t.setAttribute('aria-expanded', 'false'); });
         if(!isOpen && content){ content.classList.add('open'); if(chevron) chevron.classList.add('rotated'); if(trigger) trigger.setAttribute('aria-expanded', 'true'); }
+      };
+    });
+    document.querySelectorAll('.provider-settings-accordion-trigger').forEach(function(trigger){
+      trigger.onclick = function(){
+        if(typeof haptic === 'function') haptic(6);
+        var item = trigger.closest('.provider-settings-accordion-item');
+        if(!item) return;
+        var isOpen = item.classList.contains('open');
+        item.classList.toggle('open', !isOpen);
+        trigger.setAttribute('aria-expanded', !isOpen ? 'true' : 'false');
       };
     });
     var btnProviderSupportMike = document.getElementById('btnProviderSupportMike');
@@ -25606,7 +25843,7 @@
           var row=document.createElement('div'); row.className='inserat-time-morph-row'; row.style.cssText='display:flex; align-items:center; justify-content:center; gap:12px; flex-wrap:wrap; padding:16px;';
           var inpStart=document.createElement('input'); inpStart.type='time'; inpStart.className='inserat-pickup-time-input'; inpStart.value=tStart; inpStart.style.cssText='padding:10px 14px; border-radius:12px; border:2px solid rgba(0,0,0,0.08); background:rgba(255,255,255,0.7); backdrop-filter:blur(10px); font-size:16px; font-weight:700;';
           var inpEnd=document.createElement('input'); inpEnd.type='time'; inpEnd.className='inserat-pickup-time-input'; inpEnd.value=tEnd; inpEnd.style.cssText='padding:10px 14px; border-radius:12px; border:2px solid rgba(0,0,0,0.08); background:rgba(255,255,255,0.7); backdrop-filter:blur(10px); font-size:16px; font-weight:700;';
-          var upd=function(){ w.data.pickupWindow=inpStart.value+' – '+inpEnd.value; saveDraft(); var bar=photoTile.nextElementSibling; if(bar){ var pills=bar.querySelectorAll('.status-pill'); if(pills[2]) pills[2].className='status-pill active'; } };
+          var upd=function(){ w.data.pickupWindow=inpStart.value+' – '+inpEnd.value; saveDraft(); var bar=photoTile.nextElementSibling; if(bar){ var pills=bar.querySelectorAll('.status-pill'); if(pills[3]) pills[3].className='status-pill active'; } };
           inpStart.onchange=function(){ hapticLight(); upd(); };
           inpEnd.onchange=function(){ hapticLight(); upd(); };
           row.appendChild(inpStart);
@@ -25668,6 +25905,17 @@
       }
       addPowerPill('🍴','Vor Ort', hasDineIn, 'dineInPossible');
       addPowerPill('🔄','Mehrweg', hasReuse, 'reuse');
+      var hasPickup = !!(w.data.hasPickupCode || w.data.pricingOption === 'abholnummer');
+      var pickupPill = document.createElement('button');
+      pickupPill.type = 'button';
+      pickupPill.className = 'status-pill ' + (hasPickup ? 'active' : 'inactive');
+      pickupPill.setAttribute('aria-label', 'Abholnummer');
+      pickupPill.setAttribute('title', 'Abholnummer');
+      pickupPill.setAttribute('data-pill', 'pickup');
+      pickupPill.style.cssText = 'cursor:pointer; min-width:44px; min-height:44px;';
+      pickupPill.innerHTML = '<span style="font-size:14px;">🎫1️⃣</span>';
+      pickupPill.onclick = function(e){ e.preventDefault(); e.stopPropagation(); hapticLight(); w.data.hasPickupCode = !w.data.hasPickupCode; if(w.data.hasPickupCode) w.data.pricingOption = 'abholnummer'; else w.data.pricingOption = undefined; saveDraft(); rebuildWizard(); };
+      powerBar.appendChild(pickupPill);
       const hasTimeValue=!!(w.data.pickupWindow&&w.data.pickupWindow.trim())||(w.data.mealStart&&w.data.mealEnd);
       const timePill=document.createElement('button');
       timePill.type='button';
@@ -25696,7 +25944,7 @@
       var legendWrap=document.createElement('div'); legendWrap.style.cssText='position:relative; display:inline-flex; align-items:center;';
       var legendTrigger=document.createElement('button'); legendTrigger.type='button'; legendTrigger.className='power-bar-legend-trigger'; legendTrigger.setAttribute('aria-label','Infoseite Inseratsflow'); legendTrigger.setAttribute('title','Infoseite: Inserieren in unter 30 Sekunden'); legendTrigger.textContent='ⓘ'; legendTrigger.style.cssText='min-width:44px; min-height:44px; width:44px; height:44px; border:none; background:transparent; color:#94a3b8; font-size:14px; cursor:pointer; border-radius:50%; display:flex; align-items:center; justify-content:center; -webkit-tap-highlight-color:transparent;';
       var legendPop=document.createElement('div'); legendPop.className='power-bar-legend'; legendPop.setAttribute('role','tooltip'); legendPop.style.cssText='display:none; position:absolute; top:100%; right:0; margin-top:6px; padding:10px 14px; background:rgba(255,255,255,0.95); backdrop-filter:blur(12px); border-radius:12px; border:1px solid rgba(0,0,0,0.06); box-shadow:0 8px 24px rgba(0,0,0,0.1); font-size:11px; font-weight:600; color:#475569; line-height:1.5; z-index:50; white-space:nowrap;';
-      legendPop.innerHTML='🍴 Vor Ort · 🔄 Mehrweg · 🕒 Zeit · 🌾 Allergene · ➕ Extras';
+      legendPop.innerHTML='🍴 Vor Ort · 🎫1️⃣ Abholnummer · 🔄 Mehrweg · 🕒 Zeit · 🌾 Allergene · ➕ Extras';
       legendTrigger.onclick=function(e){ e.stopPropagation(); hapticLight(); if(typeof showLegalPage==='function'){ showLegalPage('inserat-info-provider'); } else { var on=legendPop.style.display==='block'; legendPop.style.display=on?'none':'block'; if(!on) setTimeout(function(){ var closeLegend=function(ev){ if(!legendWrap.contains(ev.target)){ legendPop.style.display='none'; document.removeEventListener('click', closeLegend); } }; document.addEventListener('click', closeLegend); }, 0); } };
       legendWrap.appendChild(legendTrigger); legendWrap.appendChild(legendPop); powerBar.appendChild(legendWrap);
       box.appendChild(powerBar);
