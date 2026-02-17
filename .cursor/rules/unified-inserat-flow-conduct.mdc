@@ -1,0 +1,49 @@
+---
+description: Core Logic – Hub, Entry Points und Component Rules für den Unified Inserat-Flow. Verhindert Logik-Fehler bei Navigation und Modi.
+alwaysApply: true
+---
+
+# CORE LOGIC ARCHITECTURE: THE UNIFIED INSERAT-FLOW
+
+Jede Inserat-Aktion endet in einer „Sammelkarten“-Oberfläche. Diese Regel beschreibt das Hub-Konzept, die Einstiege und die einheitlichen Komponenten-Regeln.
+
+## 1. The Hub (InseratCard)
+
+Die InseratCard ist das visuelle Sammelkarten-Interface. Es gibt **zwei Darstellungen**:
+
+- **Wizard-InseratCard:** Wird von `buildListingStep()` im `#wizard` gerendert. Für neue Entwürfe oder aus dem Kochbuch geladene Gerichte.
+- **Provider-Sheet (psheet):** Bearbeitung eines bestehenden oder per Blitz erzeugten Draft-Offers. Wird von `openProviderOffer()` geöffnet.
+
+Beide unterscheiden nur **zwei Zustände** (über Kontext, nicht als einzelnes mode-Prop):
+
+| Zustand | Wizard | psheet | Bedeutung |
+|--------|--------|--------|-----------|
+| **MODE_AD** | `entryPoint === 'dashboard'` | `psheetCardMode === 'ad'` | Buttons „mit Abholnummer“ (0,89 €) und „Nur Inserat“ (4,99 €) aktiv. |
+| **MODE_PLAN** | `entryPoint === 'cookbook'` oder `'week'` | `psheetCardMode === 'plan'` | Buttons „Speichern“, „Im Kochbuch speichern“ bzw. „Im Wochenplan speichern“ aktiv. |
+
+**Referenz im Code:** `app/index.html` – `buildListingStep()` (Action-Buttons um Zeile 25243–25293, `isInserierenRoute`, `actionSection`), `openProviderOffer()` (Zeile 15366, `psheetCardMode`).
+
+## 2. Entry Points
+
+| Einstieg | Verhalten | Wo landet der Nutzer | Modus |
+|----------|-----------|----------------------|-------|
+| **New Dish** | Start immer leer. Existiert ein Entwurf → Draft-Overlay („Fortsetzen?“) auf der Karte (Ghost-Card). Kein `dishId`. | Wizard-InseratCard | MODE_AD (nach Fortsetzen) bzw. leerer Entwurf |
+| **Renner (Bestseller)** | Quick-Post-UI wird übersprungen (`skipQuickPost: true`). InseratCard wird direkt mit Kochbuch-Daten geladen. | Wizard-InseratCard | MODE_AD |
+| **Blitz (⚡)** | Im Hintergrund wird aus einem Kochbuch-Eintrag ein Offer mit `status: 'draft'` erzeugt (`createOfferFromCookbook`), dann sofort geöffnet. | Provider-Sheet (psheet) | MODE_AD |
+
+**Technisch:**
+
+- **New Dish:** `startListingFlow(ctx)` ohne `dishId` → ggf. Ghost-Card-Overlay in `startListingFlow` / `buildListingStep`.
+- **Renner:** `startListingFlow({ dishId, date, entryPoint: 'dashboard', skipQuickPost: true })`. Referenz: `populateCreateFlowRenner` in `app/index.html`.
+- **Blitz:** `createOfferFromCookbook(cookbookId)` → `openProviderOffer(id, { source: 'cookbook'|'week', instantLive: true })`. Vorkommen: Kochbuch (`.cookbook-blitz-btn`), Wochenplan (`.kw-slot-blitz`). Referenz: `app/index.html` – `createOfferFromCookbook` (Zeile 15337), `openProviderOffer` (Zeile 15366), Blitz-Handler (z. B. Zeile 23830, 20881).
+
+## 3. Component Rules
+
+- **Power-Bar:** (🍴, 🔄, 🕒, 🌾, ➕, ⓘ) ist in Wizard und psheet **immer sichtbar**.
+- **Preis-Button (Gelb):** Rechts unten; löst den Hero-Morph zum 4rem-Eingabefeld aus. Referenz: bestehende Inserat-/Preis-UI in `app/index.html`.
+- **Universal-X:** Schließt den Flow **immer** mit der Pop-Away-Animation (Wizard: Klasse `x-pop-away`; psheet: z. B. `exit-active`).
+
+## Abgrenzung
+
+- Die Regel **dish-flow-vs-inserat-card.mdc** regelt die Trennung **openDishFlow (Initiator) vs. InseratCard (Wizard)** und wo UI vs. Logik hingehört.
+- Diese Regel beschreibt das **Gesamtbild** (Hub, Modi, Entry Points, Component Rules) und verweist auf dieselben Code-Stellen.
