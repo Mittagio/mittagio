@@ -2530,6 +2530,8 @@
     #psheet .psheet-photo-header .selection-overlay .extra-pill, #psheet .psheet-photo-header .selection-overlay .inserat-allergen-pill { padding: 8px 14px; border-radius: 999px; font-size: 13px; font-weight: 700; border: 2px solid rgba(0,0,0,0.08); background: rgba(255,255,255,0.5); color: #475569; cursor: pointer; transition: background 0.2s, color 0.2s; -webkit-tap-highlight-color: transparent; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
     #psheet .psheet-photo-header .selection-overlay .extra-pill.active, #psheet .psheet-photo-header .selection-overlay .inserat-allergen-pill.active { background: #10b981; color: #fff; border-color: rgba(16,185,129,0.4); box-shadow: 0 2px 10px rgba(16,185,129,0.3); }
     #psheet .psheet-photo-header .selection-overlay-inner.selection-overlay-inner--time { display: flex; align-items: center; justify-content: center; }
+    #psheet .psheet-photo-header .selection-overlay-inner.selection-overlay-inner--photo { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; }
+    #psheet .psheet-photo-header .selection-overlay .photo-suggestion:hover { border-color: #10b981; box-shadow: 0 2px 12px rgba(16,185,129,0.3); }
     /* Decision Zone: Mit Abholnummer (Grün) + Nur Inserat (Gelb) – fixiert am unteren Rand */
     #psheet .psheet-footer-sticky.psheet-decision-zone { display: flex !important; flex-direction: column; gap: 12px; padding: 16px 20px; padding-bottom: max(16px, env(safe-area-inset-bottom)); border-top: 1px solid rgba(0,0,0,0.06); background: rgba(255,255,255,0.98); flex-shrink: 0; }
     #psheet .psheet-btn-decision { width: 100%; min-height: 52px; border-radius: 16px; font-size: 16px; font-weight: 800; border: none; cursor: pointer; transition: opacity 0.25s ease, transform 0.2s, box-shadow 0.2s; }
@@ -2566,6 +2568,8 @@
     #psheet .dish-title-input:focus + .category-pill { transform: translateY(-5px); background: #fff; color: #0f172a; box-shadow: 0 4px 12px rgba(16,185,129,0.2); }
     @keyframes pill-jiggle { 0% { transform: translateY(-5px) scale(1); } 50% { transform: translateY(-7px) scale(1.05); } 100% { transform: translateY(-5px) scale(1); } }
     #psheet .category-pill.jiggle { animation: pill-jiggle 0.15s ease-out; }
+    #psheet .category-pill.psheet-category-scale { animation: psheet-category-scale-up 0.32s ease-out; }
+    @keyframes psheet-category-scale-up { 0%{transform:scale(1)} 45%{transform:scale(1.08)} 100%{transform:scale(1)} }
     #psheet .dish-title-input:not(:focus) + .category-pill { transform: translateY(0); }
     /* Price-Button: Harmonic Pulse beim Tippen [cite: 2026-02-16] */
     #psheet .price-button-yellow { transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); transform-origin: right center; }
@@ -10428,6 +10432,7 @@
     view.classList.add('active');
     if(id === 'v-pickup-code') view.style.display = 'flex';
     else if(id === 'v-provider-week') view.style.cssText = 'display:flex; flex-direction:column; min-height:100vh; visibility:visible; opacity:1;';
+    else if(id === 'v-provider-cookbook') view.style.cssText = 'display:flex !important; flex-direction:column !important; height:100vh; height:100dvh; max-height:100vh; max-height:100dvh; overflow:hidden; visibility:visible; opacity:1; width:100%; position:relative;';
     else if(isProviderView) view.style.cssText = 'display:block !important; min-height:100vh; height:auto; width:100%; visibility:visible; opacity:1; position:relative;';
     else view.style.display = 'block';
     // Danach alle anderen Views ausblenden (explizit display:none – verhindert Aufsummierung mehrerer 100vh)
@@ -15253,7 +15258,8 @@
     const hasAllergens = !!(o.allergens && o.allergens.length);
     const hasExtras = !!(o.extras && o.extras.length);
     const priceStr = (Number(o.price)||0).toFixed(2).replace('.',',');
-    const catLabel = (o.category && CAT_EMOJI[o.category]) ? (CAT_EMOJI[o.category] + ' ' + (o.category || '')) : (o.category || '');
+    var catDisplayLabels = { 'Fleisch': 'Mit Fleisch', 'Vegetarisch': 'Vegetarisch', 'Vegan': 'Vegan', 'Salat': 'Salat' };
+    const catLabel = (CAT_EMOJI[o.category] || CAT_EMOJI['Fleisch']) + ' ' + (catDisplayLabels[o.category] || 'Mit Fleisch');
     const pill = (active, label, emo, dataIcon) => '<button type="button" class="status-pill ' + (active ? 'active' : 'inactive') + '" title="' + esc(label) + '" aria-label="' + esc(label) + '" data-psheet-icon="' + esc(dataIcon) + '"><span style="font-size:18px;">' + emo + '</span></button>';
     const funcBtn = (active, title, emo, dataIcon) => '<button type="button" class="func-icon-btn ' + (active ? 'active' : '') + '" title="' + esc(title) + '" aria-label="' + esc(title) + '" data-psheet-icon="' + esc(dataIcon) + '">' + emo + '</button>';
     const cardState = typeof getCardState === 'function' ? getCardState(o) : (o.active !== false && o.day === (typeof isoDate === 'function' ? isoDate(new Date()) : '') ? 'LIVE' : 'PLANNED');
@@ -15266,6 +15272,52 @@
       funcBtn(hasExtras, 'Extras', '➕', 'extras') +
       '<button type="button" class="power-bar-legend-trigger" id="psheetInfoTrigger" title="Symbole &amp; Drucken" aria-label="Legende" data-psheet-icon="legend">ⓘ</button>' +
       '</div>';
+    var PSHET_IMAGES_BASE = 'https://images.unsplash.com/';
+    var psheetListingImageMap = {
+      schnitzel: ['photo-1546069901-d5bfd2cbfb1f?w=400&q=80','photo-1565299624946-b28f40a0ae38?w=400&q=80','photo-1603133872878-684f208fb84b?w=400&q=80'],
+      gulasch: ['photo-1547592166-23ac45744acd?w=400&q=80','photo-1544025162-d76694265947?w=400&q=80','photo-1565299624946-b28f40a0ae38?w=400&q=80'],
+      roulade: ['photo-1603133872878-684f208fb84b?w=400&q=80','photo-1546069901-d5bfd2cbfb1f?w=400&q=80','photo-1544025162-d76694265947?w=400&q=80'],
+      leberkaese: ['photo-1565299624946-b28f40a0ae38?w=400&q=80','photo-1546069901-d5bfd2cbfb1f?w=400&q=80','photo-1603133872878-684f208fb84b?w=400&q=80'],
+      linsen: ['photo-1547592166-23ac45744acd?w=400&q=80','photo-1544025162-d76694265947?w=400&q=80','photo-1546069901-eacef0df6022?w=400&q=80'],
+      kaesespaetzle: ['photo-1551183053-bf91a1d81141?w=400&q=80','photo-1546069901-d5bfd2cbfb1f?w=400&q=80','photo-1565299624946-b28f40a0ae38?w=400&q=80'],
+      frikadelle: ['photo-1565299624946-b28f40a0ae38?w=400&q=80','photo-1546069901-d5bfd2cbfb1f?w=400&q=80','photo-1603133872878-684f208fb84b?w=400&q=80'],
+      currywurst: ['photo-1565299624946-b28f40a0ae38?w=400&q=80','photo-1546069901-d5bfd2cbfb1f?w=400&q=80','photo-1603133872878-684f208fb84b?w=400&q=80'],
+      steak: ['photo-1546069901-d5bfd2cbfb1f?w=400&q=80','photo-1603133872878-684f208fb84b?w=400&q=80','photo-1565299624946-b28f40a0ae38?w=400&q=80'],
+      zwiebelrostbraten: ['photo-1603133872878-684f208fb84b?w=400&q=80','photo-1546069901-d5bfd2cbfb1f?w=400&q=80','photo-1544025162-d76694265947?w=400&q=80'],
+      default_meat: ['photo-1546069901-d5bfd2cbfb1f?w=400&q=80','photo-1603133872878-684f208fb84b?w=400&q=80','photo-1544025162-d76694265947?w=400&q=80'],
+      default_veggie: ['photo-1546069901-eacef0df6022?w=400&q=80','photo-1512621776951-a57141f2e7ef?w=400&q=80','photo-1546069901-d5bfd2cbfb1f?w=400&q=80'],
+      default_vegan: ['photo-1546069901-eacef0df6022?w=400&q=80','photo-1512621776951-a57141f2e7ef?w=400&q=80','photo-1546069901-d5bfd2cbfb1f?w=400&q=80'],
+      default_salat: ['photo-1512621776951-a57141f2e7ef?w=400&q=80','photo-1546069901-eacef0df6022?w=400&q=80','photo-1546069901-d5bfd2cbfb1f?w=400&q=80']
+    };
+    function getPsheetSuggestionKey(dish, category){
+      var text = (dish || '').toLowerCase().trim();
+      var cat = category || raw.category || 'Fleisch';
+      for(var k in psheetListingImageMap){ if(k.indexOf('default_')===0) continue; if(text.indexOf(k)!==-1) return k; }
+      if(cat==='Fleisch') return 'default_meat'; if(cat==='Vegetarisch'||cat==='Vegan') return 'default_veggie'; if(cat==='Salat') return 'default_salat'; return 'default_meat';
+    }
+    function getPsheetSuggestionUrls(key){
+      var list = psheetListingImageMap[key || getPsheetSuggestionKey(raw.dish, raw.category)];
+      if(!list) return [];
+      var base = PSHET_IMAGES_BASE;
+      return list.map(function(f){ return (f.indexOf('http')===0||f.indexOf('data:')===0) ? f : (base + f); });
+    }
+    function getSuggestedCategory(dish){
+      var d = (dish || '').toLowerCase().trim().replace(/\s+/g, ' ');
+      if(!d) return null;
+      var map = typeof DISH_CATEGORY_SUGGESTIONS !== 'undefined' ? DISH_CATEGORY_SUGGESTIONS : {};
+      var keys = Object.keys(map).sort(function(a,b){ return b.length - a.length; });
+      for(var i = 0; i < keys.length; i++) if(d.indexOf(keys[i]) !== -1) return map[keys[i]];
+      return null;
+    }
+    function getSuggestedAllergens(dish){
+      var d = (dish || '').toLowerCase().trim().replace(/\s+/g, ' ');
+      if(!d) return [];
+      var map = typeof DISH_ALLERGEN_SUGGESTIONS !== 'undefined' ? DISH_ALLERGEN_SUGGESTIONS : {};
+      var keys = Object.keys(map).sort(function(a,b){ return b.length - a.length; });
+      var out = [];
+      for(var i = 0; i < keys.length; i++) if(d.indexOf(keys[i]) !== -1) { (map[keys[i]] || []).forEach(function(c){ if(out.indexOf(c) === -1) out.push(c); }); }
+      return out;
+    }
     const preview = document.getElementById('pPreview');
     preview.innerHTML = '<div class="universal-dish-card psheet-card" data-card-state="' + esc(cardState) + '" data-offer-id="' + esc(String(raw.id)) + '" role="button" tabindex="0" aria-label="Karte bearbeiten oder long-press für Ausverkauft">' +
       '<div class="inserat-photo-tile photo-header psheet-photo-header psheet-card-click-area" style="position:relative;overflow:hidden;flex-shrink:0;width:100%;background:#f0f0f0;">' +
@@ -15279,7 +15331,7 @@
       '<div class="psheet-card-title-row">' +
       '<div class="psheet-card-title-wrap">' +
       '<input type="text" class="psheet-card-title dish-title-input" id="psheetTitleInput" value="' + esc(o.dish || '') + '" placeholder="Was kochst du heute?" maxlength="80" />' +
-      (catLabel ? '<span class="psheet-category-pill category-pill">' + esc(catLabel) + '</span>' : '') +
+      '<span class="psheet-category-pill category-pill" role="button" tabindex="0" aria-label="Kategorie ändern">' + esc(catLabel) + '</span>' +
       '</div>' +
       '<button type="button" class="psheet-price-btn price-button-yellow" id="psheetPriceBtn" aria-label="Preis">' + priceStr + ' €</button>' +
       '</div>' +
@@ -15296,6 +15348,7 @@
       if(!selectionOverlayInner) return;
       selectionOverlayInner.innerHTML = '';
       selectionOverlayInner.classList.remove('selection-overlay-inner--time');
+      selectionOverlayInner.classList.remove('selection-overlay-inner--photo');
       var profileWindow = (profile && profile.mealWindow) ? profile.mealWindow : '11:30 – 14:00';
       if(type === 'allergens'){
         (typeof ALLERGENS_14 !== 'undefined' ? ALLERGENS_14 : []).forEach(function(a){
@@ -15332,20 +15385,95 @@
         var btnFertig = document.createElement('button'); btnFertig.type = 'button'; btnFertig.textContent = 'Fertig'; btnFertig.style.cssText = 'padding:10px 20px; border-radius:999px; border:none; background:#10b981; color:#fff; font-weight:700; cursor:pointer; margin-left:8px;'; btnFertig.onclick = function(){ try { if(typeof hapticLight === 'function') hapticLight(); } catch(e){} closeHeaderSelection(); };
         row.appendChild(btnFertig);
         selectionOverlayInner.appendChild(row);
+      } else if(type === 'category'){
+        var catValues = ['Fleisch', 'Vegetarisch', 'Vegan', 'Salat'];
+        var catDisplayLabelsArr = ['Mit Fleisch', 'Vegetarisch', 'Vegan', 'Salat'];
+        var catEmojis = ['🥩', '🥗', '🌱', '🥪'];
+        var categoryPillEl = preview.querySelector('.psheet-category-pill');
+        catValues.forEach(function(c, i){
+          var btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'extra-pill inserat-cat-pill' + (raw.category === c ? ' active' : '');
+          btn.style.cssText = 'cursor:pointer;';
+          btn.textContent = (catEmojis[i] || '') + ' ' + (catDisplayLabelsArr[i] || c);
+          btn.onclick = function(){ try { if(typeof hapticLight === 'function') hapticLight(); } catch(e){} raw.category = c; raw.categoryManuallySet = true; psheetSaveDraft(); if(categoryPillEl) categoryPillEl.textContent = (catEmojis[i] || '') + ' ' + (catDisplayLabelsArr[i] || c); closeHeaderSelection(); };
+          selectionOverlayInner.appendChild(btn);
+        });
+      } else if(type === 'photo'){
+        selectionOverlayInner.classList.add('selection-overlay-inner--photo');
+        var imgEl = photoHeader ? photoHeader.querySelector('img') : null;
+        var runPickImage = function(capture){
+          (async function(){
+            try { if(typeof hapticLight === 'function') hapticLight(); } catch(e){}
+            var opts = capture ? { capture: 'environment' } : {};
+            var f = typeof pickImage === 'function' ? await pickImage(opts) : null;
+            if(!f){ closeHeaderSelection(); return; }
+            var dataUrl = typeof toDataUrl === 'function' ? await toDataUrl(f) : null;
+            if(!dataUrl){ closeHeaderSelection(); return; }
+            if(typeof applyAppetizerFilter === 'function') dataUrl = await applyAppetizerFilter(dataUrl);
+            if(typeof openPhotoEditor === 'function') dataUrl = await openPhotoEditor(dataUrl, { onAccept: function(){} });
+            raw.imageUrl = dataUrl; raw.photoData = dataUrl; raw.photoDataIsStandard = false;
+            psheetSaveDraft();
+            if(imgEl) imgEl.src = dataUrl;
+            closeHeaderSelection();
+          })();
+        };
+        var row1 = document.createElement('div');
+        row1.style.cssText = 'display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin-bottom:16px;';
+        var btnKamera = document.createElement('button');
+        btnKamera.type = 'button';
+        btnKamera.className = 'extra-pill';
+        btnKamera.style.cssText = 'cursor:pointer; padding:12px 20px;';
+        btnKamera.textContent = '📷 Kamera';
+        btnKamera.onclick = function(){ runPickImage(true); };
+        var btnGalerie = document.createElement('button');
+        btnGalerie.type = 'button';
+        btnGalerie.className = 'extra-pill';
+        btnGalerie.style.cssText = 'cursor:pointer; padding:12px 20px;';
+        btnGalerie.textContent = '🖼 Galerie';
+        btnGalerie.onclick = function(){ runPickImage(false); };
+        row1.appendChild(btnKamera); row1.appendChild(btnGalerie);
+        selectionOverlayInner.appendChild(row1);
+        var urls = getPsheetSuggestionUrls();
+        if(urls.length){
+          var labelRow = document.createElement('div');
+          labelRow.style.cssText = 'font-size:12px; font-weight:700; color:rgba(0,0,0,0.6); margin-bottom:8px;';
+          labelRow.textContent = 'KI-Vorschläge';
+          selectionOverlayInner.appendChild(labelRow);
+          var thumbRow = document.createElement('div');
+          thumbRow.style.cssText = 'display:flex; gap:12px; justify-content:center; align-items:center; flex-wrap:wrap;';
+          urls.forEach(function(url, idx){
+            var thumb = document.createElement('img');
+            thumb.src = url;
+            thumb.alt = '';
+            thumb.className = 'photo-suggestion';
+            thumb.style.cssText = 'width:72px; height:72px; object-fit:cover; border-radius:12px; cursor:pointer; border:2px solid transparent;';
+            thumb.onclick = function(){
+              try { if(typeof hapticLight === 'function') hapticLight(); } catch(e){}
+              raw.imageUrl = url; raw.photoData = url; raw.photoDataIsStandard = true;
+              psheetSaveDraft();
+              if(imgEl) imgEl.src = url;
+              closeHeaderSelection();
+            };
+            thumbRow.appendChild(thumb);
+          });
+          selectionOverlayInner.appendChild(thumbRow);
+        }
       }
     }
     function toggleHeaderSelection(type){ try { if(typeof hapticLight === 'function') hapticLight(); } catch(e){} renderPsheetSelectionContent(type); if(photoHeader) photoHeader.classList.add('is-selecting'); }
     var psheetLongPressFired = false;
-    /* Klick auf Bildbereich öffnet NICHT mehr den Wizard – Nutzer bleibt auf der Insertcard und speichert über die Buttons (mit Abholnummer / Nur Inserat). */
+    /* Klick auf Bild öffnet Bild-Modul im Header-Morph: Kamera, Galerie, 3 KI-Vorschläge. [cite: 2026-01-29, 2026-02-16] */
     preview.querySelectorAll('.psheet-card-click-area').forEach(function(el){
-      el.style.cursor = 'default';
+      el.style.cursor = 'pointer';
       el.addEventListener('click', function(ev){
         if(ev.target.closest('.psheet-share-on-image')) return;
         if(ev.target.closest('.selection-overlay')) return;
         if(psheetLongPressFired){ ev.preventDefault(); ev.stopPropagation(); return; }
         ev.preventDefault();
         ev.stopPropagation();
-        /* Kein closeProviderSheet(); kein startListingFlow – Nutzer bleibt auf der Insertcard. */
+        try { if(typeof hapticLight === 'function') hapticLight(); } catch(e){}
+        toggleHeaderSelection('photo');
       });
     });
     var shareOnImage = document.getElementById('psheetShareOnImage');
@@ -15359,6 +15487,15 @@
           if(cardEl && typeof shareCardAsImage === 'function') shareCardAsImage(cardEl, offer);
           else if(typeof shareOffer === 'function') shareOffer(offer);
         }
+      });
+    }
+    var categoryPillEl = preview.querySelector('.psheet-category-pill');
+    if(categoryPillEl){
+      categoryPillEl.style.cursor = 'pointer';
+      categoryPillEl.addEventListener('click', function(ev){
+        ev.preventDefault();
+        ev.stopPropagation();
+        toggleHeaderSelection('category');
       });
     }
     var infoTrigger = document.getElementById('psheetInfoTrigger');
@@ -15390,14 +15527,37 @@
     }
     var titleInput = document.getElementById('psheetTitleInput');
     var categoryPill = preview.querySelector('.category-pill');
+    var psheetPreloadTimer = null;
     if(titleInput){
       titleInput.addEventListener('focus', function(){ enterPsheetEditMode(); try { if(navigator.vibrate) navigator.vibrate(10); } catch(e){} });
       titleInput.addEventListener('input', function(){
         raw.dish = titleInput.value.trim(); raw.title = raw.dish;
         if(typeof save === 'function' && typeof LS !== 'undefined') save(LS.offers, offers);
+        if(!raw.categoryManuallySet){
+          var suggestedCat = getSuggestedCategory(raw.dish);
+          if(suggestedCat){
+            var prevCat = raw.category;
+            raw.category = suggestedCat;
+            if(categoryPill){
+              var catDisplayLabelsMap = { 'Fleisch': 'Mit Fleisch', 'Vegetarisch': 'Vegetarisch', 'Vegan': 'Vegan', 'Salat': 'Salat' };
+              categoryPill.textContent = (typeof CAT_EMOJI !== 'undefined' && CAT_EMOJI[raw.category] ? CAT_EMOJI[raw.category] : '') + ' ' + (catDisplayLabelsMap[raw.category] || 'Mit Fleisch');
+              if(prevCat !== suggestedCat){ categoryPill.classList.remove('psheet-category-scale'); void categoryPill.offsetWidth; categoryPill.classList.add('psheet-category-scale'); setTimeout(function(){ categoryPill.classList.remove('psheet-category-scale'); }, 320); }
+            }
+          }
+        }
+        var suggestedAllergens = getSuggestedAllergens(raw.dish);
+        raw.allergens = suggestedAllergens;
+        if(powerBarEl){ var fb = powerBarEl.querySelectorAll('.func-icon-btn'); if(fb[0]) fb[0].className = 'func-icon-btn ' + (raw.allergens && raw.allergens.length ? 'active' : ''); }
+        psheetSaveDraft();
         if(categoryPill){ categoryPill.classList.remove('jiggle'); void categoryPill.offsetWidth; categoryPill.classList.add('jiggle'); setTimeout(function(){ categoryPill.classList.remove('jiggle'); }, 150); }
         if(priceBtn){ priceBtn.classList.remove('jiggle'); void priceBtn.offsetWidth; priceBtn.classList.add('jiggle'); setTimeout(function(){ priceBtn.classList.remove('jiggle'); }, 150); }
         updatePsheetDecisionZone();
+        if(psheetPreloadTimer) clearTimeout(psheetPreloadTimer);
+        psheetPreloadTimer = setTimeout(function(){
+          var urls = getPsheetSuggestionUrls();
+          urls.forEach(function(url){ var img = new Image(); img.src = url; });
+          psheetPreloadTimer = null;
+        }, 400);
       });
       titleInput.addEventListener('blur', function(){ raw.dish = titleInput.value.trim(); raw.title = raw.dish; if(typeof save === 'function' && typeof LS !== 'undefined') save(LS.offers, offers); updatePsheetDecisionZone(); });
       titleInput.addEventListener('keydown', function(ev){ if(ev.key === 'Enter'){ ev.preventDefault(); titleInput.blur(); } });
@@ -23678,18 +23838,21 @@
   /** Emoji pro Allergen (für kleine Pills). */
   const ALLERGEN_EMOJI = { GL:'🌾', KR:'🦐', EI:'🥚', FI:'🐟', EN:'🥜', SO:'🫘', MI:'🥛', SF:'🌰', SE:'🥬', SN:'🟡', SS:'⚪', SU:'🍷', LU:'🫘', WE:'🦑' };
   /** Gerichtname (lowercase) → vorgeschlagene Allergen-Codes (short). Bei Eingabe vorauswählen. */
+  /** Gerichtname (lowercase) → Allergen-Kürzel für Vorselektion im Header-Morph [🌾]. Smart-Pill [cite: 2026-02-16]. */
   const DISH_ALLERGEN_SUGGESTIONS = {
     kürbissuppe:[], kartoffelsuppe:[], tomatensuppe:[], linsensuppe:[],
-    schnitzel:['GL','EI'], gulasch:['GL'], käsespätzle:['GL','MI'], pasta:['GL','EI'],
+    schnitzel:['GL','EI'], gulasch:['GL'], käsespätzle:['GL','MI'], kaesespaetzle:['GL','MI'], pasta:['GL','EI'],
     pizza:['GL','MI'], wrap:['GL'], burger:['GL','EI'], falafel:['SO'],
-    lachs:['FI'], sushi:['FI'], thunfisch:['FI']
+    lachs:['FI'], sushi:['FI'], thunfisch:['FI'], omelett:['EI'], steak:[], wurst:['GL','MI'], lasagne:['GL','MI','EI']
   };
-  /** Gerichtname (lowercase) → Kategorie (Fleisch|Vegetarisch|Vegan|Salat) für Autovervollständigung. */
+  /** Gerichtname (lowercase) → Kategorie (Fleisch|Vegetarisch|Vegan|Salat) für Autovervollständigung. Smart-Pill [cite: 2026-02-16]. */
   const DISH_CATEGORY_SUGGESTIONS = {
     kürbissuppe:'Vegetarisch', kartoffelsuppe:'Vegetarisch', tomatensuppe:'Vegetarisch', linsensuppe:'Vegetarisch',
-    schnitzel:'Fleisch', gulasch:'Fleisch', käsespätzle:'Vegetarisch', pasta:'Fleisch', pizza:'Fleisch',
+    schnitzel:'Fleisch', gulasch:'Fleisch', käsespätzle:'Vegetarisch', kaesespaetzle:'Vegetarisch', pasta:'Fleisch', pizza:'Fleisch',
     wrap:'Fleisch', burger:'Fleisch', falafel:'Vegan', lachs:'Fleisch', sushi:'Fleisch', thunfisch:'Fleisch',
-    salat:'Salat', curry:'Fleisch', gemüsepfanne:'Vegetarisch', risotto:'Vegetarisch', lasagne:'Fleisch'
+    salat:'Salat', curry:'Fleisch', gemüsepfanne:'Vegetarisch', risotto:'Vegetarisch', lasagne:'Fleisch',
+    linsensalat:'Vegan', gazpacho:'Vegan', omelett:'Vegetarisch', wurst:'Fleisch', steak:'Fleisch', zwiebelrostbraten:'Fleisch',
+    roulade:'Fleisch', leberkäse:'Fleisch', frikadelle:'Fleisch', currywurst:'Fleisch', hummus:'Vegan'
   };
   /** Goldene Sammelkarte: Kurze Beschreibungs-Snippets für Autovervollständigung [cite: 2026-01-29]. */
   const DISH_DESCRIPTION_SUGGESTIONS = {
