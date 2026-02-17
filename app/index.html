@@ -16203,8 +16203,8 @@
       var fact = getSuccessFactForRenner(c, allOrders);
       card.innerHTML = '<img class="renner-card-img" src="'+(typeof esc==='function'?esc(imgUrl):String(imgUrl).replace(/"/g,'&quot;'))+'" alt=""><div class="renner-card-icons">'+icons+'</div><div class="renner-card-body"><div class="renner-card-name">'+(typeof esc==='function'?esc(c.dish||'Gericht'):String(c.dish||'Gericht').replace(/</g,'&lt;'))+'</div><div class="renner-card-fact">'+fact+'</div><button type="button" class="renner-card-btn">Heute anbieten</button></div>';
       var btn = card.querySelector('.renner-card-btn');
-      if(btn) btn.onclick = function(e){ e.stopPropagation(); if(typeof haptic==='function') haptic(8); closeCreateFlowSheet(); startListingFlow({ dishId: c.id, date: createFlowPreselectedDate || (typeof isoDate==='function'?isoDate(new Date()):''), entryPoint: 'dashboard' }); };
-      card.onclick = function(e){ if(e.target===btn || btn.contains(e.target)) return; if(typeof haptic==='function') haptic(8); closeCreateFlowSheet(); startListingFlow({ dishId: c.id, date: createFlowPreselectedDate || (typeof isoDate==='function'?isoDate(new Date()):''), entryPoint: 'dashboard' }); };
+      if(btn) btn.onclick = function(e){ e.stopPropagation(); if(typeof haptic==='function') haptic(8); closeCreateFlowSheet(); startListingFlow({ dishId: c.id, date: createFlowPreselectedDate || (typeof isoDate==='function'?isoDate(new Date()):''), entryPoint: 'dashboard', skipQuickPost: true }); };
+      card.onclick = function(e){ if(e.target===btn || btn.contains(e.target)) return; if(typeof haptic==='function') haptic(8); closeCreateFlowSheet(); startListingFlow({ dishId: c.id, date: createFlowPreselectedDate || (typeof isoDate==='function'?isoDate(new Date()):''), entryPoint: 'dashboard', skipQuickPost: true }); };
       scroll.appendChild(card);
     });
   }
