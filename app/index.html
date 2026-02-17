@@ -15336,16 +15336,16 @@
     }
     function toggleHeaderSelection(type){ try { if(typeof hapticLight === 'function') hapticLight(); } catch(e){} renderPsheetSelectionContent(type); if(photoHeader) photoHeader.classList.add('is-selecting'); }
     var psheetLongPressFired = false;
+    /* Klick auf Bildbereich öffnet NICHT mehr den Wizard – Nutzer bleibt auf der Insertcard und speichert über die Buttons (mit Abholnummer / Nur Inserat). */
     preview.querySelectorAll('.psheet-card-click-area').forEach(function(el){
-      el.style.cursor = 'pointer';
+      el.style.cursor = 'default';
       el.addEventListener('click', function(ev){
         if(ev.target.closest('.psheet-share-on-image')) return;
+        if(ev.target.closest('.selection-overlay')) return;
         if(psheetLongPressFired){ ev.preventDefault(); ev.stopPropagation(); return; }
         ev.preventDefault();
         ev.stopPropagation();
-        if(typeof hapticLight === 'function') hapticLight(); else if(navigator.vibrate) navigator.vibrate(10);
-        closeProviderSheet();
-        startListingFlow({ editOfferId: raw.id });
+        /* Kein closeProviderSheet(); kein startListingFlow – Nutzer bleibt auf der Insertcard. */
       });
     });
     var shareOnImage = document.getElementById('psheetShareOnImage');
