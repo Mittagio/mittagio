@@ -820,8 +820,9 @@
     #saveSuccessSheetBd:not(.active),
     #abholnummerExplainBd:not(.active){ display:none !important; opacity:0 !important; pointer-events:none !important; }
     #pricingFairnessBd:not(.active){ display:none !important; opacity:0 !important; pointer-events:none !important; }
-    #pricingFairnessOverlay:not(.active){ display:none !important; }
-    #pricingFairnessOverlay.active{ display:block !important; }
+    /* Preisübersicht als Bottom-Sheet (S25): von unten hochgleitend */
+    #pricingFairnessOverlay { position: fixed !important; bottom: 0 !important; left: 0 !important; right: 0 !important; max-height: 85vh; overflow-y: auto; transform: translateY(100%); transition: transform 0.35s ease-out, visibility 0s linear 0.35s; pointer-events: none; visibility: hidden; border-radius: 20px 20px 0 0; }
+    #pricingFairnessOverlay.active { transform: translateY(0); transition: transform 0.35s ease-out; pointer-events: auto; visibility: visible; }
     #quickPostSheet:not(.active),
     #publishFeeSheet:not(.active),
     #inseratSuccessSheet:not(.active),
@@ -2494,20 +2495,21 @@
       display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px 16px;
       padding: 12px 16px; border-bottom: 1px solid rgba(0,0,0,0.04); flex-shrink: 0; background: rgba(0,0,0,0.02);
     }
+    /* Power-Bar Icons 20% kleiner (Spec S25) */
     #psheet .psheet-power-bar .status-pill {
-      min-width: 44px; min-height: 44px; padding: 8px; display: inline-flex; align-items: center; justify-content: center;
-      border-radius: 12px; border: 2px solid rgba(0,0,0,0.08); background: rgba(0,0,0,0.04);
-      font-size: 18px; transition: transform 0.1s cubic-bezier(0.4,0,0.2,1);
+      min-width: 35px; min-height: 35px; padding: 6px; display: inline-flex; align-items: center; justify-content: center;
+      border-radius: 10px; border: 2px solid rgba(0,0,0,0.08); background: rgba(0,0,0,0.04);
+      font-size: 14px; transition: transform 0.1s cubic-bezier(0.4,0,0.2,1);
     }
     #psheet .psheet-power-bar .status-pill.active { background: #10b981; color: #fff; border-color: rgba(16,185,129,0.4); box-shadow: 0 4px 14px rgba(16,185,129,0.4); }
     #psheet .psheet-power-bar .status-pill.inactive { opacity: 0.6; filter: grayscale(0.4); }
     #psheet .psheet-power-bar .func-icon-btn {
-      width: 44px; height: 44px; min-width: 44px; min-height: 44px; border-radius: 12px;
-      display: inline-flex; align-items: center; justify-content: center; font-size: 20px;
+      width: 35px; height: 35px; min-width: 35px; min-height: 35px; border-radius: 10px;
+      display: inline-flex; align-items: center; justify-content: center; font-size: 16px;
       border: 2px solid rgba(0,0,0,0.08); background: rgba(0,0,0,0.04);
     }
     #psheet .psheet-power-bar .func-icon-btn.active { background: #10b981; color: #fff; border-color: rgba(16,185,129,0.4); box-shadow: 0 2px 10px rgba(16,185,129,0.3); }
-    #psheet .psheet-power-bar .power-bar-legend-trigger { min-width: 44px; min-height: 44px; display: inline-flex; align-items: center; justify-content: center; color: #94a3b8; font-size: 14px; border: none; background: transparent; font-family: inherit; margin: 0; }
+    #psheet .psheet-power-bar .power-bar-legend-trigger { min-width: 35px; min-height: 35px; display: inline-flex; align-items: center; justify-content: center; color: #94a3b8; font-size: 11px; border: none; background: transparent; font-family: inherit; margin: 0; }
     #psheet .psheet-power-bar button.status-pill,
     #psheet .psheet-power-bar button.func-icon-btn { font-family: inherit; margin: 0; }
     #psheet .psheet-card-title { margin: 0 0 12px; font-size: 24px; font-weight: 800; color: #0f172a; letter-spacing: -0.03em; line-height: 1.2; }
@@ -2568,20 +2570,21 @@
     /* Category-Pill: Companion-Bounce, Sync mit Titel-Fokus [cite: 2026-02-16] */
     #psheet .category-pill { transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); display: inline-block; padding: 4px 12px; border-radius: 20px; background: #f1f5f9; font-size: 0.85rem; font-weight: 600; color: #64748b; margin-top: 6px; }
     #psheet .dish-title-input:focus + .category-pill { transform: translateY(-5px); background: #fff; color: #0f172a; box-shadow: 0 4px 12px rgba(16,185,129,0.2); }
-    @keyframes pill-jiggle { 0% { transform: translateY(-5px) scale(1); } 50% { transform: translateY(-7px) scale(1.05); } 100% { transform: translateY(-5px) scale(1); } }
-    #psheet .category-pill.jiggle { animation: pill-jiggle 0.15s ease-out; }
+    /* Companion-Bounce: elastischer synchroner Bounce (cubic-bezier 0.34, 1.56, 0.64, 1) */
+    @keyframes companion-bounce { 0% { transform: scale(1) translateY(0); } 30% { transform: scale(1.08) translateY(-6px); } 60% { transform: scale(1.02) translateY(-2px); } 100% { transform: scale(1) translateY(0); } }
+    #psheet .category-pill.jiggle { animation: companion-bounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
     #psheet .category-pill.psheet-category-scale { animation: psheet-category-scale-up 0.32s ease-out; }
     @keyframes psheet-category-scale-up { 0%{transform:scale(1)} 45%{transform:scale(1.08)} 100%{transform:scale(1)} }
     #psheet .dish-title-input:not(:focus) + .category-pill { transform: translateY(0); }
     /* Price-Button: Harmonic Pulse beim Tippen [cite: 2026-02-16] */
     #psheet .price-button-yellow { transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); transform-origin: right center; }
-    @keyframes price-pulse { 0% { transform: scale(1) translateX(0); filter: brightness(1); } 50% { transform: scale(1.05) translateX(3px); filter: brightness(1.1); } 100% { transform: scale(1) translateX(0); filter: brightness(1); } }
-    #psheet .price-button-yellow.jiggle { animation: price-pulse 0.15s ease-out; }
+    #psheet .price-button-yellow.jiggle { animation: companion-bounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
     /* Universal-X: Pop-Away Exit [cite: 2026-02-16] */
     #psheet .universal-x { position: absolute; top: 12px; right: 12px; z-index: 15; width: 44px; height: 44px; border-radius: 50%; border: none; background: rgba(255,255,255,0.95); color: #64748b; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); transition: transform 0.2s ease; }
     #psheet .universal-x:hover { color: #1a1a1a; }
-    @keyframes x-pop-away { 0% { transform: scale(1); opacity: 1; } 30% { transform: scale(0.8); opacity: 1; } 60% { transform: scale(1.3); opacity: 0.5; } 100% { transform: scale(0); opacity: 0; } }
-    #psheet .universal-x.exit-active { animation: x-pop-away 0.3s forwards cubic-bezier(0.34, 1.56, 0.64, 1); pointer-events: none; }
+    /* Universal-X Implosion (S25): ploppt mit Implosion weg */
+    @keyframes x-pop-away { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(0); opacity: 0; } }
+    #psheet .universal-x.exit-active { animation: x-pop-away 0.2s forwards ease-in; pointer-events: none; }
     #psheet .sheet-body.psheet-body { position: relative; }
     #psheet .psheet-legend-popover { position: absolute; left: 0; right: 0; bottom: 0; top: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); z-index: 20; display: flex; align-items: center; justify-content: center; padding: 20px; }
     #psheet .psheet-legend-inner { background: #fff; border-radius: 16px; padding: 20px; max-width: 320px; width: 100%; box-shadow: 0 20px 40px rgba(0,0,0,0.15); }
@@ -8766,7 +8769,7 @@
 
 <!-- Fairness-Overlay (Pricing): öffnet bei Klick auf ⓘ neben Umsatzprognose -->
 <div class="backdrop" id="pricingFairnessBd" onclick="closePricingFairnessOverlay()" style="z-index:1197;"></div>
-<div id="pricingFairnessOverlay" class="pricing-fairness-overlay" style="display:none; position:fixed; left:50%; top:50%; transform:translate(-50%,-50%); max-width:min(400px, calc(100vw - 32px)); width:100%; padding:24px; border-radius:20px; background:rgba(255,255,255,0.92); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,0.6); box-shadow:0 20px 50px rgba(0,0,0,0.12); z-index:1198;">
+<div id="pricingFairnessOverlay" class="pricing-fairness-overlay" style="width:100%; max-width:min(400px, calc(100vw - 32px)); margin:0 auto; padding:24px; padding-bottom:max(24px, env(safe-area-inset-bottom)); background:rgba(255,255,255,0.92); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,0.6); border-bottom:none; box-shadow:0 -10px 40px rgba(0,0,0,0.12); z-index:1198;">
   <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
     <h3 style="margin:0; font-size:18px; font-weight:900; color:#1a1a1a;">Preisübersicht</h3>
     <button type="button" onclick="closePricingFairnessOverlay()" aria-label="Schließen" style="width:40px; height:40px; border:none; background:rgba(0,0,0,0.06); border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:18px; color:#64748b;">×</button>
@@ -15328,6 +15331,7 @@
       '<button type="button" class="psheet-share-on-image" id="psheetShareOnImage" aria-label="Teilen" title="Teilen">📤</button>' +
       '<img src="' + esc(imgSrc) + '" alt="' + esc(o.dish||'') + '" style="width:100%;height:100%;object-fit:cover;display:block;" />' +
       '<div class="selection-overlay"><div class="selection-overlay-inner"></div></div>' +
+      '<button type="button" class="psheet-photo-change" aria-label="Foto ändern">📷 Foto ändern</button>' +
       '</div>' +
       powerBarHtml +
       '<div class="psheet-card-body">' +
@@ -15552,8 +15556,8 @@
         raw.allergens = suggestedAllergens;
         if(powerBarEl){ var fb = powerBarEl.querySelectorAll('.func-icon-btn'); if(fb[0]) fb[0].className = 'func-icon-btn ' + (raw.allergens && raw.allergens.length ? 'active' : ''); }
         psheetSaveDraft();
-        if(categoryPill){ categoryPill.classList.remove('jiggle'); void categoryPill.offsetWidth; categoryPill.classList.add('jiggle'); setTimeout(function(){ categoryPill.classList.remove('jiggle'); }, 150); }
-        if(priceBtn){ priceBtn.classList.remove('jiggle'); void priceBtn.offsetWidth; priceBtn.classList.add('jiggle'); setTimeout(function(){ priceBtn.classList.remove('jiggle'); }, 150); }
+        if(categoryPill){ categoryPill.classList.remove('jiggle'); void categoryPill.offsetWidth; categoryPill.classList.add('jiggle'); setTimeout(function(){ categoryPill.classList.remove('jiggle'); }, 520); }
+        if(priceBtn){ priceBtn.classList.remove('jiggle'); void priceBtn.offsetWidth; priceBtn.classList.add('jiggle'); setTimeout(function(){ priceBtn.classList.remove('jiggle'); }, 520); }
         updatePsheetDecisionZone();
         if(psheetPreloadTimer) clearTimeout(psheetPreloadTimer);
         psheetPreloadTimer = setTimeout(function(){
@@ -15680,7 +15684,7 @@
         }
         if(titleInput) titleInput.blur();
         closeX.classList.add('exit-active');
-        setTimeout(function(){ closeProviderSheet(); }, 300);
+        setTimeout(function(){ closeProviderSheet(); }, 220);
       });
     }
     var longPressTimer;
