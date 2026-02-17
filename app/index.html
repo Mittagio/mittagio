@@ -3973,23 +3973,24 @@
       }
     }
     
+    /* Premium Card Design: horizontales Layout, 140px Höhe (Discover Kunde, S25-optimiert) */
     .dish-card {
       display: flex;
-      min-height: 88px;
-      max-height: 100px;
-      padding: 8px;
+      min-height: 120px;
+      max-height: 140px;
+      padding: 8px 10px;
       background: #ffffff;
       border-radius: 14px;
       overflow: visible;
       border: 1px solid rgba(0,0,0,0.05);
       box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-      margin-bottom: 6px; /* Abstand zwischen Karten */
+      margin-bottom: 6px;
       cursor: pointer;
       transition: transform 0.2s ease, box-shadow 0.2s ease;
       position: relative;
       max-width: 100%;
       box-sizing: border-box;
-      width: 100%; /* Volle Breite für vertikale Liste */
+      width: 100%;
     }
     .dish-card:active {
       transform: scale(0.98);
@@ -3997,8 +3998,9 @@
     .dish-card:hover {
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
-    /* Linke Seite: Bild - Kompakt als Thumbnail (max. 100px quadratisch) */
-    .dish-image-box {
+    /* Linke Seite: Bild – Thumbnail quadratisch (100px Standard, S25 über .dish-card-thumb) */
+    .dish-image-box,
+    .dish-card-thumb {
       width: 100px;
       min-width: 100px;
       height: 100px;
@@ -4344,6 +4346,34 @@
       .discover-offers {
         padding: 10px 8px !important;
         gap: 5px !important;
+      }
+    }
+    /* Discover (Kunde): Kacheln für Samsung S25 (~384–412px) – 140px Kartenhöhe, Touch-optimiert */
+    @media (max-width: 430px) {
+      body:not(.provider-mode) #v-discover .discover-main {
+        padding: 14px 12px;
+        padding-bottom: calc(160px + env(safe-area-inset-bottom, 0));
+      }
+      body:not(.provider-mode) #discoverOffers.discover-offers-list {
+        gap: 10px;
+        padding: 0 2px 8px;
+      }
+      body:not(.provider-mode) #v-discover .dish-card {
+        min-height: 132px;
+        max-height: 152px;
+        padding: 10px;
+        margin-bottom: 8px;
+      }
+      body:not(.provider-mode) #v-discover .dish-card .dish-card-thumb {
+        width: 112px !important;
+        min-width: 112px !important;
+        height: 112px !important;
+        max-width: 112px !important;
+        max-height: 112px !important;
+      }
+      body:not(.provider-mode) #v-discover .dish-card .dish-name {
+        font-size: 15px;
+        -webkit-line-clamp: 2;
       }
     }
     /* Provider-Layout: Optimiert für kleine Bildschirme (Samsung S25, ~360-412px) */
@@ -13282,11 +13312,11 @@
       ? {text: 'Abholnummer', icon: '🧾', color: '#27AE60', bg: 'rgba(39,174,96,0.15)', border: 'rgba(39,174,96,0.3)'}
       : {text: 'Nur Info', icon: '👁️', color: '#64748b', bg: 'rgba(100,116,139,0.1)', border: 'rgba(100,116,139,0.2)'};
     
-    // Kompaktes horizontales Layout: Bild links (quadratisch), Text rechts
+    // Kompaktes horizontales Layout: Bild links (quadratisch), Text rechts (S25: über CSS .dish-card-thumb anpassbar)
     card.innerHTML = `
       <div style="display:flex; gap:12px; align-items:flex-start;">
-        <!-- Kompaktes Bild links (quadratisch, max. 100px) -->
-        <div style="position:relative; width:100px; height:100px; max-width:100px; max-height:100px; flex-shrink:0; border-radius:12px; overflow:hidden; background:#f0f0f0;">
+        <!-- Kompaktes Bild links (quadratisch, Standard 100px, S25 über CSS) -->
+        <div class="dish-card-thumb" style="position:relative; width:100px; height:100px; max-width:100px; max-height:100px; flex-shrink:0; border-radius:12px; overflow:hidden; background:#f0f0f0;">
         <img src="${esc(imgSrc)}" alt="${esc(data.dish||'')}" style="width:100%; height:100%; object-fit:cover;" />
           <!-- Service-Label (oben links) -->
           <div style="position:absolute; top:4px; left:4px; background:${serviceLabel.bg}; border:1px solid ${serviceLabel.border}; color:${serviceLabel.color}; padding:3px 6px; border-radius:6px; font-size:9px; font-weight:700; display:flex; align-items:center; gap:3px; box-shadow:0 2px 4px rgba(0,0,0,0.2); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px); z-index:6; white-space:nowrap;">
