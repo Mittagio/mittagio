@@ -2560,6 +2560,8 @@
     #psheet .psheet-photo-header .psheet-photo-change:active { transform: translateX(-50%) scale(0.98); }
     /* Decision Zone: Mit Abholnummer (Grün) + Nur Inserat (Gelb) – fixiert am unteren Rand */
     #psheet .psheet-footer-sticky.psheet-decision-zone { display: flex !important; flex-direction: column; gap: 12px; padding: 16px 20px; padding-bottom: max(16px, env(safe-area-inset-bottom)); border-top: 1px solid rgba(0,0,0,0.06); background: rgba(255,255,255,0.98); flex-shrink: 0; }
+    #psheet .psheet-btn-plan-blue { width: 100%; min-height: 48px; border-radius: 14px; font-size: 15px; font-weight: 800; border: 2px solid #3b82f6; background: #3b82f6; color: #fff; cursor: pointer; transition: transform 0.12s, box-shadow 0.2s; -webkit-tap-highlight-color: transparent; }
+    #psheet .psheet-btn-plan-blue:active { transform: scale(0.98); }
     #psheet[data-mode="plan"] .pricing-info-label { display: none !important; }
     #psheet .psheet-btn-decision { width: 100%; min-height: 52px; border-radius: 16px; font-size: 16px; font-weight: 800; border: none; cursor: pointer; transition: opacity 0.25s ease, transform 0.2s, box-shadow 0.2s; }
     #psheet .psheet-btn-decision.psheet-btn-green { background: #10b981; color: #fff; box-shadow: 0 4px 14px rgba(16,185,129,0.4); }
@@ -4895,6 +4897,8 @@
       #v-provider-week .kw-slot-main .kw-slot-name{ font-size:14px; font-weight:800; color:#1a1a1a; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
       #v-provider-week .kw-slot-main .kw-slot-price{ font-size:15px; font-weight:900; color:#1a1a1a; margin-top:2px; }
       #v-provider-week .kw-slot-override-badges{ position:absolute; top:4px; right:4px; display:flex; gap:2px; font-size:12px; }
+      #v-provider-week .kw-slot-main.kw-slot-filled,
+      #v-provider-week .kw-slot-small.kw-slot-filled{ box-shadow:0 0 0 2px rgba(16,185,129,0.35); border-color:rgba(16,185,129,0.4); }
       #v-provider-week .kw-slot-blitz{ position:absolute; top:4px; left:4px; width:28px; height:28px; border-radius:50%; border:none; background:rgba(255,255,255,0.9); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); box-shadow:0 1px 6px rgba(0,0,0,0.12); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:14px; z-index:2; -webkit-tap-highlight-color:transparent; }
       #v-provider-week .kw-slot-blitz:active{ transform:scale(0.92); }
       #v-provider-week .kw-slot-empty{ min-height:52px; border:2px dashed #e2e8f0; border-radius:14px; background:rgba(248,250,252,0.6); display:flex; align-items:center; justify-content:center; color:#cbd5e1; font-size:24px; font-weight:200; letter-spacing:0.08em; transition:color 0.2s, border-color 0.2s, background 0.2s; cursor:pointer; font-family:inherit; padding:0; margin:0; width:100%; box-sizing:border-box; -webkit-appearance:none; appearance:none; }
@@ -4915,6 +4919,7 @@
       #v-provider-week .kw-cookbook-drag-label{ font-size:13px; font-weight:700; color:#64748b; margin-right:4px; }
       #v-provider-week .kw-cookbook-drag-pill{ padding:8px 14px; border-radius:12px; background:rgba(255,255,255,0.8); border:1px solid rgba(16,185,129,0.35); color:#0f766e; font-size:13px; font-weight:700; cursor:grab; user-select:none; transition:transform 0.15s, box-shadow 0.15s; }
       #v-provider-week .kw-cookbook-drag-pill:active{ cursor:grabbing; }
+      #v-provider-week .kw-cookbook-drag-pill.dragging{ transform:scale(0.95); opacity:0.8; cursor:grabbing; }
       #v-provider-week .kw-cookbook-drag-pill:hover{ box-shadow:0 2px 12px rgba(16,185,129,0.2); transform:scale(1.02); }
       #v-provider-week .kw-slot.kw-slot-drop-over,
       #v-provider-week .kw-slot-empty.kw-slot-drop-over{ box-shadow:0 0 0 2px #10b981, 0 0 20px rgba(16,185,129,0.35); border-color:#10b981; background:rgba(16,185,129,0.06); }
@@ -8454,6 +8459,7 @@
     <button type="button" class="universal-x" id="psheetCloseX" aria-label="Schließen" title="Schließen">✕</button>
     <div id="pPreview"></div>
     <div class="psheet-footer-sticky psheet-decision-zone" id="psheetDecisionZone">
+      <button type="button" id="btnPsheetPlanBlue" class="psheet-btn-plan-blue btn-plan-blue" aria-label="Für später einplanen">📖 Für später einplanen</button>
       <div class="pricing-info-label" id="psheetPricingLabel" role="button" tabindex="0" aria-label="Preisübersicht anzeigen" style="margin-bottom:8px;">Preisübersicht ⓘ</div>
       <button type="button" id="btnPsheetMitAbholnummer" class="psheet-btn-decision psheet-btn-green" aria-label="mit Abholnummer">mit Abholnummer</button>
       <button type="button" id="btnPsheetNurInserat" class="psheet-btn-decision psheet-btn-yellow" aria-label="Nur Inserat">Nur Inserat</button>
@@ -15529,6 +15535,51 @@
           });
           selectionOverlayInner.appendChild(thumbRow);
         }
+      } else if(type === 'plandate'){
+        selectionOverlayInner.classList.add('selection-overlay-inner--time');
+        var plandateChosen = typeof isoDate === 'function' ? isoDate(new Date()) : '';
+        var row = document.createElement('div');
+        row.style.cssText = 'display:flex; align-items:center; justify-content:center; gap:8px; flex-wrap:wrap; padding:16px;';
+        for(var i = 0; i < 14; i++){
+          var d = new Date(); d.setDate(d.getDate() + i);
+          var key = typeof isoDate === 'function' ? isoDate(d) : '';
+          var label = i === 0 ? 'Heute' : (i === 1 ? 'Morgen' : (d.getDate() + '.' + (d.getMonth()+1) + '.'));
+          var btnDay = document.createElement('button');
+          btnDay.type = 'button';
+          btnDay.className = 'extra-pill' + (key === plandateChosen ? ' active' : '');
+          btnDay.style.cssText = 'cursor:pointer; padding:10px 14px;';
+          btnDay.textContent = label;
+          btnDay.dataset.date = key;
+          (function(k){ btnDay.onclick = function(){ try { if(typeof hapticLight === 'function') hapticLight(); } catch(e){} plandateChosen = k; row.querySelectorAll('button').forEach(function(b){ b.className = 'extra-pill' + (b.dataset.date === k ? ' active' : ''); }); if(btnPlan){ var x = new Date(k + 'T12:00:00'); btnPlan.textContent = 'Für ' + x.getDate() + '.' + (x.getMonth()+1) + '. einplanen'; } }; })(key);
+          row.appendChild(btnDay);
+        }
+        selectionOverlayInner.appendChild(row);
+        var btnPlan = document.createElement('button');
+        btnPlan.type = 'button';
+        var fmtDate = function(iso){ if(!iso) return 'Datum'; var x = new Date(iso + 'T12:00:00'); return x.getDate() + '.' + (x.getMonth()+1) + '.'; };
+        btnPlan.textContent = 'Für ' + fmtDate(plandateChosen) + ' einplanen';
+        btnPlan.style.cssText = 'padding:14px 24px; border-radius:14px; border:none; background:#3b82f6; color:#fff; font-weight:800; cursor:pointer; margin-top:12px;';
+        btnPlan.onclick = function(){
+          try { if(typeof hapticLight === 'function') hapticLight(); } catch(e){}
+          if(!plandateChosen || typeof addCookbookEntryToWeek !== 'function') { closeHeaderSelection(); return; }
+          var cookbookIdVal = raw.cookbookId;
+          if(!cookbookIdVal && typeof cookbook !== 'undefined' && Array.isArray(cookbook)){
+            var newEntry = { id: typeof cryptoId === 'function' ? cryptoId() : 'cb_'+Date.now(), providerId: typeof providerId === 'function' ? providerId() : '', dish: (raw.dish || raw.title || '').trim(), category: raw.category || 'Fleisch', price: Number(raw.price) || 8.5, allergens: Array.isArray(raw.allergens) ? raw.allergens.slice() : [], extras: Array.isArray(raw.extras) ? raw.extras.slice() : [], photoData: raw.photoData || raw.imageUrl || '' };
+            cookbook.push(newEntry);
+            if(typeof save === 'function' && typeof LS !== 'undefined') save(LS.cookbook, cookbook);
+            raw.cookbookId = newEntry.id;
+            psheetSaveDraft();
+            cookbookIdVal = newEntry.id;
+          }
+          if(cookbookIdVal) addCookbookEntryToWeek(plandateChosen, cookbookIdVal);
+          if(typeof showToast === 'function') showToast('Für ' + plandateChosen + ' eingeplant');
+          closeHeaderSelection();
+          closeProviderSheet();
+          if(psheetOpenSource === 'week'){ if(typeof showProviderWeek === 'function') showProviderWeek(); if(typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard(); else if(typeof renderProviderWeekPreview === 'function') renderProviderWeekPreview(); }
+          else if(psheetOpenSource === 'cookbook'){ if(typeof showProviderCookbook === 'function') showProviderCookbook(); if(typeof renderCookbook === 'function') renderCookbook(); }
+          else { if(typeof renderProviderHome === 'function') renderProviderHome(); }
+        };
+        selectionOverlayInner.appendChild(btnPlan);
       }
     }
     function toggleHeaderSelection(type){ try { if(typeof hapticLight === 'function') hapticLight(); } catch(e){} renderPsheetSelectionContent(type); if(photoHeader) photoHeader.classList.add('is-selecting'); }
@@ -15598,9 +15649,14 @@
     function applyPsheetDecisionZoneMode(mode){
       var btnGreen = document.getElementById('btnPsheetMitAbholnummer');
       var btnYellow = document.getElementById('btnPsheetNurInserat');
+      var btnBlue = document.getElementById('btnPsheetPlanBlue');
       var pricingLabelEl = document.getElementById('psheetPricingLabel');
       var zone = document.getElementById('psheetDecisionZone');
       if(!zone) return;
+      if(btnBlue){
+        if(mode === 'plan'){ btnBlue.textContent = '📖 Datum für Wochenplan wählen'; btnBlue.setAttribute('aria-label', 'Datum für Wochenplan wählen'); }
+        else { btnBlue.textContent = '📖 Für später einplanen'; btnBlue.setAttribute('aria-label', 'Für später einplanen'); }
+      }
       if(mode === 'plan'){
         if(btnGreen){ btnGreen.textContent = 'Im Kochbuch speichern'; btnGreen.setAttribute('aria-label', 'Im Kochbuch speichern'); }
         if(btnYellow){ btnYellow.textContent = 'Abbrechen'; btnYellow.setAttribute('aria-label', 'Abbrechen'); }
@@ -15706,6 +15762,14 @@
     if(pricingLabelEl){
       pricingLabelEl.addEventListener('click', function(ev){ ev.preventDefault(); ev.stopPropagation(); try { if(typeof hapticLight === 'function') hapticLight(); else if(navigator.vibrate) navigator.vibrate(10); } catch(e){} if(typeof openPricingFairnessOverlay === 'function') openPricingFairnessOverlay(); });
       pricingLabelEl.addEventListener('keydown', function(ev){ if(ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); pricingLabelEl.click(); } });
+    }
+    var btnBlue = document.getElementById('btnPsheetPlanBlue');
+    if(btnBlue){
+      btnBlue.addEventListener('click', function(ev){
+        ev.preventDefault();
+        try { if(navigator.vibrate) navigator.vibrate(10); if(typeof hapticLight === 'function') hapticLight(); } catch(e){}
+        toggleHeaderSelection('plandate');
+      });
     }
     var btnGreen = document.getElementById('btnPsheetMitAbholnummer');
     var btnYellow = document.getElementById('btnPsheetNurInserat');
@@ -20675,8 +20739,11 @@
         pill.ondragstart = function(e){
           e.dataTransfer.setData('text/plain', pill.getAttribute('data-cookbook-id'));
           e.dataTransfer.effectAllowed = 'copy';
+          pill.classList.add('dragging');
+          try { if(navigator.vibrate) navigator.vibrate(15); } catch(err){}
           if(typeof haptic === 'function') haptic(6);
         };
+        pill.ondragend = function(){ pill.classList.remove('dragging'); };
       });
     }
     grid.innerHTML = '';
@@ -20715,7 +20782,7 @@
           var kwPowerBar = '<div class="week-power-bar kw-slot-power">' + kwPowerIcon('🍴', entryDineIn, false) + kwPowerIcon('🕒', hasTime, !hasTime) + kwPowerIcon('🧾', entryPickup, false) + kwPowerIcon('🔄', entryReuse, false) + '</div>';
           if (slot === 0) {
             var slotEl = document.createElement('div');
-            slotEl.className = 'kw-slot kw-slot-main' + (isLive ? ' kw-slot-live' : '');
+            slotEl.className = 'kw-slot kw-slot-main kw-slot-filled' + (isLive ? ' kw-slot-live' : '');
             slotEl.setAttribute('data-day', key);
             slotEl.setAttribute('data-slot', String(slot));
             if (!isLive) slotEl.setAttribute('data-draft', '1');
@@ -20726,7 +20793,7 @@
             slotsWrap.appendChild(slotEl);
           } else {
             var slotSmall = document.createElement('div');
-            slotSmall.className = 'kw-slot kw-slot-small' + (isLive ? ' kw-slot-live' : '');
+            slotSmall.className = 'kw-slot kw-slot-small kw-slot-filled' + (isLive ? ' kw-slot-live' : '');
             slotSmall.setAttribute('data-day', key);
             slotSmall.setAttribute('data-slot', String(slot));
             if (!isLive) slotSmall.setAttribute('data-draft', '1');
@@ -20760,6 +20827,7 @@
         slotEl.classList.remove('kw-slot-drop-over');
         var cookbookId = e.dataTransfer.getData('text/plain');
         if(!cookbookId || typeof addCookbookEntryToWeek !== 'function') return;
+        try { if(navigator.vibrate) navigator.vibrate(10); } catch(err){}
         addCookbookEntryToWeek(dayKey, cookbookId);
         if(typeof haptic === 'function') haptic(6);
         renderWeekPlanBoard();
@@ -21251,6 +21319,10 @@
     renderProviderWeekPreview();
     toast((c.dish || 'Gericht') + ' hinzugefügt');
   }
+  function assignToDate(mealId, date){
+    addCookbookEntryToWeek(date, mealId);
+  }
+  if(typeof window !== 'undefined') window.assignToDate = assignToDate;
   function replaceWeekEntry(dayKey, index, cookbookId){
     var c = (cookbook||[]).find(function(x){ return String(x.id) === String(cookbookId); });
     if(!c || c.providerId !== providerId()) return;

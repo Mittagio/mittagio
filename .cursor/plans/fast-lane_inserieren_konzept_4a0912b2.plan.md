@@ -1,5 +1,7 @@
 # Fast-Lane Inserieren: Smart-Context, Blitz, Blauer Button, Wochenplan
 
+**Status: umgesetzt** (Phasen 1–4; alle Punkte aus Abschnitt 6 erledigt)
+
 ## Ausgangslage
 
 - **Psheet (Sammelkarte):** Wird in `openProviderOffer(id, options)` aufgebaut; `psheetOpenSource = options.source` ist bereits vorhanden (`'dashboard' | 'week' | 'cookbook'`). Decision Zone: [app/index.html](app/index.html) Zeile 8450–8454. Logik: ca. 15548–15693.
