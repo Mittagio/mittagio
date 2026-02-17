@@ -1,0 +1,53 @@
+---
+description: Architektur-Klarstellung – openDishFlow (Initiator) vs. InseratCard (UI). Verhindert Logik-Fehler und falsche UI-Zuordnung.
+alwaysApply: true
+---
+
+# ARCHITEKTUR: DISH-FLOW VS. INSERAT-CARD
+
+**Trennung strikt einhalten.** Cursor darf keine UI-Logik in den Initiator schreiben und keine Flow-Start-Logik in die InseratCard.
+
+## 1. Der Initiator (openDishFlow)
+
+- **Keine UI-Komponente**, reine Logik-Funktion. [cite: 2026-02-16]
+- **Aufgabe:** Auswahl-Sheet schließen (`closeCreateFlowSheet`) und Prozess starten via `startListingFlow(ctx)`.
+- **Parameter:** `date` (Ziel-Datum), `ep` (EntryPoint: z. B. `'dashboard'` oder `'week'`).
+- **Referenz im Code:** `app/index.html` – `openDishFlow(defaultDate, entryPoint)` ruft nur `startListingFlow(ctx)` auf.
+
+**Verboten:** UI-Elemente, DOM-Zugriffe, Styles oder Rendering-Logik in `openDishFlow` einbauen.
+
+## 2. Die Komponente (InseratCard)
+
+- **Die visuelle Maske** (Wizard-Inhalt). [cite: 2026-02-16]
+- Wird **innerhalb** von `startWizard('listing', ctx)` durch **`buildListingStep()`** gerendert.
+- **Enthält:** Foto-Modul, Power-Bar (🍴, 🔄, 🕒, 🌾, ➕), editierbarer Titel, Preis, Action-Buttons am Ende („mit Abholnummer“ / „Nur Inserat“). [cite: 2026-01-29, 2026-02-16]
+- **Referenz im Code:** `app/index.html` – `buildListingStep()` baut den gesamten Inhalt des `#wizard` für den Listing-Flow.
+
+**Alle gestalterischen und inhaltlichen Änderungen an der Inserat-Karte** gehören in `buildListingStep()` bzw. die davon aufgebauten DOM-Strukturen/CSS, **nicht** in `openDishFlow`.
+
+## 3. Logik „Neues Gericht“
+
+- Wird `startListingFlow` **ohne** `dishId` aufgerufen → InseratCard mit **leerem Entwurf** öffnen (oder Leberkäse-Onboarding-Template beim ersten Mal). [cite: 2026-01-29, 2026-02-16]
+- **Vor dem Rendern:** Draft-Check durchführen – „Letzten Entwurf fortsetzen?“ (Restore/Verwerfen). [cite: 2026-02-16]
+- Der Entwurfs-Check sitzt **vor** dem Rendern der Karte (in `startListingFlow`), nicht in der InseratCard selbst.
+
+## 4. Monetarisierung in der InseratCard
+
+Die InseratCard muss am Ende **immer** zwei Optionen anbieten:
+
+- **Option A:** Gratis inserieren mit Abholnummer (0,89 € pro Vorgang für den Kunden). [cite: 2026-01-29]
+- **Option B:** „Nur Inserat“ für 4,99 € Fixpreis. [cite: 2026-01-29]
+
+## Warum die Trennung wichtig ist
+
+| Aspekt | Initiator (openDishFlow) | Komponente (InseratCard / buildListingStep) |
+|--------|--------------------------|---------------------------------------------|
+| **Wiederverwendbarkeit** | Kann von überall aufgerufen werden (Dashboard, Wochenplan, Button). | Nur für Anzeige und Eingabe zuständig. |
+| **Fehlervermeidung** | Keine UI-Elemente hier. | Gestaltung und Interaktion nur hier. |
+| **State-Management** | Übergibt nur Kontext (date, entryPoint). | Entwurfs-Check liegt vor dem Rendern in `startListingFlow`. |
+
+## Kurzreferenz
+
+- **Öffnen/Starten:** `openDishFlow(date, ep)` → `startListingFlow(ctx)` → ggf. Draft-Check → `startWizard('listing', ctx)` → **`buildListingStep()`** rendert die InseratCard.
+- **Änderungen am Flow-Start:** nur in `openDishFlow` / `startListingFlow` / Draft-Check.
+- **Änderungen an der Karte:** nur in `buildListingStep()` und zugehörigem CSS/DOM.

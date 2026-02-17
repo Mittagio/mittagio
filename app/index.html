@@ -2667,6 +2667,18 @@
     .save-scope-btn-current { background: #f1f5f9; color: #0f172a; }
     .save-scope-btn-cookbook { background: #10b981; color: #fff; }
     .save-scope-cancel { background: transparent; color: #64748b; border: none; font-size: 14px; font-weight: 700; cursor: pointer; padding: 12px; }
+    /* Draft-Restore: Ghost-Card Overlay [cite: 2026-02-16] */
+    .draft-card-ghost { filter: saturate(0.88); transition: filter 0.35s ease; }
+    .draft-restore-overlay { position: absolute; inset: 0; z-index: 20; display: flex; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; background: rgba(15,23,42,0.35); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); transition: opacity 0.3s ease, transform 0.3s ease; }
+    .draft-restore-overlay.draft-restore-overlay-out { pointer-events: none; animation: draftOverlayOut 0.3s ease forwards; }
+    @keyframes draftOverlayOut { to { transform: scale(1.2); opacity: 0; } }
+    .draft-restore-overlay .draft-restore-box { background: #0f172a; color: #fff; padding: 24px 20px; border-radius: 20px; text-align: center; max-width: 320px; width: 100%; box-shadow: 0 20px 40px rgba(0,0,0,0.25); }
+    .draft-restore-overlay .draft-restore-text { margin: 0 0 20px; font-size: 16px; font-weight: 700; line-height: 1.4; color: rgba(255,255,255,0.95); }
+    .draft-restore-overlay .draft-restore-btns { display: flex; flex-direction: column; gap: 10px; }
+    .draft-restore-overlay .draft-restore-fortsetzen { min-height: 48px; padding: 14px 20px; border: none; border-radius: 14px; background: #10b981; color: #fff; font-size: 15px; font-weight: 800; cursor: pointer; transition: transform 0.1s ease, box-shadow 0.2s ease; box-shadow: 0 4px 16px rgba(16,185,129,0.4); }
+    .draft-restore-overlay .draft-restore-fortsetzen:active { transform: scale(0.98); }
+    .draft-restore-overlay .draft-restore-neu { min-height: 44px; padding: 12px 20px; border: 1px solid rgba(255,255,255,0.25); border-radius: 12px; background: transparent; color: rgba(255,255,255,0.85); font-size: 14px; font-weight: 700; cursor: pointer; transition: background 0.2s ease, color 0.2s ease; }
+    .draft-restore-overlay .draft-restore-neu:active { background: rgba(255,255,255,0.1); }
     #psheet .psheet-state-badge.card-state-badge { position: absolute; top: 12px; left: 12px; padding: 4px 10px; border-radius: 8px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.03em; z-index: 12; display: flex; align-items: center; gap: 6px; }
     #psheet .psheet-state-badge.card-state-live { background: rgba(255,255,255,0.95); color: #1a1a1a; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
     #psheet .psheet-state-badge.card-state-live::before { content: ''; width: 8px; height: 8px; background: #22c55e; border-radius: 50%; animation: psheet-live-pulse 1.5s ease-in-out infinite; }
@@ -24264,7 +24276,7 @@
       openQuickPostSheet(context.dishId, context.date || isoDate(new Date()));
       return;
     }
-    // Entwurf-Wiederherstellung (nur Single-Page Inseratsflow – Schritt 0)
+    // Entwurf-Wiederherstellung: Ghost-Card – Karte mit Overlay rendern, Check vor voller Interaktivität [cite: 2026-02-16]
     if(!context.editOfferId){
       try {
         var draftStr = localStorage.getItem('wizard_draft');
@@ -24272,25 +24284,20 @@
           var draft = JSON.parse(draftStr);
           if(draft && draft.kind === 'listing'){
             if(draft.step !== 0){ draft.step = 0; localStorage.setItem('wizard_draft', JSON.stringify(draft)); }
-            showDraftRestorePrompt(function(choice){
-              if(choice === 'restore'){
-                draft.ctx = draft.ctx || {};
-                draft.ctx.entryPoint = context.entryPoint || draft.ctx.entryPoint;
-                draft.ctx.date = context.date || draft.ctx.date;
-                draft.data = draft.data || {};
-                draft.data.day = context.date || draft.data.day || (typeof isoDate === 'function' ? isoDate(new Date()) : '');
-                draft.step = 0;
-                w = draft;
-                var wizardEl = document.getElementById('wizard');
-                if(wizardEl) wizardEl.setAttribute('data-flow', 'listing');
-                clearWizardActionsBar();
-                openWizard();
-                buildListingStep();
-              } else {
-                localStorage.removeItem('wizard_draft');
-                startWizard('listing', context);
-              }
-            });
+            draft.ctx = draft.ctx || {};
+            draft.ctx.entryPoint = context.entryPoint || draft.ctx.entryPoint;
+            draft.ctx.date = context.date || draft.ctx.date;
+            draft.ctx.showDraftOverlay = true;
+            draft.ctx.draftRestoreContext = context;
+            draft.data = draft.data || {};
+            draft.data.day = context.date || draft.data.day || (typeof isoDate === 'function' ? isoDate(new Date()) : '');
+            draft.step = 0;
+            w = draft;
+            var wizardEl = document.getElementById('wizard');
+            if(wizardEl) wizardEl.setAttribute('data-flow', 'listing');
+            clearWizardActionsBar();
+            openWizard();
+            buildListingStep();
             return;
           }
         }
@@ -25340,6 +25347,35 @@
         var btn = overlay.querySelector('.inserat-onboarding-btn');
         if(btn) btn.onclick = function(){ hapticLight(); overlay.classList.add('is-dismissed'); };
         box.appendChild(overlay);
+      }
+
+      if(w.ctx && w.ctx.showDraftOverlay){
+        if(!box.style.position) box.style.position = 'relative';
+        box.classList.add('draft-card-ghost');
+        var draftOverlay = document.createElement('div');
+        draftOverlay.className = 'draft-restore-overlay';
+        draftOverlay.setAttribute('role','dialog');
+        draftOverlay.setAttribute('aria-label','Entwurf fortsetzen');
+        draftOverlay.innerHTML = '<div class="draft-restore-box"><p class="draft-restore-text">Du hast hier noch einen Entwurf. Möchtest du ihn fertigstellen?</p><div class="draft-restore-btns"><button type="button" class="draft-restore-fortsetzen">Fortsetzen</button><button type="button" class="draft-restore-neu">Neu starten</button></div></div>';
+        var btnFortsetzen = draftOverlay.querySelector('.draft-restore-fortsetzen');
+        var btnNeu = draftOverlay.querySelector('.draft-restore-neu');
+        if(btnFortsetzen) btnFortsetzen.onclick = function(){
+          try { if(navigator.vibrate) navigator.vibrate(10); } catch(e){}
+          hapticLight();
+          draftOverlay.classList.add('draft-restore-overlay-out');
+          setTimeout(function(){ draftOverlay.remove(); box.classList.remove('draft-card-ghost'); if(w.ctx) w.ctx.showDraftOverlay = false; }, 320);
+        };
+        if(btnNeu) btnNeu.onclick = function(){
+          try { if(navigator.vibrate) navigator.vibrate(10); } catch(e){}
+          hapticLight();
+          draftOverlay.classList.add('draft-restore-overlay-out');
+          setTimeout(function(){
+            draftOverlay.remove();
+            localStorage.removeItem('wizard_draft');
+            startWizard('listing', w.ctx && w.ctx.draftRestoreContext ? w.ctx.draftRestoreContext : (w.ctx || {}));
+          }, 320);
+        };
+        box.appendChild(draftOverlay);
       }
 
       bindKeyboardAvoidance();
