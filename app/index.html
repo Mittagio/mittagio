@@ -3244,7 +3244,7 @@
     .provider-nav-pill .navbtn.active .ico svg{ color:#1a1a1a !important; stroke:#1a1a1a !important; }
     .provider-nav-pill .navbtn .ico + div{ font-size:10px; font-weight:900; text-transform:uppercase; letter-spacing:0.02em; }
     /* Schwebende Bar: Abstand vom Rand (FloatingAppDashboard bottom-10 left-10 right-10) */
-    #providerNavWrap.provider-nav-wrap-pill{ bottom:2.5rem !important; left:2.5rem !important; right:2.5rem !important; max-width:32rem; margin-left:auto; margin-right:auto; z-index:100 !important; }
+    #providerNavWrap.provider-nav-wrap-pill{ bottom:2.5rem !important; left:2.5rem !important; right:2.5rem !important; max-width:32rem; margin-left:auto; margin-right:auto; z-index:999 !important; }
     #providerNavWrap #providerNav{ min-height:80px; }
     @media (max-width: 420px){
       #providerNavWrap.provider-nav-wrap-pill{ left:1rem !important; right:1rem !important; bottom:1.5rem !important; }
@@ -4622,6 +4622,7 @@
     #v-provider-profile .provider-profile-header-rebuild{ background:transparent; padding:12px 20px; padding-top:calc(12px + env(safe-area-inset-top, 0)); border-bottom:none; display:flex; align-items:center; justify-content:space-between; flex-shrink:0; }
     #v-provider-profile .provider-profile-logo{ font-size:18px; font-weight:950; letter-spacing:-0.03em; cursor:pointer; color:#1a1a1a; }
     #v-provider-profile .provider-profile-logo .logo-io{ color:#6B7280; }
+    #v-provider-profile .provider-profile-logo .app-brand-logo{ height:32px; width:auto; display:block; object-fit:contain; }
     #v-provider-profile .provider-profile-gear-btn{ width:40px; height:40px; border:none; background:transparent; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0; box-shadow:none; color:#6B7280; }
     #v-provider-profile .provider-profile-gear-btn i{ stroke:#6B7280; }
     #v-provider-profile .provider-profile-gear-btn .provider-profile-gear-svg{ color:#6B7280; flex-shrink:0; }
@@ -7355,7 +7356,7 @@
     <!-- Provider-Profil "Mein Profil" – Ebene 1: Business-Dashboard | Ebene 2: Zahnrad Einstellungen [Master-Prompt] -->
     <section class="view onboarding-view" id="v-provider-profile" style="display:flex; flex-direction:column; min-height:0; background:#F9FAFB;">
       <header id="providerProfileHeader" class="provider-profile-header-rebuild">
-        <div id="providerProfileHeaderBrand" class="provider-profile-logo"><span class="logo-mittag">mittag</span><span class="logo-io">io</span></div>
+        <div id="providerProfileHeaderBrand" class="provider-profile-logo"><img src="assets/images/mittagio-logo.png" alt="Mittagio" class="app-brand-logo" /></div>
         <button type="button" id="providerProfileGearBtn" class="provider-profile-gear-btn" aria-label="Einstellungen"><svg class="provider-profile-gear-svg" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
       </header>
 
@@ -8459,7 +8460,7 @@
     <!-- 2. Live Preview (Kompakt-Card mit 3 Säulen) -->
     <div id="inseratSuccessLivePreview" class="success-card-preview" style="margin-bottom:16px;"></div>
 
-    <!-- 2b. Zusammenfassung des Deals -->
+    <!-- 2b. ZUSAMMENFASSUNG (Abrechnung je nach Buchung: mit/ohne Abholnummer) -->
     <div id="inseratSuccessDealSummary" style="background:#fff; border-radius:16px; padding:16px 20px; margin-bottom:16px; border:1px solid rgba(0,0,0,0.06); text-align:left;"></div>
 
     <!-- 2c. Was passiert jetzt? -->
@@ -25962,11 +25963,18 @@
     try { localStorage.setItem('mittagio_provider_leberkaese_onboarding_done', '1'); } catch(e){}
     if(navigator.vibrate) navigator.vibrate([50, 30, 50]);
 
+    var withPickup = !!d.hasPickupCode;
     var isLeberkaeseSuccess = (d.dish || '').indexOf('Leberkäse') !== -1;
     var checkmarkTitle = document.getElementById('inseratSuccessCheckmarkTitle');
     var checkmarkSub = document.getElementById('inseratSuccessCheckmarkSub');
-    if(checkmarkTitle) checkmarkTitle.textContent = isLeberkaeseSuccess ? 'Geschafft! Dein Leberkäse ist online.' : 'Geschafft! Deine Abholnummern sind scharfgeschaltet.';
-    if(checkmarkSub) checkmarkSub.textContent = isLeberkaeseSuccess ? 'Das war einfach, sicher – und jetzt verdienen wir Geld.' : 'Hungrige Gäste können dein Gericht jetzt finden.';
+    if(checkmarkTitle){
+      if(isLeberkaeseSuccess) checkmarkTitle.textContent = 'Geschafft! Dein Leberkäse ist online.';
+      else checkmarkTitle.textContent = withPickup ? 'Geschafft! Deine Abholnummern sind scharfgeschaltet.' : 'Geschafft! Dein Inserat ist live.';
+    }
+    if(checkmarkSub){
+      if(isLeberkaeseSuccess) checkmarkSub.textContent = 'Das war einfach, sicher – und jetzt verdienen wir Geld.';
+      else checkmarkSub.textContent = withPickup ? 'Hungrige Gäste können dein Gericht jetzt finden.' : 'Dein Gericht ist sichtbar – Gäste können vor Ort essen oder mitnehmen.';
+    }
 
     if(typeof Notification !== 'undefined' && Notification.permission === 'granted'){
       try {
@@ -25977,13 +25985,12 @@
       } catch(notifyErr){}
     }
 
-    // Hero nur bei Abholnummer („Kunde zeigt Abholnummer“ – sonst irrelevant)
+    // Hero nur bei Abholnummer; kein Gerichtsfoto hier (nur 1x Bild = in der Live-Preview)
     const heroBlock = document.getElementById('inseratSuccessHero');
     if(heroBlock) heroBlock.style.display = d.hasPickupCode ? '' : 'none';
     const heroImg = document.getElementById('inseratSuccessHeroImg');
     if(heroImg && d.hasPickupCode){
-      const heroUrl = d.imageUrl || d.photoData || '';
-      if(heroUrl) heroImg.src = heroUrl;
+      heroImg.src = 'assets/success-hero-abholnummer.png';
     }
     // 2. Live Preview (Kompakt-Card: Bild, 3 Säulen, Titel & Preis)
     const previewEl = document.getElementById('inseratSuccessLivePreview');
@@ -26022,12 +26029,12 @@
       if(/^\d{1,2}:\d{2}$/.test(rawEnd)) endTimeDisplay = rawEnd;
       else if(/^\d{3,4}$/.test(rawEnd)) endTimeDisplay = rawEnd.slice(0,-2) + ':' + rawEnd.slice(-2);
       else if(rawEnd) endTimeDisplay = rawEnd;
-      var dealLines = '<div style="font-size:12px; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:0.04em; margin-bottom:10px;">Zusammenfassung des Deals</div>' +
+      var dealLines = '<div style="font-size:12px; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:0.04em; margin-bottom:10px;">ZUSAMMENFASSUNG</div>' +
         '<div style="font-size:14px; color:#1a1a1a; margin-bottom:6px;"><strong>Inseratsgebühr:</strong> ' + (feeWaived ? '0,00 € (Geschenkt!)' : '4,99 €') + '</div>';
       if(withPickup){
         dealLines += '<div style="font-size:14px; color:#1a1a1a; margin-bottom:6px;"><strong>Abrechnung:</strong> Du zahlst lediglich 0,89 € pro Abholnummer.</div>';
       } else {
-        dealLines += '<div style="font-size:14px; color:#1a1a1a; margin-bottom:6px;">Deine Gäste sehen das Gericht <strong>ohne Abholnummer</strong> – Vor Ort oder Mitnehmen. Du zahlst nur die Inseratsgebühr.</div>';
+        dealLines += '<div style="font-size:14px; color:#1a1a1a; margin-bottom:6px;"><strong>Abrechnung:</strong> Nur Inseratsgebühr 4,99 € – keine Abholnummer.</div>';
       }
       dealLines += '<div style="font-size:14px; color:#1a1a1a;"><strong>Zeitfenster:</strong> Sichtbar bis ' + endTimeDisplay + ' Uhr</div>';
       dealEl.innerHTML = dealLines;
@@ -26125,7 +26132,7 @@
     if(inseratSuccessBtnNewListing){
       inseratSuccessBtnNewListing.onclick = function(){
         closeInseratSuccessSheet();
-        startListingFlow();
+        if(typeof startListingFlow === 'function') startListingFlow({ entryPoint: 'dashboard' });
       };
     }
     const inseratSuccessBd = document.getElementById('inseratSuccessBd');

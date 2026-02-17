@@ -12,7 +12,9 @@ export function LandingPage() {
       {/* Navigation */}
       <header className="fixed top-0 left-0 right-0 z-50 border-b border-slate-200/80 bg-white/80 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-          <span className="text-xl font-semibold tracking-tight text-slate-900">Mittagio</span>
+          <a href="/" className="flex items-center gap-2">
+            <img src="/mittagio-logo.png" alt="Mittagio" className="h-9 w-auto" />
+          </a>
           <a
             href={APP_URL}
             className="rounded-full bg-slate-900 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-slate-800"
