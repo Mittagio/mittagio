@@ -10,21 +10,16 @@ globs: app/index.html
 
 ## Grundstruktur
 - **View-Name:** Inseratsauswahl (createFlowSheet)
-- **Zwei Haupt-Buttons oben:**
-  1. **+ Neues Gericht erstellen** → Schneller Inseratsflow (openDishFlow / startListingFlow)
-  2. **📖 Aus dem Kochbuch hinzufügen** → Komplette Kochbuch-Liste (showProviderCookbook)
+- **Reihenfolge:** Oben **Deine Renner** (2×2 Speed-Dial), darunter:
+  1. **+ Neues Gericht erstellen** → openDishFlow / startListingFlow
+  2. **📖 Aus dem Kochbuch hinzufügen** → showProviderCookbook
 - **Keine Preise (4,99 €) im UI** der Inseratsauswahl anzeigen.
 
-## Sektion „Deine Renner“
-- Top-Gerichte als Kacheln (horizontal scroll).
-- **Kachel-Aufbau:** Bild oben → **Drei-Säulen-Icons** direkt unter dem Bild → Name (fett) → Success-Fact (nur Fakten) → CTA „Heute anbieten“.
-- **Drei Säulen (immer gleich):**
-  - 🍴 Vor Ort (immer sichtbar)
-  - 🧾 Abholnummer (nur sichtbar, wenn im Gericht-Profil hinterlegt)
-  - 🔄 Mehrweg (nur sichtbar, wenn Toggle aktiv)
-- **Success-Facts:** Rein datenbasiert, **keine Bewertungen/Sterne**.
-  - z. B. „Top-Seller am [Wochentag]“, „Zuletzt am [Datum] erfolgreich angeboten“, „Hohe Wiederkaufsrate (> 70%)“ sofern Daten vorhanden.
-- **CTA:** Button „Heute anbieten“ (nicht „Kaufen“ oder „Inserieren“).
+## Sektion „Deine Renner“ (Speed-Dial)
+- **Layout:** 2×2 Grid, Top 4 (nach lastUsed). Kompakte quadratische Kacheln oben im Sheet.
+- **Kachel:** 70 % Bild, TOP-Badge (gelb, pulsierend) oben rechts, Name (Midnight Blue #0f172a), Preis in grünem Pill. Abgerundete Ecken 20px, dezent Schatten.
+- **One-Tap:** Klick auf Kachel → `startListingFlow({ dishId, date, entryPoint: 'dashboard', skipQuickPost: true })` → InseratCard (Wizard) mit vorbefüllten Daten, grüner Button „mit Abholnummer“ aktiv/pulsierend. Haptik: `navigator.vibrate(10)`.
+- Kein separater „Heute anbieten“-Button; ganze Kachel klickbar.
 
 ## Hintergrund-Monetarisierung (Abholnummer)
 - **Basis-Inserat:** Jede Aktivierung löst im Hintergrund die Standardgebühr (INSERT_FEE = 4,99 €) aus.

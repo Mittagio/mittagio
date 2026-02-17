@@ -529,14 +529,14 @@
     .pillar-badge.active .pillar-label { color: #333; }
     
     /* Detailseite Gericht: 5 Icons + ⓘ wie Inseratsflow, Emerald-Glow [cite: 2026-02-16] */
-    #sheet .detail-power-bar { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; padding: 12px 20px 20px; border-bottom: 1px solid rgba(0,0,0,0.03); }
+    #sheet .detail-power-bar { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; padding: 12px 20px 20px; border-bottom: 1px solid rgba(0,0,0,0.04); }
     #sheet .detail-power-bar .detail-pillar-btn {
       min-width: 44px; min-height: 44px; width: 44px; height: 44px; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; font-size: 20px;
       border: 2px solid rgba(0,0,0,0.08); background: rgba(0,0,0,0.04); cursor: pointer; transition: background 0.2s, box-shadow 0.2s, transform 0.1s; -webkit-tap-highlight-color: transparent;
     }
     #sheet .detail-power-bar .detail-pillar-btn.active { background: #fff; border-color: #10b981; box-shadow: 0 2px 10px rgba(16,185,129,0.3); color: #1a1a1a; }
     #sheet .detail-power-bar .detail-pillar-btn:not(.active) { opacity: 0.6; filter: grayscale(0.4); }
-    #sheet .detail-power-bar .detail-pillar-btn:active { transform: scale(0.92); }
+    #sheet .detail-power-bar .detail-pillar-btn:active { transform: scale(0.96); }
     #sheet .detail-power-bar .detail-legend-btn { min-width: 36px; min-height: 36px; width: 36px; height: 36px; border: none; background: transparent; color: #94a3b8; font-size: 14px; cursor: pointer; border-radius: 50%; display: flex; align-items: center; justify-content: center; -webkit-tap-highlight-color: transparent; }
     
     .card.polaroid .img img{
@@ -971,6 +971,8 @@
     #v-provider-cookbook .cookbook-swipe-hint{ font-size:12px; color:#94a3b8; text-align:center; margin-top:8px; padding:6px 12px; }
     #v-provider-cookbook .cookbook-magazine-card:hover{ box-shadow:0 24px 48px rgba(0,0,0,0.15); }
     #v-provider-cookbook .cookbook-magazine-card:active{ box-shadow:0 20px 40px rgba(0,0,0,0.12); }
+    #v-provider-cookbook #cookbookMagazine,
+    #v-provider-cookbook #cookbookMagazine .cookbook-magazine-card{ pointer-events: auto; }
     #v-provider-cookbook .cookbook-blitz-btn{ position:absolute; top:12px; right:12px; z-index:12; width:44px; height:44px; border-radius:50%; border:none; background:rgba(255,255,255,0.9); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); box-shadow:0 2px 12px rgba(0,0,0,0.12); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:22px; -webkit-tap-highlight-color:transparent; }
     #v-provider-cookbook .cookbook-blitz-btn:active{ transform:scale(0.95); }
     #v-provider-cookbook .cookbook-bar-secondary{ background:rgba(255,255,255,0.5); color:#475569; border:2px solid rgba(255,255,255,0.6); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); }
@@ -1341,16 +1343,6 @@
     .renner-speed-tile .renner-speed-top-badge { position: absolute; top: 8px; right: 8px; z-index: 2; padding: 4px 10px; border-radius: 10px; background: #FFD700; color: #1a1a1a; font-size: 11px; font-weight: 900; letter-spacing: 0.02em; box-shadow: 0 2px 8px rgba(255,215,0,0.4); animation: rennerBadgePulse 1.8s ease-in-out infinite; }
     @keyframes rennerBadgePulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.06); opacity: 0.95; } }
     .create-flow-renner-empty { display: none; text-align: center; padding: 24px 16px; color: #64748b; font-size: 14px; }
-    /* Legacy renner-card (horiz scroll) – falls wo referenziert, weiter nutzbar */
-    .create-flow-renner-scroll { scroll-snap-type: x proximity; }
-    .create-flow-renner-scroll .renner-card { scroll-snap-align: start; flex-shrink: 0; width: 160px; border-radius: 16px; overflow: hidden; background: #f8fafc; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.06); cursor: pointer; transition: transform 0.15s ease, box-shadow 0.2s ease; }
-    .create-flow-renner-scroll .renner-card:active { transform: scale(0.98); }
-    .renner-card .renner-card-img { width: 100%; aspect-ratio: 1; object-fit: cover; }
-    .renner-card .renner-card-icons { display: flex; gap: 6px; padding: 8px 10px 0; }
-    .renner-card .renner-card-body { padding: 8px 10px 12px; }
-    .renner-card .renner-card-name { font-weight: 800; font-size: 14px; color: #1a1a1a; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .renner-card .renner-card-fact { font-size: 12px; color: #64748b; }
-    .renner-card .renner-card-btn { margin-top: 8px; width: 100%; padding: 8px 12px; border-radius: 10px; border: none; background: #FFD700; color: #1a1a1a; font-size: 12px; font-weight: 700; cursor: pointer; }
     /* Inseratflow: High-End Glassmorphism (Master) – backdrop-blur-2xl, bg-white/70, border-white/40, shadow-2xl */
     #wizard.sheet--kitchen{
       background:rgba(255,255,255,0.7) !important;
@@ -2537,7 +2529,9 @@
     #psheet .psheet-power-bar.inserat-power-bar.inserat-unified-pills {
       display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px 16px;
       padding: 12px 16px; border-bottom: 1px solid rgba(0,0,0,0.04); flex-shrink: 0; background: rgba(0,0,0,0.02);
+      pointer-events: auto;
     }
+    #psheet .psheet-power-bar [data-psheet-icon] { pointer-events: auto; }
     /* Power-Bar Icons 20% kleiner (Spec S25) */
     #psheet .psheet-power-bar .status-pill {
       min-width: 35px; min-height: 35px; padding: 6px; display: inline-flex; align-items: center; justify-content: center;
@@ -4144,7 +4138,39 @@
     .cart-icon-glow {
       animation: cartIconGlow 0.5s ease-out;
     }
-    /* Flug-Animation: Thumbnail fliegt in die Mittagsbox */
+    /* Mittagsbox-Tab „atmet“ beim Eintreffen des Thumbnails (10–20% Scale) */
+    @keyframes cartIconBreathe {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.15); }
+    }
+    .cart-icon-breathe {
+      animation: cartIconBreathe 0.45s ease-out;
+    }
+    /* Herz pulsiert einmal beim Favorisieren (Magic Move) */
+    @keyframes heartPulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.25); opacity: 0.9; }
+    }
+    .heart-pulse-once {
+      animation: heartPulse 0.4s ease-out;
+    }
+    /* Ghost: transparenter Schatten am Startort während des Flugs */
+    .fly-thumbnail-ghost {
+      position: fixed;
+      z-index: 10000;
+      pointer-events: none;
+      border-radius: 12px;
+      overflow: hidden;
+      opacity: 0.4;
+      transition: opacity 0.25s ease;
+    }
+    .fly-thumbnail-ghost img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    /* Flug-Animation: Thumbnail fliegt in Parabel in die Mittagsbox */
     .fly-thumbnail {
       position: fixed;
       z-index: 10001;
@@ -4642,7 +4668,7 @@
     #v-provider-cookbook.view.active > header{ position:relative; z-index:1; flex-shrink:0; }
     #v-provider-cookbook.view.active > div{ position:relative; z-index:1; min-height:0; flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; }
     /* Kochbuch: gleicher Header-Stil wie Meine Küche/Abholungen (kein eigener Override) */
-    #v-provider-cookbook #cookbookScrollWrap{ background:transparent; }
+    #v-provider-cookbook #cookbookScrollWrap{ background:transparent; pointer-events: auto; padding-bottom: calc(80px + 24px + env(safe-area-inset-bottom, 0)); }
     /* Kochbuch Magazin-Container: Karte oben, Dots unten; Karte nie schrumpfen (Fix: leere Karten-Anzeige) */
     #v-provider-cookbook #cookbookMagazine{ flex-direction:column; width:100%; align-items:center; }
     #v-provider-cookbook #cookbookMagazine .cookbook-magazine-card{ flex-shrink:0; }
@@ -5094,25 +5120,40 @@
       #v-provider-profile .provider-settings-card{ background:#fff; border-radius:24px; overflow:hidden; border:1px solid rgba(0,0,0,0.04); box-shadow:0 8px 24px rgba(0,0,0,0.03); margin-bottom:0; }
       #v-provider-profile .provider-settings-identity .plogo{ width:56px !important; height:56px !important; border-radius:18px !important; }
       #v-provider-profile .provider-settings-card .provider-time-trigger{ width:100%; padding:24px; border-radius:16px; background:#f8fafc; border:1px solid rgba(0,0,0,0.06); cursor:pointer; text-align:center; transition:background 0.2s; }
+      #v-provider-profile .provider-settings-card .provider-time-trigger.time-picker-display{ padding:16px; background:#F0FDF4; border-radius:12px; min-height:56px; }
       #v-provider-profile .provider-settings-card .provider-time-trigger:active{ background:#f1f3f5; }
+      #v-provider-profile .provider-settings-card .provider-time-trigger.time-picker-display:active{ background:#dcfce7; }
       #v-provider-profile .provider-settings-card .provider-time-inline{ display:flex; align-items:center; gap:12px; margin-top:16px; }
       #v-provider-profile .provider-settings-card .provider-time-inline select{ width:100%; height:48px; padding:0 12px; border:none; border-bottom:2px solid #e5e7eb; border-radius:0; font-size:16px; font-weight:700; background:transparent; color:#1a1a1a; cursor:pointer; }
       #v-provider-profile .provider-settings-card .provider-time-inline select:focus{ outline:none; border-bottom-color:var(--brand,#FFD700); }
       #v-provider-profile .provider-settings-danger-footer .provider-footer-row{ display:flex; justify-content:space-between; align-items:center; padding:18px 20px; background:#fff; border:1px solid rgba(0,0,0,0.04); border-radius:24px; margin-bottom:12px; box-shadow:0 8px 24px rgba(0,0,0,0.03); cursor:pointer; font-size:16px; font-weight:700; color:#1a1a1a; text-decoration:none; color:inherit; }
       #v-provider-profile .provider-settings-danger-footer .provider-footer-row:active{ background:#f8f9fa; }
       #v-provider-profile .provider-settings-danger-footer .provider-footer-delete{ display:block; width:100%; padding:16px; font-size:14px; font-weight:800; color:#dc2626; background:transparent; border:none; cursor:pointer; text-align:center; }
-      /* Floating Label System [cite: 2026-01-29]: Label klein und grau (#6B7280) über dem Text */
-      #v-provider-profile .input-group{ position:relative; margin-bottom:24px; background:#FFFFFF; padding:12px 16px; border-bottom:1px solid #E5E7EB; }
-      #v-provider-profile .input-group label{ display:block; font-size:10px; font-weight:700; color:#6B7280; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:4px; }
-      #v-provider-profile .input-group input{ width:100%; border:none; font-size:16px; color:#111827; padding:0; outline:none; background:transparent; }
-      #v-provider-profile .input-label{ position:absolute; top:20px; left:16px; font-size:10px; font-weight:700; color:#6B7280; text-transform:uppercase; letter-spacing:0.05em; transition:all 0.2s ease; pointer-events:none; }
+      /* Floating Label Container – Schritt 2 Inseratseinstellungen [cite: Premium-CSS] */
+      #v-provider-profile .input-group{ position:relative; margin-bottom:24px; background:#FFFFFF; padding:16px 20px; border-bottom:1px solid #E5E7EB; }
+      #v-provider-profile .input-group label{ display:block; font-size:10px; font-weight:700; color:#6B7280; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:6px; }
+      #v-provider-profile .input-group input{ width:100%; border:none; font-size:16px; color:#111827; padding:0; outline:none; background:transparent; min-height:24px; }
+      #v-provider-profile .input-label{ position:absolute; top:20px; left:20px; font-size:10px; font-weight:700; color:#6B7280; text-transform:uppercase; letter-spacing:0.05em; transition:all 0.2s ease; pointer-events:none; }
       #v-provider-profile .input-field:focus ~ .input-label,
       #v-provider-profile .input-field:not(:placeholder-shown) ~ .input-label,
       #v-provider-profile .input-field.floating-filled ~ .input-label{ top:12px; font-size:10px; color:#6B7280; }
-      #v-provider-profile .input-field{ width:100%; border:none; outline:none; font-size:16px; background:transparent; color:#111827; box-sizing:border-box; padding:0; }
+      #v-provider-profile .input-field{ width:100%; border:none; outline:none; font-size:16px; background:transparent; color:#111827; box-sizing:border-box; padding:0; min-height:44px; }
       #v-provider-profile .input-field::placeholder{ color:transparent; }
-      /* Zeit-Picker: 15-Minuten-Wheel-Anzeige [cite: 2026-01-29] */
-      #v-provider-profile .time-picker-display{ font-size:24px; font-weight:600; color:#22C55E; text-align:center; padding:16px; background:#F0FDF4; border-radius:12px; }
+      /* Zeit-Picker (15-Minuten-Wheel) – Mittagio-Grün [cite: Premium-CSS] */
+      #v-provider-profile .time-picker-display{ font-size:24px; font-weight:600; color:#22C55E; text-align:center; padding:16px; background:#F0FDF4; border-radius:12px; min-height:56px; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+      /* 3 Säulen Toggles: Emoji links, Text daneben, Toggle ganz rechts – großzügige Touch-Zonen */
+      #v-provider-profile .provider-settings-pillar-row{ display:flex; justify-content:space-between; align-items:center; padding:20px 24px; min-height:56px; gap:16px; }
+      #v-provider-profile .provider-settings-pillar-row .pillar-left{ display:flex; align-items:center; gap:14px; flex:1; min-width:0; }
+      #v-provider-profile .provider-settings-pillar-row .pillar-emoji{ width:44px; height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0; }
+      #v-provider-profile .provider-settings-pillar-row .pillar-text{ min-width:0; }
+      #v-provider-profile .provider-settings-pillar-row .toggle-switch{ flex-shrink:0; margin-left:auto; }
+      /* Betriebsdaten: nur untere Linie, keine Box-Rahmen [cite: 2026-01-29] */
+      #v-provider-profile #providerBusinessDataCardWrap .input-group{ border:none; border-bottom:1px solid #E5E7EB; border-radius:0; box-shadow:none; }
+      #v-provider-profile #providerBusinessDataCardWrap .input-group:last-of-type{ margin-bottom:0; }
+      /* Wochentage: runde Day-Pills, aktiv = Mittagio-Grün [cite: 2026-01-29] */
+      #v-provider-profile .provider-day-pill{ display:inline-flex; align-items:center; justify-content:center; min-width:44px; height:44px; padding:0 16px; border-radius:999px; border:2px solid #e5e7eb; background:#fff; font-size:14px; font-weight:700; color:#6B7280; cursor:pointer; transition:background 0.2s, border-color 0.2s, color 0.2s; }
+      #v-provider-profile .provider-day-pill.active{ background:#22C55E; border-color:#22C55E; color:#fff; }
+      #v-provider-profile .provider-day-pill:active{ opacity:0.9; }
       /* iOS-Style Toggles für 3 Säulen (🍴 🔄 🧾) in Grün #22C55E [cite: 2026-01-27] */
       #v-provider-profile .provider-settings-card .toggle-switch.active .toggle-slider{ transform:translateX(32px); }
       #v-provider-profile .provider-settings-card .toggle-switch{ background:#e5e7eb; }
@@ -7342,6 +7383,9 @@
               <span class="provider-focus-card-icon">📄</span>
               <p class="provider-focus-card-title">Deine Abrechnungen &amp; PDF-Belege</p>
             </article>
+            <button type="button" id="btnProviderLogout" aria-label="Abmelden" style="margin-top:24px; width:100%; min-height:44px; padding:14px 20px; background:#fef2f2; border:2px solid #fecaca; border-radius:14px; font-size:15px; font-weight:700; color:#b91c1c; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px;">
+              <i data-lucide="log-out" style="width:20px;height:20px;"></i><span>Abmelden</span>
+            </button>
           </div>
         </div>
 
@@ -7391,43 +7435,43 @@
             <div id="providerSettingsLunchWeekdays" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
           </div>
 
-          <!-- Kachel: Service-Logik (3 Säulen) -->
+          <!-- Kachel: Service-Logik (3 Säulen) – Emoji links, Text daneben, Toggle rechts -->
           <div class="provider-profile-card provider-settings-card" style="background:#fff; border-radius:24px; overflow:hidden; margin-bottom:20px; border:none; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
             <h3 style="margin:0; padding:24px 24px 0; font-size:17px; font-weight:800; color:#1a1a1a;">🏗️ Service-Logik</h3>
-            <div style="padding:20px; border-bottom:1px solid #f8f9fa; display:flex; justify-content:space-between; align-items:center;">
-              <div style="display:flex; align-items:center; gap:16px;">
-                <div style="width:44px; height:44px; border-radius:14px; background:#f1f3f5; display:flex; align-items:center; justify-content:center; font-size:22px;">🍴</div>
-                <div>
+            <div class="provider-settings-pillar-row" style="border-bottom:1px solid #f8f9fa;">
+              <div class="pillar-left">
+                <div class="pillar-emoji" style="background:#f1f3f5;">🍴</div>
+                <div class="pillar-text">
                   <div style="font-weight:800; color:#1a1a1a; font-size:16px;">Vor Ort essen</div>
                   <div style="font-size:13px; color:#64748b;">Platz im Betrieb anbieten</div>
                 </div>
               </div>
               <label class="toggle-switch"><input type="checkbox" id="providerSettingsDineInEnabled"><span class="toggle-slider"></span></label>
             </div>
-            <div style="padding:20px; border-bottom:1px solid #f8f9fa; display:flex; justify-content:space-between; align-items:center;">
-              <div style="display:flex; align-items:center; gap:16px;">
-                <div style="width:44px; height:44px; border-radius:14px; background:#f1f3f5; display:flex; align-items:center; justify-content:center; font-size:22px;">🔄</div>
-                <div>
+            <div class="provider-settings-pillar-row" style="border-bottom:1px solid #f8f9fa;">
+              <div class="pillar-left">
+                <div class="pillar-emoji" style="background:#f1f3f5;">🔄</div>
+                <div class="pillar-text">
                   <div style="font-weight:800; color:#1a1a1a; font-size:16px;">Mehrweg-System</div>
                   <div style="font-size:13px; color:#64748b;">Vytal, Recup oder eigenes</div>
                 </div>
               </div>
               <label class="toggle-switch"><input type="checkbox" id="providerSettingsReuseEnabled"><span class="toggle-slider"></span></label>
             </div>
-            <div style="padding:20px; border-bottom:1px solid #f8f9fa; display:flex; justify-content:space-between; align-items:center;">
-              <div style="display:flex; align-items:center; gap:16px;">
-                <div style="width:44px; height:44px; border-radius:14px; background:rgba(255,215,0,0.15); display:flex; align-items:center; justify-content:center; font-size:22px;">🧾</div>
-                <div>
+            <div class="provider-settings-pillar-row" style="border-bottom:1px solid #f8f9fa;">
+              <div class="pillar-left">
+                <div class="pillar-emoji" style="background:rgba(255,215,0,0.15);">🧾</div>
+                <div class="pillar-text">
                   <div style="font-weight:800; color:#1a1a1a; font-size:16px;">Abholnummer</div>
-                  <div style="font-size:13px; color:#64748b;">Weniger Chaos & mehr Zeit</div>
+                  <div style="font-size:13px; color:#64748b;">Weniger Chaos &amp; mehr Zeit</div>
                 </div>
               </div>
               <label class="toggle-switch"><input type="checkbox" id="providerSettingsAbholnummerEnabled"><span class="toggle-slider"></span></label>
             </div>
-            <div style="padding:20px; display:flex; justify-content:space-between; align-items:center;">
-              <div style="display:flex; align-items:center; gap:16px;">
-                <div style="width:44px; height:44px; border-radius:14px; background:#f1f3f5; display:flex; align-items:center; justify-content:center; font-size:22px;">🌾</div>
-                <div>
+            <div class="provider-settings-pillar-row">
+              <div class="pillar-left">
+                <div class="pillar-emoji" style="background:#f1f3f5;">🌾</div>
+                <div class="pillar-text">
                   <div style="font-weight:800; color:#1a1a1a; font-size:16px;">Allergene angeben?</div>
                   <div style="font-size:13px; color:#64748b;">Standard für neue Inserate</div>
                 </div>
@@ -7572,15 +7616,15 @@
             </div>
             <div class="provider-support-accordion-item">
               <button type="button" class="provider-support-accordion-trigger" aria-expanded="false"><span>Was ist die „Live-Vorschau“?</span><i data-lucide="chevron-down" class="chevron-icon" style="width:20px;height:20px;"></i></button>
-              <div class="accordion-content"><p>Sobald du ein Inserat veröffentlichst, siehst du in deinem Profil sofort die „Live-Vorschau“. Das ist die exakte Ansicht, die auch deine Kunden auf dem Handy sehen. So kannst du jederzeit prüfen, ob Bild und Preis perfekt sitzen.</p></div>
+              <div class="accordion-content"><p>Zeigt dir exakt, was deine Kunden sehen. Sobald du ein Inserat veröffentlichst, erscheint die Live-Vorschau in deinem Profil – dieselbe Ansicht wie auf dem Handy deiner Gäste. So prüfst du jederzeit, ob Bild und Preis stimmen.</p></div>
             </div>
             <div class="provider-support-accordion-item">
               <button type="button" class="provider-support-accordion-trigger" aria-expanded="false"><span>Was ist die „24h-Antwort-Garantie“?</span><i data-lucide="chevron-down" class="chevron-icon" style="width:20px;height:20px;"></i></button>
-              <div class="accordion-content"><p>Wenn du über den Hilfe-Button eine Nachricht schickst, landet diese direkt bei Mike. Wir garantieren dir eine persönliche Antwort innerhalb von 24 Stunden – meistens sogar viel schneller, damit dein Mittagsgeschäft reibungslos weiterläuft.</p></div>
+              <div class="accordion-content"><p>Persönlicher Support von Mike innerhalb eines Tages. Deine Nachricht landet direkt bei ihm – meistens antwortet er noch am selben Tag, damit dein Mittagsgeschäft reibungslos weiterläuft.</p></div>
             </div>
             <div class="provider-support-accordion-item">
               <button type="button" class="provider-support-accordion-trigger" aria-expanded="false"><span>Was ist die „Favoriten-Statistik“?</span><i data-lucide="chevron-down" class="chevron-icon" style="width:20px;height:20px;"></i></button>
-              <div class="accordion-content"><p>Unter deinen „Quick Stats“ siehst du, wie viele Kunden dich als Favoriten markiert haben. Das sind deine Stammkunden von morgen. Je höher diese Zahl, desto mehr Leute werden automatisch benachrichtigt, sobald du ein neues Inserat schaltest.</p></div>
+              <div class="accordion-content"><p>Deine digitale Stammkunden-Basis: Unter den Quick Stats siehst du, wie viele Kunden dich als Favoriten gespeichert haben. Je höher die Zahl, desto mehr werden benachrichtigt, wenn du ein neues Inserat schaltest.</p></div>
             </div>
             <div class="provider-support-accordion-item">
               <button type="button" class="provider-support-accordion-trigger" aria-expanded="false"><span>Wie funktioniert der Wochenplan?</span><i data-lucide="chevron-down" class="chevron-icon" style="width:20px;height:20px;"></i></button>
@@ -7592,20 +7636,20 @@
             </div>
             <div class="provider-support-accordion-item">
               <button type="button" class="provider-support-accordion-trigger" aria-expanded="false"><span>Was ist das digitale Kochbuch?</span><i data-lucide="chevron-down" class="chevron-icon" style="width:20px;height:20px;"></i></button>
-              <div class="accordion-content"><p>Dein digitales Kochbuch ist die Sammlung aller Gerichte, die du jemals angelegt hast. Von hier aus wählst du schnell aus, was du in den Wochenplan oder als Inserat schalten möchtest – ohne jedes Mal neu einzugeben.</p></div>
+              <div class="accordion-content"><p>Dein digitales Kochbuch speichert Bilder und Allergene für blitzschnelles Inserieren. Alle Gerichte, die du jemals angelegt hast – von hier schaltest du sie in den Wochenplan oder als Inserat, ohne jedes Mal neu einzugeben.</p></div>
             </div>
             <div class="provider-support-accordion-item">
               <button type="button" class="provider-support-accordion-trigger" aria-expanded="false"><span>Was ist die Ein-Session-Regel?</span><i data-lucide="chevron-down" class="chevron-icon" style="width:20px;height:20px;"></i></button>
-              <div class="accordion-content"><p>Im Standard-Plan ist immer nur ein Gerät pro Account angemeldet. Meldest du dich woanders an, wird die vorherige Sitzung beendet. So bleibt dein Küchenmodus sicher. Für mehrere Geräte gleichzeitig gibt es ein Team-Upgrade.</p></div>
+              <div class="accordion-content"><p>Nur ein aktives Gerät zur gleichen Zeit erlaubt. Meldest du dich woanders an, wird die vorherige Sitzung beendet – so bleibt dein Küchenmodus sicher. Für mehrere Geräte gleichzeitig gibt es ein Team-Upgrade.</p></div>
             </div>
           </div>
 
-          <!-- Rechtliche Links (saubere Liste mit Chevrons) [cite: 2026-01-29] -->
+          <!-- Rechtliches: Liste mit Pfeil-Icons (>) [cite: 2026-01-29] -->
           <h2 class="provider-support-section-title" style="margin-top:24px;">Rechtliches</h2>
           <div class="provider-support-legal-links">
+            <a href="#/impressum" class="provider-support-legal-row"><span>Impressum <small style="display:block; font-size:12px; font-weight:600; color:#6B7280;">Mike Quach, Rudersberg</small></span><i data-lucide="chevron-right" style="width:20px;height:20px;color:#9ca3af;"></i></a>
             <a href="#/agb" class="provider-support-legal-row"><span>AGB</span><i data-lucide="chevron-right" style="width:20px;height:20px;color:#9ca3af;"></i></a>
             <a href="#/datenschutz" class="provider-support-legal-row"><span>Datenschutz</span><i data-lucide="chevron-right" style="width:20px;height:20px;color:#9ca3af;"></i></a>
-            <a href="#/impressum" class="provider-support-legal-row"><span>Impressum</span><i data-lucide="chevron-right" style="width:20px;height:20px;color:#9ca3af;"></i></a>
           </div>
 
           <!-- Mike kontaktieren (24h-Garantie) -->
@@ -8248,6 +8292,12 @@
         </div>
       </div>
     </div>
+    <div id="publishFeeSyncWrap" style="display:none; margin-bottom:20px; padding:14px 16px; background:rgba(16,185,129,0.08); border-radius:14px; border:1px solid rgba(16,185,129,0.2);">
+      <label style="display:flex; align-items:center; gap:12px; cursor:pointer; font-size:15px; font-weight:700; color:#0f172a;">
+        <input type="checkbox" id="publishFeeSyncToCookbook" checked style="width:22px; height:22px; accent-color:#10b981;">
+        <span>Änderungen im Kochbuch speichern</span>
+      </label>
+    </div>
     <div style="display:flex; flex-direction:column; gap:12px;">
       <button class="btn-primary" type="button" id="btnPublishConfirm" style="width:100%; min-height:56px; font-size:16px; font-weight:700;">
         Jetzt online stellen
@@ -8508,6 +8558,12 @@
     <button type="button" class="universal-x" id="psheetCloseX" aria-label="Schließen" title="Schließen">✕</button>
     <div id="pPreview"></div>
     <div class="psheet-footer-sticky psheet-decision-zone" id="psheetDecisionZone">
+      <div id="psheetSyncToCookbookWrap" style="display:none; margin-bottom:12px; padding:12px 14px; background:rgba(16,185,129,0.08); border-radius:12px; border:1px solid rgba(16,185,129,0.2);">
+        <label style="display:flex; align-items:center; gap:10px; cursor:pointer; font-size:14px; font-weight:700; color:#0f172a;">
+          <input type="checkbox" id="psheetSyncToCookbook" checked style="width:20px; height:20px; accent-color:#10b981;">
+          <span>Änderungen im Kochbuch speichern</span>
+        </label>
+      </div>
       <button type="button" id="btnPsheetPlanBlue" class="psheet-btn-plan-blue btn-plan-blue" aria-label="Für später einplanen">📖 Für später einplanen</button>
       <div class="pricing-info-label" id="psheetPricingLabel" role="button" tabindex="0" aria-label="Preisübersicht anzeigen" style="margin-bottom:8px;">Preisübersicht ⓘ</div>
       <button type="button" id="btnPsheetMitAbholnummer" class="psheet-btn-decision psheet-btn-green" aria-label="mit Abholnummer">mit Abholnummer</button>
@@ -10950,11 +11006,14 @@
     if(providerNavBackRow) providerNavBackRow.style.display = 'none';
     pushViewState({view: 'provider-cookbook', mode: mode}, location.pathname);
   }
-  /** Zentrale Formular-Komponente: Felddefinitionen + Rendering, keine Duplikate */
+  /** Zentrale Formular-Komponente: Label über Eingabewert, nur untere Linie [cite: 2026-01-29] */
   var MittagioForm = {
     createInputGroup: function(def){
       var wrap = document.createElement('div');
       wrap.className = def.groupClass || 'input-group';
+      var label = document.createElement('label');
+      label.setAttribute('for', def.id);
+      label.textContent = def.label || '';
       var input = document.createElement('input');
       input.type = def.type || 'text';
       input.id = def.id;
@@ -10962,9 +11021,6 @@
       input.className = def.inputClass || 'input-field';
       if(def.autocomplete) input.autocomplete = def.autocomplete;
       if(def.maxlength) input.setAttribute('maxlength', def.maxlength);
-      var label = document.createElement('label');
-      label.setAttribute('for', def.id);
-      label.textContent = def.label || '';
       wrap.appendChild(label);
       wrap.appendChild(input);
       return wrap;
@@ -10987,8 +11043,8 @@
   function createProviderBusinessDataCard(){
     var wrap = document.createElement('div');
     wrap.id = 'providerBusinessDataCardWrap';
-    wrap.className = 'provider-settings-card';
-    wrap.setAttribute('style', 'background:#fff; border-radius:24px; padding:24px; border:1px solid rgba(0,0,0,0.04); box-shadow:0 8px 24px rgba(0,0,0,0.03);');
+    wrap.className = 'provider-settings-card provider-business-data-card';
+    wrap.setAttribute('style', 'background:#fff; border-radius:24px; padding:24px; border:none; box-shadow:0 1px 3px rgba(0,0,0,0.06);');
     var title = document.createElement('h3');
     title.setAttribute('style', 'margin:0 0 20px; font-size:17px; font-weight:800; color:#1a1a1a;');
     title.textContent = 'Betriebsdaten';
@@ -15764,23 +15820,23 @@
       titleInput.addEventListener('blur', function(){ raw.dish = titleInput.value.trim(); raw.title = raw.dish; if(typeof save === 'function' && typeof LS !== 'undefined') save(LS.offers, offers); updatePsheetDecisionZone(); });
       titleInput.addEventListener('keydown', function(ev){ if(ev.key === 'Enter'){ ev.preventDefault(); titleInput.blur(); } });
     }
-    /* Icon-Leiste: Bounce + Edit-Modus; 🌾/➕/🕒 öffnen Header-Morph (Allergene/Extras/Zeit) */
-    preview.querySelectorAll('.psheet-power-bar [data-psheet-icon]').forEach(function(btn){
-      btn.addEventListener('click', function(ev){
-        ev.preventDefault();
-        ev.stopPropagation();
-        var icon = btn.getAttribute('data-psheet-icon');
-        if(icon === 'allergens' || icon === 'extras' || icon === 'time'){
-          toggleHeaderSelection(icon);
-          return;
-        }
-        if(icon && icon !== 'legend'){
-          btn.classList.add('psheet-pill-bounce');
-          setTimeout(function(){ btn.classList.remove('psheet-pill-bounce'); }, 500);
-          enterPsheetEditMode();
-          try { window.dispatchEvent(new CustomEvent('psheet-icon-tap', { detail: { icon: icon, offerId: raw.id } })); } catch(e){}
-        }
-      });
+    /* Icon-Leiste: Bounce + Edit-Modus; Event-Delegation auf #pPreview, damit Power-Bar-Klicks auch nach Re-Render ankommen */
+    preview.addEventListener('click', function(ev){
+      var btn = ev.target && ev.target.closest && ev.target.closest('.psheet-power-bar [data-psheet-icon]');
+      if(!btn) return;
+      ev.preventDefault();
+      ev.stopPropagation();
+      var icon = btn.getAttribute('data-psheet-icon');
+      if(icon === 'allergens' || icon === 'extras' || icon === 'time'){
+        toggleHeaderSelection(icon);
+        return;
+      }
+      if(icon && icon !== 'legend'){
+        btn.classList.add('psheet-pill-bounce');
+        setTimeout(function(){ btn.classList.remove('psheet-pill-bounce'); }, 500);
+        enterPsheetEditMode();
+        try { window.dispatchEvent(new CustomEvent('psheet-icon-tap', { detail: { icon: icon, offerId: raw.id } })); } catch(e){}
+      }
     });
     var priceBtn = document.getElementById('psheetPriceBtn');
     if(priceBtn){
@@ -15814,6 +15870,17 @@
     }
     updatePsheetDecisionZone();
     applyPsheetDecisionZoneMode(psheetCardMode);
+    var psheetSyncWrap = document.getElementById('psheetSyncToCookbookWrap');
+    var psheetSyncCheck = document.getElementById('psheetSyncToCookbook');
+    if(psheetSyncWrap && psheetSyncCheck){
+      if(raw.cookbookId){
+        psheetSyncWrap.style.display = 'block';
+        psheetSyncCheck.checked = true;
+        psheetSyncCheck.onchange = function(){ try { if(typeof hapticLight === 'function') hapticLight(); else if(navigator.vibrate) navigator.vibrate(10); } catch(e){} };
+      } else {
+        psheetSyncWrap.style.display = 'none';
+      }
+    }
     var pricingLabelEl = document.getElementById('psheetPricingLabel');
     if(pricingLabelEl){
       pricingLabelEl.addEventListener('click', function(ev){ ev.preventDefault(); ev.stopPropagation(); try { if(typeof hapticLight === 'function') hapticLight(); else if(navigator.vibrate) navigator.vibrate(10); } catch(e){} if(typeof openPricingFairnessOverlay === 'function') openPricingFairnessOverlay(); });
@@ -15858,13 +15925,25 @@
         if(typeof renderProviderHome === 'function') renderProviderHome();
       }
     }
-    function doPsheetSaveAndCookbook(withPickup){
+    function doPsheetSaveAndCookbook(withPickup, opts){
       var cbId = raw.cookbookId;
       if(cbId && Array.isArray(cookbook)){
         var ent = cookbook.find(function(c){ return String(c.id) === String(cbId); });
-        if(ent){ ent.dish = (raw.dish || raw.title || ent.dish || '').trim(); ent.title = ent.dish; if(raw.price != null) ent.price = raw.price; if(typeof save === 'function' && typeof LS !== 'undefined') save(LS.cookbook, cookbook); }
+        if(ent){
+          ent.dish = (raw.dish || raw.title || ent.dish || '').trim();
+          ent.title = ent.dish;
+          if(raw.price != null) ent.price = raw.price;
+          ent.photoData = raw.imageUrl || raw.photoData || ent.photoData || '';
+          ent.allergens = Array.isArray(raw.allergens) ? raw.allergens.slice() : (ent.allergens || []);
+          ent.extras = Array.isArray(raw.extras) ? raw.extras.slice() : (ent.extras || []);
+          ent.description = raw.description != null ? raw.description : ent.description;
+          ent.category = raw.category || ent.category || 'Vegetarisch';
+          ent.reuse = raw.reuse && typeof raw.reuse === 'object' ? { enabled: !!raw.reuse.enabled, deposit: Number(raw.reuse.deposit) || 0 } : (ent.reuse || { enabled: false, deposit: 0 });
+          ent.dineInPossible = raw.dineInPossible !== false;
+          if(typeof save === 'function' && typeof LS !== 'undefined') save(LS.cookbook, cookbook);
+        }
       }
-      doPsheetSave(withPickup);
+      doPsheetSave(withPickup, opts);
     }
     function maybeShowSaveScope(withPickup){
       if(raw.cookbookId && typeof showSaveScopeDialog === 'function'){
@@ -15911,7 +15990,9 @@
           btnGreen.removeAttribute('aria-busy');
           var s = btnGreen.querySelector('.psheet-btn-spinner');
           if(s) s.remove();
-          doPsheetSave(true, { showSuccessSheet: true });
+          var syncCheck = document.getElementById('psheetSyncToCookbook');
+          if(syncCheck && syncCheck.checked && raw.cookbookId) doPsheetSaveAndCookbook(true, { showSuccessSheet: true });
+          else doPsheetSave(true, { showSuccessSheet: true });
         }, 800);
       });
     }
@@ -15927,7 +16008,9 @@
           return;
         }
         if(btnYellow.classList.contains('psheet-incomplete')) return;
-        maybeShowSaveScope(false);
+        var syncCheck = document.getElementById('psheetSyncToCookbook');
+        if(syncCheck && raw.cookbookId){ if(syncCheck.checked) doPsheetSaveAndCookbook(false); else doPsheetSave(false); }
+        else maybeShowSaveScope(false);
       });
     }
     var closeX = document.getElementById('psheetCloseX');
@@ -20008,8 +20091,7 @@
               ev.preventDefault();
               ev.stopPropagation();
               try { if(typeof hapticLight === 'function') hapticLight(); else if(navigator.vibrate) navigator.vibrate(10); } catch(e){}
-              var fn = typeof window !== 'undefined' && window.openProviderOffer;
-              if(offerId && fn) fn(offerId);
+              if(offerId && typeof startListingFlow === 'function') startListingFlow({ editOfferId: offerId });
             };
           })(String(o.id));
           providerActiveListings.appendChild(card);
@@ -20020,12 +20102,11 @@
             var card = ev.target.closest('.prov-card[data-offer-id]');
             if(!card) return;
             var id = card.getAttribute('data-offer-id');
-            var fn = typeof window !== 'undefined' && window.openProviderOffer;
-            if(id && fn){
+            if(id && typeof startListingFlow === 'function'){
               ev.preventDefault();
               ev.stopPropagation();
               try { if(typeof hapticLight === 'function') hapticLight(); else if(navigator.vibrate) navigator.vibrate(10); } catch(e){}
-              fn(id);
+              startListingFlow({ editOfferId: id });
             }
           });
           providerActiveListings.addEventListener('keydown', function(ev){
@@ -20034,8 +20115,7 @@
             if(!card) return;
             ev.preventDefault();
             var id = card.getAttribute('data-offer-id');
-            var fn = typeof window !== 'undefined' && window.openProviderOffer;
-            if(id && fn) fn(id);
+            if(id && typeof startListingFlow === 'function') startListingFlow({ editOfferId: id });
           });
         }
         if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
@@ -22510,20 +22590,24 @@
     const fillWeekdaysWrap = (wrap) => {
       if(!wrap) return;
       const arr = Array.isArray(provider.profile && provider.profile.lunchWeekdays) ? provider.profile.lunchWeekdays : [1,2,3,4,5];
-      wrap.innerHTML = labelsWd.map(({d,l}) => `<label style="display:inline-flex; align-items:center; gap:6px; padding:8px 12px; border-radius:10px; border:2px solid ${arr.includes(d)?'#FFDE00':'#e7e1d5'}; background:${arr.includes(d)?'rgba(255,222,0,0.15)':'#fff'}; cursor:pointer; font-size:14px; font-weight:600;"><input type="checkbox" data-wd="${d}" ${arr.includes(d)?'checked':''} style="width:18px; height:18px;">${l}</label>`).join('');
+      wrap.innerHTML = labelsWd.map(({d,l}) => '<button type="button" class="provider-day-pill" data-wd="' + d + '">' + l + '</button>').join('');
+      wrap.querySelectorAll('.provider-day-pill').forEach(function(btn){
+        var wd = parseInt(btn.dataset.wd, 10);
+        if(arr.includes(wd)) btn.classList.add('active'); else btn.classList.remove('active');
+      });
     };
     const bindWeekdaysWrap = (wrap, otherWrap) => {
       if(!wrap) return;
-      wrap.querySelectorAll('input[type=checkbox]').forEach(cb => {
-        cb.onchange = () => {
-          const wd = parseInt(cb.dataset.wd, 10);
+      wrap.querySelectorAll('.provider-day-pill').forEach(function(btn){
+        btn.onclick = function(){
+          var wd = parseInt(btn.dataset.wd, 10);
           if(!provider.profile) provider.profile = {};
           if(!Array.isArray(provider.profile.lunchWeekdays)) provider.profile.lunchWeekdays = [1,2,3,4,5];
-          if(cb.checked) { if(!provider.profile.lunchWeekdays.includes(wd)) provider.profile.lunchWeekdays.push(wd); }
-          else provider.profile.lunchWeekdays = provider.profile.lunchWeekdays.filter(x => x !== wd);
-          provider.profile.lunchWeekdays.sort((a,b)=>a-b);
+          if(provider.profile.lunchWeekdays.includes(wd)) provider.profile.lunchWeekdays = provider.profile.lunchWeekdays.filter(function(x){ return x !== wd; });
+          else provider.profile.lunchWeekdays.push(wd);
+          provider.profile.lunchWeekdays.sort(function(a,b){ return a - b; });
           save(LS.provider, provider);
-          showToast('Wochentage gespeichert');
+          if(typeof showToast === 'function') showToast('Wochentage gespeichert');
           fillWeekdaysWrap(otherWrap);
           bindWeekdaysWrap(otherWrap, wrap);
         };
@@ -23216,13 +23300,6 @@
   // Funktion ist bereits oben definiert: openSupportContact()
   // Wird automatisch von onclick="openSupportContact()" im HTML aufgerufen
 
-  // Provider actions (Create Flow Sheet)
-  // btnNewListing und btnFromCookbook werden nicht mehr verwendet
-  const btnNewListing = document.getElementById('btnNewListing');
-  if(btnNewListing) btnNewListing.style.display = 'none';
-  const btnFromCookbook = document.getElementById('btnFromCookbook');
-  if(btnFromCookbook) btnFromCookbook.style.display = 'none';
-  
   // Kochbuch: "+ Gericht hinzufügen" öffnet IMMER Unified Flow
   const btnCookbookAdd = document.getElementById('btnCookbookAdd');
   if(btnCookbookAdd) btnCookbookAdd.onclick=()=> openDishFlow(null, 'cookbook');
@@ -23268,7 +23345,7 @@
   };
   if(cookbookActionLive) cookbookActionLive.onclick=()=>{
     const ent = window._cookbookActionEntry;
-    if(ent){ try{ if(navigator.vibrate) navigator.vibrate([10, 30, 10]); } catch(e){} closeCookbookActionSheet(); selectedCookbookId = ent.id; if(typeof openCookbookLiveSheet === 'function') openCookbookLiveSheet(); }
+    if(ent){ try{ if(navigator.vibrate) navigator.vibrate([10, 30, 10]); } catch(e){} closeCookbookActionSheet(); var draftId = (typeof createOfferFromCookbook === 'function') ? createOfferFromCookbook(ent.id) : null; if(draftId && typeof openProviderOffer === 'function') openProviderOffer(draftId, { source: 'cookbook', instantLive: true }); }
   };
   if(cookbookActionDelete) cookbookActionDelete.onclick=()=>{
     const ent = window._cookbookActionEntry;
@@ -25241,7 +25318,7 @@
 
       // 9. ACTION BUTTONS (sticky am unteren Rand – Referenz: gelb + grüner Rahmen, eine Zeile)
       var entryPoint = (w.ctx && w.ctx.entryPoint) || 'dashboard';
-      var isInserierenRoute = (entryPoint === 'dashboard');
+      var isInserierenRoute = (entryPoint === 'dashboard' || entryPoint === 'week' || entryPoint === 'cookbook');
       var hasDish = !!(w.data.dish && String(w.data.dish).trim());
       var hasPrice = Number(w.data.price) > 0;
       var primaryValid = hasDish && hasPrice;
@@ -25286,6 +25363,27 @@
         btn499.textContent='Nur Inserat';
         btn499.onclick=function(){ if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; } if(btn499.disabled) return; if(typeof haptic==='function') haptic([30, 50, 30]); w.data.hasPickupCode=false; w.data.pricingOption=undefined; w.data.inseratFeeWaived=false; var o=previewOfferFromWizard(); closeWizard(true); showPublishFeeModal(o); };
         actionSection.appendChild(btn499);
+        // Ohne Live: Im Wochenplan speichern | Im Kochbuch speichern (Plan 3.3)
+        var saveRow=document.createElement('div');
+        saveRow.className='inserat-save-without-live';
+        saveRow.style.cssText='display:flex; gap:12px; margin-top:12px; flex-wrap:wrap;';
+        if(w.data.day || entryPoint==='week'){
+          var btnWeek=document.createElement('button');
+          btnWeek.type='button';
+          btnWeek.className='inserat-btn-text';
+          btnWeek.style.cssText='flex:1; min-height:44px; padding:10px 16px; font-size:14px; font-weight:600; color:#64748b; background:transparent; border:1px solid var(--border, #e2e8f0); border-radius:16px; cursor:pointer;';
+          btnWeek.textContent='Im Wochenplan speichern';
+          btnWeek.onclick=function(){ if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; } if(typeof haptic==='function') haptic(50); var id=saveToCookbookFromWizard(); if(id && w.data.day){ if(!week[w.data.day]) week[w.data.day]=[]; var c=cookbook.find(function(x){ return x.id===id; }); if(c) week[w.data.day].push({ providerId:c.providerId, cookbookId:c.id, dish:c.dish, price:c.price }); save(LS.week, week); closeWizard(true); showSaveSuccessSheet({ title:'Im Wochenplan gespeichert', sub:'Dein Gericht ist im Wochenplan eingetragen.', dishName: w.data.dish||'', price: w.data.price, imageUrl: w.data.photoData||'', savedEntryId: id, savedDay: w.data.day, onFertig: function(){ if(typeof showToast==='function') showToast('Im Wochenplan gespeichert'); if(typeof showProviderWeek==='function') showProviderWeek(); }, onLive: null }); } }
+          saveRow.appendChild(btnWeek);
+        }
+        var btnCook=document.createElement('button');
+        btnCook.type='button';
+        btnCook.className='inserat-btn-text';
+        btnCook.style.cssText='flex:1; min-height:44px; padding:10px 16px; font-size:14px; font-weight:600; color:#64748b; background:transparent; border:1px solid var(--border, #e2e8f0); border-radius:16px; cursor:pointer;';
+        btnCook.textContent='Im Kochbuch speichern';
+        btnCook.onclick=function(){ if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; } if(typeof haptic==='function') haptic(50); var id=saveToCookbookFromWizard(); if(id){ closeWizard(true); showSaveSuccessSheet({ title:'Im Kochbuch gespeichert', sub:'Dein Gericht ist in deinem Kochbuch.', dishName: w.data.dish||'', price: w.data.price, imageUrl: w.data.photoData||'', savedEntryId: id, savedDay: null, onFertig: function(){ if(typeof showToast==='function') showToast('Im Kochbuch gespeichert'); if(typeof showProviderCookbook==='function') showProviderCookbook(); }, onLive: null }); } }
+        saveRow.appendChild(btnCook);
+        actionSection.appendChild(saveRow);
       } else {
         const btnSave=document.createElement('button');
         btnSave.type='button';
@@ -25421,7 +25519,8 @@
       day: w.data.day || isoDate(new Date()),
       active: w.data.active !== false,
       pricingOption: w.data.pricingOption || null,
-      inseratFeeWaived: !!w.data.inseratFeeWaived || w.data.pricingOption === 'abholnummer'
+      inseratFeeWaived: !!w.data.inseratFeeWaived || w.data.pricingOption === 'abholnummer',
+      cookbookId: (w.ctx && (w.ctx.dishId || w.ctx.fromCookbookId)) || null
     };
   }
 
@@ -25518,8 +25617,8 @@
       offers.unshift(out);
       var tx = createInseratTransaction(out);
       saveTransaction(tx);
-      // Auto-Archive: Neu erstelltes Inserat als Master-Asset ins Kochbuch [cite: Asset-Logik]
-      if(typeof cookbook !== 'undefined' && Array.isArray(cookbook)){
+      // Auto-Archive: nur wenn nicht aus Kochbuch (Sync-Back erfolgt ggf. im Publish-Modal via Toggle)
+      if(!o.cookbookId && typeof cookbook !== 'undefined' && Array.isArray(cookbook)){
         var now = Date.now();
         var masterEntry = {
           id: typeof cryptoId === 'function' ? cryptoId() : 'cb-' + now,
@@ -25538,6 +25637,11 @@
         };
         cookbook.push(masterEntry);
         if(typeof save === 'function' && typeof LS !== 'undefined') save(LS.cookbook, cookbook);
+        if(out.day && typeof week !== 'undefined' && week){
+          if(!week[out.day]) week[out.day] = [];
+          week[out.day].push({ providerId: masterEntry.providerId, cookbookId: masterEntry.id, dish: masterEntry.dish, price: masterEntry.price });
+          if(typeof save === 'function' && typeof LS !== 'undefined') save(LS.week, week);
+        }
       }
     }
     save(LS.offers, offers);
@@ -25564,6 +25668,24 @@
 
   var publishFeeSuccessCallback = null;
 
+  function syncOfferToCookbookEntry(published){
+    if(!published || !published.cookbookId || typeof cookbook === 'undefined' || !Array.isArray(cookbook)) return;
+    var ent = cookbook.find(function(c){ return String(c.id) === String(published.cookbookId); });
+    if(!ent) return;
+    ent.dish = (published.dish || published.title || ent.dish || '').trim();
+    ent.title = ent.dish;
+    if(published.price != null) ent.price = published.price;
+    ent.photoData = published.imageUrl || published.photoData || ent.photoData || '';
+    ent.allergens = Array.isArray(published.allergens) ? published.allergens.slice() : (ent.allergens || []);
+    ent.extras = Array.isArray(published.extras) ? published.extras.slice() : (ent.extras || []);
+    ent.description = published.description != null ? published.description : ent.description;
+    ent.category = published.category || ent.category || 'Vegetarisch';
+    ent.reuse = published.reuse && typeof published.reuse === 'object' ? { enabled: !!published.reuse.enabled, deposit: Number(published.reuse.deposit) || 0 } : (ent.reuse || { enabled: false, deposit: 0 });
+    ent.dineInPossible = published.dineInPossible !== false;
+    ent.lastUsed = Date.now();
+    if(typeof save === 'function' && typeof LS !== 'undefined') save(LS.cookbook, cookbook);
+  }
+
   function showPublishFeeModal(offer, onPublished = null){
     publishFeePendingOffer = offer;
     publishFeeSuccessCallback = onPublished;
@@ -25580,6 +25702,17 @@
         amountEl.textContent = '4,99 €';
         if(hintEl) hintEl.textContent = 'Einmalig heute pro Gericht';
       }
+    }
+    var syncWrap = document.getElementById('publishFeeSyncWrap');
+    var syncCheck = document.getElementById('publishFeeSyncToCookbook');
+    if(syncWrap && syncCheck){
+      if(offer && offer.cookbookId){
+        syncWrap.style.display = 'block';
+        syncCheck.checked = true;
+      } else {
+        syncWrap.style.display = 'none';
+      }
+      syncCheck.onchange = function(){ try { if(typeof hapticLight === 'function') hapticLight(); else if(navigator.vibrate) navigator.vibrate(10); } catch(e){} };
     }
     const bd = document.getElementById('publishFeeBd');
     const sheet = document.getElementById('publishFeeSheet');
@@ -25862,9 +25995,12 @@
         if(typeof haptic === 'function') haptic(12);
         const offer = publishFeePendingOffer;
         const onSuccess = publishFeeSuccessCallback;
+        var syncCheck = document.getElementById('publishFeeSyncToCookbook');
+        var syncToCookbook = syncCheck && syncCheck.checked && offer && offer.cookbookId;
         const published = publishOffer(offer);
         closePublishFeeModal();
         if(published){
+          if(syncToCookbook && published.cookbookId && typeof syncOfferToCookbookEntry === 'function') syncOfferToCookbookEntry(published);
           showInseratSuccessSheet(published);
           if(typeof onSuccess === 'function'){ try { onSuccess(); } catch(e){ console.error(e); } }
         }
