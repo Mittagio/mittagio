@@ -835,12 +835,13 @@
     /* Abholnummer-Ansicht benötigt flex-Layout */
     .view.active#v-pickup-code{display:flex !important}
 
-    /* Kundenseiten: Einheitlicher Style von Seite 1 (Discovery) – Farben & Look */
+    /* Kundenseiten: Design-System – main-padding 16px, einheitlicher Look */
     .customer-view{
       background:var(--bg-polaroid);
       min-height:100vh;
-      padding:0 12px 0;
+      padding: 0 16px 0;
       padding-bottom:calc(100px + env(safe-area-inset-bottom, 0px));
+      box-sizing: border-box;
     }
     .customer-view .panel{
       background:rgba(255,255,255,0.95);
@@ -2894,6 +2895,8 @@
       --card-shadow-soft: 0 4px 20px rgba(0,0,0,0.05);
       --card-shadow-hover: 0 12px 40px rgba(0,0,0,0.08);
     }
+    /* Anbieter Design-System: Card-Radius 16px (Ruhe durch Ordnung), Seitenrand 16px */
+    body.provider-mode { --card-radius-premium: 16px; }
     /* Provider: einheitlich Warmes Beige #F8F7F2 – kein Farbsprung zwischen Dashboard/Wochenplan/Inserat */
     body.provider-mode [id^="v-provider-"].view{ position:relative; background: var(--provider-bg) !important; }
     body.provider-mode #v-provider-home,
@@ -2927,16 +2930,22 @@
       color: var(--header-title-color);
     }
     
-    /* App-Header Abholungen/Wochenplan/Kochbuch */
+    /* App-Header Abholungen/Wochenplan/Kochbuch – fixe Höhe 60px wie Kunde, padding 12px 16px */
     body.provider-mode .prov-page-header {
       position: sticky;
       top: 0;
       z-index: 50;
+      min-height: 60px;
+      padding: 12px 16px;
+      padding-top: calc(12px + env(safe-area-inset-top, 0));
       background: var(--header-bg) !important;
       backdrop-filter: blur(var(--header-blur));
       -webkit-backdrop-filter: blur(var(--header-blur));
       border-bottom: var(--header-border);
-      padding: calc(8px + env(safe-area-inset-top, 0)) var(--header-padding-x) var(--header-padding-y) var(--header-padding-x);
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
     .prov-page-header .prov-page-header-row {
       display: flex;
@@ -2969,11 +2978,13 @@
       height: 24px;
       color: #fff;
     }
+    /* Headline Anbieter: Montserrat 20px / 900, Letter-Spacing -0.03em */
     .prov-page-header .prov-page-header-title {
       margin: 0;
-      font-size: var(--header-title-size);
-      font-weight: var(--header-title-weight);
-      letter-spacing: var(--header-title-spacing);
+      font-family: 'Montserrat', sans-serif;
+      font-size: 20px;
+      font-weight: 900;
+      letter-spacing: -0.03em;
       color: var(--header-title-color);
     }
     .prov-page-header .prov-page-header-actions {
@@ -3625,14 +3636,21 @@
     body.provider-mode [id^="v-provider-"] { padding-top: 0 !important; margin-top: 0 !important; }
     body.provider-mode [id^="v-provider-"].view.active { padding-top: 0 !important; }
     
-    /* Discover Header - Sticky (Design-Tokens = einheitlich mit Anbieter-Header) */
+    /* Discover Header - Sticky (Design-System: 60px, padding 12px 16px) */
     .discover-header-sticky{
       position:sticky; top:0; z-index:100;
+      min-height: 60px;
+      padding: 12px 16px;
+      padding-top: calc(12px + env(safe-area-inset-top, 0px));
       background: var(--header-bg);
       backdrop-filter: blur(var(--header-blur));
       -webkit-backdrop-filter: blur(var(--header-blur));
       border-bottom: var(--header-border);
       box-shadow: 0 2px 8px rgba(0,0,0,.04);
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
     
     /* Ebene 1: Standortsuche (ganz oben) */
@@ -4697,13 +4715,15 @@
       content:''; position:absolute; left:16px; right:16px; bottom:0; height:1px;
       background:linear-gradient(to right, transparent, rgba(0,0,0,0.08), transparent);
     }
+    /* KPI-Labels: 10px / 800, Uppercase, dezent grau */
     #v-provider-home .dashboard-kasten-kpis .kpi-label{
-      font-size:10px !important; font-weight:900 !important;
-      color:rgba(0,0,0,0.4) !important; text-transform:uppercase;
+      font-size:10px !important; font-weight:800 !important;
+      color:#94a3b8 !important; text-transform:uppercase;
       letter-spacing:0.12em; margin-bottom:4px !important;
     }
+    /* KPI-Werte: 18px / 900 */
     #v-provider-home .dashboard-kasten-kpis [id^="dashboard"]{
-      font-size:24px !important; font-weight:900 !important;
+      font-size:18px !important; font-weight:900 !important;
       text-shadow:0 1px 2px rgba(255,255,255,0.8);
       filter:drop-shadow(0 1px 2px rgba(0,0,0,0.06));
       transition:transform 0.15s ease;
@@ -5283,8 +5303,12 @@
       #v-provider-profile .provider-profile-sub > div[style*="overflow-y:auto"]{ flex:1; min-height:0; padding-bottom:calc(24px + env(safe-area-inset-bottom, 0)); }
       #v-provider-profile .provider-profile-sub{ background:#F2F2F7 !important; }
       #v-provider-profile #providerProfileMenuCard{ background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,0.06); }
-      /* Einstellungen (Zahnrad): wie Kundenseite – Clean Card & Spacing */
-      #v-provider-profile .provider-profile-sub .provider-settings-scroll{ padding:40px 16px calc(100px + env(safe-area-inset-bottom, 0)); display:flex; flex-direction:column; gap:20px; max-width:500px; margin:0 auto; width:100%; box-sizing:border-box; }
+      /* Einstellungen (Zahnrad): S25-like volle Breite, Clean Card & Spacing [cite: 2026-02-17] */
+      #v-provider-profile .provider-profile-sub .provider-settings-scroll{ padding:20px 12px calc(100px + env(safe-area-inset-bottom, 0)); display:flex; flex-direction:column; gap:16px; width:100%; max-width:100%; box-sizing:border-box; }
+      #v-provider-profile .provider-profile-sub .provider-settings-scroll .provider-settings-identity,
+      #v-provider-profile .provider-profile-sub .provider-settings-scroll .provider-settings-card,
+      #v-provider-profile .provider-profile-sub .provider-settings-scroll .provider-profile-card,
+      #v-provider-profile .provider-profile-sub .provider-settings-scroll #providerBusinessDataCardSlotSettings > *{ width:100%; max-width:100%; }
       #v-provider-profile .provider-settings-card{ background:#fff; border-radius:24px; overflow:hidden; border:1px solid rgba(0,0,0,0.04); box-shadow:0 8px 24px rgba(0,0,0,0.03); margin-bottom:0; }
       #v-provider-profile .provider-settings-identity .plogo{ width:56px !important; height:56px !important; border-radius:18px !important; }
       #v-provider-profile .provider-settings-card .provider-time-trigger{ width:100%; padding:24px; border-radius:16px; background:#f8fafc; border:1px solid rgba(0,0,0,0.06); cursor:pointer; text-align:center; transition:background 0.2s; }
@@ -5315,9 +5339,13 @@
       #v-provider-profile .provider-settings-pillar-row .pillar-emoji{ width:44px; height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0; }
       #v-provider-profile .provider-settings-pillar-row .pillar-text{ min-width:0; }
       #v-provider-profile .provider-settings-pillar-row .toggle-switch{ flex-shrink:0; margin-left:auto; }
-      /* Betriebsdaten: nur untere Linie, keine Box-Rahmen [cite: 2026-01-29] */
-      #v-provider-profile #providerBusinessDataCardWrap .input-group{ border:none; border-bottom:1px solid #E5E7EB; border-radius:0; box-shadow:none; }
+      /* Betriebsdaten: einladende Eingabe, S25-like [cite: 2026-02-17] */
+      #v-provider-profile #providerBusinessDataCardWrap .input-group{ border:none; border-bottom:2px solid #E5E7EB; border-radius:0; box-shadow:none; padding:18px 20px; margin-bottom:0; transition:border-color 0.2s, background 0.2s; }
+      #v-provider-profile #providerBusinessDataCardWrap .input-group:focus-within{ border-bottom-color:#22C55E; background:rgba(34,197,94,0.04); }
+      #v-provider-profile #providerBusinessDataCardWrap .input-group input{ min-height:28px; font-size:17px; }
+      #v-provider-profile #providerBusinessDataCardWrap .input-group input::placeholder{ color:#94a3b8; opacity:0.9; }
       #v-provider-profile #providerBusinessDataCardWrap .input-group:last-of-type{ margin-bottom:0; }
+      #v-provider-profile #providerBusinessDataCardWrap #btnProviderSaveBusiness:active{ transform:scale(0.98); opacity:0.9; }
       /* Wochentage: runde Day-Pills, aktiv = Mittagio-Grün [cite: 2026-01-29] */
       #v-provider-profile .provider-day-pill{ display:inline-flex; align-items:center; justify-content:center; min-width:44px; height:44px; padding:0 16px; border-radius:999px; border:2px solid #e5e7eb; background:#fff; font-size:14px; font-weight:700; color:#6B7280; cursor:pointer; transition:background 0.2s, border-color 0.2s, color 0.2s; }
       #v-provider-profile .provider-day-pill.active{ background:#22C55E; border-color:#22C55E; color:#fff; }
@@ -5854,18 +5882,41 @@
       box-sizing: border-box;
     }
 
-    /* Modern Sticky Header */
+    /* Modern Sticky Header – Design-System Kundenseiten: 60px, padding 12px 16px */
     .cust-header-sticky {
       position: sticky;
       top: 0;
       z-index: 100;
+      min-height: 60px;
+      padding: 12px 16px;
+      padding-top: calc(12px + env(safe-area-inset-top, 0px));
       background: rgba(255, 255, 255, 0.85);
       backdrop-filter: saturate(180%) blur(20px);
       -webkit-backdrop-filter: saturate(180%) blur(20px);
       border-bottom: 1px solid rgba(0,0,0,0.05);
-      padding-top: env(safe-area-inset-top, 0px);
-      padding-left: env(safe-area-inset-left, 0);
-      padding-right: env(safe-area-inset-right, 0);
+      padding-left: 16px;
+      padding-right: 16px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    /* Seitentitel einheitlich: Montserrat 22px, Weight 900, Letter-Spacing -0.03em */
+    .customer-view .cust-header-sticky h1,
+    #v-discover .discover-header-sticky h1 {
+      font-family: 'Montserrat', sans-serif !important;
+      font-size: 22px !important;
+      font-weight: 900 !important;
+      letter-spacing: -0.03em;
+      color: #1a1a1a;
+      margin: 0;
+    }
+    #v-checkout .panel h3 {
+      font-family: 'Montserrat', sans-serif !important;
+      font-size: 22px !important;
+      font-weight: 900 !important;
+      letter-spacing: -0.03em;
+      color: #1a1a1a;
     }
     /* Kunde: Anbieter-Profil (Restaurant-Seite) – app-like, nicht gequetscht, S25-tauglich */
     #v-provider-detail-public {
@@ -5939,10 +5990,10 @@
       #v-provider-detail-public #pubProvAddress { font-size: 14px !important; }
     }
 
-    /* Discovery Card - Modernized */
+    /* Discovery Card - Design-System: radius 20px; Body-Padding 16px (siehe .cust-card-body) */
     .cust-card {
       background: #fff;
-      border-radius: 24px;
+      border-radius: 20px;
       overflow: hidden;
       border: 1px solid rgba(0,0,0,0.04);
       box-shadow: 0 8px 24px rgba(0,0,0,0.03);
@@ -5991,12 +6042,26 @@
       gap: 4px;
     }
 
+    /* Preise Kundenseiten: gelbe Pills, schwarzer Text, 14px, 800 */
     .cust-card-price {
-      font-size: 16px;
+      font-size: 14px;
       font-weight: 800;
       margin-top: 8px;
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: var(--brand);
+      color: #000;
     }
     .cust-card-price.price-pill { margin-left: auto; }
+    .customer-view .price-pill {
+      font-size: 14px !important;
+      font-weight: 800 !important;
+      background: var(--brand) !important;
+      color: #000 !important;
+      padding: 6px 12px !important;
+      border-radius: 999px !important;
+    }
 
     /* Favorites Grid (Strict 2x2 per FAVORITEN_LAYOUT_REGEL: gap 12px, border-radius 16px) */
     .fav-grid {
@@ -6165,7 +6230,7 @@
       <!-- Modern Sticky Header: Standort links, MITTAGIO weiß zentriert, Filter darunter sticky -->
       <header class="cust-header-sticky discover-header-sticky">
         <!-- Zeile 1: Standort links (📍 Schorndorf), MITTAGIO weiß zentriert -->
-        <div class="discover-header-top-row" style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px; gap:8px; background:#121826; position:relative;">
+        <div class="discover-header-top-row" style="display:flex; align-items:center; justify-content:space-between; gap:8px; background:#121826; position:relative;">
           <div style="flex:1; display:flex; align-items:center; gap:8px; min-width:0;">
             <button type="button" id="btnDiscoverLocationText" style="display:flex; align-items:center; gap:6px; background:none; border:none; padding:0; cursor:pointer; min-width:0; text-align:left;">
               <span style="font-size:16px; line-height:1;">📍</span>
@@ -6374,8 +6439,8 @@
     <!-- CUSTOMER: Favorites – Fokus auf HEUTE, 2x2 Grid, Pull-to-Reveal -->
     <section class="view customer-view" id="v-fav">
       <header class="cust-header-sticky">
-        <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px;">
-          <h1 style="font-size:20px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a; margin:0;">Deine Favoriten ⚡</h1>
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+          <h1>Deine Favoriten ⚡</h1>
           <button type="button" id="btnFavShareHeader" aria-label="Teilen" style="width:40px; height:40px; border-radius:12px; background:#f1f3f5; border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#1a1a1a;">
             <i data-lucide="share-2" style="width:20px;height:20px;"></i>
           </button>
@@ -6435,9 +6500,9 @@
     <!-- CUSTOMER: Orders (Applike: Sticky Header + Karten wie v-fav/v-cart) -->
     <section class="view customer-view" id="v-orders">
       <header class="cust-header-sticky">
-        <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px;">
+        <div style="display:flex; align-items:center; justify-content:space-between;">
           <div>
-            <h1 style="font-size:20px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a; margin:0;">Aktive Abholnummern</h1>
+            <h1>Aktive Abholnummern</h1>
             <p style="font-size:13px; font-weight:600; color:#64748b; margin:4px 0 0;">Deine Bestellungen im Überblick</p>
           </div>
         </div>
@@ -6464,9 +6529,9 @@
     <!-- CUSTOMER: Cart -->
     <section class="view customer-view" id="v-cart">
       <header class="cust-header-sticky">
-        <div style="display:flex; align-items:center; gap:10px; padding:12px 16px;">
+        <div style="display:flex; align-items:center; gap:10px;">
           <i data-lucide="shopping-basket" style="width:24px;height:24px;color:#1a1a1a;flex-shrink:0;"></i>
-          <h1 style="font-size:20px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a; margin:0;">Mittagsbox heute</h1>
+          <h1>Mittagsbox heute</h1>
         </div>
       </header>
 
@@ -6486,7 +6551,7 @@
         </div>
         
         <!-- Warenkorb Items (leer oder Vor-Checkout-Liste) -->
-        <div class="cust-card" id="cartMainCard" style="padding:20px;">
+        <div class="cust-card" id="cartMainCard" style="padding:16px;">
           <div id="cartBox" class="hint" style="text-align:center; padding:40px 0;">Deine Mittagsbox ist noch leer. Such dir was Leckeres aus.</div>
           
           <!-- Verzehrart -->
@@ -6648,8 +6713,8 @@
     <!-- CUSTOMER: Profile "Meins" – App-like: Abholnummer groß oben, dann Historie, Rest im Zahnrad-Menü -->
     <section class="view customer-view" id="v-profile">
       <header class="cust-header-sticky">
-        <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px;">
-          <h1 style="font-size:20px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a; margin:0;">Meins</h1>
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+          <h1>Meins</h1>
           <div style="display:flex; align-items:center; gap:8px;">
             <button type="button" id="btnProfileProviderPortal" aria-label="Zum Anbieter-Portal" onclick="if(window.showProviderLoginModal) window.showProviderLoginModal();" style="width:40px; height:40px; border-radius:12px; background:rgba(255,215,0,0.25); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer;">
               <i data-lucide="building" style="width:20px;height:20px;color:#1a1a1a;pointer-events:none;"></i>
@@ -7192,16 +7257,16 @@
         <div class="dashboard-kasten dashboard-kasten-kpis">
           <div class="prov-stats-stolz" style="display:flex; justify-content:space-between; align-items:flex-end; border:none; padding:0;">
             <div id="kpiTagesessen" role="button" tabindex="0" style="text-align:center; cursor:pointer; min-height:40px; flex:1;" onclick="document.getElementById('providerActiveListingsSection')?.scrollIntoView({behavior:'smooth'})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); document.getElementById('providerActiveListingsSection')?.scrollIntoView({behavior:'smooth'});}" title="Tagesessen">
-              <p id="kpiLabelTagesessen" class="kpi-label" style="margin:0 0 2px; font-size:8px; font-weight:800; color:#9ca3af; text-transform:uppercase; letter-spacing:0.05em;">Tagesessen</p>
-              <p id="dashboardTagesessenCount" style="margin:0; font-size:16px; font-weight:900; color:#1a1a1a;">0</p>
+              <p id="kpiLabelTagesessen" class="kpi-label" style="margin:0 0 2px;">Tagesessen</p>
+              <p id="dashboardTagesessenCount" style="margin:0;">0</p>
             </div>
             <div id="kpiBestellungen" role="button" tabindex="0" style="text-align:center; padding:0 16px; border-left:1px solid #f3f4f6; border-right:1px solid #f3f4f6; cursor:pointer; min-height:40px; flex:1;" onclick="showProviderPickups()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); showProviderPickups();}" title="Abholnummer / Abholungen">
-              <p id="kpiLabelAbholungen" class="kpi-label" style="margin:0 0 2px; font-size:8px; font-weight:800; color:#9ca3af; text-transform:uppercase; letter-spacing:0.05em;">Abholungen</p>
-              <p id="dashboardAbholungenCount" style="margin:0; font-size:16px; font-weight:900; color:#3b82f6;">0</p>
+              <p id="kpiLabelAbholungen" class="kpi-label" style="margin:0 0 2px;">Abholungen</p>
+              <p id="dashboardAbholungenCount" style="margin:0;">0</p>
             </div>
             <div id="kpiUmsatz" role="button" tabindex="0" style="text-align:right; cursor:pointer; min-height:40px; flex:1;" onclick="showProviderBilling()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); showProviderBilling();}" title="Tagesumsatz">
-              <p id="kpiLabelUmsatz" class="kpi-label" style="margin:0 0 2px; font-size:8px; font-weight:800; color:#9ca3af; text-transform:uppercase; letter-spacing:0.05em;">Umsatz heute</p>
-              <p id="dashboardUmsatzToday" style="margin:0; font-size:16px; font-weight:900; color:#16a34a;">0,00 €</p>
+              <p id="kpiLabelUmsatz" class="kpi-label" style="margin:0 0 2px;">Umsatz heute</p>
+              <p id="dashboardUmsatzToday" style="margin:0;">0,00 €</p>
             </div>
           </div>
         </div>
@@ -7586,16 +7651,16 @@
 
         <!-- Einstellungsseite (Zahnrad): Identity + Karten + Danger Zone -->
       <div id="providerProfileSubSettings" class="provider-profile-sub" style="display:none; flex-direction:column; min-height:0; background:#F9FAFB;">
-        <header class="provider-sub-header" style="background:#fff; padding:10px 20px 12px; padding-top:calc(10px + env(safe-area-inset-top, 0)); border-bottom:1px solid #e5e7eb; position:sticky; top:0; z-index:50; display:flex; align-items:center; gap:14px;">
+        <header class="provider-sub-header provider-settings-header-s25" style="background:#fff; padding:10px 16px 12px; padding-left:calc(12px + env(safe-area-inset-left, 0)); padding-right:calc(12px + env(safe-area-inset-right, 0)); padding-top:calc(10px + env(safe-area-inset-top, 0)); border-bottom:1px solid #e5e7eb; position:sticky; top:0; z-index:50; display:flex; align-items:center; gap:14px;">
           <button type="button" id="providerProfileBackSettings" aria-label="Zurück" style="width:44px; height:44px; border-radius:14px; background:transparent; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center;">
             <i data-lucide="chevron-left" style="width:22px; height:22px; color:#1a1a1a;"></i>
           </button>
-          <h1 style="margin:0; font-size:18px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a;">Einstellungen</h1>
+          <h1 style="margin:0; flex:1; font-size:18px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a;">Einstellungen</h1>
         </header>
 
         <div class="provider-settings-scroll provider-settings-scroll-rebuild" style="flex:1; overflow-y:auto; background:#F9FAFB;">
-          <!-- Identity Section (wie Kundenseite: zentrales Logo, Name, Ort, Status) -->
-          <div class="provider-settings-identity" style="text-align:center; padding:28px 20px 24px; background:#fff; border-radius:24px; box-shadow:0 2px 12px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04);">
+          <!-- Identity Section (S25-like volle Breite: zentrales Logo, Name, Ort, Status) -->
+          <div class="provider-settings-identity" style="text-align:center; padding:24px 20px; background:#fff; border-radius:24px; box-shadow:0 2px 12px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04);">
             <div class="plogo" id="providerSettingsLogo" style="margin:0 auto 12px; background-size:cover; background-position:center; background-color:#f1f3f5;"></div>
             <h2 id="providerSettingsName" style="margin:0 0 4px; font-size:20px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a;">Betriebsname</h2>
             <p id="providerSettingsOrt" style="margin:0 0 12px; font-size:14px; color:#64748b;">Ort</p>
@@ -7630,9 +7695,10 @@
             <div id="providerSettingsLunchWeekdays" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
           </div>
 
-          <!-- Kachel: Service-Logik (3 Säulen) – Emoji links, Text daneben, Toggle rechts -->
+          <!-- Kachel: Inseratseinstellungen – Immer Standard + Extras mit Preis -->
           <div class="provider-profile-card provider-settings-card" style="background:#fff; border-radius:24px; overflow:hidden; margin-bottom:20px; border:none; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
-            <h3 style="margin:0; padding:24px 24px 0; font-size:17px; font-weight:800; color:#1a1a1a;">🏗️ Service-Logik</h3>
+            <h3 style="margin:0; padding:24px 24px 8px; font-size:17px; font-weight:800; color:#1a1a1a;">Inseratseinstellungen</h3>
+            <p style="margin:0 0 16px; padding:0 24px; font-size:13px; color:#64748b;">Immer Standard für neue Inserate:</p>
             <div class="provider-settings-pillar-row" style="border-bottom:1px solid #f8f9fa;">
               <div class="pillar-left">
                 <div class="pillar-emoji" style="background:#f1f3f5;">🍴</div>
@@ -7643,53 +7709,53 @@
               </div>
               <label class="toggle-switch"><input type="checkbox" id="providerSettingsDineInEnabled"><span class="toggle-slider"></span></label>
             </div>
-            <div class="provider-settings-pillar-row" style="border-bottom:1px solid #f8f9fa;">
+            <div class="provider-settings-pillar-row provider-settings-reuse-row" style="border-bottom:1px solid #f8f9fa;">
               <div class="pillar-left">
                 <div class="pillar-emoji" style="background:#f1f3f5;">🔄</div>
                 <div class="pillar-text">
                   <div style="font-weight:800; color:#1a1a1a; font-size:16px;">Mehrweg-System</div>
-                  <div style="font-size:13px; color:#64748b;">Vytal, Recup oder eigenes</div>
+                  <div style="font-size:13px; color:#64748b;">Vytal, Recup oder eigenes – Pfand (€)</div>
                 </div>
               </div>
-              <label class="toggle-switch"><input type="checkbox" id="providerSettingsReuseEnabled"><span class="toggle-slider"></span></label>
-            </div>
-            <div class="provider-settings-pillar-row" style="border-bottom:1px solid #f8f9fa;">
-              <div class="pillar-left">
-                <div class="pillar-emoji" style="background:rgba(255,215,0,0.15);">🧾</div>
-                <div class="pillar-text">
-                  <div style="font-weight:800; color:#1a1a1a; font-size:16px;">Abholnummer</div>
-                  <div style="font-size:13px; color:#64748b;">Weniger Chaos &amp; mehr Zeit</div>
-                </div>
+              <div style="display:flex; align-items:center; gap:10px; flex-shrink:0;">
+                <input type="text" id="providerSettingsReusePfandPrice" inputmode="decimal" placeholder="0,00" style="width:72px; padding:10px 10px; border:2px solid #e2e8f0; border-radius:10px; font-size:15px; font-weight:700; text-align:right;" />
+                <span style="font-size:14px; font-weight:700; color:#64748b;">€</span>
+                <label class="toggle-switch"><input type="checkbox" id="providerSettingsReuseEnabled"><span class="toggle-slider"></span></label>
               </div>
-              <label class="toggle-switch"><input type="checkbox" id="providerSettingsAbholnummerEnabled"><span class="toggle-slider"></span></label>
             </div>
             <div class="provider-settings-pillar-row">
               <div class="pillar-left">
                 <div class="pillar-emoji" style="background:#f1f3f5;">🌾</div>
                 <div class="pillar-text">
-                  <div style="font-weight:800; color:#1a1a1a; font-size:16px;">Allergene angeben?</div>
+                  <div style="font-weight:800; color:#1a1a1a; font-size:16px;">Allergene angeben</div>
                   <div style="font-size:13px; color:#64748b;">Standard für neue Inserate</div>
                 </div>
               </div>
               <label class="toggle-switch"><input type="checkbox" id="providerSettingsWantsAllergensEnabled"><span class="toggle-slider"></span></label>
             </div>
+            <div style="padding:0 24px 24px; border-top:1px solid #f8f9fa; margin-top:8px; padding-top:20px;">
+              <h4 style="margin:0 0 12px; font-size:15px; font-weight:800; color:#1a1a1a;">➕ Extras mit Preis</h4>
+              <p style="margin:0 0 16px; font-size:13px; color:#64748b;">Beilagensalat, Ketchup, Mayonaise, Sauce, Brot – und eigene Extras. Tippen für Preiseingabe.</p>
+              <div id="providerSettingsExtrasList" style="display:flex; flex-direction:column; gap:10px;"></div>
+            </div>
           </div>
 
-          <!-- Extras mit Preis (Inserateinstellungen) -->
-          <div class="provider-profile-card provider-settings-card" style="background:#fff; border-radius:24px; padding:24px; margin-bottom:20px; border:none; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
-            <h3 style="margin:0 0 8px; font-size:17px; font-weight:800; color:#1a1a1a;">➕ Extras mit Preis</h3>
-            <p style="margin:0 0 16px; font-size:14px; color:#64748b; line-height:1.5;">Diese Extras stehen in neuen Inseraten zur Auswahl (z.&nbsp;B. Beilagensalat, Soße).</p>
-            <div id="providerSettingsExtrasList" style="display:flex; flex-direction:column; gap:10px;"></div>
-            <button type="button" id="providerSettingsExtrasAdd" style="margin-top:12px; width:100%; min-height:48px; border-radius:14px; font-size:15px; font-weight:700; background:#f1f3f5; color:#475569; border:2px dashed #e2e8f0; cursor:pointer;">+ Extra hinzufügen</button>
-          </div>
-
-          <!-- Abrechnung & Support -->
+          <!-- Abrechnung -->
           <div class="provider-settings-card provider-settings-card-rebuild" style="background:#fff; border-radius:16px; padding:20px; margin-bottom:20px; box-shadow:0 1px 3px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04);">
-            <h3 style="margin:0 0 12px; font-size:15px; font-weight:800; color:#1a1a1a;">Abrechnung &amp; Support</h3>
-            <button type="button" id="btnProviderBillingPortal" style="width:100%; min-height:48px; border-radius:16px; font-size:15px; font-weight:800; background:#22C55E; color:#fff; border:none; cursor:pointer; margin-bottom:12px;">Zahlungsmethoden</button>
-            <button type="button" id="btnSettingsBillingArchive" class="provider-settings-row-chevron" style="width:100%; display:flex; justify-content:space-between; align-items:center; padding:14px 0; background:transparent; border:none; border-bottom:1px solid #f3f4f6; color:#1a1a1a; font-size:15px; font-weight:700; cursor:pointer; text-align:left;">
-              <span>PDF-Archiv &amp; Belege</span><i data-lucide="chevron-right" style="width:20px; height:20px; color:#9ca3af;"></i>
+            <h3 style="margin:0 0 12px; font-size:15px; font-weight:800; color:#1a1a1a;">Abrechnung</h3>
+            <button type="button" id="btnSettingsTagesumsatz" class="provider-settings-row-chevron" style="width:100%; display:flex; justify-content:space-between; align-items:center; padding:14px 0; background:transparent; border:none; border-bottom:1px solid #f3f4f6; color:#1a1a1a; font-size:15px; font-weight:700; cursor:pointer; text-align:left;">
+              <span>Tagesumsatz</span><i data-lucide="chevron-right" style="width:20px; height:20px; color:#9ca3af;"></i>
             </button>
+            <button type="button" id="btnSettingsBillingArchive" class="provider-settings-row-chevron" style="width:100%; display:flex; justify-content:space-between; align-items:center; padding:14px 0; background:transparent; border:none; border-bottom:1px solid #f3f4f6; color:#1a1a1a; font-size:15px; font-weight:700; cursor:pointer; text-align:left;">
+              <span>Rechnungsbelege</span><i data-lucide="chevron-right" style="width:20px; height:20px; color:#9ca3af;"></i>
+            </button>
+            <button type="button" id="btnProviderBillingPortal" class="provider-settings-row-chevron" style="width:100%; display:flex; justify-content:space-between; align-items:center; padding:14px 0; background:transparent; border:none; color:#1a1a1a; font-size:15px; font-weight:700; cursor:pointer; text-align:left;">
+              <span>Bankdaten</span><i data-lucide="chevron-right" style="width:20px; height:20px; color:#9ca3af;"></i>
+            </button>
+          </div>
+          <!-- FAQ & Support -->
+          <div class="provider-settings-card provider-settings-card-rebuild" style="background:#fff; border-radius:16px; padding:20px; margin-bottom:20px; box-shadow:0 1px 3px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04);">
+            <h3 style="margin:0 0 12px; font-size:15px; font-weight:800; color:#1a1a1a;">FAQ &amp; Support</h3>
             <button type="button" id="btnSettingsSupportFooter" class="provider-settings-row-chevron" style="width:100%; display:flex; justify-content:space-between; align-items:center; padding:14px 0; background:transparent; border:none; color:#1a1a1a; font-size:15px; font-weight:700; cursor:pointer; text-align:left;">
               <span>Support &amp; FAQ</span><i data-lucide="chevron-right" style="width:20px; height:20px; color:#9ca3af;"></i>
             </button>
@@ -10659,7 +10725,7 @@
   }
 
   function normalizeProviderProfile(p){
-    const base = { name:'', address:'', street:'', zip:'', city:'', mealWindow:DEFAULT_MEAL_WINDOW, mealStart:'11:30', mealEnd:'14:00', lunchWeekdays:[1,2,3,4,5], phone:'', email:'', website:'', logoData:'', kitchenEmail:'', autoSelloutTime:'', reuseEnabledByDefault:false, abholnummerEnabledByDefault:false, wantsAllergensByDefault:false, defaultExtras:[] };
+    const base = { name:'', address:'', street:'', zip:'', city:'', mealWindow:DEFAULT_MEAL_WINDOW, mealStart:'11:30', mealEnd:'14:00', lunchWeekdays:[1,2,3,4,5], phone:'', email:'', website:'', logoData:'', kitchenEmail:'', autoSelloutTime:'', reuseEnabledByDefault:false, reusePfandPrice:0, abholnummerEnabledByDefault:false, wantsAllergensByDefault:false, defaultExtras:[] };
     const out = {...base, ...(p||{})};
     if(!Array.isArray(out.defaultExtras)) out.defaultExtras = [];
     if(!out.address){ out.address = buildAddress(out); }
@@ -11236,27 +11302,31 @@
     }
   };
   var PROVIDER_BUSINESS_FIELDS = [
-    { id: 'providerProfileBusinessName', type: 'text', label: 'Betriebsname', autocomplete: 'organization' },
-    { id: 'providerProfileStreet', type: 'text', label: 'Anschrift', autocomplete: 'street-address' },
-    { id: 'providerProfileZip', type: 'text', label: 'PLZ', autocomplete: 'postal-code', maxlength: 10 },
-    { id: 'providerProfileCity', type: 'text', label: 'Ort', autocomplete: 'address-level2' },
-    { id: 'providerProfilePhone', type: 'tel', label: 'Telefon', autocomplete: 'tel' },
-    { id: 'providerProfileEmail', type: 'email', label: 'E-Mail', autocomplete: 'email' },
-    { id: 'providerProfileWebsite', type: 'url', label: 'Webseite', autocomplete: 'url' }
+    { id: 'providerProfileBusinessName', type: 'text', label: 'Betriebsname', placeholder: 'z.B. Metzgerei Schmidt', autocomplete: 'organization' },
+    { id: 'providerProfileStreet', type: 'text', label: 'Anschrift', placeholder: 'Straße und Hausnummer', autocomplete: 'street-address' },
+    { id: 'providerProfileZip', type: 'text', label: 'PLZ', placeholder: '73614', autocomplete: 'postal-code', maxlength: 10 },
+    { id: 'providerProfileCity', type: 'text', label: 'Ort', placeholder: 'Schorndorf', autocomplete: 'address-level2' },
+    { id: 'providerProfilePhone', type: 'tel', label: 'Telefon', placeholder: '07181 123456', autocomplete: 'tel' },
+    { id: 'providerProfileEmail', type: 'email', label: 'E-Mail', placeholder: 'info@dein-betrieb.de', autocomplete: 'email' },
+    { id: 'providerProfileWebsite', type: 'url', label: 'Webseite', placeholder: 'https://deine-website.de', autocomplete: 'url' }
   ];
   function createProviderBusinessDataCard(){
     var wrap = document.createElement('div');
     wrap.id = 'providerBusinessDataCardWrap';
     wrap.className = 'provider-settings-card provider-business-data-card';
-    wrap.setAttribute('style', 'background:#fff; border-radius:24px; padding:24px; border:none; box-shadow:0 1px 3px rgba(0,0,0,0.06);');
+    wrap.setAttribute('style', 'background:#fff; border-radius:24px; padding:24px 20px; border:none; box-shadow:0 2px 12px rgba(0,0,0,0.06);');
     var title = document.createElement('h3');
-    title.setAttribute('style', 'margin:0 0 20px; font-size:17px; font-weight:800; color:#1a1a1a;');
+    title.setAttribute('style', 'margin:0 0 6px; font-size:17px; font-weight:800; color:#1a1a1a;');
     title.textContent = 'Betriebsdaten';
     wrap.appendChild(title);
+    var subtitle = document.createElement('p');
+    subtitle.setAttribute('style', 'margin:0 0 20px; font-size:14px; color:#64748b; line-height:1.4;');
+    subtitle.textContent = 'Damit Kunden dich finden – schnell ausgefüllt.';
+    wrap.appendChild(subtitle);
     wrap.appendChild(MittagioForm.createInputGroup(PROVIDER_BUSINESS_FIELDS[0]));
     wrap.appendChild(MittagioForm.createInputGroup(PROVIDER_BUSINESS_FIELDS[1]));
     var row = document.createElement('div');
-    row.setAttribute('style', 'display:grid; grid-template-columns:1fr 2fr; gap:12px;');
+    row.setAttribute('style', 'display:grid; grid-template-columns:minmax(72px,1fr) 2fr; gap:12px;');
     row.appendChild(MittagioForm.createInputGroup(PROVIDER_BUSINESS_FIELDS[2]));
     row.appendChild(MittagioForm.createInputGroup(PROVIDER_BUSINESS_FIELDS[3]));
     wrap.appendChild(row);
@@ -11269,7 +11339,7 @@
     btn.type = 'button';
     btn.id = 'btnProviderSaveBusiness';
     btn.className = 'btn-primary';
-    btn.setAttribute('style', 'width:100%; min-height:56px; border-radius:16px; font-size:16px; font-weight:800; background:#FFD700; color:#1a1a1a; border:none; box-shadow:0 4px 12px rgba(255,215,0,0.2); margin-top:20px;');
+    btn.setAttribute('style', 'width:100%; min-height:56px; border-radius:16px; font-size:16px; font-weight:800; background:#FFD700; color:#1a1a1a; border:none; box-shadow:0 4px 12px rgba(255,215,0,0.2); margin-top:20px; cursor:pointer; transition:transform 0.1s, opacity 0.1s;');
     btn.textContent = 'Daten speichern';
     wrap.appendChild(btn);
     var securityWrap = document.createElement('div');
@@ -19331,17 +19401,19 @@
     }
   }
   
-  // Onboarding Event Handlers – Einstieg "Was bieten Sie heute an?"
+  // Onboarding Event Handlers – Einstieg "Was bieten Sie heute an?" → InseratCard (kein altes First-Dish-Formular)
   function startOnboardingFromEntry(){
     const input = document.getElementById('onboardingEntryDishInput');
     const value = input ? input.value.trim() : '';
-    if(value){
-      onboardingDraftDish = onboardingDraftDish || {};
-      onboardingDraftDish.dishName = value;
-      save(LS.onboardingDraft, onboardingDraftDish);
-      showOnboardingFirstDish(true);
+    if(provider && provider.loggedIn){
+      if(typeof startListingFlow === 'function') startListingFlow({ entryPoint: 'dashboard', entryDishName: value || undefined });
     } else {
-      showOnboardingFirstDish(false);
+      if(value){
+        onboardingDraftDish = onboardingDraftDish || {};
+        onboardingDraftDish.dishName = value;
+        save(LS.onboardingDraft, onboardingDraftDish);
+      }
+      showOnboardingSignup();
     }
   }
   const onboardingEntryDishInput = document.getElementById('onboardingEntryDishInput');
@@ -19627,6 +19699,12 @@
       save(LS.onboardingDraft, onboardingDraftDish);
     }
     showOnboardingFirstDish(true);
+  };
+
+  const btnOnboardingComplete = document.getElementById('btnOnboardingComplete');
+  if(btnOnboardingComplete) btnOnboardingComplete.onclick = function(){
+    if(typeof haptic === 'function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10);
+    if(typeof startListingFlow === 'function') startListingFlow({ entryPoint: 'dashboard' });
   };
   
   // Browser back button handling for onboarding (integrated in existing popstate handler)
@@ -22799,6 +22877,8 @@
     if(btnImpressum && impressumContent) btnImpressum.onclick = function(){ if(typeof haptic === 'function') haptic(6); impressumContent.style.display = impressumContent.style.display === 'none' ? 'block' : 'none'; };
     var btnBillingArchive = document.getElementById('btnBillingArchive');
     if(btnBillingArchive) btnBillingArchive.onclick = function(){ if(!checkSessionValidity()) return; showView(views.providerBilling); renderBilling(); };
+    var btnSettingsTagesumsatz = document.getElementById('btnSettingsTagesumsatz');
+    if(btnSettingsTagesumsatz) btnSettingsTagesumsatz.onclick = function(){ if(!checkSessionValidity()) return; showProviderBilling(); };
     var btnSettingsBillingArchive = document.getElementById('btnSettingsBillingArchive');
     if(btnSettingsBillingArchive) btnSettingsBillingArchive.onclick = function(){ if(!checkSessionValidity()) return; showView(views.providerBilling); renderBilling(); };
     var btnSettingsSupport = document.getElementById('btnSettingsSupport');
@@ -23079,85 +23159,100 @@
     }
     bindSettingsToggle('providerSettingsDineInEnabled', 'providerDineInEnabled', 'dineInPossibleDefault', function(p){ return p.dineInPossibleDefault !== false; }, 'Vor Ort standardmäßig an', 'Vor Ort standardmäßig aus');
     bindSettingsToggle('providerSettingsReuseEnabled', 'providerReuseEnabled', 'reuseEnabledByDefault', function(p){ return p.reuseEnabledByDefault || false; }, 'Mehrweg-Pfandsystem aktiviert', 'Mehrweg-Pfandsystem deaktiviert');
-    bindSettingsToggle('providerSettingsAbholnummerEnabled', 'providerAbholnummerEnabled', 'abholnummerEnabledByDefault', function(p){ return p.abholnummerEnabledByDefault || false; }, 'Abholnummer standardmäßig an', 'Abholnummer standardmäßig aus');
     bindSettingsToggle('providerSettingsWantsAllergensEnabled', 'providerWantsAllergensEnabled', 'wantsAllergensByDefault', function(p){ return p.wantsAllergensByDefault || false; }, 'Allergene standardmäßig angeben', 'Allergene standardmäßig aus');
+    var reusePfandEl = document.getElementById('providerSettingsReusePfandPrice');
+    if(reusePfandEl){
+      reusePfandEl.value = (p.reusePfandPrice != null ? Number(p.reusePfandPrice).toFixed(2).replace('.', ',') : '0,00');
+      reusePfandEl.oninput = reusePfandEl.onblur = function(){
+        if(!provider.profile) provider.profile = {};
+        var v = (reusePfandEl.value || '').replace(',', '.').replace(/[^\d.-]/g, '');
+        provider.profile.reusePfandPrice = Math.max(0, parseFloat(v) || 0);
+        save(LS.provider, provider);
+        reusePfandEl.value = (provider.profile.reusePfandPrice || 0).toFixed(2).replace('.', ',');
+        if(typeof showToast === 'function') showToast('Mehrweg-Pfand gespeichert');
+      };
+    }
     
-    // Extras mit Preis (Inserateinstellungen)
+    // Extras mit Preis (Inseratseinstellungen): Beilagensalat, Ketchup, Mayonaise, Sauce, Brot + leeres Feld, bei Nutzung weiteres Feld
+    var PREDEFINED_EXTRAS = ['Beilagensalat','Ketchup','Mayonaise','Sauce','Brot'];
     var extrasListEl = document.getElementById('providerSettingsExtrasList');
-    var extrasAddBtn = document.getElementById('providerSettingsExtrasAdd');
     function renderExtrasRows(){
       if(!extrasListEl) return;
-      var list = (provider.profile && Array.isArray(provider.profile.defaultExtras)) ? provider.profile.defaultExtras : (Array.isArray(p.defaultExtras) ? p.defaultExtras : []);
+      if(!provider.profile) provider.profile = {};
+      if(!Array.isArray(provider.profile.defaultExtras)) provider.profile.defaultExtras = [];
+      var list = provider.profile.defaultExtras.slice();
+      var needPredefined = [];
+      PREDEFINED_EXTRAS.forEach(function(n){ needPredefined.push({ name: n, price: 0 }); });
+      for(var i = 0; i < PREDEFINED_EXTRAS.length; i++){
+        var found = list.find(function(x){ return x && x.name === PREDEFINED_EXTRAS[i]; });
+        if(found) needPredefined[i].price = (typeof found.price === 'number' ? found.price : 0);
+        else{ var alt = list[i]; if(alt && typeof alt.price === 'number') needPredefined[i].price = alt.price; }
+      }
+      var custom = list.filter(function(x){ return x && x.name && PREDEFINED_EXTRAS.indexOf(x.name) < 0; });
+      var merged = needPredefined.concat(custom);
+      var lastHasName = merged.length && merged[merged.length-1] && String(merged[merged.length-1].name || '').trim();
+      if(lastHasName) merged.push({ name: '', price: 0 });
+      provider.profile.defaultExtras = merged;
+      save(LS.provider, provider);
       extrasListEl.innerHTML = '';
-      list.forEach(function(extra, idx){
+      merged.forEach(function(extra, idx){
+        var isPredefined = idx < PREDEFINED_EXTRAS.length;
         var row = document.createElement('div');
         row.style.cssText = 'display:flex; align-items:center; gap:10px; padding:12px 14px; background:#f8fafc; border-radius:12px; border:1px solid #e2e8f0;';
         var nameInp = document.createElement('input');
         nameInp.type = 'text';
-        nameInp.placeholder = 'z. B. Beilagensalat';
+        nameInp.placeholder = 'Eigenes Extra eingeben';
         nameInp.value = (extra && extra.name) ? String(extra.name) : '';
-        nameInp.style.cssText = 'flex:1; min-width:0; padding:10px 12px; border:2px solid #e2e8f0; border-radius:10px; font-size:15px; font-weight:600;';
+        nameInp.readOnly = isPredefined;
+        nameInp.style.cssText = 'flex:1; min-width:0; padding:10px 12px; border:2px solid #e2e8f0; border-radius:10px; font-size:15px; font-weight:600;' + (isPredefined ? ' background:#f1f3f5;' : '');
         var priceInp = document.createElement('input');
         priceInp.type = 'text';
         priceInp.inputMode = 'decimal';
         priceInp.placeholder = '0,00';
-        priceInp.value = (extra && typeof extra.price === 'number') ? Number(extra.price).toFixed(2).replace('.', ',') : ((extra && extra.price) ? String(extra.price) : '');
+        priceInp.value = (extra && typeof extra.price === 'number') ? Number(extra.price).toFixed(2).replace('.', ',') : '';
         priceInp.style.cssText = 'width:72px; padding:10px 8px; border:2px solid #e2e8f0; border-radius:10px; font-size:15px; font-weight:700; text-align:right;';
-        var removeBtn = document.createElement('button');
-        removeBtn.type = 'button';
-        removeBtn.setAttribute('aria-label', 'Entfernen');
-        removeBtn.textContent = '✕';
-        removeBtn.style.cssText = 'width:40px; height:40px; border:none; border-radius:10px; background:rgba(220,38,38,0.1); color:#dc2626; font-size:18px; font-weight:800; cursor:pointer; flex-shrink:0;';
         function syncExtra(){
           if(!provider.profile) provider.profile = {};
           if(!Array.isArray(provider.profile.defaultExtras)) provider.profile.defaultExtras = [];
           while(provider.profile.defaultExtras.length <= idx) provider.profile.defaultExtras.push({ name: '', price: 0 });
-          provider.profile.defaultExtras[idx].name = nameInp.value.trim();
+          provider.profile.defaultExtras[idx].name = isPredefined ? PREDEFINED_EXTRAS[idx] : nameInp.value.trim();
           var priceVal = (priceInp.value || '').replace(',', '.').replace(/[^\d.-]/g, '');
           provider.profile.defaultExtras[idx].price = Math.max(0, parseFloat(priceVal) || 0);
           save(LS.provider, provider);
+          if(!isPredefined && nameInp.value.trim()){ renderExtrasRows(); return; }
         }
-        nameInp.oninput = syncExtra;
-        nameInp.onblur = function(){ syncExtra(); if(typeof showToast === 'function') showToast('Extras gespeichert'); };
+        nameInp.oninput = function(){ if(!isPredefined){ syncExtra(); } };
+        nameInp.onblur = function(){ if(!isPredefined) syncExtra(); if(typeof showToast === 'function') showToast('Extras gespeichert'); };
         priceInp.oninput = syncExtra;
         priceInp.onblur = function(){ syncExtra(); priceInp.value = (provider.profile.defaultExtras[idx] && typeof provider.profile.defaultExtras[idx].price === 'number') ? provider.profile.defaultExtras[idx].price.toFixed(2).replace('.', ',') : ''; if(typeof showToast === 'function') showToast('Extras gespeichert'); };
-        removeBtn.onclick = function(){
-          if(typeof haptic === 'function') haptic(6);
-          var cur = (provider.profile && provider.profile.defaultExtras) ? provider.profile.defaultExtras.slice() : [];
-          cur.splice(idx, 1);
-          if(!provider.profile) provider.profile = {};
-          provider.profile.defaultExtras = cur;
-          save(LS.provider, provider);
-          renderExtrasRows();
-          if(typeof showToast === 'function') showToast('Extra entfernt');
-        };
         var eurLabel = document.createElement('span');
         eurLabel.style.cssText = 'font-size:14px; font-weight:700; color:#64748b;';
         eurLabel.textContent = '€';
         row.appendChild(nameInp);
         row.appendChild(eurLabel);
         row.appendChild(priceInp);
-        row.appendChild(removeBtn);
+        if(!isPredefined){
+          var removeBtn = document.createElement('button');
+          removeBtn.type = 'button';
+          removeBtn.setAttribute('aria-label', 'Entfernen');
+          removeBtn.textContent = '✕';
+          removeBtn.style.cssText = 'width:40px; height:40px; border:none; border-radius:10px; background:rgba(220,38,38,0.1); color:#dc2626; font-size:18px; font-weight:800; cursor:pointer; flex-shrink:0;';
+          removeBtn.onclick = function(){
+            if(typeof haptic === 'function') haptic(6);
+            var cur = (provider.profile && provider.profile.defaultExtras) ? provider.profile.defaultExtras.slice() : [];
+            cur.splice(idx, 1);
+            if(!provider.profile) provider.profile = {};
+            provider.profile.defaultExtras = cur;
+            save(LS.provider, provider);
+            renderExtrasRows();
+            if(typeof showToast === 'function') showToast('Extra entfernt');
+          };
+          row.appendChild(removeBtn);
+        }
         extrasListEl.appendChild(row);
       });
     }
     renderExtrasRows();
-    if(extrasAddBtn){
-      extrasAddBtn.onclick = function(){
-        if(typeof haptic === 'function') haptic(6);
-        if(!provider.profile) provider.profile = {};
-        if(!Array.isArray(provider.profile.defaultExtras)) provider.profile.defaultExtras = [];
-        provider.profile.defaultExtras = provider.profile.defaultExtras.slice();
-        provider.profile.defaultExtras.push({ name: '', price: 0 });
-        save(LS.provider, provider);
-        renderExtrasRows();
-        var lastRow = extrasListEl.lastElementChild;
-        if(lastRow){
-          var firstInput = lastRow.querySelector('input[type="text"]:not([inputmode])');
-          if(firstInput) firstInput.focus();
-        }
-      };
-    }
     
     // Account: Status 1 aktive Sitzung
     const sessionStatusEl = document.getElementById('providerSessionStatus');
@@ -24941,6 +25036,7 @@
           day: ctx.date || createFlowPreselectedDate || isoDate(new Date())
         };
         if(isFirstTimeLeberkaese) ctx.isLeberkaeseOnboarding = true;
+        if(ctx.entryDishName && typeof ctx.entryDishName === 'string' && ctx.entryDishName.trim()) w.data.dish = ctx.entryDishName.trim();
       }
       
       // Normalize data
