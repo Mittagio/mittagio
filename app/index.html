@@ -22,6 +22,8 @@
   <link rel="apple-touch-icon" href="assets/icons/icon-192.png" />
   <script>if(typeof history!=='undefined'&&history.scrollRestoration)history.scrollRestoration='manual';</script>
   <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js" onload="if(typeof lucide !== 'undefined') try { lucide.createIcons(); } catch(e) { console.warn('Lucide init:', e); }"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Montserrat:wght@400;600;700;900&family=Kalam:wght@400;700&family=Permanent+Marker&family=Nunito:wght@600;700;800&family=Quicksand:wght@500;600;700&display=swap');
     :root{
@@ -3837,8 +3839,9 @@
       transition:transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
       will-change:transform;
     }
-    .discover-pin-drawer:not(.open){ transform:translateY(100%); pointer-events:none; }
-    .discover-pin-drawer.open{ transform:translateY(0); pointer-events:auto; }
+    .discover-pin-drawer:not(.open){ transform:translateY(100%); pointer-events:none; visibility:visible; }
+    .discover-pin-drawer.open{ transform:translateY(0); pointer-events:auto; visibility:visible; }
+    .discover-leaflet-pin{ background:none !important; border:none !important; }
     #discoverPinDrawerBackdrop{
       transition:opacity 0.3s ease, visibility 0.3s;
     }
@@ -6116,19 +6119,27 @@
           <!-- Dynamisch befüllt -->
         </div>
 
-        <!-- Kartenansicht (Hunger-Radar) – Pins mit Preis + Emoji, Tap = Drawer -->
-        <div id="discoverMap" class="discover-map-wrap" style="display:none; position:absolute; inset:0; top:0; bottom:80px; padding:16px; padding-bottom:100px;">
-          <div id="discoverMapCanvas" class="discover-map-canvas" style="width:100%; height:100%; background:linear-gradient(180deg, #e8f4f8 0%, #f0f7fa 100%); border-radius:20px; position:relative; overflow:hidden;">
-            <!-- Pins werden dynamisch eingefügt -->
+        <!-- Kartenansicht: Leaflet-Karte Schorndorf, gelbe/grüne Pins, „Hier suchen“ + Nadel -->
+        <div id="discoverMap" class="discover-map-wrap" style="display:none; position:absolute; inset:0; top:0; bottom:80px; padding:0; flex-direction:column;">
+          <div id="discoverMapCanvas" class="discover-map-canvas" style="width:100%; height:100%; border-radius:0; position:relative; overflow:hidden;">
+            <div id="discoverMapLeaflet" style="width:100%; height:100%; min-height:280px;"></div>
           </div>
+          <div id="discoverMapToolbar" style="position:absolute; top:12px; left:12px; right:12px; display:flex; gap:8px; align-items:center; z-index:400; pointer-events:none;"><div style="pointer-events:auto;"><button type="button" id="discoverMapBtnHierSuchen" style="display:none; padding:10px 16px; border-radius:999px; background:#fff; border:2px solid #e5e7eb; font-size:14px; font-weight:700; color:#1a1a1a; box-shadow:0 4px 12px rgba(0,0,0,0.1); cursor:pointer;">In diesem Bereich suchen</button></div><div style="flex:1;"></div><button type="button" id="discoverMapBtnLocation" style="pointer-events:auto; width:48px; height:48px; border-radius:50%; background:#fff; border:2px solid #e5e7eb; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(0,0,0,0.1); cursor:pointer;" title="Mein Standort"><i data-lucide="navigation" style="width:22px;height:22px;color:#1a1a1a;"></i></button></div>
         </div>
 
-        <!-- Pin-Drawer: Applike Bottom-Sheet (Slide-Up), Bild + 3 Säulen -->
-        <div id="discoverPinDrawer" class="discover-pin-drawer" style="position:fixed; left:0; right:0; bottom:0; visibility:hidden; background:#fff; border-radius:24px 24px 0 0; box-shadow:0 -8px 32px rgba(0,0,0,0.18); z-index:200; padding:16px 20px calc(20px + env(safe-area-inset-bottom)); max-height:55vh; overflow-y:auto;">
+        <!-- Pin-Drawer: Bild, Preis, 3 Säulen, Geh-/Fahrminuten, Wegbeschreibung -->
+        <div id="discoverPinDrawer" class="discover-pin-drawer" style="position:fixed; left:0; right:0; bottom:0; transition:transform 0.35s cubic-bezier(0.32,0.72,0,1); background:#fff; border-radius:24px 24px 0 0; box-shadow:0 -8px 32px rgba(0,0,0,0.18); z-index:200; padding:16px 20px calc(20px + env(safe-area-inset-bottom)); max-height:55vh; overflow-y:auto;">
           <div class="discover-pin-drawer-handle" style="width:44px; height:5px; background:#d1d5db; border-radius:3px; margin:0 auto 16px;"></div>
           <div id="discoverPinDrawerImageWrap" style="width:100%; height:180px; border-radius:16px; background:#f1f3f5; overflow:hidden;"><img id="discoverPinDrawerImage" alt="" style="width:100%; height:100%; object-fit:cover;"></div>
-          <div id="discoverPinDrawerTitle" style="font-size:20px; font-weight:800; margin:14px 0 10px;"></div>
-          <div id="discoverPinDrawerPillars" class="card-pillars" style="display:flex; gap:14px; margin-bottom:16px;"></div>
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin:14px 0 10px;">
+            <div id="discoverPinDrawerTitle" style="font-size:20px; font-weight:800; color:#1a1a1a; flex:1; min-width:0;"></div>
+            <div id="discoverPinDrawerPrice" style="font-size:18px; font-weight:900; color:var(--brand); flex-shrink:0;"></div>
+          </div>
+          <div id="discoverPinDrawerPillars" class="card-pillars" style="display:flex; gap:14px; margin-bottom:12px;"></div>
+          <div id="discoverPinDrawerNavRow" style="display:flex; align-items:center; gap:12px; margin-bottom:16px; flex-wrap:wrap;">
+            <span id="discoverPinDrawerMinutes" style="font-size:14px; font-weight:700; color:#64748b;"></span>
+            <a id="discoverPinDrawerRoute" href="#" target="_blank" rel="noopener" style="display:inline-flex; align-items:center; gap:6px; padding:10px 16px; border-radius:14px; background:rgba(0,0,0,0.06); font-size:14px; font-weight:700; color:#1a1a1a; text-decoration:none;">Wegbeschreibung</a>
+          </div>
           <button type="button" class="btn-cust-primary" id="discoverPinDrawerBtn" style="width:100%; min-height:56px; border-radius:16px; font-size:16px; font-weight:800;">Gericht ansehen</button>
         </div>
         <div id="discoverPinDrawerBackdrop" style="position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:199; opacity:0; visibility:hidden;" onclick="closeDiscoverPinDrawer()"></div>
@@ -11882,10 +11893,20 @@
     if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
   }
   
+  var discoverLeafletMap = null;
+  var discoverLeafletMarkers = [];
+  var SCHORNDORF_CENTER = [48.8054, 9.5272];
+  function offerToLatLng(o){
+    var data = normalizeOffer(o);
+    if(o.lat != null && o.lng != null) return [Number(o.lat), Number(o.lng)];
+    var km = data.distanceKm != null ? Math.min(Number(data.distanceKm), 5) : 0.5;
+    var hash = (o.id || o.providerId || '').split('').reduce(function(acc, c){ return (acc * 31 + c.charCodeAt(0)) | 0; }, 0);
+    var angle = (Math.abs(hash) % 360) * Math.PI / 180;
+    var lat = SCHORNDORF_CENTER[0] + (km / 111) * Math.cos(angle);
+    var lng = SCHORNDORF_CENTER[1] + (km / (111.32 * Math.cos(SCHORNDORF_CENTER[0] * Math.PI / 180))) * Math.sin(angle);
+    return [lat, lng];
+  }
   function renderDiscoverMap(){
-    const canvas = document.getElementById('discoverMapCanvas');
-    if(!canvas) return;
-    canvas.innerHTML = '';
     var list = offers.filter(function(o){ return o.day === activeDay && o.active !== false; });
     if(activeDiscoverFilter !== 'near' && activeDiscoverFilter !== 'provider'){
       var allowed = DISCOVER_CAT_MULTI[activeDiscoverFilter];
@@ -11906,26 +11927,56 @@
         return String(addr||'').toLowerCase().includes(q);
       });
     }
+    var mapEl = document.getElementById('discoverMapLeaflet');
+    if(!mapEl) return;
     if(list.length === 0){
-      canvas.innerHTML = '<div class="discover-map-empty" style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; text-align:center;"><div style="font-size:48px; margin-bottom:16px;">🗺️</div><div style="font-size:18px; font-weight:800; color:#1a1a1a; margin-bottom:8px;">Keine Angebote im Radius</div><div style="font-size:14px; color:#64748b;">Erweitere den Hunger-Radius oder wechsle die Kategorie.</div></div>';
+      mapEl.style.display = 'none';
+      var empty = mapEl.parentNode.querySelector('.discover-map-empty');
+      if(empty) empty.remove();
+      var emptyDiv = document.createElement('div');
+      emptyDiv.className = 'discover-map-empty';
+      emptyDiv.style.cssText = 'position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; text-align:center; background:linear-gradient(180deg, #e8f4f8 0%, #f0f7fa 100%);';
+      emptyDiv.innerHTML = '<div style="font-size:48px; margin-bottom:16px;">🗺️</div><div style="font-size:18px; font-weight:800; color:#1a1a1a; margin-bottom:8px;">Keine Angebote im Radius</div><div style="font-size:14px; color:#64748b;">Erweitere den Hunger-Radius oder wechsle die Kategorie.</div>';
+      mapEl.parentNode.appendChild(emptyDiv);
+      if(discoverLeafletMap){ discoverLeafletMarkers.forEach(function(m){ discoverLeafletMap.removeLayer(m); }); discoverLeafletMarkers = []; }
       return;
     }
-    var cols = 4;
-    list.forEach(function(o, i){
+    mapEl.style.display = 'block';
+    var empty = mapEl.parentNode.querySelector('.discover-map-empty');
+    if(empty) empty.remove();
+    if(typeof L === 'undefined'){
+      mapEl.innerHTML = '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#f0f7fa;color:#64748b;">Karte wird geladen…</div>';
+      return;
+    }
+    if(!discoverLeafletMap){
+      discoverLeafletMap = L.map('discoverMapLeaflet', { center: SCHORNDORF_CENTER, zoom: 14, zoomControl: true });
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(discoverLeafletMap);
+      discoverLeafletMap.on('moveend', function(){
+        var btn = document.getElementById('discoverMapBtnHierSuchen');
+        if(btn){
+          var c = discoverLeafletMap.getCenter();
+          var d = Math.abs(c.lat - SCHORNDORF_CENTER[0]) + Math.abs(c.lng - SCHORNDORF_CENTER[1]);
+          btn.style.display = d > 0.005 ? 'block' : 'none';
+        }
+      });
+    }
+    discoverLeafletMarkers.forEach(function(m){ discoverLeafletMap.removeLayer(m); });
+    discoverLeafletMarkers = [];
+    var bounds = L.latLngBounds(list.map(function(o){ return offerToLatLng(o); }));
+    list.forEach(function(o){
       var data = normalizeOffer(o);
-      var pin = document.createElement('div');
-      pin.className = 'discover-pin';
-      var row = Math.floor(i / cols);
-      var col = i % cols;
-      var x = (col + 0.5) * (100 / cols);
-      var y = 20 + (row + 0.5) * (70 / Math.max(1, Math.ceil(list.length / cols)));
-      pin.style.left = x + '%';
-      pin.style.top = y + '%';
-      var emoji = (data.category === 'Suppe') ? '🍲' : (data.category === 'Mit Fleisch' || data.category === 'Fisch') ? '🥩' : (data.category === 'Vegetarisch' || data.category === 'Vegan') ? '🥗' : '🥪';
-      pin.innerHTML = '<div class="discover-pin-emoji">' + emoji + '</div><div class="discover-pin-price">' + euro(data.price) + '</div>';
-      pin.onclick = function(e){ e.stopPropagation(); openDiscoverPinDrawer(o); };
-      canvas.appendChild(pin);
+      var p = offers.find(function(x){ return x.providerId === data.providerId; });
+      var hasAbholnummer = !!(p && (data.hasPickupCode || p.hasPickupCode));
+      var latlng = offerToLatLng(o);
+      var color = hasAbholnummer ? '#FFD700' : '#22c55e';
+      var icon = L.divIcon({ className: 'discover-leaflet-pin', html: '<div style="width:28px;height:28px;border-radius:50%;background:' + color + ';border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.25);"></div>', iconSize: [28, 28], iconAnchor: [14, 14] });
+      var marker = L.marker(latlng, { icon: icon }).addTo(discoverLeafletMap);
+      marker.on('click', function(){ openDiscoverPinDrawer(o); });
+      discoverLeafletMarkers.push(marker);
     });
+    discoverLeafletMap.fitBounds(bounds.pad(0.15), { maxZoom: 16 });
+    setTimeout(function(){ if(discoverLeafletMap && discoverLeafletMap.invalidateSize) discoverLeafletMap.invalidateSize(); }, 100);
+    if(typeof lucide !== 'undefined') lucide.createIcons();
   }
   
   window.openDiscoverPinDrawer = function(offer){
@@ -11933,16 +11984,28 @@
     var drawer = document.getElementById('discoverPinDrawer');
     var imgEl = document.getElementById('discoverPinDrawerImage');
     var titleEl = document.getElementById('discoverPinDrawerTitle');
+    var priceEl = document.getElementById('discoverPinDrawerPrice');
     var pillarsEl = document.getElementById('discoverPinDrawerPillars');
+    var minutesEl = document.getElementById('discoverPinDrawerMinutes');
+    var routeEl = document.getElementById('discoverPinDrawerRoute');
     var btnEl = document.getElementById('discoverPinDrawerBtn');
     var backdrop = document.getElementById('discoverPinDrawerBackdrop');
     if(!drawer || !titleEl || !pillarsEl || !btnEl) return;
     if(imgEl) imgEl.src = data.imageUrl || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=800&q=80';
     titleEl.textContent = data.dish || 'Gericht';
+    if(priceEl) priceEl.textContent = euro(data.price);
     var p = offers.find(function(x){ return x.providerId === data.providerId; });
     var abholnummer = !!(p && p.orderingEnabled !== false && (data.hasPickupCode || p.hasPickupCode));
     var mehrweg = !!(p && (p.reuse && p.reuse.enabled));
     pillarsEl.innerHTML = '<div class="pillar-mini active green" title="Vor Ort möglich">🍴</div><div class="pillar-mini ' + (abholnummer ? 'active yellow' : '') + '" title="Abholnummer aktiv">🧾</div><div class="pillar-mini ' + (mehrweg ? 'active petrol' : '') + '" title="Mehrweg verfügbar">🔄</div>';
+    var walkMin = data.distanceKm != null ? Math.round(Number(data.distanceKm) * 12) : null;
+    var carMin = data.distanceKm != null ? Math.round(Number(data.distanceKm) * 1.5) : null;
+    if(minutesEl) minutesEl.textContent = (walkMin != null ? '🚶 ' + (walkMin < 1 ? '< 1' : walkMin) + ' Min. zu Fuß' : '') + (walkMin != null && carMin != null ? ' · ' : '') + (carMin != null ? '🚗 ' + (carMin < 1 ? '< 1' : carMin) + ' Min. mit dem Auto' : '') || '';
+    var addr = buildAddress({ address: data.address, street: data.providerStreet, zip: data.providerZip, city: data.providerCity });
+    if(routeEl){
+      routeEl.href = addr ? ('https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(addr)) : '#';
+      routeEl.style.display = addr ? 'inline-flex' : 'none';
+    }
     btnEl.onclick = function(){ closeDiscoverPinDrawer(); openOffer(data.id); };
     if(backdrop) backdrop.classList.add('open');
     drawer.classList.add('open');
@@ -11961,6 +12024,25 @@
       var newMode = discoverViewMode === 'list' ? 'map' : 'list';
       switchDiscoverView(newMode);
       save(LS.discoverView, newMode);
+    };
+  }
+  var discoverMapBtnHierSuchen = document.getElementById('discoverMapBtnHierSuchen');
+  if(discoverMapBtnHierSuchen){
+    discoverMapBtnHierSuchen.onclick = function(){
+      this.style.display = 'none';
+      if(discoverLeafletMap){ discoverLeafletMap.setView(SCHORNDORF_CENTER, discoverLeafletMap.getZoom()); renderDiscoverMap(); }
+    };
+  }
+  var discoverMapBtnLocation = document.getElementById('discoverMapBtnLocation');
+  if(discoverMapBtnLocation){
+    discoverMapBtnLocation.onclick = function(){
+      if(!navigator.geolocation){ if(typeof showToast === 'function') showToast('Standort nicht verfügbar'); return; }
+      navigator.geolocation.getCurrentPosition(function(pos){
+        var lat = pos.coords.latitude, lng = pos.coords.longitude;
+        if(discoverLeafletMap){ discoverLeafletMap.setView([lat, lng], 15); }
+        var locLabel = document.getElementById('discoverCurrentLocation');
+        if(locLabel) locLabel.textContent = 'Aktueller Standort';
+      }, function(){ if(typeof showToast === 'function') showToast('Standort konnte nicht ermittelt werden'); });
     };
   }
   
