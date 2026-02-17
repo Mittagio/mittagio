@@ -2684,10 +2684,13 @@
       color: #64748b;
     }
     /* Kategorie-Pills: wie Detailseite sAllergensCodes / Karten-Text – 14px, 700, #1a1a1a, gleiche Optik */
-    /* Goldene Sammelkarte: Kategorie + Preis in einer Zeile, Preis gelbe Pill rechts [cite: 2026-02-16] */
+    /* Goldene Sammelkarte: Kategorie + Preis in einer Zeile, dann Gerichtsname, dann Beschreibung [cite: 2026-02-16] */
     #wizard[data-flow="listing"] .inserat-cat-price-row {
       display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px;
       margin-bottom: 16px;
+    }
+    #wizard[data-flow="listing"] .inserat-scroll-area .inserat-unified-title-wrap {
+      margin-top: 4px;
     }
     #wizard[data-flow="listing"] .inserat-price-pill-wrap {
       display: inline-flex; align-items: center; flex-shrink: 0;
@@ -24976,7 +24979,7 @@
       if(timeEnd.length===4) timeEnd='0'+timeEnd;
       const powerBar=document.createElement('div');
       powerBar.className='inserat-power-bar inserat-unified-pills';
-      powerBar.style.cssText='display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:10px 16px; padding:12px 20px; border-bottom:1px solid rgba(0,0,0,0.04); flex-shrink:0; background:rgba(0,0,0,0.02);';
+      powerBar.style.cssText='display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:10px 16px; padding:12px 20px; border-bottom:1px solid rgba(0,0,0,0.04); flex-shrink:0; background:rgba(0,0,0,0.02); pointer-events:auto;';
       var hasDineIn = !!w.data.dineInPossible;
       var hasReuse = !!(w.data.reuse && w.data.reuse.enabled);
       function addPowerPill(emo, label, active, toggleKey){
@@ -24985,8 +24988,9 @@
         wrap.className='status-pill '+(active?'active':'inactive');
         wrap.setAttribute('aria-label', label);
         wrap.setAttribute('title', label);
+        wrap.style.cssText='cursor:pointer; min-width:44px; min-height:44px;';
         wrap.innerHTML='<span style="font-size:18px;">'+emo+'</span>';
-        wrap.onclick=()=>{ hapticLight(); if(toggleKey==='reuse'){ w.data.reuse=w.data.reuse||{}; w.data.reuse.enabled=!w.data.reuse.enabled; } else w.data[toggleKey]=!w.data[toggleKey]; saveDraft(); rebuildWizard(); };
+        wrap.onclick=function(e){ e.preventDefault(); e.stopPropagation(); hapticLight(); if(toggleKey==='reuse'){ w.data.reuse=w.data.reuse||{}; w.data.reuse.enabled=!w.data.reuse.enabled; } else w.data[toggleKey]=!w.data[toggleKey]; saveDraft(); rebuildWizard(); };
         powerBar.appendChild(wrap);
       }
       addPowerPill('🍴','Vor Ort', hasDineIn, 'dineInPossible');
@@ -25077,9 +25081,9 @@
       inputDesc.onblur=()=>{ dismissKeyboard(); hapticLight(); };
       wrapDesc.appendChild(inputDesc);
       stepName.appendChild(wrapDesc);
-      scrollArea.appendChild(stepName);
+      // Reihenfolge: Kategorie+Preis → Gerichtsname → Beschreibung [cite: 2026-02-16]
 
-      // Goldene Sammelkarte: Kategorie-Pills + Preis-Pill in einer Zeile (Preis rechtsbündig) [cite: 2026-02-16]
+      // Goldene Sammelkarte: Kategorie-Pills + Preis-Pill in einer Zeile (eine Zeile über dem Titel)
       const catPriceRow=document.createElement('div');
       catPriceRow.className='inserat-cat-price-row';
       catPriceRow.id='step-cat';
@@ -25121,6 +25125,7 @@
       var eurSpan=document.createElement('span'); eurSpan.className='inserat-price-pill-euro'; eurSpan.textContent=' €'; stepPriceWrap.appendChild(eurSpan);
       catPriceRow.appendChild(stepPriceWrap);
       scrollArea.appendChild(catPriceRow);
+      scrollArea.appendChild(stepName);
       var p0=Number(w.data.price)||0;
       const prognoseWrap=document.createElement('div');
       prognoseWrap.className='inserat-prognose-wrap inserat-earnings inserat-umsatzprognose';
