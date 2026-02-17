@@ -2558,6 +2558,7 @@
     #psheet .psheet-photo-header .psheet-photo-change:active { transform: translateX(-50%) scale(0.98); }
     /* Decision Zone: Mit Abholnummer (Grün) + Nur Inserat (Gelb) – fixiert am unteren Rand */
     #psheet .psheet-footer-sticky.psheet-decision-zone { display: flex !important; flex-direction: column; gap: 12px; padding: 16px 20px; padding-bottom: max(16px, env(safe-area-inset-bottom)); border-top: 1px solid rgba(0,0,0,0.06); background: rgba(255,255,255,0.98); flex-shrink: 0; }
+    #psheet[data-mode="plan"] .pricing-info-label { display: none !important; }
     #psheet .psheet-btn-decision { width: 100%; min-height: 52px; border-radius: 16px; font-size: 16px; font-weight: 800; border: none; cursor: pointer; transition: opacity 0.25s ease, transform 0.2s, box-shadow 0.2s; }
     #psheet .psheet-btn-decision.psheet-btn-green { background: #10b981; color: #fff; box-shadow: 0 4px 14px rgba(16,185,129,0.4); }
     #psheet .psheet-btn-decision.psheet-btn-green:active { transform: scale(0.98); }
@@ -15264,9 +15265,42 @@
   });
 
   var psheetOpenSource = 'dashboard';
+  var psheetCardMode = 'ad'; // 'ad' | 'plan' – von openProviderOffer gesetzt
+
+  /** Erstellt aus einem Kochbuch-Eintrag ein Draft-Offer und gibt die neue Offer-Id zurück. Blitz-Pipeline. */
+  function createOfferFromCookbook(cookbookId){
+    var cb = (typeof cookbook !== 'undefined' ? cookbook : load(LS.cookbook, [])).find(function(x){ return String(x.id) === String(cookbookId); });
+    if(!cb) return null;
+    var offersArr = load(LS.offers, []);
+    var draftId = cryptoId();
+    var draft = {
+      id: draftId,
+      status: 'draft',
+      providerId: typeof providerId === 'function' ? providerId() : (typeof provider !== 'undefined' && provider && provider.email ? provider.email : ''),
+      dish: (cb.dish || '').trim(),
+      title: (cb.dish || '').trim(),
+      imageUrl: cb.photoData || '',
+      photoData: cb.photoData || '',
+      price: Number(cb.price) > 0 ? Number(cb.price) : 8.5,
+      category: cb.category || 'Fleisch',
+      allergens: Array.isArray(cb.allergens) ? cb.allergens.slice() : [],
+      extras: Array.isArray(cb.extras) ? cb.extras.slice() : [],
+      cookbookId: cb.id,
+      hasPickupCode: false,
+      active: false,
+      day: ''
+    };
+    offersArr.push(draft);
+    save(LS.offers, offersArr);
+    if(typeof offers !== 'undefined') offers = offersArr;
+    return draftId;
+  }
+  if(typeof window !== 'undefined') window.createOfferFromCookbook = createOfferFromCookbook;
+
   function openProviderOffer(id, options){
     options = options || {};
     psheetOpenSource = options.source || 'dashboard';
+    psheetCardMode = (options.instantLive === true || psheetOpenSource === 'dashboard') ? 'ad' : 'plan';
     var idStr = String(id);
     var raw = offers.find(x=>String(x.id)===idStr);
     if(!raw){
@@ -15557,6 +15591,26 @@
       btnYellow.classList.toggle('psheet-incomplete', !isComplete);
       btnGreen.classList.toggle('psheet-ready', isComplete);
     }
+    function applyPsheetDecisionZoneMode(mode){
+      var btnGreen = document.getElementById('btnPsheetMitAbholnummer');
+      var btnYellow = document.getElementById('btnPsheetNurInserat');
+      var pricingLabelEl = document.getElementById('psheetPricingLabel');
+      var zone = document.getElementById('psheetDecisionZone');
+      if(!zone) return;
+      if(mode === 'plan'){
+        if(btnGreen){ btnGreen.textContent = 'Im Kochbuch speichern'; btnGreen.setAttribute('aria-label', 'Im Kochbuch speichern'); }
+        if(btnYellow){ btnYellow.textContent = 'Abbrechen'; btnYellow.setAttribute('aria-label', 'Abbrechen'); }
+        if(pricingLabelEl) pricingLabelEl.style.display = 'none';
+        zone.classList.add('psheet-mode-plan');
+        zone.classList.remove('psheet-mode-ad');
+      } else {
+        if(btnGreen){ btnGreen.textContent = 'mit Abholnummer'; btnGreen.setAttribute('aria-label', 'mit Abholnummer'); }
+        if(btnYellow){ btnYellow.textContent = 'Nur Inserat'; btnYellow.setAttribute('aria-label', 'Nur Inserat'); }
+        if(pricingLabelEl) pricingLabelEl.style.display = '';
+        zone.classList.remove('psheet-mode-plan');
+        zone.classList.add('psheet-mode-ad');
+      }
+    }
     var titleInput = document.getElementById('psheetTitleInput');
     var categoryPill = preview.querySelector('.category-pill');
     var psheetPreloadTimer = null;
@@ -15643,6 +15697,7 @@
       });
     }
     updatePsheetDecisionZone();
+    applyPsheetDecisionZoneMode(psheetCardMode);
     var pricingLabelEl = document.getElementById('psheetPricingLabel');
     if(pricingLabelEl){
       pricingLabelEl.addEventListener('click', function(ev){ ev.preventDefault(); ev.stopPropagation(); try { if(typeof hapticLight === 'function') hapticLight(); else if(navigator.vibrate) navigator.vibrate(10); } catch(e){} if(typeof openPricingFairnessOverlay === 'function') openPricingFairnessOverlay(); });
@@ -15697,8 +15752,25 @@
     if(btnGreen){
       btnGreen.addEventListener('click', function(ev){
         ev.preventDefault();
-        if(btnGreen.classList.contains('psheet-incomplete') || btnGreen.classList.contains('psheet-btn-loading')) return;
+        if(btnGreen.classList.contains('psheet-btn-loading')) return;
         try { if(navigator.vibrate) navigator.vibrate(20); if(typeof hapticLight === 'function') hapticLight(); } catch(e){}
+        if(psheetCardMode === 'plan'){
+          if(btnGreen.classList.contains('psheet-incomplete')) return;
+          raw.dish = (raw.dish || raw.title || '').trim(); raw.title = raw.dish;
+          if(typeof save === 'function' && typeof LS !== 'undefined') save(LS.offers, offers);
+          var cbId = raw.cookbookId;
+          if(cbId && Array.isArray(cookbook)){
+            var ent = cookbook.find(function(c){ return String(c.id) === String(cbId); });
+            if(ent){ ent.dish = raw.dish || ent.dish; ent.title = ent.dish; if(raw.price != null) ent.price = raw.price; if(typeof save === 'function' && typeof LS !== 'undefined') save(LS.cookbook, cookbook); }
+          }
+          if(typeof showToast === 'function') showToast('Im Kochbuch gespeichert');
+          closeProviderSheet();
+          if(psheetOpenSource === 'week'){ if(typeof showProviderWeek === 'function') showProviderWeek(); if(typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard(); else if(typeof renderProviderWeekPreview === 'function') renderProviderWeekPreview(); }
+          else if(psheetOpenSource === 'cookbook'){ if(typeof showProviderCookbook === 'function') showProviderCookbook(); if(typeof renderCookbook === 'function') renderCookbook(); }
+          else { if(typeof renderProviderHome === 'function') renderProviderHome(); }
+          return;
+        }
+        if(btnGreen.classList.contains('psheet-incomplete')) return;
         btnGreen.classList.add('psheet-btn-loading');
         btnGreen.disabled = true;
         var origText = btnGreen.textContent;
@@ -15722,8 +15794,15 @@
     if(btnYellow){
       btnYellow.addEventListener('click', function(ev){
         ev.preventDefault();
-        if(btnYellow.classList.contains('psheet-incomplete')) return;
         try { if(navigator.vibrate) navigator.vibrate(20); if(typeof hapticLight === 'function') hapticLight(); } catch(e){}
+        if(psheetCardMode === 'plan'){
+          closeProviderSheet();
+          if(psheetOpenSource === 'week'){ if(typeof showProviderWeek === 'function') showProviderWeek(); if(typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard(); else if(typeof renderProviderWeekPreview === 'function') renderProviderWeekPreview(); }
+          else if(psheetOpenSource === 'cookbook'){ if(typeof showProviderCookbook === 'function') showProviderCookbook(); if(typeof renderCookbook === 'function') renderCookbook(); }
+          else { if(typeof renderProviderHome === 'function') renderProviderHome(); }
+          return;
+        }
+        if(btnYellow.classList.contains('psheet-incomplete')) return;
         maybeShowSaveScope(false);
       });
     }
@@ -15757,6 +15836,7 @@
 
     var pbd = document.getElementById('pbd');
     var psheetEl = document.getElementById('psheet');
+    if(psheetEl) psheetEl.setAttribute('data-mode', psheetCardMode);
     if(pbd) pbd.classList.add('active');
     if(psheetEl) psheetEl.classList.add('active');
   }
