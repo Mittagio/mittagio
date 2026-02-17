@@ -2254,7 +2254,49 @@
     }
     .close-wizard-x::before{ transform:rotate(45deg); }
     .close-wizard-x::after{ transform:rotate(-45deg); }
-    
+    /* Universal-X: Pop-Away (Implosion) beim Schließen [cite: 2026-02-16 S25] */
+    #wizard[data-flow="listing"] .liquid-master-panel.x-pop-away {
+      animation: x-pop-away 0.28s cubic-bezier(0.55, 0, 0.45, 1) forwards;
+    }
+    @keyframes x-pop-away {
+      0% { transform: scale(1); opacity: 1; }
+      100% { transform: scale(0.92); opacity: 0; }
+    }
+    /* Harmonic-Edit-Mode: elastischer Bounce von Kategorie-Pill + Preis bei Tastenschlag Titel [cite: 2026-02-16] */
+    #wizard[data-flow="listing"] .inserat-cat-price-row.harmonic-bounce .inserat-cat-pills,
+    #wizard[data-flow="listing"] .inserat-cat-price-row.harmonic-bounce .inserat-price-pill-wrap {
+      animation: harmonic-bounce 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+    @keyframes harmonic-bounce {
+      0% { transform: scale(1); }
+      35% { transform: scale(1.06); }
+      70% { transform: scale(0.98); }
+      100% { transform: scale(1); }
+    }
+    /* Hero-Morph: gelber Preis-Button expandiert zu 4rem-Zahlenfeld in der Mitte [cite: 2026-02-16 S25] */
+    #wizard[data-flow="listing"] .inserat-cat-price-row.hero-morph-active {
+      flex-wrap: wrap;
+    }
+    #wizard[data-flow="listing"] .inserat-cat-price-row.hero-morph-active .inserat-price-pill-wrap {
+      width: 100%; max-width: 100%; justify-content: center; padding: 16px;
+      border-radius: 20px; transition: width 0.35s cubic-bezier(0.4,0,0.2,1), padding 0.35s ease;
+    }
+    #wizard[data-flow="listing"] .inserat-cat-price-row.hero-morph-active .inserat-price-pill-input.inserat-price-fintech {
+      width: 140px; font-size: 4rem !important; text-align: center;
+    }
+    #wizard[data-flow="listing"] .inserat-cat-price-row.hero-morph-active .inserat-price-pill-euro {
+      font-size: 1.5rem; font-weight: 900; vertical-align: super; margin-left: 6px;
+    }
+    #wizard[data-flow="listing"] .inserat-cat-price-row:not(.hero-morph-active) .inserat-price-pill-wrap {
+      cursor: pointer;
+    }
+    #wizard[data-flow="listing"] .inserat-cat-price-row:not(.hero-morph-active) .inserat-price-pill-wrap .inserat-price-pill-input {
+      pointer-events: none;
+    }
+    #wizard[data-flow="listing"] .inserat-cat-price-row.hero-morph-active .inserat-price-pill-wrap .inserat-price-pill-input {
+      pointer-events: auto;
+    }
+
     /* High-End Liquid Panel [cite: 2026-01-29, 2026-02-02] – Listing: Screen füllend, randlos */
     .liquid-master-panel {
       flex: 1; display: flex; flex-direction: column; overflow: hidden;
@@ -2482,9 +2524,23 @@
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-unified-pills {
       justify-content: space-between; padding-left: 16px; padding-right: 16px;
     }
-    #wizard[data-flow="listing"] .inserat-power-bar .status-pill {
-      min-width: 44px; min-height: 44px; padding: 8px; justify-content: center;
-      transition: transform 0.1s cubic-bezier(0.4,0,0.2,1);
+    /* S25 High-End: Power-Bar Icons 20% kleiner, eine Zeile, Emerald-Glow für Toggles [cite: 2026-02-16] */
+    #wizard[data-flow="listing"] .liquid-master-panel .inserat-power-bar.inserat-unified-pills {
+      flex-wrap: nowrap; gap: 6px 12px; padding: 8px 14px;
+    }
+    #wizard[data-flow="listing"] .liquid-master-panel .inserat-power-bar .status-pill {
+      min-width: 35px; min-height: 35px; padding: 6px; justify-content: center;
+      transition: transform 0.1s cubic-bezier(0.4,0,0.2,1), box-shadow 0.2s ease;
+    }
+    #wizard[data-flow="listing"] .liquid-master-panel .inserat-power-bar .status-pill span { font-size: 14px !important; }
+    #wizard[data-flow="listing"] .liquid-master-panel .inserat-power-bar .status-pill.active {
+      box-shadow: 0 2px 14px rgba(16,185,129,0.45), 0 0 0 1px rgba(16,185,129,0.2);
+    }
+    #wizard[data-flow="listing"] .liquid-master-panel .inserat-power-bar .func-icon-btn {
+      width: 35px; height: 35px; min-width: 35px; min-height: 35px; font-size: 16px;
+    }
+    #wizard[data-flow="listing"] .liquid-master-panel .inserat-power-bar .power-bar-legend-trigger {
+      min-width: 35px; min-height: 35px; width: 35px; height: 35px; font-size: 12px;
     }
     #wizard[data-flow="listing"] .inserat-power-bar .status-pill:active { transform: scale(0.9); }
     #wizard[data-flow="listing"] .inserat-power-bar .power-bar-legend-trigger:hover,
@@ -2671,26 +2727,23 @@
       letter-spacing: -0.03em;
       line-height: 1.2;
     }
-    /* Beschreibung wie Detailseite sProviderName: 16px, 700, Abstand darunter 24px */
+    /* Action-Row: Titel volle Breite, darunter dezente Beschreibung [cite: 2026-02-16 S25] */
     #wizard[data-flow="listing"] .inserat-unified-title-wrap .inserat-airbnb-desc-wrap {
-      margin-top: 0; margin-bottom: 24px;
+      margin-top: 4px; margin-bottom: 20px;
     }
     #wizard[data-flow="listing"] .inserat-unified-title-wrap .inserat-desc-input,
     #wizard[data-flow="listing"] .inserat-unified-title-wrap .inserat-airbnb-desc {
-      font-size: 16px; font-weight: 700; color: #1a1a1a;
+      font-size: 14px; font-weight: 500; color: #94a3b8; font-style: italic;
     }
     #wizard[data-flow="listing"] .inserat-unified-title-wrap .inserat-desc-input::placeholder,
     #wizard[data-flow="listing"] .inserat-unified-title-wrap .inserat-airbnb-desc::placeholder {
-      color: #64748b;
+      color: #94a3b8;
     }
     /* Kategorie-Pills: wie Detailseite sAllergensCodes / Karten-Text – 14px, 700, #1a1a1a, gleiche Optik */
     /* Goldene Sammelkarte: Kategorie + Preis in einer Zeile, dann Gerichtsname, dann Beschreibung [cite: 2026-02-16] */
     #wizard[data-flow="listing"] .inserat-cat-price-row {
       display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px;
       margin-bottom: 16px;
-    }
-    #wizard[data-flow="listing"] .inserat-scroll-area .inserat-unified-title-wrap {
-      margin-top: 4px;
     }
     #wizard[data-flow="listing"] .inserat-price-pill-wrap {
       display: inline-flex; align-items: center; flex-shrink: 0;
@@ -24957,7 +25010,7 @@
         }
       }
       function toggleHeaderSelection(type){ hapticLight(); renderSelectionContent(type); photoTile.classList.add('is-selecting'); }
-      closeX.onclick=function(){ if(photoTile.classList.contains('is-selecting')){ hapticLight(); closeHeaderSelection(); } else { try{ if(typeof haptic==='function') haptic(15); else if(navigator.vibrate) navigator.vibrate(15); }catch(e){} closeWizard(); } };
+      closeX.onclick=function(){ if(photoTile.classList.contains('is-selecting')){ hapticLight(); closeHeaderSelection(); return; } try{ if(typeof haptic==='function') haptic(15); else if(navigator.vibrate) navigator.vibrate(15); }catch(e){} var panel=box; if(panel&&!panel.classList.contains('x-pop-away')){ panel.classList.add('x-pop-away'); setTimeout(function(){ closeWizard(); }, 280); } else { closeWizard(); } };
       /* Keyboard-Avoidance: Header schrumpft bei Fokus auf Titel/Preis [cite: 2026-02-16] */
       function bindKeyboardAvoidance(){
         var panel=box;
@@ -24989,7 +25042,7 @@
         wrap.setAttribute('aria-label', label);
         wrap.setAttribute('title', label);
         wrap.style.cssText='cursor:pointer; min-width:44px; min-height:44px;';
-        wrap.innerHTML='<span style="font-size:18px;">'+emo+'</span>';
+        wrap.innerHTML='<span style="font-size:14px;">'+emo+'</span>';
         wrap.onclick=function(e){ e.preventDefault(); e.stopPropagation(); hapticLight(); if(toggleKey==='reuse'){ w.data.reuse=w.data.reuse||{}; w.data.reuse.enabled=!w.data.reuse.enabled; } else w.data[toggleKey]=!w.data[toggleKey]; saveDraft(); rebuildWizard(); };
         powerBar.appendChild(wrap);
       }
@@ -25001,7 +25054,7 @@
       timePill.className='status-pill '+(hasTimeValue?'active':'inactive');
       timePill.setAttribute('aria-label','Abholzeit bearbeiten');
       timePill.setAttribute('title','Zeit');
-      timePill.innerHTML='<span style="font-size:18px;">🕒</span>';
+      timePill.innerHTML='<span style="font-size:14px;">🕒</span>';
       timePill.onclick=()=>{ toggleHeaderSelection('time'); };
       powerBar.appendChild(timePill);
       const hasAllergens=!!(w.data.allergens&&w.data.allergens.length);
@@ -25081,9 +25134,9 @@
       inputDesc.onblur=()=>{ dismissKeyboard(); hapticLight(); };
       wrapDesc.appendChild(inputDesc);
       stepName.appendChild(wrapDesc);
-      // Reihenfolge: Kategorie+Preis → Gerichtsname → Beschreibung [cite: 2026-02-16]
+      // Action-Row: Titel + Beschreibung oben, darunter Kategorie-Pills links + gelber Preis rechts [cite: 2026-02-16 S25]
 
-      // Goldene Sammelkarte: Kategorie-Pills + Preis-Pill in einer Zeile (eine Zeile über dem Titel)
+      // Goldene Sammelkarte: Kategorie-Pills links, Preis-Button rechts (eine Zeile unter Titel/Beschreibung)
       const catPriceRow=document.createElement('div');
       catPriceRow.className='inserat-cat-price-row';
       catPriceRow.id='step-cat';
@@ -25119,13 +25172,26 @@
         var calcVal = document.getElementById('calc-val');
         if(calcVal) calcVal.textContent = p.toFixed(2).replace('.',',');
       };
-      inputPrice.oninput=()=>{ var v=inputPrice.value.replace(',','.'); w.data.price=parseFloat(v)||0; saveDraft(); updateProfit(v); if(priceStickerInserat) priceStickerInserat.textContent=(Number(w.data.price)||0).toFixed(2).replace('.',',')+' €'; hapticLight(); };
-      inputPrice.onblur=()=>{ if(w.data.price>0) inputPrice.value=Number(w.data.price).toFixed(2).replace('.',','); dismissKeyboard(); hapticLight(); };
       stepPriceWrap.appendChild(inputPrice);
       var eurSpan=document.createElement('span'); eurSpan.className='inserat-price-pill-euro'; eurSpan.textContent=' €'; stepPriceWrap.appendChild(eurSpan);
       catPriceRow.appendChild(stepPriceWrap);
-      scrollArea.appendChild(catPriceRow);
+      inputDish.addEventListener('keydown', function(){
+        if(!catPriceRow || catPriceRow.classList.contains('harmonic-bounce')) return;
+        catPriceRow.classList.add('harmonic-bounce');
+        setTimeout(function(){ if(catPriceRow) catPriceRow.classList.remove('harmonic-bounce'); }, 420);
+      });
+      stepPriceWrap.addEventListener('click', function(e){
+        if(catPriceRow.classList.contains('hero-morph-active')) return;
+        if(e.target===inputPrice || inputPrice.contains(e.target)) return;
+        e.preventDefault();
+        hapticLight();
+        catPriceRow.classList.add('hero-morph-active');
+        setTimeout(function(){ try{ inputPrice.focus(); }catch(err){} }, 150);
+      });
+      inputPrice.onblur=function(){ if(w.data.price>0) inputPrice.value=Number(w.data.price).toFixed(2).replace('.',','); dismissKeyboard(); hapticLight(); if(catPriceRow) catPriceRow.classList.remove('hero-morph-active'); };
+      inputPrice.oninput=()=>{ var v=inputPrice.value.replace(',','.'); w.data.price=parseFloat(v)||0; saveDraft(); updateProfit(v); if(priceStickerInserat) priceStickerInserat.textContent=(Number(w.data.price)||0).toFixed(2).replace('.',',')+' €'; hapticLight(); };
       scrollArea.appendChild(stepName);
+      scrollArea.appendChild(catPriceRow);
       var p0=Number(w.data.price)||0;
       const prognoseWrap=document.createElement('div');
       prognoseWrap.className='inserat-prognose-wrap inserat-earnings inserat-umsatzprognose';
