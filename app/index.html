@@ -4472,7 +4472,9 @@
     #v-provider-profile .provider-profile-header-rebuild{ background:transparent; padding:12px 20px; padding-top:calc(12px + env(safe-area-inset-top, 0)); border-bottom:none; display:flex; align-items:center; justify-content:space-between; flex-shrink:0; }
     #v-provider-profile .provider-profile-logo{ font-size:18px; font-weight:950; letter-spacing:-0.03em; cursor:pointer; color:#1a1a1a; }
     #v-provider-profile .provider-profile-logo .logo-io{ color:#6B7280; }
-    #v-provider-profile .provider-profile-gear-btn{ width:40px; height:40px; border:none; background:transparent; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:22px; padding:0; box-shadow:none; }
+    #v-provider-profile .provider-profile-gear-btn{ width:40px; height:40px; border:none; background:transparent; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0; box-shadow:none; color:#6B7280; }
+    #v-provider-profile .provider-profile-gear-btn i{ stroke:#6B7280; }
+    #v-provider-profile .provider-profile-tiles-wrap{ padding:0 0 24px; }
     #v-provider-profile .provider-profile-content-rebuild{ flex:1; overflow-y:auto; padding:20px; padding-bottom:calc(100px + env(safe-area-inset-bottom)); max-width:500px; margin:0 auto; width:100%; box-sizing:border-box; }
     #v-provider-profile .provider-profile-main-rebuild{ display:flex; flex-direction:column; gap:24px; }
     #v-provider-profile .provider-focus-card{ background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04); }
@@ -4506,7 +4508,7 @@
     .provider-support-accordion-item:last-child{ border-bottom:none; }
     .provider-support-accordion-trigger{ width:100%; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:16px 20px; background:transparent; border:none; font-size:15px; font-weight:700; color:#1a1a1a; cursor:pointer; text-align:left; font-family:inherit; }
     .provider-support-accordion-trigger:active{ background:#F9FAFB; }
-    .provider-support-accordion .accordion-content{ max-height:0; overflow:hidden; transition:max-height 0.3s ease-out, padding 0.3s ease; background-color:#F9FAFB; }
+    .provider-support-accordion .accordion-content{ max-height:0; overflow:hidden; transition:max-height 300ms ease-out, padding 300ms ease; background-color:#F9FAFB; }
     .provider-support-accordion .accordion-content.open{ max-height:500px; padding:16px 20px; border-top:1px solid #E5E7EB; }
     .provider-support-accordion .accordion-content p{ margin:0; font-size:14px; line-height:1.6; color:#6B7280; }
     .provider-support-accordion .chevron-icon{ flex-shrink:0; color:#9ca3af; transition:transform 0.3s ease; }
@@ -4515,10 +4517,15 @@
     .provider-support-mike-btn{ width:100%; min-height:56px; border-radius:16px; font-size:16px; font-weight:800; border:none; cursor:pointer; background:#22C55E; color:#fff; display:flex; align-items:center; justify-content:center; gap:8px; transition:transform 0.12s; }
     .provider-support-mike-btn:active{ transform:scale(0.98); }
     .provider-support-mike-hint{ margin:12px 0 0; font-size:13px; color:#6B7280; line-height:1.5; text-align:center; }
-    /* Legacy hero (Sub-Views) */
-    #v-provider-profile .provider-profile-hero{ display:flex; overflow-x:auto; overflow-y:hidden; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; gap:16px; padding:16px 20px 24px; padding-left:calc(20px + env(safe-area-inset-left, 0)); padding-right:calc(20px + env(safe-area-inset-right, 0)); scrollbar-width:none; }
+    .provider-support-legal-links{ background:#fff; border-radius:16px; overflow:hidden; border:1px solid #E5E7EB; box-shadow:0 1px 3px rgba(0,0,0,0.04); margin-bottom:24px; }
+    .provider-support-legal-row{ display:flex; justify-content:space-between; align-items:center; padding:16px 20px; color:#1a1a1a; font-size:15px; font-weight:700; text-decoration:none; border-bottom:1px solid #F3F4F6; transition:background 0.2s; }
+    .provider-support-legal-row:last-child{ border-bottom:none; }
+    .provider-support-legal-row:active{ background:#F9FAFB; }
+    /* Horizontaler Slider: 7 Screens mit Snap-Effekt [cite: 2026-01-29] */
+    #v-provider-profile .provider-profile-hero{ display:flex; overflow-x:auto; overflow-y:hidden; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; gap:16px; padding:16px 20px 24px; padding-left:calc(20px + env(safe-area-inset-left, 0)); padding-right:calc(20px + env(safe-area-inset-right, 0)); scrollbar-width:none; flex-shrink:0; }
     #v-provider-profile .provider-profile-hero::-webkit-scrollbar{ display:none; }
-    #v-provider-profile .provider-profile-hero-slide{ flex:0 0 calc(100% - 32px); min-width:calc(100% - 32px); scroll-snap-align:start; scroll-snap-stop:always; border-radius:20px; overflow:hidden; background:#fff; box-shadow:0 8px 24px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04); display:flex; flex-direction:column; min-height:280px; }
+    #v-provider-profile .provider-profile-hero-slide{ flex:0 0 calc(100% - 32px); min-width:calc(100% - 32px); scroll-snap-align:start; scroll-snap-stop:always; border-radius:16px; overflow:hidden; background:#FFFFFF; box-shadow:0 1px 3px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04); display:flex; flex-direction:column; min-height:260px; box-sizing:border-box; }
+    #v-provider-profile .provider-profile-hero-slide:not(:has(.provider-profile-hero-slide-img)){ padding:20px; }
     #v-provider-profile .provider-profile-hero-slide-img{ width:100%; aspect-ratio:16/10; object-fit:cover; background:#f1f3f5; }
     #v-provider-profile .provider-profile-hero-slide-body{ padding:20px; flex:1; display:flex; flex-direction:column; gap:12px; }
     #v-provider-profile .provider-profile-hero-slide-title{ margin:0; font-size:18px; font-weight:900; color:#1a1a1a; line-height:1.3; font-family:system-ui,-apple-system,sans-serif; }
@@ -4985,14 +4992,22 @@
       #v-provider-profile .provider-settings-danger-footer .provider-footer-row{ display:flex; justify-content:space-between; align-items:center; padding:18px 20px; background:#fff; border:1px solid rgba(0,0,0,0.04); border-radius:24px; margin-bottom:12px; box-shadow:0 8px 24px rgba(0,0,0,0.03); cursor:pointer; font-size:16px; font-weight:700; color:#1a1a1a; text-decoration:none; color:inherit; }
       #v-provider-profile .provider-settings-danger-footer .provider-footer-row:active{ background:#f8f9fa; }
       #v-provider-profile .provider-settings-danger-footer .provider-footer-delete{ display:block; width:100%; padding:16px; font-size:14px; font-weight:800; color:#dc2626; background:transparent; border:none; cursor:pointer; text-align:center; }
-      /* Floating Labels (Silicon-Valley-Style) – Betriebsdaten */
-      #v-provider-profile .input-group{ position:relative; border-bottom:1px solid #E5E7EB; padding:20px 0 10px 0; margin-bottom:15px; }
-      #v-provider-profile .input-label{ position:absolute; top:20px; left:0; font-size:16px; color:#9CA3AF; transition:all 0.2s ease; pointer-events:none; text-transform:uppercase; letter-spacing:0.5px; }
+      /* Floating Label System [cite: 2026-01-29]: Label klein und grau (#6B7280) über dem Text */
+      #v-provider-profile .input-group{ position:relative; margin-bottom:24px; background:#FFFFFF; padding:12px 16px; border-bottom:1px solid #E5E7EB; }
+      #v-provider-profile .input-group label{ display:block; font-size:10px; font-weight:700; color:#6B7280; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:4px; }
+      #v-provider-profile .input-group input{ width:100%; border:none; font-size:16px; color:#111827; padding:0; outline:none; background:transparent; }
+      #v-provider-profile .input-label{ position:absolute; top:20px; left:16px; font-size:10px; font-weight:700; color:#6B7280; text-transform:uppercase; letter-spacing:0.05em; transition:all 0.2s ease; pointer-events:none; }
       #v-provider-profile .input-field:focus ~ .input-label,
       #v-provider-profile .input-field:not(:placeholder-shown) ~ .input-label,
-      #v-provider-profile .input-field.floating-filled ~ .input-label{ top:0; font-size:10px; color:#6B7280; font-weight:bold; }
-      #v-provider-profile .input-field{ width:100%; border:none; outline:none; font-size:18px; background:transparent; color:#1a1a1a; box-sizing:border-box; padding:0; }
+      #v-provider-profile .input-field.floating-filled ~ .input-label{ top:12px; font-size:10px; color:#6B7280; }
+      #v-provider-profile .input-field{ width:100%; border:none; outline:none; font-size:16px; background:transparent; color:#111827; box-sizing:border-box; padding:0; }
       #v-provider-profile .input-field::placeholder{ color:transparent; }
+      /* Zeit-Picker: 15-Minuten-Wheel-Anzeige [cite: 2026-01-29] */
+      #v-provider-profile .time-picker-display{ font-size:24px; font-weight:600; color:#22C55E; text-align:center; padding:16px; background:#F0FDF4; border-radius:12px; }
+      /* iOS-Style Toggles für 3 Säulen (🍴 🔄 🧾) in Grün #22C55E [cite: 2026-01-27] */
+      #v-provider-profile .provider-settings-card .toggle-switch.active .toggle-slider{ transform:translateX(32px); }
+      #v-provider-profile .provider-settings-card .toggle-switch{ background:#e5e7eb; }
+      #v-provider-profile .provider-settings-card .toggle-switch.active{ background:#22C55E !important; }
       
       /* Provider Bottom Nav: Safe-Area, Touch 48px */
       #providerNav{
@@ -7154,13 +7169,61 @@
     <section class="view onboarding-view" id="v-provider-profile" style="display:flex; flex-direction:column; min-height:0; background:#F9FAFB;">
       <header id="providerProfileHeader" class="provider-profile-header-rebuild">
         <div id="providerProfileHeaderBrand" class="provider-profile-logo"><span class="logo-mittag">mittag</span><span class="logo-io">io</span></div>
-        <button type="button" id="providerProfileGearBtn" class="provider-profile-gear-btn" aria-label="Einstellungen">⚙️</button>
+        <button type="button" id="providerProfileGearBtn" class="provider-profile-gear-btn" aria-label="Einstellungen"><i data-lucide="settings" style="width:22px;height:22px;stroke:#6B7280;"></i></button>
       </header>
 
       <div id="providerProfileContent" class="provider-profile-content-rebuild">
-        <div id="providerProfileMainWrap">
+        <!-- Horizontaler Slider: 7 Screens mit Snap-Effekt -->
+        <div class="provider-profile-hero" id="providerProfileHero" aria-label="Profil-Slides">
+          <div class="provider-profile-hero-slide">
+            <div class="provider-profile-hero-icon-wrap">🍴</div>
+            <span class="provider-profile-hero-badge">Screen 1</span>
+            <h2 class="provider-profile-hero-slide-title">Vor Ort & Mehrweg</h2>
+            <p class="provider-profile-hero-slide-sub">Gäste können bei dir essen oder in Mehrweg-Behältern mitnehmen. Einstellungen im Zahnrad.</p>
+          </div>
+          <div class="provider-profile-hero-slide">
+            <div class="provider-profile-hero-icon-wrap">📋</div>
+            <span class="provider-profile-hero-badge">Screen 2</span>
+            <h2 class="provider-profile-hero-slide-title">Wochenplan</h2>
+            <p class="provider-profile-hero-slide-sub">Plan deine Gerichte für die Woche. Einmal einrichten, jede Woche nutzen.</p>
+          </div>
+          <div class="provider-profile-hero-slide">
+            <img src="https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=1200&q=60" alt="" class="provider-profile-hero-slide-img" />
+            <div class="provider-profile-hero-slide-body">
+              <span class="provider-profile-hero-badge">Inserat</span>
+              <h2 class="provider-profile-hero-slide-title">Jetzt für 4,99 € inserieren</h2>
+              <p class="provider-profile-hero-slide-sub">Kein Abo. Einmal pro Inserat – sofort sichtbar für Kunden in deiner Nähe.</p>
+              <button type="button" id="btnProviderProfileInserierenHero" class="provider-profile-hero-cta provider-profile-hero-cta--yellow">Jetzt inserieren</button>
+            </div>
+          </div>
+          <div class="provider-profile-hero-slide">
+            <div class="provider-profile-hero-icon-wrap">🧾</div>
+            <span class="provider-profile-hero-badge">Abholnummer</span>
+            <h2 class="provider-profile-hero-slide-title">Digitale Abholnummer</h2>
+            <p class="provider-profile-hero-slide-sub">Nur 0,89 € pro Vorgang. Schlange überspringen, sauber organisiert.</p>
+          </div>
+          <div class="provider-profile-hero-slide">
+            <div class="provider-profile-hero-icon-wrap">📖</div>
+            <span class="provider-profile-hero-badge">Screen 5</span>
+            <h2 class="provider-profile-hero-slide-title">Digitales Kochbuch</h2>
+            <p class="provider-profile-hero-slide-sub">Alle deine Gerichte an einem Ort. Schnell für den Wochenplan auswählen.</p>
+          </div>
+          <div class="provider-profile-hero-slide">
+            <div class="provider-profile-hero-icon-wrap">📄</div>
+            <span class="provider-profile-hero-badge">Screen 6</span>
+            <h2 class="provider-profile-hero-slide-title">Abrechnung & Belege</h2>
+            <p class="provider-profile-hero-slide-sub">PDF-Download für die Buchhaltung. Transparent und übersichtlich.</p>
+          </div>
+          <div class="provider-profile-hero-slide">
+            <div class="provider-profile-hero-icon-wrap">ⓘ</div>
+            <span class="provider-profile-hero-badge">Screen 7</span>
+            <h2 class="provider-profile-hero-slide-title">Support & Hilfe</h2>
+            <p class="provider-profile-hero-slide-sub">Fragen? Mike meldet sich garantiert innerhalb von 24h persönlich.</p>
+          </div>
+        </div>
+        <!-- Drei Haupt-Kacheln: vertikaler Stack, 24px Abstand -->
+        <div id="providerProfileMainWrap" class="provider-profile-tiles-wrap">
           <div id="providerProfileMain" class="provider-profile-main-rebuild">
-            <!-- Kachel 1: Inserat -->
             <article class="provider-focus-card provider-focus-card-inserat">
               <div class="provider-focus-card-img-wrap"><img src="https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=1200&q=60" alt="Mittagessen" /></div>
               <div class="provider-focus-card-pillars"><span title="Vor Ort">🍴</span><span title="Abholnummer">🧾</span><span title="Mehrweg">🔄</span></div>
@@ -7168,13 +7231,11 @@
               <span class="provider-focus-badge provider-focus-badge-green">KEIN ABO. KEIN VERTRAG.</span>
               <button type="button" id="btnProviderProfileInserieren" class="provider-focus-btn provider-focus-btn-green">Jetzt inserieren</button>
             </article>
-            <!-- Kachel 2: Abholnummer -->
             <article class="provider-focus-card provider-focus-card-abholnummer">
               <div class="provider-focus-abholnummer-number">#B-42</div>
               <p class="provider-focus-card-title">Digitale Abholnummer</p>
               <p class="provider-focus-card-info">Nur 0,89 € pro Vorgang inkl. aller Gebühren.</p>
             </article>
-            <!-- Kachel 3: Abrechnung -->
             <article class="provider-focus-card provider-focus-card-abrechnung" role="button" tabindex="0" id="btnProviderProfileAbrechnung">
               <span class="provider-focus-card-icon">📄</span>
               <p class="provider-focus-card-title">Deine Abrechnungen &amp; PDF-Belege</p>
@@ -7203,25 +7264,28 @@
           <!-- Betriebsdaten-Karte (wird aus providerBusinessDataCardSlot hierher verschoben bei Einstellungen) -->
           <div id="providerBusinessDataCardSlotSettings" style="margin-bottom:20px;"></div>
 
-          <!-- Kachel: Zeitfenster -->
+          <!-- Kachel: Zeitfenster – 15-Minuten-Wheel-Picker [cite: 2026-01-29] -->
           <div class="provider-profile-card provider-settings-card" style="background:#fff; border-radius:24px; padding:24px; margin-bottom:20px; border:none; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
-            <h3 style="margin:0 0 16px; font-size:17px; font-weight:800; color:#1a1a1a;">⏰ Zeitfenster</h3>
-            <p style="margin:0 0 16px; font-size:14px; color:#64748b; line-height:1.5;">Standard-Zeitfenster für neue Inserate.</p>
-            <button type="button" id="providerSettingsTimeTrigger" class="provider-time-trigger">
-              <span id="providerSettingsTimeDisplay" style="font-size:22px; font-weight:900; color:#1a1a1a;">11:30 – 13:30</span>
+            <h3 style="margin:0 0 16px; font-size:17px; font-weight:800; color:#1a1a1a;">⏰ Mittagszeiten</h3>
+            <p style="margin:0 0 16px; font-size:14px; color:#64748b; line-height:1.5;">Standard-Zeitfenster für neue Inserate (15-Minuten-Schritte).</p>
+            <button type="button" id="providerSettingsTimeTrigger" class="provider-time-trigger time-picker-display" style="display:block; width:100%; border:none; cursor:pointer; font-family:inherit;">
+              <span id="providerSettingsTimeDisplay" style="font-size:24px; font-weight:600; color:#22C55E;">11:30 – 14:00</span>
+              <span style="display:block; margin-top:4px; font-size:12px; color:#6B7280;">Tippen zum Bearbeiten</span>
             </button>
-            <div style="display:flex; align-items:center; gap:12px; margin-top:20px; margin-bottom:20px;">
-              <div style="flex:1;">
-                <label style="display:block; font-size:11px; font-weight:700; color:#9ca3af; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.05em;">Start</label>
-                <select id="providerSettingsMealStart" style="width:100%; height:52px; padding:0 12px; border:2px solid #f1f3f5; border-radius:14px; font-size:15px; font-weight:700; background:#f8f9fa; color:#1a1a1a; cursor:pointer;"></select>
-              </div>
-              <span style="color:#cbd5e1; font-weight:900; margin-top:20px;">–</span>
-              <div style="flex:1;">
-                <label style="display:block; font-size:11px; font-weight:700; color:#9ca3af; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.05em;">Ende</label>
-                <select id="providerSettingsMealEnd" style="width:100%; height:52px; padding:0 12px; border:2px solid #f1f3f5; border-radius:14px; font-size:15px; font-weight:700; background:#f8f9fa; color:#1a1a1a; cursor:pointer;"></select>
+            <div id="providerSettingsTimeWheelWrap" style="display:none; margin-top:16px; padding:16px; background:#F9FAFB; border-radius:12px;">
+              <div style="display:flex; align-items:center; gap:12px;">
+                <div style="flex:1;">
+                  <label style="display:block; font-size:10px; font-weight:700; color:#6B7280; margin-bottom:6px; text-transform:uppercase;">Start</label>
+                  <select id="providerSettingsMealStart" class="provider-time-wheel-select" style="width:100%; height:48px; padding:0 12px; border:none; border-bottom:2px solid #E5E7EB; border-radius:0; font-size:18px; font-weight:600; background:transparent; color:#22C55E; cursor:pointer;"></select>
+                </div>
+                <span style="color:#6B7280; font-weight:700;">–</span>
+                <div style="flex:1;">
+                  <label style="display:block; font-size:10px; font-weight:700; color:#6B7280; margin-bottom:6px; text-transform:uppercase;">Ende</label>
+                  <select id="providerSettingsMealEnd" class="provider-time-wheel-select" style="width:100%; height:48px; padding:0 12px; border:none; border-bottom:2px solid #E5E7EB; border-radius:0; font-size:18px; font-weight:600; background:transparent; color:#22C55E; cursor:pointer;"></select>
+                </div>
               </div>
             </div>
-            <label style="display:block; font-size:11px; font-weight:700; color:#9ca3af; margin-bottom:12px; text-transform:uppercase; letter-spacing:0.05em;">An welchen Tagen?</label>
+            <label style="display:block; font-size:10px; font-weight:700; color:#6B7280; margin-top:20px; margin-bottom:12px; text-transform:uppercase; letter-spacing:0.05em;">An welchen Tagen?</label>
             <div id="providerSettingsLunchWeekdays" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
           </div>
 
@@ -7416,6 +7480,22 @@
               <button type="button" class="provider-support-accordion-trigger" aria-expanded="false"><span>Kostentransparenz</span><i data-lucide="chevron-down" class="chevron-icon" style="width:20px;height:20px;"></i></button>
               <div class="accordion-content"><p>Kein Abo, kein Vertrag. 4,99 € pro Inserat. Optional 0,89 € pro Abholnummer. Ende.</p></div>
             </div>
+            <div class="provider-support-accordion-item">
+              <button type="button" class="provider-support-accordion-trigger" aria-expanded="false"><span>Was ist das digitale Kochbuch?</span><i data-lucide="chevron-down" class="chevron-icon" style="width:20px;height:20px;"></i></button>
+              <div class="accordion-content"><p>Dein digitales Kochbuch ist die Sammlung aller Gerichte, die du jemals angelegt hast. Von hier aus wählst du schnell aus, was du in den Wochenplan oder als Inserat schalten möchtest – ohne jedes Mal neu einzugeben.</p></div>
+            </div>
+            <div class="provider-support-accordion-item">
+              <button type="button" class="provider-support-accordion-trigger" aria-expanded="false"><span>Was ist die Ein-Session-Regel?</span><i data-lucide="chevron-down" class="chevron-icon" style="width:20px;height:20px;"></i></button>
+              <div class="accordion-content"><p>Im Standard-Plan ist immer nur ein Gerät pro Account angemeldet. Meldest du dich woanders an, wird die vorherige Sitzung beendet. So bleibt dein Küchenmodus sicher. Für mehrere Geräte gleichzeitig gibt es ein Team-Upgrade.</p></div>
+            </div>
+          </div>
+
+          <!-- Rechtliche Links (saubere Liste mit Chevrons) [cite: 2026-01-29] -->
+          <h2 class="provider-support-section-title" style="margin-top:24px;">Rechtliches</h2>
+          <div class="provider-support-legal-links">
+            <a href="#/agb" class="provider-support-legal-row"><span>AGB</span><i data-lucide="chevron-right" style="width:20px;height:20px;color:#9ca3af;"></i></a>
+            <a href="#/datenschutz" class="provider-support-legal-row"><span>Datenschutz</span><i data-lucide="chevron-right" style="width:20px;height:20px;color:#9ca3af;"></i></a>
+            <a href="#/impressum" class="provider-support-legal-row"><span>Impressum</span><i data-lucide="chevron-right" style="width:20px;height:20px;color:#9ca3af;"></i></a>
           </div>
 
           <!-- Mike kontaktieren (24h-Garantie) -->
@@ -10762,11 +10842,10 @@
       if(def.autocomplete) input.autocomplete = def.autocomplete;
       if(def.maxlength) input.setAttribute('maxlength', def.maxlength);
       var label = document.createElement('label');
-      label.className = 'input-label';
       label.setAttribute('for', def.id);
       label.textContent = def.label || '';
-      wrap.appendChild(input);
       wrap.appendChild(label);
+      wrap.appendChild(input);
       return wrap;
     },
     validate: function(value, rules){
@@ -10832,9 +10911,11 @@
     var mainWrap = document.getElementById('providerProfileMainWrap');
     var header = document.getElementById('providerProfileHeader');
     var contentEl = document.getElementById('providerProfileContent');
+    var heroEl = document.getElementById('providerProfileHero');
     var subs = ['providerProfileSubSettings','providerProfileSubBusiness','providerProfileSubService','providerProfileSubPayment','providerProfileSubFaq'];
     if(mainWrap) mainWrap.style.display = subId ? 'none' : 'block';
     if(header) header.style.display = subId ? 'none' : 'block';
+    if(heroEl) heroEl.style.display = subId ? 'none' : 'flex';
     var targetId = subId ? 'providerProfileSub' + (subId === 'settings' ? 'Settings' : subId.charAt(0).toUpperCase() + subId.slice(1)) : '';
     subs.forEach(function(id){
       var el = document.getElementById(id);
@@ -10864,6 +10945,7 @@
     showView(views.providerProfile);
     showProviderProfileSub(null);
     renderProviderProfile();
+    if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 80);
     const providerNavBackRow = document.getElementById('providerNavBackRow');
     if(providerNavBackRow) providerNavBackRow.style.display = 'block';
     pushViewState({view: 'provider-profile', mode: mode}, location.pathname);
@@ -21768,6 +21850,8 @@
     if(headerBrand){ headerBrand.onclick = function(){ if(typeof showProviderHome === 'function') showProviderHome(); }; headerBrand.style.cursor = 'pointer'; }
     var btnProfileInserieren = document.getElementById('btnProviderProfileInserieren');
     if(btnProfileInserieren) btnProfileInserieren.onclick = function(){ if(typeof haptic === 'function') haptic(8); if(typeof openDishFlow === 'function') openDishFlow(); };
+    var btnProfileInserierenHero = document.getElementById('btnProviderProfileInserierenHero');
+    if(btnProfileInserierenHero) btnProfileInserierenHero.onclick = function(){ if(typeof haptic === 'function') haptic(8); if(typeof openDishFlow === 'function') openDishFlow(); };
     var btnProfileAbrechnung = document.getElementById('btnProviderProfileAbrechnung');
     if(btnProfileAbrechnung) btnProfileAbrechnung.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(typeof showProviderBilling === 'function') showProviderBilling(); };
     if(btnProfileAbrechnung) btnProfileAbrechnung.onkeydown = function(e){ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); btnProfileAbrechnung.click(); } };
@@ -21848,10 +21932,12 @@
     if(settingsMealEndEl){ settingsMealEndEl.value = endVal; settingsMealEndEl.onchange = function(){ if(typeof haptic === 'function') haptic(6); saveMealWindow(settingsMealStartEl, settingsMealEndEl); }; }
     if(typeof updateProviderSettingsTimeDisplay === 'function') updateProviderSettingsTimeDisplay();
     var timeTrigger = document.getElementById('providerSettingsTimeTrigger');
-    if(timeTrigger) timeTrigger.onclick = function(){
+    var timeWheelWrap = document.getElementById('providerSettingsTimeWheelWrap');
+    if(timeTrigger && timeWheelWrap) timeTrigger.onclick = function(){
       if(typeof haptic === 'function') haptic(6);
-      var first = document.getElementById('providerSettingsMealStart');
-      if(first){ first.focus(); first.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+      var isHidden = timeWheelWrap.style.display === 'none' || !timeWheelWrap.style.display;
+      timeWheelWrap.style.display = isHidden ? 'block' : 'none';
+      if(isHidden){ var first = document.getElementById('providerSettingsMealStart'); if(first) first.focus(); }
     };
     
     // Wochentage (Mo=1 … So=7) – Profil + Einstellungen mit eigenen IDs, Sync bei Änderung
