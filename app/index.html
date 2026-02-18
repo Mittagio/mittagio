@@ -2567,10 +2567,10 @@
     }
     #wizard[data-flow="listing"] .inserat-status-bar.inserat-unified-pills .status-pill:active { transform: scale(0.98); }
     /* Goldene Sammelkarte: Power-Bar – aktive Icons weiß + Emerald-Border/Shadow, 44x44 [cite: 2026-01-27, 2026-02-16] */
-    #wizard[data-flow="listing"] .inserat-power-bar.inserat-unified-pills .status-pill.active { background: #fff; color: #0f766e; border: 2px solid #10b981; box-shadow: 0 2px 12px rgba(16,185,129,0.35); }
-    #wizard[data-flow="listing"] .inserat-power-bar.inserat-unified-pills .status-pill.inactive { background: rgba(0,0,0,0.06); color: #64748b; border: 2px solid transparent; }
-    #wizard[data-flow="listing"] .inserat-power-bar .func-icon-btn { width: 44px; height: 44px; min-width: 44px; min-height: 44px; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; font-size: 20px; border: 2px solid rgba(0,0,0,0.08); background: rgba(0,0,0,0.04); transition: background 0.2s, color 0.2s, transform 0.1s cubic-bezier(0.4,0,0.2,1); cursor: pointer; -webkit-tap-highlight-color: transparent; }
-    #wizard[data-flow="listing"] .inserat-power-bar .func-icon-btn.active { background: #fff; color: #0f766e; border-color: #10b981; box-shadow: 0 2px 12px rgba(16,185,129,0.35); }
+    #wizard[data-flow="listing"] .inserat-power-bar.inserat-unified-pills .status-pill.active { background: #fff; color: #059669; border: 2px solid #10b981; box-shadow: 0 2px 12px rgba(16,185,129,0.35), 0 0 12px rgba(16,185,129,0.4); }
+    #wizard[data-flow="listing"] .inserat-power-bar.inserat-unified-pills .status-pill.inactive { background: rgba(248,250,252,0.8); color: #64748b; border: 2px solid transparent; }
+    #wizard[data-flow="listing"] .inserat-power-bar .func-icon-btn { width: 44px; height: 44px; min-width: 44px; min-height: 44px; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; font-size: 20px; border: 2px solid rgba(0,0,0,0.08); background: rgba(248,250,252,0.8); transition: background 0.2s, color 0.2s, transform 0.1s cubic-bezier(0.4,0,0.2,1); cursor: pointer; -webkit-tap-highlight-color: transparent; }
+    #wizard[data-flow="listing"] .inserat-power-bar .func-icon-btn.active { background: #fff; color: #059669; border-color: #10b981; box-shadow: 0 2px 12px rgba(16,185,129,0.35), 0 0 12px rgba(16,185,129,0.4); }
     #wizard[data-flow="listing"] .inserat-power-bar .func-icon-btn:active { transform: scale(0.9); }
     /* Power-Bar Icon-Only (S25): 44x44px Touch-Targets, space-between [cite: 2026-02-16] */
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-unified-pills {
@@ -2586,7 +2586,7 @@
     }
     #wizard[data-flow="listing"] .liquid-master-panel .inserat-power-bar .status-pill span { font-size: 14px !important; }
     #wizard[data-flow="listing"] .liquid-master-panel .inserat-power-bar .status-pill.active {
-      box-shadow: 0 2px 14px rgba(16,185,129,0.45), 0 0 0 1px rgba(16,185,129,0.2);
+      box-shadow: 0 2px 14px rgba(16,185,129,0.45), 0 0 12px rgba(16,185,129,0.4);
     }
     #wizard[data-flow="listing"] .liquid-master-panel .inserat-power-bar .func-icon-btn {
       width: 35px; height: 35px; min-width: 35px; min-height: 35px; font-size: 16px;
@@ -2597,6 +2597,8 @@
     #wizard[data-flow="listing"] .inserat-power-bar .status-pill:active { transform: scale(0.9); }
     #wizard[data-flow="listing"] .inserat-power-bar .power-bar-legend-trigger:hover,
     #wizard[data-flow="listing"] .inserat-power-bar .power-bar-legend-trigger:focus { color: #64748b; }
+    /* Info-Legende Bottom-Sheet: Aktiviert-Zustand */
+    .info-legend-item.active { background: rgba(16,185,129,0.1) !important; border: 1px solid rgba(16,185,129,0.25); }
     /* #psheet: No-Scroll – Karte ist das Interface. Position von .sheet (fixed) bleibt, Popover bezieht sich auf #psheet. */
     #psheet .universal-dish-card.psheet-card { width: 100%; background: #fff; border-radius: 16px; overflow: hidden; border: 1px solid rgba(0,0,0,0.06); }
     #psheet .psheet-photo-header { border-radius: 0; }
@@ -9308,6 +9310,24 @@
   </div>
 </div>
 
+<!-- Info-Legende Bottom-Sheet (Inseratcard Power-Bar ⓘ) -->
+<div class="backdrop" id="infoLegendBackdrop" style="z-index:1195; opacity:0; pointer-events:none; transition:opacity 0.25s ease;" onclick="if(typeof closeInfoLegendSheet==='function') closeInfoLegendSheet();"></div>
+<div id="info-legend-sheet" class="info-legend-sheet" style="position:fixed; left:0; right:0; bottom:0; background:#fff; border-radius:24px 24px 0 0; box-shadow:0 -8px 32px rgba(0,0,0,0.12); z-index:1196; padding:24px; padding-bottom:max(24px, env(safe-area-inset-bottom)); transform:translateY(100%); transition:transform 0.3s cubic-bezier(0.4,0,0.2,1); max-height:85vh; overflow-y:auto;">
+  <div class="info-legend-sheet-inner">
+    <div style="width:40px; height:4px; background:rgba(0,0,0,0.12); border-radius:2px; margin:0 auto 20px;"></div>
+    <h3 style="margin:0 0 16px; font-size:18px; font-weight:800; color:#0f172a;">Legende Inserat</h3>
+    <ul class="info-legend-list" style="list-style:none; margin:0; padding:0;">
+      <li class="info-legend-item" data-legend="vorort" style="display:flex; gap:12px; align-items:flex-start; margin-bottom:14px; padding:10px 12px; border-radius:12px; background:rgba(0,0,0,0.02);"><span style="font-size:18px; flex-shrink:0;">🍴</span><div><strong style="color:#0f172a;">Essen vor Ort</strong><p style="margin:4px 0 0; font-size:13px; line-height:1.45; color:#64748b;">Gäste können das Gericht direkt bei dir im Laden oder im Gastraum verzehren.</p></div></li>
+      <li class="info-legend-item" data-legend="mehrweg" style="display:flex; gap:12px; align-items:flex-start; margin-bottom:14px; padding:10px 12px; border-radius:12px; background:rgba(0,0,0,0.02);"><span style="font-size:18px; flex-shrink:0;">🔄</span><div><strong style="color:#0f172a;">Mehrweg</strong><p style="margin:4px 0 0; font-size:13px; line-height:1.45; color:#64748b;">Aktiviere diese Option, wenn du Speisen in Pfandsystemen oder mitgebrachten Behältern ausgibst.</p></div></li>
+      <li class="info-legend-item" data-legend="zeit" style="display:flex; gap:12px; align-items:flex-start; margin-bottom:14px; padding:10px 12px; border-radius:12px; background:rgba(0,0,0,0.02);"><span style="font-size:18px; flex-shrink:0;">🕒</span><div><strong style="color:#0f172a;">Abholzeit</strong><p style="margin:4px 0 0; font-size:13px; line-height:1.45; color:#64748b;">Das gewählte Zeitfenster, in dem das Gericht für Kunden bereitsteht.</p></div></li>
+      <li class="info-legend-item" data-legend="allergene" style="display:flex; gap:12px; align-items:flex-start; margin-bottom:14px; padding:10px 12px; border-radius:12px; background:rgba(0,0,0,0.02);"><span style="font-size:18px; flex-shrink:0;">🌾</span><div><strong style="color:#0f172a;">Allergene</strong><p style="margin:4px 0 0; font-size:13px; line-height:1.45; color:#64748b;">Kennzeichnung der Inhaltsstoffe gemäß Kategorie-Pills und Allergen-Kürzeln.</p></div></li>
+      <li class="info-legend-item" data-legend="extras" style="display:flex; gap:12px; align-items:flex-start; margin-bottom:14px; padding:10px 12px; border-radius:12px; background:rgba(0,0,0,0.02);"><span style="font-size:18px; flex-shrink:0;">➕</span><div><strong style="color:#0f172a;">Extras</strong><p style="margin:4px 0 0; font-size:13px; line-height:1.45; color:#64748b;">Optionale Beilagen oder Anpassungen, die mit einem Aufpreis gebucht werden können.</p></div></li>
+      <li class="info-legend-item" data-legend="abholnummer" style="display:flex; gap:12px; align-items:flex-start; margin-bottom:14px; padding:10px 12px; border-radius:12px; background:rgba(0,0,0,0.02);"><span style="font-size:18px; flex-shrink:0;">🧾</span><div><strong style="color:#0f172a;">Abholnummer</strong><p style="margin:4px 0 0; font-size:13px; line-height:1.45; color:#64748b;">Unser System für die automatische Zuordnung (0,89 EUR pro Vorgang). Sorgt für maximale Geschwindigkeit an der Kasse.</p></div></li>
+    </ul>
+    <button type="button" id="infoLegendVerstandenBtn" class="info-legend-verstanden" style="display:block; width:100%; margin-top:16px; padding:14px 24px; border-radius:999px; border:none; background:#10b981; color:#fff; font-size:16px; font-weight:800; cursor:pointer; -webkit-tap-highlight-color:transparent;">Verstanden</button>
+  </div>
+</div>
+
 <!-- Fairness-Overlay (Pricing): öffnet bei Klick auf ⓘ neben Umsatzprognose -->
 <div class="backdrop" id="pricingFairnessBd" onclick="closePricingFairnessOverlay()" style="z-index:1197;"></div>
 <div id="pricingFairnessOverlay" class="pricing-fairness-overlay" style="width:100%; max-width:min(400px, calc(100vw - 32px)); margin:0 auto; padding:24px; padding-bottom:max(24px, env(safe-area-inset-bottom)); background:rgba(255,255,255,0.92); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,0.6); border-bottom:none; box-shadow:0 -10px 40px rgba(0,0,0,0.12); z-index:1198;">
@@ -10868,9 +10888,10 @@
   }
 
   function normalizeProviderProfile(p){
-    const base = { name:'', address:'', street:'', zip:'', city:'', mealWindow:DEFAULT_MEAL_WINDOW, mealStart:'11:30', mealEnd:'14:00', lunchWeekdays:[1,2,3,4,5], phone:'', email:'', website:'', logoData:'', kitchenEmail:'', autoSelloutTime:'', reuseEnabledByDefault:false, abholnummerEnabledByDefault:false, wantsAllergensByDefault:false, defaultExtras:[] };
+    const base = { name:'', address:'', street:'', zip:'', city:'', mealWindow:DEFAULT_MEAL_WINDOW, mealStart:'11:30', mealEnd:'14:00', lunchWeekdays:[1,2,3,4,5], phone:'', email:'', website:'', logoData:'', kitchenEmail:'', autoSelloutTime:'', reuseEnabledByDefault:false, abholnummerEnabledByDefault:false, wantsAllergensByDefault:false, defaultExtras:[], defaultAllergens:[] };
     const out = {...base, ...(p||{})};
     if(!Array.isArray(out.defaultExtras)) out.defaultExtras = [];
+    if(!Array.isArray(out.defaultAllergens)) out.defaultAllergens = [];
     if(!out.address){ out.address = buildAddress(out); }
     if(!out.mealWindow){ out.mealWindow = DEFAULT_MEAL_WINDOW; }
     if(!Array.isArray(out.lunchWeekdays)){ out.lunchWeekdays = [1,2,3,4,5]; }
@@ -26016,6 +26037,7 @@
     if(w.data.hasPickupCode === undefined) w.data.hasPickupCode = !!profile.abholnummerEnabledByDefault;
     if(!w.data.reuse) w.data.reuse = { enabled: !!profile.reuseEnabledByDefault, deposit: defaultReuseDeposit };
     else { if(w.data.reuse.enabled === undefined) w.data.reuse.enabled = !!profile.reuseEnabledByDefault; if(w.data.reuse.enabled && (w.data.reuse.deposit === undefined || w.data.reuse.deposit === 0)) w.data.reuse.deposit = defaultReuseDeposit; }
+    if(!w.data.allergens || w.data.allergens.length === 0){ if(profile.defaultAllergens && profile.defaultAllergens.length){ w.data.allergens = profile.defaultAllergens.slice(); w.data.wantsAllergens = true; } }
     if(typeof w.data.allergeneExpanded === 'undefined') w.data.allergeneExpanded = !!w.data.wantsAllergens;
     if(typeof window !== 'undefined' && w.data && window._wizardInitialDataSnapshot == null) window._wizardInitialDataSnapshot = JSON.parse(JSON.stringify(w.data));
 
@@ -26108,9 +26130,14 @@
             pill.onclick=function(){ hapticLight(); if(!w.data.allergens) w.data.allergens=[]; if(active){ w.data.allergens=w.data.allergens.filter(function(x){ return x!==code; }); } else{ w.data.allergens.push(code); } w.data.wantsAllergens=true; saveDraft(); pill.className='extra-pill inserat-allergen-pill' + ((w.data.allergens||[]).includes(code) ? ' active' : ''); var bar=photoTile.nextElementSibling; if(bar){ var fb=bar.querySelectorAll('.func-icon-btn'); if(fb[0]) fb[0].className='func-icon-btn ' + (!!(w.data.allergens&&w.data.allergens.length) ? 'active' : ''); } };
             selectionOverlayInner.appendChild(pill);
           });
+          var allergenRow=document.createElement('div'); allergenRow.style.cssText='display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap; padding:12px 0 0; margin-top:8px; border-top:1px solid rgba(0,0,0,0.06);';
+          var btnFertigAll=document.createElement('button'); btnFertigAll.type='button'; btnFertigAll.textContent='Fertig'; btnFertigAll.style.cssText='padding:10px 20px; border-radius:999px; border:none; background:#10b981; color:#fff; font-weight:700; cursor:pointer;'; btnFertigAll.onclick=function(){ hapticLight(); closeHeaderSelection(); rebuildWizard(); };
+          var btnSaveDefault=document.createElement('button'); btnSaveDefault.type='button'; btnSaveDefault.textContent='Als Standard speichern'; btnSaveDefault.style.cssText='padding:10px 16px; border-radius:999px; border:2px solid #10b981; background:transparent; color:#059669; font-weight:700; cursor:pointer; font-size:13px;'; btnSaveDefault.onclick=function(){ hapticLight(); if(!provider.profile) provider.profile={}; provider.profile.defaultAllergens=(w.data.allergens||[]).slice(); provider.profile.wantsAllergensByDefault=!!(w.data.allergens&&w.data.allergens.length); if(typeof save==='function') save(LS.provider,provider); if(typeof showToast==='function') showToast('Als Standard für zukünftige Inserate gespeichert'); else alert('Als Standard gespeichert.'); };
+          allergenRow.appendChild(btnFertigAll); allergenRow.appendChild(btnSaveDefault); selectionOverlayInner.appendChild(allergenRow);
         } else if(type==='extras'){
           var defaultExtras = (profile.defaultExtras && profile.defaultExtras.length) ? profile.defaultExtras.slice() : [{ name:'Beilagensalat', price:2.5 }, { name:'Mayo', price:0.5 }, { name:'Ketchup', price:0.5 }, { name:'Soße', price:1 }, { name:'Brot', price:1.5 }];
           if(!Array.isArray(w.data.extras)) w.data.extras=[];
+          var extrasListWrap=document.createElement('div'); extrasListWrap.style.cssText='display:flex; flex-wrap:wrap; gap:8px; align-items:center;';
           defaultExtras.forEach(function(opt){
             var ex=w.data.extras.find(function(e){ return e.name===opt.name; }); var active=!!ex && Number(ex.price||0)>0; if(!ex) ex={ name:opt.name, price:0 };
             var pillWrap=document.createElement('div'); pillWrap.style.cssText='display:flex; align-items:center; gap:6px;';
@@ -26118,8 +26145,18 @@
             btn.onclick=function(){ hapticLight(); var idx=w.data.extras.findIndex(function(e){ return e.name===opt.name; }); if(idx>=0){ w.data.extras.splice(idx,1); } else{ w.data.extras.push({ name:opt.name, price:opt.price }); } saveDraft(); var hasEx=!!w.data.extras.find(function(e){ return e.name===opt.name; }) && Number((w.data.extras.find(function(e){ return e.name===opt.name; })||{}).price||0)>0; btn.className='extra-pill' + (hasEx ? ' active' : ''); var bar=photoTile.nextElementSibling; if(bar){ var fb=bar.querySelectorAll('.func-icon-btn'); if(fb[1]) fb[1].className='func-icon-btn ' + (!!(w.data.extras&&w.data.extras.length) ? 'active' : ''); } if(pillWrap.querySelector('input')){ var next=w.data.extras.find(function(e){ return e.name===opt.name; }); if(next&&Number(next.price||0)>0){ pillWrap.querySelector('input').value=Number(next.price).toFixed(2).replace('.',','); } else { var inpWrap=pillWrap.querySelector('span'); if(inpWrap) inpWrap.remove(); } } else if(hasEx){ var inpWrap=document.createElement('span'); inpWrap.style.cssText='display:inline-flex; align-items:center; background:rgba(255,255,255,0.6); border-radius:999px; padding:4px 8px;'; var plus=document.createElement('span'); plus.style.cssText='font-size:10px; font-weight:800; color:#10b981; margin-right:4px;'; plus.textContent='+'; var inp=document.createElement('input'); inp.type='text'; inp.inputMode='decimal'; inp.style.cssText='width:36px; background:transparent; border:none; padding:0; font-size:12px; font-weight:800; color:#10b981; outline:none;'; var e=w.data.extras.find(function(x){ return x.name===opt.name; }); inp.value=Number((e&&e.price)||0).toFixed(2).replace('.',','); inp.oninput=function(){ if(e) e.price=parseFloat((inp.value||'0').replace(',','.'))||0; saveDraft(); }; inp.onclick=function(ev){ ev.stopPropagation(); }; var eur=document.createElement('span'); eur.style.cssText='font-size:10px; font-weight:800; color:#10b981; margin-left:2px;'; eur.textContent='€'; inpWrap.appendChild(plus); inpWrap.appendChild(inp); inpWrap.appendChild(eur); pillWrap.appendChild(inpWrap); } };
             pillWrap.appendChild(btn);
             if(active){ var inpWrap=document.createElement('span'); inpWrap.style.cssText='display:inline-flex; align-items:center; background:rgba(255,255,255,0.6); border-radius:999px; padding:4px 8px;'; var plus=document.createElement('span'); plus.style.cssText='font-size:10px; font-weight:800; color:#10b981; margin-right:4px;'; plus.textContent='+'; var inp=document.createElement('input'); inp.type='text'; inp.inputMode='decimal'; inp.style.cssText='width:36px; background:transparent; border:none; padding:0; font-size:12px; font-weight:800; color:#10b981; outline:none;'; inp.value=Number(ex.price).toFixed(2).replace('.',','); inp.oninput=function(){ ex.price=parseFloat((inp.value||'0').replace(',','.'))||0; saveDraft(); }; inp.onclick=function(ev){ ev.stopPropagation(); }; var eur=document.createElement('span'); eur.style.cssText='font-size:10px; font-weight:800; color:#10b981; margin-left:2px;'; eur.textContent='€'; inpWrap.appendChild(plus); inpWrap.appendChild(inp); inpWrap.appendChild(eur); pillWrap.appendChild(inpWrap); }
-            selectionOverlayInner.appendChild(pillWrap);
+            extrasListWrap.appendChild(pillWrap);
           });
+          selectionOverlayInner.appendChild(extrasListWrap);
+          var extrasAddRow=document.createElement('div'); extrasAddRow.style.cssText='display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:10px; padding:8px 0; border-top:1px solid rgba(0,0,0,0.06);';
+          var addNameInp=document.createElement('input'); addNameInp.type='text'; addNameInp.placeholder='Neues Extra'; addNameInp.style.cssText='padding:8px 12px; border-radius:10px; border:2px solid rgba(0,0,0,0.08); width:120px; font-size:14px;';
+          var addPriceInp=document.createElement('input'); addPriceInp.type='text'; addPriceInp.inputMode='decimal'; addPriceInp.placeholder='0,00'; addPriceInp.style.cssText='padding:8px 12px; border-radius:10px; border:2px solid rgba(0,0,0,0.08); width:56px; font-size:14px;';
+          var btnAddExtra=document.createElement('button'); btnAddExtra.type='button'; btnAddExtra.textContent='Hinzufügen'; btnAddExtra.style.cssText='padding:8px 14px; border-radius:999px; border:none; background:#10b981; color:#fff; font-weight:700; cursor:pointer; font-size:13px;'; btnAddExtra.onclick=function(){ hapticLight(); var name=(addNameInp.value||'').trim(); if(!name) return; var price=parseFloat((addPriceInp.value||'0').replace(',','.'))||0; if(w.data.extras.some(function(e){ return e.name===name; })) return; w.data.extras.push({ name:name, price:price }); saveDraft(); addNameInp.value=''; addPriceInp.value=''; var bar=photoTile.nextElementSibling; if(bar){ var fb=bar.querySelectorAll('.func-icon-btn'); if(fb[1]) fb[1].className='func-icon-btn active'; } var pillWrap=document.createElement('div'); pillWrap.style.cssText='display:flex; align-items:center; gap:6px;'; var btn=document.createElement('button'); btn.type='button'; btn.className='extra-pill active'; btn.style.cssText='cursor:pointer;'; btn.textContent='➕ '+name; btn.onclick=function(){ hapticLight(); var idx=w.data.extras.findIndex(function(e){ return e.name===name; }); if(idx>=0){ w.data.extras.splice(idx,1); } saveDraft(); pillWrap.remove(); var bar=photoTile.nextElementSibling; if(bar){ var fb=bar.querySelectorAll('.func-icon-btn'); fb[1].className='func-icon-btn '+(w.data.extras.length?'active':''); } }; pillWrap.appendChild(btn); if(price>0){ var inpWrap=document.createElement('span'); inpWrap.style.cssText='display:inline-flex; align-items:center; background:rgba(255,255,255,0.6); border-radius:999px; padding:4px 8px;'; var e=w.data.extras.find(function(x){ return x.name===name; }); inpWrap.innerHTML='<span style="font-size:10px; font-weight:800; color:#10b981; margin-right:4px;">+</span><input type="text" inputmode="decimal" style="width:36px; background:transparent; border:none; padding:0; font-size:12px; font-weight:800; color:#10b981; outline:none;" value="'+Number(price).toFixed(2).replace('.',',')+'"><span style="font-size:10px; font-weight:800; color:#10b981; margin-left:2px;">€</span>'; var inp=inpWrap.querySelector('input'); if(inp&&e){ inp.oninput=function(){ e.price=parseFloat((inp.value||'0').replace(',','.'))||0; saveDraft(); }; inp.onclick=function(ev){ ev.stopPropagation(); }; } pillWrap.appendChild(inpWrap); } extrasListWrap.appendChild(pillWrap); if(typeof showToast==='function') showToast('Extra hinzugefügt'); };
+          extrasAddRow.appendChild(addNameInp); extrasAddRow.appendChild(addPriceInp); extrasAddRow.appendChild(btnAddExtra); selectionOverlayInner.appendChild(extrasAddRow);
+          var extrasBtnRow=document.createElement('div'); extrasBtnRow.style.cssText='display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap; padding:8px 0 0;';
+          var btnFertigEx=document.createElement('button'); btnFertigEx.type='button'; btnFertigEx.textContent='Fertig'; btnFertigEx.style.cssText='padding:10px 20px; border-radius:999px; border:none; background:#10b981; color:#fff; font-weight:700; cursor:pointer;'; btnFertigEx.onclick=function(){ hapticLight(); closeHeaderSelection(); rebuildWizard(); };
+          var btnSaveExtras=document.createElement('button'); btnSaveExtras.type='button'; btnSaveExtras.textContent='In Inserateinstellungen übernehmen'; btnSaveExtras.style.cssText='padding:10px 16px; border-radius:999px; border:2px solid #10b981; background:transparent; color:#059669; font-weight:700; cursor:pointer; font-size:13px;'; btnSaveExtras.onclick=function(){ hapticLight(); if(!provider.profile) provider.profile={}; if(!Array.isArray(provider.profile.defaultExtras)) provider.profile.defaultExtras=[]; (w.data.extras||[]).forEach(function(e){ if(!e||!e.name) return; var has=provider.profile.defaultExtras.some(function(d){ return d&&d.name===e.name; }); if(!has) provider.profile.defaultExtras.push({ name:e.name, price:Number(e.price)||0 }); }); if(typeof save==='function') save(LS.provider,provider); if(typeof showToast==='function') showToast('Extras in Inserateinstellungen gespeichert'); else alert('Gespeichert.'); };
+          extrasBtnRow.appendChild(btnFertigEx); extrasBtnRow.appendChild(btnSaveExtras); selectionOverlayInner.appendChild(extrasBtnRow);
         } else if(type==='time'){
           selectionOverlayInner.classList.add('selection-overlay-inner--time');
           var pwParts=(w.data.pickupWindow||'11:30 – 14:00').split(/\s*[–\-]\s*/);
@@ -26130,7 +26167,7 @@
           var row=document.createElement('div'); row.className='inserat-time-morph-row'; row.style.cssText='display:flex; align-items:center; justify-content:center; gap:12px; flex-wrap:wrap; padding:16px;';
           var inpStart=document.createElement('input'); inpStart.type='time'; inpStart.className='inserat-pickup-time-input'; inpStart.value=tStart; inpStart.style.cssText='padding:10px 14px; border-radius:12px; border:2px solid rgba(0,0,0,0.08); background:rgba(255,255,255,0.7); backdrop-filter:blur(10px); font-size:16px; font-weight:700;';
           var inpEnd=document.createElement('input'); inpEnd.type='time'; inpEnd.className='inserat-pickup-time-input'; inpEnd.value=tEnd; inpEnd.style.cssText='padding:10px 14px; border-radius:12px; border:2px solid rgba(0,0,0,0.08); background:rgba(255,255,255,0.7); backdrop-filter:blur(10px); font-size:16px; font-weight:700;';
-          var upd=function(){ w.data.pickupWindow=inpStart.value+' – '+inpEnd.value; saveDraft(); var bar=photoTile.nextElementSibling; if(bar){ var pills=bar.querySelectorAll('.status-pill'); if(pills[3]) pills[3].className='status-pill active'; } };
+          var upd=function(){ w.data.pickupWindow=inpStart.value+' – '+inpEnd.value; saveDraft(); var bar=photoTile.nextElementSibling; if(bar){ var pills=bar.querySelectorAll('.status-pill'); if(pills[2]) pills[2].className='status-pill active'; } };
           inpStart.onchange=function(){ hapticLight(); upd(); };
           inpEnd.onchange=function(){ hapticLight(); upd(); };
           row.appendChild(inpStart);
@@ -26169,7 +26206,7 @@
       if(timeEnd.length===4) timeEnd='0'+timeEnd;
       const powerBar=document.createElement('div');
       powerBar.className='inserat-power-bar inserat-unified-pills';
-      powerBar.style.cssText='display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:10px 16px; padding:12px 20px; border-bottom:1px solid rgba(0,0,0,0.04); flex-shrink:0; background:rgba(0,0,0,0.02); pointer-events:auto;';
+      powerBar.style.cssText='display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:10px 16px; padding:12px 20px; border-bottom:1px solid rgba(0,0,0,0.04); flex-shrink:0; background:#f8fafc; backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); pointer-events:auto;';
       var hasDineIn = !!w.data.dineInPossible;
       var hasReuse = !!(w.data.reuse && w.data.reuse.enabled);
       function addPowerPill(emo, label, active, toggleKey){
@@ -26185,17 +26222,6 @@
       }
       addPowerPill('🍴','Vor Ort', hasDineIn, 'dineInPossible');
       addPowerPill('🔄','Mehrweg', hasReuse, 'reuse');
-      var hasPickup = !!(w.data.hasPickupCode || w.data.pricingOption === 'abholnummer');
-      var pickupPill = document.createElement('button');
-      pickupPill.type = 'button';
-      pickupPill.className = 'status-pill ' + (hasPickup ? 'active' : 'inactive');
-      pickupPill.setAttribute('aria-label', 'Abholnummer');
-      pickupPill.setAttribute('title', 'Abholnummer');
-      pickupPill.setAttribute('data-pill', 'pickup');
-      pickupPill.style.cssText = 'cursor:pointer; min-width:44px; min-height:44px;';
-      pickupPill.innerHTML = '<span style="font-size:14px;">🎫1️⃣</span>';
-      pickupPill.onclick = function(e){ e.preventDefault(); e.stopPropagation(); hapticLight(); w.data.hasPickupCode = !w.data.hasPickupCode; if(w.data.hasPickupCode) w.data.pricingOption = 'abholnummer'; else w.data.pricingOption = undefined; saveDraft(); rebuildWizard(); };
-      powerBar.appendChild(pickupPill);
       const hasTimeValue=!!(w.data.pickupWindow&&w.data.pickupWindow.trim())||(w.data.mealStart&&w.data.mealEnd);
       const timePill=document.createElement('button');
       timePill.type='button';
@@ -26224,8 +26250,8 @@
       var legendWrap=document.createElement('div'); legendWrap.style.cssText='position:relative; display:inline-flex; align-items:center;';
       var legendTrigger=document.createElement('button'); legendTrigger.type='button'; legendTrigger.className='power-bar-legend-trigger'; legendTrigger.setAttribute('aria-label','Infoseite Inseratsflow'); legendTrigger.setAttribute('title','Infoseite: Inserieren in unter 30 Sekunden'); legendTrigger.textContent='ⓘ'; legendTrigger.style.cssText='min-width:44px; min-height:44px; width:44px; height:44px; border:none; background:transparent; color:#94a3b8; font-size:14px; cursor:pointer; border-radius:50%; display:flex; align-items:center; justify-content:center; -webkit-tap-highlight-color:transparent;';
       var legendPop=document.createElement('div'); legendPop.className='power-bar-legend'; legendPop.setAttribute('role','tooltip'); legendPop.style.cssText='display:none; position:absolute; top:100%; right:0; margin-top:6px; padding:10px 14px; background:rgba(255,255,255,0.95); backdrop-filter:blur(12px); border-radius:12px; border:1px solid rgba(0,0,0,0.06); box-shadow:0 8px 24px rgba(0,0,0,0.1); font-size:11px; font-weight:600; color:#475569; line-height:1.5; z-index:50; white-space:nowrap;';
-      legendPop.innerHTML='🍴 Vor Ort · 🎫1️⃣ Abholnummer · 🔄 Mehrweg · 🕒 Zeit · 🌾 Allergene · ➕ Extras';
-      legendTrigger.onclick=function(e){ e.stopPropagation(); hapticLight(); if(typeof showLegalPage==='function'){ showLegalPage('inserat-info-provider'); } else { var on=legendPop.style.display==='block'; legendPop.style.display=on?'none':'block'; if(!on) setTimeout(function(){ var closeLegend=function(ev){ if(!legendWrap.contains(ev.target)){ legendPop.style.display='none'; document.removeEventListener('click', closeLegend); } }; document.addEventListener('click', closeLegend); }, 0); } };
+      legendPop.innerHTML='🍴 Vor Ort · 🔄 Mehrweg · 🕒 Zeit · 🌾 Allergene · ➕ Extras · ⓘ Info';
+      legendTrigger.onclick=function(e){ e.stopPropagation(); hapticLight(); if(typeof openInfoLegendSheet==='function') openInfoLegendSheet(); else { var on=legendPop.style.display==='block'; legendPop.style.display=on?'none':'block'; if(!on) setTimeout(function(){ var closeLegend=function(ev){ if(!legendWrap.contains(ev.target)){ legendPop.style.display='none'; document.removeEventListener('click', closeLegend); } }; document.addEventListener('click', closeLegend); }, 0); } };
       legendWrap.appendChild(legendTrigger); legendWrap.appendChild(legendPop); powerBar.appendChild(legendWrap);
       box.appendChild(powerBar);
 
@@ -27161,7 +27187,21 @@
     var bd=document.getElementById('pricingFairnessBd'); var ov=document.getElementById('pricingFairnessOverlay');
     if(bd) bd.classList.remove('active'); if(ov) ov.classList.remove('active');
   }
-  if(typeof window !== 'undefined'){ window.openPricingFairnessOverlay = openPricingFairnessOverlay; window.closePricingFairnessOverlay = closePricingFairnessOverlay; }
+  function openInfoLegendSheet(){
+    if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10);
+    var bd=document.getElementById('infoLegendBackdrop'); var sheet=document.getElementById('info-legend-sheet');
+    if(bd){ bd.style.pointerEvents='auto'; bd.style.opacity='1'; bd.classList.add('active'); }
+    if(sheet){ sheet.style.transform='translateY(0)'; sheet.classList.add('active'); }
+    var list=sheet&&sheet.querySelector('.info-legend-list'); if(list&&w&&w.data){ list.querySelectorAll('.info-legend-item').forEach(function(li){ li.classList.remove('active'); var key=li.getAttribute('data-legend'); if(key==='vorort'&&w.data.dineInPossible) li.classList.add('active'); if(key==='mehrweg'&&w.data.reuse&&w.data.reuse.enabled) li.classList.add('active'); if(key==='zeit'&&(w.data.pickupWindow&&String(w.data.pickupWindow).trim())) li.classList.add('active'); if(key==='allergene'&&(w.data.allergens&&w.data.allergens.length)) li.classList.add('active'); if(key==='extras'&&(w.data.extras&&w.data.extras.length)) li.classList.add('active'); if(key==='abholnummer'&&w.data.hasPickupCode) li.classList.add('active'); }); }
+    var btn=document.getElementById('infoLegendVerstandenBtn'); if(btn&&!btn._bound){ btn._bound=true; btn.onclick=function(){ closeInfoLegendSheet(); }; }
+  }
+  function closeInfoLegendSheet(){
+    if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10);
+    var bd=document.getElementById('infoLegendBackdrop'); var sheet=document.getElementById('info-legend-sheet');
+    if(bd){ bd.style.pointerEvents='none'; bd.style.opacity='0'; bd.classList.remove('active'); }
+    if(sheet){ sheet.style.transform='translateY(100%)'; sheet.classList.remove('active'); }
+  }
+  if(typeof window !== 'undefined'){ window.openPricingFairnessOverlay = openPricingFairnessOverlay; window.closePricingFairnessOverlay = closePricingFairnessOverlay; window.openInfoLegendSheet = openInfoLegendSheet; window.closeInfoLegendSheet = closeInfoLegendSheet; }
 
   function saveToCookbookFromWizard(keepOpen=false){
     const now = Date.now();
