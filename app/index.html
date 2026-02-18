@@ -23656,6 +23656,8 @@
     if(backService) backService.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(typeof showProviderProfileSub === 'function') showProviderProfileSub('settings'); };
     var backFaq = document.getElementById('providerProfileBackFaq');
     if(backFaq) backFaq.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(typeof showProviderProfileSub === 'function') showProviderProfileSub('settings'); };
+    var backPayment = document.getElementById('providerProfileBackPayment');
+    if(backPayment) backPayment.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(typeof showProviderProfileSub === 'function') showProviderProfileSub('settings'); };
     var btnImpressum = document.getElementById('btnProviderImpressum');
     var impressumContent = document.getElementById('providerImpressumContent');
     if(btnImpressum && impressumContent) btnImpressum.onclick = function(){ if(typeof haptic === 'function') haptic(6); impressumContent.style.display = impressumContent.style.display === 'none' ? 'block' : 'none'; };
