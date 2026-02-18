@@ -11,6 +11,8 @@ Es gibt **keinen alten Inseratsflow** mehr. Jede Funktion und jedes UI-Element, 
 - **No-Duplicate-UI:** Es gibt keine blauen Balken, separaten Formular-Seiten oder Tabs für das Inserieren. Alles findet innerhalb des **#wizard** statt.
 - **Ersatz-Logik:** Bestehende Aufrufe von openProviderOffer(id) sollten perspektivisch durch **startListingFlow({ editOfferId: id })** ersetzt werden, um die InseratCard zu nutzen.
 
+**#psheet und openProviderOffer sind tote Zone:** Kein neuer Code darf sie aufrufen oder referenzieren. openProviderOffer leitet ausschließlich auf startListingFlow um.
+
 ## Der Golden Path (Die einzige Kette)
 
 Jeder Weg zum Inserieren oder Planen folgt diesem Protokoll:
