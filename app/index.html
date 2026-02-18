@@ -2599,7 +2599,7 @@
     #wizard[data-flow="listing"] .inserat-power-bar .power-bar-legend-trigger:hover,
     #wizard[data-flow="listing"] .inserat-power-bar .power-bar-legend-trigger:focus { color: #64748b; }
     /* Info-Legende Bottom-Sheet: Aktiviert-Zustand */
-    .info-legend-item.active { background: rgba(16,185,129,0.1) !important; border: 1px solid rgba(16,185,129,0.25); }
+    .info-legend-item.active { background: rgba(16,185,129,0.1) !important; border: 2px solid rgba(16,185,129,0.4); box-shadow: 0 2px 12px rgba(16,185,129,0.25), 0 0 0 1px rgba(16,185,129,0.15); }
     /* #psheet: No-Scroll – Karte ist das Interface. Position von .sheet (fixed) bleibt, Popover bezieht sich auf #psheet. */
     #psheet .universal-dish-card.psheet-card { width: 100%; background: #fff; border-radius: 16px; overflow: hidden; border: 1px solid rgba(0,0,0,0.06); }
     #psheet .psheet-photo-header { border-radius: 0; }
@@ -9369,7 +9369,7 @@
 </div>
 
 <!-- Info-Legende Bottom-Sheet (Inseratcard Power-Bar ⓘ) -->
-<div class="backdrop" id="infoLegendBackdrop" style="z-index:1195; opacity:0; pointer-events:none; transition:opacity 0.25s ease;" onclick="if(typeof closeInfoLegendSheet==='function') closeInfoLegendSheet();"></div>
+<div class="backdrop" id="infoLegendBackdrop" style="z-index:1195; opacity:0; pointer-events:none; transition:opacity 0.25s ease; background:rgba(0,0,0,0.35); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);" onclick="if(typeof closeInfoLegendSheet==='function') closeInfoLegendSheet();"></div>
 <div id="info-legend-sheet" class="info-legend-sheet" style="position:fixed; left:0; right:0; bottom:0; background:#fff; border-radius:24px 24px 0 0; box-shadow:0 -8px 32px rgba(0,0,0,0.12); z-index:1196; padding:24px; padding-bottom:max(24px, env(safe-area-inset-bottom)); transform:translateY(100%); transition:transform 0.3s cubic-bezier(0.4,0,0.2,1); max-height:85vh; overflow-y:auto;">
   <div class="info-legend-sheet-inner">
     <div style="width:40px; height:4px; background:rgba(0,0,0,0.12); border-radius:2px; margin:0 auto 20px;"></div>
@@ -14199,7 +14199,7 @@
     card.className='card';
     card.style.cursor = interactive ? 'pointer' : 'default';
     if(interactive){
-      card.onclick=()=>openProviderOffer(data.id);
+      card.onclick=()=>{ if(typeof startListingFlow==='function') startListingFlow({ editOfferId: data.id }); };
     }
 
     const profile = normalizeProviderProfile(provider.profile || {});
@@ -14249,7 +14249,7 @@
       actBtn.type='button';
       actBtn.className='card-action';
       actBtn.innerHTML = `${iconMarkup('action')}<span>Aktionen</span>`;
-      actBtn.onclick=(e)=>{ e.stopPropagation(); openProviderOffer(data.id); };
+      actBtn.onclick=(e)=>{ e.stopPropagation(); if(typeof startListingFlow==='function') startListingFlow({ editOfferId: data.id }); };
 
       const shareBtn=document.createElement('button');
       shareBtn.type='button';
@@ -16759,7 +16759,7 @@
       ev.preventDefault();
       ev.stopPropagation();
       try { if(typeof hapticLight === 'function') hapticLight(); else if(navigator.vibrate) navigator.vibrate(10); } catch(e){}
-      if(typeof window.openProviderOffer === 'function') window.openProviderOffer(id);
+      if(typeof startListingFlow === 'function') startListingFlow({ editOfferId: id });
     }, true);
   })();
 
