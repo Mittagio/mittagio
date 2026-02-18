@@ -18205,7 +18205,7 @@
       }
     }
   }, 500);
-<script>
+  // --- Init-Block (Mode, Icons, PWA, Live-Sync) ---
   // Zweites Script: Zugriff auf Mode/LS nur über localStorage (eigener Scope)
   var MODE_KEY = 'mittagio_mode_v1';
   var ORDERS_KEY = 'mittagio_orders_v1';
