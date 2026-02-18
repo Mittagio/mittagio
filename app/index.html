@@ -3683,6 +3683,16 @@
       flex-direction: column;
       justify-content: center;
     }
+    /* Scroll-Fade: Standort-Text ausblenden ab 50px Scroll – mehr Platz für Filter-Pills */
+    #v-discover .discover-header-sticky.scrolled #discoverCurrentLocation{
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    #v-discover .discover-header-sticky:not(.scrolled) #discoverCurrentLocation{
+      opacity: 1;
+      transition: opacity 0.25s ease;
+    }
     
     /* Ebene 1: Standortsuche (ganz oben) */
     .discover-location-search-row{
@@ -3871,14 +3881,14 @@
       transform:scale(.96);
     }
     .discover-filter-sticky{
-      overflow-x:hidden; min-width:0;
+      overflow-x:hidden; min-width:0; width:100%; box-sizing:border-box;
     }
-    /* S25 / Applike: Thumb-Zone, horizontal wischbar (touch-action: pan-x) */
+    /* Pills: zuverlaessig horizontal scrollbar (links/rechts) */
     #v-discover .discover-header-pills{
       display:flex; gap:10px; overflow-x:auto; overflow-y:hidden;
       -webkit-overflow-scrolling:touch; scroll-snap-type:x mandatory;
       padding:8px var(--header-padding-x) 12px; padding-bottom:14px;
-      scrollbar-width:none; min-width:0; max-width:100%;
+      scrollbar-width:none; min-width:0; max-width:100%; width:100%; box-sizing:border-box;
       white-space:nowrap;
       touch-action:pan-x;
     }
@@ -3892,12 +3902,14 @@
     #v-discover .discover-header-pills .discover-category-chip.active{
       background: var(--pill-active-emerald); color:#fff; box-shadow:0 2px 12px rgba(37,99,235,0.4);
     }
-    #v-discover #discoverDaysBar{ display:flex; gap:8px; overflow-x:auto; overflow-y:hidden; -webkit-overflow-scrolling:touch; padding:0 var(--header-padding-x) 4px; scrollbar-width:none; min-width:0; white-space:nowrap; touch-action:pan-x; }
+    #v-discover #discoverDaysBar{ display:flex; gap:8px; overflow-x:auto; overflow-y:hidden; -webkit-overflow-scrolling:touch; padding:0 var(--header-padding-x) 4px; scrollbar-width:none; min-width:0; max-width:100%; width:100%; box-sizing:border-box; white-space:nowrap; touch-action:pan-x; }
     #v-discover #discoverDaysBar::-webkit-scrollbar{ display:none; }
     #v-discover #discoverDaysBar .cust-chip{ min-height: var(--pill-min-height); min-width:65px; width:65px; padding:10px 8px; font-size: var(--font-meta-sm, 13px); border-radius:20px; flex:0 0 65px; box-sizing:border-box; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    #v-discover .discover-offers-list{ width:95%; max-width:560px; margin:0 auto; }
-    #v-discover .cust-card{ width:100%; margin:0 auto 12px; -webkit-tap-highlight-color:transparent; transition:transform 0.15s, box-shadow 0.2s; }
+    #v-discover .discover-offers-list{ width:100%; max-width:100%; margin:0; padding:0 0 8px; box-sizing:border-box; }
+    #v-discover .cust-card{ width:100%; margin:0 auto 12px; -webkit-tap-highlight-color:transparent; transition:transform 0.15s, box-shadow 0.2s; box-sizing:border-box; }
     #v-discover .cust-card:active{ transform:scale(0.99); box-shadow:0 2px 12px rgba(0,0,0,0.06); }
+    #v-discover .discover-tiles-grid .cust-card .cust-card-body{ display:flex; flex-direction:column; }
+    #v-discover .discover-tiles-grid .cust-card .btn.btn-mittagsbox-cta{ min-height:52px; font-size:16px; border-radius:14px; background:#FFD700 !important; color:#1a1a1a; font-weight:800; box-shadow:0 2px 12px rgba(255,215,0,0.25); }
     /* Discovery: Restaurant-Karte (Anbieter-Block) + Tiles darunter */
     #v-discover .discover-restaurant-card{
       display:flex; align-items:center; justify-content:space-between; gap:12px;
@@ -3912,7 +3924,8 @@
       display:grid; grid-template-columns:1fr; gap:12px; margin-bottom:20px; padding:0 0 8px;
     }
     #v-discover .discover-tiles-grid .cust-card{ width:100%; margin:0; border-radius:16px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.05); }
-    #v-discover .discover-tiles-grid .cust-card .cust-card-img{ display:block; width:100%; height:auto; max-height:220px; object-fit:cover; }
+    #v-discover .discover-tiles-grid .cust-card .cust-card-img{ display:block; width:100%; height:auto; max-height:240px; object-fit:cover; opacity:0; transition:opacity 0.35s ease; }
+    #v-discover .discover-tiles-grid .cust-card .cust-card-img.img-loaded{ opacity:1; }
     #v-discover .discover-block{ margin-bottom:24px; }
     #v-discover .status-container{ display:flex; gap:6px; margin-top:8px; flex-wrap:nowrap; overflow-x:auto; }
     .discover-radius-row{ position:relative; }
@@ -4544,7 +4557,7 @@
         gap: 5px !important;
       }
     }
-    /* Discover (Kunde): Kacheln für Samsung S25 (~384–412px) – 140px Kartenhöhe, Touch-optimiert */
+    /* Discover (Kunde): Kacheln für Samsung S25 (~384–412px) – Handy-Anpassung */
     @media (max-width: 430px) {
       body:not(.provider-mode) #v-discover .discover-main {
         padding: 14px 12px;
@@ -4553,6 +4566,9 @@
       body:not(.provider-mode) #discoverOffers.discover-offers-list {
         gap: 10px;
         padding: 0 2px 8px;
+      }
+      body:not(.provider-mode) #v-discover .discover-tiles-grid .cust-card .cust-card-img {
+        max-height: 170px;
       }
       body:not(.provider-mode) #v-discover .dish-card {
         min-height: 132px;
@@ -9568,13 +9584,13 @@
   function renderDiscoverCategories(){
     const bar = document.getElementById('discoverCategoriesBar');
     if(!bar) return;
-    // Pills: Eintopf, Vesper, Vegetarisch, Snack (Hellgrau inaktiv, Blau aktiv)
+    // Pills: genau fünf Kategorien (wie Anbieterseite/Kochbuch): Alle, Fleisch, Vegetarisch, Vegan, Salat
     const cats = [
       {id:'near', label:'Alle', emoji:'✨'},
-      {id:'Suppe', label:'Eintopf', emoji:'🍲'},
-      {id:'Vesper', label:'Vesper', emoji:'🥩'},
-      {id:'Vegetarisch', label:'Vegetarisch', emoji:'🥗'},
-      {id:'Salat', label:'Snack', emoji:'🥪'},
+      {id:'Fleisch', label:'Fleisch', emoji:'🥩'},
+      {id:'Vegetarisch', label:'Vegetarisch', emoji:'🌿'},
+      {id:'Vegan', label:'Vegan', emoji:'🌱'},
+      {id:'Salat', label:'Salat', emoji:'🥗'},
     ];
     const active = activeDiscoverFilter === 'near' || !activeDiscoverFilter ? 'near' : activeDiscoverFilter;
     bar.innerHTML = cats.map(c => `
@@ -9651,6 +9667,9 @@
     img.style.objectFit = 'cover';
     img.src = data.imageUrl || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=800&q=80';
     img.loading = 'lazy';
+    function setImgLoaded(){ img.classList.add('img-loaded'); }
+    img.onload = setImgLoaded;
+    if(img.complete) setImgLoaded();
     imgContainer.appendChild(img);
     // Like Button
     const likeBtn = document.createElement('button');
@@ -9689,14 +9708,14 @@
     title.textContent = data.dish || 'Gericht';
     body.appendChild(title);
     
-    // Slim-Pills: VOR ORT (Grün), ABHOLNUMMER (Gelb), MEHRWEG (Blau), inaktiv #F5F5F5
+    // Kleine Pills direkt unter dem Namen: 🍴 VOR ORT, 🧾 ABHOLNUMMER, 🔄 MEHRWEG
     const pill = (active, bg, label) => {
       const bgColor = active ? bg : '#F5F5F5';
       const textColor = active ? (bg === '#FFD700' ? '#1a1a1a' : '#fff') : '#94a3b8';
-      return `<span style="display:inline-flex;align-items:center;gap:4px;height:26px;padding:0 10px;border-radius:13px;font-size:11px;font-weight:800;color:${textColor};letter-spacing:0.02em;white-space:nowrap;background:${bgColor};">${label}</span>`;
+      return `<span style="display:inline-flex;align-items:center;gap:3px;height:22px;padding:0 8px;border-radius:11px;font-size:10px;font-weight:700;color:${textColor};letter-spacing:0.02em;white-space:nowrap;background:${bgColor};">${label}</span>`;
     };
     const pillsRow = document.createElement('div');
-    pillsRow.style.cssText = 'display:flex; flex-wrap:wrap; gap:6px; padding:0 16px 12px;';
+    pillsRow.style.cssText = 'display:flex; flex-wrap:wrap; gap:5px; padding:0 16px 10px;';
     pillsRow.innerHTML = [
       pill(vorOrt, '#27AE60', '🍴 VOR ORT'),
       pill(abholnummer, '#FFD700', '🧾 ABHOLNUMMER'),
@@ -9723,8 +9742,8 @@
     ctaWrap.style.cssText = 'padding:12px 16px 0;';
     const ctaBtn = document.createElement('button');
     ctaBtn.type = 'button';
-    ctaBtn.className = 'btn';
-    ctaBtn.style.cssText = 'width:100%; min-height:44px; border-radius:12px; background:#FFD700; color:#1a1a1a; font-weight:800; font-size:14px; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; transition:transform 0.2s, box-shadow 0.2s;';
+    ctaBtn.className = 'btn btn-mittagsbox-cta';
+    ctaBtn.style.cssText = 'width:100%; min-height:52px; border-radius:14px; background:#FFD700; color:#1a1a1a; font-weight:800; font-size:16px; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; transition:transform 0.2s, box-shadow 0.2s;';
     ctaBtn.innerHTML = '<span style="font-size:18px;line-height:1;">🛍️</span> <span>In die Mittagsbox</span>';
     ctaBtn.onmouseover = () => { ctaBtn.style.transform = 'scale(1.02)'; ctaBtn.style.boxShadow = '0 4px 12px rgba(255,215,0,0.4)'; };
     ctaBtn.onmouseout = () => { ctaBtn.style.transform = 'scale(1)'; ctaBtn.style.boxShadow = 'none'; };
@@ -11695,10 +11714,10 @@
   }
 
   // --- Discover render (App-like UX, PWA, Light Mode) ---
-  let activeDiscoverFilter = 'near'; // 'near', 'Suppe', 'Vesper', 'Vegetarisch', 'Salat', 'provider'
+  let activeDiscoverFilter = 'near'; // 'near', 'Fleisch', 'Vegetarisch', 'Vegan', 'Salat', 'provider'
   let currentProviderFilter = null;
   let discoverRadiusM = parseInt(load('mittagio_discover_radius', '1000'), 10) || 1000; // 500, 1000, 3000
-  const DISCOVER_CAT_MULTI = { Vesper: ['Mit Fleisch','Fisch'], Vegetarisch: ['Vegetarisch','Vegan'], Suppe: ['Suppe'], Salat: ['Salat'] };
+  const DISCOVER_CAT_MULTI = { Fleisch: ['Fleisch','Mit Fleisch'], Vegetarisch: ['Vegetarisch'], Vegan: ['Vegan'], Salat: ['Salat'] };
   
   // Location-Autofill: Nur Schorndorf-Umgebung (Demo: Kurz + Fritz)
   const locationSuggestions = [
@@ -12033,7 +12052,7 @@
       list = list.filter(o => o.providerId === currentProviderFilter);
     }
     
-    // Kategorie-Filter: Pills Eintopf/Vesper/Vegetarisch/Snack
+    // Kategorie-Filter: Pills Fleisch, Vegetarisch, Vegan, Salat (DISCOVER_CAT_MULTI)
     if(activeDiscoverFilter !== 'near' && activeDiscoverFilter !== 'provider'){
       const allowed = DISCOVER_CAT_MULTI[activeDiscoverFilter];
       if(Array.isArray(allowed)){
@@ -12094,7 +12113,7 @@
         block.className = 'discover-block';
         const grid = document.createElement('div');
         grid.className = 'discover-tiles-grid';
-        group.forEach(o => { grid.appendChild(createDiscoverListCard(o)); });
+        group.forEach(o => { grid.appendChild(createModernOfferCard(o)); });
         block.appendChild(grid);
         offersEl.appendChild(block);
       });
@@ -12326,6 +12345,40 @@
       save(LS.discoverView, newMode);
     };
   }
+  function setupPillsDragScroll(el){
+    if(!el) return;
+    var down = false, startX = 0, scrollLeft = 0;
+    el.addEventListener('pointerdown', function(e){
+      down = true;
+      startX = e.clientX;
+      scrollLeft = el.scrollLeft;
+      el.setPointerCapture(e.pointerId);
+    });
+    el.addEventListener('pointermove', function(e){
+      if(!down) return;
+      el.scrollLeft = scrollLeft - (e.clientX - startX);
+    });
+    el.addEventListener('pointerup', function(){ down = false; });
+    el.addEventListener('pointercancel', function(){ down = false; });
+  }
+  setupPillsDragScroll(document.getElementById('discoverCategoriesBar'));
+  setupPillsDragScroll(document.getElementById('discoverDaysBar'));
+  (function(){
+    var header = document.querySelector('#v-discover .discover-header-sticky');
+    if(!header) return;
+    function onScroll(){
+      var y = window.scrollY || document.documentElement.scrollTop || 0;
+      var discoverActive = document.getElementById('v-discover') && document.getElementById('v-discover').classList.contains('active');
+      if(discoverActive){
+        if(y > 50) header.classList.add('scrolled');
+        else header.classList.remove('scrolled');
+      } else {
+        header.classList.remove('scrolled');
+      }
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  })();
   var discoverMapBtnHierSuchen = document.getElementById('discoverMapBtnHierSuchen');
   if(discoverMapBtnHierSuchen){
     discoverMapBtnHierSuchen.onclick = function(){
