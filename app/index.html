@@ -21816,7 +21816,7 @@
             slotEl.setAttribute('data-slot', String(slot));
             if (!isLive) slotEl.setAttribute('data-draft', '1');
             slotEl.innerHTML = '<div class="kw-slot-thumb" style="' + (img ? 'background-image:url(\'' + esc(img) + '\')' : '') + '"></div><div class="kw-slot-body"><div class="kw-slot-name">' + esc(name) + '</div><div class="kw-slot-price"><span class="price-pill">' + euro(price) + '</span></div></div>';
-            slotEl.onclick = (function(k, idx){ return function(e){ e.stopPropagation(); if(slotEl.classList.contains('kw-slot-swipe-delete')) return; if(typeof haptic === 'function') haptic(6); weekPlanDay = k; if(isLive && items[idx] && items[idx].id){ if(typeof startListingFlow === 'function') startListingFlow({ editOfferId: items[idx].id, date: k, entryPoint: 'week' }); } else { if(typeof openWeekAddSheet === 'function') openWeekAddSheet(k, idx); } }; })(key, slot);
+            slotEl.onclick = (function(k, idx){ return function(e){ e.stopPropagation(); if(slotEl.classList.contains('kw-slot-swipe-delete')) return; if(typeof haptic === 'function') haptic(6); weekPlanDay = k; if(isLive && items[idx] && items[idx].id){ if(typeof startListingFlow === 'function') startListingFlow({ editOfferId: items[idx].id, date: k, entryPoint: 'week' }); } else { if(typeof startListingFlow === 'function') startListingFlow({ date: k, entryPoint: 'week' }); } }; })(key, slot);
             slotsWrap.appendChild(slotEl);
           } else {
             var slotSmall = document.createElement('div');
@@ -27087,7 +27087,6 @@
         if(published){
           if(syncToCookbook && published.cookbookId && typeof syncOfferToCookbookEntry === 'function') syncOfferToCookbookEntry(published);
           if(typeof showToast === 'function') showToast('Inserat ist live! 🚀');
-          showInseratSuccessSheet(published);
           if(typeof onSuccess === 'function'){ try { onSuccess(); } catch(e){ console.error(e); } }
           if(typeof showProviderHome === 'function') showProviderHome();
         }
