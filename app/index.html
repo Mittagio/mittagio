@@ -5523,6 +5523,32 @@
       .provider-settings-accordion-item.open .provider-settings-accordion-content{ grid-template-rows:1fr; }
       .provider-settings-accordion-content-inner{ overflow:hidden; }
       .provider-settings-accordion-content-inner > *{ padding:0 20px 20px; }
+
+      /* Account verwalten: TGTG-Style Liste (weiße Liste auf hellgrauem Grund) [cite: 2026-02-18] */
+      #v-provider-profile .tgtg-list-wrap{ background:#F1F3F5; flex:1; overflow-y:auto; padding:0 0 calc(100px + env(safe-area-inset-bottom)); }
+      #v-provider-profile .tgtg-list{ background:#fff; margin:0 16px 24px; border-radius:12px; overflow:hidden; border:1px solid rgba(0,0,0,0.04); }
+      #v-provider-profile .tgtg-section-title{ font-size:11px; font-weight:800; letter-spacing:0.06em; color:#64748b; text-transform:uppercase; margin:0 16px 12px; padding:0 4px; }
+      #v-provider-profile .tgtg-row{ display:flex; align-items:center; gap:12px; width:100%; min-height:52px; padding:14px 16px; background:#fff; border:none; border-bottom:1px solid #f1f3f5; font-size:16px; font-weight:700; color:#1a1a1a; cursor:pointer; text-align:left; font-family:inherit; transition:background 0.2s; -webkit-tap-highlight-color:transparent; }
+      #v-provider-profile .tgtg-row:last-child{ border-bottom:none; }
+      #v-provider-profile .tgtg-row:active{ background:#f8fafc; }
+      #v-provider-profile .tgtg-row .tgtg-icon{ font-size:20px; flex-shrink:0; width:28px; text-align:center; }
+      #v-provider-profile .tgtg-row .tgtg-label{ flex:1; min-width:0; }
+      #v-provider-profile .tgtg-row .tgtg-chevron{ width:20px; height:20px; color:#94a3b8; flex-shrink:0; }
+      #v-provider-profile .tgtg-identity{ padding:16px 20px 20px; text-align:center; background:#fff; }
+      #v-provider-profile .tgtg-identity-name{ margin:0; font-size:17px; font-weight:800; color:#1a1a1a; letter-spacing:-0.02em; }
+      #v-provider-profile .tgtg-identity-ort{ margin:4px 0 0; font-size:14px; color:#64748b; }
+      /* Was ist was? Accordion: 300ms, cubic-bezier(0.4,0,0.2,1), Chevron 90°, Opacity-Fade */
+      #v-provider-profile .tgtg-accordion-item{ border-bottom:1px solid #f1f3f5; }
+      #v-provider-profile .tgtg-accordion-item:last-child{ border-bottom:none; }
+      #v-provider-profile .tgtg-accordion-trigger{ width:100%; display:flex; align-items:center; justify-content:space-between; gap:12px; min-height:52px; padding:14px 16px; background:transparent; border:none; font-size:15px; font-weight:700; color:#1a1a1a; cursor:pointer; text-align:left; font-family:inherit; transition:background 0.2s; -webkit-tap-highlight-color:transparent; }
+      #v-provider-profile .tgtg-accordion-trigger:active{ background:#f8fafc; }
+      #v-provider-profile .tgtg-accordion-trigger .tgtg-accordion-chevron{ width:20px; height:20px; color:#94a3b8; flex-shrink:0; transition:transform 300ms cubic-bezier(0.4, 0, 0.2, 1); }
+      #v-provider-profile .tgtg-accordion-item.open .tgtg-accordion-trigger .tgtg-accordion-chevron{ transform:rotate(90deg); }
+      #v-provider-profile .tgtg-accordion-content{ display:grid; grid-template-rows:0fr; transition:grid-template-rows 300ms cubic-bezier(0.4, 0, 0.2, 1); }
+      #v-provider-profile .tgtg-accordion-item.open .tgtg-accordion-content{ grid-template-rows:1fr; }
+      #v-provider-profile .tgtg-accordion-content-inner{ overflow:hidden; }
+      #v-provider-profile .tgtg-accordion-body{ padding:0 16px 16px; font-size:14px; line-height:1.5; color:#475569; opacity:0; transition:opacity 300ms cubic-bezier(0.4, 0, 0.2, 1); }
+      #v-provider-profile .tgtg-accordion-item.open .tgtg-accordion-body{ opacity:1; }
       
       /* Provider Bottom Nav: Safe-Area, Touch 48px */
       #providerNav{
@@ -7853,142 +7879,69 @@
           </div>
         </div>
 
-        <!-- Einstellungsseite (Zahnrad): Identity + Karten + Danger Zone -->
-      <div id="providerProfileSubSettings" class="provider-profile-sub" style="display:none; flex-direction:column; min-height:0; background:#F9FAFB;">
+        <!-- Einstellungsseite (Zahnrad): TGTG-Style Liste [cite: 2026-02-18] -->
+      <div id="providerProfileSubSettings" class="provider-profile-sub" style="display:none; flex-direction:column; min-height:0; background:#F1F3F5;">
         <header class="provider-sub-header" style="background:#fff; padding:10px 20px 12px; padding-top:calc(10px + env(safe-area-inset-top, 0)); border-bottom:1px solid #e5e7eb; position:sticky; top:0; z-index:50; display:flex; align-items:center; gap:14px;">
           <button type="button" id="providerProfileBackSettings" aria-label="Zurück" style="width:44px; height:44px; border-radius:14px; background:transparent; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center;">
             <i data-lucide="chevron-left" style="width:22px; height:22px; color:#1a1a1a;"></i>
           </button>
-          <h1 style="margin:0; font-size:18px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a;">Einstellungen</h1>
+          <h1 style="margin:0; font-size:18px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a;">Account verwalten</h1>
         </header>
 
-        <div class="provider-settings-scroll provider-settings-scroll-rebuild" style="flex:1; overflow-y:auto; background:#F9FAFB;">
-          <!-- Identity Section -->
-          <div class="provider-settings-identity" style="text-align:center; padding:28px 20px 24px; background:#fff; border-radius:24px; box-shadow:0 2px 12px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04); margin-bottom:20px;">
-            <button type="button" id="providerSettingsLogoBtn" aria-label="Logo hochladen" style="display:block; margin:0 auto 12px; width:80px; height:80px; border-radius:20px; background:#f1f3f5; border:2px dashed #cbd5e1; cursor:pointer; position:relative; overflow:hidden; padding:0;">
-              <div class="plogo" id="providerSettingsLogo" style="position:absolute; inset:0; background-size:cover; background-position:center; background-color:#f1f3f5;"></div>
-              <span id="providerSettingsLogoPlaceholder" style="font-size:28px; color:#94a3b8; line-height:80px;">📷</span>
-            </button>
-            <h2 id="providerSettingsName" style="margin:0 0 4px; font-size:20px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a;">Betriebsname</h2>
-            <p id="providerSettingsOrt" style="margin:0 0 12px; font-size:14px; color:#64748b;">Ort</p>
-            <span style="display:inline-block; padding:6px 14px; border-radius:999px; font-size:12px; font-weight:800; color:#059669; background:rgba(5,150,105,0.12);">System Online</span>
+        <div class="tgtg-list-wrap" style="flex:1; overflow-y:auto;">
+          <!-- Identität dezent: Name + Ort, ohne große Box -->
+          <div class="tgtg-identity">
+            <p id="providerSettingsName" class="tgtg-identity-name">Betriebsname</p>
+            <p id="providerSettingsOrt" class="tgtg-identity-ort">Ort</p>
           </div>
 
-          <!-- Accordion: Betriebsdaten, Sicherheit, Mittagszeiten, Inseratseinstellungen, Abrechnung, FAQ, Rechtliches -->
-          <div class="provider-settings-accordion" id="providerSettingsAccordion">
-            <div class="provider-settings-accordion-item open" data-accordion="betriebsdaten">
-              <button type="button" class="provider-settings-accordion-trigger"><span style="display:flex;align-items:center;gap:12px;"><i data-lucide="building-2" style="width:20px;height:20px;color:#64748b;"></i>Betriebsdaten</span><i data-lucide="chevron-down" class="accordion-chevron"></i></button>
-              <div class="provider-settings-accordion-content"><div class="provider-settings-accordion-content-inner"><div id="providerBusinessDataCardSlotSettings" style="padding-top:0;"></div></div></div>
-            </div>
-            <div class="provider-settings-accordion-item" data-accordion="sicherheit">
-              <button type="button" class="provider-settings-accordion-trigger"><span style="display:flex;align-items:center;gap:12px;"><i data-lucide="shield-check" style="width:20px;height:20px;color:#64748b;"></i>Sicherheit</span><i data-lucide="chevron-down" class="accordion-chevron"></i></button>
-              <div class="provider-settings-accordion-content"><div class="provider-settings-accordion-content-inner"><div style="padding-top:0;"><button type="button" id="btnProviderChangePassword" class="provider-settings-row-chevron" style="width:100%; display:flex; justify-content:space-between; align-items:center; padding:16px; background:#f8f9fa; border:2px solid #f1f3f5; border-radius:14px; text-decoration:none; color:#1a1a1a; font-size:15px; font-weight:700; cursor:pointer; text-align:left;"><span style="display:flex; align-items:center; gap:12px;"><i data-lucide="lock" style="width:20px;height:20px;color:#64748b;"></i>Passwort ändern</span><i data-lucide="chevron-right" style="width:20px; height:20px; color:#9ca3af;"></i></button></div></div></div>
-            </div>
-            <div class="provider-settings-accordion-item" data-accordion="mittagszeiten">
-              <button type="button" class="provider-settings-accordion-trigger"><span style="display:flex;align-items:center;gap:12px;"><i data-lucide="clock" style="width:20px;height:20px;color:#64748b;"></i>Mittagszeiten</span><i data-lucide="chevron-down" class="accordion-chevron"></i></button>
-              <div class="provider-settings-accordion-content"><div class="provider-settings-accordion-content-inner"><div class="provider-mittagszeiten-inner">
-            <p style="margin:0 0 16px; font-size:14px; color:#64748b; line-height:1.5;">Standard-Zeitfenster für neue Inserate (15-Minuten-Schritte).</p>
-            <button type="button" id="providerSettingsTimeTrigger" class="provider-time-trigger time-picker-display" style="display:block; width:100%; border:none; cursor:pointer; font-family:inherit;">
-              <span id="providerSettingsTimeDisplay" style="font-size:24px; font-weight:600; color:#22C55E;">11:30 – 14:00</span>
-              <span style="display:block; margin-top:4px; font-size:12px; color:#6B7280;">Tippen zum Bearbeiten</span>
-            </button>
-            <div id="providerSettingsTimeWheelWrap" style="display:none; margin-top:16px; padding:16px; background:#F9FAFB; border-radius:12px;">
-              <div style="display:flex; align-items:center; gap:12px;">
-                <div style="flex:1;">
-                  <label style="display:block; font-size:10px; font-weight:700; color:#6B7280; margin-bottom:6px; text-transform:uppercase;">Start</label>
-                  <select id="providerSettingsMealStart" class="provider-time-wheel-select" style="width:100%; height:48px; padding:0 12px; border:none; border-bottom:2px solid #E5E7EB; border-radius:0; font-size:18px; font-weight:600; background:transparent; color:#22C55E; cursor:pointer;"></select>
-                </div>
-                <span style="color:#6B7280; font-weight:700;">–</span>
-                <div style="flex:1;">
-                  <label style="display:block; font-size:10px; font-weight:700; color:#6B7280; margin-bottom:6px; text-transform:uppercase;">Ende</label>
-                  <select id="providerSettingsMealEnd" class="provider-time-wheel-select" style="width:100%; height:48px; padding:0 12px; border:none; border-bottom:2px solid #E5E7EB; border-radius:0; font-size:18px; font-weight:600; background:transparent; color:#22C55E; cursor:pointer;"></select>
-                </div>
-              </div>
-            </div>
-            <label style="display:block; font-size:10px; font-weight:700; color:#6B7280; margin-top:20px; margin-bottom:12px; text-transform:uppercase; letter-spacing:0.05em;">An welchen Tagen?</label>
-            <div id="providerSettingsLunchWeekdays" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
-          </div></div></div>
-            </div>
-            <div class="provider-settings-accordion-item" data-accordion="inseratseinstellungen">
-              <button type="button" class="provider-settings-accordion-trigger"><span style="display:flex;align-items:center;gap:12px;"><i data-lucide="sliders-horizontal" style="width:20px;height:20px;color:#64748b;"></i>Inseratseinstellungen</span><i data-lucide="chevron-down" class="accordion-chevron"></i></button>
-              <div class="provider-settings-accordion-content"><div class="provider-settings-accordion-content-inner"><div class="provider-inseratseinstellungen-inner">
-          <div class="provider-profile-card provider-settings-card" style="background:#fff; border-radius:24px; overflow:hidden; margin-bottom:20px; border:none; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
-            <h3 style="margin:0; padding:24px 24px 0; font-size:17px; font-weight:800; color:#1a1a1a;">🏗️ Service-Logik</h3>
-            <div class="provider-settings-pillar-row" style="border-bottom:1px solid #f8f9fa;">
-              <div class="pillar-left">
-                <div class="pillar-emoji" style="background:#f1f3f5;">🍴</div>
-                <div class="pillar-text">
-                  <div style="font-weight:800; color:#1a1a1a; font-size:16px;">Vor Ort essen</div>
-                  <div style="font-size:13px; color:#64748b;">Platz im Betrieb anbieten</div>
-                </div>
-              </div>
-              <label class="toggle-switch"><input type="checkbox" id="providerSettingsDineInEnabled"><span class="toggle-slider"></span></label>
-            </div>
-            <div class="provider-settings-pillar-row" style="border-bottom:1px solid #f8f9fa;">
-              <div class="pillar-left">
-                <div class="pillar-emoji" style="background:#f1f3f5;">🔄</div>
-                <div class="pillar-text">
-                  <div style="font-weight:800; color:#1a1a1a; font-size:16px;">Mehrweg-System</div>
-                  <div style="font-size:13px; color:#64748b;">Vytal, Recup oder eigenes</div>
-                </div>
-              </div>
-              <label class="toggle-switch"><input type="checkbox" id="providerSettingsReuseEnabled"><span class="toggle-slider"></span></label>
-            </div>
-            <div class="provider-settings-pillar-row" style="border-bottom:1px solid #f8f9fa;">
-              <div class="pillar-left">
-                <div class="pillar-emoji" style="background:rgba(255,215,0,0.15);">🧾</div>
-                <div class="pillar-text">
-                  <div style="font-weight:800; color:#1a1a1a; font-size:16px;">Abholnummer</div>
-                  <div style="font-size:13px; color:#64748b;">Weniger Chaos &amp; mehr Zeit</div>
-                </div>
-              </div>
-              <label class="toggle-switch"><input type="checkbox" id="providerSettingsAbholnummerEnabled"><span class="toggle-slider"></span></label>
-            </div>
-            <div class="provider-settings-pillar-row">
-              <div class="pillar-left">
-                <div class="pillar-emoji" style="background:#f1f3f5;">🌾</div>
-                <div class="pillar-text">
-                  <div style="font-weight:800; color:#1a1a1a; font-size:16px;">Allergene angeben?</div>
-                  <div style="font-size:13px; color:#64748b;">Standard für neue Inserate</div>
-                </div>
-              </div>
-              <label class="toggle-switch"><input type="checkbox" id="providerSettingsWantsAllergensEnabled"><span class="toggle-slider"></span></label>
-            </div>
+          <p class="tgtg-section-title">DEIN ACCOUNT</p>
+          <div class="tgtg-list">
+            <button type="button" class="tgtg-row" data-tgtg="business"><span class="tgtg-icon">🏠</span><span class="tgtg-label">Betriebsdaten</span><i data-lucide="chevron-right" class="tgtg-chevron"></i></button>
+            <button type="button" class="tgtg-row" data-tgtg="service"><span class="tgtg-icon">⚙️</span><span class="tgtg-label">Inseratseinstellungen</span><i data-lucide="chevron-right" class="tgtg-chevron"></i></button>
+            <button type="button" class="tgtg-row" data-tgtg="payment"><span class="tgtg-icon">💳</span><span class="tgtg-label">Zahlungsmethoden</span><i data-lucide="chevron-right" class="tgtg-chevron"></i></button>
+            <button type="button" class="tgtg-row" id="btnTgtgBillingArchive"><span class="tgtg-icon">🧾</span><span class="tgtg-label">PDF-Archiv &amp; Belege</span><i data-lucide="chevron-right" class="tgtg-chevron"></i></button>
           </div>
 
-            <h4 style="margin:0 0 12px; font-size:15px; font-weight:800; color:#1a1a1a;">➕ Extras mit Preis</h4>
-            <p style="margin:0 0 16px; font-size:14px; color:#64748b; line-height:1.5;">Diese Extras stehen in neuen Inseraten zur Auswahl (z.&nbsp;B. Beilagensalat, Soße).</p>
-            <div id="providerSettingsExtrasList" style="display:flex; flex-direction:column; gap:10px;"></div>
-            <button type="button" id="providerSettingsExtrasAdd" style="margin-top:12px; width:100%; min-height:48px; border-radius:14px; font-size:15px; font-weight:700; background:#f1f3f5; color:#475569; border:2px dashed #e2e8f0; cursor:pointer;">+ Extra hinzufügen</button>
-          </div></div></div>
-            </div>
-            <div class="provider-settings-accordion-item" data-accordion="abrechnung">
-              <button type="button" class="provider-settings-accordion-trigger"><span style="display:flex;align-items:center;gap:12px;"><i data-lucide="credit-card" style="width:20px;height:20px;color:#64748b;"></i>Abrechnung</span><i data-lucide="chevron-down" class="accordion-chevron"></i></button>
-              <div class="provider-settings-accordion-content"><div class="provider-settings-accordion-content-inner"><div class="provider-abrechnung-inner">
-            <button type="button" id="btnSettingsTagesumsatz" class="provider-settings-row-chevron" style="width:100%; display:flex; justify-content:space-between; align-items:center; padding:14px 0; background:transparent; border:none; border-bottom:1px solid #f3f4f6; color:#1a1a1a; font-size:15px; font-weight:700; cursor:pointer; text-align:left;"><span>Tagesumsatz</span><i data-lucide="chevron-right" style="width:20px; height:20px; color:#9ca3af;"></i></button>
-            <button type="button" id="btnSettingsBillingArchive" class="provider-settings-row-chevron" style="width:100%; display:flex; justify-content:space-between; align-items:center; padding:14px 0; background:transparent; border:none; border-bottom:1px solid #f3f4f6; color:#1a1a1a; font-size:15px; font-weight:700; cursor:pointer; text-align:left;"><span>Rechnungsbelege</span><i data-lucide="chevron-right" style="width:20px; height:20px; color:#9ca3af;"></i></button>
-            <button type="button" id="btnProviderBillingPortal" class="provider-settings-row-chevron" style="width:100%; display:flex; justify-content:space-between; align-items:center; padding:14px 0; background:transparent; border:none; color:#1a1a1a; font-size:15px; font-weight:700; cursor:pointer; text-align:left;"><span>Bankdaten</span><i data-lucide="chevron-right" style="width:20px; height:20px; color:#9ca3af;"></i></button>
-          </div></div></div>
-            </div>
-            <div class="provider-settings-accordion-item" data-accordion="faq">
-              <button type="button" class="provider-settings-accordion-trigger"><span style="display:flex;align-items:center;gap:12px;"><i data-lucide="help-circle" style="width:20px;height:20px;color:#64748b;"></i>FAQ</span><i data-lucide="chevron-down" class="accordion-chevron"></i></button>
-              <div class="provider-settings-accordion-content"><div class="provider-settings-accordion-content-inner"><div class="provider-faq-inner">
-            <button type="button" id="btnSettingsSupportFooter" class="provider-settings-row-chevron" style="width:100%; display:flex; justify-content:space-between; align-items:center; padding:14px 0; background:transparent; border:none; color:#1a1a1a; font-size:15px; font-weight:700; cursor:pointer; text-align:left;"><span>Support &amp; FAQ</span><i data-lucide="chevron-right" style="width:20px; height:20px; color:#9ca3af;"></i></button>
-          </div></div></div>
-            </div>
-            <div class="provider-settings-accordion-item" data-accordion="rechtliches">
-              <button type="button" class="provider-settings-accordion-trigger"><span style="display:flex;align-items:center;gap:12px;"><i data-lucide="file-text" style="width:20px;height:20px;color:#64748b;"></i>Rechtliches</span><i data-lucide="chevron-down" class="accordion-chevron"></i></button>
-              <div class="provider-settings-accordion-content"><div class="provider-settings-accordion-content-inner"><div class="provider-rechtliches-inner">
-            <a href="#/agb" class="provider-settings-row-chevron" style="display:flex; justify-content:space-between; align-items:center; padding:14px 0; color:#1a1a1a; font-size:15px; font-weight:700; text-decoration:none; border-bottom:1px solid #f3f4f6;"><span>AGB</span><i data-lucide="chevron-right" style="width:20px; height:20px; color:#9ca3af;"></i></a>
-            <a href="#/datenschutz" class="provider-settings-row-chevron" style="display:flex; justify-content:space-between; align-items:center; padding:14px 0; color:#1a1a1a; font-size:15px; font-weight:700; text-decoration:none; border-bottom:1px solid #f3f4f6;"><span>Datenschutz</span><i data-lucide="chevron-right" style="width:20px; height:20px; color:#9ca3af;"></i></a>
-            <div class="provider-settings-row-chevron" style="display:flex; justify-content:space-between; align-items:center; padding:14px 0; color:#1a1a1a; font-size:15px; font-weight:700; cursor:pointer;" id="btnProviderImpressum"><span>Impressum</span><i data-lucide="chevron-right" style="width:20px; height:20px; color:#9ca3af;"></i></div>
-            <div id="providerImpressumContent" style="display:none; padding:16px 0 0; font-size:14px; color:#6B7280; line-height:1.6; border-top:1px solid #f3f4f6;">Mike Quach, Langäcker 2, 73635 Rudersberg</div>
-          </div></div></div>
-            </div>
+          <p class="tgtg-section-title">COMMUNITY</p>
+          <div class="tgtg-list">
+            <button type="button" class="tgtg-row" data-tgtg="invite"><span class="tgtg-icon">🤝</span><span class="tgtg-label">Kollegen einladen</span><i data-lucide="chevron-right" class="tgtg-chevron"></i></button>
           </div>
-          <button type="button" id="btnProviderDeleteAccount" class="provider-footer-delete" style="display:block; width:100%; padding:16px; font-size:14px; font-weight:800; color:#dc2626; background:transparent; border:none; cursor:pointer; text-align:center;">
-            Profil dauerhaft löschen
+
+          <p class="tgtg-section-title">SUPPORT &amp; HILFE</p>
+          <div class="tgtg-list">
+            <div class="tgtg-accordion" id="tgtgWasIstWasAccordion">
+              <div class="tgtg-accordion-item">
+                <button type="button" class="tgtg-accordion-trigger" aria-expanded="false"><span class="tgtg-icon">❓</span><span class="tgtg-label">Was ist was?</span><i data-lucide="chevron-right" class="tgtg-accordion-chevron"></i></button>
+                <div class="tgtg-accordion-content"><div class="tgtg-accordion-content-inner">
+                  <div class="tgtg-accordion-body">
+                    <p><strong>Abholnummer:</strong> Die Abholnummer ersetzt Warteschlangen – dein Gast zeigt sie dir, du siehst sofort, was bestellt ist. Pro Vorgang 0,89 €.</p>
+                    <p><strong>Kochbuch:</strong> Dein digitales Kochbuch speichert Gerichte mit Bild und Allergenen. Von hier schaltest du blitzschnell in den Wochenplan oder als Inserat.</p>
+                    <p><strong>Wochenplan:</strong> Plane Mo–So. Gerichte per „Folgetag“ kopieren. Einmal einrichten, jede Woche nutzen.</p>
+                    <p><strong>Allergene:</strong> Beim Anlegen schlägt die App passende Allergene vor. Du wählst aus – Kunden sehen es in der Gerichtsbeschreibung.</p>
+                    <p><strong>Ein-Session-Regel:</strong> Nur ein aktives Gerät zur gleichen Zeit. Andere Anmeldung beendet die vorherige Sitzung – dein Küchenmodus bleibt sicher.</p>
+                  </div>
+                </div></div>
+              </div>
+            </div>
+            <button type="button" class="tgtg-row" data-tgtg="faq"><span class="tgtg-icon">🛠️</span><span class="tgtg-label">Hilfe bei einem Inserat</span><i data-lucide="chevron-right" class="tgtg-chevron"></i></button>
+          </div>
+
+          <p class="tgtg-section-title">RECHTLICHES</p>
+          <div class="tgtg-list">
+            <a href="#/agb" class="tgtg-row" style="text-decoration:none; color:inherit; display:flex; box-sizing:border-box;"><span class="tgtg-icon">📄</span><span class="tgtg-label">AGB</span><i data-lucide="chevron-right" class="tgtg-chevron"></i></a>
+            <a href="#/datenschutz" class="tgtg-row" style="text-decoration:none; color:inherit; display:flex; box-sizing:border-box;"><span class="tgtg-icon">🛡️</span><span class="tgtg-label">Datenschutz</span><i data-lucide="chevron-right" class="tgtg-chevron"></i></a>
+            <button type="button" class="tgtg-row" id="btnProviderImpressum"><span class="tgtg-icon">⚖️</span><span class="tgtg-label">Impressum <small style="display:block;font-size:12px;font-weight:600;color:#64748b;">Mike Quach, Rudersberg</small></span><i data-lucide="chevron-right" class="tgtg-chevron"></i></button>
+          </div>
+          <div id="providerImpressumContent" style="display:none; margin:0 16px 16px; padding:16px; background:#fff; border-radius:12px; font-size:14px; color:#64748b; line-height:1.5;">Mike Quach, Langäcker 2, 73635 Rudersberg</div>
+
+          <button type="button" id="btnProviderDeleteAccount" class="provider-footer-delete" style="display:block; width:calc(100% - 32px); margin:16px 16px 24px; padding:16px; font-size:15px; font-weight:800; color:#dc2626; background:#fff; border:2px solid #fecaca; border-radius:14px; cursor:pointer;">
+            Abmelden
           </button>
+        </div>
+        <!-- Versteckter Slot für Betriebsdaten-Karte (wird bei Bedarf in SubBusiness verschoben) -->
+        <div id="providerBusinessDataCardSlotSettings" style="display:none;"></div>
+
         </div>
       </div>
 
@@ -7998,23 +7951,51 @@
           <button type="button" id="providerProfileBackBusiness" aria-label="Zurück" style="width:44px; height:44px; border-radius:14px; background:#f1f3f5; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center;">
             <i data-lucide="chevron-left" style="width:22px; height:22px; color:#1a1a1a;"></i>
           </button>
-          <h1 style="margin:0; font-size:18px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a;">Meine Daten</h1>
+          <h1 style="margin:0; font-size:18px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a;">Betriebsdaten</h1>
         </header>
         <div style="padding:20px; flex:1; overflow-y:auto; max-width:500px; margin:0 auto; width:100%; box-sizing:border-box;">
-          <p style="margin:0; font-size:15px; color:#64748b;">Betriebsdaten findest du in den <strong>Einstellungen</strong> (Zahnrad).</p>
+          <div id="providerBusinessDataCardSlot"></div>
         </div>
       </div>
 
-      <!-- Sub-Seite: Präferenzen & Zeiten (Weiterleitung zu Einstellungen) -->
-      <div id="providerProfileSubService" class="provider-profile-sub" style="display:none; flex-direction:column;">
-        <header style="background:#fff; padding:24px 20px 20px; border-bottom:1px solid rgba(0,0,0,0.05); position:sticky; top:0; z-index:50; display:flex; align-items:center; gap:16px;">
-          <button type="button" id="providerProfileBackService" aria-label="Zurück" style="width:40px; height:40px; border-radius:12px; background:#f8f9fa; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center;">
-            <i data-lucide="chevron-left" style="width:24px; height:24px; color:#1a1a1a;"></i>
+      <!-- Sub-Seite: Inseratseinstellungen (Standard-Zeiten + 3 Säulen + Extras) -->
+      <div id="providerProfileSubService" class="provider-profile-sub" style="display:none; flex-direction:column; min-height:0; background:#F9FAFB;">
+        <header class="provider-sub-header" style="background:#fff; padding:10px 20px 12px; padding-top:calc(10px + env(safe-area-inset-top, 0)); border-bottom:1px solid #e5e7eb; position:sticky; top:0; z-index:50; display:flex; align-items:center; gap:14px;">
+          <button type="button" id="providerProfileBackService" aria-label="Zurück" style="width:44px; height:44px; border-radius:14px; background:transparent; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+            <i data-lucide="chevron-left" style="width:22px; height:22px; color:#1a1a1a;"></i>
           </button>
-          <h1 style="margin:0; font-size:20px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a;">Präferenzen & Zeiten</h1>
+          <h1 style="margin:0; font-size:18px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a;">Inseratseinstellungen</h1>
         </header>
-        <div style="padding:24px 20px; flex:1; overflow-y:auto;">
-          <p style="margin:0; font-size:15px; color:#64748b;">Zeiten und Service-Optionen findest du in den <strong>Einstellungen</strong> (Zahnrad).</p>
+        <div style="padding:20px; flex:1; overflow-y:auto; max-width:500px; margin:0 auto; width:100%; box-sizing:border-box;">
+          <div class="provider-mittagszeiten-inner" style="margin-bottom:24px;">
+            <p style="margin:0 0 16px; font-size:14px; color:#64748b; line-height:1.5;">Standard-Zeitfenster für neue Inserate (15-Minuten-Schritte).</p>
+            <button type="button" id="providerSettingsTimeTrigger" class="provider-time-trigger time-picker-display" style="display:block; width:100%; border:none; cursor:pointer; font-family:inherit;">
+              <span id="providerSettingsTimeDisplay" style="font-size:24px; font-weight:600; color:#22C55E;">11:30 – 14:00</span>
+              <span style="display:block; margin-top:4px; font-size:12px; color:#6B7280;">Tippen zum Bearbeiten</span>
+            </button>
+            <div id="providerSettingsTimeWheelWrap" style="display:none; margin-top:16px; padding:16px; background:#F9FAFB; border-radius:12px;">
+              <div style="display:flex; align-items:center; gap:12px;">
+                <div style="flex:1;"><label style="display:block; font-size:10px; font-weight:700; color:#6B7280; margin-bottom:6px; text-transform:uppercase;">Start</label><select id="providerSettingsMealStart" class="provider-time-wheel-select" style="width:100%; height:48px; padding:0 12px; border:none; border-bottom:2px solid #E5E7EB; border-radius:0; font-size:18px; font-weight:600; background:transparent; color:#22C55E; cursor:pointer;"></select></div>
+                <span style="color:#6B7280; font-weight:700;">–</span>
+                <div style="flex:1;"><label style="display:block; font-size:10px; font-weight:700; color:#6B7280; margin-bottom:6px; text-transform:uppercase;">Ende</label><select id="providerSettingsMealEnd" class="provider-time-wheel-select" style="width:100%; height:48px; padding:0 12px; border:none; border-bottom:2px solid #E5E7EB; border-radius:0; font-size:18px; font-weight:600; background:transparent; color:#22C55E; cursor:pointer;"></select></div>
+              </div>
+            </div>
+            <label style="display:block; font-size:10px; font-weight:700; color:#6B7280; margin-top:20px; margin-bottom:12px; text-transform:uppercase; letter-spacing:0.05em;">An welchen Tagen?</label>
+            <div id="providerSettingsLunchWeekdays" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
+          </div>
+          <div class="provider-inseratseinstellungen-inner">
+            <div class="provider-profile-card provider-settings-card" style="background:#fff; border-radius:16px; overflow:hidden; margin-bottom:20px; border:1px solid rgba(0,0,0,0.04); box-shadow:0 1px 3px rgba(0,0,0,0.06);">
+              <h3 style="margin:0; padding:20px 20px 0; font-size:17px; font-weight:800; color:#1a1a1a;">Service-Logik</h3>
+              <div class="provider-settings-pillar-row" style="border-bottom:1px solid #f8f9fa;"><div class="pillar-left"><div class="pillar-emoji" style="background:#f1f3f5;">🍴</div><div class="pillar-text"><div style="font-weight:800; color:#1a1a1a; font-size:16px;">Vor Ort essen</div><div style="font-size:13px; color:#64748b;">Platz im Betrieb anbieten</div></div></div><label class="toggle-switch"><input type="checkbox" id="providerSettingsDineInEnabled"><span class="toggle-slider"></span></label></div>
+              <div class="provider-settings-pillar-row" style="border-bottom:1px solid #f8f9fa;"><div class="pillar-left"><div class="pillar-emoji" style="background:#f1f3f5;">🔄</div><div class="pillar-text"><div style="font-weight:800; color:#1a1a1a; font-size:16px;">Mehrweg-System</div><div style="font-size:13px; color:#64748b;">Vytal, Recup oder eigenes</div></div></div><label class="toggle-switch"><input type="checkbox" id="providerSettingsReuseEnabled"><span class="toggle-slider"></span></label></div>
+              <div class="provider-settings-pillar-row" style="border-bottom:1px solid #f8f9fa;"><div class="pillar-left"><div class="pillar-emoji" style="background:rgba(255,215,0,0.15);">🧾</div><div class="pillar-text"><div style="font-weight:800; color:#1a1a1a; font-size:16px;">Abholnummer</div><div style="font-size:13px; color:#64748b;">Weniger Chaos &amp; mehr Zeit</div></div></div><label class="toggle-switch"><input type="checkbox" id="providerSettingsAbholnummerEnabled"><span class="toggle-slider"></span></label></div>
+              <div class="provider-settings-pillar-row"><div class="pillar-left"><div class="pillar-emoji" style="background:#f1f3f5;">🌾</div><div class="pillar-text"><div style="font-weight:800; color:#1a1a1a; font-size:16px;">Allergene angeben?</div><div style="font-size:13px; color:#64748b;">Standard für neue Inserate</div></div></div><label class="toggle-switch"><input type="checkbox" id="providerSettingsWantsAllergensEnabled"><span class="toggle-slider"></span></label></div>
+            </div>
+            <h4 style="margin:0 0 12px; font-size:15px; font-weight:800; color:#1a1a1a;">➕ Extras mit Preis</h4>
+            <p style="margin:0 0 16px; font-size:14px; color:#64748b; line-height:1.5;">Diese Extras stehen in neuen Inseraten zur Auswahl.</p>
+            <div id="providerSettingsExtrasList" style="display:flex; flex-direction:column; gap:10px;"></div>
+            <button type="button" id="providerSettingsExtrasAdd" style="margin-top:12px; width:100%; min-height:48px; border-radius:14px; font-size:15px; font-weight:700; background:#f1f3f5; color:#475569; border:2px dashed #e2e8f0; cursor:pointer;">+ Extra hinzufügen</button>
+          </div>
         </div>
       </div>
 
@@ -11613,13 +11594,13 @@
     var card = document.getElementById('providerBusinessDataCardWrap');
     var slot = document.getElementById('providerBusinessDataCardSlot');
     var slotSettings = document.getElementById('providerBusinessDataCardSlotSettings');
-    if(card && slotSettings){
-      if(subId === 'settings'){ slotSettings.appendChild(card); }
-      else if(!subId && slot){ slot.insertBefore(card, slot.firstChild); }
+    if(card && slot && slotSettings){
+      if(subId === 'business'){ slot.appendChild(card); }
+      else { slotSettings.appendChild(card); }
     }
     if(subId && contentEl) contentEl.scrollTop = 0;
     if((subId === 'settings' || subId === 'times' || subId === 'service') && typeof renderProviderProfileMealSelects === 'function') renderProviderProfileMealSelects();
-    if(subId === 'settings' && typeof updateProviderSettingsTimeDisplay === 'function') updateProviderSettingsTimeDisplay();
+    if((subId === 'settings' || subId === 'service') && typeof updateProviderSettingsTimeDisplay === 'function') updateProviderSettingsTimeDisplay();
     if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
   }
   function updateProviderSettingsTimeDisplay(){
