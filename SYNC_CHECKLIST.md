@@ -24,7 +24,10 @@
 
 ### Vor dem Arbeiten (auf neuem PC):
 1. Repository klonen: `git clone https://github.com/[username]/mittagio.git`
-2. Oder pullen: `git pull origin main`
+2. **Auto-Push aktivieren (einmalig):** Dann musst du nicht mehr manuell pushen.
+   - **Windows (PowerShell):** `.\scripts\install-auto-push-hook.ps1`
+   - **Bash / Git Bash:** `sh scripts/install-auto-push-hook.sh`
+3. Oder wenn bereits geklont: `git pull origin main`
 
 ### Nach dem Arbeiten (immer!):
 1. **Alle Dateien speichern** (Strg+S in allen geöffneten Dateien)

@@ -46,6 +46,10 @@ git push origin main
 ### Auf neuem PC:
 ```bash
 git clone https://github.com/[username]/mittagio.git
+cd mittagio
+# Optional: Auto-Push nach jedem Commit aktivieren (einmalig):
+#   Windows (PowerShell): .\scripts\install-auto-push-hook.ps1
+#   Bash/Git Bash:        sh scripts/install-auto-push-hook.sh
 # oder wenn bereits geklont:
 git pull origin main
 ```

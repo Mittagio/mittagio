@@ -1,0 +1,13 @@
+#!/bin/sh
+# Auto-Push nach jedem Commit (funktioniert mit GitHub Desktop, Cursor, Bash, CMD)
+# Quelle: Wird von scripts/install-auto-push-hook.sh nach .git/hooks/post-commit kopiert.
+
+exec 1>&2
+echo ""
+echo "[Auto-Push] Pushe zu origin main..."
+if git push origin main 2>&1; then
+    echo "[Auto-Push] Fertig – Änderungen sind online."
+else
+    echo "[Auto-Push] Push fehlgeschlagen (z.B. Offline?). Bitte später: git push origin main"
+fi
+echo ""

@@ -43,7 +43,22 @@
       --sticker-green:#27AE60; /* Preis-Sticker & Mehrweg-Badge (Polaroid-Card) */
       --danger:#E34D4D;
       --font-polaroid-marker:'Permanent Marker', 'Kalam', cursive;
-      
+      /* S25 NATIVE-FIX: Stoppt Überlappungen und erzwingt Scrolling */
+#v-provider-account-manage .settings-container {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 15px !important;
+    padding: 20px !important;
+    height: auto !important; 
+    min-height: 100% !important;
+    overflow-y: auto !important; /* Hierdurch wird das S25 wieder scrollbar */
+}
+
+#v-provider-account-manage button {
+    position: relative !important; /* Verhindert, dass Buttons übereinander liegen */
+    width: 100% !important;
+    margin-bottom: 5px !important;
+}
       /* Design Tokens - PWA Light */
       /* Radius */
       --r-sm: 10px;
@@ -6359,6 +6374,28 @@
     }
 
     /* --- END MODERN CUSTOMER UI --- */
+  /* S25 NATIVE-FIX: Stoppt Überlappungen und erzwingt Scrolling */
+#v-provider-account-manage .settings-container {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+    padding: 20px !important;
+    height: auto !important; 
+    min-height: 100% !important;
+    overflow-y: auto !important; /* Macht die Seite auf dem S25 wieder rollbar */
+    -webkit-overflow-scrolling: touch;
+}
+
+#v-provider-account-manage button {
+    position: relative !important; /* Verhindert das Übereinanderstapeln */
+    width: 100% !important;
+    left: 0 !important;
+    top: 0 !important;
+    margin-bottom: 0 !important;
+    min-height: 60px !important;
+    border-radius: 16px !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05) !important;
+}
   </style>
 </head>
 <body>
