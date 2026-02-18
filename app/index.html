@@ -5286,8 +5286,18 @@
       #v-provider-week .week-meal-meta .price-pill{ padding:4px 10px; font-size:13px; }
       #v-provider-week .kw-slot{ transition:transform 0.2s ease; }
       #v-provider-week .kw-slot.kw-slot-swipe-delete{ background:rgba(239,68,68,0.08); }
-      #v-provider-week .kw-cookbook-strip-wrap{ flex-shrink:0; background:rgba(255,255,255,0.95); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border-bottom:1px solid rgba(0,0,0,0.06); padding:8px 0 12px; }
-      #v-provider-week .kw-cookbook-drag-strip{ display:flex; flex-wrap:wrap; align-items:center; gap:8px; padding:0; }
+      #v-provider-week .kw-cookbook-strip-wrap{ flex-shrink:0; background:linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(248,250,252,0.95) 50%, rgba(241,245,249,0.92) 100%); backdrop-filter:blur(40px); -webkit-backdrop-filter:blur(40px); border-bottom:1px solid rgba(0,0,0,0.06); padding:10px 0 14px; }
+      #v-provider-week .kw-cookbook-drag-strip{ display:flex; flex-wrap:nowrap; align-items:center; gap:10px; padding:0 16px; overflow-x:auto; -webkit-overflow-scrolling:touch; scroll-snap-type:x proximity; }
+      #v-provider-week .kw-smart-suggestions-strip .kw-suggestion-card{ scroll-snap-align:start; flex:0 0 auto; display:inline-flex; flex-direction:column; align-items:center; min-width:88px; max-width:88px; padding:10px 8px 8px; padding-right:28px; border-radius:20px; background:rgba(255,255,255,0.85); border:1px solid rgba(16,185,129,0.2); box-shadow:0 2px 12px rgba(0,0,0,0.06); position:relative; cursor:grab; user-select:none; transition:transform 0.15s, box-shadow 0.15s; }
+      #v-provider-week .kw-smart-suggestions-strip .kw-suggestion-card:active{ cursor:grabbing; }
+      #v-provider-week .kw-smart-suggestions-strip .kw-suggestion-card.dragging{ transform:scale(0.95); opacity:0.85; cursor:grabbing; }
+      #v-provider-week .kw-smart-suggestions-strip .kw-suggestion-thumb{ width:48px; height:48px; border-radius:50%; flex-shrink:0; margin-bottom:4px; border:2px solid rgba(255,255,255,0.8); box-shadow:0 2px 8px rgba(0,0,0,0.08); }
+      #v-provider-week .kw-smart-suggestions-strip .kw-suggestion-sparkle{ font-size:12px; margin-bottom:2px; filter:drop-shadow(0 0 6px rgba(255,215,0,0.5)); }
+      #v-provider-week .kw-smart-suggestions-strip .kw-suggestion-name{ font-size:12px; font-weight:700; color:#1a1a1a; line-height:1.2; text-align:center; display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:100%; }
+      #v-provider-week .kw-suggestion-badge{ display:block; font-size:9px; font-weight:800; color:#059669; text-transform:uppercase; letter-spacing:0.03em; margin-top:4px; text-align:center; }
+      #v-provider-week .kw-smart-suggestions-strip .kw-suggestion-dismiss{ top:4px; right:4px; width:22px; height:22px; font-size:12px; }
+      #v-provider-week .kw-slot-empty.kw-slot-ghost-highlight{ animation: kwSlotGhostPulse 1.2s ease-in-out infinite; border-color:#0ea5e9; background:rgba(14,165,233,0.08); box-shadow:0 0 0 2px rgba(14,165,233,0.4), 0 0 20px rgba(14,165,233,0.2); }
+      @keyframes kwSlotGhostPulse{ 0%, 100%{ box-shadow:0 0 0 2px rgba(14,165,233,0.4), 0 0 20px rgba(14,165,233,0.2); } 50%{ box-shadow:0 0 0 3px rgba(14,165,233,0.7), 0 0 28px rgba(14,165,233,0.35); } }
       #v-provider-week .kw-cookbook-drag-label{ font-size:13px; font-weight:700; color:#64748b; margin-right:4px; }
       #v-provider-week .kw-cookbook-drag-pill{ padding:8px 14px; border-radius:12px; background:rgba(255,255,255,0.8); border:1px solid rgba(16,185,129,0.35); color:#0f766e; font-size:13px; font-weight:700; cursor:grab; user-select:none; transition:transform 0.15s, box-shadow 0.15s; }
       #v-provider-week .kw-cookbook-drag-pill:active{ cursor:grabbing; }
@@ -7518,6 +7528,9 @@
             <button type="button" id="btnKwFindGap" title="Nächste Lücke finden" aria-label="Nächste Lücke finden" style="background:rgba(255,255,255,0.7); border:1px solid rgba(0,0,0,0.08); min-height:44px; padding:0 14px; border-radius:14px; display:flex; align-items:center; justify-content:center; gap:6px; color:#1a1a1a; font-size:13px; font-weight:700; cursor:pointer; white-space:nowrap;">
               <i data-lucide="sparkles" style="width:18px; height:18px;"></i><span>Lücke finden</span>
             </button>
+            <button type="button" id="btnKwSaveTemplate" title="Woche als Vorlage speichern" aria-label="Woche als Vorlage speichern" style="background:rgba(0,0,0,0.06); border:none; min-width:44px; min-height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; color:#1a1a1a; cursor:pointer;">
+              <i data-lucide="folder-plus" style="width:20px; height:20px;"></i>
+            </button>
             <button type="button" id="btnKwPdf" title="Drucken" aria-label="Drucken" style="background:rgba(0,0,0,0.06); border:none; min-width:44px; min-height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; color:#1a1a1a; cursor:pointer;">
               <i data-lucide="printer" style="width:20px; height:20px;"></i>
             </button>
@@ -7540,6 +7553,7 @@
           <div id="kwWeekActivateBar" class="kw-week-activate-bar" style="display:none;"><button type="button" id="btnKwWeekActivate" class="kw-week-activate-btn">Woche aktivieren (0 €)</button></div>
         </div>
         <div id="kwBoardScroll" class="kw-board-scroll">
+          <div id="kwEmptyWeekTemplateCta" class="kw-empty-week-template-cta" style="display:none; position:absolute; inset:0; align-items:center; justify-content:center; padding:24px; pointer-events:none; z-index:2;"><div style="pointer-events:auto;"><button type="button" id="btnKwLoadTemplate" class="kw-load-template-btn" style="display:inline-flex; align-items:center; gap:10px; min-height:56px; padding:0 28px; border-radius:20px; border:2px solid rgba(14,165,233,0.4); background:rgba(255,255,255,0.95); backdrop-filter:blur(12px); color:#0c4a6e; font-size:16px; font-weight:800; cursor:pointer; box-shadow:0 4px 20px rgba(14,165,233,0.15);"><span style="font-size:22px;">📂</span><span>Vorlage laden</span></button></div></div>
           <div class="kw-grid" id="kwGrid"></div>
         </div>
         <div class="kw-action-bar-fixed" id="kwActionBarFixed" style="display:none;">
@@ -9506,7 +9520,8 @@
     cookbookSwipeHintShown: 'mittagio_cookbook_swipe_hint_v1',
     providerSession: 'mittagio_provider_session_v1',
     favPillars: 'mittagio_fav_pillars_v1', // { [dishId]: { vorOrt, abholnummer, mehrweg } } – 3-Säulen beim Favorisieren einfrieren
-    transactions: 'mittagio_transactions_v1' // Transaktionen pro Inserat: id, vendor_id, base_price, addon_pickup, addon_price, total_amount, timestamp
+    transactions: 'mittagio_transactions_v1', // Transaktionen pro Inserat
+    weekTemplates: 'mittagio_week_templates_v1' // Wochen-Vorlagen: [{ id, name, createdAt, days: { 0..6: [{ cookbookId, dish, price }] } }]
   };
   const load = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } };
   const save = (k, v) => localStorage.setItem(k, JSON.stringify(v));
@@ -21608,6 +21623,7 @@
       if (count < 3) {
         if (typeof getWeekIndexForDate === 'function') weekPlanKWIndex = Math.max(0, getWeekIndexForDate(dateKey));
         weekPlanDay = dateKey;
+        window.__kwSmartSuggestionFocusDay = dateKey;
         if (typeof pushViewState === 'function') pushViewState({ view: 'provider-week', mode: typeof mode !== 'undefined' ? mode : 'provider', week: weekPlanKWIndex, day: weekPlanDay }, (typeof location !== 'undefined' && location.pathname) + '?week=' + weekPlanKWIndex + '&day=' + weekPlanDay);
         if (typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard();
         setTimeout(function(){
@@ -21715,6 +21731,54 @@
     overlay.onclick = function(e){ if (e.target === overlay) overlay.remove(); };
     document.body.appendChild(overlay);
   }
+  /** Smart Suggestions: Wochentag (z.B. Freitag = Fisch/veggie), Saison (Sommer = leicht, Winter = Eintopf), Renner (häufig inseriert). */
+  function getSmartSuggestions(focusDayKey){
+    var pid = typeof providerId === 'function' ? providerId() : '';
+    var mine = (typeof cookbook !== 'undefined' && cookbook) ? cookbook.filter(function(c){ return c.providerId === pid; }) : [];
+    var dismissed = window.__kwCookbookDismissedIds || {};
+    mine = mine.filter(function(c){ return !dismissed[String(c.id)]; });
+    var w = typeof load === 'function' && typeof LS !== 'undefined' ? load(LS.week, {}) : (typeof week !== 'undefined' ? week : {});
+    var offs = typeof load === 'function' && typeof LS !== 'undefined' ? load(LS.offers, []) : (typeof offers !== 'undefined' ? offers : []);
+    var dayNum = 0;
+    var month = 6;
+    if(focusDayKey && focusDayKey.length >= 10){
+      var fd = new Date(focusDayKey + 'T12:00:00');
+      dayNum = fd.getDay() || 7;
+      month = fd.getMonth() + 1;
+    }
+    var isFriday = dayNum === 5;
+    var isSummer = month >= 5 && month <= 8;
+    var isWinter = month >= 11 || month <= 2;
+    var fishVeggie = /fisch|salat|vegetarisch|vegan|tofu|lachs|forelle|makrele/i;
+    var summerWords = /salat|grill|leicht|gazpacho|tzatziki|caprese/i;
+    var winterWords = /eintopf|suppe|gulasch|auflauf|käse|spätzle|schmor/i;
+    var rennerCount = {};
+    Object.keys(w || {}).forEach(function(dateKey){
+      var arr = Array.isArray(w[dateKey]) ? w[dateKey] : [];
+      arr.forEach(function(e){
+        if(e && e.providerId === pid && e.cookbookId){ var id = String(e.cookbookId); rennerCount[id] = (rennerCount[id] || 0) + 1; }
+      });
+    });
+    (Array.isArray(offs) ? offs : []).forEach(function(o){
+      if(o && o.providerId === pid && o.cookbookId){ var id = String(o.cookbookId); rennerCount[id] = (rennerCount[id] || 0) + 1; }
+    });
+    mine.forEach(function(c){
+      var score = 0;
+      var badge = null;
+      var name = (c.dish || '').toLowerCase();
+      var cat = (c.category || '').toLowerCase();
+      if(rennerCount[String(c.id)] >= 3){ score += 40; if(!badge) badge = 'Top Renner'; }
+      else if(rennerCount[String(c.id)] >= 1){ score += 20; }
+      if(c.lastUsed) score += Math.min(15, Math.floor((Date.now() - (typeof c.lastUsed === 'number' ? c.lastUsed : new Date(c.lastUsed).getTime())) / 86400000));
+      if(isFriday && (fishVeggie.test(name) || fishVeggie.test(cat))){ score += 25; badge = badge || 'Passend zum Freitag'; }
+      if(isSummer && summerWords.test(name)){ score += 15; badge = badge || 'Saisonal'; }
+      if(isWinter && winterWords.test(name)){ score += 15; badge = badge || 'Saisonal'; }
+      c._smartScore = score;
+      c._smartBadge = badge;
+    });
+    mine.sort(function(a,b){ return (b._smartScore || 0) - (a._smartScore || 0); });
+    return mine.slice(0, 8);
+  }
   function renderWeekPlanBoard(){
     updateSessionActivity();
     week = load(LS.week, {});
@@ -21756,12 +21820,22 @@
     if (strip && stripWrap) {
       var dismissed = window.__kwCookbookDismissedIds || {};
       window.__kwCookbookDismissedIds = dismissed;
-      var mine = (cookbook || []).filter(function(c){ return c.providerId === providerId() && !dismissed[String(c.id)]; }).slice(0, 8);
-      strip.innerHTML = mine.map(function(c){
-        var label = (c.dish || 'Gericht').substring(0, 12) + (c.dish && c.dish.length > 12 ? '…' : '');
-        return '<div class="kw-cookbook-drag-pill" draggable="true" data-cookbook-id="' + esc(String(c.id)) + '" role="button"><span class="kw-pill-text">' + esc(label) + '</span><button type="button" class="kw-pill-dismiss" aria-label="Entfernen"><i data-lucide="x" style="width:14px;height:14px;"></i></button></div>';
+      var focusDay = window.__kwSmartSuggestionFocusDay || weekPlanDay || (keys && keys[0]);
+      if (window.__kwSmartSuggestionFocusDay) window.__kwSmartSuggestionFocusDay = null;
+      var suggestions = typeof getSmartSuggestions === 'function' ? getSmartSuggestions(focusDay) : (cookbook || []).filter(function(c){ return c.providerId === providerId() && !dismissed[String(c.id)]; }).slice(0, 8);
+      strip.className = 'kw-cookbook-drag-strip kw-smart-suggestions-strip';
+      strip.innerHTML = suggestions.map(function(c){
+        var label = (c.dish || 'Gericht').substring(0, 14) + (c.dish && c.dish.length > 14 ? '…' : '');
+        var imgUrl = c.photoData || '';
+        var thumbStyle = imgUrl ? 'background-image:url(\'' + esc(imgUrl) + '\'); background-size:cover; background-position:center;' : 'background:linear-gradient(135deg,#e2e8f0,#cbd5e1);';
+        var badge = c._smartBadge ? '<span class="kw-suggestion-badge">' + esc(c._smartBadge) + '</span>' : '';
+        return '<div class="kw-suggestion-card kw-cookbook-drag-pill" draggable="true" data-cookbook-id="' + esc(String(c.id)) + '" role="button">' +
+          '<button type="button" class="kw-pill-dismiss kw-suggestion-dismiss" aria-label="Entfernen"><i data-lucide="x" style="width:12px;height:12px;"></i></button>' +
+          '<div class="kw-suggestion-thumb" style="' + thumbStyle + '"></div>' +
+          '<span class="kw-suggestion-sparkle">✨</span>' +
+          '<span class="kw-pill-text kw-suggestion-name">' + esc(label) + '</span>' + badge + '</div>';
       }).join('');
-      strip.querySelectorAll('.kw-cookbook-drag-pill').forEach(function(pill){
+      strip.querySelectorAll('.kw-suggestion-card').forEach(function(pill){
         var cookbookId = pill.getAttribute('data-cookbook-id');
         pill.ondragstart = function(e){
           e.dataTransfer.setData('text/plain', cookbookId);
@@ -21771,11 +21845,21 @@
           if(typeof haptic === 'function') haptic(6);
         };
         pill.ondragend = function(){ pill.classList.remove('dragging'); };
+        pill.onclick = function(e){
+          if(e.target.closest && e.target.closest('.kw-pill-dismiss')) return;
+          e.preventDefault();
+          if(typeof haptic === 'function') haptic(6);
+          var emptySlots = grid.querySelectorAll('.kw-slot-empty');
+          emptySlots.forEach(function(s){ s.classList.add('kw-slot-ghost-highlight'); });
+          setTimeout(function(){ emptySlots.forEach(function(s){ s.classList.remove('kw-slot-ghost-highlight'); }); }, 2500);
+        };
         var dismissBtn = pill.querySelector('.kw-pill-dismiss');
         if (dismissBtn) {
           dismissBtn.onclick = function(e){ e.preventDefault(); e.stopPropagation(); if(typeof haptic === 'function') haptic(6); dismissed[cookbookId] = true; pill.remove(); };
         }
       });
+      if(typeof lucide !== 'undefined' && lucide.createIcons) setTimeout(function(){ lucide.createIcons(); }, 50);
+      if(strip.scrollLeft !== undefined) strip.scrollLeft = 0;
     }
     grid.innerHTML = '';
     keys.forEach(function(key, dayIdx){
@@ -21880,6 +21964,27 @@
         weekActivateBar.style.display = 'none';
       }
     }
+    var emptyCta = document.getElementById('kwEmptyWeekTemplateCta');
+    if (emptyCta) {
+      var isEmpty = typeof isWeekEmpty === 'function' && isWeekEmpty(weekPlanKWIndex);
+      emptyCta.style.display = isEmpty ? 'flex' : 'none';
+    }
+    var btnKwSaveTemplate = document.getElementById('btnKwSaveTemplate');
+    if (btnKwSaveTemplate) btnKwSaveTemplate.onclick = function(){
+      if (typeof haptic === 'function') haptic(6);
+      var keys = getWeekDayKeys(weekPlanKWIndex);
+      var pid = typeof providerId === 'function' ? providerId() : '';
+      var hasAny = false;
+      keys.forEach(function(k){ if ((week[k] || []).filter(function(x){ return x.providerId === pid; }).length) hasAny = true; });
+      if (!hasAny) { if (typeof showToast === 'function') showToast('Zuerst Gerichte in die Woche eintragen'); return; }
+      var name = (typeof prompt === 'function' ? prompt('Name der Vorlage:', 'Meine Woche') : null) || 'Meine Woche';
+      if (!name.trim()) return;
+      var id = typeof saveCurrentWeekAsTemplate === 'function' ? saveCurrentWeekAsTemplate(name.trim()) : null;
+      if (id && typeof showToast === 'function') showToast('Vorlage gespeichert');
+      if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+    };
+    var btnKwLoadTemplate = document.getElementById('btnKwLoadTemplate');
+    if (btnKwLoadTemplate) btnKwLoadTemplate.onclick = function(){ if (typeof haptic === 'function') haptic(6); if (typeof openWeekTemplatesSheet === 'function') openWeekTemplatesSheet(); };
     var btnKwPdf = document.getElementById('btnKwPdf');
     var btnKwShare = document.getElementById('btnKwShare');
     var btnKwFindGap = document.getElementById('btnKwFindGap');
@@ -22410,6 +22515,57 @@
     if(boardWrap && boardWrap.style.display !== 'none'){ if(typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard(); } else { renderWeekPlan(); }
     renderProviderWeekPreview();
     toast((c.dish || 'Gericht') + ' ersetzt');
+  }
+
+  /** Wochen-Vorlagen: aktuelle KW speichern, Vorlage auf leere KW anwenden (alle Einträge als ENTWURF). */
+  function getWeekTemplates(){
+    try { return load(LS.weekTemplates, []); } catch(e){ return []; }
+  }
+  function saveCurrentWeekAsTemplate(name){
+    if(!name || !name.trim()) return null;
+    var keys = getWeekDayKeys(weekPlanKWIndex);
+    var pid = typeof providerId === 'function' ? providerId() : '';
+    var days = {};
+    for(var i = 0; i < 7; i++){
+      var dateKey = keys[i];
+      var arr = (week[dateKey] || []).filter(function(x){ return x.providerId === pid; });
+      days[i] = arr.map(function(e){ return { cookbookId: e.cookbookId, dish: e.dish, price: e.price }; });
+    }
+    var list = getWeekTemplates();
+    var id = (typeof cryptoId === 'function' ? cryptoId() : 'tpl-' + Date.now());
+    var tpl = { id: id, name: (name || 'Meine Woche').trim(), createdAt: Date.now(), days: days };
+    list.push(tpl);
+    save(LS.weekTemplates, list);
+    return id;
+  }
+  function applyTemplateToWeek(templateId, targetKWIndex){
+    var list = getWeekTemplates();
+    var tpl = list.find(function(t){ return t.id === templateId; });
+    if(!tpl || !tpl.days) return false;
+    var targetKeys = getWeekDayKeys(targetKWIndex);
+    var pid = typeof providerId === 'function' ? providerId() : '';
+    week = load(LS.week, {});
+    for(var dayIdx = 0; dayIdx < 7; dayIdx++){
+      var targetDate = targetKeys[dayIdx];
+      var entries = tpl.days[dayIdx] || [];
+      if(!week[targetDate]) week[targetDate] = [];
+      entries.forEach(function(e){
+        if(!e.cookbookId) return;
+        week[targetDate].push({ providerId: pid, cookbookId: e.cookbookId, dish: e.dish, price: e.price });
+      });
+    }
+    save(LS.week, week);
+    return true;
+  }
+  function isWeekEmpty(weekIndex){
+    var keys = getWeekDayKeys(weekIndex);
+    var pid = typeof providerId === 'function' ? providerId() : '';
+    var w = load(LS.week, {});
+    for(var i = 0; i < keys.length; i++){
+      var arr = (w[keys[i]] || []).filter(function(x){ return x.providerId === pid; });
+      if(arr.length > 0) return false;
+    }
+    return true;
   }
 
   /** Origin-View für Quick-Action: Nach Speichern im Sheet zurück zur Ursprungsansicht (Dashboard oder Wochenplan). */
