@@ -5237,13 +5237,41 @@
       #v-provider-week .kw-progress-wrap{ padding:0 20px 12px; }
       #v-provider-week .kw-progress{ height:4px; border-radius:999px; background:#e2e8f0; overflow:hidden; }
       #v-provider-week .kw-progress-fill{ height:100%; border-radius:999px; background:var(--prov-brand); transition:width 0.3s ease; }
-      #v-provider-week .kw-board-scroll{ flex:1; min-height:0; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; padding:20px 20px calc(160px + env(safe-area-inset-bottom, 0)); }
+      #v-provider-week .kw-season-banner{ transition:opacity 0.25s ease, transform 0.25s ease; }
+      #v-provider-week .kw-season-banner.kw-season-mint{ background:linear-gradient(135deg, rgba(167,243,208,0.5) 0%, rgba(110,231,183,0.35) 100%); color:#065f46; border:1px solid rgba(16,185,129,0.25); }
+      #v-provider-week .kw-season-banner.kw-season-mint .kw-season-banner-btn{ background:#10b981; color:#fff; }
+      #v-provider-week .kw-season-banner.kw-season-summer{ background:linear-gradient(135deg, rgba(253,230,138,0.5) 0%, rgba(251,191,36,0.35) 100%); color:#78350f; border:1px solid rgba(245,158,11,0.3); }
+      #v-provider-week .kw-season-banner.kw-season-summer .kw-season-banner-btn{ background:#f59e0b; color:#fff; }
+      #v-provider-week .kw-season-banner.kw-season-herbst{ background:linear-gradient(135deg, rgba(254,215,170,0.5) 0%, rgba(251,146,60,0.35) 100%); color:#7c2d12; border:1px solid rgba(234,88,12,0.25); }
+      #v-provider-week .kw-season-banner.kw-season-herbst .kw-season-banner-btn{ background:#ea580c; color:#fff; }
+      #v-provider-week .kw-season-banner.kw-season-winter{ background:linear-gradient(135deg, rgba(191,219,254,0.5) 0%, rgba(147,197,253,0.35) 100%); color:#1e3a8a; border:1px solid rgba(59,130,246,0.25); }
+      #v-provider-week .kw-season-banner.kw-season-winter .kw-season-banner-btn{ background:#3b82f6; color:#fff; }
+      #v-provider-week .kw-board-scroll{ flex:1; min-height:0; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; padding:20px 20px calc(160px + env(safe-area-inset-bottom, 0)); position:relative; }
+      #v-provider-week .kw-empty-week-template-cta{ display:flex; align-items:center; justify-content:center; }
+      #v-provider-week .kw-load-template-btn:active{ transform:scale(0.98); }
+      #v-provider-week .kw-grid.kw-template-apply .kw-day-card,
+      #v-provider-week .kw-grid.kw-grid-just-applied .kw-day-card{ animation: kwTemplateDayIn 0.5s ease-out forwards; opacity:0; }
+      #v-provider-week .kw-grid.kw-template-apply .kw-day-card:nth-child(1),
+      #v-provider-week .kw-grid.kw-grid-just-applied .kw-day-card:nth-child(1){ animation-delay:0.05s; }
+      #v-provider-week .kw-grid.kw-template-apply .kw-day-card:nth-child(2),
+      #v-provider-week .kw-grid.kw-grid-just-applied .kw-day-card:nth-child(2){ animation-delay:0.1s; }
+      #v-provider-week .kw-grid.kw-template-apply .kw-day-card:nth-child(3),
+      #v-provider-week .kw-grid.kw-grid-just-applied .kw-day-card:nth-child(3){ animation-delay:0.15s; }
+      #v-provider-week .kw-grid.kw-template-apply .kw-day-card:nth-child(4),
+      #v-provider-week .kw-grid.kw-grid-just-applied .kw-day-card:nth-child(4){ animation-delay:0.2s; }
+      #v-provider-week .kw-grid.kw-template-apply .kw-day-card:nth-child(5),
+      #v-provider-week .kw-grid.kw-grid-just-applied .kw-day-card:nth-child(5){ animation-delay:0.25s; }
+      #v-provider-week .kw-grid.kw-template-apply .kw-day-card:nth-child(6),
+      #v-provider-week .kw-grid.kw-grid-just-applied .kw-day-card:nth-child(6){ animation-delay:0.3s; }
+      #v-provider-week .kw-grid.kw-template-apply .kw-day-card:nth-child(7),
+      #v-provider-week .kw-grid.kw-grid-just-applied .kw-day-card:nth-child(7){ animation-delay:0.35s; }
+      @keyframes kwTemplateDayIn{ 0%{ opacity:0; transform:translateY(-8px); } 100%{ opacity:1; transform:translateY(0); } }
       #v-provider-week .kw-grid{ display:grid; grid-template-columns:repeat(7, 1fr); gap:10px; max-width:100%; width:100%; margin:0 auto; box-sizing:border-box; }
       @media (max-width:640px){
         /* Wochenplan Handy: Flex-Kette stabil halten, damit Struktur nicht zusammenbricht [cite: 2026-02-16] */
         #v-provider-week.view.active{ display:flex !important; flex-direction:column !important; min-height:100dvh; height:100dvh; max-height:100dvh; overflow:hidden !important; }
         #v-provider-week #kwBoardWrap{ flex:1; min-height:0; display:flex; flex-direction:column; overflow:hidden; max-width:100%; }
-        #v-provider-week .kw-board-scroll{ flex:1; min-height:0; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; padding:12px 16px calc(120px + env(safe-area-inset-bottom, 0)); padding-left:max(16px, env(safe-area-inset-left)); padding-right:max(16px, env(safe-area-inset-right)); }
+        #v-provider-week .kw-board-scroll{ flex:1; min-height:0; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; padding:12px 16px calc(120px + env(safe-area-inset-bottom, 0)); padding-left:max(16px, env(safe-area-inset-left)); padding-right:max(16px, env(safe-area-inset-right)); position:relative; }
         #v-provider-week .kw-grid{ grid-template-columns:1fr; gap:12px; width:100%; max-width:100%; padding:0; }
         #v-provider-week .kw-day-card{ width:100%; max-width:100%; box-sizing:border-box; min-width:0; padding:12px; }
         #v-provider-week .kw-slots{ min-width:0; width:100%; box-sizing:border-box; }
@@ -5257,6 +5285,15 @@
       #v-provider-week .kw-day-card.kw-day-has-live{ box-shadow:0 8px 32px rgba(0,0,0,0.06), 0 0 0 1px rgba(16,185,129,0.35); }
       #v-provider-week .kw-day-card.kw-day-card-highlight{ animation: kwDayCardGapPulse 2s ease-in-out; box-shadow:0 8px 32px rgba(0,0,0,0.08), 0 0 0 2px rgba(14,165,233,0.5), 0 0 24px rgba(14,165,233,0.25); }
       @keyframes kwDayCardGapPulse{ 0%, 100%{ box-shadow:0 8px 32px rgba(0,0,0,0.06), 0 0 0 1px rgba(14,165,233,0.3); } 50%{ box-shadow:0 8px 32px rgba(0,0,0,0.08), 0 0 0 3px rgba(14,165,233,0.6), 0 0 28px rgba(14,165,233,0.35); } }
+      #v-provider-week .kw-grid.kw-grid-just-applied .kw-day-card{ animation: kwTemplateApplyIn 0.5s ease-out backwards; }
+      #v-provider-week .kw-grid.kw-grid-just-applied .kw-day-card:nth-child(1){ animation-delay:0.05s; }
+      #v-provider-week .kw-grid.kw-grid-just-applied .kw-day-card:nth-child(2){ animation-delay:0.1s; }
+      #v-provider-week .kw-grid.kw-grid-just-applied .kw-day-card:nth-child(3){ animation-delay:0.15s; }
+      #v-provider-week .kw-grid.kw-grid-just-applied .kw-day-card:nth-child(4){ animation-delay:0.2s; }
+      #v-provider-week .kw-grid.kw-grid-just-applied .kw-day-card:nth-child(5){ animation-delay:0.25s; }
+      #v-provider-week .kw-grid.kw-grid-just-applied .kw-day-card:nth-child(6){ animation-delay:0.3s; }
+      #v-provider-week .kw-grid.kw-grid-just-applied .kw-day-card:nth-child(7){ animation-delay:0.35s; }
+      @keyframes kwTemplateApplyIn{ 0%{ opacity:0; transform:translateY(-8px); } 100%{ opacity:1; transform:translateY(0); } }
       #v-provider-week .kw-day-label{ font-size:11px; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:4px; }
       #v-provider-week .kw-day-date{ font-size:13px; font-weight:700; color:#1a1a1a; }
       #v-provider-week .kw-slots{ display:flex; flex-direction:column; gap:8px; flex:1; min-height:220px; max-height:220px; }
@@ -5321,6 +5358,11 @@
       .kw-move-day-btn{ width:100%; min-height:52px; padding:14px 16px; border-radius:16px; border:2px solid #e2e8f0; background:#f8fafc; font-size:15px; font-weight:700; color:#1a1a1a; cursor:pointer; text-align:left; }
       .kw-move-day-btn:active{ transform:scale(0.98); }
       .kw-move-cancel{ width:100%; min-height:52px; border-radius:16px; border:2px solid #f1f3f5; background:#fff; font-size:15px; font-weight:700; color:#64748b; cursor:pointer; }
+      /* Wochen-Vorlagen Bottom-Sheet: Glas */
+      .week-templates-sheet.active{ animation: weekTemplatesSlideUp 0.3s ease-out; }
+      @keyframes weekTemplatesSlideUp{ from{ transform:translateY(100%); opacity:0.8; } to{ transform:translateY(0); opacity:1; } }
+      .week-template-item:hover{ background:rgba(16,185,129,0.08); border-color:rgba(16,185,129,0.25); }
+      .week-template-item:active{ transform:scale(0.98); }
       /* Action-Bar (Drucken & Teilen) – schlank, Silicon-Valley-Style */
       #v-provider-week .kw-action-bar-fixed{ position:fixed; bottom:calc(64px + env(safe-area-inset-bottom, 20px)); left:20px; right:20px; margin:0 auto; max-width:400px; background:rgba(255,255,255,0.88); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border-radius:16px; padding:10px 12px; display:flex; align-items:center; gap:12px; z-index:998; box-shadow:0 4px 24px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.03); }
       #v-provider-week .kw-action-bar-fixed .btn{ min-height:44px; flex:1; min-width:0; border-radius:12px; font-size:14px; font-weight:600; letter-spacing:0.01em; display:inline-flex; align-items:center; justify-content:center; gap:8px; border:none; background:rgba(0,0,0,0.04); color:#1a1a1a; cursor:pointer; transition:background 0.2s, transform 0.15s; }
@@ -7523,6 +7565,7 @@
               <h1 class="prov-page-header-title" id="weekHeaderTitle">Wochenplan</h1>
               <p class="week-header-subtitle" id="weekHeaderSubtitle">Deine Woche · Gerichte planen</p>
             </div>
+            <span id="weekSeasonIcon" class="week-season-icon" style="display:none; margin-left:8px; font-size:18px; opacity:0.9;" title="Saison-Tipp" aria-hidden="true">✨</span>
           </div>
           <div class="week-header-actions" style="display:flex; align-items:center; gap:8px;">
             <button type="button" id="btnKwFindGap" title="Nächste Lücke finden" aria-label="Nächste Lücke finden" style="background:rgba(255,255,255,0.7); border:1px solid rgba(0,0,0,0.08); min-height:44px; padding:0 14px; border-radius:14px; display:flex; align-items:center; justify-content:center; gap:6px; color:#1a1a1a; font-size:13px; font-weight:700; cursor:pointer; white-space:nowrap;">
@@ -7548,6 +7591,10 @@
           <div class="kw-carousel" id="kwCarousel" role="tablist"></div>
           <div class="kw-progress-wrap">
             <div class="kw-progress"><div class="kw-progress-fill" id="kwProgressFill" style="width:0%;"></div></div>
+          </div>
+          <div id="kwSeasonBanner" class="kw-season-banner" style="display:none; margin:0 16px 10px; padding:12px 16px; border-radius:16px; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+            <span id="kwSeasonBannerText" class="kw-season-banner-text" style="font-size:14px; font-weight:700; color:inherit;"></span>
+            <button type="button" id="kwSeasonBannerApply" class="kw-season-banner-btn" style="flex-shrink:0; padding:8px 16px; border-radius:12px; border:none; font-size:13px; font-weight:800; cursor:pointer; white-space:nowrap;">Jetzt anwenden</button>
           </div>
           <div id="kwCookbookStripWrap" class="kw-cookbook-strip-wrap"></div>
           <div id="kwWeekActivateBar" class="kw-week-activate-bar" style="display:none;"><button type="button" id="btnKwWeekActivate" class="kw-week-activate-btn">Woche aktivieren (0 €)</button></div>
@@ -21581,6 +21628,16 @@
     var monday = new Date(today.getFullYear(), today.getMonth(), diff + (weekIndex * 7));
     return monday;
   }
+  /** Saison-Intelligenz: Liefert für die angewählte KW ein Saison-Objekt (für Banner + Icon), sonst null. */
+  function getSeasonForWeek(weekIndex){
+    var monday = getWeekMonday(weekIndex);
+    var month = monday.getMonth() + 1;
+    if (month >= 3 && month <= 5) return { id: 'fruehling', label: 'Frühling & Spargel', templateName: 'Frühling & Spargel', colorClass: 'kw-season-mint' };
+    if (month >= 6 && month <= 8) return { id: 'sommer', label: 'Sommer', templateName: 'Sommer', colorClass: 'kw-season-summer' };
+    if (month >= 9 && month <= 11) return { id: 'herbst', label: 'Herbst', templateName: 'Herbst', colorClass: 'kw-season-herbst' };
+    if (month === 12 || month <= 2) return { id: 'winter', label: 'Winter', templateName: 'Winter', colorClass: 'kw-season-winter' };
+    return null;
+  }
   function getISOWeek(d){
     d = new Date(d);
     d.setHours(0, 0, 0, 0);
@@ -21817,6 +21874,40 @@
     }
     var progress = getKWProgress(weekPlanKWIndex);
     if (progressFill) progressFill.style.width = (progress * 100) + '%';
+    var season = typeof getSeasonForWeek === 'function' ? getSeasonForWeek(weekPlanKWIndex) : null;
+    var seasonIcon = document.getElementById('weekSeasonIcon');
+    var seasonBanner = document.getElementById('kwSeasonBanner');
+    var seasonBannerText = document.getElementById('kwSeasonBannerText');
+    var seasonBannerApply = document.getElementById('kwSeasonBannerApply');
+    if (seasonIcon) seasonIcon.style.display = season ? 'inline-block' : 'none';
+    if (seasonBanner) {
+      if (season) {
+        seasonBanner.style.display = 'flex';
+        seasonBanner.className = 'kw-season-banner ' + (season.colorClass || '');
+        if (seasonBannerText) seasonBannerText.textContent = 'Saison-Tipp: Deine Vorlage \'' + (season.templateName || season.label) + '\' jetzt anwenden?';
+        if (seasonBannerApply) {
+          seasonBannerApply.onclick = function(){
+            if (typeof haptic === 'function') haptic(6);
+            var list = getWeekTemplates();
+            var search = (season.templateName || season.label || '').toLowerCase();
+            var tpl = list.find(function(t){ return (t.name || '').toLowerCase().indexOf(search) >= 0 || search.indexOf((t.name || '').toLowerCase()) >= 0; });
+            if (tpl && typeof applyTemplateToWeek === 'function') {
+              applyTemplateToWeek(tpl.id, weekPlanKWIndex);
+              if (typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard();
+              if (typeof renderProviderWeekPreview === 'function') renderProviderWeekPreview();
+              if (typeof showToast === 'function') showToast('Vorlage eingefügt');
+              var grid = document.getElementById('kwGrid');
+              if (grid) { grid.classList.add('kw-grid-just-applied'); setTimeout(function(){ grid.classList.remove('kw-grid-just-applied'); }, 800); }
+            } else if (typeof openWeekTemplatesSheet === 'function') {
+              openWeekTemplatesSheet();
+              if (list.length === 0 && typeof showToast === 'function') showToast('Speichere zuerst eine Woche als Vorlage (z. B. „' + (season.templateName || season.label) + '").');
+            }
+          };
+        }
+      } else {
+        seasonBanner.style.display = 'none';
+      }
+    }
     var keys = getWeekDayKeys(weekPlanKWIndex);
     var dayNames = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
     var p = (provider && provider.profile) ? provider.profile : {};
@@ -22581,6 +22672,91 @@
       if(arr.length > 0) return false;
     }
     return true;
+  }
+  var _weekTemplatePreviewId = null;
+  function openWeekTemplatesSheet(){
+    var bd = document.getElementById('weekTemplatesBd');
+    var sheet = document.getElementById('weekTemplatesSheet');
+    var list = document.getElementById('weekTemplatesList');
+    if (!bd || !sheet || !list) return;
+    var templates = getWeekTemplates();
+    list.innerHTML = '';
+    if (templates.length === 0) {
+      list.innerHTML = '<p style="margin:0; font-size:14px; color:#64748b;">Noch keine Vorlagen. Fülle eine Woche und speichere sie über 💾.</p>';
+    } else {
+      templates.forEach(function(t){
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'week-template-item';
+        btn.style.cssText = 'display:flex; align-items:center; justify-content:space-between; padding:14px 16px; border-radius:14px; border:1px solid rgba(0,0,0,0.08); background:rgba(255,255,255,0.8); text-align:left; cursor:pointer; font-size:15px; font-weight:700; color:#1a1a1a;';
+        btn.innerHTML = '<span>' + (typeof esc === 'function' ? esc(t.name || 'Vorlage') : (t.name || 'Vorlage')) + '</span><span style="font-size:12px; color:#64748b;">' + (t.days ? Object.keys(t.days).reduce(function(sum, i){ return sum + (t.days[i] && t.days[i].length ? t.days[i].length : 0); }, 0) : 0) + ' Gerichte</span>';
+        btn.onclick = function(){ if (typeof haptic === 'function') haptic(6); closeWeekTemplatesSheet(); showWeekTemplatePreview(t.id); };
+        list.appendChild(btn);
+      });
+    }
+    bd.style.display = 'block';
+    bd.classList.add('active');
+    sheet.style.display = 'flex';
+    sheet.classList.add('active');
+  }
+  function closeWeekTemplatesSheet(){
+    var bd = document.getElementById('weekTemplatesBd');
+    var sheet = document.getElementById('weekTemplatesSheet');
+    if (bd) { bd.style.display = 'none'; bd.classList.remove('active'); }
+    if (sheet) { sheet.style.display = 'none'; sheet.classList.remove('active'); }
+  }
+  function showWeekTemplatePreview(templateId){
+    var tpl = getWeekTemplates().find(function(t){ return t.id === templateId; });
+    if (!tpl) return;
+    _weekTemplatePreviewId = templateId;
+    var bd = document.getElementById('weekTemplatePreviewBd');
+    var sheet = document.getElementById('weekTemplatePreviewSheet');
+    var title = document.getElementById('weekTemplatePreviewTitle');
+    var daysEl = document.getElementById('weekTemplatePreviewDays');
+    var dayNames = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
+    if (bd) { bd.style.display = 'block'; bd.classList.add('active'); }
+    if (sheet) { sheet.style.display = 'flex'; sheet.classList.add('active'); }
+    if (title) title.textContent = tpl.name || 'Vorschau';
+    if (daysEl) {
+      daysEl.innerHTML = '';
+      for (var i = 0; i < 7; i++) {
+        var entries = (tpl.days && tpl.days[i]) ? tpl.days[i] : [];
+        var names = entries.map(function(e){ return e.dish || 'Gericht'; }).slice(0, 3).join(' · ') || '—';
+        var row = document.createElement('div');
+        row.style.cssText = 'padding:10px 12px; border-radius:12px; background:rgba(0,0,0,0.04); font-size:14px;';
+        row.innerHTML = '<strong>' + dayNames[i] + '</strong>: ' + names;
+        daysEl.appendChild(row);
+      }
+    }
+    var applyBtn = document.getElementById('weekTemplatePreviewApply');
+    if (applyBtn && !applyBtn._bound) {
+      applyBtn._bound = true;
+      applyBtn.onclick = function(){
+        if (typeof haptic === 'function') haptic(6);
+        if (_weekTemplatePreviewId && typeof applyTemplateToWeek === 'function') {
+          applyTemplateToWeek(_weekTemplatePreviewId, weekPlanKWIndex);
+          closeWeekTemplatePreview();
+          if (typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard();
+          var grid = document.getElementById('kwGrid');
+          if (grid) { grid.classList.add('kw-grid-just-applied'); setTimeout(function(){ grid.classList.remove('kw-grid-just-applied'); }, 800); }
+          if (typeof renderProviderWeekPreview === 'function') renderProviderWeekPreview();
+          if (typeof showToast === 'function') showToast('Vorlage eingefügt – alle Einträge als Entwurf');
+        }
+      };
+    }
+  }
+  function closeWeekTemplatePreview(){
+    _weekTemplatePreviewId = null;
+    var bd = document.getElementById('weekTemplatePreviewBd');
+    var sheet = document.getElementById('weekTemplatePreviewSheet');
+    if (bd) { bd.style.display = 'none'; bd.classList.remove('active'); }
+    if (sheet) { sheet.style.display = 'none'; sheet.classList.remove('active'); }
+  }
+  if (typeof window !== 'undefined') {
+    window.openWeekTemplatesSheet = openWeekTemplatesSheet;
+    window.closeWeekTemplatesSheet = closeWeekTemplatesSheet;
+    window.showWeekTemplatePreview = showWeekTemplatePreview;
+    window.closeWeekTemplatePreview = closeWeekTemplatePreview;
   }
 
   /** Origin-View für Quick-Action: Nach Speichern im Sheet zurück zur Ursprungsansicht (Dashboard oder Wochenplan). */
