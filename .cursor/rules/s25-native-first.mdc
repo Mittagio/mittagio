@@ -1,37 +1,52 @@
 ---
-description: Core Layout Rule – S25 Native-First; PWA wie eine native App, Scroll-Garantie, thumb-friendly, keine Code-Abkürzungen
+description: S25 Native-Look – High-End PWA wie native App; Cards, 60px Touch, flüssige Animationen, Edit-Mode, kein Schiefertafel-Look
 alwaysApply: true
 ---
 
-# Core Layout Rule: S25 Native-First
+# S25 Native-Look (High-End PWA)
 
-**Ziel:** Die App muss eine hochwertige PWA sein, die sich nativ anfühlt. Keine Listenform, sondern moderne App-Kacheln und Cards.
+**Ziel:** Die App muss sich auf dem Samsung S25 wie eine native App anfühlen. Strikte Einhaltung der folgenden Regeln.
 
-## Referenzgerät
+## Keine Listen-Optik
 
-- **Optimierung primär für Samsung S25 (Mobile First).** Das Layout muss exakt passen.
+- **Moderne Karten-Designs (Cards)** mit sanften Schatten und abgerundeten Ecken (**16px–24px**).
+- Keine flachen Listen oder Tabellen-Optik.
+
+## Mobile-First Interaktion
+
+- **Alle klickbaren Elemente mindestens 60px hoch** (Daumen-bedienbar).
+- Touch-Ziele thumb-friendly; saubere Abstände (`gap`, `padding`, `margin`).
+
+## Native Navigation & Animation
+
+- **Keine Standard-Browser-Scrollbars** sichtbar (native Scroll-Gesten, ggf. `-webkit-overflow-scrolling: touch`, overflow verstecken oder überschreiben).
+- **Animationen flüssig (60 FPS)** – `transform`/`opacity`, kein Layout-Thrashing.
+
+## Edit-Mode Logik
+
+- **Interaktion auf belegten Elementen** → direkt in den **Edit-Mode** (Schnellanpassung Preis/Bild).
+- **Leere Elemente** → **Auswahl-Flow** (z. B. Gericht/Kochbuch wählen).
+
+## Kein Schiefertafel-Look
+
+- Design **clean, modern, hochwertig** – passend zur Hardware des S25.
+- Keine retro-/Tafel-Ästhetik.
 
 ## Scroll-Garantie
 
-- **Vertikales Scrollen darf NIEMALS** durch `overflow: hidden` oder fixe `100vh` auf Hauptcontainern blockiert werden.
-- Scroll-Container müssen `overflow-y: auto` (oder `scroll`) nutzen und eine definierte Höhe haben (z. B. `flex: 1; min-height: 0`), nicht den gesamten Viewport mit `overflow: hidden` versperren.
+- Vertikales Scrollen darf **nicht** durch `overflow: hidden` oder fixe `100vh` auf Hauptcontainern blockiert werden.
+- Scroll-Container: `overflow-y: auto` mit definierter Höhe (z. B. `flex: 1; min-height: 0`).
 
-## Box-Model & Touch
+## Code
 
-- Alle **interaktiven Elemente** müssen **thumb-friendly** sein (groß genug für Daumen).
-- **Saubere Abstände (`gap`, `padding`, `margin`)** haben, um Überlappungen und versehentliche Klicks zu vermeiden.
-- Touch-Ziele mindestens 44×44px wo möglich.
-
-## Keine Flüchtigkeit
-
-- Code darf **niemals** mit `// ...` oder ähnlichen Abkürzungen abgekürzt werden.
-- Jede Änderung muss **im Kontext der gesamten Page-Stabilität** geprüft werden (kein Zerschießen von Layout, Scroll oder anderen Views).
+- Keine `// ...`-Abkürzungen; Änderungen stets auf Page-Stabilität prüfen.
 
 ## Kurzreferenz
 
 | Thema | Regel |
 |-------|--------|
-| Referenzgerät | Samsung S25, Mobile First |
-| Scroll | Kein `overflow: hidden` / blockierende 100vh auf Hauptcontainern |
-| Interaktion | Thumb-friendly, Abstände, keine Überlappung |
-| Code | Keine `// ...`-Abkürzungen; Änderungen stets auf Page-Stabilität prüfen |
+| Optik | Cards, 16–24px Radius, Schatten, keine Listen |
+| Touch | Min. 60px Höhe für Klickbares |
+| Scroll/Nav | Keine Standard-Scrollbars, 60 FPS |
+| Edit-Mode | Belegt = Edit, leer = Auswahl-Flow |
+| Look | Clean, modern, kein Schiefertafel |
