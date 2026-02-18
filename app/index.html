@@ -23650,6 +23650,10 @@
     function goProfileBack(){ showProviderProfileSub(null); }
     var backSettings = document.getElementById('providerProfileBackSettings');
     if(backSettings) backSettings.onclick = goProfileBack;
+    var backBusiness = document.getElementById('providerProfileBackBusiness');
+    if(backBusiness) backBusiness.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(typeof showProviderProfileSub === 'function') showProviderProfileSub('settings'); };
+    var backService = document.getElementById('providerProfileBackService');
+    if(backService) backService.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(typeof showProviderProfileSub === 'function') showProviderProfileSub('settings'); };
     var backFaq = document.getElementById('providerProfileBackFaq');
     if(backFaq) backFaq.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(typeof showProviderProfileSub === 'function') showProviderProfileSub('settings'); };
     var btnImpressum = document.getElementById('btnProviderImpressum');
@@ -23733,32 +23737,40 @@
       openSupportMail('Anfrage');
     };
     var btnProviderDeleteAccount = document.getElementById('btnProviderDeleteAccount');
-    if(btnProviderDeleteAccount){ btnProviderDeleteAccount.onclick = function(){ if(confirm('Account wirklich dauerhaft löschen? Diese Aktion kann nicht rückgängig gemacht werden.')) { showToast('Account-Löschung angefragt.'); } }; }
+    if(btnProviderDeleteAccount){ btnProviderDeleteAccount.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(confirm('Account wirklich dauerhaft löschen? Diese Aktion kann nicht rückgängig gemacht werden.')) { showToast('Account-Löschung angefragt.'); } }; }
+    // TGTG-Style: Zeilen-Klicks (Account verwalten) [cite: 2026-02-18]
+    document.querySelectorAll('.tgtg-row[data-tgtg]').forEach(function(row){
+      row.onclick = function(){
+        if(typeof haptic === 'function') haptic(6);
+        var t = row.getAttribute('data-tgtg');
+        if(t === 'business' && typeof showProviderProfileSub === 'function') showProviderProfileSub('business');
+        else if(t === 'service' && typeof showProviderProfileSub === 'function') showProviderProfileSub('service');
+        else if(t === 'payment'){ if(typeof showProviderProfileSub === 'function') showProviderProfileSub('payment'); }
+        else if(t === 'invite'){ if(typeof showToast === 'function') showToast('Erzähl es weiter – Funktion kommt bald.'); }
+        else if(t === 'faq' && typeof showProviderProfileSub === 'function') showProviderProfileSub('faq');
+      };
+    });
+    var btnTgtgBillingArchive = document.getElementById('btnTgtgBillingArchive');
+    if(btnTgtgBillingArchive) btnTgtgBillingArchive.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(typeof showProviderBilling === 'function') showProviderBilling(); };
+    // Was ist was? Accordion: 300ms, Haptic [cite: 2026-02-18]
+    document.querySelectorAll('.tgtg-accordion-trigger').forEach(function(trigger){
+      trigger.onclick = function(){
+        if(typeof haptic === 'function') haptic(6);
+        try { if(navigator.vibrate) navigator.vibrate(10); } catch(e){}
+        var item = trigger.closest('.tgtg-accordion-item');
+        if(!item) return;
+        var isOpen = item.classList.contains('open');
+        item.classList.toggle('open', !isOpen);
+        trigger.setAttribute('aria-expanded', !isOpen ? 'true' : 'false');
+      };
+    });
+    var btnProviderImpressum = document.getElementById('btnProviderImpressum');
+    var impressumContent = document.getElementById('providerImpressumContent');
+    if(btnProviderImpressum && impressumContent) btnProviderImpressum.onclick = function(){ if(typeof haptic === 'function') haptic(6); impressumContent.style.display = impressumContent.style.display === 'none' ? 'block' : 'none'; };
 
-    // Identity-Bereich auf der Einstellungsseite (Sub Settings)
-    var settingsLogo = document.getElementById('providerSettingsLogo');
-    var settingsLogoPlaceholder = document.getElementById('providerSettingsLogoPlaceholder');
-    var settingsLogoBtn = document.getElementById('providerSettingsLogoBtn');
+    // Identity: Name + Ort (TGTG dezent, ohne Logo-Box)
     var settingsName = document.getElementById('providerSettingsName');
     var settingsOrt = document.getElementById('providerSettingsOrt');
-    if(settingsLogo){
-      if(p.logoData){ settingsLogo.style.backgroundImage = `url('${esc(p.logoData)}')`; settingsLogo.style.backgroundColor = 'transparent'; if(settingsLogoPlaceholder) settingsLogoPlaceholder.style.display = 'none'; }
-      else { settingsLogo.style.backgroundImage = 'none'; settingsLogo.style.backgroundColor = '#f1f3f5'; if(settingsLogoPlaceholder){ settingsLogoPlaceholder.style.display = 'inline'; settingsLogoPlaceholder.textContent = '📷'; } }
-    }
-    if(settingsLogoBtn){
-      settingsLogoBtn.onclick = async function(){
-        if(typeof haptic === 'function') haptic(10);
-        var f = typeof pickImage === 'function' ? await pickImage() : null;
-        if(!f) return;
-        var dataUrl = typeof toDataUrl === 'function' ? await toDataUrl(f) : null;
-        if(!dataUrl) return;
-        if(!provider.profile) provider.profile = {};
-        provider.profile.logoData = dataUrl;
-        save(LS.provider, provider);
-        showToast('Logo gespeichert');
-        renderProviderProfile();
-      };
-    }
     if(settingsName) settingsName.textContent = name || 'Betriebsname';
     if(settingsOrt) settingsOrt.textContent = (p.city || (p.zip && p.city ? p.zip + ' ' + p.city : '') || addr || 'Ort').trim() || '—';
     var gearBtn = document.getElementById('providerProfileGearBtn');
