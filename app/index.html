@@ -7562,6 +7562,21 @@
       </div>
     </section>
 
+    <!-- Wochen-Vorlagen: Bottom-Sheet (Glas) + Vorschau-Overlay -->
+    <div class="backdrop" id="weekTemplatesBd" style="display:none; z-index:1190;" onclick="if(typeof closeWeekTemplatesSheet==='function') closeWeekTemplatesSheet();"></div>
+    <div id="weekTemplatesSheet" class="week-templates-sheet sheet" style="position:fixed; left:0; right:0; bottom:0; max-height:70vh; border-radius:24px 24px 0 0; background:rgba(255,255,255,0.92); backdrop-filter:blur(40px); -webkit-backdrop-filter:blur(40px); box-shadow:0 -8px 32px rgba(0,0,0,0.12); z-index:1191; display:none; flex-direction:column; overflow:hidden;">
+      <div class="week-templates-sheet-handle" style="width:40px; height:4px; background:rgba(0,0,0,0.12); border-radius:2px; margin:12px auto 8px;"></div>
+      <h3 style="margin:0 20px 12px; font-size:18px; font-weight:800; color:#0f172a;">Woche aus Vorlage füllen</h3>
+      <div id="weekTemplatesList" style="flex:1; overflow-y:auto; padding:0 20px 24px; display:flex; flex-direction:column; gap:10px;"></div>
+    </div>
+    <div class="backdrop" id="weekTemplatePreviewBd" style="display:none; z-index:1192;" onclick="if(typeof closeWeekTemplatePreview==='function') closeWeekTemplatePreview();"></div>
+    <div id="weekTemplatePreviewSheet" style="position:fixed; left:50%; top:50%; transform:translate(-50%,-50%); width:90%; max-width:360px; max-height:80vh; overflow:auto; background:rgba(255,255,255,0.96); backdrop-filter:blur(24px); border-radius:20px; padding:20px; box-shadow:0 12px 40px rgba(0,0,0,0.15); z-index:1193; display:none; flex-direction:column;">
+      <h3 id="weekTemplatePreviewTitle" style="margin:0 0 12px; font-size:17px; font-weight:800; color:#0f172a;">Vorschau</h3>
+      <div id="weekTemplatePreviewDays" style="display:flex; flex-direction:column; gap:8px; margin-bottom:16px;"></div>
+      <button type="button" id="weekTemplatePreviewApply" style="width:100%; min-height:52px; border-radius:16px; border:none; background:#10b981; color:#fff; font-size:16px; font-weight:800; cursor:pointer;">Anwenden</button>
+      <button type="button" class="btn secondary" style="width:100%; min-height:44px; margin-top:8px; border-radius:14px;" onclick="if(typeof closeWeekTemplatePreview==='function') closeWeekTemplatePreview();">Abbrechen</button>
+    </div>
+
     <!-- Kochbuch: MASTER-SPEC MagazinKochbuch – nur Titel + Pills, Magazin-Karte, Bar BEARBEITEN | WOCHENPLAN | AUSWÄHLEN -->
     <section class="view" id="v-provider-cookbook" style="background:linear-gradient(180deg, rgba(254,243,199,0.2) 0%, #F5F5F7 30%);">
       <header class="prov-page-header" id="v-provider-cookbook-header">
