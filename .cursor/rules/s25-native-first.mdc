@@ -1,0 +1,37 @@
+---
+description: Core Layout Rule – S25 Native-First; PWA wie eine native App, Scroll-Garantie, thumb-friendly, keine Code-Abkürzungen
+alwaysApply: true
+---
+
+# Core Layout Rule: S25 Native-First
+
+**Ziel:** Die App muss eine hochwertige PWA sein, die sich nativ anfühlt. Keine Listenform, sondern moderne App-Kacheln und Cards.
+
+## Referenzgerät
+
+- **Optimierung primär für Samsung S25 (Mobile First).** Das Layout muss exakt passen.
+
+## Scroll-Garantie
+
+- **Vertikales Scrollen darf NIEMALS** durch `overflow: hidden` oder fixe `100vh` auf Hauptcontainern blockiert werden.
+- Scroll-Container müssen `overflow-y: auto` (oder `scroll`) nutzen und eine definierte Höhe haben (z. B. `flex: 1; min-height: 0`), nicht den gesamten Viewport mit `overflow: hidden` versperren.
+
+## Box-Model & Touch
+
+- Alle **interaktiven Elemente** müssen **thumb-friendly** sein (groß genug für Daumen).
+- **Saubere Abstände (`gap`, `padding`, `margin`)** haben, um Überlappungen und versehentliche Klicks zu vermeiden.
+- Touch-Ziele mindestens 44×44px wo möglich.
+
+## Keine Flüchtigkeit
+
+- Code darf **niemals** mit `// ...` oder ähnlichen Abkürzungen abgekürzt werden.
+- Jede Änderung muss **im Kontext der gesamten Page-Stabilität** geprüft werden (kein Zerschießen von Layout, Scroll oder anderen Views).
+
+## Kurzreferenz
+
+| Thema | Regel |
+|-------|--------|
+| Referenzgerät | Samsung S25, Mobile First |
+| Scroll | Kein `overflow: hidden` / blockierende 100vh auf Hauptcontainern |
+| Interaktion | Thumb-friendly, Abstände, keine Überlappung |
+| Code | Keine `// ...`-Abkürzungen; Änderungen stets auf Page-Stabilität prüfen |

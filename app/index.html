@@ -161,6 +161,13 @@
     }
     body.provider-mode{ overflow-y:hidden; }
 
+    /* Interaktions-Schutz: Schnelle Taps ohne 300ms-Delay (touch-action: manipulation) [Stabilität] */
+    .navbtn, #providerNav .navbtn, .prov-card, .status-pill, .func-icon-btn, .power-bar-legend-trigger,
+    #v-provider-cookbook .cookbook-magazine-card, #v-provider-cookbook .cookbook-blitz-btn,
+    #wizard[data-flow="listing"] .inserat-power-bar .status-pill, #wizard[data-flow="listing"] .inserat-power-bar .func-icon-btn,
+    .inserat-btn-primary, .inserat-btn-secondary, .btn, button[type="button"].cust-chip,
+    .customer-nav .nav-item, .renner-speed-tile, .week-meal-card { touch-action: manipulation; }
+
     body:not(.provider-mode) #providerStatusIndicator,
     body:not(.provider-mode) #statusIndicatorDot { display: none !important; }
     a{color:inherit}
@@ -175,8 +182,9 @@
     body.provider-mode .app main, body.provider-mode #app main{ flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; }
 
     /* ========== NUR KUNDE (body:not(.provider-mode)) – keine Regel hier darf Anbieter betreffen ========== */
-    body:not(.provider-mode) .app, body:not(.provider-mode) #app{ min-height:100%; min-height:100dvh; }
-    body:not(.provider-mode) .app main, body:not(.provider-mode) #app main{ min-height:auto; overflow-y:visible; -webkit-overflow-scrolling:touch; }
+    body:not(.provider-mode) .app, body:not(.provider-mode) #app{ min-height:100%; min-height:100dvh; margin-top:0; padding-top:0; }
+    body:not(.provider-mode) .app main, body:not(.provider-mode) #app main{ min-height:auto; overflow-y:visible; -webkit-overflow-scrolling:touch; margin-top:0; }
+    body:not(.provider-mode) #v-discover.view.active{ margin-top:0; padding-top:0; min-height:100dvh; display:block !important; }
     .topbar{
       position:sticky; top:0; z-index:10;
       background:rgba(247,246,240,.92);
@@ -2552,6 +2560,7 @@
       background: rgba(0,0,0,0.06); color: #64748b; filter: grayscale(0.5);
     }
     .inserat-status-bar .status-pill:active { transform: scale(0.98); }
+    .inserat-status-bar .status-pill { flex-shrink: 0; }
     /* Listing-Flow: Unified – nur 🍴 🔄 Pills, Emerald wenn aktiv */
     #wizard[data-flow="listing"] .inserat-status-bar.inserat-unified-pills .status-pill {
       display: inline-flex; align-items: center; justify-content: center; gap: 8px;
@@ -2573,6 +2582,13 @@
     #wizard[data-flow="listing"] .inserat-power-bar .func-icon-btn { width: 44px; height: 44px; min-width: 44px; min-height: 44px; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; font-size: 20px; border: 2px solid rgba(0,0,0,0.08); background: rgba(248,250,252,0.8); transition: background 0.2s, color 0.2s, transform 0.1s cubic-bezier(0.4,0,0.2,1); cursor: pointer; -webkit-tap-highlight-color: transparent; }
     #wizard[data-flow="listing"] .inserat-power-bar .func-icon-btn.active { background: #fff; color: #059669; border-color: #10b981; box-shadow: 0 2px 12px rgba(16,185,129,0.35), 0 0 12px rgba(16,185,129,0.4); }
     #wizard[data-flow="listing"] .inserat-power-bar .func-icon-btn:active { transform: scale(0.9); }
+    /* Layout-Lock: Power-Bar feste Flex-Row unter dem Bild – Icons verschieben sich nie [Stabilität] */
+    .inserat-power-bar {
+      display: flex; align-items: center; flex-shrink: 0; flex-wrap: nowrap;
+    }
+    .inserat-power-bar .status-pill,
+    .inserat-power-bar .func-icon-btn,
+    .inserat-power-bar .power-bar-legend-trigger { flex-shrink: 0; }
     /* Power-Bar Icon-Only (S25): 44x44px Touch-Targets, space-between [cite: 2026-02-16] */
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-unified-pills {
       justify-content: space-between; padding-left: 16px; padding-right: 16px;
@@ -2598,6 +2614,23 @@
     #wizard[data-flow="listing"] .inserat-power-bar .status-pill:active { transform: scale(0.9); }
     #wizard[data-flow="listing"] .inserat-power-bar .power-bar-legend-trigger:hover,
     #wizard[data-flow="listing"] .inserat-power-bar .power-bar-legend-trigger:focus { color: #64748b; }
+    /* Power-Bar Soft-Shell [cite: 2026-02-18]: Keine grünen Boxen – hellgrau/transparent, ruhig */
+    #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell {
+      background: rgba(248,250,252,0.6); border-bottom: 1px solid rgba(0,0,0,0.04);
+      padding: 10px 16px; gap: 8px; flex-wrap: nowrap; justify-content: space-between;
+    }
+    #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .status-pill,
+    #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .func-icon-btn,
+    #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .power-bar-legend-trigger {
+      background: rgba(255,255,255,0.7); border: 1px solid rgba(0,0,0,0.06);
+      box-shadow: none; color: #64748b;
+    }
+    #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .status-pill.active,
+    #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .func-icon-btn.active {
+      background: rgba(255,255,255,0.95); border-color: rgba(16,185,129,0.35); color: #059669;
+      box-shadow: 0 1px 4px rgba(16,185,129,0.12);
+    }
+    #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .power-bar-legend-trigger { color: #94a3b8; }
     /* Info-Legende Bottom-Sheet: Aktiviert-Zustand */
     .info-legend-item.active { background: rgba(16,185,129,0.1) !important; border: 2px solid rgba(16,185,129,0.4); box-shadow: 0 2px 12px rgba(16,185,129,0.25), 0 0 0 1px rgba(16,185,129,0.15); }
     /* #psheet-CSS entfernt (Legacy) – InseratCard nur im #wizard [cite: 2026-02-18] */
@@ -2844,8 +2877,9 @@
       gap: 12px;
       min-width: 0;
     }
-    .prov-header-reset-trigger { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+    .prov-header-reset-trigger { cursor: pointer; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
     .prov-header-reset-trigger:active { opacity: 0.85; }
+    #v-provider-profile .provider-sub-header h1 { touch-action: manipulation; cursor: pointer; -webkit-tap-highlight-color: transparent; }
     /* Einheitlich: alle Anbieter-Header (Meine Küche, Abholungen, Wochenplan, Kochbuch) */
     .prov-page-header .prov-page-header-icon {
       width: 44px;
@@ -3523,21 +3557,31 @@
     body.provider-mode [id^="v-provider-"] { padding-top: 0 !important; margin-top: 0 !important; }
     body.provider-mode [id^="v-provider-"].view.active { padding-top: 0 !important; }
     
-    /* Discover Header - Sticky (Design-System: 60px, padding 12px 16px) */
+    /* Discover Header – ImmoScout-Style: gesamter Header sticky, ruhig, solider Hintergrund */
     .discover-header-sticky{
-      position:sticky; top:0; z-index:100;
+      position: sticky;
+      top: 0;
+      z-index: 100;
       min-height: 60px;
-      padding: 12px 16px;
-      padding-top: calc(12px + env(safe-area-inset-top, 0px));
-      background: var(--header-bg);
-      backdrop-filter: blur(var(--header-blur));
-      -webkit-backdrop-filter: blur(var(--header-blur));
-      border-bottom: var(--header-border);
-      box-shadow: 0 2px 8px rgba(0,0,0,.04);
+      padding: 0;
+      padding-top: env(safe-area-inset-top, 0);
+      background: #fff;
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
       box-sizing: border-box;
       display: flex;
       flex-direction: column;
-      justify-content: center;
+      justify-content: flex-start;
+    }
+    #v-discover .discover-header-top-row{
+      flex-shrink: 0;
+      padding: 12px 16px;
+      padding-top: calc(12px + env(safe-area-inset-top, 0px));
+    }
+    #v-discover .discover-filter-sticky{
+      background: #fff !important;
+      border-bottom: none;
+      flex-shrink: 0;
     }
     /* Scroll-Fade: Standort-Text ausblenden ab 50px Scroll – mehr Platz für Filter-Pills */
     #v-discover .discover-header-sticky.scrolled #discoverCurrentLocation{
@@ -3739,29 +3783,64 @@
     .discover-filter-sticky{
       overflow-x:visible; min-width:0; width:100%; box-sizing:border-box;
     }
-    /* Pills: zuverlaessig horizontal scrollbar (links/rechts) */
+    /* Pills: ImmoScout-Style – ruhig, dünne Rahmen, kleine Schrift, Grau inaktiv / Gelb aktiv */
     #v-discover .discover-header-pills{
-      display:flex; gap:10px; overflow-x:auto; overflow-y:hidden;
-      -webkit-overflow-scrolling:touch; scroll-snap-type:x mandatory;
-      padding:8px var(--header-padding-x) 12px; padding-bottom:14px;
-      scrollbar-width:none; min-width:0; max-width:100%; width:100%; box-sizing:border-box;
-      white-space:nowrap;
-      touch-action:pan-x;
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      -webkit-overflow-scrolling: touch;
+      scroll-snap-type: x mandatory;
+      padding: 8px var(--header-padding-x, 16px) 10px;
+      scrollbar-width: none;
+      min-width: 0;
+      max-width: 100%;
+      width: 100%;
+      box-sizing: border-box;
+      white-space: nowrap;
+      touch-action: pan-x;
     }
-    #v-discover .discover-header-pills::-webkit-scrollbar{ display:none; }
+    #v-discover .discover-header-pills::-webkit-scrollbar{ display: none; }
     #v-discover .discover-header-pills .discover-category-chip{
-      flex:0 0 auto; scroll-snap-align:center; min-height: var(--pill-min-height); min-width:auto;
-      background: var(--pill-bg-inactive); color: var(--pill-color-inactive); border:none; padding:10px 18px; border-radius: var(--pill-radius); font-size: var(--pill-font-size); font-weight: var(--pill-font-weight);
-      cursor:pointer; transition:transform 0.15s, background 0.2s; -webkit-tap-highlight-color:transparent;
+      flex: 0 0 auto;
+      scroll-snap-align: center;
+      min-height: 36px;
+      min-width: auto;
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600;
+      border: 1px solid rgba(0,0,0,0.08);
+      background: #f1f3f5;
+      color: #64748b;
+      cursor: pointer;
+      transition: transform 0.15s, background 0.2s, border-color 0.2s, color 0.2s;
+      -webkit-tap-highlight-color: transparent;
     }
-    #v-discover .discover-header-pills .discover-category-chip:active{ transform:scale(0.96); }
+    #v-discover .discover-header-pills .discover-category-chip:active{ transform: scale(0.96); }
     #v-discover .discover-header-pills .discover-category-chip.active{
-      background: var(--pill-active-emerald); color:#fff; box-shadow:0 2px 12px rgba(37,99,235,0.4);
+      background: #FFD700;
+      color: #1a1a1a;
+      border-color: rgba(255,215,0,0.6);
+      box-shadow: 0 1px 4px rgba(255,215,0,0.25);
     }
-    #v-discover #discoverDaysBar{ display:flex; gap:8px; overflow-x:auto; overflow-y:hidden; -webkit-overflow-scrolling:touch; padding:0 var(--header-padding-x) 4px; scrollbar-width:none; min-width:0; max-width:100%; width:100%; box-sizing:border-box; white-space:nowrap; touch-action:pan-x; }
+    #v-discover #discoverDaysBar{ display:flex; gap:8px; overflow-x:auto; overflow-y:hidden; -webkit-overflow-scrolling:touch; padding:6px var(--header-padding-x, 16px) 10px; scrollbar-width:none; min-width:0; max-width:100%; width:100%; box-sizing:border-box; white-space:nowrap; touch-action:pan-x; }
     #v-discover #discoverDaysBar::-webkit-scrollbar{ display:none; }
-    #v-discover #discoverDaysBar .cust-chip{ min-height: var(--pill-min-height); min-width:65px; width:65px; padding:10px 8px; font-size: var(--font-meta-sm, 13px); border-radius:20px; flex:0 0 65px; box-sizing:border-box; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    #v-discover #discoverDaysBar .cust-chip{ min-height:36px; min-width:60px; width:60px; padding:8px 6px; font-size:12px; font-weight:600; border-radius:999px; flex:0 0 60px; box-sizing:border-box; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; border:1px solid rgba(0,0,0,0.08); background:#f1f3f5; color:#64748b; transition:background 0.2s, color 0.2s, border-color 0.2s; }
+    #v-discover #discoverDaysBar .cust-chip.active{ background:#FFD700; color:#1a1a1a; border-color:rgba(255,215,0,0.6); box-shadow:0 1px 4px rgba(255,215,0,0.25); }
     #v-discover .discover-offers-list{ width:100%; max-width:100%; margin:0; padding:0 0 8px; box-sizing:border-box; }
+    /* ImmoScout-Style: Content startet exakt unter dem Sticky-Header – kein Abschneiden der ersten Karte */
+    body:not(.provider-mode) #v-discover .discover-main{
+      padding-top: 12px;
+      padding-left: 16px;
+      padding-right: 16px;
+      padding-bottom: calc(88px + env(safe-area-inset-bottom, 0));
+      min-height: 0;
+    }
+    body:not(.provider-mode) #v-discover .discover-main .discover-offers-list,
+    body:not(.provider-mode) #v-discover #discoverOffers{
+      scroll-margin-top: 1px;
+    }
     #v-discover .cust-card{ width:100%; margin:0 auto 12px; -webkit-tap-highlight-color:transparent; transition:transform 0.15s, box-shadow 0.2s; box-sizing:border-box; }
     #v-discover .cust-card:active{ transform:scale(0.99); box-shadow:0 2px 12px rgba(0,0,0,0.06); }
     #v-discover .discover-tiles-grid .cust-card .cust-card-body{ display:flex; flex-direction:column; }
@@ -4424,7 +4503,7 @@
     /* Discover (Kunde): Kacheln für Samsung S25 (~384–412px) – Handy-Anpassung */
     @media (max-width: 430px) {
       body:not(.provider-mode) #v-discover .discover-main {
-        padding: 14px 12px;
+        padding: 12px 12px;
         padding-bottom: calc(88px + env(safe-area-inset-bottom, 0));
       }
       body:not(.provider-mode) #discoverOffers.discover-offers-list {
@@ -5320,13 +5399,16 @@
       #v-provider-profile .provider-profile-row-app.provider-profile-row-last{ border-bottom:none; }
       #v-provider-profile .provider-profile-row i[data-lucide]{ width:20px !important; height:20px !important; }
       #v-provider-profile .provider-profile-logout-btn:active{ transform:scale(0.98); opacity:0.9; }
-      #v-provider-profile .provider-profile-sub{ flex:1; min-height:0; overflow:hidden; }
-      #v-provider-profile .provider-profile-sub > div[style*="overflow-y:auto"]{ flex:1; min-height:0; padding-bottom:calc(24px + env(safe-area-inset-bottom, 0)); }
-      #v-provider-profile .provider-profile-sub{ background:#F2F2F7 !important; }
+      /* S25 Native-First: flüssiges flex-column, Scroll nicht blockieren [cite: s25-native-first] */
+      #v-provider-profile .provider-profile-sub{ flex:1; min-height:0; display:flex; flex-direction:column; background:#F9FAFB !important; }
+      #v-provider-profile .provider-profile-sub > .tgtg-list-wrap,
+      #v-provider-profile .provider-profile-sub > div[style*="overflow-y:auto"]{ flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:20px; padding-bottom:calc(120px + env(safe-area-inset-bottom, 0)); box-sizing:border-box; }
+      #v-provider-profile .provider-profile-sub .provider-sub-scroll{ flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:20px; padding-bottom:calc(120px + env(safe-area-inset-bottom, 0)); box-sizing:border-box; }
       #v-provider-profile #providerProfileMenuCard{ background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,0.06); }
       /* Einstellungen (Zahnrad): wie Kundenseite – Clean Card & Spacing */
       #v-provider-profile .provider-profile-sub .provider-settings-scroll{ padding:40px 16px calc(100px + env(safe-area-inset-bottom, 0)); display:flex; flex-direction:column; gap:20px; max-width:500px; margin:0 auto; width:100%; box-sizing:border-box; }
-      #v-provider-profile .provider-settings-card{ background:#fff; border-radius:24px; overflow:hidden; border:1px solid rgba(0,0,0,0.04); box-shadow:0 8px 24px rgba(0,0,0,0.03); margin-bottom:0; }
+      /* Einstellungen: Clean-Look Cards – weiß, dezent Schatten, keine Schiefertafel [cite: s25-native-first] */
+      #v-provider-profile .provider-settings-card{ background:#fff; border-radius:16px; overflow:hidden; border:1px solid rgba(0,0,0,0.04); box-shadow:0 2px 12px rgba(0,0,0,0.06); margin-bottom:0; }
       #v-provider-profile .provider-settings-identity .plogo{ width:100% !important; height:100% !important; border-radius:18px !important; }
       #v-provider-profile #providerSettingsLogoBtn{ transition:border-color 0.2s, background 0.2s; }
       #v-provider-profile #providerSettingsLogoBtn:hover{ border-color:#94a3b8; }
@@ -5385,18 +5467,18 @@
       .provider-settings-accordion-content-inner{ overflow:hidden; }
       .provider-settings-accordion-content-inner > *{ padding:0 20px 20px; }
 
-      /* Account verwalten: TGTG Flat-List – keine Cards, einheitlich #F9FAFB, Inset-Dividers [cite: 2026-02-18] */
-      #v-provider-profile .tgtg-list-wrap{ background:#F9FAFB; flex:1; overflow-y:auto; padding:0 0 calc(100px + env(safe-area-inset-bottom)); }
-      #v-provider-profile .tgtg-list{ background:#fff; margin:0; border-radius:0; border:none; box-shadow:none; overflow:hidden; }
-      #v-provider-profile .tgtg-section-title{ font-size:11px; font-weight:800; letter-spacing:0.06em; color:#64748b; text-transform:uppercase; margin:0 16px 12px; padding:0 4px; }
-      #v-provider-profile .tgtg-row{ position:relative; display:flex; align-items:center; gap:12px; width:100%; min-height:52px; padding:14px 16px; background:#fff; border:none; font-size:16px; font-weight:700; color:#1a1a1a; cursor:pointer; text-align:left; font-family:inherit; transition:background 0.2s; -webkit-tap-highlight-color:transparent; }
-      #v-provider-profile .tgtg-row::after{ content:''; position:absolute; left:16px; right:16px; bottom:0; height:1px; background:#E5E7EB; }
+      /* Account verwalten: S25 Native-First – flex-column, gap 16px, padding 20px, Clean Cards [cite: s25-native-first] */
+      #v-provider-profile .tgtg-list-wrap{ background:#F9FAFB; flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:20px; padding-bottom:calc(120px + env(safe-area-inset-bottom, 0)); display:flex; flex-direction:column; gap:16px; box-sizing:border-box; }
+      #v-provider-profile .tgtg-list{ background:#fff; margin:0; border-radius:16px; border:1px solid rgba(0,0,0,0.04); box-shadow:0 2px 12px rgba(0,0,0,0.06); overflow:hidden; }
+      #v-provider-profile .tgtg-section-title{ font-size:11px; font-weight:800; letter-spacing:0.06em; color:#64748b; text-transform:uppercase; margin:0 0 4px; padding:0 4px; }
+      #v-provider-profile .tgtg-row{ position:relative; display:flex; align-items:center; gap:12px; width:100%; min-height:56px; padding:16px 20px; background:#fff; border:none; font-size:16px; font-weight:700; color:#1a1a1a; cursor:pointer; text-align:left; font-family:inherit; transition:background 0.2s; -webkit-tap-highlight-color:transparent; }
+      #v-provider-profile .tgtg-row::after{ content:''; position:absolute; left:20px; right:20px; bottom:0; height:1px; background:#f1f3f5; }
       #v-provider-profile .tgtg-row:last-child::after{ display:none; }
       #v-provider-profile .tgtg-row:active{ background:#f8fafc; }
       #v-provider-profile .tgtg-row .tgtg-icon{ font-size:20px; flex-shrink:0; width:28px; text-align:center; }
       #v-provider-profile .tgtg-row .tgtg-label{ flex:1; min-width:0; }
       #v-provider-profile .tgtg-row .tgtg-chevron{ width:20px; height:20px; color:#94a3b8; flex-shrink:0; }
-      #v-provider-profile .tgtg-identity{ padding:16px 20px 20px; text-align:center; background:transparent; }
+      #v-provider-profile .tgtg-identity{ padding:0 4px 8px; text-align:center; background:transparent; }
       #v-provider-profile .tgtg-identity-name{ margin:0; font-size:17px; font-weight:800; color:#1a1a1a; letter-spacing:-0.02em; }
       #v-provider-profile .tgtg-identity-ort{ margin:4px 0 0; font-size:14px; color:#64748b; }
       /* FOLGE UNS: SVG-Icons Grün, Subtitle [cite: 2026-02-18] */
@@ -5419,18 +5501,18 @@
       #v-provider-profile .tgtg-accordion-body{ padding:0 16px 16px; font-size:14px; line-height:1.5; color:#475569; opacity:0; transition:opacity 300ms cubic-bezier(0.4, 0, 0.2, 1); }
       #v-provider-profile .tgtg-accordion-item.open .tgtg-accordion-body{ opacity:1; }
       
-      /* Account verwalten: Mobile Layout & Header-Zentrierung [cite: 2026-02-18] */
+      /* Account verwalten: S25 Mobile – padding 20px, padding-bottom für Nav [cite: s25-native-first] */
       @media (max-width:600px){
-        #v-provider-profile .provider-profile-sub{ width:100% !important; max-width:100% !important; box-sizing:border-box; overflow-x:hidden; }
-        #v-provider-profile .tgtg-list-wrap{ padding:0 20px calc(100px + env(safe-area-inset-bottom)); width:100%; box-sizing:border-box; }
-        #v-provider-profile .provider-sub-header{ padding-left:16px; padding-right:16px; }
+        #v-provider-profile .provider-profile-sub{ width:100% !important; max-width:100% !important; box-sizing:border-box; }
+        #v-provider-profile .tgtg-list-wrap{ padding:20px; padding-bottom:calc(120px + env(safe-area-inset-bottom, 0)); width:100%; box-sizing:border-box; }
+        #v-provider-profile .provider-sub-header{ padding-left:20px; padding-right:20px; }
         #v-provider-profile .provider-sub-header h1{ flex:1; text-align:center; margin:0; min-width:0; }
-        #v-provider-profile .provider-profile-content-rebuild{ padding:20px; padding-left:20px; padding-right:20px; width:100%; max-width:100%; }
+        #v-provider-profile .provider-profile-content-rebuild{ padding:20px; width:100%; max-width:100%; box-sizing:border-box; }
       }
       
-      /* Account verwalten: Sticky-Bottom Abmelden-Button [cite: 2026-02-18] */
-      #v-provider-profile .provider-settings-sticky-footer{ position:sticky; bottom:0; left:0; right:0; padding:16px 20px; padding-bottom:calc(16px + env(safe-area-inset-bottom)); background:rgba(249,250,251,0.9); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border-top:1px solid #E5E7EB; display:flex; justify-content:center; z-index:10; flex-shrink:0; }
-      #v-provider-profile .provider-settings-sticky-footer .provider-footer-delete{ display:block; width:100%; max-width:400px; margin:0; }
+      /* Account verwalten: Sticky-Bottom Abmelden – S25: Abstand oben, Safe-Area unten [cite: s25-native-first] */
+      #v-provider-profile .provider-settings-sticky-footer{ position:sticky; bottom:0; left:0; right:0; padding:16px 20px; padding-bottom:calc(16px + env(safe-area-inset-bottom)); background:rgba(255,255,255,0.95); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border-top:1px solid rgba(0,0,0,0.06); display:flex; justify-content:center; z-index:10; flex-shrink:0; }
+      #v-provider-profile .provider-settings-sticky-footer .provider-footer-delete{ display:block; width:100%; max-width:400px; margin:0; min-height:52px; border-radius:14px; }
       
       /* Provider Bottom Nav: Safe-Area, Touch 48px */
       #providerNav{
@@ -6211,12 +6293,13 @@
       color: var(--brand);
     }
 
-    /* 3 Pillars in Card – kreisförmige Standard-Icons (Grün, Petrol, Gelb) direkt unter dem Bild */
+    /* 3 Pillars in Card – kreisförmige Standard-Icons (Grün, Petrol, Gelb) direkt unter dem Bild; Layout-Lock [Stabilität] */
     .card-pillars {
       display: flex;
       gap: 12px;
       margin-top: 12px;
       align-items: center;
+      flex-shrink: 0;
     }
     .pillar-mini {
       width: 32px;
@@ -6229,6 +6312,7 @@
       background: #f1f3f5;
       opacity: 0.45;
       filter: grayscale(1);
+      flex-shrink: 0;
     }
     .pillar-mini.active { opacity: 1; filter: grayscale(0); }
     .pillar-mini.active.green { background: rgba(39, 174, 96, 0.2); color: #27AE60; }
@@ -7864,7 +7948,7 @@
           </button>
           <h1 style="margin:0; font-size:18px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a;">Betriebsdaten</h1>
         </header>
-        <div style="padding:20px; flex:1; overflow-y:auto; max-width:500px; margin:0 auto; width:100%; box-sizing:border-box;">
+        <div class="provider-sub-scroll" style="padding:20px; padding-bottom:calc(120px + env(safe-area-inset-bottom, 0)); flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; max-width:500px; margin:0 auto; width:100%; box-sizing:border-box; display:flex; flex-direction:column; gap:16px;">
           <div id="providerBusinessDataCardSlot"></div>
         </div>
       </div>
@@ -7877,7 +7961,7 @@
           </button>
           <h1 style="margin:0; font-size:18px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a;">Inseratseinstellungen</h1>
         </header>
-        <div style="padding:20px; flex:1; overflow-y:auto; max-width:500px; margin:0 auto; width:100%; box-sizing:border-box;">
+        <div class="provider-sub-scroll" style="padding:20px; padding-bottom:calc(120px + env(safe-area-inset-bottom, 0)); flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; max-width:500px; margin:0 auto; width:100%; box-sizing:border-box; display:flex; flex-direction:column; gap:16px;">
           <div class="provider-mittagszeiten-inner" style="margin-bottom:24px;">
             <p style="margin:0 0 16px; font-size:14px; color:#64748b; line-height:1.5;">Standard-Zeitfenster für neue Inserate (15-Minuten-Schritte).</p>
             <button type="button" id="providerSettingsTimeTrigger" class="provider-time-trigger time-picker-display" style="display:block; width:100%; border:none; cursor:pointer; font-family:inherit;">
@@ -11094,11 +11178,6 @@
           showView(lastView);
           var navGo = (lastView === 'v-provider-home') ? 'provider-home' : (lastView === 'v-provider-pickups') ? 'provider-pickups' : (lastView === 'v-provider-week') ? 'provider-week' : (lastView === 'v-provider-cookbook') ? 'provider-cookbook' : (lastView === 'v-provider-profile' || lastView === 'v-provider-billing') ? 'provider-profile' : 'provider-home';
           setProviderNavActive(navGo);
-          if(lastView === 'v-provider-home'){
-            var homeEl = document.getElementById('v-provider-home');
-            var wrapEl = homeEl && homeEl.querySelector('.dashboard-floating-wrap');
-            if(wrapEl && wrapEl.scrollTop) wrapEl.scrollTop = 0;
-          }
           requestAnimationFrame(function(){
             if(lastView === 'v-provider-home') renderProviderHome();
             else if(lastView === 'v-provider-pickups') renderProviderPickups();
@@ -11106,11 +11185,13 @@
             else if(lastView === 'v-provider-cookbook') renderCookbook();
             else if(lastView === 'v-provider-profile') renderProviderProfile();
             else if(lastView === 'v-provider-billing') renderBilling();
-            if(lastView === 'v-provider-home'){
-              var h = document.getElementById('v-provider-home');
-              var w = h && h.querySelector('.dashboard-floating-wrap');
-              if(w && w.scrollTop) w.scrollTop = 0;
-            }
+            var scrollEl = getScrollElForView ? getScrollElForView(lastView) : null;
+            var savedScroll = null;
+            try { savedScroll = sessionStorage.getItem(RESTORE_SCROLL_KEY + '_' + lastView); } catch(s){}
+            if(scrollEl && savedScroll !== null && savedScroll !== '' && !isNaN(parseInt(savedScroll,10))){
+              scrollEl.scrollTop = parseInt(savedScroll,10);
+              try { sessionStorage.removeItem(RESTORE_SCROLL_KEY + '_' + lastView); } catch(r){}
+            } else if(lastView === 'v-provider-home' && scrollEl && scrollEl.scrollTop) scrollEl.scrollTop = 0;
             if(typeof lucide !== 'undefined') lucide.createIcons();
           });
         } else {
@@ -15832,7 +15913,7 @@
         pushViewState(null, location.pathname);
         return;
       } else if(currentView.id === 'v-provider-onboarding-signup'){
-        showOnboardingFirstDish(!!onboardingDraftDish);
+        showOnboardingEntry(!!onboardingDraftDish);
         e.preventDefault();
         pushViewState(null, location.pathname);
         return;
@@ -18596,7 +18677,7 @@
         if(provider && provider.loggedIn){
           if(typeof startListingFlow === 'function') startListingFlow({ entryPoint: 'dashboard', entryDishName: (onboardingDraftDish && onboardingDraftDish.dishName) ? onboardingDraftDish.dishName : undefined });
         } else {
-          showOnboardingFirstDish(true);
+          showOnboardingSignup();
         }
       };
       if(btnDiscard) btnDiscard.onclick = () => {
@@ -18607,267 +18688,11 @@
     }
   }
   
-  function showOnboardingFirstDish(prefill = false){
-    showView(views.providerOnboardingFirstDish);
-    
-    // Push state for browser back button
-    pushViewState({onboarding: 'first-dish'}, location.pathname);
-    
-    if(prefill && onboardingDraftDish){
-      const dishName = document.getElementById('onboardingDishName');
-      const timeStart = document.getElementById('onboardingPickupTimeStart');
-      const timeEnd = document.getElementById('onboardingPickupTimeEnd');
-      const photoPreview = document.getElementById('onboardingPhotoPreview');
-      const photoPreviewImg = document.getElementById('onboardingPhotoPreviewImg');
-      
-      if(dishName) dishName.value = onboardingDraftDish.dishName || '';
-      if(timeStart) timeStart.value = onboardingDraftDish.pickupTimeStart || '';
-      if(timeEnd) timeEnd.value = onboardingDraftDish.pickupTimeEnd || '';
-      if(onboardingDraftDish.photoData && photoPreview && photoPreviewImg){
-        photoPreview.style.display = 'block';
-        photoPreviewImg.src = onboardingDraftDish.photoData;
-      }
-    }
-    
-    // Photo upload handler (recreate each time to avoid duplicates)
-    const existingInput = document.getElementById('onboardingPhotoInput');
-    if(existingInput) existingInput.remove();
-    
-    const photoInput = document.createElement('input');
-    photoInput.id = 'onboardingPhotoInput';
-    photoInput.type = 'file';
-    photoInput.accept = 'image/*';
-    photoInput.style.display = 'none';
-    document.body.appendChild(photoInput);
-    
-    // Profi-Galerie System
-    const foodLibrary = {
-      klassiker: [
-        {id: 'schnitzel', name: 'Schnitzel', url: 'https://images.unsplash.com/photo-1562967914-608f82629710?auto=format&fit=crop&w=800&q=80', allergens: ['Gluten', 'Ei']},
-        {id: 'bratwurst', name: 'Bratwurst', url: 'https://images.unsplash.com/photo-1528607929212-2636ec44253e?auto=format&fit=crop&w=800&q=80', allergens: ['Gluten']},
-        {id: 'roulade', name: 'Roulade', url: 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&w=800&q=80', allergens: ['Gluten']}
-      ],
-      deftig: [
-        {id: 'gulasch', name: 'Gulasch', url: 'https://images.unsplash.com/photo-1563379091339-03246963d19c?auto=format&fit=crop&w=800&q=80', allergens: []},
-        {id: 'braten', name: 'Braten', url: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80', allergens: []},
-        {id: 'kassler', name: 'Kassler', url: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80', allergens: []}
-      ],
-      eintoepfe: [
-        {id: 'linsensuppe', name: 'Linsensuppe', url: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&w=800&q=80', allergens: []},
-        {id: 'erbsensuppe', name: 'Erbsensuppe', url: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&w=800&q=80', allergens: []},
-        {id: 'kartoffelsuppe', name: 'Kartoffelsuppe', url: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&w=800&q=80', allergens: []}
-      ],
-      modern: [
-        {id: 'bowl', name: 'Bowl', url: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=800&q=80', allergens: []},
-        {id: 'wrap', name: 'Wrap', url: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?auto=format&fit=crop&w=800&q=80', allergens: ['Gluten']},
-        {id: 'salat', name: 'Salat', url: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=800&q=80', allergens: []}
-      ]
-    };
-    
-    let selectedProPhoto = null;
-    let recentProPhotos = JSON.parse(localStorage.getItem('mittagio_recent_pro_photos') || '[]');
-    
-    // Profi-Galerie Funktionen (global, damit onclick funktioniert)
-    window.openProPhotoGallery = function(){
-      const proPhotoBd = document.getElementById('proPhotoBd');
-      const proPhotoSheet = document.getElementById('proPhotoSheet');
-      if(proPhotoBd) proPhotoBd.style.display = 'block';
-      if(proPhotoSheet) proPhotoSheet.style.display = 'flex';
-      window.renderProPhotoGallery('all');
-    };
-    
-    window.closeProPhotoGallery = function(){
-      const proPhotoBd = document.getElementById('proPhotoBd');
-      const proPhotoSheet = document.getElementById('proPhotoSheet');
-      if(proPhotoBd) proPhotoBd.style.display = 'none';
-      if(proPhotoSheet) proPhotoSheet.style.display = 'none';
-    };
-    
-    window.renderProPhotoGallery = function(category){
-      const gridEl = document.getElementById('proPhotoGrid');
-      if(!gridEl) return;
-      
-      // Kategorien-Tabs aktualisieren
-      document.querySelectorAll('.pro-photo-category-tab').forEach(tab => {
-        tab.classList.toggle('active', tab.dataset.category === category);
-        tab.style.background = tab.dataset.category === category ? '#FFD700' : '#f5f5f5';
-        tab.style.color = tab.dataset.category === category ? '#2D3436' : '#666';
-      });
-      
-      // Zuletzt genutzt anzeigen (wenn vorhanden)
-      const recentEl = document.getElementById('proPhotoRecent');
-      const recentGridEl = document.getElementById('proPhotoRecentGrid');
-      if(recentEl && recentGridEl){
-        if(recentProPhotos.length > 0 && category === 'all'){
-          recentEl.style.display = 'block';
-          recentGridEl.innerHTML = recentProPhotos.slice(0, 4).map(photo => {
-            return `
-              <div onclick="selectProPhoto('${photo.id}', '${esc(photo.url)}', '${esc(photo.category)}');" style="aspect-ratio:1; border-radius:12px; overflow:hidden; cursor:pointer; border:2px solid #FFD700;">
-                <img src="${esc(photo.url)}" alt="${esc(photo.name)}" style="width:100%; height:100%; object-fit:cover;" />
-              </div>
-            `;
-          }).join('');
-        } else {
-          recentEl.style.display = 'none';
-        }
-      }
-      
-      // Galerie rendern
-      let photos = [];
-      if(category === 'all'){
-        Object.values(foodLibrary).flat().forEach(p => photos.push({...p, category: Object.keys(foodLibrary).find(k => foodLibrary[k].includes(p))}));
-      } else {
-        photos = foodLibrary[category] || [];
-      }
-      
-      gridEl.innerHTML = photos.map(photo => {
-        const cat = (photo.category || category);
-        return `
-          <div onclick="selectProPhoto('${photo.id}', '${esc(photo.url)}', '${cat}');" style="aspect-ratio:1; border-radius:12px; overflow:hidden; cursor:pointer; border:2px solid #e7e1d5; transition:all 0.2s;" onmouseover="this.style.borderColor='#FFD700'; this.style.transform='scale(1.05)';" onmouseout="this.style.borderColor='#e7e1d5'; this.style.transform='scale(1)';">
-            <img src="${esc(photo.url)}" alt="${esc(photo.name)}" style="width:100%; height:100%; object-fit:cover;" />
-          </div>
-        `;
-      }).join('');
-    };
-    
-    window.selectProPhoto = function(photoId, photoUrl, category){
-      selectedProPhoto = {id: photoId, url: photoUrl, category: category, isStockPhoto: true};
-      
-      const catKey = (typeof category === 'string' && category !== 'all') ? category : Object.keys(foodLibrary).find(k => (foodLibrary[k] || []).some(p => p.id === photoId)) || 'all';
-      const photoName = (foodLibrary[catKey] || []).find(p => p.id === photoId)?.name || 'Gericht';
-      recentProPhotos = recentProPhotos.filter(p => p.id !== photoId);
-      recentProPhotos.unshift({id: photoId, url: photoUrl, category: catKey, name: photoName});
-      recentProPhotos = recentProPhotos.slice(0, 10);
-      localStorage.setItem('mittagio_recent_pro_photos', JSON.stringify(recentProPhotos));
-      
-      window.closeProPhotoGallery();
-      
-      // Immer durch Foto-Editor: Filter + Zuschnitt. Listing vs Onboarding unterscheiden.
-      (async ()=>{
-        let dataUrl = photoUrl;
-        if(/^https?:\/\//i.test(photoUrl)){
-          try { dataUrl = await urlToDataUrl(photoUrl); } catch(e){
-            if(typeof showToast === 'function') showToast('Foto konnte nicht geladen werden.');
-            return;
-          }
-        }
-        if(window.proPhotoContext === 'listing'){
-          window.proPhotoContext = null;
-          await openPhotoEditor(dataUrl);
-          if(typeof showToast === 'function') showToast('Profi-Foto übernommen.');
-          return;
-        }
-        await openPhotoEditor(dataUrl, {
-          onAccept: (url)=>{
-            if(typeof onboardingDraftDish === 'undefined') return;
-            onboardingDraftDish = onboardingDraftDish || {};
-            onboardingDraftDish.photoData = url;
-            if(typeof save === 'function' && typeof LS !== 'undefined') save(LS.onboardingDraft, onboardingDraftDish);
-            const previewEl = document.getElementById('onboardingPhotoPreview');
-            const previewImgEl = document.getElementById('onboardingPhotoPreviewImg');
-            const watermarkEl = document.getElementById('onboardingPhotoWatermark');
-            if(previewEl && previewImgEl){
-              previewEl.style.display = 'block';
-              previewImgEl.src = url;
-              previewImgEl.style.filter = '';
-              if(watermarkEl) watermarkEl.style.display = 'block';
-            }
-            if(typeof showToast === 'function') showToast('Profi-Foto übernommen.');
-          }
-        });
-      })();
-    };
-    
-    // Kategorien-Tab Handler
-    document.querySelectorAll('.pro-photo-category-tab').forEach(tab => {
-      tab.onclick = () => {
-        window.renderProPhotoGallery(tab.dataset.category);
-      };
-    });
-    
-    // Profi-Galerie Button Handler
-    const btnOnboardingChooseProPhoto = document.getElementById('btnOnboardingChooseProPhoto');
-    if(btnOnboardingChooseProPhoto){
-      btnOnboardingChooseProPhoto.onclick = () => {
-        window.openProPhotoGallery();
-      };
-    }
-    
-    const btnAddPhoto = document.getElementById('btnOnboardingAddPhoto');
-    if(btnAddPhoto){
-      btnAddPhoto.onclick = () => {
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = 'image/*';
-        input.capture = 'environment';
-        input.onchange = async (e) => {
-          const file = e.target.files[0];
-          if(!file) return;
-          const dataUrl = await toDataUrl(file);
-          await openPhotoEditor(dataUrl, {
-            onAccept: (url) => {
-              if(typeof onboardingDraftDish === 'undefined') return;
-              onboardingDraftDish = onboardingDraftDish || {};
-              onboardingDraftDish.photoData = url;
-              if(typeof save === 'function' && typeof LS !== 'undefined') save(LS.onboardingDraft, onboardingDraftDish);
-              const previewEl = document.getElementById('onboardingPhotoPreview');
-              const previewImgEl = document.getElementById('onboardingPhotoPreviewImg');
-              const watermarkEl = document.getElementById('onboardingPhotoWatermark');
-              if(previewEl && previewImgEl){
-                previewEl.style.display = 'block';
-                previewImgEl.src = url;
-                previewImgEl.style.filter = '';
-                if(watermarkEl) watermarkEl.style.display = 'none';
-              }
-              selectedProPhoto = null;
-              if(typeof showToast === 'function') showToast('Foto übernommen.');
-            }
-          });
-        };
-        input.click();
-      };
-    }
-    
-    // photoInput.onchange
-    const existingPhotoInput = document.getElementById('photoInput');
-    if(existingPhotoInput){
-      existingPhotoInput.onchange = async (e) => {
-        const file = e.target.files[0];
-        if(!file) return;
-        const dataUrl = await toDataUrl(file);
-        await openPhotoEditor(dataUrl, {
-          onAccept: (url) => {
-            if(!onboardingDraftDish) onboardingDraftDish = {};
-            onboardingDraftDish.photoData = url;
-            if(typeof save === 'function' && typeof LS !== 'undefined') save(LS.onboardingDraft, onboardingDraftDish);
-            const photoPreview = document.getElementById('onboardingPhotoPreview');
-            const photoPreviewImg = document.getElementById('onboardingPhotoPreviewImg');
-            if(photoPreview && photoPreviewImg){
-              photoPreview.style.display = 'block';
-              photoPreviewImg.src = url;
-            }
-            if(typeof showToast === 'function') showToast('Foto übernommen.');
-          }
-        });
-      };
-    }
-    
-    // Warn before leaving if changes exist
-    let hasChanges = false;
-    const inputs = ['onboardingDishName', 'onboardingPickupTimeStart', 'onboardingPickupTimeEnd'];
-    inputs.forEach(id => {
-      const el = document.getElementById(id);
-      if(el){
-        el.oninput = () => { hasChanges = true; };
-      }
-    });
-    
-    window.onbeforeunload = (e) => {
-      if(hasChanges && onboardingDraftDish){
-        e.preventDefault();
-        e.returnValue = '';
-      }
-    };
+  /** InseratCard-Enforcer: Alter First-Dish-Flow ist abgeschaltet. Jeder Aufruf leitet in die InseratCard um. [cite: Hard-Redirect] */
+  function showOnboardingFirstDish(prefill){
+    var entryDishName = (prefill && onboardingDraftDish && onboardingDraftDish.dishName) ? onboardingDraftDish.dishName : undefined;
+    if(provider && provider.loggedIn && typeof startListingFlow === 'function') startListingFlow({ entryPoint: 'dashboard', entryDishName: entryDishName });
+    else showOnboardingEntry(!!onboardingDraftDish);
   }
   
   function showOnboardingSignup(){
@@ -18922,20 +18747,20 @@
     }
   }
   
-  // Onboarding Event Handlers – Einstieg "Was bieten Sie heute an?" → InseratCard (kein altes First-Dish-Formular)
+  // InseratCard-Enforcer: Einstieg "Was bieten Sie heute an?" → NUR InseratCard. Kein showOnboardingFirstDish. [cite: Hard-Redirect]
   function startOnboardingFromEntry(){
-    const input = document.getElementById('onboardingEntryDishInput');
-    const value = input ? input.value.trim() : '';
+    var input = document.getElementById('onboardingEntryDishInput');
+    var value = input ? input.value.trim() : '';
     if(provider && provider.loggedIn){
       if(typeof startListingFlow === 'function') startListingFlow({ entryPoint: 'dashboard', entryDishName: value || undefined });
-    } else {
-      if(value){
-        onboardingDraftDish = onboardingDraftDish || {};
-        onboardingDraftDish.dishName = value;
-        save(LS.onboardingDraft, onboardingDraftDish);
-      }
-      showOnboardingSignup();
+      return;
     }
+    if(value){
+      onboardingDraftDish = onboardingDraftDish || {};
+      onboardingDraftDish.dishName = value;
+      save(LS.onboardingDraft, onboardingDraftDish);
+    }
+    showOnboardingSignup();
   }
   const onboardingEntryDishInput = document.getElementById('onboardingEntryDishInput');
   if(onboardingEntryDishInput) onboardingEntryDishInput.addEventListener('keydown', function(e){ if(e.key === 'Enter'){ e.preventDefault(); startOnboardingFromEntry(); } });
@@ -19208,18 +19033,8 @@
   
   const btnOnboardingPreviewEdit = document.getElementById('btnOnboardingPreviewEdit');
   if(btnOnboardingPreviewEdit) btnOnboardingPreviewEdit.onclick = () => {
-    // Restore draft from saved dish
-    const savedDish = cookbook.find(c => c.providerId === providerId());
-    if(savedDish){
-      onboardingDraftDish = {
-        dishName: savedDish.dish,
-        pickupTimeStart: savedDish.pickupWindow?.split(' – ')[0] || '11:30',
-        pickupTimeEnd: savedDish.pickupWindow?.split(' – ')[1] || '14:30',
-        photoData: savedDish.photoData || null
-      };
-      save(LS.onboardingDraft, onboardingDraftDish);
-    }
-    showOnboardingFirstDish(true);
+    var savedDish = cookbook.find(function(c){ return c.providerId === providerId(); });
+    if(typeof startListingFlow === 'function') startListingFlow({ entryPoint: 'dashboard', entryDishName: savedDish && savedDish.dish ? savedDish.dish : undefined });
   };
 
   const btnOnboardingComplete = document.getElementById('btnOnboardingComplete');
@@ -19747,7 +19562,21 @@
     }
   }, true);
 
-  // Reset-Navigation: Klick auf Header-Titel → Scroll nach oben + Untermenüs schließen
+  // Heimat-Logik (Global): Klick auf Header-Titel → sanft nach oben scrollen + Overlays schließen [cite: S25 Native-PWA]
+  function scrollActiveViewToTopAndCloseOverlays(){
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if(document.documentElement) document.documentElement.scrollTop = 0;
+    if(document.body) document.body.scrollTop = 0;
+    var mainEl = document.querySelector('main');
+    if(mainEl && mainEl.scrollTop) mainEl.scrollTo({ top: 0, behavior: 'smooth' });
+    if(typeof closeCookbookActionSheet === 'function') closeCookbookActionSheet();
+    if(typeof closeCookbookLiveSheet === 'function') closeCookbookLiveSheet();
+    if(typeof closeCookbookWeekSheet === 'function') closeCookbookWeekSheet();
+    var discoverLoc = document.getElementById('discoverLocationExpanded');
+    if(discoverLoc && discoverLoc.style.display !== 'none') discoverLoc.style.display = 'none';
+    var discoverRadius = document.getElementById('discoverRadiusDropdown');
+    if(discoverRadius && discoverRadius.style.display !== 'none') discoverRadius.style.display = 'none';
+  }
   document.addEventListener('click', function(e){
     var trig = e.target.closest('.prov-header-reset-trigger');
     if(!trig || e.target.closest('input') || e.target.closest('button')) return;
@@ -19755,6 +19584,7 @@
     if(!view) return;
     e.preventDefault();
     try { if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); } catch(err){}
+    scrollActiveViewToTopAndCloseOverlays();
     var scrollEl = null;
     if(view === 'home') scrollEl = document.querySelector('#v-provider-home .dashboard-floating-wrap');
     else if(view === 'pickups') scrollEl = document.getElementById('provPickupsScroll');
@@ -19768,6 +19598,20 @@
     }
     if(scrollEl){ scrollEl.scrollTo({ top: 0, behavior: 'smooth' }); }
   }, true);
+  document.addEventListener('click', function(e){
+    var headerTitle = e.target.closest('.provider-sub-header h1');
+    if(!headerTitle || e.target.closest('button')) return;
+    e.preventDefault();
+    try { if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); } catch(err){}
+    scrollActiveViewToTopAndCloseOverlays();
+    var sub = headerTitle.closest('.provider-profile-sub');
+    if(sub){
+      var wrap = sub.querySelector('.tgtg-list-wrap');
+      if(wrap){ wrap.scrollTo({ top: 0, behavior: 'smooth' }); }
+      var scrollDiv = sub.querySelector('.provider-sub-scroll');
+      if(scrollDiv){ scrollDiv.scrollTo({ top: 0, behavior: 'smooth' }); }
+    }
+  }, true);
   document.addEventListener('keydown', function(e){
     var trig = document.activeElement;
     if(!trig || !trig.classList || !trig.classList.contains('prov-header-reset-trigger')) return;
@@ -19776,15 +19620,16 @@
     trig.click();
   });
 
-  // Pull-to-Refresh: Dashboard und Listen – InseratCard gesperrt (keine PTR im Wizard)
+  // Pull-to-Refresh: Dashboard und Listen – InseratCard gesperrt (keine PTR im Wizard). Smart: Scroll-Zustand erhalten.
   (function setupPullToRefresh(){
     var PTR_THRESHOLD = 80;
     var startY = 0, pullY = 0, activeEl = null;
+    var SCROLL_KEY = 'mittagio_ptr_scroll';
     function isInseratCardOpen(){
       var w = document.getElementById('wizard');
       return w && w.classList && w.classList.contains('active') && w.getAttribute('data-flow') === 'listing';
     }
-    function attachPTR(el, onRefresh){
+    function attachPTR(el, onRefresh, viewId){
       if(!el || !onRefresh) return;
       el.addEventListener('touchstart', function(e){
         if(isInseratCardOpen()) return;
@@ -19797,9 +19642,19 @@
       el.addEventListener('touchend', function(){
         if(!activeEl || activeEl !== el) return;
         if(pullY >= PTR_THRESHOLD){
-          try { if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); } catch(err){}
+          try {
+            if(viewId) try { sessionStorage.setItem(SCROLL_KEY + '_' + viewId, String(el.scrollTop)); } catch(s){}
+            if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10);
+          } catch(err){}
           if(typeof showToast==='function') showToast('Aktualisiere…', 800);
           onRefresh();
+          if(viewId){
+            requestAnimationFrame(function(){ requestAnimationFrame(function(){
+              var saved = sessionStorage.getItem(SCROLL_KEY + '_' + viewId);
+              if(saved !== null && el && !isNaN(parseInt(saved,10))) el.scrollTop = parseInt(saved,10);
+              try { sessionStorage.removeItem(SCROLL_KEY + '_' + viewId); } catch(r){}
+            }); });
+          }
         }
         startY = 0; pullY = 0; activeEl = null;
       }, { passive: true });
@@ -19809,10 +19664,10 @@
       var pickupsScroll = document.getElementById('provPickupsScroll');
       var weekScroll = document.getElementById('kwBoardScroll');
       var cookbookScroll = document.getElementById('cookbookScrollWrap');
-      attachPTR(homeWrap, function(){ if(typeof renderProviderHome==='function') renderProviderHome(); });
-      attachPTR(pickupsScroll, function(){ if(typeof renderProviderPickups==='function') renderProviderPickups(); });
-      attachPTR(weekScroll, function(){ if(typeof renderWeekPlanBoard==='function') renderWeekPlanBoard(); else if(typeof renderProviderWeekPreview==='function') renderProviderWeekPreview(); });
-      attachPTR(cookbookScroll, function(){ if(typeof renderCookbook==='function') renderCookbook(); });
+      attachPTR(homeWrap, function(){ if(typeof renderProviderHome==='function') renderProviderHome(); }, 'provider-home');
+      attachPTR(pickupsScroll, function(){ if(typeof renderProviderPickups==='function') renderProviderPickups(); }, 'provider-pickups');
+      attachPTR(weekScroll, function(){ if(typeof renderWeekPlanBoard==='function') renderWeekPlanBoard(); else if(typeof renderProviderWeekPreview==='function') renderProviderWeekPreview(); }, 'provider-week');
+      attachPTR(cookbookScroll, function(){ if(typeof renderCookbook==='function') renderCookbook(); }, 'provider-cookbook');
     }, 300);
   })();
 
@@ -25641,10 +25496,10 @@
       }
       function listingSuggestionsVisible(){ var cat = w.data.category; return !!cat || (w.data.photoSuggestionKey && listingImageMap[w.data.photoSuggestionKey]); }
 
-      // 1. HERO – randlos oben (Edge-to-Edge), fixierter Header, 190px, Universal-X
+      // 1. Ebene (Header): Bild exakt 190px, „Foto ändern“-Pill mit Glassmorphism [cite: 2026-02-18]
       const photoTile=document.createElement('div');
       photoTile.className='inserat-photo-tile photo-header' + (w.data.photoData ? '' : ' pulse-soft');
-      photoTile.style.cssText='position:relative; overflow:hidden; flex-shrink:0; width:100%;';
+      photoTile.style.cssText='position:relative; overflow:hidden; flex-shrink:0; width:100%; height:190px; min-height:190px; max-height:190px;';
       var closeX=document.createElement('div');
       closeX.className='close-wizard-x';
       closeX.setAttribute('role','button');
@@ -25757,15 +25612,15 @@
       }
       box.appendChild(photoTile);
 
-      // 2. Unified Power-Bar: [Vor Ort] [Mehrweg] [Zeit] [Allergene] [Extras] – eine Leiste unter dem Foto-Header
+      // 2. Ebene (Power-Bar): Eine Zeile, 6 Icons – 🍴 Vor Ort, 🔄 Mehrweg, 🕒 Zeit, 🌾 Allergene, ➕ Extras, ⓘ Info (Soft-Shell, kein grünes Boxen-Design) [cite: 2026-02-18]
       var pwParts=(w.data.pickupWindow||profileWindow).split(/\s*[–\-]\s*/);
       var timeStart=(pwParts[0]||'11:30').trim();
       var timeEnd=(pwParts[1]||'14:00').trim();
       if(timeStart.length===4) timeStart='0'+timeStart;
       if(timeEnd.length===4) timeEnd='0'+timeEnd;
       const powerBar=document.createElement('div');
-      powerBar.className='inserat-power-bar inserat-unified-pills';
-      powerBar.style.cssText='display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:10px 16px; padding:12px 20px; border-bottom:1px solid rgba(0,0,0,0.04); flex-shrink:0; background:#f8fafc; backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); pointer-events:auto;';
+      powerBar.className='inserat-power-bar inserat-unified-pills inserat-soft-shell';
+      powerBar.style.cssText='display:flex; flex-wrap:nowrap; justify-content:space-between; align-items:center; gap:8px; padding:10px 16px; flex-shrink:0; pointer-events:auto;';
       var hasDineIn = !!w.data.dineInPossible;
       var hasReuse = !!(w.data.reuse && w.data.reuse.enabled);
       function addPowerPill(emo, label, active, toggleKey){
@@ -25817,7 +25672,7 @@
       const scrollArea=document.createElement('div');
       scrollArea.className='inserat-scroll-area scroll-content';
 
-      // Titel wie Detailseite: „Was kochst du heute?“ + pulsierende Emerald-Unterlinie
+      // 3. Ebene (Titel): Gerichtsname volle Breite, Midnight Blue #0f172a, ExtraBold, adjustTitleFontSize() [cite: 2026-02-18]
       const stepName=document.createElement('div');
       stepName.id='step-name';
       stepName.className='inserat-section inserat-unified-title-wrap';
@@ -25833,6 +25688,7 @@
       inputDish.value=w.data.dish||'';
       inputDish.setAttribute('list','inserat-dish-datalist');
       inputDish.autocomplete='off';
+      inputDish.style.cssText='width:100%; color:#0f172a; font-weight:800;';
       function adjustTitleFontSize(){
         var el = inputDish;
         if(!el || !el.offsetParent) return;
@@ -25865,22 +25721,24 @@
       stepName.appendChild(inputDish);
       const wrapDesc=document.createElement('div');
       wrapDesc.className='inserat-airbnb-field-wrap inserat-airbnb-desc-wrap inserat-desc-italic-wrap';
-      wrapDesc.style.marginTop='0';
+      wrapDesc.style.cssText='margin-top:0; margin-bottom:8px;';
       const inputDesc=document.createElement('input');
       inputDesc.type='text';
       inputDesc.className='liquid-input liquid-input-focus inserat-desc-input inserat-airbnb-desc inserat-desc-italic';
       inputDesc.placeholder='… z.B. mit frischem saisonalen Gemüse …';
       inputDesc.value=w.data.description||'';
+      inputDesc.style.cssText='color:#64748b; font-size:0.9em;';
       inputDesc.oninput=()=>{ w.data.description=inputDesc.value; saveDraft(); };
       inputDesc.onblur=()=>{ dismissKeyboard(); hapticLight(); };
       wrapDesc.appendChild(inputDesc);
       stepName.appendChild(wrapDesc);
-      // Action-Row: Titel + Beschreibung oben, darunter Kategorie-Pills links + gelber Preis rechts [cite: 2026-02-16 S25]
+      // 4. Ebene (Beschreibung): Direkt unter Titel, Schiefergrau #64748b [cite: 2026-02-18]
 
-      // Goldene Sammelkarte: Kategorie-Pills links, Preis-Button rechts (eine Zeile unter Titel/Beschreibung)
+      // 5. Ebene (Action-Row): Flex-Row – Kategorie-Pills links, gelber Preis-Button rechts [cite: 2026-02-18]
       const catPriceRow=document.createElement('div');
       catPriceRow.className='inserat-cat-price-row';
       catPriceRow.id='step-cat';
+      catPriceRow.style.cssText='display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;';
       const catValues = ['Fleisch','Vegetarisch','Vegan','Salat'];
       const catDisplayLabels = ['Mit Fleisch','Vegetarisch','Vegan','Salat'];
       const catEmojis = ['🥩','🥗','🌱','🥪'];
@@ -26023,53 +25881,61 @@
         saveRow.appendChild(btnCook);
         actionSection.appendChild(saveRow);
       } else {
-        const btnSave=document.createElement('button');
-        btnSave.type='button';
-        btnSave.style.cssText='width:100%; padding:20px; background:#10b981; color:#fff; font-size:16px; font-weight:800; border:none; border-radius:24px; cursor:pointer; box-shadow:0 10px 30px rgba(16,185,129,0.35); text-transform:uppercase;';
-        btnSave.textContent=entryPoint==='cookbook' ? 'Im Kochbuch speichern' : 'Im Wochenplan speichern';
-        btnSave.onclick=function(){
+        var btnCookbookPlan=document.createElement('button');
+        btnCookbookPlan.type='button';
+        btnCookbookPlan.style.cssText='flex:1; min-height:52px; padding:14px 20px; background:#10b981; color:#fff; font-size:16px; font-weight:800; border:none; border-radius:16px; cursor:pointer; box-shadow:0 4px 16px rgba(16,185,129,0.3);';
+        btnCookbookPlan.textContent='Im Kochbuch speichern';
+        btnCookbookPlan.onclick=function(){
           if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; }
           if(typeof haptic==='function') haptic(50);
-          if(entryPoint==='cookbook'){
-            var id=saveToCookbookFromWizard();
-            if(id){
-              closeWizard(true);
-              showSaveSuccessSheet({
-                title:'Im Kochbuch gespeichert',
-                sub:'Dein Gericht ist in deinem Kochbuch.',
-                dishName: w.data.dish||'',
-                price: w.data.price,
-                imageUrl: w.data.photoData||'',
-                savedEntryId: id,
-                savedDay: null,
-                onFertig: function(){ if(typeof showToast==='function') showToast('Gericht im Kochbuch aktualisiert 📖'); if(typeof showProviderCookbook==='function') showProviderCookbook(); },
-                onLive: null
-              });
-            }
-          }
-          else if(entryPoint==='week'){
-            var id=saveToCookbookFromWizard();
-            if(id && w.data.day){
-              if(!week[w.data.day]) week[w.data.day]=[];
-              var c=cookbook.find(function(x){ return x.id===id; });
-              if(c) week[w.data.day].push({ providerId:c.providerId, cookbookId:c.id, dish:c.dish, price:c.price });
-              save(LS.week, week);
-              closeWizard(true);
-              showSaveSuccessSheet({
-                title:'Im Wochenplan gespeichert',
-                sub:'Dein Gericht ist im Wochenplan eingetragen.',
-                dishName: w.data.dish||'',
-                price: w.data.price,
-                imageUrl: w.data.photoData||'',
-                savedEntryId: id,
-                savedDay: w.data.day,
-                onFertig: function(){ if(typeof showToast==='function') showToast('Im Wochenplan gespeichert 📅'); if(typeof showProviderWeek==='function') showProviderWeek(); },
-                onLive: null
-              });
-            }
+          var id=saveToCookbookFromWizard();
+          if(id){
+            closeWizard(true);
+            showSaveSuccessSheet({
+              title:'Im Kochbuch gespeichert',
+              sub:'Dein Gericht ist in deinem Kochbuch.',
+              dishName: w.data.dish||'',
+              price: w.data.price,
+              imageUrl: w.data.photoData||'',
+              savedEntryId: id,
+              savedDay: null,
+              onFertig: function(){ if(typeof showToast==='function') showToast('Gericht im Kochbuch aktualisiert 📖'); if(typeof showProviderCookbook==='function') showProviderCookbook(); },
+              onLive: null
+            });
           }
         };
-        actionSection.appendChild(btnSave);
+        var btnEinplanen=document.createElement('button');
+        btnEinplanen.type='button';
+        btnEinplanen.style.cssText='flex:1; min-height:52px; padding:14px 20px; background:#fff; color:#10b981; font-size:16px; font-weight:800; border:2px solid #10b981; border-radius:16px; cursor:pointer;';
+        btnEinplanen.textContent='Einplanen';
+        btnEinplanen.onclick=function(){
+          if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; }
+          if(typeof haptic==='function') haptic(50);
+          var id=saveToCookbookFromWizard();
+          if(id && w.data.day){
+            if(!week[w.data.day]) week[w.data.day]=[];
+            var c=cookbook.find(function(x){ return x.id===id; });
+            if(c) week[w.data.day].push({ providerId:c.providerId, cookbookId:c.id, dish:c.dish, price:c.price });
+            save(LS.week, week);
+            closeWizard(true);
+            showSaveSuccessSheet({
+              title:'Im Wochenplan gespeichert',
+              sub:'Dein Gericht ist im Wochenplan eingetragen.',
+              dishName: w.data.dish||'',
+              price: w.data.price,
+              imageUrl: w.data.photoData||'',
+              savedEntryId: id,
+              savedDay: w.data.day,
+              onFertig: function(){ if(typeof showToast==='function') showToast('Im Wochenplan gespeichert 📅'); if(typeof showProviderWeek==='function') showProviderWeek(); },
+              onLive: null
+            });
+          } else if(id){ if(typeof showToast==='function') showToast('Bitte zuerst ein Datum im Wochenplan wählen'); }
+        };
+        var planRow=document.createElement('div');
+        planRow.style.cssText='display:flex; gap:12px; width:100%;';
+        planRow.appendChild(btnCookbookPlan);
+        planRow.appendChild(btnEinplanen);
+        actionSection.appendChild(planRow);
       }
       box.appendChild(actionSection);
 
@@ -27693,15 +27559,14 @@
     */
   }
   
-  // Auto-Reload-Logik (alle 30 Sekunden, nur wenn offline)
+  // Auto-Reload-Logik (alle 30 Sekunden, nur wenn offline). Nicht reloaden wenn InseratCard offen (Eingabe würde verloren gehen).
   function autoReloadIfNeeded(){
     if(!navigator.onLine && mode === 'provider'){
-      // Wenn offline, versuche Seite neu zu laden (nur wenn wirklich nötig)
+      if(localStorage.getItem('mittagio_wizard_open') === 'true') return;
       const lastReload = load('mittagio_last_reload', 0);
       const now = Date.now();
-      if(now - lastReload > 30000){ // Maximal alle 30 Sekunden
+      if(now - lastReload > 30000){
         save('mittagio_last_reload', now);
-        // Leise Reload (ohne Benutzer zu stören)
         window.location.reload();
       }
     }
@@ -27727,10 +27592,26 @@
     }
   }
 
-  /* Verhindert, dass der Browser nach Reload die alte Scroll-Position wiederherstellt (Provider-Inhalt oben). */
   if(typeof history !== 'undefined' && history.scrollRestoration) history.scrollRestoration = 'manual';
 
-  /* Scroll-Reset nach Reload: Browser stellt ggf. nach unserem JS wieder her – load+setTimeout schlägt das */
+  /* Scroll vor Reload speichern (Smart Refresh): Wiederherstellung nach F5/Reload [Stabilität] */
+  var RESTORE_SCROLL_KEY = 'mittagio_restore_scroll';
+  function getScrollElForView(viewId){
+    if(viewId === 'v-provider-home'){ var h = document.getElementById('v-provider-home'); return h && h.querySelector('.dashboard-floating-wrap'); }
+    if(viewId === 'v-provider-pickups') return document.getElementById('provPickupsScroll');
+    if(viewId === 'v-provider-week') return document.getElementById('kwBoardScroll');
+    if(viewId === 'v-provider-cookbook') return document.getElementById('cookbookScrollWrap'); return null;
+  }
+  function saveScrollBeforeUnload(){
+    try {
+      var viewId = localStorage.getItem('mittagio_last_view');
+      if(!viewId || mode !== 'provider') return;
+      var el = getScrollElForView(viewId);
+      if(el && el.scrollTop > 0) sessionStorage.setItem(RESTORE_SCROLL_KEY + '_' + viewId, String(el.scrollTop));
+    } catch(e){}
+  }
+  window.addEventListener('pagehide', saveScrollBeforeUnload);
+
   function providerScrollReset(){
     if(!document.body.classList.contains('provider-mode')) return;
     window.scrollTo(0,0);
