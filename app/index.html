@@ -9025,9 +9025,9 @@
     </div>
   </div>
 
-<!-- Provider offer sheet: No-Scroll – Karte ist das Interface, ein Sticky-Button unten -->
+<!-- Inseratcard (blauer Bereich: „Datum für Wochenplan wählen“ / „Im Kochbuch speichern“ / Abbrechen) – kein separates „Action“-Screen -->
 <div class="backdrop" id="pbd" onclick="closeProviderSheet()"></div>
-<div class="sheet" id="psheet">
+<div class="sheet" id="psheet" role="dialog" aria-label="Inserat – Aktionen">
   <div class="handle"></div>
   <div class="sheet-body psheet-body">
     <button type="button" class="universal-x" id="psheetCloseX" aria-label="Schließen" title="Schließen">✕</button>
@@ -25745,7 +25745,7 @@
     if(!provider || !provider.loggedIn){ if(typeof showToast === 'function') showToast('Bitte zuerst anmelden'); return; }
     // Action-Controller: Herkunft für Button-Logik (Dashboard / Kochbuch / Wochenplan)
     if(!context.entryPoint) context.entryPoint = context.dishId ? 'cookbook' : (context.fromWeek ? 'week' : 'dashboard');
-    // Direkt zur Inseratcard – keine Zwischen-Action-Card (Quick-Post entfernt)
+    // Direkt zur Inseratcard (Karte mit blauem „Datum für Wochenplan wählen“ / „Im Kochbuch speichern“) – keine Zwischenkarte
     // Entwurf-Wiederherstellung: Ghost-Card – Karte mit Overlay rendern, Check vor voller Interaktivität [cite: 2026-02-16]
     if(!context.editOfferId){
       try {
