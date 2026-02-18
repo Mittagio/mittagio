@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mittagio Discover – Dashboard (korrigiert)</title>
+  <style>
+:root{
+  --bg:#F6F3EF;
+  --card:#FFFFFF;
+  --text:#111214;
+  --muted:#7A7F87;
+  --line: rgba(15, 16, 20, .08);
+  --shadow: 0 10px 30px rgba(0,0,0,.08);
+
+  --brand:#0F1014;         /* Header dunkel */
+  --brandText:#FFFFFF;
+
+  --pill:#EEF0F3;
+  --pillText:#222;
+  --pillActive:#2F66FF;
+  --pillActiveText:#fff;
+
+  --success:#1FA971;
+  --warn:#F2C94C;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* Container */
+.page{
+  max-width: 520px;
+  margin: 0 auto;
+  padding-bottom: 90px; /* Platz für Bottom Nav */
+}
+
+/* Header */
+.topbar{
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--bg);
+  padding: 10px 12px 8px;
+}
+
+.topbar-inner{
+  height: 56px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #15171D 0%, #0D0E12 100%);
+  color: var(--brandText);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding: 0 14px;
+  box-shadow: 0 10px 20px rgba(0,0,0,.18);
+}
+
+.location{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-weight: 800;
+  letter-spacing: .2px;
+}
+
+.location .pin{
+  width: 34px; height: 34px;
+  border-radius: 14px;
+  background: rgba(255,255,255,.10);
+  display:grid;
+  place-items:center;
+}
+
+.brand{
+  font-weight: 900;
+  letter-spacing: .6px;
+  font-size: 22px;
+}
+
+/* Section wrapper (Filterbox) – Pills scrollbar: Parent begrenzen */
+.filterbox{
+  margin-top: 10px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  padding: 14px 14px 10px;
+  box-shadow: var(--shadow);
+  overflow-x: hidden;
+  min-width: 0;
+}
+
+/* Horizontal chips – scrollbar: min-width:0 damit Container scrollt */
+.chips{
+  display:flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  min-width: 0;
+  max-width: 100%;
+}
+.chips::-webkit-scrollbar{display:none}
+
+.chip{
+  flex: 0 0 auto;
+  border: 1px solid var(--line);
+  background: var(--pill);
+  color: var(--pillText);
+  padding: 12px 16px;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 14px;
+  display:flex;
+  gap:8px;
+  align-items:center;
+  user-select:none;
+  cursor:pointer;
+  transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
+}
+.chip:active{ transform: scale(.98); }
+.chip.is-active{
+  background: var(--pillActive);
+  color: var(--pillActiveText);
+  border-color: rgba(47,102,255,.35);
+  box-shadow: 0 10px 20px rgba(47,102,255,.20);
+}
+
+/* Distance + day tabs row */
+.filters-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 12px;
+  margin-top: 10px;
+  min-width: 0;
+}
+
+.distance{
+  flex: 0 0 auto;
+  border: 1px solid var(--line);
+  background: #fff;
+  padding: 12px 14px;
+  border-radius: 999px;
+  font-weight: 800;
+  display:flex;
+  align-items:center;
+  gap: 8px;
+  cursor:pointer;
+  user-select:none;
+}
+.distance .chev{ opacity:.7; font-weight:900; }
+
+/* Day tabs – scrollbar: min-width:0 damit horizontal scrollt */
+.daytabs{
+  display:flex;
+  gap: 10px;
+  overflow-x:auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width:none;
+  flex: 1;
+  min-width: 0;
+}
+.daytabs::-webkit-scrollbar{display:none}
+
+.day{
+  flex:0 0 auto;
+  border: 1px solid var(--line);
+  background: #fff;
+  padding: 12px 16px;
+  border-radius: 999px;
+  font-weight: 900;
+  color: #2C2F36;
+  cursor:pointer;
+  transition: transform .12s ease, background .12s ease;
+}
+.day:active{ transform: scale(.98); }
+.day.is-active{
+  background: #0F1014;
+  color: #fff;
+  border-color: rgba(15,16,20,.2);
+}
+
+/* Feed */
+.feed{
+  padding: 14px 12px 0;
+}
+
+/* Card – Kacheln kleiner: kompakte Höhe, Bild 50% der Kartenhöhe */
+.card{
+  position: relative;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 26px;
+  overflow:hidden;
+  box-shadow: var(--shadow);
+  margin-bottom: 14px;
+  max-height: 320px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Klickbares Anbieter-Logo (Badge), blockiert Card-Tap nicht */
+.card-logo{
+  position:absolute;
+  left:16px;
+  bottom:110px;
+  width:62px;
+  height:62px;
+  border-radius:999px;
+  background:#fff;
+  border:3px solid #fff;
+  box-shadow:0 10px 20px rgba(0,0,0,.15);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  z-index:5;
+  cursor:pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
+  text-decoration:none;
+}
+.card-logo:active{ transform: scale(.96); }
+.card-logo:hover{ filter: brightness(.98); }
+.card-logo img{
+  width:80%;
+  height:80%;
+  object-fit:contain;
+}
+.card-logo:focus-visible{
+  outline: 3px solid rgba(47,102,255,.45);
+  outline-offset: 3px;
+}
+.card-logo::after{
+  content:"Anbieter";
+  position:absolute;
+  bottom:-18px;
+  left:50%;
+  transform:translateX(-50%);
+  font-size:11px;
+  font-weight:900;
+  color: rgba(15,16,20,.55);
+}
+
+.card-media{
+  width:100%;
+  height: 0;
+  padding-bottom: 50%; /* Bild nimmt 50% der Kartenhöhe ein (kompakt) */
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.card-media img{
+  position: absolute;
+  top:0;left:0;
+  width:100%;
+  height:100%;
+  object-fit: cover;
+  display:block;
+}
+
+.card-body{
+  padding: 14px 14px 16px;
+  flex: 1;
+  min-height: 0;
+}
+
+.card-title{
+  font-size: 20px;
+  font-weight: 950;
+  margin: 2px 0 10px;
+  letter-spacing: -0.3px;
+  line-height: 1.25;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.card-actions{
+  display:flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.btn{
+  border: 0;
+  border-radius: 999px;
+  padding: 12px 14px;
+  font-weight: 950;
+  letter-spacing: .2px;
+  display:flex;
+  align-items:center;
+  gap: 10px;
+  cursor:pointer;
+  user-select:none;
+  transition: transform .12s ease, filter .12s ease;
+}
+.btn:active{ transform: scale(.98); }
+
+.btn-success{ background: var(--success); color:#fff; }
+.btn-warn{ background: var(--warn); color:#111; }
+.btn-ghost{
+  background: #EEF0F3;
+  color: #111;
+  border: 1px solid var(--line);
+}
+
+/* Bottom nav (optisch wie App) */
+.bottomnav{
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(246,243,239,.92);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid var(--line);
+  padding: 10px 10px 16px;
+  z-index: 60;
+}
+
+.bottomnav-inner{
+  max-width: 520px;
+  margin: 0 auto;
+  display:flex;
+  justify-content:space-around;
+  gap: 10px;
+}
+
+.navitem{
+  width: 25%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap: 6px;
+  font-weight: 900;
+  font-size: 12px;
+  color: #8A8F98;
+  user-select:none;
+  cursor:pointer;
+}
+.navitem .ico{
+  width: 42px; height: 42px;
+  border-radius: 18px;
+  display:grid;
+  place-items:center;
+}
+.navitem.is-active{
+  color: #D1A900;
+}
+.navitem.is-active .ico{
+  background: rgba(209,169,0,.14);
+}
+
+.badge{
+  position: relative;
+}
+.badge::after{
+  content: attr(data-badge);
+  position:absolute;
+  top: -6px; right: -6px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: #F2C94C;
+  color:#111;
+  font-weight: 950;
+  font-size: 12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border: 2px solid rgba(246,243,239,.92);
+}
+  </style>
+</head>
+<body>
+
+<div class="page">
+
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="location">
+        <span class="emoji">📍</span>
+        <span>Schorndorf</span>
+        <span class="pin">📍</span>
+      </div>
+      <div class="brand">MITTAGIO</div>
+    </div>
+
+    <div class="filterbox">
+      <div class="chips" id="catChips">
+        <button class="chip is-active" data-value="all">✨ Alle</button>
+        <button class="chip" data-value="eintopf">🥘 Eintopf</button>
+        <button class="chip" data-value="vesper">🥩 Vesper</button>
+        <button class="chip" data-value="veggie">🥗 Veggie</button>
+      </div>
+
+      <div class="filters-row">
+        <button class="distance" id="distanceBtn">
+          📍 <span id="distanceLabel">1 km</span> <span class="chev">⌄</span>
+        </button>
+
+        <div class="daytabs" id="dayTabs">
+          <button class="day is-active" data-day="today">Heute…</button>
+          <button class="day" data-day="tomorrow">Morg…</button>
+          <button class="day" data-day="later">Über…</button>
+          <button class="day" data-day="sat">Samst…</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="feed" id="feed">
+    <article class="card" onclick="openMealDetail()" role="button" tabindex="0">
+      <div class="card-media">
+        <img src="https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=1600&q=70" alt="Gericht">
+      </div>
+      <a class="card-logo" href="#anbieter/demo" aria-label="Zum Anbieter" onclick="event.preventDefault(); event.stopPropagation();">
+        <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=128&h=128&fit=crop&crop=faces" alt="Anbieterlogo">
+      </a>
+      <div class="card-body">
+        <div class="card-title">Schnitzel mit Pommes</div>
+        <div class="card-actions">
+          <button class="btn btn-success">🍴 VOR ORT</button>
+          <button class="btn btn-warn">🧾 ABHOLNUMMER</button>
+          <button class="btn btn-ghost">↪︎ Mehr</button>
+        </div>
+      </div>
+    </article>
+  </div>
+
+</div>
+
+<nav class="bottomnav">
+  <div class="bottomnav-inner" id="bottomNav">
+    <div class="navitem is-active">
+      <div class="ico">🔎</div>
+      <div>Entdecken</div>
+    </div>
+    <div class="navitem">
+      <div class="ico">♡</div>
+      <div>Favoriten</div>
+    </div>
+    <div class="navitem">
+      <div class="ico badge" data-badge="1">🧺</div>
+      <div>Mittagsbox</div>
+    </div>
+    <div class="navitem">
+      <div class="ico">👤</div>
+      <div>Meins</div>
+    </div>
+  </div>
+</nav>
+
+<script>
+function openMealDetail(){ console.log('Card tap – Gericht öffnen'); }
+
+document.addEventListener("click", function(e) {
+  var logo = e.target.closest(".card-logo");
+  if (logo) e.stopPropagation();
+});
+
+function setActive(container, selector, activeEl) {
+  if(!container) return;
+  container.querySelectorAll(selector).forEach(el => el.classList.remove('is-active'));
+  activeEl.classList.add('is-active');
+}
+
+const catChips = document.getElementById('catChips');
+const dayTabs = document.getElementById('dayTabs');
+const distanceBtn = document.getElementById('distanceBtn');
+const distanceLabel = document.getElementById('distanceLabel');
+
+catChips?.addEventListener('click', (e) => {
+  const btn = e.target.closest('.chip');
+  if(!btn) return;
+  setActive(catChips, '.chip', btn);
+  const value = btn.dataset.value;
+});
+
+dayTabs?.addEventListener('click', (e) => {
+  const btn = e.target.closest('.day');
+  if(!btn) return;
+  setActive(dayTabs, '.day', btn);
+  const day = btn.dataset.day;
+});
+
+const distances = ["1 km","3 km","5 km","10 km"];
+let idx = 0;
+distanceBtn?.addEventListener('click', () => {
+  idx = (idx + 1) % distances.length;
+  if(distanceLabel) distanceLabel.textContent = distances[idx];
+});
+</script>
+
+</body>
+</html>
