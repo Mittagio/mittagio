@@ -9002,11 +9002,13 @@
     showToast('Erfolgreich eingeloggt! 🎉', 2000);
     if(typeof updateProfileView === 'function') updateProfileView();
     setMode('provider', { skipView: true });
-    if(provider.onboardingCompleted){
-      showProviderHome();
-    } else {
-      showOnboardingEntry(!!load(LS.onboardingDraft, null));
-    }
+    // Direkt-Sprung S25: Onboarding ignorieren, immer Dashboard + sofort InseratCard öffnen
+    provider.onboardingCompleted = true;
+    save(LS.provider, provider);
+    showProviderHome();
+    setTimeout(function(){
+      if(typeof startListingFlow === 'function') startListingFlow({ entryPoint: 'dashboard' });
+    }, 150);
   }
   
   // Login-Konflikt Modal öffnen
@@ -9241,11 +9243,14 @@
     }
   }
   
-  // InseratCard-Enforcer: Einstieg "Was bieten Sie heute an?" → NUR InseratCard. Kein showOnboardingFirstDish. [cite: Hard-Redirect]
+  // Direkt-Sprung S25: Einstieg führt immer in die InseratCard (Wizard), nie ins Onboarding. [cite: InseratCard-Enforcer]
   function startOnboardingFromEntry(){
     var input = document.getElementById('onboardingEntryDishInput');
     var value = input ? input.value.trim() : '';
     if(provider && provider.loggedIn){
+      provider.onboardingCompleted = true;
+      save(LS.provider, provider);
+      if(typeof showProviderHome === 'function') showProviderHome();
       if(typeof startListingFlow === 'function') startListingFlow({ entryPoint: 'dashboard', entryDishName: value || undefined });
       return;
     }
