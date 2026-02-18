@@ -234,12 +234,14 @@ mittagio/
 | Swipe & 3-Säulen | `docs/specs/swipe-3saeulen.md` |
 | Allergene-Overlay | `docs/specs/allergene-overlay.md` |
 | Prompt-Library | `PROMPTS.md` (Root) |
+| Inserat-Flow / STOP-ORDER | `.cursor/rules/inserat-flow-stop-order.mdc` |
 
 ## Golden Rules (für Cursor)
 
 > Wenn sich etwas **wie ein Shop oder Account** anfühlt → **falsch**
 > Wenn ein Klick **nichts tut** → **nicht done**
 > Wenn Endkunde & Anbieter vermischt sind → **Bug**
+> **Inserieren** läuft nur über InseratCard im #wizard (`buildListingStep`). Alte Flows (#psheet) nicht verwenden.
 
 ## Empfohlener Cursor-Prompt
 
