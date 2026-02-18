@@ -34,9 +34,9 @@
 5. **Pushen**: `git push origin main`
 
 ### Automatische Synchronisation:
-- GitHub Desktop: "Sync" Button drücken
-- VS Code: "Sync Changes" Button
-- Terminal: `git push origin main`
+- **Auto-Push:** Nach jedem Commit pusht ein Git-Hook automatisch zu `origin main` – du musst nicht mehr manuell pushen (gilt für GitHub Desktop, Cursor, Bash, CMD).
+- GitHub Desktop: "Commit" reicht, Push passiert danach automatisch.
+- Terminal: `git commit -m "..."` → Push läuft automatisch danach.
 
 ## ⚠️ WICHTIG:
 - **NIEMALS** ohne Commit/Push den PC wechseln!
