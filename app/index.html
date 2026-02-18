@@ -5187,7 +5187,7 @@
       #v-provider-week .week-status-block .week-activate-inline:active{ transform:scale(0.98); }
       #v-provider-week .week-status-activate-hint{ font-size:11px; color:#64748b; margin-top:6px; line-height:1.3; }
       /* Applike: Header mit Untertitel, Safe-Area oben; Zeile für Titel + Fertig (Edit-Mode) */
-      #v-provider-week .week-header-compact{ padding:calc(8px + env(safe-area-inset-top, 0)) 20px 12px 20px; min-height:56px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; background:rgba(255,255,255,0.8) !important; border-bottom:1px solid rgba(255,255,255,0.2); }
+      #v-provider-week .week-header-compact{ padding:calc(8px + env(safe-area-inset-top, 0)) 20px 12px 20px; min-height:56px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; background:linear-gradient(135deg, rgba(248,250,252,0.95) 0%, rgba(241,245,249,0.92) 50%, rgba(239,246,255,0.9) 100%) !important; backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border-bottom:1px solid rgba(255,255,255,0.4); }
       #v-provider-week .week-header-row{ display:flex; align-items:center; justify-content:space-between; width:100%; max-width:100%; gap:12px; }
       #v-provider-week .week-header-row > div:first-child{ min-width:0; text-align:left; }
       #v-provider-week .week-header-done-btn{ flex-shrink:0; min-height:44px; padding:0 18px; font-size:15px; font-weight:800; border-radius:12px; background:var(--prov-brand); color:#1a1a1a; border:none; cursor:pointer; box-shadow:0 2px 12px rgba(255,222,0,0.35); }
@@ -5252,6 +5252,8 @@
       #v-provider-week .kw-day-card{ background:rgba(255,255,255,0.7); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border-radius:24px; border:1px solid rgba(255,255,255,0.5); box-shadow:0 8px 32px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.03); padding:12px; min-height:280px; height:280px; display:flex; flex-direction:column; gap:8px; transition:transform 0.2s ease, box-shadow 0.2s ease; box-sizing:border-box; }
       #v-provider-week .kw-day-card:active{ transform:scale(0.98); }
       #v-provider-week .kw-day-card.kw-day-has-live{ box-shadow:0 8px 32px rgba(0,0,0,0.06), 0 0 0 1px rgba(16,185,129,0.35); }
+      #v-provider-week .kw-day-card.kw-day-card-highlight{ animation: kwDayCardGapPulse 2s ease-in-out; box-shadow:0 8px 32px rgba(0,0,0,0.08), 0 0 0 2px rgba(14,165,233,0.5), 0 0 24px rgba(14,165,233,0.25); }
+      @keyframes kwDayCardGapPulse{ 0%, 100%{ box-shadow:0 8px 32px rgba(0,0,0,0.06), 0 0 0 1px rgba(14,165,233,0.3); } 50%{ box-shadow:0 8px 32px rgba(0,0,0,0.08), 0 0 0 3px rgba(14,165,233,0.6), 0 0 28px rgba(14,165,233,0.35); } }
       #v-provider-week .kw-day-label{ font-size:11px; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:4px; }
       #v-provider-week .kw-day-date{ font-size:13px; font-weight:700; color:#1a1a1a; }
       #v-provider-week .kw-slots{ display:flex; flex-direction:column; gap:8px; flex:1; min-height:220px; max-height:220px; }
@@ -7510,6 +7512,9 @@
             </div>
           </div>
           <div class="week-header-actions" style="display:flex; align-items:center; gap:8px;">
+            <button type="button" id="btnKwFindGap" title="Nächste Lücke finden" aria-label="Nächste Lücke finden" style="background:rgba(255,255,255,0.7); border:1px solid rgba(0,0,0,0.08); min-height:44px; padding:0 14px; border-radius:14px; display:flex; align-items:center; justify-content:center; gap:6px; color:#1a1a1a; font-size:13px; font-weight:700; cursor:pointer; white-space:nowrap;">
+              <i data-lucide="sparkles" style="width:18px; height:18px;"></i><span>Lücke finden</span>
+            </button>
             <button type="button" id="btnKwPdf" title="Drucken" aria-label="Drucken" style="background:rgba(0,0,0,0.06); border:none; min-width:44px; min-height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; color:#1a1a1a; cursor:pointer;">
               <i data-lucide="printer" style="width:20px; height:20px;"></i>
             </button>
@@ -21567,6 +21572,37 @@
     });
     return Math.min(1, filled / 7);
   }
+  function findAndJumpToNextFreeSlot(){
+    var w = typeof load === 'function' && typeof LS !== 'undefined' ? load(LS.week, {}) : (typeof week !== 'undefined' ? week : {});
+    var offs = typeof load === 'function' && typeof LS !== 'undefined' ? load(LS.offers, []) : (typeof offers !== 'undefined' ? offers : []);
+    var pid = typeof providerId === 'function' ? providerId() : '';
+    var today = new Date();
+    for (var i = 0; i < 56; i++) {
+      var d = new Date(today.getFullYear(), today.getMonth(), today.getDate() + i);
+      var dateKey = typeof isoDate === 'function' ? isoDate(d) : d.toISOString().slice(0, 10);
+      var provEntries = (w[dateKey] || []).filter(function(x){ return x.providerId === pid; });
+      var liveOffers = offs.filter(function(o){ return o.providerId === pid && o.day === dateKey; });
+      var count = liveOffers.length > 0 ? liveOffers.length : provEntries.length;
+      if (count < 3) {
+        if (typeof getWeekIndexForDate === 'function') weekPlanKWIndex = Math.max(0, getWeekIndexForDate(dateKey));
+        weekPlanDay = dateKey;
+        if (typeof pushViewState === 'function') pushViewState({ view: 'provider-week', mode: typeof mode !== 'undefined' ? mode : 'provider', week: weekPlanKWIndex, day: weekPlanDay }, (typeof location !== 'undefined' && location.pathname) + '?week=' + weekPlanKWIndex + '&day=' + weekPlanDay);
+        if (typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard();
+        setTimeout(function(){
+          var el = document.getElementById('day-' + dateKey);
+          if (el) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            el.classList.add('kw-day-card-highlight');
+            setTimeout(function(){ el.classList.remove('kw-day-card-highlight'); }, 2000);
+          }
+        }, 150);
+        if (typeof haptic === 'function') haptic(6);
+        if (typeof showToast === 'function') showToast('Nächste Lücke: ' + dateKey);
+        return;
+      }
+    }
+    if (typeof showToast === 'function') showToast('Keine Lücke in den nächsten 8 Wochen');
+  }
   function moveWeekEntryToDay(dayFrom, slotFrom, dayTo){
     var arr = week[dayFrom];
     if (!arr || !arr[slotFrom]) return;
@@ -21731,6 +21767,7 @@
       var card = document.createElement('div');
       card.className = 'kw-day-card' + (isLive ? ' kw-day-has-live' : '');
       card.setAttribute('data-date', key);
+      card.id = 'day-' + key;
       card.innerHTML = '<div class="kw-day-label">' + dayLabel + '</div><div class="kw-day-date">' + dateLabel + '</div><div class="kw-slots"></div>';
       var slotsWrap = card.querySelector('.kw-slots');
       var numSlots = items.length >= 3 ? 4 : 3;
@@ -21758,7 +21795,7 @@
             slotEl.setAttribute('data-slot', String(slot));
             if (!isLive) slotEl.setAttribute('data-draft', '1');
             slotEl.innerHTML = '<div class="kw-slot-thumb" style="' + (img ? 'background-image:url(\'' + esc(img) + '\')' : '') + '"></div><div class="kw-slot-body"><div class="kw-slot-name">' + esc(name) + '</div><div class="kw-slot-price"><span class="price-pill">' + euro(price) + '</span></div></div>';
-            slotEl.onclick = (function(k, idx){ return function(e){ e.stopPropagation(); if(slotEl.classList.contains('kw-slot-swipe-delete')) return; if(typeof haptic === 'function') haptic(6); weekPlanDay = k; if(isLive && items[idx] && items[idx].id){ if(typeof openProviderOffer === 'function') openProviderOffer(items[idx].id, { source: 'week' }); } else { if(typeof openWeekAddSheet === 'function') openWeekAddSheet(k, idx); } }; })(key, slot);
+            slotEl.onclick = (function(k, idx){ return function(e){ e.stopPropagation(); if(slotEl.classList.contains('kw-slot-swipe-delete')) return; if(typeof haptic === 'function') haptic(6); weekPlanDay = k; if(isLive && items[idx] && items[idx].id){ if(typeof startListingFlow === 'function') startListingFlow({ editOfferId: items[idx].id, date: k, entryPoint: 'week' }); } else { if(typeof openWeekAddSheet === 'function') openWeekAddSheet(k, idx); } }; })(key, slot);
             slotsWrap.appendChild(slotEl);
           } else {
             var slotSmall = document.createElement('div');
@@ -21767,7 +21804,7 @@
             slotSmall.setAttribute('data-slot', String(slot));
             if (!isLive) slotSmall.setAttribute('data-draft', '1');
             slotSmall.innerHTML = '<div class="kw-slot-thumb" style="' + (img ? 'background-image:url(\'' + esc(img) + '\')' : '') + '"></div><div class="kw-slot-name">' + esc(name) + '</div><div class="kw-slot-price"><span class="price-pill">' + euro(price) + '</span></div>';
-            slotSmall.onclick = (function(k, idx){ return function(e){ e.stopPropagation(); if(slotSmall.classList.contains('kw-slot-swipe-delete')) return; if(typeof haptic === 'function') haptic(6); weekPlanDay = k; if(isLive && items[idx] && items[idx].id){ if(typeof openProviderOffer === 'function') openProviderOffer(items[idx].id, { source: 'week' }); } else { if(typeof openWeekAddSheet === 'function') openWeekAddSheet(k, idx); } }; })(key, slot);
+            slotSmall.onclick = (function(k, idx){ return function(e){ e.stopPropagation(); if(slotSmall.classList.contains('kw-slot-swipe-delete')) return; if(typeof haptic === 'function') haptic(6); weekPlanDay = k; if(isLive && items[idx] && items[idx].id){ if(typeof startListingFlow === 'function') startListingFlow({ editOfferId: items[idx].id, date: k, entryPoint: 'week' }); } else { if(typeof openWeekAddSheet === 'function') openWeekAddSheet(k, idx); } }; })(key, slot);
             slotsWrap.appendChild(slotSmall);
           }
         } else {
@@ -21823,8 +21860,10 @@
     }
     var btnKwPdf = document.getElementById('btnKwPdf');
     var btnKwShare = document.getElementById('btnKwShare');
+    var btnKwFindGap = document.getElementById('btnKwFindGap');
     if (btnKwPdf) btnKwPdf.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(typeof printWeekCard === 'function') printWeekCard(); };
     if (btnKwShare) btnKwShare.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(typeof shareWeekPlan === 'function') shareWeekPlan(); };
+    if (btnKwFindGap) btnKwFindGap.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(typeof findAndJumpToNextFreeSlot === 'function') findAndJumpToNextFreeSlot(); };
     var monday = getWeekMonday(weekPlanKWIndex);
     var sunday = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + 6);
     var sub = document.getElementById('weekHeaderSubtitle');
@@ -22113,7 +22152,7 @@
         attachSwipeToWeekCard(swipeInner, weekPlanDay, weekIndex);
         attachLongPressToWeekCard(wrap);
       } else {
-        card.onclick = function(e){ e.preventDefault(); e.stopPropagation(); if(weekJustSwiped) return; if(typeof openProviderOffer === 'function') openProviderOffer(entry.id || '', { source: 'week' }); };
+        card.onclick = function(e){ e.preventDefault(); e.stopPropagation(); if(weekJustSwiped) return; if(typeof startListingFlow === 'function') startListingFlow({ editOfferId: entry.id || '', date: weekPlanDay, entryPoint: 'week' }); };
         swipeInner.appendChild(card);
       }
       wrap.appendChild(swipeInner);
