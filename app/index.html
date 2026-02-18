@@ -16968,7 +16968,7 @@
         try { if(navigator.vibrate) navigator.vibrate(10); } catch(e){}
         if(typeof haptic === 'function') haptic(10);
         closeCreateFlowSheet();
-        startListingFlow({ dishId: c.id, date: createFlowPreselectedDate || (typeof isoDate === 'function' ? isoDate(new Date()) : ''), entryPoint: 'dashboard', skipQuickPost: true });
+        startListingFlow({ dishId: c.id, date: createFlowPreselectedDate || (typeof isoDate === 'function' ? isoDate(new Date()) : ''), entryPoint: createFlowOriginView || 'dashboard', skipQuickPost: true });
       };
       tile.onclick = function(e){ e.preventDefault(); e.stopPropagation(); doOpen(); };
       tile.onkeydown = function(e){ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); doOpen(); } };
@@ -21380,7 +21380,7 @@
         '<div><div class="week-preview-empty-label">' + emptyLabel + '</div><div class="week-preview-empty-cta">JETZT NEUES GERICHT</div></div>' +
         '</div></div>';
       var btnEmpty = document.getElementById('btnProviderWeekEmptyTrigger');
-      if(btnEmpty) btnEmpty.onclick = function(){ if(typeof haptic === 'function') haptic(6); createFlowPreselectedDate = selectedDay; createFlowOriginView = 'week'; if(typeof openCreateFlowSheet === 'function') openCreateFlowSheet(); };
+      if(btnEmpty) btnEmpty.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(typeof openDishFlow === 'function') openDishFlow(selectedDay, 'week'); };
       if(btnEmpty) btnEmpty.onkeydown = function(e){ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); btnEmpty.click(); } };
     }
     /* Haptik beim Einrasten (Snap-Carousel) – Dashboard-Wochenvorschau */
@@ -21777,7 +21777,7 @@
           empty.setAttribute('data-day', key);
           empty.setAttribute('aria-label', 'Gericht hinzufügen für ' + dayLabel + ', ' + dateLabel);
           empty.textContent = '+';
-          empty.onclick = (function(k){ return function(e){ e.preventDefault(); e.stopPropagation(); if(typeof haptic === 'function') haptic(6); weekPlanDay = k; createFlowPreselectedDate = k; createFlowOriginView = 'week'; if(typeof openCreateFlowSheet === 'function') openCreateFlowSheet(); }; })(key);
+          empty.onclick = (function(k){ return function(e){ e.preventDefault(); e.stopPropagation(); if(typeof haptic === 'function') haptic(6); weekPlanDay = k; if(typeof openDishFlow === 'function') openDishFlow(k, 'week'); }; })(key);
           slotsWrap.appendChild(empty);
         }
       }
@@ -22007,7 +22007,7 @@
       const btnWeekEmptyAdd = document.getElementById('btnWeekEmptyAdd');
       if(btnWeekEmptyAdd) btnWeekEmptyAdd.onclick = () => { if(typeof openWeekAddSheet === 'function') openWeekAddSheet(); };
       const btnWeekEmptyNew = document.getElementById('btnWeekEmptyNew');
-      if(btnWeekEmptyNew) btnWeekEmptyNew.onclick = () => { createFlowPreselectedDate = weekPlanDay; createFlowOriginView = 'week'; if(typeof openCreateFlowSheet === 'function') openCreateFlowSheet(); };
+      if(btnWeekEmptyNew) btnWeekEmptyNew.onclick = () => { if(typeof openDishFlow === 'function') openDishFlow(weekPlanDay, 'week'); };
       if(actionsBar) actionsBar.style.display = 'none';
       if(activateBlock) activateBlock.style.display = 'none';
       if(typeof lucide !== 'undefined') lucide.createIcons();
@@ -24772,7 +24772,7 @@
           var id = card.getAttribute('data-cookbook-entry-id');
           if(!id) return;
           var entry = (typeof cookbook !== 'undefined' && cookbook) ? cookbook.find(function(c){ return String(c.id) === String(id); }) : null;
-          if(entry && typeof openCookbookActionSheet === 'function'){ if(typeof haptic === 'function') haptic(6); openCookbookActionSheet(entry); }
+          if(entry && typeof startListingFlow === 'function'){ if(typeof haptic === 'function') haptic(6); if(typeof closeCookbookActionSheet === 'function') closeCookbookActionSheet(); startListingFlow({ dishId: entry.id, date: typeof isoDate === 'function' ? isoDate(new Date()) : '', entryPoint: 'cookbook', skipQuickPost: true }); }
         });
         magazineEl.addEventListener('touchend', function(e){
           var card = e.target && e.target.closest ? e.target.closest('.cookbook-magazine-card') : null;
@@ -24781,7 +24781,7 @@
           var id = card.getAttribute('data-cookbook-entry-id');
           if(!id) return;
           var entry = (typeof cookbook !== 'undefined' && cookbook) ? cookbook.find(function(c){ return String(c.id) === String(id); }) : null;
-          if(entry && typeof openCookbookActionSheet === 'function'){ if(typeof haptic === 'function') haptic(6); openCookbookActionSheet(entry); }
+          if(entry && typeof startListingFlow === 'function'){ if(typeof haptic === 'function') haptic(6); if(typeof closeCookbookActionSheet === 'function') closeCookbookActionSheet(); startListingFlow({ dishId: entry.id, date: typeof isoDate === 'function' ? isoDate(new Date()) : '', entryPoint: 'cookbook', skipQuickPost: true }); }
         }, { passive: false });
       }
       var entry = list[cookbookMagazineIndex];
@@ -24835,7 +24835,8 @@
         if(e && e.target && e.target.closest && e.target.closest('.cookbook-blitz-btn')) return;
         if(e && e.cancelable){ e.preventDefault(); e.stopPropagation(); }
         if(typeof haptic==='function') haptic(6);
-        if(typeof openCookbookActionSheet==='function') openCookbookActionSheet(entry);
+        if(typeof closeCookbookActionSheet === 'function') closeCookbookActionSheet();
+        if(typeof startListingFlow === 'function') startListingFlow({ dishId: entry.id, date: typeof isoDate === 'function' ? isoDate(new Date()) : '', entryPoint: 'cookbook', skipQuickPost: true });
       };
       var cardEl = magazineEl.querySelector('.cookbook-magazine-card');
       if(cardEl){
@@ -24850,7 +24851,8 @@
           if(e && e.target && e.target.closest && (e.target.closest('.cookbook-magazine-nav') || e.target.closest('.cookbook-blitz-btn'))) return;
           if(e && e.cancelable){ e.preventDefault(); e.stopPropagation(); }
           if(typeof haptic==='function') haptic(6);
-          if(typeof openCookbookActionSheet==='function') openCookbookActionSheet(entry);
+          if(typeof closeCookbookActionSheet === 'function') closeCookbookActionSheet();
+          if(typeof startListingFlow === 'function') startListingFlow({ dishId: entry.id, date: typeof isoDate === 'function' ? isoDate(new Date()) : '', entryPoint: 'cookbook', skipQuickPost: true });
         }
         cardEl.onclick = function(e){ e.stopPropagation(); handleCardTap(e); };
         cardEl.onkeydown = function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); handleCardTap(e); } };
@@ -27124,8 +27126,9 @@
 
   function saveToCookbookFromWizard(keepOpen=false){
     const now = Date.now();
+    var targetId = (w.ctx && w.ctx.editId) || (w.data && w.data.cookbookId) || (w.ctx && w.ctx.dishId) || null;
     const base = {
-      id: cryptoId(),
+      id: targetId || (typeof cryptoId === 'function' ? cryptoId() : 'cb-' + now),
       providerId: providerId(),
       dish: w.data.dish||'',
       category: w.data.category||'Vegetarisch',
@@ -27139,21 +27142,23 @@
       createdAt: now,
       lastUsed: null
     };
-    if(w.ctx && w.ctx.editId){
-      var idx = cookbook.findIndex(function(c){ return c.id===w.ctx.editId; });
-      if(idx>=0){
+    if(targetId){
+      var idx = cookbook.findIndex(function(c){ return String(c.id) === String(targetId); });
+      if(idx >= 0){
         var prev = cookbook[idx];
-        cookbook[idx] = Object.assign({}, prev, base, { id: prev.id, createdAt: prev.createdAt || now, lastUsed: prev.lastUsed != null ? prev.lastUsed : null });
-        save(LS.cookbook, cookbook);
-        if(!keepOpen){ renderCookbook(); }
+        cookbook[idx] = Object.assign({}, prev, base, { id: prev.id, createdAt: prev.createdAt || now, lastUsed: prev.lastUsed != null ? prev.lastUsed : now });
+        if(typeof save === 'function' && typeof LS !== 'undefined') save(LS.cookbook, cookbook);
+        if(typeof showToast === 'function') showToast('Kochbuch-Eintrag aktualisiert ✨');
+        if(!keepOpen && typeof renderCookbook === 'function') renderCookbook();
+        if(!keepOpen && w.ctx && w.ctx.entryPoint === 'week'){ if(typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard(); else if(typeof renderProviderWeekPreview === 'function') renderProviderWeekPreview(); }
         return prev.id;
       }
     }
-    {
-      cookbook.push(base);
-    }
-    save(LS.cookbook, cookbook);
-    if(!keepOpen){ renderCookbook(); }
+    cookbook.push(base);
+    if(typeof save === 'function' && typeof LS !== 'undefined') save(LS.cookbook, cookbook);
+    if(!targetId && typeof showToast === 'function') showToast('Neu im Kochbuch gespeichert 📖');
+    if(!keepOpen && typeof renderCookbook === 'function') renderCookbook();
+    if(!keepOpen && w.ctx && w.ctx.entryPoint === 'week'){ if(typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard(); else if(typeof renderProviderWeekPreview === 'function') renderProviderWeekPreview(); }
     return base.id;
   }
 
