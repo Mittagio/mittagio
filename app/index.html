@@ -24808,7 +24808,7 @@
         '<span class="cookbook-pillar-icon" style="font-size:18px; opacity:'+(hasAbholnummer?'1':'0.4')+';" aria-hidden="true">🧾</span>'+
         '<span class="cookbook-pillar-icon" style="font-size:18px; opacity:'+(hasMehrweg?'1':'0.4')+';" aria-hidden="true">🔄</span>'+
         '</div>';
-      magazineEl.innerHTML = '<div class="cookbook-magazine-card" role="button" tabindex="0" style="width:88%; max-width:400px; background:#fff; border:1px solid rgba(0,0,0,0.06); border-radius:24px; box-shadow:0 8px 24px rgba(0,0,0,0.08); overflow:hidden; display:flex; flex-direction:column; cursor:pointer; position:relative; z-index:2;">'+
+      magazineEl.innerHTML = '<div class="cookbook-magazine-card" role="button" tabindex="0" style="width:88%; max-width:400px; background:#fff; border:1px solid rgba(0,0,0,0.06); border-radius:24px; box-shadow:0 8px 24px rgba(0,0,0,0.08); overflow:hidden; display:flex; flex-direction:column; cursor:pointer; position:relative; z-index:2; touch-action:manipulation; -webkit-tap-highlight-color:transparent;">'+
         '<div class="cookbook-magazine-gloss" style="position:absolute; inset:0; pointer-events:none; z-index:1; background:linear-gradient(to top right, rgba(255,255,255,0.08) 0%, transparent 50%);"></div>'+
         '<div class="cookbook-magazine-img-wrap" style="overflow:hidden; position:relative; flex-shrink:0;">'+
         imgHtml+
@@ -24856,10 +24856,10 @@
         cardEl.onkeydown = function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); handleCardTap(e); } };
         cardEl.addEventListener('touchend', function(e){
           if(window._cookbookSwipeHandled){ window._cookbookSwipeHandled = false; return; }
-          if(e.target.closest('.cookbook-blitz-btn')) return;
+          if(e.target && e.target.closest && e.target.closest('.cookbook-blitz-btn')) return;
           if(e.cancelable) e.preventDefault();
           e.stopPropagation();
-          handleCardTap(null);
+          handleCardTap(e);
         }, { passive: false });
         if(list.length > 1) attachCookbookMagazineSwipe(cardEl, list.length);
       }
