@@ -24651,7 +24651,7 @@
   };
   if(cookbookActionWeek) cookbookActionWeek.onclick=()=>{
     const ent = window._cookbookActionEntry;
-    if(ent){ if(typeof haptic==='function') haptic(6); selectedCookbookId = ent.id; closeCookbookActionSheet(); if(typeof openCookbookWeekSheet === 'function') openCookbookWeekSheet(); }
+    if(ent){ if(typeof haptic==='function') haptic(6); closeCookbookActionSheet(); if(typeof startListingFlow==='function') startListingFlow({ dishId: ent.id, entryPoint: 'week', date: typeof isoDate==='function' ? isoDate(new Date()) : '' }); }
   };
   if(cookbookActionSave) cookbookActionSave.onclick=()=>{
     const ent = window._cookbookActionEntry;
@@ -27430,7 +27430,7 @@
       };
     }
     const inseratSuccessBtnBack = document.getElementById('inseratSuccessBtnBack');
-    if(inseratSuccessBtnBack) inseratSuccessBtnBack.onclick = function(){ var id = inseratSuccessCurrentOffer && inseratSuccessCurrentOffer.id; closeInseratSuccessSheet(); if(id && typeof openProviderOffer === 'function') openProviderOffer(id); };
+    if(inseratSuccessBtnBack) inseratSuccessBtnBack.onclick = function(){ var id = inseratSuccessCurrentOffer && inseratSuccessCurrentOffer.id; closeInseratSuccessSheet(); if(id && typeof startListingFlow === 'function') startListingFlow({ editOfferId: id }); };
     const inseratSuccessBtnNewListing = document.getElementById('inseratSuccessBtnNewListing');
     if(inseratSuccessBtnNewListing){
       inseratSuccessBtnNewListing.onclick = function(){
