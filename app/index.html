@@ -873,6 +873,9 @@
     #saveSuccessSheetBd:not(.active),
     #abholnummerExplainBd:not(.active){ display:none !important; opacity:0 !important; pointer-events:none !important; visibility:hidden !important; }
     #pricingFairnessBd:not(.active){ display:none !important; opacity:0 !important; pointer-events:none !important; }
+    #cookbookActionSheetBd:not(.active),
+    #cookbookLiveSheetBd:not(.active),
+    #cookbookWeekSheetBd:not(.cookbook-week-bd-visible){ display:none !important; opacity:0 !important; pointer-events:none !important; visibility:hidden !important; }
     /* Preisübersicht als Bottom-Sheet (S25): von unten hochgleitend */
     #pricingFairnessOverlay { position: fixed !important; bottom: 0 !important; left: 0 !important; right: 0 !important; max-height: 85vh; overflow-y: auto; transform: translateY(100%); transition: transform 0.35s ease-out, visibility 0s linear 0.35s; pointer-events: none; visibility: hidden; border-radius: 20px 20px 0 0; }
     #pricingFairnessOverlay.active { transform: translateY(0); transition: transform 0.35s ease-out; pointer-events: auto; visibility: visible; }
@@ -3340,7 +3343,7 @@
     .provider-nav-pill .navbtn.active .ico svg{ color:#1a1a1a !important; stroke:#1a1a1a !important; }
     .provider-nav-pill .navbtn .ico + div{ font-size:10px; font-weight:900; text-transform:uppercase; letter-spacing:0.02em; }
     /* Schwebende Bar: Abstand vom Rand (FloatingAppDashboard bottom-10 left-10 right-10) */
-    #providerNavWrap.provider-nav-wrap-pill{ bottom:2.5rem !important; left:2.5rem !important; right:2.5rem !important; max-width:32rem; margin-left:auto; margin-right:auto; z-index:999 !important; }
+    #providerNavWrap.provider-nav-wrap-pill{ bottom:2.5rem !important; left:2.5rem !important; right:2.5rem !important; max-width:32rem; margin-left:auto; margin-right:auto; z-index:1052 !important; }
     #providerNavWrap #providerNav{ min-height:80px; }
     @media (max-width: 420px){
       #providerNavWrap.provider-nav-wrap-pill{ left:1rem !important; right:1rem !important; bottom:1.5rem !important; }
@@ -5316,7 +5319,7 @@
       body.provider-week-active .topbar{ display:none !important; }
       body.provider-week-active main{ padding-top:0 !important; padding-left:0 !important; padding-right:0 !important; max-width:none !important; overflow-x:hidden !important; }
       /* Tab-Nav bleibt fix sichtbar (z-index über Action-Bar) */
-      body.provider-week-active #providerNavWrap{ position:fixed !important; bottom:0 !important; left:0 !important; right:0 !important; z-index:999 !important; }
+      body.provider-week-active #providerNavWrap{ position:fixed !important; bottom:0 !important; left:0 !important; right:0 !important; z-index:1052 !important; }
       /* Dashboard: Dein Wochenplan – klare Trennung von KPIs, App-Kasten, S25-Safe */
       #providerWeekSection .prov-card{ padding:var(--card-padding, 20px); border-radius:24px; box-shadow:0 4px 20px rgba(0,0,0,0.06); border:none; background:#fff; }
       #providerWeekSection{ margin-top:28px; padding:24px 16px 24px; padding-left:max(16px, env(safe-area-inset-left)); padding-right:max(16px, env(safe-area-inset-right)); background:#fff; border-radius:28px; box-shadow:0 4px 24px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04); }
@@ -8595,7 +8598,7 @@
   </nav>
 
     <!-- PROVIDER bottom nav: fixer Zurück-Button darüber, heller Tab-Bar (App-Style) -->
-  <div id="providerNavWrap" class="provider-nav-wrap-pill" style="display:none; position:fixed; bottom:24px; left:16px; right:16px; max-width:500px; margin-left:auto; margin-right:auto; z-index:999; padding:0 env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0);">
+  <div id="providerNavWrap" class="provider-nav-wrap-pill" style="display:none; position:fixed; bottom:24px; left:16px; right:16px; max-width:500px; margin-left:auto; margin-right:auto; z-index:1052; padding:0 env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0);">
     <div id="providerNavBackRow" style="padding:0 20px 16px; display:none;">
       <button type="button" id="btnProviderNavBack" class="btn-back" aria-label="Zurück" style="background:rgba(255,255,255,0.9); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:1px solid rgba(0,0,0,0.08); color:#1a1a1a; padding:10px 24px; border-radius:999px; font-size:15px; font-weight:700; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.06);"><i data-lucide="chevron-left" style="width:20px;height:20px;"></i> Zurück</button>
     </div>
@@ -10975,10 +10978,6 @@
         document.getElementById('quickPostSheet')?.classList.remove('active');
         document.getElementById('publishFeeBd')?.classList.remove('active');
         document.getElementById('publishFeeSheet')?.classList.remove('active');
-        if(id === 'v-provider-cookbook'){
-          if(typeof closeCookbookLiveSheet === 'function') closeCookbookLiveSheet();
-          if(typeof closeCookbookWeekSheet === 'function') closeCookbookWeekSheet();
-        }
       } catch(e) {}
     }
     view.classList.add('active');
@@ -11031,10 +11030,10 @@
     // Quick-Post- und Publish-Fee-Modals schließen – verhindert blockierte Klicks (z. B. Kochbuch tapbar)
     if(typeof closeQuickPostSheet === 'function') closeQuickPostSheet();
     if(typeof closePublishFeeModal === 'function') closePublishFeeModal();
-    if(id === 'v-provider-cookbook'){
-      if(typeof closeCookbookLiveSheet === 'function') closeCookbookLiveSheet();
-      if(typeof closeCookbookWeekSheet === 'function') closeCookbookWeekSheet();
-    }
+    // Kochbuch-Modale bei jedem View-Wechsel schließen, damit Nav und Kochbuch-Inhalt tapbar bleiben
+    if(typeof closeCookbookActionSheet === 'function') closeCookbookActionSheet();
+    if(typeof closeCookbookLiveSheet === 'function') closeCookbookLiveSheet();
+    if(typeof closeCookbookWeekSheet === 'function') closeCookbookWeekSheet();
 
     // Topbar: Kundefarben (Seite-1-Style) wenn Kundenseite aktiv
     const topbar = document.querySelector('.topbar');
@@ -24925,10 +24924,11 @@
     }
     if(btn){ btn.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(typeof publishCookbookEntry === 'function') publishCookbookEntry(selectedCookbookId, cookbookLiveSheetChosenDate); closeCookbookLiveSheet(); clearCookbookSelection(); if(typeof renderCookbook === 'function') renderCookbook(); }; }
     bd.style.display = 'block';
+    bd.classList.add('active');
     sheet.classList.add('active');
     if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
   }
-  function closeCookbookLiveSheet(){ var bd = document.getElementById('cookbookLiveSheetBd'); var sheet = document.getElementById('cookbookLiveSheet'); if(bd) bd.style.display = 'none'; if(sheet) sheet.classList.remove('active'); }
+  function closeCookbookLiveSheet(){ var bd = document.getElementById('cookbookLiveSheetBd'); var sheet = document.getElementById('cookbookLiveSheet'); if(bd){ bd.style.display = 'none'; bd.classList.remove('active'); } if(sheet) sheet.classList.remove('active'); }
   function showCookbookVictoryOverlay(dayLabel, thenCallback){
     try { if(typeof haptic === 'function') haptic([12, 55, 12]); else if(navigator.vibrate) navigator.vibrate([12, 55, 12]); } catch(e){}
     var overlay = document.createElement('div');
