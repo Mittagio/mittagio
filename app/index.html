@@ -3873,11 +3873,14 @@
     .discover-filter-sticky{
       overflow-x:hidden; min-width:0;
     }
-    /* S25 / Applike: Thumb-Zone, große Touch-Ziele (min 44–48px) */
+    /* S25 / Applike: Thumb-Zone, horizontal wischbar (touch-action: pan-x) */
     #v-discover .discover-header-pills{
-      display:flex; gap:10px; overflow-x:auto; -webkit-overflow-scrolling:touch; scroll-snap-type:x mandatory;
-      padding:8px var(--header-padding-x) 12px; scrollbar-width:none;
-      min-width:0; max-width:100%;
+      display:flex; gap:10px; overflow-x:auto; overflow-y:hidden;
+      -webkit-overflow-scrolling:touch; scroll-snap-type:x mandatory;
+      padding:8px var(--header-padding-x) 12px; padding-bottom:14px;
+      scrollbar-width:none; min-width:0; max-width:100%;
+      white-space:nowrap;
+      touch-action:pan-x;
     }
     #v-discover .discover-header-pills::-webkit-scrollbar{ display:none; }
     #v-discover .discover-header-pills .discover-category-chip{
@@ -3889,7 +3892,7 @@
     #v-discover .discover-header-pills .discover-category-chip.active{
       background: var(--pill-active-emerald); color:#fff; box-shadow:0 2px 12px rgba(37,99,235,0.4);
     }
-    #v-discover #discoverDaysBar{ display:flex; gap:8px; overflow-x:auto; -webkit-overflow-scrolling:touch; padding:0 var(--header-padding-x) 4px; scrollbar-width:none; min-width:0; }
+    #v-discover #discoverDaysBar{ display:flex; gap:8px; overflow-x:auto; overflow-y:hidden; -webkit-overflow-scrolling:touch; padding:0 var(--header-padding-x) 4px; scrollbar-width:none; min-width:0; white-space:nowrap; touch-action:pan-x; }
     #v-discover #discoverDaysBar::-webkit-scrollbar{ display:none; }
     #v-discover #discoverDaysBar .cust-chip{ min-height: var(--pill-min-height); min-width:65px; width:65px; padding:10px 8px; font-size: var(--font-meta-sm, 13px); border-radius:20px; flex:0 0 65px; box-sizing:border-box; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     #v-discover .discover-offers-list{ width:95%; max-width:560px; margin:0 auto; }
@@ -4136,31 +4139,36 @@
       object-fit: cover;
       object-position: center;
     }
-    /* Anbieter-Logo als klickbares Badge (blockiert Card-Tap nicht) */
+    /* Anbieter-Logo als dezent Badge oben links (blockiert Card-Tap nicht) */
     #v-discover .dish-card{ position: relative; }
-    #v-discover .dish-card .card-logo{
+    #v-discover .dish-card .card-logo,
+    #v-discover .dish-card .providerBadge{
       position:absolute;
-      left:4px;
-      bottom:4px;
-      width:48px;
-      height:48px;
+      top:8px;
+      left:8px;
+      width:36px;
+      height:36px;
       border-radius:999px;
-      background:#fff;
-      border:2px solid #fff;
-      box-shadow:0 6px 14px rgba(0,0,0,.15);
-      display:flex;
-      align-items:center;
-      justify-content:center;
+      background:rgba(255,255,255,.92);
+      border:1px solid rgba(0,0,0,.08);
+      box-shadow:0 6px 14px rgba(0,0,0,.10);
+      backdrop-filter:blur(6px);
+      -webkit-backdrop-filter:blur(6px);
+      display:grid;
+      place-items:center;
       overflow:hidden;
       z-index:6;
       cursor:pointer;
       -webkit-tap-highlight-color:transparent;
-      transition:transform .12s ease, box-shadow .12s ease;
+      transition:transform .12s ease;
       text-decoration:none;
     }
-    #v-discover .dish-card .card-logo:active{ transform:scale(.96); }
-    #v-discover .dish-card .card-logo img{ width:80%; height:80%; object-fit:contain; }
-    #v-discover .dish-card .card-logo:focus-visible{ outline:3px solid rgba(47,102,255,.45); outline-offset:2px; }
+    #v-discover .dish-card .card-logo:active,
+    #v-discover .dish-card .providerBadge:active{ transform:scale(.96); }
+    #v-discover .dish-card .card-logo img,
+    #v-discover .dish-card .providerBadge img{ width:74%; height:74%; object-fit:contain; border-radius:999px; }
+    #v-discover .dish-card .card-logo:focus-visible,
+    #v-discover .dish-card .providerBadge:focus-visible{ outline:3px solid rgba(47,102,255,.45); outline-offset:2px; }
     /* Rechte Seite: Details (kompakt, ohne extra Padding) */
     .dish-details {
       flex: 1;
@@ -12168,6 +12176,8 @@
       if(swipeEl) swipeEl.style.display = 'none';
       if(switchIcon) switchIcon.textContent = '☰';
       if(switchLabel) switchLabel.textContent = 'Liste';
+      var routeEl = document.getElementById('discoverPinDrawerRoute');
+      if(routeEl) routeEl.style.display = (routeEl.getAttribute('href') && routeEl.getAttribute('href') !== '#') ? 'inline-flex' : 'none';
     } else {
       if(listEl) listEl.style.display = 'flex';
       if(mapWrap) mapWrap.style.display = 'none';
@@ -12175,6 +12185,8 @@
       if(emptyEl) emptyEl.style.display = 'none';
       if(switchIcon) switchIcon.textContent = '🗺️';
       if(switchLabel) switchLabel.textContent = 'Karte';
+      var routeEl = document.getElementById('discoverPinDrawerRoute');
+      if(routeEl) routeEl.style.display = 'none';
       if(typeof renderDiscover === 'function') renderDiscover();
     }
     
@@ -12292,7 +12304,7 @@
     var addr = buildAddress({ address: data.address, street: data.providerStreet, zip: data.providerZip, city: data.providerCity });
     if(routeEl){
       routeEl.href = addr ? ('https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(addr)) : '#';
-      routeEl.style.display = addr ? 'inline-flex' : 'none';
+      routeEl.style.display = (discoverViewMode === 'map' && addr) ? 'inline-flex' : 'none';
     }
     btnEl.onclick = function(){ closeDiscoverPinDrawer(); openOffer(data.id); };
     if(backdrop) backdrop.classList.add('open');
@@ -13700,7 +13712,7 @@
           <button class="btn-icon-overlay" onclick="event.stopPropagation(); event.preventDefault(); toggleDishFav(${JSON.stringify(dishKey)}); const btn=this.querySelector('i'); if(btn){ const nowFav=typeof dishFavs!=='undefined'&&dishFavs.has(${JSON.stringify(dishKey)}); btn.style.fill=nowFav?'currentColor':''; btn.style.color=nowFav?'#e74c3c':'#666'; if(typeof lucide!=='undefined')lucide.createIcons(); }" title="Favorit" style="position:absolute; top:4px; right:4px; width:28px; height:28px; border-radius:50%; background:rgba(255,255,255,0.95); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 2px 6px rgba(0,0,0,0.15); transition:transform 0.2s ease; z-index:5;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
             <i data-lucide="heart" style="width:14px;height:14px;${isFav ? 'fill:currentColor; color:#e74c3c;' : 'color:#666;'}"></i>
           </button>
-          <a class="card-logo" href="#" aria-label="Zum Anbieter ${esc(data.providerName||'Anbieter')}" onclick="event.preventDefault(); event.stopPropagation(); if(typeof showProviderProfilePublic==='function') showProviderProfilePublic('${esc(data.providerId||'')}');">${logoContent}</a>
+          <a class="card-logo providerBadge" href="#" aria-label="Zum Anbieter ${esc(data.providerName||'Anbieter')}" onclick="event.preventDefault(); event.stopPropagation(); if(typeof showProviderProfilePublic==='function') showProviderProfilePublic('${esc(data.providerId||'')}');">${logoContent}</a>
         </div>
         
         <!-- Info-Bereich rechts (flex:1 für volle Breite) -->
@@ -13734,7 +13746,7 @@
     // Klick auf Karte öffnet immer Detailansicht (nicht direkt Bestellung)
     card.onclick = (e)=>{
       if(e.target.closest('.btn-icon-overlay')) return; // Button-Handler übernimmt
-      if(e.target.closest('.card-logo')) return; // Logo führt zum Anbieter, nicht zum Gericht
+      if(e.target.closest('.card-logo') || e.target.closest('.providerBadge')) return; // Badge führt zum Anbieter
       openOffer(data.id); // Immer Detailansicht öffnen
     };
     

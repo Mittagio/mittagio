@@ -96,16 +96,19 @@ body{
   min-width: 0;
 }
 
-/* Horizontal chips – scrollbar: min-width:0 damit Container scrollt */
+/* Horizontal chips – wischbar (touch-action: pan-x), min-width:0 */
 .chips{
   display:flex;
   gap: 10px;
   overflow-x: auto;
+  overflow-y: hidden;
   padding-bottom: 6px;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
   min-width: 0;
   max-width: 100%;
+  white-space: nowrap;
+  touch-action: pan-x;
 }
 .chips::-webkit-scrollbar{display:none}
 
@@ -158,15 +161,18 @@ body{
 }
 .distance .chev{ opacity:.7; font-weight:900; }
 
-/* Day tabs – scrollbar: min-width:0 damit horizontal scrollt */
+/* Day tabs – horizontal wischbar (touch-action: pan-x) */
 .daytabs{
   display:flex;
   gap: 10px;
   overflow-x:auto;
+  overflow-y:hidden;
   -webkit-overflow-scrolling: touch;
   scrollbar-width:none;
   flex: 1;
   min-width: 0;
+  white-space:nowrap;
+  touch-action: pan-x;
 }
 .daytabs::-webkit-scrollbar{display:none}
 
@@ -207,47 +213,39 @@ body{
   flex-direction: column;
 }
 
-/* Klickbares Anbieter-Logo (Badge), blockiert Card-Tap nicht */
+/* Anbieter-Badge oben links im Bild, dezent, klickbar → Anbieter */
 .card-logo{
   position:absolute;
-  left:16px;
-  bottom:110px;
-  width:62px;
-  height:62px;
+  top:8px;
+  left:8px;
+  width:36px;
+  height:36px;
   border-radius:999px;
-  background:#fff;
-  border:3px solid #fff;
-  box-shadow:0 10px 20px rgba(0,0,0,.15);
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  background:rgba(255,255,255,.92);
+  border:1px solid rgba(0,0,0,.08);
+  box-shadow:0 6px 14px rgba(0,0,0,.10);
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+  display:grid;
+  place-items:center;
   overflow:hidden;
   z-index:5;
   cursor:pointer;
-  -webkit-tap-highlight-color: transparent;
-  transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
+  -webkit-tap-highlight-color:transparent;
+  transition:transform .12s ease;
   text-decoration:none;
 }
 .card-logo:active{ transform: scale(.96); }
 .card-logo:hover{ filter: brightness(.98); }
 .card-logo img{
-  width:80%;
-  height:80%;
+  width:74%;
+  height:74%;
   object-fit:contain;
+  border-radius:999px;
 }
 .card-logo:focus-visible{
   outline: 3px solid rgba(47,102,255,.45);
   outline-offset: 3px;
-}
-.card-logo::after{
-  content:"Anbieter";
-  position:absolute;
-  bottom:-18px;
-  left:50%;
-  transform:translateX(-50%);
-  font-size:11px;
-  font-weight:900;
-  color: rgba(15,16,20,.55);
 }
 
 .card-media{
@@ -467,6 +465,29 @@ function openMealDetail(){ console.log('Card tap – Gericht öffnen'); }
 document.addEventListener("click", function(e) {
   var logo = e.target.closest(".card-logo");
   if (logo) e.stopPropagation();
+});
+
+/* Optional: Drag-to-scroll für Chips (Fallback wenn Touch-Swipe hakt) */
+function setupDragScroll(selector) {
+  var el = document.querySelector(selector);
+  if (!el) return;
+  var down = false, startX = 0, scrollLeft = 0;
+  el.addEventListener("pointerdown", function(e) {
+    down = true;
+    startX = e.clientX;
+    scrollLeft = el.scrollLeft;
+    el.setPointerCapture(e.pointerId);
+  });
+  el.addEventListener("pointermove", function(e) {
+    if (!down) return;
+    el.scrollLeft = scrollLeft - (e.clientX - startX);
+  });
+  el.addEventListener("pointerup", function() { down = false; });
+  el.addEventListener("pointercancel", function() { down = false; });
+}
+document.addEventListener("DOMContentLoaded", function() {
+  setupDragScroll(".chips");
+  setupDragScroll(".daytabs");
 });
 
 function setActive(container, selector, activeEl) {
