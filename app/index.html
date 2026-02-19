@@ -59,21 +59,20 @@
     <section class="view customer-view active" id="v-discover">
       <!-- Modern Sticky Header: Standort links, MITTAGIO weiß zentriert, Filter darunter sticky -->
       <header class="cust-header-sticky discover-header-sticky">
-        <!-- Zeile 1: Standort links, MITTAGIO exakt mittig (Grid). Kein Profil-/Warenkorb-Icon rechts. -->
-        <div class="discover-header-top-row" style="display:grid; grid-template-columns: 1fr auto 1fr; align-items:center; gap:6px; background:#121826;">
-          <div class="discover-location-row-wrap" style="display:flex; align-items:center; gap:6px; min-width:0;">
-            <button type="button" id="btnDiscoverLocationText" style="display:flex; align-items:center; gap:4px; background:none; border:none; padding:0; cursor:pointer; min-width:0; text-align:left;">
+        <!-- Zeile 1: Standort links, Logo absolut mittig, GPS rechts – Symmetrie [cite: 2026-02-18] -->
+        <div class="discover-header-top-row" style="background:#121826;">
+          <div class="discover-location-row-wrap">
+            <button type="button" id="btnDiscoverLocationText" class="discover-location-btn-inner" style="display:flex; align-items:center; gap:4px; background:none; border:none; padding:0; cursor:pointer; min-width:0; text-align:left;">
               <span class="discover-location-pin" style="font-size:14px; line-height:1;">📍</span>
               <span id="discoverCurrentLocation" class="discover-location-text">Standort wählen...</span>
             </button>
-            <button type="button" id="btnDiscoverLocationGPS" class="discover-gps-btn" aria-label="Standort per GPS" style="display:flex; align-items:center; justify-content:center; width:36px; height:36px; border-radius:10px; border:none; background:rgba(255,255,255,0.15); color:#fff; cursor:pointer; flex-shrink:0;">
-              <i data-lucide="map-pin" style="width:18px;height:18px;"></i>
+          </div>
+          <span class="discover-logo">MITTAGIO</span>
+          <div class="discover-header-right-anchor">
+            <button type="button" id="btnDiscoverLocationGPS" class="discover-gps-btn" aria-label="Standort per GPS">
+              <i data-lucide="map-pin" style="width:16px;height:16px;"></i>
             </button>
           </div>
-          <div style="display:flex; justify-content:center; align-items:center;">
-            <span class="discover-logo">MITTAGIO</span>
-          </div>
-          <div style="min-width:0;"></div>
         </div>
 
         <!-- Standort-Dropdown (Bleibt funktional gleich, nur Design-Update) -->
