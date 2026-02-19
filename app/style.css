@@ -1983,6 +1983,22 @@
       cursor: pointer;
       transition: transform 0.1s;
     }
+    /* Onboarding-Preview: 5-Ebenen-InseratCard-Stil, 32px Radius, Bottom-Sheet [cite: 2026-02-18] */
+    #v-provider-onboarding-preview .onboarding-preview-card,
+    #v-provider-onboarding-preview .inserat-card-preview {
+      border-radius: 32px;
+      overflow: hidden;
+      background: #fff;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.02);
+      display: flex;
+      flex-direction: column;
+    }
+    #v-provider-onboarding-preview .onboarding-preview-card img,
+    #v-provider-onboarding-preview .inserat-card-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
     .onboarding-actions button.btn-primary {
       background: var(--brand);
       color: #1a1a1a;
@@ -2562,14 +2578,21 @@
       background: rgba(255,255,255,0.4); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
       transition: opacity 0.3s ease; pointer-events: auto;
     }
-    #wizard[data-flow="listing"] .inserat-onboarding-overlay.is-dismissed { opacity: 0; pointer-events: none; }
+    #wizard[data-flow="listing"] .inserat-onboarding-overlay.is-dismissed { opacity: 0; pointer-events: none; transition: opacity 0.25s ease; }
+    /* Onboarding-Karte: Bottom-Sheet-Look, 32px Radius, kein harter Schlagschatten [cite: 2026-02-18] */
     #wizard[data-flow="listing"] .inserat-onboarding-card {
-      background: #fff; border-radius: 24px; padding: 28px 24px; max-width: 320px; text-align: center;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.04);
+      background: #fff; border-radius: 32px; padding: 28px 24px; max-width: 320px; text-align: center;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.02);
     }
-    #wizard[data-flow="listing"] .inserat-onboarding-card p { margin: 0 0 20px; font-size: 17px; font-weight: 700; color: #1a1a1a; line-height: 1.4; }
-    #wizard[data-flow="listing"] .inserat-onboarding-card .inserat-onboarding-btn { width: 100%; min-height: 52px; border-radius: 16px; border: none; background: #10b981; color: #fff; font-size: 16px; font-weight: 800; cursor: pointer; box-shadow: 0 10px 30px rgba(16,185,129,0.35); -webkit-tap-highlight-color: transparent; }
-    #wizard[data-flow="listing"] .inserat-onboarding-card .inserat-onboarding-btn:active { transform: scale(0.98); }
+    #wizard[data-flow="listing"] .inserat-onboarding-card p { margin: 0 0 20px; font-size: 17px; font-weight: 700; color: #0f172a; line-height: 1.4; }
+    /* CTA: Modern S25-Look, Emerald, abgerundet, nicht klobig [cite: 2026-02-18] */
+    #wizard[data-flow="listing"] .inserat-onboarding-card .inserat-onboarding-btn {
+      width: 100%; min-height: 52px; border-radius: 20px; border: none;
+      background: #10b981; color: #fff; font-size: 16px; font-weight: 800; cursor: pointer;
+      box-shadow: 0 6px 20px rgba(16,185,129,0.3); -webkit-tap-highlight-color: transparent;
+      transition: transform 0.15s ease, box-shadow 0.2s ease;
+    }
+    #wizard[data-flow="listing"] .inserat-onboarding-card .inserat-onboarding-btn:active { transform: scale(0.98); box-shadow: 0 4px 16px rgba(16,185,129,0.25); }
     #wizard[data-flow="listing"] .inserat-onboarding-price-pulse input.inserat-price-fintech { animation: onboarding-price-pulse 2s ease-in-out infinite; }
     @keyframes onboarding-price-pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(16,185,129,0.2); } 50% { box-shadow: 0 0 0 6px rgba(16,185,129,0.15); } }
     #wizard[data-flow="listing"] .pricing-info-label.inserat-onboarding-tooltip { position: relative; }
@@ -5652,7 +5675,7 @@
       /* S25 Native-First: flüssiges flex-column, Scroll nicht blockieren [cite: s25-native-first] */
       #v-provider-profile .provider-profile-sub{ flex:1; min-height:0; display:flex; flex-direction:column; background:#F9FAFB !important; }
       #v-provider-profile .provider-profile-sub > .tgtg-list-wrap,
-      #v-provider-profile .provider-profile-sub > div[style*="overflow-y:auto"]{ flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:20px; padding-bottom:calc(120px + env(safe-area-inset-bottom, 0)); box-sizing:border-box; }
+      #v-provider-profile .provider-profile-sub > div[style*="overflow-y:auto"]{ flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:20px 0 calc(120px + env(safe-area-inset-bottom, 0)); box-sizing:border-box; width:100%; }
       #v-provider-profile .provider-profile-sub .provider-sub-scroll{ flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:20px; padding-bottom:calc(120px + env(safe-area-inset-bottom, 0)); box-sizing:border-box; }
       #v-provider-profile #providerProfileMenuCard{ background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,0.06); }
       /* Einstellungen (Zahnrad): wie Kundenseite – Clean Card & Spacing */
@@ -5717,22 +5740,29 @@
       .provider-settings-accordion-content-inner{ overflow:hidden; }
       .provider-settings-accordion-content-inner > *{ padding:0 20px 20px; }
 
-      /* Account verwalten: S25 Native-First – flex-column, gap 16px, padding 20px, Clean Cards [cite: s25-native-first] */
-      #v-provider-profile .tgtg-list-wrap{ background:#F9FAFB; flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:20px; padding-bottom:calc(120px + env(safe-area-inset-bottom, 0)); display:flex; flex-direction:column; gap:16px; box-sizing:border-box; width:100%; }
-      /* Account verwalten: Keine Boxen – volle Breite, nur 1px #E5E7EB Trenner [TGTG-Vorbild] */
-      #v-provider-profile .tgtg-list{ background:#fff; margin:0; border-radius:0; border:none; box-shadow:none; overflow:hidden; width:100%; max-width:100%; }
-      /* FAQ „Was ist was?“: TGTG-Flat – eine weiße Fläche, keine Kacheln [cite: 2026-01-29] */
-      #v-provider-profile .tgtg-list:has(.tgtg-accordion){ box-shadow:none; border:none; border-radius:0; margin:0; }
-      #v-provider-profile .tgtg-section-title{ font-size:11px; font-weight:800; letter-spacing:0.06em; color:#64748b; text-transform:uppercase; margin:0 0 4px; padding:0 4px; }
-      #v-provider-profile .tgtg-row{ position:relative; display:flex; align-items:center; justify-content:space-between; gap:12px; width:100%; min-height:56px; padding:16px 20px; background:#fff; border:none; font-size:16px; font-weight:700; color:#1a1a1a; cursor:pointer; text-align:left; font-family:inherit; transition:background 0.2s; -webkit-tap-highlight-color:transparent; box-sizing:border-box; border-bottom:1px solid #E5E7EB; }
+      /* Account verwalten: Full-Width List-Design [cite: 2026-01-29, 2026-02-18] – Listenzeilen, nicht Buttons */
+      #v-provider-profile .tgtg-list-wrap{ background:#F9FAFB !important; flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:20px 0 calc(120px + env(safe-area-inset-bottom, 0)); display:flex; flex-direction:column; box-sizing:border-box; width:100% !important; max-width:none !important; gap:0; }
+      /* Container-Sprengung: Keine max-width, keine festen Breiten */
+      #v-provider-profile .tgtg-list{ background:#fff !important; margin:0; border-radius:0; border:none !important; box-shadow:none !important; overflow:hidden; width:100% !important; max-width:none !important; }
+      #v-provider-profile .tgtg-list:has(.tgtg-accordion){ box-shadow:none !important; border:none !important; border-radius:0; margin:0; }
+      #v-provider-profile .tgtg-section-title{ font-size:11px; font-weight:800; letter-spacing:0.06em; color:#64748b; text-transform:uppercase; margin:0 0 4px; padding:12px 20px 4px; }
+      /* Zeile = von ganz links bis ganz rechts. Icon links, Pfeil rechts, dazwischen Weißraum [cite: 2026-02-18] */
+      #v-provider-profile .tgtg-row{
+        position:relative; display:flex !important; align-items:center !important; justify-content:space-between !important;
+        width:100% !important; min-height:56px; padding:16px 20px !important;
+        background:#FFFFFF !important; border:none !important; box-shadow:none !important;
+        font-size:16px; font-weight:700; color:#1a1a1a; cursor:pointer; text-align:left; font-family:inherit;
+        transition:background 0.2s; -webkit-tap-highlight-color:transparent; box-sizing:border-box;
+        border-bottom:1px solid #E5E7EB !important;
+      }
       #v-provider-profile .tgtg-row:last-child{ border-bottom:none; }
-      #v-provider-profile .tgtg-row::after{ display:none; }
-      #v-provider-profile .tgtg-row:active{ background:#f8fafc; }
+      #v-provider-profile .tgtg-row::after{ display:none !important; }
+      #v-provider-profile .tgtg-row:active{ background:#f8fafc !important; }
       #v-provider-profile .tgtg-row .tgtg-icon,
-      #v-provider-profile .tgtg-row .tgtg-row-icon{ font-size:20px; flex-shrink:0; width:28px; min-width:28px; text-align:center; }
-      #v-provider-profile .tgtg-row .tgtg-label{ flex:1; min-width:0; text-align:center; }
+      #v-provider-profile .tgtg-row .tgtg-row-icon{ font-size:20px; flex-shrink:0; width:28px; min-width:28px; text-align:left; }
+      #v-provider-profile .tgtg-row .tgtg-label{ flex:1; min-width:0; text-align:left; }
       #v-provider-profile .tgtg-row .tgtg-chevron{ width:20px; height:20px; color:#94a3b8; flex-shrink:0; }
-      #v-provider-profile .tgtg-identity{ padding:32px 4px 20px; text-align:center; background:transparent; }
+      #v-provider-profile .tgtg-identity{ padding:32px 20px 20px; text-align:center; background:transparent; }
       #v-provider-profile .tgtg-identity-name{ margin:0; font-size:17px; font-weight:800; color:#1a1a1a; letter-spacing:-0.02em; }
       #v-provider-profile .tgtg-identity-ort{ margin:4px 0 0; font-size:14px; color:#64748b; }
       /* FOLGE UNS: SVG-Icons Grün, Subtitle [cite: 2026-02-18] */
@@ -5745,8 +5775,8 @@
       #v-provider-profile .tgtg-accordion-item{ position:relative; }
       #v-provider-profile .tgtg-accordion-item::after{ content:''; position:absolute; left:16px; right:0; bottom:0; height:1px; background:#E5E7EB; }
       #v-provider-profile .tgtg-accordion-item:last-child::after{ display:none; }
-      #v-provider-profile .tgtg-accordion-trigger{ width:100%; display:flex; align-items:center; justify-content:space-between; gap:12px; min-height:52px; padding:14px 16px; background:transparent; border:none; font-size:15px; font-weight:600; color:#0f172a; cursor:pointer; text-align:left; font-family:inherit; transition:background 0.2s; -webkit-tap-highlight-color:transparent; }
-      #v-provider-profile .tgtg-accordion-trigger .tgtg-label{ text-align:center; }
+      #v-provider-profile .tgtg-accordion-trigger{ width:100% !important; display:flex !important; align-items:center !important; justify-content:space-between !important; gap:12px; min-height:56px; padding:16px 20px !important; background:#fff !important; border:none !important; box-shadow:none !important; font-size:16px; font-weight:700; color:#1a1a1a; cursor:pointer; text-align:left; font-family:inherit; transition:background 0.2s; -webkit-tap-highlight-color:transparent; }
+      #v-provider-profile .tgtg-accordion-trigger .tgtg-label{ text-align:left; }
       #v-provider-profile .tgtg-accordion-trigger:active{ background:#f8fafc; }
       #v-provider-profile .tgtg-accordion-trigger .tgtg-accordion-chevron{ width:18px; height:18px; color:#94a3b8; flex-shrink:0; transition:transform 300ms cubic-bezier(0.4, 0, 0.2, 1); opacity:0.85; }
       #v-provider-profile .tgtg-accordion-item.open .tgtg-accordion-trigger .tgtg-accordion-chevron{ transform:rotate(90deg); }

@@ -9221,44 +9221,54 @@
     pushViewState({onboarding: 'business'}, location.pathname);
   }
   
+  // Onboarding-Preview: 5-Ebenen-InseratCard-Struktur [cite: 2026-02-18]
+  function createOnboardingPreviewCard(dish, savedDish, draft){
+    const imgSrc = dish.photoData || dish.imageUrl || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70';
+    const price = savedDish && savedDish.price != null ? savedDish.price : (parseFloat(String(draft?.dishPrice || '8.5').replace(',','.')) || 8.5);
+    const cat = dish.category || 'Vegetarisch';
+    const catEmoji = { 'Fleisch':'🥩', 'Vegetarisch':'🥦', 'Vegan':'🌱', 'Salat':'🥪' }[cat] || '🥦';
+    const card = document.createElement('div');
+    card.className = 'onboarding-preview-card inserat-card-preview';
+    card.innerHTML = `
+      <div class="onboarding-preview-photo" style="position:relative; width:100%; height:190px; min-height:190px; overflow:hidden; background:#f1f5f9; flex-shrink:0;">
+        <img src="${esc(imgSrc)}" alt="${esc(dish.dish||'')}" style="width:100%; height:100%; object-fit:cover; display:block;" />
+        <div class="price-badge-on-image" style="position:absolute; bottom:12px; right:12px; background:#FFD700; color:#121826; padding:8px 14px; border-radius:20px; font-weight:800; font-size:15px; box-shadow:0 4px 12px rgba(0,0,0,0.15);">${typeof euro === 'function' ? euro(price) : price + ' €'}</div>
+      </div>
+      <div class="onboarding-preview-powerbar" style="display:flex; gap:8px; padding:10px 16px; background:#f8fafc; border-bottom:1px solid rgba(0,0,0,0.04); justify-content:center; flex-wrap:wrap;">
+        <span style="min-width:44px; min-height:44px; border-radius:12px; background:rgba(16,185,129,0.12); color:#059669; display:flex; align-items:center; justify-content:center; font-size:18px;">🍴</span>
+        <span style="min-width:44px; min-height:44px; border-radius:12px; background:#f8fafc; color:#94a3b8; display:flex; align-items:center; justify-content:center; font-size:18px;">🔄</span>
+        <span style="min-width:44px; min-height:44px; border-radius:12px; background:#f8fafc; color:#94a3b8; display:flex; align-items:center; justify-content:center; font-size:18px;">🕒</span>
+      </div>
+      <div style="padding:20px 20px 24px;">
+        <h3 class="onboarding-preview-title" style="font-family:'Source Serif 4',Georgia,serif; font-size:20px; font-weight:700; color:#0f172a; margin:0 0 8px; line-height:1.3;">${esc(dish.dish || 'Gericht')}</h3>
+        <p style="color:#64748b; font-size:14px; margin:0 0 16px;">${esc(provider?.profile?.name || 'Dein Betrieb')}</p>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="background:#f1f5f9; padding:6px 12px; border-radius:999px; font-size:13px; font-weight:700; color:#64748b;">${catEmoji} ${cat}</span>
+        </div>
+      </div>
+    `;
+    return card;
+  }
+
   function showOnboardingPreview(dishId){
     showView(views.providerOnboardingPreview);
     pushViewState({onboarding: 'preview'}, location.pathname);
     
-    // Load saved dish and show preview
     const savedDish = dishId ? cookbook.find(c => c.id === dishId) : cookbook.find(c => c.providerId === providerId());
     const previewCard = document.getElementById('onboardingPreviewCard');
     if(previewCard && (savedDish || onboardingDraftDish)){
       const dish = savedDish || {
         dish: onboardingDraftDish.dishName,
-        category: 'Vegetarisch',
+        category: onboardingDraftDish.dishDiet || 'Vegetarisch',
         photoData: onboardingDraftDish.photoData || null
       };
       
-      const preview = offerCard({
-        id: dish.id || 'preview',
-        dish: dish.dish,
-        category: dish.category || 'Vegetarisch',
-        price: 0, // No price in preview
-        pickupWindow: savedDish?.pickupWindow || `${onboardingDraftDish?.pickupTimeStart || '11:30'} – ${onboardingDraftDish?.pickupTimeEnd || '14:30'}`,
-        imageUrl: dish.photoData || dish.imageUrl || '',
-        providerName: provider.profile?.name || 'Dein Betrieb',
-        hasPickupCode: false, // No Abholnummer in preview
-        dineInPossible: false
-      }, {interactive: false});
-      
+      const preview = createOnboardingPreviewCard(dish, savedDish, onboardingDraftDish);
       previewCard.innerHTML = '';
       previewCard.appendChild(preview);
       
-      // Disable all interactive elements in preview
-      preview.querySelectorAll('button, a').forEach(el => {
-        el.style.pointerEvents = 'none';
-        el.style.opacity = '0.5';
-      });
-      
-      // Update icons
       if(typeof lucide !== 'undefined'){
-        setTimeout(() => lucide.createIcons(), 50);
+        setTimeout(function(){ lucide.createIcons(); }, 50);
       }
     }
   }
@@ -16544,7 +16554,11 @@
         overlay.setAttribute('aria-label','Erstes Inserat');
         overlay.innerHTML = '<div class="inserat-onboarding-card"><p>Dein erstes Inserat ist bereit. Probier es kurz aus!</p><button type="button" class="inserat-onboarding-btn">Probier es aus</button></div>';
         var btn = overlay.querySelector('.inserat-onboarding-btn');
-        if(btn) btn.onclick = function(){ hapticLight(); overlay.classList.add('is-dismissed'); };
+            if(btn) btn.onclick = function(){
+          hapticLight();
+          overlay.classList.add('is-dismissed');
+          setTimeout(function(){ if(overlay.parentNode) overlay.remove(); }, 280);
+        };
         box.appendChild(overlay);
       }
 
