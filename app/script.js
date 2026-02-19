@@ -281,7 +281,7 @@
     ctaBtn.type = 'button';
     ctaBtn.className = 'btn btn-mittagsbox-cta';
     ctaBtn.style.cssText = 'width:auto; min-width:200px; min-height:48px; padding:0 24px; border-radius:14px; background:#FFD700; color:#1a1a1a; font-weight:800; font-size:16px; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; transition:transform 0.2s, box-shadow 0.2s;';
-    ctaBtn.innerHTML = '<span style="font-size:18px;line-height:1;">🛍️</span> <span>In die Mittagsbox</span>';
+    ctaBtn.innerHTML = '<span style="font-size:18px;line-height:1;">🍱</span> <span>In meine Box</span>';
     ctaBtn.onmouseover = () => { ctaBtn.style.transform = 'scale(1.02)'; ctaBtn.style.boxShadow = '0 4px 12px rgba(255,215,0,0.4)'; };
     ctaBtn.onmouseout = () => { ctaBtn.style.transform = 'scale(1)'; ctaBtn.style.boxShadow = 'none'; };
     ctaBtn.onclick = (e) => {
@@ -3435,7 +3435,7 @@
         <h2 style="color:#fff; font-size:36px; font-weight:900; margin:0 0 12px; letter-spacing:2px;">Lecker!</h2>
         <p style="color:rgba(255,255,255,0.8); font-size:16px; margin:0 0 24px; line-height:1.5;">${esc(data.dish || 'Gericht')} wurde zu deiner Mittagsbox hinzugefügt.</p>
         <div style="display:flex; gap:12px; justify-content:center;">
-          <button type="button" onclick="document.getElementById('matchOverlayTinder').remove(); showFav();" style="padding:14px 28px; background:#FFD700; color:#1a1a1a; font-weight:800; font-size:15px; border:none; border-radius:12px; cursor:pointer;">In die Mittagsbox</button>
+          <button type="button" onclick="document.getElementById('matchOverlayTinder').remove(); showFav();" style="padding:14px 28px; background:#FFD700; color:#1a1a1a; font-weight:800; font-size:15px; border:none; border-radius:12px; cursor:pointer;">In meine Box 🍱</button>
           <button type="button" onclick="document.getElementById('matchOverlayTinder').remove();" style="padding:14px 28px; background:rgba(255,255,255,0.15); color:#fff; font-weight:700; font-size:15px; border:none; border-radius:12px; cursor:pointer;">Weiter</button>
         </div>
       </div>
@@ -4591,7 +4591,7 @@
       }
     }
     
-    // Actions: Primary CTA "In die Mittagsbox" (gelber Button ohne graue Box)
+    // Actions: Primary CTA "In meine Box" (gelber Button ohne graue Box)
     if(interactive){
       if(isPolaroid){
         // Polaroid: Gelber Button direkt auf weißem Rand (ohne graue Box)
@@ -4606,7 +4606,7 @@
           orderBtn.style.transform = 'translateY(0)';
           orderBtn.style.boxShadow = '0 4px 12px rgba(255,204,0,0.3)';
         };
-        orderBtn.innerHTML = `<span style="font-size:18px;line-height:1;">🛍️</span> <span>In die Mittagsbox</span>`;
+        orderBtn.innerHTML = `<span style="font-size:18px;line-height:1;">🍱</span> <span>In meine Box</span>`;
         orderBtn.disabled = !data.hasPickupCode;
         if(orderBtn.disabled){
           orderBtn.style.opacity = '0.5';
@@ -4627,7 +4627,7 @@
         const orderBtn=document.createElement('button');
         orderBtn.type='button';
         orderBtn.className='card-action primary';
-        orderBtn.innerHTML = `${iconMarkup('shopping-basket')} <span>In die Mittagsbox</span>`;
+        orderBtn.innerHTML = `${iconMarkup('shopping-basket')} <span>In meine Box</span>`;
         orderBtn.disabled = !data.hasPickupCode;
         orderBtn.onclick=(e)=>{ e.stopPropagation(); const thumb = card.querySelector('img'); flyThumbnailToMittagsbox(thumb, () => handleOrderClick(data)); };
         
@@ -5826,7 +5826,7 @@
       btnCTA.style.border = 'none';
       btnCTA.style.fontWeight = '900';
       btnCTA.style.boxShadow = '0 8px 24px rgba(255,215,0,0.25)';
-      if(primaryCTAText) primaryCTAText.textContent = 'In die Mittagsbox legen';
+      if(primaryCTAText) primaryCTAText.textContent = 'In meine Box legen';
     }
 
     const addr = buildAddress({address:o.address, street:o.providerStreet, zip:o.providerZip, city:o.providerCity});
@@ -5994,7 +5994,7 @@
         primaryCTAText.textContent = !isActive ? 'Angebot nicht verfügbar' : 'Angebot nicht mehr verfügbar';
         btnCTA.onclick = null;
       } else if(orderingEnabled){
-        primaryCTAText.textContent = 'In die Mittagsbox legen';
+        primaryCTAText.textContent = 'In meine Box legen';
         if(sInfoHint) sInfoHint.style.display = 'none';
         btnCTA.onclick = () => {
           btnCTA.disabled = true;
@@ -6024,19 +6024,19 @@
                 setTimeout(() => {
                   btnCTA.disabled = false;
                   btnCTA.classList.remove('success');
-                  primaryCTAText.textContent = 'In die Mittagsbox legen';
+                  primaryCTAText.textContent = 'In meine Box legen';
                 }, 500);
               }, 300);
             } else {
               btnCTA.disabled = false;
               btnCTA.classList.remove('loading');
-              primaryCTAText.textContent = 'In die Mittagsbox legen';
+              primaryCTAText.textContent = 'In meine Box legen';
               showToast('Fehler beim Hinzufügen.');
             }
           });
         };
       } else {
-        primaryCTAText.textContent = 'In die Mittagsbox legen';
+        primaryCTAText.textContent = 'In meine Box legen';
         if(sInfoHint){
           sInfoHint.textContent = 'Anbieter nimmt nicht an Abholnummer teil';
           sInfoHint.style.display = 'block';
@@ -6060,7 +6060,7 @@
           setTimeout(() => {
             btnCTA.disabled = false;
             btnCTA.classList.remove('success');
-            primaryCTAText.textContent = 'In die Mittagsbox legen';
+            primaryCTAText.textContent = 'In meine Box legen';
           }, 2000);
         };
       }
