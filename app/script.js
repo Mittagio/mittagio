@@ -1944,6 +1944,16 @@
     if(typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard(); else renderWeekPlan();
     var newPath = location.pathname + '?week=' + weekPlanKWIndex + '&day=' + weekPlanDay;
     pushViewState({view: 'provider-week', mode: mode, week: weekPlanKWIndex, day: weekPlanDay}, newPath);
+    /* Header drop-shadow nur beim Scrollen [cite: 2026-02-18] */
+    requestAnimationFrame(function(){
+      var scrollEl = document.getElementById('kwBoardScroll');
+      var headerEl = document.getElementById('weekHeaderCompact');
+      if(!scrollEl || !headerEl) return;
+      function onWeekScroll(){ headerEl.classList.toggle('scrolled', scrollEl.scrollTop > 10); }
+      scrollEl.removeEventListener('scroll', onWeekScroll);
+      scrollEl.addEventListener('scroll', onWeekScroll, { passive: true });
+      onWeekScroll();
+    });
   }
   function showProviderCookbook(){
     if(!checkSessionValidity()) return;
@@ -2629,7 +2639,7 @@
     // Categories rendern (nur einmal oder bei Änderung)
     renderDiscoverCategories();
 
-    if(offersEl && emptyEl){
+    if(offersEl){
       // Skeleton-Loader anzeigen während Daten geladen werden
       offersEl.innerHTML = '';
       for(let i = 0; i < 3; i++){
@@ -2639,31 +2649,65 @@
       // Kurze Verzögerung für bessere UX (simuliert Ladezeit)
       setTimeout(() => {
       offersEl.innerHTML = '';
-      emptyEl.style.display = list.length ? 'none' : 'block';
-      
-      // Layout: Pills oben (bereits im Header), darunter gruppiert nach Restaurant + Tiles
-      const byProvider = {};
-      list.forEach(o => {
-        const pid = o.providerId || 'unknown';
-        if(!byProvider[pid]) byProvider[pid] = [];
-        byProvider[pid].push(o);
-      });
-      const providerIds = Object.keys(byProvider);
-      providerIds.forEach(pid => {
-        const group = byProvider[pid];
-        const block = document.createElement('div');
-        block.className = 'discover-block';
-        const grid = document.createElement('div');
-        grid.className = 'discover-tiles-grid';
-        group.forEach(o => { grid.appendChild(createModernOfferCard(o)); });
-        block.appendChild(grid);
-        offersEl.appendChild(block);
-      });
-    
+      if(emptyEl) emptyEl.style.display = 'none';
+
+      if(list.length === 0){
+        // Modern Craft Empty State: Emoji, Serif-Headline, Text, Radius-Button [cite: 2026-01-29, 2026-02-18]
+        var emptyWrap = document.createElement('div');
+        emptyWrap.className = 'empty-state-container';
+        var iconEl = document.createElement('div');
+        iconEl.className = 'empty-state-icon';
+        iconEl.setAttribute('aria-hidden', 'true');
+        iconEl.textContent = '🍱';
+        emptyWrap.appendChild(iconEl);
+        var titleEl = document.createElement('h2');
+        titleEl.className = 'empty-state-title';
+        titleEl.textContent = 'Noch nichts in deiner N\u00e4he';
+        emptyWrap.appendChild(titleEl);
+        var textEl = document.createElement('p');
+        textEl.className = 'empty-state-text';
+        textEl.textContent = 'Erweitere deinen Suchradius oder schau sp\u00e4ter nochmal vorbei.';
+        emptyWrap.appendChild(textEl);
+        var btnRadius = document.createElement('button');
+        btnRadius.type = 'button';
+        btnRadius.className = 'btn-cust-primary';
+        btnRadius.textContent = 'Radius erweitern';
+        btnRadius.onclick = function(){
+          if(typeof triggerHapticFeedback === 'function') triggerHapticFeedback([10]);
+          var next = discoverRadiusM < 1000 ? 1000 : (discoverRadiusM < 3000 ? 3000 : 5000);
+          discoverRadiusM = next;
+          if(typeof save === 'function') save('mittagio_discover_radius', discoverRadiusM);
+          var rL = document.getElementById('discoverRadiusLabel');
+          if(rL) rL.textContent = discoverRadiusM >= 1000 ? (discoverRadiusM/1000) + ' km' : discoverRadiusM + 'm';
+          renderDiscover();
+        };
+        emptyWrap.appendChild(btnRadius);
+        offersEl.appendChild(emptyWrap);
+      } else {
+        // Layout: Pills oben (bereits im Header), darunter gruppiert nach Restaurant + Tiles
+        const byProvider = {};
+        list.forEach(o => {
+          const pid = o.providerId || 'unknown';
+          if(!byProvider[pid]) byProvider[pid] = [];
+          byProvider[pid].push(o);
+        });
+        const providerIds = Object.keys(byProvider);
+        providerIds.forEach(pid => {
+          const group = byProvider[pid];
+          const block = document.createElement('div');
+          block.className = 'discover-block';
+          const grid = document.createElement('div');
+          grid.className = 'discover-tiles-grid';
+          group.forEach(o => { grid.appendChild(createModernOfferCard(o)); });
+          block.appendChild(grid);
+          offersEl.appendChild(block);
+        });
+      }
+
       // Icons aktualisieren nach dem Rendern
-    if(typeof lucide !== 'undefined'){
-      setTimeout(()=> lucide.createIcons(), 50);
-    }
+      if(typeof lucide !== 'undefined'){
+        setTimeout(function(){ lucide.createIcons(); }, 50);
+      }
       }, 300); // 300ms Delay für realistische Ladezeit
     }
     

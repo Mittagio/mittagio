@@ -3602,8 +3602,10 @@
       flex-direction: column;
       justify-content: flex-start;
     }
+    /* Feste Höhe: Logo-Scale verursacht keinen Layout-Shift [cite: 2026-01-27, 2026-02-18] */
     #v-discover .discover-header-top-row{
       flex-shrink: 0;
+      min-height: 52px;
       padding: 12px 16px;
       padding-top: calc(12px + env(safe-area-inset-top, 0px));
     }
@@ -3628,9 +3630,11 @@
       25% { transform: rotate(-8deg); }
       75% { transform: rotate(8deg); }
     }
+    /* Pin-Wiggle: nur einmal beim Laden, nicht ablenkend [cite: 2026-01-29] */
     #v-discover .discover-location-pin {
       display: inline-block;
       animation: pin-wiggle 0.5s ease-in-out 0.4s both;
+      animation-iteration-count: 1;
     }
     /* Logo-Scale: bei .scrolled sanft auf scale(0.94) [cite: 2026-01-27, 2026-02-18] */
     #v-discover .discover-logo {
@@ -3887,6 +3891,56 @@
     body:not(.provider-mode) #v-discover #discoverOffers{
       scroll-margin-top: 1px;
     }
+    /* Discover: Leerzustand mittig zwischen Header und Footer [cite: 2026-01-27, 2026-01-29] */
+    #v-discover #discoverOffers{
+      min-height: 60vh;
+      display: flex;
+      flex-direction: column;
+    }
+    /* Modern Craft Empty State – reduzierter dish-card Look [cite: 2026-02-18] */
+    #v-discover .empty-state-container{
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 24px 48px;
+      background: rgba(248,250,252,0.6);
+      border-radius: 20px;
+      margin: 0 auto;
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+    #v-discover .empty-state-icon{
+      font-size: 56px;
+      line-height: 1;
+      margin-bottom: 20px;
+      animation: empty-state-breathe 2.5s ease-in-out infinite;
+    }
+    @keyframes empty-state-breathe {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    #v-discover .empty-state-title{
+      font-family: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #0f172a;
+      margin: 0 0 8px;
+      text-align: center;
+    }
+    #v-discover .empty-state-text{
+      font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+      font-size: 0.95rem;
+      color: #64748b;
+      line-height: 1.5;
+      margin: 0 0 24px;
+      text-align: center;
+      max-width: 320px;
+    }
+    #v-discover .empty-state-container .btn-cust-primary{
+      min-width: 200px;
+    }
     #v-discover .cust-card{ width:100%; margin:0 auto 12px; -webkit-tap-highlight-color:transparent; transition:transform 0.15s, box-shadow 0.2s; box-sizing:border-box; }
     #v-discover .cust-card:active{ transform:scale(0.99); box-shadow:0 2px 12px rgba(0,0,0,0.06); }
     #v-discover .discover-tiles-grid .cust-card .cust-card-body{ display:flex; flex-direction:column; }
@@ -3952,8 +4006,9 @@
       background:#fff; padding:6px 12px; border-radius:14px; font-size:14px; font-weight:800; color:#1a1a1a;
       border:2px solid #2563eb; white-space:nowrap;
     }
-    /* Pin-Drawer: Applike Slide-Up + Backdrop (S25) */
-    .discover-pin-drawer{
+    /* Pin-Drawer: über fixierter Footer-Navigation, keine Z-Index-Kollision [cite: 2026-01-27, 2026-01-29] */
+    #discoverPinDrawer.discover-pin-drawer{
+      z-index: 1100 !important;
       transition:transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
       will-change:transform;
     }
@@ -3961,6 +4016,7 @@
     .discover-pin-drawer.open{ transform:translateY(0); pointer-events:auto; visibility:visible; }
     .discover-leaflet-pin{ background:none !important; border:none !important; }
     #discoverPinDrawerBackdrop{
+      z-index: 1099 !important;
       transition:opacity 0.3s ease, visibility 0.3s;
     }
     #discoverPinDrawerBackdrop.open{ opacity:1; visibility:visible; }
@@ -4135,6 +4191,7 @@
       overflow: hidden;
       border-radius: 18px 14px 20px 16px;
     }
+    /* Hand-Cut: object-fit cover verhindert Verzerrung bei falschem Bildformat [cite: 2026-01-27, 2026-02-18] */
     .dish-image-box img {
       width: 100%;
       height: 100%;
@@ -4867,7 +4924,8 @@
     #v-provider-profile .provider-profile-gear-btn{ width:40px; height:40px; border:none; background:transparent; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0; box-shadow:none; color:#6B7280; }
     #v-provider-profile .provider-profile-gear-btn i{ stroke:#6B7280; }
     #v-provider-profile .provider-profile-gear-btn .provider-profile-gear-svg{ color:#6B7280; flex-shrink:0; }
-    #v-provider-profile #providerProfileWelcome.provider-profile-welcome{ flex-shrink:0; padding:12px 20px 16px; }
+    /* Welcome-Header: mehr Luft nach oben, zentriert [TGTG-Vorbild] */
+    #v-provider-profile #providerProfileWelcome.provider-profile-welcome{ flex-shrink:0; padding:24px 20px 16px; text-align:center; }
     #v-provider-profile .provider-profile-welcome-text{ margin:0 0 4px; font-size:24px; font-weight:700; color:#111827; line-height:1.3; }
     #v-provider-profile .provider-profile-welcome-subtitle{ margin:0; font-size:14px; color:#6B7280; line-height:1.4; }
     #v-provider-profile .provider-profile-tiles-wrap{ padding:0 0 24px; }
@@ -4946,24 +5004,42 @@
     #v-provider-cookbook .cookbook-category-pills{ background:transparent; }
     #v-provider-cookbook .cookbook-action-bar{ background:rgba(255,255,255,0.7) !important; backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border-top:1px solid rgba(255,255,255,0.4) !important; box-shadow:0 -4px 24px rgba(0,0,0,0.06); }
 
-    /* Wochenplan: nur auf der Wochenplan-Seite sichtbar; Layout nur wenn .active */
+    /* Wochenplan: Mesh-Hintergrund + Slate-50 [cite: 2026-02-18] */
     #v-provider-week.view{ display:none; }
     #v-provider-week.view.active{
       display:flex !important; flex-direction:column !important; min-height:100vh; min-height:100dvh; height:100vh; height:100dvh;
-      padding:0; padding-bottom:calc(80px + env(safe-area-inset-bottom, 0)); background:transparent; box-sizing:border-box;
+      padding:0; padding-bottom:calc(80px + env(safe-area-inset-bottom, 0)); background:#f8fafc; box-sizing:border-box;
       overflow:visible; visibility:visible !important; opacity:1 !important; position:relative;
     }
-    /* Wochenplan-Header: gleicher Stil wie prov-page-header (Größen/Farben/Schriften) */
+    #v-provider-week.view.active::before,
+    #v-provider-week.view.active::after{
+      content:''; position:absolute; pointer-events:none; z-index:0;
+    }
+    #v-provider-week.view.active::before{
+      top:-10%; left:-10%; width:40%; height:40%; border-radius:50%; background:rgba(191,219,254,0.4); filter:blur(120px);
+    }
+    #v-provider-week.view.active::after{
+      bottom:-5%; right:-5%; width:35%; height:35%; border-radius:50%; background:rgba(199,210,254,0.3); filter:blur(100px);
+    }
+    #v-provider-week.view.active > header,
+    #v-provider-week.view.active > #kwBoardWrap{ position:relative; z-index:1; }
+    /* Wochenplan-Header: Sticky Cockpit mit Glassmorphism [cite: 2026-02-18] */
     #v-provider-week .week-header-compact{
-      flex-shrink:0; min-height:56px;
-      background:rgba(255,255,255,0.8) !important; backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
-      border-bottom:1px solid rgba(255,255,255,0.2);
+      position:sticky; top:0; z-index:50;
+      flex-shrink:0; min-height:56px; width:100%;
+      background:rgba(255,255,255,0.8) !important; backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px);
+      border-bottom:1px solid #e2e8f0;
       padding:calc(8px + env(safe-area-inset-top, 0)) 20px 12px 20px;
       display:flex; flex-direction:column; justify-content:center; align-items:center; gap:2px;
+      transition:box-shadow 0.2s ease;
     }
+    #v-provider-week .week-header-compact.scrolled{ box-shadow:0 1px 3px rgba(0,0,0,0.06); }
     #v-provider-week .week-header-compact h1,
     #v-provider-week .week-header-compact .prov-page-header-title{ margin:0; font-size:20px; font-weight:900; color:#1a1a1a; letter-spacing:-0.03em; }
     #v-provider-week .week-header-subtitle{ margin:0; font-size:12px; font-weight:600; color:#64748b; }
+    /* Lücke finden: dezent als smarter Assistent [cite: 2026-01-29] */
+    #v-provider-week .week-magic-gap-btn{ background:transparent; border:1px solid #e2e8f0; min-height:40px; padding:0 12px; border-radius:12px; display:flex; align-items:center; justify-content:center; gap:6px; color:#64748b; font-size:13px; font-weight:600; cursor:pointer; white-space:nowrap; transition:background 0.2s, color 0.2s; }
+    #v-provider-week .week-magic-gap-btn:hover{ background:#f1f5f9; color:#475569; }
     #v-provider-week .week-plan-wrap{
       flex:1; min-height:0; display:flex; flex-direction:column; max-width:500px; margin:0 auto; width:100%; padding:0 20px 16px; box-sizing:border-box;
     }
@@ -5218,15 +5294,18 @@
       #v-provider-week .week-overview-scroll{ -webkit-overflow-scrolling:touch; }
       #v-provider-week .week-overview-cta-wrap .week-edit-primary{ min-height:56px; }
       /* ========== KW-Board (High-End Wochenplan) ========== */
-      #v-provider-week .kw-board-header{ padding:12px 20px 8px; padding-top:calc(12px + env(safe-area-inset-top, 0)); background:rgba(255,255,255,0.75); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border-bottom:1px solid rgba(255,255,255,0.4); flex-shrink:0; }
+      #v-provider-week .kw-board-header{ padding:12px 20px 8px; padding-top:calc(12px + env(safe-area-inset-top, 0)); background:rgba(255,255,255,0.75); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border-bottom:1px solid #e2e8f0; flex-shrink:0; }
+      /* KW-Slider: 8 Wochen, Snap-Scrolling [cite: 2026-02-18] */
       #v-provider-week .kw-carousel{ display:flex; gap:10px; overflow-x:auto; -webkit-overflow-scrolling:touch; scroll-snap-type:x mandatory; padding:8px 0 12px; scrollbar-width:none; }
       #v-provider-week .kw-carousel::-webkit-scrollbar{ display:none; }
-      #v-provider-week .kw-pill{ flex:0 0 auto; min-width:72px; scroll-snap-align:center; scroll-snap-stop:always; min-height:48px; padding:10px 14px; border-radius:16px; border:1px solid rgba(255,255,255,0.6); background:rgba(255,255,255,0.5); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); font-size:14px; font-weight:800; color:#64748b; cursor:pointer; transition:all 0.2s; display:flex; align-items:center; justify-content:center; }
-      #v-provider-week .kw-pill.active{ background:rgba(16,185,129,0.12); border-color:#10b981; color:#10b981; }
+      #v-provider-week .kw-pill{ flex:0 0 auto; min-width:72px; scroll-snap-align:center; scroll-snap-stop:always; min-height:48px; padding:10px 14px; border-radius:16px; border:none; background:#f1f5f9; font-size:14px; font-weight:800; color:#94a3b8; cursor:pointer; transition:all 0.3s ease; display:flex; align-items:center; justify-content:center; }
+      #v-provider-week .kw-pill:hover{ background:#e2e8f0; color:#64748b; }
+      #v-provider-week .kw-pill.active{ background:#0f172a; color:#fff; box-shadow:0 4px 14px rgba(15,23,42,0.25); transform:scale(1.05); }
       #v-provider-week .kw-progress-wrap{ padding:0 20px 12px; }
       #v-provider-week .kw-progress{ height:4px; border-radius:999px; background:#e2e8f0; overflow:hidden; }
       #v-provider-week .kw-progress-fill{ height:100%; border-radius:999px; background:var(--prov-brand); transition:width 0.3s ease; }
-      #v-provider-week .kw-season-banner{ transition:opacity 0.25s ease, transform 0.25s ease; }
+      #v-provider-week .kw-season-banner{ transition:opacity 0.25s ease, transform 0.25s ease; border-radius:24px; }
+      #v-provider-week .kw-season-banner:not([class*="kw-season-"]){ background:#eff6ff; color:#1e40af; border:1px solid rgba(59,130,246,0.2); }
       #v-provider-week .kw-season-banner.kw-season-mint{ background:linear-gradient(135deg, rgba(167,243,208,0.5) 0%, rgba(110,231,183,0.35) 100%); color:#065f46; border:1px solid rgba(16,185,129,0.25); }
       #v-provider-week .kw-season-banner.kw-season-mint .kw-season-banner-btn{ background:#10b981; color:#fff; }
       #v-provider-week .kw-season-banner.kw-season-summer{ background:linear-gradient(135deg, rgba(253,230,138,0.5) 0%, rgba(251,191,36,0.35) 100%); color:#78350f; border:1px solid rgba(245,158,11,0.3); }
@@ -5292,7 +5371,8 @@
       #v-provider-week .kw-slot-empty{ min-height:52px; height:52px; flex-shrink:0; }
       #v-provider-week .kw-slot-main.kw-slot-live{ background:rgba(34,197,94,0.18); border-color:rgba(34,197,94,0.3); }
       #v-provider-week .kw-slot-main.kw-slot-offline{ background:rgba(239,68,68,0.12); border-color:rgba(239,68,68,0.25); opacity:0.7; box-shadow:0 0 0 1px rgba(239,68,68,0.2); }
-      #v-provider-week .kw-slot-main .kw-slot-thumb{ width:64px; height:64px; border-radius:14px; background:#e2e8f0; flex-shrink:0; background-size:cover; background-position:center; position:relative; }
+      #v-provider-week .kw-slot-main .kw-slot-thumb{ width:64px; height:64px; border-radius:16px; background:#e2e8f0; flex-shrink:0; background-size:cover; background-position:center; position:relative; object-fit:cover; }
+      #v-provider-week .kw-slot-main .kw-slot-thumb img{ width:100%; height:100%; object-fit:cover; border-radius:16px; display:block; }
       #v-provider-week .kw-slot-main .kw-slot-body{ flex:1; min-width:0; }
       #v-provider-week .kw-slot-main .kw-slot-name{ font-size:14px; font-weight:800; color:#1a1a1a; line-height:1.3; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; word-break:break-word; }
       #v-provider-week .kw-slot-main .kw-slot-price{ font-size:15px; font-weight:900; color:#1a1a1a; margin-top:2px; }
@@ -5302,7 +5382,8 @@
       #v-provider-week .kw-slot-empty{ min-height:52px; border:2px dashed #e2e8f0; border-radius:14px; background:rgba(248,250,252,0.6); display:flex; align-items:center; justify-content:center; color:#cbd5e1; font-size:24px; font-weight:200; letter-spacing:0.08em; transition:color 0.2s, border-color 0.2s, background 0.2s; cursor:pointer; font-family:inherit; padding:0; margin:0; width:100%; box-sizing:border-box; -webkit-appearance:none; appearance:none; }
       #v-provider-week .kw-slot-empty:active{ color:#94a3b8; border-color:#cbd5e1; background:rgba(241,245,249,0.9); }
       #v-provider-week .kw-slot-small{ display:flex; align-items:center; gap:8px; padding:8px 10px; backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border-radius:12px; border:1px solid rgba(255,255,255,0.5); }
-      #v-provider-week .kw-slot-small .kw-slot-thumb{ width:40px; height:40px; border-radius:10px; background:#e2e8f0; flex-shrink:0; background-size:cover; background-position:center; position:relative; }
+      #v-provider-week .kw-slot-small .kw-slot-thumb{ width:40px; height:40px; border-radius:12px; background:#e2e8f0; flex-shrink:0; background-size:cover; background-position:center; position:relative; }
+      #v-provider-week .kw-slot-small .kw-slot-thumb img{ width:100%; height:100%; object-fit:cover; border-radius:12px; display:block; }
       #v-provider-week .kw-slot-small .kw-slot-name{ font-size:13px; font-weight:700; color:#1a1a1a; line-height:1.3; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; word-break:break-word; flex:1; min-width:0; }
       #v-provider-week .kw-slot-small .kw-slot-price{ font-size:13px; font-weight:800; color:#1a1a1a; margin-left:auto; }
       #v-provider-week .kw-slot-main .price-pill{ padding:6px 12px; font-size:15px; }
@@ -5518,12 +5599,14 @@
 
       /* Account verwalten: S25 Native-First – flex-column, gap 16px, padding 20px, Clean Cards [cite: s25-native-first] */
       #v-provider-profile .tgtg-list-wrap{ background:#F9FAFB; flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:20px; padding-bottom:calc(120px + env(safe-area-inset-bottom, 0)); display:flex; flex-direction:column; gap:16px; box-sizing:border-box; }
-      #v-provider-profile .tgtg-list{ background:#fff; margin:0; border-radius:16px; border:1px solid rgba(0,0,0,0.04); box-shadow:0 2px 12px rgba(0,0,0,0.06); overflow:hidden; }
+      /* Account verwalten: Keine Boxen – nur Inset-Divider 1px #E5E7EB [TGTG-Vorbild] */
+      #v-provider-profile .tgtg-list{ background:#fff; margin:0; border-radius:0; border:none; box-shadow:none; overflow:hidden; }
       /* FAQ „Was ist was?“: TGTG-Flat – eine weiße Fläche, keine Kacheln [cite: 2026-01-29] */
       #v-provider-profile .tgtg-list:has(.tgtg-accordion){ box-shadow:none; border:none; border-radius:0; margin:0; }
       #v-provider-profile .tgtg-section-title{ font-size:11px; font-weight:800; letter-spacing:0.06em; color:#64748b; text-transform:uppercase; margin:0 0 4px; padding:0 4px; }
-      #v-provider-profile .tgtg-row{ position:relative; display:flex; align-items:center; gap:12px; width:100%; min-height:56px; padding:16px 20px; background:#fff; border:none; font-size:16px; font-weight:700; color:#1a1a1a; cursor:pointer; text-align:left; font-family:inherit; transition:background 0.2s; -webkit-tap-highlight-color:transparent; }
-      #v-provider-profile .tgtg-row::after{ content:''; position:absolute; left:20px; right:20px; bottom:0; height:1px; background:#f1f3f5; }
+      #v-provider-profile .tgtg-row{ position:relative; display:flex; align-items:center; justify-content:space-between; gap:12px; width:100%; min-height:56px; padding:16px 20px; background:#fff; border:none; font-size:16px; font-weight:700; color:#1a1a1a; cursor:pointer; text-align:left; font-family:inherit; transition:background 0.2s; -webkit-tap-highlight-color:transparent; box-sizing:border-box; }
+      /* Inset-Divider: beginnt nach dem Icon (~56px), rechts bis zum Rand – Apple/TGTG-Look */
+      #v-provider-profile .tgtg-row::after{ content:''; position:absolute; left:56px; right:0; bottom:0; height:1px; background:#E5E7EB; }
       #v-provider-profile .tgtg-row:last-child::after{ display:none; }
       #v-provider-profile .tgtg-row:active{ background:#f8fafc; }
       #v-provider-profile .tgtg-row .tgtg-icon{ font-size:20px; flex-shrink:0; width:28px; text-align:center; }
@@ -5561,9 +5644,9 @@
         #v-provider-profile .provider-profile-content-rebuild{ padding:20px; width:100%; max-width:100%; box-sizing:border-box; }
       }
       
-      /* Account verwalten: Sticky-Bottom Abmelden – S25: Abstand oben, Safe-Area unten [cite: s25-native-first] */
+      /* Account verwalten: Sticky-Bottom – schlichter Text-Link ohne Box [TGTG-Vorbild] */
       #v-provider-profile .provider-settings-sticky-footer{ position:sticky; bottom:0; left:0; right:0; padding:16px 20px; padding-bottom:calc(16px + env(safe-area-inset-bottom)); background:rgba(255,255,255,0.95); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border-top:1px solid rgba(0,0,0,0.06); display:flex; justify-content:center; z-index:10; flex-shrink:0; }
-      #v-provider-profile .provider-settings-sticky-footer .provider-footer-delete{ display:block; width:100%; max-width:400px; margin:0; min-height:52px; border-radius:14px; }
+      #v-provider-profile .provider-settings-sticky-footer .provider-footer-delete{ display:inline-block; width:auto; max-width:none; margin:0; min-height:auto; padding:12px 0; background:transparent; border:none; border-radius:0; font-size:15px; font-weight:700; color:#dc2626; cursor:pointer; text-decoration:underline; text-underline-offset:3px; }
       
       /* Provider Bottom Nav: Safe-Area, Touch 48px */
       #providerNav{
@@ -6405,7 +6488,7 @@
       justify-content: center;
       gap: 10px;
       box-shadow: 0 8px 24px rgba(255, 215, 0, 0.28);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
       cursor: pointer;
     }
     .btn-cust-primary:hover {
@@ -6413,7 +6496,11 @@
       transform: translateY(-2px) scale(1.02);
     }
     .btn-cust-primary:active { transform: scale(0.97); }
-    /* Mittagsbox-CTA: persönlich „In meine Box“ – puffy Hover/Active [cite: 2026-01-27, 2026-01-29] */
+    /* Mittagsbox-CTA: puffy Hover ~0.2s ease-out [cite: 2026-01-29, 2026-02-18] */
+    #v-discover .btn-mittagsbox-cta,
+    #v-discover .btn-cust-primary {
+      transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+    }
     #v-discover .btn-mittagsbox-cta:hover,
     #v-discover .btn-cust-primary:hover {
       box-shadow: 0 16px 40px rgba(0, 0, 0, 0.15);
