@@ -15975,13 +15975,18 @@
     if(typeof w.data.allergeneExpanded === 'undefined') w.data.allergeneExpanded = !!w.data.wantsAllergens;
     if(typeof window !== 'undefined' && w.data && window._wizardInitialDataSnapshot == null) window._wizardInitialDataSnapshot = JSON.parse(JSON.stringify(w.data));
 
-    // Master Inseratsflow (Single-Page): Foto→Name→Beschreibung→Kategorie→Preis→Logistik→Allergene→Extras→Buttons
+    // S25 InseratCard – strikt 5 Ebenen, als .inserat-bottom-sheet gerendert [cite: BAUARBEITER]
     {
       setWizardQuestion('', '');
-      const box=document.createElement('div');
+      const sheet = document.createElement('div');
+      sheet.className = 'inserat-card-sheet';
+      sheet.setAttribute('data-inserat-card', 'true');
+      sheet.style.cssText = 'padding:0; overflow:visible; display:flex; flex-direction:column; min-height:0; border-radius:24px 24px 0 0; background:#fff; box-shadow:0 -8px 32px rgba(0,0,0,0.12);';
+      const box = document.createElement('div');
       box.className='liquid-master-panel glass-express-step0 inserat-universal-mask inserat-master-flow liquid-panel listing-glass-panel s25-floating-panel inserat-card';
       box.setAttribute('data-inserat-card','true');
       box.style.cssText='padding:0; overflow:hidden; display:flex; flex-direction:column; min-height:0;';
+      sheet.appendChild(box);
       const saveDraft = () => { localStorage.setItem('wizard_draft', JSON.stringify(w)); };
       const dismissKeyboard = ()=>{ try { if(document.activeElement && document.activeElement.blur) document.activeElement.blur(); } catch(e){} };
       const hapticLight = ()=>{ try { if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); } catch(e){} };
@@ -16360,12 +16365,7 @@
       requestAnimationFrame(function(){ requestAnimationFrame(function(){ if(typeof adjustTitleFontSize === 'function') adjustTitleFontSize(); }); });
       var entryPoint = (w.ctx && w.ctx.entryPoint) || 'dashboard';
       var isPlanMode = (entryPoint === 'week' || entryPoint === 'cookbook');
-      var p0=Number(w.data.price)||0;
-      const prognoseWrap=document.createElement('div');
-      prognoseWrap.className='inserat-prognose-wrap inserat-earnings inserat-umsatzprognose';
-      prognoseWrap.innerHTML='<p style="margin:0; font-size:12px; font-weight:600; color:#94a3b8;">Umsatzprognose: <span id="calc-val">'+(p0*30).toFixed(2).replace('.',',')+'</span> €</p>';
-      if(!isPlanMode) scrollArea.appendChild(prognoseWrap);
-      if(w.ctx && w.ctx.isLeberkaeseOnboarding) prognoseWrap.classList.add('inserat-onboarding-price-pulse');
+      /* KEINE Verdienstvorschau – Ebene 4 nur Beschreibung [cite: BAUARBEITER] */
 
 
       box.appendChild(scrollArea);
@@ -16578,7 +16578,7 @@
       }
 
       bindKeyboardAvoidance();
-      setWizardContent(box);
+      setWizardContent(sheet);
       // Guided Interaction: leere Karte → Fokus Namensfeld (blinkender Cursor), kein Foto → Pulsieren [cite: 2026-01-29]
       setTimeout(function(){
         var isEmpty = !(w.data.dish && String(w.data.dish).trim()) && !w.data.photoData;

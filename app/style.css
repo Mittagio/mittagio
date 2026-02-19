@@ -2491,6 +2491,20 @@
       font-size: 10px; font-weight: 800; color: #0f172a; letter-spacing: 0.02em;
       margin-left: 4px; max-width: 48px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
     }
+    /* InseratCard-Wrapper: 5 Ebenen in Sheet-Optik (S25), kein position:fixed [cite: BAUARBEITER] */
+    #wizard[data-flow="listing"] .inserat-card-sheet {
+      width: 100%; max-width: 100%; box-sizing: border-box;
+      border-radius: 24px 24px 0 0; background: #fff;
+      box-shadow: 0 -8px 32px rgba(0,0,0,0.12);
+    }
+    #wizard[data-flow="listing"] .inserat-card-sheet .photo-header,
+    #wizard[data-flow="listing"] .inserat-card-sheet .inserat-photo-tile.photo-header {
+      height: 190px; min-height: 190px; max-height: 190px; object-fit: cover;
+    }
+    #wizard[data-flow="listing"] .inserat-card-sheet .inserat-detail-style-title,
+    #wizard[data-flow="listing"] .inserat-card-sheet .magnet-input { color: #0f172a; font-weight: 800; }
+    #wizard[data-flow="listing"] .inserat-card-sheet .inserat-airbnb-desc,
+    #wizard[data-flow="listing"] .inserat-card-sheet .inserat-desc-input { color: #64748b; }
     /* Foto ändern / FOTO HINZUFÜGEN: Glass-Pill, unten zentriert [cite: 2026-02-16, plan Smart-Photo] */
     #wizard[data-flow="listing"] .liquid-master-panel .photo-header .inserat-photo-change,
     #wizard[data-flow="listing"] .liquid-master-panel .inserat-photo-tile.photo-header .inserat-photo-change {
@@ -4040,7 +4054,7 @@
       height: 100%;
       object-fit: cover;
       border-radius: 18px 14px 20px 16px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.2);
     }
     /* Preis-Badge auf dem Bild (unten rechts, leicht überlappend) */
     #v-discover .dish-card .price-badge,
@@ -4055,6 +4069,7 @@
       font-size: 15px;
       color: #121826;
       box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      pointer-events: none;
     }
     /* Floating Actions (Teilen & Herz oben rechts) */
     #v-discover .card-actions-top{
@@ -4171,7 +4186,7 @@
       min-width: 200px;
     }
     #v-discover .cust-card{ width:100%; margin:0 auto; -webkit-tap-highlight-color:transparent; transition:transform 0.15s, box-shadow 0.2s; box-sizing:border-box; }
-    #v-discover .dish-card{ margin-bottom: 8px; padding: 12px; box-sizing: border-box; }
+    #v-discover .dish-card:not(.dish-card-vertical){ margin-bottom: 8px; padding: 12px; box-sizing: border-box; }
     #v-discover .cust-card:active{ transform:scale(0.99); box-shadow:0 2px 12px rgba(0,0,0,0.06); }
     #v-discover .discover-tiles-grid .cust-card .cust-card-body{ display:flex; flex-direction:column; }
     #v-discover .discover-tiles-grid .cust-card .btn.btn-mittagsbox-cta{ min-height:52px; font-size:16px; border-radius:14px; background:#FFD700 !important; color:#1a1a1a; font-weight:800; box-shadow:0 2px 12px rgba(255,215,0,0.25); }
@@ -4843,8 +4858,8 @@
         padding-bottom: calc(88px + env(safe-area-inset-bottom, 0));
       }
       body:not(.provider-mode) #discoverOffers.discover-offers-list {
-        gap: 10px;
-        padding: 0 2px 8px;
+        gap: 40px;
+        padding: 20px 16px;
       }
       body:not(.provider-mode) #v-discover .discover-tiles-grid .cust-card:not(.discover-card-silent) .cust-card-img {
         max-height: 170px;
@@ -4862,9 +4877,12 @@
         max-width: 112px !important;
         max-height: 112px !important;
       }
-      body:not(.provider-mode) #v-discover .dish-card .dish-name {
+      body:not(.provider-mode) #v-discover .dish-card:not(.dish-card-vertical) .dish-name {
         font-size: 15px;
         -webkit-line-clamp: 2;
+      }
+      body:not(.provider-mode) #v-discover .dish-card.dish-card-vertical .dish-name {
+        font-size: 19px;
       }
     }
     /* Provider-Layout: Optimiert für kleine Bildschirme (Samsung S25, ~360-412px) */
@@ -4895,11 +4913,11 @@
     /* Dish-Card: Gerichtsname 16px Serif, reduzierter line-height für 1.5-Kacheln-Regel [cite: 2026-02-18, 2026-01-29] */
     #v-discover .dish-card .dish-name{
       font-family: 'Source Serif 4', Georgia, 'Times New Roman', serif;
-      font-size: 16px;
+      font-size: 19px;
       font-weight: 700;
       line-height: 1.2;
       margin: 0;
-      color: #111;
+      color: #121826;
       letter-spacing: -0.02em;
       flex: 1;
       min-width: 0;
@@ -5181,7 +5199,7 @@
     #v-provider-profile .provider-profile-gear-btn i{ stroke:#6B7280; }
     #v-provider-profile .provider-profile-gear-btn .provider-profile-gear-svg{ color:#6B7280; flex-shrink:0; }
     /* Welcome-Header: mehr Luft nach oben, zentriert [TGTG-Vorbild] */
-    #v-provider-profile #providerProfileWelcome.provider-profile-welcome{ flex-shrink:0; padding:24px 20px 16px; text-align:center; }
+    #v-provider-profile #providerProfileWelcome.provider-profile-welcome{ flex-shrink:0; padding:32px 20px 24px; text-align:center; }
     #v-provider-profile .provider-profile-welcome-text{ margin:0 0 4px; font-size:24px; font-weight:700; color:#111827; line-height:1.3; }
     #v-provider-profile .provider-profile-welcome-subtitle{ margin:0; font-size:14px; color:#6B7280; line-height:1.4; }
     #v-provider-profile .provider-profile-tiles-wrap{ padding:0 0 24px; }
@@ -5854,21 +5872,21 @@
       .provider-settings-accordion-content-inner > *{ padding:0 20px 20px; }
 
       /* Account verwalten: S25 Native-First – flex-column, gap 16px, padding 20px, Clean Cards [cite: s25-native-first] */
-      #v-provider-profile .tgtg-list-wrap{ background:#F9FAFB; flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:20px; padding-bottom:calc(120px + env(safe-area-inset-bottom, 0)); display:flex; flex-direction:column; gap:16px; box-sizing:border-box; }
-      /* Account verwalten: Keine Boxen – nur Inset-Divider 1px #E5E7EB [TGTG-Vorbild] */
-      #v-provider-profile .tgtg-list{ background:#fff; margin:0; border-radius:0; border:none; box-shadow:none; overflow:hidden; }
+      #v-provider-profile .tgtg-list-wrap{ background:#F9FAFB; flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:20px; padding-bottom:calc(120px + env(safe-area-inset-bottom, 0)); display:flex; flex-direction:column; gap:16px; box-sizing:border-box; width:100%; }
+      /* Account verwalten: Keine Boxen – volle Breite, nur 1px #E5E7EB Trenner [TGTG-Vorbild] */
+      #v-provider-profile .tgtg-list{ background:#fff; margin:0; border-radius:0; border:none; box-shadow:none; overflow:hidden; width:100%; max-width:100%; }
       /* FAQ „Was ist was?“: TGTG-Flat – eine weiße Fläche, keine Kacheln [cite: 2026-01-29] */
       #v-provider-profile .tgtg-list:has(.tgtg-accordion){ box-shadow:none; border:none; border-radius:0; margin:0; }
       #v-provider-profile .tgtg-section-title{ font-size:11px; font-weight:800; letter-spacing:0.06em; color:#64748b; text-transform:uppercase; margin:0 0 4px; padding:0 4px; }
-      #v-provider-profile .tgtg-row{ position:relative; display:flex; align-items:center; justify-content:space-between; gap:12px; width:100%; min-height:56px; padding:16px 20px; background:#fff; border:none; font-size:16px; font-weight:700; color:#1a1a1a; cursor:pointer; text-align:left; font-family:inherit; transition:background 0.2s; -webkit-tap-highlight-color:transparent; box-sizing:border-box; }
-      /* Inset-Divider: beginnt nach dem Icon (~56px), rechts bis zum Rand – Apple/TGTG-Look */
-      #v-provider-profile .tgtg-row::after{ content:''; position:absolute; left:56px; right:0; bottom:0; height:1px; background:#E5E7EB; }
-      #v-provider-profile .tgtg-row:last-child::after{ display:none; }
+      #v-provider-profile .tgtg-row{ position:relative; display:flex; align-items:center; justify-content:space-between; gap:12px; width:100%; min-height:56px; padding:16px 20px; background:#fff; border:none; font-size:16px; font-weight:700; color:#1a1a1a; cursor:pointer; text-align:left; font-family:inherit; transition:background 0.2s; -webkit-tap-highlight-color:transparent; box-sizing:border-box; border-bottom:1px solid #E5E7EB; }
+      #v-provider-profile .tgtg-row:last-child{ border-bottom:none; }
+      #v-provider-profile .tgtg-row::after{ display:none; }
       #v-provider-profile .tgtg-row:active{ background:#f8fafc; }
-      #v-provider-profile .tgtg-row .tgtg-icon{ font-size:20px; flex-shrink:0; width:28px; text-align:center; }
-      #v-provider-profile .tgtg-row .tgtg-label{ flex:1; min-width:0; }
+      #v-provider-profile .tgtg-row .tgtg-icon,
+      #v-provider-profile .tgtg-row .tgtg-row-icon{ font-size:20px; flex-shrink:0; width:28px; min-width:28px; text-align:center; }
+      #v-provider-profile .tgtg-row .tgtg-label{ flex:1; min-width:0; text-align:center; }
       #v-provider-profile .tgtg-row .tgtg-chevron{ width:20px; height:20px; color:#94a3b8; flex-shrink:0; }
-      #v-provider-profile .tgtg-identity{ padding:0 4px 8px; text-align:center; background:transparent; }
+      #v-provider-profile .tgtg-identity{ padding:32px 4px 20px; text-align:center; background:transparent; }
       #v-provider-profile .tgtg-identity-name{ margin:0; font-size:17px; font-weight:800; color:#1a1a1a; letter-spacing:-0.02em; }
       #v-provider-profile .tgtg-identity-ort{ margin:4px 0 0; font-size:14px; color:#64748b; }
       /* FOLGE UNS: SVG-Icons Grün, Subtitle [cite: 2026-02-18] */
@@ -5882,6 +5900,7 @@
       #v-provider-profile .tgtg-accordion-item::after{ content:''; position:absolute; left:16px; right:0; bottom:0; height:1px; background:#E5E7EB; }
       #v-provider-profile .tgtg-accordion-item:last-child::after{ display:none; }
       #v-provider-profile .tgtg-accordion-trigger{ width:100%; display:flex; align-items:center; justify-content:space-between; gap:12px; min-height:52px; padding:14px 16px; background:transparent; border:none; font-size:15px; font-weight:600; color:#0f172a; cursor:pointer; text-align:left; font-family:inherit; transition:background 0.2s; -webkit-tap-highlight-color:transparent; }
+      #v-provider-profile .tgtg-accordion-trigger .tgtg-label{ text-align:center; }
       #v-provider-profile .tgtg-accordion-trigger:active{ background:#f8fafc; }
       #v-provider-profile .tgtg-accordion-trigger .tgtg-accordion-chevron{ width:18px; height:18px; color:#94a3b8; flex-shrink:0; transition:transform 300ms cubic-bezier(0.4, 0, 0.2, 1); opacity:0.85; }
       #v-provider-profile .tgtg-accordion-item.open .tgtg-accordion-trigger .tgtg-accordion-chevron{ transform:rotate(90deg); }
@@ -5900,9 +5919,9 @@
         #v-provider-profile .provider-profile-content-rebuild{ padding:20px; width:100%; max-width:100%; box-sizing:border-box; }
       }
       
-      /* Account verwalten: Sticky-Bottom – schlichter Text-Link ohne Box [TGTG-Vorbild] */
-      #v-provider-profile .provider-settings-sticky-footer{ position:sticky; bottom:0; left:0; right:0; padding:16px 20px; padding-bottom:calc(16px + env(safe-area-inset-bottom)); background:rgba(255,255,255,0.95); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border-top:1px solid rgba(0,0,0,0.06); display:flex; justify-content:center; z-index:10; flex-shrink:0; }
-      #v-provider-profile .provider-settings-sticky-footer .provider-footer-delete{ display:inline-block; width:auto; max-width:none; margin:0; min-height:auto; padding:12px 0; background:transparent; border:none; border-radius:0; font-size:15px; font-weight:700; color:#dc2626; cursor:pointer; text-decoration:underline; text-underline-offset:3px; }
+      /* Account verwalten: Profil löschen ganz unten – schlichter Text-Link ohne Box [TGTG-Vorbild] */
+      #v-provider-profile .provider-settings-sticky-footer{ position:relative; padding:24px 20px calc(24px + env(safe-area-inset-bottom)); background:transparent; border:none; display:flex; justify-content:center; flex-shrink:0; }
+      #v-provider-profile .provider-settings-sticky-footer .provider-footer-delete{ display:inline-block; width:auto; margin:0; padding:12px 0; background:transparent; border:none; border-radius:0; font-size:15px; font-weight:700; color:#dc2626; cursor:pointer; text-decoration:underline; text-underline-offset:3px; }
       
       /* Provider Bottom Nav: Safe-Area, Touch 48px */
       #providerNav{
