@@ -2635,21 +2635,21 @@
     #wizard[data-flow="listing"] .inserat-power-bar .status-pill:active { transform: scale(0.9); }
     #wizard[data-flow="listing"] .inserat-power-bar .power-bar-legend-trigger:hover,
     #wizard[data-flow="listing"] .inserat-power-bar .power-bar-legend-trigger:focus { color: #64748b; }
-    /* Power-Bar Soft-Shell [cite: 2026-02-18]: Keine grünen Boxen – hellgrau/transparent, ruhig */
+    /* Power-Bar Soft-Shell [Master-Prompt]: Inaktiv ultra-hell/transparent, aktiv nur Emerald-Glow, keine massive Box */
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell {
-      background: rgba(248,250,252,0.6); border-bottom: 1px solid rgba(0,0,0,0.04);
+      background: rgba(248,250,252,0.4); border-bottom: 1px solid rgba(0,0,0,0.04);
       padding: 10px 16px; gap: 8px; flex-wrap: nowrap; justify-content: space-between;
     }
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .status-pill,
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .func-icon-btn,
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .power-bar-legend-trigger {
-      background: rgba(255,255,255,0.7); border: 1px solid rgba(0,0,0,0.06);
-      box-shadow: none; color: #64748b;
+      background: rgba(248,250,252,0.5); border: none;
+      box-shadow: none; color: #94a3b8;
     }
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .status-pill.active,
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .func-icon-btn.active {
-      background: rgba(255,255,255,0.95); border-color: rgba(16,185,129,0.35); color: #059669;
-      box-shadow: 0 1px 4px rgba(16,185,129,0.12);
+      background: transparent; border: none; color: #059669;
+      box-shadow: 0 0 14px rgba(16,185,129,0.45);
     }
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .power-bar-legend-trigger { color: #94a3b8; }
     /* Info-Legende Bottom-Sheet: Aktiviert-Zustand */
@@ -2679,15 +2679,16 @@
     .inserat-unified-title-wrap {
       padding-bottom: 0;
     }
+    /* InseratCard: Titel wie gedruckte Überschrift, ohne Input-Rahmen [Master-Prompt Card-Veredelung] */
     .inserat-unified-title-wrap .inserat-detail-style-title {
       margin: 0 0 8px;
-      font-size: 24px; font-weight: 800; color: #0f172a; letter-spacing: -0.03em; line-height: 1.2;
-      width: 100%; border: none; border-bottom: 2px solid rgba(0,0,0,0.08);
-      background: transparent; padding: 4px 0 8px; outline: none;
+      font-size: 1.5rem; font-weight: 800; color: #0f172a; letter-spacing: -0.03em; line-height: 1.2;
+      width: 100%; border: none; background: transparent; padding: 4px 0 8px; outline: none;
       font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
     }
     .inserat-unified-title-wrap .inserat-detail-style-title:focus {
-      border-bottom-color: #10b981;
+      border-bottom: none;
+      box-shadow: 0 1px 0 0 rgba(16,185,129,0.5);
       animation: magnet-pulse 1.2s ease-in-out infinite;
     }
     .inserat-unified-title-wrap .inserat-detail-style-title::placeholder { color: #94a3b8; }
@@ -2709,14 +2710,21 @@
     #wizard[data-flow="listing"] #step-name input.magnet-input {
       width: 100% !important; max-width: 100%; box-sizing: border-box;
       color: #0f172a; font-weight: 800;
+      border: none !important; border-bottom: none !important; background: transparent !important;
+    }
+    #wizard[data-flow="listing"] #step-name input.inserat-detail-style-title:focus,
+    #wizard[data-flow="listing"] #step-name input.magnet-input:focus {
+      border-bottom: none !important;
     }
     /* Action-Row: Titel volle Breite, darunter dezente Beschreibung [cite: 2026-02-16 S25] */
     #wizard[data-flow="listing"] .inserat-unified-title-wrap .inserat-airbnb-desc-wrap {
-      margin-top: 4px; margin-bottom: 20px;
+      margin-top: 4px; margin-bottom: 0;
     }
+    /* InseratCard: Beschreibung ohne Rahmen, Schiefergrau, wie Typografie [Master-Prompt Card-Veredelung] */
     #wizard[data-flow="listing"] .inserat-unified-title-wrap .inserat-desc-input,
     #wizard[data-flow="listing"] .inserat-unified-title-wrap .inserat-airbnb-desc {
-      font-size: 0.9rem; font-weight: 500; color: #64748b; font-style: italic;
+      font-size: 0.95rem; font-weight: 500; color: #64748b; font-style: italic;
+      border: none !important; border-bottom: none !important; background: transparent !important; box-shadow: none !important;
     }
     #wizard[data-flow="listing"] .inserat-unified-title-wrap .inserat-desc-input::placeholder,
     #wizard[data-flow="listing"] .inserat-unified-title-wrap .inserat-airbnb-desc::placeholder {
@@ -2726,7 +2734,7 @@
     /* Goldene Sammelkarte: Kategorie + Preis in einer Zeile, dann Gerichtsname, dann Beschreibung [cite: 2026-02-16] */
     #wizard[data-flow="listing"] .inserat-cat-price-row {
       display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px;
-      margin-bottom: 16px;
+      margin-top: 16px; margin-bottom: 16px;
     }
     #wizard[data-flow="listing"] .inserat-price-pill-wrap {
       display: inline-flex; align-items: center; flex-shrink: 0;

@@ -16276,10 +16276,10 @@
       const catPriceRow=document.createElement('div');
       catPriceRow.className='inserat-cat-price-row';
       catPriceRow.id='step-cat';
-      catPriceRow.style.cssText='display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;';
+      catPriceRow.style.cssText='display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-top:16px;';
       const catValues = ['Fleisch','Vegetarisch','Vegan','Salat'];
       const catDisplayLabels = ['Mit Fleisch','Vegetarisch','Vegan','Salat'];
-      const catEmojis = ['🥩','🥗','🌱','🥪'];
+      const catEmojis = ['🥩','🥦','🌱','🥪'];
       const currentCat = w.data.category || 'Fleisch';
       if(!catValues.includes(currentCat)) w.data.category = 'Fleisch';
       const stepCat=document.createElement('div');
