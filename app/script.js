@@ -10501,7 +10501,7 @@
           const d = normalizeOffer(o);
           const imgUrl = d.imageUrl || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=800&q=70';
           const hasReusable = !!(o.reuse && o.reuse.enabled);
-          const hasPickupNumber = !!o.hasPickupCode;
+          const hasPickupNumber = !!(o.hasPickupCode !== undefined ? o.hasPickupCode : defaultPickup);
           const hasDineIn = o.dineInPossible !== false;
           const dishName = d.dish || d.title || 'Gericht';
           const isLive = o.active !== false;
@@ -10513,11 +10513,15 @@
           const firstPickupCode = paidWithCode.length ? ('#' + (paidWithCode[0].pickupCode || String(paidWithCode[0].id || '').slice(-2))) : null;
           const abholnummerLabel = hasPickupNumber ? (firstPickupCode || '–') : '–';
           const abholnummerGray = !hasPickupNumber;
-          // 3 Säulen: runde PillarIcons (green = Vor Ort, yellow = Abholnummer, petrol = Mehrweg) direkt unter dem Bild
-          const pillarDineIn = hasDineIn ? 'active green' : '';
-          const pillarPickup = hasPickupNumber ? 'active yellow' : '';
-          const pillarReuse = hasReusable ? 'active petrol' : '';
-          const pillarsRow = '<div class="card-pillars" style="display:flex; gap:12px; margin-bottom:12px;"><div class="pillar-mini ' + pillarDineIn + '" title="Vor Ort">🍴</div><div class="pillar-mini ' + pillarPickup + '" title="Abholnummer">🧾</div><div class="pillar-mini ' + pillarReuse + '" title="Mehrweg">🔄</div></div>';
+          // Silent Defaults: Säulen nur anzeigen, wenn Inserat vom Profil abweicht
+          var deviateDineIn = o.dineInPossible !== undefined && (o.dineInPossible !== false) !== defaultDineIn;
+          var deviatePickup = o.hasPickupCode !== undefined && !!o.hasPickupCode !== defaultPickup;
+          var deviateReuse = (o.reuse && (o.reuse.enabled !== undefined)) ? !!(o.reuse && o.reuse.enabled) !== defaultReuse : false;
+          var pillarParts = [];
+          if (deviateDineIn) pillarParts.push('<div class="pillar-mini ' + (hasDineIn ? 'active green' : '') + '" title="Vor Ort">🍴</div>');
+          if (deviatePickup) pillarParts.push('<div class="pillar-mini ' + (hasPickupNumber ? 'active yellow' : '') + '" title="Abholnummer">🧾</div>');
+          if (deviateReuse) pillarParts.push('<div class="pillar-mini ' + (hasReusable ? 'active petrol' : '') + '" title="Mehrweg">🔄</div>');
+          const pillarsRow = pillarParts.length ? '<div class="card-pillars" style="display:flex; gap:12px; margin-bottom:12px;">' + pillarParts.join('') + '</div>' : '';
 
           const card = document.createElement('div');
           card.className = 'prov-card';
