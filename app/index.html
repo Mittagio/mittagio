@@ -60,18 +60,18 @@
       <!-- Modern Sticky Header: Standort links, MITTAGIO weiß zentriert, Filter darunter sticky -->
       <header class="cust-header-sticky discover-header-sticky">
         <!-- Zeile 1: Standort links, MITTAGIO exakt mittig (Grid). Kein Profil-/Warenkorb-Icon rechts. -->
-        <div class="discover-header-top-row" style="display:grid; grid-template-columns: 1fr auto 1fr; align-items:center; gap:8px; background:#121826;">
-          <div style="display:flex; align-items:center; gap:8px; min-width:0;">
-            <button type="button" id="btnDiscoverLocationText" style="display:flex; align-items:center; gap:6px; background:none; border:none; padding:0; cursor:pointer; min-width:0; text-align:left;">
-              <span class="discover-location-pin" style="font-size:16px; line-height:1;">📍</span>
-              <span id="discoverCurrentLocation" style="font-size:14px; font-weight:700; color:rgba(255,255,255,0.95); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Standort wählen...</span>
+        <div class="discover-header-top-row" style="display:grid; grid-template-columns: 1fr auto 1fr; align-items:center; gap:6px; background:#121826;">
+          <div class="discover-location-row-wrap" style="display:flex; align-items:center; gap:6px; min-width:0;">
+            <button type="button" id="btnDiscoverLocationText" style="display:flex; align-items:center; gap:4px; background:none; border:none; padding:0; cursor:pointer; min-width:0; text-align:left;">
+              <span class="discover-location-pin" style="font-size:14px; line-height:1;">📍</span>
+              <span id="discoverCurrentLocation" class="discover-location-text">Standort wählen...</span>
             </button>
-            <button type="button" id="btnDiscoverLocationGPS" aria-label="Standort per GPS" style="display:flex; align-items:center; justify-content:center; width:40px; height:40px; border-radius:12px; border:none; background:rgba(255,255,255,0.15); color:#fff; cursor:pointer; flex-shrink:0;">
-              <i data-lucide="map-pin" style="width:20px;height:20px;"></i>
+            <button type="button" id="btnDiscoverLocationGPS" class="discover-gps-btn" aria-label="Standort per GPS" style="display:flex; align-items:center; justify-content:center; width:36px; height:36px; border-radius:10px; border:none; background:rgba(255,255,255,0.15); color:#fff; cursor:pointer; flex-shrink:0;">
+              <i data-lucide="map-pin" style="width:18px;height:18px;"></i>
             </button>
           </div>
           <div style="display:flex; justify-content:center; align-items:center;">
-            <span class="discover-logo" style="font-family:'Montserrat',sans-serif; font-weight:900; font-size:20px; color:#fff; letter-spacing:-0.03em;">MITTAGIO</span>
+            <span class="discover-logo">MITTAGIO</span>
           </div>
           <div style="min-width:0;"></div>
         </div>
@@ -95,10 +95,10 @@
 
         <!-- Sticky Filter: Zeile 1 Kategorien, Zeile 2 Radius + Zeit (Heute/Morgen) -->
         <div class="discover-filter-sticky" style="background:var(--header-bg,#fff); border-bottom:1px solid rgba(0,0,0,0.06);">
-          <div id="discoverCategoriesBar" class="discover-header-pills cust-chip-bar" style="padding:8px var(--header-padding-x,16px) 6px;">
+          <div id="discoverCategoriesBar" class="discover-header-pills cust-chip-bar discover-pills-compact">
             <!-- Dynamisch: [ 🍲 Eintopf ] [ 🥩 Vesper ] [ 🥗 Vegetarisch ] [ 🥪 Snack ] -->
           </div>
-          <div class="discover-radius-time-row" style="display:flex; align-items:center; gap:8px; padding:6px var(--header-padding-x,16px) 10px; flex-wrap:wrap;">
+          <div class="discover-radius-time-row discover-filter-row-slim">
             <div class="discover-radius-row" style="display:flex; align-items:center; gap:8px;">
               <button type="button" id="discoverRadiusBtn" class="discover-radius-pill" aria-label="Hunger-Radius">
                 <span id="discoverRadiusIcon">📍</span>
@@ -121,7 +121,7 @@
 
       <!-- Listenansicht ("Speisekarte") + Karten-Container (Overlay) – S25 Safe-Area -->
       <main class="discover-main" style="position:relative; padding:16px; padding-bottom:calc(88px + env(safe-area-inset-bottom, 0));">
-        <div id="discoverOffers" class="discover-offers-list" style="display:flex; flex-direction:column; gap:12px; padding:0 0 8px;">
+        <div id="discoverOffers" class="discover-offers-list" style="display:flex; flex-direction:column; padding:0 0 8px;">
           <!-- Dynamisch befüllt -->
         </div>
 
@@ -3160,27 +3160,6 @@
     <button class="btn ghost support-style-btn" type="button" onclick="closeSupportContact()" style="width:100%; margin-top:16px; border:2px solid #e5e7eb; border-radius:12px;">Abbrechen</button>
   </div>
 </div>
-
-<footer class="trust-footer">
-  <div class="trust-footer-inner">
-    <div class="trust-footer-apps">
-      <div class="trust-footer-app-badge"><img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg" alt="App Store" height="40"></div>
-      <div class="trust-footer-app-badge"><img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Google Play" height="40"></div>
-      <span class="trust-footer-coming">Coming Soon</span>
-    </div>
-    <div class="trust-footer-payment">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" height="20">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/b/ba/Stripe_Logo%2C_revised_2016.svg" alt="Stripe" height="25">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" height="15">
-    </div>
-    <div class="trust-footer-legal">
-      <a href="impressum.html">Impressum</a>
-      <a href="datenschutz.html">Datenschutz</a>
-      <a href="agb.html">AGB</a>
-    </div>
-  </div>
-  <div class="trust-footer-copy">&copy; 2026 Mittagio. Keine Abos. Keine Verträge. Einfach inserieren.</div>
-</footer>
 
 <script src="script.js"></script>
   <script src="https://unpkg.com/html2canvas@1.4.1/dist/html2canvas.min.js" async></script>

@@ -97,7 +97,7 @@
       --pill-radius: 22px;
       --pill-bg-inactive: #e5e7eb;
       --pill-color-inactive: #64748b;
-      --pill-active-emerald: #2563eb;
+      --pill-active-emerald: #059669;
       --section-title-size: 18px;
       --section-title-weight: 900;
       --body-text-size: 15px;
@@ -527,7 +527,7 @@
     }
     .pillar-badge.active.green .pillar-icon-circle { background: rgba(39, 174, 96, 0.15); color: #27AE60; }
     .pillar-badge.active.yellow .pillar-icon-circle { background: rgba(255, 215, 0, 0.2); color: #1a1a1a; }
-    .pillar-badge.active.blue .pillar-icon-circle { background: rgba(52, 152, 219, 0.15); color: #3498db; }
+    .pillar-badge.active.blue .pillar-icon-circle { background: rgba(15, 23, 42, 0.12); color: #121826; }
     
     .pillar-label {
       font-size: 10px;
@@ -2800,12 +2800,12 @@
     /* MODE_PLAN (week/cookbook): Blue „In den Wochenplan einplanen“ + grüner „Nur im Kochbuch“ [cite: 2026-02-18] */
     #wizard[data-flow="listing"] .inserat-action-section.inserat-action-plan .inserat-btn-plan-primary {
       width: 100%; min-height: 56px; padding: 16px 20px; border-radius: 20px; border: none; cursor: pointer;
-      background: #3b82f6; color: #fff; font-size: 16px; font-weight: 800;
-      box-shadow: 0 8px 24px rgba(59,130,246,0.35); -webkit-tap-highlight-color: transparent;
+      background: #121826; color: #fff; font-size: 16px; font-weight: 800;
+      box-shadow: 0 8px 24px rgba(15,23,42,0.25); -webkit-tap-highlight-color: transparent;
       transition: transform 0.15s ease, box-shadow 0.2s ease;
     }
     #wizard[data-flow="listing"] .inserat-action-section.inserat-action-plan .inserat-btn-plan-primary:active {
-      transform: scale(0.98); box-shadow: 0 4px 16px rgba(59,130,246,0.3);
+      transform: scale(0.98); box-shadow: 0 4px 16px rgba(15,23,42,0.2);
     }
     #wizard[data-flow="listing"] .inserat-action-section.inserat-action-plan .inserat-btn-plan-secondary {
       width: 100%; min-height: 48px; padding: 12px 20px; margin-top: 12px; border-radius: 16px; cursor: pointer;
@@ -3098,7 +3098,7 @@
       display:flex; align-items:center; justify-content:center;
     }
     .provider-header-bar h1{ margin:0; font-size: var(--section-title-size); font-weight: var(--section-title-weight); color: var(--header-title-color) !important; }
-    .provider-header-bar .btn-back{ position:absolute; left:10px; color:#0A84FF; font-size:16px; padding:8px; display:flex; align-items:center; gap:4px; background:none; border:none; cursor:pointer; }
+    .provider-header-bar .btn-back{ position:absolute; left:10px; color:#121826; font-size:16px; padding:8px; display:flex; align-items:center; gap:4px; background:none; border:none; cursor:pointer; }
     /* Legal-Anbieter-Seiten: gleiches helles Layout */
     #v-legal-impressum-provider,
     #v-legal-faq-provider,
@@ -3134,7 +3134,7 @@
     @media (max-width: 480px){ .inserat-info-grid{ grid-template-columns:1fr !important; } }
     #v-legal-impressum-provider .panel a,
     #v-legal-faq-provider .panel a,
-    #v-legal-datenschutz-provider .panel a{ color:#0A84FF !important; }
+    #v-legal-datenschutz-provider .panel a{ color:#121826 !important; }
     #v-legal-agb-provider{ background:var(--provider-bg) !important; }
     [id^="v-provider-"] .panel{
       background:var(--provider-surface) !important;
@@ -3348,7 +3348,7 @@
     details{background:#fff;border:1px solid var(--border);border-radius:14px;box-shadow:0 6px 14px rgba(0,0,0,.06);padding:14px 16px}
     details+details{margin-top:10px}
     summary{cursor:pointer;font-weight:950;font-size:15px;line-height:1.4}
-    summary:focus-visible{outline:2px solid var(--accent,#0A84FF);outline-offset:2px;border-radius:8px}
+    summary:focus-visible{outline:2px solid var(--accent,#121826);outline-offset:2px;border-radius:8px}
     summary::-webkit-details-marker{display:none}
     #v-legal-faq details summary::-webkit-details-marker,
     #v-legal-faq-provider details summary::-webkit-details-marker{display:none}
@@ -3637,13 +3637,37 @@
       flex-direction: column;
       justify-content: flex-start;
     }
-    /* Feste Höhe: Logo-Scale verursacht keinen Layout-Shift [cite: 2026-01-27, 2026-02-18] */
+    /* Header-Kompaktierung: Ruhe im Fokus – minimaler vertikaler Raum [cite: 2026-01-29, 2026-02-18] */
     #v-discover .discover-header-top-row{
       flex-shrink: 0;
-      min-height: 52px;
-      padding: 12px 16px;
-      padding-top: calc(12px + env(safe-area-inset-top, 0px));
+      min-height: 44px;
+      padding: 4px 12px;
+      padding-top: calc(4px + env(safe-area-inset-top, 0px));
     }
+    #v-discover .discover-logo{
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 900;
+      font-size: clamp(16px, 4vw, 20px);
+      line-height: 1.2;
+      max-height: 24px;
+      color: #fff;
+      letter-spacing: -0.03em;
+    }
+    #v-discover .discover-location-text,
+    #v-discover #discoverCurrentLocation{
+      font-size: 14px !important;
+      font-weight: 700;
+      color: rgba(255,255,255,0.95);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    #v-discover .discover-gps-btn{
+      width: 36px !important;
+      height: 36px !important;
+      border-radius: 10px;
+    }
+    #v-discover .discover-gps-btn i{ width: 18px !important; height: 18px !important; }
     #v-discover .discover-filter-sticky{
       background: #fff !important;
       border-bottom: none;
@@ -3670,10 +3694,6 @@
       display: inline-block;
       animation: pin-wiggle 0.5s ease-in-out 0.4s both;
       animation-iteration-count: 1;
-    }
-    /* Logo-Scale: bei .scrolled sanft auf scale(0.94) [cite: 2026-01-27, 2026-02-18] */
-    #v-discover .discover-logo {
-      transition: transform 0.25s ease;
     }
     #v-discover .discover-header-sticky.scrolled .discover-logo {
       transform: scale(0.94);
@@ -3886,34 +3906,55 @@
       touch-action: pan-x;
     }
     #v-discover .discover-header-pills::-webkit-scrollbar{ display: none; }
+    /* Kategorien-Pills: 32px Höhe, feine Umrandung inaktiv – kein Baukasten-Look [cite: 2026-01-27, 2026-02-18] */
+    #v-discover .discover-header-pills.discover-pills-compact{
+      padding: 4px var(--header-padding-x, 16px) 4px;
+    }
     #v-discover .discover-header-pills .discover-category-chip{
       flex: 0 0 auto;
       scroll-snap-align: center;
-      min-height: 36px;
+      min-height: 32px;
       min-width: auto;
-      padding: 8px 14px;
+      padding: 6px 12px;
       border-radius: 999px;
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 600;
-      border: 1px solid rgba(0,0,0,0.08);
-      background: #f1f3f5;
+      border: 1px solid rgba(0,0,0,0.06);
+      background: #f8fafc;
       color: #64748b;
       cursor: pointer;
       transition: transform 0.15s, background 0.2s, border-color 0.2s, color 0.2s;
       -webkit-tap-highlight-color: transparent;
+      box-shadow: none;
     }
     #v-discover .discover-header-pills .discover-category-chip:active{ transform: scale(0.96); }
     #v-discover .discover-header-pills .discover-category-chip.active{
       background: #FFD700;
       color: #1a1a1a;
-      border-color: rgba(255,215,0,0.6);
-      box-shadow: 0 1px 4px rgba(255,215,0,0.25);
+      border-color: rgba(255,215,0,0.5);
+      box-shadow: 0 1px 2px rgba(255,215,0,0.2);
     }
-    #v-discover #discoverDaysBar{ display:flex; gap:8px; overflow-x:auto; overflow-y:hidden; -webkit-overflow-scrolling:touch; padding:6px var(--header-padding-x, 16px) 10px; scrollbar-width:none; min-width:0; max-width:100%; width:100%; box-sizing:border-box; white-space:nowrap; touch-action:pan-x; }
+    /* Radius & Tage: schmal, feine Grauschrift [cite: 2026-02-18] */
+    #v-discover .discover-radius-time-row.discover-filter-row-slim{
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px var(--header-padding-x, 16px) 6px;
+      flex-wrap: wrap;
+    }
+    #v-discover .discover-filter-row-slim .discover-radius-pill{
+      min-height: 32px;
+      padding: 6px 10px;
+      font-size: 13px;
+      color: #94a3b8;
+    }
+    #v-discover #discoverDaysBar{ display:flex; gap:6px; overflow-x:auto; overflow-y:hidden; -webkit-overflow-scrolling:touch; padding:4px var(--header-padding-x, 16px) 6px; scrollbar-width:none; min-width:0; max-width:100%; width:100%; box-sizing:border-box; white-space:nowrap; touch-action:pan-x; }
     #v-discover #discoverDaysBar::-webkit-scrollbar{ display:none; }
-    #v-discover #discoverDaysBar .cust-chip{ min-height:36px; min-width:60px; width:60px; padding:8px 6px; font-size:12px; font-weight:600; border-radius:999px; flex:0 0 60px; box-sizing:border-box; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; border:1px solid rgba(0,0,0,0.08); background:#f1f3f5; color:#64748b; transition:background 0.2s, color 0.2s, border-color 0.2s; }
+    /* Radius & Tage: 13px, dezentes Grau – nur aktiver (gelber) Tag sticht hervor [cite: 2026-02-18] */
+    #v-discover #discoverDaysBar .cust-chip{ min-height:28px; min-width:52px; width:52px; padding:4px 4px; font-size:13px; font-weight:600; border-radius:999px; flex:0 0 52px; box-sizing:border-box; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; border:1px solid rgba(0,0,0,0.05); background:#f8fafc; color:#cbd5e1; transition:background 0.2s, color 0.2s, border-color 0.2s; }
     #v-discover #discoverDaysBar .cust-chip.active{ background:#FFD700; color:#1a1a1a; border-color:rgba(255,215,0,0.6); box-shadow:0 1px 4px rgba(255,215,0,0.25); }
-    #v-discover .discover-offers-list{ width:100%; max-width:100%; margin:0; padding:0 0 8px; box-sizing:border-box; }
+    /* 1.5-Kacheln-Ziel: weniger Abstand zwischen Karten [cite: 2026-01-29] */
+    #v-discover .discover-offers-list{ width:100%; max-width:100%; margin:0; padding:0 0 8px; box-sizing:border-box; gap:8px; }
     /* ImmoScout-Style: Content startet exakt unter dem Sticky-Header – kein Abschneiden der ersten Karte */
     body:not(.provider-mode) #v-discover .discover-main{
       padding-top: 12px;
@@ -3976,7 +4017,8 @@
     #v-discover .empty-state-container .btn-cust-primary{
       min-width: 200px;
     }
-    #v-discover .cust-card{ width:100%; margin:0 auto 12px; -webkit-tap-highlight-color:transparent; transition:transform 0.15s, box-shadow 0.2s; box-sizing:border-box; }
+    #v-discover .cust-card{ width:100%; margin:0 auto; -webkit-tap-highlight-color:transparent; transition:transform 0.15s, box-shadow 0.2s; box-sizing:border-box; }
+    #v-discover .dish-card{ margin-bottom: 8px; }
     #v-discover .cust-card:active{ transform:scale(0.99); box-shadow:0 2px 12px rgba(0,0,0,0.06); }
     #v-discover .discover-tiles-grid .cust-card .cust-card-body{ display:flex; flex-direction:column; }
     #v-discover .discover-tiles-grid .cust-card .btn.btn-mittagsbox-cta{ min-height:52px; font-size:16px; border-radius:14px; background:#FFD700 !important; color:#1a1a1a; font-weight:800; box-shadow:0 2px 12px rgba(255,215,0,0.25); }
@@ -4039,7 +4081,7 @@
     .discover-map-canvas .discover-pin-emoji{ font-size:28px; margin-bottom:4px; line-height:1; }
     .discover-map-canvas .discover-pin-price{
       background:#fff; padding:6px 12px; border-radius:14px; font-size:14px; font-weight:800; color:#1a1a1a;
-      border:2px solid #2563eb; white-space:nowrap;
+      border:2px solid #121826; white-space:nowrap;
     }
     /* Pin-Drawer: über fixierter Footer-Navigation, keine Z-Index-Kollision [cite: 2026-01-27, 2026-01-29] */
     #discoverPinDrawer.discover-pin-drawer{
@@ -4695,10 +4737,34 @@
         gap: 8px !important;
       }
     }
-    /* Preis: klare Sans-Serif [cite: 2026-02-18] */
-    .dish-price {
+    /* Dish-Card: Gerichtsname 16px Serif, reduzierter line-height für 1.5-Kacheln-Regel [cite: 2026-02-18, 2026-01-29] */
+    #v-discover .dish-card .dish-name{
+      font-family: 'Source Serif 4', Georgia, 'Times New Roman', serif;
       font-size: 16px;
       font-weight: 700;
+      line-height: 1.2;
+      margin: 0;
+      color: #111;
+      letter-spacing: -0.02em;
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+    #v-discover .dish-card .dish-price{
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--brand, #FFD700);
+      white-space: nowrap;
+      flex-shrink: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+    }
+    .dish-price {
+      font-size: 14px;
+      font-weight: 800;
       color: #111;
       white-space: nowrap;
       font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
@@ -4900,7 +4966,7 @@
       transform:scale(1.05);
     }
     #v-provider-home .dashboard-kasten-kpis #dashboardTagesessenCount{ color:#1a1a1a !important; }
-    #v-provider-home .dashboard-kasten-kpis #dashboardAbholungenCount{ color:#3b82f6 !important; }
+    #v-provider-home .dashboard-kasten-kpis #dashboardAbholungenCount{ color:#121826 !important; }
     #v-provider-home .dashboard-kasten-kpis #dashboardUmsatzToday{ color:#16a34a !important; }
     #v-provider-home .dashboard-kasten-angebote{
       padding:14px 16px; padding-left:max(16px, env(safe-area-inset-left, 0)); padding-right:max(16px, env(safe-area-inset-right, 0));
@@ -5258,7 +5324,7 @@
       #v-provider-week .week-meal-card-wrap.week-meal-card-exit .week-meal-card-swipe .week-meal-card{ transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
       #v-provider-week .week-meal-card-wrap.week-meal-card-exit{ opacity:0; }
       #v-provider-week .week-swipe-actions{ display:flex; flex-direction:column; gap:4px; position:absolute; top:0; bottom:0; width:80px; align-items:center; justify-content:center; font-size:11px; font-weight:800; color:#fff; }
-      #v-provider-week .week-swipe-actions.left{ left:0; background:#2563eb; }
+      #v-provider-week .week-swipe-actions.left{ left:0; background:#121826; }
       #v-provider-week .week-swipe-actions.right{ right:0; background:#ef4444; }
       /* Aktivierung: großer Button – Loading + Success-Checkmark (Premium) */
       #v-provider-week .week-activate-block{ padding:16px 0; margin-top:8px; }
@@ -5340,15 +5406,15 @@
       #v-provider-week .kw-progress{ height:4px; border-radius:999px; background:#e2e8f0; overflow:hidden; }
       #v-provider-week .kw-progress-fill{ height:100%; border-radius:999px; background:var(--prov-brand); transition:width 0.3s ease; }
       #v-provider-week .kw-season-banner{ transition:opacity 0.25s ease, transform 0.25s ease; border-radius:24px; }
-      #v-provider-week .kw-season-banner:not([class*="kw-season-"]){ background:#eff6ff; color:#1e40af; border:1px solid rgba(59,130,246,0.2); }
+      #v-provider-week .kw-season-banner:not([class*="kw-season-"]){ background:#f1f5f9; color:#121826; border:1px solid rgba(15,23,42,0.12); }
       #v-provider-week .kw-season-banner.kw-season-mint{ background:linear-gradient(135deg, rgba(167,243,208,0.5) 0%, rgba(110,231,183,0.35) 100%); color:#065f46; border:1px solid rgba(16,185,129,0.25); }
       #v-provider-week .kw-season-banner.kw-season-mint .kw-season-banner-btn{ background:#10b981; color:#fff; }
       #v-provider-week .kw-season-banner.kw-season-summer{ background:linear-gradient(135deg, rgba(253,230,138,0.5) 0%, rgba(251,191,36,0.35) 100%); color:#78350f; border:1px solid rgba(245,158,11,0.3); }
       #v-provider-week .kw-season-banner.kw-season-summer .kw-season-banner-btn{ background:#f59e0b; color:#fff; }
       #v-provider-week .kw-season-banner.kw-season-herbst{ background:linear-gradient(135deg, rgba(254,215,170,0.5) 0%, rgba(251,146,60,0.35) 100%); color:#7c2d12; border:1px solid rgba(234,88,12,0.25); }
       #v-provider-week .kw-season-banner.kw-season-herbst .kw-season-banner-btn{ background:#ea580c; color:#fff; }
-      #v-provider-week .kw-season-banner.kw-season-winter{ background:linear-gradient(135deg, rgba(191,219,254,0.5) 0%, rgba(147,197,253,0.35) 100%); color:#1e3a8a; border:1px solid rgba(59,130,246,0.25); }
-      #v-provider-week .kw-season-banner.kw-season-winter .kw-season-banner-btn{ background:#3b82f6; color:#fff; }
+      #v-provider-week .kw-season-banner.kw-season-winter{ background:linear-gradient(135deg, rgba(241,245,249,0.9) 0%, rgba(226,232,240,0.6) 100%); color:#121826; border:1px solid rgba(15,23,42,0.15); }
+      #v-provider-week .kw-season-banner.kw-season-winter .kw-season-banner-btn{ background:#121826; color:#fff; }
       #v-provider-week .kw-board-scroll{ flex:1; min-height:0; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; padding:20px 20px calc(160px + env(safe-area-inset-bottom, 0)); position:relative; }
       #v-provider-week .kw-empty-week-template-cta{ display:flex; align-items:center; justify-content:center; }
       #v-provider-week .kw-load-template-btn:active{ transform:scale(0.98); }
@@ -5492,9 +5558,9 @@
       #providerWeekDays .week-preview-pill{ flex:0 0 auto; width:52px; min-width:52px; height:52px; min-height:52px; padding:0 6px; border-radius:32px; border:2px solid #f1f3f5; background:#fff; font-size:10px; font-weight:900; color:#64748b; cursor:pointer; transition:all 0.2s; line-height:1.2; text-align:center; white-space:pre-line; scroll-snap-align:center; scroll-snap-stop:always; display:flex; flex-direction:column; align-items:center; justify-content:center; box-sizing:border-box; }
       #providerWeekDays .week-preview-pill::after{ content:''; width:8px; height:8px; border-radius:50%; margin-top:4px; background:#e2e8f0; border:none; transition:background 0.2s; }
       #providerWeekDays .week-preview-pill.has-online::after{ background:var(--prov-brand); box-shadow:0 0 0 2px rgba(255,222,0,0.35); }
-      #providerWeekDays .week-preview-pill.has-listings:not(.has-online)::after{ background:#3b82f6; border:none; }
+      #providerWeekDays .week-preview-pill.has-listings:not(.has-online)::after{ background:#121826; border:none; }
       #providerWeekDays .week-preview-pill.active{ background:#ffde00; border-color:#ffde00; color:#1a1a1a; box-shadow:0 2px 12px rgba(255,222,0,0.4); transform:scale(1.05); }
-      #providerWeekDays .week-preview-pill.active::after{ background:#3b82f6; }
+      #providerWeekDays .week-preview-pill.active::after{ background:#121826; }
       #providerWeekDays .week-preview-pill.active.has-online::after{ background:var(--prov-brand); box-shadow:0 0 0 2px rgba(255,222,0,0.35); }
       /* Wochenplan 2.2: Dashboard-Pills minimalistisch – ohne Status-Punkt, Fokus auf Karten */
       #v-provider-home #providerWeekDays .week-preview-pill::after{ display:none !important; }
@@ -5533,9 +5599,9 @@
       #providerWeekDayContent .week-preview-cta{ margin-top:24px; }
       #providerWeekDayContent .week-preview-cta .btn{ width:100%; min-height:48px; border-radius:14px; font-weight:700; border:2px solid #e5e7eb; background:#fff; color:#1a1a1a; }
       #providerWeekDayContent .week-preview-link{ display:inline-flex; align-items:center; gap:6px; font-size:14px; font-weight:700; color:#1a1a1a; margin-top:20px; margin-bottom:24px; cursor:pointer; color:var(--prov-brand,#0ea5e9); padding-bottom:env(safe-area-inset-bottom, 0); }
-      #providerWeekDayContent .week-preview-gap-tip{ display:flex; align-items:center; justify-content:space-between; gap:12px; background:#eff6ff; border:1px solid #bfdbfe; padding:20px; border-radius:24px; margin-top:16px; box-shadow:0 0 0 1px rgba(59,130,246,0.08), 0 4px 20px rgba(59,130,246,0.12); }
+      #providerWeekDayContent .week-preview-gap-tip{ display:flex; align-items:center; justify-content:space-between; gap:12px; background:#f8fafc; border:1px solid #e2e8f0; padding:20px; border-radius:24px; margin-top:16px; box-shadow:0 0 0 1px rgba(15,23,42,0.06), 0 4px 20px rgba(15,23,42,0.08); }
       #providerWeekDayContent .week-preview-gap-tip-inner{ display:flex; align-items:center; gap:12px; }
-      #providerWeekDayContent .week-preview-gap-tip-label{ font-size:9px; font-weight:900; text-transform:uppercase; letter-spacing:0.08em; color:#3b82f6; }
+      #providerWeekDayContent .week-preview-gap-tip-label{ font-size:9px; font-weight:900; text-transform:uppercase; letter-spacing:0.08em; color:#121826; }
       #providerWeekDayContent .week-preview-gap-tip-title{ font-size:13px; font-weight:800; color:#1a1a1a; margin-top:2px; }
       #providerWeekDayContent .week-preview-gap-tip-stats{ font-size:11px; font-weight:700; color:#1a1a1a; margin-top:4px; }
       #providerWeekDayContent .week-preview-gap-tip .week-preview-gap-tip-btn{ background:#fff; padding:8px 14px; border-radius:12px; font-size:9px; font-weight:900; text-transform:uppercase; border:none; box-shadow:0 1px 4px rgba(0,0,0,0.06); cursor:pointer; color:#1a1a1a; }
@@ -6630,4 +6696,8 @@
   margin-top: 40px;
   font-size: 12px;
   color: #aaa;
+}
+/* Footer nur in Anbieter-Login (Landingpage) – Abstand zum Panel [cite: 2026-02-04] */
+#v-provider-login .trust-footer {
+  margin-top: 32px;
 }

@@ -4337,8 +4337,8 @@
     
     // Kompaktes horizontales Layout: Bild links (quadratisch), Text rechts (S25: über CSS .dish-card-thumb anpassbar)
     card.innerHTML = `
-      <div style="display:flex; gap:12px; align-items:flex-start;">
-        <!-- Kompaktes Bild links (quadratisch, Standard 100px, S25 über CSS) -->
+      <div class="dish-card-inner" style="display:flex; gap:8px; align-items:flex-start;">
+        <!-- Kompaktes Bild links (100px, S25 über CSS) [cite: 2026-02-18] -->
         <div class="dish-card-thumb" style="position:relative; width:100px; height:100px; max-width:100px; max-height:100px; flex-shrink:0; border-radius:12px; overflow:hidden; background:#f0f0f0;">
         <img src="${esc(imgSrc)}" alt="${esc(data.dish||'')}" style="width:100%; height:100%; object-fit:cover;" />
           <!-- Service-Label (oben links) -->
@@ -4356,10 +4356,10 @@
         
         <!-- Info-Bereich rechts (flex:1 für volle Breite) -->
         <div style="flex:1; display:flex; flex-direction:column; justify-content:space-between; min-width:0; padding:2px 0;">
-          <!-- Name & Preis in einer Zeile -->
+          <!-- Name & Preis: Gerichtsname 16px Serif, Preis kleiner [cite: 2026-02-18] -->
           <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px; margin-bottom:4px;">
-            <h3 class="dish-name" style="font-weight:900; font-size:15px; line-height:1.3; margin:0; color:#111; letter-spacing:-0.2px; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;">${esc(data.dish||'Gericht')}</h3>
-            <div class="dish-price" style="font-size:16px; color:var(--brand); font-weight:900; flex-shrink:0; white-space:nowrap;">${euro(data.price)}</div>
+            <h3 class="dish-name">${esc(data.dish||'Gericht')}</h3>
+            <div class="dish-price">${euro(data.price)}</div>
       </div>
           
           <!-- Anbieter-Name (klein, uppercase) -->
