@@ -4286,7 +4286,7 @@
     return card;
   }
   
-  // List Card für Discover-Seite: Vertikal zentriert wie Detailkarte (Bild Anker, Floating Actions) [cite: 2026-02-18]
+  // List Card für Discover: Centered Discovery Feed – Bild → Säulen → Text → Distanz → Button [cite: 2026-02-18]
   function createDiscoverListCard(o){
     const data = normalizeOffer(o);
     const card = document.createElement('div');
@@ -4310,24 +4310,24 @@
     card.innerHTML = `
       <div class="dish-card-image-wrapper">
         <img src="${esc(imgSrc)}" alt="${dishName}" loading="lazy" />
-        <div class="card-actions-top">
-          <button type="button" class="action-btn-floating" aria-label="Teilen" title="Teilen"><i data-lucide="share-2" style="width:16px;height:16px;color:#1a1a1a;"></i></button>
+        <div class="card-actions-top" style="position:absolute; top:12px; right:12px; display:flex; gap:8px;">
           <button type="button" class="action-btn-floating action-btn-fav" aria-label="Favorit" title="Favorit"><i data-lucide="heart" style="width:16px;height:16px;${isFavorited ? 'fill:#e74c3c;color:#e74c3c;' : 'color:#666;'}"></i></button>
+          <button type="button" class="action-btn-floating" aria-label="Teilen" title="Teilen"><i data-lucide="share-2" style="width:16px;height:16px;color:#1a1a1a;"></i></button>
         </div>
-        <div class="price-badge">${euro(data.price)}</div>
+        <div class="price-badge-on-image">${euro(data.price)}</div>
       </div>
-      <div class="dish-card-pillars-row" style="display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin-bottom:12px;">
+      <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin-bottom:12px;">
         <span class="pillar-pill" style="${vorOrt ? '' : 'opacity:0.5; filter:grayscale(1);'}">🍴 Vor Ort</span>
         <span class="pillar-pill" style="${mehrweg ? '' : 'opacity:0.5; filter:grayscale(1);'}">🔄 Mehrweg</span>
         <span class="pillar-pill" style="${abholnummer ? '' : 'opacity:0.5; filter:grayscale(1);'}">🧾 Abholnummer</span>
       </div>
-      <h3 class="dish-name" style="font-family:'Source Serif 4',Georgia,serif; font-size:18px; font-weight:700; color:#0f172a; margin:0 0 4px; line-height:1.3;">${dishName}</h3>
-      <p class="dish-card-provider" style="color:#94a3b8; font-size:14px; margin:0 0 10px;">${providerName} &gt;</p>
-      <div class="dish-card-mobility" style="display:flex; justify-content:center; gap:10px; font-size:13px; color:#64748b; font-weight:600; margin-bottom:12px;">
-        ${walkingMin ? `<span>🏃 ${walkingMin} Min.</span>` : ''}
-        ${carMin ? `<span>🚗 ${carMin} Min.</span>` : ''}
+      <h3 class="dish-name" style="font-family:'Source Serif 4',Georgia,serif; font-size:19px; font-weight:700; color:#121826; margin:0 0 4px; line-height:1.3;">${dishName}</h3>
+      <p class="dish-card-provider" style="color:#64748b; font-size:14px; margin:0 0 12px;">${providerName} &gt;</p>
+      <div style="display:flex; justify-content:center; gap:12px; margin-bottom:16px;">
+        ${walkingMin ? `<span class="distance-chip">🏃 ${walkingMin} Min.</span>` : ''}
+        ${carMin ? `<span class="distance-chip">🚗 ${carMin} Min.</span>` : ''}
       </div>
-      <button type="button" class="btn-cust-primary dish-card-cta" style="width:100%; max-width:280px; min-height:48px; border-radius:14px; font-weight:800; font-size:16px;">In meine Box legen 🍱</button>
+      <button type="button" class="btn-cust-primary dish-card-cta" style="width:280px; padding:14px; border-radius:18px; font-weight:800; font-size:16px;">In meine Box legen 🍱</button>
     `;
     
     const imgEl = card.querySelector('.dish-card-image-wrapper img');
@@ -4365,7 +4365,7 @@
     }
     
     card.onclick = function(e){
-      if(e.target.closest('.card-actions-top') || e.target.closest('.price-badge') || e.target.closest('.dish-card-cta')) return;
+      if(e.target.closest('.card-actions-top') || e.target.closest('.price-badge') || e.target.closest('.price-badge-on-image') || e.target.closest('.dish-card-cta')) return;
       openOffer(data.id);
     };
     

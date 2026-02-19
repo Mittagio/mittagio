@@ -4000,33 +4000,34 @@
     /* Radius & Tage: 13px, dezentes Grau – nur aktiver (gelber) Tag sticht hervor [cite: 2026-02-18] */
     #v-discover #discoverDaysBar .cust-chip{ min-height:28px; min-width:52px; width:52px; padding:4px 4px; font-size:13px; font-weight:600; border-radius:999px; flex:0 0 52px; box-sizing:border-box; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; border:1px solid rgba(0,0,0,0.05); background:#f8fafc; color:#cbd5e1; transition:background 0.2s, color 0.2s, border-color 0.2s; }
     #v-discover #discoverDaysBar .cust-chip.active{ background:#FFD700; color:#1a1a1a; border-color:rgba(255,215,0,0.6); box-shadow:0 1px 4px rgba(255,215,0,0.25); }
-    /* Discovery Vertical Zentriert: Liste vertikal, Karten mittig wie Detailansicht [cite: 2026-02-18] */
+    /* The Centered Discovery Feed: Vertikaler Feed, alles auf Mittelachse, Gallery-Look [cite: 2026-02-18] */
     #v-discover .discover-offers-list{
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 24px;
-      padding: 16px;
+      gap: 40px;
+      padding: 20px 16px;
       width: 100%;
       max-width: 480px;
       margin: 0 auto;
       box-sizing: border-box;
     }
-    /* Zentrierte Karte (Bild als Anker, Floating-Buttons) */
-    #v-discover .dish-card.dish-card-vertical{
+    /* Kachel: Keine Box, nur schwebende Elemente */
+    #v-discover .dish-card{
       width: 100%;
       max-width: 340px;
+      background: transparent !important;
+      box-shadow: none !important;
+      border: none !important;
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
-      background: transparent;
-      box-shadow: none;
       margin-bottom: 0;
       padding: 0;
     }
-    #v-discover .dish-card.dish-card-vertical:active{ transform: scale(0.98); }
-    /* Bild-Modul mit Floating-Buttons (Hand-Cut Look) */
+    #v-discover .dish-card:active{ transform: scale(0.98); }
+    /* Bild-Modul (Detail-Stil, zentrierter Fokus) */
     #v-discover .dish-card-image-wrapper{
       position: relative;
       width: 220px;
@@ -4039,21 +4040,21 @@
       height: 100%;
       object-fit: cover;
       border-radius: 18px 14px 20px 16px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.12);
     }
-    /* Preis-Badge auf dem Bild (unten rechts) */
-    #v-discover .dish-card .price-badge{
+    /* Preis-Badge auf dem Bild (unten rechts, leicht überlappend) */
+    #v-discover .dish-card .price-badge,
+    #v-discover .dish-card .price-badge-on-image{
       position: absolute;
-      bottom: 12px;
-      right: 8px;
+      bottom: 10px;
+      right: -5px;
       background: #FFD700;
-      padding: 6px 12px;
-      border-radius: 12px;
-      font-weight: bold;
-      font-size: 14px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-      backdrop-filter: blur(4px);
-      -webkit-backdrop-filter: blur(4px);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-weight: 800;
+      font-size: 15px;
+      color: #121826;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
     /* Floating Actions (Teilen & Herz oben rechts) */
     #v-discover .card-actions-top{
@@ -4092,7 +4093,7 @@
       100% { transform: scale(1); opacity: 1; }
     }
     /* Pillar-Pills unter dem Bild (3 Säulen) */
-    #v-discover .dish-card-vertical .pillar-pill{
+    #v-discover .dish-card .pillar-pill{
       font-size: 11px;
       font-weight: 700;
       color: #64748b;
@@ -4100,6 +4101,12 @@
       border-radius: 999px;
       background: #f1f5f9;
       border: 1px solid rgba(0,0,0,0.06);
+    }
+    /* Distanz-Chips (Laufzeit / Fahrtzeit) */
+    #v-discover .dish-card .distance-chip{
+      font-size: 13px;
+      font-weight: 600;
+      color: #64748b;
     }
     /* ImmoScout-Style: Content startet exakt unter dem Sticky-Header – kein Abschneiden der ersten Karte */
     body:not(.provider-mode) #v-discover .discover-main{
