@@ -3621,7 +3621,7 @@
     body.provider-mode [id^="v-provider-"] { padding-top: 0 !important; margin-top: 0 !important; }
     body.provider-mode [id^="v-provider-"].view.active { padding-top: 0 !important; }
     
-    /* Discover Header – ImmoScout-Style: gesamter Header sticky, ruhig, solider Hintergrund */
+    /* Discover Header – ImmoScout-Style: gesamter Header sticky, z-index damit Content darunter bleibt */
     .discover-header-sticky{
       position: sticky;
       top: 0;
@@ -4108,9 +4108,9 @@
       font-weight: 600;
       color: #64748b;
     }
-    /* ImmoScout-Style: Content startet exakt unter dem Sticky-Header – kein Abschneiden der ersten Karte */
+    /* Content startet unter Sticky-Header: padding-top = Header-Höhe, damit Karten nicht unter Pills laufen [cite: 2026-02-18] */
     body:not(.provider-mode) #v-discover .discover-main{
-      padding-top: 12px;
+      padding-top: calc(136px + env(safe-area-inset-top, 0px));
       padding-left: 16px;
       padding-right: 16px;
       padding-bottom: calc(88px + env(safe-area-inset-bottom, 0));
@@ -4837,7 +4837,9 @@
     /* Discover (Kunde): Kacheln für Samsung S25 (~384–412px) – Handy-Anpassung */
     @media (max-width: 430px) {
       body:not(.provider-mode) #v-discover .discover-main {
-        padding: 12px 12px;
+        padding-top: calc(136px + env(safe-area-inset-top, 0px));
+        padding-left: 12px;
+        padding-right: 12px;
         padding-bottom: calc(88px + env(safe-area-inset-bottom, 0));
       }
       body:not(.provider-mode) #discoverOffers.discover-offers-list {
