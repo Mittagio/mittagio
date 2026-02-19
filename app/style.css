@@ -6539,3 +6539,60 @@
     border-radius: 16px !important;
     box-shadow: 0 2px 8px rgba(0,0,0,0.05) !important;
 }
+
+/* === Trust-Footer (Rechtliches & Payment) === */
+.trust-footer {
+  padding: 60px 20px;
+  border-top: 1px solid #eaeaea;
+  background: #fff;
+  font-family: sans-serif;
+}
+.trust-footer-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 30px;
+}
+.trust-footer-apps {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+.trust-footer-app-badge {
+  opacity: 0.5;
+  filter: grayscale(1);
+}
+.trust-footer-coming {
+  font-size: 12px;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.trust-footer-payment {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  opacity: 0.6;
+}
+.trust-footer-payment img {
+  display: block;
+}
+.trust-footer-legal {
+  display: flex;
+  gap: 25px;
+  font-size: 14px;
+  color: #666;
+}
+.trust-footer-legal a {
+  text-decoration: none;
+  color: inherit;
+}
+.trust-footer-copy {
+  text-align: center;
+  margin-top: 40px;
+  font-size: 12px;
+  color: #aaa;
+}
