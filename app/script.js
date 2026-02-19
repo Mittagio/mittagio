@@ -4286,11 +4286,11 @@
     return card;
   }
   
-  // List Card für Discover: Centered Discovery Feed – Bild → Säulen → Text → Distanz → Button [cite: 2026-02-18]
+  // List Card für Discover: Rein vertikaler Aufbau, Mittelachse [cite: 2026-02-18 Tabula Rasa]
   function createDiscoverListCard(o){
     const data = normalizeOffer(o);
     const card = document.createElement('div');
-    card.className = 'dish-card dish-card-vertical';
+    card.className = 'dish-card';
     
     const imgSrc = data.imageUrl || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70';
     const offerProvider = offers.find(p => p.providerId === data.providerId);
@@ -4310,24 +4310,24 @@
     card.innerHTML = `
       <div class="dish-card-image-wrapper">
         <img src="${esc(imgSrc)}" alt="${dishName}" loading="lazy" />
-        <div class="card-actions-top" style="position:absolute; top:12px; right:12px; display:flex; gap:8px;">
+        <div class="card-actions-top">
           <button type="button" class="action-btn-floating action-btn-fav" aria-label="Favorit" title="Favorit"><i data-lucide="heart" style="width:16px;height:16px;${isFavorited ? 'fill:#e74c3c;color:#e74c3c;' : 'color:#666;'}"></i></button>
           <button type="button" class="action-btn-floating" aria-label="Teilen" title="Teilen"><i data-lucide="share-2" style="width:16px;height:16px;color:#1a1a1a;"></i></button>
         </div>
         <div class="price-badge-on-image">${euro(data.price)}</div>
       </div>
-      <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin-bottom:12px;">
-        <span class="pillar-pill" style="${vorOrt ? '' : 'opacity:0.5; filter:grayscale(1);'}">🍴 Vor Ort</span>
-        <span class="pillar-pill" style="${mehrweg ? '' : 'opacity:0.5; filter:grayscale(1);'}">🔄 Mehrweg</span>
-        <span class="pillar-pill" style="${abholnummer ? '' : 'opacity:0.5; filter:grayscale(1);'}">🧾 Abholnummer</span>
+      <div style="display:flex; gap:8px; margin-bottom:16px; justify-content:center; flex-wrap:wrap;">
+        <span class="pillar-pill" style="${vorOrt ? '' : 'opacity:0.5; filter:grayscale(1);'}">🍴 VOR ORT</span>
+        <span class="pillar-pill" style="${mehrweg ? '' : 'opacity:0.5; filter:grayscale(1);'}">🔄 MEHRWEG</span>
+        <span class="pillar-pill" style="${abholnummer ? '' : 'opacity:0.5; filter:grayscale(1);'}">🧾 ABHOLNUMMER</span>
       </div>
-      <h3 class="dish-name" style="font-family:'Source Serif 4',Georgia,serif; font-size:19px; font-weight:700; color:#121826; margin:0 0 4px; line-height:1.3;">${dishName}</h3>
-      <p class="dish-card-provider" style="color:#64748b; font-size:14px; margin:0 0 12px;">${providerName} &gt;</p>
-      <div style="display:flex; justify-content:center; gap:12px; margin-bottom:16px;">
-        ${walkingMin ? `<span class="distance-chip">🏃 ${walkingMin} Min.</span>` : ''}
-        ${carMin ? `<span class="distance-chip">🚗 ${carMin} Min.</span>` : ''}
+      <h3 class="dish-name" style="font-family:'Source Serif 4', serif; font-size:20px; font-weight:600; margin:0 0 6px 0;">${dishName}</h3>
+      <p class="dish-card-provider" style="color:#64748b; font-family:sans-serif; font-size:14px; margin-bottom:16px;">${providerName} &gt;</p>
+      <div style="display:flex; gap:12px; margin-bottom:20px; justify-content:center; flex-wrap:wrap;">
+        ${walkingMin ? `<span style="background:#f1f5f9; padding:4px 10px; border-radius:8px; font-size:13px;">🏃 ${walkingMin} Min.</span>` : ''}
+        ${carMin ? `<span style="background:#f1f5f9; padding:4px 10px; border-radius:8px; font-size:13px;">🚗 ${carMin} Min.</span>` : ''}
       </div>
-      <button type="button" class="btn-cust-primary dish-card-cta" style="width:280px; padding:14px; border-radius:18px; font-weight:800; font-size:16px;">In meine Box legen 🍱</button>
+      <button type="button" class="btn-cust-primary dish-card-cta" style="width:280px; padding:16px; border-radius:20px; font-weight:bold; background:#FFD700; border:none; color:#121826;">In meine Box legen 🍱</button>
     `;
     
     const imgEl = card.querySelector('.dish-card-image-wrapper img');
@@ -5687,7 +5687,7 @@
     box.querySelectorAll('.order-code').forEach(btn=>{
       btn.onclick=()=> {
         const orderId = btn.getAttribute('data-id') || '';
-        showPickupCode(orderId); // Öffnet Abholnummer-Sheet (quick-ticket)
+        showPickupCode(orderId); // Öffnet Abholnummer-Sheet (codeSheet)
       };
     });
   }
@@ -9243,7 +9243,7 @@
         pickupWindow: savedDish?.pickupWindow || `${onboardingDraftDish?.pickupTimeStart || '11:30'} – ${onboardingDraftDish?.pickupTimeEnd || '14:30'}`,
         imageUrl: dish.photoData || dish.imageUrl || '',
         providerName: provider.profile?.name || 'Dein Betrieb',
-        hasPickupCode: false, // No abholcode in preview
+        hasPickupCode: false, // No Abholnummer in preview
         dineInPossible: false
       }, {interactive: false});
       
@@ -9415,7 +9415,7 @@
         price: parseFloat(onboardingDraftDish.dishPrice.replace(',', '.')) || 0,
         pickupWindow: `${onboardingDraftDish.pickupTimeStart} – ${onboardingDraftDish.pickupTimeEnd}`,
         photoData: onboardingDraftDish.photoData || '',
-        hasPickupCode: false, // No abholcode in onboarding
+        hasPickupCode: false, // No Abholnummer in onboarding
         dineInPossible: false,
         allergens: [],
         extras: [],
@@ -15981,7 +15981,7 @@
       const sheet = document.createElement('div');
       sheet.className = 'inserat-card-sheet';
       sheet.setAttribute('data-inserat-card', 'true');
-      sheet.style.cssText = 'padding:0; overflow:visible; display:flex; flex-direction:column; min-height:0; border-radius:24px 24px 0 0; background:#fff; box-shadow:0 -8px 32px rgba(0,0,0,0.12);';
+      sheet.style.cssText = 'padding:0; overflow:visible; display:flex; flex-direction:column; min-height:0; border-radius:28px 28px 0 0; background:#fff; box-shadow:0 -8px 32px rgba(0,0,0,0.08);';
       const box = document.createElement('div');
       box.className='liquid-master-panel glass-express-step0 inserat-universal-mask inserat-master-flow liquid-panel listing-glass-panel s25-floating-panel inserat-card';
       box.setAttribute('data-inserat-card','true');
@@ -16258,7 +16258,7 @@
       inputDish.value=w.data.dish||'';
       inputDish.setAttribute('list','inserat-dish-datalist');
       inputDish.autocomplete='off';
-      inputDish.style.cssText='width:100%; max-width:100%; color:#0f172a; font-weight:800; box-sizing:border-box;';
+      inputDish.style.cssText='width:100%; max-width:100%; color:#0f172a; font-weight:800; box-sizing:border-box; border:none; background:transparent; outline:none;';
       function adjustTitleFontSize(){
         var el = inputDish;
         if(!el || !el.offsetParent) return;
@@ -16297,13 +16297,13 @@
       inputDesc.className='liquid-input liquid-input-focus inserat-desc-input inserat-airbnb-desc inserat-desc-italic';
       inputDesc.placeholder='… z.B. mit frischem saisonalen Gemüse …';
       inputDesc.value=w.data.description||'';
-      inputDesc.style.cssText='color:#64748b; font-size:0.9em;';
+      inputDesc.style.cssText='color:#64748b; font-size:0.95rem;';
       inputDesc.oninput=()=>{ w.data.description=inputDesc.value; saveDraft(); };
       inputDesc.onblur=()=>{ dismissKeyboard(); hapticLight(); };
       wrapDesc.appendChild(inputDesc);
       stepName.appendChild(wrapDesc);
-      // ========== 4. EBENE (Beschreibung): Direkt unter Titel als Untertitel, Schiefergrau #64748b, kleiner skaliert [cite: 2026-02-18] ==========
-      inputDesc.style.cssText='width:100%; color:#64748b; font-size:0.9em; box-sizing:border-box;';
+      // ========== 4. EBENE (Beschreibung): Direkt unter Titel als Untertitel, Schiefergrau #64748b, 0.95rem [cite: 2026-02-18] ==========
+      inputDesc.style.cssText='width:100%; color:#64748b; font-size:0.95rem; box-sizing:border-box; border:none; background:transparent; outline:none;';
 
       // ========== 5. EBENE (Action-Row): Flex-Row – Kategorie-Pills links, gelber Preis-Button rechts. MODE_AD: „mit Abholnummer“ + „Nur Inserat“. MODE_PLAN: „Im Kochbuch speichern“ + „Einplanen“. Terminologie: nur Abholnummer [cite: 2026-02-18] ==========
       const catPriceRow=document.createElement('div');
@@ -17750,7 +17750,7 @@
   // Routes:
   //   /checkout/success?session_id=xxx OR ?orderId=xxx
   //   /checkout/cancel?orderId=xxx OR ?session_id=xxx
-  //   /abholcode/:orderId (via URL hash or query param)
+  //   /abholnummer/:orderId (Legacy: /abholcode/ bleibt für Deep-Links)
   {
     const urlParams = new URLSearchParams(window.location.search);
     const path = window.location.pathname;
