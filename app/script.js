@@ -16374,18 +16374,19 @@
       scrollArea.appendChild(stepName);
       scrollArea.appendChild(catPriceRow);
       requestAnimationFrame(function(){ requestAnimationFrame(function(){ if(typeof adjustTitleFontSize === 'function') adjustTitleFontSize(); }); });
+      var entryPoint = (w.ctx && w.ctx.entryPoint) || 'dashboard';
+      var isPlanMode = (entryPoint === 'week' || entryPoint === 'cookbook');
       var p0=Number(w.data.price)||0;
       const prognoseWrap=document.createElement('div');
       prognoseWrap.className='inserat-prognose-wrap inserat-earnings inserat-umsatzprognose';
       prognoseWrap.innerHTML='<p style="margin:0; font-size:12px; font-weight:600; color:#94a3b8;">Umsatzprognose: <span id="calc-val">'+(p0*30).toFixed(2).replace('.',',')+'</span> €</p>';
-      scrollArea.appendChild(prognoseWrap);
+      if(!isPlanMode) scrollArea.appendChild(prognoseWrap);
       if(w.ctx && w.ctx.isLeberkaeseOnboarding) prognoseWrap.classList.add('inserat-onboarding-price-pulse');
 
 
       box.appendChild(scrollArea);
 
-      // 9. ACTION BUTTONS (sticky am unteren Rand – Referenz: gelb + grüner Rahmen, eine Zeile)
-      var entryPoint = (w.ctx && w.ctx.entryPoint) || 'dashboard';
+      // 9. ACTION BUTTONS – MODE_PLAN (week/cookbook): Blue „In den Wochenplan einplanen“ + grüner „Nur im Kochbuch“. MODE_AD (dashboard): Preisübersicht + mit Abholnummer + Nur Inserat [cite: 2026-02-18]
       var isInserierenRoute = (entryPoint === 'dashboard' || entryPoint === 'week' || entryPoint === 'cookbook');
       var hasDish = !!(w.data.dish && String(w.data.dish).trim());
       var hasPrice = Number(w.data.price) > 0;
@@ -16393,9 +16394,39 @@
 
       const actionSection=document.createElement('section');
       actionSection.id='inserat-action-section';
-      actionSection.className='inserat-action-section fixed-footer' + (isInserierenRoute ? ' inserat-action-pricing' : '');
+      actionSection.className='inserat-action-section fixed-footer' + (!isPlanMode && isInserierenRoute ? ' inserat-action-pricing' : '') + (isPlanMode ? ' inserat-action-plan' : '');
 
-      if(isInserierenRoute){
+      if(isPlanMode){
+        var btnWeekPlan=document.createElement('button');
+        btnWeekPlan.type='button';
+        btnWeekPlan.className='inserat-btn-plan-primary';
+        btnWeekPlan.textContent='📅 In den Wochenplan einplanen';
+        btnWeekPlan.onclick=function(){
+          if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; }
+          if(typeof haptic==='function') haptic(50);
+          var id=saveToCookbookFromWizard();
+          if(id && w.data.day){
+            if(!week[w.data.day]) week[w.data.day]=[];
+            var c=cookbook.find(function(x){ return x.id===id; });
+            if(c) week[w.data.day].push({ providerId:c.providerId, cookbookId:c.id, dish:c.dish, price:c.price });
+            save(LS.week, week);
+            closeWizard(true);
+            showSaveSuccessSheet({ title:'Im Wochenplan gespeichert', sub:'Dein Gericht ist im Wochenplan eingetragen.', dishName: w.data.dish||'', price: w.data.price, imageUrl: w.data.photoData||'', savedEntryId: id, savedDay: w.data.day, onFertig: function(){ if(typeof showToast==='function') showToast('Im Wochenplan gespeichert 📅'); if(typeof showProviderWeek==='function') showProviderWeek(); }, onLive: null });
+          } else if(id){ if(typeof showToast==='function') showToast('Bitte zuerst ein Datum im Wochenplan wählen'); }
+        };
+        actionSection.appendChild(btnWeekPlan);
+        var btnCookOnly=document.createElement('button');
+        btnCookOnly.type='button';
+        btnCookOnly.className='inserat-btn-plan-secondary';
+        btnCookOnly.textContent='Nur im Kochbuch speichern';
+        btnCookOnly.onclick=function(){
+          if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; }
+          if(typeof haptic==='function') haptic(50);
+          var id=saveToCookbookFromWizard();
+          if(id){ closeWizard(true); showSaveSuccessSheet({ title:'Im Kochbuch gespeichert', sub:'Dein Gericht ist in deinem Kochbuch.', dishName: w.data.dish||'', price: w.data.price, imageUrl: w.data.photoData||'', savedEntryId: id, savedDay: null, onFertig: function(){ if(typeof showToast==='function') showToast('Gericht im Kochbuch aktualisiert 📖'); if(typeof showProviderCookbook==='function') showProviderCookbook(); }, onLive: null }); }
+        };
+        actionSection.appendChild(btnCookOnly);
+      } else if(entryPoint === 'dashboard'){
         var isLeberkaeseOnboarding = !!(w.ctx && w.ctx.isLeberkaeseOnboarding);
         var todayKey = typeof isoDate === 'function' ? isoDate(new Date()) : '';
         var existingOffer = (w.ctx && w.ctx.editOfferId && typeof offers !== 'undefined') ? offers.find(function(o){ return o.id === w.ctx.editOfferId; }) : null;

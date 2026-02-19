@@ -2383,6 +2383,10 @@
     /* InseratCard klickbar: explizit pointer-events, damit keine Überlagerung Klicks schluckt */
     #wizard[data-flow="listing"] #wContent > .liquid-master-panel,
     #wizard[data-flow="listing"] .liquid-master-panel.inserat-card { pointer-events: auto; }
+    /* Gourmet-Refactor: Karte als Design-Objekt – 28px Radius, weicher Schatten [cite: 2026-02-18] */
+    #wizard[data-flow="listing"] .liquid-master-panel.inserat-card {
+      border-radius: 28px; box-shadow: 0 12px 40px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.03);
+    }
     #wizard[data-flow="listing"] .liquid-master-panel .photo-header,
     #wizard[data-flow="listing"] .liquid-master-panel .inserat-power-bar,
     #wizard[data-flow="listing"] .liquid-master-panel .inserat-cat-price-row,
@@ -2652,6 +2656,17 @@
       box-shadow: 0 0 14px rgba(16,185,129,0.45);
     }
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .power-bar-legend-trigger { color: #94a3b8; }
+    /* Gourmet-Refactor: Inaktiv ultra-hell, nur aktives Icon in Emerald – keine harten grünen Kreise [cite: 2026-02-18] */
+    #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .status-pill.inactive,
+    #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .func-icon-btn:not(.active),
+    #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .power-bar-legend-trigger {
+      background: #f8fafc !important; border: none !important; box-shadow: none !important; color: #94a3b8;
+    }
+    #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .status-pill.active,
+    #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .func-icon-btn.active {
+      background: rgba(16,185,129,0.12) !important; color: #059669 !important; border: none !important;
+      box-shadow: 0 0 14px rgba(16,185,129,0.35);
+    }
     /* Info-Legende Bottom-Sheet: Aktiviert-Zustand */
     .info-legend-item.active { background: rgba(16,185,129,0.1) !important; border: 2px solid rgba(16,185,129,0.4); box-shadow: 0 2px 12px rgba(16,185,129,0.25), 0 0 0 1px rgba(16,185,129,0.15); }
     /* #psheet-CSS entfernt (Legacy) – InseratCard nur im #wizard [cite: 2026-02-18] */
@@ -2709,12 +2724,14 @@
     #wizard[data-flow="listing"] #step-name input.inserat-detail-style-title,
     #wizard[data-flow="listing"] #step-name input.magnet-input {
       width: 100% !important; max-width: 100%; box-sizing: border-box;
-      color: #0f172a; font-weight: 800;
+      color: #0f172a; font-weight: 800; font-size: 1.5rem;
       border: none !important; border-bottom: none !important; background: transparent !important;
+      padding: 4px 0; outline: none;
     }
     #wizard[data-flow="listing"] #step-name input.inserat-detail-style-title:focus,
     #wizard[data-flow="listing"] #step-name input.magnet-input:focus {
-      border-bottom: none !important;
+      border-bottom: none !important; border-radius: 0;
+      box-shadow: none; background: transparent !important;
     }
     /* Action-Row: Titel volle Breite, darunter dezente Beschreibung [cite: 2026-02-16 S25] */
     #wizard[data-flow="listing"] .inserat-unified-title-wrap .inserat-airbnb-desc-wrap {
@@ -2779,6 +2796,24 @@
     /* Umsatzprognose: wie sInfoHint – 12px, 600, #94a3b8 */
     #wizard[data-flow="listing"] .inserat-prognose-wrap.inserat-umsatzprognose p {
       font-size: 12px; font-weight: 600; color: #94a3b8;
+    }
+    /* MODE_PLAN (week/cookbook): Blue „In den Wochenplan einplanen“ + grüner „Nur im Kochbuch“ [cite: 2026-02-18] */
+    #wizard[data-flow="listing"] .inserat-action-section.inserat-action-plan .inserat-btn-plan-primary {
+      width: 100%; min-height: 56px; padding: 16px 20px; border-radius: 20px; border: none; cursor: pointer;
+      background: #3b82f6; color: #fff; font-size: 16px; font-weight: 800;
+      box-shadow: 0 8px 24px rgba(59,130,246,0.35); -webkit-tap-highlight-color: transparent;
+      transition: transform 0.15s ease, box-shadow 0.2s ease;
+    }
+    #wizard[data-flow="listing"] .inserat-action-section.inserat-action-plan .inserat-btn-plan-primary:active {
+      transform: scale(0.98); box-shadow: 0 4px 16px rgba(59,130,246,0.3);
+    }
+    #wizard[data-flow="listing"] .inserat-action-section.inserat-action-plan .inserat-btn-plan-secondary {
+      width: 100%; min-height: 48px; padding: 12px 20px; margin-top: 12px; border-radius: 16px; cursor: pointer;
+      background: rgba(16,185,129,0.12); color: #059669; font-size: 15px; font-weight: 700; border: 2px solid rgba(16,185,129,0.35);
+      -webkit-tap-highlight-color: transparent; transition: background 0.2s, transform 0.15s ease;
+    }
+    #wizard[data-flow="listing"] .inserat-action-section.inserat-action-plan .inserat-btn-plan-secondary:active {
+      transform: scale(0.98); background: rgba(16,185,129,0.2);
     }
     /* Funktions-Icons am Ende: schwebend, gläsernes Dropdown */
     .inserat-func-icons {
