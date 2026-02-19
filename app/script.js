@@ -2684,24 +2684,8 @@
         emptyWrap.appendChild(btnRadius);
         offersEl.appendChild(emptyWrap);
       } else {
-        // Layout: Pills oben (bereits im Header), darunter gruppiert nach Restaurant + Tiles
-        const byProvider = {};
-        list.forEach(o => {
-          const pid = o.providerId || 'unknown';
-          if(!byProvider[pid]) byProvider[pid] = [];
-          byProvider[pid].push(o);
-        });
-        const providerIds = Object.keys(byProvider);
-        providerIds.forEach(pid => {
-          const group = byProvider[pid];
-          const block = document.createElement('div');
-          block.className = 'discover-block';
-          const grid = document.createElement('div');
-          grid.className = 'discover-tiles-grid';
-          group.forEach(o => { grid.appendChild(createModernOfferCard(o)); });
-          block.appendChild(grid);
-          offersEl.appendChild(block);
-        });
+        // Vertikal zentrierte Karten (wie Detailansicht), eine Karte pro Angebot [cite: 2026-02-18]
+        list.forEach(o => { offersEl.appendChild(createDiscoverListCard(o)); });
       }
 
       // Icons aktualisieren nach dem Rendern
@@ -4302,91 +4286,87 @@
     return card;
   }
   
-  // List Card für Discover-Seite (Kompaktes horizontales Design - Slim-Card)
+  // List Card für Discover-Seite: Vertikal zentriert wie Detailkarte (Bild Anker, Floating Actions) [cite: 2026-02-18]
   function createDiscoverListCard(o){
     const data = normalizeOffer(o);
     const card = document.createElement('div');
-    card.className = 'dish-card';
+    card.className = 'dish-card dish-card-vertical';
     
     const imgSrc = data.imageUrl || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70';
-    
-    // Favorit-Status prüfen (dishFavs speichert Strings)
-    const dishKey = String(data.id || '');
-    const isFav = typeof dishFavs !== 'undefined' && dishFavs.has(dishKey);
-    
-    // Gehzeit berechnen
-    let walkingTimeText = '';
-    if(data.walkingTimeText){
-      walkingTimeText = data.walkingTimeText;
-    } else if(data.distanceKm != null){
-      const walkingMinutes = Math.round(Number(data.distanceKm) * 12);
-      walkingTimeText = walkingMinutes < 1 ? '< 1 Min.' : `${walkingMinutes} Min.`;
-    }
-    
-    // Eco-Badge: Mehrweg-Option (wenn Anbieter es unterstützt)
     const offerProvider = offers.find(p => p.providerId === data.providerId);
-    const hasReuseSupport = offerProvider && (offerProvider.reuseEnabled || offerProvider.reuse || (offerProvider.providerProfile && offerProvider.providerProfile.reuseEnabled));
+    const vorOrt = !!(offerProvider && offerProvider.dineInPossible !== false);
+    const abholnummer = !!(offerProvider && offerProvider.orderingEnabled !== false && (data.hasPickupCode || offerProvider.hasPickupCode));
+    const mehrweg = !!(offerProvider && offerProvider.reuse && offerProvider.reuse.enabled);
+    const isFavorited = typeof dishFavs !== 'undefined' && dishFavs.has(String(data.id));
+    let walkingMin = '';
+    let carMin = '';
+    if(data.distanceKm != null){
+      walkingMin = Math.round(Number(data.distanceKm) * 12) < 1 ? '< 1' : String(Math.round(Number(data.distanceKm) * 12));
+      carMin = Math.round(Number(data.distanceKm) * 1.5) < 1 ? '< 1' : String(Math.round(Number(data.distanceKm) * 1.5));
+    }
+    const providerName = esc(data.providerName || 'Anbieter');
+    const dishName = esc(data.dish || 'Gericht');
     
-    // Service-Label prüfen (Abholnummer vs. Nur Info)
-    const hasAbholnummer = data.hasPickupCode || false;
-    const serviceLabel = hasAbholnummer 
-      ? {text: 'Abholnummer', icon: '🧾', color: '#27AE60', bg: 'rgba(39,174,96,0.15)', border: 'rgba(39,174,96,0.3)'}
-      : {text: 'Nur Info', icon: '👁️', color: '#64748b', bg: 'rgba(100,116,139,0.1)', border: 'rgba(100,116,139,0.2)'};
-    const providerLogoUrl = (offerProvider && offerProvider.providerProfile && offerProvider.providerProfile.logoUrl) || (offerProvider && offerProvider.logoUrl) || '';
-    const logoContent = providerLogoUrl ? '<img src="'+esc(providerLogoUrl)+'" alt="">' : '<span style="font-size:20px;line-height:1;">🏪</span>';
-    
-    // Kompaktes horizontales Layout: Bild links (quadratisch), Text rechts (S25: über CSS .dish-card-thumb anpassbar)
     card.innerHTML = `
-      <div class="dish-card-inner" style="display:flex; gap:8px; align-items:flex-start;">
-        <!-- Kompaktes Bild links (100px, S25 über CSS) [cite: 2026-02-18] -->
-        <div class="dish-card-thumb" style="position:relative; width:100px; height:100px; max-width:100px; max-height:100px; flex-shrink:0; border-radius:12px; overflow:hidden; background:#f0f0f0;">
-        <img src="${esc(imgSrc)}" alt="${esc(data.dish||'')}" style="width:100%; height:100%; object-fit:cover;" />
-          <!-- Service-Label (oben links) -->
-          <div style="position:absolute; top:4px; left:4px; background:${serviceLabel.bg}; border:1px solid ${serviceLabel.border}; color:${serviceLabel.color}; padding:3px 6px; border-radius:6px; font-size:9px; font-weight:700; display:flex; align-items:center; gap:3px; box-shadow:0 2px 4px rgba(0,0,0,0.2); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px); z-index:6; white-space:nowrap;">
-            <span style="font-size:10px;">${serviceLabel.icon}</span>
-            <span>${serviceLabel.text}</span>
-          </div>
-          <!-- Eco-Badge: Mehrweg-Konzept-Icon - ENTFERNT (nur noch im Profil) -->
-          <!-- Favorit-Button (oben rechts) -->
-          <button class="btn-icon-overlay" onclick="event.stopPropagation(); event.preventDefault(); toggleDishFav(${JSON.stringify(dishKey)}); const btn=this.querySelector('i'); if(btn){ const nowFav=typeof dishFavs!=='undefined'&&dishFavs.has(${JSON.stringify(dishKey)}); btn.style.fill=nowFav?'currentColor':''; btn.style.color=nowFav?'#e74c3c':'#666'; if(typeof lucide!=='undefined')lucide.createIcons(); }" title="Favorit" style="position:absolute; top:4px; right:4px; width:28px; height:28px; border-radius:50%; background:rgba(255,255,255,0.95); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 2px 6px rgba(0,0,0,0.15); transition:transform 0.2s ease; z-index:5;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
-            <i data-lucide="heart" style="width:14px;height:14px;${isFav ? 'fill:currentColor; color:#e74c3c;' : 'color:#666;'}"></i>
-          </button>
-          <a class="card-logo providerBadge" href="#" aria-label="Zum Anbieter ${esc(data.providerName||'Anbieter')}" onclick="event.preventDefault(); event.stopPropagation(); if(typeof showProviderProfilePublic==='function') showProviderProfilePublic('${esc(data.providerId||'')}');">${logoContent}</a>
+      <div class="dish-card-image-wrapper">
+        <img src="${esc(imgSrc)}" alt="${dishName}" loading="lazy" />
+        <div class="card-actions-top">
+          <button type="button" class="action-btn-floating" aria-label="Teilen" title="Teilen"><i data-lucide="share-2" style="width:16px;height:16px;color:#1a1a1a;"></i></button>
+          <button type="button" class="action-btn-floating action-btn-fav" aria-label="Favorit" title="Favorit"><i data-lucide="heart" style="width:16px;height:16px;${isFavorited ? 'fill:#e74c3c;color:#e74c3c;' : 'color:#666;'}"></i></button>
         </div>
-        
-        <!-- Info-Bereich rechts (flex:1 für volle Breite) -->
-        <div style="flex:1; display:flex; flex-direction:column; justify-content:space-between; min-width:0; padding:2px 0;">
-          <!-- Name & Preis: Gerichtsname 16px Serif, Preis kleiner [cite: 2026-02-18] -->
-          <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px; margin-bottom:4px;">
-            <h3 class="dish-name">${esc(data.dish||'Gericht')}</h3>
-            <div class="dish-price">${euro(data.price)}</div>
+        <div class="price-badge">${euro(data.price)}</div>
       </div>
-          
-          <!-- Anbieter-Name (klein, uppercase) -->
-          <p style="font-size:10px; font-weight:700; color:#94a3b8; text-transform:uppercase; letter-spacing:0.5px; margin:0 0 6px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
-            ${esc(data.providerName||'Anbieter')}
-          </p>
-          
-          <!-- Info-Zeile: Gehzeit & Zeit-Slot (kompakt) -->
-          <div style="display:flex; align-items:center; gap:12px; font-size:10px; font-weight:700; color:#64748b; margin-top:auto;">
-            ${walkingTimeText ? `<span style="display:flex; align-items:center; gap:3px;">
-              <i data-lucide="navigation" style="width:11px;height:11px; color:var(--brand);"></i>
-              <span>${walkingTimeText}</span>
-            </span>` : ''}
-            ${data.pickupWindow ? `<span style="display:flex; align-items:center; gap:3px;">
-              <i data-lucide="clock" style="width:11px;height:11px; color:#94a3b8;"></i>
-              <span>${esc(data.pickupWindow)}</span>
-            </span>` : ''}
-          </div>
-        </div>
+      <div class="dish-card-pillars-row" style="display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin-bottom:12px;">
+        <span class="pillar-pill" style="${vorOrt ? '' : 'opacity:0.5; filter:grayscale(1);'}">🍴 Vor Ort</span>
+        <span class="pillar-pill" style="${mehrweg ? '' : 'opacity:0.5; filter:grayscale(1);'}">🔄 Mehrweg</span>
+        <span class="pillar-pill" style="${abholnummer ? '' : 'opacity:0.5; filter:grayscale(1);'}">🧾 Abholnummer</span>
       </div>
+      <h3 class="dish-name" style="font-family:'Source Serif 4',Georgia,serif; font-size:18px; font-weight:700; color:#0f172a; margin:0 0 4px; line-height:1.3;">${dishName}</h3>
+      <p class="dish-card-provider" style="color:#94a3b8; font-size:14px; margin:0 0 10px;">${providerName} &gt;</p>
+      <div class="dish-card-mobility" style="display:flex; justify-content:center; gap:10px; font-size:13px; color:#64748b; font-weight:600; margin-bottom:12px;">
+        ${walkingMin ? `<span>🏃 ${walkingMin} Min.</span>` : ''}
+        ${carMin ? `<span>🚗 ${carMin} Min.</span>` : ''}
+      </div>
+      <button type="button" class="btn-cust-primary dish-card-cta" style="width:100%; max-width:280px; min-height:48px; border-radius:14px; font-weight:800; font-size:16px;">In meine Box legen 🍱</button>
     `;
     
-    // Klick auf Karte öffnet immer Detailansicht (nicht direkt Bestellung)
-    card.onclick = (e)=>{
-      if(e.target.closest('.btn-icon-overlay')) return; // Button-Handler übernimmt
-      if(e.target.closest('.card-logo') || e.target.closest('.providerBadge')) return; // Badge führt zum Anbieter
-      openOffer(data.id); // Immer Detailansicht öffnen
+    const imgEl = card.querySelector('.dish-card-image-wrapper img');
+    if(imgEl){ imgEl.onload = function(){ imgEl.classList.add('img-loaded'); }; if(imgEl.complete) imgEl.classList.add('img-loaded'); }
+    
+    const shareBtn = card.querySelector('.card-actions-top .action-btn-floating[aria-label="Teilen"]');
+    if(shareBtn) shareBtn.onclick = function(e){ e.stopPropagation(); e.preventDefault(); shareOffer(data); };
+    const favBtn = card.querySelector('.action-btn-fav');
+    if(favBtn){
+      favBtn.onclick = function(e){
+        e.stopPropagation(); e.preventDefault();
+        toggleFavorite(data.id, favBtn);
+        if(typeof lucide !== 'undefined') lucide.createIcons();
+        favBtn.classList.add('heart-just-clicked');
+        setTimeout(function(){ favBtn.classList.remove('heart-just-clicked'); }, 460);
+      };
+    }
+    
+    const ctaBtn = card.querySelector('.dish-card-cta');
+    if(ctaBtn){
+      if(!abholnummer){ ctaBtn.style.background = '#e5e5e5'; ctaBtn.style.color = '#888'; ctaBtn.disabled = true; ctaBtn.onclick = function(e){ e.stopPropagation(); showToast('Keine Abholnummer – nur ansehen.', 2000); }; }
+      else {
+        ctaBtn.onclick = function(e){
+          e.stopPropagation(); e.preventDefault();
+          const thumb = card.querySelector('.dish-card-image-wrapper img');
+          flyThumbnailToMittagsbox(thumb, function(){
+            if(!addToCart(o)){ showToast('Fehler beim Hinzufügen.', 2000); return; }
+            triggerHapticFeedback([20]);
+            if(typeof triggerCartIconGlow === 'function') triggerCartIconGlow();
+            showToast('In der Box! 🥗', 1500);
+            if(typeof updateHeaderBasket === 'function') updateHeaderBasket();
+          });
+        };
+      }
+    }
+    
+    card.onclick = function(e){
+      if(e.target.closest('.card-actions-top') || e.target.closest('.price-badge') || e.target.closest('.dish-card-cta')) return;
+      openOffer(data.id);
     };
     
     return card;
