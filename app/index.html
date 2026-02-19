@@ -9,8 +9,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <title>Mittagio</title>
   <meta name="theme-color" content="#FFD700" />
-  <!-- Init-Gate: kein Flackern beim Hard-Reload – Body erst nach View-Switch sichtbar -->
-  <style>body{visibility:hidden;}</style>
+  <!-- Init-Gate: body visibility in style.css, Sichtbarkeit wird von script.js gesetzt -->
   <!-- WhatsApp/Link-Vorschau: Standard-OG (provider-spezifisch ggf. per Server) -->
   <meta property="og:title" content="Mittagio – Wochenplan" />
   <meta property="og:description" content="Unser Wochenplan ist online! Entdecke Gerichte und bestelle mit Abholnummer." />
@@ -20,8 +19,7 @@
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" href="assets/icons/icon-192.png" />
   <link rel="apple-touch-icon" href="assets/icons/icon-192.png" />
-  <script>if(typeof history!=='undefined'&&history.scrollRestoration)history.scrollRestoration='manual';</script>
-  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js" onload="if(typeof lucide !== 'undefined') try { lucide.createIcons(); } catch(e) { console.warn('Lucide init:', e); }"></script>
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <link rel="stylesheet" href="style.css">

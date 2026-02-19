@@ -414,7 +414,6 @@
         const trimmed = (ordersList || []).slice(-200);
         try {
           localStorage.setItem(LS.orders, JSON.stringify(trimmed));
-          console.warn('Orders trimmed to last 200 due to storage quota.');
         } catch(e2){
           console.error('Error saving orders (trimmed):', e2);
         }
@@ -432,7 +431,6 @@
   function addOrder(order){
     // Guard: pickupCode nur bei PAID
     if(order.pickupCode && order.status !== 'PAID'){
-      console.warn('pickupCode should only be set when status is PAID');
       order.pickupCode = undefined;
       order.pickupCodeActivatedAt = undefined;
     }
@@ -461,7 +459,6 @@
     
     // Guard: pickupCode nur bei PAID
     if(patch.pickupCode && patch.status !== 'PAID' && order.status !== 'PAID'){
-      console.warn('pickupCode should only be set when status is PAID');
       patch.pickupCode = undefined;
       patch.pickupCodeActivatedAt = undefined;
     }
@@ -8264,7 +8261,6 @@
     };
     const notPaid = orders.filter(o => o.status !== 'PAID');
     notPaid.forEach(o => {
-      if(o.status !== 'PAYMENT_PENDING') console.warn('Order status is not PAYMENT_PENDING:', o.id);
       completePayment(o.id, paymentData, { skipCartClear: true, skipShowSuccess: true });
     });
     cart = null;
@@ -13432,7 +13428,7 @@
             if(typeof haptic === 'function') haptic(10);
             if(typeof showToast === 'function') showToast('Adresse übernommen');
           });
-        } catch(e){ console.warn('Places Autocomplete:', e); }
+        } catch(e){}
       }
       if(typeof google !== 'undefined' && google.maps && google.maps.places){ attachAutocomplete(); return; }
       if(!window._placesScriptLoading){
@@ -14407,7 +14403,6 @@
     } else {
       if(nameEl) nameEl.textContent = data.providerName || 'Wochenplan';
       if(logoEl){ logoEl.style.backgroundImage = data.logoUrl ? 'url(' + data.logoUrl + ')' : ''; logoEl.style.backgroundColor = data.logoUrl ? 'transparent' : '#f1f3f5'; }
-      function euro(n){ return (Number(n)||0).toFixed(2).replace('.',',') + ' €'; }
       var html = '';
       data.offers.forEach(function(o){
         var img = o.imageUrl || data.firstDishImage || '';
@@ -15993,7 +15988,7 @@
       }
       function listingSuggestionsVisible(){ var cat = w.data.category; return !!cat || (w.data.photoSuggestionKey && listingImageMap[w.data.photoSuggestionKey]); }
 
-      // 1. Ebene (Header): Bild exakt 190px, „Foto ändern“-Pill mit Glassmorphism [cite: 2026-02-18]
+      // ========== 1. EBENE (Header): Bild exakt 190px, „Foto ändern“-Pill mit Glassmorphism [cite: 2026-02-18] ==========
       const photoTile=document.createElement('div');
       photoTile.className='inserat-photo-tile photo-header' + (w.data.photoData ? '' : ' pulse-soft');
       photoTile.style.cssText='position:relative; overflow:hidden; flex-shrink:0; width:100%; height:190px; min-height:190px; max-height:190px;';
@@ -16001,10 +15996,23 @@
       closeX.className='close-wizard-x';
       closeX.setAttribute('role','button');
       closeX.setAttribute('aria-label','Schließen');
+      async function handlePhotoPick(){
+        if(typeof triggerHapticFeedback==='function') triggerHapticFeedback([5]);
+        var f=await pickImage({ capture:'environment' });
+        if(!f) return;
+        photoTile.classList.add('inserat-photo-loading');
+        var spinner=document.createElement('div'); spinner.className='inserat-photo-spinner'; photoTile.appendChild(spinner);
+        try {
+          var dataUrl=await toDataUrl(f);
+          if(typeof applyAppetizerFilter==='function') dataUrl=await applyAppetizerFilter(dataUrl);
+          if(typeof openPhotoEditor==='function') dataUrl=await openPhotoEditor(dataUrl, { onAccept: function(){} });
+          w.data.photoData=dataUrl; w.data.photoDataIsStandard=false; saveDraft(); rebuildWizard();
+        } finally { photoTile.classList.remove('inserat-photo-loading'); if(spinner.parentNode) spinner.remove(); }
+      }
       if(w.data.photoData){
         photoTile.innerHTML='<img src="'+w.data.photoData+'" style="width:100%; height:100%; object-fit:cover; display:block;" class="inserat-photo-fade-in" alt=""><button type="button" class="inserat-photo-change" aria-label="Foto ändern"><i data-lucide="camera" style="width:14px;height:14px;stroke-width:2.5;"></i> 📷 Foto ändern</button>';
         const rem=photoTile.querySelector('.inserat-photo-change');
-        if(rem) rem.onclick=(e)=>{ e.stopPropagation(); hapticLight(); w.data.photoData=''; w.data.photoDataIsStandard=false; saveDraft(); rebuildWizard(); };
+        if(rem) rem.onclick=function(e){ e.stopPropagation(); handlePhotoPick(); };
       } else {
         var urls = getListingSuggestionUrls();
         var showSuggestions = listingSuggestionsVisible() && urls.length;
@@ -16013,16 +16021,11 @@
         suggestionRow += '</div>';
         photoTile.innerHTML='<div class="inserat-photo-placeholder" style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px;box-sizing:border-box;">'+suggestionRow+'</div>';
         var addBtn=photoTile.querySelector('.inserat-photo-change');
-        if(addBtn) addBtn.onclick=async function(e){ e.stopPropagation(); hapticLight(); const f=await pickImage(); if(!f) return; let dataUrl=await toDataUrl(f); if(typeof applyAppetizerFilter==='function') dataUrl=await applyAppetizerFilter(dataUrl); if(typeof openPhotoEditor==='function') dataUrl=await openPhotoEditor(dataUrl, { onAccept: function(){} }); w.data.photoData=dataUrl; w.data.photoDataIsStandard=false; saveDraft(); rebuildWizard(); };
-        photoTile.querySelectorAll('.photo-suggestion').forEach(function(img,idx){ img.onclick=function(e){ e.stopPropagation(); hapticLight(); var u=getListingSuggestionUrls()[idx]; if(u) w.data.photoData=u; w.data.photoDataIsStandard=true; saveDraft(); rebuildWizard(); }; });
-        photoTile.onclick=async function(ev){ if(ev.target.closest('.inserat-photo-change')||ev.target.closest('.photo-suggestion')) return; hapticLight(); const f=await pickImage(); if(!f) return; let dataUrl=await toDataUrl(f); if(typeof applyAppetizerFilter==='function') dataUrl=await applyAppetizerFilter(dataUrl); if(typeof openPhotoEditor==='function') dataUrl=await openPhotoEditor(dataUrl, { onAccept: function(){} }); w.data.photoData=dataUrl; w.data.photoDataIsStandard=false; saveDraft(); rebuildWizard(); };
+        if(addBtn) addBtn.onclick=function(e){ e.stopPropagation(); handlePhotoPick(); };
+        photoTile.querySelectorAll('.photo-suggestion').forEach(function(img,idx){ img.onclick=function(e){ e.stopPropagation(); if(typeof triggerHapticFeedback==='function') triggerHapticFeedback([5]); var u=getListingSuggestionUrls()[idx]; if(u) w.data.photoData=u; w.data.photoDataIsStandard=true; saveDraft(); rebuildWizard(); }; });
+        photoTile.onclick=async function(ev){ if(ev.target.closest('.inserat-photo-change')||ev.target.closest('.photo-suggestion')) return; handlePhotoPick(); };
       }
       photoTile.appendChild(closeX);
-      var priceStickerInserat=document.createElement('div');
-      priceStickerInserat.className='inserat-price-on-image price-pill';
-      priceStickerInserat.style.cssText='position:absolute; bottom:8px; right:8px; padding:6px 12px; border-radius:999px; font-weight:900; font-size:14px; background:rgba(255,215,0,0.95); color:#1a1a1a; box-shadow:0 2px 8px rgba(255,215,0,0.3); z-index:10;';
-      priceStickerInserat.textContent=(Number(w.data.price)||0).toFixed(2).replace('.',',')+' €';
-      photoTile.appendChild(priceStickerInserat);
       var selectionOverlay=document.createElement('div');
       selectionOverlay.className='selection-overlay';
       var selectionOverlayInner=document.createElement('div');
@@ -16109,7 +16112,7 @@
       }
       box.appendChild(photoTile);
 
-      // 2. Ebene (Power-Bar): Eine Zeile, 6 Icons – 🍴 Vor Ort, 🔄 Mehrweg, 🕒 Zeit, 🌾 Allergene, ➕ Extras, ⓘ Info (Soft-Shell, kein grünes Boxen-Design) [cite: 2026-02-18]
+      // ========== 2. EBENE (Power-Bar): Eine Zeile, 6 Icons – 🍴 🔄 🕒 🌾 ➕ ⓘ. Soft-Shell (hellgrau/transparent), keine harten grünen Boxen [cite: 2026-02-18] ==========
       var pwParts=(w.data.pickupWindow||profileWindow).split(/\s*[–\-]\s*/);
       var timeStart=(pwParts[0]||'11:30').trim();
       var timeEnd=(pwParts[1]||'14:00').trim();
@@ -16118,17 +16121,19 @@
       const powerBar=document.createElement('div');
       powerBar.className='inserat-power-bar inserat-unified-pills inserat-soft-shell';
       powerBar.style.cssText='display:flex; flex-wrap:nowrap; justify-content:space-between; align-items:center; gap:8px; padding:10px 16px; flex-shrink:0; pointer-events:auto;';
+      var softShellStyle='cursor:pointer; min-width:44px; min-height:44px; border:none; border-radius:12px; background:rgba(0,0,0,0.06); color:#64748b; display:flex; align-items:center; justify-content:center; -webkit-tap-highlight-color:transparent;';
+      var softShellActiveStyle='background:rgba(16,185,129,0.12); color:#0f172a;';
       var hasDineIn = !!w.data.dineInPossible;
       var hasReuse = !!(w.data.reuse && w.data.reuse.enabled);
       function addPowerPill(emo, label, active, toggleKey){
         const wrap=document.createElement('button');
         wrap.type='button';
-        wrap.className='status-pill '+(active?'active':'inactive');
+        wrap.className='status-pill inserat-soft-pill '+(active?'active':'inactive');
         wrap.setAttribute('aria-label', label);
         wrap.setAttribute('title', label);
-        wrap.style.cssText='cursor:pointer; min-width:44px; min-height:44px;';
+        wrap.style.cssText=softShellStyle+(active?softShellActiveStyle:'');
         wrap.innerHTML='<span style="font-size:14px;">'+emo+'</span>';
-        wrap.onclick=function(e){ e.preventDefault(); e.stopPropagation(); hapticLight(); if(toggleKey==='reuse'){ w.data.reuse=w.data.reuse||{}; w.data.reuse.enabled=!w.data.reuse.enabled; } else w.data[toggleKey]=!w.data[toggleKey]; saveDraft(); rebuildWizard(); };
+        wrap.onclick=function(e){ e.preventDefault(); e.stopPropagation(); if(typeof triggerHapticFeedback==='function') triggerHapticFeedback([5]); if(toggleKey==='reuse'){ w.data.reuse=w.data.reuse||{}; w.data.reuse.enabled=!w.data.reuse.enabled; } else w.data[toggleKey]=!w.data[toggleKey]; saveDraft(); rebuildWizard(); };
         powerBar.appendChild(wrap);
       }
       addPowerPill('🍴','Vor Ort', hasDineIn, 'dineInPossible');
@@ -16136,43 +16141,78 @@
       const hasTimeValue=!!(w.data.pickupWindow&&w.data.pickupWindow.trim())||(w.data.mealStart&&w.data.mealEnd);
       const timePill=document.createElement('button');
       timePill.type='button';
-      timePill.className='status-pill '+(hasTimeValue?'active':'inactive');
+      timePill.className='status-pill inserat-soft-pill '+(hasTimeValue?'active':'inactive');
       timePill.setAttribute('aria-label','Abholzeit bearbeiten');
       timePill.setAttribute('title','Zeit');
+      timePill.style.cssText=softShellStyle+(hasTimeValue?softShellActiveStyle:'');
       timePill.innerHTML='<span style="font-size:14px;">🕒</span>';
-      timePill.onclick=()=>{ toggleHeaderSelection('time'); };
+      timePill.onclick=function(){ if(typeof triggerHapticFeedback==='function') triggerHapticFeedback([5]); toggleHeaderSelection('time'); };
       powerBar.appendChild(timePill);
+      function openAllergenBottomSheet(){
+        if(typeof triggerHapticFeedback==='function') triggerHapticFeedback([5]);
+        var backdrop=document.createElement('div');
+        backdrop.className='inserat-bottom-sheet-backdrop';
+        var sheet=document.createElement('div');
+        sheet.className='inserat-bottom-sheet';
+        sheet.innerHTML='<div class="inserat-sheet-handle" aria-hidden="true"></div><p style="margin:0 0 16px; font-size:16px; font-weight:800; color:#0f172a;">Allergene</p><div class="inserat-allergen-pills-wrap" style="display:flex; flex-wrap:wrap; gap:8px;"></div><button type="button" class="inserat-sheet-done" style="margin-top:20px; width:100%; min-height:52px; border-radius:16px; border:none; background:#10b981; color:#fff; font-size:16px; font-weight:800; cursor:pointer;">Fertig</button>';
+        var wrap=sheet.querySelector('.inserat-allergen-pills-wrap');
+        (typeof ALLERGENS_14!=='undefined'?ALLERGENS_14:[]).forEach(function(a){
+          var code=a.short; var name=a.name||code; var active=(w.data.allergens||[]).includes(code);
+          var pill=document.createElement('button'); pill.type='button'; pill.className='inserat-allergen-pill'+(active?' active':'');
+          pill.textContent=name; pill.title=name;
+          pill.onclick=function(){ if(typeof triggerHapticFeedback==='function') triggerHapticFeedback([5]); if(!w.data.allergens) w.data.allergens=[]; if((w.data.allergens||[]).includes(code)){ w.data.allergens=w.data.allergens.filter(function(x){ return x!==code; }); } else{ w.data.allergens.push(code); } w.data.wantsAllergens=true; saveDraft(); pill.className='inserat-allergen-pill'+((w.data.allergens||[]).includes(code)?' active':''); };
+          wrap.appendChild(pill);
+        });
+        function closeSheet(){ backdrop.classList.remove('is-open'); sheet.classList.remove('is-open'); setTimeout(function(){ backdrop.remove(); sheet.remove(); }, 320); rebuildWizard(); }
+        sheet.querySelector('.inserat-sheet-done').onclick=function(){ if(typeof triggerHapticFeedback==='function') triggerHapticFeedback([5]); closeSheet(); };
+        backdrop.onclick=function(e){ if(e.target===backdrop) closeSheet(); };
+        var touchStartY=0; var swipeClosed=false;
+        sheet.addEventListener('touchstart',function(e){ touchStartY=e.touches[0].clientY; swipeClosed=false; },{passive:true});
+        sheet.addEventListener('touchmove',function(e){ if(swipeClosed) return; var y=e.touches[0].clientY; if(y-touchStartY>50){ swipeClosed=true; closeSheet(); } },{passive:true});
+        document.body.appendChild(backdrop); document.body.appendChild(sheet);
+        requestAnimationFrame(function(){ requestAnimationFrame(function(){ backdrop.classList.add('is-open'); sheet.classList.add('is-open'); }); });
+      }
       const hasAllergens=!!(w.data.allergens&&w.data.allergens.length);
+      var allergenWrap=document.createElement('div');
+      allergenWrap.style.cssText='display:inline-flex; align-items:center; min-width:44px; min-height:44px;';
       const allergenBarBtn=document.createElement('button');
       allergenBarBtn.type='button';
-      allergenBarBtn.className='func-icon-btn ' + (hasAllergens ? 'active' : '');
+      allergenBarBtn.className='func-icon-btn inserat-soft-pill ' + (hasAllergens ? 'active' : '');
+      allergenBarBtn.style.cssText=softShellStyle+(hasAllergens?softShellActiveStyle:'');
       allergenBarBtn.textContent='🌾';
       allergenBarBtn.title='Allergene';
-      allergenBarBtn.onclick=function(){ toggleHeaderSelection('allergens'); };
-      powerBar.appendChild(allergenBarBtn);
+      allergenBarBtn.onclick=openAllergenBottomSheet;
+      var allergenCodesSpan=document.createElement('span');
+      allergenCodesSpan.className='inserat-allergen-codes';
+      allergenCodesSpan.textContent=(w.data.allergens&&w.data.allergens.length)?(w.data.allergens.join(' ')):'';
+      allergenWrap.appendChild(allergenBarBtn);
+      allergenWrap.appendChild(allergenCodesSpan);
+      powerBar.appendChild(allergenWrap);
       const hasExtras=!!(w.data.extras&&w.data.extras.length);
       const extrasBarBtn=document.createElement('button');
       extrasBarBtn.type='button';
-      extrasBarBtn.className='func-icon-btn ' + (hasExtras ? 'active' : '');
+      extrasBarBtn.className='func-icon-btn inserat-soft-pill ' + (hasExtras ? 'active' : '');
+      extrasBarBtn.style.cssText=softShellStyle+(hasExtras?softShellActiveStyle:'');
       extrasBarBtn.textContent='➕';
       extrasBarBtn.title='Extras';
-      extrasBarBtn.onclick=function(){ toggleHeaderSelection('extras'); };
+      extrasBarBtn.onclick=function(){ if(typeof triggerHapticFeedback==='function') triggerHapticFeedback([5]); toggleHeaderSelection('extras'); };
       powerBar.appendChild(extrasBarBtn);
       var legendWrap=document.createElement('div'); legendWrap.style.cssText='position:relative; display:inline-flex; align-items:center;';
-      var legendTrigger=document.createElement('button'); legendTrigger.type='button'; legendTrigger.className='power-bar-legend-trigger'; legendTrigger.setAttribute('aria-label','Infoseite Inseratsflow'); legendTrigger.setAttribute('title','Infoseite: Inserieren in unter 30 Sekunden'); legendTrigger.textContent='ⓘ'; legendTrigger.style.cssText='min-width:44px; min-height:44px; width:44px; height:44px; border:none; background:transparent; color:#94a3b8; font-size:14px; cursor:pointer; border-radius:50%; display:flex; align-items:center; justify-content:center; -webkit-tap-highlight-color:transparent;';
+      var legendTrigger=document.createElement('button'); legendTrigger.type='button'; legendTrigger.className='power-bar-legend-trigger inserat-soft-pill'; legendTrigger.setAttribute('aria-label','Infoseite Inseratsflow'); legendTrigger.setAttribute('title','Infoseite: Inserieren in unter 30 Sekunden'); legendTrigger.textContent='ⓘ'; legendTrigger.style.cssText=softShellStyle+'min-width:44px; min-height:44px; width:44px; height:44px; color:#94a3b8; font-size:14px; border-radius:50%; display:flex; align-items:center; justify-content:center;';
       var legendPop=document.createElement('div'); legendPop.className='power-bar-legend'; legendPop.setAttribute('role','tooltip'); legendPop.style.cssText='display:none; position:absolute; top:100%; right:0; margin-top:6px; padding:10px 14px; background:rgba(255,255,255,0.95); backdrop-filter:blur(12px); border-radius:12px; border:1px solid rgba(0,0,0,0.06); box-shadow:0 8px 24px rgba(0,0,0,0.1); font-size:11px; font-weight:600; color:#475569; line-height:1.5; z-index:50; white-space:nowrap;';
       legendPop.innerHTML='🍴 Vor Ort · 🔄 Mehrweg · 🕒 Zeit · 🌾 Allergene · ➕ Extras · ⓘ Info';
-      legendTrigger.onclick=function(e){ e.stopPropagation(); hapticLight(); if(typeof openInfoLegendSheet==='function') openInfoLegendSheet(); else { var on=legendPop.style.display==='block'; legendPop.style.display=on?'none':'block'; if(!on) setTimeout(function(){ var closeLegend=function(ev){ if(!legendWrap.contains(ev.target)){ legendPop.style.display='none'; document.removeEventListener('click', closeLegend); } }; document.addEventListener('click', closeLegend); }, 0); } };
+      legendTrigger.onclick=function(e){ e.stopPropagation(); if(typeof triggerHapticFeedback==='function') triggerHapticFeedback([5]); if(typeof openInfoLegendSheet==='function') openInfoLegendSheet(); else { var on=legendPop.style.display==='block'; legendPop.style.display=on?'none':'block'; if(!on) setTimeout(function(){ var closeLegend=function(ev){ if(!legendWrap.contains(ev.target)){ legendPop.style.display='none'; document.removeEventListener('click', closeLegend); } }; document.addEventListener('click', closeLegend); }, 0); } };
       legendWrap.appendChild(legendTrigger); legendWrap.appendChild(legendPop); powerBar.appendChild(legendWrap);
       box.appendChild(powerBar);
 
       const scrollArea=document.createElement('div');
       scrollArea.className='inserat-scroll-area scroll-content';
 
-      // 3. Ebene (Titel): Gerichtsname volle Breite, Midnight Blue #0f172a, ExtraBold, adjustTitleFontSize() [cite: 2026-02-18]
+      // ========== 3. EBENE (Titel): Gerichtsname volle Breite 100%, Midnight Blue #0f172a, ExtraBold. adjustTitleFontSize() – Name niemals abgeschnitten [cite: 2026-02-18] ==========
       const stepName=document.createElement('div');
       stepName.id='step-name';
       stepName.className='inserat-section inserat-unified-title-wrap';
+      stepName.style.cssText='width:100%;';
       const dishDatalist=document.createElement('datalist');
       dishDatalist.id='inserat-dish-datalist';
       const dishSuggestions = ['Kürbissuppe','Kartoffelsuppe','Tomatensuppe','Linsensuppe','Schnitzel','Gulasch','Käsespätzle','Pasta','Pizza','Wrap','Burger','Falafel','Lachs','Sushi','Thunfisch','Salat','Curry','Gemüsepfanne','Risotto','Lasagne'];
@@ -16185,7 +16225,7 @@
       inputDish.value=w.data.dish||'';
       inputDish.setAttribute('list','inserat-dish-datalist');
       inputDish.autocomplete='off';
-      inputDish.style.cssText='width:100%; color:#0f172a; font-weight:800;';
+      inputDish.style.cssText='width:100%; max-width:100%; color:#0f172a; font-weight:800; box-sizing:border-box;';
       function adjustTitleFontSize(){
         var el = inputDish;
         if(!el || !el.offsetParent) return;
@@ -16229,9 +16269,10 @@
       inputDesc.onblur=()=>{ dismissKeyboard(); hapticLight(); };
       wrapDesc.appendChild(inputDesc);
       stepName.appendChild(wrapDesc);
-      // 4. Ebene (Beschreibung): Direkt unter Titel, Schiefergrau #64748b [cite: 2026-02-18]
+      // ========== 4. EBENE (Beschreibung): Direkt unter Titel als Untertitel, Schiefergrau #64748b, kleiner skaliert [cite: 2026-02-18] ==========
+      inputDesc.style.cssText='width:100%; color:#64748b; font-size:0.9em; box-sizing:border-box;';
 
-      // 5. Ebene (Action-Row): Flex-Row – Kategorie-Pills links, gelber Preis-Button rechts [cite: 2026-02-18]
+      // ========== 5. EBENE (Action-Row): Flex-Row – Kategorie-Pills links, gelber Preis-Button rechts. MODE_AD: „mit Abholnummer“ + „Nur Inserat“. MODE_PLAN: „Im Kochbuch speichern“ + „Einplanen“. Terminologie: nur Abholnummer [cite: 2026-02-18] ==========
       const catPriceRow=document.createElement('div');
       catPriceRow.className='inserat-cat-price-row';
       catPriceRow.id='step-cat';
@@ -16285,7 +16326,7 @@
         setTimeout(function(){ try{ inputPrice.focus(); }catch(err){} }, 150);
       });
       inputPrice.onblur=function(){ if(w.data.price>0) inputPrice.value=Number(w.data.price).toFixed(2).replace('.',','); dismissKeyboard(); hapticLight(); if(catPriceRow) catPriceRow.classList.remove('hero-morph-active'); };
-      inputPrice.oninput=()=>{ var v=inputPrice.value.replace(',','.'); w.data.price=parseFloat(v)||0; saveDraft(); updateProfit(v); if(priceStickerInserat) priceStickerInserat.textContent=(Number(w.data.price)||0).toFixed(2).replace('.',',')+' €'; hapticLight(); };
+      inputPrice.oninput=()=>{ var v=inputPrice.value.replace(',','.'); w.data.price=parseFloat(v)||0; saveDraft(); updateProfit(v); hapticLight(); };
       scrollArea.appendChild(stepName);
       scrollArea.appendChild(catPriceRow);
       requestAnimationFrame(function(){ requestAnimationFrame(function(){ if(typeof adjustTitleFontSize === 'function') adjustTitleFontSize(); }); });
@@ -16526,7 +16567,7 @@
   }
 
   // Transaktions-Schema (pro Inserat): id, vendor_id, base_price, addon_pickup, addon_price, total_amount, timestamp
-  /** TRANSACTION LOGIC & TERMINOLOGY: Nur „Abholnummer“ (nie Ticket/Abholcode/Code). Abholnummer-Upsell nur nach Publish (Geld-Route), nicht bei stillem Speichern. */
+  /** TRANSACTION LOGIC & TERMINOLOGY: Nur Abholnummer. Abholnummer-Upsell nur nach Publish (Geld-Route), nicht bei stillem Speichern. */
   const TX_BASE_PRICE = 4.99;   // fixed_fee (Inseratsgebühr)
   const TX_ADDON_PRICE = 0.89; // abholnummer_fee pro Vorgang
   function createInseratTransaction(offer){
@@ -17318,29 +17359,7 @@
   // Foto-KI: Analysiert Foto mit GPT-4o Vision API
   async function analyzeFoodPhoto(imageDataUrl){
     try {
-      // TODO: In Production: Echte GPT-4o Vision API Integration
-      // Beispiel-Request:
-      // const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Authorization': `Bearer ${OPENAI_API_KEY}`,
-      //     'Content-Type': 'application/json'
-      //   },
-      //   body: JSON.stringify({
-      //     model: 'gpt-4o',
-      //     messages: [{
-      //       role: 'user',
-      //       content: [
-      //         { type: 'text', text: 'Analysiere dieses Food-Foto und extrahiere: Name des Gerichts, geschätzter Preis in EUR, Hauptzutaten (Liste). Antworte im JSON-Format: {name, price, ingredients: []}. KEINE Mengenschätzungen oder Kalorien.' },
-      //         { type: 'image_url', image_url: { url: imageDataUrl } }
-      //       ]
-      //     }]
-      //   })
-      // });
-      // const data = await response.json();
-      // return JSON.parse(data.choices[0].message.content);
-      
-      // Demo: Simuliere KI-Analyse (wird später durch echte API ersetzt)
+      // Production: GPT-4o Vision API anbinden; aktuell Mock.
       await new Promise(resolve => setTimeout(resolve, 1500)); // Simuliere API-Latenz
       
       // Mock-Daten basierend auf häufigsten Gerichten
@@ -17997,63 +18016,11 @@
     const autoReplySubject = 'Deine Nachricht an das Mittagio-Team 🤝';
     const autoReplyBody = `Hallo ${providerName},\n\nvielen Dank für deine Nachricht! Wir haben deine Anfrage zum Thema ${topicLabels[topic] || 'Allgemein'} erhalten.\n\nDa wir wissen, dass es in der Küche oft stressig zugeht, geben wir Vollgas: Wir schauen uns dein Anliegen sofort an und melden uns innerhalb der nächsten 24 Stunden persönlich bei dir.\n\nIn der Zwischenzeit: Schau gerne in unsere 'Erste-Hilfe'-Checkliste in deinem Profil – oft lässt sich dort schon eine schnelle Lösung finden.\n\nBeste Grüße,\nMike von Mittagio`;
     
-    if(false && typeof console !== 'undefined') console.log('[Support Auto-Reply]', {
-      providerId: providerId(),
-      providerName: providerName,
-      providerEmail: provider.email,
-      topic: topic,
-      subject: autoReplySubject,
-      body: autoReplyBody,
-      timestamp: new Date().toISOString()
-    });
-    
-    // In Production würde hier ein fetch() zum Backend erfolgen:
-    /*
-    fetch('/api/send-support-auto-reply', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        providerId: providerId(),
-        providerName: providerName,
-        providerEmail: provider.email,
-        topic: topic,
-        autoReplySubject: autoReplySubject,
-        autoReplyBody: autoReplyBody
-      })
-    }).catch(err => console.error('Support Auto-Reply failed:', err));
-    */
+    // Production: fetch('/api/send-support-auto-reply', …)
   }
-  
-  // Backup-E-Mail an Anbieter senden (vorbereitet für Backend-Integration)
+
   function sendBackupEmailToProvider(order){
-    // TODO: In Production: Backend-Endpoint aufrufen
-    // POST /api/send-backup-email
-    // Body: { orderId, providerId, pickupCode, dishName, ... }
-    
-    // MVP: Log für Debugging
-    if(false && typeof console !== 'undefined') console.log('[Backup-Email]', {
-      orderId: order.id,
-      providerId: order.providerId,
-      pickupCode: order.pickupCode,
-      dishName: order.dishName,
-      timestamp: new Date().toISOString()
-    });
-    
-    // In Production würde hier ein fetch() zum Backend erfolgen:
-    /*
-    fetch('/api/send-backup-email', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        orderId: order.id,
-        providerId: order.providerId,
-        pickupCode: order.pickupCode,
-        dishName: order.dishName,
-        providerEmail: provider.profile?.kitchenEmail || provider.email,
-        timestamp: new Date().toISOString()
-      })
-    }).catch(err => console.error('Backup-Email failed:', err));
-    */
+    // Production: POST /api/send-backup-email
   }
   
   // Auto-Reload-Logik (alle 30 Sekunden, nur wenn offline). Nicht reloaden wenn InseratCard offen (Eingabe würde verloren gehen).
@@ -18202,13 +18169,8 @@
     });
     var activeViews = document.querySelectorAll('.view.active');
     var oneActive = activeViews.length === 1;
-    if(missing.length === 0 && oneActive){
-      if(typeof console !== 'undefined') console.log('Mittagio Health Check: OK');
-    } else {
-      if(typeof console !== 'undefined'){
-        console.warn('Mittagio Health Check:', missing.length ? 'Fehlende IDs: ' + missing.join(', ') : 'OK', oneActive ? '' : 'Aktive Views: ' + activeViews.length + ' (erwartet 1)');
-      }
-    }
+    if(missing.length === 0 && oneActive){}
+    else {}
   }, 500);
   // --- Init-Block (Mode, Icons, PWA, Live-Sync) ---
   // Zweites Script: Zugriff auf Mode/LS nur über localStorage (eigener Scope)
@@ -18219,14 +18181,14 @@
   // Icon-Initialisierung (immer, nicht nur bei Service Worker)
   function initIcons(){
     if(typeof lucide !== 'undefined' && typeof lucide.createIcons === 'function'){
-      try { lucide.createIcons(); } catch(e) { console.warn('Lucide createIcons:', e); }
+      try { lucide.createIcons(); } catch(e) {}
     } else {
       // Warte bis Lucide geladen ist (max. 2 Sekunden)
       let attempts = 0;
       const checkLucide = setInterval(()=>{
         attempts++;
         if(typeof lucide !== 'undefined' && typeof lucide.createIcons === 'function'){
-          try { lucide.createIcons(); } catch(err) { console.warn('Lucide createIcons:', err); }
+          try { lucide.createIcons(); } catch(err) {}
           clearInterval(checkLucide);
         } else if(attempts > 20){ // Nach 2 Sekunden aufgeben
           clearInterval(checkLucide);
@@ -18244,50 +18206,18 @@
     window.testPickupCodeLogic = testPickupCodeLogic;
   }
 
-  // PWA (optional)
-  // TEMPORÄR DEAKTIVIERT ZUM TESTEN
-  if(false && 'serviceWorker' in navigator){
-    window.addEventListener('load', ()=>{
-      // Service Worker-Pfad relativ zum aktuellen Verzeichnis
-      const swPath = document.querySelector('base') ? 'sw.js' : './sw.js';
-      navigator.serviceWorker.register(swPath).catch(()=>{});
-      // Icons initialisieren
-      initIcons();
-      // Profile-View aktualisieren
-      if(typeof updateProfileView !== 'undefined'){
-        updateProfileView();
-      }
-      // Startseite rendern, falls im start-Mode
-      if(getMode() === 'start' && typeof renderStart !== 'undefined'){
-        setTimeout(()=>{
-          renderStart();
-          initIcons();
-        }, 100);
-      }
-    });
-  } else {
-    // Fallback: Icons auch ohne Service Worker initialisieren
-    window.addEventListener('load', ()=>{
-      initIcons();
-      // Topbar: Kundefarben setzen, wenn initial aktive View eine Kundenseite ist
-      const activeView = document.querySelector('.view.active');
-      const topbar = document.querySelector('.topbar');
-      if(topbar && activeView && activeView.classList.contains('customer-view')){
-        topbar.classList.add('customer-context');
-      }
-      // Profile-View aktualisieren
-      if(typeof updateProfileView !== 'undefined'){
-        updateProfileView();
-      }
-      // Startseite rendern, falls im start-Mode
-      if(getMode() === 'start' && typeof renderStart !== 'undefined'){
-        setTimeout(()=>{
-          renderStart();
-          initIcons();
-        }, 100);
-      }
-    });
-  }
+  window.addEventListener('load', ()=>{
+    initIcons();
+    const activeView = document.querySelector('.view.active');
+    const topbar = document.querySelector('.topbar');
+    if(topbar && activeView && activeView.classList.contains('customer-view')){
+      topbar.classList.add('customer-context');
+    }
+    if(typeof updateProfileView !== 'undefined') updateProfileView();
+    if(getMode() === 'start' && typeof renderStart !== 'undefined'){
+      setTimeout(()=>{ renderStart(); initIcons(); }, 100);
+    }
+  });
   
   // Offline/Online Event-Handler (Fallback-Verhalten)
   window.addEventListener('online', () => {
@@ -18317,9 +18247,7 @@
       setTimeout(()=> initIcons(), 50);
     };
   }
-  // ---------------------------------------------------------
   // LIVE SYNC & OFFLINE HANDLING
-  // ---------------------------------------------------------
   function setupLiveSync(){
     window.addEventListener('storage', (e) => {
       if(e.key === ORDERS_KEY || e.key === OFFERS_KEY){

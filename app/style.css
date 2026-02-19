@@ -1,4 +1,6 @@
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Montserrat:wght@400;600;700;900&family=Kalam:wght@400;700&family=Permanent+Marker&family=Nunito:wght@600;700;800&family=Quicksand:wght@500;600;700&display=swap');
+    /* Init-Gate: kein Flackern – Body wird von script.js nach View-Switch sichtbar geschaltet */
+    body { visibility: hidden; }
     :root{
       /* Mittagio High-End Farbpalette */
       --bg:#F7F6F0; /* Standard-Hintergrund */
@@ -16,22 +18,6 @@
       --sticker-green:#27AE60; /* Preis-Sticker & Mehrweg-Badge (Polaroid-Card) */
       --danger:#E34D4D;
       --font-polaroid-marker:'Permanent Marker', 'Kalam', cursive;
-      /* S25 NATIVE-FIX: Stoppt Überlappungen und erzwingt Scrolling */
-#v-provider-account-manage .settings-container {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 15px !important;
-    padding: 20px !important;
-    height: auto !important; 
-    min-height: 100% !important;
-    overflow-y: auto !important; /* Hierdurch wird das S25 wieder scrollbar */
-}
-
-#v-provider-account-manage button {
-    position: relative !important; /* Verhindert, dass Buttons übereinander liegen */
-    width: 100% !important;
-    margin-bottom: 5px !important;
-}
       /* Design Tokens - PWA Light */
       /* Radius */
       --r-sm: 10px;
@@ -2420,6 +2406,15 @@
     .liquid-master-panel .inserat-photo-tile.photo-header img {
       width: 100%; height: 100%; object-fit: cover; object-position: center; display: block;
     }
+    .photo-header.inserat-photo-loading::after {
+      content: ''; position: absolute; inset: 0; background: rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; z-index: 12;
+    }
+    .photo-header.inserat-photo-loading .inserat-photo-spinner {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); z-index: 13;
+      width: 44px; height: 44px; border: 3px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%;
+      animation: inserat-spin 0.8s linear infinite;
+    }
+    @keyframes inserat-spin { to { transform: translate(-50%,-50%) rotate(360deg); } }
     /* Keyboard-Avoidance: Header schrumpft bei aktivem Input (Titel/Preis) [cite: 2026-02-16] */
     #wizard[data-flow="listing"] .liquid-master-panel.inserat-keyboard-active .photo-header,
     #wizard[data-flow="listing"] .liquid-master-panel.inserat-keyboard-active .inserat-photo-tile.photo-header {
@@ -2454,6 +2449,44 @@
     #wizard[data-flow="listing"] .photo-header .selection-overlay .extra-pill.active,
     #wizard[data-flow="listing"] .photo-header .selection-overlay .inserat-allergen-pill.active { background: #10b981; color: #fff; border-color: rgba(16,185,129,0.4); box-shadow: 0 2px 10px rgba(16,185,129,0.3); }
     #wizard[data-flow="listing"] .photo-header .selection-overlay-inner.selection-overlay-inner--time { display: flex; align-items: center; justify-content: center; }
+    /* ========== Inserat Bottom-Sheet (Allergen-Auswahl): fixiert unten, S25 Native [cite: 2026-02-18] ========== */
+    .inserat-bottom-sheet-backdrop {
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(0,0,0,0.45); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+    }
+    .inserat-bottom-sheet-backdrop.is-open {
+      opacity: 1; pointer-events: auto;
+    }
+    .inserat-bottom-sheet {
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 201;
+      border-radius: 32px 32px 0 0;
+      padding: 20px 20px calc(30px + env(safe-area-inset-bottom, 0));
+      background: #fff;
+      box-shadow: 0 -8px 32px rgba(0,0,0,0.15);
+      max-height: 70vh; overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+    }
+    .inserat-bottom-sheet.is-open {
+      transform: translateY(0);
+    }
+    .inserat-bottom-sheet .inserat-sheet-handle {
+      width: 44px; height: 5px; background: #d1d5db; border-radius: 3px; margin: 0 auto 16px;
+    }
+    .inserat-bottom-sheet .inserat-allergen-pill {
+      padding: 10px 16px; border-radius: 999px; font-size: 13px; font-weight: 700;
+      border: 2px solid rgba(0,0,0,0.08); background: rgba(0,0,0,0.04); color: #475569;
+      cursor: pointer; transition: background 0.2s, color 0.2s, border-color 0.2s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .inserat-bottom-sheet .inserat-allergen-pill.active {
+      background: rgba(16,185,129,0.15); color: #059669; border-color: rgba(16,185,129,0.4);
+    }
+    .inserat-power-bar .inserat-allergen-codes {
+      font-size: 10px; font-weight: 800; color: #0f172a; letter-spacing: 0.02em;
+      margin-left: 4px; max-width: 48px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
     /* Foto ändern / FOTO HINZUFÜGEN: Glass-Pill, unten zentriert [cite: 2026-02-16, plan Smart-Photo] */
     #wizard[data-flow="listing"] .liquid-master-panel .photo-header .inserat-photo-change,
     #wizard[data-flow="listing"] .liquid-master-panel .inserat-photo-tile.photo-header .inserat-photo-change {
@@ -5458,6 +5491,8 @@
       /* Account verwalten: S25 Native-First – flex-column, gap 16px, padding 20px, Clean Cards [cite: s25-native-first] */
       #v-provider-profile .tgtg-list-wrap{ background:#F9FAFB; flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:20px; padding-bottom:calc(120px + env(safe-area-inset-bottom, 0)); display:flex; flex-direction:column; gap:16px; box-sizing:border-box; }
       #v-provider-profile .tgtg-list{ background:#fff; margin:0; border-radius:16px; border:1px solid rgba(0,0,0,0.04); box-shadow:0 2px 12px rgba(0,0,0,0.06); overflow:hidden; }
+      /* FAQ „Was ist was?“: TGTG-Flat – eine weiße Fläche, keine Kacheln [cite: 2026-01-29] */
+      #v-provider-profile .tgtg-list:has(.tgtg-accordion){ box-shadow:none; border:none; border-radius:0; margin:0; }
       #v-provider-profile .tgtg-section-title{ font-size:11px; font-weight:800; letter-spacing:0.06em; color:#64748b; text-transform:uppercase; margin:0 0 4px; padding:0 4px; }
       #v-provider-profile .tgtg-row{ position:relative; display:flex; align-items:center; gap:12px; width:100%; min-height:56px; padding:16px 20px; background:#fff; border:none; font-size:16px; font-weight:700; color:#1a1a1a; cursor:pointer; text-align:left; font-family:inherit; transition:background 0.2s; -webkit-tap-highlight-color:transparent; }
       #v-provider-profile .tgtg-row::after{ content:''; position:absolute; left:20px; right:20px; bottom:0; height:1px; background:#f1f3f5; }
@@ -5475,18 +5510,18 @@
       #v-provider-profile .tgtg-row-icon--green{ color:#22C55E; }
       #v-provider-profile .tgtg-label-sub{ display:block; margin-top:2px; font-size:12px; font-weight:600; color:#6B7280; }
       #v-provider-profile .tgtg-row.tgtg-row--link{ min-height:60px; }
-      /* Was ist was? Accordion: 300ms, Inset-Divider wie Zeilen */
+      /* Was ist was? Accordion: TGTG-Flat – durchgehende weiße Fläche, 1px Inset-Divider (links 16px), 300ms [cite: 2026-01-29] */
       #v-provider-profile .tgtg-accordion-item{ position:relative; }
-      #v-provider-profile .tgtg-accordion-item::after{ content:''; position:absolute; left:16px; right:16px; bottom:0; height:1px; background:#E5E7EB; }
+      #v-provider-profile .tgtg-accordion-item::after{ content:''; position:absolute; left:16px; right:0; bottom:0; height:1px; background:#E5E7EB; }
       #v-provider-profile .tgtg-accordion-item:last-child::after{ display:none; }
-      #v-provider-profile .tgtg-accordion-trigger{ width:100%; display:flex; align-items:center; justify-content:space-between; gap:12px; min-height:52px; padding:14px 16px; background:transparent; border:none; font-size:15px; font-weight:700; color:#1a1a1a; cursor:pointer; text-align:left; font-family:inherit; transition:background 0.2s; -webkit-tap-highlight-color:transparent; }
+      #v-provider-profile .tgtg-accordion-trigger{ width:100%; display:flex; align-items:center; justify-content:space-between; gap:12px; min-height:52px; padding:14px 16px; background:transparent; border:none; font-size:15px; font-weight:600; color:#0f172a; cursor:pointer; text-align:left; font-family:inherit; transition:background 0.2s; -webkit-tap-highlight-color:transparent; }
       #v-provider-profile .tgtg-accordion-trigger:active{ background:#f8fafc; }
-      #v-provider-profile .tgtg-accordion-trigger .tgtg-accordion-chevron{ width:20px; height:20px; color:#94a3b8; flex-shrink:0; transition:transform 300ms cubic-bezier(0.4, 0, 0.2, 1); }
+      #v-provider-profile .tgtg-accordion-trigger .tgtg-accordion-chevron{ width:18px; height:18px; color:#94a3b8; flex-shrink:0; transition:transform 300ms cubic-bezier(0.4, 0, 0.2, 1); opacity:0.85; }
       #v-provider-profile .tgtg-accordion-item.open .tgtg-accordion-trigger .tgtg-accordion-chevron{ transform:rotate(90deg); }
       #v-provider-profile .tgtg-accordion-content{ display:grid; grid-template-rows:0fr; transition:grid-template-rows 300ms cubic-bezier(0.4, 0, 0.2, 1); }
       #v-provider-profile .tgtg-accordion-item.open .tgtg-accordion-content{ grid-template-rows:1fr; }
       #v-provider-profile .tgtg-accordion-content-inner{ overflow:hidden; }
-      #v-provider-profile .tgtg-accordion-body{ padding:0 16px 16px; font-size:14px; line-height:1.5; color:#475569; opacity:0; transition:opacity 300ms cubic-bezier(0.4, 0, 0.2, 1); }
+      #v-provider-profile .tgtg-accordion-body{ padding:0 16px 16px; font-size:14px; line-height:1.5; color:#475569; opacity:0; transition:opacity 300ms cubic-bezier(0.4, 0, 0.2, 1); background:#F9FAFB; }
       #v-provider-profile .tgtg-accordion-item.open .tgtg-accordion-body{ opacity:1; }
       
       /* Account verwalten: S25 Mobile – padding 20px, padding-bottom für Nav [cite: s25-native-first] */
@@ -6347,7 +6382,8 @@
     }
 
     /* --- END MODERN CUSTOMER UI --- */
-  /* S25 NATIVE-FIX: Stoppt Überlappungen und erzwingt Scrolling */
+
+/* === S25 HIGH-END FINISH === */
 #v-provider-account-manage .settings-container {
     display: flex !important;
     flex-direction: column !important;

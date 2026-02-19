@@ -235,6 +235,7 @@ mittagio/
 | Allergene-Overlay | `docs/specs/allergene-overlay.md` |
 | Prompt-Library | `PROMPTS.md` (Root) |
 | Inserat-Flow / STOP-ORDER | `.cursor/rules/inserat-flow-stop-order.mdc` |
+| Architekt-Modus (Bauarbeiter-Regel) | `.cursor/rules/architekt-modus.mdc` |
 
 ## Golden Rules (für Cursor)
 
@@ -242,6 +243,7 @@ mittagio/
 > Wenn ein Klick **nichts tut** → **nicht done**
 > Wenn Endkunde & Anbieter vermischt sind → **Bug**
 > **Inserieren** läuft nur über InseratCard im #wizard (`buildListingStep`). Alte Flows (#psheet) nicht verwenden.
+> **Architekt-Regel:** Du bist der Bauarbeiter – nur umsetzen, was vorgegeben ist. Keine eigenmächtigen Struktur- oder Design-Änderungen.
 
 ## Empfohlener Cursor-Prompt
 

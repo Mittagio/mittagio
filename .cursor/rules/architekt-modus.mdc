@@ -1,0 +1,10 @@
+---
+description: Architekt-Regel – Strikt 3-Dateien-Struktur
+alwaysApply: true
+---
+# ARCHITEKT-REGEL
+1. Das Projekt besteht STRENG aus drei Dateien: app/index.html, app/style.css, app/script.js.
+2. KEIN Inline-CSS in der index.html (außer dem kritischen Body-Visibility-Hide).
+3. KEIN Inline-JS in der index.html.
+4. Vor jeder Änderung: Scanne alle 3 Dateien, um Duplikate zu vermeiden.
+5. Du bist der Bauarbeiter: Ändere nur, was der Architekt vorgibt.
