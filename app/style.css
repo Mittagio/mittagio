@@ -1,4 +1,5 @@
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Montserrat:wght@400;600;700;900&family=Kalam:wght@400;700&family=Permanent+Marker&family=Nunito:wght@600;700;800&family=Quicksand:wght@500;600;700&display=swap');
+    /* TGTG-Airbnb: Nur Inter + Montserrat (flaches Design, keine Schreibschriften) */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Montserrat:wght@400;600;700;900&display=swap');
     /* Init-Gate: kein Flackern – Body wird von script.js nach View-Switch sichtbar geschaltet */
     body { visibility: hidden; }
     :root{
@@ -9,21 +10,23 @@
       --text:#334155;   /* Slate Grey - edler als reines Schwarz */
       --muted:#6b6b6b;
       --border:#e7e1d5;
-      --shadow:0 10px 24px rgba(0,0,0,.08);
-      --shadow2:0 16px 40px rgba(0,0,0,.14);
-      --radius:24px;     /* rounded-3xl for messenger vibe */
-      /* Airbnb-Style Design Tokens (S25 High-End) */
-      --airbnb-radius: 28px;
-      --airbnb-shadow: 0 4px 20px rgba(0,0,0,0.06);
-      --airbnb-shadow-hover: 0 8px 30px rgba(0,0,0,0.08);
-      --airbnb-spacing: 24px;
-      --airbnb-title-color: #0f172a;
+      /* TGTG-Airbnb Fusion: keine Schlagschatten, Inset-Dividers */
+      --tgtg-divider: 1px solid rgba(0,0,0,0.06);
+      --tgtg-shadow-minimal: 0 1px 3px rgba(0,0,0,0.04);
+      --tgtg-spacing: 24px;
+      --tgtg-spacing-lg: 32px;
+      --tgtg-img-radius: 18px;
+      --tgtg-title-color: #0f172a;
+      /* Legacy-Kompatibilität */
+      --shadow: 0 1px 3px rgba(0,0,0,0.04);
+      --shadow2: 0 2px 8px rgba(0,0,0,0.06);
+      --radius: 18px;
       --brand:#FFD700;   /* Mittagio Gold - Primär (Korb, Abholnummer-Buttons) */
       --brand2:#2ECC71;  /* Erfolgs-Grün - Profit (Netto-Umsatz) */
       --brand3:#27AE60;  /* Mehrweg-Grün - Dezent (Blatt-Icon) */
       --sticker-green:#27AE60; /* Preis-Sticker & Mehrweg-Badge (Polaroid-Card) */
       --danger:#E34D4D;
-      --font-polaroid-marker:'Permanent Marker', 'Kalam', cursive;
+      --font-polaroid-marker: 'Inter', system-ui, sans-serif;
       /* Design Tokens - PWA Light */
       /* Radius */
       --r-sm: 10px;
@@ -269,17 +272,18 @@
       background:#fffbf0 !important;
     }
     
-    /* Pickup Card Styles (Anbieter: helles Layout) */
+    /* Pickup Card Styles – TGTG Tabula Rasa [cite: Plan Phase 3] */
     .pickup-card {
       background: #fff;
-      border: 1px solid rgba(0,0,0,0.06);
-      border-radius: 16px;
+      border: none;
+      border-bottom: var(--tgtg-divider, 1px solid rgba(0,0,0,0.06));
+      border-radius: var(--tgtg-img-radius, 16px);
       padding: 16px;
       position: relative;
       overflow: hidden;
       transition: all 0.2s;
       cursor: pointer;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      box-shadow: var(--tgtg-shadow-minimal, 0 1px 3px rgba(0,0,0,0.04));
     }
     .pickup-card:active {
       transform: scale(0.98);
@@ -856,6 +860,53 @@
     }
     .customer-view .section-title{ font-size: var(--section-title-size); font-weight: var(--section-title-weight); color: var(--body-text-color); }
     .customer-view .hint{ color: var(--header-subtitle-color); }
+    /* ========== TGTG-Airbnb: Flaches List-Item (Bild + Text + 1px Divider) ========== */
+    .tgtg-list-item{
+      display: flex;
+      flex-direction: column;
+      background: #fff;
+      border-bottom: var(--tgtg-divider);
+      padding-bottom: var(--tgtg-spacing);
+      margin-bottom: var(--tgtg-spacing);
+      box-shadow: none;
+    }
+    .tgtg-list-item:last-child{ border-bottom: none; margin-bottom: 0; }
+    .tgtg-list-item-img-wrap{
+      position: relative;
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      min-height: 200px;
+      overflow: hidden;
+      border-radius: var(--tgtg-img-radius);
+      background: #f1f5f9;
+      margin-bottom: var(--tgtg-spacing);
+    }
+    .tgtg-list-item-img-wrap img{
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .tgtg-list-item-body{ padding: 0; }
+    .tgtg-list-item-title{
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--tgtg-title-color);
+      margin: 0 0 4px;
+      line-height: 1.3;
+      letter-spacing: -0.02em;
+    }
+    .tgtg-list-item-meta{ font-size: 14px; font-weight: 600; color: #64748b; margin: 0 0 8px; }
+    .tgtg-list-item-pillars{ display: flex; gap: 8px; margin-bottom: 12px; font-size: 12px; }
+    .tgtg-list-item-pill{ padding: 4px 8px; border-radius: 999px; background: transparent; color: #64748b; border: none; }
+    .tgtg-list-item-pill.active{ color: var(--tgtg-title-color); }
+    .tgtg-list-item-row{ display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+    .tgtg-list-item-price{ font-size: 16px; font-weight: 900; color: var(--brand); }
+    /* offerCard mit tgtg-flat: keine Schatten, Inset-Divider */
+    .card.tgtg-flat{ box-shadow: none !important; border: none !important; }
+    .card.tgtg-flat.polaroid,
+    .card.tgtg-flat.playful{ border-bottom: var(--tgtg-divider) !important; }
     /* Topbar in Kundekontext: gleicher warmer Ton wie Seite 1 */
     .topbar.customer-context{
       background:rgba(232,224,214,0.92);
@@ -1028,12 +1079,11 @@
     #v-provider-cookbook .cookbook-magazine-dots .cookbook-dot{ width:8px; height:8px; border-radius:50%; background:rgba(0,0,0,0.15); transition:background 0.2s; }
     #v-provider-cookbook .cookbook-magazine-dots .cookbook-dot.on{ background:#10b981; }
     #v-provider-cookbook .cookbook-swipe-hint{ font-size:12px; color:#94a3b8; text-align:center; margin-top:8px; padding:6px 12px; }
-    #v-provider-cookbook .cookbook-magazine-card:hover{ box-shadow:0 24px 48px rgba(0,0,0,0.15); }
-    #v-provider-cookbook .cookbook-magazine-card:active{ box-shadow:0 20px 40px rgba(0,0,0,0.12); }
+    #v-provider-cookbook .cookbook-magazine-card{ box-shadow: var(--tgtg-shadow-minimal, 0 1px 3px rgba(0,0,0,0.04)); border-bottom: var(--tgtg-divider, 1px solid rgba(0,0,0,0.06)); }
     #v-provider-cookbook #cookbookMagazine,
     #v-provider-cookbook #cookbookMagazine .cookbook-magazine-card{ pointer-events: auto; }
     #v-provider-cookbook .cookbook-magazine-card .cookbook-magazine-img-wrap{ position:relative; }
-    #v-provider-cookbook .cookbook-blitz-btn{ position:absolute; top:10px; right:10px; z-index:12; width:48px; height:48px; min-width:48px; min-height:48px; border-radius:50%; border:2px solid rgba(255,215,0,0.6); background:rgba(255,255,255,0.95); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); box-shadow:0 4px 16px rgba(0,0,0,0.12); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:24px; -webkit-tap-highlight-color:transparent; }
+    #v-provider-cookbook .cookbook-blitz-btn{ position:absolute; top:10px; right:10px; z-index:12; width:48px; height:48px; min-width:48px; min-height:48px; border-radius:50%; border:2px solid rgba(255,215,0,0.6); background:rgba(255,255,255,0.95); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); box-shadow: var(--tgtg-shadow-minimal, 0 1px 3px rgba(0,0,0,0.04)); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:24px; -webkit-tap-highlight-color:transparent; }
     #v-provider-cookbook .cookbook-blitz-btn:active{ transform:scale(0.95); }
     #v-provider-cookbook .cookbook-bar-secondary{ background:rgba(255,255,255,0.5); color:#475569; border:2px solid rgba(255,255,255,0.6); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); }
     #v-provider-cookbook .cookbook-bar-primary{ background:#FACC15; color:#1a1a1a; box-shadow:0 4px 16px rgba(250,204,21,0.4); }
@@ -1148,16 +1198,17 @@
     .status-pill.done{background:rgba(31,157,85,.12); color:#1f9d55}
     .code-full{font-size:42px; font-weight:950; text-align:center; margin:10px 0}
 
-    /* Pickup Card (Theken-Ansicht 2.0) */
+    /* Pickup Card (Theken-Ansicht 2.0) – TGTG Tabula Rasa */
     .pickup-card{
       background:#fff;
-      border-radius:16px;
-      box-shadow:0 4px 12px rgba(0,0,0,0.08);
+      border-radius: var(--tgtg-img-radius, 16px);
+      box-shadow: var(--tgtg-shadow-minimal, 0 1px 3px rgba(0,0,0,0.04));
       position:relative;
       overflow:hidden;
       transition:all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
       cursor:pointer;
-      border-left:6px solid #e5e7eb; /* Default */
+      border-left:6px solid #e5e7eb;
+      border-bottom: var(--tgtg-divider, 1px solid rgba(0,0,0,0.06));
       display:flex;
       flex-direction:column;
       min-height:160px;
@@ -1191,7 +1242,6 @@
     .pickup-card-badge{
       position:absolute; top:12px; right:12px;
       background:#2ecc71; color:#fff; font-size:11px; font-weight:800; padding:4px 8px; border-radius:6px;
-      box-shadow:0 2px 6px rgba(46,204,113,0.3);
     }
     
     /* Animation für Erledigt */
@@ -2396,9 +2446,9 @@
     .liquid-master-panel .inserat-action-section {
       flex-shrink: 0; padding: 20px;
       padding-bottom: calc(15px + env(safe-area-inset-bottom, 0px));
-      background: rgba(255, 255, 255, 0.5);
-      border-top: 1px solid rgba(255, 255, 255, 0.2);
-      box-shadow: 0 -8px 32px rgba(0,0,0,0.06);
+      background: #fff;
+      border-top: var(--tgtg-divider, 1px solid rgba(0,0,0,0.06));
+      box-shadow: none;
     }
     
     /* Magnet-Pulse Animation */
@@ -2422,9 +2472,9 @@
     /* InseratCard klickbar: explizit pointer-events, damit keine Überlagerung Klicks schluckt */
     #wizard[data-flow="listing"] #wContent > .liquid-master-panel,
     #wizard[data-flow="listing"] .liquid-master-panel.inserat-card { pointer-events: auto; }
-    /* Gourmet-Refactor: Karte als Design-Objekt – 28px Radius, sehr weicher Schatten [cite: 2026-02-18] */
+    /* TGTG-Airbnb Tabula Rasa: flach, keine Schlagschatten, Inset-Dividers [cite: Plan Tabula Rasa] */
     #wizard[data-flow="listing"] .liquid-master-panel.inserat-card {
-      border-radius: 28px; box-shadow: 0 16px 48px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.02);
+      border-radius: 20px; box-shadow: var(--tgtg-shadow-minimal, 0 1px 3px rgba(0,0,0,0.04));
     }
     #wizard[data-flow="listing"] .liquid-master-panel .photo-header,
     #wizard[data-flow="listing"] .liquid-master-panel .inserat-power-bar,
@@ -2436,14 +2486,13 @@
     .liquid-master-panel .inserat-photo-tile.photo-header {
       width: 100%; aspect-ratio: 3/2; max-height: min(260px, 38vh); flex-shrink: 0;
       height: auto; min-height: 0;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
       transition: max-height 0.25s ease;
     }
-    /* Listing: Smart-Photo 190px, Innen-Schatten, object-fit [cite: plan InseratCard] */
+    /* Listing: Smart-Photo 190px, TGTG flach – Inset-Divider unter Bild [cite: Plan Tabula Rasa] */
     #wizard[data-flow="listing"] .liquid-master-panel .photo-header,
     #wizard[data-flow="listing"] .liquid-master-panel .inserat-photo-tile.photo-header {
       height: 190px; min-height: 190px; max-height: 190px; aspect-ratio: auto;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.08), inset 0 -40px 40px -20px rgba(0,0,0,0.3);
+      box-shadow: none; border-bottom: var(--tgtg-divider, 1px solid rgba(0,0,0,0.06));
     }
     .liquid-master-panel .photo-header img,
     .liquid-master-panel .inserat-photo-tile.photo-header img {
@@ -2490,7 +2539,7 @@
       backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
     }
     #wizard[data-flow="listing"] .photo-header .selection-overlay .extra-pill.active,
-    #wizard[data-flow="listing"] .photo-header .selection-overlay .inserat-allergen-pill.active { background: #10b981; color: #fff; border-color: rgba(16,185,129,0.4); box-shadow: 0 2px 10px rgba(16,185,129,0.3); }
+    #wizard[data-flow="listing"] .photo-header .selection-overlay .inserat-allergen-pill.active { background: #10b981; color: #fff; border-color: rgba(16,185,129,0.4); }
     #wizard[data-flow="listing"] .photo-header .selection-overlay-inner.selection-overlay-inner--time { display: flex; align-items: center; justify-content: center; }
     /* ========== Inserat Bottom-Sheet (Allergen-Auswahl): fixiert unten, S25 Native [cite: 2026-02-18] ========== */
     .inserat-bottom-sheet-backdrop {
@@ -2506,7 +2555,7 @@
       border-radius: 32px 32px 0 0;
       padding: 20px 20px calc(30px + env(safe-area-inset-bottom, 0));
       background: #fff;
-      box-shadow: 0 -8px 32px rgba(0,0,0,0.15);
+      box-shadow: var(--tgtg-shadow-minimal, 0 -1px 3px rgba(0,0,0,0.06));
       max-height: 70vh; overflow-y: auto;
       -webkit-overflow-scrolling: touch;
       transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
@@ -2530,11 +2579,11 @@
       font-size: 10px; font-weight: 800; color: #0f172a; letter-spacing: 0.02em;
       margin-left: 4px; max-width: 48px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
     }
-    /* InseratCard-Wrapper: 5 Ebenen in Sheet-Optik (S25), kein position:fixed [cite: BAUARBEITER] */
+    /* InseratCard-Wrapper: TGTG flach, Inset-Divider statt Schatten [cite: Plan Tabula Rasa] */
     #wizard[data-flow="listing"] .inserat-card-sheet {
       width: 100%; max-width: 100%; box-sizing: border-box;
       border-radius: 24px 24px 0 0; background: #fff;
-      box-shadow: 0 -8px 32px rgba(0,0,0,0.12);
+      box-shadow: none; border-top: var(--tgtg-divider, 1px solid rgba(0,0,0,0.06));
     }
     #wizard[data-flow="listing"] .inserat-card-sheet .photo-header,
     #wizard[data-flow="listing"] .inserat-card-sheet .inserat-photo-tile.photo-header {
@@ -2558,8 +2607,8 @@
       font-size: 14px; font-weight: 700;
       cursor: pointer; display: inline-flex; align-items: center; gap: 8px;
       -webkit-tap-highlight-color: transparent;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.25);
-      transition: transform 0.12s ease, box-shadow 0.2s ease;
+      box-shadow: var(--tgtg-shadow-minimal, 0 1px 3px rgba(0,0,0,0.04));
+      transition: transform 0.12s ease;
     }
     #wizard[data-flow="listing"] .liquid-master-panel .photo-header .inserat-photo-change:hover,
     #wizard[data-flow="listing"] .liquid-master-panel .photo-header .inserat-photo-change:active { color: #fff; }
@@ -2586,7 +2635,7 @@
     #wizard[data-flow="listing"] .liquid-master-panel .inserat-photo-tile.photo-header.pulse-soft {
       animation: pulse-soft 2s ease-in-out infinite;
     }
-    @keyframes pulse-soft { 0%, 100% { box-shadow: 0 8px 24px rgba(0,0,0,0.08), inset 0 0 0 2px rgba(16,185,129,0.2); } 50% { box-shadow: 0 8px 24px rgba(0,0,0,0.08), inset 0 0 0 3px rgba(16,185,129,0.45); } }
+    @keyframes pulse-soft { 0%, 100% { border-bottom: 2px solid rgba(16,185,129,0.2); } 50% { border-bottom: 2px solid rgba(16,185,129,0.45); } }
     /* Neues Bild: Fade-in [cite: plan Smart-Photo] */
     #wizard[data-flow="listing"] .liquid-master-panel .photo-header img.inserat-photo-fade-in,
     #wizard[data-flow="listing"] .liquid-master-panel .inserat-photo-tile.photo-header img.inserat-photo-fade-in {
@@ -2662,10 +2711,10 @@
     }
     #wizard[data-flow="listing"] .inserat-status-bar.inserat-unified-pills .status-pill:active { transform: scale(0.98); }
     /* Goldene Sammelkarte: Power-Bar – aktive Icons weiß + Emerald-Border/Shadow, 44x44 [cite: 2026-01-27, 2026-02-16] */
-    #wizard[data-flow="listing"] .inserat-power-bar.inserat-unified-pills .status-pill.active { background: #fff; color: #059669; border: 2px solid #10b981; box-shadow: 0 2px 12px rgba(16,185,129,0.35), 0 0 12px rgba(16,185,129,0.4); }
+    #wizard[data-flow="listing"] .inserat-power-bar.inserat-unified-pills .status-pill.active { background: #fff; color: #059669; border: 2px solid #10b981; }
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-unified-pills .status-pill.inactive { background: rgba(248,250,252,0.8); color: #64748b; border: 2px solid transparent; }
     #wizard[data-flow="listing"] .inserat-power-bar .func-icon-btn { width: 44px; height: 44px; min-width: 44px; min-height: 44px; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; font-size: 20px; border: 2px solid rgba(0,0,0,0.08); background: rgba(248,250,252,0.8); transition: background 0.2s, color 0.2s, transform 0.1s cubic-bezier(0.4,0,0.2,1); cursor: pointer; -webkit-tap-highlight-color: transparent; }
-    #wizard[data-flow="listing"] .inserat-power-bar .func-icon-btn.active { background: #fff; color: #059669; border-color: #10b981; box-shadow: 0 2px 12px rgba(16,185,129,0.35), 0 0 12px rgba(16,185,129,0.4); }
+    #wizard[data-flow="listing"] .inserat-power-bar .func-icon-btn.active { background: #fff; color: #059669; border-color: #10b981; }
     #wizard[data-flow="listing"] .inserat-power-bar .func-icon-btn:active { transform: scale(0.9); }
     /* Layout-Lock: Power-Bar feste Flex-Row unter dem Bild – Icons verschieben sich nie [Stabilität] */
     .inserat-power-bar {
@@ -2687,9 +2736,6 @@
       transition: transform 0.1s cubic-bezier(0.4,0,0.2,1), box-shadow 0.2s ease;
     }
     #wizard[data-flow="listing"] .liquid-master-panel .inserat-power-bar .status-pill span { font-size: 14px !important; }
-    #wizard[data-flow="listing"] .liquid-master-panel .inserat-power-bar .status-pill.active {
-      box-shadow: 0 2px 14px rgba(16,185,129,0.45), 0 0 12px rgba(16,185,129,0.4);
-    }
     #wizard[data-flow="listing"] .liquid-master-panel .inserat-power-bar .func-icon-btn {
       width: 35px; height: 35px; min-width: 35px; min-height: 35px; font-size: 16px;
     }
@@ -2708,10 +2754,15 @@
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .status-pill,
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .func-icon-btn,
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .power-bar-legend-trigger {
+      min-width: 44px; min-height: 44px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; -webkit-tap-highlight-color: transparent;
       background: transparent; border: none;
       box-shadow: none; color: #94a3b8;
     }
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .power-bar-legend-trigger { color: #94a3b8; }
+    #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .inserat-pill-emo { font-size: 14px; }
+    #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .power-bar-legend-round { width: 44px; height: 44px; border-radius: 50%; font-size: 14px; }
     /* Inaktiv: ultra-helles Grau oder transparent */
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .status-pill.inactive,
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .func-icon-btn:not(.active),
@@ -2722,7 +2773,6 @@
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .status-pill.active,
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .func-icon-btn.active {
       background: rgba(16,185,129,0.15) !important; color: #059669 !important; border: none !important;
-      box-shadow: 0 0 12px rgba(16,185,129,0.4);
     }
     /* Info-Legende Bottom-Sheet: Aktiviert-Zustand */
     .info-legend-item.active { background: rgba(16,185,129,0.1) !important; border: 2px solid rgba(16,185,129,0.4); box-shadow: 0 2px 12px rgba(16,185,129,0.25), 0 0 0 1px rgba(16,185,129,0.15); }
@@ -3061,23 +3111,22 @@
       transform: scale(0.96);
     }
     
+    /* TGTG-Airbnb Tabula Rasa: flach, Inset-Divider [cite: Plan Phase 3] */
     .prov-card {
-      background: var(--glass-bg);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-radius: var(--card-radius-premium, 24px);
-      padding: var(--card-padding, 20px);
-      border: 1px solid var(--glass-border);
-      box-shadow: var(--card-shadow-soft), var(--glass-inner-glow);
+      background: #fff;
+      border-radius: var(--tgtg-img-radius, 18px);
+      padding: var(--tgtg-spacing, 20px);
+      border: none;
+      border-bottom: var(--tgtg-divider, 1px solid rgba(0,0,0,0.06));
+      box-shadow: var(--tgtg-shadow-minimal, 0 1px 3px rgba(0,0,0,0.04));
       margin-bottom: 20px;
-      transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+      transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
       max-width: 100%;
       min-width: 0;
       box-sizing: border-box;
     }
     .prov-card:active {
       transform: scale(0.98);
-      box-shadow: 0 2px 12px rgba(0,0,0,0.04), var(--glass-inner-glow);
     }
     
     .prov-stats-grid {
@@ -4080,117 +4129,69 @@
     /* Radius & Tage: 13px, dezentes Grau – nur aktiver (gelber) Tag sticht hervor [cite: 2026-02-18] */
     #v-discover #discoverDaysBar .cust-chip{ min-height:28px; min-width:52px; width:52px; padding:4px 4px; font-size:13px; font-weight:600; border-radius:999px; flex:0 0 52px; box-sizing:border-box; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; border:1px solid rgba(0,0,0,0.05); background:#f8fafc; color:#cbd5e1; transition:background 0.2s, color 0.2s, border-color 0.2s; }
     #v-discover #discoverDaysBar .cust-chip.active{ background:#FFD700; color:#1a1a1a; border-color:rgba(255,215,0,0.6); box-shadow:0 1px 4px rgba(255,215,0,0.25); }
-    /* Airbnb-Style: Full-Width vertikale Liste, viel Weißraum, bildgewaltig [cite: 2026-02-20] */
+    /* TGTG-Airbnb: Full-Width Liste, Inset-Dividers, viel Weißraum [cite: 2026-02-20] */
     #v-discover .discover-offers-list{
       display: flex;
       flex-direction: column;
       align-items: stretch;
-      gap: calc(var(--airbnb-spacing, 24px) * 2);
-      padding: var(--airbnb-spacing, 24px) 0;
+      gap: 0;
+      padding: var(--tgtg-spacing) 0;
       width: 100%;
       max-width: 100%;
       margin: 0;
       box-sizing: border-box;
     }
-    /* Airbnb-Card: Full-Width, 28px Radius, hauchzarter Schatten [cite: 2026-02-20] */
-    #v-discover .dish-card{
-      width: 100%;
-      max-width: 100%;
-      background: #fff !important;
-      box-shadow: var(--airbnb-shadow) !important;
-      border: none !important;
-      border-radius: var(--airbnb-radius) !important;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      align-items: stretch;
-      text-align: left;
-      margin-bottom: 0;
-      padding: 0;
-    }
-    #v-discover .dish-card:active{ transform: scale(0.98); }
-    /* Airbnb: Bild edge-to-edge, volle Breite, 4:3 Aspect [cite: 2026-02-20] */
-    #v-discover .dish-card-image-wrapper{
-      position: relative;
-      width: 100%;
-      aspect-ratio: 4 / 3;
-      min-height: 200px;
-      margin-bottom: 0;
-      flex-shrink: 0;
-      overflow: hidden;
-    }
-    #v-discover .dish-card-image-wrapper img{
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: 0;
-      box-shadow: none;
-    }
-    /* 4. Preis-Badge: Fest auf dem Bild */
-    #v-discover .price-badge-on-image {
-      position: absolute !important;
-      bottom: 12px !important;
-      right: -10px !important;
-      background: #FFD700 !important;
-      color: #121826 !important;
-      padding: 8px 18px !important;
-      border-radius: 20px !important;
-      font-weight: 800 !important;
-      font-size: 16px !important;
-      box-shadow: 0 6px 15px rgba(0,0,0,0.2) !important;
-      z-index: 10 !important;
-    }
-    /* Floating Actions (Herz & Teilen oben rechts) */
-    #v-discover .card-actions-top {
-      position: absolute !important;
-      top: 12px !important;
-      right: 12px !important;
-      display: flex !important;
-      gap: 8px !important;
-      z-index: 10 !important;
-    }
-    #v-discover .action-btn-floating {
-      width: 36px; height: 36px; min-width: 36px; min-height: 36px;
-      background: white; border-radius: 50%; border: none;
-      display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      cursor: pointer; -webkit-tap-highlight-color: transparent;
-    }
-    #v-discover .action-btn-floating:active { transform: scale(0.92); }
-    #v-discover .action-btn-fav.heart-just-clicked i { animation: heart-blink 0.45s ease; }
-    @keyframes heart-blink { 0% { transform: scale(1); } 35% { transform: scale(1.35); } 60% { transform: scale(1.15); } 100% { transform: scale(1); } }
-    /* Pillar-Pills & Distanz-Chips */
-    #v-discover .dish-card .pillar-pill {
-      font-size: 11px; font-weight: 700; color: #64748b;
-      padding: 4px 8px; border-radius: 999px; background: #f1f5f9; border: 1px solid rgba(0,0,0,0.06);
-    }
-    @keyframes heart-blink {
-      0%   { transform: scale(1); opacity: 1; }
-      35%  { transform: scale(1.35); opacity: 1; }
-      60%  { transform: scale(1.15); opacity: 1; }
-      100% { transform: scale(1); opacity: 1; }
-    }
-    /* Pillar-Pills unter dem Bild (3 Säulen) */
-    #v-discover .dish-card .pillar-pill{
-      font-size: 11px;
-      font-weight: 700;
-      color: #64748b;
-      padding: 4px 8px;
+    /* TGTG-List-Item in Discover: flach, keine Schatten */
+    #v-discover .tgtg-list-item:active{ transform: scale(0.99); }
+    /* Preis-Badge auf Bild (dezent, kein Schlagschatten) */
+    #v-discover .tgtg-list-item .tgtg-price-badge{
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      background: var(--brand);
+      color: #121826;
+      padding: 6px 14px;
       border-radius: 999px;
-      background: #f1f5f9;
-      border: 1px solid rgba(0,0,0,0.06);
+      font-weight: 800;
+      font-size: 15px;
+      box-shadow: var(--tgtg-shadow-minimal);
+      z-index: 10;
     }
-    /* Distanz-Chips (Laufzeit / Fahrtzeit) */
-    #v-discover .dish-card .distance-chip{
-      font-size: 13px;
-      font-weight: 600;
-      color: #64748b;
+    /* Floating Actions (Herz & Teilen) – flach */
+    #v-discover .tgtg-list-item .tgtg-actions-top{
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      display: flex;
+      gap: 8px;
+      z-index: 10;
     }
-    /* Content: Airbnb-Weißraum, viel Atem [cite: 2026-02-20] */
+    #v-discover .tgtg-list-item .tgtg-btn-floating{
+      width: 40px; height: 40px;
+      background: rgba(255,255,255,0.95);
+      border-radius: 50%;
+      border: none;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: var(--tgtg-shadow-minimal);
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    #v-discover .tgtg-list-item .tgtg-btn-floating:active{ transform: scale(0.92); }
+    @keyframes heart-blink { 0% { transform: scale(1); } 35% { transform: scale(1.35); } 60% { transform: scale(1.15); } 100% { transform: scale(1); } }
+    /* Legacy dish-card: Fallback für Übergang (kann entfernt werden wenn tgtg überall) */
+    #v-discover .dish-card{
+      width: 100%; max-width: 100%; background: #fff !important;
+      box-shadow: none !important; border: none !important;
+      border-bottom: var(--tgtg-divider); padding-bottom: var(--tgtg-spacing);
+      border-radius: 0; overflow: visible;
+    }
+    #v-discover .dish-card-image-wrapper{ border-radius: var(--tgtg-img-radius); overflow: hidden; }
+    #v-discover .dish-card .pillar-pill, #v-discover .dish-card .distance-chip{ font-size: 13px; font-weight: 600; color: #64748b; }
+    /* Content: TGTG-Weißraum */
     body:not(.provider-mode) #v-discover .discover-main{
       padding-top: calc(136px + env(safe-area-inset-top, 0px));
-      padding-left: var(--airbnb-spacing, 24px);
-      padding-right: var(--airbnb-spacing, 24px);
+      padding-left: var(--tgtg-spacing);
+      padding-right: var(--tgtg-spacing);
       padding-bottom: calc(88px + env(safe-area-inset-bottom, 0));
       min-height: 0;
     }
@@ -4244,12 +4245,11 @@
     #v-discover .empty-state-container .btn-cust-primary{
       min-width: 200px;
     }
-    #v-discover .cust-card{ width:100%; margin:0 auto; -webkit-tap-highlight-color:transparent; transition:transform 0.15s, box-shadow 0.2s; box-sizing:border-box; border-radius: var(--airbnb-radius) !important; box-shadow: var(--airbnb-shadow) !important; border: none !important; }
-    /* Edge-to-edge Bild, Content mit Airbnb-Padding */
-    #v-discover .dish-card{ margin-bottom: 0; padding: 0 !important; box-sizing: border-box; }
+    #v-discover .cust-card{ width:100%; box-shadow: none !important; border: none !important; border-bottom: var(--tgtg-divider) !important; }
+    #v-discover .dish-card{ margin-bottom: 0; padding: 0 var(--tgtg-spacing) var(--tgtg-spacing) !important; }
     #v-discover .dish-card .dish-card-image-wrapper{ width: 100%; }
-    #v-discover .dish-card > *:not(.dish-card-image-wrapper){ padding-left: var(--airbnb-spacing); padding-right: var(--airbnb-spacing); }
-    #v-discover .dish-card > *:not(.dish-card-image-wrapper):first-of-type{ padding-top: var(--airbnb-spacing); }
+    #v-discover .dish-card > *:not(.dish-card-image-wrapper){ padding-left: 0; padding-right: 0; }
+    #v-discover .dish-card > *:not(.dish-card-image-wrapper):first-of-type{ padding-top: var(--tgtg-spacing); }
     #v-discover .dish-card .dish-card-cta{ margin-left: auto; margin-right: auto; }
     #v-discover .cust-card:active{ transform:scale(0.99); box-shadow:0 2px 12px rgba(0,0,0,0.06); }
     #v-discover .discover-tiles-grid .cust-card .cust-card-body{ display:flex; flex-direction:column; }
@@ -4257,8 +4257,8 @@
     /* Discovery: Restaurant-Karte (Anbieter-Block) + Tiles darunter */
     #v-discover .discover-restaurant-card{
       display:flex; align-items:center; justify-content:space-between; gap:12px;
-      padding:14px 16px; margin:0 0 12px 0; border-radius:var(--airbnb-radius);
-      background:#fff; border:none; box-shadow:var(--airbnb-shadow);
+      padding:14px 16px; margin:0 0 12px 0; border-radius:var(--tgtg-img-radius);
+      background:#fff; border:none; box-shadow:none; border-bottom:var(--tgtg-divider);
       cursor:pointer; -webkit-tap-highlight-color:transparent; transition:transform 0.15s, box-shadow 0.2s;
     }
     #v-discover .discover-restaurant-card:active{ transform:scale(0.99); }
@@ -4267,7 +4267,7 @@
     #v-discover .discover-tiles-grid{
       display:grid; grid-template-columns:1fr; gap:12px; margin-bottom:20px; padding:0 0 8px;
     }
-    #v-discover .discover-tiles-grid .cust-card{ width:100%; margin:0; border-radius:var(--airbnb-radius); overflow:hidden; box-shadow:var(--airbnb-shadow); border:none; }
+    #v-discover .discover-tiles-grid .cust-card{ width:100%; margin:0; border-radius:var(--tgtg-img-radius); overflow:hidden; box-shadow:none; border-bottom:var(--tgtg-divider); }
     #v-discover .discover-tiles-grid .cust-card .cust-card-img{ display:block; width:100%; height:auto; max-height:240px; object-fit:cover; opacity:0; transition:opacity 0.35s ease; }
     #v-discover .discover-tiles-grid .cust-card .cust-card-img.img-loaded{ opacity:1; }
     /* Silent & Clean: 4:3 Bild, Pillars unter Bild, kompakte Karte, 1.5 Kacheln sichtbar (S25) */
@@ -4421,8 +4421,8 @@
     .card.polaroid{
       transform:rotate(0deg);
       transition:transform 0.3s ease, box-shadow 0.3s ease;
-      border-radius:var(--airbnb-radius) !important;
-      box-shadow:var(--airbnb-shadow) !important;
+      border-radius:var(--tgtg-img-radius) !important;
+      box-shadow:none !important;
       border:none !important;
     }
     /* Airbnb: Keine Rotation mehr – saubere Karten [cite: 2026-02-20] */
@@ -4433,7 +4433,7 @@
     }
     .card.polaroid:hover{
       transform:scale(1.02);
-      box-shadow:var(--airbnb-shadow-hover, 0 8px 30px rgba(0,0,0,0.08));
+      box-shadow:var(--tgtg-shadow-minimal);
       z-index:10;
     }
     /* Kompakte Horizontale Gericht-Karte (Slim-Card) - High Performance */
@@ -4494,9 +4494,10 @@
     .fav-grid-card {
       position: relative;
       background: #fff !important;
-      border-radius: var(--airbnb-radius);
-      box-shadow: var(--airbnb-shadow);
+      border-radius: var(--tgtg-img-radius);
+      box-shadow: none;
       overflow: hidden;
+      border-bottom: none;
       border: none;
     }
     
@@ -4875,7 +4876,7 @@
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       font-size: 18px;
       font-weight: 800;
-      color: var(--airbnb-title-color, #0f172a) !important;
+      color: var(--tgtg-title-color) !important;
       line-height: 1.2;
       margin: 0;
       letter-spacing: -0.02em;
@@ -5386,18 +5387,19 @@
       #v-provider-week .week-status-online{ display:flex; align-items:center; gap:8px; font-weight:800; font-size:14px; color:#1a1a1a; }
       #v-provider-week .week-status-draft{ display:flex; align-items:center; gap:8px; font-weight:800; font-size:14px; color:#64748b; }
       #v-provider-week .week-status-dot{ width:10px; height:10px; border-radius:50%; }
+    /* TGTG-Airbnb Tabula Rasa: flach [cite: Plan Phase 3] */
 #v-provider-week .week-meal-card-wrap{
-      transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease, background 0.2s ease;
-      border-radius: var(--card-radius-premium, 24px);
+      transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s ease;
+      border-radius: var(--tgtg-img-radius, 18px);
       margin-bottom: 14px;
-      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-      box-shadow: var(--card-shadow-soft), var(--glass-inner-glow);
-      border: 1px solid var(--glass-border);
+      box-shadow: none;
+      border: none;
+      border-bottom: var(--tgtg-divider, 1px solid rgba(0,0,0,0.06));
     }
     /* Online = grüner Hintergrund, Offline = roter Hintergrund */
-    #v-provider-week .week-meal-card-wrap.week-card-live{ background: rgba(34,197,94,0.14); border-color: rgba(34,197,94,0.25); }
-    #v-provider-week .week-meal-card-wrap.week-card-offline{ background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.2); }
-    #v-provider-week .week-meal-card-wrap:active{ transform: scale(0.98); box-shadow: 0 2px 12px rgba(0,0,0,0.04), var(--glass-inner-glow); }
+    #v-provider-week .week-meal-card-wrap.week-card-live{ background: rgba(34,197,94,0.14); border-bottom-color: rgba(34,197,94,0.25); }
+    #v-provider-week .week-meal-card-wrap.week-card-offline{ background: rgba(239,68,68,0.1); border-bottom-color: rgba(239,68,68,0.2); }
+    #v-provider-week .week-meal-card-wrap:active{ transform: scale(0.98); }
     /* Success-Shimmer: Tag geplant/online – dezent goldener Streifen */
     #v-provider-week .week-meal-card-wrap.week-card-live::after{
       content:''; position:absolute; inset:0; border-radius:inherit; pointer-events:none;
@@ -5425,9 +5427,9 @@
     #v-provider-week .week-power-bar .week-power-icon.week-power-time-missing{ animation: weekTimePulse 1.5s ease-in-out infinite; opacity:0.9; color:#94a3b8; filter: drop-shadow(0 0 4px rgba(250,204,21,0.35)); }
     #v-provider-week .week-power-bar .week-power-icon.week-power-time-ok{ color:#059669; filter: drop-shadow(0 0 6px rgba(16,185,129,0.5)); }
     @keyframes weekTimePulse{ 0%,100%{ opacity:0.75; transform:scale(1); } 50%{ opacity:1; transform:scale(1.08); } }
-    #v-provider-week .week-meal-card-wrap.week-card-live .week-power-bar{ box-shadow: 0 0 0 1px rgba(16,185,129,0.2), 0 2px 12px rgba(16,185,129,0.15); border-radius:12px; padding:4px 8px; margin-top:8px; }
-    #v-provider-week .week-meal-card-wrap.week-card-live{ box-shadow: var(--card-shadow-soft), 0 0 0 1px rgba(16,185,129,0.12), 0 0 24px -4px rgba(16,185,129,0.2); animation: weekCardLiveGlow 2.5s ease-in-out infinite; }
-    @keyframes weekCardLiveGlow{ 0%,100%{ box-shadow: var(--card-shadow-soft), 0 0 0 1px rgba(16,185,129,0.12), 0 0 24px -4px rgba(16,185,129,0.2); } 50%{ box-shadow: var(--card-shadow-soft), 0 0 0 1px rgba(16,185,129,0.2), 0 0 28px -2px rgba(16,185,129,0.28); } }
+    #v-provider-week .week-meal-card-wrap.week-card-live .week-power-bar{ border-radius:12px; padding:4px 8px; margin-top:8px; }
+    #v-provider-week .week-meal-card-wrap.week-card-live{ animation: weekCardLiveGlow 2.5s ease-in-out infinite; }
+    @keyframes weekCardLiveGlow{ 0%,100%{ border-bottom-color: rgba(16,185,129,0.25); } 50%{ border-bottom-color: rgba(16,185,129,0.4); } }
       #v-provider-week .week-meal-meta{ font-size:13px; color:#64748b; margin-top:4px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
       #v-provider-week .week-meal-online{ display:inline-flex; align-items:center; gap:4px; font-size:12px; font-weight:700; color:#1a1a1a; }
       #v-provider-week .week-meal-actions{ display:flex; align-items:center; gap:6px; }
@@ -6109,16 +6111,17 @@
       max-width:980px; margin:0 auto;
     }
     
-    /* Pickup Card (Theken-Ansicht 2.0) */
+    /* Pickup Card (Theken-Ansicht 2.0) – TGTG Tabula Rasa */
     .pickup-card{
       background:#fff;
-      border-radius:16px;
-      box-shadow:0 4px 12px rgba(0,0,0,0.08);
+      border-radius: var(--tgtg-img-radius, 16px);
+      box-shadow: var(--tgtg-shadow-minimal, 0 1px 3px rgba(0,0,0,0.04));
       position:relative;
       overflow:hidden;
       transition:all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
       cursor:pointer;
-      border-left:6px solid #e5e7eb; /* Default */
+      border-left:6px solid #e5e7eb;
+      border-bottom: var(--tgtg-divider, 1px solid rgba(0,0,0,0.06));
       display:flex;
       flex-direction:column;
       min-height:160px;
@@ -6152,7 +6155,6 @@
     .pickup-card-badge{
       position:absolute; top:12px; right:12px;
       background:#2ecc71; color:#fff; font-size:11px; font-weight:800; padding:4px 8px; border-radius:6px;
-      box-shadow:0 2px 6px rgba(46,204,113,0.3);
     }
     
     /* Animation für Erledigt */
@@ -6528,14 +6530,15 @@
     /* Airbnb-Style Cards: 28px Radius, hauchzarter Schatten [cite: 2026-02-20] */
     .cust-card {
       background: #fff;
-      border-radius: var(--airbnb-radius);
+      border-radius: var(--tgtg-img-radius);
       overflow: hidden;
       border: none;
-      box-shadow: var(--airbnb-shadow);
-      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s;
+      box-shadow: none;
+      border-bottom: var(--tgtg-divider);
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
       display: flex;
       flex-direction: column;
-      margin-bottom: var(--airbnb-spacing);
+      margin-bottom: var(--tgtg-spacing);
     }
     .cust-card:active {
       transform: scale(0.97);
@@ -6559,7 +6562,7 @@
     .cust-card-title {
       font-size: 18px;
       font-weight: 850;
-      color: var(--airbnb-title-color, #0f172a);
+      color: var(--tgtg-title-color);
       letter-spacing: -0.02em;
       margin: 0;
       display: -webkit-box;
@@ -6602,18 +6605,18 @@
     .fav-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: var(--airbnb-spacing);
-      padding: 0 var(--airbnb-spacing);
+      gap: var(--tgtg-spacing);
+      padding: 0 var(--tgtg-spacing);
     }
 
     .fav-card {
       background: #fff;
-      border-radius: var(--airbnb-radius);
+      border-radius: var(--tgtg-img-radius);
       overflow: hidden;
+      box-shadow: none;
       display: flex;
       flex-direction: column;
       border: none;
-      box-shadow: var(--airbnb-shadow);
       height: 100%;
     }
 

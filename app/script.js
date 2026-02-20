@@ -4286,11 +4286,11 @@
     return card;
   }
   
-  // List Card für Discover: Rein vertikaler Aufbau, Mittelachse [cite: 2026-02-18 Tabula Rasa]
+  // TGTG-Airbnb: Flaches List-Item (Bild + Text + 1px Divider) [cite: 2026-02-20]
   function createDiscoverListCard(o){
     const data = normalizeOffer(o);
     const card = document.createElement('div');
-    card.className = 'dish-card';
+    card.className = 'tgtg-list-item';
     
     const imgSrc = data.imageUrl || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70';
     const offerProvider = offers.find(p => p.providerId === data.providerId);
@@ -4308,32 +4308,39 @@
     const dishName = esc(data.dish || 'Gericht');
     
     card.innerHTML = `
-      <div class="dish-card-image-wrapper">
+      <div class="tgtg-list-item-img-wrap">
         <img src="${esc(imgSrc)}" alt="${dishName}" loading="lazy" />
-        <div class="card-actions-top">
-          <button type="button" class="action-btn-floating action-btn-fav" aria-label="Favorit" title="Favorit"><i data-lucide="heart" style="width:16px;height:16px;${isFavorited ? 'fill:#e74c3c;color:#e74c3c;' : 'color:#666;'}"></i></button>
-          <button type="button" class="action-btn-floating" aria-label="Teilen" title="Teilen"><i data-lucide="share-2" style="width:16px;height:16px;color:#1a1a1a;"></i></button>
+        <div class="tgtg-actions-top">
+          <button type="button" class="tgtg-btn-floating action-btn-fav" aria-label="Favorit" title="Favorit"><i data-lucide="heart" style="width:16px;height:16px;${isFavorited ? 'fill:#e74c3c;color:#e74c3c;' : 'color:#666;'}"></i></button>
+          <button type="button" class="tgtg-btn-floating" aria-label="Teilen" title="Teilen"><i data-lucide="share-2" style="width:16px;height:16px;color:#1a1a1a;"></i></button>
         </div>
-        <div class="price-badge-on-image">${euro(data.price)}</div>
+        <div class="tgtg-price-badge">${euro(data.price)}</div>
       </div>
-      <div style="display:flex; gap:8px; margin-bottom:16px; justify-content:center; flex-wrap:wrap;">
-        <span class="pillar-pill" style="${vorOrt ? '' : 'opacity:0.5; filter:grayscale(1);'}">🍴 VOR ORT</span>
-        <span class="pillar-pill" style="${mehrweg ? '' : 'opacity:0.5; filter:grayscale(1);'}">🔄 MEHRWEG</span>
-        <span class="pillar-pill" style="${abholnummer ? '' : 'opacity:0.5; filter:grayscale(1);'}">🧾 ABHOLNUMMER</span>
+      <div class="tgtg-list-item-body">
+        <div class="tgtg-list-item-pillars">
+          <span class="tgtg-list-item-pill ${vorOrt ? 'active' : ''}">🍴 Vor Ort</span>
+          <span class="tgtg-list-item-pill ${mehrweg ? 'active' : ''}">🔄 Mehrweg</span>
+          <span class="tgtg-list-item-pill ${abholnummer ? 'active' : ''}">🧾 Abholnummer</span>
+        </div>
+        <h3 class="tgtg-list-item-title">${dishName}</h3>
+        <p class="tgtg-list-item-meta">${providerName} &gt;</p>
+        <div class="tgtg-list-item-row" style="margin-top:8px;">
+          <div style="display:flex; gap:8px;">
+            ${walkingMin ? `<span style="font-size:13px; color:#64748b;">🏃 ${walkingMin} Min.</span>` : ''}
+            ${carMin ? `<span style="font-size:13px; color:#64748b;">🚗 ${carMin} Min.</span>` : ''}
+          </div>
+        </div>
+        <div class="tgtg-list-item-row" style="margin-top:12px;">
+          <span class="tgtg-list-item-price">${euro(data.price)}</span>
+          <button type="button" class="btn-cust-primary dish-card-cta" style="padding:12px 20px; border-radius:999px; font-weight:800; background:var(--brand); border:none; color:#121826;">In meine Box 🍱</button>
+        </div>
       </div>
-      <h3 class="dish-name" style="font-family:'Source Serif 4', serif; font-size:20px; font-weight:600; margin:0 0 6px 0;">${dishName}</h3>
-      <p class="dish-card-provider" style="color:#64748b; font-family:sans-serif; font-size:14px; margin-bottom:16px;">${providerName} &gt;</p>
-      <div style="display:flex; gap:12px; margin-bottom:20px; justify-content:center; flex-wrap:wrap;">
-        ${walkingMin ? `<span style="background:#f1f5f9; padding:4px 10px; border-radius:8px; font-size:13px;">🏃 ${walkingMin} Min.</span>` : ''}
-        ${carMin ? `<span style="background:#f1f5f9; padding:4px 10px; border-radius:8px; font-size:13px;">🚗 ${carMin} Min.</span>` : ''}
-      </div>
-      <button type="button" class="btn-cust-primary dish-card-cta" style="width:280px; padding:16px; border-radius:20px; font-weight:bold; background:#FFD700; border:none; color:#121826;">In meine Box legen 🍱</button>
     `;
     
-    const imgEl = card.querySelector('.dish-card-image-wrapper img');
+    const imgEl = card.querySelector('.tgtg-list-item-img-wrap img');
     if(imgEl){ imgEl.onload = function(){ imgEl.classList.add('img-loaded'); }; if(imgEl.complete) imgEl.classList.add('img-loaded'); }
     
-    const shareBtn = card.querySelector('.card-actions-top .action-btn-floating[aria-label="Teilen"]');
+    const shareBtn = card.querySelector('.tgtg-actions-top .tgtg-btn-floating[aria-label="Teilen"]');
     if(shareBtn) shareBtn.onclick = function(e){ e.stopPropagation(); e.preventDefault(); shareOffer(data); };
     const favBtn = card.querySelector('.action-btn-fav');
     if(favBtn){
@@ -4352,7 +4359,7 @@
       else {
         ctaBtn.onclick = function(e){
           e.stopPropagation(); e.preventDefault();
-          const thumb = card.querySelector('.dish-card-image-wrapper img');
+          const thumb = card.querySelector('.tgtg-list-item-img-wrap img');
           flyThumbnailToMittagsbox(thumb, function(){
             if(!addToCart(o)){ showToast('Fehler beim Hinzufügen.', 2000); return; }
             triggerHapticFeedback([20]);
@@ -4365,7 +4372,7 @@
     }
     
     card.onclick = function(e){
-      if(e.target.closest('.card-actions-top') || e.target.closest('.price-badge') || e.target.closest('.price-badge-on-image') || e.target.closest('.dish-card-cta')) return;
+      if(e.target.closest('.tgtg-actions-top') || e.target.closest('.tgtg-price-badge') || e.target.closest('.dish-card-cta')) return;
       openOffer(data.id);
     };
     
@@ -4382,7 +4389,7 @@
     const hasDineIn = usePreviewData ? !!data.dineInPossible : (offerProvider && (offerProvider.dineInPossible !== false || data.dineInPossible));
     const hasReuse = usePreviewData ? !!(data.reuse && data.reuse.enabled) : (offerProvider && (offerProvider.reuse && offerProvider.reuse.enabled));
     const card=document.createElement('div');
-    card.className='card';
+    card.className='card tgtg-flat';
     if(isPolaroid){
       card.classList.add('polaroid');
     } else if(opts.context === 'start' || opts.context === 'customer'){
@@ -4463,7 +4470,7 @@
       titleRow.style.cssText = 'margin-top:12px; padding:0 16px; display:flex; align-items:center; justify-content:space-between; gap:8px;';
       
       const title = document.createElement('h3');
-      title.style.cssText = "font-family:'Kalam', 'Comic Sans MS', 'Marker Felt', cursive; font-weight:700; font-size:18px; color:#000; text-transform:none; letter-spacing:0.5px; line-height:1.3; margin:0; flex:1; text-align:center;";
+      title.style.cssText = "font-family:'Inter', system-ui, sans-serif; font-weight:800; font-size:18px; color:var(--tgtg-title-color,#0f172a); text-transform:none; letter-spacing:-0.02em; line-height:1.3; margin:0; flex:1; text-align:center;";
       title.textContent = data.dish || 'Gericht';
       titleRow.appendChild(title);
       
@@ -4678,7 +4685,7 @@
     const isToday = data.day === (opts.todayKey || isoDate(new Date()));
     const statusLine = data.hasPickupCode ? (isToday ? 'Abholnummer · Heute' : 'Abholnummer') : '';
     const card=document.createElement('div');
-    card.className='card';
+    card.className='card tgtg-flat prov-card-tgtg';
     card.style.cursor = interactive ? 'pointer' : 'default';
     if(interactive){
       card.onclick=()=>{ if(typeof startListingFlow==='function') startListingFlow({ editOfferId: data.id }); };
@@ -4795,119 +4802,60 @@
     updateSheetFavs();
   }
   
-  // Favoriten-Kachel: Kompaktes Grid-Layout (Dashboard-Style)
+  // TGTG-Airbnb: Favoriten-Grid – flach, kein Schatten, Inset-Divider [cite: 2026-02-20]
   function createFavoriteCard(o){
     const data = normalizeOffer(o);
     const card = document.createElement('div');
-    card.className = 'fav-grid-card';
+    card.className = 'fav-grid-card tgtg-fav-card';
     card.setAttribute('data-fav-id', data.id);
-    card.style.position = 'relative';
-    card.style.background = '#FFFFFF';
-    card.style.borderRadius = '16px';
-    card.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.08)';
-    card.style.border = '1px solid rgba(0,0,0,0.06)';
-    card.style.overflow = 'hidden';
-    card.style.transition = 'transform 0.2s ease, opacity 0.3s ease, box-shadow 0.2s ease';
-    card.style.cursor = 'pointer';
-    card.style.display = 'flex';
-    card.style.flexDirection = 'column';
-    
-    // Hover-Effekt
-    card.onmouseenter = () => {
-      card.style.transform = 'translateY(-2px)';
-      card.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.12)';
-    };
-    card.onmouseleave = () => {
-      card.style.transform = 'translateY(0)';
-      card.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.08)';
-    };
     
     const imgSrc = data.imageUrl || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70';
     
-    // Kompaktes Bild (reduzierte Höhe für Grid)
     const img = document.createElement('div');
-    img.style.position = 'relative';
-    img.style.height = '96px'; // Kompakt: 96px statt 256px
-    img.style.overflow = 'hidden';
-    img.style.background = '#f0f0f0';
+    img.className = 'fav-card-img-wrap';
+    img.style.cssText = 'position:relative; height:96px; overflow:hidden; background:#f1f5f9;';
     const imgEl = document.createElement('img');
     imgEl.src = imgSrc;
     imgEl.alt = esc(data.dish||'Gericht');
-    imgEl.style.width = '100%';
-    imgEl.style.height = '100%';
-    imgEl.style.objectFit = 'cover';
+    imgEl.className = 'fav-card-img';
+    imgEl.style.cssText = 'width:100%; height:100%; object-fit:cover;';
     img.appendChild(imgEl);
     
-    // X-Icon oben rechts zum Entfernen (Schnell-Streichen)
     const removeBtn = document.createElement('button');
     removeBtn.type = 'button';
-    removeBtn.style.position = 'absolute';
-    removeBtn.style.top = '6px';
-    removeBtn.style.right = '6px';
-    removeBtn.style.zIndex = '10';
-    removeBtn.style.background = 'rgba(255,255,255,0.95)';
-    removeBtn.style.backdropFilter = 'blur(8px)';
-    removeBtn.style.webkitBackdropFilter = 'blur(8px)';
-    removeBtn.style.border = 'none';
-    removeBtn.style.borderRadius = '50%';
-    removeBtn.style.width = '28px';
-    removeBtn.style.height = '28px';
-    removeBtn.style.display = 'flex';
-    removeBtn.style.alignItems = 'center';
-    removeBtn.style.justifyContent = 'center';
-    removeBtn.style.cursor = 'pointer';
-    removeBtn.style.padding = '0';
-    removeBtn.style.boxShadow = '0 2px 6px rgba(0,0,0,0.15)';
-    removeBtn.style.transition = 'transform 0.2s ease, background 0.2s ease';
-    removeBtn.innerHTML = '<i data-lucide="x" style="width:16px;height:16px;color:#E34D4D;stroke-width:3;"></i>';
-    removeBtn.onmouseenter = () => {
-      removeBtn.style.transform = 'scale(1.1)';
-      removeBtn.style.background = '#fff';
-    };
-    removeBtn.onmouseleave = () => {
-      removeBtn.style.transform = 'scale(1)';
-      removeBtn.style.background = 'rgba(255,255,255,0.95)';
-    };
+    removeBtn.className = 'tgtg-btn-remove';
+    removeBtn.style.cssText = 'position:absolute; top:6px; right:6px; z-index:10; width:28px; height:28px; border-radius:50%; background:rgba(255,255,255,0.95); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; padding:0; box-shadow:0 1px 3px rgba(0,0,0,0.08);';
+    removeBtn.innerHTML = '<i data-lucide="x" style="width:14px;height:14px;color:#E34D4D;stroke-width:3;"></i>';
     removeBtn.onclick = (e) => {
       e.stopPropagation();
       e.preventDefault();
-      // Haptics beim Entfernen
       triggerHapticFeedback([15]);
-      // Animation: Ausblenden
       card.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
       card.style.opacity = '0';
-      card.style.transform = 'scale(0.9)';
-      // Nach Animation entfernen
+      card.style.transform = 'scale(0.95)';
       setTimeout(() => {
-      toggleDishFav(data.id);
-        // Grid automatisch neu anordnen durch Re-Render
+        toggleDishFav(data.id);
         renderFavorites();
       }, 300);
     };
     img.appendChild(removeBtn);
     
-    // Kompakter Content-Bereich
     const body = document.createElement('div');
-    body.style.padding = '8px';
-    body.style.flex = '1';
-    body.style.display = 'flex';
-    body.style.flexDirection = 'column';
-    body.style.gap = '4px';
+    body.className = 'fav-card-body';
+    body.style.cssText = 'padding:10px 12px; flex:1; display:flex; flex-direction:column; gap:2px; min-height:0;';
     body.innerHTML = `
-      <p style="font-size:10px; font-weight:700; color:#94a3b8; text-transform:uppercase; letter-spacing:0.5px; margin:0; line-height:1.2; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${esc(data.providerName||'Anbieter')}</p>
-      <p style="font-size:13px; font-weight:900; color:#1a1a1a; margin:0; line-height:1.3; overflow:hidden; text-overflow:ellipsis; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;">${esc(data.dish||'Gericht')}</p>
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:auto; padding-top:4px;">
-        <span style="font-size:14px; font-weight:900; color:var(--brand);">${euro(data.price)}</span>
-            </div>
+      <p class="tgtg-fav-meta" style="font-size:11px; font-weight:700; color:#94a3b8; margin:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${esc(data.providerName||'Anbieter')}</p>
+      <p class="tgtg-fav-title" style="font-size:14px; font-weight:800; color:var(--tgtg-title-color,#0f172a); margin:0; line-height:1.3; overflow:hidden; text-overflow:ellipsis; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;">${esc(data.dish||'Gericht')}</p>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:auto; padding-top:6px;">
+        <span class="tgtg-list-item-price" style="font-size:14px; font-weight:900;">${euro(data.price)}</span>
+      </div>
     `;
     
     card.appendChild(img);
     card.appendChild(body);
     
-    // Klick auf Karte öffnet Details (nicht auf Remove-Button)
     card.onclick = (e) => {
-      // Ignoriere Klicks auf Remove-Button
-      if(e.target.closest('button[type="button"]')) return;
+      if(e.target.closest('button')) return;
       openOffer(data.id);
     };
     
@@ -5237,16 +5185,8 @@
   // Kompakte Karte für kommende Tage
   function createUpcomingDayCard(data, dayKey){
     const card = document.createElement('div');
-    card.style.cssText = 'flex:0 0 auto; width:140px; background:#fff; border-radius:10px; border:1px solid rgba(0,0,0,0.08); box-shadow:0 1px 3px rgba(0,0,0,0.06); overflow:hidden; cursor:pointer; transition:transform 0.2s ease, box-shadow 0.2s ease;';
-    
-    card.onmouseover = () => {
-      card.style.transform = 'translateY(-2px)';
-      card.style.boxShadow = '0 2px 6px rgba(0,0,0,0.1)';
-    };
-    card.onmouseout = () => {
-      card.style.transform = 'translateY(0)';
-      card.style.boxShadow = '0 1px 3px rgba(0,0,0,0.06)';
-    };
+    card.className = 'tgtg-upcoming-card';
+    card.style.cssText = 'flex:0 0 auto; width:140px; background:#fff; border-radius:16px; border:1px solid var(--tgtg-divider,rgba(0,0,0,0.06)); box-shadow:none; overflow:hidden; cursor:pointer; transition:border-color 0.2s ease;';
     
     card.onclick = () => {
       openOffer(data.id);
@@ -5265,7 +5205,7 @@
     
     // Gerichtname (kompakt)
     const title = document.createElement('div');
-    title.style.cssText = "font-family:'Kalam', 'Comic Sans MS', 'Marker Felt', cursive; font-weight:700; font-size:12px; color:#000; margin-bottom:4px; line-height:1.2; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;";
+    title.style.cssText = "font-family:'Inter', system-ui, sans-serif; font-weight:700; font-size:12px; color:var(--tgtg-title-color,#0f172a); margin-bottom:4px; line-height:1.2; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;";
     title.textContent = data.dish || 'Gericht';
     body.appendChild(title);
     
@@ -10421,12 +10361,10 @@
         for(let i=0;i<6;i++){
           const c = topN[i];
           const tile = document.createElement('div');
-          tile.className = 'cookbook-tile';
-          tile.style.cssText = 'border-radius:14px; background:#fff; border:1px solid rgba(0,0,0,0.06); overflow:hidden; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.04); transition:transform 0.15s, box-shadow 0.15s; display:flex; flex-direction:column; min-height:0; min-width:0;';
+          tile.className = 'cookbook-tile tgtg-cookbook-tile';
+          tile.style.cssText = 'border-radius:var(--tgtg-img-radius,18px); background:#fff; overflow:hidden; cursor:pointer; display:flex; flex-direction:column; min-height:0; min-width:0; border:none; border-bottom:1px solid rgba(0,0,0,0.06);';
           tile.setAttribute('role','button');
           tile.setAttribute('tabindex','0');
-          tile.onmouseover = function(){ this.style.transform='scale(1.02)'; this.style.boxShadow='0 4px 14px rgba(0,0,0,0.08)'; };
-          tile.onmouseout = function(){ this.style.transform=''; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.04)'; };
           if(c){
             const imgUrl = (c.photoData || c.imageUrl || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=400&q=60').replace(/"/g,'&quot;').replace(/'/g,'%27');
             const name = (c.dish||'Gericht').length > 14 ? (c.dish||'').substring(0,12)+'…' : (c.dish||'Gericht');
@@ -14816,7 +14754,7 @@
         '<span class="cookbook-pillar-icon" style="font-size:18px; opacity:'+(hasAbholnummer?'1':'0.4')+';" aria-hidden="true">🧾</span>'+
         '<span class="cookbook-pillar-icon" style="font-size:18px; opacity:'+(hasMehrweg?'1':'0.4')+';" aria-hidden="true">🔄</span>'+
         '</div>';
-      magazineEl.innerHTML = '<div class="cookbook-magazine-card" role="button" tabindex="0" style="width:88%; max-width:400px; background:#fff; border:1px solid rgba(0,0,0,0.06); border-radius:24px; box-shadow:0 8px 24px rgba(0,0,0,0.08); overflow:hidden; display:flex; flex-direction:column; cursor:pointer; position:relative; z-index:2; touch-action:manipulation; -webkit-tap-highlight-color:transparent;">'+
+      magazineEl.innerHTML = '<div class="cookbook-magazine-card tgtg-flat" role="button" tabindex="0" style="width:88%; max-width:400px; background:#fff; border:none; border-bottom:1px solid rgba(0,0,0,0.06); border-radius:20px; overflow:hidden; display:flex; flex-direction:column; cursor:pointer; position:relative; z-index:2; touch-action:manipulation; -webkit-tap-highlight-color:transparent;">'+
         '<div class="cookbook-magazine-gloss" style="position:absolute; inset:0; pointer-events:none; z-index:1; background:linear-gradient(to top right, rgba(255,255,255,0.08) 0%, transparent 50%);"></div>'+
         '<div class="cookbook-magazine-img-wrap" style="overflow:hidden; position:relative; flex-shrink:0;">'+
         imgHtml+
@@ -16163,9 +16101,6 @@
       if(timeEnd.length===4) timeEnd='0'+timeEnd;
       const powerBar=document.createElement('div');
       powerBar.className='inserat-power-bar inserat-unified-pills inserat-soft-shell';
-      powerBar.style.cssText='display:flex; flex-wrap:nowrap; justify-content:space-between; align-items:center; gap:8px; padding:10px 16px; flex-shrink:0; pointer-events:auto;';
-      var softShellStyle='cursor:pointer; min-width:44px; min-height:44px; border:none; border-radius:12px; background:rgba(0,0,0,0.06); color:#64748b; display:flex; align-items:center; justify-content:center; -webkit-tap-highlight-color:transparent;';
-      var softShellActiveStyle='background:rgba(16,185,129,0.12); color:#0f172a;';
       var hasDineIn = !!w.data.dineInPossible;
       var hasReuse = !!(w.data.reuse && w.data.reuse.enabled);
       function addPowerPill(emo, label, active, toggleKey){
@@ -16174,8 +16109,7 @@
         wrap.className='status-pill inserat-soft-pill '+(active?'active':'inactive');
         wrap.setAttribute('aria-label', label);
         wrap.setAttribute('title', label);
-        wrap.style.cssText=softShellStyle+(active?softShellActiveStyle:'');
-        wrap.innerHTML='<span style="font-size:14px;">'+emo+'</span>';
+        wrap.innerHTML='<span class="inserat-pill-emo">'+emo+'</span>';
         wrap.onclick=function(e){ e.preventDefault(); e.stopPropagation(); if(typeof triggerHapticFeedback==='function') triggerHapticFeedback([5]); if(toggleKey==='reuse'){ w.data.reuse=w.data.reuse||{}; w.data.reuse.enabled=!w.data.reuse.enabled; } else w.data[toggleKey]=!w.data[toggleKey]; saveDraft(); rebuildWizard(); };
         powerBar.appendChild(wrap);
       }
@@ -16187,8 +16121,7 @@
       timePill.className='status-pill inserat-soft-pill '+(hasTimeValue?'active':'inactive');
       timePill.setAttribute('aria-label','Abholzeit bearbeiten');
       timePill.setAttribute('title','Zeit');
-      timePill.style.cssText=softShellStyle+(hasTimeValue?softShellActiveStyle:'');
-      timePill.innerHTML='<span style="font-size:14px;">🕒</span>';
+      timePill.innerHTML='<span class="inserat-pill-emo">🕒</span>';
       timePill.onclick=function(){ if(typeof triggerHapticFeedback==='function') triggerHapticFeedback([5]); toggleHeaderSelection('time'); };
       powerBar.appendChild(timePill);
       function openAllergenBottomSheet(){
@@ -16221,7 +16154,6 @@
       const allergenBarBtn=document.createElement('button');
       allergenBarBtn.type='button';
       allergenBarBtn.className='func-icon-btn inserat-soft-pill ' + (hasAllergens ? 'active' : '');
-      allergenBarBtn.style.cssText=softShellStyle+(hasAllergens?softShellActiveStyle:'');
       allergenBarBtn.textContent='🌾';
       allergenBarBtn.title='Allergene';
       allergenBarBtn.onclick=openAllergenBottomSheet;
@@ -16235,13 +16167,12 @@
       const extrasBarBtn=document.createElement('button');
       extrasBarBtn.type='button';
       extrasBarBtn.className='func-icon-btn inserat-soft-pill ' + (hasExtras ? 'active' : '');
-      extrasBarBtn.style.cssText=softShellStyle+(hasExtras?softShellActiveStyle:'');
       extrasBarBtn.textContent='➕';
       extrasBarBtn.title='Extras';
       extrasBarBtn.onclick=function(){ if(typeof triggerHapticFeedback==='function') triggerHapticFeedback([5]); toggleHeaderSelection('extras'); };
       powerBar.appendChild(extrasBarBtn);
       var legendWrap=document.createElement('div'); legendWrap.style.cssText='position:relative; display:inline-flex; align-items:center;';
-      var legendTrigger=document.createElement('button'); legendTrigger.type='button'; legendTrigger.className='power-bar-legend-trigger inserat-soft-pill'; legendTrigger.setAttribute('aria-label','Infoseite Inseratsflow'); legendTrigger.setAttribute('title','Infoseite: Inserieren in unter 30 Sekunden'); legendTrigger.textContent='ⓘ'; legendTrigger.style.cssText=softShellStyle+'min-width:44px; min-height:44px; width:44px; height:44px; color:#94a3b8; font-size:14px; border-radius:50%; display:flex; align-items:center; justify-content:center;';
+      var legendTrigger=document.createElement('button'); legendTrigger.type='button'; legendTrigger.className='power-bar-legend-trigger inserat-soft-pill power-bar-legend-round'; legendTrigger.setAttribute('aria-label','Infoseite Inseratsflow'); legendTrigger.setAttribute('title','Infoseite: Inserieren in unter 30 Sekunden'); legendTrigger.textContent='ⓘ';
       var legendPop=document.createElement('div'); legendPop.className='power-bar-legend'; legendPop.setAttribute('role','tooltip'); legendPop.style.cssText='display:none; position:absolute; top:100%; right:0; margin-top:6px; padding:10px 14px; background:rgba(255,255,255,0.95); backdrop-filter:blur(12px); border-radius:12px; border:1px solid rgba(0,0,0,0.06); box-shadow:0 8px 24px rgba(0,0,0,0.1); font-size:11px; font-weight:600; color:#475569; line-height:1.5; z-index:50; white-space:nowrap;';
       legendPop.innerHTML='🍴 Vor Ort · 🔄 Mehrweg · 🕒 Zeit · 🌾 Allergene · ➕ Extras · ⓘ Info';
       legendTrigger.onclick=function(e){ e.stopPropagation(); if(typeof triggerHapticFeedback==='function') triggerHapticFeedback([5]); if(typeof openInfoLegendSheet==='function') openInfoLegendSheet(); else { var on=legendPop.style.display==='block'; legendPop.style.display=on?'none':'block'; if(!on) setTimeout(function(){ var closeLegend=function(ev){ if(!legendWrap.contains(ev.target)){ legendPop.style.display='none'; document.removeEventListener('click', closeLegend); } }; document.addEventListener('click', closeLegend); }, 0); } };
