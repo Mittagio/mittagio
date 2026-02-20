@@ -152,7 +152,8 @@
   }
 
   function setMode(next, opts){
-    if (next == null) return;
+    if (next == null || next === undefined) return;
+    if (!LS || typeof save !== 'function'){ console.warn('setMode: LS/save nicht geladen'); return; }
     opts = (opts && typeof opts === 'object') ? opts : {};
     window.mode = next;
     save(LS.mode, window.mode);

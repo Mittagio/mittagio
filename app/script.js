@@ -30,6 +30,7 @@
   };
   const load = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } };
   const save = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+  if(typeof window !== 'undefined'){ window.LS = LS; window.load = load; window.save = save; }
 
   // Abholzeit-Slots 11:00–14:30 im 15-Minuten-Takt (zentral für Cart + Checkout)
   function getTimeSlots(){
