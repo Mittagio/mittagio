@@ -137,11 +137,7 @@
     `).join('');
   }
 
-  function getDayName(date){
-    const days = ['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
-    return days[date.getDay()];
-  }
-
+  /* getDayName → js/utils.js */
   function renderDiscoverDays(){
     const bar = document.getElementById('discoverDaysBar');
     if(!bar) return;
@@ -926,23 +922,7 @@
     return allUnique;
   }
 
-  // --- UI helpers ---
-  function euro(n){
-    const v = Number(n||0);
-    return v.toFixed(2).replace('.',',') + ' €';
-  }
-  function cryptoId(){
-    return 'id_' + Math.random().toString(16).slice(2) + '_' + Date.now().toString(16);
-  }
-  function esc(s){
-    return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#039;'}[c]));
-  }
-
-  /** Erstes Wort aus Allergen-Label (z. B. "Erdnüsse" statt "Erdnüsse und daraus gewonnene Erzeugnisse"). */
-  function allergenFirstWord(label){
-    if(!label) return '';
-    return String(label).trim().split(/\s+/)[0] || label;
-  }
+  /* euro, cryptoId, esc, allergenFirstWord → js/utils.js */
 
   /** Standardisierte Allergen-Übersetzung (ALLERGENE_OVERLAY_SPEC.md). Anbieter wählt Kürzel; nur zutreffende anzeigen. */
   const ALLERGENE_STANDARD = {
@@ -1146,73 +1126,9 @@
     return urls.slice(0,3);
   }
 
-  function buildAddress(p){
-    if(p && p.address && String(p.address).trim()) return String(p.address).trim();
-    const rest = [p?.zip, p?.city].filter(Boolean).join(' ').trim();
-    return [p?.street, rest].filter(Boolean).join(', ');
-  }
+  /* buildAddress, parseAddress, normalizeProviderProfile, formatLunchWeekdays, normalizeOffer → js/utils.js */
 
-  function parseAddress(addr){
-    const raw = String(addr||'').trim();
-    const out = { address: raw, street:'', zip:'', city:'' };
-    if(!raw) return out;
-    const parts = raw.split(',').map(s=>s.trim()).filter(Boolean);
-    if(parts.length){ out.street = parts[0]; }
-    if(parts.length > 1){
-      const rest = parts.slice(1).join(', ');
-      const m = rest.match(/^(\d{4,6})\s*(.*)$/);
-      if(m){ out.zip = m[1]; out.city = m[2] || ''; }
-      else { out.city = rest; }
-    }
-    return out;
-  }
-
-  function normalizeProviderProfile(p){
-    const base = { name:'', address:'', street:'', zip:'', city:'', mealWindow:DEFAULT_MEAL_WINDOW, mealStart:'11:30', mealEnd:'14:00', lunchWeekdays:[1,2,3,4,5], phone:'', email:'', website:'', logoData:'', kitchenEmail:'', autoSelloutTime:'', reuseEnabledByDefault:false, abholnummerEnabledByDefault:false, wantsAllergensByDefault:false, defaultExtras:[], defaultAllergens:[] };
-    const out = {...base, ...(p||{})};
-    if(!Array.isArray(out.defaultExtras)) out.defaultExtras = [];
-    if(!Array.isArray(out.defaultAllergens)) out.defaultAllergens = [];
-    if(!out.address){ out.address = buildAddress(out); }
-    if(!out.mealWindow){ out.mealWindow = DEFAULT_MEAL_WINDOW; }
-    if(!Array.isArray(out.lunchWeekdays)){ out.lunchWeekdays = [1,2,3,4,5]; }
-    return out;
-  }
-  /** Wochentage-Array zu Anzeige-Text (1=Mo … 7=So) */
-  function formatLunchWeekdays(arr){
-    const labels = ['','Mo','Di','Mi','Do','Fr','Sa','So'];
-    if(!arr || arr.length===0) return '–';
-    const sorted = [...arr].sort((a,b)=>a-b);
-    if(sorted.length===7) return 'Mo–So';
-    if(sorted.length===5 && sorted[0]===1 && sorted[4]===5) return 'Mo–Fr';
-    return sorted.map(d=>labels[d]).filter(Boolean).join(', ');
-  }
-
-  function normalizeOffer(o){
-    const out = {...(o||{})};
-    if(!out.dish && out.title) out.dish = out.title;
-    if(!out.imageUrl && out.img) out.imageUrl = out.img;
-    if(!out.pickupWindow && out.time) out.pickupWindow = out.time;
-    if(!out.category && out.diet) out.category = out.diet;
-
-    if(out.address && (!out.providerStreet && !out.providerZip && !out.providerCity)){
-      const parsed = parseAddress(out.address);
-      out.providerStreet = out.providerStreet || parsed.street || '';
-      out.providerZip = out.providerZip || parsed.zip || '';
-      out.providerCity = out.providerCity || parsed.city || '';
-    }
-    out.providerStreet = out.providerStreet || '';
-    out.providerZip = out.providerZip || '';
-    out.providerCity = out.providerCity || '';
-    out.hasPickupCode = !!out.hasPickupCode;
-    out.dineInPossible = !!out.dineInPossible;
-    if(out.active === undefined) out.active = true;
-    const info = seededInfo(out.dish || out.providerName || out.providerId);
-    if(out.distanceKm == null) out.distanceKm = info.distanceKm;
-    // Status wird nur über active gesteuert
-    return out;
-  }
-
-  // --- Navigation → js/ui-navigation.js ---
+  // --- Navigation (views für ui-navigation) ---
   const views = {
     start:'v-discover',
     discover:'v-discover', fav:'v-fav', orders:'v-orders', cart:'v-cart', profile:'v-profile',
@@ -1231,13 +1147,8 @@
     admin:'v-admin'
   };
 
-  /* setCustomerNavActive, setProviderNavActive, showView, setMode, handleLogoClick, pushViewState, showStart, showDiscover, showFav, showOrders, showCart, showProfile, openCodeSheetWithOrder, showPickupCode, showProviderHome, showProviderPickups, showProviderWeek, showProviderCookbook, showProviderProfile, showProviderBilling, showCheckout → js/ui-navigation.js */
-  function setCustomerNavActive(go){
-    document.querySelectorAll('#customerNav .navbtn').forEach(b=>b.classList.toggle('active', b.dataset.go===go));
-  }
-  function setProviderNavActive(go){
-    document.querySelectorAll('#providerNav .navbtn').forEach(b=>b.classList.toggle('active', b.dataset.pgo===go));
-  }
+  /* setCustomerNavActive, setProviderNavActive, showView, setMode, showStart, showDiscover, showFav, showOrders, showCart, showProfile, openCodeSheetWithOrder, showPickupCode, showProviderHome, showProviderPickups, showProviderWeek, showProviderCookbook, showProviderProfile, showProviderBilling → js/ui-navigation.js */
+  if(typeof window !== 'undefined') window.views = views;
 
   /** FAB nur auf Dashboard: bei true erstellen und an main hängen, bei false aus DOM entfernen (nicht nur ausblenden). */
   function ensureProviderFab(visible){
@@ -1272,479 +1183,9 @@
     else { text = name ? 'Gute Nacht, ' + name + '! 🌙' : fallback; }
     el.textContent = text;
   }
-
-  function showView(id){
-    const view = document.getElementById(id);
-    if(!view){
-      console.error('View not found:', id);
-      const fallbackView = document.getElementById(views.discover || 'v-discover');
-      if(fallbackView) fallbackView.classList.add('active');
-      window.scrollTo({top:0,behavior:'smooth'});
-      return;
-    }
-    // Zuerst neue View aktivieren und anzeigen – kein leerer Bildschirm beim Wechsel
-    var isProviderView = (id && id.indexOf('v-provider-') === 0);
-    var customerViewIds = [views.start, views.discover, views.fav, views.orders, views.cart, views.profile, views.orderSuccess, views.pickupCode, views.checkout].filter(Boolean);
-    if(!isProviderView && customerViewIds.indexOf(id) !== -1){
-      document.body.classList.remove('provider-mode');
-      mode = 'customer';
-      try { if(typeof save === 'function' && typeof LS !== 'undefined') save(LS.mode, mode); } catch(e) {}
-    }
-    if(isProviderView){
-      document.body.classList.add('provider-mode');
-      if(typeof history !== 'undefined' && history.scrollRestoration !== undefined) history.scrollRestoration = 'manual';
-      // Backdrops sofort ausblenden, damit Kochbuch und andere Views tapbar bleiben
-      try {
-        document.getElementById('quickPostBd')?.classList.remove('active');
-        document.getElementById('quickPostSheet')?.classList.remove('active');
-        document.getElementById('publishFeeBd')?.classList.remove('active');
-        document.getElementById('publishFeeSheet')?.classList.remove('active');
-      } catch(e) {}
-    }
-    view.classList.add('active');
-    if(id === 'v-pickup-code') view.style.display = 'flex';
-    else if(id === 'v-provider-week') view.style.cssText = 'display:flex; flex-direction:column; min-height:100vh; visibility:visible; opacity:1;';
-    else if(id === 'v-provider-cookbook') view.style.cssText = 'display:flex !important; flex-direction:column !important; height:100vh; height:100dvh; max-height:100vh; max-height:100dvh; overflow:hidden; visibility:visible; opacity:1; width:100%; position:relative;';
-    else if(isProviderView) view.style.cssText = 'display:block !important; min-height:100vh; height:auto; width:100%; visibility:visible; opacity:1; position:relative;';
-    else view.style.display = 'block';
-    // Danach alle anderen Views ausblenden (explizit display:none – verhindert Aufsummierung mehrerer 100vh)
-    document.querySelectorAll('.view').forEach(v => {
-      if(v === view) return;
-      v.classList.remove('active');
-      v.style.setProperty('display', 'none', 'important');
-    });
-    document.body.classList.toggle('provider-week-active', id === 'v-provider-week');
-    /* Bei Anbieter-Views sofort nach oben scrollen, damit kein leerer oberer Bereich sichtbar ist */
-    window.scrollTo({ top: 0, behavior: isProviderView ? 'auto' : 'smooth' });
-    if (document.documentElement) document.documentElement.scrollTop = 0;
-    if (document.body) document.body.scrollTop = 0;
-    if (isProviderView) {
-      var activeEl = document.getElementById(id);
-      if (activeEl && activeEl.scrollIntoView) activeEl.scrollIntoView({ block: 'start', inline: 'nearest', behavior: 'auto' });
-      requestAnimationFrame(function(){
-        requestAnimationFrame(function(){
-          window.scrollTo({ top: 0, behavior: 'auto' });
-          if (document.documentElement) document.documentElement.scrollTop = 0;
-          if (document.body) document.body.scrollTop = 0;
-          var el = document.getElementById(id);
-          if (el) { if (el.scrollTop) el.scrollTop = 0; if (el.scrollIntoView) el.scrollIntoView({ block: 'start', behavior: 'auto' }); }
-          var mainEl = document.querySelector('main');
-          if (mainEl && mainEl.scrollTop) mainEl.scrollTop = 0;
-          var appEl = document.getElementById('app');
-          if (appEl && appEl.scrollTop) appEl.scrollTop = 0;
-        });
-      });
-    } else if (id === 'v-provider-login') {
-      requestAnimationFrame(function(){ requestAnimationFrame(function(){ window.scrollTo({ top: 0, behavior: 'auto' }); }); });
-    }
-    
-    // VIEW PERSISTENCE: Save current view and mode for refresh
-    try {
-      localStorage.setItem('mittagio_last_view', id);
-      localStorage.setItem('mittagio_last_mode', mode);
-    } catch(e) { console.error('Failed to save view state', e); }
-
-    if(typeof lucide !== 'undefined') lucide.createIcons();
-    if(id === 'v-provider-profile' && typeof updateProviderProfileWelcome === 'function') updateProviderProfileWelcome();
-    
-    // Fullscreen-Abholnummer-Modal beim View-Wechsel schließen (verhindert grünes Overlay auf allen Seiten)
-    if(typeof closeFullscreenCode === 'function') closeFullscreenCode();
-    // Quick-Post- und Publish-Fee-Modals schließen – verhindert blockierte Klicks (z. B. Kochbuch tapbar)
-    if(typeof closeQuickPostSheet === 'function') closeQuickPostSheet();
-    if(typeof closePublishFeeModal === 'function') closePublishFeeModal();
-    // Kochbuch-Modale bei jedem View-Wechsel schließen, damit Nav und Kochbuch-Inhalt tapbar bleiben
-    if(typeof closeCookbookActionSheet === 'function') closeCookbookActionSheet();
-    if(typeof closeCookbookLiveSheet === 'function') closeCookbookLiveSheet();
-    if(typeof closeCookbookWeekSheet === 'function') closeCookbookWeekSheet();
-
-    // Topbar: Kundefarben (Seite-1-Style) wenn Kundenseite aktiv
-    const topbar = document.querySelector('.topbar');
-    if(topbar){
-      if(customerViewIds.indexOf(id) !== -1) topbar.classList.add('customer-context');
-      else topbar.classList.remove('customer-context');
-    }
-    
-    // Topbar-Toggle nur in Discover-View anzeigen
-    const toggleTopbar = document.getElementById('toggleDiscoverViewTopbar');
-    if(toggleTopbar){
-      toggleTopbar.style.display = (id === views.discover) ? 'flex' : 'none';
-    }
-    
-    // FAB (Lust auf Inspiration?) nur auf Discover anzeigen – sonst immer ausblenden
-    const fabModeToggle = document.getElementById('fabModeToggle');
-    if(fabModeToggle && id !== views.discover){
-      fabModeToggle.style.display = 'none';
-    }
-
-    // Bottom-Nav jeweils sichtbar halten (Customer vs. Provider)
-    const isProv = mode === 'provider';
-    const isCustomerOrStart = mode === 'customer' || mode === 'start';
-    const customerNavEl = document.getElementById('customerNav');
-    const providerNavWrapEl = document.getElementById('providerNavWrap');
-    if(customerNavEl) customerNavEl.style.display = isCustomerOrStart ? 'flex' : 'none';
-    if(providerNavWrapEl) providerNavWrapEl.style.display = isProv ? 'block' : 'none';
-
-    // Bottom-Nav aktiven Tab immer zur aktuellen View synchronisieren
-    if(isCustomerOrStart){
-      var go = (id === 'v-discover') ? 'discover' : (id === 'v-profile') ? 'profile' : (id === 'v-cart') ? 'cart' : (id === 'v-fav') ? 'fav' : (id === 'v-orders') ? 'orders' : null;
-      if(go) setCustomerNavActive(go);
-    }
-
-    // Provider-FAB: nur auf Dashboard im DOM; auf anderen Anbieter-Seiten entfernen
-    if(mode === 'provider') ensureProviderFab(id === 'v-provider-home');
-    else ensureProviderFab(false);
-  }
-
-  function setMode(next, opts){
-    if (next == null) return;
-    opts = (opts && typeof opts === 'object') ? opts : {};
-    mode = next;
-    save(LS.mode, mode);
-
-    const isProv = mode==='provider';
-    const isStart = mode==='start';
-    const isCustomer = mode==='customer';
-    const customerNav = document.getElementById('customerNav');
-    const providerNavWrap = document.getElementById('providerNavWrap');
-    const providerNav = document.getElementById('providerNav');
-    const statusIndicator = document.getElementById('providerStatusIndicator');
-    
-    if(customerNav) customerNav.style.display = (isCustomer || isStart) ? 'flex' : 'none';
-    if(providerNavWrap) providerNavWrap.style.display = isProv ? 'block' : 'none';
-    if(statusIndicator) statusIndicator.style.display = (isProv && provider.loggedIn) ? 'flex' : 'none';
-    
-
-    
-    if(isProv && provider.loggedIn){
-      document.body.classList.add('provider-mode');
-      if(typeof history !== 'undefined' && history.scrollRestoration !== undefined) history.scrollRestoration = 'manual';
-      // Modals/Backdrops aus, damit die Oberfläche klickbar bleibt
-      try {
-        document.getElementById('quickPostBd')?.classList.remove('active');
-        document.getElementById('quickPostSheet')?.classList.remove('active');
-        document.getElementById('publishFeeBd')?.classList.remove('active');
-        document.getElementById('publishFeeSheet')?.classList.remove('active');
-      } catch(e) {}
-    } else {
-      document.body.classList.remove('provider-mode');
-    }
-    
-    updateHeaderBasket();
-
-    if(opts.skipView) return;
-
-    if(isStart){
-      if(!customer.loggedIn){
-        setMode('customer');
-        showDiscover();
-        return;
-      }
-      showStart();
-      return;
-    }
-
-    if(isProv){
-      if(!provider.loggedIn){
-        showView(views.providerLogin);
-      } else {
-        // RESTORE NUR HAUPT-TABS – nie v-provider-detail-public / Login / Onboarding
-        const lastView = localStorage.getItem('mittagio_last_view');
-        const lastMode = localStorage.getItem('mittagio_last_mode');
-        const providerMainViews = ['v-provider-home','v-provider-pickups','v-provider-week','v-provider-cookbook','v-provider-profile','v-provider-billing'];
-        const canRestore = lastMode === 'provider' && lastView && providerMainViews.indexOf(lastView) !== -1 && document.getElementById(lastView);
-        if(canRestore){
-          showView(lastView);
-          var navGo = (lastView === 'v-provider-home') ? 'provider-home' : (lastView === 'v-provider-pickups') ? 'provider-pickups' : (lastView === 'v-provider-week') ? 'provider-week' : (lastView === 'v-provider-cookbook') ? 'provider-cookbook' : (lastView === 'v-provider-profile' || lastView === 'v-provider-billing') ? 'provider-profile' : 'provider-home';
-          setProviderNavActive(navGo);
-          requestAnimationFrame(function(){
-            if(lastView === 'v-provider-home') renderProviderHome();
-            else if(lastView === 'v-provider-pickups') renderProviderPickups();
-            else if(lastView === 'v-provider-week'){ if(typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard(); else renderWeekPlan(); }
-            else if(lastView === 'v-provider-cookbook') renderCookbook();
-            else if(lastView === 'v-provider-profile') renderProviderProfile();
-            else if(lastView === 'v-provider-billing') renderBilling();
-            var scrollEl = getScrollElForView ? getScrollElForView(lastView) : null;
-            var savedScroll = null;
-            try { savedScroll = sessionStorage.getItem(RESTORE_SCROLL_KEY + '_' + lastView); } catch(s){}
-            if(scrollEl && savedScroll !== null && savedScroll !== '' && !isNaN(parseInt(savedScroll,10))){
-              scrollEl.scrollTop = parseInt(savedScroll,10);
-              try { sessionStorage.removeItem(RESTORE_SCROLL_KEY + '_' + lastView); } catch(r){}
-            } else if(lastView === 'v-provider-home' && scrollEl && scrollEl.scrollTop) scrollEl.scrollTop = 0;
-            if(typeof lucide !== 'undefined') lucide.createIcons();
-          });
-        } else {
-          showProviderHome();
-        }
-      }
-    } else {
-      const lastView = localStorage.getItem('mittagio_last_view');
-      const lastMode = localStorage.getItem('mittagio_last_mode');
-      if((lastMode === 'customer' || lastMode === 'start') && lastView && document.getElementById(lastView)){
-        showView(lastView);
-        if(lastView === views.discover) { renderChips(); renderDiscover(); }
-        else if(lastView === views.fav) renderFavorites();
-        else if(lastView === views.orders) renderOrders();
-        else if(lastView === views.profile) updateProfileView();
-        else if(lastView === 'v-start') renderStart();
-      } else {
-        showDiscover();
-      }
-    }
-  }
-
-  // Logo-Click Handler (Home-Button)
-  function handleLogoClick(){
-    // Je nach Mode zur entsprechenden Startseite navigieren
-    if(mode === 'provider'){
-      showProviderHome();
-    } else if(mode === 'start'){
-      showStart();
-    } else {
-      // Customer Mode: Zur Discover-Seite
-      showDiscover();
-    }
-  }
-  
-  /** Verhindert Browser-Warnung "pushState in trivial session history": bei nur einem Eintrag replaceState nutzen. */
-  function pushViewState(state, url){
-    url = url || location.pathname;
-    if (typeof history.replaceState === 'function' && history.length === 1)
-      history.replaceState(state, '', url);
-    else if (typeof history.pushState === 'function')
-      history.pushState(state, '', url);
-  }
-
-  // --- Start ---
-  function showStart(){
-    // Navigation auf "Entdecken" setzen (auch wenn wir auf Startseite sind)
-    const navBtn = document.querySelector('#customerNav button[data-go="discover"]');
-    if(navBtn){
-      document.querySelectorAll('#customerNav .navbtn').forEach(b=>b.classList.remove('active'));
-      navBtn.classList.add('active');
-    }
-    showView(views.start);
-    renderStart();
-    pushViewState({view: 'start', mode: mode}, location.pathname);
-  }
-
-  // --- Customer views ---
-  function showDiscover(){
-    setCustomerNavActive('discover');
-    showView(views.discover);
-    renderChips();
-    renderDiscover();
-    ensureProviderFab(false);
-    // Alle pickupCodeContainer leeren (falls vorhanden)
-    document.querySelectorAll('[id="pickupCodeContainer"]').forEach(function(el){ el.innerHTML = ''; });
-    // Zusätzlich: dynamische Abholnummer-View (v-pickup-code-dynamic) explizit entfernen, falls sie außerhalb des Containers existiert
-    const dynamicView = document.getElementById('v-pickup-code-dynamic');
-    if(dynamicView && dynamicView.parentNode) dynamicView.parentNode.removeChild(dynamicView);
-    // FAB anzeigen
-    const fabModeToggle = document.getElementById('fabModeToggle');
-    if(fabModeToggle) fabModeToggle.style.display = 'flex';
-    // Topbar-Toggle anzeigen (nur in Discover-View)
-    const toggleTopbar = document.getElementById('toggleDiscoverViewTopbar');
-    if(toggleTopbar) toggleTopbar.style.display = 'flex';
-    pushViewState({view: 'discover', mode: mode}, location.pathname);
-  }
-  function showFav(){
-    setCustomerNavActive('fav');
-    showView(views.fav);
-    // Toggle im Topbar ausblenden
-    const toggleTopbar = document.getElementById('toggleDiscoverViewTopbar');
-    if(toggleTopbar) toggleTopbar.style.display = 'none';
-    renderFavorites();
-    // Vorschau-Sektion initial verstecken
-    const upcomingPreview = document.getElementById('favUpcomingPreview');
-    if(upcomingPreview){
-      upcomingPreview.style.display = 'none';
-      upcomingPreview.style.opacity = '0';
-    }
-    pushViewState({view: 'fav', mode: mode}, location.pathname);
-  }
-  function showOrders(){
-    setCustomerNavActive('orders');
-    showView(views.orders);
-    renderOrders();
-    pushViewState({view: 'orders', mode: mode}, location.pathname);
-  }
-  function showCart(){
-    setCustomerNavActive('cart');
-    showView(views.cart);
-    renderCart();
-    pushViewState({view: 'cart', mode: mode}, location.pathname);
-  }
-  function showProfile(){
-    setCustomerNavActive('profile');
-    // Abholnummer-Ansicht explizit verstecken, bevor Profil-Seite angezeigt wird
-    const pickupCodeView = document.getElementById('v-pickup-code');
-    if(pickupCodeView){
-      pickupCodeView.style.display = 'none';
-      pickupCodeView.classList.remove('active');
-    }
-    showView(views.profile);
-    updateProfileView();
-    lucide.createIcons();
-    pushViewState({view: 'profile', mode: mode}, location.pathname);
-  }
-  
-  // --- Abholnummer: kompakte Kachel + codeSheet ---
+  if(typeof window !== 'undefined'){ window.ensureProviderFab = ensureProviderFab; window.updateProviderProfileWelcome = updateProviderProfileWelcome; }
   let currentPickupOrderId = null;
-  
-  /** Öffnet das Abholnummer-Sheet mit Order-Daten. */
-  function openCodeSheetWithOrder(order){
-    if(!order) return;
-    const code = order.pickupCode || order.code || '';
-    activeOrderId = order.id;
-    const codeTextEl = document.getElementById('codeText');
-    const codeProviderEl = document.getElementById('codeProvider');
-    const codeSummaryEl = document.getElementById('codeSummary');
-    const codePickupWindowEl = document.getElementById('codePickupWindow');
-    const codePickupTimeEl = document.getElementById('codePickupTime');
-    const codeStatusEl = document.getElementById('codeStatus');
-    const btnToggle = document.getElementById('btnToggleOrderStatus');
-    const isPickedUp = order.status === 'PICKED_UP' || order.status === 'abgeholt';
-    if(codeTextEl) codeTextEl.textContent = code || '–';
-    if(codeProviderEl) codeProviderEl.textContent = order.providerName || 'Anbieter';
-    if(codeSummaryEl) codeSummaryEl.textContent = order.dishName || order.summary || '–';
-    if(codePickupWindowEl) codePickupWindowEl.textContent = order.pickupWindow ? 'Essenszeit: ' + order.pickupWindow : 'Essenszeit: –';
-    if(codePickupTimeEl) codePickupTimeEl.textContent = order.pickupTime || 'offen';
-    if(codeStatusEl) codeStatusEl.textContent = isPickedUp ? 'Status: abgeholt' : 'Status: offen';
-    if(btnToggle) btnToggle.textContent = isPickedUp ? 'Als offen markieren' : 'Als abgeholt markieren';
-    const logoEl = document.getElementById('codeProviderLogo');
-    if(logoEl){
-      const offer = (typeof offers !== 'undefined' && offers && offers.length) ? offers.find(o => o.providerName === order.providerName) : null;
-      if(offer && offer.providerLogo) logoEl.innerHTML = '<img src="' + (offer.providerLogo || '') + '" alt="Logo" />';
-      else logoEl.innerHTML = '';
-    }
-    document.getElementById('codeBd').classList.add('active');
-    document.getElementById('codeSheet').classList.add('active');
-    if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
-  }
-  
-  function showPickupCode(orderId){
-    const order = getOrderById(orderId);
-    if(!order){
-      showToast('Bestellung nicht gefunden');
-      showDiscover();
-      return;
-    }
-    if(order.status !== 'PAID' && order.status !== 'PICKED_UP'){
-      showToast('Zahlung noch nicht bestätigt');
-      showOrders();
-      return;
-    }
-    currentPickupOrderId = orderId;
-    openCodeSheetWithOrder(order);
-  }
-  
-  function renderPickupCode(order){}
 
-  // --- Provider views ---
-  function showProviderHome(){
-    // Session-Validität prüfen
-    if(!checkSessionValidity()){
-      // Session ungültig, wurde bereits ausgeloggt
-      return;
-    }
-    
-    setProviderNavActive('provider-home');
-    showView(views.providerHome);
-    renderProviderHome();
-    
-    // Dashboard sofort von oben sichtbar (verhindert leerer Screen beim Nach-oben-Scrollen)
-    function scrollProviderHomeToTop(){
-      window.scrollTo(0, 0);
-      if(document.documentElement) document.documentElement.scrollTop = 0;
-      if(document.body) document.body.scrollTop = 0;
-      var home = document.getElementById('v-provider-home');
-      if(home && home.scrollTop) home.scrollTop = 0;
-      var wrap = home && home.querySelector('.dashboard-floating-wrap');
-      if(wrap && wrap.scrollTop) wrap.scrollTop = 0;
-      var mainEl = document.querySelector('main');
-      if(mainEl && mainEl.scrollTop) mainEl.scrollTop = 0;
-    }
-    scrollProviderHomeToTop();
-    setTimeout(scrollProviderHomeToTop, 50);
-    setTimeout(scrollProviderHomeToTop, 150);
-    requestAnimationFrame(function(){ requestAnimationFrame(scrollProviderHomeToTop); });
-    
-    // Connectivity-Check starten wenn Provider-Modus aktiv
-    if(mode === 'provider' && provider.loggedIn){
-      startConnectivityCheck();
-      // Status-Ampel Icons rendern
-      if(typeof lucide !== 'undefined'){
-        setTimeout(() => lucide.createIcons(), 50);
-      }
-    }
-    
-    // FAB ist von showView/ensureProviderFab bereits ins DOM eingefügt
-    // Zurück-Zeile über der Nav ausblenden (nur auf Sub-Views sichtbar)
-    const providerNavBackRow = document.getElementById('providerNavBackRow');
-    if(providerNavBackRow) providerNavBackRow.style.display = 'none';
-    
-    pushViewState({view: 'provider-home', mode: mode}, location.pathname);
-  }
-  function showProviderPickups(){
-    if(!checkSessionValidity()) return;
-    document.body.classList.remove('provider-week-active');
-    if(typeof closeWeekAddSheet === 'function') closeWeekAddSheet();
-    if(typeof hideWeekUndoSnackbar === 'function') hideWeekUndoSnackbar();
-    document.querySelectorAll('.kw-move-overlay').forEach(function(o){ o.remove(); });
-    var wb = document.getElementById('weekAddSheetBd');
-    var ws = document.getElementById('weekAddSheet');
-    if(wb) wb.style.display = 'none';
-    if(ws){ ws.classList.remove('active'); ws.style.display = 'none'; }
-    var wu = document.getElementById('weekUndoSnackbar');
-    if(wu){ wu.classList.remove('active'); wu.style.display = 'none'; }
-    setProviderNavActive('provider-pickups');
-    showView(views.providerPickups);
-    renderProviderPickups();
-    const providerNavBackRow = document.getElementById('providerNavBackRow');
-    if(providerNavBackRow) providerNavBackRow.style.display = 'block';
-    pushViewState({view: 'provider-pickups', mode: mode}, location.pathname);
-  }
-  /** Deep-Link: „Zum Wochenplan“ übergibt gewählten Tag/KW → Wochenplan öffnet direkt an der richtigen Stelle (Smart-Jump). URL: ?week=0&day=2026-02-17 */
-  function showProviderWeek(preselectDay, preselectKW){
-    if(!checkSessionValidity()) return;
-    var params = new URLSearchParams(location.search);
-    var urlWeek = params.get('week');
-    var urlDay = params.get('day');
-    if (urlWeek !== null && urlWeek !== '') { var w = parseInt(urlWeek, 10); if (!isNaN(w) && w >= 0 && w < 8) weekPlanKWIndex = w; }
-    if (urlDay !== null && urlDay !== '' && /^\d{4}-\d{2}-\d{2}$/.test(urlDay)) weekPlanDay = urlDay;
-    if (preselectDay && typeof preselectDay === 'string') { weekPlanDay = preselectDay; if (typeof getWeekIndexForDate === 'function') weekPlanKWIndex = Math.max(0, getWeekIndexForDate(preselectDay)); }
-    if (typeof preselectKW === 'number' && preselectKW >= 0 && preselectKW < 8) weekPlanKWIndex = preselectKW;
-    weekPlanMode = 'overview';
-    setProviderNavActive('provider-week');
-    showView(views.providerWeek);
-    if(typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard(); else renderWeekPlan();
-    var newPath = location.pathname + '?week=' + weekPlanKWIndex + '&day=' + weekPlanDay;
-    pushViewState({view: 'provider-week', mode: mode, week: weekPlanKWIndex, day: weekPlanDay}, newPath);
-    /* Header drop-shadow nur beim Scrollen [cite: 2026-02-18] */
-    requestAnimationFrame(function(){
-      var scrollEl = document.getElementById('kwBoardScroll');
-      var headerEl = document.getElementById('weekHeaderCompact');
-      if(!scrollEl || !headerEl) return;
-      function onWeekScroll(){ headerEl.classList.toggle('scrolled', scrollEl.scrollTop > 10); }
-      scrollEl.removeEventListener('scroll', onWeekScroll);
-      scrollEl.addEventListener('scroll', onWeekScroll, { passive: true });
-      onWeekScroll();
-    });
-  }
-  function showProviderCookbook(){
-    if(!checkSessionValidity()) return;
-    if(typeof closeSaveSuccessSheet === 'function') closeSaveSuccessSheet();
-    if(typeof closeCookbookActionSheet === 'function') closeCookbookActionSheet();
-    document.body.classList.remove('provider-week-active');
-    setProviderNavActive('provider-cookbook');
-    showView(views.providerCookbook);
-    renderCookbook();
-    /* Nach View-Sichtbarkeit erneut rendern, falls Layout (Breite/Höhe) beim ersten Mal noch nicht stimmte */
-    requestAnimationFrame(function(){ requestAnimationFrame(function(){ if(typeof renderCookbook === 'function') renderCookbook(); }); });
-    const providerNavBackRow = document.getElementById('providerNavBackRow');
-    if(providerNavBackRow) providerNavBackRow.style.display = 'none';
-    pushViewState({view: 'provider-cookbook', mode: mode}, location.pathname);
-  }
   /** Zentrale Formular-Komponente: Label über Eingabewert, nur untere Linie [cite: 2026-01-29] */
   var MittagioForm = {
     createInputGroup: function(def){
@@ -1847,32 +1288,14 @@
     if((subId === 'settings' || subId === 'service') && typeof updateProviderSettingsTimeDisplay === 'function') updateProviderSettingsTimeDisplay();
     if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
   }
+  if(typeof window !== 'undefined') window.showProviderProfileSub = showProviderProfileSub;
   function updateProviderSettingsTimeDisplay(){
     var startEl = document.getElementById('providerSettingsMealStart');
     var endEl = document.getElementById('providerSettingsMealEnd');
     var displayEl = document.getElementById('providerSettingsTimeDisplay');
     if(displayEl && startEl && endEl) displayEl.textContent = (startEl.value || '11:30') + ' – ' + (endEl.value || '14:00');
   }
-  function showProviderProfile(){
-    if(!checkSessionValidity()) return;
-    setProviderNavActive('provider-profile');
-    showView(views.providerProfile);
-    showProviderProfileSub(null);
-    renderProviderProfile();
-    if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 80);
-    const providerNavBackRow = document.getElementById('providerNavBackRow');
-    if(providerNavBackRow) providerNavBackRow.style.display = 'block';
-    pushViewState({view: 'provider-profile', mode: mode}, location.pathname);
-  }
-  function showProviderBilling(){
-    if(!checkSessionValidity()) return;
-    setProviderNavActive('provider-profile');
-    showView(views.providerBilling);
-    renderBilling();
-    
-    // Browser-Verlauf aktualisieren
-    pushViewState({view: 'provider-billing', mode: mode}, location.pathname);
-  }
+  /* showProviderProfile, showProviderBilling → js/ui-navigation.js */
 
   // --- Chips render ---
   function renderChips(){
@@ -7020,20 +6443,21 @@
   if(btnCodeClose) btnCodeClose.onclick=()=> closeCodeSheet();
   const btnToggleOrderStatus = document.getElementById('btnToggleOrderStatus');
   if(btnToggleOrderStatus) btnToggleOrderStatus.onclick=()=>{
-    if(!activeOrderId) return;
-    const order = getOrderById(activeOrderId);
+    const oid = window.activeOrderId != null ? window.activeOrderId : activeOrderId;
+    if(!oid) return;
+    const order = getOrderById(oid);
     if(order){
       const newStatus = order.status === 'PICKED_UP' || order.status === 'abgeholt' ? 'PAID' : 'PICKED_UP';
-      updateOrder(activeOrderId, { status: newStatus, pickupCodeActivatedAt: newStatus === 'PICKED_UP' ? Date.now() : null });
-      openCodeSheetWithOrder(getOrderById(activeOrderId));
+      updateOrder(oid, { status: newStatus, pickupCodeActivatedAt: newStatus === 'PICKED_UP' ? Date.now() : null });
+      openCodeSheetWithOrder(getOrderById(oid));
       if(typeof updateProfileView === 'function') updateProfileView();
     } else if(typeof orders !== 'undefined' && orders){
-      const idx = orders.findIndex(o=>o.id===activeOrderId);
+      const idx = orders.findIndex(o=>o.id===oid);
       if(idx>=0){
         orders[idx].status = orders[idx].status === 'abgeholt' ? 'offen' : 'abgeholt';
         if(typeof save === 'function') save(LS.orders, orders);
         if(typeof renderOrders === 'function') renderOrders();
-        openCodeSheet(activeOrderId);
+        openCodeSheet(oid);
       }
     }
   };
@@ -7320,60 +6744,7 @@
   };
 
   const btnCheckout = document.getElementById('btnCheckout');
-  // --- Checkout Navigation ---
-  function showCheckout(){
-    if(!cart || !cart.items || !cart.items.length){
-      showCart();
-      return;
-    }
-    
-    // Prüfe ob Payment möglich ist
-    const hasPayment = cart.items.every(it=>{
-      const o = offers.find(x=>x.id===it.offerId);
-      return o && normalizeOffer(o).hasPickupCode;
-    });
-    
-    if(!hasPayment){
-      alert('Diese Bestellung enthält Gerichte ohne Abholnummer. Bitte wähle Angebote mit Abholnummer aus.');
-      return;
-    }
-    
-    // Gesamtpreis berechnen
-    let total = 0;
-    cart.items.forEach(it=>{
-      const o = offers.find(x=>x.id===it.offerId);
-      if(o){
-        const normalized = normalizeOffer(o);
-        total += Number(normalized.price||0) * it.qty;
-      }
-    });
-    
-    if(total <= 0){
-      alert('Bitte wähle mindestens ein Gericht aus.');
-      return;
-    }
-    
-    // Checkout-View rendern
-    renderCheckout(total);
-    
-    // View anzeigen
-    showView(views.checkout);
-    setCustomerNavActive('cart'); // Cart bleibt aktiv
-    
-    // History für Back-Button
-    if(!isNavigatingBack){
-      navigationHistory.push({
-        view: 'cart',
-        locationQuery: locationQuery || '',
-        activeCat: activeCat || null,
-        activeDay: activeDay || isoDate(new Date()),
-        activeFilter: activeDiscoverFilter || 'near',
-        scrollY: window.scrollY
-      });
-      pushViewState({view: 'checkout'}, '#checkout');
-    }
-  }
-  
+  /* showCheckout → js/ui-navigation.js */
   function renderCheckout(total){
     if(!cart) cart = { items: [] };
     if(!cart.verzehrmodus) cart.verzehrmodus = 'mitnehmen';
@@ -16608,7 +15979,8 @@
     const qrImg = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(url);
     const w = window.open('', '_blank', 'width=400,height=520');
     if(!w) return;
-    w.document.write('<!DOCTYPE html><html><head><title>QR-Code – Mittagio</title><style>body{font-family:'Montserrat','Inter',sans-serif;margin:24px;text-align:center;} .logo{font-size:22px;font-weight:900;color:#1a1a1a;margin-bottom:4px;} .slogan{font-size:12px;color:#6b7280;} img{margin:16px 0;} .dish{font-size:16px;font-weight:700;margin-top:8px;}</style></head><body><div class="logo">Mittagio</div><div class="slogan">Zeit gespart mit der Abholnummer</div><img src="' + qrImg + '" alt="QR-Code" width="200" height="200" /><div class="dish">' + dish + '</div><p style="font-size:11px;color:#9ca3af;margin-top:16px;">Scannen &rarr; Gericht öffnen &amp; Abholnummer sichern</p><script>window.onload=function(){window.print();};<\/script></body></html>');
+    const qrHtml = '<!DOCTYPE html><html><head><title>QR-Code – Mittagio</title><style>body{font-family:\'Montserrat\',\'Inter\',sans-serif;margin:24px;text-align:center;} .logo{font-size:22px;font-weight:900;color:#1a1a1a;margin-bottom:4px;} .slogan{font-size:12px;color:#6b7280;} img{margin:16px 0;} .dish{font-size:16px;font-weight:700;margin-top:8px;}</style></head><body><div class="logo">Mittagio</div><div class="slogan">Zeit gespart mit der Abholnummer</div><img src="' + qrImg + '" alt="QR-Code" width="200" height="200" /><div class="dish">' + dish + '</div><p style="font-size:11px;color:#9ca3af;margin-top:16px;">Scannen &rarr; Gericht öffnen &amp; Abholnummer sichern</p><script>window.onload=function(){window.print();};<' + '/script></body></html>';
+    w.document.write(qrHtml);
     w.document.close();
   }
 
@@ -18088,12 +17460,6 @@
 
   function refreshCurrentView(silent=false){
     const activeView = document.querySelector('.view.active');
-    if(!activeView) return;
-    if(activeView.id === 'v-provider-home'){ if(typeof renderProviderHome==='function') renderProviderHome(); }
-    else if(activeView.id === 'v-provider-pickups'){ if(typeof renderProviderPickups==='function') renderProviderPickups(); }
-  }
-
-  setupLiveSync();r('.view.active');
     if(!activeView) return;
     if(activeView.id === 'v-provider-home'){ if(typeof renderProviderHome==='function') renderProviderHome(); }
     else if(activeView.id === 'v-provider-pickups'){ if(typeof renderProviderPickups==='function') renderProviderPickups(); }
