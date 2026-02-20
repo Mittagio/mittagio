@@ -139,7 +139,6 @@
       {id:'Fleisch', label:'Fleisch', emoji:'🥩'},
       {id:'Vegetarisch', label:'Vegetarisch', emoji:'🌿'},
       {id:'Vegan', label:'Vegan', emoji:'🌱'},
-      {id:'Salat', label:'Salat', emoji:'🥗'},
     ];
     const active = activeDiscoverFilter === 'near' || !activeDiscoverFilter ? 'near' : activeDiscoverFilter;
     bar.innerHTML = cats.map(c => `
@@ -188,6 +187,7 @@
   };
   
   window.selectDiscoverCategory = function(catId){
+    if(typeof triggerHapticFeedback === 'function') triggerHapticFeedback(5);
     if(catId === 'near' || catId === 'all'){
       activeDiscoverFilter = 'near';
     } else {
@@ -2956,6 +2956,41 @@
       if(discoverLeafletMap){ discoverLeafletMap.setView(SCHORNDORF_CENTER, discoverLeafletMap.getZoom()); renderDiscoverMap(); }
     };
   }
+  var btnDiscoverCalendar = document.getElementById('btnDiscoverCalendar');
+  if(btnDiscoverCalendar){
+    btnDiscoverCalendar.onclick = function(){
+      if(typeof triggerHapticFeedback === 'function') triggerHapticFeedback(5);
+      openDiscoverDateSheet();
+    };
+  }
+  function openDiscoverDateSheet(){
+    var backdrop = document.createElement('div');
+    backdrop.className = 'discover-date-sheet-backdrop';
+    backdrop.style.cssText = 'position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:2998; opacity:0; transition:opacity 0.2s;';
+    var sheet = document.createElement('div');
+    sheet.className = 'discover-date-sheet';
+    sheet.style.cssText = 'position:fixed; left:10px; right:10px; bottom:calc(20px + env(safe-area-inset-bottom)); background:#fff; border-radius:20px; padding:20px; z-index:2999; box-shadow:0 8px 32px rgba(0,0,0,0.15); transform:translateY(120%); transition:transform 0.3s cubic-bezier(0.32,0.72,0,1);';
+    var days = [];
+    var today = new Date();
+    for(var i = 0; i < 7; i++){
+      var d = new Date(today); d.setDate(today.getDate() + i);
+      var iso = d.toISOString().split('T')[0];
+      var label = i === 0 ? 'Heute' : i === 1 ? 'Morgen' : i === 2 ? 'Übermorgen' : ['So','Mo','Di','Mi','Do','Fr','Sa'][d.getDay()] + ', ' + d.getDate() + '.' + (d.getMonth()+1) + '.';
+      days.push({ id: iso, label: label });
+    }
+    sheet.innerHTML = '<p style="margin:0 0 16px; font-size:16px; font-weight:800; color:#0f172a;">Datum wählen</p><div style="display:flex; flex-direction:column; gap:8px;">' + days.map(function(d){
+      var isActive = activeDay === d.id;
+      return '<button type="button" class="discover-date-opt' + (isActive ? ' active' : '') + '" data-day="' + d.id + '" style="padding:14px 16px; border-radius:14px; border:2px solid ' + (isActive ? '#0f172a' : 'rgba(0,0,0,0.08)') + '; background:' + (isActive ? '#0f172a' : '#fff') + '; color:' + (isActive ? '#fff' : '#0f172a') + '; font-size:15px; font-weight:700; cursor:pointer; text-align:left;">' + d.label + '</button>';
+    }).join('') + '</div>';
+    document.body.appendChild(backdrop);
+    document.body.appendChild(sheet);
+    requestAnimationFrame(function(){ requestAnimationFrame(function(){ backdrop.style.opacity = '1'; sheet.style.transform = 'translateY(0)'; }); });
+    function close(){ backdrop.style.opacity = '0'; sheet.style.transform = 'translateY(120%)'; setTimeout(function(){ backdrop.remove(); sheet.remove(); }, 300); }
+    backdrop.onclick = close;
+    sheet.querySelectorAll('.discover-date-opt').forEach(function(btn){
+      btn.onclick = function(){ activeDay = btn.getAttribute('data-day'); renderDiscoverDays(); renderDiscover(); close(); };
+    });
+  }
   var discoverMapBtnLocation = document.getElementById('discoverMapBtnLocation');
   if(discoverMapBtnLocation){
     discoverMapBtnLocation.onclick = function(){
@@ -4308,31 +4343,29 @@
     const dishName = esc(data.dish || 'Gericht');
     
     card.innerHTML = `
-      <div class="tgtg-list-item-img-wrap">
+      <div class="tgtg-list-item-img-wrap tgtg-list-item-img-compact">
         <img src="${esc(imgSrc)}" alt="${dishName}" loading="lazy" />
         <div class="tgtg-actions-top">
-          <button type="button" class="tgtg-btn-floating action-btn-fav" aria-label="Favorit" title="Favorit"><i data-lucide="heart" style="width:16px;height:16px;${isFavorited ? 'fill:#e74c3c;color:#e74c3c;' : 'color:#666;'}"></i></button>
-          <button type="button" class="tgtg-btn-floating" aria-label="Teilen" title="Teilen"><i data-lucide="share-2" style="width:16px;height:16px;color:#1a1a1a;"></i></button>
+          <button type="button" class="tgtg-btn-floating action-btn-fav" aria-label="Favorit" title="Favorit"><i data-lucide="heart" style="width:14px;height:14px;${isFavorited ? 'fill:#e74c3c;color:#e74c3c;' : 'color:#666;'}"></i></button>
+          <button type="button" class="tgtg-btn-floating" aria-label="Teilen" title="Teilen"><i data-lucide="share-2" style="width:14px;height:14px;color:#1a1a1a;"></i></button>
         </div>
         <div class="tgtg-price-badge">${euro(data.price)}</div>
       </div>
       <div class="tgtg-list-item-body">
         <div class="tgtg-list-item-pillars">
-          <span class="tgtg-list-item-pill ${vorOrt ? 'active' : ''}">🍴 Vor Ort</span>
-          <span class="tgtg-list-item-pill ${mehrweg ? 'active' : ''}">🔄 Mehrweg</span>
-          <span class="tgtg-list-item-pill ${abholnummer ? 'active' : ''}">🧾 Abholnummer</span>
+          <span class="tgtg-list-item-pill ${vorOrt ? 'active' : ''}">🍴</span>
+          <span class="tgtg-list-item-pill ${mehrweg ? 'active' : ''}">🔄</span>
+          <span class="tgtg-list-item-pill ${abholnummer ? 'active' : ''}">🧾</span>
         </div>
         <h3 class="tgtg-list-item-title">${dishName}</h3>
         <p class="tgtg-list-item-meta">${providerName} &gt;</p>
-        <div class="tgtg-list-item-row" style="margin-top:8px;">
-          <div style="display:flex; gap:8px;">
-            ${walkingMin ? `<span style="font-size:13px; color:#64748b;">🏃 ${walkingMin} Min.</span>` : ''}
-            ${carMin ? `<span style="font-size:13px; color:#64748b;">🚗 ${carMin} Min.</span>` : ''}
-          </div>
+        <div class="tgtg-list-item-row tgtg-list-item-meta-row">
+          ${walkingMin ? `<span class="tgtg-meta-chip">🏃 ${walkingMin} Min.</span>` : ''}
+          ${carMin ? `<span class="tgtg-meta-chip">🚗 ${carMin} Min.</span>` : ''}
         </div>
-        <div class="tgtg-list-item-row" style="margin-top:12px;">
+        <div class="tgtg-list-item-row tgtg-list-item-cta-row">
           <span class="tgtg-list-item-price">${euro(data.price)}</span>
-          <button type="button" class="btn-cust-primary dish-card-cta" style="padding:12px 20px; border-radius:999px; font-weight:800; background:var(--brand); border:none; color:#121826;">In meine Box 🍱</button>
+          <button type="button" class="btn-cust-primary dish-card-cta">In meine Box 🍱</button>
         </div>
       </div>
     `;
