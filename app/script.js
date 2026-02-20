@@ -17210,8 +17210,19 @@
     }
   }
   
-  // Initialisierung startet
-  renderChips();
+  /* getScrollElForView, RESTORE_SCROLL_KEY – für ui-navigation (muss vor dessen Load auf window sein) */
+  var RESTORE_SCROLL_KEY = 'mittagio_restore_scroll';
+  function getScrollElForView(viewId){
+    if(viewId === 'v-provider-home'){ var h = document.getElementById('v-provider-home'); return h && h.querySelector('.dashboard-floating-wrap'); }
+    if(viewId === 'v-provider-pickups') return document.getElementById('provPickupsScroll');
+    if(viewId === 'v-provider-week') return document.getElementById('kwBoardScroll');
+    if(viewId === 'v-provider-cookbook') return document.getElementById('cookbookScrollWrap'); return null;
+  }
+  if(typeof window !== 'undefined'){ window.RESTORE_SCROLL_KEY = RESTORE_SCROLL_KEY; window.getScrollElForView = getScrollElForView; }
+  
+  // Initialisierung: erst nach allen Scripts (ui-navigation mit setMode etc.)
+  function initApp(){
+    renderChips();
 
   // init nav bindings
   if(mode==='provider' && !provider.loggedIn) mode='customer';
@@ -17232,14 +17243,7 @@
 
   if(typeof history !== 'undefined' && history.scrollRestoration) history.scrollRestoration = 'manual';
 
-  /* Scroll vor Reload speichern (Smart Refresh): Wiederherstellung nach F5/Reload [Stabilität] */
-  var RESTORE_SCROLL_KEY = 'mittagio_restore_scroll';
-  function getScrollElForView(viewId){
-    if(viewId === 'v-provider-home'){ var h = document.getElementById('v-provider-home'); return h && h.querySelector('.dashboard-floating-wrap'); }
-    if(viewId === 'v-provider-pickups') return document.getElementById('provPickupsScroll');
-    if(viewId === 'v-provider-week') return document.getElementById('kwBoardScroll');
-    if(viewId === 'v-provider-cookbook') return document.getElementById('cookbookScrollWrap'); return null;
-  }
+  /* Scroll vor Reload speichern (Smart Refresh) – getScrollElForView/RESTORE_SCROLL_KEY oben definiert */
   function saveScrollBeforeUnload(){
     try {
       var viewId = localStorage.getItem('mittagio_last_view');
@@ -17466,3 +17470,9 @@
   }
 
   setupLiveSync();
+  }
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', initApp);
+  } else {
+    initApp();
+  }
