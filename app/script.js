@@ -1265,11 +1265,13 @@
   }
 
   function showProviderProfileSub(subId){
+    var mainContent = document.getElementById('providerProfileMainContent');
     var mainWrap = document.getElementById('providerProfileMainWrap');
     var header = document.getElementById('providerProfileHeader');
     var contentEl = document.getElementById('providerProfileContent');
     var heroEl = document.getElementById('providerProfileHero');
     var subs = ['providerProfileSubSettings','providerProfileSubBusiness','providerProfileSubService','providerProfileSubPayment','providerProfileSubFaq'];
+    if(mainContent) mainContent.style.display = subId ? 'none' : 'flex';
     if(mainWrap) mainWrap.style.display = subId ? 'none' : 'block';
     if(header) header.style.display = subId ? 'none' : 'block';
     if(heroEl) heroEl.style.display = subId ? 'none' : 'flex';
@@ -12413,15 +12415,74 @@
       if(typeof haptic === 'function') haptic(6);
       if(typeof showProviderProfileSub === 'function') showProviderProfileSub('settings');
     };
-    var headerBrand = document.getElementById('providerProfileHeaderBrand');
-    if(headerBrand){ headerBrand.onclick = function(){ if(typeof showProviderHome === 'function') showProviderHome(); }; headerBrand.style.cursor = 'pointer'; }
-    var btnProfileInserieren = document.getElementById('btnProviderProfileInserieren');
-    if(btnProfileInserieren) btnProfileInserieren.onclick = function(){ if(typeof haptic === 'function') haptic(8); if(typeof openDishFlow === 'function') openDishFlow(); };
-    var btnProfileInserierenHero = document.getElementById('btnProviderProfileInserierenHero');
-    if(btnProfileInserierenHero) btnProfileInserierenHero.onclick = function(){ if(typeof haptic === 'function') haptic(8); if(typeof openDishFlow === 'function') openDishFlow(); };
+    /* Master-Kachel: Klick öffnet Edit-Mode Betriebsdaten [cite: 2026-02-18] */
+    var masterKachel = document.getElementById('providerProfileMasterKachel');
+    if(masterKachel){ masterKachel.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(typeof showProviderProfileSub === 'function') showProviderProfileSub('business'); }; masterKachel.onkeydown = function(e){ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); masterKachel.click(); } }; }
+    /* Stats befüllen: Kochbuch, Inserate, Umsatz (Mittagio-Grün #22C55E) [cite: 2026-01-29] */
+    var pid = typeof providerId === 'function' ? providerId() : '';
+    var cookbookCount = (typeof cookbook !== 'undefined' ? cookbook : []).filter(function(c){ return c.providerId === pid; }).length;
+    var inserateCount = (typeof offers !== 'undefined' ? offers : []).filter(function(o){ return o.providerId === pid; }).length;
+    var todayKey = typeof isoDate === 'function' ? isoDate(new Date()) : '';
+    var todayOrders = typeof loadOrders === 'function' ? loadOrders().filter(function(o){ var offer = (typeof offers !== 'undefined' ? offers : []).find(function(off){ return off.id === o.dishId || off.providerId === o.providerId; }); return offer && offer.providerId === pid && offer.day === todayKey && o.status === 'PAID'; }) : [];
+    var tagesumsatzCents = todayOrders.reduce(function(s, o){ return s + (o.totalCents || 0); }, 0);
+    var nettoEuro = (tagesumsatzCents / 100 - todayOrders.length * 0.89).toFixed(2);
+    var statKochbuch = document.getElementById('accountStatKochbuch');
+    var statInserate = document.getElementById('accountStatInserate');
+    var statUmsatz = document.getElementById('accountStatUmsatz');
+    if(statKochbuch) statKochbuch.textContent = cookbookCount;
+    if(statInserate) statInserate.textContent = inserateCount;
+    if(statUmsatz){ statUmsatz.textContent = nettoEuro.replace('.', ',') + ' €'; statUmsatz.style.color = tagesumsatzCents > 0 ? '#22C55E' : '#1a1a1a'; }
+    var masterName = document.getElementById('providerProfileMasterName');
+    var masterOrt = document.getElementById('providerProfileMasterOrt');
+    var masterLogo = document.getElementById('providerProfileMasterLogo');
+    if(masterName) masterName.textContent = (p.name || p.businessName || 'Betriebsname').trim() || 'Betriebsname';
+    if(masterOrt) masterOrt.textContent = (p.city || (p.zip && p.city ? p.zip + ' ' + p.city : '') || buildAddress(p) || 'Ort').trim() || '—';
+    if(masterLogo && p.logoUrl) masterLogo.src = p.logoUrl;
+    /* Kachel Abrechnungen → BillingHistory [cite: 2026-01-29] */
+    var btnAccountAbrechnung = document.getElementById('btnAccountAbrechnung');
+    if(btnAccountAbrechnung) btnAccountAbrechnung.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(typeof showProviderBilling === 'function') showProviderBilling(); };
+    /* Kachel FAQ → Scroll zu Accordion + öffnen [cite: 2026-02-18] */
+    var btnAccountFaq = document.getElementById('btnAccountFaq');
+    if(btnAccountFaq) btnAccountFaq.onclick = function(){
+      if(typeof haptic === 'function') haptic(6);
+      var section = document.getElementById('accountWasIstWasSection');
+      var firstItem = document.querySelector('#accountWasIstWasAccordion .account-accordion-item');
+      if(section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if(firstItem){ firstItem.classList.add('open'); var t = firstItem.querySelector('.account-accordion-trigger'); if(t) t.setAttribute('aria-expanded', 'true'); }
+    };
+    /* Kachel Support → Modal [cite: 2026-02-04] */
+    var btnAccountSupport = document.getElementById('btnAccountSupport');
+    var supportBackdrop = document.getElementById('accountSupportModalBackdrop');
+    var supportModal = document.getElementById('accountSupportModal');
+    function openSupportModal(){ if(supportBackdrop) supportBackdrop.style.display = 'block'; if(supportModal) supportModal.style.display = 'block'; }
+    function closeSupportModal(){ if(supportBackdrop) supportBackdrop.style.display = 'none'; if(supportModal) supportModal.style.display = 'none'; }
+    if(btnAccountSupport) btnAccountSupport.onclick = function(){ if(typeof haptic === 'function') haptic(6); openSupportModal(); };
+    if(supportBackdrop) supportBackdrop.onclick = closeSupportModal;
+    var supportClose = document.querySelector('.account-support-close');
+    if(supportClose) supportClose.onclick = function(){ if(typeof haptic === 'function') haptic(6); closeSupportModal(); };
+    document.querySelectorAll('.account-support-option').forEach(function(opt){
+      opt.onclick = function(){
+        if(typeof haptic === 'function') haptic(6);
+        var type = opt.getAttribute('data-support');
+        if(type === 'standort'){ closeSupportModal(); if(typeof showProviderProfileSub === 'function') showProviderProfileSub('business'); }
+        else if(type === 'zahlung'){ closeSupportModal(); if(typeof showProviderProfileSub === 'function') showProviderProfileSub('payment'); }
+        else if(type === 'whatsapp'){ var wa = 'https://wa.me/49XXXXXXXXX?text=' + encodeURIComponent('Hallo Mittagio Support!'); window.open(wa, '_blank'); closeSupportModal(); if(typeof showToast === 'function') showToast('WhatsApp geöffnet'); }
+      };
+    });
+    /* Accordion Was ist was [cite: 2026-02-18] */
+    document.querySelectorAll('#accountWasIstWasAccordion .account-accordion-trigger').forEach(function(trigger){
+      trigger.onclick = function(){
+        if(typeof haptic === 'function') haptic(6);
+        var item = trigger.closest('.account-accordion-item');
+        if(!item) return;
+        var isOpen = item.classList.contains('open');
+        item.classList.toggle('open', !isOpen);
+        trigger.setAttribute('aria-expanded', !isOpen ? 'true' : 'false');
+      };
+    });
+    /* Legacy: btnProviderProfileAbrechnung falls noch im DOM */
     var btnProfileAbrechnung = document.getElementById('btnProviderProfileAbrechnung');
     if(btnProfileAbrechnung) btnProfileAbrechnung.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(typeof showProviderBilling === 'function') showProviderBilling(); };
-    if(btnProfileAbrechnung) btnProfileAbrechnung.onkeydown = function(e){ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); btnProfileAbrechnung.click(); } };
     
     // Kontaktdaten (Adresse, Telefon, E-Mail, Internetseite)
     const profileBusinessName = document.getElementById('providerProfileBusinessName');
@@ -15067,7 +15128,7 @@
       if(inseratStep === 2 && useTwoStepFlow){
         var step2Wrap=document.createElement('div');
         step2Wrap.className='inserat-step2-wrap';
-        step2Wrap.style.cssText='display:flex; flex-direction:column; flex:1; min-height:0; overflow-y:auto; padding:16px;';
+        step2Wrap.style.cssText='display:flex; flex-direction:column; flex:1; min-height:0; overflow-y:auto; padding:16px; padding-bottom:calc(96px + env(safe-area-inset-bottom, 0));';
         var step2Nav=document.createElement('div');
         step2Nav.style.cssText='display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;';
         var backBtn=document.createElement('button');
@@ -15089,7 +15150,7 @@
         var werbepaper=document.createElement('div');
         werbepaper.className='inserat-werbepaper';
         werbepaper.style.cssText='display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:24px;';
-        werbepaper.innerHTML='<div class="werbepaper-panel werbepaper-stress" style="padding:20px; border-radius:16px; background:rgba(241,245,249,0.9); border:2px solid rgba(0,0,0,0.06); text-align:center;"><span style="font-size:48px; display:block; margin-bottom:8px;">😤</span><p style="margin:0; font-size:14px; font-weight:800; color:#64748b;">Warteschlange</p><p style="margin:4px 0 0; font-size:12px; color:#94a3b8;">Stressig & lang</p></div><div class="werbepaper-panel werbepaper-hero" style="padding:20px; border-radius:16px; background:rgba(16,185,129,0.12); border:2px solid #10b981; text-align:center; box-shadow:0 4px 20px rgba(16,185,129,0.25);"><span style="font-size:48px; display:block; margin-bottom:8px;">🚀</span><p style="margin:0; font-size:14px; font-weight:800; color:#059669;">Abholnummer</p><p style="margin:4px 0 0; font-size:12px; color:#059669;">Schnell & easy</p></div>';
+        werbepaper.innerHTML='<div class="werbepaper-panel werbepaper-stress" style="padding:16px; border-radius:16px; background:rgba(241,245,249,0.8); border:1px solid rgba(0,0,0,0.06); text-align:center;"><p style="margin:0; font-size:13px; font-weight:800; color:#64748b;">Warteschlange – stressig</p></div><div class="werbepaper-panel werbepaper-hero" style="padding:16px; border-radius:16px; background:rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.4); text-align:center; box-shadow:0 0 16px rgba(16,185,129,0.3);"><p style="margin:0; font-size:13px; font-weight:800; color:#059669;">Abholnummer – schnell</p></div>';
         step2Wrap.appendChild(werbepaper);
         var tilesRow=document.createElement('div');
         tilesRow.className='inserat-decision-tiles';
@@ -15103,14 +15164,14 @@
         var isEditActiveS2=!!(existingOfferS2&&existingOfferS2.day===todayKeyS2&&existingOfferS2.active!==false);
         var tile499=document.createElement('button');
         tile499.type='button';
-        tile499.className='inserat-decision-tile inserat-tile-secondary';
-        tile499.style.cssText='min-height:120px; padding:20px; border-radius:24px; border:2px solid #FACC15; background:rgba(255,255,255,0.9); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; cursor:pointer; box-shadow:0 10px 30px rgba(0,0,0,0.15); backdrop-filter:blur(12px);';
-        tile499.innerHTML='<strong style="font-size:16px; color:#0f172a;">Nur Inserat (4,99 €)</strong>';
+        tile499.className='inserat-decision-tile inserat-tile-champagne inserat-tile-secondary';
+        tile499.style.cssText='min-height:120px; padding:20px; border-radius:24px; border:none; background:linear-gradient(135deg,#F5E6D3 0%,#E8DCC4 50%,#D4C4A8 100%); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; cursor:pointer; box-shadow:0 10px 30px rgba(0,0,0,0.12);';
+        tile499.innerHTML='<strong style="font-size:16px; color:#5c4a3d;">Nur Inserat (4,99 €)</strong>';
         tile499.onclick=function(){ if(!primaryValidS2){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; } hapticLight(); w.data.hasPickupCode=false; w.data.pricingOption=undefined; w.data.inseratFeeWaived=false; var o=previewOfferFromWizard(); closeWizard(true); showPublishFeeModal(o); };
         var tileHero=document.createElement('button');
         tileHero.type='button';
         tileHero.className='inserat-decision-tile inserat-tile-hero inserat-tile-pulse';
-        tileHero.style.cssText='min-height:120px; padding:20px; border-radius:24px; border:none; background:linear-gradient(135deg,#10b981,#059669); color:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; cursor:pointer; box-shadow:0 10px 30px rgba(0,0,0,0.15); animation:inserat-hero-pulse 2s ease-in-out infinite;';
+        tileHero.style.cssText='min-height:120px; padding:20px; border-radius:24px; border:none; background:linear-gradient(135deg,#10b981,#059669); color:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; cursor:pointer; box-shadow:0 0 24px rgba(16,185,129,0.5), 0 10px 30px rgba(0,0,0,0.15); animation:inserat-hero-pulse 2s ease-in-out infinite;';
         tileHero.innerHTML='<strong style="font-size:16px;">Abholnummer</strong><span style="font-size:20px; font-weight:800;">0,00 €</span><small style="font-size:12px; opacity:0.9;">0,89 € pro Abholung</small>';
         tileHero.onclick=function(){ if(!primaryValidS2){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; } if(tileHero.classList.contains('is-loading')) return; hapticLight(); if(isEditActiveS2){ w.data.hasPickupCode=w.data.hasPickupCode!==false; w.data.inseratFeeWaived=true; w.data.pricingOption='abholnummer'; var o=previewOfferFromWizard(); var published=typeof publishOffer==='function'?publishOffer(o):null; if(published){ closeWizard(true); if(typeof showToast==='function') showToast('Inserat ist live! 🚀'); if(typeof showProviderHome==='function') showProviderHome(); } return; } w.data.hasPickupCode=true; w.data.inseratFeeWaived=true; w.data.pricingOption='abholnummer'; var o=previewOfferFromWizard(); tileHero.classList.add('is-loading'); tileHero.innerHTML='<span class="inserat-btn-spinner" style="width:24px;height:24px;border:3px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:inserat-spin 0.8s linear infinite;"></span>'; setTimeout(function(){ closeWizard(true); showPublishFeeModal(o); }, 800); };
         tilesRow.appendChild(tile499);

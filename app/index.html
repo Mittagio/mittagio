@@ -1436,91 +1436,81 @@
     <section class="view onboarding-view" id="v-provider-profile" style="display:flex; flex-direction:column; min-height:0;">
       <header id="providerProfileHeader" class="provider-profile-header-rebuild">
         <div class="provider-profile-header-row1">
-          <div id="providerProfileHeaderBrand" class="provider-profile-logo provider-profile-logo-center"><img src="assets/images/mittagio-logo.png" alt="Mittagio" class="app-brand-logo" /></div>
           <button type="button" id="providerProfileGearBtn" class="provider-profile-gear-btn provider-profile-gear-btn-tr" aria-label="Einstellungen"><svg class="provider-profile-gear-svg" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
-        </div>
-        <div class="provider-profile-header-row2">
-          <h1 class="provider-profile-title">Profil</h1>
         </div>
       </header>
 
-      <!-- Dynamischer Welcome (Ebene 1): tageszeitabhängig, vor dem 7-Screen-Slider -->
-      <div id="providerProfileWelcome" class="provider-profile-welcome">
-        <p id="providerProfileWelcomeText" class="provider-profile-welcome-text">Hallo Chef! 👋</p>
-        <p class="provider-profile-welcome-subtitle">Bereit für deine Kunden heute?</p>
-      </div>
-
       <div id="providerProfileContent" class="provider-profile-content-rebuild">
-        <!-- Horizontaler Slider: 7 Screens mit Snap-Effekt -->
-        <div class="provider-profile-hero" id="providerProfileHero" aria-label="Profil-Slides">
-          <div class="provider-profile-hero-slide">
-            <div class="provider-profile-hero-icon-wrap">🍴</div>
-            <span class="provider-profile-hero-badge">Screen 1</span>
-            <h2 class="provider-profile-hero-slide-title">Vor Ort & Mehrweg</h2>
-            <p class="provider-profile-hero-slide-sub">Gäste können bei dir essen oder in Mehrweg-Behältern mitnehmen. Einstellungen im Zahnrad.</p>
-          </div>
-          <div class="provider-profile-hero-slide">
-            <div class="provider-profile-hero-icon-wrap">📋</div>
-            <span class="provider-profile-hero-badge">Screen 2</span>
-            <h2 class="provider-profile-hero-slide-title">Wochenplan</h2>
-            <p class="provider-profile-hero-slide-sub">Plan deine Gerichte für die Woche. Einmal einrichten, jede Woche nutzen.</p>
-          </div>
-          <div class="provider-profile-hero-slide">
-            <img src="https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=1200&q=60" alt="" class="provider-profile-hero-slide-img" />
-            <div class="provider-profile-hero-slide-body">
-              <span class="provider-profile-hero-badge">Inserat</span>
-              <h2 class="provider-profile-hero-slide-title">Jetzt für 4,99 € inserieren</h2>
-              <p class="provider-profile-hero-slide-sub">Kein Abo. Einmal pro Inserat – sofort sichtbar für Kunden in deiner Nähe.</p>
-              <button type="button" id="btnProviderProfileInserierenHero" class="provider-profile-hero-cta provider-profile-hero-cta--yellow">Jetzt inserieren</button>
+        <div id="providerProfileMainContent" class="account-settings-airbnb">
+        <!-- Master-Kachel: Logo links, 3 Stats rechts [cite: 2026-02-18] -->
+        <div id="providerProfileMasterKachel" class="account-master-kachel" role="button" tabindex="0">
+          <div class="account-master-left">
+            <img id="providerProfileMasterLogo" src="assets/images/mittagio-logo.png" alt="" class="account-master-logo" />
+            <div>
+              <h2 id="providerProfileMasterName" class="account-master-name">Betriebsname</h2>
+              <p id="providerProfileMasterOrt" class="account-master-ort">Ort</p>
             </div>
           </div>
-          <div class="provider-profile-hero-slide">
-            <div class="provider-profile-hero-icon-wrap">🧾</div>
-            <span class="provider-profile-hero-badge">Abholnummer</span>
-            <h2 class="provider-profile-hero-slide-title">Digitale Abholnummer</h2>
-            <p class="provider-profile-hero-slide-sub">Nur 0,89 € pro Vorgang. Schlange überspringen, sauber organisiert.</p>
-          </div>
-          <div class="provider-profile-hero-slide">
-            <div class="provider-profile-hero-icon-wrap">📖</div>
-            <span class="provider-profile-hero-badge">Screen 5</span>
-            <h2 class="provider-profile-hero-slide-title">Digitales Kochbuch</h2>
-            <p class="provider-profile-hero-slide-sub">Alle deine Gerichte an einem Ort. Schnell für den Wochenplan auswählen.</p>
-          </div>
-          <div class="provider-profile-hero-slide">
-            <div class="provider-profile-hero-icon-wrap">📄</div>
-            <span class="provider-profile-hero-badge">Screen 6</span>
-            <h2 class="provider-profile-hero-slide-title">Abrechnung & Belege</h2>
-            <p class="provider-profile-hero-slide-sub">PDF-Download für die Buchhaltung. Transparent und übersichtlich.</p>
-          </div>
-          <div class="provider-profile-hero-slide">
-            <div class="provider-profile-hero-icon-wrap">ⓘ</div>
-            <span class="provider-profile-hero-badge">Screen 7</span>
-            <h2 class="provider-profile-hero-slide-title">Support & Hilfe</h2>
-            <p class="provider-profile-hero-slide-sub">Fragen? Mike meldet sich garantiert innerhalb von 24h persönlich.</p>
+          <div class="account-master-stats">
+            <div class="account-stat"><span id="accountStatKochbuch">0</span><small>Kochbuch</small></div>
+            <div class="account-stat"><span id="accountStatInserate">0</span><small>Inserate</small></div>
+            <div class="account-stat account-stat-umsatz"><span id="accountStatUmsatz">0,00 €</span><small>Umsatz</small></div>
           </div>
         </div>
-        <!-- Drei Haupt-Kacheln: vertikaler Stack, 24px Abstand -->
-        <div id="providerProfileMainWrap" class="provider-profile-tiles-wrap">
-          <div id="providerProfileMain" class="provider-profile-main-rebuild">
-            <article class="provider-focus-card provider-focus-card-inserat">
-              <div class="provider-focus-card-img-wrap"><img src="https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=1200&q=60" alt="Mittagessen" /></div>
-              <div class="provider-focus-card-pillars"><span title="Vor Ort">🍴</span><span title="Abholnummer">🧾</span><span title="Mehrweg">🔄</span></div>
-              <p class="provider-focus-card-title">Jetzt für 4,99 € inserieren</p>
-              <span class="provider-focus-badge provider-focus-badge-green">KEIN ABO. KEIN VERTRAG.</span>
-              <button type="button" id="btnProviderProfileInserieren" class="provider-focus-btn provider-focus-btn-green">Jetzt inserieren</button>
-            </article>
-            <article class="provider-focus-card provider-focus-card-abholnummer">
-              <div class="provider-focus-abholnummer-number">#B-42</div>
-              <p class="provider-focus-card-title">Digitale Abholnummer</p>
-              <p class="provider-focus-card-info">Nur 0,89 € pro Vorgang inkl. aller Gebühren.</p>
-            </article>
-            <article class="provider-focus-card provider-focus-card-abrechnung" role="button" tabindex="0" id="btnProviderProfileAbrechnung">
-              <span class="provider-focus-card-icon">📄</span>
-              <p class="provider-focus-card-title">Deine Abrechnungen &amp; PDF-Belege</p>
-            </article>
-            <button type="button" id="btnProviderLogout" aria-label="Abmelden" style="margin-top:24px; width:100%; min-height:44px; padding:14px 20px; background:#fef2f2; border:2px solid #fecaca; border-radius:14px; font-size:15px; font-weight:700; color:#b91c1c; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px;">
-              <i data-lucide="log-out" style="width:20px;height:20px;"></i><span>Abmelden</span>
-            </button>
+
+        <!-- Grid: 3 Kacheln [cite: 2026-02-18] -->
+        <div class="account-grid-nav">
+          <button type="button" id="btnAccountAbrechnung" class="account-tile">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 18V6"/></svg>
+            <span>Abrechnungen</span>
+          </button>
+          <button type="button" id="btnAccountFaq" class="account-tile">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>
+            <span>FAQ</span>
+          </button>
+          <button type="button" id="btnAccountSupport" class="account-tile">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><path d="m4.93 4.93 4.24 4.24"/><path d="m14.83 14.83 4.24 4.24"/><path d="m4.93 19.07 4.24-4.24"/><path d="m14.83 9.17 4.24-4.24"/></svg>
+            <span>Support</span>
+          </button>
+        </div>
+
+        <!-- Was ist was: Accordion [cite: 2026-02-18] -->
+        <section class="account-faq-section" id="accountWasIstWasSection">
+          <h3 class="account-faq-title">Was ist was?</h3>
+          <div class="account-accordion" id="accountWasIstWasAccordion">
+            <div class="account-accordion-item" data-accordion="abholnummer">
+              <button type="button" class="account-accordion-trigger" aria-expanded="false"><span>Abholnummer</span><svg class="account-accordion-chevron" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button>
+              <div class="account-accordion-content"><div class="account-accordion-inner">Die Abholnummer ersetzt Warteschlangen – dein Gast zeigt sie dir, du siehst sofort, was bestellt ist. Pro Vorgang 0,89 €.</div></div>
+            </div>
+            <div class="account-accordion-item" data-accordion="kochbuch">
+              <button type="button" class="account-accordion-trigger" aria-expanded="false"><span>Kochbuch</span><svg class="account-accordion-chevron" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button>
+              <div class="account-accordion-content"><div class="account-accordion-inner">Dein digitales Kochbuch speichert Gerichte mit Bild und Allergenen. Von hier schaltest du blitzschnell in den Wochenplan oder als Inserat.</div></div>
+            </div>
+            <div class="account-accordion-item" data-accordion="wochenplan">
+              <button type="button" class="account-accordion-trigger" aria-expanded="false"><span>Wochenplan</span><svg class="account-accordion-chevron" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button>
+              <div class="account-accordion-content"><div class="account-accordion-inner">Plane Mo–So. Gerichte per „Folgetag“ kopieren. Einmal einrichten, jede Woche nutzen.</div></div>
+            </div>
+            <div class="account-accordion-item" data-accordion="allergene">
+              <button type="button" class="account-accordion-trigger" aria-expanded="false"><span>Allergene</span><svg class="account-accordion-chevron" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button>
+              <div class="account-accordion-content"><div class="account-accordion-inner">Beim Anlegen schlägt die App passende Allergene vor. Du wählst aus – Kunden sehen es in der Gerichtsbeschreibung.</div></div>
+            </div>
+          </div>
+        </section>
+
+        <button type="button" id="btnProviderLogout" aria-label="Abmelden" class="account-logout-btn">
+          <i data-lucide="log-out" style="width:20px;height:20px;"></i><span>Abmelden</span>
+        </button>
+        </div>
+
+        <!-- Support-Modal: Standort, Zahlung, WhatsApp [cite: 2026-02-04] -->
+        <div id="accountSupportModalBackdrop" class="account-support-backdrop" style="display:none;" aria-hidden="true"></div>
+        <div id="accountSupportModal" class="account-support-modal" style="display:none;" role="dialog" aria-label="Support">
+          <div class="account-support-modal-inner">
+            <h3 class="account-support-modal-title">Support</h3>
+            <button type="button" class="account-support-option" data-support="standort">📍 Problem mit Standort</button>
+            <button type="button" class="account-support-option" data-support="zahlung">💳 Zahlungsproblem</button>
+            <button type="button" class="account-support-option" data-support="whatsapp">💬 Direkt-Kontakt via WhatsApp</button>
+            <button type="button" class="account-support-close" aria-label="Schließen">Schließen</button>
           </div>
         </div>
 
