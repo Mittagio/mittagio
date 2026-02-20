@@ -1,0 +1,196 @@
+/**
+ * High-End Wochenplan – Mesh-Gradients & Slot-Machine Animationen
+ * S25 / Airbnb-Look: Bottom-Up, Glassmorphism, weiche Übergänge
+ */
+
+/* === Mesh-Gradient Hintergrund === */
+.meshBackground {
+  position: relative;
+  overflow: hidden;
+}
+
+.meshBackground::before,
+.meshBackground::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.meshBackground::before {
+  background:
+    radial-gradient(ellipse 80% 50% at 50% 0%, rgba(16, 185, 129, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse 60% 40% at 90% 60%, rgba(250, 204, 21, 0.06) 0%, transparent 45%),
+    radial-gradient(ellipse 50% 35% at 10% 80%, rgba(99, 102, 241, 0.04) 0%, transparent 40%);
+}
+
+.meshBackground::after {
+  background: linear-gradient(180deg, transparent 0%, rgba(248, 247, 242, 0.3) 100%);
+}
+
+/* === Slot-Machine Animation (Karten-Einblendung) === */
+@keyframes slotMachineIn {
+  0% {
+    opacity: 0;
+    transform: translateY(24px) scale(0.96);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(-2px) scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.slotIn {
+  animation: slotMachineIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* === Lotto: slotRoll (Durchlauf) + slotLoading (Warten) + slotAnimated (Plopp) === */
+@keyframes slotRoll {
+  0%, 100% { transform: translateY(0) scale(1); opacity: 0.3; }
+  50% { transform: translateY(-4px) scale(1.02); opacity: 0.7; }
+}
+
+@keyframes slotLoading {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+@keyframes slotAnimated {
+  0% {
+    opacity: 0;
+    transform: scale(0.85) translateY(12px);
+  }
+  70% {
+    opacity: 1;
+    transform: scale(1.05) translateY(-4px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.slotRoll {
+  animation: slotRoll 0.6s ease-in-out infinite;
+}
+
+.slotLoading {
+  animation: slotLoading 0.5s ease-in-out infinite;
+}
+
+.slotAnimated {
+  animation: slotAnimated 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* Stagger: Mo→Fr, Slot 0→1→2 pro Tag. 15 Slots: delay-1 bis delay-15 */
+.slotDelay1 { animation-delay: 0.03s; }
+.slotDelay2 { animation-delay: 0.06s; }
+.slotDelay3 { animation-delay: 0.09s; }
+.slotDelay4 { animation-delay: 0.12s; }
+.slotDelay5 { animation-delay: 0.15s; }
+.slotDelay6 { animation-delay: 0.18s; }
+.slotDelay7 { animation-delay: 0.21s; }
+.slotDelay8 { animation-delay: 0.24s; }
+.slotDelay9 { animation-delay: 0.27s; }
+.slotDelay10 { animation-delay: 0.30s; }
+.slotDelay11 { animation-delay: 0.33s; }
+.slotDelay12 { animation-delay: 0.36s; }
+.slotDelay13 { animation-delay: 0.39s; }
+.slotDelay14 { animation-delay: 0.42s; }
+.slotDelay15 { animation-delay: 0.45s; }
+
+/* === Bottom-Sheet Handle (Airbnb-Style) === */
+.sheetHandle {
+  width: 36px;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(0, 0, 0, 0.15);
+  margin: 0 auto;
+  flex-shrink: 0;
+}
+
+/* === Glassmorphism Sheet === */
+.sheetGlass {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border-top: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 -4px 32px rgba(0, 0, 0, 0.08);
+}
+
+/* === Floating Bar Glow === */
+.floatingBarGlow {
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.5),
+    0 8px 32px rgba(0, 0, 0, 0.12),
+    0 0 40px rgba(255, 222, 0, 0.15);
+}
+
+/* === KW-Pill Active State (Hover/Focus) === */
+.kwPillActive {
+  background: #FFDE00;
+  color: #1a1a1a;
+  box-shadow: 0 4px 12px rgba(255, 222, 0, 0.35);
+  transform: scale(1.05);
+}
+
+/* === Empty-Slot Dashed Border (Hover) === */
+.emptySlot:hover {
+  border-color: rgba(255, 222, 0, 0.4);
+  background: rgba(255, 222, 0, 0.08);
+}
+
+/* === Micro-Badges (3 Säulen) am Bild === */
+.microBadges {
+  font-size: 10px;
+  line-height: 1;
+  opacity: 0.9;
+}
+
+.microBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* === Success-Modal [cite: 2026-02-18] === */
+@keyframes successCheckPulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.25); }
+  50% { transform: scale(1.05); box-shadow: 0 0 0 12px rgba(16, 185, 129, 0); }
+}
+
+.successCheckPulse {
+  animation: successCheckPulse 1.8s ease-in-out infinite;
+  color: #059669;
+}
+
+/* Dezentes Konfetti-Overlay – kleine Partikel via Box-Shadow */
+.successConfetti::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(2px 2px at 10% 20%, rgba(255, 222, 0, 0.4), transparent),
+    radial-gradient(2px 2px at 85% 15%, rgba(16, 185, 129, 0.35), transparent),
+    radial-gradient(2px 2px at 20% 80%, rgba(250, 204, 21, 0.3), transparent),
+    radial-gradient(2px 2px at 90% 70%, rgba(16, 185, 129, 0.3), transparent),
+    radial-gradient(2px 2px at 50% 50%, rgba(255, 222, 0, 0.2), transparent);
+  animation: successConfettiFloat 3s ease-in-out infinite;
+  opacity: 0.8;
+}
+
+@keyframes successConfettiFloat {
+  0%, 100% { transform: translateY(0) scale(1); opacity: 0.6; }
+  50% { transform: translateY(-4px) scale(1.02); opacity: 1; }
+}
