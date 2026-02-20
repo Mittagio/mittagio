@@ -3461,13 +3461,13 @@
     [id^="v-provider-"] .btn-primary{
       border:2px solid transparent !important;
     }
-    /* Bottom-Nav Provider: Floating Pill nutzt --provider-nav-bg */
+    /* Bottom-Nav Provider: Schwebende Anthrazit-Pill, identisch zum Kundenseiten-Layout (Rounded-Style) [cite: 2026-02-18] */
     #providerNav.provider-nav-pill{
-      background: var(--provider-nav-bg) !important;
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
+      background: rgba(26, 26, 26, 0.85) !important;
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
       border: none !important;
-      border-radius: 2.5rem;
+      border-radius: 2.5rem !important;
       box-shadow: 0 8px 32px rgba(0,0,0,0.2) !important;
     }
     #providerNav:not(.provider-nav-pill){
@@ -3486,23 +3486,20 @@
     .provider-nav-light .navbtn:not(.active){ opacity:0.2; }
     .provider-nav-light .navbtn.active{ color:#ffde00; font-weight:700; border-top-color:#ffde00; opacity:1; }
     .provider-nav-light .navbtn.active .ico svg{ color:#ffde00 !important; stroke:#ffde00 !important; }
-    /* Schwebende Bottom-Bar (Pille): dunkler Hintergrund, aktiver Tab = gelbe Box */
+    /* Modern Bottom-Nav: Anthrazit, aktiver Tab = dezentes Weiß-Leuchten (Arbeits-Modus, nicht Gelb/Kunde) */
     .provider-nav-pill .navbtn{ color:rgba(255,255,255,0.4); border-top:none; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; flex:1; min-width:0; }
-    .provider-nav-pill .navbtn .ico{ width:44px; height:44px; border-radius:16px; display:flex; align-items:center; justify-content:center; transition:background 0.2s, box-shadow 0.2s; }
+    .provider-nav-pill .navbtn .ico{ width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center; transition:background 0.2s, box-shadow 0.2s; }
     .provider-nav-pill .navbtn:not(.active) .ico{ background:transparent; }
-    .provider-nav-pill .navbtn.active{ color:#ffde00; opacity:1; }
-    .provider-nav-pill .navbtn.active .ico{ background:#ffde00; width:48px; height:48px; border-radius:16px; box-shadow:0 4px 16px rgba(255,222,0,0.35); }
-    .provider-nav-pill .navbtn.active .ico svg{ color:#1a1a1a !important; stroke:#1a1a1a !important; }
+    .provider-nav-pill .navbtn.active{ color:#fff; opacity:1; }
+    .provider-nav-pill .navbtn.active .ico{ background:rgba(255,255,255,0.2); width:44px; height:44px; border-radius:50%; box-shadow:0 0 16px rgba(255,255,255,0.4); }
+    .provider-nav-pill .navbtn.active .ico svg{ color:#fff !important; stroke:#fff !important; }
     .provider-nav-pill .navbtn .ico + div,
     .provider-nav-pill .provider-nav-label{ font-size:10px; font-weight:700; text-align:center; letter-spacing:0.02em; display:block; }
     .provider-nav-pill .navbtn:not(.active) .provider-nav-label{ color:rgba(255,255,255,0.5); }
     .provider-nav-pill .navbtn.active .provider-nav-label{ color:#fff; }
-    /* Floating Pill: Edge-to-Edge, 16px Inset, Safe-Area [cite: Full-Width 2026-02-19] */
-    #providerNavWrap.provider-nav-wrap-pill{ bottom: 24px !important; left: 0 !important; right: 0 !important; padding: 0 max(16px, env(safe-area-inset-right, 0)) max(0px, env(safe-area-inset-bottom, 0)) max(16px, env(safe-area-inset-left, 0)); width: 100%; box-sizing: border-box; z-index: 1052 !important; }
-    #providerNavWrap #providerNav{ min-height:80px; }
-    @media (max-width: 420px){
-      #providerNavWrap.provider-nav-wrap-pill{ left: 16px !important; right: 16px !important; bottom: 24px !important; }
-    }
+    /* Schwebende Bottom-Nav: Rounded-Style wie Kunde, 75px Höhe für S25 [cite: 2026-02-18] */
+    #providerNavWrap.provider-nav-wrap-pill{ bottom: 24px !important; left: 0 !important; right: 0 !important; padding: 0 max(16px, env(safe-area-inset-right)) max(0px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); width: 100%; box-sizing: border-box; z-index: 1052 !important; }
+    #providerNavWrap #providerNav{ min-height: 75px; padding: 12px 24px calc(12px + env(safe-area-inset-bottom, 0)); display: flex; justify-content: space-between; align-items: center; }
     [id^="v-provider-"] .panel h1,[id^="v-provider-"] .panel h2,[id^="v-provider-"] .panel h3,[id^="v-provider-"] .panel .section-title{ color:var(--provider-text) !important; }
     [id^="v-provider-"] .panel .hint{ color:var(--provider-text-muted) !important; }
     /* Dynamisch eingefügter Inhalt: immer lesbar */
@@ -3814,7 +3811,8 @@
     }
     /* Anbieter-Ansichten: Topbar ausblenden, Inhalt beginnt oben ohne Leerraum */
     body.provider-mode .topbar { display: none !important; }
-    body.provider-mode main { padding-top: 0 !important; margin-top: 0 !important; padding-left: 16px; padding-right: 16px; padding-bottom: 0 !important; box-sizing: border-box; }
+    /* Full-Width Edge-to-Edge: Kein seitliches Padding, Inhalt nutzt volle Displaybreite [cite: 2026-02-18] */
+    body.provider-mode main { padding-top: 0 !important; margin-top: 0 !important; padding-left: 0 !important; padding-right: 0 !important; padding-bottom: 0 !important; box-sizing: border-box; }
     body.provider-mode main > [id^="v-provider-"].view.active { margin-top: 0 !important; padding-top: 0 !important; }
     /* Kein leerer Screen beim Nach-oben-Scrollen: Overscroll/Rubber-Band deaktivieren */
     body.provider-mode { overscroll-behavior-y: none; -webkit-overflow-scrolling: touch; overflow-x: hidden; }
@@ -5246,9 +5244,15 @@
     body.provider-mode [id^="v-provider-"].view.active{ min-height:100vh; min-height:100dvh; display:block !important; visibility:visible !important; opacity:1 !important; scroll-margin-top:0; position:relative; width:100%; max-width:100%; overflow-x:hidden; box-sizing:border-box; }
     /* Erster Viewport sofort gefüllt: Inhalt oben verankern, keine Animation die verschiebt */
     body.provider-mode [id^="v-provider-"].view.active{ animation:none !important; transform:translateY(0) !important; }
-    /* Header/Inhalt der Anbieter-Views immer sichtbar; Header = Glassmorphism */
-    body.provider-mode [id^="v-provider-"].view.active .prov-header,
-    body.provider-mode [id^="v-provider-"].view.active header:first-child{ visibility:visible !important; opacity:1 !important; min-height:60px; background:rgba(255,255,255,0.95) !important; backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); display:block !important; border:none !important; box-shadow:0 4px 20px rgba(0,0,0,0.03) !important; padding-top:env(safe-area-inset-top, 0) !important; }
+    /* Header-Exitus: Alle Haupt-Header ausblenden – Content direkt unter Status-Balken, Edge-to-Edge [cite: 2026-02-18] */
+    body.provider-mode [id^="v-provider-"] .prov-header,
+    body.provider-mode [id^="v-provider-"] .prov-page-header,
+    body.provider-mode [id^="v-provider-"] .dashboard-kasten-header,
+    body.provider-mode [id^="v-provider-"] .provider-profile-header-rebuild,
+    body.provider-mode [id^="v-provider-"] .week-header-compact,
+    body.provider-mode [id^="v-provider-"] .provider-header-bar,
+    body.provider-mode [id^="v-provider-"] > header.prov-page-header,
+    body.provider-mode [id^="v-provider-"] > header.dashboard-kasten-header{ display:none !important; }
     body.provider-mode [id^="v-provider-"].view.active#v-provider-week{ display:flex !important; flex-direction:column !important; }
     /* Meine Küche: View füllt main (height:100%), Wrap = absoluter Scroll-Bereich (immer sichtbar + scrollbar) */
     #v-provider-home.view.active{
@@ -5260,17 +5264,15 @@
       width:100%; box-sizing:border-box;
       overflow:hidden !important;
     }
-    /* Dashboard: absoluter Scroll-Container – Layer-Präzision 100px für Nav-Pill [cite: Tabula Rasa] */
+    /* Dashboard: absoluter Scroll – Full-Width Edge-to-Edge, nur Inset-Divider zwischen Karten [cite: 2026-02-18] */
     #v-provider-home .dashboard-floating-wrap{
       position:absolute !important; top:0 !important; left:0 !important; right:0 !important; bottom:0 !important;
-      display:flex; flex-direction:column; gap:20px;
+      display:flex; flex-direction:column; gap:0;
       overflow-y:auto !important; overflow-x:hidden !important;
       -webkit-overflow-scrolling:touch;
       overscroll-behavior-y:contain;
       min-height:0;
-      padding:0 16px calc(24px + 100px + env(safe-area-inset-bottom, 0)) !important;
-      padding-left:max(16px, env(safe-area-inset-left, 0)) !important;
-      padding-right:max(16px, env(safe-area-inset-right, 0)) !important;
+      padding:0 env(safe-area-inset-right, 0) calc(24px + 100px + env(safe-area-inset-bottom, 0)) env(safe-area-inset-left, 0) !important;
       padding-top:env(safe-area-inset-top, 0) !important;
       width:100% !important; max-width:100% !important; margin:0 !important; box-sizing:border-box;
       background:#fff;
@@ -5305,12 +5307,12 @@
     #v-provider-home .dashboard-kasten-header .prov-page-header-title{ font-size: 20px !important; font-weight: 900 !important; letter-spacing: -0.03em; color: #0f172a !important; }
     /* KPI-Kasten: Glas-Lesbarkeit (Text-Schatten) + veredelte Zahlen + Trennlinie */
     #v-provider-home .dashboard-kasten-kpis{
-      padding:18px max(16px, env(safe-area-inset-left, 0)) 18px max(16px, env(safe-area-inset-right, 0));
+      padding:18px env(safe-area-inset-right, 0) 18px env(safe-area-inset-left, 0);
       position:relative;
     }
     #v-provider-home .dashboard-kasten-kpis::after{
-      content:''; position:absolute; left:16px; right:16px; bottom:0; height:1px;
-      background:linear-gradient(to right, transparent, rgba(0,0,0,0.08), transparent);
+      content:''; position:absolute; left:0; right:0; bottom:0; height:1px;
+      background:rgba(0,0,0,0.06);
     }
     /* KPI-Labels: 10px / 800, Uppercase, dezent grau */
     #v-provider-home .dashboard-kasten-kpis .kpi-label{
@@ -5332,14 +5334,14 @@
     #v-provider-home .dashboard-kasten-kpis #dashboardAbholungenCount{ color:#121826 !important; }
     #v-provider-home .dashboard-kasten-kpis #dashboardUmsatzToday{ color:#16a34a !important; }
     #v-provider-home .dashboard-kasten-angebote{
-      padding:14px 16px; padding-left:max(16px, env(safe-area-inset-left, 0)); padding-right:max(16px, env(safe-area-inset-right, 0));
+      padding:14px env(safe-area-inset-right, 0) 14px env(safe-area-inset-left, 0);
       max-width:100%; box-sizing:border-box;
     }
-    #v-provider-home .dashboard-floating-wrap{ max-width:100%; min-width:0; padding-left:max(16px, env(safe-area-inset-left, 0)); padding-right:max(16px, env(safe-area-inset-right, 0)); box-sizing:border-box; }
+    #v-provider-home .dashboard-floating-wrap{ max-width:100%; min-width:0; padding-left:env(safe-area-inset-left, 0); padding-right:env(safe-area-inset-right, 0); box-sizing:border-box; }
     #v-provider-home .dashboard-kasten-angebote .provider-week-title{ font-size: 18px !important; font-weight: 800 !important; color: #0f172a !important; }
     #v-provider-home .dashboard-kasten-wochenplan{
-      padding:14px 16px; padding-left:max(16px, env(safe-area-inset-left, 0)); padding-right:max(16px, env(safe-area-inset-right, 0));
-      padding-bottom:18px;
+      padding:14px env(safe-area-inset-right, 0) 18px env(safe-area-inset-left, 0);
+      max-width:100%; box-sizing:border-box;
     }
     #v-provider-home .dashboard-kasten-wochenplan .provider-week-title{ font-size: 18px !important; font-weight: 800 !important; color: #0f172a !important; }
     #v-provider-home.view.active .prov-header,
@@ -5351,12 +5353,12 @@
     #v-provider-home #providerActiveListingsSection .provider-week-title{ margin-bottom:12px; }
     #v-provider-home #providerActiveListings{ display:flex; flex-direction:column; gap:0; max-width:100%; min-width:0; box-sizing:border-box; }
     #v-provider-home #providerActiveListings .prov-card.prov-list-item{
-      display:flex; flex-direction:row; align-items:stretch; gap:16px; padding:16px 20px;
+      display:flex; flex-direction:row; align-items:stretch; gap:16px; padding:16px env(safe-area-inset-right, 0) 16px env(safe-area-inset-left, 0);
       background:transparent; border:none; position:relative; cursor:pointer; min-height:0;
     }
     /* Inset Divider zwischen Karten */
     #v-provider-home #providerActiveListings .prov-list-item::after{
-      content:''; position:absolute; left:20px; right:20px; bottom:0; height:1px; background:#e2e8f0;
+      content:''; position:absolute; left:0; right:0; bottom:0; height:1px; background:rgba(0,0,0,0.06);
     }
     #v-provider-home #providerActiveListings .prov-list-item:last-child::after{ display:none; }
     #v-provider-home .prov-list-item-img-wrap{
