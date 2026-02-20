@@ -10489,35 +10489,7 @@
     var seasonBanner = document.getElementById('kwSeasonBanner');
     var seasonBannerText = document.getElementById('kwSeasonBannerText');
     var seasonBannerApply = document.getElementById('kwSeasonBannerApply');
-    if (seasonIcon) seasonIcon.style.display = season ? 'inline-block' : 'none';
-    if (seasonBanner) {
-      if (season) {
-        seasonBanner.style.display = 'flex';
-        seasonBanner.className = 'kw-season-banner ' + (season.colorClass || '');
-        if (seasonBannerText) seasonBannerText.textContent = 'Saison-Tipp: Deine Vorlage \'' + (season.templateName || season.label) + '\' jetzt anwenden?';
-        if (seasonBannerApply) {
-          seasonBannerApply.onclick = function(){
-            if (typeof haptic === 'function') haptic(6);
-            var list = getWeekTemplates();
-            var search = (season.templateName || season.label || '').toLowerCase();
-            var tpl = list.find(function(t){ return (t.name || '').toLowerCase().indexOf(search) >= 0 || search.indexOf((t.name || '').toLowerCase()) >= 0; });
-            if (tpl && typeof applyTemplateToWeek === 'function') {
-              applyTemplateToWeek(tpl.id, weekPlanKWIndex);
-              if (typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard();
-              if (typeof renderProviderWeekPreview === 'function') renderProviderWeekPreview();
-              if (typeof showToast === 'function') showToast('Vorlage eingefügt');
-              var grid = document.getElementById('kwGrid');
-              if (grid) { grid.classList.add('kw-grid-just-applied'); setTimeout(function(){ grid.classList.remove('kw-grid-just-applied'); }, 800); }
-            } else if (typeof openWeekTemplatesSheet === 'function') {
-              openWeekTemplatesSheet();
-              if (list.length === 0 && typeof showToast === 'function') showToast('Speichere zuerst eine Woche als Vorlage (z. B. „' + (season.templateName || season.label) + '").');
-            }
-          };
-        }
-      } else {
-        seasonBanner.style.display = 'none';
-      }
-    }
+    /* Saison-Banner entfernt: Logik in Magic-Sheet [cite: 2026-02-20] */
     var keys = getWeekDayKeys(weekPlanKWIndex);
     var dayNames = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
     var p = (provider && provider.profile) ? provider.profile : {};
@@ -10592,8 +10564,10 @@
       card.id = 'day-' + key;
       card.innerHTML = '<div class="kw-day-label">' + dayLabel + '</div><div class="kw-day-date">' + dateLabel + '</div><div class="kw-slots"></div>';
       var slotsWrap = card.querySelector('.kw-slots');
-      var numSlots = items.length >= 3 ? 4 : 3;
-      for (var slot = 0; slot < numSlots; slot++) {
+      /* Silent Slot: Pro Tag maximal 1 leeres Element. Progressive Disclosure: Erst bei erstem Gericht erscheint zweiter Slot. */
+      var maxFilled = 4;
+      var slot = 0;
+      for (slot = 0; slot < items.length && slot < maxFilled; slot++) {
         var entry = items[slot];
         if (entry) {
           var cb = cookbook.find(function(c){ return String(c.id) === String(entry.cookbookId); });
@@ -10621,16 +10595,18 @@
           if (!isLive) slotEl.setAttribute('data-draft', '1');
           slotEl.onclick = (function(k, idx, ent){ return function(e){ e.stopPropagation(); if(slotEl.classList.contains('kw-slot-swipe-delete')) return; if(typeof haptic === 'function') haptic(6); weekPlanDay = k; if(isLive && items[idx] && items[idx].id){ if(typeof startListingFlow === 'function') startListingFlow({ editOfferId: items[idx].id, date: k, entryPoint: 'week' }); } else { if(typeof startListingFlow === 'function') startListingFlow({ date: k, entryPoint: 'week', dishId: ent ? ent.cookbookId : undefined }); } }; })(key, slot, entry);
           slotsWrap.appendChild(slotEl);
-        } else {
-          var empty = document.createElement('button');
-          empty.type = 'button';
-          empty.className = 'kw-slot kw-slot-empty';
-          empty.setAttribute('data-day', key);
-          empty.setAttribute('aria-label', 'Gericht hinzufügen für ' + dayLabel + ', ' + dateLabel);
-          empty.textContent = '+';
-          empty.onclick = (function(k){ return function(e){ e.preventDefault(); e.stopPropagation(); if(typeof haptic === 'function') haptic(6); weekPlanDay = k; if(typeof openDishFlow === 'function') openDishFlow(k, 'week'); }; })(key);
-          slotsWrap.appendChild(empty);
         }
+      }
+      /* Silent Slot: Genau 1 dezenter Hinzufügen-Button pro Tag (außer bei 4 Gerichten voll) */
+      if (items.length < maxFilled) {
+        var empty = document.createElement('button');
+        empty.type = 'button';
+        empty.className = 'kw-slot kw-slot-empty kw-slot-silent';
+        empty.setAttribute('data-day', key);
+        empty.setAttribute('aria-label', 'Gericht hinzufügen für ' + dayLabel + ', ' + dateLabel);
+        empty.innerHTML = '<span class="kw-slot-empty-icon">+</span><span class="kw-slot-empty-text">Gericht hinzufügen</span>';
+        empty.onclick = (function(k){ return function(e){ e.preventDefault(); e.stopPropagation(); if(typeof haptic === 'function') haptic(6); weekPlanDay = k; if(typeof openDishFlow === 'function') openDishFlow(k, 'week'); }; })(key);
+        slotsWrap.appendChild(empty);
       }
       grid.appendChild(card);
     });
@@ -10677,9 +10653,11 @@
       var isEmpty = typeof isWeekEmpty === 'function' && isWeekEmpty(weekPlanKWIndex);
       emptyCta.style.display = isEmpty ? 'flex' : 'none';
     }
-    var btnKwSaveTemplate = document.getElementById('btnKwSaveTemplate');
+    var btnKwSaveTemplate = document.getElementById('weekKebabSaveTemplate');
     if (btnKwSaveTemplate) btnKwSaveTemplate.onclick = function(){
       if (typeof haptic === 'function') haptic(6);
+      var kebabDrop = document.getElementById('weekKebabDropdown');
+      if (kebabDrop) kebabDrop.style.display = 'none';
       var keys = getWeekDayKeys(weekPlanKWIndex);
       var pid = typeof providerId === 'function' ? providerId() : '';
       var hasAny = false;
@@ -10690,20 +10668,90 @@
       var id = typeof saveCurrentWeekAsTemplate === 'function' ? saveCurrentWeekAsTemplate(name.trim()) : null;
       if (id && typeof showToast === 'function') showToast('Vorlage gespeichert');
       if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+      var kd = document.getElementById('weekKebabDropdown');
+      if (kd) kd.style.display = 'none';
     };
     var btnKwLoadTemplate = document.getElementById('btnKwLoadTemplate');
     if (btnKwLoadTemplate) btnKwLoadTemplate.onclick = function(){ if (typeof haptic === 'function') haptic(6); if (typeof openWeekTemplatesSheet === 'function') openWeekTemplatesSheet(); };
-    var btnKwPdf = document.getElementById('btnKwPdf');
-    var btnKwShare = document.getElementById('btnKwShare');
-    var btnKwFindGap = document.getElementById('btnKwFindGap');
-    if (btnKwPdf) btnKwPdf.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(typeof printWeekCard === 'function') printWeekCard(); };
-    if (btnKwShare) btnKwShare.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(typeof shareWeekPlan === 'function') shareWeekPlan(); };
-    if (btnKwFindGap) btnKwFindGap.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(typeof findAndJumpToNextFreeSlot === 'function') findAndJumpToNextFreeSlot(); };
+    var btnKwPdf = document.getElementById('weekKebabPdf');
+    var btnKwShare = document.getElementById('weekKebabShare');
+    if (btnKwPdf) btnKwPdf.onclick = function(){ var d=document.getElementById('weekKebabDropdown'); if(d)d.style.display='none'; if(typeof haptic==='function')haptic(6); if(typeof printWeekCard==='function')printWeekCard(); };
+    if (btnKwShare) btnKwShare.onclick = function(){ var d=document.getElementById('weekKebabDropdown'); if(d)d.style.display='none'; if(typeof haptic==='function')haptic(6); if(typeof shareWeekPlan==='function')shareWeekPlan(); };
     var monday = getWeekMonday(weekPlanKWIndex);
     var sunday = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + 6);
-    var sub = document.getElementById('weekHeaderSubtitle');
-    if (sub) sub.textContent = getKWLabel(weekPlanKWIndex) + ' · ' + monday.getDate() + '. – ' + sunday.getDate() + '.' + (sunday.getMonth() !== monday.getMonth() ? ' ' + ['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'][sunday.getMonth()] : '');
+    var kwBadge = document.getElementById('weekHeaderKwBadge');
+    if (kwBadge) kwBadge.textContent = getKWLabel(weekPlanKWIndex);
     if (typeof lucide !== 'undefined') lucide.createIcons();
+    /* Magic-Sheet: Saison-Vorlage, Lücke finden, Woche füllen */
+    var magicList = document.getElementById('weekMagicSheetList');
+    var magicSheet = document.getElementById('weekMagicSheet');
+    var magicBd = document.getElementById('weekMagicSheetBd');
+    if (magicList && magicSheet) {
+      magicList.innerHTML = '';
+      if (season) {
+        var btnSeason = document.createElement('button');
+        btnSeason.type = 'button';
+        btnSeason.className = 'week-magic-sheet-btn';
+        btnSeason.innerHTML = '<span class="week-magic-sheet-emo">✨</span><span>Vorlage \'' + (season.templateName || season.label || '') + '\' anwenden</span>';
+        btnSeason.onclick = function(){
+          if (typeof haptic === 'function') haptic(6);
+          closeWeekMagicSheet();
+          var list = typeof getWeekTemplates === 'function' ? getWeekTemplates() : [];
+          var search = (season.templateName || season.label || '').toLowerCase();
+          var tpl = list.find(function(t){ return (t.name || '').toLowerCase().indexOf(search) >= 0 || search.indexOf((t.name || '').toLowerCase()) >= 0; });
+          if (tpl && typeof applyTemplateToWeek === 'function') {
+            applyTemplateToWeek(tpl.id, weekPlanKWIndex);
+            if (typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard();
+            if (typeof renderProviderWeekPreview === 'function') renderProviderWeekPreview();
+            if (typeof showToast === 'function') showToast('Vorlage eingefügt');
+            var grid = document.getElementById('kwGrid');
+            if (grid) { grid.classList.add('kw-grid-just-applied'); setTimeout(function(){ grid.classList.remove('kw-grid-just-applied'); }, 800); }
+          } else if (typeof openWeekTemplatesSheet === 'function') {
+            openWeekTemplatesSheet();
+            if (list.length === 0 && typeof showToast === 'function') showToast('Speichere zuerst eine Woche als Vorlage.');
+          }
+        };
+        magicList.appendChild(btnSeason);
+      }
+      var btnGap = document.createElement('button');
+      btnGap.type = 'button';
+      btnGap.className = 'week-magic-sheet-btn';
+      btnGap.innerHTML = '<span class="week-magic-sheet-emo">🔍</span><span>Lücke finden</span>';
+      btnGap.onclick = function(){ if (typeof haptic === 'function') haptic(6); closeWeekMagicSheet(); if (typeof findAndJumpToNextFreeSlot === 'function') findAndJumpToNextFreeSlot(); };
+      magicList.appendChild(btnGap);
+      var btnFill = document.createElement('button');
+      btnFill.type = 'button';
+      btnFill.className = 'week-magic-sheet-btn';
+      btnFill.innerHTML = '<span class="week-magic-sheet-emo">📂</span><span>Woche aus Vorlage füllen</span>';
+      btnFill.onclick = function(){ if (typeof haptic === 'function') haptic(6); closeWeekMagicSheet(); if (typeof openWeekTemplatesSheet === 'function') openWeekTemplatesSheet(); };
+      magicList.appendChild(btnFill);
+    }
+  }
+  function openWeekMagicSheet(){
+    var bd = document.getElementById('weekMagicSheetBd');
+    var sheet = document.getElementById('weekMagicSheet');
+    if (bd && sheet){ bd.style.display = 'block'; bd.classList.add('active'); sheet.style.display = 'flex'; sheet.classList.add('active'); if (typeof haptic === 'function') haptic(6); }
+  }
+  function closeWeekMagicSheet(){
+    var bd = document.getElementById('weekMagicSheetBd');
+    var sheet = document.getElementById('weekMagicSheet');
+    if (bd && sheet){ bd.style.display = 'none'; bd.classList.remove('active'); sheet.style.display = 'none'; sheet.classList.remove('active'); }
+  }
+  /* Magic FAB + Kebab: einmalige Bindung */
+  if (!window.__weekMagicFabBound) {
+    window.__weekMagicFabBound = true;
+    setTimeout(function(){
+      var fab = document.getElementById('weekMagicFab');
+      if (fab) fab.onclick = function(){ openWeekMagicSheet(); };
+      var kebab = document.getElementById('btnWeekKebab');
+      var kebabDrop = document.getElementById('weekKebabDropdown');
+      if (kebab && kebabDrop) {
+        kebab.onclick = function(e){ e.stopPropagation(); if (typeof haptic === 'function') haptic(6); kebabDrop.style.display = kebabDrop.style.display === 'block' ? 'none' : 'block'; if (kebabDrop.style.display === 'block' && typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons(); };
+        document.addEventListener('click', function(){ if (kebabDrop) kebabDrop.style.display = 'none'; });
+        kebab.addEventListener('click', function(e){ e.stopPropagation(); });
+        if (kebabDrop) kebabDrop.onclick = function(e){ e.stopPropagation(); };
+      }
+    }, 500);
   }
   function renderWeekPlan(){
     updateSessionActivity();
