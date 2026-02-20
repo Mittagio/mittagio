@@ -15027,6 +15027,11 @@
       const saveDraft = () => { localStorage.setItem('wizard_draft', JSON.stringify(w)); };
       const dismissKeyboard = ()=>{ try { if(document.activeElement && document.activeElement.blur) document.activeElement.blur(); } catch(e){} };
       const hapticLight = ()=>{ try { if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); } catch(e){} };
+      var entryPoint = (w.ctx && w.ctx.entryPoint) || 'dashboard';
+      var isPlanMode = (entryPoint === 'week' || entryPoint === 'cookbook');
+      var useTwoStepFlow = !isPlanMode && entryPoint === 'dashboard';
+      if(useTwoStepFlow && typeof w.inseratStep !== 'number') w.inseratStep = 1;
+      var inseratStep = useTwoStepFlow ? (w.inseratStep === 2 ? 2 : 1) : 1;
       var listingDebounceTimer = null; /* Debounce für Autovervollständigung + Bildvorschläge */
       var LISTING_IMAGES_BASE = 'https://images.unsplash.com/';
       var listingImageMap = {
@@ -15057,6 +15062,62 @@
         return list.map(function(f){ return (f.indexOf('http')===0||f.indexOf('data:')===0) ? f : (base + f); });
       }
       function listingSuggestionsVisible(){ var cat = w.data.category; return !!cat || (w.data.photoSuggestionKey && listingImageMap[w.data.photoSuggestionKey]); }
+
+      // ========== 2-SCHRITT AIRBNB-FLOW: Step 2 = Entscheidungskarte (nur MODE_AD) ==========
+      if(inseratStep === 2 && useTwoStepFlow){
+        var step2Wrap=document.createElement('div');
+        step2Wrap.className='inserat-step2-wrap';
+        step2Wrap.style.cssText='display:flex; flex-direction:column; flex:1; min-height:0; overflow-y:auto; padding:16px;';
+        var step2Nav=document.createElement('div');
+        step2Nav.style.cssText='display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;';
+        var backBtn=document.createElement('button');
+        backBtn.type='button';
+        backBtn.className='inserat-step2-back';
+        backBtn.style.cssText='padding:8px 16px; border:none; background:rgba(0,0,0,0.06); border-radius:12px; font-size:14px; font-weight:700; color:#64748b; cursor:pointer;';
+        backBtn.textContent='← Zurück';
+        backBtn.onclick=function(){ hapticLight(); w.inseratStep=1; saveDraft(); rebuildWizard(); };
+        var step2Close=document.createElement('button');
+        step2Close.type='button';
+        step2Close.className='close-wizard-x';
+        step2Close.setAttribute('aria-label','Schließen');
+        step2Close.style.cssText='width:44px; height:44px; border:none; background:rgba(0,0,0,0.06); border-radius:50%; font-size:20px; cursor:pointer; display:flex; align-items:center; justify-content:center; color:#64748b;';
+        step2Close.textContent='×';
+        step2Close.onclick=function(){ hapticLight(); if(typeof handleWizardExit==='function') handleWizardExit(box); else closeWizard(); };
+        step2Nav.appendChild(backBtn);
+        step2Nav.appendChild(step2Close);
+        step2Wrap.appendChild(step2Nav);
+        var werbepaper=document.createElement('div');
+        werbepaper.className='inserat-werbepaper';
+        werbepaper.style.cssText='display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:24px;';
+        werbepaper.innerHTML='<div class="werbepaper-panel werbepaper-stress" style="padding:20px; border-radius:16px; background:rgba(241,245,249,0.9); border:2px solid rgba(0,0,0,0.06); text-align:center;"><span style="font-size:48px; display:block; margin-bottom:8px;">😤</span><p style="margin:0; font-size:14px; font-weight:800; color:#64748b;">Warteschlange</p><p style="margin:4px 0 0; font-size:12px; color:#94a3b8;">Stressig & lang</p></div><div class="werbepaper-panel werbepaper-hero" style="padding:20px; border-radius:16px; background:rgba(16,185,129,0.12); border:2px solid #10b981; text-align:center; box-shadow:0 4px 20px rgba(16,185,129,0.25);"><span style="font-size:48px; display:block; margin-bottom:8px;">🚀</span><p style="margin:0; font-size:14px; font-weight:800; color:#059669;">Abholnummer</p><p style="margin:4px 0 0; font-size:12px; color:#059669;">Schnell & easy</p></div>';
+        step2Wrap.appendChild(werbepaper);
+        var tilesRow=document.createElement('div');
+        tilesRow.className='inserat-decision-tiles';
+        tilesRow.style.cssText='display:grid; grid-template-columns:1fr 1fr; gap:16px;';
+        var hasDishS2=!!(w.data.dish&&String(w.data.dish).trim());
+        var hasPriceS2=Number(w.data.price)>0;
+        var primaryValidS2=hasDishS2&&hasPriceS2;
+        var isLeberkaeseS2=!!(w.ctx&&w.ctx.isLeberkaeseOnboarding);
+        var existingOfferS2=(w.ctx&&w.ctx.editOfferId&&typeof offers!=='undefined')?offers.find(function(o){return o.id===w.ctx.editOfferId;}):null;
+        var todayKeyS2=typeof isoDate==='function'?isoDate(new Date()):'';
+        var isEditActiveS2=!!(existingOfferS2&&existingOfferS2.day===todayKeyS2&&existingOfferS2.active!==false);
+        var tile499=document.createElement('button');
+        tile499.type='button';
+        tile499.className='inserat-decision-tile inserat-tile-secondary';
+        tile499.style.cssText='min-height:120px; padding:20px; border-radius:20px; border:2px solid #FACC15; background:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.06);';
+        tile499.innerHTML='<strong style="font-size:16px; color:#0f172a;">Nur Inserat</strong><span style="font-size:20px; font-weight:800; color:#FACC15;">4,99 €</span>';
+        tile499.onclick=function(){ if(!primaryValidS2){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; } hapticLight(); w.data.hasPickupCode=false; w.data.pricingOption=undefined; w.data.inseratFeeWaived=false; var o=previewOfferFromWizard(); closeWizard(true); showPublishFeeModal(o); };
+        var tileHero=document.createElement('button');
+        tileHero.type='button';
+        tileHero.className='inserat-decision-tile inserat-tile-hero inserat-tile-pulse';
+        tileHero.style.cssText='min-height:120px; padding:20px; border-radius:20px; border:none; background:linear-gradient(135deg,#10b981,#059669); color:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; cursor:pointer; box-shadow:0 8px 24px rgba(16,185,129,0.4); animation:inserat-hero-pulse 2s ease-in-out infinite;';
+        tileHero.innerHTML='<strong style="font-size:16px;">Mit Abholnummer</strong><span style="font-size:20px; font-weight:800;">0,00 €</span><small style="font-size:12px; opacity:0.9;">0,89 € pro Abholung</small>';
+        tileHero.onclick=function(){ if(!primaryValidS2){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; } if(tileHero.classList.contains('is-loading')) return; hapticLight(); if(isEditActiveS2){ w.data.hasPickupCode=w.data.hasPickupCode!==false; w.data.inseratFeeWaived=true; w.data.pricingOption='abholnummer'; var o=previewOfferFromWizard(); var published=typeof publishOffer==='function'?publishOffer(o):null; if(published){ closeWizard(true); if(typeof showToast==='function') showToast('Inserat ist live! 🚀'); if(typeof showProviderHome==='function') showProviderHome(); } return; } w.data.hasPickupCode=true; w.data.inseratFeeWaived=true; w.data.pricingOption='abholnummer'; var o=previewOfferFromWizard(); tileHero.classList.add('is-loading'); tileHero.innerHTML='<span class="inserat-btn-spinner" style="width:24px;height:24px;border:3px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:inserat-spin 0.8s linear infinite;"></span>'; setTimeout(function(){ closeWizard(true); showPublishFeeModal(o); }, 800); };
+        tilesRow.appendChild(tile499);
+        tilesRow.appendChild(tileHero);
+        step2Wrap.appendChild(tilesRow);
+        box.appendChild(step2Wrap);
+      } else {
 
       // ========== 1. EBENE (Header): Bild exakt 190px, „Foto ändern“-Pill mit Glassmorphism [cite: 2026-02-18] ==========
       const photoTile=document.createElement('div');
@@ -15114,10 +15175,10 @@
             pill.onclick=function(){ hapticLight(); if(!w.data.allergens) w.data.allergens=[]; if(active){ w.data.allergens=w.data.allergens.filter(function(x){ return x!==code; }); } else{ w.data.allergens.push(code); } w.data.wantsAllergens=true; saveDraft(); pill.className='extra-pill inserat-allergen-pill' + ((w.data.allergens||[]).includes(code) ? ' active' : ''); var bar=photoTile.nextElementSibling; if(bar){ var fb=bar.querySelectorAll('.func-icon-btn'); if(fb[0]) fb[0].className='func-icon-btn ' + (!!(w.data.allergens&&w.data.allergens.length) ? 'active' : ''); } };
             selectionOverlayInner.appendChild(pill);
           });
-          var allergenRow=document.createElement('div'); allergenRow.style.cssText='display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap; padding:12px 0 0; margin-top:8px; border-top:1px solid rgba(0,0,0,0.06);';
-          var btnFertigAll=document.createElement('button'); btnFertigAll.type='button'; btnFertigAll.textContent='Fertig'; btnFertigAll.style.cssText='padding:10px 20px; border-radius:999px; border:none; background:#10b981; color:#fff; font-weight:700; cursor:pointer;'; btnFertigAll.onclick=function(){ hapticLight(); closeHeaderSelection(); rebuildWizard(); };
+          var allergenRow=document.createElement('div'); allergenRow.style.cssText='display:flex; flex-direction:column; gap:10px; padding:12px 0 0; margin-top:8px; border-top:1px solid rgba(0,0,0,0.06);';
+          var btnFertigAll=document.createElement('button'); btnFertigAll.type='button'; btnFertigAll.className='inserat-fertig-kachel'; btnFertigAll.textContent='Fertig'; btnFertigAll.onclick=function(){ hapticLight(); closeHeaderSelection(); rebuildWizard(); };
           var btnSaveDefault=document.createElement('button'); btnSaveDefault.type='button'; btnSaveDefault.textContent='Als Standard speichern'; btnSaveDefault.style.cssText='padding:10px 16px; border-radius:999px; border:2px solid #10b981; background:transparent; color:#059669; font-weight:700; cursor:pointer; font-size:13px;'; btnSaveDefault.onclick=function(){ hapticLight(); if(!provider.profile) provider.profile={}; provider.profile.defaultAllergens=(w.data.allergens||[]).slice(); provider.profile.wantsAllergensByDefault=!!(w.data.allergens&&w.data.allergens.length); if(typeof save==='function') save(LS.provider,provider); if(typeof showToast==='function') showToast('Als Standard für zukünftige Inserate gespeichert'); else alert('Als Standard gespeichert.'); };
-          allergenRow.appendChild(btnFertigAll); allergenRow.appendChild(btnSaveDefault); selectionOverlayInner.appendChild(allergenRow);
+          allergenRow.appendChild(btnSaveDefault); allergenRow.appendChild(btnFertigAll); selectionOverlayInner.appendChild(allergenRow);
         } else if(type==='extras'){
           var defaultExtras = (profile.defaultExtras && profile.defaultExtras.length) ? profile.defaultExtras.slice() : [{ name:'Beilagensalat', price:2.5 }, { name:'Mayo', price:0.5 }, { name:'Ketchup', price:0.5 }, { name:'Soße', price:1 }, { name:'Brot', price:1.5 }];
           if(!Array.isArray(w.data.extras)) w.data.extras=[];
@@ -15137,10 +15198,10 @@
           var addPriceInp=document.createElement('input'); addPriceInp.type='text'; addPriceInp.inputMode='decimal'; addPriceInp.placeholder='0,00'; addPriceInp.style.cssText='padding:8px 12px; border-radius:10px; border:2px solid rgba(0,0,0,0.08); width:56px; font-size:14px;';
           var btnAddExtra=document.createElement('button'); btnAddExtra.type='button'; btnAddExtra.textContent='Hinzufügen'; btnAddExtra.style.cssText='padding:8px 14px; border-radius:999px; border:none; background:#10b981; color:#fff; font-weight:700; cursor:pointer; font-size:13px;'; btnAddExtra.onclick=function(){ hapticLight(); var name=(addNameInp.value||'').trim(); if(!name) return; var price=parseFloat((addPriceInp.value||'0').replace(',','.'))||0; if(w.data.extras.some(function(e){ return e.name===name; })) return; w.data.extras.push({ name:name, price:price }); saveDraft(); addNameInp.value=''; addPriceInp.value=''; var bar=photoTile.nextElementSibling; if(bar){ var fb=bar.querySelectorAll('.func-icon-btn'); if(fb[1]) fb[1].className='func-icon-btn active'; } var pillWrap=document.createElement('div'); pillWrap.style.cssText='display:flex; align-items:center; gap:6px;'; var btn=document.createElement('button'); btn.type='button'; btn.className='extra-pill active'; btn.style.cssText='cursor:pointer;'; btn.textContent='➕ '+name; btn.onclick=function(){ hapticLight(); var idx=w.data.extras.findIndex(function(e){ return e.name===name; }); if(idx>=0){ w.data.extras.splice(idx,1); } saveDraft(); pillWrap.remove(); var bar=photoTile.nextElementSibling; if(bar){ var fb=bar.querySelectorAll('.func-icon-btn'); fb[1].className='func-icon-btn '+(w.data.extras.length?'active':''); } }; pillWrap.appendChild(btn); if(price>0){ var inpWrap=document.createElement('span'); inpWrap.style.cssText='display:inline-flex; align-items:center; background:rgba(255,255,255,0.6); border-radius:999px; padding:4px 8px;'; var e=w.data.extras.find(function(x){ return x.name===name; }); inpWrap.innerHTML='<span style="font-size:10px; font-weight:800; color:#10b981; margin-right:4px;">+</span><input type="text" inputmode="decimal" style="width:36px; background:transparent; border:none; padding:0; font-size:12px; font-weight:800; color:#10b981; outline:none;" value="'+Number(price).toFixed(2).replace('.',',')+'"><span style="font-size:10px; font-weight:800; color:#10b981; margin-left:2px;">€</span>'; var inp=inpWrap.querySelector('input'); if(inp&&e){ inp.oninput=function(){ e.price=parseFloat((inp.value||'0').replace(',','.'))||0; saveDraft(); }; inp.onclick=function(ev){ ev.stopPropagation(); }; } pillWrap.appendChild(inpWrap); } extrasListWrap.appendChild(pillWrap); if(typeof showToast==='function') showToast('Extra hinzugefügt'); };
           extrasAddRow.appendChild(addNameInp); extrasAddRow.appendChild(addPriceInp); extrasAddRow.appendChild(btnAddExtra); selectionOverlayInner.appendChild(extrasAddRow);
-          var extrasBtnRow=document.createElement('div'); extrasBtnRow.style.cssText='display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap; padding:8px 0 0;';
-          var btnFertigEx=document.createElement('button'); btnFertigEx.type='button'; btnFertigEx.textContent='Fertig'; btnFertigEx.style.cssText='padding:10px 20px; border-radius:999px; border:none; background:#10b981; color:#fff; font-weight:700; cursor:pointer;'; btnFertigEx.onclick=function(){ hapticLight(); closeHeaderSelection(); rebuildWizard(); };
+          var extrasBtnRow=document.createElement('div'); extrasBtnRow.style.cssText='display:flex; flex-direction:column; gap:10px; padding:12px 0 0; margin-top:8px; border-top:1px solid rgba(0,0,0,0.06);';
+          var btnFertigEx=document.createElement('button'); btnFertigEx.type='button'; btnFertigEx.className='inserat-fertig-kachel'; btnFertigEx.textContent='Fertig'; btnFertigEx.onclick=function(){ hapticLight(); closeHeaderSelection(); rebuildWizard(); };
           var btnSaveExtras=document.createElement('button'); btnSaveExtras.type='button'; btnSaveExtras.textContent='In Inserateinstellungen übernehmen'; btnSaveExtras.style.cssText='padding:10px 16px; border-radius:999px; border:2px solid #10b981; background:transparent; color:#059669; font-weight:700; cursor:pointer; font-size:13px;'; btnSaveExtras.onclick=function(){ hapticLight(); if(!provider.profile) provider.profile={}; if(!Array.isArray(provider.profile.defaultExtras)) provider.profile.defaultExtras=[]; (w.data.extras||[]).forEach(function(e){ if(!e||!e.name) return; var has=provider.profile.defaultExtras.some(function(d){ return d&&d.name===e.name; }); if(!has) provider.profile.defaultExtras.push({ name:e.name, price:Number(e.price)||0 }); }); if(typeof save==='function') save(LS.provider,provider); if(typeof showToast==='function') showToast('Extras in Inserateinstellungen gespeichert'); else alert('Gespeichert.'); };
-          extrasBtnRow.appendChild(btnFertigEx); extrasBtnRow.appendChild(btnSaveExtras); selectionOverlayInner.appendChild(extrasBtnRow);
+          extrasBtnRow.appendChild(btnSaveExtras); extrasBtnRow.appendChild(btnFertigEx); selectionOverlayInner.appendChild(extrasBtnRow);
         } else if(type==='time'){
           selectionOverlayInner.classList.add('selection-overlay-inner--time');
           var pwParts=(w.data.pickupWindow||'11:30 – 14:00').split(/\s*[–\-]\s*/);
@@ -15148,7 +15209,7 @@
           var tEnd=(pwParts[1]||'14:00').trim();
           if(tStart.length===4) tStart='0'+tStart;
           if(tEnd.length===4) tEnd='0'+tEnd;
-          var row=document.createElement('div'); row.className='inserat-time-morph-row'; row.style.cssText='display:flex; align-items:center; justify-content:center; gap:12px; flex-wrap:wrap; padding:16px;';
+          var row=document.createElement('div'); row.className='inserat-time-morph-row'; row.style.cssText='display:flex; align-items:center; justify-content:center; gap:12px; flex-wrap:wrap; padding:16px 0;';
           var inpStart=document.createElement('input'); inpStart.type='time'; inpStart.className='inserat-pickup-time-input'; inpStart.value=tStart; inpStart.style.cssText='padding:10px 14px; border-radius:12px; border:2px solid rgba(0,0,0,0.08); background:rgba(255,255,255,0.7); backdrop-filter:blur(10px); font-size:16px; font-weight:700;';
           var inpEnd=document.createElement('input'); inpEnd.type='time'; inpEnd.className='inserat-pickup-time-input'; inpEnd.value=tEnd; inpEnd.style.cssText='padding:10px 14px; border-radius:12px; border:2px solid rgba(0,0,0,0.08); background:rgba(255,255,255,0.7); backdrop-filter:blur(10px); font-size:16px; font-weight:700;';
           var upd=function(){ w.data.pickupWindow=inpStart.value+' – '+inpEnd.value; saveDraft(); var bar=photoTile.nextElementSibling; if(bar){ var pills=bar.querySelectorAll('.status-pill'); if(pills[2]) pills[2].className='status-pill active'; } };
@@ -15157,9 +15218,9 @@
           row.appendChild(inpStart);
           row.appendChild(document.createTextNode(' – '));
           row.appendChild(inpEnd);
-          var btnFertig=document.createElement('button'); btnFertig.type='button'; btnFertig.textContent='Fertig'; btnFertig.style.cssText='padding:10px 20px; border-radius:999px; border:none; background:#10b981; color:#fff; font-weight:700; cursor:pointer; margin-left:8px;'; btnFertig.onclick=function(){ hapticLight(); closeHeaderSelection(); rebuildWizard(); };
-          row.appendChild(btnFertig);
           selectionOverlayInner.appendChild(row);
+          var btnFertig=document.createElement('button'); btnFertig.type='button'; btnFertig.className='inserat-fertig-kachel'; btnFertig.textContent='Fertig'; btnFertig.onclick=function(){ hapticLight(); closeHeaderSelection(); rebuildWizard(); };
+          selectionOverlayInner.appendChild(btnFertig);
         }
       }
       function toggleHeaderSelection(type){ hapticLight(); renderSelectionContent(type); photoTile.classList.add('is-selecting'); }
@@ -15231,7 +15292,7 @@
         backdrop.className='inserat-bottom-sheet-backdrop';
         var sheet=document.createElement('div');
         sheet.className='inserat-bottom-sheet';
-        sheet.innerHTML='<div class="inserat-sheet-handle" aria-hidden="true"></div><p style="margin:0 0 16px; font-size:16px; font-weight:800; color:#0f172a;">Allergene</p><div class="inserat-allergen-pills-wrap" style="display:flex; flex-wrap:wrap; gap:8px;"></div><button type="button" class="inserat-sheet-done" style="margin-top:20px; width:100%; min-height:52px; border-radius:16px; border:none; background:#10b981; color:#fff; font-size:16px; font-weight:800; cursor:pointer;">Fertig</button>';
+        sheet.innerHTML='<div class="inserat-sheet-handle" aria-hidden="true"></div><p style="margin:0 0 16px; font-size:16px; font-weight:800; color:#0f172a;">Allergene</p><div class="inserat-allergen-pills-wrap" style="display:flex; flex-wrap:wrap; gap:8px;"></div><button type="button" class="inserat-sheet-done inserat-fertig-kachel">Fertig</button>';
         var wrap=sheet.querySelector('.inserat-allergen-pills-wrap');
         (typeof ALLERGENS_14!=='undefined'?ALLERGENS_14:[]).forEach(function(a){
           var code=a.short; var name=a.name||code; var active=(w.data.allergens||[]).includes(code);
@@ -15351,25 +15412,28 @@
       const catPriceRow=document.createElement('div');
       catPriceRow.className='inserat-cat-price-row';
       catPriceRow.id='step-cat';
-      catPriceRow.style.cssText='display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-top:16px;';
+      catPriceRow.style.cssText='display:flex; flex-direction:column; gap:16px; margin-top:16px;';
       const catValues = ['Fleisch','Vegetarisch','Vegan','Salat'];
       const catDisplayLabels = ['Mit Fleisch','Vegetarisch','Vegan','Salat'];
-      const catEmojis = ['🥩','🥦','🌱','🥪'];
+      const catEmojis = ['🥩','🥦','🌱','🥗'];
       const currentCat = w.data.category || 'Fleisch';
       if(!catValues.includes(currentCat)) w.data.category = 'Fleisch';
       const stepCat=document.createElement('div');
-      stepCat.className='inserat-cat-pills';
-      stepCat.style.display='flex'; stepCat.style.flexWrap='wrap'; stepCat.style.gap='8px';
+      stepCat.className='inserat-cat-tiles inserat-cat-grid';
+      stepCat.style.cssText='display:grid; grid-template-columns:1fr 1fr; gap:12px; width:100%;';
       catValues.forEach((c,i)=>{
         const b=document.createElement('button');
         b.type='button';
-        b.className='extra-pill inserat-cat-pill' + (w.data.category===c ? ' active' : '');
-        b.style.cssText='flex:0 0 auto; cursor:pointer;';
-        b.textContent=(catEmojis[i]||'')+' '+catDisplayLabels[i];
+        b.className='inserat-cat-tile' + (w.data.category===c ? ' active' : '');
+        b.style.cssText='min-height:80px; aspect-ratio:1; border-radius:16px; border:2px solid transparent; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; cursor:pointer; background:rgba(0,0,0,0.03); transition:all 0.2s ease; font-size:14px; font-weight:700; color:#64748b;';
+        if(w.data.category===c) b.style.cssText+=' background:rgba(16,185,129,0.15); border-color:#10b981; color:#059669; box-shadow:0 4px 12px rgba(16,185,129,0.2);';
+        b.innerHTML='<span style="font-size:28px;">'+(catEmojis[i]||'')+'</span><span>'+(catDisplayLabels[i]||c)+'</span>';
         b.onclick=()=>{ hapticLight(); w.data.category=c; saveDraft(); rebuildWizard(); };
         stepCat.appendChild(b);
       });
       catPriceRow.appendChild(stepCat);
+      var priceRowWrap=document.createElement('div');
+      priceRowWrap.style.cssText='display:flex; justify-content:flex-end; align-items:center;';
       const stepPriceWrap=document.createElement('div');
       stepPriceWrap.id='step-price';
       stepPriceWrap.className='inserat-price-pill-wrap';
@@ -15392,7 +15456,8 @@
       };
       stepPriceWrap.appendChild(inputPrice);
       var eurSpan=document.createElement('span'); eurSpan.className='inserat-price-pill-euro'; eurSpan.textContent=' €'; stepPriceWrap.appendChild(eurSpan);
-      catPriceRow.appendChild(stepPriceWrap);
+      priceRowWrap.appendChild(stepPriceWrap);
+      catPriceRow.appendChild(priceRowWrap);
       inputDish.addEventListener('keydown', function(){
         if(!catPriceRow || catPriceRow.classList.contains('harmonic-bounce')) return;
         catPriceRow.classList.add('harmonic-bounce');
@@ -15411,8 +15476,6 @@
       scrollArea.appendChild(stepName);
       scrollArea.appendChild(catPriceRow);
       requestAnimationFrame(function(){ requestAnimationFrame(function(){ if(typeof adjustTitleFontSize === 'function') adjustTitleFontSize(); }); });
-      var entryPoint = (w.ctx && w.ctx.entryPoint) || 'dashboard';
-      var isPlanMode = (entryPoint === 'week' || entryPoint === 'cookbook');
 
       // Verdienstvorschau (MODE_AD): Dein Verdienst bei 30 Portionen [cite: Master-Prompt 2026-02-19]
       if(!isPlanMode && entryPoint === 'dashboard'){
@@ -15477,72 +15540,25 @@
         };
         actionSection.appendChild(btnCookOnly);
       } else if(entryPoint === 'dashboard'){
-        var isLeberkaeseOnboarding = !!(w.ctx && w.ctx.isLeberkaeseOnboarding);
-        var todayKey = typeof isoDate === 'function' ? isoDate(new Date()) : '';
-        var existingOffer = (w.ctx && w.ctx.editOfferId && typeof offers !== 'undefined') ? offers.find(function(o){ return o.id === w.ctx.editOfferId; }) : null;
-        var isEditActiveOffer = !!(existingOffer && existingOffer.day === todayKey && existingOffer.active !== false && entryPoint === 'dashboard');
-        var pricingLabel=document.createElement('div');
-        pricingLabel.className='pricing-info-label' + (isLeberkaeseOnboarding ? ' inserat-onboarding-tooltip' : '');
-        pricingLabel.setAttribute('role','button');
-        pricingLabel.setAttribute('aria-label','Preisübersicht anzeigen');
-        if(isLeberkaeseOnboarding) pricingLabel.setAttribute('data-tooltip','Hier kriegst du volle Transparenz');
-        pricingLabel.textContent='Preisübersicht ⓘ';
-        pricingLabel.onclick=function(e){ e.preventDefault(); e.stopPropagation(); hapticLight(); if(typeof openPricingFairnessOverlay==='function') openPricingFairnessOverlay(); };
-        actionSection.appendChild(pricingLabel);
-        const btnGratis=document.createElement('button');
-        btnGratis.type='button';
-        btnGratis.className='inserat-btn-primary inserat-btn-emerald' + (w.ctx && w.ctx.rennerFastTrack ? ' renner-fast-pulse' : '');
-        btnGratis.textContent= isEditActiveOffer ? 'Änderungen übernehmen' : 'mit Abholnummer';
-        btnGratis.onclick=function(){
-          if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; }
-          if(btnGratis.classList.contains('is-loading')) return;
-          if(typeof haptic==='function') haptic([30, 50, 30]);
-          if(isEditActiveOffer){
-            w.data.hasPickupCode = w.data.hasPickupCode !== false; w.data.inseratFeeWaived = true; w.data.pricingOption = 'abholnummer';
-            var o = previewOfferFromWizard();
-            var published = typeof publishOffer === 'function' ? publishOffer(o) : null;
-            if(published){ closeWizard(true); if(typeof showToast==='function') showToast('Inserat ist live! 🚀'); if(typeof showProviderHome==='function') showProviderHome(); }
-            return;
-          }
-          w.data.hasPickupCode=true; w.data.inseratFeeWaived=true; w.data.pricingOption='abholnummer';
-          var o=previewOfferFromWizard();
-          btnGratis.classList.add('is-loading');
-          btnGratis.innerHTML='<span class="inserat-btn-spinner"></span>';
-          btnGratis.disabled=true;
-          if(btn499) btn499.disabled=true;
-          setTimeout(function(){
-            closeWizard(true);
-            showPublishFeeModal(o);
-          }, 800);
-        };
-        actionSection.appendChild(btnGratis);
-        const btn499=document.createElement('button');
-        btn499.type='button';
-        btn499.className='inserat-btn-secondary inserat-btn-yellow-border';
-        btn499.textContent='Jetzt für 4,99 € inserieren';
-        btn499.onclick=function(){ if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; } if(btn499.disabled) return; if(typeof haptic==='function') haptic([30, 50, 30]); w.data.hasPickupCode=false; w.data.pricingOption=undefined; w.data.inseratFeeWaived=false; var o=previewOfferFromWizard(); closeWizard(true); showPublishFeeModal(o); };
-        actionSection.appendChild(btn499);
-        // Ohne Live: Im Wochenplan speichern | Im Kochbuch speichern (Plan 3.3)
-        var saveRow=document.createElement('div');
-        saveRow.className='inserat-save-without-live';
-        saveRow.style.cssText='display:flex; gap:12px; margin-top:12px; flex-wrap:wrap;';
-        if(w.data.day || entryPoint==='week'){
-          var btnWeek=document.createElement('button');
-          btnWeek.type='button';
-          btnWeek.className='inserat-btn-text';
-          btnWeek.style.cssText='flex:1; min-height:44px; padding:10px 16px; font-size:14px; font-weight:600; color:#64748b; background:transparent; border:1px solid var(--border, #e2e8f0); border-radius:16px; cursor:pointer;';
-          btnWeek.textContent='Im Wochenplan speichern';
-          btnWeek.onclick=function(){ if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; } if(typeof haptic==='function') haptic(50); var id=saveToCookbookFromWizard(); if(id && w.data.day){ if(!week[w.data.day]) week[w.data.day]=[]; var c=cookbook.find(function(x){ return x.id===id; }); if(c) week[w.data.day].push({ providerId:c.providerId, cookbookId:c.id, dish:c.dish, price:c.price }); save(LS.week, week); closeWizard(true); showSaveSuccessSheet({ title:'Im Wochenplan gespeichert', sub:'Dein Gericht ist im Wochenplan eingetragen.', dishName: w.data.dish||'', price: w.data.price, imageUrl: w.data.photoData||'', savedEntryId: id, savedDay: w.data.day, onFertig: function(){ if(typeof showToast==='function') showToast('Im Wochenplan gespeichert 📅'); if(typeof showProviderWeek==='function') showProviderWeek(); }, onLive: null }); } }
-          saveRow.appendChild(btnWeek);
-        }
-        var btnCook=document.createElement('button');
-        btnCook.type='button';
-        btnCook.className='inserat-btn-text';
-        btnCook.style.cssText='flex:1; min-height:44px; padding:10px 16px; font-size:14px; font-weight:600; color:#64748b; background:transparent; border:1px solid var(--border, #e2e8f0); border-radius:16px; cursor:pointer;';
-        btnCook.textContent='Im Kochbuch speichern';
-        btnCook.onclick=function(){ if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; } if(typeof haptic==='function') haptic(50); var id=saveToCookbookFromWizard(); if(id){ closeWizard(true); showSaveSuccessSheet({ title:'Im Kochbuch gespeichert', sub:'Dein Gericht ist in deinem Kochbuch.', dishName: w.data.dish||'', price: w.data.price, imageUrl: w.data.photoData||'', savedEntryId: id, savedDay: null, onFertig: function(){ if(typeof showToast==='function') showToast('Gericht im Kochbuch aktualisiert 📖'); if(typeof showProviderCookbook==='function') showProviderCookbook(); }, onLive: null }); } }
-        saveRow.appendChild(btnCook);
-        actionSection.appendChild(saveRow);
+        /* 2-Schritt Airbnb-Flow Step 1: Speichern in... | Weiter zur Veröffentlichung */
+        var step1NavRow=document.createElement('div');
+        step1NavRow.className='inserat-step1-nav';
+        step1NavRow.style.cssText='display:flex; gap:12px; width:100%; align-items:stretch;';
+        var btnSpeichern=document.createElement('button');
+        btnSpeichern.type='button';
+        btnSpeichern.className='inserat-btn-step1-left';
+        btnSpeichern.style.cssText='flex:1; min-height:56px; padding:14px 20px; border:2px solid rgba(0,0,0,0.1); border-radius:16px; background:#fff; font-size:15px; font-weight:700; color:#64748b; cursor:pointer;';
+        btnSpeichern.textContent='Speichern in...';
+        btnSpeichern.onclick=function(){ hapticLight(); if(typeof showSaveScopeDialog==='function') showSaveScopeDialog({ onlyCurrent: function(){ saveDraft(); if(typeof showToast==='function') showToast('Als Entwurf gespeichert'); }, saveToCookbook: function(){ if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; } var id=saveToCookbookFromWizard(); if(id){ closeWizard(true); showSaveSuccessSheet({ title:'Im Kochbuch gespeichert', sub:'Dein Gericht ist in deinem Kochbuch.', dishName: w.data.dish||'', price: w.data.price, imageUrl: w.data.photoData||'', savedEntryId: id, savedDay: null, onFertig: function(){ if(typeof showToast==='function') showToast('Gericht im Kochbuch aktualisiert 📖'); if(typeof showProviderCookbook==='function') showProviderCookbook(); }, onLive: null }); } } }); };
+        var btnWeiter=document.createElement('button');
+        btnWeiter.type='button';
+        btnWeiter.className='inserat-btn-step1-right';
+        btnWeiter.style.cssText='flex:1; min-height:56px; padding:14px 20px; border:none; border-radius:16px; background:#3b82f6; color:#fff; font-size:15px; font-weight:800; cursor:pointer; box-shadow:0 4px 16px rgba(59,130,246,0.4);';
+        btnWeiter.textContent='Weiter zur Veröffentlichung';
+        btnWeiter.onclick=function(){ hapticLight(); w.inseratStep=2; saveDraft(); rebuildWizard(); };
+        step1NavRow.appendChild(btnSpeichern);
+        step1NavRow.appendChild(btnWeiter);
+        actionSection.appendChild(step1NavRow);
       } else {
         var btnCookbookPlan=document.createElement('button');
         btnCookbookPlan.type='button';
@@ -15646,6 +15662,8 @@
         };
         box.appendChild(draftOverlay);
       }
+
+      } /* Ende else (Step 1) */
 
       bindKeyboardAvoidance();
       setWizardContent(sheet);

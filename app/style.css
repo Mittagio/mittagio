@@ -2041,6 +2041,7 @@
       animation: rennerGreenPulse 2s ease-in-out infinite;
     }
     @keyframes rennerGreenPulse { 0%, 100% { box-shadow: 0 10px 30px rgba(16,185,129,0.35); transform: scale(1); } 50% { box-shadow: 0 12px 36px rgba(16,185,129,0.45); transform: scale(1.01); } }
+    @keyframes inserat-hero-pulse { 0%, 100% { box-shadow: 0 8px 24px rgba(16,185,129,0.4); transform: scale(1); } 50% { box-shadow: 0 12px 32px rgba(16,185,129,0.5); transform: scale(1.02); } }
     #wizard[data-flow="listing"] .inserat-btn-primary.is-loading { pointer-events: none; }
     #wizard[data-flow="listing"] .inserat-btn-spinner {
       display: inline-block; width: 22px; height: 22px; border: 3px solid rgba(255,255,255,0.35);
@@ -2647,6 +2648,16 @@
       cursor: pointer; transition: background 0.2s, color 0.2s, border-color 0.2s;
       -webkit-tap-highlight-color: transparent;
     }
+    /* Einheitliche Fertig-Kachel für alle Sub-Sheets [2-Schritt Airbnb-Flow] */
+    .inserat-bottom-sheet .inserat-sheet-done,
+    .inserat-fertig-kachel {
+      width: 100%; min-height: 60px; padding: 16px 24px; margin-top: 20px;
+      border-radius: 16px; border: none; background: #10b981; color: #fff;
+      font-size: 16px; font-weight: 800; cursor: pointer;
+      box-shadow: 0 4px 16px rgba(16,185,129,0.3); transition: transform 0.1s ease;
+    }
+    .inserat-bottom-sheet .inserat-sheet-done:active,
+    .inserat-fertig-kachel:active { transform: scale(0.98); }
     .inserat-bottom-sheet .inserat-allergen-pill.active {
       background: rgba(16,185,129,0.15); color: #059669; border-color: rgba(16,185,129,0.4);
     }
@@ -2843,11 +2854,16 @@
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .power-bar-legend-trigger {
       background: rgba(0,0,0,0.04) !important; border: none !important; box-shadow: none !important; color: #94a3b8;
     }
-    /* Aktiv: nur Emerald-Glow, kein massiver Hintergrund */
+    /* Aktiv: Emerald-Glow (Thin-Stroke-Style), kein massiver Kasten */
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .status-pill.active,
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .func-icon-btn.active {
-      background: rgba(16,185,129,0.15) !important; color: #059669 !important; border: none !important;
+      background: rgba(16,185,129,0.12) !important; color: #059669 !important; border: none !important;
+      box-shadow: 0 0 0 1px rgba(16,185,129,0.25), 0 2px 8px rgba(16,185,129,0.2) !important;
     }
+    /* 2-Schritt Airbnb-Flow: Step 2 Entscheidungskarte */
+    .inserat-step2-wrap .inserat-decision-tile { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+    .inserat-step2-wrap .inserat-decision-tile:active { transform: scale(0.98); }
+    .inserat-step2-wrap .inserat-tile-hero.inserat-tile-pulse { animation: inserat-hero-pulse 2s ease-in-out infinite; }
     /* Info-Legende Bottom-Sheet: Aktiviert-Zustand */
     .info-legend-item.active { background: rgba(16,185,129,0.1) !important; border: 2px solid rgba(16,185,129,0.4); box-shadow: 0 2px 12px rgba(16,185,129,0.25), 0 0 0 1px rgba(16,185,129,0.15); }
     /* #psheet-CSS entfernt (Legacy) – InseratCard nur im #wizard [cite: 2026-02-18] */
