@@ -1,0 +1,33 @@
+---
+description: Archiv & Master-Law – Einzige MITTAGIO_MASTER_RULES.md zählt, _archive ignorieren
+alwaysApply: true
+---
+
+# Archiv & Master-Law (Agent-Modus)
+
+Ab sofort gilt ein striktes Regelwerk:
+
+## 1. Datei-Isolation
+
+- **Ignorieren:** Alle Dateien im Ordner `docs/_archive/` sowie alle `.md`-Dateien, **außer** `MITTAGIO_MASTER_RULES.md`.
+- Keine Design-Entscheidungen aus verstreuten Konzept-Docs, alten Specs oder archivierten Dateien.
+
+## 2. Die neue Bibel
+
+- **Einzige Quelle für Design:** `MITTAGIO_MASTER_RULES.md` (Projektroot).
+- Nutze ausschließlich diese Datei für:
+  - Airbnb-Style
+  - Edge-to-Edge
+  - 100×100 Card
+  - Inseratsflow-Layout (Foto volle Breite, keine Paddings)
+
+## 3. Inseratsflow-Layout
+
+- Foto oben **volle Breite**, bündig mit dem Rand.
+- **Keine inneren Abstände** (Paddings) oberhalb oder seitlich des Fotos.
+- Implementierung: `app/style.css` und `app/script.js` – alle Paddings/Margins entfernen, die das Foto einrücken.
+
+## 4. Priorität bei Widerspruch
+
+- **Master-Regel > alte Dateien.** Wenn eine Anweisung in `docs/_archive/` oder anderem `.md` der Master-Regel widerspricht, hat die Master-Regel immer Vorrang.
+- Keine Halluzinationen: Design-Vorgaben kommen ausschließlich aus `MITTAGIO_MASTER_RULES.md`.

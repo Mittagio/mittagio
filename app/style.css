@@ -2398,6 +2398,16 @@
     @keyframes wizardShimmer{ 0%{ background-position:200% 0; } 100%{ background-position:-200% 0; } }
 
     /* ========== INSERATSFLOW (TOTALER RESET & SILICON VALLEY) ========== */
+    /* Edge-to-Edge: Foto volle Breite, keine inneren Abstände [cite: 2026-02-18 MITTAGIO_MASTER_RULES] */
+    #wizard[data-flow="listing"] .handle { display: none !important; }
+    #wizard[data-flow="listing"] .liquid-master-panel.listing-glass-panel,
+    #wizard[data-flow="listing"] .liquid-master-panel.glass-express-step0,
+    #wizard[data-flow="listing"] .liquid-master-panel.s25-floating-panel {
+      max-width: 100% !important;
+      width: 100% !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
     /* Sheet: feste Höhe + Flex, damit innen nur .inserat-scroll-area scrollt */
     #wizard[data-flow="listing"].sheet--kitchen.active {
       max-height: 100dvh !important;
