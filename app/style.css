@@ -2517,13 +2517,14 @@
       font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.1em;
       margin: 0 0 8px; display: block;
     }
+    /* Visual Cleanness: Keine Trennlinien/grauer Hintergrund – Content scheint durch [cite: 2026-02-18] */
     .liquid-master-panel .fixed-footer,
     .liquid-master-panel .inserat-action-section {
       flex-shrink: 0; padding: 20px;
-      padding-bottom: calc(15px + env(safe-area-inset-bottom, 0px));
+      padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+      margin-bottom: 16px;
       background: transparent;
       border: none;
-      border-top: 1px solid #e2e8f0;
       box-shadow: none;
     }
     
@@ -2679,21 +2680,21 @@
     #wizard[data-flow="listing"] .inserat-card-sheet .magnet-input { color: #0f172a; font-weight: 800; }
     #wizard[data-flow="listing"] .inserat-card-sheet .inserat-airbnb-desc,
     #wizard[data-flow="listing"] .inserat-card-sheet .inserat-desc-input { color: #64748b; }
-    /* Foto ändern / FOTO HINZUFÜGEN: Glass-Pill, unten zentriert [cite: 2026-02-16, plan Smart-Photo] */
+    /* Foto ändern: Glassmorphism-Pill (Frosted Glass), unten zentriert [cite: 2026-02-18 Master Card] */
     #wizard[data-flow="listing"] .liquid-master-panel .photo-header .inserat-photo-change,
     #wizard[data-flow="listing"] .liquid-master-panel .inserat-photo-tile.photo-header .inserat-photo-change {
       position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
       z-index: 10;
       border-radius: 30px;
-      background: rgba(0,0,0,0.5);
-      backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+      background: rgba(0,0,0,0.35);
+      backdrop-filter: blur(16px) saturate(140%); -webkit-backdrop-filter: blur(16px) saturate(140%);
+      border: 1px solid rgba(255,255,255,0.15);
       color: #fff;
-      padding: 8px 16px;
-      border: none;
+      padding: 10px 20px;
       font-size: 14px; font-weight: 700;
       cursor: pointer; display: inline-flex; align-items: center; gap: 8px;
       -webkit-tap-highlight-color: transparent;
-      box-shadow: var(--tgtg-shadow-minimal, 0 1px 3px rgba(0,0,0,0.04));
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
       transition: transform 0.12s ease;
     }
     #wizard[data-flow="listing"] .liquid-master-panel .photo-header .inserat-photo-change:hover,
@@ -2831,9 +2832,9 @@
     #wizard[data-flow="listing"] .inserat-power-bar .status-pill:active { transform: scale(0.9); }
     #wizard[data-flow="listing"] .inserat-power-bar .power-bar-legend-trigger:hover,
     #wizard[data-flow="listing"] .inserat-power-bar .power-bar-legend-trigger:focus { color: #64748b; }
-    /* Power-Bar Soft-Shell: Tabula Rasa – weiße Leinwand, kein beiger Streifen [cite: Plan InseratCard] */
+    /* Power-Bar: Kein grauer Hintergrund, Emerald-Glow hinter Icons [cite: 2026-02-18 Master Card] */
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell {
-      background: #fff; border-bottom: 1px solid rgba(0,0,0,0.04);
+      background: transparent; border-bottom: 1px solid rgba(0,0,0,0.04);
       padding: 10px 16px; gap: 8px; flex-wrap: nowrap; justify-content: space-between;
     }
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .status-pill,
@@ -2848,20 +2849,34 @@
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .power-bar-legend-trigger { color: #94a3b8; }
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .inserat-pill-emo { font-size: 14px; }
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .power-bar-legend-round { width: 44px; height: 44px; border-radius: 50%; font-size: 14px; }
-    /* Inaktiv: dezent grau auf weißer Leinwand */
+    /* Inaktiv: transparent, kein grauer Hintergrund */
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .status-pill.inactive,
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .func-icon-btn:not(.active),
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .power-bar-legend-trigger {
-      background: rgba(0,0,0,0.04) !important; border: none !important; box-shadow: none !important; color: #94a3b8;
+      background: transparent !important; border: none !important; box-shadow: none !important; color: #94a3b8;
     }
-    /* Aktiv: Emerald-Glow (Thin-Stroke-Style), kein massiver Kasten */
+    /* Aktiv: Emerald-Glow (sanftes grünes Leuchten hinter den Icons) */
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .status-pill.active,
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .func-icon-btn.active {
-      background: rgba(16,185,129,0.12) !important; color: #059669 !important; border: none !important;
-      box-shadow: 0 0 0 1px rgba(16,185,129,0.25), 0 2px 8px rgba(16,185,129,0.2) !important;
+      background: rgba(16,185,129,0.15) !important; color: #059669 !important; border: none !important;
+      box-shadow: 0 0 12px rgba(16,185,129,0.35), 0 0 24px rgba(16,185,129,0.15) !important;
     }
-    /* 2-Schritt Airbnb-Flow: Step 2 Entscheidungskarte */
-    .inserat-step2-wrap .inserat-decision-tile { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+    /* Airbnb-Bottom-Tiles: Schweben über Nav, border-radius 24px, weicher Schatten [cite: 2026-02-18] */
+    #wizard[data-flow="listing"] .inserat-step1-nav {
+      display: flex; gap: 12px; width: 100%; min-height: 60px; align-items: stretch;
+    }
+    #wizard[data-flow="listing"] .inserat-btn-step1-left,
+    #wizard[data-flow="listing"] .inserat-btn-step1-right {
+      border-radius: 24px !important; box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important;
+    }
+    #wizard[data-flow="listing"] .inserat-btn-step1-left:active,
+    #wizard[data-flow="listing"] .inserat-btn-step1-right:active { transform: scale(0.98); }
+    /* 2-Schritt Airbnb-Flow: Step 2 – Kacheln schweben mit 24px radius, 16px über Nav [cite: 2026-02-18] */
+    .inserat-step2-wrap .inserat-decision-tile {
+      border-radius: 24px !important;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
     .inserat-step2-wrap .inserat-decision-tile:active { transform: scale(0.98); }
     .inserat-step2-wrap .inserat-tile-hero.inserat-tile-pulse { animation: inserat-hero-pulse 2s ease-in-out infinite; }
     /* Info-Legende Bottom-Sheet: Aktiviert-Zustand */
@@ -3479,12 +3494,12 @@
     }
     /* Bottom-Nav Provider: Schwebende Anthrazit-Pill, identisch zum Kundenseiten-Layout (Rounded-Style) [cite: 2026-02-18] */
     #providerNav.provider-nav-pill{
-      background: rgba(26, 26, 26, 0.85) !important;
-      backdrop-filter: blur(15px);
-      -webkit-backdrop-filter: blur(15px);
+      background: rgba(26, 26, 26, 0.65) !important;
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
       border: none !important;
-      border-radius: 2.5rem !important;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.2) !important;
+      border-radius: 34px !important;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.15) !important;
     }
     #providerNav:not(.provider-nav-pill){
       background: rgba(255,255,255,0.98) !important;
@@ -3513,8 +3528,11 @@
     .provider-nav-pill .provider-nav-label{ font-size:10px; font-weight:700; text-align:center; letter-spacing:0.02em; display:block; }
     .provider-nav-pill .navbtn:not(.active) .provider-nav-label{ color:rgba(255,255,255,0.5); }
     .provider-nav-pill .navbtn.active .provider-nav-label{ color:#fff; }
-    /* Schwebende Bottom-Nav: Rounded-Style wie Kunde, 75px Höhe für S25 [cite: 2026-02-18] */
-    #providerNavWrap.provider-nav-wrap-pill{ bottom: 24px !important; left: 0 !important; right: 0 !important; padding: 0 max(16px, env(safe-area-inset-right)) max(0px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); width: 100%; box-sizing: border-box; z-index: 1052 !important; }
+    /* Schwebende Glas-Pill: bottom/left/right 12px, border-radius 34px, blur(25px) [cite: 2026-02-18] */
+    #providerNavWrap.provider-nav-wrap-pill{
+      bottom: 12px !important; left: 12px !important; right: 12px !important;
+      width: auto !important; box-sizing: border-box; z-index: 1052 !important;
+    }
     #providerNavWrap #providerNav{ min-height: 75px; padding: 12px 24px calc(12px + env(safe-area-inset-bottom, 0)); display: flex; justify-content: space-between; align-items: center; }
     [id^="v-provider-"] .panel h1,[id^="v-provider-"] .panel h2,[id^="v-provider-"] .panel h3,[id^="v-provider-"] .panel .section-title{ color:var(--provider-text) !important; }
     [id^="v-provider-"] .panel .hint{ color:var(--provider-text-muted) !important; }
@@ -5956,8 +5974,8 @@
       /* Wochenplan fullscreen: Topbar ausblenden, main ohne horizontales Scroll – applike */
       body.provider-week-active .topbar{ display:none !important; }
       body.provider-week-active main{ padding-top:0 !important; padding-left:0 !important; padding-right:0 !important; max-width:none !important; overflow-x:hidden !important; }
-      /* Tab-Nav bleibt fix sichtbar (z-index über Action-Bar) */
-      body.provider-week-active #providerNavWrap{ position:fixed !important; bottom:0 !important; left:0 !important; right:0 !important; z-index:1052 !important; }
+      /* Tab-Nav bleibt fix sichtbar (Glas-Pill mit 12px Inset) */
+      body.provider-week-active #providerNavWrap{ position:fixed !important; bottom:12px !important; left:12px !important; right:12px !important; z-index:1052 !important; }
       /* Dashboard: Dein Wochenplan – klare Trennung von KPIs, App-Kasten, S25-Safe */
       #providerWeekSection .prov-card{ padding:var(--card-padding, 20px); border-radius:24px; box-shadow:0 4px 20px rgba(0,0,0,0.06); border:none; background:#fff; }
       #providerWeekSection{ margin-top:28px; padding:24px 16px 24px; padding-left:max(16px, env(safe-area-inset-left)); padding-right:max(16px, env(safe-area-inset-right)); background:#fff; border-radius:28px; box-shadow:0 4px 24px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04); }

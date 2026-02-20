@@ -15104,14 +15104,14 @@
         var tile499=document.createElement('button');
         tile499.type='button';
         tile499.className='inserat-decision-tile inserat-tile-secondary';
-        tile499.style.cssText='min-height:120px; padding:20px; border-radius:20px; border:2px solid #FACC15; background:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.06);';
-        tile499.innerHTML='<strong style="font-size:16px; color:#0f172a;">Nur Inserat</strong><span style="font-size:20px; font-weight:800; color:#FACC15;">4,99 €</span>';
+        tile499.style.cssText='min-height:120px; padding:20px; border-radius:24px; border:2px solid #FACC15; background:rgba(255,255,255,0.9); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; cursor:pointer; box-shadow:0 10px 30px rgba(0,0,0,0.15); backdrop-filter:blur(12px);';
+        tile499.innerHTML='<strong style="font-size:16px; color:#0f172a;">Nur Inserat (4,99 €)</strong>';
         tile499.onclick=function(){ if(!primaryValidS2){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; } hapticLight(); w.data.hasPickupCode=false; w.data.pricingOption=undefined; w.data.inseratFeeWaived=false; var o=previewOfferFromWizard(); closeWizard(true); showPublishFeeModal(o); };
         var tileHero=document.createElement('button');
         tileHero.type='button';
         tileHero.className='inserat-decision-tile inserat-tile-hero inserat-tile-pulse';
-        tileHero.style.cssText='min-height:120px; padding:20px; border-radius:20px; border:none; background:linear-gradient(135deg,#10b981,#059669); color:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; cursor:pointer; box-shadow:0 8px 24px rgba(16,185,129,0.4); animation:inserat-hero-pulse 2s ease-in-out infinite;';
-        tileHero.innerHTML='<strong style="font-size:16px;">Mit Abholnummer</strong><span style="font-size:20px; font-weight:800;">0,00 €</span><small style="font-size:12px; opacity:0.9;">0,89 € pro Abholung</small>';
+        tileHero.style.cssText='min-height:120px; padding:20px; border-radius:24px; border:none; background:linear-gradient(135deg,#10b981,#059669); color:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; cursor:pointer; box-shadow:0 10px 30px rgba(0,0,0,0.15); animation:inserat-hero-pulse 2s ease-in-out infinite;';
+        tileHero.innerHTML='<strong style="font-size:16px;">Abholnummer</strong><span style="font-size:20px; font-weight:800;">0,00 €</span><small style="font-size:12px; opacity:0.9;">0,89 € pro Abholung</small>';
         tileHero.onclick=function(){ if(!primaryValidS2){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; } if(tileHero.classList.contains('is-loading')) return; hapticLight(); if(isEditActiveS2){ w.data.hasPickupCode=w.data.hasPickupCode!==false; w.data.inseratFeeWaived=true; w.data.pricingOption='abholnummer'; var o=previewOfferFromWizard(); var published=typeof publishOffer==='function'?publishOffer(o):null; if(published){ closeWizard(true); if(typeof showToast==='function') showToast('Inserat ist live! 🚀'); if(typeof showProviderHome==='function') showProviderHome(); } return; } w.data.hasPickupCode=true; w.data.inseratFeeWaived=true; w.data.pricingOption='abholnummer'; var o=previewOfferFromWizard(); tileHero.classList.add('is-loading'); tileHero.innerHTML='<span class="inserat-btn-spinner" style="width:24px;height:24px;border:3px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:inserat-spin 0.8s linear infinite;"></span>'; setTimeout(function(){ closeWizard(true); showPublishFeeModal(o); }, 800); };
         tilesRow.appendChild(tile499);
         tilesRow.appendChild(tileHero);
@@ -15230,17 +15230,6 @@
         if(typeof handleWizardExit==='function'){ handleWizardExit(box); return; }
         var panel=box; if(panel&&!panel.classList.contains('x-pop-away')){ panel.classList.add('x-pop-away'); setTimeout(function(){ closeWizard(); }, 280); } else { closeWizard(); }
       };
-      /* Keyboard-Avoidance: Header schrumpft bei Fokus auf Titel/Preis [cite: 2026-02-16] */
-      function bindKeyboardAvoidance(){
-        var panel=box;
-        if(!panel) return;
-        function addActive(){ panel.classList.add('inserat-keyboard-active'); }
-        function removeActive(){ panel.classList.remove('inserat-keyboard-active'); }
-        var titleInput=panel.querySelector('#step-name .inserat-detail-style-title, #step-name input.magnet-input');
-        var priceInput=panel.querySelector('#step-price input.inserat-price-fintech, #step-price .inserat-price-input');
-        if(titleInput){ titleInput.addEventListener('focus', addActive); titleInput.addEventListener('blur', removeActive); }
-        if(priceInput){ priceInput.addEventListener('focus', addActive); priceInput.addEventListener('blur', removeActive); }
-      }
       box.appendChild(photoTile);
 
       // ========== 2. EBENE (Power-Bar): Eine Zeile, 6 Icons – 🍴 🔄 🕒 🌾 ➕ ⓘ. Soft-Shell (hellgrau/transparent), keine harten grünen Boxen [cite: 2026-02-18] ==========
@@ -15425,9 +15414,9 @@
         const b=document.createElement('button');
         b.type='button';
         b.className='inserat-cat-tile' + (w.data.category===c ? ' active' : '');
-        b.style.cssText='min-height:80px; aspect-ratio:1; border-radius:16px; border:2px solid transparent; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; cursor:pointer; background:rgba(0,0,0,0.03); transition:all 0.2s ease; font-size:14px; font-weight:700; color:#64748b;';
-        if(w.data.category===c) b.style.cssText+=' background:rgba(16,185,129,0.15); border-color:#10b981; color:#059669; box-shadow:0 4px 12px rgba(16,185,129,0.2);';
-        b.innerHTML='<span style="font-size:28px;">'+(catEmojis[i]||'')+'</span><span>'+(catDisplayLabels[i]||c)+'</span>';
+        b.style.cssText='min-height:96px; aspect-ratio:1; border-radius:20px; border:2px solid transparent; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; cursor:pointer; background:rgba(0,0,0,0.03); transition:all 0.2s ease; font-size:15px; font-weight:800; color:#64748b;';
+        if(w.data.category===c) b.style.cssText+=' background:rgba(16,185,129,0.18); border-color:#10b981; color:#059669; box-shadow:0 4px 16px rgba(16,185,129,0.25);';
+        b.innerHTML='<span style="font-size:32px;">'+(catEmojis[i]||'')+'</span><span>'+(catDisplayLabels[i]||c)+'</span>';
         b.onclick=()=>{ hapticLight(); w.data.category=c; saveDraft(); rebuildWizard(); };
         stepCat.appendChild(b);
       });
@@ -15547,13 +15536,13 @@
         var btnSpeichern=document.createElement('button');
         btnSpeichern.type='button';
         btnSpeichern.className='inserat-btn-step1-left';
-        btnSpeichern.style.cssText='flex:1; min-height:56px; padding:14px 20px; border:2px solid rgba(0,0,0,0.1); border-radius:16px; background:#fff; font-size:15px; font-weight:700; color:#64748b; cursor:pointer;';
+        btnSpeichern.style.cssText='flex:1; min-height:60px; padding:14px 20px; border:none; border-radius:24px; background:rgba(255,255,255,0.6); font-size:16px; font-weight:700; color:#64748b; cursor:pointer; box-shadow:0 10px 30px rgba(0,0,0,0.15); backdrop-filter:blur(12px);';
         btnSpeichern.textContent='Speichern in...';
         btnSpeichern.onclick=function(){ hapticLight(); if(typeof showSaveScopeDialog==='function') showSaveScopeDialog({ onlyCurrent: function(){ saveDraft(); if(typeof showToast==='function') showToast('Als Entwurf gespeichert'); }, saveToCookbook: function(){ if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; } var id=saveToCookbookFromWizard(); if(id){ closeWizard(true); showSaveSuccessSheet({ title:'Im Kochbuch gespeichert', sub:'Dein Gericht ist in deinem Kochbuch.', dishName: w.data.dish||'', price: w.data.price, imageUrl: w.data.photoData||'', savedEntryId: id, savedDay: null, onFertig: function(){ if(typeof showToast==='function') showToast('Gericht im Kochbuch aktualisiert 📖'); if(typeof showProviderCookbook==='function') showProviderCookbook(); }, onLive: null }); } } }); };
         var btnWeiter=document.createElement('button');
         btnWeiter.type='button';
         btnWeiter.className='inserat-btn-step1-right';
-        btnWeiter.style.cssText='flex:1; min-height:56px; padding:14px 20px; border:none; border-radius:16px; background:#3b82f6; color:#fff; font-size:15px; font-weight:800; cursor:pointer; box-shadow:0 4px 16px rgba(59,130,246,0.4);';
+        btnWeiter.style.cssText='flex:1; min-height:60px; padding:14px 20px; border:none; border-radius:24px; background:#3b82f6; color:#fff; font-size:16px; font-weight:800; cursor:pointer; box-shadow:0 10px 30px rgba(0,0,0,0.15);';
         btnWeiter.textContent='Weiter zur Veröffentlichung';
         btnWeiter.onclick=function(){ hapticLight(); w.inseratStep=2; saveDraft(); rebuildWizard(); };
         step1NavRow.appendChild(btnSpeichern);
@@ -15665,7 +15654,13 @@
 
       } /* Ende else (Step 1) */
 
-      bindKeyboardAvoidance();
+      /* scrollIntoView bei Fokus auf Input (ersetzt bindKeyboardAvoidance) */
+      sheet.addEventListener('focusin', function(e){
+        var el = e.target;
+        if(el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') && typeof el.scrollIntoView === 'function'){
+          el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      });
       setWizardContent(sheet);
       // Guided Interaction: leere Karte → Fokus Namensfeld (blinkender Cursor), kein Foto → Pulsieren [cite: 2026-01-29]
       setTimeout(function(){
