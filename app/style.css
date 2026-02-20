@@ -4,8 +4,8 @@
     body { visibility: hidden; }
     :root{
       /* Mittagio High-End Farbpalette */
-      --bg:#F5F5F7; /* Native App: subtiler Hintergrund */
-      --bg-polaroid:#E8E0D6; /* Gebleichte Eiche (Polaroid-Discovery Hintergrund) */
+      --bg:#FFFFFF; /* Native App: reine Leinwand, kein Beige [cite: Tabula Rasa] */
+      --bg-polaroid:#FFFFFF; /* Kein Polaroid-Beige mehr – einheitlich weiß */
       --card:#FFFFFF;
       --text:#334155;   /* Slate Grey - edler als reines Schwarz */
       --muted:#6b6b6b;
@@ -461,7 +461,7 @@
     }
     .day.active{background:rgba(242,183,5,.14); border-color:rgba(242,183,5,.55)}
 
-    body:not(.provider-mode) main{ width:100%; max-width:100%; margin:0; padding:16px; box-sizing:border-box; }
+    body:not(.provider-mode) main{ width:100%; max-width:100%; margin:0; padding:0; box-sizing:border-box; }
     .grid{display:grid; grid-template-columns:1fr; gap:12px}
     @media (min-width:820px){ .grid{grid-template-columns:1fr 1fr} }
 
@@ -894,13 +894,15 @@
     /* Abholnummer-Ansicht benötigt flex-Layout */
     .view.active#v-pickup-code{display:flex !important}
 
-    /* Kundenseiten: Design-System – main-padding 16px, einheitlicher Look */
+    /* Kundenseiten: Volle Breite, weiße Leinwand – kein Beige, kein seitliches Padding [cite: Tabula Rasa] */
     .customer-view{
-      background:var(--bg-polaroid);
+      background:#fff;
       min-height:100vh;
-      padding: 0 16px 0;
+      padding:0;
       padding-bottom:calc(100px + env(safe-area-inset-bottom, 0px));
-      box-sizing: border-box;
+      box-sizing:border-box;
+      width:100%;
+      max-width:100%;
     }
     .customer-view .panel{
       background:rgba(255,255,255,0.95);
@@ -1531,6 +1533,15 @@
       flex-direction:column;
       margin-left:12px; margin-right:12px;
       max-width:calc(100% - 24px);
+    }
+    /* Tabula Rasa: InseratCard volle Breite, weiße Leinwand – kein Beige-Durchscheinen [cite: Plan InseratCard] */
+    #wizard[data-flow="listing"].sheet--kitchen{
+      margin-left:0 !important; margin-right:0 !important;
+      max-width:100% !important;
+      background:#fff !important;
+    }
+    #wizard[data-flow="listing"].sheet--kitchen .wizard{
+      background:#fff !important;
     }
     #wizard.sheet--kitchen .handle{ background:rgba(0,0,0,0.15); width:40px; margin:8px auto 4px; }
     /* Wizard: app-like – Inserat-Flow weiter oben, weniger Abstand oben */
@@ -2480,6 +2491,7 @@
       margin: 0; border-radius: 0; border-left: none; border-right: none; border-bottom: none;
       min-height: 0; flex: 1;
       font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+      background: #fff !important;
     }
     #wizard[data-flow="listing"].sheet--kitchen .wizard-scroll #wContent{
       flex: 1; min-height: 0; height: 100%; display: flex; flex-direction: column;
@@ -2808,10 +2820,9 @@
     #wizard[data-flow="listing"] .inserat-power-bar .status-pill:active { transform: scale(0.9); }
     #wizard[data-flow="listing"] .inserat-power-bar .power-bar-legend-trigger:hover,
     #wizard[data-flow="listing"] .inserat-power-bar .power-bar-legend-trigger:focus { color: #64748b; }
-    /* Power-Bar Soft-Shell [Master-Prompt]: Inaktiv ultra-hell/transparent, aktiv nur Emerald-Glow, keine massive Box */
-    /* Power-Bar: Soft-Shell, nur aktives Icon in Emerald (keine massiven grünen Hintergründe) [cite: 2026-02-18] */
+    /* Power-Bar Soft-Shell: Tabula Rasa – weiße Leinwand, kein beiger Streifen [cite: Plan InseratCard] */
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell {
-      background: #f8fafc; border-bottom: 1px solid rgba(0,0,0,0.04);
+      background: #fff; border-bottom: 1px solid rgba(0,0,0,0.04);
       padding: 10px 16px; gap: 8px; flex-wrap: nowrap; justify-content: space-between;
     }
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .status-pill,
@@ -2826,11 +2837,11 @@
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .power-bar-legend-trigger { color: #94a3b8; }
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .inserat-pill-emo { font-size: 14px; }
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .power-bar-legend-round { width: 44px; height: 44px; border-radius: 50%; font-size: 14px; }
-    /* Inaktiv: ultra-helles Grau oder transparent */
+    /* Inaktiv: dezent grau auf weißer Leinwand */
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .status-pill.inactive,
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .func-icon-btn:not(.active),
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .power-bar-legend-trigger {
-      background: #f8fafc !important; border: none !important; box-shadow: none !important; color: #94a3b8;
+      background: rgba(0,0,0,0.04) !important; border: none !important; box-shadow: none !important; color: #94a3b8;
     }
     /* Aktiv: nur Emerald-Glow, kein massiver Hintergrund */
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .status-pill.active,
@@ -3846,6 +3857,8 @@
       min-height: 44px;
       padding: 8px 16px;
       padding-top: calc(8px + env(safe-area-inset-top, 0px));
+      padding-left: max(16px, env(safe-area-inset-left, 0));
+      padding-right: max(16px, env(safe-area-inset-right, 0));
       z-index: 10;
     }
     /* Fallback: alte Top-Row ohne Minimal-Klasse */
@@ -4329,13 +4342,15 @@
     }
     #v-discover .dish-card-image-wrapper{ border-radius: var(--tgtg-img-radius); overflow: hidden; }
     #v-discover .dish-card .pillar-pill, #v-discover .dish-card .distance-chip{ font-size: 13px; font-weight: 600; color: #64748b; }
-    /* Content: TGTG-Weißraum – Design-System padding-bottom 120px */
+    /* Content: Volle Breite, Innen-Padding 16px + Safe-Area [cite: Tabula Rasa] */
     body:not(.provider-mode) #v-discover .discover-main{
       padding-top: calc(130px + env(safe-area-inset-top, 0px));
-      padding-left: var(--tgtg-spacing);
-      padding-right: var(--tgtg-spacing);
+      padding-left: max(16px, env(safe-area-inset-left, 0));
+      padding-right: max(16px, env(safe-area-inset-right, 0));
       padding-bottom: calc(var(--content-padding-bottom) + env(safe-area-inset-bottom, 0));
       min-height: 0;
+      width: 100%;
+      max-width: 100%;
     }
     /* Discover: Leerzustand mittig zwischen Header und Footer [cite: 2026-01-27, 2026-01-29] */
     #v-discover #discoverOffers{
@@ -6580,16 +6595,19 @@
     }
     /* --- MODERN CUSTOMER UI --- */
     .customer-view {
-      background: var(--bg);
+      background: #fff;
       min-height: 100vh;
     }
-    /* Meins, Mittagsbox, Favoriten, Orders: Inhaltsbereich – Design-System padding-bottom 120px */
+    /* Meins, Mittagsbox, Favoriten, Orders: Inhaltsbereich, seitliches Padding 16px [cite: Tabula Rasa] */
     #v-profile .customer-main-wrap,
     #v-cart .customer-main-wrap,
     #v-fav .customer-main-wrap,
     #v-orders .customer-main-wrap {
       min-height: calc(100vh - 60px);
+      padding: 0 16px;
       padding-bottom: calc(var(--content-padding-bottom) + env(safe-area-inset-bottom, 0));
+      padding-left: max(16px, env(safe-area-inset-left, 0));
+      padding-right: max(16px, env(safe-area-inset-right, 0));
       box-sizing: border-box;
     }
 
