@@ -52,7 +52,7 @@
         </div>
         <a href="#" id="planPublicBack" style="display:inline-flex; align-items:center; gap:6px; margin-top:16px; font-size:14px; font-weight:700; color:var(--brand,#FFD700); text-decoration:none;">← Zur App</a>
       </header>
-      <div id="planPublicList" style="max-width:500px; margin:0 auto; padding:20px 16px 24px;"></div>
+      <div id="planPublicList" style="width:100%; max-width:100%; margin:0; padding:20px max(16px, env(safe-area-inset-right)) 24px max(16px, env(safe-area-inset-left)); box-sizing:border-box;"></div>
     </section>
 
     <!-- CUSTOMER: Discover - App-like UX (Final Spec) -->
@@ -219,7 +219,7 @@
 
     <!-- Admin-Dashboard: /admin – Clean, modern, KPIs, Inserats-Feed, Buchhaltung, CSV-Export -->
     <section class="view content-padding-bottom-compact" id="v-admin" style="min-height:100vh; padding:20px; background:#f8f7f2;">
-      <div style="max-width:900px; margin:0 auto;">
+      <div style="width:100%; max-width:100%; margin:0; padding-left:max(16px, env(safe-area-inset-left)); padding-right:max(16px, env(safe-area-inset-right)); box-sizing:border-box;">
         <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:24px;">
           <h1 class="ds-h1" style="margin:0;">Admin</h1>
           <a href="#" onclick="location.hash=''; showDiscover(); return false;" style="display:inline-flex; align-items:center; gap:6px; font-size:14px; font-weight:700; color:#64748b; text-decoration:none;"><i data-lucide="chevron-left" style="width:18px;height:18px;"></i> Zurück</a>
@@ -413,7 +413,7 @@
     
     <!-- CUSTOMER: One-Page Checkout (Checkout-Turbo) -->
     <section class="view" id="v-checkout" style="min-height:100vh; background:var(--bg);">
-      <div class="content-padding-bottom-compact" style="padding:16px; max-width:600px; margin:0 auto;">
+      <div class="content-padding-bottom-compact" style="padding:16px max(16px, env(safe-area-inset-right)) 16px max(16px, env(safe-area-inset-left)); width:100%; max-width:100%; margin:0; box-sizing:border-box;">
         <div class="panel" style="padding:20px; border-radius:24px; box-shadow:0 4px 16px rgba(0,0,0,.08); background:rgba(255,255,255,0.95); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);">
           <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
             <button class="back-button btn-back" type="button" id="btnCheckoutBack" aria-label="Zurück" style="background:none; border:none; padding:8px; cursor:pointer; font-size:16px; font-weight:700; color:#2D3436;">
@@ -509,7 +509,7 @@
 
     <!-- CUSTOMER: Erfolgs-Ansicht nach "JETZT BEZAHLEN" – Abholnummer im Fokus, clean, keine Schiefertafel -->
     <section class="view customer-view content-padding-bottom-compact" id="v-order-success" style="display:none; padding:24px 16px; min-height:100vh; background:#f8fafc;">
-      <div style="max-width:420px; margin:0 auto;">
+      <div style="width:100%; max-width:100%; margin:0; padding-left:max(16px, env(safe-area-inset-left)); padding-right:max(16px, env(safe-area-inset-right)); box-sizing:border-box;">
         <!-- Status-Badge: Zahlung erfolgreich -->
         <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:20px;">
           <span style="width:24px; height:24px; border-radius:50%; background:#22c55e; display:inline-flex; align-items:center; justify-content:center;"><i data-lucide="check" style="width:14px;height:14px;color:#fff;stroke-width:3;"></i></span>
@@ -694,7 +694,7 @@
       </header>
 
       <div class="pub-prov-scroll">
-        <div style="display:flex; flex-direction:column; gap:24px; max-width:500px; margin:0 auto;">
+        <div style="display:flex; flex-direction:column; gap:24px; width:100%; max-width:100%; margin:0; padding-left:max(16px, env(safe-area-inset-left)); padding-right:max(16px, env(safe-area-inset-right)); box-sizing:border-box;">
           <!-- Anbieter Info Card (App-like Hero) -->
           <div class="cust-card pub-prov-hero" style="padding:28px 24px; display:flex; flex-direction:column; align-items:center; text-align:center; gap:16px; background:#fff; border:none; box-shadow:0 4px 20px rgba(0,0,0,0.06); border-radius:24px;">
             <div id="pubProvLogoWrap" style="width:88px; height:88px; border-radius:24px; background:#f1f3f5; display:flex; align-items:center; justify-content:center; font-size:40px; box-shadow:0 8px 24px rgba(0,0,0,0.06); overflow:hidden;">
@@ -1192,7 +1192,7 @@
         </div>
       </header>
 
-      <div id="provPickupsScroll" style="padding:12px 20px 20px; max-width:500px; margin:0 auto; flex:1;">
+      <div id="provPickupsScroll" style="padding:12px max(20px, env(safe-area-inset-right)) 20px max(20px, env(safe-area-inset-left)); width:100%; max-width:100%; margin:0; flex:1; box-sizing:border-box;">
         <!-- Subheader Status -->
         <div id="provPickupsSubheader" style="margin-bottom:20px; font-size:13px; font-weight:700; color:#9ca3af; text-transform:uppercase; letter-spacing:0.05em;">
           <!-- Wird dynamisch befüllt -->
@@ -1315,7 +1315,7 @@
         <div class="cookbook-category-pills" id="cookbookCategoryPills" role="tablist" aria-label="Kategorie filter"></div>
       </header>
 
-      <div id="cookbookScrollWrap" style="flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:16px 20px calc(24px + env(safe-area-inset-bottom, 0)); max-width:500px; margin:0 auto; width:100%; box-sizing:border-box;">
+      <div id="cookbookScrollWrap" style="flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:16px max(20px, env(safe-area-inset-right)) calc(24px + env(safe-area-inset-bottom, 0)) max(20px, env(safe-area-inset-left)); width:100%; max-width:100%; margin:0; box-sizing:border-box;">
         <div id="cookbookMagazine" style="display:flex; align-items:center; justify-content:center; min-height:320px;">
           <!-- Eine Karte (Magazin-Flip), dynamisch -->
         </div>
@@ -1334,7 +1334,7 @@
 
     <!-- Kochbuch: Bottom-Sheet "Jetzt live schalten" (Preis, Datum, Zeit, 4,99€-Button) -->
     <div class="backdrop" id="cookbookLiveSheetBd" style="display:none; background:rgba(0,0,0,0.5); z-index:1050;" onclick="closeCookbookLiveSheet()"></div>
-    <div class="sheet sheet--kitchen" id="cookbookLiveSheet" style="max-width:480px; border-radius:28px 28px 0 0; overflow:hidden; z-index:1051;">
+    <div class="sheet sheet--kitchen" id="cookbookLiveSheet" style="width:100%; max-width:100%; border-radius:28px 28px 0 0; overflow:hidden; z-index:1051; box-sizing:border-box;">
       <div class="handle"></div>
       <div class="sheet-body" style="padding:20px 20px calc(24px + env(safe-area-inset-bottom));">
         <h3 id="cookbookLiveSheetTitle" style="margin:0 0 8px; font-size:18px; font-weight:900; color:#1a1a1a;">Auswählen</h3>
@@ -1360,7 +1360,7 @@
 
     <!-- Kochbuch: Bottom-Sheet "Wochenplan" (Mo–So, Backdrop-Blur, Stagger) -->
     <div class="backdrop cookbook-week-bd" id="cookbookWeekSheetBd" style="display:none; background:rgba(0,0,0,0.4); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); z-index:1050; transition:opacity 0.4s;" onclick="closeCookbookWeekSheet()"></div>
-    <div class="sheet sheet--kitchen cookbook-week-sheet" id="cookbookWeekSheet" style="max-width:480px; border-radius:28px 28px 0 0; overflow:hidden; z-index:1051; transition:transform 0.4s cubic-bezier(0.4,0,0.2,1);">
+    <div class="sheet sheet--kitchen cookbook-week-sheet" id="cookbookWeekSheet" style="width:100%; max-width:100%; border-radius:28px 28px 0 0; overflow:hidden; z-index:1051; transition:transform 0.4s cubic-bezier(0.4,0,0.2,1); box-sizing:border-box;">
       <div class="handle"></div>
       <div class="sheet-body" style="padding:20px 20px calc(24px + env(safe-area-inset-bottom));">
         <h3 style="margin:0 0 4px; font-size:18px; font-weight:900; color:#1a1a1a;">Wochenplan</h3>
@@ -1375,7 +1375,7 @@
 
     <!-- Wochenplan: Quick-Add Bottom-Sheet (Top 5 + Suche, Tap = zum Plan) -->
     <div class="backdrop" id="weekAddSheetBd" style="display:none; background:rgba(0,0,0,0.5);" onclick="closeWeekAddSheet()"></div>
-    <div class="sheet sheet--kitchen" id="weekAddSheet" style="max-width:480px; border-radius:28px 28px 0 0; overflow:hidden; z-index:1100;">
+    <div class="sheet sheet--kitchen" id="weekAddSheet" style="width:100%; max-width:100%; border-radius:28px 28px 0 0; overflow:hidden; z-index:1100; box-sizing:border-box;">
       <div class="handle"></div>
       <div class="sheet-body" style="padding:20px 20px calc(24px + env(safe-area-inset-bottom));">
         <!-- Auswahl bei leerem Tag: zuerst "Aus Kochbuch" oder "Neues Gericht" (Frage 3 B) -->
@@ -1400,7 +1400,7 @@
 
     <!-- Wochenplan: Zeit-Overlay (Abholzeit setzen – Karte „scharf“) -->
     <div class="backdrop" id="weekTimeOverlayBd" style="display:none; background:rgba(0,0,0,0.5); z-index:1101;" onclick="closeWeekTimeOverlay()"></div>
-    <div class="sheet sheet--kitchen" id="weekTimeOverlay" style="max-width:400px; border-radius:20px 20px 0 0; overflow:hidden; z-index:1102;">
+    <div class="sheet sheet--kitchen" id="weekTimeOverlay" style="width:100%; max-width:100%; border-radius:20px 20px 0 0; overflow:hidden; z-index:1102; box-sizing:border-box;">
       <div class="handle"></div>
       <div class="sheet-body" style="padding:20px 20px calc(24px + env(safe-area-inset-bottom));">
         <h3 style="margin:0 0 8px; font-size:18px; font-weight:800; color:#1a1a1a;">Abholzeit setzen</h3>
@@ -1619,7 +1619,7 @@
           </button>
           <h1 style="margin:0; font-size:18px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a;">Betriebsdaten</h1>
         </header>
-        <div class="provider-sub-scroll content-padding-bottom" style="padding:20px; flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; max-width:500px; margin:0 auto; width:100%; box-sizing:border-box; display:flex; flex-direction:column; gap:16px;">
+        <div class="provider-sub-scroll content-padding-bottom" style="padding:20px max(20px, env(safe-area-inset-right)) 20px max(20px, env(safe-area-inset-left)); flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; width:100%; max-width:100%; margin:0; box-sizing:border-box; display:flex; flex-direction:column; gap:16px;">
           <div id="providerBusinessDataCardSlot"></div>
         </div>
       </div>
@@ -1632,7 +1632,7 @@
           </button>
           <h1 style="margin:0; font-size:18px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a;">Inseratseinstellungen</h1>
         </header>
-        <div class="provider-sub-scroll content-padding-bottom" style="padding:20px; flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; max-width:500px; margin:0 auto; width:100%; box-sizing:border-box; display:flex; flex-direction:column; gap:16px;">
+        <div class="provider-sub-scroll content-padding-bottom" style="padding:20px max(20px, env(safe-area-inset-right)) 20px max(20px, env(safe-area-inset-left)); flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; width:100%; max-width:100%; margin:0; box-sizing:border-box; display:flex; flex-direction:column; gap:16px;">
           <div class="provider-mittagszeiten-inner" style="margin-bottom:24px;">
             <p style="margin:0 0 16px; font-size:14px; color:#64748b; line-height:1.5;">Standard-Zeitfenster für neue Inserate (15-Minuten-Schritte).</p>
             <button type="button" id="providerSettingsTimeTrigger" class="provider-time-trigger time-picker-display" style="display:block; width:100%; border:none; cursor:pointer; font-family:inherit;">
@@ -2224,7 +2224,7 @@
 
     <!-- Versionsseite (Link im Footer: v1.0.x) -->
     <section class="view content-padding-bottom-compact" id="v-version" style="background:#F7F6F0; min-height:100vh; padding:20px;">
-      <div class="panel" style="max-width:480px; margin:0 auto;">
+      <div class="panel" style="width:100%; max-width:100%; margin:0; padding-left:max(16px, env(safe-area-inset-left)); padding-right:max(16px, env(safe-area-inset-right)); box-sizing:border-box;">
         <h1 style="font-size:24px; font-weight:900; margin-bottom:20px;">Version</h1>
         <p style="font-size:16px; color:#555; margin-bottom:16px;">Aktuelle App-Version: <strong>v1.0.0</strong></p>
         <p style="font-size:14px; color:#666; line-height:1.6;">Changelog und technische Details findest du hier. Bei Fragen: <a href="mailto:info@mittagio.de" style="color:var(--brand);">info@mittagio.de</a></p>
@@ -2345,7 +2345,7 @@
 
     <!-- Quick-Post Modal (direkt aus Kochbuch) -->
     <div class="backdrop" id="quickPostBd" onclick="closeQuickPostSheet()" style="background:rgba(0,0,0,0.5); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); z-index:1100;"></div>
-    <div class="sheet" id="quickPostSheet" style="max-width:480px; border-radius:28px; overflow:hidden; z-index:1101;">
+    <div class="sheet" id="quickPostSheet" style="width:100%; max-width:100%; border-radius:28px; overflow:hidden; z-index:1101; box-sizing:border-box;">
       <div class="sheet-body" style="padding:28px;">
         <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
           <div style="width:48px; height:48px; background:rgba(255,222,0,0.2); border-radius:14px; display:flex; align-items:center; justify-content:center;">
@@ -2399,7 +2399,7 @@
 
     <!-- Publish Fee Modal (vor Inserats-Veröffentlichung) – Backdrop + Sheet immer gemeinsam anzeigen -->
     <div class="backdrop" id="publishFeeBd" onclick="closePublishFeeModal()" style="background:rgba(0,0,0,0.7); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); z-index:2000;"></div>
-    <div class="sheet" id="publishFeeSheet" style="max-width:480px; border-radius:24px; overflow:hidden; z-index:2001;">
+    <div class="sheet" id="publishFeeSheet" style="width:100%; max-width:100%; border-radius:24px; overflow:hidden; z-index:2001; box-sizing:border-box;">
   <div class="sheet-body" style="padding:28px;">
     <h3 style="margin:0 0 20px; font-size:22px; font-weight:900; color:#2D3436;">Inserat veröffentlichen</h3>
     <div style="margin-bottom:24px; padding:20px; background:rgba(255,215,0,0.1); border-radius:16px; border:2px solid rgba(255,215,0,0.3);">
@@ -2437,14 +2437,14 @@
 
 <!-- Hinweis: Adresse in Meine Daten ausfüllen -->
 <div class="backdrop" id="addressRequiredBd" onclick="closeAddressRequiredModal()" style="background:rgba(0,0,0,0.5); z-index:1150; display:none;"></div>
-<div id="addressRequiredSheet" style="position:fixed; left:50%; top:50%; transform:translate(-50%,-50%); width:90%; max-width:340px; background:#fff; border-radius:20px; padding:24px; box-shadow:0 20px 40px rgba(0,0,0,0.15); z-index:1151; display:none;">
+<div id="addressRequiredSheet" style="position:fixed; left:0; right:0; top:50%; transform:translateY(-50%); width:calc(100% - 32px); max-width:100%; margin:0 16px; background:#fff; border-radius:20px; padding:24px; box-shadow:0 20px 40px rgba(0,0,0,0.15); z-index:1151; display:none; box-sizing:border-box;">
   <p style="margin:0 0 20px; font-size:16px; font-weight:600; color:#1a1a1a; line-height:1.45;">Bitte zuerst in <strong>Meine Daten</strong> deine Adresse eintragen (Straße, PLZ, Ort).</p>
   <button type="button" onclick="closeAddressRequiredModal(); showProviderProfile(); setTimeout(function(){ if(typeof showProviderProfileSub==='function') showProviderProfileSub('business'); }, 100);" style="width:100%; min-height:48px; border-radius:14px; background:#1a1a1a; color:#fff; font-weight:800; font-size:15px; border:none; cursor:pointer;">Zu Meine Daten</button>
 </div>
 
 <!-- Speichern-Erfolg + „Jetzt live?“ (Kochbuch/Wochenplan) – ähnlich Inserat-Erfolg -->
 <div class="backdrop" id="saveSuccessSheetBd" onclick="closeSaveSuccessSheet()" style="background:rgba(0,0,0,0.7); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); z-index:1198;"></div>
-<div class="sheet" id="saveSuccessSheet" style="max-width:480px; border-radius:32px; background:#f8f7f2; z-index:1199; display:flex; flex-direction:column; max-height:92vh;">
+<div class="sheet" id="saveSuccessSheet" style="width:100%; max-width:100%; border-radius:32px; background:#f8f7f2; z-index:1199; display:flex; flex-direction:column; max-height:92vh; box-sizing:border-box;">
   <div class="sheet-body" style="padding:24px 24px 120px; text-align:center; overflow-y:auto; flex:1; min-height:0;">
     <div style="width:64px; height:64px; background:#dcfce7; color:#16a34a; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:32px; margin:0 auto 16px; box-shadow:0 4px 12px rgba(22,163,74,0.15);">✓</div>
     <h1 id="saveSuccessSheetTitle" style="margin:0 0 8px; font-size:24px; font-weight:950; color:#1a1a1a; letter-spacing:-0.03em;">Gespeichert!</h1>
@@ -2463,7 +2463,7 @@
 
 <!-- 5 Screens: So funktioniert die Abholnummer (Marketing/FAQ) – Platzhalterbilder, ersetzbar -->
 <div class="backdrop" id="abholnummerExplainBd" onclick="closeAbholnummerExplainSheet()" style="background:rgba(0,0,0,0.7); backdrop-filter:blur(10px); z-index:1195;"></div>
-<div class="sheet" id="abholnummerExplainSheet" style="max-width:480px; border-radius:28px 28px 0 0; background:#f8f7f2; z-index:1196; display:flex; flex-direction:column; max-height:90vh;">
+<div class="sheet" id="abholnummerExplainSheet" style="width:100%; max-width:100%; border-radius:28px 28px 0 0; background:#f8f7f2; z-index:1196; display:flex; flex-direction:column; max-height:90vh; box-sizing:border-box;">
   <div style="padding:16px 0 0; border-bottom:1px solid rgba(0,0,0,0.06); display:flex; align-items:center; justify-content:space-between;">
     <h2 style="margin:0 24px; font-size:18px; font-weight:900; color:#1a1a1a;">So funktioniert die Abholnummer</h2>
     <button type="button" onclick="closeAbholnummerExplainSheet()" aria-label="Schließen" style="width:44px; height:44px; border:none; background:transparent; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; margin-right:8px;"><i data-lucide="x" style="width:22px;height:22px;color:#64748b;"></i></button>
@@ -2513,7 +2513,7 @@
 
 <!-- Inserat Live – Erfolgs-Sheet nach Veröffentlichung -->
 <div class="backdrop inserat-success-backdrop" id="inseratSuccessBd" onclick="closeInseratSuccessSheet()" style="background:rgba(0,0,0,0.5); backdrop-filter:blur(30px); -webkit-backdrop-filter:blur(30px); z-index:1200;"></div>
-<div class="sheet" id="inseratSuccessSheet" style="max-width:480px; border-radius:32px; background:#f8f7f2; z-index:1201; display:flex; flex-direction:column; max-height:92vh;">
+<div class="sheet" id="inseratSuccessSheet" style="width:100%; max-width:100%; border-radius:32px; background:#f8f7f2; z-index:1201; display:flex; flex-direction:column; max-height:92vh; box-sizing:border-box;">
   <div id="confettiContainer" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; overflow:hidden;"></div>
   
   <div class="sheet-body" style="padding:0 24px 100px; text-align:center; overflow-y:auto; flex:1; min-height:0; -webkit-overflow-scrolling:touch;">
@@ -2728,10 +2728,10 @@
 
 <!-- Bestelldetail-Sheet (für Bestellungen ohne Abholnummer oder Übersicht) -->
 <div class="backdrop" id="orderDetailBd" onclick="closeOrderDetailSheet()"></div>
-<div class="sheet" id="orderDetailSheet" style="max-width:420px; border-radius:24px; overflow:hidden;">
+<div class="sheet" id="orderDetailSheet" style="width:100%; max-width:100%; border-radius:24px; overflow:hidden; box-sizing:border-box;">
   <div class="handle"></div>
   <div class="sheet-body" style="padding:24px;">
-    <div style="font-family:'Nunito',sans-serif; font-weight:800; font-size:18px; margin-bottom:20px; color:#1a1a1a;">Bestelldetails</div>
+    <div style="font-weight:800; font-size:18px; margin-bottom:20px; color:#1a1a1a;">Bestelldetails</div>
     <div id="orderDetailContent" style="display:flex; flex-direction:column; gap:14px; font-size:15px;">
       <!-- Wird dynamisch befüllt -->
     </div>
@@ -2829,7 +2829,7 @@
 
 <!-- Profil anlegen Sheet (Kunde) -->
 <div class="backdrop" id="profileCreateBd" onclick="closeProfileCreateSheet()"></div>
-<div class="sheet" id="profileCreateSheet" style="max-width:420px; border-radius:24px; overflow:hidden;">
+<div class="sheet" id="profileCreateSheet" style="width:100%; max-width:100%; border-radius:24px; overflow:hidden; box-sizing:border-box;">
   <div class="handle"></div>
   <div class="sheet-body" style="padding:24px;">
     <div style="text-align:center; margin-bottom:20px;">
@@ -2869,7 +2869,7 @@
 
 <!-- Provider Login Modal (Business-Login) -->
 <div class="backdrop" id="providerLoginBd" onclick="closeProviderLoginModal()" style="background:rgba(0,0,0,0.7); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); display:none;"></div>
-<div class="sheet" id="providerLoginSheet" style="max-width:420px; border-radius:24px; overflow:hidden; display:none;">
+<div class="sheet" id="providerLoginSheet" style="width:100%; max-width:100%; border-radius:24px; overflow:hidden; display:none; box-sizing:border-box;">
   <div class="sheet-body" style="padding:32px;">
     <div style="text-align:center; margin-bottom:24px;">
       <div style="width:64px; height:64px; margin:0 auto 16px; background:linear-gradient(135deg, rgba(255,204,0,0.2) 0%, rgba(255,184,0,0.1) 100%); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:32px;">
@@ -2898,7 +2898,7 @@
 
 <!-- Sheet: App herunterladen – Startbildschirm -->
 <div class="backdrop" id="pwaStartScreenBd" onclick="closePwaStartScreenSheet()" style="background:rgba(0,0,0,0.5); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); display:none;"></div>
-<div class="sheet" id="pwaStartScreenSheet" style="max-width:400px; border-radius:24px; overflow:hidden; display:none;">
+<div class="sheet" id="pwaStartScreenSheet" style="width:100%; max-width:100%; border-radius:24px; overflow:hidden; display:none; box-sizing:border-box;">
   <div class="handle"></div>
   <div class="sheet-body" style="padding:28px 24px;">
     <div style="text-align:center; margin-bottom:20px;">
@@ -3052,7 +3052,7 @@
 
 <!-- Login-Konflikt Modal (Ein-Gerät-Schranke) -->
 <div class="backdrop" id="loginConflictBd" onclick="closeLoginConflictModal()" style="background:rgba(0,0,0,0.7); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); display:none;"></div>
-<div class="sheet" id="loginConflictSheet" style="max-width:420px; border-radius:24px; overflow:hidden; display:none;">
+<div class="sheet" id="loginConflictSheet" style="width:100%; max-width:100%; border-radius:24px; overflow:hidden; display:none; box-sizing:border-box;">
   <div class="handle"></div>
   <div class="sheet-body" style="padding:24px;">
     <div style="text-align:center; margin-bottom:24px;">

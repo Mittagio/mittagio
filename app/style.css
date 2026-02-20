@@ -183,7 +183,7 @@
     html,body{height:100%; width:100%; margin:0; padding:0; overflow-x:hidden;}
     body{
       margin:0; padding:0; width:100%;
-      font-family:'Inter', 'Montserrat', system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      font-family: var(--font-main);
       font-size:16px; line-height:1.5;
       color: var(--color-text, #1a1a1a);
       background:var(--bg); color:var(--text);
@@ -1134,7 +1134,7 @@
     .tabrow{display:flex; gap:8px; flex-wrap:wrap}
     .tabrow .ans{font-size:12px; padding:8px 10px}
     /* Kochbuch: MASTER-SPEC MagazinKochbuch – nur Pills, Magazin-Karte, Action-Bar (siehe docs/KOCHBUCH_KONZEPT.md) */
-    #v-provider-cookbook .cookbook-action-bar{ max-width:500px; margin:0 auto; box-sizing:border-box; }
+    #v-provider-cookbook .cookbook-action-bar{ width:100%; max-width:100%; margin:0; padding-left:max(16px, env(safe-area-inset-left)); padding-right:max(16px, env(safe-area-inset-right)); box-sizing:border-box; }
     #v-provider-cookbook .cookbook-bar-btn{ min-height:52px; border-radius:20px; font-size:10px; font-weight:800; letter-spacing:0.06em; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; border:none; transition:transform 0.12s; flex:1; min-width:0; }
     #v-provider-cookbook .cookbook-bar-btn:active{ transform:scale(0.97); }
     /* Kochbuch Magazin-Karte: feste Größe wie Magazin – keine Größenänderung beim Swipen/Blättern */
@@ -1374,7 +1374,7 @@
     }
     .quick-abholnummer-code-value{
       font-size:72px; font-weight:950; line-height:1;
-      color:#111; font-family:'Inter', monospace;
+      color:#111; font-family: var(--font-main);
       letter-spacing:.05em;
     }
     .quick-abholnummer-details{
@@ -1798,7 +1798,7 @@
     /* price-display: elegant, System-Sans / Inter, Bold [cite: Native-Feel] */
     #wizard.sheet--kitchen .glass-express-step0 #step-price .inserat-price-input,
     #wizard.sheet--kitchen .glass-express-step0 .price-display{
-      font-size: 2.75rem; font-weight: 800; font-family: system-ui, -apple-system, "Inter", sans-serif;
+      font-size: 2.75rem; font-weight: 800; font-family: var(--font-main);
       text-align: center; color: #111;
     }
     /* Pills: haptisch, voll rund (Kategorien + Extras) – app-like :active */
@@ -2097,12 +2097,14 @@
       flex: 1;
       display: flex;
       flex-direction: column;
-      padding: 24px 20px 100px !important; /* Space for sticky footer */
-      max-width: 500px;
-      margin: 0 auto;
+      padding: 24px max(20px, env(safe-area-inset-right)) 100px max(20px, env(safe-area-inset-left)) !important;
+      width: 100%;
+      max-width: 100%;
+      margin: 0;
       background: transparent !important;
       border: none !important;
       box-shadow: none !important;
+      box-sizing: border-box;
     }
     .onboarding-actions {
       position: fixed;
@@ -2490,7 +2492,7 @@
     #wizard[data-flow="listing"].sheet--kitchen .liquid-master-panel {
       margin: 0; border-radius: 0; border-left: none; border-right: none; border-bottom: none;
       min-height: 0; flex: 1;
-      font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+      font-family: var(--font-main);
       background: #fff !important;
     }
     #wizard[data-flow="listing"].sheet--kitchen .wizard-scroll #wContent{
@@ -2505,7 +2507,7 @@
     .liquid-master-panel .inserat-scroll-area {
       flex: 1; min-height: 0; overflow-y: auto; padding: 20px; -webkit-overflow-scrolling: touch;
     }
-    #wizard[data-flow="listing"] .inserat-scroll-area { padding: 24px 20px; font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif; }
+    #wizard[data-flow="listing"] .inserat-scroll-area { padding: 24px 20px; font-family: var(--font-main); }
     /* App-like: ein Bildschirm, klare Sektionen [cite: Plan Inseratsflow] */
     .liquid-master-panel .inserat-scroll-area {
       --inserat-section-gap: 28px;
@@ -2882,7 +2884,7 @@
       font-size: 1.5rem; font-weight: 800; color: #0f172a; letter-spacing: -0.03em; line-height: 1.2;
       border: none; background: transparent; outline: none;
       width: 100%; border: none; background: transparent; padding: 4px 0 8px; outline: none;
-      font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+      font-family: var(--font-main);
     }
     .inserat-unified-title-wrap .inserat-detail-style-title:focus {
       border: none; background: transparent;
@@ -3277,7 +3279,7 @@
     
     [id^="v-provider-"]{
       background:var(--provider-bg) !important;
-      font-family: 'Inter', sans-serif;
+      font-family: var(--font-main);
     }
     /* Einheitlicher Sticky-Header für Anbieter-Subseiten */
     .provider-header-bar{
@@ -3580,9 +3582,9 @@
       font-size:13px; line-height:1.4;
     }
 
-    /* Onboarding */
+    /* Onboarding – volle Breite */
     .onboarding-step{
-      max-width:600px; margin:0 auto;
+      width:100%; max-width:100%; margin:0; padding-left:max(16px, env(safe-area-inset-left)); padding-right:max(16px, env(safe-area-inset-right)); box-sizing:border-box;
     }
     .onboarding-header{
       display:flex; justify-content:space-between; align-items:flex-start;
@@ -3604,10 +3606,10 @@
       margin-bottom:0;
     }
 
-    /* Social Feed - Story-Leiste */
+    /* Social Feed - Story-Leiste – volle Breite */
     .stories-container{
-      padding:16px 14px 20px;
-      max-width:980px; margin:0 auto;
+      padding:16px max(14px, env(safe-area-inset-right)) 20px max(14px, env(safe-area-inset-left));
+      width:100%; max-width:100%; margin:0; box-sizing:border-box;
     }
     .stories-scroll{
       display:flex; gap:16px; overflow-x:auto;
@@ -3881,7 +3883,7 @@
       left: 50%;
       top: 50%;
       transform: translate(-50%, -50%);
-      font-family: 'Montserrat', sans-serif;
+      font-family: var(--font-main);
       font-weight: 900;
       font-size: 20px;
       letter-spacing: -0.03em;
@@ -4391,7 +4393,7 @@
       text-align: center;
     }
     #v-discover .empty-state-text{
-      font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+      font-family: var(--font-main);
       font-size: 0.95rem;
       color: #64748b;
       line-height: 1.5;
@@ -4947,7 +4949,7 @@
       background: linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(255,250,240,0.96) 100%) !important;
     }
     .fav-header-title {
-      font-family: 'Quicksand', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+      font-family: var(--font-main) !important;
       font-weight: 700 !important;
       letter-spacing: 0.02em !important;
     }
@@ -5042,7 +5044,7 @@
     }
     /* Dish-Card: Gerichtsname Serif (Vertical Gallery) [cite: 2026-02-18] */
     #v-discover .dish-card .dish-name{
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-family: var(--font-main);
       font-size: 18px;
       font-weight: 800;
       color: var(--tgtg-title-color) !important;
@@ -5063,14 +5065,14 @@
       color: var(--brand, #FFD700);
       white-space: nowrap;
       flex-shrink: 0;
-      font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+      font-family: var(--font-main);
     }
     .dish-price {
       font-size: 14px;
       font-weight: 800;
       color: #111;
       white-space: nowrap;
-      font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+      font-family: var(--font-main);
     }
     /* Mittlere Zeile: Anbieter */
     .dish-provider {
@@ -5352,7 +5354,7 @@
     #v-provider-profile .provider-profile-welcome-text{ margin:0 0 4px; font-size:24px; font-weight:700; color:#111827; line-height:1.3; }
     #v-provider-profile .provider-profile-welcome-subtitle{ margin:0; font-size:14px; color:#6B7280; line-height:1.4; }
     #v-provider-profile .provider-profile-tiles-wrap{ padding:0 0 24px; }
-    #v-provider-profile .provider-profile-content-rebuild{ flex:1; overflow-y:auto; padding:20px; padding-bottom:calc(100px + env(safe-area-inset-bottom)); max-width:500px; margin:0 auto; width:100%; box-sizing:border-box; }
+    #v-provider-profile .provider-profile-content-rebuild{ flex:1; overflow-y:auto; padding:20px max(16px, env(safe-area-inset-right)) calc(100px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); width:100%; max-width:100%; margin:0; box-sizing:border-box; }
     #v-provider-profile .provider-profile-main-rebuild{ display:flex; flex-direction:column; gap:24px; }
     #v-provider-profile .provider-focus-card{ background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04); }
     #v-provider-profile .provider-focus-card-inserat{ padding:0 0 20px; }
@@ -5405,10 +5407,10 @@
     #v-provider-profile .provider-profile-hero-slide:not(:has(.provider-profile-hero-slide-img)){ padding:20px; }
     #v-provider-profile .provider-profile-hero-slide-img{ width:100%; aspect-ratio:16/10; object-fit:cover; background:#f1f3f5; }
     #v-provider-profile .provider-profile-hero-slide-body{ padding:20px; flex:1; display:flex; flex-direction:column; gap:12px; }
-    #v-provider-profile .provider-profile-hero-slide-title{ margin:0; font-size:18px; font-weight:900; color:#1a1a1a; line-height:1.3; font-family:system-ui,-apple-system,sans-serif; }
+    #v-provider-profile .provider-profile-hero-slide-title{ margin:0; font-size:18px; font-weight:900; color:#1a1a1a; line-height:1.3; font-family: var(--font-main); }
     #v-provider-profile .provider-profile-hero-slide-sub{ margin:0; font-size:13px; color:#64748b; line-height:1.45; }
     #v-provider-profile .provider-profile-hero-badge{ display:inline-block; font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:0.06em; color:#64748b; margin-bottom:4px; }
-    #v-provider-profile .provider-profile-hero-cta{ min-height:52px; border-radius:14px; font-size:15px; font-weight:800; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; font-family:system-ui,-apple-system,sans-serif; transition:transform 0.12s, box-shadow 0.2s; }
+    #v-provider-profile .provider-profile-hero-cta{ min-height:52px; border-radius:14px; font-size:15px; font-weight:800; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; font-family: var(--font-main); transition:transform 0.12s, box-shadow 0.2s; }
     #v-provider-profile .provider-profile-hero-cta:active{ transform:scale(0.98); }
     #v-provider-profile .provider-profile-hero-cta--yellow{ background:#FFD700; color:#1a1a1a; box-shadow:0 4px 16px rgba(255,215,0,0.35); }
     #v-provider-profile .provider-profile-hero-cta--emerald{ background:#10b981; color:#fff; box-shadow:0 4px 16px rgba(16,185,129,0.25); }
@@ -5464,7 +5466,7 @@
     #v-provider-week .week-magic-gap-btn{ background:transparent; border:1px solid #e2e8f0; min-height:36px; padding:0 10px; border-radius:10px; display:flex; align-items:center; justify-content:center; gap:5px; color:#64748b; font-size:12px; font-weight:600; cursor:pointer; white-space:nowrap; transition:background 0.2s, color 0.2s, border-color 0.2s; }
     #v-provider-week .week-magic-gap-btn:hover{ background:#f8fafc; color:#475569; border-color:#cbd5e1; }
     #v-provider-week .week-plan-wrap{
-      flex:1; min-height:0; display:flex; flex-direction:column; max-width:500px; margin:0 auto; width:100%; padding:0 20px 16px; box-sizing:border-box;
+      flex:1; min-height:0; display:flex; flex-direction:column; width:100%; max-width:100%; margin:0; padding:0 max(16px, env(safe-area-inset-right)) 16px max(16px, env(safe-area-inset-left)); box-sizing:border-box;
     }
     #v-provider-week .week-list-scroll{ flex:1; min-height:120px; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:8px 0 16px; }
     #v-provider-week .week-dayrow{ display:flex; gap:8px; overflow-x:auto; -webkit-overflow-scrolling:touch; padding:0 0 16px; margin-bottom:16px; border-bottom:1px solid #f1f3f5; }
@@ -5554,7 +5556,7 @@
       #v-provider-week .week-header-compact .prov-page-header-title{ margin:0; font-size: var(--size-h2); font-weight: var(--weight-heavy); letter-spacing:-0.03em; color: var(--color-title); }
       #v-provider-week .week-header-subtitle{ margin:0; font-size:12px; font-weight:600; color:#64748b; letter-spacing:0.02em; }
       #v-provider-week .week-plan-wrap{
-        flex:1; display:flex; flex-direction:column; min-height:0; max-width:500px; margin:0 auto; width:100%;
+        flex:1; display:flex; flex-direction:column; min-height:0; width:100%; max-width:100%; margin:0;
         padding:0 20px 16px; box-sizing:border-box;
       }
       #v-provider-week .week-list-scroll{ flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:8px 0 16px; }
@@ -5846,7 +5848,7 @@
       #v-provider-week .kw-week-activate-btn:active{ transform:scale(0.98); }
       /* Verschieben-Sheet (Long-Press) */
       .kw-move-overlay{ position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:1100; display:flex; align-items:flex-end; justify-content:center; padding:0 20px  calc(80px + env(safe-area-inset-bottom)); animation:fadeIn 0.2s ease; }
-      .kw-move-sheet{ background:#fff; border-radius:24px 24px 0 0; padding:24px 20px calc(20px + env(safe-area-inset-bottom)); width:100%; max-width:400px; max-height:70vh; overflow:auto; box-shadow:0 -8px 32px rgba(0,0,0,0.12); }
+      .kw-move-sheet{ background:#fff; border-radius:24px 24px 0 0; padding:24px max(20px, env(safe-area-inset-right)) calc(20px + env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left)); width:100%; max-width:100%; max-height:70vh; overflow:auto; box-shadow:0 -8px 32px rgba(0,0,0,0.12); box-sizing:border-box; }
       .kw-move-title{ font-size:15px; font-weight:800; color:#1a1a1a; margin-bottom:16px; }
       .kw-move-days{ display:flex; flex-direction:column; gap:8px; margin-bottom:16px; }
       .kw-move-day-btn{ width:100%; min-height:52px; padding:14px 16px; border-radius:16px; border:2px solid #e2e8f0; background:#f8fafc; font-size:15px; font-weight:700; color:#1a1a1a; cursor:pointer; text-align:left; }
@@ -5858,7 +5860,7 @@
       .week-template-item:hover{ background:rgba(16,185,129,0.08); border-color:rgba(16,185,129,0.25); }
       .week-template-item:active{ transform:scale(0.98); }
       /* Action-Bar (Drucken & Teilen) – schlank, Silicon-Valley-Style */
-      #v-provider-week .kw-action-bar-fixed{ position:fixed; bottom:calc(64px + env(safe-area-inset-bottom, 20px)); left:20px; right:20px; margin:0 auto; max-width:400px; background:rgba(255,255,255,0.88); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border-radius:16px; padding:10px 12px; display:flex; align-items:center; gap:12px; z-index:998; box-shadow:0 4px 24px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.03); }
+      #v-provider-week .kw-action-bar-fixed{ position:fixed; bottom:calc(64px + env(safe-area-inset-bottom, 20px)); left:0; right:0; width:100%; margin:0; box-sizing:border-box; background:rgba(255,255,255,0.88); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border-radius:0; padding:10px max(16px, env(safe-area-inset-right)) 10px max(16px, env(safe-area-inset-left)); display:flex; align-items:center; gap:12px; z-index:998; box-shadow:0 -4px 24px rgba(0,0,0,0.06); }
       #v-provider-week .kw-action-bar-fixed .btn{ min-height:44px; flex:1; min-width:0; border-radius:12px; font-size:14px; font-weight:600; letter-spacing:0.01em; display:inline-flex; align-items:center; justify-content:center; gap:8px; border:none; background:rgba(0,0,0,0.04); color:#1a1a1a; cursor:pointer; transition:background 0.2s, transform 0.15s; }
       #v-provider-week .kw-action-bar-fixed .btn:hover{ background:rgba(0,0,0,0.07); }
       #v-provider-week .kw-action-bar-fixed .btn:active{ transform:scale(0.97); }
@@ -5960,7 +5962,7 @@
       #v-provider-profile .provider-profile-sub .provider-sub-scroll{ flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:20px; padding-bottom:calc(120px + env(safe-area-inset-bottom, 0)); box-sizing:border-box; }
       #v-provider-profile #providerProfileMenuCard{ background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,0.06); }
       /* Einstellungen (Zahnrad): wie Kundenseite – Clean Card & Spacing */
-      #v-provider-profile .provider-profile-sub .provider-settings-scroll{ padding:40px 16px calc(100px + env(safe-area-inset-bottom, 0)); display:flex; flex-direction:column; gap:20px; max-width:500px; margin:0 auto; width:100%; box-sizing:border-box; }
+      #v-provider-profile .provider-profile-sub .provider-settings-scroll{ padding:40px max(16px, env(safe-area-inset-right)) calc(100px + env(safe-area-inset-bottom, 0)) max(16px, env(safe-area-inset-left)); display:flex; flex-direction:column; gap:20px; width:100%; max-width:100%; margin:0; box-sizing:border-box; }
       /* Einstellungen: Clean-Look Cards – weiß, dezent Schatten, keine Schiefertafel [cite: s25-native-first] */
       #v-provider-profile .provider-settings-card{ background:#fff; border-radius:16px; overflow:hidden; border:1px solid rgba(0,0,0,0.04); box-shadow:0 2px 12px rgba(0,0,0,0.06); margin-bottom:0; }
       #v-provider-profile .provider-settings-identity .plogo{ width:100% !important; height:100% !important; border-radius:18px !important; }
@@ -6992,11 +6994,15 @@
   padding: 60px 20px;
   border-top: 1px solid #eaeaea;
   background: #fff;
-  font-family: sans-serif;
+  font-family: var(--font-main);
 }
 .trust-footer-inner {
-  max-width: 1100px;
-  margin: 0 auto;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding-left: max(20px, env(safe-area-inset-left));
+  padding-right: max(20px, env(safe-area-inset-right));
+  box-sizing: border-box;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;

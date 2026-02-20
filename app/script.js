@@ -1244,7 +1244,7 @@
       return `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="stroke-width:2.5;">
         <rect x="4" y="6" width="16" height="12" rx="2" stroke="currentColor" fill="none"/>
         <path d="M4 10h16" stroke="currentColor" stroke-linecap="round"/>
-        <text x="12" y="16" font-family="Arial, sans-serif" font-size="8" font-weight="900" text-anchor="middle" fill="currentColor">A1</text>
+        <text x="12" y="16" font-family="Inter, Montserrat, sans-serif" font-size="8" font-weight="900" text-anchor="middle" fill="currentColor">A1</text>
         <path d="M18 8l2-2M18 16l2 2" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>`;
     } else if(type === 'dine-in'){
@@ -4503,7 +4503,7 @@
       titleRow.style.cssText = 'margin-top:12px; padding:0 16px; display:flex; align-items:center; justify-content:space-between; gap:8px;';
       
       const title = document.createElement('h3');
-      title.style.cssText = "font-family:'Inter', system-ui, sans-serif; font-weight:800; font-size:18px; color:var(--tgtg-title-color,#0f172a); text-transform:none; letter-spacing:-0.02em; line-height:1.3; margin:0; flex:1; text-align:center;";
+      title.style.cssText = "font-family:'Montserrat','Inter',system-ui,sans-serif; font-weight:800; font-size:18px; color:var(--tgtg-title-color,#0f172a); text-transform:none; letter-spacing:-0.02em; line-height:1.3; margin:0; flex:1; text-align:center;";
       title.textContent = data.dish || 'Gericht';
       titleRow.appendChild(title);
       
@@ -5238,7 +5238,7 @@
     
     // Gerichtname (kompakt)
     const title = document.createElement('div');
-    title.style.cssText = "font-family:'Inter', system-ui, sans-serif; font-weight:700; font-size:12px; color:var(--tgtg-title-color,#0f172a); margin-bottom:4px; line-height:1.2; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;";
+    title.style.cssText = "font-family:'Montserrat','Inter',system-ui,sans-serif; font-weight:700; font-size:12px; color:var(--tgtg-title-color,#0f172a); margin-bottom:4px; line-height:1.2; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;";
     title.textContent = data.dish || 'Gericht';
     body.appendChild(title);
     
@@ -16665,7 +16665,7 @@
     var posten = t.inserat_id ? ('Inserat · ' + (t.inserat_id || '')) : 'Inseratsgebühr';
     var betrag = (t.total_amount != null) ? Number(t.total_amount).toFixed(2).replace('.', ',') + ' €' : '4,99 €';
     var rechnungsnr = (t.id || 'R-' + (t.timestamp || '').slice(0,10).replace(/-/g,'') || '') + '';
-    var html = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Rechnung Mittagio</title><style>body{font-family:system-ui,-apple-system,sans-serif;padding:40px;max-width:420px;margin:0 auto;color:#1a1a1a;} h1{font-size:22px;font-weight:800;margin:0 0 8px;} .meta{color:#64748b;font-size:13px;line-height:1.5;margin-bottom:28px;} table{width:100%;border-collapse:collapse;} th{text-align:left;padding:10px 0;border-bottom:1px solid #e5e7eb;font-size:12px;font-weight:700;color:#64748b;text-transform:uppercase;} td{padding:10px 0;border-bottom:1px solid #e5e7eb;} tr:last-child td{border-bottom:none;} .total{font-weight:800;font-size:20px;color:#16a34a;} .foot{margin-top:32px;padding-top:20px;border-top:1px solid #e5e7eb;font-size:11px;color:#94a3b8;line-height:1.5;} .print-hint{margin-top:16px;font-size:13px;color:#0A84FF;} @media print{.print-hint{display:none;} body{padding:20px;}}</style></head><body>' +
+    var html = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Rechnung Mittagio</title><style>body{font-family:'Montserrat','Inter',system-ui,-apple-system,sans-serif;padding:40px;max-width:420px;margin:0 auto;color:#1a1a1a;} h1{font-size:22px;font-weight:800;margin:0 0 8px;} .meta{color:#64748b;font-size:13px;line-height:1.5;margin-bottom:28px;} table{width:100%;border-collapse:collapse;} th{text-align:left;padding:10px 0;border-bottom:1px solid #e5e7eb;font-size:12px;font-weight:700;color:#64748b;text-transform:uppercase;} td{padding:10px 0;border-bottom:1px solid #e5e7eb;} tr:last-child td{border-bottom:none;} .total{font-weight:800;font-size:20px;color:#16a34a;} .foot{margin-top:32px;padding-top:20px;border-top:1px solid #e5e7eb;font-size:11px;color:#94a3b8;line-height:1.5;} .print-hint{margin-top:16px;font-size:13px;color:#0A84FF;} @media print{.print-hint{display:none;} body{padding:20px;}}</style></head><body>' +
       '<h1>Rechnung</h1>' +
       '<div class="meta">Rechnungsnummer: ' + rechnungsnr.replace(/</g,'&lt;') + '<br><br>Mittagio · Mike Quach<br>Langäcker 2, 73635 Rudersberg<br>info@mittagio.de</div>' +
       '<table><tr><th>Datum</th><td>' + datum + '</td></tr><tr><th>Posten</th><td>' + (posten || 'Inseratsgebühr 4,99 €').replace(/</g,'&lt;') + '</td></tr><tr><th>Betrag (zahlbar sofort)</th><td class="total">' + betrag + '</td></tr></table>' +
@@ -16873,7 +16873,7 @@
     const qrImg = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(url);
     const w = window.open('', '_blank', 'width=400,height=520');
     if(!w) return;
-    w.document.write('<!DOCTYPE html><html><head><title>QR-Code – Mittagio</title><style>body{font-family:Inter,sans-serif;margin:24px;text-align:center;} .logo{font-size:22px;font-weight:900;color:#1a1a1a;margin-bottom:4px;} .slogan{font-size:12px;color:#6b7280;} img{margin:16px 0;} .dish{font-size:16px;font-weight:700;margin-top:8px;}</style></head><body><div class="logo">Mittagio</div><div class="slogan">Zeit gespart mit der Abholnummer</div><img src="' + qrImg + '" alt="QR-Code" width="200" height="200" /><div class="dish">' + dish + '</div><p style="font-size:11px;color:#9ca3af;margin-top:16px;">Scannen &rarr; Gericht öffnen &amp; Abholnummer sichern</p><script>window.onload=function(){window.print();};<\/script></body></html>');
+    w.document.write('<!DOCTYPE html><html><head><title>QR-Code – Mittagio</title><style>body{font-family:'Montserrat','Inter',sans-serif;margin:24px;text-align:center;} .logo{font-size:22px;font-weight:900;color:#1a1a1a;margin-bottom:4px;} .slogan{font-size:12px;color:#6b7280;} img{margin:16px 0;} .dish{font-size:16px;font-weight:700;margin-top:8px;}</style></head><body><div class="logo">Mittagio</div><div class="slogan">Zeit gespart mit der Abholnummer</div><img src="' + qrImg + '" alt="QR-Code" width="200" height="200" /><div class="dish">' + dish + '</div><p style="font-size:11px;color:#9ca3af;margin-top:16px;">Scannen &rarr; Gericht öffnen &amp; Abholnummer sichern</p><script>window.onload=function(){window.print();};<\/script></body></html>');
     w.document.close();
   }
 
