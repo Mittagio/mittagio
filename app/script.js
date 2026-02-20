@@ -9233,17 +9233,18 @@
     }, 300);
   })();
 
-  // Provider nav handlers
-  document.getElementById('providerNav').addEventListener('click',(e)=>{
-    const b = e.target.closest('button');
+  // Provider nav handlers – Kalender-Icon (Wochenplan) triggert showProviderWeek [cite: 2026-02-18]
+  var providerNavEl = document.getElementById('providerNav');
+  if(providerNavEl) providerNavEl.addEventListener('click',function(e){
+    var b = e.target.closest('button');
     if(!b) return;
-    const go = b.dataset.pgo;
-    if(go==='provider-home') showProviderHome();
-    if(go==='provider-pickups') showProviderPickups();
-    if(go==='provider-week') showProviderWeek();
-    if(go==='provider-cookbook') showProviderCookbook();
-    if(go==='provider-support') openSupportContact();
-    if(go==='provider-profile') showProviderProfile();
+    var go = b.dataset.pgo;
+    if(go==='provider-home' && typeof showProviderHome==='function'){ showProviderHome(); if(typeof haptic==='function') haptic(6); }
+    if(go==='provider-pickups' && typeof showProviderPickups==='function'){ showProviderPickups(); if(typeof haptic==='function') haptic(6); }
+    if(go==='provider-week' && typeof showProviderWeek==='function'){ if(typeof haptic==='function') haptic(6); showProviderWeek(); }
+    if(go==='provider-cookbook' && typeof showProviderCookbook==='function'){ showProviderCookbook(); if(typeof haptic==='function') haptic(6); }
+    if(go==='provider-support' && typeof openSupportContact==='function'){ openSupportContact(); if(typeof haptic==='function') haptic(6); }
+    if(go==='provider-profile' && typeof showProviderProfile==='function'){ showProviderProfile(); if(typeof haptic==='function') haptic(6); }
   });
   // Kochbuch: Plus / „Neues Gericht“ – Delegation damit Tap immer den Gericht-anlegen-Flow öffnet
   document.addEventListener('click', function(e){
@@ -9459,9 +9460,18 @@
           tile.setAttribute('role','button');
           tile.setAttribute('tabindex','0');
           if(c){
-            const imgUrl = (c.photoData || c.imageUrl || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=400&q=60').replace(/"/g,'&quot;').replace(/'/g,'%27');
-            const name = (c.dish||'Gericht').length > 14 ? (c.dish||'').substring(0,12)+'…' : (c.dish||'Gericht');
-            tile.innerHTML = '<div style="height:56px; flex-shrink:0; overflow:hidden; background:#f1f3f5;"><img src="'+imgUrl+'" alt="" style="width:100%; height:100%; object-fit:cover; display:block;" onerror="this.style.display=\'none\'"></div><div style="padding:8px 10px; flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;"><div style="font-size:11px; font-weight:800; color:#1a1a1a; text-align:center; line-height:1.2;">'+esc(name)+'</div><div style="font-size:10px; font-weight:700; color:#1a1a1a; margin-top:2px;">'+euro(c.price||0)+'</div><div style="margin-top:6px; font-size:10px; font-weight:800; color:#FFDE00; text-transform:uppercase; letter-spacing:0.03em;">Heute anbieten</div></div>';
+            var imgUrl = (c.photoData || c.imageUrl || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=400&q=60').replace(/"/g,'&quot;').replace(/'/g,'%27');
+            var cookbookCardHtml = typeof renderInseratCard === 'function' ? renderInseratCard({
+              id: c.id,
+              image: imgUrl,
+              name: c.dish || 'Gericht',
+              price: euro(c.price || 0),
+              time: 'Heute',
+              dataCookbookId: String(c.id),
+              dataDate: todayKey
+            }) : '<div class="prov-card" data-cookbook-id="' + esc(String(c.id)) + '" data-date="' + esc(todayKey) + '">' + esc(c.dish || 'Gericht') + ' ' + euro(c.price || 0) + '</div>';
+            tile.innerHTML = cookbookCardHtml;
+            tile.style.cssText = 'width:100%; border-radius:0; background:transparent; overflow:visible; cursor:pointer; display:block; border:none; border-bottom:1px solid #e5e7eb;';
             tile.onclick = function(ev){ if(!ev.target.closest('a')) { if(typeof startListingFlow==='function') startListingFlow({ dishId: c.id, date: todayKey }); } };
             tile.onkeydown = function(ev){ if(ev.key==='Enter'||ev.key===' '){ ev.preventDefault(); if(typeof startListingFlow==='function') startListingFlow({ dishId: c.id, date: todayKey }); } };
           } else {
@@ -9562,35 +9572,19 @@
           if (deviateDineIn) pillarParts.push('<div class="pillar-mini ' + (hasDineIn ? 'active green' : '') + '" title="Vor Ort">🍴</div>');
           if (deviatePickup) pillarParts.push('<div class="pillar-mini ' + (hasPickupNumber ? 'active yellow' : '') + '" title="Abholnummer">🧾</div>');
           if (deviateReuse) pillarParts.push('<div class="pillar-mini ' + (hasReusable ? 'active petrol' : '') + '" title="Mehrweg">🔄</div>');
-          const pillarsRow = pillarParts.length ? '<div class="prov-list-item-pillars">' + pillarParts.join('') + '</div>' : '';
-
-          const card = document.createElement('div');
-          card.className = 'prov-card prov-list-item';
-          card.setAttribute('data-offer-id', String(o.id));
-          card.setAttribute('role', 'button');
-          card.setAttribute('tabindex', '0');
-          card.style.cssText = 'display:flex; align-items:center; gap:16px; padding:16px 0; cursor:pointer; background:transparent; border:none; box-shadow:none; border-radius:0; margin:0;';
-          card.innerHTML = `
-            <div class="prov-list-item-img-wrap">
-              <img src="${esc(imgUrl)}" alt="" />
-              <div class="prov-list-item-price-badge">${euro(d.price)}</div>
-              ${isLive ? '<div class="prov-list-item-live-badge"><span class="live-dot"></span>Live</div>' : ''}
-            </div>
-            <div class="prov-list-item-body">
-              ${pillarsRow ? pillarsRow.replace('card-pillars', 'prov-list-item-pillars') : ''}
-              <h2 class="prov-list-item-title">${esc(dishName)}</h2>
-              <div class="prov-list-item-meta-row">
-                <span>👁️ ${viewsCount}</span>
-                <span>❤️ ${favCount}</span>
-                <span>🧾 ${orderCount}</span>
-              </div>
-              <div class="prov-list-item-abholnummer ${abholnummerGray ? 'gray' : ''}">
-                <span>🧾</span>
-                <span>Abholnummer</span>
-                <span class="abholnummer-val">${abholnummerLabel}</span>
-              </div>
-            </div>
-          `;
+          var pillarsStr = '🍴 🧾 🔄';
+          var cardHtml = typeof renderInseratCard === 'function' ? renderInseratCard({
+            id: o.id,
+            image: imgUrl,
+            name: dishName,
+            price: euro(d.price),
+            time: (d.pickupWindow || '').trim() || abholnummerLabel,
+            pillars: pillarsStr,
+            dataOfferId: String(o.id)
+          }) : '<div class="prov-card" data-offer-id="' + esc(String(o.id)) + '">' + esc(dishName) + ' ' + euro(d.price) + '</div>';
+          var cardWrap = document.createElement('div');
+          cardWrap.innerHTML = cardHtml;
+          var card = cardWrap.firstElementChild || cardWrap;
           (function(offerId){
             card.onclick = function(ev){
               ev.preventDefault();
@@ -10605,36 +10599,28 @@
           var cb = cookbook.find(function(c){ return String(c.id) === String(entry.cookbookId); });
           var name = (cb && cb.dish) || entry.dish || 'Gericht';
           var price = (cb && cb.price) || entry.price || 0;
-          var img = (cb && cb.photoData) || entry.photoData || entry.imageUrl || '';
-          var entryDineIn = entry.dineInPossible !== false;
-          var entryPickup = !!(entry.hasPickupCode !== undefined ? entry.hasPickupCode : defaultPickup);
-          var entryReuse = !!(entry.reuse && entry.reuse.enabled);
+          var img = (cb && cb.photoData) || entry.photoData || entry.imageUrl || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=200&q=70';
           var hasTime = isLive || !!(entry.pickupWindow && String(entry.pickupWindow).trim()) || !!(entry.timeStart && entry.timeEnd);
-          var showVorOrt = (entry.dineInPossible !== undefined) && (entryDineIn !== defaultDineIn);
-          var showMehrweg = (entry.reuse !== undefined) && (entryReuse !== defaultReuse);
-          var overrideBadges = [];
-          if (showVorOrt) overrideBadges.push('<span title="Vor Ort (Abweichung)">🍴</span>');
-          if (showMehrweg) overrideBadges.push('<span title="Mehrweg (Abweichung)">🔄</span>');
-          var badgeHtml = '';
-          if (slot === 0) {
-            var slotEl = document.createElement('div');
-            slotEl.className = 'kw-slot kw-slot-main kw-slot-filled' + (isLive ? ' kw-slot-live' : ' kw-slot-offline');
-            slotEl.setAttribute('data-day', key);
-            slotEl.setAttribute('data-slot', String(slot));
-            if (!isLive) slotEl.setAttribute('data-draft', '1');
-            slotEl.innerHTML = '<div class="kw-slot-thumb" style="' + (img ? 'background-image:url(\'' + esc(img) + '\')' : '') + '"></div><div class="kw-slot-body"><div class="kw-slot-name">' + esc(name) + '</div><div class="kw-slot-price"><span class="price-pill">' + euro(price) + '</span></div></div>';
-            slotEl.onclick = (function(k, idx){ return function(e){ e.stopPropagation(); if(slotEl.classList.contains('kw-slot-swipe-delete')) return; if(typeof haptic === 'function') haptic(6); weekPlanDay = k; if(isLive && items[idx] && items[idx].id){ if(typeof startListingFlow === 'function') startListingFlow({ editOfferId: items[idx].id, date: k, entryPoint: 'week' }); } else { if(typeof startListingFlow === 'function') startListingFlow({ date: k, entryPoint: 'week' }); } }; })(key, slot);
-            slotsWrap.appendChild(slotEl);
-          } else {
-            var slotSmall = document.createElement('div');
-            slotSmall.className = 'kw-slot kw-slot-small kw-slot-filled' + (isLive ? ' kw-slot-live' : ' kw-slot-offline');
-            slotSmall.setAttribute('data-day', key);
-            slotSmall.setAttribute('data-slot', String(slot));
-            if (!isLive) slotSmall.setAttribute('data-draft', '1');
-            slotSmall.innerHTML = '<div class="kw-slot-thumb" style="' + (img ? 'background-image:url(\'' + esc(img) + '\')' : '') + '"></div><div class="kw-slot-name">' + esc(name) + '</div><div class="kw-slot-price"><span class="price-pill">' + euro(price) + '</span></div>';
-            slotSmall.onclick = (function(k, idx){ return function(e){ e.stopPropagation(); if(slotSmall.classList.contains('kw-slot-swipe-delete')) return; if(typeof haptic === 'function') haptic(6); weekPlanDay = k; if(isLive && items[idx] && items[idx].id){ if(typeof startListingFlow === 'function') startListingFlow({ editOfferId: items[idx].id, date: k, entryPoint: 'week' }); } else { if(typeof startListingFlow === 'function') startListingFlow({ date: k, entryPoint: 'week' }); } }; })(key, slot);
-            slotsWrap.appendChild(slotSmall);
-          }
+          var slotHtml = typeof renderInseratCard === 'function' ? renderInseratCard({
+            id: entry.id || entry.cookbookId,
+            image: img,
+            name: name,
+            price: euro(price),
+            time: (entry.pickupWindow || '').trim() || (entry.timeStart && entry.timeEnd ? entry.timeStart + '–' + entry.timeEnd : ''),
+            pillars: '🍴 🧾 🔄',
+            dataOfferId: isLive && items[slot] && items[slot].id ? String(items[slot].id) : undefined,
+            dataCookbookId: entry.cookbookId ? String(entry.cookbookId) : undefined,
+            dataDate: key
+          }) : '<div class="prov-card kw-slot-bar" data-day="' + esc(key) + '">' + esc(name) + ' ' + euro(price) + '</div>';
+          var slotWrap = document.createElement('div');
+          slotWrap.innerHTML = slotHtml;
+          var slotEl = slotWrap.firstElementChild || slotWrap;
+          slotEl.className = (slotEl.className || '') + ' kw-slot kw-slot-filled' + (isLive ? ' kw-slot-live' : ' kw-slot-offline');
+          slotEl.setAttribute('data-day', key);
+          slotEl.setAttribute('data-slot', String(slot));
+          if (!isLive) slotEl.setAttribute('data-draft', '1');
+          slotEl.onclick = (function(k, idx, ent){ return function(e){ e.stopPropagation(); if(slotEl.classList.contains('kw-slot-swipe-delete')) return; if(typeof haptic === 'function') haptic(6); weekPlanDay = k; if(isLive && items[idx] && items[idx].id){ if(typeof startListingFlow === 'function') startListingFlow({ editOfferId: items[idx].id, date: k, entryPoint: 'week' }); } else { if(typeof startListingFlow === 'function') startListingFlow({ date: k, entryPoint: 'week', dishId: ent ? ent.cookbookId : undefined }); } }; })(key, slot, entry);
+          slotsWrap.appendChild(slotEl);
         } else {
           var empty = document.createElement('button');
           empty.type = 'button';
