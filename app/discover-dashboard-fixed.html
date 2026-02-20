@@ -29,16 +29,20 @@
 html,body{height:100%}
 body{
   margin:0;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+  font-family: 'Montserrat', 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   background: var(--bg);
   color: var(--text);
 }
 
-/* Container */
+/* Container – volle Breite [cite: alle Seiten ganze Breite] */
 .page{
-  max-width: 520px;
-  margin: 0 auto;
-  padding-bottom: 90px; /* Platz für Bottom Nav */
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding-left: max(16px, env(safe-area-inset-left));
+  padding-right: max(16px, env(safe-area-inset-right));
+  padding-bottom: 90px;
+  box-sizing: border-box;
 }
 
 /* Header */
@@ -326,8 +330,12 @@ body{
 }
 
 .bottomnav-inner{
-  max-width: 520px;
-  margin: 0 auto;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding-left: max(16px, env(safe-area-inset-left));
+  padding-right: max(16px, env(safe-area-inset-right));
+  box-sizing: border-box;
   display:flex;
   justify-content:space-around;
   gap: 10px;

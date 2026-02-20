@@ -4,8 +4,8 @@
     body { visibility: hidden; }
     :root{
       /* Mittagio High-End Farbpalette */
-      --bg:#F5F5F7; /* Native App: subtiler Hintergrund */
-      --bg-polaroid:#E8E0D6; /* Gebleichte Eiche (Polaroid-Discovery Hintergrund) */
+      --bg:#FFFFFF; /* Native App: reine Leinwand, kein Beige [cite: Tabula Rasa] */
+      --bg-polaroid:#FFFFFF; /* Kein Polaroid-Beige mehr – einheitlich weiß */
       --card:#FFFFFF;
       --text:#334155;   /* Slate Grey - edler als reines Schwarz */
       --muted:#6b6b6b;
@@ -92,11 +92,11 @@
       --header-blur: 16px;
       --header-border: none;
       --header-padding-y: 12px;
-      --header-padding-x: 20px;
+      --header-padding-x: 16px;
       --header-title-size: 20px;
       --header-title-weight: 900;
       --header-title-spacing: -0.03em;
-      --header-title-color: #1a1a1a;
+      --header-title-color: #0f172a;
       --header-subtitle-color: #64748b;
       --header-input-size: 15px;
       --header-input-weight: 500;
@@ -108,9 +108,10 @@
       --pill-color-inactive: #64748b;
       --pill-active-emerald: #059669;
       --section-title-size: 18px;
-      --section-title-weight: 900;
+      --section-title-weight: 800;
+      --list-title-weight: 800;
       --body-text-size: 15px;
-      --body-text-color: #334155;
+      --body-text-color: #64748b;
       /* Nutzung: .prov-header, .prov-page-header, .discover-header-sticky, Pills (Kunde + Kochbuch) */
 
       /* ========== EISERNES DESIGN-SYSTEM (Schritt 1.6) ========== */
@@ -134,19 +135,24 @@
       --list-photo-size: 100px;
       --list-photo-radius: 16px;
     }
-    /* Design-System Typografie-Klassen (Inline-Styles ersetzen) */
-    .ds-h1{ font-size: var(--size-h1) !important; font-weight: var(--weight-heavy) !important; color: var(--color-title); }
-    .ds-h2{ font-size: var(--size-h2) !important; font-weight: var(--weight-heavy) !important; color: var(--color-title); letter-spacing: -0.02em; }
-    .ds-h2-850{ font-size: var(--size-h2) !important; font-weight: 850 !important; color: var(--color-title); letter-spacing: -0.02em; }
-    .ds-empty-title{ font-size: 22px !important; font-weight: 850 !important; color: var(--color-title); letter-spacing: -0.02em; margin: 0 0 12px; }
-    .ds-h3{ font-size: var(--size-list-title) !important; font-weight: var(--weight-bold) !important; color: var(--color-title); }
-    .ds-body{ font-size: var(--size-body); color: var(--color-body); }
+    /* ========== EISERNE SCHRIFT-REGEL (Typography Master) [cite: 2026-02-19] ========== */
+    /* Haupttitel (zentriert): 20px, 900, -0.03em, Midnight Blue #0f172a */
+    .ds-h1, .ds-h2{ font-size: 20px !important; font-weight: 900 !important; letter-spacing: -0.03em; color: #0f172a !important; }
+    .ds-h2-850{ font-size: 20px !important; font-weight: 850 !important; color: #0f172a !important; letter-spacing: -0.03em; }
+    .ds-empty-title{ font-size: 20px !important; font-weight: 900 !important; color: #0f172a !important; letter-spacing: -0.03em; margin: 0 0 12px; }
+    /* Listen-Titel: 18px, 800 */
+    .ds-h3{ font-size: 18px !important; font-weight: 800 !important; color: #0f172a !important; }
+    /* Body: 14-15px, Schiefergrau #64748b */
+    .ds-body{ font-size: 15px; color: #64748b; }
     .ds-meta{ font-size: 12px; font-weight: 700; color: var(--color-body); }
     .ds-label{ font-size: 15px; font-weight: 700; color: var(--color-title); }
-    .ds-abholnummer-emoji{ font-size: var(--abholnummer-size) !important; line-height: 1; }
+    .ds-abholnummer-emoji{ font-size: 2.5rem !important; font-weight: 950 !important; font-family: ui-monospace, monospace !important; line-height: 1; color: #0f172a !important; }
     .content-padding-bottom{ padding-bottom: calc(var(--content-padding-bottom) + env(safe-area-inset-bottom, 0)) !important; }
     .content-padding-bottom-compact{ padding-bottom: calc(var(--content-padding-bottom-compact) + env(safe-area-inset-bottom, 0)) !important; }
     *{box-sizing:border-box}
+
+    /* S25 Typografie: Glatte Schriften (Gussform-Look) [cite: 2026-02-19] */
+    body{ -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
 
     /* ========== TRENNUNG KUNDE / ANBIETER (PFLICHT) ==========
      * Jede layout-kritische Regel (height, overflow, scroll) MUSS einen der beiden Scopes haben:
@@ -154,6 +160,15 @@
      * - NUR KUNDE:    body:not(.provider-mode) ...
      * Keine gemeinsamen Regeln für #app/main/body mit height/overflow – sonst bricht eine Seite die andere.
      * ========== */
+
+    /* ========== TABULA RASA: ARCHITEKTEN-RESET [cite: 2026-02-19] ==========
+     * 1. Global: #app, .app, alle Views width/max-width 100%, margin 0. Hierarchie-Sieg via !important.
+     * 2. No-Box Policy: Jede View ein Haupt-Wrapper, padding 0 16px. Keine Kästen, nur Inset-Divider.
+     * 3. Layer-Management: Header/Footer fixed. Main: padding-top/bottom + env(safe-area-inset-*).
+     * 4. Breitenbefreiung: chiprow, dayrow max-width 100% (kein 980px-Zentrier-Box mehr).
+     */
+    #app, .app{ width:100% !important; max-width:100% !important; margin:0 !important; box-sizing:border-box; }
+    #app .view, [id^="v-provider-"], #v-discover{ width:100% !important; max-width:100% !important; margin:0 !important; box-sizing:border-box; }
 
     /* VIEW-SWITCH: nur aktive View sichtbar (gemeinsam) */
     #app .view:not(.active){ display:none !important; min-height:0 !important; visibility:hidden !important; }
@@ -165,10 +180,10 @@
     .backdrop:not(.active){ display:none !important; opacity:0 !important; pointer-events:none !important; visibility:hidden !important; }
     .sheet:not(.active){ visibility:hidden !important; pointer-events:none !important; }
 
-    html,body{height:100%; margin:0; padding:0; overflow-x:hidden; max-width:100vw;}
+    html,body{height:100%; width:100%; margin:0; padding:0; overflow-x:hidden;}
     body{
-      margin:0; padding:0; max-width:100vw;
-      font-family:'Inter', 'Montserrat', system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      margin:0; padding:0; width:100%;
+      font-family: var(--font-main);
       font-size:16px; line-height:1.5;
       color: var(--color-text, #1a1a1a);
       background:var(--bg); color:var(--text);
@@ -189,7 +204,7 @@
     a{color:inherit}
 
     /* App shell: NUR unkritische Gemeinsamkeiten (kein height/overflow für beide) */
-    .app,#app{ display:flex; flex-direction:column; box-sizing:border-box; overflow-x:hidden; }
+    .app,#app{ display:flex; flex-direction:column; box-sizing:border-box; overflow-x:hidden; width:100%; margin:0; }
     .app main,#app main{ display:block; }
     .app{ padding-bottom:calc(78px + env(safe-area-inset-bottom, 0px)); }
 
@@ -203,16 +218,19 @@
     body:not(.provider-mode) #v-discover.view.active{ margin-top:0; padding-top:0; min-height:100dvh; display:block !important; }
     .topbar{
       position:sticky; top:0; z-index:10;
+      width:100%;
       background:rgba(255,255,255,.95);
       backdrop-filter:saturate(160%) blur(16px);
       -webkit-backdrop-filter:saturate(160%) blur(16px);
       border:none;
       box-shadow:0 4px 20px rgba(0,0,0,0.03);
       padding-top:env(safe-area-inset-top, 0px);
-      padding-left:env(safe-area-inset-left, 0);
-      padding-right:env(safe-area-inset-right, 0);
+      padding-left:max(16px, env(safe-area-inset-left, 0));
+      padding-right:max(16px, env(safe-area-inset-right, 0));
+      padding-bottom:12px;
+      box-sizing:border-box;
     }
-    .topbar-inner{max-width:980px; margin:0 auto; padding:12px 16px; display:flex; align-items:center; gap:10px;}
+    .topbar-inner{width:100%; max-width:100%; margin:0; padding:0; display:flex; align-items:center; gap:10px; box-sizing:border-box;}
     .header-basket-btn{
       position:relative;
       background:none;
@@ -281,7 +299,7 @@
     .spacer{flex:1}
 
     .chiprow{
-      max-width:980px; margin:0 auto; padding:6px 14px 8px;
+      max-width:100%; width:100%; margin:0; padding:6px 16px 8px;
       display:flex; gap:8px; overflow:auto; -webkit-overflow-scrolling:touch;
     }
     
@@ -426,7 +444,7 @@
     }
 
     .dayrow{
-      max-width:980px; margin:0 auto; padding:0 14px 12px;
+      max-width:100%; width:100%; margin:0; padding:0 16px 12px;
       display:flex; gap:8px; overflow:auto; -webkit-overflow-scrolling:touch;
     }
     .day{
@@ -443,7 +461,7 @@
     }
     .day.active{background:rgba(242,183,5,.14); border-color:rgba(242,183,5,.55)}
 
-    body:not(.provider-mode) main{ max-width:980px; margin:0 auto; padding:16px; }
+    body:not(.provider-mode) main{ width:100%; max-width:100%; margin:0; padding:0; box-sizing:border-box; }
     .grid{display:grid; grid-template-columns:1fr; gap:12px}
     @media (min-width:820px){ .grid{grid-template-columns:1fr 1fr} }
 
@@ -876,13 +894,15 @@
     /* Abholnummer-Ansicht benötigt flex-Layout */
     .view.active#v-pickup-code{display:flex !important}
 
-    /* Kundenseiten: Design-System – main-padding 16px, einheitlicher Look */
+    /* Kundenseiten: Volle Breite, weiße Leinwand – kein Beige, kein seitliches Padding [cite: Tabula Rasa] */
     .customer-view{
-      background:var(--bg-polaroid);
+      background:#fff;
       min-height:100vh;
-      padding: 0 16px 0;
+      padding:0;
       padding-bottom:calc(100px + env(safe-area-inset-bottom, 0px));
-      box-sizing: border-box;
+      box-sizing:border-box;
+      width:100%;
+      max-width:100%;
     }
     .customer-view .panel{
       background:rgba(255,255,255,0.95);
@@ -1114,7 +1134,7 @@
     .tabrow{display:flex; gap:8px; flex-wrap:wrap}
     .tabrow .ans{font-size:12px; padding:8px 10px}
     /* Kochbuch: MASTER-SPEC MagazinKochbuch – nur Pills, Magazin-Karte, Action-Bar (siehe docs/KOCHBUCH_KONZEPT.md) */
-    #v-provider-cookbook .cookbook-action-bar{ max-width:500px; margin:0 auto; box-sizing:border-box; }
+    #v-provider-cookbook .cookbook-action-bar{ width:100%; max-width:100%; margin:0; padding-left:max(16px, env(safe-area-inset-left)); padding-right:max(16px, env(safe-area-inset-right)); box-sizing:border-box; }
     #v-provider-cookbook .cookbook-bar-btn{ min-height:52px; border-radius:20px; font-size:10px; font-weight:800; letter-spacing:0.06em; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; border:none; transition:transform 0.12s; flex:1; min-width:0; }
     #v-provider-cookbook .cookbook-bar-btn:active{ transform:scale(0.97); }
     /* Kochbuch Magazin-Karte: feste Größe wie Magazin – keine Größenänderung beim Swipen/Blättern */
@@ -1268,7 +1288,7 @@
       display:flex; justify-content:space-between; align-items:flex-start;
     }
     .pickup-card-code{
-      font-size:42px; font-weight:900; line-height:1; color:#1a1a1a; letter-spacing:-0.03em;
+      font-size: 2.5rem; font-weight: 950; font-family: ui-monospace, monospace; line-height: 1; color: #0f172a; letter-spacing: 0.05em;
     }
     .pickup-card-time{
       font-size:13px; font-weight:700; color:#666; background:#f0f2f5; padding:4px 8px; border-radius:8px;
@@ -1354,7 +1374,7 @@
     }
     .quick-abholnummer-code-value{
       font-size:72px; font-weight:950; line-height:1;
-      color:#111; font-family:'Inter', monospace;
+      color:#111; font-family: var(--font-main);
       letter-spacing:.05em;
     }
     .quick-abholnummer-details{
@@ -1513,6 +1533,15 @@
       flex-direction:column;
       margin-left:12px; margin-right:12px;
       max-width:calc(100% - 24px);
+    }
+    /* Tabula Rasa: InseratCard volle Breite, weiße Leinwand – kein Beige-Durchscheinen [cite: Plan InseratCard] */
+    #wizard[data-flow="listing"].sheet--kitchen{
+      margin-left:0 !important; margin-right:0 !important;
+      max-width:100% !important;
+      background:#fff !important;
+    }
+    #wizard[data-flow="listing"].sheet--kitchen .wizard{
+      background:#fff !important;
     }
     #wizard.sheet--kitchen .handle{ background:rgba(0,0,0,0.15); width:40px; margin:8px auto 4px; }
     /* Wizard: app-like – Inserat-Flow weiter oben, weniger Abstand oben */
@@ -1769,7 +1798,7 @@
     /* price-display: elegant, System-Sans / Inter, Bold [cite: Native-Feel] */
     #wizard.sheet--kitchen .glass-express-step0 #step-price .inserat-price-input,
     #wizard.sheet--kitchen .glass-express-step0 .price-display{
-      font-size: 2.75rem; font-weight: 800; font-family: system-ui, -apple-system, "Inter", sans-serif;
+      font-size: 2.75rem; font-weight: 800; font-family: var(--font-main);
       text-align: center; color: #111;
     }
     /* Pills: haptisch, voll rund (Kategorien + Extras) – app-like :active */
@@ -2068,12 +2097,14 @@
       flex: 1;
       display: flex;
       flex-direction: column;
-      padding: 24px 20px 100px !important; /* Space for sticky footer */
-      max-width: 500px;
-      margin: 0 auto;
+      padding: 24px max(20px, env(safe-area-inset-right)) 100px max(20px, env(safe-area-inset-left)) !important;
+      width: 100%;
+      max-width: 100%;
+      margin: 0;
       background: transparent !important;
       border: none !important;
       box-shadow: none !important;
+      box-sizing: border-box;
     }
     .onboarding-actions {
       position: fixed;
@@ -2473,7 +2504,7 @@
     .liquid-master-panel .inserat-scroll-area {
       flex: 1; min-height: 0; overflow-y: auto; padding: 20px; -webkit-overflow-scrolling: touch;
     }
-    #wizard[data-flow="listing"] .inserat-scroll-area { padding: 24px 20px; font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif; }
+    #wizard[data-flow="listing"] .inserat-scroll-area { padding: 24px 20px; font-family: var(--font-main); }
     /* App-like: ein Bildschirm, klare Sektionen [cite: Plan Inseratsflow] */
     .liquid-master-panel .inserat-scroll-area {
       --inserat-section-gap: 28px;
@@ -2789,10 +2820,9 @@
     #wizard[data-flow="listing"] .inserat-power-bar .status-pill:active { transform: scale(0.9); }
     #wizard[data-flow="listing"] .inserat-power-bar .power-bar-legend-trigger:hover,
     #wizard[data-flow="listing"] .inserat-power-bar .power-bar-legend-trigger:focus { color: #64748b; }
-    /* Power-Bar Soft-Shell [Master-Prompt]: Inaktiv ultra-hell/transparent, aktiv nur Emerald-Glow, keine massive Box */
-    /* Power-Bar: Soft-Shell, nur aktives Icon in Emerald (keine massiven grünen Hintergründe) [cite: 2026-02-18] */
+    /* Power-Bar Soft-Shell: Tabula Rasa – weiße Leinwand, kein beiger Streifen [cite: Plan InseratCard] */
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell {
-      background: #f8fafc; border-bottom: 1px solid rgba(0,0,0,0.04);
+      background: #fff; border-bottom: 1px solid rgba(0,0,0,0.04);
       padding: 10px 16px; gap: 8px; flex-wrap: nowrap; justify-content: space-between;
     }
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .status-pill,
@@ -2807,11 +2837,11 @@
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .power-bar-legend-trigger { color: #94a3b8; }
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .inserat-pill-emo { font-size: 14px; }
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .power-bar-legend-round { width: 44px; height: 44px; border-radius: 50%; font-size: 14px; }
-    /* Inaktiv: ultra-helles Grau oder transparent */
+    /* Inaktiv: dezent grau auf weißer Leinwand */
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .status-pill.inactive,
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .func-icon-btn:not(.active),
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .power-bar-legend-trigger {
-      background: #f8fafc !important; border: none !important; box-shadow: none !important; color: #94a3b8;
+      background: rgba(0,0,0,0.04) !important; border: none !important; box-shadow: none !important; color: #94a3b8;
     }
     /* Aktiv: nur Emerald-Glow, kein massiver Hintergrund */
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .status-pill.active,
@@ -2852,7 +2882,7 @@
       font-size: 1.5rem; font-weight: 800; color: #0f172a; letter-spacing: -0.03em; line-height: 1.2;
       border: none; background: transparent; outline: none;
       width: 100%; border: none; background: transparent; padding: 4px 0 8px; outline: none;
-      font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+      font-family: var(--font-main);
     }
     .inserat-unified-title-wrap .inserat-detail-style-title:focus {
       border: none; background: transparent;
@@ -3161,14 +3191,14 @@
       transform: scale(0.96);
     }
     
-    /* Native App: Karten ohne Rahmen, weiche Schatten [cite: Operation Native] */
+    /* Komponenten-Glättung: Minimaler Schatten, Trennung nur über Inset-Divider [cite: Tabula Rasa] */
     .prov-card {
       background: #fff;
       border-radius: var(--tgtg-img-radius, 18px);
       padding: var(--tgtg-spacing, 20px);
       border: none;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.03);
-      margin-bottom: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      margin-bottom: 0;
       transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
       max-width: 100%;
       min-width: 0;
@@ -3247,7 +3277,7 @@
     
     [id^="v-provider-"]{
       background:var(--provider-bg) !important;
-      font-family: 'Inter', sans-serif;
+      font-family: var(--font-main);
     }
     /* Einheitlicher Sticky-Header für Anbieter-Subseiten */
     .provider-header-bar{
@@ -3467,8 +3497,8 @@
     .provider-nav-pill .provider-nav-label{ font-size:10px; font-weight:700; text-align:center; letter-spacing:0.02em; display:block; }
     .provider-nav-pill .navbtn:not(.active) .provider-nav-label{ color:rgba(255,255,255,0.5); }
     .provider-nav-pill .navbtn.active .provider-nav-label{ color:#fff; }
-    /* Floating Pill: position fixed, bottom 24px, left/right 16px, max-width 500px zentriert */
-    #providerNavWrap.provider-nav-wrap-pill{ bottom: 24px !important; left: 16px !important; right: 16px !important; max-width: 500px; margin-left: auto; margin-right: auto; z-index: 1052 !important; }
+    /* Floating Pill: Edge-to-Edge, 16px Inset, Safe-Area [cite: Full-Width 2026-02-19] */
+    #providerNavWrap.provider-nav-wrap-pill{ bottom: 24px !important; left: 0 !important; right: 0 !important; padding: 0 max(16px, env(safe-area-inset-right, 0)) max(0px, env(safe-area-inset-bottom, 0)) max(16px, env(safe-area-inset-left, 0)); width: 100%; box-sizing: border-box; z-index: 1052 !important; }
     #providerNavWrap #providerNav{ min-height:80px; }
     @media (max-width: 420px){
       #providerNavWrap.provider-nav-wrap-pill{ left: 16px !important; right: 16px !important; bottom: 24px !important; }
@@ -3550,9 +3580,9 @@
       font-size:13px; line-height:1.4;
     }
 
-    /* Onboarding */
+    /* Onboarding – volle Breite */
     .onboarding-step{
-      max-width:600px; margin:0 auto;
+      width:100%; max-width:100%; margin:0; padding-left:max(16px, env(safe-area-inset-left)); padding-right:max(16px, env(safe-area-inset-right)); box-sizing:border-box;
     }
     .onboarding-header{
       display:flex; justify-content:space-between; align-items:flex-start;
@@ -3574,10 +3604,10 @@
       margin-bottom:0;
     }
 
-    /* Social Feed - Story-Leiste */
+    /* Social Feed - Story-Leiste – volle Breite */
     .stories-container{
-      padding:16px 14px 20px;
-      max-width:980px; margin:0 auto;
+      padding:16px max(14px, env(safe-area-inset-right)) 20px max(14px, env(safe-area-inset-left));
+      width:100%; max-width:100%; margin:0; box-sizing:border-box;
     }
     .stories-scroll{
       display:flex; gap:16px; overflow-x:auto;
@@ -3828,6 +3858,8 @@
       min-height: 44px;
       padding: 8px 16px;
       padding-top: calc(8px + env(safe-area-inset-top, 0px));
+      padding-left: max(16px, env(safe-area-inset-left, 0));
+      padding-right: max(16px, env(safe-area-inset-right, 0));
       z-index: 10;
     }
     /* Fallback: alte Top-Row ohne Minimal-Klasse */
@@ -3850,9 +3882,10 @@
       left: 50%;
       top: 50%;
       transform: translate(-50%, -50%);
-      font-family: 'Montserrat', sans-serif;
+      font-family: var(--font-main);
       font-weight: 900;
-      font-size: clamp(16px, 4vw, 20px);
+      font-size: 20px;
+      letter-spacing: -0.03em;
       line-height: 1.2;
       max-height: 24px;
       color: #fff;
@@ -4123,9 +4156,9 @@
     
     /* Filter-Leiste: Kategorien – Fixiert oben (Design-Tokens) */
     .discover-categories-wrapper{
-      padding:6px 0 8px;
+      padding:6px 16px 8px;
       border-top: var(--header-border);
-      max-width:980px; margin:0 auto;
+      width:100%; max-width:100%; margin:0;
       position:sticky;
       top:0;
       background: var(--header-bg);
@@ -4369,10 +4402,12 @@
     /* Content: TGTG-Weißraum – Design-System padding-bottom 120px */
     body:not(.provider-mode) #v-discover .discover-main{
       padding-top: calc(130px + env(safe-area-inset-top, 0px));
-      padding-left: var(--tgtg-spacing);
-      padding-right: var(--tgtg-spacing);
+      padding-left: max(16px, env(safe-area-inset-left, 0));
+      padding-right: max(16px, env(safe-area-inset-right, 0));
       padding-bottom: calc(var(--content-padding-bottom) + env(safe-area-inset-bottom, 0));
       min-height: 0;
+      width: 100%;
+      max-width: 100%;
     }
     /* Discover: Leerzustand mittig zwischen Header und Footer [cite: 2026-01-27, 2026-01-29] */
     #v-discover #discoverOffers{
@@ -4413,7 +4448,7 @@
       text-align: center;
     }
     #v-discover .empty-state-text{
-      font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+      font-family: var(--font-main);
       font-size: 0.95rem;
       color: #64748b;
       line-height: 1.5;
@@ -4512,8 +4547,8 @@
     
     /* Kalender (horizontal swipebar, ohne Überschrift, distinct style) */
     .discover-calendar{
-      padding:0 0 14px;
-      max-width:980px; margin:0 auto;
+      padding:0 16px 14px;
+      width:100%; max-width:100%; margin:0;
       border-top:1px solid rgba(0,0,0,.06);
       margin-top:4px;
       padding-top:10px;
@@ -4592,7 +4627,7 @@
     
     /* Angebots-Liste Container (kompakt, vertikal) */
     .discover-offers{
-      max-width:980px; margin:0 auto; padding:12px 10px;
+      width:100%; max-width:100%; margin:0; padding:12px 16px;
       display:flex; flex-direction:column; gap:6px;
       box-sizing:border-box;
     }
@@ -4791,7 +4826,7 @@
       line-height: 1.1;
     }
     #v-cart #cartActiveAbholnummerDisplay { margin: 12px 0 4px; letter-spacing: 0.08em; }
-    #orderSuccessAbholnummer { letter-spacing: 0.12em; }
+    #orderSuccessAbholnummer { letter-spacing: 0.12em; font-size: 2.5rem !important; font-weight: 950 !important; }
     /* Mittagsbox: Karte pro Gericht (Thumbnail, 3 Säulen, Routen, Abgeholt) */
     .mittagsbox-active-card {
       background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.05);
@@ -4969,7 +5004,7 @@
       background: linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(255,250,240,0.96) 100%) !important;
     }
     .fav-header-title {
-      font-family: 'Quicksand', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+      font-family: var(--font-main) !important;
       font-weight: 700 !important;
       letter-spacing: 0.02em !important;
     }
@@ -5064,7 +5099,7 @@
     }
     /* Dish-Card: Gerichtsname Serif (Vertical Gallery) [cite: 2026-02-18] */
     #v-discover .dish-card .dish-name{
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-family: var(--font-main);
       font-size: 18px;
       font-weight: 800;
       color: var(--tgtg-title-color) !important;
@@ -5085,14 +5120,14 @@
       color: var(--brand, #FFD700);
       white-space: nowrap;
       flex-shrink: 0;
-      font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+      font-family: var(--font-main);
     }
     .dish-price {
       font-size: 14px;
       font-weight: 800;
       color: #111;
       white-space: nowrap;
-      font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+      font-family: var(--font-main);
     }
     /* Mittlere Zeile: Anbieter */
     .dish-provider {
@@ -5225,7 +5260,7 @@
       width:100%; box-sizing:border-box;
       overflow:hidden !important;
     }
-    /* Dashboard: absoluter Scroll-Container – füllt die View, Inhalt immer sichtbar und scrollbar */
+    /* Dashboard: absoluter Scroll-Container – Layer-Präzision 100px für Nav-Pill [cite: Tabula Rasa] */
     #v-provider-home .dashboard-floating-wrap{
       position:absolute !important; top:0 !important; left:0 !important; right:0 !important; bottom:0 !important;
       display:flex; flex-direction:column; gap:20px;
@@ -5233,21 +5268,23 @@
       -webkit-overflow-scrolling:touch;
       overscroll-behavior-y:contain;
       min-height:0;
-      padding:0 16px calc(24px + 72px + env(safe-area-inset-bottom, 0)); padding-left:max(16px, env(safe-area-inset-left, 0)); padding-right:max(16px, env(safe-area-inset-right, 0));
-      padding-top:env(safe-area-inset-top, 0);
-      width:100%; max-width:100%; margin:0; box-sizing:border-box;
+      padding:0 16px calc(24px + 100px + env(safe-area-inset-bottom, 0)) !important;
+      padding-left:max(16px, env(safe-area-inset-left, 0)) !important;
+      padding-right:max(16px, env(safe-area-inset-right, 0)) !important;
+      padding-top:env(safe-area-inset-top, 0) !important;
+      width:100% !important; max-width:100% !important; margin:0 !important; box-sizing:border-box;
       background:#fff;
-      border-radius:0;
-      box-shadow:none;
-      border:none;
+      border-radius:0 !important;
+      box-shadow:none !important;
+      border:none !important;
     }
-    /* Drei Kästen (KPIs, Angebote, Wochenplan): schwebend. Header kein Kasten – schlanke Leiste. */
+    /* No-Box Policy: Keine Kästen, flache Leinwand – Transparenz statt Tabelle [cite: Tabula Rasa] */
     #v-provider-home .dashboard-kasten{
-      background:#fff;
-      border-radius:24px;
-      box-shadow:0 4px 24px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04);
-      border:1px solid rgba(0,0,0,0.04);
-      overflow:hidden;
+      background:transparent !important;
+      border-radius:0 !important;
+      box-shadow:none !important;
+      border:none !important;
+      overflow:visible;
     }
     /* Header „Meine Küche“: Layout + Stil wie Wochenplan/Kochbuch (prov-page-header) */
     #v-provider-home .dashboard-kasten-header{
@@ -5261,11 +5298,11 @@
       backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
       border:none !important;
       box-shadow:0 4px 20px rgba(0,0,0,0.03) !important;
-      padding:calc(8px + env(safe-area-inset-top, 0)) 20px 12px 20px;
+      padding:calc(8px + env(safe-area-inset-top, 0)) 16px 12px 16px;
     }
     #v-provider-home .dashboard-kasten-header .prov-header-inner{ padding:0; }
     #v-provider-home .dashboard-kasten-header .prov-title,
-    #v-provider-home .dashboard-kasten-header .prov-page-header-title{ font-size: var(--size-h2) !important; font-weight: var(--weight-heavy) !important; }
+    #v-provider-home .dashboard-kasten-header .prov-page-header-title{ font-size: 20px !important; font-weight: 900 !important; letter-spacing: -0.03em; color: #0f172a !important; }
     /* KPI-Kasten: Glas-Lesbarkeit (Text-Schatten) + veredelte Zahlen + Trennlinie */
     #v-provider-home .dashboard-kasten-kpis{
       padding:18px max(16px, env(safe-area-inset-left, 0)) 18px max(16px, env(safe-area-inset-right, 0));
@@ -5299,12 +5336,12 @@
       max-width:100%; box-sizing:border-box;
     }
     #v-provider-home .dashboard-floating-wrap{ max-width:100%; min-width:0; padding-left:max(16px, env(safe-area-inset-left, 0)); padding-right:max(16px, env(safe-area-inset-right, 0)); box-sizing:border-box; }
-    #v-provider-home .dashboard-kasten-angebote .provider-week-title{ font-size:16px !important; }
+    #v-provider-home .dashboard-kasten-angebote .provider-week-title{ font-size: 18px !important; font-weight: 800 !important; color: #0f172a !important; }
     #v-provider-home .dashboard-kasten-wochenplan{
       padding:14px 16px; padding-left:max(16px, env(safe-area-inset-left, 0)); padding-right:max(16px, env(safe-area-inset-right, 0));
       padding-bottom:18px;
     }
-    #v-provider-home .dashboard-kasten-wochenplan .provider-week-title{ font-size:16px !important; }
+    #v-provider-home .dashboard-kasten-wochenplan .provider-week-title{ font-size: 18px !important; font-weight: 800 !important; color: #0f172a !important; }
     #v-provider-home.view.active .prov-header,
     #v-provider-home.view.active .dashboard-kasten{
       position:relative; z-index:1; min-height:0; overflow:visible; flex-shrink:0;
@@ -5361,7 +5398,8 @@
     #v-provider-pickups.view.active{ display:flex !important; flex-direction:column !important; height:100vh; height:100dvh; max-height:100vh; max-height:100dvh; overflow:hidden; }
     #v-provider-pickups.view.active > header{ position:relative; z-index:1; flex-shrink:0; }
     #v-provider-pickups.view.active > div{ position:relative; z-index:1; min-height:0; flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; }
-    #v-provider-profile{ min-height:100vh; min-height:100dvh; width:100%; box-sizing:border-box; background:#F9FAFB !important; }
+    /* TGTG-Layout: weiße Leinwand, kein grauer Rand [cite: FAQ Anbieter] */
+    #v-provider-profile{ min-height:100vh; min-height:100dvh; width:100%; box-sizing:border-box; background:#fff !important; }
     #v-provider-profile.view.active{ display:flex !important; flex-direction:column !important; }
     #v-provider-profile.view.active > header,
     #v-provider-profile.view.active > div{ position:relative; z-index:1; min-height:0; overflow:visible; }
@@ -5383,7 +5421,7 @@
     #v-provider-profile .provider-profile-welcome-text{ margin:0 0 4px; font-size:24px; font-weight:700; color:#111827; line-height:1.3; }
     #v-provider-profile .provider-profile-welcome-subtitle{ margin:0; font-size:14px; color:#6B7280; line-height:1.4; }
     #v-provider-profile .provider-profile-tiles-wrap{ padding:0 0 24px; }
-    #v-provider-profile .provider-profile-content-rebuild{ flex:1; overflow-y:auto; padding:20px; padding-bottom:calc(100px + env(safe-area-inset-bottom)); max-width:500px; margin:0 auto; width:100%; box-sizing:border-box; }
+    #v-provider-profile .provider-profile-content-rebuild{ flex:1; overflow-y:auto; padding:20px max(16px, env(safe-area-inset-right)) calc(100px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); width:100%; max-width:100%; margin:0; box-sizing:border-box; }
     #v-provider-profile .provider-profile-main-rebuild{ display:flex; flex-direction:column; gap:24px; }
     #v-provider-profile .provider-focus-card{ background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04); }
     #v-provider-profile .provider-focus-card-inserat{ padding:0 0 20px; }
@@ -5396,7 +5434,7 @@
     #v-provider-profile .provider-focus-btn{ display:block; width:calc(100% - 40px); margin:0 20px; min-height:52px; border-radius:16px; font-size:15px; font-weight:800; border:none; cursor:pointer; background:#22C55E; color:#fff; transition:transform 0.12s; }
     #v-provider-profile .provider-focus-btn:active{ transform:scale(0.98); }
     #v-provider-profile .provider-focus-card-abholnummer{ padding:24px 20px; text-align:center; }
-    #v-provider-profile .provider-focus-abholnummer-number{ font-size:2.5rem; font-weight:800; font-family:ui-monospace, monospace; color:#1a1a1a; letter-spacing:0.02em; margin-bottom:8px; }
+    #v-provider-profile .provider-focus-abholnummer-number{ font-size:2.5rem; font-weight:950; font-family:ui-monospace, monospace; color:#0f172a; letter-spacing:0.02em; margin-bottom:8px; }
     #v-provider-profile .provider-focus-card-info{ margin:0; font-size:14px; color:#6B7280; line-height:1.45; }
     #v-provider-profile .provider-focus-card-abrechnung{ padding:20px; display:flex; align-items:center; gap:16px; cursor:pointer; transition:background 0.2s; }
     #v-provider-profile .provider-focus-card-abrechnung:active{ background:#f3f4f6; }
@@ -5436,10 +5474,10 @@
     #v-provider-profile .provider-profile-hero-slide:not(:has(.provider-profile-hero-slide-img)){ padding:20px; }
     #v-provider-profile .provider-profile-hero-slide-img{ width:100%; aspect-ratio:16/10; object-fit:cover; background:#f1f3f5; }
     #v-provider-profile .provider-profile-hero-slide-body{ padding:20px; flex:1; display:flex; flex-direction:column; gap:12px; }
-    #v-provider-profile .provider-profile-hero-slide-title{ margin:0; font-size:18px; font-weight:900; color:#1a1a1a; line-height:1.3; font-family:system-ui,-apple-system,sans-serif; }
+    #v-provider-profile .provider-profile-hero-slide-title{ margin:0; font-size:18px; font-weight:900; color:#1a1a1a; line-height:1.3; font-family: var(--font-main); }
     #v-provider-profile .provider-profile-hero-slide-sub{ margin:0; font-size:13px; color:#64748b; line-height:1.45; }
     #v-provider-profile .provider-profile-hero-badge{ display:inline-block; font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:0.06em; color:#64748b; margin-bottom:4px; }
-    #v-provider-profile .provider-profile-hero-cta{ min-height:52px; border-radius:14px; font-size:15px; font-weight:800; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; font-family:system-ui,-apple-system,sans-serif; transition:transform 0.12s, box-shadow 0.2s; }
+    #v-provider-profile .provider-profile-hero-cta{ min-height:52px; border-radius:14px; font-size:15px; font-weight:800; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; font-family: var(--font-main); transition:transform 0.12s, box-shadow 0.2s; }
     #v-provider-profile .provider-profile-hero-cta:active{ transform:scale(0.98); }
     #v-provider-profile .provider-profile-hero-cta--yellow{ background:#FFD700; color:#1a1a1a; box-shadow:0 4px 16px rgba(255,215,0,0.35); }
     #v-provider-profile .provider-profile-hero-cta--emerald{ background:#10b981; color:#fff; box-shadow:0 4px 16px rgba(16,185,129,0.25); }
@@ -5495,7 +5533,7 @@
     #v-provider-week .week-magic-gap-btn{ background:transparent; border:1px solid #e2e8f0; min-height:36px; padding:0 10px; border-radius:10px; display:flex; align-items:center; justify-content:center; gap:5px; color:#64748b; font-size:12px; font-weight:600; cursor:pointer; white-space:nowrap; transition:background 0.2s, color 0.2s, border-color 0.2s; }
     #v-provider-week .week-magic-gap-btn:hover{ background:#f8fafc; color:#475569; border-color:#cbd5e1; }
     #v-provider-week .week-plan-wrap{
-      flex:1; min-height:0; display:flex; flex-direction:column; max-width:500px; margin:0 auto; width:100%; padding:0 20px 16px; box-sizing:border-box;
+      flex:1; min-height:0; display:flex; flex-direction:column; width:100%; max-width:100%; margin:0; padding:0 max(16px, env(safe-area-inset-right)) 16px max(16px, env(safe-area-inset-left)); box-sizing:border-box;
     }
     #v-provider-week .week-list-scroll{ flex:1; min-height:120px; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:8px 0 16px; }
     #v-provider-week .week-dayrow{ display:flex; gap:8px; overflow-x:auto; -webkit-overflow-scrolling:touch; padding:0 0 16px; margin-bottom:16px; border-bottom:1px solid #f1f3f5; }
@@ -5585,7 +5623,7 @@
       #v-provider-week .week-header-compact .prov-page-header-title{ margin:0; font-size: var(--size-h2); font-weight: var(--weight-heavy); letter-spacing:-0.03em; color: var(--color-title); }
       #v-provider-week .week-header-subtitle{ margin:0; font-size:12px; font-weight:600; color:#64748b; letter-spacing:0.02em; }
       #v-provider-week .week-plan-wrap{
-        flex:1; display:flex; flex-direction:column; min-height:0; max-width:500px; margin:0 auto; width:100%;
+        flex:1; display:flex; flex-direction:column; min-height:0; width:100%; max-width:100%; margin:0;
         padding:0 20px 16px; box-sizing:border-box;
       }
       #v-provider-week .week-list-scroll{ flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:8px 0 16px; }
@@ -5877,7 +5915,7 @@
       #v-provider-week .kw-week-activate-btn:active{ transform:scale(0.98); }
       /* Verschieben-Sheet (Long-Press) */
       .kw-move-overlay{ position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:1100; display:flex; align-items:flex-end; justify-content:center; padding:0 20px  calc(80px + env(safe-area-inset-bottom)); animation:fadeIn 0.2s ease; }
-      .kw-move-sheet{ background:#fff; border-radius:24px 24px 0 0; padding:24px 20px calc(20px + env(safe-area-inset-bottom)); width:100%; max-width:400px; max-height:70vh; overflow:auto; box-shadow:0 -8px 32px rgba(0,0,0,0.12); }
+      .kw-move-sheet{ background:#fff; border-radius:24px 24px 0 0; padding:24px max(20px, env(safe-area-inset-right)) calc(20px + env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left)); width:100%; max-width:100%; max-height:70vh; overflow:auto; box-shadow:0 -8px 32px rgba(0,0,0,0.12); box-sizing:border-box; }
       .kw-move-title{ font-size:15px; font-weight:800; color:#1a1a1a; margin-bottom:16px; }
       .kw-move-days{ display:flex; flex-direction:column; gap:8px; margin-bottom:16px; }
       .kw-move-day-btn{ width:100%; min-height:52px; padding:14px 16px; border-radius:16px; border:2px solid #e2e8f0; background:#f8fafc; font-size:15px; font-weight:700; color:#1a1a1a; cursor:pointer; text-align:left; }
@@ -5889,7 +5927,7 @@
       .week-template-item:hover{ background:rgba(16,185,129,0.08); border-color:rgba(16,185,129,0.25); }
       .week-template-item:active{ transform:scale(0.98); }
       /* Action-Bar (Drucken & Teilen) – schlank, Silicon-Valley-Style */
-      #v-provider-week .kw-action-bar-fixed{ position:fixed; bottom:calc(64px + env(safe-area-inset-bottom, 20px)); left:20px; right:20px; margin:0 auto; max-width:400px; background:rgba(255,255,255,0.88); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border-radius:16px; padding:10px 12px; display:flex; align-items:center; gap:12px; z-index:998; box-shadow:0 4px 24px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.03); }
+      #v-provider-week .kw-action-bar-fixed{ position:fixed; bottom:calc(64px + env(safe-area-inset-bottom, 20px)); left:0; right:0; width:100%; margin:0; box-sizing:border-box; background:rgba(255,255,255,0.88); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border-radius:0; padding:10px max(16px, env(safe-area-inset-right)) 10px max(16px, env(safe-area-inset-left)); display:flex; align-items:center; gap:12px; z-index:998; box-shadow:0 -4px 24px rgba(0,0,0,0.06); }
       #v-provider-week .kw-action-bar-fixed .btn{ min-height:44px; flex:1; min-width:0; border-radius:12px; font-size:14px; font-weight:600; letter-spacing:0.01em; display:inline-flex; align-items:center; justify-content:center; gap:8px; border:none; background:rgba(0,0,0,0.04); color:#1a1a1a; cursor:pointer; transition:background 0.2s, transform 0.15s; }
       #v-provider-week .kw-action-bar-fixed .btn:hover{ background:rgba(0,0,0,0.07); }
       #v-provider-week .kw-action-bar-fixed .btn:active{ transform:scale(0.97); }
@@ -5985,13 +6023,13 @@
       #v-provider-profile .provider-profile-row i[data-lucide]{ width:20px !important; height:20px !important; }
       #v-provider-profile .provider-profile-logout-btn:active{ transform:scale(0.98); opacity:0.9; }
       /* S25 Native-First: flüssiges flex-column, Scroll nicht blockieren [cite: s25-native-first] */
-      #v-provider-profile .provider-profile-sub{ flex:1; min-height:0; display:flex; flex-direction:column; background:#F9FAFB !important; }
+      #v-provider-profile .provider-profile-sub{ flex:1; min-height:0; display:flex; flex-direction:column; background:#fff !important; }
       #v-provider-profile .provider-profile-sub > .tgtg-list-wrap,
       #v-provider-profile .provider-profile-sub > div[style*="overflow-y:auto"]{ flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:20px 0 calc(120px + env(safe-area-inset-bottom, 0)); box-sizing:border-box; width:100%; }
       #v-provider-profile .provider-profile-sub .provider-sub-scroll{ flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:20px; padding-bottom:calc(120px + env(safe-area-inset-bottom, 0)); box-sizing:border-box; }
       #v-provider-profile #providerProfileMenuCard{ background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,0.06); }
       /* Einstellungen (Zahnrad): wie Kundenseite – Clean Card & Spacing */
-      #v-provider-profile .provider-profile-sub .provider-settings-scroll{ padding:40px 16px calc(100px + env(safe-area-inset-bottom, 0)); display:flex; flex-direction:column; gap:20px; max-width:500px; margin:0 auto; width:100%; box-sizing:border-box; }
+      #v-provider-profile .provider-profile-sub .provider-settings-scroll{ padding:40px max(16px, env(safe-area-inset-right)) calc(100px + env(safe-area-inset-bottom, 0)) max(16px, env(safe-area-inset-left)); display:flex; flex-direction:column; gap:20px; width:100%; max-width:100%; margin:0; box-sizing:border-box; }
       /* Einstellungen: Clean-Look Cards – weiß, dezent Schatten, keine Schiefertafel [cite: s25-native-first] */
       #v-provider-profile .provider-settings-card{ background:#fff; border-radius:16px; overflow:hidden; border:1px solid rgba(0,0,0,0.04); box-shadow:0 2px 12px rgba(0,0,0,0.06); margin-bottom:0; }
       #v-provider-profile .provider-settings-identity .plogo{ width:100% !important; height:100% !important; border-radius:18px !important; }
@@ -6052,16 +6090,17 @@
       .provider-settings-accordion-content-inner{ overflow:hidden; }
       .provider-settings-accordion-content-inner > *{ padding:0 20px 20px; }
 
-      /* Account verwalten: Full-Width List-Design [cite: 2026-01-29, 2026-02-18] – Listenzeilen, nicht Buttons */
-      #v-provider-profile .tgtg-list-wrap{ background:#F9FAFB !important; flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:20px 0 calc(120px + env(safe-area-inset-bottom, 0)); display:flex; flex-direction:column; box-sizing:border-box; width:100% !important; max-width:none !important; gap:0; }
+      /* Account verwalten: TGTG Full-Width – weiße Leinwand, keine Box [cite: FAQ Anbieter] */
+      #v-provider-profile .tgtg-list-wrap{ background:#fff !important; flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:16px max(16px, env(safe-area-inset-right, 0)) calc(120px + env(safe-area-inset-bottom, 0)) max(16px, env(safe-area-inset-left, 0)); display:flex; flex-direction:column; box-sizing:border-box; width:100% !important; max-width:none !important; gap:0; }
       /* Container-Sprengung: Keine max-width, keine festen Breiten */
       #v-provider-profile .tgtg-list{ background:#fff !important; margin:0; border-radius:0; border:none !important; box-shadow:none !important; overflow:hidden; width:100% !important; max-width:none !important; }
       #v-provider-profile .tgtg-list:has(.tgtg-accordion){ box-shadow:none !important; border:none !important; border-radius:0; margin:0; }
-      #v-provider-profile .tgtg-section-title{ font-size:11px; font-weight:800; letter-spacing:0.06em; color:#64748b; text-transform:uppercase; margin:0 0 4px; padding:12px 20px 4px; }
-      /* Zeile = von ganz links bis ganz rechts. Icon links, Pfeil rechts, dazwischen Weißraum [cite: 2026-02-18] */
+      #v-provider-profile .tgtg-section-title{ font-size:11px; font-weight:800; letter-spacing:0.06em; color:#64748b; text-transform:uppercase; margin:0 0 4px; padding:12px 16px 4px; padding-left:max(16px, env(safe-area-inset-left, 0)); padding-right:max(16px, env(safe-area-inset-right, 0)); }
+      /* Zeile = von ganz links bis ganz rechts. Icon links, Pfeil rechts [TGTG] */
       #v-provider-profile .tgtg-row{
         position:relative; display:flex !important; align-items:center !important; justify-content:space-between !important;
         width:100% !important; min-height:56px; padding:16px 20px !important;
+        padding-left:max(16px, env(safe-area-inset-left, 0)); padding-right:max(16px, env(safe-area-inset-right, 0));
         background:#FFFFFF !important; border:none !important; box-shadow:none !important;
         font-size:16px; font-weight:700; color:#1a1a1a; cursor:pointer; text-align:left; font-family:inherit;
         transition:background 0.2s; -webkit-tap-highlight-color:transparent; box-sizing:border-box;
@@ -6074,7 +6113,7 @@
       #v-provider-profile .tgtg-row .tgtg-row-icon{ font-size:20px; flex-shrink:0; width:28px; min-width:28px; text-align:left; }
       #v-provider-profile .tgtg-row .tgtg-label{ flex:1; min-width:0; text-align:left; }
       #v-provider-profile .tgtg-row .tgtg-chevron{ width:20px; height:20px; color:#94a3b8; flex-shrink:0; }
-      #v-provider-profile .tgtg-identity{ padding:32px 20px 20px; text-align:center; background:transparent; }
+      #v-provider-profile .tgtg-identity{ padding:32px 16px 20px; text-align:center; background:transparent; padding-left:max(16px, env(safe-area-inset-left, 0)); padding-right:max(16px, env(safe-area-inset-right, 0)); }
       #v-provider-profile .tgtg-identity-name{ margin:0; font-size:17px; font-weight:800; color:#1a1a1a; letter-spacing:-0.02em; }
       #v-provider-profile .tgtg-identity-ort{ margin:4px 0 0; font-size:14px; color:#64748b; }
       /* FOLGE UNS: SVG-Icons Grün, Subtitle [cite: 2026-02-18] */
@@ -6087,7 +6126,7 @@
       #v-provider-profile .tgtg-accordion-item{ position:relative; }
       #v-provider-profile .tgtg-accordion-item::after{ content:''; position:absolute; left:16px; right:0; bottom:0; height:1px; background:#E5E7EB; }
       #v-provider-profile .tgtg-accordion-item:last-child::after{ display:none; }
-      #v-provider-profile .tgtg-accordion-trigger{ width:100% !important; display:flex !important; align-items:center !important; justify-content:space-between !important; gap:12px; min-height:56px; padding:16px 20px !important; background:#fff !important; border:none !important; box-shadow:none !important; font-size:16px; font-weight:700; color:#1a1a1a; cursor:pointer; text-align:left; font-family:inherit; transition:background 0.2s; -webkit-tap-highlight-color:transparent; }
+      #v-provider-profile .tgtg-accordion-trigger{ width:100% !important; display:flex !important; align-items:center !important; justify-content:space-between !important; gap:12px; min-height:56px; padding:16px 20px !important; padding-left:max(16px, env(safe-area-inset-left, 0)); padding-right:max(16px, env(safe-area-inset-right, 0)); background:#fff !important; border:none !important; box-shadow:none !important; font-size:16px; font-weight:700; color:#1a1a1a; cursor:pointer; text-align:left; font-family:inherit; transition:background 0.2s; -webkit-tap-highlight-color:transparent; }
       #v-provider-profile .tgtg-accordion-trigger .tgtg-label{ text-align:left; }
       #v-provider-profile .tgtg-accordion-trigger:active{ background:#f8fafc; }
       #v-provider-profile .tgtg-accordion-trigger .tgtg-accordion-chevron{ width:18px; height:18px; color:#94a3b8; flex-shrink:0; transition:transform 300ms cubic-bezier(0.4, 0, 0.2, 1); opacity:0.85; }
@@ -6098,10 +6137,10 @@
       #v-provider-profile .tgtg-accordion-body{ padding:0 16px 16px; font-size:14px; line-height:1.5; color:#475569; opacity:0; transition:opacity 300ms cubic-bezier(0.4, 0, 0.2, 1); background:#F9FAFB; }
       #v-provider-profile .tgtg-accordion-item.open .tgtg-accordion-body{ opacity:1; }
       
-      /* Account verwalten: S25 Mobile – padding 20px, padding-bottom für Nav [cite: s25-native-first] */
+      /* Account verwalten: S25 – volle Breite, kein Box-Padding [TGTG] */
       @media (max-width:600px){
         #v-provider-profile .provider-profile-sub{ width:100% !important; max-width:100% !important; box-sizing:border-box; }
-        #v-provider-profile .tgtg-list-wrap{ padding:20px; padding-bottom:calc(120px + env(safe-area-inset-bottom, 0)); width:100%; box-sizing:border-box; }
+        #v-provider-profile .tgtg-list-wrap{ padding-left:max(16px, env(safe-area-inset-left, 0)); padding-right:max(16px, env(safe-area-inset-right, 0)); padding-bottom:calc(120px + env(safe-area-inset-bottom, 0)); width:100%; box-sizing:border-box; }
         #v-provider-profile .provider-sub-header{ padding-left:20px; padding-right:20px; }
         #v-provider-profile .provider-sub-header h1{ flex:1; text-align:center; margin:0; min-width:0; }
         #v-provider-profile .provider-profile-content-rebuild{ padding:20px; width:100%; max-width:100%; box-sizing:border-box; }
@@ -6269,7 +6308,7 @@
 
     /* Chat-Bubbles Feed */
     .feed-container{
-      max-width:980px; margin:0 auto; padding:0 16px 20px;
+      width:100%; max-width:100%; margin:0; padding:0 16px 20px;
     }
     .chat-bubble{
       background:#fff; border:1px solid var(--border);
@@ -6327,7 +6366,7 @@
       background:#f8f7f3; border:1px solid var(--border); color:var(--text);
     }
     .feed-empty{
-      max-width:980px; margin:0 auto;
+      width:100%; max-width:100%; margin:0;
     }
     
     /* Pickup Card (Theken-Ansicht 2.0) – TGTG Tabula Rasa */
@@ -6355,7 +6394,7 @@
       display:flex; justify-content:space-between; align-items:flex-start;
     }
     .pickup-card-code{
-      font-size:42px; font-weight:900; line-height:1; color:#1a1a1a; letter-spacing:-0.03em;
+      font-size: 2.5rem; font-weight: 950; font-family: ui-monospace, monospace; line-height: 1; color: #0f172a; letter-spacing: 0.05em;
     }
     .pickup-card-time{
       font-size:13px; font-weight:700; color:#666; background:#f0f2f5; padding:4px 8px; border-radius:8px;
@@ -6627,16 +6666,19 @@
     }
     /* --- MODERN CUSTOMER UI --- */
     .customer-view {
-      background: var(--bg);
+      background: #fff;
       min-height: 100vh;
     }
-    /* Meins, Mittagsbox, Favoriten, Orders: Inhaltsbereich – Design-System padding-bottom 120px */
+    /* Meins, Mittagsbox, Favoriten, Orders: Inhaltsbereich, seitliches Padding 16px [cite: Tabula Rasa] */
     #v-profile .customer-main-wrap,
     #v-cart .customer-main-wrap,
     #v-fav .customer-main-wrap,
     #v-orders .customer-main-wrap {
       min-height: calc(100vh - 60px);
+      padding: 0 16px;
       padding-bottom: calc(var(--content-padding-bottom) + env(safe-area-inset-bottom, 0));
+      padding-left: max(16px, env(safe-area-inset-left, 0));
+      padding-right: max(16px, env(safe-area-inset-right, 0));
       box-sizing: border-box;
     }
 
@@ -6783,8 +6825,8 @@
 
     .cust-card-title {
       font-size: 18px;
-      font-weight: 850;
-      color: var(--tgtg-title-color);
+      font-weight: 800;
+      color: #0f172a;
       letter-spacing: -0.02em;
       margin: 0;
       display: -webkit-box;
@@ -7019,11 +7061,15 @@
   padding: 60px 20px;
   border-top: 1px solid #eaeaea;
   background: #fff;
-  font-family: sans-serif;
+  font-family: var(--font-main);
 }
 .trust-footer-inner {
-  max-width: 1100px;
-  margin: 0 auto;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding-left: max(20px, env(safe-area-inset-left));
+  padding-right: max(20px, env(safe-area-inset-right));
+  box-sizing: border-box;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
