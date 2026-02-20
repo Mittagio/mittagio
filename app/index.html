@@ -185,7 +185,7 @@
       <!-- Karte 1: Meine Kontodaten -->
       <div class="panel" id="billingCardKontodaten" style="border-radius:16px; padding:24px; margin-bottom:20px; box-shadow:0 2px 12px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04);">
         <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
-          <span style="font-size:15px; font-weight:700; color:#1a1a1a;">Meine Kontodaten</span>
+          <span style="font-size:15px; font-weight:700; color:#1a1a1a;">Kontodaten</span>
           <span id="billingKontodatenStatus" style="font-size:12px; font-weight:700; padding:6px 12px; border-radius:20px; background:rgba(34,197,94,0.15); color:#16a34a;">Hinterlegt</span>
         </div>
         <div style="background:#f8f7f2; border-radius:12px; padding:16px 20px; margin-bottom:16px; border:1px solid rgba(0,0,0,0.06);">
@@ -209,7 +209,7 @@
 
       <!-- Karte 3: Meine Abrechnungen -->
       <div class="panel" style="border-radius:16px; padding:24px; box-shadow:0 2px 12px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04);">
-        <div style="font-size:15px; font-weight:700; color:#1a1a1a; margin-bottom:16px;">Meine Abrechnungen</div>
+        <div style="font-size:15px; font-weight:700; color:#1a1a1a; margin-bottom:16px;">Abrechnungen</div>
         <div id="billingList" style="display:flex; flex-direction:column; gap:0;">
           <!-- Zeilen: Datum, Posten, Betrag, PDF-Icon – wird von renderBilling befüllt -->
         </div>
@@ -583,7 +583,7 @@
 
         <!-- Meine Bestellungen / Food-Historie (immer sichtbar) -->
         <div class="cust-card" style="padding:20px; margin-bottom:0;">
-          <h3 style="margin:0 0 16px; font-size:16px; font-weight:900; color:#1a1a1a;">Meine Bestellungen</h3>
+          <h3 style="margin:0 0 16px; font-size:16px; font-weight:900; color:#1a1a1a;">Bestellungen</h3>
           <div id="profileOrderHistoryList" style="display:flex; flex-direction:column; gap:8px;">
             <!-- Dynamisch befüllt -->
           </div>
@@ -1068,7 +1068,7 @@
     <!-- PROVIDER APP - Dashboard 2.1: 4 schwebende Kästen (App-like) -->
     <section class="view prov-dashboard-stolz" id="v-provider-home">
       <div class="dashboard-floating-wrap">
-        <!-- KASTEN 1: Meine Küche Header (Layout + Stil wie Wochenplan/Kochbuch) -->
+        <!-- KASTEN 1: Küche Header (Layout + Stil wie Wochenplan/Kochbuch) -->
         <header class="dashboard-kasten dashboard-kasten-header prov-header prov-header-stolz prov-page-header">
           <div class="prov-header-inner">
             <div class="prov-page-header-row">
@@ -1076,7 +1076,7 @@
                 <div class="prov-page-header-icon" aria-hidden="true">
                   <i data-lucide="home" style="width:24px; height:24px;"></i>
                 </div>
-                <h1 class="prov-page-header-title">Meine Küche</h1>
+                <h1 class="prov-page-header-title">Küche</h1>
               </div>
               <button type="button" id="btnProviderHomeRefresh" title="Aktualisieren" aria-label="Daten neu laden" class="prov-page-header-action" style="background:rgba(0,0,0,0.06); border:none; min-width:44px; min-height:44px; width:44px; height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; color:#1a1a1a; cursor:pointer;">
                 <i data-lucide="refresh-cw" style="width:20px; height:20px;"></i>
@@ -1094,7 +1094,7 @@
               <p id="kpiLabelTagesessen" class="kpi-label" style="margin:0 0 2px;">Tagesessen</p>
               <p id="dashboardTagesessenCount" style="margin:0;">0</p>
             </div>
-            <div id="kpiBestellungen" role="button" tabindex="0" style="text-align:center; padding:0 16px; border-left:1px solid #f3f4f6; border-right:1px solid #f3f4f6; cursor:pointer; min-height:40px; flex:1;" onclick="showProviderPickups()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); showProviderPickups();}" title="Abholnummer / Abholungen">
+            <div id="kpiBestellungen" role="button" tabindex="0" style="text-align:center; padding:0 16px; cursor:pointer; min-height:40px; flex:1;" onclick="showProviderPickups()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); showProviderPickups();}" title="Abholnummer / Abholungen">
               <p id="kpiLabelAbholungen" class="kpi-label" style="margin:0 0 2px;">Abholungen</p>
               <p id="dashboardAbholungenCount" style="margin:0;">0</p>
             </div>
@@ -1132,7 +1132,7 @@
         <!-- KASTEN 4: Dein Wochenplan -->
         <div class="dashboard-kasten dashboard-kasten-wochenplan">
           <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:16px;">
-            <h3 class="provider-week-title" style="margin:0;">Dein Wochenplan</h3>
+            <h3 class="provider-week-title" style="margin:0;">Wochenplan</h3>
             <button type="button" id="btnProviderShareWeekPlanTitle" title="Wochenplan teilen" aria-label="Wochenplan teilen" style="background:rgba(0,0,0,0.06); border:none; min-width:44px; min-height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; color:#1a1a1a; cursor:pointer;">
               <i data-lucide="share-2" style="width:20px; height:20px;"></i>
             </button>
@@ -1298,7 +1298,7 @@
               <div class="prov-page-header-icon">
                 <i data-lucide="book-open" style="width:24px; height:24px;"></i>
               </div>
-              <h1 class="prov-page-header-title" id="cookbookHeaderTitle">Mein Kochbuch</h1>
+              <h1 class="prov-page-header-title" id="cookbookHeaderTitle">Kochbuch</h1>
             </div>
             <div id="cookbookSearchWrap" style="display:none; flex:1; min-width:0;">
               <input type="text" id="cookbookSearchInput" placeholder="Gericht suchen…" style="width:100%; height:40px; border-radius:12px; border:2px solid #e2e8f0; padding:0 14px; font-size:14px; font-weight:500; outline:none; box-sizing:border-box;" />
@@ -1440,7 +1440,7 @@
           <button type="button" id="providerProfileGearBtn" class="provider-profile-gear-btn provider-profile-gear-btn-tr" aria-label="Einstellungen"><svg class="provider-profile-gear-svg" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
         </div>
         <div class="provider-profile-header-row2">
-          <h1 class="provider-profile-title">Mein Profil</h1>
+          <h1 class="provider-profile-title">Profil</h1>
         </div>
       </header>
 
@@ -2308,7 +2308,7 @@
 
 
   <!-- CUSTOMER bottom nav - Mittagio-Bar -->
-  <nav class="bottom-nav" id="customerNav" style="position:fixed; bottom:0; left:0; right:0; z-index:999; display:flex; justify-content:space-around; align-items:center; background:rgba(255,255,255,0.85); backdrop-filter:saturate(180%) blur(20px); -webkit-backdrop-filter:saturate(180%) blur(20px); border-top:1px solid rgba(0,0,0,0.05); height:calc(70px + env(safe-area-inset-bottom, 0px)); padding-bottom:env(safe-area-inset-bottom, 0px);">
+  <nav class="bottom-nav" id="customerNav" style="position:fixed; bottom:0; left:0; right:0; z-index:999; display:flex; justify-content:space-around; align-items:center; background:rgba(255,255,255,0.95); backdrop-filter:saturate(180%) blur(20px); -webkit-backdrop-filter:saturate(180%) blur(20px); border:none; box-shadow:0 -4px 20px rgba(0,0,0,0.03); height:calc(70px + env(safe-area-inset-bottom, 0px)); padding-bottom:env(safe-area-inset-bottom, 0px);">
     <button class="navbtn active" data-go="discover" style="background:none; border:none; padding:8px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; transition:all 0.2s;">
       <i data-lucide="search" style="width:22px;height:22px;"></i>
       <span style="font-size:11px; font-weight:700;">Entdecken</span>
@@ -2331,14 +2331,14 @@
     <!-- PROVIDER bottom nav: fixer Zurück-Button darüber, heller Tab-Bar (App-Style) -->
   <div id="providerNavWrap" class="provider-nav-wrap-pill" style="display:none; position:fixed; bottom:24px; left:16px; right:16px; max-width:500px; margin-left:auto; margin-right:auto; z-index:1052; padding:0 env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0);">
     <div id="providerNavBackRow" style="padding:0 20px 16px; display:none;">
-      <button type="button" id="btnProviderNavBack" class="btn-back" aria-label="Zurück" style="background:rgba(255,255,255,0.9); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:1px solid rgba(0,0,0,0.08); color:#1a1a1a; padding:10px 24px; border-radius:999px; font-size:15px; font-weight:700; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.06);"><i data-lucide="chevron-left" style="width:20px;height:20px;"></i> Zurück</button>
+      <button type="button" id="btnProviderNavBack" class="btn-back" aria-label="Zurück" style="background:rgba(255,255,255,0.95); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:none; color:#1a1a1a; padding:10px 24px; border-radius:999px; font-size:15px; font-weight:700; cursor:pointer; box-shadow:0 4px 20px rgba(0,0,0,0.06);"><i data-lucide="chevron-left" style="width:20px;height:20px;"></i> Zurück</button>
     </div>
-    <nav class="bottom provider-nav-light provider-nav-pill" id="providerNav" style="background:#1a1a1a; backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border:1px solid rgba(255,255,255,0.1); border-radius:2.5rem; padding:16px 32px calc(16px + env(safe-area-inset-bottom, 0)); box-shadow:0 25px 50px rgba(0,0,0,0.25); display:flex; justify-content:space-between; align-items:center;">
-      <button class="navbtn active" data-pgo="provider-home" title="Küche"><div class="ico" data-icon="utensils-crossed" data-icon-only="1"></div></button>
-      <button class="navbtn" data-pgo="provider-pickups" title="Abholungen"><div class="ico" data-icon="receipt" data-icon-only="1"></div></button>
-      <button class="navbtn" data-pgo="provider-week" title="Wochenplan"><div class="ico" data-icon="calendar" data-icon-only="1"></div></button>
-      <button class="navbtn" data-pgo="provider-cookbook" title="Kochbuch"><div class="ico" data-icon="bookOpen" data-icon-only="1"></div></button>
-      <button class="navbtn" data-pgo="provider-profile" title="Meins"><div class="ico" data-icon="user" data-icon-only="1"></div></button>
+    <nav class="bottom provider-nav-light provider-nav-pill" id="providerNav" style="background:#1a1a1a; border-radius:2.5rem; padding:16px 32px calc(16px + env(safe-area-inset-bottom, 0)); box-shadow:0 8px 32px rgba(0,0,0,0.2); display:flex; justify-content:space-between; align-items:center;">
+      <button class="navbtn active" data-pgo="provider-home" title="Küche"><div class="ico" data-icon="utensils-crossed" data-icon-only="1"></div><span class="provider-nav-label">Küche</span></button>
+      <button class="navbtn" data-pgo="provider-pickups" title="Abholungen"><div class="ico" data-icon="receipt" data-icon-only="1"></div><span class="provider-nav-label">Abholungen</span></button>
+      <button class="navbtn" data-pgo="provider-week" title="Wochenplan"><div class="ico" data-icon="calendar" data-icon-only="1"></div><span class="provider-nav-label">Wochenplan</span></button>
+      <button class="navbtn" data-pgo="provider-cookbook" title="Kochbuch"><div class="ico" data-icon="bookOpen" data-icon-only="1"></div><span class="provider-nav-label">Kochbuch</span></button>
+      <button class="navbtn" data-pgo="provider-profile" title="Meins"><div class="ico" data-icon="user" data-icon-only="1"></div><span class="provider-nav-label">Meins</span></button>
     </nav>
   </div>
 </div>
