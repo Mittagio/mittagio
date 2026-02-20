@@ -44,18 +44,7 @@
 
   // Cookie-Helfer für Single-Session (Session-ID im Cookie + DB)
   const SESSION_COOKIE_NAME = 'mittagio_session_id';
-  const SESSION_COOKIE_DAYS = 30;
-  function getCookie(name){
-    const m = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
-    return m ? decodeURIComponent(m[2]) : null;
-  }
-  function setCookie(name, value, days){
-    const maxAge = (days || SESSION_COOKIE_DAYS) * 24 * 60 * 60;
-    document.cookie = name + '=' + encodeURIComponent(value) + '; path=/; max-age=' + maxAge + '; SameSite=Lax';
-  }
-  function deleteCookie(name){
-    document.cookie = name + '=; path=/; max-age=0';
-  }
+  /* getCookie, setCookie, deleteCookie → js/utils.js */
 
   function getFavPillars(dishId){ const m = load(LS.favPillars, {}); return m[dishId] || null; }
   function setFavPillars(dishId, pillars){ const m = load(LS.favPillars, {}); m[dishId] = pillars; save(LS.favPillars, m); }
@@ -653,8 +642,7 @@
   };
   /** Platzhalter-Bild im Inserat-Wizard (1x1, hellgrau) */
   const WIZARD_PLACEHOLDER_IMAGE = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="1" height="1"%3E%3Crect fill="%23f0f0f0" width="1" height="1"/%3E%3C/svg%3E';
-  /** Haptisches Feedback (Vibration) – nur wo erlaubt (z.B. nach Nutzerinteraktion) */
-  function haptic(ms){ try { if(navigator.vibrate) navigator.vibrate(ms !== undefined ? ms : 10); } catch(e){} }
+  /* haptic → js/utils.js */
 
   /** Kategorie → Emoji (Bestellhistorie & Pills) */
   const CAT_EMOJI = {
@@ -684,32 +672,7 @@
     {name:'Gulasch mit Spätzle', category:'Fleisch'}
   ];
 
-  // Day slider: today..+6
-  // Format: "Montag, 24.01." (immer vollständiger Wochentag + DD.MM.)
-  function fmtDay(d, includeToday = false){
-    const weekdays = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
-    const wd = weekdays[d.getDay()];
-    const day = String(d.getDate()).padStart(2,'0');
-    const month = String(d.getMonth()+1).padStart(2,'0');
-    
-    if(includeToday){
-      const today = new Date();
-      const isToday = d.toDateString() === today.toDateString();
-      if(isToday){
-        return `Heute, ${wd} ${day}.${month}.`;
-      }
-    }
-    
-    return `${wd}, ${day}.${month}.`;
-  }
-  
-  // Format date with time range: "Montag, 24.01. · 11:30–14:30"
-  function fmtDateWithTime(d, timeRange){
-    const dateStr = fmtDay(d);
-    return timeRange ? `${dateStr} · ${timeRange}` : dateStr;
-  }
-  
-  function isoDate(d){ return d.toISOString().slice(0,10); }
+  /* fmtDay, fmtDateWithTime, isoDate → js/utils.js */
 
   let activeCat = null;
   let activeDay = isoDate(new Date());
@@ -1287,19 +1250,9 @@
     });
   }
 
-  function seededInfoKey(str){
-    const s = String(str||'');
-    let h = 0;
-    for(let i=0;i<s.length;i++){ h = (h*31 + s.charCodeAt(i)) % 10000; }
-    return h;
-  }
-  function seededInfo(str){
-    const h = seededInfoKey(str);
-    const distanceKm = Number((0.5 + (h % 80) / 10).toFixed(1));
-    return { distanceKm };
-  }
+  /* seededInfoKey, seededInfo → js/utils.js */
 
-  const DEFAULT_MEAL_WINDOW = '11:30 – 14:00';
+  const DEFAULT_MEAL_WINDOW = typeof window.DEFAULT_MEAL_WINDOW !== 'undefined' ? window.DEFAULT_MEAL_WINDOW : '11:30 – 14:00';
   /** Platzhalter-Bild für Inserate ohne Foto (Gastro, unspezifisch) – Overlay „Bild folgt“. */
   const PLACEHOLDER_IMAGE_URL = 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=800&q=80';
   const INSERT_FEE = 4.99;       // Inseratsgebühr fix (€)
@@ -16669,7 +16622,7 @@
     var posten = t.inserat_id ? ('Inserat · ' + (t.inserat_id || '')) : 'Inseratsgebühr';
     var betrag = (t.total_amount != null) ? Number(t.total_amount).toFixed(2).replace('.', ',') + ' €' : '4,99 €';
     var rechnungsnr = (t.id || 'R-' + (t.timestamp || '').slice(0,10).replace(/-/g,'') || '') + '';
-    var html = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Rechnung Mittagio</title><style>body{font-family:'Montserrat','Inter',system-ui,-apple-system,sans-serif;padding:40px;max-width:420px;margin:0 auto;color:#1a1a1a;} h1{font-size:22px;font-weight:800;margin:0 0 8px;} .meta{color:#64748b;font-size:13px;line-height:1.5;margin-bottom:28px;} table{width:100%;border-collapse:collapse;} th{text-align:left;padding:10px 0;border-bottom:1px solid #e5e7eb;font-size:12px;font-weight:700;color:#64748b;text-transform:uppercase;} td{padding:10px 0;border-bottom:1px solid #e5e7eb;} tr:last-child td{border-bottom:none;} .total{font-weight:800;font-size:20px;color:#16a34a;} .foot{margin-top:32px;padding-top:20px;border-top:1px solid #e5e7eb;font-size:11px;color:#94a3b8;line-height:1.5;} .print-hint{margin-top:16px;font-size:13px;color:#0A84FF;} @media print{.print-hint{display:none;} body{padding:20px;}}</style></head><body>' +
+    var html = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Rechnung Mittagio</title><style>body{font-family:\'Montserrat\',\'Inter\',system-ui,-apple-system,sans-serif;padding:40px;max-width:420px;margin:0 auto;color:#1a1a1a;} h1{font-size:22px;font-weight:800;margin:0 0 8px;} .meta{color:#64748b;font-size:13px;line-height:1.5;margin-bottom:28px;} table{width:100%;border-collapse:collapse;} th{text-align:left;padding:10px 0;border-bottom:1px solid #e5e7eb;font-size:12px;font-weight:700;color:#64748b;text-transform:uppercase;} td{padding:10px 0;border-bottom:1px solid #e5e7eb;} tr:last-child td{border-bottom:none;} .total{font-weight:800;font-size:20px;color:#16a34a;} .foot{margin-top:32px;padding-top:20px;border-top:1px solid #e5e7eb;font-size:11px;color:#94a3b8;line-height:1.5;} .print-hint{margin-top:16px;font-size:13px;color:#0A84FF;} @media print{.print-hint{display:none;} body{padding:20px;}}</style></head><body>' +
       '<h1>Rechnung</h1>' +
       '<div class="meta">Rechnungsnummer: ' + rechnungsnr.replace(/</g,'&lt;') + '<br><br>Mittagio · Mike Quach<br>Langäcker 2, 73635 Rudersberg<br>info@mittagio.de</div>' +
       '<table><tr><th>Datum</th><td>' + datum + '</td></tr><tr><th>Posten</th><td>' + (posten || 'Inseratsgebühr 4,99 €').replace(/</g,'&lt;') + '</td></tr><tr><th>Betrag (zahlbar sofort)</th><td class="total">' + betrag + '</td></tr></table>' +
@@ -18358,6 +18311,12 @@
 
   function refreshCurrentView(silent=false){
     const activeView = document.querySelector('.view.active');
+    if(!activeView) return;
+    if(activeView.id === 'v-provider-home'){ if(typeof renderProviderHome==='function') renderProviderHome(); }
+    else if(activeView.id === 'v-provider-pickups'){ if(typeof renderProviderPickups==='function') renderProviderPickups(); }
+  }
+
+  setupLiveSync();r('.view.active');
     if(!activeView) return;
     if(activeView.id === 'v-provider-home'){ if(typeof renderProviderHome==='function') renderProviderHome(); }
     else if(activeView.id === 'v-provider-pickups'){ if(typeof renderProviderPickups==='function') renderProviderPickups(); }
