@@ -412,195 +412,15 @@
     }
   }
   
-  /**
-   * Add a new order
-   * @param {Order} order
-   * @returns {Order}
-   */
-  function addOrder(order){
-    // Guard: pickupCode nur bei PAID
-    if(order.pickupCode && order.status !== 'PAID'){
-      order.pickupCode = undefined;
-      order.pickupCodeActivatedAt = undefined;
-    }
-    
-    const ordersList = loadOrders();
-    ordersList.push(order);
-    saveOrders(ordersList);
-    return order;
-  }
-  
-  /**
-   * Update an existing order
-   * @param {string} orderId
-   * @param {Partial<Order>} patch
-   * @returns {Order|null}
-   */
-  function updateOrder(orderId, patch){
-    const ordersList = loadOrders();
-    const index = ordersList.findIndex(o => o.id === orderId);
-    if(index === -1){
-      console.error('Order not found:', orderId);
-      return null;
-    }
-    
-    const order = ordersList[index];
-    
-    // Guard: pickupCode nur bei PAID
-    if(patch.pickupCode && patch.status !== 'PAID' && order.status !== 'PAID'){
-      patch.pickupCode = undefined;
-      patch.pickupCodeActivatedAt = undefined;
-    }
-    
-    // Merge patch
-    const updated = {
-      ...order,
-      ...patch,
-      updatedAt: Date.now()
-    };
-    
-    ordersList[index] = updated;
-    saveOrders(ordersList);
-    return updated;
-  }
-  
-  /**
-   * Get order by ID
-   * @param {string} orderId
-   * @returns {Order|null}
-   */
-  function getOrderById(orderId){
-    const ordersList = loadOrders();
-    return ordersList.find(o => o.id === orderId) || null;
-  }
-  
-  /**
-   * List active orders (CREATED, PAYMENT_PENDING, PAID)
-   * @returns {Order[]}
-   */
-  function listActiveOrders(){
-    const ordersList = loadOrders();
-    return ordersList.filter(o => 
-      o.status === 'CREATED' || 
-      o.status === 'PAYMENT_PENDING' || 
-      o.status === 'PAID'
-    );
-  }
-  
-  /**
-   * Generate pickup code (legacy: random 5-char code)
-   * @param {number} [len=5]
-   * @returns {string}
-   */
-  function generatePickupCode(len = 5){
-    const alphabet = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'; // ohne O/I/0/1
-    let code = '';
-    for(let i = 0; i < len; i++){
-      code += alphabet[Math.floor(Math.random() * alphabet.length)];
-    }
-    
-    // Optional: ensure uniqueness (wenn collision, neu generieren)
-    const ordersList = loadOrders();
-    const existingCodes = ordersList
-      .filter(o => o.pickupCode)
-      .map(o => o.pickupCode);
-    
-    if(existingCodes.includes(code)){
-      // Collision: neu generieren (max 10 Versuche)
-      for(let attempt = 0; attempt < 10; attempt++){
-        code = '';
-        for(let i = 0; i < len; i++){
-          code += alphabet[Math.floor(Math.random() * alphabet.length)];
-        }
-        if(!existingCodes.includes(code)) break;
-      }
-    }
-    
-    return code;
-  }
-  
-  /**
-   * Assign pickup code (deterministic, mock)
-   * Single source of truth: Order record
-   * @param {Object} params
-   * @param {string} params.providerId - Provider ID
-   * @param {string} params.pickupDate - ISO date "YYYY-MM-DD"
-   * @param {string} params.dishId - Dish/Offer ID
-   * @returns {{dishLetter: string, runningNumber: number, pickupCode: string}}
-   */
-  function assignPickupCode({providerId, pickupDate, dishId}){
-    // 1) Get today's active offers for provider (same pickupDate)
-    const todayOffers = offers
-      .filter(o => o.providerId === providerId && o.day === pickupDate && o.active !== false)
-      .sort((a, b) => {
-        // 2) Sort deterministically (createdAt or sortIndex)
-        const timeA = a.createdAt || 0;
-        const timeB = b.createdAt || 0;
-        if(timeA !== timeB) return timeA - timeB;
-        return (a.id || '').localeCompare(b.id || '');
-      });
-    
-    // 3) Determine dishLetter based on index: 0->A, 1->B, 2->C, 3->D, 4->E
-    const dishIndex = todayOffers.findIndex(o => o.id === dishId);
-    if(dishIndex === -1){
-      // Fallback: use first dish (A)
-      const dishLetter = 'A';
-      const ordersList = loadOrders();
-      // 4) Find existing orders for (providerId + pickupDate + dishLetter)
-      const existingOrders = ordersList.filter(o => 
-        o.providerId === providerId && 
-        o.pickupDate === pickupDate && 
-        o.dishLetter === dishLetter &&
-        o.status === 'PAID'
-      );
-      // 5) runningNumber = existingCount + 1
-      const runningNumber = existingOrders.length + 1;
-      // 6) pickupCode = `${runningNumber}${dishLetter}`
-      const pickupCode = `${runningNumber}${dishLetter}`;
-      return {dishLetter, runningNumber, pickupCode};
-    }
-    
-    const position = Math.min(dishIndex, 4); // Max 5 dishes (0-4)
-    const dishLetter = String.fromCharCode(65 + position); // A=65, B=66, etc. (0→A, 1→B, ...)
-    
-    // 4) Find existing orders for (providerId + pickupDate + dishLetter)
-    const ordersList = loadOrders();
-    const existingOrders = ordersList.filter(o => 
-      o.providerId === providerId && 
-      o.pickupDate === pickupDate && 
-      o.dishLetter === dishLetter &&
-      o.status === 'PAID'
-    );
-    
-    // 5) runningNumber = existingCount + 1
-    const runningNumber = existingOrders.length + 1;
-    
-    // 6) pickupCode = `${runningNumber}${dishLetter}`
-    const pickupCode = `${runningNumber}${dishLetter}`;
-    
-    return {dishLetter, runningNumber, pickupCode};
-  }
-  
-  /**
-   * Generate dish-letter pickup code (legacy wrapper, uses assignPickupCode)
-   * @param {string} orderId - Order ID
-   * @param {string} dishId - Dish/Offer ID
-   * @param {string} providerIdVal - Provider ID (from order)
-   * @param {string} day - ISO date string (YYYY-MM-DD)
-   * @returns {{code: string, dishLetter: string, runningNumber: number}} - Format: "1A", "2A", "3B", etc.
-   */
-  function generateDishLetterPickupCode(orderId, dishId, providerIdVal, day){
-    const pickupDate = day || isoDate(new Date());
-    // Use assignPickupCode (deterministic)
-    const result = assignPickupCode({providerId: providerIdVal, pickupDate, dishId});
-    return {code: result.pickupCode, dishLetter: result.dishLetter, runningNumber: result.runningNumber};
-  }
+  // addOrder, updateOrder, getOrderById, listActiveOrders, generatePickupCode, assignPickupCode, generateDishLetterPickupCode → js/app-logic.js
 
   // --- State ---
   let mode = load(LS.mode, 'customer'); // 'start' | 'customer' | 'provider' (Standard: 'customer' für Discover-Seite)
+  if(typeof window !== 'undefined') window.mode = mode; // Für js/ui-navigation.js
   // Angebote werden später durch seedExampleData() oder seed() geladen
   // Zuerst aus localStorage laden, falls vorhanden
   let offers = load(LS.offers, []);
+  if(typeof window !== 'undefined') window.offers = offers;
   const legacyFavs = load(LS.favs, []);
   let providerFavs = new Set(load(LS.providerFavs, legacyFavs));
   let dishFavs = new Set(load(LS.dishFavs, []));
@@ -620,8 +440,10 @@
     reuseEnabled: false
   });
   let provider = load(LS.provider, { loggedIn:false, email:null, current_session_id:null, profile:{ name:'', address:'', street:'', zip:'', city:'', mealWindow:'11:30 – 14:00', mealStart:'11:30', mealEnd:'14:00', lunchWeekdays:[1,2,3,4,5], phone:'', email:'', website:'', logoData:'', reuseEnabledByDefault:false, abholnummerEnabledByDefault:false, wantsAllergensByDefault:false } });
+  if(typeof window !== 'undefined') window.provider = provider;
   let cookbook = load(LS.cookbook, []); // [{id, dish, category, price, allergens[], extras?, reuse? , photoData?}]
   let week = load(LS.week, {}); // { 'YYYY-MM-DD': [{ providerId, cookbookId, dish, price, timeStart?, timeEnd? }, ...] }
+  if(typeof window !== 'undefined'){ window.customer = customer; window.cookbook = cookbook; window.week = week; }
 
   var GOOGLE_PLACES_API_KEY = '';  // Optional: Für Adress-Autocomplete bei Betriebsdaten eintragen
   const CATEGORIES = ['Vegetarisch','Vegan','Fisch','Mit Fleisch'];
@@ -1390,7 +1212,7 @@
     return out;
   }
 
-  // --- Navigation ---
+  // --- Navigation → js/ui-navigation.js ---
   const views = {
     start:'v-discover',
     discover:'v-discover', fav:'v-fav', orders:'v-orders', cart:'v-cart', profile:'v-profile',
@@ -1409,6 +1231,7 @@
     admin:'v-admin'
   };
 
+  /* setCustomerNavActive, setProviderNavActive, showView, setMode, handleLogoClick, pushViewState, showStart, showDiscover, showFav, showOrders, showCart, showProfile, openCodeSheetWithOrder, showPickupCode, showProviderHome, showProviderPickups, showProviderWeek, showProviderCookbook, showProviderProfile, showProviderBilling, showCheckout → js/ui-navigation.js */
   function setCustomerNavActive(go){
     document.querySelectorAll('#customerNav .navbtn').forEach(b=>b.classList.toggle('active', b.dataset.go===go));
   }
@@ -7136,19 +6959,7 @@
     }
   }
 
-  function addToCart(o){
-    if(!o || !o.hasPickupCode){
-      alert('Ohne Abholnummer nur ansehen.');
-      return false;
-    }
-    // Multi-Vendor erlaubt (keine Warnung mehr, nur Info im Korb)
-    if(!cart){ cart = { providerId:o.providerId, providerName:o.providerName, items:[], pickupTime:'' }; }
-    const idx = cart.items.findIndex(i=>i.offerId===o.id);
-    if(idx>=0) cart.items[idx].qty += 1; else cart.items.push({offerId:o.id, qty:1});
-    save(LS.cart, cart);
-    updateHeaderBasket();
-    return true;
-  }
+  // addToCart → js/app-logic.js
 
   function handleOrderClick(o){
     // KEIN Login-Zwang: Gast kann direkt bestellen
@@ -7321,41 +7132,7 @@
     };
   }
 
-  // Header-Basket aktualisieren (Badge mit Anzahl)
-  function updateHeaderBasket(){
-    const bottomNavBasketBadge = document.getElementById('bottomNavBasketBadge');
-    if(!bottomNavBasketBadge) return;
-    
-    const raw = load(LS.cart, []);
-    const cart = (raw != null && raw !== undefined) ? raw : [];
-    const itemCount = (cart && cart.items && Array.isArray(cart.items))
-      ? cart.items.reduce((sum, it) => sum + (it && it.qty != null ? it.qty : 0), 0)
-      : (Array.isArray(cart) ? cart.length : 0);
-    
-    if(itemCount > 0){
-      bottomNavBasketBadge.textContent = itemCount > 99 ? '99+' : itemCount;
-      bottomNavBasketBadge.style.display = 'flex';
-    } else {
-      bottomNavBasketBadge.style.display = 'none';
-    }
-    
-    // Icons aktualisieren
-    if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
-  }
-  
-  // --- Cart ---
-  /** Verbleibende Minuten bis Ende des Abholfensters (pickupWindow z.B. "11:30 – 14:00"). */
-  function getRemainingPickupMinutes(pickupWindow){
-    if(!pickupWindow || typeof pickupWindow !== 'string') return null;
-    const match = pickupWindow.match(/(\d{1,2}):(\d{2})\s*[–\-]\s*(\d{1,2}):(\d{2})/);
-    if(!match) return null;
-    const endH = parseInt(match[3], 10), endM = parseInt(match[4], 10);
-    const now = new Date();
-    const nowM = now.getHours() * 60 + now.getMinutes();
-    const endMinutes = endH * 60 + endM;
-    if(nowM >= endMinutes) return 0;
-    return endMinutes - nowM;
-  }
+  // updateHeaderBasket, getRemainingPickupMinutes → js/app-logic.js
   
   function renderCart(){
     const box=document.getElementById('cartBox');
