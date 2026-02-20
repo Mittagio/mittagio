@@ -10502,10 +10502,10 @@
           if (deviateDineIn) pillarParts.push('<div class="pillar-mini ' + (hasDineIn ? 'active green' : '') + '" title="Vor Ort">🍴</div>');
           if (deviatePickup) pillarParts.push('<div class="pillar-mini ' + (hasPickupNumber ? 'active yellow' : '') + '" title="Abholnummer">🧾</div>');
           if (deviateReuse) pillarParts.push('<div class="pillar-mini ' + (hasReusable ? 'active petrol' : '') + '" title="Mehrweg">🔄</div>');
-          const pillarsRow = pillarParts.length ? '<div class="card-pillars" style="display:flex; gap:12px; margin-bottom:12px;">' + pillarParts.join('') + '</div>' : '';
+          const pillarsRow = pillarParts.length ? '<div class="prov-list-item-pillars">' + pillarParts.join('') + '</div>' : '';
 
           const card = document.createElement('div');
-          card.className = 'prov-card';
+          card.className = 'prov-card prov-list-item';
           card.setAttribute('data-offer-id', String(o.id));
           card.setAttribute('role', 'button');
           card.setAttribute('tabindex', '0');
@@ -10513,23 +10513,23 @@
           card.style.overflow = 'hidden';
           card.style.cursor = 'pointer';
           card.innerHTML = `
-            <div style="position:relative; height:180px; width:100%;">
-              <img src="${esc(imgUrl)}" alt="" style="width:100%; height:100%; object-fit:cover;" />
-              <div class="price-pill" style="position:absolute; bottom:12px; right:12px; padding:6px 14px; border-radius:999px; font-size:16px; font-weight:900;">${euro(d.price)}</div>
-              ${isLive ? '<div style="position:absolute; top:12px; left:12px; background:rgba(255,255,255,0.9); backdrop-filter:blur(4px); padding:4px 10px; border-radius:8px; display:flex; align-items:center; gap:6px;"><span style="width:8px; height:8px; background:#22c55e; border-radius:50%;"></span><span style="font-size:10px; font-weight:800; text-transform:uppercase; color:#1a1a1a;">Live</span></div>' : ''}
+            <div class="prov-list-item-img-wrap">
+              <img src="${esc(imgUrl)}" alt="" />
+              <div class="prov-list-item-price-badge">${euro(d.price)}</div>
+              ${isLive ? '<div class="prov-list-item-live-badge"><span class="live-dot"></span>Live</div>' : ''}
             </div>
-            <div style="padding:var(--card-padding, 20px);">
-              ${pillarsRow}
-              <h2 style="margin:0 0 16px; font-size:18px; font-weight:900; color:#1a1a1a;">${esc(dishName)}</h2>
-              <div style="display:flex; gap:16px; margin-bottom:12px; padding-bottom:12px; border-bottom:1px solid #f1f1f1;">
-                <div style="display:flex; align-items:center; gap:6px;"><span style="font-size:16px;">👁️</span><span style="font-size:13px; font-weight:800;">${viewsCount}</span></div>
-                <div style="display:flex; align-items:center; gap:6px;"><span style="font-size:16px;">❤️</span><span style="font-size:13px; font-weight:800;">${favCount}</span></div>
-                <div style="display:flex; align-items:center; gap:6px;"><span style="font-size:16px;">🧾</span><span style="font-size:13px; font-weight:800;">${orderCount}</span></div>
+            <div class="prov-list-item-body">
+              ${pillarsRow ? pillarsRow.replace('card-pillars', 'prov-list-item-pillars') : ''}
+              <h2 class="prov-list-item-title">${esc(dishName)}</h2>
+              <div class="prov-list-item-meta-row">
+                <span>👁️ ${viewsCount}</span>
+                <span>❤️ ${favCount}</span>
+                <span>🧾 ${orderCount}</span>
               </div>
-              <div style="margin-bottom:0; padding:8px 12px; border-radius:10px; background:${abholnummerGray ? '#f1f5f9' : 'rgba(255,215,0,0.15)'}; color:${abholnummerGray ? '#94a3b8' : '#1a1a1a'}; font-size:12px; font-weight:800; display:flex; align-items:center; gap:8px;">
-                <span style="font-size:14px;">🧾</span>
+              <div class="prov-list-item-abholnummer ${abholnummerGray ? 'gray' : ''}">
+                <span>🧾</span>
                 <span>Abholnummer</span>
-                <span style="margin-left:auto; font-family:monospace; letter-spacing:0.05em;">${abholnummerLabel}</span>
+                <span class="abholnummer-val">${abholnummerLabel}</span>
               </div>
             </div>
           `;
@@ -15962,7 +15962,7 @@
       const sheet = document.createElement('div');
       sheet.className = 'inserat-card-sheet';
       sheet.setAttribute('data-inserat-card', 'true');
-      sheet.style.cssText = 'padding:0; overflow:visible; display:flex; flex-direction:column; min-height:0; border-radius:28px 28px 0 0; background:#fff; box-shadow:0 -8px 32px rgba(0,0,0,0.08);';
+      sheet.style.cssText = 'padding:0; overflow:visible; display:flex; flex-direction:column; min-height:0; border-radius:0; background:transparent;';
       const box = document.createElement('div');
       box.className='liquid-master-panel glass-express-step0 inserat-universal-mask inserat-master-flow liquid-panel listing-glass-panel s25-floating-panel inserat-card';
       box.setAttribute('data-inserat-card','true');
@@ -16312,9 +16312,15 @@
       inputPrice.placeholder='0,00';
       inputPrice.value=(w.data.price>0?Number(w.data.price).toFixed(2).replace('.',','):'');
       const updateProfit = function(val){
-        var p = (parseFloat(String(val).replace(',','.')) || 0) * 30;
+        var price = parseFloat(String(val).replace(',','.')) || 0;
         var calcVal = document.getElementById('calc-val');
-        if(calcVal) calcVal.textContent = p.toFixed(2).replace('.',',');
+        if(calcVal) calcVal.textContent = (price * 30).toFixed(2).replace('.',',');
+        var verdienstEl = document.getElementById('inserat-verdienst-vorschau');
+        if(verdienstEl && !isPlanMode){
+          var verdienst = Math.max(0, (price - 0.89) * 30);
+          verdienstEl.textContent = 'Dein Verdienst (ca. 30 Portionen): ' + verdienst.toFixed(2).replace('.',',') + ' €';
+          verdienstEl.style.display = price > 0 ? 'block' : 'none';
+        }
       };
       stepPriceWrap.appendChild(inputPrice);
       var eurSpan=document.createElement('span'); eurSpan.className='inserat-price-pill-euro'; eurSpan.textContent=' €'; stepPriceWrap.appendChild(eurSpan);
@@ -16427,7 +16433,7 @@
         const btn499=document.createElement('button');
         btn499.type='button';
         btn499.className='inserat-btn-secondary inserat-btn-yellow-border';
-        btn499.textContent='Nur Inserat';
+        btn499.textContent='Jetzt für 4,99 € inserieren';
         btn499.onclick=function(){ if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; } if(btn499.disabled) return; if(typeof haptic==='function') haptic([30, 50, 30]); w.data.hasPickupCode=false; w.data.pricingOption=undefined; w.data.inseratFeeWaived=false; var o=previewOfferFromWizard(); closeWizard(true); showPublishFeeModal(o); };
         actionSection.appendChild(btn499);
         // Ohne Live: Im Wochenplan speichern | Im Kochbuch speichern (Plan 3.3)
@@ -16655,11 +16661,12 @@
   function getInseratLiveEmailTemplate(offer){
     const o = offer ? normalizeOffer(offer) : {};
     const dishName = o.dish || o.dishName || o.title || 'Dein Gericht';
-    const providerName = o.providerName || (provider && provider.profile && provider.profile.name) || 'Anbieter';
+    const pn = o.providerName || (provider && provider.profile && provider.profile.name) || 'Anbieter';
+    const providerName = typeof pn === 'string' ? pn : 'Anbieter';
     const day = o.day || (typeof isoDate === 'function' ? isoDate(new Date()) : '');
     const offerUrl = typeof buildOfferShareUrl === 'function' ? buildOfferShareUrl(offer) : (window.location.origin + window.location.pathname + '#/offer/' + (o.id || ''));
     const subject = 'Dein Inserat ist live! 🚀';
-    const body = 'Hallo ' + providerName + ',\n\n' +
+    const body = `Hallo ${providerName},\n\n` +
       'dein Gericht „' + dishName + '“ ist ab sofort auf Mittagio sichtbar.\n\n' +
       '🔗 Link zum Angebot: ' + offerUrl + '\n' +
       '📅 Datum: ' + day + '\n\n' +
