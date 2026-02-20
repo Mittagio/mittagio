@@ -12,6 +12,12 @@
       --shadow:0 10px 24px rgba(0,0,0,.08);
       --shadow2:0 16px 40px rgba(0,0,0,.14);
       --radius:24px;     /* rounded-3xl for messenger vibe */
+      /* Airbnb-Style Design Tokens (S25 High-End) */
+      --airbnb-radius: 28px;
+      --airbnb-shadow: 0 4px 20px rgba(0,0,0,0.06);
+      --airbnb-shadow-hover: 0 8px 30px rgba(0,0,0,0.08);
+      --airbnb-spacing: 24px;
+      --airbnb-title-color: #0f172a;
       --brand:#FFD700;   /* Mittagio Gold - Primär (Korb, Abholnummer-Buttons) */
       --brand2:#2ECC71;  /* Erfolgs-Grün - Profit (Netto-Umsatz) */
       --brand3:#27AE60;  /* Mehrweg-Grün - Dezent (Blatt-Icon) */
@@ -775,6 +781,21 @@
     .navbtn.active{color:var(--brand)}
     .navbtn.active .ico svg{color:var(--brand); stroke:var(--brand)}
     .navbtn.active{color:var(--brand); font-weight:900}
+    /* Airbnb-Style: Kunde Tab-Bar – flach, weiß, graue Icons, aktiv gelb [cite: 2026-02-20] */
+    body:not(.provider-mode) #customerNav{
+      background:#fff !important;
+      border-top:1px solid rgba(0,0,0,0.06);
+      box-shadow:none;
+      backdrop-filter:none;
+      -webkit-backdrop-filter:none;
+    }
+    body:not(.provider-mode) #customerNav .navbtn{ color:#94a3b8; }
+    body:not(.provider-mode) #customerNav .navbtn i,
+    body:not(.provider-mode) #customerNav .navbtn svg{ color:#94a3b8; stroke:#94a3b8; }
+    body:not(.provider-mode) #customerNav .navbtn.active{ color:var(--brand); }
+    body:not(.provider-mode) #customerNav .navbtn.active i,
+    body:not(.provider-mode) #customerNav .navbtn.active svg,
+    body:not(.provider-mode) #customerNav .navbtn.active .ico svg{ color:var(--brand) !important; stroke:var(--brand) !important; }
     .navbtn .badge-notification{
       position:absolute; top:8px; right:calc(50% - 20px);
       width:8px; height:8px; border-radius:50%;
@@ -3638,12 +3659,16 @@
       justify-content: flex-start;
     }
     /* Perfect Alignment & Symmetry: Flex + Logo absolut mittig [cite: 2026-02-18] */
+    /* Airbnb-Style Hero: Dunkler Kopf mit Such-Pill-Optik [cite: 2026-02-20] */
     #v-discover .discover-header-top-row{
       position: relative;
       display: flex;
       align-items: center;
       justify-content: space-between;
       flex-shrink: 0;
+      min-height: 56px;
+      padding: 12px 20px;
+      background: linear-gradient(180deg, #121826 0%, #0f172a 100%);
       min-height: 44px;
       padding: 4px 12px;
       padding-top: calc(4px + env(safe-area-inset-top, 0px));
@@ -3677,6 +3702,17 @@
       min-height: 32px;
       min-width: 0;
       z-index: 2;
+    }
+    /* Standort als Such-Pill (Airbnb-Look) */
+    #v-discover .discover-location-btn-inner{
+      padding: 10px 16px;
+      border-radius: 24px;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.15);
+      transition: background 0.2s ease;
+    }
+    #v-discover .discover-location-btn-inner:active{
+      background: rgba(255,255,255,0.2);
     }
     #v-discover .discover-location-text,
     #v-discover #discoverCurrentLocation{
@@ -4000,47 +4036,51 @@
     /* Radius & Tage: 13px, dezentes Grau – nur aktiver (gelber) Tag sticht hervor [cite: 2026-02-18] */
     #v-discover #discoverDaysBar .cust-chip{ min-height:28px; min-width:52px; width:52px; padding:4px 4px; font-size:13px; font-weight:600; border-radius:999px; flex:0 0 52px; box-sizing:border-box; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; border:1px solid rgba(0,0,0,0.05); background:#f8fafc; color:#cbd5e1; transition:background 0.2s, color 0.2s, border-color 0.2s; }
     #v-discover #discoverDaysBar .cust-chip.active{ background:#FFD700; color:#1a1a1a; border-color:rgba(255,215,0,0.6); box-shadow:0 1px 4px rgba(255,215,0,0.25); }
-    /* The Centered Discovery Feed: Vertikaler Feed, alles auf Mittelachse, Gallery-Look [cite: 2026-02-18] */
+    /* Airbnb-Style: Full-Width vertikale Liste, viel Weißraum, bildgewaltig [cite: 2026-02-20] */
     #v-discover .discover-offers-list{
       display: flex;
       flex-direction: column;
-      align-items: center;
-      gap: 40px;
-      padding: 20px 16px;
+      align-items: stretch;
+      gap: calc(var(--airbnb-spacing, 24px) * 2);
+      padding: var(--airbnb-spacing, 24px) 0;
       width: 100%;
-      max-width: 480px;
-      margin: 0 auto;
+      max-width: 100%;
+      margin: 0;
       box-sizing: border-box;
     }
-    /* Kachel: Keine Box, nur schwebende Elemente */
+    /* Airbnb-Card: Full-Width, 28px Radius, hauchzarter Schatten [cite: 2026-02-20] */
     #v-discover .dish-card{
       width: 100%;
-      max-width: 340px;
-      background: transparent !important;
-      box-shadow: none !important;
+      max-width: 100%;
+      background: #fff !important;
+      box-shadow: var(--airbnb-shadow) !important;
       border: none !important;
+      border-radius: var(--airbnb-radius) !important;
+      overflow: hidden;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      text-align: center;
+      align-items: stretch;
+      text-align: left;
       margin-bottom: 0;
       padding: 0;
     }
     #v-discover .dish-card:active{ transform: scale(0.98); }
-    /* Bild-Modul (Detail-Stil, zentrierter Fokus) */
+    /* Airbnb: Bild edge-to-edge, volle Breite, 4:3 Aspect [cite: 2026-02-20] */
     #v-discover .dish-card-image-wrapper{
       position: relative;
-      width: 220px;
-      height: 220px;
-      margin-bottom: 16px;
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      min-height: 200px;
+      margin-bottom: 0;
       flex-shrink: 0;
+      overflow: hidden;
     }
     #v-discover .dish-card-image-wrapper img{
       width: 100%;
       height: 100%;
       object-fit: cover;
-      border-radius: 18px 14px 20px 16px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+      border-radius: 0;
+      box-shadow: none;
     }
     /* Preis-Badge auf dem Bild (unten rechts, leicht überlappend) */
     #v-discover .dish-card .price-badge,
@@ -4108,11 +4148,11 @@
       font-weight: 600;
       color: #64748b;
     }
-    /* Content startet unter Sticky-Header: padding-top = Header-Höhe, damit Karten nicht unter Pills laufen [cite: 2026-02-18] */
+    /* Content: Airbnb-Weißraum, viel Atem [cite: 2026-02-20] */
     body:not(.provider-mode) #v-discover .discover-main{
       padding-top: calc(136px + env(safe-area-inset-top, 0px));
-      padding-left: 16px;
-      padding-right: 16px;
+      padding-left: var(--airbnb-spacing, 24px);
+      padding-right: var(--airbnb-spacing, 24px);
       padding-bottom: calc(88px + env(safe-area-inset-bottom, 0));
       min-height: 0;
     }
@@ -4170,16 +4210,21 @@
     #v-discover .empty-state-container .btn-cust-primary{
       min-width: 200px;
     }
-    #v-discover .cust-card{ width:100%; margin:0 auto; -webkit-tap-highlight-color:transparent; transition:transform 0.15s, box-shadow 0.2s; box-sizing:border-box; }
-    #v-discover .dish-card{ margin-bottom: 8px; padding: 12px; box-sizing: border-box; }
+    #v-discover .cust-card{ width:100%; margin:0 auto; -webkit-tap-highlight-color:transparent; transition:transform 0.15s, box-shadow 0.2s; box-sizing:border-box; border-radius: var(--airbnb-radius) !important; box-shadow: var(--airbnb-shadow) !important; border: none !important; }
+    /* Edge-to-edge Bild, Content mit Airbnb-Padding */
+    #v-discover .dish-card{ margin-bottom: 0; padding: 0 !important; box-sizing: border-box; }
+    #v-discover .dish-card .dish-card-image-wrapper{ width: 100%; }
+    #v-discover .dish-card > *:not(.dish-card-image-wrapper){ padding-left: var(--airbnb-spacing); padding-right: var(--airbnb-spacing); }
+    #v-discover .dish-card > *:not(.dish-card-image-wrapper):first-of-type{ padding-top: var(--airbnb-spacing); }
+    #v-discover .dish-card .dish-card-cta{ margin-left: auto; margin-right: auto; }
     #v-discover .cust-card:active{ transform:scale(0.99); box-shadow:0 2px 12px rgba(0,0,0,0.06); }
     #v-discover .discover-tiles-grid .cust-card .cust-card-body{ display:flex; flex-direction:column; }
     #v-discover .discover-tiles-grid .cust-card .btn.btn-mittagsbox-cta{ min-height:52px; font-size:16px; border-radius:14px; background:#FFD700 !important; color:#1a1a1a; font-weight:800; box-shadow:0 2px 12px rgba(255,215,0,0.25); }
     /* Discovery: Restaurant-Karte (Anbieter-Block) + Tiles darunter */
     #v-discover .discover-restaurant-card{
       display:flex; align-items:center; justify-content:space-between; gap:12px;
-      padding:14px 16px; margin:0 0 12px 0; border-radius:16px;
-      background:#fff; border:1px solid rgba(0,0,0,0.06); box-shadow:0 2px 12px rgba(0,0,0,0.06);
+      padding:14px 16px; margin:0 0 12px 0; border-radius:var(--airbnb-radius);
+      background:#fff; border:none; box-shadow:var(--airbnb-shadow);
       cursor:pointer; -webkit-tap-highlight-color:transparent; transition:transform 0.15s, box-shadow 0.2s;
     }
     #v-discover .discover-restaurant-card:active{ transform:scale(0.99); }
@@ -4188,7 +4233,7 @@
     #v-discover .discover-tiles-grid{
       display:grid; grid-template-columns:1fr; gap:12px; margin-bottom:20px; padding:0 0 8px;
     }
-    #v-discover .discover-tiles-grid .cust-card{ width:100%; margin:0; border-radius:16px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.05); }
+    #v-discover .discover-tiles-grid .cust-card{ width:100%; margin:0; border-radius:var(--airbnb-radius); overflow:hidden; box-shadow:var(--airbnb-shadow); border:none; }
     #v-discover .discover-tiles-grid .cust-card .cust-card-img{ display:block; width:100%; height:auto; max-height:240px; object-fit:cover; opacity:0; transition:opacity 0.35s ease; }
     #v-discover .discover-tiles-grid .cust-card .cust-card-img.img-loaded{ opacity:1; }
     /* Silent & Clean: 4:3 Bild, Pillars unter Bild, kompakte Karte, 1.5 Kacheln sichtbar (S25) */
@@ -4342,19 +4387,19 @@
     .card.polaroid{
       transform:rotate(0deg);
       transition:transform 0.3s ease, box-shadow 0.3s ease;
+      border-radius:var(--airbnb-radius) !important;
+      box-shadow:var(--airbnb-shadow) !important;
+      border:none !important;
     }
-    .card.polaroid:nth-child(3n+1){
-      transform:rotate(-1deg);
-    }
-    .card.polaroid:nth-child(3n+2){
-      transform:rotate(0.8deg);
-    }
+    /* Airbnb: Keine Rotation mehr – saubere Karten [cite: 2026-02-20] */
+    .card.polaroid:nth-child(3n+1),
+    .card.polaroid:nth-child(3n+2),
     .card.polaroid:nth-child(3n+3){
-      transform:rotate(-0.5deg);
+      transform:rotate(0deg);
     }
     .card.polaroid:hover{
-      transform:rotate(0deg) scale(1.03);
-      box-shadow:0 6px 20px rgba(0,0,0,0.15), 0 4px 10px rgba(0,0,0,0.1);
+      transform:scale(1.02);
+      box-shadow:var(--airbnb-shadow-hover, 0 8px 30px rgba(0,0,0,0.08));
       z-index:10;
     }
     /* Kompakte Horizontale Gericht-Karte (Slim-Card) - High Performance */
@@ -4489,10 +4534,14 @@
       overflow: hidden;
     }
     
-    /* Favoriten Grid-Kachel: Basis (Jiggle + relative für X-Button) */
+    /* Favoriten Grid-Kachel: Airbnb-Style [cite: 2026-02-20] */
     .fav-grid-card {
       position: relative;
       background: #fff !important;
+      border-radius: var(--airbnb-radius);
+      box-shadow: var(--airbnb-shadow);
+      overflow: hidden;
+      border: none;
     }
     
     @keyframes fadeIn {
@@ -4894,9 +4943,10 @@
     }
     /* Dish-Card: Gerichtsname 16px Serif, reduzierter line-height für 1.5-Kacheln-Regel [cite: 2026-02-18, 2026-01-29] */
     #v-discover .dish-card .dish-name{
-      font-family: 'Source Serif 4', Georgia, 'Times New Roman', serif;
-      font-size: 16px;
-      font-weight: 700;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--airbnb-title-color, #0f172a) !important;
       line-height: 1.2;
       margin: 0;
       color: #111;
@@ -6539,17 +6589,17 @@
       #v-provider-detail-public #pubProvAddress { font-size: 14px !important; }
     }
 
-    /* Discovery Card - Design-System: radius 20px; Body-Padding 16px (siehe .cust-card-body) */
+    /* Airbnb-Style Cards: 28px Radius, hauchzarter Schatten [cite: 2026-02-20] */
     .cust-card {
       background: #fff;
-      border-radius: 20px;
+      border-radius: var(--airbnb-radius);
       overflow: hidden;
-      border: 1px solid rgba(0,0,0,0.04);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.03);
+      border: none;
+      box-shadow: var(--airbnb-shadow);
       transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s;
       display: flex;
       flex-direction: column;
-      margin-bottom: 16px;
+      margin-bottom: var(--airbnb-spacing);
     }
     .cust-card:active {
       transform: scale(0.97);
@@ -6573,7 +6623,7 @@
     .cust-card-title {
       font-size: 18px;
       font-weight: 850;
-      color: #1a1a1a;
+      color: var(--airbnb-title-color, #0f172a);
       letter-spacing: -0.02em;
       margin: 0;
       display: -webkit-box;
@@ -6612,23 +6662,23 @@
       border-radius: 999px !important;
     }
 
-    /* Favorites Grid (Strict 2x2 per FAVORITEN_LAYOUT_REGEL: gap 12px, border-radius 16px) */
+    /* Favorites Grid: 2x2, Airbnb-Style (28px Radius, mehr Weißraum) [cite: 2026-02-20] */
     .fav-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-      padding: 0 16px;
+      gap: var(--airbnb-spacing);
+      padding: 0 var(--airbnb-spacing);
     }
 
     .fav-card {
       background: #fff;
-      border-radius: 20px;
+      border-radius: var(--airbnb-radius);
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      border: 1px solid rgba(0,0,0,0.04);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.02);
-      height: 100%; /* Homogene Höhe */
+      border: none;
+      box-shadow: var(--airbnb-shadow);
+      height: 100%;
     }
 
     .fav-card-img {
