@@ -112,7 +112,40 @@
       --body-text-size: 15px;
       --body-text-color: #334155;
       /* Nutzung: .prov-header, .prov-page-header, .discover-header-sticky, Pills (Kunde + Kochbuch) */
+
+      /* ========== EISERNES DESIGN-SYSTEM (Schritt 1.6) ========== */
+      --font-main: 'Montserrat', 'Inter', sans-serif;
+      --color-title: #0f172a;
+      --color-body: #64748b;
+      --size-h1: 24px;
+      --size-h2: 20px;
+      --size-list-title: 18px;
+      --size-body: 15px;
+      --weight-heavy: 900;
+      --weight-bold: 800;
+      --weight-medium: 600;
+      --weight-hero: 950;
+      --radius-card: 16px;
+      --radius-panel: 24px;
+      --abholnummer-size: 2.5rem;
+      --abholnummer-weight: 950;
+      --content-padding-bottom: 120px;
+      --content-padding-bottom-compact: 90px;
+      --list-photo-size: 100px;
+      --list-photo-radius: 16px;
     }
+    /* Design-System Typografie-Klassen (Inline-Styles ersetzen) */
+    .ds-h1{ font-size: var(--size-h1) !important; font-weight: var(--weight-heavy) !important; color: var(--color-title); }
+    .ds-h2{ font-size: var(--size-h2) !important; font-weight: var(--weight-heavy) !important; color: var(--color-title); letter-spacing: -0.02em; }
+    .ds-h2-850{ font-size: var(--size-h2) !important; font-weight: 850 !important; color: var(--color-title); letter-spacing: -0.02em; }
+    .ds-empty-title{ font-size: 22px !important; font-weight: 850 !important; color: var(--color-title); letter-spacing: -0.02em; margin: 0 0 12px; }
+    .ds-h3{ font-size: var(--size-list-title) !important; font-weight: var(--weight-bold) !important; color: var(--color-title); }
+    .ds-body{ font-size: var(--size-body); color: var(--color-body); }
+    .ds-meta{ font-size: 12px; font-weight: 700; color: var(--color-body); }
+    .ds-label{ font-size: 15px; font-weight: 700; color: var(--color-title); }
+    .ds-abholnummer-emoji{ font-size: var(--abholnummer-size) !important; line-height: 1; }
+    .content-padding-bottom{ padding-bottom: calc(var(--content-padding-bottom) + env(safe-area-inset-bottom, 0)) !important; }
+    .content-padding-bottom-compact{ padding-bottom: calc(var(--content-padding-bottom-compact) + env(safe-area-inset-bottom, 0)) !important; }
     *{box-sizing:border-box}
 
     /* ========== TRENNUNG KUNDE / ANBIETER (PFLICHT) ==========
@@ -132,9 +165,9 @@
     .backdrop:not(.active){ display:none !important; opacity:0 !important; pointer-events:none !important; visibility:hidden !important; }
     .sheet:not(.active){ visibility:hidden !important; pointer-events:none !important; }
 
-    html,body{height:100%; margin:0; padding:0; overflow-x:hidden}
+    html,body{height:100%; margin:0; padding:0; overflow-x:hidden; max-width:100vw;}
     body{
-      margin:0; padding:0;
+      margin:0; padding:0; max-width:100vw;
       font-family:'Inter', 'Montserrat', system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
       font-size:16px; line-height:1.5;
       color: var(--color-text, #1a1a1a);
@@ -605,7 +638,7 @@
     .pname{font-size:14px; font-weight:900; color:#222; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; line-height:1.3}
 
     .body{padding:16px}
-    .title{font-weight:950; font-size:18px; margin:0; line-height:1.3}
+    .title{font-weight: var(--weight-hero); font-size: var(--size-list-title); margin:0; line-height:1.3}
     .sub{margin:4px 0 0; color:#444; font-size:14px; line-height:1.4}
     
     /* Refactored Card Styles - weniger Text, mehr Icons */
@@ -860,26 +893,35 @@
     }
     .customer-view .section-title{ font-size: var(--section-title-size); font-weight: var(--section-title-weight); color: var(--body-text-color); }
     .customer-view .hint{ color: var(--header-subtitle-color); }
-    /* ========== TGTG-Airbnb: Flaches List-Item (Bild + Text + 1px Divider) ========== */
+    /* ========== TGTG-Airbnb: Kompakte List-Item (Foto links 90px, Content rechts) [cite: 2026-02-20 Schritt 1.3] ========== */
     .tgtg-list-item{
       display: flex;
-      flex-direction: column;
+      flex-direction: row;
+      align-items: stretch;
+      gap: 16px;
       background: #fff;
       border-bottom: var(--tgtg-divider);
-      padding-bottom: var(--tgtg-spacing);
-      margin-bottom: var(--tgtg-spacing);
+      padding: var(--tgtg-spacing) 0;
+      margin-bottom: 0;
       box-shadow: none;
     }
-    .tgtg-list-item:last-child{ border-bottom: none; margin-bottom: 0; }
+    .tgtg-list-item:last-child{ border-bottom: none; }
     .tgtg-list-item-img-wrap{
       position: relative;
+      flex-shrink: 0;
       width: 100%;
       aspect-ratio: 4 / 3;
       min-height: 200px;
       overflow: hidden;
       border-radius: var(--tgtg-img-radius);
       background: #f1f5f9;
-      margin-bottom: var(--tgtg-spacing);
+    }
+    .tgtg-list-item-img-wrap.tgtg-list-item-img-compact{
+      width: var(--list-photo-size); min-width: var(--list-photo-size);
+      height: var(--list-photo-size); min-height: var(--list-photo-size);
+      aspect-ratio: 1;
+      border-radius: var(--list-photo-radius);
+      overflow: hidden;
     }
     .tgtg-list-item-img-wrap img{
       width: 100%;
@@ -887,22 +929,24 @@
       object-fit: cover;
       display: block;
     }
-    .tgtg-list-item-body{ padding: 0; }
+    .tgtg-list-item-body{ padding: 0; flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; }
     .tgtg-list-item-title{
-      font-family: 'Inter', system-ui, sans-serif;
-      font-size: 18px;
-      font-weight: 800;
-      color: var(--tgtg-title-color);
+      font-family: var(--font-main);
+      font-size: var(--size-list-title);
+      font-weight: var(--weight-bold);
+      color: var(--color-title);
       margin: 0 0 4px;
       line-height: 1.3;
       letter-spacing: -0.02em;
     }
     .tgtg-list-item-meta{ font-size: 14px; font-weight: 600; color: #64748b; margin: 0 0 8px; }
-    .tgtg-list-item-pillars{ display: flex; gap: 8px; margin-bottom: 12px; font-size: 12px; }
+    .tgtg-list-item-pillars{ display: flex; gap: 6px; margin-bottom: 8px; font-size: 14px; }
     .tgtg-list-item-pill{ padding: 4px 8px; border-radius: 999px; background: transparent; color: #64748b; border: none; }
     .tgtg-list-item-pill.active{ color: var(--tgtg-title-color); }
     .tgtg-list-item-row{ display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
     .tgtg-list-item-price{ font-size: 16px; font-weight: 900; color: var(--brand); }
+    .tgtg-meta-chip{ font-size: 12px; color: #64748b; }
+    .tgtg-list-item-cta-row .dish-card-cta{ padding: 10px 16px; border-radius: 999px; font-weight: 800; background: var(--brand); border: none; color: #0f172a; font-size: 14px; }
     /* offerCard mit tgtg-flat: keine Schatten, Inset-Divider */
     .card.tgtg-flat{ box-shadow: none !important; border: none !important; }
     .card.tgtg-flat.polaroid,
@@ -1431,7 +1475,7 @@
     #createFlowSheet.active { transform: translateY(0); }
     #createFlowSheet.sheet--kitchen .handle { background: rgba(0,0,0,0.15); width: 40px; height: 4px; border-radius: 2px; margin: 8px auto 4px; }
     #createFlowSheet .sheet-body { padding: 12px 20px max(20px, env(safe-area-inset-bottom)); overflow-y: auto; -webkit-overflow-scrolling: touch; }
-    .create-flow-title { font-size: 20px; font-weight: 900; color: #1a1a1a; margin-bottom: 16px; }
+    .create-flow-title { font-size: var(--size-h2); font-weight: var(--weight-heavy); color: var(--color-title); margin-bottom: 16px; }
     .create-flow-hint { font-size: 13px; color: #64748b; margin-top: 8px; }
     .create-flow-btns { display: flex; flex-direction: column; gap: 12px; }
     .btn-create-primary { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; min-height: 56px; padding: 14px 20px; border: none; border-radius: 16px; background: #FFD700; color: #1a1a1a; font-size: 16px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 20px rgba(255,215,0,0.35); transition: transform 0.1s ease, box-shadow 0.2s ease; }
@@ -2626,7 +2670,7 @@
       #wizard[data-flow="listing"] .liquid-master-panel.inserat-keyboard-active .inserat-photo-tile.photo-header { height: 100px !important; min-height: 100px !important; }
       #wizard[data-flow="listing"] .liquid-master-panel .inserat-power-bar { padding: 8px 16px; }
       #wizard[data-flow="listing"] .liquid-master-panel .inserat-section { padding-top: 8px; padding-bottom: 8px; }
-      #wizard[data-flow="listing"] .liquid-master-panel #step-name input.inserat-detail-style-title { font-size: 20px !important; }
+      #wizard[data-flow="listing"] .liquid-master-panel #step-name input.inserat-detail-style-title { font-size: var(--size-h2) !important; }
       #wizard[data-flow="listing"] .liquid-master-panel .inserat-price-section input.inserat-price-fintech { font-size: 3rem !important; }
     }
     @keyframes gentle-pulse { 0% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.02); opacity: 1; text-shadow: 0 0 8px rgba(16,185,129,0.2); } 100% { transform: scale(1); opacity: 0.8; } }
@@ -2969,16 +3013,19 @@
       --support-padding:16px;
       --support-padding-lg:24px;
     }
-    /* Provider-App: Systemweite Design-Vorgabe – Warmes Beige, Dein Gelb, Weiß */
+    /* Provider-App: Design-System Schritt 1.7 – Schwerer, professioneller */
     :root{
-      --provider-bg: #F8F7F2;
+      --provider-bg: #F5F5F7;
       --provider-surface: #ffffff;
       --provider-surface-alt: #f0f0eb;
       --provider-border: rgba(0,0,0,0.06);
       --provider-text: #1a1a1a;
       --provider-text-muted: #64748b;
+      --provider-nav-bg: #1a1a1a;
       --provider-shadow: 0 4px 20px rgba(0,0,0,0.05);
       --provider-radius: 20px;
+      --provider-btn-height: 56px;
+      --provider-btn-radius: 28px;
       --prov-brand: #FFDE00;
       --prov-success: #FFDE00;
       --prov-danger: #ef4444;
@@ -3081,11 +3128,11 @@
     /* Headline Anbieter: Montserrat 20px / 900, Letter-Spacing -0.03em */
     .prov-page-header .prov-page-header-title {
       margin: 0;
-      font-family: 'Montserrat', sans-serif;
-      font-size: 20px;
-      font-weight: 900;
+      font-family: var(--font-main);
+      font-size: var(--size-h2);
+      font-weight: var(--weight-heavy);
       letter-spacing: -0.03em;
-      color: var(--header-title-color);
+      color: var(--color-title);
     }
     .prov-page-header .prov-page-header-actions {
       display: flex;
@@ -3146,9 +3193,9 @@
     }
     .prov-stat-value {
       display: block;
-      font-size: 24px;
-      font-weight: 950;
-      color: #1a1a1a;
+      font-size: var(--size-h1);
+      font-weight: var(--weight-hero);
+      color: var(--color-title);
       line-height: 1;
     }
     .prov-stat-label {
@@ -3382,13 +3429,21 @@
     [id^="v-provider-"] .btn-primary{
       border:2px solid transparent !important;
     }
-    /* Bottom-Nav Provider: hell, modern */
-    #providerNav{
-      background:rgba(255,255,255,0.98) !important;
-      backdrop-filter:blur(12px);
-      -webkit-backdrop-filter:blur(12px);
-      border-top:1px solid var(--provider-border) !important;
-      box-shadow:0 -2px 16px rgba(0,0,0,.06) !important;
+    /* Bottom-Nav Provider: Floating Pill nutzt --provider-nav-bg */
+    #providerNav.provider-nav-pill{
+      background: var(--provider-nav-bg) !important;
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 2.5rem;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.25) !important;
+    }
+    #providerNav:not(.provider-nav-pill){
+      background: rgba(255,255,255,0.98) !important;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-top: 1px solid var(--provider-border) !important;
+      box-shadow: 0 -2px 16px rgba(0,0,0,.06) !important;
     }
     #providerNav .navbtn{ color:var(--provider-text-muted); }
     #providerNav .navbtn.active{ color:var(--prov-brand); }
@@ -3407,11 +3462,11 @@
     .provider-nav-pill .navbtn.active .ico{ background:#ffde00; width:48px; height:48px; border-radius:16px; box-shadow:0 4px 16px rgba(255,222,0,0.35); }
     .provider-nav-pill .navbtn.active .ico svg{ color:#1a1a1a !important; stroke:#1a1a1a !important; }
     .provider-nav-pill .navbtn .ico + div{ font-size:10px; font-weight:900; text-transform:uppercase; letter-spacing:0.02em; }
-    /* Schwebende Bar: Abstand vom Rand (FloatingAppDashboard bottom-10 left-10 right-10) */
-    #providerNavWrap.provider-nav-wrap-pill{ bottom:2.5rem !important; left:2.5rem !important; right:2.5rem !important; max-width:32rem; margin-left:auto; margin-right:auto; z-index:1052 !important; }
+    /* Floating Pill: position fixed, bottom 24px, left/right 16px, max-width 500px zentriert */
+    #providerNavWrap.provider-nav-wrap-pill{ bottom: 24px !important; left: 16px !important; right: 16px !important; max-width: 500px; margin-left: auto; margin-right: auto; z-index: 1052 !important; }
     #providerNavWrap #providerNav{ min-height:80px; }
     @media (max-width: 420px){
-      #providerNavWrap.provider-nav-wrap-pill{ left:1rem !important; right:1rem !important; bottom:1.5rem !important; }
+      #providerNavWrap.provider-nav-wrap-pill{ left: 16px !important; right: 16px !important; bottom: 24px !important; }
     }
     [id^="v-provider-"] .panel h1,[id^="v-provider-"] .panel h2,[id^="v-provider-"] .panel h3,[id^="v-provider-"] .panel .section-title{ color:var(--provider-text) !important; }
     [id^="v-provider-"] .panel .hint{ color:var(--provider-text-muted) !important; }
@@ -3735,24 +3790,41 @@
     body.provider-mode [id^="v-provider-"] { padding-top: 0 !important; margin-top: 0 !important; }
     body.provider-mode [id^="v-provider-"].view.active { padding-top: 0 !important; }
     
-    /* Discover Header – ImmoScout-Style: gesamter Header sticky, z-index damit Content darunter bleibt */
+    /* Discover Header – Native Edge-to-Edge ImmoScout [cite: 2026-02-20 Schritt 1.5] */
     .discover-header-sticky{
-      position: sticky;
+      position: fixed;
       top: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
       z-index: 100;
       min-height: 60px;
       padding: 0;
       padding-top: env(safe-area-inset-top, 0);
       background: #fff;
-      border-bottom: 1px solid rgba(0,0,0,0.06);
-      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      border-bottom: 1px solid #f1f5f9;
       box-sizing: border-box;
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
     }
     /* Perfect Alignment & Symmetry: Flex + Logo absolut mittig [cite: 2026-02-18] */
-    /* Airbnb-Style Hero: Dunkler Kopf mit Such-Pill-Optik [cite: 2026-02-20] */
+    /* Minimalist Header: Reinweiß, zentriert [cite: 2026-02-20 Schritt 1.4] */
+    #v-discover .discover-header-top-row.discover-header-minimal{
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      min-height: 56px;
+      padding: 12px 20px;
+      background: transparent;
+      min-height: 44px;
+      padding: 8px 16px;
+      padding-top: calc(8px + env(safe-area-inset-top, 0px));
+      z-index: 10;
+    }
+    /* Fallback: alte Top-Row ohne Minimal-Klasse */
     #v-discover .discover-header-top-row{
       position: relative;
       display: flex;
@@ -3783,6 +3855,7 @@
       pointer-events: none;
       transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
     }
+    #v-discover .discover-header-top-row.discover-header-minimal .discover-logo{ color: #0f172a; }
     #v-discover .discover-header-sticky.scrolled .discover-logo {
       transform: translate(-50%, -50%) scale(0.94);
       opacity: 0.95;
@@ -3804,6 +3877,10 @@
       border: 1px solid rgba(255,255,255,0.15);
       transition: background 0.2s ease;
     }
+    #v-discover .discover-header-top-row.discover-header-minimal .discover-location-btn-inner{
+      background: rgba(0,0,0,0.06);
+      border: 1px solid rgba(0,0,0,0.08);
+    }
     #v-discover .discover-location-btn-inner:active{
       background: rgba(255,255,255,0.2);
     }
@@ -3816,6 +3893,8 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
+    #v-discover .discover-header-top-row.discover-header-minimal .discover-location-text,
+    #v-discover .discover-header-top-row.discover-header-minimal #discoverCurrentLocation{ color: #0f172a; }
     /* Rechte Seite: GPS-Button als symmetrischer Partner – gleiche Gewichtung [cite: 2026-02-18] */
     #v-discover .discover-header-right-anchor{
       display: flex;
@@ -3846,10 +3925,33 @@
     }
     #v-discover .discover-gps-btn i,
     #v-discover .discover-gps-btn svg{ width: 16px !important; height: 16px !important; color: #fff !important; }
+    /* Kalender-Icon: filigran, obere rechte Ecke [cite: 2026-02-20 Schritt 1.4] */
+    #v-discover .discover-calendar-btn{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      min-width: 40px;
+      min-height: 40px;
+      border-radius: 50%;
+      border: 1px solid rgba(0,0,0,0.08);
+      background: rgba(0,0,0,0.04);
+      color: #0f172a;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.2s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    #v-discover .discover-calendar-btn:active{ background: rgba(0,0,0,0.1); transform: scale(0.94); }
+    #v-discover .discover-calendar-btn i,
+    #v-discover .discover-calendar-btn svg{ width: 20px !important; height: 20px !important; color: inherit !important; }
     #v-discover .discover-filter-sticky{
       background: #fff !important;
-      border-bottom: none;
+      border-bottom: 1px solid #f1f5f9;
       flex-shrink: 0;
+      position: relative;
+      z-index: 9;
+      width: 100%;
     }
     /* Scroll-Fade: Standort-Text ausblenden ab 50px Scroll – mehr Platz für Filter-Pills */
     #v-discover .discover-header-sticky.scrolled #discoverCurrentLocation{
@@ -4063,8 +4165,51 @@
     .discover-filter-sticky{
       overflow-x:visible; min-width:0; width:100%; box-sizing:border-box;
     }
-    /* Pills: ImmoScout-Style – ruhig, dünne Rahmen, kleine Schrift, Grau inaktiv / Gelb aktiv */
-    #v-discover .discover-header-pills{
+    /* Sticky Category-Bar: Volle Breite, keine seitlichen Abstände [cite: 2026-02-20 Schritt 1.5] */
+    #v-discover #discoverCategoriesBar.discover-header-pills{
+      display: flex;
+      justify-content: space-around;
+      gap: 0;
+      overflow-x: visible;
+      overflow-y: visible;
+      scroll-snap-type: none;
+      padding: 12px 0 14px;
+      scrollbar-width: none;
+      min-width: 0;
+      max-width: 100%;
+      width: 100%;
+      box-sizing: border-box;
+      flex-wrap: nowrap;
+    }
+    #v-discover #discoverCategoriesBar .discover-category-chip{
+      flex: 1;
+      min-width: 0;
+      min-height: 44px;
+      padding: 8px 4px;
+      border-radius: 0;
+      font-size: 13px;
+      font-weight: 600;
+      border: none;
+      background: transparent;
+      color: #64748b;
+      cursor: pointer;
+      transition: color 0.2s, border-color 0.2s;
+      -webkit-tap-highlight-color: transparent;
+      box-shadow: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      border-bottom: 2px solid transparent;
+    }
+    #v-discover #discoverCategoriesBar .discover-category-chip:active{ transform: scale(0.98); }
+    #v-discover #discoverCategoriesBar .discover-category-chip.active{
+      color: #0f172a;
+      border-bottom: 2px solid #0f172a;
+      background: transparent;
+    }
+    /* Fallback: andere discover-header-pills (ohne discoverCategoriesBar) behalten Scroll */
+    #v-discover .discover-header-pills:not(#discoverCategoriesBar){
       display: flex;
       gap: 8px;
       overflow-x: auto;
@@ -4072,43 +4217,7 @@
       -webkit-overflow-scrolling: touch;
       scroll-snap-type: x mandatory;
       padding: 8px 12px 10px;
-      scroll-padding: 12px;
-      scrollbar-width: none;
-      min-width: 0;
-      max-width: 100%;
-      width: 100%;
-      box-sizing: border-box;
-      white-space: nowrap;
-      touch-action: pan-x;
-    }
-    #v-discover .discover-header-pills::-webkit-scrollbar{ display: none; }
-    /* Kategorien-Pills: 32px Höhe, feine Umrandung inaktiv – kein Baukasten-Look [cite: 2026-01-27, 2026-02-18] */
-    #v-discover .discover-header-pills.discover-pills-compact{
-      padding: 4px 12px 4px;
-    }
-    #v-discover .discover-header-pills .discover-category-chip{
-      flex: 0 0 auto;
-      scroll-snap-align: center;
-      min-height: 32px;
-      min-width: auto;
-      padding: 6px 12px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 600;
-      border: 1px solid rgba(0,0,0,0.06);
-      background: #f8fafc;
-      color: #64748b;
-      cursor: pointer;
-      transition: transform 0.15s, background 0.2s, border-color 0.2s, color 0.2s;
-      -webkit-tap-highlight-color: transparent;
-      box-shadow: none;
-    }
-    #v-discover .discover-header-pills .discover-category-chip:active{ transform: scale(0.96); }
-    #v-discover .discover-header-pills .discover-category-chip.active{
-      background: #FFD700;
-      color: #1a1a1a;
-      border-color: rgba(255,215,0,0.5);
-      box-shadow: 0 1px 2px rgba(255,215,0,0.2);
+      justify-content: flex-start;
     }
     /* Radius & Tage: schmal, feine Grauschrift [cite: 2026-02-18] */
     #v-discover .discover-radius-time-row.discover-filter-row-slim{
@@ -4143,6 +4252,14 @@
     }
     /* TGTG-List-Item in Discover: flach, keine Schatten */
     #v-discover .tgtg-list-item:active{ transform: scale(0.99); }
+    /* Kompakte Karte: Preis-Badge und Actions kleiner [cite: Schritt 1.3] */
+    #v-discover .tgtg-list-item .tgtg-list-item-img-compact .tgtg-price-badge{
+      bottom: 6px; right: 6px;
+      padding: 4px 8px;
+      font-size: 12px;
+    }
+    #v-discover .tgtg-list-item .tgtg-list-item-img-compact .tgtg-actions-top{ top: 4px; right: 4px; gap: 4px; }
+    #v-discover .tgtg-list-item .tgtg-list-item-img-compact .tgtg-btn-floating{ width: 32px; height: 32px; }
     /* Preis-Badge auf Bild (dezent, kein Schlagschatten) */
     #v-discover .tgtg-list-item .tgtg-price-badge{
       position: absolute;
@@ -4187,12 +4304,12 @@
     }
     #v-discover .dish-card-image-wrapper{ border-radius: var(--tgtg-img-radius); overflow: hidden; }
     #v-discover .dish-card .pillar-pill, #v-discover .dish-card .distance-chip{ font-size: 13px; font-weight: 600; color: #64748b; }
-    /* Content: TGTG-Weißraum */
+    /* Content: TGTG-Weißraum – Design-System padding-bottom 120px */
     body:not(.provider-mode) #v-discover .discover-main{
-      padding-top: calc(136px + env(safe-area-inset-top, 0px));
+      padding-top: calc(130px + env(safe-area-inset-top, 0px));
       padding-left: var(--tgtg-spacing);
       padding-right: var(--tgtg-spacing);
-      padding-bottom: calc(88px + env(safe-area-inset-bottom, 0));
+      padding-bottom: calc(var(--content-padding-bottom) + env(safe-area-inset-bottom, 0));
       min-height: 0;
     }
     /* Discover: Leerzustand mittig zwischen Header und Footer [cite: 2026-01-27, 2026-01-29] */
@@ -4601,6 +4718,18 @@
     .mittagsbox-session-dot {
       animation: mittagsbox-session-pulse 2s ease-in-out infinite;
     }
+    /* Abholnummer-Hero (v-cart, v-order-success): Design-System 2.5rem/950 monospace */
+    #cartActiveAbholnummerDisplay,
+    #orderSuccessAbholnummer {
+      font-family: ui-monospace, monospace !important;
+      font-size: var(--abholnummer-size) !important;
+      font-weight: var(--abholnummer-weight) !important;
+      color: var(--color-title) !important;
+      letter-spacing: 0.08em;
+      line-height: 1.1;
+    }
+    #v-cart #cartActiveAbholnummerDisplay { margin: 12px 0 4px; letter-spacing: 0.08em; }
+    #orderSuccessAbholnummer { letter-spacing: 0.12em; }
     /* Mittagsbox: Karte pro Gericht (Thumbnail, 3 Säulen, Routen, Abgeholt) */
     .mittagsbox-active-card {
       background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.05);
@@ -4810,7 +4939,7 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     }
     #v-fav .fav-summary-bar .fav-summary-label { font-size: 14px; font-weight: 700; color: var(--header-subtitle-color); }
-    #v-fav .fav-summary-bar .fav-summary-value { font-size: 18px; font-weight: 900; color: var(--brand); }
+    #v-fav .fav-summary-bar .fav-summary-value { font-size: var(--size-list-title); font-weight: var(--weight-heavy); color: var(--brand); }
     /* Meins: letzte Bestellzeile ohne unteren Rand */
     #profileOrderHistoryList .profile-order-item:last-child,
     #profileOrderHistoryMore .profile-order-item:last-child {
@@ -5073,7 +5202,7 @@
     }
     #v-provider-home .dashboard-kasten-header .prov-header-inner{ padding:0; }
     #v-provider-home .dashboard-kasten-header .prov-title,
-    #v-provider-home .dashboard-kasten-header .prov-page-header-title{ font-size:20px !important; font-weight:900 !important; }
+    #v-provider-home .dashboard-kasten-header .prov-page-header-title{ font-size: var(--size-h2) !important; font-weight: var(--weight-heavy) !important; }
     /* KPI-Kasten: Glas-Lesbarkeit (Text-Schatten) + veredelte Zahlen + Trennlinie */
     #v-provider-home .dashboard-kasten-kpis{
       padding:18px max(16px, env(safe-area-inset-left, 0)) 18px max(16px, env(safe-area-inset-right, 0));
@@ -5091,7 +5220,7 @@
     }
     /* KPI-Werte: 18px / 900 */
     #v-provider-home .dashboard-kasten-kpis [id^="dashboard"]{
-      font-size:18px !important; font-weight:900 !important;
+      font-size: var(--size-list-title) !important; font-weight: var(--weight-heavy) !important;
       text-shadow:0 1px 2px rgba(255,255,255,0.8);
       filter:drop-shadow(0 1px 2px rgba(0,0,0,0.06));
       transition:transform 0.15s ease;
@@ -5270,7 +5399,7 @@
     }
     #v-provider-week .week-header-compact.scrolled{ box-shadow:0 1px 3px rgba(0,0,0,0.06); }
     #v-provider-week .week-header-compact h1,
-    #v-provider-week .week-header-compact .prov-page-header-title{ margin:0; font-size:20px; font-weight:900; color:#1a1a1a; letter-spacing:-0.03em; }
+    #v-provider-week .week-header-compact .prov-page-header-title{ margin:0; font-size: var(--size-h2); font-weight: var(--weight-heavy); color: var(--color-title); letter-spacing:-0.03em; }
     #v-provider-week .week-header-subtitle{ margin:0; font-size:12px; font-weight:600; color:#64748b; }
     /* Lücke finden ✨: dezent als smarter Assistent, Text-Link-Stil [cite: 2026-01-29, 2026-02-18] */
     #v-provider-week .week-magic-gap-btn{ background:transparent; border:1px solid #e2e8f0; min-height:36px; padding:0 10px; border-radius:10px; display:flex; align-items:center; justify-content:center; gap:5px; color:#64748b; font-size:12px; font-weight:600; cursor:pointer; white-space:nowrap; transition:background 0.2s, color 0.2s, border-color 0.2s; }
@@ -5363,7 +5492,7 @@
         padding-top:calc(10px + env(safe-area-inset-top, 0)); padding-right:20px; padding-bottom:16px; padding-left:20px; min-height:52px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px;
       }
       #v-provider-week .week-header-compact h1,
-      #v-provider-week .week-header-compact .prov-page-header-title{ margin:0; font-size:20px; font-weight:900; letter-spacing:-0.03em; color:#1a1a1a; }
+      #v-provider-week .week-header-compact .prov-page-header-title{ margin:0; font-size: var(--size-h2); font-weight: var(--weight-heavy); letter-spacing:-0.03em; color: var(--color-title); }
       #v-provider-week .week-header-subtitle{ margin:0; font-size:12px; font-weight:600; color:#64748b; letter-spacing:0.02em; }
       #v-provider-week .week-plan-wrap{
         flex:1; display:flex; flex-direction:column; min-height:0; max-width:500px; margin:0 auto; width:100%;
@@ -5497,7 +5626,7 @@
       #v-provider-week .week-header-done-btn{ flex-shrink:0; min-height:44px; padding:0 18px; font-size:15px; font-weight:800; border-radius:12px; background:var(--prov-brand); color:#1a1a1a; border:none; cursor:pointer; box-shadow:0 2px 12px rgba(255,222,0,0.35); }
       #v-provider-week .week-header-done-btn:active{ transform:scale(0.98); }
       #v-provider-week .week-header-compact h1,
-      #v-provider-week .week-header-compact .prov-page-header-title{ margin:0; font-size:20px; font-weight:900; }
+      #v-provider-week .week-header-compact .prov-page-header-title{ margin:0; font-size: var(--size-h2); font-weight: var(--weight-heavy); }
       /* Übersicht: kompakte Tageskarten (nur Lesen), app-first */
       #v-provider-week .week-overview-scroll{ flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:12px 20px 20px; }
       /* Wochenplan Übersicht: Tages-Kacheln einheitlich */
@@ -6411,11 +6540,13 @@
       background: var(--bg);
       min-height: 100vh;
     }
-    /* Meins, Mittagsbox, Favoriten: Inhaltsbereich füllt Viewport – kein Leerraum beim Runterscrollen */
-    #v-profile > div:last-child,
-    #v-cart > div:last-child,
-    #v-fav > div:last-child {
+    /* Meins, Mittagsbox, Favoriten, Orders: Inhaltsbereich – Design-System padding-bottom 120px */
+    #v-profile .customer-main-wrap,
+    #v-cart .customer-main-wrap,
+    #v-fav .customer-main-wrap,
+    #v-orders .customer-main-wrap {
       min-height: calc(100vh - 60px);
+      padding-bottom: calc(var(--content-padding-bottom) + env(safe-area-inset-bottom, 0));
       box-sizing: border-box;
     }
 
@@ -6438,22 +6569,22 @@
       flex-direction: column;
       justify-content: center;
     }
-    /* Seitentitel einheitlich: Montserrat 22px, Weight 900, Letter-Spacing -0.03em */
+    /* Seitentitel: Design-System --size-h2/--weight-heavy (Discover etc.), Checkout/Rechtliches --size-h1 */
     .customer-view .cust-header-sticky h1,
     #v-discover .discover-header-sticky h1 {
-      font-family: 'Montserrat', sans-serif !important;
-      font-size: 22px !important;
-      font-weight: 900 !important;
+      font-family: var(--font-main) !important;
+      font-size: var(--size-h2) !important;
+      font-weight: var(--weight-heavy) !important;
       letter-spacing: -0.03em;
-      color: #1a1a1a;
+      color: var(--color-title);
       margin: 0;
     }
     #v-checkout .panel h3 {
-      font-family: 'Montserrat', sans-serif !important;
-      font-size: 22px !important;
-      font-weight: 900 !important;
+      font-family: var(--font-main) !important;
+      font-size: var(--size-h1) !important;
+      font-weight: var(--weight-heavy) !important;
       letter-spacing: -0.03em;
-      color: #1a1a1a;
+      color: var(--color-title);
     }
     /* Kunde: Anbieter-Profil (Restaurant-Seite) – app-like, nicht gequetscht, S25-tauglich */
     #v-provider-detail-public {
@@ -6520,7 +6651,7 @@
       #v-provider-detail-public .pub-prov-header-row { padding: 16px 16px !important; }
       #v-provider-detail-public .pub-prov-back-btn,
       #v-provider-detail-public .pub-prov-fav-btn { min-width: 52px; min-height: 52px; }
-      #v-provider-detail-public #pubProvName { font-size: 20px !important; }
+      #v-provider-detail-public #pubProvName { font-size: var(--size-h2) !important; }
       #v-provider-detail-public .pub-prov-hero { padding: 28px 20px !important; }
       #v-provider-detail-public .pub-prov-scroll { padding: 20px 16px calc(28px + env(safe-area-inset-bottom, 0)) !important; }
       #v-provider-detail-public #pubProvTitle { font-size: 22px !important; }
@@ -6654,12 +6785,19 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
 
-    /* Bottom Navigation Modernization */
-    .bottom-nav {
-      background: rgba(255, 255, 255, 0.85);
-      backdrop-filter: saturate(180%) blur(20px);
-      -webkit-backdrop-filter: saturate(180%) blur(20px);
-      border-top: 1px solid rgba(0,0,0,0.05);
+    /* Bottom Navigation: Native Edge-to-Edge ImmoScout [cite: 2026-02-20 Schritt 1.5] */
+    body:not(.provider-mode) .bottom-nav {
+      position: fixed !important;
+      bottom: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      width: 100% !important;
+      background: #fff !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+      border-top: 1px solid #f1f5f9 !important;
+      box-shadow: none !important;
+      border-radius: 0 !important;
       height: calc(70px + env(safe-area-inset-bottom, 0px));
       padding-bottom: env(safe-area-inset-bottom, 0px);
     }

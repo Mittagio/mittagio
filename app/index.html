@@ -46,8 +46,8 @@
         <div style="display:flex; align-items:center; gap:12px;">
           <div id="planPublicLogo" style="width:48px; height:48px; border-radius:14px; background:#f1f3f5; background-size:cover; background-position:center;"></div>
           <div>
-            <h1 id="planPublicName" style="margin:0; font-size:20px; font-weight:900; color:#1a1a1a; letter-spacing:-0.02em;">Wochenplan</h1>
-            <p style="margin:2px 0 0; font-size:13px; color:#64748b; font-weight:600;">Unser Wochenplan ist online!</p>
+            <h1 id="planPublicName" class="ds-h2" style="margin:0;">Wochenplan</h1>
+            <p class="ds-body" style="margin:2px 0 0; font-size:13px; font-weight:600;">Unser Wochenplan ist online!</p>
           </div>
         </div>
         <a href="#" id="planPublicBack" style="display:inline-flex; align-items:center; gap:6px; margin-top:16px; font-size:14px; font-weight:700; color:var(--brand,#FFD700); text-decoration:none;">← Zur App</a>
@@ -59,8 +59,8 @@
     <section class="view customer-view active" id="v-discover">
       <!-- Modern Sticky Header: Standort links, MITTAGIO weiß zentriert, Filter darunter sticky -->
       <header class="cust-header-sticky discover-header-sticky">
-        <!-- Zeile 1: Standort links, Logo absolut mittig, GPS rechts – Symmetrie [cite: 2026-02-18] -->
-        <div class="discover-header-top-row" style="background:#121826;">
+        <!-- Zeile 1: Minimalist – Standort links, Logo mittig, Kalender rechts [cite: 2026-02-20 Schritt 1.4] -->
+        <div class="discover-header-top-row discover-header-minimal">
           <div class="discover-location-row-wrap">
             <button type="button" id="btnDiscoverLocationText" class="discover-location-btn-inner" style="display:flex; align-items:center; gap:4px; background:none; border:none; padding:0; cursor:pointer; min-width:0; text-align:left;">
               <span class="discover-location-pin" style="font-size:14px; line-height:1;">📍</span>
@@ -69,8 +69,11 @@
           </div>
           <span class="discover-logo">MITTAGIO</span>
           <div class="discover-header-right-anchor">
-            <button type="button" id="btnDiscoverLocationGPS" class="discover-gps-btn" aria-label="Standort per GPS">
+            <button type="button" id="btnDiscoverLocationGPS" class="discover-gps-btn" aria-label="Standort per GPS" style="display:none;">
               <i data-lucide="map-pin" style="width:16px;height:16px;"></i>
+            </button>
+            <button type="button" id="btnDiscoverCalendar" class="discover-calendar-btn" aria-label="Datum wählen" title="Datum wählen">
+              <i data-lucide="calendar" style="width:20px;height:20px;"></i>
             </button>
           </div>
         </div>
@@ -78,7 +81,7 @@
         <!-- Standort-Dropdown (Bleibt funktional gleich, nur Design-Update) -->
         <div id="discoverLocationExpanded" style="display:none; position:fixed; z-index:99999; background:#fff; border-radius:24px; box-shadow:0 20px 40px rgba(0,0,0,0.15); border:1px solid rgba(0,0,0,0.05); overflow:hidden; min-width:300px; max-width:calc(100vw - 32px); top:80px; left:16px;">
           <div style="padding:24px;">
-            <h3 style="margin:0 0 16px; font-size:18px; font-weight:850; letter-spacing:-0.02em;">Wo suchst du?</h3>
+            <h3 class="ds-h2-850" style="margin:0 0 16px;">Wo suchst du?</h3>
             <button type="button" id="discoverLocationBtnNadel" class="btn-cust-primary" style="width:100%; height:56px; border-radius:16px; margin-bottom:16px;">
               <i data-lucide="navigation" style="width:20px;height:20px;"></i>
               <span>Aktueller Standort</span>
@@ -92,12 +95,12 @@
           </div>
         </div>
 
-        <!-- Sticky Filter: Zeile 1 Kategorien, Zeile 2 Radius + Zeit (Heute/Morgen) -->
+        <!-- Sticky Filter: NUR Kategorien – keine Zeit-Buttons [cite: 2026-02-20 Schritt 1.4] -->
         <div class="discover-filter-sticky" style="background:var(--header-bg,#fff); border-bottom:1px solid rgba(0,0,0,0.06);">
           <div id="discoverCategoriesBar" class="discover-header-pills cust-chip-bar discover-pills-compact">
-            <!-- Dynamisch: [ 🍲 Eintopf ] [ 🥩 Vesper ] [ 🥗 Vegetarisch ] [ 🥪 Snack ] -->
+            <!-- Dynamisch: Alle, Fleisch, Vegetarisch, Vegan -->
           </div>
-          <div class="discover-radius-time-row discover-filter-row-slim">
+          <div class="discover-radius-time-row discover-filter-row-slim" style="display:none;">
             <div class="discover-radius-row" style="display:flex; align-items:center; gap:8px;">
               <button type="button" id="discoverRadiusBtn" class="discover-radius-pill" aria-label="Hunger-Radius">
                 <span id="discoverRadiusIcon">📍</span>
@@ -111,15 +114,15 @@
                 <button type="button" data-radius="5000" class="discover-radius-opt">5 km</button>
               </div>
             </div>
-            <div id="discoverDaysBar" class="cust-chip-bar discover-calendar-sticky" style="display:flex; gap:8px; overflow-x:auto; padding:0; scrollbar-width:none; -webkit-overflow-scrolling:touch; flex:1; min-width:0;">
-              <!-- Dynamisch: Heute, Morgen, … -->
+            <div id="discoverDaysBar" class="cust-chip-bar discover-calendar-sticky" style="display:none;">
+              <!-- Zeit-Buttons entfernt – nur Kalender-Icon -->
             </div>
           </div>
         </div>
       </header>
 
       <!-- Listenansicht ("Speisekarte") + Karten-Container (Overlay) – S25 Safe-Area -->
-      <main class="discover-main" style="position:relative; padding:16px; padding-bottom:calc(88px + env(safe-area-inset-bottom, 0));">
+      <main class="discover-main" style="position:relative;">
         <div id="discoverOffers" class="discover-offers-list" style="display:flex; flex-direction:column; padding:0 0 8px;">
           <!-- Dynamisch befüllt -->
         </div>
@@ -154,8 +157,8 @@
           <div style="width:160px; height:160px; margin:0 auto 24px; border-radius:24px; overflow:hidden; box-shadow:0 8px 32px rgba(0,0,0,0.08); background:#f8f9fa;">
             <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&amp;fit=crop&amp;w=400&amp;q=80" alt="" style="width:100%; height:100%; object-fit:cover;" loading="lazy" />
           </div>
-          <h2 style="font-size:22px; font-weight:850; margin:0 0 12px; color:#1a1a1a; letter-spacing:-0.02em;">Hunger?</h2>
-          <p style="font-size:15px; color:#64748b; line-height:1.6; margin-bottom:28px; max-width:320px; margin-left:auto; margin-right:auto;">Momentan gibt es keine aktiven Angebote in deiner Nähe. Schau später nochmal vorbei oder ändere deinen Standort.</p>
+          <h2 class="ds-empty-title" style="max-width:320px; margin-left:auto; margin-right:auto;">Hunger?</h2>
+          <p class="ds-body" style="line-height:1.6; margin-bottom:28px; max-width:320px; margin-left:auto; margin-right:auto;">Momentan gibt es keine aktiven Angebote in deiner Nähe. Schau später nochmal vorbei oder ändere deinen Standort.</p>
           <button class="btn-cust-primary" type="button" onclick="openDiscoverLocationSearch();" style="width:100%; max-width:280px; margin:0 auto;">
             <i data-lucide="map-pin" style="width:20px;height:20px;"></i>
             <span>Standort ändern</span>
@@ -171,7 +174,7 @@
     </section>
 
     <!-- Provider-Billing: einheitlich helles Layout -->
-    <section class="view" id="v-provider-billing" style="min-height:100vh; padding:20px; padding-bottom:90px;">
+    <section class="view content-padding-bottom-compact" id="v-provider-billing" style="min-height:100vh; padding:20px;">
       <div class="provider-header-bar">
         <h1>Finanzen & Abrechnung</h1>
         <button id="btnBillingBack" class="btn-back" type="button">
@@ -215,10 +218,10 @@
     </section>
 
     <!-- Admin-Dashboard: /admin – Clean, modern, KPIs, Inserats-Feed, Buchhaltung, CSV-Export -->
-    <section class="view" id="v-admin" style="min-height:100vh; padding:20px; padding-bottom:90px; background:#f8f7f2;">
+    <section class="view content-padding-bottom-compact" id="v-admin" style="min-height:100vh; padding:20px; background:#f8f7f2;">
       <div style="max-width:900px; margin:0 auto;">
         <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:24px;">
-          <h1 style="margin:0; font-size:24px; font-weight:900; color:#1a1a1a;">Admin</h1>
+          <h1 class="ds-h1" style="margin:0;">Admin</h1>
           <a href="#" onclick="location.hash=''; showDiscover(); return false;" style="display:inline-flex; align-items:center; gap:6px; font-size:14px; font-weight:700; color:#64748b; text-decoration:none;"><i data-lucide="chevron-left" style="width:18px;height:18px;"></i> Zurück</a>
         </div>
         <!-- KPI-Sektion -->
@@ -278,14 +281,14 @@
         </div>
       </header>
 
-      <div style="padding-bottom:120px;">
+      <div class="customer-main-wrap">
         <!-- Empty State -->
         <div id="favEmptyState" style="display:none; flex-direction:column; align-items:center; text-align:center; padding:80px 20px;">
           <div style="width:120px; height:120px; margin-bottom:24px; background:rgba(255,215,0,0.1); border-radius:40px; display:flex; align-items:center; justify-content:center;">
             <i data-lucide="heart" style="width:48px; height:48px; color:#1a1a1a;"></i>
           </div>
-          <h2 style="font-size:22px; font-weight:850; margin:0 0 12px; color:#1a1a1a; letter-spacing:-0.02em;">Deine Favoriten sind leer</h2>
-          <p style="font-size:15px; color:#64748b; line-height:1.6; margin-bottom:32px; max-width:280px;">Sichere dir dein Mittagessen! Markiere Gerichte mit ❤️ – sie landen hier bei deinen Favoriten.</p>
+          <h2 class="ds-empty-title" style="max-width:280px;">Deine Favoriten sind leer</h2>
+          <p class="ds-body" style="line-height:1.6; margin-bottom:32px; max-width:280px;">Sichere dir dein Mittagessen! Markiere Gerichte mit ❤️ – sie landen hier bei deinen Favoriten.</p>
           <button class="btn-cust-primary" type="button" onclick="showDiscover();" style="width:100%; max-width:260px; margin:0 auto; background:var(--brand); color:#1a1a1a;">
             <i data-lucide="compass" style="width:20px;height:20px;"></i>
             <span>Jetzt entdecken</span>
@@ -339,7 +342,7 @@
         </div>
       </header>
 
-      <div style="padding:16px; padding-bottom:120px;">
+      <div class="customer-main-wrap" style="padding:16px;">
         <div class="cust-chip-bar" id="ordersFilters" style="margin-bottom:20px; padding:0 0 12px 0;"></div>
         <!-- Empty State (sichtbar nur wenn keine Bestellungen) -->
         <div id="ordersEmptyState" style="display:flex; flex-direction:column; align-items:center; text-align:center; padding:48px 20px; background:#f8f9fa; border-radius:24px; border:2px dashed #e2e8f0;">
@@ -366,17 +369,17 @@
         </div>
       </header>
 
-      <div style="padding:16px; padding-bottom:120px; display:flex; flex-direction:column; gap:16px;">
+      <div class="customer-main-wrap" style="padding:16px; display:flex; flex-direction:column; gap:16px;">
         <!-- Aktive Session: Abholnummer oben + Gericht-Karten (🍴🔄🧾, Routen, Timer, Abgeholt) -->
         <div id="cartActiveSessionWrap" style="display:none;">
           <!-- Highlight: Abholnummer ganz oben, großer Fokus -->
           <div class="mittagsbox-abholnummer-hero" style="text-align:center; padding:24px 20px; background:linear-gradient(135deg, rgba(255,215,0,0.12) 0%, rgba(255,215,0,0.06) 100%); border-radius:20px; border:1px solid rgba(255,215,0,0.25); margin-bottom:20px;">
             <div style="display:inline-flex; align-items:center; gap:12px;">
               <span class="mittagsbox-session-dot" style="width:10px; height:10px; border-radius:50%; background:#22c55e; box-shadow:0 0 0 3px rgba(34,197,94,0.3);"></span>
-              <span style="font-size:12px; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:0.05em;">Aktive Session</span>
+              <span class="ds-meta" style="text-transform:uppercase; letter-spacing:0.05em;">Aktive Session</span>
             </div>
-            <div id="cartActiveAbholnummerDisplay" style="font-size:2.5rem; font-weight:950; color:#1a1a1a; letter-spacing:0.08em; font-family:ui-monospace, monospace; margin:12px 0 4px; line-height:1.1;">#A12</div>
-            <div style="font-size:13px; font-weight:600; color:#64748b;">Abholnummer</div>
+            <div id="cartActiveAbholnummerDisplay">#A12</div>
+            <div class="ds-body" style="font-size:13px; font-weight:600;">Abholnummer</div>
           </div>
           <div id="cartActiveSessionList" style="display:flex; flex-direction:column; gap:16px;"></div>
         </div>
@@ -410,7 +413,7 @@
     
     <!-- CUSTOMER: One-Page Checkout (Checkout-Turbo) -->
     <section class="view" id="v-checkout" style="min-height:100vh; background:var(--bg);">
-      <div style="padding:16px; padding-bottom:calc(90px + env(safe-area-inset-bottom, 0px)); max-width:600px; margin:0 auto;">
+      <div class="content-padding-bottom-compact" style="padding:16px; max-width:600px; margin:0 auto;">
         <div class="panel" style="padding:20px; border-radius:24px; box-shadow:0 4px 16px rgba(0,0,0,.08); background:rgba(255,255,255,0.95); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);">
           <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
             <button class="back-button btn-back" type="button" id="btnCheckoutBack" aria-label="Zurück" style="background:none; border:none; padding:8px; cursor:pointer; font-size:16px; font-weight:700; color:#2D3436;">
@@ -418,7 +421,7 @@
             </button>
             <div style="display:flex; align-items:center; gap:10px; flex:1;">
               <i data-lucide="shopping-basket" style="width:24px;height:24px;color:#2D3436;flex-shrink:0;"></i>
-              <h3 style="margin:0; font-weight:900; font-size:24px; color:#2D3436;">Dein Mittagstisch</h3>
+              <h3 class="ds-h1" style="margin:0; color:#2D3436;">Dein Mittagstisch</h3>
             </div>
           </div>
           
@@ -505,7 +508,7 @@
     <div id="pickupCodeContainer"></div>
 
     <!-- CUSTOMER: Erfolgs-Ansicht nach "JETZT BEZAHLEN" – Abholnummer im Fokus, clean, keine Schiefertafel -->
-    <section class="view customer-view" id="v-order-success" style="display:none; padding:24px 16px calc(90px + env(safe-area-inset-bottom, 0px)); min-height:100vh; background:#f8fafc;">
+    <section class="view customer-view content-padding-bottom-compact" id="v-order-success" style="display:none; padding:24px 16px; min-height:100vh; background:#f8fafc;">
       <div style="max-width:420px; margin:0 auto;">
         <!-- Status-Badge: Zahlung erfolgreich -->
         <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:20px;">
@@ -514,10 +517,10 @@
         </div>
         <!-- Hero: Abholnummer extrem groß im gelben Container [cite: 2026-01-27] -->
         <div id="orderSuccessSingleBlock" style="text-align:center; padding:28px 20px; background:linear-gradient(135deg, rgba(255,215,0,0.2) 0%, rgba(255,215,0,0.08) 100%); border-radius:20px; border:2px solid rgba(255,215,0,0.4); margin-bottom:24px; box-shadow:0 4px 20px rgba(255,215,0,0.15);">
-          <div style="font-size:14px; font-weight:700; color:#64748b; margin-bottom:8px;">Deine Abholnummer für den Tresen</div>
+          <div class="ds-meta" style="font-size:14px; margin-bottom:8px;">Deine Abholnummer für den Tresen</div>
           <div style="display:inline-flex; align-items:center; justify-content:center; gap:12px;">
-            <span style="font-size:2.5rem;">🧾</span>
-            <div id="orderSuccessAbholnummer" style="font-family:ui-monospace, monospace; font-size:clamp(2.5rem, 12vw, 3.5rem); font-weight:950; letter-spacing:0.12em; color:#1a1a1a; line-height:1.1;">#101</div>
+            <span class="ds-abholnummer-emoji">🧾</span>
+            <div id="orderSuccessAbholnummer">#101</div>
           </div>
         </div>
         <div id="orderSuccessMultiBlock" style="display:none; margin-bottom:24px;"></div>
@@ -560,7 +563,7 @@
         </div>
       </header>
 
-      <div style="padding:40px 16px 120px; display:flex; flex-direction:column; gap:20px;">
+      <div class="customer-main-wrap" style="padding-top:40px; padding-left:16px; padding-right:16px; display:flex; flex-direction:column; gap:20px;">
         <!-- Kurz Identität (Avatar + Name), nur wenn eingeloggt -->
         <div class="cust-card" id="profileHeaderCard" style="padding:16px 20px; flex-direction:row; align-items:center; gap:12px; margin-bottom:0; background:none; border:none; box-shadow:none;">
           <!-- Wird dynamisch befüllt -->
@@ -1616,7 +1619,7 @@
           </button>
           <h1 style="margin:0; font-size:18px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a;">Betriebsdaten</h1>
         </header>
-        <div class="provider-sub-scroll" style="padding:20px; padding-bottom:calc(120px + env(safe-area-inset-bottom, 0)); flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; max-width:500px; margin:0 auto; width:100%; box-sizing:border-box; display:flex; flex-direction:column; gap:16px;">
+        <div class="provider-sub-scroll content-padding-bottom" style="padding:20px; flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; max-width:500px; margin:0 auto; width:100%; box-sizing:border-box; display:flex; flex-direction:column; gap:16px;">
           <div id="providerBusinessDataCardSlot"></div>
         </div>
       </div>
@@ -1629,7 +1632,7 @@
           </button>
           <h1 style="margin:0; font-size:18px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a;">Inseratseinstellungen</h1>
         </header>
-        <div class="provider-sub-scroll" style="padding:20px; padding-bottom:calc(120px + env(safe-area-inset-bottom, 0)); flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; max-width:500px; margin:0 auto; width:100%; box-sizing:border-box; display:flex; flex-direction:column; gap:16px;">
+        <div class="provider-sub-scroll content-padding-bottom" style="padding:20px; flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; max-width:500px; margin:0 auto; width:100%; box-sizing:border-box; display:flex; flex-direction:column; gap:16px;">
           <div class="provider-mittagszeiten-inner" style="margin-bottom:24px;">
             <p style="margin:0 0 16px; font-size:14px; color:#64748b; line-height:1.5;">Standard-Zeitfenster für neue Inserate (15-Minuten-Schritte).</p>
             <button type="button" id="providerSettingsTimeTrigger" class="provider-time-trigger time-picker-display" style="display:block; width:100%; border:none; cursor:pointer; font-family:inherit;">
@@ -1808,7 +1811,7 @@
     </section>
 
     <!-- Impressum für Anbieter: einheitlich helles Layout -->
-    <section class="view" id="v-legal-impressum-provider" style="min-height:100vh; padding:20px; padding-bottom:90px;">
+    <section class="view content-padding-bottom-compact" id="v-legal-impressum-provider" style="min-height:100vh; padding:20px;">
       <div class="panel" style="padding:20px; border-radius:16px; box-shadow:0 2px 12px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.06);">
         <h1 style="font-size:24px; font-weight:900; margin-bottom:20px; color:#1a1a1a;">Impressum</h1>
         <div style="line-height:1.8; font-size:15px; color:#334155;">
@@ -1860,7 +1863,7 @@
     </section>
 
     <!-- AGB für Anbieter: einheitlich helles Layout -->
-    <section class="view" id="v-legal-agb-provider" style="min-height:100vh; padding:20px; padding-bottom:90px;">
+    <section class="view content-padding-bottom-compact" id="v-legal-agb-provider" style="min-height:100vh; padding:20px;">
       <div style="margin-bottom:24px; display:flex; align-items:center; gap:12px;">
         <button type="button" onclick="goBackFromLegalPage()" aria-label="Zurück" style="width:40px; height:40px; border-radius:50%; background:#fff; border:none; box-shadow:0 2px 8px rgba(0,0,0,0.08); cursor:pointer; display:flex; align-items:center; justify-content:center;"><i data-lucide="chevron-left" style="width:22px; height:22px; color:#1a1a1a;"></i></button>
         <h1 style="margin:0; font-size:22px; font-weight:800; color:#1a1a1a; letter-spacing:-0.02em;">AGB (Anbieter)</h1>
@@ -1930,7 +1933,7 @@
     </section>
 
     <!-- FAQ mit Reitern (Kunden & Anbieter) -->
-    <section class="view" id="v-legal-faq" style="background:#F7F6F0; min-height:100vh; padding:20px; padding-bottom:90px;">
+    <section class="view content-padding-bottom-compact" id="v-legal-faq" style="background:#F7F6F0; min-height:100vh; padding:20px;">
       <div class="panel" style="padding:0; overflow:hidden;">
         <h1 style="font-size:24px; font-weight:900; margin:20px 20px 0; padding-bottom:20px;">FAQ</h1>
         
@@ -2021,7 +2024,7 @@
     </section>
 
     <!-- Support-Seite (Kunden): erweiterte FAQs + Kontaktformular, keine E-Mail im UI -->
-    <section class="view" id="v-support" style="background:#F7F6F0; min-height:100vh; padding:20px; padding-bottom:90px;">
+    <section class="view content-padding-bottom-compact" id="v-support" style="background:#F7F6F0; min-height:100vh; padding:20px;">
       <div class="panel" style="padding:0; overflow:hidden;">
         <h1 style="font-size:24px; font-weight:900; margin:20px 20px 0; padding-bottom:20px;">Support &amp; Hilfe</h1>
 
@@ -2074,7 +2077,7 @@
     </section>
 
     <!-- Anbieter-FAQ: einheitlich helles Layout -->
-    <section class="view" id="v-legal-faq-provider" style="min-height:100vh; padding:20px; padding-bottom:90px;">
+    <section class="view content-padding-bottom-compact" id="v-legal-faq-provider" style="min-height:100vh; padding:20px;">
       <div class="panel" style="padding:20px; border-radius:16px; box-shadow:0 2px 12px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.06);">
         <h1 style="font-size:24px; font-weight:900; margin-bottom:20px; color:#1a1a1a;">FAQ für Anbieter</h1>
         <div style="line-height:1.8; font-size:15px; color:#334155;">
@@ -2106,7 +2109,7 @@
     </section>
 
     <!-- Anbieter Infoseite Inseratsflow: Hero + 5 Kern-Funktionen -->
-    <section class="view" id="v-legal-inserat-info-provider" style="min-height:100vh; padding:20px; padding-bottom:90px;">
+    <section class="view content-padding-bottom-compact" id="v-legal-inserat-info-provider" style="min-height:100vh; padding:20px;">
       <div class="panel inserat-info-panel" style="padding:24px; border-radius:16px; box-shadow:0 2px 12px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.06); background:#fff;">
         <h1 class="inserat-info-hero-title" style="font-size:26px; font-weight:900; margin:0 0 12px; color:#1a1a1a; letter-spacing:-0.03em; line-height:1.2;">Inserieren in unter 30 Sekunden</h1>
         <p class="inserat-info-hero-sub" style="font-size:16px; color:#64748b; margin:0 0 24px; line-height:1.5;">Erreiche hungrige Gäste direkt in deiner Umgebung – ohne Bindung, ohne Risiko.</p>
@@ -2188,7 +2191,7 @@
     </section>
 
     <!-- Datenschutz für Anbieter: einheitlich helles Layout -->
-    <section class="view" id="v-legal-datenschutz-provider" style="min-height:100vh; padding:20px; padding-bottom:90px;">
+    <section class="view content-padding-bottom-compact" id="v-legal-datenschutz-provider" style="min-height:100vh; padding:20px;">
       <div class="panel" style="padding:20px; border-radius:16px; box-shadow:0 2px 12px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.06);">
         <h1 style="font-size:24px; font-weight:900; margin-bottom:20px; color:#1a1a1a;">Datenschutzerklärung (Anbieter)</h1>
         <div style="line-height:1.8; font-size:15px; color:#334155;">
@@ -2220,7 +2223,7 @@
     </section>
 
     <!-- Versionsseite (Link im Footer: v1.0.x) -->
-    <section class="view" id="v-version" style="background:#F7F6F0; min-height:100vh; padding:20px; padding-bottom:90px;">
+    <section class="view content-padding-bottom-compact" id="v-version" style="background:#F7F6F0; min-height:100vh; padding:20px;">
       <div class="panel" style="max-width:480px; margin:0 auto;">
         <h1 style="font-size:24px; font-weight:900; margin-bottom:20px;">Version</h1>
         <p style="font-size:16px; color:#555; margin-bottom:16px;">Aktuelle App-Version: <strong>v1.0.0</strong></p>
