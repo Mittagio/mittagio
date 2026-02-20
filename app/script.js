@@ -10474,11 +10474,12 @@
       if(providerActiveListings){
         providerActiveListings.innerHTML = '';
         providerActiveListings.style.display = mineToday.length > 0 ? 'flex' : 'none';
+        providerActiveListings.className = 'provider-active-listings-pure';
         var p = (provider && provider.profile) ? provider.profile : {};
         var defaultDineIn = p.dineInPossibleDefault !== false;
         var defaultPickup = !!p.abholnummerEnabledByDefault;
         var defaultReuse = !!p.reuseEnabledByDefault;
-        mineToday.forEach(function(o){
+        mineToday.forEach(function(o, idx){
           const d = normalizeOffer(o);
           const imgUrl = d.imageUrl || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=800&q=70';
           const hasReusable = !!(o.reuse && o.reuse.enabled);
@@ -10494,42 +10495,41 @@
           const firstPickupCode = paidWithCode.length ? ('#' + (paidWithCode[0].pickupCode || String(paidWithCode[0].id || '').slice(-2))) : null;
           const abholnummerLabel = hasPickupNumber ? (firstPickupCode || '–') : '–';
           const abholnummerGray = !hasPickupNumber;
-          // Silent Defaults: Säulen nur anzeigen, wenn Inserat vom Profil abweicht
           var deviateDineIn = o.dineInPossible !== undefined && (o.dineInPossible !== false) !== defaultDineIn;
           var deviatePickup = o.hasPickupCode !== undefined && !!o.hasPickupCode !== defaultPickup;
           var deviateReuse = (o.reuse && (o.reuse.enabled !== undefined)) ? !!(o.reuse && o.reuse.enabled) !== defaultReuse : false;
           var pillarParts = [];
-          if (deviateDineIn) pillarParts.push('<div class="pillar-mini ' + (hasDineIn ? 'active green' : '') + '" title="Vor Ort">🍴</div>');
-          if (deviatePickup) pillarParts.push('<div class="pillar-mini ' + (hasPickupNumber ? 'active yellow' : '') + '" title="Abholnummer">🧾</div>');
-          if (deviateReuse) pillarParts.push('<div class="pillar-mini ' + (hasReusable ? 'active petrol' : '') + '" title="Mehrweg">🔄</div>');
-          const pillarsRow = pillarParts.length ? '<div class="card-pillars" style="display:flex; gap:12px; margin-bottom:12px;">' + pillarParts.join('') + '</div>' : '';
+          if (deviateDineIn) pillarParts.push('<span class="pillar-mini ' + (hasDineIn ? 'active green' : '') + '" title="Vor Ort">🍴</span>');
+          if (deviatePickup) pillarParts.push('<span class="pillar-mini ' + (hasPickupNumber ? 'active yellow' : '') + '" title="Abholnummer">🧾</span>');
+          if (deviateReuse) pillarParts.push('<span class="pillar-mini ' + (hasReusable ? 'active petrol' : '') + '" title="Mehrweg">🔄</span>');
+          const pillarsHtml = pillarParts.length ? '<div class="prov-row-pillars">' + pillarParts.join('') + '</div>' : '';
 
+          if (idx > 0) {
+            var div = document.createElement('div');
+            div.className = 'inset-divider';
+            providerActiveListings.appendChild(div);
+          }
           const card = document.createElement('div');
-          card.className = 'prov-card';
+          card.className = 'prov-card prov-card-pure';
           card.setAttribute('data-offer-id', String(o.id));
           card.setAttribute('role', 'button');
           card.setAttribute('tabindex', '0');
-          card.style.padding = '0';
-          card.style.overflow = 'hidden';
-          card.style.cursor = 'pointer';
+          card.style.cssText = 'display:flex; align-items:center; gap:16px; padding:16px 20px; cursor:pointer; background:transparent; border:none; box-shadow:none; border-radius:0; margin:0;';
           card.innerHTML = `
-            <div style="position:relative; height:180px; width:100%;">
+            <div class="prov-card-pure-thumb" style="flex-shrink:0; width:100px; height:100px; border-radius:16px; overflow:hidden; background:#f1f3f5;">
               <img src="${esc(imgUrl)}" alt="" style="width:100%; height:100%; object-fit:cover;" />
-              <div class="price-pill" style="position:absolute; bottom:12px; right:12px; padding:6px 14px; border-radius:999px; font-size:16px; font-weight:900;">${euro(d.price)}</div>
-              ${isLive ? '<div style="position:absolute; top:12px; left:12px; background:rgba(255,255,255,0.9); backdrop-filter:blur(4px); padding:4px 10px; border-radius:8px; display:flex; align-items:center; gap:6px;"><span style="width:8px; height:8px; background:#22c55e; border-radius:50%;"></span><span style="font-size:10px; font-weight:800; text-transform:uppercase; color:#1a1a1a;">Live</span></div>' : ''}
             </div>
-            <div style="padding:var(--card-padding, 20px);">
-              ${pillarsRow}
-              <h2 style="margin:0 0 16px; font-size:18px; font-weight:900; color:#1a1a1a;">${esc(dishName)}</h2>
-              <div style="display:flex; gap:16px; margin-bottom:12px; padding-bottom:12px; border-bottom:1px solid #f1f1f1;">
-                <div style="display:flex; align-items:center; gap:6px;"><span style="font-size:16px;">👁️</span><span style="font-size:13px; font-weight:800;">${viewsCount}</span></div>
-                <div style="display:flex; align-items:center; gap:6px;"><span style="font-size:16px;">❤️</span><span style="font-size:13px; font-weight:800;">${favCount}</span></div>
-                <div style="display:flex; align-items:center; gap:6px;"><span style="font-size:16px;">🧾</span><span style="font-size:13px; font-weight:800;">${orderCount}</span></div>
+            <div class="prov-card-pure-body" style="flex:1; min-width:0;">
+              ${isLive ? '<span class="prov-badge-live" style="display:inline-flex; align-items:center; gap:6px; font-size:10px; font-weight:800; text-transform:uppercase; color:#1a1a1a; margin-bottom:4px;"><span style="width:6px; height:6px; background:#22c55e; border-radius:50%;"></span>Live</span>' : ''}
+              <h2 style="margin:0 0 4px; font-size:17px; font-weight:900; color:#1a1a1a; line-height:1.25;">${esc(dishName)}</h2>
+              ${pillarsHtml}
+              <div style="display:flex; align-items:center; gap:12px; margin-top:8px;">
+                <span style="font-size:18px; font-weight:900; color:#1a1a1a;">${euro(d.price)}</span>
+                <span style="font-size:13px; color:#64748b;">👁️ ${viewsCount} · ❤️ ${favCount} · 🧾 ${orderCount}</span>
               </div>
-              <div style="margin-bottom:0; padding:8px 12px; border-radius:10px; background:${abholnummerGray ? '#f1f5f9' : 'rgba(255,215,0,0.15)'}; color:${abholnummerGray ? '#94a3b8' : '#1a1a1a'}; font-size:12px; font-weight:800; display:flex; align-items:center; gap:8px;">
-                <span style="font-size:14px;">🧾</span>
-                <span>Abholnummer</span>
-                <span style="margin-left:auto; font-family:monospace; letter-spacing:0.05em;">${abholnummerLabel}</span>
+              <div style="margin-top:8px; font-size:12px; font-weight:700; color:${abholnummerGray ? '#94a3b8' : '#1a1a1a'};">
+                <span>🧾 Abholnummer</span>
+                <span style="font-family:ui-monospace; letter-spacing:0.05em; margin-left:6px;">${abholnummerLabel}</span>
               </div>
             </div>
           `;
@@ -15962,7 +15962,7 @@
       const sheet = document.createElement('div');
       sheet.className = 'inserat-card-sheet';
       sheet.setAttribute('data-inserat-card', 'true');
-      sheet.style.cssText = 'padding:0; overflow:visible; display:flex; flex-direction:column; min-height:0; border-radius:28px 28px 0 0; background:#fff; box-shadow:0 -8px 32px rgba(0,0,0,0.08);';
+      sheet.style.cssText = 'padding:0; overflow:visible; display:flex; flex-direction:column; min-height:0; border-radius:28px 28px 0 0; background:#fff; box-shadow:none; border:none;';
       const box = document.createElement('div');
       box.className='liquid-master-panel glass-express-step0 inserat-universal-mask inserat-master-flow liquid-panel listing-glass-panel s25-floating-panel inserat-card';
       box.setAttribute('data-inserat-card','true');
@@ -16148,6 +16148,18 @@
       }
       addPowerPill('🍴','Vor Ort', hasDineIn, 'dineInPossible');
       addPowerPill('🔄','Mehrweg', hasReuse, 'reuse');
+      var hasPickupCode = w.data.hasPickupCode !== false;
+      function addPowerPillPickup(emo, label, active, toggleKey){
+        const wrap=document.createElement('button');
+        wrap.type='button';
+        wrap.className='status-pill inserat-soft-pill '+(active?'active':'inactive');
+        wrap.setAttribute('aria-label', label);
+        wrap.setAttribute('title', label + ' (0,89 € pro Gast)');
+        wrap.innerHTML='<span class="inserat-pill-emo">'+emo+'</span>';
+        wrap.onclick=function(e){ e.preventDefault(); e.stopPropagation(); if(typeof triggerHapticFeedback==='function') triggerHapticFeedback([5]); w.data.hasPickupCode=!w.data.hasPickupCode; saveDraft(); rebuildWizard(); };
+        powerBar.appendChild(wrap);
+      }
+      addPowerPillPickup('🧾','Abholnummer', hasPickupCode, 'hasPickupCode');
       const hasTimeValue=!!(w.data.pickupWindow&&w.data.pickupWindow.trim())||(w.data.mealStart&&w.data.mealEnd);
       const timePill=document.createElement('button');
       timePill.type='button';
@@ -16339,8 +16351,26 @@
       requestAnimationFrame(function(){ requestAnimationFrame(function(){ if(typeof adjustTitleFontSize === 'function') adjustTitleFontSize(); }); });
       var entryPoint = (w.ctx && w.ctx.entryPoint) || 'dashboard';
       var isPlanMode = (entryPoint === 'week' || entryPoint === 'cookbook');
-      /* KEINE Verdienstvorschau – Ebene 4 nur Beschreibung [cite: BAUARBEITER] */
 
+      // Verdienstvorschau (MODE_AD): Dein Verdienst bei 30 Portionen [cite: Master-Prompt 2026-02-19]
+      if(!isPlanMode && entryPoint === 'dashboard'){
+        var verdienstWrap = document.createElement('div');
+        verdienstWrap.className = 'inserat-verdienst-vorschau';
+        verdienstWrap.style.cssText = 'margin-top:16px; padding:12px 16px; background:rgba(16,185,129,0.08); border-radius:12px;';
+        function renderVerdienst(){
+          var p = Number(w.data.price) || 0;
+          if(p <= 0){ verdienstWrap.innerHTML = '<span style="font-size:14px; font-weight:700; color:#64748b;">Gib einen Preis ein, dann siehst du deinen Verdienst.</span>'; return; }
+          var mitAbholnummer = 30 * p - 30 * 0.89;
+          var ohneAbholnummer = 30 * p - 4.99;
+          var v = Math.max(0, w.data.hasPickupCode !== false ? mitAbholnummer : ohneAbholnummer);
+          verdienstWrap.innerHTML = '<span style="font-size:15px; font-weight:800; color:#059669;">Dein Verdienst: ' + v.toFixed(2).replace('.', ',') + ' €</span><span style="font-size:12px; color:#64748b; margin-left:8px;">(bei 30 Portionen)</span>';
+        }
+        renderVerdienst();
+        scrollArea.appendChild(verdienstWrap);
+        var verdienstObserver = function(){ renderVerdienst(); };
+        inputPrice.addEventListener('input', verdienstObserver);
+        inputPrice.addEventListener('blur', verdienstObserver);
+      }
 
       box.appendChild(scrollArea);
 
@@ -16427,7 +16457,7 @@
         const btn499=document.createElement('button');
         btn499.type='button';
         btn499.className='inserat-btn-secondary inserat-btn-yellow-border';
-        btn499.textContent='Nur Inserat';
+        btn499.textContent='Jetzt für 4,99 € inserieren';
         btn499.onclick=function(){ if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; } if(btn499.disabled) return; if(typeof haptic==='function') haptic([30, 50, 30]); w.data.hasPickupCode=false; w.data.pricingOption=undefined; w.data.inseratFeeWaived=false; var o=previewOfferFromWizard(); closeWizard(true); showPublishFeeModal(o); };
         actionSection.appendChild(btn499);
         // Ohne Live: Im Wochenplan speichern | Im Kochbuch speichern (Plan 3.3)

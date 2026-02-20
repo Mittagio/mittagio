@@ -5256,11 +5256,11 @@
     /* Dashboard-Wrap: Block-Layout, main scrollt */
     #v-provider-home #providerActiveListingsSection{ margin-bottom:0; }
     #v-provider-home #providerActiveListingsSection .provider-week-title{ margin-bottom:12px; }
-    #v-provider-home #providerActiveListings{ display:flex; flex-wrap:wrap; gap:16px; max-width:100%; min-width:0; box-sizing:border-box; }
-    #v-provider-home #providerActiveListings .prov-card{ flex:1 1 min(100%, 280px); position:relative; z-index:1; cursor:pointer; pointer-events:auto; }
-    #v-provider-home .prov-card img{ max-width:100%; height:auto; object-fit:cover; display:block; pointer-events:none; }
-    #v-provider-home .prov-card .price-pill{ pointer-events:none; }
-    #v-provider-home .prov-card > div{ max-width:100%; box-sizing:border-box; }
+    #v-provider-home #providerActiveListings.provider-active-listings-pure{ display:flex; flex-direction:column; flex-wrap:nowrap; gap:0; max-width:100%; min-width:0; box-sizing:border-box; }
+    #v-provider-home #providerActiveListings .inset-divider{ height:1px; background:rgba(0,0,0,0.08); margin:0 20px; flex-shrink:0; }
+    #v-provider-home #providerActiveListings .prov-card.prov-card-pure{ margin:0; padding:16px 20px; flex:none; }
+    #v-provider-home #providerActiveListings .prov-card-pure-thumb img{ pointer-events:none; }
+    #v-provider-home #providerActiveListings .prov-row-pillars{ display:flex; gap:8px; margin-top:4px; }
     /* Drei Säulen (🍴🧾🔄) direkt unter dem Bild – clean, keine Schiefertafel */
     #v-provider-home .prov-card .card-pillars{ display:flex; gap:12px; margin:0 0 12px; flex-shrink:0; }
     #v-provider-home .prov-card .card-pillars .pillar-mini{ flex-shrink:0; }
