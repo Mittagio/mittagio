@@ -5329,7 +5329,8 @@
     #v-provider-pickups.view.active{ display:flex !important; flex-direction:column !important; height:100vh; height:100dvh; max-height:100vh; max-height:100dvh; overflow:hidden; }
     #v-provider-pickups.view.active > header{ position:relative; z-index:1; flex-shrink:0; }
     #v-provider-pickups.view.active > div{ position:relative; z-index:1; min-height:0; flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; }
-    #v-provider-profile{ min-height:100vh; min-height:100dvh; width:100%; box-sizing:border-box; background:#F9FAFB !important; }
+    /* TGTG-Layout: weiße Leinwand, kein grauer Rand [cite: FAQ Anbieter] */
+    #v-provider-profile{ min-height:100vh; min-height:100dvh; width:100%; box-sizing:border-box; background:#fff !important; }
     #v-provider-profile.view.active{ display:flex !important; flex-direction:column !important; }
     #v-provider-profile.view.active > header,
     #v-provider-profile.view.active > div{ position:relative; z-index:1; min-height:0; overflow:visible; }
@@ -5953,7 +5954,7 @@
       #v-provider-profile .provider-profile-row i[data-lucide]{ width:20px !important; height:20px !important; }
       #v-provider-profile .provider-profile-logout-btn:active{ transform:scale(0.98); opacity:0.9; }
       /* S25 Native-First: flüssiges flex-column, Scroll nicht blockieren [cite: s25-native-first] */
-      #v-provider-profile .provider-profile-sub{ flex:1; min-height:0; display:flex; flex-direction:column; background:#F9FAFB !important; }
+      #v-provider-profile .provider-profile-sub{ flex:1; min-height:0; display:flex; flex-direction:column; background:#fff !important; }
       #v-provider-profile .provider-profile-sub > .tgtg-list-wrap,
       #v-provider-profile .provider-profile-sub > div[style*="overflow-y:auto"]{ flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:20px 0 calc(120px + env(safe-area-inset-bottom, 0)); box-sizing:border-box; width:100%; }
       #v-provider-profile .provider-profile-sub .provider-sub-scroll{ flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:20px; padding-bottom:calc(120px + env(safe-area-inset-bottom, 0)); box-sizing:border-box; }
@@ -6020,16 +6021,17 @@
       .provider-settings-accordion-content-inner{ overflow:hidden; }
       .provider-settings-accordion-content-inner > *{ padding:0 20px 20px; }
 
-      /* Account verwalten: Full-Width List-Design [cite: 2026-01-29, 2026-02-18] – Listenzeilen, nicht Buttons */
-      #v-provider-profile .tgtg-list-wrap{ background:#F9FAFB !important; flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:20px 0 calc(120px + env(safe-area-inset-bottom, 0)); display:flex; flex-direction:column; box-sizing:border-box; width:100% !important; max-width:none !important; gap:0; }
+      /* Account verwalten: TGTG Full-Width – weiße Leinwand, keine Box [cite: FAQ Anbieter] */
+      #v-provider-profile .tgtg-list-wrap{ background:#fff !important; flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:16px max(16px, env(safe-area-inset-right, 0)) calc(120px + env(safe-area-inset-bottom, 0)) max(16px, env(safe-area-inset-left, 0)); display:flex; flex-direction:column; box-sizing:border-box; width:100% !important; max-width:none !important; gap:0; }
       /* Container-Sprengung: Keine max-width, keine festen Breiten */
       #v-provider-profile .tgtg-list{ background:#fff !important; margin:0; border-radius:0; border:none !important; box-shadow:none !important; overflow:hidden; width:100% !important; max-width:none !important; }
       #v-provider-profile .tgtg-list:has(.tgtg-accordion){ box-shadow:none !important; border:none !important; border-radius:0; margin:0; }
-      #v-provider-profile .tgtg-section-title{ font-size:11px; font-weight:800; letter-spacing:0.06em; color:#64748b; text-transform:uppercase; margin:0 0 4px; padding:12px 20px 4px; }
-      /* Zeile = von ganz links bis ganz rechts. Icon links, Pfeil rechts, dazwischen Weißraum [cite: 2026-02-18] */
+      #v-provider-profile .tgtg-section-title{ font-size:11px; font-weight:800; letter-spacing:0.06em; color:#64748b; text-transform:uppercase; margin:0 0 4px; padding:12px 16px 4px; padding-left:max(16px, env(safe-area-inset-left, 0)); padding-right:max(16px, env(safe-area-inset-right, 0)); }
+      /* Zeile = von ganz links bis ganz rechts. Icon links, Pfeil rechts [TGTG] */
       #v-provider-profile .tgtg-row{
         position:relative; display:flex !important; align-items:center !important; justify-content:space-between !important;
         width:100% !important; min-height:56px; padding:16px 20px !important;
+        padding-left:max(16px, env(safe-area-inset-left, 0)); padding-right:max(16px, env(safe-area-inset-right, 0));
         background:#FFFFFF !important; border:none !important; box-shadow:none !important;
         font-size:16px; font-weight:700; color:#1a1a1a; cursor:pointer; text-align:left; font-family:inherit;
         transition:background 0.2s; -webkit-tap-highlight-color:transparent; box-sizing:border-box;
@@ -6042,7 +6044,7 @@
       #v-provider-profile .tgtg-row .tgtg-row-icon{ font-size:20px; flex-shrink:0; width:28px; min-width:28px; text-align:left; }
       #v-provider-profile .tgtg-row .tgtg-label{ flex:1; min-width:0; text-align:left; }
       #v-provider-profile .tgtg-row .tgtg-chevron{ width:20px; height:20px; color:#94a3b8; flex-shrink:0; }
-      #v-provider-profile .tgtg-identity{ padding:32px 20px 20px; text-align:center; background:transparent; }
+      #v-provider-profile .tgtg-identity{ padding:32px 16px 20px; text-align:center; background:transparent; padding-left:max(16px, env(safe-area-inset-left, 0)); padding-right:max(16px, env(safe-area-inset-right, 0)); }
       #v-provider-profile .tgtg-identity-name{ margin:0; font-size:17px; font-weight:800; color:#1a1a1a; letter-spacing:-0.02em; }
       #v-provider-profile .tgtg-identity-ort{ margin:4px 0 0; font-size:14px; color:#64748b; }
       /* FOLGE UNS: SVG-Icons Grün, Subtitle [cite: 2026-02-18] */
@@ -6055,7 +6057,7 @@
       #v-provider-profile .tgtg-accordion-item{ position:relative; }
       #v-provider-profile .tgtg-accordion-item::after{ content:''; position:absolute; left:16px; right:0; bottom:0; height:1px; background:#E5E7EB; }
       #v-provider-profile .tgtg-accordion-item:last-child::after{ display:none; }
-      #v-provider-profile .tgtg-accordion-trigger{ width:100% !important; display:flex !important; align-items:center !important; justify-content:space-between !important; gap:12px; min-height:56px; padding:16px 20px !important; background:#fff !important; border:none !important; box-shadow:none !important; font-size:16px; font-weight:700; color:#1a1a1a; cursor:pointer; text-align:left; font-family:inherit; transition:background 0.2s; -webkit-tap-highlight-color:transparent; }
+      #v-provider-profile .tgtg-accordion-trigger{ width:100% !important; display:flex !important; align-items:center !important; justify-content:space-between !important; gap:12px; min-height:56px; padding:16px 20px !important; padding-left:max(16px, env(safe-area-inset-left, 0)); padding-right:max(16px, env(safe-area-inset-right, 0)); background:#fff !important; border:none !important; box-shadow:none !important; font-size:16px; font-weight:700; color:#1a1a1a; cursor:pointer; text-align:left; font-family:inherit; transition:background 0.2s; -webkit-tap-highlight-color:transparent; }
       #v-provider-profile .tgtg-accordion-trigger .tgtg-label{ text-align:left; }
       #v-provider-profile .tgtg-accordion-trigger:active{ background:#f8fafc; }
       #v-provider-profile .tgtg-accordion-trigger .tgtg-accordion-chevron{ width:18px; height:18px; color:#94a3b8; flex-shrink:0; transition:transform 300ms cubic-bezier(0.4, 0, 0.2, 1); opacity:0.85; }
@@ -6066,10 +6068,10 @@
       #v-provider-profile .tgtg-accordion-body{ padding:0 16px 16px; font-size:14px; line-height:1.5; color:#475569; opacity:0; transition:opacity 300ms cubic-bezier(0.4, 0, 0.2, 1); background:#F9FAFB; }
       #v-provider-profile .tgtg-accordion-item.open .tgtg-accordion-body{ opacity:1; }
       
-      /* Account verwalten: S25 Mobile – padding 20px, padding-bottom für Nav [cite: s25-native-first] */
+      /* Account verwalten: S25 – volle Breite, kein Box-Padding [TGTG] */
       @media (max-width:600px){
         #v-provider-profile .provider-profile-sub{ width:100% !important; max-width:100% !important; box-sizing:border-box; }
-        #v-provider-profile .tgtg-list-wrap{ padding:20px; padding-bottom:calc(120px + env(safe-area-inset-bottom, 0)); width:100%; box-sizing:border-box; }
+        #v-provider-profile .tgtg-list-wrap{ padding-left:max(16px, env(safe-area-inset-left, 0)); padding-right:max(16px, env(safe-area-inset-right, 0)); padding-bottom:calc(120px + env(safe-area-inset-bottom, 0)); width:100%; box-sizing:border-box; }
         #v-provider-profile .provider-sub-header{ padding-left:20px; padding-right:20px; }
         #v-provider-profile .provider-sub-header h1{ flex:1; text-align:center; margin:0; min-width:0; }
         #v-provider-profile .provider-profile-content-rebuild{ padding:20px; width:100%; max-width:100%; box-sizing:border-box; }
