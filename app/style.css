@@ -373,10 +373,10 @@
         background-position: 200% 0;
       }
     }
-    .ticket-card-pulse {
+    .abholnummer-card-pulse {
       animation: abholnummerPulse 2s ease-in-out infinite;
     }
-    .ticket-card-pulse::before {
+    .abholnummer-card-pulse::before {
       content: '';
       position: absolute;
       top: 0;
@@ -1207,15 +1207,15 @@
     }
     .pickup-card.just-done .check-overlay{ opacity:1; }
     .pickup-card.just-done .check-icon{ animation:check-pop 0.3s ease-out forwards; }
-    .quick-ticket{
+    .quick-abholnummer{
       position:fixed; inset:0; z-index:31;
       background:linear-gradient(135deg, var(--brand) 0%, #FFD700 100%);
       display:flex; align-items:center; justify-content:center;
       transform:translateY(100%); transition:transform .3s cubic-bezier(.4,0,.2,1);
       padding:20px;
     }
-    .quick-ticket.active{transform:translateY(0)}
-    .quick-ticket-close{
+    .quick-abholnummer.active{transform:translateY(0)}
+    .quick-abholnummer-close{
       position:absolute; top:20px; right:20px;
       width:44px; height:44px; border-radius:50%;
       background:rgba(255,255,255,.2); backdrop-filter:blur(10px);
@@ -1224,64 +1224,64 @@
       display:flex; align-items:center; justify-content:center;
       transition:background .2s;
     }
-    .quick-ticket-close:hover{background:rgba(255,255,255,.3)}
-    .quick-ticket-close i{width:24px; height:24px}
-    .quick-ticket-content{
+    .quick-abholnummer-close:hover{background:rgba(255,255,255,.3)}
+    .quick-abholnummer-close i{width:24px; height:24px}
+    .quick-abholnummer-content{
       width:100%; max-width:400px; text-align:center;
       color:#111;
     }
-    .quick-ticket-header{
+    .quick-abholnummer-header{
       margin-bottom:40px;
     }
-    .quick-ticket-logo{
+    .quick-abholnummer-logo{
       width:80px; height:80px; border-radius:20px;
       background:#fff; border:4px solid rgba(255,255,255,.5);
       margin:0 auto 16px; overflow:hidden;
       box-shadow:0 8px 24px rgba(0,0,0,.2);
     }
-    .quick-ticket-logo img{
+    .quick-abholnummer-logo img{
       width:100%; height:100%; object-fit:cover;
     }
-    .quick-ticket-provider{
+    .quick-abholnummer-provider{
       font-size:26px; font-weight:900; margin-bottom:10px; line-height:1.3;
     }
-    .quick-ticket-time{
+    .quick-abholnummer-time{
       font-size:15px; opacity:.8; font-weight:600; line-height:1.4;
     }
-    .quick-ticket-code{
+    .quick-abholnummer-code{
       background:#fff; border-radius:var(--radius);
       padding:32px 24px; margin-bottom:24px;
       box-shadow:0 12px 32px rgba(0,0,0,.2);
     }
-    .quick-ticket-code-label{
+    .quick-abholnummer-code-label{
       font-size:12px; font-weight:700; text-transform:uppercase;
       letter-spacing:.1em; color:var(--muted); margin-bottom:12px;
     }
-    .quick-ticket-code-value{
+    .quick-abholnummer-code-value{
       font-size:72px; font-weight:950; line-height:1;
       color:#111; font-family:'Inter', monospace;
       letter-spacing:.05em;
     }
-    .quick-ticket-details{
+    .quick-abholnummer-details{
       background:rgba(255,255,255,.3); backdrop-filter:blur(10px);
       border-radius:var(--radius); padding:20px;
       margin-bottom:20px;
     }
-    .quick-ticket-detail-item{
+    .quick-abholnummer-detail-item{
       margin-bottom:16px;
     }
-    .quick-ticket-detail-item:last-child{margin-bottom:0}
-    .quick-ticket-detail-label{
+    .quick-abholnummer-detail-item:last-child{margin-bottom:0}
+    .quick-abholnummer-detail-label{
       font-size:13px; font-weight:700; opacity:.7; margin-bottom:6px; line-height:1.4;
     }
-    .quick-ticket-detail-value{
+    .quick-abholnummer-detail-value{
       font-size:17px; font-weight:900; line-height:1.4;
     }
-    .quick-ticket-status{
+    .quick-abholnummer-status{
       font-size:14px; font-weight:700; opacity:.8; line-height:1.4;
       margin-bottom:24px;
     }
-    .quick-ticket-actions .btn{
+    .quick-abholnummer-actions .btn{
       background:#fff; color:#111; box-shadow:0 8px 24px rgba(0,0,0,.2);
     }
 
@@ -1640,9 +1640,9 @@
     #wizard.sheet--kitchen .liquid-master-panel #step-name .inserat-airbnb-desc,
     #wizard.sheet--kitchen .glass-express-step0 #step-name input.inserat-desc-input,
     #wizard.sheet--kitchen .liquid-master-panel #step-name input.inserat-desc-input{
-      width: 100%; min-height: 36px; padding: 8px 20px 6px;
-      font-size: 0.8rem; font-weight: 400; font-style: normal; color: #94a3b8;
-      background: transparent; border: none; border-bottom: 1px solid rgba(0,0,0,0.05);
+      width: 100%; min-height: 36px; padding: 8px 0 6px;
+      font-size: 0.95rem; font-weight: 500; font-style: italic; color: #64748b;
+      background: transparent !important; border: none !important; border-bottom: none !important;
       border-radius: 0; outline: none; transition: border-color 0.2s ease;
       box-sizing: border-box;
     }
@@ -1653,8 +1653,10 @@
       color: #cbd5e1;
     }
     #wizard.sheet--kitchen .glass-express-step0 #step-name .inserat-airbnb-desc:focus,
-    #wizard.sheet--kitchen .liquid-master-panel #step-name .inserat-airbnb-desc:focus{
-      border-bottom-color: rgba(0,0,0,0.12); color: #64748b;
+    #wizard.sheet--kitchen .liquid-master-panel #step-name .inserat-airbnb-desc:focus,
+    #wizard.sheet--kitchen .glass-express-step0 #step-name input.inserat-desc-input:focus,
+    #wizard.sheet--kitchen .liquid-master-panel #step-name input.inserat-desc-input:focus{
+      box-shadow: 0 1px 0 0 rgba(16,185,129,0.3); color: #64748b;
     }
     #wizard.sheet--kitchen .glass-express-step0 #step-name input:first-of-type{
       font-size: 1.75rem; text-align: left;
@@ -1662,8 +1664,8 @@
     #wizard.sheet--kitchen .glass-express-step0 #step-name input:last-of-type,
     #wizard.sheet--kitchen .glass-express-step0 #step-name .inserat-desc-input,
     #wizard.sheet--kitchen .liquid-master-panel #step-name .inserat-desc-input{
-      font-size: 0.8rem; color: #94a3b8; text-align: left; margin-top: 0;
-      font-weight: 400; font-style: normal; background: transparent;
+      font-size: 0.95rem; color: #64748b; text-align: left; margin-top: 0;
+      font-weight: 500; font-style: italic; background: transparent;
     }
     #wizard.sheet--kitchen .glass-express-step0 #step-name .inserat-desc-input::placeholder,
     #wizard.sheet--kitchen .liquid-master-panel #step-name .inserat-desc-input::placeholder{
@@ -2001,6 +2003,22 @@
       border: none;
       cursor: pointer;
       transition: transform 0.1s;
+    }
+    /* Onboarding-Preview: 5-Ebenen-InseratCard-Stil, 32px Radius, Bottom-Sheet [cite: 2026-02-18] */
+    #v-provider-onboarding-preview .onboarding-preview-card,
+    #v-provider-onboarding-preview .inserat-card-preview {
+      border-radius: 32px;
+      overflow: hidden;
+      background: #fff;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.02);
+      display: flex;
+      flex-direction: column;
+    }
+    #v-provider-onboarding-preview .onboarding-preview-card img,
+    #v-provider-onboarding-preview .inserat-card-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
     .onboarding-actions button.btn-primary {
       background: var(--brand);
@@ -2404,9 +2422,9 @@
     /* InseratCard klickbar: explizit pointer-events, damit keine Überlagerung Klicks schluckt */
     #wizard[data-flow="listing"] #wContent > .liquid-master-panel,
     #wizard[data-flow="listing"] .liquid-master-panel.inserat-card { pointer-events: auto; }
-    /* Gourmet-Refactor: Karte als Design-Objekt – 28px Radius, weicher Schatten [cite: 2026-02-18] */
+    /* Gourmet-Refactor: Karte als Design-Objekt – 28px Radius, sehr weicher Schatten [cite: 2026-02-18] */
     #wizard[data-flow="listing"] .liquid-master-panel.inserat-card {
-      border-radius: 28px; box-shadow: 0 12px 40px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.03);
+      border-radius: 28px; box-shadow: 0 16px 48px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.02);
     }
     #wizard[data-flow="listing"] .liquid-master-panel .photo-header,
     #wizard[data-flow="listing"] .liquid-master-panel .inserat-power-bar,
@@ -2512,6 +2530,20 @@
       font-size: 10px; font-weight: 800; color: #0f172a; letter-spacing: 0.02em;
       margin-left: 4px; max-width: 48px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
     }
+    /* InseratCard-Wrapper: 5 Ebenen in Sheet-Optik (S25), kein position:fixed [cite: BAUARBEITER] */
+    #wizard[data-flow="listing"] .inserat-card-sheet {
+      width: 100%; max-width: 100%; box-sizing: border-box;
+      border-radius: 24px 24px 0 0; background: #fff;
+      box-shadow: 0 -8px 32px rgba(0,0,0,0.12);
+    }
+    #wizard[data-flow="listing"] .inserat-card-sheet .photo-header,
+    #wizard[data-flow="listing"] .inserat-card-sheet .inserat-photo-tile.photo-header {
+      height: 190px; min-height: 190px; max-height: 190px; object-fit: cover;
+    }
+    #wizard[data-flow="listing"] .inserat-card-sheet .inserat-detail-style-title,
+    #wizard[data-flow="listing"] .inserat-card-sheet .magnet-input { color: #0f172a; font-weight: 800; }
+    #wizard[data-flow="listing"] .inserat-card-sheet .inserat-airbnb-desc,
+    #wizard[data-flow="listing"] .inserat-card-sheet .inserat-desc-input { color: #64748b; }
     /* Foto ändern / FOTO HINZUFÜGEN: Glass-Pill, unten zentriert [cite: 2026-02-16, plan Smart-Photo] */
     #wizard[data-flow="listing"] .liquid-master-panel .photo-header .inserat-photo-change,
     #wizard[data-flow="listing"] .liquid-master-panel .inserat-photo-tile.photo-header .inserat-photo-change {
@@ -2567,14 +2599,21 @@
       background: rgba(255,255,255,0.4); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
       transition: opacity 0.3s ease; pointer-events: auto;
     }
-    #wizard[data-flow="listing"] .inserat-onboarding-overlay.is-dismissed { opacity: 0; pointer-events: none; }
+    #wizard[data-flow="listing"] .inserat-onboarding-overlay.is-dismissed { opacity: 0; pointer-events: none; transition: opacity 0.25s ease; }
+    /* Onboarding-Karte: Bottom-Sheet-Look, 32px Radius, kein harter Schlagschatten [cite: 2026-02-18] */
     #wizard[data-flow="listing"] .inserat-onboarding-card {
-      background: #fff; border-radius: 24px; padding: 28px 24px; max-width: 320px; text-align: center;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.04);
+      background: #fff; border-radius: 32px; padding: 28px 24px; max-width: 320px; text-align: center;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.02);
     }
-    #wizard[data-flow="listing"] .inserat-onboarding-card p { margin: 0 0 20px; font-size: 17px; font-weight: 700; color: #1a1a1a; line-height: 1.4; }
-    #wizard[data-flow="listing"] .inserat-onboarding-card .inserat-onboarding-btn { width: 100%; min-height: 52px; border-radius: 16px; border: none; background: #10b981; color: #fff; font-size: 16px; font-weight: 800; cursor: pointer; box-shadow: 0 10px 30px rgba(16,185,129,0.35); -webkit-tap-highlight-color: transparent; }
-    #wizard[data-flow="listing"] .inserat-onboarding-card .inserat-onboarding-btn:active { transform: scale(0.98); }
+    #wizard[data-flow="listing"] .inserat-onboarding-card p { margin: 0 0 20px; font-size: 17px; font-weight: 700; color: #0f172a; line-height: 1.4; }
+    /* CTA: Modern S25-Look, Emerald, abgerundet, nicht klobig [cite: 2026-02-18] */
+    #wizard[data-flow="listing"] .inserat-onboarding-card .inserat-onboarding-btn {
+      width: 100%; min-height: 52px; border-radius: 20px; border: none;
+      background: #10b981; color: #fff; font-size: 16px; font-weight: 800; cursor: pointer;
+      box-shadow: 0 6px 20px rgba(16,185,129,0.3); -webkit-tap-highlight-color: transparent;
+      transition: transform 0.15s ease, box-shadow 0.2s ease;
+    }
+    #wizard[data-flow="listing"] .inserat-onboarding-card .inserat-onboarding-btn:active { transform: scale(0.98); box-shadow: 0 4px 16px rgba(16,185,129,0.25); }
     #wizard[data-flow="listing"] .inserat-onboarding-price-pulse input.inserat-price-fintech { animation: onboarding-price-pulse 2s ease-in-out infinite; }
     @keyframes onboarding-price-pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(16,185,129,0.2); } 50% { box-shadow: 0 0 0 6px rgba(16,185,129,0.15); } }
     #wizard[data-flow="listing"] .pricing-info-label.inserat-onboarding-tooltip { position: relative; }
@@ -2661,32 +2700,29 @@
     #wizard[data-flow="listing"] .inserat-power-bar .power-bar-legend-trigger:hover,
     #wizard[data-flow="listing"] .inserat-power-bar .power-bar-legend-trigger:focus { color: #64748b; }
     /* Power-Bar Soft-Shell [Master-Prompt]: Inaktiv ultra-hell/transparent, aktiv nur Emerald-Glow, keine massive Box */
+    /* Power-Bar: Soft-Shell, nur aktives Icon in Emerald (keine massiven grünen Hintergründe) [cite: 2026-02-18] */
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell {
-      background: rgba(248,250,252,0.4); border-bottom: 1px solid rgba(0,0,0,0.04);
+      background: #f8fafc; border-bottom: 1px solid rgba(0,0,0,0.04);
       padding: 10px 16px; gap: 8px; flex-wrap: nowrap; justify-content: space-between;
     }
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .status-pill,
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .func-icon-btn,
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .power-bar-legend-trigger {
-      background: rgba(248,250,252,0.5); border: none;
+      background: transparent; border: none;
       box-shadow: none; color: #94a3b8;
     }
-    #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .status-pill.active,
-    #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .func-icon-btn.active {
-      background: transparent; border: none; color: #059669;
-      box-shadow: 0 0 14px rgba(16,185,129,0.45);
-    }
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .power-bar-legend-trigger { color: #94a3b8; }
-    /* Gourmet-Refactor: Inaktiv ultra-hell, nur aktives Icon in Emerald – keine harten grünen Kreise [cite: 2026-02-18] */
+    /* Inaktiv: ultra-helles Grau oder transparent */
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .status-pill.inactive,
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .func-icon-btn:not(.active),
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .power-bar-legend-trigger {
       background: #f8fafc !important; border: none !important; box-shadow: none !important; color: #94a3b8;
     }
+    /* Aktiv: nur Emerald-Glow, kein massiver Hintergrund */
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .status-pill.active,
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .func-icon-btn.active {
-      background: rgba(16,185,129,0.12) !important; color: #059669 !important; border: none !important;
-      box-shadow: 0 0 14px rgba(16,185,129,0.35);
+      background: rgba(16,185,129,0.15) !important; color: #059669 !important; border: none !important;
+      box-shadow: 0 0 12px rgba(16,185,129,0.4);
     }
     /* Info-Legende Bottom-Sheet: Aktiviert-Zustand */
     .info-legend-item.active { background: rgba(16,185,129,0.1) !important; border: 2px solid rgba(16,185,129,0.4); box-shadow: 0 2px 12px rgba(16,185,129,0.25), 0 0 0 1px rgba(16,185,129,0.15); }
@@ -2716,15 +2752,17 @@
       padding-bottom: 0;
     }
     /* InseratCard: Titel wie gedruckte Überschrift, ohne Input-Rahmen [Master-Prompt Card-Veredelung] */
+    /* Menükarten-Look: keine Input-Rahmen/Hintergründe, erst bei Fokus sichtbar [cite: 2026-02-18] */
     .inserat-unified-title-wrap .inserat-detail-style-title {
       margin: 0 0 8px;
       font-size: 1.5rem; font-weight: 800; color: #0f172a; letter-spacing: -0.03em; line-height: 1.2;
+      border: none; background: transparent; outline: none;
       width: 100%; border: none; background: transparent; padding: 4px 0 8px; outline: none;
       font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
     }
     .inserat-unified-title-wrap .inserat-detail-style-title:focus {
-      border-bottom: none;
-      box-shadow: 0 1px 0 0 rgba(16,185,129,0.5);
+      border: none; background: transparent;
+      box-shadow: 0 2px 0 0 rgba(16,185,129,0.5);
       animation: magnet-pulse 1.2s ease-in-out infinite;
     }
     .inserat-unified-title-wrap .inserat-detail-style-title::placeholder { color: #94a3b8; }
@@ -2758,11 +2796,16 @@
     #wizard[data-flow="listing"] .inserat-unified-title-wrap .inserat-airbnb-desc-wrap {
       margin-top: 4px; margin-bottom: 0;
     }
-    /* InseratCard: Beschreibung ohne Rahmen, Schiefergrau, wie Typografie [Master-Prompt Card-Veredelung] */
+    /* InseratCard: Beschreibung Untertitel, Schiefergrau #64748b, 0.95rem – Menükarten-Look [cite: 2026-02-18] */
     #wizard[data-flow="listing"] .inserat-unified-title-wrap .inserat-desc-input,
     #wizard[data-flow="listing"] .inserat-unified-title-wrap .inserat-airbnb-desc {
       font-size: 0.95rem; font-weight: 500; color: #64748b; font-style: italic;
       border: none !important; border-bottom: none !important; background: transparent !important; box-shadow: none !important;
+      outline: none; padding: 4px 0;
+    }
+    #wizard[data-flow="listing"] .inserat-unified-title-wrap .inserat-desc-input:focus,
+    #wizard[data-flow="listing"] .inserat-unified-title-wrap .inserat-airbnb-desc:focus {
+      box-shadow: 0 1px 0 0 rgba(16,185,129,0.3);
     }
     #wizard[data-flow="listing"] .inserat-unified-title-wrap .inserat-desc-input::placeholder,
     #wizard[data-flow="listing"] .inserat-unified-title-wrap .inserat-airbnb-desc::placeholder {
@@ -2819,18 +2862,19 @@
       font-size: 12px; font-weight: 600; color: #94a3b8;
     }
     /* MODE_PLAN (week/cookbook): Blue „In den Wochenplan einplanen“ + grüner „Nur im Kochbuch“ [cite: 2026-02-18] */
+    /* MODE_PLAN: Blauer Wochenplan-Button, grüner Kochbuch-Button [cite: 2026-02-18] */
     #wizard[data-flow="listing"] .inserat-action-section.inserat-action-plan .inserat-btn-plan-primary {
       width: 100%; min-height: 56px; padding: 16px 20px; border-radius: 20px; border: none; cursor: pointer;
-      background: #121826; color: #fff; font-size: 16px; font-weight: 800;
-      box-shadow: 0 8px 24px rgba(15,23,42,0.25); -webkit-tap-highlight-color: transparent;
+      background: #3b82f6; color: #fff; font-size: 16px; font-weight: 800;
+      box-shadow: 0 8px 24px rgba(59,130,246,0.35); -webkit-tap-highlight-color: transparent;
       transition: transform 0.15s ease, box-shadow 0.2s ease;
     }
     #wizard[data-flow="listing"] .inserat-action-section.inserat-action-plan .inserat-btn-plan-primary:active {
-      transform: scale(0.98); box-shadow: 0 4px 16px rgba(15,23,42,0.2);
+      transform: scale(0.98); box-shadow: 0 4px 16px rgba(59,130,246,0.25);
     }
     #wizard[data-flow="listing"] .inserat-action-section.inserat-action-plan .inserat-btn-plan-secondary {
       width: 100%; min-height: 48px; padding: 12px 20px; margin-top: 12px; border-radius: 16px; cursor: pointer;
-      background: rgba(16,185,129,0.12); color: #059669; font-size: 15px; font-weight: 700; border: 2px solid rgba(16,185,129,0.35);
+      background: rgba(16,185,129,0.08); color: #059669; font-size: 15px; font-weight: 700; border: 1px solid rgba(16,185,129,0.25);
       -webkit-tap-highlight-color: transparent; transition: background 0.2s, transform 0.15s ease;
     }
     #wizard[data-flow="listing"] .inserat-action-section.inserat-action-plan .inserat-btn-plan-secondary:active {
@@ -2908,7 +2952,7 @@
     body.provider-mode #v-provider-billing{ background: var(--provider-bg) !important; }
     /* Kochbuch & Wochenplan: Warmes Glassmorphism-Hintergrund */
     body.provider-mode #v-provider-cookbook,
-    body.provider-mode #v-provider-week{ background: linear-gradient(180deg, rgba(254,243,199,0.25) 0%, #F5F5F7 35%, #F5F5F7 100%) !important; }
+    body.provider-mode #v-provider-week{ background: #f8fafc !important; }
     body.provider-mode #v-provider-home > *,
     body.provider-mode #v-provider-week > *,
     body.provider-mode [id^="v-provider-"].view.active > *{ position:relative; z-index:1; }
@@ -4082,49 +4126,43 @@
       border-radius: 0;
       box-shadow: none;
     }
-    /* Preis-Badge auf dem Bild (unten rechts, leicht überlappend) */
-    #v-discover .dish-card .price-badge,
-    #v-discover .dish-card .price-badge-on-image{
-      position: absolute;
-      bottom: 10px;
-      right: -5px;
-      background: #FFD700;
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-weight: 800;
-      font-size: 15px;
-      color: #121826;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    /* 4. Preis-Badge: Fest auf dem Bild */
+    #v-discover .price-badge-on-image {
+      position: absolute !important;
+      bottom: 12px !important;
+      right: -10px !important;
+      background: #FFD700 !important;
+      color: #121826 !important;
+      padding: 8px 18px !important;
+      border-radius: 20px !important;
+      font-weight: 800 !important;
+      font-size: 16px !important;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.2) !important;
+      z-index: 10 !important;
     }
-    /* Floating Actions (Teilen & Herz oben rechts) */
-    #v-discover .card-actions-top{
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      display: flex;
-      gap: 8px;
-      z-index: 10;
+    /* Floating Actions (Herz & Teilen oben rechts) */
+    #v-discover .card-actions-top {
+      position: absolute !important;
+      top: 12px !important;
+      right: 12px !important;
+      display: flex !important;
+      gap: 8px !important;
+      z-index: 10 !important;
     }
-    #v-discover .action-btn-floating{
-      width: 36px;
-      height: 36px;
-      min-width: 36px;
-      min-height: 36px;
-      background: white;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    #v-discover .action-btn-floating {
+      width: 36px; height: 36px; min-width: 36px; min-height: 36px;
+      background: white; border-radius: 50%; border: none;
+      display: flex; align-items: center; justify-content: center;
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      border: none;
-      cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
-      transition: transform 0.2s ease;
+      cursor: pointer; -webkit-tap-highlight-color: transparent;
     }
-    #v-discover .action-btn-floating:active{ transform: scale(0.92); }
-    /* Herz-Icon: Rot füllen + kurzer Blink beim Anklicken [cite: 2026-02-18] */
-    #v-discover .action-btn-fav.heart-just-clicked i{
-      animation: heart-blink 0.45s ease;
+    #v-discover .action-btn-floating:active { transform: scale(0.92); }
+    #v-discover .action-btn-fav.heart-just-clicked i { animation: heart-blink 0.45s ease; }
+    @keyframes heart-blink { 0% { transform: scale(1); } 35% { transform: scale(1.35); } 60% { transform: scale(1.15); } 100% { transform: scale(1); } }
+    /* Pillar-Pills & Distanz-Chips */
+    #v-discover .dish-card .pillar-pill {
+      font-size: 11px; font-weight: 700; color: #64748b;
+      padding: 4px 8px; border-radius: 999px; background: #f1f5f9; border: 1px solid rgba(0,0,0,0.06);
     }
     @keyframes heart-blink {
       0%   { transform: scale(1); opacity: 1; }
@@ -4155,10 +4193,6 @@
       padding-right: var(--airbnb-spacing, 24px);
       padding-bottom: calc(88px + env(safe-area-inset-bottom, 0));
       min-height: 0;
-    }
-    body:not(.provider-mode) #v-discover .discover-main .discover-offers-list,
-    body:not(.provider-mode) #v-discover #discoverOffers{
-      scroll-margin-top: 1px;
     }
     /* Discover: Leerzustand mittig zwischen Header und Footer [cite: 2026-01-27, 2026-01-29] */
     #v-discover #discoverOffers{
@@ -4425,84 +4459,6 @@
       }
     }
     
-    /* Premium Card Design: Modern Craft – weiche Radien [cite: 2026-02-18] */
-    .dish-card {
-      display: flex;
-      min-height: 120px;
-      max-height: 140px;
-      padding: 8px 10px;
-      background: #ffffff;
-      border-radius: 20px;
-      overflow: visible;
-      border: 1px solid rgba(0,0,0,0.05);
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-      margin-bottom: 6px;
-      cursor: pointer;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-      position: relative;
-      max-width: 100%;
-      box-sizing: border-box;
-      width: 100%;
-    }
-    .dish-card:active {
-      transform: scale(0.98);
-    }
-    .dish-card:hover {
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    /* Bild-Box: Hand-Cut-Look, unregelmäßiger Radius [cite: 2026-02-18] */
-    .dish-image-box,
-    .dish-card-thumb {
-      width: 100px;
-      min-width: 100px;
-      height: 100px;
-      max-width: 100px;
-      max-height: 100px;
-      flex-shrink: 0;
-      background: #f5f5f5;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      border-radius: 18px 14px 20px 16px;
-    }
-    /* Hand-Cut: object-fit cover verhindert Verzerrung bei falschem Bildformat [cite: 2026-01-27, 2026-02-18] */
-    .dish-image-box img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center;
-    }
-    /* Anbieter-Logo als dezent Badge oben links (blockiert Card-Tap nicht) */
-    #v-discover .dish-card{ position: relative; }
-    #v-discover .dish-card .card-logo,
-    #v-discover .dish-card .providerBadge{
-      position:absolute;
-      top:8px;
-      left:8px;
-      width:36px;
-      height:36px;
-      border-radius:999px;
-      background:rgba(255,255,255,.92);
-      border:1px solid rgba(0,0,0,.08);
-      box-shadow:0 6px 14px rgba(0,0,0,.10);
-      backdrop-filter:blur(6px);
-      -webkit-backdrop-filter:blur(6px);
-      display:grid;
-      place-items:center;
-      overflow:hidden;
-      z-index:6;
-      cursor:pointer;
-      -webkit-tap-highlight-color:transparent;
-      transition:transform .12s ease;
-      text-decoration:none;
-    }
-    #v-discover .dish-card .card-logo:active,
-    #v-discover .dish-card .providerBadge:active{ transform:scale(.96); }
-    #v-discover .dish-card .card-logo img,
-    #v-discover .dish-card .providerBadge img{ width:74%; height:74%; object-fit:contain; border-radius:999px; }
-    #v-discover .dish-card .card-logo:focus-visible,
-    #v-discover .dish-card .providerBadge:focus-visible{ outline:3px solid rgba(47,102,255,.45); outline-offset:2px; }
     /* Rechte Seite: Details (kompakt, ohne extra Padding) */
     .dish-details {
       flex: 1;
@@ -4883,37 +4839,10 @@
         gap: 5px !important;
       }
     }
-    /* Discover (Kunde): Kacheln für Samsung S25 (~384–412px) – Handy-Anpassung */
+    /* Discover (Kunde): discover-tiles-grid Cust-Cards [cite: 2026-02-18] */
     @media (max-width: 430px) {
-      body:not(.provider-mode) #v-discover .discover-main {
-        padding-top: calc(136px + env(safe-area-inset-top, 0px));
-        padding-left: 12px;
-        padding-right: 12px;
-        padding-bottom: calc(88px + env(safe-area-inset-bottom, 0));
-      }
-      body:not(.provider-mode) #discoverOffers.discover-offers-list {
-        gap: 10px;
-        padding: 0 2px 8px;
-      }
       body:not(.provider-mode) #v-discover .discover-tiles-grid .cust-card:not(.discover-card-silent) .cust-card-img {
         max-height: 170px;
-      }
-      body:not(.provider-mode) #v-discover .dish-card:not(.dish-card-vertical) {
-        min-height: 132px;
-        max-height: 152px;
-        padding: 10px;
-        margin-bottom: 8px;
-      }
-      body:not(.provider-mode) #v-discover .dish-card:not(.dish-card-vertical) .dish-card-thumb {
-        width: 112px !important;
-        min-width: 112px !important;
-        height: 112px !important;
-        max-width: 112px !important;
-        max-height: 112px !important;
-      }
-      body:not(.provider-mode) #v-discover .dish-card .dish-name {
-        font-size: 15px;
-        -webkit-line-clamp: 2;
       }
     }
     /* Provider-Layout: Optimiert für kleine Bildschirme (Samsung S25, ~360-412px) */
@@ -4941,7 +4870,7 @@
         gap: 8px !important;
       }
     }
-    /* Dish-Card: Gerichtsname 16px Serif, reduzierter line-height für 1.5-Kacheln-Regel [cite: 2026-02-18, 2026-01-29] */
+    /* Dish-Card: Gerichtsname Serif (Vertical Gallery) [cite: 2026-02-18] */
     #v-discover .dish-card .dish-name{
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       font-size: 18px;
@@ -4949,7 +4878,6 @@
       color: var(--airbnb-title-color, #0f172a) !important;
       line-height: 1.2;
       margin: 0;
-      color: #111;
       letter-spacing: -0.02em;
       flex: 1;
       min-width: 0;
@@ -5231,7 +5159,7 @@
     #v-provider-profile .provider-profile-gear-btn i{ stroke:#6B7280; }
     #v-provider-profile .provider-profile-gear-btn .provider-profile-gear-svg{ color:#6B7280; flex-shrink:0; }
     /* Welcome-Header: mehr Luft nach oben, zentriert [TGTG-Vorbild] */
-    #v-provider-profile #providerProfileWelcome.provider-profile-welcome{ flex-shrink:0; padding:24px 20px 16px; text-align:center; }
+    #v-provider-profile #providerProfileWelcome.provider-profile-welcome{ flex-shrink:0; padding:32px 20px 24px; text-align:center; }
     #v-provider-profile .provider-profile-welcome-text{ margin:0 0 4px; font-size:24px; font-weight:700; color:#111827; line-height:1.3; }
     #v-provider-profile .provider-profile-welcome-subtitle{ margin:0; font-size:14px; color:#6B7280; line-height:1.4; }
     #v-provider-profile .provider-profile-tiles-wrap{ padding:0 0 24px; }
@@ -5322,20 +5250,20 @@
       content:''; position:absolute; pointer-events:none; z-index:0;
     }
     #v-provider-week.view.active::before{
-      top:-10%; left:-10%; width:40%; height:40%; border-radius:50%; background:rgba(191,219,254,0.4); filter:blur(120px);
+      top:-15%; left:-10%; width:45%; height:45%; border-radius:50%; background:radial-gradient(ellipse at 30% 20%, rgba(226,232,240,0.6) 0%, transparent 70%); filter:blur(80px);
     }
     #v-provider-week.view.active::after{
-      bottom:-5%; right:-5%; width:35%; height:35%; border-radius:50%; background:rgba(199,210,254,0.3); filter:blur(100px);
+      bottom:-10%; right:-10%; width:40%; height:40%; border-radius:50%; background:radial-gradient(ellipse at 70% 80%, rgba(203,213,225,0.5) 0%, transparent 70%); filter:blur(80px);
     }
     #v-provider-week.view.active > header,
     #v-provider-week.view.active > #kwBoardWrap{ position:relative; z-index:1; }
-    /* Wochenplan-Header: Sticky Cockpit mit Glassmorphism [cite: 2026-02-18] */
+    /* Wochenplan-Header: Sticky Cockpit mit Glassmorphism [cite: 2026-02-18 High-End] */
     #v-provider-week .week-header-compact{
       position:sticky; top:0; z-index:50;
       flex-shrink:0; min-height:56px; width:100%;
-      background:rgba(255,255,255,0.8) !important; backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px);
-      border-bottom:1px solid #e2e8f0;
-      padding:calc(8px + env(safe-area-inset-top, 0)) 20px 12px 20px;
+      background:rgba(255,255,255,0.8) !important; backdrop-filter:blur(40px); -webkit-backdrop-filter:blur(40px);
+      border-bottom:1px solid #f1f5f9;
+      padding:calc(12px + env(safe-area-inset-top, 0)) 20px 14px 20px;
       display:flex; flex-direction:column; justify-content:center; align-items:center; gap:2px;
       transition:box-shadow 0.2s ease;
     }
@@ -5343,9 +5271,9 @@
     #v-provider-week .week-header-compact h1,
     #v-provider-week .week-header-compact .prov-page-header-title{ margin:0; font-size:20px; font-weight:900; color:#1a1a1a; letter-spacing:-0.03em; }
     #v-provider-week .week-header-subtitle{ margin:0; font-size:12px; font-weight:600; color:#64748b; }
-    /* Lücke finden: dezent als smarter Assistent [cite: 2026-01-29] */
-    #v-provider-week .week-magic-gap-btn{ background:transparent; border:1px solid #e2e8f0; min-height:40px; padding:0 12px; border-radius:12px; display:flex; align-items:center; justify-content:center; gap:6px; color:#64748b; font-size:13px; font-weight:600; cursor:pointer; white-space:nowrap; transition:background 0.2s, color 0.2s; }
-    #v-provider-week .week-magic-gap-btn:hover{ background:#f1f5f9; color:#475569; }
+    /* Lücke finden ✨: dezent als smarter Assistent, Text-Link-Stil [cite: 2026-01-29, 2026-02-18] */
+    #v-provider-week .week-magic-gap-btn{ background:transparent; border:1px solid #e2e8f0; min-height:36px; padding:0 10px; border-radius:10px; display:flex; align-items:center; justify-content:center; gap:5px; color:#64748b; font-size:12px; font-weight:600; cursor:pointer; white-space:nowrap; transition:background 0.2s, color 0.2s, border-color 0.2s; }
+    #v-provider-week .week-magic-gap-btn:hover{ background:#f8fafc; color:#475569; border-color:#cbd5e1; }
     #v-provider-week .week-plan-wrap{
       flex:1; min-height:0; display:flex; flex-direction:column; max-width:500px; margin:0 auto; width:100%; padding:0 20px 16px; box-sizing:border-box;
     }
@@ -5600,18 +5528,18 @@
       #v-provider-week .week-overview-scroll{ -webkit-overflow-scrolling:touch; }
       #v-provider-week .week-overview-cta-wrap .week-edit-primary{ min-height:56px; }
       /* ========== KW-Board (High-End Wochenplan) ========== */
-      #v-provider-week .kw-board-header{ padding:12px 20px 8px; padding-top:calc(12px + env(safe-area-inset-top, 0)); background:rgba(255,255,255,0.75); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border-bottom:1px solid #e2e8f0; flex-shrink:0; }
+      #v-provider-week .kw-board-header{ padding:12px 20px 8px; padding-top:calc(12px + env(safe-area-inset-top, 0)); background:rgba(255,255,255,0.8); backdrop-filter:blur(40px); -webkit-backdrop-filter:blur(40px); border-bottom:1px solid #f1f5f9; flex-shrink:0; }
       /* KW-Slider: 8 Wochen, Snap-Scrolling [cite: 2026-02-18] */
-      #v-provider-week .kw-carousel{ display:flex; gap:10px; overflow-x:auto; -webkit-overflow-scrolling:touch; scroll-snap-type:x mandatory; padding:8px 0 12px; scrollbar-width:none; }
+      #v-provider-week .kw-carousel{ display:flex; gap:10px; overflow-x:auto; -webkit-overflow-scrolling:touch; scroll-snap-type:x mandatory; scroll-padding:0 20px; padding:8px 20px 12px; scrollbar-width:none; }
       #v-provider-week .kw-carousel::-webkit-scrollbar{ display:none; }
       #v-provider-week .kw-pill{ flex:0 0 auto; min-width:72px; scroll-snap-align:center; scroll-snap-stop:always; min-height:48px; padding:10px 14px; border-radius:16px; border:none; background:#f1f5f9; font-size:14px; font-weight:800; color:#94a3b8; cursor:pointer; transition:all 0.3s ease; display:flex; align-items:center; justify-content:center; }
       #v-provider-week .kw-pill:hover{ background:#e2e8f0; color:#64748b; }
-      #v-provider-week .kw-pill.active{ background:#0f172a; color:#fff; box-shadow:0 4px 14px rgba(15,23,42,0.25); transform:scale(1.05); }
+      #v-provider-week .kw-pill.active{ background:#0f172a; color:#fff; box-shadow:0 2px 12px rgba(15,23,42,0.2), 0 1px 3px rgba(0,0,0,0.08); transform:scale(1.02); }
       #v-provider-week .kw-progress-wrap{ padding:0 20px 12px; }
       #v-provider-week .kw-progress{ height:4px; border-radius:999px; background:#e2e8f0; overflow:hidden; }
       #v-provider-week .kw-progress-fill{ height:100%; border-radius:999px; background:var(--prov-brand); transition:width 0.3s ease; }
-      #v-provider-week .kw-season-banner{ transition:opacity 0.25s ease, transform 0.25s ease; border-radius:24px; }
-      #v-provider-week .kw-season-banner:not([class*="kw-season-"]){ background:#f1f5f9; color:#121826; border:1px solid rgba(15,23,42,0.12); }
+      #v-provider-week .kw-season-banner{ transition:opacity 0.25s ease, transform 0.25s ease; border-radius:16px; margin:0 20px 12px; }
+      #v-provider-week .kw-season-banner:not([class*="kw-season-"]){ background:#eff6ff; color:#1e40af; border:1px solid rgba(59,130,246,0.2); }
       #v-provider-week .kw-season-banner.kw-season-mint{ background:linear-gradient(135deg, rgba(167,243,208,0.5) 0%, rgba(110,231,183,0.35) 100%); color:#065f46; border:1px solid rgba(16,185,129,0.25); }
       #v-provider-week .kw-season-banner.kw-season-mint .kw-season-banner-btn{ background:#10b981; color:#fff; }
       #v-provider-week .kw-season-banner.kw-season-summer{ background:linear-gradient(135deg, rgba(253,230,138,0.5) 0%, rgba(251,191,36,0.35) 100%); color:#78350f; border:1px solid rgba(245,158,11,0.3); }
@@ -5838,7 +5766,7 @@
       /* S25 Native-First: flüssiges flex-column, Scroll nicht blockieren [cite: s25-native-first] */
       #v-provider-profile .provider-profile-sub{ flex:1; min-height:0; display:flex; flex-direction:column; background:#F9FAFB !important; }
       #v-provider-profile .provider-profile-sub > .tgtg-list-wrap,
-      #v-provider-profile .provider-profile-sub > div[style*="overflow-y:auto"]{ flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:20px; padding-bottom:calc(120px + env(safe-area-inset-bottom, 0)); box-sizing:border-box; }
+      #v-provider-profile .provider-profile-sub > div[style*="overflow-y:auto"]{ flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:20px 0 calc(120px + env(safe-area-inset-bottom, 0)); box-sizing:border-box; width:100%; }
       #v-provider-profile .provider-profile-sub .provider-sub-scroll{ flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:20px; padding-bottom:calc(120px + env(safe-area-inset-bottom, 0)); box-sizing:border-box; }
       #v-provider-profile #providerProfileMenuCard{ background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,0.06); }
       /* Einstellungen (Zahnrad): wie Kundenseite – Clean Card & Spacing */
@@ -5903,22 +5831,29 @@
       .provider-settings-accordion-content-inner{ overflow:hidden; }
       .provider-settings-accordion-content-inner > *{ padding:0 20px 20px; }
 
-      /* Account verwalten: S25 Native-First – flex-column, gap 16px, padding 20px, Clean Cards [cite: s25-native-first] */
-      #v-provider-profile .tgtg-list-wrap{ background:#F9FAFB; flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:20px; padding-bottom:calc(120px + env(safe-area-inset-bottom, 0)); display:flex; flex-direction:column; gap:16px; box-sizing:border-box; }
-      /* Account verwalten: Keine Boxen – nur Inset-Divider 1px #E5E7EB [TGTG-Vorbild] */
-      #v-provider-profile .tgtg-list{ background:#fff; margin:0; border-radius:0; border:none; box-shadow:none; overflow:hidden; }
-      /* FAQ „Was ist was?“: TGTG-Flat – eine weiße Fläche, keine Kacheln [cite: 2026-01-29] */
-      #v-provider-profile .tgtg-list:has(.tgtg-accordion){ box-shadow:none; border:none; border-radius:0; margin:0; }
-      #v-provider-profile .tgtg-section-title{ font-size:11px; font-weight:800; letter-spacing:0.06em; color:#64748b; text-transform:uppercase; margin:0 0 4px; padding:0 4px; }
-      #v-provider-profile .tgtg-row{ position:relative; display:flex; align-items:center; justify-content:space-between; gap:12px; width:100%; min-height:56px; padding:16px 20px; background:#fff; border:none; font-size:16px; font-weight:700; color:#1a1a1a; cursor:pointer; text-align:left; font-family:inherit; transition:background 0.2s; -webkit-tap-highlight-color:transparent; box-sizing:border-box; }
-      /* Inset-Divider: beginnt nach dem Icon (~56px), rechts bis zum Rand – Apple/TGTG-Look */
-      #v-provider-profile .tgtg-row::after{ content:''; position:absolute; left:56px; right:0; bottom:0; height:1px; background:#E5E7EB; }
-      #v-provider-profile .tgtg-row:last-child::after{ display:none; }
-      #v-provider-profile .tgtg-row:active{ background:#f8fafc; }
-      #v-provider-profile .tgtg-row .tgtg-icon{ font-size:20px; flex-shrink:0; width:28px; text-align:center; }
-      #v-provider-profile .tgtg-row .tgtg-label{ flex:1; min-width:0; }
+      /* Account verwalten: Full-Width List-Design [cite: 2026-01-29, 2026-02-18] – Listenzeilen, nicht Buttons */
+      #v-provider-profile .tgtg-list-wrap{ background:#F9FAFB !important; flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:20px 0 calc(120px + env(safe-area-inset-bottom, 0)); display:flex; flex-direction:column; box-sizing:border-box; width:100% !important; max-width:none !important; gap:0; }
+      /* Container-Sprengung: Keine max-width, keine festen Breiten */
+      #v-provider-profile .tgtg-list{ background:#fff !important; margin:0; border-radius:0; border:none !important; box-shadow:none !important; overflow:hidden; width:100% !important; max-width:none !important; }
+      #v-provider-profile .tgtg-list:has(.tgtg-accordion){ box-shadow:none !important; border:none !important; border-radius:0; margin:0; }
+      #v-provider-profile .tgtg-section-title{ font-size:11px; font-weight:800; letter-spacing:0.06em; color:#64748b; text-transform:uppercase; margin:0 0 4px; padding:12px 20px 4px; }
+      /* Zeile = von ganz links bis ganz rechts. Icon links, Pfeil rechts, dazwischen Weißraum [cite: 2026-02-18] */
+      #v-provider-profile .tgtg-row{
+        position:relative; display:flex !important; align-items:center !important; justify-content:space-between !important;
+        width:100% !important; min-height:56px; padding:16px 20px !important;
+        background:#FFFFFF !important; border:none !important; box-shadow:none !important;
+        font-size:16px; font-weight:700; color:#1a1a1a; cursor:pointer; text-align:left; font-family:inherit;
+        transition:background 0.2s; -webkit-tap-highlight-color:transparent; box-sizing:border-box;
+        border-bottom:1px solid #E5E7EB !important;
+      }
+      #v-provider-profile .tgtg-row:last-child{ border-bottom:none; }
+      #v-provider-profile .tgtg-row::after{ display:none !important; }
+      #v-provider-profile .tgtg-row:active{ background:#f8fafc !important; }
+      #v-provider-profile .tgtg-row .tgtg-icon,
+      #v-provider-profile .tgtg-row .tgtg-row-icon{ font-size:20px; flex-shrink:0; width:28px; min-width:28px; text-align:left; }
+      #v-provider-profile .tgtg-row .tgtg-label{ flex:1; min-width:0; text-align:left; }
       #v-provider-profile .tgtg-row .tgtg-chevron{ width:20px; height:20px; color:#94a3b8; flex-shrink:0; }
-      #v-provider-profile .tgtg-identity{ padding:0 4px 8px; text-align:center; background:transparent; }
+      #v-provider-profile .tgtg-identity{ padding:32px 20px 20px; text-align:center; background:transparent; }
       #v-provider-profile .tgtg-identity-name{ margin:0; font-size:17px; font-weight:800; color:#1a1a1a; letter-spacing:-0.02em; }
       #v-provider-profile .tgtg-identity-ort{ margin:4px 0 0; font-size:14px; color:#64748b; }
       /* FOLGE UNS: SVG-Icons Grün, Subtitle [cite: 2026-02-18] */
@@ -5931,7 +5866,8 @@
       #v-provider-profile .tgtg-accordion-item{ position:relative; }
       #v-provider-profile .tgtg-accordion-item::after{ content:''; position:absolute; left:16px; right:0; bottom:0; height:1px; background:#E5E7EB; }
       #v-provider-profile .tgtg-accordion-item:last-child::after{ display:none; }
-      #v-provider-profile .tgtg-accordion-trigger{ width:100%; display:flex; align-items:center; justify-content:space-between; gap:12px; min-height:52px; padding:14px 16px; background:transparent; border:none; font-size:15px; font-weight:600; color:#0f172a; cursor:pointer; text-align:left; font-family:inherit; transition:background 0.2s; -webkit-tap-highlight-color:transparent; }
+      #v-provider-profile .tgtg-accordion-trigger{ width:100% !important; display:flex !important; align-items:center !important; justify-content:space-between !important; gap:12px; min-height:56px; padding:16px 20px !important; background:#fff !important; border:none !important; box-shadow:none !important; font-size:16px; font-weight:700; color:#1a1a1a; cursor:pointer; text-align:left; font-family:inherit; transition:background 0.2s; -webkit-tap-highlight-color:transparent; }
+      #v-provider-profile .tgtg-accordion-trigger .tgtg-label{ text-align:left; }
       #v-provider-profile .tgtg-accordion-trigger:active{ background:#f8fafc; }
       #v-provider-profile .tgtg-accordion-trigger .tgtg-accordion-chevron{ width:18px; height:18px; color:#94a3b8; flex-shrink:0; transition:transform 300ms cubic-bezier(0.4, 0, 0.2, 1); opacity:0.85; }
       #v-provider-profile .tgtg-accordion-item.open .tgtg-accordion-trigger .tgtg-accordion-chevron{ transform:rotate(90deg); }
@@ -5950,9 +5886,9 @@
         #v-provider-profile .provider-profile-content-rebuild{ padding:20px; width:100%; max-width:100%; box-sizing:border-box; }
       }
       
-      /* Account verwalten: Sticky-Bottom – schlichter Text-Link ohne Box [TGTG-Vorbild] */
-      #v-provider-profile .provider-settings-sticky-footer{ position:sticky; bottom:0; left:0; right:0; padding:16px 20px; padding-bottom:calc(16px + env(safe-area-inset-bottom)); background:rgba(255,255,255,0.95); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border-top:1px solid rgba(0,0,0,0.06); display:flex; justify-content:center; z-index:10; flex-shrink:0; }
-      #v-provider-profile .provider-settings-sticky-footer .provider-footer-delete{ display:inline-block; width:auto; max-width:none; margin:0; min-height:auto; padding:12px 0; background:transparent; border:none; border-radius:0; font-size:15px; font-weight:700; color:#dc2626; cursor:pointer; text-decoration:underline; text-underline-offset:3px; }
+      /* Account verwalten: Profil löschen ganz unten – schlichter Text-Link ohne Box [TGTG-Vorbild] */
+      #v-provider-profile .provider-settings-sticky-footer{ position:relative; padding:24px 20px calc(24px + env(safe-area-inset-bottom)); background:transparent; border:none; display:flex; justify-content:center; flex-shrink:0; }
+      #v-provider-profile .provider-settings-sticky-footer .provider-footer-delete{ display:inline-block; width:auto; margin:0; padding:12px 0; background:transparent; border:none; border-radius:0; font-size:15px; font-weight:700; color:#dc2626; cursor:pointer; text-decoration:underline; text-underline-offset:3px; }
       
       /* Provider Bottom Nav: Safe-Area, Touch 48px */
       #providerNav{
