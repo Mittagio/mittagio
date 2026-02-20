@@ -116,4 +116,5 @@
   window.seededInfo = seededInfo;
   window.normalizeOffer = normalizeOffer;
   window.DEFAULT_MEAL_WINDOW = DEFAULT_MEAL_WINDOW;
+  window.SESSION_COOKIE_DAYS = SESSION_COOKIE_DAYS;
 })();

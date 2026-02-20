@@ -1,6 +1,9 @@
 /* Mittagio App-Logic – Warenkorb, Bestellungen, Abholnummer [Big Split] */
 (function(){
   'use strict';
+  var SESSION_COOKIE_DAYS = 30;
+  if(typeof window !== 'undefined') window.SESSION_COOKIE_DAYS = SESSION_COOKIE_DAYS;
+
   var LS = window.LS;
   var load = window.load;
   var save = window.save;
@@ -137,6 +140,62 @@
     return true;
   }
 
+  // Provider-Login (aus script.js hierher verschoben [Big Split])
+  function performProviderLogin(email){
+    var cryptoId = window.cryptoId;
+    var saveFn = window.save;
+    var LSref = window.LS;
+    var providerRef = window.provider;
+    var setCookieFn = window.setCookie;
+    var sessionName = window.SESSION_COOKIE_NAME || 'mittagio_session_id';
+    var sessionDays = window.SESSION_COOKIE_DAYS || 30;
+    var loadFn = window.load;
+    var closeModal = window.closeProviderLoginModal;
+    var showToastFn = window.showToast;
+    var setModeFn = window.setMode;
+    var showProviderHomeFn = window.showProviderHome;
+    var startListingFlowFn = window.startListingFlow;
+    var updateProfileViewFn = window.updateProfileView;
+    if(!cryptoId || !saveFn || !providerRef || !setCookieFn){ console.warn('performProviderLogin: Abhängigkeiten fehlen'); return; }
+    var newSessionId = cryptoId();
+    var sessionData = { email: email, sessionId: newSessionId, createdAt: Date.now(), lastActivity: Date.now() };
+    saveFn(LSref.providerSession, sessionData);
+    saveFn('mittagio_current_session_id', newSessionId);
+    setCookieFn(sessionName, newSessionId, sessionDays);
+    providerRef.loggedIn = true;
+    providerRef.email = email;
+    providerRef.current_session_id = newSessionId;
+    if(email === 'demo@mittagio.de' || email === 'thomas@thomas-kurz.de'){
+      var demoProfile = loadFn('mittagio_demo_provider_profile', null);
+      if(demoProfile){
+        providerRef.profile = providerRef.profile || {};
+        providerRef.profile.name = demoProfile.name || providerRef.profile.name;
+        providerRef.profile.address = demoProfile.address || providerRef.profile.address;
+        providerRef.profile.street = demoProfile.street || providerRef.profile.street;
+        providerRef.profile.zip = demoProfile.zip || providerRef.profile.zip;
+        providerRef.profile.city = demoProfile.city || providerRef.profile.city;
+        providerRef.profile.logoData = demoProfile.logoData != null ? demoProfile.logoData : providerRef.profile.logoData;
+        providerRef.profile.mealWindow = demoProfile.mealWindow || providerRef.profile.mealWindow;
+        if(demoProfile.phone != null) providerRef.profile.phone = demoProfile.phone;
+        if(demoProfile.email != null) providerRef.profile.email = demoProfile.email;
+        if(demoProfile.website != null) providerRef.profile.website = demoProfile.website;
+        if(demoProfile.mealStart != null) providerRef.profile.mealStart = demoProfile.mealStart;
+        if(demoProfile.mealEnd != null) providerRef.profile.mealEnd = demoProfile.mealEnd;
+      }
+    }
+    saveFn(LSref.provider, providerRef);
+    if(closeModal) closeModal();
+    if(showToastFn) showToastFn('Erfolgreich eingeloggt! 🎉', 2000);
+    if(typeof updateProfileViewFn === 'function') updateProfileViewFn();
+    if(setModeFn) setModeFn('provider', { skipView: true });
+    providerRef.onboardingCompleted = true;
+    saveFn(LSref.provider, providerRef);
+    if(showProviderHomeFn) showProviderHomeFn();
+    setTimeout(function(){
+      if(typeof startListingFlowFn === 'function') startListingFlowFn({ entryPoint: 'dashboard' });
+    }, 150);
+  }
+
   window.addOrder = addOrder;
   window.updateOrder = updateOrder;
   window.getOrderById = getOrderById;
@@ -147,4 +206,5 @@
   window.updateHeaderBasket = updateHeaderBasket;
   window.getRemainingPickupMinutes = getRemainingPickupMinutes;
   window.addToCart = addToCart;
+  window.performProviderLogin = performProviderLogin;
 })();

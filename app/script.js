@@ -45,6 +45,7 @@
 
   // Cookie-Helfer für Single-Session (Session-ID im Cookie + DB)
   const SESSION_COOKIE_NAME = 'mittagio_session_id';
+  if(typeof window !== 'undefined') window.SESSION_COOKIE_NAME = SESSION_COOKIE_NAME;
   /* getCookie, setCookie, deleteCookie → js/utils.js */
 
   function getFavPillars(dishId){ const m = load(LS.favPillars, {}); return m[dishId] || null; }
@@ -8049,63 +8050,18 @@
         // Login-Konflikt: Zeige Modal
         openLoginConflictModal(email, () => {
           // Übernahme bestätigt: Neue Session erstellen
-          performProviderLogin(email);
+          if(window.performProviderLogin) window.performProviderLogin(email);
         });
         return;
       }
       
       // Normale Login-Durchführung
-      performProviderLogin(email);
+      if(window.performProviderLogin) window.performProviderLogin(email);
     };
   }
   
-  // Provider-Login durchführen (mit Single-Session: Session-ID in DB + Cookie)
-  function performProviderLogin(email){
-    const newSessionId = cryptoId();
-    const sessionData = {
-      email: email,
-      sessionId: newSessionId,
-      createdAt: Date.now(),
-      lastActivity: Date.now()
-    };
-    save(LS.providerSession, sessionData);
-    save('mittagio_current_session_id', newSessionId);
-    setCookie(SESSION_COOKIE_NAME, newSessionId, SESSION_COOKIE_DAYS);
-    provider.loggedIn = true;
-    provider.email = email;
-    provider.current_session_id = newSessionId;
-    if(email === 'demo@mittagio.de' || email === 'thomas@thomas-kurz.de'){
-      var demoProfile = load('mittagio_demo_provider_profile', null);
-      if(demoProfile){
-        provider.profile = provider.profile || {};
-        provider.profile.name = demoProfile.name || provider.profile.name;
-        provider.profile.address = demoProfile.address || provider.profile.address;
-        provider.profile.street = demoProfile.street || provider.profile.street;
-        provider.profile.zip = demoProfile.zip || provider.profile.zip;
-        provider.profile.city = demoProfile.city || provider.profile.city;
-        provider.profile.logoData = demoProfile.logoData != null ? demoProfile.logoData : provider.profile.logoData;
-        provider.profile.mealWindow = demoProfile.mealWindow || provider.profile.mealWindow;
-        if(demoProfile.phone != null) provider.profile.phone = demoProfile.phone;
-        if(demoProfile.email != null) provider.profile.email = demoProfile.email;
-        if(demoProfile.website != null) provider.profile.website = demoProfile.website;
-        if(demoProfile.mealStart != null) provider.profile.mealStart = demoProfile.mealStart;
-        if(demoProfile.mealEnd != null) provider.profile.mealEnd = demoProfile.mealEnd;
-      }
-    }
-    save(LS.provider, provider);
-    closeProviderLoginModal();
-    showToast('Erfolgreich eingeloggt! 🎉', 2000);
-    if(typeof updateProfileView === 'function') updateProfileView();
-    setMode('provider', { skipView: true });
-    // Direkt-Sprung S25: Onboarding ignorieren, immer Dashboard + sofort InseratCard öffnen
-    provider.onboardingCompleted = true;
-    save(LS.provider, provider);
-    showProviderHome();
-    setTimeout(function(){
-      if(typeof startListingFlow === 'function') startListingFlow({ entryPoint: 'dashboard' });
-    }, 150);
-  }
-  
+  /* performProviderLogin → js/app-logic.js */
+
   // Login-Konflikt Modal öffnen
   function openLoginConflictModal(email, onConfirm){
     const bd = document.getElementById('loginConflictBd');
@@ -8667,10 +8623,10 @@
       const existingSession = load(LS.providerSession, null);
       const currentSessionId = load('mittagio_current_session_id', null);
       if(existingSession && existingSession.email === email && existingSession.sessionId !== currentSessionId){
-        openLoginConflictModal(email, () => { performProviderLogin(email); });
+        openLoginConflictModal(email, () => { if(window.performProviderLogin) window.performProviderLogin(email); });
         return;
       }
-      performProviderLogin(email);
+      if(window.performProviderLogin) window.performProviderLogin(email);
     };
   }
 
@@ -17231,7 +17187,7 @@
   
   // Single-Session: Cookie aus DB wiederherstellen, falls fehlt (z. B. nach Reload)
   if(mode === 'provider' && provider.loggedIn && provider.current_session_id && !getCookie(SESSION_COOKIE_NAME)){
-    setCookie(SESSION_COOKIE_NAME, provider.current_session_id, SESSION_COOKIE_DAYS);
+    setCookie(SESSION_COOKIE_NAME, provider.current_session_id, window.SESSION_COOKIE_DAYS || 30);
   }
   
   // Session-Validität prüfen BEVOR setMode aufgerufen wird (checkSingleSession)
