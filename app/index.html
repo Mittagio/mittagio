@@ -2308,7 +2308,7 @@
 
 
   <!-- CUSTOMER bottom nav - Mittagio-Bar -->
-  <nav class="bottom-nav" id="customerNav" style="position:fixed; bottom:0; left:0; right:0; z-index:999; display:flex; justify-content:space-around; align-items:center; background:rgba(255,255,255,0.95); backdrop-filter:saturate(180%) blur(20px); -webkit-backdrop-filter:saturate(180%) blur(20px); border:none; box-shadow:0 -4px 20px rgba(0,0,0,0.03); height:calc(70px + env(safe-area-inset-bottom, 0px)); padding-bottom:env(safe-area-inset-bottom, 0px);">
+  <nav class="bottom-nav" id="customerNav" style="position:fixed; bottom:0; left:0; right:0; width:100%; z-index:999; display:flex; justify-content:space-around; align-items:center; background:rgba(255,255,255,0.95); backdrop-filter:saturate(180%) blur(20px); -webkit-backdrop-filter:saturate(180%) blur(20px); border:none; box-shadow:0 -4px 20px rgba(0,0,0,0.03); height:calc(70px + env(safe-area-inset-bottom, 0px)); padding:0 max(16px, env(safe-area-inset-right, 0)) env(safe-area-inset-bottom, 0) max(16px, env(safe-area-inset-left, 0)); box-sizing:border-box;">
     <button class="navbtn active" data-go="discover" style="background:none; border:none; padding:8px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; transition:all 0.2s;">
       <i data-lucide="search" style="width:22px;height:22px;"></i>
       <span style="font-size:11px; font-weight:700;">Entdecken</span>
@@ -2329,7 +2329,7 @@
   </nav>
 
     <!-- PROVIDER bottom nav: fixer Zurück-Button darüber, heller Tab-Bar (App-Style) -->
-  <div id="providerNavWrap" class="provider-nav-wrap-pill" style="display:none; position:fixed; bottom:24px; left:16px; right:16px; max-width:500px; margin-left:auto; margin-right:auto; z-index:1052; padding:0 env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0);">
+  <div id="providerNavWrap" class="provider-nav-wrap-pill" style="display:none; position:fixed; bottom:24px; left:0; right:0; width:100%; z-index:1052; padding:0 max(16px, env(safe-area-inset-right, 0)) max(0px, env(safe-area-inset-bottom, 0)) max(16px, env(safe-area-inset-left, 0)); box-sizing:border-box;">
     <div id="providerNavBackRow" style="padding:0 20px 16px; display:none;">
       <button type="button" id="btnProviderNavBack" class="btn-back" aria-label="Zurück" style="background:rgba(255,255,255,0.95); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:none; color:#1a1a1a; padding:10px 24px; border-radius:999px; font-size:15px; font-weight:700; cursor:pointer; box-shadow:0 4px 20px rgba(0,0,0,0.06);"><i data-lucide="chevron-left" style="width:20px;height:20px;"></i> Zurück</button>
     </div>

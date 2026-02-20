@@ -10514,7 +10514,7 @@
           card.setAttribute('data-offer-id', String(o.id));
           card.setAttribute('role', 'button');
           card.setAttribute('tabindex', '0');
-          card.style.cssText = 'display:flex; align-items:center; gap:16px; padding:16px 20px; cursor:pointer; background:transparent; border:none; box-shadow:none; border-radius:0; margin:0;';
+          card.style.cssText = 'display:flex; align-items:center; gap:16px; padding:16px 0; cursor:pointer; background:transparent; border:none; box-shadow:none; border-radius:0; margin:0;';
           card.innerHTML = `
             <div class="prov-card-pure-thumb" style="flex-shrink:0; width:100px; height:100px; border-radius:16px; overflow:hidden; background:#f1f3f5;">
               <img src="${esc(imgUrl)}" alt="" style="width:100%; height:100%; object-fit:cover;" />
