@@ -2024,9 +2024,12 @@
     #wizard.sheet--kitchen .liquid-master-panel .inserat-allergen-row.active{ background: #10b981; color: #fff; }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-allergen-row:active,
     #wizard.sheet--kitchen .liquid-master-panel .inserat-allergen-row:active{ transform: scale(0.98); }
+    /* Airbnb-Footer: Edge-to-Edge, ohne seitliche Lücken/Rundungen, blur(30px) [cite: 2026-02-21] */
     #wizard.sheet--kitchen .glass-express-step0 .inserat-action-section{
-      padding: 24px 24px calc(20px + env(safe-area-inset-bottom, 24px));
-      background: rgba(255,255,255,0.98); border-top: 1px solid rgba(0,0,0,0.06);
+      padding: 20px max(16px, env(safe-area-inset-left)) calc(20px + env(safe-area-inset-bottom, 24px)) max(16px, env(safe-area-inset-right));
+      margin: 0; border-radius: 0; border-top: 1px solid rgba(0,0,0,0.06);
+      background: rgba(245,245,240,0.92);
+      backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
       box-shadow: 0 -8px 32px rgba(0,0,0,0.06); flex-shrink: 0;
       display: flex; flex-direction: column; gap: 12px;
     }
@@ -2629,9 +2632,13 @@
       0%, 100% { opacity: 0.5; }
       50% { opacity: 0.9; }
     }
-    /* Preis-Placeholder pulsieren [cite: 2026-02-21] */
+    /* Pulsierende leere Felder (atmen): Preis, Gericht [cite: 2026-02-21] */
     #wizard[data-flow="listing"] .inserat-price-input::placeholder,
-    #wizard[data-flow="listing"] .price-field::placeholder {
+    #wizard[data-flow="listing"] .price-field::placeholder,
+    #wizard[data-flow="listing"] .inserat-price-pill-input::placeholder {
+      animation: ghost-placeholder-pulse 2.5s ease-in-out infinite;
+    }
+    #wizard[data-flow="listing"] #step-name input.ghost-input::placeholder {
       animation: ghost-placeholder-pulse 2.5s ease-in-out infinite;
     }
     /* Textarea Beschreibung: kein harter Rahmen */
@@ -5613,14 +5620,36 @@
       box-shadow:none !important;
       border:none !important;
     }
-    /* GLOBALER HEADER-STANDARD: Alle Anbieter-Seiten wie Meine Küche (Montserrat 900, 20px, #f5f5f0 95%, blur, sticky top:0) */
+    /* ========== STICKY-GEWALT: Header + Sub-Bar radikal fixiert [cite: 2026-02-21] ==========
+     * Wichtig: Scroll-Container (dashboard-floating-wrap, pickups-floating-wrap) hat overflow-y:auto.
+     * Parent (#v-provider-home etc.) hat overflow:hidden nur für Clipping – Scroll ist im Wrap.
+     * background-color #f5f5f0 !important verhindert Durchscheinen des dahinter scrollenden Inhalts.
+     */
+    .sticky-header{
+      position:sticky !important; top:0 !important; z-index:1000 !important;
+      background-color:#f5f5f0 !important;
+      backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+      flex-shrink:0;
+    }
+    .sticky-sub-bar{
+      position:sticky !important; top:60px !important; z-index:900 !important;
+      background-color:#f5f5f0 !important;
+      backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+      flex-shrink:0;
+    }
+    @supports (top: env(safe-area-inset-top)){
+      .sticky-sub-bar{ top:calc(60px + env(safe-area-inset-top, 0)) !important; }
+    }
+    /* GLOBALER HEADER-STANDARD: Alle Anbieter-Seiten wie Meine Küche (Montserrat 900, 20px, #f5f5f0, blur, sticky top:0) */
     body.provider-mode [id^="v-provider-"] > header.prov-page-header,
     body.provider-mode [id^="v-provider-"] > header.dynamic-header,
-    body.provider-mode [id^="v-provider-"] > header.system-header{
-      position:sticky; top:0; z-index:100; flex-shrink:0;
-      background:rgba(245,245,240,0.95) !important;
+    body.provider-mode [id^="v-provider-"] > header.system-header,
+    body.provider-mode .sticky-header{
+      position:sticky !important; top:0 !important; z-index:1000 !important;
+      background-color:#f5f5f0 !important;
       backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
       font-family:'Montserrat','Inter',sans-serif;
+      flex-shrink:0;
     }
     body.provider-mode [id^="v-provider-"] .prov-page-header-title,
     body.provider-mode [id^="v-provider-"] .system-header-title{
@@ -5636,17 +5665,12 @@
     #v-provider-home .dashboard-kasten-header .prov-header-inner{ padding:0; }
     #v-provider-home .dashboard-kasten-header .prov-title,
     #v-provider-home .dashboard-kasten-header .prov-page-header-title{ font-size: 20px !important; font-weight: 900 !important; letter-spacing: -0.03em; color: #0f172a !important; }
-    /* KPI-Kasten: Double-Sticky direkt unter Header (top: Header-Höhe ~60px), gleicher Hintergrund #f5f5f0 */
+    /* KPI-Kasten: .sticky-sub-bar (top: 60px), background #f5f5f0 – kein Durchscheinen */
     #v-provider-home .dashboard-kasten-kpis{
-      position:sticky;
-      top:calc(60px + env(safe-area-inset-top, 0));
-      z-index:900;
       padding:18px env(safe-area-inset-right, 0) 18px env(safe-area-inset-left, 0);
       padding-left:max(16px, env(safe-area-inset-left, 0));
       padding-right:max(16px, env(safe-area-inset-right, 0));
-      background:#f5f5f0;
-      backdrop-filter:blur(20px);
-      -webkit-backdrop-filter:blur(20px);
+      background-color:#f5f5f0 !important;
       flex-shrink:0;
     }
     #v-provider-home .dashboard-kasten-kpis::after{
@@ -5742,11 +5766,30 @@
     }
     #v-provider-home .prov-stat-item:last-child{ border-right:none; }
     #v-provider-pickups{ min-height:100vh; min-height:100dvh; background:#f8fafc; width:100%; box-sizing:border-box; }
-    #v-provider-pickups.view.active{ display:flex !important; flex-direction:column !important; height:100vh; height:100dvh; max-height:100vh; max-height:100dvh; overflow:hidden; }
-    #v-provider-pickups.view.active > header{ position:sticky; top:0; z-index:100; flex-shrink:0; background:rgba(245,245,240,0.95) !important; backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); }
-    /* Filter (Offen/Abgeholt) als Sub-Header-Block unter Titel – gleicher Stil wie KPIs im Dashboard */
-    #v-provider-pickups .prov-pickups-filter-sticky{ padding:12px max(16px, env(safe-area-inset-right, 0)) 12px max(16px, env(safe-area-inset-left, 0)); background:#f5f5f0; flex-shrink:0; }
-    #v-provider-pickups.view.active > div{ position:relative; z-index:1; min-height:0; flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; }
+    #v-provider-pickups.view.active{ display:flex !important; flex-direction:column !important; height:100vh; height:100dvh; max-height:100vh; max-height:100dvh; overflow:hidden !important; }
+    /* Abholnummern: pickups-floating-wrap = Scroll-Container (analog dashboard-floating-wrap); Header + Filter sticky darin */
+    #v-provider-pickups .pickups-floating-wrap{
+      flex:1; min-height:0; display:flex; flex-direction:column; gap:0;
+      overflow-y:auto !important; overflow-x:hidden !important;
+      -webkit-overflow-scrolling:touch;
+      overscroll-behavior-y:contain;
+      padding:0 env(safe-area-inset-right, 0) 0 env(safe-area-inset-left, 0) !important;
+      padding-top:env(safe-area-inset-top, 0) !important;
+      width:100% !important; max-width:100% !important; margin:0 !important; box-sizing:border-box;
+      background:#fff;
+    }
+    #v-provider-pickups .pickups-floating-wrap > header{
+      position:sticky; top:0; z-index:100; flex-shrink:0;
+      background:rgba(245,245,240,0.95) !important;
+      backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+    }
+    /* Filter (Offen/Abgeholt): .sticky-sub-bar – kein Durchscheinen */
+    #v-provider-pickups .prov-pickups-filter-sticky{
+      padding:12px max(16px, env(safe-area-inset-right, 0)) 12px max(16px, env(safe-area-inset-left, 0));
+      background-color:#f5f5f0 !important;
+      flex-shrink:0;
+    }
+    #v-provider-pickups #provPickupsScroll{ flex:1; min-height:0; }
     /* TGTG-Layout: weiße Leinwand, kein grauer Rand [cite: FAQ Anbieter] */
     #v-provider-profile{ min-height:100vh; min-height:100dvh; width:100%; box-sizing:border-box; background:#fff !important; }
     #v-provider-profile.view.active{ display:flex !important; flex-direction:column !important; }
@@ -5956,7 +5999,7 @@
       #v-provider-home .prov-header,
       #providerProfileHeader,
       #v-provider-cookbook > header,
-      #v-provider-pickups > header,
+      #v-provider-pickups .pickups-floating-wrap > header,
       #v-provider-week .week-header-compact{
         padding-top:calc(12px + env(safe-area-inset-top, 0)) !important;
       }
@@ -5980,7 +6023,7 @@
       #providerTimeTracker div[style*="font-size:36px"]{ font-size:30px !important; }
       #providerPersonalSpar{ padding:16px !important; }
       
-      #v-provider-pickups, #v-provider-cookbook, #v-provider-profile{
+      #v-provider-cookbook, #v-provider-profile{
         padding:0 16px 100px !important;
       }
       #v-provider-cookbook{ padding-bottom:0 !important; }

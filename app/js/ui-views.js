@@ -1,6 +1,11 @@
 /* Mittagio UI-Views – Render-Funktionen [Big Split]
  * Enthält: renderInseratCard (S25 100x100 Edge-to-Edge Master), renderDiscover, …
  * [cite: 2026-02-18 INSERATSFLOW_S25_KONZEPT]
+ *
+ * STICKY-GEWALT [2026-02-21]: Dashboard + Abholnummern nutzen .sticky-header und .sticky-sub-bar.
+ * Struktur (index.html): Scroll-Container (dashboard-floating-wrap, pickups-floating-wrap) enthält
+ * direkt: 1) Header (.sticky-header), 2) KPIs/Filter (.sticky-sub-bar), 3) Content (scrollt darunter).
+ * KPI-Karten und Filter-Buttons liegen NICHT im scrollbaren Listen-Container – sie sind Geschwister.
  */
 (function(){
   'use strict';

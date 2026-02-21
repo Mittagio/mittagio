@@ -1069,7 +1069,7 @@
     <section class="view prov-dashboard-stolz" id="v-provider-home">
       <div class="dashboard-floating-wrap">
         <!-- KASTEN 1: Dashboard Header (dynamic-header: Montserrat 900, kein Icon) [cite: 2026-02-18] -->
-        <header class="dashboard-kasten dashboard-kasten-header prov-header prov-header-stolz prov-page-header dynamic-header system-header" id="providerDashboardHeader">
+        <header class="dashboard-kasten dashboard-kasten-header sticky-header prov-header prov-header-stolz prov-page-header dynamic-header system-header" id="providerDashboardHeader">
           <div class="prov-header-inner">
             <div class="prov-page-header-row">
               <div class="prov-page-header-left prov-header-reset-trigger" data-reset-view="home" role="button" tabindex="0" aria-label="Zum Seitenanfang">
@@ -1088,7 +1088,7 @@
         </header>
 
         <!-- KASTEN 2: KPIs (sticky unter Header, Scroll-Divider via JS) -->
-        <div class="dashboard-kasten dashboard-kasten-kpis" id="dashboardKpisBlock">
+        <div class="dashboard-kasten dashboard-kasten-kpis sticky-sub-bar" id="dashboardKpisBlock">
           <div class="prov-stats-stolz" style="display:flex; justify-content:space-between; align-items:flex-end; border:none; padding:0;">
             <div id="kpiTagesessen" role="button" tabindex="0" style="text-align:center; cursor:pointer; min-height:40px; flex:1;" onclick="document.getElementById('providerActiveListingsSection')?.scrollIntoView({behavior:'smooth'})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); document.getElementById('providerActiveListingsSection')?.scrollIntoView({behavior:'smooth'});}" title="Tagesessen">
               <p id="kpiLabelTagesessen" class="kpi-label" style="margin:0 0 2px;">Tagesessen</p>
@@ -1170,26 +1170,26 @@
     </section>
 
     <section class="view onboarding-view" id="v-provider-pickups">
-      <header class="prov-page-header dynamic-header system-header" id="v-provider-pickups-header">
-        <div class="prov-page-header-row">
-          <div class="prov-page-header-left prov-header-reset-trigger" data-reset-view="pickups" role="button" tabindex="0" aria-label="Zum Seitenanfang">
-            <h1 class="prov-page-header-title system-header-title">Abholnummern</h1>
+      <div class="pickups-floating-wrap" id="pickupsFloatingWrap">
+        <header class="prov-page-header sticky-header dynamic-header system-header" id="v-provider-pickups-header">
+          <div class="prov-page-header-row">
+            <div class="prov-page-header-left prov-header-reset-trigger" data-reset-view="pickups" role="button" tabindex="0" aria-label="Zum Seitenanfang">
+              <h1 class="prov-page-header-title system-header-title">Abholnummern</h1>
+            </div>
+            <div class="prov-page-header-actions prov-header-toolbar" style="display:flex; gap:8px; align-items:center;">
+              <button type="button" id="btnPickupsHeaderCookbook" title="Kochbuch" aria-label="Kochbuch" style="background:rgba(0,0,0,0.06); border:none; min-width:44px; min-height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:20px; cursor:pointer;">📖</button>
+              <button type="button" id="btnPickupsHeaderShare" title="Teilen" aria-label="Teilen" style="background:rgba(0,0,0,0.06); border:none; min-width:44px; min-height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; color:#1a1a1a; cursor:pointer;">
+                <i data-lucide="share-2" style="width:20px; height:20px;"></i>
+              </button>
+            </div>
           </div>
-          <div class="prov-page-header-actions prov-header-toolbar" style="display:flex; gap:8px; align-items:center;">
-            <button type="button" id="btnPickupsHeaderCookbook" title="Kochbuch" aria-label="Kochbuch" style="background:rgba(0,0,0,0.06); border:none; min-width:44px; min-height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:20px; cursor:pointer;">📖</button>
-            <button type="button" id="btnPickupsHeaderShare" title="Teilen" aria-label="Teilen" style="background:rgba(0,0,0,0.06); border:none; min-width:44px; min-height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; color:#1a1a1a; cursor:pointer;">
-              <i data-lucide="share-2" style="width:20px; height:20px;"></i>
-            </button>
+        </header>
+        <div class="prov-pickups-filter-sticky sticky-sub-bar" id="provPickupsFilterSticky">
+          <div class="answers" id="provPickupFilter" style="background:#f1f3f5; padding:4px; border-radius:14px; display:flex; gap:4px; border:none; box-shadow:none;">
+            <!-- Wird dynamisch befüllt -->
           </div>
         </div>
-        <div class="prov-pickups-filter-sticky" id="provPickupsFilterSticky">
-        <div class="answers" id="provPickupFilter" style="background:#f1f3f5; padding:4px; border-radius:14px; display:flex; gap:4px; border:none; box-shadow:none;">
-          <!-- Wird dynamisch befüllt -->
-        </div>
-        </div>
-      </header>
-
-      <div id="provPickupsScroll" style="padding:12px max(20px, env(safe-area-inset-right)) 20px max(20px, env(safe-area-inset-left)); width:100%; max-width:100%; margin:0; flex:1; box-sizing:border-box;">
+        <div id="provPickupsScroll" style="padding:12px max(20px, env(safe-area-inset-right)) calc(24px + 100px + env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left)); width:100%; max-width:100%; margin:0; flex:1; min-height:0; box-sizing:border-box;">
         <!-- Subheader Status -->
         <div id="provPickupsSubheader" style="margin-bottom:20px; font-size:13px; font-weight:700; color:#9ca3af; text-transform:uppercase; letter-spacing:0.05em;">
           <!-- Wird dynamisch befüllt -->
@@ -1212,6 +1212,7 @@
         <!-- Pickup List -->
         <div id="provPickupsList" style="display:none; flex-direction:column; gap:12px;">
           <!-- Wird dynamisch befüllt -->
+        </div>
         </div>
       </div>
     </section>

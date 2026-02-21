@@ -9135,7 +9135,7 @@
     scrollActiveViewToTopAndCloseOverlays();
     var scrollEl = null;
     if(view === 'home') scrollEl = document.querySelector('#v-provider-home .dashboard-floating-wrap');
-    else if(view === 'pickups') scrollEl = document.getElementById('provPickupsScroll');
+    else if(view === 'pickups') scrollEl = document.getElementById('pickupsFloatingWrap');
     else if(view === 'week') scrollEl = document.getElementById('kwBoardScroll');
     else if(view === 'cookbook'){
       scrollEl = document.getElementById('cookbookScrollWrap');
@@ -9210,7 +9210,7 @@
     }
     setTimeout(function(){
       var homeWrap = document.querySelector('#v-provider-home .dashboard-floating-wrap');
-      var pickupsScroll = document.getElementById('provPickupsScroll');
+      var pickupsScroll = document.getElementById('pickupsFloatingWrap');
       var weekScroll = document.getElementById('kwBoardScroll');
       var cookbookScroll = document.getElementById('cookbookScrollWrap');
       attachPTR(homeWrap, function(){ if(typeof renderProviderHome==='function') renderProviderHome(); }, 'provider-home');
@@ -15326,6 +15326,17 @@
         var step2Wrap=document.createElement('div');
         step2Wrap.className='inserat-step2-wrap inserat-step2-floating-bottom';
         step2Wrap.style.cssText='display:flex; flex-direction:column; flex:1; min-height:0; overflow-y:auto; padding:16px; padding-bottom:calc(180px + env(safe-area-inset-bottom, 0));';
+        /* Bild-Vorschau aus Schritt 1 (inkl. Crop) [cite: 2026-02-21] */
+        var step2Preview=document.createElement('div');
+        step2Preview.className='inserat-step2-preview';
+        step2Preview.style.cssText='position:relative; width:100%; height:140px; border-radius:16px; overflow:hidden; background:#e8ecf0; margin-bottom:20px; flex-shrink:0;';
+        var cropY2=(typeof w.data.photoCropY==='number')?w.data.photoCropY:0;
+        if(w.data.photoData){
+          step2Preview.innerHTML='<div style="position:absolute;inset:0;overflow:hidden;"><img src="'+w.data.photoData+'" alt="" style="width:100%;height:100%;object-fit:cover;transform:translateY('+cropY2+'px);"></div><span class="inserat-step2-abholnummer-badge" style="position:absolute;bottom:10px;right:10px;padding:6px 12px;border-radius:999px;background:rgba(16,185,129,0.9);color:#fff;font-size:12px;font-weight:800;opacity:0;transition:opacity 0.25s;">🎫 Abholnummer</span>';
+        } else {
+          step2Preview.innerHTML='<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:48px;opacity:0.4;">📸</div>';
+        }
+        step2Wrap.appendChild(step2Preview);
         var step2Nav=document.createElement('div');
         step2Nav.className='inserat-step2-nav-pille';
         step2Nav.style.cssText='display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;';
@@ -15344,11 +15355,7 @@
         step2Close.onclick=function(){ hapticLight(); if(typeof handleWizardExit==='function') handleWizardExit(box); else closeWizard(); };
         step2Nav.appendChild(backBtn);
         step2Nav.appendChild(step2Close);
-        var werbepaper=document.createElement('div');
-        werbepaper.className='inserat-werbepaper';
-        werbepaper.style.cssText='display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:24px;';
-        werbepaper.innerHTML='<div class="werbepaper-panel werbepaper-stress" style="padding:16px; border-radius:16px; background:rgba(241,245,249,0.8); border:1px solid rgba(0,0,0,0.06); text-align:center;"><p style="margin:0; font-size:13px; font-weight:800; color:#64748b;">Warteschlange – stressig</p></div><div class="werbepaper-panel werbepaper-hero" style="padding:16px; border-radius:16px; background:rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.4); text-align:center; box-shadow:0 0 16px rgba(16,185,129,0.3);"><p style="margin:0; font-size:13px; font-weight:800; color:#059669;">Abholnummer – schnell</p></div>';
-        step2Wrap.appendChild(werbepaper);
+        step2Wrap.appendChild(step2Nav);
         var tilesRow=document.createElement('div');
         tilesRow.className='inserat-decision-tiles inserat-step2-tiles-floating';
         tilesRow.style.cssText='display:grid; grid-template-columns:1fr 1fr; gap:16px;';
@@ -15362,19 +15369,20 @@
         var tile499=document.createElement('button');
         tile499.type='button';
         tile499.className='inserat-decision-tile inserat-tile-champagne inserat-tile-secondary';
-        tile499.style.cssText='min-height:120px; padding:20px; border-radius:24px; border:none; background:linear-gradient(135deg,#F5E6D3 0%,#E8DCC4 50%,#D4C4A8 100%); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; cursor:pointer; box-shadow:0 10px 30px rgba(0,0,0,0.12);';
-        tile499.innerHTML='<strong style="font-size:16px; color:#5c4a3d;">Nur Inserat (4,99 €)</strong>';
+        tile499.style.cssText='min-height:140px; padding:20px; border-radius:24px; border:none; background:linear-gradient(135deg,#F5E6D3 0%,#E8DCC4 50%,#D4C4A8 100%); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; cursor:pointer; box-shadow:0 10px 30px rgba(0,0,0,0.12);';
+        tile499.innerHTML='<strong style="font-size:16px; color:#5c4a3d;">Einmaliges Inserat</strong><span style="font-size:18px; font-weight:800; color:#5c4a3d;">4,99 €</span><span style="font-size:13px; font-weight:700; margin-top:8px; padding:8px 16px; background:rgba(0,0,0,0.08); border-radius:999px;">Jetzt für 4,99 € inserieren</span>';
         tile499.onclick=function(){ if(!primaryValidS2){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; } hapticLight(); w.data.hasPickupCode=false; w.data.pricingOption=undefined; w.data.inseratFeeWaived=false; var o=previewOfferFromWizard(); closeWizard(true); showPublishFeeModal(o); };
         var tileHero=document.createElement('button');
         tileHero.type='button';
         tileHero.className='inserat-decision-tile inserat-tile-hero inserat-tile-pulse';
-        tileHero.style.cssText='min-height:120px; padding:20px; border-radius:24px; border:none; background:linear-gradient(135deg,#10b981,#059669); color:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; cursor:pointer; box-shadow:0 0 24px rgba(16,185,129,0.5), 0 10px 30px rgba(0,0,0,0.15); animation:inserat-hero-pulse 2s ease-in-out infinite;';
-        tileHero.innerHTML='<strong style="font-size:16px;">Abholnummer</strong><span style="font-size:20px; font-weight:800;">0,00 €</span><small style="font-size:12px; opacity:0.9;">0,89 € pro Abholung</small>';
+        tileHero.style.cssText='min-height:140px; padding:20px; border-radius:24px; border:none; background:linear-gradient(135deg,#10b981,#059669); color:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; cursor:pointer; box-shadow:0 0 24px rgba(16,185,129,0.5), 0 10px 30px rgba(0,0,0,0.15); animation:inserat-hero-pulse 2s ease-in-out infinite;';
+        tileHero.innerHTML='<strong style="font-size:16px;">Kostenlos inserieren</strong><small style="font-size:12px; opacity:0.9;">Nur 0,89 € pro Abholnummer</small><span style="font-size:13px; font-weight:700; margin-top:8px; padding:8px 16px; background:rgba(255,255,255,0.25); border-radius:999px;">Jetzt kostenlos inserieren</span>';
         tileHero.onclick=function(){ if(!primaryValidS2){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; } if(tileHero.classList.contains('is-loading')) return; hapticLight(); if(isEditActiveS2){ w.data.hasPickupCode=w.data.hasPickupCode!==false; w.data.inseratFeeWaived=true; w.data.pricingOption='abholnummer'; var o=previewOfferFromWizard(); var published=typeof publishOffer==='function'?publishOffer(o):null; if(published){ closeWizard(true); if(typeof showToast==='function') showToast('Inserat ist live! 🚀'); if(typeof showProviderHome==='function') showProviderHome(); } return; } w.data.hasPickupCode=true; w.data.inseratFeeWaived=true; w.data.pricingOption='abholnummer'; var o=previewOfferFromWizard(); tileHero.classList.add('is-loading'); tileHero.innerHTML='<span class="inserat-btn-spinner" style="width:24px;height:24px;border:3px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:inserat-spin 0.8s linear infinite;"></span>'; setTimeout(function(){ closeWizard(true); showPublishFeeModal(o); }, 800); };
         tilesRow.appendChild(tile499);
         tilesRow.appendChild(tileHero);
         step2Wrap.appendChild(tilesRow);
-        step2Wrap.appendChild(step2Nav);
+        var abholBadge=step2Preview.querySelector('.inserat-step2-abholnummer-badge');
+        if(abholBadge){ tileHero.onmouseenter=tileHero.ontouchstart=function(){ abholBadge.style.opacity='1'; }; tileHero.onmouseleave=tileHero.ontouchend=function(){ abholBadge.style.opacity='0'; }; }
         box.appendChild(step2Wrap);
       } else {
 
@@ -15400,9 +15408,19 @@
         } finally { photoTile.classList.remove('inserat-photo-loading'); if(spinner.parentNode) spinner.remove(); }
       }
       if(w.data.photoData){
-        photoTile.innerHTML='<img src="'+w.data.photoData+'" style="width:100%; height:100%; object-fit:cover; display:block;" class="inserat-photo-fade-in" alt=""><button type="button" class="inserat-photo-change" aria-label="Foto ändern"><i data-lucide="camera" style="width:14px;height:14px;stroke-width:2.5;"></i> 📷 Foto ändern</button>';
+        var cropY = (typeof w.data.photoCropY === 'number') ? w.data.photoCropY : 0;
+        photoTile.innerHTML='<div class="inserat-photo-crop-wrap" style="position:absolute;inset:0;overflow:hidden;"><img src="'+w.data.photoData+'" class="inserat-photo-fade-in inserat-photo-draggable" style="width:100%;height:100%;object-fit:cover;display:block;transform:translateY('+cropY+'px);touch-action:none;" alt=""></div><button type="button" class="inserat-photo-edit-icon" aria-label="Bearbeiten" style="position:absolute;top:12px;right:12px;width:36px;height:36px;border:none;border-radius:50%;background:rgba(0,0,0,0.35);backdrop-filter:blur(8px);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2;"><i data-lucide="pencil" style="width:16px;height:16px;stroke-width:2.5;"></i></button><button type="button" class="inserat-photo-change" aria-label="Foto ändern"><i data-lucide="camera" style="width:14px;height:14px;stroke-width:2.5;"></i> 📷 Foto ändern</button>';
+        const imgEl=photoTile.querySelector('.inserat-photo-draggable');
+        const editIcon=photoTile.querySelector('.inserat-photo-edit-icon');
+        if(editIcon) editIcon.onclick=function(e){ e.stopPropagation(); handlePhotoPick(); };
         const rem=photoTile.querySelector('.inserat-photo-change');
         if(rem) rem.onclick=function(e){ e.stopPropagation(); handlePhotoPick(); };
+        if(imgEl){
+          var startY=0, startCrop=0;
+          imgEl.addEventListener('touchstart',function(ev){ if(ev.touches.length!==1) return; startY=ev.touches[0].clientY; startCrop=cropY; ev.preventDefault(); },{passive:false});
+          imgEl.addEventListener('touchmove',function(ev){ if(ev.touches.length!==1) return; var dy=ev.touches[0].clientY-startY; cropY=Math.max(-80,Math.min(80,startCrop+dy)); imgEl.style.transform='translateY('+cropY+'px)'; w.data.photoCropY=cropY; saveDraft(); ev.preventDefault(); },{passive:false});
+          imgEl.addEventListener('touchend',function(){ hapticLight(); });
+        }
       } else {
         var urls = getListingSuggestionUrls();
         var showSuggestions = listingSuggestionsVisible() && urls.length;
@@ -15613,16 +15631,17 @@
         wrap.onclick=function(e){ e.preventDefault(); e.stopPropagation(); if(typeof triggerHapticFeedback==='function') triggerHapticFeedback([5]); if(toggleKey==='reuse'){ w.data.reuse=w.data.reuse||{}; w.data.reuse.enabled=!w.data.reuse.enabled; } else w.data[toggleKey]=!w.data[toggleKey]; saveDraft(); rebuildWizard(); };
         powerBar.appendChild(wrap);
       }
-      w.data.dineInPossible=true;
-      function addPowerPillStatic(emo, label){
+      /* 🍴 Vor Ort: aus Profil – aktiv wenn dort eingespeichert (dineInPossibleDefault) */
+      function addPowerPillStatic(emo, label, isActive){
         const wrap=document.createElement('span');
-        wrap.className='status-pill inserat-soft-pill active power-pill-static';
+        wrap.className='status-pill inserat-soft-pill ' + (isActive ? 'active' : 'inactive') + ' power-pill-static';
         wrap.setAttribute('aria-label', label);
         wrap.setAttribute('title', label);
         wrap.innerHTML='<span class="inserat-pill-emo">'+emo+'</span>';
         powerBar.appendChild(wrap);
       }
-      addPowerPillStatic('🍴','Vor Ort');
+      var profileDineIn = (provider.profile && provider.profile.dineInPossibleDefault !== undefined) ? !!provider.profile.dineInPossibleDefault : true;
+      addPowerPillStatic('🍴','Vor Ort', profileDineIn);
       addPowerPill('🔄','Mehrweg', hasReuse, 'reuse');
       const hasTimeValue=!!(w.data.pickupWindow&&w.data.pickupWindow.trim())||(w.data.mealStart&&w.data.mealEnd);
       const timePill=document.createElement('button');
@@ -15754,8 +15773,9 @@
       var eurSpan=document.createElement('span'); eurSpan.className='inserat-price-pill-euro'; eurSpan.textContent=' €'; stepPriceWrap.appendChild(eurSpan);
       priceRowWrap.appendChild(stepPriceWrap);
       catPriceRow.appendChild(priceRowWrap);
-      scrollArea.appendChild(powerBar);
+      /* Top-Down: Kategorien → Preis → PowerBar (5 Säulen am Ende) */
       scrollArea.appendChild(catPriceRow);
+      scrollArea.appendChild(powerBar);
       scrollArea.appendChild(quickAdjustPanel);
       inputDish.addEventListener('keydown', function(){
         if(!catPriceRow || catPriceRow.classList.contains('harmonic-bounce')) return;
@@ -17531,7 +17551,7 @@
   var RESTORE_SCROLL_KEY = 'mittagio_restore_scroll';
   function getScrollElForView(viewId){
     if(viewId === 'v-provider-home'){ var h = document.getElementById('v-provider-home'); return h && h.querySelector('.dashboard-floating-wrap'); }
-    if(viewId === 'v-provider-pickups') return document.getElementById('provPickupsScroll');
+    if(viewId === 'v-provider-pickups') return document.getElementById('pickupsFloatingWrap');
     if(viewId === 'v-provider-week') return document.getElementById('kwBoardScroll');
     if(viewId === 'v-provider-cookbook') return document.getElementById('cookbookScrollWrap');
     if(viewId === 'v-provider-profile') return document.getElementById('providerProfileContent');
