@@ -1069,11 +1069,11 @@
     <section class="view prov-dashboard-stolz" id="v-provider-home">
       <div class="dashboard-floating-wrap">
         <!-- KASTEN 1: Dashboard Header (dynamic-header: Montserrat 900, kein Icon) [cite: 2026-02-18] -->
-        <header class="dashboard-kasten dashboard-kasten-header prov-header prov-header-stolz prov-page-header dynamic-header" id="providerDashboardHeader">
+        <header class="dashboard-kasten dashboard-kasten-header prov-header prov-header-stolz prov-page-header dynamic-header system-header" id="providerDashboardHeader">
           <div class="prov-header-inner">
             <div class="prov-page-header-row">
               <div class="prov-page-header-left prov-header-reset-trigger" data-reset-view="home" role="button" tabindex="0" aria-label="Zum Seitenanfang">
-                <h1 class="prov-page-header-title">Dashboard</h1>
+                <h1 class="prov-page-header-title system-header-title">Meine Küche</h1>
               </div>
               <button type="button" id="btnProviderHomeRefresh" title="Aktualisieren" aria-label="Daten neu laden" class="prov-page-header-action" style="background:rgba(0,0,0,0.06); border:none; min-width:44px; min-height:44px; width:44px; height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; color:#1a1a1a; cursor:pointer;">
                 <i data-lucide="refresh-cw" style="width:20px; height:20px;"></i>
@@ -1167,13 +1167,13 @@
     </section>
 
     <section class="view onboarding-view" id="v-provider-pickups">
-      <header class="prov-page-header dynamic-header" id="v-provider-pickups-header">
+      <header class="prov-page-header dynamic-header system-header" id="v-provider-pickups-header">
         <div class="prov-page-header-row">
           <div class="prov-page-header-left prov-header-reset-trigger" data-reset-view="pickups" role="button" tabindex="0" aria-label="Zum Seitenanfang">
-            <div class="prov-page-header-icon">
+            <div class="prov-page-header-icon system-header-icon">
               <i data-lucide="receipt" style="width:24px; height:24px;"></i>
             </div>
-            <h1 class="prov-page-header-title">Abholungen</h1>
+            <h1 class="prov-page-header-title system-header-title">Meine Abholung</h1>
           </div>
           <div class="prov-page-header-actions">
             <button type="button" id="btnKitchenListPDF" aria-label="PDF">
@@ -1283,14 +1283,14 @@
 
     <!-- Kochbuch: MASTER-SPEC MagazinKochbuch – nur Titel + Pills, Magazin-Karte, Bar BEARBEITEN | WOCHENPLAN | AUSWÄHLEN -->
     <section class="view" id="v-provider-cookbook" style="background:linear-gradient(180deg, rgba(254,243,199,0.2) 0%, #F5F5F7 30%);">
-      <header class="prov-page-header dynamic-header" id="v-provider-cookbook-header">
+      <header class="prov-page-header dynamic-header system-header" id="v-provider-cookbook-header">
         <div class="prov-page-header-row">
           <div class="prov-page-header-left prov-header-reset-trigger" data-reset-view="cookbook" style="flex:1; min-width:0;" role="button" tabindex="0" aria-label="Zum Seitenanfang">
             <div id="cookbookTitleWrap" style="display:flex; align-items:center; gap:12px; min-width:0;">
-              <div class="prov-page-header-icon">
+              <div class="prov-page-header-icon system-header-icon">
                 <i data-lucide="book-open" style="width:24px; height:24px;"></i>
               </div>
-              <h1 class="prov-page-header-title" id="cookbookHeaderTitle">Kochbuch</h1>
+              <h1 class="prov-page-header-title system-header-title" id="cookbookHeaderTitle">Kochbuch</h1>
             </div>
             <div id="cookbookSearchWrap" style="display:none; flex:1; min-width:0;">
               <input type="text" id="cookbookSearchInput" placeholder="Gericht suchen…" style="width:100%; height:40px; border-radius:12px; border:2px solid #e2e8f0; padding:0 14px; font-size:14px; font-weight:500; outline:none; box-sizing:border-box;" />

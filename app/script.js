@@ -9231,19 +9231,26 @@
       attachPTR(pickupsScroll, function(){ if(typeof renderProviderPickups==='function') renderProviderPickups(); }, 'provider-pickups');
       attachPTR(weekScroll, function(){ if(typeof renderWeekPlanBoard==='function') renderWeekPlanBoard(); else if(typeof renderProviderWeekPreview==='function') renderProviderWeekPreview(); }, 'provider-week');
       attachPTR(cookbookScroll, function(){ if(typeof renderCookbook==='function') renderCookbook(); }, 'provider-cookbook');
-      /* Header-Scroll: Beim Runterscrollen verschwindet .dynamic-header, beim Hochscrollen erscheint er [cite: 2026-02-18] */
+      /* Header-Scroll: system-header = Airbnb-Style Collapse (Title schrumpft, 48px Glass-Bar). Andere = header-hidden [cite: 2026-02-21] */
       var HEADER_SCROLL_THRESHOLD = 40;
+      var SYSTEM_HEADER_THRESHOLD = 60;
       var lastScrollTop = {};
       function setupHeaderScroll(scrollEl, headerEl){
         if(!scrollEl || !headerEl) return;
         var key = (scrollEl.id || headerEl.id || '') + '_' + Math.random().toString(36).slice(2);
         lastScrollTop[key] = 0;
+        var isSystemHeader = headerEl.classList.contains('system-header');
         scrollEl.addEventListener('scroll', function(){
           var st = scrollEl.scrollTop;
           var prev = lastScrollTop[key] || 0;
           lastScrollTop[key] = st;
-          if(st > HEADER_SCROLL_THRESHOLD && st > prev){ headerEl.classList.add('header-hidden'); }
-          else if(st <= HEADER_SCROLL_THRESHOLD || st < prev){ headerEl.classList.remove('header-hidden'); }
+          if(isSystemHeader){
+            if(st > SYSTEM_HEADER_THRESHOLD){ headerEl.classList.add('system-header-collapsed'); headerEl.classList.remove('header-hidden'); }
+            else{ headerEl.classList.remove('system-header-collapsed'); headerEl.classList.remove('header-hidden'); }
+          } else {
+            if(st > HEADER_SCROLL_THRESHOLD && st > prev){ headerEl.classList.add('header-hidden'); }
+            else if(st <= HEADER_SCROLL_THRESHOLD || st < prev){ headerEl.classList.remove('header-hidden'); }
+          }
         }, { passive: true });
       }
       setupHeaderScroll(homeWrap, document.getElementById('providerDashboardHeader'));

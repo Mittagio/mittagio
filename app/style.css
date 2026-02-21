@@ -3235,6 +3235,68 @@
       opacity: 0;
       pointer-events: none;
     }
+    /* system-header: Airbnb-Style Collapsing – beim Hochscrollen Title schrumpft, 48px Glass-Bar [cite: 2026-02-21] */
+    .system-header {
+      border-bottom: none !important;
+      box-shadow: none !important;
+      transition: min-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+        backdrop-filter 0.3s ease, background 0.3s ease;
+    }
+    .system-header .system-header-title {
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), font-size 0.3s ease, opacity 0.25s ease;
+    }
+    .system-header .system-header-icon {
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease, width 0.3s ease, height 0.3s ease;
+    }
+    .system-header.system-header-collapsed {
+      min-height: 48px !important;
+      padding-top: calc(6px + env(safe-area-inset-top, 0)) !important;
+      padding-bottom: 6px !important;
+      padding-left: 16px !important;
+      padding-right: 16px !important;
+      justify-content: center !important;
+      background: rgba(255, 255, 255, 0.75) !important;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 1px 0 rgba(0, 0, 0, 0.03) !important;
+    }
+    .system-header.system-header-collapsed .prov-page-header-row {
+      justify-content: center;
+    }
+    .system-header.system-header-collapsed .prov-page-header-left {
+      justify-content: center;
+      flex: 1;
+    }
+    .system-header.system-header-collapsed .system-header-title {
+      font-size: 15px !important;
+      transform: scale(0.9);
+      margin: 0;
+    }
+    .system-header.system-header-collapsed .system-header-icon {
+      width: 28px !important;
+      height: 28px !important;
+      transform: scale(0.75);
+    }
+    .system-header.system-header-collapsed .prov-page-header-actions,
+    .system-header.system-header-collapsed .prov-page-header-action {
+      opacity: 0.9;
+    }
+    .system-header.system-header-collapsed .prov-page-header-right {
+      position: absolute;
+      right: 16px;
+    }
+    .system-header.system-header-collapsed #provPickupFilter,
+    .system-header.system-header-collapsed .cookbook-category-pills {
+      display: none !important;
+    }
+    .system-header.system-header-collapsed .prov-header-inner > div:not(.prov-page-header-row) {
+      display: none !important;
+    }
+    /* Flüssiger Übergang Header–Inhalt, keine harte Trennlinie [cite: 2026-02-21] */
+    body.provider-mode .system-header.prov-page-header {
+      border-bottom: none !important;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.02) !important;
+    }
     /* Dashboard: kein Icon im dynamic-header */
     #providerDashboardHeader .prov-page-header-icon { display: none !important; }
 
