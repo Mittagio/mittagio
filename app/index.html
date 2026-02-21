@@ -1427,11 +1427,21 @@
       <button type="button" class="cookbook-action-sheet-btn" onclick="closeCookbookActionSheet()">Abbrechen</button>
     </div>
 
-    <!-- Provider-Profil "Mein Profil" – Ebene 1: Business-Dashboard | Ebene 2: Zahnrad Einstellungen [Master-Prompt] -->
+    <!-- Provider-Profil "Mein Profil" – Header 1:1 wie Meine Küche (Klon), Zahnrad in Aktionen -->
     <section class="view onboarding-view" id="v-provider-profile" style="display:flex; flex-direction:column; min-height:0;">
-      <header id="providerProfileHeader" class="provider-profile-header-rebuild">
-        <div class="provider-profile-header-row1">
-          <button type="button" id="providerProfileGearBtn" class="provider-profile-gear-btn provider-profile-gear-btn-tr" aria-label="Einstellungen"><svg class="provider-profile-gear-svg" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
+      <header id="providerProfileHeader" class="prov-page-header">
+        <div class="prov-page-header-row">
+          <div class="prov-page-header-left prov-header-reset-trigger" data-reset-view="profile" role="button" tabindex="0" aria-label="Zum Seitenanfang">
+            <div class="prov-page-header-icon" aria-hidden="true">
+              <i data-lucide="user" style="width:24px; height:24px;"></i>
+            </div>
+            <h1 class="prov-page-header-title">Meins</h1>
+          </div>
+          <div class="prov-page-header-actions">
+            <button type="button" id="providerProfileGearBtn" class="prov-page-header-action" aria-label="Einstellungen">
+              <i data-lucide="settings" style="width:20px; height:20px;"></i>
+            </button>
+          </div>
         </div>
       </header>
 

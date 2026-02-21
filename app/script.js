@@ -9158,6 +9158,7 @@
       cookbookShowSortMenu = false;
       if(typeof renderCookbook === 'function') renderCookbook();
     }
+    else if(view === 'profile') scrollEl = document.getElementById('providerProfileContent');
     if(scrollEl){ scrollEl.scrollTo({ top: 0, behavior: 'smooth' }); }
   }, true);
   document.addEventListener('click', function(e){
@@ -17281,7 +17282,9 @@
     if(viewId === 'v-provider-home'){ var h = document.getElementById('v-provider-home'); return h && h.querySelector('.dashboard-floating-wrap'); }
     if(viewId === 'v-provider-pickups') return document.getElementById('provPickupsScroll');
     if(viewId === 'v-provider-week') return document.getElementById('kwBoardScroll');
-    if(viewId === 'v-provider-cookbook') return document.getElementById('cookbookScrollWrap'); return null;
+    if(viewId === 'v-provider-cookbook') return document.getElementById('cookbookScrollWrap');
+    if(viewId === 'v-provider-profile') return document.getElementById('providerProfileContent');
+    return null;
   }
   if(typeof window !== 'undefined'){ window.RESTORE_SCROLL_KEY = RESTORE_SCROLL_KEY; window.getScrollElForView = getScrollElForView; }
   

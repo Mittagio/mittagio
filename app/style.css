@@ -3135,13 +3135,16 @@
       position: sticky;
       top: 0;
       z-index: 100;
-      background: var(--header-bg);
-      backdrop-filter: blur(var(--header-blur));
-      -webkit-backdrop-filter: blur(var(--header-blur));
+      background: rgba(245,245,240,0.95);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       padding: var(--header-padding-y) var(--header-padding-x) 16px;
       padding-top: calc(var(--header-padding-y) + env(safe-area-inset-top, 0));
       border: none;
       box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 900;
+      text-align: left;
     }
     
     .prov-title {
@@ -3152,23 +3155,26 @@
       color: var(--header-title-color);
     }
     
-    /* App-Header Abholungen/Wochenplan/Kochbuch – fixe Höhe 60px wie Kunde, padding 12px 16px */
+    /* App-Header Abholungen/Wochenplan/Kochbuch/Profil – einheitlich Meine-Küche-Style, permanent sticky */
     body.provider-mode .prov-page-header {
       position: sticky;
       top: 0;
-      z-index: 50;
+      z-index: 100;
       min-height: 60px;
       padding: 12px 16px;
       padding-top: calc(12px + env(safe-area-inset-top, 0));
-      background: var(--header-bg) !important;
-      backdrop-filter: blur(var(--header-blur));
-      -webkit-backdrop-filter: blur(var(--header-blur));
+      background: rgba(245,245,240,0.95) !important;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       border: none;
       box-shadow: 0 4px 20px rgba(0,0,0,0.03);
       box-sizing: border-box;
       display: flex;
       flex-direction: column;
       justify-content: center;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 900;
+      text-align: left;
     }
     .prov-page-header .prov-page-header-row {
       display: flex;
@@ -3513,7 +3519,7 @@
       backdrop-filter: blur(25px);
       -webkit-backdrop-filter: blur(25px);
       border: none !important;
-      border-radius: 34px !important;
+      border-radius: 0 !important;
       box-shadow: 0 8px 32px rgba(0,0,0,0.15) !important;
     }
     #providerNav:not(.provider-nav-pill){
@@ -3543,12 +3549,20 @@
     .provider-nav-pill .provider-nav-label{ font-size:10px; font-weight:700; text-align:center; letter-spacing:0.02em; display:block; }
     .provider-nav-pill .navbtn:not(.active) .provider-nav-label{ color:rgba(255,255,255,0.5); }
     .provider-nav-pill .navbtn.active .provider-nav-label{ color:#fff; }
-    /* Schwebende Glas-Pill: bottom/left/right 12px, border-radius 34px, blur(25px) [cite: 2026-02-18] */
+    /* Bottom-Nav: eckig (border-radius 0), am Gehäuserand – Icons/Texte nach oben (padding-bottom min. 25px) [cite: 2026-02-21 S25] */
     #providerNavWrap.provider-nav-wrap-pill{
-      bottom: 12px !important; left: 12px !important; right: 12px !important;
-      width: auto !important; box-sizing: border-box; z-index: 1052 !important;
+      bottom: 0 !important; left: 0 !important; right: 0 !important;
+      width: 100% !important; box-sizing: border-box; z-index: 1052 !important;
+      border-radius: 0 !important;
     }
-    #providerNavWrap #providerNav{ min-height: 75px; padding: 12px 24px calc(12px + env(safe-area-inset-bottom, 0)); display: flex; justify-content: space-between; align-items: center; }
+    #providerNavWrap #providerNav{
+      min-height: 75px;
+      padding: 12px 24px calc(25px + env(safe-area-inset-bottom, 0));
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 0 !important;
+    }
     [id^="v-provider-"] .panel h1,[id^="v-provider-"] .panel h2,[id^="v-provider-"] .panel h3,[id^="v-provider-"] .panel .section-title{ color:var(--provider-text) !important; }
     [id^="v-provider-"] .panel .hint{ color:var(--provider-text-muted) !important; }
     /* Dynamisch eingefügter Inhalt: immer lesbar */
@@ -5293,7 +5307,7 @@
     body.provider-mode [id^="v-provider-"].view.active{ min-height:100vh; min-height:100dvh; display:block !important; visibility:visible !important; opacity:1 !important; scroll-margin-top:0; position:relative; width:100%; max-width:100%; overflow-x:hidden; box-sizing:border-box; }
     /* Erster Viewport sofort gefüllt: Inhalt oben verankern, keine Animation die verschiebt */
     body.provider-mode [id^="v-provider-"].view.active{ animation:none !important; transform:translateY(0) !important; }
-    /* Header-Exitus: Alle Haupt-Header ausblenden – Content direkt unter Status-Balken, Edge-to-Edge [cite: 2026-02-18] */
+    /* Globaler Header-Standard: Alle 5 Anbieter-Seiten – permanent sticky, Meine-Küche-Style [cite: 2026-02-21] */
     body.provider-mode [id^="v-provider-"] .prov-header,
     body.provider-mode [id^="v-provider-"] .prov-page-header,
     body.provider-mode [id^="v-provider-"] .dashboard-kasten-header,
@@ -5301,8 +5315,20 @@
     body.provider-mode [id^="v-provider-"] .week-header-compact,
     body.provider-mode [id^="v-provider-"] .provider-header-bar,
     body.provider-mode [id^="v-provider-"] > header.prov-page-header,
-    body.provider-mode [id^="v-provider-"] > header.dashboard-kasten-header{ display:none !important; }
-    /* Wochenplan: Header wieder anzeigen – KW, Lücke finden, Vorlage, Drucken, Teilen [cite: 2026-02-18] */
+    body.provider-mode [id^="v-provider-"] > header.dashboard-kasten-header{
+      display:flex !important;
+      flex-direction:column;
+      position:sticky !important;
+      top:0 !important;
+      z-index:100;
+      background:rgba(245,245,240,0.95) !important;
+      backdrop-filter:blur(20px);
+      -webkit-backdrop-filter:blur(20px);
+      font-family:'Montserrat',sans-serif;
+      font-weight:900;
+      text-align:left;
+      box-sizing:border-box;
+    }
     body.provider-mode #v-provider-week.view.active .week-header-compact{ display:flex !important; }
     body.provider-mode [id^="v-provider-"].view.active#v-provider-week{ display:flex !important; flex-direction:column !important; }
     /* Meine Küche: View füllt main (height:100%), Wrap = absoluter Scroll-Bereich (immer sichtbar + scrollbar) */
@@ -5347,8 +5373,8 @@
       border:none !important;
     }
     #v-provider-home .dashboard-kasten-header.prov-page-header{
-      background:rgba(255,255,255,0.95) !important;
-      backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+      background:rgba(245,245,240,0.95) !important;
+      backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
       border:none !important;
       box-shadow:0 4px 20px rgba(0,0,0,0.03) !important;
       padding:calc(8px + env(safe-area-inset-top, 0)) 16px 12px 16px;
@@ -5356,10 +5382,15 @@
     #v-provider-home .dashboard-kasten-header .prov-header-inner{ padding:0; }
     #v-provider-home .dashboard-kasten-header .prov-title,
     #v-provider-home .dashboard-kasten-header .prov-page-header-title{ font-size: 20px !important; font-weight: 900 !important; letter-spacing: -0.03em; color: #0f172a !important; }
-    /* KPI-Kasten: Glas-Lesbarkeit (Text-Schatten) + veredelte Zahlen + Trennlinie */
+    /* KPI-Kasten: sticky direkt unter Header (Verdienst/Portionen bleiben beim Scrollen sichtbar) */
     #v-provider-home .dashboard-kasten-kpis{
       padding:18px env(safe-area-inset-right, 0) 18px env(safe-area-inset-left, 0);
-      position:relative;
+      position:sticky;
+      top:calc(64px + env(safe-area-inset-top, 0));
+      z-index:99;
+      background:rgba(245,245,240,0.98);
+      backdrop-filter:blur(20px);
+      -webkit-backdrop-filter:blur(20px);
     }
     #v-provider-home .dashboard-kasten-kpis::after{
       content:''; position:absolute; left:0; right:0; bottom:0; height:1px;
@@ -6061,7 +6092,7 @@
       body.provider-week-active .topbar{ display:none !important; }
       body.provider-week-active main{ padding-top:0 !important; padding-left:0 !important; padding-right:0 !important; max-width:none !important; overflow-x:hidden !important; }
       /* Tab-Nav bleibt fix sichtbar (Glas-Pill mit 12px Inset) */
-      body.provider-week-active #providerNavWrap{ position:fixed !important; bottom:12px !important; left:12px !important; right:12px !important; z-index:1052 !important; }
+      body.provider-week-active #providerNavWrap{ position:fixed !important; bottom:0 !important; left:0 !important; right:0 !important; z-index:1052 !important; border-radius:0 !important; }
       /* Dashboard: Dein Wochenplan – klare Trennung von KPIs, App-Kasten, S25-Safe */
       #providerWeekSection .prov-card{ padding:var(--card-padding, 20px); border-radius:24px; box-shadow:0 4px 20px rgba(0,0,0,0.06); border:none; background:#fff; }
       #providerWeekSection{ margin-top:28px; padding:24px 16px 24px; padding-left:max(16px, env(safe-area-inset-left)); padding-right:max(16px, env(safe-area-inset-right)); background:#fff; border-radius:28px; box-shadow:0 4px 24px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04); }
