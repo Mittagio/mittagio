@@ -14342,6 +14342,71 @@
     euCodes.forEach(function(c){ var s = EU_TO_ALLERGENS14[String(c).toUpperCase()]; if(s && !seen[s]){ seen[s]=true; out.push(s); } });
     return out;
   }
+  /** menuDatabase aus mittagstisch_02_2026.pdf – Auto-Fill Preis, Kategorie, Allergene [cite: 2026-02-21] */
+  var MENU_DB_EXTRA = [
+    { name: 'Jägerschnitzel (Schwein)', category: 'fleisch', price: '9.50', allergens: ['A1', 'C', 'G', 'M'] },
+    { name: 'Schwäbische Käsespätzle', category: 'veggie', price: '8.95', allergens: ['A1', 'C', 'G'] },
+    { name: 'Currywurst mit Brötchen', category: 'fleisch', price: '5.00', allergens: ['A1', 'M'] },
+    { name: 'Rahmiger Nudelauflauf', category: 'fleisch', price: '8.95', allergens: ['A1', 'C', 'G', 'M'] },
+    { name: 'Schweinebraten mit Kloß', category: 'fleisch', price: '11.90', allergens: ['A1', 'C', 'G', 'M'] },
+    { name: 'Pikantes Reisfleisch', category: 'fleisch', price: '9.50', allergens: ['S'] },
+    { name: 'Schinkennudeln mit Salat', category: 'fleisch', price: '8.95', allergens: ['A1', 'C', 'G', 'M'] },
+    { name: 'Portion Leberkäse', category: 'fleisch', price: '8.90', allergens: ['M', 'L'] },
+    { name: 'Hausgemachte Lasagne', category: 'fleisch', price: '8.95', allergens: ['A1', 'C', 'G', 'M'] },
+    { name: 'Linsen mit Spätzle & Saiten', category: 'fleisch', price: '8.95', allergens: ['A1', 'C', 'G', 'M'] },
+    { name: 'Tortellini Schinken-Sahne', category: 'fleisch', price: '8.95', allergens: ['A1', 'C', 'G', 'M'] },
+    { name: 'Pikanter Heringstopf', category: 'fisch', price: '9.50', allergens: ['C', 'D', 'M', 'G'] },
+    { name: 'Backfisch mit Remoulade', category: 'fisch', price: '10.50', allergens: ['A1', 'C', 'D', 'M'] },
+    { name: 'Serviettenknödel Pilzrahm', category: 'veggie', price: '8.40', allergens: ['A1', 'C', 'G', 'M'] },
+    { name: 'Kartoffel-Gemüse-Gratin', category: 'veggie', price: '8.40', allergens: ['G', 'M'] },
+    { name: 'Fastnachts-Burger', category: 'fleisch', price: '6.90', allergens: ['A1', 'C', 'G'] },
+    { name: 'Rindergulasch mit Nudeln', category: 'fleisch', price: '10.90', allergens: ['A1', 'L'] },
+    { name: 'Gaisburger Marsch', category: 'fleisch', price: '9.50', allergens: ['A1', 'C', 'L'] },
+    { name: 'Maultaschen geröstet', category: 'fleisch', price: '9.50', allergens: ['A1', 'C', 'L'] },
+    { name: 'Zwiebelrostbraten', category: 'fleisch', price: '15.90', allergens: ['L'] },
+    { name: 'Putenschnitzel Wiener Art', category: 'fleisch', price: '9.50', allergens: ['A1', 'C'] },
+    { name: 'Wurstsalat mit Brot', category: 'fleisch', price: '8.50', allergens: ['M', 'L'] },
+    { name: 'Gemüseeintopf (Vegan)', category: 'vegan', price: '6.50', allergens: ['L'] },
+    { name: 'Hähnchengeschnetzeltes', category: 'fleisch', price: '9.50', allergens: ['G', 'L'] },
+    { name: 'Tafelspitz mit Meerrettich', category: 'fleisch', price: '13.50', allergens: ['L', 'G'] },
+    { name: 'Schupfnudeln mit Kraut', category: 'veggie', price: '8.50', allergens: ['A1', 'C'] },
+    { name: 'Gyros mit Zaziki & Reis', category: 'fleisch', price: '9.50', allergens: ['G'] },
+    { name: 'Kartoffelsalat (Portion)', category: 'salat', price: '4.50', allergens: ['L', 'M'] },
+    { name: 'Grillhähnchen (halbes)', category: 'fleisch', price: '8.90', allergens: ['L'] },
+    { name: 'Reispfanne mit Gemüse', category: 'vegan', price: '7.90', allergens: ['L'] }
+  ];
+  /** menuDatabase-Kategorie → UI-Kategorie (Fleisch|Vegetarisch|Vegan|Salat) */
+  var MENU_CAT_MAP = { fleisch: 'Fleisch', veggie: 'Vegetarisch', vegan: 'Vegan', salat: 'Salat', fisch: 'Fleisch' };
+  /** PDF-Allergen (A1,C,G,M,L,S,D) → ALLERGENS_14 short */
+  var MENU_ALLERGEN_MAP = { A1: 'GL', A: 'GL', C: 'EI', G: 'MI', M: 'SN', L: 'SE', S: 'SO', D: 'FI' };
+  function mapMenuAllergensToShort(arr) {
+    if (!arr || !Array.isArray(arr)) return [];
+    var out = [], seen = {};
+    arr.forEach(function(c) {
+      var s = MENU_ALLERGEN_MAP[String(c).toUpperCase()] || MENU_ALLERGEN_MAP[String(c).replace(/\d/g, '')];
+      if (s && !seen[s]) { seen[s] = true; out.push(s); }
+    });
+    return out;
+  }
+  function getMenuEntryForDish(dishVal) {
+    var n = String(dishVal || '').trim().toLowerCase();
+    if (!n) return null;
+    var db = typeof MENU_DB_EXTRA !== 'undefined' ? MENU_DB_EXTRA : [];
+    for (var i = 0; i < db.length; i++) {
+      var d = db[i];
+      var dn = (d.name || '').toLowerCase().trim();
+      if (dn === n) return { name: d.name, category: MENU_CAT_MAP[d.category] || 'Fleisch', price: parseFloat(String(d.price || '8.9').replace(',', '.')) || 8.9, allergens: mapMenuAllergensToShort(d.allergens || []) };
+      if (dn.indexOf(n) === 0 || n.indexOf(dn) >= 0) return { name: d.name, category: MENU_CAT_MAP[d.category] || 'Fleisch', price: parseFloat(String(d.price || '8.9').replace(',', '.')) || 8.9, allergens: mapMenuAllergensToShort(d.allergens || []) };
+    }
+    var t30 = typeof TOP_30_DISHES !== 'undefined' ? TOP_30_DISHES : [];
+    for (var j = 0; j < t30.length; j++) {
+      var t = t30[j];
+      var tn = (t.name || '').toLowerCase().trim();
+      if (tn === n) return { name: t.name, category: t.category || 'Fleisch', price: 8.9, allergens: mapEuAllergensToShort(t.allergens || []) };
+      if (tn.indexOf(n) === 0 || n.indexOf(tn) >= 0) return { name: t.name, category: t.category || 'Fleisch', price: 8.9, allergens: mapEuAllergensToShort(t.allergens || []) };
+    }
+    return null;
+  }
   /** Top-30 Gerichte als Autocomplete-Quelle [cite: 2026-01-29, 2026-02-21] */
   const TOP_30_DISHES = [
     {name:'Wiener Schnitzel', category:'Fleisch', allergens:['A','C']},
@@ -14432,6 +14497,8 @@
     return null;
   }
   function getCategorySuggestionForDish(dishName){
+    var menu = getMenuEntryForDish(dishName);
+    if(menu && menu.category) return menu.category;
     var n = String(dishName||'').trim().toLowerCase();
     if(!n) return null;
     if(typeof TOP_30_DISHES !== 'undefined'){
@@ -14446,6 +14513,8 @@
     return null;
   }
   function getAllergenSuggestionsForDish(dishName){
+    var menu = getMenuEntryForDish(dishName);
+    if(menu && menu.allergens && menu.allergens.length) return menu.allergens;
     const n = String(dishName||'').trim().toLowerCase();
     if(!n) return [];
     if(typeof TOP_30_DISHES !== 'undefined'){
@@ -14465,6 +14534,11 @@
     const wizard = document.getElementById('wizard');
     if(wbd) wbd.classList.add('active');
     if(wizard) wizard.classList.add('active');
+    if(w && w.kind === 'listing' && document.body.classList.contains('provider-mode')){
+      var pn = document.getElementById('providerNavWrap');
+      if(pn) pn.style.setProperty('display', 'none', 'important');
+      document.body.classList.add('wizard-inserat-open');
+    }
     pushViewState({wizard: true}, location.pathname);
     localStorage.setItem('mittagio_wizard_open', 'true');
   }
@@ -14476,6 +14550,9 @@
     const wizard = document.getElementById('wizard');
     document.getElementById('wbd').classList.remove('active');
     if(wizard){ wizard.classList.remove('active'); wizard.removeAttribute('data-flow'); }
+    document.body.classList.remove('wizard-inserat-open');
+    var pn = document.getElementById('providerNavWrap');
+    if(pn && document.body.classList.contains('provider-mode')) pn.style.removeProperty('display');
     restoreWizardActionsBar();
     localStorage.removeItem('mittagio_wizard_open');
     if(clearDraft) localStorage.removeItem('wizard_draft');
@@ -15202,9 +15279,14 @@
       sheet.setAttribute('data-inserat-card', 'true');
       sheet.style.cssText = 'padding:0; overflow:visible; display:flex; flex-direction:column; min-height:0; border-radius:0; background:transparent;';
       const box = document.createElement('div');
-      box.className='liquid-master-panel glass-express-step0 inserat-universal-mask inserat-master-flow liquid-panel listing-glass-panel s25-floating-panel inserat-card';
+      box.className='liquid-master-panel glass-express-step0 inserat-universal-mask inserat-master-flow liquid-panel listing-glass-panel s25-floating-panel inserat-card inserat-airbnb-refactor';
       box.setAttribute('data-inserat-card','true');
       box.style.cssText='padding:0; overflow:hidden; display:flex; flex-direction:column; min-height:0;';
+      var collapsingHeader=document.createElement('div');
+      collapsingHeader.className='inserat-collapsing-header';
+      collapsingHeader.innerHTML='<span class="inserat-collapsing-title">Dein Inserat</span>';
+      collapsingHeader.style.cssText='position:sticky; top:0; z-index:12; flex-shrink:0; padding:12px 16px; background:rgba(255,255,255,0.95); backdrop-filter:blur(12px); border-bottom:1px solid rgba(0,0,0,0.06); text-align:center; transition:padding 0.25s ease, font-size 0.25s ease;';
+      box.appendChild(collapsingHeader);
       sheet.appendChild(box);
       const saveDraft = () => { localStorage.setItem('wizard_draft', JSON.stringify(w)); };
       const dismissKeyboard = ()=>{ try { if(document.activeElement && document.activeElement.blur) document.activeElement.blur(); } catch(e){} };
@@ -15425,14 +15507,16 @@
       stepName.style.cssText='width:100%;';
       const dishDatalist=document.createElement('datalist');
       dishDatalist.id='inserat-dish-datalist';
-      var dishSuggestions = (typeof TOP_30_DISHES !== 'undefined') ? TOP_30_DISHES.map(function(d){ return d.name; }) : ['Kürbissuppe','Kartoffelsuppe','Tomatensuppe','Linsensuppe','Schnitzel','Gulasch','Käsespätzle','Pasta','Pizza','Wrap','Burger','Falafel','Lachs','Sushi','Thunfisch','Salat','Curry','Gemüsepfanne','Risotto','Lasagne'];
+      var dishSuggestions = [];
+      if (typeof MENU_DB_EXTRA !== 'undefined') dishSuggestions = MENU_DB_EXTRA.map(function(d){ return d.name; });
+      if (typeof TOP_30_DISHES !== 'undefined') TOP_30_DISHES.forEach(function(d){ if (dishSuggestions.indexOf(d.name) < 0) dishSuggestions.push(d.name); });
+      if (!dishSuggestions.length) dishSuggestions = ['Kürbissuppe','Schnitzel','Gulasch','Käsespätzle','Currywurst','Lasagne'];
       dishSuggestions.forEach(function(name){ var o=document.createElement('option'); o.value=name; dishDatalist.appendChild(o); });
       stepName.appendChild(dishDatalist);
       const inputDish=document.createElement('input');
       inputDish.id='gericht-name';
       inputDish.type='text';
-      inputDish.className='inserat-detail-style-title magnet-input';
-      inputDish.placeholder='Was kochst du heute?';
+      inputDish.className='inserat-detail-style-title magnet-input inserat-gericht-name-extra';
       inputDish.value=w.data.dish||'';
       inputDish.setAttribute('list','inserat-dish-datalist');
       inputDish.autocomplete='off';
@@ -15445,19 +15529,29 @@
         el.style.fontSize = sizeRem + 'rem';
       }
       function applyDishAutocomplete(dishVal){
-        var catSugg=getCategorySuggestionForDish(dishVal);
-        if(catSugg&&['Fleisch','Vegetarisch','Vegan','Salat'].indexOf(catSugg)>=0){ w.data.category=catSugg; }
-        var suggested=getAllergenSuggestionsForDish(dishVal);
-        if(suggested.length){ w.data.allergens=suggested.slice(); w.data.wantsAllergens=true; }
-        var descSugg=getDescriptionSuggestionForDish(dishVal);
-        if(descSugg&&(!w.data.description||!w.data.description.trim())){ w.data.description=descSugg; }
+        var menuEntry = getMenuEntryForDish(dishVal);
+        if (menuEntry) {
+          w.data.category = menuEntry.category;
+          w.data.price = menuEntry.price;
+          w.data.allergens = (menuEntry.allergens || []).slice();
+          w.data.wantsAllergens = !!(menuEntry.allergens && menuEntry.allergens.length);
+          var descSugg = getDescriptionSuggestionForDish(dishVal);
+          if (descSugg && (!w.data.description || !w.data.description.trim())) w.data.description = descSugg;
+        } else {
+          var catSugg = getCategorySuggestionForDish(dishVal);
+          if (catSugg && ['Fleisch','Vegetarisch','Vegan','Salat'].indexOf(catSugg) >= 0) w.data.category = catSugg;
+          var suggested = getAllergenSuggestionsForDish(dishVal);
+          if (suggested.length) { w.data.allergens = suggested.slice(); w.data.wantsAllergens = true; }
+          var descSugg = getDescriptionSuggestionForDish(dishVal);
+          if (descSugg && (!w.data.description || !w.data.description.trim())) w.data.description = descSugg;
+        }
         saveDraft(); rebuildWizard();
       }
       inputDish.oninput=()=>{
         w.data.dish=inputDish.value; saveDraft();
         adjustTitleFontSize();
         var val = (inputDish.value || '').trim().toLowerCase();
-        var exactMatch = (typeof TOP_30_DISHES !== 'undefined') && TOP_30_DISHES.some(function(d){ return (d.name||'').toLowerCase().trim() === val; });
+        var exactMatch = !!getMenuEntryForDish(inputDish.value) || ((typeof TOP_30_DISHES !== 'undefined') && TOP_30_DISHES.some(function(d){ return (d.name||'').toLowerCase().trim() === val; }));
         if(exactMatch){
           if(listingDebounceTimer) clearTimeout(listingDebounceTimer);
           listingDebounceTimer=null;
@@ -15489,7 +15583,22 @@
       stepName.appendChild(inputDish);
       scrollArea.appendChild(stepName);
 
-      // ========== Power-Bar (Bahnhofskarte): 5 Icons direkt unter Titel, Edge-to-Edge. Aktiv=Emerald-Glow, Inaktiv=Grau [cite: 2026-02-20] ==========
+      // ========== Beschreibung: Textarea direkt unter Gerichtsname [cite: 2026-02-21 Airbnb] ==========
+      const wrapDesc=document.createElement('div');
+      wrapDesc.className='inserat-airbnb-field-wrap inserat-airbnb-desc-wrap inserat-desc-italic-wrap';
+      wrapDesc.style.cssText='margin-top:0; margin-bottom:12px;';
+      const inputDesc=document.createElement('input');
+      inputDesc.type='text';
+      inputDesc.className='liquid-input liquid-input-focus inserat-desc-input inserat-airbnb-desc inserat-desc-italic';
+      inputDesc.placeholder='… z.B. mit frischem saisonalen Gemüse …';
+      inputDesc.value=w.data.description||'';
+      inputDesc.style.cssText='width:100%; color:#64748b; font-size:0.95rem; box-sizing:border-box; border:none; background:transparent; outline:none;';
+      inputDesc.oninput=()=>{ w.data.description=inputDesc.value; saveDraft(); };
+      inputDesc.onblur=()=>{ dismissKeyboard(); hapticLight(); };
+      wrapDesc.appendChild(inputDesc);
+      scrollArea.appendChild(wrapDesc);
+
+      // ========== Power-Bar: 5 Toggles als Abschluss – wird weiter unten eingefügt (Reihenfolge: Name→Desc→Kategorien→Preis→PowerBar) ==========
       var pwParts=(w.data.pickupWindow||profileWindow).split(/\s*[–\-]\s*/);
       var timeStart=(pwParts[0]||'11:30').trim();
       var timeEnd=(pwParts[1]||'14:00').trim();
@@ -15596,26 +15705,8 @@
       extrasBarBtn.title='Extras';
       extrasBarBtn.onclick=function(){ openQuickAdjust('extras'); };
       powerBar.appendChild(extrasBarBtn);
-      scrollArea.appendChild(powerBar);
-      scrollArea.appendChild(quickAdjustPanel);
 
-      // ========== 3. EBENE (Beschreibung): Direkt unter PowerBar, Schiefergrau #64748b [cite: 2026-02-18] ==========
-      const wrapDesc=document.createElement('div');
-      wrapDesc.className='inserat-airbnb-field-wrap inserat-airbnb-desc-wrap inserat-desc-italic-wrap';
-      wrapDesc.style.cssText='margin-top:0; margin-bottom:8px;';
-      const inputDesc=document.createElement('input');
-      inputDesc.type='text';
-      inputDesc.className='liquid-input liquid-input-focus inserat-desc-input inserat-airbnb-desc inserat-desc-italic';
-      inputDesc.placeholder='… z.B. mit frischem saisonalen Gemüse …';
-      inputDesc.value=w.data.description||'';
-      inputDesc.style.cssText='color:#64748b; font-size:0.95rem;';
-      inputDesc.oninput=()=>{ w.data.description=inputDesc.value; saveDraft(); };
-      inputDesc.onblur=()=>{ dismissKeyboard(); hapticLight(); };
-      wrapDesc.appendChild(inputDesc);
-      scrollArea.appendChild(wrapDesc);
-      inputDesc.style.cssText='width:100%; color:#64748b; font-size:0.95rem; box-sizing:border-box; border:none; background:transparent; outline:none;';
-
-      // ========== 5. EBENE (Action-Row): Flex-Row – Kategorie-Pills links, gelber Preis-Button rechts. MODE_AD: „mit Abholnummer“ + „Nur Inserat“. MODE_PLAN: „Im Kochbuch speichern“ + „Einplanen“. Terminologie: nur Abholnummer [cite: 2026-02-18] ==========
+      // ========== 4. Kategorien + 5. Preis (Strikte Hierarchie: Name→Desc→Kategorien→Preis→PowerBar) [cite: 2026-02-21] ==========
       const catPriceRow=document.createElement('div');
       catPriceRow.className='inserat-cat-price-row';
       catPriceRow.id='step-cat';
@@ -15640,15 +15731,16 @@
       });
       catPriceRow.appendChild(stepCat);
       var priceRowWrap=document.createElement('div');
-      priceRowWrap.style.cssText='display:flex; justify-content:flex-end; align-items:center;';
+      priceRowWrap.className='price-input-wrapper';
+      priceRowWrap.style.cssText='display:flex; align-items:center; margin-top:16px;';
       const stepPriceWrap=document.createElement('div');
       stepPriceWrap.id='step-price';
-      stepPriceWrap.className='inserat-price-pill-wrap';
+      stepPriceWrap.className='inserat-price-pill-wrap price-input-wrapper';
       const inputPrice=document.createElement('input');
       inputPrice.type='text';
-      inputPrice.className='inserat-price-pill-input inserat-price-fintech inserat-price-input';
+      inputPrice.className='inserat-price-pill-input inserat-price-fintech inserat-price-input price-field';
       inputPrice.setAttribute('inputmode','decimal');
-      inputPrice.placeholder='0,00';
+      inputPrice.placeholder='8,90 €';
       inputPrice.value=(w.data.price>0?Number(w.data.price).toFixed(2).replace('.',','):'');
       const updateProfit = function(val){
         var price = parseFloat(String(val).replace(',','.')) || 0;
@@ -15665,6 +15757,9 @@
       var eurSpan=document.createElement('span'); eurSpan.className='inserat-price-pill-euro'; eurSpan.textContent=' €'; stepPriceWrap.appendChild(eurSpan);
       priceRowWrap.appendChild(stepPriceWrap);
       catPriceRow.appendChild(priceRowWrap);
+      scrollArea.appendChild(catPriceRow);
+      scrollArea.appendChild(powerBar);
+      scrollArea.appendChild(quickAdjustPanel);
       inputDish.addEventListener('keydown', function(){
         if(!catPriceRow || catPriceRow.classList.contains('harmonic-bounce')) return;
         catPriceRow.classList.add('harmonic-bounce');
@@ -15680,8 +15775,7 @@
       });
       inputPrice.onblur=function(){ if(w.data.price>0) inputPrice.value=Number(w.data.price).toFixed(2).replace('.',','); dismissKeyboard(); hapticLight(); if(catPriceRow) catPriceRow.classList.remove('hero-morph-active'); };
       inputPrice.oninput=()=>{ var v=inputPrice.value.replace(',','.'); w.data.price=parseFloat(v)||0; saveDraft(); updateProfit(v); hapticLight(); };
-      scrollArea.appendChild(stepName);
-      scrollArea.appendChild(catPriceRow);
+      inputPrice.onfocus=function(){ hapticLight(); };
       requestAnimationFrame(function(){ requestAnimationFrame(function(){ if(typeof adjustTitleFontSize === 'function') adjustTitleFontSize(); }); });
 
       // Verdienstvorschau (MODE_AD): Dein Verdienst bei 30 Portionen [cite: Master-Prompt 2026-02-19]
@@ -15705,6 +15799,10 @@
       }
 
       box.appendChild(scrollArea);
+      scrollArea.addEventListener('scroll', function(){
+        var ch = box.querySelector('.inserat-collapsing-header');
+        if(ch) ch.classList.toggle('is-scrolled', scrollArea.scrollTop > 60);
+      });
 
       // 9. ACTION BUTTONS – MODE_PLAN (week/cookbook): Blue „In den Wochenplan einplanen“ + grüner „Nur im Kochbuch“. MODE_AD (dashboard): Preisübersicht + mit Abholnummer + Nur Inserat [cite: 2026-02-18]
       var isInserierenRoute = (entryPoint === 'dashboard' || entryPoint === 'week' || entryPoint === 'cookbook');

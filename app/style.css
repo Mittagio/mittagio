@@ -2547,6 +2547,49 @@
     .liquid-master-panel #step-name input.magnet-input:focus {
       animation: magnet-pulse 1.2s ease-in-out infinite;
     }
+    /* Ghost-Price: Pulsierender Placeholder 8,90 € [cite: 2026-02-21] */
+    @keyframes ghostPulse {
+      0% { opacity: 0.3; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(1.01); }
+      100% { opacity: 0.3; transform: scale(1); }
+    }
+    #wizard[data-flow="listing"] .price-input-wrapper input.price-field::placeholder,
+    #wizard[data-flow="listing"] .price-field::placeholder {
+      color: #64748b;
+      font-weight: 700;
+      animation: ghostPulse 3s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    }
+    #wizard[data-flow="listing"] .price-field:focus {
+      outline: none;
+      border-bottom: 2px solid #10b981;
+      transition: border-color 0.3s ease;
+    }
+    /* Collapsing Header „Dein Inserat“ [cite: 2026-02-21] */
+    #wizard[data-flow="listing"] .inserat-collapsing-header .inserat-collapsing-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: #0f172a;
+      transition: font-size 0.25s ease;
+    }
+    #wizard[data-flow="listing"] .inserat-collapsing-header.is-scrolled .inserat-collapsing-title {
+      font-size: 14px;
+      font-weight: 700;
+    }
+    /* Native Immersion: Nav ausblenden wenn InseratCard offen */
+    body.wizard-inserat-open #providerNavWrap {
+      display: none !important;
+    }
+    /* Sticky Bottom: Aktionsleiste vollflächig, keine Rundung unten [cite: 2026-02-21] */
+    body.wizard-inserat-open #wizard[data-flow="listing"] .inserat-action-section.inserat-action-layer {
+      bottom: 0 !important;
+      left: 0;
+      right: 0;
+      border-radius: 0;
+      padding: 20px 16px max(20px, env(safe-area-inset-bottom)) !important;
+      background: rgba(255,255,255,0.98);
+      border-top: 1px solid rgba(0,0,0,0.06);
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+    }
     
     /* Guided Interaction: Pulsieren des Foto-Bereichs bei leerer Karte [cite: 2026-01-29] */
     @keyframes inserat-card-photo-pulse {
