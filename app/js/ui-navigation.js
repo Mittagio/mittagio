@@ -436,15 +436,7 @@
     if(typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard(); else renderWeekPlan();
     var newPath = location.pathname + '?week=' + window.weekPlanKWIndex + '&day=' + window.weekPlanDay;
     pushViewState({view: 'provider-week', mode: window.mode, week: window.weekPlanKWIndex, day: window.weekPlanDay}, newPath);
-    requestAnimationFrame(function(){
-      var scrollEl = document.getElementById('kwBoardScroll');
-      var headerEl = document.getElementById('weekHeaderCompact');
-      if(!scrollEl || !headerEl) return;
-      function onWeekScroll(){ headerEl.classList.toggle('scrolled', scrollEl.scrollTop > 10); }
-      scrollEl.removeEventListener('scroll', onWeekScroll);
-      scrollEl.addEventListener('scroll', onWeekScroll, { passive: true });
-      onWeekScroll();
-    });
+    /* Master-Fix: Kein scroll-basierter Header – weekHeaderCompact bleibt permanent sticky */
   }
   function showProviderCookbook(){
     if(!checkSessionValidity()) return;

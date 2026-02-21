@@ -2137,22 +2137,7 @@
   }
   setupPillsDragScroll(document.getElementById('discoverCategoriesBar'));
   setupPillsDragScroll(document.getElementById('discoverDaysBar'));
-  (function(){
-    var header = document.querySelector('#v-discover .discover-header-sticky');
-    if(!header) return;
-    function onScroll(){
-      var y = window.scrollY || document.documentElement.scrollTop || 0;
-      var discoverActive = document.getElementById('v-discover') && document.getElementById('v-discover').classList.contains('active');
-      if(discoverActive){
-        if(y > 50) header.classList.add('scrolled');
-        else header.classList.remove('scrolled');
-      } else {
-        header.classList.remove('scrolled');
-      }
-    }
-    window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
-  })();
+  /* Master-Fix: Kein Scroll-basierter Header – Header bleibt permanent sticky (Airbnb-Style) */
   var discoverMapBtnHierSuchen = document.getElementById('discoverMapBtnHierSuchen');
   if(discoverMapBtnHierSuchen){
     discoverMapBtnHierSuchen.onclick = function(){
@@ -9231,27 +9216,7 @@
       attachPTR(pickupsScroll, function(){ if(typeof renderProviderPickups==='function') renderProviderPickups(); }, 'provider-pickups');
       attachPTR(weekScroll, function(){ if(typeof renderWeekPlanBoard==='function') renderWeekPlanBoard(); else if(typeof renderProviderWeekPreview==='function') renderProviderWeekPreview(); }, 'provider-week');
       attachPTR(cookbookScroll, function(){ if(typeof renderCookbook==='function') renderCookbook(); }, 'provider-cookbook');
-      /* Header-Scroll: globaler Airbnb-Header – scrollTop>60 und runter → header-hidden, hoch → sofort entfernen [cite: 2026-02-21] */
-      var HEADER_SCROLL_THRESHOLD = 60;
-      var lastScrollTop = {};
-      function setupHeaderScroll(scrollEl, headerEl){
-        if(!scrollEl || !headerEl) return;
-        var key = (scrollEl.id || headerEl.id || '') + '_' + Math.random().toString(36).slice(2);
-        lastScrollTop[key] = 0;
-        scrollEl.addEventListener('scroll', function(){
-          var st = scrollEl.scrollTop;
-          var prev = lastScrollTop[key] || 0;
-          lastScrollTop[key] = st;
-          if(st > HEADER_SCROLL_THRESHOLD && st > prev){ headerEl.classList.add('header-hidden'); }
-          else if(st <= HEADER_SCROLL_THRESHOLD || st < prev){ headerEl.classList.remove('header-hidden'); }
-        }, { passive: true });
-      }
-      setupHeaderScroll(homeWrap, document.getElementById('providerDashboardHeader'));
-      setupHeaderScroll(pickupsScroll, document.getElementById('v-provider-pickups-header'));
-      setupHeaderScroll(weekScroll, document.getElementById('weekHeaderCompact'));
-      setupHeaderScroll(cookbookScroll, document.getElementById('v-provider-cookbook-header'));
-      var profileScroll = document.getElementById('providerProfileContent');
-      setupHeaderScroll(profileScroll, document.getElementById('providerProfileHeader'));
+      /* Airbnb-Fest: Header bleibt permanent sticky – kein Verschwinden mehr [cite: 2026-02-21] */
     }, 300);
   })();
 
@@ -15310,7 +15275,7 @@
       var collapsingHeader=document.createElement('div');
       collapsingHeader.className='inserat-collapsing-header';
       collapsingHeader.innerHTML='<span class="inserat-collapsing-title">Dein Inserat</span>';
-      collapsingHeader.style.cssText='position:sticky; top:0; z-index:12; flex-shrink:0; padding:12px 16px; background:rgba(255,255,255,0.95); backdrop-filter:blur(12px); border-bottom:1px solid rgba(0,0,0,0.06); text-align:center; transition:padding 0.25s ease, font-size 0.25s ease;';
+      collapsingHeader.style.cssText='position:sticky; top:0; z-index:12; flex-shrink:0; padding:12px 16px; background:rgba(245,245,240,0.95); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); text-align:center; font-family:\'Montserrat\',sans-serif; font-weight:900; font-size:20px; color:#1a1a1a;';
       box.appendChild(collapsingHeader);
       sheet.appendChild(box);
       const saveDraft = () => { localStorage.setItem('wizard_draft', JSON.stringify(w)); };
@@ -15530,7 +15495,7 @@
       const stepName=document.createElement('div');
       stepName.id='step-name';
       stepName.className='inserat-section inserat-unified-title-wrap';
-      stepName.style.cssText='width:100%; margin-top:20px;';
+      stepName.style.cssText='width:100%; margin-top:12px; margin-bottom:4px;';
       const dishDatalist=document.createElement('datalist');
       dishDatalist.id='inserat-dish-datalist';
       var dishSuggestions = [];
@@ -15547,7 +15512,7 @@
       inputDish.placeholder='z.B. Jägerschnitzel';
       inputDish.setAttribute('list','inserat-dish-datalist');
       inputDish.autocomplete='off';
-      inputDish.style.cssText='width:100%; max-width:100%; color:#0f172a; font-weight:800; box-sizing:border-box; border:none; background:transparent; outline:none;';
+      inputDish.style.cssText='width:100%; max-width:100%; color:#1a1a1a; font-family:\'Montserrat\',sans-serif; font-weight:900; font-style:normal; box-sizing:border-box; border:none; background:transparent; outline:none;';
       function adjustTitleFontSize(){
         var el = inputDish;
         if(!el || !el.offsetParent) return;
@@ -15613,19 +15578,19 @@
       // ========== Beschreibung: Textarea ohne harten Rahmen [cite: 2026-02-21] ==========
       const wrapDesc=document.createElement('div');
       wrapDesc.className='inserat-airbnb-field-wrap inserat-airbnb-desc-wrap inserat-desc-italic-wrap inserat-desc-no-frame';
-      wrapDesc.style.cssText='margin-top:0; margin-bottom:12px;';
+      wrapDesc.style.cssText='margin-top:0; margin-bottom:8px;';
       const inputDesc=document.createElement('textarea');
       inputDesc.className='liquid-input liquid-input-focus inserat-desc-input inserat-airbnb-desc inserat-desc-italic inserat-desc-textarea';
       inputDesc.placeholder='… z.B. mit frischem saisonalen Gemüse …';
       inputDesc.value=w.data.description||'';
       inputDesc.rows=2;
-      inputDesc.style.cssText='width:100%; color:#64748b; font-size:0.95rem; box-sizing:border-box; border:none; background:transparent; outline:none; resize:none;';
+      inputDesc.style.cssText='width:100%; color:#666; font-size:0.85rem; font-style:normal; box-sizing:border-box; border:none; background:transparent; outline:none; resize:none;';
       inputDesc.oninput=()=>{ w.data.description=inputDesc.value; saveDraft(); };
       inputDesc.onblur=()=>{ dismissKeyboard(); hapticLight(); };
       wrapDesc.appendChild(inputDesc);
       scrollArea.appendChild(wrapDesc);
 
-      // ========== Power-Bar: 5 Toggles als Abschluss – wird weiter unten eingefügt (Reihenfolge: Name→Desc→Kategorien→Preis→PowerBar) ==========
+      // ========== Power-Bar: direkt unter Beschreibung, näher zum Titel [cite: 2026-02-21] ==========
       var pwParts=(w.data.pickupWindow||profileWindow).split(/\s*[–\-]\s*/);
       var timeStart=(pwParts[0]||'11:30').trim();
       var timeEnd=(pwParts[1]||'14:00').trim();
@@ -15785,8 +15750,8 @@
       var eurSpan=document.createElement('span'); eurSpan.className='inserat-price-pill-euro'; eurSpan.textContent=' €'; stepPriceWrap.appendChild(eurSpan);
       priceRowWrap.appendChild(stepPriceWrap);
       catPriceRow.appendChild(priceRowWrap);
-      scrollArea.appendChild(catPriceRow);
       scrollArea.appendChild(powerBar);
+      scrollArea.appendChild(catPriceRow);
       scrollArea.appendChild(quickAdjustPanel);
       inputDish.addEventListener('keydown', function(){
         if(!catPriceRow || catPriceRow.classList.contains('harmonic-bounce')) return;
@@ -15880,13 +15845,13 @@
         var btnSpeichern=document.createElement('button');
         btnSpeichern.type='button';
         btnSpeichern.className='inserat-btn-step1-left';
-        btnSpeichern.style.cssText='flex:1; min-height:60px; padding:14px 20px; border:none; border-radius:24px; background:rgba(255,255,255,0.6); font-size:16px; font-weight:700; color:#64748b; cursor:pointer; box-shadow:0 10px 30px rgba(0,0,0,0.15); backdrop-filter:blur(12px);';
+        btnSpeichern.style.cssText='flex:1; min-height:56px; padding:14px 16px; border:none; border-radius:0; background:#f1f5f9; font-size:15px; font-weight:700; color:#475569; cursor:pointer;';
         btnSpeichern.textContent='Speichern in...';
         btnSpeichern.onclick=function(){ hapticLight(); if(typeof showSaveScopeDialog==='function') showSaveScopeDialog({ onlyCurrent: function(){ saveDraft(); if(typeof showToast==='function') showToast('Als Entwurf gespeichert'); }, saveToCookbook: function(){ if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; } var id=saveToCookbookFromWizard(); if(id){ closeWizard(true); showSaveSuccessSheet({ title:'Im Kochbuch gespeichert', sub:'Dein Gericht ist in deinem Kochbuch.', dishName: w.data.dish||'', price: w.data.price, imageUrl: w.data.photoData||'', savedEntryId: id, savedDay: null, onFertig: function(){ if(typeof showToast==='function') showToast('Gericht im Kochbuch aktualisiert 📖'); if(typeof showProviderCookbook==='function') showProviderCookbook(); }, onLive: null }); } } }); };
         var btnWeiter=document.createElement('button');
         btnWeiter.type='button';
         btnWeiter.className='inserat-btn-step1-right';
-        btnWeiter.style.cssText='flex:1; min-height:60px; padding:14px 20px; border:none; border-radius:24px; background:#3b82f6; color:#fff; font-size:16px; font-weight:800; cursor:pointer; box-shadow:0 10px 30px rgba(0,0,0,0.15);';
+        btnWeiter.style.cssText='flex:1; min-height:56px; padding:14px 16px; border:none; border-radius:0; background:#121212; color:#fff; font-size:15px; font-weight:800; cursor:pointer;';
         btnWeiter.textContent='Weiter zur Veröffentlichung';
         btnWeiter.onclick=function(){
           hapticLight();
