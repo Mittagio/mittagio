@@ -1084,8 +1084,8 @@
           </div>
         </header>
 
-        <!-- KASTEN 2: KPIs -->
-        <div class="dashboard-kasten dashboard-kasten-kpis">
+        <!-- KASTEN 2: KPIs (sticky unter Header, Scroll-Divider via JS) -->
+        <div class="dashboard-kasten dashboard-kasten-kpis" id="dashboardKpisBlock">
           <div class="prov-stats-stolz" style="display:flex; justify-content:space-between; align-items:flex-end; border:none; padding:0;">
             <div id="kpiTagesessen" role="button" tabindex="0" style="text-align:center; cursor:pointer; min-height:40px; flex:1;" onclick="document.getElementById('providerActiveListingsSection')?.scrollIntoView({behavior:'smooth'})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); document.getElementById('providerActiveListingsSection')?.scrollIntoView({behavior:'smooth'});}" title="Tagesessen">
               <p id="kpiLabelTagesessen" class="kpi-label" style="margin:0 0 2px;">Tagesessen</p>
@@ -1170,7 +1170,7 @@
       <header class="prov-page-header dynamic-header system-header" id="v-provider-pickups-header">
         <div class="prov-page-header-row">
           <div class="prov-page-header-left prov-header-reset-trigger" data-reset-view="pickups" role="button" tabindex="0" aria-label="Zum Seitenanfang">
-            <h1 class="prov-page-header-title system-header-title">Meine Abholung</h1>
+            <h1 class="prov-page-header-title system-header-title">Meine Bestellungen</h1>
           </div>
           <div class="prov-page-header-actions">
             <button type="button" id="btnKitchenListPDF" aria-label="PDF">
@@ -1418,15 +1418,12 @@
       <button type="button" class="cookbook-action-sheet-btn" onclick="closeCookbookActionSheet()">Abbrechen</button>
     </div>
 
-    <!-- Provider-Profil "Mein Profil" – Header 1:1 wie Meine Küche (Klon), Zahnrad in Aktionen -->
+    <!-- Provider-Profil "Meins" – Header wie Meine Küche (ohne Icon), Zahnrad in Aktionen -->
     <section class="view onboarding-view" id="v-provider-profile" style="display:flex; flex-direction:column; min-height:0;">
-      <header id="providerProfileHeader" class="prov-page-header">
+      <header id="providerProfileHeader" class="prov-page-header dynamic-header system-header">
         <div class="prov-page-header-row">
           <div class="prov-page-header-left prov-header-reset-trigger" data-reset-view="profile" role="button" tabindex="0" aria-label="Zum Seitenanfang">
-            <div class="prov-page-header-icon" aria-hidden="true">
-              <i data-lucide="user" style="width:24px; height:24px;"></i>
-            </div>
-            <h1 class="prov-page-header-title">Meins</h1>
+            <h1 class="prov-page-header-title system-header-title">Meins</h1>
           </div>
           <div class="prov-page-header-actions">
             <button type="button" id="providerProfileGearBtn" class="prov-page-header-action" aria-label="Einstellungen">

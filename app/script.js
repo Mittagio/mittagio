@@ -9214,6 +9214,14 @@
       var weekScroll = document.getElementById('kwBoardScroll');
       var cookbookScroll = document.getElementById('cookbookScrollWrap');
       attachPTR(homeWrap, function(){ if(typeof renderProviderHome==='function') renderProviderHome(); }, 'provider-home');
+      /* KPI-Block: kpis-scrolled bei Scroll für visuelle Trennung (Inset-Divider/Schatten) */
+      var kpisBlock = document.getElementById('dashboardKpisBlock');
+      if(homeWrap && kpisBlock){
+        function onDashboardScroll(){ kpisBlock.classList.toggle('kpis-scrolled', homeWrap.scrollTop > 4); }
+        homeWrap.removeEventListener('scroll', onDashboardScroll);
+        homeWrap.addEventListener('scroll', onDashboardScroll, { passive: true });
+        onDashboardScroll();
+      }
       attachPTR(pickupsScroll, function(){ if(typeof renderProviderPickups==='function') renderProviderPickups(); }, 'provider-pickups');
       attachPTR(weekScroll, function(){ if(typeof renderWeekPlanBoard==='function') renderWeekPlanBoard(); else if(typeof renderProviderWeekPreview==='function') renderProviderWeekPreview(); }, 'provider-week');
       attachPTR(cookbookScroll, function(){ if(typeof renderCookbook==='function') renderCookbook(); }, 'provider-cookbook');
