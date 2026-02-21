@@ -9255,14 +9255,28 @@
   const btnProviderNavBack = document.getElementById('btnProviderNavBack');
   if(btnProviderNavBack) btnProviderNavBack.onclick = function(){ showProviderHome(); };
 
-  // Kochbuch-Shortcut in Header (Dashboard, Abholnummern, Wochenplan)
+  // Header Icon-Werkzeugleiste: Kochbuch (📖) + Share – identisch auf Dashboard, Abholnummern, Wochenplan
   document.addEventListener('click', function(e){
     var btn = e.target.closest('#btnHeaderCookbookShortcut, #btnPickupsHeaderCookbook, #btnWeekHeaderCookbook');
-    if(!btn) return;
-    e.preventDefault();
-    e.stopPropagation();
-    if(typeof haptic === 'function') haptic(6);
-    if(typeof showProviderCookbook === 'function') showProviderCookbook();
+    if(btn){
+      e.preventDefault();
+      e.stopPropagation();
+      if(typeof haptic === 'function') haptic(6);
+      if(typeof showProviderCookbook === 'function') showProviderCookbook();
+      return;
+    }
+    var shareBtn = e.target.closest('#btnHeaderShareShortcut, #btnPickupsHeaderShare, #btnWeekHeaderShare');
+    if(shareBtn){
+      e.preventDefault();
+      e.stopPropagation();
+      if(typeof haptic === 'function') haptic(6);
+      if(shareBtn.id === 'btnHeaderShareShortcut' && typeof shareTodayOffers === 'function') shareTodayOffers();
+      else if(shareBtn.id === 'btnPickupsHeaderShare'){
+        if(typeof generateKitchenListPDF === 'function') generateKitchenListPDF();
+        else if(typeof showToast === 'function') showToast('Küchenliste drucken');
+      }
+      else if(shareBtn.id === 'btnWeekHeaderShare' && typeof shareWeekPlan === 'function') shareWeekPlan();
+    }
   }, true);
 
   // Dashboard: „Zum Wochenplan“ → Deep-Link zur aktuellen KW und heute
@@ -9968,27 +9982,7 @@
     
     // FAB wird von ensureProviderFab() erstellt und dort verknüpft
 
-    // Refresh Button Handler: Tooltip bereits im HTML; Loading-Feedback (disabled + Spinner)
-    const btnRefresh = document.getElementById('btnProviderHomeRefresh');
-    if(btnRefresh){
-      btnRefresh.onclick = () => {
-        if(btnRefresh.getAttribute('aria-busy') === 'true') return;
-        btnRefresh.setAttribute('aria-busy', 'true');
-        btnRefresh.disabled = true;
-        const icon = btnRefresh.querySelector('i');
-        if(icon) {
-          icon.style.transition = 'transform 0.5s ease-in-out';
-          icon.style.transform = 'rotate(360deg)';
-        }
-        renderProviderHome();
-        setTimeout(() => {
-          btnRefresh.removeAttribute('aria-busy');
-          btnRefresh.disabled = false;
-          if(icon) { icon.style.transform = 'rotate(0deg)'; icon.style.transition = 'none'; }
-          if(typeof showToast === 'function') showToast('Daten aktualisiert');
-        }, 400);
-      };
-    }
+    // Header Share (Dashboard): Heutige Angebote teilen
     
     // Icons aktualisieren
     if(typeof lucide !== 'undefined') setTimeout(()=> lucide.createIcons(), 50);
@@ -10685,8 +10679,7 @@
     if (btnKwShare) btnKwShare.onclick = function(){ var d=document.getElementById('weekKebabDropdown'); if(d)d.style.display='none'; if(typeof haptic==='function')haptic(6); if(typeof shareWeekPlan==='function')shareWeekPlan(); };
     var monday = getWeekMonday(weekPlanKWIndex);
     var sunday = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + 6);
-    var kwBadge = document.getElementById('weekHeaderKwBadge');
-    if (kwBadge) kwBadge.textContent = getKWLabel(weekPlanKWIndex);
+    // KW-Badge entfernt (Layout-Symmetrie: Header wie Meine Küche)
     if (typeof lucide !== 'undefined') lucide.createIcons();
     /* Magic-Sheet: Saison-Vorlage, Lücke finden, Woche füllen */
     var magicList = document.getElementById('weekMagicSheetList');
@@ -12178,19 +12171,7 @@
       listEl.appendChild(row);
     });
     
-    // PDF-Küchenliste Buttons
-    const btnKitchenListPDF = document.getElementById('btnKitchenListPDF');
-    const btnKitchenListEmail = document.getElementById('btnKitchenListEmail');
-    if(btnKitchenListPDF){
-      btnKitchenListPDF.onclick = () => {
-        generateKitchenListPDF();
-      };
-    }
-    if(btnKitchenListEmail){
-      btnKitchenListEmail.onclick = () => {
-        emailKitchenList();
-      };
-    }
+    // Share-Button: Küchenliste drucken (PDF) – Handler via Header-Delegation
     
     // Icons aktualisieren
     if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
