@@ -35,7 +35,21 @@
     '</div>';
   }
 
+  /** Single Source: Header-Titel für alle 5 Anbieter-Seiten beim Laden setzen.
+   * Jede Seite ruft diese Funktion mit dem jeweiligen Titel auf.
+   * @param {string} title - z.B. "Meine Küche", "Meine Abholung", "Wochenplan", "Mein Kochbuch", "Mein Profil"
+   */
+  function setProviderPageHeader(title){
+    if(typeof document === 'undefined' || !title) return;
+    var sel = '.view.active .dynamic-header .prov-page-header-title, .view.active .dynamic-header .system-header-title, .view.active .dynamic-header h1';
+    var el = document.querySelector(sel);
+    if(el) el.textContent = String(title);
+    var weekTitle = document.getElementById('weekHeaderTitle');
+    if(weekTitle && document.querySelector('.view.active#v-provider-week')) weekTitle.textContent = String(title);
+  }
+
   if(typeof window !== 'undefined'){
     window.renderInseratCard = renderInseratCard;
+    window.setProviderPageHeader = setProviderPageHeader;
   }
 })();
