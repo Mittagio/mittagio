@@ -9231,32 +9231,27 @@
       attachPTR(pickupsScroll, function(){ if(typeof renderProviderPickups==='function') renderProviderPickups(); }, 'provider-pickups');
       attachPTR(weekScroll, function(){ if(typeof renderWeekPlanBoard==='function') renderWeekPlanBoard(); else if(typeof renderProviderWeekPreview==='function') renderProviderWeekPreview(); }, 'provider-week');
       attachPTR(cookbookScroll, function(){ if(typeof renderCookbook==='function') renderCookbook(); }, 'provider-cookbook');
-      /* Header-Scroll: system-header = Airbnb-Style Collapse (Title schrumpft, 48px Glass-Bar). Andere = header-hidden [cite: 2026-02-21] */
-      var HEADER_SCROLL_THRESHOLD = 40;
-      var SYSTEM_HEADER_THRESHOLD = 60;
+      /* Header-Scroll: globaler Airbnb-Header – scrollTop>60 und runter → header-hidden, hoch → sofort entfernen [cite: 2026-02-21] */
+      var HEADER_SCROLL_THRESHOLD = 60;
       var lastScrollTop = {};
       function setupHeaderScroll(scrollEl, headerEl){
         if(!scrollEl || !headerEl) return;
         var key = (scrollEl.id || headerEl.id || '') + '_' + Math.random().toString(36).slice(2);
         lastScrollTop[key] = 0;
-        var isSystemHeader = headerEl.classList.contains('system-header');
         scrollEl.addEventListener('scroll', function(){
           var st = scrollEl.scrollTop;
           var prev = lastScrollTop[key] || 0;
           lastScrollTop[key] = st;
-          if(isSystemHeader){
-            if(st > SYSTEM_HEADER_THRESHOLD){ headerEl.classList.add('system-header-collapsed'); headerEl.classList.remove('header-hidden'); }
-            else{ headerEl.classList.remove('system-header-collapsed'); headerEl.classList.remove('header-hidden'); }
-          } else {
-            if(st > HEADER_SCROLL_THRESHOLD && st > prev){ headerEl.classList.add('header-hidden'); }
-            else if(st <= HEADER_SCROLL_THRESHOLD || st < prev){ headerEl.classList.remove('header-hidden'); }
-          }
+          if(st > HEADER_SCROLL_THRESHOLD && st > prev){ headerEl.classList.add('header-hidden'); }
+          else if(st <= HEADER_SCROLL_THRESHOLD || st < prev){ headerEl.classList.remove('header-hidden'); }
         }, { passive: true });
       }
       setupHeaderScroll(homeWrap, document.getElementById('providerDashboardHeader'));
       setupHeaderScroll(pickupsScroll, document.getElementById('v-provider-pickups-header'));
       setupHeaderScroll(weekScroll, document.getElementById('weekHeaderCompact'));
       setupHeaderScroll(cookbookScroll, document.getElementById('v-provider-cookbook-header'));
+      var profileScroll = document.getElementById('providerProfileContent');
+      setupHeaderScroll(profileScroll, document.getElementById('providerProfileHeader'));
     }, 300);
   })();
 
@@ -14414,6 +14409,29 @@
     }
     return null;
   }
+  /** Fast-Insert: Bei „Weiter“ oder Gerichtsauswahl aus menuDatabase Preis, Kategorie, Allergene füllen [cite: 2026-02-21] */
+  function handlePriceFastInsert(panelEl) {
+    var box = panelEl || document.querySelector('#wizard .liquid-master-panel');
+    if (!box) return;
+    var priceInput = box.querySelector('.price-field, .inserat-price-input, input.inserat-price-fintech');
+    var dishInput = box.querySelector('#gericht-name, .ghost-input');
+    if (!priceInput || !dishInput) return;
+    var dishName = (dishInput.value || '').trim();
+    if (!dishName) return;
+    var menuEntry = getMenuEntryForDish(dishName);
+    if (priceInput.value.trim() === '' || Number(priceInput.value.replace(',', '.')) <= 0) {
+      if (menuEntry && menuEntry.price) {
+        priceInput.value = menuEntry.price.toFixed(2).replace('.', ',');
+        w.data.price = menuEntry.price;
+        if (menuEntry.category) w.data.category = menuEntry.category;
+        if (menuEntry.allergens && menuEntry.allergens.length) { w.data.allergens = menuEntry.allergens.slice(); w.data.wantsAllergens = true; }
+      } else {
+        priceInput.value = '8,90';
+        w.data.price = 8.9;
+      }
+      try { localStorage.setItem('wizard_draft', JSON.stringify(w)); } catch (e) {}
+    }
+  }
   /** Top-30 Gerichte als Autocomplete-Quelle [cite: 2026-01-29, 2026-02-21] */
   const TOP_30_DISHES = [
     {name:'Wiener Schnitzel', category:'Fleisch', allergens:['A','C']},
@@ -15444,7 +15462,7 @@
             var code=a.short; var name=a.name||code; var active=(w.data.allergens||[]).includes(code);
             var emo=(typeof ALLERGEN_EMOJI!=='undefined'&&ALLERGEN_EMOJI[code])?ALLERGEN_EMOJI[code]:'';
             var pill=document.createElement('button'); pill.type='button'; pill.className='extra-pill inserat-allergen-pill' + (active ? ' active' : ''); pill.style.cssText='cursor:pointer;'; pill.textContent=(emo ? emo + ' ' : '') + name; pill.title=name;
-            pill.onclick=function(){ hapticLight(); if(!w.data.allergens) w.data.allergens=[]; if(active){ w.data.allergens=w.data.allergens.filter(function(x){ return x!==code; }); } else{ w.data.allergens.push(code); } w.data.wantsAllergens=true; saveDraft(); pill.className='extra-pill inserat-allergen-pill' + ((w.data.allergens||[]).includes(code) ? ' active' : ''); var bar=photoTile.nextElementSibling; if(bar){ var fb=bar.querySelectorAll('.func-icon-btn'); if(fb[0]) fb[0].className='func-icon-btn ' + (!!(w.data.allergens&&w.data.allergens.length) ? 'active' : ''); } };
+            pill.onclick=function(){ hapticLight(); if(!w.data.allergens) w.data.allergens=[]; if(active){ w.data.allergens=w.data.allergens.filter(function(x){ return x!==code; }); } else{ w.data.allergens.push(code); } w.data.wantsAllergens=true; saveDraft(); pill.className='extra-pill inserat-allergen-pill' + ((w.data.allergens||[]).includes(code) ? ' active' : ''); var bar=scrollArea.querySelector('.inserat-power-bar'); if(bar){ var fb=bar.querySelectorAll('.func-icon-btn'); if(fb[0]) fb[0].className='func-icon-btn ' + (!!(w.data.allergens&&w.data.allergens.length) ? 'active' : ''); } };
             selectionOverlayInner.appendChild(pill);
           });
           var allergenRow=document.createElement('div'); allergenRow.style.cssText='display:flex; flex-direction:column; gap:10px; padding:12px 0 0; margin-top:8px; border-top:1px solid rgba(0,0,0,0.06);';
@@ -15459,7 +15477,7 @@
             var ex=w.data.extras.find(function(e){ return e.name===opt.name; }); var active=!!ex && Number(ex.price||0)>0; if(!ex) ex={ name:opt.name, price:0 };
             var pillWrap=document.createElement('div'); pillWrap.style.cssText='display:flex; align-items:center; gap:6px;';
             var btn=document.createElement('button'); btn.type='button'; btn.className='extra-pill' + (active ? ' active' : ''); btn.style.cssText='cursor:pointer;'; btn.textContent='➕ ' + opt.name;
-            btn.onclick=function(){ hapticLight(); var idx=w.data.extras.findIndex(function(e){ return e.name===opt.name; }); if(idx>=0){ w.data.extras.splice(idx,1); } else{ w.data.extras.push({ name:opt.name, price:opt.price }); } saveDraft(); var hasEx=!!w.data.extras.find(function(e){ return e.name===opt.name; }) && Number((w.data.extras.find(function(e){ return e.name===opt.name; })||{}).price||0)>0; btn.className='extra-pill' + (hasEx ? ' active' : ''); var bar=photoTile.nextElementSibling; if(bar){ var fb=bar.querySelectorAll('.func-icon-btn'); if(fb[1]) fb[1].className='func-icon-btn ' + (!!(w.data.extras&&w.data.extras.length) ? 'active' : ''); } if(pillWrap.querySelector('input')){ var next=w.data.extras.find(function(e){ return e.name===opt.name; }); if(next&&Number(next.price||0)>0){ pillWrap.querySelector('input').value=Number(next.price).toFixed(2).replace('.',','); } else { var inpWrap=pillWrap.querySelector('span'); if(inpWrap) inpWrap.remove(); } } else if(hasEx){ var inpWrap=document.createElement('span'); inpWrap.style.cssText='display:inline-flex; align-items:center; background:rgba(255,255,255,0.6); border-radius:999px; padding:4px 8px;'; var plus=document.createElement('span'); plus.style.cssText='font-size:10px; font-weight:800; color:#10b981; margin-right:4px;'; plus.textContent='+'; var inp=document.createElement('input'); inp.type='text'; inp.inputMode='decimal'; inp.style.cssText='width:36px; background:transparent; border:none; padding:0; font-size:12px; font-weight:800; color:#10b981; outline:none;'; var e=w.data.extras.find(function(x){ return x.name===opt.name; }); inp.value=Number((e&&e.price)||0).toFixed(2).replace('.',','); inp.oninput=function(){ if(e) e.price=parseFloat((inp.value||'0').replace(',','.'))||0; saveDraft(); }; inp.onclick=function(ev){ ev.stopPropagation(); }; var eur=document.createElement('span'); eur.style.cssText='font-size:10px; font-weight:800; color:#10b981; margin-left:2px;'; eur.textContent='€'; inpWrap.appendChild(plus); inpWrap.appendChild(inp); inpWrap.appendChild(eur); pillWrap.appendChild(inpWrap); } };
+            btn.onclick=function(){ hapticLight(); var idx=w.data.extras.findIndex(function(e){ return e.name===opt.name; }); if(idx>=0){ w.data.extras.splice(idx,1); } else{ w.data.extras.push({ name:opt.name, price:opt.price }); } saveDraft(); var hasEx=!!w.data.extras.find(function(e){ return e.name===opt.name; }) && Number((w.data.extras.find(function(e){ return e.name===opt.name; })||{}).price||0)>0; btn.className='extra-pill' + (hasEx ? ' active' : ''); var bar=scrollArea.querySelector('.inserat-power-bar'); if(bar){ var fb=bar.querySelectorAll('.func-icon-btn'); if(fb[1]) fb[1].className='func-icon-btn ' + (!!(w.data.extras&&w.data.extras.length) ? 'active' : ''); } if(pillWrap.querySelector('input')){ var next=w.data.extras.find(function(e){ return e.name===opt.name; }); if(next&&Number(next.price||0)>0){ pillWrap.querySelector('input').value=Number(next.price).toFixed(2).replace('.',','); } else { var inpWrap=pillWrap.querySelector('span'); if(inpWrap) inpWrap.remove(); } } else if(hasEx){ var inpWrap=document.createElement('span'); inpWrap.style.cssText='display:inline-flex; align-items:center; background:rgba(255,255,255,0.6); border-radius:999px; padding:4px 8px;'; var plus=document.createElement('span'); plus.style.cssText='font-size:10px; font-weight:800; color:#10b981; margin-right:4px;'; plus.textContent='+'; var inp=document.createElement('input'); inp.type='text'; inp.inputMode='decimal'; inp.style.cssText='width:36px; background:transparent; border:none; padding:0; font-size:12px; font-weight:800; color:#10b981; outline:none;'; var e=w.data.extras.find(function(x){ return x.name===opt.name; }); inp.value=Number((e&&e.price)||0).toFixed(2).replace('.',','); inp.oninput=function(){ if(e) e.price=parseFloat((inp.value||'0').replace(',','.'))||0; saveDraft(); }; inp.onclick=function(ev){ ev.stopPropagation(); }; var eur=document.createElement('span'); eur.style.cssText='font-size:10px; font-weight:800; color:#10b981; margin-left:2px;'; eur.textContent='€'; inpWrap.appendChild(plus); inpWrap.appendChild(inp); inpWrap.appendChild(eur); pillWrap.appendChild(inpWrap); } };
             pillWrap.appendChild(btn);
             if(active){ var inpWrap=document.createElement('span'); inpWrap.style.cssText='display:inline-flex; align-items:center; background:rgba(255,255,255,0.6); border-radius:999px; padding:4px 8px;'; var plus=document.createElement('span'); plus.style.cssText='font-size:10px; font-weight:800; color:#10b981; margin-right:4px;'; plus.textContent='+'; var inp=document.createElement('input'); inp.type='text'; inp.inputMode='decimal'; inp.style.cssText='width:36px; background:transparent; border:none; padding:0; font-size:12px; font-weight:800; color:#10b981; outline:none;'; inp.value=Number(ex.price).toFixed(2).replace('.',','); inp.oninput=function(){ ex.price=parseFloat((inp.value||'0').replace(',','.'))||0; saveDraft(); }; inp.onclick=function(ev){ ev.stopPropagation(); }; var eur=document.createElement('span'); eur.style.cssText='font-size:10px; font-weight:800; color:#10b981; margin-left:2px;'; eur.textContent='€'; inpWrap.appendChild(plus); inpWrap.appendChild(inp); inpWrap.appendChild(eur); pillWrap.appendChild(inpWrap); }
             extrasListWrap.appendChild(pillWrap);
@@ -15468,7 +15486,7 @@
           var extrasAddRow=document.createElement('div'); extrasAddRow.style.cssText='display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:10px; padding:8px 0; border-top:1px solid rgba(0,0,0,0.06);';
           var addNameInp=document.createElement('input'); addNameInp.type='text'; addNameInp.placeholder='Neues Extra'; addNameInp.style.cssText='padding:8px 12px; border-radius:10px; border:2px solid rgba(0,0,0,0.08); width:120px; font-size:14px;';
           var addPriceInp=document.createElement('input'); addPriceInp.type='text'; addPriceInp.inputMode='decimal'; addPriceInp.placeholder='0,00'; addPriceInp.style.cssText='padding:8px 12px; border-radius:10px; border:2px solid rgba(0,0,0,0.08); width:56px; font-size:14px;';
-          var btnAddExtra=document.createElement('button'); btnAddExtra.type='button'; btnAddExtra.textContent='Hinzufügen'; btnAddExtra.style.cssText='padding:8px 14px; border-radius:999px; border:none; background:#10b981; color:#fff; font-weight:700; cursor:pointer; font-size:13px;'; btnAddExtra.onclick=function(){ hapticLight(); var name=(addNameInp.value||'').trim(); if(!name) return; var price=parseFloat((addPriceInp.value||'0').replace(',','.'))||0; if(w.data.extras.some(function(e){ return e.name===name; })) return; w.data.extras.push({ name:name, price:price }); saveDraft(); addNameInp.value=''; addPriceInp.value=''; var bar=photoTile.nextElementSibling; if(bar){ var fb=bar.querySelectorAll('.func-icon-btn'); if(fb[1]) fb[1].className='func-icon-btn active'; } var pillWrap=document.createElement('div'); pillWrap.style.cssText='display:flex; align-items:center; gap:6px;'; var btn=document.createElement('button'); btn.type='button'; btn.className='extra-pill active'; btn.style.cssText='cursor:pointer;'; btn.textContent='➕ '+name; btn.onclick=function(){ hapticLight(); var idx=w.data.extras.findIndex(function(e){ return e.name===name; }); if(idx>=0){ w.data.extras.splice(idx,1); } saveDraft(); pillWrap.remove(); var bar=photoTile.nextElementSibling; if(bar){ var fb=bar.querySelectorAll('.func-icon-btn'); fb[1].className='func-icon-btn '+(w.data.extras.length?'active':''); } }; pillWrap.appendChild(btn); if(price>0){ var inpWrap=document.createElement('span'); inpWrap.style.cssText='display:inline-flex; align-items:center; background:rgba(255,255,255,0.6); border-radius:999px; padding:4px 8px;'; var e=w.data.extras.find(function(x){ return x.name===name; }); inpWrap.innerHTML='<span style="font-size:10px; font-weight:800; color:#10b981; margin-right:4px;">+</span><input type="text" inputmode="decimal" style="width:36px; background:transparent; border:none; padding:0; font-size:12px; font-weight:800; color:#10b981; outline:none;" value="'+Number(price).toFixed(2).replace('.',',')+'"><span style="font-size:10px; font-weight:800; color:#10b981; margin-left:2px;">€</span>'; var inp=inpWrap.querySelector('input'); if(inp&&e){ inp.oninput=function(){ e.price=parseFloat((inp.value||'0').replace(',','.'))||0; saveDraft(); }; inp.onclick=function(ev){ ev.stopPropagation(); }; } pillWrap.appendChild(inpWrap); } extrasListWrap.appendChild(pillWrap); if(typeof showToast==='function') showToast('Extra hinzugefügt'); };
+          var btnAddExtra=document.createElement('button'); btnAddExtra.type='button'; btnAddExtra.textContent='Hinzufügen'; btnAddExtra.style.cssText='padding:8px 14px; border-radius:999px; border:none; background:#10b981; color:#fff; font-weight:700; cursor:pointer; font-size:13px;'; btnAddExtra.onclick=function(){ hapticLight(); var name=(addNameInp.value||'').trim(); if(!name) return; var price=parseFloat((addPriceInp.value||'0').replace(',','.'))||0; if(w.data.extras.some(function(e){ return e.name===name; })) return; w.data.extras.push({ name:name, price:price }); saveDraft(); addNameInp.value=''; addPriceInp.value=''; var bar=scrollArea.querySelector('.inserat-power-bar'); if(bar){ var fb=bar.querySelectorAll('.func-icon-btn'); if(fb[1]) fb[1].className='func-icon-btn active'; } var pillWrap=document.createElement('div'); pillWrap.style.cssText='display:flex; align-items:center; gap:6px;'; var btn=document.createElement('button'); btn.type='button'; btn.className='extra-pill active'; btn.style.cssText='cursor:pointer;'; btn.textContent='➕ '+name; btn.onclick=function(){ hapticLight(); var idx=w.data.extras.findIndex(function(e){ return e.name===name; }); if(idx>=0){ w.data.extras.splice(idx,1); } saveDraft(); pillWrap.remove(); var bar=scrollArea.querySelector('.inserat-power-bar'); if(bar){ var fb=bar.querySelectorAll('.func-icon-btn'); if(fb[1]) fb[1].className='func-icon-btn '+(w.data.extras.length?'active':''); } }; pillWrap.appendChild(btn); if(price>0){ var inpWrap=document.createElement('span'); inpWrap.style.cssText='display:inline-flex; align-items:center; background:rgba(255,255,255,0.6); border-radius:999px; padding:4px 8px;'; var e=w.data.extras.find(function(x){ return x.name===name; }); inpWrap.innerHTML='<span style="font-size:10px; font-weight:800; color:#10b981; margin-right:4px;">+</span><input type="text" inputmode="decimal" style="width:36px; background:transparent; border:none; padding:0; font-size:12px; font-weight:800; color:#10b981; outline:none;" value="'+Number(price).toFixed(2).replace('.',',')+'"><span style="font-size:10px; font-weight:800; color:#10b981; margin-left:2px;">€</span>'; var inp=inpWrap.querySelector('input'); if(inp&&e){ inp.oninput=function(){ e.price=parseFloat((inp.value||'0').replace(',','.'))||0; saveDraft(); }; inp.onclick=function(ev){ ev.stopPropagation(); }; } pillWrap.appendChild(inpWrap); } extrasListWrap.appendChild(pillWrap); if(typeof showToast==='function') showToast('Extra hinzugefügt'); };
           extrasAddRow.appendChild(addNameInp); extrasAddRow.appendChild(addPriceInp); extrasAddRow.appendChild(btnAddExtra); selectionOverlayInner.appendChild(extrasAddRow);
           var extrasBtnRow=document.createElement('div'); extrasBtnRow.style.cssText='display:flex; flex-direction:column; gap:10px; padding:12px 0 0; margin-top:8px; border-top:1px solid rgba(0,0,0,0.06);';
           var btnFertigEx=document.createElement('button'); btnFertigEx.type='button'; btnFertigEx.className='inserat-fertig-kachel'; btnFertigEx.textContent='Fertig'; btnFertigEx.onclick=function(){ hapticLight(); closeHeaderSelection(); rebuildWizard(); };
@@ -15484,7 +15502,7 @@
           var row=document.createElement('div'); row.className='inserat-time-morph-row'; row.style.cssText='display:flex; align-items:center; justify-content:center; gap:12px; flex-wrap:wrap; padding:16px 0;';
           var inpStart=document.createElement('input'); inpStart.type='time'; inpStart.className='inserat-pickup-time-input'; inpStart.value=tStart; inpStart.style.cssText='padding:10px 14px; border-radius:12px; border:2px solid rgba(0,0,0,0.08); background:rgba(255,255,255,0.7); backdrop-filter:blur(10px); font-size:16px; font-weight:700;';
           var inpEnd=document.createElement('input'); inpEnd.type='time'; inpEnd.className='inserat-pickup-time-input'; inpEnd.value=tEnd; inpEnd.style.cssText='padding:10px 14px; border-radius:12px; border:2px solid rgba(0,0,0,0.08); background:rgba(255,255,255,0.7); backdrop-filter:blur(10px); font-size:16px; font-weight:700;';
-          var upd=function(){ w.data.pickupWindow=inpStart.value+' – '+inpEnd.value; saveDraft(); var bar=photoTile.nextElementSibling; if(bar){ var pills=bar.querySelectorAll('.status-pill'); if(pills[2]) pills[2].className='status-pill active'; } };
+          var upd=function(){ w.data.pickupWindow=inpStart.value+' – '+inpEnd.value; saveDraft(); var bar=scrollArea.querySelector('.inserat-power-bar'); if(bar){ var pills=bar.querySelectorAll('.status-pill'); if(pills[2]) pills[2].className='status-pill active'; } };
           inpStart.onchange=function(){ hapticLight(); upd(); };
           inpEnd.onchange=function(){ hapticLight(); upd(); };
           row.appendChild(inpStart);
@@ -15502,16 +15520,17 @@
         if(typeof handleWizardExit==='function'){ handleWizardExit(box); return; }
         var panel=box; if(panel&&!panel.classList.contains('x-pop-away')){ panel.classList.add('x-pop-away'); setTimeout(function(){ closeWizard(); }, 280); } else { closeWizard(); }
       };
-      box.appendChild(photoTile);
 
       const scrollArea=document.createElement('div');
-      scrollArea.className='inserat-scroll-area scroll-content';
+      scrollArea.className='inserat-scroll-area scroll-content inserat-scroll-with-photo';
+      photoTile.classList.add('inserat-photo-in-scroll');
+      scrollArea.appendChild(photoTile);
 
-      // ========== 2. EBENE (Titel): Gerichtsname zuerst, dann PowerBar direkt darunter (Bahnhofskarte) [cite: 2026-02-20] ==========
+      // ========== 2. EBENE (Titel): ghost-input, Placeholder pulsierend [cite: 2026-02-21] ==========
       const stepName=document.createElement('div');
       stepName.id='step-name';
       stepName.className='inserat-section inserat-unified-title-wrap';
-      stepName.style.cssText='width:100%;';
+      stepName.style.cssText='width:100%; margin-top:20px;';
       const dishDatalist=document.createElement('datalist');
       dishDatalist.id='inserat-dish-datalist';
       var dishSuggestions = [];
@@ -15523,8 +15542,9 @@
       const inputDish=document.createElement('input');
       inputDish.id='gericht-name';
       inputDish.type='text';
-      inputDish.className='inserat-detail-style-title magnet-input inserat-gericht-name-extra';
+      inputDish.className='ghost-input inserat-detail-style-title magnet-input inserat-gericht-name-extra';
       inputDish.value=w.data.dish||'';
+      inputDish.placeholder='z.B. Jägerschnitzel';
       inputDish.setAttribute('list','inserat-dish-datalist');
       inputDish.autocomplete='off';
       inputDish.style.cssText='width:100%; max-width:100%; color:#0f172a; font-weight:800; box-sizing:border-box; border:none; background:transparent; outline:none;';
@@ -15590,16 +15610,16 @@
       stepName.appendChild(inputDish);
       scrollArea.appendChild(stepName);
 
-      // ========== Beschreibung: Textarea direkt unter Gerichtsname [cite: 2026-02-21 Airbnb] ==========
+      // ========== Beschreibung: Textarea ohne harten Rahmen [cite: 2026-02-21] ==========
       const wrapDesc=document.createElement('div');
-      wrapDesc.className='inserat-airbnb-field-wrap inserat-airbnb-desc-wrap inserat-desc-italic-wrap';
+      wrapDesc.className='inserat-airbnb-field-wrap inserat-airbnb-desc-wrap inserat-desc-italic-wrap inserat-desc-no-frame';
       wrapDesc.style.cssText='margin-top:0; margin-bottom:12px;';
-      const inputDesc=document.createElement('input');
-      inputDesc.type='text';
-      inputDesc.className='liquid-input liquid-input-focus inserat-desc-input inserat-airbnb-desc inserat-desc-italic';
+      const inputDesc=document.createElement('textarea');
+      inputDesc.className='liquid-input liquid-input-focus inserat-desc-input inserat-airbnb-desc inserat-desc-italic inserat-desc-textarea';
       inputDesc.placeholder='… z.B. mit frischem saisonalen Gemüse …';
       inputDesc.value=w.data.description||'';
-      inputDesc.style.cssText='width:100%; color:#64748b; font-size:0.95rem; box-sizing:border-box; border:none; background:transparent; outline:none;';
+      inputDesc.rows=2;
+      inputDesc.style.cssText='width:100%; color:#64748b; font-size:0.95rem; box-sizing:border-box; border:none; background:transparent; outline:none; resize:none;';
       inputDesc.oninput=()=>{ w.data.description=inputDesc.value; saveDraft(); };
       inputDesc.onblur=()=>{ dismissKeyboard(); hapticLight(); };
       wrapDesc.appendChild(inputDesc);
@@ -15713,26 +15733,27 @@
       extrasBarBtn.onclick=function(){ openQuickAdjust('extras'); };
       powerBar.appendChild(extrasBarBtn);
 
-      // ========== 4. Kategorien + 5. Preis (Strikte Hierarchie: Name→Desc→Kategorien→Preis→PowerBar) [cite: 2026-02-21] ==========
+      // ========== 4. Kategorien: kompakte Reihe (🥩, 🥦, 🌱, 🥗) [cite: 2026-02-21] ==========
       const catPriceRow=document.createElement('div');
       catPriceRow.className='inserat-cat-price-row';
       catPriceRow.id='step-cat';
       catPriceRow.style.cssText='display:flex; flex-direction:column; gap:16px; margin-top:16px;';
       const catValues = ['Fleisch','Vegetarisch','Vegan','Salat'];
-      const catDisplayLabels = ['Mit Fleisch','Vegetarisch','Vegan','Salat'];
       const catEmojis = ['🥩','🥦','🌱','🥗'];
       const currentCat = w.data.category || 'Fleisch';
       if(!catValues.includes(currentCat)) w.data.category = 'Fleisch';
       const stepCat=document.createElement('div');
-      stepCat.className='inserat-cat-tiles inserat-cat-grid';
-      stepCat.style.cssText='display:grid; grid-template-columns:1fr 1fr; gap:12px; width:100%;';
+      stepCat.className='inserat-cat-tiles inserat-cat-row-compact';
+      stepCat.style.cssText='display:flex; flex-wrap:wrap; gap:8px; width:100%; align-items:center;';
       catValues.forEach((c,i)=>{
         const b=document.createElement('button');
         b.type='button';
-        b.className='inserat-cat-tile' + (w.data.category===c ? ' active' : '');
-        b.style.cssText='min-height:96px; aspect-ratio:1; border-radius:20px; border:2px solid transparent; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; cursor:pointer; background:rgba(0,0,0,0.03); transition:all 0.2s ease; font-size:15px; font-weight:800; color:#64748b;';
-        if(w.data.category===c) b.style.cssText+=' background:rgba(16,185,129,0.18); border-color:#10b981; color:#059669; box-shadow:0 4px 16px rgba(16,185,129,0.25);';
-        b.innerHTML='<span style="font-size:32px;">'+(catEmojis[i]||'')+'</span><span>'+(catDisplayLabels[i]||c)+'</span>';
+        b.className='inserat-cat-pill inserat-cat-tile' + (w.data.category===c ? ' active' : '');
+        b.style.cssText='min-height:44px; min-width:52px; padding:8px 14px; border-radius:999px; border:2px solid transparent; display:flex; align-items:center; justify-content:center; gap:6px; cursor:pointer; background:rgba(0,0,0,0.03); transition:all 0.2s ease; font-size:15px; font-weight:800; color:#64748b;';
+        if(w.data.category===c) b.style.cssText+=' background:rgba(16,185,129,0.18); border-color:#10b981; color:#059669; box-shadow:0 2px 12px rgba(16,185,129,0.25);';
+        b.innerHTML='<span style="font-size:18px;">'+(catEmojis[i]||'')+'</span>';
+        b.setAttribute('title', c);
+        b.setAttribute('aria-label', c);
         b.onclick=()=>{ hapticLight(); w.data.category=c; saveDraft(); rebuildWizard(); };
         stepCat.appendChild(b);
       });
@@ -15867,7 +15888,11 @@
         btnWeiter.className='inserat-btn-step1-right';
         btnWeiter.style.cssText='flex:1; min-height:60px; padding:14px 20px; border:none; border-radius:24px; background:#3b82f6; color:#fff; font-size:16px; font-weight:800; cursor:pointer; box-shadow:0 10px 30px rgba(0,0,0,0.15);';
         btnWeiter.textContent='Weiter zur Veröffentlichung';
-        btnWeiter.onclick=function(){ hapticLight(); w.inseratStep=2; saveDraft(); rebuildWizard(); };
+        btnWeiter.onclick=function(){
+          hapticLight();
+          if(typeof handlePriceFastInsert==='function') handlePriceFastInsert(box);
+          w.inseratStep=2; saveDraft(); rebuildWizard();
+        };
         step1NavRow.appendChild(btnSpeichern);
         step1NavRow.appendChild(btnWeiter);
         actionSection.appendChild(step1NavRow);

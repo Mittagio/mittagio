@@ -2575,20 +2575,73 @@
       font-size: 14px;
       font-weight: 700;
     }
-    /* Native Immersion: Nav ausblenden wenn InseratCard offen */
+    #wizard[data-flow="listing"] .inserat-collapsing-header.is-scrolled {
+      padding: 8px 16px;
+    }
+    /* Native Immersion: Nav ausblenden wenn InseratCard offen [cite: 2026-02-21] */
     body.wizard-inserat-open #providerNavWrap {
       display: none !important;
     }
-    /* Sticky Bottom: Aktionsleiste vollflächig, keine Rundung unten [cite: 2026-02-21] */
-    body.wizard-inserat-open #wizard[data-flow="listing"] .inserat-action-section.inserat-action-layer {
+    /* Sticky Bottom: Aktionsleiste massiv, vollflächig – kein Spalt, Handy-Rahmen [cite: 2026-02-21] */
+    body.wizard-inserat-open #wizard[data-flow="listing"] .inserat-action-section.inserat-action-layer,
+    body.wizard-inserat-open #wizard[data-flow="listing"] .inserat-action-section.inserat-action-pricing {
+      position: fixed !important;
       bottom: 0 !important;
-      left: 0;
-      right: 0;
-      border-radius: 0;
-      padding: 20px 16px max(20px, env(safe-area-inset-bottom)) !important;
+      left: 0 !important;
+      right: 0 !important;
+      width: 100% !important;
+      margin: 0 !important;
+      border-radius: 0 !important;
+      padding: 20px 0 max(24px, env(safe-area-inset-bottom)) !important;
+      padding-left: max(16px, env(safe-area-inset-left)) !important;
+      padding-right: max(16px, env(safe-area-inset-right)) !important;
       background: rgba(255,255,255,0.98);
       border-top: 1px solid rgba(0,0,0,0.06);
       box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+    }
+    /* Footer-Padding reduziert wenn Nav ausgeblendet */
+    body.wizard-inserat-open #wizard[data-flow="listing"] .liquid-master-panel .inserat-action-section {
+      padding-bottom: max(20px, env(safe-area-inset-bottom)) !important;
+    }
+    /* Scroll-Bereich: Platz für fixierte Action-Leiste */
+    body.wizard-inserat-open #wizard[data-flow="listing"] .inserat-scroll-area {
+      padding-bottom: 100px !important;
+    }
+    /* Step1-Nav: Buttons mit Abstand zu den Rändern */
+    body.wizard-inserat-open #wizard[data-flow="listing"] .inserat-step1-nav {
+      padding-left: 16px;
+      padding-right: 16px;
+      gap: 12px;
+    }
+    /* Bild im Scroll-Fluss: oben abgerundet, volle Breite [cite: 2026-02-21] */
+    #wizard[data-flow="listing"] .inserat-scroll-area.inserat-scroll-with-photo {
+      padding-top: 0 !important;
+    }
+    #wizard[data-flow="listing"] .inserat-photo-in-scroll {
+      width: 100vw !important;
+      max-width: calc(100% + 40px) !important;
+      margin-left: -20px !important;
+      margin-right: -20px !important;
+      border-radius: 20px 20px 0 0 !important;
+    }
+    /* ghost-input: Placeholder pulsierend (z.B. Jägerschnitzel) [cite: 2026-02-21] */
+    #wizard[data-flow="listing"] .ghost-input::placeholder {
+      animation: ghost-placeholder-pulse 2.5s ease-in-out infinite;
+    }
+    @keyframes ghost-placeholder-pulse {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 0.9; }
+    }
+    /* Preis-Placeholder pulsieren [cite: 2026-02-21] */
+    #wizard[data-flow="listing"] .inserat-price-input::placeholder,
+    #wizard[data-flow="listing"] .price-field::placeholder {
+      animation: ghost-placeholder-pulse 2.5s ease-in-out infinite;
+    }
+    /* Textarea Beschreibung: kein harter Rahmen */
+    #wizard[data-flow="listing"] .inserat-desc-textarea,
+    #wizard[data-flow="listing"] .inserat-desc-no-frame textarea {
+      border: none !important;
+      box-shadow: none !important;
     }
     
     /* Guided Interaction: Pulsieren des Foto-Bereichs bei leerer Karte [cite: 2026-01-29] */
@@ -3219,20 +3272,24 @@
     body.provider-mode #v-provider-week > *,
     body.provider-mode [id^="v-provider-"].view.active > *{ position:relative; z-index:1; }
     
-    /* dynamic-header: Glass-Effekt, Montserrat 900, kein Icon [cite: 2026-02-18] */
-    .dynamic-header {
+    /* dynamic-header: globaler Airbnb-Header – sticky, blur, Montserrat 900, #f5f5f0 S25-Harmonie [cite: 2026-02-21] */
+    body.provider-mode .dynamic-header {
+      position: sticky !important;
+      top: 0 !important;
+      z-index: 1000 !important;
       background: rgba(245, 245, 240, 0.95) !important;
       backdrop-filter: blur(15px);
       -webkit-backdrop-filter: blur(15px);
-      transition: transform 0.25s ease, opacity 0.25s ease;
+      transition: transform 0.3s ease-in-out;
     }
-    .dynamic-header.prov-page-header .prov-page-header-title {
+    body.provider-mode .dynamic-header.prov-page-header .prov-page-header-title,
+    body.provider-mode .dynamic-header .system-header-title,
+    body.provider-mode .dynamic-header h1 {
       font-family: 'Montserrat', 'Inter', sans-serif !important;
       font-weight: 900 !important;
     }
-    .dynamic-header.header-hidden {
+    body.provider-mode .dynamic-header.header-hidden {
       transform: translateY(-100%);
-      opacity: 0;
       pointer-events: none;
     }
     /* system-header: Airbnb-Style Collapsing – beim Hochscrollen Title schrumpft, 48px Glass-Bar [cite: 2026-02-21] */
@@ -3297,8 +3354,10 @@
       border-bottom: none !important;
       box-shadow: 0 2px 12px rgba(0, 0, 0, 0.02) !important;
     }
-    /* Dashboard: kein Icon im dynamic-header */
-    #providerDashboardHeader .prov-page-header-icon { display: none !important; }
+    /* Header: Keine Icons – nur Montserrat 900 Titel [cite: 2026-02-21] */
+    #providerDashboardHeader .prov-page-header-icon,
+    #v-provider-pickups-header .prov-page-header-icon,
+    #v-provider-cookbook-header .prov-page-header-icon { display: none !important; }
 
     /* Modern App-Like CSS for Provider (Design-Tokens = einheitlich mit Kundenseite) */
     .prov-header {
@@ -3677,14 +3736,15 @@
     [id^="v-provider-"] .btn-primary{
       border:2px solid transparent !important;
     }
-    /* Bottom-Nav Provider: Tiefes Anthrazit + Blur [cite: 2026-02-18] */
+    /* Bottom-Nav Provider: Eckig, tiefes Anthrazit #121212, Blur – Hardware-Fusion S25 [cite: 2026-02-21] */
     #providerNav.provider-nav-pill{
       background: rgba(18, 18, 18, 0.85) !important;
-      backdrop-filter: blur(15px);
-      -webkit-backdrop-filter: blur(15px);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       border: none !important;
-      border-radius: 34px !important;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.2) !important;
+      border-radius: 0 !important;
+      border-top: 0.5px solid rgba(255,255,255,0.1);
+      box-shadow: none !important;
     }
     #providerNav:not(.provider-nav-pill){
       background: rgba(255,255,255,0.98) !important;
@@ -3713,15 +3773,18 @@
     .provider-nav-pill .provider-nav-label{ font-size:10px; font-weight:700; text-align:center; letter-spacing:0.02em; display:block; }
     .provider-nav-pill .navbtn:not(.active) .provider-nav-label{ color:rgba(255,255,255,0.5); }
     .provider-nav-pill .navbtn.active .provider-nav-label{ color:#fff; }
-    /* Schwebende Glas-Pill: Safe-Areas (Statusbar oben, Home-Indicator unten) [cite: 2026-02-18] */
+    /* Bottom-Nav: Eckig, bündig unten – Eins-mit-dem-Display S25 [cite: 2026-02-21] */
     #providerNavWrap.provider-nav-wrap-pill{
-      bottom: max(12px, env(safe-area-inset-bottom, 12px)) !important;
-      left: max(12px, env(safe-area-inset-left, 12px)) !important;
-      right: max(12px, env(safe-area-inset-right, 12px)) !important;
-      width: auto !important; box-sizing: border-box; z-index: 1052 !important;
+      bottom: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      width: 100% !important;
+      box-sizing: border-box; z-index: 1052 !important;
       padding-top: 0;
+      padding-bottom: env(safe-area-inset-bottom, 0);
+      border-radius: 0 !important;
     }
-    #providerNavWrap #providerNav{ min-height: 75px; padding: 12px 24px calc(12px + env(safe-area-inset-bottom, 12px)); display: flex; justify-content: space-between; align-items: center; box-sizing: border-box; }
+    #providerNavWrap #providerNav{ min-height: 65px; padding: 12px 24px calc(12px + env(safe-area-inset-bottom, 12px)); display: flex; justify-content: space-between; align-items: center; box-sizing: border-box; }
     [id^="v-provider-"] .panel h1,[id^="v-provider-"] .panel h2,[id^="v-provider-"] .panel h3,[id^="v-provider-"] .panel .section-title{ color:var(--provider-text) !important; }
     [id^="v-provider-"] .panel .hint{ color:var(--provider-text-muted) !important; }
     /* Dynamisch eingefügter Inhalt: immer lesbar */
@@ -5466,18 +5529,17 @@
     body.provider-mode [id^="v-provider-"].view.active{ min-height:100vh; min-height:100dvh; display:block !important; visibility:visible !important; opacity:1 !important; scroll-margin-top:0; position:relative; width:100%; max-width:100%; overflow-x:hidden; box-sizing:border-box; }
     /* Erster Viewport sofort gefüllt: Inhalt oben verankern, keine Animation die verschiebt */
     body.provider-mode [id^="v-provider-"].view.active{ animation:none !important; transform:translateY(0) !important; }
-    /* Header-Exitus: Alle Haupt-Header ausblenden – Content direkt unter Status-Balken, Edge-to-Edge [cite: 2026-02-18] */
-    body.provider-mode [id^="v-provider-"] .prov-header,
-    body.provider-mode [id^="v-provider-"] .prov-page-header,
-    body.provider-mode [id^="v-provider-"] .dashboard-kasten-header,
-    body.provider-mode [id^="v-provider-"] .provider-profile-header-rebuild,
-    body.provider-mode [id^="v-provider-"] .week-header-compact,
-    body.provider-mode [id^="v-provider-"] .provider-header-bar,
-    body.provider-mode [id^="v-provider-"] > header.prov-page-header,
-    body.provider-mode [id^="v-provider-"] > header.dashboard-kasten-header{ display:none !important; }
-    /* Wochenplan: Header wieder anzeigen – KW, Lücke finden, Vorlage, Drucken, Teilen [cite: 2026-02-18] */
-    body.provider-mode #v-provider-week.view.active .week-header-compact{ display:flex !important; }
-    body.provider-mode [id^="v-provider-"].view.active#v-provider-week{ display:flex !important; flex-direction:column !important; }
+    /* Globale Airbnb-Header: Pickups, Wochenplan, Kochbuch, Profil als Flex-Column (Header sticky, Content scrollt) [cite: 2026-02-21] */
+    body.provider-mode #v-provider-pickups.view.active,
+    body.provider-mode #v-provider-week.view.active,
+    body.provider-mode #v-provider-cookbook.view.active,
+    body.provider-mode #v-provider-profile.view.active{ display:flex !important; flex-direction:column !important; min-height:0 !important; }
+    /* Edge-to-Edge: Content volle Breite S25, nur Safe-Area seitlich [cite: 2026-02-21] */
+    body.provider-mode #v-provider-home .dashboard-floating-wrap,
+    body.provider-mode #provPickupsScroll,
+    body.provider-mode #kwBoardScroll,
+    body.provider-mode #cookbookScrollWrap,
+    body.provider-mode #v-provider-profile .provider-profile-content-rebuild{ padding-left: env(safe-area-inset-left, 0) !important; padding-right: env(safe-area-inset-right, 0) !important; }
     /* Meine Küche: View füllt main (height:100%), Wrap = absoluter Scroll-Bereich (immer sichtbar + scrollbar) */
     #v-provider-home.view.active{
       position:relative !important;
@@ -5632,7 +5694,7 @@
     #v-provider-profile.view.active > header,
     #v-provider-profile.view.active > div{ position:relative; z-index:1; min-height:0; overflow:visible; }
     /* Ebene 1: Business-Dashboard (Master-Prompt) – #22C55E, 16px Radius */
-    #v-provider-profile .provider-profile-header-rebuild{ background:transparent; padding:12px 20px; padding-top:calc(12px + env(safe-area-inset-top, 0)); border-bottom:none; display:flex; flex-direction:column; gap:8px; flex-shrink:0; }
+    #v-provider-profile .provider-profile-header-rebuild.dynamic-header{ background:rgba(245,245,240,0.95) !important; backdrop-filter:blur(15px); -webkit-backdrop-filter:blur(15px); padding:12px 20px; padding-top:calc(12px + env(safe-area-inset-top, 0)); border-bottom:none; display:flex; flex-direction:column; gap:8px; flex-shrink:0; }
     #v-provider-profile .provider-profile-header-row1{ position:relative; display:flex; align-items:center; justify-content:flex-end; width:100%; }
     #v-provider-profile .provider-profile-logo.provider-profile-logo-center{ display:flex; justify-content:center; }
     #v-provider-profile .provider-profile-gear-btn.provider-profile-gear-btn-tr{ position:absolute; top:0; right:0; }
@@ -6233,8 +6295,8 @@
       /* Wochenplan fullscreen: Topbar ausblenden, main ohne horizontales Scroll – applike */
       body.provider-week-active .topbar{ display:none !important; }
       body.provider-week-active main{ padding-top:0 !important; padding-left:0 !important; padding-right:0 !important; max-width:none !important; overflow-x:hidden !important; }
-      /* Tab-Nav bleibt fix sichtbar (Glas-Pill mit 12px Inset) */
-      body.provider-week-active #providerNavWrap{ position:fixed !important; bottom:12px !important; left:12px !important; right:12px !important; z-index:1052 !important; }
+      /* Tab-Nav: eckig, bündig unten (wie alle Anbieter-Seiten) */
+      body.provider-week-active #providerNavWrap{ position:fixed !important; bottom:0 !important; left:0 !important; right:0 !important; width:100% !important; z-index:1052 !important; border-radius:0 !important; }
       /* Dashboard: Dein Wochenplan – klare Trennung von KPIs, App-Kasten, S25-Safe */
       #providerWeekSection .prov-card{ padding:var(--card-padding, 20px); border-radius:24px; box-shadow:0 4px 20px rgba(0,0,0,0.06); border:none; background:#fff; }
       #providerWeekSection{ margin-top:28px; padding:24px 16px 24px; padding-left:max(16px, env(safe-area-inset-left)); padding-right:max(16px, env(safe-area-inset-right)); background:#fff; border-radius:28px; box-shadow:0 4px 24px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04); }
