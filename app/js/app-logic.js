@@ -184,6 +184,7 @@
       }
     }
     saveFn(LSref.provider, providerRef);
+    try { localStorage.setItem('user_role', 'provider'); } catch(e){}
     if(closeModal) closeModal();
     if(showToastFn) showToastFn('Erfolgreich eingeloggt! 🎉', 2000);
     if(typeof updateProfileViewFn === 'function') updateProfileViewFn();
