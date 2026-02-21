@@ -2884,6 +2884,47 @@
     }
     #wizard[data-flow="listing"] .inserat-btn-step1-left:active,
     #wizard[data-flow="listing"] .inserat-btn-step1-right:active { transform: scale(0.98); }
+    /* Scroll-Bereich: Platz für schwebende Aktions-Buttons (Step 1) */
+    #wizard[data-flow="listing"] .liquid-master-panel:has(.inserat-action-layer) .inserat-scroll-area {
+      padding-bottom: calc(180px + env(safe-area-inset-bottom, 0));
+    }
+    /* Noble Floating Bottom: Aktions-Kacheln 16px über Nav-Pille, Nav-Pille 12px Abstand [cite: 2026-02-20] */
+    .inserat-step2-floating-bottom .inserat-step2-tiles-floating {
+      position: fixed;
+      bottom: calc(96px + env(safe-area-inset-bottom, 0));
+      left: 16px;
+      right: 16px;
+      z-index: 10;
+    }
+    #wizard[data-flow="listing"] .inserat-action-section.inserat-action-layer {
+      position: fixed;
+      bottom: calc(96px + env(safe-area-inset-bottom, 0));
+      left: 16px;
+      right: 16px;
+      z-index: 10;
+    }
+    .inserat-step2-floating-bottom .inserat-step2-nav-pille {
+      position: fixed;
+      bottom: calc(12px + env(safe-area-inset-bottom, 0));
+      left: 16px;
+      right: 16px;
+      z-index: 11;
+      margin-bottom: 0;
+      padding: 12px 20px;
+      border-radius: 34px;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .inserat-step2-nav-pille .inserat-step2-back,
+    .inserat-step2-nav-pille .close-wizard-x {
+      background: transparent !important;
+      color: rgba(255, 255, 255, 0.9) !important;
+    }
     /* 2-Schritt Airbnb-Flow: Step 2 – Kacheln schweben, Champagner links / Emerald rechts [cite: 2026-02-18] */
     .inserat-step2-wrap .inserat-decision-tile {
       border-radius: 24px !important;
@@ -2948,6 +2989,11 @@
     #wizard[data-flow="listing"] #step-name,
     #wizard[data-flow="listing"] .inserat-unified-title-wrap {
       display: block; width: 100%; box-sizing: border-box;
+    }
+    /* Keyboard-Avoidance: scroll-margin damit Input ca. 20px über Tastatur bleibt [cite: 2026-02-18] */
+    #wizard[data-flow="listing"] input,
+    #wizard[data-flow="listing"] textarea {
+      scroll-margin-bottom: 220px;
     }
     #wizard[data-flow="listing"] #step-name input.inserat-detail-style-title,
     #wizard[data-flow="listing"] #step-name input.magnet-input {
@@ -3130,6 +3176,25 @@
     body.provider-mode #v-provider-week > *,
     body.provider-mode [id^="v-provider-"].view.active > *{ position:relative; z-index:1; }
     
+    /* dynamic-header: Glass-Effekt, Montserrat 900, kein Icon [cite: 2026-02-18] */
+    .dynamic-header {
+      background: rgba(245, 245, 240, 0.95) !important;
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      transition: transform 0.25s ease, opacity 0.25s ease;
+    }
+    .dynamic-header.prov-page-header .prov-page-header-title {
+      font-family: 'Montserrat', 'Inter', sans-serif !important;
+      font-weight: 900 !important;
+    }
+    .dynamic-header.header-hidden {
+      transform: translateY(-100%);
+      opacity: 0;
+      pointer-events: none;
+    }
+    /* Dashboard: kein Icon im dynamic-header */
+    #providerDashboardHeader .prov-page-header-icon { display: none !important; }
+
     /* Modern App-Like CSS for Provider (Design-Tokens = einheitlich mit Kundenseite) */
     .prov-header {
       position: sticky;
@@ -3507,14 +3572,14 @@
     [id^="v-provider-"] .btn-primary{
       border:2px solid transparent !important;
     }
-    /* Bottom-Nav Provider: Schwebende Anthrazit-Pill, identisch zum Kundenseiten-Layout (Rounded-Style) [cite: 2026-02-18] */
+    /* Bottom-Nav Provider: Tiefes Anthrazit + Blur [cite: 2026-02-18] */
     #providerNav.provider-nav-pill{
-      background: rgba(26, 26, 26, 0.65) !important;
-      backdrop-filter: blur(25px);
-      -webkit-backdrop-filter: blur(25px);
+      background: rgba(18, 18, 18, 0.85) !important;
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
       border: none !important;
       border-radius: 34px !important;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.15) !important;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2) !important;
     }
     #providerNav:not(.provider-nav-pill){
       background: rgba(255,255,255,0.98) !important;
@@ -3543,12 +3608,15 @@
     .provider-nav-pill .provider-nav-label{ font-size:10px; font-weight:700; text-align:center; letter-spacing:0.02em; display:block; }
     .provider-nav-pill .navbtn:not(.active) .provider-nav-label{ color:rgba(255,255,255,0.5); }
     .provider-nav-pill .navbtn.active .provider-nav-label{ color:#fff; }
-    /* Schwebende Glas-Pill: bottom/left/right 12px, border-radius 34px, blur(25px) [cite: 2026-02-18] */
+    /* Schwebende Glas-Pill: Safe-Areas (Statusbar oben, Home-Indicator unten) [cite: 2026-02-18] */
     #providerNavWrap.provider-nav-wrap-pill{
-      bottom: 12px !important; left: 12px !important; right: 12px !important;
+      bottom: max(12px, env(safe-area-inset-bottom, 12px)) !important;
+      left: max(12px, env(safe-area-inset-left, 12px)) !important;
+      right: max(12px, env(safe-area-inset-right, 12px)) !important;
       width: auto !important; box-sizing: border-box; z-index: 1052 !important;
+      padding-top: 0;
     }
-    #providerNavWrap #providerNav{ min-height: 75px; padding: 12px 24px calc(12px + env(safe-area-inset-bottom, 0)); display: flex; justify-content: space-between; align-items: center; }
+    #providerNavWrap #providerNav{ min-height: 75px; padding: 12px 24px calc(12px + env(safe-area-inset-bottom, 12px)); display: flex; justify-content: space-between; align-items: center; box-sizing: border-box; }
     [id^="v-provider-"] .panel h1,[id^="v-provider-"] .panel h2,[id^="v-provider-"] .panel h3,[id^="v-provider-"] .panel .section-title{ color:var(--provider-text) !important; }
     [id^="v-provider-"] .panel .hint{ color:var(--provider-text-muted) !important; }
     /* Dynamisch eingefügter Inhalt: immer lesbar */
@@ -5339,16 +5407,16 @@
       border:none !important;
       overflow:visible;
     }
-    /* Header „Meine Küche“: Layout + Stil wie Wochenplan/Kochbuch (prov-page-header) */
+    /* Header „Dashboard“: Layout + Stil wie Wochenplan/Kochbuch (prov-page-header) */
     #v-provider-home .dashboard-kasten-header{
       position:sticky; top:0; z-index:100;
       border-radius:0 !important;
       box-shadow:none !important;
       border:none !important;
     }
-    #v-provider-home .dashboard-kasten-header.prov-page-header{
-      background:rgba(255,255,255,0.95) !important;
-      backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+    #v-provider-home .dashboard-kasten-header.prov-page-header.dynamic-header{
+      background:rgba(245,245,240,0.95) !important;
+      backdrop-filter:blur(15px); -webkit-backdrop-filter:blur(15px);
       border:none !important;
       box-shadow:0 4px 20px rgba(0,0,0,0.03) !important;
       padding:calc(8px + env(safe-area-inset-top, 0)) 16px 12px 16px;

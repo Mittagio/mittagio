@@ -9,7 +9,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <title>Mittagio | In 30s zum Inserat</title>
   <meta name="description" content="Die schnellste Inserat-Lösung für Gastronomie &amp; Metzger. 4,99 € pro Inserat. Kein Abo, keine Verträge. 🍴 🧾 🔄" />
-  <meta name="theme-color" content="#FFD700" />
+  <meta name="theme-color" content="#f5f5f0" />
   <!-- Init-Gate: body visibility in style.css, Sichtbarkeit wird von script.js gesetzt -->
   <!-- SEO & Social: Link-Vorschau Instagram/WhatsApp -->
   <meta property="og:type" content="website" />
@@ -1068,15 +1068,12 @@
     <!-- PROVIDER APP - Dashboard 2.1: 4 schwebende Kästen (App-like) -->
     <section class="view prov-dashboard-stolz" id="v-provider-home">
       <div class="dashboard-floating-wrap">
-        <!-- KASTEN 1: Küche Header (Layout + Stil wie Wochenplan/Kochbuch) -->
-        <header class="dashboard-kasten dashboard-kasten-header prov-header prov-header-stolz prov-page-header">
+        <!-- KASTEN 1: Dashboard Header (dynamic-header: Montserrat 900, kein Icon) [cite: 2026-02-18] -->
+        <header class="dashboard-kasten dashboard-kasten-header prov-header prov-header-stolz prov-page-header dynamic-header" id="providerDashboardHeader">
           <div class="prov-header-inner">
             <div class="prov-page-header-row">
               <div class="prov-page-header-left prov-header-reset-trigger" data-reset-view="home" role="button" tabindex="0" aria-label="Zum Seitenanfang">
-                <div class="prov-page-header-icon" aria-hidden="true">
-                  <i data-lucide="home" style="width:24px; height:24px;"></i>
-                </div>
-                <h1 class="prov-page-header-title">Küche</h1>
+                <h1 class="prov-page-header-title">Dashboard</h1>
               </div>
               <button type="button" id="btnProviderHomeRefresh" title="Aktualisieren" aria-label="Daten neu laden" class="prov-page-header-action" style="background:rgba(0,0,0,0.06); border:none; min-width:44px; min-height:44px; width:44px; height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; color:#1a1a1a; cursor:pointer;">
                 <i data-lucide="refresh-cw" style="width:20px; height:20px;"></i>
@@ -1170,7 +1167,7 @@
     </section>
 
     <section class="view onboarding-view" id="v-provider-pickups">
-      <header class="prov-page-header" id="v-provider-pickups-header">
+      <header class="prov-page-header dynamic-header" id="v-provider-pickups-header">
         <div class="prov-page-header-row">
           <div class="prov-page-header-left prov-header-reset-trigger" data-reset-view="pickups" role="button" tabindex="0" aria-label="Zum Seitenanfang">
             <div class="prov-page-header-icon">
@@ -1286,7 +1283,7 @@
 
     <!-- Kochbuch: MASTER-SPEC MagazinKochbuch – nur Titel + Pills, Magazin-Karte, Bar BEARBEITEN | WOCHENPLAN | AUSWÄHLEN -->
     <section class="view" id="v-provider-cookbook" style="background:linear-gradient(180deg, rgba(254,243,199,0.2) 0%, #F5F5F7 30%);">
-      <header class="prov-page-header" id="v-provider-cookbook-header">
+      <header class="prov-page-header dynamic-header" id="v-provider-cookbook-header">
         <div class="prov-page-header-row">
           <div class="prov-page-header-left prov-header-reset-trigger" data-reset-view="cookbook" style="flex:1; min-width:0;" role="button" tabindex="0" aria-label="Zum Seitenanfang">
             <div id="cookbookTitleWrap" style="display:flex; align-items:center; gap:12px; min-width:0;">
@@ -1429,7 +1426,7 @@
 
     <!-- Provider-Profil "Mein Profil" – Ebene 1: Business-Dashboard | Ebene 2: Zahnrad Einstellungen [Master-Prompt] -->
     <section class="view onboarding-view" id="v-provider-profile" style="display:flex; flex-direction:column; min-height:0;">
-      <header id="providerProfileHeader" class="provider-profile-header-rebuild">
+      <header id="providerProfileHeader" class="provider-profile-header-rebuild dynamic-header">
         <div class="provider-profile-header-row1">
           <button type="button" id="providerProfileGearBtn" class="provider-profile-gear-btn provider-profile-gear-btn-tr" aria-label="Einstellungen"><svg class="provider-profile-gear-svg" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
         </div>
@@ -2319,11 +2316,11 @@
       <button type="button" id="btnProviderNavBack" class="btn-back" aria-label="Zurück" style="background:rgba(255,255,255,0.95); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:none; color:#1a1a1a; padding:10px 24px; border-radius:999px; font-size:15px; font-weight:700; cursor:pointer; box-shadow:0 4px 20px rgba(0,0,0,0.06);"><i data-lucide="chevron-left" style="width:20px;height:20px;"></i> Zurück</button>
     </div>
     <nav class="bottom bottom-nav provider-nav-light provider-nav-pill" id="providerNav" style="display:flex; justify-content:space-between; align-items:center;">
-      <button class="navbtn active" data-pgo="provider-home" title="Küche"><div class="ico" data-icon="utensils-crossed" data-icon-only="1"></div><span class="provider-nav-label">Küche</span></button>
+      <button class="navbtn active" data-pgo="provider-home" title="Dashboard"><div class="ico" data-icon="layoutDashboard" data-icon-only="1"></div><span class="provider-nav-label">Dashboard</span></button>
       <button class="navbtn" data-pgo="provider-pickups" title="Abholungen"><div class="ico" data-icon="receipt" data-icon-only="1"></div><span class="provider-nav-label">Abholungen</span></button>
       <button class="navbtn" data-pgo="provider-week" title="Wochenplan"><div class="ico" data-icon="calendar" data-icon-only="1"></div><span class="provider-nav-label">Wochenplan</span></button>
       <button class="navbtn" data-pgo="provider-cookbook" title="Kochbuch"><div class="ico" data-icon="bookOpen" data-icon-only="1"></div><span class="provider-nav-label">Kochbuch</span></button>
-      <button class="navbtn" data-pgo="provider-profile" title="Meins"><div class="ico" data-icon="user" data-icon-only="1"></div><span class="provider-nav-label">Meins</span></button>
+      <button class="navbtn" data-pgo="provider-profile" title="Profil"><div class="ico" data-icon="user" data-icon-only="1"></div><span class="provider-nav-label">Profil</span></button>
     </nav>
   </div>
 </div>
