@@ -993,6 +993,7 @@
     'shopping-bag':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>',
     package:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 18v-8Z"/><path d="M3.27 6.96 12 12.01l8.73-5.05"/><path d="M12 22.08V12"/></svg>',
     'utensils-crossed':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15.5-1-.5.5"/><path d="M15 2v5"/><path d="M12 22V8"/><path d="M12 2v3"/><path d="M19 22V11"/><path d="M19 2v4"/><path d="M2 22l20-20"/></svg>',
+    layoutDashboard:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>',
     store:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7v13h16V7"/><path d="M4 7l2-5h12l2 5"/><path d="M9 12v6"/><path d="M15 12v6"/></svg>',
     'calendar-days':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01"/></svg>',
     'map-pin':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>',
@@ -9230,6 +9231,25 @@
       attachPTR(pickupsScroll, function(){ if(typeof renderProviderPickups==='function') renderProviderPickups(); }, 'provider-pickups');
       attachPTR(weekScroll, function(){ if(typeof renderWeekPlanBoard==='function') renderWeekPlanBoard(); else if(typeof renderProviderWeekPreview==='function') renderProviderWeekPreview(); }, 'provider-week');
       attachPTR(cookbookScroll, function(){ if(typeof renderCookbook==='function') renderCookbook(); }, 'provider-cookbook');
+      /* Header-Scroll: Beim Runterscrollen verschwindet .dynamic-header, beim Hochscrollen erscheint er [cite: 2026-02-18] */
+      var HEADER_SCROLL_THRESHOLD = 40;
+      var lastScrollTop = {};
+      function setupHeaderScroll(scrollEl, headerEl){
+        if(!scrollEl || !headerEl) return;
+        var key = (scrollEl.id || headerEl.id || '') + '_' + Math.random().toString(36).slice(2);
+        lastScrollTop[key] = 0;
+        scrollEl.addEventListener('scroll', function(){
+          var st = scrollEl.scrollTop;
+          var prev = lastScrollTop[key] || 0;
+          lastScrollTop[key] = st;
+          if(st > HEADER_SCROLL_THRESHOLD && st > prev){ headerEl.classList.add('header-hidden'); }
+          else if(st <= HEADER_SCROLL_THRESHOLD || st < prev){ headerEl.classList.remove('header-hidden'); }
+        }, { passive: true });
+      }
+      setupHeaderScroll(homeWrap, document.getElementById('providerDashboardHeader'));
+      setupHeaderScroll(pickupsScroll, document.getElementById('v-provider-pickups-header'));
+      setupHeaderScroll(weekScroll, document.getElementById('weekHeaderCompact'));
+      setupHeaderScroll(cookbookScroll, document.getElementById('v-provider-cookbook-header'));
     }, 300);
   })();
 
@@ -14314,20 +14334,75 @@
   const ALLERGEN_EMOJI = { GL:'🌾', KR:'🦐', EI:'🥚', FI:'🐟', EN:'🥜', SO:'🫘', MI:'🥛', SF:'🌰', SE:'🥬', SN:'🟡', SS:'⚪', SU:'🍷', LU:'🫘', WE:'🦑' };
   /** Gerichtname (lowercase) → vorgeschlagene Allergen-Codes (short). Bei Eingabe vorauswählen. */
   /** Gerichtname (lowercase) → Allergen-Kürzel für Vorselektion im Header-Morph [🌾]. Smart-Pill [cite: 2026-02-16]. */
+  /** EU-Allergen-Code (A,C,G,L,M,D) → ALLERGENS_14 short (GL,EI,MI,SE,SN,FI) [cite: 2026-02-21 Top-30] */
+  const EU_TO_ALLERGENS14 = { A:'GL', C:'EI', G:'MI', L:'SE', M:'SN', D:'FI' };
+  function mapEuAllergensToShort(euCodes){
+    if(!euCodes || !Array.isArray(euCodes)) return [];
+    var out = [], seen = {};
+    euCodes.forEach(function(c){ var s = EU_TO_ALLERGENS14[String(c).toUpperCase()]; if(s && !seen[s]){ seen[s]=true; out.push(s); } });
+    return out;
+  }
+  /** Top-30 Gerichte als Autocomplete-Quelle [cite: 2026-01-29, 2026-02-21] */
+  const TOP_30_DISHES = [
+    {name:'Wiener Schnitzel', category:'Fleisch', allergens:['A','C']},
+    {name:'Schweinebraten', category:'Fleisch', allergens:['L']},
+    {name:'Leberkäse (Portion)', category:'Fleisch', allergens:['M','L']},
+    {name:'Rindergulasch', category:'Fleisch', allergens:['L']},
+    {name:'Currywurst', category:'Fleisch', allergens:['M','L']},
+    {name:'Maultaschen (geröstet)', category:'Fleisch', allergens:['A','C','L']},
+    {name:'Kässpätzle', category:'Vegetarisch', allergens:['A','C','G']},
+    {name:'Kartoffelsalat', category:'Salat', allergens:['L','M']},
+    {name:'Sauerbraten', category:'Fleisch', allergens:['L','G','A']},
+    {name:'Frikadellen', category:'Fleisch', allergens:['A','C','M']},
+    {name:'Fleischkäse mit Ei', category:'Fleisch', allergens:['C','M']},
+    {name:'Hähnchengeschnetzeltes', category:'Fleisch', allergens:['G','L']},
+    {name:'Lasagne Bolognese', category:'Fleisch', allergens:['A','G','L']},
+    {name:'Spaghetti Bolognese', category:'Fleisch', allergens:['A','L']},
+    {name:'Gemüseeintopf', category:'Vegan', allergens:['L']},
+    {name:'Putenschnitzel', category:'Fleisch', allergens:['A','C']},
+    {name:'Wurstsalat', category:'Fleisch', allergens:['M','L']},
+    {name:'Ochsenmaulsalat', category:'Fleisch', allergens:['L','M']},
+    {name:'Gemüselasagne', category:'Vegetarisch', allergens:['A','G','L']},
+    {name:'Schupfnudeln mit Kraut', category:'Vegetarisch', allergens:['A','C']},
+    {name:'Tafelspitz', category:'Fleisch', allergens:['L']},
+    {name:'Krautwickerl', category:'Fleisch', allergens:['L']},
+    {name:'Gyros mit Zaziki', category:'Fleisch', allergens:['G']},
+    {name:'Backfisch', category:'Fleisch', allergens:['A','C','D']},
+    {name:'Linsensalat', category:'Vegan', allergens:['L']},
+    {name:'Gaisburger Marsch', category:'Fleisch', allergens:['A','C','L']},
+    {name:'Reispfanne mit Gemüse', category:'Vegan', allergens:['L']},
+    {name:'Zwiebelrostbraten', category:'Fleisch', allergens:['L']},
+    {name:'Grillhähnchen', category:'Fleisch', allergens:['L']},
+    {name:'Tortellini Sahnesoße', category:'Fleisch', allergens:['A','C','G']}
+  ];
   const DISH_ALLERGEN_SUGGESTIONS = {
     kürbissuppe:[], kartoffelsuppe:[], tomatensuppe:[], linsensuppe:[],
-    schnitzel:['GL','EI'], gulasch:['GL'], käsespätzle:['GL','MI'], kaesespaetzle:['GL','MI'], pasta:['GL','EI'],
+    schnitzel:['GL','EI'], gulasch:['GL'], käsespätzle:['GL','MI'], kaesespaetzle:['GL','MI'], kässpätzle:['GL','MI','EI'], pasta:['GL','EI'],
     pizza:['GL','MI'], wrap:['GL'], burger:['GL','EI'], falafel:['SO'],
-    lachs:['FI'], sushi:['FI'], thunfisch:['FI'], omelett:['EI'], steak:[], wurst:['GL','MI'], lasagne:['GL','MI','EI']
+    lachs:['FI'], sushi:['FI'], thunfisch:['FI'], omelett:['EI'], steak:[], wurst:['GL','MI'], lasagne:['GL','MI','EI'],
+    wiener:['GL','EI'], schweinebraten:['SE'], leberkäse:['SN','SE'], rindergulasch:['SE'], currywurst:['SN','SE'],
+    maultaschen:['GL','EI','SE'], kartoffelsalat:['SE','SN'], sauerbraten:['SE','MI','GL'], frikadellen:['GL','EI','SN'],
+    fleischkäse:['EI','SN'], fleischkaese:['EI','SN'], hähnchengeschnetzeltes:['MI','SE'], haehnchengeschnetzeltes:['MI','SE'],
+    lasagne:['GL','MI','EI'], spaghetti:['GL','SE'], gemüseeintopf:['SE'], gemueseeintopf:['SE'], putenschnitzel:['GL','EI'],
+    wurstsalat:['SN','SE'], ochsenmaulsalat:['SE','SN'], gemüselasagne:['GL','MI','SE'], gemueselasagne:['GL','MI','SE'],
+    schupfnudeln:['GL','EI'], tafelspitz:['SE'], krautwickerl:['SE'], gyros:['MI'], backfisch:['GL','EI','FI'],
+    linsensalat:['SE'], gaisburger:['GL','EI','SE'], reispfanne:['SE'], zwiebelrostbraten:['SE'], grillhähnchen:['SE'],
+    tortellini:['GL','EI','MI']
   };
   /** Gerichtname (lowercase) → Kategorie (Fleisch|Vegetarisch|Vegan|Salat) für Autovervollständigung. Smart-Pill [cite: 2026-02-16]. */
   const DISH_CATEGORY_SUGGESTIONS = {
     kürbissuppe:'Vegetarisch', kartoffelsuppe:'Vegetarisch', tomatensuppe:'Vegetarisch', linsensuppe:'Vegetarisch',
-    schnitzel:'Fleisch', gulasch:'Fleisch', käsespätzle:'Vegetarisch', kaesespaetzle:'Vegetarisch', pasta:'Fleisch', pizza:'Fleisch',
+    schnitzel:'Fleisch', gulasch:'Fleisch', käsespätzle:'Vegetarisch', kaesespaetzle:'Vegetarisch', kässpätzle:'Vegetarisch', pasta:'Fleisch', pizza:'Fleisch',
     wrap:'Fleisch', burger:'Fleisch', falafel:'Vegan', lachs:'Fleisch', sushi:'Fleisch', thunfisch:'Fleisch',
     salat:'Salat', curry:'Fleisch', gemüsepfanne:'Vegetarisch', risotto:'Vegetarisch', lasagne:'Fleisch',
     linsensalat:'Vegan', gazpacho:'Vegan', omelett:'Vegetarisch', wurst:'Fleisch', steak:'Fleisch', zwiebelrostbraten:'Fleisch',
-    roulade:'Fleisch', leberkäse:'Fleisch', frikadelle:'Fleisch', currywurst:'Fleisch', hummus:'Vegan'
+    roulade:'Fleisch', leberkäse:'Fleisch', frikadelle:'Fleisch', frikadellen:'Fleisch', currywurst:'Fleisch', hummus:'Vegan',
+    wiener:'Fleisch', schweinebraten:'Fleisch', rindergulasch:'Fleisch', maultaschen:'Fleisch', kartoffelsalat:'Salat',
+    sauerbraten:'Fleisch', fleischkäse:'Fleisch', fleischkaese:'Fleisch', hähnchengeschnetzeltes:'Fleisch', haehnchengeschnetzeltes:'Fleisch',
+    spaghetti:'Fleisch', gemüseeintopf:'Vegan', gemueseeintopf:'Vegan', putenschnitzel:'Fleisch', wurstsalat:'Fleisch',
+    ochsenmaulsalat:'Fleisch', gemüselasagne:'Vegetarisch', gemueselasagne:'Vegetarisch', schupfnudeln:'Vegetarisch',
+    tafelspitz:'Fleisch', krautwickerl:'Fleisch', gyros:'Fleisch', backfisch:'Fleisch', linsensalat:'Vegan',
+    gaisburger:'Fleisch', reispfanne:'Vegan', zwiebelrostbraten:'Fleisch', grillhähnchen:'Fleisch', tortellini:'Fleisch'
   };
   /** Goldene Sammelkarte: Kurze Beschreibungs-Snippets für Autovervollständigung [cite: 2026-01-29]. */
   const DISH_DESCRIPTION_SUGGESTIONS = {
@@ -14359,6 +14434,12 @@
   function getCategorySuggestionForDish(dishName){
     var n = String(dishName||'').trim().toLowerCase();
     if(!n) return null;
+    if(typeof TOP_30_DISHES !== 'undefined'){
+      var exact = TOP_30_DISHES.find(function(d){ return (d.name||'').toLowerCase().trim() === n; });
+      if(exact && exact.category) return exact.category;
+      var partial = TOP_30_DISHES.find(function(d){ return (d.name||'').toLowerCase().indexOf(n)===0 || n.indexOf((d.name||'').toLowerCase())===0; });
+      if(partial && partial.category) return partial.category;
+    }
     for(var key in DISH_CATEGORY_SUGGESTIONS){
       if(n.includes(key) || key.includes(n)) return DISH_CATEGORY_SUGGESTIONS[key];
     }
@@ -14367,6 +14448,12 @@
   function getAllergenSuggestionsForDish(dishName){
     const n = String(dishName||'').trim().toLowerCase();
     if(!n) return [];
+    if(typeof TOP_30_DISHES !== 'undefined'){
+      var exact = TOP_30_DISHES.find(function(d){ return (d.name||'').toLowerCase().trim() === n; });
+      if(exact && exact.allergens && exact.allergens.length) return mapEuAllergensToShort(exact.allergens);
+      var partial = TOP_30_DISHES.find(function(d){ return (d.name||'').toLowerCase().indexOf(n)===0 || n.indexOf((d.name||'').toLowerCase())===0; });
+      if(partial && partial.allergens && partial.allergens.length) return mapEuAllergensToShort(partial.allergens);
+    }
     for(const key of Object.keys(DISH_ALLERGEN_SUGGESTIONS)){
       if(n.includes(key) || key.includes(n)) return DISH_ALLERGEN_SUGGESTIONS[key] || [];
     }
@@ -15161,9 +15248,10 @@
       // ========== 2-SCHRITT AIRBNB-FLOW: Step 2 = Entscheidungskarte (nur MODE_AD) ==========
       if(inseratStep === 2 && useTwoStepFlow){
         var step2Wrap=document.createElement('div');
-        step2Wrap.className='inserat-step2-wrap';
-        step2Wrap.style.cssText='display:flex; flex-direction:column; flex:1; min-height:0; overflow-y:auto; padding:16px; padding-bottom:calc(96px + env(safe-area-inset-bottom, 0));';
+        step2Wrap.className='inserat-step2-wrap inserat-step2-floating-bottom';
+        step2Wrap.style.cssText='display:flex; flex-direction:column; flex:1; min-height:0; overflow-y:auto; padding:16px; padding-bottom:calc(180px + env(safe-area-inset-bottom, 0));';
         var step2Nav=document.createElement('div');
+        step2Nav.className='inserat-step2-nav-pille';
         step2Nav.style.cssText='display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;';
         var backBtn=document.createElement('button');
         backBtn.type='button';
@@ -15180,14 +15268,13 @@
         step2Close.onclick=function(){ hapticLight(); if(typeof handleWizardExit==='function') handleWizardExit(box); else closeWizard(); };
         step2Nav.appendChild(backBtn);
         step2Nav.appendChild(step2Close);
-        step2Wrap.appendChild(step2Nav);
         var werbepaper=document.createElement('div');
         werbepaper.className='inserat-werbepaper';
         werbepaper.style.cssText='display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:24px;';
         werbepaper.innerHTML='<div class="werbepaper-panel werbepaper-stress" style="padding:16px; border-radius:16px; background:rgba(241,245,249,0.8); border:1px solid rgba(0,0,0,0.06); text-align:center;"><p style="margin:0; font-size:13px; font-weight:800; color:#64748b;">Warteschlange – stressig</p></div><div class="werbepaper-panel werbepaper-hero" style="padding:16px; border-radius:16px; background:rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.4); text-align:center; box-shadow:0 0 16px rgba(16,185,129,0.3);"><p style="margin:0; font-size:13px; font-weight:800; color:#059669;">Abholnummer – schnell</p></div>';
         step2Wrap.appendChild(werbepaper);
         var tilesRow=document.createElement('div');
-        tilesRow.className='inserat-decision-tiles';
+        tilesRow.className='inserat-decision-tiles inserat-step2-tiles-floating';
         tilesRow.style.cssText='display:grid; grid-template-columns:1fr 1fr; gap:16px;';
         var hasDishS2=!!(w.data.dish&&String(w.data.dish).trim());
         var hasPriceS2=Number(w.data.price)>0;
@@ -15211,6 +15298,7 @@
         tilesRow.appendChild(tile499);
         tilesRow.appendChild(tileHero);
         step2Wrap.appendChild(tilesRow);
+        step2Wrap.appendChild(step2Nav);
         box.appendChild(step2Wrap);
       } else {
 
@@ -15327,118 +15415,21 @@
       };
       box.appendChild(photoTile);
 
-      // ========== 2. EBENE (Power-Bar): Eine Zeile, 6 Icons – 🍴 🔄 🕒 🌾 ➕ ⓘ. Soft-Shell (hellgrau/transparent), keine harten grünen Boxen [cite: 2026-02-18] ==========
-      var pwParts=(w.data.pickupWindow||profileWindow).split(/\s*[–\-]\s*/);
-      var timeStart=(pwParts[0]||'11:30').trim();
-      var timeEnd=(pwParts[1]||'14:00').trim();
-      if(timeStart.length===4) timeStart='0'+timeStart;
-      if(timeEnd.length===4) timeEnd='0'+timeEnd;
-      const powerBar=document.createElement('div');
-      powerBar.className='inserat-power-bar inserat-unified-pills inserat-soft-shell';
-      var hasDineIn = !!w.data.dineInPossible;
-      var hasReuse = !!(w.data.reuse && w.data.reuse.enabled);
-      function addPowerPill(emo, label, active, toggleKey){
-        const wrap=document.createElement('button');
-        wrap.type='button';
-        wrap.className='status-pill inserat-soft-pill '+(active?'active':'inactive');
-        wrap.setAttribute('aria-label', label);
-        wrap.setAttribute('title', label);
-        wrap.innerHTML='<span class="inserat-pill-emo">'+emo+'</span>';
-        wrap.onclick=function(e){ e.preventDefault(); e.stopPropagation(); if(typeof triggerHapticFeedback==='function') triggerHapticFeedback([5]); if(toggleKey==='reuse'){ w.data.reuse=w.data.reuse||{}; w.data.reuse.enabled=!w.data.reuse.enabled; } else w.data[toggleKey]=!w.data[toggleKey]; saveDraft(); rebuildWizard(); };
-        powerBar.appendChild(wrap);
-      }
-      addPowerPill('🍴','Vor Ort', hasDineIn, 'dineInPossible');
-      addPowerPill('🔄','Mehrweg', hasReuse, 'reuse');
-      var hasPickupCode = w.data.hasPickupCode !== false;
-      function addPowerPillPickup(emo, label, active, toggleKey){
-        const wrap=document.createElement('button');
-        wrap.type='button';
-        wrap.className='status-pill inserat-soft-pill '+(active?'active':'inactive');
-        wrap.setAttribute('aria-label', label);
-        wrap.setAttribute('title', label + ' (0,89 € pro Gast)');
-        wrap.innerHTML='<span class="inserat-pill-emo">'+emo+'</span>';
-        wrap.onclick=function(e){ e.preventDefault(); e.stopPropagation(); if(typeof triggerHapticFeedback==='function') triggerHapticFeedback([5]); w.data.hasPickupCode=!w.data.hasPickupCode; saveDraft(); rebuildWizard(); };
-        powerBar.appendChild(wrap);
-      }
-      addPowerPillPickup('🧾','Abholnummer', hasPickupCode, 'hasPickupCode');
-      const hasTimeValue=!!(w.data.pickupWindow&&w.data.pickupWindow.trim())||(w.data.mealStart&&w.data.mealEnd);
-      const timePill=document.createElement('button');
-      timePill.type='button';
-      timePill.className='status-pill inserat-soft-pill '+(hasTimeValue?'active':'inactive');
-      timePill.setAttribute('aria-label','Abholzeit bearbeiten');
-      timePill.setAttribute('title','Zeit');
-      timePill.innerHTML='<span class="inserat-pill-emo">🕒</span>';
-      timePill.onclick=function(){ if(typeof triggerHapticFeedback==='function') triggerHapticFeedback([5]); toggleHeaderSelection('time'); };
-      powerBar.appendChild(timePill);
-      function openAllergenBottomSheet(){
-        if(typeof triggerHapticFeedback==='function') triggerHapticFeedback([5]);
-        var backdrop=document.createElement('div');
-        backdrop.className='inserat-bottom-sheet-backdrop';
-        var sheet=document.createElement('div');
-        sheet.className='inserat-bottom-sheet';
-        sheet.innerHTML='<div class="inserat-sheet-handle" aria-hidden="true"></div><p style="margin:0 0 16px; font-size:16px; font-weight:800; color:#0f172a;">Allergene</p><div class="inserat-allergen-pills-wrap" style="display:flex; flex-wrap:wrap; gap:8px;"></div><button type="button" class="inserat-sheet-done inserat-fertig-kachel">Fertig</button>';
-        var wrap=sheet.querySelector('.inserat-allergen-pills-wrap');
-        (typeof ALLERGENS_14!=='undefined'?ALLERGENS_14:[]).forEach(function(a){
-          var code=a.short; var name=a.name||code; var active=(w.data.allergens||[]).includes(code);
-          var pill=document.createElement('button'); pill.type='button'; pill.className='inserat-allergen-pill'+(active?' active':'');
-          pill.textContent=name; pill.title=name;
-          pill.onclick=function(){ if(typeof triggerHapticFeedback==='function') triggerHapticFeedback([5]); if(!w.data.allergens) w.data.allergens=[]; if((w.data.allergens||[]).includes(code)){ w.data.allergens=w.data.allergens.filter(function(x){ return x!==code; }); } else{ w.data.allergens.push(code); } w.data.wantsAllergens=true; saveDraft(); pill.className='inserat-allergen-pill'+((w.data.allergens||[]).includes(code)?' active':''); };
-          wrap.appendChild(pill);
-        });
-        function closeSheet(){ backdrop.classList.remove('is-open'); sheet.classList.remove('is-open'); setTimeout(function(){ backdrop.remove(); sheet.remove(); }, 320); rebuildWizard(); }
-        sheet.querySelector('.inserat-sheet-done').onclick=function(){ if(typeof triggerHapticFeedback==='function') triggerHapticFeedback([5]); closeSheet(); };
-        backdrop.onclick=function(e){ if(e.target===backdrop) closeSheet(); };
-        var touchStartY=0; var swipeClosed=false;
-        sheet.addEventListener('touchstart',function(e){ touchStartY=e.touches[0].clientY; swipeClosed=false; },{passive:true});
-        sheet.addEventListener('touchmove',function(e){ if(swipeClosed) return; var y=e.touches[0].clientY; if(y-touchStartY>50){ swipeClosed=true; closeSheet(); } },{passive:true});
-        document.body.appendChild(backdrop); document.body.appendChild(sheet);
-        requestAnimationFrame(function(){ requestAnimationFrame(function(){ backdrop.classList.add('is-open'); sheet.classList.add('is-open'); }); });
-      }
-      const hasAllergens=!!(w.data.allergens&&w.data.allergens.length);
-      var allergenWrap=document.createElement('div');
-      allergenWrap.style.cssText='display:inline-flex; align-items:center; min-width:44px; min-height:44px;';
-      const allergenBarBtn=document.createElement('button');
-      allergenBarBtn.type='button';
-      allergenBarBtn.className='func-icon-btn inserat-soft-pill ' + (hasAllergens ? 'active' : '');
-      allergenBarBtn.textContent='🌾';
-      allergenBarBtn.title='Allergene';
-      allergenBarBtn.onclick=openAllergenBottomSheet;
-      var allergenCodesSpan=document.createElement('span');
-      allergenCodesSpan.className='inserat-allergen-codes';
-      allergenCodesSpan.textContent=(w.data.allergens&&w.data.allergens.length)?(w.data.allergens.join(' ')):'';
-      allergenWrap.appendChild(allergenBarBtn);
-      allergenWrap.appendChild(allergenCodesSpan);
-      powerBar.appendChild(allergenWrap);
-      const hasExtras=!!(w.data.extras&&w.data.extras.length);
-      const extrasBarBtn=document.createElement('button');
-      extrasBarBtn.type='button';
-      extrasBarBtn.className='func-icon-btn inserat-soft-pill ' + (hasExtras ? 'active' : '');
-      extrasBarBtn.textContent='➕';
-      extrasBarBtn.title='Extras';
-      extrasBarBtn.onclick=function(){ if(typeof triggerHapticFeedback==='function') triggerHapticFeedback([5]); toggleHeaderSelection('extras'); };
-      powerBar.appendChild(extrasBarBtn);
-      var legendWrap=document.createElement('div'); legendWrap.style.cssText='position:relative; display:inline-flex; align-items:center;';
-      var legendTrigger=document.createElement('button'); legendTrigger.type='button'; legendTrigger.className='power-bar-legend-trigger inserat-soft-pill power-bar-legend-round'; legendTrigger.setAttribute('aria-label','Infoseite Inseratsflow'); legendTrigger.setAttribute('title','Infoseite: Inserieren in unter 30 Sekunden'); legendTrigger.textContent='ⓘ';
-      var legendPop=document.createElement('div'); legendPop.className='power-bar-legend'; legendPop.setAttribute('role','tooltip'); legendPop.style.cssText='display:none; position:absolute; top:100%; right:0; margin-top:6px; padding:10px 14px; background:rgba(255,255,255,0.95); backdrop-filter:blur(12px); border-radius:12px; border:1px solid rgba(0,0,0,0.06); box-shadow:0 8px 24px rgba(0,0,0,0.1); font-size:11px; font-weight:600; color:#475569; line-height:1.5; z-index:50; white-space:nowrap;';
-      legendPop.innerHTML='🍴 Vor Ort · 🔄 Mehrweg · 🕒 Zeit · 🌾 Allergene · ➕ Extras · ⓘ Info';
-      legendTrigger.onclick=function(e){ e.stopPropagation(); if(typeof triggerHapticFeedback==='function') triggerHapticFeedback([5]); if(typeof openInfoLegendSheet==='function') openInfoLegendSheet(); else { var on=legendPop.style.display==='block'; legendPop.style.display=on?'none':'block'; if(!on) setTimeout(function(){ var closeLegend=function(ev){ if(!legendWrap.contains(ev.target)){ legendPop.style.display='none'; document.removeEventListener('click', closeLegend); } }; document.addEventListener('click', closeLegend); }, 0); } };
-      legendWrap.appendChild(legendTrigger); legendWrap.appendChild(legendPop); powerBar.appendChild(legendWrap);
-      box.appendChild(powerBar);
-
       const scrollArea=document.createElement('div');
       scrollArea.className='inserat-scroll-area scroll-content';
 
-      // ========== 3. EBENE (Titel): Gerichtsname volle Breite 100%, Midnight Blue #0f172a, ExtraBold. adjustTitleFontSize() – Name niemals abgeschnitten [cite: 2026-02-18] ==========
+      // ========== 2. EBENE (Titel): Gerichtsname zuerst, dann PowerBar direkt darunter (Bahnhofskarte) [cite: 2026-02-20] ==========
       const stepName=document.createElement('div');
       stepName.id='step-name';
       stepName.className='inserat-section inserat-unified-title-wrap';
       stepName.style.cssText='width:100%;';
       const dishDatalist=document.createElement('datalist');
       dishDatalist.id='inserat-dish-datalist';
-      const dishSuggestions = ['Kürbissuppe','Kartoffelsuppe','Tomatensuppe','Linsensuppe','Schnitzel','Gulasch','Käsespätzle','Pasta','Pizza','Wrap','Burger','Falafel','Lachs','Sushi','Thunfisch','Salat','Curry','Gemüsepfanne','Risotto','Lasagne'];
-      dishSuggestions.forEach(function(name){ const o=document.createElement('option'); o.value=name; dishDatalist.appendChild(o); });
+      var dishSuggestions = (typeof TOP_30_DISHES !== 'undefined') ? TOP_30_DISHES.map(function(d){ return d.name; }) : ['Kürbissuppe','Kartoffelsuppe','Tomatensuppe','Linsensuppe','Schnitzel','Gulasch','Käsespätzle','Pasta','Pizza','Wrap','Burger','Falafel','Lachs','Sushi','Thunfisch','Salat','Curry','Gemüsepfanne','Risotto','Lasagne'];
+      dishSuggestions.forEach(function(name){ var o=document.createElement('option'); o.value=name; dishDatalist.appendChild(o); });
       stepName.appendChild(dishDatalist);
       const inputDish=document.createElement('input');
+      inputDish.id='gericht-name';
       inputDish.type='text';
       inputDish.className='inserat-detail-style-title magnet-input';
       inputDish.placeholder='Was kochst du heute?';
@@ -15453,29 +15444,162 @@
         var sizeRem = len > 20 ? Math.max(1.1, 1.5 - (len - 20) * 0.02) : 1.5;
         el.style.fontSize = sizeRem + 'rem';
       }
+      function applyDishAutocomplete(dishVal){
+        var catSugg=getCategorySuggestionForDish(dishVal);
+        if(catSugg&&['Fleisch','Vegetarisch','Vegan','Salat'].indexOf(catSugg)>=0){ w.data.category=catSugg; }
+        var suggested=getAllergenSuggestionsForDish(dishVal);
+        if(suggested.length){ w.data.allergens=suggested.slice(); w.data.wantsAllergens=true; }
+        var descSugg=getDescriptionSuggestionForDish(dishVal);
+        if(descSugg&&(!w.data.description||!w.data.description.trim())){ w.data.description=descSugg; }
+        saveDraft(); rebuildWizard();
+      }
       inputDish.oninput=()=>{
         w.data.dish=inputDish.value; saveDraft();
         adjustTitleFontSize();
-        if(listingDebounceTimer) clearTimeout(listingDebounceTimer);
-        listingDebounceTimer=setTimeout(function(){
+        var val = (inputDish.value || '').trim().toLowerCase();
+        var exactMatch = (typeof TOP_30_DISHES !== 'undefined') && TOP_30_DISHES.some(function(d){ return (d.name||'').toLowerCase().trim() === val; });
+        if(exactMatch){
+          if(listingDebounceTimer) clearTimeout(listingDebounceTimer);
           listingDebounceTimer=null;
-          var catSugg=getCategorySuggestionForDish(inputDish.value);
-          if(catSugg&&['Fleisch','Vegetarisch','Vegan','Salat'].indexOf(catSugg)>=0){ w.data.category=catSugg; saveDraft(); }
-          var suggested=getAllergenSuggestionsForDish(inputDish.value);
-          if(suggested.length&&(!w.data.allergens||w.data.allergens.length===0)){ w.data.allergens=suggested.slice(); w.data.wantsAllergens=true; saveDraft(); }
-          var descSugg=getDescriptionSuggestionForDish(inputDish.value);
-          if(descSugg&&(!w.data.description||!w.data.description.trim())){ w.data.description=descSugg; saveDraft(); }
-          rebuildWizard();
-        }, 400);
+          var hadFocus = document.activeElement === inputDish;
+          applyDishAutocomplete(inputDish.value);
+          if(hadFocus){
+            var wizardBox = document.getElementById('wizard');
+            var newInp = wizardBox && wizardBox.querySelector('#gericht-name');
+            if(newInp) newInp.focus();
+          }
+        } else {
+          if(listingDebounceTimer) clearTimeout(listingDebounceTimer);
+          listingDebounceTimer=setTimeout(function(){
+            listingDebounceTimer=null;
+            var hadFocus = document.activeElement === inputDish;
+            applyDishAutocomplete(inputDish.value);
+            if(hadFocus){
+              var wizardBox = document.getElementById('wizard');
+              var newInp = wizardBox && wizardBox.querySelector('#gericht-name');
+              if(newInp) newInp.focus();
+            }
+          }, 400);
+        }
       };
       inputDish.onblur=()=>{
         dismissKeyboard(); hapticLight();
-        var catSugg=getCategorySuggestionForDish(inputDish.value);
-        if(catSugg&&['Fleisch','Vegetarisch','Vegan','Salat'].indexOf(catSugg)>=0){ w.data.category=catSugg; saveDraft(); }
-        var suggested=getAllergenSuggestionsForDish(inputDish.value);
-        if(suggested.length&&(!w.data.allergens||w.data.allergens.length===0)){ w.data.allergens=suggested.slice(); w.data.wantsAllergens=true; saveDraft(); rebuildWizard(); }
+        applyDishAutocomplete(inputDish.value);
       };
       stepName.appendChild(inputDish);
+      scrollArea.appendChild(stepName);
+
+      // ========== Power-Bar (Bahnhofskarte): 5 Icons direkt unter Titel, Edge-to-Edge. Aktiv=Emerald-Glow, Inaktiv=Grau [cite: 2026-02-20] ==========
+      var pwParts=(w.data.pickupWindow||profileWindow).split(/\s*[–\-]\s*/);
+      var timeStart=(pwParts[0]||'11:30').trim();
+      var timeEnd=(pwParts[1]||'14:00').trim();
+      if(timeStart.length===4) timeStart='0'+timeStart;
+      if(timeEnd.length===4) timeEnd='0'+timeEnd;
+      const powerBar=document.createElement('div');
+      powerBar.className='inserat-power-bar inserat-unified-pills inserat-soft-shell';
+      var hasReuse = !!(w.data.reuse && w.data.reuse.enabled);
+      function addPowerPill(emo, label, active, toggleKey){
+        const wrap=document.createElement('button');
+        wrap.type='button';
+        wrap.className='status-pill inserat-soft-pill '+(active?'active':'inactive');
+        wrap.setAttribute('aria-label', label);
+        wrap.setAttribute('title', label);
+        wrap.innerHTML='<span class="inserat-pill-emo">'+emo+'</span>';
+        wrap.onclick=function(e){ e.preventDefault(); e.stopPropagation(); if(typeof triggerHapticFeedback==='function') triggerHapticFeedback([5]); if(toggleKey==='reuse'){ w.data.reuse=w.data.reuse||{}; w.data.reuse.enabled=!w.data.reuse.enabled; } else w.data[toggleKey]=!w.data[toggleKey]; saveDraft(); rebuildWizard(); };
+        powerBar.appendChild(wrap);
+      }
+      w.data.dineInPossible=true;
+      function addPowerPillStatic(emo, label){
+        const wrap=document.createElement('span');
+        wrap.className='status-pill inserat-soft-pill active power-pill-static';
+        wrap.setAttribute('aria-label', label);
+        wrap.setAttribute('title', label);
+        wrap.innerHTML='<span class="inserat-pill-emo">'+emo+'</span>';
+        powerBar.appendChild(wrap);
+      }
+      addPowerPillStatic('🍴','Vor Ort');
+      addPowerPill('🔄','Mehrweg', hasReuse, 'reuse');
+      const hasTimeValue=!!(w.data.pickupWindow&&w.data.pickupWindow.trim())||(w.data.mealStart&&w.data.mealEnd);
+      const timePill=document.createElement('button');
+      timePill.type='button';
+      timePill.className='status-pill inserat-soft-pill '+(hasTimeValue?'active':'inactive');
+      timePill.setAttribute('aria-label','Abholzeit bearbeiten');
+      timePill.setAttribute('title','Zeit');
+      timePill.innerHTML='<span class="inserat-pill-emo">🕒</span>';
+      timePill.onclick=function(){ hapticLight(); openQuickAdjust('time'); };
+      powerBar.appendChild(timePill);
+      const quickAdjustPanel=document.createElement('div');
+      quickAdjustPanel.className='inserat-quick-adjust-panel';
+      quickAdjustPanel.style.cssText='display:none; padding:12px 16px; background:rgba(255,255,255,0.6); backdrop-filter:blur(12px); border-top:1px solid rgba(0,0,0,0.06); border-radius:0 0 16px 16px; margin:0 -4px 0 -4px;';
+      function closeQuickAdjust(){ quickAdjustPanel.style.display='none'; quickAdjustPanel.innerHTML=''; rebuildWizard(); }
+      function openQuickAdjust(type){
+        hapticLight();
+        quickAdjustPanel.innerHTML='';
+        quickAdjustPanel.style.display='block';
+        if(type==='time'){
+          var pwParts=(w.data.pickupWindow||'11:30 – 14:00').split(/\s*[–\-]\s*/);
+          var tStart=(pwParts[0]||'11:30').trim(); var tEnd=(pwParts[1]||'14:00').trim();
+          if(tStart.length===4) tStart='0'+tStart; if(tEnd.length===4) tEnd='0'+tEnd;
+          var row=document.createElement('div'); row.style.cssText='display:flex; align-items:center; justify-content:center; gap:12px; flex-wrap:wrap; padding:8px 0;';
+          var inpStart=document.createElement('input'); inpStart.type='time'; inpStart.value=tStart; inpStart.style.cssText='padding:10px 14px; border-radius:12px; border:2px solid rgba(0,0,0,0.08); background:rgba(255,255,255,0.7); font-size:16px; font-weight:700;';
+          var inpEnd=document.createElement('input'); inpEnd.type='time'; inpEnd.value=tEnd; inpEnd.style.cssText='padding:10px 14px; border-radius:12px; border:2px solid rgba(0,0,0,0.08); background:rgba(255,255,255,0.7); font-size:16px; font-weight:700;';
+          inpStart.onchange=inpEnd.onchange=function(){ w.data.pickupWindow=inpStart.value+' – '+inpEnd.value; saveDraft(); };
+          row.appendChild(inpStart); row.appendChild(document.createTextNode(' – ')); row.appendChild(inpEnd);
+          quickAdjustPanel.appendChild(row);
+          var btnFertig=document.createElement('button'); btnFertig.type='button'; btnFertig.className='inserat-fertig-kachel'; btnFertig.textContent='Fertig'; btnFertig.style.cssText='margin-top:12px;'; btnFertig.onclick=function(){ hapticLight(); closeQuickAdjust(); };
+          quickAdjustPanel.appendChild(btnFertig);
+        } else if(type==='allergens'){
+          var p=document.createElement('p'); p.style.cssText='margin:0 0 12px; font-size:14px; font-weight:800; color:#0f172a;'; p.textContent='Allergene'; quickAdjustPanel.appendChild(p);
+          var wrap=document.createElement('div'); wrap.style.cssText='display:flex; flex-wrap:wrap; gap:8px;';
+          (typeof ALLERGENS_14!=='undefined'?ALLERGENS_14:[]).forEach(function(a){
+            var code=a.short; var name=a.name||code; var active=(w.data.allergens||[]).includes(code);
+            var pill=document.createElement('button'); pill.type='button'; pill.className='inserat-allergen-pill'+(active?' active':'');
+            pill.textContent=name; pill.title=name;
+            pill.onclick=function(){ hapticLight(); if(!w.data.allergens) w.data.allergens=[]; if((w.data.allergens||[]).includes(code)){ w.data.allergens=w.data.allergens.filter(function(x){ return x!==code; }); } else{ w.data.allergens.push(code); } w.data.wantsAllergens=true; saveDraft(); pill.className='inserat-allergen-pill'+((w.data.allergens||[]).includes(code)?' active':''); };
+            wrap.appendChild(pill);
+          });
+          quickAdjustPanel.appendChild(wrap);
+          var btnFertig=document.createElement('button'); btnFertig.type='button'; btnFertig.className='inserat-fertig-kachel'; btnFertig.textContent='Fertig'; btnFertig.style.cssText='margin-top:12px;'; btnFertig.onclick=function(){ hapticLight(); closeQuickAdjust(); };
+          quickAdjustPanel.appendChild(btnFertig);
+        } else if(type==='extras'){
+          var p=document.createElement('p'); p.style.cssText='margin:0 0 12px; font-size:14px; font-weight:800; color:#0f172a;'; p.textContent='Extras'; quickAdjustPanel.appendChild(p);
+          var defaultExtras=(profile.defaultExtras&&profile.defaultExtras.length)?profile.defaultExtras.slice():[{name:'Beilagensalat',price:2.5},{name:'Mayo',price:0.5},{name:'Ketchup',price:0.5},{name:'Soße',price:1},{name:'Brot',price:1.5}];
+          if(!Array.isArray(w.data.extras)) w.data.extras=[];
+          var extrasListWrap=document.createElement('div'); extrasListWrap.style.cssText='display:flex; flex-wrap:wrap; gap:8px; align-items:center;';
+          defaultExtras.forEach(function(opt){
+            var ex=w.data.extras.find(function(e){ return e.name===opt.name; }); var active=!!ex&&Number(ex.price||0)>0; if(!ex) ex={name:opt.name,price:0};
+            var pillWrap=document.createElement('div'); pillWrap.style.cssText='display:flex; align-items:center; gap:6px;';
+            var btn=document.createElement('button'); btn.type='button'; btn.className='extra-pill'+(active?' active':''); btn.style.cssText='cursor:pointer;'; btn.textContent='➕ '+opt.name;
+            btn.onclick=function(){ hapticLight(); var idx=w.data.extras.findIndex(function(e){ return e.name===opt.name; }); if(idx>=0){ w.data.extras.splice(idx,1); } else{ w.data.extras.push({name:opt.name,price:opt.price}); } saveDraft(); var hasEx=!!w.data.extras.find(function(e){ return e.name===opt.name; })&&Number((w.data.extras.find(function(e){ return e.name===opt.name; })||{}).price||0)>0; btn.className='extra-pill'+(hasEx?' active':''); if(hasEx&&!pillWrap.querySelector('input')){ var inpWrap=document.createElement('span'); inpWrap.style.cssText='display:inline-flex; align-items:center; background:rgba(255,255,255,0.6); border-radius:999px; padding:4px 8px;'; var next=w.data.extras.find(function(e){ return e.name===opt.name; }); inpWrap.innerHTML='<span style="font-size:10px; font-weight:800; color:#10b981; margin-right:4px;">+</span><input type="text" inputmode="decimal" style="width:36px; background:transparent; border:none; padding:0; font-size:12px; font-weight:800; color:#10b981; outline:none;" value="'+Number((next&&next.price)||0).toFixed(2).replace(".",",")+'"><span style="font-size:10px; font-weight:800; color:#10b981; margin-left:2px;">€</span>'; var inp=inpWrap.querySelector('input'); if(inp){ var e=w.data.extras.find(function(x){ return x.name===opt.name; }); inp.oninput=function(){ if(e) e.price=parseFloat((inp.value||"0").replace(",","."))||0; saveDraft(); }; inp.onclick=function(ev){ ev.stopPropagation(); }; pillWrap.appendChild(inpWrap); } } else if(!hasEx){ var o=pillWrap.querySelector('span'); if(o) o.remove(); } };
+            pillWrap.appendChild(btn);
+            if(active){ var inpWrap=document.createElement('span'); inpWrap.style.cssText='display:inline-flex; align-items:center; background:rgba(255,255,255,0.6); border-radius:999px; padding:4px 8px;'; inpWrap.innerHTML='<span style="font-size:10px; font-weight:800; color:#10b981; margin-right:4px;">+</span><input type="text" inputmode="decimal" style="width:36px; background:transparent; border:none; padding:0; font-size:12px; font-weight:800; color:#10b981; outline:none;" value="'+Number(ex.price).toFixed(2).replace(".",",")+'"><span style="font-size:10px; font-weight:800; color:#10b981; margin-left:2px;">€</span>'; var inp=inpWrap.querySelector('input'); if(inp){ inp.oninput=function(){ ex.price=parseFloat((inp.value||"0").replace(",","."))||0; saveDraft(); }; inp.onclick=function(ev){ ev.stopPropagation(); }; } pillWrap.appendChild(inpWrap); }
+            extrasListWrap.appendChild(pillWrap);
+          });
+          quickAdjustPanel.appendChild(extrasListWrap);
+          var btnFertig=document.createElement('button'); btnFertig.type='button'; btnFertig.className='inserat-fertig-kachel'; btnFertig.textContent='Fertig'; btnFertig.style.cssText='margin-top:12px;'; btnFertig.onclick=function(){ hapticLight(); closeQuickAdjust(); };
+          quickAdjustPanel.appendChild(btnFertig);
+        }
+      }
+      const hasAllergens=!!(w.data.allergens&&w.data.allergens.length);
+      const allergenBarBtn=document.createElement('button');
+      allergenBarBtn.type='button';
+      allergenBarBtn.className='func-icon-btn inserat-soft-pill ' + (hasAllergens ? 'active' : '');
+      allergenBarBtn.textContent='🌾';
+      allergenBarBtn.title='Allergene';
+      allergenBarBtn.onclick=function(){ openQuickAdjust('allergens'); };
+      powerBar.appendChild(allergenBarBtn);
+      const hasExtras=!!(w.data.extras&&w.data.extras.length);
+      const extrasBarBtn=document.createElement('button');
+      extrasBarBtn.type='button';
+      extrasBarBtn.className='func-icon-btn inserat-soft-pill ' + (hasExtras ? 'active' : '');
+      extrasBarBtn.textContent='➕';
+      extrasBarBtn.title='Extras';
+      extrasBarBtn.onclick=function(){ openQuickAdjust('extras'); };
+      powerBar.appendChild(extrasBarBtn);
+      scrollArea.appendChild(powerBar);
+      scrollArea.appendChild(quickAdjustPanel);
+
+      // ========== 3. EBENE (Beschreibung): Direkt unter PowerBar, Schiefergrau #64748b [cite: 2026-02-18] ==========
       const wrapDesc=document.createElement('div');
       wrapDesc.className='inserat-airbnb-field-wrap inserat-airbnb-desc-wrap inserat-desc-italic-wrap';
       wrapDesc.style.cssText='margin-top:0; margin-bottom:8px;';
@@ -15488,8 +15612,7 @@
       inputDesc.oninput=()=>{ w.data.description=inputDesc.value; saveDraft(); };
       inputDesc.onblur=()=>{ dismissKeyboard(); hapticLight(); };
       wrapDesc.appendChild(inputDesc);
-      stepName.appendChild(wrapDesc);
-      // ========== 4. EBENE (Beschreibung): Direkt unter Titel als Untertitel, Schiefergrau #64748b, 0.95rem [cite: 2026-02-18] ==========
+      scrollArea.appendChild(wrapDesc);
       inputDesc.style.cssText='width:100%; color:#64748b; font-size:0.95rem; box-sizing:border-box; border:none; background:transparent; outline:none;';
 
       // ========== 5. EBENE (Action-Row): Flex-Row – Kategorie-Pills links, gelber Preis-Button rechts. MODE_AD: „mit Abholnummer“ + „Nur Inserat“. MODE_PLAN: „Im Kochbuch speichern“ + „Einplanen“. Terminologie: nur Abholnummer [cite: 2026-02-18] ==========
@@ -15591,7 +15714,7 @@
 
       const actionSection=document.createElement('section');
       actionSection.id='inserat-action-section';
-      actionSection.className='inserat-action-section fixed-footer' + (!isPlanMode && isInserierenRoute ? ' inserat-action-pricing' : '') + (isPlanMode ? ' inserat-action-plan' : '');
+      actionSection.className='inserat-action-section fixed-footer' + (!isPlanMode && isInserierenRoute ? ' inserat-action-pricing inserat-action-layer' : '') + (isPlanMode ? ' inserat-action-plan' : '');
 
       if(isPlanMode){
         var btnWeekPlan=document.createElement('button');
@@ -15749,13 +15872,43 @@
 
       } /* Ende else (Step 1) */
 
-      /* scrollIntoView bei Fokus auf Input (ersetzt bindKeyboardAvoidance) */
+      /* Keyboard-Scroll-Sync: Input bleibt 20px über Tastatur (visualViewport + scroll-margin) [cite: 2026-02-18, 2026-02-21] */
+      function scrollInputAboveKeyboard(el){
+        if(!el || (el.tagName !== 'INPUT' && el.tagName !== 'TEXTAREA')) return;
+        if(typeof window.visualViewport !== 'undefined'){
+          var vh = window.visualViewport.height;
+          var gap = 20;
+          var rect = el.getBoundingClientRect();
+          if(rect.bottom > vh - gap){
+            var scrollArea = box.querySelector('.inserat-scroll-area');
+            if(scrollArea && scrollArea.scrollHeight > scrollArea.clientHeight){
+              var delta = rect.bottom - (vh - gap);
+              scrollArea.scrollTop = Math.min(scrollArea.scrollTop + delta, scrollArea.scrollHeight - scrollArea.clientHeight);
+            } else {
+              el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+          }
+        } else {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }
       sheet.addEventListener('focusin', function(e){
         var el = e.target;
-        if(el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') && typeof el.scrollIntoView === 'function'){
-          el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        if(el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA')){
+          setTimeout(function(){ scrollInputAboveKeyboard(el); }, 150);
+          if(typeof el.scrollIntoView === 'function') el.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
       });
+      var vvHandler = function(){
+        var active = document.activeElement;
+        if(active && active.closest && active.closest('#wizard') && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA')){
+          scrollInputAboveKeyboard(active);
+        }
+      };
+      if(typeof window.visualViewport !== 'undefined'){
+        window.visualViewport.addEventListener('resize', vvHandler);
+        window.visualViewport.addEventListener('scroll', vvHandler);
+      }
       setWizardContent(sheet);
       // Guided Interaction: leere Karte → Fokus Namensfeld (blinkender Cursor), kein Foto → Pulsieren [cite: 2026-01-29]
       setTimeout(function(){
