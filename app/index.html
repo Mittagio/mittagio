@@ -2382,7 +2382,8 @@
 
     <!-- Publish Fee Modal (vor Inserats-Veröffentlichung) – Backdrop + Sheet immer gemeinsam anzeigen -->
     <div class="backdrop" id="publishFeeBd" onclick="closePublishFeeModal()" style="background:rgba(0,0,0,0.7); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); z-index:2000;"></div>
-    <div class="sheet" id="publishFeeSheet" style="width:100%; max-width:100%; border-radius:24px; overflow:hidden; z-index:2001; box-sizing:border-box;">
+    <div class="sheet publish-fee-sheet" id="publishFeeSheet" style="width:100%; max-width:100%; border-radius:24px; overflow:hidden; z-index:2001; box-sizing:border-box; position:relative;">
+  <div class="inserat-success-glow publish-fee-success-glow" id="publishFeeSuccessGlow" style="position:absolute;inset:0;pointer-events:none;z-index:5;border-radius:24px;overflow:hidden;"></div>
   <div class="sheet-body" style="padding:28px;">
     <h3 style="margin:0 0 20px; font-size:22px; font-weight:900; color:#2D3436;">Inserat veröffentlichen</h3>
     <div style="margin-bottom:24px; padding:20px; background:rgba(255,215,0,0.1); border-radius:16px; border:2px solid rgba(255,215,0,0.3);">
@@ -2570,10 +2571,10 @@
   <!-- Bottom: Zum Inserat + Nächstes Gericht [cite: 2026-01-29] -->
   <div style="position:absolute; bottom:0; left:0; right:0; padding:20px 24px calc(20px + env(safe-area-inset-bottom, 0)); background:linear-gradient(to top, #f8f7f2 80%, transparent); text-align:center; display:flex; flex-direction:column; gap:10px;">
     <button type="button" id="inseratSuccessBtnBack" style="width:100%; min-height:52px; border-radius:16px; background:#1a1a1a; color:#fff; font-weight:800; font-size:15px; border:none; box-shadow:0 4px 12px rgba(0,0,0,0.1);">
-      Zum Inserat
+      Zurück zum Dashboard
     </button>
     <button type="button" id="inseratSuccessBtnNewListing" style="width:100%; min-height:48px; border-radius:16px; background:#fff; color:#1a1a1a; font-weight:700; font-size:15px; border:2px solid rgba(0,0,0,0.1);">
-      Nächstes Gericht inserieren
+      Weiteres Inserat erstellen
     </button>
   </div>
 </div>
