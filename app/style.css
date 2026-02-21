@@ -2547,6 +2547,99 @@
     .liquid-master-panel #step-name input.magnet-input:focus {
       animation: magnet-pulse 1.2s ease-in-out infinite;
     }
+    /* Ghost-Price: Pulsierender Placeholder 8,90 € [cite: 2026-02-21] */
+    @keyframes ghostPulse {
+      0% { opacity: 0.3; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(1.01); }
+      100% { opacity: 0.3; transform: scale(1); }
+    }
+    #wizard[data-flow="listing"] .price-input-wrapper input.price-field::placeholder,
+    #wizard[data-flow="listing"] .price-field::placeholder {
+      color: #64748b;
+      font-weight: 700;
+      animation: ghostPulse 3s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    }
+    #wizard[data-flow="listing"] .price-field:focus {
+      outline: none;
+      border-bottom: 2px solid #10b981;
+      transition: border-color 0.3s ease;
+    }
+    /* Collapsing Header „Dein Inserat“ [cite: 2026-02-21] */
+    #wizard[data-flow="listing"] .inserat-collapsing-header .inserat-collapsing-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: #0f172a;
+      transition: font-size 0.25s ease;
+    }
+    #wizard[data-flow="listing"] .inserat-collapsing-header.is-scrolled .inserat-collapsing-title {
+      font-size: 14px;
+      font-weight: 700;
+    }
+    #wizard[data-flow="listing"] .inserat-collapsing-header.is-scrolled {
+      padding: 8px 16px;
+    }
+    /* Native Immersion: Nav ausblenden wenn InseratCard offen [cite: 2026-02-21] */
+    body.wizard-inserat-open #providerNavWrap {
+      display: none !important;
+    }
+    /* Sticky Bottom: Hardware-Fusion, festgedockt, Clean [cite: 2026-02-21 S25] */
+    body.wizard-inserat-open #wizard[data-flow="listing"] .inserat-action-section.inserat-action-layer,
+    body.wizard-inserat-open #wizard[data-flow="listing"] .inserat-action-section.inserat-action-pricing {
+      position: fixed !important;
+      bottom: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      width: 100% !important;
+      margin: 0 !important;
+      border-radius: 0 !important;
+      padding: 12px 0 max(16px, env(safe-area-inset-bottom)) !important;
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+      background: #fff;
+    }
+    /* Footer-Padding reduziert wenn Nav ausgeblendet */
+    body.wizard-inserat-open #wizard[data-flow="listing"] .liquid-master-panel .inserat-action-section {
+      padding-bottom: max(20px, env(safe-area-inset-bottom)) !important;
+    }
+    /* Scroll-Bereich: Platz für fixierte Action-Leiste */
+    body.wizard-inserat-open #wizard[data-flow="listing"] .inserat-scroll-area {
+      padding-bottom: 100px !important;
+    }
+    /* Step1-Nav: volle Breite, Safe-Area – Hardware-Style */
+    body.wizard-inserat-open #wizard[data-flow="listing"] .inserat-step1-nav {
+      padding-left: max(0, env(safe-area-inset-left));
+      padding-right: max(0, env(safe-area-inset-right));
+    }
+    /* Bild im Scroll-Fluss: oben abgerundet, volle Breite [cite: 2026-02-21] */
+    #wizard[data-flow="listing"] .inserat-scroll-area.inserat-scroll-with-photo {
+      padding-top: 0 !important;
+    }
+    #wizard[data-flow="listing"] .inserat-photo-in-scroll {
+      width: 100vw !important;
+      max-width: calc(100% + 40px) !important;
+      margin-left: -20px !important;
+      margin-right: -20px !important;
+      border-radius: 20px 20px 0 0 !important;
+    }
+    /* ghost-input: Placeholder pulsierend (z.B. Jägerschnitzel) [cite: 2026-02-21] */
+    #wizard[data-flow="listing"] .ghost-input::placeholder {
+      animation: ghost-placeholder-pulse 2.5s ease-in-out infinite;
+    }
+    @keyframes ghost-placeholder-pulse {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 0.9; }
+    }
+    /* Preis-Placeholder pulsieren [cite: 2026-02-21] */
+    #wizard[data-flow="listing"] .inserat-price-input::placeholder,
+    #wizard[data-flow="listing"] .price-field::placeholder {
+      animation: ghost-placeholder-pulse 2.5s ease-in-out infinite;
+    }
+    /* Textarea Beschreibung: kein harter Rahmen */
+    #wizard[data-flow="listing"] .inserat-desc-textarea,
+    #wizard[data-flow="listing"] .inserat-desc-no-frame textarea {
+      border: none !important;
+      box-shadow: none !important;
+    }
     
     /* Guided Interaction: Pulsieren des Foto-Bereichs bei leerer Karte [cite: 2026-01-29] */
     @keyframes inserat-card-photo-pulse {
@@ -2580,7 +2673,7 @@
     #wizard[data-flow="listing"] .liquid-master-panel .photo-header,
     #wizard[data-flow="listing"] .liquid-master-panel .inserat-photo-tile.photo-header {
       height: 190px; min-height: 190px; max-height: 190px; aspect-ratio: auto;
-      box-shadow: none; border: none; border-bottom: 1px solid rgba(0,0,0,0.06);
+      box-shadow: none; border: none;
     }
     .liquid-master-panel .photo-header img,
     .liquid-master-panel .inserat-photo-tile.photo-header img {
@@ -2777,8 +2870,7 @@
     /* Status-Leiste: Pills direkt unter dem Bild (🍴 Vor Ort, 🔄 Mehrweg) */
     .inserat-status-bar {
       display: flex; gap: 12px; padding: 12px 20px; flex-shrink: 0;
-      background: rgba(255,255,255,0.6); border-bottom: 1px solid rgba(0,0,0,0.04);
-      justify-content: center; align-items: center;
+      background: transparent; justify-content: center; align-items: center;
     }
     .inserat-status-bar .status-pill {
       display: inline-flex; align-items: center; justify-content: center; gap: 6px;
@@ -2788,7 +2880,7 @@
       -webkit-tap-highlight-color: transparent;
     }
     .inserat-status-bar .status-pill.active {
-      background: #10b981; color: #fff; box-shadow: 0 4px 14px rgba(16,185,129,0.4);
+      background: #10b981; color: #fff;
     }
     .inserat-status-bar .status-pill.inactive {
       background: rgba(0,0,0,0.06); color: #64748b; filter: grayscale(0.5);
@@ -2804,7 +2896,7 @@
       -webkit-tap-highlight-color: transparent;
     }
     #wizard[data-flow="listing"] .inserat-status-bar.inserat-unified-pills .status-pill.active {
-      background: #10b981; color: #fff; box-shadow: 0 4px 14px rgba(16,185,129,0.4);
+      background: #10b981; color: #fff;
     }
     #wizard[data-flow="listing"] .inserat-status-bar.inserat-unified-pills .status-pill.inactive {
       background: rgba(0,0,0,0.06); color: #64748b;
@@ -2829,11 +2921,11 @@
     }
     /* S25 High-End: Power-Bar Icons 20% kleiner, eine Zeile, Emerald-Glow für Toggles [cite: 2026-02-16] */
     #wizard[data-flow="listing"] .liquid-master-panel .inserat-power-bar.inserat-unified-pills {
-      flex-wrap: nowrap; gap: 6px 12px; padding: 8px 14px;
+      flex-wrap: nowrap; gap: 6px 12px; padding: 6px 12px; margin-top: -4px;
     }
     #wizard[data-flow="listing"] .liquid-master-panel .inserat-power-bar .status-pill {
       min-width: 35px; min-height: 35px; padding: 6px; justify-content: center;
-      transition: transform 0.1s cubic-bezier(0.4,0,0.2,1), box-shadow 0.2s ease;
+      transition: transform 0.1s cubic-bezier(0.4,0,0.2,1);
     }
     #wizard[data-flow="listing"] .liquid-master-panel .inserat-power-bar .status-pill span { font-size: 14px !important; }
     #wizard[data-flow="listing"] .liquid-master-panel .inserat-power-bar .func-icon-btn {
@@ -2847,8 +2939,7 @@
     #wizard[data-flow="listing"] .inserat-power-bar .power-bar-legend-trigger:focus { color: #64748b; }
     /* Power-Bar: Kein grauer Hintergrund, Emerald-Glow hinter Icons [cite: 2026-02-18 Master Card] */
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell {
-      background: transparent; border-bottom: 1px solid rgba(0,0,0,0.04);
-      padding: 10px 16px; gap: 8px; flex-wrap: nowrap; justify-content: space-between;
+      background: transparent; padding: 10px 16px; gap: 8px; flex-wrap: nowrap; justify-content: space-between;
     }
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .status-pill,
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .func-icon-btn,
@@ -2868,22 +2959,62 @@
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .power-bar-legend-trigger {
       background: transparent !important; border: none !important; box-shadow: none !important; color: #94a3b8;
     }
-    /* Aktiv: Emerald-Glow (sanftes grünes Leuchten hinter den Icons) */
+    /* Aktiv: clean, technisch – kein Glow [cite: 2026-02-21 S25 High-End] */
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .status-pill.active,
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .func-icon-btn.active {
-      background: rgba(16,185,129,0.15) !important; color: #059669 !important; border: none !important;
-      box-shadow: 0 0 12px rgba(16,185,129,0.35), 0 0 24px rgba(16,185,129,0.15) !important;
+      background: rgba(16,185,129,0.12) !important; color: #059669 !important; border: none !important;
     }
-    /* Airbnb-Bottom-Tiles: Schweben über Nav, border-radius 24px, weicher Schatten [cite: 2026-02-18] */
+    /* Bottom-Nav-Style: Eckig, Anthrazit Primär, festgedockt [cite: 2026-02-21 S25] */
     #wizard[data-flow="listing"] .inserat-step1-nav {
-      display: flex; gap: 12px; width: 100%; min-height: 60px; align-items: stretch;
+      display: flex; gap: 0; width: 100%; min-height: 56px; align-items: stretch;
     }
     #wizard[data-flow="listing"] .inserat-btn-step1-left,
     #wizard[data-flow="listing"] .inserat-btn-step1-right {
-      border-radius: 24px !important; box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important;
+      border-radius: 0 !important; box-shadow: none !important; border: none !important;
     }
     #wizard[data-flow="listing"] .inserat-btn-step1-left:active,
     #wizard[data-flow="listing"] .inserat-btn-step1-right:active { transform: scale(0.98); }
+    /* Scroll-Bereich: Platz für schwebende Aktions-Buttons (Step 1) */
+    #wizard[data-flow="listing"] .liquid-master-panel:has(.inserat-action-layer) .inserat-scroll-area {
+      padding-bottom: calc(180px + env(safe-area-inset-bottom, 0));
+    }
+    /* Noble Floating Bottom: Aktions-Kacheln 16px über Nav-Pille, Nav-Pille 12px Abstand [cite: 2026-02-20] */
+    .inserat-step2-floating-bottom .inserat-step2-tiles-floating {
+      position: fixed;
+      bottom: calc(96px + env(safe-area-inset-bottom, 0));
+      left: 16px;
+      right: 16px;
+      z-index: 10;
+    }
+    #wizard[data-flow="listing"] .inserat-action-section.inserat-action-layer {
+      position: fixed;
+      bottom: calc(96px + env(safe-area-inset-bottom, 0));
+      left: 16px;
+      right: 16px;
+      z-index: 10;
+    }
+    .inserat-step2-floating-bottom .inserat-step2-nav-pille {
+      position: fixed;
+      bottom: calc(12px + env(safe-area-inset-bottom, 0));
+      left: 16px;
+      right: 16px;
+      z-index: 11;
+      margin-bottom: 0;
+      padding: 12px 20px;
+      border-radius: 34px;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .inserat-step2-nav-pille .inserat-step2-back,
+    .inserat-step2-nav-pille .close-wizard-x {
+      background: transparent !important;
+      color: rgba(255, 255, 255, 0.9) !important;
+    }
     /* 2-Schritt Airbnb-Flow: Step 2 – Kacheln schweben, Champagner links / Emerald rechts [cite: 2026-02-18] */
     .inserat-step2-wrap .inserat-decision-tile {
       border-radius: 24px !important;
@@ -2948,6 +3079,11 @@
     #wizard[data-flow="listing"] #step-name,
     #wizard[data-flow="listing"] .inserat-unified-title-wrap {
       display: block; width: 100%; box-sizing: border-box;
+    }
+    /* Keyboard-Avoidance: scroll-margin damit Input ca. 20px über Tastatur bleibt [cite: 2026-02-18] */
+    #wizard[data-flow="listing"] input,
+    #wizard[data-flow="listing"] textarea {
+      scroll-margin-bottom: 220px;
     }
     #wizard[data-flow="listing"] #step-name input.inserat-detail-style-title,
     #wizard[data-flow="listing"] #step-name input.magnet-input {
@@ -3130,6 +3266,94 @@
     body.provider-mode #v-provider-week > *,
     body.provider-mode [id^="v-provider-"].view.active > *{ position:relative; z-index:1; }
     
+    /* dynamic-header: Permanent Sticky (Airbnb), z-index 9999 ÜBER allem, Glass [cite: 2026-02-21 Master-Fix] */
+    body.provider-mode .dynamic-header {
+      position: sticky !important;
+      top: 0 !important;
+      z-index: 9999 !important;
+      background-color: rgba(245, 245, 240, 0.95) !important;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      transition: none;
+    }
+    /* Wochenplan-Gesetz: Alle Headers Montserrat 900, linksbündig, gleicher Abstand [Master-Fix] */
+    body.provider-mode .dynamic-header .prov-page-header-title,
+    body.provider-mode .dynamic-header .system-header-title,
+    body.provider-mode .dynamic-header h1 {
+      font-family: 'Montserrat', 'Inter', sans-serif !important;
+      font-weight: 900 !important;
+      font-size: 24px !important;
+      color: #1a1a1a !important;
+      letter-spacing: -0.03em;
+      margin: 0;
+      text-align: left;
+    }
+    /* Airbnb-Fest: Kein header-hidden – Header bleibt permanent sichtbar [cite: 2026-02-21] */
+    /* system-header: Airbnb-Style Collapsing – beim Hochscrollen Title schrumpft, 48px Glass-Bar [cite: 2026-02-21] */
+    .system-header {
+      border-bottom: none !important;
+      box-shadow: none !important;
+      transition: min-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+        backdrop-filter 0.3s ease, background 0.3s ease;
+    }
+    .system-header .system-header-title {
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), font-size 0.3s ease, opacity 0.25s ease;
+    }
+    .system-header .system-header-icon {
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease, width 0.3s ease, height 0.3s ease;
+    }
+    .system-header.system-header-collapsed {
+      min-height: 48px !important;
+      padding-top: calc(6px + env(safe-area-inset-top, 0)) !important;
+      padding-bottom: 6px !important;
+      padding-left: 16px !important;
+      padding-right: 16px !important;
+      justify-content: center !important;
+      background: rgba(255, 255, 255, 0.75) !important;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 1px 0 rgba(0, 0, 0, 0.03) !important;
+    }
+    .system-header.system-header-collapsed .prov-page-header-row {
+      justify-content: center;
+    }
+    .system-header.system-header-collapsed .prov-page-header-left {
+      justify-content: center;
+      flex: 1;
+    }
+    .system-header.system-header-collapsed .system-header-title {
+      font-size: 15px !important;
+      transform: scale(0.9);
+      margin: 0;
+    }
+    .system-header.system-header-collapsed .system-header-icon {
+      width: 28px !important;
+      height: 28px !important;
+      transform: scale(0.75);
+    }
+    .system-header.system-header-collapsed .prov-page-header-actions,
+    .system-header.system-header-collapsed .prov-page-header-action {
+      opacity: 0.9;
+    }
+    .system-header.system-header-collapsed .prov-page-header-right {
+      position: absolute;
+      right: 16px;
+    }
+    .system-header.system-header-collapsed #provPickupFilter,
+    .system-header.system-header-collapsed .cookbook-category-pills {
+      display: none !important;
+    }
+    .system-header.system-header-collapsed .prov-header-inner > div:not(.prov-page-header-row) {
+      display: none !important;
+    }
+    /* Flüssiger Übergang Header–Inhalt, keine harte Trennlinie [cite: 2026-02-21] */
+    body.provider-mode .system-header.prov-page-header {
+      border-bottom: none !important;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.02) !important;
+    }
+    /* Header: Keine Icons – nur Titel (zentrale .dynamic-header regelt alles) */
+    body.provider-mode .dynamic-header .prov-page-header-icon { display: none !important; }
+
     /* Modern App-Like CSS for Provider (Design-Tokens = einheitlich mit Kundenseite) */
     .prov-header {
       position: sticky;
@@ -3513,11 +3737,11 @@
     [id^="v-provider-"] .btn-primary{
       border:2px solid transparent !important;
     }
-    /* Bottom-Nav Provider: Schwebende Anthrazit-Pill, identisch zum Kundenseiten-Layout (Rounded-Style) [cite: 2026-02-18] */
+    /* Bottom-Nav Provider: Eckig, tiefes Anthrazit #121212, Blur – Hardware-Fusion S25 [cite: 2026-02-21] */
     #providerNav.provider-nav-pill{
-      background: rgba(26, 26, 26, 0.65) !important;
-      backdrop-filter: blur(25px);
-      -webkit-backdrop-filter: blur(25px);
+      background: rgba(18, 18, 18, 0.85) !important;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       border: none !important;
       border-radius: 0 !important;
       box-shadow: 0 8px 32px rgba(0,0,0,0.15) !important;
@@ -5331,6 +5555,23 @@
     }
     body.provider-mode #v-provider-week.view.active .week-header-compact{ display:flex !important; }
     body.provider-mode [id^="v-provider-"].view.active#v-provider-week{ display:flex !important; flex-direction:column !important; }
+    /* Single Source: Alle 5 Anbieter-Container padding:0 margin:0, Edge-to-Edge [cite: 2026-02-21] */
+    body.provider-mode #v-provider-home,
+    body.provider-mode #v-provider-pickups,
+    body.provider-mode #v-provider-week,
+    body.provider-mode #v-provider-cookbook,
+    body.provider-mode #v-provider-profile{ padding:0 !important; margin:0 !important; }
+    /* Globale Airbnb-Header: Pickups, Wochenplan, Kochbuch, Profil als Flex-Column */
+    body.provider-mode #v-provider-pickups.view.active,
+    body.provider-mode #v-provider-week.view.active,
+    body.provider-mode #v-provider-cookbook.view.active,
+    body.provider-mode #v-provider-profile.view.active{ display:flex !important; flex-direction:column !important; min-height:0 !important; }
+    /* Edge-to-Edge: Content volle Breite S25, nur Safe-Area seitlich [cite: 2026-02-21] */
+    body.provider-mode #v-provider-home .dashboard-floating-wrap,
+    body.provider-mode #provPickupsScroll,
+    body.provider-mode #kwBoardScroll,
+    body.provider-mode #cookbookScrollWrap,
+    body.provider-mode #v-provider-profile .provider-profile-content-rebuild{ padding-left: env(safe-area-inset-left, 0) !important; padding-right: env(safe-area-inset-right, 0) !important; }
     /* Meine Küche: View füllt main (height:100%), Wrap = absoluter Scroll-Bereich (immer sichtbar + scrollbar) */
     #v-provider-home.view.active{
       position:relative !important;
@@ -5365,9 +5606,9 @@
       border:none !important;
       overflow:visible;
     }
-    /* Header „Meine Küche“: Layout + Stil wie Wochenplan/Kochbuch (prov-page-header) */
+    /* Header „Dashboard“: Layout + Stil wie Wochenplan/Kochbuch (prov-page-header) */
     #v-provider-home .dashboard-kasten-header{
-      position:sticky; top:0; z-index:100;
+      position:sticky; top:0; z-index:9999;
       border-radius:0 !important;
       box-shadow:none !important;
       border:none !important;
@@ -5377,17 +5618,16 @@
       backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
       border:none !important;
       box-shadow:0 4px 20px rgba(0,0,0,0.03) !important;
-      padding:calc(8px + env(safe-area-inset-top, 0)) 16px 12px 16px;
     }
     #v-provider-home .dashboard-kasten-header .prov-header-inner{ padding:0; }
     #v-provider-home .dashboard-kasten-header .prov-title,
     #v-provider-home .dashboard-kasten-header .prov-page-header-title{ font-size: 20px !important; font-weight: 900 !important; letter-spacing: -0.03em; color: #0f172a !important; }
     /* KPI-Kasten: sticky direkt unter Header (Verdienst/Portionen bleiben beim Scrollen sichtbar) */
     #v-provider-home .dashboard-kasten-kpis{
-      padding:18px env(safe-area-inset-right, 0) 18px env(safe-area-inset-left, 0);
       position:sticky;
       top:calc(64px + env(safe-area-inset-top, 0));
       z-index:99;
+      padding:18px env(safe-area-inset-right, 0) 18px env(safe-area-inset-left, 0);
       background:rgba(245,245,240,0.98);
       backdrop-filter:blur(20px);
       -webkit-backdrop-filter:blur(20px);
@@ -5490,7 +5730,7 @@
     #v-provider-profile.view.active > header,
     #v-provider-profile.view.active > div{ position:relative; z-index:1; min-height:0; overflow:visible; }
     /* Ebene 1: Business-Dashboard (Master-Prompt) – #22C55E, 16px Radius */
-    #v-provider-profile .provider-profile-header-rebuild{ background:transparent; padding:12px 20px; padding-top:calc(12px + env(safe-area-inset-top, 0)); border-bottom:none; display:flex; flex-direction:column; gap:8px; flex-shrink:0; }
+    #v-provider-profile .provider-profile-header-rebuild.dynamic-header{ background:rgba(245,245,240,0.95) !important; backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border-bottom:none; display:flex; flex-direction:column; gap:8px; flex-shrink:0; }
     #v-provider-profile .provider-profile-header-row1{ position:relative; display:flex; align-items:center; justify-content:flex-end; width:100%; }
     #v-provider-profile .provider-profile-logo.provider-profile-logo-center{ display:flex; justify-content:center; }
     #v-provider-profile .provider-profile-gear-btn.provider-profile-gear-btn-tr{ position:absolute; top:0; right:0; }
@@ -5647,9 +5887,10 @@
       display:flex; align-items:center; justify-content:space-between;
       transition:box-shadow 0.2s ease;
     }
-    #v-provider-week .week-header-minimal .week-header-row{ display:flex; align-items:center; justify-content:space-between; width:100%; gap:12px; position:relative; }
+    /* Wochenplan-Gesetz: linksbündig statt zentriert [Master-Fix] */
+    #v-provider-week .week-header-minimal .week-header-row{ display:flex; align-items:center; justify-content:flex-start; width:100%; gap:12px; position:relative; }
     #v-provider-week .week-header-kw-badge{ font-size:13px; font-weight:800; color:#64748b; background:#f1f5f9; padding:6px 12px; border-radius:10px; flex-shrink:0; }
-    #v-provider-week .week-header-title-center{ margin:0; font-size:11px; font-weight:600; color:#94a3b8; letter-spacing:0.02em; position:absolute; left:50%; transform:translateX(-50%); pointer-events:none; }
+    #v-provider-week .week-header-title-center{ margin:0; position:static; transform:none; pointer-events:none; font-family:'Montserrat','Inter',sans-serif !important; font-weight:900 !important; font-size:24px !important; letter-spacing:-0.03em; color:#1a1a1a; text-align:left; }
     #v-provider-week .week-header-actions{ display:flex; align-items:center; gap:4px; margin-left:auto; }
     #v-provider-week .week-kebab-btn{ background:none; border:none; width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; color:#64748b; cursor:pointer; -webkit-tap-highlight-color:transparent; position:relative; }
     #v-provider-week .week-kebab-btn:active{ background:rgba(0,0,0,0.06); }
@@ -5696,14 +5937,9 @@
       #v-provider-week .week-header-compact{
         padding-top:calc(12px + env(safe-area-inset-top, 0)) !important;
       }
-      #providerProfileHeader{ padding-bottom:10px !important; }
-      #v-provider-cookbook > header{ padding-bottom:14px !important; }
-      #v-provider-cookbook > header h1{ margin-bottom:12px !important; }
-      #v-provider-pickups > header{ padding-bottom:14px !important; padding-left:20px !important; padding-right:20px !important; }
       #v-provider-week .week-header-compact{ background:rgba(255,255,255,0.8) !important; }
       #v-provider-week .prov-page-header{ padding-top:calc(10px + env(safe-area-inset-top, 0)) !important; }
-      #v-provider-home{ padding:0 16px 0 !important; padding-top:0 !important; }
-      #v-provider-home h1{ font-size:20px !important; }
+      #v-provider-home{ padding:0 !important; margin:0 !important; }
       
       /* KPI Cards: 3er Grid, Touch-freundlich */
       #v-provider-home [style*="grid-template-columns:repeat(3"]{ gap:10px !important; }
@@ -5739,12 +5975,13 @@
         background:transparent !important;
         overflow:hidden !important; position:relative;
       }
+      /* Wochenplan-Header: 1:1 Vorlage für alle Seiten – Montserrat 900, linksbündig [Master-Fix] */
       #v-provider-week .week-header-compact{
-        flex-shrink:0; background:#fff; border-bottom:1px solid rgba(0,0,0,0.06); position:sticky; top:0; z-index:50;
-        padding-top:calc(10px + env(safe-area-inset-top, 0)); padding-right:20px; padding-bottom:16px; padding-left:20px; min-height:52px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px;
+        flex-shrink:0; background:rgba(245,245,240,0.95); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border-bottom:1px solid rgba(0,0,0,0.06); position:sticky; top:0; z-index:9999;
+        padding-top:calc(10px + env(safe-area-inset-top, 0)); padding-right:20px; padding-bottom:16px; padding-left:20px; min-height:52px; display:flex; flex-direction:column; align-items:flex-start; justify-content:center; gap:2px;
       }
       #v-provider-week .week-header-compact h1,
-      #v-provider-week .week-header-compact .prov-page-header-title{ margin:0; font-size: var(--size-h2); font-weight: var(--weight-heavy); letter-spacing:-0.03em; color: var(--color-title); }
+      #v-provider-week .week-header-compact .prov-page-header-title{ margin:0; font-family:'Montserrat','Inter',sans-serif !important; font-weight:900 !important; font-size:24px !important; letter-spacing:-0.03em; color:#1a1a1a; text-align:left; }
       #v-provider-week .week-header-subtitle{ margin:0; font-size:12px; font-weight:600; color:#64748b; letter-spacing:0.02em; }
       #v-provider-week .week-plan-wrap{
         flex:1; display:flex; flex-direction:column; min-height:0; width:100%; max-width:100%; margin:0;
@@ -5877,8 +6114,6 @@
       #v-provider-week .week-header-row > div:first-child{ min-width:0; text-align:left; }
       #v-provider-week .week-header-done-btn{ flex-shrink:0; min-height:44px; padding:0 18px; font-size:15px; font-weight:800; border-radius:12px; background:var(--prov-brand); color:#1a1a1a; border:none; cursor:pointer; box-shadow:0 2px 12px rgba(255,222,0,0.35); }
       #v-provider-week .week-header-done-btn:active{ transform:scale(0.98); }
-      #v-provider-week .week-header-compact h1,
-      #v-provider-week .week-header-compact .prov-page-header-title{ margin:0; font-size: var(--size-h2); font-weight: var(--weight-heavy); }
       /* Übersicht: kompakte Tageskarten (nur Lesen), app-first */
       #v-provider-week .week-overview-scroll{ flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:12px 20px 20px; }
       /* Wochenplan Übersicht: Tages-Kacheln einheitlich */
@@ -6091,8 +6326,8 @@
       /* Wochenplan fullscreen: Topbar ausblenden, main ohne horizontales Scroll – applike */
       body.provider-week-active .topbar{ display:none !important; }
       body.provider-week-active main{ padding-top:0 !important; padding-left:0 !important; padding-right:0 !important; max-width:none !important; overflow-x:hidden !important; }
-      /* Tab-Nav bleibt fix sichtbar (Glas-Pill mit 12px Inset) */
-      body.provider-week-active #providerNavWrap{ position:fixed !important; bottom:0 !important; left:0 !important; right:0 !important; z-index:1052 !important; border-radius:0 !important; }
+      /* Tab-Nav: eckig, bündig unten (wie alle Anbieter-Seiten) */
+      body.provider-week-active #providerNavWrap{ position:fixed !important; bottom:0 !important; left:0 !important; right:0 !important; width:100% !important; z-index:1052 !important; border-radius:0 !important; }
       /* Dashboard: Dein Wochenplan – klare Trennung von KPIs, App-Kasten, S25-Safe */
       #providerWeekSection .prov-card{ padding:var(--card-padding, 20px); border-radius:24px; box-shadow:0 4px 20px rgba(0,0,0,0.06); border:none; background:#fff; }
       #providerWeekSection{ margin-top:28px; padding:24px 16px 24px; padding-left:max(16px, env(safe-area-inset-left)); padding-right:max(16px, env(safe-area-inset-right)); background:#fff; border-radius:28px; box-shadow:0 4px 24px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04); }

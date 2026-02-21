@@ -10,6 +10,7 @@
     providerHome:'v-provider-home', providerPickups:'v-provider-pickups', providerCookbook:'v-provider-cookbook',
     providerProfile:'v-provider-profile', providerBilling:'v-provider-billing', providerWeek:'v-provider-week'
   };
+  var setProviderPageHeader = window.setProviderPageHeader;
   var renderChips = window.renderChips;
   var renderDiscover = window.renderDiscover;
   var renderFavorites = window.renderFavorites;
@@ -202,6 +203,8 @@
           showView(lastView);
           var navGo = (lastView === 'v-provider-home') ? 'provider-home' : (lastView === 'v-provider-pickups') ? 'provider-pickups' : (lastView === 'v-provider-week') ? 'provider-week' : (lastView === 'v-provider-cookbook') ? 'provider-cookbook' : (lastView === 'v-provider-profile' || lastView === 'v-provider-billing') ? 'provider-profile' : 'provider-home';
           setProviderNavActive(navGo);
+          var headerTitles = { 'v-provider-home':'Meine Küche', 'v-provider-pickups':'Meine Abholung', 'v-provider-week':'Wochenplan', 'v-provider-cookbook':'Mein Kochbuch', 'v-provider-profile':'Mein Profil', 'v-provider-billing':'Mein Profil' };
+          if(typeof setProviderPageHeader === 'function' && headerTitles[lastView]) setProviderPageHeader(headerTitles[lastView]);
           requestAnimationFrame(function(){
             if(lastView === 'v-provider-home') renderProviderHome();
             else if(lastView === 'v-provider-pickups') renderProviderPickups();
@@ -372,6 +375,7 @@
     if(!checkSessionValidity()) return;
     setProviderNavActive('provider-home');
     showView(views.providerHome);
+    if(typeof setProviderPageHeader === 'function') setProviderPageHeader('Meine Küche');
     renderProviderHome();
     function scrollProviderHomeToTop(){
       window.scrollTo(0, 0);
@@ -410,6 +414,7 @@
     if(wu){ wu.classList.remove('active'); wu.style.display = 'none'; }
     setProviderNavActive('provider-pickups');
     showView(views.providerPickups);
+    if(typeof setProviderPageHeader === 'function') setProviderPageHeader('Meine Abholung');
     renderProviderPickups();
     const providerNavBackRow = document.getElementById('providerNavBackRow');
     if(providerNavBackRow) providerNavBackRow.style.display = 'block';
@@ -427,18 +432,11 @@
     window.weekPlanMode = 'overview';
     setProviderNavActive('provider-week');
     showView(views.providerWeek);
+    if(typeof setProviderPageHeader === 'function') setProviderPageHeader('Wochenplan');
     if(typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard(); else renderWeekPlan();
     var newPath = location.pathname + '?week=' + window.weekPlanKWIndex + '&day=' + window.weekPlanDay;
     pushViewState({view: 'provider-week', mode: window.mode, week: window.weekPlanKWIndex, day: window.weekPlanDay}, newPath);
-    requestAnimationFrame(function(){
-      var scrollEl = document.getElementById('kwBoardScroll');
-      var headerEl = document.getElementById('weekHeaderCompact');
-      if(!scrollEl || !headerEl) return;
-      function onWeekScroll(){ headerEl.classList.toggle('scrolled', scrollEl.scrollTop > 10); }
-      scrollEl.removeEventListener('scroll', onWeekScroll);
-      scrollEl.addEventListener('scroll', onWeekScroll, { passive: true });
-      onWeekScroll();
-    });
+    /* Master-Fix: Kein scroll-basierter Header – weekHeaderCompact bleibt permanent sticky */
   }
   function showProviderCookbook(){
     if(!checkSessionValidity()) return;
@@ -447,6 +445,7 @@
     document.body.classList.remove('provider-week-active');
     setProviderNavActive('provider-cookbook');
     showView(views.providerCookbook);
+    if(typeof setProviderPageHeader === 'function') setProviderPageHeader('Mein Kochbuch');
     renderCookbook();
     requestAnimationFrame(function(){ requestAnimationFrame(function(){ if(typeof renderCookbook === 'function') renderCookbook(); }); });
     const providerNavBackRow = document.getElementById('providerNavBackRow');
@@ -457,6 +456,7 @@
     if(!checkSessionValidity()) return;
     setProviderNavActive('provider-profile');
     showView(views.providerProfile);
+    if(typeof setProviderPageHeader === 'function') setProviderPageHeader('Mein Profil');
     window.showProviderProfileSub(null);
     renderProviderProfile();
     if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 80);
