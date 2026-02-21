@@ -12311,13 +12311,21 @@
     var backSettings = document.getElementById('providerProfileBackSettings');
     if(backSettings) backSettings.onclick = goProfileBack;
     var backBusiness = document.getElementById('providerProfileBackBusiness');
-    if(backBusiness) backBusiness.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(typeof showProviderProfileSub === 'function') showProviderProfileSub('settings'); };
+    if(backBusiness) backBusiness.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(typeof showProviderProfileSub === 'function') showProviderProfileSub(null); };
     var backService = document.getElementById('providerProfileBackService');
-    if(backService) backService.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(typeof showProviderProfileSub === 'function') showProviderProfileSub('settings'); };
+    if(backService) backService.onclick = function(){
+      if(typeof haptic === 'function') haptic(6);
+      var sub = document.getElementById('providerProfileSubService');
+      if(sub && sub.classList.contains('as-regeln-overlay')){
+        var bd = document.getElementById('accountRegelnOverlayBd');
+        if(bd) bd.style.display = 'none';
+        sub.classList.remove('as-regeln-overlay', 'active'); sub.style.display = 'none';
+      } else if(typeof showProviderProfileSub === 'function') showProviderProfileSub('settings');
+    };
     var backFaq = document.getElementById('providerProfileBackFaq');
     if(backFaq) backFaq.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(typeof showProviderProfileSub === 'function') showProviderProfileSub('settings'); };
     var backPayment = document.getElementById('providerProfileBackPayment');
-    if(backPayment) backPayment.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(typeof showProviderProfileSub === 'function') showProviderProfileSub('settings'); };
+    if(backPayment) backPayment.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(typeof showProviderProfileSub === 'function') showProviderProfileSub(null); };
     var btnImpressum = document.getElementById('btnProviderImpressum');
     var impressumContent = document.getElementById('providerImpressumContent');
     if(btnImpressum && impressumContent) btnImpressum.onclick = function(){ if(typeof haptic === 'function') haptic(6); impressumContent.style.display = impressumContent.style.display === 'none' ? 'block' : 'none'; };
@@ -12435,14 +12443,9 @@
     var settingsOrt = document.getElementById('providerSettingsOrt');
     if(settingsName) settingsName.textContent = name || 'Betriebsname';
     if(settingsOrt) settingsOrt.textContent = (p.city || (p.zip && p.city ? p.zip + ' ' + p.city : '') || addr || 'Ort').trim() || '—';
-    var gearBtn = document.getElementById('providerProfileGearBtn');
-    if(gearBtn) gearBtn.onclick = function(){
-      if(typeof haptic === 'function') haptic(6);
-      if(typeof showProviderProfileSub === 'function') showProviderProfileSub('settings');
-    };
-    /* Master-Kachel: Klick öffnet Edit-Mode Betriebsdaten [cite: 2026-02-18] */
+    /* Single-Page: Master-Kachel nur Anzeige (Logo+Name), kein Klick [cite: 2026-02-21] */
     var masterKachel = document.getElementById('providerProfileMasterKachel');
-    if(masterKachel){ masterKachel.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(typeof showProviderProfileSub === 'function') showProviderProfileSub('business'); }; masterKachel.onkeydown = function(e){ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); masterKachel.click(); } }; }
+    if(masterKachel && !masterKachel.classList.contains('account-profile-header')){ masterKachel.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(typeof showProviderProfileSub === 'function') showProviderProfileSub('business'); }; }
     /* Stats befüllen: Kochbuch, Inserate, Umsatz (Mittagio-Grün #22C55E) [cite: 2026-01-29] */
     var pid = typeof providerId === 'function' ? providerId() : '';
     var cookbookCount = (typeof cookbook !== 'undefined' ? cookbook : []).filter(function(c){ return c.providerId === pid; }).length;
@@ -12463,25 +12466,48 @@
     if(masterName) masterName.textContent = (p.name || p.businessName || 'Betriebsname').trim() || 'Betriebsname';
     if(masterOrt) masterOrt.textContent = (p.city || (p.zip && p.city ? p.zip + ' ' + p.city : '') || buildAddress(p) || 'Ort').trim() || '—';
     if(masterLogo && p.logoUrl) masterLogo.src = p.logoUrl;
-    /* Kachel Abrechnungen → BillingHistory [cite: 2026-01-29] */
+    /* 4er-Grid: Mein Geld, Meine Regeln, Mein Kochbuch, Mein Support [cite: 2026-02-21] */
+    var btnAccountMeinGeld = document.getElementById('btnAccountMeinGeld');
+    if(btnAccountMeinGeld) btnAccountMeinGeld.onclick = function(){
+      if(typeof haptic === 'function') haptic(6);
+      var bd = document.getElementById('accountGeldOverlayBd');
+      var sheet = document.getElementById('accountGeldOverlay');
+      if(bd) bd.style.display = 'block';
+      if(sheet) sheet.classList.add('active');
+      if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
+    };
+    var btnAccountMeineRegeln = document.getElementById('btnAccountMeineRegeln');
+    if(btnAccountMeineRegeln) btnAccountMeineRegeln.onclick = function(){
+      if(typeof haptic === 'function') haptic(6);
+      var bd = document.getElementById('accountRegelnOverlayBd');
+      var sub = document.getElementById('providerProfileSubService');
+      if(bd) bd.style.display = 'block';
+      if(sub){ sub.style.display = 'flex'; sub.classList.add('as-regeln-overlay', 'active'); }
+      if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
+    };
+    var btnAccountMeinKochbuch = document.getElementById('btnAccountMeinKochbuch');
+    if(btnAccountMeinKochbuch) btnAccountMeinKochbuch.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(typeof showProviderCookbook === 'function') showProviderCookbook(); };
+    var btnAccountMeinSupport = document.getElementById('btnAccountMeinSupport');
+    var regelnBd = document.getElementById('accountRegelnOverlayBd');
+    if(regelnBd) regelnBd.onclick = function(){ if(typeof haptic === 'function') haptic(6); var sub = document.getElementById('providerProfileSubService'); if(sub){ sub.classList.remove('as-regeln-overlay', 'active'); sub.style.display = 'none'; } regelnBd.style.display = 'none'; };
+    var geldBd = document.getElementById('accountGeldOverlayBd');
+    var geldSheet = document.getElementById('accountGeldOverlay');
+    var geldClose = document.getElementById('accountGeldClose');
+    function closeAccountGeldOverlay(){ if(geldBd) geldBd.style.display = 'none'; if(geldSheet) geldSheet.classList.remove('active'); }
+    if(geldBd) geldBd.onclick = closeAccountGeldOverlay;
+    if(geldClose) geldClose.onclick = function(){ if(typeof haptic === 'function') haptic(6); closeAccountGeldOverlay(); };
+    var accountGeldAbrechnungen = document.getElementById('accountGeldAbrechnungen');
+    var accountGeldBillingArchive = document.getElementById('accountGeldBillingArchive');
+    if(accountGeldAbrechnungen) accountGeldAbrechnungen.onclick = function(){ if(typeof haptic === 'function') haptic(6); closeAccountGeldOverlay(); if(typeof showProviderBilling === 'function') showProviderBilling(); };
+    if(accountGeldBillingArchive) accountGeldBillingArchive.onclick = function(){ if(typeof haptic === 'function') haptic(6); closeAccountGeldOverlay(); if(typeof showProviderBilling === 'function') showProviderBilling(); };
+    /* Fallback: Alte IDs falls noch im DOM */
     var btnAccountAbrechnung = document.getElementById('btnAccountAbrechnung');
     if(btnAccountAbrechnung) btnAccountAbrechnung.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(typeof showProviderBilling === 'function') showProviderBilling(); };
-    /* Kachel FAQ → Scroll zu Accordion + öffnen [cite: 2026-02-18] */
-    var btnAccountFaq = document.getElementById('btnAccountFaq');
-    if(btnAccountFaq) btnAccountFaq.onclick = function(){
-      if(typeof haptic === 'function') haptic(6);
-      var section = document.getElementById('accountWasIstWasSection');
-      var firstItem = document.querySelector('#accountWasIstWasAccordion .account-accordion-item');
-      if(section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      if(firstItem){ firstItem.classList.add('open'); var t = firstItem.querySelector('.account-accordion-trigger'); if(t) t.setAttribute('aria-expanded', 'true'); }
-    };
-    /* Kachel Support → Modal [cite: 2026-02-04] */
-    var btnAccountSupport = document.getElementById('btnAccountSupport');
     var supportBackdrop = document.getElementById('accountSupportModalBackdrop');
     var supportModal = document.getElementById('accountSupportModal');
     function openSupportModal(){ if(supportBackdrop) supportBackdrop.style.display = 'block'; if(supportModal) supportModal.style.display = 'block'; }
     function closeSupportModal(){ if(supportBackdrop) supportBackdrop.style.display = 'none'; if(supportModal) supportModal.style.display = 'none'; }
-    if(btnAccountSupport) btnAccountSupport.onclick = function(){ if(typeof haptic === 'function') haptic(6); openSupportModal(); };
+    if(btnAccountMeinSupport) btnAccountMeinSupport.onclick = function(){ if(typeof haptic === 'function') haptic(6); openSupportModal(); };
     if(supportBackdrop) supportBackdrop.onclick = closeSupportModal;
     var supportClose = document.querySelector('.account-support-close');
     if(supportClose) supportClose.onclick = function(){ if(typeof haptic === 'function') haptic(6); closeSupportModal(); };
@@ -14798,31 +14824,27 @@
         }
       } 
       // Case 3: Neues Gericht – 3 Säulen und Abholzeiten aus Profil übernehmen
-      // First-Time: Leberkäse-Template laden [cite: 2026-01-29, 2026-02-16]
       else {
         const globalReuseEnabled = !!profile.reuseEnabledByDefault;
         const defaultVorOrt = (provider.profile && provider.profile.dineInPossibleDefault !== undefined) ? !!provider.profile.dineInPossibleDefault : true;
         const defaultAbholnummer = !!profile.abholnummerEnabledByDefault;
-        const isFirstTimeLeberkaese = !localStorage.getItem('mittagio_provider_leberkaese_onboarding_done') && (offers || []).filter(function(o){ return o.providerId === providerId(); }).length === 0;
-        const leberkaeseImageUrl = 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400&q=80';
         w.data = {
           providerId: providerId(),
-          dish: isFirstTimeLeberkaese ? 'Dicke Scheibe Leberkäse mit Spätzle' : '',
-          category: isFirstTimeLeberkaese ? 'Fleisch' : 'Vegetarisch',
-          price: isFirstTimeLeberkaese ? 8.5 : 0,
+          dish: '',
+          category: 'Vegetarisch',
+          price: 0,
           pickupWindow: profile.mealWindow || DEFAULT_MEAL_WINDOW,
           hasPickupCode: defaultAbholnummer,
-          dineInPossible: isFirstTimeLeberkaese ? true : defaultVorOrt,
+          dineInPossible: defaultVorOrt,
           allergens:[],
           wantsAllergens: false,
           extras:[],
-          reuse:{ enabled: isFirstTimeLeberkaese ? true : globalReuseEnabled, deposit: (isFirstTimeLeberkaese || globalReuseEnabled) ? (provider.profile && typeof provider.profile.reuseDepositDefault === 'number' ? provider.profile.reuseDepositDefault : 3) : 0 },
-          photoData: isFirstTimeLeberkaese ? leberkaeseImageUrl : '',
-          photoDataIsStandard: !!isFirstTimeLeberkaese,
+          reuse:{ enabled: globalReuseEnabled, deposit: globalReuseEnabled ? (provider.profile && typeof provider.profile.reuseDepositDefault === 'number' ? provider.profile.reuseDepositDefault : 3) : 0 },
+          photoData: '',
+          photoDataIsStandard: false,
           cookbookId:null,
           day: ctx.date || createFlowPreselectedDate || isoDate(new Date())
         };
-        if(isFirstTimeLeberkaese) ctx.isLeberkaeseOnboarding = true;
         if(ctx.entryDishName && typeof ctx.entryDishName === 'string' && ctx.entryDishName.trim()) w.data.dish = ctx.entryDishName.trim();
       }
       
@@ -15378,7 +15400,6 @@
         var hasDishS2=!!(w.data.dish&&String(w.data.dish).trim());
         var hasPriceS2=Number(w.data.price)>0;
         var primaryValidS2=hasDishS2&&hasPriceS2;
-        var isLeberkaeseS2=!!(w.ctx&&w.ctx.isLeberkaeseOnboarding);
         var existingOfferS2=(w.ctx&&w.ctx.editOfferId&&typeof offers!=='undefined')?offers.find(function(o){return o.id===w.ctx.editOfferId;}):null;
         var todayKeyS2=typeof isoDate==='function'?isoDate(new Date()):'';
         var isEditActiveS2=!!(existingOfferS2&&existingOfferS2.day===todayKeyS2&&existingOfferS2.active!==false);
@@ -15972,22 +15993,6 @@
 
       if(slider){ box.appendChild(slider); var airbnbFooter=document.createElement('div'); airbnbFooter.className='inserat-airbnb-footer'; airbnbFooter.setAttribute('data-inserat-step','2'); airbnbFooter.style.display=inseratStep===2?'flex':'none'; airbnbFooter.style.flexDirection='column'; airbnbFooter.style.gap='10px'; var btn499=document.createElement('button'); btn499.type='button'; btn499.className='inserat-footer-btn inserat-footer-btn--secondary'; btn499.textContent='Jetzt für 4,99 € inserieren'; btn499.onclick=function(){ if(!(!!(w.data.dish&&String(w.data.dish).trim())&&Number(w.data.price)>0)){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; } hapticLight(); w.data.hasPickupCode=false; w.data.inseratFeeWaived=false; var o=previewOfferFromWizard(); closeWizard(true); showPublishFeeModal(o); }; var btnPro=document.createElement('button'); btnPro.type='button'; btnPro.className='inserat-footer-btn inserat-footer-btn--primary'; btnPro.textContent='Jetzt kostenlos inserieren'; btnPro.onclick=function(){ if(!(!!(w.data.dish&&String(w.data.dish).trim())&&Number(w.data.price)>0)){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; } hapticLight(); var o=previewOfferFromWizard(); w.data.hasPickupCode=true; w.data.inseratFeeWaived=true; w.data.pricingOption='abholnummer'; closeWizard(true); showPublishFeeModal(o); }; airbnbFooter.appendChild(btn499); airbnbFooter.appendChild(btnPro); box.appendChild(airbnbFooter); var updateFooterVisibility=function(){ var s=inseratStep; try{ var sl=box.querySelector('.inserat-steps-slider'); if(sl) s=parseInt(sl.getAttribute('data-inserat-step')||'1',10); }catch(e){} airbnbFooter.style.display=s===2?'flex':'none'; }; slider.addEventListener('transitionend', updateFooterVisibility); requestAnimationFrame(function(){ updateFooterVisibility(); }); }
 
-      if(w.ctx && w.ctx.isLeberkaeseOnboarding){
-        box.style.position = 'relative';
-        var overlay = document.createElement('div');
-        overlay.className = 'inserat-onboarding-overlay';
-        overlay.setAttribute('role','dialog');
-        overlay.setAttribute('aria-label','Erstes Inserat');
-        overlay.innerHTML = '<div class="inserat-onboarding-card"><p>Dein erstes Inserat ist bereit. Probier es kurz aus!</p><button type="button" class="inserat-onboarding-btn">Probier es aus</button></div>';
-        var btn = overlay.querySelector('.inserat-onboarding-btn');
-            if(btn) btn.onclick = function(){
-          hapticLight();
-          overlay.classList.add('is-dismissed');
-          setTimeout(function(){ if(overlay.parentNode) overlay.remove(); }, 280);
-        };
-        box.appendChild(overlay);
-      }
-
       if(w.ctx && w.ctx.showDraftOverlay){
         if(!box.style.position) box.style.position = 'relative';
         box.classList.add('draft-card-ghost');
@@ -16427,26 +16432,22 @@
     
     // 1. Konfetti zünden [cite: 2026-01-26, 2026-02-16]
     createConfetti();
-    try { localStorage.setItem('mittagio_provider_leberkaese_onboarding_done', '1'); } catch(e){}
     if(navigator.vibrate) navigator.vibrate([50, 30, 50]);
 
     var withPickup = !!d.hasPickupCode;
-    var isLeberkaeseSuccess = (d.dish || '').indexOf('Leberkäse') !== -1;
     var checkmarkTitle = document.getElementById('inseratSuccessCheckmarkTitle');
     var checkmarkSub = document.getElementById('inseratSuccessCheckmarkSub');
     if(checkmarkTitle){
-      if(isLeberkaeseSuccess) checkmarkTitle.textContent = 'Geschafft! Dein Leberkäse ist online.';
-      else checkmarkTitle.textContent = withPickup ? 'Geschafft! Deine Abholnummern sind scharfgeschaltet.' : 'Geschafft! Dein Inserat ist live.';
+      checkmarkTitle.textContent = withPickup ? 'Geschafft! Deine Abholnummern sind scharfgeschaltet.' : 'Geschafft! Dein Inserat ist live.';
     }
     if(checkmarkSub){
-      if(isLeberkaeseSuccess) checkmarkSub.textContent = 'Das war einfach, sicher – und jetzt verdienen wir Geld.';
-      else checkmarkSub.textContent = withPickup ? 'Hungrige Gäste können dein Gericht jetzt finden.' : 'Dein Gericht ist sichtbar – Gäste können vor Ort essen oder mitnehmen.';
+      checkmarkSub.textContent = withPickup ? 'Hungrige Gäste können dein Gericht jetzt finden.' : 'Dein Gericht ist sichtbar – Gäste können vor Ort essen oder mitnehmen.';
     }
 
     if(typeof Notification !== 'undefined' && Notification.permission === 'granted'){
       try {
-        new Notification(isLeberkaeseSuccess ? '🚀 Dein Leberkäse ist live!' : '🚀 Dein Inserat ist live!', {
-          body: isLeberkaeseSuccess ? 'Dein erstes Inserat ist online. Ab jetzt können Gäste digital bestellen. Denk dran: Vor-Ort-Gäste kosten dich weiterhin 0,00 €!' : 'Dein Inserat ist online. Gäste können jetzt bestellen.',
+        new Notification('🚀 Dein Inserat ist live!', {
+          body: 'Dein Inserat ist online. Gäste können jetzt bestellen.',
           icon: '/mittagio/app/assets/icons/icon-192.png'
         });
       } catch(notifyErr){}

@@ -1419,25 +1419,12 @@
       <button type="button" class="cookbook-action-sheet-btn" onclick="closeCookbookActionSheet()">Abbrechen</button>
     </div>
 
-    <!-- Provider-Profil "Meins" – Header wie Meine Küche (ohne Icon), Zahnrad in Aktionen -->
+    <!-- Provider-Profil "Meins" – Single-Page: Logo+Name als Header, 4er-Grid, Overlays [cite: 2026-02-21 Masterplan] -->
     <section class="view onboarding-view" id="v-provider-profile" style="display:flex; flex-direction:column; min-height:0;">
-      <header id="providerProfileHeader" class="prov-page-header dynamic-header system-header">
-        <div class="prov-page-header-row">
-          <div class="prov-page-header-left prov-header-reset-trigger" data-reset-view="profile" role="button" tabindex="0" aria-label="Zum Seitenanfang">
-            <h1 class="prov-page-header-title system-header-title">Meins</h1>
-          </div>
-          <div class="prov-page-header-actions">
-            <button type="button" id="providerProfileGearBtn" class="prov-page-header-action" aria-label="Einstellungen">
-              <i data-lucide="settings" style="width:20px; height:20px;"></i>
-            </button>
-          </div>
-        </div>
-      </header>
-
-      <div id="providerProfileContent" class="provider-profile-content-rebuild">
+      <div id="providerProfileContent" class="provider-profile-content-rebuild provider-profile-single-page">
         <div id="providerProfileMainContent" class="account-settings-airbnb">
-        <!-- Master-Kachel: Logo links, 3 Stats rechts [cite: 2026-02-18] -->
-        <div id="providerProfileMasterKachel" class="account-master-kachel" role="button" tabindex="0">
+        <!-- Profil-Header: Logo + Name direkt (Ehemals Ebene 1) [cite: 2026-02-21] -->
+        <div id="providerProfileMasterKachel" class="account-master-kachel account-profile-header">
           <div class="account-master-left">
             <img id="providerProfileMasterLogo" src="assets/images/mittagio-logo.png" alt="" class="account-master-logo" />
             <div>
@@ -1445,26 +1432,31 @@
               <p id="providerProfileMasterOrt" class="account-master-ort">Ort</p>
             </div>
           </div>
-          <div class="account-master-stats">
-            <div class="account-stat"><span id="accountStatKochbuch">0</span><small>Kochbuch</small></div>
-            <div class="account-stat"><span id="accountStatInserate">0</span><small>Inserate</small></div>
-            <div class="account-stat account-stat-umsatz"><span id="accountStatUmsatz">0,00 €</span><small>Umsatz</small></div>
-          </div>
+        </div>
+        <!-- 3 Stats: Umsatz, Inserate, Kochbuch [cite: 2026-01-29] -->
+        <div class="account-stats-row">
+          <div class="account-stat account-stat-umsatz"><span id="accountStatUmsatz">0,00 €</span><small>Umsatz</small></div>
+          <div class="account-stat"><span id="accountStatInserate">0</span><small>Inserate</small></div>
+          <div class="account-stat"><span id="accountStatKochbuch">0</span><small>Kochbuch</small></div>
         </div>
 
-        <!-- Grid: 3 Kacheln [cite: 2026-02-18] -->
-        <div class="account-grid-nav">
-          <button type="button" id="btnAccountAbrechnung" class="account-tile">
+        <!-- 4er-Kachel-Grid: Die Schaltzentrale [cite: 2026-02-21] -->
+        <div class="account-grid-nav account-grid-4">
+          <button type="button" id="btnAccountMeinGeld" class="account-tile">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 18V6"/></svg>
-            <span>Abrechnungen</span>
+            <span>Mein Geld</span>
           </button>
-          <button type="button" id="btnAccountFaq" class="account-tile">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>
-            <span>FAQ</span>
+          <button type="button" id="btnAccountMeineRegeln" class="account-tile">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"/><path d="m8 7 4-4 4 4"/><path d="m8 17 4 4 4-4"/><path d="M3 12h3"/><path d="M18 12h3"/><path d="M4 18 2 20"/><path d="M20 18 22 20"/><path d="M4 6 2 4"/><path d="M20 6 22 4"/></svg>
+            <span>Meine Regeln</span>
           </button>
-          <button type="button" id="btnAccountSupport" class="account-tile">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><path d="m4.93 4.93 4.24 4.24"/><path d="m14.83 14.83 4.24 4.24"/><path d="m4.93 19.07 4.24-4.24"/><path d="m14.83 9.17 4.24-4.24"/></svg>
-            <span>Support</span>
+          <button type="button" id="btnAccountMeinKochbuch" class="account-tile">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            <span>Mein Kochbuch</span>
+          </button>
+          <button type="button" id="btnAccountMeinSupport" class="account-tile">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+            <span>Mein Support</span>
           </button>
         </div>
 
@@ -1488,12 +1480,51 @@
               <button type="button" class="account-accordion-trigger" aria-expanded="false"><span>Allergene</span><svg class="account-accordion-chevron" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button>
               <div class="account-accordion-content"><div class="account-accordion-inner">Beim Anlegen schlägt die App passende Allergene vor. Du wählst aus – Kunden sehen es in der Gerichtsbeschreibung.</div></div>
             </div>
+            <div class="account-accordion-item" data-accordion="mehrweg">
+              <button type="button" class="account-accordion-trigger" aria-expanded="false"><span>Mehrweg</span><svg class="account-accordion-chevron" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button>
+              <div class="account-accordion-content"><div class="account-accordion-inner">Vytal, Recup oder eigenes Pfandsystem. Zeige deinen Gästen, dass du Mehrweg anbietest.</div></div>
+            </div>
           </div>
         </section>
+
+        <!-- Footer: Impressum, Datenschutz, AGB [cite: 2026-02-21] -->
+        <div class="account-legal-footer">
+          <a href="#/impressum" class="account-legal-link">Impressum</a>
+          <span class="account-legal-sep">·</span>
+          <a href="#/datenschutz" class="account-legal-link">Datenschutz</a>
+          <span class="account-legal-sep">·</span>
+          <a href="#/agb" class="account-legal-link">AGB</a>
+        </div>
 
         <button type="button" id="btnProviderLogout" aria-label="Abmelden" class="account-logout-btn">
           <i data-lucide="log-out" style="width:20px;height:20px;"></i><span>Abmelden</span>
         </button>
+        </div>
+
+        <!-- Meine Regeln Overlay: zeigt providerProfileSubService als Slide-In [cite: 2026-02-21] -->
+        <div id="accountRegelnOverlayBd" class="account-overlay-backdrop" style="display:none;" aria-hidden="true"></div>
+
+        <!-- Mein Geld Overlay (Slide-In) [cite: 2026-02-21] -->
+        <div id="accountGeldOverlayBd" class="account-overlay-backdrop" style="display:none;" aria-hidden="true"></div>
+        <div id="accountGeldOverlay" class="account-regeln-sheet" role="dialog" aria-label="Mein Geld">
+          <div class="account-regeln-sheet-inner">
+            <div class="account-regeln-sheet-header">
+              <h3>Mein Geld</h3>
+              <button type="button" id="accountGeldClose" aria-label="Schließen">&times;</button>
+            </div>
+            <div class="account-regeln-sheet-body">
+              <button type="button" id="accountGeldAbrechnungen" class="account-geld-option">
+                <span class="account-geld-icon">💰</span>
+                <span><strong>Abrechnungen &amp; Belege</strong><small>Abrechnungen einsehen, PDF-Archiv</small></span>
+                <i data-lucide="chevron-right" style="width:20px;height:20px;color:#9ca3af;"></i>
+              </button>
+              <button type="button" id="accountGeldBillingArchive" class="account-geld-option">
+                <span class="account-geld-icon">🧾</span>
+                <span><strong>PDF-Archiv</strong><small>Belege herunterladen</small></span>
+                <i data-lucide="chevron-right" style="width:20px;height:20px;color:#9ca3af;"></i>
+              </button>
+            </div>
+          </div>
         </div>
 
         <!-- Support-Modal: Standort, Zahlung, WhatsApp [cite: 2026-02-04] -->
