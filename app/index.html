@@ -1075,9 +1075,14 @@
               <div class="prov-page-header-left prov-header-reset-trigger" data-reset-view="home" role="button" tabindex="0" aria-label="Zum Seitenanfang">
                 <h1 class="prov-page-header-title system-header-title">Meine Küche</h1>
               </div>
+              <div class="prov-page-header-actions" style="display:flex; gap:8px;">
+              <button type="button" id="btnHeaderCookbookShortcut" title="Kochbuch" aria-label="Kochbuch" class="prov-page-header-action" style="background:rgba(0,0,0,0.06); border:none; min-width:44px; min-height:44px; width:44px; height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:20px; cursor:pointer;">
+                📖
+              </button>
               <button type="button" id="btnProviderHomeRefresh" title="Aktualisieren" aria-label="Daten neu laden" class="prov-page-header-action" style="background:rgba(0,0,0,0.06); border:none; min-width:44px; min-height:44px; width:44px; height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; color:#1a1a1a; cursor:pointer;">
                 <i data-lucide="refresh-cw" style="width:20px; height:20px;"></i>
               </button>
+              </div>
             </div>
             <div id="providerHomeGreeting" style="display:none;"></div>
             <div id="providerHomeDate" style="display:none;" aria-hidden="true"></div>
@@ -1091,8 +1096,8 @@
               <p id="kpiLabelTagesessen" class="kpi-label" style="margin:0 0 2px;">Tagesessen</p>
               <p id="dashboardTagesessenCount" style="margin:0;">0</p>
             </div>
-            <div id="kpiBestellungen" role="button" tabindex="0" style="text-align:center; padding:0 16px; cursor:pointer; min-height:40px; flex:1;" onclick="showProviderPickups()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); showProviderPickups();}" title="Abholnummer / Abholungen">
-              <p id="kpiLabelAbholungen" class="kpi-label" style="margin:0 0 2px;">Abholungen</p>
+            <div id="kpiBestellungen" role="button" tabindex="0" style="text-align:center; padding:0 16px; cursor:pointer; min-height:40px; flex:1;" onclick="showProviderPickups()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); showProviderPickups();}" title="Abholnummern">
+              <p id="kpiLabelAbholungen" class="kpi-label" style="margin:0 0 2px;">Nummern</p>
               <p id="dashboardAbholungenCount" style="margin:0;">0</p>
             </div>
             <div id="kpiUmsatz" role="button" tabindex="0" style="text-align:right; cursor:pointer; min-height:40px; flex:1;" onclick="showProviderBilling()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); showProviderBilling();}" title="Tagesumsatz">
@@ -1170,9 +1175,10 @@
       <header class="prov-page-header dynamic-header system-header" id="v-provider-pickups-header">
         <div class="prov-page-header-row">
           <div class="prov-page-header-left prov-header-reset-trigger" data-reset-view="pickups" role="button" tabindex="0" aria-label="Zum Seitenanfang">
-            <h1 class="prov-page-header-title system-header-title">Meine Bestellungen</h1>
+            <h1 class="prov-page-header-title system-header-title">Abholnummern</h1>
           </div>
-          <div class="prov-page-header-actions">
+          <div class="prov-page-header-actions" style="display:flex; gap:8px; align-items:center;">
+            <button type="button" id="btnPickupsHeaderCookbook" title="Kochbuch" aria-label="Kochbuch" style="background:rgba(0,0,0,0.06); border:none; min-width:44px; min-height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:20px; cursor:pointer;">📖</button>
             <button type="button" id="btnKitchenListPDF" aria-label="PDF">
               <i data-lucide="file-text" style="width:20px; height:20px;"></i>
             </button>
@@ -1197,7 +1203,7 @@
           <div style="width:80px; height:80px; background:rgba(0,0,0,0.03); border-radius:50%; margin:0 auto 20px; display:flex; align-items:center; justify-content:center;">
             <i data-lucide="receipt" style="width:40px; height:40px; color:#cbd5e1;"></i>
           </div>
-          <h3 style="font-size:18px; font-weight:800; color:#1a1a1a; margin-bottom:8px;">Noch keine Abholungen</h3>
+          <h3 style="font-size:18px; font-weight:800; color:#1a1a1a; margin-bottom:8px;">Noch keine Nummern</h3>
           <p style="color:#64748b; font-size:15px; line-height:1.5;">Sobald Kunden bestellen, erscheinen sie hier in Echtzeit.</p>
         </div>
         
@@ -1218,7 +1224,8 @@
         <div class="prov-page-header-row week-header-row">
           <div class="week-header-kw-badge" id="weekHeaderKwBadge" aria-label="Kalenderwoche">KW 8</div>
           <h1 class="week-header-title-center" id="weekHeaderTitle" aria-hidden="true">Wochenplan</h1>
-          <div class="week-header-actions" style="position:relative;">
+          <div class="week-header-actions" style="position:relative; display:flex; gap:8px; align-items:center;">
+            <button type="button" id="btnWeekHeaderCookbook" title="Kochbuch" aria-label="Kochbuch" style="background:rgba(0,0,0,0.06); border:none; min-width:44px; min-height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:20px; cursor:pointer;">📖</button>
             <button type="button" id="btnWeekKebab" class="week-kebab-btn" title="Menü" aria-label="Menü" aria-haspopup="true">
               <i data-lucide="more-vertical" style="width:22px; height:22px;"></i>
             </button>
@@ -1712,7 +1719,7 @@
           </div>
           <div id="providerSupportSolution" class="provider-support-solution-box" style="display:none;">
             <p id="providerSupportSolutionText" class="provider-support-solution-text"></p>
-            <button type="button" id="providerSupportAbholungenBtn" class="provider-support-mail-btn" style="display:none; margin-bottom:8px;">Abholungen anzeigen</button>
+            <button type="button" id="providerSupportAbholungenBtn" class="provider-support-mail-btn" style="display:none; margin-bottom:8px;">Nummern anzeigen</button>
             <button type="button" id="providerSupportMailBtn" class="provider-support-mail-btn">Per E-Mail an Mike melden</button>
           </div>
 
@@ -2290,8 +2297,8 @@
   <!-- Floating Action Button (FAB) für Modus-Wechsel -->
 
 
-  <!-- CUSTOMER bottom nav - Mittagio-Bar -->
-  <nav class="bottom-nav bottom-nav-pure" id="customerNav" style="position:fixed; bottom:0; left:0; right:0; z-index:999; display:flex; justify-content:space-around; align-items:center; background:#fff; height:calc(70px + env(safe-area-inset-bottom, 0px)); padding-bottom:env(safe-area-inset-bottom, 0px);">
+  <!-- CUSTOMER bottom nav - Mittagio-Bar (4 Buttons, eckig, 25px padding S25) -->
+  <nav class="bottom-nav bottom-nav-pure" id="customerNav" style="position:fixed; bottom:0; left:0; right:0; z-index:999; display:flex; justify-content:space-around; align-items:center; background:#fff; height:calc(70px + env(safe-area-inset-bottom, 0px)); padding-bottom:calc(25px + env(safe-area-inset-bottom, 0px)); border-radius:0;">
     <button class="navbtn active" data-go="discover" style="background:none; border:none; padding:8px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; transition:all 0.2s;">
       <i data-lucide="search" style="width:22px;height:22px;"></i>
       <span style="font-size:11px; font-weight:700;">Entdecken</span>
@@ -2318,9 +2325,8 @@
     </div>
     <nav class="bottom bottom-nav provider-nav-light provider-nav-pill" id="providerNav" style="display:flex; justify-content:space-between; align-items:center;">
       <button class="navbtn active" data-pgo="provider-home" title="Dashboard"><div class="ico" data-icon="layoutDashboard" data-icon-only="1"></div><span class="provider-nav-label">Dashboard</span></button>
-      <button class="navbtn" data-pgo="provider-pickups" title="Abholungen"><div class="ico" data-icon="receipt" data-icon-only="1"></div><span class="provider-nav-label">Abholungen</span></button>
+      <button class="navbtn" data-pgo="provider-pickups" title="Abholnummern"><div class="ico navbtn-emoji" style="font-size:1.2em;line-height:1;">🧾</div><span class="provider-nav-label">Nummern</span></button>
       <button class="navbtn" data-pgo="provider-week" title="Wochenplan"><div class="ico" data-icon="calendar" data-icon-only="1"></div><span class="provider-nav-label">Wochenplan</span></button>
-      <button class="navbtn" data-pgo="provider-cookbook" title="Kochbuch"><div class="ico" data-icon="bookOpen" data-icon-only="1"></div><span class="provider-nav-label">Kochbuch</span></button>
       <button class="navbtn" data-pgo="provider-profile" title="Profil"><div class="ico" data-icon="user" data-icon-only="1"></div><span class="provider-nav-label">Profil</span></button>
     </nav>
   </div>

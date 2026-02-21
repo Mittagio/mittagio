@@ -203,7 +203,7 @@
           showView(lastView);
           var navGo = (lastView === 'v-provider-home') ? 'provider-home' : (lastView === 'v-provider-pickups') ? 'provider-pickups' : (lastView === 'v-provider-week') ? 'provider-week' : (lastView === 'v-provider-cookbook') ? 'provider-cookbook' : (lastView === 'v-provider-profile' || lastView === 'v-provider-billing') ? 'provider-profile' : 'provider-home';
           setProviderNavActive(navGo);
-          var headerTitles = { 'v-provider-home':'Meine Küche', 'v-provider-pickups':'Meine Abholung', 'v-provider-week':'Wochenplan', 'v-provider-cookbook':'Mein Kochbuch', 'v-provider-profile':'Mein Profil', 'v-provider-billing':'Mein Profil' };
+          var headerTitles = { 'v-provider-home':'Meine Küche', 'v-provider-pickups':'Abholnummern', 'v-provider-week':'Wochenplan', 'v-provider-cookbook':'Mein Kochbuch', 'v-provider-profile':'Mein Profil', 'v-provider-billing':'Mein Profil' };
           if(typeof setProviderPageHeader === 'function' && headerTitles[lastView]) setProviderPageHeader(headerTitles[lastView]);
           requestAnimationFrame(function(){
             if(lastView === 'v-provider-home') renderProviderHome();
@@ -414,7 +414,7 @@
     if(wu){ wu.classList.remove('active'); wu.style.display = 'none'; }
     setProviderNavActive('provider-pickups');
     showView(views.providerPickups);
-    if(typeof setProviderPageHeader === 'function') setProviderPageHeader('Meine Abholung');
+    if(typeof setProviderPageHeader === 'function') setProviderPageHeader('Abholnummern');
     renderProviderPickups();
     const providerNavBackRow = document.getElementById('providerNavBackRow');
     if(providerNavBackRow) providerNavBackRow.style.display = 'block';

@@ -9255,6 +9255,16 @@
   const btnProviderNavBack = document.getElementById('btnProviderNavBack');
   if(btnProviderNavBack) btnProviderNavBack.onclick = function(){ showProviderHome(); };
 
+  // Kochbuch-Shortcut in Header (Dashboard, Abholnummern, Wochenplan)
+  document.addEventListener('click', function(e){
+    var btn = e.target.closest('#btnHeaderCookbookShortcut, #btnPickupsHeaderCookbook, #btnWeekHeaderCookbook');
+    if(!btn) return;
+    e.preventDefault();
+    e.stopPropagation();
+    if(typeof haptic === 'function') haptic(6);
+    if(typeof showProviderCookbook === 'function') showProviderCookbook();
+  }, true);
+
   // Dashboard: „Zum Wochenplan“ → Deep-Link zur aktuellen KW und heute
   document.addEventListener('click', function(e){
     var openBtn = e.target.closest('#btnDashboardOpenWeekPlan');
@@ -9663,7 +9673,7 @@
               <div style="font-weight:600; font-size:14px;">Inserate heute: ${mineToday.length}</div>
             </a>
             <a href="#" id="providerTodayPickupsLink" style="display:block; padding:10px; background:#f8f7f3; border-radius:12px; text-decoration:none; color:inherit;">
-              <div style="font-weight:600; font-size:14px;">Abholungen heute: ${todayPickups}</div>
+              <div style="font-weight:600; font-size:14px;">Nummern heute: ${todayPickups}</div>
             </a>
         `;
         if(nextPickup && nextPickup.etaTime){
@@ -12035,8 +12045,8 @@
     if(!allPickups.length){
       empty.style.display='block';
       empty.innerHTML = `
-        <div style="font-weight:600; font-size:16px; margin-bottom:8px;">Keine Abholungen</div>
-        <div style="font-size:14px; line-height:1.4; color:var(--muted);">Heute gibt es noch keine Abholungen.</div>
+        <div style="font-weight:600; font-size:16px; margin-bottom:8px;">Noch keine Nummern</div>
+        <div style="font-size:14px; line-height:1.4; color:var(--muted);">Heute noch keine Abholnummern.</div>
       `;
       listEl.style.display='none';
       return;
@@ -12047,12 +12057,12 @@
       if(pickupFilter === 'offen'){
         empty.innerHTML = `
           <div style="font-weight:600; font-size:16px; margin-bottom:8px;">Alles erledigt</div>
-          <div style="font-size:14px; line-height:1.4; color:var(--muted);">Alle Abholungen sind abgeschlossen.</div>
+          <div style="font-size:14px; line-height:1.4; color:var(--muted);">Alle Nummern sind abgeholt.</div>
         `;
       } else {
         empty.innerHTML = `
-          <div style="font-weight:600; font-size:16px; margin-bottom:8px;">Keine abgeholten Bestellungen</div>
-          <div style="font-size:14px; line-height:1.4; color:var(--muted);">Noch keine Bestellungen als abgeholt markiert.</div>
+          <div style="font-weight:600; font-size:16px; margin-bottom:8px;">Noch nichts abgeholt</div>
+          <div style="font-size:14px; line-height:1.4; color:var(--muted);">Noch keine als abgeholt markiert.</div>
         `;
       }
       listEl.style.display='none';
@@ -12103,20 +12113,19 @@
         const isDone = p.status === 'PICKED_UP';
         const isPaid = !isDone;
         const codeDisplay = (p.code ? '#' + String(p.code).replace(/\s/g,'') : '#–');
-        const icons = [];
-        if(p.hasEatIn) icons.push('<span style="font-size:18px;" title="Vor Ort">🍴</span>');
-        if(p.hasReuse) icons.push('<span style="font-size:18px;" title="Mehrweg">🔄</span>');
-        icons.push('<span style="font-size:18px;" title="Abholnummer">🧾</span>');
-        const iconsHtml = icons.join(' ');
+        const pillarsHtml = [];
+        if(p.hasEatIn) pillarsHtml.push('<span class="pickup-pillar" style="font-size:20px;" title="Vor Ort (Teller)">🍴</span>');
+        if(p.hasReuse) pillarsHtml.push('<span class="pickup-pillar" style="font-size:20px;" title="Mehrweg (Box)">🔄</span>');
+        const pillarsStr = pillarsHtml.length ? pillarsHtml.join(' ') : '<span class="pickup-pillar" style="font-size:18px; opacity:0.6;" title="To-Go">📦</span>';
         
         const card = document.createElement('div');
         card.className = `pickup-card ${isDone ? 'status-done' : 'status-paid'}`;
         card.innerHTML = `
-          <div class="pickup-card-header">
-            <div class="pickup-card-code">${esc(codeDisplay)}</div>
-            <div class="pickup-card-time">${esc(p.pickupTime || 'Sofort')}</div>
+          <div class="pickup-card-header" style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+            <div class="pickup-card-code" style="flex-shrink:0;">${esc(codeDisplay)}</div>
+            <div class="pickup-card-pillars" style="display:flex; align-items:center; gap:6px; font-size:20px;">${pillarsStr}</div>
+            <div class="pickup-card-time" style="margin-left:auto;">${esc(p.pickupTime || 'Sofort')}</div>
           </div>
-          <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px; font-size:16px;">${iconsHtml}</div>
           <div class="pickup-card-body">
             <div class="pickup-card-dish">${esc((p.dishName || 'Gericht').split(',')[0])}</div>
             <div class="pickup-card-customer">${p.order && p.order.customerName ? esc(p.order.customerName) : 'Gast'}</div>
@@ -12145,13 +12154,18 @@
     list.forEach(p=>{
       const isPickedUp = p.status === 'PICKED_UP';
       const codeDisplay = p.code ? '#' + String(p.code).replace(/\s/g,'') : '#–';
-      const icons = (p.hasEatIn ? '🍴 ' : '') + (p.hasReuse ? '🔄 ' : '') + '🧾';
+      const pillars = [];
+      if(p.hasEatIn) pillars.push('<span style="font-size:22px;" title="Vor Ort (Teller)">🍴</span>');
+      if(p.hasReuse) pillars.push('<span style="font-size:22px;" title="Mehrweg (Box)">🔄</span>');
+      const pillarsHtml = pillars.length ? pillars.join(' ') : '<span style="font-size:18px; opacity:0.6;">📦</span>';
       const row = document.createElement('div');
       row.className = 'pickup-row' + (isPickedUp ? ' picked-up' : '');
       row.style.cssText = 'display:flex; align-items:center; gap:16px; padding:16px; border-bottom:1px solid var(--border); ' + (isPickedUp ? 'opacity:0.5; background:#f8f8f8;' : 'cursor:pointer;');
       row.innerHTML = `
-        <div style="font-size:32px; font-weight:900; font-family:monospace; color:var(--brand); min-width:70px; text-align:center; line-height:1;">${esc(codeDisplay)}</div>
-        <div style="font-size:16px; margin-right:8px;">${icons}</div>
+        <div style="display:flex; align-items:center; gap:12px; flex-shrink:0;">
+          <div style="font-size:32px; font-weight:900; font-family:monospace; color:var(--brand); min-width:70px; text-align:center; line-height:1;">${esc(codeDisplay)}</div>
+          <div class="pickup-row-pillars" style="display:flex; gap:6px; font-size:22px;">${pillarsHtml}</div>
+        </div>
         <div style="flex:1; min-width:0;">
           <div style="font-weight:600; font-size:16px; line-height:1.3; margin-bottom:4px;">${esc((p.dishName||'').split(',')[0])}</div>
           <div style="font-size:14px; color:var(--muted); margin-bottom:4px;">${esc(p.pickupTime || '')}</div>
@@ -12339,7 +12353,7 @@
     var supportSolutions = {
       standort: 'Standort kalibrieren: Öffne Einstellungen (Zahnrad) → Betriebsdaten. Prüfe Anschrift, PLZ und Ort. Dein Standort wird für die Kunden-Suche verwendet.',
       zahlung: 'Zahlung prüfen: In den Einstellungen unter „Abrechnung & Support“ → Zahlungsmethoden. Stelle sicher, dass eine gültige Karte hinterlegt ist.',
-      abholnummer: 'Abholnummer: Sie wird bei jeder Bestellung automatisch generiert. Prüfe unter „Abholnummer“ (Tab in der App) deine heutigen Abholungen. Die Einstellung „Abholnummer“ findest du in den Einstellungen unter den 3 Säulen.',
+      abholnummer: 'Abholnummer: Sie wird automatisch generiert. Prüfe unter „Nummern“ (Tab) deine heutigen Abholnummern. Die Einstellung findest du in den Einstellungen unter den 3 Säulen.',
       sichtbarkeit: 'Sichtbarkeit: Dein Inserat ist nur während des von dir gesetzten Zeitfensters (Mittagszeiten) für Kunden sichtbar. Außerhalb dieser Zeit erscheint es nicht im Feed – so ist es gewollt.'
     };
     var abholungenBtn = document.getElementById('providerSupportAbholungenBtn');
