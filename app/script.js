@@ -6042,59 +6042,41 @@
 
   function openCreateFlowSheet(){
     if(typeof haptic === 'function') haptic(10);
-    const sheet = document.getElementById('createFlowSheet');
-    const hint = document.getElementById('createFlowDateHint');
-
-    if(sheet && hint){
-      if(createFlowPreselectedDate){
-        const d = new Date(createFlowPreselectedDate);
-        const weekday = ['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'][d.getDay()];
-        const dateStr = d.getDate() + '.' + String(d.getMonth()+1).padStart(2,'0') + '.';
-        hint.innerHTML = '<i data-lucide="calendar" style="width:16px;height:16px;color:#64748b;flex-shrink:0;"></i><span>Für ' + weekday + ', ' + dateStr + '</span>';
-        hint.style.display = 'inline-flex';
-        if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
-      } else {
-        hint.style.display = 'none';
-      }
-
-      populateCreateFlowRenner();
-
-      document.getElementById('createFlowBd').classList.add('active');
-      sheet.classList.add('active');
-      if(document.body) document.body.classList.add('create-flow-open');
-      var sweep = document.getElementById('createFlowSlotSweep');
-      if(sweep) { sweep.classList.remove('animate'); sweep.offsetHeight; sweep.classList.add('animate'); sweep.addEventListener('animationend', function onEnd(){ sweep.removeEventListener('animationend', onEnd); sweep.classList.remove('animate'); }, { once: true }); }
-      if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
+    var pane = document.getElementById('selectionOverlayPane');
+    var bd = document.getElementById('createFlowBd');
+    if(pane && bd){
+      pane.style.display = 'flex';
+      bd.classList.add('active');
+      if(document.body){ document.body.classList.add('create-flow-open'); document.body.classList.add('selection-mode'); }
     }
   }
   
   function closeCreateFlowSheet(){
-    document.getElementById('createFlowBd').classList.remove('active');
-    document.getElementById('createFlowSheet').classList.remove('active');
-    if(document.body) document.body.classList.remove('create-flow-open');
+    var pane = document.getElementById('selectionOverlayPane');
+    var bd = document.getElementById('createFlowBd');
+    if(bd) bd.classList.remove('active');
+    if(pane) pane.style.display = 'none';
+    if(document.body){ document.body.classList.remove('create-flow-open'); document.body.classList.remove('selection-mode'); }
     createFlowPreselectedDate = null;
     createFlowOriginView = 'dashboard';
   }
   
-  // Create Flow Handlers - Beide öffnen Master-Flow
-  const btnCreateFromCookbook = document.getElementById('btnCreateFromCookbook');
-  if(btnCreateFromCookbook){
-    btnCreateFromCookbook.onclick = () => {
-      closeCreateFlowSheet();
-      // Navigate to cookbook - user selects entry there, then "Inserieren" opens Master-Flow
-      showProviderCookbook();
-    };
+  // Create Flow Handlers – Tunnelblick: System-Footer (openCookbook, createNewListing) + Legacy Tiles
+  function wireCreateFlowButtons(){
+    var openCookbook = document.getElementById('openCookbook');
+    var createNewListing = document.getElementById('createNewListing');
+    if(openCookbook){
+      openCookbook.onclick = function(){ if(typeof haptic==='function') haptic(6); closeCreateFlowSheet(); if(typeof showProviderCookbook==='function') showProviderCookbook(); };
+    }
+    if(createNewListing){
+      createNewListing.onclick = function(){ if(typeof haptic==='function') haptic(6); var date=createFlowPreselectedDate; var ep=createFlowOriginView||'dashboard'; closeCreateFlowSheet(); if(typeof openDishFlow==='function') openDishFlow(date,ep); };
+    }
+    var btnCreateFromCookbook = document.getElementById('btnCreateFromCookbook');
+    if(btnCreateFromCookbook){ btnCreateFromCookbook.onclick = function(){ closeCreateFlowSheet(); if(typeof showProviderCookbook==='function') showProviderCookbook(); }; }
+    var btnCreateNewDish = document.getElementById('btnCreateNewDish');
+    if(btnCreateNewDish){ btnCreateNewDish.onclick = function(){ var date=createFlowPreselectedDate; var ep=createFlowOriginView||'dashboard'; closeCreateFlowSheet(); if(typeof openDishFlow==='function') openDishFlow(date,ep); }; }
   }
-  
-  const btnCreateNewDish = document.getElementById('btnCreateNewDish');
-  if(btnCreateNewDish){
-    btnCreateNewDish.onclick = () => {
-      const date = createFlowPreselectedDate;
-      const ep = createFlowOriginView || 'dashboard';
-      closeCreateFlowSheet();
-      openDishFlow(date, ep);
-    };
-  }
+  wireCreateFlowButtons();
   
   // Offer More Menu
   function openOfferMoreMenu(offerId){

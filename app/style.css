@@ -1536,6 +1536,19 @@
     #createFlowSheet { z-index: 998; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.34, 1.2, 0.64, 1); position: fixed; top: 0; left: 0; right: 0; bottom: 0; height: 100vh; max-height: 100vh; border-radius: 0; background: rgba(255,255,255,0.98); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: none; box-shadow: 0 -10px 40px rgba(0,0,0,0.12); display: flex; flex-direction: column; overflow: hidden; }
     #createFlowSheet.active { transform: translateY(0); }
     body.create-flow-open #fabProviderAddOffer { opacity: 0; pointer-events: none; transition: opacity 0.2s ease; }
+    /* Tunnelblick: Nav ausblenden wenn Inseratsauswahl aktiv [cite: 2026-02-21] */
+    body.selection-mode #providerNavWrap,
+    body.create-flow-open #providerNavWrap { transform: translateY(100%); opacity: 0; transition: transform 0.3s ease, opacity 0.3s ease; pointer-events: none; }
+    /* Selection Overlay: Dimmed Dashboard + System-Footer */
+    .selection-overlay-pane { position: fixed; inset: 0; z-index: 996; display: flex; flex-direction: column; justify-content: flex-end; pointer-events: none; }
+    .selection-overlay-pane .dashboard-preview-dimmed { position: absolute; inset: 0; pointer-events: auto; }
+    .selection-overlay-pane .system-selection-footer { pointer-events: auto; flex-shrink: 0; }
+    .system-selection-footer { position: fixed; bottom: 0; left: 0; width: 100vw; background: #0f172a; padding: 16px 20px calc(20px + env(safe-area-inset-bottom)) 20px; display: flex; align-items: center; justify-content: center; z-index: 1500; border-radius: 0; margin: 0; box-sizing: border-box; }
+    .footer-content-wrapper { display: flex; gap: 12px; width: 100%; max-width: 100%; }
+    .footer-btn-primary-pill { flex: 2; background: #ffffff; color: #0f172a; height: 56px; min-height: 56px; border-radius: 16px; font-weight: 800; font-size: 17px; border: none; box-shadow: 0 0 20px rgba(255,255,255,0.1); cursor: pointer; font-family: inherit; }
+    .footer-btn-primary-pill:active { transform: scale(0.98); }
+    .footer-btn-secondary-pill { flex: 1; background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); color: #ffffff; height: 56px; min-height: 56px; border-radius: 16px; font-weight: 600; font-size: 15px; border: 1px solid rgba(255,255,255,0.2); cursor: pointer; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .footer-btn-secondary-pill:active { transform: scale(0.98); }
     #createFlowSheet.sheet--kitchen .handle { display: none; }
     #createFlowSheet .sheet-body { padding: 12px 20px max(20px, env(safe-area-inset-bottom)); overflow-y: auto; -webkit-overflow-scrolling: touch; flex: 1; min-height: 0; overscroll-behavior: contain; }
     .create-flow-title { font-size: var(--size-h2); font-weight: var(--weight-heavy); color: var(--color-title); margin-bottom: 16px; }
@@ -2932,11 +2945,10 @@
       margin: 0 !important;
       border-radius: 0 !important;
       z-index: 500 !important;
-      padding: 12px max(16px, env(safe-area-inset-left)) max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-right)) !important;
-      padding-left: max(16px, env(safe-area-inset-left)) !important;
-      background: rgba(15,23,42,0.92) !important;
-      backdrop-filter: blur(30px);
-      -webkit-backdrop-filter: blur(30px);
+      padding: 16px 24px max(16px, env(safe-area-inset-bottom)) 24px !important;
+      padding-left: max(24px, env(safe-area-inset-left)) !important;
+      padding-right: max(24px, env(safe-area-inset-right)) !important;
+      background: #0f172a !important;
       display: flex !important;
       flex-direction: row !important;
       align-items: center !important;
@@ -3467,33 +3479,35 @@
     .inserat-step3-pane .sharing-trigger { display: flex; align-items: center; gap: 8px; background: transparent; border: none; cursor: pointer; color: #fff !important; font-size: 15px; font-weight: 600; padding: 12px 0; }
     .inserat-step3-pane #step3ConfettiContainer .confetti { position: absolute; width: 10px; height: 10px; background: #FFD700; border-radius: 2px; animation: confetti-fall 3s linear forwards; top: -20px; }
     @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-    /* Airbnb-Footer: Bündig 0px unten, schwarz, Glas-Optik [cite: 2026-02-21 Step 2] */
+    /* ImmoScout-Footer: 100% bündig, #0f172a, kein Glow [cite: 2026-02-21] */
     .inserat-airbnb-footer {
       position: fixed; left: 0; right: 0; bottom: 0; z-index: 15;
-      width: 100vw; margin: 0 !important; padding: 0; border: none; border-radius: 0;
-      padding: 12px max(16px, env(safe-area-inset-left)) max(12px, env(safe-area-inset-bottom, 0)) max(16px, env(safe-area-inset-right));
-      background: rgba(15,23,42,0.92); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+      width: 100vw; margin: 0 !important; padding: 0; border: none; border-radius: 0 !important;
+      padding: 16px 24px calc(16px + env(safe-area-inset-bottom, 0)) 24px;
+      padding-left: max(24px, env(safe-area-inset-left));
+      padding-right: max(24px, env(safe-area-inset-right));
+      background: #0f172a;
       box-shadow: none;
       display: flex; flex-direction: row; align-items: center; justify-content: space-between; gap: 16px;
     }
-    /* ImmoScout: Schwarzer Primär-Button rechts [cite: 2026-02-21] */
+    /* ImmoScout: Weißer Primär-Button rechts, keine Glow-Effekte [cite: 2026-02-21] */
     .inserat-airbnb-footer .inserat-footer-btn-main {
-      flex: 1; min-width: 0; min-height: 60px; border-radius: 16px;
-      font-size: 18px; font-weight: 800; border: none; cursor: pointer; display: flex; align-items: center;
-      justify-content: center; transition: transform 0.15s ease, box-shadow 0.2s ease;
-      background: #121212; color: #fff; box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      flex: 1; min-width: 0; min-height: 52px; height: 52px; border-radius: 12px;
+      font-size: 16px; font-weight: 800; border: none; cursor: pointer; display: flex; align-items: center;
+      justify-content: center; transition: transform 0.15s ease;
+      background: #ffffff; color: #0f172a; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
-    .inserat-airbnb-footer .inserat-footer-btn-main.inserat-footer-btn--499 { background: #FACC15; color: #1a1a1a; box-shadow: 0 4px 20px rgba(250,204,21,0.4); }
+    .inserat-airbnb-footer .inserat-footer-btn-main.inserat-footer-btn--499 { background: #ffffff; color: #0f172a; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
     .inserat-airbnb-footer .inserat-footer-btn-main:active { transform: scale(0.98); }
-    /* ImmoScout: Zurück-Text weiß [cite: 2026-02-21] */
-    .inserat-airbnb-footer .inserat-footer-link { color: #fff !important; }
-    /* 3. ImmoScout-Footer: Massiv & Bündig [cite: 2026-02-21] */
-    body.wizard-inserat-open #wizard[data-flow="listing"] .inserat-action-section:has(.airbnb-footer) {
-      background: rgba(15,23,42,0.95) !important;
-      backdrop-filter: blur(25px);
-      -webkit-backdrop-filter: blur(25px);
-      border-top: 1px solid rgba(255,255,255,0.1);
-      padding: 16px 24px max(34px, env(safe-area-inset-bottom)) 24px !important;
+    /* ImmoScout: Abbrechen transparent, weißer Text [cite: 2026-02-21] */
+    .inserat-airbnb-footer .inserat-footer-link,
+    .inserat-airbnb-footer .footer-link-secondary { background: transparent !important; border: none !important; color: #ffffff !important; font-size: 15px; font-weight: 600; }
+    /* ImmoScout-Footer: #0f172a massiv, 0px margin/radius unten [cite: 2026-02-21] */
+    body.wizard-inserat-open #wizard[data-flow="listing"] .inserat-action-section:has(.airbnb-footer),
+    body.wizard-inserat-open #wizard[data-flow="listing"] .inserat-step1-nav.inserat-immo-footer {
+      background: #0f172a !important;
+      margin: 0 !important; border-radius: 0 !important;
+      padding: 16px 24px max(16px, env(safe-area-inset-bottom)) 24px !important;
     }
     /* 5. IMMOSCOUT-FOOTER: z-index 500 – Scroll-Inhalt verschwindet sicher dahinter [cite: 2026-02-21 S25] */
     .airbnb-footer,
@@ -3546,12 +3560,12 @@
       color: #0f172a;
       box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     }
-    /* Elegant Toggle: Kostenlos gewählt → Emerald-Grün [cite: 2026-02-21] */
+    /* Step 2: Kostenlos-Button – weiterhin weiß, kein Grün-Glow [cite: 2026-02-21 ImmoScout] */
     .footer-btn-primary.free-mode,
     .footer-btn-primary.is-free-mode {
-      background: #10b981 !important;
-      color: #ffffff !important;
-      box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+      background: #ffffff !important;
+      color: #0f172a !important;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
     /* Footer-Stabilität: #footerNext identische Position und Größe Step 1 + Step 2 [cite: 2026-02-21] */
     #wizard[data-flow="listing"] #footerNext,

@@ -2983,9 +2983,22 @@
   <button type="button" id="weekUndoBtn">Rückgängig</button>
 </div>
 
-<!-- Inseratsauswahl: Slot-Machine Entry, Full-Screen 100vh [cite: 2026-02-21] -->
-<div class="backdrop" id="createFlowBd" onclick="closeCreateFlowSheet()"><div class="create-flow-slot-machine-sweep" id="createFlowSlotSweep" aria-hidden="true"></div></div>
-<div class="sheet sheet--kitchen" id="createFlowSheet">
+<!-- Inseratsauswahl: Tunnelblick – Dimmed Dashboard + System-Footer [cite: 2026-02-21] -->
+<div class="selection-overlay-pane" id="selectionOverlayPane" style="display:none;">
+  <div class="backdrop dashboard-preview-dimmed" id="createFlowBd" onclick="closeCreateFlowSheet()"></div>
+  <footer class="system-selection-footer" id="systemSelectionFooter">
+    <div class="footer-content-wrapper">
+      <button type="button" class="footer-btn-secondary-pill" id="openCookbook">
+        <span>📖</span> Kochbuch
+      </button>
+      <button type="button" class="footer-btn-primary-pill" id="createNewListing">
+        + Neues Gericht
+      </button>
+    </div>
+  </footer>
+</div>
+<div class="create-flow-slot-machine-sweep" id="createFlowSlotSweep" aria-hidden="true" style="position:fixed;inset:-50%;z-index:999;pointer-events:none;display:none;"></div>
+<div class="sheet sheet--kitchen" id="createFlowSheet" style="display:none;">
   <div class="handle"></div>
   <div class="sheet-body">
     <div class="create-flow-title">Inseratsauswahl</div>
