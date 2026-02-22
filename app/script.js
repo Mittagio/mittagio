@@ -15344,11 +15344,11 @@
       sheet.setAttribute('data-inserat-card', 'true');
       sheet.style.cssText = 'padding:0; overflow:visible; display:flex; flex-direction:column; min-height:0; border-radius:0; background:transparent;';
       const box = document.createElement('div');
-      box.className='liquid-master-panel glass-express-step0 inserat-universal-mask inserat-master-flow liquid-panel listing-glass-panel s25-floating-panel inserat-card inserat-airbnb-refactor';
+      box.className='liquid-master-panel mastercard-container glass-express-step0 inserat-universal-mask inserat-master-flow liquid-panel listing-glass-panel s25-floating-panel inserat-card inserat-airbnb-refactor';
       box.setAttribute('data-inserat-card','true');
       box.style.cssText='padding:0; overflow:hidden; display:flex; flex-direction:column; min-height:0;';
       var collapsingHeader=document.createElement('div');
-      collapsingHeader.className='inserat-collapsing-header';
+      collapsingHeader.className='inserat-collapsing-header mastercard-header';
       collapsingHeader.innerHTML='<span class="inserat-collapsing-title">Dein Inserat</span>';
       collapsingHeader.style.cssText='position:sticky; top:0; z-index:12; flex-shrink:0; padding:12px 16px; background:#fff; backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); text-align:center; font-family:\'Montserrat\',sans-serif; font-weight:900; font-size:18px; color:#0f172a; border-bottom:1px solid rgba(0,0,0,0.06);';
       box.appendChild(collapsingHeader);
@@ -15422,8 +15422,7 @@
         ctxZone.innerHTML='<div class="step2-context-thumb" style="width:56px;height:56px;border-radius:12px;overflow:hidden;background:#e8ecf0;flex-shrink:0;position:relative;"><img src="'+thumbUrl+'" alt="" style="width:100%;height:100%;object-fit:cover;transform:translateY('+cropY2+'px);"><span class="step2-context-abhol-badge" style="position:absolute;bottom:4px;right:4px;padding:2px 6px;border-radius:6px;background:rgba(15,23,42,0.9);color:#fff;font-size:10px;font-weight:800;opacity:0;transition:opacity 0.25s;">🧾</span></div><div style="flex:1;min-width:0;"><div style="font-size:17px;font-weight:900;color:#0f172a;">'+esc(dishNameS2)+'</div><div style="font-size:15px;font-weight:700;color:#64748b;">'+euroS2+'</div></div>';
         step2Wrap.appendChild(ctxZone);
         var tilesRow=document.createElement('div');
-        tilesRow.className='inserat-decision-tiles inserat-step2-tiles-vertical';
-        tilesRow.style.cssText='display:flex; flex-direction:column; gap:16px;';
+        tilesRow.className='inserat-decision-tiles inserat-step2-tiles-vertical pricing-grid';
         var hasDishS2=!!(w.data.dish&&String(w.data.dish).trim());
         var hasPriceS2=Number(w.data.price)>0;
         var primaryValidS2=hasDishS2&&hasPriceS2;
@@ -15435,16 +15434,16 @@
         if(!w.data.pricingChoice) w.data.pricingChoice = 'pro';
         var tile499=document.createElement('button');
         tile499.type='button';
-        tile499.className='inserat-decision-tile inserat-tile-basis pricing-card' + (w.data.pricingChoice==='499' ? ' is-selected' : '');
+        tile499.className='inserat-decision-tile inserat-tile-basis pricing-card' + (w.data.pricingChoice==='499' ? ' is-selected selected' : '');
         tile499.style.cssText='padding:24px; border-radius:12px; background:#fff; cursor:pointer; text-align:left; transition:all 0.4s cubic-bezier(0.175,0.885,0.32,1.275); overflow:hidden;';
         tile499.innerHTML='<h3 class="pricing-card-label" style="font-size:17px;font-weight:800;margin:0 0 8px;color:#0f172a;">Einmalig Inserieren</h3><span class="pricing-card-price" style="font-size:22px;font-weight:900;color:#0f172a;">4,99 €</span><p class="pricing-card-sub" style="font-size:13px;color:#64748b;margin:10px 0 0;line-height:1.4;">Kein Abo, keine Laufzeit. Einmalig bis das Inserat gelöscht wird.</p>';
-        tile499.onclick=function(){ hapticLight(); w.data.pricingChoice='499'; tile499.classList.add('is-selected'); tileHero.classList.remove('is-selected'); saveDraft(); var fb=box.querySelector('.inserat-airbnb-footer .inserat-footer-btn-main'); if(fb){ fb.textContent='Jetzt für 4,99 € inserieren'; fb.classList.add('inserat-footer-btn--499'); } var ab=ctxZone.querySelector('.step2-context-abhol-badge'); if(ab) ab.style.opacity='0'; };
+        tile499.onclick=function(){ hapticLight(); w.data.pricingChoice='499'; tile499.classList.add('is-selected','selected'); tileHero.classList.remove('is-selected','selected'); saveDraft(); var fb=box.querySelector('.inserat-airbnb-footer .inserat-footer-btn-main'); if(fb){ fb.textContent='Jetzt für 4,99 € inserieren'; fb.classList.add('inserat-footer-btn--499'); fb.classList.remove('free-mode'); } var ab=ctxZone.querySelector('.step2-context-abhol-badge'); if(ab) ab.style.opacity='0'; };
         var tileHero=document.createElement('button');
         tileHero.type='button';
-        tileHero.className='inserat-decision-tile inserat-tile-smart pricing-card' + (w.data.pricingChoice==='pro' ? ' is-selected' : '');
+        tileHero.className='inserat-decision-tile inserat-tile-smart pricing-card' + (w.data.pricingChoice==='pro' ? ' is-selected selected' : '');
         tileHero.style.cssText='padding:24px; border-radius:12px; background:#fff; cursor:pointer; text-align:left; transition:all 0.4s cubic-bezier(0.175,0.885,0.32,1.275); overflow:hidden;';
         tileHero.innerHTML='<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;"><h3 class="pricing-card-label" style="font-size:17px;font-weight:800;margin:0;color:#0f172a;">Kostenlos Inserieren</h3><span class="price-massive" style="font-size:3.8rem;font-weight:900;line-height:1;color:#0f172a;">0,00 €</span></div><div class="fair-fee-badge" style="display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:10px;background:rgba(15,23,42,0.06);font-size:14px;font-weight:700;color:#0f172a;margin-bottom:8px;">Zahle nur bei Erfolg: 0,89 € pro 🧾 Abholnummer</div><p class="pricing-card-sub" style="font-size:13px;color:#64748b;margin:0;line-height:1.4;">Volle Kontrolle: Vermeide Chaos & Foodwaste.</p>';
-        tileHero.onclick=function(){ hapticLight(); w.data.pricingChoice='pro'; tileHero.classList.add('is-selected'); tile499.classList.remove('is-selected'); saveDraft(); var fb=box.querySelector('.inserat-airbnb-footer .inserat-footer-btn-main'); if(fb){ fb.textContent='Jetzt kostenlos inserieren'; fb.classList.remove('inserat-footer-btn--499'); } var ab=ctxZone.querySelector('.step2-context-abhol-badge'); if(ab) ab.style.opacity='1'; };
+        tileHero.onclick=function(){ hapticLight(); w.data.pricingChoice='pro'; tileHero.classList.add('is-selected','selected'); tile499.classList.remove('is-selected','selected'); saveDraft(); var fb=box.querySelector('.inserat-airbnb-footer .inserat-footer-btn-main'); if(fb){ fb.textContent='Jetzt kostenlos inserieren'; fb.classList.remove('inserat-footer-btn--499'); fb.classList.add('free-mode'); } var ab=ctxZone.querySelector('.step2-context-abhol-badge'); if(ab) ab.style.opacity='1'; };
         tilesRow.appendChild(tile499);
         tilesRow.appendChild(tileHero);
         step2Wrap.appendChild(tilesRow);
@@ -15462,12 +15461,12 @@
 
       {
 
-      // ========== 1. EBENE (Header): Bild exakt 190px, „Foto ändern“-Pill mit Glassmorphism [cite: 2026-02-18] ==========
+      // ========== 1. EBENE (eBay-Header): Photo-Section 220px, Kamera right:56px, X right:12px [cite: 2026-02-21] ==========
       const photoTile=document.createElement('div');
-      photoTile.className='inserat-photo-tile photo-header' + (w.data.photoData ? '' : ' pulse-soft');
-      photoTile.style.cssText='position:relative; overflow:hidden; flex-shrink:0; width:100%; height:190px; min-height:190px; max-height:190px;';
+      photoTile.className='inserat-photo-tile photo-section photo-header' + (w.data.photoData ? '' : ' pulse-soft');
+      photoTile.style.cssText='position:relative; overflow:hidden; flex-shrink:0; width:100%; height:200px; min-height:200px; max-height:200px;';
       var closeX=document.createElement('div');
-      closeX.className='close-wizard-x';
+      closeX.className='close-wizard-x close-mastercard btn-close-master';
       closeX.setAttribute('role','button');
       closeX.setAttribute('aria-label','Schließen');
       async function handlePhotoPick(){
@@ -15485,7 +15484,7 @@
       }
       if(w.data.photoData){
         var cropY = (typeof w.data.photoCropY === 'number') ? w.data.photoCropY : 0;
-        photoTile.innerHTML='<div class="inserat-photo-crop-wrap" style="position:absolute;inset:0;overflow:hidden;"><img src="'+w.data.photoData+'" class="inserat-photo-fade-in inserat-photo-draggable" style="width:100%;height:100%;object-fit:cover;display:block;transform:translateY('+cropY+'px);touch-action:none;" alt=""></div><button type="button" class="inserat-photo-edit-icon" aria-label="Foto ändern" style="position:absolute;top:12px;right:12px;width:40px;height:40px;border:none;border-radius:50%;background:rgba(0,0,0,0.25);backdrop-filter:blur(12px);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2;"><i data-lucide="camera" style="width:18px;height:18px;stroke-width:2.5;"></i></button>';
+        photoTile.innerHTML='<div class="inserat-photo-crop-wrap" style="position:absolute;inset:0;overflow:hidden;"><img src="'+w.data.photoData+'" class="inserat-photo-fade-in inserat-photo-draggable" style="width:100%;height:100%;object-fit:cover;display:block;transform:translateY('+cropY+'px);touch-action:none;" alt=""></div><button type="button" class="inserat-photo-edit-icon camera-trigger" aria-label="Foto ändern" style="position:absolute;top:12px;right:56px;width:40px;height:40px;border:none;border-radius:50%;background:rgba(0,0,0,0.25);backdrop-filter:blur(12px);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2;"><i data-lucide="camera" style="width:18px;height:18px;stroke-width:2.5;"></i></button>';
         const imgEl=photoTile.querySelector('.inserat-photo-draggable');
         const editIcon=photoTile.querySelector('.inserat-photo-edit-icon');
         if(editIcon) editIcon.onclick=function(e){ e.stopPropagation(); handlePhotoPick(); };
@@ -15583,7 +15582,7 @@
       };
 
       const scrollArea=document.createElement('div');
-      scrollArea.className='inserat-scroll-area scroll-content inserat-scroll-with-photo';
+      scrollArea.className='inserat-scroll-area mastercard-content scroll-content inserat-scroll-with-photo';
       photoTile.classList.add('inserat-photo-in-scroll');
       scrollArea.appendChild(photoTile);
 
@@ -15869,13 +15868,14 @@
       } else if(isPlanMode){
         /* ImmoScout-Footer Plan-Mode: Links Text-Link, Rechts schwarzer Primär-Button */
         var planNavRow=document.createElement('div');
-        planNavRow.className='inserat-immo-footer';
+        planNavRow.className='inserat-immo-footer airbnb-footer';
         planNavRow.style.cssText='display:flex; gap:16px; width:100%; align-items:center; justify-content:space-between;';
         var linkCookOnly=document.createElement('button');
         linkCookOnly.type='button';
-        linkCookOnly.className='inserat-footer-link';
-        linkCookOnly.style.cssText='background:none; border:none; padding:12px 0; font-size:15px; font-weight:700; color:rgba(255,255,255,0.9); cursor:pointer; text-decoration:underline; text-underline-offset:4px;';
-        linkCookOnly.textContent='Nur im Kochbuch speichern';
+        linkCookOnly.className='inserat-footer-link footer-link-secondary';
+        linkCookOnly.style.cssText='background:none; border:none; padding:12px 0; font-size:15px; font-weight:500; color:#fff; cursor:pointer; text-decoration:none; opacity:0.8;';
+        linkCookOnly.textContent='Nur speichern';
+        linkCookOnly.classList.add('footer-link-secondary');
         linkCookOnly.onclick=function(){
           if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; }
           if(typeof haptic==='function') haptic(50);
@@ -15884,9 +15884,9 @@
         };
         var btnWeekPlan=document.createElement('button');
         btnWeekPlan.type='button';
-        btnWeekPlan.className='inserat-footer-btn-main';
-        btnWeekPlan.style.cssText='flex:1; min-height:56px; padding:14px 20px; border:none; border-radius:16px; background:#121212; color:#fff; font-size:16px; font-weight:800; cursor:pointer; box-shadow:0 4px 20px rgba(0,0,0,0.3);';
-        btnWeekPlan.textContent='📅 In den Wochenplan einplanen';
+        btnWeekPlan.className='inserat-footer-btn-main footer-btn-primary';
+        btnWeekPlan.style.cssText='flex:1; min-height:56px; min-width:160px; padding:14px 24px; border:none; border-radius:12px; background:#fff; color:#0f172a; font-size:16px; font-weight:700; cursor:pointer;';
+        btnWeekPlan.textContent='Einplanen';
         btnWeekPlan.onclick=function(){
           if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; }
           if(typeof haptic==='function') haptic(50);
@@ -15906,18 +15906,19 @@
       } else if(entryPoint === 'dashboard'){
         /* ImmoScout-Footer: Links Text-Link, Rechts schwarzer Primär-Button [cite: 2026-02-21] */
         var step1NavRow=document.createElement('div');
-        step1NavRow.className='inserat-step1-nav inserat-immo-footer';
+        step1NavRow.className='inserat-step1-nav inserat-immo-footer airbnb-footer';
         step1NavRow.style.cssText='display:flex; gap:16px; width:100%; align-items:center; justify-content:space-between;';
         var linkSpeichern=document.createElement('button');
         linkSpeichern.type='button';
-        linkSpeichern.className='inserat-footer-link';
-        linkSpeichern.style.cssText='background:none; border:none; padding:12px 0; font-size:15px; font-weight:700; color:rgba(255,255,255,0.9); cursor:pointer; text-decoration:underline; text-underline-offset:4px;';
+        linkSpeichern.className='inserat-footer-link footer-link-secondary';
+        linkSpeichern.style.cssText='background:none; border:none; padding:12px 0; font-size:15px; font-weight:500; color:#fff; cursor:pointer; text-decoration:none; opacity:0.8;';
         linkSpeichern.textContent='Speichern in...';
+        linkSpeichern.classList.add('footer-link-secondary');
         linkSpeichern.onclick=function(){ hapticLight(); if(typeof showSaveScopeDialog==='function') showSaveScopeDialog({ onlyCurrent: function(){ saveDraft(); if(typeof showToast==='function') showToast('Als Entwurf gespeichert'); }, saveToCookbook: function(){ if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; } var id=saveToCookbookFromWizard(); if(id){ closeWizard(true); showSaveSuccessSheet({ title:'Im Kochbuch gespeichert', sub:'Dein Gericht ist in deinem Kochbuch.', dishName: w.data.dish||'', price: w.data.price, imageUrl: w.data.photoData||'', savedEntryId: id, savedDay: null, onFertig: function(){ if(typeof showToast==='function') showToast('Gericht im Kochbuch aktualisiert 📖'); if(typeof showProviderCookbook==='function') showProviderCookbook(); }, onLive: null }); } } }); };
         var btnWeiter=document.createElement('button');
         btnWeiter.type='button';
-        btnWeiter.className='inserat-footer-btn-main';
-        btnWeiter.style.cssText='flex:1; min-height:56px; padding:14px 20px; border:none; border-radius:16px; background:#121212; color:#fff; font-size:16px; font-weight:800; cursor:pointer; box-shadow:0 4px 20px rgba(0,0,0,0.3);';
+        btnWeiter.className='inserat-footer-btn-main footer-btn-primary';
+        btnWeiter.style.cssText='flex:1; min-height:56px; min-width:160px; padding:14px 24px; border:none; border-radius:12px; background:#fff; color:#0f172a; font-size:16px; font-weight:700; cursor:pointer;';
         btnWeiter.textContent='Weiter zur Veröffentlichung';
         btnWeiter.onclick=function(){
           hapticLight();
@@ -15938,13 +15939,14 @@
       } else {
         /* ImmoScout-Footer Plan-Mode: Links Text-Link, Rechts schwarzer Primär-Button */
         var planRow=document.createElement('div');
-        planRow.className='inserat-immo-footer';
+        planRow.className='inserat-immo-footer airbnb-footer';
         planRow.style.cssText='display:flex; gap:16px; width:100%; align-items:center; justify-content:space-between;';
         var linkKochbuch=document.createElement('button');
         linkKochbuch.type='button';
-        linkKochbuch.className='inserat-footer-link';
-        linkKochbuch.style.cssText='background:none; border:none; padding:12px 0; font-size:15px; font-weight:700; color:rgba(255,255,255,0.9); cursor:pointer; text-decoration:underline; text-underline-offset:4px;';
-        linkKochbuch.textContent='Nur im Kochbuch speichern';
+        linkKochbuch.className='inserat-footer-link footer-link-secondary';
+        linkKochbuch.style.cssText='background:none; border:none; padding:12px 0; font-size:15px; font-weight:500; color:#fff; cursor:pointer; text-decoration:none; opacity:0.8;';
+        linkKochbuch.textContent='Nur speichern';
+        linkKochbuch.classList.add('footer-link-secondary');
         linkKochbuch.onclick=function(){
           if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; }
           if(typeof haptic==='function') haptic(50);
@@ -15953,9 +15955,9 @@
         };
         var btnEinplanen=document.createElement('button');
         btnEinplanen.type='button';
-        btnEinplanen.className='inserat-footer-btn-main';
-        btnEinplanen.style.cssText='flex:1; min-height:56px; padding:14px 20px; border:none; border-radius:16px; background:#121212; color:#fff; font-size:16px; font-weight:800; cursor:pointer; box-shadow:0 4px 20px rgba(0,0,0,0.3);';
-        btnEinplanen.textContent='In den Wochenplan einplanen';
+        btnEinplanen.className='inserat-footer-btn-main footer-btn-primary';
+        btnEinplanen.style.cssText='flex:1; min-height:56px; min-width:160px; padding:14px 24px; border:none; border-radius:12px; background:#fff; color:#0f172a; font-size:16px; font-weight:700; cursor:pointer;';
+        btnEinplanen.textContent='Einplanen';
         btnEinplanen.onclick=function(){
           if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; }
           if(typeof haptic==='function') haptic(50);
@@ -15988,7 +15990,8 @@
       if(slider){
         box.appendChild(slider);
         var airbnbFooter=document.createElement('div');
-        airbnbFooter.className='inserat-airbnb-footer';
+        airbnbFooter.className='inserat-airbnb-footer airbnb-footer';
+        airbnbFooter.id='mastercardFooter';
         airbnbFooter.setAttribute('data-inserat-step','2');
         airbnbFooter.style.display=inseratStep===2?'flex':'none';
         var linkZurueck=document.createElement('button');
@@ -15996,10 +15999,13 @@
         linkZurueck.className='inserat-footer-link';
         linkZurueck.style.cssText='background:none; border:none; padding:12px 0; font-size:15px; font-weight:700; color:rgba(255,255,255,0.9); cursor:pointer; text-decoration:underline; text-underline-offset:4px; flex-shrink:0;';
         linkZurueck.textContent='← Zurück';
+        linkZurueck.className='inserat-footer-link footer-link-secondary';
+        linkZurueck.id='footerBtnSecondary';
         linkZurueck.onclick=function(){ hapticLight(); w.inseratStep=1; saveDraft(); if(slider) slider.setAttribute('data-inserat-step','1'); airbnbFooter.style.display='none'; var wizardEl=document.getElementById('wizard'); if(wizardEl) wizardEl.classList.remove('inserat-step2-active'); };
         var footerBtn=document.createElement('button');
         footerBtn.type='button';
-        footerBtn.className='inserat-footer-btn-main' + (w.data.pricingChoice==='499' ? ' inserat-footer-btn--499' : '');
+        footerBtn.className='inserat-footer-btn-main footer-btn-primary' + (w.data.pricingChoice==='499' ? ' inserat-footer-btn--499' : ' free-mode');
+        footerBtn.id='footerBtnPrimary';
         footerBtn.textContent=(w.data.pricingChoice==='499' ? 'Jetzt für 4,99 € inserieren' : 'Jetzt kostenlos inserieren');
         footerBtn.onclick=function(){
           if(!(!!(w.data.dish&&String(w.data.dish).trim())&&Number(w.data.price)>0)){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; }
@@ -16018,7 +16024,7 @@
               var published=typeof publishOffer==='function'?publishOffer(o):null;
               if(published){ closeWizard(true); if(typeof showInseratSuccessSheet==='function') showInseratSuccessSheet(published); else if(typeof showProviderHome==='function') showProviderHome(); return; }
             }
-            var tileHeroEl=box.querySelector('.inserat-tile-hero');
+            var tileHeroEl=box.querySelector('.inserat-tile-smart');
             if(tileHeroEl){ tileHeroEl.classList.add('is-loading'); tileHeroEl.innerHTML='<span class="inserat-btn-spinner" style="width:24px;height:24px;border:3px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:inserat-spin 0.8s linear infinite;"></span>'; }
             setTimeout(function(){ closeWizard(true); showPublishFeeModal(o); }, 800);
           }
@@ -16380,6 +16386,31 @@
     return 'Heute bei uns: ' + dish + ' für nur ' + price + ' €! Jetzt schnell die Abholnummer sichern und Schlange überspringen: ' + link + ' – Mittagio: Zeit gespart mit der Abholnummer.';
   }
 
+  /** Share-Master: Inserat teilen via Web Share API (S25), Fallback WhatsApp [cite: 2026-02-21] */
+  async function shareListing(){
+    const o = inseratSuccessCurrentOffer;
+    const d = o ? normalizeOffer(o) : {};
+    const title = d.dish || d.title || 'Gericht';
+    const price = typeof d.price === 'number' ? d.price.toFixed(2).replace('.', ',') + ' €' : (d.price || '0,00 €');
+    const url = o && typeof buildOfferShareUrl === 'function' ? buildOfferShareUrl(o) : (location.origin + (location.pathname || '/') + '#offer/' + (o && o.id ? o.id : ''));
+    const text = 'Schau dir mein neues Angebot an: ' + title + ' für nur ' + price + '! ' + url;
+    try {
+      if(navigator.share){
+        await navigator.share({ title: title, text: text, url: url });
+        if(navigator.vibrate) navigator.vibrate(10);
+        if(typeof showToast === 'function') showToast('Geteilt!');
+      } else {
+        const whatsappUrl = 'https://wa.me/?text=' + encodeURIComponent(text);
+        window.open(whatsappUrl, '_blank', 'noopener');
+      }
+    } catch(err) {
+      if(err.name !== 'AbortError'){
+        const whatsappUrl = 'https://wa.me/?text=' + encodeURIComponent(text);
+        window.open(whatsappUrl, '_blank', 'noopener');
+      }
+    }
+  }
+
   function openQRPrintWindow(offer){
     const url = buildOfferShareUrl(offer);
     const d = normalizeOffer(offer);
@@ -16563,18 +16594,24 @@
       const offer = offers.find(off => off.id === o.dishId || (off.providerId === o.providerId && off.day === todayKey));
       return offer && offer.providerId === providerId() && o.status === 'PAID';
     });
-    
-    if(nextCodeEl) nextCodeEl.textContent = (todayOrders.length + 1);
+    const runningNumber = todayOrders.length + 1;
+    const todayOffers = (typeof offers !== 'undefined' ? offers : []).filter(off => off.providerId === providerId() && off.day === todayKey).sort((a,b) => (a.createdAt || 0) - (b.createdAt || 0));
+    const dishIdx = todayOffers.findIndex(off => off.id === publishedOffer.id);
+    const dishLetter = dishIdx >= 0 ? String.fromCharCode(65 + Math.min(dishIdx, 4)) : 'A';
+    const codeDisplay = dishLetter + '-' + String(runningNumber).padStart(2, '0');
+    if(nextCodeEl) nextCodeEl.textContent = codeDisplay;
     if(abholSection) abholSection.style.display = (d.hasPickupCode ? 'block' : 'none');
     
     var offerLink = buildOfferShareUrl(publishedOffer);
     var whatsAppText = buildWhatsAppShareText(publishedOffer);
     var whatsAppBtn = document.getElementById('inseratSuccessBtnWhatsApp');
+    var whatsAppUrl = 'https://wa.me/?text=' + encodeURIComponent(whatsAppText);
     if(whatsAppBtn){
-      var whatsAppUrl = 'https://api.whatsapp.com/send?text=' + encodeURIComponent(whatsAppText);
       whatsAppBtn.href = whatsAppUrl;
-      whatsAppBtn.onclick = function(e){ e.preventDefault(); window.open(whatsAppUrl, '_blank', 'noopener'); return false; };
+      whatsAppBtn.onclick = function(e){ e.preventDefault(); hapticLight(); window.open(whatsAppUrl, '_blank', 'noopener'); return false; };
     }
+    var whatsAppStatusBtn = document.getElementById('inseratSuccessBtnWhatsAppStatus');
+    if(whatsAppStatusBtn) whatsAppStatusBtn.onclick = function(){ hapticLight(); window.open(whatsAppUrl, '_blank', 'noopener'); };
     
     var btnPrintQR = document.getElementById('inseratSuccessBtnPrintQR');
     if(btnPrintQR){ btnPrintQR.onclick = function(){ openQRPrintWindow(publishedOffer); }; }
@@ -16644,6 +16681,8 @@
     }
     const inseratSuccessBtnBack = document.getElementById('inseratSuccessBtnBack');
     if(inseratSuccessBtnBack) inseratSuccessBtnBack.onclick = function(){ closeInseratSuccessSheet(); };
+    const inseratSuccessBtnShare = document.getElementById('inseratSuccessBtnShare');
+    if(inseratSuccessBtnShare) inseratSuccessBtnShare.onclick = function(){ hapticLight(); if(typeof shareListing === 'function') shareListing(); };
     const inseratSuccessBd = document.getElementById('inseratSuccessBd');
     if(inseratSuccessBd) inseratSuccessBd.onclick = closeInseratSuccessSheet;
     if(typeof window !== 'undefined'){
