@@ -1489,20 +1489,27 @@
     /* Wizard/InseratCard: Backdrop unter Sheet, damit Klicks die Karte treffen (nicht Backdrop) */
     #wbd.active { z-index: 999 !important; background: radial-gradient(ellipse at center, rgba(254,243,199,0.35) 0%, rgba(251,191,36,0.08) 35%, rgba(0,0,0,0.65) 100%); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
     #wizard.sheet--kitchen.active { z-index: 1001 !important; }
-    /* Inseratsauswahl-Sheet (createFlowBd/createFlowSheet) – unter Wizard */
+    /* Inseratsauswahl-Sheet (createFlowBd/createFlowSheet) – Slot-Machine Entry, Full-Screen 100vh [cite: 2026-02-21] */
     #createFlowBd { z-index: 997; opacity: 0; pointer-events: none; transition: opacity 0.25s ease; background: rgba(0,0,0,0.5); }
     #createFlowBd.active { opacity: 1; pointer-events: auto; }
-    #createFlowSheet { z-index: 998; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.34, 1.2, 0.64, 1); position: fixed; bottom: 0; left: 0; right: 0; max-height: 85vh; border-radius: 24px 24px 0 0; background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.6); box-shadow: 0 -10px 40px rgba(0,0,0,0.12); display: flex; flex-direction: column; overflow: hidden; }
+    #createFlowBd .create-flow-slot-machine-sweep { position: fixed; inset: -50%; z-index: 999; pointer-events: none; width: 200%; height: 200%; }
+    #createFlowBd .create-flow-slot-machine-sweep::after { content: ''; display: block; position: absolute; top: 50%; left: -50%; width: 80%; height: 300%; background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.75) 35%, rgba(255,255,255,0.95) 50%, rgba(255,255,255,0.75) 65%, transparent 100%); transform: translateY(-50%) rotate(-35deg); }
+    #createFlowBd .create-flow-slot-machine-sweep.animate::after { animation: create-flow-slot-sweep 0.55s ease-out forwards; }
+    @keyframes create-flow-slot-sweep { 0% { transform: translateY(-50%) translateX(-80%) rotate(-35deg); opacity: 1; } 100% { transform: translateY(-50%) translateX(120%) rotate(-35deg); opacity: 0.3; } }
+    #createFlowSheet { z-index: 998; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.34, 1.2, 0.64, 1); position: fixed; top: 0; left: 0; right: 0; bottom: 0; height: 100vh; max-height: 100vh; border-radius: 0; background: rgba(255,255,255,0.98); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: none; box-shadow: 0 -10px 40px rgba(0,0,0,0.12); display: flex; flex-direction: column; overflow: hidden; }
     #createFlowSheet.active { transform: translateY(0); }
-    #createFlowSheet.sheet--kitchen .handle { background: rgba(0,0,0,0.15); width: 40px; height: 4px; border-radius: 2px; margin: 8px auto 4px; }
-    #createFlowSheet .sheet-body { padding: 12px 20px max(20px, env(safe-area-inset-bottom)); overflow-y: auto; -webkit-overflow-scrolling: touch; }
+    body.create-flow-open #fabProviderAddOffer { opacity: 0; pointer-events: none; transition: opacity 0.2s ease; }
+    #createFlowSheet.sheet--kitchen .handle { display: none; }
+    #createFlowSheet .sheet-body { padding: 12px 20px max(20px, env(safe-area-inset-bottom)); overflow-y: auto; -webkit-overflow-scrolling: touch; flex: 1; min-height: 0; overscroll-behavior: contain; }
     .create-flow-title { font-size: var(--size-h2); font-weight: var(--weight-heavy); color: var(--color-title); margin-bottom: 16px; }
     .create-flow-hint { font-size: 13px; color: #64748b; margin-top: 8px; }
-    .create-flow-btns { display: flex; flex-direction: column; gap: 12px; }
-    .btn-create-primary { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; min-height: 56px; padding: 14px 20px; border: none; border-radius: 16px; background: #FFD700; color: #1a1a1a; font-size: 16px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 20px rgba(255,215,0,0.35); transition: transform 0.1s ease, box-shadow 0.2s ease; }
-    .btn-create-primary:active { transform: scale(0.98); }
-    .btn-create-secondary { width: 100%; min-height: 52px; padding: 14px 20px; border: 2px solid #e5e7eb; border-radius: 14px; background: #fff; font-size: 16px; font-weight: 700; color: #1a1a1a; cursor: pointer; transition: transform 0.1s ease; }
-    .btn-create-secondary:active { transform: scale(0.98); }
+    .create-flow-tiles { display: flex; flex-direction: column; gap: 16px; }
+    .create-flow-tile { display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; min-height: 80px; padding: 20px 24px; border: none; border-radius: 20px; background: #fff; font-size: 18px; font-weight: 800; color: #1a1a1a; cursor: pointer; transition: transform 0.15s ease, box-shadow 0.2s ease; text-align: left; box-sizing: border-box; }
+    .create-flow-tile:active { transform: scale(0.98); }
+    .create-flow-tile--hero { border: 4px solid #0f172a; box-shadow: 0 4px 20px rgba(15,23,42,0.12); }
+    .create-flow-tile--base { border: 1px solid rgba(15,23,42,0.12); }
+    .create-flow-tile-plus { font-size: 28px; font-weight: 900; line-height: 1; color: #0f172a; }
+    .create-flow-tile-label { flex: 1; }
     /* Renner-Speed-Dial: 2x2 Grid, TOP-Badge, 70% Bild, Midnight Blue Name, grüner Preis [cite: 2026-02-16] */
     .create-flow-renner-section { margin-bottom: 0; }
     .create-flow-renner-heading { font-weight: 800; font-size: 15px; color: #1a1a1a; margin-bottom: 12px; }
@@ -1535,15 +1542,34 @@
       max-width:calc(100% - 24px);
     }
     /* Tabula Rasa: InseratCard volle Breite, weiße Leinwand – kein Beige-Durchscheinen [cite: Plan InseratCard] */
+    /* Inseratsbüro: Mastercard Full-Screen, 0 Margin/Rundungen [cite: 2026-02-21] */
     #wizard[data-flow="listing"].sheet--kitchen{
-      margin-left:0 !important; margin-right:0 !important;
-      max-width:100% !important;
+      margin: 0 !important; margin-left:0 !important; margin-right:0 !important;
+      max-width:100% !important; width: 100vw !important;
+      height: 100vh !important; max-height: 100vh !important;
+      border-radius: 0 !important;
       background:#fff !important;
+      border: none !important;
+      box-shadow: none !important;
     }
     #wizard[data-flow="listing"].sheet--kitchen .wizard{
       background:#fff !important;
+      border-radius: 0 !important;
+      border: none !important;
+      box-shadow: none !important;
+      backdrop-filter: none; -webkit-backdrop-filter: none;
+    }
+    #wizard[data-flow="listing"].sheet--kitchen .sheet-body.wizard-sheet-body{
+      padding: 0 !important;
+      border-radius: 0 !important;
     }
     #wizard.sheet--kitchen .handle{ background:rgba(0,0,0,0.15); width:40px; margin:8px auto 4px; }
+    /* Inseratsbüro: Kein Handle im Listing-Flow, volle Höhe [cite: 2026-02-21] */
+    #wizard[data-flow="listing"].sheet--kitchen .handle { display: none !important; }
+    /* Inseratsbüro: Keine Rundungen in Mastercard – Edge-to-Edge [cite: 2026-02-21] */
+    #wizard[data-flow="listing"] .inserat-photo-in-scroll,
+    #wizard[data-flow="listing"] .inserat-photo-tile,
+    #wizard[data-flow="listing"] .inserat-collapsing-header { border-radius: 0 !important; }
     /* Wizard: app-like – Inserat-Flow weiter oben, weniger Abstand oben */
     /* Inseratsflow: Kein Header, Bild volle Breite oben [cite: 2026-02-18] */
     #wizard.sheet--kitchen .sheet-body.wizard-sheet-body{
@@ -2567,7 +2593,16 @@
       border-bottom: 2px solid #10b981;
       transition: border-color 0.3s ease;
     }
-    /* Collapsing Header „Dein Inserat“ [cite: 2026-02-21] */
+    /* Collapsing Header „Dein Inserat“ [cite: 2026-02-21 Inseratsbüro] */
+    /* Fixer Header: „Dein Inserat“ bleibt stehen, Inhalt scrollt darunter weg */
+    #wizard[data-flow="listing"] .inserat-collapsing-header {
+      position: sticky !important;
+      top: 0 !important;
+      z-index: 20;
+      flex-shrink: 0;
+      background: #fff !important;
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+    }
     #wizard[data-flow="listing"] .inserat-collapsing-header .inserat-collapsing-title {
       font-size: 18px;
       font-weight: 800;
@@ -2586,8 +2621,10 @@
       display: none !important;
     }
     /* Sticky Bottom: Hardware-Fusion, festgedockt, Clean [cite: 2026-02-21 S25] */
+    /* ImmoScout-Footer: bündig 0px unten, backdrop blur, rgba(15,23,42,0.92) [cite: 2026-01-29, 2026-02-21] */
     body.wizard-inserat-open #wizard[data-flow="listing"] .inserat-action-section.inserat-action-layer,
-    body.wizard-inserat-open #wizard[data-flow="listing"] .inserat-action-section.inserat-action-pricing {
+    body.wizard-inserat-open #wizard[data-flow="listing"] .inserat-action-section.inserat-action-pricing,
+    body.wizard-inserat-open #wizard[data-flow="listing"] .inserat-action-section.inserat-action-plan {
       position: fixed !important;
       bottom: 0 !important;
       left: 0 !important;
@@ -2595,10 +2632,16 @@
       width: 100% !important;
       margin: 0 !important;
       border-radius: 0 !important;
-      padding: 12px 0 max(16px, env(safe-area-inset-bottom)) !important;
-      padding-left: 0 !important;
-      padding-right: 0 !important;
-      background: #fff;
+      padding: 12px max(16px, env(safe-area-inset-left)) max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-right)) !important;
+      padding-left: max(16px, env(safe-area-inset-left)) !important;
+      background: rgba(15,23,42,0.92) !important;
+      backdrop-filter: blur(30px);
+      -webkit-backdrop-filter: blur(30px);
+      display: flex !important;
+      flex-direction: row !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      gap: 16px !important;
     }
     /* Footer-Padding reduziert wenn Nav ausgeblendet */
     body.wizard-inserat-open #wizard[data-flow="listing"] .liquid-master-panel .inserat-action-section {
@@ -2613,16 +2656,16 @@
       padding-left: max(0, env(safe-area-inset-left));
       padding-right: max(0, env(safe-area-inset-right));
     }
-    /* Bild im Scroll-Fluss: oben abgerundet, volle Breite [cite: 2026-02-21] */
+    /* Bild im Scroll-Fluss: Edge-to-Edge, keine Rundungen [cite: 2026-02-21 Inseratsbüro] */
     #wizard[data-flow="listing"] .inserat-scroll-area.inserat-scroll-with-photo {
       padding-top: 0 !important;
     }
     #wizard[data-flow="listing"] .inserat-photo-in-scroll {
       width: 100vw !important;
-      max-width: calc(100% + 40px) !important;
-      margin-left: -20px !important;
-      margin-right: -20px !important;
-      border-radius: 20px 20px 0 0 !important;
+      max-width: 100% !important;
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+      border-radius: 0 !important;
     }
     /* ghost-input: Placeholder pulsierend (z.B. Jägerschnitzel) [cite: 2026-02-21] */
     #wizard[data-flow="listing"] .ghost-input::placeholder {
@@ -2959,12 +3002,9 @@
       padding-bottom: calc(180px + env(safe-area-inset-bottom, 0));
     }
     /* Noble Floating Bottom: Aktions-Kacheln 16px über Nav-Pille, Nav-Pille 12px Abstand [cite: 2026-02-20] */
-    .inserat-step2-floating-bottom .inserat-step2-tiles-floating {
-      position: fixed;
-      bottom: calc(96px + env(safe-area-inset-bottom, 0));
-      left: 16px;
-      right: 16px;
-      z-index: 10;
+    /* Step 2 Bold Selection: Vertikal gestapelt, Kontext-Zone oben [cite: 2026-02-21] */
+    .inserat-step2-immo .inserat-step2-tiles-vertical {
+      width: 100%;
     }
     #wizard[data-flow="listing"] .inserat-action-section.inserat-action-layer {
       position: fixed;
@@ -2973,45 +3013,34 @@
       right: 16px;
       z-index: 10;
     }
-    .inserat-step2-floating-bottom .inserat-step2-nav-pille {
-      position: fixed;
-      bottom: calc(12px + env(safe-area-inset-bottom, 0));
-      left: 16px;
-      right: 16px;
-      z-index: 11;
-      margin-bottom: 0;
-      padding: 12px 20px;
-      border-radius: 34px;
-      background: rgba(15, 23, 42, 0.85);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .inserat-step2-nav-pille .inserat-step2-back,
-    .inserat-step2-nav-pille .close-wizard-x {
-      background: transparent !important;
-      color: rgba(255, 255, 255, 0.9) !important;
-    }
     /* 2-Schritt Airbnb-Flow: Step 2 – Kacheln als Radio-Selection, Emerald-Glow bei Auswahl [cite: 2026-02-21 Step 2] */
+    /* Bold Selection: 1px Rahmen Standard, 4px schwarz bei Auswahl – kein Glow [cite: 2026-02-18, 2026-02-21] */
     .inserat-step2-wrap .inserat-decision-tile.pricing-card {
-      border-radius: 24px !important;
-      position: relative; border: 3px solid transparent;
-      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); text-align: center;
+      border-radius: 12px;
+      position: relative;
+      border: 1px solid rgba(15, 23, 42, 0.12);
+      background: #fff;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      cursor: pointer;
     }
-    .inserat-step2-wrap .inserat-decision-tile.pricing-card.selected {
-      border-color: #10b981;
-      box-shadow: 0 0 0 1px #10b981, 0 0 28px rgba(16,185,129,0.45), 0 0 40px rgba(16,185,129,0.25) !important;
+    .inserat-step2-wrap .inserat-decision-tile.pricing-card.is-selected {
+      box-shadow: inset 0 0 0 4px #0f172a;
+      border-color: transparent;
+      transform: scale(1.01);
+      z-index: 10;
     }
+    .inserat-step2-wrap .inserat-decision-tile.pricing-card.selected { box-shadow: inset 0 0 0 4px #0f172a; border-color: transparent; transform: scale(1.01); z-index: 10; }
     .inserat-step2-wrap .inserat-decision-tile:active { transform: scale(0.98); }
+    .inserat-step2-wrap .inserat-decision-tile.pricing-card.is-selected:active { transform: scale(0.99); }
     .inserat-step2-wrap .inserat-decision-tile .pricing-card-price { font-size: 22px; font-weight: 900; }
-    .inserat-step2-wrap .inserat-decision-tile .pricing-card-label { font-size: 15px; font-weight: 700; }
-    .inserat-step2-wrap .inserat-decision-tile .pricing-card-sub { font-size: 12px; opacity: 0.9; }
-    .inserat-step2-wrap .inserat-tile-hero.inserat-tile-pulse { animation: inserat-hero-pulse 2s ease-in-out infinite; }
-    .inserat-step2-wrap .inserat-tile-champagne { background: linear-gradient(135deg, #F5E6D3 0%, #E8DCC4 50%, #D4C4A8 100%) !important; box-shadow: 0 10px 30px rgba(0,0,0,0.12) !important; }
-    .inserat-step2-wrap .inserat-tile-hero { box-shadow: 0 0 24px rgba(16,185,129,0.5), 0 10px 30px rgba(0,0,0,0.12) !important; }
+    .inserat-step2-wrap .inserat-decision-tile .pricing-card-label { font-size: 17px; font-weight: 800; }
+    .inserat-step2-wrap .inserat-decision-tile .pricing-card-sub { font-size: 13px; color: #64748b; }
+    .inserat-step2-wrap .inserat-decision-tile .price-massive { font-size: 3.8rem; font-weight: 900; line-height: 1; color: #0f172a; }
+    /* Bold-Selection: Basis immer 1px, Smart (Default) immer 4px [cite: 2026-02-21] */
+    .inserat-step2-wrap .inserat-tile-basis.pricing-card { border: 1px solid rgba(15, 23, 42, 0.12); }
+    .inserat-step2-wrap .inserat-tile-basis.pricing-card.is-selected { box-shadow: inset 0 0 0 4px #0f172a; border-color: transparent; }
+    .inserat-step2-wrap .inserat-tile-smart.pricing-card { border: 4px solid #0f172a; }
+    .inserat-step2-wrap .inserat-tile-smart.pricing-card.is-selected { box-shadow: inset 0 0 0 4px #0f172a; border-color: transparent; }
     /* Checkout-Flow: Step 1 → Step 2 Slide-Animation [cubic-bezier 0.4,0,0.2,1] */
     .inserat-steps-slider {
       flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column;
@@ -3057,22 +3086,37 @@
     }
     .inserat-tiles-scale-down { animation: inserat-tiles-scale-down 0.35s cubic-bezier(0.4,0,0.2,1) forwards; }
     @keyframes inserat-tiles-scale-down { to { transform: scale(0.92); opacity: 0; } }
+    /* Step 2: Slot-Machine Sweep – diagonaler Lichtblitz über gesamten Bildschirm [cite: 2026-02-21] */
+    .step2-slot-machine-sweep { position: fixed; inset: -50%; z-index: 999; pointer-events: none; width: 200%; height: 200%; }
+    .step2-slot-machine-sweep::after { content: ''; display: block; position: absolute; top: 50%; left: -50%; width: 80%; height: 300%; background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.75) 35%, rgba(255,255,255,0.95) 50%, rgba(255,255,255,0.75) 65%, transparent 100%); transform: translateY(-50%) rotate(-35deg); }
+    .step2-slot-machine-sweep.animate::after { animation: step2-slot-sweep 0.55s ease-out forwards; }
+    @keyframes step2-slot-sweep { 0% { transform: translateY(-50%) translateX(-80%) rotate(-35deg); opacity: 1; } 100% { transform: translateY(-50%) translateX(120%) rotate(-35deg); opacity: 0.3; } }
+    /* Step 2: Full-Screen 100vh wenn aktiv [cite: 2026-02-21] */
+    #wizard.inserat-step2-active.sheet--kitchen, #wizard.inserat-step2-active[data-flow="listing"] { height: 100vh !important; max-height: 100vh !important; }
     /* Airbnb-Footer: Bündig 0px unten, schwarz, Glas-Optik [cite: 2026-02-21 Step 2] */
     .inserat-airbnb-footer {
       position: fixed; left: 0; right: 0; bottom: 0; z-index: 15;
-      width: 100vw; margin: 0; padding: 0; border: none; border-radius: 0;
+      width: 100vw; margin: 0 !important; padding: 0; border: none; border-radius: 0;
       padding: 12px max(16px, env(safe-area-inset-left)) max(12px, env(safe-area-inset-bottom, 0)) max(16px, env(safe-area-inset-right));
       background: rgba(15,23,42,0.92); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
       box-shadow: none;
+      display: flex; flex-direction: row; align-items: center; justify-content: space-between; gap: 16px;
     }
+    /* ImmoScout: Schwarzer Primär-Button rechts [cite: 2026-02-21] */
     .inserat-airbnb-footer .inserat-footer-btn-main {
-      width: 100%; min-height: 60px; border-radius: 16px;
+      flex: 1; min-width: 0; min-height: 60px; border-radius: 16px;
       font-size: 18px; font-weight: 800; border: none; cursor: pointer; display: flex; align-items: center;
       justify-content: center; transition: transform 0.15s ease, box-shadow 0.2s ease;
-      background: #10b981; color: #fff; box-shadow: 0 4px 20px rgba(16,185,129,0.4);
+      background: #121212; color: #fff; box-shadow: 0 4px 20px rgba(0,0,0,0.3);
     }
     .inserat-airbnb-footer .inserat-footer-btn-main.inserat-footer-btn--499 { background: #FACC15; color: #1a1a1a; box-shadow: 0 4px 20px rgba(250,204,21,0.4); }
     .inserat-airbnb-footer .inserat-footer-btn-main:active { transform: scale(0.98); }
+    /* ImmoScout: Zurück-Text weiß [cite: 2026-02-21] */
+    .inserat-airbnb-footer .inserat-footer-link { color: #fff !important; }
+    /* Inseratsbüro: Footer in allen Phasen (1,2,3) Edge-to-Edge, 0px Radius unten [cite: 2026-02-21] */
+    .inserat-airbnb-footer, .inserat-success-footer,
+    body.wizard-inserat-open #wizard[data-flow="listing"] .inserat-action-section,
+    body.wizard-inserat-open #wizard[data-flow="listing"] .inserat-step1-nav.inserat-immo-footer { border-radius: 0 !important; border-bottom-left-radius: 0 !important; border-bottom-right-radius: 0 !important; }
     /* Publish-Fee Modal: Success-Glow vor Schließen */
     .publish-fee-success-glow { opacity: 0; }
     .publish-fee-success-glow.animate { opacity: 1; animation: publish-fee-success-sweep 0.6s ease-out forwards; }

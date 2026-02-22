@@ -6060,6 +6060,9 @@
 
       document.getElementById('createFlowBd').classList.add('active');
       sheet.classList.add('active');
+      if(document.body) document.body.classList.add('create-flow-open');
+      var sweep = document.getElementById('createFlowSlotSweep');
+      if(sweep) { sweep.classList.remove('animate'); sweep.offsetHeight; sweep.classList.add('animate'); sweep.addEventListener('animationend', function onEnd(){ sweep.removeEventListener('animationend', onEnd); sweep.classList.remove('animate'); }, { once: true }); }
       if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
     }
   }
@@ -6067,6 +6070,7 @@
   function closeCreateFlowSheet(){
     document.getElementById('createFlowBd').classList.remove('active');
     document.getElementById('createFlowSheet').classList.remove('active');
+    if(document.body) document.body.classList.remove('create-flow-open');
     createFlowPreselectedDate = null;
     createFlowOriginView = 'dashboard';
   }
@@ -9631,7 +9635,8 @@
             price: euro(d.price),
             time: (d.pickupWindow || '').trim() || abholnummerLabel,
             pillars: pillarsStr,
-            dataOfferId: String(o.id)
+            dataOfferId: String(o.id),
+            hasPickupCode: hasPickupNumber
           }) : '<div class="prov-card" data-offer-id="' + esc(String(o.id)) + '">' + esc(dishName) + ' ' + euro(d.price) + '</div>';
           var cardWrap = document.createElement('div');
           cardWrap.innerHTML = cardHtml;
@@ -14613,7 +14618,7 @@
   function closeWizard(clearDraft){
     const wizard = document.getElementById('wizard');
     document.getElementById('wbd').classList.remove('active');
-    if(wizard){ wizard.classList.remove('active'); wizard.removeAttribute('data-flow'); }
+    if(wizard){ wizard.classList.remove('active','inserat-step2-active'); wizard.removeAttribute('data-flow'); }
     document.body.classList.remove('wizard-inserat-open');
     var pn = document.getElementById('providerNavWrap');
     if(pn && document.body.classList.contains('provider-mode')) pn.style.removeProperty('display');
@@ -15345,7 +15350,7 @@
       var collapsingHeader=document.createElement('div');
       collapsingHeader.className='inserat-collapsing-header';
       collapsingHeader.innerHTML='<span class="inserat-collapsing-title">Dein Inserat</span>';
-      collapsingHeader.style.cssText='position:sticky; top:0; z-index:12; flex-shrink:0; padding:12px 16px; background:rgba(245,245,240,0.95); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); text-align:center; font-family:\'Montserrat\',sans-serif; font-weight:900; font-size:20px; color:#1a1a1a;';
+      collapsingHeader.style.cssText='position:sticky; top:0; z-index:12; flex-shrink:0; padding:12px 16px; background:#fff; backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); text-align:center; font-family:\'Montserrat\',sans-serif; font-weight:900; font-size:18px; color:#0f172a; border-bottom:1px solid rgba(0,0,0,0.06);';
       box.appendChild(collapsingHeader);
       sheet.appendChild(box);
       const saveDraft = () => { localStorage.setItem('wizard_draft', JSON.stringify(w)); };
@@ -15402,46 +15407,23 @@
         var step2Pane=document.createElement('div');
         step2Pane.className='inserat-step2-pane';
         step1Container=step1Pane;
-        /* Step 2: Live-Flow-Card + Monetarisierungs-Wahl */
+        /* Step 2: Bold Selection – Kontext-Zone + vertikal gestapelte Kacheln [cite: 2026-02-21] */
         var step2Wrap=document.createElement('div');
-        step2Wrap.className='inserat-step2-wrap inserat-step2-floating-bottom';
-        step2Wrap.style.cssText='display:flex; flex-direction:column; flex:1; min-height:0; overflow-y:auto; padding:16px; padding-bottom:calc(200px + env(safe-area-inset-bottom, 0));';
-        var liveFlowCard=document.createElement('div');
-        liveFlowCard.className='inserat-live-flow-card';
-        liveFlowCard.innerHTML='<div class="inserat-live-flow-card-inner"></div><span class="abholnummer-pop">🧾 Abholnummer</span>';
-        step2Wrap.appendChild(liveFlowCard);
-        var step2Preview=document.createElement('div');
-        step2Preview.className='inserat-step2-preview';
-        step2Preview.style.cssText='position:relative; width:100%; height:140px; border-radius:16px; overflow:hidden; background:#e8ecf0; margin-bottom:20px; flex-shrink:0;';
+        step2Wrap.className='inserat-step2-wrap inserat-step2-immo';
+        step2Wrap.style.cssText='display:flex; flex-direction:column; flex:1; min-height:0; overflow-y:auto; padding:16px; padding-bottom:calc(120px + env(safe-area-inset-bottom, 0));';
         var cropY2=(typeof w.data.photoCropY==='number')?w.data.photoCropY:0;
-        if(w.data.photoData){
-          step2Preview.innerHTML='<div style="position:absolute;inset:0;overflow:hidden;"><img src="'+w.data.photoData+'" alt="" style="width:100%;height:100%;object-fit:cover;transform:translateY('+cropY2+'px);"></div><span class="inserat-step2-abholnummer-badge" style="position:absolute;bottom:10px;right:10px;padding:6px 12px;border-radius:999px;background:rgba(16,185,129,0.9);color:#fff;font-size:12px;font-weight:800;opacity:0;transition:opacity 0.25s;">🧾 Abholnummer</span>';
-        } else {
-          step2Preview.innerHTML='<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:48px;opacity:0.4;">📸</div>';
-        }
-        step2Wrap.appendChild(step2Preview);
-        var step2Nav=document.createElement('div');
-        step2Nav.className='inserat-step2-nav-pille';
-        step2Nav.style.cssText='display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;';
-        var backBtn=document.createElement('button');
-        backBtn.type='button';
-        backBtn.className='inserat-step2-back';
-        backBtn.style.cssText='padding:8px 16px; border:none; background:rgba(0,0,0,0.06); border-radius:12px; font-size:14px; font-weight:700; color:#64748b; cursor:pointer;';
-        backBtn.textContent='← Zurück';
-        backBtn.onclick=function(){ hapticLight(); w.inseratStep=1; saveDraft(); if(slider) slider.setAttribute('data-inserat-step','1'); };
-        var step2Close=document.createElement('button');
-        step2Close.type='button';
-        step2Close.className='close-wizard-x';
-        step2Close.setAttribute('aria-label','Schließen');
-        step2Close.style.cssText='width:44px; height:44px; border:none; background:rgba(0,0,0,0.06); border-radius:50%; font-size:20px; cursor:pointer; display:flex; align-items:center; justify-content:center; color:#64748b;';
-        step2Close.textContent='×';
-        step2Close.onclick=function(){ hapticLight(); if(typeof handleWizardExit==='function') handleWizardExit(box); else closeWizard(); };
-        step2Nav.appendChild(backBtn);
-        step2Nav.appendChild(step2Close);
-        step2Wrap.appendChild(step2Nav);
+        var ctxZone=document.createElement('div');
+        ctxZone.className='inserat-step2-context-zone';
+        ctxZone.style.cssText='display:flex; align-items:center; gap:12px; padding:12px 0; margin-bottom:20px; flex-shrink:0; border-bottom:1px solid rgba(15,23,42,0.08);';
+        var thumbUrl=w.data.photoData||'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=200&q=60';
+        var dishNameS2=(w.data.dish||'').trim()||'Gericht';
+        var priceS2=Number(w.data.price)||0;
+        var euroS2=typeof euro==='function'?euro(priceS2):(priceS2.toFixed(2).replace('.',',')+' €');
+        ctxZone.innerHTML='<div class="step2-context-thumb" style="width:56px;height:56px;border-radius:12px;overflow:hidden;background:#e8ecf0;flex-shrink:0;position:relative;"><img src="'+thumbUrl+'" alt="" style="width:100%;height:100%;object-fit:cover;transform:translateY('+cropY2+'px);"><span class="step2-context-abhol-badge" style="position:absolute;bottom:4px;right:4px;padding:2px 6px;border-radius:6px;background:rgba(15,23,42,0.9);color:#fff;font-size:10px;font-weight:800;opacity:0;transition:opacity 0.25s;">🧾</span></div><div style="flex:1;min-width:0;"><div style="font-size:17px;font-weight:900;color:#0f172a;">'+esc(dishNameS2)+'</div><div style="font-size:15px;font-weight:700;color:#64748b;">'+euroS2+'</div></div>';
+        step2Wrap.appendChild(ctxZone);
         var tilesRow=document.createElement('div');
-        tilesRow.className='inserat-decision-tiles inserat-step2-tiles-floating';
-        tilesRow.style.cssText='display:grid; grid-template-columns:1fr 1fr; gap:16px;';
+        tilesRow.className='inserat-decision-tiles inserat-step2-tiles-vertical';
+        tilesRow.style.cssText='display:flex; flex-direction:column; gap:16px;';
         var hasDishS2=!!(w.data.dish&&String(w.data.dish).trim());
         var hasPriceS2=Number(w.data.price)>0;
         var primaryValidS2=hasDishS2&&hasPriceS2;
@@ -15453,27 +15435,29 @@
         if(!w.data.pricingChoice) w.data.pricingChoice = 'pro';
         var tile499=document.createElement('button');
         tile499.type='button';
-        tile499.className='inserat-decision-tile inserat-tile-champagne inserat-tile-secondary pricing-card' + (w.data.pricingChoice==='499' ? ' selected' : '');
-        tile499.style.cssText='min-height:140px; padding:20px; border-radius:24px; border:3px solid transparent; background:linear-gradient(135deg,#F5E6D3 0%,#E8DCC4 50%,#D4C4A8 100%); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; cursor:pointer; box-shadow:0 10px 30px rgba(0,0,0,0.12); text-align:center;';
-        tile499.innerHTML='<div style="display:flex;align-items:center;justify-content:flex-end;width:100%;"><button type="button" class="inserat-tile-info-i" aria-label="Info" style="width:28px;height:28px;border:none;border-radius:50%;background:rgba(0,0,0,0.08);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;font-weight:800;color:#5c4a3d;">ⓘ</button></div><span class="pricing-card-label" style="font-size:15px;font-weight:700;color:#5c4a3d;">Einmalig Inserieren</span><span class="pricing-card-price" style="font-size:22px;font-weight:900;color:#5c4a3d;">4,99 €</span>';
-        tile499.onclick=function(){ hapticLight(); w.data.pricingChoice='499'; tile499.classList.add('selected'); tileHero.classList.remove('selected'); saveDraft(); var fb=box.querySelector('.inserat-airbnb-footer .inserat-footer-btn-main'); if(fb){ fb.textContent='Jetzt für 4,99 € inserieren'; fb.classList.add('inserat-footer-btn--499'); } };
+        tile499.className='inserat-decision-tile inserat-tile-basis pricing-card' + (w.data.pricingChoice==='499' ? ' is-selected' : '');
+        tile499.style.cssText='padding:24px; border-radius:12px; background:#fff; cursor:pointer; text-align:left; transition:all 0.4s cubic-bezier(0.175,0.885,0.32,1.275); overflow:hidden;';
+        tile499.innerHTML='<h3 class="pricing-card-label" style="font-size:17px;font-weight:800;margin:0 0 8px;color:#0f172a;">Einmalig Inserieren</h3><span class="pricing-card-price" style="font-size:22px;font-weight:900;color:#0f172a;">4,99 €</span><p class="pricing-card-sub" style="font-size:13px;color:#64748b;margin:10px 0 0;line-height:1.4;">Kein Abo, keine Laufzeit. Einmalig bis das Inserat gelöscht wird.</p>';
+        tile499.onclick=function(){ hapticLight(); w.data.pricingChoice='499'; tile499.classList.add('is-selected'); tileHero.classList.remove('is-selected'); saveDraft(); var fb=box.querySelector('.inserat-airbnb-footer .inserat-footer-btn-main'); if(fb){ fb.textContent='Jetzt für 4,99 € inserieren'; fb.classList.add('inserat-footer-btn--499'); } var ab=ctxZone.querySelector('.step2-context-abhol-badge'); if(ab) ab.style.opacity='0'; };
         var tileHero=document.createElement('button');
         tileHero.type='button';
-        tileHero.className='inserat-decision-tile inserat-tile-hero inserat-tile-pulse pricing-card' + (w.data.pricingChoice==='pro' ? ' selected' : '');
-        tileHero.style.cssText='min-height:140px; padding:20px; border-radius:24px; border:3px solid transparent; background:linear-gradient(135deg,#10b981,#059669); color:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; cursor:pointer; box-shadow:0 0 24px rgba(16,185,129,0.5), 0 10px 30px rgba(0,0,0,0.15); animation:inserat-hero-pulse 2s ease-in-out infinite; text-align:center;';
-        tileHero.innerHTML='<div style="display:flex;align-items:center;justify-content:flex-end;width:100%;"><button type="button" class="inserat-tile-info-i" aria-label="Info" style="width:28px;height:28px;border:none;border-radius:50%;background:rgba(255,255,255,0.25);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;font-weight:800;color:#fff;">ⓘ</button></div><span class="pricing-card-label" style="font-size:15px;font-weight:700;">Kostenlos Inserieren</span><span class="pricing-card-price" style="font-size:22px;font-weight:900;">0,89 € pro Abholnummer</span>';
-        tileHero.onclick=function(){ hapticLight(); w.data.pricingChoice='pro'; tileHero.classList.add('selected'); tile499.classList.remove('selected'); saveDraft(); var fb=box.querySelector('.inserat-airbnb-footer .inserat-footer-btn-main'); if(fb){ fb.textContent='Jetzt kostenlos inserieren'; fb.classList.remove('inserat-footer-btn--499'); } };
-        tile499.querySelectorAll('.inserat-tile-info-i').forEach(function(btn){ btn.onclick=function(e){ e.stopPropagation(); hapticLight(); if(typeof openPricingFairnessOverlay==='function') openPricingFairnessOverlay(); }; });
-        tileHero.querySelectorAll('.inserat-tile-info-i').forEach(function(btn){ btn.onclick=function(e){ e.stopPropagation(); hapticLight(); if(typeof openInfoLegendSheet==='function') openInfoLegendSheet('abholnummer'); else if(typeof openPricingFairnessOverlay==='function') openPricingFairnessOverlay(); }; });
+        tileHero.className='inserat-decision-tile inserat-tile-smart pricing-card' + (w.data.pricingChoice==='pro' ? ' is-selected' : '');
+        tileHero.style.cssText='padding:24px; border-radius:12px; background:#fff; cursor:pointer; text-align:left; transition:all 0.4s cubic-bezier(0.175,0.885,0.32,1.275); overflow:hidden;';
+        tileHero.innerHTML='<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;"><h3 class="pricing-card-label" style="font-size:17px;font-weight:800;margin:0;color:#0f172a;">Kostenlos Inserieren</h3><span class="price-massive" style="font-size:3.8rem;font-weight:900;line-height:1;color:#0f172a;">0,00 €</span></div><div class="fair-fee-badge" style="display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:10px;background:rgba(15,23,42,0.06);font-size:14px;font-weight:700;color:#0f172a;margin-bottom:8px;">Zahle nur bei Erfolg: 0,89 € pro 🧾 Abholnummer</div><p class="pricing-card-sub" style="font-size:13px;color:#64748b;margin:0;line-height:1.4;">Volle Kontrolle: Vermeide Chaos & Foodwaste.</p>';
+        tileHero.onclick=function(){ hapticLight(); w.data.pricingChoice='pro'; tileHero.classList.add('is-selected'); tile499.classList.remove('is-selected'); saveDraft(); var fb=box.querySelector('.inserat-airbnb-footer .inserat-footer-btn-main'); if(fb){ fb.textContent='Jetzt kostenlos inserieren'; fb.classList.remove('inserat-footer-btn--499'); } var ab=ctxZone.querySelector('.step2-context-abhol-badge'); if(ab) ab.style.opacity='1'; };
         tilesRow.appendChild(tile499);
         tilesRow.appendChild(tileHero);
         step2Wrap.appendChild(tilesRow);
-        var abholBadge=step2Preview.querySelector('.inserat-step2-abholnummer-badge');
-        if(abholBadge){ tileHero.onmouseenter=tileHero.ontouchstart=function(){ abholBadge.style.opacity='1'; step2Preview.classList.add('has-pro-overlay'); }; tileHero.onmouseleave=tileHero.ontouchend=function(){ abholBadge.style.opacity='0'; step2Preview.classList.remove('has-pro-overlay'); }; }
+        var ctxAbholBadge=ctxZone.querySelector('.step2-context-abhol-badge');
+        if(ctxAbholBadge){ ctxAbholBadge.style.opacity=(w.data.pricingChoice==='pro'?'1':'0'); }
         step2Pane.appendChild(step2Wrap);
         track.appendChild(step1Pane);
         track.appendChild(step2Pane);
         slider.appendChild(track);
+        var step2Sweep=document.createElement('div');
+        step2Sweep.className='step2-slot-machine-sweep';
+        step2Sweep.setAttribute('aria-hidden','true');
+        box.appendChild(step2Sweep);
       }
 
       {
@@ -15521,7 +15505,7 @@
         var addBtn=photoTile.querySelector('.inserat-photo-change');
         if(addBtn) addBtn.onclick=function(e){ e.stopPropagation(); handlePhotoPick(); };
         photoTile.querySelectorAll('.photo-suggestion').forEach(function(img,idx){ img.onclick=function(e){ e.stopPropagation(); if(typeof triggerHapticFeedback==='function') triggerHapticFeedback([5]); var u=getListingSuggestionUrls()[idx]; if(u) w.data.photoData=u; w.data.photoDataIsStandard=true; saveDraft(); rebuildWizard(); }; });
-        photoTile.onclick=async function(ev){ if(ev.target.closest('.inserat-photo-change')||ev.target.closest('.photo-suggestion')) return; handlePhotoPick(); };
+        photoTile.onclick=async function(ev){ if(ev.target.closest('.close-wizard-x')||ev.target.closest('.inserat-photo-change')||ev.target.closest('.photo-suggestion')) return; handlePhotoPick(); };
       }
       photoTile.appendChild(closeX);
       var selectionOverlay=document.createElement('div');
@@ -15591,7 +15575,7 @@
         }
       }
       function toggleHeaderSelection(type){ hapticLight(); renderSelectionContent(type); photoTile.classList.add('is-selecting'); }
-      closeX.onclick=function(){
+      closeX.onclick=function(e){ e.preventDefault(); e.stopPropagation();
         if(photoTile.classList.contains('is-selecting')){ hapticLight(); closeHeaderSelection(); return; }
         try{ if(typeof haptic==='function') haptic(15); else if(navigator.vibrate) navigator.vibrate(15); }catch(e){}
         if(typeof handleWizardExit==='function'){ handleWizardExit(box); return; }
@@ -15608,21 +15592,13 @@
       stepName.id='step-name';
       stepName.className='inserat-section inserat-unified-title-wrap';
       stepName.style.cssText='width:100%; margin-top:12px; margin-bottom:4px;';
-      const dishDatalist=document.createElement('datalist');
-      dishDatalist.id='inserat-dish-datalist';
-      var dishSuggestions = [];
-      if (typeof MENU_DB_EXTRA !== 'undefined') dishSuggestions = MENU_DB_EXTRA.map(function(d){ return d.name; });
-      if (typeof TOP_30_DISHES !== 'undefined') TOP_30_DISHES.forEach(function(d){ if (dishSuggestions.indexOf(d.name) < 0) dishSuggestions.push(d.name); });
-      if (!dishSuggestions.length) dishSuggestions = ['Kürbissuppe','Schnitzel','Gulasch','Käsespätzle','Currywurst','Lasagne'];
-      dishSuggestions.forEach(function(name){ var o=document.createElement('option'); o.value=name; dishDatalist.appendChild(o); });
-      stepName.appendChild(dishDatalist);
+      /* Autovervollständigung Gerichtsnamen entfernt [cite: 2026-02-21] */
       const inputDish=document.createElement('input');
       inputDish.id='gericht-name';
       inputDish.type='text';
       inputDish.className='ghost-input inserat-detail-style-title magnet-input inserat-gericht-name-extra';
       inputDish.value=w.data.dish||'';
       inputDish.placeholder='z.B. Jägerschnitzel';
-      inputDish.setAttribute('list','inserat-dish-datalist');
       inputDish.autocomplete='off';
       inputDish.style.cssText='width:100%; max-width:100%; color:#1a1a1a; font-family:\'Montserrat\',sans-serif; font-weight:900; font-style:normal; box-sizing:border-box; border:none; background:transparent; outline:none;';
       function adjustTitleFontSize(){
@@ -15632,58 +15608,8 @@
         var sizeRem = len > 20 ? Math.max(1.1, 1.5 - (len - 20) * 0.02) : 1.5;
         el.style.fontSize = sizeRem + 'rem';
       }
-      function applyDishAutocomplete(dishVal){
-        var menuEntry = getMenuEntryForDish(dishVal);
-        if (menuEntry) {
-          w.data.category = menuEntry.category;
-          w.data.price = menuEntry.price;
-          w.data.allergens = (menuEntry.allergens || []).slice();
-          w.data.wantsAllergens = !!(menuEntry.allergens && menuEntry.allergens.length);
-          var descSugg = getDescriptionSuggestionForDish(dishVal);
-          if (descSugg && (!w.data.description || !w.data.description.trim())) w.data.description = descSugg;
-        } else {
-          var catSugg = getCategorySuggestionForDish(dishVal);
-          if (catSugg && ['Fleisch','Vegetarisch','Vegan','Salat'].indexOf(catSugg) >= 0) w.data.category = catSugg;
-          var suggested = getAllergenSuggestionsForDish(dishVal);
-          if (suggested.length) { w.data.allergens = suggested.slice(); w.data.wantsAllergens = true; }
-          var descSugg = getDescriptionSuggestionForDish(dishVal);
-          if (descSugg && (!w.data.description || !w.data.description.trim())) w.data.description = descSugg;
-        }
-        saveDraft(); rebuildWizard();
-      }
-      inputDish.oninput=()=>{
-        w.data.dish=inputDish.value; saveDraft();
-        adjustTitleFontSize();
-        var val = (inputDish.value || '').trim().toLowerCase();
-        var exactMatch = !!getMenuEntryForDish(inputDish.value) || ((typeof TOP_30_DISHES !== 'undefined') && TOP_30_DISHES.some(function(d){ return (d.name||'').toLowerCase().trim() === val; }));
-        if(exactMatch){
-          if(listingDebounceTimer) clearTimeout(listingDebounceTimer);
-          listingDebounceTimer=null;
-          var hadFocus = document.activeElement === inputDish;
-          applyDishAutocomplete(inputDish.value);
-          if(hadFocus){
-            var wizardBox = document.getElementById('wizard');
-            var newInp = wizardBox && wizardBox.querySelector('#gericht-name');
-            if(newInp) newInp.focus();
-          }
-        } else {
-          if(listingDebounceTimer) clearTimeout(listingDebounceTimer);
-          listingDebounceTimer=setTimeout(function(){
-            listingDebounceTimer=null;
-            var hadFocus = document.activeElement === inputDish;
-            applyDishAutocomplete(inputDish.value);
-            if(hadFocus){
-              var wizardBox = document.getElementById('wizard');
-              var newInp = wizardBox && wizardBox.querySelector('#gericht-name');
-              if(newInp) newInp.focus();
-            }
-          }, 400);
-        }
-      };
-      inputDish.onblur=()=>{
-        dismissKeyboard(); hapticLight();
-        applyDishAutocomplete(inputDish.value);
-      };
+      inputDish.oninput=function(){ w.data.dish=inputDish.value; saveDraft(); adjustTitleFontSize(); };
+      inputDish.onblur=function(){ dismissKeyboard(); hapticLight(); };
       stepName.appendChild(inputDish);
       scrollArea.appendChild(stepName);
 
@@ -15941,9 +15867,25 @@
         };
         actionSection.appendChild(btnSaveChanges);
       } else if(isPlanMode){
+        /* ImmoScout-Footer Plan-Mode: Links Text-Link, Rechts schwarzer Primär-Button */
+        var planNavRow=document.createElement('div');
+        planNavRow.className='inserat-immo-footer';
+        planNavRow.style.cssText='display:flex; gap:16px; width:100%; align-items:center; justify-content:space-between;';
+        var linkCookOnly=document.createElement('button');
+        linkCookOnly.type='button';
+        linkCookOnly.className='inserat-footer-link';
+        linkCookOnly.style.cssText='background:none; border:none; padding:12px 0; font-size:15px; font-weight:700; color:rgba(255,255,255,0.9); cursor:pointer; text-decoration:underline; text-underline-offset:4px;';
+        linkCookOnly.textContent='Nur im Kochbuch speichern';
+        linkCookOnly.onclick=function(){
+          if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; }
+          if(typeof haptic==='function') haptic(50);
+          var id=saveToCookbookFromWizard();
+          if(id){ closeWizard(true); showSaveSuccessSheet({ title:'Im Kochbuch gespeichert', sub:'Dein Gericht ist in deinem Kochbuch.', dishName: w.data.dish||'', price: w.data.price, imageUrl: w.data.photoData||'', savedEntryId: id, savedDay: null, onFertig: function(){ if(typeof showToast==='function') showToast('Gericht im Kochbuch aktualisiert 📖'); if(typeof showProviderCookbook==='function') showProviderCookbook(); }, onLive: null }); }
+        };
         var btnWeekPlan=document.createElement('button');
         btnWeekPlan.type='button';
-        btnWeekPlan.className='inserat-btn-plan-primary';
+        btnWeekPlan.className='inserat-footer-btn-main';
+        btnWeekPlan.style.cssText='flex:1; min-height:56px; padding:14px 20px; border:none; border-radius:16px; background:#121212; color:#fff; font-size:16px; font-weight:800; cursor:pointer; box-shadow:0 4px 20px rgba(0,0,0,0.3);';
         btnWeekPlan.textContent='📅 In den Wochenplan einplanen';
         btnWeekPlan.onclick=function(){
           if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; }
@@ -15958,71 +15900,62 @@
             showSaveSuccessSheet({ title:'Im Wochenplan gespeichert', sub:'Dein Gericht ist im Wochenplan eingetragen.', dishName: w.data.dish||'', price: w.data.price, imageUrl: w.data.photoData||'', savedEntryId: id, savedDay: w.data.day, onFertig: function(){ if(typeof showToast==='function') showToast('Im Wochenplan gespeichert 📅'); if(typeof showProviderWeek==='function') showProviderWeek(); }, onLive: null });
           } else if(id){ if(typeof showToast==='function') showToast('Bitte zuerst ein Datum im Wochenplan wählen'); }
         };
-        actionSection.appendChild(btnWeekPlan);
-        var btnCookOnly=document.createElement('button');
-        btnCookOnly.type='button';
-        btnCookOnly.className='inserat-btn-plan-secondary';
-        btnCookOnly.textContent='Nur im Kochbuch speichern';
-        btnCookOnly.onclick=function(){
-          if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; }
-          if(typeof haptic==='function') haptic(50);
-          var id=saveToCookbookFromWizard();
-          if(id){ closeWizard(true); showSaveSuccessSheet({ title:'Im Kochbuch gespeichert', sub:'Dein Gericht ist in deinem Kochbuch.', dishName: w.data.dish||'', price: w.data.price, imageUrl: w.data.photoData||'', savedEntryId: id, savedDay: null, onFertig: function(){ if(typeof showToast==='function') showToast('Gericht im Kochbuch aktualisiert 📖'); if(typeof showProviderCookbook==='function') showProviderCookbook(); }, onLive: null }); }
-        };
-        actionSection.appendChild(btnCookOnly);
+        planNavRow.appendChild(linkCookOnly);
+        planNavRow.appendChild(btnWeekPlan);
+        actionSection.appendChild(planNavRow);
       } else if(entryPoint === 'dashboard'){
-        /* 2-Schritt Airbnb-Flow Step 1: Speichern in... | Weiter zur Veröffentlichung */
+        /* ImmoScout-Footer: Links Text-Link, Rechts schwarzer Primär-Button [cite: 2026-02-21] */
         var step1NavRow=document.createElement('div');
-        step1NavRow.className='inserat-step1-nav';
-        step1NavRow.style.cssText='display:flex; gap:12px; width:100%; align-items:stretch;';
-        var btnSpeichern=document.createElement('button');
-        btnSpeichern.type='button';
-        btnSpeichern.className='inserat-btn-step1-left';
-        btnSpeichern.style.cssText='flex:1; min-height:56px; padding:14px 16px; border:none; border-radius:0; background:#f1f5f9; font-size:15px; font-weight:700; color:#475569; cursor:pointer;';
-        btnSpeichern.textContent='Speichern in...';
-        btnSpeichern.onclick=function(){ hapticLight(); if(typeof showSaveScopeDialog==='function') showSaveScopeDialog({ onlyCurrent: function(){ saveDraft(); if(typeof showToast==='function') showToast('Als Entwurf gespeichert'); }, saveToCookbook: function(){ if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; } var id=saveToCookbookFromWizard(); if(id){ closeWizard(true); showSaveSuccessSheet({ title:'Im Kochbuch gespeichert', sub:'Dein Gericht ist in deinem Kochbuch.', dishName: w.data.dish||'', price: w.data.price, imageUrl: w.data.photoData||'', savedEntryId: id, savedDay: null, onFertig: function(){ if(typeof showToast==='function') showToast('Gericht im Kochbuch aktualisiert 📖'); if(typeof showProviderCookbook==='function') showProviderCookbook(); }, onLive: null }); } } }); };
+        step1NavRow.className='inserat-step1-nav inserat-immo-footer';
+        step1NavRow.style.cssText='display:flex; gap:16px; width:100%; align-items:center; justify-content:space-between;';
+        var linkSpeichern=document.createElement('button');
+        linkSpeichern.type='button';
+        linkSpeichern.className='inserat-footer-link';
+        linkSpeichern.style.cssText='background:none; border:none; padding:12px 0; font-size:15px; font-weight:700; color:rgba(255,255,255,0.9); cursor:pointer; text-decoration:underline; text-underline-offset:4px;';
+        linkSpeichern.textContent='Speichern in...';
+        linkSpeichern.onclick=function(){ hapticLight(); if(typeof showSaveScopeDialog==='function') showSaveScopeDialog({ onlyCurrent: function(){ saveDraft(); if(typeof showToast==='function') showToast('Als Entwurf gespeichert'); }, saveToCookbook: function(){ if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; } var id=saveToCookbookFromWizard(); if(id){ closeWizard(true); showSaveSuccessSheet({ title:'Im Kochbuch gespeichert', sub:'Dein Gericht ist in deinem Kochbuch.', dishName: w.data.dish||'', price: w.data.price, imageUrl: w.data.photoData||'', savedEntryId: id, savedDay: null, onFertig: function(){ if(typeof showToast==='function') showToast('Gericht im Kochbuch aktualisiert 📖'); if(typeof showProviderCookbook==='function') showProviderCookbook(); }, onLive: null }); } } }); };
         var btnWeiter=document.createElement('button');
         btnWeiter.type='button';
-        btnWeiter.className='inserat-btn-step1-right';
-        btnWeiter.style.cssText='flex:1; min-height:56px; padding:14px 16px; border:none; border-radius:0; background:#121212; color:#fff; font-size:15px; font-weight:800; cursor:pointer;';
+        btnWeiter.className='inserat-footer-btn-main';
+        btnWeiter.style.cssText='flex:1; min-height:56px; padding:14px 20px; border:none; border-radius:16px; background:#121212; color:#fff; font-size:16px; font-weight:800; cursor:pointer; box-shadow:0 4px 20px rgba(0,0,0,0.3);';
         btnWeiter.textContent='Weiter zur Veröffentlichung';
         btnWeiter.onclick=function(){
           hapticLight();
           if(typeof handlePriceFastInsert==='function') handlePriceFastInsert(box);
           w.inseratStep=2; saveDraft();
-          if(slider){ slider.setAttribute('data-inserat-step','2'); var f=box.querySelector('.inserat-airbnb-footer'); if(f) f.style.display='flex'; } else { rebuildWizard(); }
+          if(slider){
+            var sweepEl=box.querySelector('.step2-slot-machine-sweep');
+            if(sweepEl){ sweepEl.classList.remove('animate'); sweepEl.offsetHeight; sweepEl.classList.add('animate'); sweepEl.addEventListener('animationend',function onSweepEnd(){ sweepEl.removeEventListener('animationend',onSweepEnd); sweepEl.classList.remove('animate'); },{once:true}); }
+            slider.setAttribute('data-inserat-step','2');
+            var wizardEl=document.getElementById('wizard');
+            if(wizardEl) wizardEl.classList.add('inserat-step2-active');
+            var f=box.querySelector('.inserat-airbnb-footer'); if(f) f.style.display='flex';
+          } else { rebuildWizard(); }
         };
-        step1NavRow.appendChild(btnSpeichern);
+        step1NavRow.appendChild(linkSpeichern);
         step1NavRow.appendChild(btnWeiter);
         actionSection.appendChild(step1NavRow);
       } else {
-        var btnCookbookPlan=document.createElement('button');
-        btnCookbookPlan.type='button';
-        btnCookbookPlan.style.cssText='flex:1; min-height:52px; padding:14px 20px; background:#10b981; color:#fff; font-size:16px; font-weight:800; border:none; border-radius:16px; cursor:pointer; box-shadow:0 4px 16px rgba(16,185,129,0.3);';
-        btnCookbookPlan.textContent='Im Kochbuch speichern';
-        btnCookbookPlan.onclick=function(){
+        /* ImmoScout-Footer Plan-Mode: Links Text-Link, Rechts schwarzer Primär-Button */
+        var planRow=document.createElement('div');
+        planRow.className='inserat-immo-footer';
+        planRow.style.cssText='display:flex; gap:16px; width:100%; align-items:center; justify-content:space-between;';
+        var linkKochbuch=document.createElement('button');
+        linkKochbuch.type='button';
+        linkKochbuch.className='inserat-footer-link';
+        linkKochbuch.style.cssText='background:none; border:none; padding:12px 0; font-size:15px; font-weight:700; color:rgba(255,255,255,0.9); cursor:pointer; text-decoration:underline; text-underline-offset:4px;';
+        linkKochbuch.textContent='Nur im Kochbuch speichern';
+        linkKochbuch.onclick=function(){
           if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; }
           if(typeof haptic==='function') haptic(50);
           var id=saveToCookbookFromWizard();
-          if(id){
-            closeWizard(true);
-            showSaveSuccessSheet({
-              title:'Im Kochbuch gespeichert',
-              sub:'Dein Gericht ist in deinem Kochbuch.',
-              dishName: w.data.dish||'',
-              price: w.data.price,
-              imageUrl: w.data.photoData||'',
-              savedEntryId: id,
-              savedDay: null,
-              onFertig: function(){ if(typeof showToast==='function') showToast('Gericht im Kochbuch aktualisiert 📖'); if(typeof showProviderCookbook==='function') showProviderCookbook(); },
-              onLive: null
-            });
-          }
+          if(id){ closeWizard(true); showSaveSuccessSheet({ title:'Im Kochbuch gespeichert', sub:'Dein Gericht ist in deinem Kochbuch.', dishName: w.data.dish||'', price: w.data.price, imageUrl: w.data.photoData||'', savedEntryId: id, savedDay: null, onFertig: function(){ if(typeof showToast==='function') showToast('Gericht im Kochbuch aktualisiert 📖'); if(typeof showProviderCookbook==='function') showProviderCookbook(); }, onLive: null }); }
         };
         var btnEinplanen=document.createElement('button');
         btnEinplanen.type='button';
-        btnEinplanen.style.cssText='flex:1; min-height:52px; padding:14px 20px; background:#fff; color:#10b981; font-size:16px; font-weight:800; border:2px solid #10b981; border-radius:16px; cursor:pointer;';
-        btnEinplanen.textContent='Einplanen';
+        btnEinplanen.className='inserat-footer-btn-main';
+        btnEinplanen.style.cssText='flex:1; min-height:56px; padding:14px 20px; border:none; border-radius:16px; background:#121212; color:#fff; font-size:16px; font-weight:800; cursor:pointer; box-shadow:0 4px 20px rgba(0,0,0,0.3);';
+        btnEinplanen.textContent='In den Wochenplan einplanen';
         btnEinplanen.onclick=function(){
           if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; }
           if(typeof haptic==='function') haptic(50);
@@ -16046,9 +15979,7 @@
             });
           } else if(id){ if(typeof showToast==='function') showToast('Bitte zuerst ein Datum im Wochenplan wählen'); }
         };
-        var planRow=document.createElement('div');
-        planRow.style.cssText='display:flex; gap:12px; width:100%;';
-        planRow.appendChild(btnCookbookPlan);
+        planRow.appendChild(linkKochbuch);
         planRow.appendChild(btnEinplanen);
         actionSection.appendChild(planRow);
       }
@@ -16060,7 +15991,12 @@
         airbnbFooter.className='inserat-airbnb-footer';
         airbnbFooter.setAttribute('data-inserat-step','2');
         airbnbFooter.style.display=inseratStep===2?'flex':'none';
-        airbnbFooter.style.flexDirection='column';
+        var linkZurueck=document.createElement('button');
+        linkZurueck.type='button';
+        linkZurueck.className='inserat-footer-link';
+        linkZurueck.style.cssText='background:none; border:none; padding:12px 0; font-size:15px; font-weight:700; color:rgba(255,255,255,0.9); cursor:pointer; text-decoration:underline; text-underline-offset:4px; flex-shrink:0;';
+        linkZurueck.textContent='← Zurück';
+        linkZurueck.onclick=function(){ hapticLight(); w.inseratStep=1; saveDraft(); if(slider) slider.setAttribute('data-inserat-step','1'); airbnbFooter.style.display='none'; var wizardEl=document.getElementById('wizard'); if(wizardEl) wizardEl.classList.remove('inserat-step2-active'); };
         var footerBtn=document.createElement('button');
         footerBtn.type='button';
         footerBtn.className='inserat-footer-btn-main' + (w.data.pricingChoice==='499' ? ' inserat-footer-btn--499' : '');
@@ -16087,6 +16023,7 @@
             setTimeout(function(){ closeWizard(true); showPublishFeeModal(o); }, 800);
           }
         };
+        airbnbFooter.appendChild(linkZurueck);
         airbnbFooter.appendChild(footerBtn);
         box.appendChild(airbnbFooter);
         var updateFooterVisibility=function(){ var s=inseratStep; try{ var sl=box.querySelector('.inserat-steps-slider'); if(sl) s=parseInt(sl.getAttribute('data-inserat-step')||'1',10); }catch(e){} airbnbFooter.style.display=s===2?'flex':'none'; };
@@ -16570,8 +16507,9 @@
       const mehrweg = !!(d.reuse && d.reuse.enabled);
       const pill = (on, label) => on ? '<span style="display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:8px;background:rgba(0,0,0,0.06);font-size:11px;font-weight:700;color:#1a1a1a;">' + label + '</span>' : '<span style="display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:8px;background:rgba(0,0,0,0.04);font-size:11px;font-weight:600;color:#94a3b8;opacity:0.8;">' + label + '</span>';
       const pillAbhol = abholnummer ? '<span style="display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:8px;background:rgba(59,130,246,0.15);font-size:11px;font-weight:700;color:#2563eb;">🧾 Abholnummer</span>' : pill(false, '🧾 Abholnummer');
+      var imgWrap = abholnummer ? '<div style="position:relative;width:100%;height:120px;overflow:hidden;"><img src="'+imgUrl+'" class="success-card-img" alt="" style="width:100%;height:100%;object-fit:cover;display:block;"><span style="position:absolute;bottom:8px;right:8px;padding:4px 8px;border-radius:8px;background:rgba(15,23,42,0.9);color:#fff;font-size:11px;font-weight:800;">🧾</span></div>' : '<img src="'+imgUrl+'" class="success-card-img" alt="">';
       previewEl.innerHTML = `
-        <img src="${imgUrl}" class="success-card-img" alt="">
+        ${imgWrap}
         <div class="success-card-body" style="padding:12px 16px;">
           <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px; flex-wrap:wrap;">
             ${pill(vorOrt, '🍴 Vor Ort')}
@@ -16705,14 +16643,7 @@
       };
     }
     const inseratSuccessBtnBack = document.getElementById('inseratSuccessBtnBack');
-    if(inseratSuccessBtnBack) inseratSuccessBtnBack.onclick = function(){ var id = inseratSuccessCurrentOffer && inseratSuccessCurrentOffer.id; closeInseratSuccessSheet(); if(id && typeof startListingFlow === 'function') startListingFlow({ editOfferId: id }); };
-    const inseratSuccessBtnNewListing = document.getElementById('inseratSuccessBtnNewListing');
-    if(inseratSuccessBtnNewListing){
-      inseratSuccessBtnNewListing.onclick = function(){
-        closeInseratSuccessSheet();
-        if(typeof startListingFlow === 'function') startListingFlow({ entryPoint: 'dashboard' });
-      };
-    }
+    if(inseratSuccessBtnBack) inseratSuccessBtnBack.onclick = function(){ closeInseratSuccessSheet(); };
     const inseratSuccessBd = document.getElementById('inseratSuccessBd');
     if(inseratSuccessBd) inseratSuccessBd.onclick = closeInseratSuccessSheet;
     if(typeof window !== 'undefined'){

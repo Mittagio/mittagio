@@ -2599,13 +2599,10 @@
 
   </div>
 
-  <!-- Bottom: Zum Inserat + Nächstes Gericht [cite: 2026-01-29] -->
-  <div style="position:absolute; bottom:0; left:0; right:0; padding:20px 24px calc(20px + env(safe-area-inset-bottom, 0)); background:linear-gradient(to top, #f8f7f2 80%, transparent); text-align:center; display:flex; flex-direction:column; gap:10px;">
-    <button type="button" id="inseratSuccessBtnBack" style="width:100%; min-height:52px; border-radius:16px; background:#1a1a1a; color:#fff; font-weight:800; font-size:15px; border:none; box-shadow:0 4px 12px rgba(0,0,0,0.1);">
-      Zurück zum Dashboard
-    </button>
-    <button type="button" id="inseratSuccessBtnNewListing" style="width:100%; min-height:48px; border-radius:16px; background:#fff; color:#1a1a1a; font-weight:700; font-size:15px; border:2px solid rgba(0,0,0,0.1);">
-      Weiteres Inserat erstellen
+  <!-- Bottom: ImmoScout-Footer – Fertig & zum Dashboard [cite: 2026-02-21] -->
+  <div class="inserat-success-footer" style="position:absolute; bottom:0; left:0; right:0; padding:16px 24px calc(16px + env(safe-area-inset-bottom, 0)); background:rgba(15,23,42,0.92); backdrop-filter:blur(30px); -webkit-backdrop-filter:blur(30px); margin:0; border-radius:0;">
+    <button type="button" id="inseratSuccessBtnBack" style="width:100%; min-height:56px; border-radius:16px; background:#121212; color:#fff; font-weight:800; font-size:16px; border:none; box-shadow:0 4px 20px rgba(0,0,0,0.3);">
+      Fertig & zum Dashboard
     </button>
   </div>
 </div>
@@ -2963,8 +2960,8 @@
   <button type="button" id="weekUndoBtn">Rückgängig</button>
 </div>
 
-<!-- Inseratsauswahl: Deine Renner (Speed-Dial 2x2) oben, dann Buttons [cite: 2026-02-16] -->
-<div class="backdrop" id="createFlowBd" onclick="closeCreateFlowSheet()"></div>
+<!-- Inseratsauswahl: Slot-Machine Entry, Full-Screen 100vh [cite: 2026-02-21] -->
+<div class="backdrop" id="createFlowBd" onclick="closeCreateFlowSheet()"><div class="create-flow-slot-machine-sweep" id="createFlowSlotSweep" aria-hidden="true"></div></div>
 <div class="sheet sheet--kitchen" id="createFlowSheet">
   <div class="handle"></div>
   <div class="sheet-body">
@@ -2974,13 +2971,13 @@
       <div id="createFlowRennerScroll" class="create-flow-renner-grid"></div>
       <div id="createFlowRennerEmpty" class="create-flow-renner-empty">Noch keine Renner – leg Gerichte im Kochbuch an oder biete sie an.</div>
     </div>
-    <div class="create-flow-btns" style="margin-top:20px; margin-bottom:24px;">
-      <button class="btn-create-primary" type="button" id="btnCreateNewDish" style="margin-bottom:12px;">
-        <span class="plus-char" style="font-size:22px; line-height:1; color:#fff;">+</span>
-        <span>Neues Gericht erstellen</span>
+    <div class="create-flow-tiles" style="margin-top:20px; margin-bottom:24px;">
+      <button class="create-flow-tile create-flow-tile--hero" type="button" id="btnCreateNewDish">
+        <span class="create-flow-tile-plus">+</span>
+        <span class="create-flow-tile-label">Neues Gericht erstellen</span>
       </button>
-      <button class="btn btn-create-secondary" type="button" id="btnCreateFromCookbook">
-        <span>Aus dem Kochbuch hinzufügen</span>
+      <button class="create-flow-tile create-flow-tile--base" type="button" id="btnCreateFromCookbook">
+        <span class="create-flow-tile-label">Aus Kochbuch wählen</span>
       </button>
     </div>
     <div class="create-flow-hint hint" id="createFlowDateHint" style="display:none;"></div>
