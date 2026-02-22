@@ -1221,28 +1221,28 @@
       <header class="week-header-compact week-header-minimal prov-page-header dynamic-header system-header" id="weekHeaderCompact">
         <div class="prov-page-header-row week-header-row">
           <div class="prov-page-header-left prov-header-reset-trigger" data-reset-view="week" style="flex:1; min-width:0;" role="button" tabindex="0" aria-label="Zum Seitenanfang">
-            <h1 class="prov-page-header-title system-header-title week-header-title-left" id="weekHeaderTitle">Wochenplan</h1>
-          </div>
-          <div class="prov-page-header-actions prov-header-toolbar" style="display:flex; gap:8px; align-items:center;">
-            <button type="button" id="btnWeekHeaderCookbook" title="Kochbuch" aria-label="Kochbuch" style="background:rgba(0,0,0,0.06); border:none; min-width:44px; min-height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:20px; cursor:pointer;">📖</button>
-            <button type="button" id="btnWeekHeaderShare" title="Teilen" aria-label="Teilen" style="background:rgba(0,0,0,0.06); border:none; min-width:44px; min-height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; color:#1a1a1a; cursor:pointer;">
-              <i data-lucide="share-2" style="width:20px; height:20px;"></i>
+            <button type="button" class="week-header-kw-trigger" id="weekHeaderKWTrigger" aria-label="Kalenderwoche wählen" style="display:inline-flex; align-items:center; gap:6px; background:none; border:none; padding:4px 0; cursor:pointer; font-family:inherit;">
+              <h1 class="prov-page-header-title system-header-title week-header-title-left" id="weekHeaderTitle" style="margin:0;">Wochenplan</h1>
+              <span class="week-header-kw-badge" id="weekHeaderKWBadge">KW 8</span>
+              <i data-lucide="chevron-down" style="width:18px; height:18px; color:#64748b;"></i>
             </button>
+          </div>
+          <div class="prov-page-header-actions prov-header-toolbar" style="display:flex; gap:8px; align-items:center; position:relative;">
+            <button type="button" id="btnWeekKebab" class="week-kebab-trigger" title="Menü" aria-label="Menü" aria-haspopup="true" aria-expanded="false" style="background:rgba(0,0,0,0.06); border:none; min-width:44px; min-height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:700; color:#1a1a1a; cursor:pointer;">⋮</button>
+            <div id="weekKebabDropdown" class="week-kebab-dropdown" style="display:none;">
+              <button type="button" class="week-kebab-item" id="weekKebabPdf"><i data-lucide="printer" style="width:18px;height:18px;"></i> Drucken</button>
+              <button type="button" class="week-kebab-item" id="weekKebabShare"><i data-lucide="share-2" style="width:18px;height:18px;"></i> Teilen</button>
+              <button type="button" class="week-kebab-item" id="weekKebabScreenshot"><i data-lucide="camera" style="width:18px;height:18px;"></i> Team-Vorschau</button>
+            </div>
           </div>
           <button type="button" class="week-header-done-btn" id="weekHeaderDoneBtn" style="display:none;" aria-label="Fertig">Fertig</button>
         </div>
       </header>
 
-      <!-- KW-Board: KW-Carousel + 7-Tage-Grid + Action-Bar -->
+      <!-- KW-Board: Inspirations-Slider + Elastic 7-Tage-Grid [cite: 2026-02-21] -->
       <div id="kwBoardWrap" style="display:flex; flex-direction:column; flex:1; min-height:0; position:relative;">
         <div class="kw-board-header" id="kwBoardHeader">
-          <div class="kw-carousel" id="kwCarousel" role="tablist"></div>
-          <div class="kw-progress-wrap">
-            <div class="kw-progress"><div class="kw-progress-fill" id="kwProgressFill" style="width:0%;"></div></div>
-          </div>
-          <div id="kwSeasonBanner" class="kw-season-banner" style="display:none !important; visibility:hidden;"><span id="kwSeasonBannerText"></span><button type="button" id="kwSeasonBannerApply"></button></div>
-          <div id="kwCookbookStripWrap" class="kw-cookbook-strip-wrap"></div>
-          <div id="kwWeekActivateBar" class="kw-week-activate-bar" style="display:none;"><button type="button" id="btnKwWeekActivate" class="kw-week-activate-btn">Woche aktivieren (0 €)</button></div>
+          <div id="kwCookbookStripWrap" class="kw-cookbook-strip-wrap kw-inspirations-slider"></div>
         </div>
         <div id="kwBoardScroll" class="kw-board-scroll">
           <div id="kwEmptyWeekTemplateCta" class="kw-empty-week-template-cta" style="display:none; position:absolute; inset:0; align-items:center; justify-content:center; padding:24px; pointer-events:none; z-index:2;"><div style="pointer-events:auto;"><button type="button" id="btnKwLoadTemplate" class="kw-load-template-btn" style="display:inline-flex; align-items:center; gap:10px; min-height:56px; padding:0 28px; border-radius:20px; border:2px solid rgba(14,165,233,0.4); background:rgba(255,255,255,0.95); backdrop-filter:blur(12px); color:#0c4a6e; font-size:16px; font-weight:800; cursor:pointer; box-shadow:0 4px 20px rgba(14,165,233,0.15);"><span style="font-size:22px;">📂</span><span>Vorlage laden</span></button></div></div>
@@ -1253,8 +1253,23 @@
         <button type="button" id="weekMagicFab" class="week-magic-fab" aria-label="Schnellaktionen" title="Schnellaktionen">
           <span class="week-magic-fab-icon">✨</span>
         </button>
+        <!-- Activation Dock: fixiert unten, Mastercard-Style [cite: 2026-02-21] -->
+        <div id="kwWeekActivateBar" class="kw-week-activate-bar kw-activation-dock" style="display:none;">
+          <button type="button" id="btnKwWeekActivate" class="kw-week-activate-btn kw-activation-dock-btn">
+            <span id="kwActivateCount" class="kw-activate-count">0</span> Gerichte jetzt aktivieren
+          </button>
+          <p class="kw-activation-disclaimer">Abrechnung (4,99 €) erfolgt erst zum jeweiligen Startzeitpunkt.</p>
+        </div>
       </div>
     </section>
+
+    <!-- KW-Selector: Bottom-Sheet für Kalenderwoche [cite: 2026-02-21] -->
+    <div class="backdrop" id="kwSelectorBd" style="display:none; z-index:1185;" onclick="closeKWSelector()"></div>
+    <div id="kwSelectorSheet" class="week-magic-sheet kw-selector-sheet" style="position:fixed; left:0; right:0; bottom:0; border-radius:24px 24px 0 0; background:rgba(255,255,255,0.96); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); box-shadow:0 -8px 32px rgba(0,0,0,0.1); z-index:1186; display:none; flex-direction:column; overflow:hidden; padding-bottom:max(24px, env(safe-area-inset-bottom));">
+      <div class="week-magic-sheet-handle"></div>
+      <h3 class="week-magic-sheet-title">Kalenderwoche wählen</h3>
+      <div id="kwSelectorList" class="kw-selector-list" style="display:flex; flex-direction:column; gap:8px; padding:0 20px 20px; max-height:50vh; overflow-y:auto;"></div>
+    </div>
 
     <!-- Week Magic Sheet: Vorlage, Lücke finden, Woche füllen [cite: 2026-02-20] -->
     <div class="backdrop" id="weekMagicSheetBd" style="display:none; z-index:1188;" onclick="closeWeekMagicSheet()"></div>
