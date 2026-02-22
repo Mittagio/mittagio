@@ -4,9 +4,9 @@
     :root { --s25-slide-curve: cubic-bezier(0.2, 0.8, 0.2, 1); }
     /* 2. EMERALD-PULSE: Ready-Zustand des Primär-Buttons [cite: 2026-02-21] */
     @keyframes emerald-pulse {
-      0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); transform: scale(1); }
-      70% { box-shadow: 0 0 0 15px rgba(16, 185, 129, 0); transform: scale(1.03); }
-      100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); transform: scale(1); }
+      0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6); }
+      70% { box-shadow: 0 0 0 15px rgba(16, 185, 129, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
     }
     /* 3. DER "READY" ZUSTAND: Emerald-Grün, klickbar, pulsierend */
     .footer-btn-primary.is-ready,
@@ -3195,40 +3195,59 @@
       transition: all 0.3s ease;
       background: #fafafa;
     }
-    .pricing-grid .pricing-card.selected {
-      border-color: #10b981;
-      background: rgba(16,185,129,0.05);
-      box-shadow: 0 0 15px rgba(16,185,129,0.2);
+    .pricing-grid .pricing-card.selected,
+    .pricing-grid .pricing-card.is-selected {
+      border-color: #10b981 !important;
+      background: rgba(16, 185, 129, 0.04);
+      box-shadow: 0 0 0 1px #10b981, 0 10px 25px rgba(16, 185, 129, 0.15);
       transform: scale(1.02);
     }
     .pricing-grid .pricing-card h4 { font-size: 14px; color: #64748b; margin-bottom: 8px; }
     .pricing-grid .pricing-card .price { font-size: 24px; font-weight: 800; color: #1e293b; }
-    /* 4. Schritt 2: Emerald-Selection (Keine Buttons in Kacheln!) */
+    /* 4. Schritt 2: ImmoScout-Eleganz – Pricing-Grid, Kacheln nur zum Antippen [cite: 2026-02-21] */
+    .pricing-selection-area {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      padding: 20px 24px;
+      background: #ffffff;
+    }
     .pricing-card {
       border: 2px solid #f1f5f9;
       border-radius: 16px;
-      padding: 20px;
-      transition: all 0.2s ease;
+      padding: 24px 12px;
+      text-align: center;
+      background: #ffffff;
+      transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
       cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
     }
-    .pricing-card.selected {
+    .pricing-card.selected,
+    .pricing-card.is-selected {
       border-color: #10b981 !important;
-      background: rgba(16,185,129,0.05);
-      box-shadow: 0 0 0 1px #10b981, 0 8px 20px rgba(16,185,129,0.2);
+      background: rgba(16, 185, 129, 0.04);
+      box-shadow: 0 0 0 1px #10b981, 0 10px 25px rgba(16, 185, 129, 0.15);
+      transform: scale(1.02);
     }
     /* Checkout-Flow: Step 1 → Step 2 Slide-Animation [cubic-bezier 0.4,0,0.2,1] */
     .inserat-steps-slider {
       flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column;
     }
     .inserat-steps-track {
-      display: flex; width: 200%; flex: 1; min-height: 0;
+      display: flex; width: 300%; flex: 1; min-height: 0;
       transition: transform 0.42s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .inserat-steps-slider[data-inserat-step="2"] .inserat-steps-track {
-      transform: translateX(-50%);
+      transform: translateX(-33.33%);
     }
-    .inserat-step1-pane, .inserat-step2-pane {
-      width: 50%; flex-shrink: 0; min-height: 0; display: flex; flex-direction: column;
+    .inserat-steps-slider[data-inserat-step="3"] .inserat-steps-track {
+      transform: translateX(-66.66%);
+    }
+    .inserat-step1-pane, .inserat-step2-pane, .inserat-step3-pane {
+      width: 33.33%; flex-shrink: 0; min-height: 0; display: flex; flex-direction: column;
     }
     /* Step 2: Live-Flow-Card (Smartphone-Mockup) */
     .inserat-live-flow-card {
@@ -3266,8 +3285,27 @@
     .step2-slot-machine-sweep::after { content: ''; display: block; position: absolute; top: 50%; left: -50%; width: 80%; height: 300%; background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.75) 35%, rgba(255,255,255,0.95) 50%, rgba(255,255,255,0.75) 65%, transparent 100%); transform: translateY(-50%) rotate(-35deg); }
     .step2-slot-machine-sweep.animate::after { animation: step2-slot-sweep 0.55s ease-out forwards; }
     @keyframes step2-slot-sweep { 0% { transform: translateY(-50%) translateX(-80%) rotate(-35deg); opacity: 1; } 100% { transform: translateY(-50%) translateX(120%) rotate(-35deg); opacity: 0.3; } }
-    /* Step 2: Full-Screen 100vh wenn aktiv [cite: 2026-02-21] */
-    #wizard.inserat-step2-active.sheet--kitchen, #wizard.inserat-step2-active[data-flow="listing"] { height: 100vh !important; max-height: 100vh !important; }
+    /* Step 2 + Step 3: Full-Screen 100vh wenn aktiv [cite: 2026-02-21] */
+    #wizard.inserat-step2-active.sheet--kitchen, #wizard.inserat-step2-active[data-flow="listing"],
+    #wizard.inserat-step3-active.sheet--kitchen, #wizard.inserat-step3-active[data-flow="listing"] { height: 100vh !important; max-height: 100vh !important; }
+    /* Step 3: Live-Erfolg [cite: 2026-02-21] */
+    .inserat-step3-pane { position: relative; overflow: hidden; background: #f8fafc; }
+    .inserat-step3-pane .success-confetti { position: absolute; inset: 0; pointer-events: none; z-index: 10; }
+    .inserat-step3-pane .inserat-step3-content { flex: 1; overflow-y: auto; padding-bottom: calc(90px + env(safe-area-inset-bottom)); }
+    .inserat-step3-pane .success-check-wrapper { text-align: center; padding: 40px 0 20px; }
+    .inserat-step3-pane .success-checkmark { display: inline-block; background: #10b981; color: white; padding: 8px 24px; border-radius: 40px; font-weight: 900; font-size: 20px; letter-spacing: 2px; box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4); animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    .inserat-step3-pane .live-status-card { margin: 20px 24px; background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.1); border: 1px solid #f1f5f9; }
+    .inserat-step3-pane .live-card-badge { position: absolute; top: 12px; left: 12px; padding: 6px 12px; background: rgba(16,185,129,0.95); color: #fff; font-size: 12px; font-weight: 800; border-radius: 999px; z-index: 2; }
+    .inserat-step3-pane .live-card-img { width: 100%; height: 160px; object-fit: cover; display: block; }
+    .inserat-step3-pane .live-card-info { padding: 16px 20px; }
+    .inserat-step3-pane .live-card-info h3 { margin: 0 0 4px; font-size: 17px; font-weight: 900; color: #0f172a; }
+    .inserat-step3-pane .live-card-info p { margin: 0; font-size: 15px; font-weight: 700; color: #64748b; }
+    .inserat-step3-pane .final-abhol-box { margin-top: 15px; padding: 12px; background: #f8fafc; border-radius: 12px; text-align: center; }
+    .inserat-step3-pane .abhol-id { display: block; font-size: 24px; font-weight: 900; color: #10b981; }
+    .inserat-step3-pane .success-hint { text-align: center; font-size: 14px; color: #64748b; padding: 0 24px 20px; margin: 0; }
+    .inserat-step3-pane .sharing-trigger { display: flex; align-items: center; gap: 8px; background: transparent; border: none; cursor: pointer; color: #fff !important; font-size: 15px; font-weight: 600; padding: 12px 0; }
+    .inserat-step3-pane #step3ConfettiContainer .confetti { position: absolute; width: 10px; height: 10px; background: #FFD700; border-radius: 2px; animation: confetti-fall 3s linear forwards; top: -20px; }
+    @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
     /* Airbnb-Footer: Bündig 0px unten, schwarz, Glas-Optik [cite: 2026-02-21 Step 2] */
     .inserat-airbnb-footer {
       position: fixed; left: 0; right: 0; bottom: 0; z-index: 15;
@@ -3328,18 +3366,41 @@
       font-weight: 500;
       opacity: 0.8;
     }
-    /* Massiver Primär-Button (Rechts – Weiter) */
-    .footer-btn-primary {
-      background: #ffffff;
-      color: #0f172a;
-      padding: 14px 28px;
+    /* Massiver Primär-Button (Rechts): Konstante Maße Step 1 + Step 2 [cite: 2026-02-21 ImmoScout] */
+    .footer-btn-primary,
+    .inserat-airbnb-footer .inserat-footer-btn-main.footer-btn-primary {
+      height: 48px;
+      min-width: 180px;
+      padding: 0 24px;
       border-radius: 12px;
       font-size: 16px;
       font-weight: 700;
       border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+      background: #ffffff;
+      color: #0f172a;
       box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     }
-    .footer-btn-primary.free-mode { background: #10b981 !important; color: #fff !important; }
+    /* Elegant Toggle: Kostenlos gewählt → Emerald-Grün [cite: 2026-02-21] */
+    .footer-btn-primary.free-mode,
+    .footer-btn-primary.is-free-mode {
+      background: #10b981 !important;
+      color: #ffffff !important;
+      box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+    }
+    /* Footer-Stabilität: #footerNext identische Position und Größe Step 1 + Step 2 [cite: 2026-02-21] */
+    #wizard[data-flow="listing"] #footerNext,
+    #wizard[data-flow="listing"] .inserat-step1-nav #footerNext,
+    #wizard[data-flow="listing"] .inserat-airbnb-footer #footerNext {
+      height: 48px !important;
+      min-height: 48px !important;
+      min-width: 180px !important;
+      flex: 1;
+    }
     /* Schritt 3: Erfolgs-Footer – Links Teilen, Rechts Zum Dashboard [cite: 2026-02-21] */
     #inseratSuccessSheet .inserat-success-footer.airbnb-footer {
       display: flex; flex-direction: row; align-items: center; justify-content: space-between; gap: 16px;

@@ -15396,6 +15396,7 @@
       // ========== 2-SCHRITT AIRBNB-FLOW: Slider (Step 1 ↔ Step 2) oder Step 1 nur (Plan-Mode) ==========
       var step1Container = box;
       var slider = null;
+      var updateStep2ContextZoneRef = null;
       if(useTwoStepFlow){
         slider=document.createElement('div');
         slider.className='inserat-steps-slider';
@@ -15421,37 +15422,90 @@
         var euroS2=typeof euro==='function'?euro(priceS2):(priceS2.toFixed(2).replace('.',',')+' €');
         ctxZone.innerHTML='<div class="step2-context-thumb" style="width:56px;height:56px;border-radius:12px;overflow:hidden;background:#e8ecf0;flex-shrink:0;position:relative;"><img src="'+thumbUrl+'" alt="" style="width:100%;height:100%;object-fit:cover;transform:translateY('+cropY2+'px);"><span class="step2-context-abhol-badge" style="position:absolute;bottom:4px;right:4px;padding:2px 6px;border-radius:6px;background:rgba(15,23,42,0.9);color:#fff;font-size:10px;font-weight:800;opacity:0;transition:opacity 0.25s;">🧾</span></div><div style="flex:1;min-width:0;"><div style="font-size:17px;font-weight:900;color:#0f172a;">'+esc(dishNameS2)+'</div><div style="font-size:15px;font-weight:700;color:#64748b;">'+euroS2+'</div></div>';
         step2Wrap.appendChild(ctxZone);
+        /* Step 2 Context Live-Sync: Name und Preis aus Schritt 1 live in step2-context-zone [cite: 2026-02-21] */
+        updateStep2ContextZoneRef = function(){ if(!ctxZone||!ctxZone.isConnected) return; var t=w.data.photoData||'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=200&q=60'; var cy=(typeof w.data.photoCropY==='number')?w.data.photoCropY:0; var dn=(w.data.dish||'').trim()||'Gericht'; var pr=Number(w.data.price)||0; var eu=typeof euro==='function'?euro(pr):(pr.toFixed(2).replace('.',',')+' €'); var ab=(w.data.pricingChoice==='pro')?'1':'0'; ctxZone.innerHTML='<div class="step2-context-thumb" style="width:56px;height:56px;border-radius:12px;overflow:hidden;background:#e8ecf0;flex-shrink:0;position:relative;"><img src="'+t+'" alt="" style="width:100%;height:100%;object-fit:cover;transform:translateY('+cy+'px);"><span class="step2-context-abhol-badge" style="position:absolute;bottom:4px;right:4px;padding:2px 6px;border-radius:6px;background:rgba(15,23,42,0.9);color:#fff;font-size:10px;font-weight:800;opacity:'+ab+';transition:opacity 0.25s;">🧾</span></div><div style="flex:1;min-width:0;"><div style="font-size:17px;font-weight:900;color:#0f172a;">'+esc(dn)+'</div><div style="font-size:15px;font-weight:700;color:#64748b;">'+eu+'</div></div>'; };
         var tilesRow=document.createElement('div');
-        tilesRow.className='inserat-decision-tiles inserat-step2-tiles-vertical pricing-grid';
+        tilesRow.className='inserat-decision-tiles inserat-step2-tiles-vertical pricing-grid pricing-selection-area';
         var hasDishS2=!!(w.data.dish&&String(w.data.dish).trim());
         var hasPriceS2=Number(w.data.price)>0;
         var primaryValidS2=hasDishS2&&hasPriceS2;
         var existingOfferS2=(w.ctx&&w.ctx.editOfferId&&typeof offers!=='undefined')?offers.find(function(o){return o.id===w.ctx.editOfferId;}):null;
         var todayKeyS2=typeof isoDate==='function'?isoDate(new Date()):'';
         var isEditActiveS2=!!(existingOfferS2&&existingOfferS2.day===todayKeyS2&&existingOfferS2.active!==false);
-        var doPublish499=function(){ w.data.hasPickupCode=false; w.data.pricingOption=undefined; w.data.inseratFeeWaived=false; var o=previewOfferFromWizard(); closeWizard(true); showPublishFeeModal(o); };
-        var doPublishPro=function(){ if(tileHero.classList.contains('is-loading')) return; w.data.hasPickupCode=true; w.data.inseratFeeWaived=true; w.data.pricingOption='abholnummer'; var o=previewOfferFromWizard(); if(isEditActiveS2){ var published=typeof publishOffer==='function'?publishOffer(o):null; if(published){ closeWizard(true); if(typeof showInseratSuccessSheet==='function') showInseratSuccessSheet(published); else if(typeof showProviderHome==='function') showProviderHome(); } return; } tileHero.classList.add('is-loading'); tileHero.innerHTML='<span class="inserat-btn-spinner" style="width:24px;height:24px;border:3px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:inserat-spin 0.8s linear infinite;"></span>'; setTimeout(function(){ closeWizard(true); showPublishFeeModal(o); }, 800); };
+        var doPublish499=function(){ w.data.hasPickupCode=false; w.data.pricingOption=undefined; w.data.inseratFeeWaived=false; var o=previewOfferFromWizard(); publishFeeUseStep3=true; showPublishFeeModal(o, null); };
+        var doPublishPro=function(){ if(tileHero.classList.contains('is-loading')) return; w.data.hasPickupCode=true; w.data.inseratFeeWaived=true; w.data.pricingOption='abholnummer'; var o=previewOfferFromWizard(); if(isEditActiveS2){ var published=typeof publishOffer==='function'?publishOffer(o):null; if(published){ if(typeof slideWizardToStep3==='function') slideWizardToStep3(published); else { closeWizard(true); if(typeof showInseratSuccessSheet==='function') showInseratSuccessSheet(published); else if(typeof showProviderHome==='function') showProviderHome(); } } return; } tileHero.classList.add('is-loading'); tileHero.innerHTML='<span class="inserat-btn-spinner" style="width:24px;height:24px;border:3px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:inserat-spin 0.8s linear infinite;"></span>'; publishFeeUseStep3=true; setTimeout(function(){ showPublishFeeModal(o, null); }, 800); };
         if(!w.data.pricingChoice) w.data.pricingChoice = 'pro';
         var tile499=document.createElement('button');
         tile499.type='button';
         tile499.className='inserat-decision-tile inserat-tile-basis pricing-card' + (w.data.pricingChoice==='499' ? ' is-selected selected' : '');
         tile499.style.cssText='padding:24px; border-radius:12px; background:#fff; cursor:pointer; text-align:left; transition:all 0.4s cubic-bezier(0.175,0.885,0.32,1.275); overflow:hidden;';
         tile499.innerHTML='<h3 class="pricing-card-label" style="font-size:17px;font-weight:800;margin:0 0 8px;color:#0f172a;">Einmalig Inserieren</h3><span class="pricing-card-price" style="font-size:22px;font-weight:900;color:#0f172a;">4,99 €</span><p class="pricing-card-sub" style="font-size:13px;color:#64748b;margin:10px 0 0;line-height:1.4;">Kein Abo, keine Laufzeit. Einmalig bis das Inserat gelöscht wird.</p>';
-        tile499.onclick=function(){ hapticLight(); w.data.pricingChoice='499'; tile499.classList.add('is-selected','selected'); tileHero.classList.remove('is-selected','selected'); saveDraft(); var fb=box.querySelector('.inserat-airbnb-footer .inserat-footer-btn-main'); if(fb){ fb.textContent='Jetzt für 4,99 € inserieren'; fb.classList.add('inserat-footer-btn--499'); fb.classList.remove('free-mode'); } var ab=ctxZone.querySelector('.step2-context-abhol-badge'); if(ab) ab.style.opacity='0'; };
+        tile499.onclick=function(){ hapticLight(); w.data.pricingChoice='499'; w.data.hasPickupCode=false; tile499.classList.add('is-selected','selected'); tileHero.classList.remove('is-selected','selected'); saveDraft(); var fb=box.querySelector('.inserat-airbnb-footer .inserat-footer-btn-main'); if(fb){ fb.textContent='Jetzt für 4,99 € inserieren'; fb.classList.add('inserat-footer-btn--499'); fb.classList.remove('free-mode','is-free-mode'); } var ab=ctxZone.querySelector('.step2-context-abhol-badge'); if(ab) ab.style.opacity='0'; };
         var tileHero=document.createElement('button');
         tileHero.type='button';
         tileHero.className='inserat-decision-tile inserat-tile-smart pricing-card' + (w.data.pricingChoice==='pro' ? ' is-selected selected' : '');
+        tileHero.setAttribute('data-type','free');
         tileHero.style.cssText='padding:24px; border-radius:12px; background:#fff; cursor:pointer; text-align:left; transition:all 0.4s cubic-bezier(0.175,0.885,0.32,1.275); overflow:hidden;';
         tileHero.innerHTML='<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;"><h3 class="pricing-card-label" style="font-size:17px;font-weight:800;margin:0;color:#0f172a;">Kostenlos Inserieren</h3><span class="price-massive" style="font-size:3.8rem;font-weight:900;line-height:1;color:#0f172a;">0,00 €</span></div><div class="fair-fee-badge" style="display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:10px;background:rgba(15,23,42,0.06);font-size:14px;font-weight:700;color:#0f172a;margin-bottom:8px;">Zahle nur bei Erfolg: 0,89 € pro 🧾 Abholnummer</div><p class="pricing-card-sub" style="font-size:13px;color:#64748b;margin:0;line-height:1.4;">Volle Kontrolle: Vermeide Chaos & Foodwaste.</p>';
-        tileHero.onclick=function(){ hapticLight(); w.data.pricingChoice='pro'; tileHero.classList.add('is-selected','selected'); tile499.classList.remove('is-selected','selected'); saveDraft(); var fb=box.querySelector('.inserat-airbnb-footer .inserat-footer-btn-main'); if(fb){ fb.textContent='Jetzt kostenlos inserieren'; fb.classList.remove('inserat-footer-btn--499'); fb.classList.add('free-mode'); } var ab=ctxZone.querySelector('.step2-context-abhol-badge'); if(ab) ab.style.opacity='1'; };
+        tileHero.onclick=function(){ hapticLight(); w.data.pricingChoice='pro'; w.data.hasPickupCode=true; tileHero.classList.add('is-selected','selected'); tile499.classList.remove('is-selected','selected'); saveDraft(); var fb=box.querySelector('.inserat-airbnb-footer .inserat-footer-btn-main'); if(fb){ fb.textContent='Jetzt kostenlos inserieren'; fb.classList.remove('inserat-footer-btn--499'); fb.classList.add('free-mode','is-free-mode'); } var ab=ctxZone.querySelector('.step2-context-abhol-badge'); if(ab) ab.style.opacity='1'; };
         tilesRow.appendChild(tile499);
         tilesRow.appendChild(tileHero);
         step2Wrap.appendChild(tilesRow);
         var ctxAbholBadge=ctxZone.querySelector('.step2-context-abhol-badge');
         if(ctxAbholBadge){ ctxAbholBadge.style.opacity=(w.data.pricingChoice==='pro'?'1':'0'); }
         step2Pane.appendChild(step2Wrap);
+        /* Step 3: Live-Erfolg [cite: 2026-02-21] */
+        var step3Pane=document.createElement('div');
+        step3Pane.className='inserat-step3-pane';
+        step3Pane.style.cssText='display:flex; flex-direction:column; flex:1; min-height:0;';
+        var step3ConfettiWrap=document.createElement('div');
+        step3ConfettiWrap.id='step3ConfettiContainer';
+        step3ConfettiWrap.className='success-confetti';
+        step3ConfettiWrap.style.cssText='position:absolute; inset:0; pointer-events:none; z-index:10; overflow:hidden;';
+        step3ConfettiWrap.setAttribute('aria-hidden','true');
+        step3Pane.appendChild(step3ConfettiWrap);
+        var step3Content=document.createElement('div');
+        step3Content.className='inserat-step3-content';
+        var successCheckWrap=document.createElement('div');
+        successCheckWrap.className='success-check-wrapper';
+        successCheckWrap.innerHTML='<div class="success-checkmark">LIVE</div>';
+        step3Content.appendChild(successCheckWrap);
+        var liveStatusCard=document.createElement('div');
+        liveStatusCard.className='live-status-card';
+        liveStatusCard.style.cssText='position:relative;';
+        var thumbS3=w.data.photoData||'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=400&q=60';
+        var cropS3=(typeof w.data.photoCropY==='number')?w.data.photoCropY:0;
+        var dishS3=(w.data.dish||'').trim()||'Gericht';
+        var priceS3=Number(w.data.price)||0;
+        var euroS3=typeof euro==='function'?euro(priceS3):(priceS3.toFixed(2).replace('.',',')+' €');
+        liveStatusCard.innerHTML='<div class="live-card-badge">Aktiv</div><img src="'+thumbS3+'" id="step3FinalImg" class="live-card-img" alt="" style="object-position:center '+(cropS3||0)+'px;"><div class="live-card-info"><h3 id="step3FinalTitle">'+esc(dishS3)+'</h3><p id="step3FinalPrice">'+euroS3+'</p><div class="final-abhol-box" id="step3AbholBox" style="display:none;"><span>Deine <strong>Abholnummer</strong>:</span><span class="abhol-id" id="step3AbholId">#A-01</span></div></div>';
+        step3Content.appendChild(liveStatusCard);
+        var successHint=document.createElement('p');
+        successHint.className='success-hint';
+        successHint.textContent='Dein Inserat ist jetzt für alle Kunden sichtbar.';
+        step3Content.appendChild(successHint);
+        step3Pane.appendChild(step3Content);
+        var step3Footer=document.createElement('footer');
+        step3Footer.className='airbnb-footer inserat-step3-footer';
+        step3Footer.style.cssText='position:fixed; left:0; right:0; bottom:0; z-index:500; display:none; flex-direction:row; align-items:center; justify-content:space-between; gap:16px; padding:12px max(16px, env(safe-area-inset-left)) max(12px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-right)); background:rgba(15,23,42,0.92); backdrop-filter:blur(30px); -webkit-backdrop-filter:blur(30px);';
+        var btnShare=document.createElement('button');
+        btnShare.type='button';
+        btnShare.className='footer-link-secondary sharing-trigger';
+        btnShare.id='footerShare';
+        btnShare.innerHTML='<span class="share-icon">📤</span> Teilen';
+        var btnFinish=document.createElement('button');
+        btnFinish.type='button';
+        btnFinish.className='footer-btn-primary';
+        btnFinish.id='footerFinish';
+        btnFinish.textContent='Zum Dashboard';
+        step3Footer.appendChild(btnShare);
+        step3Footer.appendChild(btnFinish);
+        step3Pane.appendChild(step3Footer);
+        btnShare.onclick=function(){ hapticLight(); if(typeof triggerLiveSharing==='function') triggerLiveSharing(); };
+        btnFinish.onclick=function(){ hapticLight(); if(typeof resetMastercardFromStep3==='function') resetMastercardFromStep3(); };
         track.appendChild(step1Pane);
         track.appendChild(step2Pane);
+        track.appendChild(step3Pane);
         slider.appendChild(track);
         var step2Sweep=document.createElement('div');
         step2Sweep.className='step2-slot-machine-sweep';
@@ -15609,7 +15663,7 @@
         var sizeRem = len > 20 ? Math.max(1.1, 1.5 - (len - 20) * 0.02) : 1.5;
         el.style.fontSize = sizeRem + 'rem';
       }
-      inputDish.oninput=function(){ w.data.dish=inputDish.value; saveDraft(); adjustTitleFontSize(); if(typeof checkMastercardValidation==='function') checkMastercardValidation(); };
+      inputDish.oninput=function(){ w.data.dish=inputDish.value; saveDraft(); adjustTitleFontSize(); if(typeof checkMastercardValidation==='function') checkMastercardValidation(); if(updateStep2ContextZoneRef) updateStep2ContextZoneRef(); };
       inputDish.onblur=function(){ dismissKeyboard(); hapticLight(); };
       stepName.appendChild(inputDish);
       scrollArea.appendChild(stepName);
@@ -15813,7 +15867,7 @@
         setTimeout(function(){ try{ inputPrice.focus(); }catch(err){} }, 150);
       });
       inputPrice.onblur=function(){ if(w.data.price>0) inputPrice.value=Number(w.data.price).toFixed(2).replace('.',','); dismissKeyboard(); hapticLight(); if(catPriceRow) catPriceRow.classList.remove('hero-morph-active'); };
-      inputPrice.oninput=()=>{ var v=inputPrice.value.replace(',','.'); w.data.price=parseFloat(v)||0; saveDraft(); updateProfit(v); hapticLight(); if(typeof checkMastercardValidation==='function') checkMastercardValidation(); };
+      inputPrice.oninput=()=>{ var v=inputPrice.value.replace(',','.'); w.data.price=parseFloat(v)||0; saveDraft(); updateProfit(v); hapticLight(); if(typeof checkMastercardValidation==='function') checkMastercardValidation(); if(updateStep2ContextZoneRef) updateStep2ContextZoneRef(); };
       inputPrice.onfocus=function(){ hapticLight(); };
       function checkMastercardValidation(){
         var name=(w.data.dish||'').trim();
@@ -15896,7 +15950,7 @@
         btnWeekPlan.type='button';
         btnWeekPlan.className='inserat-footer-btn-main footer-btn-primary';
         btnWeekPlan.id='footerNext';
-        btnWeekPlan.style.cssText='flex:1; min-height:56px; min-width:160px; padding:14px 24px; border:none; border-radius:12px; background:#fff; color:#0f172a; font-size:16px; font-weight:700; cursor:pointer;';
+        btnWeekPlan.style.cssText='flex:1; height:48px; min-width:180px; padding:0 24px; border:none; border-radius:12px; background:#fff; color:#0f172a; font-size:16px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center;';
         btnWeekPlan.textContent='Einplanen';
         btnWeekPlan.onclick=function(){
           if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; }
@@ -15931,11 +15985,12 @@
         btnWeiter.type='button';
         btnWeiter.className='inserat-footer-btn-main footer-btn-primary';
         btnWeiter.id='footerNext';
-        btnWeiter.style.cssText='flex:1; min-height:56px; min-width:160px; padding:14px 24px; border:none; border-radius:12px; background:#fff; color:#0f172a; font-size:16px; font-weight:700; cursor:pointer;';
+        btnWeiter.style.cssText='flex:1; height:48px; min-width:180px; padding:0 24px; border:none; border-radius:12px; background:#fff; color:#0f172a; font-size:16px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center;';
         btnWeiter.textContent='Weiter';
         btnWeiter.onclick=function(){
           hapticLight();
           if(typeof handlePriceFastInsert==='function') handlePriceFastInsert(box);
+          if(updateStep2ContextZoneRef) updateStep2ContextZoneRef();
           w.inseratStep=2; saveDraft();
           if(slider){
             var sweepEl=box.querySelector('.step2-slot-machine-sweep');
@@ -15966,7 +16021,7 @@
         btnEinplanen.type='button';
         btnEinplanen.className='inserat-footer-btn-main footer-btn-primary';
         btnEinplanen.id='footerNext';
-        btnEinplanen.style.cssText='flex:1; min-height:56px; min-width:160px; padding:14px 24px; border:none; border-radius:12px; background:#fff; color:#0f172a; font-size:16px; font-weight:700; cursor:pointer;';
+        btnEinplanen.style.cssText='flex:1; height:48px; min-width:180px; padding:0 24px; border:none; border-radius:12px; background:#fff; color:#0f172a; font-size:16px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center;';
         btnEinplanen.textContent='Einplanen';
         btnEinplanen.onclick=function(){
           if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; }
@@ -16007,14 +16062,14 @@
         var linkZurueck=document.createElement('button');
         linkZurueck.type='button';
         linkZurueck.className='inserat-footer-link';
-        linkZurueck.style.cssText='background:none; border:none; padding:12px 0; font-size:15px; font-weight:700; color:rgba(255,255,255,0.9); cursor:pointer; text-decoration:underline; text-underline-offset:4px; flex-shrink:0;';
+        linkZurueck.style.cssText='background:none; border:none; padding:12px 0; font-size:15px; font-weight:500; color:#ffffff; cursor:pointer; text-decoration:none; opacity:0.8; flex-shrink:0;';
         linkZurueck.textContent='Abbrechen';
         linkZurueck.className='inserat-footer-link footer-link-secondary';
         linkZurueck.id='footerCancel';
-        linkZurueck.onclick=function(){ hapticLight(); w.inseratStep=1; saveDraft(); if(slider) slider.setAttribute('data-inserat-step','1'); airbnbFooter.style.display='none'; var wizardEl=document.getElementById('wizard'); if(wizardEl) wizardEl.classList.remove('inserat-step2-active'); };
+        linkZurueck.onclick=function(){ hapticLight(); w.inseratStep=1; saveDraft(); if(slider) slider.setAttribute('data-inserat-step','1'); airbnbFooter.style.display='none'; var sf=box.querySelector('.inserat-step3-footer'); if(sf) sf.style.display='none'; var wizardEl=document.getElementById('wizard'); if(wizardEl){ wizardEl.classList.remove('inserat-step2-active'); wizardEl.classList.remove('inserat-step3-active'); } };
         var footerBtn=document.createElement('button');
         footerBtn.type='button';
-        footerBtn.className='inserat-footer-btn-main footer-btn-primary' + (w.data.pricingChoice==='499' ? ' inserat-footer-btn--499' : ' free-mode');
+        footerBtn.className='inserat-footer-btn-main footer-btn-primary' + (w.data.pricingChoice==='499' ? ' inserat-footer-btn--499' : ' free-mode is-free-mode');
         footerBtn.id='footerNext';
         footerBtn.textContent=(w.data.pricingChoice==='499' ? 'Jetzt für 4,99 € inserieren' : 'Jetzt kostenlos inserieren');
         footerBtn.onclick=function(){
@@ -16023,7 +16078,7 @@
           var choice=w.data.pricingChoice||'pro';
           if(choice==='499'){
             w.data.hasPickupCode=false; w.data.inseratFeeWaived=false; w.data.pricingOption=undefined;
-            var o=previewOfferFromWizard(); closeWizard(true); showPublishFeeModal(o);
+            var o=previewOfferFromWizard(); publishFeeUseStep3=true; showPublishFeeModal(o);
           } else {
             w.data.hasPickupCode=true; w.data.inseratFeeWaived=true; w.data.pricingOption='abholnummer';
             var o=previewOfferFromWizard();
@@ -16032,17 +16087,18 @@
             var isEditActiveS2=!!(existingOfferS2&&existingOfferS2.day===todayKeyS2&&existingOfferS2.active!==false);
             if(isEditActiveS2){
               var published=typeof publishOffer==='function'?publishOffer(o):null;
-              if(published){ closeWizard(true); if(typeof showInseratSuccessSheet==='function') showInseratSuccessSheet(published); else if(typeof showProviderHome==='function') showProviderHome(); return; }
+              if(published){ if(typeof slideWizardToStep3==='function') slideWizardToStep3(published); else { closeWizard(true); if(typeof showInseratSuccessSheet==='function') showInseratSuccessSheet(published); else if(typeof showProviderHome==='function') showProviderHome(); } return; }
             }
             var tileHeroEl=box.querySelector('.inserat-tile-smart');
             if(tileHeroEl){ tileHeroEl.classList.add('is-loading'); tileHeroEl.innerHTML='<span class="inserat-btn-spinner" style="width:24px;height:24px;border:3px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:inserat-spin 0.8s linear infinite;"></span>'; }
-            setTimeout(function(){ closeWizard(true); showPublishFeeModal(o); }, 800);
+            publishFeeUseStep3=true;
+            setTimeout(function(){ showPublishFeeModal(o); }, 800);
           }
         };
         airbnbFooter.appendChild(linkZurueck);
         airbnbFooter.appendChild(footerBtn);
         box.appendChild(airbnbFooter);
-        var updateFooterVisibility=function(){ var s=inseratStep; try{ var sl=box.querySelector('.inserat-steps-slider'); if(sl) s=parseInt(sl.getAttribute('data-inserat-step')||'1',10); }catch(e){} airbnbFooter.style.display=s===2?'flex':'none'; };
+        var updateFooterVisibility=function(){ var s=1; try{ var sl=box.querySelector('.inserat-steps-slider'); if(sl) s=parseInt(sl.getAttribute('data-inserat-step')||'1',10); }catch(e){} airbnbFooter.style.display=s===2?'flex':'none'; var sf=box.querySelector('.inserat-step3-footer'); if(sf) sf.style.display=s===3?'flex':'none'; };
         slider.addEventListener('transitionend', updateFooterVisibility);
         requestAnimationFrame(function(){ updateFooterVisibility(); });
       }
@@ -16361,6 +16417,7 @@
   function closePublishFeeModal(){
     publishFeePendingOffer = null;
     publishFeeSuccessCallback = null;
+    publishFeeUseStep3 = false;
     const bd = document.getElementById('publishFeeBd');
     const sheet = document.getElementById('publishFeeSheet');
     if(bd) bd.classList.remove('active');
@@ -16381,6 +16438,88 @@
   }
   if(typeof window !== 'undefined'){ window.showAddressRequiredModal = showAddressRequiredModal; window.closeAddressRequiredModal = closeAddressRequiredModal; }
   var inseratSuccessCurrentOffer = null; // für WhatsApp / QR / Social-Export
+  var publishFeeUseStep3 = false; // bei true: Slide zu Wizard-Step 3 statt Success-Sheet [cite: 2026-02-21]
+
+  /** Step 3: Slide-Track auf Erfolg, Konfetti, Abholnummer-Box [cite: 2026-02-21] */
+  function slideWizardToStep3(publishedOffer){
+    if(!publishedOffer) return;
+    inseratSuccessCurrentOffer = publishedOffer;
+    var d = normalizeOffer(publishedOffer);
+    var slider = document.querySelector('#wizard .inserat-steps-slider');
+    var box = document.querySelector('#wizard .liquid-master-panel');
+    if(!slider || !box) return;
+    var imgEl = document.getElementById('step3FinalImg');
+    var titleEl = document.getElementById('step3FinalTitle');
+    var priceEl = document.getElementById('step3FinalPrice');
+    var abholBox = document.getElementById('step3AbholBox');
+    var abholId = document.getElementById('step3AbholId');
+    if(imgEl) imgEl.src = d.imageUrl || d.photoData || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=400&q=60';
+    if(titleEl) titleEl.textContent = d.dish || d.title || 'Gericht';
+    if(priceEl) priceEl.textContent = (typeof euro === 'function' ? euro(d.price) : (Number(d.price || 0).toFixed(2).replace('.', ',') + ' €'));
+    if(abholBox) abholBox.style.display = (d.hasPickupCode ? 'block' : 'none');
+    if(abholId){
+      var todayKey = typeof isoDate === 'function' ? isoDate(new Date()) : '';
+      var todayOrders = (typeof loadOrders === 'function' ? loadOrders() : []).filter(function(o){
+        var off = (typeof offers !== 'undefined' ? offers : []).find(function(x){ return x.id === o.dishId; });
+        return off && off.providerId === (typeof providerId === 'function' ? providerId() : '') && o.status === 'PAID';
+      });
+      var todayOffers = (typeof offers !== 'undefined' ? offers : []).filter(function(o){ return o.providerId === (typeof providerId === 'function' ? providerId() : '') && o.day === todayKey; }).sort(function(a,b){ return (a.createdAt || 0) - (b.createdAt || 0); });
+      var idx = todayOffers.findIndex(function(o){ return o.id === publishedOffer.id; });
+      var letter = idx >= 0 ? String.fromCharCode(65 + Math.min(idx, 4)) : 'A';
+      abholId.textContent = '#' + letter + '-' + String(todayOrders.length + 1).padStart(2, '0');
+    }
+    var step3Container = document.getElementById('step3ConfettiContainer');
+    if(step3Container){
+      step3Container.innerHTML = '';
+      var colors = ['#10b981', '#059669', '#34d399', '#6ee7b7', '#a7f3d0', '#FACC15'];
+      for(var i = 0; i < 50; i++){
+        var c = document.createElement('div');
+        c.className = 'confetti';
+        c.style.cssText = 'position:absolute; left:' + (Math.random() * 100) + '%; width:' + (Math.random() * 8 + 5) + 'px; height:' + (Math.random() * 8 + 5) + 'px; background:' + colors[Math.floor(Math.random() * colors.length)] + '; animation:confetti-fall 3s linear forwards; animation-delay:' + (Math.random() * 2) + 's; animation-duration:' + (Math.random() * 2 + 2) + 's;';
+        step3Container.appendChild(c);
+      }
+    }
+    if(navigator.vibrate) navigator.vibrate([50, 30, 50]);
+    slider.setAttribute('data-inserat-step', '3');
+    var wizardEl = document.getElementById('wizard');
+    if(wizardEl) wizardEl.classList.add('inserat-step3-active');
+    var airbnbFooter = box.querySelector('.inserat-airbnb-footer');
+    var step3Footer = box.querySelector('.inserat-step3-footer');
+    if(airbnbFooter) airbnbFooter.style.display = 'none';
+    if(step3Footer){ step3Footer.style.display = 'flex'; }
+  }
+
+  /** Sharing: navigator.share oder WhatsApp-Fallback [cite: 2026-02-21] */
+  async function triggerLiveSharing(){
+    var o = inseratSuccessCurrentOffer;
+    var d = o ? normalizeOffer(o) : {};
+    var dishName = d.dish || d.title || 'unser neues Gericht';
+    var price = typeof d.price === 'number' ? d.price.toFixed(2).replace('.', ',') + ' €' : (d.price || 'Tagespreis');
+    var shareUrl = o && typeof buildOfferShareUrl === 'function' ? buildOfferShareUrl(o) : (location.origin + (location.pathname || ''));
+    var shareText = '🔥 Frisch inseriert: ' + dishName + ' für nur ' + price + '!\n\nHier ansehen und direkt abholen:';
+    try {
+      if(navigator.share){
+        await navigator.share({ title: 'Mein neues Inserat', text: shareText, url: shareUrl });
+        if(navigator.vibrate) navigator.vibrate(10);
+        if(typeof showToast === 'function') showToast('Geteilt 📤');
+      } else {
+        var waUrl = 'https://wa.me/?text=' + encodeURIComponent(shareText + ' ' + shareUrl);
+        window.open(waUrl, '_blank', 'noopener');
+        if(typeof showToast === 'function') showToast('WhatsApp geöffnet 📤');
+      }
+    } catch(err) {
+      if(err.name !== 'AbortError'){
+        var waUrl = 'https://wa.me/?text=' + encodeURIComponent(shareText + ' ' + shareUrl);
+        window.open(waUrl, '_blank', 'noopener');
+      }
+    }
+  }
+
+  /** Step 3 Exit: Wizard schließen, Dashboard anzeigen [cite: 2026-02-21] */
+  function resetMastercardFromStep3(){
+    closeWizard(true);
+    navigateAfterWizardExit('dashboard');
+  }
 
   function buildOfferShareUrl(offer){
     const id = offer && (offer.id || offer);
@@ -16675,13 +16814,16 @@
         if(published){
           if(syncToCookbook && published.cookbookId && typeof syncOfferToCookbookEntry === 'function') syncOfferToCookbookEntry(published);
           if(typeof showToast === 'function') showToast('Inserat ist live! 🚀');
-          if(typeof onSuccess === 'function'){ try { onSuccess(); } catch(e){ console.error(e); } }
+          if(typeof onSuccess === 'function'){ try { onSuccess(published); } catch(e){ console.error(e); } }
           var glow = document.getElementById('publishFeeSuccessGlow');
           if(glow){ glow.classList.add('animate'); }
           setTimeout(function(){
             closePublishFeeModal();
             if(glow) glow.classList.remove('animate');
-            if(typeof showInseratSuccessSheet === 'function') showInseratSuccessSheet(published);
+            if(publishFeeUseStep3 && typeof slideWizardToStep3 === 'function'){
+              publishFeeUseStep3 = false;
+              slideWizardToStep3(published);
+            } else if(typeof showInseratSuccessSheet === 'function') showInseratSuccessSheet(published);
             else if(typeof showProviderHome === 'function') showProviderHome();
           }, 620);
         } else {
