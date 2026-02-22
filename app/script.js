@@ -14639,7 +14639,21 @@
     if(!w || !w.data || typeof window === 'undefined' || !window._wizardInitialDataSnapshot) return false;
     return JSON.stringify(w.data) !== JSON.stringify(window._wizardInitialDataSnapshot);
   }
-  /** Universal-X: Prüft Dirty, zeigt ggf. Save-Prompt, sonst pop-away + close + navigate [cite: 2026-02-16] */
+  /** Schließt die Mastercard mit S25-Slide-Down (translateY 100%) [cite: 2026-02-21] */
+  function closeMastercardSlideDown(panel, entryPoint){
+    entryPoint = entryPoint || (w && w.ctx && w.ctx.entryPoint) || 'dashboard';
+    var card = panel || document.querySelector('#wizard .mastercard-container, #wizard .liquid-master-panel');
+    var overlay = document.getElementById('wbd');
+    if(card){ card.classList.remove('is-open'); }
+    if(overlay) overlay.classList.remove('active');
+    document.body.style.overflow = '';
+    setTimeout(function(){
+      closeWizard(true);
+      navigateAfterWizardExit(entryPoint);
+    }, 500);
+  }
+
+  /** Universal-X: Prüft Dirty, zeigt ggf. Save-Prompt, sonst Slide-Down + close + navigate [cite: 2026-02-16, 2026-02-21] */
   function handleWizardExit(panel){
     if(!w || w.kind !== 'listing'){ var p = panel || document.querySelector('#wizard .liquid-master-panel'); if(p && !p.classList.contains('x-pop-away')){ p.classList.add('x-pop-away'); setTimeout(function(){ closeWizard(); navigateAfterWizardExit('dashboard'); }, 280); } else { closeWizard(); navigateAfterWizardExit('dashboard'); } return; }
     var entryPoint = (w.ctx && w.ctx.entryPoint) || 'dashboard';
@@ -14663,7 +14677,9 @@
       return;
     }
     var p = panel || document.querySelector('#wizard .liquid-master-panel');
-    if(p && !p.classList.contains('x-pop-away')){ p.classList.add('x-pop-away'); setTimeout(function(){ closeWizard(); navigateAfterWizardExit(entryPoint); }, 280); } else { closeWizard(); navigateAfterWizardExit(entryPoint); }
+    if(p && p.classList.contains('mastercard-container')){
+      closeMastercardSlideDown(p, entryPoint);
+    } else if(p && !p.classList.contains('x-pop-away')){ p.classList.add('x-pop-away'); setTimeout(function(){ closeWizard(); navigateAfterWizardExit(entryPoint); }, 280); } else { closeWizard(); navigateAfterWizardExit(entryPoint); }
   }
 
   /**
@@ -16172,6 +16188,7 @@
         window.visualViewport.addEventListener('scroll', vvHandler);
       }
       setWizardContent(sheet);
+      requestAnimationFrame(function(){ requestAnimationFrame(function(){ box.classList.add('is-open'); }); });
       // Guided Interaction: leere Karte → Fokus Namensfeld (blinkender Cursor), kein Foto → Pulsieren [cite: 2026-01-29]
       setTimeout(function(){
         var isEmpty = !(w.data.dish && String(w.data.dish).trim()) && !w.data.photoData;

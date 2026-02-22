@@ -1622,6 +1622,85 @@
       padding: 0 !important;
       border: none !important;
       border-radius: 0 !important;
+      transform: translateY(100%);
+      transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+    }
+    #wizard[data-flow="listing"] .mastercard-container.is-open {
+      transform: translateY(0);
+    }
+    /* mastercard-overlay: Hintergrund-Dimmer für Slide-Down [cite: 2026-02-21] */
+    .mastercard-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      pointer-events: none;
+      z-index: 1999;
+    }
+    .mastercard-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    /* Radikale Schlichtheit: Riesige Inputs ohne Rahmen [cite: 2026-02-21] */
+    #wizard[data-flow="listing"] .input-name-giant,
+    #wizard[data-flow="listing"] #step-name input.ghost-input.inserat-detail-style-title {
+      width: 100%;
+      border: none;
+      font-size: clamp(24px, 6vw, 32px);
+      font-weight: 900;
+      text-align: center;
+      color: #0f172a;
+      padding: 16px 0;
+      outline: none;
+      background: transparent;
+    }
+    #wizard[data-flow="listing"] .input-price-giant,
+    #wizard[data-flow="listing"] .inserat-price-pill-input {
+      border: none;
+      font-size: clamp(32px, 8vw, 48px);
+      font-weight: 900;
+      text-align: center;
+      color: #0f172a;
+      width: 160px;
+      outline: none;
+      background: transparent;
+    }
+    .minimal-divider {
+      width: 40px;
+      height: 4px;
+      background: #f1f5f9;
+      margin: 10px auto;
+      border-radius: 2px;
+    }
+    /* Airbnb-Glow: Button atmet bei Validierung [cite: 2026-02-21] */
+    .footer-btn-primary-glow,
+    #wizard[data-flow="listing"] .inserat-step1-nav .footer-btn-primary.is-ready {
+      background: #ffffff;
+      color: #0f172a;
+      height: 56px;
+      min-width: 180px;
+      border-radius: 16px;
+      font-size: 18px;
+      font-weight: 800;
+      border: none;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .footer-btn-primary-glow.is-ready,
+    #wizard[data-flow="listing"] .inserat-step1-nav .footer-btn-primary.is-ready {
+      box-shadow: 0 0 25px rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+    }
+    .airbnb-footer-minimal,
+    #wizard[data-flow="listing"] .inserat-step1-nav.inserat-immo-footer {
+      background: #0f172a;
+      padding: 16px 24px max(34px, env(safe-area-inset-bottom));
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 0 !important;
+      border-radius: 0 !important;
     }
     /* 2. FIXED HEADER: Bleibt oben stehen */
     #wizard[data-flow="listing"] .mastercard-header {
