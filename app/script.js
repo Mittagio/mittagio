@@ -15464,7 +15464,7 @@
       // ========== 1. EBENE (eBay-Header): Photo-Section 220px, Kamera right:56px, X right:12px [cite: 2026-02-21] ==========
       const photoTile=document.createElement('div');
       photoTile.className='inserat-photo-tile photo-section photo-header' + (w.data.photoData ? '' : ' pulse-soft');
-      photoTile.style.cssText='position:relative; overflow:hidden; flex-shrink:0; width:100%; height:200px; min-height:200px; max-height:200px;';
+      photoTile.style.cssText='position:relative; overflow:hidden; flex-shrink:0; width:100%; height:220px; min-height:220px; max-height:220px;';
       var closeX=document.createElement('div');
       closeX.className='close-wizard-x close-mastercard btn-close-master';
       closeX.setAttribute('role','button');
@@ -15582,6 +15582,7 @@
       };
 
       const scrollArea=document.createElement('div');
+      scrollArea.id='mastercardScrollArea';
       scrollArea.className='inserat-scroll-area mastercard-content scroll-content inserat-scroll-with-photo';
       photoTile.classList.add('inserat-photo-in-scroll');
       scrollArea.appendChild(photoTile);
@@ -15594,6 +15595,7 @@
       /* Autovervollständigung Gerichtsnamen entfernt [cite: 2026-02-21] */
       const inputDish=document.createElement('input');
       inputDish.id='gericht-name';
+      inputDish.setAttribute('autocomplete','off');
       inputDish.type='text';
       inputDish.className='ghost-input inserat-detail-style-title magnet-input inserat-gericht-name-extra';
       inputDish.value=w.data.dish||'';
@@ -15607,7 +15609,7 @@
         var sizeRem = len > 20 ? Math.max(1.1, 1.5 - (len - 20) * 0.02) : 1.5;
         el.style.fontSize = sizeRem + 'rem';
       }
-      inputDish.oninput=function(){ w.data.dish=inputDish.value; saveDraft(); adjustTitleFontSize(); };
+      inputDish.oninput=function(){ w.data.dish=inputDish.value; saveDraft(); adjustTitleFontSize(); if(typeof checkMastercardValidation==='function') checkMastercardValidation(); };
       inputDish.onblur=function(){ dismissKeyboard(); hapticLight(); };
       stepName.appendChild(inputDish);
       scrollArea.appendChild(stepName);
@@ -15657,6 +15659,10 @@
       }
       var profileDineIn = (provider.profile && provider.profile.dineInPossibleDefault !== undefined) ? !!provider.profile.dineInPossibleDefault : true;
       addPowerPillStatic('🍴','Vor Ort', profileDineIn);
+      var profileAbholnummer = !!(provider.profile && provider.profile.abholnummerEnabledByDefault);
+      if(profileAbholnummer){
+        addPowerPillStatic('🧾','Abholnummer', !!(w.data.hasPickupCode));
+      }
       addPowerPill('🔄','Mehrweg', hasReuse, 'reuse');
       const hasTimeValue=!!(w.data.pickupWindow&&w.data.pickupWindow.trim())||(w.data.mealStart&&w.data.mealEnd);
       const timePill=document.createElement('button');
@@ -15769,6 +15775,7 @@
       stepPriceWrap.className='inserat-price-pill-wrap price-input-wrapper';
       const inputPrice=document.createElement('input');
       inputPrice.type='text';
+      inputPrice.id='gericht-preis';
       inputPrice.className='inserat-price-pill-input inserat-price-fintech inserat-price-input price-field';
       inputPrice.setAttribute('inputmode','decimal');
       inputPrice.placeholder='8,90 €';
@@ -15806,9 +15813,16 @@
         setTimeout(function(){ try{ inputPrice.focus(); }catch(err){} }, 150);
       });
       inputPrice.onblur=function(){ if(w.data.price>0) inputPrice.value=Number(w.data.price).toFixed(2).replace('.',','); dismissKeyboard(); hapticLight(); if(catPriceRow) catPriceRow.classList.remove('hero-morph-active'); };
-      inputPrice.oninput=()=>{ var v=inputPrice.value.replace(',','.'); w.data.price=parseFloat(v)||0; saveDraft(); updateProfit(v); hapticLight(); };
+      inputPrice.oninput=()=>{ var v=inputPrice.value.replace(',','.'); w.data.price=parseFloat(v)||0; saveDraft(); updateProfit(v); hapticLight(); if(typeof checkMastercardValidation==='function') checkMastercardValidation(); };
       inputPrice.onfocus=function(){ hapticLight(); };
-      requestAnimationFrame(function(){ requestAnimationFrame(function(){ if(typeof adjustTitleFontSize === 'function') adjustTitleFontSize(); }); });
+      function checkMastercardValidation(){
+        var name=(w.data.dish||'').trim();
+        var price=Number(w.data.price)||0;
+        var primaryBtn=box.querySelector('#inserat-action-section .footer-btn-primary, #inserat-action-section .inserat-footer-btn-main');
+        if(!primaryBtn) return;
+        if(name.length>2&&price>0){ primaryBtn.classList.add('is-ready'); } else { primaryBtn.classList.remove('is-ready'); }
+      }
+      requestAnimationFrame(function(){ requestAnimationFrame(function(){ if(typeof adjustTitleFontSize === 'function') adjustTitleFontSize(); if(typeof checkMastercardValidation === 'function') checkMastercardValidation(); }); });
 
       // Verdienstvorschau (MODE_AD): Dein Verdienst bei 30 Portionen [cite: Master-Prompt 2026-02-19] – ausblenden bei Fast-Track (nur Inhalte bearbeiten)
       if(!isPlanMode && !isFastTrack && entryPoint === 'dashboard'){
@@ -15874,17 +15888,14 @@
         linkCookOnly.type='button';
         linkCookOnly.className='inserat-footer-link footer-link-secondary';
         linkCookOnly.style.cssText='background:none; border:none; padding:12px 0; font-size:15px; font-weight:500; color:#fff; cursor:pointer; text-decoration:none; opacity:0.8;';
-        linkCookOnly.textContent='Nur speichern';
+        linkCookOnly.textContent='Abbrechen';
         linkCookOnly.classList.add('footer-link-secondary');
-        linkCookOnly.onclick=function(){
-          if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; }
-          if(typeof haptic==='function') haptic(50);
-          var id=saveToCookbookFromWizard();
-          if(id){ closeWizard(true); showSaveSuccessSheet({ title:'Im Kochbuch gespeichert', sub:'Dein Gericht ist in deinem Kochbuch.', dishName: w.data.dish||'', price: w.data.price, imageUrl: w.data.photoData||'', savedEntryId: id, savedDay: null, onFertig: function(){ if(typeof showToast==='function') showToast('Gericht im Kochbuch aktualisiert 📖'); if(typeof showProviderCookbook==='function') showProviderCookbook(); }, onLive: null }); }
-        };
+        linkCookOnly.id='footerCancel';
+        linkCookOnly.onclick=function(){ hapticLight(); closeWizard(); };
         var btnWeekPlan=document.createElement('button');
         btnWeekPlan.type='button';
         btnWeekPlan.className='inserat-footer-btn-main footer-btn-primary';
+        btnWeekPlan.id='footerNext';
         btnWeekPlan.style.cssText='flex:1; min-height:56px; min-width:160px; padding:14px 24px; border:none; border-radius:12px; background:#fff; color:#0f172a; font-size:16px; font-weight:700; cursor:pointer;';
         btnWeekPlan.textContent='Einplanen';
         btnWeekPlan.onclick=function(){
@@ -15912,14 +15923,16 @@
         linkSpeichern.type='button';
         linkSpeichern.className='inserat-footer-link footer-link-secondary';
         linkSpeichern.style.cssText='background:none; border:none; padding:12px 0; font-size:15px; font-weight:500; color:#fff; cursor:pointer; text-decoration:none; opacity:0.8;';
-        linkSpeichern.textContent='Speichern in...';
+        linkSpeichern.textContent='Abbrechen';
         linkSpeichern.classList.add('footer-link-secondary');
-        linkSpeichern.onclick=function(){ hapticLight(); if(typeof showSaveScopeDialog==='function') showSaveScopeDialog({ onlyCurrent: function(){ saveDraft(); if(typeof showToast==='function') showToast('Als Entwurf gespeichert'); }, saveToCookbook: function(){ if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; } var id=saveToCookbookFromWizard(); if(id){ closeWizard(true); showSaveSuccessSheet({ title:'Im Kochbuch gespeichert', sub:'Dein Gericht ist in deinem Kochbuch.', dishName: w.data.dish||'', price: w.data.price, imageUrl: w.data.photoData||'', savedEntryId: id, savedDay: null, onFertig: function(){ if(typeof showToast==='function') showToast('Gericht im Kochbuch aktualisiert 📖'); if(typeof showProviderCookbook==='function') showProviderCookbook(); }, onLive: null }); } } }); };
+        linkSpeichern.id='footerCancel';
+        linkSpeichern.onclick=function(){ hapticLight(); closeWizard(); };
         var btnWeiter=document.createElement('button');
         btnWeiter.type='button';
         btnWeiter.className='inserat-footer-btn-main footer-btn-primary';
+        btnWeiter.id='footerNext';
         btnWeiter.style.cssText='flex:1; min-height:56px; min-width:160px; padding:14px 24px; border:none; border-radius:12px; background:#fff; color:#0f172a; font-size:16px; font-weight:700; cursor:pointer;';
-        btnWeiter.textContent='Weiter zur Veröffentlichung';
+        btnWeiter.textContent='Weiter';
         btnWeiter.onclick=function(){
           hapticLight();
           if(typeof handlePriceFastInsert==='function') handlePriceFastInsert(box);
@@ -15945,17 +15958,14 @@
         linkKochbuch.type='button';
         linkKochbuch.className='inserat-footer-link footer-link-secondary';
         linkKochbuch.style.cssText='background:none; border:none; padding:12px 0; font-size:15px; font-weight:500; color:#fff; cursor:pointer; text-decoration:none; opacity:0.8;';
-        linkKochbuch.textContent='Nur speichern';
+        linkKochbuch.textContent='Abbrechen';
         linkKochbuch.classList.add('footer-link-secondary');
-        linkKochbuch.onclick=function(){
-          if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; }
-          if(typeof haptic==='function') haptic(50);
-          var id=saveToCookbookFromWizard();
-          if(id){ closeWizard(true); showSaveSuccessSheet({ title:'Im Kochbuch gespeichert', sub:'Dein Gericht ist in deinem Kochbuch.', dishName: w.data.dish||'', price: w.data.price, imageUrl: w.data.photoData||'', savedEntryId: id, savedDay: null, onFertig: function(){ if(typeof showToast==='function') showToast('Gericht im Kochbuch aktualisiert 📖'); if(typeof showProviderCookbook==='function') showProviderCookbook(); }, onLive: null }); }
-        };
+        linkKochbuch.id='footerCancel';
+        linkKochbuch.onclick=function(){ hapticLight(); closeWizard(); };
         var btnEinplanen=document.createElement('button');
         btnEinplanen.type='button';
         btnEinplanen.className='inserat-footer-btn-main footer-btn-primary';
+        btnEinplanen.id='footerNext';
         btnEinplanen.style.cssText='flex:1; min-height:56px; min-width:160px; padding:14px 24px; border:none; border-radius:12px; background:#fff; color:#0f172a; font-size:16px; font-weight:700; cursor:pointer;';
         btnEinplanen.textContent='Einplanen';
         btnEinplanen.onclick=function(){
@@ -15998,14 +16008,14 @@
         linkZurueck.type='button';
         linkZurueck.className='inserat-footer-link';
         linkZurueck.style.cssText='background:none; border:none; padding:12px 0; font-size:15px; font-weight:700; color:rgba(255,255,255,0.9); cursor:pointer; text-decoration:underline; text-underline-offset:4px; flex-shrink:0;';
-        linkZurueck.textContent='← Zurück';
+        linkZurueck.textContent='Abbrechen';
         linkZurueck.className='inserat-footer-link footer-link-secondary';
-        linkZurueck.id='footerBtnSecondary';
+        linkZurueck.id='footerCancel';
         linkZurueck.onclick=function(){ hapticLight(); w.inseratStep=1; saveDraft(); if(slider) slider.setAttribute('data-inserat-step','1'); airbnbFooter.style.display='none'; var wizardEl=document.getElementById('wizard'); if(wizardEl) wizardEl.classList.remove('inserat-step2-active'); };
         var footerBtn=document.createElement('button');
         footerBtn.type='button';
         footerBtn.className='inserat-footer-btn-main footer-btn-primary' + (w.data.pricingChoice==='499' ? ' inserat-footer-btn--499' : ' free-mode');
-        footerBtn.id='footerBtnPrimary';
+        footerBtn.id='footerNext';
         footerBtn.textContent=(w.data.pricingChoice==='499' ? 'Jetzt für 4,99 € inserieren' : 'Jetzt kostenlos inserieren');
         footerBtn.onclick=function(){
           if(!(!!(w.data.dish&&String(w.data.dish).trim())&&Number(w.data.price)>0)){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; }
