@@ -15486,55 +15486,54 @@
         track.className='inserat-steps-track';
         var step1Pane=document.createElement('div');
         step1Pane.className='inserat-step1-pane';
+        step1Pane.id='mastercard-step-edit';
         var step2Pane=document.createElement('div');
         step2Pane.className='inserat-step2-pane';
         step1Container=step1Pane;
-        /* Step 2: Bold Selection – Kontext-Zone + vertikal gestapelte Kacheln [cite: 2026-02-21] */
+        /* Step 2: Monetarisierung – zwei vertikale Kacheln [cite: Drei-Schritte-Gesetz 2026-02-21] */
         var step2Wrap=document.createElement('div');
-        step2Wrap.className='inserat-step2-wrap inserat-step2-immo';
-        step2Wrap.style.cssText='display:flex; flex-direction:column; flex:1; min-height:0; overflow-y:auto; padding:16px; padding-bottom:calc(120px + env(safe-area-inset-bottom, 0));';
-        var ctxZone=document.createElement('div');
-        ctxZone.className='inserat-step2-context-zone';
-        ctxZone.style.cssText='display:flex; align-items:center; gap:12px; padding:12px 0; margin-bottom:20px; flex-shrink:0; border-bottom:1px solid rgba(15,23,42,0.08);';
+        step2Wrap.className='inserat-step2-wrap mastercard-step-money';
+        step2Wrap.style.cssText='display:flex; flex-direction:column; flex:1; min-height:0; overflow-y:auto; padding:20px; padding-bottom:calc(120px + env(safe-area-inset-bottom, 0));';
         var thumbUrl=w.data.photoData||'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=200&q=60';
         var objPos2=(typeof w.data.photoObjectPosition==='number')?w.data.photoObjectPosition:(typeof w.data.photoCropY==='number'?Math.round(50+(w.data.photoCropY/80)*50):50);
         var dishNameS2=(w.data.dish||'').trim()||'Gericht';
         var priceS2=Number(w.data.price)||0;
         var euroS2=typeof euro==='function'?euro(priceS2):(priceS2.toFixed(2).replace('.',',')+' €');
-        ctxZone.innerHTML='<div class="step2-context-thumb" style="width:56px;height:56px;border-radius:12px;overflow:hidden;background:#e8ecf0;flex-shrink:0;position:relative;"><img src="'+thumbUrl+'" alt="" style="width:100%;height:100%;object-fit:cover;object-position:center '+objPos2+'%;"><span class="step2-context-abhol-badge" style="position:absolute;bottom:4px;right:4px;padding:2px 6px;border-radius:6px;background:rgba(15,23,42,0.9);color:#fff;font-size:10px;font-weight:800;opacity:0;transition:opacity 0.25s;">🧾</span></div><div style="flex:1;min-width:0;"><div style="font-size:17px;font-weight:900;color:#0f172a;">'+esc(dishNameS2)+'</div><div style="font-size:15px;font-weight:700;color:#64748b;">'+euroS2+'</div></div>';
-        step2Wrap.appendChild(ctxZone);
-        /* Step 2 Context Live-Sync: Name und Preis aus Schritt 1 live in step2-context-zone [cite: 2026-02-21] */
-        updateStep2ContextZoneRef = function(){ if(!ctxZone||!ctxZone.isConnected) return; var t=w.data.photoData||'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=200&q=60'; var op=(typeof w.data.photoObjectPosition==='number')?w.data.photoObjectPosition:(typeof w.data.photoCropY==='number'?Math.round(50+(w.data.photoCropY/80)*50):50); var dn=(w.data.dish||'').trim()||'Gericht'; var pr=Number(w.data.price)||0; var eu=typeof euro==='function'?euro(pr):(pr.toFixed(2).replace('.',',')+' €'); var ab=(w.data.pricingChoice==='pro')?'1':'0'; ctxZone.innerHTML='<div class="step2-context-thumb" style="width:56px;height:56px;border-radius:12px;overflow:hidden;background:#e8ecf0;flex-shrink:0;position:relative;"><img src="'+t+'" alt="" style="width:100%;height:100%;object-fit:cover;object-position:center '+op+'%;"><span class="step2-context-abhol-badge" style="position:absolute;bottom:4px;right:4px;padding:2px 6px;border-radius:6px;background:rgba(15,23,42,0.9);color:#fff;font-size:10px;font-weight:800;opacity:'+ab+';transition:opacity 0.25s;">🧾</span></div><div style="flex:1;min-width:0;"><div style="font-size:17px;font-weight:900;color:#0f172a;">'+esc(dn)+'</div><div style="font-size:15px;font-weight:700;color:#64748b;">'+eu+'</div></div>'; };
-        var tilesRow=document.createElement('div');
-        tilesRow.className='inserat-decision-tiles inserat-step2-tiles-vertical pricing-grid pricing-selection-area';
-        var hasDishS2=!!(w.data.dish&&String(w.data.dish).trim());
-        var hasPriceS2=Number(w.data.price)>0;
-        var primaryValidS2=hasDishS2&&hasPriceS2;
+        var miniPreview=document.createElement('div');
+        miniPreview.className='mini-dish-preview';
+        miniPreview.style.cssText='display:flex; align-items:center; gap:12px; padding:12px 0; margin-bottom:16px; border-bottom:1px solid rgba(15,23,42,0.08); flex-shrink:0;';
+        miniPreview.innerHTML='<img src="'+thumbUrl+'" id="money-dish-img" class="mini-thumb" alt="" style="width:56px;height:56px;border-radius:12px;object-fit:cover;object-position:center '+objPos2+'%; background:#e8ecf0;"><div class="mini-details" style="flex:1;min-width:0;"><h3 id="money-dish-name" style="margin:0;font-size:17px;font-weight:900;color:#0f172a;">'+esc(dishNameS2)+'</h3><span id="money-dish-price" style="font-size:15px;font-weight:700;color:#64748b;">'+euroS2+'</span></div>';
+        step2Wrap.appendChild(miniPreview);
+        updateStep2ContextZoneRef=function(){ if(!miniPreview||!miniPreview.isConnected) return; var t=w.data.photoData||'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=200&q=60'; var op=(typeof w.data.photoObjectPosition==='number')?w.data.photoObjectPosition:(typeof w.data.photoCropY==='number'?Math.round(50+(w.data.photoCropY/80)*50):50); var dn=(w.data.dish||'').trim()||'Gericht'; var pr=Number(w.data.price)||0; var eu=typeof euro==='function'?euro(pr):(pr.toFixed(2).replace('.',',')+' €'); var imgEl=document.getElementById('money-dish-img'); var nameEl=document.getElementById('money-dish-name'); var priceEl=document.getElementById('money-dish-price'); if(imgEl){ imgEl.src=t; imgEl.style.objectPosition='center '+op+'%'; } if(nameEl) nameEl.textContent=dn; if(priceEl) priceEl.textContent=eu; };
+        var moneyHeadline=document.createElement('h2');
+        moneyHeadline.className='money-headline';
+        moneyHeadline.textContent='Wähle dein Paket';
+        moneyHeadline.style.cssText='margin:0 0 20px; font-size:18px; font-weight:800; color:#0f172a;';
+        step2Wrap.appendChild(moneyHeadline);
+        var pricingContainer=document.createElement('div');
+        pricingContainer.className='pricing-container';
+        pricingContainer.style.cssText='display:flex; gap:16px; padding:0; margin-top:0; flex:1; flex-wrap:wrap;';
         var existingOfferS2=(w.ctx&&w.ctx.editOfferId&&typeof offers!=='undefined')?offers.find(function(o){return o.id===w.ctx.editOfferId;}):null;
         var todayKeyS2=typeof isoDate==='function'?isoDate(new Date()):'';
         var isEditActiveS2=!!(existingOfferS2&&existingOfferS2.day===todayKeyS2&&existingOfferS2.active!==false);
-        var doPublish499=function(){ w.data.hasPickupCode=false; w.data.pricingOption=undefined; w.data.inseratFeeWaived=false; var o=previewOfferFromWizard(); publishFeeUseStep3=true; showPublishFeeModal(o, null); };
-        var doPublishPro=function(){ if(tileHero.classList.contains('is-loading')) return; w.data.hasPickupCode=true; w.data.inseratFeeWaived=true; w.data.pricingOption='abholnummer'; var o=previewOfferFromWizard(); if(isEditActiveS2){ var published=typeof publishOffer==='function'?publishOffer(o):null; if(published){ if(typeof slideWizardToStep3==='function') slideWizardToStep3(published); else { closeWizard(true); if(typeof showInseratSuccessSheet==='function') showInseratSuccessSheet(published); else if(typeof showProviderHome==='function') showProviderHome(); } } return; } tileHero.classList.add('is-loading'); tileHero.innerHTML='<span class="inserat-btn-spinner" style="width:24px;height:24px;border:3px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:inserat-spin 0.8s linear infinite;"></span>'; publishFeeUseStep3=true; setTimeout(function(){ showPublishFeeModal(o, null); }, 800); };
         if(!w.data.pricingChoice) w.data.pricingChoice = 'pro';
-        var tile499=document.createElement('button');
-        tile499.type='button';
-        tile499.className='inserat-decision-tile inserat-tile-basis pricing-card' + (w.data.pricingChoice==='499' ? ' is-selected selected' : '');
-        tile499.style.cssText='padding:24px; border-radius:12px; background:#fff; cursor:pointer; text-align:left; transition:all 0.4s cubic-bezier(0.175,0.885,0.32,1.275); overflow:hidden;';
-        tile499.innerHTML='<h3 class="pricing-card-label" style="font-size:17px;font-weight:800;margin:0 0 8px;color:#0f172a;">Einmalig Inserieren</h3><span class="pricing-card-price" style="font-size:22px;font-weight:900;color:#0f172a;">4,99 €</span><p class="pricing-card-sub" style="font-size:13px;color:#64748b;margin:10px 0 0;line-height:1.4;">Kein Abo, keine Laufzeit. Einmalig bis das Inserat gelöscht wird.</p>';
-        tile499.onclick=function(){ hapticLight(); w.data.pricingChoice='499'; w.data.hasPickupCode=false; tile499.classList.add('is-selected','selected'); tileHero.classList.remove('is-selected','selected'); saveDraft(); var fb=box.querySelector('.inserat-airbnb-footer .inserat-footer-btn-main'); if(fb){ fb.textContent='Jetzt für 4,99 € inserieren'; fb.classList.add('inserat-footer-btn--499'); fb.classList.remove('free-mode','is-free-mode'); } var ab=ctxZone.querySelector('.step2-context-abhol-badge'); if(ab) ab.style.opacity='0'; };
-        var tileHero=document.createElement('button');
-        tileHero.type='button';
-        tileHero.className='inserat-decision-tile inserat-tile-smart pricing-card' + (w.data.pricingChoice==='pro' ? ' is-selected selected' : '');
-        tileHero.setAttribute('data-type','free');
-        tileHero.style.cssText='padding:24px; border-radius:12px; background:#fff; cursor:pointer; text-align:left; transition:all 0.4s cubic-bezier(0.175,0.885,0.32,1.275); overflow:hidden;';
-        tileHero.innerHTML='<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;"><h3 class="pricing-card-label" style="font-size:17px;font-weight:800;margin:0;color:#0f172a;">Kostenlos Inserieren</h3><span class="price-massive" style="font-size:3.8rem;font-weight:900;line-height:1;color:#0f172a;">0,00 €</span></div><div class="fair-fee-badge" style="display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:10px;background:rgba(15,23,42,0.06);font-size:14px;font-weight:700;color:#0f172a;margin-bottom:8px;">Zahle nur bei Erfolg: 0,89 € pro 🧾 Abholnummer</div><p class="pricing-card-sub" style="font-size:13px;color:#64748b;margin:0;line-height:1.4;">Volle Kontrolle: Vermeide Chaos & Foodwaste.</p>';
-        tileHero.onclick=function(){ hapticLight(); w.data.pricingChoice='pro'; w.data.hasPickupCode=true; tileHero.classList.add('is-selected','selected'); tile499.classList.remove('is-selected','selected'); saveDraft(); var fb=box.querySelector('.inserat-airbnb-footer .inserat-footer-btn-main'); if(fb){ fb.textContent='Jetzt kostenlos inserieren'; fb.classList.remove('inserat-footer-btn--499'); fb.classList.add('free-mode','is-free-mode'); } var ab=ctxZone.querySelector('.step2-context-abhol-badge'); if(ab) ab.style.opacity='1'; };
-        tilesRow.appendChild(tile499);
-        tilesRow.appendChild(tileHero);
-        step2Wrap.appendChild(tilesRow);
-        var ctxAbholBadge=ctxZone.querySelector('.step2-context-abhol-badge');
-        if(ctxAbholBadge){ ctxAbholBadge.style.opacity=(w.data.pricingChoice==='pro'?'1':'0'); }
+        var cardClassic=document.createElement('div');
+        cardClassic.className='price-card classic' + (w.data.pricingChoice==='499' ? ' active' : '');
+        cardClassic.setAttribute('role','button');
+        cardClassic.tabIndex=0;
+        cardClassic.innerHTML='<div class="card-header">Einmalig</div><div class="amount">4,99 €</div><ul class="benefit-list"><li>Kein Abo, kein Vertrag</li><li>Einmalig bis zum Verkauf</li></ul>';
+        cardClassic.onclick=function(){ hapticLight(); w.data.pricingChoice='499'; w.data.hasPickupCode=false; cardClassic.classList.add('active'); cardPremium.classList.remove('active'); saveDraft(); var fb=box.querySelector('.inserat-airbnb-footer .inserat-footer-btn-main, #footerNext'); if(fb){ fb.textContent='Jetzt für 4,99 € inserieren'; fb.classList.add('inserat-footer-btn--499'); fb.classList.remove('free-mode','is-free-mode'); } };
+        var cardPremium=document.createElement('div');
+        cardPremium.className='price-card premium' + (w.data.pricingChoice==='pro' ? ' active' : '');
+        cardPremium.setAttribute('role','button');
+        cardPremium.tabIndex=0;
+        cardPremium.innerHTML='<div class="card-badge">Empfehlung</div><div class="card-header">Pay-per-Order</div><div class="amount">0,89 €</div><div class="amount-sub">pro Abholnummer 🧾</div><ul class="benefit-list"><li>0 € Inseratsgebühr</li><li>Nur bei Erfolg zahlen</li><li>Vermeide Foodwaste</li></ul>';
+        cardPremium.onclick=function(){ hapticLight(); w.data.pricingChoice='pro'; w.data.hasPickupCode=true; cardPremium.classList.add('active'); cardClassic.classList.remove('active'); saveDraft(); var fb=box.querySelector('#footerNext, .inserat-airbnb-footer .inserat-footer-btn-main'); if(fb){ fb.textContent='Kostenlos inserieren'; fb.classList.remove('inserat-footer-btn--499'); fb.classList.add('free-mode','is-free-mode'); } };
+        pricingContainer.appendChild(cardClassic);
+        pricingContainer.appendChild(cardPremium);
+        step2Wrap.appendChild(pricingContainer);
         step2Pane.appendChild(step2Wrap);
+        step2Pane.id='mastercard-step-money';
         /* Step 3: Live-Erfolg [cite: 2026-02-21] */
         var step3Pane=document.createElement('div');
         step3Pane.className='inserat-step3-pane';
@@ -15566,6 +15565,7 @@
         successHint.textContent='Dein Inserat ist jetzt für alle Kunden sichtbar.';
         step3Content.appendChild(successHint);
         step3Pane.appendChild(step3Content);
+        step3Pane.id='mastercard-step-live';
         var step3Footer=document.createElement('footer');
         step3Footer.className='airbnb-footer inserat-step3-footer';
         step3Footer.style.cssText='position:fixed; left:0; right:0; bottom:0; z-index:500; display:none; flex-direction:row; align-items:center; justify-content:space-between; gap:16px; padding:12px max(16px, env(safe-area-inset-left)) max(12px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-right)); background:rgba(15,23,42,0.92); backdrop-filter:blur(30px); -webkit-backdrop-filter:blur(30px);';
@@ -15592,6 +15592,8 @@
         step2Sweep.className='step2-slot-machine-sweep';
         step2Sweep.setAttribute('aria-hidden','true');
         box.appendChild(step2Sweep);
+      } else {
+        box.id='mastercard-step-edit';
       }
 
       {
@@ -15602,7 +15604,7 @@
       const photoTile=document.createElement('section');
       photoTile.id='photoModule';
       photoTile.className='inserat-photo-tile photo-section photo-section-ebay photo-header'+(w.data.photoData ? '' : ' pulse-soft');
-      photoTile.style.cssText='position:relative; overflow:hidden; flex-shrink:0; width:100%; height:220px; min-height:220px; max-height:220px;';
+      photoTile.style.cssText='position:relative; overflow:hidden; flex-shrink:0; width:100%; height:190px; min-height:190px; max-height:190px;';
       var imgSrc=w.data.photoData||'data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300"><rect fill="#1e293b" width="400" height="300"/></svg>');
       var objPos=getPhotoObjectPosition();
       photoTile.innerHTML='<img src="'+imgSrc+'" id="mainImagePreview" class="ebay-preview-img" alt="" style="object-position:center '+objPos+'%;"><input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none"><div class="ebay-photo-overlay"><button type="button" class="ebay-edit-btn" id="triggerCamera">'+(w.data.photoData?'<span>📷</span> Foto ändern':'<span>📷</span> Foto aufnehmen')+'</button>'+(w.data.photoData?'<p class="ebay-hint">Ziehen zum Ausrichten</p>':'')+'</div>';
@@ -15765,30 +15767,21 @@
         var el = inputDish;
         if(!el || !el.offsetParent) return;
         var len = (el.value || '').length;
-        var sizeRem = len > 20 ? Math.max(1.1, 1.5 - (len - 20) * 0.02) : 1.5;
+        var sizeRem = len > 20 ? Math.max(1.4, 1.75 - (len - 20) * 0.02) : 1.75;
         el.style.fontSize = sizeRem + 'rem';
       }
       inputDish.oninput=function(){ w.data.dish=inputDish.value; saveDraft(); adjustTitleFontSize(); if(typeof checkMastercardValidation==='function') checkMastercardValidation(); if(updateStep2ContextZoneRef) updateStep2ContextZoneRef(); };
       inputDish.onblur=function(){ dismissKeyboard(); hapticLight(); };
       stepName.appendChild(inputDish);
+      stepName.style.cssText='width:100%; margin-top:16px; margin-bottom:8px; display:flex; justify-content:center;';
       scrollArea.appendChild(stepName);
 
-      // ========== Beschreibung: Textarea ohne harten Rahmen [cite: 2026-02-21] ==========
-      const wrapDesc=document.createElement('div');
-      wrapDesc.className='inserat-airbnb-field-wrap inserat-airbnb-desc-wrap inserat-desc-italic-wrap inserat-desc-no-frame';
-      wrapDesc.style.cssText='margin-top:0; margin-bottom:8px;';
-      const inputDesc=document.createElement('textarea');
-      inputDesc.className='liquid-input liquid-input-focus inserat-desc-input inserat-airbnb-desc inserat-desc-italic inserat-desc-textarea';
-      inputDesc.placeholder='… z.B. mit frischem saisonalen Gemüse …';
-      inputDesc.value=w.data.description||'';
-      inputDesc.rows=2;
-      inputDesc.style.cssText='width:100%; color:#666; font-size:0.85rem; font-style:normal; box-sizing:border-box; border:none; background:transparent; outline:none; resize:none;';
-      inputDesc.oninput=()=>{ w.data.description=inputDesc.value; saveDraft(); };
-      inputDesc.onblur=()=>{ dismissKeyboard(); hapticLight(); };
-      wrapDesc.appendChild(inputDesc);
-      scrollArea.appendChild(wrapDesc);
+      var systemDivider=document.createElement('div');
+      systemDivider.className='minimal-divider mastercard-step-edit-divider';
+      systemDivider.style.cssText='width:40px; height:2px; background:#f1f5f9; margin:12px auto; border-radius:2px;';
+      scrollArea.appendChild(systemDivider);
 
-      // ========== Power-Bar: direkt unter Beschreibung, näher zum Titel [cite: 2026-02-21] ==========
+      // ========== Power-Bar (Clean-Slate: ausgeblendet in Schritt 1) [cite: Drei-Schritte-Gesetz] ==========
       var pwParts=(w.data.pickupWindow||profileWindow).split(/\s*[–\-]\s*/);
       var timeStart=(pwParts[0]||'11:30').trim();
       var timeEnd=(pwParts[1]||'14:00').trim();
@@ -16109,7 +16102,7 @@
         var btnAbbrechen=document.createElement('button');
         btnAbbrechen.type='button';
         btnAbbrechen.className='inserat-btn-step1-left nav-btn-primary nav-btn-equal';
-        btnAbbrechen.style.cssText='flex:1; min-height:48px; height:48px; padding:0 24px; border:none; border-radius:8px; background:#222222; font-size:16px; font-weight:700; color:#fff; cursor:pointer;';
+        btnAbbrechen.style.cssText='flex:1; min-height:48px; height:48px; padding:0 24px; border:none; border-radius:0; background:transparent; font-size:16px; font-weight:600; color:#ffffff; cursor:pointer; text-decoration:underline;';
         btnAbbrechen.textContent='Abbrechen';
         btnAbbrechen.onclick=function(){ hapticLight(); if(typeof handleWizardExit==='function') handleWizardExit(); };
         var btnWeiter=document.createElement('button');
@@ -16193,8 +16186,8 @@
         var linkZurueck=document.createElement('button');
         linkZurueck.type='button';
         linkZurueck.className='inserat-footer-link';
-        linkZurueck.style.cssText='background:none; border:none; padding:12px 0; font-size:15px; font-weight:500; color:#ffffff; cursor:pointer; text-decoration:none; opacity:0.8; flex-shrink:0;';
-        linkZurueck.textContent='Abbrechen';
+        linkZurueck.style.cssText='background:none; border:none; padding:12px 0; font-size:15px; font-weight:600; color:#ffffff; cursor:pointer; text-decoration:underline; opacity:0.9; flex-shrink:0;';
+        linkZurueck.textContent='Zurück';
         linkZurueck.className='inserat-footer-link footer-link-secondary';
         linkZurueck.id='footerCancel';
         linkZurueck.onclick=function(){ hapticLight(); w.inseratStep=1; saveDraft(); if(slider) slider.setAttribute('data-inserat-step','1'); airbnbFooter.style.display='none'; var sf=box.querySelector('.inserat-step3-footer'); if(sf) sf.style.display='none'; var wizardEl=document.getElementById('wizard'); if(wizardEl){ wizardEl.classList.remove('inserat-step2-active'); wizardEl.classList.remove('inserat-step3-active'); } };
@@ -16202,7 +16195,7 @@
         footerBtn.type='button';
         footerBtn.className='inserat-footer-btn-main footer-btn-primary' + (w.data.pricingChoice==='499' ? ' inserat-footer-btn--499' : ' free-mode is-free-mode');
         footerBtn.id='footerNext';
-        footerBtn.textContent=(w.data.pricingChoice==='499' ? 'Jetzt für 4,99 € inserieren' : 'Jetzt kostenlos inserieren');
+        footerBtn.textContent=(w.data.pricingChoice==='499' ? 'Jetzt für 4,99 € inserieren' : 'Kostenlos inserieren');
         footerBtn.onclick=function(){
           if(!(!!(w.data.dish&&String(w.data.dish).trim())&&Number(w.data.price)>0)){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; }
           hapticLight();
@@ -16220,8 +16213,8 @@
               var published=typeof publishOffer==='function'?publishOffer(o):null;
               if(published){ if(typeof slideWizardToStep3==='function') slideWizardToStep3(published); else { closeWizard(true); if(typeof showInseratSuccessSheet==='function') showInseratSuccessSheet(published); else if(typeof showProviderHome==='function') showProviderHome(); } return; }
             }
-            var tileHeroEl=box.querySelector('.inserat-tile-smart');
-            if(tileHeroEl){ tileHeroEl.classList.add('is-loading'); tileHeroEl.innerHTML='<span class="inserat-btn-spinner" style="width:24px;height:24px;border:3px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:inserat-spin 0.8s linear infinite;"></span>'; }
+            var premiumCard=box.querySelector('.price-card.premium');
+            if(premiumCard){ premiumCard.classList.add('is-loading'); premiumCard.dataset.originalHtml=premiumCard.innerHTML; premiumCard.innerHTML='<span class="inserat-btn-spinner" style="width:24px;height:24px;border:3px solid rgba(16,185,129,0.3);border-top-color:#10b981;border-radius:50%;animation:inserat-spin 0.8s linear infinite;display:block;margin:24px auto;"></span>'; }
             publishFeeUseStep3=true;
             setTimeout(function(){ showPublishFeeModal(o); }, 800);
           }

@@ -61,4 +61,5 @@ Der Footer ist in **allen drei Schritten** identisch gestaltet:
 ## Referenz im Code
 
 - **Umsetzung:** `app/script.js` – `buildListingStep()`, `inseratStep` (1/2/3), `slider.setAttribute('data-inserat-step', …)`
+- **IDs:** `<div id="mastercard-step-edit">` (Schritt 1 Inserat), `<div id="mastercard-step-money">` (Schritt 2 Bezahlen), `<div id="mastercard-step-live">` (Schritt 3 Erfolg)
 - **Footer:** `.inserat-step1-nav`, `.inserat-airbnb-footer`, `.inserat-step3-footer`

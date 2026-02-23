@@ -1641,25 +1641,27 @@
     }
     /* Radikale Schlichtheit: Riesige Inputs ohne Rahmen [cite: 2026-02-21] */
     #wizard[data-flow="listing"] .input-name-giant,
+    #wizard[data-flow="listing"] #mastercard-step-edit #step-name input,
     #wizard[data-flow="listing"] #step-name input.ghost-input.inserat-detail-style-title {
       width: 100%;
       border: none;
-      font-size: clamp(24px, 6vw, 32px);
+      font-size: 28px;
       font-weight: 900;
       text-align: center;
       color: #0f172a;
-      padding: 16px 0;
+      padding: 20px 0;
       outline: none;
       background: transparent;
     }
     #wizard[data-flow="listing"] .input-price-giant,
+    #wizard[data-flow="listing"] #mastercard-step-edit .inserat-price-pill-input,
     #wizard[data-flow="listing"] .inserat-price-pill-input {
       border: none;
-      font-size: clamp(32px, 8vw, 48px);
+      font-size: 56px;
       font-weight: 900;
       text-align: center;
       color: #0f172a;
-      width: 160px;
+      width: 180px;
       outline: none;
       background: transparent;
     }
@@ -1669,6 +1671,94 @@
       background: #f1f5f9;
       margin: 10px auto;
       border-radius: 2px;
+    }
+    /* Clean-Slate: Nur Giant-Inputs in Schritt 1 [cite: 2026-02-21] */
+    #mastercard-step-edit .inserat-power-bar,
+    #mastercard-step-edit .inserat-quick-adjust-panel,
+    #mastercard-step-edit .inserat-cat-tiles,
+    #mastercard-step-edit .inserat-verdienst-vorschau,
+    #mastercard-step-edit .cookbook-quick-select { display: none !important; }
+    #mastercard-step-edit .inserat-cat-price-row { flex-direction: column; align-items: center; gap: 0; margin-top: 0; }
+    #mastercard-step-edit .price-input-wrapper { justify-content: center; margin-top: 0; }
+    #mastercard-step-edit .inserat-scroll-area { padding: 24px 20px 120px !important; }
+    /* ===== SCHRITT 2: MONETARISIERUNG – Zwei vertikale Kacheln [cite: Drei-Schritte-Gesetz] ===== */
+    #mastercard-step-money .pricing-container,
+    .mastercard-step-money .pricing-container {
+      display: flex;
+      gap: 16px;
+      padding: 0;
+      margin-top: 0;
+      flex-wrap: wrap;
+    }
+    #mastercard-step-money .price-card,
+    .mastercard-step-money .price-card {
+      flex: 1;
+      min-width: 140px;
+      border: 2px solid #f1f5f9;
+      border-radius: 16px;
+      padding: 20px 12px;
+      text-align: center;
+      transition: all 0.3s ease;
+      position: relative;
+      background: #fff;
+      cursor: pointer;
+      list-style: none;
+    }
+    #mastercard-step-money .price-card.active,
+    .mastercard-step-money .price-card.active {
+      border-color: #10b981;
+      box-shadow: 0 10px 25px rgba(16, 185, 129, 0.1);
+    }
+    #mastercard-step-money .price-card .card-badge,
+    .mastercard-step-money .price-card .card-badge {
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #10b981;
+      color: white;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+    #mastercard-step-money .price-card .card-header,
+    .mastercard-step-money .price-card .card-header {
+      font-size: 14px;
+      font-weight: 800;
+      color: #64748b;
+      margin-bottom: 8px;
+    }
+    #mastercard-step-money .price-card .amount,
+    .mastercard-step-money .price-card .amount {
+      font-size: 32px;
+      font-weight: 900;
+      margin: 10px 0;
+      color: #0f172a;
+    }
+    #mastercard-step-money .price-card .amount-sub,
+    .mastercard-step-money .price-card .amount-sub {
+      font-size: 11px;
+      font-weight: 700;
+      color: #64748b;
+      margin-top: -8px;
+      margin-bottom: 15px;
+    }
+    #mastercard-step-money .price-card .benefit-list,
+    .mastercard-step-money .price-card .benefit-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      text-align: left;
+      font-size: 13px;
+      color: #64748b;
+      line-height: 1.5;
+    }
+    #mastercard-step-money .price-card .benefit-list li,
+    .mastercard-step-money .price-card .benefit-list li {
+      margin-bottom: 6px;
+      padding-left: 0;
     }
     /* Airbnb-Glow: Button atmet bei Validierung [cite: 2026-02-21] */
     .footer-btn-primary-glow,
@@ -1727,9 +1817,9 @@
     #wizard[data-flow="listing"] .photo-section {
       width: 100%;
       width: 100vw;
-      height: 220px;
-      min-height: 220px;
-      max-height: 220px;
+      height: 190px;
+      min-height: 190px;
+      max-height: 190px;
       margin: 0;
       position: relative;
       background: #1e293b;
@@ -2949,7 +3039,7 @@
       flex: 1 !important;
       min-height: 48px !important;
       height: 48px !important;
-      border-radius: 8px !important;
+      border-radius: 0 !important;
       background: transparent !important;
       color: #ffffff !important;
       text-decoration: underline;
@@ -3518,7 +3608,11 @@
     .inserat-immo-footer.airbnb-footer {
       z-index: 500 !important;
     }
-    /* 5. THE TOOL EDITION: Tiefschwarz #000000, bündig – einheitlich Kochbuch/Dashboard/Wochenplan */
+    /* 5. THE TOOL EDITION: Tiefschwarz #000000, bündig – Schritt 1 + 2 + 3 */
+    .airbnb-footer,
+    .inserat-airbnb-footer.airbnb-footer {
+      background: #000000 !important;
+    }
     .airbnb-footer {
       position: fixed;
       bottom: 0;
