@@ -1727,6 +1727,7 @@
       flex: 1; min-width: 44px; min-height: 44px; padding: 10px; border-radius: 12px; text-align: center; font-size: 14px; font-weight: 700;
       border: 1px solid #e2e8f0; background: #f8fafc; color: #64748b;
       transition: all 0.2s cubic-bezier(0.4,0,0.2,1); cursor: pointer; user-select: none;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
     }
     #mastercard-step-edit .power-item.active,
     #wizard[data-flow="listing"] .inserat-power-bar .power-item.active {
@@ -1736,22 +1737,68 @@
     #wizard[data-flow="listing"] .inserat-power-bar .power-item:active {
       transform: scale(0.92);
     }
-    /* Quick-Adjust Sheet: Weißes Menü von unten, über Footer (z-index 600) [cite: Regel 2026-02-23] */
-    /* No-Glow Policy: Quick-Adjust ohne box-shadow [cite: ZERO-CLICK FOCUS 2026-02-23] */
-    .quick-adjust-sheet,
-    .inserat-quick-adjust-panel.quick-adjust-sheet {
+    /* PowerBar Haptik: press-anim beim Tippen [cite: 2026-02-23] */
+    .vendor-area .power-item.press-anim {
+      transform: scale(0.9);
+      transition: transform 0.1s ease;
+    }
+    .vendor-area .power-item .power-item-label {
+      display: block;
+      font-size: 10px;
+      font-weight: 600;
+      color: inherit;
+      margin-top: 2px;
+      line-height: 1.2;
+      max-width: 44px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    /* IMMOSCOUT-MINIMALISM: linkbündig, border-bottom Inputs [cite: 2026-02-23] */
+    .scout-master-card.vendor-area .inserat-section,
+    .scout-master-card .inserat-section { text-align: left !important; justify-content: flex-start !important; }
+    .scout-master-card.vendor-area #step-name input,
+    .scout-master-card.vendor-area .input-description,
+    .scout-master-card.vendor-area .inserat-price-pill-input {
+      text-align: left !important;
+      border: none !important;
+      border-bottom: 1px solid #ebebeb !important;
+      border-radius: 0 !important;
+      padding: 8px 0 !important;
+    }
+    .scout-master-card.vendor-area #step-name input { font-size: 18px !important; font-weight: 500 !important; }
+    /* QUICK-ADJUST DESIGN-MATCH: Airbnb-Footer-Look [cite: 2026-02-23] */
+    body.provider-mode .quick-adjust-sheet,
+    body.provider-mode .inserat-quick-adjust-panel.quick-adjust-sheet {
       position: fixed !important; left: 0; right: 0; bottom: 0; z-index: 600;
-      background: #ffffff; border-radius: 20px 20px 0 0;
+      width: 100%; max-width: 100vw;
+      background: #ffffff !important;
+      border-radius: 24px 24px 0 0;
       padding: 24px 20px calc(24px + env(safe-area-inset-bottom, 0));
       box-shadow: none;
-      border-top: 1px solid rgba(0,0,0,0.04);
+      border-top: 1px solid #ebebeb;
       max-height: 70vh; overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
     }
-    .quick-adjust-headline { margin: 0 0 20px; font-size: 18px; font-weight: 800; color: #0f172a; }
-    .quick-adjust-fertig {
-      width: 100%; min-height: 56px; margin-top: 24px; padding: 16px;
-      border: none; border-radius: 16px; background: #0f172a; color: #ffffff;
-      font-size: 18px; font-weight: 800; cursor: pointer;
+    body.provider-mode .quick-adjust-headline { margin: 0 0 20px; font-size: 18px; font-weight: 800; color: #0f172a; }
+    /* Fertig-Button: identisch zum Footer-Primär-Button (#222222, 8px Radius) */
+    body.provider-mode .quick-adjust-fertig,
+    body.provider-mode .inserat-fertig-kachel.quick-adjust-fertig {
+      width: 100%; min-height: 56px; margin-top: 24px; padding: 16px 24px;
+      border: none; border-radius: 8px; background: #222222 !important; color: #ffffff !important;
+      font-size: 16px; font-weight: 800; cursor: pointer;
+      transition: transform 0.1s ease;
+    }
+    body.provider-mode .quick-adjust-fertig:active,
+    body.provider-mode .inserat-fertig-kachel.quick-adjust-fertig:active { transform: scale(0.98); }
+    /* Quick-Adjust Pills: Schwarz-Weiß */
+    body.provider-mode .inserat-quick-adjust-panel .inserat-allergen-pill,
+    body.provider-mode .inserat-quick-adjust-panel .extra-pill {
+      border: 1px solid #ebebeb; background: #ffffff; color: #1a1a1a;
+    }
+    body.provider-mode .inserat-quick-adjust-panel .inserat-allergen-pill.active,
+    body.provider-mode .inserat-quick-adjust-panel .extra-pill.active {
+      background: #222222; color: #ffffff; border-color: #222222;
     }
     #mastercard-step-edit .power-bar-module.inserat-power-bar { display: flex; gap: 8px; margin: 8px 0; flex-wrap: wrap; }
     #mastercard-step-edit .input-description { width: 100%; border: none; font-size: 14px; color: #64748b; resize: none; padding: 4px 0 6px 0; margin: 0; text-align: center; }
@@ -1914,6 +1961,7 @@
       -webkit-user-select: none;
       user-select: none;
     }
+    /* UNIFIED: Kein grauer Schleier – Foto bleibt klar und immersiv (Neu + Edit) [cite: 2026-02-23] */
     #wizard[data-flow="listing"] .photo-section-ebay .ebay-photo-overlay {
       position: absolute;
       inset: 0;
@@ -1921,7 +1969,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      background: rgba(0,0,0,0.2);
+      background: transparent;
       pointer-events: none;
     }
     #wizard[data-flow="listing"] .photo-section-ebay .ebay-edit-btn {
@@ -3087,10 +3135,10 @@
       padding: 8px 16px;
     }
     /* Tunnel-Blick: Nav ausblenden wenn Inseratsauswahl ODER Mastercard offen [cite: 2026-02-21] */
-    /* Mastercard-Fix: Footer exakt wie Inseratsauswahl – gleiche Position, Höhe, bündig [cite: 2026-02-21] */
-    body.wizard-inserat-open #wizard[data-flow="listing"] .inserat-action-section.inserat-action-layer,
-    body.wizard-inserat-open #wizard[data-flow="listing"] .inserat-action-section.inserat-action-pricing,
-    body.wizard-inserat-open #wizard[data-flow="listing"] .inserat-action-section.inserat-action-plan {
+    /* DESIGN-TRENNUNG: Mastercard-Footer NUR im Anbieter-Bereich [cite: 2026-02-23] */
+    body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-action-section.inserat-action-layer,
+    body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-action-section.inserat-action-pricing,
+    body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-action-section.inserat-action-plan {
       position: fixed !important;
       bottom: 0 !important;
       left: 0 !important;
@@ -3104,22 +3152,22 @@
       border-top: none !important;
     }
     /* Footer-Padding reduziert wenn Nav ausgeblendet */
-    body.wizard-inserat-open #wizard[data-flow="listing"] .liquid-master-panel .inserat-action-section {
+    body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .liquid-master-panel .inserat-action-section {
       padding-bottom: max(20px, env(safe-area-inset-bottom)) !important;
     }
     /* Scroll-Bereich: Platz für fixierte Action-Leiste */
-    body.wizard-inserat-open #wizard[data-flow="listing"] .inserat-scroll-area {
+    body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-scroll-area {
       padding-bottom: 100px !important;
     }
     /* Step1-Nav: 2 Buttons gleich groß wie system-bottom-nav (48px, gap 12px) */
-    body.wizard-inserat-open #wizard[data-flow="listing"] .inserat-step1-nav {
+    body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-step1-nav {
       display: flex !important;
       gap: 12px !important;
       width: 100% !important;
       min-height: 48px !important;
       align-items: stretch !important;
     }
-    body.wizard-inserat-open #wizard[data-flow="listing"] .inserat-step1-nav .inserat-btn-step1-left {
+    body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-step1-nav .inserat-btn-step1-left {
       flex: 0 !important;
       min-width: auto !important;
       min-height: 48px !important;
@@ -3128,7 +3176,7 @@
       color: #ffffff !important;
       text-decoration: underline;
     }
-    body.wizard-inserat-open #wizard[data-flow="listing"] .inserat-step1-nav .inserat-btn-step1-right {
+    body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-step1-nav .inserat-btn-step1-right {
       flex: 1 !important;
       min-height: 48px !important;
       height: 48px !important;
@@ -3139,7 +3187,7 @@
       pointer-events: none;
       transition: all 0.3s ease;
     }
-    body.wizard-inserat-open #wizard[data-flow="listing"] .inserat-step1-nav .inserat-btn-step1-right.is-ready {
+    body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-step1-nav .inserat-btn-step1-right.is-ready {
       background: #ffffff !important;
       color: #000000 !important;
       opacity: 1;
@@ -3254,13 +3302,17 @@
     #wizard[data-flow="listing"] .photo-header .selection-overlay-inner {
       display: grid; grid-template-columns: 1fr 1fr; justify-items: center; align-items: center; gap: 8px; width: 100%;
     }
-    #wizard[data-flow="listing"] .photo-header .selection-overlay .extra-pill,
-    #wizard[data-flow="listing"] .photo-header .selection-overlay .inserat-allergen-pill {
-      padding: 8px 14px; border-radius: 999px; font-size: 13px; font-weight: 700; border: 2px solid rgba(0,0,0,0.08); background: rgba(255,255,255,0.5); color: #475569; cursor: pointer; transition: background 0.2s, color 0.2s; -webkit-tap-highlight-color: transparent;
-      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    /* UNIFIED: Pills im Selection-Overlay = Schwarz-Weiß [cite: 2026-02-23] */
+    body.provider-mode #wizard[data-flow="listing"] .photo-header .selection-overlay .extra-pill,
+    body.provider-mode #wizard[data-flow="listing"] .photo-header .selection-overlay .inserat-allergen-pill {
+      padding: 8px 14px; border-radius: 999px; font-size: 13px; font-weight: 700;
+      border: 1px solid #ebebeb; background: #ffffff; color: #1a1a1a;
+      cursor: pointer; transition: background 0.2s, color 0.2s; -webkit-tap-highlight-color: transparent;
     }
-    #wizard[data-flow="listing"] .photo-header .selection-overlay .extra-pill.active,
-    #wizard[data-flow="listing"] .photo-header .selection-overlay .inserat-allergen-pill.active { background: #10b981; color: #fff; border-color: rgba(16,185,129,0.4); }
+    body.provider-mode #wizard[data-flow="listing"] .photo-header .selection-overlay .extra-pill.active,
+    body.provider-mode #wizard[data-flow="listing"] .photo-header .selection-overlay .inserat-allergen-pill.active {
+      background: #222222; color: #ffffff; border-color: #222222;
+    }
     #wizard[data-flow="listing"] .photo-header .selection-overlay-inner.selection-overlay-inner--time { display: flex; align-items: center; justify-content: center; }
     /* ========== Inserat Bottom-Sheet (Allergen-Auswahl): fixiert unten, S25 Native [cite: 2026-02-18] ========== */
     .inserat-bottom-sheet-backdrop {
@@ -3271,41 +3323,42 @@
     .inserat-bottom-sheet-backdrop.is-open {
       opacity: 1; pointer-events: auto;
     }
-    .inserat-bottom-sheet {
+    /* UNIFIED: Bottom-Sheet im Anbieterbereich = Airbnb-Footer-Look [cite: 2026-02-23] */
+    body.provider-mode .inserat-bottom-sheet {
       position: fixed; left: 0; right: 0; bottom: 0; z-index: 201;
-      border-radius: 32px 32px 0 0;
-      padding: 20px 20px calc(30px + env(safe-area-inset-bottom, 0));
-      background: #fff;
-      box-shadow: var(--tgtg-shadow-minimal, 0 -1px 3px rgba(0,0,0,0.06));
+      width: 100%; max-width: 100vw;
+      border-radius: 24px 24px 0 0;
+      padding: 20px 20px calc(24px + env(safe-area-inset-bottom, 0));
+      background: #ffffff !important;
+      border-top: 1px solid #ebebeb;
       max-height: 70vh; overflow-y: auto;
       -webkit-overflow-scrolling: touch;
       transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
     }
-    .inserat-bottom-sheet.is-open {
-      transform: translateY(0);
+    body.provider-mode .inserat-bottom-sheet.is-open { transform: translateY(0); }
+    body.provider-mode .inserat-bottom-sheet .inserat-sheet-handle {
+      width: 44px; height: 5px; background: #ebebeb; border-radius: 3px; margin: 0 auto 16px;
     }
-    .inserat-bottom-sheet .inserat-sheet-handle {
-      width: 44px; height: 5px; background: #d1d5db; border-radius: 3px; margin: 0 auto 16px;
-    }
-    .inserat-bottom-sheet .inserat-allergen-pill {
+    /* Pills: Schwarz-Weiß, keine bunten Farben */
+    body.provider-mode .inserat-bottom-sheet .inserat-allergen-pill {
       padding: 10px 16px; border-radius: 999px; font-size: 13px; font-weight: 700;
-      border: 2px solid rgba(0,0,0,0.08); background: rgba(0,0,0,0.04); color: #475569;
+      border: 1px solid #ebebeb; background: #ffffff; color: #1a1a1a;
       cursor: pointer; transition: background 0.2s, color 0.2s, border-color 0.2s;
       -webkit-tap-highlight-color: transparent;
     }
-    /* Einheitliche Fertig-Kachel für alle Sub-Sheets [2-Schritt Airbnb-Flow] */
-    .inserat-bottom-sheet .inserat-sheet-done,
-    .inserat-fertig-kachel {
-      width: 100%; min-height: 60px; padding: 16px 24px; margin-top: 20px;
-      border-radius: 16px; border: none; background: #10b981; color: #fff;
+    body.provider-mode .inserat-bottom-sheet .inserat-allergen-pill.active {
+      background: #222222; color: #ffffff; border-color: #222222;
+    }
+    /* Fertig-Button: identisch zum Footer (#222222, 8px Radius) */
+    body.provider-mode .inserat-bottom-sheet .inserat-sheet-done,
+    body.provider-mode #wizard[data-flow="listing"] .inserat-fertig-kachel {
+      width: 100%; min-height: 56px; padding: 16px 24px; margin-top: 20px;
+      border-radius: 8px; border: none; background: #222222 !important; color: #ffffff !important;
       font-size: 16px; font-weight: 800; cursor: pointer;
-      box-shadow: 0 4px 16px rgba(16,185,129,0.3); transition: transform 0.1s ease;
+      transition: transform 0.1s ease;
     }
-    .inserat-bottom-sheet .inserat-sheet-done:active,
-    .inserat-fertig-kachel:active { transform: scale(0.98); }
-    .inserat-bottom-sheet .inserat-allergen-pill.active {
-      background: rgba(16,185,129,0.15); color: #059669; border-color: rgba(16,185,129,0.4);
-    }
+    body.provider-mode .inserat-bottom-sheet .inserat-sheet-done:active,
+    body.provider-mode #wizard[data-flow="listing"] .inserat-fertig-kachel:active { transform: scale(0.98); }
     .inserat-power-bar .inserat-allergen-codes {
       font-size: 10px; font-weight: 800; color: #0f172a; letter-spacing: 0.02em;
       margin-left: 4px; max-width: 48px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
@@ -3492,8 +3545,8 @@
     }
     #wizard[data-flow="listing"] .inserat-btn-step1-left:active,
     #wizard[data-flow="listing"] .inserat-btn-step1-right:active { transform: scale(0.98); }
-    /* Scroll-Bereich: Platz für schwebende Aktions-Buttons (Step 1) */
-    #wizard[data-flow="listing"] .liquid-master-panel:has(.inserat-action-layer) .inserat-scroll-area {
+    /* Scroll-Bereich: Platz für schwebende Aktions-Buttons (Step 1) – NUR Anbieter [cite: 2026-02-23] */
+    body.provider-mode #wizard[data-flow="listing"] .liquid-master-panel:has(.inserat-action-layer) .inserat-scroll-area {
       padding-bottom: calc(180px + env(safe-area-inset-bottom, 0));
     }
     /* Noble Floating Bottom: Aktions-Kacheln 16px über Nav-Pille, Nav-Pille 12px Abstand [cite: 2026-02-20] */
@@ -3501,7 +3554,7 @@
     .inserat-step2-immo .inserat-step2-tiles-vertical {
       width: 100%;
     }
-    #wizard[data-flow="listing"] .inserat-action-section.inserat-action-layer {
+    body.provider-mode #wizard[data-flow="listing"] .inserat-action-section.inserat-action-layer {
       position: fixed;
       bottom: calc(96px + env(safe-area-inset-bottom, 0));
       left: 16px;
@@ -3686,11 +3739,11 @@
     /* ImmoScout: Abbrechen transparent, kein Rahmen, weißer Text [cite: ZERO-CLICK FOCUS 2026-02-23] */
     .inserat-airbnb-footer .inserat-footer-link,
     .inserat-airbnb-footer .footer-link-secondary,
-    #wizard[data-flow="listing"] .inserat-btn-step1-left,
-    #wizard[data-flow="listing"] .system-footer-merged .inserat-btn-step1-left { background: transparent !important; border: none !important; box-shadow: none !important; outline: none !important; color: #ffffff !important; font-size: 15px; font-weight: 600; }
+    body.provider-mode #wizard[data-flow="listing"] .inserat-btn-step1-left,
+    body.provider-mode #wizard[data-flow="listing"] .system-footer-merged .inserat-btn-step1-left { background: transparent !important; border: none !important; box-shadow: none !important; outline: none !important; color: #ffffff !important; font-size: 15px; font-weight: 600; }
     /* The Tool Edition: Tiefschwarz #000000, 100% bündig [cite: 2026-02-21] */
-    body.wizard-inserat-open #wizard[data-flow="listing"] .inserat-action-section:has(.airbnb-footer),
-    body.wizard-inserat-open #wizard[data-flow="listing"] .inserat-step1-nav.inserat-immo-footer {
+    body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-action-section:has(.airbnb-footer),
+    body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-step1-nav.inserat-immo-footer {
       background: #000000 !important;
       margin: 0 !important; border-radius: 0 !important;
       padding: 16px 24px max(16px, env(safe-area-inset-bottom)) 24px !important;
@@ -3760,9 +3813,9 @@
       text-decoration: underline !important;
       opacity: 0.8;
     }
-    /* Step 1 Footer: Airbnb-Design – #000000, 100% bündig [cite: RADIKALER COMPACT 2026-02-23] */
-    #wizard[data-flow="listing"] .inserat-action-section:has(.system-footer-merged),
-    .system-footer-merged {
+    /* DESIGN-TRENNUNG: Airbnb-Footer NUR im Anbieter-Bereich [cite: 2026-02-23] */
+    body.provider-mode #wizard[data-flow="listing"] .inserat-action-section:has(.system-footer-merged),
+    body.provider-mode .system-footer-merged {
       position: fixed !important;
       bottom: 0 !important;
       left: 0 !important;
@@ -3777,7 +3830,7 @@
       justify-content: space-between;
       align-items: center;
     }
-    #wizard[data-flow="listing"] .system-footer-merged .inserat-btn-step1-right.is-ready {
+    body.provider-mode #wizard[data-flow="listing"] .system-footer-merged .inserat-btn-step1-right.is-ready {
       background: #ffffff !important;
       color: #000000 !important;
     }
@@ -3845,8 +3898,8 @@
     #inseratSuccessSheet .inserat-success-footer-btn-primary:active { transform: scale(0.98); }
     /* Inseratsbüro: Footer in allen Phasen (1,2,3) Edge-to-Edge, 0px Radius unten [cite: 2026-02-21] */
     .inserat-airbnb-footer, .inserat-success-footer,
-    body.wizard-inserat-open #wizard[data-flow="listing"] .inserat-action-section,
-    body.wizard-inserat-open #wizard[data-flow="listing"] .inserat-step1-nav.inserat-immo-footer { border-radius: 0 !important; border-bottom-left-radius: 0 !important; border-bottom-right-radius: 0 !important; }
+    body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-action-section,
+    body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-step1-nav.inserat-immo-footer { border-radius: 0 !important; border-bottom-left-radius: 0 !important; border-bottom-right-radius: 0 !important; }
     /* Publish-Fee Modal: Success-Glow vor Schließen */
     .publish-fee-success-glow { opacity: 0; }
     .publish-fee-success-glow.animate { opacity: 1; animation: publish-fee-success-sweep 0.6s ease-out forwards; }

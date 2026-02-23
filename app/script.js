@@ -14657,6 +14657,16 @@
     if(isMastercardOpen) document.body.classList.add('status-bar-dark-icons');
     else document.body.classList.remove('status-bar-dark-icons');
   }
+  /** Content-Safety: Scroll-Bereich erhält Platz für fixierten Footer – NUR Anbieter [cite: 2026-02-23] */
+  function applyVendorFooterPadding(){
+    if(!document.body.classList.contains('provider-mode')) return;
+    var footer=document.querySelector('#wizard .inserat-action-section .system-footer-merged, #wizard .inserat-action-section .inserat-step1-nav, #wizard .inserat-action-section .inserat-immo-footer');
+    var scrollArea=document.querySelector('#wizard .mastercard-scroll-area, #wizard .inserat-scroll-area');
+    if(footer&&scrollArea){
+      var h=footer.offsetHeight;
+      scrollArea.style.paddingBottom=(h+16)+'px';
+    }
+  }
   function openWizard(){
     const wbd = document.getElementById('wbd');
     const wizard = document.getElementById('wizard');
@@ -14669,6 +14679,7 @@
       updateSystemTheme(true);
       document.body.style.overflow = 'hidden';
       document.body.style.overscrollBehavior = 'none';
+      requestAnimationFrame(function(){ requestAnimationFrame(function(){ if(typeof applyVendorFooterPadding==='function') applyVendorFooterPadding(); }); });
     }
     pushViewState({wizard: true}, location.pathname);
     localStorage.setItem('mittagio_wizard_open', 'true');
@@ -14812,6 +14823,17 @@
     // Always use listing wizard (Master Flow)
     startWizard('listing', context);
   }
+
+  /** Single-Source API: Ein Tool für Neu, Edit, Kochbuch [cite: 2026-02-23] */
+  function openUniversalEditor(data){
+    var ctx = {};
+    if(data && data.id) ctx.editOfferId = data.id;
+    if(data && data.entryPoint) ctx.entryPoint = data.entryPoint;
+    if(data && data.date) ctx.date = data.date;
+    if(data && data.dishId) ctx.dishId = data.dishId;
+    if(typeof startListingFlow === 'function') startListingFlow(ctx);
+  }
+  if(typeof window !== 'undefined') window.openUniversalEditor = openUniversalEditor;
 
   /** Wendet einen automatischen Optimierungs-Filter auf ein Bild an (Food-Optimization). */
   async function applyAppetizerFilter(dataUrl) {
@@ -15425,7 +15447,7 @@
       sheet.setAttribute('data-inserat-card', 'true');
       sheet.style.cssText = 'padding:0; overflow:visible; display:flex; flex-direction:column; min-height:0; border-radius:0; background:transparent;';
       const box = document.createElement('div');
-      box.className='liquid-master-panel mastercard-container glass-express-step0 inserat-universal-mask inserat-master-flow liquid-panel listing-glass-panel s25-floating-panel inserat-card inserat-airbnb-refactor';
+      box.className='liquid-master-panel mastercard-container scout-master-card vendor-area glass-express-step0 inserat-universal-mask inserat-master-flow liquid-panel listing-glass-panel s25-floating-panel inserat-card inserat-airbnb-refactor';
       box.setAttribute('data-inserat-card','true');
       box.style.cssText='padding:0; overflow:hidden; display:flex; flex-direction:column; min-height:0;';
       var collapsingHeader=document.createElement('div');
@@ -15808,8 +15830,8 @@
         var b=document.createElement('button');
         b.type='button';
         b.className='pill power-item'+(w.data.category===c?' active':'');
-        b.style.cssText='min-height:44px; padding:8px 14px; border-radius:12px; border:1px solid #e2e8f0; background:#f8fafc; font-size:14px; font-weight:700; color:#64748b; cursor:pointer; transition:all 0.2s ease;';
-        if(w.data.category===c) b.style.cssText+=' background:#000; color:#fff; border-color:#000;';
+        b.style.cssText='min-height:44px; padding:8px 14px; border-radius:12px; border:1px solid #ebebeb; background:#ffffff; font-size:14px; font-weight:700; color:#1a1a1a; cursor:pointer; transition:all 0.2s ease;';
+        if(w.data.category===c) b.style.cssText+=' background:#222222; color:#fff; border-color:#222222;';
         b.innerHTML='<span style="font-size:16px;">'+(catEmojis[i]||'')+'</span> ' + c;
         b.setAttribute('title',c);
         b.onclick=function(){ hapticLight(); w.data.category=c; saveDraft(); rebuildWizard(); };
@@ -15868,10 +15890,11 @@
       var hasAllergens=!!(w.data.allergens&&w.data.allergens.length);
       var hasExtras=!!(w.data.extras&&w.data.extras.length);
       function handlePowerBarInteraction(type){
-        try{ if(navigator.vibrate) navigator.vibrate(10); }catch(e){}
+        try{ if(navigator.vibrate) navigator.vibrate(15); }catch(e){}
         hapticLight();
+        var item=powerBar.querySelector('.power-item[data-type="'+type+'"]');
+        if(item){ item.classList.add('press-anim'); setTimeout(function(){ item.classList.remove('press-anim'); }, 200); }
         if(type==='vor-ort'||type==='mehrweg'){
-          var item=powerBar.querySelector('.power-item[data-type="'+type+'"]');
           if(item){
             var isActive=item.classList.toggle('active');
             if(type==='vor-ort'){ w.data.dineInPossible=isActive; } else if(type==='mehrweg'){ w.data.reuse=w.data.reuse||{}; w.data.reuse.enabled=isActive; }
@@ -15888,7 +15911,9 @@
         btn.setAttribute('data-type',type);
         btn.setAttribute('aria-label',label);
         btn.setAttribute('title',label);
-        btn.innerHTML='<span class="inserat-pill-emo">'+emo+'</span>';
+        var labelText=label;
+        if(type==='allergene'&&w.data.allergens&&w.data.allergens.length){ labelText=(w.data.allergens||[]).join(', '); }
+        btn.innerHTML='<span class="inserat-pill-emo">'+emo+'</span><span class="power-item-label inserat-allergen-codes">'+labelText+'</span>';
         btn.onclick=function(){ handlePowerBarInteraction(type); };
         powerBar.appendChild(btn);
       }
@@ -15899,8 +15924,8 @@
       addPowerItem('\u2795','Extras','extras',hasExtras);
       const quickAdjustPanel=document.createElement('div');
       quickAdjustPanel.className='inserat-quick-adjust-panel quick-adjust-sheet';
-      quickAdjustPanel.style.cssText='display:none; position:fixed; left:0; right:0; bottom:0; z-index:600; background:#ffffff; border-radius:20px 20px 0 0; padding:24px 20px calc(24px + env(safe-area-inset-bottom,0)); box-shadow:none; border-top:1px solid rgba(0,0,0,0.04); max-height:70vh; overflow-y:auto;';
-      function closeQuickAdjust(){ quickAdjustPanel.style.display='none'; quickAdjustPanel.innerHTML=''; rebuildWizard(); }
+      quickAdjustPanel.style.cssText='display:none; position:fixed; left:0; right:0; bottom:0; z-index:600; background:#ffffff; border-radius:24px 24px 0 0; padding:24px 20px calc(24px + env(safe-area-inset-bottom,0)); box-shadow:none; border-top:1px solid #ebebeb; max-height:70vh; overflow-y:auto;';
+      function closeQuickAdjust(){ if(navigator.vibrate) navigator.vibrate(20); quickAdjustPanel.style.display='none'; quickAdjustPanel.innerHTML=''; rebuildWizard(); }
       function openQuickAdjust(type){
         hapticLight();
         quickAdjustPanel.innerHTML='';
@@ -15953,7 +15978,7 @@
         btnFertig.type='button';
         btnFertig.className='inserat-fertig-kachel quick-adjust-fertig';
         btnFertig.textContent='Fertig';
-        btnFertig.style.cssText='width:100%; min-height:56px; margin-top:24px; padding:16px; border:none; border-radius:16px; background:#0f172a; color:#ffffff; font-size:18px; font-weight:800; cursor:pointer;';
+        btnFertig.style.cssText='width:100%; min-height:56px; margin-top:24px; padding:16px 24px; border:none; border-radius:8px; background:#222222; color:#ffffff; font-size:16px; font-weight:800; cursor:pointer;';
         btnFertig.onclick=function(){ hapticLight(); closeQuickAdjust(); };
         quickAdjustPanel.appendChild(btnFertig);
       }
@@ -16059,16 +16084,28 @@
 
       const actionSection=document.createElement('section');
       actionSection.id='inserat-action-section';
-      actionSection.className='inserat-action-section fixed-footer' + (!isPlanMode && isInserierenRoute ? ' inserat-action-pricing inserat-action-layer' : '') + (isPlanMode ? ' inserat-action-plan' : '');
+      actionSection.className='inserat-action-section fixed-footer' + (!isPlanMode && isInserierenRoute ? ' inserat-action-pricing inserat-action-layer' : '') + (isFastTrack ? ' inserat-action-layer' : '') + (isPlanMode ? ' inserat-action-plan' : '');
 
       if(isFastTrack){
-        /* Fast-Track: Aktives Inserat/Wochenplan-Eintrag bearbeiten → Änderungen speichern, kein Step 2 */
-        var btnSaveChanges=document.createElement('button');
-        btnSaveChanges.type='button';
-        btnSaveChanges.className='inserat-btn-fast-track';
-        btnSaveChanges.style.cssText='width:100%; min-height:56px; padding:14px 16px; border:none; border-radius:0; background:#10b981; color:#fff; font-size:15px; font-weight:800; cursor:pointer;';
-        btnSaveChanges.textContent='Änderungen speichern';
-        btnSaveChanges.onclick=function(){
+        /* Fast-Track: UNIFIED DESIGN – exakt derselbe Airbnb-Footer wie Neu-Erstellen [cite: 2026-02-23] */
+        var step1NavRow=document.createElement('div');
+        step1NavRow.className='inserat-step1-nav system-footer-merged';
+        step1NavRow.style.cssText='display:flex; gap:12px; width:100%; align-items:stretch;';
+        var btnAbbrechen=document.createElement('button');
+        btnAbbrechen.type='button';
+        btnAbbrechen.className='inserat-btn-step1-left nav-btn-primary nav-btn-equal';
+        btnAbbrechen.style.cssText='flex:0; min-height:48px; padding:0 16px; border:none; border-radius:0; background:transparent !important; font-size:16px; font-weight:600; color:#ffffff !important; cursor:pointer; text-decoration:underline;';
+        btnAbbrechen.textContent='Abbrechen';
+        btnAbbrechen.onclick=function(){ hapticLight(); if(typeof handleWizardExit==='function') handleWizardExit(); };
+        var btnSpeichern=document.createElement('button');
+        btnSpeichern.type='button';
+        btnSpeichern.id='btnNext';
+        btnSpeichern.className='inserat-btn-step1-right nav-btn-primary nav-btn-equal';
+        btnSpeichern.style.cssText='flex:1; min-height:48px; height:48px; padding:0 24px; border:none; border-radius:8px; background:#334155; color:#94a3b8; font-size:16px; font-weight:800; cursor:pointer;';
+        btnSpeichern.textContent='Speichern';
+        btnSpeichern.disabled=!primaryValid;
+        if(primaryValid) btnSpeichern.classList.add('is-ready');
+        btnSpeichern.onclick=function(){
           if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; }
           hapticLight();
           var o=previewOfferFromWizard();
@@ -16079,7 +16116,9 @@
           if(entryPoint==='WEEKLY_PLAN_EDIT'&&typeof renderWeekPlanBoard==='function') renderWeekPlanBoard();
           else if(typeof showProviderHome==='function') showProviderHome();
         };
-        actionSection.appendChild(btnSaveChanges);
+        step1NavRow.appendChild(btnAbbrechen);
+        step1NavRow.appendChild(btnSpeichern);
+        actionSection.appendChild(step1NavRow);
       } else if(isPlanMode){
         /* ImmoScout-Footer Plan-Mode: Links Text-Link, Rechts schwarzer Primär-Button */
         var planNavRow=document.createElement('div');
@@ -16318,7 +16357,7 @@
         window.visualViewport.addEventListener('scroll', vvHandler);
       }
       setWizardContent(sheet);
-      requestAnimationFrame(function(){ requestAnimationFrame(function(){ box.classList.add('is-open'); }); });
+      requestAnimationFrame(function(){ requestAnimationFrame(function(){ box.classList.add('is-open'); if(typeof applyVendorFooterPadding==='function') applyVendorFooterPadding(); }); });
       // ZERO-CLICK FOCUS: Tastatur sofort aufklappen – Fokus immer auf Namensfeld [cite: 2026-02-23]
       setTimeout(function(){
         var titleInput = box.querySelector('#gericht-name, #step-name input.magnet-input, #step-name .inserat-detail-style-title');
@@ -16329,6 +16368,7 @@
         }
         var photoEl = box.querySelector('.photo-header, .inserat-photo-tile');
         if(photoEl && !w.data.photoData) photoEl.classList.add('inserat-card-photo-pulse');
+        if(typeof applyVendorFooterPadding==='function') applyVendorFooterPadding();
       }, 300);
       return;
     }
