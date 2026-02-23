@@ -15815,16 +15815,16 @@
       inputDish.oninput=function(){ w.data.dish=inputDish.value; saveDraft(); adjustTitleFontSize(); if(typeof checkMastercardValidation==='function') checkMastercardValidation(); if(updateStep2ContextZoneRef) updateStep2ContextZoneRef(); };
       inputDish.onblur=function(){ dismissKeyboard(); hapticLight(); };
       stepName.appendChild(inputDish);
-      stepName.style.cssText='width:100%; margin-top:6px; margin-bottom:0; display:flex; justify-content:center;';
+      stepName.style.cssText='width:100%; margin-top:6px; margin-bottom:4px; display:flex; justify-content:center;';
       scrollArea.appendChild(stepName);
 
-      // ========== 3. Beschreibung (VOR Kategorien) [cite: 2026-02-23 DESIGN-FINISH] ==========
+      // ========== 3. Beschreibung (4–8px unter Name, Einheit) [cite: STRENGER LAYOUT-CHECK 2026-02-23] ==========
       var descriptionTextarea=document.createElement('textarea');
       descriptionTextarea.id='gerichtDesc';
       descriptionTextarea.className='input-description';
       descriptionTextarea.placeholder='Kurze Beschreibung...';
       descriptionTextarea.value=w.data.description||'';
-      descriptionTextarea.style.cssText='width:100%; border:none; font-size:14px; color:#64748b; resize:none; padding:2px 0 6px 0; margin:2px 0 0; text-align:center; background:transparent; outline:none; box-sizing:border-box;';
+      descriptionTextarea.style.cssText='width:100%; border:none; font-size:14px; color:#64748b; resize:none; padding:4px 0 6px 0; margin:0; text-align:center; background:transparent; outline:none; box-sizing:border-box;';
       descriptionTextarea.oninput=function(){ w.data.description=descriptionTextarea.value; saveDraft(); };
       scrollArea.appendChild(descriptionTextarea);
 
@@ -15937,16 +15937,16 @@
           finishBtn.style.background='#222222';
           if(window.navigator.vibrate) window.navigator.vibrate([10,30,10]);
         }
+        quickAdjustPanel.style.transition='transform 0.3s cubic-bezier(0.32,0.72,0,1)';
         requestAnimationFrame(function(){
           quickAdjustPanel.style.transform='translateY(100%)';
-          quickAdjustPanel.style.transition='transform 0.3s cubic-bezier(0.32,0.72,0,1)';
           setTimeout(function(){
             quickAdjustPanel.style.display='none';
             quickAdjustPanel.style.transform='';
             quickAdjustPanel.style.transition='';
             quickAdjustPanel.innerHTML='';
             rebuildWizard();
-          }, 300);
+          }, 320);
         });
       }
       function closeQuickAdjust(){ if(navigator.vibrate) navigator.vibrate(20); quickAdjustPanel.style.display='none'; quickAdjustPanel.innerHTML=''; rebuildWizard(); }

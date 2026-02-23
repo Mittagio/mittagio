@@ -1994,8 +1994,9 @@
       right: 12px;
       width: 36px;
       height: 36px;
-      background: rgba(255,255,255,0.9);
+      background: rgba(255,255,255,0.9) !important;
       border-radius: 50%;
+      z-index: 20;
       border: none;
       box-shadow: 0 2px 8px rgba(0,0,0,0.2);
       display: flex;
