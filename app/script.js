@@ -15645,12 +15645,12 @@
       photoTile.style.cssText='position:relative; overflow:hidden; flex-shrink:0; width:100%; height:170px; min-height:170px; max-height:170px;';
       var imgSrc=w.data.photoData||'data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300"><rect fill="#1e293b" width="400" height="300"/></svg>');
       var objPos=getPhotoObjectPosition();
-      photoTile.innerHTML='<img src="'+imgSrc+'" id="mainImagePreview" class="ebay-preview-img" alt="" style="object-position:center '+objPos+'%;"><input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none"><div class="ebay-photo-overlay"><button type="button" class="ebay-edit-btn" id="triggerCamera">'+(w.data.photoData?'<span>📷</span> Foto ändern':'<span>📷</span> Foto aufnehmen')+'</button>'+(w.data.photoData?'<p class="ebay-hint">Ziehen zum Ausrichten</p>':'')+'</div>';
+      photoTile.innerHTML='<img src="'+imgSrc+'" id="mainImagePreview" class="ebay-preview-img" alt="" style="object-position:center '+objPos+'%;"><input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none"><div class="ebay-photo-overlay"><button type="button" class="btn-photo-icon-only ebay-edit-btn" id="triggerCamera" title="'+(w.data.photoData?'Foto ändern':'Foto aufnehmen')+'">📷</button></div>';
       var imgEl=photoTile.querySelector('#mainImagePreview');
       var cameraInput=photoTile.querySelector('#cameraInput');
       var triggerBtn=photoTile.querySelector('#triggerCamera');
       if(triggerBtn) triggerBtn.onclick=function(e){ e.stopPropagation(); cameraInput.click(); };
-      photoTile.onclick=function(ev){ if(ev.target.closest('.close-wizard-x')||ev.target.closest('.btn-close-master')||ev.target.closest('.ebay-edit-btn')||ev.target.closest('.ebay-photo-overlay')) return; cameraInput.click(); };
+      photoTile.onclick=function(ev){ if(ev.target.closest('.close-wizard-x')||ev.target.closest('.btn-close-master')||ev.target.closest('.ebay-edit-btn')||ev.target.closest('.btn-photo-icon-only')||ev.target.closest('.ebay-photo-overlay')) return; cameraInput.click(); };
       if(cameraInput){
         cameraInput.onchange=async function(){
           var f=this.files&&this.files[0];
@@ -15782,7 +15782,7 @@
 
       const scrollArea=document.createElement('div');
       scrollArea.id='mastercardScrollArea';
-      scrollArea.className='inserat-scroll-area mastercard-scroll-area mastercard-content scroll-content inserat-scroll-with-photo';
+      scrollArea.className='inserat-scroll-area mastercard-scroll-area mastercard-content scroll-content inserat-scroll-with-photo system-content-body';
       photoTile.classList.add('inserat-photo-in-scroll');
       scrollArea.appendChild(photoTile);
 
@@ -15814,33 +15814,7 @@
       stepName.style.cssText='width:100%; margin-top:6px; margin-bottom:2px; display:flex; justify-content:center;';
       scrollArea.appendChild(stepName);
 
-      // ========== 3. Kategorie-Pills (Allergene gestrichen) [cite: 2026-02-21] ==========
-      var pillGroup=document.createElement('div');
-      pillGroup.className='pill-group system-content-body';
-      pillGroup.style.cssText='display:flex; flex-direction:column; gap:8px; margin-top:6px; margin-bottom:0;';
-      var catValues=['Fleisch','Vegetarisch','Vegan','Salat'];
-      var catEmojis=['\uD83C\uDF56','\uD83C\uDF36','\uD83E\uDDEB','\uD83C\uDF57'];
-      var currentCat=w.data.category||'Fleisch';
-      if(!catValues.includes(currentCat)) w.data.category='Fleisch';
-      var categoryPills=document.createElement('div');
-      categoryPills.className='pill-cloud categories';
-      categoryPills.id='categoryPills';
-      categoryPills.style.cssText='display:flex; flex-wrap:wrap; gap:8px; align-items:center;';
-      catValues.forEach(function(c,i){
-        var b=document.createElement('button');
-        b.type='button';
-        b.className='pill power-item'+(w.data.category===c?' active':'');
-        b.style.cssText='min-height:44px; padding:8px 14px; border-radius:12px; border:1px solid #ebebeb; background:#ffffff; font-size:14px; font-weight:700; color:#1a1a1a; cursor:pointer; transition:all 0.2s ease;';
-        if(w.data.category===c) b.style.cssText+=' background:#222222; color:#fff; border-color:#222222;';
-        b.innerHTML='<span style="font-size:16px;">'+(catEmojis[i]||'')+'</span> ' + c;
-        b.setAttribute('title',c);
-        b.onclick=function(){ hapticLight(); w.data.category=c; saveDraft(); rebuildWizard(); };
-        categoryPills.appendChild(b);
-      });
-      pillGroup.appendChild(categoryPills);
-      scrollArea.appendChild(pillGroup);
-
-      // ========== 4. Beschreibung (Textarea) [cite: FINALE NEUAUFBAU 2026-02-21] ==========
+      // ========== 3. Beschreibung (VOR Kategorien) [cite: 2026-02-23 DESIGN-FINISH] ==========
       var descriptionTextarea=document.createElement('textarea');
       descriptionTextarea.id='gerichtDesc';
       descriptionTextarea.className='input-description';
@@ -15849,6 +15823,32 @@
       descriptionTextarea.style.cssText='width:100%; border:none; font-size:14px; color:#64748b; resize:none; padding:4px 0 6px 0; margin:0; text-align:center; background:transparent; outline:none; box-sizing:border-box;';
       descriptionTextarea.oninput=function(){ w.data.description=descriptionTextarea.value; saveDraft(); };
       scrollArea.appendChild(descriptionTextarea);
+
+      // ========== 4. Kategorie-Pills (neutral, nicht schwarz) [cite: 2026-02-23] ==========
+      var pillGroup=document.createElement('div');
+      pillGroup.className='pill-group system-content-body';
+      pillGroup.style.cssText='display:flex; flex-direction:column; gap:8px; margin-top:6px; margin-bottom:0; align-items:center; width:100%;';
+      var catValues=['Fleisch','Vegetarisch','Vegan','Salat'];
+      var catEmojis=['\uD83C\uDF56','\uD83C\uDF36','\uD83E\uDDEB','\uD83C\uDF57'];
+      var currentCat=w.data.category||'Fleisch';
+      if(!catValues.includes(currentCat)) w.data.category='Fleisch';
+      var categoryPills=document.createElement('div');
+      categoryPills.className='pill-cloud categories';
+      categoryPills.id='categoryPills';
+      categoryPills.style.cssText='display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:center;';
+      catValues.forEach(function(c,i){
+        var b=document.createElement('button');
+        b.type='button';
+        b.className='pill power-item'+(w.data.category===c?' active':'');
+        b.style.cssText='min-height:44px; padding:8px 14px; border-radius:12px; border:1px solid #ebebeb; background:#ffffff; font-size:14px; font-weight:700; color:#1a1a1a; cursor:pointer; transition:all 0.2s ease;';
+        if(w.data.category===c) b.style.cssText+=' background:#f1f5f9; color:#475569; border-color:#cbd5e1;';
+        b.innerHTML='<span style="font-size:16px;">'+(catEmojis[i]||'')+'</span> ' + c;
+        b.setAttribute('title',c);
+        b.onclick=function(){ hapticLight(); w.data.category=c; saveDraft(); rebuildWizard(); };
+        categoryPills.appendChild(b);
+      });
+      pillGroup.appendChild(categoryPills);
+      scrollArea.appendChild(pillGroup);
 
       var systemDivider=document.createElement('div');
       systemDivider.className='minimal-divider mastercard-step-edit-divider system-divider';
@@ -15923,8 +15923,22 @@
       addPowerItem('\uD83C\uDF3E','Allergene','allergene',hasAllergens);
       addPowerItem('\u2795','Extras','extras',hasExtras);
       const quickAdjustPanel=document.createElement('div');
+      quickAdjustPanel.id='quick-adjust-sheet';
       quickAdjustPanel.className='inserat-quick-adjust-panel quick-adjust-sheet';
-      quickAdjustPanel.style.cssText='display:none; position:fixed; left:0; right:0; bottom:0; z-index:600; background:#ffffff; border-radius:24px 24px 0 0; padding:24px 20px calc(24px + env(safe-area-inset-bottom,0)); box-shadow:none; border-top:1px solid #ebebeb; max-height:70vh; overflow-y:auto;';
+      quickAdjustPanel.style.cssText='display:none; position:fixed; left:0; right:0; bottom:0; z-index:6000; background:#ffffff; border-radius:24px 24px 0 0; padding:24px 20px calc(24px + env(safe-area-inset-bottom,0)); box-shadow:none; border-top:1px solid #ebebeb; max-height:70vh; overflow-y:auto;';
+      function closeQuickAdjustWithFeedback(type){
+        var finishBtn=quickAdjustPanel.querySelector('.quick-adjust-fertig');
+        if(finishBtn){
+          finishBtn.textContent='✓ Gespeichert';
+          finishBtn.style.background='#10b981';
+          if(window.navigator.vibrate) window.navigator.vibrate([10,30,10]);
+        }
+        setTimeout(function(){
+          quickAdjustPanel.style.display='none';
+          quickAdjustPanel.innerHTML='';
+          rebuildWizard();
+        }, 400);
+      }
       function closeQuickAdjust(){ if(navigator.vibrate) navigator.vibrate(20); quickAdjustPanel.style.display='none'; quickAdjustPanel.innerHTML=''; rebuildWizard(); }
       function openQuickAdjust(type){
         hapticLight();
@@ -15979,7 +15993,7 @@
         btnFertig.className='inserat-fertig-kachel quick-adjust-fertig';
         btnFertig.textContent='Fertig';
         btnFertig.style.cssText='width:100%; min-height:56px; margin-top:24px; padding:16px 24px; border:none; border-radius:8px; background:#222222; color:#ffffff; font-size:16px; font-weight:800; cursor:pointer;';
-        btnFertig.onclick=function(){ hapticLight(); closeQuickAdjust(); };
+        btnFertig.onclick=function(){ hapticLight(); closeQuickAdjustWithFeedback(type); };
         quickAdjustPanel.appendChild(btnFertig);
       }
 
