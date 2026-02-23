@@ -1,5 +1,33 @@
     /* TGTG-Airbnb: Nur Inter + Montserrat (flaches Design, keine Schreibschriften) */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Montserrat:wght@400;600;700;900&display=swap');
+    /* 1. DIE ANIMATIONS-KURVE (S25-Standard) [cite: 2026-02-21] */
+    :root { --s25-slide-curve: cubic-bezier(0.2, 0.8, 0.2, 1); }
+    /* 2. EMERALD-PULSE: Ready-Zustand des Primär-Buttons [cite: 2026-02-21] */
+    @keyframes emerald-pulse {
+      0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6); }
+      70% { box-shadow: 0 0 0 15px rgba(16, 185, 129, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+    /* 3. DER "READY" ZUSTAND: Emerald-Grün, klickbar, pulsierend */
+    .footer-btn-primary.is-ready,
+    .inserat-footer-btn-main.footer-btn-primary.is-ready {
+      background: #10b981 !important;
+      color: #ffffff !important;
+      animation: emerald-pulse 2s infinite;
+      cursor: pointer;
+      transition: all 0.3s var(--s25-slide-curve);
+      pointer-events: auto !important;
+    }
+    /* 4. Deaktivierter Zustand: Grau, nicht klickbar bis is-ready */
+    #inserat-action-section .footer-btn-primary:not(.is-ready):not(.inserat-footer-btn--499),
+    #inserat-action-section .inserat-footer-btn-main.footer-btn-primary:not(.is-ready):not(.inserat-footer-btn--499) {
+      background: #e2e8f0 !important;
+      color: #94a3b8 !important;
+      pointer-events: none !important;
+      transition: all 0.3s var(--s25-slide-curve);
+    }
+    /* Step 2 Inserieren-Button: Bleibt schwarz/gelb – keine is-ready-Logik */
+    .inserat-airbnb-footer .inserat-footer-btn-main { pointer-events: auto !important; }
     /* Init-Gate: kein Flackern – Body wird von script.js nach View-Switch sichtbar geschaltet */
     body { visibility: hidden; }
     :root{
@@ -865,9 +893,18 @@
     100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
   }
   .confetti {
-    position: fixed; width: 10px; height: 10px; background: #FFD700;
-    top: -20px; z-index: 2000; pointer-events: none;
+    position: absolute; width: 10px; height: 10px; background: #FFD700;
+    top: -20px; z-index: 0; pointer-events: none;
     animation: confetti-fall 3s linear forwards;
+  }
+  /* Schritt 3: Konfetti hinter Karte & Footer – Bedienelemente immer klickbar [cite: 2026-02-21] */
+  #inseratSuccessSheet .inserat-success-confetti-layer {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; overflow: hidden; z-index: 0;
+  }
+  #inseratSuccessSheet .inserat-success-sheet-body,
+  #inseratSuccessSheet .inserat-success-footer {
+    position: relative; z-index: 10;
   }
   @keyframes success-checkmark-pulse {
     0%, 100% { transform: scale(1); box-shadow: 0 8px 24px rgba(16,185,129,0.25); }
@@ -1538,15 +1575,296 @@
       max-width:calc(100% - 24px);
     }
     /* Tabula Rasa: InseratCard volle Breite, weiße Leinwand – kein Beige-Durchscheinen [cite: Plan InseratCard] */
+    /* Inseratsbüro: Mastercard Full-Screen, 0 Margin/Rundungen [cite: 2026-02-21] */
     #wizard[data-flow="listing"].sheet--kitchen{
-      margin-left:0 !important; margin-right:0 !important;
-      max-width:100% !important;
+      margin: 0 !important; margin-left:0 !important; margin-right:0 !important;
+      max-width:100% !important; width: 100vw !important;
+      height: 100vh !important; max-height: 100vh !important;
+      border-radius: 0 !important;
       background:#fff !important;
+      border: none !important;
+      box-shadow: none !important;
     }
     #wizard[data-flow="listing"].sheet--kitchen .wizard{
       background:#fff !important;
+      border-radius: 0 !important;
+      border: none !important;
+      box-shadow: none !important;
+      backdrop-filter: none; -webkit-backdrop-filter: none;
+    }
+    #wizard[data-flow="listing"].sheet--kitchen .sheet-body.wizard-sheet-body{
+      padding: 0 !important;
+      border-radius: 0 !important;
     }
     #wizard.sheet--kitchen .handle{ background:rgba(0,0,0,0.15); width:40px; margin:8px auto 4px; }
+    /* Inseratsbüro: Kein Handle im Listing-Flow, volle Höhe [cite: 2026-02-21] */
+    #wizard[data-flow="listing"].sheet--kitchen .handle { display: none !important; }
+    /* Inseratsbüro: Keine Rundungen in Mastercard – Edge-to-Edge [cite: 2026-02-21] */
+    #wizard[data-flow="listing"] .inserat-photo-in-scroll,
+    #wizard[data-flow="listing"] .inserat-photo-tile,
+    #wizard[data-flow="listing"] .inserat-collapsing-header { border-radius: 0 !important; }
+    /* ===== MASTERCARD KANON [cite: 2026-02-21, User Prompt] ===== */
+    /* 1. DIE SHELL: Verhindert das "Aufsitz-Gefühl", 100% S25-Screen */
+    #wizard[data-flow="listing"] .mastercard-container {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #ffffff;
+      z-index: 2000;
+      display: flex;
+      flex-direction: column;
+      margin: 0 !important;
+      padding: 0 !important;
+      border: none !important;
+      border-radius: 0 !important;
+      transform: translateY(100%);
+      transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+    }
+    #wizard[data-flow="listing"] .mastercard-container.is-open {
+      transform: translateY(0);
+    }
+    /* mastercard-overlay: Hintergrund-Dimmer für Slide-Down [cite: 2026-02-21] */
+    .mastercard-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      pointer-events: none;
+      z-index: 1999;
+    }
+    .mastercard-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    /* Radikale Schlichtheit: Riesige Inputs ohne Rahmen [cite: 2026-02-21] */
+    #wizard[data-flow="listing"] .input-name-giant,
+    #wizard[data-flow="listing"] #step-name input.ghost-input.inserat-detail-style-title {
+      width: 100%;
+      border: none;
+      font-size: clamp(24px, 6vw, 32px);
+      font-weight: 900;
+      text-align: center;
+      color: #0f172a;
+      padding: 16px 0;
+      outline: none;
+      background: transparent;
+    }
+    #wizard[data-flow="listing"] .input-price-giant,
+    #wizard[data-flow="listing"] .inserat-price-pill-input {
+      border: none;
+      font-size: clamp(32px, 8vw, 48px);
+      font-weight: 900;
+      text-align: center;
+      color: #0f172a;
+      width: 160px;
+      outline: none;
+      background: transparent;
+    }
+    .minimal-divider {
+      width: 40px;
+      height: 4px;
+      background: #f1f5f9;
+      margin: 10px auto;
+      border-radius: 2px;
+    }
+    /* Airbnb-Glow: Button atmet bei Validierung [cite: 2026-02-21] */
+    .footer-btn-primary-glow,
+    #wizard[data-flow="listing"] .inserat-step1-nav .footer-btn-primary.is-ready {
+      background: #ffffff;
+      color: #0f172a;
+      height: 56px;
+      min-width: 180px;
+      border-radius: 16px;
+      font-size: 18px;
+      font-weight: 800;
+      border: none;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .footer-btn-primary-glow.is-ready,
+    #wizard[data-flow="listing"] .inserat-step1-nav .footer-btn-primary.is-ready {
+      box-shadow: 0 0 25px rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+    }
+    .airbnb-footer-minimal,
+    #wizard[data-flow="listing"] .inserat-step1-nav.inserat-immo-footer {
+      background: #0f172a;
+      padding: 16px 24px max(34px, env(safe-area-inset-bottom));
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 0 !important;
+      border-radius: 0 !important;
+    }
+    /* 2. FIXED HEADER: Bleibt oben stehen */
+    #wizard[data-flow="listing"] .mastercard-header {
+      width: 100%;
+      padding: 16px 0;
+      text-align: center;
+      font-weight: 800;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border-bottom: 1px solid #f1f5f9;
+      z-index: 100;
+      flex-shrink: 0;
+    }
+    /* 3. CONTENT-SCROLL: S25 snappy – overflow-y auto, touch scrolling, Header sticky [cite: 2026-02-21] */
+    #mastercardScrollArea,
+    #wizard[data-flow="listing"] .mastercard-content,
+    #wizard[data-flow="listing"] .inserat-scroll-area.mastercard-content {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      min-height: 0;
+      padding: 20px 24px 120px 24px;
+    }
+    /* 4. EBAY-STYLE PHOTO-SECTION: Smart-Crop, Drag-to-Pan [cite: 2026-02-21] */
+    #wizard[data-flow="listing"] .photo-section-ebay,
+    #wizard[data-flow="listing"] .photo-section {
+      width: 100%;
+      width: 100vw;
+      height: 220px;
+      min-height: 220px;
+      max-height: 220px;
+      margin: 0;
+      position: relative;
+      background: #1e293b;
+      overflow: hidden;
+      flex-shrink: 0;
+      cursor: grab;
+      box-shadow: inset 0 -20px 20px rgba(0,0,0,0.1);
+    }
+    #wizard[data-flow="listing"] .photo-section-ebay .ebay-preview-img,
+    #wizard[data-flow="listing"] .photo-section img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 50%;
+      transition: object-position 0.1s ease-out;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+    #wizard[data-flow="listing"] .photo-section-ebay .ebay-photo-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0.2);
+      pointer-events: none;
+    }
+    #wizard[data-flow="listing"] .photo-section-ebay .ebay-edit-btn {
+      pointer-events: auto;
+      background: rgba(255,255,255,0.9);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: none;
+      padding: 10px 20px;
+      border-radius: 50px;
+      font-weight: 700;
+      font-size: 14px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      cursor: pointer;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    #wizard[data-flow="listing"] .photo-section-ebay .ebay-hint {
+      color: white;
+      font-size: 11px;
+      margin-top: 10px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+      font-weight: 600;
+      pointer-events: none;
+    }
+    /* Kochbuch Quick-Select: horizontale Scroll-Leiste [cite: 2026-02-21] */
+    .cookbook-quick-select {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding: 10px 16px;
+      -webkit-overflow-scrolling: touch;
+      flex-shrink: 0;
+      scrollbar-width: none;
+    }
+    .cookbook-quick-select::-webkit-scrollbar {
+      display: none;
+    }
+    .cookbook-quick-item {
+      flex: 0 0 60px;
+      text-align: center;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .cookbook-quick-item .cookbook-quick-thumb {
+      width: 60px;
+      height: 60px;
+      border-radius: 12px;
+      object-fit: cover;
+      border: 2px solid #f1f5f9;
+      display: block;
+    }
+    .cookbook-quick-item span {
+      font-size: 10px;
+      font-weight: 700;
+      color: #64748b;
+      display: block;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: 4px;
+    }
+    /* X oben rechts – NUR ZUM SCHLIESSEN */
+    #wizard[data-flow="listing"] .btn-close-master,
+    #wizard[data-flow="listing"] .close-mastercard {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 40px;
+      height: 40px;
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 50%;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 150;
+      border: none;
+      cursor: pointer;
+    }
+    /* Kamera-Icon: Dezent oben rechts auf dem Bild, neben dem X */
+    #wizard[data-flow="listing"] .camera-trigger {
+      position: absolute;
+      top: 12px;
+      right: 60px;
+      width: 40px;
+      height: 40px;
+      background: rgba(0, 0, 0, 0.25);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      cursor: pointer;
+      border: none;
+      z-index: 15;
+    }
+    /* 5. Die 3 Säulen-Icons direkt unter dem Bild */
+    #wizard[data-flow="listing"] .pillars-row,
+    #wizard[data-flow="listing"] .inserat-power-bar.inserat-unified-pills {
+      display: flex;
+      justify-content: space-around;
+      padding: 15px 0;
+      margin-bottom: 20px;
+    }
     /* Wizard: app-like – Inserat-Flow weiter oben, weniger Abstand oben */
     /* Inseratsflow: Kein Header, Bild volle Breite oben [cite: 2026-02-18] */
     #wizard.sheet--kitchen .sheet-body.wizard-sheet-body{
@@ -2027,9 +2345,12 @@
     #wizard.sheet--kitchen .liquid-master-panel .inserat-allergen-row.active{ background: #10b981; color: #fff; }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-allergen-row:active,
     #wizard.sheet--kitchen .liquid-master-panel .inserat-allergen-row:active{ transform: scale(0.98); }
+    /* Airbnb-Footer: Edge-to-Edge, ohne seitliche Lücken/Rundungen, blur(30px) [cite: 2026-02-21] */
     #wizard.sheet--kitchen .glass-express-step0 .inserat-action-section{
-      padding: 24px 24px calc(20px + env(safe-area-inset-bottom, 24px));
-      background: rgba(255,255,255,0.98); border-top: 1px solid rgba(0,0,0,0.06);
+      padding: 20px max(16px, env(safe-area-inset-left)) calc(20px + env(safe-area-inset-bottom, 24px)) max(16px, env(safe-area-inset-right));
+      margin: 0; border-radius: 0; border-top: 1px solid rgba(0,0,0,0.06);
+      background: rgba(245,245,240,0.92);
+      backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
       box-shadow: 0 -8px 32px rgba(0,0,0,0.06); flex-shrink: 0;
       display: flex; flex-direction: column; gap: 12px;
     }
@@ -2567,7 +2888,16 @@
       border-bottom: 2px solid #10b981;
       transition: border-color 0.3s ease;
     }
-    /* Collapsing Header „Dein Inserat“ [cite: 2026-02-21] */
+    /* Collapsing Header „Dein Inserat“ [cite: 2026-02-21 Inseratsbüro] */
+    /* Fixer Header: „Dein Inserat“ bleibt stehen, Inhalt scrollt darunter weg */
+    #wizard[data-flow="listing"] .inserat-collapsing-header {
+      position: sticky !important;
+      top: 0 !important;
+      z-index: 20;
+      flex-shrink: 0;
+      background: #fff !important;
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+    }
     #wizard[data-flow="listing"] .inserat-collapsing-header .inserat-collapsing-title {
       font-size: 18px;
       font-weight: 800;
@@ -2584,7 +2914,8 @@
     /* Tunnel-Blick: Nav ausblenden wenn Inseratsauswahl ODER Mastercard offen [cite: 2026-02-21] */
     /* Mastercard-Fix: Footer exakt wie Inseratsauswahl – gleiche Position, Höhe, bündig [cite: 2026-02-21] */
     body.wizard-inserat-open #wizard[data-flow="listing"] .inserat-action-section.inserat-action-layer,
-    body.wizard-inserat-open #wizard[data-flow="listing"] .inserat-action-section.inserat-action-pricing {
+    body.wizard-inserat-open #wizard[data-flow="listing"] .inserat-action-section.inserat-action-pricing,
+    body.wizard-inserat-open #wizard[data-flow="listing"] .inserat-action-section.inserat-action-plan {
       position: fixed !important;
       bottom: 0 !important;
       left: 0 !important;
@@ -2592,6 +2923,7 @@
       width: 100% !important;
       margin: 0 !important;
       border-radius: 0 !important;
+      z-index: 500 !important;
       padding: 12px 24px calc(12px + env(safe-area-inset-bottom)) 24px !important;
       background: #fff !important;
       border-top: 1px solid #f1f5f9 !important;
@@ -2619,16 +2951,16 @@
       height: 48px !important;
       border-radius: 8px !important;
     }
-    /* Bild im Scroll-Fluss: oben abgerundet, volle Breite [cite: 2026-02-21] */
+    /* Bild im Scroll-Fluss: Edge-to-Edge, keine Rundungen [cite: 2026-02-21 Inseratsbüro] */
     #wizard[data-flow="listing"] .inserat-scroll-area.inserat-scroll-with-photo {
       padding-top: 0 !important;
     }
     #wizard[data-flow="listing"] .inserat-photo-in-scroll {
       width: 100vw !important;
-      max-width: calc(100% + 40px) !important;
-      margin-left: -20px !important;
-      margin-right: -20px !important;
-      border-radius: 20px 20px 0 0 !important;
+      max-width: 100% !important;
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+      border-radius: 0 !important;
     }
     /* ghost-input: Placeholder pulsierend (z.B. Jägerschnitzel) [cite: 2026-02-21] */
     #wizard[data-flow="listing"] .ghost-input::placeholder {
@@ -2638,9 +2970,13 @@
       0%, 100% { opacity: 0.5; }
       50% { opacity: 0.9; }
     }
-    /* Preis-Placeholder pulsieren [cite: 2026-02-21] */
+    /* Pulsierende leere Felder (atmen): Preis, Gericht [cite: 2026-02-21] */
     #wizard[data-flow="listing"] .inserat-price-input::placeholder,
-    #wizard[data-flow="listing"] .price-field::placeholder {
+    #wizard[data-flow="listing"] .price-field::placeholder,
+    #wizard[data-flow="listing"] .inserat-price-pill-input::placeholder {
+      animation: ghost-placeholder-pulse 2.5s ease-in-out infinite;
+    }
+    #wizard[data-flow="listing"] #step-name input.ghost-input::placeholder {
       animation: ghost-placeholder-pulse 2.5s ease-in-out infinite;
     }
     /* Textarea Beschreibung: kein harter Rahmen */
@@ -2705,6 +3041,7 @@
     #wizard[data-flow="listing"].sheet--kitchen .liquid-master-panel .photo-header,
     #wizard[data-flow="listing"].sheet--kitchen .liquid-master-panel .inserat-photo-tile.photo-header {
       border-radius: 0 0 24px 24px; width: 100%;
+      margin: 0; margin-top: 0; /* Bild bündig oben, 0px [cite: 2026-02-21] */
     }
     .liquid-master-panel .photo-header.inserat-photo-tile .inserat-photo-placeholder,
     .liquid-master-panel .photo-header:not(:has(img[src])) {
@@ -2795,26 +3132,24 @@
     #wizard[data-flow="listing"] .inserat-card-sheet .magnet-input { color: #0f172a; font-weight: 800; }
     #wizard[data-flow="listing"] .inserat-card-sheet .inserat-airbnb-desc,
     #wizard[data-flow="listing"] .inserat-card-sheet .inserat-desc-input { color: #64748b; }
-    /* Foto ändern: Glassmorphism-Pill (Frosted Glass), unten zentriert [cite: 2026-02-18 Master Card] */
+    /* eBay-Header Clean-up: Kein „Foto ändern“-Button – nur dezentes Kamera-Icon in der Ecke [cite: 2026-02-21 Step 2] */
     #wizard[data-flow="listing"] .liquid-master-panel .photo-header .inserat-photo-change,
     #wizard[data-flow="listing"] .liquid-master-panel .inserat-photo-tile.photo-header .inserat-photo-change {
-      position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
-      z-index: 10;
-      border-radius: 30px;
-      background: rgba(0,0,0,0.35);
-      backdrop-filter: blur(16px) saturate(140%); -webkit-backdrop-filter: blur(16px) saturate(140%);
-      border: 1px solid rgba(255,255,255,0.15);
-      color: #fff;
-      padding: 10px 20px;
-      font-size: 14px; font-weight: 700;
-      cursor: pointer; display: inline-flex; align-items: center; gap: 8px;
-      -webkit-tap-highlight-color: transparent;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-      transition: transform 0.12s ease;
+      display: none !important;
     }
-    #wizard[data-flow="listing"] .liquid-master-panel .photo-header .inserat-photo-change:hover,
-    #wizard[data-flow="listing"] .liquid-master-panel .photo-header .inserat-photo-change:active { color: #fff; }
-    #wizard[data-flow="listing"] .liquid-master-panel .photo-header .inserat-photo-change:active { transform: translateX(-50%) scale(0.95); }
+    #wizard[data-flow="listing"] .liquid-master-panel .photo-header .inserat-photo-edit-icon,
+    #wizard[data-flow="listing"] .liquid-master-panel .inserat-photo-tile.photo-header .inserat-photo-edit-icon {
+      position: absolute; top: 12px; right: 12px; z-index: 10;
+      width: 40px; height: 40px; border-radius: 50%;
+      background: rgba(0,0,0,0.25); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      color: #fff; display: flex; align-items: center; justify-content: center;
+      cursor: pointer; -webkit-tap-highlight-color: transparent;
+      transition: transform 0.12s ease, background 0.2s ease;
+    }
+    #wizard[data-flow="listing"] .liquid-master-panel .photo-header .inserat-photo-edit-icon:active,
+    #wizard[data-flow="listing"] .liquid-master-panel .inserat-photo-tile.photo-header .inserat-photo-edit-icon:active {
+      transform: scale(0.95); background: rgba(0,0,0,0.4);
+    }
     /* Pricing-Label über Buttons: dezenter Puls; auf schmalen Displays kleiner [cite: 2026-02-16] */
     .pricing-info-label { cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; font-size: 12px; font-weight: 500; color: #94a3b8; margin-bottom: 8px; -webkit-tap-highlight-color: transparent; animation: gentle-pulse 3s infinite ease-in-out; }
     @media (max-width: 400px) {
@@ -2844,32 +3179,6 @@
       animation: inserat-photo-fade-in 0.5s ease forwards;
     }
     @keyframes inserat-photo-fade-in { 0% { opacity: 0; } 100% { opacity: 1; } }
-    /* Interactive Leberkäse-Onboarding [cite: 2026-02-14, 2026-02-16] */
-    #wizard[data-flow="listing"] .inserat-onboarding-overlay {
-      position: absolute; inset: 0; z-index: 20; display: flex; align-items: center; justify-content: center; padding: 24px; box-sizing: border-box;
-      background: rgba(255,255,255,0.4); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
-      transition: opacity 0.3s ease; pointer-events: auto;
-    }
-    #wizard[data-flow="listing"] .inserat-onboarding-overlay.is-dismissed { opacity: 0; pointer-events: none; transition: opacity 0.25s ease; }
-    /* Onboarding-Karte: Bottom-Sheet-Look, 32px Radius, kein harter Schlagschatten [cite: 2026-02-18] */
-    #wizard[data-flow="listing"] .inserat-onboarding-card {
-      background: #fff; border-radius: 32px; padding: 28px 24px; max-width: 320px; text-align: center;
-      box-shadow: 0 12px 40px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.02);
-    }
-    #wizard[data-flow="listing"] .inserat-onboarding-card p { margin: 0 0 20px; font-size: 17px; font-weight: 700; color: #0f172a; line-height: 1.4; }
-    /* CTA: Modern S25-Look, Emerald, abgerundet, nicht klobig [cite: 2026-02-18] */
-    #wizard[data-flow="listing"] .inserat-onboarding-card .inserat-onboarding-btn {
-      width: 100%; min-height: 52px; border-radius: 20px; border: none;
-      background: #10b981; color: #fff; font-size: 16px; font-weight: 800; cursor: pointer;
-      box-shadow: 0 6px 20px rgba(16,185,129,0.3); -webkit-tap-highlight-color: transparent;
-      transition: transform 0.15s ease, box-shadow 0.2s ease;
-    }
-    #wizard[data-flow="listing"] .inserat-onboarding-card .inserat-onboarding-btn:active { transform: scale(0.98); box-shadow: 0 4px 16px rgba(16,185,129,0.25); }
-    #wizard[data-flow="listing"] .inserat-onboarding-price-pulse input.inserat-price-fintech { animation: onboarding-price-pulse 2s ease-in-out infinite; }
-    @keyframes onboarding-price-pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(16,185,129,0.2); } 50% { box-shadow: 0 0 0 6px rgba(16,185,129,0.15); } }
-    #wizard[data-flow="listing"] .pricing-info-label.inserat-onboarding-tooltip { position: relative; }
-    #wizard[data-flow="listing"] .pricing-info-label.inserat-onboarding-tooltip::after { content: attr(data-tooltip); position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); margin-bottom: 6px; padding: 6px 10px; background: #1a1a1a; color: #fff; font-size: 11px; font-weight: 600; border-radius: 8px; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
-    #wizard[data-flow="listing"] .pricing-info-label.inserat-onboarding-tooltip:hover::after { opacity: 1; }
     /* Smart-Photo: Vorschaubilder (3 Standard-Bilder / imageMap) */
     .photo-suggestion {
       width: 60px; height: 60px; border-radius: 12px; object-fit: cover; border: 2px solid transparent;
@@ -2988,12 +3297,9 @@
       padding-bottom: calc(180px + env(safe-area-inset-bottom, 0));
     }
     /* Noble Floating Bottom: Aktions-Kacheln 16px über Nav-Pille, Nav-Pille 12px Abstand [cite: 2026-02-20] */
-    .inserat-step2-floating-bottom .inserat-step2-tiles-floating {
-      position: fixed;
-      bottom: calc(96px + env(safe-area-inset-bottom, 0));
-      left: 16px;
-      right: 16px;
-      z-index: 10;
+    /* Step 2 Bold Selection: Vertikal gestapelt, Kontext-Zone oben [cite: 2026-02-21] */
+    .inserat-step2-immo .inserat-step2-tiles-vertical {
+      width: 100%;
     }
     #wizard[data-flow="listing"] .inserat-action-section.inserat-action-layer {
       position: fixed;
@@ -3002,37 +3308,288 @@
       right: 16px;
       z-index: 10;
     }
-    .inserat-step2-floating-bottom .inserat-step2-nav-pille {
-      position: fixed;
-      bottom: calc(12px + env(safe-area-inset-bottom, 0));
-      left: 16px;
-      right: 16px;
-      z-index: 11;
-      margin-bottom: 0;
-      padding: 12px 20px;
-      border-radius: 34px;
-      background: rgba(15, 23, 42, 0.85);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    /* 2-Schritt Airbnb-Flow: Step 2 – Kacheln als Radio-Selection, Emerald-Glow bei Auswahl [cite: 2026-02-21 Step 2] */
+    /* Bold Selection: 1px Rahmen Standard, 4px schwarz bei Auswahl – kein Glow [cite: 2026-02-18, 2026-02-21] */
+    .inserat-step2-wrap .inserat-decision-tile.pricing-card {
+      border-radius: 12px;
+      position: relative;
+      border: 1px solid rgba(15, 23, 42, 0.12);
+      background: #fff;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      cursor: pointer;
     }
-    .inserat-step2-nav-pille .inserat-step2-back,
-    .inserat-step2-nav-pille .close-wizard-x {
-      background: transparent !important;
-      color: rgba(255, 255, 255, 0.9) !important;
+    .inserat-step2-wrap .inserat-decision-tile.pricing-card.is-selected {
+      box-shadow: inset 0 0 0 4px #0f172a;
+      border-color: transparent;
+      transform: scale(1.01);
+      z-index: 10;
     }
-    /* 2-Schritt Airbnb-Flow: Step 2 – Kacheln schweben, Champagner links / Emerald rechts [cite: 2026-02-18] */
-    .inserat-step2-wrap .inserat-decision-tile {
-      border-radius: 24px !important;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
+    .inserat-step2-wrap .inserat-decision-tile.pricing-card.selected { box-shadow: inset 0 0 0 4px #0f172a; border-color: transparent; transform: scale(1.01); z-index: 10; }
     .inserat-step2-wrap .inserat-decision-tile:active { transform: scale(0.98); }
-    .inserat-step2-wrap .inserat-tile-hero.inserat-tile-pulse { animation: inserat-hero-pulse 2s ease-in-out infinite; }
-    .inserat-step2-wrap .inserat-tile-champagne { background: linear-gradient(135deg, #F5E6D3 0%, #E8DCC4 50%, #D4C4A8 100%) !important; box-shadow: 0 10px 30px rgba(0,0,0,0.12) !important; }
-    .inserat-step2-wrap .inserat-tile-hero { box-shadow: 0 0 24px rgba(16,185,129,0.5), 0 10px 30px rgba(0,0,0,0.12) !important; }
+    .inserat-step2-wrap .inserat-decision-tile.pricing-card.is-selected:active { transform: scale(0.99); }
+    .inserat-step2-wrap .inserat-decision-tile .pricing-card-price { font-size: 22px; font-weight: 900; }
+    .inserat-step2-wrap .inserat-decision-tile .pricing-card-label { font-size: 17px; font-weight: 800; }
+    .inserat-step2-wrap .inserat-decision-tile .pricing-card-sub { font-size: 13px; color: #64748b; }
+    .inserat-step2-wrap .inserat-decision-tile .price-massive { font-size: 3.8rem; font-weight: 900; line-height: 1; color: #0f172a; }
+    /* Bold-Selection: Basis immer 1px, Smart (Default) immer 4px [cite: 2026-02-21] */
+    .inserat-step2-wrap .inserat-tile-basis.pricing-card { border: 1px solid rgba(15, 23, 42, 0.12); }
+    .inserat-step2-wrap .inserat-tile-basis.pricing-card.is-selected { box-shadow: inset 0 0 0 4px #0f172a; border-color: transparent; }
+    .inserat-step2-wrap .inserat-tile-smart.pricing-card { border: 4px solid #0f172a; }
+    .inserat-step2-wrap .inserat-tile-smart.pricing-card.is-selected { box-shadow: inset 0 0 0 4px #0f172a; border-color: transparent; }
+    /* Step 2: Kachel-Redesign – Selection, Emerald-Glow bei Auswahl [cite: 2026-02-21] */
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      padding: 20px;
+    }
+    .pricing-grid .pricing-card {
+      border: 2px solid #f1f5f9;
+      border-radius: 16px;
+      padding: 24px 16px;
+      text-align: center;
+      transition: all 0.3s ease;
+      background: #fafafa;
+    }
+    .pricing-grid .pricing-card.selected,
+    .pricing-grid .pricing-card.is-selected {
+      border-color: #10b981 !important;
+      background: rgba(16, 185, 129, 0.04);
+      box-shadow: 0 0 0 1px #10b981, 0 10px 25px rgba(16, 185, 129, 0.15);
+      transform: scale(1.02);
+    }
+    .pricing-grid .pricing-card h4 { font-size: 14px; color: #64748b; margin-bottom: 8px; }
+    .pricing-grid .pricing-card .price { font-size: 24px; font-weight: 800; color: #1e293b; }
+    /* 4. Schritt 2: ImmoScout-Eleganz – Pricing-Grid, Kacheln nur zum Antippen [cite: 2026-02-21] */
+    .pricing-selection-area {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      padding: 20px 24px;
+      background: #ffffff;
+    }
+    .pricing-card {
+      border: 2px solid #f1f5f9;
+      border-radius: 16px;
+      padding: 24px 12px;
+      text-align: center;
+      background: #ffffff;
+      transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .pricing-card.selected,
+    .pricing-card.is-selected {
+      border-color: #10b981 !important;
+      background: rgba(16, 185, 129, 0.04);
+      box-shadow: 0 0 0 1px #10b981, 0 10px 25px rgba(16, 185, 129, 0.15);
+      transform: scale(1.02);
+    }
+    /* Checkout-Flow: Step 1 → Step 2 Slide-Animation [cubic-bezier 0.4,0,0.2,1] */
+    .inserat-steps-slider {
+      flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column;
+    }
+    .inserat-steps-track {
+      display: flex; width: 300%; flex: 1; min-height: 0;
+      transition: transform 0.42s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .inserat-steps-slider[data-inserat-step="2"] .inserat-steps-track {
+      transform: translateX(-33.33%);
+    }
+    .inserat-steps-slider[data-inserat-step="3"] .inserat-steps-track {
+      transform: translateX(-66.66%);
+    }
+    .inserat-step1-pane, .inserat-step2-pane, .inserat-step3-pane {
+      width: 33.33%; flex-shrink: 0; min-height: 0; display: flex; flex-direction: column;
+    }
+    /* Step 2: Live-Flow-Card (Smartphone-Mockup) */
+    .inserat-live-flow-card {
+      width: 120px; height: 200px; margin: 0 auto 16px; border-radius: 16px; overflow: hidden;
+      background: linear-gradient(145deg, #1a1a1a 0%, #2d2d2d 100%); box-shadow: 0 12px 36px rgba(0,0,0,0.35);
+      position: relative; border: 4px solid #0f0f0f; flex-shrink: 0;
+    }
+    .inserat-live-flow-card-inner {
+      position: absolute; inset: 8px 6px 24px; background: #f8f7f2; border-radius: 10px; overflow: hidden;
+    }
+    .inserat-live-flow-card .abholnummer-pop { position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%);
+      padding: 6px 12px; border-radius: 999px; background: rgba(16,185,129,0.95); color: #fff; font-size: 11px; font-weight: 900;
+      animation: abholnummer-pop-in 0.5s cubic-bezier(0.34, 1.2, 0.64, 1) forwards; }
+    @keyframes abholnummer-pop-in { 0% { opacity: 0; transform: translateX(-50%) scale(0.8); } 100% { opacity: 1; transform: translateX(-50%) scale(1); } }
+    /* Pro-Wahl: 🧾 leuchtendes Overlay auf Gerichtsbild */
+    .inserat-step2-preview.has-pro-overlay::after { content: '🧾'; position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%); font-size: 48px; filter: drop-shadow(0 0 12px rgba(16,185,129,0.8));
+      animation: inserat-abholnummer-glow 1.5s ease-in-out infinite; pointer-events: none; }
+    @keyframes inserat-abholnummer-glow { 0%, 100% { opacity: 1; filter: drop-shadow(0 0 12px rgba(16,185,129,0.8)); }
+      50% { opacity: 0.85; filter: drop-shadow(0 0 20px rgba(16,185,129,1)); } }
+    .inserat-step2-abholnummer-badge { transition: opacity 0.25s; }
+    /* Success-Glow (Step 2 → 3) */
+    .inserat-success-glow { position: absolute; inset: 0; pointer-events: none; overflow: hidden;
+      opacity: 0; }
+    .inserat-success-glow.animate { opacity: 1; animation: success-glow-sweep 0.6s ease-out forwards; }
+    @keyframes success-glow-sweep {
+      0% { background: linear-gradient(90deg, rgba(16,185,129,0.4) 0%, transparent 50%); }
+      50% { background: linear-gradient(90deg, transparent 0%, rgba(16,185,129,0.5) 50%, transparent 100%); }
+      100% { background: linear-gradient(90deg, transparent 0%, rgba(16,185,129,0.3) 100%); opacity: 0; }
+    }
+    .inserat-tiles-scale-down { animation: inserat-tiles-scale-down 0.35s cubic-bezier(0.4,0,0.2,1) forwards; }
+    @keyframes inserat-tiles-scale-down { to { transform: scale(0.92); opacity: 0; } }
+    /* Step 2: Slot-Machine Sweep – diagonaler Lichtblitz über gesamten Bildschirm [cite: 2026-02-21] */
+    .step2-slot-machine-sweep { position: fixed; inset: -50%; z-index: 999; pointer-events: none; width: 200%; height: 200%; }
+    .step2-slot-machine-sweep::after { content: ''; display: block; position: absolute; top: 50%; left: -50%; width: 80%; height: 300%; background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.75) 35%, rgba(255,255,255,0.95) 50%, rgba(255,255,255,0.75) 65%, transparent 100%); transform: translateY(-50%) rotate(-35deg); }
+    .step2-slot-machine-sweep.animate::after { animation: step2-slot-sweep 0.55s ease-out forwards; }
+    @keyframes step2-slot-sweep { 0% { transform: translateY(-50%) translateX(-80%) rotate(-35deg); opacity: 1; } 100% { transform: translateY(-50%) translateX(120%) rotate(-35deg); opacity: 0.3; } }
+    /* Step 2 + Step 3: Full-Screen 100vh wenn aktiv [cite: 2026-02-21] */
+    #wizard.inserat-step2-active.sheet--kitchen, #wizard.inserat-step2-active[data-flow="listing"],
+    #wizard.inserat-step3-active.sheet--kitchen, #wizard.inserat-step3-active[data-flow="listing"] { height: 100vh !important; max-height: 100vh !important; }
+    /* Step 3: Live-Erfolg [cite: 2026-02-21] */
+    .inserat-step3-pane { position: relative; overflow: hidden; background: #f8fafc; }
+    .inserat-step3-pane .success-confetti { position: absolute; inset: 0; pointer-events: none; z-index: 10; }
+    .inserat-step3-pane .inserat-step3-content { flex: 1; overflow-y: auto; padding-bottom: calc(90px + env(safe-area-inset-bottom)); }
+    .inserat-step3-pane .success-check-wrapper { text-align: center; padding: 40px 0 20px; }
+    .inserat-step3-pane .success-checkmark { display: inline-block; background: #10b981; color: white; padding: 8px 24px; border-radius: 40px; font-weight: 900; font-size: 20px; letter-spacing: 2px; box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4); animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    .inserat-step3-pane .live-status-card { margin: 20px 24px; background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.1); border: 1px solid #f1f5f9; }
+    .inserat-step3-pane .live-card-badge { position: absolute; top: 12px; left: 12px; padding: 6px 12px; background: rgba(16,185,129,0.95); color: #fff; font-size: 12px; font-weight: 800; border-radius: 999px; z-index: 2; }
+    .inserat-step3-pane .live-card-img { width: 100%; height: 160px; object-fit: cover; display: block; }
+    .inserat-step3-pane .live-card-info { padding: 16px 20px; }
+    .inserat-step3-pane .live-card-info h3 { margin: 0 0 4px; font-size: 17px; font-weight: 900; color: #0f172a; }
+    .inserat-step3-pane .live-card-info p { margin: 0; font-size: 15px; font-weight: 700; color: #64748b; }
+    .inserat-step3-pane .final-abhol-box { margin-top: 15px; padding: 12px; background: #f8fafc; border-radius: 12px; text-align: center; }
+    .inserat-step3-pane .abhol-id { display: block; font-size: 24px; font-weight: 900; color: #10b981; }
+    .inserat-step3-pane .success-hint { text-align: center; font-size: 14px; color: #64748b; padding: 0 24px 20px; margin: 0; }
+    .inserat-step3-pane .sharing-trigger { display: flex; align-items: center; gap: 8px; background: transparent; border: none; cursor: pointer; color: #fff !important; font-size: 15px; font-weight: 600; padding: 12px 0; }
+    .inserat-step3-pane #step3ConfettiContainer .confetti { position: absolute; width: 10px; height: 10px; background: #FFD700; border-radius: 2px; animation: confetti-fall 3s linear forwards; top: -20px; }
+    @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+    /* ImmoScout-Footer: 100% bündig, #0f172a, kein Glow [cite: 2026-02-21] */
+    .inserat-airbnb-footer {
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 15;
+      width: 100vw; margin: 0 !important; padding: 0; border: none; border-radius: 0 !important;
+      padding: 16px 24px calc(16px + env(safe-area-inset-bottom, 0)) 24px;
+      padding-left: max(24px, env(safe-area-inset-left));
+      padding-right: max(24px, env(safe-area-inset-right));
+      background: #0f172a;
+      box-shadow: none;
+      display: flex; flex-direction: row; align-items: center; justify-content: space-between; gap: 16px;
+    }
+    /* ImmoScout: Weißer Primär-Button rechts, keine Glow-Effekte [cite: 2026-02-21] */
+    .inserat-airbnb-footer .inserat-footer-btn-main {
+      flex: 1; min-width: 0; min-height: 52px; height: 52px; border-radius: 12px;
+      font-size: 16px; font-weight: 800; border: none; cursor: pointer; display: flex; align-items: center;
+      justify-content: center; transition: transform 0.15s ease;
+      background: #ffffff; color: #0f172a; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .inserat-airbnb-footer .inserat-footer-btn-main.inserat-footer-btn--499 { background: #ffffff; color: #0f172a; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    .inserat-airbnb-footer .inserat-footer-btn-main:active { transform: scale(0.98); }
+    /* ImmoScout: Abbrechen transparent, weißer Text [cite: 2026-02-21] */
+    .inserat-airbnb-footer .inserat-footer-link,
+    .inserat-airbnb-footer .footer-link-secondary { background: transparent !important; border: none !important; color: #ffffff !important; font-size: 15px; font-weight: 600; }
+    /* ImmoScout-Footer: #0f172a massiv, 0px margin/radius unten [cite: 2026-02-21] */
+    body.wizard-inserat-open #wizard[data-flow="listing"] .inserat-action-section:has(.airbnb-footer),
+    body.wizard-inserat-open #wizard[data-flow="listing"] .inserat-step1-nav.inserat-immo-footer {
+      background: #0f172a !important;
+      margin: 0 !important; border-radius: 0 !important;
+      padding: 16px 24px max(16px, env(safe-area-inset-bottom)) 24px !important;
+    }
+    /* 5. IMMOSCOUT-FOOTER: z-index 500 – Scroll-Inhalt verschwindet sicher dahinter [cite: 2026-02-21 S25] */
+    .airbnb-footer,
+    .inserat-airbnb-footer,
+    .inserat-immo-footer.airbnb-footer {
+      z-index: 500 !important;
+    }
+    /* 5. IMMOSCOUT-FOOTER: Schwarz, bündig, massiv – einheitlich Kochbuch/Dashboard/Wochenplan */
+    .airbnb-footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100vw;
+      background: rgba(15, 23, 42, 0.92);
+      backdrop-filter: blur(30px);
+      -webkit-backdrop-filter: blur(30px);
+      padding: 16px 24px 34px 24px;
+      padding-bottom: max(34px, env(safe-area-inset-bottom));
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 0 !important;
+      border-radius: 0 !important;
+      z-index: 500;
+    }
+    /* Sekundärer Text-Link (Links – Abbrechen, ImmoScout Style) */
+    .footer-link-secondary {
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 15px;
+      font-weight: 500;
+      opacity: 0.8;
+    }
+    /* Massiver Primär-Button (Rechts): Konstante Maße Step 1 + Step 2 [cite: 2026-02-21 ImmoScout] */
+    .footer-btn-primary,
+    .inserat-airbnb-footer .inserat-footer-btn-main.footer-btn-primary {
+      height: 48px;
+      min-width: 180px;
+      padding: 0 24px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 700;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+      background: #ffffff;
+      color: #0f172a;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    /* Step 2: Kostenlos-Button – weiterhin weiß, kein Grün-Glow [cite: 2026-02-21 ImmoScout] */
+    .footer-btn-primary.free-mode,
+    .footer-btn-primary.is-free-mode {
+      background: #ffffff !important;
+      color: #0f172a !important;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    /* Footer-Stabilität: #footerNext identische Position und Größe Step 1 + Step 2 [cite: 2026-02-21] */
+    #wizard[data-flow="listing"] #footerNext,
+    #wizard[data-flow="listing"] .inserat-step1-nav #footerNext,
+    #wizard[data-flow="listing"] .inserat-airbnb-footer #footerNext {
+      height: 48px !important;
+      min-height: 48px !important;
+      min-width: 180px !important;
+      flex: 1;
+    }
+    /* Schritt 3: Erfolgs-Footer – Links Teilen, Rechts Zum Dashboard [cite: 2026-02-21] */
+    #inseratSuccessSheet .inserat-success-footer.airbnb-footer {
+      display: flex; flex-direction: row; align-items: center; justify-content: space-between; gap: 16px;
+      position: absolute; z-index: 100;
+    }
+    #inseratSuccessSheet .inserat-success-footer-link.secondary {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: transparent; border: none; color: #fff !important; font-size: 15px; font-weight: 600;
+      cursor: pointer; padding: 12px 16px; min-height: 48px;
+      opacity: 0.95; transition: opacity 0.2s ease;
+    }
+    #inseratSuccessSheet .inserat-success-footer-link.secondary:active { opacity: 0.8; }
+    #inseratSuccessSheet .inserat-success-footer-btn-primary {
+      flex: 1; min-width: 0; min-height: 56px; border-radius: 16px;
+      background: #121212; color: #fff; font-size: 16px; font-weight: 800; border: none;
+      cursor: pointer; box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      transition: transform 0.15s ease, box-shadow 0.2s ease;
+    }
+    #inseratSuccessSheet .inserat-success-footer-btn-primary:active { transform: scale(0.98); }
+    /* Inseratsbüro: Footer in allen Phasen (1,2,3) Edge-to-Edge, 0px Radius unten [cite: 2026-02-21] */
+    .inserat-airbnb-footer, .inserat-success-footer,
+    body.wizard-inserat-open #wizard[data-flow="listing"] .inserat-action-section,
+    body.wizard-inserat-open #wizard[data-flow="listing"] .inserat-step1-nav.inserat-immo-footer { border-radius: 0 !important; border-bottom-left-radius: 0 !important; border-bottom-right-radius: 0 !important; }
+    /* Publish-Fee Modal: Success-Glow vor Schließen */
+    .publish-fee-success-glow { opacity: 0; }
+    .publish-fee-success-glow.animate { opacity: 1; animation: publish-fee-success-sweep 0.6s ease-out forwards; }
+    @keyframes publish-fee-success-sweep {
+      0% { background: linear-gradient(90deg, rgba(16,185,129,0.5) 0%, transparent 40%); }
+      40% { background: linear-gradient(90deg, transparent 0%, rgba(16,185,129,0.6) 50%, transparent 100%); }
+      100% { background: linear-gradient(90deg, transparent 0%, rgba(16,185,129,0.4) 100%); opacity: 0; }
+    }
     /* Info-Legende Bottom-Sheet: Aktiviert-Zustand */
     .info-legend-item.active { background: rgba(16,185,129,0.1) !important; border: 2px solid rgba(16,185,129,0.4); box-shadow: 0 2px 12px rgba(16,185,129,0.25), 0 0 0 1px rgba(16,185,129,0.15); }
     /* #psheet-CSS entfernt (Legacy) – InseratCard nur im #wizard [cite: 2026-02-18] */
@@ -3270,6 +3827,13 @@
     /* Kochbuch & Wochenplan: Warmes Glassmorphism-Hintergrund */
     body.provider-mode #v-provider-cookbook,
     body.provider-mode #v-provider-week{ background: #f8fafc !important; }
+    /* Header: KW-Trigger + Kebab [cite: 2026-02-21] */
+    #v-provider-week .week-header-kw-trigger{ font-family:inherit; }
+    #v-provider-week .week-header-kw-badge{ font-size:14px; font-weight:800; color:#64748b; background:rgba(0,0,0,0.06); padding:4px 10px; border-radius:10px; }
+    #v-provider-week .week-kebab-trigger{ position:relative; }
+    .kw-selector-item{ position:relative; padding-left:16px; }
+    .kw-selector-active{ background:rgba(16,185,129,0.12) !important; border:2px solid rgba(16,185,129,0.3); font-weight:800; color:#059669; }
+    .kw-selector-dot{ display:inline-block; width:8px; height:8px; background:#10b981; border-radius:50%; margin-left:8px; vertical-align:middle; }
     /* High-End Card Polish: Hintergrund slate-50, Karten weiss mit Schatten, rounded-2xl [cite: 2026-02-20] */
     body.provider-mode #v-provider-home > *,
     body.provider-mode #v-provider-week > *,
@@ -3368,13 +3932,16 @@
       position: sticky;
       top: 0;
       z-index: 100;
-      background: var(--header-bg);
-      backdrop-filter: blur(var(--header-blur));
-      -webkit-backdrop-filter: blur(var(--header-blur));
+      background: rgba(245,245,240,0.95);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       padding: var(--header-padding-y) var(--header-padding-x) 16px;
       padding-top: calc(var(--header-padding-y) + env(safe-area-inset-top, 0));
       border: none;
       box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 900;
+      text-align: left;
     }
     
     .prov-title {
@@ -3385,23 +3952,26 @@
       color: var(--header-title-color);
     }
     
-    /* App-Header Abholungen/Wochenplan/Kochbuch – fixe Höhe 60px wie Kunde, padding 12px 16px */
+    /* App-Header Abholungen/Wochenplan/Kochbuch/Profil – einheitlich Meine-Küche-Style, permanent sticky */
     body.provider-mode .prov-page-header {
       position: sticky;
       top: 0;
-      z-index: 9999;
+      z-index: 100;
       min-height: 60px;
       padding: 12px 16px;
       padding-top: calc(12px + env(safe-area-inset-top, 0));
-      background: var(--header-bg) !important;
-      backdrop-filter: blur(var(--header-blur));
-      -webkit-backdrop-filter: blur(var(--header-blur));
+      background: rgba(245,245,240,0.95) !important;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       border: none;
       box-shadow: 0 4px 20px rgba(0,0,0,0.03);
       box-sizing: border-box;
       display: flex;
       flex-direction: column;
       justify-content: center;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 900;
+      text-align: left;
     }
     .prov-page-header .prov-page-header-row {
       display: flex;
@@ -3485,6 +4055,18 @@
     }
     .prov-card:active {
       transform: scale(0.98);
+    }
+    /* Emerald-Glow nach Fast-Track-Speichern (Änderungen speichern) [cite: 2026-02-18] */
+    .prov-card.prov-card-emerald-glow {
+      animation: prov-card-emerald-glow 1.2s ease-out forwards;
+    }
+    @keyframes prov-card-emerald-glow {
+      0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7), 0 1px 3px rgba(0,0,0,0.04); }
+      30% { box-shadow: 0 0 24px 4px rgba(16, 185, 129, 0.4), 0 4px 20px rgba(16, 185, 129, 0.15); }
+      100% { box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+    }
+    #v-provider-week .week-meal-card-wrap.prov-card-emerald-glow {
+      animation: prov-card-emerald-glow 1.2s ease-out forwards;
     }
     
     .prov-stats-grid {
@@ -3747,8 +4329,7 @@
       -webkit-backdrop-filter: blur(20px);
       border: none !important;
       border-radius: 0 !important;
-      border-top: 0.5px solid rgba(255,255,255,0.1);
-      box-shadow: none !important;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.15) !important;
     }
     #providerNav:not(.provider-nav-pill){
       background: rgba(255,255,255,0.98) !important;
@@ -3777,18 +4358,20 @@
     .provider-nav-pill .provider-nav-label{ font-size:10px; font-weight:700; text-align:center; letter-spacing:0.02em; display:block; }
     .provider-nav-pill .navbtn:not(.active) .provider-nav-label{ color:rgba(255,255,255,0.5); }
     .provider-nav-pill .navbtn.active .provider-nav-label{ color:#fff; }
-    /* Bottom-Nav: Eckig, bündig S25-Rand, keine Rundungen [cite: 2026-02-21 Master-Fix] */
+    /* Bottom-Nav: eckig (border-radius 0), am Gehäuserand – Icons/Texte nach oben (padding-bottom min. 25px) [cite: 2026-02-21 S25] */
     #providerNavWrap.provider-nav-wrap-pill{
-      bottom: 0 !important;
-      left: 0 !important;
-      right: 0 !important;
-      width: 100% !important;
-      box-sizing: border-box; z-index: 1052 !important;
-      padding-top: 0;
-      padding-bottom: 0;
+      bottom: 0 !important; left: 0 !important; right: 0 !important;
+      width: 100% !important; box-sizing: border-box; z-index: 1052 !important;
       border-radius: 0 !important;
     }
-    #providerNavWrap #providerNav{ min-height: 65px; padding: 12px 24px 25px; padding-bottom: calc(25px + env(safe-area-inset-bottom, 0)); display: flex; justify-content: space-between; align-items: center; box-sizing: border-box; border-radius: 0 !important; }
+    #providerNavWrap #providerNav{
+      min-height: 75px;
+      padding: 12px 24px calc(25px + env(safe-area-inset-bottom, 0));
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 0 !important;
+    }
     [id^="v-provider-"] .panel h1,[id^="v-provider-"] .panel h2,[id^="v-provider-"] .panel h3,[id^="v-provider-"] .panel .section-title{ color:var(--provider-text) !important; }
     [id^="v-provider-"] .panel .hint{ color:var(--provider-text-muted) !important; }
     /* Dynamisch eingefügter Inhalt: immer lesbar */
@@ -5533,6 +6116,30 @@
     body.provider-mode [id^="v-provider-"].view.active{ min-height:100vh; min-height:100dvh; display:block !important; visibility:visible !important; opacity:1 !important; scroll-margin-top:0; position:relative; width:100%; max-width:100%; overflow-x:hidden; box-sizing:border-box; }
     /* Erster Viewport sofort gefüllt: Inhalt oben verankern, keine Animation die verschiebt */
     body.provider-mode [id^="v-provider-"].view.active{ animation:none !important; transform:translateY(0) !important; }
+    /* Globaler Header-Standard: Alle 5 Anbieter-Seiten – permanent sticky, Meine-Küche-Style [cite: 2026-02-21] */
+    body.provider-mode [id^="v-provider-"] .prov-header,
+    body.provider-mode [id^="v-provider-"] .prov-page-header,
+    body.provider-mode [id^="v-provider-"] .dashboard-kasten-header,
+    body.provider-mode [id^="v-provider-"] .provider-profile-header-rebuild,
+    body.provider-mode [id^="v-provider-"] .week-header-compact,
+    body.provider-mode [id^="v-provider-"] .provider-header-bar,
+    body.provider-mode [id^="v-provider-"] > header.prov-page-header,
+    body.provider-mode [id^="v-provider-"] > header.dashboard-kasten-header{
+      display:flex !important;
+      flex-direction:column;
+      position:sticky !important;
+      top:0 !important;
+      z-index:100;
+      background:rgba(245,245,240,0.95) !important;
+      backdrop-filter:blur(20px);
+      -webkit-backdrop-filter:blur(20px);
+      font-family:'Montserrat',sans-serif;
+      font-weight:900;
+      text-align:left;
+      box-sizing:border-box;
+    }
+    body.provider-mode #v-provider-week.view.active .week-header-compact{ display:flex !important; }
+    body.provider-mode [id^="v-provider-"].view.active#v-provider-week{ display:flex !important; flex-direction:column !important; }
     /* Single Source: Alle 5 Anbieter-Container padding:0 margin:0, Edge-to-Edge [cite: 2026-02-21] */
     body.provider-mode #v-provider-home,
     body.provider-mode #v-provider-pickups,
@@ -5591,26 +6198,66 @@
       box-shadow:none !important;
       border:none !important;
     }
-    #v-provider-home .dashboard-kasten-header.prov-page-header.dynamic-header{
+    /* ========== STICKY-GEWALT: Header + Sub-Bar radikal fixiert [cite: 2026-02-21] ==========
+     * Wichtig: Scroll-Container (dashboard-floating-wrap, pickups-floating-wrap) hat overflow-y:auto.
+     * Parent (#v-provider-home etc.) hat overflow:hidden nur für Clipping – Scroll ist im Wrap.
+     * background-color #f5f5f0 !important verhindert Durchscheinen des dahinter scrollenden Inhalts.
+     */
+    .sticky-header{
+      position:sticky !important; top:0 !important; z-index:1000 !important;
+      background-color:#f5f5f0 !important;
+      backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+      flex-shrink:0;
+    }
+    .sticky-sub-bar{
+      position:sticky !important; top:60px !important; z-index:900 !important;
+      background-color:#f5f5f0 !important;
+      backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+      flex-shrink:0;
+    }
+    @supports (top: env(safe-area-inset-top)){
+      .sticky-sub-bar{ top:calc(60px + env(safe-area-inset-top, 0)) !important; }
+    }
+    /* GLOBALER HEADER-STANDARD: Alle Anbieter-Seiten wie Meine Küche (Montserrat 900, 20px, #f5f5f0, blur, sticky top:0) */
+    body.provider-mode [id^="v-provider-"] > header.prov-page-header,
+    body.provider-mode [id^="v-provider-"] > header.dynamic-header,
+    body.provider-mode [id^="v-provider-"] > header.system-header,
+    body.provider-mode .sticky-header{
+      position:sticky !important; top:0 !important; z-index:1000 !important;
+      background-color:#f5f5f0 !important;
+      backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+      font-family:'Montserrat','Inter',sans-serif;
+      flex-shrink:0;
+    }
+    body.provider-mode [id^="v-provider-"] .prov-page-header-title,
+    body.provider-mode [id^="v-provider-"] .system-header-title{
+      font-size:20px !important; font-weight:900 !important; letter-spacing:-0.03em; color:#0f172a !important; text-align:left;
+    }
+    body.provider-mode [id^="v-provider-"] .prov-header-toolbar{ display:flex; gap:8px; align-items:center; }
+    #v-provider-home .dashboard-kasten-header.prov-page-header{
       background:rgba(245,245,240,0.95) !important;
       backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
       border:none !important;
       box-shadow:0 4px 20px rgba(0,0,0,0.03) !important;
     }
     #v-provider-home .dashboard-kasten-header .prov-header-inner{ padding:0; }
-    /* KPI-Kasten: Sticky unter dem Header – bleibt beim Scrollen oben [cite: 2026-02-21] */
+    #v-provider-home .dashboard-kasten-header .prov-title,
+    #v-provider-home .dashboard-kasten-header .prov-page-header-title{ font-size: 20px !important; font-weight: 900 !important; letter-spacing: -0.03em; color: #0f172a !important; }
+    /* KPI-Kasten: .sticky-sub-bar (top: 60px), background #f5f5f0 – kein Durchscheinen */
     #v-provider-home .dashboard-kasten-kpis{
-      position: sticky;
-      top: calc(56px + env(safe-area-inset-top, 0));
-      z-index: 99;
       padding:18px env(safe-area-inset-right, 0) 18px env(safe-area-inset-left, 0);
-      background: rgba(255,255,255,0.98);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      padding-left:max(16px, env(safe-area-inset-left, 0));
+      padding-right:max(16px, env(safe-area-inset-right, 0));
+      background-color:#f5f5f0 !important;
+      flex-shrink:0;
     }
     #v-provider-home .dashboard-kasten-kpis::after{
       content:''; position:absolute; left:0; right:0; bottom:0; height:1px;
       background:rgba(0,0,0,0.06);
+    }
+    /* Visuelle Trennung beim Scrollen: dezenter Schatten unter KPIs */
+    #v-provider-home .dashboard-kasten-kpis.kpis-scrolled{
+      box-shadow:0 2px 8px rgba(0,0,0,0.04);
     }
     /* KPI-Labels: 10px / 800, Uppercase, dezent grau */
     #v-provider-home .dashboard-kasten-kpis .kpi-label{
@@ -5697,14 +6344,35 @@
     }
     #v-provider-home .prov-stat-item:last-child{ border-right:none; }
     #v-provider-pickups{ min-height:100vh; min-height:100dvh; background:#f8fafc; width:100%; box-sizing:border-box; }
-    #v-provider-pickups.view.active{ display:flex !important; flex-direction:column !important; height:100vh; height:100dvh; max-height:100vh; max-height:100dvh; overflow:hidden; }
-    #v-provider-pickups.view.active > header{ position:relative; z-index:1; flex-shrink:0; }
-    #v-provider-pickups.view.active > div{ position:relative; z-index:1; min-height:0; flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; }
+    #v-provider-pickups.view.active{ display:flex !important; flex-direction:column !important; height:100vh; height:100dvh; max-height:100vh; max-height:100dvh; overflow:hidden !important; }
+    /* Abholnummern: pickups-floating-wrap = Scroll-Container (analog dashboard-floating-wrap); Header + Filter sticky darin */
+    #v-provider-pickups .pickups-floating-wrap{
+      flex:1; min-height:0; display:flex; flex-direction:column; gap:0;
+      overflow-y:auto !important; overflow-x:hidden !important;
+      -webkit-overflow-scrolling:touch;
+      overscroll-behavior-y:contain;
+      padding:0 env(safe-area-inset-right, 0) 0 env(safe-area-inset-left, 0) !important;
+      padding-top:env(safe-area-inset-top, 0) !important;
+      width:100% !important; max-width:100% !important; margin:0 !important; box-sizing:border-box;
+      background:#fff;
+    }
+    #v-provider-pickups .pickups-floating-wrap > header{
+      position:sticky; top:0; z-index:100; flex-shrink:0;
+      background:rgba(245,245,240,0.95) !important;
+      backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+    }
+    /* Filter (Offen/Abgeholt): .sticky-sub-bar – kein Durchscheinen */
+    #v-provider-pickups .prov-pickups-filter-sticky{
+      padding:12px max(16px, env(safe-area-inset-right, 0)) 12px max(16px, env(safe-area-inset-left, 0));
+      background-color:#f5f5f0 !important;
+      flex-shrink:0;
+    }
+    #v-provider-pickups #provPickupsScroll{ flex:1; min-height:0; }
     /* TGTG-Layout: weiße Leinwand, kein grauer Rand [cite: FAQ Anbieter] */
     #v-provider-profile{ min-height:100vh; min-height:100dvh; width:100%; box-sizing:border-box; background:#fff !important; }
     #v-provider-profile.view.active{ display:flex !important; flex-direction:column !important; }
-    #v-provider-profile.view.active > header,
-    #v-provider-profile.view.active > div{ position:relative; z-index:1; min-height:0; overflow:visible; }
+    #v-provider-profile.view.active > header{ position:sticky; top:0; z-index:100; flex-shrink:0; background:rgba(245,245,240,0.95) !important; backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); }
+    #v-provider-profile.view.active > div{ position:relative; z-index:1; min-height:0; flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; }
     /* Ebene 1: Business-Dashboard (Master-Prompt) – #22C55E, 16px Radius */
     #v-provider-profile .provider-profile-header-rebuild.dynamic-header{ background:rgba(245,245,240,0.95) !important; backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border-bottom:none; display:flex; flex-direction:column; gap:8px; flex-shrink:0; }
     #v-provider-profile .provider-profile-header-row1{ position:relative; display:flex; align-items:center; justify-content:flex-end; width:100%; }
@@ -5727,9 +6395,13 @@
     /* Account Settings Airbnb-Style: Master-Kachel + Grid + Accordion [cite: 2026-02-18] */
     .account-settings-airbnb{ display:flex; flex-direction:column; gap:20px; }
     .account-master-kachel{ display:flex; align-items:center; justify-content:space-between; padding:20px; background:#fff; border-radius:20px; box-shadow:0 4px 20px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04); cursor:pointer; min-height:80px; transition:transform 0.15s ease, box-shadow 0.2s ease; -webkit-tap-highlight-color:transparent; }
-    .account-master-kachel:active{ transform:scale(0.98); }
+    .account-master-kachel.account-profile-header{ cursor:default; }
+    .account-master-kachel.account-profile-header:active{ transform:none; }
     .account-master-left{ display:flex; align-items:center; gap:16px; }
     .account-master-logo{ width:56px; height:56px; border-radius:14px; object-fit:cover; }
+    /* Single-Page: Stats-Reihe unter Header [cite: 2026-02-21] */
+    .account-stats-row{ display:flex; gap:16px; padding:0 4px 20px; flex-wrap:wrap; }
+    .account-stats-row .account-stat{ align-items:flex-start; }
     .account-master-name{ margin:0; font-size:18px; font-weight:900; color:#0f172a; letter-spacing:-0.02em; }
     .account-master-ort{ margin:4px 0 0; font-size:14px; color:#64748b; font-weight:600; }
     .account-master-stats{ display:flex; gap:20px; }
@@ -5738,6 +6410,7 @@
     .account-stat small{ font-size:11px; font-weight:700; color:#94a3b8; text-transform:uppercase; letter-spacing:0.06em; margin-top:2px; }
     .account-stat-umsatz span{ color:#22C55E !important; }
     .account-grid-nav{ display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; }
+    .account-grid-nav.account-grid-4{ grid-template-columns:repeat(2, 1fr); width:100%; max-width:100%; }
     .account-tile{ display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; min-height:88px; padding:16px; border:none; border-radius:20px; background:#fff; box-shadow:0 4px 16px rgba(0,0,0,0.06); cursor:pointer; transition:transform 0.15s ease; -webkit-tap-highlight-color:transparent; color:#1a1a1a; font-size:13px; font-weight:700; }
     .account-tile svg{ color:#64748b; flex-shrink:0; }
     .account-tile:active{ transform:scale(0.97); }
@@ -5754,6 +6427,28 @@
     .account-accordion-inner{ padding:0 20px 16px; font-size:14px; color:#64748b; line-height:1.5; }
     .account-logout-btn{ margin-top:8px; width:100%; min-height:52px; padding:14px 20px; background:#fef2f2; border:2px solid #fecaca; border-radius:16px; font-size:15px; font-weight:700; color:#b91c1c; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; -webkit-tap-highlight-color:transparent; }
     .account-logout-btn:active{ transform:scale(0.98); }
+    /* Legal Footer: Impressum, Datenschutz, AGB [cite: 2026-02-21] */
+    .account-legal-footer{ padding:20px 0 12px; text-align:center; font-size:13px; }
+    .account-legal-link{ color:#64748b; text-decoration:none; font-weight:600; }
+    .account-legal-link:hover{ color:#1a1a1a; text-decoration:underline; }
+    .account-legal-sep{ margin:0 8px; color:#cbd5e1; }
+    /* Meine Regeln / Mein Geld Overlays (Slide-In) */
+    .account-overlay-backdrop{ position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:1198; backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); }
+    .account-regeln-sheet{ position:fixed; left:0; right:0; bottom:0; max-height:85vh; background:#fff; border-radius:24px 24px 0 0; z-index:1199; box-shadow:0 -8px 32px rgba(0,0,0,0.15); transform:translateY(100%); transition:transform 0.35s cubic-bezier(0.32,0.72,0,1); overflow:hidden; display:flex; flex-direction:column; }
+    .account-regeln-sheet.active{ transform:translateY(0); }
+    .account-regeln-sheet-inner{ overflow-y:auto; -webkit-overflow-scrolling:touch; padding-bottom:calc(24px + env(safe-area-inset-bottom)); flex:1; min-height:0; }
+    .account-regeln-sheet-header{ display:flex; align-items:center; justify-content:space-between; padding:20px max(20px, env(safe-area-inset-right)) 16px max(20px, env(safe-area-inset-left)); border-bottom:1px solid #e5e7eb; flex-shrink:0; }
+    .account-regeln-sheet-header h3{ margin:0; font-size:18px; font-weight:950; color:#1a1a1a; }
+    .account-regeln-sheet-header button{ width:44px; height:44px; border:none; background:transparent; cursor:pointer; font-size:28px; line-height:1; color:#64748b; display:flex; align-items:center; justify-content:center; }
+    .account-regeln-sheet-body{ padding:20px max(20px, env(safe-area-inset-right)) 20px max(20px, env(safe-area-inset-left)); }
+    .account-geld-option{ display:flex; align-items:center; gap:16px; width:100%; min-height:60px; padding:16px; margin-bottom:12px; border:none; border-radius:16px; background:#f8f9fa; cursor:pointer; text-align:left; font-family:inherit; transition:background 0.2s; -webkit-tap-highlight-color:transparent; }
+    .account-geld-option:active{ background:#f1f3f5; }
+    .account-geld-icon{ font-size:24px; }
+    .account-geld-option span:not(.account-geld-icon){ flex:1; display:flex; flex-direction:column; gap:2px; }
+    .account-geld-option small{ font-size:12px; font-weight:600; color:#64748b; }
+    /* providerProfileSubService als Slide-In Overlay (Meine Regeln) */
+    #providerProfileSubService.as-regeln-overlay{ position:fixed !important; left:0; right:0; bottom:0; top:auto !important; max-height:85vh; z-index:1199; border-radius:24px 24px 0 0; box-shadow:0 -8px 32px rgba(0,0,0,0.15); transform:translateY(100%); transition:transform 0.35s cubic-bezier(0.32,0.72,0,1); }
+    #providerProfileSubService.as-regeln-overlay.active{ transform:translateY(0); }
     .account-support-backdrop{ position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:1200; backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); }
     .account-support-modal{ position:fixed; left:50%; bottom:0; transform:translateX(-50%); width:100%; max-width:400px; background:#fff; border-radius:24px 24px 0 0; z-index:1201; padding:24px 20px calc(24px + env(safe-area-inset-bottom)); box-shadow:0 -8px 32px rgba(0,0,0,0.15); }
     .account-support-modal-title{ margin:0 0 20px; font-size:18px; font-weight:900; color:#0f172a; }
@@ -5822,7 +6517,7 @@
     #v-provider-profile .provider-profile-hero-icon-wrap{ width:56px; height:56px; border-radius:16px; background:#f1f3f5; display:flex; align-items:center; justify-content:center; font-size:28px; margin-bottom:8px; }
     #v-provider-cookbook{ min-height:100vh; min-height:100dvh; width:100%; box-sizing:border-box; }
     #v-provider-cookbook.view.active{ display:flex !important; flex-direction:column !important; height:100vh; height:100dvh; max-height:100vh; max-height:100dvh; overflow:hidden; }
-    #v-provider-cookbook.view.active > header{ position:relative; z-index:1; flex-shrink:0; }
+    #v-provider-cookbook.view.active > header{ position:sticky; top:0; z-index:100; flex-shrink:0; background:rgba(245,245,240,0.95) !important; backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); }
     #v-provider-cookbook.view.active > div{ position:relative; z-index:1; min-height:0; flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; }
     /* Kochbuch: gleicher Header-Stil wie Meine Küche/Abholungen (kein eigener Override) */
     /* Kochbuch tapbar: View und Inhalt explizit pointer-events, damit keine Overlays Klicks schlucken */
@@ -5863,13 +6558,13 @@
       display:flex; align-items:center; justify-content:space-between;
       transition:box-shadow 0.2s ease;
     }
-    /* Wochenplan-Gesetz: linksbündig statt zentriert [Master-Fix] */
+    /* Wochenplan: identischer Header wie Meine Küche (KW-Badge entfernt, linksbündig) */
     #v-provider-week .week-header-minimal .week-header-row{ display:flex; align-items:center; justify-content:flex-start; width:100%; gap:12px; position:relative; }
-    #v-provider-week .week-header-kw-badge{ font-size:13px; font-weight:800; color:#64748b; background:#f1f5f9; padding:6px 12px; border-radius:10px; flex-shrink:0; }
-    #v-provider-week .week-header-title-center{ margin:0; position:static; transform:none; pointer-events:none; font-family:'Montserrat','Inter',sans-serif !important; font-weight:900 !important; font-size:24px !important; letter-spacing:-0.03em; color:#1a1a1a; text-align:left; }
-    #v-provider-week .week-header-actions{ display:flex; align-items:center; gap:4px; margin-left:auto; }
-    #v-provider-week .week-kebab-btn{ background:none; border:none; width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; color:#64748b; cursor:pointer; -webkit-tap-highlight-color:transparent; position:relative; }
-    #v-provider-week .week-kebab-btn:active{ background:rgba(0,0,0,0.06); }
+    #v-provider-week .week-header-kw-badge{ display:none !important; }
+    #v-provider-week .week-header-compact{ background:rgba(245,245,240,0.95) !important; backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); font-family:'Montserrat',sans-serif; position:sticky; top:0; z-index:100; }
+    #v-provider-week .week-header-title-left,
+    #v-provider-week .prov-page-header-title{ margin:0; font-family:'Montserrat','Inter',sans-serif !important; font-weight:900 !important; font-size:20px !important; letter-spacing:-0.03em; color:#0f172a !important; text-align:left; }
+    #v-provider-week .week-header-actions{ display:flex; align-items:center; gap:8px; margin-left:auto; }
     /* Lücke finden ✨: dezent als smarter Assistent, Text-Link-Stil [cite: 2026-01-29, 2026-02-18] */
     #v-provider-week .week-magic-gap-btn{ background:transparent; border:1px solid #e2e8f0; min-height:36px; padding:0 10px; border-radius:10px; display:flex; align-items:center; justify-content:center; gap:5px; color:#64748b; font-size:12px; font-weight:600; cursor:pointer; white-space:nowrap; transition:background 0.2s, color 0.2s, border-color 0.2s; }
     #v-provider-week .week-magic-gap-btn:hover{ background:#f8fafc; color:#475569; border-color:#cbd5e1; }
@@ -5909,7 +6604,7 @@
       #v-provider-home .prov-header,
       #providerProfileHeader,
       #v-provider-cookbook > header,
-      #v-provider-pickups > header,
+      #v-provider-pickups .pickups-floating-wrap > header,
       #v-provider-week .week-header-compact{
         padding-top:calc(12px + env(safe-area-inset-top, 0)) !important;
       }
@@ -5933,7 +6628,7 @@
       #providerTimeTracker div[style*="font-size:36px"]{ font-size:30px !important; }
       #providerPersonalSpar{ padding:16px !important; }
       
-      #v-provider-pickups, #v-provider-cookbook, #v-provider-profile{
+      #v-provider-cookbook, #v-provider-profile{
         padding:0 16px 100px !important;
       }
       #v-provider-cookbook{ padding-bottom:0 !important; }
@@ -5957,7 +6652,7 @@
         padding-top:calc(10px + env(safe-area-inset-top, 0)); padding-right:20px; padding-bottom:16px; padding-left:20px; min-height:52px; display:flex; flex-direction:column; align-items:flex-start; justify-content:center; gap:2px;
       }
       #v-provider-week .week-header-compact h1,
-      #v-provider-week .week-header-compact .prov-page-header-title{ margin:0; font-family:'Montserrat','Inter',sans-serif !important; font-weight:900 !important; font-size:24px !important; letter-spacing:-0.03em; color:#1a1a1a; text-align:left; }
+      #v-provider-week .week-header-compact .prov-page-header-title{ margin:0; font-family:'Montserrat','Inter',sans-serif !important; font-weight:900 !important; font-size:20px !important; letter-spacing:-0.03em; color:#0f172a !important; text-align:left; }
       #v-provider-week .week-header-subtitle{ margin:0; font-size:12px; font-weight:600; color:#64748b; letter-spacing:0.02em; }
       #v-provider-week .week-plan-wrap{
         flex:1; display:flex; flex-direction:column; min-height:0; width:100%; max-width:100%; margin:0;
@@ -6085,7 +6780,7 @@
       #v-provider-week .week-status-block .week-activate-inline:active{ transform:scale(0.98); }
       #v-provider-week .week-status-activate-hint{ font-size:11px; color:#64748b; margin-top:6px; line-height:1.3; }
       /* Applike: Header mit Untertitel, Safe-Area oben; Zeile für Titel + Fertig (Edit-Mode) */
-      #v-provider-week .week-header-compact{ padding:calc(8px + env(safe-area-inset-top, 0)) 20px 12px 20px; min-height:56px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; background:linear-gradient(135deg, rgba(248,250,252,0.95) 0%, rgba(241,245,249,0.92) 50%, rgba(239,246,255,0.9) 100%) !important; backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border-bottom:1px solid rgba(255,255,255,0.4); }
+      #v-provider-week .week-header-compact{ padding:calc(8px + env(safe-area-inset-top, 0)) 20px 12px 20px; min-height:56px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; background:rgba(245,245,240,0.95) !important; backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); font-family:'Montserrat',sans-serif; }
       #v-provider-week .week-header-row{ display:flex; align-items:center; justify-content:space-between; width:100%; max-width:100%; gap:12px; }
       #v-provider-week .week-header-row > div:first-child{ min-width:0; text-align:left; }
       #v-provider-week .week-header-done-btn{ flex-shrink:0; min-height:44px; padding:0 18px; font-size:15px; font-weight:800; border-radius:12px; background:var(--prov-brand); color:#1a1a1a; border:none; cursor:pointer; box-shadow:0 2px 12px rgba(255,222,0,0.35); }
@@ -6181,7 +6876,7 @@
       @media (max-width:768px){ #v-provider-week .kw-grid{ grid-template-columns:1fr; } }
       #v-provider-week #kwBoardWrap{ overflow-x:hidden; max-width:100%; }
       /* High-End Card: weiss, weicher Schatten, kein Border, rounded-2xl [cite: 2026-02-20] */
-      #v-provider-week .kw-day-card{ background:#fff; border-radius:16px; border:none; box-shadow:0 2px 12px rgba(0,0,0,0.06); padding:12px; min-height:280px; height:280px; display:flex; flex-direction:column; gap:8px; transition:transform 0.2s ease, box-shadow 0.2s ease; box-sizing:border-box; }
+      #v-provider-week .kw-day-card{ background:#fff; border-radius:24px; border:none; box-shadow:0 2px 12px rgba(0,0,0,0.06); padding:12px; min-height:auto; display:flex; flex-direction:column; gap:8px; transition:transform 0.2s ease, box-shadow 0.2s ease; box-sizing:border-box; }
       #v-provider-week .kw-day-card:active{ transform:scale(0.98); }
       #v-provider-week .kw-day-card.kw-day-has-live{ box-shadow:0 2px 12px rgba(0,0,0,0.06), 0 0 0 2px rgba(16,185,129,0.2); }
       #v-provider-week .kw-day-card.kw-day-card-highlight{ animation: kwDayCardGapPulse 2s ease-in-out; box-shadow:0 8px 32px rgba(0,0,0,0.08), 0 0 0 2px rgba(14,165,233,0.5), 0 0 24px rgba(14,165,233,0.25); }
@@ -6197,7 +6892,7 @@
       @keyframes kwTemplateApplyIn{ 0%{ opacity:0; transform:translateY(-8px); } 100%{ opacity:1; transform:translateY(0); } }
       #v-provider-week .kw-day-label{ font-size:11px; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:4px; }
       #v-provider-week .kw-day-date{ font-size:13px; font-weight:700; color:#1a1a1a; }
-      #v-provider-week .kw-slots{ display:flex; flex-direction:column; gap:8px; flex:1; min-height:220px; max-height:220px; }
+      #v-provider-week .kw-slots{ display:flex; flex-direction:column; gap:8px; flex:1; min-height:0; }
       #v-provider-week .kw-slot{ border-radius:16px; overflow:hidden; min-height:52px; position:relative; cursor:pointer; transition:background 0.2s; flex-shrink:0; box-sizing:border-box; }
       #v-provider-week .kw-slot-main{ display:flex; gap:12px; align-items:center; padding:10px; backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border-radius:14px; border:1px solid rgba(255,255,255,0.5); min-height:80px; height:80px; flex-shrink:0; }
       #v-provider-week .kw-slot-small{ min-height:52px; height:52px; flex-shrink:0; }
@@ -6241,7 +6936,11 @@
       #v-provider-week .kw-smart-suggestions-strip .kw-suggestion-card:active{ cursor:grabbing; }
       #v-provider-week .kw-smart-suggestions-strip .kw-suggestion-card.dragging{ transform:scale(0.95); opacity:0.85; cursor:grabbing; }
       #v-provider-week .kw-smart-suggestions-strip .kw-suggestion-thumb{ width:48px; height:48px; border-radius:50%; flex-shrink:0; margin-bottom:4px; border:2px solid rgba(255,255,255,0.8); box-shadow:0 2px 8px rgba(0,0,0,0.08); }
+      #v-provider-week .kw-suggestion-compact .kw-suggestion-thumb-mini{ width:40px; height:40px; border-radius:10px; margin-bottom:2px; }
+      #v-provider-week .kw-suggestion-compact{ min-width:64px; max-width:64px; padding:8px 6px 6px; }
+      #v-provider-week .kw-suggestion-compact .kw-suggestion-price{ font-size:12px; font-weight:900; color:#1a1a1a; display:block; margin-bottom:2px; }
       #v-provider-week .kw-smart-suggestions-strip .kw-suggestion-sparkle{ font-size:12px; margin-bottom:2px; filter:drop-shadow(0 0 6px rgba(255,215,0,0.5)); }
+      #v-provider-week .kw-suggestion-compact .kw-suggestion-sparkle{ display:none; }
       #v-provider-week .kw-smart-suggestions-strip .kw-suggestion-name{ font-size:12px; font-weight:700; color:#1a1a1a; line-height:1.2; text-align:center; display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:100%; }
       #v-provider-week .kw-suggestion-badge{ display:block; font-size:9px; font-weight:800; color:#059669; text-transform:uppercase; letter-spacing:0.03em; margin-top:4px; text-align:center; }
       #v-provider-week .kw-smart-suggestions-strip .kw-suggestion-dismiss{ top:4px; right:4px; width:22px; height:22px; font-size:12px; }
@@ -6259,11 +6958,16 @@
       #v-provider-week .kw-pill-dismiss i{ width:14px; height:14px; }
       #v-provider-week .kw-slot.kw-slot-drop-over,
       #v-provider-week .kw-slot-empty.kw-slot-drop-over{ box-shadow:0 0 0 2px #10b981, 0 0 20px rgba(16,185,129,0.35); border-color:#10b981; background:rgba(16,185,129,0.06); }
-      #v-provider-week .kw-week-activate-bar{ flex-shrink:0; padding:10px 0 12px; border-top:1px solid rgba(0,0,0,0.06); }
-      #v-provider-week .kw-week-activate-btn{ width:100%; min-height:52px; border-radius:14px; font-size:15px; font-weight:800; border:none; background:var(--prov-brand,#FFD700); color:#1a1a1a; cursor:pointer; box-shadow:0 2px 12px rgba(255,222,0,0.35); transition:transform 0.15s; }
+      #v-provider-week .kw-week-activate-bar{ position:fixed; left:0; right:0; bottom:0; z-index:55; flex-shrink:0; padding:16px max(24px, env(safe-area-inset-left)) calc(24px + env(safe-area-inset-bottom, 0)) max(24px, env(safe-area-inset-right)); background:linear-gradient(180deg, transparent 0%, rgba(248,250,252,0.98) 20%); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); }
+      body.kw-activation-dock-visible #v-provider-week .kw-board-scroll{ padding-bottom:calc(140px + env(safe-area-inset-bottom, 0)); }
+      #v-provider-week .kw-activation-dock{ display:flex; flex-direction:column; gap:6px; align-items:stretch; }
+      #v-provider-week .kw-week-activate-btn{ width:100%; min-height:56px; border-radius:20px; font-size:16px; font-weight:800; border:none; background:#0a0a0a; color:#fff; cursor:pointer; box-shadow:0 4px 20px rgba(0,0,0,0.25); transition:transform 0.15s, opacity 0.2s; font-family:inherit; }
       #v-provider-week .kw-week-activate-btn:active{ transform:scale(0.98); }
+      #v-provider-week .kw-week-activate-btn.kw-activation-disabled{ opacity:0.5; cursor:not-allowed; pointer-events:none; }
+      #v-provider-week .kw-activate-count{ font-weight:900; }
+      #v-provider-week .kw-activation-disclaimer{ font-size:10px; font-weight:600; color:#94a3b8; margin:0; text-align:center; line-height:1.3; }
       /* Magic FAB: schwebend unten rechts über Tab-Bar [cite: 2026-02-20] */
-      #v-provider-week .week-magic-fab{ position:absolute; bottom:calc(100px + env(safe-area-inset-bottom, 0)); right:20px; width:56px; height:56px; border-radius:50%; border:none; background:#fff; box-shadow:0 4px 20px rgba(0,0,0,0.12); display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:60; transition:transform 0.2s, box-shadow 0.2s; -webkit-tap-highlight-color:transparent; }
+      #v-provider-week .week-magic-fab{ position:fixed; bottom:calc(72px + env(safe-area-inset-bottom, 0)); right:24px; width:56px; height:56px; border-radius:50%; border:none; background:#fff; box-shadow:0 4px 20px rgba(0,0,0,0.12); display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:60; transition:transform 0.2s, box-shadow 0.2s; -webkit-tap-highlight-color:transparent; }
       #v-provider-week .week-magic-fab:active{ transform:scale(0.95); }
       #v-provider-week .week-magic-fab-icon{ font-size:24px; }
       /* Magic Sheet */
@@ -6523,8 +7227,9 @@
         min-height:52px; padding:12px 8px !important; font-size:12px !important;
         flex:1; min-width:0; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;
       }
-      #providerNav .navbtn.active{ font-weight:700; }
-      #providerNav .navbtn .ico svg{ width:24px !important; height:24px !important; }
+    #providerNav .navbtn.active{ font-weight:700; }
+    #providerNav .navbtn .ico svg{ width:24px !important; height:24px !important; }
+    #providerNav .navbtn .ico.navbtn-emoji{ display:flex; align-items:center; justify-content:center; }
       
       /* FAB nur Dashboard: rechts */
       #fabProviderAddOffer{

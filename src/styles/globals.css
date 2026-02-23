@@ -19,6 +19,25 @@
   scrollbar-width: none;
 }
 
+/* Inseratsauswahl-Sheet offen: Scroll-Chaining verhindern */
+body.inseratsauswahl-sheet-open {
+  overflow: hidden !important;
+  position: fixed;
+  width: 100%;
+}
+
+/* Inseratsauswahl: scrollbarer Body – flex + overflow-y auto */
+.inseratsauswahl-scroll {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+}
+
+/* Airbnb-NumPad Quick-Edit: S25-optimiert */
+.inseratsauswahl-numpad {
+  touch-action: manipulation;
+}
+
 /* Hochwertiger Glas-Effekt für die Bottom-Bar */
 .glass-effect {
   background: rgba(255, 255, 255, 0.75);

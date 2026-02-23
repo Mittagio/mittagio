@@ -1069,30 +1069,33 @@
     <section class="view prov-dashboard-stolz" id="v-provider-home">
       <div class="dashboard-floating-wrap">
         <!-- KASTEN 1: Dashboard Header (dynamic-header: Montserrat 900, kein Icon) [cite: 2026-02-18] -->
-        <header class="dashboard-kasten dashboard-kasten-header prov-header prov-header-stolz prov-page-header dynamic-header system-header" id="providerDashboardHeader">
+        <header class="dashboard-kasten dashboard-kasten-header sticky-header prov-header prov-header-stolz prov-page-header dynamic-header system-header" id="providerDashboardHeader">
           <div class="prov-header-inner">
             <div class="prov-page-header-row">
               <div class="prov-page-header-left prov-header-reset-trigger" data-reset-view="home" role="button" tabindex="0" aria-label="Zum Seitenanfang">
                 <h1 class="prov-page-header-title system-header-title">Meine Küche</h1>
               </div>
-              <button type="button" id="btnProviderHomeRefresh" title="Aktualisieren" aria-label="Daten neu laden" class="prov-page-header-action" style="background:rgba(0,0,0,0.06); border:none; min-width:44px; min-height:44px; width:44px; height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; color:#1a1a1a; cursor:pointer;">
-                <i data-lucide="refresh-cw" style="width:20px; height:20px;"></i>
+              <div class="prov-page-header-actions prov-header-toolbar" style="display:flex; gap:8px;">
+              <button type="button" id="btnHeaderCookbookShortcut" title="Kochbuch" aria-label="Kochbuch" class="prov-page-header-action" style="background:rgba(0,0,0,0.06); border:none; min-width:44px; min-height:44px; width:44px; height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:20px; cursor:pointer;">📖</button>
+              <button type="button" id="btnHeaderShareShortcut" title="Teilen" aria-label="Teilen" class="prov-page-header-action" style="background:rgba(0,0,0,0.06); border:none; min-width:44px; min-height:44px; width:44px; height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; color:#1a1a1a; cursor:pointer;">
+                <i data-lucide="share-2" style="width:20px; height:20px;"></i>
               </button>
+              </div>
             </div>
             <div id="providerHomeGreeting" style="display:none;"></div>
             <div id="providerHomeDate" style="display:none;" aria-hidden="true"></div>
           </div>
         </header>
 
-        <!-- KASTEN 2: KPIs -->
-        <div class="dashboard-kasten dashboard-kasten-kpis">
+        <!-- KASTEN 2: KPIs (sticky unter Header, Scroll-Divider via JS) -->
+        <div class="dashboard-kasten dashboard-kasten-kpis sticky-sub-bar" id="dashboardKpisBlock">
           <div class="prov-stats-stolz" style="display:flex; justify-content:space-between; align-items:flex-end; border:none; padding:0;">
             <div id="kpiTagesessen" role="button" tabindex="0" style="text-align:center; cursor:pointer; min-height:40px; flex:1;" onclick="document.getElementById('providerActiveListingsSection')?.scrollIntoView({behavior:'smooth'})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); document.getElementById('providerActiveListingsSection')?.scrollIntoView({behavior:'smooth'});}" title="Tagesessen">
               <p id="kpiLabelTagesessen" class="kpi-label" style="margin:0 0 2px;">Tagesessen</p>
               <p id="dashboardTagesessenCount" style="margin:0;">0</p>
             </div>
-            <div id="kpiBestellungen" role="button" tabindex="0" style="text-align:center; padding:0 16px; cursor:pointer; min-height:40px; flex:1;" onclick="showProviderPickups()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); showProviderPickups();}" title="Abholnummer / Abholungen">
-              <p id="kpiLabelAbholungen" class="kpi-label" style="margin:0 0 2px;">Abholungen</p>
+            <div id="kpiBestellungen" role="button" tabindex="0" style="text-align:center; padding:0 16px; cursor:pointer; min-height:40px; flex:1;" onclick="showProviderPickups()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); showProviderPickups();}" title="Abholnummern">
+              <p id="kpiLabelAbholungen" class="kpi-label" style="margin:0 0 2px;">Nummern</p>
               <p id="dashboardAbholungenCount" style="margin:0;">0</p>
             </div>
             <div id="kpiUmsatz" role="button" tabindex="0" style="text-align:right; cursor:pointer; min-height:40px; flex:1;" onclick="showProviderBilling()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); showProviderBilling();}" title="Tagesumsatz">
@@ -1167,26 +1170,26 @@
     </section>
 
     <section class="view onboarding-view" id="v-provider-pickups">
-      <header class="prov-page-header dynamic-header system-header" id="v-provider-pickups-header">
-        <div class="prov-page-header-row">
-          <div class="prov-page-header-left prov-header-reset-trigger" data-reset-view="pickups" role="button" tabindex="0" aria-label="Zum Seitenanfang">
-            <h1 class="prov-page-header-title system-header-title">Meine Abholung</h1>
+      <div class="pickups-floating-wrap" id="pickupsFloatingWrap">
+        <header class="prov-page-header sticky-header dynamic-header system-header" id="v-provider-pickups-header">
+          <div class="prov-page-header-row">
+            <div class="prov-page-header-left prov-header-reset-trigger" data-reset-view="pickups" role="button" tabindex="0" aria-label="Zum Seitenanfang">
+              <h1 class="prov-page-header-title system-header-title">Abholnummern</h1>
+            </div>
+            <div class="prov-page-header-actions prov-header-toolbar" style="display:flex; gap:8px; align-items:center;">
+              <button type="button" id="btnPickupsHeaderCookbook" title="Kochbuch" aria-label="Kochbuch" style="background:rgba(0,0,0,0.06); border:none; min-width:44px; min-height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:20px; cursor:pointer;">📖</button>
+              <button type="button" id="btnPickupsHeaderShare" title="Teilen" aria-label="Teilen" style="background:rgba(0,0,0,0.06); border:none; min-width:44px; min-height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; color:#1a1a1a; cursor:pointer;">
+                <i data-lucide="share-2" style="width:20px; height:20px;"></i>
+              </button>
+            </div>
           </div>
-          <div class="prov-page-header-actions">
-            <button type="button" id="btnKitchenListPDF" aria-label="PDF">
-              <i data-lucide="file-text" style="width:20px; height:20px;"></i>
-            </button>
-            <button type="button" id="btnKitchenListEmail" aria-label="E-Mail">
-              <i data-lucide="mail" style="width:20px; height:20px;"></i>
-            </button>
+        </header>
+        <div class="prov-pickups-filter-sticky sticky-sub-bar" id="provPickupsFilterSticky">
+          <div class="answers" id="provPickupFilter" style="background:#f1f3f5; padding:4px; border-radius:14px; display:flex; gap:4px; border:none; box-shadow:none;">
+            <!-- Wird dynamisch befüllt -->
           </div>
         </div>
-        <div class="answers" id="provPickupFilter" style="background:#f1f3f5; padding:4px; border-radius:14px; display:flex; gap:4px; border:none; box-shadow:none; margin-top:12px;">
-          <!-- Wird dynamisch befüllt -->
-        </div>
-      </header>
-
-      <div id="provPickupsScroll" style="padding:12px max(20px, env(safe-area-inset-right)) 20px max(20px, env(safe-area-inset-left)); width:100%; max-width:100%; margin:0; flex:1; box-sizing:border-box;">
+        <div id="provPickupsScroll" style="padding:12px max(20px, env(safe-area-inset-right)) calc(24px + 100px + env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left)); width:100%; max-width:100%; margin:0; flex:1; min-height:0; box-sizing:border-box;">
         <!-- Subheader Status -->
         <div id="provPickupsSubheader" style="margin-bottom:20px; font-size:13px; font-weight:700; color:#9ca3af; text-transform:uppercase; letter-spacing:0.05em;">
           <!-- Wird dynamisch befüllt -->
@@ -1197,7 +1200,7 @@
           <div style="width:80px; height:80px; background:rgba(0,0,0,0.03); border-radius:50%; margin:0 auto 20px; display:flex; align-items:center; justify-content:center;">
             <i data-lucide="receipt" style="width:40px; height:40px; color:#cbd5e1;"></i>
           </div>
-          <h3 style="font-size:18px; font-weight:800; color:#1a1a1a; margin-bottom:8px;">Noch keine Abholungen</h3>
+          <h3 style="font-size:18px; font-weight:800; color:#1a1a1a; margin-bottom:8px;">Noch keine Nummern</h3>
           <p style="color:#64748b; font-size:15px; line-height:1.5;">Sobald Kunden bestellen, erscheinen sie hier in Echtzeit.</p>
         </div>
         
@@ -1210,38 +1213,36 @@
         <div id="provPickupsList" style="display:none; flex-direction:column; gap:12px;">
           <!-- Wird dynamisch befüllt -->
         </div>
+        </div>
       </div>
     </section>
 
     <section class="view onboarding-view" id="v-provider-week">
-      <header class="week-header-compact week-header-minimal prov-page-header dynamic-header" id="weekHeaderCompact">
+      <header class="week-header-compact week-header-minimal prov-page-header dynamic-header system-header" id="weekHeaderCompact">
         <div class="prov-page-header-row week-header-row">
-          <div class="week-header-kw-badge" id="weekHeaderKwBadge" aria-label="Kalenderwoche">KW 8</div>
-          <h1 class="week-header-title-center" id="weekHeaderTitle" aria-hidden="true">Wochenplan</h1>
-          <div class="week-header-actions" style="position:relative;">
-            <button type="button" id="btnWeekKebab" class="week-kebab-btn" title="Menü" aria-label="Menü" aria-haspopup="true">
-              <i data-lucide="more-vertical" style="width:22px; height:22px;"></i>
+          <div class="prov-page-header-left prov-header-reset-trigger" data-reset-view="week" style="flex:1; min-width:0;" role="button" tabindex="0" aria-label="Zum Seitenanfang">
+            <button type="button" class="week-header-kw-trigger" id="weekHeaderKWTrigger" aria-label="Kalenderwoche wählen" style="display:inline-flex; align-items:center; gap:6px; background:none; border:none; padding:4px 0; cursor:pointer; font-family:inherit;">
+              <h1 class="prov-page-header-title system-header-title week-header-title-left" id="weekHeaderTitle" style="margin:0;">Wochenplan</h1>
+              <span class="week-header-kw-badge" id="weekHeaderKWBadge">KW 8</span>
+              <i data-lucide="chevron-down" style="width:18px; height:18px; color:#64748b;"></i>
             </button>
+          </div>
+          <div class="prov-page-header-actions prov-header-toolbar" style="display:flex; gap:8px; align-items:center; position:relative;">
+            <button type="button" id="btnWeekKebab" class="week-kebab-trigger" title="Menü" aria-label="Menü" aria-haspopup="true" aria-expanded="false" style="background:rgba(0,0,0,0.06); border:none; min-width:44px; min-height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:700; color:#1a1a1a; cursor:pointer;">⋮</button>
             <div id="weekKebabDropdown" class="week-kebab-dropdown" style="display:none;">
               <button type="button" class="week-kebab-item" id="weekKebabPdf"><i data-lucide="printer" style="width:18px;height:18px;"></i> Drucken</button>
               <button type="button" class="week-kebab-item" id="weekKebabShare"><i data-lucide="share-2" style="width:18px;height:18px;"></i> Teilen</button>
-              <button type="button" class="week-kebab-item" id="weekKebabSaveTemplate"><i data-lucide="folder-plus" style="width:18px;height:18px;"></i> Vorlage speichern</button>
+              <button type="button" class="week-kebab-item" id="weekKebabScreenshot"><i data-lucide="camera" style="width:18px;height:18px;"></i> Team-Vorschau</button>
             </div>
           </div>
           <button type="button" class="week-header-done-btn" id="weekHeaderDoneBtn" style="display:none;" aria-label="Fertig">Fertig</button>
         </div>
       </header>
 
-      <!-- KW-Board: KW-Carousel + 7-Tage-Grid + Action-Bar -->
+      <!-- KW-Board: Inspirations-Slider + Elastic 7-Tage-Grid [cite: 2026-02-21] -->
       <div id="kwBoardWrap" style="display:flex; flex-direction:column; flex:1; min-height:0; position:relative;">
         <div class="kw-board-header" id="kwBoardHeader">
-          <div class="kw-carousel" id="kwCarousel" role="tablist"></div>
-          <div class="kw-progress-wrap">
-            <div class="kw-progress"><div class="kw-progress-fill" id="kwProgressFill" style="width:0%;"></div></div>
-          </div>
-          <div id="kwSeasonBanner" class="kw-season-banner" style="display:none !important; visibility:hidden;"><span id="kwSeasonBannerText"></span><button type="button" id="kwSeasonBannerApply"></button></div>
-          <div id="kwCookbookStripWrap" class="kw-cookbook-strip-wrap"></div>
-          <div id="kwWeekActivateBar" class="kw-week-activate-bar" style="display:none;"><button type="button" id="btnKwWeekActivate" class="kw-week-activate-btn">Woche aktivieren (0 €)</button></div>
+          <div id="kwCookbookStripWrap" class="kw-cookbook-strip-wrap kw-inspirations-slider"></div>
         </div>
         <div id="kwBoardScroll" class="kw-board-scroll">
           <div id="kwEmptyWeekTemplateCta" class="kw-empty-week-template-cta" style="display:none; position:absolute; inset:0; align-items:center; justify-content:center; padding:24px; pointer-events:none; z-index:2;"><div style="pointer-events:auto;"><button type="button" id="btnKwLoadTemplate" class="kw-load-template-btn" style="display:inline-flex; align-items:center; gap:10px; min-height:56px; padding:0 28px; border-radius:20px; border:2px solid rgba(14,165,233,0.4); background:rgba(255,255,255,0.95); backdrop-filter:blur(12px); color:#0c4a6e; font-size:16px; font-weight:800; cursor:pointer; box-shadow:0 4px 20px rgba(14,165,233,0.15);"><span style="font-size:22px;">📂</span><span>Vorlage laden</span></button></div></div>
@@ -1252,8 +1253,23 @@
         <button type="button" id="weekMagicFab" class="week-magic-fab" aria-label="Schnellaktionen" title="Schnellaktionen">
           <span class="week-magic-fab-icon">✨</span>
         </button>
+        <!-- Activation Dock: fixiert unten, Mastercard-Style [cite: 2026-02-21] -->
+        <div id="kwWeekActivateBar" class="kw-week-activate-bar kw-activation-dock" style="display:none;">
+          <button type="button" id="btnKwWeekActivate" class="kw-week-activate-btn kw-activation-dock-btn">
+            <span id="kwActivateCount" class="kw-activate-count">0</span> Gerichte jetzt aktivieren
+          </button>
+          <p class="kw-activation-disclaimer">Abrechnung (4,99 €) erfolgt erst zum jeweiligen Startzeitpunkt.</p>
+        </div>
       </div>
     </section>
+
+    <!-- KW-Selector: Bottom-Sheet für Kalenderwoche [cite: 2026-02-21] -->
+    <div class="backdrop" id="kwSelectorBd" style="display:none; z-index:1185;" onclick="closeKWSelector()"></div>
+    <div id="kwSelectorSheet" class="week-magic-sheet kw-selector-sheet" style="position:fixed; left:0; right:0; bottom:0; border-radius:24px 24px 0 0; background:rgba(255,255,255,0.96); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); box-shadow:0 -8px 32px rgba(0,0,0,0.1); z-index:1186; display:none; flex-direction:column; overflow:hidden; padding-bottom:max(24px, env(safe-area-inset-bottom));">
+      <div class="week-magic-sheet-handle"></div>
+      <h3 class="week-magic-sheet-title">Kalenderwoche wählen</h3>
+      <div id="kwSelectorList" class="kw-selector-list" style="display:flex; flex-direction:column; gap:8px; padding:0 20px 20px; max-height:50vh; overflow-y:auto;"></div>
+    </div>
 
     <!-- Week Magic Sheet: Vorlage, Lücke finden, Woche füllen [cite: 2026-02-20] -->
     <div class="backdrop" id="weekMagicSheetBd" style="display:none; z-index:1188;" onclick="closeWeekMagicSheet()"></div>
@@ -1418,19 +1434,12 @@
       <button type="button" class="cookbook-action-sheet-btn" onclick="closeCookbookActionSheet()">Abbrechen</button>
     </div>
 
-    <!-- Provider-Profil "Mein Profil" – Ebene 1: Business-Dashboard | Ebene 2: Zahnrad Einstellungen [Master-Prompt] -->
+    <!-- Provider-Profil "Meins" – Single-Page: Logo+Name als Header, 4er-Grid, Overlays [cite: 2026-02-21 Masterplan] -->
     <section class="view onboarding-view" id="v-provider-profile" style="display:flex; flex-direction:column; min-height:0;">
-      <header id="providerProfileHeader" class="provider-profile-header-rebuild dynamic-header prov-page-header system-header">
-        <div class="prov-page-header-row provider-profile-header-row1">
-          <h1 class="prov-page-header-title system-header-title">Mein Profil</h1>
-          <button type="button" id="providerProfileGearBtn" class="provider-profile-gear-btn provider-profile-gear-btn-tr" aria-label="Einstellungen"><svg class="provider-profile-gear-svg" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
-        </div>
-      </header>
-
-      <div id="providerProfileContent" class="provider-profile-content-rebuild">
+      <div id="providerProfileContent" class="provider-profile-content-rebuild provider-profile-single-page">
         <div id="providerProfileMainContent" class="account-settings-airbnb">
-        <!-- Master-Kachel: Logo links, 3 Stats rechts [cite: 2026-02-18] -->
-        <div id="providerProfileMasterKachel" class="account-master-kachel" role="button" tabindex="0">
+        <!-- Profil-Header: Logo + Name direkt (Ehemals Ebene 1) [cite: 2026-02-21] -->
+        <div id="providerProfileMasterKachel" class="account-master-kachel account-profile-header">
           <div class="account-master-left">
             <img id="providerProfileMasterLogo" src="assets/images/mittagio-logo.png" alt="" class="account-master-logo" />
             <div>
@@ -1438,26 +1447,31 @@
               <p id="providerProfileMasterOrt" class="account-master-ort">Ort</p>
             </div>
           </div>
-          <div class="account-master-stats">
-            <div class="account-stat"><span id="accountStatKochbuch">0</span><small>Kochbuch</small></div>
-            <div class="account-stat"><span id="accountStatInserate">0</span><small>Inserate</small></div>
-            <div class="account-stat account-stat-umsatz"><span id="accountStatUmsatz">0,00 €</span><small>Umsatz</small></div>
-          </div>
+        </div>
+        <!-- 3 Stats: Umsatz, Inserate, Kochbuch [cite: 2026-01-29] -->
+        <div class="account-stats-row">
+          <div class="account-stat account-stat-umsatz"><span id="accountStatUmsatz">0,00 €</span><small>Umsatz</small></div>
+          <div class="account-stat"><span id="accountStatInserate">0</span><small>Inserate</small></div>
+          <div class="account-stat"><span id="accountStatKochbuch">0</span><small>Kochbuch</small></div>
         </div>
 
-        <!-- Grid: 3 Kacheln [cite: 2026-02-18] -->
-        <div class="account-grid-nav">
-          <button type="button" id="btnAccountAbrechnung" class="account-tile">
+        <!-- 4er-Kachel-Grid: Die Schaltzentrale [cite: 2026-02-21] -->
+        <div class="account-grid-nav account-grid-4">
+          <button type="button" id="btnAccountMeinGeld" class="account-tile">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 18V6"/></svg>
-            <span>Abrechnungen</span>
+            <span>Mein Geld</span>
           </button>
-          <button type="button" id="btnAccountFaq" class="account-tile">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>
-            <span>FAQ</span>
+          <button type="button" id="btnAccountMeineRegeln" class="account-tile">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"/><path d="m8 7 4-4 4 4"/><path d="m8 17 4 4 4-4"/><path d="M3 12h3"/><path d="M18 12h3"/><path d="M4 18 2 20"/><path d="M20 18 22 20"/><path d="M4 6 2 4"/><path d="M20 6 22 4"/></svg>
+            <span>Meine Regeln</span>
           </button>
-          <button type="button" id="btnAccountSupport" class="account-tile">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><path d="m4.93 4.93 4.24 4.24"/><path d="m14.83 14.83 4.24 4.24"/><path d="m4.93 19.07 4.24-4.24"/><path d="m14.83 9.17 4.24-4.24"/></svg>
-            <span>Support</span>
+          <button type="button" id="btnAccountMeinKochbuch" class="account-tile">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            <span>Mein Kochbuch</span>
+          </button>
+          <button type="button" id="btnAccountMeinSupport" class="account-tile">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+            <span>Mein Support</span>
           </button>
         </div>
 
@@ -1481,12 +1495,51 @@
               <button type="button" class="account-accordion-trigger" aria-expanded="false"><span>Allergene</span><svg class="account-accordion-chevron" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button>
               <div class="account-accordion-content"><div class="account-accordion-inner">Beim Anlegen schlägt die App passende Allergene vor. Du wählst aus – Kunden sehen es in der Gerichtsbeschreibung.</div></div>
             </div>
+            <div class="account-accordion-item" data-accordion="mehrweg">
+              <button type="button" class="account-accordion-trigger" aria-expanded="false"><span>Mehrweg</span><svg class="account-accordion-chevron" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button>
+              <div class="account-accordion-content"><div class="account-accordion-inner">Vytal, Recup oder eigenes Pfandsystem. Zeige deinen Gästen, dass du Mehrweg anbietest.</div></div>
+            </div>
           </div>
         </section>
+
+        <!-- Footer: Impressum, Datenschutz, AGB [cite: 2026-02-21] -->
+        <div class="account-legal-footer">
+          <a href="#/impressum" class="account-legal-link">Impressum</a>
+          <span class="account-legal-sep">·</span>
+          <a href="#/datenschutz" class="account-legal-link">Datenschutz</a>
+          <span class="account-legal-sep">·</span>
+          <a href="#/agb" class="account-legal-link">AGB</a>
+        </div>
 
         <button type="button" id="btnProviderLogout" aria-label="Abmelden" class="account-logout-btn">
           <i data-lucide="log-out" style="width:20px;height:20px;"></i><span>Abmelden</span>
         </button>
+        </div>
+
+        <!-- Meine Regeln Overlay: zeigt providerProfileSubService als Slide-In [cite: 2026-02-21] -->
+        <div id="accountRegelnOverlayBd" class="account-overlay-backdrop" style="display:none;" aria-hidden="true"></div>
+
+        <!-- Mein Geld Overlay (Slide-In) [cite: 2026-02-21] -->
+        <div id="accountGeldOverlayBd" class="account-overlay-backdrop" style="display:none;" aria-hidden="true"></div>
+        <div id="accountGeldOverlay" class="account-regeln-sheet" role="dialog" aria-label="Mein Geld">
+          <div class="account-regeln-sheet-inner">
+            <div class="account-regeln-sheet-header">
+              <h3>Mein Geld</h3>
+              <button type="button" id="accountGeldClose" aria-label="Schließen">&times;</button>
+            </div>
+            <div class="account-regeln-sheet-body">
+              <button type="button" id="accountGeldAbrechnungen" class="account-geld-option">
+                <span class="account-geld-icon">💰</span>
+                <span><strong>Abrechnungen &amp; Belege</strong><small>Abrechnungen einsehen, PDF-Archiv</small></span>
+                <i data-lucide="chevron-right" style="width:20px;height:20px;color:#9ca3af;"></i>
+              </button>
+              <button type="button" id="accountGeldBillingArchive" class="account-geld-option">
+                <span class="account-geld-icon">🧾</span>
+                <span><strong>PDF-Archiv</strong><small>Belege herunterladen</small></span>
+                <i data-lucide="chevron-right" style="width:20px;height:20px;color:#9ca3af;"></i>
+              </button>
+            </div>
+          </div>
         </div>
 
         <!-- Support-Modal: Standort, Zahlung, WhatsApp [cite: 2026-02-04] -->
@@ -1706,7 +1759,7 @@
           </div>
           <div id="providerSupportSolution" class="provider-support-solution-box" style="display:none;">
             <p id="providerSupportSolutionText" class="provider-support-solution-text"></p>
-            <button type="button" id="providerSupportAbholungenBtn" class="provider-support-mail-btn" style="display:none; margin-bottom:8px;">Abholungen anzeigen</button>
+            <button type="button" id="providerSupportAbholungenBtn" class="provider-support-mail-btn" style="display:none; margin-bottom:8px;">Nummern anzeigen</button>
             <button type="button" id="providerSupportMailBtn" class="provider-support-mail-btn">Per E-Mail an Mike melden</button>
           </div>
 
@@ -2284,8 +2337,8 @@
   <!-- Floating Action Button (FAB) für Modus-Wechsel -->
 
 
-  <!-- CUSTOMER bottom nav - Mittagio-Bar -->
-  <nav class="bottom-nav bottom-nav-pure" id="customerNav" style="position:fixed; bottom:0; left:0; right:0; z-index:999; display:flex; justify-content:space-around; align-items:center; background:#fff; height:calc(70px + env(safe-area-inset-bottom, 0px)); padding-bottom:env(safe-area-inset-bottom, 0px);">
+  <!-- CUSTOMER bottom nav - Mittagio-Bar (4 Buttons, eckig, 25px padding S25) -->
+  <nav class="bottom-nav bottom-nav-pure" id="customerNav" style="position:fixed; bottom:0; left:0; right:0; z-index:999; display:flex; justify-content:space-around; align-items:center; background:#fff; height:calc(70px + env(safe-area-inset-bottom, 0px)); padding-bottom:calc(25px + env(safe-area-inset-bottom, 0px)); border-radius:0;">
     <button class="navbtn active" data-go="discover" style="background:none; border:none; padding:8px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; transition:all 0.2s;">
       <i data-lucide="search" style="width:22px;height:22px;"></i>
       <span style="font-size:11px; font-weight:700;">Entdecken</span>
@@ -2312,9 +2365,8 @@
     </div>
     <nav class="bottom bottom-nav provider-nav-light provider-nav-pill" id="providerNav" style="display:flex; justify-content:space-between; align-items:center;">
       <button class="navbtn active" data-pgo="provider-home" title="Dashboard"><div class="ico" data-icon="layoutDashboard" data-icon-only="1"></div><span class="provider-nav-label">Dashboard</span></button>
-      <button class="navbtn" data-pgo="provider-pickups" title="Abholungen"><div class="ico" data-icon="receipt" data-icon-only="1"></div><span class="provider-nav-label">Abholungen</span></button>
+      <button class="navbtn" data-pgo="provider-pickups" title="Abholnummern"><div class="ico navbtn-emoji" style="font-size:1.2em;line-height:1;">🧾</div><span class="provider-nav-label">Nummern</span></button>
       <button class="navbtn" data-pgo="provider-week" title="Wochenplan"><div class="ico" data-icon="calendar" data-icon-only="1"></div><span class="provider-nav-label">Wochenplan</span></button>
-      <button class="navbtn" data-pgo="provider-cookbook" title="Kochbuch"><div class="ico" data-icon="bookOpen" data-icon-only="1"></div><span class="provider-nav-label">Kochbuch</span></button>
       <button class="navbtn" data-pgo="provider-profile" title="Profil"><div class="ico" data-icon="user" data-icon-only="1"></div><span class="provider-nav-label">Profil</span></button>
     </nav>
   </div>
@@ -2376,7 +2428,8 @@
 
     <!-- Publish Fee Modal (vor Inserats-Veröffentlichung) – Backdrop + Sheet immer gemeinsam anzeigen -->
     <div class="backdrop" id="publishFeeBd" onclick="closePublishFeeModal()" style="background:rgba(0,0,0,0.7); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); z-index:2000;"></div>
-    <div class="sheet" id="publishFeeSheet" style="width:100%; max-width:100%; border-radius:24px; overflow:hidden; z-index:2001; box-sizing:border-box;">
+    <div class="sheet publish-fee-sheet" id="publishFeeSheet" style="width:100%; max-width:100%; border-radius:24px; overflow:hidden; z-index:2001; box-sizing:border-box; position:relative;">
+  <div class="inserat-success-glow publish-fee-success-glow" id="publishFeeSuccessGlow" style="position:absolute;inset:0;pointer-events:none;z-index:5;border-radius:24px;overflow:hidden;"></div>
   <div class="sheet-body" style="padding:28px;">
     <h3 style="margin:0 0 20px; font-size:22px; font-weight:900; color:#2D3436;">Inserat veröffentlichen</h3>
     <div style="margin-bottom:24px; padding:20px; background:rgba(255,215,0,0.1); border-radius:16px; border:2px solid rgba(255,215,0,0.3);">
@@ -2491,9 +2544,9 @@
 <!-- Inserat Live – Erfolgs-Sheet nach Veröffentlichung -->
 <div class="backdrop inserat-success-backdrop" id="inseratSuccessBd" onclick="closeInseratSuccessSheet()" style="background:rgba(0,0,0,0.5); backdrop-filter:blur(30px); -webkit-backdrop-filter:blur(30px); z-index:1200;"></div>
 <div class="sheet" id="inseratSuccessSheet" style="width:100%; max-width:100%; border-radius:32px; background:#f8f7f2; z-index:1201; display:flex; flex-direction:column; max-height:92vh; box-sizing:border-box;">
-  <div id="confettiContainer" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; overflow:hidden;"></div>
+  <div id="confettiContainer" class="inserat-success-confetti-layer"></div>
   
-  <div class="sheet-body" style="padding:0 24px 100px; text-align:center; overflow-y:auto; flex:1; min-height:0; -webkit-overflow-scrolling:touch;">
+  <div class="sheet-body inserat-success-sheet-body" style="padding:0 24px 100px; text-align:center; overflow-y:auto; flex:1; min-height:0; -webkit-overflow-scrolling:touch;">
     
     <!-- Emotional: Kunde zeigt Abholnummer an der Theke (Fullscreen-Feeling) -->
     <div id="inseratSuccessHero" style="margin:0 -24px 20px; border-radius:0 0 28px 28px; overflow:hidden; background:linear-gradient(180deg, #dcfce7 0%, #f0fdf4 100%); position:relative;">
@@ -2527,10 +2580,14 @@
     <!-- 3. Primary Action: WhatsApp Boost (gut sichtbar, direkt unter Vorschau) -->
     <div style="margin-top:16px;">
       <div style="font-size:11px; font-weight:800; color:#9ca3af; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:12px;">Dein Umsatz-Turbo</div>
-      <a id="inseratSuccessBtnWhatsApp" href="#" target="_blank" rel="noopener" style="display:flex; align-items:center; justify-content:center; gap:12px; width:100%; min-height:56px; padding:14px 24px; border-radius:20px; background:#25D366; color:#fff; font-weight:900; font-size:17px; text-decoration:none; margin-bottom:12px; box-shadow:0 8px 24px rgba(37,211,102,0.3); cursor:pointer;">
+      <a id="inseratSuccessBtnWhatsApp" href="#" target="_blank" rel="noopener" style="display:flex; align-items:center; justify-content:center; gap:12px; width:100%; min-height:56px; padding:14px 24px; border-radius:20px; background:#25D366; color:#fff; font-weight:900; font-size:17px; text-decoration:none; margin-bottom:8px; box-shadow:0 8px 24px rgba(37,211,102,0.3); cursor:pointer;">
         <i data-lucide="send" style="width:24px; height:24px;"></i>
         <span>Bei WhatsApp teilen</span>
       </a>
+      <button type="button" id="inseratSuccessBtnWhatsAppStatus" class="inserat-success-whatsapp-status-btn" style="display:inline-flex; align-items:center; justify-content:center; gap:8px; min-height:44px; padding:10px 20px; border-radius:14px; background:rgba(37,211,102,0.15); color:#128C7E; font-weight:700; font-size:14px; border:1px solid rgba(37,211,102,0.4); cursor:pointer; margin-bottom:12px;">
+        <span>📱</span>
+        <span>Für WhatsApp Status</span>
+      </button>
       <p style="font-size:13px; color:#64748b; font-weight:500; margin-bottom:24px;">Informiere deine Kunden direkt.</p>
     </div>
 
@@ -2548,26 +2605,27 @@
       </button>
     </div>
 
-    <!-- 5. Abholnummer: Finale Bestätigung (emotional, nur bei Abholnummer) -->
-    <div id="inseratSuccessAbholnummerSection" style="background:#fff; border-radius:24px; padding:20px; border:1px solid rgba(59,130,246,0.1); display:none; margin-bottom:24px;">
+    <!-- 5. Abholnummer: Finale Bestätigung (emotional, nur bei Abholnummer) [cite: 2026-02-21] -->
+    <div id="inseratSuccessAbholnummerSection" class="inserat-success-abholnummer-card" style="background:#fff; border-radius:24px; padding:24px; border:2px solid rgba(59,130,246,0.2); display:none; margin-bottom:24px;">
       <div style="font-size:11px; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Abholnummer für deine Gäste</div>
       <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px; justify-content:center;">
         <div style="width:8px; height:8px; background:#3b82f6; border-radius:50%; animation: pulse 2s infinite;"></div>
-        <span style="font-size:12px; font-weight:800; color:#3b82f6; text-transform:uppercase; letter-spacing:0.05em;">Monitoring Aktiv</span>
+        <span style="font-size:12px; font-weight:800; color:#3b82f6; text-transform:uppercase; letter-spacing:0.05em;">Es geht los!</span>
       </div>
-      <div style="font-size:32px; font-weight:900; color:#1a1a1a; letter-spacing:-0.02em; margin-bottom:4px;">#<span id="inseratSuccessNextCode">1</span></div>
-      <div style="font-size:12px; color:#64748b; font-weight:600;">Nächste freie Abholnummer</div>
+      <div class="inserat-success-abholnummer-display" style="font-size:48px; font-weight:900; color:#1a1a1a; letter-spacing:-0.03em; margin-bottom:4px; line-height:1;">#<span id="inseratSuccessNextCode">A-01</span></div>
+      <div style="font-size:13px; color:#64748b; font-weight:600;">Nächste freie Abholnummer</div>
     </div>
 
   </div>
 
-  <!-- Bottom: Zum Inserat + Nächstes Gericht [cite: 2026-01-29] -->
-  <div style="position:absolute; bottom:0; left:0; right:0; padding:20px 24px calc(20px + env(safe-area-inset-bottom, 0)); background:linear-gradient(to top, #f8f7f2 80%, transparent); text-align:center; display:flex; flex-direction:column; gap:10px;">
-    <button type="button" id="inseratSuccessBtnBack" style="width:100%; min-height:52px; border-radius:16px; background:#1a1a1a; color:#fff; font-weight:800; font-size:15px; border:none; box-shadow:0 4px 12px rgba(0,0,0,0.1);">
-      Zum Inserat
+  <!-- Bottom: ImmoScout-Footer – Links Teilen, Rechts Zum Dashboard [cite: 2026-02-21] -->
+  <div class="inserat-success-footer airbnb-footer" style="position:absolute; bottom:0; left:0; right:0; padding:16px 24px calc(16px + env(safe-area-inset-bottom, 0)); background:rgba(15,23,42,0.92); backdrop-filter:blur(30px); -webkit-backdrop-filter:blur(30px); margin:0; border-radius:0;">
+    <button type="button" id="inseratSuccessBtnShare" class="inserat-success-footer-link secondary" aria-label="Inserat teilen">
+      <i data-lucide="share-2" style="width:20px;height:20px;"></i>
+      <span>Inserat teilen</span>
     </button>
-    <button type="button" id="inseratSuccessBtnNewListing" style="width:100%; min-height:48px; border-radius:16px; background:#fff; color:#1a1a1a; font-weight:700; font-size:15px; border:2px solid rgba(0,0,0,0.1);">
-      Nächstes Gericht inserieren
+    <button type="button" id="inseratSuccessBtnBack" class="inserat-success-footer-btn-primary">
+      Zurück zum Dashboard
     </button>
   </div>
 </div>

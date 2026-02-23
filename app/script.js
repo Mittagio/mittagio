@@ -26,7 +26,8 @@
     providerSession: 'mittagio_provider_session_v1',
     favPillars: 'mittagio_fav_pillars_v1', // { [dishId]: { vorOrt, abholnummer, mehrweg } } – 3-Säulen beim Favorisieren einfrieren
     transactions: 'mittagio_transactions_v1', // Transaktionen pro Inserat
-    weekTemplates: 'mittagio_week_templates_v1' // Wochen-Vorlagen: [{ id, name, createdAt, days: { 0..6: [{ cookbookId, dish, price }] } }]
+    weekTemplates: 'mittagio_week_templates_v1', // Wochen-Vorlagen: [{ id, name, createdAt, days: { 0..6: [{ cookbookId, dish, price }] } }]
+    inseratQuickbook: 'mittagio_inserat_quickbook_v1' // Zuletzt verwendete Inserate für Quick-Select: [{ id, dish, price, image, objectPosition }]
   };
   const load = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } };
   const save = (k, v) => localStorage.setItem(k, JSON.stringify(v));
@@ -5736,7 +5737,7 @@
       ev.preventDefault();
       ev.stopPropagation();
       try { if(typeof hapticLight === 'function') hapticLight(); else if(navigator.vibrate) navigator.vibrate(10); } catch(e){}
-      if(typeof startListingFlow === 'function') startListingFlow({ editOfferId: id });
+      if(typeof startListingFlow === 'function') startListingFlow({ editOfferId: id, entryPoint: 'ACTIVE_LISTING' });
     }, true);
   })();
 
@@ -8010,9 +8011,11 @@
     if(emailField) emailField.value = '';
     if(passField) passField.value = '';
   }
+  function showLoginView(){ if(typeof showView === 'function' && views && views.providerLogin) showView(views.providerLogin); }
   if(typeof window !== 'undefined'){
     window.showProviderLoginModal = showProviderLoginModal;
     window.closeProviderLoginModal = closeProviderLoginModal;
+    window.showLoginView = showLoginView;
   }
   var btnProfileProviderPortalEl = document.getElementById('btnProfileProviderPortal');
   if(btnProfileProviderPortalEl){
@@ -8629,6 +8632,7 @@
       deleteCookie(SESSION_COOKIE_NAME);
       localStorage.removeItem(LS.providerSession);
       localStorage.removeItem('mittagio_current_session_id');
+      try { localStorage.removeItem('user_role'); } catch(e){}
       provider.loggedIn = false;
       provider.current_session_id = null;
       save(LS.provider, provider);
@@ -8643,6 +8647,7 @@
       deleteCookie(SESSION_COOKIE_NAME);
       localStorage.removeItem(LS.providerSession);
       localStorage.removeItem('mittagio_current_session_id');
+      try { localStorage.removeItem('user_role'); } catch(e){}
       provider.loggedIn = false;
       provider.current_session_id = null;
       save(LS.provider, provider);
@@ -9140,7 +9145,7 @@
     scrollActiveViewToTopAndCloseOverlays();
     var scrollEl = null;
     if(view === 'home') scrollEl = document.querySelector('#v-provider-home .dashboard-floating-wrap');
-    else if(view === 'pickups') scrollEl = document.getElementById('provPickupsScroll');
+    else if(view === 'pickups') scrollEl = document.getElementById('pickupsFloatingWrap');
     else if(view === 'week') scrollEl = document.getElementById('kwBoardScroll');
     else if(view === 'cookbook'){
       scrollEl = document.getElementById('cookbookScrollWrap');
@@ -9149,6 +9154,7 @@
       cookbookShowSortMenu = false;
       if(typeof renderCookbook === 'function') renderCookbook();
     }
+    else if(view === 'profile') scrollEl = document.getElementById('providerProfileContent');
     if(scrollEl){ scrollEl.scrollTo({ top: 0, behavior: 'smooth' }); }
   }, true);
   document.addEventListener('click', function(e){
@@ -9214,10 +9220,18 @@
     }
     setTimeout(function(){
       var homeWrap = document.querySelector('#v-provider-home .dashboard-floating-wrap');
-      var pickupsScroll = document.getElementById('provPickupsScroll');
+      var pickupsScroll = document.getElementById('pickupsFloatingWrap');
       var weekScroll = document.getElementById('kwBoardScroll');
       var cookbookScroll = document.getElementById('cookbookScrollWrap');
       attachPTR(homeWrap, function(){ if(typeof renderProviderHome==='function') renderProviderHome(); }, 'provider-home');
+      /* KPI-Block: kpis-scrolled bei Scroll für visuelle Trennung (Inset-Divider/Schatten) */
+      var kpisBlock = document.getElementById('dashboardKpisBlock');
+      if(homeWrap && kpisBlock){
+        function onDashboardScroll(){ kpisBlock.classList.toggle('kpis-scrolled', homeWrap.scrollTop > 4); }
+        homeWrap.removeEventListener('scroll', onDashboardScroll);
+        homeWrap.addEventListener('scroll', onDashboardScroll, { passive: true });
+        onDashboardScroll();
+      }
       attachPTR(pickupsScroll, function(){ if(typeof renderProviderPickups==='function') renderProviderPickups(); }, 'provider-pickups');
       attachPTR(weekScroll, function(){ if(typeof renderWeekPlanBoard==='function') renderWeekPlanBoard(); else if(typeof renderProviderWeekPreview==='function') renderProviderWeekPreview(); }, 'provider-week');
       attachPTR(cookbookScroll, function(){ if(typeof renderCookbook==='function') renderCookbook(); }, 'provider-cookbook');
@@ -9251,12 +9265,62 @@
   const btnProviderNavBack = document.getElementById('btnProviderNavBack');
   if(btnProviderNavBack) btnProviderNavBack.onclick = function(){ showProviderHome(); };
 
+  // Header Icon-Werkzeugleiste: Kochbuch (📖) + Share – identisch auf Dashboard, Abholnummern, Wochenplan
+  document.addEventListener('click', function(e){
+    var btn = e.target.closest('#btnHeaderCookbookShortcut, #btnPickupsHeaderCookbook, #btnWeekHeaderCookbook');
+    if(btn){
+      e.preventDefault();
+      e.stopPropagation();
+      if(typeof haptic === 'function') haptic(6);
+      if(typeof showProviderCookbook === 'function') showProviderCookbook();
+      return;
+    }
+    var shareBtn = e.target.closest('#btnHeaderShareShortcut, #btnPickupsHeaderShare, #btnWeekHeaderShare');
+    if(shareBtn){
+      e.preventDefault();
+      e.stopPropagation();
+      if(typeof haptic === 'function') haptic(6);
+      if(shareBtn.id === 'btnHeaderShareShortcut' && typeof shareTodayOffers === 'function') shareTodayOffers();
+      else if(shareBtn.id === 'btnPickupsHeaderShare'){
+        if(typeof generateKitchenListPDF === 'function') generateKitchenListPDF();
+        else if(typeof showToast === 'function') showToast('Küchenliste drucken');
+      }
+      else if(shareBtn.id === 'btnWeekHeaderShare' && typeof shareWeekPlan === 'function') shareWeekPlan();
+    }
+  }, true);
+
   // Dashboard: „Zum Wochenplan“ → Deep-Link zur aktuellen KW und heute
   document.addEventListener('click', function(e){
     var openBtn = e.target.closest('#btnDashboardOpenWeekPlan');
     if(openBtn){ e.preventDefault(); if(typeof showProviderWeek === 'function') showProviderWeek(typeof isoDate === 'function' ? isoDate(new Date()) : null); return; }
     var card = e.target.closest('#providerWeekCard');
     if(card && !e.target.closest('button') && !e.target.closest('.week-preview-link')){ e.preventDefault(); if(typeof showProviderWeek === 'function') showProviderWeek(typeof isoDate === 'function' ? isoDate(new Date()) : null); }
+  }, true);
+
+  // Triple-Tap Geheimweg: 3× auf „Entdecken“ (Nav) oder MITTAGIO-Logo (Header) → Provider-Login [cite: Agent-Modus]
+  var tripleTapCount = 0;
+  var tripleTapTimer = null;
+  function handleDiscoverTripleTap(go){
+    if(go !== 'discover'){ tripleTapCount = 0; if(tripleTapTimer){ clearTimeout(tripleTapTimer); tripleTapTimer = null; } return false; }
+    tripleTapCount++;
+    if(tripleTapTimer) clearTimeout(tripleTapTimer);
+    if(tripleTapCount >= 3){
+      tripleTapCount = 0;
+      try { if(navigator.vibrate) navigator.vibrate(50); } catch(v){}
+      if(typeof showLoginView === 'function') showLoginView(); else if(typeof showView === 'function' && views && views.providerLogin) showView(views.providerLogin);
+      return true;
+    }
+    tripleTapTimer = setTimeout(function(){ tripleTapCount = 0; }, 1500);
+    return false;
+  }
+  document.addEventListener('click', function(e){
+    var logo = e.target.closest('#v-discover .discover-logo');
+    if(logo && document.querySelector('.view.active#v-discover')){
+      e.preventDefault();
+      e.stopPropagation();
+      if(handleDiscoverTripleTap('discover')) return;
+      // Normaler Logo-Klick: nichts (oder später: zur Startseite)
+    }
   }, true);
 
   // Customer nav handlers - Robuster Event-Delegation-Ansatz
@@ -9268,8 +9332,9 @@
     const go = btn.dataset.go;
     e.preventDefault();
     e.stopPropagation();
-    
-    
+
+    if(handleDiscoverTripleTap(go)) return;
+
     try {
       if(go==='discover'){
         if(mode === 'start'){
@@ -9572,7 +9637,8 @@
             price: euro(d.price),
             time: (d.pickupWindow || '').trim() || abholnummerLabel,
             pillars: pillarsStr,
-            dataOfferId: String(o.id)
+            dataOfferId: String(o.id),
+            hasPickupCode: hasPickupNumber
           }) : '<div class="prov-card" data-offer-id="' + esc(String(o.id)) + '">' + esc(dishName) + ' ' + euro(d.price) + '</div>';
           var cardWrap = document.createElement('div');
           cardWrap.innerHTML = cardHtml;
@@ -9582,9 +9648,15 @@
               ev.preventDefault();
               ev.stopPropagation();
               try { if(typeof hapticLight === 'function') hapticLight(); else if(navigator.vibrate) navigator.vibrate(10); } catch(e){}
-              if(offerId && typeof startListingFlow === 'function') startListingFlow({ editOfferId: offerId });
+              if(offerId && typeof startListingFlow === 'function') startListingFlow({ editOfferId: offerId, entryPoint: 'ACTIVE_LISTING' });
             };
           })(String(o.id));
+          var lastSavedId = '';
+          try { lastSavedId = sessionStorage.getItem('mittagio_last_saved_offer_id') || ''; } catch(e){}
+          if(lastSavedId && String(o.id) === lastSavedId){
+            card.classList.add('prov-card-emerald-glow');
+            setTimeout(function(){ card.classList.remove('prov-card-emerald-glow'); try{ sessionStorage.removeItem('mittagio_last_saved_offer_id'); }catch(e){} }, 1400);
+          }
           providerActiveListings.appendChild(card);
         });
         if(!providerActiveListings._offerClickDelegation){
@@ -9597,7 +9669,7 @@
               ev.preventDefault();
               ev.stopPropagation();
               try { if(typeof hapticLight === 'function') hapticLight(); else if(navigator.vibrate) navigator.vibrate(10); } catch(e){}
-              startListingFlow({ editOfferId: id });
+              startListingFlow({ editOfferId: id, entryPoint: 'ACTIVE_LISTING' });
             }
           });
           providerActiveListings.addEventListener('keydown', function(ev){
@@ -9606,7 +9678,7 @@
             if(!card) return;
             ev.preventDefault();
             var id = card.getAttribute('data-offer-id');
-            if(id && typeof startListingFlow === 'function') startListingFlow({ editOfferId: id });
+            if(id && typeof startListingFlow === 'function') startListingFlow({ editOfferId: id, entryPoint: 'ACTIVE_LISTING' });
           });
         }
         if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
@@ -9659,7 +9731,7 @@
               <div style="font-weight:600; font-size:14px;">Inserate heute: ${mineToday.length}</div>
             </a>
             <a href="#" id="providerTodayPickupsLink" style="display:block; padding:10px; background:#f8f7f3; border-radius:12px; text-decoration:none; color:inherit;">
-              <div style="font-weight:600; font-size:14px;">Abholungen heute: ${todayPickups}</div>
+              <div style="font-weight:600; font-size:14px;">Nummern heute: ${todayPickups}</div>
             </a>
         `;
         if(nextPickup && nextPickup.etaTime){
@@ -9954,27 +10026,7 @@
     
     // FAB wird von ensureProviderFab() erstellt und dort verknüpft
 
-    // Refresh Button Handler: Tooltip bereits im HTML; Loading-Feedback (disabled + Spinner)
-    const btnRefresh = document.getElementById('btnProviderHomeRefresh');
-    if(btnRefresh){
-      btnRefresh.onclick = () => {
-        if(btnRefresh.getAttribute('aria-busy') === 'true') return;
-        btnRefresh.setAttribute('aria-busy', 'true');
-        btnRefresh.disabled = true;
-        const icon = btnRefresh.querySelector('i');
-        if(icon) {
-          icon.style.transition = 'transform 0.5s ease-in-out';
-          icon.style.transform = 'rotate(360deg)';
-        }
-        renderProviderHome();
-        setTimeout(() => {
-          btnRefresh.removeAttribute('aria-busy');
-          btnRefresh.disabled = false;
-          if(icon) { icon.style.transform = 'rotate(0deg)'; icon.style.transition = 'none'; }
-          if(typeof showToast === 'function') showToast('Daten aktualisiert');
-        }, 400);
-      };
-    }
+    // Header Share (Dashboard): Heutige Angebote teilen
     
     // Icons aktualisieren
     if(typeof lucide !== 'undefined') setTimeout(()=> lucide.createIcons(), 50);
@@ -10453,6 +10505,42 @@
     mine.sort(function(a,b){ return (b._smartScore || 0) - (a._smartScore || 0); });
     return mine.slice(0, 8);
   }
+  function openKWSelector(){
+    var bd = document.getElementById('kwSelectorBd');
+    var sheet = document.getElementById('kwSelectorSheet');
+    var list = document.getElementById('kwSelectorList');
+    if (!bd || !sheet || !list) return;
+    if (typeof haptic === 'function') haptic(6);
+    list.innerHTML = '';
+    for (var w = 0; w < 12; w++) {
+      var monday = getWeekMonday(w);
+      var sunday = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + 6);
+      var fromStr = monday.getDate() + '.' + (monday.getMonth() + 1) + '.';
+      var toStr = sunday.getDate() + '.' + (sunday.getMonth() + 1) + '.';
+      var hasPlanned = (function(k){
+        var ks = getWeekDayKeys(k);
+        return ks.some(function(key){
+          var pe = (week[key] || []).filter(function(x){ return x.providerId === providerId(); });
+          var lo = (offers || []).filter(function(o){ return o.providerId === providerId() && o.day === key; });
+          return pe.length > 0 || lo.length > 0;
+        });
+      })(w);
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'week-magic-sheet-btn kw-selector-item' + (w === weekPlanKWIndex ? ' kw-selector-active' : '');
+      btn.innerHTML = 'KW ' + getISOWeek(monday) + ': ' + fromStr + ' – ' + toStr + (hasPlanned ? ' <span class="kw-selector-dot"></span>' : '');
+      btn.onclick = (function(k){ return function(){ if(typeof haptic === 'function') haptic(6); weekPlanKWIndex = k; var keys = getWeekDayKeys(k); if(keys.indexOf(weekPlanDay) === -1) weekPlanDay = keys[0]; closeKWSelector(); if(typeof pushViewState === 'function') pushViewState({ view: 'provider-week', mode: typeof mode !== 'undefined' ? mode : 'provider', week: k, day: weekPlanDay }, (typeof location !== 'undefined' && location.pathname) + '?week=' + k + '&day=' + weekPlanDay); renderWeekPlanBoard(); }; })(w);
+      list.appendChild(btn);
+    }
+    bd.style.display = 'block';
+    sheet.style.display = 'flex';
+  }
+  function closeKWSelector(){
+    var bd = document.getElementById('kwSelectorBd');
+    var sheet = document.getElementById('kwSelectorSheet');
+    if (bd) bd.style.display = 'none';
+    if (sheet) sheet.style.display = 'none';
+  }
   function renderWeekPlanBoard(){
     updateSessionActivity();
     week = load(LS.week, {});
@@ -10460,22 +10548,21 @@
     provider = load(LS.provider, provider);
     var wrap = document.getElementById('kwBoardWrap');
     if (wrap) wrap.style.display = 'flex';
-    var carousel = document.getElementById('kwCarousel');
-    var progressFill = document.getElementById('kwProgressFill');
     var grid = document.getElementById('kwGrid');
-    if (!carousel || !grid) return;
-    carousel.innerHTML = '';
-    for (var w = 0; w < 8; w++) {
-      var btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'kw-pill' + (w === weekPlanKWIndex ? ' active' : '');
-      btn.textContent = getKWLabel(w);
-      btn.setAttribute('data-kw', String(w));
-      btn.onclick = (function(k){ return function(){ if(typeof haptic === 'function') haptic(6); weekPlanKWIndex = k; var keys = getWeekDayKeys(k); if(keys.indexOf(weekPlanDay) === -1) weekPlanDay = keys[0]; if(typeof pushViewState === 'function') pushViewState({ view: 'provider-week', mode: typeof mode !== 'undefined' ? mode : 'provider', week: k, day: weekPlanDay }, (typeof location !== 'undefined' && location.pathname) + '?week=' + k + '&day=' + weekPlanDay); renderWeekPlanBoard(); }; })(w);
-      carousel.appendChild(btn);
+    if (!grid) return;
+    /* Header: KW-Badge + Trigger [cite: 2026-02-21] */
+    var kwBadge = document.getElementById('weekHeaderKWBadge');
+    var kwTrigger = document.getElementById('weekHeaderKWTrigger');
+    if (kwBadge) kwBadge.textContent = getKWLabel(weekPlanKWIndex);
+    if (kwTrigger && !kwTrigger._bound) { kwTrigger._bound = true; kwTrigger.onclick = function(e){ e.preventDefault(); openKWSelector(); }; }
+    /* Kebab: Toggle + Aussenklick schliessen */
+    var kebabBtn = document.getElementById('btnWeekKebab');
+    var kebabDrop = document.getElementById('weekKebabDropdown');
+    if (kebabBtn && kebabDrop && !kebabBtn._bound) {
+      kebabBtn._bound = true;
+      kebabBtn.onclick = function(e){ e.stopPropagation(); if(typeof haptic === 'function') haptic(6); kebabDrop.style.display = kebabDrop.style.display === 'none' ? 'block' : 'none'; kebabBtn.setAttribute('aria-expanded', kebabDrop.style.display !== 'none'); };
+      document.addEventListener('click', function closeKebab(ev){ if (!kebabDrop.contains(ev.target) && ev.target !== kebabBtn) { kebabDrop.style.display = 'none'; kebabBtn.setAttribute('aria-expanded', 'false'); } });
     }
-    var progress = getKWProgress(weekPlanKWIndex);
-    if (progressFill) progressFill.style.width = (progress * 100) + '%';
     var season = typeof getSeasonForWeek === 'function' ? getSeasonForWeek(weekPlanKWIndex) : null;
     var seasonIcon = document.getElementById('weekSeasonIcon');
     var seasonBanner = document.getElementById('kwSeasonBanner');
@@ -10505,15 +10592,16 @@
       var suggestions = typeof getSmartSuggestions === 'function' ? getSmartSuggestions(focusDay) : (cookbook || []).filter(function(c){ return c.providerId === providerId() && !dismissed[String(c.id)]; }).slice(0, 8);
       strip.className = 'kw-cookbook-drag-strip kw-smart-suggestions-strip';
       strip.innerHTML = suggestions.map(function(c){
-        var label = (c.dish || 'Gericht').substring(0, 14) + (c.dish && c.dish.length > 14 ? '…' : '');
+        var label = (c.dish || 'Gericht').substring(0, 12) + (c.dish && c.dish.length > 12 ? '…' : '');
         var imgUrl = c.photoData || '';
         var thumbStyle = imgUrl ? 'background-image:url(\'' + esc(imgUrl) + '\'); background-size:cover; background-position:center;' : 'background:linear-gradient(135deg,#e2e8f0,#cbd5e1);';
-        var badge = c._smartBadge ? '<span class="kw-suggestion-badge">' + esc(c._smartBadge) + '</span>' : '';
-        return '<div class="kw-suggestion-card kw-cookbook-drag-pill" draggable="true" data-cookbook-id="' + esc(String(c.id)) + '" role="button">' +
-          '<button type="button" class="kw-pill-dismiss kw-suggestion-dismiss" aria-label="Entfernen"><i data-lucide="x" style="width:12px;height:12px;"></i></button>' +
-          '<div class="kw-suggestion-thumb" style="' + thumbStyle + '"></div>' +
-          '<span class="kw-suggestion-sparkle">✨</span>' +
-          '<span class="kw-pill-text kw-suggestion-name">' + esc(label) + '</span>' + badge + '</div>';
+        var priceStr = typeof euro === 'function' ? euro(c.price || 0) : (Number(c.price || 0).toFixed(2).replace('.', ',') + ' €');
+        return '<div class="kw-suggestion-card kw-suggestion-compact kw-cookbook-drag-pill" draggable="true" data-cookbook-id="' + esc(String(c.id)) + '" role="button">' +
+          '<div class="kw-suggestion-thumb kw-suggestion-thumb-mini" style="' + thumbStyle + '"></div>' +
+          '<span class="kw-suggestion-price">' + esc(priceStr) + '</span>' +
+          '<span class="kw-pill-text kw-suggestion-name">' + esc(label) + '</span>' +
+          '<button type="button" class="kw-pill-dismiss kw-suggestion-dismiss" aria-label="Entfernen"><i data-lucide="x" style="width:10px;height:10px;"></i></button>' +
+          '</div>';
       }).join('');
       strip.querySelectorAll('.kw-suggestion-card').forEach(function(pill){
         var cookbookId = pill.getAttribute('data-cookbook-id');
@@ -10585,7 +10673,7 @@
           slotEl.setAttribute('data-day', key);
           slotEl.setAttribute('data-slot', String(slot));
           if (!isLive) slotEl.setAttribute('data-draft', '1');
-          slotEl.onclick = (function(k, idx, ent){ return function(e){ e.stopPropagation(); if(slotEl.classList.contains('kw-slot-swipe-delete')) return; if(typeof haptic === 'function') haptic(6); weekPlanDay = k; if(isLive && items[idx] && items[idx].id){ if(typeof startListingFlow === 'function') startListingFlow({ editOfferId: items[idx].id, date: k, entryPoint: 'week' }); } else { if(typeof startListingFlow === 'function') startListingFlow({ date: k, entryPoint: 'week', dishId: ent ? ent.cookbookId : undefined }); } }; })(key, slot, entry);
+          slotEl.onclick = (function(k, idx, ent){ return function(e){ e.stopPropagation(); if(slotEl.classList.contains('kw-slot-swipe-delete')) return; if(typeof haptic === 'function') haptic(6); weekPlanDay = k; if(isLive && items[idx] && items[idx].id){ if(typeof startListingFlow === 'function') startListingFlow({ editOfferId: items[idx].id, date: k, entryPoint: 'WEEKLY_PLAN_EDIT' }); } else { if(typeof startListingFlow === 'function') startListingFlow({ date: k, entryPoint: 'week', dishId: ent ? ent.cookbookId : undefined }); } }; })(key, slot, entry);
           slotsWrap.appendChild(slotEl);
         }
       }
@@ -10627,17 +10715,28 @@
     });
     var weekActivateBar = document.getElementById('kwWeekActivateBar');
     var btnKwWeekActivate = document.getElementById('btnKwWeekActivate');
+    var kwActivateCount = document.getElementById('kwActivateCount');
     if (weekActivateBar && btnKwWeekActivate) {
-      if (draftKeysInKW.length > 0) {
-        weekActivateBar.style.display = 'block';
-        var sum = (draftKeysInKW.length * 4.99).toFixed(2).replace('.', ',');
-        btnKwWeekActivate.textContent = 'Woche aktivieren (' + sum + ' €)';
+      var count = draftKeysInKW.length;
+      if (count > 0) {
+        weekActivateBar.style.display = 'flex';
+        document.body.classList.add('kw-activation-dock-visible');
+        if (kwActivateCount) kwActivateCount.textContent = String(count);
+        btnKwWeekActivate.disabled = false;
+        btnKwWeekActivate.classList.remove('kw-activation-disabled');
         btnKwWeekActivate.onclick = function(){
           if (typeof haptic === 'function') haptic(10);
+          else if (navigator.vibrate) navigator.vibrate(10);
           if (typeof bulkActivateWeekDraftsForDates === 'function') bulkActivateWeekDraftsForDates(draftKeysInKW);
         };
+        if (count > (window.__kwLastActivateCount || 0)) {
+          try { if (navigator.vibrate) navigator.vibrate(10); } catch(e){}
+        }
+        window.__kwLastActivateCount = count;
       } else {
         weekActivateBar.style.display = 'none';
+        document.body.classList.remove('kw-activation-dock-visible');
+        window.__kwLastActivateCount = 0;
       }
     }
     var emptyCta = document.getElementById('kwEmptyWeekTemplateCta');
@@ -10669,10 +10768,11 @@
     var btnKwShare = document.getElementById('weekKebabShare');
     if (btnKwPdf) btnKwPdf.onclick = function(){ var d=document.getElementById('weekKebabDropdown'); if(d)d.style.display='none'; if(typeof haptic==='function')haptic(6); if(typeof printWeekCard==='function')printWeekCard(); };
     if (btnKwShare) btnKwShare.onclick = function(){ var d=document.getElementById('weekKebabDropdown'); if(d)d.style.display='none'; if(typeof haptic==='function')haptic(6); if(typeof shareWeekPlan==='function')shareWeekPlan(); };
+    var btnKwScreenshot = document.getElementById('weekKebabScreenshot');
+    if (btnKwScreenshot) btnKwScreenshot.onclick = function(){ var d=document.getElementById('weekKebabDropdown'); if(d)d.style.display='none'; if(typeof haptic==='function')haptic(6); if(typeof printWeekCard==='function') printWeekCard(); else if(typeof showToast==='function') showToast('Team-Vorschau'); };
     var monday = getWeekMonday(weekPlanKWIndex);
     var sunday = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + 6);
-    var kwBadge = document.getElementById('weekHeaderKwBadge');
-    if (kwBadge) kwBadge.textContent = getKWLabel(weekPlanKWIndex);
+    // KW-Badge entfernt (Layout-Symmetrie: Header wie Meine Küche)
     if (typeof lucide !== 'undefined') lucide.createIcons();
     /* Magic-Sheet: Saison-Vorlage, Lücke finden, Woche füllen */
     var magicList = document.getElementById('weekMagicSheetList');
@@ -10969,6 +11069,7 @@
       var weekIndex = entryIndices[idx];
       var wrap = document.createElement('div');
       wrap.className = 'week-meal-card-wrap' + (dayIsLive ? ' week-card-live' : ' week-card-offline');
+      if(entry.id) wrap.setAttribute('data-offer-id', String(entry.id));
       if(!dayIsLive && weekSortMode){
         wrap.draggable = true;
         wrap.dataset.index = String(weekIndex);
@@ -11027,10 +11128,16 @@
         attachSwipeToWeekCard(swipeInner, weekPlanDay, weekIndex);
         attachLongPressToWeekCard(wrap);
       } else {
-        card.onclick = function(e){ e.preventDefault(); e.stopPropagation(); if(weekJustSwiped) return; if(typeof startListingFlow === 'function') startListingFlow({ editOfferId: entry.id || '', date: weekPlanDay, entryPoint: 'week' }); };
+        card.onclick = function(e){ e.preventDefault(); e.stopPropagation(); if(weekJustSwiped) return; if(typeof startListingFlow === 'function') startListingFlow({ editOfferId: entry.id || '', date: weekPlanDay, entryPoint: 'WEEKLY_PLAN_EDIT' }); };
         swipeInner.appendChild(card);
       }
       wrap.appendChild(swipeInner);
+      var lastSavedId = '';
+      try { lastSavedId = sessionStorage.getItem('mittagio_last_saved_offer_id') || ''; } catch(e){}
+      if(lastSavedId && entry.id && String(entry.id) === lastSavedId){
+        wrap.classList.add('prov-card-emerald-glow');
+        setTimeout(function(){ wrap.classList.remove('prov-card-emerald-glow'); try{ sessionStorage.removeItem('mittagio_last_saved_offer_id'); }catch(e){} }, 1400);
+      }
       list.appendChild(wrap);
     });
 
@@ -12031,8 +12138,8 @@
     if(!allPickups.length){
       empty.style.display='block';
       empty.innerHTML = `
-        <div style="font-weight:600; font-size:16px; margin-bottom:8px;">Keine Abholungen</div>
-        <div style="font-size:14px; line-height:1.4; color:var(--muted);">Heute gibt es noch keine Abholungen.</div>
+        <div style="font-weight:600; font-size:16px; margin-bottom:8px;">Noch keine Nummern</div>
+        <div style="font-size:14px; line-height:1.4; color:var(--muted);">Heute noch keine Abholnummern.</div>
       `;
       listEl.style.display='none';
       return;
@@ -12043,12 +12150,12 @@
       if(pickupFilter === 'offen'){
         empty.innerHTML = `
           <div style="font-weight:600; font-size:16px; margin-bottom:8px;">Alles erledigt</div>
-          <div style="font-size:14px; line-height:1.4; color:var(--muted);">Alle Abholungen sind abgeschlossen.</div>
+          <div style="font-size:14px; line-height:1.4; color:var(--muted);">Alle Nummern sind abgeholt.</div>
         `;
       } else {
         empty.innerHTML = `
-          <div style="font-weight:600; font-size:16px; margin-bottom:8px;">Keine abgeholten Bestellungen</div>
-          <div style="font-size:14px; line-height:1.4; color:var(--muted);">Noch keine Bestellungen als abgeholt markiert.</div>
+          <div style="font-weight:600; font-size:16px; margin-bottom:8px;">Noch nichts abgeholt</div>
+          <div style="font-size:14px; line-height:1.4; color:var(--muted);">Noch keine als abgeholt markiert.</div>
         `;
       }
       listEl.style.display='none';
@@ -12099,20 +12206,19 @@
         const isDone = p.status === 'PICKED_UP';
         const isPaid = !isDone;
         const codeDisplay = (p.code ? '#' + String(p.code).replace(/\s/g,'') : '#–');
-        const icons = [];
-        if(p.hasEatIn) icons.push('<span style="font-size:18px;" title="Vor Ort">🍴</span>');
-        if(p.hasReuse) icons.push('<span style="font-size:18px;" title="Mehrweg">🔄</span>');
-        icons.push('<span style="font-size:18px;" title="Abholnummer">🧾</span>');
-        const iconsHtml = icons.join(' ');
+        const pillarsHtml = [];
+        if(p.hasEatIn) pillarsHtml.push('<span class="pickup-pillar" style="font-size:20px;" title="Vor Ort (Teller)">🍴</span>');
+        if(p.hasReuse) pillarsHtml.push('<span class="pickup-pillar" style="font-size:20px;" title="Mehrweg (Box)">🔄</span>');
+        const pillarsStr = pillarsHtml.length ? pillarsHtml.join(' ') : '<span class="pickup-pillar" style="font-size:18px; opacity:0.6;" title="To-Go">📦</span>';
         
         const card = document.createElement('div');
         card.className = `pickup-card ${isDone ? 'status-done' : 'status-paid'}`;
         card.innerHTML = `
-          <div class="pickup-card-header">
-            <div class="pickup-card-code">${esc(codeDisplay)}</div>
-            <div class="pickup-card-time">${esc(p.pickupTime || 'Sofort')}</div>
+          <div class="pickup-card-header" style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+            <div class="pickup-card-code" style="flex-shrink:0;">${esc(codeDisplay)}</div>
+            <div class="pickup-card-pillars" style="display:flex; align-items:center; gap:6px; font-size:20px;">${pillarsStr}</div>
+            <div class="pickup-card-time" style="margin-left:auto;">${esc(p.pickupTime || 'Sofort')}</div>
           </div>
-          <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px; font-size:16px;">${iconsHtml}</div>
           <div class="pickup-card-body">
             <div class="pickup-card-dish">${esc((p.dishName || 'Gericht').split(',')[0])}</div>
             <div class="pickup-card-customer">${p.order && p.order.customerName ? esc(p.order.customerName) : 'Gast'}</div>
@@ -12141,13 +12247,18 @@
     list.forEach(p=>{
       const isPickedUp = p.status === 'PICKED_UP';
       const codeDisplay = p.code ? '#' + String(p.code).replace(/\s/g,'') : '#–';
-      const icons = (p.hasEatIn ? '🍴 ' : '') + (p.hasReuse ? '🔄 ' : '') + '🧾';
+      const pillars = [];
+      if(p.hasEatIn) pillars.push('<span style="font-size:22px;" title="Vor Ort (Teller)">🍴</span>');
+      if(p.hasReuse) pillars.push('<span style="font-size:22px;" title="Mehrweg (Box)">🔄</span>');
+      const pillarsHtml = pillars.length ? pillars.join(' ') : '<span style="font-size:18px; opacity:0.6;">📦</span>';
       const row = document.createElement('div');
       row.className = 'pickup-row' + (isPickedUp ? ' picked-up' : '');
       row.style.cssText = 'display:flex; align-items:center; gap:16px; padding:16px; border-bottom:1px solid var(--border); ' + (isPickedUp ? 'opacity:0.5; background:#f8f8f8;' : 'cursor:pointer;');
       row.innerHTML = `
-        <div style="font-size:32px; font-weight:900; font-family:monospace; color:var(--brand); min-width:70px; text-align:center; line-height:1;">${esc(codeDisplay)}</div>
-        <div style="font-size:16px; margin-right:8px;">${icons}</div>
+        <div style="display:flex; align-items:center; gap:12px; flex-shrink:0;">
+          <div style="font-size:32px; font-weight:900; font-family:monospace; color:var(--brand); min-width:70px; text-align:center; line-height:1;">${esc(codeDisplay)}</div>
+          <div class="pickup-row-pillars" style="display:flex; gap:6px; font-size:22px;">${pillarsHtml}</div>
+        </div>
         <div style="flex:1; min-width:0;">
           <div style="font-weight:600; font-size:16px; line-height:1.3; margin-bottom:4px;">${esc((p.dishName||'').split(',')[0])}</div>
           <div style="font-size:14px; color:var(--muted); margin-bottom:4px;">${esc(p.pickupTime || '')}</div>
@@ -12160,19 +12271,7 @@
       listEl.appendChild(row);
     });
     
-    // PDF-Küchenliste Buttons
-    const btnKitchenListPDF = document.getElementById('btnKitchenListPDF');
-    const btnKitchenListEmail = document.getElementById('btnKitchenListEmail');
-    if(btnKitchenListPDF){
-      btnKitchenListPDF.onclick = () => {
-        generateKitchenListPDF();
-      };
-    }
-    if(btnKitchenListEmail){
-      btnKitchenListEmail.onclick = () => {
-        emailKitchenList();
-      };
-    }
+    // Share-Button: Küchenliste drucken (PDF) – Handler via Header-Delegation
     
     // Icons aktualisieren
     if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
@@ -12312,13 +12411,21 @@
     var backSettings = document.getElementById('providerProfileBackSettings');
     if(backSettings) backSettings.onclick = goProfileBack;
     var backBusiness = document.getElementById('providerProfileBackBusiness');
-    if(backBusiness) backBusiness.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(typeof showProviderProfileSub === 'function') showProviderProfileSub('settings'); };
+    if(backBusiness) backBusiness.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(typeof showProviderProfileSub === 'function') showProviderProfileSub(null); };
     var backService = document.getElementById('providerProfileBackService');
-    if(backService) backService.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(typeof showProviderProfileSub === 'function') showProviderProfileSub('settings'); };
+    if(backService) backService.onclick = function(){
+      if(typeof haptic === 'function') haptic(6);
+      var sub = document.getElementById('providerProfileSubService');
+      if(sub && sub.classList.contains('as-regeln-overlay')){
+        var bd = document.getElementById('accountRegelnOverlayBd');
+        if(bd) bd.style.display = 'none';
+        sub.classList.remove('as-regeln-overlay', 'active'); sub.style.display = 'none';
+      } else if(typeof showProviderProfileSub === 'function') showProviderProfileSub('settings');
+    };
     var backFaq = document.getElementById('providerProfileBackFaq');
     if(backFaq) backFaq.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(typeof showProviderProfileSub === 'function') showProviderProfileSub('settings'); };
     var backPayment = document.getElementById('providerProfileBackPayment');
-    if(backPayment) backPayment.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(typeof showProviderProfileSub === 'function') showProviderProfileSub('settings'); };
+    if(backPayment) backPayment.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(typeof showProviderProfileSub === 'function') showProviderProfileSub(null); };
     var btnImpressum = document.getElementById('btnProviderImpressum');
     var impressumContent = document.getElementById('providerImpressumContent');
     if(btnImpressum && impressumContent) btnImpressum.onclick = function(){ if(typeof haptic === 'function') haptic(6); impressumContent.style.display = impressumContent.style.display === 'none' ? 'block' : 'none'; };
@@ -12335,7 +12442,7 @@
     var supportSolutions = {
       standort: 'Standort kalibrieren: Öffne Einstellungen (Zahnrad) → Betriebsdaten. Prüfe Anschrift, PLZ und Ort. Dein Standort wird für die Kunden-Suche verwendet.',
       zahlung: 'Zahlung prüfen: In den Einstellungen unter „Abrechnung & Support“ → Zahlungsmethoden. Stelle sicher, dass eine gültige Karte hinterlegt ist.',
-      abholnummer: 'Abholnummer: Sie wird bei jeder Bestellung automatisch generiert. Prüfe unter „Abholnummer“ (Tab in der App) deine heutigen Abholungen. Die Einstellung „Abholnummer“ findest du in den Einstellungen unter den 3 Säulen.',
+      abholnummer: 'Abholnummer: Sie wird automatisch generiert. Prüfe unter „Nummern“ (Tab) deine heutigen Abholnummern. Die Einstellung findest du in den Einstellungen unter den 3 Säulen.',
       sichtbarkeit: 'Sichtbarkeit: Dein Inserat ist nur während des von dir gesetzten Zeitfensters (Mittagszeiten) für Kunden sichtbar. Außerhalb dieser Zeit erscheint es nicht im Feed – so ist es gewollt.'
     };
     var abholungenBtn = document.getElementById('providerSupportAbholungenBtn');
@@ -12436,14 +12543,9 @@
     var settingsOrt = document.getElementById('providerSettingsOrt');
     if(settingsName) settingsName.textContent = name || 'Betriebsname';
     if(settingsOrt) settingsOrt.textContent = (p.city || (p.zip && p.city ? p.zip + ' ' + p.city : '') || addr || 'Ort').trim() || '—';
-    var gearBtn = document.getElementById('providerProfileGearBtn');
-    if(gearBtn) gearBtn.onclick = function(){
-      if(typeof haptic === 'function') haptic(6);
-      if(typeof showProviderProfileSub === 'function') showProviderProfileSub('settings');
-    };
-    /* Master-Kachel: Klick öffnet Edit-Mode Betriebsdaten [cite: 2026-02-18] */
+    /* Single-Page: Master-Kachel nur Anzeige (Logo+Name), kein Klick [cite: 2026-02-21] */
     var masterKachel = document.getElementById('providerProfileMasterKachel');
-    if(masterKachel){ masterKachel.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(typeof showProviderProfileSub === 'function') showProviderProfileSub('business'); }; masterKachel.onkeydown = function(e){ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); masterKachel.click(); } }; }
+    if(masterKachel && !masterKachel.classList.contains('account-profile-header')){ masterKachel.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(typeof showProviderProfileSub === 'function') showProviderProfileSub('business'); }; }
     /* Stats befüllen: Kochbuch, Inserate, Umsatz (Mittagio-Grün #22C55E) [cite: 2026-01-29] */
     var pid = typeof providerId === 'function' ? providerId() : '';
     var cookbookCount = (typeof cookbook !== 'undefined' ? cookbook : []).filter(function(c){ return c.providerId === pid; }).length;
@@ -12464,25 +12566,48 @@
     if(masterName) masterName.textContent = (p.name || p.businessName || 'Betriebsname').trim() || 'Betriebsname';
     if(masterOrt) masterOrt.textContent = (p.city || (p.zip && p.city ? p.zip + ' ' + p.city : '') || buildAddress(p) || 'Ort').trim() || '—';
     if(masterLogo && p.logoUrl) masterLogo.src = p.logoUrl;
-    /* Kachel Abrechnungen → BillingHistory [cite: 2026-01-29] */
+    /* 4er-Grid: Mein Geld, Meine Regeln, Mein Kochbuch, Mein Support [cite: 2026-02-21] */
+    var btnAccountMeinGeld = document.getElementById('btnAccountMeinGeld');
+    if(btnAccountMeinGeld) btnAccountMeinGeld.onclick = function(){
+      if(typeof haptic === 'function') haptic(6);
+      var bd = document.getElementById('accountGeldOverlayBd');
+      var sheet = document.getElementById('accountGeldOverlay');
+      if(bd) bd.style.display = 'block';
+      if(sheet) sheet.classList.add('active');
+      if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
+    };
+    var btnAccountMeineRegeln = document.getElementById('btnAccountMeineRegeln');
+    if(btnAccountMeineRegeln) btnAccountMeineRegeln.onclick = function(){
+      if(typeof haptic === 'function') haptic(6);
+      var bd = document.getElementById('accountRegelnOverlayBd');
+      var sub = document.getElementById('providerProfileSubService');
+      if(bd) bd.style.display = 'block';
+      if(sub){ sub.style.display = 'flex'; sub.classList.add('as-regeln-overlay', 'active'); }
+      if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
+    };
+    var btnAccountMeinKochbuch = document.getElementById('btnAccountMeinKochbuch');
+    if(btnAccountMeinKochbuch) btnAccountMeinKochbuch.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(typeof showProviderCookbook === 'function') showProviderCookbook(); };
+    var btnAccountMeinSupport = document.getElementById('btnAccountMeinSupport');
+    var regelnBd = document.getElementById('accountRegelnOverlayBd');
+    if(regelnBd) regelnBd.onclick = function(){ if(typeof haptic === 'function') haptic(6); var sub = document.getElementById('providerProfileSubService'); if(sub){ sub.classList.remove('as-regeln-overlay', 'active'); sub.style.display = 'none'; } regelnBd.style.display = 'none'; };
+    var geldBd = document.getElementById('accountGeldOverlayBd');
+    var geldSheet = document.getElementById('accountGeldOverlay');
+    var geldClose = document.getElementById('accountGeldClose');
+    function closeAccountGeldOverlay(){ if(geldBd) geldBd.style.display = 'none'; if(geldSheet) geldSheet.classList.remove('active'); }
+    if(geldBd) geldBd.onclick = closeAccountGeldOverlay;
+    if(geldClose) geldClose.onclick = function(){ if(typeof haptic === 'function') haptic(6); closeAccountGeldOverlay(); };
+    var accountGeldAbrechnungen = document.getElementById('accountGeldAbrechnungen');
+    var accountGeldBillingArchive = document.getElementById('accountGeldBillingArchive');
+    if(accountGeldAbrechnungen) accountGeldAbrechnungen.onclick = function(){ if(typeof haptic === 'function') haptic(6); closeAccountGeldOverlay(); if(typeof showProviderBilling === 'function') showProviderBilling(); };
+    if(accountGeldBillingArchive) accountGeldBillingArchive.onclick = function(){ if(typeof haptic === 'function') haptic(6); closeAccountGeldOverlay(); if(typeof showProviderBilling === 'function') showProviderBilling(); };
+    /* Fallback: Alte IDs falls noch im DOM */
     var btnAccountAbrechnung = document.getElementById('btnAccountAbrechnung');
     if(btnAccountAbrechnung) btnAccountAbrechnung.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(typeof showProviderBilling === 'function') showProviderBilling(); };
-    /* Kachel FAQ → Scroll zu Accordion + öffnen [cite: 2026-02-18] */
-    var btnAccountFaq = document.getElementById('btnAccountFaq');
-    if(btnAccountFaq) btnAccountFaq.onclick = function(){
-      if(typeof haptic === 'function') haptic(6);
-      var section = document.getElementById('accountWasIstWasSection');
-      var firstItem = document.querySelector('#accountWasIstWasAccordion .account-accordion-item');
-      if(section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      if(firstItem){ firstItem.classList.add('open'); var t = firstItem.querySelector('.account-accordion-trigger'); if(t) t.setAttribute('aria-expanded', 'true'); }
-    };
-    /* Kachel Support → Modal [cite: 2026-02-04] */
-    var btnAccountSupport = document.getElementById('btnAccountSupport');
     var supportBackdrop = document.getElementById('accountSupportModalBackdrop');
     var supportModal = document.getElementById('accountSupportModal');
     function openSupportModal(){ if(supportBackdrop) supportBackdrop.style.display = 'block'; if(supportModal) supportModal.style.display = 'block'; }
     function closeSupportModal(){ if(supportBackdrop) supportBackdrop.style.display = 'none'; if(supportModal) supportModal.style.display = 'none'; }
-    if(btnAccountSupport) btnAccountSupport.onclick = function(){ if(typeof haptic === 'function') haptic(6); openSupportModal(); };
+    if(btnAccountMeinSupport) btnAccountMeinSupport.onclick = function(){ if(typeof haptic === 'function') haptic(6); openSupportModal(); };
     if(supportBackdrop) supportBackdrop.onclick = closeSupportModal;
     var supportClose = document.querySelector('.account-support-close');
     if(supportClose) supportClose.onclick = function(){ if(typeof haptic === 'function') haptic(6); closeSupportModal(); };
@@ -14544,7 +14669,7 @@
   function closeWizard(clearDraft){
     const wizard = document.getElementById('wizard');
     document.getElementById('wbd').classList.remove('active');
-    if(wizard){ wizard.classList.remove('active'); wizard.removeAttribute('data-flow'); }
+    if(wizard){ wizard.classList.remove('active','inserat-step2-active'); wizard.removeAttribute('data-flow'); }
     document.body.classList.remove('wizard-inserat-open');
     var pn = document.getElementById('providerNavWrap');
     if(pn && document.body.classList.contains('provider-mode')) pn.style.removeProperty('display');
@@ -14565,7 +14690,21 @@
     if(!w || !w.data || typeof window === 'undefined' || !window._wizardInitialDataSnapshot) return false;
     return JSON.stringify(w.data) !== JSON.stringify(window._wizardInitialDataSnapshot);
   }
-  /** Universal-X: Prüft Dirty, zeigt ggf. Save-Prompt, sonst pop-away + close + navigate [cite: 2026-02-16] */
+  /** Schließt die Mastercard mit S25-Slide-Down (translateY 100%) [cite: 2026-02-21] */
+  function closeMastercardSlideDown(panel, entryPoint){
+    entryPoint = entryPoint || (w && w.ctx && w.ctx.entryPoint) || 'dashboard';
+    var card = panel || document.querySelector('#wizard .mastercard-container, #wizard .liquid-master-panel');
+    var overlay = document.getElementById('wbd');
+    if(card){ card.classList.remove('is-open'); }
+    if(overlay) overlay.classList.remove('active');
+    document.body.style.overflow = '';
+    setTimeout(function(){
+      closeWizard(true);
+      navigateAfterWizardExit(entryPoint);
+    }, 500);
+  }
+
+  /** Universal-X: Prüft Dirty, zeigt ggf. Save-Prompt, sonst Slide-Down + close + navigate [cite: 2026-02-16, 2026-02-21] */
   function handleWizardExit(panel){
     if(!w || w.kind !== 'listing'){ var p = panel || document.querySelector('#wizard .liquid-master-panel'); if(p && !p.classList.contains('x-pop-away')){ p.classList.add('x-pop-away'); setTimeout(function(){ closeWizard(); navigateAfterWizardExit('dashboard'); }, 280); } else { closeWizard(); navigateAfterWizardExit('dashboard'); } return; }
     var entryPoint = (w.ctx && w.ctx.entryPoint) || 'dashboard';
@@ -14589,7 +14728,9 @@
       return;
     }
     var p = panel || document.querySelector('#wizard .liquid-master-panel');
-    if(p && !p.classList.contains('x-pop-away')){ p.classList.add('x-pop-away'); setTimeout(function(){ closeWizard(); navigateAfterWizardExit(entryPoint); }, 280); } else { closeWizard(); navigateAfterWizardExit(entryPoint); }
+    if(p && p.classList.contains('mastercard-container')){
+      closeMastercardSlideDown(p, entryPoint);
+    } else if(p && !p.classList.contains('x-pop-away')){ p.classList.add('x-pop-away'); setTimeout(function(){ closeWizard(); navigateAfterWizardExit(entryPoint); }, 280); } else { closeWizard(); navigateAfterWizardExit(entryPoint); }
   }
 
   /**
@@ -14799,31 +14940,27 @@
         }
       } 
       // Case 3: Neues Gericht – 3 Säulen und Abholzeiten aus Profil übernehmen
-      // First-Time: Leberkäse-Template laden [cite: 2026-01-29, 2026-02-16]
       else {
         const globalReuseEnabled = !!profile.reuseEnabledByDefault;
         const defaultVorOrt = (provider.profile && provider.profile.dineInPossibleDefault !== undefined) ? !!provider.profile.dineInPossibleDefault : true;
         const defaultAbholnummer = !!profile.abholnummerEnabledByDefault;
-        const isFirstTimeLeberkaese = !localStorage.getItem('mittagio_provider_leberkaese_onboarding_done') && (offers || []).filter(function(o){ return o.providerId === providerId(); }).length === 0;
-        const leberkaeseImageUrl = 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400&q=80';
         w.data = {
           providerId: providerId(),
-          dish: isFirstTimeLeberkaese ? 'Dicke Scheibe Leberkäse mit Spätzle' : '',
-          category: isFirstTimeLeberkaese ? 'Fleisch' : 'Vegetarisch',
-          price: isFirstTimeLeberkaese ? 8.5 : 0,
+          dish: '',
+          category: 'Vegetarisch',
+          price: 0,
           pickupWindow: profile.mealWindow || DEFAULT_MEAL_WINDOW,
           hasPickupCode: defaultAbholnummer,
-          dineInPossible: isFirstTimeLeberkaese ? true : defaultVorOrt,
+          dineInPossible: defaultVorOrt,
           allergens:[],
           wantsAllergens: false,
           extras:[],
-          reuse:{ enabled: isFirstTimeLeberkaese ? true : globalReuseEnabled, deposit: (isFirstTimeLeberkaese || globalReuseEnabled) ? (provider.profile && typeof provider.profile.reuseDepositDefault === 'number' ? provider.profile.reuseDepositDefault : 3) : 0 },
-          photoData: isFirstTimeLeberkaese ? leberkaeseImageUrl : '',
-          photoDataIsStandard: !!isFirstTimeLeberkaese,
+          reuse:{ enabled: globalReuseEnabled, deposit: globalReuseEnabled ? (provider.profile && typeof provider.profile.reuseDepositDefault === 'number' ? provider.profile.reuseDepositDefault : 3) : 0 },
+          photoData: '',
+          photoDataIsStandard: false,
           cookbookId:null,
           day: ctx.date || createFlowPreselectedDate || isoDate(new Date())
         };
-        if(isFirstTimeLeberkaese) ctx.isLeberkaeseOnboarding = true;
         if(ctx.entryDishName && typeof ctx.entryDishName === 'string' && ctx.entryDishName.trim()) w.data.dish = ctx.entryDishName.trim();
       }
       
@@ -15274,13 +15411,13 @@
       sheet.setAttribute('data-inserat-card', 'true');
       sheet.style.cssText = 'padding:0; overflow:visible; display:flex; flex-direction:column; min-height:0; border-radius:0; background:transparent;';
       const box = document.createElement('div');
-      box.className='liquid-master-panel glass-express-step0 inserat-universal-mask inserat-master-flow liquid-panel listing-glass-panel s25-floating-panel inserat-card inserat-airbnb-refactor';
+      box.className='liquid-master-panel mastercard-container glass-express-step0 inserat-universal-mask inserat-master-flow liquid-panel listing-glass-panel s25-floating-panel inserat-card inserat-airbnb-refactor';
       box.setAttribute('data-inserat-card','true');
       box.style.cssText='padding:0; overflow:hidden; display:flex; flex-direction:column; min-height:0;';
       var collapsingHeader=document.createElement('div');
-      collapsingHeader.className='inserat-collapsing-header';
+      collapsingHeader.className='inserat-collapsing-header mastercard-header';
       collapsingHeader.innerHTML='<span class="inserat-collapsing-title">Dein Inserat</span>';
-      collapsingHeader.style.cssText='position:sticky; top:0; z-index:12; flex-shrink:0; padding:12px 16px; background:rgba(245,245,240,0.95); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); text-align:center; font-family:\'Montserrat\',sans-serif; font-weight:900; font-size:20px; color:#1a1a1a;';
+      collapsingHeader.style.cssText='position:sticky; top:0; z-index:12; flex-shrink:0; padding:12px 16px; background:#fff; backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); text-align:center; font-family:\'Montserrat\',sans-serif; font-weight:900; font-size:18px; color:#0f172a; border-bottom:1px solid rgba(0,0,0,0.06);';
       box.appendChild(collapsingHeader);
       sheet.appendChild(box);
       const saveDraft = () => { localStorage.setItem('wizard_draft', JSON.stringify(w)); };
@@ -15288,7 +15425,8 @@
       const hapticLight = ()=>{ try { if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); } catch(e){} };
       var entryPoint = (w.ctx && w.ctx.entryPoint) || 'dashboard';
       var isPlanMode = (entryPoint === 'week' || entryPoint === 'cookbook');
-      var useTwoStepFlow = !isPlanMode && entryPoint === 'dashboard';
+      var isFastTrack = (entryPoint === 'ACTIVE_LISTING' || entryPoint === 'WEEKLY_PLAN_EDIT');
+      var useTwoStepFlow = !isPlanMode && !isFastTrack && entryPoint === 'dashboard';
       if(useTwoStepFlow && typeof w.inseratStep !== 'number') w.inseratStep = 1;
       var inseratStep = useTwoStepFlow ? (w.inseratStep === 2 ? 2 : 1) : 1;
       var listingDebounceTimer = null; /* Debounce für Autovervollständigung + Bildvorschläge */
@@ -15322,100 +15460,194 @@
       }
       function listingSuggestionsVisible(){ var cat = w.data.category; return !!cat || (w.data.photoSuggestionKey && listingImageMap[w.data.photoSuggestionKey]); }
 
-      // ========== 2-SCHRITT AIRBNB-FLOW: Step 2 = Entscheidungskarte (nur MODE_AD) ==========
-      if(inseratStep === 2 && useTwoStepFlow){
+      // ========== 2-SCHRITT AIRBNB-FLOW: Slider (Step 1 ↔ Step 2) oder Step 1 nur (Plan-Mode) ==========
+      var step1Container = box;
+      var slider = null;
+      var updateStep2ContextZoneRef = null;
+      if(useTwoStepFlow){
+        slider=document.createElement('div');
+        slider.className='inserat-steps-slider';
+        slider.setAttribute('data-inserat-step', String(inseratStep));
+        var track=document.createElement('div');
+        track.className='inserat-steps-track';
+        var step1Pane=document.createElement('div');
+        step1Pane.className='inserat-step1-pane';
+        var step2Pane=document.createElement('div');
+        step2Pane.className='inserat-step2-pane';
+        step1Container=step1Pane;
+        /* Step 2: Bold Selection – Kontext-Zone + vertikal gestapelte Kacheln [cite: 2026-02-21] */
         var step2Wrap=document.createElement('div');
-        step2Wrap.className='inserat-step2-wrap inserat-step2-floating-bottom';
-        step2Wrap.style.cssText='display:flex; flex-direction:column; flex:1; min-height:0; overflow-y:auto; padding:16px; padding-bottom:calc(180px + env(safe-area-inset-bottom, 0));';
-        var step2Nav=document.createElement('div');
-        step2Nav.className='inserat-step2-nav-pille';
-        step2Nav.style.cssText='display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;';
-        var backBtn=document.createElement('button');
-        backBtn.type='button';
-        backBtn.className='inserat-step2-back';
-        backBtn.style.cssText='padding:8px 16px; border:none; background:rgba(0,0,0,0.06); border-radius:12px; font-size:14px; font-weight:700; color:#64748b; cursor:pointer;';
-        backBtn.textContent='← Zurück';
-        backBtn.onclick=function(){ hapticLight(); w.inseratStep=1; saveDraft(); rebuildWizard(); };
-        var step2Close=document.createElement('button');
-        step2Close.type='button';
-        step2Close.className='close-wizard-x';
-        step2Close.setAttribute('aria-label','Schließen');
-        step2Close.style.cssText='width:44px; height:44px; border:none; background:rgba(0,0,0,0.06); border-radius:50%; font-size:20px; cursor:pointer; display:flex; align-items:center; justify-content:center; color:#64748b;';
-        step2Close.textContent='×';
-        step2Close.onclick=function(){ hapticLight(); if(typeof handleWizardExit==='function') handleWizardExit(box); else closeWizard(); };
-        step2Nav.appendChild(backBtn);
-        step2Nav.appendChild(step2Close);
-        var werbepaper=document.createElement('div');
-        werbepaper.className='inserat-werbepaper';
-        werbepaper.style.cssText='display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:24px;';
-        werbepaper.innerHTML='<div class="werbepaper-panel werbepaper-stress" style="padding:16px; border-radius:16px; background:rgba(241,245,249,0.8); border:1px solid rgba(0,0,0,0.06); text-align:center;"><p style="margin:0; font-size:13px; font-weight:800; color:#64748b;">Warteschlange – stressig</p></div><div class="werbepaper-panel werbepaper-hero" style="padding:16px; border-radius:16px; background:rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.4); text-align:center; box-shadow:0 0 16px rgba(16,185,129,0.3);"><p style="margin:0; font-size:13px; font-weight:800; color:#059669;">Abholnummer – schnell</p></div>';
-        step2Wrap.appendChild(werbepaper);
+        step2Wrap.className='inserat-step2-wrap inserat-step2-immo';
+        step2Wrap.style.cssText='display:flex; flex-direction:column; flex:1; min-height:0; overflow-y:auto; padding:16px; padding-bottom:calc(120px + env(safe-area-inset-bottom, 0));';
+        var ctxZone=document.createElement('div');
+        ctxZone.className='inserat-step2-context-zone';
+        ctxZone.style.cssText='display:flex; align-items:center; gap:12px; padding:12px 0; margin-bottom:20px; flex-shrink:0; border-bottom:1px solid rgba(15,23,42,0.08);';
+        var thumbUrl=w.data.photoData||'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=200&q=60';
+        var objPos2=(typeof w.data.photoObjectPosition==='number')?w.data.photoObjectPosition:(typeof w.data.photoCropY==='number'?Math.round(50+(w.data.photoCropY/80)*50):50);
+        var dishNameS2=(w.data.dish||'').trim()||'Gericht';
+        var priceS2=Number(w.data.price)||0;
+        var euroS2=typeof euro==='function'?euro(priceS2):(priceS2.toFixed(2).replace('.',',')+' €');
+        ctxZone.innerHTML='<div class="step2-context-thumb" style="width:56px;height:56px;border-radius:12px;overflow:hidden;background:#e8ecf0;flex-shrink:0;position:relative;"><img src="'+thumbUrl+'" alt="" style="width:100%;height:100%;object-fit:cover;object-position:center '+objPos2+'%;"><span class="step2-context-abhol-badge" style="position:absolute;bottom:4px;right:4px;padding:2px 6px;border-radius:6px;background:rgba(15,23,42,0.9);color:#fff;font-size:10px;font-weight:800;opacity:0;transition:opacity 0.25s;">🧾</span></div><div style="flex:1;min-width:0;"><div style="font-size:17px;font-weight:900;color:#0f172a;">'+esc(dishNameS2)+'</div><div style="font-size:15px;font-weight:700;color:#64748b;">'+euroS2+'</div></div>';
+        step2Wrap.appendChild(ctxZone);
+        /* Step 2 Context Live-Sync: Name und Preis aus Schritt 1 live in step2-context-zone [cite: 2026-02-21] */
+        updateStep2ContextZoneRef = function(){ if(!ctxZone||!ctxZone.isConnected) return; var t=w.data.photoData||'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=200&q=60'; var op=(typeof w.data.photoObjectPosition==='number')?w.data.photoObjectPosition:(typeof w.data.photoCropY==='number'?Math.round(50+(w.data.photoCropY/80)*50):50); var dn=(w.data.dish||'').trim()||'Gericht'; var pr=Number(w.data.price)||0; var eu=typeof euro==='function'?euro(pr):(pr.toFixed(2).replace('.',',')+' €'); var ab=(w.data.pricingChoice==='pro')?'1':'0'; ctxZone.innerHTML='<div class="step2-context-thumb" style="width:56px;height:56px;border-radius:12px;overflow:hidden;background:#e8ecf0;flex-shrink:0;position:relative;"><img src="'+t+'" alt="" style="width:100%;height:100%;object-fit:cover;object-position:center '+op+'%;"><span class="step2-context-abhol-badge" style="position:absolute;bottom:4px;right:4px;padding:2px 6px;border-radius:6px;background:rgba(15,23,42,0.9);color:#fff;font-size:10px;font-weight:800;opacity:'+ab+';transition:opacity 0.25s;">🧾</span></div><div style="flex:1;min-width:0;"><div style="font-size:17px;font-weight:900;color:#0f172a;">'+esc(dn)+'</div><div style="font-size:15px;font-weight:700;color:#64748b;">'+eu+'</div></div>'; };
         var tilesRow=document.createElement('div');
-        tilesRow.className='inserat-decision-tiles inserat-step2-tiles-floating';
-        tilesRow.style.cssText='display:grid; grid-template-columns:1fr 1fr; gap:16px;';
+        tilesRow.className='inserat-decision-tiles inserat-step2-tiles-vertical pricing-grid pricing-selection-area';
         var hasDishS2=!!(w.data.dish&&String(w.data.dish).trim());
         var hasPriceS2=Number(w.data.price)>0;
         var primaryValidS2=hasDishS2&&hasPriceS2;
-        var isLeberkaeseS2=!!(w.ctx&&w.ctx.isLeberkaeseOnboarding);
         var existingOfferS2=(w.ctx&&w.ctx.editOfferId&&typeof offers!=='undefined')?offers.find(function(o){return o.id===w.ctx.editOfferId;}):null;
         var todayKeyS2=typeof isoDate==='function'?isoDate(new Date()):'';
         var isEditActiveS2=!!(existingOfferS2&&existingOfferS2.day===todayKeyS2&&existingOfferS2.active!==false);
+        var doPublish499=function(){ w.data.hasPickupCode=false; w.data.pricingOption=undefined; w.data.inseratFeeWaived=false; var o=previewOfferFromWizard(); publishFeeUseStep3=true; showPublishFeeModal(o, null); };
+        var doPublishPro=function(){ if(tileHero.classList.contains('is-loading')) return; w.data.hasPickupCode=true; w.data.inseratFeeWaived=true; w.data.pricingOption='abholnummer'; var o=previewOfferFromWizard(); if(isEditActiveS2){ var published=typeof publishOffer==='function'?publishOffer(o):null; if(published){ if(typeof slideWizardToStep3==='function') slideWizardToStep3(published); else { closeWizard(true); if(typeof showInseratSuccessSheet==='function') showInseratSuccessSheet(published); else if(typeof showProviderHome==='function') showProviderHome(); } } return; } tileHero.classList.add('is-loading'); tileHero.innerHTML='<span class="inserat-btn-spinner" style="width:24px;height:24px;border:3px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:inserat-spin 0.8s linear infinite;"></span>'; publishFeeUseStep3=true; setTimeout(function(){ showPublishFeeModal(o, null); }, 800); };
+        if(!w.data.pricingChoice) w.data.pricingChoice = 'pro';
         var tile499=document.createElement('button');
         tile499.type='button';
-        tile499.className='inserat-decision-tile inserat-tile-champagne inserat-tile-secondary';
-        tile499.style.cssText='min-height:120px; padding:20px; border-radius:24px; border:none; background:linear-gradient(135deg,#F5E6D3 0%,#E8DCC4 50%,#D4C4A8 100%); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; cursor:pointer; box-shadow:0 10px 30px rgba(0,0,0,0.12);';
-        tile499.innerHTML='<strong style="font-size:16px; color:#5c4a3d;">Nur Inserat (4,99 €)</strong>';
-        tile499.onclick=function(){ if(!primaryValidS2){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; } hapticLight(); w.data.hasPickupCode=false; w.data.pricingOption=undefined; w.data.inseratFeeWaived=false; var o=previewOfferFromWizard(); closeWizard(true); showPublishFeeModal(o); };
+        tile499.className='inserat-decision-tile inserat-tile-basis pricing-card' + (w.data.pricingChoice==='499' ? ' is-selected selected' : '');
+        tile499.style.cssText='padding:24px; border-radius:12px; background:#fff; cursor:pointer; text-align:left; transition:all 0.4s cubic-bezier(0.175,0.885,0.32,1.275); overflow:hidden;';
+        tile499.innerHTML='<h3 class="pricing-card-label" style="font-size:17px;font-weight:800;margin:0 0 8px;color:#0f172a;">Einmalig Inserieren</h3><span class="pricing-card-price" style="font-size:22px;font-weight:900;color:#0f172a;">4,99 €</span><p class="pricing-card-sub" style="font-size:13px;color:#64748b;margin:10px 0 0;line-height:1.4;">Kein Abo, keine Laufzeit. Einmalig bis das Inserat gelöscht wird.</p>';
+        tile499.onclick=function(){ hapticLight(); w.data.pricingChoice='499'; w.data.hasPickupCode=false; tile499.classList.add('is-selected','selected'); tileHero.classList.remove('is-selected','selected'); saveDraft(); var fb=box.querySelector('.inserat-airbnb-footer .inserat-footer-btn-main'); if(fb){ fb.textContent='Jetzt für 4,99 € inserieren'; fb.classList.add('inserat-footer-btn--499'); fb.classList.remove('free-mode','is-free-mode'); } var ab=ctxZone.querySelector('.step2-context-abhol-badge'); if(ab) ab.style.opacity='0'; };
         var tileHero=document.createElement('button');
         tileHero.type='button';
-        tileHero.className='inserat-decision-tile inserat-tile-hero inserat-tile-pulse';
-        tileHero.style.cssText='min-height:120px; padding:20px; border-radius:24px; border:none; background:linear-gradient(135deg,#10b981,#059669); color:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; cursor:pointer; box-shadow:0 0 24px rgba(16,185,129,0.5), 0 10px 30px rgba(0,0,0,0.15); animation:inserat-hero-pulse 2s ease-in-out infinite;';
-        tileHero.innerHTML='<strong style="font-size:16px;">Abholnummer</strong><span style="font-size:20px; font-weight:800;">0,00 €</span><small style="font-size:12px; opacity:0.9;">0,89 € pro Abholung</small>';
-        tileHero.onclick=function(){ if(!primaryValidS2){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; } if(tileHero.classList.contains('is-loading')) return; hapticLight(); if(isEditActiveS2){ w.data.hasPickupCode=w.data.hasPickupCode!==false; w.data.inseratFeeWaived=true; w.data.pricingOption='abholnummer'; var o=previewOfferFromWizard(); var published=typeof publishOffer==='function'?publishOffer(o):null; if(published){ closeWizard(true); if(typeof showToast==='function') showToast('Inserat ist live! 🚀'); if(typeof showProviderHome==='function') showProviderHome(); } return; } w.data.hasPickupCode=true; w.data.inseratFeeWaived=true; w.data.pricingOption='abholnummer'; var o=previewOfferFromWizard(); tileHero.classList.add('is-loading'); tileHero.innerHTML='<span class="inserat-btn-spinner" style="width:24px;height:24px;border:3px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:inserat-spin 0.8s linear infinite;"></span>'; setTimeout(function(){ closeWizard(true); showPublishFeeModal(o); }, 800); };
+        tileHero.className='inserat-decision-tile inserat-tile-smart pricing-card' + (w.data.pricingChoice==='pro' ? ' is-selected selected' : '');
+        tileHero.setAttribute('data-type','free');
+        tileHero.style.cssText='padding:24px; border-radius:12px; background:#fff; cursor:pointer; text-align:left; transition:all 0.4s cubic-bezier(0.175,0.885,0.32,1.275); overflow:hidden;';
+        tileHero.innerHTML='<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;"><h3 class="pricing-card-label" style="font-size:17px;font-weight:800;margin:0;color:#0f172a;">Kostenlos Inserieren</h3><span class="price-massive" style="font-size:3.8rem;font-weight:900;line-height:1;color:#0f172a;">0,00 €</span></div><div class="fair-fee-badge" style="display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:10px;background:rgba(15,23,42,0.06);font-size:14px;font-weight:700;color:#0f172a;margin-bottom:8px;">Zahle nur bei Erfolg: 0,89 € pro 🧾 Abholnummer</div><p class="pricing-card-sub" style="font-size:13px;color:#64748b;margin:0;line-height:1.4;">Volle Kontrolle: Vermeide Chaos & Foodwaste.</p>';
+        tileHero.onclick=function(){ hapticLight(); w.data.pricingChoice='pro'; w.data.hasPickupCode=true; tileHero.classList.add('is-selected','selected'); tile499.classList.remove('is-selected','selected'); saveDraft(); var fb=box.querySelector('.inserat-airbnb-footer .inserat-footer-btn-main'); if(fb){ fb.textContent='Jetzt kostenlos inserieren'; fb.classList.remove('inserat-footer-btn--499'); fb.classList.add('free-mode','is-free-mode'); } var ab=ctxZone.querySelector('.step2-context-abhol-badge'); if(ab) ab.style.opacity='1'; };
         tilesRow.appendChild(tile499);
         tilesRow.appendChild(tileHero);
         step2Wrap.appendChild(tilesRow);
-        step2Wrap.appendChild(step2Nav);
-        box.appendChild(step2Wrap);
-      } else {
+        var ctxAbholBadge=ctxZone.querySelector('.step2-context-abhol-badge');
+        if(ctxAbholBadge){ ctxAbholBadge.style.opacity=(w.data.pricingChoice==='pro'?'1':'0'); }
+        step2Pane.appendChild(step2Wrap);
+        /* Step 3: Live-Erfolg [cite: 2026-02-21] */
+        var step3Pane=document.createElement('div');
+        step3Pane.className='inserat-step3-pane';
+        step3Pane.style.cssText='display:flex; flex-direction:column; flex:1; min-height:0;';
+        var step3ConfettiWrap=document.createElement('div');
+        step3ConfettiWrap.id='step3ConfettiContainer';
+        step3ConfettiWrap.className='success-confetti';
+        step3ConfettiWrap.style.cssText='position:absolute; inset:0; pointer-events:none; z-index:10; overflow:hidden;';
+        step3ConfettiWrap.setAttribute('aria-hidden','true');
+        step3Pane.appendChild(step3ConfettiWrap);
+        var step3Content=document.createElement('div');
+        step3Content.className='inserat-step3-content';
+        var successCheckWrap=document.createElement('div');
+        successCheckWrap.className='success-check-wrapper';
+        successCheckWrap.innerHTML='<div class="success-checkmark">LIVE</div>';
+        step3Content.appendChild(successCheckWrap);
+        var liveStatusCard=document.createElement('div');
+        liveStatusCard.className='live-status-card';
+        liveStatusCard.style.cssText='position:relative;';
+        var thumbS3=w.data.photoData||'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=400&q=60';
+        var objPosS3=(typeof w.data.photoObjectPosition==='number')?w.data.photoObjectPosition:(typeof w.data.photoCropY==='number'?Math.round(50+(w.data.photoCropY/80)*50):50);
+        var dishS3=(w.data.dish||'').trim()||'Gericht';
+        var priceS3=Number(w.data.price)||0;
+        var euroS3=typeof euro==='function'?euro(priceS3):(priceS3.toFixed(2).replace('.',',')+' €');
+        liveStatusCard.innerHTML='<div class="live-card-badge">Aktiv</div><img src="'+thumbS3+'" id="step3FinalImg" class="live-card-img" alt="" style="object-position:center '+objPosS3+'%;"><div class="live-card-info"><h3 id="step3FinalTitle">'+esc(dishS3)+'</h3><p id="step3FinalPrice">'+euroS3+'</p><div class="final-abhol-box" id="step3AbholBox" style="display:none;"><span>Deine <strong>Abholnummer</strong>:</span><span class="abhol-id" id="step3AbholId">#A-01</span></div></div>';
+        step3Content.appendChild(liveStatusCard);
+        var successHint=document.createElement('p');
+        successHint.className='success-hint';
+        successHint.textContent='Dein Inserat ist jetzt für alle Kunden sichtbar.';
+        step3Content.appendChild(successHint);
+        step3Pane.appendChild(step3Content);
+        var step3Footer=document.createElement('footer');
+        step3Footer.className='airbnb-footer inserat-step3-footer';
+        step3Footer.style.cssText='position:fixed; left:0; right:0; bottom:0; z-index:500; display:none; flex-direction:row; align-items:center; justify-content:space-between; gap:16px; padding:12px max(16px, env(safe-area-inset-left)) max(12px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-right)); background:rgba(15,23,42,0.92); backdrop-filter:blur(30px); -webkit-backdrop-filter:blur(30px);';
+        var btnShare=document.createElement('button');
+        btnShare.type='button';
+        btnShare.className='footer-link-secondary sharing-trigger';
+        btnShare.id='footerShare';
+        btnShare.innerHTML='<span class="share-icon">📤</span> Teilen';
+        var btnFinish=document.createElement('button');
+        btnFinish.type='button';
+        btnFinish.className='footer-btn-primary';
+        btnFinish.id='footerFinish';
+        btnFinish.textContent='Zum Dashboard';
+        step3Footer.appendChild(btnShare);
+        step3Footer.appendChild(btnFinish);
+        step3Pane.appendChild(step3Footer);
+        btnShare.onclick=function(){ hapticLight(); if(typeof triggerLiveSharing==='function') triggerLiveSharing(); };
+        btnFinish.onclick=function(){ hapticLight(); if(typeof resetMastercardFromStep3==='function') resetMastercardFromStep3(); };
+        track.appendChild(step1Pane);
+        track.appendChild(step2Pane);
+        track.appendChild(step3Pane);
+        slider.appendChild(track);
+        var step2Sweep=document.createElement('div');
+        step2Sweep.className='step2-slot-machine-sweep';
+        step2Sweep.setAttribute('aria-hidden','true');
+        box.appendChild(step2Sweep);
+      }
 
-      // ========== 1. EBENE (Header): Bild exakt 190px, „Foto ändern“-Pill mit Glassmorphism [cite: 2026-02-18] ==========
-      const photoTile=document.createElement('div');
-      photoTile.className='inserat-photo-tile photo-header' + (w.data.photoData ? '' : ' pulse-soft');
-      photoTile.style.cssText='position:relative; overflow:hidden; flex-shrink:0; width:100%; height:190px; min-height:190px; max-height:190px;';
-      var closeX=document.createElement('div');
-      closeX.className='close-wizard-x';
-      closeX.setAttribute('role','button');
+      {
+
+      // ========== 1. EBENE: Ebay-Style Photo-Modul – Smart-Crop, Drag-to-Pan [cite: 2026-02-21] ==========
+      function getPhotoObjectPosition(){ var v=w.data.photoObjectPosition; if(typeof v==='number') return Math.max(0,Math.min(100,v)); var cy=w.data.photoCropY; if(typeof cy==='number') return Math.round(50+(cy/80)*50); return 50; }
+      function setPhotoObjectPosition(p){ w.data.photoObjectPosition=Math.max(0,Math.min(100,p)); w.data.photoCropY=undefined; saveDraft(); }
+      const photoTile=document.createElement('section');
+      photoTile.id='photoModule';
+      photoTile.className='inserat-photo-tile photo-section photo-section-ebay photo-header'+(w.data.photoData ? '' : ' pulse-soft');
+      photoTile.style.cssText='position:relative; overflow:hidden; flex-shrink:0; width:100%; height:220px; min-height:220px; max-height:220px;';
+      var imgSrc=w.data.photoData||'data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300"><rect fill="#1e293b" width="400" height="300"/></svg>');
+      var objPos=getPhotoObjectPosition();
+      photoTile.innerHTML='<img src="'+imgSrc+'" id="mainImagePreview" class="ebay-preview-img" alt="" style="object-position:center '+objPos+'%;"><input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none"><div class="ebay-photo-overlay"><button type="button" class="ebay-edit-btn" id="triggerCamera">'+(w.data.photoData?'<span>📷</span> Foto ändern':'<span>📷</span> Foto aufnehmen')+'</button>'+(w.data.photoData?'<p class="ebay-hint">Ziehen zum Ausrichten</p>':'')+'</div>';
+      var imgEl=photoTile.querySelector('#mainImagePreview');
+      var cameraInput=photoTile.querySelector('#cameraInput');
+      var triggerBtn=photoTile.querySelector('#triggerCamera');
+      if(triggerBtn) triggerBtn.onclick=function(e){ e.stopPropagation(); cameraInput.click(); };
+      photoTile.onclick=function(ev){ if(ev.target.closest('.close-wizard-x')||ev.target.closest('.btn-close-master')||ev.target.closest('.ebay-edit-btn')||ev.target.closest('.ebay-photo-overlay')) return; cameraInput.click(); };
+      if(cameraInput){
+        cameraInput.onchange=async function(){
+          var f=this.files&&this.files[0];
+          this.value='';
+          if(!f) return;
+          if(typeof triggerHapticFeedback==='function') triggerHapticFeedback([5]);
+          photoTile.classList.add('inserat-photo-loading');
+          var spinner=document.createElement('div'); spinner.className='inserat-photo-spinner'; photoTile.appendChild(spinner);
+          try {
+            var dataUrl=await new Promise(function(res,rej){ var r=new FileReader(); r.onload=function(){ res(r.result); }; r.onerror=rej; r.readAsDataURL(f); });
+            var img=new Image();
+            await new Promise(function(res,rej){ img.onload=res; img.onerror=rej; img.src=dataUrl; });
+            var canvas=document.createElement('canvas'); var MAX_W=1200; var ww=img.width; var hh=img.height;
+            if(ww>MAX_W){ hh*=MAX_W/ww; ww=MAX_W; }
+            canvas.width=ww; canvas.height=hh; canvas.getContext('2d').drawImage(img,0,0,ww,hh);
+            dataUrl=canvas.toDataURL('image/jpeg',0.8);
+            if(typeof applyAppetizerFilter==='function') dataUrl=await applyAppetizerFilter(dataUrl);
+            if(typeof openPhotoEditor==='function') dataUrl=await openPhotoEditor(dataUrl,{onAccept:function(){}});
+            w.data.photoData=dataUrl; w.data.photoDataIsStandard=false; setPhotoObjectPosition(50); saveDraft(); rebuildWizard();
+          } finally { photoTile.classList.remove('inserat-photo-loading'); var s=photoTile.querySelector('.inserat-photo-spinner'); if(s) s.remove(); }
+        };
+      }
+      var urls=getListingSuggestionUrls();
+      var showSuggestions=!w.data.photoData&&listingSuggestionsVisible()&&urls.length;
+      if(showSuggestions){
+        var sugWrap=document.createElement('div');
+        sugWrap.className='inserat-photo-suggestions-wrap';
+        sugWrap.style.cssText='position:absolute;bottom:12px;left:0;right:0;display:flex;gap:12px;justify-content:center;align-items:center;pointer-events:auto;';
+        urls.forEach(function(u,i){ var im=document.createElement('img'); im.className='photo-suggestion'; im.src=u; im.alt=''; im.dataset.suggestionIndex=i; im.style.cssText='width:48px;height:48px;object-fit:cover;border-radius:10px;cursor:pointer;'; im.onclick=function(e){ e.stopPropagation(); if(typeof triggerHapticFeedback==='function') triggerHapticFeedback([5]); w.data.photoData=getListingSuggestionUrls()[i]; w.data.photoDataIsStandard=true; setPhotoObjectPosition(50); saveDraft(); rebuildWizard(); }; sugWrap.appendChild(im); });
+        photoTile.querySelector('.ebay-photo-overlay').appendChild(sugWrap);
+      }
+      if(imgEl&&w.data.photoData){
+        var panStartY=0,panStartPos=50,isPanning=false;
+        function onPointerStart(ev){ panStartY=ev.touches?ev.touches[0].clientY:ev.clientY; panStartPos=getPhotoObjectPosition(); isPanning=true; }
+        function onPointerMove(ev){ if(!isPanning) return; var y=ev.touches?ev.touches[0].clientY:ev.clientY; var diff=(panStartY-y)*0.15; var p=Math.max(0,Math.min(100,panStartPos+diff)); imgEl.style.objectPosition='center '+p+'%'; setPhotoObjectPosition(p); }
+        function onPointerEnd(){ if(isPanning) hapticLight(); isPanning=false; panStartY=0; }
+        photoTile.addEventListener('touchstart',function(ev){ if(ev.touches.length!==1) return; onPointerStart(ev); },{passive:true});
+        photoTile.addEventListener('touchmove',function(ev){ if(ev.touches.length!==1) return; onPointerMove(ev); },{passive:true});
+        photoTile.addEventListener('touchend',onPointerEnd,{passive:true});
+        photoTile.addEventListener('mousedown',function(ev){ if(ev.button!==0) return; onPointerStart(ev); ev.preventDefault(); });
+        var panMove=function(ev){ if(isPanning) onPointerMove(ev); };
+        var panUp=function(){ onPointerEnd(); };
+        window.addEventListener('mousemove',panMove);
+        window.addEventListener('mouseup',panUp);
+      }
+      var closeX=document.createElement('button');
+      closeX.type='button';
+      closeX.className='close-wizard-x close-mastercard btn-close-master';
       closeX.setAttribute('aria-label','Schließen');
-      async function handlePhotoPick(){
-        if(typeof triggerHapticFeedback==='function') triggerHapticFeedback([5]);
-        var f=await pickImage({ capture:'environment' });
-        if(!f) return;
-        photoTile.classList.add('inserat-photo-loading');
-        var spinner=document.createElement('div'); spinner.className='inserat-photo-spinner'; photoTile.appendChild(spinner);
-        try {
-          var dataUrl=await toDataUrl(f);
-          if(typeof applyAppetizerFilter==='function') dataUrl=await applyAppetizerFilter(dataUrl);
-          if(typeof openPhotoEditor==='function') dataUrl=await openPhotoEditor(dataUrl, { onAccept: function(){} });
-          w.data.photoData=dataUrl; w.data.photoDataIsStandard=false; saveDraft(); rebuildWizard();
-        } finally { photoTile.classList.remove('inserat-photo-loading'); if(spinner.parentNode) spinner.remove(); }
-      }
-      if(w.data.photoData){
-        photoTile.innerHTML='<img src="'+w.data.photoData+'" style="width:100%; height:100%; object-fit:cover; display:block;" class="inserat-photo-fade-in" alt=""><button type="button" class="inserat-photo-change" aria-label="Foto ändern"><i data-lucide="camera" style="width:14px;height:14px;stroke-width:2.5;"></i> 📷 Foto ändern</button>';
-        const rem=photoTile.querySelector('.inserat-photo-change');
-        if(rem) rem.onclick=function(e){ e.stopPropagation(); handlePhotoPick(); };
-      } else {
-        var urls = getListingSuggestionUrls();
-        var showSuggestions = listingSuggestionsVisible() && urls.length;
-        var suggestionRow = '<div class="inserat-photo-suggestions-wrap" style="display:flex;gap:15px;justify-content:center;align-items:center;margin-top:8px;transition:opacity 0.3s;opacity:'+(showSuggestions ? '1' : '0')+';pointer-events:'+(showSuggestions ? 'auto' : 'none')+';"><span class="inserat-photo-placeholder-icon">📸</span><button type="button" class="inserat-photo-change" aria-label="Foto hinzufügen"><i data-lucide="camera" style="width:14px;height:14px;stroke-width:2.5;"></i> FOTO HINZUFÜGEN</button>';
-        if(urls.length) for(var si=0;si<urls.length;si++) suggestionRow += '<img class="photo-suggestion" src="'+urls[si]+'" alt="" data-suggestion-index="'+si+'" style="width:60px;height:60px;object-fit:cover;border-radius:12px;">';
-        suggestionRow += '</div>';
-        photoTile.innerHTML='<div class="inserat-photo-placeholder" style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px;box-sizing:border-box;">'+suggestionRow+'</div>';
-        var addBtn=photoTile.querySelector('.inserat-photo-change');
-        if(addBtn) addBtn.onclick=function(e){ e.stopPropagation(); handlePhotoPick(); };
-        photoTile.querySelectorAll('.photo-suggestion').forEach(function(img,idx){ img.onclick=function(e){ e.stopPropagation(); if(typeof triggerHapticFeedback==='function') triggerHapticFeedback([5]); var u=getListingSuggestionUrls()[idx]; if(u) w.data.photoData=u; w.data.photoDataIsStandard=true; saveDraft(); rebuildWizard(); }; });
-        photoTile.onclick=async function(ev){ if(ev.target.closest('.inserat-photo-change')||ev.target.closest('.photo-suggestion')) return; handlePhotoPick(); };
-      }
+      closeX.textContent='✕';
+      closeX.style.cssText='position:absolute;top:12px;right:12px;width:40px;height:40px;background:rgba(0,0,0,0.4);border-radius:50%;color:white;display:flex;align-items:center;justify-content:center;z-index:150;border:none;cursor:pointer;';
       photoTile.appendChild(closeX);
       var selectionOverlay=document.createElement('div');
       selectionOverlay.className='selection-overlay';
@@ -15484,7 +15716,7 @@
         }
       }
       function toggleHeaderSelection(type){ hapticLight(); renderSelectionContent(type); photoTile.classList.add('is-selecting'); }
-      closeX.onclick=function(){
+      closeX.onclick=function(e){ e.preventDefault(); e.stopPropagation();
         if(photoTile.classList.contains('is-selecting')){ hapticLight(); closeHeaderSelection(); return; }
         try{ if(typeof haptic==='function') haptic(15); else if(navigator.vibrate) navigator.vibrate(15); }catch(e){}
         if(typeof handleWizardExit==='function'){ handleWizardExit(box); return; }
@@ -15492,7 +15724,8 @@
       };
 
       const scrollArea=document.createElement('div');
-      scrollArea.className='inserat-scroll-area scroll-content inserat-scroll-with-photo';
+      scrollArea.id='mastercardScrollArea';
+      scrollArea.className='inserat-scroll-area mastercard-content scroll-content inserat-scroll-with-photo';
       photoTile.classList.add('inserat-photo-in-scroll');
       scrollArea.appendChild(photoTile);
 
@@ -15501,21 +15734,14 @@
       stepName.id='step-name';
       stepName.className='inserat-section inserat-unified-title-wrap';
       stepName.style.cssText='width:100%; margin-top:12px; margin-bottom:4px;';
-      const dishDatalist=document.createElement('datalist');
-      dishDatalist.id='inserat-dish-datalist';
-      var dishSuggestions = [];
-      if (typeof MENU_DB_EXTRA !== 'undefined') dishSuggestions = MENU_DB_EXTRA.map(function(d){ return d.name; });
-      if (typeof TOP_30_DISHES !== 'undefined') TOP_30_DISHES.forEach(function(d){ if (dishSuggestions.indexOf(d.name) < 0) dishSuggestions.push(d.name); });
-      if (!dishSuggestions.length) dishSuggestions = ['Kürbissuppe','Schnitzel','Gulasch','Käsespätzle','Currywurst','Lasagne'];
-      dishSuggestions.forEach(function(name){ var o=document.createElement('option'); o.value=name; dishDatalist.appendChild(o); });
-      stepName.appendChild(dishDatalist);
+      /* Autovervollständigung Gerichtsnamen entfernt [cite: 2026-02-21] */
       const inputDish=document.createElement('input');
       inputDish.id='gericht-name';
+      inputDish.setAttribute('autocomplete','off');
       inputDish.type='text';
       inputDish.className='ghost-input inserat-detail-style-title magnet-input inserat-gericht-name-extra';
       inputDish.value=w.data.dish||'';
       inputDish.placeholder='z.B. Jägerschnitzel';
-      inputDish.setAttribute('list','inserat-dish-datalist');
       inputDish.autocomplete='off';
       inputDish.style.cssText='width:100%; max-width:100%; color:#1a1a1a; font-family:\'Montserrat\',sans-serif; font-weight:900; font-style:normal; box-sizing:border-box; border:none; background:transparent; outline:none;';
       function adjustTitleFontSize(){
@@ -15525,58 +15751,8 @@
         var sizeRem = len > 20 ? Math.max(1.1, 1.5 - (len - 20) * 0.02) : 1.5;
         el.style.fontSize = sizeRem + 'rem';
       }
-      function applyDishAutocomplete(dishVal){
-        var menuEntry = getMenuEntryForDish(dishVal);
-        if (menuEntry) {
-          w.data.category = menuEntry.category;
-          w.data.price = menuEntry.price;
-          w.data.allergens = (menuEntry.allergens || []).slice();
-          w.data.wantsAllergens = !!(menuEntry.allergens && menuEntry.allergens.length);
-          var descSugg = getDescriptionSuggestionForDish(dishVal);
-          if (descSugg && (!w.data.description || !w.data.description.trim())) w.data.description = descSugg;
-        } else {
-          var catSugg = getCategorySuggestionForDish(dishVal);
-          if (catSugg && ['Fleisch','Vegetarisch','Vegan','Salat'].indexOf(catSugg) >= 0) w.data.category = catSugg;
-          var suggested = getAllergenSuggestionsForDish(dishVal);
-          if (suggested.length) { w.data.allergens = suggested.slice(); w.data.wantsAllergens = true; }
-          var descSugg = getDescriptionSuggestionForDish(dishVal);
-          if (descSugg && (!w.data.description || !w.data.description.trim())) w.data.description = descSugg;
-        }
-        saveDraft(); rebuildWizard();
-      }
-      inputDish.oninput=()=>{
-        w.data.dish=inputDish.value; saveDraft();
-        adjustTitleFontSize();
-        var val = (inputDish.value || '').trim().toLowerCase();
-        var exactMatch = !!getMenuEntryForDish(inputDish.value) || ((typeof TOP_30_DISHES !== 'undefined') && TOP_30_DISHES.some(function(d){ return (d.name||'').toLowerCase().trim() === val; }));
-        if(exactMatch){
-          if(listingDebounceTimer) clearTimeout(listingDebounceTimer);
-          listingDebounceTimer=null;
-          var hadFocus = document.activeElement === inputDish;
-          applyDishAutocomplete(inputDish.value);
-          if(hadFocus){
-            var wizardBox = document.getElementById('wizard');
-            var newInp = wizardBox && wizardBox.querySelector('#gericht-name');
-            if(newInp) newInp.focus();
-          }
-        } else {
-          if(listingDebounceTimer) clearTimeout(listingDebounceTimer);
-          listingDebounceTimer=setTimeout(function(){
-            listingDebounceTimer=null;
-            var hadFocus = document.activeElement === inputDish;
-            applyDishAutocomplete(inputDish.value);
-            if(hadFocus){
-              var wizardBox = document.getElementById('wizard');
-              var newInp = wizardBox && wizardBox.querySelector('#gericht-name');
-              if(newInp) newInp.focus();
-            }
-          }, 400);
-        }
-      };
-      inputDish.onblur=()=>{
-        dismissKeyboard(); hapticLight();
-        applyDishAutocomplete(inputDish.value);
-      };
+      inputDish.oninput=function(){ w.data.dish=inputDish.value; saveDraft(); adjustTitleFontSize(); if(typeof checkMastercardValidation==='function') checkMastercardValidation(); if(updateStep2ContextZoneRef) updateStep2ContextZoneRef(); };
+      inputDish.onblur=function(){ dismissKeyboard(); hapticLight(); };
       stepName.appendChild(inputDish);
       scrollArea.appendChild(stepName);
 
@@ -15614,16 +15790,21 @@
         wrap.onclick=function(e){ e.preventDefault(); e.stopPropagation(); if(typeof triggerHapticFeedback==='function') triggerHapticFeedback([5]); if(toggleKey==='reuse'){ w.data.reuse=w.data.reuse||{}; w.data.reuse.enabled=!w.data.reuse.enabled; } else w.data[toggleKey]=!w.data[toggleKey]; saveDraft(); rebuildWizard(); };
         powerBar.appendChild(wrap);
       }
-      w.data.dineInPossible=true;
-      function addPowerPillStatic(emo, label){
+      /* 🍴 Vor Ort: aus Profil – aktiv wenn dort eingespeichert (dineInPossibleDefault) */
+      function addPowerPillStatic(emo, label, isActive){
         const wrap=document.createElement('span');
-        wrap.className='status-pill inserat-soft-pill active power-pill-static';
+        wrap.className='status-pill inserat-soft-pill ' + (isActive ? 'active' : 'inactive') + ' power-pill-static';
         wrap.setAttribute('aria-label', label);
         wrap.setAttribute('title', label);
         wrap.innerHTML='<span class="inserat-pill-emo">'+emo+'</span>';
         powerBar.appendChild(wrap);
       }
-      addPowerPillStatic('🍴','Vor Ort');
+      var profileDineIn = (provider.profile && provider.profile.dineInPossibleDefault !== undefined) ? !!provider.profile.dineInPossibleDefault : true;
+      addPowerPillStatic('🍴','Vor Ort', profileDineIn);
+      var profileAbholnummer = !!(provider.profile && provider.profile.abholnummerEnabledByDefault);
+      if(profileAbholnummer){
+        addPowerPillStatic('🧾','Abholnummer', !!(w.data.hasPickupCode));
+      }
       addPowerPill('🔄','Mehrweg', hasReuse, 'reuse');
       const hasTimeValue=!!(w.data.pickupWindow&&w.data.pickupWindow.trim())||(w.data.mealStart&&w.data.mealEnd);
       const timePill=document.createElement('button');
@@ -15736,6 +15917,7 @@
       stepPriceWrap.className='inserat-price-pill-wrap price-input-wrapper';
       const inputPrice=document.createElement('input');
       inputPrice.type='text';
+      inputPrice.id='gericht-preis';
       inputPrice.className='inserat-price-pill-input inserat-price-fintech inserat-price-input price-field';
       inputPrice.setAttribute('inputmode','decimal');
       inputPrice.placeholder='8,90 €';
@@ -15755,8 +15937,9 @@
       var eurSpan=document.createElement('span'); eurSpan.className='inserat-price-pill-euro'; eurSpan.textContent=' €'; stepPriceWrap.appendChild(eurSpan);
       priceRowWrap.appendChild(stepPriceWrap);
       catPriceRow.appendChild(priceRowWrap);
-      scrollArea.appendChild(powerBar);
+      /* Top-Down: Kategorien → Preis → PowerBar (5 Säulen am Ende) */
       scrollArea.appendChild(catPriceRow);
+      scrollArea.appendChild(powerBar);
       scrollArea.appendChild(quickAdjustPanel);
       inputDish.addEventListener('keydown', function(){
         if(!catPriceRow || catPriceRow.classList.contains('harmonic-bounce')) return;
@@ -15772,12 +15955,19 @@
         setTimeout(function(){ try{ inputPrice.focus(); }catch(err){} }, 150);
       });
       inputPrice.onblur=function(){ if(w.data.price>0) inputPrice.value=Number(w.data.price).toFixed(2).replace('.',','); dismissKeyboard(); hapticLight(); if(catPriceRow) catPriceRow.classList.remove('hero-morph-active'); };
-      inputPrice.oninput=()=>{ var v=inputPrice.value.replace(',','.'); w.data.price=parseFloat(v)||0; saveDraft(); updateProfit(v); hapticLight(); };
+      inputPrice.oninput=()=>{ var v=inputPrice.value.replace(',','.'); w.data.price=parseFloat(v)||0; saveDraft(); updateProfit(v); hapticLight(); if(typeof checkMastercardValidation==='function') checkMastercardValidation(); if(updateStep2ContextZoneRef) updateStep2ContextZoneRef(); };
       inputPrice.onfocus=function(){ hapticLight(); };
-      requestAnimationFrame(function(){ requestAnimationFrame(function(){ if(typeof adjustTitleFontSize === 'function') adjustTitleFontSize(); }); });
+      function checkMastercardValidation(){
+        var name=(w.data.dish||'').trim();
+        var price=Number(w.data.price)||0;
+        var primaryBtn=box.querySelector('#inserat-action-section .footer-btn-primary, #inserat-action-section .inserat-footer-btn-main');
+        if(!primaryBtn) return;
+        if(name.length>2&&price>0){ primaryBtn.classList.add('is-ready'); } else { primaryBtn.classList.remove('is-ready'); }
+      }
+      requestAnimationFrame(function(){ requestAnimationFrame(function(){ if(typeof adjustTitleFontSize === 'function') adjustTitleFontSize(); if(typeof checkMastercardValidation === 'function') checkMastercardValidation(); }); });
 
-      // Verdienstvorschau (MODE_AD): Dein Verdienst bei 30 Portionen [cite: Master-Prompt 2026-02-19]
-      if(!isPlanMode && entryPoint === 'dashboard'){
+      // Verdienstvorschau (MODE_AD): Dein Verdienst bei 30 Portionen [cite: Master-Prompt 2026-02-19] – ausblenden bei Fast-Track (nur Inhalte bearbeiten)
+      if(!isPlanMode && !isFastTrack && entryPoint === 'dashboard'){
         var verdienstWrap = document.createElement('div');
         verdienstWrap.className = 'inserat-verdienst-vorschau';
         verdienstWrap.style.cssText = 'margin-top:16px; padding:12px 16px; background:rgba(16,185,129,0.08); border-radius:12px;';
@@ -15796,7 +15986,33 @@
         inputPrice.addEventListener('blur', verdienstObserver);
       }
 
-      box.appendChild(scrollArea);
+      /* Kochbuch Quick-Select: Zuletzt verwendet – horizontale Leiste direkt unter Header [cite: 2026-02-21] */
+      var quickbookKey=LS.inseratQuickbook||'mittagio_inserat_quickbook_v1';
+      var quickbookList=load(quickbookKey,[]);
+      if(Array.isArray(quickbookList)&&quickbookList.length>0){
+        var cookbookQuickSelect=document.createElement('div');
+        cookbookQuickSelect.className='cookbook-quick-select';
+        cookbookQuickSelect.setAttribute('aria-label','Zuletzt verwendet');
+        quickbookList.slice(0,10).forEach(function(item){
+          var wrap=document.createElement('button');
+          wrap.type='button';
+          wrap.className='cookbook-quick-item';
+          wrap.setAttribute('data-quickbook-id',String(item.id||''));
+          var thumb=document.createElement('img');
+          thumb.className='cookbook-quick-thumb';
+          thumb.src=item.image||item.imageUrl||'data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60"><rect fill="#e2e8f0" width="60" height="60"/></svg>');
+          thumb.alt='';
+          thumb.style.objectPosition='center '+(typeof item.objectPosition==='number'?item.objectPosition:50)+'%';
+          var label=document.createElement('span');
+          label.textContent=(item.dish||item.name||'Gericht').substring(0,12);
+          wrap.appendChild(thumb);
+          wrap.appendChild(label);
+          wrap.onclick=function(e){ e.preventDefault(); e.stopPropagation(); hapticLight(); if(navigator.vibrate) navigator.vibrate(10); w.data.dish=item.dish||item.name||''; w.data.price=item.price||0; w.data.photoData=item.image||item.imageUrl||''; w.data.photoObjectPosition=typeof item.objectPosition==='number'?item.objectPosition:(typeof item.objectPosition==='string'?parseFloat(item.objectPosition)||50:50); saveDraft(); rebuildWizard(); };
+          cookbookQuickSelect.appendChild(wrap);
+        });
+        step1Container.appendChild(cookbookQuickSelect);
+      }
+      step1Container.appendChild(scrollArea);
       scrollArea.addEventListener('scroll', function(){
         var ch = box.querySelector('.inserat-collapsing-header');
         if(ch) ch.classList.toggle('is-scrolled', scrollArea.scrollTop > 60);
@@ -15812,11 +16028,44 @@
       actionSection.id='inserat-action-section';
       actionSection.className='inserat-action-section fixed-footer' + (!isPlanMode && isInserierenRoute ? ' inserat-action-pricing inserat-action-layer' : '') + (isPlanMode ? ' inserat-action-plan' : '');
 
-      if(isPlanMode){
+      if(isFastTrack){
+        /* Fast-Track: Aktives Inserat/Wochenplan-Eintrag bearbeiten → Änderungen speichern, kein Step 2 */
+        var btnSaveChanges=document.createElement('button');
+        btnSaveChanges.type='button';
+        btnSaveChanges.className='inserat-btn-fast-track';
+        btnSaveChanges.style.cssText='width:100%; min-height:56px; padding:14px 16px; border:none; border-radius:0; background:#10b981; color:#fff; font-size:15px; font-weight:800; cursor:pointer;';
+        btnSaveChanges.textContent='Änderungen speichern';
+        btnSaveChanges.onclick=function(){
+          if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; }
+          hapticLight();
+          var o=previewOfferFromWizard();
+          var offerId=(w.ctx&&w.ctx.editOfferId)||(o&&o.id)||null;
+          if(offerId) try{ sessionStorage.setItem('mittagio_last_saved_offer_id', String(offerId)); }catch(e){}
+          var published=typeof publishOffer==='function'?publishOffer(o):null;
+          closeWizard(true);
+          if(entryPoint==='WEEKLY_PLAN_EDIT'&&typeof renderWeekPlanBoard==='function') renderWeekPlanBoard();
+          else if(typeof showProviderHome==='function') showProviderHome();
+        };
+        actionSection.appendChild(btnSaveChanges);
+      } else if(isPlanMode){
+        /* ImmoScout-Footer Plan-Mode: Links Text-Link, Rechts schwarzer Primär-Button */
+        var planNavRow=document.createElement('div');
+        planNavRow.className='inserat-immo-footer airbnb-footer';
+        planNavRow.style.cssText='display:flex; gap:16px; width:100%; align-items:center; justify-content:space-between;';
+        var linkCookOnly=document.createElement('button');
+        linkCookOnly.type='button';
+        linkCookOnly.className='inserat-footer-link footer-link-secondary';
+        linkCookOnly.style.cssText='background:none; border:none; padding:12px 0; font-size:15px; font-weight:500; color:#fff; cursor:pointer; text-decoration:none; opacity:0.8;';
+        linkCookOnly.textContent='Abbrechen';
+        linkCookOnly.classList.add('footer-link-secondary');
+        linkCookOnly.id='footerCancel';
+        linkCookOnly.onclick=function(){ hapticLight(); closeWizard(); };
         var btnWeekPlan=document.createElement('button');
         btnWeekPlan.type='button';
-        btnWeekPlan.className='inserat-btn-plan-primary';
-        btnWeekPlan.textContent='📅 In den Wochenplan einplanen';
+        btnWeekPlan.className='inserat-footer-btn-main footer-btn-primary';
+        btnWeekPlan.id='footerNext';
+        btnWeekPlan.style.cssText='flex:1; height:48px; min-width:180px; padding:0 24px; border:none; border-radius:12px; background:#fff; color:#0f172a; font-size:16px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center;';
+        btnWeekPlan.textContent='Einplanen';
         btnWeekPlan.onclick=function(){
           if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; }
           if(typeof haptic==='function') haptic(50);
@@ -15830,20 +16079,11 @@
             showSaveSuccessSheet({ title:'Im Wochenplan gespeichert', sub:'Dein Gericht ist im Wochenplan eingetragen.', dishName: w.data.dish||'', price: w.data.price, imageUrl: w.data.photoData||'', savedEntryId: id, savedDay: w.data.day, onFertig: function(){ if(typeof showToast==='function') showToast('Im Wochenplan gespeichert 📅'); if(typeof showProviderWeek==='function') showProviderWeek(); }, onLive: null });
           } else if(id){ if(typeof showToast==='function') showToast('Bitte zuerst ein Datum im Wochenplan wählen'); }
         };
-        actionSection.appendChild(btnWeekPlan);
-        var btnCookOnly=document.createElement('button');
-        btnCookOnly.type='button';
-        btnCookOnly.className='inserat-btn-plan-secondary';
-        btnCookOnly.textContent='Nur im Kochbuch speichern';
-        btnCookOnly.onclick=function(){
-          if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; }
-          if(typeof haptic==='function') haptic(50);
-          var id=saveToCookbookFromWizard();
-          if(id){ closeWizard(true); showSaveSuccessSheet({ title:'Im Kochbuch gespeichert', sub:'Dein Gericht ist in deinem Kochbuch.', dishName: w.data.dish||'', price: w.data.price, imageUrl: w.data.photoData||'', savedEntryId: id, savedDay: null, onFertig: function(){ if(typeof showToast==='function') showToast('Gericht im Kochbuch aktualisiert 📖'); if(typeof showProviderCookbook==='function') showProviderCookbook(); }, onLive: null }); }
-        };
-        actionSection.appendChild(btnCookOnly);
+        planNavRow.appendChild(linkCookOnly);
+        planNavRow.appendChild(btnWeekPlan);
+        actionSection.appendChild(planNavRow);
       } else if(entryPoint === 'dashboard'){
-        /* 2-Schritt Airbnb-Flow Step 1: Speichern in... | Weiter zur Veröffentlichung */
+        /* ImmoScout-Footer: Beide Buttons gleich groß, Airbnb Black [cite: 2026-02-21] */
         var step1NavRow=document.createElement('div');
         step1NavRow.className='inserat-step1-nav';
         step1NavRow.style.cssText='display:flex; gap:12px; width:100%; align-items:stretch;';
@@ -15861,38 +16101,38 @@
         btnWeiter.onclick=function(){
           hapticLight();
           if(typeof handlePriceFastInsert==='function') handlePriceFastInsert(box);
-          w.inseratStep=2; saveDraft(); rebuildWizard();
+          if(updateStep2ContextZoneRef) updateStep2ContextZoneRef();
+          w.inseratStep=2; saveDraft();
+          if(slider){
+            var sweepEl=box.querySelector('.step2-slot-machine-sweep');
+            if(sweepEl){ sweepEl.classList.remove('animate'); sweepEl.offsetHeight; sweepEl.classList.add('animate'); sweepEl.addEventListener('animationend',function onSweepEnd(){ sweepEl.removeEventListener('animationend',onSweepEnd); sweepEl.classList.remove('animate'); },{once:true}); }
+            slider.setAttribute('data-inserat-step','2');
+            var wizardEl=document.getElementById('wizard');
+            if(wizardEl) wizardEl.classList.add('inserat-step2-active');
+            var f=box.querySelector('.inserat-airbnb-footer'); if(f) f.style.display='flex';
+          } else { rebuildWizard(); }
         };
         step1NavRow.appendChild(btnAbbrechen);
         step1NavRow.appendChild(btnWeiter);
         actionSection.appendChild(step1NavRow);
       } else {
-        var btnCookbookPlan=document.createElement('button');
-        btnCookbookPlan.type='button';
-        btnCookbookPlan.style.cssText='flex:1; min-height:52px; padding:14px 20px; background:#10b981; color:#fff; font-size:16px; font-weight:800; border:none; border-radius:16px; cursor:pointer; box-shadow:0 4px 16px rgba(16,185,129,0.3);';
-        btnCookbookPlan.textContent='Im Kochbuch speichern';
-        btnCookbookPlan.onclick=function(){
-          if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; }
-          if(typeof haptic==='function') haptic(50);
-          var id=saveToCookbookFromWizard();
-          if(id){
-            closeWizard(true);
-            showSaveSuccessSheet({
-              title:'Im Kochbuch gespeichert',
-              sub:'Dein Gericht ist in deinem Kochbuch.',
-              dishName: w.data.dish||'',
-              price: w.data.price,
-              imageUrl: w.data.photoData||'',
-              savedEntryId: id,
-              savedDay: null,
-              onFertig: function(){ if(typeof showToast==='function') showToast('Gericht im Kochbuch aktualisiert 📖'); if(typeof showProviderCookbook==='function') showProviderCookbook(); },
-              onLive: null
-            });
-          }
-        };
+        /* ImmoScout-Footer Plan-Mode: Links Text-Link, Rechts schwarzer Primär-Button */
+        var planRow=document.createElement('div');
+        planRow.className='inserat-immo-footer airbnb-footer';
+        planRow.style.cssText='display:flex; gap:16px; width:100%; align-items:center; justify-content:space-between;';
+        var linkKochbuch=document.createElement('button');
+        linkKochbuch.type='button';
+        linkKochbuch.className='inserat-footer-link footer-link-secondary';
+        linkKochbuch.style.cssText='background:none; border:none; padding:12px 0; font-size:15px; font-weight:500; color:#fff; cursor:pointer; text-decoration:none; opacity:0.8;';
+        linkKochbuch.textContent='Abbrechen';
+        linkKochbuch.classList.add('footer-link-secondary');
+        linkKochbuch.id='footerCancel';
+        linkKochbuch.onclick=function(){ hapticLight(); closeWizard(); };
         var btnEinplanen=document.createElement('button');
         btnEinplanen.type='button';
-        btnEinplanen.style.cssText='flex:1; min-height:52px; padding:14px 20px; background:#fff; color:#10b981; font-size:16px; font-weight:800; border:2px solid #10b981; border-radius:16px; cursor:pointer;';
+        btnEinplanen.className='inserat-footer-btn-main footer-btn-primary';
+        btnEinplanen.id='footerNext';
+        btnEinplanen.style.cssText='flex:1; height:48px; min-width:180px; padding:0 24px; border:none; border-radius:12px; background:#fff; color:#0f172a; font-size:16px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center;';
         btnEinplanen.textContent='Einplanen';
         btnEinplanen.onclick=function(){
           if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; }
@@ -15917,28 +16157,61 @@
             });
           } else if(id){ if(typeof showToast==='function') showToast('Bitte zuerst ein Datum im Wochenplan wählen'); }
         };
-        var planRow=document.createElement('div');
-        planRow.style.cssText='display:flex; gap:12px; width:100%;';
-        planRow.appendChild(btnCookbookPlan);
+        planRow.appendChild(linkKochbuch);
         planRow.appendChild(btnEinplanen);
         actionSection.appendChild(planRow);
       }
-      box.appendChild(actionSection);
+      step1Container.appendChild(actionSection);
 
-      if(w.ctx && w.ctx.isLeberkaeseOnboarding){
-        box.style.position = 'relative';
-        var overlay = document.createElement('div');
-        overlay.className = 'inserat-onboarding-overlay';
-        overlay.setAttribute('role','dialog');
-        overlay.setAttribute('aria-label','Erstes Inserat');
-        overlay.innerHTML = '<div class="inserat-onboarding-card"><p>Dein erstes Inserat ist bereit. Probier es kurz aus!</p><button type="button" class="inserat-onboarding-btn">Probier es aus</button></div>';
-        var btn = overlay.querySelector('.inserat-onboarding-btn');
-            if(btn) btn.onclick = function(){
+      if(slider){
+        box.appendChild(slider);
+        var airbnbFooter=document.createElement('div');
+        airbnbFooter.className='inserat-airbnb-footer airbnb-footer';
+        airbnbFooter.id='mastercardFooter';
+        airbnbFooter.setAttribute('data-inserat-step','2');
+        airbnbFooter.style.display=inseratStep===2?'flex':'none';
+        var linkZurueck=document.createElement('button');
+        linkZurueck.type='button';
+        linkZurueck.className='inserat-footer-link';
+        linkZurueck.style.cssText='background:none; border:none; padding:12px 0; font-size:15px; font-weight:500; color:#ffffff; cursor:pointer; text-decoration:none; opacity:0.8; flex-shrink:0;';
+        linkZurueck.textContent='Abbrechen';
+        linkZurueck.className='inserat-footer-link footer-link-secondary';
+        linkZurueck.id='footerCancel';
+        linkZurueck.onclick=function(){ hapticLight(); w.inseratStep=1; saveDraft(); if(slider) slider.setAttribute('data-inserat-step','1'); airbnbFooter.style.display='none'; var sf=box.querySelector('.inserat-step3-footer'); if(sf) sf.style.display='none'; var wizardEl=document.getElementById('wizard'); if(wizardEl){ wizardEl.classList.remove('inserat-step2-active'); wizardEl.classList.remove('inserat-step3-active'); } };
+        var footerBtn=document.createElement('button');
+        footerBtn.type='button';
+        footerBtn.className='inserat-footer-btn-main footer-btn-primary' + (w.data.pricingChoice==='499' ? ' inserat-footer-btn--499' : ' free-mode is-free-mode');
+        footerBtn.id='footerNext';
+        footerBtn.textContent=(w.data.pricingChoice==='499' ? 'Jetzt für 4,99 € inserieren' : 'Jetzt kostenlos inserieren');
+        footerBtn.onclick=function(){
+          if(!(!!(w.data.dish&&String(w.data.dish).trim())&&Number(w.data.price)>0)){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; }
           hapticLight();
-          overlay.classList.add('is-dismissed');
-          setTimeout(function(){ if(overlay.parentNode) overlay.remove(); }, 280);
+          var choice=w.data.pricingChoice||'pro';
+          if(choice==='499'){
+            w.data.hasPickupCode=false; w.data.inseratFeeWaived=false; w.data.pricingOption=undefined;
+            var o=previewOfferFromWizard(); publishFeeUseStep3=true; showPublishFeeModal(o);
+          } else {
+            w.data.hasPickupCode=true; w.data.inseratFeeWaived=true; w.data.pricingOption='abholnummer';
+            var o=previewOfferFromWizard();
+            var existingOfferS2=(w.ctx&&w.ctx.editOfferId&&typeof offers!=='undefined')?offers.find(function(x){return x.id===w.ctx.editOfferId;}):null;
+            var todayKeyS2=typeof isoDate==='function'?isoDate(new Date()):'';
+            var isEditActiveS2=!!(existingOfferS2&&existingOfferS2.day===todayKeyS2&&existingOfferS2.active!==false);
+            if(isEditActiveS2){
+              var published=typeof publishOffer==='function'?publishOffer(o):null;
+              if(published){ if(typeof slideWizardToStep3==='function') slideWizardToStep3(published); else { closeWizard(true); if(typeof showInseratSuccessSheet==='function') showInseratSuccessSheet(published); else if(typeof showProviderHome==='function') showProviderHome(); } return; }
+            }
+            var tileHeroEl=box.querySelector('.inserat-tile-smart');
+            if(tileHeroEl){ tileHeroEl.classList.add('is-loading'); tileHeroEl.innerHTML='<span class="inserat-btn-spinner" style="width:24px;height:24px;border:3px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:inserat-spin 0.8s linear infinite;"></span>'; }
+            publishFeeUseStep3=true;
+            setTimeout(function(){ showPublishFeeModal(o); }, 800);
+          }
         };
-        box.appendChild(overlay);
+        airbnbFooter.appendChild(linkZurueck);
+        airbnbFooter.appendChild(footerBtn);
+        box.appendChild(airbnbFooter);
+        var updateFooterVisibility=function(){ var s=1; try{ var sl=box.querySelector('.inserat-steps-slider'); if(sl) s=parseInt(sl.getAttribute('data-inserat-step')||'1',10); }catch(e){} airbnbFooter.style.display=s===2?'flex':'none'; var sf=box.querySelector('.inserat-step3-footer'); if(sf) sf.style.display=s===3?'flex':'none'; };
+        slider.addEventListener('transitionend', updateFooterVisibility);
+        requestAnimationFrame(function(){ updateFooterVisibility(); });
       }
 
       if(w.ctx && w.ctx.showDraftOverlay){
@@ -16010,6 +16283,7 @@
         window.visualViewport.addEventListener('scroll', vvHandler);
       }
       setWizardContent(sheet);
+      requestAnimationFrame(function(){ requestAnimationFrame(function(){ box.classList.add('is-open'); }); });
       // Guided Interaction: leere Karte → Fokus Namensfeld (blinkender Cursor), kein Foto → Pulsieren [cite: 2026-01-29]
       setTimeout(function(){
         var isEmpty = !(w.data.dish && String(w.data.dish).trim()) && !w.data.photoData;
@@ -16255,6 +16529,7 @@
   function closePublishFeeModal(){
     publishFeePendingOffer = null;
     publishFeeSuccessCallback = null;
+    publishFeeUseStep3 = false;
     const bd = document.getElementById('publishFeeBd');
     const sheet = document.getElementById('publishFeeSheet');
     if(bd) bd.classList.remove('active');
@@ -16275,6 +16550,103 @@
   }
   if(typeof window !== 'undefined'){ window.showAddressRequiredModal = showAddressRequiredModal; window.closeAddressRequiredModal = closeAddressRequiredModal; }
   var inseratSuccessCurrentOffer = null; // für WhatsApp / QR / Social-Export
+  var publishFeeUseStep3 = false; // bei true: Slide zu Wizard-Step 3 statt Success-Sheet [cite: 2026-02-21]
+
+  /** Speichert veröffentlichtes Inserat in Quickbook für Wiederverwendung [cite: 2026-02-21] */
+  function saveToInseratQuickbook(publishedOffer){
+    if(!publishedOffer||typeof save!=='function'||!LS||!LS.inseratQuickbook) return;
+    var d=normalizeOffer(publishedOffer);
+    var objPos=50;
+    if(w&&w.data&&typeof w.data.photoObjectPosition==='number') objPos=w.data.photoObjectPosition;
+    else if(d.photoObjectPosition!=null) objPos=Number(d.photoObjectPosition)||50;
+    var entry={ id: Date.now(), dish: d.dish||d.title||'', price: Number(d.price)||0, image: d.imageUrl||d.photoData||w.data.photoData||'', objectPosition: objPos, timestamp: new Date().toISOString() };
+    var list=load(LS.inseratQuickbook,[]);
+    if(!Array.isArray(list)) list=[];
+    list=([entry].concat(list)).filter(function(x,i,a){ return a.findIndex(function(y){ return y.dish===x.dish&&y.price===x.price; })===i; }).slice(0,10);
+    save(LS.inseratQuickbook,list);
+  }
+
+  /** Step 3: Slide-Track auf Erfolg, Konfetti, Abholnummer-Box [cite: 2026-02-21] */
+  function slideWizardToStep3(publishedOffer){
+    if(!publishedOffer) return;
+    saveToInseratQuickbook(publishedOffer);
+    inseratSuccessCurrentOffer = publishedOffer;
+    var d = normalizeOffer(publishedOffer);
+    var slider = document.querySelector('#wizard .inserat-steps-slider');
+    var box = document.querySelector('#wizard .liquid-master-panel');
+    if(!slider || !box) return;
+    var imgEl = document.getElementById('step3FinalImg');
+    var titleEl = document.getElementById('step3FinalTitle');
+    var priceEl = document.getElementById('step3FinalPrice');
+    var abholBox = document.getElementById('step3AbholBox');
+    var abholId = document.getElementById('step3AbholId');
+    if(imgEl) imgEl.src = d.imageUrl || d.photoData || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=400&q=60';
+    if(titleEl) titleEl.textContent = d.dish || d.title || 'Gericht';
+    if(priceEl) priceEl.textContent = (typeof euro === 'function' ? euro(d.price) : (Number(d.price || 0).toFixed(2).replace('.', ',') + ' €'));
+    if(abholBox) abholBox.style.display = (d.hasPickupCode ? 'block' : 'none');
+    if(abholId){
+      var todayKey = typeof isoDate === 'function' ? isoDate(new Date()) : '';
+      var todayOrders = (typeof loadOrders === 'function' ? loadOrders() : []).filter(function(o){
+        var off = (typeof offers !== 'undefined' ? offers : []).find(function(x){ return x.id === o.dishId; });
+        return off && off.providerId === (typeof providerId === 'function' ? providerId() : '') && o.status === 'PAID';
+      });
+      var todayOffers = (typeof offers !== 'undefined' ? offers : []).filter(function(o){ return o.providerId === (typeof providerId === 'function' ? providerId() : '') && o.day === todayKey; }).sort(function(a,b){ return (a.createdAt || 0) - (b.createdAt || 0); });
+      var idx = todayOffers.findIndex(function(o){ return o.id === publishedOffer.id; });
+      var letter = idx >= 0 ? String.fromCharCode(65 + Math.min(idx, 4)) : 'A';
+      abholId.textContent = '#' + letter + '-' + String(todayOrders.length + 1).padStart(2, '0');
+    }
+    var step3Container = document.getElementById('step3ConfettiContainer');
+    if(step3Container){
+      step3Container.innerHTML = '';
+      var colors = ['#10b981', '#059669', '#34d399', '#6ee7b7', '#a7f3d0', '#FACC15'];
+      for(var i = 0; i < 50; i++){
+        var c = document.createElement('div');
+        c.className = 'confetti';
+        c.style.cssText = 'position:absolute; left:' + (Math.random() * 100) + '%; width:' + (Math.random() * 8 + 5) + 'px; height:' + (Math.random() * 8 + 5) + 'px; background:' + colors[Math.floor(Math.random() * colors.length)] + '; animation:confetti-fall 3s linear forwards; animation-delay:' + (Math.random() * 2) + 's; animation-duration:' + (Math.random() * 2 + 2) + 's;';
+        step3Container.appendChild(c);
+      }
+    }
+    if(navigator.vibrate) navigator.vibrate([50, 30, 50]);
+    slider.setAttribute('data-inserat-step', '3');
+    var wizardEl = document.getElementById('wizard');
+    if(wizardEl) wizardEl.classList.add('inserat-step3-active');
+    var airbnbFooter = box.querySelector('.inserat-airbnb-footer');
+    var step3Footer = box.querySelector('.inserat-step3-footer');
+    if(airbnbFooter) airbnbFooter.style.display = 'none';
+    if(step3Footer){ step3Footer.style.display = 'flex'; }
+  }
+
+  /** Sharing: navigator.share oder WhatsApp-Fallback [cite: 2026-02-21] */
+  async function triggerLiveSharing(){
+    var o = inseratSuccessCurrentOffer;
+    var d = o ? normalizeOffer(o) : {};
+    var dishName = d.dish || d.title || 'unser neues Gericht';
+    var price = typeof d.price === 'number' ? d.price.toFixed(2).replace('.', ',') + ' €' : (d.price || 'Tagespreis');
+    var shareUrl = o && typeof buildOfferShareUrl === 'function' ? buildOfferShareUrl(o) : (location.origin + (location.pathname || ''));
+    var shareText = '🔥 Frisch inseriert: ' + dishName + ' für nur ' + price + '!\n\nHier ansehen und direkt abholen:';
+    try {
+      if(navigator.share){
+        await navigator.share({ title: 'Mein neues Inserat', text: shareText, url: shareUrl });
+        if(navigator.vibrate) navigator.vibrate(10);
+        if(typeof showToast === 'function') showToast('Geteilt 📤');
+      } else {
+        var waUrl = 'https://wa.me/?text=' + encodeURIComponent(shareText + ' ' + shareUrl);
+        window.open(waUrl, '_blank', 'noopener');
+        if(typeof showToast === 'function') showToast('WhatsApp geöffnet 📤');
+      }
+    } catch(err) {
+      if(err.name !== 'AbortError'){
+        var waUrl = 'https://wa.me/?text=' + encodeURIComponent(shareText + ' ' + shareUrl);
+        window.open(waUrl, '_blank', 'noopener');
+      }
+    }
+  }
+
+  /** Step 3 Exit: Wizard schließen, Dashboard anzeigen [cite: 2026-02-21] */
+  function resetMastercardFromStep3(){
+    closeWizard(true);
+    navigateAfterWizardExit('dashboard');
+  }
 
   function buildOfferShareUrl(offer){
     const id = offer && (offer.id || offer);
@@ -16288,6 +16660,31 @@
     const price = typeof d.price === 'number' ? d.price.toFixed(2).replace('.', ',') : (d.price || '0,00');
     const link = buildOfferShareUrl(offer);
     return 'Heute bei uns: ' + dish + ' für nur ' + price + ' €! Jetzt schnell die Abholnummer sichern und Schlange überspringen: ' + link + ' – Mittagio: Zeit gespart mit der Abholnummer.';
+  }
+
+  /** Share-Master: Inserat teilen via Web Share API (S25), Fallback WhatsApp [cite: 2026-02-21] */
+  async function shareListing(){
+    const o = inseratSuccessCurrentOffer;
+    const d = o ? normalizeOffer(o) : {};
+    const title = d.dish || d.title || 'Gericht';
+    const price = typeof d.price === 'number' ? d.price.toFixed(2).replace('.', ',') + ' €' : (d.price || '0,00 €');
+    const url = o && typeof buildOfferShareUrl === 'function' ? buildOfferShareUrl(o) : (location.origin + (location.pathname || '/') + '#offer/' + (o && o.id ? o.id : ''));
+    const text = 'Schau dir mein neues Angebot an: ' + title + ' für nur ' + price + '! ' + url;
+    try {
+      if(navigator.share){
+        await navigator.share({ title: title, text: text, url: url });
+        if(navigator.vibrate) navigator.vibrate(10);
+        if(typeof showToast === 'function') showToast('Geteilt!');
+      } else {
+        const whatsappUrl = 'https://wa.me/?text=' + encodeURIComponent(text);
+        window.open(whatsappUrl, '_blank', 'noopener');
+      }
+    } catch(err) {
+      if(err.name !== 'AbortError'){
+        const whatsappUrl = 'https://wa.me/?text=' + encodeURIComponent(text);
+        window.open(whatsappUrl, '_blank', 'noopener');
+      }
+    }
   }
 
   function openQRPrintWindow(offer){
@@ -16380,26 +16777,22 @@
     
     // 1. Konfetti zünden [cite: 2026-01-26, 2026-02-16]
     createConfetti();
-    try { localStorage.setItem('mittagio_provider_leberkaese_onboarding_done', '1'); } catch(e){}
     if(navigator.vibrate) navigator.vibrate([50, 30, 50]);
 
     var withPickup = !!d.hasPickupCode;
-    var isLeberkaeseSuccess = (d.dish || '').indexOf('Leberkäse') !== -1;
     var checkmarkTitle = document.getElementById('inseratSuccessCheckmarkTitle');
     var checkmarkSub = document.getElementById('inseratSuccessCheckmarkSub');
     if(checkmarkTitle){
-      if(isLeberkaeseSuccess) checkmarkTitle.textContent = 'Geschafft! Dein Leberkäse ist online.';
-      else checkmarkTitle.textContent = withPickup ? 'Geschafft! Deine Abholnummern sind scharfgeschaltet.' : 'Geschafft! Dein Inserat ist live.';
+      checkmarkTitle.textContent = withPickup ? 'Geschafft! Deine Abholnummern sind scharfgeschaltet.' : 'Geschafft! Dein Inserat ist live.';
     }
     if(checkmarkSub){
-      if(isLeberkaeseSuccess) checkmarkSub.textContent = 'Das war einfach, sicher – und jetzt verdienen wir Geld.';
-      else checkmarkSub.textContent = withPickup ? 'Hungrige Gäste können dein Gericht jetzt finden.' : 'Dein Gericht ist sichtbar – Gäste können vor Ort essen oder mitnehmen.';
+      checkmarkSub.textContent = withPickup ? 'Hungrige Gäste können dein Gericht jetzt finden.' : 'Dein Gericht ist sichtbar – Gäste können vor Ort essen oder mitnehmen.';
     }
 
     if(typeof Notification !== 'undefined' && Notification.permission === 'granted'){
       try {
-        new Notification(isLeberkaeseSuccess ? '🚀 Dein Leberkäse ist live!' : '🚀 Dein Inserat ist live!', {
-          body: isLeberkaeseSuccess ? 'Dein erstes Inserat ist online. Ab jetzt können Gäste digital bestellen. Denk dran: Vor-Ort-Gäste kosten dich weiterhin 0,00 €!' : 'Dein Inserat ist online. Gäste können jetzt bestellen.',
+        new Notification('🚀 Dein Inserat ist live!', {
+          body: 'Dein Inserat ist online. Gäste können jetzt bestellen.',
           icon: '/mittagio/app/assets/icons/icon-192.png'
         });
       } catch(notifyErr){}
@@ -16421,8 +16814,9 @@
       const mehrweg = !!(d.reuse && d.reuse.enabled);
       const pill = (on, label) => on ? '<span style="display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:8px;background:rgba(0,0,0,0.06);font-size:11px;font-weight:700;color:#1a1a1a;">' + label + '</span>' : '<span style="display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:8px;background:rgba(0,0,0,0.04);font-size:11px;font-weight:600;color:#94a3b8;opacity:0.8;">' + label + '</span>';
       const pillAbhol = abholnummer ? '<span style="display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:8px;background:rgba(59,130,246,0.15);font-size:11px;font-weight:700;color:#2563eb;">🧾 Abholnummer</span>' : pill(false, '🧾 Abholnummer');
+      var imgWrap = abholnummer ? '<div style="position:relative;width:100%;height:120px;overflow:hidden;"><img src="'+imgUrl+'" class="success-card-img" alt="" style="width:100%;height:100%;object-fit:cover;display:block;"><span style="position:absolute;bottom:8px;right:8px;padding:4px 8px;border-radius:8px;background:rgba(15,23,42,0.9);color:#fff;font-size:11px;font-weight:800;">🧾</span></div>' : '<img src="'+imgUrl+'" class="success-card-img" alt="">';
       previewEl.innerHTML = `
-        <img src="${imgUrl}" class="success-card-img" alt="">
+        ${imgWrap}
         <div class="success-card-body" style="padding:12px 16px;">
           <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px; flex-wrap:wrap;">
             ${pill(vorOrt, '🍴 Vor Ort')}
@@ -16433,8 +16827,8 @@
             <h4 style="margin:0; font-size:17px; font-weight:900; color:#1a1a1a;">Dein ${esc(d.dish)} für ${euro(d.price)}</h4>
           </div>
           <div style="display:flex; align-items:center; gap:6px; margin-top:6px;">
-            <span style="width:8px; height:8px; background:#22c55e; border-radius:50%;"></span>
-            <span style="font-size:11px; font-weight:800; color:#22c55e; text-transform:uppercase;">Jetzt Live</span>
+            <span style="width:8px; height:8px; background:#22c55e; border-radius:50%; animation:pulse 2s ease-in-out infinite;"></span>
+            <span style="font-size:11px; font-weight:800; color:#22c55e; text-transform:uppercase;">Dein Inserat ist jetzt LIVE</span>
           </div>
         </div>
       `;
@@ -16476,18 +16870,24 @@
       const offer = offers.find(off => off.id === o.dishId || (off.providerId === o.providerId && off.day === todayKey));
       return offer && offer.providerId === providerId() && o.status === 'PAID';
     });
-    
-    if(nextCodeEl) nextCodeEl.textContent = (todayOrders.length + 1);
+    const runningNumber = todayOrders.length + 1;
+    const todayOffers = (typeof offers !== 'undefined' ? offers : []).filter(off => off.providerId === providerId() && off.day === todayKey).sort((a,b) => (a.createdAt || 0) - (b.createdAt || 0));
+    const dishIdx = todayOffers.findIndex(off => off.id === publishedOffer.id);
+    const dishLetter = dishIdx >= 0 ? String.fromCharCode(65 + Math.min(dishIdx, 4)) : 'A';
+    const codeDisplay = dishLetter + '-' + String(runningNumber).padStart(2, '0');
+    if(nextCodeEl) nextCodeEl.textContent = codeDisplay;
     if(abholSection) abholSection.style.display = (d.hasPickupCode ? 'block' : 'none');
     
     var offerLink = buildOfferShareUrl(publishedOffer);
     var whatsAppText = buildWhatsAppShareText(publishedOffer);
     var whatsAppBtn = document.getElementById('inseratSuccessBtnWhatsApp');
+    var whatsAppUrl = 'https://wa.me/?text=' + encodeURIComponent(whatsAppText);
     if(whatsAppBtn){
-      var whatsAppUrl = 'https://api.whatsapp.com/send?text=' + encodeURIComponent(whatsAppText);
       whatsAppBtn.href = whatsAppUrl;
-      whatsAppBtn.onclick = function(e){ e.preventDefault(); window.open(whatsAppUrl, '_blank', 'noopener'); return false; };
+      whatsAppBtn.onclick = function(e){ e.preventDefault(); hapticLight(); window.open(whatsAppUrl, '_blank', 'noopener'); return false; };
     }
+    var whatsAppStatusBtn = document.getElementById('inseratSuccessBtnWhatsAppStatus');
+    if(whatsAppStatusBtn) whatsAppStatusBtn.onclick = function(){ hapticLight(); window.open(whatsAppUrl, '_blank', 'noopener'); };
     
     var btnPrintQR = document.getElementById('inseratSuccessBtnPrintQR');
     if(btnPrintQR){ btnPrintQR.onclick = function(){ openQRPrintWindow(publishedOffer); }; }
@@ -16538,24 +16938,30 @@
         var syncCheck = document.getElementById('publishFeeSyncToCookbook');
         var syncToCookbook = syncCheck && syncCheck.checked && offer && offer.cookbookId;
         const published = publishOffer(offer);
-        closePublishFeeModal();
         if(published){
           if(syncToCookbook && published.cookbookId && typeof syncOfferToCookbookEntry === 'function') syncOfferToCookbookEntry(published);
           if(typeof showToast === 'function') showToast('Inserat ist live! 🚀');
-          if(typeof onSuccess === 'function'){ try { onSuccess(); } catch(e){ console.error(e); } }
-          if(typeof showProviderHome === 'function') showProviderHome();
+          if(typeof onSuccess === 'function'){ try { onSuccess(published); } catch(e){ console.error(e); } }
+          var glow = document.getElementById('publishFeeSuccessGlow');
+          if(glow){ glow.classList.add('animate'); }
+          setTimeout(function(){
+            closePublishFeeModal();
+            if(glow) glow.classList.remove('animate');
+            if(publishFeeUseStep3 && typeof slideWizardToStep3 === 'function'){
+              publishFeeUseStep3 = false;
+              slideWizardToStep3(published);
+            } else if(typeof showInseratSuccessSheet === 'function') showInseratSuccessSheet(published);
+            else if(typeof showProviderHome === 'function') showProviderHome();
+          }, 620);
+        } else {
+          closePublishFeeModal();
         }
       };
     }
     const inseratSuccessBtnBack = document.getElementById('inseratSuccessBtnBack');
-    if(inseratSuccessBtnBack) inseratSuccessBtnBack.onclick = function(){ var id = inseratSuccessCurrentOffer && inseratSuccessCurrentOffer.id; closeInseratSuccessSheet(); if(id && typeof startListingFlow === 'function') startListingFlow({ editOfferId: id }); };
-    const inseratSuccessBtnNewListing = document.getElementById('inseratSuccessBtnNewListing');
-    if(inseratSuccessBtnNewListing){
-      inseratSuccessBtnNewListing.onclick = function(){
-        closeInseratSuccessSheet();
-        if(typeof startListingFlow === 'function') startListingFlow({ entryPoint: 'dashboard' });
-      };
-    }
+    if(inseratSuccessBtnBack) inseratSuccessBtnBack.onclick = function(){ closeInseratSuccessSheet(); };
+    const inseratSuccessBtnShare = document.getElementById('inseratSuccessBtnShare');
+    if(inseratSuccessBtnShare) inseratSuccessBtnShare.onclick = function(){ hapticLight(); if(typeof shareListing === 'function') shareListing(); };
     const inseratSuccessBd = document.getElementById('inseratSuccessBd');
     if(inseratSuccessBd) inseratSuccessBd.onclick = closeInseratSuccessSheet;
     if(typeof window !== 'undefined'){
@@ -17532,9 +17938,11 @@
   var RESTORE_SCROLL_KEY = 'mittagio_restore_scroll';
   function getScrollElForView(viewId){
     if(viewId === 'v-provider-home'){ var h = document.getElementById('v-provider-home'); return h && h.querySelector('.dashboard-floating-wrap'); }
-    if(viewId === 'v-provider-pickups') return document.getElementById('provPickupsScroll');
+    if(viewId === 'v-provider-pickups') return document.getElementById('pickupsFloatingWrap');
     if(viewId === 'v-provider-week') return document.getElementById('kwBoardScroll');
-    if(viewId === 'v-provider-cookbook') return document.getElementById('cookbookScrollWrap'); return null;
+    if(viewId === 'v-provider-cookbook') return document.getElementById('cookbookScrollWrap');
+    if(viewId === 'v-provider-profile') return document.getElementById('providerProfileContent');
+    return null;
   }
   if(typeof window !== 'undefined'){ window.RESTORE_SCROLL_KEY = RESTORE_SCROLL_KEY; window.getScrollElForView = getScrollElForView; }
   
@@ -17545,6 +17953,14 @@
   // init nav bindings
   if(mode==='provider' && !provider.loggedIn) mode='customer';
   if(mode==='start') mode='customer';
+  // Auto-Login Wiedererkennung: user_role === 'provider' → direkt Dashboard, Discovery überspringen [cite: Agent-Modus]
+  try {
+    var ur = localStorage.getItem('user_role');
+    if(ur === 'provider' && provider && provider.loggedIn && checkSessionValidity()){
+      mode = 'provider';
+      save(LS.mode, mode);
+    }
+  } catch(e){}
   
   // Single-Session: Cookie aus DB wiederherstellen, falls fehlt (z. B. nach Reload)
   if(mode === 'provider' && provider.loggedIn && provider.current_session_id && !getCookie(SESSION_COOKIE_NAME)){
