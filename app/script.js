@@ -14675,7 +14675,7 @@
     if(w && w.kind === 'listing' && document.body.classList.contains('provider-mode')){
       var pn = document.getElementById('providerNavWrap');
       if(pn) pn.style.setProperty('display', 'none', 'important');
-      document.body.classList.add('wizard-inserat-open');
+      document.body.classList.add('wizard-inserat-open', 'vendor-area');
       updateSystemTheme(true);
       document.body.style.overflow = 'hidden';
       document.body.style.overscrollBehavior = 'none';
@@ -14692,7 +14692,7 @@
     const wizard = document.getElementById('wizard');
     document.getElementById('wbd').classList.remove('active');
     if(wizard){ wizard.classList.remove('active','inserat-step2-active'); wizard.removeAttribute('data-flow'); }
-    document.body.classList.remove('wizard-inserat-open');
+    document.body.classList.remove('wizard-inserat-open', 'vendor-area');
     updateSystemTheme(false);
     document.body.style.overflow = '';
     document.body.style.overscrollBehavior = '';
@@ -14900,6 +14900,7 @@
       return;
     }
     if(kind==='listing'){
+      document.body.classList.add('vendor-area');
       // MASTER INSERATSFLOW - Always the same flow
       const profile = normalizeProviderProfile(provider.profile || {});
       
@@ -15556,7 +15557,7 @@
           w.data.pricingChoice=type==='classic'?'499':'pro';
           w.data.hasPickupCode=(type==='pro');
           saveDraft();
-          var fb=box.querySelector('.app-footer-main .inserat-footer-btn-main, #footerNext');
+          var fb=box.querySelector('.app-footer-main .inserat-footer-btn-main, .app-footer-main .btn-primary-black');
           if(fb){
             fb.textContent=(type==='classic')?'Für 4,99 € inserieren':'Kostenlos inserieren';
             fb.classList.toggle('inserat-footer-btn--499',type==='classic');
@@ -15645,10 +15646,13 @@
       photoTile.style.cssText='position:relative; overflow:hidden; flex-shrink:0; width:100%; height:170px; min-height:170px; max-height:170px;';
       var imgSrc=w.data.photoData||'data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300"><rect fill="#1e293b" width="400" height="300"/></svg>');
       var objPos=getPhotoObjectPosition();
-      photoTile.innerHTML='<img src="'+imgSrc+'" id="mainImagePreview" class="ebay-preview-img" alt="" style="object-position:center '+objPos+'%;"><input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none"><div class="ebay-photo-overlay"><button type="button" class="btn-photo-icon-only ebay-edit-btn" id="triggerCamera" title="Foto" aria-label="Foto">📷</button></div>';
-      var imgEl=photoTile.querySelector('#mainImagePreview');
-      var cameraInput=photoTile.querySelector('#cameraInput');
-      var triggerBtn=photoTile.querySelector('#triggerCamera');
+      var imgEl=document.createElement('img');
+      imgEl.id='mainImagePreview'; imgEl.className='ebay-preview-img'; imgEl.alt=''; imgEl.src=imgSrc; imgEl.style.objectPosition='center '+objPos+'%';
+      var cameraInput=document.createElement('input');
+      cameraInput.type='file'; cameraInput.id='cameraInput'; cameraInput.accept='image/*'; cameraInput.setAttribute('capture','environment'); cameraInput.style.display='none';
+      var overlay=document.createElement('div'); overlay.className='ebay-photo-overlay';
+      var triggerBtn=document.createElement('button'); triggerBtn.type='button'; triggerBtn.className='btn-photo-icon-only ebay-edit-btn'; triggerBtn.id='triggerCamera'; triggerBtn.title='Foto'; triggerBtn.setAttribute('aria-label','Foto'); triggerBtn.textContent='📷';
+      overlay.appendChild(triggerBtn); photoTile.appendChild(imgEl); photoTile.appendChild(cameraInput); photoTile.appendChild(overlay);
       if(triggerBtn) triggerBtn.onclick=function(e){ e.stopPropagation(); cameraInput.click(); };
       photoTile.onclick=function(ev){ if(ev.target.closest('.close-wizard-x')||ev.target.closest('.btn-close-master')||ev.target.closest('.ebay-edit-btn')||ev.target.closest('.btn-photo-icon-only')||ev.target.closest('.ebay-photo-overlay')) return; cameraInput.click(); };
       if(cameraInput){
@@ -15683,7 +15687,7 @@
         sugWrap.className='inserat-photo-suggestions-wrap';
         sugWrap.style.cssText='position:absolute;bottom:12px;left:0;right:0;display:flex;gap:12px;justify-content:center;align-items:center;pointer-events:auto;';
         urls.forEach(function(u,i){ var im=document.createElement('img'); im.className='photo-suggestion'; im.src=u; im.alt=''; im.dataset.suggestionIndex=i; im.style.cssText='width:48px;height:48px;object-fit:cover;border-radius:10px;cursor:pointer;'; im.onclick=function(e){ e.stopPropagation(); if(typeof triggerHapticFeedback==='function') triggerHapticFeedback([5]); w.data.photoData=getListingSuggestionUrls()[i]; w.data.photoDataIsStandard=true; setPhotoObjectPosition(50); saveDraft(); rebuildWizard(); }; sugWrap.appendChild(im); });
-        photoTile.querySelector('.ebay-photo-overlay').appendChild(sugWrap);
+        overlay.appendChild(sugWrap);
       }
       if(imgEl&&w.data.photoData){
         var panStartY=0,panStartPos=50,isPanning=false;
@@ -16041,7 +16045,7 @@
         var price=Number(w.data.price)||0;
         var photoData=w.data.photoData||'';
         var isImageSet=!!(photoData&&!String(photoData).includes('svg+xml'));
-        var primaryBtn=box.querySelector('#inserat-action-section .inserat-btn-step1-right, #inserat-action-section .footer-btn-primary, #inserat-action-section .inserat-footer-btn-main');
+        var primaryBtn=box.querySelector('#inserat-action-section .inserat-btn-step1-right, #inserat-action-section .footer-btn-primary, #inserat-action-section .inserat-footer-btn-main, #inserat-action-section .btn-primary-black');
         if(!primaryBtn) return;
         if(name.length>=2&&isImageSet){ primaryBtn.classList.add('is-ready'); primaryBtn.disabled=false; } else { primaryBtn.classList.remove('is-ready'); primaryBtn.disabled=true; }
       }
@@ -16152,12 +16156,10 @@
         linkCookOnly.className='inserat-footer-link footer-link-secondary btn-secondary-link';
         linkCookOnly.style.cssText='background:none; border:none; padding:12px 0; font-size:15px; font-weight:bold; color:#222222; cursor:pointer; text-decoration:underline;';
         linkCookOnly.textContent='Abbrechen';
-        linkCookOnly.id='footerCancel';
         linkCookOnly.onclick=function(){ hapticLight(); closeWizard(); };
         var btnWeekPlan=document.createElement('button');
         btnWeekPlan.type='button';
         btnWeekPlan.className='inserat-footer-btn-main footer-btn-primary btn-primary-black';
-        btnWeekPlan.id='footerNext';
         btnWeekPlan.style.cssText='flex:1; height:48px; min-width:180px; padding:0 24px; border:none; border-radius:8px; background:#222222; color:white; font-size:16px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center;';
         btnWeekPlan.textContent='Einplanen';
         btnWeekPlan.onclick=function(){
@@ -16221,12 +16223,10 @@
         linkKochbuch.className='inserat-footer-link footer-link-secondary btn-secondary-link';
         linkKochbuch.style.cssText='background:none; border:none; padding:12px 0; font-size:15px; font-weight:bold; color:#222222; cursor:pointer; text-decoration:underline;';
         linkKochbuch.textContent='Abbrechen';
-        linkKochbuch.id='footerCancel';
         linkKochbuch.onclick=function(){ hapticLight(); closeWizard(); };
         var btnEinplanen=document.createElement('button');
         btnEinplanen.type='button';
         btnEinplanen.className='inserat-footer-btn-main footer-btn-primary btn-primary-black';
-        btnEinplanen.id='footerNext';
         btnEinplanen.style.cssText='flex:1; height:48px; min-width:180px; padding:0 24px; border:none; border-radius:8px; background:#222222; color:white; font-size:16px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center;';
         btnEinplanen.textContent='Einplanen';
         btnEinplanen.onclick=function(){
@@ -16262,7 +16262,6 @@
         box.appendChild(slider);
         var airbnbFooter=document.createElement('div');
         airbnbFooter.className='app-footer-main';
-        airbnbFooter.id='mastercardFooter';
         airbnbFooter.setAttribute('data-inserat-step','2');
         airbnbFooter.style.display=inseratStep===2?'flex':'none';
         var linkZurueck=document.createElement('button');
@@ -16271,12 +16270,10 @@
         linkZurueck.style.cssText='background:none; border:none; padding:12px 0; font-size:15px; font-weight:bold; color:#222222; cursor:pointer; text-decoration:underline; flex-shrink:0;';
         linkZurueck.textContent='Zurück';
         linkZurueck.className='inserat-footer-link footer-link-secondary btn-secondary-link';
-        linkZurueck.id='footerCancel';
         linkZurueck.onclick=function(){ hapticLight(); w.inseratStep=1; saveDraft(); if(slider) slider.setAttribute('data-inserat-step','1'); airbnbFooter.style.display='none'; var sf=box.querySelector('.inserat-step3-footer'); if(sf) sf.style.display='none'; var wizardEl=document.getElementById('wizard'); if(wizardEl){ wizardEl.classList.remove('inserat-step2-active'); wizardEl.classList.remove('inserat-step3-active'); } };
         var footerBtn=document.createElement('button');
         footerBtn.type='button';
         footerBtn.className='inserat-footer-btn-main footer-btn-primary btn-primary-black' + (w.data.pricingChoice==='499' ? ' inserat-footer-btn--499' : ' free-mode is-free-mode');
-        footerBtn.id='footerNext';
         footerBtn.textContent=(w.data.pricingChoice==='499' ? 'Für 4,99 € inserieren' : 'Kostenlos inserieren');
         footerBtn.onclick=function(){
           if(!(!!(w.data.dish&&String(w.data.dish).trim())&&Number(w.data.price)>0)){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; }

@@ -8422,8 +8422,9 @@
   background: transparent !important;
   border: none !important;
 }
-.vendor-area .app-footer-main #footerNext,
-.vendor-area .app-footer-main .inserat-btn-step1-right {
+.vendor-area .app-footer-main .inserat-footer-btn-main,
+.vendor-area .app-footer-main .inserat-btn-step1-right,
+.vendor-area .app-footer-main .btn-primary-black {
   height: 48px !important;
   min-height: 48px !important;
   min-width: 180px !important;
