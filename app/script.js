@@ -15437,9 +15437,980 @@
   }
 
   // ============================================================
-  // UNIFIED ENTRY POINT – Break-the-Loop [cite: 2026-02-23]
-  // openListingWizard → openMastercard (minimal, keine buildListingStep-Loops)
+  // INSERATCARD – 3-STEP FLOW [mastercard-drei-schritte-gesetz]
+  // STEP_EDIT → STEP_MONEY → STEP_LIVE
   // ============================================================
+  function buildListingStep(){
+    setWizardNextDefault();
+    w.step = 0;
+    setWizardHeader('', '');
+    const profile = normalizeProviderProfile(provider.profile || {});
+    const profileWindow = profile.mealWindow || DEFAULT_MEAL_WINDOW;
+    const defaultReuseDeposit = (provider.profile && typeof provider.profile.reuseDepositDefault === 'number') ? provider.profile.reuseDepositDefault : 3;
+    // 3 S├ñulen + Abholzeiten: aus Profil ├╝bernehmen, wenn noch nicht gesetzt
+    if(!w.data.pickupWindow) w.data.pickupWindow = profileWindow;
+    if(w.data.dineInPossible === undefined) w.data.dineInPossible = (provider.profile && provider.profile.dineInPossibleDefault !== undefined) ? !!provider.profile.dineInPossibleDefault : true;
+    if(w.data.hasPickupCode === undefined) w.data.hasPickupCode = !!profile.abholnummerEnabledByDefault;
+    if(!w.data.reuse) w.data.reuse = { enabled: !!profile.reuseEnabledByDefault, deposit: defaultReuseDeposit };
+    else { if(w.data.reuse.enabled === undefined) w.data.reuse.enabled = !!profile.reuseEnabledByDefault; if(w.data.reuse.enabled && (w.data.reuse.deposit === undefined || w.data.reuse.deposit === 0)) w.data.reuse.deposit = defaultReuseDeposit; }
+    if(!w.data.allergens || w.data.allergens.length === 0){ if(profile.defaultAllergens && profile.defaultAllergens.length){ w.data.allergens = profile.defaultAllergens.slice(); w.data.wantsAllergens = true; } }
+    if(typeof w.data.allergeneExpanded === 'undefined') w.data.allergeneExpanded = !!w.data.wantsAllergens;
+    if(typeof window !== 'undefined' && w.data && window._wizardInitialDataSnapshot == null) window._wizardInitialDataSnapshot = JSON.parse(JSON.stringify(w.data));
+
+    // S25 InseratCard ÔÇô strikt 5 Ebenen, als .inserat-bottom-sheet gerendert [cite: BAUARBEITER]
+    {
+      setWizardQuestion('', '');
+      const sheet = document.createElement('div');
+      sheet.className = 'inserat-card-sheet';
+      sheet.setAttribute('data-inserat-card', 'true');
+      sheet.style.cssText = 'padding:0; overflow:visible; display:flex; flex-direction:column; min-height:0; border-radius:0; background:transparent;';
+      const box = document.createElement('div');
+      box.className='liquid-master-panel mastercard-container scout-master-card vendor-area glass-express-step0 inserat-universal-mask inserat-master-flow liquid-panel listing-glass-panel s25-floating-panel inserat-card inserat-airbnb-refactor';
+      box.setAttribute('data-inserat-card','true');
+      box.style.cssText='padding:0; overflow:hidden; display:flex; flex-direction:column; min-height:0;';
+      var collapsingHeader=document.createElement('div');
+      collapsingHeader.className='inserat-collapsing-header mastercard-header';
+      collapsingHeader.innerHTML='<span class="inserat-collapsing-title">Dein Inserat</span>';
+      collapsingHeader.style.cssText='position:sticky; top:0; z-index:12; flex-shrink:0; padding:12px 16px; padding-top:max(12px, env(safe-area-inset-top)); background:#fff; backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); text-align:center; font-family:\'Montserrat\',sans-serif; font-weight:900; font-size:18px; color:#0f172a; border-bottom:1px solid rgba(0,0,0,0.06);';
+      box.appendChild(collapsingHeader);
+      sheet.appendChild(box);
+      const saveDraft = () => { localStorage.setItem('wizard_draft', JSON.stringify(w)); };
+      const dismissKeyboard = ()=>{ try { if(document.activeElement && document.activeElement.blur) document.activeElement.blur(); } catch(e){} };
+      const hapticLight = ()=>{ try { if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); } catch(e){} };
+      var entryPoint = (w.ctx && w.ctx.entryPoint) || 'dashboard';
+      var isPlanMode = (entryPoint === 'week' || entryPoint === 'cookbook');
+      var isFastTrack = (entryPoint === 'ACTIVE_LISTING' || entryPoint === 'WEEKLY_PLAN_EDIT');
+      var useTwoStepFlow = !isPlanMode && !isFastTrack && entryPoint === 'dashboard';
+      if(useTwoStepFlow && typeof w.inseratStep !== 'number') w.inseratStep = 1;
+      var inseratStep = useTwoStepFlow ? (w.inseratStep === 2 ? 2 : 1) : 1;
+      var listingDebounceTimer = null; /* Debounce f├╝r Autovervollst├ñndigung + Bildvorschl├ñge */
+      var LISTING_IMAGES_BASE = 'https://images.unsplash.com/';
+      var listingImageMap = {
+        schnitzel: ['photo-1546069901-d5bfd2cbfb1f?w=400&q=80','photo-1565299624946-b28f40a0ae38?w=400&q=80','photo-1603133872878-684f208fb84b?w=400&q=80'],
+        gulasch: ['photo-1547592166-23ac45744acd?w=400&q=80','photo-1544025162-d76694265947?w=400&q=80','photo-1565299624946-b28f40a0ae38?w=400&q=80'],
+        roulade: ['photo-1603133872878-684f208fb84b?w=400&q=80','photo-1546069901-d5bfd2cbfb1f?w=400&q=80','photo-1544025162-d76694265947?w=400&q=80'],
+        leberkaese: ['photo-1565299624946-b28f40a0ae38?w=400&q=80','photo-1546069901-d5bfd2cbfb1f?w=400&q=80','photo-1603133872878-684f208fb84b?w=400&q=80'],
+        linsen: ['photo-1547592166-23ac45744acd?w=400&q=80','photo-1544025162-d76694265947?w=400&q=80','photo-1546069901-eacef0df6022?w=400&q=80'],
+        kaesespaetzle: ['photo-1551183053-bf91a1d81141?w=400&q=80','photo-1546069901-d5bfd2cbfb1f?w=400&q=80','photo-1565299624946-b28f40a0ae38?w=400&q=80'],
+        frikadelle: ['photo-1565299624946-b28f40a0ae38?w=400&q=80','photo-1546069901-d5bfd2cbfb1f?w=400&q=80','photo-1603133872878-684f208fb84b?w=400&q=80'],
+        currywurst: ['photo-1565299624946-b28f40a0ae38?w=400&q=80','photo-1546069901-d5bfd2cbfb1f?w=400&q=80','photo-1603133872878-684f208fb84b?w=400&q=80'],
+        default_meat: ['photo-1546069901-d5bfd2cbfb1f?w=400&q=80','photo-1603133872878-684f208fb84b?w=400&q=80','photo-1544025162-d76694265947?w=400&q=80'],
+        default_veggie: ['photo-1546069901-eacef0df6022?w=400&q=80','photo-1512621776951-a57141f2e7ef?w=400&q=80','photo-1546069901-d5bfd2cbfb1f?w=400&q=80'],
+        default_vegan: ['photo-1546069901-eacef0df6022?w=400&q=80','photo-1512621776951-a57141f2e7ef?w=400&q=80','photo-1546069901-d5bfd2cbfb1f?w=400&q=80'],
+        default_salat: ['photo-1512621776951-a57141f2e7ef?w=400&q=80','photo-1546069901-eacef0df6022?w=400&q=80','photo-1546069901-d5bfd2cbfb1f?w=400&q=80']
+      };
+      function getListingSuggestionKey(){
+        var text = (w.data.dish||'').toLowerCase().trim();
+        var cat = w.data.category || 'Fleisch';
+        for(var k in listingImageMap){ if(k.indexOf('default_')===0) continue; if(text.indexOf(k)!==-1) return k; }
+        if(cat==='Fleisch') return 'default_meat'; if(cat==='Vegetarisch'||cat==='Vegan') return 'default_veggie'; if(cat==='Salat') return 'default_salat'; return 'default_meat';
+      }
+      function getListingSuggestionUrls(){
+        var key = w.data.photoSuggestionKey || getListingSuggestionKey();
+        var list = listingImageMap[key];
+        if(!list) return [];
+        var base = LISTING_IMAGES_BASE;
+        return list.map(function(f){ return (f.indexOf('http')===0||f.indexOf('data:')===0) ? f : (base + f); });
+      }
+      function listingSuggestionsVisible(){ var cat = w.data.category; return !!cat || (w.data.photoSuggestionKey && listingImageMap[w.data.photoSuggestionKey]); }
+
+      // ========== 2-SCHRITT AIRBNB-FLOW: Slider (Step 1 Ôåö Step 2) oder Step 1 nur (Plan-Mode) ==========
+      var step1Container = box;
+      var slider = null;
+      var updateStep2ContextZoneRef = null;
+      if(useTwoStepFlow){
+        slider=document.createElement('div');
+        slider.className='inserat-steps-slider';
+        slider.setAttribute('data-inserat-step', String(inseratStep));
+        var track=document.createElement('div');
+        track.className='inserat-steps-track';
+        var step1Pane=document.createElement('div');
+        step1Pane.className='inserat-step1-pane';
+        step1Pane.id='mastercard-step-edit';
+        var step2Pane=document.createElement('div');
+        step2Pane.className='inserat-step2-pane';
+        step1Container=step1Pane;
+        /* Step 2: Monetarisierung ÔÇô zwei vertikale Kacheln [cite: Drei-Schritte-Gesetz 2026-02-21] */
+        var step2Wrap=document.createElement('div');
+        step2Wrap.className='inserat-step2-wrap mastercard-step-money';
+        step2Wrap.style.cssText='display:flex; flex-direction:column; flex:1; min-height:0; overflow-y:auto; padding:20px; padding-bottom:calc(140px + env(safe-area-inset-bottom, 0));';
+        var thumbUrl=w.data.photoData||'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=200&q=60';
+        var objPos2=(typeof w.data.photoObjectPosition==='number')?w.data.photoObjectPosition:(typeof w.data.photoCropY==='number'?Math.round(50+(w.data.photoCropY/80)*50):50);
+        var dishNameS2=(w.data.dish||'').trim()||'Gericht';
+        var priceS2=Number(w.data.price)||0;
+        var euroS2=typeof euro==='function'?euro(priceS2):(priceS2.toFixed(2).replace('.',',')+' Ôé¼');
+        var miniPreview=document.createElement('div');
+        miniPreview.className='mini-dish-preview';
+        miniPreview.style.cssText='display:flex; align-items:center; gap:12px; padding:12px 0; margin-bottom:16px; border-bottom:1px solid rgba(15,23,42,0.08); flex-shrink:0;';
+        miniPreview.innerHTML='<img src="'+thumbUrl+'" id="money-dish-img" class="mini-thumb" alt="" style="width:56px;height:56px;border-radius:12px;object-fit:cover;object-position:center '+objPos2+'%; background:#e8ecf0;"><div class="mini-details" style="flex:1;min-width:0;"><h3 id="money-dish-name" style="margin:0;font-size:17px;font-weight:900;color:#0f172a;">'+esc(dishNameS2)+'</h3><span id="money-dish-price" style="font-size:15px;font-weight:700;color:#64748b;">'+euroS2+'</span></div>';
+        step2Wrap.appendChild(miniPreview);
+        updateStep2ContextZoneRef=function(){ if(!miniPreview||!miniPreview.isConnected) return; var t=w.data.photoData||'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=200&q=60'; var op=(typeof w.data.photoObjectPosition==='number')?w.data.photoObjectPosition:(typeof w.data.photoCropY==='number'?Math.round(50+(w.data.photoCropY/80)*50):50); var dn=(w.data.dish||'').trim()||'Gericht'; var pr=Number(w.data.price)||0; var eu=typeof euro==='function'?euro(pr):(pr.toFixed(2).replace('.',',')+' Ôé¼'); var imgEl=document.getElementById('money-dish-img'); var nameEl=document.getElementById('money-dish-name'); var priceEl=document.getElementById('money-dish-price'); if(imgEl){ imgEl.src=t; imgEl.style.objectPosition='center '+op+'%'; } if(nameEl) nameEl.textContent=dn; if(priceEl) priceEl.textContent=eu; };
+        var moneyHeadline=document.createElement('h2');
+        moneyHeadline.className='money-headline';
+        moneyHeadline.textContent='W├ñhle dein Paket';
+        moneyHeadline.style.cssText='margin:0 0 20px; font-size:18px; font-weight:800; color:#0f172a;';
+        step2Wrap.appendChild(moneyHeadline);
+        var pricingContainer=document.createElement('div');
+        pricingContainer.className='pricing-container';
+        pricingContainer.style.cssText='display:flex; gap:16px; padding:0; margin-top:0; flex:1; flex-wrap:wrap;';
+        var existingOfferS2=(w.ctx&&w.ctx.editOfferId&&typeof offers!=='undefined')?offers.find(function(o){return o.id===w.ctx.editOfferId;}):null;
+        var todayKeyS2=typeof isoDate==='function'?isoDate(new Date()):'';
+        var isEditActiveS2=!!(existingOfferS2&&existingOfferS2.day===todayKeyS2&&existingOfferS2.active!==false);
+        if(!w.data.pricingChoice) w.data.pricingChoice = 'pro';
+        var cardClassic=document.createElement('div');
+        cardClassic.className='price-card classic' + (w.data.pricingChoice==='499' ? ' active' : '');
+        cardClassic.setAttribute('role','button');
+        cardClassic.tabIndex=0;
+        cardClassic.innerHTML='<div class="card-header">Einmalig</div><div class="amount">4,99 Ôé¼</div><ul class="benefit-list"><li>Kein Abo, kein Vertrag</li><li>Einmalig bis zum Verkauf</li></ul>';
+        var cardPremium=document.createElement('div');
+        cardPremium.className='price-card premium' + (w.data.pricingChoice==='pro' ? ' active' : '');
+        cardPremium.setAttribute('role','button');
+        cardPremium.tabIndex=0;
+        cardPremium.innerHTML='<div class="card-badge">Empfehlung</div><div class="card-header">Pay-per-Order</div><div class="amount">0,89 Ôé¼</div><div class="amount-sub">pro Abholnummer ­ƒº¥</div><ul class="benefit-list"><li>0 Ôé¼ Inseratsgeb├╝hr</li><li>Nur bei Erfolg zahlen</li><li>Vermeide Foodwaste</li></ul>';
+        function selectPacket(type){
+          box.querySelectorAll('.price-card').forEach(function(c){ c.classList.remove('active'); });
+          var card=type==='classic'?cardClassic:cardPremium;
+          card.classList.add('active');
+          w.data.pricingChoice=type==='classic'?'499':'pro';
+          w.data.hasPickupCode=(type==='pro');
+          saveDraft();
+          var fb=box.querySelector('.app-footer-main .inserat-footer-btn-main, .app-footer-main .btn-primary-black');
+          if(fb){
+            fb.textContent=(type==='classic')?'F├╝r 4,99 Ôé¼ inserieren':'Kostenlos inserieren';
+            fb.classList.toggle('inserat-footer-btn--499',type==='classic');
+            fb.classList.toggle('free-mode',type==='pro');
+            fb.classList.toggle('is-free-mode',type==='pro');
+          }
+          try{ if(navigator.vibrate) navigator.vibrate(10); }catch(e){}
+        }
+        cardClassic.onclick=function(){ hapticLight(); selectPacket('classic'); };
+        cardPremium.onclick=function(){ hapticLight(); selectPacket('pro'); };
+        pricingContainer.appendChild(cardClassic);
+        pricingContainer.appendChild(cardPremium);
+        step2Wrap.appendChild(pricingContainer);
+        step2Pane.appendChild(step2Wrap);
+        step2Pane.id='mastercard-step-money';
+        /* Step 3: Live-Erfolg [cite: 2026-02-21] */
+        var step3Pane=document.createElement('div');
+        step3Pane.className='inserat-step3-pane';
+        step3Pane.style.cssText='display:flex; flex-direction:column; flex:1; min-height:0;';
+        var step3ConfettiWrap=document.createElement('div');
+        step3ConfettiWrap.id='step3ConfettiContainer';
+        step3ConfettiWrap.className='success-confetti';
+        step3ConfettiWrap.style.cssText='position:absolute; inset:0; pointer-events:none; z-index:10; overflow:hidden;';
+        step3ConfettiWrap.setAttribute('aria-hidden','true');
+        step3Pane.appendChild(step3ConfettiWrap);
+        var step3Content=document.createElement('div');
+        step3Content.className='inserat-step3-content';
+        var successCheckWrap=document.createElement('div');
+        successCheckWrap.className='success-check-wrapper';
+        successCheckWrap.innerHTML='<div class="success-checkmark">LIVE</div>';
+        step3Content.appendChild(successCheckWrap);
+        var liveStatusCard=document.createElement('div');
+        liveStatusCard.className='live-status-card';
+        liveStatusCard.style.cssText='position:relative;';
+        var thumbS3=w.data.photoData||'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=400&q=60';
+        var objPosS3=(typeof w.data.photoObjectPosition==='number')?w.data.photoObjectPosition:(typeof w.data.photoCropY==='number'?Math.round(50+(w.data.photoCropY/80)*50):50);
+        var dishS3=(w.data.dish||'').trim()||'Gericht';
+        var priceS3=Number(w.data.price)||0;
+        var euroS3=typeof euro==='function'?euro(priceS3):(priceS3.toFixed(2).replace('.',',')+' Ôé¼');
+        liveStatusCard.innerHTML='<div class="live-card-badge">Aktiv</div><img src="'+thumbS3+'" id="step3FinalImg" class="live-card-img" alt="" style="object-position:center '+objPosS3+'%;"><div class="live-card-info"><h3 id="step3FinalTitle">'+esc(dishS3)+'</h3><p id="step3FinalPrice">'+euroS3+'</p><div class="final-abhol-box" id="step3AbholBox" style="display:none;"><span>Deine <strong>Abholnummer</strong>:</span><span class="abhol-id" id="step3AbholId">#A-01</span></div></div>';
+        step3Content.appendChild(liveStatusCard);
+        var successHint=document.createElement('p');
+        successHint.className='success-hint';
+        successHint.textContent='Dein Inserat ist jetzt f├╝r alle Kunden sichtbar.';
+        step3Content.appendChild(successHint);
+        step3Pane.appendChild(step3Content);
+        step3Pane.id='mastercard-step-live';
+        var step3Footer=document.createElement('footer');
+        step3Footer.className='airbnb-footer inserat-step3-footer';
+        step3Footer.style.cssText='position:fixed; left:0; right:0; bottom:0; z-index:500; display:none; flex-direction:row; align-items:center; justify-content:space-between; gap:16px; padding:12px max(16px, env(safe-area-inset-left)) max(12px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-right)); background:rgba(15,23,42,0.92); backdrop-filter:blur(30px); -webkit-backdrop-filter:blur(30px);';
+        var btnShare=document.createElement('button');
+        btnShare.type='button';
+        btnShare.className='footer-link-secondary sharing-trigger';
+        btnShare.id='footerShare';
+        btnShare.innerHTML='<span class="share-icon">­ƒôñ</span> Teilen';
+        var btnFinish=document.createElement('button');
+        btnFinish.type='button';
+        btnFinish.className='footer-btn-primary';
+        btnFinish.id='footerFinish';
+        btnFinish.textContent='Zum Dashboard';
+        step3Footer.appendChild(btnShare);
+        step3Footer.appendChild(btnFinish);
+        step3Pane.appendChild(step3Footer);
+        btnShare.onclick=function(){ hapticLight(); if(typeof triggerLiveSharing==='function') triggerLiveSharing(); };
+        btnFinish.onclick=function(){ hapticLight(); if(typeof resetMastercardFromStep3==='function') resetMastercardFromStep3(); };
+        track.appendChild(step1Pane);
+        track.appendChild(step2Pane);
+        track.appendChild(step3Pane);
+        slider.appendChild(track);
+        var step2Sweep=document.createElement('div');
+        step2Sweep.className='step2-slot-machine-sweep';
+        step2Sweep.setAttribute('aria-hidden','true');
+        box.appendChild(step2Sweep);
+      } else {
+        box.id='mastercard-step-edit';
+      }
+
+      {
+
+      // ========== 1. EBENE: Ebay-Style Photo-Modul ÔÇô Smart-Crop, Drag-to-Pan [cite: 2026-02-21] ==========
+      function getPhotoObjectPosition(){ var v=w.data.photoObjectPosition; if(typeof v==='number') return Math.max(0,Math.min(100,v)); var cy=w.data.photoCropY; if(typeof cy==='number') return Math.round(50+(cy/80)*50); return 50; }
+      function setPhotoObjectPosition(p){ w.data.photoObjectPosition=Math.max(0,Math.min(100,p)); w.data.photoCropY=undefined; saveDraft(); }
+      const photoTile=document.createElement('section');
+      photoTile.id='photoModule';
+      photoTile.className='inserat-photo-tile photo-section photo-section-ebay photo-module-ebay photo-header'+(w.data.photoData ? '' : ' pulse-soft');
+      photoTile.style.cssText='position:relative; overflow:hidden; flex-shrink:0; width:100%; height:170px; min-height:170px; max-height:170px;';
+      var imgSrc=w.data.photoData||'data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300"><rect fill="#1e293b" width="400" height="300"/></svg>');
+      var objPos=getPhotoObjectPosition();
+      var imgEl=document.createElement('img');
+      imgEl.id='mainImagePreview'; imgEl.className='ebay-preview-img'; imgEl.alt=''; imgEl.src=imgSrc; imgEl.style.objectPosition='center '+objPos+'%';
+      var cameraInput=document.createElement('input');
+      cameraInput.type='file'; cameraInput.id='cameraInput'; cameraInput.accept='image/*'; cameraInput.setAttribute('capture','environment'); cameraInput.style.display='none';
+      var overlay=document.createElement('div'); overlay.className='ebay-photo-overlay';
+      var triggerBtn=document.createElement('button'); triggerBtn.type='button'; triggerBtn.className='btn-photo-icon-only ebay-edit-btn'; triggerBtn.id='triggerCamera'; triggerBtn.title='Foto'; triggerBtn.setAttribute('aria-label','Foto'); triggerBtn.textContent='­ƒôÀ';
+      overlay.appendChild(triggerBtn); photoTile.appendChild(imgEl); photoTile.appendChild(cameraInput); photoTile.appendChild(overlay);
+      if(triggerBtn) triggerBtn.onclick=function(e){ e.stopPropagation(); cameraInput.click(); };
+      photoTile.onclick=function(ev){ if(ev.target.closest('.close-wizard-x')||ev.target.closest('.btn-close-master')||ev.target.closest('.ebay-edit-btn')||ev.target.closest('.btn-photo-icon-only')||ev.target.closest('.ebay-photo-overlay')) return; cameraInput.click(); };
+      if(cameraInput){
+        cameraInput.onchange=async function(){
+          var f=this.files&&this.files[0];
+          this.value='';
+          if(!f) return;
+          if(typeof triggerHapticFeedback==='function') triggerHapticFeedback([5]);
+          photoTile.classList.add('inserat-photo-loading');
+          var spinner=document.createElement('div'); spinner.className='inserat-photo-spinner'; photoTile.appendChild(spinner);
+          try {
+            var dataUrl=await new Promise(function(res,rej){ var r=new FileReader(); r.onload=function(){ res(r.result); }; r.onerror=rej; r.readAsDataURL(f); });
+            var img=new Image();
+            await new Promise(function(res,rej){ img.onload=res; img.onerror=rej; img.src=dataUrl; });
+            var canvas=document.createElement('canvas'); var MAX_W=1200; var ww=img.width; var hh=img.height;
+            if(ww>MAX_W){ hh*=MAX_W/ww; ww=MAX_W; }
+            canvas.width=ww; canvas.height=hh; canvas.getContext('2d').drawImage(img,0,0,ww,hh);
+            dataUrl=canvas.toDataURL('image/jpeg',0.8);
+            if(typeof applyAppetizerFilter==='function') dataUrl=await applyAppetizerFilter(dataUrl);
+            if(typeof openPhotoEditor==='function') dataUrl=await openPhotoEditor(dataUrl,{onAccept:function(){}});
+            w.data.photoData=dataUrl; w.data.photoDataIsStandard=false; setPhotoObjectPosition(50); saveDraft(); rebuildWizard();
+          } finally { photoTile.classList.remove('inserat-photo-loading'); var s=photoTile.querySelector('.inserat-photo-spinner'); if(s) s.remove(); }
+        };
+      }
+      if(cameraInput&&entryPoint==='dashboard'&&!(w.ctx&&(w.ctx.editOfferId||w.ctx.dishId))&&!w.data.photoData){
+        setTimeout(function(){ if(cameraInput&&cameraInput.parentNode) cameraInput.click(); }, 400);
+      }
+      var urls=getListingSuggestionUrls();
+      var showSuggestions=!w.data.photoData&&listingSuggestionsVisible()&&urls.length;
+      if(showSuggestions){
+        var sugWrap=document.createElement('div');
+        sugWrap.className='inserat-photo-suggestions-wrap';
+        sugWrap.style.cssText='position:absolute;bottom:12px;left:0;right:0;display:flex;gap:12px;justify-content:center;align-items:center;pointer-events:auto;';
+        urls.forEach(function(u,i){ var im=document.createElement('img'); im.className='photo-suggestion'; im.src=u; im.alt=''; im.dataset.suggestionIndex=i; im.style.cssText='width:48px;height:48px;object-fit:cover;border-radius:10px;cursor:pointer;'; im.onclick=function(e){ e.stopPropagation(); if(typeof triggerHapticFeedback==='function') triggerHapticFeedback([5]); w.data.photoData=getListingSuggestionUrls()[i]; w.data.photoDataIsStandard=true; setPhotoObjectPosition(50); saveDraft(); rebuildWizard(); }; sugWrap.appendChild(im); });
+        overlay.appendChild(sugWrap);
+      }
+      if(imgEl&&w.data.photoData){
+        var panStartY=0,panStartPos=50,isPanning=false;
+        function onPointerStart(ev){ panStartY=ev.touches?ev.touches[0].clientY:ev.clientY; panStartPos=getPhotoObjectPosition(); isPanning=true; }
+        function onPointerMove(ev){ if(!isPanning) return; var y=ev.touches?ev.touches[0].clientY:ev.clientY; var diff=(panStartY-y)*0.15; var p=Math.max(0,Math.min(100,panStartPos+diff)); imgEl.style.objectPosition='center '+p+'%'; setPhotoObjectPosition(p); }
+        function onPointerEnd(){ if(isPanning) hapticLight(); isPanning=false; panStartY=0; }
+        photoTile.addEventListener('touchstart',function(ev){ if(ev.touches.length!==1) return; onPointerStart(ev); },{passive:true});
+        photoTile.addEventListener('touchmove',function(ev){ if(ev.touches.length!==1) return; onPointerMove(ev); },{passive:true});
+        photoTile.addEventListener('touchend',onPointerEnd,{passive:true});
+        photoTile.addEventListener('mousedown',function(ev){ if(ev.button!==0) return; onPointerStart(ev); ev.preventDefault(); });
+        var panMove=function(ev){ if(isPanning) onPointerMove(ev); };
+        var panUp=function(){ onPointerEnd(); };
+        window.addEventListener('mousemove',panMove);
+        window.addEventListener('mouseup',panUp);
+      }
+      var closeX=document.createElement('button');
+      closeX.type='button';
+      closeX.className='close-wizard-x close-mastercard btn-close-master';
+      closeX.setAttribute('aria-label','Schlie├ƒen');
+      closeX.textContent='Ô£ò';
+      closeX.style.cssText='position:absolute;top:12px;left:12px;width:40px;height:40px;background:rgba(0,0,0,0.4);border-radius:50%;color:white;display:flex;align-items:center;justify-content:center;z-index:150;border:none;cursor:pointer;';
+      photoTile.appendChild(closeX);
+      var selectionOverlay=document.createElement('div');
+      selectionOverlay.className='selection-overlay';
+      var selectionOverlayInner=document.createElement('div');
+      selectionOverlayInner.className='selection-overlay-inner';
+      selectionOverlay.appendChild(selectionOverlayInner);
+      photoTile.appendChild(selectionOverlay);
+      function closeHeaderSelection(){ hapticLight(); photoTile.classList.remove('is-selecting'); }
+      function renderSelectionContent(type){
+        selectionOverlayInner.innerHTML='';
+        selectionOverlayInner.classList.remove('selection-overlay-inner--time');
+        if(type==='allergens'){
+          (typeof ALLERGENS_14!=='undefined'?ALLERGENS_14:[]).forEach(function(a){
+            var code=a.short; var name=a.name||code; var active=(w.data.allergens||[]).includes(code);
+            var emo=(typeof ALLERGEN_EMOJI!=='undefined'&&ALLERGEN_EMOJI[code])?ALLERGEN_EMOJI[code]:'';
+            var pill=document.createElement('button'); pill.type='button'; pill.className='extra-pill inserat-allergen-pill' + (active ? ' active' : ''); pill.style.cssText='cursor:pointer;'; pill.textContent=(emo ? emo + ' ' : '') + name; pill.title=name;
+            pill.onclick=function(){ hapticLight(); if(!w.data.allergens) w.data.allergens=[]; if(active){ w.data.allergens=w.data.allergens.filter(function(x){ return x!==code; }); } else{ w.data.allergens.push(code); } w.data.wantsAllergens=true; saveDraft(); pill.className='extra-pill inserat-allergen-pill' + ((w.data.allergens||[]).includes(code) ? ' active' : ''); var bar=scrollArea.querySelector('.inserat-power-bar'); if(bar){ var fb=bar.querySelectorAll('.func-icon-btn'); if(fb[0]) fb[0].className='func-icon-btn ' + (!!(w.data.allergens&&w.data.allergens.length) ? 'active' : ''); } };
+            selectionOverlayInner.appendChild(pill);
+          });
+          var allergenRow=document.createElement('div'); allergenRow.style.cssText='display:flex; flex-direction:column; gap:10px; padding:12px 0 0; margin-top:8px; border-top:1px solid rgba(0,0,0,0.06);';
+          var btnFertigAll=document.createElement('button'); btnFertigAll.type='button'; btnFertigAll.className='inserat-fertig-kachel'; btnFertigAll.textContent='Fertig'; btnFertigAll.onclick=function(){ hapticLight(); closeHeaderSelection(); rebuildWizard(); };
+          var btnSaveDefault=document.createElement('button'); btnSaveDefault.type='button'; btnSaveDefault.textContent='Als Standard speichern'; btnSaveDefault.style.cssText='padding:10px 16px; border-radius:999px; border:2px solid #10b981; background:transparent; color:#059669; font-weight:700; cursor:pointer; font-size:13px;'; btnSaveDefault.onclick=function(){ hapticLight(); if(!provider.profile) provider.profile={}; provider.profile.defaultAllergens=(w.data.allergens||[]).slice(); provider.profile.wantsAllergensByDefault=!!(w.data.allergens&&w.data.allergens.length); if(typeof save==='function') save(LS.provider,provider); if(typeof showToast==='function') showToast('Als Standard f├╝r zuk├╝nftige Inserate gespeichert'); else alert('Als Standard gespeichert.'); };
+          allergenRow.appendChild(btnSaveDefault); allergenRow.appendChild(btnFertigAll); selectionOverlayInner.appendChild(allergenRow);
+        } else if(type==='extras'){
+          var defaultExtras = (profile.defaultExtras && profile.defaultExtras.length) ? profile.defaultExtras.slice() : [{ name:'Beilagensalat', price:2.5 }, { name:'Mayo', price:0.5 }, { name:'Ketchup', price:0.5 }, { name:'So├ƒe', price:1 }, { name:'Brot', price:1.5 }];
+          if(!Array.isArray(w.data.extras)) w.data.extras=[];
+          var extrasListWrap=document.createElement('div'); extrasListWrap.style.cssText='display:flex; flex-wrap:wrap; gap:8px; align-items:center;';
+          defaultExtras.forEach(function(opt){
+            var ex=w.data.extras.find(function(e){ return e.name===opt.name; }); var active=!!ex && Number(ex.price||0)>0; if(!ex) ex={ name:opt.name, price:0 };
+            var pillWrap=document.createElement('div'); pillWrap.style.cssText='display:flex; align-items:center; gap:6px;';
+            var btn=document.createElement('button'); btn.type='button'; btn.className='extra-pill' + (active ? ' active' : ''); btn.style.cssText='cursor:pointer;'; btn.textContent='Ô×ò ' + opt.name;
+            btn.onclick=function(){ hapticLight(); var idx=w.data.extras.findIndex(function(e){ return e.name===opt.name; }); if(idx>=0){ w.data.extras.splice(idx,1); } else{ w.data.extras.push({ name:opt.name, price:opt.price }); } saveDraft(); var hasEx=!!w.data.extras.find(function(e){ return e.name===opt.name; }) && Number((w.data.extras.find(function(e){ return e.name===opt.name; })||{}).price||0)>0; btn.className='extra-pill' + (hasEx ? ' active' : ''); var bar=scrollArea.querySelector('.inserat-power-bar'); if(bar){ var fb=bar.querySelectorAll('.func-icon-btn'); if(fb[1]) fb[1].className='func-icon-btn ' + (!!(w.data.extras&&w.data.extras.length) ? 'active' : ''); } if(pillWrap.querySelector('input')){ var next=w.data.extras.find(function(e){ return e.name===opt.name; }); if(next&&Number(next.price||0)>0){ pillWrap.querySelector('input').value=Number(next.price).toFixed(2).replace('.',','); } else { var inpWrap=pillWrap.querySelector('span'); if(inpWrap) inpWrap.remove(); } } else if(hasEx){ var inpWrap=document.createElement('span'); inpWrap.style.cssText='display:inline-flex; align-items:center; background:rgba(255,255,255,0.6); border-radius:999px; padding:4px 8px;'; var plus=document.createElement('span'); plus.style.cssText='font-size:10px; font-weight:800; color:#10b981; margin-right:4px;'; plus.textContent='+'; var inp=document.createElement('input'); inp.type='text'; inp.inputMode='decimal'; inp.style.cssText='width:36px; background:transparent; border:none; padding:0; font-size:12px; font-weight:800; color:#10b981; outline:none;'; var e=w.data.extras.find(function(x){ return x.name===opt.name; }); inp.value=Number((e&&e.price)||0).toFixed(2).replace('.',','); inp.oninput=function(){ if(e) e.price=parseFloat((inp.value||'0').replace(',','.'))||0; saveDraft(); }; inp.onclick=function(ev){ ev.stopPropagation(); }; var eur=document.createElement('span'); eur.style.cssText='font-size:10px; font-weight:800; color:#10b981; margin-left:2px;'; eur.textContent='Ôé¼'; inpWrap.appendChild(plus); inpWrap.appendChild(inp); inpWrap.appendChild(eur); pillWrap.appendChild(inpWrap); } };
+            pillWrap.appendChild(btn);
+            if(active){ var inpWrap=document.createElement('span'); inpWrap.style.cssText='display:inline-flex; align-items:center; background:rgba(255,255,255,0.6); border-radius:999px; padding:4px 8px;'; var plus=document.createElement('span'); plus.style.cssText='font-size:10px; font-weight:800; color:#10b981; margin-right:4px;'; plus.textContent='+'; var inp=document.createElement('input'); inp.type='text'; inp.inputMode='decimal'; inp.style.cssText='width:36px; background:transparent; border:none; padding:0; font-size:12px; font-weight:800; color:#10b981; outline:none;'; inp.value=Number(ex.price).toFixed(2).replace('.',','); inp.oninput=function(){ ex.price=parseFloat((inp.value||'0').replace(',','.'))||0; saveDraft(); }; inp.onclick=function(ev){ ev.stopPropagation(); }; var eur=document.createElement('span'); eur.style.cssText='font-size:10px; font-weight:800; color:#10b981; margin-left:2px;'; eur.textContent='Ôé¼'; inpWrap.appendChild(plus); inpWrap.appendChild(inp); inpWrap.appendChild(eur); pillWrap.appendChild(inpWrap); }
+            extrasListWrap.appendChild(pillWrap);
+          });
+          selectionOverlayInner.appendChild(extrasListWrap);
+          var extrasAddRow=document.createElement('div'); extrasAddRow.style.cssText='display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:10px; padding:8px 0; border-top:1px solid rgba(0,0,0,0.06);';
+          var addNameInp=document.createElement('input'); addNameInp.type='text'; addNameInp.placeholder='Neues Extra'; addNameInp.style.cssText='padding:8px 12px; border-radius:10px; border:2px solid rgba(0,0,0,0.08); width:120px; font-size:14px;';
+          var addPriceInp=document.createElement('input'); addPriceInp.type='text'; addPriceInp.inputMode='decimal'; addPriceInp.placeholder='0,00'; addPriceInp.style.cssText='padding:8px 12px; border-radius:10px; border:2px solid rgba(0,0,0,0.08); width:56px; font-size:14px;';
+          var btnAddExtra=document.createElement('button'); btnAddExtra.type='button'; btnAddExtra.textContent='Hinzuf├╝gen'; btnAddExtra.style.cssText='padding:8px 14px; border-radius:999px; border:none; background:#10b981; color:#fff; font-weight:700; cursor:pointer; font-size:13px;'; btnAddExtra.onclick=function(){ hapticLight(); var name=(addNameInp.value||'').trim(); if(!name) return; var price=parseFloat((addPriceInp.value||'0').replace(',','.'))||0; if(w.data.extras.some(function(e){ return e.name===name; })) return; w.data.extras.push({ name:name, price:price }); saveDraft(); addNameInp.value=''; addPriceInp.value=''; var bar=scrollArea.querySelector('.inserat-power-bar'); if(bar){ var fb=bar.querySelectorAll('.func-icon-btn'); if(fb[1]) fb[1].className='func-icon-btn active'; } var pillWrap=document.createElement('div'); pillWrap.style.cssText='display:flex; align-items:center; gap:6px;'; var btn=document.createElement('button'); btn.type='button'; btn.className='extra-pill active'; btn.style.cssText='cursor:pointer;'; btn.textContent='Ô×ò '+name; btn.onclick=function(){ hapticLight(); var idx=w.data.extras.findIndex(function(e){ return e.name===name; }); if(idx>=0){ w.data.extras.splice(idx,1); } saveDraft(); pillWrap.remove(); var bar=scrollArea.querySelector('.inserat-power-bar'); if(bar){ var fb=bar.querySelectorAll('.func-icon-btn'); if(fb[1]) fb[1].className='func-icon-btn '+(w.data.extras.length?'active':''); } }; pillWrap.appendChild(btn); if(price>0){ var inpWrap=document.createElement('span'); inpWrap.style.cssText='display:inline-flex; align-items:center; background:rgba(255,255,255,0.6); border-radius:999px; padding:4px 8px;'; var e=w.data.extras.find(function(x){ return x.name===name; }); inpWrap.innerHTML='<span style="font-size:10px; font-weight:800; color:#10b981; margin-right:4px;">+</span><input type="text" inputmode="decimal" style="width:36px; background:transparent; border:none; padding:0; font-size:12px; font-weight:800; color:#10b981; outline:none;" value="'+Number(price).toFixed(2).replace('.',',')+'"><span style="font-size:10px; font-weight:800; color:#10b981; margin-left:2px;">Ôé¼</span>'; var inp=inpWrap.querySelector('input'); if(inp&&e){ inp.oninput=function(){ e.price=parseFloat((inp.value||'0').replace(',','.'))||0; saveDraft(); }; inp.onclick=function(ev){ ev.stopPropagation(); }; } pillWrap.appendChild(inpWrap); } extrasListWrap.appendChild(pillWrap); if(typeof showToast==='function') showToast('Extra hinzugef├╝gt'); };
+          extrasAddRow.appendChild(addNameInp); extrasAddRow.appendChild(addPriceInp); extrasAddRow.appendChild(btnAddExtra); selectionOverlayInner.appendChild(extrasAddRow);
+          var extrasBtnRow=document.createElement('div'); extrasBtnRow.style.cssText='display:flex; flex-direction:column; gap:10px; padding:12px 0 0; margin-top:8px; border-top:1px solid rgba(0,0,0,0.06);';
+          var btnFertigEx=document.createElement('button'); btnFertigEx.type='button'; btnFertigEx.className='inserat-fertig-kachel'; btnFertigEx.textContent='Fertig'; btnFertigEx.onclick=function(){ hapticLight(); closeHeaderSelection(); rebuildWizard(); };
+          var btnSaveExtras=document.createElement('button'); btnSaveExtras.type='button'; btnSaveExtras.textContent='In Inserateinstellungen ├╝bernehmen'; btnSaveExtras.style.cssText='padding:10px 16px; border-radius:999px; border:2px solid #10b981; background:transparent; color:#059669; font-weight:700; cursor:pointer; font-size:13px;'; btnSaveExtras.onclick=function(){ hapticLight(); if(!provider.profile) provider.profile={}; if(!Array.isArray(provider.profile.defaultExtras)) provider.profile.defaultExtras=[]; (w.data.extras||[]).forEach(function(e){ if(!e||!e.name) return; var has=provider.profile.defaultExtras.some(function(d){ return d&&d.name===e.name; }); if(!has) provider.profile.defaultExtras.push({ name:e.name, price:Number(e.price)||0 }); }); if(typeof save==='function') save(LS.provider,provider); if(typeof showToast==='function') showToast('Extras in Inserateinstellungen gespeichert'); else alert('Gespeichert.'); };
+          extrasBtnRow.appendChild(btnSaveExtras); extrasBtnRow.appendChild(btnFertigEx); selectionOverlayInner.appendChild(extrasBtnRow);
+        } else if(type==='time'){
+          selectionOverlayInner.classList.add('selection-overlay-inner--time');
+          var pwParts=(w.data.pickupWindow||'11:30 ÔÇô 14:00').split(/\s*[ÔÇô\-]\s*/);
+          var tStart=(pwParts[0]||'11:30').trim();
+          var tEnd=(pwParts[1]||'14:00').trim();
+          if(tStart.length===4) tStart='0'+tStart;
+          if(tEnd.length===4) tEnd='0'+tEnd;
+          var row=document.createElement('div'); row.className='inserat-time-morph-row'; row.style.cssText='display:flex; align-items:center; justify-content:center; gap:12px; flex-wrap:wrap; padding:16px 0;';
+          var inpStart=document.createElement('input'); inpStart.type='time'; inpStart.className='inserat-pickup-time-input'; inpStart.value=tStart; inpStart.style.cssText='padding:10px 14px; border-radius:12px; border:2px solid rgba(0,0,0,0.08); background:rgba(255,255,255,0.7); backdrop-filter:blur(10px); font-size:16px; font-weight:700;';
+          var inpEnd=document.createElement('input'); inpEnd.type='time'; inpEnd.className='inserat-pickup-time-input'; inpEnd.value=tEnd; inpEnd.style.cssText='padding:10px 14px; border-radius:12px; border:2px solid rgba(0,0,0,0.08); background:rgba(255,255,255,0.7); backdrop-filter:blur(10px); font-size:16px; font-weight:700;';
+          var upd=function(){ w.data.pickupWindow=inpStart.value+' ÔÇô '+inpEnd.value; saveDraft(); var bar=scrollArea.querySelector('.inserat-power-bar'); if(bar){ var pills=bar.querySelectorAll('.status-pill'); if(pills[2]) pills[2].className='status-pill active'; } };
+          inpStart.onchange=function(){ hapticLight(); upd(); };
+          inpEnd.onchange=function(){ hapticLight(); upd(); };
+          row.appendChild(inpStart);
+          row.appendChild(document.createTextNode(' ÔÇô '));
+          row.appendChild(inpEnd);
+          selectionOverlayInner.appendChild(row);
+          var btnFertig=document.createElement('button'); btnFertig.type='button'; btnFertig.className='inserat-fertig-kachel'; btnFertig.textContent='Fertig'; btnFertig.onclick=function(){ hapticLight(); closeHeaderSelection(); rebuildWizard(); };
+          selectionOverlayInner.appendChild(btnFertig);
+        }
+      }
+      function toggleHeaderSelection(type){ hapticLight(); renderSelectionContent(type); photoTile.classList.add('is-selecting'); }
+      closeX.onclick=function(e){ e.preventDefault(); e.stopPropagation();
+        if(photoTile.classList.contains('is-selecting')){ hapticLight(); closeHeaderSelection(); return; }
+        try{ if(typeof haptic==='function') haptic(15); else if(navigator.vibrate) navigator.vibrate(15); }catch(e){}
+        if(typeof handleWizardExit==='function'){ handleWizardExit(box); return; }
+        var panel=box; if(panel&&!panel.classList.contains('x-pop-away')){ requestAnimationFrame(function(){ panel.classList.add('x-pop-away'); setTimeout(function(){ closeWizard(); }, 280); }); } else { closeWizard(); }
+      };
+
+      const scrollArea=document.createElement('div');
+      scrollArea.id='mastercardScrollArea';
+      scrollArea.className='inserat-scroll-area mastercard-scroll-area mastercard-content scroll-content inserat-scroll-with-photo system-content-body';
+      photoTile.classList.add('inserat-photo-in-scroll');
+      scrollArea.appendChild(photoTile);
+
+      // ========== 2. EBENE (Titel): ghost-input, Placeholder pulsierend [cite: 2026-02-21] ==========
+      const stepName=document.createElement('div');
+      stepName.id='step-name';
+      stepName.className='inserat-section inserat-unified-title-wrap';
+      stepName.style.cssText='width:100%; margin-top:6px; margin-bottom:2px;';
+      /* Autovervollst├ñndigung Gerichtsnamen entfernt [cite: 2026-02-21] */
+      const inputDish=document.createElement('input');
+      inputDish.id='gericht-name';
+      inputDish.setAttribute('autocomplete','off');
+      inputDish.type='text';
+      inputDish.className='ghost-input inserat-detail-style-title magnet-input inserat-gericht-name-extra';
+      inputDish.value=w.data.dish||'';
+      inputDish.placeholder='z.B. J├ñgerschnitzel';
+      inputDish.autocomplete='off';
+      inputDish.style.cssText='width:100%; max-width:100%; color:#1a1a1a; font-family:\'Montserrat\',sans-serif; font-weight:900; font-style:normal; box-sizing:border-box; border:none; background:transparent; outline:none;';
+      function adjustTitleFontSize(){
+        var el = inputDish;
+        if(!el || !el.offsetParent) return;
+        var len = (el.value || '').length;
+        var sizeRem = len > 20 ? Math.max(1.4, 1.75 - (len - 20) * 0.02) : 1.75;
+        el.style.fontSize = sizeRem + 'rem';
+      }
+      inputDish.oninput=function(){ w.data.dish=inputDish.value; saveDraft(); adjustTitleFontSize(); if(typeof checkMastercardValidation==='function') checkMastercardValidation(); if(updateStep2ContextZoneRef) updateStep2ContextZoneRef(); };
+      inputDish.onblur=function(){ dismissKeyboard(); hapticLight(); };
+      stepName.appendChild(inputDish);
+      stepName.style.cssText='width:100%; margin-top:6px; margin-bottom:4px; display:flex; justify-content:center;';
+      scrollArea.appendChild(stepName);
+
+      // ========== 3. Beschreibung (4ÔÇô8px unter Name, Einheit) [cite: STRENGER LAYOUT-CHECK 2026-02-23] ==========
+      var descriptionTextarea=document.createElement('textarea');
+      descriptionTextarea.id='gerichtDesc';
+      descriptionTextarea.className='input-description';
+      descriptionTextarea.placeholder='Kurze Beschreibung...';
+      descriptionTextarea.value=w.data.description||'';
+      descriptionTextarea.style.cssText='width:100%; border:none; font-size:14px; color:#64748b; resize:none; padding:4px 0 6px 0; margin:0; text-align:center; background:transparent; outline:none; box-sizing:border-box;';
+      descriptionTextarea.oninput=function(){ w.data.description=descriptionTextarea.value; saveDraft(); };
+      scrollArea.appendChild(descriptionTextarea);
+
+      // ========== 4. Kategorie-Pills (neutral, nicht schwarz) [cite: 2026-02-23] ==========
+      var pillGroup=document.createElement('div');
+      pillGroup.className='pill-group system-content-body';
+      pillGroup.style.cssText='display:flex; flex-direction:column; gap:8px; margin-top:6px; margin-bottom:0; align-items:center; width:100%;';
+      var catValues=['Fleisch','Vegetarisch','Vegan','Salat'];
+      var catEmojis=['\uD83C\uDF56','\uD83C\uDF36','\uD83E\uDDEB','\uD83C\uDF57'];
+      var currentCat=w.data.category||'Fleisch';
+      if(!catValues.includes(currentCat)) w.data.category='Fleisch';
+      var categoryPills=document.createElement('div');
+      categoryPills.className='pill-cloud categories';
+      categoryPills.id='categoryPills';
+      categoryPills.style.cssText='display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:center;';
+      catValues.forEach(function(c,i){
+        var b=document.createElement('button');
+        b.type='button';
+        b.className='pill power-item'+(w.data.category===c?' active':'');
+        b.style.cssText='min-height:44px; padding:8px 14px; border-radius:12px; border:1px solid #ebebeb; background:#ffffff; font-size:14px; font-weight:700; color:#1a1a1a; cursor:pointer; transition:all 0.2s ease;';
+        if(w.data.category===c) b.style.cssText+=' background:#f1f5f9; color:#475569; border-color:#cbd5e1;';
+        b.innerHTML='<span style="font-size:16px;">'+(catEmojis[i]||'')+'</span> ' + c;
+        b.setAttribute('title',c);
+        b.onclick=function(){ hapticLight(); w.data.category=c; saveDraft(); rebuildWizard(); };
+        categoryPills.appendChild(b);
+      });
+      pillGroup.appendChild(categoryPills);
+      scrollArea.appendChild(pillGroup);
+
+      var systemDivider=document.createElement('div');
+      systemDivider.className='minimal-divider mastercard-step-edit-divider system-divider';
+      systemDivider.style.cssText='width:40px; height:2px; background:#f1f5f9; margin:6px auto 8px; border-radius:2px;';
+      scrollArea.appendChild(systemDivider);
+
+      // ========== 5. Preis (Giant) & Extras-Button [cite: FINALE NEUAUFBAU 2026-02-21] ==========
+      var priceSection=document.createElement('div');
+      priceSection.className='price-section';
+      priceSection.style.cssText='display:flex; flex-direction:column; align-items:center; gap:6px; margin-bottom:8px; margin-top:4px;';
+      var priceInputWrapper=document.createElement('div');
+      priceInputWrapper.className='price-input-wrapper';
+      priceInputWrapper.style.cssText='display:flex; align-items:center; justify-content:center; gap:8px;';
+      var stepPriceWrap=document.createElement('div');
+      stepPriceWrap.id='step-price';
+      stepPriceWrap.className='inserat-price-pill-wrap price-input-wrapper';
+      var inputPrice=document.createElement('input');
+      inputPrice.type='text';
+      inputPrice.id='gericht-preis';
+      inputPrice.className='inserat-price-pill-input inserat-price-fintech input-giant-price';
+      inputPrice.setAttribute('inputmode','decimal');
+      inputPrice.placeholder='0,00';
+      inputPrice.value=(w.data.price>0?Number(w.data.price).toFixed(2).replace('.',','):'');
+      var eurSpan=document.createElement('span');
+      eurSpan.className='currency inserat-price-pill-euro';
+      eurSpan.textContent=' \u20AC';
+      stepPriceWrap.appendChild(inputPrice);
+      stepPriceWrap.appendChild(eurSpan);
+      priceInputWrapper.appendChild(stepPriceWrap);
+      priceSection.appendChild(priceInputWrapper);
+      scrollArea.appendChild(priceSection);
+
+      // ========== 6. Power-Bar [cite: Regel 2026-02-23] Reihenfolge: ­ƒì┤ Vor Ort -> ­ƒöä Mehrweg -> ­ƒòÆ Abholzeit -> ­ƒî¥ Allergene -> Ô×ò Extras ==========
+      const powerBar=document.createElement('div');
+      powerBar.className='inserat-power-bar inserat-unified-pills inserat-soft-shell power-bar-module';
+      var hasDineIn=w.data.dineInPossible!==false;
+      var hasReuse=!!(w.data.reuse&&w.data.reuse.enabled);
+      var hasTimeValue=!!(w.data.pickupWindow&&w.data.pickupWindow.trim())||(w.data.mealStart&&w.data.mealEnd);
+      var hasAllergens=!!(w.data.allergens&&w.data.allergens.length);
+      var hasExtras=!!(w.data.extras&&w.data.extras.length);
+      function handlePowerBarInteraction(type){
+        try{ if(navigator.vibrate) navigator.vibrate(15); }catch(e){}
+        hapticLight();
+        var item=powerBar.querySelector('.power-item[data-type="'+type+'"]');
+        if(item){ item.classList.add('press-anim'); setTimeout(function(){ item.classList.remove('press-anim'); }, 200); }
+        if(type==='vor-ort'||type==='mehrweg'){
+          if(item){
+            var isActive=item.classList.toggle('active');
+            if(type==='vor-ort'){ w.data.dineInPossible=isActive; } else if(type==='mehrweg'){ w.data.reuse=w.data.reuse||{}; w.data.reuse.enabled=isActive; }
+            saveDraft();
+          }
+        } else {
+          openQuickAdjust(type==='zeit'?'time':(type==='allergene'?'allergens':'extras'));
+        }
+      }
+      function addPowerItem(emo, label, type, isActive){
+        var btn=document.createElement('button');
+        btn.type='button';
+        btn.className='power-item status-pill inserat-soft-pill '+(isActive?'active':'inactive');
+        btn.setAttribute('data-type',type);
+        btn.setAttribute('aria-label',label);
+        btn.setAttribute('title',label);
+        var labelText=label;
+        if(type==='allergene'&&w.data.allergens&&w.data.allergens.length){ labelText=(w.data.allergens||[]).join(', '); }
+        btn.innerHTML='<span class="inserat-pill-emo">'+emo+'</span><span class="power-item-label inserat-allergen-codes">'+labelText+'</span>';
+        btn.onclick=function(){ handlePowerBarInteraction(type); };
+        powerBar.appendChild(btn);
+      }
+      addPowerItem('\uD83C\uDF74','Vor Ort Essen','vor-ort',hasDineIn);
+      addPowerItem('\uD83D\uDD04','Mehrweg','mehrweg',hasReuse);
+      addPowerItem('\uD83D\uDD54','Abholzeit','zeit',hasTimeValue);
+      addPowerItem('\uD83C\uDF3E','Allergene','allergene',hasAllergens);
+      addPowerItem('\u2795','Extras','extras',hasExtras);
+      const quickAdjustPanel=document.createElement('div');
+      quickAdjustPanel.id='quick-adjust-sheet';
+      quickAdjustPanel.className='inserat-quick-adjust-panel quick-adjust-sheet';
+      quickAdjustPanel.style.cssText='display:none; position:fixed; left:0; right:0; bottom:0; z-index:11000; background:#ffffff; border-radius:24px 24px 0 0; padding:24px 20px calc(24px + env(safe-area-inset-bottom,0)); box-shadow:none; border-top:1px solid #ebebeb; max-height:70vh; overflow-y:auto;';
+      function closeQuickAdjustWithFeedback(type){
+        var finishBtn=quickAdjustPanel.querySelector('.quick-adjust-fertig');
+        if(finishBtn){
+          finishBtn.textContent='Ô£ô Gespeichert';
+          finishBtn.style.background='#222222';
+          if(window.navigator.vibrate) window.navigator.vibrate([10,30,10]);
+        }
+        quickAdjustPanel.style.transition='transform 0.3s cubic-bezier(0.32,0.72,0,1)';
+        requestAnimationFrame(function(){
+          quickAdjustPanel.style.transform='translateY(100%)';
+          setTimeout(function(){
+            quickAdjustPanel.style.display='none';
+            quickAdjustPanel.style.transform='';
+            quickAdjustPanel.style.transition='';
+            quickAdjustPanel.innerHTML='';
+            rebuildWizard();
+          }, 320);
+        });
+      }
+      function closeQuickAdjust(){ if(navigator.vibrate) navigator.vibrate(20); quickAdjustPanel.style.display='none'; quickAdjustPanel.innerHTML=''; rebuildWizard(); }
+      function openQuickAdjust(type){
+        hapticLight();
+        quickAdjustPanel.innerHTML='';
+        quickAdjustPanel.style.transition='transform 0.3s cubic-bezier(0.32,0.72,0,1)';
+        quickAdjustPanel.style.transform='translateY(100%)';
+        quickAdjustPanel.style.display='block';
+        requestAnimationFrame(function(){ requestAnimationFrame(function(){ quickAdjustPanel.style.transform='translateY(0)'; }); });
+        var headline=document.createElement('h3');
+        headline.className='quick-adjust-headline';
+        headline.style.cssText='margin:0 0 20px; font-size:18px; font-weight:800; color:#0f172a;';
+        if(type==='time'){
+          headline.textContent='Abholzeit';
+          quickAdjustPanel.appendChild(headline);
+          var pwParts=(w.data.pickupWindow||'11:30 ÔÇô 14:00').split(/\s*[ÔÇô\-]\s*/);
+          var tStart=(pwParts[0]||'11:30').trim(); var tEnd=(pwParts[1]||'14:00').trim();
+          if(tStart.length===4) tStart='0'+tStart; if(tEnd.length===4) tEnd='0'+tEnd;
+          var row=document.createElement('div'); row.style.cssText='display:flex; align-items:center; justify-content:center; gap:12px; flex-wrap:wrap; padding:8px 0;';
+          var inpStart=document.createElement('input'); inpStart.type='time'; inpStart.value=tStart; inpStart.style.cssText='padding:12px 16px; border-radius:12px; border:2px solid #e2e8f0; background:#f8fafc; font-size:16px; font-weight:700;';
+          var inpEnd=document.createElement('input'); inpEnd.type='time'; inpEnd.value=tEnd; inpEnd.style.cssText='padding:12px 16px; border-radius:12px; border:2px solid #e2e8f0; background:#f8fafc; font-size:16px; font-weight:700;';
+          inpStart.onchange=inpEnd.onchange=function(){ w.data.pickupWindow=inpStart.value+' ÔÇô '+inpEnd.value; saveDraft(); };
+          row.appendChild(inpStart); row.appendChild(document.createTextNode(' bis ')); row.appendChild(inpEnd);
+          quickAdjustPanel.appendChild(row);
+        } else if(type==='allergens'){
+          headline.textContent='Allergene';
+          quickAdjustPanel.appendChild(headline);
+          var wrap=document.createElement('div'); wrap.style.cssText='display:flex; flex-wrap:wrap; gap:8px;';
+          (typeof ALLERGENS_14!=='undefined'?ALLERGENS_14:[]).forEach(function(a){
+            var code=a.short; var name=a.name||code; var active=(w.data.allergens||[]).includes(code);
+            var pill=document.createElement('button'); pill.type='button'; pill.className='inserat-allergen-pill'+(active?' active':'');
+            pill.textContent=name; pill.title=name;
+            pill.onclick=function(){ hapticLight(); if(!w.data.allergens) w.data.allergens=[]; if((w.data.allergens||[]).includes(code)){ w.data.allergens=w.data.allergens.filter(function(x){ return x!==code; }); } else{ w.data.allergens.push(code); } w.data.wantsAllergens=true; saveDraft(); pill.className='inserat-allergen-pill'+((w.data.allergens||[]).includes(code)?' active':''); };
+            wrap.appendChild(pill);
+          });
+          quickAdjustPanel.appendChild(wrap);
+        } else if(type==='extras'){
+          headline.textContent='Extras';
+          quickAdjustPanel.appendChild(headline);
+          var defaultExtras=(profile.defaultExtras&&profile.defaultExtras.length)?profile.defaultExtras.slice():[{name:'Beilagensalat',price:2.5},{name:'Mayo',price:0.5},{name:'Ketchup',price:0.5},{name:'So├ƒe',price:1},{name:'Brot',price:1.5}];
+          if(!Array.isArray(w.data.extras)) w.data.extras=[];
+          var extrasListWrap=document.createElement('div'); extrasListWrap.style.cssText='display:flex; flex-wrap:wrap; gap:8px; align-items:center;';
+          defaultExtras.forEach(function(opt){
+            var ex=w.data.extras.find(function(e){ return e.name===opt.name; }); var active=!!ex&&Number(ex.price||0)>0; if(!ex) ex={name:opt.name,price:0};
+            var pillWrap=document.createElement('div'); pillWrap.style.cssText='display:flex; align-items:center; gap:6px;';
+            var btn=document.createElement('button'); btn.type='button'; btn.className='extra-pill'+(active?' active':''); btn.style.cssText='cursor:pointer;'; btn.textContent='Ô×ò '+opt.name;
+            btn.onclick=function(){ hapticLight(); var idx=w.data.extras.findIndex(function(e){ return e.name===opt.name; }); if(idx>=0){ w.data.extras.splice(idx,1); } else{ w.data.extras.push({name:opt.name,price:opt.price}); } saveDraft(); var hasEx=!!w.data.extras.find(function(e){ return e.name===opt.name; })&&Number((w.data.extras.find(function(e){ return e.name===opt.name; })||{}).price||0)>0; btn.className='extra-pill'+(hasEx?' active':''); if(hasEx&&!pillWrap.querySelector('input')){ var inpWrap=document.createElement('span'); inpWrap.style.cssText='display:inline-flex; align-items:center; background:rgba(255,255,255,0.6); border-radius:999px; padding:4px 8px;'; var next=w.data.extras.find(function(e){ return e.name===opt.name; }); inpWrap.innerHTML='<span style="font-size:10px; font-weight:800; color:#10b981; margin-right:4px;">+</span><input type="text" inputmode="decimal" style="width:36px; background:transparent; border:none; padding:0; font-size:12px; font-weight:800; color:#10b981; outline:none;" value="'+Number((next&&next.price)||0).toFixed(2).replace(".",",")+'"><span style="font-size:10px; font-weight:800; color:#10b981; margin-left:2px;">Ôé¼</span>'; var inp=inpWrap.querySelector('input'); if(inp){ var e=w.data.extras.find(function(x){ return x.name===opt.name; }); inp.oninput=function(){ if(e) e.price=parseFloat((inp.value||"0").replace(",","."))||0; saveDraft(); }; inp.onclick=function(ev){ ev.stopPropagation(); }; pillWrap.appendChild(inpWrap); } } else if(!hasEx){ var o=pillWrap.querySelector('span'); if(o) o.remove(); } };
+            pillWrap.appendChild(btn);
+            if(active){ var inpWrap=document.createElement('span'); inpWrap.style.cssText='display:inline-flex; align-items:center; background:rgba(255,255,255,0.6); border-radius:999px; padding:4px 8px;'; inpWrap.innerHTML='<span style="font-size:10px; font-weight:800; color:#10b981; margin-right:4px;">+</span><input type="text" inputmode="decimal" style="width:36px; background:transparent; border:none; padding:0; font-size:12px; font-weight:800; color:#10b981; outline:none;" value="'+Number(ex.price).toFixed(2).replace(".",",")+'"><span style="font-size:10px; font-weight:800; color:#10b981; margin-left:2px;">Ôé¼</span>'; var inp=inpWrap.querySelector('input'); if(inp){ inp.oninput=function(){ ex.price=parseFloat((inp.value||"0").replace(",","."))||0; saveDraft(); }; inp.onclick=function(ev){ ev.stopPropagation(); }; } pillWrap.appendChild(inpWrap); }
+            extrasListWrap.appendChild(pillWrap);
+          });
+          quickAdjustPanel.appendChild(extrasListWrap);
+        }
+        var btnFertig=document.createElement('button');
+        btnFertig.type='button';
+        btnFertig.className='inserat-fertig-kachel quick-adjust-fertig';
+        btnFertig.textContent='Fertig';
+        btnFertig.style.cssText='width:100%; min-height:56px; margin-top:24px; padding:16px 24px; border:none; border-radius:8px; background:#222222; color:#ffffff; font-size:16px; font-weight:800; cursor:pointer;';
+        btnFertig.onclick=function(){ hapticLight(); closeQuickAdjustWithFeedback(type); };
+        quickAdjustPanel.appendChild(btnFertig);
+      }
+
+      const updateProfit = function(val){
+        var price = parseFloat(String(val).replace(',','.')) || 0;
+        var calcVal = document.getElementById('calc-val');
+        if(calcVal) calcVal.textContent = (price * 30).toFixed(2).replace('.',',');
+        var verdienstEl = document.getElementById('inserat-verdienst-vorschau');
+        if(verdienstEl && !isPlanMode){
+          var verdienst = Math.max(0, (price - 0.89) * 30);
+          verdienstEl.textContent = 'Dein Verdienst (ca. 30 Portionen): ' + verdienst.toFixed(2).replace('.',',') + ' Ôé¼';
+          verdienstEl.style.display = price > 0 ? 'block' : 'none';
+        }
+      };
+      scrollArea.appendChild(powerBar);
+      /* Extra-Button entfernt [cite: RADIKALER COMPACT 2026-02-23] ÔÇô nur Ô×ò in PowerBar ├Âffnet Quick-Adjust */
+      box.appendChild(quickAdjustPanel);
+      inputDish.addEventListener('keydown', function(){
+        if(!priceSection || priceSection.classList.contains('harmonic-bounce')) return;
+        priceSection.classList.add('harmonic-bounce');
+        setTimeout(function(){ if(priceSection) priceSection.classList.remove('harmonic-bounce'); }, 420);
+      });
+      stepPriceWrap.addEventListener('click', function(e){
+        if(priceSection && priceSection.classList.contains('hero-morph-active')) return;
+        if(e.target===inputPrice || inputPrice.contains(e.target)) return;
+        e.preventDefault();
+        hapticLight();
+        if(priceSection) priceSection.classList.add('hero-morph-active');
+        setTimeout(function(){ try{ inputPrice.focus(); }catch(err){} }, 150);
+      });
+      inputPrice.onblur=function(){ if(w.data.price>0) inputPrice.value=Number(w.data.price).toFixed(2).replace('.',','); dismissKeyboard(); hapticLight(); if(priceSection) priceSection.classList.remove('hero-morph-active'); };
+      inputPrice.oninput=()=>{ var v=inputPrice.value.replace(',','.'); w.data.price=parseFloat(v)||0; saveDraft(); updateProfit(v); hapticLight(); if(typeof checkMastercardValidation==='function') checkMastercardValidation(); if(updateStep2ContextZoneRef) updateStep2ContextZoneRef(); };
+      inputPrice.onfocus=function(){ hapticLight(); };
+      function checkMastercardValidation(){
+        var name=(w.data.dish||'').trim();
+        var price=Number(w.data.price)||0;
+        var photoData=w.data.photoData||'';
+        var isImageSet=!!(photoData&&!String(photoData).includes('svg+xml'));
+        var primaryBtn=box.querySelector('#inserat-action-section .inserat-btn-step1-right, #inserat-action-section .footer-btn-primary, #inserat-action-section .inserat-footer-btn-main, #inserat-action-section .btn-primary-black');
+        if(!primaryBtn) return;
+        if(name.length>=2&&isImageSet){ primaryBtn.classList.add('is-ready'); primaryBtn.disabled=false; } else { primaryBtn.classList.remove('is-ready'); primaryBtn.disabled=true; }
+      }
+      requestAnimationFrame(function(){ requestAnimationFrame(function(){ if(typeof adjustTitleFontSize === 'function') adjustTitleFontSize(); if(typeof checkMastercardValidation === 'function') checkMastercardValidation(); }); });
+
+      // Verdienstvorschau (MODE_AD): Dein Verdienst bei 30 Portionen [cite: Master-Prompt 2026-02-19] ÔÇô ausblenden bei Fast-Track (nur Inhalte bearbeiten)
+      if(!isPlanMode && !isFastTrack && entryPoint === 'dashboard'){
+        var verdienstWrap = document.createElement('div');
+        verdienstWrap.className = 'inserat-verdienst-vorschau';
+        verdienstWrap.style.cssText = 'margin-top:16px; padding:12px 16px; background:rgba(16,185,129,0.08); border-radius:12px;';
+        function renderVerdienst(){
+          var p = Number(w.data.price) || 0;
+          if(p <= 0){ verdienstWrap.innerHTML = '<span style="font-size:14px; font-weight:700; color:#64748b;">Gib einen Preis ein, dann siehst du deinen Verdienst.</span>'; return; }
+          var mitAbholnummer = 30 * p - 30 * 0.89;
+          var ohneAbholnummer = 30 * p - 4.99;
+          var v = Math.max(0, w.data.hasPickupCode !== false ? mitAbholnummer : ohneAbholnummer);
+          verdienstWrap.innerHTML = '<span style="font-size:15px; font-weight:800; color:#059669;">Dein Verdienst: ' + v.toFixed(2).replace('.', ',') + ' Ôé¼</span><span style="font-size:12px; color:#64748b; margin-left:8px;">(bei 30 Portionen)</span>';
+        }
+        renderVerdienst();
+        scrollArea.appendChild(verdienstWrap);
+        var verdienstObserver = function(){ renderVerdienst(); };
+        inputPrice.addEventListener('input', verdienstObserver);
+        inputPrice.addEventListener('blur', verdienstObserver);
+      }
+
+      /* Kochbuch Quick-Select: Zuletzt verwendet ÔÇô horizontale Leiste direkt unter Header [cite: 2026-02-21] */
+      var quickbookKey=LS.inseratQuickbook||'mittagio_inserat_quickbook_v1';
+      var quickbookList=load(quickbookKey,[]);
+      if(Array.isArray(quickbookList)&&quickbookList.length>0){
+        var cookbookQuickSelect=document.createElement('div');
+        cookbookQuickSelect.className='cookbook-quick-select';
+        cookbookQuickSelect.setAttribute('aria-label','Zuletzt verwendet');
+        quickbookList.slice(0,10).forEach(function(item){
+          var wrap=document.createElement('button');
+          wrap.type='button';
+          wrap.className='cookbook-quick-item';
+          wrap.setAttribute('data-quickbook-id',String(item.id||''));
+          var thumb=document.createElement('img');
+          thumb.className='cookbook-quick-thumb';
+          thumb.src=item.image||item.imageUrl||'data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60"><rect fill="#e2e8f0" width="60" height="60"/></svg>');
+          thumb.alt='';
+          thumb.style.objectPosition='center '+(typeof item.objectPosition==='number'?item.objectPosition:50)+'%';
+          var label=document.createElement('span');
+          label.textContent=(item.dish||item.name||'Gericht').substring(0,12);
+          wrap.appendChild(thumb);
+          wrap.appendChild(label);
+          wrap.onclick=function(e){ e.preventDefault(); e.stopPropagation(); hapticLight(); if(navigator.vibrate) navigator.vibrate(10); w.data.dish=item.dish||item.name||''; w.data.price=item.price||0; w.data.photoData=item.image||item.imageUrl||''; w.data.photoObjectPosition=typeof item.objectPosition==='number'?item.objectPosition:(typeof item.objectPosition==='string'?parseFloat(item.objectPosition)||50:50); saveDraft(); rebuildWizard(); };
+          cookbookQuickSelect.appendChild(wrap);
+        });
+        step1Container.appendChild(cookbookQuickSelect);
+      }
+      step1Container.appendChild(scrollArea);
+      scrollArea.addEventListener('scroll', function(){
+        var ch = box.querySelector('.inserat-collapsing-header');
+        if(ch) ch.classList.toggle('is-scrolled', scrollArea.scrollTop > 60);
+      });
+
+      // 9. ACTION BUTTONS ÔÇô MODE_PLAN (week/cookbook): Blue ÔÇ×In den Wochenplan einplanenÔÇ£ + gr├╝ner ÔÇ×Nur im KochbuchÔÇ£. MODE_AD (dashboard): Preis├╝bersicht + mit Abholnummer + Nur Inserat [cite: 2026-02-18]
+      var isInserierenRoute = (entryPoint === 'dashboard' || entryPoint === 'week' || entryPoint === 'cookbook');
+      var hasDish = !!(w.data.dish && String(w.data.dish).trim());
+      var hasPrice = Number(w.data.price) > 0;
+      var primaryValid = hasDish && hasPrice;
+
+      const actionSection=document.createElement('section');
+      actionSection.id='inserat-action-section';
+      actionSection.className='inserat-action-section fixed-footer' + (!isPlanMode && isInserierenRoute ? ' inserat-action-pricing inserat-action-layer' : '') + (isFastTrack ? ' inserat-action-layer' : '') + (isPlanMode ? ' inserat-action-plan' : '');
+
+      if(isFastTrack){
+        /* Fast-Track: UNIFIED DESIGN ÔÇô exakt derselbe Airbnb-Footer wie Neu-Erstellen [cite: 2026-02-23] */
+        var step1NavRow=document.createElement('div');
+        step1NavRow.className='inserat-step1-nav system-footer-merged app-footer-main';
+        step1NavRow.style.cssText='display:flex; gap:12px; width:100%; align-items:stretch;';
+        var btnAbbrechen=document.createElement('button');
+        btnAbbrechen.type='button';
+        btnAbbrechen.className='inserat-btn-step1-left btn-secondary-link nav-btn-primary nav-btn-equal';
+        btnAbbrechen.style.cssText='flex:0; min-height:48px; padding:0 16px; border:none; background:transparent !important; font-size:16px; font-weight:bold; color:#222222 !important; cursor:pointer; text-decoration:underline;';
+        btnAbbrechen.textContent='Abbrechen';
+        btnAbbrechen.onclick=function(){ hapticLight(); if(typeof handleWizardExit==='function') handleWizardExit(); };
+        var btnSpeichern=document.createElement('button');
+        btnSpeichern.type='button';
+        btnSpeichern.id='btnNext';
+        btnSpeichern.className='inserat-btn-step1-right btn-primary-black nav-btn-primary nav-btn-equal';
+        btnSpeichern.style.cssText='flex:1; min-height:48px; height:48px; padding:0 24px; border:none; border-radius:8px; background:#222222 !important; color:white !important; font-size:16px; font-weight:800; cursor:pointer;';
+        btnSpeichern.textContent='Speichern';
+        btnSpeichern.disabled=!primaryValid;
+        if(primaryValid) btnSpeichern.classList.add('is-ready');
+        btnSpeichern.onclick=function(){
+          if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; }
+          hapticLight();
+          var o=previewOfferFromWizard();
+          var offerId=(w.ctx&&w.ctx.editOfferId)||(o&&o.id)||null;
+          if(offerId) try{ sessionStorage.setItem('mittagio_last_saved_offer_id', String(offerId)); }catch(e){}
+          var published=typeof publishOffer==='function'?publishOffer(o):null;
+          closeWizard(true);
+          if(entryPoint==='WEEKLY_PLAN_EDIT'&&typeof renderWeekPlanBoard==='function') renderWeekPlanBoard();
+          else if(typeof showProviderHome==='function') showProviderHome();
+        };
+        step1NavRow.appendChild(btnAbbrechen);
+        step1NavRow.appendChild(btnSpeichern);
+        actionSection.appendChild(step1NavRow);
+      } else if(isPlanMode){
+        /* ImmoScout-Footer Plan-Mode: Links Text-Link, Rechts schwarzer Prim├ñr-Button */
+        var planNavRow=document.createElement('div');
+        planNavRow.className='app-footer-main';
+        planNavRow.style.cssText='display:flex; gap:16px; width:100%; align-items:center; justify-content:space-between;';
+        var linkCookOnly=document.createElement('button');
+        linkCookOnly.type='button';
+        linkCookOnly.className='inserat-footer-link footer-link-secondary btn-secondary-link';
+        linkCookOnly.style.cssText='background:none; border:none; padding:12px 0; font-size:15px; font-weight:bold; color:#222222; cursor:pointer; text-decoration:underline;';
+        linkCookOnly.textContent='Abbrechen';
+        linkCookOnly.onclick=function(){ hapticLight(); closeWizard(); };
+        var btnWeekPlan=document.createElement('button');
+        btnWeekPlan.type='button';
+        btnWeekPlan.className='inserat-footer-btn-main footer-btn-primary btn-primary-black';
+        btnWeekPlan.style.cssText='flex:1; height:48px; min-width:180px; padding:0 24px; border:none; border-radius:8px; background:#222222; color:white; font-size:16px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center;';
+        btnWeekPlan.textContent='Einplanen';
+        btnWeekPlan.onclick=function(){
+          if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; }
+          if(typeof haptic==='function') haptic(50);
+          var id=saveToCookbookFromWizard();
+          if(id && w.data.day){
+            if(!week[w.data.day]) week[w.data.day]=[];
+            var c=cookbook.find(function(x){ return x.id===id; });
+            if(c) week[w.data.day].push({ providerId:c.providerId, cookbookId:c.id, dish:c.dish, price:c.price });
+            save(LS.week, week);
+            closeWizard(true);
+            showSaveSuccessSheet({ title:'Im Wochenplan gespeichert', sub:'Dein Gericht ist im Wochenplan eingetragen.', dishName: w.data.dish||'', price: w.data.price, imageUrl: w.data.photoData||'', savedEntryId: id, savedDay: w.data.day, onFertig: function(){ if(typeof showToast==='function') showToast('Im Wochenplan gespeichert ­ƒôà'); if(typeof showProviderWeek==='function') showProviderWeek(); }, onLive: null });
+          } else if(id){ if(typeof showToast==='function') showToast('Bitte zuerst ein Datum im Wochenplan w├ñhlen'); }
+        };
+        planNavRow.appendChild(linkCookOnly);
+        planNavRow.appendChild(btnWeekPlan);
+        actionSection.appendChild(planNavRow);
+      } else if(entryPoint === 'dashboard'){
+        /* ImmoScout-Footer: Beide Buttons gleich gro├ƒ, Airbnb Black [cite: 2026-02-21] */
+        var step1NavRow=document.createElement('div');
+        step1NavRow.className='inserat-step1-nav system-footer-merged app-footer-main';
+        step1NavRow.style.cssText='display:flex; gap:12px; width:100%; align-items:stretch;';
+        var btnAbbrechen=document.createElement('button');
+        btnAbbrechen.type='button';
+        btnAbbrechen.className='inserat-btn-step1-left btn-secondary-link nav-btn-primary nav-btn-equal';
+        btnAbbrechen.style.cssText='flex:0; min-height:48px; padding:0 16px; border:none; background:transparent !important; font-size:16px; font-weight:bold; color:#222222 !important; cursor:pointer; text-decoration:underline;';
+        btnAbbrechen.textContent='Abbrechen';
+        btnAbbrechen.onclick=function(){ hapticLight(); if(typeof handleWizardExit==='function') handleWizardExit(); };
+        var btnWeiter=document.createElement('button');
+        btnWeiter.type='button';
+        btnWeiter.id='btnNext';
+        btnWeiter.className='inserat-btn-step1-right btn-primary-black nav-btn-primary nav-btn-equal';
+        btnWeiter.style.cssText='flex:1; min-height:48px; height:48px; padding:0 24px; border:none; border-radius:8px; background:#222222 !important; color:white !important; font-size:16px; font-weight:800; cursor:pointer;';
+        btnWeiter.textContent='Weiter';
+        btnWeiter.disabled=true;
+        btnWeiter.onclick=function(){
+          hapticLight();
+          if(typeof handlePriceFastInsert==='function') handlePriceFastInsert(box);
+          if(updateStep2ContextZoneRef) updateStep2ContextZoneRef();
+          w.inseratStep=2; saveDraft();
+          if(slider){
+            var sweepEl=box.querySelector('.step2-slot-machine-sweep');
+            if(sweepEl){ sweepEl.classList.remove('animate'); sweepEl.offsetHeight; sweepEl.classList.add('animate'); sweepEl.addEventListener('animationend',function onSweepEnd(){ sweepEl.removeEventListener('animationend',onSweepEnd); sweepEl.classList.remove('animate'); },{once:true}); }
+            slider.setAttribute('data-inserat-step','2');
+            var wizardEl=document.getElementById('wizard');
+            if(wizardEl) wizardEl.classList.add('inserat-step2-active');
+            var f=box.querySelector('.inserat-airbnb-footer'); if(f) f.style.display='flex';
+          } else { rebuildWizard(); }
+        };
+        step1NavRow.appendChild(btnAbbrechen);
+        step1NavRow.appendChild(btnWeiter);
+        actionSection.appendChild(step1NavRow);
+      } else {
+        /* ImmoScout-Footer Plan-Mode: Links Text-Link, Rechts schwarzer Prim├ñr-Button */
+        var planRow=document.createElement('div');
+        planRow.className='app-footer-main';
+        planRow.style.cssText='display:flex; gap:16px; width:100%; align-items:center; justify-content:space-between;';
+        var linkKochbuch=document.createElement('button');
+        linkKochbuch.type='button';
+        linkKochbuch.className='inserat-footer-link footer-link-secondary btn-secondary-link';
+        linkKochbuch.style.cssText='background:none; border:none; padding:12px 0; font-size:15px; font-weight:bold; color:#222222; cursor:pointer; text-decoration:underline;';
+        linkKochbuch.textContent='Abbrechen';
+        linkKochbuch.onclick=function(){ hapticLight(); closeWizard(); };
+        var btnEinplanen=document.createElement('button');
+        btnEinplanen.type='button';
+        btnEinplanen.className='inserat-footer-btn-main footer-btn-primary btn-primary-black';
+        btnEinplanen.style.cssText='flex:1; height:48px; min-width:180px; padding:0 24px; border:none; border-radius:8px; background:#222222; color:white; font-size:16px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center;';
+        btnEinplanen.textContent='Einplanen';
+        btnEinplanen.onclick=function(){
+          if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; }
+          if(typeof haptic==='function') haptic(50);
+          var id=saveToCookbookFromWizard();
+          if(id && w.data.day){
+            if(!week[w.data.day]) week[w.data.day]=[];
+            var c=cookbook.find(function(x){ return x.id===id; });
+            if(c) week[w.data.day].push({ providerId:c.providerId, cookbookId:c.id, dish:c.dish, price:c.price });
+            save(LS.week, week);
+            closeWizard(true);
+            showSaveSuccessSheet({
+              title:'Im Wochenplan gespeichert',
+              sub:'Dein Gericht ist im Wochenplan eingetragen.',
+              dishName: w.data.dish||'',
+              price: w.data.price,
+              imageUrl: w.data.photoData||'',
+              savedEntryId: id,
+              savedDay: w.data.day,
+              onFertig: function(){ if(typeof showToast==='function') showToast('Im Wochenplan gespeichert ­ƒôà'); if(typeof showProviderWeek==='function') showProviderWeek(); },
+              onLive: null
+            });
+          } else if(id){ if(typeof showToast==='function') showToast('Bitte zuerst ein Datum im Wochenplan w├ñhlen'); }
+        };
+        planRow.appendChild(linkKochbuch);
+        planRow.appendChild(btnEinplanen);
+        actionSection.appendChild(planRow);
+      }
+      step1Container.appendChild(actionSection);
+
+      if(slider){
+        box.appendChild(slider);
+        var airbnbFooter=document.createElement('div');
+        airbnbFooter.className='app-footer-main';
+        airbnbFooter.setAttribute('data-inserat-step','2');
+        airbnbFooter.style.display=inseratStep===2?'flex':'none';
+        var linkZurueck=document.createElement('button');
+        linkZurueck.type='button';
+        linkZurueck.className='inserat-footer-link';
+        linkZurueck.style.cssText='background:none; border:none; padding:12px 0; font-size:15px; font-weight:bold; color:#222222; cursor:pointer; text-decoration:underline; flex-shrink:0;';
+        linkZurueck.textContent='Zur├╝ck';
+        linkZurueck.className='inserat-footer-link footer-link-secondary btn-secondary-link';
+        linkZurueck.onclick=function(){ hapticLight(); w.inseratStep=1; saveDraft(); if(slider) slider.setAttribute('data-inserat-step','1'); airbnbFooter.style.display='none'; var sf=box.querySelector('.inserat-step3-footer'); if(sf) sf.style.display='none'; var wizardEl=document.getElementById('wizard'); if(wizardEl){ wizardEl.classList.remove('inserat-step2-active'); wizardEl.classList.remove('inserat-step3-active'); } };
+        var footerBtn=document.createElement('button');
+        footerBtn.type='button';
+        footerBtn.className='inserat-footer-btn-main footer-btn-primary btn-primary-black' + (w.data.pricingChoice==='499' ? ' inserat-footer-btn--499' : ' free-mode is-free-mode');
+        footerBtn.textContent=(w.data.pricingChoice==='499' ? 'F├╝r 4,99 Ôé¼ inserieren' : 'Kostenlos inserieren');
+        footerBtn.onclick=function(){
+          if(!(!!(w.data.dish&&String(w.data.dish).trim())&&Number(w.data.price)>0)){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; }
+          hapticLight();
+          var choice=w.data.pricingChoice||'pro';
+          if(choice==='499'){
+            w.data.hasPickupCode=false; w.data.inseratFeeWaived=false; w.data.pricingOption=undefined;
+            var o=previewOfferFromWizard(); publishFeeUseStep3=true; showPublishFeeModal(o);
+          } else {
+            w.data.hasPickupCode=true; w.data.inseratFeeWaived=true; w.data.pricingOption='abholnummer';
+            var o=previewOfferFromWizard();
+            var existingOfferS2=(w.ctx&&w.ctx.editOfferId&&typeof offers!=='undefined')?offers.find(function(x){return x.id===w.ctx.editOfferId;}):null;
+            var todayKeyS2=typeof isoDate==='function'?isoDate(new Date()):'';
+            var isEditActiveS2=!!(existingOfferS2&&existingOfferS2.day===todayKeyS2&&existingOfferS2.active!==false);
+            if(isEditActiveS2){
+              var published=typeof publishOffer==='function'?publishOffer(o):null;
+              if(published){ if(typeof slideWizardToStep3==='function') slideWizardToStep3(published); else { closeWizard(true); if(typeof showInseratSuccessSheet==='function') showInseratSuccessSheet(published); else if(typeof showProviderHome==='function') showProviderHome(); } return; }
+            }
+            var premiumCard=box.querySelector('.price-card.premium');
+            if(premiumCard){ premiumCard.classList.add('is-loading'); premiumCard.dataset.originalHtml=premiumCard.innerHTML; premiumCard.innerHTML='<span class="inserat-btn-spinner" style="width:24px;height:24px;border:3px solid rgba(16,185,129,0.3);border-top-color:#10b981;border-radius:50%;animation:inserat-spin 0.8s linear infinite;display:block;margin:24px auto;"></span>'; }
+            publishFeeUseStep3=true;
+            setTimeout(function(){ showPublishFeeModal(o); }, 800);
+          }
+        };
+        airbnbFooter.appendChild(linkZurueck);
+        airbnbFooter.appendChild(footerBtn);
+        box.appendChild(airbnbFooter);
+        var updateFooterVisibility=function(){ var s=1; try{ var sl=box.querySelector('.inserat-steps-slider'); if(sl) s=parseInt(sl.getAttribute('data-inserat-step')||'1',10); }catch(e){} airbnbFooter.style.display=s===2?'flex':'none'; var sf=box.querySelector('.inserat-step3-footer'); if(sf) sf.style.display=s===3?'flex':'none'; };
+        slider.addEventListener('transitionend', updateFooterVisibility);
+        requestAnimationFrame(function(){ updateFooterVisibility(); });
+      }
+
+      if(w.ctx && w.ctx.showDraftOverlay){
+        if(!box.style.position) box.style.position = 'relative';
+        box.classList.add('draft-card-ghost');
+        var draftOverlay = document.createElement('div');
+        draftOverlay.className = 'draft-restore-overlay';
+        draftOverlay.setAttribute('role','dialog');
+        draftOverlay.setAttribute('aria-label','Entwurf fortsetzen');
+        draftOverlay.innerHTML = '<div class="draft-restore-box"><p class="draft-restore-text">Du hast hier noch einen Entwurf. M├Âchtest du ihn fertigstellen?</p><div class="draft-restore-btns"><button type="button" class="draft-restore-fortsetzen">Fortsetzen</button><button type="button" class="draft-restore-neu">Neu starten</button></div></div>';
+        var btnFortsetzen = draftOverlay.querySelector('.draft-restore-fortsetzen');
+        var btnNeu = draftOverlay.querySelector('.draft-restore-neu');
+        if(btnFortsetzen) btnFortsetzen.onclick = function(){
+          try { if(navigator.vibrate) navigator.vibrate(10); } catch(e){}
+          hapticLight();
+          draftOverlay.classList.add('draft-restore-overlay-out');
+          setTimeout(function(){ draftOverlay.remove(); box.classList.remove('draft-card-ghost'); if(w.ctx) w.ctx.showDraftOverlay = false; }, 320);
+        };
+        if(btnNeu) btnNeu.onclick = function(){
+          try { if(navigator.vibrate) navigator.vibrate(10); } catch(e){}
+          hapticLight();
+          draftOverlay.classList.add('draft-restore-overlay-out');
+          setTimeout(function(){
+            draftOverlay.remove();
+            localStorage.removeItem('wizard_draft');
+            startWizard('listing', w.ctx && w.ctx.draftRestoreContext ? w.ctx.draftRestoreContext : (w.ctx || {}));
+          }, 320);
+        };
+        box.appendChild(draftOverlay);
+      }
+
+      } /* Ende else (Step 1) */
+
+      /* Keyboard-Scroll-Sync: Input bleibt 20px ├╝ber Tastatur (visualViewport + scroll-margin) [cite: 2026-02-18, 2026-02-21] */
+      function scrollInputAboveKeyboard(el){
+        if(!el || (el.tagName !== 'INPUT' && el.tagName !== 'TEXTAREA')) return;
+        if(typeof window.visualViewport !== 'undefined'){
+          var vh = window.visualViewport.height;
+          var gap = 20;
+          var rect = el.getBoundingClientRect();
+          if(rect.bottom > vh - gap){
+            var scrollArea = box.querySelector('.inserat-scroll-area');
+            if(scrollArea && scrollArea.scrollHeight > scrollArea.clientHeight){
+              var delta = rect.bottom - (vh - gap);
+              scrollArea.scrollTop = Math.min(scrollArea.scrollTop + delta, scrollArea.scrollHeight - scrollArea.clientHeight);
+            } else {
+              el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+          }
+        } else {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }
+      sheet.addEventListener('focusin', function(e){
+        var el = e.target;
+        if(el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA')){
+          setTimeout(function(){ scrollInputAboveKeyboard(el); }, 150);
+          if(typeof el.scrollIntoView === 'function') el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      });
+      var vvHandler = function(){
+        var active = document.activeElement;
+        if(active && active.closest && active.closest('#wizard') && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA')){
+          scrollInputAboveKeyboard(active);
+        }
+      };
+      if(typeof window.visualViewport !== 'undefined'){
+        window.visualViewport.addEventListener('resize', vvHandler);
+        window.visualViewport.addEventListener('scroll', vvHandler);
+      }
+      setWizardContent(sheet);
+      requestAnimationFrame(function(){ requestAnimationFrame(function(){ box.classList.add('is-open'); if(typeof applyVendorFooterPadding==='function') applyVendorFooterPadding(); }); });
+      // ZERO-CLICK FOCUS: Tastatur sofort aufklappen ÔÇô Fokus immer auf Namensfeld [cite: 2026-02-23]
+      setTimeout(function(){
+        var titleInput = box.querySelector('#gericht-name, #step-name input.magnet-input, #step-name .inserat-detail-style-title');
+        if(titleInput){
+          titleInput.focus();
+          var val = titleInput.value || '';
+          if(val){ titleInput.value = ''; titleInput.value = val; }
+        }
+        var photoEl = box.querySelector('.photo-header, .inserat-photo-tile');
+        if(photoEl && !w.data.photoData) photoEl.classList.add('inserat-card-photo-pulse');
+        if(typeof applyVendorFooterPadding==='function') applyVendorFooterPadding();
+      }, 300);
+      return;
+    }
+
+  }
+
+
   function openListingWizard(){
     var d = { name:'', price:'', category:'Fleisch', isReusable:true };
     openMastercard(d);
@@ -15467,19 +16438,7 @@
     if(wizardEl) wizardEl.setAttribute('data-flow', 'listing');
     clearWizardActionsBar();
     openWizard();
-    setWizardHeader('', '');
-    setWizardQuestion('', '');
-    var container = document.createElement('div');
-    container.id = 'mastercard-container';
-    container.className = 'mastercard-container mastercard-main-container is-open';
-    container.style.cssText = 'display:flex; flex-direction:column; align-items:center; width:100%; padding:24px; padding-bottom:100px; box-sizing:border-box; min-height:100%;';
-    container.innerHTML = '<button type="button" class="close-mastercard btn-close-master" aria-label="Schließen" onclick="if(typeof closeMastercard===\'function\') closeMastercard();" style="position:absolute; top:20px; left:20px; width:44px; height:44px; border:none; background:rgba(0,0,0,0.06); border-radius:50%; font-size:24px; cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:1001;">×</button><div style="font-size:18px; font-weight:700; color:#0f172a;">Dein Inserat</div><p style="margin:8px 0 0; font-size:14px; color:#64748b;">Mastercard-Placeholder</p>';
-    var footer = document.createElement('footer');
-    footer.className = 'app-footer-main';
-    footer.style.cssText = 'position:fixed; bottom:0; left:0; right:0; background:#fff; border-top:1px solid #ebebeb; padding:12px 24px; padding-bottom:max(12px, env(safe-area-inset-bottom)); display:flex; justify-content:space-between; align-items:center; z-index:500;';
-    footer.innerHTML = '<a href="#" class="footer-link-secondary" onclick="event.preventDefault(); if(typeof closeMastercard===\'function\') closeMastercard();" style="color:#222; font-weight:700;">Abbrechen</a><button type="button" class="footer-btn-primary" disabled style="background:#e2e8f0; color:#94a3b8; padding:14px 28px; border-radius:8px; border:none; font-weight:600;">Weiter</button>';
-    container.appendChild(footer);
-    setWizardContent(container);
+    buildListingStep();
   }
   if(typeof window !== 'undefined') window.openMastercard = openMastercard;
 
