@@ -1676,9 +1676,37 @@
     #mastercard-step-edit .inserat-scroll-area { padding: 24px 20px 140px !important; }
     #mastercard-step-edit .pill-group { margin-top: 12px; }
     #mastercard-step-edit .pill-cloud.categories { gap: 10px; }
-    #mastercard-step-edit .pill-cloud.allergens { gap: 6px; margin-top: 4px; }
-    #mastercard-step-edit .power-item { flex: 1; min-width: 60px; padding: 10px; background: #f8fafc; border-radius: 12px; text-align: center; font-size: 12px; font-weight: 700; border: 1px solid #e2e8f0; transition: all 0.2s ease; }
-    #mastercard-step-edit .power-item.active { background: #000; color: #fff; border-color: #000; }
+    /* Allergen-Pills gestrichen [cite: 2026-02-21] */
+    /* PowerBar Regel 2026-02-23: Reihenfolge 🍴🔄🕒🌾➕, Direkt-Toggle vs. Quick-Adjust */
+    #mastercard-step-edit .power-item,
+    #wizard[data-flow="listing"] .inserat-power-bar .power-item {
+      flex: 1; min-width: 44px; min-height: 44px; padding: 10px; border-radius: 12px; text-align: center; font-size: 14px; font-weight: 700;
+      border: 1px solid #e2e8f0; background: #f8fafc; color: #64748b;
+      transition: all 0.2s cubic-bezier(0.4,0,0.2,1); cursor: pointer; user-select: none;
+    }
+    #mastercard-step-edit .power-item.active,
+    #wizard[data-flow="listing"] .inserat-power-bar .power-item.active {
+      background: #000000 !important; color: #ffffff !important; border-color: #000000 !important;
+    }
+    #mastercard-step-edit .power-item:active,
+    #wizard[data-flow="listing"] .inserat-power-bar .power-item:active {
+      transform: scale(0.92);
+    }
+    /* Quick-Adjust Sheet: Weißes Menü von unten, über Footer (z-index 600) [cite: Regel 2026-02-23] */
+    .quick-adjust-sheet,
+    .inserat-quick-adjust-panel.quick-adjust-sheet {
+      position: fixed !important; left: 0; right: 0; bottom: 0; z-index: 600;
+      background: #ffffff; border-radius: 20px 20px 0 0;
+      padding: 24px 20px calc(24px + env(safe-area-inset-bottom, 0));
+      box-shadow: 0 -8px 32px rgba(0,0,0,0.15);
+      max-height: 70vh; overflow-y: auto;
+    }
+    .quick-adjust-headline { margin: 0 0 20px; font-size: 18px; font-weight: 800; color: #0f172a; }
+    .quick-adjust-fertig {
+      width: 100%; min-height: 56px; margin-top: 24px; padding: 16px;
+      border: none; border-radius: 16px; background: #0f172a; color: #ffffff;
+      font-size: 18px; font-weight: 800; cursor: pointer;
+    }
     #mastercard-step-edit .power-bar-module.inserat-power-bar { display: flex; gap: 10px; margin: 15px 0; flex-wrap: wrap; }
     #mastercard-step-edit .input-description { width: 100%; border: none; font-size: 16px; color: #64748b; resize: none; padding: 10px 0; margin-bottom: 20px; text-align: center; }
     #mastercard-step-edit .price-section { margin-bottom: 20px; }
@@ -2885,26 +2913,34 @@
       100% { transform: scale(1); }
     }
     /* Hero-Morph: gelber Preis-Button expandiert zu 4rem-Zahlenfeld in der Mitte [cite: 2026-02-16 S25] */
-    #wizard[data-flow="listing"] .inserat-cat-price-row.hero-morph-active {
+    #wizard[data-flow="listing"] .inserat-cat-price-row.hero-morph-active,
+    #wizard[data-flow="listing"] .price-section.hero-morph-active {
       flex-wrap: wrap;
     }
-    #wizard[data-flow="listing"] .inserat-cat-price-row.hero-morph-active .inserat-price-pill-wrap {
+    #wizard[data-flow="listing"] .inserat-cat-price-row.hero-morph-active .inserat-price-pill-wrap,
+    #wizard[data-flow="listing"] .price-section.hero-morph-active .inserat-price-pill-wrap {
       width: 100%; max-width: 100%; justify-content: center; padding: 16px;
       border-radius: 20px; transition: width 0.35s cubic-bezier(0.4,0,0.2,1), padding 0.35s ease;
+      background: #f8fafc;
     }
-    #wizard[data-flow="listing"] .inserat-cat-price-row.hero-morph-active .inserat-price-pill-input.inserat-price-fintech {
+    #wizard[data-flow="listing"] .inserat-cat-price-row.hero-morph-active .inserat-price-pill-input.inserat-price-fintech,
+    #wizard[data-flow="listing"] .price-section.hero-morph-active .inserat-price-pill-input.inserat-price-fintech {
       width: 140px; font-size: 4rem !important; text-align: center;
     }
-    #wizard[data-flow="listing"] .inserat-cat-price-row.hero-morph-active .inserat-price-pill-euro {
+    #wizard[data-flow="listing"] .inserat-cat-price-row.hero-morph-active .inserat-price-pill-euro,
+    #wizard[data-flow="listing"] .price-section.hero-morph-active .inserat-price-pill-euro {
       font-size: 1.5rem; font-weight: 900; vertical-align: super; margin-left: 6px;
     }
-    #wizard[data-flow="listing"] .inserat-cat-price-row:not(.hero-morph-active) .inserat-price-pill-wrap {
+    #wizard[data-flow="listing"] .inserat-cat-price-row:not(.hero-morph-active) .inserat-price-pill-wrap,
+    #wizard[data-flow="listing"] .price-section:not(.hero-morph-active) .inserat-price-pill-wrap {
       cursor: pointer;
     }
-    #wizard[data-flow="listing"] .inserat-cat-price-row:not(.hero-morph-active) .inserat-price-pill-wrap .inserat-price-pill-input {
+    #wizard[data-flow="listing"] .inserat-cat-price-row:not(.hero-morph-active) .inserat-price-pill-wrap .inserat-price-pill-input,
+    #wizard[data-flow="listing"] .price-section:not(.hero-morph-active) .inserat-price-pill-wrap .inserat-price-pill-input {
       pointer-events: none;
     }
-    #wizard[data-flow="listing"] .inserat-cat-price-row.hero-morph-active .inserat-price-pill-wrap .inserat-price-pill-input {
+    #wizard[data-flow="listing"] .inserat-cat-price-row.hero-morph-active .inserat-price-pill-wrap .inserat-price-pill-input,
+    #wizard[data-flow="listing"] .price-section.hero-morph-active .inserat-price-pill-wrap .inserat-price-pill-input {
       pointer-events: auto;
     }
 
@@ -3038,9 +3074,9 @@
       align-items: stretch !important;
     }
     body.wizard-inserat-open #wizard[data-flow="listing"] .inserat-step1-nav .inserat-btn-step1-left {
-      flex: 1 !important;
+      flex: 0 !important;
+      min-width: auto !important;
       min-height: 48px !important;
-      height: 48px !important;
       border-radius: 0 !important;
       background: transparent !important;
       color: #ffffff !important;
@@ -3336,7 +3372,7 @@
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-unified-pills .status-pill.active { background: #fff; color: #059669; border: 2px solid #10b981; }
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-unified-pills .status-pill.inactive { background: rgba(248,250,252,0.8); color: #64748b; border: 2px solid transparent; }
     #wizard[data-flow="listing"] .inserat-power-bar .func-icon-btn { width: 44px; height: 44px; min-width: 44px; min-height: 44px; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; font-size: 20px; border: 2px solid rgba(0,0,0,0.08); background: rgba(248,250,252,0.8); transition: background 0.2s, color 0.2s, transform 0.1s cubic-bezier(0.4,0,0.2,1); cursor: pointer; -webkit-tap-highlight-color: transparent; }
-    #wizard[data-flow="listing"] .inserat-power-bar .func-icon-btn.active { background: #fff; color: #059669; border-color: #10b981; }
+    #wizard[data-flow="listing"] .inserat-power-bar .func-icon-btn.active { background: #f1f5f9; color: #0f172a; border-color: rgba(0,0,0,0.12); }
     #wizard[data-flow="listing"] .inserat-power-bar .func-icon-btn:active { transform: scale(0.9); }
     /* Layout-Lock: Power-Bar feste Flex-Row unter dem Bild – Icons verschieben sich nie [Stabilität] */
     .inserat-power-bar {
@@ -3389,16 +3425,22 @@
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .power-bar-legend-trigger {
       background: transparent !important; border: none !important; box-shadow: none !important; color: #94a3b8;
     }
-    /* Aktiv: clean, technisch – kein Glow [cite: 2026-02-21 S25 High-End] */
+    /* Aktiv: neutral Grau/Schwarz – kein Grün [cite: FINALE POLISH 2026-02-21] */
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .status-pill.active,
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .func-icon-btn.active {
-      background: rgba(16,185,129,0.12) !important; color: #059669 !important; border: none !important;
+      background: #f1f5f9 !important; color: #0f172a !important; border: none !important;
     }
     /* Bottom-Nav-Style: Beide Buttons gleich groß (48px), Airbnb Black [cite: 2026-02-21] */
     #wizard[data-flow="listing"] .inserat-step1-nav {
       display: flex; gap: 12px; width: 100%; min-height: 48px; align-items: stretch;
     }
-    #wizard[data-flow="listing"] .inserat-btn-step1-left,
+    #wizard[data-flow="listing"] .inserat-btn-step1-left {
+      flex: 0 !important; min-width: auto; background: transparent !important; color: #ffffff !important; text-decoration: underline;
+    }
+    #wizard[data-flow="listing"] .inserat-btn-step1-left:hover,
+    #wizard[data-flow="listing"] .inserat-btn-step1-left:focus {
+      background: transparent !important; color: #ffffff !important; opacity: 0.9;
+    }
     #wizard[data-flow="listing"] .inserat-btn-step1-right {
       flex: 1; min-height: 48px; border-radius: 8px !important; box-shadow: none !important; border: none !important;
     }
@@ -3857,7 +3899,7 @@
     }
     #wizard[data-flow="listing"] .inserat-price-pill-wrap {
       display: inline-flex; align-items: center; flex-shrink: 0;
-      padding: 8px 14px; border-radius: 999px; background: rgba(255,215,0,0.95); box-shadow: 0 2px 8px rgba(255,215,0,0.3);
+      padding: 8px 14px; border-radius: 999px; background: #f8fafc; box-shadow: 0 1px 4px rgba(0,0,0,0.06);
     }
     #wizard[data-flow="listing"] .inserat-price-pill-input {
       width: 56px; border: none; background: transparent; font-size: 16px; font-weight: 900; color: #1a1a1a;

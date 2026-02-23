@@ -15792,7 +15792,7 @@
       stepName.style.cssText='width:100%; margin-top:16px; margin-bottom:8px; display:flex; justify-content:center;';
       scrollArea.appendChild(stepName);
 
-      // ========== 3. Kategorie-Pills & Allergene (Pill-Cloud) [cite: FINALE NEUAUFBAU 2026-02-21] ==========
+      // ========== 3. Kategorie-Pills (Allergene gestrichen) [cite: 2026-02-21] ==========
       var pillGroup=document.createElement('div');
       pillGroup.className='pill-group system-content-body';
       pillGroup.style.cssText='display:flex; flex-direction:column; gap:12px; margin-top:12px;';
@@ -15816,32 +15816,6 @@
         categoryPills.appendChild(b);
       });
       pillGroup.appendChild(categoryPills);
-      var allergenPills=document.createElement('div');
-      allergenPills.className='pill-cloud allergens';
-      allergenPills.id='allergenPills';
-      allergenPills.style.cssText='display:flex; flex-wrap:wrap; gap:6px; align-items:center;';
-      var allergenCodes=(typeof ALLERGENS_14!=='undefined'?ALLERGENS_14:[]).slice(0,8);
-      allergenCodes.forEach(function(a){
-        var code=a.short||a; var name=(a.name||code).substring(0,1); var emo=(typeof ALLERGEN_EMOJI!=='undefined'&&ALLERGEN_EMOJI[code])?ALLERGEN_EMOJI[code]:'\uD83C\uDF3F'; var active=(w.data.allergens||[]).includes(code);
-        var pill=document.createElement('button');
-        pill.type='button';
-        pill.className='pill power-item'+(active?' active':'');
-        pill.style.cssText='min-height:36px; padding:6px 10px; border-radius:10px; border:1px solid #e2e8f0; background:#f8fafc; font-size:11px; font-weight:700; color:#64748b; cursor:pointer;';
-        if(active) pill.style.cssText+=' background:#000; color:#fff; border-color:#000;';
-        pill.textContent=emo+' '+name;
-        pill.title=a.name||code;
-        pill.onclick=function(){ hapticLight(); if(!w.data.allergens) w.data.allergens=[]; if(active){ w.data.allergens=w.data.allergens.filter(function(x){return x!==code;}); } else{ w.data.allergens.push(code); } w.data.wantsAllergens=true; saveDraft(); rebuildWizard(); };
-        allergenPills.appendChild(pill);
-      });
-      var moreAllergen=document.createElement('button');
-      moreAllergen.type='button';
-      moreAllergen.className='pill power-item';
-      moreAllergen.style.cssText='min-height:36px; padding:6px 10px; border-radius:10px; border:1px solid #e2e8f0; background:#f8fafc; font-size:11px; font-weight:700; color:#64748b; cursor:pointer;';
-      moreAllergen.textContent='\uD83C\uDF3F +';
-      moreAllergen.title='Alle Allergene';
-      moreAllergen.onclick=function(){ hapticLight(); openQuickAdjust('allergens'); };
-      allergenPills.appendChild(moreAllergen);
-      pillGroup.appendChild(allergenPills);
       scrollArea.appendChild(pillGroup);
 
       // ========== 4. Beschreibung (Textarea) [cite: FINALE NEUAUFBAU 2026-02-21] ==========
@@ -15883,81 +15857,72 @@
       stepPriceWrap.appendChild(eurSpan);
       priceInputWrapper.appendChild(stepPriceWrap);
       priceSection.appendChild(priceInputWrapper);
-      var btnAddExtra=document.createElement('button');
-      btnAddExtra.type='button';
-      btnAddExtra.className='btn-add-extra';
-      btnAddExtra.style.cssText='padding:10px 20px; border-radius:12px; border:2px solid #e2e8f0; background:transparent; color:#64748b; font-size:14px; font-weight:700; cursor:pointer;';
-      btnAddExtra.textContent='+ Extra mit Aufpreis';
-      btnAddExtra.onclick=function(){ hapticLight(); openQuickAdjust('extras'); };
-      priceSection.appendChild(btnAddExtra);
       scrollArea.appendChild(priceSection);
 
-      // ========== 6. Power-Bar (Vor Ort, Mehrweg, Abholnummer + Zeitfenster) [cite: FINALE NEUAUFBAU 2026-02-21] ==========
-      var pwParts=(w.data.pickupWindow||profileWindow).split(/\s*[–\-]\s*/);
-      var timeStart=(pwParts[0]||'11:30').trim();
-      var timeEnd=(pwParts[1]||'14:00').trim();
-      if(timeStart.length===4) timeStart='0'+timeStart;
-      if(timeEnd.length===4) timeEnd='0'+timeEnd;
+      // ========== 6. Power-Bar [cite: Regel 2026-02-23] Reihenfolge: 🍴 Vor Ort -> 🔄 Mehrweg -> 🕒 Abholzeit -> 🌾 Allergene -> ➕ Extras ==========
       const powerBar=document.createElement('div');
-      powerBar.className='inserat-power-bar inserat-unified-pills inserat-soft-shell';
-      var hasReuse = !!(w.data.reuse && w.data.reuse.enabled);
-      function addPowerPill(emo, label, active, toggleKey){
-        const wrap=document.createElement('button');
-        wrap.type='button';
-        wrap.className='status-pill inserat-soft-pill '+(active?'active':'inactive');
-        wrap.setAttribute('aria-label', label);
-        wrap.setAttribute('title', label);
-        wrap.innerHTML='<span class="inserat-pill-emo">'+emo+'</span>';
-        wrap.onclick=function(e){ e.preventDefault(); e.stopPropagation(); if(typeof triggerHapticFeedback==='function') triggerHapticFeedback([5]); if(toggleKey==='reuse'){ w.data.reuse=w.data.reuse||{}; w.data.reuse.enabled=!w.data.reuse.enabled; } else w.data[toggleKey]=!w.data[toggleKey]; saveDraft(); rebuildWizard(); };
-        powerBar.appendChild(wrap);
+      powerBar.className='inserat-power-bar inserat-unified-pills inserat-soft-shell power-bar-module';
+      var hasDineIn=w.data.dineInPossible!==false;
+      var hasReuse=!!(w.data.reuse&&w.data.reuse.enabled);
+      var hasTimeValue=!!(w.data.pickupWindow&&w.data.pickupWindow.trim())||(w.data.mealStart&&w.data.mealEnd);
+      var hasAllergens=!!(w.data.allergens&&w.data.allergens.length);
+      var hasExtras=!!(w.data.extras&&w.data.extras.length);
+      function handlePowerBarInteraction(type){
+        try{ if(navigator.vibrate) navigator.vibrate(10); }catch(e){}
+        hapticLight();
+        if(type==='vor-ort'||type==='mehrweg'){
+          var item=powerBar.querySelector('.power-item[data-type="'+type+'"]');
+          if(item){
+            var isActive=item.classList.toggle('active');
+            if(type==='vor-ort'){ w.data.dineInPossible=isActive; } else if(type==='mehrweg'){ w.data.reuse=w.data.reuse||{}; w.data.reuse.enabled=isActive; }
+            saveDraft();
+          }
+        } else {
+          openQuickAdjust(type==='zeit'?'time':(type==='allergene'?'allergens':'extras'));
+        }
       }
-      /* 🍴 Vor Ort: aus Profil – aktiv wenn dort eingespeichert (dineInPossibleDefault) */
-      function addPowerPillStatic(emo, label, isActive){
-        const wrap=document.createElement('span');
-        wrap.className='status-pill inserat-soft-pill ' + (isActive ? 'active' : 'inactive') + ' power-pill-static';
-        wrap.setAttribute('aria-label', label);
-        wrap.setAttribute('title', label);
-        wrap.innerHTML='<span class="inserat-pill-emo">'+emo+'</span>';
-        powerBar.appendChild(wrap);
+      function addPowerItem(emo, label, type, isActive){
+        var btn=document.createElement('button');
+        btn.type='button';
+        btn.className='power-item status-pill inserat-soft-pill '+(isActive?'active':'inactive');
+        btn.setAttribute('data-type',type);
+        btn.setAttribute('aria-label',label);
+        btn.setAttribute('title',label);
+        btn.innerHTML='<span class="inserat-pill-emo">'+emo+'</span>';
+        btn.onclick=function(){ handlePowerBarInteraction(type); };
+        powerBar.appendChild(btn);
       }
-      var profileDineIn = (provider.profile && provider.profile.dineInPossibleDefault !== undefined) ? !!provider.profile.dineInPossibleDefault : true;
-      addPowerPillStatic('🍴','Vor Ort', profileDineIn);
-      var profileAbholnummer = !!(provider.profile && provider.profile.abholnummerEnabledByDefault);
-      if(profileAbholnummer){
-        addPowerPillStatic('🧾','Abholnummer', !!(w.data.hasPickupCode));
-      }
-      addPowerPill('🔄','Mehrweg', hasReuse, 'reuse');
-      const hasTimeValue=!!(w.data.pickupWindow&&w.data.pickupWindow.trim())||(w.data.mealStart&&w.data.mealEnd);
-      const timePill=document.createElement('button');
-      timePill.type='button';
-      timePill.className='status-pill inserat-soft-pill '+(hasTimeValue?'active':'inactive');
-      timePill.setAttribute('aria-label','Abholzeit bearbeiten');
-      timePill.setAttribute('title','Zeit');
-      timePill.innerHTML='<span class="inserat-pill-emo">🕒</span>';
-      timePill.onclick=function(){ hapticLight(); openQuickAdjust('time'); };
-      powerBar.appendChild(timePill);
+      addPowerItem('\uD83C\uDF74','Vor Ort Essen','vor-ort',hasDineIn);
+      addPowerItem('\uD83D\uDD04','Mehrweg','mehrweg',hasReuse);
+      addPowerItem('\uD83D\uDD54','Abholzeit','zeit',hasTimeValue);
+      addPowerItem('\uD83C\uDF3E','Allergene','allergene',hasAllergens);
+      addPowerItem('\u2795','Extras','extras',hasExtras);
       const quickAdjustPanel=document.createElement('div');
-      quickAdjustPanel.className='inserat-quick-adjust-panel';
-      quickAdjustPanel.style.cssText='display:none; padding:12px 16px; background:rgba(255,255,255,0.6); backdrop-filter:blur(12px); border-top:1px solid rgba(0,0,0,0.06); border-radius:0 0 16px 16px; margin:0 -4px 0 -4px;';
+      quickAdjustPanel.className='inserat-quick-adjust-panel quick-adjust-sheet';
+      quickAdjustPanel.style.cssText='display:none; position:fixed; left:0; right:0; bottom:0; z-index:600; background:#ffffff; border-radius:20px 20px 0 0; padding:24px 20px calc(24px + env(safe-area-inset-bottom,0)); box-shadow:0 -8px 32px rgba(0,0,0,0.15); max-height:70vh; overflow-y:auto;';
       function closeQuickAdjust(){ quickAdjustPanel.style.display='none'; quickAdjustPanel.innerHTML=''; rebuildWizard(); }
       function openQuickAdjust(type){
         hapticLight();
         quickAdjustPanel.innerHTML='';
         quickAdjustPanel.style.display='block';
+        var headline=document.createElement('h3');
+        headline.className='quick-adjust-headline';
+        headline.style.cssText='margin:0 0 20px; font-size:18px; font-weight:800; color:#0f172a;';
         if(type==='time'){
+          headline.textContent='Abholzeit';
+          quickAdjustPanel.appendChild(headline);
           var pwParts=(w.data.pickupWindow||'11:30 – 14:00').split(/\s*[–\-]\s*/);
           var tStart=(pwParts[0]||'11:30').trim(); var tEnd=(pwParts[1]||'14:00').trim();
           if(tStart.length===4) tStart='0'+tStart; if(tEnd.length===4) tEnd='0'+tEnd;
           var row=document.createElement('div'); row.style.cssText='display:flex; align-items:center; justify-content:center; gap:12px; flex-wrap:wrap; padding:8px 0;';
-          var inpStart=document.createElement('input'); inpStart.type='time'; inpStart.value=tStart; inpStart.style.cssText='padding:10px 14px; border-radius:12px; border:2px solid rgba(0,0,0,0.08); background:rgba(255,255,255,0.7); font-size:16px; font-weight:700;';
-          var inpEnd=document.createElement('input'); inpEnd.type='time'; inpEnd.value=tEnd; inpEnd.style.cssText='padding:10px 14px; border-radius:12px; border:2px solid rgba(0,0,0,0.08); background:rgba(255,255,255,0.7); font-size:16px; font-weight:700;';
+          var inpStart=document.createElement('input'); inpStart.type='time'; inpStart.value=tStart; inpStart.style.cssText='padding:12px 16px; border-radius:12px; border:2px solid #e2e8f0; background:#f8fafc; font-size:16px; font-weight:700;';
+          var inpEnd=document.createElement('input'); inpEnd.type='time'; inpEnd.value=tEnd; inpEnd.style.cssText='padding:12px 16px; border-radius:12px; border:2px solid #e2e8f0; background:#f8fafc; font-size:16px; font-weight:700;';
           inpStart.onchange=inpEnd.onchange=function(){ w.data.pickupWindow=inpStart.value+' – '+inpEnd.value; saveDraft(); };
-          row.appendChild(inpStart); row.appendChild(document.createTextNode(' – ')); row.appendChild(inpEnd);
+          row.appendChild(inpStart); row.appendChild(document.createTextNode(' bis ')); row.appendChild(inpEnd);
           quickAdjustPanel.appendChild(row);
-          var btnFertig=document.createElement('button'); btnFertig.type='button'; btnFertig.className='inserat-fertig-kachel'; btnFertig.textContent='Fertig'; btnFertig.style.cssText='margin-top:12px;'; btnFertig.onclick=function(){ hapticLight(); closeQuickAdjust(); };
-          quickAdjustPanel.appendChild(btnFertig);
         } else if(type==='allergens'){
-          var p=document.createElement('p'); p.style.cssText='margin:0 0 12px; font-size:14px; font-weight:800; color:#0f172a;'; p.textContent='Allergene'; quickAdjustPanel.appendChild(p);
+          headline.textContent='Allergene';
+          quickAdjustPanel.appendChild(headline);
           var wrap=document.createElement('div'); wrap.style.cssText='display:flex; flex-wrap:wrap; gap:8px;';
           (typeof ALLERGENS_14!=='undefined'?ALLERGENS_14:[]).forEach(function(a){
             var code=a.short; var name=a.name||code; var active=(w.data.allergens||[]).includes(code);
@@ -15967,10 +15932,9 @@
             wrap.appendChild(pill);
           });
           quickAdjustPanel.appendChild(wrap);
-          var btnFertig=document.createElement('button'); btnFertig.type='button'; btnFertig.className='inserat-fertig-kachel'; btnFertig.textContent='Fertig'; btnFertig.style.cssText='margin-top:12px;'; btnFertig.onclick=function(){ hapticLight(); closeQuickAdjust(); };
-          quickAdjustPanel.appendChild(btnFertig);
         } else if(type==='extras'){
-          var p=document.createElement('p'); p.style.cssText='margin:0 0 12px; font-size:14px; font-weight:800; color:#0f172a;'; p.textContent='Extras'; quickAdjustPanel.appendChild(p);
+          headline.textContent='Extras';
+          quickAdjustPanel.appendChild(headline);
           var defaultExtras=(profile.defaultExtras&&profile.defaultExtras.length)?profile.defaultExtras.slice():[{name:'Beilagensalat',price:2.5},{name:'Mayo',price:0.5},{name:'Ketchup',price:0.5},{name:'Soße',price:1},{name:'Brot',price:1.5}];
           if(!Array.isArray(w.data.extras)) w.data.extras=[];
           var extrasListWrap=document.createElement('div'); extrasListWrap.style.cssText='display:flex; flex-wrap:wrap; gap:8px; align-items:center;';
@@ -15984,26 +15948,15 @@
             extrasListWrap.appendChild(pillWrap);
           });
           quickAdjustPanel.appendChild(extrasListWrap);
-          var btnFertig=document.createElement('button'); btnFertig.type='button'; btnFertig.className='inserat-fertig-kachel'; btnFertig.textContent='Fertig'; btnFertig.style.cssText='margin-top:12px;'; btnFertig.onclick=function(){ hapticLight(); closeQuickAdjust(); };
-          quickAdjustPanel.appendChild(btnFertig);
         }
+        var btnFertig=document.createElement('button');
+        btnFertig.type='button';
+        btnFertig.className='inserat-fertig-kachel quick-adjust-fertig';
+        btnFertig.textContent='Fertig';
+        btnFertig.style.cssText='width:100%; min-height:56px; margin-top:24px; padding:16px; border:none; border-radius:16px; background:#0f172a; color:#ffffff; font-size:18px; font-weight:800; cursor:pointer;';
+        btnFertig.onclick=function(){ hapticLight(); closeQuickAdjust(); };
+        quickAdjustPanel.appendChild(btnFertig);
       }
-      const hasAllergens=!!(w.data.allergens&&w.data.allergens.length);
-      const allergenBarBtn=document.createElement('button');
-      allergenBarBtn.type='button';
-      allergenBarBtn.className='func-icon-btn inserat-soft-pill ' + (hasAllergens ? 'active' : '');
-      allergenBarBtn.textContent='🌾';
-      allergenBarBtn.title='Allergene';
-      allergenBarBtn.onclick=function(){ openQuickAdjust('allergens'); };
-      powerBar.appendChild(allergenBarBtn);
-      const hasExtras=!!(w.data.extras&&w.data.extras.length);
-      const extrasBarBtn=document.createElement('button');
-      extrasBarBtn.type='button';
-      extrasBarBtn.className='func-icon-btn inserat-soft-pill ' + (hasExtras ? 'active' : '');
-      extrasBarBtn.textContent='➕';
-      extrasBarBtn.title='Extras';
-      extrasBarBtn.onclick=function(){ openQuickAdjust('extras'); };
-      powerBar.appendChild(extrasBarBtn);
 
       const updateProfit = function(val){
         var price = parseFloat(String(val).replace(',','.')) || 0;
@@ -16017,35 +15970,18 @@
         }
       };
       scrollArea.appendChild(powerBar);
-      scrollArea.appendChild(quickAdjustPanel);
-      powerBar.classList.add('power-bar-module');
-      var sectionLabel=document.createElement('span');
-      sectionLabel.className='section-label';
-      sectionLabel.textContent='Prozess & Zeiten';
-      sectionLabel.style.cssText='display:block; font-size:12px; font-weight:700; color:#64748b; margin-bottom:10px;';
-      powerBar.insertBefore(sectionLabel, powerBar.firstChild);
-      var pwParts2=(w.data.pickupWindow||profileWindow).split(/\s*[–\-]\s*/);
-      var tStart2=(pwParts2[0]||'11:30').trim();
-      var tEnd2=(pwParts2[1]||'14:00').trim();
-      if(tStart2.length===4) tStart2='0'+tStart2;
-      if(tEnd2.length===4) tEnd2='0'+tEnd2;
-      var timeRangePicker=document.createElement('div');
-      timeRangePicker.className='time-range-picker';
-      timeRangePicker.style.cssText='display:flex; align-items:center; justify-content:center; gap:8px; margin-top:12px; flex-wrap:wrap; flex-basis:100%;';
-      var inpStart2=document.createElement('input');
-      inpStart2.type='time';
-      inpStart2.value=tStart2;
-      inpStart2.style.cssText='padding:8px 12px; border-radius:10px; border:1px solid #e2e8f0; background:#f8fafc; font-size:14px; font-weight:700;';
-      var inpEnd2=document.createElement('input');
-      inpEnd2.type='time';
-      inpEnd2.value=tEnd2;
-      inpEnd2.style.cssText='padding:8px 12px; border-radius:10px; border:1px solid #e2e8f0; background:#f8fafc; font-size:14px; font-weight:700;';
-      inpStart2.onchange=inpEnd2.onchange=function(){ w.data.pickupWindow=inpStart2.value+' – '+inpEnd2.value; saveDraft(); };
-      timeRangePicker.appendChild(document.createTextNode('\uD83C\uDFC5 '));
-      timeRangePicker.appendChild(inpStart2);
-      timeRangePicker.appendChild(document.createTextNode(' bis '));
-      timeRangePicker.appendChild(inpEnd2);
-      powerBar.appendChild(timeRangePicker);
+      var extrasWrap=document.createElement('div');
+      extrasWrap.className='extras-section';
+      extrasWrap.style.cssText='display:flex; justify-content:center; margin-top:16px; padding:0 20px;';
+      var btnAddExtra=document.createElement('button');
+      btnAddExtra.type='button';
+      btnAddExtra.className='btn-add-extra';
+      btnAddExtra.style.cssText='padding:10px 20px; border-radius:12px; border:2px solid #e2e8f0; background:transparent; color:#64748b; font-size:14px; font-weight:700; cursor:pointer;';
+      btnAddExtra.textContent='+ Extra mit Aufpreis';
+      btnAddExtra.onclick=function(){ hapticLight(); openQuickAdjust('extras'); };
+      extrasWrap.appendChild(btnAddExtra);
+      scrollArea.appendChild(extrasWrap);
+      box.appendChild(quickAdjustPanel);
       inputDish.addEventListener('keydown', function(){
         if(!priceSection || priceSection.classList.contains('harmonic-bounce')) return;
         priceSection.classList.add('harmonic-bounce');
@@ -16197,7 +16133,7 @@
         var btnAbbrechen=document.createElement('button');
         btnAbbrechen.type='button';
         btnAbbrechen.className='inserat-btn-step1-left nav-btn-primary nav-btn-equal';
-        btnAbbrechen.style.cssText='flex:1; min-height:48px; height:48px; padding:0 24px; border:none; border-radius:0; background:transparent; font-size:16px; font-weight:600; color:#ffffff; cursor:pointer; text-decoration:underline;';
+        btnAbbrechen.style.cssText='flex:0; min-height:48px; padding:0 16px; border:none; border-radius:0; background:transparent !important; font-size:16px; font-weight:600; color:#ffffff !important; cursor:pointer; text-decoration:underline;';
         btnAbbrechen.textContent='Abbrechen';
         btnAbbrechen.onclick=function(){ hapticLight(); if(typeof handleWizardExit==='function') handleWizardExit(); };
         var btnWeiter=document.createElement('button');
