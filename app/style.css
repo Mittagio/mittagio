@@ -1809,6 +1809,7 @@
     body.provider-mode .inserat-quick-adjust-panel .inserat-allergen-pill,
     body.provider-mode .inserat-quick-adjust-panel .extra-pill {
       border: 1px solid #ebebeb; background: #ffffff; color: #1a1a1a;
+      transition: background 0.2s, color 0.2s;
     }
     body.provider-mode .inserat-quick-adjust-panel .inserat-allergen-pill.active {
       background: #10b981 !important; color: #ffffff !important; border-color: #10b981 !important;
@@ -1843,9 +1844,9 @@
     }
     #mastercard-step-money .price-card,
     .mastercard-step-money .price-card {
-      flex: 1;
-      min-width: 140px;
-      border: 2px solid #f1f5f9;
+      flex: 0 0 auto;
+      width: 100%;
+      min-width: 0;
       border-radius: 16px;
       padding: 20px 12px;
       text-align: center;
@@ -1855,8 +1856,39 @@
       cursor: pointer;
       list-style: none;
     }
-    #mastercard-step-money .price-card.active,
-    .mastercard-step-money .price-card.active {
+    /* Zero-Entry: Obere Kachel opacity 0.6 wenn inaktiv [cite: ZERO-COST PICKUP 2026-02-23] */
+    #mastercard-step-money .price-card.inserat-tile-standard,
+    .mastercard-step-money .price-card.inserat-tile-standard {
+      border: 1px solid #ebebeb;
+      transition: opacity 0.2s ease, border-color 0.2s ease, border-width 0.2s ease;
+    }
+    #mastercard-step-money .price-card.inserat-tile-standard:not(.active),
+    .mastercard-step-money .price-card.inserat-tile-standard:not(.active) {
+      opacity: 0.6;
+    }
+    #mastercard-step-money .price-card.inserat-tile-standard.active,
+    .mastercard-step-money .price-card.inserat-tile-standard.active {
+      opacity: 1;
+      border: 2px solid #222222;
+    }
+    /* Untere Kachel: 2px schwarzer Rahmen wenn aktiv (Default) [cite: ZERO-COST PICKUP 2026-02-23] */
+    #mastercard-step-money .price-card.inserat-tile-abholnummer,
+    .mastercard-step-money .price-card.inserat-tile-abholnummer {
+      border: 1px solid #ebebeb;
+      transition: opacity 0.2s ease, border-color 0.2s ease, border-width 0.2s ease;
+    }
+    #mastercard-step-money .price-card.inserat-tile-abholnummer:not(.active),
+    .mastercard-step-money .price-card.inserat-tile-abholnummer:not(.active) {
+      opacity: 0.6;
+    }
+    #mastercard-step-money .price-card.inserat-tile-abholnummer.active,
+    .mastercard-step-money .price-card.inserat-tile-abholnummer.active {
+      opacity: 1;
+      border: 2px solid #222222;
+      box-shadow: none;
+    }
+    #mastercard-step-money .price-card.active:not(.inserat-tile-standard):not(.inserat-tile-abholnummer),
+    .mastercard-step-money .price-card.active:not(.inserat-tile-standard):not(.inserat-tile-abholnummer) {
       border-color: #10b981;
       box-shadow: none;
     }
@@ -1894,6 +1926,14 @@
       font-weight: 700;
       color: #64748b;
       margin-top: -8px;
+    }
+    #mastercard-step-money .price-card .card-detail,
+    .mastercard-step-money .price-card .card-detail {
+      font-size: 13px;
+      font-weight: 600;
+      color: #64748b;
+      margin-top: 8px;
+      line-height: 1.4;
       margin-bottom: 15px;
     }
     #mastercard-step-money .price-card .benefit-list,
@@ -3215,16 +3255,16 @@
       min-height: 48px !important;
       align-items: stretch !important;
     }
-    body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-step1-nav .inserat-btn-step1-left {
+    body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-step1-nav .btn-secondary-link {
       flex: 0 !important;
       min-width: auto !important;
       min-height: 48px !important;
       border-radius: 0 !important;
       background: transparent !important;
-      color: #ffffff !important;
+      color: #222222 !important;
       text-decoration: underline;
     }
-    body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-step1-nav .inserat-btn-step1-right {
+    body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-step1-nav .btn-primary-black {
       flex: 1 !important;
       min-height: 48px !important;
       height: 48px !important;
@@ -3235,9 +3275,9 @@
       pointer-events: none;
       transition: all 0.3s ease;
     }
-    body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-step1-nav .inserat-btn-step1-right.is-ready {
-      background: #ffffff !important;
-      color: #000000 !important;
+    body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-step1-nav .btn-primary-black.is-ready {
+      background: #222222 !important;
+      color: #ffffff !important;
       opacity: 1;
       pointer-events: auto;
     }
@@ -3304,10 +3344,10 @@
       height: auto; min-height: 0;
       transition: max-height 0.25s ease;
     }
-    /* Listing: Smart-Photo 190px, TGTG flach – Inset-Divider unter Bild [cite: Plan Tabula Rasa] */
+    /* Listing: Foto 250px – Anti-Hüpf: immer gleiche Höhe (Neu/Bearbeiten/Kochbuch) [cite: UNIFY COOKBOOK 2026-02-23] */
     #wizard[data-flow="listing"] .liquid-master-panel .photo-header,
     #wizard[data-flow="listing"] .liquid-master-panel .inserat-photo-tile.photo-header {
-      height: 190px; min-height: 190px; max-height: 190px; aspect-ratio: auto;
+      height: 250px !important; min-height: 250px !important; max-height: 250px !important; aspect-ratio: auto;
       box-shadow: none; border: none;
     }
     .liquid-master-panel .photo-header img,
@@ -3323,6 +3363,25 @@
       animation: inserat-spin 0.8s linear infinite;
     }
     @keyframes inserat-spin { to { transform: translate(-50%,-50%) rotate(360deg); } }
+    /* Photo Lightbox: Überlagert ALLES (Sheet, Footer), Zoom-In aus Mastercard [cite: FINALIZE SHEET 2026-02-23] */
+    #photo-lightbox.photo-lightbox-overlay {
+      position: fixed !important;
+      inset: 0 !important;
+      background: #000 !important;
+      z-index: 20000 !important;
+      padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #photo-lightbox .photo-lightbox-img {
+      max-width: 100%; max-height: 100%; object-fit: contain;
+      cursor: pointer;
+    }
+    #photo-lightbox .photo-lightbox-close {
+      top: max(16px, env(safe-area-inset-top));
+      right: max(16px, env(safe-area-inset-right));
+    }
     /* Keyboard-Avoidance: Header schrumpft bei aktivem Input (Titel/Preis) [cite: 2026-02-16] */
     #wizard[data-flow="listing"] .liquid-master-panel.inserat-keyboard-active .photo-header,
     #wizard[data-flow="listing"] .liquid-master-panel.inserat-keyboard-active .inserat-photo-tile.photo-header {
@@ -3422,7 +3481,7 @@
     /* Bild volle Breite oben, kein weißer Rand [cite: 2026-02-18] */
     #wizard[data-flow="listing"] .inserat-card-sheet .photo-header,
     #wizard[data-flow="listing"] .inserat-card-sheet .inserat-photo-tile.photo-header {
-      height: 190px; min-height: 190px; max-height: 190px; object-fit: cover;
+      height: 250px !important; min-height: 250px !important; max-height: 250px !important; object-fit: cover;
       width: 100%; margin: 0; border-radius: 0; border: none;
     }
     #wizard[data-flow="listing"] .inserat-card-sheet .inserat-detail-style-title,
@@ -3583,21 +3642,21 @@
     #wizard[data-flow="listing"] .inserat-step1-nav {
       display: flex; gap: 12px; width: 100%; min-height: 48px; align-items: stretch;
     }
-    #wizard[data-flow="listing"] .inserat-btn-step1-left {
-      flex: 0 !important; min-width: auto; background: transparent !important; color: #ffffff !important; text-decoration: underline;
+    #wizard[data-flow="listing"] .app-footer-main .btn-secondary-link {
+      flex: 0 !important; min-width: auto; background: transparent !important; color: #222222 !important; text-decoration: underline;
     }
-    #wizard[data-flow="listing"] .inserat-btn-step1-left:hover,
-    #wizard[data-flow="listing"] .inserat-btn-step1-left:focus {
-      background: transparent !important; color: #ffffff !important; opacity: 0.9;
+    #wizard[data-flow="listing"] .app-footer-main .btn-secondary-link:hover,
+    #wizard[data-flow="listing"] .app-footer-main .btn-secondary-link:focus {
+      background: transparent !important; color: #222222 !important; opacity: 0.9;
     }
-    #wizard[data-flow="listing"] .inserat-btn-step1-right {
+    #wizard[data-flow="listing"] .app-footer-main .btn-primary-black {
       flex: 1; min-height: 48px; border-radius: 8px !important; box-shadow: none !important; border: none !important;
     }
-    #wizard[data-flow="listing"] .inserat-btn-step1-left:active,
-    #wizard[data-flow="listing"] .inserat-btn-step1-right:active { transform: scale(0.98); }
-    /* Scroll-Bereich: Platz für schwebende Aktions-Buttons (Step 1) – NUR Anbieter [cite: 2026-02-23] */
+    #wizard[data-flow="listing"] .app-footer-main .btn-secondary-link:active,
+    #wizard[data-flow="listing"] .app-footer-main .btn-primary-black:active { transform: scale(0.98); }
+    /* Scroll-Bereich: Platz für Footer, letzter Preis-Eintrag komplett sichtbar [cite: FINALIZE SHEET 2026-02-23] */
     body.provider-mode #wizard[data-flow="listing"] .liquid-master-panel:has(.inserat-action-layer) .inserat-scroll-area {
-      padding-bottom: calc(180px + env(safe-area-inset-bottom, 0));
+      padding-bottom: calc(120px + env(safe-area-inset-bottom, 0));
     }
     /* Noble Floating Bottom: Aktions-Kacheln 16px über Nav-Pille, Nav-Pille 12px Abstand [cite: 2026-02-20] */
     /* Step 2 Bold Selection: Vertikal gestapelt, Kontext-Zone oben [cite: 2026-02-21] */
@@ -8396,54 +8455,60 @@
   margin-top: 32px;
 }
 
-/* === REFACTOR & SPEED: Airbnb-Footer Globaler Standard [cite: 2026-02-23] === */
+/* === FOOTER HARDWARE UNITY: S25 Native Look [cite: 2026-02-23] === */
 .vendor-area .app-footer-main,
 #wizard[data-flow="listing"] .vendor-area .app-footer-main {
-  background: #ffffff !important;
-  border-top: 1px solid #ebebeb !important;
-  padding: 12px 24px calc(12px + env(safe-area-inset-bottom)) 24px !important;
-  padding-left: max(24px, env(safe-area-inset-left)) !important;
-  padding-right: max(24px, env(safe-area-inset-right)) !important;
   position: fixed !important;
   bottom: 0 !important;
   left: 0 !important;
+  right: 0 !important;
   width: 100vw !important;
+  background: #ffffff !important;
+  border-top: 1px solid #ebebeb !important;
+  padding: 12px 24px calc(16px + env(safe-area-inset-bottom)) !important;
+  padding-left: max(24px, env(safe-area-inset-left)) !important;
+  padding-right: max(24px, env(safe-area-inset-right)) !important;
   display: flex !important;
   justify-content: space-between !important;
   align-items: center !important;
-  z-index: 500;
+  z-index: 500 !important;
   margin: 0 !important;
   border-radius: 0 !important;
+  box-shadow: none !important;
 }
 .vendor-area .btn-primary-black,
-.vendor-area .app-footer-main .inserat-btn-step1-right,
 .vendor-area .app-footer-main .footer-btn-primary {
+  height: 48px !important;
+  min-height: 48px !important;
+  padding: 0 32px !important;
   background: #222222 !important;
   color: #ffffff !important;
   border-radius: 8px !important;
-  padding: 14px 28px !important;
   font-weight: 600 !important;
   border: none !important;
   box-shadow: none !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 .vendor-area .btn-secondary-link,
-.vendor-area .app-footer-main .inserat-btn-step1-left,
 .vendor-area .app-footer-main .footer-link-secondary {
+  height: 48px !important;
+  min-height: 48px !important;
+  padding: 0 !important;
   color: #222222 !important;
   font-weight: 700 !important;
+  font-size: 16px !important;
   text-decoration: underline !important;
   background: transparent !important;
   border: none !important;
 }
 .vendor-area .app-footer-main .footer-btn-primary,
-.vendor-area .app-footer-main .inserat-btn-step1-right,
 .vendor-area .app-footer-main .btn-primary-black {
-  height: 48px !important;
-  min-height: 48px !important;
   min-width: 180px !important;
   flex: 1;
 }
-/* mastercard-scroll-area: Zentrierung + Kinder width:100% [cite: FINAL DESIGN-LOCK 2026-02-23] */
+/* mastercard-scroll-area: padding-bottom damit letzter Preis über Footer sichtbar [cite: FINALIZE SHEET 2026-02-23] */
 .mastercard-scroll-area,
 .inserat-scroll-area.mastercard-scroll-area,
 #mastercard-step-edit .mastercard-scroll-area {
@@ -8451,6 +8516,7 @@
   flex-direction: column !important;
   align-items: center !important;
   text-align: center !important;
+  padding-bottom: calc(120px + env(safe-area-inset-bottom, 0)) !important;
 }
 /* Foto bündig oben, Kamera-Icon oben rechts [cite: 2026-02-23] */
 #wizard[data-flow="listing"] #mastercard-step-edit .inserat-scroll-area,
@@ -8461,12 +8527,86 @@
   margin-top: 0 !important;
   margin-bottom: 0 !important;
 }
+/* X & Kamera: Immer über dem Bild, bewegen sich mit sticky Photo [cite: FINAL HARDWARE SYNC 2026-02-23] */
 #wizard[data-flow="listing"] .inserat-camera-float.btn-photo-icon-only {
   position: absolute !important;
   top: 12px !important;
   right: 12px !important;
   left: auto !important;
-  z-index: 20;
+  z-index: 20 !important;
+}
+#wizard[data-flow="listing"] .close-wizard-x.close-mastercard,
+#wizard[data-flow="listing"] .inserat-photo-tile .close-wizard-x {
+  position: absolute !important;
+  top: 24px !important;
+  left: 24px !important;
+  z-index: 999 !important;
+}
+/* Content-Sheet: Überdeckt Foto beim Scrollen, unter Lightbox [cite: FINALIZE SHEET 2026-02-23] */
+#wizard[data-flow="listing"] .inserat-content-sheet {
+  background: #ffffff !important;
+  border-top-left-radius: 24px !important;
+  border-top-right-radius: 24px !important;
+  margin-top: -24px !important;
+  padding-top: 24px !important;
+  position: relative;
+  z-index: 2;
+}
+/* Foto-Container: Sticky Parallax + 250px [cite: FINAL HARDWARE SYNC 2026-02-23] */
+.inserat-photo-container,
+#wizard[data-flow="listing"] .inserat-photo-container,
+#wizard[data-flow="listing"] .inserat-photo-tile.photo-header {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 1 !important;
+  height: 250px !important;
+  min-height: 250px !important;
+  max-height: 250px !important;
+}
+#wizard[data-flow="listing"] .inserat-photo-tile.inserat-photo-placeholder {
+  background: #e2e8f0 !important;
+}
+#wizard[data-flow="listing"] .inserat-photo-placeholder-center {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: #e2e8f0 !important;
+}
+#wizard[data-flow="listing"] .inserat-photo-placeholder-center span {
+  font-size: 48px !important;
+  opacity: 0.5;
+}
+/* Jägerschnitzel-Look: Typography [cite: UNIFIED MASTERCARD 2026-02-23] */
+#wizard[data-flow="listing"] .input-giant-name,
+#wizard[data-flow="listing"] #gericht-name.inserat-detail-style-title {
+  font-family: 'Inter', sans-serif !important;
+  font-weight: 800 !important;
+  margin-top: 24px !important;
+}
+/* Powerbar mittig [cite: UNIFIED MASTERCARD 2026-02-23] */
+#wizard[data-flow="listing"] .inserat-power-bar {
+  justify-content: center !important;
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: wrap !important;
+}
+/* Quick-Adjust: mittig unten (left:50% + transform in script.js) [cite: UNIFIED MASTERCARD 2026-02-23] */
+#wizard[data-flow="listing"] .inserat-quick-adjust-panel,
+#wizard[data-flow="listing"] .quick-adjust-sheet {
+  left: 50% !important;
+  width: 100% !important;
+  max-width: 400px !important;
+}
+/* Fertig-Button: Abstand zum Footer [cite: UNIFIED MASTERCARD 2026-02-23] */
+#wizard[data-flow="listing"] .inserat-fertig-kachel,
+#wizard[data-flow="listing"] .quick-adjust-fertig {
+  margin-bottom: 24px !important;
+}
+/* Anti-Flash: Farbwechsel weich [cite: Refactor Event Handlers 2026-02-23] */
+#wizard[data-flow="listing"] .category-pill,
+#wizard[data-flow="listing"] .inserat-allergen-pill,
+#wizard[data-flow="listing"] .photo-header .inserat-allergen-pill {
+  transition: background 0.2s, color 0.2s;
 }
 /* Zentrierungs-Achse Step 1 + 2 [cite: 2026-02-23] */
 .mastercard-step-center,
