@@ -15493,7 +15493,7 @@
         /* Step 2: Monetarisierung – zwei vertikale Kacheln [cite: Drei-Schritte-Gesetz 2026-02-21] */
         var step2Wrap=document.createElement('div');
         step2Wrap.className='inserat-step2-wrap mastercard-step-money';
-        step2Wrap.style.cssText='display:flex; flex-direction:column; flex:1; min-height:0; overflow-y:auto; padding:20px; padding-bottom:calc(120px + env(safe-area-inset-bottom, 0));';
+        step2Wrap.style.cssText='display:flex; flex-direction:column; flex:1; min-height:0; overflow-y:auto; padding:20px; padding-bottom:calc(140px + env(safe-area-inset-bottom, 0));';
         var thumbUrl=w.data.photoData||'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=200&q=60';
         var objPos2=(typeof w.data.photoObjectPosition==='number')?w.data.photoObjectPosition:(typeof w.data.photoCropY==='number'?Math.round(50+(w.data.photoCropY/80)*50):50);
         var dishNameS2=(w.data.dish||'').trim()||'Gericht';
@@ -15522,13 +15522,29 @@
         cardClassic.setAttribute('role','button');
         cardClassic.tabIndex=0;
         cardClassic.innerHTML='<div class="card-header">Einmalig</div><div class="amount">4,99 €</div><ul class="benefit-list"><li>Kein Abo, kein Vertrag</li><li>Einmalig bis zum Verkauf</li></ul>';
-        cardClassic.onclick=function(){ hapticLight(); w.data.pricingChoice='499'; w.data.hasPickupCode=false; cardClassic.classList.add('active'); cardPremium.classList.remove('active'); saveDraft(); var fb=box.querySelector('.inserat-airbnb-footer .inserat-footer-btn-main, #footerNext'); if(fb){ fb.textContent='Jetzt für 4,99 € inserieren'; fb.classList.add('inserat-footer-btn--499'); fb.classList.remove('free-mode','is-free-mode'); } };
         var cardPremium=document.createElement('div');
         cardPremium.className='price-card premium' + (w.data.pricingChoice==='pro' ? ' active' : '');
         cardPremium.setAttribute('role','button');
         cardPremium.tabIndex=0;
         cardPremium.innerHTML='<div class="card-badge">Empfehlung</div><div class="card-header">Pay-per-Order</div><div class="amount">0,89 €</div><div class="amount-sub">pro Abholnummer 🧾</div><ul class="benefit-list"><li>0 € Inseratsgebühr</li><li>Nur bei Erfolg zahlen</li><li>Vermeide Foodwaste</li></ul>';
-        cardPremium.onclick=function(){ hapticLight(); w.data.pricingChoice='pro'; w.data.hasPickupCode=true; cardPremium.classList.add('active'); cardClassic.classList.remove('active'); saveDraft(); var fb=box.querySelector('#footerNext, .inserat-airbnb-footer .inserat-footer-btn-main'); if(fb){ fb.textContent='Kostenlos inserieren'; fb.classList.remove('inserat-footer-btn--499'); fb.classList.add('free-mode','is-free-mode'); } };
+        function selectPacket(type){
+          box.querySelectorAll('.price-card').forEach(function(c){ c.classList.remove('active'); });
+          var card=type==='classic'?cardClassic:cardPremium;
+          card.classList.add('active');
+          w.data.pricingChoice=type==='classic'?'499':'pro';
+          w.data.hasPickupCode=(type==='pro');
+          saveDraft();
+          var fb=box.querySelector('.inserat-airbnb-footer .inserat-footer-btn-main, #footerNext');
+          if(fb){
+            fb.textContent=(type==='classic')?'Für 4,99 € inserieren':'Kostenlos inserieren';
+            fb.classList.toggle('inserat-footer-btn--499',type==='classic');
+            fb.classList.toggle('free-mode',type==='pro');
+            fb.classList.toggle('is-free-mode',type==='pro');
+          }
+          try{ if(navigator.vibrate) navigator.vibrate(10); }catch(e){}
+        }
+        cardClassic.onclick=function(){ hapticLight(); selectPacket('classic'); };
+        cardPremium.onclick=function(){ hapticLight(); selectPacket('pro'); };
         pricingContainer.appendChild(cardClassic);
         pricingContainer.appendChild(cardPremium);
         step2Wrap.appendChild(pricingContainer);
@@ -15776,12 +15792,107 @@
       stepName.style.cssText='width:100%; margin-top:16px; margin-bottom:8px; display:flex; justify-content:center;';
       scrollArea.appendChild(stepName);
 
+      // ========== 3. Kategorie-Pills & Allergene (Pill-Cloud) [cite: FINALE NEUAUFBAU 2026-02-21] ==========
+      var pillGroup=document.createElement('div');
+      pillGroup.className='pill-group system-content-body';
+      pillGroup.style.cssText='display:flex; flex-direction:column; gap:12px; margin-top:12px;';
+      var catValues=['Fleisch','Vegetarisch','Vegan','Salat'];
+      var catEmojis=['\uD83C\uDF56','\uD83C\uDF36','\uD83E\uDDEB','\uD83C\uDF57'];
+      var currentCat=w.data.category||'Fleisch';
+      if(!catValues.includes(currentCat)) w.data.category='Fleisch';
+      var categoryPills=document.createElement('div');
+      categoryPills.className='pill-cloud categories';
+      categoryPills.id='categoryPills';
+      categoryPills.style.cssText='display:flex; flex-wrap:wrap; gap:8px; align-items:center;';
+      catValues.forEach(function(c,i){
+        var b=document.createElement('button');
+        b.type='button';
+        b.className='pill power-item'+(w.data.category===c?' active':'');
+        b.style.cssText='min-height:44px; padding:8px 14px; border-radius:12px; border:1px solid #e2e8f0; background:#f8fafc; font-size:14px; font-weight:700; color:#64748b; cursor:pointer; transition:all 0.2s ease;';
+        if(w.data.category===c) b.style.cssText+=' background:#000; color:#fff; border-color:#000;';
+        b.innerHTML='<span style="font-size:16px;">'+(catEmojis[i]||'')+'</span> ' + c;
+        b.setAttribute('title',c);
+        b.onclick=function(){ hapticLight(); w.data.category=c; saveDraft(); rebuildWizard(); };
+        categoryPills.appendChild(b);
+      });
+      pillGroup.appendChild(categoryPills);
+      var allergenPills=document.createElement('div');
+      allergenPills.className='pill-cloud allergens';
+      allergenPills.id='allergenPills';
+      allergenPills.style.cssText='display:flex; flex-wrap:wrap; gap:6px; align-items:center;';
+      var allergenCodes=(typeof ALLERGENS_14!=='undefined'?ALLERGENS_14:[]).slice(0,8);
+      allergenCodes.forEach(function(a){
+        var code=a.short||a; var name=(a.name||code).substring(0,1); var emo=(typeof ALLERGEN_EMOJI!=='undefined'&&ALLERGEN_EMOJI[code])?ALLERGEN_EMOJI[code]:'\uD83C\uDF3F'; var active=(w.data.allergens||[]).includes(code);
+        var pill=document.createElement('button');
+        pill.type='button';
+        pill.className='pill power-item'+(active?' active':'');
+        pill.style.cssText='min-height:36px; padding:6px 10px; border-radius:10px; border:1px solid #e2e8f0; background:#f8fafc; font-size:11px; font-weight:700; color:#64748b; cursor:pointer;';
+        if(active) pill.style.cssText+=' background:#000; color:#fff; border-color:#000;';
+        pill.textContent=emo+' '+name;
+        pill.title=a.name||code;
+        pill.onclick=function(){ hapticLight(); if(!w.data.allergens) w.data.allergens=[]; if(active){ w.data.allergens=w.data.allergens.filter(function(x){return x!==code;}); } else{ w.data.allergens.push(code); } w.data.wantsAllergens=true; saveDraft(); rebuildWizard(); };
+        allergenPills.appendChild(pill);
+      });
+      var moreAllergen=document.createElement('button');
+      moreAllergen.type='button';
+      moreAllergen.className='pill power-item';
+      moreAllergen.style.cssText='min-height:36px; padding:6px 10px; border-radius:10px; border:1px solid #e2e8f0; background:#f8fafc; font-size:11px; font-weight:700; color:#64748b; cursor:pointer;';
+      moreAllergen.textContent='\uD83C\uDF3F +';
+      moreAllergen.title='Alle Allergene';
+      moreAllergen.onclick=function(){ hapticLight(); openQuickAdjust('allergens'); };
+      allergenPills.appendChild(moreAllergen);
+      pillGroup.appendChild(allergenPills);
+      scrollArea.appendChild(pillGroup);
+
+      // ========== 4. Beschreibung (Textarea) [cite: FINALE NEUAUFBAU 2026-02-21] ==========
+      var descriptionTextarea=document.createElement('textarea');
+      descriptionTextarea.id='gerichtDesc';
+      descriptionTextarea.className='input-description';
+      descriptionTextarea.placeholder='Kurze Beschreibung...';
+      descriptionTextarea.value=w.data.description||'';
+      descriptionTextarea.style.cssText='width:100%; border:none; font-size:16px; color:#64748b; resize:none; padding:10px 0; margin:12px 0 20px; text-align:center; background:transparent; outline:none; box-sizing:border-box;';
+      descriptionTextarea.oninput=function(){ w.data.description=descriptionTextarea.value; saveDraft(); };
+      scrollArea.appendChild(descriptionTextarea);
+
       var systemDivider=document.createElement('div');
-      systemDivider.className='minimal-divider mastercard-step-edit-divider';
-      systemDivider.style.cssText='width:40px; height:2px; background:#f1f5f9; margin:12px auto; border-radius:2px;';
+      systemDivider.className='minimal-divider mastercard-step-edit-divider system-divider';
+      systemDivider.style.cssText='width:40px; height:2px; background:#f1f5f9; margin:12px auto 20px; border-radius:2px;';
       scrollArea.appendChild(systemDivider);
 
-      // ========== Power-Bar (Clean-Slate: ausgeblendet in Schritt 1) [cite: Drei-Schritte-Gesetz] ==========
+      // ========== 5. Preis (Giant) & Extras-Button [cite: FINALE NEUAUFBAU 2026-02-21] ==========
+      var priceSection=document.createElement('div');
+      priceSection.className='price-section';
+      priceSection.style.cssText='display:flex; flex-direction:column; align-items:center; gap:12px; margin-bottom:20px;';
+      var priceInputWrapper=document.createElement('div');
+      priceInputWrapper.className='price-input-wrapper';
+      priceInputWrapper.style.cssText='display:flex; align-items:center; justify-content:center; gap:8px;';
+      var stepPriceWrap=document.createElement('div');
+      stepPriceWrap.id='step-price';
+      stepPriceWrap.className='inserat-price-pill-wrap price-input-wrapper';
+      var inputPrice=document.createElement('input');
+      inputPrice.type='text';
+      inputPrice.id='gericht-preis';
+      inputPrice.className='inserat-price-pill-input inserat-price-fintech input-giant-price';
+      inputPrice.setAttribute('inputmode','decimal');
+      inputPrice.placeholder='0,00';
+      inputPrice.value=(w.data.price>0?Number(w.data.price).toFixed(2).replace('.',','):'');
+      var eurSpan=document.createElement('span');
+      eurSpan.className='currency inserat-price-pill-euro';
+      eurSpan.textContent=' \u20AC';
+      stepPriceWrap.appendChild(inputPrice);
+      stepPriceWrap.appendChild(eurSpan);
+      priceInputWrapper.appendChild(stepPriceWrap);
+      priceSection.appendChild(priceInputWrapper);
+      var btnAddExtra=document.createElement('button');
+      btnAddExtra.type='button';
+      btnAddExtra.className='btn-add-extra';
+      btnAddExtra.style.cssText='padding:10px 20px; border-radius:12px; border:2px solid #e2e8f0; background:transparent; color:#64748b; font-size:14px; font-weight:700; cursor:pointer;';
+      btnAddExtra.textContent='+ Extra mit Aufpreis';
+      btnAddExtra.onclick=function(){ hapticLight(); openQuickAdjust('extras'); };
+      priceSection.appendChild(btnAddExtra);
+      scrollArea.appendChild(priceSection);
+
+      // ========== 6. Power-Bar (Vor Ort, Mehrweg, Abholnummer + Zeitfenster) [cite: FINALE NEUAUFBAU 2026-02-21] ==========
       var pwParts=(w.data.pickupWindow||profileWindow).split(/\s*[–\-]\s*/);
       var timeStart=(pwParts[0]||'11:30').trim();
       var timeEnd=(pwParts[1]||'14:00').trim();
@@ -15894,44 +16005,6 @@
       extrasBarBtn.onclick=function(){ openQuickAdjust('extras'); };
       powerBar.appendChild(extrasBarBtn);
 
-      // ========== 4. Kategorien: kompakte Reihe (🥩, 🥦, 🌱, 🥗) [cite: 2026-02-21] ==========
-      const catPriceRow=document.createElement('div');
-      catPriceRow.className='inserat-cat-price-row';
-      catPriceRow.id='step-cat';
-      catPriceRow.style.cssText='display:flex; flex-direction:column; gap:16px; margin-top:16px;';
-      const catValues = ['Fleisch','Vegetarisch','Vegan','Salat'];
-      const catEmojis = ['🥩','🥦','🌱','🥗'];
-      const currentCat = w.data.category || 'Fleisch';
-      if(!catValues.includes(currentCat)) w.data.category = 'Fleisch';
-      const stepCat=document.createElement('div');
-      stepCat.className='inserat-cat-tiles inserat-cat-row-compact';
-      stepCat.style.cssText='display:flex; flex-wrap:wrap; gap:8px; width:100%; align-items:center;';
-      catValues.forEach((c,i)=>{
-        const b=document.createElement('button');
-        b.type='button';
-        b.className='inserat-cat-pill inserat-cat-tile' + (w.data.category===c ? ' active' : '');
-        b.style.cssText='min-height:44px; min-width:52px; padding:8px 14px; border-radius:999px; border:2px solid transparent; display:flex; align-items:center; justify-content:center; gap:6px; cursor:pointer; background:rgba(0,0,0,0.03); transition:all 0.2s ease; font-size:15px; font-weight:800; color:#64748b;';
-        if(w.data.category===c) b.style.cssText+=' background:rgba(16,185,129,0.18); border-color:#10b981; color:#059669; box-shadow:0 2px 12px rgba(16,185,129,0.25);';
-        b.innerHTML='<span style="font-size:18px;">'+(catEmojis[i]||'')+'</span>';
-        b.setAttribute('title', c);
-        b.setAttribute('aria-label', c);
-        b.onclick=()=>{ hapticLight(); w.data.category=c; saveDraft(); rebuildWizard(); };
-        stepCat.appendChild(b);
-      });
-      catPriceRow.appendChild(stepCat);
-      var priceRowWrap=document.createElement('div');
-      priceRowWrap.className='price-input-wrapper';
-      priceRowWrap.style.cssText='display:flex; align-items:center; margin-top:16px;';
-      const stepPriceWrap=document.createElement('div');
-      stepPriceWrap.id='step-price';
-      stepPriceWrap.className='inserat-price-pill-wrap price-input-wrapper';
-      const inputPrice=document.createElement('input');
-      inputPrice.type='text';
-      inputPrice.id='gericht-preis';
-      inputPrice.className='inserat-price-pill-input inserat-price-fintech inserat-price-input price-field';
-      inputPrice.setAttribute('inputmode','decimal');
-      inputPrice.placeholder='8,90 €';
-      inputPrice.value=(w.data.price>0?Number(w.data.price).toFixed(2).replace('.',','):'');
       const updateProfit = function(val){
         var price = parseFloat(String(val).replace(',','.')) || 0;
         var calcVal = document.getElementById('calc-val');
@@ -15943,28 +16016,50 @@
           verdienstEl.style.display = price > 0 ? 'block' : 'none';
         }
       };
-      stepPriceWrap.appendChild(inputPrice);
-      var eurSpan=document.createElement('span'); eurSpan.className='inserat-price-pill-euro'; eurSpan.textContent=' €'; stepPriceWrap.appendChild(eurSpan);
-      priceRowWrap.appendChild(stepPriceWrap);
-      catPriceRow.appendChild(priceRowWrap);
-      /* Top-Down: Kategorien → Preis → PowerBar (5 Säulen am Ende) */
-      scrollArea.appendChild(catPriceRow);
       scrollArea.appendChild(powerBar);
       scrollArea.appendChild(quickAdjustPanel);
+      powerBar.classList.add('power-bar-module');
+      var sectionLabel=document.createElement('span');
+      sectionLabel.className='section-label';
+      sectionLabel.textContent='Prozess & Zeiten';
+      sectionLabel.style.cssText='display:block; font-size:12px; font-weight:700; color:#64748b; margin-bottom:10px;';
+      powerBar.insertBefore(sectionLabel, powerBar.firstChild);
+      var pwParts2=(w.data.pickupWindow||profileWindow).split(/\s*[–\-]\s*/);
+      var tStart2=(pwParts2[0]||'11:30').trim();
+      var tEnd2=(pwParts2[1]||'14:00').trim();
+      if(tStart2.length===4) tStart2='0'+tStart2;
+      if(tEnd2.length===4) tEnd2='0'+tEnd2;
+      var timeRangePicker=document.createElement('div');
+      timeRangePicker.className='time-range-picker';
+      timeRangePicker.style.cssText='display:flex; align-items:center; justify-content:center; gap:8px; margin-top:12px; flex-wrap:wrap; flex-basis:100%;';
+      var inpStart2=document.createElement('input');
+      inpStart2.type='time';
+      inpStart2.value=tStart2;
+      inpStart2.style.cssText='padding:8px 12px; border-radius:10px; border:1px solid #e2e8f0; background:#f8fafc; font-size:14px; font-weight:700;';
+      var inpEnd2=document.createElement('input');
+      inpEnd2.type='time';
+      inpEnd2.value=tEnd2;
+      inpEnd2.style.cssText='padding:8px 12px; border-radius:10px; border:1px solid #e2e8f0; background:#f8fafc; font-size:14px; font-weight:700;';
+      inpStart2.onchange=inpEnd2.onchange=function(){ w.data.pickupWindow=inpStart2.value+' – '+inpEnd2.value; saveDraft(); };
+      timeRangePicker.appendChild(document.createTextNode('\uD83C\uDFC5 '));
+      timeRangePicker.appendChild(inpStart2);
+      timeRangePicker.appendChild(document.createTextNode(' bis '));
+      timeRangePicker.appendChild(inpEnd2);
+      powerBar.appendChild(timeRangePicker);
       inputDish.addEventListener('keydown', function(){
-        if(!catPriceRow || catPriceRow.classList.contains('harmonic-bounce')) return;
-        catPriceRow.classList.add('harmonic-bounce');
-        setTimeout(function(){ if(catPriceRow) catPriceRow.classList.remove('harmonic-bounce'); }, 420);
+        if(!priceSection || priceSection.classList.contains('harmonic-bounce')) return;
+        priceSection.classList.add('harmonic-bounce');
+        setTimeout(function(){ if(priceSection) priceSection.classList.remove('harmonic-bounce'); }, 420);
       });
       stepPriceWrap.addEventListener('click', function(e){
-        if(catPriceRow.classList.contains('hero-morph-active')) return;
+        if(priceSection && priceSection.classList.contains('hero-morph-active')) return;
         if(e.target===inputPrice || inputPrice.contains(e.target)) return;
         e.preventDefault();
         hapticLight();
-        catPriceRow.classList.add('hero-morph-active');
+        if(priceSection) priceSection.classList.add('hero-morph-active');
         setTimeout(function(){ try{ inputPrice.focus(); }catch(err){} }, 150);
       });
-      inputPrice.onblur=function(){ if(w.data.price>0) inputPrice.value=Number(w.data.price).toFixed(2).replace('.',','); dismissKeyboard(); hapticLight(); if(catPriceRow) catPriceRow.classList.remove('hero-morph-active'); };
+      inputPrice.onblur=function(){ if(w.data.price>0) inputPrice.value=Number(w.data.price).toFixed(2).replace('.',','); dismissKeyboard(); hapticLight(); if(priceSection) priceSection.classList.remove('hero-morph-active'); };
       inputPrice.oninput=()=>{ var v=inputPrice.value.replace(',','.'); w.data.price=parseFloat(v)||0; saveDraft(); updateProfit(v); hapticLight(); if(typeof checkMastercardValidation==='function') checkMastercardValidation(); if(updateStep2ContextZoneRef) updateStep2ContextZoneRef(); };
       inputPrice.onfocus=function(){ hapticLight(); };
       function checkMastercardValidation(){
@@ -16097,7 +16192,7 @@
       } else if(entryPoint === 'dashboard'){
         /* ImmoScout-Footer: Beide Buttons gleich groß, Airbnb Black [cite: 2026-02-21] */
         var step1NavRow=document.createElement('div');
-        step1NavRow.className='inserat-step1-nav';
+        step1NavRow.className='inserat-step1-nav system-footer-merged';
         step1NavRow.style.cssText='display:flex; gap:12px; width:100%; align-items:stretch;';
         var btnAbbrechen=document.createElement('button');
         btnAbbrechen.type='button';
@@ -16107,6 +16202,7 @@
         btnAbbrechen.onclick=function(){ hapticLight(); if(typeof handleWizardExit==='function') handleWizardExit(); };
         var btnWeiter=document.createElement('button');
         btnWeiter.type='button';
+        btnWeiter.id='btnNext';
         btnWeiter.className='inserat-btn-step1-right nav-btn-primary nav-btn-equal';
         btnWeiter.style.cssText='flex:1; min-height:48px; height:48px; padding:0 24px; border:none; border-radius:8px; background:#334155; color:#94a3b8; font-size:16px; font-weight:800; cursor:pointer;';
         btnWeiter.textContent='Weiter';
@@ -16179,7 +16275,7 @@
       if(slider){
         box.appendChild(slider);
         var airbnbFooter=document.createElement('div');
-        airbnbFooter.className='inserat-airbnb-footer airbnb-footer';
+        airbnbFooter.className='inserat-airbnb-footer airbnb-footer money-footer-merged';
         airbnbFooter.id='mastercardFooter';
         airbnbFooter.setAttribute('data-inserat-step','2');
         airbnbFooter.style.display=inseratStep===2?'flex':'none';
@@ -16195,7 +16291,7 @@
         footerBtn.type='button';
         footerBtn.className='inserat-footer-btn-main footer-btn-primary' + (w.data.pricingChoice==='499' ? ' inserat-footer-btn--499' : ' free-mode is-free-mode');
         footerBtn.id='footerNext';
-        footerBtn.textContent=(w.data.pricingChoice==='499' ? 'Jetzt für 4,99 € inserieren' : 'Kostenlos inserieren');
+        footerBtn.textContent=(w.data.pricingChoice==='499' ? 'Für 4,99 € inserieren' : 'Kostenlos inserieren');
         footerBtn.onclick=function(){
           if(!(!!(w.data.dish&&String(w.data.dish).trim())&&Number(w.data.price)>0)){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; }
           hapticLight();

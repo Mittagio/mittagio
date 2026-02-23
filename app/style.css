@@ -1672,15 +1672,17 @@
       margin: 10px auto;
       border-radius: 2px;
     }
-    /* Clean-Slate: Nur Giant-Inputs in Schritt 1 [cite: 2026-02-21] */
-    #mastercard-step-edit .inserat-power-bar,
-    #mastercard-step-edit .inserat-quick-adjust-panel,
-    #mastercard-step-edit .inserat-cat-tiles,
-    #mastercard-step-edit .inserat-verdienst-vorschau,
-    #mastercard-step-edit .cookbook-quick-select { display: none !important; }
-    #mastercard-step-edit .inserat-cat-price-row { flex-direction: column; align-items: center; gap: 0; margin-top: 0; }
-    #mastercard-step-edit .price-input-wrapper { justify-content: center; margin-top: 0; }
-    #mastercard-step-edit .inserat-scroll-area { padding: 24px 20px 120px !important; }
+    /* FINALE NEUAUFBAU Schritt 1: Reihenfolge Foto→Name→Kategorie→Beschreibung→Preis→PowerBar [cite: 2026-02-21] */
+    #mastercard-step-edit .inserat-scroll-area { padding: 24px 20px 140px !important; }
+    #mastercard-step-edit .pill-group { margin-top: 12px; }
+    #mastercard-step-edit .pill-cloud.categories { gap: 10px; }
+    #mastercard-step-edit .pill-cloud.allergens { gap: 6px; margin-top: 4px; }
+    #mastercard-step-edit .power-item { flex: 1; min-width: 60px; padding: 10px; background: #f8fafc; border-radius: 12px; text-align: center; font-size: 12px; font-weight: 700; border: 1px solid #e2e8f0; transition: all 0.2s ease; }
+    #mastercard-step-edit .power-item.active { background: #000; color: #fff; border-color: #000; }
+    #mastercard-step-edit .power-bar-module.inserat-power-bar { display: flex; gap: 10px; margin: 15px 0; flex-wrap: wrap; }
+    #mastercard-step-edit .input-description { width: 100%; border: none; font-size: 16px; color: #64748b; resize: none; padding: 10px 0; margin-bottom: 20px; text-align: center; }
+    #mastercard-step-edit .price-section { margin-bottom: 20px; }
+    #mastercard-step-edit .btn-add-extra { min-height: 48px; }
     /* ===== SCHRITT 2: MONETARISIERUNG – Zwei vertikale Kacheln [cite: Drei-Schritte-Gesetz] ===== */
     #mastercard-step-money .pricing-container,
     .mastercard-step-money .pricing-container {
@@ -3627,6 +3629,59 @@
       margin: 0 !important;
       border-radius: 0 !important;
       z-index: 500;
+    }
+    /* The Tool Edition: money-footer-merged – totale Verschmelzung mit Displayrand [cite: 2026-02-21 S25] */
+    .money-footer-merged {
+      position: fixed !important;
+      bottom: 0 !important;
+      left: 0 !important;
+      width: 100vw !important;
+      background: #000000 !important;
+      padding: 16px 24px calc(16px + env(safe-area-inset-bottom, 0)) 24px !important;
+      padding-left: max(24px, env(safe-area-inset-left)) !important;
+      padding-right: max(24px, env(safe-area-inset-right)) !important;
+      margin: 0 !important;
+      border-radius: 0 !important;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      z-index: 1000;
+    }
+    .money-footer-merged .footer-btn-primary-white,
+    .money-footer-merged .inserat-footer-btn-main {
+      background: #ffffff !important;
+      color: #000000 !important;
+      height: 52px !important;
+      min-height: 52px !important;
+      padding: 0 32px !important;
+      border-radius: 12px !important;
+      font-weight: 800 !important;
+      font-size: 16px !important;
+      border: none !important;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
+    }
+    .money-footer-merged .footer-btn-back-link,
+    .money-footer-merged .inserat-footer-link,
+    .money-footer-merged .footer-link-secondary {
+      background: transparent !important;
+      border: none !important;
+      color: #ffffff !important;
+      font-size: 16px !important;
+      font-weight: 600 !important;
+      text-decoration: underline !important;
+      opacity: 0.8;
+    }
+    /* Step 1 Footer: system-footer-merged – Tiefschwarz, bündig [cite: FINALE NEUAUFBAU 2026-02-21] */
+    #wizard[data-flow="listing"] .inserat-action-section:has(.system-footer-merged) {
+      background: #000000 !important;
+      padding: 16px 24px calc(16px + env(safe-area-inset-bottom, 0)) 24px !important;
+      padding-left: max(24px, env(safe-area-inset-left)) !important;
+      padding-right: max(24px, env(safe-area-inset-right)) !important;
+      margin: 0 !important;
+      border-radius: 0 !important;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+    #wizard[data-flow="listing"] .system-footer-merged .inserat-btn-step1-right.is-ready {
+      background: #ffffff !important;
+      color: #000000 !important;
     }
     /* Sekundärer Text-Link (Links – Abbrechen, ImmoScout Style) */
     .footer-link-secondary {
