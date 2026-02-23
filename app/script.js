@@ -15620,7 +15620,7 @@
       const photoTile=document.createElement('section');
       photoTile.id='photoModule';
       photoTile.className='inserat-photo-tile photo-section photo-section-ebay photo-header'+(w.data.photoData ? '' : ' pulse-soft');
-      photoTile.style.cssText='position:relative; overflow:hidden; flex-shrink:0; width:100%; height:190px; min-height:190px; max-height:190px;';
+      photoTile.style.cssText='position:relative; overflow:hidden; flex-shrink:0; width:100%; height:170px; min-height:170px; max-height:170px;';
       var imgSrc=w.data.photoData||'data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300"><rect fill="#1e293b" width="400" height="300"/></svg>');
       var objPos=getPhotoObjectPosition();
       photoTile.innerHTML='<img src="'+imgSrc+'" id="mainImagePreview" class="ebay-preview-img" alt="" style="object-position:center '+objPos+'%;"><input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none"><div class="ebay-photo-overlay"><button type="button" class="ebay-edit-btn" id="triggerCamera">'+(w.data.photoData?'<span>📷</span> Foto ändern':'<span>📷</span> Foto aufnehmen')+'</button>'+(w.data.photoData?'<p class="ebay-hint">Ziehen zum Ausrichten</p>':'')+'</div>';
@@ -15768,7 +15768,7 @@
       const stepName=document.createElement('div');
       stepName.id='step-name';
       stepName.className='inserat-section inserat-unified-title-wrap';
-      stepName.style.cssText='width:100%; margin-top:12px; margin-bottom:4px;';
+      stepName.style.cssText='width:100%; margin-top:10px; margin-bottom:4px;';
       /* Autovervollständigung Gerichtsnamen entfernt [cite: 2026-02-21] */
       const inputDish=document.createElement('input');
       inputDish.id='gericht-name';
@@ -15789,7 +15789,7 @@
       inputDish.oninput=function(){ w.data.dish=inputDish.value; saveDraft(); adjustTitleFontSize(); if(typeof checkMastercardValidation==='function') checkMastercardValidation(); if(updateStep2ContextZoneRef) updateStep2ContextZoneRef(); };
       inputDish.onblur=function(){ dismissKeyboard(); hapticLight(); };
       stepName.appendChild(inputDish);
-      stepName.style.cssText='width:100%; margin-top:16px; margin-bottom:8px; display:flex; justify-content:center;';
+      stepName.style.cssText='width:100%; margin-top:10px; margin-bottom:4px; display:flex; justify-content:center;';
       scrollArea.appendChild(stepName);
 
       // ========== 3. Kategorie-Pills (Allergene gestrichen) [cite: 2026-02-21] ==========
@@ -15824,19 +15824,19 @@
       descriptionTextarea.className='input-description';
       descriptionTextarea.placeholder='Kurze Beschreibung...';
       descriptionTextarea.value=w.data.description||'';
-      descriptionTextarea.style.cssText='width:100%; border:none; font-size:16px; color:#64748b; resize:none; padding:10px 0; margin:12px 0 20px; text-align:center; background:transparent; outline:none; box-sizing:border-box;';
+      descriptionTextarea.style.cssText='width:100%; border:none; font-size:16px; color:#64748b; resize:none; padding:8px 0; margin:8px 0 12px; text-align:center; background:transparent; outline:none; box-sizing:border-box;';
       descriptionTextarea.oninput=function(){ w.data.description=descriptionTextarea.value; saveDraft(); };
       scrollArea.appendChild(descriptionTextarea);
 
       var systemDivider=document.createElement('div');
       systemDivider.className='minimal-divider mastercard-step-edit-divider system-divider';
-      systemDivider.style.cssText='width:40px; height:2px; background:#f1f5f9; margin:12px auto 20px; border-radius:2px;';
+      systemDivider.style.cssText='width:40px; height:2px; background:#f1f5f9; margin:8px auto 12px; border-radius:2px;';
       scrollArea.appendChild(systemDivider);
 
       // ========== 5. Preis (Giant) & Extras-Button [cite: FINALE NEUAUFBAU 2026-02-21] ==========
       var priceSection=document.createElement('div');
       priceSection.className='price-section';
-      priceSection.style.cssText='display:flex; flex-direction:column; align-items:center; gap:12px; margin-bottom:20px;';
+      priceSection.style.cssText='display:flex; flex-direction:column; align-items:center; gap:8px; margin-bottom:14px;';
       var priceInputWrapper=document.createElement('div');
       priceInputWrapper.className='price-input-wrapper';
       priceInputWrapper.style.cssText='display:flex; align-items:center; justify-content:center; gap:8px;';
@@ -15899,7 +15899,7 @@
       addPowerItem('\u2795','Extras','extras',hasExtras);
       const quickAdjustPanel=document.createElement('div');
       quickAdjustPanel.className='inserat-quick-adjust-panel quick-adjust-sheet';
-      quickAdjustPanel.style.cssText='display:none; position:fixed; left:0; right:0; bottom:0; z-index:600; background:#ffffff; border-radius:20px 20px 0 0; padding:24px 20px calc(24px + env(safe-area-inset-bottom,0)); box-shadow:0 -8px 32px rgba(0,0,0,0.15); max-height:70vh; overflow-y:auto;';
+      quickAdjustPanel.style.cssText='display:none; position:fixed; left:0; right:0; bottom:0; z-index:600; background:#ffffff; border-radius:20px 20px 0 0; padding:24px 20px calc(24px + env(safe-area-inset-bottom,0)); box-shadow:none; border-top:1px solid rgba(0,0,0,0.04); max-height:70vh; overflow-y:auto;';
       function closeQuickAdjust(){ quickAdjustPanel.style.display='none'; quickAdjustPanel.innerHTML=''; rebuildWizard(); }
       function openQuickAdjust(type){
         hapticLight();
@@ -16329,11 +16329,14 @@
       }
       setWizardContent(sheet);
       requestAnimationFrame(function(){ requestAnimationFrame(function(){ box.classList.add('is-open'); }); });
-      // Guided Interaction: leere Karte → Fokus Namensfeld (blinkender Cursor), kein Foto → Pulsieren [cite: 2026-01-29]
+      // ZERO-CLICK FOCUS: Tastatur sofort aufklappen – Fokus immer auf Namensfeld [cite: 2026-02-23]
       setTimeout(function(){
-        var isEmpty = !(w.data.dish && String(w.data.dish).trim()) && !w.data.photoData;
-        var titleInput = box.querySelector('#step-name input.magnet-input, #step-name .inserat-detail-style-title');
-        if(titleInput && isEmpty){ titleInput.focus(); }
+        var titleInput = box.querySelector('#gericht-name, #step-name input.magnet-input, #step-name .inserat-detail-style-title');
+        if(titleInput){
+          titleInput.focus();
+          var val = titleInput.value || '';
+          if(val){ titleInput.value = ''; titleInput.value = val; }
+        }
         var photoEl = box.querySelector('.photo-header, .inserat-photo-tile');
         if(photoEl && !w.data.photoData) photoEl.classList.add('inserat-card-photo-pulse');
       }, 300);

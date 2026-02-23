@@ -1672,9 +1672,9 @@
       margin: 10px auto;
       border-radius: 2px;
     }
-    /* FINALE NEUAUFBAU Schritt 1: Reihenfolge Foto→Name→Kategorie→Beschreibung→Preis→PowerBar [cite: 2026-02-21] */
+    /* FINALE NEUAUFBAU Schritt 1: Kompaktheit [cite: ZERO-CLICK FOCUS 2026-02-23] Foto 170px→Name 22px→Pills→Beschreibung 14px→Preis 42px→PowerBar */
     #mastercard-step-edit .inserat-scroll-area { padding: 24px 20px 140px !important; }
-    #mastercard-step-edit .pill-group { margin-top: 12px; }
+    #mastercard-step-edit .pill-group { margin-top: 10px; }
     #mastercard-step-edit .pill-cloud.categories { gap: 10px; }
     /* Allergen-Pills gestrichen [cite: 2026-02-21] */
     /* PowerBar Regel 2026-02-23: Reihenfolge 🍴🔄🕒🌾➕, Direkt-Toggle vs. Quick-Adjust */
@@ -1693,12 +1693,14 @@
       transform: scale(0.92);
     }
     /* Quick-Adjust Sheet: Weißes Menü von unten, über Footer (z-index 600) [cite: Regel 2026-02-23] */
+    /* No-Glow Policy: Quick-Adjust ohne box-shadow [cite: ZERO-CLICK FOCUS 2026-02-23] */
     .quick-adjust-sheet,
     .inserat-quick-adjust-panel.quick-adjust-sheet {
       position: fixed !important; left: 0; right: 0; bottom: 0; z-index: 600;
       background: #ffffff; border-radius: 20px 20px 0 0;
       padding: 24px 20px calc(24px + env(safe-area-inset-bottom, 0));
-      box-shadow: 0 -8px 32px rgba(0,0,0,0.15);
+      box-shadow: none;
+      border-top: 1px solid rgba(0,0,0,0.04);
       max-height: 70vh; overflow-y: auto;
     }
     .quick-adjust-headline { margin: 0 0 20px; font-size: 18px; font-weight: 800; color: #0f172a; }
@@ -1737,7 +1739,7 @@
     #mastercard-step-money .price-card.active,
     .mastercard-step-money .price-card.active {
       border-color: #10b981;
-      box-shadow: 0 10px 25px rgba(16, 185, 129, 0.1);
+      box-shadow: none;
     }
     #mastercard-step-money .price-card .card-badge,
     .mastercard-step-money .price-card .card-badge {
@@ -1801,13 +1803,14 @@
       font-size: 18px;
       font-weight: 800;
       border: none;
-      box-shadow: 0 0 20px rgba(255, 255, 255, 0);
+      box-shadow: none;
       transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     }
+    /* No-Glow Policy: Kein Glow auf Weiter-Button [cite: ZERO-CLICK FOCUS 2026-02-23] */
     .footer-btn-primary-glow.is-ready,
     #wizard[data-flow="listing"] .inserat-step1-nav .footer-btn-primary.is-ready {
-      box-shadow: 0 0 25px rgba(255, 255, 255, 0.3);
-      transform: translateY(-2px);
+      box-shadow: none;
+      transform: translateY(0);
     }
     .airbnb-footer-minimal,
     #wizard[data-flow="listing"] .inserat-step1-nav.inserat-immo-footer {
@@ -3628,17 +3631,20 @@
       display: flex; flex-direction: row; align-items: center; justify-content: space-between; gap: 16px;
     }
     /* ImmoScout: Weißer Primär-Button rechts, keine Glow-Effekte [cite: 2026-02-21] */
+    /* No-Glow Policy: Footer-Buttons ohne box-shadow [cite: ZERO-CLICK FOCUS 2026-02-23] */
     .inserat-airbnb-footer .inserat-footer-btn-main {
       flex: 1; min-width: 0; min-height: 52px; height: 52px; border-radius: 12px;
       font-size: 16px; font-weight: 800; border: none; cursor: pointer; display: flex; align-items: center;
       justify-content: center; transition: transform 0.15s ease;
-      background: #ffffff; color: #0f172a; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      background: #ffffff; color: #0f172a; box-shadow: none;
     }
-    .inserat-airbnb-footer .inserat-footer-btn-main.inserat-footer-btn--499 { background: #ffffff; color: #0f172a; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    .inserat-airbnb-footer .inserat-footer-btn-main.inserat-footer-btn--499 { background: #ffffff; color: #0f172a; box-shadow: none; }
     .inserat-airbnb-footer .inserat-footer-btn-main:active { transform: scale(0.98); }
-    /* ImmoScout: Abbrechen transparent, weißer Text [cite: 2026-02-21] */
+    /* ImmoScout: Abbrechen transparent, kein Rahmen, weißer Text [cite: ZERO-CLICK FOCUS 2026-02-23] */
     .inserat-airbnb-footer .inserat-footer-link,
-    .inserat-airbnb-footer .footer-link-secondary { background: transparent !important; border: none !important; color: #ffffff !important; font-size: 15px; font-weight: 600; }
+    .inserat-airbnb-footer .footer-link-secondary,
+    #wizard[data-flow="listing"] .inserat-btn-step1-left,
+    #wizard[data-flow="listing"] .system-footer-merged .inserat-btn-step1-left { background: transparent !important; border: none !important; box-shadow: none !important; outline: none !important; color: #ffffff !important; font-size: 15px; font-weight: 600; }
     /* The Tool Edition: Tiefschwarz #000000, 100% bündig [cite: 2026-02-21] */
     body.wizard-inserat-open #wizard[data-flow="listing"] .inserat-action-section:has(.airbnb-footer),
     body.wizard-inserat-open #wizard[data-flow="listing"] .inserat-step1-nav.inserat-immo-footer {
@@ -3698,7 +3704,7 @@
       font-weight: 800 !important;
       font-size: 16px !important;
       border: none !important;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
+      box-shadow: none !important;
     }
     .money-footer-merged .footer-btn-back-link,
     .money-footer-merged .inserat-footer-link,
