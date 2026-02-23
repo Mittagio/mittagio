@@ -2925,27 +2925,27 @@
   <button type="button" id="weekUndoBtn">Rückgängig</button>
 </div>
 
-<!-- Inseratsauswahl: Deine Renner (Speed-Dial 2x2) oben, dann Buttons [cite: 2026-02-16] -->
+<!-- Inseratsauswahl: Deine Renner oben, Footer Airbnb-Style (2 massive schwarze Buttons) [cite: 2026-02-21] -->
 <div class="backdrop" id="createFlowBd" onclick="closeCreateFlowSheet()"></div>
-<div class="sheet sheet--kitchen" id="createFlowSheet">
+<div class="sheet sheet--kitchen create-flow-selection-pane" id="createFlowSheet">
   <div class="handle"></div>
-  <div class="sheet-body">
-    <div class="create-flow-title">Inseratsauswahl</div>
-    <div id="createFlowRennerSection" class="create-flow-renner-section">
-      <div class="create-flow-renner-heading">Deine Renner</div>
-      <div id="createFlowRennerScroll" class="create-flow-renner-grid"></div>
-      <div id="createFlowRennerEmpty" class="create-flow-renner-empty">Noch keine Renner – leg Gerichte im Kochbuch an oder biete sie an.</div>
+  <div class="create-flow-selection-body">
+    <div class="renner-scroll-area">
+      <h2 class="section-title create-flow-title">Deine Renner</h2>
+      <div id="createFlowRennerSection" class="create-flow-renner-section">
+        <div id="createFlowRennerScroll" class="create-flow-renner-grid"></div>
+        <div id="createFlowRennerEmpty" class="create-flow-renner-empty">Noch keine Renner – leg Gerichte im Kochbuch an oder biete sie an.</div>
+      </div>
+      <div class="create-flow-hint hint" id="createFlowDateHint" style="display:none;"></div>
     </div>
-    <div class="create-flow-btns" style="margin-top:20px; margin-bottom:24px;">
-      <button class="btn-create-primary" type="button" id="btnCreateNewDish" style="margin-bottom:12px;">
-        <span class="plus-char" style="font-size:22px; line-height:1; color:#fff;">+</span>
-        <span>Neues Gericht erstellen</span>
+    <footer class="system-bottom-nav">
+      <button class="nav-btn-primary nav-btn-equal" type="button" id="openCookbook">
+        <span>📖</span> Kochbuch
       </button>
-      <button class="btn btn-create-secondary" type="button" id="btnCreateFromCookbook">
-        <span>Aus dem Kochbuch hinzufügen</span>
+      <button class="nav-btn-primary nav-btn-equal" type="button" id="createNewListing">
+        + Neues Gericht
       </button>
-    </div>
-    <div class="create-flow-hint hint" id="createFlowDateHint" style="display:none;"></div>
+    </footer>
   </div>
 </div>
 

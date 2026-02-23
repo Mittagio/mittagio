@@ -6060,6 +6060,9 @@
 
       document.getElementById('createFlowBd').classList.add('active');
       sheet.classList.add('active');
+      document.body.classList.add('create-flow-open');
+      var pn = document.getElementById('providerNavWrap');
+      if(pn && document.body.classList.contains('provider-mode')) pn.style.setProperty('display', 'none', 'important');
       if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
     }
   }
@@ -6067,25 +6070,27 @@
   function closeCreateFlowSheet(){
     document.getElementById('createFlowBd').classList.remove('active');
     document.getElementById('createFlowSheet').classList.remove('active');
+    document.body.classList.remove('create-flow-open');
+    var pn = document.getElementById('providerNavWrap');
+    if(pn && document.body.classList.contains('provider-mode')) pn.style.removeProperty('display');
     createFlowPreselectedDate = null;
     createFlowOriginView = 'dashboard';
   }
   
-  // Create Flow Handlers - Beide öffnen Master-Flow
-  const btnCreateFromCookbook = document.getElementById('btnCreateFromCookbook');
-  if(btnCreateFromCookbook){
-    btnCreateFromCookbook.onclick = () => {
+  // Create Flow Handlers - Footer Airbnb-Style: beide massive schwarze Buttons
+  const openCookbookBtn = document.getElementById('openCookbook');
+  if(openCookbookBtn){
+    openCookbookBtn.onclick = function(){
       closeCreateFlowSheet();
-      // Navigate to cookbook - user selects entry there, then "Inserieren" opens Master-Flow
       showProviderCookbook();
     };
   }
   
-  const btnCreateNewDish = document.getElementById('btnCreateNewDish');
-  if(btnCreateNewDish){
-    btnCreateNewDish.onclick = () => {
-      const date = createFlowPreselectedDate;
-      const ep = createFlowOriginView || 'dashboard';
+  const createNewListingBtn = document.getElementById('createNewListing');
+  if(createNewListingBtn){
+    createNewListingBtn.onclick = function(){
+      var date = createFlowPreselectedDate;
+      var ep = createFlowOriginView || 'dashboard';
       closeCreateFlowSheet();
       openDishFlow(date, ep);
     };
@@ -15842,23 +15847,23 @@
         var step1NavRow=document.createElement('div');
         step1NavRow.className='inserat-step1-nav';
         step1NavRow.style.cssText='display:flex; gap:12px; width:100%; align-items:stretch;';
-        var btnSpeichern=document.createElement('button');
-        btnSpeichern.type='button';
-        btnSpeichern.className='inserat-btn-step1-left';
-        btnSpeichern.style.cssText='flex:1; min-height:56px; padding:14px 16px; border:none; border-radius:0; background:#f1f5f9; font-size:15px; font-weight:700; color:#475569; cursor:pointer;';
-        btnSpeichern.textContent='Speichern in...';
-        btnSpeichern.onclick=function(){ hapticLight(); if(typeof showSaveScopeDialog==='function') showSaveScopeDialog({ onlyCurrent: function(){ saveDraft(); if(typeof showToast==='function') showToast('Als Entwurf gespeichert'); }, saveToCookbook: function(){ if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; } var id=saveToCookbookFromWizard(); if(id){ closeWizard(true); showSaveSuccessSheet({ title:'Im Kochbuch gespeichert', sub:'Dein Gericht ist in deinem Kochbuch.', dishName: w.data.dish||'', price: w.data.price, imageUrl: w.data.photoData||'', savedEntryId: id, savedDay: null, onFertig: function(){ if(typeof showToast==='function') showToast('Gericht im Kochbuch aktualisiert 📖'); if(typeof showProviderCookbook==='function') showProviderCookbook(); }, onLive: null }); } } }); };
+        var btnAbbrechen=document.createElement('button');
+        btnAbbrechen.type='button';
+        btnAbbrechen.className='inserat-btn-step1-left nav-btn-primary nav-btn-equal';
+        btnAbbrechen.style.cssText='flex:1; min-height:48px; height:48px; padding:0 24px; border:none; border-radius:8px; background:#222222; font-size:16px; font-weight:700; color:#fff; cursor:pointer;';
+        btnAbbrechen.textContent='Abbrechen';
+        btnAbbrechen.onclick=function(){ hapticLight(); if(typeof handleWizardExit==='function') handleWizardExit(); };
         var btnWeiter=document.createElement('button');
         btnWeiter.type='button';
-        btnWeiter.className='inserat-btn-step1-right';
-        btnWeiter.style.cssText='flex:1; min-height:56px; padding:14px 16px; border:none; border-radius:0; background:#121212; color:#fff; font-size:15px; font-weight:800; cursor:pointer;';
+        btnWeiter.className='inserat-btn-step1-right nav-btn-primary nav-btn-equal';
+        btnWeiter.style.cssText='flex:1; min-height:48px; height:48px; padding:0 24px; border:none; border-radius:8px; background:#222222; color:#fff; font-size:16px; font-weight:800; cursor:pointer;';
         btnWeiter.textContent='Weiter zur Veröffentlichung';
         btnWeiter.onclick=function(){
           hapticLight();
           if(typeof handlePriceFastInsert==='function') handlePriceFastInsert(box);
           w.inseratStep=2; saveDraft(); rebuildWizard();
         };
-        step1NavRow.appendChild(btnSpeichern);
+        step1NavRow.appendChild(btnAbbrechen);
         step1NavRow.appendChild(btnWeiter);
         actionSection.appendChild(step1NavRow);
       } else {

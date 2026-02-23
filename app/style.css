@@ -1489,20 +1489,23 @@
     /* Wizard/InseratCard: Backdrop unter Sheet, damit Klicks die Karte treffen (nicht Backdrop) */
     #wbd.active { z-index: 999 !important; background: radial-gradient(ellipse at center, rgba(254,243,199,0.35) 0%, rgba(251,191,36,0.08) 35%, rgba(0,0,0,0.65) 100%); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
     #wizard.sheet--kitchen.active { z-index: 1001 !important; }
-    /* Inseratsauswahl-Sheet (createFlowBd/createFlowSheet) – unter Wizard */
+    /* Inseratsauswahl-Sheet (createFlowBd/createFlowSheet) – Footer bündig, Airbnb-Style [cite: 2026-02-21] */
     #createFlowBd { z-index: 997; opacity: 0; pointer-events: none; transition: opacity 0.25s ease; background: rgba(0,0,0,0.5); }
     #createFlowBd.active { opacity: 1; pointer-events: auto; }
-    #createFlowSheet { z-index: 998; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.34, 1.2, 0.64, 1); position: fixed; bottom: 0; left: 0; right: 0; max-height: 85vh; border-radius: 24px 24px 0 0; background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.6); box-shadow: 0 -10px 40px rgba(0,0,0,0.12); display: flex; flex-direction: column; overflow: hidden; }
+    #createFlowSheet { z-index: 998; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.34, 1.2, 0.64, 1); position: fixed; bottom: 0; left: 0; right: 0; max-height: 85vh; border-radius: 0; margin: 0 !important; background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.6); box-shadow: 0 -10px 40px rgba(0,0,0,0.12); display: flex; flex-direction: column; overflow: hidden; }
     #createFlowSheet.active { transform: translateY(0); }
     #createFlowSheet.sheet--kitchen .handle { background: rgba(0,0,0,0.15); width: 40px; height: 4px; border-radius: 2px; margin: 8px auto 4px; }
-    #createFlowSheet .sheet-body { padding: 12px 20px max(20px, env(safe-area-inset-bottom)); overflow-y: auto; -webkit-overflow-scrolling: touch; }
-    .create-flow-title { font-size: var(--size-h2); font-weight: var(--weight-heavy); color: var(--color-title); margin-bottom: 16px; }
+    #createFlowSheet .create-flow-selection-body { display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden; }
+    #createFlowSheet .renner-scroll-area { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 12px 20px 16px; }
+    #createFlowSheet .section-title.create-flow-title { font-size: var(--size-h2); font-weight: var(--weight-heavy); color: var(--color-title); margin: 0 0 16px; }
     .create-flow-hint { font-size: 13px; color: #64748b; margin-top: 8px; }
-    .create-flow-btns { display: flex; flex-direction: column; gap: 12px; }
-    .btn-create-primary { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; min-height: 56px; padding: 14px 20px; border: none; border-radius: 16px; background: #FFD700; color: #1a1a1a; font-size: 16px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 20px rgba(255,215,0,0.35); transition: transform 0.1s ease, box-shadow 0.2s ease; }
-    .btn-create-primary:active { transform: scale(0.98); }
-    .btn-create-secondary { width: 100%; min-height: 52px; padding: 14px 20px; border: 2px solid #e5e7eb; border-radius: 14px; background: #fff; font-size: 16px; font-weight: 700; color: #1a1a1a; cursor: pointer; transition: transform 0.1s ease; }
-    .btn-create-secondary:active { transform: scale(0.98); }
+    /* SYSTEM FOOTER – bündig S25-Rand, 2 massive schwarze Buttons gleich groß [cite: 2026-02-21] */
+    .system-bottom-nav { position: relative; bottom: auto; left: 0; right: 0; width: 100%; background: #fff; border-top: 1px solid #f1f5f9; padding: 12px 24px calc(12px + env(safe-area-inset-bottom)) 24px; display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 !important; border-radius: 0 !important; flex-shrink: 0; z-index: 10; }
+    .system-bottom-nav .nav-btn-primary { background: #222222; color: #ffffff; height: 48px; min-height: 48px; padding: 0 24px; border-radius: 8px; font-weight: 700; font-size: 16px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; flex: 1; transition: transform 0.1s, opacity 0.2s; -webkit-tap-highlight-color: transparent; }
+    .system-bottom-nav .nav-btn-primary:active { transform: scale(0.98); }
+    .system-bottom-nav .nav-btn-equal { flex: 1; min-width: 0; }
+    body.create-flow-open #providerNavWrap,
+    body.wizard-inserat-open #providerNavWrap { display: none !important; }
     /* Renner-Speed-Dial: 2x2 Grid, TOP-Badge, 70% Bild, Midnight Blue Name, grüner Preis [cite: 2026-02-16] */
     .create-flow-renner-section { margin-bottom: 0; }
     .create-flow-renner-heading { font-weight: 800; font-size: 15px; color: #1a1a1a; margin-bottom: 12px; }
@@ -2578,11 +2581,8 @@
     #wizard[data-flow="listing"] .inserat-collapsing-header.is-scrolled {
       padding: 8px 16px;
     }
-    /* Native Immersion: Nav ausblenden wenn InseratCard offen [cite: 2026-02-21] */
-    body.wizard-inserat-open #providerNavWrap {
-      display: none !important;
-    }
-    /* Sticky Bottom: Hardware-Fusion, festgedockt, Clean [cite: 2026-02-21 S25] */
+    /* Tunnel-Blick: Nav ausblenden wenn Inseratsauswahl ODER Mastercard offen [cite: 2026-02-21] */
+    /* Mastercard-Fix: Footer exakt wie Inseratsauswahl – gleiche Position, Höhe, bündig [cite: 2026-02-21] */
     body.wizard-inserat-open #wizard[data-flow="listing"] .inserat-action-section.inserat-action-layer,
     body.wizard-inserat-open #wizard[data-flow="listing"] .inserat-action-section.inserat-action-pricing {
       position: fixed !important;
@@ -2592,10 +2592,9 @@
       width: 100% !important;
       margin: 0 !important;
       border-radius: 0 !important;
-      padding: 12px 0 max(16px, env(safe-area-inset-bottom)) !important;
-      padding-left: 0 !important;
-      padding-right: 0 !important;
-      background: #fff;
+      padding: 12px 24px calc(12px + env(safe-area-inset-bottom)) 24px !important;
+      background: #fff !important;
+      border-top: 1px solid #f1f5f9 !important;
     }
     /* Footer-Padding reduziert wenn Nav ausgeblendet */
     body.wizard-inserat-open #wizard[data-flow="listing"] .liquid-master-panel .inserat-action-section {
@@ -2605,10 +2604,20 @@
     body.wizard-inserat-open #wizard[data-flow="listing"] .inserat-scroll-area {
       padding-bottom: 100px !important;
     }
-    /* Step1-Nav: volle Breite, Safe-Area – Hardware-Style */
+    /* Step1-Nav: 2 Buttons gleich groß wie system-bottom-nav (48px, gap 12px) */
     body.wizard-inserat-open #wizard[data-flow="listing"] .inserat-step1-nav {
-      padding-left: max(0, env(safe-area-inset-left));
-      padding-right: max(0, env(safe-area-inset-right));
+      display: flex !important;
+      gap: 12px !important;
+      width: 100% !important;
+      min-height: 48px !important;
+      align-items: stretch !important;
+    }
+    body.wizard-inserat-open #wizard[data-flow="listing"] .inserat-step1-nav .inserat-btn-step1-left,
+    body.wizard-inserat-open #wizard[data-flow="listing"] .inserat-step1-nav .inserat-btn-step1-right {
+      flex: 1 !important;
+      min-height: 48px !important;
+      height: 48px !important;
+      border-radius: 8px !important;
     }
     /* Bild im Scroll-Fluss: oben abgerundet, volle Breite [cite: 2026-02-21] */
     #wizard[data-flow="listing"] .inserat-scroll-area.inserat-scroll-with-photo {
@@ -2964,13 +2973,13 @@
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .func-icon-btn.active {
       background: rgba(16,185,129,0.12) !important; color: #059669 !important; border: none !important;
     }
-    /* Bottom-Nav-Style: Eckig, Anthrazit Primär, festgedockt [cite: 2026-02-21 S25] */
+    /* Bottom-Nav-Style: Beide Buttons gleich groß (48px), Airbnb Black [cite: 2026-02-21] */
     #wizard[data-flow="listing"] .inserat-step1-nav {
-      display: flex; gap: 0; width: 100%; min-height: 56px; align-items: stretch;
+      display: flex; gap: 12px; width: 100%; min-height: 48px; align-items: stretch;
     }
     #wizard[data-flow="listing"] .inserat-btn-step1-left,
     #wizard[data-flow="listing"] .inserat-btn-step1-right {
-      border-radius: 0 !important; box-shadow: none !important; border: none !important;
+      flex: 1; min-height: 48px; border-radius: 8px !important; box-shadow: none !important; border: none !important;
     }
     #wizard[data-flow="listing"] .inserat-btn-step1-left:active,
     #wizard[data-flow="listing"] .inserat-btn-step1-right:active { transform: scale(0.98); }
