@@ -14755,7 +14755,7 @@
     var p = panel || document.querySelector('#wizard .liquid-master-panel');
     if(p && p.classList.contains('mastercard-container')){
       closeMastercardSlideDown(p, entryPoint);
-    } else if(p && !p.classList.contains('x-pop-away')){ p.classList.add('x-pop-away'); setTimeout(function(){ closeWizard(); navigateAfterWizardExit(entryPoint); }, 280); } else { closeWizard(); navigateAfterWizardExit(entryPoint); }
+    } else if(p && !p.classList.contains('x-pop-away')){ requestAnimationFrame(function(){ p.classList.add('x-pop-away'); setTimeout(function(){ closeWizard(); navigateAfterWizardExit(entryPoint); }, 280); }); } else { closeWizard(); navigateAfterWizardExit(entryPoint); }
   }
 
   /**
@@ -15556,7 +15556,7 @@
           w.data.pricingChoice=type==='classic'?'499':'pro';
           w.data.hasPickupCode=(type==='pro');
           saveDraft();
-          var fb=box.querySelector('.inserat-airbnb-footer .inserat-footer-btn-main, #footerNext');
+          var fb=box.querySelector('.app-footer-main .inserat-footer-btn-main, #footerNext');
           if(fb){
             fb.textContent=(type==='classic')?'Für 4,99 € inserieren':'Kostenlos inserieren';
             fb.classList.toggle('inserat-footer-btn--499',type==='classic');
@@ -15777,7 +15777,7 @@
         if(photoTile.classList.contains('is-selecting')){ hapticLight(); closeHeaderSelection(); return; }
         try{ if(typeof haptic==='function') haptic(15); else if(navigator.vibrate) navigator.vibrate(15); }catch(e){}
         if(typeof handleWizardExit==='function'){ handleWizardExit(box); return; }
-        var panel=box; if(panel&&!panel.classList.contains('x-pop-away')){ panel.classList.add('x-pop-away'); setTimeout(function(){ closeWizard(); }, 280); } else { closeWizard(); }
+        var panel=box; if(panel&&!panel.classList.contains('x-pop-away')){ requestAnimationFrame(function(){ panel.classList.add('x-pop-away'); setTimeout(function(){ closeWizard(); }, 280); }); } else { closeWizard(); }
       };
 
       const scrollArea=document.createElement('div');
@@ -15811,7 +15811,7 @@
       inputDish.oninput=function(){ w.data.dish=inputDish.value; saveDraft(); adjustTitleFontSize(); if(typeof checkMastercardValidation==='function') checkMastercardValidation(); if(updateStep2ContextZoneRef) updateStep2ContextZoneRef(); };
       inputDish.onblur=function(){ dismissKeyboard(); hapticLight(); };
       stepName.appendChild(inputDish);
-      stepName.style.cssText='width:100%; margin-top:6px; margin-bottom:2px; display:flex; justify-content:center;';
+      stepName.style.cssText='width:100%; margin-top:6px; margin-bottom:0; display:flex; justify-content:center;';
       scrollArea.appendChild(stepName);
 
       // ========== 3. Beschreibung (VOR Kategorien) [cite: 2026-02-23 DESIGN-FINISH] ==========
@@ -15820,7 +15820,7 @@
       descriptionTextarea.className='input-description';
       descriptionTextarea.placeholder='Kurze Beschreibung...';
       descriptionTextarea.value=w.data.description||'';
-      descriptionTextarea.style.cssText='width:100%; border:none; font-size:14px; color:#64748b; resize:none; padding:4px 0 6px 0; margin:0; text-align:center; background:transparent; outline:none; box-sizing:border-box;';
+      descriptionTextarea.style.cssText='width:100%; border:none; font-size:14px; color:#64748b; resize:none; padding:2px 0 6px 0; margin:2px 0 0; text-align:center; background:transparent; outline:none; box-sizing:border-box;';
       descriptionTextarea.oninput=function(){ w.data.description=descriptionTextarea.value; saveDraft(); };
       scrollArea.appendChild(descriptionTextarea);
 
@@ -15925,25 +15925,34 @@
       const quickAdjustPanel=document.createElement('div');
       quickAdjustPanel.id='quick-adjust-sheet';
       quickAdjustPanel.className='inserat-quick-adjust-panel quick-adjust-sheet';
-      quickAdjustPanel.style.cssText='display:none; position:fixed; left:0; right:0; bottom:0; z-index:6000; background:#ffffff; border-radius:24px 24px 0 0; padding:24px 20px calc(24px + env(safe-area-inset-bottom,0)); box-shadow:none; border-top:1px solid #ebebeb; max-height:70vh; overflow-y:auto;';
+      quickAdjustPanel.style.cssText='display:none; position:fixed; left:0; right:0; bottom:0; z-index:11000; background:#ffffff; border-radius:24px 24px 0 0; padding:24px 20px calc(24px + env(safe-area-inset-bottom,0)); box-shadow:none; border-top:1px solid #ebebeb; max-height:70vh; overflow-y:auto;';
       function closeQuickAdjustWithFeedback(type){
         var finishBtn=quickAdjustPanel.querySelector('.quick-adjust-fertig');
         if(finishBtn){
           finishBtn.textContent='✓ Gespeichert';
-          finishBtn.style.background='#10b981';
+          finishBtn.style.background='#222222';
           if(window.navigator.vibrate) window.navigator.vibrate([10,30,10]);
         }
-        setTimeout(function(){
-          quickAdjustPanel.style.display='none';
-          quickAdjustPanel.innerHTML='';
-          rebuildWizard();
-        }, 400);
+        requestAnimationFrame(function(){
+          quickAdjustPanel.style.transform='translateY(100%)';
+          quickAdjustPanel.style.transition='transform 0.3s cubic-bezier(0.32,0.72,0,1)';
+          setTimeout(function(){
+            quickAdjustPanel.style.display='none';
+            quickAdjustPanel.style.transform='';
+            quickAdjustPanel.style.transition='';
+            quickAdjustPanel.innerHTML='';
+            rebuildWizard();
+          }, 300);
+        });
       }
       function closeQuickAdjust(){ if(navigator.vibrate) navigator.vibrate(20); quickAdjustPanel.style.display='none'; quickAdjustPanel.innerHTML=''; rebuildWizard(); }
       function openQuickAdjust(type){
         hapticLight();
         quickAdjustPanel.innerHTML='';
+        quickAdjustPanel.style.transition='transform 0.3s cubic-bezier(0.32,0.72,0,1)';
+        quickAdjustPanel.style.transform='translateY(100%)';
         quickAdjustPanel.style.display='block';
+        requestAnimationFrame(function(){ requestAnimationFrame(function(){ quickAdjustPanel.style.transform='translateY(0)'; }); });
         var headline=document.createElement('h3');
         headline.className='quick-adjust-headline';
         headline.style.cssText='margin:0 0 20px; font-size:18px; font-weight:800; color:#0f172a;';
@@ -16107,14 +16116,14 @@
         step1NavRow.style.cssText='display:flex; gap:12px; width:100%; align-items:stretch;';
         var btnAbbrechen=document.createElement('button');
         btnAbbrechen.type='button';
-        btnAbbrechen.className='inserat-btn-step1-left nav-btn-primary nav-btn-equal';
+        btnAbbrechen.className='inserat-btn-step1-left btn-secondary-link nav-btn-primary nav-btn-equal';
         btnAbbrechen.style.cssText='flex:0; min-height:48px; padding:0 16px; border:none; background:transparent !important; font-size:16px; font-weight:bold; color:#222222 !important; cursor:pointer; text-decoration:underline;';
         btnAbbrechen.textContent='Abbrechen';
         btnAbbrechen.onclick=function(){ hapticLight(); if(typeof handleWizardExit==='function') handleWizardExit(); };
         var btnSpeichern=document.createElement('button');
         btnSpeichern.type='button';
         btnSpeichern.id='btnNext';
-        btnSpeichern.className='inserat-btn-step1-right nav-btn-primary nav-btn-equal';
+        btnSpeichern.className='inserat-btn-step1-right btn-primary-black nav-btn-primary nav-btn-equal';
         btnSpeichern.style.cssText='flex:1; min-height:48px; height:48px; padding:0 24px; border:none; border-radius:8px; background:#222222 !important; color:white !important; font-size:16px; font-weight:800; cursor:pointer;';
         btnSpeichern.textContent='Speichern';
         btnSpeichern.disabled=!primaryValid;
@@ -16136,19 +16145,18 @@
       } else if(isPlanMode){
         /* ImmoScout-Footer Plan-Mode: Links Text-Link, Rechts schwarzer Primär-Button */
         var planNavRow=document.createElement('div');
-        planNavRow.className='inserat-immo-footer airbnb-footer app-footer-main';
+        planNavRow.className='app-footer-main';
         planNavRow.style.cssText='display:flex; gap:16px; width:100%; align-items:center; justify-content:space-between;';
         var linkCookOnly=document.createElement('button');
         linkCookOnly.type='button';
-        linkCookOnly.className='inserat-footer-link footer-link-secondary';
+        linkCookOnly.className='inserat-footer-link footer-link-secondary btn-secondary-link';
         linkCookOnly.style.cssText='background:none; border:none; padding:12px 0; font-size:15px; font-weight:bold; color:#222222; cursor:pointer; text-decoration:underline;';
         linkCookOnly.textContent='Abbrechen';
-        linkCookOnly.classList.add('footer-link-secondary');
         linkCookOnly.id='footerCancel';
         linkCookOnly.onclick=function(){ hapticLight(); closeWizard(); };
         var btnWeekPlan=document.createElement('button');
         btnWeekPlan.type='button';
-        btnWeekPlan.className='inserat-footer-btn-main footer-btn-primary';
+        btnWeekPlan.className='inserat-footer-btn-main footer-btn-primary btn-primary-black';
         btnWeekPlan.id='footerNext';
         btnWeekPlan.style.cssText='flex:1; height:48px; min-width:180px; padding:0 24px; border:none; border-radius:8px; background:#222222; color:white; font-size:16px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center;';
         btnWeekPlan.textContent='Einplanen';
@@ -16175,14 +16183,14 @@
         step1NavRow.style.cssText='display:flex; gap:12px; width:100%; align-items:stretch;';
         var btnAbbrechen=document.createElement('button');
         btnAbbrechen.type='button';
-        btnAbbrechen.className='inserat-btn-step1-left nav-btn-primary nav-btn-equal';
+        btnAbbrechen.className='inserat-btn-step1-left btn-secondary-link nav-btn-primary nav-btn-equal';
         btnAbbrechen.style.cssText='flex:0; min-height:48px; padding:0 16px; border:none; background:transparent !important; font-size:16px; font-weight:bold; color:#222222 !important; cursor:pointer; text-decoration:underline;';
         btnAbbrechen.textContent='Abbrechen';
         btnAbbrechen.onclick=function(){ hapticLight(); if(typeof handleWizardExit==='function') handleWizardExit(); };
         var btnWeiter=document.createElement('button');
         btnWeiter.type='button';
         btnWeiter.id='btnNext';
-        btnWeiter.className='inserat-btn-step1-right nav-btn-primary nav-btn-equal';
+        btnWeiter.className='inserat-btn-step1-right btn-primary-black nav-btn-primary nav-btn-equal';
         btnWeiter.style.cssText='flex:1; min-height:48px; height:48px; padding:0 24px; border:none; border-radius:8px; background:#222222 !important; color:white !important; font-size:16px; font-weight:800; cursor:pointer;';
         btnWeiter.textContent='Weiter';
         btnWeiter.disabled=true;
@@ -16206,19 +16214,18 @@
       } else {
         /* ImmoScout-Footer Plan-Mode: Links Text-Link, Rechts schwarzer Primär-Button */
         var planRow=document.createElement('div');
-        planRow.className='inserat-immo-footer airbnb-footer app-footer-main';
+        planRow.className='app-footer-main';
         planRow.style.cssText='display:flex; gap:16px; width:100%; align-items:center; justify-content:space-between;';
         var linkKochbuch=document.createElement('button');
         linkKochbuch.type='button';
-        linkKochbuch.className='inserat-footer-link footer-link-secondary';
+        linkKochbuch.className='inserat-footer-link footer-link-secondary btn-secondary-link';
         linkKochbuch.style.cssText='background:none; border:none; padding:12px 0; font-size:15px; font-weight:bold; color:#222222; cursor:pointer; text-decoration:underline;';
         linkKochbuch.textContent='Abbrechen';
-        linkKochbuch.classList.add('footer-link-secondary');
         linkKochbuch.id='footerCancel';
         linkKochbuch.onclick=function(){ hapticLight(); closeWizard(); };
         var btnEinplanen=document.createElement('button');
         btnEinplanen.type='button';
-        btnEinplanen.className='inserat-footer-btn-main footer-btn-primary';
+        btnEinplanen.className='inserat-footer-btn-main footer-btn-primary btn-primary-black';
         btnEinplanen.id='footerNext';
         btnEinplanen.style.cssText='flex:1; height:48px; min-width:180px; padding:0 24px; border:none; border-radius:8px; background:#222222; color:white; font-size:16px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center;';
         btnEinplanen.textContent='Einplanen';
@@ -16254,7 +16261,7 @@
       if(slider){
         box.appendChild(slider);
         var airbnbFooter=document.createElement('div');
-        airbnbFooter.className='inserat-airbnb-footer airbnb-footer money-footer-merged app-footer-main';
+        airbnbFooter.className='app-footer-main';
         airbnbFooter.id='mastercardFooter';
         airbnbFooter.setAttribute('data-inserat-step','2');
         airbnbFooter.style.display=inseratStep===2?'flex':'none';
@@ -16263,12 +16270,12 @@
         linkZurueck.className='inserat-footer-link';
         linkZurueck.style.cssText='background:none; border:none; padding:12px 0; font-size:15px; font-weight:bold; color:#222222; cursor:pointer; text-decoration:underline; flex-shrink:0;';
         linkZurueck.textContent='Zurück';
-        linkZurueck.className='inserat-footer-link footer-link-secondary';
+        linkZurueck.className='inserat-footer-link footer-link-secondary btn-secondary-link';
         linkZurueck.id='footerCancel';
         linkZurueck.onclick=function(){ hapticLight(); w.inseratStep=1; saveDraft(); if(slider) slider.setAttribute('data-inserat-step','1'); airbnbFooter.style.display='none'; var sf=box.querySelector('.inserat-step3-footer'); if(sf) sf.style.display='none'; var wizardEl=document.getElementById('wizard'); if(wizardEl){ wizardEl.classList.remove('inserat-step2-active'); wizardEl.classList.remove('inserat-step3-active'); } };
         var footerBtn=document.createElement('button');
         footerBtn.type='button';
-        footerBtn.className='inserat-footer-btn-main footer-btn-primary' + (w.data.pricingChoice==='499' ? ' inserat-footer-btn--499' : ' free-mode is-free-mode');
+        footerBtn.className='inserat-footer-btn-main footer-btn-primary btn-primary-black' + (w.data.pricingChoice==='499' ? ' inserat-footer-btn--499' : ' free-mode is-free-mode');
         footerBtn.id='footerNext';
         footerBtn.textContent=(w.data.pricingChoice==='499' ? 'Für 4,99 € inserieren' : 'Kostenlos inserieren');
         footerBtn.onclick=function(){
