@@ -1543,6 +1543,7 @@
     .system-bottom-nav .nav-btn-equal { flex: 1; min-width: 0; }
     body.create-flow-open #providerNavWrap,
     body.wizard-inserat-open #providerNavWrap { display: none !important; }
+    body.wizard-inserat-open { overflow: hidden !important; overscroll-behavior: none !important; }
     /* Renner-Speed-Dial: 2x2 Grid, TOP-Badge, 70% Bild, Midnight Blue Name, grüner Preis [cite: 2026-02-16] */
     .create-flow-renner-section { margin-bottom: 0; }
     .create-flow-renner-heading { font-weight: 800; font-size: 15px; color: #1a1a1a; margin-bottom: 12px; }
@@ -2925,8 +2926,8 @@
       border-radius: 0 !important;
       z-index: 500 !important;
       padding: 12px 24px calc(12px + env(safe-area-inset-bottom)) 24px !important;
-      background: #fff !important;
-      border-top: 1px solid #f1f5f9 !important;
+      background: #000000 !important;
+      border-top: none !important;
     }
     /* Footer-Padding reduziert wenn Nav ausgeblendet */
     body.wizard-inserat-open #wizard[data-flow="listing"] .liquid-master-panel .inserat-action-section {
@@ -2944,12 +2945,31 @@
       min-height: 48px !important;
       align-items: stretch !important;
     }
-    body.wizard-inserat-open #wizard[data-flow="listing"] .inserat-step1-nav .inserat-btn-step1-left,
+    body.wizard-inserat-open #wizard[data-flow="listing"] .inserat-step1-nav .inserat-btn-step1-left {
+      flex: 1 !important;
+      min-height: 48px !important;
+      height: 48px !important;
+      border-radius: 8px !important;
+      background: transparent !important;
+      color: #ffffff !important;
+      text-decoration: underline;
+    }
     body.wizard-inserat-open #wizard[data-flow="listing"] .inserat-step1-nav .inserat-btn-step1-right {
       flex: 1 !important;
       min-height: 48px !important;
       height: 48px !important;
       border-radius: 8px !important;
+      background: #334155 !important;
+      color: #94a3b8 !important;
+      opacity: 0.5;
+      pointer-events: none;
+      transition: all 0.3s ease;
+    }
+    body.wizard-inserat-open #wizard[data-flow="listing"] .inserat-step1-nav .inserat-btn-step1-right.is-ready {
+      background: #ffffff !important;
+      color: #000000 !important;
+      opacity: 1;
+      pointer-events: auto;
     }
     /* Bild im Scroll-Fluss: Edge-to-Edge, keine Rundungen [cite: 2026-02-21 Inseratsbüro] */
     #wizard[data-flow="listing"] .inserat-scroll-area.inserat-scroll-with-photo {
@@ -3485,10 +3505,10 @@
     /* ImmoScout: Abbrechen transparent, weißer Text [cite: 2026-02-21] */
     .inserat-airbnb-footer .inserat-footer-link,
     .inserat-airbnb-footer .footer-link-secondary { background: transparent !important; border: none !important; color: #ffffff !important; font-size: 15px; font-weight: 600; }
-    /* ImmoScout-Footer: #0f172a massiv, 0px margin/radius unten [cite: 2026-02-21] */
+    /* The Tool Edition: Tiefschwarz #000000, 100% bündig [cite: 2026-02-21] */
     body.wizard-inserat-open #wizard[data-flow="listing"] .inserat-action-section:has(.airbnb-footer),
     body.wizard-inserat-open #wizard[data-flow="listing"] .inserat-step1-nav.inserat-immo-footer {
-      background: #0f172a !important;
+      background: #000000 !important;
       margin: 0 !important; border-radius: 0 !important;
       padding: 16px 24px max(16px, env(safe-area-inset-bottom)) 24px !important;
     }
@@ -3498,15 +3518,13 @@
     .inserat-immo-footer.airbnb-footer {
       z-index: 500 !important;
     }
-    /* 5. IMMOSCOUT-FOOTER: Schwarz, bündig, massiv – einheitlich Kochbuch/Dashboard/Wochenplan */
+    /* 5. THE TOOL EDITION: Tiefschwarz #000000, bündig – einheitlich Kochbuch/Dashboard/Wochenplan */
     .airbnb-footer {
       position: fixed;
       bottom: 0;
       left: 0;
       width: 100vw;
-      background: rgba(15, 23, 42, 0.92);
-      backdrop-filter: blur(30px);
-      -webkit-backdrop-filter: blur(30px);
+      background: #000000;
       padding: 16px 24px 34px 24px;
       padding-bottom: max(34px, env(safe-area-inset-bottom));
       display: flex;

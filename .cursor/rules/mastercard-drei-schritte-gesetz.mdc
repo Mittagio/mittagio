@@ -1,0 +1,64 @@
+---
+description: Das Drei-Schritte-Gesetz – verbindliche Phasen des Mastercard-Workflows (STEP_EDIT → STEP_MONEY → STEP_LIVE).
+alwaysApply: true
+---
+
+# DAS DREI-SCHRITTE-GESETZ (Mastercard-Workflow)
+
+Jedes Inserat durchläuft **zwingend drei Phasen**. Diese Regel definiert den Mastercard-Workflow für Cursor und alle Beteiligten.
+
+## Regel: Mastercard-Phasen
+
+| Phase | Zweck | Freischaltung |
+|-------|-------|---------------|
+| **STEP_EDIT** | Dateneingabe und visuelle Gestaltung | Einstieg |
+| **STEP_MONEY** | Geschäftsmodell-Entscheidung (Bezahlung) | Validierung in STEP_EDIT |
+| **STEP_LIVE** | Bestätigung, Belohnung, Marketing | Nach erfolgreicher Veröffentlichung |
+
+---
+
+## Schritt 1: Das Inserat (STEP_EDIT – Die Bearbeitung)
+
+**Zweck:** Dateneingabe und visuelle Gestaltung.
+
+- **Design:** Weißes Panel, 190px eBay-Fotomodul (unten 24px abgerundet), Giant-Inputs für Name und Preis.
+- **Technik:** Automatischer Kamera-Trigger bei Neustart, vertikales Panning des Fotos (object-position).
+- **Footer:** Schwarzer „Merged Footer“. Links: Abbrechen (Text-Link), Rechts: Weiter (erst weiß/aktiv nach Validierung).
+- **Validierung:** Weiter wird freigeschaltet, wenn Gerichtsname (≥2 Zeichen) und Foto (kein Platzhalter) gesetzt sind.
+
+---
+
+## Schritt 2: Die Monetarisierung (STEP_MONEY – Die Auswahl)
+
+**Zweck:** Geschäftsmodell-Entscheidung (Bezahlung).
+
+- **Design:** Klare Trennung zwischen Basis-Inserat (z.B. 4,99 €) und Zusatz-Optionen (z.B. Abholnummer für 0,89 €).
+- **Logik:** Keine komplexen Tabellen. Große, klickbare Kacheln oder einfache Toggles.
+- **Footer:** Bleibt schwarz und bündig. Button-Text je nach Wahl: „Jetzt zahlungspflichtig inserieren“ oder „Kostenlos veröffentlichen“.
+
+---
+
+## Schritt 3: Die Live-Karte (STEP_LIVE – Der Erfolg)
+
+**Zweck:** Bestätigung, Belohnung und Marketing.
+
+- **Design:** Die Karte zeigt das fertige Inserat im Live-Look (mit „Aktiv“-Badge).
+- **Features:** Konfetti-Effekt beim Erscheinen, Anzeige der ersten Abholnummer (falls gebucht), prominenter „Teilen“-Button für WhatsApp.
+- **Abschluss:** Footer mit „Zum Dashboard“ führt zurück in die Übersicht und resettet die Mastercard.
+
+---
+
+## Footer-Kanon (alle drei Schritte)
+
+Der Footer ist in **allen drei Schritten** identisch gestaltet:
+
+- **Hintergrund:** Tiefschwarz (#000000)
+- **Position:** Bündig zum Displayrand (0px margin, 0px border-radius unten)
+- **Layout:** Airbnb-Style – Links Text-Link, Rechts massiver Primär-Button
+
+---
+
+## Referenz im Code
+
+- **Umsetzung:** `app/script.js` – `buildListingStep()`, `inseratStep` (1/2/3), `slider.setAttribute('data-inserat-step', …)`
+- **Footer:** `.inserat-step1-nav`, `.inserat-airbnb-footer`, `.inserat-step3-footer`

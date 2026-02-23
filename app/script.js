@@ -14649,6 +14649,14 @@
     return [];
   }
 
+  function updateSystemTheme(isMastercardOpen){
+    var themeColorMeta = document.querySelector('meta[name="theme-color"]');
+    if(themeColorMeta){
+      themeColorMeta.setAttribute('content', isMastercardOpen ? '#ffffff' : '#f5f5f0');
+    }
+    if(isMastercardOpen) document.body.classList.add('status-bar-dark-icons');
+    else document.body.classList.remove('status-bar-dark-icons');
+  }
   function openWizard(){
     const wbd = document.getElementById('wbd');
     const wizard = document.getElementById('wizard');
@@ -14658,6 +14666,9 @@
       var pn = document.getElementById('providerNavWrap');
       if(pn) pn.style.setProperty('display', 'none', 'important');
       document.body.classList.add('wizard-inserat-open');
+      updateSystemTheme(true);
+      document.body.style.overflow = 'hidden';
+      document.body.style.overscrollBehavior = 'none';
     }
     pushViewState({wizard: true}, location.pathname);
     localStorage.setItem('mittagio_wizard_open', 'true');
@@ -14671,6 +14682,9 @@
     document.getElementById('wbd').classList.remove('active');
     if(wizard){ wizard.classList.remove('active','inserat-step2-active'); wizard.removeAttribute('data-flow'); }
     document.body.classList.remove('wizard-inserat-open');
+    updateSystemTheme(false);
+    document.body.style.overflow = '';
+    document.body.style.overscrollBehavior = '';
     var pn = document.getElementById('providerNavWrap');
     if(pn && document.body.classList.contains('provider-mode')) pn.style.removeProperty('display');
     restoreWizardActionsBar();
@@ -15417,7 +15431,7 @@
       var collapsingHeader=document.createElement('div');
       collapsingHeader.className='inserat-collapsing-header mastercard-header';
       collapsingHeader.innerHTML='<span class="inserat-collapsing-title">Dein Inserat</span>';
-      collapsingHeader.style.cssText='position:sticky; top:0; z-index:12; flex-shrink:0; padding:12px 16px; background:#fff; backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); text-align:center; font-family:\'Montserrat\',sans-serif; font-weight:900; font-size:18px; color:#0f172a; border-bottom:1px solid rgba(0,0,0,0.06);';
+      collapsingHeader.style.cssText='position:sticky; top:0; z-index:12; flex-shrink:0; padding:12px 16px; padding-top:max(12px, env(safe-area-inset-top)); background:#fff; backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); text-align:center; font-family:\'Montserrat\',sans-serif; font-weight:900; font-size:18px; color:#0f172a; border-bottom:1px solid rgba(0,0,0,0.06);';
       box.appendChild(collapsingHeader);
       sheet.appendChild(box);
       const saveDraft = () => { localStorage.setItem('wizard_draft', JSON.stringify(w)); };
@@ -15618,6 +15632,9 @@
             w.data.photoData=dataUrl; w.data.photoDataIsStandard=false; setPhotoObjectPosition(50); saveDraft(); rebuildWizard();
           } finally { photoTile.classList.remove('inserat-photo-loading'); var s=photoTile.querySelector('.inserat-photo-spinner'); if(s) s.remove(); }
         };
+      }
+      if(cameraInput&&entryPoint==='dashboard'&&!(w.ctx&&(w.ctx.editOfferId||w.ctx.dishId))&&!w.data.photoData){
+        setTimeout(function(){ if(cameraInput&&cameraInput.parentNode) cameraInput.click(); }, 400);
       }
       var urls=getListingSuggestionUrls();
       var showSuggestions=!w.data.photoData&&listingSuggestionsVisible()&&urls.length;
@@ -15960,9 +15977,11 @@
       function checkMastercardValidation(){
         var name=(w.data.dish||'').trim();
         var price=Number(w.data.price)||0;
-        var primaryBtn=box.querySelector('#inserat-action-section .footer-btn-primary, #inserat-action-section .inserat-footer-btn-main');
+        var photoData=w.data.photoData||'';
+        var isImageSet=!!(photoData&&!String(photoData).includes('svg+xml'));
+        var primaryBtn=box.querySelector('#inserat-action-section .inserat-btn-step1-right, #inserat-action-section .footer-btn-primary, #inserat-action-section .inserat-footer-btn-main');
         if(!primaryBtn) return;
-        if(name.length>2&&price>0){ primaryBtn.classList.add('is-ready'); } else { primaryBtn.classList.remove('is-ready'); }
+        if(name.length>=2&&isImageSet){ primaryBtn.classList.add('is-ready'); primaryBtn.disabled=false; } else { primaryBtn.classList.remove('is-ready'); primaryBtn.disabled=true; }
       }
       requestAnimationFrame(function(){ requestAnimationFrame(function(){ if(typeof adjustTitleFontSize === 'function') adjustTitleFontSize(); if(typeof checkMastercardValidation === 'function') checkMastercardValidation(); }); });
 
@@ -16096,8 +16115,9 @@
         var btnWeiter=document.createElement('button');
         btnWeiter.type='button';
         btnWeiter.className='inserat-btn-step1-right nav-btn-primary nav-btn-equal';
-        btnWeiter.style.cssText='flex:1; min-height:48px; height:48px; padding:0 24px; border:none; border-radius:8px; background:#222222; color:#fff; font-size:16px; font-weight:800; cursor:pointer;';
-        btnWeiter.textContent='Weiter zur Veröffentlichung';
+        btnWeiter.style.cssText='flex:1; min-height:48px; height:48px; padding:0 24px; border:none; border-radius:8px; background:#334155; color:#94a3b8; font-size:16px; font-weight:800; cursor:pointer;';
+        btnWeiter.textContent='Weiter';
+        btnWeiter.disabled=true;
         btnWeiter.onclick=function(){
           hapticLight();
           if(typeof handlePriceFastInsert==='function') handlePriceFastInsert(box);
