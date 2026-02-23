@@ -15619,7 +15619,7 @@
       function setPhotoObjectPosition(p){ w.data.photoObjectPosition=Math.max(0,Math.min(100,p)); w.data.photoCropY=undefined; saveDraft(); }
       const photoTile=document.createElement('section');
       photoTile.id='photoModule';
-      photoTile.className='inserat-photo-tile photo-section photo-section-ebay photo-header'+(w.data.photoData ? '' : ' pulse-soft');
+      photoTile.className='inserat-photo-tile photo-section photo-section-ebay photo-module-ebay photo-header'+(w.data.photoData ? '' : ' pulse-soft');
       photoTile.style.cssText='position:relative; overflow:hidden; flex-shrink:0; width:100%; height:170px; min-height:170px; max-height:170px;';
       var imgSrc=w.data.photoData||'data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300"><rect fill="#1e293b" width="400" height="300"/></svg>');
       var objPos=getPhotoObjectPosition();
@@ -15760,7 +15760,7 @@
 
       const scrollArea=document.createElement('div');
       scrollArea.id='mastercardScrollArea';
-      scrollArea.className='inserat-scroll-area mastercard-content scroll-content inserat-scroll-with-photo';
+      scrollArea.className='inserat-scroll-area mastercard-scroll-area mastercard-content scroll-content inserat-scroll-with-photo';
       photoTile.classList.add('inserat-photo-in-scroll');
       scrollArea.appendChild(photoTile);
 
@@ -15768,7 +15768,7 @@
       const stepName=document.createElement('div');
       stepName.id='step-name';
       stepName.className='inserat-section inserat-unified-title-wrap';
-      stepName.style.cssText='width:100%; margin-top:10px; margin-bottom:4px;';
+      stepName.style.cssText='width:100%; margin-top:6px; margin-bottom:2px;';
       /* Autovervollständigung Gerichtsnamen entfernt [cite: 2026-02-21] */
       const inputDish=document.createElement('input');
       inputDish.id='gericht-name';
@@ -15789,13 +15789,13 @@
       inputDish.oninput=function(){ w.data.dish=inputDish.value; saveDraft(); adjustTitleFontSize(); if(typeof checkMastercardValidation==='function') checkMastercardValidation(); if(updateStep2ContextZoneRef) updateStep2ContextZoneRef(); };
       inputDish.onblur=function(){ dismissKeyboard(); hapticLight(); };
       stepName.appendChild(inputDish);
-      stepName.style.cssText='width:100%; margin-top:10px; margin-bottom:4px; display:flex; justify-content:center;';
+      stepName.style.cssText='width:100%; margin-top:6px; margin-bottom:2px; display:flex; justify-content:center;';
       scrollArea.appendChild(stepName);
 
       // ========== 3. Kategorie-Pills (Allergene gestrichen) [cite: 2026-02-21] ==========
       var pillGroup=document.createElement('div');
       pillGroup.className='pill-group system-content-body';
-      pillGroup.style.cssText='display:flex; flex-direction:column; gap:12px; margin-top:12px;';
+      pillGroup.style.cssText='display:flex; flex-direction:column; gap:8px; margin-top:6px; margin-bottom:0;';
       var catValues=['Fleisch','Vegetarisch','Vegan','Salat'];
       var catEmojis=['\uD83C\uDF56','\uD83C\uDF36','\uD83E\uDDEB','\uD83C\uDF57'];
       var currentCat=w.data.category||'Fleisch';
@@ -15824,19 +15824,19 @@
       descriptionTextarea.className='input-description';
       descriptionTextarea.placeholder='Kurze Beschreibung...';
       descriptionTextarea.value=w.data.description||'';
-      descriptionTextarea.style.cssText='width:100%; border:none; font-size:16px; color:#64748b; resize:none; padding:8px 0; margin:8px 0 12px; text-align:center; background:transparent; outline:none; box-sizing:border-box;';
+      descriptionTextarea.style.cssText='width:100%; border:none; font-size:14px; color:#64748b; resize:none; padding:4px 0 6px 0; margin:0; text-align:center; background:transparent; outline:none; box-sizing:border-box;';
       descriptionTextarea.oninput=function(){ w.data.description=descriptionTextarea.value; saveDraft(); };
       scrollArea.appendChild(descriptionTextarea);
 
       var systemDivider=document.createElement('div');
       systemDivider.className='minimal-divider mastercard-step-edit-divider system-divider';
-      systemDivider.style.cssText='width:40px; height:2px; background:#f1f5f9; margin:8px auto 12px; border-radius:2px;';
+      systemDivider.style.cssText='width:40px; height:2px; background:#f1f5f9; margin:6px auto 8px; border-radius:2px;';
       scrollArea.appendChild(systemDivider);
 
       // ========== 5. Preis (Giant) & Extras-Button [cite: FINALE NEUAUFBAU 2026-02-21] ==========
       var priceSection=document.createElement('div');
       priceSection.className='price-section';
-      priceSection.style.cssText='display:flex; flex-direction:column; align-items:center; gap:8px; margin-bottom:14px;';
+      priceSection.style.cssText='display:flex; flex-direction:column; align-items:center; gap:6px; margin-bottom:8px; margin-top:4px;';
       var priceInputWrapper=document.createElement('div');
       priceInputWrapper.className='price-input-wrapper';
       priceInputWrapper.style.cssText='display:flex; align-items:center; justify-content:center; gap:8px;';
@@ -15970,17 +15970,7 @@
         }
       };
       scrollArea.appendChild(powerBar);
-      var extrasWrap=document.createElement('div');
-      extrasWrap.className='extras-section';
-      extrasWrap.style.cssText='display:flex; justify-content:center; margin-top:16px; padding:0 20px;';
-      var btnAddExtra=document.createElement('button');
-      btnAddExtra.type='button';
-      btnAddExtra.className='btn-add-extra';
-      btnAddExtra.style.cssText='padding:10px 20px; border-radius:12px; border:2px solid #e2e8f0; background:transparent; color:#64748b; font-size:14px; font-weight:700; cursor:pointer;';
-      btnAddExtra.textContent='+ Extra mit Aufpreis';
-      btnAddExtra.onclick=function(){ hapticLight(); openQuickAdjust('extras'); };
-      extrasWrap.appendChild(btnAddExtra);
-      scrollArea.appendChild(extrasWrap);
+      /* Extra-Button entfernt [cite: RADIKALER COMPACT 2026-02-23] – nur ➕ in PowerBar öffnet Quick-Adjust */
       box.appendChild(quickAdjustPanel);
       inputDish.addEventListener('keydown', function(){
         if(!priceSection || priceSection.classList.contains('harmonic-bounce')) return;

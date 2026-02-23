@@ -1604,6 +1604,50 @@
     #wizard[data-flow="listing"] .inserat-photo-in-scroll,
     #wizard[data-flow="listing"] .inserat-photo-tile,
     #wizard[data-flow="listing"] .inserat-collapsing-header { border-radius: 0 !important; }
+    /* ===== RADIKALER COMPACT-REFACTOR [cite: 2026-02-23] ===== */
+    /* 1. GLOBAL CLEANUP: Kein Glow, kein Gelb, flaches Design */
+    #mastercard-step-edit .price-circle-yellow,
+    #mastercard-step-edit .glow-effect,
+    #wizard[data-flow="listing"] #mastercard-step-edit .price-circle-yellow,
+    #wizard[data-flow="listing"] #mastercard-step-edit .glow-effect {
+      box-shadow: none !important;
+      background: #ffffff !important;
+      filter: none !important;
+    }
+    /* 2. COMPACT LAYOUT: Ein-Screen-Garantie S25 */
+    #mastercard-step-edit .inserat-scroll-area.mastercard-content,
+    #mastercard-step-edit .mastercard-scroll-area {
+      padding: 0 20px 120px !important;
+      display: flex;
+      flex-direction: column;
+      gap: 8px !important;
+    }
+    /* Foto-Modul: 170px, edge-to-edge */
+    #mastercard-step-edit .photo-section-ebay,
+    #mastercard-step-edit .inserat-photo-tile {
+      height: 170px !important;
+      min-height: 170px !important;
+      max-height: 170px !important;
+      margin: 0 -20px !important;
+    }
+    /* 3. TYPOGRAFIE REDUKTION */
+    #mastercard-step-edit #step-name input,
+    #mastercard-step-edit .input-giant-name,
+    #wizard[data-flow="listing"] #mastercard-step-edit #step-name input.ghost-input {
+      font-size: 22px !important;
+      padding: 8px 0 4px 0 !important;
+    }
+    #mastercard-step-edit .input-description {
+      font-size: 14px !important;
+      color: #64748b;
+      margin: 0 !important;
+      padding: 4px 0 6px 0 !important;
+    }
+    #mastercard-step-edit .inserat-price-pill-input,
+    #mastercard-step-edit .input-giant-price {
+      font-size: 42px !important;
+      margin-top: -4px;
+    }
     /* ===== MASTERCARD KANON [cite: 2026-02-21, User Prompt] ===== */
     /* 1. DIE SHELL: Verhindert das "Aufsitz-Gefühl", 100% S25-Screen */
     #wizard[data-flow="listing"] .mastercard-container {
@@ -1639,17 +1683,17 @@
       opacity: 1;
       pointer-events: auto;
     }
-    /* Radikale Schlichtheit: Riesige Inputs ohne Rahmen [cite: 2026-02-21] */
+    /* Radikale Schlichtheit: Compact Typografie [cite: RADIKALER COMPACT 2026-02-23] */
     #wizard[data-flow="listing"] .input-name-giant,
     #wizard[data-flow="listing"] #mastercard-step-edit #step-name input,
     #wizard[data-flow="listing"] #step-name input.ghost-input.inserat-detail-style-title {
       width: 100%;
       border: none;
-      font-size: 28px;
+      font-size: 22px;
       font-weight: 900;
       text-align: center;
       color: #0f172a;
-      padding: 20px 0;
+      padding: 8px 0 4px 0;
       outline: none;
       background: transparent;
     }
@@ -1657,7 +1701,7 @@
     #wizard[data-flow="listing"] #mastercard-step-edit .inserat-price-pill-input,
     #wizard[data-flow="listing"] .inserat-price-pill-input {
       border: none;
-      font-size: 56px;
+      font-size: 42px;
       font-weight: 900;
       text-align: center;
       color: #0f172a;
@@ -1709,10 +1753,9 @@
       border: none; border-radius: 16px; background: #0f172a; color: #ffffff;
       font-size: 18px; font-weight: 800; cursor: pointer;
     }
-    #mastercard-step-edit .power-bar-module.inserat-power-bar { display: flex; gap: 10px; margin: 15px 0; flex-wrap: wrap; }
-    #mastercard-step-edit .input-description { width: 100%; border: none; font-size: 16px; color: #64748b; resize: none; padding: 10px 0; margin-bottom: 20px; text-align: center; }
-    #mastercard-step-edit .price-section { margin-bottom: 20px; }
-    #mastercard-step-edit .btn-add-extra { min-height: 48px; }
+    #mastercard-step-edit .power-bar-module.inserat-power-bar { display: flex; gap: 8px; margin: 8px 0; flex-wrap: wrap; }
+    #mastercard-step-edit .input-description { width: 100%; border: none; font-size: 14px; color: #64748b; resize: none; padding: 4px 0 6px 0; margin: 0; text-align: center; }
+    #mastercard-step-edit .price-section { margin-bottom: 8px; margin-top: 4px; }
     /* ===== SCHRITT 2: MONETARISIERUNG – Zwei vertikale Kacheln [cite: Drei-Schritte-Gesetz] ===== */
     #mastercard-step-money .pricing-container,
     .mastercard-step-money .pricing-container {
@@ -3717,15 +3760,22 @@
       text-decoration: underline !important;
       opacity: 0.8;
     }
-    /* Step 1 Footer: system-footer-merged – Tiefschwarz, bündig [cite: FINALE NEUAUFBAU 2026-02-21] */
-    #wizard[data-flow="listing"] .inserat-action-section:has(.system-footer-merged) {
+    /* Step 1 Footer: Airbnb-Design – #000000, 100% bündig [cite: RADIKALER COMPACT 2026-02-23] */
+    #wizard[data-flow="listing"] .inserat-action-section:has(.system-footer-merged),
+    .system-footer-merged {
+      position: fixed !important;
+      bottom: 0 !important;
+      left: 0 !important;
+      width: 100vw !important;
       background: #000000 !important;
-      padding: 16px 24px calc(16px + env(safe-area-inset-bottom, 0)) 24px !important;
+      padding: 12px 24px calc(12px + env(safe-area-inset-bottom, 0)) 24px !important;
       padding-left: max(24px, env(safe-area-inset-left)) !important;
       padding-right: max(24px, env(safe-area-inset-right)) !important;
       margin: 0 !important;
       border-radius: 0 !important;
-      border-top: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
     #wizard[data-flow="listing"] .system-footer-merged .inserat-btn-step1-right.is-ready {
       background: #ffffff !important;
