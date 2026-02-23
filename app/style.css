@@ -8452,6 +8452,32 @@
   align-items: center !important;
   text-align: center !important;
 }
+/* Foto bündig oben, Kamera-Icon oben rechts [cite: 2026-02-23] */
+#wizard[data-flow="listing"] #mastercard-step-edit .inserat-scroll-area,
+#wizard[data-flow="listing"] .inserat-step1-pane .inserat-scroll-area {
+  padding-top: 0 !important;
+}
+#wizard[data-flow="listing"] .inserat-photo-tile.photo-header {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+#wizard[data-flow="listing"] .inserat-camera-float.btn-photo-icon-only {
+  position: absolute !important;
+  top: 12px !important;
+  right: 12px !important;
+  left: auto !important;
+  z-index: 20;
+}
+/* Zentrierungs-Achse Step 1 + 2 [cite: 2026-02-23] */
+.mastercard-step-center,
+#mastercard-step-edit,
+.inserat-step1-pane,
+#mastercard-step-money .inserat-step2-wrap {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  text-align: center !important;
+}
 .mastercard-scroll-area > *,
 .inserat-scroll-area.mastercard-scroll-area > * {
   width: 100%;

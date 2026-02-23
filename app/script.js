@@ -15525,7 +15525,7 @@
         var track=document.createElement('div');
         track.className='inserat-steps-track';
         var step1Pane=document.createElement('div');
-        step1Pane.className='inserat-step1-pane';
+        step1Pane.className='inserat-step1-pane mastercard-step-center';
         step1Pane.id='mastercard-step-edit';
         var step2Pane=document.createElement('div');
         step2Pane.className='inserat-step2-pane';
@@ -15533,7 +15533,7 @@
         /* Step 2: Monetarisierung ÔÇô zwei vertikale Kacheln [cite: Drei-Schritte-Gesetz 2026-02-21] */
         var step2Wrap=document.createElement('div');
         step2Wrap.className='inserat-step2-wrap mastercard-step-money';
-        step2Wrap.style.cssText='display:flex; flex-direction:column; flex:1; min-height:0; overflow-y:auto; padding:20px; padding-bottom:calc(140px + env(safe-area-inset-bottom, 0));';
+        step2Wrap.style.cssText='display:flex; flex-direction:column; align-items:center; text-align:center; flex:1; min-height:0; overflow-y:auto; padding:20px; padding-bottom:calc(140px + env(safe-area-inset-bottom, 0));';
         var thumbUrl=w.data.photoData||'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=200&q=60';
         var objPos2=(typeof w.data.photoObjectPosition==='number')?w.data.photoObjectPosition:(typeof w.data.photoCropY==='number'?Math.round(50+(w.data.photoCropY/80)*50):50);
         var dishNameS2=(w.data.dish||'').trim()||'Gericht';
@@ -15623,8 +15623,8 @@
         step3Pane.appendChild(step3Content);
         step3Pane.id='mastercard-step-live';
         var step3Footer=document.createElement('footer');
-        step3Footer.className='airbnb-footer inserat-step3-footer';
-        step3Footer.style.cssText='position:fixed; left:0; right:0; bottom:0; z-index:500; display:none; flex-direction:row; align-items:center; justify-content:space-between; gap:16px; padding:12px max(16px, env(safe-area-inset-left)) max(12px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-right)); background:rgba(15,23,42,0.92); backdrop-filter:blur(30px); -webkit-backdrop-filter:blur(30px);';
+        step3Footer.className='app-footer-main airbnb-footer inserat-step3-footer';
+        step3Footer.style.cssText='position:fixed; left:0; right:0; bottom:0; z-index:500; display:none; flex-direction:row; align-items:center; justify-content:space-between; gap:16px;';
         var btnShare=document.createElement('button');
         btnShare.type='button';
         btnShare.className='footer-link-secondary sharing-trigger';
@@ -15650,6 +15650,7 @@
         box.appendChild(step2Sweep);
       } else {
         box.id='mastercard-step-edit';
+        box.classList.add('mastercard-step-center');
       }
 
       {
@@ -15660,7 +15661,7 @@
       const photoTile=document.createElement('section');
       photoTile.id='photoModule';
       photoTile.className='inserat-photo-tile photo-section photo-section-ebay photo-module-ebay photo-header'+(w.data.photoData ? '' : ' pulse-soft');
-      photoTile.style.cssText='position:relative; overflow:hidden; flex-shrink:0; width:100%; height:170px; min-height:170px; max-height:170px;';
+      photoTile.style.cssText='position:relative; overflow:hidden; flex-shrink:0; width:100%; height:170px; min-height:170px; max-height:170px; margin:0; padding:0;';
       var imgSrc=w.data.photoData||'data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300"><rect fill="#1e293b" width="400" height="300"/></svg>');
       var objPos=getPhotoObjectPosition();
       var imgEl=document.createElement('img');
@@ -15668,7 +15669,7 @@
       var cameraInput=document.createElement('input');
       cameraInput.type='file'; cameraInput.id='cameraInput'; cameraInput.accept='image/*'; cameraInput.setAttribute('capture','environment'); cameraInput.style.display='none';
       var overlay=document.createElement('div'); overlay.className='ebay-photo-overlay';
-      var triggerBtn=document.createElement('button'); triggerBtn.type='button'; triggerBtn.className='btn-photo-icon-only ebay-edit-btn'; triggerBtn.id='triggerCamera'; triggerBtn.title='Foto'; triggerBtn.setAttribute('aria-label','Foto'); triggerBtn.textContent='­ƒôÀ';
+      var triggerBtn=document.createElement('button'); triggerBtn.type='button'; triggerBtn.className='btn-photo-icon-only ebay-edit-btn inserat-camera-float'; triggerBtn.id='triggerCamera'; triggerBtn.title='Foto'; triggerBtn.setAttribute('aria-label','Foto'); triggerBtn.textContent='📷';
       overlay.appendChild(triggerBtn); photoTile.appendChild(imgEl); photoTile.appendChild(cameraInput); photoTile.appendChild(overlay);
       if(triggerBtn) triggerBtn.onclick=function(e){ e.stopPropagation(); cameraInput.click(); };
       photoTile.onclick=function(ev){ if(ev.target.closest('.close-wizard-x')||ev.target.closest('.btn-close-master')||ev.target.closest('.ebay-edit-btn')||ev.target.closest('.btn-photo-icon-only')||ev.target.closest('.ebay-photo-overlay')) return; cameraInput.click(); };
@@ -16278,7 +16279,7 @@
       if(slider){
         box.appendChild(slider);
         var airbnbFooter=document.createElement('div');
-        airbnbFooter.className='app-footer-main';
+        airbnbFooter.className='app-footer-main inserat-airbnb-footer';
         airbnbFooter.setAttribute('data-inserat-step','2');
         airbnbFooter.style.display=inseratStep===2?'flex':'none';
         var linkZurueck=document.createElement('button');
