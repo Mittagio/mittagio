@@ -1,5 +1,8 @@
     /* TGTG-Airbnb: Nur Inter + Montserrat (flaches Design, keine Schreibschriften) */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Montserrat:wght@400;600;700;900&display=swap');
+    /* INPUT-FOCUS-RESET: Kein blauer/gelber Standard-Rahmen [cite: STRENGER CODE-CLEANUP 2026-02-23] */
+    input:focus, textarea:focus, select:focus, button:focus { outline: none !important; box-shadow: none !important; }
+    #step-name input:focus, .input-giant-name:focus, .input-description:focus, .ghost-input:focus { border-bottom: 1px solid #222222 !important; }
     /* 1. DIE ANIMATIONS-KURVE (S25-Standard) [cite: 2026-02-21] */
     :root { --s25-slide-curve: cubic-bezier(0.2, 0.8, 0.2, 1); }
     /* 2. EMERALD-PULSE: Ready-Zustand des Primär-Buttons [cite: 2026-02-21] */
@@ -8,15 +11,16 @@
       70% { box-shadow: 0 0 0 15px rgba(16, 185, 129, 0); }
       100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
     }
-    /* 3. DER "READY" ZUSTAND: Emerald-Grün, klickbar, pulsierend */
+    /* 3. DER "READY" ZUSTAND: Schwarze Pill, kein Glow [cite: STRENGER CODE-CLEANUP 2026-02-23] */
     .footer-btn-primary.is-ready,
     .inserat-footer-btn-main.footer-btn-primary.is-ready {
-      background: #10b981 !important;
+      background: #222222 !important;
       color: #ffffff !important;
-      animation: emerald-pulse 2s infinite;
+      animation: none;
       cursor: pointer;
       transition: all 0.3s var(--s25-slide-curve);
       pointer-events: auto !important;
+      box-shadow: none !important;
     }
     /* 4. Deaktivierter Zustand: Grau, nicht klickbar bis is-ready */
     #inserat-action-section .footer-btn-primary:not(.is-ready):not(.inserat-footer-btn--499),
@@ -1621,6 +1625,8 @@
       display: flex;
       flex-direction: column;
       gap: 8px !important;
+      text-align: center !important;
+      align-items: center !important;
     }
     /* Foto-Modul: 170px, edge-to-edge */
     #mastercard-step-edit .photo-section-ebay,
@@ -1984,8 +1990,8 @@
     #wizard[data-flow="listing"] .photo-section-ebay .btn-photo-icon-only {
       pointer-events: auto;
       position: absolute;
-      top: 10px;
-      right: 56px;
+      top: 12px;
+      right: 12px;
       width: 36px;
       height: 36px;
       background: rgba(255,255,255,0.9);
@@ -3763,19 +3769,20 @@
       justify-content: center; transition: transform 0.15s ease;
       background: #ffffff; color: #0f172a; box-shadow: none;
     }
-    .inserat-airbnb-footer .inserat-footer-btn-main.inserat-footer-btn--499 { background: #ffffff; color: #0f172a; box-shadow: none; }
+    .inserat-airbnb-footer .inserat-footer-btn-main.inserat-footer-btn--499 { background: #222222 !important; color: white !important; box-shadow: none !important; }
     .inserat-airbnb-footer .inserat-footer-btn-main:active { transform: scale(0.98); }
     /* ImmoScout: Abbrechen transparent, kein Rahmen, weißer Text [cite: ZERO-CLICK FOCUS 2026-02-23] */
     .inserat-airbnb-footer .inserat-footer-link,
     .inserat-airbnb-footer .footer-link-secondary,
     body.provider-mode #wizard[data-flow="listing"] .inserat-btn-step1-left,
-    body.provider-mode #wizard[data-flow="listing"] .system-footer-merged .inserat-btn-step1-left { background: transparent !important; border: none !important; box-shadow: none !important; outline: none !important; color: #ffffff !important; font-size: 15px; font-weight: 600; }
-    /* The Tool Edition: Tiefschwarz #000000, 100% bündig [cite: 2026-02-21] */
+    body.provider-mode #wizard[data-flow="listing"] .system-footer-merged .inserat-btn-step1-left { background: transparent !important; border: none !important; box-shadow: none !important; outline: none !important; color: #222222 !important; font-size: 15px; font-weight: bold; text-decoration: underline; }
+    /* Airbnb-Footer: Weiß statt Schwarz [cite: STRENGER CODE-CLEANUP 2026-02-23] */
     body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-action-section:has(.airbnb-footer),
     body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-step1-nav.inserat-immo-footer {
-      background: #000000 !important;
+      background: #ffffff !important;
+      border-top: 1px solid #ebebeb !important;
       margin: 0 !important; border-radius: 0 !important;
-      padding: 16px 24px max(16px, env(safe-area-inset-bottom)) 24px !important;
+      padding: 12px 24px calc(12px + env(safe-area-inset-bottom)) 24px !important;
     }
     /* 5. IMMOSCOUT-FOOTER: z-index 500 – Scroll-Inhalt verschwindet sicher dahinter [cite: 2026-02-21 S25] */
     .airbnb-footer,
@@ -3783,19 +3790,20 @@
     .inserat-immo-footer.airbnb-footer {
       z-index: 500 !important;
     }
-    /* 5. THE TOOL EDITION: Tiefschwarz #000000, bündig – Schritt 1 + 2 + 3 */
+    /* Airbnb-Footer: Weiß, Trennlinie [cite: STRENGER CODE-CLEANUP 2026-02-23] */
     .airbnb-footer,
     .inserat-airbnb-footer.airbnb-footer {
-      background: #000000 !important;
+      background: #ffffff !important;
+      border-top: 1px solid #ebebeb !important;
     }
     .airbnb-footer {
       position: fixed;
       bottom: 0;
       left: 0;
       width: 100vw;
-      background: #000000;
-      padding: 16px 24px 34px 24px;
-      padding-bottom: max(34px, env(safe-area-inset-bottom));
+      background: #ffffff;
+      border-top: 1px solid #ebebeb;
+      padding: 12px 24px calc(12px + env(safe-area-inset-bottom));
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -3803,25 +3811,25 @@
       border-radius: 0 !important;
       z-index: 500;
     }
-    /* The Tool Edition: money-footer-merged – totale Verschmelzung mit Displayrand [cite: 2026-02-21 S25] */
+    /* money-footer-merged: Weiß, Trennlinie [cite: STRENGER CODE-CLEANUP 2026-02-23] */
     .money-footer-merged {
       position: fixed !important;
       bottom: 0 !important;
       left: 0 !important;
       width: 100vw !important;
-      background: #000000 !important;
-      padding: 16px 24px calc(16px + env(safe-area-inset-bottom, 0)) 24px !important;
+      background: #ffffff !important;
+      border-top: 1px solid #ebebeb !important;
+      padding: 12px 24px calc(12px + env(safe-area-inset-bottom)) 24px !important;
       padding-left: max(24px, env(safe-area-inset-left)) !important;
       padding-right: max(24px, env(safe-area-inset-right)) !important;
       margin: 0 !important;
       border-radius: 0 !important;
-      border-top: 1px solid rgba(255,255,255,0.1);
       z-index: 1000;
     }
     .money-footer-merged .footer-btn-primary-white,
     .money-footer-merged .inserat-footer-btn-main {
-      background: #ffffff !important;
-      color: #000000 !important;
+      background: #222222 !important;
+      color: white !important;
       height: 52px !important;
       min-height: 52px !important;
       padding: 0 32px !important;
@@ -3836,21 +3844,51 @@
     .money-footer-merged .footer-link-secondary {
       background: transparent !important;
       border: none !important;
-      color: #ffffff !important;
+      color: #222222 !important;
       font-size: 16px !important;
-      font-weight: 600 !important;
+      font-weight: bold !important;
       text-decoration: underline !important;
-      opacity: 0.8;
     }
-    /* DESIGN-TRENNUNG: Airbnb-Footer NUR im Anbieter-Bereich [cite: 2026-02-23] */
+    /* APP-FOOTER-MAIN: Airbnb-Einfachheit – Weiß, Trennlinie, keine schwarzen/gelben Hintergründe [cite: STRENGER CODE-CLEANUP 2026-02-23] */
+    .app-footer-main,
+    body.provider-mode #wizard[data-flow="listing"] .inserat-action-section:has(.app-footer-main),
     body.provider-mode #wizard[data-flow="listing"] .inserat-action-section:has(.system-footer-merged),
-    body.provider-mode .system-footer-merged {
+    body.provider-mode #wizard[data-flow="listing"] .inserat-action-section:has(.inserat-airbnb-footer),
+    body.provider-mode .system-footer-merged.app-footer-main,
+    body.provider-mode .inserat-airbnb-footer.app-footer-main {
+      background: #ffffff !important;
+      border-top: 1px solid #ebebeb !important;
+      padding-bottom: calc(12px + env(safe-area-inset-bottom)) !important;
+      border-radius: 0 !important;
+      margin: 0 !important;
+    }
+    .app-footer-main .inserat-btn-step1-left,
+    .app-footer-main .inserat-footer-link,
+    .app-footer-main .footer-link-secondary {
+      color: #222222 !important;
+      font-weight: bold !important;
+      text-decoration: underline !important;
+      background: transparent !important;
+      border: none !important;
+    }
+    .app-footer-main .inserat-btn-step1-right,
+    .app-footer-main .inserat-footer-btn-main,
+    .app-footer-main .footer-btn-primary {
+      background: #222222 !important;
+      color: white !important;
+      border-radius: 8px !important;
+      box-shadow: none !important;
+    }
+    /* Legacy-Override: Alte schwarze/gelbe Footer-Hintergründe überschreiben */
+    body.provider-mode #wizard[data-flow="listing"] .inserat-action-section:has(.system-footer-merged):not(:has(.app-footer-main)),
+    body.provider-mode .system-footer-merged:not(.app-footer-main) {
       position: fixed !important;
       bottom: 0 !important;
       left: 0 !important;
       width: 100vw !important;
-      background: #000000 !important;
-      padding: 12px 24px calc(12px + env(safe-area-inset-bottom, 0)) 24px !important;
+      background: #ffffff !important;
+      border-top: 1px solid #ebebeb !important;
+      padding: 12px 24px calc(12px + env(safe-area-inset-bottom)) 24px !important;
       padding-left: max(24px, env(safe-area-inset-left)) !important;
       padding-right: max(24px, env(safe-area-inset-right)) !important;
       margin: 0 !important;
@@ -3860,8 +3898,8 @@
       align-items: center;
     }
     body.provider-mode #wizard[data-flow="listing"] .system-footer-merged .inserat-btn-step1-right.is-ready {
-      background: #ffffff !important;
-      color: #000000 !important;
+      background: #222222 !important;
+      color: white !important;
     }
     /* Sekundärer Text-Link (Links – Abbrechen, ImmoScout Style) */
     .footer-link-secondary {
@@ -3871,31 +3909,31 @@
       font-weight: 500;
       opacity: 0.8;
     }
-    /* Massiver Primär-Button (Rechts): Konstante Maße Step 1 + Step 2 [cite: 2026-02-21 ImmoScout] */
+    /* Primär-Button (Rechts): Schwarze Pill, kein Glow [cite: STRENGER CODE-CLEANUP 2026-02-23] */
     .footer-btn-primary,
     .inserat-airbnb-footer .inserat-footer-btn-main.footer-btn-primary {
       height: 48px;
       min-width: 180px;
       padding: 0 24px;
-      border-radius: 12px;
+      border-radius: 8px;
       font-size: 16px;
       font-weight: 700;
       border: none;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+      transition: background-color 0.2s ease, transform 0.2s ease;
       cursor: pointer;
-      background: #ffffff;
-      color: #0f172a;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      background: #222222 !important;
+      color: white !important;
+      box-shadow: none !important;
     }
-    /* Step 2: Kostenlos-Button – weiterhin weiß, kein Grün-Glow [cite: 2026-02-21 ImmoScout] */
+    /* Step 2: Kostenlos-Button – schwarze Pill wie Weiter [cite: STRENGER CODE-CLEANUP 2026-02-23] */
     .footer-btn-primary.free-mode,
     .footer-btn-primary.is-free-mode {
-      background: #ffffff !important;
-      color: #0f172a !important;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      background: #222222 !important;
+      color: white !important;
+      box-shadow: none !important;
     }
     /* Footer-Stabilität: #footerNext identische Position und Größe Step 1 + Step 2 [cite: 2026-02-21] */
     #wizard[data-flow="listing"] #footerNext,
