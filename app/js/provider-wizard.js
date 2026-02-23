@@ -1,5 +1,5 @@
 /* Mittagio Provider-Wizard – Inseratsflow [Big Split]
- * Enthält: closeWizard, openDishFlow, startListingFlow, buildListingStep, publishOffer,
+ * Enthält: closeWizard, openDishFlow, startListingFlow, openMastercard, publishOffer,
  * showPublishFeeModal, closePublishFeeModal, showInseratSuccessSheet, closeInseratSuccessSheet,
  * saveToCookbookFromWizard, previewOfferFromWizard, etc.
  * Globals via window: w, provider, offers, cookbook, week, LS, load, save, providerId, isoDate,
