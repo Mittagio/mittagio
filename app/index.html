@@ -3011,7 +3011,7 @@
 <div id="printView" class="print-view"></div>
 
 <!-- Provider Wizard sheet (single reusable) – Küchenmodus -->
-<div class="backdrop" id="wbd" onclick="if(event.target===this) closeWizard();"></div>
+<div class="backdrop" id="wbd" onclick="if(event.target===this){ var w=document.getElementById('wizard'); if(w&&w.getAttribute('data-flow')==='listing'&&typeof closeMastercard==='function') closeMastercard(); else if(typeof closeWizard==='function') closeWizard(); }"></div>
 <div class="sheet sheet--kitchen" id="wizard">
   <div class="handle"></div>
   <div class="sheet-body wizard-sheet-body">
@@ -3202,7 +3202,6 @@
 <script src="js/ui-views.js"></script>
 <script src="script.js"></script>
 <script src="js/app-logic.js"></script>
-<script src="js/provider-wizard.js"></script>
 <script src="js/ui-navigation.js"></script>
   <script src="https://unpkg.com/html2canvas@1.4.1/dist/html2canvas.min.js" async></script>
 </body>

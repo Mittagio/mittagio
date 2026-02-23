@@ -14715,6 +14715,24 @@
     if(!w || !w.data || typeof window === 'undefined' || !window._wizardInitialDataSnapshot) return false;
     return JSON.stringify(w.data) !== JSON.stringify(window._wizardInitialDataSnapshot);
   }
+  /** Schließt die Mastercard, versteckt Container, entfernt vendor-area, zeigt Dashboard [cite: DELETE PROVIDER-WIZARD 2026-02-23] */
+  function closeMastercard(){
+    var container = document.getElementById('mastercard-container') || document.querySelector('#wizard .mastercard-container, #wizard .mastercard-main-container');
+    if(container){
+      container.style.display = 'none';
+    }
+    document.body.classList.remove('vendor-area', 'wizard-inserat-open');
+    document.body.style.overflow = '';
+    document.body.style.overscrollBehavior = '';
+    var wbd = document.getElementById('wbd');
+    if(wbd) wbd.classList.remove('active');
+    var wizard = document.getElementById('wizard');
+    if(wizard) wizard.classList.remove('active');
+    if(typeof closeWizard === 'function') closeWizard(true);
+    if(typeof navigateAfterWizardExit === 'function') navigateAfterWizardExit((w && w.ctx && w.ctx.entryPoint) || 'dashboard');
+  }
+  if(typeof window !== 'undefined') window.closeMastercard = closeMastercard;
+
   /** Schließt die Mastercard mit S25-Slide-Down (translateY 100%) [cite: 2026-02-21] */
   function closeMastercardSlideDown(panel, entryPoint){
     entryPoint = entryPoint || (w && w.ctx && w.ctx.entryPoint) || 'dashboard';
@@ -14752,10 +14770,10 @@
       );
       return;
     }
-    var p = panel || document.querySelector('#wizard .liquid-master-panel');
-    if(p && p.classList.contains('mastercard-container')){
-      closeMastercardSlideDown(p, entryPoint);
-    } else if(p && !p.classList.contains('x-pop-away')){ requestAnimationFrame(function(){ p.classList.add('x-pop-away'); setTimeout(function(){ closeWizard(); navigateAfterWizardExit(entryPoint); }, 280); }); } else { closeWizard(); navigateAfterWizardExit(entryPoint); }
+    var p = panel || document.querySelector('#wizard .mastercard-container, #wizard .liquid-master-panel');
+    if(p && (p.classList.contains('mastercard-container') || p.classList.contains('mastercard-main-container'))){
+      closeMastercard();
+    } else if(p && !p.classList.contains('x-pop-away')){ requestAnimationFrame(function(){ p.classList.add('x-pop-away'); setTimeout(function(){ closeWizard(); navigateAfterWizardExit(entryPoint); }, 280); }); } else { closeMastercard(); }
   }
 
   /**
@@ -15452,9 +15470,15 @@
     setWizardHeader('', '');
     setWizardQuestion('', '');
     var container = document.createElement('div');
-    container.className = 'mastercard-container mastercard-main-container';
-    container.style.cssText = 'display:flex; flex-direction:column; align-items:center; width:100%; padding:24px; box-sizing:border-box;';
-    container.innerHTML = '<div style="font-size:18px; font-weight:700; color:#0f172a;">Dein Inserat</div><p style="margin:8px 0 0; font-size:14px; color:#64748b;">Mastercard-Placeholder</p>';
+    container.id = 'mastercard-container';
+    container.className = 'mastercard-container mastercard-main-container is-open';
+    container.style.cssText = 'display:flex; flex-direction:column; align-items:center; width:100%; padding:24px; padding-bottom:100px; box-sizing:border-box; min-height:100%;';
+    container.innerHTML = '<button type="button" class="close-mastercard btn-close-master" aria-label="Schließen" onclick="if(typeof closeMastercard===\'function\') closeMastercard();" style="position:absolute; top:20px; left:20px; width:44px; height:44px; border:none; background:rgba(0,0,0,0.06); border-radius:50%; font-size:24px; cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:1001;">×</button><div style="font-size:18px; font-weight:700; color:#0f172a;">Dein Inserat</div><p style="margin:8px 0 0; font-size:14px; color:#64748b;">Mastercard-Placeholder</p>';
+    var footer = document.createElement('footer');
+    footer.className = 'app-footer-main';
+    footer.style.cssText = 'position:fixed; bottom:0; left:0; right:0; background:#fff; border-top:1px solid #ebebeb; padding:12px 24px; padding-bottom:max(12px, env(safe-area-inset-bottom)); display:flex; justify-content:space-between; align-items:center; z-index:500;';
+    footer.innerHTML = '<a href="#" class="footer-link-secondary" onclick="event.preventDefault(); if(typeof closeMastercard===\'function\') closeMastercard();" style="color:#222; font-weight:700;">Abbrechen</a><button type="button" class="footer-btn-primary" disabled style="background:#e2e8f0; color:#94a3b8; padding:14px 28px; border-radius:8px; border:none; font-weight:600;">Weiter</button>';
+    container.appendChild(footer);
     setWizardContent(container);
   }
   if(typeof window !== 'undefined') window.openMastercard = openMastercard;
@@ -17181,25 +17205,7 @@
     else if(typeof hidePlanPublicView === 'function'){ hidePlanPublicView(); setMode(mode); }
   });
   
-  // WIZARD RESTORATION: Restore open wizard if needed (z. B. nach Refresh)
-  try {
-    const wizardOpen = localStorage.getItem('mittagio_wizard_open') === 'true';
-    const draftStr = localStorage.getItem('wizard_draft');
-    if(wizardOpen && draftStr){
-      const draft = JSON.parse(draftStr);
-      if(draft && draft.kind){
-        // Global 'w' object is used by the wizard
-        w = draft;
-        var wizardEl = document.getElementById('wizard');
-        if(wizardEl && w.kind === 'listing'){ wizardEl.setAttribute('data-flow', 'listing'); if(typeof clearWizardActionsBar === 'function') clearWizardActionsBar(); }
-        openWizard();
-        // Restore specific step content (Kochbuch = InseratCard)
-        if(w.kind === 'listing') openMastercard(w.data || { dish:'', price:0, category:'Fleisch', reuse:{enabled:true} });
-        else if(w.kind === 'provider') buildProviderStep();
-        else if(w.kind === 'cookbook') { w.kind = 'listing'; if(wizardEl) wizardEl.setAttribute('data-flow', 'listing'); if(typeof clearWizardActionsBar === 'function') clearWizardActionsBar(); openMastercard(w.data || { dish:'', price:0, category:'Fleisch', reuse:{enabled:true} }); }
-      }
-    }
-  } catch(e) { console.error('Failed to restore wizard state', e); }
+  /* WIZARD RESTORATION: Deaktiviert – Mastercard nur bei Nutzerklick (Dashboard + / Bearbeiten) [cite: MASTER-UI FIX 2026-02-23] */
   
   // Connectivity-Check starten wenn Provider-Modus
   if(mode === 'provider' && provider.loggedIn){

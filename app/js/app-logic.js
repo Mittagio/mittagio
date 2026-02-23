@@ -154,7 +154,6 @@
     var showToastFn = window.showToast;
     var setModeFn = window.setMode;
     var showProviderHomeFn = window.showProviderHome;
-    var startListingFlowFn = window.startListingFlow;
     var updateProfileViewFn = window.updateProfileView;
     if(!cryptoId || !saveFn || !providerRef || !setCookieFn){ console.warn('performProviderLogin: Abhängigkeiten fehlen'); return; }
     var newSessionId = cryptoId();
@@ -192,9 +191,7 @@
     providerRef.onboardingCompleted = true;
     saveFn(LSref.provider, providerRef);
     if(showProviderHomeFn) showProviderHomeFn();
-    setTimeout(function(){
-      if(typeof startListingFlowFn === 'function') startListingFlowFn({ entryPoint: 'dashboard' });
-    }, 150);
+    /* Mastercard nur bei Nutzerklick (Dashboard + oder Bearbeiten) – kein Auto-Open nach Login [cite: MASTER-UI FIX 2026-02-23] */
   }
 
   window.addOrder = addOrder;
