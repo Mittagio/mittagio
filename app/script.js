@@ -6086,7 +6086,7 @@
           return;
         }
         closeCreateFlowSheet();
-        startListingFlow({ dishId: c.id, date: date, entryPoint: ep, skipQuickPost: true });
+        startListingFlow({ dishId: c.id, date: date, entryPoint: ep, skipQuickPost: false });
       };
       tile.onclick = function(e){ e.preventDefault(); e.stopPropagation(); doOpen(); };
       tile.onkeydown = function(e){ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); doOpen(); } };
@@ -16055,8 +16055,9 @@
       var cameraInput=document.createElement('input');
       cameraInput.type='file'; cameraInput.id='cameraInput'; cameraInput.accept='image/*'; cameraInput.setAttribute('capture','environment'); cameraInput.style.display='none';
       var overlay=document.createElement('div'); overlay.className='ebay-photo-overlay';
+      overlay.style.cssText='position:absolute;inset:0;cursor:pointer;';
+      overlay.style.setProperty('pointer-events', w.data.photoData?'none':'auto', 'important');
       photoTile.appendChild(imgEl); photoTile.appendChild(cameraInput); photoTile.appendChild(overlay);
-      overlay.style.pointerEvents=w.data.photoData?'none':'auto';
       if(!w.data.photoData){
         var placeholderCenter=document.createElement('div');
         placeholderCenter.className='inserat-photo-placeholder-center';
@@ -16083,7 +16084,7 @@
           var plc=photoTile.querySelector('.inserat-photo-placeholder-center'); if(plc) plc.remove();
           photoTile.classList.remove('inserat-photo-placeholder','pulse-soft');
           w.data.photoData=objectUrl; w.data.photoDataIsStandard=false; setPhotoObjectPosition(50); saveDraft();
-          overlay.style.pointerEvents='none';
+          overlay.style.pointerEvents='none'; overlay.style.cursor='default';
           if(typeof checkMastercardValidation==='function') checkMastercardValidation();
           /* Hintergrund: Resize + Filter für Upload, dann dataUrl speichern */
           (async function(){
@@ -16619,26 +16620,6 @@
       }
       requestAnimationFrame(function(){ requestAnimationFrame(function(){ if(typeof adjustTitleFontSize === 'function') adjustTitleFontSize(); if(typeof checkMastercardValidation === 'function') checkMastercardValidation(); }); });
 
-      // Verdienstvorschau (MODE_AD): Dein Verdienst bei 30 Portionen [cite: Master-Prompt 2026-02-19] ÔÇô ausblenden bei Fast-Track (nur Inhalte bearbeiten)
-      if(!isPlanMode && !isFastTrack && entryPoint === 'dashboard'){
-        var verdienstWrap = document.createElement('div');
-        verdienstWrap.className = 'inserat-verdienst-vorschau';
-        verdienstWrap.style.cssText = 'margin-top:16px; padding:12px 16px; background:rgba(16,185,129,0.08); border-radius:12px;';
-        function renderVerdienst(){
-          var p = Number(w.data.price) || 0;
-          if(p <= 0){ verdienstWrap.innerHTML = '<span style="font-size:14px; font-weight:700; color:#64748b;">Gib einen Preis ein, dann siehst du deinen Verdienst.</span>'; return; }
-          var mitAbholnummer = 30 * p - 30 * 0.89;
-          var ohneAbholnummer = 30 * p - 4.99;
-          var v = Math.max(0, w.data.hasPickupCode !== false ? mitAbholnummer : ohneAbholnummer);
-          verdienstWrap.innerHTML = '<span style="font-size:15px; font-weight:800; color:#059669;">Dein Verdienst: ' + v.toFixed(2).replace('.', ',') + ' Ôé¼</span><span style="font-size:12px; color:#64748b; margin-left:8px;">(bei 30 Portionen)</span>';
-        }
-        renderVerdienst();
-        contentSheet.appendChild(verdienstWrap);
-        var verdienstObserver = function(){ renderVerdienst(); };
-        inputPrice.addEventListener('input', verdienstObserver);
-        inputPrice.addEventListener('blur', verdienstObserver);
-      }
-
       /* Kochbuch Quick-Select: Zuletzt verwendet ÔÇô horizontale Leiste direkt unter Header [cite: 2026-02-21] */
       var quickbookKey=LS.inseratQuickbook||'mittagio_inserat_quickbook_v1';
       var quickbookList=load(quickbookKey,[]);
@@ -16764,7 +16745,7 @@
         planNavRow.appendChild(btnWeekPlan);
         actionSection.appendChild(planNavRow);
       } else if(entryPoint === 'dashboard'){
-        /* Mode-basierter Footer: Weiter (MODE_NEW) oder Speichern (MODE_EDIT), ohne Abbrechen [cite: MASTER-CARD FIX 2026-02-23] */
+        /* Mode-basierter Footer: Weiter (MODE_NEW/Renner) oder Speichern (MODE_EDIT), ohne Abbrechen [cite: FLOW FIX 2026-02-23] */
         var step1NavRow=document.createElement('div');
         step1NavRow.className='app-footer-main';
         step1NavRow.style.cssText='display:flex; width:100%; align-items:stretch; justify-content:center;';
