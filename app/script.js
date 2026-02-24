@@ -16056,7 +16056,7 @@
           var vorOrt=document.createElement('div');
           vorOrt.className='inserat-vorort-hint';
           vorOrt.style.cssText='display:flex; align-items:center; gap:8px; font-size:13px; font-weight:600; color:#0f172a; padding:8px 12px; background:rgba(16,185,129,0.08); border-radius:10px; border:1px solid rgba(16,185,129,0.2);';
-          vorOrt.innerHTML='<span style="font-size:16px;">\u2705</span> Essen vor Ort möglich (Info für Gäste)';
+          vorOrt.innerHTML='<span style="font-size:16px;">\u2705</span> Essen vor Ort möglich';
           powerBarExtras.appendChild(vorOrt);
         }
       }

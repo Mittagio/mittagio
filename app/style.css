@@ -8568,6 +8568,13 @@
   padding-top: 4px !important;
   position: relative;
   z-index: 2;
+  overflow: visible;
+}
+/* Beschreibungsfeld: sichtbar, nicht abgeschnitten [cite: MASTER-CARD FIX 2026-02-23] */
+#wizard[data-flow="listing"] .inserat-desc-wrap {
+  flex-shrink: 0;
+  overflow: visible;
+  min-height: 44px;
 }
 /* Foto-Container: Sticky Parallax + 250px [cite: FINAL HARDWARE SYNC 2026-02-23] */
 .inserat-photo-container,
