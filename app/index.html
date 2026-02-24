@@ -26,11 +26,15 @@
   <link rel="icon" href="assets/icons/icon-192.png" />
   <link rel="apple-touch-icon" href="assets/icons/icon-192.png" />
   <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+  <script src="https://unpkg.com/html-to-image@1.11.11/dist/html-to-image.min.js"></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<!-- 9:16 Share-Template (1080×1920) für WhatsApp-Status – versteckt, wird von script.js befüllt [cite: 2026-02-18] -->
+<div id="shareTemplate916" class="share-template-916" style="position:fixed; left:-9999px; top:0; width:1080px; height:1920px; background:#fff; overflow:hidden; z-index:9999; box-sizing:border-box;"><!-- Inhalt dynamisch --></div>
+<div id="shareTemplate916Overlay" class="share-template-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:10000; align-items:center; justify-content:center; font-size:18px; font-weight:700; color:#fff; text-align:center; padding:24px;">Dein Status-Bild wird erstellt...</div>
 <div id="demoBadge" class="demo-badge" style="display:none;" title="Klick zum Umschalten" aria-label="Demo-Modus">Demo</div>
 <div class="app" id="app">
   <div class="topbar" id="topbar">
@@ -1221,17 +1225,20 @@
       <header class="week-header-compact week-header-minimal prov-page-header dynamic-header system-header" id="weekHeaderCompact">
         <div class="prov-page-header-row week-header-row">
           <button type="button" id="weekHeaderBackBtn" class="week-header-back-btn" aria-label="Zurück zum Dashboard" style="flex-shrink:0; width:44px; height:44px; min-width:44px; min-height:44px; display:flex; align-items:center; justify-content:center; background:none; border:none; padding:0; cursor:pointer; margin-right:8px; border-radius:12px; color:#0f172a;"><i data-lucide="chevron-left" style="width:24px;height:24px;"></i></button>
-          <div class="prov-page-header-left prov-header-reset-trigger" data-reset-view="week" style="flex:1; min-width:0;" role="button" tabindex="0" aria-label="Zum Seitenanfang">
+          <div class="prov-page-header-left prov-header-reset-trigger" data-reset-view="week" style="flex:1; min-width:0; display:flex; align-items:center; gap:8px;">
+            <span class="week-header-title-text" id="weekHeaderTitleText">Wochenplan</span>
             <button type="button" class="week-header-kw-trigger" id="weekHeaderKWTrigger" aria-label="Kalenderwoche wählen" style="display:inline-flex; align-items:center; gap:6px; background:none; border:none; padding:4px 0; cursor:pointer; font-family:inherit;">
               <span class="week-header-kw-badge" id="weekHeaderKWBadge">KW 8</span>
             </button>
           </div>
           <div class="prov-page-header-actions prov-header-toolbar" style="display:flex; gap:8px; align-items:center; position:relative;">
-            <button type="button" id="btnWeekKebab" class="week-kebab-trigger" title="Menü" aria-label="Menü" aria-haspopup="true" aria-expanded="false" style="background:rgba(0,0,0,0.06); border:none; min-width:44px; min-height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:700; color:#1a1a1a; cursor:pointer;">⋮</button>
+            <button type="button" id="btnWeekPreviewClose" class="week-preview-close-btn" style="display:none; min-height:44px; padding:0 16px; border-radius:12px; border:none; background:rgba(0,0,0,0.08); font-size:14px; font-weight:700; color:#1a1a1a; cursor:pointer;">Schließen</button>
+            <button type="button" id="btnWeekKebab" class="week-kebab-trigger" title="Menü" aria-label="Menü" aria-haspopup="true" aria-expanded="false" style="background:rgba(0,0,0,0.06); border:none; min-width:44px; min-height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:700; color:#1a1a1a; cursor:pointer;">⋮</button>
             <div id="weekKebabDropdown" class="week-kebab-dropdown" style="display:none;">
               <button type="button" class="week-kebab-item" id="weekKebabSaveTemplate"><i data-lucide="save" style="width:18px;height:18px;"></i> Eigene Vorlage speichern</button>
               <button type="button" class="week-kebab-item" id="weekKebabPdf"><i data-lucide="printer" style="width:18px;height:18px;"></i> Drucken</button>
               <button type="button" class="week-kebab-item" id="weekKebabShare"><i data-lucide="share-2" style="width:18px;height:18px;"></i> Teilen</button>
+              <div class="week-kebab-separator" role="separator"></div>
               <button type="button" class="week-kebab-item" id="weekKebabScreenshot"><i data-lucide="camera" style="width:18px;height:18px;"></i> Team-Vorschau</button>
             </div>
           </div>
@@ -1242,6 +1249,7 @@
       <!-- KW-Board: Inspirations-Slider + Elastic 7-Tage-Grid [cite: 2026-02-21] -->
       <div id="kwBoardWrap" style="display:flex; flex-direction:column; flex:1; min-height:0; position:relative;">
         <div class="kw-board-header" id="kwBoardHeader">
+          <h2 class="kw-board-strip-title" id="kwBoardStripTitle">Wochen-Gerichte</h2>
           <div id="kwCookbookStripWrap" class="kw-cookbook-strip-wrap kw-inspirations-slider"></div>
         </div>
         <div id="kwBoardScroll" class="kw-board-scroll">
@@ -1258,7 +1266,7 @@
           <button type="button" id="btnKwWeekActivate" class="kw-week-activate-btn kw-activation-dock-btn">
             <span class="kw-activate-count-wrap">[<span class="kw-rolling-counter" id="kwActivateCount" aria-hidden="true"><span class="kw-digit-cyl" data-place="tens"></span><span class="kw-digit-cyl" data-place="ones"></span></span>] Gerichte jetzt aktivieren</span>
           </button>
-          <p class="kw-activation-disclaimer">Abrechnung (4,99 €) erfolgt erst zum jeweiligen Startzeitpunkt.</p>
+          <p class="kw-activation-disclaimer">Abrechnung erfolgt erst zum jeweiligen Startzeitpunkt.</p>
         </div>
       </div>
     </section>
@@ -1268,7 +1276,7 @@
     <div id="kwSelectorSheet" class="week-magic-sheet kw-selector-sheet" style="position:fixed; left:0; right:0; bottom:0; border-radius:24px 24px 0 0; background:rgba(255,255,255,0.96); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); box-shadow:0 -8px 32px rgba(0,0,0,0.1); z-index:1186; display:none; flex-direction:column; overflow:hidden; padding-bottom:max(24px, env(safe-area-inset-bottom));">
       <div class="week-magic-sheet-handle"></div>
       <h3 class="week-magic-sheet-title">Kalenderwoche wählen</h3>
-      <div id="kwSelectorList" class="kw-selector-list" style="display:flex; flex-direction:column; gap:8px; padding:0 20px 20px; max-height:50vh; overflow-y:auto;"></div>
+      <div id="kwSelectorList" class="kw-selector-list kw-selector-list-horizontal"></div>
     </div>
 
     <!-- Week Magic Sheet: Vorlage, Lücke finden, Woche füllen [cite: 2026-02-20] -->
@@ -1325,15 +1333,18 @@
 
         <div id="cookbookEmpty" style="text-align:center; padding:80px 24px; display:none;">
           <div style="width:96px; height:96px; background:rgba(255,255,255,0.6); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid rgba(255,255,255,0.5); border-radius:50%; margin:0 auto 24px; display:flex; align-items:center; justify-content:center; box-shadow:0 8px 32px rgba(0,0,0,0.08); font-size:48px;">📖</div>
-          <h2 style="font-size:24px; font-weight:800; color:#1D1D1F; margin-bottom:8px;">Dein Erfolgstagebuch ist noch leer.</h2>
-          <p style="color:#86868B; font-size:14px; line-height:1.5; margin-bottom:32px; max-width:280px; margin-left:auto; margin-right:auto;">Inseriere dein erstes Gericht und wir füllen dein Kochbuch automatisch mit Bestsellern.</p>
-          <button class="btn-primary" id="btnCookbookEmptyAdd" type="button" style="width:100%; min-height:56px; border-radius:24px; font-size:15px; font-weight:800; background:#FACC15; color:#1a1a1a; border:none; box-shadow:0 4px 20px rgba(250,204,21,0.4);">
-            JETZT ERSTES GERICHT INSERIEREN
+          <h2 style="font-size:24px; font-weight:800; color:#1D1D1F; margin-bottom:8px;">Starte mit 200 Profi-Gerichten</h2>
+          <p style="color:#86868B; font-size:14px; line-height:1.5; margin-bottom:24px; max-width:280px; margin-left:auto; margin-right:auto;">Lade 200 kuratierte Profi-Gerichte mit einem Klick – inkl. Bilder und Allergene.</p>
+          <button class="btn-primary" id="btnCookbookEmptyImport" type="button" style="width:100%; min-height:56px; border-radius:24px; font-size:15px; font-weight:800; background:#222222; color:#fff; border:none; box-shadow:0 4px 20px rgba(0,0,0,0.2); margin-bottom:12px;">
+            Importieren
+          </button>
+          <button class="btn-primary" id="btnCookbookEmptyAdd" type="button" style="width:100%; min-height:52px; border-radius:24px; font-size:14px; font-weight:700; background:#FACC15; color:#1a1a1a; border:none; box-shadow:0 4px 20px rgba(250,204,21,0.4);">
+            Jetzt erstes Gericht inserieren
           </button>
         </div>
       </div>
       <footer id="cookbookFooterWrap" class="cookbook-footer-fixed" style="display:none;">
-        <button type="button" id="cookbookFooterBtnInserieren" class="cookbook-footer-btn-inserieren">Dieses Gericht jetzt inserieren für 0 €</button>
+        <button type="button" id="cookbookFooterBtnInserieren" class="cookbook-footer-btn-inserieren">Dieses Gericht jetzt inserieren</button>
       </footer>
     </section>
 

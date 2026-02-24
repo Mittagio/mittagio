@@ -92,6 +92,7 @@
     });
     /* Body-Klassen zentral: alte entfernen, nur neue setzen [cite: GLOBAL NATIVE NAV 2026-02-23] */
     document.body.classList.remove('provider-week-active', 'provider-cookbook-active');
+    if (id !== 'v-provider-cookbook') document.body.classList.remove('cookbook-from-dashboard');
     if (id === 'v-provider-week') document.body.classList.add('provider-week-active');
     else if (id === 'v-provider-cookbook') document.body.classList.add('provider-cookbook-active');
     window.scrollTo({ top: 0, behavior: isProviderView ? 'auto' : 'smooth' });
@@ -580,6 +581,7 @@
     if(typeof window.closeSaveSuccessSheet === 'function') window.closeSaveSuccessSheet();
     if(typeof closeCookbookActionSheet === 'function') closeCookbookActionSheet();
     document.body.classList.remove('provider-week-active');
+    if(window.createFlowOriginView === 'dashboard') document.body.classList.add('cookbook-from-dashboard');
     setProviderNavActive('provider-cookbook');
     showView(views.providerCookbook);
     if(typeof setProviderPageHeader === 'function') setProviderPageHeader('Mein Kochbuch');
