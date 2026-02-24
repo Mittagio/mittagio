@@ -8559,13 +8559,13 @@
   left: 24px !important;
   z-index: 999 !important;
 }
-/* Content-Sheet: Überdeckt Foto beim Scrollen, unter Lightbox [cite: FINALIZE SHEET 2026-02-23] */
+/* Content-Sheet: Zero Gap – fast bündig mit 24px-Abrundung [cite: REFACTOR 2026-02-23] */
 #wizard[data-flow="listing"] .inserat-content-sheet {
   background: #ffffff !important;
   border-top-left-radius: 24px !important;
   border-top-right-radius: 24px !important;
   margin-top: -19px !important;
-  padding-top: 19px !important;
+  padding-top: 6px !important;
   position: relative;
   z-index: 2;
 }
@@ -8593,12 +8593,16 @@
   font-size: 48px !important;
   opacity: 0.5;
 }
-/* Jägerschnitzel-Look: Typography [cite: UNIFIED MASTERCARD 2026-02-23] */
+/* Jägerschnitzel-Look: Typography + Textarea [cite: REFACTOR 2026-02-23] */
 #wizard[data-flow="listing"] .input-giant-name,
-#wizard[data-flow="listing"] #gericht-name.inserat-detail-style-title {
+#wizard[data-flow="listing"] #gericht-name.inserat-detail-style-title,
+#wizard[data-flow="listing"] .inserat-name-textarea {
   font-family: 'Inter', sans-serif !important;
   font-weight: 800 !important;
-  margin-top: 24px !important;
+  margin-top: 0 !important;
+}
+#wizard[data-flow="listing"] .inserat-name-textarea {
+  line-height: 1.3;
 }
 /* Powerbar mittig [cite: UNIFIED MASTERCARD 2026-02-23] */
 #wizard[data-flow="listing"] .inserat-power-bar {

@@ -445,19 +445,21 @@
   if(typeof window !== 'undefined'){ window.customer = customer; window.cookbook = cookbook; window.week = week; }
 
   var GOOGLE_PLACES_API_KEY = '';  // Optional: Für Adress-Autocomplete bei Betriebsdaten eintragen
-  const CATEGORIES = ['Vegetarisch','Vegan','Fisch','Mit Fleisch'];
-  /** Kochbuch MASTER-SPEC (MagazinKochbuch): Pills = Alle, Fleisch, Eintopf, Snack, Vegetarisch */
-  const COOKBOOK_CATEGORIES = ['Alle','Fleisch','Eintopf','Snack','Vegetarisch'];
+  const CATEGORIES = ['🥩 Fleisch','🥦 Veggie','🌿 Vegan'];
+  /** Kochbuch: Fleisch, Veggie, Vegan [CLEAN CODE 2026-02-23] */
+  const COOKBOOK_CATEGORIES = ['Alle','Fleisch','Eintopf','Snack','Veggie'];
   const CAT_MAP = {
+    '🥩 Fleisch':'Fleisch','🥦 Veggie':'Veggie','🌿 Vegan':'Vegan',
     'Vegan':'Vegan',
-    'Vegetarisch':'Vegetarisch',
+    'Veggie':'Veggie',
+    'Vegetarisch':'Veggie',
     'Fisch':'Fisch',
     'Mit Fleisch':'Fleisch',
     'Fleisch':'Fleisch',
     'Geflügel':'Geflügel',
     'Pasta':'Pasta',
     'Suppe':'Suppe',
-    'Salat':'Salat',
+    'Salat':'Veggie',
     'Burger':'Burger',
     'Beilage':'Beilage'
   };
@@ -467,16 +469,14 @@
 
   /** Kategorie → Emoji (Bestellhistorie & Pills) */
   const CAT_EMOJI = {
-    'Vegan':'🌿',
-    'Vegetarisch':'🥦',
+    'Fleisch':'🥩',
     'Veggie':'🥦',
+    'Vegan':'🌿',
     'Fisch':'🐟',
     'Mit Fleisch':'🥩',
-    'Fleisch':'🥩',
     'Geflügel':'🍗',
     'Pasta':'🍝',
     'Suppe':'🥣',
-    'Salat':'🥦',
     'Burger':'🍔',
     'Beilage':'🍟',
     '🥩':'🥩','🍗':'🍗','🐟':'🐟','🌿':'🌿','🌱':'🌱','🍝':'🍝','🥣':'🥣','🥗':'🥗','🍔':'🍔','🍟':'🍟'
@@ -484,9 +484,9 @@
   const DISH_SUGGESTIONS = [
     {name:'Kürbissuppe', category:'Vegan'},
     {name:'Tomatensuppe mit Brot', category:'Vegan'},
-    {name:'Pasta mit Gemüse', category:'Vegetarisch'},
-    {name:'Käsespätzle', category:'Vegetarisch'},
-    {name:'Salat Bowl', category:'Vegetarisch'},
+    {name:'Pasta mit Gemüse', category:'Veggie'},
+    {name:'Käsespätzle', category:'Veggie'},
+    {name:'Salat Bowl', category:'Veggie'},
     {name:'Falafel Teller', category:'Vegan'},
     {name:'Veggie Burger', category:'Vegan'},
     {name:'Schnitzel mit Pommes', category:'Fleisch'},
@@ -501,7 +501,7 @@
   let providerWeekDay = isoDate(new Date());
   let pickupSort = 'code'; // Default: sort by code (1A, 1B, 1C, 2A, 2B...)
   let pickupFilter = 'offen'; // 'offen' | 'abgeholt'
-  let cookbookCategory = 'Alle'; // Konzept: Alle | Fleisch | Eintopf | Snack | Vegetarisch (docs/KOCHBUCH_KONZEPT.md)
+  let cookbookCategory = 'Alle'; // Konzept: Alle | Fleisch | Eintopf | Snack | Veggie (docs/KOCHBUCH_KONZEPT.md)
   let cookbookMagazineIndex = 0; // aktuell angezeigte Magazin-Karte (filtered[cookbookMagazineIndex])
   let selectedCookbookId = null; // wird auf aktuelle Magazin-Karte gesetzt (für BEARBEITEN/WOCHENPLAN/AUSWÄHLEN)
   let cookbookSortBy = 'date'; // 'date' | 'quantity' | 'price' | 'name'
@@ -545,11 +545,11 @@
       // Verschiedene Kategorien
       {dish: 'Kürbissuppe', category: 'Vegan', price: 6.50, img: 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=1200&q=60'},
       {dish: 'Pasta Carbonara', category: 'Mit Fleisch', price: 8.80, img: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=1200&q=60'},
-      {dish: 'Salat Bowl', category: 'Vegetarisch', price: 7.90, img: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1200&q=60'},
+      {dish: 'Salat Bowl', category: 'Veggie', price: 7.90, img: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1200&q=60'},
       {dish: 'Hähnchen Teriyaki', category: 'Mit Fleisch', price: 9.20, img: 'https://images.unsplash.com/photo-1603133872878-684f208fb84b?auto=format&fit=crop&w=1200&q=60'},
       {dish: 'Falafel Teller', category: 'Vegan', price: 7.50, img: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?auto=format&fit=crop&w=1200&q=60'},
-      {dish: 'Käsespätzle', category: 'Vegetarisch', price: 7.20, img: 'https://images.unsplash.com/photo-1546069901-d5bfd2cbfb1f?auto=format&fit=crop&w=1200&q=60'},
-      {dish: 'Pizza Margherita', category: 'Vegetarisch', price: 8.50, img: 'https://images.unsplash.com/photo-1571997478779-2adcbbe9ab2f?auto=format&fit=crop&w=1200&q=60'},
+      {dish: 'Käsespätzle', category: 'Veggie', price: 7.20, img: 'https://images.unsplash.com/photo-1546069901-d5bfd2cbfb1f?auto=format&fit=crop&w=1200&q=60'},
+      {dish: 'Pizza Margherita', category: 'Veggie', price: 8.50, img: 'https://images.unsplash.com/photo-1571997478779-2adcbbe9ab2f?auto=format&fit=crop&w=1200&q=60'},
       {dish: 'Lachs mit Gemüse', category: 'Fisch', price: 10.50, img: 'https://images.unsplash.com/photo-1559314809-0d155014e29e?auto=format&fit=crop&w=1200&q=60'},
       {dish: 'Veggie Burger', category: 'Vegan', price: 7.90, img: 'https://images.unsplash.com/photo-1525059696034-4967a7290027?auto=format&fit=crop&w=1200&q=60'},
       {dish: 'Schnitzel mit Pommes', category: 'Mit Fleisch', price: 9.80, img: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=1200&q=60'},
@@ -557,19 +557,19 @@
       {dish: 'Thunfisch-Steak', category: 'Fisch', price: 11.20, img: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=1200&q=60'},
       {dish: 'Gulasch mit Spätzle', category: 'Mit Fleisch', price: 9.50, img: 'https://images.unsplash.com/photo-1606755962773-d324e0a13086?auto=format&fit=crop&w=1200&q=60'},
       {dish: 'Gemüse-Curry', category: 'Vegan', price: 8.60, img: 'https://images.unsplash.com/photo-1546069901-d5bfd2cbfb1f?auto=format&fit=crop&w=1200&q=60'},
-      {dish: 'Risotto ai Funghi', category: 'Vegetarisch', price: 8.90, img: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=1200&q=60'},
+      {dish: 'Risotto ai Funghi', category: 'Veggie', price: 8.90, img: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=1200&q=60'},
       {dish: 'Sushi Platte', category: 'Fisch', price: 12.50, img: 'https://images.unsplash.com/photo-1559314809-0d155014e29e?auto=format&fit=crop&w=1200&q=60'},
       {dish: 'Steak mit Beilagen', category: 'Mit Fleisch', price: 13.90, img: 'https://images.unsplash.com/photo-1606755962773-d324e0a13086?auto=format&fit=crop&w=1200&q=60'},
       {dish: 'Buddha Bowl', category: 'Vegan', price: 8.80, img: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1200&q=60'},
-      {dish: 'Caprese Salat', category: 'Vegetarisch', price: 7.40, img: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=1200&q=60'},
+      {dish: 'Caprese Salat', category: 'Veggie', price: 7.40, img: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=1200&q=60'},
       {dish: 'Fischfilet mit Kartoffeln', category: 'Fisch', price: 10.80, img: 'https://images.unsplash.com/photo-1559314809-0d155014e29e?auto=format&fit=crop&w=1200&q=60'},
       {dish: 'Chili con Carne', category: 'Mit Fleisch', price: 8.70, img: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=1200&q=60'},
       {dish: 'Avocado-Bowl', category: 'Vegan', price: 9.50, img: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1200&q=60'},
-      {dish: 'Mozzarella-Pasta', category: 'Vegetarisch', price: 8.30, img: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=1200&q=60'},
+      {dish: 'Mozzarella-Pasta', category: 'Veggie', price: 8.30, img: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=1200&q=60'},
       {dish: 'Lachs-Tartar', category: 'Fisch', price: 11.90, img: 'https://images.unsplash.com/photo-1559314809-0d155014e29e?auto=format&fit=crop&w=1200&q=60'},
       {dish: 'Hamburger Classic', category: 'Mit Fleisch', price: 8.90, img: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=1200&q=60'},
       {dish: 'Tofu-Wrap', category: 'Vegan', price: 7.60, img: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?auto=format&fit=crop&w=1200&q=60'},
-      {dish: 'Gemüse-Lasagne', category: 'Vegetarisch', price: 9.20, img: 'https://images.unsplash.com/photo-1546069901-d5bfd2cbfb1f?auto=format&fit=crop&w=1200&q=60'},
+      {dish: 'Gemüse-Lasagne', category: 'Veggie', price: 9.20, img: 'https://images.unsplash.com/photo-1546069901-d5bfd2cbfb1f?auto=format&fit=crop&w=1200&q=60'},
       {dish: 'Forelle blau', category: 'Fisch', price: 10.40, img: 'https://images.unsplash.com/photo-1559314809-0d155014e29e?auto=format&fit=crop&w=1200&q=60'},
       {dish: 'Rinderbraten', category: 'Mit Fleisch', price: 12.50, img: 'https://images.unsplash.com/photo-1606755962773-d324e0a13086?auto=format&fit=crop&w=1200&q=60'},
       {dish: 'Power-Smoothie Bowl', category: 'Vegan', price: 6.90, img: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1200&q=60'}
@@ -737,38 +737,38 @@
       { dish: 'Schnitzel mit Pommes', category: 'Mit Fleisch', price: 9.80, img: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=1200&q=60' },
       { dish: 'Gulasch mit Spätzle', category: 'Mit Fleisch', price: 9.50, img: 'https://images.unsplash.com/photo-1606755962773-d324e0a13086?auto=format&fit=crop&w=1200&q=60' },
       { dish: 'Zwiebelrostbraten mit Bratkartoffeln', category: 'Mit Fleisch', price: 11.90, img: 'https://images.unsplash.com/photo-1606755962773-d324e0a13086?auto=format&fit=crop&w=1200&q=60' },
-      { dish: 'Käsespätzle', category: 'Vegetarisch', price: 7.20, img: 'https://images.unsplash.com/photo-1546069901-d5bfd2cbfb1f?auto=format&fit=crop&w=1200&q=60' },
-      { dish: 'Linsen mit Spätzle', category: 'Vegetarisch', price: 6.90, img: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&w=1200&q=60' },
-      { dish: 'Maultaschen mit Salat', category: 'Vegetarisch', price: 8.20, img: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=1200&q=60' },
-      { dish: 'Gemüse-Lasagne', category: 'Vegetarisch', price: 9.20, img: 'https://images.unsplash.com/photo-1546069901-d5bfd2cbfb1f?auto=format&fit=crop&w=1200&q=60' },
+      { dish: 'Käsespätzle', category: 'Veggie', price: 7.20, img: 'https://images.unsplash.com/photo-1546069901-d5bfd2cbfb1f?auto=format&fit=crop&w=1200&q=60' },
+      { dish: 'Linsen mit Spätzle', category: 'Veggie', price: 6.90, img: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&w=1200&q=60' },
+      { dish: 'Maultaschen mit Salat', category: 'Veggie', price: 8.20, img: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=1200&q=60' },
+      { dish: 'Gemüse-Lasagne', category: 'Veggie', price: 9.20, img: 'https://images.unsplash.com/photo-1546069901-d5bfd2cbfb1f?auto=format&fit=crop&w=1200&q=60' },
       { dish: 'Kürbissuppe', category: 'Vegan', price: 6.50, img: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&w=1200&q=60' },
-      { dish: 'Salat Bowl', category: 'Vegetarisch', price: 7.90, img: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1200&q=60' },
+      { dish: 'Salat Bowl', category: 'Veggie', price: 7.90, img: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1200&q=60' },
       { dish: 'Rinderbraten mit Rotkohl und Klößen', category: 'Mit Fleisch', price: 12.50, img: 'https://images.unsplash.com/photo-1606755962773-d324e0a13086?auto=format&fit=crop&w=1200&q=60' },
       { dish: 'Cordon Bleu mit Pommes', category: 'Mit Fleisch', price: 10.50, img: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=1200&q=60' },
       { dish: 'Hackbraten mit Kartoffeln', category: 'Mit Fleisch', price: 9.20, img: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=1200&q=60' },
       { dish: 'Schweinebraten mit Knödel', category: 'Mit Fleisch', price: 10.90, img: 'https://images.unsplash.com/photo-1606755962773-d324e0a13086?auto=format&fit=crop&w=1200&q=60' },
       { dish: 'Roulade mit Rotkohl und Kartoffeln', category: 'Mit Fleisch', price: 11.20, img: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=1200&q=60' },
-      { dish: 'Tomatensuppe mit Brot', category: 'Vegetarisch', price: 5.90, img: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&w=1200&q=60' },
-      { dish: 'Spinat mit Spiegelei und Kartoffeln', category: 'Vegetarisch', price: 7.50, img: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=1200&q=60' },
-      { dish: 'Risotto mit Pilzen', category: 'Vegetarisch', price: 8.90, img: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=1200&q=60' },
+      { dish: 'Tomatensuppe mit Brot', category: 'Veggie', price: 5.90, img: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&w=1200&q=60' },
+      { dish: 'Spinat mit Spiegelei und Kartoffeln', category: 'Veggie', price: 7.50, img: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=1200&q=60' },
+      { dish: 'Risotto mit Pilzen', category: 'Veggie', price: 8.90, img: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=1200&q=60' },
       { dish: 'Fleischkäse mit Bratkartoffeln', category: 'Mit Fleisch', price: 8.20, img: 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=1200&q=60' },
       { dish: 'Pasta Carbonara', category: 'Mit Fleisch', price: 8.80, img: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=1200&q=60' },
       { dish: 'Hähnchen Teriyaki', category: 'Mit Fleisch', price: 9.20, img: 'https://images.unsplash.com/photo-1603133872878-684f208fb84b?auto=format&fit=crop&w=1200&q=60' },
       { dish: 'Falafel Teller', category: 'Vegan', price: 7.50, img: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?auto=format&fit=crop&w=1200&q=60' },
-      { dish: 'Pizza Margherita', category: 'Vegetarisch', price: 8.50, img: 'https://images.unsplash.com/photo-1571997478779-2adcbbe9ab2f?auto=format&fit=crop&w=1200&q=60' },
+      { dish: 'Pizza Margherita', category: 'Veggie', price: 8.50, img: 'https://images.unsplash.com/photo-1571997478779-2adcbbe9ab2f?auto=format&fit=crop&w=1200&q=60' },
       { dish: 'Lachs mit Gemüse', category: 'Fisch', price: 10.50, img: 'https://images.unsplash.com/photo-1559314809-0d155014e29e?auto=format&fit=crop&w=1200&q=60' },
       { dish: 'Veggie Burger', category: 'Vegan', price: 7.90, img: 'https://images.unsplash.com/photo-1525059696034-4967a7290027?auto=format&fit=crop&w=1200&q=60' },
       { dish: 'Quinoa-Salat', category: 'Vegan', price: 8.20, img: 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=1200&q=60' },
       { dish: 'Thunfisch-Steak', category: 'Fisch', price: 11.20, img: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=1200&q=60' },
-      { dish: 'Risotto ai Funghi', category: 'Vegetarisch', price: 8.90, img: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=1200&q=60' },
+      { dish: 'Risotto ai Funghi', category: 'Veggie', price: 8.90, img: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=1200&q=60' },
       { dish: 'Sushi Platte', category: 'Fisch', price: 12.50, img: 'https://images.unsplash.com/photo-1559314809-0d155014e29e?auto=format&fit=crop&w=1200&q=60' },
       { dish: 'Steak mit Beilagen', category: 'Mit Fleisch', price: 13.90, img: 'https://images.unsplash.com/photo-1606755962773-d324e0a13086?auto=format&fit=crop&w=1200&q=60' },
       { dish: 'Buddha Bowl', category: 'Vegan', price: 8.80, img: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1200&q=60' },
-      { dish: 'Caprese Salat', category: 'Vegetarisch', price: 7.40, img: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=1200&q=60' },
+      { dish: 'Caprese Salat', category: 'Veggie', price: 7.40, img: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=1200&q=60' },
       { dish: 'Fischfilet mit Kartoffeln', category: 'Fisch', price: 10.80, img: 'https://images.unsplash.com/photo-1559314809-0d155014e29e?auto=format&fit=crop&w=1200&q=60' },
       { dish: 'Chili con Carne', category: 'Mit Fleisch', price: 8.70, img: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=1200&q=60' },
       { dish: 'Avocado-Bowl', category: 'Vegan', price: 9.50, img: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1200&q=60' },
-      { dish: 'Mozzarella-Pasta', category: 'Vegetarisch', price: 8.30, img: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=1200&q=60' },
+      { dish: 'Mozzarella-Pasta', category: 'Veggie', price: 8.30, img: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=1200&q=60' },
       { dish: 'Lachs-Tartar', category: 'Fisch', price: 11.90, img: 'https://images.unsplash.com/photo-1559314809-0d155014e29e?auto=format&fit=crop&w=1200&q=60' },
       { dish: 'Hamburger Classic', category: 'Mit Fleisch', price: 8.90, img: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=1200&q=60' },
       { dish: 'Tofu-Wrap', category: 'Vegan', price: 7.60, img: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?auto=format&fit=crop&w=1200&q=60' },
@@ -1070,22 +1070,22 @@
   const DISH_DB = [
     {dish:'Kürbissuppe', category:'Vegan', img:'https://images.unsplash.com/photo-1476718406336-bb5a9690ee2a?auto=format&fit=crop&w=600&q=80'},
     {dish:'Pasta Carbonara', category:'Mit Fleisch', img:'https://images.unsplash.com/photo-1612874742237-6526221588e3?auto=format&fit=crop&w=600&q=80'},
-    {dish:'Salat Bowl', category:'Vegetarisch', img:'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=600&q=80'},
+    {dish:'Salat Bowl', category:'Veggie', img:'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=600&q=80'},
     {dish:'Hähnchen Teriyaki', category:'Mit Fleisch', img:'https://images.unsplash.com/photo-1555126634-323283e090fa?auto=format&fit=crop&w=600&q=80'},
     {dish:'Falafel Teller', category:'Vegan', img:'https://images.unsplash.com/photo-1593001874117-c99c800e3eb7?auto=format&fit=crop&w=600&q=80'},
-    {dish:'Käsespätzle', category:'Vegetarisch', img:'https://images.unsplash.com/photo-1627856429547-0624d08c8485?auto=format&fit=crop&w=600&q=80'},
-    {dish:'Pizza Margherita', category:'Vegetarisch', img:'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&w=600&q=80'},
+    {dish:'Käsespätzle', category:'Veggie', img:'https://images.unsplash.com/photo-1627856429547-0624d08c8485?auto=format&fit=crop&w=600&q=80'},
+    {dish:'Pizza Margherita', category:'Veggie', img:'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&w=600&q=80'},
     {dish:'Schnitzel mit Pommes', category:'Mit Fleisch', img:'https://images.unsplash.com/photo-1599921841143-819065d5d431?auto=format&fit=crop&w=600&q=80'},
     {dish:'Veggie Burger', category:'Vegan', img:'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=600&q=80'},
     {dish:'Gulasch', category:'Mit Fleisch', img:'https://images.unsplash.com/photo-1588509653491-b0db37996c9c?auto=format&fit=crop&w=600&q=80'},
     {dish:'Gemüse-Curry', category:'Vegan', img:'https://images.unsplash.com/photo-1604152135912-04a022e23696?auto=format&fit=crop&w=600&q=80'},
-    {dish:'Risotto', category:'Vegetarisch', img:'https://images.unsplash.com/photo-1476124369491-e7addf5db371?auto=format&fit=crop&w=600&q=80'},
+    {dish:'Risotto', category:'Veggie', img:'https://images.unsplash.com/photo-1476124369491-e7addf5db371?auto=format&fit=crop&w=600&q=80'},
     {dish:'Buddha Bowl', category:'Vegan', img:'https://images.unsplash.com/photo-1543339308-43e59d6b73a6?auto=format&fit=crop&w=600&q=80'},
     {dish:'Lachs mit Gemüse', category:'Fisch', img:'https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?auto=format&fit=crop&w=600&q=80'},
     {dish:'Sushi Platte', category:'Fisch', img:'https://images.unsplash.com/photo-1553621042-f6e147245754?auto=format&fit=crop&w=600&q=80'},
-    {dish:'Caprese Salat', category:'Vegetarisch', img:'https://images.unsplash.com/photo-1529312266912-b33cf6227e2f?auto=format&fit=crop&w=600&q=80'},
+    {dish:'Caprese Salat', category:'Veggie', img:'https://images.unsplash.com/photo-1529312266912-b33cf6227e2f?auto=format&fit=crop&w=600&q=80'},
     {dish:'Avocado Toast', category:'Vegan', img:'https://images.unsplash.com/photo-1588137372308-15f75323ca8d?auto=format&fit=crop&w=600&q=80'},
-    {dish:'Wrap', category:'Vegetarisch', img:'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?auto=format&fit=crop&w=600&q=80'},
+    {dish:'Wrap', category:'Veggie', img:'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?auto=format&fit=crop&w=600&q=80'},
     {dish:'Lasagne', category:'Mit Fleisch', img:'https://images.unsplash.com/photo-1574868352503-c8d3014383c8?auto=format&fit=crop&w=600&q=80'},
     {dish:'Chili con Carne', category:'Mit Fleisch', img:'https://images.unsplash.com/photo-1543545811-71a1d43c86dd?auto=format&fit=crop&w=600&q=80'}
   ];
@@ -1106,7 +1106,7 @@
         if(qn && !name.toLowerCase().includes(qn)) return;
         seen.add(name.toLowerCase());
         const all = (x.allergens && Array.isArray(x.allergens)) ? x.allergens : (typeof getAllergenSuggestionsForDish==='function' ? getAllergenSuggestionsForDish(name) : []);
-        out.push({ dish: name, category: x.category||x.diet||'Vegetarisch', img: x.photoData||x.imageUrl||x.img, allergens: all });
+        out.push({ dish: name, category: x.category||x.diet||'Veggie', img: x.photoData||x.imageUrl||x.img, allergens: all });
       });
     });
     DISH_DB.forEach(x=>{
@@ -1115,7 +1115,7 @@
       if(qn && !n.toLowerCase().includes(qn)) return;
       seen.add(n.toLowerCase());
       const all = (x.allergens && Array.isArray(x.allergens)) ? x.allergens : (typeof getAllergenSuggestionsForDish==='function' ? getAllergenSuggestionsForDish(n) : []);
-      out.push({ dish: n, category: x.category||'Vegetarisch', img: x.img, allergens: all });
+      out.push({ dish: n, category: x.category||'Veggie', img: x.img, allergens: all });
     });
     return out.slice(0, 12);
   }
@@ -1316,7 +1316,7 @@
     const discoverCats = [
       {id: 'near', label: 'In der Nähe', icon: null},
       {id: 'Vegan', label: 'Vegan', icon: 'leaf'},
-      {id: 'Vegetarisch', label: 'Vegetarisch', icon: 'carrot'},
+      {id: 'Veggie', label: 'Veggie', icon: 'carrot'},
       {id: 'Fisch', label: 'Fisch', icon: 'fish'},
       {id: 'Mit Fleisch', label: 'Mit Fleisch', icon: 'drumstick'}
     ];
@@ -1362,8 +1362,8 @@
     CATEGORIES.forEach(c=>{
       const b=document.createElement('button');
       b.className='chip'+(activeCat===c?' active':'');
-      // Icon Mapping: Vegan=leaf, Vegetarisch=carrot, Mit Fleisch=drumstick
-      const iconName = c==='Vegan' ? 'leaf' : (c==='Vegetarisch' ? 'carrot' : 'drumstick');
+      // Icon Mapping: Vegan=leaf, Veggie=carrot, Fleisch=drumstick
+      const iconName = (c&&c.includes('Vegan')) ? 'leaf' : ((c&&c.includes('Veggie')) ? 'carrot' : 'drumstick');
       b.innerHTML = `${iconMarkup(iconName)}<span>${esc(c)}</span>`;
       b.onclick=()=>{
         activeCat = activeCat===c ? null : c;
@@ -1441,7 +1441,7 @@
     const distance = data.distanceKm ? `${Number(data.distanceKm).toFixed(1)} km` : '';
     // Food type icon (keine Emojis)
     const foodTypeIcon = data.category === 'Vegan' ? 'leaf' : 
-                         data.category === 'Vegetarisch' ? 'carrot' : 
+                         data.category === 'Veggie' ? 'carrot' : 
                          data.category === 'Mit Fleisch' ? 'drumstick' : 
                          data.category === 'Fisch' ? 'fish' : '';
     
@@ -1475,7 +1475,7 @@
   let activeDiscoverFilter = 'near'; // 'near', 'Fleisch', 'Veggie', 'Vegan', 'provider' [SYNC MASTER-CARD]
   let currentProviderFilter = null;
   let discoverRadiusM = parseInt(load('mittagio_discover_radius', '1000'), 10) || 1000; // 500, 1000, 3000
-  const DISCOVER_CAT_MULTI = { Fleisch: ['Fleisch','Mit Fleisch'], Veggie: ['Vegetarisch','Veggie'], Vegan: ['Vegan'] };
+  const DISCOVER_CAT_MULTI = { Fleisch: ['Fleisch','Mit Fleisch'], 'Mit Fleisch': ['Fleisch','Mit Fleisch'], Veggie: ['Veggie'], Vegan: ['Vegan'], Fisch: ['Fisch'] };
   
   // Location-Autofill: Nur Schorndorf-Umgebung (Demo: Kurz + Fritz)
   const locationSuggestions = [
@@ -1784,7 +1784,7 @@
         // Vegan: Nur "Vegan" Kategorie
         if(prefs.vegan && category !== 'Vegan') return false;
         
-        // Vegetarisch: "Vegan" oder "Vegetarisch" (aber nicht "Mit Fleisch" oder "Fisch")
+        // Veggie: "Vegan" oder "Veggie" (aber nicht "Mit Fleisch" oder "Fisch")
         if(prefs.vegetarian && (category === 'Mit Fleisch' || category === 'Fisch')) return false;
         
         // Glutenfrei: Keine glutenhaltigen Allergene
@@ -2235,7 +2235,7 @@
       });
     }
     
-    // Kategorie-Filter (Fleisch / Vegetarisch / Salat)
+    // Kategorie-Filter (Fleisch / Veggie / Vegan)
     if(activeSwipePreference){
       list = list.filter(o => {
         const data = normalizeOffer(o);
@@ -2749,7 +2749,7 @@
       showToast('Karten geladen – viel Spaß beim Swipen!', 1500);
     } else {
       renderSwipeCards();
-      const label = type === 'pref' ? (value === 'fleisch' ? 'Fleisch' : value === 'vegetarisch' ? 'Vegetarisch' : 'Salat') : (value === 'walking' ? 'Zu Fuss' : 'Auto');
+      const label = type === 'pref' ? (value === 'fleisch' ? 'Fleisch' : value === 'vegetarisch' ? 'Veggie' : 'Veggie') : (value === 'walking' ? 'Zu Fuss' : 'Auto');
       showToast('Filter: ' + label, 1000);
     }
   }
@@ -3386,7 +3386,7 @@
       box-shadow: 0 2px 8px rgba(231, 76, 60, 0.4);
       transition: transform 0.2s ease;
     `;
-    dismissBtn.textContent = '×';
+    dismissBtn.innerHTML = '&#10005;';
     dismissBtn.onclick = (e) => {
       e.stopPropagation();
       triggerHapticFeedback([10]);
@@ -3824,7 +3824,7 @@
       
       // food type: leaf (Vegan), carrot (Vegetarian), drumstick (Meat), fish (Fish)
       const foodTypeIcon = data.category === 'Vegan' ? 'leaf' : 
-                           data.category === 'Vegetarisch' ? 'carrot' : 
+                           data.category === 'Veggie' ? 'carrot' : 
                            data.category === 'Mit Fleisch' ? 'drumstick' : 
                            data.category === 'Fisch' ? 'fish' : '';
       if(foodTypeIcon && !usePreviewData){
@@ -5085,7 +5085,7 @@
         infoRowEl.appendChild(timeEl);
       }
       const foodTypeIcon = o.category === 'Vegan' ? 'leaf' : 
-                           o.category === 'Vegetarisch' ? 'carrot' : 
+                           o.category === 'Veggie' ? 'carrot' : 
                            o.category === 'Fisch' ? 'fish' :
                            o.category === 'Mit Fleisch' ? 'drumstick' : '';
       if(foodTypeIcon){
@@ -7816,7 +7816,7 @@
     const isReuseEnabled = customer.reuseEnabled || false;
     const dietSwitches = [
       { key: 'vegan', label: 'Vegan', icon: 'leaf' },
-      { key: 'vegetarian', label: 'Vegetarisch', icon: 'sprout' },
+      { key: 'vegetarian', label: 'Veggie', icon: 'sprout' },
       { key: 'reuse', label: 'Mehrweg', icon: 'refresh-cw' }
     ];
     const dietHtml = dietSwitches.map(s => {
@@ -8253,8 +8253,8 @@
   function createOnboardingPreviewCard(dish, savedDish, draft){
     const imgSrc = dish.photoData || dish.imageUrl || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70';
     const price = savedDish && savedDish.price != null ? savedDish.price : (parseFloat(String(draft?.dishPrice || '8.5').replace(',','.')) || 8.5);
-    const cat = dish.category || 'Vegetarisch';
-    const catEmoji = { 'Fleisch':'🥩', 'Vegetarisch':'🥦', 'Vegan':'🌱', 'Salat':'🥪' }[cat] || '🥦';
+    const cat = dish.category || 'Veggie';
+    const catEmoji = { 'Fleisch':'🥩', 'Veggie':'🥦', 'Vegan':'🌱' }[cat] || '🥦';
     const card = document.createElement('div');
     card.className = 'onboarding-preview-card inserat-card-preview';
     card.innerHTML = `
@@ -8287,7 +8287,7 @@
     if(previewCard && (savedDish || onboardingDraftDish)){
       const dish = savedDish || {
         dish: onboardingDraftDish.dishName,
-        category: onboardingDraftDish.dishDiet || 'Vegetarisch',
+        category: onboardingDraftDish.dishDiet || 'Veggie',
         photoData: onboardingDraftDish.photoData || null
       };
       
@@ -8448,7 +8448,7 @@
         id: cryptoId(),
         providerId: providerId(),
         dish: onboardingDraftDish.dishName,
-        category: onboardingDraftDish.dishDiet || 'Vegetarisch',
+        category: onboardingDraftDish.dishDiet || 'Veggie',
         description: onboardingDraftDish.dishDesc || '',
         price: parseFloat(onboardingDraftDish.dishPrice.replace(',', '.')) || 0,
         pickupWindow: `${onboardingDraftDish.pickupTimeStart} – ${onboardingDraftDish.pickupTimeEnd}`,
@@ -8560,7 +8560,7 @@
         id: cryptoId(),
         providerId: providerId(),
         dish: onboardingDraftDish.dishName,
-        category: onboardingDraftDish.dishDiet || 'Vegetarisch',
+        category: onboardingDraftDish.dishDiet || 'Veggie',
         description: onboardingDraftDish.dishDesc || '',
         price: parseFloat(onboardingDraftDish.dishPrice.replace(',', '.')) || 0,
         pickupWindow: `${onboardingDraftDish.pickupTimeStart} – ${onboardingDraftDish.pickupTimeEnd}`,
@@ -11938,7 +11938,7 @@
       providerCity: profile.city || '',
       providerLogoData: profile.logoData || '',
       dish: cb.dish || entry.dish || '',
-      category: cb.category || 'Vegetarisch',
+      category: cb.category || 'Veggie',
       price: Number(cb.price != null ? cb.price : entry.price || 0),
       pickupWindow: profile.mealWindow || (profile.mealStart && profile.mealEnd ? profile.mealStart + ' – ' + profile.mealEnd : '11:30 – 14:00'),
       hasPickupCode: !!profile.abholnummerEnabledByDefault,
@@ -11989,7 +11989,7 @@
       providerCity: profile.city||'',
       providerLogoData: profile.logoData||'',
       dish: cb.dish || firstEntry.dish || '',
-      category: cb.category || 'Vegetarisch',
+      category: cb.category || 'Veggie',
       price: Number(cb.price != null ? cb.price : firstEntry.price || 0),
       pickupWindow: profile.mealWindow || DEFAULT_MEAL_WINDOW,
       hasPickupCode: !!profile.abholnummerEnabledByDefault,
@@ -12019,7 +12019,7 @@
           providerCity: o.providerCity || '',
           dish: c.dish || e.dish,
           price: Number(c.price != null ? c.price : e.price || 0),
-          category: c.category || 'Vegetarisch',
+          category: c.category || 'Veggie',
           pickupWindow: o.pickupWindow,
           hasPickupCode: !!profile.abholnummerEnabledByDefault,
           dineInPossible: c.dineInPossible !== false,
@@ -12894,7 +12894,7 @@
         var removeBtn = document.createElement('button');
         removeBtn.type = 'button';
         removeBtn.setAttribute('aria-label', 'Entfernen');
-        removeBtn.textContent = '✕';
+        removeBtn.innerHTML = '&#10005;';
         removeBtn.style.cssText = 'width:40px; height:40px; border:none; border-radius:10px; background:rgba(220,38,38,0.1); color:#dc2626; font-size:18px; font-weight:800; cursor:pointer; flex-shrink:0;';
         function syncExtra(){
           if(!provider.profile) provider.profile = {};
@@ -13938,7 +13938,7 @@
         });
       }
       if(btnSearch){
-        btnSearch.textContent = cookbookIsSearching ? '✕' : '🔍';
+        btnSearch.innerHTML = cookbookIsSearching ? '&#10005;' : '🔍';
         btnSearch.onclick = function(){ if(typeof haptic==='function') haptic(6); cookbookIsSearching = !cookbookIsSearching; if(!cookbookIsSearching) cookbookSearchTerm = ''; renderCookbook(); if(cookbookIsSearching && searchInput) setTimeout(function(){ searchInput.focus(); }, 50); };
       }
       if(searchInput){
@@ -13959,7 +13959,7 @@
     if(pillsWrap){
       pillsWrap.style.display = cookbookIsSearching ? 'none' : 'flex';
       pillsWrap.innerHTML='';
-      (COOKBOOK_CATEGORIES||['Alle','Fleisch','Eintopf','Snack','Vegetarisch']).forEach(function(cat){
+      (COOKBOOK_CATEGORIES||['Alle','Fleisch','Eintopf','Snack','Veggie']).forEach(function(cat){
         var b = document.createElement('button');
         b.type='button';
         b.className='cookbook-cat-pill' + (cookbookCategory===cat?' on':'');
@@ -14336,7 +14336,7 @@
       providerCity: profile.city||'',
       providerLogoData: profile.logoData||'',
       dish: entry.dish||'',
-      category: entry.category||'Vegetarisch',
+      category: entry.category||'Veggie',
       price: Number(entry.price||0),
       pickupWindow: profile.mealWindow || DEFAULT_MEAL_WINDOW,
       hasPickupCode: !!profile.abholnummerEnabledByDefault,
@@ -14382,7 +14382,7 @@
       providerCity: profile.city||'',
       providerLogoData: profile.logoData||'',
       dish: cb.dish||entry.dish||'',
-      category: cb.category||'Vegetarisch',
+      category: cb.category||'Veggie',
       price: Number(cb.price||0),
       pickupWindow: profile.mealWindow || DEFAULT_MEAL_WINDOW,
       hasPickupCode: !!cb.hasPickupCode,
@@ -14482,8 +14482,8 @@
     { name: 'Grillhähnchen (halbes)', category: 'fleisch', price: '8.90', allergens: ['L'] },
     { name: 'Reispfanne mit Gemüse', category: 'vegan', price: '7.90', allergens: ['L'] }
   ];
-  /** menuDatabase-Kategorie → UI-Kategorie (Fleisch|Vegetarisch|Vegan|Salat) */
-  var MENU_CAT_MAP = { fleisch: 'Fleisch', veggie: 'Vegetarisch', vegan: 'Vegan', salat: 'Salat', fisch: 'Fleisch' };
+  /** menuDatabase-Kategorie → UI-Kategorie (Fleisch|Veggie|Vegan) [CLEAN 2026-02-23] */
+  var MENU_CAT_MAP = { fleisch: 'Fleisch', veggie: 'Veggie', vegan: 'Vegan', salat: 'Veggie', fisch: 'Fleisch' };
   /** PDF-Allergen (A1,C,G,M,L,S,D) → ALLERGENS_14 short */
   var MENU_ALLERGEN_MAP = { A1: 'GL', A: 'GL', C: 'EI', G: 'MI', M: 'SN', L: 'SE', S: 'SO', D: 'FI' };
   function mapMenuAllergensToShort(arr) {
@@ -14545,8 +14545,8 @@
     {name:'Rindergulasch', category:'Fleisch', allergens:['L']},
     {name:'Currywurst', category:'Fleisch', allergens:['M','L']},
     {name:'Maultaschen (geröstet)', category:'Fleisch', allergens:['A','C','L']},
-    {name:'Kässpätzle', category:'Vegetarisch', allergens:['A','C','G']},
-    {name:'Kartoffelsalat', category:'Salat', allergens:['L','M']},
+    {name:'Kässpätzle', category:'Veggie', allergens:['A','C','G']},
+    {name:'Kartoffelsalat', category:'Veggie', allergens:['L','M']},
     {name:'Sauerbraten', category:'Fleisch', allergens:['L','G','A']},
     {name:'Frikadellen', category:'Fleisch', allergens:['A','C','M']},
     {name:'Fleischkäse mit Ei', category:'Fleisch', allergens:['C','M']},
@@ -14557,8 +14557,8 @@
     {name:'Putenschnitzel', category:'Fleisch', allergens:['A','C']},
     {name:'Wurstsalat', category:'Fleisch', allergens:['M','L']},
     {name:'Ochsenmaulsalat', category:'Fleisch', allergens:['L','M']},
-    {name:'Gemüselasagne', category:'Vegetarisch', allergens:['A','G','L']},
-    {name:'Schupfnudeln mit Kraut', category:'Vegetarisch', allergens:['A','C']},
+    {name:'Gemüselasagne', category:'Veggie', allergens:['A','G','L']},
+    {name:'Schupfnudeln mit Kraut', category:'Veggie', allergens:['A','C']},
     {name:'Tafelspitz', category:'Fleisch', allergens:['L']},
     {name:'Krautwickerl', category:'Fleisch', allergens:['L']},
     {name:'Gyros mit Zaziki', category:'Fleisch', allergens:['G']},
@@ -14584,18 +14584,18 @@
     linsensalat:['SE'], gaisburger:['GL','EI','SE'], reispfanne:['SE'], zwiebelrostbraten:['SE'], grillhähnchen:['SE'],
     tortellini:['GL','EI','MI']
   };
-  /** Gerichtname (lowercase) → Kategorie (Fleisch|Vegetarisch|Vegan|Salat) für Autovervollständigung. Smart-Pill [cite: 2026-02-16]. */
+  /** Gerichtname (lowercase) → Kategorie (Fleisch|Veggie|Vegan) [CLEAN 2026-02-23] */
   const DISH_CATEGORY_SUGGESTIONS = {
-    kürbissuppe:'Vegetarisch', kartoffelsuppe:'Vegetarisch', tomatensuppe:'Vegetarisch', linsensuppe:'Vegetarisch',
-    schnitzel:'Fleisch', gulasch:'Fleisch', käsespätzle:'Vegetarisch', kaesespaetzle:'Vegetarisch', kässpätzle:'Vegetarisch', pasta:'Fleisch', pizza:'Fleisch',
+    kürbissuppe:'Veggie', kartoffelsuppe:'Veggie', tomatensuppe:'Veggie', linsensuppe:'Veggie',
+    schnitzel:'Fleisch', gulasch:'Fleisch', käsespätzle:'Veggie', kaesespaetzle:'Veggie', kässpätzle:'Veggie', pasta:'Fleisch', pizza:'Fleisch',
     wrap:'Fleisch', burger:'Fleisch', falafel:'Vegan', lachs:'Fleisch', sushi:'Fleisch', thunfisch:'Fleisch',
-    salat:'Salat', curry:'Fleisch', gemüsepfanne:'Vegetarisch', risotto:'Vegetarisch', lasagne:'Fleisch',
-    linsensalat:'Vegan', gazpacho:'Vegan', omelett:'Vegetarisch', wurst:'Fleisch', steak:'Fleisch', zwiebelrostbraten:'Fleisch',
+    salat:'Veggie', curry:'Fleisch', gemüsepfanne:'Veggie', risotto:'Veggie', lasagne:'Fleisch',
+    linsensalat:'Vegan', gazpacho:'Vegan', omelett:'Veggie', wurst:'Fleisch', steak:'Fleisch', zwiebelrostbraten:'Fleisch',
     roulade:'Fleisch', leberkäse:'Fleisch', frikadelle:'Fleisch', frikadellen:'Fleisch', currywurst:'Fleisch', hummus:'Vegan',
-    wiener:'Fleisch', schweinebraten:'Fleisch', rindergulasch:'Fleisch', maultaschen:'Fleisch', kartoffelsalat:'Salat',
+    wiener:'Fleisch', schweinebraten:'Fleisch', rindergulasch:'Fleisch', maultaschen:'Fleisch', kartoffelsalat:'Veggie',
     sauerbraten:'Fleisch', fleischkäse:'Fleisch', fleischkaese:'Fleisch', hähnchengeschnetzeltes:'Fleisch', haehnchengeschnetzeltes:'Fleisch',
     spaghetti:'Fleisch', gemüseeintopf:'Vegan', gemueseeintopf:'Vegan', putenschnitzel:'Fleisch', wurstsalat:'Fleisch',
-    ochsenmaulsalat:'Fleisch', gemüselasagne:'Vegetarisch', gemueselasagne:'Vegetarisch', schupfnudeln:'Vegetarisch',
+    ochsenmaulsalat:'Fleisch', gemüselasagne:'Veggie', gemueselasagne:'Veggie', schupfnudeln:'Veggie',
     tafelspitz:'Fleisch', krautwickerl:'Fleisch', gyros:'Fleisch', backfisch:'Fleisch', linsensalat:'Vegan',
     gaisburger:'Fleisch', reispfanne:'Vegan', zwiebelrostbraten:'Fleisch', grillhähnchen:'Fleisch', tortellini:'Fleisch'
   };
@@ -14911,7 +14911,7 @@
           w.data = {
             providerId: o.providerId || providerId(),
             dish: o.dish||'',
-            category: o.category||'Vegetarisch',
+            category: o.category||'Veggie',
             price: Number(o.price||0),
             pickupWindow: o.pickupWindow || profile.mealWindow || DEFAULT_MEAL_WINDOW,
             hasPickupCode: !!o.hasPickupCode,
@@ -14942,7 +14942,7 @@
           w.data = {
             providerId: providerId(),
             dish: x.dish || '',
-            category: x.category || 'Vegetarisch',
+            category: x.category || 'Veggie',
             price: Number(x.price||0),
             pickupWindow: x.pickupWindow || profile.mealWindow || DEFAULT_MEAL_WINDOW,
             hasPickupCode: isRennerFastTrack ? true : (x.hasPickupCode !== undefined ? !!x.hasPickupCode : defaultAbholnummer),
@@ -14961,7 +14961,7 @@
           const globalReuseEnabled = !!profile.reuseEnabledByDefault;
           w.data = {
             providerId: providerId(),
-            dish:'', category:'Vegetarisch', price:0,
+            dish:'', category:'Veggie', price:0,
             pickupWindow: profile.mealWindow || DEFAULT_MEAL_WINDOW,
             hasPickupCode: !!profile.abholnummerEnabledByDefault,
             dineInPossible: defaultVorOrt,
@@ -15002,7 +15002,7 @@
       // Normalize data
       w.data.providerId = w.data.providerId || providerId();
       w.data.category = w.data.category || 'Fleisch';
-      if(w.data.category==='Vegetarisch'||w.data.category==='Salat') w.data.category='Veggie';
+      if(w.data.category==='Vegetarisch'||w.data.category==='Salat') w.data.category='Veggie'; // Legacy→Veggie
       w.data.price = Number(w.data.price||0);
       w.data.pickupWindow = w.data.pickupWindow || profile.mealWindow || DEFAULT_MEAL_WINDOW;
       w.data.cookbookId = w.data.cookbookId || null;
@@ -15042,7 +15042,7 @@
       w.data = {
         providerId: providerId(),
         dish: x.dish || '',
-        category: x.category || 'Vegetarisch',
+        category: x.category || 'Veggie',
         price: Number(x.price||0),
         pickupWindow: x.pickupWindow || profile.mealWindow || DEFAULT_MEAL_WINDOW,
         hasPickupCode: x.hasPickupCode !== undefined ? !!x.hasPickupCode : defaultAbholnummer,
@@ -15484,7 +15484,7 @@
         var text = (w.data.dish||'').toLowerCase().trim();
         var cat = w.data.category || 'Fleisch';
         for(var k in listingImageMap){ if(k.indexOf('default_')===0) continue; if(text.indexOf(k)!==-1) return k; }
-        if(cat==='Fleisch') return 'default_meat'; if(cat==='Vegetarisch'||cat==='Vegan') return 'default_veggie'; if(cat==='Salat') return 'default_salat'; return 'default_meat';
+        if(cat==='Fleisch') return 'default_meat'; if(cat==='Veggie'||cat==='Vegan'||cat==='Vegetarisch'||cat==='Salat') return 'default_veggie'; return 'default_meat';
       }
       function getListingSuggestionUrls(){
         var key = w.data.photoSuggestionKey || getListingSuggestionKey();
@@ -15672,7 +15672,7 @@
       overlay.onclick=function(e){ if(!e.target.closest('.photo-suggestion')){ e.stopPropagation(); cameraInput.click(); } };
       photoTile.onclick=function(ev){ if(ev.target.closest('.close-wizard-x')||ev.target.closest('.btn-close-master')||ev.target.closest('.ebay-edit-btn')||ev.target.closest('.btn-photo-icon-only')||ev.target.closest('.ebay-photo-overlay')) return; if(w.data.photoData&&(ev.target===imgEl||ev.target.closest('.ebay-preview-img'))) return; cameraInput.click(); };
       /* Lightbox: Klick auf Bild öffnet Großansicht, schließt per Klick auf Bild oder Hintergrund [cite: FINALIZE SHEET 2026-02-23] */
-      function openPhotoLightbox(src){ if(!src) return; hapticLight(); var lb=document.getElementById('photo-lightbox'); if(!lb){ lb=document.createElement('div'); lb.id='photo-lightbox'; lb.className='photo-lightbox-overlay'; lb.style.cssText='position:fixed;inset:0;background:#000;z-index:20000;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.28s ease;'; var img=document.createElement('img'); img.className='photo-lightbox-img'; img.style.cssText='max-width:100%;max-height:100%;object-fit:contain;transform:scale(0.85);transition:transform 0.3s cubic-bezier(0.34,1.2,0.64,1);'; var closeBtn=document.createElement('button'); closeBtn.type='button'; closeBtn.className='photo-lightbox-close'; closeBtn.setAttribute('aria-label','Schließen'); closeBtn.textContent='×'; closeBtn.style.cssText='position:absolute;top:16px;right:16px;width:48px;height:48px;background:rgba(255,255,255,0.2);border:none;border-radius:50%;color:#fff;font-size:28px;cursor:pointer;z-index:1;display:flex;align-items:center;justify-content:center;'; function closeLb(){ lb.style.opacity='0'; lb.querySelector('.photo-lightbox-img').style.transform='scale(0.85)'; setTimeout(function(){ lb.style.display='none'; lb.classList.remove('photo-lightbox-open'); }, 280); } closeBtn.onclick=function(e){ e.stopPropagation(); closeLb(); }; lb.onclick=function(e){ if(e.target===lb) closeLb(); }; img.onclick=function(e){ e.stopPropagation(); closeLb(); }; lb.appendChild(img); lb.appendChild(closeBtn); document.body.appendChild(lb); } var lbImg=lb.querySelector('.photo-lightbox-img'); lbImg.src=src; lb.style.display='flex'; lb.style.opacity='0'; requestAnimationFrame(function(){ requestAnimationFrame(function(){ lb.style.opacity='1'; lb.classList.add('photo-lightbox-open'); lb.querySelector('.photo-lightbox-img').style.transform='scale(1)'; }); }); }
+      function openPhotoLightbox(src){ if(!src) return; hapticLight(); var lb=document.getElementById('photo-lightbox'); if(!lb){ lb=document.createElement('div'); lb.id='photo-lightbox'; lb.className='photo-lightbox-overlay'; lb.style.cssText='position:fixed;inset:0;background:#000;z-index:20000;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.28s ease;'; var img=document.createElement('img'); img.className='photo-lightbox-img'; img.style.cssText='max-width:100%;max-height:100%;object-fit:contain;transform:scale(0.85);transition:transform 0.3s cubic-bezier(0.34,1.2,0.64,1);'; var closeBtn=document.createElement('button'); closeBtn.type='button'; closeBtn.className='photo-lightbox-close'; closeBtn.setAttribute('aria-label','Schließen'); closeBtn.innerHTML='&#10005;'; closeBtn.style.cssText='position:absolute;top:16px;right:16px;width:48px;height:48px;background:rgba(255,255,255,0.2);border:none;border-radius:50%;color:#fff;font-size:28px;cursor:pointer;z-index:1;display:flex;align-items:center;justify-content:center;'; function closeLb(){ lb.style.opacity='0'; lb.querySelector('.photo-lightbox-img').style.transform='scale(0.85)'; setTimeout(function(){ lb.style.display='none'; lb.classList.remove('photo-lightbox-open'); }, 280); } closeBtn.onclick=function(e){ e.stopPropagation(); closeLb(); }; lb.onclick=function(e){ if(e.target===lb) closeLb(); }; img.onclick=function(e){ e.stopPropagation(); closeLb(); }; lb.appendChild(img); lb.appendChild(closeBtn); document.body.appendChild(lb); } var lbImg=lb.querySelector('.photo-lightbox-img'); lbImg.src=src; lb.style.display='flex'; lb.style.opacity='0'; requestAnimationFrame(function(){ requestAnimationFrame(function(){ lb.style.opacity='1'; lb.classList.add('photo-lightbox-open'); lb.querySelector('.photo-lightbox-img').style.transform='scale(1)'; }); }); }
       /* Trigger NUR auf Bild, nicht auf X oder Kamera [cite: FINALIZE SHEET 2026-02-23] */
       photoContainer.onclick=function(ev){ if(ev.target.closest('.close-wizard-x')||ev.target.closest('.btn-close-master')||ev.target.closest('.btn-photo-icon-only')||ev.target.closest('.inserat-camera-float')||ev.target.closest('.ebay-photo-overlay')) return; if(w.data.photoData) openPhotoLightbox(imgEl.src||w.data.photoData); };
       if(cameraInput){
@@ -15835,35 +15835,37 @@
       photoTile.classList.add('inserat-photo-in-scroll');
       scrollArea.appendChild(photoContainer);
 
-      /* Content-Sheet: Weißer Wrapper mit Sheet-Look für Parallax [cite: FINAL HARDWARE SYNC 2026-02-23] */
+      /* Content-Sheet: Weißer Wrapper, Zero Gap [cite: REFACTOR 2026-02-23] */
       var contentSheet=document.createElement('div');
       contentSheet.className='inserat-content-sheet';
       contentSheet.style.cssText='width:100%; background:#ffffff; border-top-left-radius:24px; border-top-right-radius:24px; flex:1;';
       scrollArea.appendChild(contentSheet);
 
-      // ========== 2. EBENE (Titel): ghost-input + Quick-Delete [cite: 2026-02-23] ==========
+      // ========== 2. EBENE (Titel): Textarea + Mülleimer rechts [cite: REFACTOR 2026-02-23] ==========
       const stepName=document.createElement('div');
       stepName.id='step-name';
       stepName.className='inserat-section inserat-unified-title-wrap inserat-name-sticky';
-      stepName.style.cssText='width:100%; margin-top:19px; margin-bottom:3px; display:flex; justify-content:center; position:sticky; top:0; z-index:10; background:#ffffff; padding-bottom:4px; border-bottom:1px solid #f2f2f2;';
+      stepName.style.cssText='width:100%; margin-top:0; margin-bottom:0; display:flex; justify-content:center; position:sticky; top:0; z-index:10; background:#ffffff; padding:8px 0; border-bottom:1px solid #f2f2f2;';
       var nameInputWrap=document.createElement('div');
       nameInputWrap.className='inserat-name-input-wrap';
-      nameInputWrap.style.cssText='position:relative; width:100%; display:flex; align-items:center;';
-      const inputDish=document.createElement('input');
+      nameInputWrap.style.cssText='position:relative; width:100%; display:flex; align-items:flex-start; min-height:44px;';
+      const inputDish=document.createElement('textarea');
       inputDish.id='gericht-name';
       inputDish.setAttribute('autocomplete','off');
-      inputDish.type='text';
-      inputDish.className='ghost-input inserat-detail-style-title magnet-input inserat-gericht-name-extra input-giant-name';
+      inputDish.rows=1;
+      inputDish.className='ghost-input inserat-detail-style-title magnet-input inserat-gericht-name-extra input-giant-name inserat-name-textarea';
       inputDish.value=w.data.dish||'';
       inputDish.placeholder='z.B. Jägerschnitzel';
       inputDish.autocomplete='off';
-      inputDish.style.cssText='flex:1; color:#1a1a1a; font-family:\'Montserrat\',sans-serif; font-weight:900; font-style:normal; box-sizing:border-box; border:none; background:transparent; outline:none; padding-right:36px;';
+      inputDish.style.cssText='flex:1; color:#1a1a1a; font-family:\'Montserrat\',sans-serif; font-weight:900; font-style:normal; box-sizing:border-box; border:none; background:transparent; outline:none; padding-right:32px; padding-top:4px; padding-bottom:4px; resize:none; overflow:hidden; min-height:36px;';
       function adjustTitleFontSize(){
         var el = inputDish;
         if(!el || !el.offsetParent) return;
         var len = (el.value || '').length;
         var sizeRem = len > 20 ? Math.max(1.4, 1.75 - (len - 20) * 0.02) : 1.75;
         el.style.fontSize = sizeRem + 'rem';
+        el.style.height = 'auto';
+        el.style.height = Math.min(el.scrollHeight, 80) + 'px';
       }
       inputDish.oninput=function(){ w.data.dish=inputDish.value; saveDraft(); adjustTitleFontSize(); if(typeof checkMastercardValidation==='function') checkMastercardValidation(); if(updateStep2ContextZoneRef) updateStep2ContextZoneRef(); };
       inputDish.onblur=function(){ dismissKeyboard(); hapticLight(); };
@@ -15872,27 +15874,36 @@
       btnClearName.className='inserat-name-clear-btn';
       btnClearName.setAttribute('aria-label','Name löschen');
       btnClearName.textContent='\uD83D\uDDD1\uFE0F';
-      btnClearName.style.cssText='position:absolute; right:4px; top:50%; transform:translateY(-50%); width:28px; height:28px; border:none; background:transparent; color:#94a3b8; font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; border-radius:50%; flex-shrink:0;';
+      btnClearName.style.cssText='position:absolute; right:2px; top:8px; width:24px; height:24px; border:none; background:transparent; color:#94a3b8; font-size:12px; cursor:pointer; display:flex; align-items:center; justify-content:center; border-radius:50%; flex-shrink:0; opacity:0.7;';
       btnClearName.onclick=function(e){ e.preventDefault(); e.stopPropagation(); if(navigator.vibrate) navigator.vibrate(10); hapticLight(); inputDish.value=''; w.data.dish=''; saveDraft(); adjustTitleFontSize(); inputDish.focus(); };
       nameInputWrap.appendChild(inputDish);
       nameInputWrap.appendChild(btnClearName);
       stepName.appendChild(nameInputWrap);
       contentSheet.appendChild(stepName);
 
-      // ========== 3. Beschreibung (4ÔÇô8px unter Name, Einheit) [cite: STRENGER LAYOUT-CHECK 2026-02-23] ==========
+      // ========== 3. Beschreibung + Hilfe-Zeile [cite: REFACTOR 2026-02-23] ==========
+      var descWrap=document.createElement('div');
+      descWrap.className='inserat-desc-wrap';
+      descWrap.style.cssText='width:100%; padding:6px 0 8px 0; border-bottom:1px solid #f2f2f2;';
       var descriptionTextarea=document.createElement('textarea');
       descriptionTextarea.id='gerichtDesc';
       descriptionTextarea.className='input-description';
-      descriptionTextarea.placeholder='Kurze Beschreibung...';
+      descriptionTextarea.placeholder='Kurze Beschreibung (z.B. Zutaten, Beilagen)';
       descriptionTextarea.value=w.data.description||'';
-      descriptionTextarea.style.cssText='width:100%; border:none; font-size:14px; color:#64748b; resize:none; padding:4px 0 6px 0; margin:0; text-align:center; background:transparent; outline:none; box-sizing:border-box;';
+      descriptionTextarea.style.cssText='width:100%; border:none; font-size:14px; color:#64748b; resize:none; padding:4px 0 2px 0; margin:0; text-align:center; background:transparent; outline:none; box-sizing:border-box; min-height:36px;';
       descriptionTextarea.oninput=function(){ w.data.description=descriptionTextarea.value; saveDraft(); };
-      contentSheet.appendChild(descriptionTextarea);
+      var descHelp=document.createElement('p');
+      descHelp.className='inserat-desc-help';
+      descHelp.textContent='Was macht dein Gericht besonders? Zutaten?';
+      descHelp.style.cssText='margin:4px 0 0 0; font-size:11px; color:#94a3b8; text-align:center;';
+      descWrap.appendChild(descriptionTextarea);
+      descWrap.appendChild(descHelp);
+      contentSheet.appendChild(descWrap);
 
       // ========== 4. Kategorie-Pills (Green Categories: Fleisch, Veggie, Vegan) [cite: 2026-02-23] ==========
       var pillGroup=document.createElement('div');
       pillGroup.className='pill-group system-content-body';
-      pillGroup.style.cssText='display:flex; flex-direction:column; gap:6px; margin-top:5px; margin-bottom:0; align-items:center; width:100%;';
+      pillGroup.style.cssText='display:flex; flex-direction:column; gap:6px; margin-top:8px; margin-bottom:0; padding-top:8px; align-items:center; width:100%; border-top:1px solid #f2f2f2;';
       var catValues=['Fleisch','Veggie','Vegan'];
       var catEmojis=['\uD83E\uDD69','\uD83E\uDD66','\uD83C\uDF3F'];
       var currentCat=w.data.category||'Fleisch';
@@ -15957,6 +15968,7 @@
       // ========== 6. Power-Bar [cite: Regel 2026-02-23] Reihenfolge: ­ƒì┤ Vor Ort -> ­ƒöä Mehrweg -> ­ƒòÆ Abholzeit -> ­ƒî¥ Allergene -> Ô×ò Extras ==========
       const powerBar=document.createElement('div');
       powerBar.className='inserat-power-bar inserat-unified-pills inserat-soft-shell power-bar-module';
+      powerBar.style.cssText='border-top:1px solid #f2f2f2; padding-top:12px; margin-top:4px;';
       var hasDineIn=w.data.dineInPossible!==false;
       var hasReuse=!!(w.data.reuse&&w.data.reuse.enabled);
       var hasTimeValue=!!(w.data.pickupWindow&&w.data.pickupWindow.trim())||(w.data.mealStart&&w.data.mealEnd);
@@ -15995,10 +16007,43 @@
       addPowerItem('\uD83D\uDD54','Abholzeit','zeit',hasTimeValue);
       addPowerItem('\uD83C\uDF3E','Allergene','allergene',hasAllergens);
       addPowerItem('\u2795','Extras','extras',hasExtras);
+      var powerBarExtras=document.createElement('div');
+      powerBarExtras.className='power-bar-extras';
+      powerBarExtras.style.cssText='width:100%; display:flex; flex-direction:column; gap:8px; margin-top:8px; padding-top:8px; border-top:1px solid #f2f2f2;';
+      function renderPowerBarExtras(){
+        powerBarExtras.innerHTML='';
+        var mehrwegActive=powerBar.querySelector('.power-item[data-type="mehrweg"]')&&powerBar.querySelector('.power-item[data-type="mehrweg"]').classList.contains('active');
+        var vorOrtActive=powerBar.querySelector('.power-item[data-type="vor-ort"]')&&powerBar.querySelector('.power-item[data-type="vor-ort"]').classList.contains('active');
+        if(mehrwegActive){
+          var rebowl=document.createElement('div');
+          rebowl.className='inserat-rebowl-option';
+          rebowl.style.cssText='display:flex; align-items:center; justify-content:space-between; padding:8px 12px; background:rgba(16,185,129,0.06); border-radius:10px; border:1px solid rgba(16,185,129,0.2);';
+          rebowl.innerHTML='<span style="font-size:13px; font-weight:600; color:#0f172a;">Rebowl-Option: + 5,00 € Pfand</span>';
+          var pfandBtn=document.createElement('button');
+          pfandBtn.type='button';
+          pfandBtn.className='inserat-pfand-toggle';
+          pfandBtn.textContent=(w.data.reuse&&w.data.reuse.deposit>0)?'5,00 €':'+ Hinzufügen';
+          pfandBtn.style.cssText='padding:6px 12px; border-radius:8px; border:1px solid #10b981; background:#fff; color:#10b981; font-size:12px; font-weight:700; cursor:pointer;';
+          pfandBtn.onclick=function(){ hapticLight(); w.data.reuse=w.data.reuse||{}; w.data.reuse.deposit=w.data.reuse.deposit>0?0:5; saveDraft(); pfandBtn.textContent=(w.data.reuse.deposit>0)?'5,00 €':'+ Hinzufügen'; };
+          rebowl.appendChild(pfandBtn);
+          powerBarExtras.appendChild(rebowl);
+        }
+        if(vorOrtActive){
+          var vorOrt=document.createElement('div');
+          vorOrt.className='inserat-vorort-hint';
+          vorOrt.style.cssText='font-size:12px; color:#64748b; padding:6px 12px; background:#f8fafc; border-radius:8px;';
+          vorOrt.textContent='Vor Ort essen bei dir möglich? (Wird dem Gast im Inserat angezeigt)';
+          powerBarExtras.appendChild(vorOrt);
+        }
+      }
+      powerBar.appendChild(powerBarExtras);
+      var origHandlePowerBar=handlePowerBarInteraction;
+      handlePowerBarInteraction=function(type){ origHandlePowerBar(type); renderPowerBarExtras(); };
+      renderPowerBarExtras();
       const quickAdjustPanel=document.createElement('div');
       quickAdjustPanel.id='quick-adjust-sheet';
       quickAdjustPanel.className='inserat-quick-adjust-panel quick-adjust-sheet';
-      quickAdjustPanel.style.cssText='display:none; position:fixed; left:50%; bottom:0; width:100%; max-width:400px; z-index:11000; background:#ffffff; border-radius:24px 24px 0 0; padding:20px 16px 0; margin:0; box-shadow:none; border-top:1px solid #ebebeb; max-height:70vh; overflow-y:auto;';
+      quickAdjustPanel.style.cssText='display:none; position:fixed; left:50%; bottom:0; width:100%; max-width:400px; z-index:6000; background:#ffffff; border-radius:24px 24px 0 0; padding:20px 16px 0; margin:0; box-shadow:none; border-top:1px solid #ebebeb; max-height:70vh; overflow-y:auto; padding-bottom:0;';
       function updatePowerBarFromData(){ if(typeof updatePowerBarFromBox==='function') updatePowerBarFromBox(); }
       function closeQuickAdjustWithFeedback(type){
         var finishBtn=quickAdjustPanel.querySelector('.quick-adjust-fertig');
@@ -16075,7 +16120,7 @@
         btnFertig.type='button';
         btnFertig.className='inserat-fertig-kachel quick-adjust-fertig';
         btnFertig.textContent='Fertig';
-        btnFertig.style.cssText='width:100%; min-height:56px; margin-top:20px; padding:16px 24px calc(16px + env(safe-area-inset-bottom,0)); border:none; border-radius:0; background:#222222; color:#ffffff; font-size:16px; font-weight:800; cursor:pointer;';
+        btnFertig.style.cssText='width:100%; min-height:56px; margin-top:20px; padding:16px 24px; padding-bottom:calc(16px + env(safe-area-inset-bottom,0)); border:none; border-radius:0; background:#222222; color:#ffffff; font-size:16px; font-weight:800; cursor:pointer; position:sticky; bottom:0; z-index:6010;';
         btnFertig.onclick=function(){ hapticLight(); closeQuickAdjustWithFeedback(type); };
         quickAdjustPanel.appendChild(btnFertig);
       }
@@ -16509,7 +16554,7 @@
       providerLogoData: p.logoData||'',
       dish: w.data.dish||'Gericht',
       description: w.data.description||'',
-      category: w.data.category||'Vegetarisch',
+      category: w.data.category||'Veggie',
       price: Number(w.data.price||0),
       pickupWindow,
       imageUrl: w.data.photoData || PLACEHOLDER_IMAGE_URL,
@@ -16629,7 +16674,7 @@
           id: typeof cryptoId === 'function' ? cryptoId() : 'cb-' + now,
           providerId: out.providerId || (typeof providerId === 'function' ? providerId() : ''),
           dish: out.dish || out.title || '',
-          category: out.category || 'Vegetarisch',
+          category: out.category || 'Veggie',
           price: Number(out.price || 0),
           allergens: out.allergens || [],
           extras: out.extras || [],
@@ -16684,7 +16729,7 @@
     ent.allergens = Array.isArray(published.allergens) ? published.allergens.slice() : (ent.allergens || []);
     ent.extras = Array.isArray(published.extras) ? published.extras.slice() : (ent.extras || []);
     ent.description = published.description != null ? published.description : ent.description;
-    ent.category = published.category || ent.category || 'Vegetarisch';
+    ent.category = published.category || ent.category || 'Veggie';
     ent.reuse = published.reuse && typeof published.reuse === 'object' ? { enabled: !!published.reuse.enabled, deposit: Number(published.reuse.deposit) || 0 } : (ent.reuse || { enabled: false, deposit: 0 });
     ent.dineInPossible = published.dineInPossible !== false;
     ent.lastUsed = Date.now();
@@ -17268,7 +17313,7 @@
       id: targetId || (typeof cryptoId === 'function' ? cryptoId() : 'cb-' + now),
       providerId: providerId(),
       dish: w.data.dish||'',
-      category: w.data.category||'Vegetarisch',
+      category: w.data.category||'Veggie',
       price: Number(w.data.price||0),
       allergens: w.data.allergens||[],
       extras: w.data.extras||[],
