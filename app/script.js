@@ -16071,7 +16071,7 @@
       closeX.className='close-wizard-x close-mastercard btn-close-master';
       closeX.setAttribute('aria-label','Schließen');
       closeX.innerHTML='<span aria-hidden="true">&#10005;</span>';
-      closeX.style.cssText='position:absolute;top:12px;left:12px;width:40px;height:40px;background:rgba(0,0,0,0.4);border-radius:50%;color:white;display:flex;align-items:center;justify-content:center;z-index:150;border:none;cursor:pointer;font-size:22px;line-height:1;font-family:system-ui,sans-serif;';
+      closeX.style.cssText='position:absolute;top:12px;left:12px;width:32px;height:32px;background:rgba(255,255,255,0.8);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:50%;color:#1a1a1a;display:flex;align-items:center;justify-content:center;z-index:150;border:none;cursor:pointer;font-size:18px;line-height:1;font-family:system-ui,sans-serif;';
       photoTile.appendChild(closeX);
       var selectionOverlay=document.createElement('div');
       selectionOverlay.className='selection-overlay';
@@ -16245,8 +16245,8 @@
         var b=document.createElement('button');
         b.type='button';
         b.className='pill power-item category-pill'+(w.data.category===c?' active':'');
-        b.style.cssText='min-height:38px; padding:6px 12px; border-radius:10px; border:1px solid #c8e6c9; background:#ffffff; font-size:13px; font-weight:700; color:#1a1a1a; cursor:pointer;';
-        if(w.data.category===c) b.style.cssText+=' background:#e8f5e9; color:#2e7d32; border-color:#a5d6a7;';
+        b.style.cssText='min-height:40px; padding:8px 14px; border-radius:12px; border:none; font-size:13px; font-weight:700; cursor:pointer;';
+        if(w.data.category===c){ b.style.background='#222222'; b.style.color='#ffffff'; } else { b.style.background='#f2f2f2'; b.style.color='#6b7280'; }
         b.innerHTML='<span style="font-size:14px;">'+(catEmojis[i]||'')+'</span> ' + c;
         b.setAttribute('title',c);
         b.dataset.category=c;
@@ -16257,14 +16257,12 @@
           saveDraft();
           categoryPills.querySelectorAll('.category-pill').forEach(function(p){
             p.classList.remove('active');
-            p.style.background='#ffffff';
-            p.style.color='#1a1a1a';
-            p.style.borderColor='#c8e6c9';
+            p.style.background='#f2f2f2';
+            p.style.color='#6b7280';
           });
           this.classList.add('active');
-          this.style.background='#e8f5e9';
-          this.style.color='#2e7d32';
-          this.style.borderColor='#a5d6a7';
+          this.style.background='#222222';
+          this.style.color='#ffffff';
         };
         categoryPills.appendChild(b);
       });
@@ -16339,11 +16337,11 @@
         btn.onclick=function(){ handlePowerBarInteraction(type); };
         powerBar.appendChild(btn);
       }
-      addPowerItem('\uD83C\uDF74','Vor Ort Essen','vor-ort',hasDineIn);
+      addPowerItem('\uD83C\uDF74','Vor Ort','vor-ort',hasDineIn);
       addPowerItem('\uD83D\uDD04','Mehrweg','mehrweg',hasReuse);
-      addPowerItem('\uD83D\uDD54','Abholzeit','zeit',hasTimeValue);
-      addPowerItem('\uD83C\uDF3E','Allergene','allergene',hasAllergens);
-      addPowerItem('\u2795','Extras','extras',hasExtras);
+      addPowerItem('\uD83D\uDCEB','Abholzeit','zeit',hasTimeValue);
+      addPowerItem('\u26A0\uFE0F','Allergene','allergene',hasAllergens);
+      addPowerItem('\u002B','Extras','extras',hasExtras);
       var powerBarExtras=document.createElement('div');
       powerBarExtras.className='power-bar-extras';
       powerBarExtras.style.cssText='width:100%; display:flex; flex-direction:column; gap:8px; margin-top:8px; padding-top:8px; border-top:1px solid #f2f2f2;';

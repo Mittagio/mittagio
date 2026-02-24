@@ -13,7 +13,7 @@
     }
     /* 3. DER "READY" ZUSTAND: Schwarze Pill, kein Glow [cite: STRENGER CODE-CLEANUP 2026-02-23] */
     .footer-btn-primary.is-ready {
-      background: #222222 !important;
+      background: #1a1a1a !important;
       color: #ffffff !important;
       animation: none;
       cursor: pointer;
@@ -1728,21 +1728,35 @@
       border-radius: 2px;
     }
     /* FINALE NEUAUFBAU Schritt 1: Kompaktheit [cite: ZERO-CLICK FOCUS 2026-02-23] Foto 170px→Name 22px→Pills→Beschreibung 14px→Preis 42px→PowerBar */
-    #mastercard-step-edit .inserat-scroll-area { padding: 24px 20px 140px !important; }
-    #mastercard-step-edit .pill-group { margin-top: 10px; }
+    #mastercard-step-edit .inserat-scroll-area { padding: 28px 20px 140px !important; }
+    #mastercard-step-edit .pill-group { margin-top: 14px; }
     #mastercard-step-edit .pill-cloud.categories { gap: 10px; }
     /* Allergen-Pills gestrichen [cite: 2026-02-21] */
-    /* PowerBar Regel 2026-02-23: Reihenfolge 🍴🔄🕒🌾➕, Direkt-Toggle vs. Quick-Adjust */
+    /* 5-Pillars: Icons only, space-around, 2px Balken bei aktiv [cite: S25 PREMIUM V2 2026-02-23] */
     #mastercard-step-edit .power-item,
     #wizard[data-flow="listing"] .inserat-power-bar .power-item {
-      flex: 1; min-width: 44px; min-height: 44px; padding: 10px; border-radius: 12px; text-align: center; font-size: 14px; font-weight: 700;
-      border: 1px solid #e2e8f0; background: #f8fafc; color: #64748b;
+      flex: 1; min-width: 44px; min-height: 44px; padding: 10px 6px 12px; border-radius: 12px; text-align: center; font-size: 20px;
+      border: none; background: transparent; color: #94a3b8;
       transition: all 0.2s cubic-bezier(0.4,0,0.2,1); cursor: pointer; user-select: none;
-      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0;
+      border-bottom: 2px solid transparent;
+    }
+    #mastercard-step-edit .inserat-power-bar,
+    #wizard[data-flow="listing"] .inserat-power-bar {
+      justify-content: space-around !important;
+    }
+    #mastercard-step-edit .power-item .power-item-label,
+    #wizard[data-flow="listing"] .inserat-power-bar .power-item-label {
+      display: none !important;
+    }
+    #mastercard-step-edit .power-item .inserat-pill-emo,
+    #wizard[data-flow="listing"] .inserat-power-bar .power-item .inserat-pill-emo {
+      font-size: 22px; line-height: 1;
     }
     #mastercard-step-edit .power-item.active,
     #wizard[data-flow="listing"] .inserat-power-bar .power-item.active {
-      background: #000000 !important; color: #ffffff !important; border-color: #000000 !important;
+      background: transparent !important; color: #1a1a1a !important; border-color: transparent !important;
+      border-bottom-color: #1a1a1a !important;
     }
     #mastercard-step-edit .power-item:active,
     #wizard[data-flow="listing"] .inserat-power-bar .power-item:active {
@@ -1754,7 +1768,6 @@
       transition: transform 0.1s ease;
     }
     .vendor-area .power-item .power-item-label {
-      display: block;
       font-size: 10px;
       font-weight: 600;
       color: inherit;
@@ -1820,24 +1833,31 @@
     body.provider-mode .inserat-quick-adjust-panel .extra-pill.active {
       background: #222222; color: #ffffff; border-color: #222222;
     }
-    /* Green Categories: Fleisch, Veggie, Vegan [cite: 2026-02-23] */
-    #wizard[data-flow="listing"] .category-pills-green .category-pill {
-      min-height: 38px; padding: 6px 12px; border-radius: 10px; font-size: 13px; font-weight: 700;
-      border: 1px solid #c8e6c9; background: #ffffff; color: #1a1a1a;
+    /* Category Chips: Aktiv #222222 weiß, Inaktiv #f2f2f2 grau [cite: S25 PREMIUM V2 2026-02-23] */
+    #wizard[data-flow="listing"] .category-pills-green .category-pill,
+    #wizard[data-flow="listing"] .category-pill {
+      min-height: 40px; padding: 8px 14px; border-radius: 12px; font-size: 13px; font-weight: 700;
+      border: none !important; background: #f2f2f2; color: #6b7280;
     }
-    #wizard[data-flow="listing"] .category-pills-green .category-pill.active {
-      background: #e8f5e9 !important; color: #2e7d32 !important; border-color: #a5d6a7 !important;
+    #wizard[data-flow="listing"] .category-pills-green .category-pill.active,
+    #wizard[data-flow="listing"] .category-pill.active {
+      background: #222222 !important; color: #ffffff !important; border: none !important;
     }
     /* Quick-Delete: Papierkorb rechts im Namen [cite: 2026-02-23] */
     #wizard[data-flow="listing"] .inserat-name-clear-btn {
       opacity: 0.7; transition: opacity 0.2s;
     }
     #wizard[data-flow="listing"] .inserat-name-clear-btn:hover { opacity: 1; }
-    #mastercard-step-edit .power-bar-module.inserat-power-bar { display: flex; gap: 6px; margin: 6px 0; flex-wrap: wrap; }
+    /* Chips–Preis: Mehr Abstand [cite: S25 PREMIUM V2 2026-02-23] */
+    #wizard[data-flow="listing"] .pill-group,
+    #wizard[data-flow="listing"] .category-pills-green {
+      margin-bottom: 16px !important;
+    }
+    #mastercard-step-edit .power-bar-module.inserat-power-bar { display: flex; gap: 6px; margin: 10px 0; flex-wrap: wrap; padding-top: 16px !important; }
     #mastercard-step-edit .input-description { width: 100%; border: none; font-size: 14px; color: #64748b; resize: none; padding: 3px 0 5px 0; margin: 0; text-align: center; }
     #mastercard-step-edit .price-section,
     #wizard[data-flow="listing"] .price-section {
-      margin-bottom: 6px; margin-top: 3px;
+      margin-bottom: 14px; margin-top: 11px;
       display: flex !important;
       flex-direction: column !important;
       align-items: center !important;
@@ -3064,18 +3084,19 @@
     }
     #wizard[data-flow="listing"] .w-actions { display: none !important; }
     
-    /* Universal-X: Frosted-Glass Schließen-Button (einziger Ausstieg neben Backdrop) [cite: 2026-02-16 S25] */
-    .close-wizard-x{
-      position:absolute; top:15px; right:15px; width:44px; height:44px;
-      background:rgba(0,0,0,0.5); backdrop-filter:blur(12px) saturate(180%); -webkit-backdrop-filter:blur(12px) saturate(180%);
-      border-radius:50%; display:flex; align-items:center; justify-content:center;
-      border:1px solid rgba(255,255,255,0.35); cursor:pointer; z-index:300;
-      transition:transform 0.1s cubic-bezier(0.4,0,0.2,1), box-shadow 0.1s ease;
-      box-shadow:0 2px 12px rgba(0,0,0,0.25);
+    /* Universal-X: 32px Kreis, weiß 80% + Blur [cite: S25 PREMIUM V2 2026-02-23] */
+    .close-wizard-x,
+    #wizard[data-flow="listing"] .close-wizard-x {
+      position: absolute !important; top: 12px !important; left: 12px !important;
+      width: 32px !important; height: 32px !important;
+      background: rgba(255,255,255,0.8) !important;
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      border-radius: 50% !important; color: #1a1a1a !important;
+      border: none !important; box-shadow: none !important;
     }
     .close-wizard-x:active{ transform:scale(0.96); box-shadow:none; filter:brightness(0.95); }
     .close-wizard-x::before,.close-wizard-x::after{
-      content:''; position:absolute; width:16px; height:2px; background:#fff; border-radius:1px;
+      content:''; position:absolute; width:12px; height:2px; background:#1a1a1a; border-radius:1px;
     }
     .close-wizard-x::before{ transform:rotate(45deg); }
     .close-wizard-x::after{ transform:rotate(-45deg); }
@@ -3283,7 +3304,7 @@
       transition: all 0.3s ease;
     }
     body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-step1-nav .btn-primary-black.is-ready {
-      background: #222222 !important;
+      background: #1a1a1a !important;
       color: #ffffff !important;
       opacity: 1;
       pointer-events: auto;
@@ -3969,7 +3990,12 @@
       padding: 0; outline: none;
     }
     #wizard[data-flow="listing"] .inserat-price-pill-input::placeholder { color: rgba(0,0,0,0.4); }
-    #wizard[data-flow="listing"] .inserat-price-pill-euro { font-size: 14px; font-weight: 800; color: #1a1a1a; margin-left: 2px; }
+    /* Preis: € 70% Größe, Superscript [cite: S25 PREMIUM V2 2026-02-23] */
+    #wizard[data-flow="listing"] .inserat-price-pill-euro,
+    #wizard[data-flow="listing"] .price-section .inserat-price-pill-euro {
+      font-size: 0.7em !important; font-weight: 700; color: #1a1a1a;
+      vertical-align: super; margin-left: 4px; line-height: 1;
+    }
     #wizard[data-flow="listing"] .inserat-desc-italic,
     #wizard[data-flow="listing"] .inserat-airbnb-desc.inserat-desc-italic { font-style: italic; color: #64748b; }
     #wizard[data-flow="listing"].sheet--kitchen .inserat-cat-pills .extra-pill {
@@ -8535,7 +8561,7 @@
   height: 48px !important;
   min-height: 48px !important;
   padding: 0 32px !important;
-  background: #222222 !important;
+  background: #1a1a1a !important;
   color: #ffffff !important;
   border-radius: 8px !important;
   font-weight: 600 !important;
@@ -8584,9 +8610,10 @@
 /* X: Einziges Schließen-Element oben links [cite: UI CLEANUP 2026-02-23] */
 #wizard[data-flow="listing"] .close-wizard-x.close-mastercard,
 #wizard[data-flow="listing"] .inserat-photo-tile .close-wizard-x {
-  position: absolute !important;
-  top: 24px !important;
-  left: 24px !important;
+  top: 12px !important;
+  left: 12px !important;
+  width: 32px !important;
+  height: 32px !important;
   z-index: 999 !important;
 }
 /* Content-Sheet: Zero Gap – fast bündig mit 24px-Abrundung [cite: S25 PREMIUM 2026-02-23] */
@@ -8595,7 +8622,7 @@
   border-top-left-radius: 24px !important;
   border-top-right-radius: 24px !important;
   margin-top: -19px !important;
-  padding-top: 4px !important;
+  padding-top: 8px !important;
   position: relative;
   z-index: 2;
   overflow: visible;
@@ -8606,7 +8633,7 @@
   overflow: visible;
   min-height: 44px;
 }
-/* Foto-Container: Sticky Parallax + 250px [cite: FINAL HARDWARE SYNC 2026-02-23] */
+/* Foto-Container: Sticky + sanfter Verlauf unten [cite: S25 PREMIUM V2 2026-02-23] */
 .inserat-photo-container,
 #wizard[data-flow="listing"] .inserat-photo-container,
 #wizard[data-flow="listing"] .inserat-photo-tile.photo-header {
@@ -8616,6 +8643,16 @@
   height: 250px !important;
   min-height: 250px !important;
   max-height: 250px !important;
+}
+#wizard[data-flow="listing"] .inserat-photo-tile.photo-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background: linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.4) 100%);
+  pointer-events: none;
 }
 #wizard[data-flow="listing"] .inserat-photo-tile.inserat-photo-placeholder {
   background: #e2e8f0 !important;
@@ -8630,16 +8667,23 @@
   font-size: 48px !important;
   opacity: 0.5;
 }
-/* Jägerschnitzel-Look: Typography + Textarea [cite: REFACTOR 2026-02-23] */
+/* Titel-Hierarchie: Bold, Letter-Spacing [cite: S25 PREMIUM V2 2026-02-23] */
 #wizard[data-flow="listing"] .input-giant-name,
 #wizard[data-flow="listing"] #gericht-name.inserat-detail-style-title,
 #wizard[data-flow="listing"] .inserat-name-textarea {
   font-family: 'Inter', sans-serif !important;
-  font-weight: 800 !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.02em !important;
   margin-top: 0 !important;
 }
 #wizard[data-flow="listing"] .inserat-name-textarea {
   line-height: 1.3;
+}
+/* Untertitel: 0.85rem, Medium-Grau [cite: S25 PREMIUM V2 2026-02-23] */
+#wizard[data-flow="listing"] .input-description,
+#mastercard-step-edit .input-description {
+  font-size: 0.85rem !important;
+  color: #6b7280 !important;
 }
 /* Powerbar mittig [cite: UNIFIED MASTERCARD 2026-02-23] */
 #wizard[data-flow="listing"] .inserat-power-bar {
