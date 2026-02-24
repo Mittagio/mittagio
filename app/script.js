@@ -125,12 +125,12 @@
   function renderDiscoverCategories(){
     const bar = document.getElementById('discoverCategoriesBar');
     if(!bar) return;
-    // Pills: genau fünf Kategorien (wie Anbieterseite/Kochbuch): Alle, Fleisch, Vegetarisch, Vegan, Salat
+    // Pills: Fleisch, Veggie, Vegan (SYNC MASTER-CARD 2026-02-23)
     const cats = [
       {id:'near', label:'Alle', emoji:'✨'},
       {id:'Fleisch', label:'Fleisch', emoji:'🥩'},
-      {id:'Vegetarisch', label:'Vegetarisch', emoji:'🌿'},
-      {id:'Vegan', label:'Vegan', emoji:'🌱'},
+      {id:'Veggie', label:'Veggie', emoji:'🥦'},
+      {id:'Vegan', label:'Vegan', emoji:'🌿'},
     ];
     const active = activeDiscoverFilter === 'near' || !activeDiscoverFilter ? 'near' : activeDiscoverFilter;
     bar.innerHTML = cats.map(c => `
@@ -467,15 +467,16 @@
 
   /** Kategorie → Emoji (Bestellhistorie & Pills) */
   const CAT_EMOJI = {
-    'Vegan':'🌱',
-    'Vegetarisch':'🌿',
+    'Vegan':'🌿',
+    'Vegetarisch':'🥦',
+    'Veggie':'🥦',
     'Fisch':'🐟',
     'Mit Fleisch':'🥩',
     'Fleisch':'🥩',
     'Geflügel':'🍗',
     'Pasta':'🍝',
     'Suppe':'🥣',
-    'Salat':'🥗',
+    'Salat':'🥦',
     'Burger':'🍔',
     'Beilage':'🍟',
     '🥩':'🥩','🍗':'🍗','🐟':'🐟','🌿':'🌿','🌱':'🌱','🍝':'🍝','🥣':'🥣','🥗':'🥗','🍔':'🍔','🍟':'🍟'
@@ -1471,10 +1472,10 @@
   }
 
   // --- Discover render (App-like UX, PWA, Light Mode) ---
-  let activeDiscoverFilter = 'near'; // 'near', 'Fleisch', 'Vegetarisch', 'Vegan', 'Salat', 'provider'
+  let activeDiscoverFilter = 'near'; // 'near', 'Fleisch', 'Veggie', 'Vegan', 'provider' [SYNC MASTER-CARD]
   let currentProviderFilter = null;
   let discoverRadiusM = parseInt(load('mittagio_discover_radius', '1000'), 10) || 1000; // 500, 1000, 3000
-  const DISCOVER_CAT_MULTI = { Fleisch: ['Fleisch','Mit Fleisch'], Vegetarisch: ['Vegetarisch'], Vegan: ['Vegan'], Salat: ['Salat'] };
+  const DISCOVER_CAT_MULTI = { Fleisch: ['Fleisch','Mit Fleisch'], Veggie: ['Vegetarisch','Veggie'], Vegan: ['Vegan'] };
   
   // Location-Autofill: Nur Schorndorf-Umgebung (Demo: Kurz + Fritz)
   const locationSuggestions = [
@@ -1809,7 +1810,7 @@
       list = list.filter(o => o.providerId === currentProviderFilter);
     }
     
-    // Kategorie-Filter: Pills Fleisch, Vegetarisch, Vegan, Salat (DISCOVER_CAT_MULTI)
+    // Kategorie-Filter: Fleisch, Veggie, Vegan (DISCOVER_CAT_MULTI)
     if(activeDiscoverFilter !== 'near' && activeDiscoverFilter !== 'provider'){
       const allowed = DISCOVER_CAT_MULTI[activeDiscoverFilter];
       if(Array.isArray(allowed)){
@@ -14981,7 +14982,7 @@
         w.data = {
           providerId: providerId(),
           dish: '',
-          category: 'Vegetarisch',
+          category: 'Fleisch',
           price: 0,
           pickupWindow: profile.mealWindow || DEFAULT_MEAL_WINDOW,
           hasPickupCode: defaultAbholnummer,
@@ -15000,7 +15001,8 @@
       
       // Normalize data
       w.data.providerId = w.data.providerId || providerId();
-      w.data.category = w.data.category || 'Vegetarisch';
+      w.data.category = w.data.category || 'Fleisch';
+      if(w.data.category==='Vegetarisch'||w.data.category==='Salat') w.data.category='Veggie';
       w.data.price = Number(w.data.price||0);
       w.data.pickupWindow = w.data.pickupWindow || profile.mealWindow || DEFAULT_MEAL_WINDOW;
       w.data.cookbookId = w.data.cookbookId || null;
@@ -15426,7 +15428,7 @@
     const profile = normalizeProviderProfile(provider.profile || {});
     const profileWindow = profile.mealWindow || DEFAULT_MEAL_WINDOW;
     const defaultReuseDeposit = (provider.profile && typeof provider.profile.reuseDepositDefault === 'number') ? provider.profile.reuseDepositDefault : 3;
-    // 3 S├ñulen + Abholzeiten: aus Profil ├╝bernehmen, wenn noch nicht gesetzt
+    // 3 Säulen + Abholzeiten: aus Profil übernehmen, wenn noch nicht gesetzt
     if(!w.data.pickupWindow) w.data.pickupWindow = profileWindow;
     if(w.data.dineInPossible === undefined) w.data.dineInPossible = (provider.profile && provider.profile.dineInPossibleDefault !== undefined) ? !!provider.profile.dineInPossibleDefault : true;
     if(w.data.hasPickupCode === undefined) w.data.hasPickupCode = !!profile.abholnummerEnabledByDefault;
@@ -15735,9 +15737,9 @@
       var closeX=document.createElement('button');
       closeX.type='button';
       closeX.className='close-wizard-x close-mastercard btn-close-master';
-      closeX.setAttribute('aria-label','Schlie├ƒen');
-      closeX.textContent='Ô£ò';
-      closeX.style.cssText='position:absolute;top:12px;left:12px;width:40px;height:40px;background:rgba(0,0,0,0.4);border-radius:50%;color:white;display:flex;align-items:center;justify-content:center;z-index:150;border:none;cursor:pointer;';
+      closeX.setAttribute('aria-label','Schließen');
+      closeX.innerHTML='<span aria-hidden="true">&#10005;</span>';
+      closeX.style.cssText='position:absolute;top:12px;left:12px;width:40px;height:40px;background:rgba(0,0,0,0.4);border-radius:50%;color:white;display:flex;align-items:center;justify-content:center;z-index:150;border:none;cursor:pointer;font-size:22px;line-height:1;font-family:system-ui,sans-serif;';
       photoTile.appendChild(closeX);
       var selectionOverlay=document.createElement('div');
       selectionOverlay.className='selection-overlay';
@@ -15782,7 +15784,7 @@
           defaultExtras.forEach(function(opt){
             var ex=w.data.extras.find(function(e){ return e.name===opt.name; }); var active=!!ex && Number(ex.price||0)>0; if(!ex) ex={ name:opt.name, price:0 };
             var pillWrap=document.createElement('div'); pillWrap.style.cssText='display:flex; align-items:center; gap:6px;';
-            var btn=document.createElement('button'); btn.type='button'; btn.className='extra-pill' + (active ? ' active' : ''); btn.style.cssText='cursor:pointer;'; btn.textContent='Ô×ò ' + opt.name;
+            var btn=document.createElement('button'); btn.type='button'; btn.className='extra-pill' + (active ? ' active' : ''); btn.style.cssText='cursor:pointer;'; btn.textContent='\u2795 ' + opt.name;
             btn.onclick=function(){ hapticLight(); var idx=w.data.extras.findIndex(function(e){ return e.name===opt.name; }); if(idx>=0){ w.data.extras.splice(idx,1); } else{ w.data.extras.push({ name:opt.name, price:opt.price }); } saveDraft(); var hasEx=!!w.data.extras.find(function(e){ return e.name===opt.name; }) && Number((w.data.extras.find(function(e){ return e.name===opt.name; })||{}).price||0)>0; btn.classList.toggle('active',hasEx); if(typeof updatePowerBarFromBox==='function') updatePowerBarFromBox(); if(pillWrap.querySelector('input')){ var next=w.data.extras.find(function(e){ return e.name===opt.name; }); if(next&&Number(next.price||0)>0){ pillWrap.querySelector('input').value=Number(next.price).toFixed(2).replace('.',','); } else { var inpWrap=pillWrap.querySelector('span'); if(inpWrap) inpWrap.remove(); } } else if(hasEx){ var inpWrap=document.createElement('span'); inpWrap.style.cssText='display:inline-flex; align-items:center; background:rgba(255,255,255,0.6); border-radius:999px; padding:4px 8px;'; var plus=document.createElement('span'); plus.style.cssText='font-size:10px; font-weight:800; color:#10b981; margin-right:4px;'; plus.textContent='+'; var inp=document.createElement('input'); inp.type='text'; inp.inputMode='decimal'; inp.style.cssText='width:36px; background:transparent; border:none; padding:0; font-size:12px; font-weight:800; color:#10b981; outline:none;'; var e=w.data.extras.find(function(x){ return x.name===opt.name; }); inp.value=Number((e&&e.price)||0).toFixed(2).replace('.',','); inp.oninput=function(){ if(e) e.price=parseFloat((inp.value||'0').replace(',','.'))||0; saveDraft(); }; inp.onclick=function(ev){ ev.stopPropagation(); }; var eur=document.createElement('span'); eur.style.cssText='font-size:10px; font-weight:800; color:#10b981; margin-left:2px;'; eur.textContent='Ôé¼'; inpWrap.appendChild(plus); inpWrap.appendChild(inp); inpWrap.appendChild(eur); pillWrap.appendChild(inpWrap); } };
             pillWrap.appendChild(btn);
             if(active){ var inpWrap=document.createElement('span'); inpWrap.style.cssText='display:inline-flex; align-items:center; background:rgba(255,255,255,0.6); border-radius:999px; padding:4px 8px;'; var plus=document.createElement('span'); plus.style.cssText='font-size:10px; font-weight:800; color:#10b981; margin-right:4px;'; plus.textContent='+'; var inp=document.createElement('input'); inp.type='text'; inp.inputMode='decimal'; inp.style.cssText='width:36px; background:transparent; border:none; padding:0; font-size:12px; font-weight:800; color:#10b981; outline:none;'; inp.value=Number(ex.price).toFixed(2).replace('.',','); inp.oninput=function(){ ex.price=parseFloat((inp.value||'0').replace(',','.'))||0; saveDraft(); }; inp.onclick=function(ev){ ev.stopPropagation(); }; var eur=document.createElement('span'); eur.style.cssText='font-size:10px; font-weight:800; color:#10b981; margin-left:2px;'; eur.textContent='Ôé¼'; inpWrap.appendChild(plus); inpWrap.appendChild(inp); inpWrap.appendChild(eur); pillWrap.appendChild(inpWrap); }
@@ -15792,7 +15794,7 @@
           var extrasAddRow=document.createElement('div'); extrasAddRow.style.cssText='display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:10px; padding:8px 0; border-top:1px solid rgba(0,0,0,0.06);';
           var addNameInp=document.createElement('input'); addNameInp.type='text'; addNameInp.placeholder='Neues Extra'; addNameInp.style.cssText='padding:8px 12px; border-radius:10px; border:2px solid rgba(0,0,0,0.08); width:120px; font-size:14px;';
           var addPriceInp=document.createElement('input'); addPriceInp.type='text'; addPriceInp.inputMode='decimal'; addPriceInp.placeholder='0,00'; addPriceInp.style.cssText='padding:8px 12px; border-radius:10px; border:2px solid rgba(0,0,0,0.08); width:56px; font-size:14px;';
-          var btnAddExtra=document.createElement('button'); btnAddExtra.type='button'; btnAddExtra.textContent='Hinzuf├╝gen'; btnAddExtra.style.cssText='padding:8px 14px; border-radius:999px; border:none; background:#10b981; color:#fff; font-weight:700; cursor:pointer; font-size:13px;'; btnAddExtra.onclick=function(){ hapticLight(); var name=(addNameInp.value||'').trim(); if(!name) return; var price=parseFloat((addPriceInp.value||'0').replace(',','.'))||0; if(w.data.extras.some(function(e){ return e.name===name; })) return; w.data.extras.push({ name:name, price:price }); saveDraft(); addNameInp.value=''; addPriceInp.value=''; if(typeof updatePowerBarFromBox==='function') updatePowerBarFromBox(); var pillWrap=document.createElement('div'); pillWrap.style.cssText='display:flex; align-items:center; gap:6px;'; var btn=document.createElement('button'); btn.type='button'; btn.className='extra-pill active'; btn.style.cssText='cursor:pointer;'; btn.textContent='Ô×ò '+name; btn.onclick=function(){ hapticLight(); var idx=w.data.extras.findIndex(function(e){ return e.name===name; }); if(idx>=0){ w.data.extras.splice(idx,1); } saveDraft(); pillWrap.remove(); if(typeof updatePowerBarFromBox==='function') updatePowerBarFromBox(); }; pillWrap.appendChild(btn); if(price>0){ var inpWrap=document.createElement('span'); inpWrap.style.cssText='display:inline-flex; align-items:center; background:rgba(255,255,255,0.6); border-radius:999px; padding:4px 8px;'; var e=w.data.extras.find(function(x){ return x.name===name; }); inpWrap.innerHTML='<span style="font-size:10px; font-weight:800; color:#10b981; margin-right:4px;">+</span><input type="text" inputmode="decimal" style="width:36px; background:transparent; border:none; padding:0; font-size:12px; font-weight:800; color:#10b981; outline:none;" value="'+Number(price).toFixed(2).replace('.',',')+'"><span style="font-size:10px; font-weight:800; color:#10b981; margin-left:2px;">Ôé¼</span>'; var inp=inpWrap.querySelector('input'); if(inp&&e){ inp.oninput=function(){ e.price=parseFloat((inp.value||'0').replace(',','.'))||0; saveDraft(); }; inp.onclick=function(ev){ ev.stopPropagation(); }; } pillWrap.appendChild(inpWrap); } extrasListWrap.appendChild(pillWrap); if(typeof showToast==='function') showToast('Extra hinzugef├╝gt'); };
+          var btnAddExtra=document.createElement('button'); btnAddExtra.type='button'; btnAddExtra.textContent='Hinzufügen'; btnAddExtra.style.cssText='padding:8px 14px; border-radius:999px; border:none; background:#10b981; color:#fff; font-weight:700; cursor:pointer; font-size:13px;'; btnAddExtra.onclick=function(){ hapticLight(); var name=(addNameInp.value||'').trim(); if(!name) return; var price=parseFloat((addPriceInp.value||'0').replace(',','.'))||0; if(w.data.extras.some(function(e){ return e.name===name; })) return; w.data.extras.push({ name:name, price:price }); saveDraft(); addNameInp.value=''; addPriceInp.value=''; if(typeof updatePowerBarFromBox==='function') updatePowerBarFromBox(); var pillWrap=document.createElement('div'); pillWrap.style.cssText='display:flex; align-items:center; gap:6px;'; var btn=document.createElement('button'); btn.type='button'; btn.className='extra-pill active'; btn.style.cssText='cursor:pointer;'; btn.textContent='\u2795 '+name; btn.onclick=function(){ hapticLight(); var idx=w.data.extras.findIndex(function(e){ return e.name===name; }); if(idx>=0){ w.data.extras.splice(idx,1); } saveDraft(); pillWrap.remove(); if(typeof updatePowerBarFromBox==='function') updatePowerBarFromBox(); }; pillWrap.appendChild(btn); if(price>0){ var inpWrap=document.createElement('span'); inpWrap.style.cssText='display:inline-flex; align-items:center; background:rgba(255,255,255,0.6); border-radius:999px; padding:4px 8px;'; var e=w.data.extras.find(function(x){ return x.name===name; }); inpWrap.innerHTML='<span style="font-size:10px; font-weight:800; color:#10b981; margin-right:4px;">+</span><input type="text" inputmode="decimal" style="width:36px; background:transparent; border:none; padding:0; font-size:12px; font-weight:800; color:#10b981; outline:none;" value="'+Number(price).toFixed(2).replace('.',',')+'"><span style="font-size:10px; font-weight:800; color:#10b981; margin-left:2px;">Ôé¼</span>'; var inp=inpWrap.querySelector('input'); if(inp&&e){ inp.oninput=function(){ e.price=parseFloat((inp.value||'0').replace(',','.'))||0; saveDraft(); }; inp.onclick=function(ev){ ev.stopPropagation(); }; } pillWrap.appendChild(inpWrap); } extrasListWrap.appendChild(pillWrap); if(typeof showToast==='function') showToast('Extra hinzugef├╝gt'); };
           extrasAddRow.appendChild(addNameInp); extrasAddRow.appendChild(addPriceInp); extrasAddRow.appendChild(btnAddExtra); selectionOverlayInner.appendChild(extrasAddRow);
           var extrasBtnRow=document.createElement('div'); extrasBtnRow.style.cssText='display:flex; flex-direction:column; gap:10px; padding:12px 0 0; margin-top:8px; border-top:1px solid rgba(0,0,0,0.06);';
           var btnFertigEx=document.createElement('button'); btnFertigEx.type='button'; btnFertigEx.className='inserat-fertig-kachel'; btnFertigEx.textContent='Fertig'; btnFertigEx.onclick=function(){ hapticLight(); closeHeaderSelection(); if(typeof updatePowerBarFromBox==='function') updatePowerBarFromBox(); };
@@ -15800,7 +15802,7 @@
           extrasBtnRow.appendChild(btnSaveExtras); extrasBtnRow.appendChild(btnFertigEx); selectionOverlayInner.appendChild(extrasBtnRow);
         } else if(type==='time'){
           selectionOverlayInner.classList.add('selection-overlay-inner--time');
-          var pwParts=(w.data.pickupWindow||'11:30 ÔÇô 14:00').split(/\s*[ÔÇô\-]\s*/);
+          var pwParts=(w.data.pickupWindow||'11:30 – 14:00').split(/\s*[–\-]\s*/);
           var tStart=(pwParts[0]||'11:30').trim();
           var tEnd=(pwParts[1]||'14:00').trim();
           if(tStart.length===4) tStart='0'+tStart;
@@ -15808,7 +15810,7 @@
           var row=document.createElement('div'); row.className='inserat-time-morph-row'; row.style.cssText='display:flex; align-items:center; justify-content:center; gap:12px; flex-wrap:wrap; padding:16px 0;';
           var inpStart=document.createElement('input'); inpStart.type='time'; inpStart.className='inserat-pickup-time-input'; inpStart.value=tStart; inpStart.style.cssText='padding:10px 14px; border-radius:12px; border:2px solid rgba(0,0,0,0.08); background:rgba(255,255,255,0.7); backdrop-filter:blur(10px); font-size:16px; font-weight:700;';
           var inpEnd=document.createElement('input'); inpEnd.type='time'; inpEnd.className='inserat-pickup-time-input'; inpEnd.value=tEnd; inpEnd.style.cssText='padding:10px 14px; border-radius:12px; border:2px solid rgba(0,0,0,0.08); background:rgba(255,255,255,0.7); backdrop-filter:blur(10px); font-size:16px; font-weight:700;';
-          var upd=function(){ w.data.pickupWindow=inpStart.value+' ÔÇô '+inpEnd.value; saveDraft(); if(typeof updatePowerBarFromBox==='function') updatePowerBarFromBox(); };
+          var upd=function(){ w.data.pickupWindow=inpStart.value+' – '+inpEnd.value; saveDraft(); if(typeof updatePowerBarFromBox==='function') updatePowerBarFromBox(); };
           inpStart.onchange=function(){ hapticLight(); upd(); };
           inpEnd.onchange=function(){ hapticLight(); upd(); };
           row.appendChild(inpStart);
@@ -15839,21 +15841,23 @@
       contentSheet.style.cssText='width:100%; background:#ffffff; border-top-left-radius:24px; border-top-right-radius:24px; flex:1;';
       scrollArea.appendChild(contentSheet);
 
-      // ========== 2. EBENE (Titel): ghost-input, Placeholder pulsierend [cite: 2026-02-21] ==========
+      // ========== 2. EBENE (Titel): ghost-input + Quick-Delete [cite: 2026-02-23] ==========
       const stepName=document.createElement('div');
       stepName.id='step-name';
-      stepName.className='inserat-section inserat-unified-title-wrap';
-      stepName.style.cssText='width:100%; margin-top:6px; margin-bottom:2px;';
-      /* Autovervollst├ñndigung Gerichtsnamen entfernt [cite: 2026-02-21] */
+      stepName.className='inserat-section inserat-unified-title-wrap inserat-name-sticky';
+      stepName.style.cssText='width:100%; margin-top:19px; margin-bottom:3px; display:flex; justify-content:center; position:sticky; top:0; z-index:10; background:#ffffff; padding-bottom:4px; border-bottom:1px solid #f2f2f2;';
+      var nameInputWrap=document.createElement('div');
+      nameInputWrap.className='inserat-name-input-wrap';
+      nameInputWrap.style.cssText='position:relative; width:100%; display:flex; align-items:center;';
       const inputDish=document.createElement('input');
       inputDish.id='gericht-name';
       inputDish.setAttribute('autocomplete','off');
       inputDish.type='text';
       inputDish.className='ghost-input inserat-detail-style-title magnet-input inserat-gericht-name-extra input-giant-name';
       inputDish.value=w.data.dish||'';
-      inputDish.placeholder='z.B. J├ñgerschnitzel';
+      inputDish.placeholder='z.B. Jägerschnitzel';
       inputDish.autocomplete='off';
-      inputDish.style.cssText='width:100%; max-width:100%; color:#1a1a1a; font-family:\'Montserrat\',sans-serif; font-weight:900; font-style:normal; box-sizing:border-box; border:none; background:transparent; outline:none;';
+      inputDish.style.cssText='flex:1; color:#1a1a1a; font-family:\'Montserrat\',sans-serif; font-weight:900; font-style:normal; box-sizing:border-box; border:none; background:transparent; outline:none; padding-right:36px;';
       function adjustTitleFontSize(){
         var el = inputDish;
         if(!el || !el.offsetParent) return;
@@ -15863,8 +15867,16 @@
       }
       inputDish.oninput=function(){ w.data.dish=inputDish.value; saveDraft(); adjustTitleFontSize(); if(typeof checkMastercardValidation==='function') checkMastercardValidation(); if(updateStep2ContextZoneRef) updateStep2ContextZoneRef(); };
       inputDish.onblur=function(){ dismissKeyboard(); hapticLight(); };
-      stepName.appendChild(inputDish);
-      stepName.style.cssText='width:100%; margin-top:24px; margin-bottom:4px; display:flex; justify-content:center;';
+      var btnClearName=document.createElement('button');
+      btnClearName.type='button';
+      btnClearName.className='inserat-name-clear-btn';
+      btnClearName.setAttribute('aria-label','Name löschen');
+      btnClearName.textContent='\uD83D\uDDD1\uFE0F';
+      btnClearName.style.cssText='position:absolute; right:4px; top:50%; transform:translateY(-50%); width:28px; height:28px; border:none; background:transparent; color:#94a3b8; font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; border-radius:50%; flex-shrink:0;';
+      btnClearName.onclick=function(e){ e.preventDefault(); e.stopPropagation(); if(navigator.vibrate) navigator.vibrate(10); hapticLight(); inputDish.value=''; w.data.dish=''; saveDraft(); adjustTitleFontSize(); inputDish.focus(); };
+      nameInputWrap.appendChild(inputDish);
+      nameInputWrap.appendChild(btnClearName);
+      stepName.appendChild(nameInputWrap);
       contentSheet.appendChild(stepName);
 
       // ========== 3. Beschreibung (4ÔÇô8px unter Name, Einheit) [cite: STRENGER LAYOUT-CHECK 2026-02-23] ==========
@@ -15877,25 +15889,26 @@
       descriptionTextarea.oninput=function(){ w.data.description=descriptionTextarea.value; saveDraft(); };
       contentSheet.appendChild(descriptionTextarea);
 
-      // ========== 4. Kategorie-Pills (neutral, nicht schwarz) [cite: 2026-02-23] ==========
+      // ========== 4. Kategorie-Pills (Green Categories: Fleisch, Veggie, Vegan) [cite: 2026-02-23] ==========
       var pillGroup=document.createElement('div');
       pillGroup.className='pill-group system-content-body';
-      pillGroup.style.cssText='display:flex; flex-direction:column; gap:8px; margin-top:6px; margin-bottom:0; align-items:center; width:100%;';
-      var catValues=['Fleisch','Vegetarisch','Vegan','Salat'];
-      var catEmojis=['\uD83C\uDF56','\uD83C\uDF36','\uD83E\uDDEB','\uD83C\uDF57'];
+      pillGroup.style.cssText='display:flex; flex-direction:column; gap:6px; margin-top:5px; margin-bottom:0; align-items:center; width:100%;';
+      var catValues=['Fleisch','Veggie','Vegan'];
+      var catEmojis=['\uD83E\uDD69','\uD83E\uDD66','\uD83C\uDF3F'];
       var currentCat=w.data.category||'Fleisch';
-      if(!catValues.includes(currentCat)) w.data.category='Fleisch';
+      if(currentCat==='Vegetarisch'||currentCat==='Salat') currentCat='Veggie';
+      if(!catValues.includes(currentCat)) w.data.category='Fleisch'; else w.data.category=currentCat;
       var categoryPills=document.createElement('div');
-      categoryPills.className='pill-cloud categories';
+      categoryPills.className='pill-cloud categories category-pills-green';
       categoryPills.id='categoryPills';
-      categoryPills.style.cssText='display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:center;';
+      categoryPills.style.cssText='display:flex; flex-wrap:wrap; gap:6px; align-items:center; justify-content:center;';
       catValues.forEach(function(c,i){
         var b=document.createElement('button');
         b.type='button';
         b.className='pill power-item category-pill'+(w.data.category===c?' active':'');
-        b.style.cssText='min-height:44px; padding:8px 14px; border-radius:12px; border:1px solid #ebebeb; background:#ffffff; font-size:14px; font-weight:700; color:#1a1a1a; cursor:pointer;';
-        if(w.data.category===c) b.style.cssText+=' background:#f1f5f9; color:#475569; border-color:#cbd5e1;';
-        b.innerHTML='<span style="font-size:16px;">'+(catEmojis[i]||'')+'</span> ' + c;
+        b.style.cssText='min-height:38px; padding:6px 12px; border-radius:10px; border:1px solid #c8e6c9; background:#ffffff; font-size:13px; font-weight:700; color:#1a1a1a; cursor:pointer;';
+        if(w.data.category===c) b.style.cssText+=' background:#e8f5e9; color:#2e7d32; border-color:#a5d6a7;';
+        b.innerHTML='<span style="font-size:14px;">'+(catEmojis[i]||'')+'</span> ' + c;
         b.setAttribute('title',c);
         b.dataset.category=c;
         b.onclick=function(){
@@ -15912,7 +15925,7 @@
 
       var systemDivider=document.createElement('div');
       systemDivider.className='minimal-divider mastercard-step-edit-divider system-divider';
-      systemDivider.style.cssText='width:40px; height:2px; background:#f1f5f9; margin:6px auto 8px; border-radius:2px;';
+      systemDivider.style.cssText='width:40px; height:2px; background:#f1f5f9; margin:5px auto 6px; border-radius:2px;';
       contentSheet.appendChild(systemDivider);
 
       // ========== 5. Preis (Giant) & Extras-Button [cite: FINALE NEUAUFBAU 2026-02-21] ==========
@@ -15985,12 +15998,12 @@
       const quickAdjustPanel=document.createElement('div');
       quickAdjustPanel.id='quick-adjust-sheet';
       quickAdjustPanel.className='inserat-quick-adjust-panel quick-adjust-sheet';
-      quickAdjustPanel.style.cssText='display:none; position:fixed; left:50%; bottom:0; width:100%; max-width:400px; z-index:11000; background:#ffffff; border-radius:24px 24px 0 0; padding:24px 20px calc(24px + env(safe-area-inset-bottom,0)); box-shadow:none; border-top:1px solid #ebebeb; max-height:70vh; overflow-y:auto;';
+      quickAdjustPanel.style.cssText='display:none; position:fixed; left:50%; bottom:0; width:100%; max-width:400px; z-index:11000; background:#ffffff; border-radius:24px 24px 0 0; padding:20px 16px 0; margin:0; box-shadow:none; border-top:1px solid #ebebeb; max-height:70vh; overflow-y:auto;';
       function updatePowerBarFromData(){ if(typeof updatePowerBarFromBox==='function') updatePowerBarFromBox(); }
       function closeQuickAdjustWithFeedback(type){
         var finishBtn=quickAdjustPanel.querySelector('.quick-adjust-fertig');
         if(finishBtn){
-          finishBtn.textContent='Ô£ô Gespeichert';
+          finishBtn.textContent='✓ Gespeichert';
           finishBtn.style.background='#222222';
           if(window.navigator.vibrate) window.navigator.vibrate([10,30,10]);
         }
@@ -16016,17 +16029,17 @@
         requestAnimationFrame(function(){ requestAnimationFrame(function(){ quickAdjustPanel.style.transform='translate(-50%, 0)'; }); });
         var headline=document.createElement('h3');
         headline.className='quick-adjust-headline';
-        headline.style.cssText='margin:0 0 20px; font-size:18px; font-weight:800; color:#0f172a;';
+        headline.style.cssText='margin:0 0 16px; font-size:18px; font-weight:800; color:#0f172a;';
         if(type==='time'){
           headline.textContent='Abholzeit';
           quickAdjustPanel.appendChild(headline);
-          var pwParts=(w.data.pickupWindow||'11:30 ÔÇô 14:00').split(/\s*[ÔÇô\-]\s*/);
+          var pwParts=(w.data.pickupWindow||'11:30 – 14:00').split(/\s*[–\-]\s*/);
           var tStart=(pwParts[0]||'11:30').trim(); var tEnd=(pwParts[1]||'14:00').trim();
           if(tStart.length===4) tStart='0'+tStart; if(tEnd.length===4) tEnd='0'+tEnd;
           var row=document.createElement('div'); row.style.cssText='display:flex; align-items:center; justify-content:center; gap:12px; flex-wrap:wrap; padding:8px 0;';
           var inpStart=document.createElement('input'); inpStart.type='time'; inpStart.value=tStart; inpStart.style.cssText='padding:12px 16px; border-radius:12px; border:2px solid #e2e8f0; background:#f8fafc; font-size:16px; font-weight:700;';
           var inpEnd=document.createElement('input'); inpEnd.type='time'; inpEnd.value=tEnd; inpEnd.style.cssText='padding:12px 16px; border-radius:12px; border:2px solid #e2e8f0; background:#f8fafc; font-size:16px; font-weight:700;';
-          inpStart.onchange=inpEnd.onchange=function(){ w.data.pickupWindow=inpStart.value+' ÔÇô '+inpEnd.value; saveDraft(); };
+          inpStart.onchange=inpEnd.onchange=function(){ w.data.pickupWindow=inpStart.value+' – '+inpEnd.value; saveDraft(); };
           row.appendChild(inpStart); row.appendChild(document.createTextNode(' bis ')); row.appendChild(inpEnd);
           quickAdjustPanel.appendChild(row);
         } else if(type==='allergens'){
@@ -16044,16 +16057,16 @@
         } else if(type==='extras'){
           headline.textContent='Extras';
           quickAdjustPanel.appendChild(headline);
-          var defaultExtras=(profile.defaultExtras&&profile.defaultExtras.length)?profile.defaultExtras.slice():[{name:'Beilagensalat',price:2.5},{name:'Mayo',price:0.5},{name:'Ketchup',price:0.5},{name:'So├ƒe',price:1},{name:'Brot',price:1.5}];
+          var defaultExtras=(profile.defaultExtras&&profile.defaultExtras.length)?profile.defaultExtras.slice():[{name:'Beilagensalat',price:2.5},{name:'Mayo',price:0.5},{name:'Ketchup',price:0.5},{name:'Soße',price:1},{name:'Brot',price:1.5}];
           if(!Array.isArray(w.data.extras)) w.data.extras=[];
           var extrasListWrap=document.createElement('div'); extrasListWrap.style.cssText='display:flex; flex-wrap:wrap; gap:8px; align-items:center;';
           defaultExtras.forEach(function(opt){
             var ex=w.data.extras.find(function(e){ return e.name===opt.name; }); var active=!!ex&&Number(ex.price||0)>0; if(!ex) ex={name:opt.name,price:0};
             var pillWrap=document.createElement('div'); pillWrap.style.cssText='display:flex; align-items:center; gap:6px;';
-            var btn=document.createElement('button'); btn.type='button'; btn.className='extra-pill'+(active?' active':''); btn.style.cssText='cursor:pointer;'; btn.textContent='Ô×ò '+opt.name;
-            btn.onclick=function(){ hapticLight(); var idx=w.data.extras.findIndex(function(e){ return e.name===opt.name; }); if(idx>=0){ w.data.extras.splice(idx,1); } else{ w.data.extras.push({name:opt.name,price:opt.price}); } saveDraft(); var hasEx=!!w.data.extras.find(function(e){ return e.name===opt.name; })&&Number((w.data.extras.find(function(e){ return e.name===opt.name; })||{}).price||0)>0; btn.className='extra-pill'+(hasEx?' active':''); if(hasEx&&!pillWrap.querySelector('input')){ var inpWrap=document.createElement('span'); inpWrap.style.cssText='display:inline-flex; align-items:center; background:rgba(255,255,255,0.6); border-radius:999px; padding:4px 8px;'; var next=w.data.extras.find(function(e){ return e.name===opt.name; }); inpWrap.innerHTML='<span style="font-size:10px; font-weight:800; color:#10b981; margin-right:4px;">+</span><input type="text" inputmode="decimal" style="width:36px; background:transparent; border:none; padding:0; font-size:12px; font-weight:800; color:#10b981; outline:none;" value="'+Number((next&&next.price)||0).toFixed(2).replace(".",",")+'"><span style="font-size:10px; font-weight:800; color:#10b981; margin-left:2px;">Ôé¼</span>'; var inp=inpWrap.querySelector('input'); if(inp){ var e=w.data.extras.find(function(x){ return x.name===opt.name; }); inp.oninput=function(){ if(e) e.price=parseFloat((inp.value||"0").replace(",","."))||0; saveDraft(); }; inp.onclick=function(ev){ ev.stopPropagation(); }; pillWrap.appendChild(inpWrap); } } else if(!hasEx){ var o=pillWrap.querySelector('span'); if(o) o.remove(); } };
+            var btn=document.createElement('button'); btn.type='button'; btn.className='extra-pill'+(active?' active':''); btn.style.cssText='cursor:pointer;'; btn.textContent='➕ '+opt.name;
+            btn.onclick=function(){ hapticLight(); var idx=w.data.extras.findIndex(function(e){ return e.name===opt.name; }); if(idx>=0){ w.data.extras.splice(idx,1); } else{ w.data.extras.push({name:opt.name,price:opt.price}); } saveDraft(); var hasEx=!!w.data.extras.find(function(e){ return e.name===opt.name; })&&Number((w.data.extras.find(function(e){ return e.name===opt.name; })||{}).price||0)>0; btn.className='extra-pill'+(hasEx?' active':''); if(hasEx&&!pillWrap.querySelector('input')){ var inpWrap=document.createElement('span'); inpWrap.style.cssText='display:inline-flex; align-items:center; background:rgba(255,255,255,0.6); border-radius:999px; padding:4px 8px;'; var next=w.data.extras.find(function(e){ return e.name===opt.name; }); inpWrap.innerHTML='<span style="font-size:10px; font-weight:800; color:#10b981; margin-right:4px;">+</span><input type="text" inputmode="decimal" style="width:36px; background:transparent; border:none; padding:0; font-size:12px; font-weight:800; color:#10b981; outline:none;" value="'+Number((next&&next.price)||0).toFixed(2).replace(".",",")+'"><span style="font-size:10px; font-weight:800; color:#10b981; margin-left:2px;">€</span>'; var inp=inpWrap.querySelector('input'); if(inp){ var e=w.data.extras.find(function(x){ return x.name===opt.name; }); inp.oninput=function(){ if(e) e.price=parseFloat((inp.value||"0").replace(",","."))||0; saveDraft(); }; inp.onclick=function(ev){ ev.stopPropagation(); }; pillWrap.appendChild(inpWrap); } } else if(!hasEx){ var o=pillWrap.querySelector('span'); if(o) o.remove(); } };
             pillWrap.appendChild(btn);
-            if(active){ var inpWrap=document.createElement('span'); inpWrap.style.cssText='display:inline-flex; align-items:center; background:rgba(255,255,255,0.6); border-radius:999px; padding:4px 8px;'; inpWrap.innerHTML='<span style="font-size:10px; font-weight:800; color:#10b981; margin-right:4px;">+</span><input type="text" inputmode="decimal" style="width:36px; background:transparent; border:none; padding:0; font-size:12px; font-weight:800; color:#10b981; outline:none;" value="'+Number(ex.price).toFixed(2).replace(".",",")+'"><span style="font-size:10px; font-weight:800; color:#10b981; margin-left:2px;">Ôé¼</span>'; var inp=inpWrap.querySelector('input'); if(inp){ inp.oninput=function(){ ex.price=parseFloat((inp.value||"0").replace(",","."))||0; saveDraft(); }; inp.onclick=function(ev){ ev.stopPropagation(); }; } pillWrap.appendChild(inpWrap); }
+            if(active){ var inpWrap=document.createElement('span'); inpWrap.style.cssText='display:inline-flex; align-items:center; background:rgba(255,255,255,0.6); border-radius:999px; padding:4px 8px;'; inpWrap.innerHTML='<span style="font-size:10px; font-weight:800; color:#10b981; margin-right:4px;">+</span><input type="text" inputmode="decimal" style="width:36px; background:transparent; border:none; padding:0; font-size:12px; font-weight:800; color:#10b981; outline:none;" value="'+Number(ex.price).toFixed(2).replace(".",",")+'"><span style="font-size:10px; font-weight:800; color:#10b981; margin-left:2px;">€</span>'; var inp=inpWrap.querySelector('input'); if(inp){ inp.oninput=function(){ ex.price=parseFloat((inp.value||"0").replace(",","."))||0; saveDraft(); }; inp.onclick=function(ev){ ev.stopPropagation(); }; } pillWrap.appendChild(inpWrap); }
             extrasListWrap.appendChild(pillWrap);
           });
           quickAdjustPanel.appendChild(extrasListWrap);
@@ -16062,7 +16075,7 @@
         btnFertig.type='button';
         btnFertig.className='inserat-fertig-kachel quick-adjust-fertig';
         btnFertig.textContent='Fertig';
-        btnFertig.style.cssText='width:100%; min-height:56px; margin-top:24px; padding:16px 24px; border:none; border-radius:8px; background:#222222; color:#ffffff; font-size:16px; font-weight:800; cursor:pointer;';
+        btnFertig.style.cssText='width:100%; min-height:56px; margin-top:20px; padding:16px 24px calc(16px + env(safe-area-inset-bottom,0)); border:none; border-radius:0; background:#222222; color:#ffffff; font-size:16px; font-weight:800; cursor:pointer;';
         btnFertig.onclick=function(){ hapticLight(); closeQuickAdjustWithFeedback(type); };
         quickAdjustPanel.appendChild(btnFertig);
       }
@@ -16074,12 +16087,12 @@
         var verdienstEl = document.getElementById('inserat-verdienst-vorschau');
         if(verdienstEl && !isPlanMode){
           var verdienst = Math.max(0, (price - 0.89) * 30);
-          verdienstEl.textContent = 'Dein Verdienst (ca. 30 Portionen): ' + verdienst.toFixed(2).replace('.',',') + ' Ôé¼';
+          verdienstEl.textContent = 'Dein Verdienst (ca. 30 Portionen): ' + verdienst.toFixed(2).replace('.',',') + ' €';
           verdienstEl.style.display = price > 0 ? 'block' : 'none';
         }
       };
       contentSheet.appendChild(powerBar);
-      /* Extra-Button entfernt [cite: RADIKALER COMPACT 2026-02-23] ÔÇô nur Ô×ò in PowerBar ├Âffnet Quick-Adjust */
+      /* Extra-Button entfernt [cite: RADIKALER COMPACT 2026-02-23] – nur ➕ in PowerBar öffnet Quick-Adjust */
       box.appendChild(quickAdjustPanel);
       inputDish.addEventListener('keydown', function(){
         if(!priceSection || priceSection.classList.contains('harmonic-bounce')) return;
