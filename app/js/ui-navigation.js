@@ -90,8 +90,10 @@
       v.classList.remove('active');
       v.style.setProperty('display', 'none', 'important');
     });
-    document.body.classList.toggle('provider-week-active', id === 'v-provider-week');
-    document.body.classList.toggle('provider-cookbook-active', id === 'v-provider-cookbook');
+    /* Body-Klassen zentral: alte entfernen, nur neue setzen [cite: GLOBAL NATIVE NAV 2026-02-23] */
+    document.body.classList.remove('provider-week-active', 'provider-cookbook-active');
+    if (id === 'v-provider-week') document.body.classList.add('provider-week-active');
+    else if (id === 'v-provider-cookbook') document.body.classList.add('provider-cookbook-active');
     window.scrollTo({ top: 0, behavior: isProviderView ? 'auto' : 'smooth' });
     if (document.documentElement) document.documentElement.scrollTop = 0;
     if (document.body) document.body.scrollTop = 0;
@@ -252,12 +254,105 @@
     }
   }
 
-  function pushViewState(state, url){
+  function pushViewState(state, url, doPush){
+    if (doPush === false) {
+      if (typeof history.replaceState === 'function') history.replaceState(state, '', url || location.pathname);
+      return;
+    }
+    if (window.__navSuppressPush) return;
     url = url || location.pathname;
-    if (typeof history.replaceState === 'function' && history.length === 1)
+    if (typeof history.replaceState === 'function' && history.length === 1) {
       history.replaceState(state, '', url);
-    else if (typeof history.pushState === 'function')
+      if (typeof history.pushState === 'function') history.pushState(state, '', url);
+    } else if (typeof history.pushState === 'function') {
       history.pushState(state, '', url);
+    }
+  }
+
+  /** Aktuelle Sektion aus aktivem View [cite: GLOBAL NATIVE NAV 2026-02-23] */
+  function getCurrentSection(){
+    var av = document.querySelector('.view.active');
+    if (!av || !av.id) return null;
+    var map = { 'v-provider-home':'dashboard', 'v-provider-cookbook':'cookbook', 'v-provider-week':'week', 'v-provider-profile':'profile', 'v-provider-pickups':'pickups', 'v-provider-billing':'billing' };
+    return map[av.id] || av.id;
+  }
+
+  /** Wizard/InseratCard offen? [cite: GLOBAL NATIVE NAV 2026-02-23] */
+  function isWizardOpen(){
+    var w = document.getElementById('wizard');
+    var wbd = document.getElementById('wbd');
+    return !!(w && wbd && (w.classList.contains('active') || wbd.classList.contains('active')));
+  }
+
+  /** Profil-Sub (Settings, Business, etc.) sichtbar? [cite: GLOBAL NATIVE NAV 2026-02-23] */
+  function isProfileSubOpen(){
+    var main = document.getElementById('providerProfileMainContent');
+    return !!(main && main.style.display === 'none');
+  }
+
+  /** Andere Sheets/Modals offen (KW-Selector, Magic-Sheet, CreateFlow)? [cite: GLOBAL NATIVE NAV 2026-02-23] */
+  function isAnySheetOpen(){
+    var ids = ['kwSelectorSheet','weekMagicSheet','createFlowSheet','quickPostSheet','publishFeeSheet','codeSheet','codeBd'];
+    for (var i = 0; i < ids.length; i++) {
+      var el = document.getElementById(ids[i]);
+      if (el && (el.classList.contains('active') || (el.style && el.style.display !== 'none'))) return true;
+    }
+    var kwBd = document.getElementById('kwSelectorBd');
+    var magicBd = document.getElementById('weekMagicSheetBd');
+    var createBd = document.getElementById('createFlowBd');
+    if (kwBd && kwBd.style.display !== 'none') return true;
+    if (magicBd && magicBd.style.display !== 'none') return true;
+    if (createBd && createBd.classList.contains('active')) return true;
+    return false;
+  }
+
+  /** showSection: Zentrale Navigation mit History + Body-Klassen [cite: GLOBAL NATIVE NAV 2026-02-23] */
+  function showSection(sectionId, doPush){
+    if (doPush === undefined) doPush = true;
+    window.__navSuppressPush = !doPush;
+    var fn = null;
+    if (sectionId === 'dashboard') fn = showProviderHome;
+    else if (sectionId === 'cookbook') fn = showProviderCookbook;
+    else if (sectionId === 'week') fn = showProviderWeek;
+    else if (sectionId === 'profile') fn = showProviderProfile;
+    else if (sectionId === 'pickups') fn = showProviderPickups;
+    else if (sectionId === 'billing') fn = showProviderBilling;
+    if (fn) {
+      fn();
+      if (!doPush && typeof history.replaceState === 'function') {
+        var viewMap = { dashboard:'v-provider-home', cookbook:'v-provider-cookbook', week:'v-provider-week', profile:'v-provider-profile', pickups:'v-provider-pickups', billing:'v-provider-billing' };
+        history.replaceState({ section: sectionId, view: viewMap[sectionId], mode: window.mode }, '', location.pathname);
+      }
+    }
+    window.__navSuppressPush = false;
+  }
+
+  /** Popstate: Hardware-Zurück – Modal schließen oder zum Dashboard [cite: GLOBAL NATIVE NAV 2026-02-23] */
+  function initPopstateHandler(){
+    window.addEventListener('popstate', function(event){
+      try { if (navigator.vibrate) navigator.vibrate(10); } catch(e){}
+      if (window.mode !== 'provider') return;
+      if (isWizardOpen() && typeof closeMastercard === 'function') {
+        closeMastercard();
+        return;
+      }
+      if (isProfileSubOpen() && typeof showProviderProfileSub === 'function') {
+        showProviderProfileSub(null);
+        return;
+      }
+      if (isAnySheetOpen()) {
+        if (typeof closeWeekMagicSheet === 'function') closeWeekMagicSheet();
+        if (typeof closeKWSelector === 'function') closeKWSelector();
+        if (typeof closeCreateFlowSheet === 'function') closeCreateFlowSheet();
+        if (typeof closeQuickPostSheet === 'function') closeQuickPostSheet();
+        if (typeof closePublishFeeModal === 'function') closePublishFeeModal();
+        return;
+      }
+      var current = getCurrentSection();
+      if (current && current !== 'dashboard') {
+        showSection('dashboard', false);
+      }
+    });
   }
 
   function showStart(){
@@ -399,7 +494,7 @@
     }
     const providerNavBackRow = document.getElementById('providerNavBackRow');
     if(providerNavBackRow) providerNavBackRow.style.display = 'none';
-    pushViewState({view: 'provider-home', mode: window.mode}, location.pathname);
+    pushViewState({section: 'dashboard', view: 'provider-home', mode: window.mode}, location.pathname);
   }
   function showProviderPickups(){
     if(!checkSessionValidity()) return;
@@ -419,7 +514,7 @@
     renderProviderPickups();
     const providerNavBackRow = document.getElementById('providerNavBackRow');
     if(providerNavBackRow) providerNavBackRow.style.display = 'block';
-    pushViewState({view: 'provider-pickups', mode: window.mode}, location.pathname);
+    pushViewState({section: 'pickups', view: 'provider-pickups', mode: window.mode}, location.pathname);
   }
   function showProviderWeek(preselectDay, preselectKW){
     if(!checkSessionValidity()) return;
@@ -436,7 +531,7 @@
     if(typeof setProviderPageHeader === 'function') setProviderPageHeader('Wochenplan');
     if(typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard(); else renderWeekPlan();
     var newPath = location.pathname + '?week=' + window.weekPlanKWIndex + '&day=' + window.weekPlanDay;
-    pushViewState({view: 'provider-week', mode: window.mode, week: window.weekPlanKWIndex, day: window.weekPlanDay}, newPath);
+    pushViewState({section: 'week', view: 'provider-week', mode: window.mode, week: window.weekPlanKWIndex, day: window.weekPlanDay}, newPath);
     /* Master-Fix: Kein scroll-basierter Header – weekHeaderCompact bleibt permanent sticky */
   }
   function showProviderCookbook(){
@@ -451,7 +546,7 @@
     requestAnimationFrame(function(){ requestAnimationFrame(function(){ if(typeof renderCookbook === 'function') renderCookbook(); }); });
     const providerNavBackRow = document.getElementById('providerNavBackRow');
     if(providerNavBackRow) providerNavBackRow.style.display = 'none';
-    pushViewState({view: 'provider-cookbook', mode: window.mode}, location.pathname);
+    pushViewState({section: 'cookbook', view: 'provider-cookbook', mode: window.mode}, location.pathname);
   }
   function showProviderProfile(){
     if(!checkSessionValidity()) return;
@@ -463,14 +558,14 @@
     if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 80);
     const providerNavBackRow = document.getElementById('providerNavBackRow');
     if(providerNavBackRow) providerNavBackRow.style.display = 'block';
-    pushViewState({view: 'provider-profile', mode: window.mode}, location.pathname);
+    pushViewState({section: 'profile', view: 'provider-profile', mode: window.mode}, location.pathname);
   }
   function showProviderBilling(){
     if(!checkSessionValidity()) return;
     setProviderNavActive('provider-profile');
     showView(views.providerBilling);
     renderBilling();
-    pushViewState({view: 'provider-billing', mode: window.mode}, location.pathname);
+    pushViewState({section: 'billing', view: 'provider-billing', mode: window.mode}, location.pathname);
   }
 
   function showCheckout(){
@@ -528,6 +623,11 @@
   window.setMode = setMode;
   window.setCustomerNavActive = setCustomerNavActive;
   window.setProviderNavActive = setProviderNavActive;
+  window.showSection = showSection;
+  window.getCurrentSection = getCurrentSection;
+  window.isWizardOpen = isWizardOpen;
+  window.isProfileSubOpen = isProfileSubOpen;
+  window.isAnySheetOpen = isAnySheetOpen;
   window.showStart = showStart;
   window.showDiscover = showDiscover;
   window.showFav = showFav;
@@ -545,4 +645,5 @@
   window.pushViewState = pushViewState;
   window.openCodeSheetWithOrder = openCodeSheetWithOrder;
   window.showPickupCode = showPickupCode;
+  if (typeof window.addEventListener === 'function') initPopstateHandler();
 })();

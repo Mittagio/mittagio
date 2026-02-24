@@ -5,6 +5,46 @@
     #step-name input:focus, .input-giant-name:focus, .input-description:focus, .ghost-input:focus { border-bottom: 1px solid #222222 !important; }
     /* 1. DIE ANIMATIONS-KURVE (S25-Standard) [cite: 2026-02-21] */
     :root { --s25-slide-curve: cubic-bezier(0.2, 0.8, 0.2, 1); }
+    /* Flying-Dish: Sternschnuppen-Animation für Magic-Game [cite: 2026-02-23] */
+    .flying-dish {
+      position: fixed;
+      z-index: 9999;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      object-fit: cover;
+      pointer-events: none;
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+      transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .flying-dish::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle, rgba(255,215,0,0.8) 0%, rgba(255,215,0,0) 70%);
+      transform: translate(-50%, -50%) scale(1.5);
+      filter: blur(5px);
+      z-index: -1;
+    }
+    @keyframes slot-land {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.15); box-shadow: 0 0 24px rgba(255, 215, 0, 0.5); }
+      100% { transform: scale(1); }
+    }
+    .kw-slot.slot-landing { animation: slot-land 0.4s ease-out; }
+    /* Shake-Animation bei Validierungsfehler [cite: 2026-02-23] */
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+    .btn-shake {
+      animation: shake 0.2s ease-in-out 0s 2;
+      border: 1px solid #ff4444 !important;
+    }
     /* 2. EMERALD-PULSE: Ready-Zustand des Primär-Buttons [cite: 2026-02-21] */
     @keyframes emerald-pulse {
       0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6); }
@@ -21,12 +61,18 @@
       pointer-events: auto !important;
       box-shadow: none !important;
     }
-    /* 4. Deaktivierter Zustand: Grau, nicht klickbar bis is-ready */
-    #inserat-action-section .footer-btn-primary:not(.is-ready) {
-      background: #e2e8f0 !important;
-      color: #94a3b8 !important;
+    /* 4. Deaktivierter Zustand: opacity 0.3, nicht klickbar bis is-ready [cite: MASTER-LOGIC 2026-02-23] */
+    #inserat-action-section .footer-btn-primary:not(.is-ready),
+    #inserat-action-section .btn-primary-black:not(.is-ready) {
+      opacity: 0.3 !important;
       pointer-events: none !important;
-      transition: all 0.3s var(--s25-slide-curve);
+      transition: opacity 0.25s ease, background 0.25s ease;
+    }
+    #inserat-action-section .btn-primary-black.is-ready {
+      opacity: 1 !important;
+      background: #222222 !important;
+      border-radius: 8px !important;
+      pointer-events: auto !important;
     }
     /* Step 2 Inserieren-Button: Bleibt schwarz/gelb – keine is-ready-Logik */
     .app-footer-main .footer-btn-primary { pointer-events: auto !important; }
@@ -6838,8 +6884,7 @@
     #v-provider-cookbook.view.active > header{ position:relative; z-index:1; flex-shrink:0; background:rgba(245,245,240,0.95) !important; backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); }
     #v-provider-cookbook.view.active > div{ position:relative; z-index:1; min-height:0; flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; }
     #v-provider-cookbook.view.active{ pointer-events: auto; position: relative; z-index: 1; }
-    /* Kochbuch: Nav ausblenden, fixierter Footer [cite: REFACTOR KOCHBUCH 2026-02-23] */
-    body.provider-cookbook-active #providerNavWrap{ display:none !important; }
+    /* Kochbuch: Bottom-Nav sichtbar (wie Dashboard); week/wizard blenden via provider-week-active / wizard-inserat-open aus [cite: GLOBAL NATIVE NAV 2026-02-23] */
     #v-provider-cookbook #cookbookScrollWrap{ background:transparent; pointer-events: auto; padding-bottom: calc(100px + env(safe-area-inset-bottom, 0)); }
     /* Kochbuch Galerie: horizontaler Snap-Scroll, keine Pfeile/Dots [cite: REFACTOR KOCHBUCH 2026-02-23] */
     #v-provider-cookbook #cookbookMagazine{ flex-direction:row; width:100%; align-items:stretch; overflow-x:auto; overflow-y:hidden; scroll-snap-type:x mandatory; scroll-behavior:smooth; -webkit-overflow-scrolling:touch; scrollbar-width:none; gap:0; padding:16px max(20px, env(safe-area-inset-right)) 16px max(20px, env(safe-area-inset-left)); box-sizing:border-box; }
@@ -7303,10 +7348,10 @@
       #v-provider-week .kw-pill-dismiss i{ width:14px; height:14px; }
       #v-provider-week .kw-slot.kw-slot-drop-over,
       #v-provider-week .kw-slot-empty.kw-slot-drop-over{ box-shadow:0 0 0 2px #10b981, 0 0 20px rgba(16,185,129,0.35); border-color:#10b981; background:rgba(16,185,129,0.06); }
-      #v-provider-week .kw-week-activate-bar{ position:fixed; left:0; right:0; bottom:0; z-index:55; flex-shrink:0; padding:16px max(24px, env(safe-area-inset-left)) calc(24px + env(safe-area-inset-bottom, 0)) max(24px, env(safe-area-inset-right)); background:linear-gradient(180deg, transparent 0%, rgba(248,250,252,0.98) 20%); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); }
-      body.kw-activation-dock-visible #v-provider-week .kw-board-scroll{ padding-bottom:calc(140px + env(safe-area-inset-bottom, 0)); }
+      #v-provider-week .kw-week-activate-bar{ position:fixed; left:0; right:0; bottom:0; z-index:55; flex-shrink:0; padding:16px max(24px, env(safe-area-inset-left)) calc(24px + env(safe-area-inset-bottom, 0)) max(24px, env(safe-area-inset-right)); background:linear-gradient(180deg, transparent 0%, rgba(248,250,252,0.98) 20%); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); display:flex !important; flex-direction:column; gap:6px; }
+      body.provider-week-active #v-provider-week .kw-board-scroll{ padding-bottom:calc(140px + env(safe-area-inset-bottom, 0)); }
       #v-provider-week .kw-activation-dock{ display:flex; flex-direction:column; gap:6px; align-items:stretch; }
-      #v-provider-week .kw-week-activate-btn{ width:100%; min-height:56px; border-radius:20px; font-size:16px; font-weight:800; border:none; background:#0a0a0a; color:#fff; cursor:pointer; box-shadow:0 4px 20px rgba(0,0,0,0.25); transition:transform 0.15s, opacity 0.2s; font-family:inherit; }
+      #v-provider-week .kw-week-activate-btn{ width:100%; min-height:56px; padding:16px 24px; border-radius:12px; font-size:16px; font-weight:800; border:none; background:#222222; color:#fff; cursor:pointer; box-shadow:0 4px 20px rgba(0,0,0,0.15); transition:transform 0.15s, opacity 0.2s; font-family:inherit; }
       #v-provider-week .kw-week-activate-btn:active{ transform:scale(0.98); }
       #v-provider-week .kw-week-activate-btn.kw-activation-disabled{ opacity:0.5; cursor:not-allowed; pointer-events:none; }
       #v-provider-week .kw-activate-count{ font-weight:900; }
@@ -7351,8 +7396,10 @@
       /* Wochenplan fullscreen: Topbar ausblenden, main ohne horizontales Scroll – applike */
       body.provider-week-active .topbar{ display:none !important; }
       body.provider-week-active main{ padding-top:0 !important; padding-left:0 !important; padding-right:0 !important; max-width:none !important; overflow-x:hidden !important; }
-      /* Tab-Nav: im Wochenplan komplett ausblenden [cite: RESET WOCHENPLAN 2026-02-23] */
-      body.provider-week-active #providerNavWrap{ display:none !important; }
+      /* Tab-Nav: im Wochenplan komplett ausblenden [cite: FULLSCREEN FOCUS 2026-02-23] */
+      body.provider-week-active #providerNavWrap,
+      body.provider-week-active .bottom-navigation,
+      body.provider-week-active .bottom-nav{ display:none !important; transition: opacity 0.25s ease, visibility 0.25s ease; }
       /* Dashboard: Dein Wochenplan – klare Trennung von KPIs, App-Kasten, S25-Safe */
       #providerWeekSection .prov-card{ padding:var(--card-padding, 20px); border-radius:24px; box-shadow:0 4px 20px rgba(0,0,0,0.06); border:none; background:#fff; }
       #providerWeekSection{ margin-top:28px; padding:24px 16px 24px; padding-left:max(16px, env(safe-area-inset-left)); padding-right:max(16px, env(safe-area-inset-right)); background:#fff; border-radius:28px; box-shadow:0 4px 24px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04); }

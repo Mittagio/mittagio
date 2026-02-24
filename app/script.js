@@ -9398,7 +9398,7 @@
     else { if(typeof openDishFlow === 'function') openDishFlow(); }
   }, true);
   const btnProviderNavBack = document.getElementById('btnProviderNavBack');
-  if(btnProviderNavBack) btnProviderNavBack.onclick = function(){ showProviderHome(); };
+  if(btnProviderNavBack) btnProviderNavBack.onclick = function(){ if(typeof haptic==='function') haptic(6); if(typeof showSection==='function') showSection('dashboard'); else showProviderHome(); };
 
   // Header Icon-Werkzeugleiste: Kochbuch (📖) + Share – identisch auf Dashboard, Abholnummern, Wochenplan
   document.addEventListener('click', function(e){
@@ -10957,26 +10957,21 @@
     var kwActivateCount = document.getElementById('kwActivateCount');
     if (weekActivateBar && btnKwWeekActivate) {
       var count = totalDraftDishes;
-      if (count > 0) {
-        weekActivateBar.style.display = 'flex';
-        document.body.classList.add('kw-activation-dock-visible');
-        if (kwActivateCount) kwActivateCount.textContent = String(count);
-        btnKwWeekActivate.disabled = false;
-        btnKwWeekActivate.classList.remove('kw-activation-disabled');
-        btnKwWeekActivate.onclick = function(){
-          if (typeof haptic === 'function') haptic(10);
-          else if (navigator.vibrate) navigator.vibrate(10);
-          if (typeof bulkActivateWeekDraftsForDates === 'function') bulkActivateWeekDraftsForDates(draftKeysInKW);
-        };
-        if (count > (window.__kwLastActivateCount || 0)) {
-          try { if (navigator.vibrate) navigator.vibrate(30); } catch(e){}
-        }
-        window.__kwLastActivateCount = count;
-      } else {
-        weekActivateBar.style.display = 'none';
-        document.body.classList.remove('kw-activation-dock-visible');
-        window.__kwLastActivateCount = 0;
+      weekActivateBar.style.display = 'flex';
+      document.body.classList.add('kw-activation-dock-visible');
+      if (kwActivateCount) kwActivateCount.textContent = '[' + count + ']';
+      btnKwWeekActivate.disabled = count <= 0;
+      btnKwWeekActivate.classList.toggle('kw-activation-disabled', count <= 0);
+      btnKwWeekActivate.onclick = function(){
+        if (count <= 0) return;
+        if (typeof haptic === 'function') haptic(10);
+        else if (navigator.vibrate) navigator.vibrate(10);
+        if (typeof bulkActivateWeekDraftsForDates === 'function') bulkActivateWeekDraftsForDates(draftKeysInKW);
+      };
+      if (count > (window.__kwLastActivateCount || 0)) {
+        try { if (navigator.vibrate) navigator.vibrate(30); } catch(e){}
       }
+      window.__kwLastActivateCount = count;
     }
     var emptyCta = document.getElementById('kwEmptyWeekTemplateCta');
     if (emptyCta) {
@@ -11019,6 +11014,69 @@
     var magicBd = document.getElementById('weekMagicSheetBd');
     if (magicList && magicSheet) {
       magicList.innerHTML = '';
+      /* Magic Game: Glücks-Lotto + Saison-Karte [cite: 2026-02-23] */
+      function runMagicFill(numSlots, useSeason){
+        closeWeekMagicSheet();
+        var grid = document.getElementById('kwGrid');
+        if (!grid) return;
+        var emptySlots = grid.querySelectorAll('.kw-slot-empty');
+        if (emptySlots.length === 0){ if (typeof showToast === 'function') showToast('Keine freien Slots'); return; }
+        var cb = (cookbook || []).filter(function(c){ return c.providerId === providerId(); });
+        if (cb.length === 0){ if (typeof showToast === 'function') showToast('Zuerst Gerichte im Kochbuch anlegen'); return; }
+        var toFill = Math.min(numSlots, emptySlots.length, cb.length);
+        var shuffled = cb.slice().sort(function(){ return Math.random() - 0.5; });
+        var idx = 0;
+        function flyNext(){
+          if (idx >= toFill){ if (typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard(); if (typeof showToast === 'function') showToast(toFill + ' Gerichte eingetragen ✨'); return; }
+          var slot = emptySlots[idx];
+          var dayKey = slot.getAttribute('data-day');
+          var dish = shuffled[idx % shuffled.length];
+          if (!dayKey || !dish || typeof addCookbookEntryToWeek !== 'function'){ idx++; setTimeout(flyNext, 100); return; }
+          var imgUrl = dish.photoData || dish.imageUrl || '';
+          var fly = document.createElement('div');
+          fly.className = 'flying-dish';
+          fly.style.width = '60px'; fly.style.height = '60px'; fly.style.borderRadius = '50%'; fly.style.overflow = 'hidden';
+          fly.style.left = (slot.getBoundingClientRect().left + slot.offsetWidth/2 - 30) + 'px';
+          fly.style.top = (slot.getBoundingClientRect().top + slot.offsetHeight/2 - 30) + 'px';
+          if (imgUrl){ var img = document.createElement('img'); img.src = imgUrl; img.style.cssText = 'width:100%;height:100%;object-fit:cover;'; fly.appendChild(img); }
+          else { fly.style.background = 'linear-gradient(135deg,#e2e8f0,#cbd5e1)'; }
+          document.body.appendChild(fly);
+          fly.style.transition = 'none';
+          fly.style.left = '50%'; fly.style.top = '30%'; fly.style.transform = 'translate(-50%,-50%) scale(0.5)';
+          fly.offsetHeight;
+          fly.style.transition = 'all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+          var targetRect = slot.getBoundingClientRect();
+          fly.style.left = (targetRect.left + targetRect.width/2 - 30) + 'px';
+          fly.style.top = (targetRect.top + targetRect.height/2 - 30) + 'px';
+          fly.style.transform = 'translate(0,0) scale(1)';
+          setTimeout(function(){
+            try { if (navigator.vibrate) navigator.vibrate([30, 50]); } catch(e){}
+            addCookbookEntryToWeek(dayKey, String(dish.id), { silent: true });
+            slot.classList.add('slot-landing');
+            setTimeout(function(){ slot.classList.remove('slot-landing'); }, 400);
+            fly.remove();
+            idx++;
+            setTimeout(flyNext, 150);
+          }, 800);
+        }
+        flyNext();
+      }
+      var magicCardWrap = document.createElement('div');
+      magicCardWrap.className = 'week-magic-cards-wrap';
+      magicCardWrap.style.cssText = 'display:flex; flex-direction:column; gap:16px; margin-bottom:20px;';
+      ['Glücks-Lotto 🎰', 'Saison-Karte 🍂'].forEach(function(label, cardIdx){
+        var card = document.createElement('div');
+        card.className = 'week-magic-card';
+        card.style.cssText = 'background:rgba(255,255,255,0.8); backdrop-filter:blur(12px); border-radius:16px; padding:16px; border:1px solid rgba(0,0,0,0.06);';
+        card.innerHTML = '<div style="font-size:16px; font-weight:800; color:#0f172a; margin-bottom:12px;">' + label + '</div><div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;"><label style="font-size:13px; font-weight:600; color:#64748b;">Anzahl:</label><input type="range" min="1" max="5" value="2" class="week-magic-slider" style="flex:1; accent-color:#10b981;"><span class="week-magic-slider-val" style="font-size:14px; font-weight:800; color:#0f172a; min-width:24px;">2</span></div><button type="button" class="week-magic-start-btn" style="width:100%; min-height:48px; border-radius:12px; border:none; background:#222222; color:#fff; font-size:15px; font-weight:800; cursor:pointer;">Magie starten</button>';
+        var slider = card.querySelector('.week-magic-slider');
+        var valSpan = card.querySelector('.week-magic-slider-val');
+        if (slider && valSpan){ slider.oninput = function(){ valSpan.textContent = slider.value; }; }
+        var btn = card.querySelector('.week-magic-start-btn');
+        if (btn){ btn.onclick = function(){ if (typeof haptic === 'function') haptic(6); var n = parseInt(slider.value, 10) || 2; runMagicFill(n, cardIdx === 1); }; }
+        magicCardWrap.appendChild(card);
+      });
+      magicList.appendChild(magicCardWrap);
       if (season) {
         var btnSeason = document.createElement('button');
         btnSeason.type = 'button';
@@ -11604,10 +11662,11 @@
     if(opts && (opts.timeStart != null || opts.timeEnd != null)){ entry.timeStart = opts.timeStart; entry.timeEnd = opts.timeEnd; }
     week[dayKey].push(entry);
     save(LS.week, week);
+    if(opts && opts.silent) return;
     var boardWrap = document.getElementById('kwBoardWrap');
     if(boardWrap && boardWrap.style.display !== 'none'){ if(typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard(); } else { renderWeekPlan(); }
     renderProviderWeekPreview();
-    toast((c.dish || 'Gericht') + ' hinzugefügt');
+    if(typeof toast === 'function') toast((c.dish || 'Gericht') + ' hinzugefügt');
   }
   function assignToDate(mealId, date){
     addCookbookEntryToWeek(date, mealId);
@@ -13853,6 +13912,11 @@
   if(btnWeekBack){
     btnWeekBack.onclick=()=> showProviderHome();
   }
+  var weekHeaderBackBtn = document.getElementById('weekHeaderBackBtn');
+  if(weekHeaderBackBtn && !weekHeaderBackBtn._bound){
+    weekHeaderBackBtn._bound = true;
+    weekHeaderBackBtn.onclick = function(){ if(typeof haptic==='function') haptic(6); if(typeof showSection==='function') showSection('dashboard'); else if(typeof showProviderHome==='function') showProviderHome(); };
+  }
   const btnWeekRefresh = document.getElementById('btnWeekRefresh');
   if(btnWeekRefresh){
     btnWeekRefresh.onclick=()=>{ renderWeekPlan(); if(typeof showToast === 'function') showToast('Aktualisiert'); };
@@ -15891,7 +15955,7 @@
           w.data.pricingChoice=type==='classic'?'499':'pro';
           w.data.hasPickupCode=(type==='pro');
           saveDraft();
-          var fb=box.querySelector('.app-footer-main .btn-primary-black');
+          var fb=box.querySelector('[data-inserat-step="2"] .btn-primary-black');
           if(fb){
             fb.textContent=(type==='classic')?'Jetzt für 4,99 € inserieren':'Jetzt für 0,00 € inserieren';
             fb.classList.toggle('inserat-footer-btn--499',type==='classic');
@@ -16536,22 +16600,21 @@
       inputPrice.oninput=()=>{ var v=inputPrice.value.replace(',','.'); w.data.price=parseFloat(v)||0; saveDraft(); updateProfit(v); hapticLight(); if(typeof checkMastercardValidation==='function') checkMastercardValidation(); if(updateStep2ContextZoneRef) updateStep2ContextZoneRef(); };
       inputPrice.onfocus=function(){ hapticLight(); };
       function checkMastercardValidation(){
-        var name=(w.data.dish||'').trim();
-        var price=Number(w.data.price)||0;
-        var photoData=w.data.photoData||'';
-        var isImageSet=!!(photoData&&!String(photoData).includes('svg+xml'));
-        var valid=name.length>=2&&isImageSet&&price>0;
-        var primaryBtn=box.querySelector('#inserat-action-section .btn-primary-black');
-        if(!primaryBtn) return;
-        if(valid){ primaryBtn.classList.add('is-ready'); primaryBtn.disabled=false; } else { primaryBtn.classList.remove('is-ready'); primaryBtn.disabled=true; }
-        stepName.classList.remove('inserat-validation-error'); priceSection.classList.remove('inserat-validation-error');
+        if (typeof updateWizardFooter === 'function') updateWizardFooter();
       }
-      function triggerValidationError(){
-        try{ if(navigator.vibrate) navigator.vibrate([50,30,50]); }catch(e){}
+      function triggerValidationError(btn){
+        try{ if(navigator.vibrate) navigator.vibrate([50,50,50]); }catch(e){}
         var name=(w.data.dish||'').trim();
         var price=Number(w.data.price)||0;
         if(name.length<2) stepName.classList.add('inserat-validation-error');
         if(price<=0) priceSection.classList.add('inserat-validation-error');
+        var targetBtn=btn||box.querySelector('#inserat-action-section .btn-primary-black')||box.querySelector('[data-inserat-step="2"] .btn-primary-black');
+        if(targetBtn){
+          targetBtn.classList.remove('btn-shake');
+          targetBtn.offsetHeight;
+          targetBtn.classList.add('btn-shake');
+          setTimeout(function(){ if(targetBtn) targetBtn.classList.remove('btn-shake'); }, 400);
+        }
         setTimeout(function(){ stepName.classList.remove('inserat-validation-error'); priceSection.classList.remove('inserat-validation-error'); }, 2000);
       }
       requestAnimationFrame(function(){ requestAnimationFrame(function(){ if(typeof adjustTitleFontSize === 'function') adjustTitleFontSize(); if(typeof checkMastercardValidation === 'function') checkMastercardValidation(); }); });
@@ -16608,11 +16671,32 @@
         if(ch) ch.classList.toggle('is-scrolled', scrollArea.scrollTop > 60);
       });
 
-      // 9. ACTION BUTTONS ÔÇô MODE_PLAN (week/cookbook): Blue ÔÇ×In den Wochenplan einplanenÔÇ£ + gr├╝ner ÔÇ×Nur im KochbuchÔÇ£. MODE_AD (dashboard): Preis├╝bersicht + mit Abholnummer + Nur Inserat [cite: 2026-02-18]
+      // 9. ACTION BUTTONS – updateWizardFooter zentral [cite: MASTER-CARD FIX 2026-02-23]
       var isInserierenRoute = (entryPoint === 'dashboard' || entryPoint === 'week' || entryPoint === 'cookbook');
-      function isPrimaryValid(){ var d=!!(w.data.dish&&String(w.data.dish).trim()); var p=Number(w.data.price)>0; return d&&p; }
-      var hasDish = !!(w.data.dish && String(w.data.dish).trim());
-      var hasPrice = Number(w.data.price) > 0;
+      function isPrimaryValid(){
+        var d = !!(w.data.dish && String(w.data.dish).trim().length >= 2);
+        var p = Number(w.data.price) > 0;
+        var photo = !!(w.data.photoData && !String(w.data.photoData).includes('svg+xml'));
+        return d && p && photo;
+      }
+      function updateWizardFooter(){
+        var valid = isPrimaryValid();
+        var primaryBtn = box.querySelector('#inserat-action-section .btn-primary-black');
+        if (!primaryBtn) return;
+        if (valid) {
+          primaryBtn.classList.add('is-ready');
+          primaryBtn.disabled = false;
+          primaryBtn.style.opacity = '1';
+          primaryBtn.style.pointerEvents = 'auto';
+        } else {
+          primaryBtn.classList.remove('is-ready');
+          primaryBtn.disabled = true;
+          primaryBtn.style.opacity = '0.3';
+          primaryBtn.style.pointerEvents = 'none';
+        }
+        if (stepName) stepName.classList.remove('inserat-validation-error');
+        if (priceSection) priceSection.classList.remove('inserat-validation-error');
+      }
       var primaryValid = isPrimaryValid();
 
       const actionSection=document.createElement('section');
@@ -16631,9 +16715,11 @@
         btnSpeichern.style.cssText='flex:1; min-height:48px; height:48px; padding:0 24px; border:none; border-radius:8px; background:#222222 !important; color:white !important; font-size:16px; font-weight:800; cursor:pointer;';
         btnSpeichern.textContent='Speichern';
         btnSpeichern.disabled=!primaryValid;
+        btnSpeichern.style.opacity=primaryValid?'1':'0.3';
+        btnSpeichern.style.pointerEvents=primaryValid?'auto':'none';
         if(primaryValid) btnSpeichern.classList.add('is-ready');
         btnSpeichern.onclick=function(){
-          if(!isPrimaryValid()){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); if(typeof triggerValidationError==='function') triggerValidationError(); return; }
+          if(!isPrimaryValid()){ if(typeof showToast==='function') showToast('Bitte Name, Preis und Foto eingeben.'); if(typeof triggerValidationError==='function') triggerValidationError(this); return; }
           hapticLight();
           var o=previewOfferFromWizard();
           var offerId=(w.ctx&&w.ctx.editOfferId)||(o&&o.id)||null;
@@ -16652,11 +16738,14 @@
         planNavRow.style.cssText='display:flex; width:100%; align-items:center; justify-content:center;';
         var btnWeekPlan=document.createElement('button');
         btnWeekPlan.type='button';
-        btnWeekPlan.className='btn-primary-black';
+        btnWeekPlan.className='btn-primary-black' + (primaryValid ? ' is-ready' : '');
         btnWeekPlan.style.cssText='flex:1; height:48px; min-width:180px; padding:0 24px; border:none; border-radius:8px; background:#222222; color:white; font-size:16px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center;';
         btnWeekPlan.textContent=(entryPoint === 'week' ? 'In den Plan übernehmen' : 'Im Kochbuch speichern');
+        btnWeekPlan.disabled=!primaryValid;
+        btnWeekPlan.style.opacity=primaryValid?'1':'0.3';
+        btnWeekPlan.style.pointerEvents=primaryValid?'auto':'none';
         btnWeekPlan.onclick=function(){
-          if(!isPrimaryValid()){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); if(typeof triggerValidationError==='function') triggerValidationError(); return; }
+          if(!isPrimaryValid()){ if(typeof showToast==='function') showToast('Bitte Name, Preis und Foto eingeben.'); if(typeof triggerValidationError==='function') triggerValidationError(this); return; }
           if(typeof haptic==='function') haptic(50);
           var id=saveToCookbookFromWizard();
           if(entryPoint === 'cookbook' && id){
@@ -16687,8 +16776,10 @@
         btnWeiter.style.cssText='flex:1; min-height:48px; height:48px; padding:0 24px; border:none; border-radius:8px; background:#222222 !important; color:white !important; font-size:16px; font-weight:800; cursor:pointer;';
         btnWeiter.textContent=footerBtnText;
         btnWeiter.disabled=true;
+        btnWeiter.style.opacity='0.3';
+        btnWeiter.style.pointerEvents='none';
         btnWeiter.onclick=function(){
-          if(!isPrimaryValid()){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); if(typeof triggerValidationError==='function') triggerValidationError(); return; }
+          if(!isPrimaryValid()){ if(typeof showToast==='function') showToast('Bitte Name, Preis und Foto eingeben.'); if(typeof triggerValidationError==='function') triggerValidationError(this); return; }
           hapticLight();
           if(footerBtnText==='Speichern'){
             var o=previewOfferFromWizard();
@@ -16724,8 +16815,12 @@
         btnEinplanen.className='btn-primary-black';
         btnEinplanen.style.cssText='flex:1; height:48px; min-width:180px; padding:0 24px; border:none; border-radius:8px; background:#222222; color:white; font-size:16px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center;';
         btnEinplanen.textContent=(entryPoint === 'week' ? 'In den Plan übernehmen' : 'Im Kochbuch speichern');
+        btnEinplanen.disabled=!primaryValid;
+        btnEinplanen.style.opacity=primaryValid?'1':'0.3';
+        btnEinplanen.style.pointerEvents=primaryValid?'auto':'none';
+        btnEinplanen.className='btn-primary-black' + (primaryValid ? ' is-ready' : '');
         btnEinplanen.onclick=function(){
-          if(!isPrimaryValid()){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); if(typeof triggerValidationError==='function') triggerValidationError(); return; }
+          if(!isPrimaryValid()){ if(typeof showToast==='function') showToast('Bitte Name, Preis und Foto eingeben.'); if(typeof triggerValidationError==='function') triggerValidationError(this); return; }
           if(typeof haptic==='function') haptic(50);
           var id=saveToCookbookFromWizard();
           if(entryPoint === 'cookbook' && id){
@@ -16759,22 +16854,23 @@
       if(slider){
         box.appendChild(slider);
         var airbnbFooter=document.createElement('div');
-        airbnbFooter.className='app-footer-main';
+        airbnbFooter.className='app-footer-main inserat-step1-nav';
         airbnbFooter.setAttribute('data-inserat-step','2');
-        airbnbFooter.style.display=inseratStep===2?'flex':'none';
+        airbnbFooter.style.cssText='display:'+(inseratStep===2?'flex':'none')+'; flex-direction:row; align-items:stretch; justify-content:space-between; gap:12px; width:100%;';
         var linkZurueck=document.createElement('button');
         linkZurueck.type='button';
         linkZurueck.className='inserat-footer-link';
         linkZurueck.style.cssText='background:none; border:none; padding:12px 0; font-size:15px; font-weight:bold; color:#222222; cursor:pointer; text-decoration:underline; flex-shrink:0;';
-        linkZurueck.textContent='Zur├╝ck';
+        linkZurueck.textContent='Zurück';
         linkZurueck.className='btn-secondary-link';
         linkZurueck.onclick=function(){ hapticLight(); w.inseratStep=1; saveDraft(); if(slider) slider.setAttribute('data-inserat-step','1'); airbnbFooter.style.display='none'; var sf=box.querySelector('[data-inserat-step="3"]'); if(sf) sf.style.display='none'; var wizardEl=document.getElementById('wizard'); if(wizardEl){ wizardEl.classList.remove('inserat-step2-active'); wizardEl.classList.remove('inserat-step3-active'); } };
         var footerBtn=document.createElement('button');
         footerBtn.type='button';
         footerBtn.className='btn-primary-black' + (w.data.pricingChoice==='499' ? ' inserat-footer-btn--499' : ' free-mode is-free-mode');
+        footerBtn.style.cssText='flex:1; min-height:48px; padding:0 24px; border:none; border-radius:8px; background:#222222 !important; color:#ffffff !important; font-size:16px; font-weight:800; cursor:pointer;';
         footerBtn.textContent=(w.data.pricingChoice==='499' ? 'Jetzt für 4,99 € inserieren' : 'Jetzt für 0,00 € inserieren');
         footerBtn.onclick=function(){
-          if(!(!!(w.data.dish&&String(w.data.dish).trim())&&Number(w.data.price)>0)){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); if(typeof triggerValidationError==='function') triggerValidationError(); return; }
+          if(!isPrimaryValid()){ if(typeof showToast==='function') showToast('Bitte Name, Preis und Foto eingeben.'); if(typeof triggerValidationError==='function') triggerValidationError(this); return; }
           hapticLight();
           var choice=w.data.pricingChoice||'pro';
           if(choice==='499'){

@@ -1226,6 +1226,7 @@
     <section class="view onboarding-view" id="v-provider-week">
       <header class="week-header-compact week-header-minimal prov-page-header dynamic-header system-header" id="weekHeaderCompact">
         <div class="prov-page-header-row week-header-row">
+          <button type="button" id="weekHeaderBackBtn" class="week-header-back-btn" aria-label="Zurück zum Dashboard" style="flex-shrink:0; width:44px; height:44px; min-width:44px; min-height:44px; display:flex; align-items:center; justify-content:center; background:none; border:none; padding:0; cursor:pointer; margin-right:8px; border-radius:12px; color:#0f172a;"><i data-lucide="chevron-left" style="width:24px;height:24px;"></i></button>
           <div class="prov-page-header-left prov-header-reset-trigger" data-reset-view="week" style="flex:1; min-width:0;" role="button" tabindex="0" aria-label="Zum Seitenanfang">
             <button type="button" class="week-header-kw-trigger" id="weekHeaderKWTrigger" aria-label="Kalenderwoche wählen" style="display:inline-flex; align-items:center; gap:6px; background:none; border:none; padding:4px 0; cursor:pointer; font-family:inherit;">
               <h1 class="prov-page-header-title system-header-title week-header-title-left" id="weekHeaderTitle" style="margin:0;">Wochenplan</h1>
@@ -1262,7 +1263,7 @@
         <!-- Activation Dock: fixiert unten, Mastercard-Style [cite: 2026-02-21] -->
         <div id="kwWeekActivateBar" class="kw-week-activate-bar kw-activation-dock" style="display:none;">
           <button type="button" id="btnKwWeekActivate" class="kw-week-activate-btn kw-activation-dock-btn">
-            <span id="kwActivateCount" class="kw-activate-count">0</span> Gerichte jetzt aktivieren
+            <span id="kwActivateCount" class="kw-activate-count">[0]</span> Gerichte jetzt aktivieren
           </button>
           <p class="kw-activation-disclaimer">Abrechnung (4,99 €) erfolgt erst zum jeweiligen Startzeitpunkt.</p>
         </div>
