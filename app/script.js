@@ -5564,6 +5564,25 @@
       pushViewState(null, location.pathname);
       return;
     }
+    // Inserat Step 2 → Step 1 (Hardware Back / Swipe) [cite: MASTER-CARD FIX 2026-02-23]
+    var wizardEl = document.getElementById('wizard');
+    if(wizardEl && wizardEl.classList.contains('active') && wizardEl.getAttribute('data-flow')==='listing'){
+      var box = document.querySelector('#wizard .liquid-master-panel');
+      var slider = document.querySelector('#wizard .inserat-steps-slider');
+      if(box && slider && slider.getAttribute('data-inserat-step')==='2'){
+        try{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); }catch(err){}
+        if(typeof w !== 'undefined'){ w.inseratStep=1; try{ localStorage.setItem('wizard_draft', JSON.stringify(w)); }catch(err){} }
+        slider.setAttribute('data-inserat-step','1');
+        var airbnbFooter = box.querySelector('[data-inserat-step="2"]');
+        if(airbnbFooter) airbnbFooter.style.display='none';
+        var sf = box.querySelector('[data-inserat-step="3"]');
+        if(sf) sf.style.display='none';
+        wizardEl.classList.remove('inserat-step2-active');
+        wizardEl.classList.remove('inserat-step3-active');
+        e.preventDefault();
+        return;
+      }
+    }
     // Wizard schließen
     if(document.getElementById('wizard') && document.getElementById('wizard').classList.contains('active')){
       closeWizard();
@@ -14421,21 +14440,21 @@
   let w = { kind:null, step:0, data:{}, ctx:{} };
   let publishFeePendingOffer = null;
 
-  /** Pro-Metzger: Gesetzliche Kürzel (EU VO 1169/2011 Anhang II) [cite: S25 PREMIUM 2026-02-23] */
+  /** Pro-Metzger: 14 Hauptallergene alphabetisch (rechtlich korrekt) [cite: MASTER-CARD FIX 2026-02-23] */
   const ALLERGENS_14 = [
+    {name:'Eier', short:'EI', legal:'C'},
+    {name:'Erdnüsse', short:'EN', legal:'E'},
+    {name:'Fisch', short:'FI', legal:'D'},
     {name:'Glutenhaltiges Getreide', short:'GL', legal:'A'},
     {name:'Krebstiere', short:'KR', legal:'B'},
-    {name:'Eier', short:'EI', legal:'C'},
-    {name:'Fisch', short:'FI', legal:'D'},
-    {name:'Erdnüsse', short:'EN', legal:'E'},
-    {name:'Soja', short:'SO', legal:'F'},
-    {name:'Milch/Laktose', short:'MI', legal:'G'},
-    {name:'Schalenfrüchte', short:'SF', legal:'H'},
-    {name:'Sellerie', short:'SE', legal:'L'},
-    {name:'Senf', short:'SN', legal:'M'},
-    {name:'Sesam', short:'SS', legal:'N'},
-    {name:'Sulfite', short:'SU', legal:'O'},
     {name:'Lupinen', short:'LU', legal:'P'},
+    {name:'Milch / Laktose', short:'MI', legal:'G'},
+    {name:'Schalenfrüchte / Nüsse', short:'SF', legal:'H'},
+    {name:'Schwefeldioxid / Sulfite', short:'SU', legal:'L'},
+    {name:'Sellerie', short:'SE', legal:'I'},
+    {name:'Senf', short:'SN', legal:'M'},
+    {name:'Sesamsamen', short:'SS', legal:'N'},
+    {name:'Soja', short:'SO', legal:'F'},
     {name:'Weichtiere', short:'WE', legal:'R'}
   ];
   /** Emoji pro Allergen (für kleine Pills). */
@@ -15920,10 +15939,19 @@
         b.dataset.category=c;
         b.onclick=function(){
           hapticLight();
-          w.data.category=this.dataset.category;
+          var cat=this.dataset.category;
+          w.data.category=cat;
           saveDraft();
-          categoryPills.querySelectorAll('.category-pill').forEach(function(p){ p.classList.remove('active'); });
+          categoryPills.querySelectorAll('.category-pill').forEach(function(p){
+            p.classList.remove('active');
+            p.style.background='#ffffff';
+            p.style.color='#1a1a1a';
+            p.style.borderColor='#c8e6c9';
+          });
           this.classList.add('active');
+          this.style.background='#e8f5e9';
+          this.style.color='#2e7d32';
+          this.style.borderColor='#a5d6a7';
         };
         categoryPills.appendChild(b);
       });
@@ -16243,20 +16271,14 @@
       actionSection.className='inserat-action-section fixed-footer' + (!isPlanMode && isInserierenRoute ? ' inserat-action-pricing inserat-action-layer' : '') + (isFastTrack ? ' inserat-action-layer' : '') + (isPlanMode ? ' inserat-action-plan' : '');
 
       if(isFastTrack){
-        /* Fast-Track: UNIFIED DESIGN ÔÇô exakt derselbe Airbnb-Footer wie Neu-Erstellen [cite: 2026-02-23] */
+        /* Fast-Track: Airbnb-Footer ohne Abbrechen [cite: MASTER-CARD FIX 2026-02-23] */
         var step1NavRow=document.createElement('div');
         step1NavRow.className='inserat-step1-nav system-footer-merged app-footer-main';
-        step1NavRow.style.cssText='display:flex; gap:12px; width:100%; align-items:stretch;';
-        var btnAbbrechen=document.createElement('button');
-        btnAbbrechen.type='button';
-        btnAbbrechen.className='btn-secondary-link';
-        btnAbbrechen.style.cssText='flex:0; min-height:48px; padding:0 16px; border:none; background:transparent !important; font-size:16px; font-weight:bold; color:#222222 !important; cursor:pointer; text-decoration:underline;';
-        btnAbbrechen.textContent='Abbrechen';
-        btnAbbrechen.onclick=function(){ hapticLight(); if(typeof handleWizardExit==='function') handleWizardExit(); };
+        step1NavRow.style.cssText='display:flex; width:100%; align-items:stretch; justify-content:center;';
         var btnSpeichern=document.createElement('button');
         btnSpeichern.type='button';
         btnSpeichern.id='btnNext';
-        btnSpeichern.className='btn-primary-black';
+        btnSpeichern.className='btn-primary-black footer-main-button';
         btnSpeichern.style.cssText='flex:1; min-height:48px; height:48px; padding:0 24px; border:none; border-radius:8px; background:#222222 !important; color:white !important; font-size:16px; font-weight:800; cursor:pointer;';
         btnSpeichern.textContent='Speichern';
         btnSpeichern.disabled=!primaryValid;
@@ -16272,20 +16294,13 @@
           if(entryPoint==='WEEKLY_PLAN_EDIT'&&typeof renderWeekPlanBoard==='function') renderWeekPlanBoard();
           else if(typeof showProviderHome==='function') showProviderHome();
         };
-        step1NavRow.appendChild(btnAbbrechen);
         step1NavRow.appendChild(btnSpeichern);
         actionSection.appendChild(step1NavRow);
       } else if(isPlanMode){
-        /* ImmoScout-Footer Plan-Mode: Links Text-Link, Rechts schwarzer Prim├ñr-Button */
+        /* Plan-Mode: Nur Primär-Button, ohne Abbrechen [cite: MASTER-CARD FIX 2026-02-23] */
         var planNavRow=document.createElement('div');
         planNavRow.className='app-footer-main';
-        planNavRow.style.cssText='display:flex; gap:16px; width:100%; align-items:center; justify-content:space-between;';
-        var linkCookOnly=document.createElement('button');
-        linkCookOnly.type='button';
-        linkCookOnly.className='btn-secondary-link';
-        linkCookOnly.style.cssText='background:none; border:none; padding:12px 0; font-size:15px; font-weight:bold; color:#222222; cursor:pointer; text-decoration:underline;';
-        linkCookOnly.textContent='Abbrechen';
-        linkCookOnly.onclick=function(){ hapticLight(); closeWizard(); if(typeof navigateAfterWizardExit==='function') navigateAfterWizardExit(entryPoint); };
+        planNavRow.style.cssText='display:flex; width:100%; align-items:center; justify-content:center;';
         var btnWeekPlan=document.createElement('button');
         btnWeekPlan.type='button';
         btnWeekPlan.className='btn-primary-black';
@@ -16308,34 +16323,38 @@
             showSaveSuccessSheet({ title:'Im Wochenplan gespeichert', sub:'Dein Gericht ist im Wochenplan eingetragen.', dishName: w.data.dish||'', price: w.data.price, imageUrl: w.data.photoData||'', savedEntryId: id, savedDay: w.data.day, onFertig: function(){ if(typeof showToast==='function') showToast('Im Wochenplan gespeichert 📅'); if(typeof showProviderWeek==='function') showProviderWeek(); }, onLive: null });
           } else if(id){ if(typeof showToast==='function') showToast('Bitte zuerst ein Datum im Wochenplan wählen'); }
         };
-        planNavRow.appendChild(linkCookOnly);
         planNavRow.appendChild(btnWeekPlan);
         actionSection.appendChild(planNavRow);
       } else if(entryPoint === 'dashboard'){
-        /* ImmoScout-Footer: Beide Buttons gleich gro├ƒ, Airbnb Black [cite: 2026-02-21] */
+        /* Mode-basierter Footer: Weiter (MODE_NEW) oder Speichern (MODE_EDIT), ohne Abbrechen [cite: MASTER-CARD FIX 2026-02-23] */
         var step1NavRow=document.createElement('div');
         step1NavRow.className='app-footer-main';
-        step1NavRow.style.cssText='display:flex; gap:12px; width:100%; align-items:stretch;';
-        var btnAbbrechen=document.createElement('button');
-        btnAbbrechen.type='button';
-        btnAbbrechen.className='btn-secondary-link';
-        btnAbbrechen.style.cssText='flex:0; min-height:48px; padding:0 16px; border:none; background:transparent !important; font-size:16px; font-weight:bold; color:#222222 !important; cursor:pointer; text-decoration:underline;';
-        btnAbbrechen.textContent='Abbrechen';
-        btnAbbrechen.onclick=function(){ hapticLight(); if(typeof handleWizardExit==='function') handleWizardExit(); };
+        step1NavRow.style.cssText='display:flex; width:100%; align-items:stretch; justify-content:center;';
+        var footerBtnText=(typeof currentWizardMode!=='undefined'&&currentWizardMode==='MODE_EDIT')?'Speichern':'Weiter';
         var btnWeiter=document.createElement('button');
         btnWeiter.type='button';
         btnWeiter.id='btnNext';
-        btnWeiter.className='btn-primary-black';
+        btnWeiter.className='btn-primary-black footer-main-button';
         btnWeiter.style.cssText='flex:1; min-height:48px; height:48px; padding:0 24px; border:none; border-radius:8px; background:#222222 !important; color:white !important; font-size:16px; font-weight:800; cursor:pointer;';
-        btnWeiter.textContent='Weiter';
+        btnWeiter.textContent=footerBtnText;
         btnWeiter.disabled=true;
         btnWeiter.onclick=function(){
           if(!isPrimaryValid()){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); if(typeof triggerValidationError==='function') triggerValidationError(); return; }
           hapticLight();
+          if(footerBtnText==='Speichern'){
+            var o=previewOfferFromWizard();
+            var offerId=(w.ctx&&w.ctx.editOfferId)||(o&&o.id)||null;
+            if(offerId) try{ sessionStorage.setItem('mittagio_last_saved_offer_id', String(offerId)); }catch(e){}
+            var published=typeof publishOffer==='function'?publishOffer(o):null;
+            closeWizard(true);
+            if(typeof showProviderHome==='function') showProviderHome();
+            return;
+          }
           if(typeof handlePriceFastInsert==='function') handlePriceFastInsert(box);
           if(updateStep2ContextZoneRef) updateStep2ContextZoneRef();
           w.inseratStep=2; saveDraft();
           if(slider){
+            try{ history.pushState({inseratStep:2},'','#'); }catch(e){}
             var sweepEl=box.querySelector('.step2-slot-machine-sweep');
             if(sweepEl){ sweepEl.classList.remove('animate'); sweepEl.offsetHeight; sweepEl.classList.add('animate'); sweepEl.addEventListener('animationend',function onSweepEnd(){ sweepEl.removeEventListener('animationend',onSweepEnd); sweepEl.classList.remove('animate'); },{once:true}); }
             slider.setAttribute('data-inserat-step','2');
@@ -16344,20 +16363,13 @@
             var f=box.querySelector('[data-inserat-step="2"]'); if(f) f.style.display='flex';
           } else { rebuildWizard(); }
         };
-        step1NavRow.appendChild(btnAbbrechen);
         step1NavRow.appendChild(btnWeiter);
         actionSection.appendChild(step1NavRow);
       } else {
-        /* ImmoScout-Footer Plan-Mode: Links Text-Link, Rechts schwarzer Prim├ñr-Button */
+        /* Plan-Mode: Nur Primär-Button, ohne Abbrechen [cite: MASTER-CARD FIX 2026-02-23] */
         var planRow=document.createElement('div');
         planRow.className='app-footer-main';
-        planRow.style.cssText='display:flex; gap:16px; width:100%; align-items:center; justify-content:space-between;';
-        var linkKochbuch=document.createElement('button');
-        linkKochbuch.type='button';
-        linkKochbuch.className='btn-secondary-link';
-        linkKochbuch.style.cssText='background:none; border:none; padding:12px 0; font-size:15px; font-weight:bold; color:#222222; cursor:pointer; text-decoration:underline;';
-        linkKochbuch.textContent='Abbrechen';
-        linkKochbuch.onclick=function(){ hapticLight(); closeWizard(); if(typeof navigateAfterWizardExit==='function') navigateAfterWizardExit(entryPoint); };
+        planRow.style.cssText='display:flex; width:100%; align-items:center; justify-content:center;';
         var btnEinplanen=document.createElement('button');
         btnEinplanen.type='button';
         btnEinplanen.className='btn-primary-black';
@@ -16390,7 +16402,6 @@
             });
           } else if(id){ if(typeof showToast==='function') showToast('Bitte zuerst ein Datum im Wochenplan wählen'); }
         };
-        planRow.appendChild(linkKochbuch);
         planRow.appendChild(btnEinplanen);
         actionSection.appendChild(planRow);
       }
@@ -16529,6 +16540,7 @@
   }
   if(typeof window !== 'undefined') window.openListingWizard = openListingWizard;
 
+  var currentWizardMode = 'MODE_NEW';
   function openMastercard(newDish, entryPoint){
     document.body.classList.add('vendor-area');
     w = w || {};
@@ -16547,6 +16559,7 @@
     }
     w.ctx = w.ctx || {};
     if(entryPoint){ w.ctx.entryPoint = entryPoint; w.ctx.dishId = d.id || w.ctx.dishId; }
+    currentWizardMode = (w.ctx && w.ctx.editOfferId) ? 'MODE_EDIT' : 'MODE_NEW';
     var wizardEl = document.getElementById('wizard');
     if(wizardEl) wizardEl.setAttribute('data-flow', 'listing');
     clearWizardActionsBar();
