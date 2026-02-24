@@ -5767,6 +5767,12 @@
   }
   if(typeof window !== 'undefined') window.openProviderOffer = openProviderOffer;
 
+  /** Quick-Edit: Klick auf belegte Kachel öffnet InseratCard für Preis/Bild [cite: Gemini 5-Säulen] */
+  function openQuickEdit(dishId){
+    if(typeof startListingFlow === 'function') startListingFlow({ editOfferId: String(dishId), entryPoint: 'ACTIVE_LISTING' });
+  }
+  if(typeof window !== 'undefined') window.openQuickEdit = openQuickEdit;
+
   /* Dashboard-Karten: Klick in Capture-Phase abfangen, damit die Detailseite zuverlässig öffnet (auch bei Touch/Overlay) */
   (function(){
     if(document._providerCardCapture) return;
@@ -9712,8 +9718,8 @@
       if(dashAbholungen) dashAbholungen.textContent = todayPickups;
       if(dashAbholungenHint){ dashAbholungenHint.style.display = todayPickups === 0 ? 'block' : 'none'; }
       if(dashKochbuch) dashKochbuch.textContent = cookbookCount;
-      const nettoEuro = (tagesumsatzCents / 100 - todayOrders.length * 0.89).toFixed(2);
-      if(dashUmsatz){ dashUmsatz.textContent = nettoEuro.replace('.', ',') + ' €'; dashUmsatz.style.color = hasRevenue ? '#16a34a' : '#1a1a1a'; }
+      const bruttoEuro = (tagesumsatzCents / 100).toFixed(2);
+      if(dashUmsatz){ dashUmsatz.textContent = bruttoEuro.replace('.', ',') + ' €'; dashUmsatz.style.color = hasRevenue ? '#2ecc71' : '#1a1a1a'; dashUmsatz.style.fontWeight = '900'; }
       if(dashUmsatzHint){ dashUmsatzHint.style.display = !hasRevenue ? 'block' : 'none'; }
 
       // KPI: Tagesessen-Label immer anzeigen; Abholungen/Umsatz-Labels ausblenden bei Aktivität
@@ -10166,9 +10172,18 @@
       btnWeekPlanText.textContent = weekPlannedCount > 0 ? 'Wochenplan · ' + weekPlannedCount + ' Gerichte geplant' : 'Wochenplan öffnen';
     }
     
-    // Leere-Karte CTA: Erstes Gericht für heute
+    // Leere-Karte CTA: Erstes Gericht für heute – High-End Empty State [cite: Gemini]
     const btnFirstDishToday = document.getElementById('btnProviderFirstDishToday');
-    if(btnFirstDishToday) btnFirstDishToday.onclick = function(){ createFlowPreselectedDate = typeof isoDate === 'function' ? isoDate(new Date()) : null; createFlowOriginView = 'dashboard'; if(typeof openCreateFlowSheet === 'function') openCreateFlowSheet(); };
+    if(btnFirstDishToday){
+      btnFirstDishToday.onclick = function(){
+        try { if(typeof haptic === 'function') haptic(6); else if(navigator.vibrate) navigator.vibrate(10); } catch(e){}
+        createFlowPreselectedDate = typeof isoDate === 'function' ? isoDate(new Date()) : null;
+        createFlowOriginView = 'dashboard';
+        if(typeof openCreateFlowSheet === 'function') openCreateFlowSheet();
+        else if(typeof startListingFlow === 'function') startListingFlow({ entryPoint: 'dashboard' });
+      };
+      btnFirstDishToday.onkeydown = function(ev){ if(ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); btnFirstDishToday.click(); } };
+    }
     
     // Post-Onboarding Dashboard State (if just completed onboarding)
     const providerEmptyDashboard = document.getElementById('providerEmptyDashboard');
@@ -10208,25 +10223,34 @@
         provider.onboardingShown = true;
         save(LS.provider, provider);
       } else {
-        // Normal empty state
+        // Normal empty state – High-End wie providerActiveListingsEmptyCard [cite: Gemini]
         providerEmptyDashboard.style.display = hasAnyData ? 'none' : 'block';
+        providerEmptyDashboard.className = 'empty-state-container provider-empty-state';
         if(!hasAnyData){
           providerEmptyDashboard.innerHTML = `
-            <div style="font-weight:600; font-size:18px; margin-bottom:8px; line-height:1.3;">Noch keine aktiven Inserate</div>
-            <div class="hint" style="font-size:14px; line-height:1.4; margin-bottom:16px; color:var(--muted);">
-              Erstelle dein erstes Inserat, um für Kunden sichtbar zu werden.
+            <div class="empty-state-inner">
+              <div class="empty-state-icon" aria-hidden="true">🥘</div>
+              <h2 class="empty-state-title">Noch kein Angebot für heute?</h2>
+              <p class="empty-state-text">Erstelle in weniger als 30 Sekunden dein erstes Inserat und erreiche Kunden in deiner Nähe.</p>
+              <button type="button" class="btn-primary-large" id="btnProviderEmptyAddDish" style="width:100%; max-width:320px; min-height:56px;">Jetzt für 4,99 € inserieren</button>
+              <div class="empty-state-pricing-hint">
+                <span>Inserat: 4,99 €</span>
+                <span class="divider">|</span>
+                <span>Abholnummer: +0,89 €</span>
+              </div>
             </div>
-            <button class="btn secondary" type="button" id="btnProviderEmptyAddDish" style="width:100%; min-height:44px;">
-              Gericht erstellen
-            </button>
           `;
         }
         
         const btnProviderEmptyAddDish = document.getElementById('btnProviderEmptyAddDish');
-        if(btnProviderEmptyAddDish) btnProviderEmptyAddDish.onclick = () => {
-          openDishFlow();
-        };
-        // „Gericht erstellen“-Button entfernt (Dashboard: nur Kasten mit Aktive Angebote heute + Wochenplan)
+        if(btnProviderEmptyAddDish){
+          btnProviderEmptyAddDish.onclick = () => {
+            try { if(typeof haptic === 'function') haptic(6); else if(navigator.vibrate) navigator.vibrate(10); } catch(e){}
+            if(typeof openCreateFlowSheet === 'function'){ createFlowPreselectedDate = typeof isoDate === 'function' ? isoDate(new Date()) : null; createFlowOriginView = 'dashboard'; openCreateFlowSheet(); }
+            else if(typeof startListingFlow === 'function') startListingFlow({ entryPoint: 'dashboard' });
+            else if(typeof openDishFlow === 'function') openDishFlow();
+          };
+        }
       }
     }
     
@@ -10727,6 +10751,57 @@
     mine.sort(function(a,b){ return (b._smartScore || 0) - (a._smartScore || 0); });
     return mine.slice(0, 8);
   }
+  /** Saison-System-Sets: Keywords pro Profi-Woche [cite: 2026-02-23] */
+  var SAISON_SYSTEM_SETS = {
+    winter: ['eintopf','suppe','auflauf','rostbraten','gulasch','schmor','linsen','zwiebel'],
+    fruhling: ['salat','gemüse','spargel','leicht','frisch','veggie'],
+    grill: ['grill','steak','fleisch','bratwurst','hack','burger'],
+    eintopf: ['eintopf','suppe','linsen','bohnen','gulasch']
+  };
+  var SAISON_LABELS = { winter: 'Winter-Klassiker', fruhling: 'Frühlings-Frische', grill: 'Grillsaison-Spezial', eintopf: 'Eintopf-Woche' };
+  function getDishesForSaisonSet(setKey){
+    var pid = typeof providerId === 'function' ? providerId() : '';
+    var cb = (cookbook || []).filter(function(c){ return c.providerId === pid; });
+    var keywords = SAISON_SYSTEM_SETS[setKey] || [];
+    var matched = cb.filter(function(c){
+      var n = (c.dish || '').toLowerCase();
+      var cat = (c.category || '').toLowerCase();
+      return keywords.some(function(k){ return n.indexOf(k) >= 0 || cat.indexOf(k) >= 0; });
+    });
+    return matched.length > 0 ? matched : cb;
+  }
+  function applySaisonSystemSet(setKey){
+    var keys = getWeekDayKeys(weekPlanKWIndex);
+    var dishes = getDishesForSaisonSet(setKey);
+    if (dishes.length === 0){ if (typeof showToast === 'function') showToast('Zuerst Gerichte im Kochbuch anlegen'); return 0; }
+    var shuffled = dishes.slice().sort(function(){ return Math.random() - 0.5; });
+    var idx = 0;
+    keys.forEach(function(key){
+      var provEntries = (week[key] || []).filter(function(x){ return x.providerId === providerId(); });
+      if (provEntries.length === 0 && typeof addCookbookEntryToWeek === 'function'){
+        var d = shuffled[idx % shuffled.length];
+        if (d){ addCookbookEntryToWeek(key, String(d.id), { silent: true }); idx++; }
+      }
+    });
+    return idx;
+  }
+  function fillGapsOnly(){
+    var keys = getWeekDayKeys(weekPlanKWIndex);
+    var suggestions = typeof getSmartSuggestions === 'function' ? getSmartSuggestions(keys[0]) : [];
+    var cb = (cookbook || []).filter(function(c){ return c.providerId === providerId(); });
+    var pool = suggestions.length > 0 ? suggestions : cb;
+    if (pool.length === 0){ if (typeof showToast === 'function') showToast('Zuerst Gerichte im Kochbuch anlegen'); return 0; }
+    var shuffled = pool.slice().sort(function(){ return Math.random() - 0.5; });
+    var idx = 0;
+    keys.forEach(function(key){
+      var provEntries = (week[key] || []).filter(function(x){ return x.providerId === providerId(); });
+      if (provEntries.length === 0 && typeof addCookbookEntryToWeek === 'function'){
+        var d = shuffled[idx % shuffled.length];
+        if (d){ addCookbookEntryToWeek(key, String(d.id), { silent: true }); idx++; }
+      }
+    });
+    return idx;
+  }
   function openKWSelector(){
     var bd = document.getElementById('kwSelectorBd');
     var sheet = document.getElementById('kwSelectorSheet');
@@ -10762,6 +10837,38 @@
     var sheet = document.getElementById('kwSelectorSheet');
     if (bd) bd.style.display = 'none';
     if (sheet) sheet.style.display = 'none';
+  }
+  /** Rolling Counter: Pro-Ziffer-Animation, Haptik-Sync [cite: 2026-02-23] */
+  function initKwRollingCounter(){
+    var counter = document.getElementById('kwActivateCount');
+    if (!counter || counter.querySelector('.kw-digit-cyl .kw-digit-strip')) return;
+    var stripHtml = '<span class="kw-digit-strip">' + [0,1,2,3,4,5,6,7,8,9].map(function(n){ return '<span class="kw-digit-cell">' + n + '</span>'; }).join('') + '</span>';
+    var tens = counter.querySelector('.kw-digit-cyl[data-place="tens"]');
+    var ones = counter.querySelector('.kw-digit-cyl[data-place="ones"]');
+    if (tens && ones) {
+      if (!tens.querySelector('.kw-digit-strip')) { tens.innerHTML = stripHtml; }
+      if (!ones.querySelector('.kw-digit-strip')) { ones.innerHTML = stripHtml; }
+    }
+  }
+  function updateKwActivateCount(count){
+    var counter = document.getElementById('kwActivateCount');
+    if (!counter) return;
+    var prev = (window.__kwActivateCountPrev !== undefined) ? window.__kwActivateCountPrev : -1;
+    if (prev === count) return;
+    var tensEl = counter.querySelector('.kw-digit-cyl[data-place="tens"] .kw-digit-strip');
+    var onesEl = counter.querySelector('.kw-digit-cyl[data-place="ones"] .kw-digit-strip');
+    if (!tensEl || !onesEl) {
+      counter.textContent = count;
+      return;
+    }
+    var v = Math.min(99, Math.max(0, parseInt(count, 10) || 0));
+    var tens = Math.floor(v / 10);
+    var ones = v % 10;
+    var cellH = 22;
+    tensEl.style.transform = 'translateY(-' + (tens * cellH) + 'px)';
+    onesEl.style.transform = 'translateY(-' + (ones * cellH) + 'px)';
+    try { if (navigator.vibrate) navigator.vibrate(10); } catch(e){}
+    window.__kwActivateCountPrev = count;
   }
   function renderWeekPlanBoard(){
     updateSessionActivity();
@@ -10844,7 +10951,6 @@
           '<div class="kw-suggestion-thumb kw-suggestion-thumb-mini" style="' + thumbStyle + '"></div>' +
           '<span class="kw-suggestion-price">' + esc(priceStr) + '</span>' +
           '<span class="kw-pill-text kw-suggestion-name">' + esc(label) + '</span>' +
-          '<button type="button" class="kw-pill-dismiss kw-suggestion-dismiss" aria-label="Entfernen"><i data-lucide="x" style="width:10px;height:10px;"></i></button>' +
           '</div>';
       }).join('');
       strip.querySelectorAll('.kw-suggestion-card').forEach(function(pill){
@@ -10858,17 +10964,12 @@
         };
         pill.ondragend = function(){ pill.classList.remove('dragging'); };
         pill.onclick = function(e){
-          if(e.target.closest && e.target.closest('.kw-pill-dismiss')) return;
           e.preventDefault();
           if(typeof haptic === 'function') haptic(6);
           var emptySlots = grid.querySelectorAll('.kw-slot-empty');
           emptySlots.forEach(function(s){ s.classList.add('kw-slot-ghost-highlight'); });
           setTimeout(function(){ emptySlots.forEach(function(s){ s.classList.remove('kw-slot-ghost-highlight'); }); }, 2500);
         };
-        var dismissBtn = pill.querySelector('.kw-pill-dismiss');
-        if (dismissBtn) {
-          dismissBtn.onclick = function(e){ e.preventDefault(); e.stopPropagation(); if(typeof haptic === 'function') haptic(6); dismissed[cookbookId] = true; pill.remove(); };
-        }
       });
       if(typeof lucide !== 'undefined' && lucide.createIcons) setTimeout(function(){ lucide.createIcons(); }, 50);
       if(strip.scrollLeft !== undefined) strip.scrollLeft = 0;
@@ -10954,12 +11055,12 @@
     }, 0);
     var weekActivateBar = document.getElementById('kwWeekActivateBar');
     var btnKwWeekActivate = document.getElementById('btnKwWeekActivate');
-    var kwActivateCount = document.getElementById('kwActivateCount');
     if (weekActivateBar && btnKwWeekActivate) {
       var count = totalDraftDishes;
       weekActivateBar.style.display = 'flex';
       document.body.classList.add('kw-activation-dock-visible');
-      if (kwActivateCount) kwActivateCount.textContent = '[' + count + ']';
+      initKwRollingCounter();
+      updateKwActivateCount(count);
       btnKwWeekActivate.disabled = count <= 0;
       btnKwWeekActivate.classList.toggle('kw-activation-disabled', count <= 0);
       btnKwWeekActivate.onclick = function(){
@@ -11008,110 +11109,84 @@
     var sunday = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + 6);
     // KW-Badge entfernt (Layout-Symmetrie: Header wie Meine Küche)
     if (typeof lucide !== 'undefined') lucide.createIcons();
-    /* Magic-Sheet: Saison-Vorlage, Lücke finden, Woche füllen */
+    /* Magic-Sheet: Lotto, Saison-Sets, Lücken füllen [cite: 2026-02-23] */
     var magicList = document.getElementById('weekMagicSheetList');
     var magicSheet = document.getElementById('weekMagicSheet');
     var magicBd = document.getElementById('weekMagicSheetBd');
     if (magicList && magicSheet) {
       magicList.innerHTML = '';
-      /* Magic Game: Glücks-Lotto + Saison-Karte [cite: 2026-02-23] */
-      function runMagicFill(numSlots, useSeason){
+      function runLottoFill(){
         closeWeekMagicSheet();
         var grid = document.getElementById('kwGrid');
         if (!grid) return;
         var emptySlots = grid.querySelectorAll('.kw-slot-empty');
         if (emptySlots.length === 0){ if (typeof showToast === 'function') showToast('Keine freien Slots'); return; }
+        var suggestions = typeof getSmartSuggestions === 'function' ? getSmartSuggestions(getWeekDayKeys(weekPlanKWIndex)[0]) : [];
         var cb = (cookbook || []).filter(function(c){ return c.providerId === providerId(); });
-        if (cb.length === 0){ if (typeof showToast === 'function') showToast('Zuerst Gerichte im Kochbuch anlegen'); return; }
-        var toFill = Math.min(numSlots, emptySlots.length, cb.length);
-        var shuffled = cb.slice().sort(function(){ return Math.random() - 0.5; });
+        var pool = suggestions.length > 0 ? suggestions : cb;
+        if (pool.length === 0){ if (typeof showToast === 'function') showToast('Zuerst Gerichte im Kochbuch anlegen'); return; }
+        var shuffled = pool.slice().sort(function(){ return Math.random() - 0.5; });
+        var toFill = Math.min(emptySlots.length, shuffled.length);
         var idx = 0;
         function flyNext(){
-          if (idx >= toFill){ if (typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard(); if (typeof showToast === 'function') showToast(toFill + ' Gerichte eingetragen ✨'); return; }
+          if (idx >= toFill){ if (typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard(); if (typeof showToast === 'function') showToast(toFill + ' Gerichte eingetragen'); return; }
           var slot = emptySlots[idx];
           var dayKey = slot.getAttribute('data-day');
           var dish = shuffled[idx % shuffled.length];
           if (!dayKey || !dish || typeof addCookbookEntryToWeek !== 'function'){ idx++; setTimeout(flyNext, 100); return; }
-          var imgUrl = dish.photoData || dish.imageUrl || '';
-          var fly = document.createElement('div');
-          fly.className = 'flying-dish';
-          fly.style.width = '60px'; fly.style.height = '60px'; fly.style.borderRadius = '50%'; fly.style.overflow = 'hidden';
-          fly.style.left = (slot.getBoundingClientRect().left + slot.offsetWidth/2 - 30) + 'px';
-          fly.style.top = (slot.getBoundingClientRect().top + slot.offsetHeight/2 - 30) + 'px';
-          if (imgUrl){ var img = document.createElement('img'); img.src = imgUrl; img.style.cssText = 'width:100%;height:100%;object-fit:cover;'; fly.appendChild(img); }
-          else { fly.style.background = 'linear-gradient(135deg,#e2e8f0,#cbd5e1)'; }
-          document.body.appendChild(fly);
-          fly.style.transition = 'none';
-          fly.style.left = '50%'; fly.style.top = '30%'; fly.style.transform = 'translate(-50%,-50%) scale(0.5)';
-          fly.offsetHeight;
-          fly.style.transition = 'all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-          var targetRect = slot.getBoundingClientRect();
-          fly.style.left = (targetRect.left + targetRect.width/2 - 30) + 'px';
-          fly.style.top = (targetRect.top + targetRect.height/2 - 30) + 'px';
-          fly.style.transform = 'translate(0,0) scale(1)';
-          setTimeout(function(){
-            try { if (navigator.vibrate) navigator.vibrate([30, 50]); } catch(e){}
-            addCookbookEntryToWeek(dayKey, String(dish.id), { silent: true });
-            slot.classList.add('slot-landing');
-            setTimeout(function(){ slot.classList.remove('slot-landing'); }, 400);
-            fly.remove();
-            idx++;
-            setTimeout(flyNext, 150);
-          }, 800);
+          slot.classList.add('kw-slot-roll-in');
+          try { if (navigator.vibrate) navigator.vibrate(10); } catch(e){}
+          addCookbookEntryToWeek(dayKey, String(dish.id), { silent: true });
+          setTimeout(function(){ slot.classList.remove('kw-slot-roll-in'); idx++; setTimeout(flyNext, 120); }, 350);
         }
         flyNext();
       }
-      var magicCardWrap = document.createElement('div');
-      magicCardWrap.className = 'week-magic-cards-wrap';
-      magicCardWrap.style.cssText = 'display:flex; flex-direction:column; gap:16px; margin-bottom:20px;';
-      ['Glücks-Lotto 🎰', 'Saison-Karte 🍂'].forEach(function(label, cardIdx){
-        var card = document.createElement('div');
-        card.className = 'week-magic-card';
-        card.style.cssText = 'background:rgba(255,255,255,0.8); backdrop-filter:blur(12px); border-radius:16px; padding:16px; border:1px solid rgba(0,0,0,0.06);';
-        card.innerHTML = '<div style="font-size:16px; font-weight:800; color:#0f172a; margin-bottom:12px;">' + label + '</div><div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;"><label style="font-size:13px; font-weight:600; color:#64748b;">Anzahl:</label><input type="range" min="1" max="5" value="2" class="week-magic-slider" style="flex:1; accent-color:#10b981;"><span class="week-magic-slider-val" style="font-size:14px; font-weight:800; color:#0f172a; min-width:24px;">2</span></div><button type="button" class="week-magic-start-btn" style="width:100%; min-height:48px; border-radius:12px; border:none; background:#222222; color:#fff; font-size:15px; font-weight:800; cursor:pointer;">Magie starten</button>';
-        var slider = card.querySelector('.week-magic-slider');
-        var valSpan = card.querySelector('.week-magic-slider-val');
-        if (slider && valSpan){ slider.oninput = function(){ valSpan.textContent = slider.value; }; }
-        var btn = card.querySelector('.week-magic-start-btn');
-        if (btn){ btn.onclick = function(){ if (typeof haptic === 'function') haptic(6); var n = parseInt(slider.value, 10) || 2; runMagicFill(n, cardIdx === 1); }; }
-        magicCardWrap.appendChild(card);
-      });
-      magicList.appendChild(magicCardWrap);
-      if (season) {
-        var btnSeason = document.createElement('button');
-        btnSeason.type = 'button';
-        btnSeason.className = 'week-magic-sheet-btn';
-        btnSeason.innerHTML = '<span class="week-magic-sheet-emo">✨</span><span>Vorlage \'' + (season.templateName || season.label || '') + '\' anwenden</span>';
-        btnSeason.onclick = function(){
-          if (typeof haptic === 'function') haptic(6);
-          closeWeekMagicSheet();
-          var list = typeof getWeekTemplates === 'function' ? getWeekTemplates() : [];
-          var search = (season.templateName || season.label || '').toLowerCase();
-          var tpl = list.find(function(t){ return (t.name || '').toLowerCase().indexOf(search) >= 0 || search.indexOf((t.name || '').toLowerCase()) >= 0; });
-          if (tpl && typeof applyTemplateToWeek === 'function') {
-            applyTemplateToWeek(tpl.id, weekPlanKWIndex);
+      var btnLotto = document.createElement('button');
+      btnLotto.type = 'button';
+      btnLotto.className = 'week-magic-sheet-btn';
+      btnLotto.innerHTML = '<span class="week-magic-sheet-emo">🎲</span><span>Lotto-Modus: Leere Slots mit Renner füllen</span>';
+      btnLotto.onclick = function(){ if (typeof haptic === 'function') haptic(6); runLottoFill(); };
+      magicList.appendChild(btnLotto);
+      Object.keys(SAISON_LABELS || {}).forEach(function(k){
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'week-magic-sheet-btn';
+        btn.innerHTML = '<span class="week-magic-sheet-emo">🌦️</span><span>' + (SAISON_LABELS[k] || k) + '</span>';
+        btn.onclick = (function(sk){
+          return function(){
+            if (typeof haptic === 'function') haptic(6);
+            closeWeekMagicSheet();
+            var n = applySaisonSystemSet(sk);
             if (typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard();
             if (typeof renderProviderWeekPreview === 'function') renderProviderWeekPreview();
-            if (typeof showToast === 'function') showToast('Vorlage eingefügt');
-            var grid = document.getElementById('kwGrid');
-            if (grid) { grid.classList.add('kw-grid-just-applied'); setTimeout(function(){ grid.classList.remove('kw-grid-just-applied'); }, 800); }
-          } else if (typeof openWeekTemplatesSheet === 'function') {
-            openWeekTemplatesSheet();
-            if (list.length === 0 && typeof showToast === 'function') showToast('Speichere zuerst eine Woche als Vorlage.');
-          }
-        };
-        magicList.appendChild(btnSeason);
-      }
+            if (typeof showToast === 'function') showToast(n > 0 ? n + ' Gerichte eingetragen' : 'Keine leeren Tage');
+          };
+        })(k);
+        magicList.appendChild(btn);
+      });
       var btnGap = document.createElement('button');
       btnGap.type = 'button';
       btnGap.className = 'week-magic-sheet-btn';
-      btnGap.innerHTML = '<span class="week-magic-sheet-emo">🔍</span><span>Lücke finden</span>';
-      btnGap.onclick = function(){ if (typeof haptic === 'function') haptic(6); closeWeekMagicSheet(); if (typeof findAndJumpToNextFreeSlot === 'function') findAndJumpToNextFreeSlot(); };
+      btnGap.innerHTML = '<span class="week-magic-sheet-emo">🔍</span><span>Lücken füllen: Nur leere Tage ergänzen</span>';
+      btnGap.onclick = function(){
+        if (typeof haptic === 'function') haptic(6);
+        closeWeekMagicSheet();
+        var n = fillGapsOnly();
+        if (typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard();
+        if (typeof renderProviderWeekPreview === 'function') renderProviderWeekPreview();
+        if (typeof showToast === 'function') showToast(n > 0 ? n + ' Tage ergänzt' : 'Keine Lücken');
+      };
       magicList.appendChild(btnGap);
+      var btnFind = document.createElement('button');
+      btnFind.type = 'button';
+      btnFind.className = 'week-magic-sheet-btn';
+      btnFind.innerHTML = '<span class="week-magic-sheet-emo">📍</span><span>Lücke finden (zum nächsten freien Slot springen)</span>';
+      btnFind.onclick = function(){ if (typeof haptic === 'function') haptic(6); closeWeekMagicSheet(); if (typeof findAndJumpToNextFreeSlot === 'function') findAndJumpToNextFreeSlot(); };
+      magicList.appendChild(btnFind);
       var btnFill = document.createElement('button');
       btnFill.type = 'button';
       btnFill.className = 'week-magic-sheet-btn';
-      btnFill.innerHTML = '<span class="week-magic-sheet-emo">📂</span><span>Woche aus Vorlage füllen</span>';
+      btnFill.innerHTML = '<span class="week-magic-sheet-emo">📂</span><span>Woche aus eigener Vorlage füllen</span>';
       btnFill.onclick = function(){ if (typeof haptic === 'function') haptic(6); closeWeekMagicSheet(); if (typeof openWeekTemplatesSheet === 'function') openWeekTemplatesSheet(); };
       magicList.appendChild(btnFill);
     }
@@ -15916,7 +15991,7 @@
         miniPreview.style.cssText='display:flex; align-items:center; gap:12px; padding:12px 0; margin-bottom:16px; border-bottom:1px solid rgba(15,23,42,0.08); flex-shrink:0;';
         miniPreview.innerHTML='<img src="'+thumbUrl+'" id="money-dish-img" class="mini-thumb" alt="" style="width:56px;height:56px;border-radius:12px;object-fit:cover;object-position:center '+objPos2+'%; background:#e8ecf0;"><div class="mini-details" style="flex:1;min-width:0;"><h3 id="money-dish-name" style="margin:0;font-size:17px;font-weight:900;color:#0f172a;">'+esc(dishNameS2)+'</h3><span id="money-dish-price" style="font-size:15px;font-weight:700;color:#64748b;">'+euroS2+'</span></div>';
         step2Wrap.appendChild(miniPreview);
-        updateStep2ContextZoneRef=function(){ if(!miniPreview||!miniPreview.isConnected) return; var t=w.data.photoData||'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=200&q=60'; var op=(typeof w.data.photoObjectPosition==='number')?w.data.photoObjectPosition:(typeof w.data.photoCropY==='number'?Math.round(50+(w.data.photoCropY/80)*50):50); var dn=(w.data.dish||'').trim()||'Gericht'; var pr=Number(w.data.price)||0; var eu=typeof euro==='function'?euro(pr):(pr.toFixed(2).replace('.',',')+' €'); var imgEl=document.getElementById('money-dish-img'); var nameEl=document.getElementById('money-dish-name'); var priceEl=document.getElementById('money-dish-price'); if(imgEl){ imgEl.src=t; imgEl.style.objectPosition='center '+op+'%'; } if(nameEl) nameEl.textContent=dn; if(priceEl) priceEl.textContent=eu; var umsatzValEl=document.getElementById('step2UmsatzVal'); if(umsatzValEl){ var u30=(pr*30).toFixed(2).replace('.',','); umsatzValEl.textContent=u30+' €'; } };
+        updateStep2ContextZoneRef=function(){ if(!miniPreview||!miniPreview.isConnected) return; var t=w.data.photoData||'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=200&q=60'; var op=(typeof w.data.photoObjectPosition==='number')?w.data.photoObjectPosition:(typeof w.data.photoCropY==='number'?Math.round(50+(w.data.photoCropY/80)*50):50); var dn=(w.data.dish||'').trim()||'Gericht'; var pr=Number(w.data.price)||0; var eu=typeof euro==='function'?euro(pr):(pr.toFixed(2).replace('.',',')+' €'); var imgEl=document.getElementById('money-dish-img'); var nameEl=document.getElementById('money-dish-name'); var priceEl=document.getElementById('money-dish-price'); if(imgEl){ imgEl.src=t; imgEl.style.objectPosition='center '+op+'%'; } if(nameEl) nameEl.textContent=dn; if(priceEl) priceEl.textContent=eu; var umsatzValEl=document.getElementById('step2UmsatzVal'); if(umsatzValEl){ var u25=(pr*25).toFixed(2).replace('.',','); umsatzValEl.textContent=u25+' €'; } };
         var moneyHeadline=document.createElement('h2');
         moneyHeadline.className='money-headline';
         moneyHeadline.textContent='Wähle dein Paket';
@@ -15927,8 +16002,8 @@
         umsatzVorschauEl.className='step2-umsatz-vorschau';
         umsatzVorschauEl.style.cssText='margin-bottom:20px; padding:14px 16px; background:rgba(15,23,42,0.04); border-radius:12px; text-align:left; width:100%; box-sizing:border-box;';
         var priceS2ForUmsatz=Number(w.data.price)||0;
-        var umsatz30=(priceS2ForUmsatz*30).toFixed(2).replace('.',',');
-        umsatzVorschauEl.innerHTML='<div style="font-size:12px; font-weight:800; color:#64748b; margin-bottom:4px;">Umsatz-Vorschau (bei 30 Portionen)</div><div id="step2UmsatzVal" style="font-size:18px; font-weight:900; color:#0f172a;">'+umsatz30+' €</div><div style="font-size:11px; color:#94a3b8; margin-top:8px;">Gebühren: 4,99 € Einmalinserierung oder 0,89 € pro Abholnummer</div>';
+        var umsatz25=(priceS2ForUmsatz*25).toFixed(2).replace('.',',');
+        umsatzVorschauEl.innerHTML='<div style="font-size:12px; font-weight:800; color:#64748b; margin-bottom:4px;">Möglicher Umsatz (bei 25 Portionen)</div><div id="step2UmsatzVal" style="font-size:22px; font-weight:900; color:#0f172a;">'+umsatz25+' €</div><div style="font-size:11px; color:#94a3b8; margin-top:12px; line-height:1.4;">Inserat: 0,00 €<br>Service-Gebühr: 0,89 € pro Abholnummer (nur bei erfolgreichem Verkauf via Stripe)</div>';
         step2Wrap.appendChild(umsatzVorschauEl);
         /* Zero-Entry: Zwei Kacheln – Standard 4,99 oben, Abholnummer 0,00 unten (aktiv) [cite: ZERO-COST PICKUP 2026-02-23] */
         var pricingContainer=document.createElement('div');
@@ -15957,7 +16032,7 @@
           saveDraft();
           var fb=box.querySelector('[data-inserat-step="2"] .btn-primary-black');
           if(fb){
-            fb.textContent=(type==='classic')?'Jetzt für 4,99 € inserieren':'Jetzt für 0,00 € inserieren';
+            fb.textContent='Jetzt kostenlos inserieren';
             fb.classList.toggle('inserat-footer-btn--499',type==='classic');
             fb.classList.toggle('free-mode',type==='pro');
             fb.classList.toggle('is-free-mode',type==='pro');
@@ -16006,19 +16081,21 @@
         var step3Footer=document.createElement('footer');
         step3Footer.className='app-footer-main';
         step3Footer.setAttribute('data-inserat-step','3');
-        step3Footer.style.cssText='position:fixed; left:0; right:0; bottom:0; z-index:500; display:none; flex-direction:row; align-items:center; justify-content:space-between; gap:16px;';
+        step3Footer.style.cssText='position:fixed; left:0; right:0; bottom:0; z-index:500; display:none; flex-direction:row; align-items:stretch; justify-content:space-between; gap:12px; width:100%;';
         var btnShare=document.createElement('button');
         btnShare.type='button';
-        btnShare.className='footer-link-secondary sharing-trigger';
+        btnShare.className='footer-link-secondary sharing-trigger btn-secondary-link';
         btnShare.id='footerShare';
         btnShare.innerHTML='<span class="share-icon">­ƒôñ</span> Teilen';
         var btnFinish=document.createElement('button');
         btnFinish.type='button';
-        btnFinish.className='footer-btn-primary';
+        btnFinish.className='footer-btn-primary btn-primary-black';
         btnFinish.id='footerFinish';
+        btnFinish.style.cssText='flex:1; min-height:48px; padding:0 24px; border:none; border-radius:8px; background:#222222; color:#ffffff; font-size:16px; font-weight:800; cursor:pointer;';
         btnFinish.textContent='Zum Dashboard';
         step3Footer.appendChild(btnShare);
         step3Footer.appendChild(btnFinish);
+        step3Footer.classList.add('inserat-step1-nav');
         step3Pane.appendChild(step3Footer);
         btnShare.onclick=function(){ hapticLight(); if(typeof triggerLiveSharing==='function') triggerLiveSharing(); };
         btnFinish.onclick=function(){ hapticLight(); if(typeof resetMastercardFromStep3==='function') resetMastercardFromStep3(); };
@@ -16837,7 +16914,7 @@
         var airbnbFooter=document.createElement('div');
         airbnbFooter.className='app-footer-main inserat-step1-nav';
         airbnbFooter.setAttribute('data-inserat-step','2');
-        airbnbFooter.style.cssText='display:'+(inseratStep===2?'flex':'none')+'; flex-direction:row; align-items:stretch; justify-content:space-between; gap:12px; width:100%;';
+        airbnbFooter.style.cssText='display:'+(inseratStep===2?'flex':'none')+'; position:fixed; left:0; right:0; bottom:0; z-index:500; flex-direction:row; align-items:stretch; justify-content:space-between; gap:12px; width:100%;';
         var linkZurueck=document.createElement('button');
         linkZurueck.type='button';
         linkZurueck.className='inserat-footer-link';
@@ -16849,7 +16926,7 @@
         footerBtn.type='button';
         footerBtn.className='btn-primary-black' + (w.data.pricingChoice==='499' ? ' inserat-footer-btn--499' : ' free-mode is-free-mode');
         footerBtn.style.cssText='flex:1; min-height:48px; padding:0 24px; border:none; border-radius:8px; background:#222222 !important; color:#ffffff !important; font-size:16px; font-weight:800; cursor:pointer;';
-        footerBtn.textContent=(w.data.pricingChoice==='499' ? 'Jetzt für 4,99 € inserieren' : 'Jetzt für 0,00 € inserieren');
+        footerBtn.textContent='Jetzt kostenlos inserieren';
         footerBtn.onclick=function(){
           if(!isPrimaryValid()){ if(typeof showToast==='function') showToast('Bitte Name, Preis und Foto eingeben.'); if(typeof triggerValidationError==='function') triggerValidationError(this); return; }
           hapticLight();
