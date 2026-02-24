@@ -91,6 +91,7 @@
       v.style.setProperty('display', 'none', 'important');
     });
     document.body.classList.toggle('provider-week-active', id === 'v-provider-week');
+    document.body.classList.toggle('provider-cookbook-active', id === 'v-provider-cookbook');
     window.scrollTo({ top: 0, behavior: isProviderView ? 'auto' : 'smooth' });
     if (document.documentElement) document.documentElement.scrollTop = 0;
     if (document.body) document.body.scrollTop = 0;

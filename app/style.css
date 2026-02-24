@@ -913,6 +913,7 @@
     50% { transform: scale(1.05); box-shadow: 0 12px 32px rgba(16,185,129,0.35); }
   }
   #inseratSuccessSheet .inserat-success-checkmark { animation: success-checkmark-pulse 1.5s ease-in-out infinite; }
+  .week-activation-success-checkmark { animation: success-checkmark-pulse 1.5s ease-in-out infinite; }
 
   .success-card-preview {
     background: #fff;
@@ -1029,7 +1030,8 @@
     #publishFeeBd:not(.active),
     #inseratSuccessBd:not(.active),
     #saveSuccessSheetBd:not(.active),
-    #abholnummerExplainBd:not(.active){ display:none !important; opacity:0 !important; pointer-events:none !important; visibility:hidden !important; }
+    #abholnummerExplainBd:not(.active),
+    #weekActivationSuccessBd:not(.active){ display:none !important; opacity:0 !important; pointer-events:none !important; visibility:hidden !important; }
     #pricingFairnessBd:not(.active){ display:none !important; opacity:0 !important; pointer-events:none !important; }
     #cookbookActionSheetBd:not(.active),
     #cookbookLiveSheetBd:not(.active),
@@ -1192,11 +1194,12 @@
     #v-provider-cookbook .cookbook-bar-secondary{ background:rgba(255,255,255,0.5); color:#475569; border:2px solid rgba(255,255,255,0.6); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); }
     #v-provider-cookbook .cookbook-bar-primary{ background:#FACC15; color:#1a1a1a; box-shadow:0 4px 16px rgba(250,204,21,0.4); }
     /* Kochbuch: Kategorie-Pills wie Kundenseite (Discover) – kleiner, einheitliches Layout */
-    #v-provider-cookbook .cookbook-category-pills{ display:flex; gap:10px; overflow-x:auto; padding:8px var(--header-padding-x) 12px; -webkit-overflow-scrolling:touch; scrollbar-width:none; scroll-snap-type:x mandatory; }
+    /* Kochbuch Pills: wie Dashboard (einheitlich) [cite: REFACTOR KOCHBUCH 2026-02-23] */
+    #v-provider-cookbook .cookbook-category-pills{ display:flex; gap:8px; overflow-x:auto; padding:8px max(20px, env(safe-area-inset-left)) 12px; -webkit-overflow-scrolling:touch; scrollbar-width:none; scroll-snap-type:x proximity; }
     #v-provider-cookbook .cookbook-category-pills::-webkit-scrollbar{ display:none; }
-    #v-provider-cookbook .cookbook-category-pills .cookbook-cat-pill{ flex:0 0 auto; scroll-snap-align:center; min-height: var(--pill-min-height); min-width:auto; padding:10px 18px; border-radius: var(--pill-radius); font-size: var(--pill-font-size); font-weight: var(--pill-font-weight); border:none; background: var(--pill-bg-inactive); color: var(--pill-color-inactive); cursor:pointer; transition:transform 0.15s, background 0.2s; display:inline-flex; align-items:center; justify-content:center; -webkit-tap-highlight-color:transparent; }
-    #v-provider-cookbook .cookbook-category-pills .cookbook-cat-pill:hover{ color:#1D1D1F; }
-    #v-provider-cookbook .cookbook-category-pills .cookbook-cat-pill.on{ background:#10b981; border:none; color:#fff; box-shadow:0 2px 12px rgba(16,185,129,0.4); }
+    #v-provider-cookbook .cookbook-category-pills .cookbook-cat-pill{ flex:0 0 auto; scroll-snap-align:center; min-height:40px; padding:8px 16px; border-radius:20px; font-size:14px; font-weight:700; border:none; background:#f1f3f5; color:#64748b; cursor:pointer; transition:transform 0.15s, background 0.2s, color 0.2s; display:inline-flex; align-items:center; justify-content:center; -webkit-tap-highlight-color:transparent; }
+    #v-provider-cookbook .cookbook-category-pills .cookbook-cat-pill:hover{ color:#1a1a1a; }
+    #v-provider-cookbook .cookbook-category-pills .cookbook-cat-pill.on{ background:#0f172a; color:#fff; box-shadow:0 2px 8px rgba(15,23,42,0.25); }
     #v-provider-cookbook .cookbook-category-pills .cookbook-cat-pill:active{ transform:scale(0.96); }
     #v-provider-cookbook #btnCookbookEmptyAdd{ background:#FACC15 !important; color:#1a1a1a !important; box-shadow:0 4px 20px rgba(250,204,21,0.4) !important; }
     /* Kochbuch Action-Sheet */
@@ -2136,12 +2139,12 @@
       text-overflow: ellipsis;
       margin-top: 4px;
     }
-    /* X oben rechts – NUR ZUM SCHLIESSEN */
+    /* X oben links – einziges Schließen-Element [cite: UI CLEANUP 2026-02-23] */
     #wizard[data-flow="listing"] .btn-close-master,
     #wizard[data-flow="listing"] .close-mastercard {
       position: absolute;
       top: 12px;
-      right: 12px;
+      left: 12px;
       width: 40px;
       height: 40px;
       background: rgba(0, 0, 0, 0.4);
@@ -2154,24 +2157,11 @@
       border: none;
       cursor: pointer;
     }
-    /* Kamera-Icon: Dezent oben rechts auf dem Bild, neben dem X */
-    #wizard[data-flow="listing"] .camera-trigger {
-      position: absolute;
-      top: 12px;
-      right: 60px;
-      width: 40px;
-      height: 40px;
-      background: rgba(0, 0, 0, 0.25);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      cursor: pointer;
-      border: none;
-      z-index: 15;
+    /* Kamera-Linse entfernt – Nutzer nutzt zentralen Platzhalter [cite: UI CLEANUP 2026-02-23] */
+    #wizard[data-flow="listing"] .camera-trigger,
+    #wizard[data-flow="listing"] .inserat-camera-float,
+    #wizard[data-flow="listing"] .ebay-edit-btn.btn-photo-icon-only {
+      display: none !important;
     }
     /* 5. Die 3 Säulen-Icons direkt unter dem Bild */
     #wizard[data-flow="listing"] .pillars-row,
@@ -6473,6 +6463,19 @@
       border:none !important;
       overflow:visible;
     }
+    /* S25 Island Design: Hintergrund #f9f9f9, zwei schwebende Cards [cite: 2026-02-23] */
+    #v-provider-home .dashboard-floating-wrap{ background:#f9f9f9 !important; }
+    #v-provider-home .dashboard-kasten-angebote,
+    #v-provider-home .dashboard-kasten-wochenplan{
+      background:#fff !important;
+      border-radius:12px !important;
+      box-shadow:0 2px 12px rgba(0,0,0,0.08) !important;
+      margin:0 16px 16px !important;
+      padding:16px !important;
+      max-width:calc(100% - 32px); box-sizing:border-box;
+    }
+    #v-provider-home .dashboard-kasten-angebote:last-of-type,
+    #v-provider-home .dashboard-kasten-wochenplan:last-of-type{ margin-bottom:max(16px, env(safe-area-inset-bottom)); }
     /* Header „Dashboard“: Layout + Stil wie Wochenplan/Kochbuch (prov-page-header) */
     #v-provider-home .dashboard-kasten-header{
       position:sticky; top:0; z-index:9999;
@@ -6607,6 +6610,12 @@
     #v-provider-home .prov-list-item-body{ flex:1; min-width:0; display:flex; flex-direction:column; justify-content:center; }
     #v-provider-home .prov-list-item-pillars{ display:flex; gap:6px; margin-bottom:6px; flex-shrink:0; }
     #v-provider-home .prov-list-item-pillars .pillar-mini{ flex-shrink:0; }
+    /* S25 Dashboard: 5 Säulen – aktiv #222, inaktiv opacity 0.15, Klick = Deep-Link Mastercard [cite: 2026-02-23] */
+    #v-provider-home .dashboard-five-pillars{ display:flex; align-items:center; gap:8px; margin-top:6px; margin-bottom:6px; flex-wrap:wrap; }
+    #v-provider-home .dashboard-pillar-icon{ width:32px; height:32px; border-radius:8px; display:inline-flex; align-items:center; justify-content:center; font-size:16px; cursor:pointer; -webkit-tap-highlight-color:transparent; transition:opacity 0.15s; }
+    #v-provider-home .dashboard-pillar-icon.active{ color:#222222; opacity:1; }
+    #v-provider-home .dashboard-pillar-icon.inactive{ opacity:0.15; color:#222222; }
+    #v-provider-home .dashboard-pillar-icon:active{ transform:scale(0.95); }
     #v-provider-home .prov-list-item-title{ margin:0 0 4px; font-size:18px; font-weight:800; color:#0f172a; line-height:1.3; }
     #v-provider-home .prov-list-item-meta-row{ display:flex; gap:12px; font-size:13px; font-weight:800; color:#64748b; margin-bottom:8px; }
     #v-provider-home .prov-list-item-abholnummer{
@@ -6799,17 +6808,41 @@
     #v-provider-profile .provider-profile-hero-icon-wrap{ width:56px; height:56px; border-radius:16px; background:#f1f3f5; display:flex; align-items:center; justify-content:center; font-size:28px; margin-bottom:8px; }
     #v-provider-cookbook{ min-height:100vh; min-height:100dvh; width:100%; box-sizing:border-box; }
     #v-provider-cookbook.view.active{ display:flex !important; flex-direction:column !important; height:100vh; height:100dvh; max-height:100vh; max-height:100dvh; overflow:hidden; }
-    #v-provider-cookbook.view.active > header{ position:sticky; top:0; z-index:100; flex-shrink:0; background:rgba(245,245,240,0.95) !important; backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); }
+    /* Kochbuch: Header scrollt mit (kein sticky) [cite: REFACTOR KOCHBUCH 2026-02-23] */
+    #v-provider-cookbook.view.active > header{ position:relative; z-index:1; flex-shrink:0; background:rgba(245,245,240,0.95) !important; backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); }
     #v-provider-cookbook.view.active > div{ position:relative; z-index:1; min-height:0; flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; }
-    /* Kochbuch: gleicher Header-Stil wie Meine Küche/Abholungen (kein eigener Override) */
-    /* Kochbuch tapbar: View und Inhalt explizit pointer-events, damit keine Overlays Klicks schlucken */
     #v-provider-cookbook.view.active{ pointer-events: auto; position: relative; z-index: 1; }
-    #v-provider-cookbook #cookbookScrollWrap{ background:transparent; pointer-events: auto; padding-bottom: calc(80px + 24px + env(safe-area-inset-bottom, 0)); }
-    /* Kochbuch Magazin-Container: Karte oben, Dots unten; Karte nie schrumpfen (Fix: leere Karten-Anzeige) */
-    #v-provider-cookbook #cookbookMagazine{ flex-direction:column; width:100%; align-items:center; }
-    #v-provider-cookbook #cookbookMagazine .cookbook-magazine-card{ flex-shrink:0; }
+    /* Kochbuch: Nav ausblenden, fixierter Footer [cite: REFACTOR KOCHBUCH 2026-02-23] */
+    body.provider-cookbook-active #providerNavWrap{ display:none !important; }
+    #v-provider-cookbook #cookbookScrollWrap{ background:transparent; pointer-events: auto; padding-bottom: calc(100px + env(safe-area-inset-bottom, 0)); }
+    /* Kochbuch Galerie: horizontaler Snap-Scroll, keine Pfeile/Dots [cite: REFACTOR KOCHBUCH 2026-02-23] */
+    #v-provider-cookbook #cookbookMagazine{ flex-direction:row; width:100%; align-items:stretch; overflow-x:auto; overflow-y:hidden; scroll-snap-type:x mandatory; scroll-behavior:smooth; -webkit-overflow-scrolling:touch; scrollbar-width:none; gap:0; padding:16px max(20px, env(safe-area-inset-right)) 16px max(20px, env(safe-area-inset-left)); box-sizing:border-box; }
+    #v-provider-cookbook #cookbookMagazine::-webkit-scrollbar{ display:none; }
+    #v-provider-cookbook #cookbookMagazine.cookbook-price-focus{ scroll-snap-type:none; }
+    #v-provider-cookbook #cookbookMagazine .cookbook-magazine-card{ flex:0 0 auto; width:88%; max-width:400px; scroll-snap-align:center; scroll-snap-stop:always; margin:0 6px; }
+    #v-provider-cookbook .cookbook-magazine-nav,
+    #v-provider-cookbook .cookbook-magazine-dots,
+    #v-provider-cookbook .cookbook-swipe-hint{ display:none !important; }
     #v-provider-cookbook .cookbook-category-pills{ background:transparent; }
     #v-provider-cookbook .cookbook-action-bar{ background:rgba(255,255,255,0.7) !important; backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border-top:1px solid rgba(255,255,255,0.4) !important; box-shadow:0 -4px 24px rgba(0,0,0,0.06); }
+    /* Kochbuch: fixierter Footer (Airbnb-Style) [cite: REFACTOR KOCHBUCH 2026-02-23] */
+    #v-provider-cookbook .cookbook-footer-fixed{ position:fixed; left:0; right:0; bottom:0; z-index:100; background:#fff; border-top:1px solid #e2e8f0; padding:16px max(20px, env(safe-area-inset-right)) calc(16px + env(safe-area-inset-bottom, 0)) max(20px, env(safe-area-inset-left)); box-sizing:border-box; }
+    #v-provider-cookbook .cookbook-footer-btn-inserieren{ width:100%; min-height:56px; border-radius:16px; border:none; background:#222222; color:#fff; font-size:16px; font-weight:800; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+    #v-provider-cookbook .cookbook-footer-btn-inserieren:active{ opacity:0.9; transform:scale(0.99); }
+    /* Kochbuch: editierbares Preisfeld in der Karte [cite: REFACTOR KOCHBUCH 2026-02-23] */
+    #v-provider-cookbook .cookbook-price-cell{ display:flex; flex-direction:column; align-items:flex-end; flex-shrink:0; min-height:48px; }
+    #v-provider-cookbook .cookbook-price-row{ display:flex; align-items:baseline; gap:2px; }
+    #v-provider-cookbook .cookbook-card-price-input{ width:4.5em; min-width:48px; font-size:22px; font-weight:800; color:#0f172a; background:transparent; border:none; border-bottom:2px solid #e2e8f0; padding:4px 4px 4px 8px; text-align:right; -moz-appearance:textfield; }
+    #v-provider-cookbook .cookbook-card-price-input::-webkit-outer-spin-button,
+    #v-provider-cookbook .cookbook-card-price-input::-webkit-inner-spin-button{ -webkit-appearance:none; margin:0; }
+    #v-provider-cookbook .cookbook-card-price-input:focus{ outline:none; border-bottom-color:#10b981; }
+    #v-provider-cookbook .cookbook-price-suffix{ font-size:22px; font-weight:800; color:#0f172a; flex-shrink:0; }
+    #v-provider-cookbook .cookbook-price-saved{ opacity:0; pointer-events:none; font-size:18px; margin-left:6px; transition:opacity 0.2s ease; }
+    #v-provider-cookbook .cookbook-price-saved.cookbook-price-saved-visible{ opacity:1; }
+    #v-provider-cookbook .price-history{ font-size:11px; color:#999999; font-weight:400; margin-top:4px; cursor:pointer; -webkit-tap-highlight-color:transparent; line-height:1.2; }
+    #v-provider-cookbook .price-history:hover{ color:#64748b; }
+    #v-provider-cookbook .cookbook-footer-btn-inserieren:disabled,
+    #v-provider-cookbook .cookbook-footer-btn-inserieren[aria-disabled="true"]{ background:#94a3b8 !important; cursor:not-allowed; opacity:0.9; }
 
     /* Wochenplan: Mesh-Hintergrund + Slate-50 [cite: 2026-02-18] */
     #v-provider-week.view{ display:none; }
@@ -7211,7 +7244,11 @@
       #v-provider-week .kw-slot.kw-slot-offline{ box-shadow:0 0 0 1px rgba(239,68,68,0.25), 0 2px 12px rgba(0,0,0,0.04); }
       #v-provider-week .week-meal-meta .price-pill{ padding:4px 10px; font-size:13px; }
       #v-provider-week .kw-slot{ transition:transform 0.2s ease; }
-      #v-provider-week .kw-slot.kw-slot-swipe-delete{ background:rgba(239,68,68,0.08); }
+      #v-provider-week .kw-slot.kw-slot-swipe-delete{ background:rgba(239,68,68,0.2); }
+      #v-provider-week .kw-slot.kw-slot-swipe-copy{ background:rgba(34,197,94,0.18); }
+      #v-provider-week .kw-slot-flat{ display:flex; align-items:center; justify-content:center; gap:6px; text-align:center; padding:10px 12px; min-height:48px; }
+      #v-provider-week .kw-slot-flat .kw-slot-flat-text{ font-size:14px; font-weight:700; color:#1a1a1a; }
+      #v-provider-week .kw-slot-flat .kw-slot-abhol-icon{ font-size:14px; }
       #v-provider-week .kw-cookbook-strip-wrap{ flex-shrink:0; background:linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(248,250,252,0.95) 50%, rgba(241,245,249,0.92) 100%); backdrop-filter:blur(40px); -webkit-backdrop-filter:blur(40px); border-bottom:1px solid rgba(0,0,0,0.06); padding:10px 0 14px; }
       #v-provider-week .kw-cookbook-drag-strip{ display:flex; flex-wrap:nowrap; align-items:center; gap:10px; padding:0 16px; overflow-x:auto; -webkit-overflow-scrolling:touch; scroll-snap-type:x proximity; }
       #v-provider-week .kw-smart-suggestions-strip .kw-suggestion-card{ scroll-snap-align:start; flex:0 0 auto; display:inline-flex; flex-direction:column; align-items:center; min-width:88px; max-width:88px; padding:10px 8px 8px; padding-right:28px; border-radius:16px; background:#fff; border:none; box-shadow:0 2px 12px rgba(0,0,0,0.06); position:relative; cursor:grab; user-select:none; transition:transform 0.15s, box-shadow 0.15s; }
@@ -7288,8 +7325,8 @@
       /* Wochenplan fullscreen: Topbar ausblenden, main ohne horizontales Scroll – applike */
       body.provider-week-active .topbar{ display:none !important; }
       body.provider-week-active main{ padding-top:0 !important; padding-left:0 !important; padding-right:0 !important; max-width:none !important; overflow-x:hidden !important; }
-      /* Tab-Nav: eckig, bündig unten (wie alle Anbieter-Seiten) */
-      body.provider-week-active #providerNavWrap{ position:fixed !important; bottom:0 !important; left:0 !important; right:0 !important; width:100% !important; z-index:1052 !important; border-radius:0 !important; }
+      /* Tab-Nav: im Wochenplan komplett ausblenden [cite: RESET WOCHENPLAN 2026-02-23] */
+      body.provider-week-active #providerNavWrap{ display:none !important; }
       /* Dashboard: Dein Wochenplan – klare Trennung von KPIs, App-Kasten, S25-Safe */
       #providerWeekSection .prov-card{ padding:var(--card-padding, 20px); border-radius:24px; box-shadow:0 4px 20px rgba(0,0,0,0.06); border:none; background:#fff; }
       #providerWeekSection{ margin-top:28px; padding:24px 16px 24px; padding-left:max(16px, env(safe-area-inset-left)); padding-right:max(16px, env(safe-area-inset-right)); background:#fff; border-radius:28px; box-shadow:0 4px 24px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04); }
@@ -8544,14 +8581,7 @@
   margin-top: 0 !important;
   margin-bottom: 0 !important;
 }
-/* X & Kamera: Immer über dem Bild, bewegen sich mit sticky Photo [cite: FINAL HARDWARE SYNC 2026-02-23] */
-#wizard[data-flow="listing"] .inserat-camera-float.btn-photo-icon-only {
-  position: absolute !important;
-  top: 12px !important;
-  right: 12px !important;
-  left: auto !important;
-  z-index: 20 !important;
-}
+/* X: Einziges Schließen-Element oben links [cite: UI CLEANUP 2026-02-23] */
 #wizard[data-flow="listing"] .close-wizard-x.close-mastercard,
 #wizard[data-flow="listing"] .inserat-photo-tile .close-wizard-x {
   position: absolute !important;
@@ -8618,6 +8648,51 @@
   flex-direction: row !important;
   flex-wrap: wrap !important;
 }
+/* Feedback-Liste: Allergene, Extras, Mehrweg, Vor Ort [cite: PIXEL-PERFECT 2026-02-23] */
+#wizard[data-flow="listing"] .feedback-list {
+  width: 100%;
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0;
+}
+#wizard[data-flow="listing"] .feedback-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 6px;
+  min-height: 24px;
+  padding: 8px 12px;
+  background: rgba(16, 185, 129, 0.08);
+  border-radius: 10px;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+#wizard[data-flow="listing"] .feedback-row .feedback-icon {
+  width: 20px;
+  min-width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  opacity: 0.8;
+  margin-top: 2px;
+  font-size: 16px;
+  line-height: 1;
+  text-align: center;
+}
+#wizard[data-flow="listing"] .feedback-row .feedback-text {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #0f172a;
+  line-height: 1.35;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
 /* Quick-Adjust: mittig unten (left:50% + transform in script.js) [cite: UNIFIED MASTERCARD 2026-02-23] */
 #wizard[data-flow="listing"] .inserat-quick-adjust-panel,
 #wizard[data-flow="listing"] .quick-adjust-sheet {
@@ -8661,4 +8736,21 @@
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
+}
+
+/* Demo-Modus Indikator (dezenter Badge, Klick zum Umschalten) */
+.demo-badge {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  z-index: 10000;
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  cursor: pointer;
 }
