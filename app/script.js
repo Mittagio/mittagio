@@ -6226,6 +6226,65 @@
       toast.style.opacity = '0';
     }, 3000);
   }
+  /** Quick-Edit Overlay: nur Preis und Menge, Fokus im Preisfeld [cite: Quick-Actions Swipe] */
+  function openQuickEditOverlay(offer){
+    if(!offer || typeof offers === 'undefined') return;
+    var bd = document.getElementById('quickEditBd');
+    var sheet = document.getElementById('quickEditSheet');
+    if(!bd){
+      bd = document.createElement('div');
+      bd.id = 'quickEditBd';
+      bd.className = 'backdrop';
+      bd.style.cssText = 'position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:1050; display:none; opacity:0; transition:opacity 0.25s;';
+      document.body.appendChild(bd);
+    }
+    if(!sheet){
+      sheet = document.createElement('div');
+      sheet.id = 'quickEditSheet';
+      sheet.className = 'sheet sheet--kitchen';
+      sheet.style.cssText = 'position:fixed; left:0; right:0; bottom:0; z-index:1051; background:#fff; border-radius:24px 24px 0 0; padding:24px; padding-bottom:calc(24px + env(safe-area-inset-bottom)); max-height:85vh; overflow-y:auto; transform:translateY(100%); transition:transform 0.3s cubic-bezier(0.4,0,0.2,1); box-shadow:0 -8px 32px rgba(0,0,0,0.15);';
+      document.body.appendChild(sheet);
+    }
+    var priceVal = Number(offer.price) != null && !Number.isNaN(Number(offer.price)) ? Number(offer.price) : 0;
+    var quantityVal = (offer.quantity != null && offer.quantity !== '') ? Number(offer.quantity) : (offer.portions != null ? Number(offer.portions) : '');
+    if(quantityVal === '' || Number.isNaN(quantityVal)) quantityVal = '';
+    var dishName = (offer.dish || offer.title || 'Gericht').trim() || 'Gericht';
+    sheet.innerHTML = '<div style="width:40px; height:4px; background:rgba(0,0,0,0.12); border-radius:2px; margin:0 auto 20px;"></div>' +
+      '<h3 style="margin:0 0 8px; font-size:20px; font-weight:900; color:#0f172a;">Schnell bearbeiten</h3>' +
+      '<p style="margin:0 0 20px; font-size:14px; color:#64748b;">' + (dishName.length > 40 ? dishName.substring(0,40) + '…' : dishName) + '</p>' +
+      '<label style="display:block; margin-bottom:8px; font-size:12px; font-weight:800; color:#64748b; text-transform:uppercase;">Preis (€)</label>' +
+      '<input type="number" step="0.01" min="0" id="quickEditPrice" placeholder="z.B. 5,99" value="' + (priceVal > 0 ? String(priceVal) : '') + '" style="width:100%; padding:14px 16px; border:2px solid #e2e8f0; border-radius:12px; font-size:16px; font-weight:700; margin-bottom:20px; box-sizing:border-box;" inputmode="decimal" />' +
+      '<label style="display:block; margin-bottom:8px; font-size:12px; font-weight:800; color:#64748b; text-transform:uppercase;">Menge (Portionen)</label>' +
+      '<input type="number" min="0" id="quickEditQuantity" placeholder="z.B. 30" value="' + (quantityVal !== '' ? String(quantityVal) : '') + '" style="width:100%; padding:14px 16px; border:2px solid #e2e8f0; border-radius:12px; font-size:16px; font-weight:700; margin-bottom:24px; box-sizing:border-box;" inputmode="numeric" />' +
+      '<button type="button" id="quickEditApply" style="width:100%; min-height:56px; border-radius:16px; border:none; background:#222; color:#fff; font-size:16px; font-weight:800; cursor:pointer;">Speichern</button>';
+    var priceInp = document.getElementById('quickEditPrice');
+    var quantityInp = document.getElementById('quickEditQuantity');
+    document.getElementById('quickEditApply').onclick = function(){
+      try { if(navigator.vibrate) navigator.vibrate(10); } catch(e){}
+      var newPrice = priceInp.value.trim() !== '' ? parseFloat(priceInp.value.replace(',', '.')) : NaN;
+      var newQty = quantityInp.value.trim() !== '' ? parseInt(quantityInp.value, 10) : undefined;
+      var o = offers.find(function(x){ return String(x.id) === String(offer.id); });
+      if(o){
+        if(!Number.isNaN(newPrice) && newPrice >= 0) o.price = Math.round(newPrice * 100) / 100;
+        if(newQty !== undefined && newQty >= 0) o.quantity = newQty;
+        if(typeof save === 'function' && typeof LS !== 'undefined') save(LS.offers, offers);
+      }
+      bd.style.display = 'none';
+      bd.style.opacity = '0';
+      sheet.style.transform = 'translateY(100%)';
+      if(typeof showToast === 'function') showToast('Gespeichert');
+      if(typeof renderProviderHome === 'function') renderProviderHome();
+    };
+    function close(){ bd.style.opacity = '0'; sheet.style.transform = 'translateY(100%)'; setTimeout(function(){ bd.style.display = 'none'; }, 300); }
+    bd.onclick = function(ev){ if(ev.target === bd) close(); };
+    bd.style.display = 'block';
+    requestAnimationFrame(function(){
+      sheet.style.transform = 'translateY(0)';
+      if(priceInp){ priceInp.focus(); priceInp.select && priceInp.select(); }
+    });
+  }
+  if(typeof window !== 'undefined') window.openQuickEditOverlay = openQuickEditOverlay;
+
   /** Power-Sales Overlay: Rabatt-Pills (-10% bis -50%), Festpreis, Badge „Letzte Portionen“ [cite: S25 2026-02-23] */
   function openPowerSalesOverlay(offer){
     if(!offer || typeof offers === 'undefined') return;
@@ -9547,7 +9606,7 @@
     const todayKey = isoDate(new Date());
     const mineAll = offers.filter(o => o.providerId === providerId());
     const mineActive = mineAll.filter(o => o.active !== false);
-    const mineToday = mineActive.filter(o => o.day === todayKey);
+    const mineToday = mineAll.filter(o => o.day === todayKey);
     
     // Header: Begrüßung & Datum
     const firstName = (profile.name || '').trim().split(/\s+/)[0] || 'Chef';
@@ -9800,6 +9859,17 @@
           var cardWrap = document.createElement('div');
           cardWrap.innerHTML = cardHtml;
           var card = cardWrap.firstElementChild || cardWrap;
+          if(!isLive){
+            card.classList.add('prov-list-item-sold-out');
+            var imgWrap = card.querySelector('.prov-list-item-img-wrap');
+            if(imgWrap){
+              var banner = document.createElement('div');
+              banner.className = 'prov-list-item-ausverkauft-banner';
+              banner.setAttribute('aria-label', 'Ausverkauft');
+              banner.textContent = 'Ausverkauft';
+              imgWrap.appendChild(banner);
+            }
+          }
           (function(offerId){
             card.onclick = function(ev){
               if(ev.target && ev.target.closest && ev.target.closest('.dashboard-pillar-icon')) return;
@@ -9815,22 +9885,60 @@
             card.classList.add('prov-card-emerald-glow');
             setTimeout(function(){ card.classList.remove('prov-card-emerald-glow'); try{ sessionStorage.removeItem('mittagio_last_saved_offer_id'); }catch(e){} }, 1400);
           }
-          providerActiveListings.appendChild(card);
+          var swipeWrap = document.createElement('div');
+          swipeWrap.className = 'dashboard-listing-swipe-wrap';
+          swipeWrap.setAttribute('data-offer-id', String(o.id));
+          var swipeLeftActions = document.createElement('div');
+          swipeLeftActions.className = 'dashboard-swipe-actions dashboard-swipe-actions-left';
+          swipeLeftActions.setAttribute('aria-hidden', 'true');
+          swipeLeftActions.innerHTML = '<span class="dashboard-swipe-icon">🗑</span><span class="dashboard-swipe-label">Ausverkauft</span>';
+          var swipeRightActions = document.createElement('div');
+          swipeRightActions.className = 'dashboard-swipe-actions dashboard-swipe-actions-right';
+          swipeRightActions.setAttribute('aria-hidden', 'true');
+          swipeRightActions.innerHTML = '<span class="dashboard-swipe-icon">✏️</span><span class="dashboard-swipe-label">Preis & Menge</span>';
+          var swipeLayer = document.createElement('div');
+          swipeLayer.className = 'dashboard-listing-swipe';
+          swipeLayer.appendChild(card);
+          swipeWrap.appendChild(swipeLeftActions);
+          swipeWrap.appendChild(swipeRightActions);
+          swipeWrap.appendChild(swipeLayer);
+          providerActiveListings.appendChild(swipeWrap);
         });
         if(!providerActiveListings._offerSwipeAttached){
           providerActiveListings._offerSwipeAttached = true;
-          var swipeStartX = 0, swipeStartY = 0, swipeCard = null;
+          var swipeStartX = 0, swipeStartY = 0, swipeCard = null, swipeWrapEl = null, swipeLayerEl = null;
           providerActiveListings.addEventListener('touchstart', function(ev){
             if(ev.target.closest('.dashboard-pillar-icon')) return;
             var card = ev.target.closest('.prov-card[data-offer-id]');
-            if(card){ swipeStartX = ev.touches[0].clientX; swipeStartY = ev.touches[0].clientY; swipeCard = card; }
+            if(!card) return;
+            var wrap = card.closest('.dashboard-listing-swipe-wrap');
+            if(wrap){
+              swipeStartX = ev.touches[0].clientX;
+              swipeStartY = ev.touches[0].clientY;
+              swipeCard = card;
+              swipeWrapEl = wrap;
+              swipeLayerEl = wrap.querySelector('.dashboard-listing-swipe');
+            }
           }, { passive: true });
+          providerActiveListings.addEventListener('touchmove', function(ev){
+            if(!swipeLayerEl || !ev.touches[0]) return;
+            var dx = ev.touches[0].clientX - swipeStartX;
+            var dy = ev.touches[0].clientY - swipeStartY;
+            if(Math.abs(dx) < Math.abs(dy)) return;
+            var clamp = 120;
+            dx = Math.max(-clamp, Math.min(clamp, dx));
+            swipeLayerEl.style.transform = 'translateX(' + dx + 'px)';
+            ev.preventDefault();
+          }, { passive: false });
           providerActiveListings.addEventListener('touchend', function(ev){
-            if(!swipeCard || !ev.changedTouches[0]) return;
+            if(!swipeCard || !swipeWrapEl || !swipeLayerEl || !ev.changedTouches[0]) return;
             var dx = ev.changedTouches[0].clientX - swipeStartX;
             var dy = ev.changedTouches[0].clientY - swipeStartY;
             var id = swipeCard.getAttribute('data-offer-id');
+            swipeLayerEl.style.transform = '';
             swipeCard = null;
+            swipeWrapEl = null;
+            swipeLayerEl = null;
             if(Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy)) return;
             var offer = typeof offers !== 'undefined' && offers ? offers.find(function(o){ return String(o.id) === String(id); }) : null;
             if(!offer) return;
@@ -9838,13 +9946,20 @@
               ev.preventDefault();
               offer.active = false;
               if(typeof save === 'function' && typeof LS !== 'undefined') save(LS.offers, offers);
-              if(typeof vibrate === 'function') vibrate(10); else if(navigator.vibrate) navigator.vibrate(10);
+              try { if(navigator.vibrate) navigator.vibrate([15, 30, 15]); } catch(e){}
               if(typeof showToast === 'function') showToast('Ausverkauft');
               if(typeof renderProviderHome === 'function') renderProviderHome();
             } else if(dx > 50){
               ev.preventDefault();
-              if(typeof vibrate === 'function') vibrate(10); else if(navigator.vibrate) navigator.vibrate(10);
-              if(typeof openPowerSalesOverlay === 'function') openPowerSalesOverlay(offer); else if(typeof showToast === 'function') showToast('Power-Sales: Rabatt & Letzte Portionen');
+              try { if(navigator.vibrate) navigator.vibrate(10); } catch(e){}
+              if(offer.active === false){
+                offer.active = true;
+                if(typeof save === 'function' && typeof LS !== 'undefined') save(LS.offers, offers);
+                if(typeof showToast === 'function') showToast('Wieder verfügbar');
+                if(typeof renderProviderHome === 'function') renderProviderHome();
+              } else {
+                if(typeof openQuickEditOverlay === 'function') openQuickEditOverlay(offer); else if(typeof openPowerSalesOverlay === 'function') openPowerSalesOverlay(offer);
+              }
             }
           }, { passive: false });
         }
