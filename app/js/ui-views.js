@@ -47,7 +47,7 @@
       var titles = { dineIn: 'Vor Ort', reuse: 'Mehrweg', allergens: 'Allergene', extras: 'Extras', pickupCode: 'Abholnummer' };
       pillarsBlock = '<div class="prov-list-item-pillars dashboard-five-pillars">' + pillarIcons.map(function(p) {
         var active = !!p.active;
-        var cls = 'dashboard-pillar-icon' + (active ? ' active' : ' inactive');
+        var cls = 'dashboard-pillar-icon icon-pill' + (active ? ' active' : ' inactive');
         var title = titles[p.pillar] || p.pillar;
         return '<span class="' + cls + '" data-pillar="' + esc(String(p.pillar)) + '" role="button" tabindex="0" title="' + esc(title) + '" aria-label="' + esc(title) + '">' + esc(String(p.icon)) + '</span>';
       }).join('') + '</div>';
@@ -62,9 +62,8 @@
       '<div class="prov-list-item-body" style="flex:1;padding-left:16px;display:flex;flex-direction:column;min-width:0;">' +
         '<h3 class="prov-list-item-title" style="font-family:\'Montserrat\',sans-serif;font-weight:900;font-size:16px;margin:0;color:#1a1a1a;line-height:1.3;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">' + name + '</h3>' +
         pillarsBlock +
-        '<div class="prov-list-item-meta-row" style="display:flex;justify-content:space-between;align-items:center;margin-top:auto;">' +
-          '<span style="font-weight:700;font-size:15px;">' + price + '</span>' +
-          '<span style="font-size:12px;color:#6b7280;">' + time + '</span>' +
+        '<div class="prov-list-item-meta-row" style="display:flex;justify-content:flex-start;align-items:center;margin-top:auto;">' +
+          '<span class="price-tag" style="font-weight:800;font-size:1.25rem;">' + price + '</span>' +
         '</div>' +
       '</div>' +
     '</div>';

@@ -1092,16 +1092,16 @@
         <div class="dashboard-kasten dashboard-kasten-kpis sticky-sub-bar" id="dashboardKpisBlock">
           <div class="prov-stats-stolz" style="display:flex; justify-content:space-between; align-items:flex-end; border:none; padding:0;">
             <div id="kpiTagesessen" role="button" tabindex="0" style="text-align:center; cursor:pointer; min-height:40px; flex:1;" onclick="document.getElementById('providerActiveListingsSection')?.scrollIntoView({behavior:'smooth'})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); document.getElementById('providerActiveListingsSection')?.scrollIntoView({behavior:'smooth'});}" title="Tagesessen">
-              <p id="kpiLabelTagesessen" class="kpi-label" style="margin:0 0 2px;">Tagesessen</p>
+              <p id="kpiLabelTagesessen" class="kpi-label" style="margin:0 0 2px;">Aktive Tagesessen heute</p>
               <p id="dashboardTagesessenCount" style="margin:0;">0</p>
             </div>
             <div id="kpiBestellungen" role="button" tabindex="0" style="text-align:center; padding:0 16px; cursor:pointer; min-height:40px; flex:1;" onclick="showProviderPickups()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); showProviderPickups();}" title="Abholnummern">
-              <p id="kpiLabelAbholungen" class="kpi-label" style="margin:0 0 2px;">Nummern</p>
+              <p id="kpiLabelAbholungen" class="kpi-label" style="margin:0 0 2px;">Abholnummern heute</p>
               <p id="dashboardAbholungenCount" style="margin:0;">0</p>
             </div>
             <div id="kpiUmsatz" role="button" tabindex="0" style="text-align:right; cursor:pointer; min-height:40px; flex:1;" onclick="showProviderBilling()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); showProviderBilling();}" title="Tagesumsatz">
-              <p id="kpiLabelUmsatz" class="kpi-label" style="margin:0 0 2px;">Umsatz heute</p>
-              <p id="dashboardUmsatzToday" style="margin:0;">0,00 €</p>
+              <p id="kpiLabelUmsatz" class="kpi-label kpi-label-umsatz" style="margin:0 0 2px;">Umsatz Heute</p>
+              <p id="dashboardUmsatzToday" class="kpi-umsatz-value" style="margin:0;">0,00 €</p>
             </div>
           </div>
         </div>
@@ -2375,7 +2375,7 @@
     </div>
     <nav class="bottom bottom-nav provider-nav-light provider-nav-pill" id="providerNav" style="display:flex; justify-content:space-between; align-items:center;">
       <button class="navbtn active" data-pgo="provider-home" title="Dashboard"><div class="ico" data-icon="layoutDashboard" data-icon-only="1"></div><span class="provider-nav-label">Dashboard</span></button>
-      <button class="navbtn" data-pgo="provider-pickups" title="Abholnummern"><div class="ico navbtn-emoji" style="font-size:1.2em;line-height:1;">🧾</div><span class="provider-nav-label">Nummern</span></button>
+      <button class="navbtn" data-pgo="provider-pickups" title="Abholnummern"><div class="ico navbtn-emoji" style="font-size:1.2em;line-height:1;">🧾</div><span class="provider-nav-label">Abholnummern</span></button>
       <button class="navbtn" data-pgo="provider-week" title="Wochenplan"><div class="ico" data-icon="calendar" data-icon-only="1"></div><span class="provider-nav-label">Wochenplan</span></button>
       <button class="navbtn" data-pgo="provider-profile" title="Profil"><div class="ico" data-icon="user" data-icon-only="1"></div><span class="provider-nav-label">Profil</span></button>
     </nav>

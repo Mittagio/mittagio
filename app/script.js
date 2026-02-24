@@ -9398,7 +9398,7 @@
     else { if(typeof openDishFlow === 'function') openDishFlow(); }
   }, true);
   const btnProviderNavBack = document.getElementById('btnProviderNavBack');
-  if(btnProviderNavBack) btnProviderNavBack.onclick = function(){ if(typeof haptic==='function') haptic(6); if(typeof showSection==='function') showSection('dashboard'); else showProviderHome(); };
+  if(btnProviderNavBack) btnProviderNavBack.onclick = function(){ if(typeof handleBack==='function') handleBack(); else if(typeof showSection==='function') showSection('dashboard'); else showProviderHome(); };
 
   // Header Icon-Werkzeugleiste: Kochbuch (📖) + Share – identisch auf Dashboard, Abholnummern, Wochenplan
   document.addEventListener('click', function(e){
@@ -9776,17 +9776,17 @@
           const abholnummerGray = !hasPickupNumber;
           var pillarIcons = [
             { icon: '🍴', active: hasDineIn, pillar: 'dineIn' },
+            { icon: '🧾', active: hasPickupNumber, pillar: 'pickupCode' },
             { icon: '🔄', active: hasReusable, pillar: 'reuse' },
             { icon: '⚠️', active: hasAllergens, pillar: 'allergens' },
-            { icon: '+', active: hasExtras, pillar: 'extras' },
-            { icon: '🧾', active: hasPickupNumber, pillar: 'pickupCode' }
+            { icon: '➕', active: hasExtras, pillar: 'extras' }
           ];
           var cardHtml = typeof renderInseratCard === 'function' ? renderInseratCard({
             id: o.id,
             image: imgUrl,
             name: dishName,
             price: euro(d.price),
-            time: (d.pickupWindow || '').trim() || abholnummerLabel,
+            time: '',
             pillarIcons: pillarIcons,
             dataOfferId: String(o.id),
             hasPickupCode: hasPickupNumber
@@ -13915,7 +13915,7 @@
   var weekHeaderBackBtn = document.getElementById('weekHeaderBackBtn');
   if(weekHeaderBackBtn && !weekHeaderBackBtn._bound){
     weekHeaderBackBtn._bound = true;
-    weekHeaderBackBtn.onclick = function(){ if(typeof haptic==='function') haptic(6); if(typeof showSection==='function') showSection('dashboard'); else if(typeof showProviderHome==='function') showProviderHome(); };
+    weekHeaderBackBtn.onclick = function(){ if(typeof handleBack==='function') handleBack(); else if(typeof showSection==='function') showSection('dashboard'); else if(typeof showProviderHome==='function') showProviderHome(); };
   }
   const btnWeekRefresh = document.getElementById('btnWeekRefresh');
   if(btnWeekRefresh){

@@ -5,6 +5,17 @@
     #step-name input:focus, .input-giant-name:focus, .input-description:focus, .ghost-input:focus { border-bottom: 1px solid #222222 !important; }
     /* 1. DIE ANIMATIONS-KURVE (S25-Standard) [cite: 2026-02-21] */
     :root { --s25-slide-curve: cubic-bezier(0.2, 0.8, 0.2, 1); }
+    /* Airbnb Branding & UI [cite: Dashboard 2.1] */
+    :root {
+      --airbnb-black: #222222;
+      --airbnb-white: #ffffff;
+      --airbnb-border: #ebebeb;
+      --price-yellow: #FFD700;
+      --status-active-green: #2ecc71;
+      --status-active-blue: #3498db;
+      --status-active-orange: #f39c12;
+      --status-inactive: #d1d1d1;
+    }
     /* Flying-Dish: Sternschnuppen-Animation für Magic-Game [cite: 2026-02-23] */
     .flying-dish {
       position: fixed;
@@ -4706,7 +4717,7 @@
     #providerNavWrap.provider-nav-wrap-pill{
       bottom: 0 !important; left: 0 !important; right: 0 !important;
       width: 100% !important; box-sizing: border-box; z-index: 1052 !important;
-      border-radius: 0 !important;
+      border-radius: 0 !important; margin: 0 !important;
     }
     #providerNavWrap #providerNav{
       min-height: 75px;
@@ -4716,6 +4727,23 @@
       align-items: center;
       border-radius: 0 !important;
     }
+    /* Airbnb-Style Footer: Reinweiß, feine Trennlinie, safe-area [cite: Dashboard 2.1] */
+    body.provider-mode #providerNavWrap.provider-nav-wrap-pill{
+      background: var(--airbnb-white, #ffffff) !important;
+      border-top: 1px solid var(--airbnb-border, #ebebeb) !important;
+    }
+    body.provider-mode #providerNav.provider-nav-pill{
+      background: var(--airbnb-white, #ffffff) !important;
+      backdrop-filter: none; -webkit-backdrop-filter: none;
+      box-shadow: none !important;
+      border-top: none !important;
+    }
+    body.provider-mode #providerNavWrap.provider-nav-wrap-pill .navbtn{ color:var(--airbnb-black, #222222) !important; }
+    body.provider-mode #providerNavWrap.provider-nav-wrap-pill .navbtn:not(.active){ opacity:0.5 !important; }
+    body.provider-mode #providerNavWrap.provider-nav-wrap-pill .navbtn.active{ opacity:1 !important; font-weight:800 !important; }
+    body.provider-mode #providerNavWrap.provider-nav-wrap-pill .navbtn .provider-nav-label{ color:inherit !important; }
+    body.provider-mode #providerNavWrap.provider-nav-wrap-pill .navbtn .ico svg{ color:var(--airbnb-black, #222222) !important; stroke:var(--airbnb-black, #222222) !important; }
+    body.provider-mode #providerNavWrap.provider-nav-wrap-pill .navbtn.active .ico{ background:rgba(0,0,0,0.06) !important; box-shadow:none !important; border-radius:8px !important; }
     [id^="v-provider-"] .panel h1,[id^="v-provider-"] .panel h2,[id^="v-provider-"] .panel h3,[id^="v-provider-"] .panel .section-title{ color:var(--provider-text) !important; }
     [id^="v-provider-"] .panel .hint{ color:var(--provider-text-muted) !important; }
     /* Dynamisch eingefügter Inhalt: immer lesbar */
@@ -6602,11 +6630,12 @@
     #v-provider-home .dashboard-kasten-header .prov-page-header-title{ font-size: 20px !important; font-weight: 900 !important; letter-spacing: -0.03em; color: #0f172a !important; }
     /* KPI-Kasten: .sticky-sub-bar (top: 60px), background #f5f5f0 – kein Durchscheinen */
     #v-provider-home .dashboard-kasten-kpis{
-      padding:18px env(safe-area-inset-right, 0) 18px env(safe-area-inset-left, 0);
+      padding:18px env(safe-area-inset-right, 0) 28px env(safe-area-inset-left, 0);
       padding-left:max(16px, env(safe-area-inset-left, 0));
       padding-right:max(16px, env(safe-area-inset-right, 0));
       background-color:#f5f5f0 !important;
       flex-shrink:0;
+      margin-bottom:0;
     }
     #v-provider-home .dashboard-kasten-kpis::after{
       content:''; position:absolute; left:0; right:0; bottom:0; height:1px;
@@ -6634,7 +6663,9 @@
     }
     #v-provider-home .dashboard-kasten-kpis #dashboardTagesessenCount{ color:#1a1a1a !important; }
     #v-provider-home .dashboard-kasten-kpis #dashboardAbholungenCount{ color:#121826 !important; }
-    #v-provider-home .dashboard-kasten-kpis #dashboardUmsatzToday{ color:#16a34a !important; }
+    #v-provider-home .dashboard-kasten-kpis #dashboardUmsatzToday,
+    #v-provider-home .dashboard-kasten-kpis .kpi-umsatz-value{ color:var(--status-active-green) !important; font-weight:900 !important; }
+    #v-provider-home .dashboard-kasten-kpis .kpi-label-umsatz{ font-weight:900 !important; color:var(--status-active-green) !important; }
     #v-provider-home .dashboard-kasten-angebote{
       padding:14px env(safe-area-inset-right, 0) 14px env(safe-area-inset-left, 0);
       max-width:100%; box-sizing:border-box;
@@ -6682,12 +6713,16 @@
     #v-provider-home .prov-list-item-body{ flex:1; min-width:0; display:flex; flex-direction:column; justify-content:center; }
     #v-provider-home .prov-list-item-pillars{ display:flex; gap:6px; margin-bottom:6px; flex-shrink:0; }
     #v-provider-home .prov-list-item-pillars .pillar-mini{ flex-shrink:0; }
-    /* S25 Dashboard: 5 Säulen – aktiv #222, inaktiv opacity 0.15, Klick = Deep-Link Mastercard [cite: 2026-02-23] */
+    /* S25 Dashboard: 5 Säulen – aktiv leuchtend, inaktiv dezent [cite: Dashboard 2.1] */
     #v-provider-home .dashboard-five-pillars{ display:flex; align-items:center; gap:8px; margin-top:6px; margin-bottom:6px; flex-wrap:wrap; }
-    #v-provider-home .dashboard-pillar-icon{ width:32px; height:32px; border-radius:8px; display:inline-flex; align-items:center; justify-content:center; font-size:16px; cursor:pointer; -webkit-tap-highlight-color:transparent; transition:opacity 0.15s; }
-    #v-provider-home .dashboard-pillar-icon.active{ color:#222222; opacity:1; }
-    #v-provider-home .dashboard-pillar-icon.inactive{ opacity:0.15; color:#222222; }
+    #v-provider-home .dashboard-pillar-icon.icon-pill{ width:32px; height:32px; border-radius:8px; display:inline-flex; align-items:center; justify-content:center; font-size:16px; cursor:pointer; -webkit-tap-highlight-color:transparent; transition:all 0.3s ease; }
+    #v-provider-home .dashboard-pillar-icon.icon-pill.inactive{ opacity:0.4; filter:grayscale(100%); color:var(--status-inactive); }
+    #v-provider-home .dashboard-pillar-icon.icon-pill.active{ opacity:1; filter:grayscale(0%) drop-shadow(0 0 5px rgba(243,156,18,0.3)); color:#222222; }
+    #v-provider-home .dashboard-pillar-icon:not(.icon-pill){ width:32px; height:32px; border-radius:8px; display:inline-flex; align-items:center; justify-content:center; font-size:16px; cursor:pointer; -webkit-tap-highlight-color:transparent; transition:opacity 0.15s; }
+    #v-provider-home .dashboard-pillar-icon:not(.icon-pill).active{ color:#222222; opacity:1; }
+    #v-provider-home .dashboard-pillar-icon:not(.icon-pill).inactive{ opacity:0.15; color:#222222; }
     #v-provider-home .dashboard-pillar-icon:active{ transform:scale(0.95); }
+    #v-provider-home .prov-list-item-meta-row .price-tag{ color:var(--price-yellow) !important; font-weight:800 !important; font-size:1.25rem !important; }
     #v-provider-home .prov-list-item-title{ margin:0 0 4px; font-size:18px; font-weight:800; color:#0f172a; line-height:1.3; }
     #v-provider-home .prov-list-item-meta-row{ display:flex; gap:12px; font-size:13px; font-weight:800; color:#64748b; margin-bottom:8px; }
     #v-provider-home .prov-list-item-abholnummer{

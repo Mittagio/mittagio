@@ -290,9 +290,9 @@
     return !!(main && main.style.display === 'none');
   }
 
-  /** Andere Sheets/Modals offen (KW-Selector, Magic-Sheet, CreateFlow)? [cite: GLOBAL NATIVE NAV 2026-02-23] */
+  /** Andere Sheets/Modals offen (KW-Selector, Magic-Sheet, CreateFlow, WeekAdd)? [cite: GLOBAL NATIVE NAV 2026-02-23] */
   function isAnySheetOpen(){
-    var ids = ['kwSelectorSheet','weekMagicSheet','createFlowSheet','quickPostSheet','publishFeeSheet','codeSheet','codeBd'];
+    var ids = ['kwSelectorSheet','weekMagicSheet','createFlowSheet','quickPostSheet','publishFeeSheet','codeSheet','codeBd','weekAddSheet'];
     for (var i = 0; i < ids.length; i++) {
       var el = document.getElementById(ids[i]);
       if (el && (el.classList.contains('active') || (el.style && el.style.display !== 'none'))) return true;
@@ -300,9 +300,11 @@
     var kwBd = document.getElementById('kwSelectorBd');
     var magicBd = document.getElementById('weekMagicSheetBd');
     var createBd = document.getElementById('createFlowBd');
+    var weekAddBd = document.getElementById('weekAddSheetBd');
     if (kwBd && kwBd.style.display !== 'none') return true;
     if (magicBd && magicBd.style.display !== 'none') return true;
     if (createBd && createBd.classList.contains('active')) return true;
+    if (weekAddBd && weekAddBd.style.display !== 'none') return true;
     return false;
   }
 
@@ -327,7 +329,37 @@
     window.__navSuppressPush = false;
   }
 
-  /** Popstate: Hardware-Zurück – Modal schließen oder zum Dashboard [cite: GLOBAL NATIVE NAV 2026-02-23] */
+  /** handleBack: Zentrale Zurück-Logik – nutzt history.back() für echten Verlauf [cite: DASHBOARD 2.1] */
+  function handleBack(){
+    try { if (typeof haptic === 'function') haptic(6); else if (navigator.vibrate) navigator.vibrate(10); } catch(e){}
+    if (window.mode === 'provider') {
+      if (isWizardOpen() && typeof closeMastercard === 'function') {
+        closeMastercard();
+        return;
+      }
+      if (isProfileSubOpen() && typeof showProviderProfileSub === 'function') {
+        showProviderProfileSub(null);
+        return;
+      }
+      if (isAnySheetOpen()) {
+        if (typeof closeWeekAddSheet === 'function') closeWeekAddSheet();
+        if (typeof closeWeekMagicSheet === 'function') closeWeekMagicSheet();
+        if (typeof closeKWSelector === 'function') closeKWSelector();
+        if (typeof closeCreateFlowSheet === 'function') closeCreateFlowSheet();
+        if (typeof closeQuickPostSheet === 'function') closeQuickPostSheet();
+        if (typeof closePublishFeeModal === 'function') closePublishFeeModal();
+        return;
+      }
+    }
+    if (typeof history !== 'undefined' && history.length > 1) {
+      history.back();
+    } else {
+      if (window.mode === 'provider' && typeof showProviderHome === 'function') showProviderHome();
+      else if (typeof showDiscover === 'function') showDiscover();
+    }
+  }
+
+  /** Popstate: Hardware-Zurück – UI aus event.state wiederherstellen [cite: DASHBOARD 2.1] */
   function initPopstateHandler(){
     window.addEventListener('popstate', function(event){
       try { if (navigator.vibrate) navigator.vibrate(10); } catch(e){}
@@ -341,6 +373,7 @@
         return;
       }
       if (isAnySheetOpen()) {
+        if (typeof closeWeekAddSheet === 'function') closeWeekAddSheet();
         if (typeof closeWeekMagicSheet === 'function') closeWeekMagicSheet();
         if (typeof closeKWSelector === 'function') closeKWSelector();
         if (typeof closeCreateFlowSheet === 'function') closeCreateFlowSheet();
@@ -348,9 +381,17 @@
         if (typeof closePublishFeeModal === 'function') closePublishFeeModal();
         return;
       }
-      var current = getCurrentSection();
-      if (current && current !== 'dashboard') {
-        showSection('dashboard', false);
+      var state = event.state;
+      if (state && state.section) {
+        showSection(state.section, false);
+        if (state.section === 'week') {
+          if (typeof state.week === 'number') window.weekPlanKWIndex = state.week;
+          if (typeof state.day === 'string') window.weekPlanDay = state.day;
+          if (typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard();
+        }
+      } else {
+        var current = getCurrentSection();
+        if (current && current !== 'dashboard') showSection('dashboard', false);
       }
     });
   }
@@ -642,6 +683,7 @@
   window.showProviderBilling = showProviderBilling;
   window.showCheckout = showCheckout;
   window.handleLogoClick = handleLogoClick;
+  window.handleBack = handleBack;
   window.pushViewState = pushViewState;
   window.openCodeSheetWithOrder = openCodeSheetWithOrder;
   window.showPickupCode = showPickupCode;
