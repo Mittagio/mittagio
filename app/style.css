@@ -8559,13 +8559,13 @@
   left: 24px !important;
   z-index: 999 !important;
 }
-/* Content-Sheet: Zero Gap – fast bündig mit 24px-Abrundung [cite: REFACTOR 2026-02-23] */
+/* Content-Sheet: Zero Gap – fast bündig mit 24px-Abrundung [cite: S25 PREMIUM 2026-02-23] */
 #wizard[data-flow="listing"] .inserat-content-sheet {
   background: #ffffff !important;
   border-top-left-radius: 24px !important;
   border-top-right-radius: 24px !important;
   margin-top: -19px !important;
-  padding-top: 6px !important;
+  padding-top: 4px !important;
   position: relative;
   z-index: 2;
 }
@@ -8624,6 +8624,14 @@
   margin-bottom: 0 !important;
   border-radius: 0 !important;
   padding-bottom: calc(16px + env(safe-area-inset-bottom, 0)) !important;
+}
+/* Validation Error: sanfter roter Schimmer [cite: S25 PREMIUM 2026-02-23] */
+#wizard[data-flow="listing"] .inserat-validation-error {
+  animation: inserat-validation-shimmer 0.5s ease;
+}
+@keyframes inserat-validation-shimmer {
+  0%, 100% { box-shadow: 0 0 0 0 transparent; }
+  50% { box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.25); }
 }
 /* Anti-Flash: Farbwechsel weich [cite: Refactor Event Handlers 2026-02-23] */
 #wizard[data-flow="listing"] .category-pill,

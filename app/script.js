@@ -14421,21 +14421,22 @@
   let w = { kind:null, step:0, data:{}, ctx:{} };
   let publishFeePendingOffer = null;
 
+  /** Pro-Metzger: Gesetzliche Kürzel (EU VO 1169/2011 Anhang II) [cite: S25 PREMIUM 2026-02-23] */
   const ALLERGENS_14 = [
-    {name:'Gluten', short:'GL'},
-    {name:'Krebstiere', short:'KR'},
-    {name:'Eier', short:'EI'},
-    {name:'Fisch', short:'FI'},
-    {name:'Erdnüsse', short:'EN'},
-    {name:'Soja', short:'SO'},
-    {name:'Milch', short:'MI'},
-    {name:'Schalenfrüchte', short:'SF'},
-    {name:'Sellerie', short:'SE'},
-    {name:'Senf', short:'SN'},
-    {name:'Sesam', short:'SS'},
-    {name:'Sulfite', short:'SU'},
-    {name:'Lupinen', short:'LU'},
-    {name:'Weichtiere', short:'WE'}
+    {name:'Glutenhaltiges Getreide', short:'GL', legal:'A'},
+    {name:'Krebstiere', short:'KR', legal:'B'},
+    {name:'Eier', short:'EI', legal:'C'},
+    {name:'Fisch', short:'FI', legal:'D'},
+    {name:'Erdnüsse', short:'EN', legal:'E'},
+    {name:'Soja', short:'SO', legal:'F'},
+    {name:'Milch/Laktose', short:'MI', legal:'G'},
+    {name:'Schalenfrüchte', short:'SF', legal:'H'},
+    {name:'Sellerie', short:'SE', legal:'L'},
+    {name:'Senf', short:'SN', legal:'M'},
+    {name:'Sesam', short:'SS', legal:'N'},
+    {name:'Sulfite', short:'SU', legal:'O'},
+    {name:'Lupinen', short:'LU', legal:'P'},
+    {name:'Weichtiere', short:'WE', legal:'R'}
   ];
   /** Emoji pro Allergen (für kleine Pills). */
   const ALLERGEN_EMOJI = { GL:'🌾', KR:'🦐', EI:'🥚', FI:'🐟', EN:'🥜', SO:'🫘', MI:'🥛', SF:'🌰', SE:'🥬', SN:'🟡', SS:'⚪', SU:'🍷', LU:'🫘', WE:'🦑' };
@@ -15855,9 +15856,9 @@
       inputDish.rows=1;
       inputDish.className='ghost-input inserat-detail-style-title magnet-input inserat-gericht-name-extra input-giant-name inserat-name-textarea';
       inputDish.value=w.data.dish||'';
-      inputDish.placeholder='z.B. Jägerschnitzel';
+      inputDish.placeholder='Was bietest du heute an?';
       inputDish.autocomplete='off';
-      inputDish.style.cssText='flex:1; color:#1a1a1a; font-family:\'Montserrat\',sans-serif; font-weight:900; font-style:normal; box-sizing:border-box; border:none; background:transparent; outline:none; padding-right:32px; padding-top:4px; padding-bottom:4px; resize:none; overflow:hidden; min-height:36px;';
+      inputDish.style.cssText='flex:1; color:#1a1a1a; font-family:system-ui,-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,sans-serif; font-weight:800; font-style:normal; box-sizing:border-box; border:none; background:transparent; outline:none; padding-right:32px; padding-top:4px; padding-bottom:4px; resize:none; overflow:hidden; min-height:36px; text-align:center;';
       function adjustTitleFontSize(){
         var el = inputDish;
         if(!el || !el.offsetParent) return;
@@ -15888,16 +15889,11 @@
       var descriptionTextarea=document.createElement('textarea');
       descriptionTextarea.id='gerichtDesc';
       descriptionTextarea.className='input-description';
-      descriptionTextarea.placeholder='Kurze Beschreibung (z.B. Zutaten, Beilagen)';
+      descriptionTextarea.placeholder='Zutaten oder Besonderheiten...';
       descriptionTextarea.value=w.data.description||'';
       descriptionTextarea.style.cssText='width:100%; border:none; font-size:14px; color:#64748b; resize:none; padding:4px 0 2px 0; margin:0; text-align:center; background:transparent; outline:none; box-sizing:border-box; min-height:36px;';
       descriptionTextarea.oninput=function(){ w.data.description=descriptionTextarea.value; saveDraft(); };
-      var descHelp=document.createElement('p');
-      descHelp.className='inserat-desc-help';
-      descHelp.textContent='Was macht dein Gericht besonders? Zutaten?';
-      descHelp.style.cssText='margin:4px 0 0 0; font-size:11px; color:#94a3b8; text-align:center;';
       descWrap.appendChild(descriptionTextarea);
-      descWrap.appendChild(descHelp);
       contentSheet.appendChild(descWrap);
 
       // ========== 4. Kategorie-Pills (Green Categories: Fleisch, Veggie, Vegan) [cite: 2026-02-23] ==========
@@ -16031,8 +16027,8 @@
         if(vorOrtActive){
           var vorOrt=document.createElement('div');
           vorOrt.className='inserat-vorort-hint';
-          vorOrt.style.cssText='font-size:12px; color:#64748b; padding:6px 12px; background:#f8fafc; border-radius:8px;';
-          vorOrt.textContent='Vor Ort essen bei dir möglich? (Wird dem Gast im Inserat angezeigt)';
+          vorOrt.style.cssText='display:flex; align-items:center; gap:8px; font-size:13px; font-weight:600; color:#0f172a; padding:8px 12px; background:rgba(16,185,129,0.08); border-radius:10px; border:1px solid rgba(16,185,129,0.2);';
+          vorOrt.innerHTML='<span style="font-size:16px;">\u2705</span> Essen vor Ort möglich (Info für Gäste)';
           powerBarExtras.appendChild(vorOrt);
         }
       }
@@ -16091,14 +16087,21 @@
           headline.textContent='Allergene';
           quickAdjustPanel.appendChild(headline);
           var wrap=document.createElement('div'); wrap.style.cssText='display:flex; flex-wrap:wrap; gap:8px;';
-          (typeof ALLERGENS_14!=='undefined'?ALLERGENS_14:[]).forEach(function(a){
-            var code=a.short; var name=a.name||code; var active=(w.data.allergens||[]).includes(code);
+          var list=(typeof ALLERGENS_14!=='undefined'?ALLERGENS_14:[]).slice();
+          list.sort(function(a,b){ return String(a.name||'').localeCompare(String(b.name||'')); });
+          list.forEach(function(a){
+            var code=a.short; var label=(a.legal)?(a.name||code)+' ('+a.legal+')':(a.name||code); var active=(w.data.allergens||[]).includes(code);
             var pill=document.createElement('button'); pill.type='button'; pill.className='inserat-allergen-pill'+(active?' active':'');
-            pill.textContent=name; pill.title=name;
+            pill.textContent=label; pill.title=label;
             pill.onclick=function(){ hapticLight(); if(!w.data.allergens) w.data.allergens=[]; if((w.data.allergens||[]).includes(code)){ w.data.allergens=w.data.allergens.filter(function(x){ return x!==code; }); } else{ w.data.allergens.push(code); } w.data.wantsAllergens=true; saveDraft(); pill.classList.toggle('active',(w.data.allergens||[]).includes(code)); };
             wrap.appendChild(pill);
           });
           quickAdjustPanel.appendChild(wrap);
+          var disclaimer=document.createElement('p');
+          disclaimer.className='inserat-allergen-disclaimer';
+          disclaimer.style.cssText='margin:16px 0 0 0; font-size:11px; font-style:italic; color:#94a3b8; line-height:1.4;';
+          disclaimer.textContent='Hinweis: Kennzeichnung erfolgt eigenverantwortlich durch den Anbieter. Keine Gewährleistung durch die Plattform.';
+          quickAdjustPanel.appendChild(disclaimer);
         } else if(type==='extras'){
           headline.textContent='Extras';
           quickAdjustPanel.appendChild(headline);
@@ -16160,9 +16163,19 @@
         var price=Number(w.data.price)||0;
         var photoData=w.data.photoData||'';
         var isImageSet=!!(photoData&&!String(photoData).includes('svg+xml'));
+        var valid=name.length>=2&&isImageSet&&price>0;
         var primaryBtn=box.querySelector('#inserat-action-section .btn-primary-black');
         if(!primaryBtn) return;
-        if(name.length>=2&&isImageSet){ primaryBtn.classList.add('is-ready'); primaryBtn.disabled=false; } else { primaryBtn.classList.remove('is-ready'); primaryBtn.disabled=true; }
+        if(valid){ primaryBtn.classList.add('is-ready'); primaryBtn.disabled=false; } else { primaryBtn.classList.remove('is-ready'); primaryBtn.disabled=true; }
+        stepName.classList.remove('inserat-validation-error'); priceSection.classList.remove('inserat-validation-error');
+      }
+      function triggerValidationError(){
+        try{ if(navigator.vibrate) navigator.vibrate([50,30,50]); }catch(e){}
+        var name=(w.data.dish||'').trim();
+        var price=Number(w.data.price)||0;
+        if(name.length<2) stepName.classList.add('inserat-validation-error');
+        if(price<=0) priceSection.classList.add('inserat-validation-error');
+        setTimeout(function(){ stepName.classList.remove('inserat-validation-error'); priceSection.classList.remove('inserat-validation-error'); }, 2000);
       }
       requestAnimationFrame(function(){ requestAnimationFrame(function(){ if(typeof adjustTitleFontSize === 'function') adjustTitleFontSize(); if(typeof checkMastercardValidation === 'function') checkMastercardValidation(); }); });
 
@@ -16220,9 +16233,10 @@
 
       // 9. ACTION BUTTONS ÔÇô MODE_PLAN (week/cookbook): Blue ÔÇ×In den Wochenplan einplanenÔÇ£ + gr├╝ner ÔÇ×Nur im KochbuchÔÇ£. MODE_AD (dashboard): Preis├╝bersicht + mit Abholnummer + Nur Inserat [cite: 2026-02-18]
       var isInserierenRoute = (entryPoint === 'dashboard' || entryPoint === 'week' || entryPoint === 'cookbook');
+      function isPrimaryValid(){ var d=!!(w.data.dish&&String(w.data.dish).trim()); var p=Number(w.data.price)>0; return d&&p; }
       var hasDish = !!(w.data.dish && String(w.data.dish).trim());
       var hasPrice = Number(w.data.price) > 0;
-      var primaryValid = hasDish && hasPrice;
+      var primaryValid = isPrimaryValid();
 
       const actionSection=document.createElement('section');
       actionSection.id='inserat-action-section';
@@ -16248,7 +16262,7 @@
         btnSpeichern.disabled=!primaryValid;
         if(primaryValid) btnSpeichern.classList.add('is-ready');
         btnSpeichern.onclick=function(){
-          if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; }
+          if(!isPrimaryValid()){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); if(typeof triggerValidationError==='function') triggerValidationError(); return; }
           hapticLight();
           var o=previewOfferFromWizard();
           var offerId=(w.ctx&&w.ctx.editOfferId)||(o&&o.id)||null;
@@ -16278,7 +16292,7 @@
         btnWeekPlan.style.cssText='flex:1; height:48px; min-width:180px; padding:0 24px; border:none; border-radius:8px; background:#222222; color:white; font-size:16px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center;';
         btnWeekPlan.textContent=(entryPoint === 'week' ? 'In den Plan übernehmen' : 'Im Kochbuch speichern');
         btnWeekPlan.onclick=function(){
-          if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; }
+          if(!isPrimaryValid()){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); if(typeof triggerValidationError==='function') triggerValidationError(); return; }
           if(typeof haptic==='function') haptic(50);
           var id=saveToCookbookFromWizard();
           if(entryPoint === 'cookbook' && id){
@@ -16316,6 +16330,7 @@
         btnWeiter.textContent='Weiter';
         btnWeiter.disabled=true;
         btnWeiter.onclick=function(){
+          if(!isPrimaryValid()){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); if(typeof triggerValidationError==='function') triggerValidationError(); return; }
           hapticLight();
           if(typeof handlePriceFastInsert==='function') handlePriceFastInsert(box);
           if(updateStep2ContextZoneRef) updateStep2ContextZoneRef();
@@ -16349,7 +16364,7 @@
         btnEinplanen.style.cssText='flex:1; height:48px; min-width:180px; padding:0 24px; border:none; border-radius:8px; background:#222222; color:white; font-size:16px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center;';
         btnEinplanen.textContent=(entryPoint === 'week' ? 'In den Plan übernehmen' : 'Im Kochbuch speichern');
         btnEinplanen.onclick=function(){
-          if(!primaryValid){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; }
+          if(!isPrimaryValid()){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); if(typeof triggerValidationError==='function') triggerValidationError(); return; }
           if(typeof haptic==='function') haptic(50);
           var id=saveToCookbookFromWizard();
           if(entryPoint === 'cookbook' && id){
@@ -16399,7 +16414,7 @@
         footerBtn.className='btn-primary-black' + (w.data.pricingChoice==='499' ? ' inserat-footer-btn--499' : ' free-mode is-free-mode');
         footerBtn.textContent=(w.data.pricingChoice==='499' ? 'Jetzt für 4,99 € inserieren' : 'Jetzt für 0,00 € inserieren');
         footerBtn.onclick=function(){
-          if(!(!!(w.data.dish&&String(w.data.dish).trim())&&Number(w.data.price)>0)){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); return; }
+          if(!(!!(w.data.dish&&String(w.data.dish).trim())&&Number(w.data.price)>0)){ if(typeof showToast==='function') showToast('Bitte Gericht und Preis eingeben'); if(typeof triggerValidationError==='function') triggerValidationError(); return; }
           hapticLight();
           var choice=w.data.pricingChoice||'pro';
           if(choice==='499'){
