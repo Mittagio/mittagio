@@ -15054,14 +15054,14 @@
   }
 
   /** Pure Food Magazin: Kopieren & Fliegen – Bild gleitet in InseratCard [cite: 2026-02-18, 2026-02-25] */
+  /** Schatzkammer-Tap: Direkt vorausgefüllte InseratCard Schritt 1 (Weiter), kein Draft-Pfad [cite: FLOW FIX 2026-02-25] */
   window.copyAndFlyToListing = function(ev, dish, defaultPrice){
     if(!dish) return;
     var clickedCard = ev && ev.currentTarget ? ev.currentTarget : (ev && ev.target ? ev.target.closest('.treasure-card') : null);
     var clickedImg = clickedCard ? clickedCard.querySelector('img') : null;
     var rect = clickedImg ? clickedImg.getBoundingClientRect() : null;
     var price = Number(dish.price) || Number(defaultPrice) || 8.9;
-    var draft = { data: { dish: (dish.name || '').trim() || 'Gericht', price: price, photoData: dish.image_url || dish.imageUrl || '', category: dish.category || 'Fleisch', description: dish.description || '', allergens: Array.isArray(dish.allergens) ? dish.allergens : [] }, ctx: { entryPoint: 'dashboard' } };
-    localStorage.setItem('wizard_draft', JSON.stringify(draft));
+    var draftData = { dish: (dish.name || '').trim() || 'Gericht', price: price, photoData: dish.image_url || dish.imageUrl || '', category: dish.category || 'Fleisch', description: dish.description || '', allergens: Array.isArray(dish.allergens) ? dish.allergens : [] };
     try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(20); }catch(e){}
     var flyContainer = document.getElementById('fly-animation-container');
     var flyImg = null;
@@ -15081,7 +15081,7 @@
     }
     setTimeout(function(){
       if(typeof closeCookbookMittagio === 'function') closeCookbookMittagio();
-      if(typeof startListingFlow === 'function') startListingFlow({ entryPoint: 'dashboard' });
+      if(typeof openMastercard === 'function') openMastercard(draftData, 'dashboard');
       if(flyImg && flyImg.parentNode) flyImg.remove();
     }, flyImg ? 600 : 150);
   };
