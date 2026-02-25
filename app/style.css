@@ -281,7 +281,7 @@
 
     /* Interaktions-Schutz: Schnelle Taps ohne 300ms-Delay (touch-action: manipulation) [Stabilität] */
     .navbtn, #providerNav .navbtn, .prov-card, .status-pill, .func-icon-btn, .power-bar-legend-trigger,
-    #v-provider-cookbook .cookbook-magazine-card, #v-provider-cookbook .cookbook-blitz-btn,
+    #v-provider-cookbook .cookbook-magazine-card,
     #wizard[data-flow="listing"] .inserat-power-bar .status-pill, #wizard[data-flow="listing"] .inserat-power-bar .func-icon-btn,
     .inserat-btn-primary, .inserat-btn-secondary, .btn, button[type="button"].cust-chip,
     .customer-nav .nav-item, .renner-speed-tile, .week-meal-card { touch-action: manipulation; }
@@ -1246,8 +1246,9 @@
     #v-provider-cookbook #cookbookMagazine,
     #v-provider-cookbook #cookbookMagazine .cookbook-magazine-card{ pointer-events: auto; }
     #v-provider-cookbook .cookbook-magazine-card .cookbook-magazine-img-wrap{ position:relative; }
-    #v-provider-cookbook .cookbook-blitz-btn{ position:absolute; top:10px; right:10px; z-index:12; width:48px; height:48px; min-width:48px; min-height:48px; border-radius:50%; border:2px solid rgba(255,215,0,0.6); background:rgba(255,255,255,0.95); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); box-shadow: var(--tgtg-shadow-minimal, 0 1px 3px rgba(0,0,0,0.04)); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:24px; -webkit-tap-highlight-color:transparent; }
-    #v-provider-cookbook .cookbook-blitz-btn:active{ transform:scale(0.95); }
+    #v-provider-cookbook .cookbook-magazine-meta{ padding:6px 16px 10px; background:#f8fafc; border-bottom:1px solid rgba(0,0,0,0.04); font-size:12px; color:#94a3b8; line-height:1.3; flex-shrink:0; }
+    #v-provider-cookbook .cookbook-card-price-input.cookbook-price-highlight{ border-bottom-color:#FACC15; box-shadow:0 0 0 2px rgba(250,204,21,0.35); animation:cookbook-price-pulse 1.5s ease-in-out infinite; }
+    @keyframes cookbook-price-pulse{ 0%, 100%{ box-shadow:0 0 0 2px rgba(250,204,21,0.35); } 50%{ box-shadow:0 0 0 4px rgba(250,204,21,0.5); } }
     #v-provider-cookbook .cookbook-bar-secondary{ background:rgba(255,255,255,0.5); color:#475569; border:2px solid rgba(255,255,255,0.6); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); }
     #v-provider-cookbook .cookbook-bar-primary{ background:#FACC15; color:#1a1a1a; box-shadow:0 4px 16px rgba(250,204,21,0.4); }
     /* Kochbuch: Kategorie-Pills wie Kundenseite (Discover) – kleiner, einheitliches Layout */
@@ -2335,50 +2336,6 @@
       margin:0 -20px;
       padding:0 20px 24px; /* Fußzeile entfernt – Platz nur für Safe Area */
     }
-    #wizard.sheet--kitchen .w-actions{
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      flex-shrink:0;
-      padding:16px 20px calc(16px + env(safe-area-inset-bottom, 20px));
-      background: rgba(255, 255, 255, 0.98);
-      backdrop-filter: blur(15px);
-      -webkit-backdrop-filter: blur(15px);
-      border-top: 1px solid rgba(0, 0, 0, 0.06);
-      box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.03);
-      border-radius: 0 0 20px 20px;
-      z-index: 10;
-      display: flex; gap: 12px;
-    }
-    #wizard.sheet--kitchen .w-actions button{
-      flex:1;
-      height:54px; 
-      border-radius:16px; 
-      font-weight:800; 
-      font-size:16px; 
-      letter-spacing:0.01em;
-      border:none;
-      cursor:pointer;
-      transition: transform 0.1s, background-color 0.2s;
-    }
-    #wizard.sheet--kitchen .w-actions button.secondary{ 
-      background:rgba(0,0,0,0.05); 
-      color:#64748b; 
-      font-weight: 700;
-    }
-    #wizard.sheet--kitchen .w-actions button:not(.secondary){ 
-      background:var(--prov-brand); 
-      color:#1a1a1a; 
-      box-shadow:0 4px 16px rgba(255,222,0,0.4);
-      font-weight: 900;
-      text-transform: uppercase;
-      font-size: 15px;
-      letter-spacing: 0.05em;
-    }
-    #wizard.sheet--kitchen .w-actions button:active{
-      transform: scale(0.97);
-    }
     /* Liquid Panel / High-End Glassmorphism (Inseratsflow) – Optik wie Referenz */
     #wizard.sheet--kitchen .glass-express-step0,
     #wizard.sheet--kitchen .inserat-universal-mask,
@@ -2581,13 +2538,6 @@
       min-height:50px;
       backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
     }
-    #wizard.sheet--kitchen .w-actions button.listing-express-primary{
-      background:var(--prov-brand) !important; color:#1a1a1a !important; font-weight:800 !important;
-      box-shadow:0 4px 16px rgba(255,222,0,0.4);
-      min-height:54px;
-      border-radius:16px;
-    }
-    #wizard.sheet--kitchen .w-actions button.btn-glass-secondary{ background:rgba(255,255,255,0.4); }
     /* Inserat Step 0: daumenfreundlich, alle Ziele mind. 48px */
     #wizard.sheet--kitchen #wContent .field{
       min-height: 52px !important;
@@ -7035,7 +6985,9 @@
     #v-provider-cookbook.view.active > header{ position:relative; z-index:1; flex-shrink:0; background:rgba(245,245,240,0.95) !important; backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); }
     #v-provider-cookbook.view.active > div{ position:relative; z-index:1; min-height:0; flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; }
     #v-provider-cookbook.view.active{ pointer-events: auto; position: relative; z-index: 1; }
-    /* Kochbuch: Bottom-Nav sichtbar (wie Dashboard); week/wizard blenden via provider-week-active / wizard-inserat-open aus [cite: GLOBAL NATIVE NAV 2026-02-23] */
+    /* Kochbuch Galerie-Modus: untere Router-Navigation ausblenden [cite: 2026-01-26, 2026-02-18] */
+    body.provider-cookbook-active #providerNavWrap{ display:none !important; }
+    /* Kochbuch: week/wizard blenden via provider-week-active / wizard-inserat-open aus [cite: GLOBAL NATIVE NAV 2026-02-23] */
     #v-provider-cookbook #cookbookScrollWrap{ background:transparent; pointer-events: auto; padding-bottom: calc(100px + env(safe-area-inset-bottom, 0)); }
     /* Kochbuch Galerie: horizontaler Snap-Scroll, keine Pfeile/Dots [cite: REFACTOR KOCHBUCH 2026-02-23] */
     #v-provider-cookbook #cookbookMagazine{ flex-direction:row; width:100%; align-items:stretch; overflow-x:auto; overflow-y:hidden; scroll-snap-type:x mandatory; scroll-behavior:smooth; -webkit-overflow-scrolling:touch; scrollbar-width:none; gap:0; padding:16px max(20px, env(safe-area-inset-right)) 16px max(20px, env(safe-area-inset-left)); box-sizing:border-box; }
@@ -7078,10 +7030,10 @@
       content:''; position:absolute; pointer-events:none; z-index:0;
     }
     #v-provider-week.view.active::before{
-      top:-15%; left:-10%; width:45%; height:45%; border-radius:50%; background:radial-gradient(ellipse at 30% 20%, rgba(226,232,240,0.6) 0%, transparent 70%); filter:blur(80px);
+      top:-15%; left:-10%; width:45%; height:45%; border-radius:50%; background:radial-gradient(ellipse at 30% 20%, rgba(226,232,240,0.6) 0%, transparent 70%); filter:blur(80px); pointer-events:none;
     }
     #v-provider-week.view.active::after{
-      bottom:-10%; right:-10%; width:40%; height:40%; border-radius:50%; background:radial-gradient(ellipse at 70% 80%, rgba(203,213,225,0.5) 0%, transparent 70%); filter:blur(80px);
+      bottom:-10%; right:-10%; width:40%; height:40%; border-radius:50%; background:radial-gradient(ellipse at 70% 80%, rgba(203,213,225,0.5) 0%, transparent 70%); filter:blur(80px); pointer-events:none;
     }
     #v-provider-week.view.active > header,
     #v-provider-week.view.active > #kwBoardWrap{ position:relative; z-index:1; }
@@ -7098,6 +7050,7 @@
     /* Wochenplan: identischer Header wie Meine Küche (KW-Badge entfernt, linksbündig) */
     #v-provider-week .week-header-minimal .week-header-row{ display:flex; align-items:center; justify-content:flex-start; width:100%; gap:12px; position:relative; }
     #v-provider-week .week-header-kw-badge{ display:inline-flex !important; align-items:center; padding:6px 12px; border-radius:12px; background:rgba(0,0,0,0.06); font-size:15px; font-weight:800; color:#0f172a; }
+    #v-provider-week .week-header-kw-trigger{ position:relative; z-index:2; }
     #v-provider-week .week-header-compact{ background:rgba(245,245,240,0.95) !important; backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); font-family:'Montserrat',sans-serif; position:sticky; top:0; z-index:100; }
     #v-provider-week .week-header-title-left,
     #v-provider-week .prov-page-header-title{ margin:0; font-family:'Montserrat','Inter',sans-serif !important; font-weight:900 !important; font-size:20px !important; letter-spacing:-0.03em; color:#0f172a !important; text-align:left; }
@@ -7525,7 +7478,7 @@
       #v-provider-week .kw-digit-cell{ height:22px; line-height:22px; font-size:16px; font-weight:900; text-align:center; flex-shrink:0; color:#fff; }
       #v-provider-week .kw-activation-disclaimer{ font-size:10px; font-weight:600; color:#71717a; margin:0; text-align:center; line-height:1.3; }
       /* Magic FAB: schwebend über Activation-Dock, Daumenbereich [cite: 2026-02-23] */
-      #v-provider-week .week-magic-fab{ position:fixed; bottom:calc(140px + env(safe-area-inset-bottom, 0)); right:24px; width:56px; height:56px; border-radius:50%; border:none; background:#fff; box-shadow:0 4px 20px rgba(0,0,0,0.12); display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:60; transition:transform 0.2s, box-shadow 0.2s; -webkit-tap-highlight-color:transparent; }
+      #v-provider-week .week-magic-fab{ position:fixed; bottom:calc(140px + env(safe-area-inset-bottom, 0)); right:24px; width:56px; height:56px; border-radius:50%; border:none; background:#fff; box-shadow:0 4px 20px rgba(0,0,0,0.12); display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:1001; transition:transform 0.2s, box-shadow 0.2s; -webkit-tap-highlight-color:transparent; }
       body:not(.kw-activation-dock-visible) #v-provider-week .week-magic-fab{ bottom:calc(72px + env(safe-area-inset-bottom, 0)); }
       #v-provider-week .week-magic-fab:active{ transform:scale(0.95); }
       #v-provider-week .week-magic-fab-icon{ font-size:24px; }
@@ -7537,7 +7490,9 @@
       .week-magic-sheet-btn:active{ background:#e2e8f0; }
       .week-magic-sheet-emo{ font-size:20px; }
       /* Kebab Dropdown: 12px Radius, Icons, Trennlinie vor Team-Vorschau [cite: 2026-02-23] */
-      #v-provider-week .week-kebab-trigger{ border-radius:12px; }
+      #v-provider-week .week-kebab-trigger{ min-width:44px; min-height:44px; padding:0; border-radius:12px; border:none; background:rgba(0,0,0,0.06); display:flex; align-items:center; justify-content:center; color:#1a1a1a; cursor:pointer; -webkit-tap-highlight-color:transparent; transition:background 0.2s; }
+      #v-provider-week .week-kebab-trigger:active{ background:rgba(0,0,0,0.1); }
+      #v-provider-week .week-kebab-trigger i{ flex-shrink:0; }
       .week-kebab-dropdown{ position:absolute; top:calc(100% + 6px); right:0; background:#fff; border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.12); border:1px solid rgba(0,0,0,0.06); padding:6px; z-index:100; min-width:180px; }
       .week-kebab-separator{ border-top:1px solid #ebebeb; margin:4px 0; }
       .week-kebab-item{ display:flex; align-items:center; gap:10px; width:100%; min-height:44px; padding:0 14px; border:none; border-radius:10px; background:transparent; font-size:14px; font-weight:600; color:#1a1a1a; cursor:pointer; text-align:left; transition:background 0.2s; }
@@ -7589,6 +7544,10 @@
       body.provider-week-active #providerNavWrap,
       body.provider-week-active .bottom-navigation,
       body.provider-week-active .bottom-nav{ display:none !important; transition: opacity 0.25s ease, visibility 0.25s ease; }
+      /* Wochenplan-Footer: Airbnb-Global-Footer [cite: 2026-02-23] */
+      #v-provider-week .week-view-footer{ position:sticky; bottom:0; left:0; right:0; margin:0; padding:12px 20px calc(12px + env(safe-area-inset-bottom, 0)); background:#ffffff; border-top:1px solid #ebebeb; flex-shrink:0; z-index:10; }
+      #v-provider-week .week-view-footer-btn{ width:100%; min-height:48px; border-radius:12px; border:none; background:#222222; color:#ffffff; font-size:16px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:transform 0.1s, opacity 0.2s; -webkit-tap-highlight-color:transparent; }
+      #v-provider-week .week-view-footer-btn:active{ transform:scale(0.98); }
       /* Dashboard: Dein Wochenplan – klare Trennung von KPIs, App-Kasten, S25-Safe */
       #providerWeekSection .prov-card{ padding:var(--card-padding, 20px); border-radius:24px; box-shadow:0 4px 20px rgba(0,0,0,0.06); border:none; background:#fff; }
       #providerWeekSection{ margin-top:28px; padding:24px 16px 24px; padding-left:max(16px, env(safe-area-inset-left)); padding-right:max(16px, env(safe-area-inset-right)); background:#fff; border-radius:28px; box-shadow:0 4px 24px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04); }
@@ -7830,14 +7789,6 @@
         min-height:48px !important;
       }
       
-      /* S25 / Daumenfreundlich: Inseratsflow & Create-Flow */
-      #wizard.sheet--kitchen .w-actions button{
-        min-height:52px !important;
-        padding:14px 20px !important;
-      }
-      #wizard.sheet--kitchen .w-actions{
-        padding:18px 20px calc(20px + env(safe-area-inset-bottom, 24px)) !important;
-      }
       /* Notfall-Fix: Liquid-Panel auf Mobile – ein sauberes Glas-Panel, kein abgeschnittenes Chaos */
       #wizard.sheet--kitchen.active{
         max-height: 100dvh !important;

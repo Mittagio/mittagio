@@ -1,5 +1,5 @@
-  // ========== Demo-Modus (für Tests, standardmäßig an) ==========
-  if (typeof window !== 'undefined') { window.DEMO_MODE = true; }
+  // ========== Demo-Modus (für Tests, standardmäßig aus) [cite: 2026-02-25] ==========
+  if (typeof window !== 'undefined') { window.DEMO_MODE = false; }
   /** Einheitliche Haptik: navigator.vibrate([ms]) für Gesten/Erfolge [cite: S25 2026-02-23] */
   function vibrate(ms){ try { if(navigator.vibrate) navigator.vibrate(Array.isArray(ms) ? ms : [ms]); } catch(e){} }
   if (typeof window !== 'undefined') { window.vibrate = vibrate; }
@@ -4936,7 +4936,6 @@
 
   // --- Offer sheet ---
   let activeOfferId=null;
-  let activeProviderOfferId=null;
   // Navigation History für Back-Button
   let navigationHistory = [];
   
@@ -5728,9 +5727,6 @@
     }
   });
 
-  var psheetOpenSource = 'dashboard';
-  var psheetCardMode = 'ad'; // 'ad' | 'plan' – von openProviderOffer gesetzt
-
   /** Erstellt aus einem Kochbuch-Eintrag ein Draft-Offer und gibt die neue Offer-Id zurück. Blitz-Pipeline. */
   function createOfferFromCookbook(cookbookId){
     var cb = (typeof cookbook !== 'undefined' ? cookbook : load(LS.cookbook, [])).find(function(x){ return String(x.id) === String(cookbookId); });
@@ -5794,13 +5790,8 @@
     }, true);
   })();
 
-  /** No-Op: #psheet/pbd entfernt; Aufrufer werfen nicht mehr. */
-  function closeProviderSheet(){
-    var pbd = document.getElementById('pbd');
-    var psheet = document.getElementById('psheet');
-    if(pbd) pbd.classList.remove('active');
-    if(psheet) psheet.classList.remove('active');
-  }
+  // Legacy No-Op - #psheet entfernt
+  function closeProviderSheet(){}
 
   var _saveScopeCallbacks = null;
   function showSaveScopeDialog(opts){
@@ -14077,12 +14068,7 @@
     if(ent){
       if(typeof haptic==='function') haptic(6);
       closeCookbookActionSheet();
-      var cb = (typeof cookbook !== 'undefined' ? cookbook : load(LS.cookbook, [])).find(function(c){ return String(c.id) === String(ent.id); });
-      if(cb){
-        var cookbookData = JSON.parse(JSON.stringify(cb));
-        cookbookData.dish = cookbookData.dish || '';
-        if(typeof openMastercard === 'function') openMastercard(cookbookData, 'cookbook');
-      }
+      if(typeof startListingFlow === 'function') startListingFlow({ dishId: ent.id, entryPoint: 'cookbook' });
     }
   };
   if(cookbookActionWeek) cookbookActionWeek.onclick=()=>{
@@ -14148,33 +14134,13 @@
     renderDiscover();
   }
 
-  const btnPsheetFertig = document.getElementById('btnPsheetFertig');
-  if(btnPsheetFertig) btnPsheetFertig.onclick = closeProviderSheet;
-
-  const btnPsheetLegendClose = document.getElementById('btnPsheetLegendClose');
-  if(btnPsheetLegendClose){
-    btnPsheetLegendClose.onclick = function(){
-      var pop = document.getElementById('psheetLegendPopover');
-      if(pop) pop.style.display = 'none';
-    };
-  }
-  const btnPsheetPrintFromLegend = document.getElementById('btnPsheetPrintFromLegend');
-  if(btnPsheetPrintFromLegend){
-    btnPsheetPrintFromLegend.onclick = function(){
-      if(!activeProviderOfferId) return;
-      var o = offers.find(x=>x.id===activeProviderOfferId);
-      if(o) printOffer(o);
-      var pop = document.getElementById('psheetLegendPopover');
-      if(pop) pop.style.display = 'none';
-    };
-  }
-  document.getElementById('psheetLegendPopover') && document.getElementById('psheetLegendPopover').addEventListener('click', function(e){
-    if(e.target === this){ this.style.display = 'none'; }
-  });
-
   const btnWeekBack = document.getElementById('btnWeekBack');
   if(btnWeekBack){
     btnWeekBack.onclick=()=> showProviderHome();
+  }
+  const btnWeekViewFooter = document.getElementById('btnWeekViewFooter');
+  if(btnWeekViewFooter){
+    btnWeekViewFooter.onclick = function(){ try { if(typeof haptic === 'function') haptic(6); } catch(e){} if(typeof showProviderHome === 'function') showProviderHome(); };
   }
   var weekHeaderBackBtn = document.getElementById('weekHeaderBackBtn');
   if(weekHeaderBackBtn && !weekHeaderBackBtn._bound){
@@ -14826,12 +14792,14 @@
       var priceInput = card ? card.querySelector('.cookbook-card-price-input') : null;
       var rawVal = priceInput ? priceInput.value.trim() : '';
       var priceVal = rawVal !== '' ? parseFloat(rawVal) : NaN;
-      var hasValidPrice = !Number.isNaN(priceVal) && priceVal >= 0;
+      var hasValidPrice = !Number.isNaN(priceVal) && priceVal > 0;
       footerWrap.style.display = 'block';
+      cards.forEach(function(c){ var inp = c.querySelector('.cookbook-card-price-input'); if(inp) inp.classList.remove('cookbook-price-highlight'); });
       if(!hasValidPrice){
         btn.disabled = true;
         btn.setAttribute('aria-disabled', 'true');
         btn.textContent = 'Bitte Preis eingeben';
+        if(priceInput) priceInput.classList.add('cookbook-price-highlight');
       } else {
         btn.disabled = false;
         btn.removeAttribute('aria-disabled');
@@ -14866,11 +14834,17 @@
         var hasVorOrt = entry.dineInPossible !== false;
         var hasAbholnummer = !!entry.hasPickupCode;
         var hasMehrweg = !!(entry.reuse && entry.reuse.enabled);
+        var allergenArr = Array.isArray(entry.allergens) ? entry.allergens : [];
+        var allergenStr = allergenArr.map(function(a){ return typeof a === 'string' ? a.trim() : String(a); }).filter(Boolean).join(', ');
+        var extrasArr = Array.isArray(entry.extras) ? entry.extras : [];
+        var extrasStr = extrasArr.map(function(x){ var n = (x && (x.name || x.label)) ? String(x.name || x.label).trim() : (typeof x === 'string' ? x.trim() : ''); return n ? '+ ' + n : ''; }).filter(Boolean).join(' ');
+        var metaParts = [allergenStr, extrasStr].filter(Boolean);
+        var metaHtml = metaParts.length ? '<div class="cookbook-magazine-meta">'+esc(metaParts.join(' · '))+'</div>' : '';
         var pillarsHtml = '<div class="cookbook-magazine-pillars" style="display:flex; align-items:center; justify-content:center; gap:12px; padding:10px 16px; background:#f8fafc; border-bottom:1px solid rgba(0,0,0,0.04); flex-shrink:0;">'+
           '<span class="cookbook-pillar-icon" style="font-size:18px; opacity:'+(hasVorOrt?'1':'0.4')+';" aria-hidden="true">🍴</span>'+
           '<span class="cookbook-pillar-icon" style="font-size:18px; opacity:'+(hasAbholnummer?'1':'0.4')+';" aria-hidden="true">🧾</span>'+
           '<span class="cookbook-pillar-icon" style="font-size:18px; opacity:'+(hasMehrweg?'1':'0.4')+';" aria-hidden="true">🔄</span>'+
-          '</div>';
+          '</div>'+metaHtml;
         return '<div class="cookbook-magazine-card tgtg-flat" role="article" data-cookbook-entry-id="'+esc(entry.id||'')+'" style="background:#fff; border:none; border-bottom:1px solid rgba(0,0,0,0.06); border-radius:20px; overflow:hidden; display:flex; flex-direction:column; position:relative; z-index:2; touch-action:manipulation; -webkit-tap-highlight-color:transparent;">'+
           '<div class="cookbook-magazine-gloss" style="position:absolute; inset:0; pointer-events:none; z-index:1; background:linear-gradient(to top right, rgba(255,255,255,0.08) 0%, transparent 50%);"></div>'+
           '<div class="cookbook-magazine-img-wrap" style="overflow:hidden; position:relative; flex-shrink:0;">'+
@@ -14879,7 +14853,6 @@
           '<p style="margin:0 0 2px; font-size:10px; font-weight:800; color:#1D1D1F; text-transform:uppercase;">Zuletzt live</p>'+
           '<p style="margin:0; font-size:13px; font-weight:700; color:#1D1D1F;">'+esc(lastUsedLabel)+'</p></div></div>'+
           pillarsHtml+
-          '<button type="button" class="cookbook-blitz-btn" aria-label="Sofort inserieren" title="Sofort inserieren">⚡</button>'+
           '<div style="padding:20px; flex:1; display:flex; flex-direction:column; justify-content:space-between; background:#fff;">'+
           '<div><h2 style="margin:0 0 6px; font-size:24px; font-weight:900; color:#1D1D1F; line-height:1.1; letter-spacing:-0.02em;">'+esc(entry.dish||'Gericht')+'</h2>'+
           '<p style="margin:0; font-size:13px; font-weight:500; color:#94a3b8;">Zuletzt verkauft</p></div>'+
@@ -14904,9 +14877,8 @@
         var priceInput = card.querySelector('.cookbook-card-price-input');
         var priceSavedEl = card.querySelector('.cookbook-price-saved');
         var priceHistoryEl = card.querySelector('.price-history');
-        var blitzBtn = card.querySelector('.cookbook-blitz-btn');
         if(priceInput){
-          priceInput.onfocus = function(){ magazineEl.classList.add('cookbook-price-focus'); this.select(); };
+          priceInput.onfocus = function(){ magazineEl.classList.add('cookbook-price-focus'); this.select(); card.classList.remove('cookbook-price-highlight'); };
           priceInput.onblur = function(){ magazineEl.classList.remove('cookbook-price-focus'); };
           priceInput.oninput = priceInput.onchange = function(){
             var val = parseFloat(this.value);
@@ -14923,9 +14895,12 @@
           priceHistoryEl.onclick = function(e){ e.preventDefault(); e.stopPropagation(); if(!lastPrice) return; var ent = cookbook.find(function(c){ return String(c.id) === String(entry.id); }); if(!ent) return; var num = parseFloat(lastPrice); if(Number.isNaN(num)) return; ent.price = num; if(priceInput){ priceInput.value = num % 1 === 0 ? String(num) : num.toFixed(2); } if(typeof save === 'function' && typeof LS !== 'undefined') save(LS.cookbook, cookbook); try { if(navigator.vibrate) navigator.vibrate(5); } catch(err){} updateCookbookFooterButton(); };
           priceHistoryEl.onkeydown = function(e){ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); priceHistoryEl.click(); } };
         }
-        if(blitzBtn){
-          blitzBtn.onclick = function(ev){ ev.preventDefault(); ev.stopPropagation(); try { if(navigator.vibrate) navigator.vibrate([10, 50, 10]); } catch(err){} if(typeof closeCookbookActionSheet === 'function') closeCookbookActionSheet(); if(typeof startListingFlow === 'function') startListingFlow({ dishId: entry.id, date: typeof isoDate === 'function' ? isoDate(new Date()) : '', entryPoint: 'dashboard', skipQuickPost: true }); };
-        }
+        card.onclick = function(e){
+          if(e.target.closest && (e.target.closest('.cookbook-price-cell') || e.target.closest('.cookbook-card-price-input') || e.target.closest('.price-history'))) return;
+          if(window._cookbookSwipeHandled) return;
+          try { if(navigator.vibrate) navigator.vibrate(15); } catch(err){}
+          if(typeof openCookbookActionSheet === 'function') openCookbookActionSheet(entry);
+        };
       });
 
       if(!magazineEl._cookbookScrollSnap){
@@ -14967,7 +14942,13 @@
       var footerBtn = document.getElementById('cookbookFooterBtnInserieren');
       if(footerBtn){
         footerBtn.onclick = function(){
-          if(footerBtn.disabled) return;
+          if(footerBtn.disabled){
+            var cards = magazineEl.querySelectorAll('.cookbook-magazine-card');
+            var card = cards[cookbookMagazineIndex];
+            var priceInput = card ? card.querySelector('.cookbook-card-price-input') : null;
+            if(priceInput){ priceInput.classList.add('cookbook-price-highlight'); priceInput.focus(); priceInput.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
+            return;
+          }
           var cards = magazineEl.querySelectorAll('.cookbook-magazine-card');
           var card = cards[cookbookMagazineIndex];
           if(!card) return;

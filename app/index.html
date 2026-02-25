@@ -1233,7 +1233,7 @@
           </div>
           <div class="prov-page-header-actions prov-header-toolbar" style="display:flex; gap:8px; align-items:center; position:relative;">
             <button type="button" id="btnWeekPreviewClose" class="week-preview-close-btn" style="display:none; min-height:44px; padding:0 16px; border-radius:12px; border:none; background:rgba(0,0,0,0.08); font-size:14px; font-weight:700; color:#1a1a1a; cursor:pointer;">Schließen</button>
-            <button type="button" id="btnWeekKebab" class="week-kebab-trigger" title="Menü" aria-label="Menü" aria-haspopup="true" aria-expanded="false" style="background:rgba(0,0,0,0.06); border:none; min-width:44px; min-height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:700; color:#1a1a1a; cursor:pointer;">⋮</button>
+            <button type="button" id="btnWeekKebab" class="week-kebab-trigger" title="Menü" aria-label="Menü" aria-haspopup="true" aria-expanded="false"><i data-lucide="more-vertical" style="width:20px;height:20px;"></i></button>
             <div id="weekKebabDropdown" class="week-kebab-dropdown" style="display:none;">
               <button type="button" class="week-kebab-item" id="weekKebabSaveTemplate"><i data-lucide="save" style="width:18px;height:18px;"></i> Eigene Vorlage speichern</button>
               <button type="button" class="week-kebab-item" id="weekKebabPdf"><i data-lucide="printer" style="width:18px;height:18px;"></i> Drucken</button>
@@ -1269,6 +1269,10 @@
           <p class="kw-activation-disclaimer">Abrechnung erfolgt erst zum jeweiligen Startzeitpunkt.</p>
         </div>
       </div>
+      <!-- Wochenplan-Footer: Airbnb-Global-Footer [cite: 2026-02-23] -->
+      <footer class="week-view-footer" id="weekViewFooter">
+        <button type="button" id="btnWeekViewFooter" class="week-view-footer-btn">Zum Dashboard</button>
+      </footer>
     </section>
 
     <!-- KW-Selector: Bottom-Sheet für Kalenderwoche [cite: 2026-02-21] -->
