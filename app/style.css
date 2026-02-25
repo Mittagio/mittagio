@@ -1636,6 +1636,7 @@
     .system-bottom-nav .nav-btn-equal { flex: 1; min-width: 0; }
     body.create-flow-open #providerNavWrap,
     body.wizard-inserat-open #providerNavWrap { display: none !important; }
+    body.wizard-inserat-open #cookbookFooterWrap { display: none !important; }
     body.cookbook-from-dashboard #providerNavWrap { display: none !important; }
     body.wizard-inserat-open { overflow: hidden !important; overscroll-behavior: none !important; }
     /* Renner-Speed-Dial: 2x2 Grid, TOP-Badge, 70% Bild, Midnight Blue Name, grüner Preis [cite: 2026-02-16] */
@@ -7560,7 +7561,7 @@
       #v-provider-week .kw-grid.kw-grid-just-applied .kw-day-card:nth-child(6){ animation-delay:0.3s; }
       #v-provider-week .kw-grid.kw-grid-just-applied .kw-day-card:nth-child(7){ animation-delay:0.35s; }
       @keyframes kwTemplateApplyIn{ 0%{ opacity:0; transform:translateY(-8px); } 100%{ opacity:1; transform:translateY(0); } }
-      #v-provider-week .week-header-title-text{ font-size:1rem; font-weight:700; color:#0f172a; }
+      #v-provider-week .week-header-title-text{ font-size:20px !important; font-weight:900 !important; letter-spacing:-0.03em; color:#0f172a; }
       #v-provider-week .kw-board-strip-title{ font-size:14px; font-weight:700; color:#0f172a; margin:0 0 10px 0; padding:0 max(12px, env(safe-area-inset-left)) 0 0; }
       #v-provider-week .kw-day-label{ font-size:14px; font-weight:800; color:#18181b; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:4px; }
       #v-provider-week .kw-day-date{ font-size:16px; font-weight:800; color:#18181b; }
