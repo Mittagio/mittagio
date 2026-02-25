@@ -9053,4 +9053,5 @@
 .share-template-916 .st916-footer{ padding:32px 40px 48px; background:#0f172a; color:#fff; text-align:center; box-sizing:border-box; margin-top:auto; }
 .share-template-916 .st916-footer-addr{ font-size:24px; font-weight:600; margin:0 0 12px 0; line-height:1.4; }
 .share-template-916 .st916-footer-cta{ font-size:32px; font-weight:900; margin:0; letter-spacing:0.02em; }
-.share-template-overlay{ display:flex !important; }
+/* Overlay Sichtbarkeit nur per JS (display:none/ flex) – kein !important, sonst blockiert es beim Seitenstart */
+.share-template-overlay{ align-items:center; justify-content:center; }
