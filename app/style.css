@@ -7549,7 +7549,7 @@
       #v-provider-week .kw-pill-dismiss i{ width:14px; height:14px; }
       #v-provider-week .kw-slot.kw-slot-drop-over,
       #v-provider-week .kw-slot-empty.kw-slot-drop-over{ box-shadow:0 0 0 2px #10b981, 0 0 20px rgba(16,185,129,0.35); border-color:#10b981; background:rgba(16,185,129,0.06); }
-      body.provider-week-active #v-provider-week .kw-board-scroll{ padding-bottom:140px; }
+      body.provider-week-active #v-provider-week .kw-board-scroll{ padding-bottom:calc(140px + env(safe-area-inset-bottom, 0px)) !important; }
       /* Magic FAB: schwebend über Footer, Daumenbereich [cite: 2026-02-23, 2026-02-25] */
       #v-provider-week .week-magic-fab{ position:fixed; bottom:calc(140px + env(safe-area-inset-bottom, 0)); right:24px; width:56px; height:56px; border-radius:50%; border:none; background:#fff; box-shadow:0 4px 20px rgba(0,0,0,0.12); display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:10001; transition:transform 0.2s, box-shadow 0.2s; -webkit-tap-highlight-color:transparent; }
       #v-provider-week .week-magic-fab:active{ transform:scale(0.95); }
