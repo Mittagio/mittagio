@@ -388,6 +388,12 @@
         if (typeof closePublishFeeModal === 'function') closePublishFeeModal();
         return;
       }
+      /* Wochenplan: Slide-Out bei Hardware-Zurück [cite: 2026-02-18, 2026-02-25] */
+      if (document.body.classList.contains('provider-week-active') && typeof closeWeekplanWithNativeAnim === 'function') {
+        var targetSection = (event.state && event.state.section) ? event.state.section : 'dashboard';
+        closeWeekplanWithNativeAnim(targetSection);
+        return;
+      }
       /* Gesten-Fix: Im Kochbuch führt Zurück-Wischen zum Dashboard, App nicht verlassen [cite: 2026-02-18, 2026-02-25] */
       var cookbookView = document.getElementById('v-provider-cookbook');
       if (cookbookView && cookbookView.classList.contains('active')) {

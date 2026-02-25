@@ -7549,21 +7549,9 @@
       #v-provider-week .kw-pill-dismiss i{ width:14px; height:14px; }
       #v-provider-week .kw-slot.kw-slot-drop-over,
       #v-provider-week .kw-slot-empty.kw-slot-drop-over{ box-shadow:0 0 0 2px #10b981, 0 0 20px rgba(16,185,129,0.35); border-color:#10b981; background:rgba(16,185,129,0.06); }
-      #v-provider-week .kw-week-activate-bar{ position:fixed; left:0; right:0; bottom:0; z-index:50; flex-shrink:0; padding:16px max(24px, env(safe-area-inset-left)) calc(24px + env(safe-area-inset-bottom, 0px)) max(24px, env(safe-area-inset-right)); padding-bottom:calc(16px + env(safe-area-inset-bottom, 0px)); background:#ffffff; border-top:1px solid #ebebeb; display:flex !important; flex-direction:column; gap:6px; border-radius:0; margin:0; box-sizing:border-box; }
-      body.provider-week-active #v-provider-week .kw-board-scroll{ padding-bottom:calc(160px + env(safe-area-inset-bottom, 0)); }
-      #v-provider-week .kw-activation-dock{ display:flex; flex-direction:column; gap:6px; align-items:stretch; }
-      #v-provider-week .kw-week-activate-btn{ width:100%; min-height:56px; padding:16px 24px; border-radius:8px; font-size:16px; font-weight:800; border:none; background:#222222; color:#fff; cursor:pointer; transition:transform 0.15s, opacity 0.2s; font-family:inherit; }
-      #v-provider-week .kw-week-activate-btn:active{ transform:scale(0.98); }
-      #v-provider-week .kw-week-activate-btn.kw-activation-disabled{ opacity:0.5; cursor:not-allowed; pointer-events:none; }
-      #v-provider-week .kw-activate-count-wrap{ display:inline-flex; align-items:center; }
-      #v-provider-week .kw-rolling-counter{ display:inline-flex; align-items:center; font-weight:900; }
-      #v-provider-week .kw-digit-cyl{ display:inline-block; width:14px; height:22px; overflow:hidden; vertical-align:middle; }
-      #v-provider-week .kw-digit-strip{ display:flex; flex-direction:column; transition:transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
-      #v-provider-week .kw-digit-cell{ height:22px; line-height:22px; font-size:16px; font-weight:900; text-align:center; flex-shrink:0; color:#fff; }
-      #v-provider-week .kw-activation-disclaimer{ font-size:10px; font-weight:600; color:#71717a; margin:0; text-align:center; line-height:1.3; }
-      /* Magic FAB: schwebend über Activation-Dock, Daumenbereich [cite: 2026-02-23] */
+      body.provider-week-active #v-provider-week .kw-board-scroll{ padding-bottom:140px; }
+      /* Magic FAB: schwebend über Footer, Daumenbereich [cite: 2026-02-23, 2026-02-25] */
       #v-provider-week .week-magic-fab{ position:fixed; bottom:calc(140px + env(safe-area-inset-bottom, 0)); right:24px; width:56px; height:56px; border-radius:50%; border:none; background:#fff; box-shadow:0 4px 20px rgba(0,0,0,0.12); display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:10001; transition:transform 0.2s, box-shadow 0.2s; -webkit-tap-highlight-color:transparent; }
-      body:not(.kw-activation-dock-visible) #v-provider-week .week-magic-fab{ bottom:calc(72px + env(safe-area-inset-bottom, 0)); }
       #v-provider-week .week-magic-fab:active{ transform:scale(0.95); }
       #v-provider-week .week-magic-fab-icon{ font-size:24px; }
       /* Magic Sheet */
@@ -7573,11 +7561,11 @@
       .week-magic-sheet-btn{ display:flex; align-items:center; gap:12px; width:100%; min-height:52px; padding:0 16px; border:none; border-radius:14px; background:#f8fafc; font-size:15px; font-weight:700; color:#1a1a1a; cursor:pointer; text-align:left; transition:background 0.2s; }
       .week-magic-sheet-btn:active{ background:#e2e8f0; }
       .week-magic-sheet-emo{ font-size:20px; }
-      /* Kebab: High-End Glaseffekt, S25 Native-First [cite: 2026-02-18, 2026-02-25] */
-      #v-provider-week .week-kebab-trigger{ min-width:52px; min-height:52px; padding:0; border-radius:12px; border:none; background:rgba(255,255,255,0.7); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); display:flex; align-items:center; justify-content:center; color:#1a1a1a; cursor:pointer; -webkit-tap-highlight-color:transparent; transition:background 0.2s; }
+      /* Kebab: High-End Glaseffekt, S25 Native-First, Touch-Target 60px [cite: 2026-02-18, 2026-02-25] */
+      #v-provider-week .week-kebab-trigger{ min-width:60px; min-height:60px; padding:0; border-radius:12px; border:none; background:rgba(255,255,255,0.7); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); display:flex; align-items:center; justify-content:center; color:#1a1a1a; cursor:pointer; -webkit-tap-highlight-color:transparent; transition:background 0.2s; }
       #v-provider-week .week-kebab-trigger:active{ background:rgba(0,0,0,0.08); }
       #v-provider-week .week-kebab-trigger i{ flex-shrink:0; width:22px; height:22px; }
-      .week-kebab-dropdown{ position:absolute; top:calc(100% + 6px); right:0; background:rgba(255,255,255,0.96); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border-radius:20px; box-shadow:0 12px 40px rgba(0,0,0,0.15); border:1px solid rgba(0,0,0,0.06); padding:8px; z-index:100; min-width:200px; }
+      .week-kebab-dropdown{ position:absolute; top:calc(100% + 6px); right:0; background:rgba(255,255,255,0.96); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border-radius:20px; box-shadow:0 12px 40px rgba(0,0,0,0.15); border:1px solid rgba(0,0,0,0.06); padding:8px; z-index:20005; min-width:200px; }
       .week-kebab-separator{ border-top:1px solid #ebebeb; margin:6px 0; }
       .week-kebab-item{ display:flex; align-items:center; gap:12px; width:100%; min-height:56px; padding:0 16px; border:none; border-radius:14px; background:transparent; font-size:15px; font-weight:600; color:#1a1a1a; cursor:pointer; text-align:left; transition:background 0.2s; }
       .week-kebab-item i{ flex-shrink:0; width:22px !important; height:22px !important; }
@@ -7601,17 +7589,17 @@
       #v-provider-week .kw-action-bar-fixed .btn:hover{ background:rgba(0,0,0,0.07); }
       #v-provider-week .kw-action-bar-fixed .btn:active{ transform:scale(0.97); }
       #v-provider-week .kw-action-bar-fixed .btn i{ opacity:0.9; }
-      /* Preview-Mode: Palette + FAB + Activation-Dock ausblenden [cite: 2026-02-18] */
+      /* Preview-Mode: Palette + FAB + Footer ausblenden [cite: 2026-02-18] */
       body.week-preview-mode #v-provider-week #kwBoardHeader{ display:none !important; }
       body.week-preview-mode #v-provider-week .week-magic-fab{ display:none !important; }
-      body.week-preview-mode #v-provider-week #kwWeekActivateBar{ display:none !important; }
+      body.week-preview-mode #weekViewFooter{ display:none !important; }
       body.week-preview-mode #v-provider-week #btnWeekKebab{ display:none !important; }
       body.week-preview-mode #v-provider-week #btnWeekPreviewClose{ display:inline-flex !important; align-items:center; justify-content:center; }
       /* Druck: sauberes A4 ohne UI-Buttons [cite: 2026-02-18] */
       @media print{
         #v-provider-week .week-magic-fab,
         #v-provider-week #kwBoardHeader,
-        #v-provider-week #kwWeekActivateBar,
+        #weekViewFooter,
         #v-provider-week .week-header-compact .week-kebab-trigger,
         #v-provider-week .week-header-back-btn,
         #v-provider-week #btnWeekPreviewClose{ display:none !important; }
@@ -7624,17 +7612,18 @@
       /* Wochenplan fullscreen: Topbar ausblenden, main ohne horizontales Scroll – applike */
       body.provider-week-active .topbar{ display:none !important; }
       body.provider-week-active main{ padding-top:0 !important; padding-left:0 !important; padding-right:0 !important; max-width:none !important; overflow-x:hidden !important; }
-      /* Tab-Nav: im Wochenplan komplett ausblenden [cite: FULLSCREEN FOCUS 2026-02-23] */
-      body.provider-week-active #providerNavWrap,
-      body.provider-week-active .bottom-navigation,
-      body.provider-week-active .bottom-nav{ display:none !important; transition: opacity 0.25s ease, visibility 0.25s ease; }
+      /* Tab-Nav: im Wochenplan sichtbar [cite: provider-bottom-nav-fest, Footer unten 2026-02-25] */
+      /* Wochenplan-Footer: nur bei provider-week-active sichtbar, Body-Level [cite: 2026-02-25] */
+      #weekViewFooter{ display:none !important; }
+      body.provider-week-active #weekViewFooter{ display:flex !important; flex-direction:column; }
+      /* Magic FAB: über Provider-Nav, klickbar [cite: Magic-Button 2026-02-25] */
+      body.provider-week-active #v-provider-week .week-magic-fab{ z-index:11000 !important; }
       /* Wochenplan-Footer: fixiert, Safe-Area, bündig mit Handy-Unterkante [cite: 2026-02-23, 2026-02-25] */
-      /* Wochenplan-Footer: Hard-Lock, Safe-Area, Button bündig über Home-Bar [cite: 2026-02-23, 2026-02-25] */
-      #v-provider-week .week-view-footer,
-      #weekViewFooter{ position:fixed !important; bottom:0; left:0; width:100%; z-index:10000; margin:0; margin-bottom:0; padding:12px 20px; padding-bottom:env(safe-area-inset-bottom); background:#ffffff; border-top:1px solid #ebebeb; box-sizing:border-box; }
-      #v-provider-week .week-view-footer-btn,
-      #weekViewFooter .week-view-footer-btn{ width:100%; min-height:48px; margin-bottom:0; border-radius:8px; border:none; background:#222222; color:#ffffff; font-size:16px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:transform 0.1s, opacity 0.2s; -webkit-tap-highlight-color:transparent; }
-      #v-provider-week .week-view-footer-btn:active{ transform:scale(0.98); }
+      .week-view-footer-fixed{ position:fixed !important; bottom:0; left:0; right:0; width:100%; z-index:10000; background:#ffffff !important; border-top:1px solid #ebebeb; padding-bottom:env(safe-area-inset-bottom) !important; box-sizing:border-box; }
+      .week-view-footer-fixed .footer-content-wrapper{ padding:16px 20px; display:flex; flex-direction:column; align-items:center; gap:8px; }
+      .week-view-footer-fixed .btn-airbnb-primary{ width:100%; height:54px; min-height:54px; margin:0; margin-bottom:0; border-radius:8px; border:none; background:#222222 !important; color:#ffffff !important; font-size:16px; font-weight:600; cursor:pointer; display:flex; justify-content:center; align-items:center; transition:transform 0.1s ease; -webkit-tap-highlight-color:transparent; }
+      .week-view-footer-fixed .btn-airbnb-primary:active{ transform:scale(0.98); }
+      .week-view-footer-fixed .footer-subtext{ font-size:11px; color:#717171; margin:0; line-height:1.3; }
       /* Dashboard: Dein Wochenplan – klare Trennung von KPIs, App-Kasten, S25-Safe */
       #providerWeekSection .prov-card{ padding:var(--card-padding, 20px); border-radius:24px; box-shadow:0 4px 20px rgba(0,0,0,0.06); border:none; background:#fff; }
       #providerWeekSection{ margin-top:28px; padding:24px 16px 24px; padding-left:max(16px, env(safe-area-inset-left)); padding-right:max(16px, env(safe-area-inset-right)); background:#fff; border-radius:28px; box-shadow:0 4px 24px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04); }

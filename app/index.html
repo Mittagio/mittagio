@@ -1261,18 +1261,7 @@
         <button type="button" id="weekMagicFab" class="week-magic-fab" aria-label="Schnellaktionen" title="Schnellaktionen">
           <span class="week-magic-fab-icon">✨</span>
         </button>
-        <!-- Activation Dock: fixiert unten, Mastercard-Style, Rolling Counter [cite: 2026-02-21] -->
-        <div id="kwWeekActivateBar" class="kw-week-activate-bar kw-activation-dock" style="display:none;">
-          <button type="button" id="btnKwWeekActivate" class="kw-week-activate-btn kw-activation-dock-btn">
-            <span class="kw-activate-count-wrap">[<span class="kw-rolling-counter" id="kwActivateCount" aria-hidden="true"><span class="kw-digit-cyl" data-place="tens"></span><span class="kw-digit-cyl" data-place="ones"></span></span>] Gerichte jetzt aktivieren</span>
-          </button>
-          <p class="kw-activation-disclaimer">Abrechnung erfolgt erst zum jeweiligen Startzeitpunkt.</p>
-        </div>
       </div>
-      <!-- Wochenplan-Footer: Airbnb-Global-Footer [cite: 2026-02-23] -->
-      <footer class="week-view-footer" id="weekViewFooter">
-        <button type="button" id="btnWeekViewFooter" class="week-view-footer-btn">Zum Dashboard</button>
-      </footer>
     </section>
 
     <!-- KW-Selector: Bottom-Sheet für Kalenderwoche [cite: 2026-02-21] -->
@@ -3252,5 +3241,14 @@
     </header>
     <div id="cookbookMittagioList" class="cookbook-mittagio-list" style="padding:16px; padding-bottom:calc(24px + env(safe-area-inset-bottom)); display:flex; flex-direction:column; gap:12px;"></div>
   </div>
+  <!-- Wochenplan-Footer: Body-Level, Safe-Area, nur bei provider-week-active [cite: 2026-02-25] -->
+  <footer id="weekViewFooter" class="week-view-footer-fixed">
+    <div class="footer-content-wrapper">
+      <button type="button" id="btnProviderWeekFooter" class="btn-airbnb-primary">
+        <span class="kw-activate-count-wrap">[<span id="kwActivateCount">0</span>] Gerichte jetzt aktivieren</span>
+      </button>
+      <p class="footer-subtext">Abrechnung erfolgt erst zum jeweiligen Startzeitpunkt.</p>
+    </div>
+  </footer>
 </body>
 </html>
