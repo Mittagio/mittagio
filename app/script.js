@@ -14582,34 +14582,84 @@
         var img = m.image_url ? '<img src="' + (m.image_url || '').replace(/"/g, '&quot;') + '" alt="" style="width:56px; height:56px; object-fit:cover; border-radius:12px;" />' : '<div style="width:56px; height:56px; background:#e2e8f0; border-radius:12px;"></div>';
         var card = document.createElement('div');
         card.className = 'cookbook-mittagio-item';
-        card.style.cssText = 'display:flex; align-items:center; gap:12px; padding:12px; background:#f8fafc; border-radius:16px; border:1px solid #e2e8f0;';
-        card.innerHTML = '<div style="flex-shrink:0;">' + img + '</div><div style="flex:1; min-width:0;"><div style="font-weight:800; font-size:15px; color:#1a1a1a;">' + (name.replace(/</g, '&lt;')) + '</div><div style="font-size:13px; color:#64748b;">' + (m.category || '').replace(/</g, '&lt;') + '</div></div><button type="button" class="cookbook-mittagio-ubernehmen" style="flex-shrink:0; min-height:44px; padding:0 16px; border-radius:12px; border:none; background:#10b981; color:#fff; font-size:14px; font-weight:700; cursor:pointer;">Übernehmen</button>';
-        var btn = card.querySelector('.cookbook-mittagio-ubernehmen');
-        if(btn){
-          btn.onclick = function(){
-            var cb = (typeof window !== 'undefined' && window.cookbook) ? window.cookbook : (typeof load === 'function' && typeof LS !== 'undefined' ? load(LS.cookbook, []) : []);
-            var dishName = (m.name || 'Gericht').trim().toLowerCase();
-            var isDuplicate = cb.some(function(e){ return (e.dish || '').trim().toLowerCase() === dishName; });
-            if(isDuplicate){
-              if(typeof showToast === 'function') showToast('Gericht bereits vorhanden.');
-              return;
-            }
-            var ent = masterToCookbookEntry(m, defaultPrice);
-            cb.push(ent);
-            if(typeof save === 'function' && typeof LS !== 'undefined') save(LS.cookbook, cb);
-            if(typeof window !== 'undefined') window.cookbook = cb;
-            closeCookbookMittagio();
-            try { if(navigator.vibrate) navigator.vibrate([30, 50, 30]); } catch(e){}
-            if(typeof renderCookbook === 'function') renderCookbook();
-            if(typeof showToast === 'function') showToast('Erfolgreich in dein Kochbuch übernommen!');
-          };
-        }
+        card.style.cssText = 'display:flex; align-items:center; gap:12px; padding:12px; background:#f8fafc; border-radius:16px; border:1px solid #e2e8f0; cursor:pointer;';
+        card.innerHTML = '<div style="flex-shrink:0;">' + img + '</div><div style="flex:1; min-width:0;"><div style="font-weight:800; font-size:15px; color:#1a1a1a;">' + (name.replace(/</g, '&lt;')) + '</div><div style="font-size:13px; color:#64748b;">' + (m.category || '').replace(/</g, '&lt;') + '</div></div>';
+        card.onclick = function(){ openMittagioDualActionCard(m, defaultPrice); };
         listEl.appendChild(card);
       });
     });
   }
 
+  /** Mittagio: Dual-Action-Card – Tap öffnet Card mit zwei schwarzen Buttons [cite: 2026-02-23, 2026-02-25] */
+  function openMittagioDualActionCard(m, defaultPrice){
+    defaultPrice = defaultPrice != null ? defaultPrice : 8.9;
+    var bd = document.getElementById('mittagioDualActionBd');
+    var sheet = document.getElementById('mittagioDualActionSheet');
+    if(!bd){
+      bd = document.createElement('div');
+      bd.id = 'mittagioDualActionBd';
+      bd.className = 'backdrop';
+      bd.style.cssText = 'position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:99999; display:none;';
+      bd.onclick = function(){ closeMittagioDualActionCard(); };
+      document.body.appendChild(bd);
+    }
+    if(!sheet){
+      sheet = document.createElement('div');
+      sheet.id = 'mittagioDualActionSheet';
+      sheet.className = 'mittagio-dual-action-sheet';
+      sheet.style.cssText = 'position:fixed; left:50%; bottom:0; transform:translateX(-50%); width:100%; max-width:400px; background:#fff; border-radius:20px 20px 0 0; padding:20px 20px calc(20px + env(safe-area-inset-bottom)); z-index:100000; box-shadow:0 -8px 32px rgba(0,0,0,0.12); display:none; flex-direction:column; gap:16px;';
+      document.body.appendChild(sheet);
+    }
+    var name = (m.name || 'Gericht').substring(0, 60);
+    sheet.innerHTML = '<div class="mittagio-dual-action-title" style="font-size:18px; font-weight:800; color:#1a1a1a; margin:0;">' + (name.replace(/</g, '&lt;')) + '</div>' +
+      '<button type="button" class="mittagio-dual-btn mittagio-dual-btn-copy">In mein Kochbuch kopieren</button>' +
+      '<button type="button" class="mittagio-dual-btn mittagio-dual-btn-inserieren">⚡ Jetzt direkt inserieren</button>';
+    var btnCopy = sheet.querySelector('.mittagio-dual-btn-copy');
+    var btnInserieren = sheet.querySelector('.mittagio-dual-btn-inserieren');
+    function closeSheet(){ bd.style.display = 'none'; sheet.style.display = 'none'; }
+    function doCopy(andThen){
+      var cb = (typeof window !== 'undefined' && window.cookbook) ? window.cookbook : (typeof load === 'function' && typeof LS !== 'undefined' ? load(LS.cookbook, []) : []);
+      var dishName = (m.name || 'Gericht').trim().toLowerCase();
+      var isDuplicate = cb.some(function(e){ return (e.dish || '').trim().toLowerCase() === dishName; });
+      if(isDuplicate){ if(typeof showToast === 'function') showToast('Gericht bereits vorhanden.'); return; }
+      var ent = masterToCookbookEntry(m, defaultPrice);
+      cb.push(ent);
+      if(typeof save === 'function' && typeof LS !== 'undefined') save(LS.cookbook, cb);
+      if(typeof window !== 'undefined') window.cookbook = cb;
+      try { if(navigator.vibrate) navigator.vibrate([30, 50, 30]); } catch(e){}
+      if(typeof renderCookbook === 'function') renderCookbook();
+      if(typeof showToast === 'function') showToast('Erfolgreich in dein Kochbuch übernommen!');
+      if(andThen) andThen(ent);
+    }
+    if(btnCopy){
+      btnCopy.onclick = function(){
+        doCopy();
+        closeSheet();
+        closeCookbookMittagio();
+      };
+    }
+    if(btnInserieren){
+      btnInserieren.onclick = function(){
+        closeSheet();
+        closeCookbookMittagio();
+        doCopy(function(ent){
+          if(typeof startListingFlow === 'function') startListingFlow({ dishId: ent.id, date: typeof isoDate === 'function' ? isoDate(new Date()) : '', entryPoint: 'dashboard' });
+        });
+      };
+    }
+    bd.style.display = 'block';
+    sheet.style.display = 'flex';
+  }
+
+  function closeMittagioDualActionCard(){
+    var bd = document.getElementById('mittagioDualActionBd');
+    var sheet = document.getElementById('mittagioDualActionSheet');
+    if(bd) bd.style.display = 'none';
+    if(sheet) sheet.style.display = 'none';
+  }
+
   function closeCookbookMittagio(){
+    if(typeof closeMittagioDualActionCard === 'function') closeMittagioDualActionCard();
     var layer = document.getElementById('cookbookMittagioLayer');
     if(layer) layer.style.display = 'none';
   }
@@ -14664,6 +14714,7 @@
     }
     overlay.innerHTML = '<div class="cookbook-ingest-flash"></div><div class="cookbook-ingest-bg"></div><div class="cookbook-ingest-counter">0</div><div class="cookbook-ingest-progress-wrap"><div class="cookbook-ingest-progress-bar"></div></div>';
     overlay.style.display = 'block';
+    overlay.style.pointerEvents = 'auto';
     overlay.style.opacity = '1';
     var counterEl = overlay.querySelector('.cookbook-ingest-counter');
     var progressBar = overlay.querySelector('.cookbook-ingest-progress-bar');
@@ -14976,10 +15027,12 @@
         function onCardClick(e){
           if(e.target.closest && (e.target.closest('.cookbook-price-cell') || e.target.closest('.cookbook-card-price-input') || e.target.closest('.price-history'))) return;
           if(window._cookbookSwipeHandled) return;
+          e.preventDefault();
+          e.stopPropagation();
           try { if(navigator.vibrate) navigator.vibrate(15); } catch(err){}
           if(typeof openCookbookActionSheet === 'function') openCookbookActionSheet(entry);
         }
-        card.addEventListener('click', onCardClick);
+        card.addEventListener('click', onCardClick, true);
       });
 
       if(!magazineEl._cookbookScrollSnap){

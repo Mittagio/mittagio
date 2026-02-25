@@ -382,6 +382,13 @@
         if (typeof closePublishFeeModal === 'function') closePublishFeeModal();
         return;
       }
+      /* Gesten-Fix: Im Kochbuch führt Zurück-Wischen zum Dashboard, App nicht verlassen [cite: 2026-02-18, 2026-02-25] */
+      var cookbookView = document.getElementById('v-provider-cookbook');
+      if (cookbookView && cookbookView.classList.contains('active')) {
+        try { if (navigator.vibrate) navigator.vibrate(5); } catch(e){}
+        showSection('dashboard', false);
+        return;
+      }
       var state = event.state;
       /* Fail-Safe: state null/undefined obwohl Wochenplan oder Kochbuch aktiv – zwingend zum Dashboard [cite: 2026-02-25] */
       if (!state || state.section == null) {

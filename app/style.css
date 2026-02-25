@@ -1262,11 +1262,12 @@
     #v-provider-cookbook .cookbook-category-pills .cookbook-cat-pill.on{ background:#0f172a; color:#fff; box-shadow:0 2px 8px rgba(15,23,42,0.25); }
     #v-provider-cookbook .cookbook-category-pills .cookbook-cat-pill:active{ transform:scale(0.96); }
     #v-provider-cookbook #btnCookbookEmptyAdd{ background:#FACC15 !important; color:#1a1a1a !important; box-shadow:0 4px 20px rgba(250,204,21,0.4) !important; }
-    /* Cookbook Magic Ingest Overlay */
+    /* Cookbook Magic Ingest Overlay – wenn ausgeblendet, keine Blockade [cite: 2026-02-25] */
     .cookbook-ingest-overlay{
       position:fixed; inset:0; z-index:2000; background:#09090b;
       display:flex; flex-direction:column; align-items:center; justify-content:center; gap:24px;
       padding:24px; box-sizing:border-box; transition:opacity 0.3s ease;
+      pointer-events:none;
     }
     .cookbook-ingest-flash{
       position:absolute; inset:0; background:#fff; opacity:0; transition:opacity 0.1s ease; pointer-events:none;
@@ -6989,14 +6990,32 @@
     #v-provider-profile .provider-profile-hero-icon-wrap{ width:56px; height:56px; border-radius:16px; background:#f1f3f5; display:flex; align-items:center; justify-content:center; font-size:28px; margin-bottom:8px; }
     #v-provider-cookbook{ min-height:100vh; min-height:100dvh; width:100%; box-sizing:border-box; }
     #v-provider-cookbook.view.active{ display:flex !important; flex-direction:column !important; height:100vh; height:100dvh; max-height:100vh; max-height:100dvh; overflow:hidden; }
-    /* Kochbuch: Header scrollt mit (kein sticky) [cite: REFACTOR KOCHBUCH 2026-02-23] */
-    #v-provider-cookbook.view.active > header{ position:relative; z-index:1; flex-shrink:0; background:rgba(245,245,240,0.95) !important; backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); }
-    #v-provider-cookbook.view.active > div{ position:relative; z-index:1; min-height:0; flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; }
+    /* Kochbuch: Header fixiert, bündig oben – Rahmenstabilität [cite: 2026-02-25] */
+    #v-provider-cookbook.view.active > header{
+      position:fixed !important; top:0 !important; left:0; right:0; width:100%;
+      z-index:10001;
+      border-top:none !important;
+      flex-shrink:0;
+      background:rgba(245,245,240,0.98) !important;
+      backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+      padding-top:env(safe-area-inset-top, 0);
+      box-sizing:border-box;
+    }
+    #v-provider-cookbook.view.active > div{ position:relative; z-index:1; min-height:0; flex:1; overflow:visible; }
     #v-provider-cookbook.view.active{ pointer-events: auto; position: relative; z-index: 1; }
     /* Kochbuch Galerie-Modus: untere Router-Navigation ausblenden [cite: 2026-01-26, 2026-02-18] */
     body.provider-cookbook-active #providerNavWrap{ display:none !important; }
-    /* Kochbuch: week/wizard blenden via provider-week-active / wizard-inserat-open aus [cite: GLOBAL NATIVE NAV 2026-02-23] */
-    #v-provider-cookbook #cookbookScrollWrap{ background:transparent; pointer-events: auto; padding-bottom: calc(100px + env(safe-area-inset-bottom, 0)); }
+    /* Kochbuch: Scroll-Bereich feste Höhe, kein Springen [cite: 2026-02-25] */
+    #v-provider-cookbook #cookbookScrollWrap{
+      margin-top:120px;
+      height:calc(100dvh - 120px - 80px);
+      max-height:calc(100vh - 120px - 80px);
+      overflow-y:auto !important;
+      -webkit-overflow-scrolling:touch;
+      background:transparent;
+      pointer-events:auto;
+      padding-bottom:calc(24px + env(safe-area-inset-bottom, 0));
+    }
     /* Kochbuch Galerie: horizontaler Snap-Scroll, keine Pfeile/Dots [cite: REFACTOR KOCHBUCH 2026-02-23] */
     #v-provider-cookbook #cookbookMagazine{ flex-direction:row; width:100%; align-items:stretch; overflow-x:auto; overflow-y:hidden; scroll-snap-type:x mandatory; scroll-behavior:smooth; -webkit-overflow-scrolling:touch; scrollbar-width:none; gap:0; padding:16px max(20px, env(safe-area-inset-right)) 16px max(20px, env(safe-area-inset-left)); box-sizing:border-box; }
     #v-provider-cookbook #cookbookMagazine::-webkit-scrollbar{ display:none; }
@@ -7007,8 +7026,8 @@
     #v-provider-cookbook .cookbook-swipe-hint{ display:none !important; }
     #v-provider-cookbook .cookbook-category-pills{ background:transparent; }
     #v-provider-cookbook .cookbook-action-bar{ background:rgba(255,255,255,0.7) !important; backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border-top:1px solid rgba(255,255,255,0.4) !important; box-shadow:0 -4px 24px rgba(0,0,0,0.06); }
-    /* Kochbuch: Footer auf Body-Ebene – kein Eltern-transform/filter [cite: 2026-02-23] */
-    .cookbook-footer-fixed{ position:fixed !important; bottom:0 !important; left:0; width:100%; z-index:99999; background:#fff !important; padding:16px max(20px, env(safe-area-inset-right)) calc(16px + env(safe-area-inset-bottom, 0)) max(20px, env(safe-area-inset-left)); padding-bottom:env(safe-area-inset-bottom, 0); border-top:1px solid #ebebeb; display:flex; justify-content:center; align-items:center; box-sizing:border-box; }
+    /* Kochbuch: Footer auf Body-Ebene – z-index 10001 wie Header [cite: 2026-02-23, 2026-02-25] */
+    .cookbook-footer-fixed{ position:fixed !important; bottom:0 !important; left:0; width:100%; z-index:10001; background:#fff !important; padding:16px max(20px, env(safe-area-inset-right)) calc(16px + env(safe-area-inset-bottom, 0)) max(20px, env(safe-area-inset-left)); padding-bottom:env(safe-area-inset-bottom, 0); border-top:1px solid #ebebeb; display:flex; justify-content:center; align-items:center; box-sizing:border-box; }
     .cookbook-footer-fixed .cookbook-footer-btn-inserieren{ max-width:400px; width:100%; min-height:56px; border-radius:16px; border:none; background:#222222; color:#fff; font-size:16px; font-weight:800; cursor:pointer; -webkit-tap-highlight-color:transparent; }
     .cookbook-footer-fixed .cookbook-footer-btn-inserieren:active{ opacity:0.9; transform:scale(0.99); }
     .cookbook-footer-fixed .cookbook-footer-btn-inserieren:disabled,
@@ -7030,17 +7049,32 @@
     #v-provider-cookbook .price-history:hover{ color:#64748b; }
     #v-provider-cookbook .cookbook-footer-btn-inserieren:disabled,
     #v-provider-cookbook .cookbook-footer-btn-inserieren[aria-disabled="true"]{ background:#94a3b8 !important; cursor:not-allowed; opacity:0.9; }
-    /* Mittagio-Button: Premium-Quelle mit goldener Umrandung [cite: 2026-02-18] */
+    /* Mittagio-Button: Goldenes Buch mit sanftem Glow [cite: 2026-02-18, 2026-02-25] */
+    @keyframes mittagio-book-glow{
+      0%, 100%{ filter: drop-shadow(0 0 5px rgba(255, 184, 0, 0.6)); }
+      50%{ filter: drop-shadow(0 0 10px rgba(255, 184, 0, 0.85)); }
+    }
     #btnOpenMittagio.cookbook-mittagio-btn,
     #v-provider-cookbook #btnOpenMittagio.cookbook-mittagio-btn{
       border: 1px solid rgba(212, 175, 55, 0.6) !important;
       box-shadow: 0 0 0 1px rgba(212, 175, 55, 0.15);
       background: linear-gradient(180deg, #fefce8 0%, #f5f5f7 100%) !important;
+      filter: drop-shadow(0 0 5px rgba(255, 184, 0, 0.6));
+      animation: mittagio-book-glow 2.5s ease-in-out infinite;
     }
     #btnOpenMittagio.cookbook-mittagio-btn:active,
     #v-provider-cookbook #btnOpenMittagio.cookbook-mittagio-btn:active{
       box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.35);
     }
+    /* Mittagio Dual-Action-Card: Airbnb-Style schwarze Buttons [cite: 2026-02-23, 2026-02-25] */
+    .mittagio-dual-btn{
+      width:100%; min-height:52px; padding:0 20px; border-radius:8px; border:none;
+      background:#222222; color:#fff; font-size:15px; font-weight:700; cursor:pointer;
+      display:flex; align-items:center; justify-content:center; gap:8px;
+      -webkit-tap-highlight-color:transparent; transition:opacity 0.2s, transform 0.1s;
+    }
+    .mittagio-dual-btn:active{ opacity:0.9; transform:scale(0.99); }
+    .mittagio-dual-btn-inserieren{ background:#222222 !important; }
 
     /* Wochenplan: Mesh-Hintergrund + Slate-50 [cite: 2026-02-18] */
     #v-provider-week.view{ display:none; }
