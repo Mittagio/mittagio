@@ -6223,13 +6223,8 @@
   if(openCookbookBtn){
     openCookbookBtn.onclick = function(){
       if(typeof haptic === 'function') haptic(6);
-      var date = createFlowPreselectedDate || (typeof weekPlanDay !== 'undefined' ? weekPlanDay : null);
-      var ep = createFlowOriginView || 'dashboard';
-      var isWeekView = (document.querySelector('.view.active') && document.querySelector('.view.active').id === 'v-provider-week');
       closeCreateFlowSheet();
-      if((ep === 'week' || isWeekView) && date && typeof openWeekAddSheet === 'function'){
-        openWeekAddSheet(date);
-      } else if(typeof showProviderCookbook === 'function'){
+      if(typeof showProviderCookbook === 'function'){
         showProviderCookbook();
       }
     };
@@ -16377,7 +16372,8 @@
     }
     // Direkt zur Inseratcard (Karte mit blauem „Datum für Wochenplan wählen“ / „Im Kochbuch speichern“) – keine Zwischenkarte
     // Entwurf-Wiederherstellung: Ghost-Card – Karte mit Overlay rendern, Check vor voller Interaktivität [cite: 2026-02-16]
-    if(!context.editOfferId){
+    /* Renner/Kochbuch-Explizit: Kein Draft – immer InseratCard Schritt 1 [cite: FLOW FIX 2026-02-25] */
+    if(!context.editOfferId && !context.dishId && !context.fromCookbookId){
       try {
         var draftStr = localStorage.getItem('wizard_draft');
         if(draftStr){
@@ -17894,7 +17890,7 @@
         btnWeekPlan.type='button';
         btnWeekPlan.className='btn-primary-black' + (primaryValid ? ' is-ready' : '');
         btnWeekPlan.style.cssText='flex:1; height:48px; min-width:180px; padding:0 24px; border:none; border-radius:8px; background:#222222; color:white; font-size:16px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center;';
-        btnWeekPlan.textContent=(entryPoint === 'week' ? 'In den Plan übernehmen' : 'Im Kochbuch speichern');
+        btnWeekPlan.textContent=(entryPoint === 'week' ? 'Speichern' : 'Im Kochbuch speichern');
         btnWeekPlan.disabled=!primaryValid;
         btnWeekPlan.style.opacity=primaryValid?'1':'0.3';
         btnWeekPlan.style.pointerEvents=primaryValid?'auto':'none';
@@ -18007,7 +18003,7 @@
         btnEinplanen.type='button';
         btnEinplanen.className='btn-primary-black';
         btnEinplanen.style.cssText='flex:1; height:48px; min-width:180px; padding:0 24px; border:none; border-radius:8px; background:#222222; color:white; font-size:16px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center;';
-        btnEinplanen.textContent=(entryPoint === 'week' ? 'In den Plan übernehmen' : 'Im Kochbuch speichern');
+        btnEinplanen.textContent=(entryPoint === 'week' ? 'Speichern' : 'Im Kochbuch speichern');
         btnEinplanen.disabled=!primaryValid;
         btnEinplanen.style.opacity=primaryValid?'1':'0.3';
         btnEinplanen.style.pointerEvents=primaryValid?'auto':'none';
