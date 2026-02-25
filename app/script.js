@@ -11113,9 +11113,9 @@
         var thumbStyle = imgUrl ? 'background-image:url(\'' + esc(imgUrl) + '\'); background-size:cover; background-position:center;' : 'background:linear-gradient(135deg,#e2e8f0,#cbd5e1);';
         var priceStr = typeof euro === 'function' ? euro(c.price || 0) : (Number(c.price || 0).toFixed(2).replace('.', ',') + ' €');
         return '<div class="kw-suggestion-card kw-suggestion-compact kw-cookbook-drag-pill" draggable="true" data-cookbook-id="' + esc(String(c.id)) + '" role="button">' +
+          '<span class="kw-pill-text kw-suggestion-name">' + esc(label) + '</span>' +
           '<div class="kw-suggestion-thumb kw-suggestion-thumb-mini" style="' + thumbStyle + '"></div>' +
           '<span class="kw-suggestion-price">' + esc(priceStr) + '</span>' +
-          '<span class="kw-pill-text kw-suggestion-name">' + esc(label) + '</span>' +
           '</div>';
       }).join('');
       strip.querySelectorAll('.kw-suggestion-card').forEach(function(pill){
@@ -11162,9 +11162,8 @@
       var countHtml = isFilled ? ' <span class="kw-day-count">(' + items.length + ' Gericht' + (items.length !== 1 ? 'e' : '') + ')</span>' : '';
       card.innerHTML = '<div class="kw-day-label">' + dayLabel + '</div><div class="kw-day-date">' + dateLabel + countHtml + '</div><div class="kw-slots"></div>';
       var slotsWrap = card.querySelector('.kw-slots');
-      /* Slots: flach, nur Name + Preis (zentriert). 1 Slot initial, bei Befüllung +1 leerer Slot. [cite: RESET WOCHENPLAN 2026-02-23] */
+      /* Slots: flach, nur Name + Preis (Abholnummer aus Kachel entfernt) [cite: 2026-02-25] */
       var maxFilled = 5;
-      var showAbholIcon = defaultPickup;
       var slot = 0;
       for (slot = 0; slot < items.length && slot < maxFilled; slot++) {
         var entry = items[slot];
@@ -11173,11 +11172,9 @@
           var name = (cb && cb.dish) || entry.dish || 'Gericht';
           var price = (cb && cb.price) || entry.price || 0;
           var priceStr = typeof euro === 'function' ? euro(price) : (Number(price || 0).toFixed(2).replace('.', ',') + ' €');
-          var hasAbhol = showAbholIcon || !!(entry && entry.hasPickupCode);
-          var abholSpan = hasAbhol ? ' <span class="kw-slot-abhol-icon" aria-hidden="true">🧾</span>' : '';
           var cat = (cb && cb.category) || '';
           var catIcon = (cat === 'Vegan' || /vegan/i.test(cat)) ? '\uD83C\uDF31' : ((cat === 'Veggie' || /vegetarisch|veggie/i.test(cat)) ? '\uD83E\uDD66' : '\uD83E\uDD69');
-          var slotHtml = '<div class="kw-slot-flat prov-card kw-slot-bar kw-slot-compact" data-day="' + esc(key) + '" data-offer-id="' + (isLive && items[slot] && items[slot].id ? esc(String(items[slot].id)) : '') + '" data-cookbook-id="' + (entry.cookbookId ? esc(String(entry.cookbookId)) : '') + '" data-date="' + esc(key) + '"><span class="kw-slot-cat-icon" aria-hidden="true">' + catIcon + '</span><div class="kw-slot-flat-body"><span class="kw-slot-flat-title">' + esc(name) + '</span><span class="kw-slot-flat-price">' + esc(priceStr) + '</span></div>' + abholSpan + '</div>';
+          var slotHtml = '<div class="kw-slot-flat prov-card kw-slot-bar kw-slot-compact" data-day="' + esc(key) + '" data-offer-id="' + (isLive && items[slot] && items[slot].id ? esc(String(items[slot].id)) : '') + '" data-cookbook-id="' + (entry.cookbookId ? esc(String(entry.cookbookId)) : '') + '" data-date="' + esc(key) + '"><span class="kw-slot-cat-icon" aria-hidden="true">' + catIcon + '</span><div class="kw-slot-flat-body"><span class="kw-slot-flat-title">' + esc(name) + '</span><span class="kw-slot-flat-price">' + esc(priceStr) + '</span></div></div>';
           var slotWrap = document.createElement('div');
           slotWrap.innerHTML = slotHtml;
           var slotEl = slotWrap.firstElementChild || slotWrap;
@@ -11656,10 +11653,10 @@
       var entryPickup = !!(entry.hasPickupCode !== undefined ? entry.hasPickupCode : defaultPickup);
       var entryReuse = !!(entry.reuse && entry.reuse.enabled);
       var hasTime = !!(entry.pickupWindow && String(entry.pickupWindow).trim()) || !!(entry.timeStart && entry.timeEnd);
-      var verdienstHtml = !dayIsLive ? '<div class="week-meal-verdienst" style="font-size:12px; color:#1a1a1a; margin-top:4px;">Verdienst ca. ' + euro(Math.max(0, (Number(price)||0) - 4.99)) + '</div>' : '';
+      var verdienstHtml = !dayIsLive ? '<div class="week-meal-verdienst" style="font-size:12px; margin-top:4px;">Verdienst ca. ' + euro(Math.max(0, (Number(price)||0) - 4.99)) + '</div>' : '';
       var moveBtnHtml = !dayIsLive ? '<div style="margin-top:8px;"><button type="button" class="week-meal-move-btn" data-day="' + esc(weekPlanDay) + '" data-index="' + weekIndex + '" style="padding:0; background:none; border:none; font-size:12px; font-weight:700; color:#64748b; cursor:pointer; text-decoration:underline;">Verschieben</button></div>' : '';
       var thumbHtml = '<div class="week-meal-thumb" style="width:56px;min-width:56px;height:56px;border-radius:12px;overflow:hidden;background:#e5e7eb;flex-shrink:0;background-size:cover;background-position:center' + (img ? ';background-image:url(\'' + esc(img) + '\')' : '') + '"></div>';
-      card.innerHTML = thumbHtml + '<div style="flex:1;min-width:0;"><div class="week-meal-name">' + esc(name) + '</div><div class="week-meal-meta"><span class="price-pill">' + euro(price) + '</span> ' + onlineHtml + '</div>' + verdienstHtml + moveBtnHtml + '</div>';
+      card.innerHTML = thumbHtml + '<div class="week-meal-content" style="flex:1;min-width:0; display:flex; flex-direction:column; align-items:stretch;"><div class="week-meal-name">' + esc(name) + '</div><div class="week-meal-meta" style="display:flex; align-items:center; justify-content:space-between; gap:8px;"><span style="flex-shrink:0;">' + onlineHtml + '</span><span class="price-pill week-meal-price-right">' + euro(price) + '</span></div>' + verdienstHtml + moveBtnHtml + '</div>';
       card.style.cursor = 'pointer';
       if(!dayIsLive){
         card.onclick = function(e){ e.preventDefault(); e.stopPropagation(); if(weekJustSwiped) return; if(e.target.closest && e.target.closest('.week-meal-move-btn')) return; if(hasTime){ if(typeof startListingFlow === 'function') startListingFlow({ date: weekPlanDay, entryPoint: 'week', dishId: entry.cookbookId || undefined }); } else { if(typeof openWeekTimeOverlay === 'function') openWeekTimeOverlay(weekPlanDay, weekIndex); } };
@@ -14543,6 +14540,80 @@
     fetch(url).then(function(r){ return r.ok ? r.json() : []; }).then(function(arr){ if(typeof cb === 'function') cb(Array.isArray(arr) ? arr : []); }).catch(function(){ if(typeof cb === 'function') cb([]); });
   }
 
+  /** Mittagio: Einzelnes Master-Gericht in Kochbuch-Entry mappen [cite: 2026-02-18, 2026-01-29] */
+  function masterToCookbookEntry(m, defaultPrice){
+    var cat = (m.category || 'Fleisch').trim();
+    if(cat === 'Vegan' || cat === 'Vegetarisch') cat = 'Veggie';
+    if(cat !== 'Fleisch' && cat !== 'Eintopf' && cat !== 'Snack' && cat !== 'Veggie') cat = 'Fleisch';
+    var pid = typeof providerId === 'function' ? providerId() : '';
+    return {
+      id: typeof cryptoId === 'function' ? cryptoId() : ('mittagio_' + Date.now()),
+      providerId: pid,
+      dish: m.name || 'Gericht',
+      category: cat,
+      description: m.description || '',
+      price: defaultPrice != null ? defaultPrice : 8.9,
+      photoData: m.image_url || '',
+      allergens: Array.isArray(m.allergens) ? m.allergens : [],
+      extras: [],
+      reuse: { enabled: false, deposit: 0 },
+      hasPickupCode: false,
+      dineInPossible: false,
+      createdAt: Date.now(),
+      lastUsed: null
+    };
+  }
+
+  function openCookbookMittagio(){
+    var layer = document.getElementById('cookbookMittagioLayer');
+    var listEl = document.getElementById('cookbookMittagioList');
+    var btnClose = document.getElementById('btnCloseMittagio');
+    if(!layer || !listEl) return;
+    if(typeof loadMasterDishes !== 'function') return;
+    listEl.innerHTML = '<p style="text-align:center; color:#64748b; padding:24px;">Lade …</p>';
+    layer.style.display = 'block';
+    if(btnClose && !btnClose._mittagioBound){ btnClose._mittagioBound = true; btnClose.onclick = function(){ closeCookbookMittagio(); }; }
+    loadMasterDishes(function(arr){
+      var list = Array.isArray(arr) ? arr : [];
+      listEl.innerHTML = '';
+      var defaultPrice = 8.9;
+      list.forEach(function(m){
+        var name = (m.name || 'Gericht').substring(0, 50);
+        var img = m.image_url ? '<img src="' + (m.image_url || '').replace(/"/g, '&quot;') + '" alt="" style="width:56px; height:56px; object-fit:cover; border-radius:12px;" />' : '<div style="width:56px; height:56px; background:#e2e8f0; border-radius:12px;"></div>';
+        var card = document.createElement('div');
+        card.className = 'cookbook-mittagio-item';
+        card.style.cssText = 'display:flex; align-items:center; gap:12px; padding:12px; background:#f8fafc; border-radius:16px; border:1px solid #e2e8f0;';
+        card.innerHTML = '<div style="flex-shrink:0;">' + img + '</div><div style="flex:1; min-width:0;"><div style="font-weight:800; font-size:15px; color:#1a1a1a;">' + (name.replace(/</g, '&lt;')) + '</div><div style="font-size:13px; color:#64748b;">' + (m.category || '').replace(/</g, '&lt;') + '</div></div><button type="button" class="cookbook-mittagio-ubernehmen" style="flex-shrink:0; min-height:44px; padding:0 16px; border-radius:12px; border:none; background:#10b981; color:#fff; font-size:14px; font-weight:700; cursor:pointer;">Übernehmen</button>';
+        var btn = card.querySelector('.cookbook-mittagio-ubernehmen');
+        if(btn){
+          btn.onclick = function(){
+            var cb = (typeof window !== 'undefined' && window.cookbook) ? window.cookbook : (typeof load === 'function' && typeof LS !== 'undefined' ? load(LS.cookbook, []) : []);
+            var dishName = (m.name || 'Gericht').trim().toLowerCase();
+            var isDuplicate = cb.some(function(e){ return (e.dish || '').trim().toLowerCase() === dishName; });
+            if(isDuplicate){
+              if(typeof showToast === 'function') showToast('Gericht bereits vorhanden.');
+              return;
+            }
+            var ent = masterToCookbookEntry(m, defaultPrice);
+            cb.push(ent);
+            if(typeof save === 'function' && typeof LS !== 'undefined') save(LS.cookbook, cb);
+            if(typeof window !== 'undefined') window.cookbook = cb;
+            closeCookbookMittagio();
+            try { if(navigator.vibrate) navigator.vibrate([30, 50, 30]); } catch(e){}
+            if(typeof renderCookbook === 'function') renderCookbook();
+            if(typeof showToast === 'function') showToast('Erfolgreich in dein Kochbuch übernommen!');
+          };
+        }
+        listEl.appendChild(card);
+      });
+    });
+  }
+
+  function closeCookbookMittagio(){
+    var layer = document.getElementById('cookbookMittagioLayer');
+    if(layer) layer.style.display = 'none';
+  }
+
   /** Preis-Modal für Ingest: einmalig Standardpreis abfragen (z. B. 8,90 €) */
   function showCookbookIngestPriceModal(callback){
     var bd = document.getElementById('cookbookIngestPriceBd');
@@ -14652,6 +14723,8 @@
   }
 
   function renderCookbook(){
+    cookbook = load(LS.cookbook, []);
+    if(typeof window !== 'undefined') window.cookbook = cookbook;
     const box = document.getElementById('cookbookList');
     const magazineEl = document.getElementById('cookbookMagazine');
     const emptyEl = document.getElementById('cookbookEmpty');
@@ -14693,6 +14766,8 @@
         searchInput.oninput = function(){ cookbookSearchTerm = this.value; cookbookMagazineIndex = 0; renderCookbook(); };
         searchInput.onkeydown = function(e){ if(e.key === 'Escape'){ cookbookIsSearching = false; cookbookSearchTerm = ''; renderCookbook(); } };
       }
+      var btnMittagio = document.getElementById('btnOpenMittagio');
+      if(btnMittagio && !btnMittagio._mittagioBound){ btnMittagio._mittagioBound = true; btnMittagio.onclick = function(){ if(typeof openCookbookMittagio === 'function') openCookbookMittagio(); }; }
     })();
 
     let updated = false;
@@ -14871,6 +14946,8 @@
       }).join('');
       magazineEl.innerHTML = cardsHtml;
       magazineEl.style.position = 'relative';
+      var ingestOverlay = document.getElementById('cookbookIngestOverlay');
+      if(ingestOverlay){ ingestOverlay.style.display = 'none'; ingestOverlay.style.pointerEvents = 'none'; }
 
       list.forEach(function(entry, i){
         var card = magazineEl.children[i];
@@ -14896,12 +14973,13 @@
           priceHistoryEl.onclick = function(e){ e.preventDefault(); e.stopPropagation(); if(!lastPrice) return; var ent = cookbook.find(function(c){ return String(c.id) === String(entry.id); }); if(!ent) return; var num = parseFloat(lastPrice); if(Number.isNaN(num)) return; ent.price = num; if(priceInput){ priceInput.value = num % 1 === 0 ? String(num) : num.toFixed(2); } if(typeof save === 'function' && typeof LS !== 'undefined') save(LS.cookbook, cookbook); try { if(navigator.vibrate) navigator.vibrate(5); } catch(err){} updateCookbookFooterButton(); };
           priceHistoryEl.onkeydown = function(e){ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); priceHistoryEl.click(); } };
         }
-        card.onclick = function(e){
+        function onCardClick(e){
           if(e.target.closest && (e.target.closest('.cookbook-price-cell') || e.target.closest('.cookbook-card-price-input') || e.target.closest('.price-history'))) return;
           if(window._cookbookSwipeHandled) return;
           try { if(navigator.vibrate) navigator.vibrate(15); } catch(err){}
           if(typeof openCookbookActionSheet === 'function') openCookbookActionSheet(entry);
-        };
+        }
+        card.addEventListener('click', onCardClick);
       });
 
       if(!magazineEl._cookbookScrollSnap){
@@ -16821,6 +16899,11 @@
       stepPriceWrap.appendChild(eurSpan);
       priceInputWrapper.appendChild(stepPriceWrap);
       priceSection.appendChild(priceInputWrapper);
+      var verdienstWrap = document.createElement('div');
+      verdienstWrap.id = 'inserat-verdienst-vorschau';
+      verdienstWrap.className = 'inserat-verdienst-vorschau';
+      verdienstWrap.style.cssText = 'display:none; font-size:13px; margin-top:6px;';
+      priceSection.appendChild(verdienstWrap);
       contentSheet.appendChild(priceSection);
 
       // ========== 6. Power-Bar [cite: Regel 2026-02-23] Reihenfolge: ­ƒì┤ Vor Ort -> ­ƒöä Mehrweg -> ­ƒòÆ Abholzeit -> ­ƒî¥ Allergene -> Ô×ò Extras ==========

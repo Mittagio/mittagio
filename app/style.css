@@ -11,6 +11,8 @@
       --airbnb-white: #ffffff;
       --airbnb-border: #ebebeb;
       --price-yellow: #FFD700;
+      /** Preis-Branding Anbieterseite: kräftiges Bernstein-Gelb [cite: 2026-02-25] */
+      --color-price-yellow: #FFB800;
       --status-active-green: #2ecc71;
       --status-active-blue: #3498db;
       --status-active-orange: #f39c12;
@@ -4043,15 +4045,20 @@
       padding: 8px 14px; border-radius: 999px; background: #f8fafc; box-shadow: 0 1px 4px rgba(0,0,0,0.06);
     }
     #wizard[data-flow="listing"] .inserat-price-pill-input {
-      width: 56px; border: none; background: transparent; font-size: 16px; font-weight: 900; color: #1a1a1a;
+      width: 56px; border: none; background: transparent; font-size: 16px; font-weight: 500; color: var(--color-price-yellow, #FFB800);
       padding: 0; outline: none;
     }
     #wizard[data-flow="listing"] .inserat-price-pill-input::placeholder { color: rgba(0,0,0,0.4); }
-    /* Preis: € 70% Größe, Superscript [cite: S25 PREMIUM V2 2026-02-23] */
+    /* Preis: € 70% Größe, Superscript – Preis-Gelb [cite: 2026-02-25] */
     #wizard[data-flow="listing"] .inserat-price-pill-euro,
     #wizard[data-flow="listing"] .price-section .inserat-price-pill-euro {
-      font-size: 0.7em !important; font-weight: 700; color: #1a1a1a;
+      font-size: 0.7em !important; font-weight: 500; color: var(--color-price-yellow, #FFB800);
       vertical-align: super; margin-left: 4px; line-height: 1;
+    }
+    /* Verdienst-Vorschau: Preis-Gelb, dezent (nicht fett) [cite: 2026-02-25] */
+    #wizard[data-flow="listing"] #inserat-verdienst-vorschau.inserat-verdienst-vorschau,
+    #wizard[data-flow="listing"] .price-section #inserat-verdienst-vorschau {
+      color: var(--color-price-yellow, #FFB800) !important; font-weight: 500 !important;
     }
     #wizard[data-flow="listing"] .inserat-desc-italic,
     #wizard[data-flow="listing"] .inserat-airbnb-desc.inserat-desc-italic { font-style: italic; color: #64748b; }
@@ -4070,12 +4077,12 @@
     #wizard[data-flow="listing"] .inserat-price-section .price-display:not(.inserat-price-fintech) {
       font-size: 14px !important; font-weight: 900 !important; color: #1a1a1a !important;
     }
-    /* Fintech-Preis (S25): massive Zahl 4rem, Hochzahl-€ */
+    /* Fintech-Preis (S25): massive Zahl 4rem, Preis-Gelb, edel (font-weight 500) [cite: 2026-02-25] */
     #wizard[data-flow="listing"] .inserat-price-section input.inserat-price-fintech {
       width: 140px; max-width: 60%; background: transparent !important;
       border: none !important; border-bottom: 2px solid rgba(0,0,0,0.08) !important;
       border-radius: 0 !important; padding: 12px 0 10px !important; outline: none !important;
-      font-size: 4rem !important; font-weight: 900 !important; color: #1a1a1a !important;
+      font-size: 4rem !important; font-weight: 500 !important; color: var(--color-price-yellow, #FFB800) !important;
       text-align: center; transition: border-color 0.3s ease;
     }
     #wizard[data-flow="listing"] .inserat-price-section .inserat-price-euro-sup { font-size: 1.5rem; font-weight: 900; color: #1a1a1a; vertical-align: super; margin-left: 4px; }
@@ -7000,8 +7007,13 @@
     #v-provider-cookbook .cookbook-swipe-hint{ display:none !important; }
     #v-provider-cookbook .cookbook-category-pills{ background:transparent; }
     #v-provider-cookbook .cookbook-action-bar{ background:rgba(255,255,255,0.7) !important; backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border-top:1px solid rgba(255,255,255,0.4) !important; box-shadow:0 -4px 24px rgba(0,0,0,0.06); }
-    /* Kochbuch: fixierter Footer (Airbnb-Style) [cite: REFACTOR KOCHBUCH 2026-02-23] */
-    #v-provider-cookbook .cookbook-footer-fixed{ position:fixed; bottom:0; left:0; width:100%; z-index:1000; background:#ffffff; border-top:1px solid #ebebeb; padding:16px max(20px, env(safe-area-inset-right)) calc(16px + env(safe-area-inset-bottom, 0)) max(20px, env(safe-area-inset-left)); box-sizing:border-box; }
+    /* Kochbuch: Footer auf Body-Ebene – kein Eltern-transform/filter [cite: 2026-02-23] */
+    .cookbook-footer-fixed{ position:fixed !important; bottom:0 !important; left:0; width:100%; z-index:99999; background:#fff !important; padding:16px max(20px, env(safe-area-inset-right)) calc(16px + env(safe-area-inset-bottom, 0)) max(20px, env(safe-area-inset-left)); padding-bottom:env(safe-area-inset-bottom, 0); border-top:1px solid #ebebeb; display:flex; justify-content:center; align-items:center; box-sizing:border-box; }
+    .cookbook-footer-fixed .cookbook-footer-btn-inserieren{ max-width:400px; width:100%; min-height:56px; border-radius:16px; border:none; background:#222222; color:#fff; font-size:16px; font-weight:800; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+    .cookbook-footer-fixed .cookbook-footer-btn-inserieren:active{ opacity:0.9; transform:scale(0.99); }
+    .cookbook-footer-fixed .cookbook-footer-btn-inserieren:disabled,
+    .cookbook-footer-fixed .cookbook-footer-btn-inserieren[aria-disabled="true"]{ background:#94a3b8 !important; cursor:not-allowed; opacity:0.9; }
+    #v-provider-cookbook #cookbookMagazine .cookbook-magazine-card{ z-index:2; pointer-events:auto !important; cursor:pointer; }
     #v-provider-cookbook .cookbook-footer-btn-inserieren{ width:100%; min-height:56px; border-radius:16px; border:none; background:#222222; color:#fff; font-size:16px; font-weight:800; cursor:pointer; -webkit-tap-highlight-color:transparent; }
     #v-provider-cookbook .cookbook-footer-btn-inserieren:active{ opacity:0.9; transform:scale(0.99); }
     /* Kochbuch: editierbares Preisfeld in der Karte [cite: REFACTOR KOCHBUCH 2026-02-23] */
@@ -7018,6 +7030,17 @@
     #v-provider-cookbook .price-history:hover{ color:#64748b; }
     #v-provider-cookbook .cookbook-footer-btn-inserieren:disabled,
     #v-provider-cookbook .cookbook-footer-btn-inserieren[aria-disabled="true"]{ background:#94a3b8 !important; cursor:not-allowed; opacity:0.9; }
+    /* Mittagio-Button: Premium-Quelle mit goldener Umrandung [cite: 2026-02-18] */
+    #btnOpenMittagio.cookbook-mittagio-btn,
+    #v-provider-cookbook #btnOpenMittagio.cookbook-mittagio-btn{
+      border: 1px solid rgba(212, 175, 55, 0.6) !important;
+      box-shadow: 0 0 0 1px rgba(212, 175, 55, 0.15);
+      background: linear-gradient(180deg, #fefce8 0%, #f5f5f7 100%) !important;
+    }
+    #btnOpenMittagio.cookbook-mittagio-btn:active,
+    #v-provider-cookbook #btnOpenMittagio.cookbook-mittagio-btn:active{
+      box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.35);
+    }
 
     /* Wochenplan: Mesh-Hintergrund + Slate-50 [cite: 2026-02-18] */
     #v-provider-week.view{ display:none; }
@@ -7213,6 +7236,8 @@
     #v-provider-week .week-meal-card-wrap.week-card-live{ animation: weekCardLiveGlow 2.5s ease-in-out infinite; }
     @keyframes weekCardLiveGlow{ 0%,100%{ border-bottom-color: rgba(16,185,129,0.25); } 50%{ border-bottom-color: rgba(16,185,129,0.4); } }
       #v-provider-week .week-meal-meta{ font-size:13px; color:#64748b; margin-top:4px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+      #v-provider-week .week-meal-meta .week-meal-price-right{ margin-left:auto; font-weight:500; color:var(--color-price-yellow, #FFB800); }
+      #v-provider-week .week-meal-verdienst{ font-weight:500; color:var(--color-price-yellow, #FFB800); }
       #v-provider-week .week-meal-online{ display:inline-flex; align-items:center; gap:4px; font-size:12px; font-weight:700; color:#1a1a1a; }
       #v-provider-week .week-meal-actions{ display:flex; align-items:center; gap:6px; }
       #v-provider-week .week-add-more{ width:100%; margin-top:8px; min-height:56px; padding:16px; border-radius:16px; border:none; background:var(--prov-brand); color:#1a1a1a; font-size:16px; font-weight:800; cursor:pointer; transition:all 0.2s; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(255,222,0,0.35); }
@@ -7429,27 +7454,27 @@
       #v-provider-week .kw-slot.kw-slot-live{ box-shadow:0 0 0 1px rgba(16,185,129,0.2), 0 2px 12px rgba(16,185,129,0.12); border-radius:14px; }
       #v-provider-week .kw-slot.kw-slot-offline{ box-shadow:0 0 0 1px rgba(239,68,68,0.25), 0 2px 12px rgba(0,0,0,0.04); }
       #v-provider-week .week-meal-meta .price-pill{ padding:4px 10px; font-size:13px; }
+    #v-provider-week .week-meal-meta .price-pill.week-meal-price-right{ font-weight:500; color:var(--color-price-yellow, #FFB800); }
       #v-provider-week .kw-slot{ transition:transform 0.2s ease; }
       #v-provider-week .kw-slot.kw-slot-swipe-delete{ background:rgba(239,68,68,0.2); }
       #v-provider-week .kw-slot.kw-slot-swipe-copy{ background:rgba(34,197,94,0.18); }
       #v-provider-week .kw-slot-flat{ display:flex; align-items:center; gap:10px; text-align:left; padding:10px 12px; min-height:52px; }
-      #v-provider-week .kw-slot-flat .kw-slot-flat-body{ display:flex; flex-direction:column; gap:2px; flex:1; min-width:0; }
-      #v-provider-week .kw-slot-flat .kw-slot-flat-title{ font-size:16px; font-weight:800; color:#18181b; line-height:1.25; display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-      #v-provider-week .kw-slot-flat .kw-slot-flat-price{ font-size:14px; font-weight:700; color:#475569; }
+      #v-provider-week .kw-slot-flat .kw-slot-flat-body{ display:flex; align-items:center; gap:10px; flex:1; min-width:0; }
+      #v-provider-week .kw-slot-flat .kw-slot-flat-title{ font-size:16px; font-weight:800; color:#18181b; line-height:1.25; display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1; min-width:0; }
+      #v-provider-week .kw-slot-flat .kw-slot-flat-price{ font-size:14px; font-weight:500; color:var(--color-price-yellow, #FFB800); flex-shrink:0; margin-left:auto; }
       #v-provider-week .kw-slot-flat .kw-slot-cat-icon{ font-size:18px; flex-shrink:0; }
-      #v-provider-week .kw-slot-flat .kw-slot-abhol-icon{ font-size:14px; flex-shrink:0; }
       #v-provider-week .kw-cookbook-strip-wrap{ flex-shrink:0; background:linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(248,250,252,0.95) 50%, rgba(241,245,249,0.92) 100%); backdrop-filter:blur(40px); -webkit-backdrop-filter:blur(40px); border-bottom:1px solid rgba(0,0,0,0.06); padding:10px 0 14px; }
       #v-provider-week .kw-cookbook-drag-strip{ display:flex; flex-wrap:nowrap; align-items:center; gap:10px; padding:0 16px; overflow-x:auto; -webkit-overflow-scrolling:touch; scroll-snap-type:x proximity; }
-      #v-provider-week .kw-smart-suggestions-strip .kw-suggestion-card{ scroll-snap-align:start; flex:0 0 auto; display:inline-flex; flex-direction:column; align-items:center; min-width:72px; max-width:72px; padding:8px 6px 6px; border-radius:16px; background:#fff; border:none; box-shadow:0 2px 12px rgba(0,0,0,0.06); position:relative; cursor:grab; user-select:none; transition:transform 0.15s, box-shadow 0.15s; }
+      #v-provider-week .kw-smart-suggestions-strip .kw-suggestion-card{ scroll-snap-align:start; flex:0 0 auto; display:inline-flex; flex-direction:column; align-items:center; justify-content:flex-start; min-width:72px; max-width:72px; padding:8px 6px 6px; border-radius:16px; background:#fff; border:none; box-shadow:0 2px 12px rgba(0,0,0,0.06); position:relative; cursor:grab; user-select:none; transition:transform 0.15s, box-shadow 0.15s; }
       #v-provider-week .kw-smart-suggestions-strip .kw-suggestion-card:active{ cursor:grabbing; }
       #v-provider-week .kw-smart-suggestions-strip .kw-suggestion-card.dragging{ transform:scale(0.95); opacity:0.85; cursor:grabbing; }
-      #v-provider-week .kw-smart-suggestions-strip .kw-suggestion-thumb{ width:48px; height:48px; border-radius:50%; flex-shrink:0; margin-bottom:4px; border:2px solid rgba(255,255,255,0.8); box-shadow:0 2px 8px rgba(0,0,0,0.08); }
-      #v-provider-week .kw-suggestion-compact .kw-suggestion-thumb-mini{ width:40px; height:40px; border-radius:10px; margin-bottom:2px; }
+      #v-provider-week .kw-suggestion-compact .kw-suggestion-name{ font-size:12px; font-weight:700; color:#1a1a1a; line-height:1.2; text-align:center; display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:100%; order:1; margin-bottom:6px; }
+      #v-provider-week .kw-smart-suggestions-strip .kw-suggestion-thumb{ width:48px; height:48px; border-radius:12px; flex-shrink:0; margin-bottom:6px; border:2px solid rgba(255,255,255,0.8); box-shadow:0 2px 8px rgba(0,0,0,0.08); order:2; }
+      #v-provider-week .kw-suggestion-compact .kw-suggestion-thumb-mini{ width:40px; height:40px; border-radius:10px; margin-bottom:6px; }
       #v-provider-week .kw-suggestion-compact{ min-width:72px; max-width:72px; padding:8px 6px 6px; }
-      #v-provider-week .kw-suggestion-compact .kw-suggestion-price{ font-size:12px; font-weight:900; color:#1a1a1a; display:block; margin-bottom:2px; }
+      #v-provider-week .kw-suggestion-compact .kw-suggestion-price{ font-size:13px; font-weight:500; color:var(--color-price-yellow, #FFB800); display:block; order:3; }
       #v-provider-week .kw-smart-suggestions-strip .kw-suggestion-sparkle{ font-size:12px; margin-bottom:2px; filter:drop-shadow(0 0 6px rgba(255,215,0,0.5)); }
       #v-provider-week .kw-suggestion-compact .kw-suggestion-sparkle{ display:none; }
-      #v-provider-week .kw-smart-suggestions-strip .kw-suggestion-name{ font-size:12px; font-weight:700; color:#1a1a1a; line-height:1.2; text-align:center; display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:100%; }
       #v-provider-week .kw-suggestion-badge{ display:block; font-size:9px; font-weight:800; color:#059669; text-transform:uppercase; letter-spacing:0.03em; margin-top:4px; text-align:center; }
       #v-provider-week .kw-smart-suggestions-strip .kw-suggestion-dismiss{ display:none !important; }
       #v-provider-week .kw-slot-empty.kw-slot-ghost-highlight{ animation: kwSlotGhostPulse 1.2s ease-in-out infinite; border-color:#0ea5e9; background:rgba(14,165,233,0.08); box-shadow:0 0 0 2px rgba(14,165,233,0.4), 0 0 20px rgba(14,165,233,0.2); }
@@ -7547,8 +7572,8 @@
       body.provider-week-active #providerNavWrap,
       body.provider-week-active .bottom-navigation,
       body.provider-week-active .bottom-nav{ display:none !important; transition: opacity 0.25s ease, visibility 0.25s ease; }
-      /* Wochenplan-Footer: Airbnb-Global-Footer [cite: 2026-02-23] */
-      #v-provider-week .week-view-footer{ position:sticky; bottom:0; left:0; right:0; margin:0; padding:12px 20px calc(12px + env(safe-area-inset-bottom, 0)); background:#ffffff; border-top:1px solid #ebebeb; flex-shrink:0; z-index:10; }
+      /* Wochenplan-Footer: fixiert wie Kochbuch, bündig mit Home-Bar [cite: 2026-02-23, 2026-02-25] */
+      #v-provider-week .week-view-footer{ position:fixed; bottom:0; left:0; width:100%; margin:0; padding:12px 20px calc(12px + env(safe-area-inset-bottom, 0)); background:#ffffff; border-top:1px solid #ebebeb; box-sizing:border-box; z-index:1000; }
       #v-provider-week .week-view-footer-btn{ width:100%; min-height:48px; border-radius:12px; border:none; background:#222222; color:#ffffff; font-size:16px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:transform 0.1s, opacity 0.2s; -webkit-tap-highlight-color:transparent; }
       #v-provider-week .week-view-footer-btn:active{ transform:scale(0.98); }
       /* Dashboard: Dein Wochenplan – klare Trennung von KPIs, App-Kasten, S25-Safe */
