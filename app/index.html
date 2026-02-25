@@ -3109,6 +3109,137 @@
   </div>
 </div>
 
+<!-- Step-Flow Monetisierung: Schritt 1 & 2 – deckungsgleiche Footer-Struktur [cite: 2026-02-25] -->
+<div id="v-step-1" class="step-view" style="display:none;">
+  <div class="step-1-content"></div>
+  <footer class="airbnb-footer step-footer">
+    <div class="footer-line"></div>
+    <button type="button" class="primary-btn-black" id="btn-step-1-to-2" onclick="if(typeof window.goToStep2==='function') window.goToStep2()">Weiter</button>
+  </footer>
+</div>
+
+<div id="v-step-2-monetize" class="step-view" style="display:none;">
+  <div class="premium-header-shimmer">
+    <h2>Dein Inserat ist bereit</h2>
+  </div>
+  <div class="review-minimal-list" id="step2MiniList">
+    <div class="mini-summary-item">
+      <img src="https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=200&q=70" alt="Gericht">
+      <div class="mini-info">
+        <span class="name">Wiener Schnitzel</span>
+        <span class="price">12,50 €</span>
+      </div>
+    </div>
+  </div>
+  <div class="cashflow-selector">
+    <div class="option-card active" id="option-smart" onclick="if(typeof window.selectSmart==='function') window.selectSmart()">
+      <div class="top">
+        <span class="label">MIT ABHOLNUMMER 🧾</span>
+        <span class="price-big">0,00 €</span>
+      </div>
+      <p class="sub-note">0,89 € Servicepauschale pro Bestellung</p>
+    </div>
+  </div>
+  <div class="revenue-preview-box">
+    <p>Bei ca. 25 Portionen erzielst du hiermit <strong id="revenuePreviewVal">312,50 € Umsatz</strong></p>
+  </div>
+  <footer class="airbnb-footer step-footer">
+    <div class="footer-line"></div>
+    <button type="button" id="btn-final-list" class="primary-btn-black" onclick="if(typeof window.confirmFinalListing==='function') window.confirmFinalListing()">
+      Jetzt kostenlos inserieren
+    </button>
+  </footer>
+</div>
+
+<!-- Step 3: Big-Bang Success-View [cite: 2026-02-25] -->
+<div id="v-step-3-success" class="step-view success-view-bg" style="display:none; opacity:0;">
+  <div id="step3ConfettiContainer" class="confetti-overlay"></div>
+  <div class="success-header">
+    <div class="live-pill-pulse">LIVE</div>
+    <h2 class="bam-title">BÄM!</h2>
+    <p>Dein Inserat ist jetzt für alle sichtbar.</p>
+  </div>
+  <div class="live-status-card-container">
+    <div class="live-card">
+      <div class="active-badge">Aktiv</div>
+      <img id="step3FinalImg" src="" alt="Gericht">
+      <div class="live-card-body">
+        <h3 id="step3FinalTitle">Gerichtsname</h3>
+        <div class="price-row">
+          <span id="step3FinalPrice">0,00 €</span>
+          <div id="step3AbholBox" class="abhol-badge" style="display:none;">🧾 0,89 €</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="viral-section">
+    <h3>Teilen &amp; Verkaufen 🚀</h3>
+    <div class="share-actions-grid">
+      <button type="button" class="share-item wa" onclick="if(typeof window.triggerWhatsAppShare==='function') window.triggerWhatsAppShare()">
+        <div class="share-icon">🟢</div>
+        <span>WhatsApp</span>
+      </button>
+      <button type="button" class="share-item insta" onclick="if(typeof window.triggerInstaShare==='function') window.triggerInstaShare()">
+        <div class="share-icon">📸</div>
+        <span>Story</span>
+      </button>
+      <button type="button" class="share-item copy" onclick="if(typeof window.copyListingLink==='function') window.copyListingLink()">
+        <div class="share-icon">🔗</div>
+        <span>Link</span>
+      </button>
+    </div>
+  </div>
+  <footer class="airbnb-footer step-footer">
+    <div class="footer-line"></div>
+    <button type="button" class="primary-btn-black" onclick="if(typeof window.resetFlowToDashboard==='function') window.resetFlowToDashboard()">
+      Fertig &amp; Zum Dashboard
+    </button>
+  </footer>
+</div>
+
+<!-- Insert Review View: Aktivierung bestätigen – „Der schlaue Metzger spart“ [cite: 2026-02-24, 2026-02-25] -->
+<div id="v-insert-review" class="native-view" style="display:none; transform: translateX(100%);">
+  <div class="view-header">
+    <button type="button" onclick="window.closeReviewAndBack()" class="back-btn" aria-label="Zurück">←</button>
+    <h2>Aktivierung bestätigen</h2>
+  </div>
+  <div class="review-scroll-area">
+    <div id="reviewGrid" class="review-grid-2col"></div>
+    <div class="billing-card">
+      <h3>Deine Wahl</h3>
+      <div id="pricingDisplay">
+        <div class="billing-row" id="row-standard">
+          <span>Einmaliges Inserat</span>
+          <span class="price-bold">4,99 €</span>
+        </div>
+        <div class="billing-row highlight-green" id="row-smart" style="display:none;">
+          <span>Inserat (mit Abholnummer) 🧾</span>
+          <span class="strike">4,99 €</span>
+          <span class="badge-free">0,00 €</span>
+        </div>
+      </div>
+      <div class="billing-divider"></div>
+      <div id="fee-note" style="display:none;" class="service-info">
+        <div class="billing-row">
+          <span>Service-Pauschale</span>
+          <span class="price-tag">0,89 € pro Bestellung</span>
+        </div>
+        <p class="explanation">Wird automatisch bei jeder Bestellung verrechnet.</p>
+      </div>
+      <div class="billing-row total">
+        <span>Heute fällig</span>
+        <span id="reviewFinalTotal">4,99 €</span>
+      </div>
+    </div>
+  </div>
+  <footer class="airbnb-footer">
+    <div class="footer-line"></div>
+    <button type="button" id="btnFinalActivate" class="primary-btn-black" onclick="window.processFinalActivation()">
+      Jetzt für 4,99 € aktivieren
+    </button>
+  </footer>
+</div>
+
 <!-- Print view -->
 <div id="printView" class="print-view"></div>
 

@@ -5641,6 +5641,12 @@
       pushViewState(null, location.pathname);
       return;
     }
+    // Insert Review View schließen (Hardware-Back) [cite: 2026-02-25]
+    if(document.body.classList.contains('insert-review-active')){
+      if(typeof window.closeReviewAndBack === 'function') window.closeReviewAndBack(true);
+      e.preventDefault();
+      return;
+    }
     // FAQ Sheet schließen
     if(document.getElementById('faqSheet') && document.getElementById('faqSheet').classList.contains('active')){
       closeFaqSheet();
@@ -11182,6 +11188,206 @@
       bulkDraftDates: draftKeysInKW
     });
   }
+
+  /** Insert Review View: „Der schlaue Metzger spart“ – UI-Weiche Standard vs. Smart [cite: 2026-02-24, 2026-02-25] */
+  window.openInsertReview = function(selectedDishes, useAbholnummer){
+    var view = document.getElementById('v-insert-review');
+    var grid = document.getElementById('reviewGrid');
+    var rowStd = document.getElementById('row-standard');
+    var rowSmart = document.getElementById('row-smart');
+    var feeNote = document.getElementById('fee-note');
+    var totalEl = document.getElementById('reviewFinalTotal');
+    var btnEl = document.getElementById('btnFinalActivate');
+    if(!view || !grid) return;
+    var escFn = (typeof esc === 'function') ? esc : function(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); };
+    grid.innerHTML = '';
+    (selectedDishes || []).forEach(function(dish){
+      var img = (dish.img || dish.photoData || dish.imageUrl || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=200&q=70');
+      var name = dish.name || dish.dish || 'Gericht';
+      grid.innerHTML += '<div class="review-card"><img src="' + escFn(img) + '" alt=""><div class="info"><h3>' + escFn(name) + '</h3><div class="pillars">🍴 🔄 ' + (useAbholnummer ? '🧾' : '') + '</div></div></div>';
+    });
+    if(useAbholnummer){
+      if(rowStd) rowStd.style.display = 'none';
+      if(rowSmart) rowSmart.style.display = 'flex';
+      if(feeNote) feeNote.style.display = 'block';
+      if(totalEl) totalEl.textContent = '0,00 €';
+      if(btnEl){ btnEl.textContent = 'Kostenlos aktivieren'; btnEl.style.background = '#10b981'; }
+    } else {
+      if(rowStd) rowStd.style.display = 'flex';
+      if(rowSmart) rowSmart.style.display = 'none';
+      if(feeNote) feeNote.style.display = 'none';
+      if(totalEl) totalEl.textContent = '4,99 €';
+      if(btnEl){ btnEl.textContent = 'Jetzt für 4,99 € aktivieren'; btnEl.style.background = '#222222'; }
+    }
+    view.style.display = 'block';
+    setTimeout(function(){ view.style.transform = 'translateX(0)'; }, 10);
+    document.body.classList.add('insert-review-active');
+    try{ history.pushState({view: 'insert-review'}, ''); }catch(e){}
+  };
+  window.showInsertReview = window.openInsertReview;
+
+  window.closeReviewAndBack = function(skipHistoryBack){
+    var view = document.getElementById('v-insert-review');
+    if(!view) return;
+    try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); }catch(e){}
+    view.style.transform = 'translateX(100%)';
+    setTimeout(function(){
+      view.style.display = 'none';
+      document.body.classList.remove('insert-review-active');
+      if(!skipHistoryBack){ try{ history.back(); }catch(e){} }
+    }, 300);
+  };
+
+  window.processFinalActivation = function(){
+    var rowSmart = document.getElementById('row-smart');
+    var useAbhol = rowSmart && rowSmart.style.display === 'flex';
+    if(typeof saveTransaction === 'function'){
+      var txId = 'TX-' + (typeof cryptoId === 'function' ? cryptoId().slice(0, 8) : Date.now().toString(36).toUpperCase());
+      var tx = {
+        id: txId,
+        date: new Date().toLocaleDateString('de-DE'),
+        type: useAbhol ? 'Smart-Inserat (0,89 €/Bestellung)' : 'Standard-Inserat',
+        amount: useAbhol ? '0,00 €' : '-4,99 €',
+        total_amount: useAbhol ? 0 : 4.99,
+        timestamp: new Date().toISOString()
+      };
+      saveTransaction(tx);
+    }
+    if(typeof renderProviderHome === 'function') renderProviderHome();
+    try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate([30, 100, 30]); }catch(e){}
+    if(typeof triggerCookbookVictoryConfetti === 'function') triggerCookbookVictoryConfetti();
+    else if(typeof showToast === 'function') showToast('BÄM! Deine Woche ist live. Viel Erfolg!');
+    setTimeout(function(){
+      window.closeReviewAndBack(true);
+      if(typeof showProviderHome === 'function') showProviderHome();
+    }, 600);
+  };
+  window.confirmBulkInsert = window.processFinalActivation;
+
+  /** Step-Flow Monetisierung: Kein-Sprung-Logik [cite: 2026-02-25] */
+  window.goToStep2 = function(price, servings){
+    var s1 = document.getElementById('v-step-1');
+    var s2 = document.getElementById('v-step-2-monetize');
+    if(!s1 || !s2) return;
+    s1.style.transition = 'opacity 0.2s ease';
+    s1.style.opacity = '0';
+    setTimeout(function(){
+      s1.style.display = 'none';
+      s2.style.display = 'block';
+      s2.style.opacity = '1';
+      try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(15); }catch(e){}
+      var p = typeof price === 'number' ? price : 12.50;
+      var n = typeof servings === 'number' ? servings : 25;
+      var total = (p * n).toFixed(2);
+      var el = document.getElementById('revenuePreviewVal');
+      if(el) el.textContent = total + ' € Umsatz';
+    }, 200);
+  };
+  window.selectSmart = function(){
+    var card = document.getElementById('option-smart');
+    if(card){ card.classList.add('active'); }
+    try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); }catch(e){}
+  };
+
+  /** Schlägt die Brücke vom Wizard zum Premium-Monetarisierung-Board. Nutzt localStorage als primäre Quelle. [cite: 2026-02-25] */
+  window.bridgeToPremiumMonetization = function(){
+    var draft = JSON.parse(localStorage.getItem('wizard_draft') || '{}');
+    var w = draft.data || {};
+    var name = (w.dish || '').trim() || 'Dein Gericht';
+    var price = Number(w.price) || 0;
+    var imageUrl = w.photoData || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=200&q=60';
+    var safe = function(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); };
+    var container = document.getElementById('step2MiniList');
+    if(container){
+      container.innerHTML = '<div class="mini-summary-item"><img src="'+safe(imageUrl)+'" alt="'+safe(name)+'"><div class="mini-info"><span class="name">'+safe(name)+'</span><span class="price">'+(price.toFixed(2).replace('.',','))+' €</span></div></div>';
+    }
+    if(typeof window.goToStep2 === 'function') window.goToStep2(price, 25);
+    var wizardModal = document.getElementById('wizard');
+    var wbd = document.getElementById('wbd');
+    if(wizardModal){
+      wizardModal.style.transition = 'opacity 0.2s ease';
+      wizardModal.style.opacity = '0';
+      setTimeout(function(){ wizardModal.style.display = 'none'; wizardModal.style.opacity = ''; }, 200);
+    }
+    if(wbd) wbd.classList.remove('active');
+  };
+
+  /** Step 2 → 3: Finalisiert Inserat, zeigt Big-Bang Success [cite: 2026-02-25] */
+  window.confirmFinalListing = function(){
+    var s2 = document.getElementById('v-step-2-monetize');
+    var s3 = document.getElementById('v-step-3-success');
+    if(!s2 || !s3) return;
+    var draft = JSON.parse(localStorage.getItem('wizard_draft') || '{}');
+    var w = draft.data || {};
+    var optSmart = document.getElementById('option-smart');
+    var isSmart = optSmart && optSmart.classList.contains('active');
+    var imgEl = document.getElementById('step3FinalImg');
+    var titleEl = document.getElementById('step3FinalTitle');
+    var priceEl = document.getElementById('step3FinalPrice');
+    var abholBox = document.getElementById('step3AbholBox');
+    if(imgEl) imgEl.src = w.photoData || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=400&q=60';
+    if(titleEl) titleEl.textContent = (w.dish || '').trim() || 'Gericht';
+    if(priceEl) priceEl.textContent = (Number(w.price) || 0).toFixed(2).replace('.', ',') + ' €';
+    if(abholBox) abholBox.style.display = isSmart ? 'block' : 'none';
+    try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate([30, 100, 30, 200]); }catch(e){}
+    s2.style.transition = 'opacity 0.2s ease';
+    s2.style.opacity = '0';
+    setTimeout(function(){
+      s2.style.display = 'none';
+      s3.style.display = 'block';
+      s3.style.opacity = '1';
+      if(typeof window.triggerLiveConfetti === 'function') window.triggerLiveConfetti();
+    }, 200);
+  };
+
+  /** Flow-Abschluss: Draft löschen, Dashboard zeigen [cite: 2026-02-25] */
+  window.resetFlowToDashboard = function(){
+    localStorage.removeItem('wizard_draft');
+    var s3 = document.getElementById('v-step-3-success');
+    if(s3) s3.style.display = 'none';
+    if(typeof showProviderHome === 'function') showProviderHome();
+  };
+
+  /** Viralitäts-Engine: WhatsApp & Link-Kopieren [cite: 2026-02-25] */
+  window.triggerWhatsAppShare = function(){
+    var draft = JSON.parse(localStorage.getItem('wizard_draft') || '{}');
+    var w = draft.data || {};
+    var name = (w.dish || '').trim() || 'unser heutiges Gericht';
+    var price = (Number(w.price) || 0).toFixed(2).replace('.', ',') + ' €';
+    var shopLink = location.origin + (location.pathname || '/') + '#offer/' + ((draft.ctx && draft.ctx.editOfferId) || '');
+    var text = encodeURIComponent('🍴 *Frisch bei uns:* ' + name + '\n💰 Nur ' + price + '\n\nHier direkt ansehen und reservieren:\n' + shopLink);
+    window.open('https://wa.me/?text=' + text, '_blank');
+    try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); }catch(e){}
+  };
+
+  window.copyListingLink = function(){
+    var draft = JSON.parse(localStorage.getItem('wizard_draft') || '{}');
+    var shopLink = location.origin + (location.pathname || '/') + '#offer/' + ((draft.ctx && draft.ctx.editOfferId) || '');
+    if(typeof copyToClipboard === 'function') copyToClipboard(shopLink);
+    else try{ navigator.clipboard.writeText(shopLink); }catch(e){}
+    var btn = document.querySelector('.share-item.copy span');
+    if(btn){ var old = btn.textContent; btn.textContent = 'Kopiert! ✅'; setTimeout(function(){ btn.textContent = old; }, 2000); }
+    try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(30); }catch(e){}
+    if(typeof showToast === 'function') showToast('Link kopiert!');
+  };
+
+  window.triggerInstaShare = function(){
+    if(typeof window.copyListingLink === 'function') window.copyListingLink();
+    if(typeof showToast === 'function') showToast('Link kopiert – für Story einfügen!');
+  };
+
+  window.triggerLiveConfetti = function(){
+    var container = document.getElementById('step3ConfettiContainer');
+    if(!container) return;
+    container.innerHTML = '';
+    var colors = ['#10b981', '#059669', '#34d399', '#6ee7b7', '#a7f3d0', '#FACC15'];
+    for(var i = 0; i < 50; i++){
+      var c = document.createElement('div');
+      c.className = 'confetti';
+      c.style.cssText = 'position:absolute;left:' + (Math.random() * 100) + '%;width:' + (Math.random() * 8 + 5) + 'px;height:' + (Math.random() * 8 + 5) + 'px;background:' + colors[Math.floor(Math.random() * colors.length)] + ';animation:confetti-fall 3s linear forwards;animation-delay:' + (Math.random() * 2) + 's;animation-duration:' + (Math.random() * 2 + 2) + 's;';
+      container.appendChild(c);
+    }
+  };
 
   /** Slide-Out bei Hardware-Zurück im Wochenplan [cite: 2026-02-18, 2026-02-25] */
   function closeWeekplanWithNativeAnim(targetSection){
@@ -17758,8 +17964,10 @@
           if(typeof handlePriceFastInsert==='function') handlePriceFastInsert(box);
           if(updateStep2ContextZoneRef) updateStep2ContextZoneRef();
           w.inseratStep=2; saveDraft();
-          try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate([10, 50]); }catch(err){}
-          if(slider){
+          try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(15); }catch(err){}
+          if(typeof window.bridgeToPremiumMonetization==='function'){
+            window.bridgeToPremiumMonetization();
+          } else if(slider){
             try{ history.pushState({inseratStep:2},'','#'); }catch(e){}
             var sweepEl=box.querySelector('.step2-slot-machine-sweep');
             if(sweepEl){ sweepEl.classList.remove('animate'); sweepEl.offsetHeight; sweepEl.classList.add('animate'); sweepEl.addEventListener('animationend',function onSweepEnd(){ sweepEl.removeEventListener('animationend',onSweepEnd); sweepEl.classList.remove('animate'); },{once:true}); }

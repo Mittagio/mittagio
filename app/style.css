@@ -9198,3 +9198,229 @@
 .share-template-916 .st916-footer-cta{ font-size:32px; font-weight:900; margin:0; letter-spacing:0.02em; }
 /* Overlay Sichtbarkeit nur per JS (display:none/ flex) – kein !important, sonst blockiert es beim Seitenstart */
 .share-template-overlay{ align-items:center; justify-content:center; }
+
+/* ========== Insert Review View (Woche aktivieren) [cite: 2026-02-25] ========== */
+#v-insert-review.native-view {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: #f8fafc; z-index: 2000;
+  transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+  display: flex; flex-direction: column;
+  padding-top: env(safe-area-inset-top);
+}
+#v-insert-review .view-header {
+  display: flex; align-items: center; gap: 12px;
+  padding: 16px 20px; background: #fff; border-bottom: 1px solid #ebebeb;
+}
+#v-insert-review .view-header .back-btn {
+  width: 44px; height: 44px; border: none; background: none;
+  font-size: 24px; cursor: pointer; padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+#v-insert-review .view-header h2 {
+  margin: 0; font-size: 18px; font-weight: 800; color: #0f172a;
+}
+#v-insert-review .review-scroll-area {
+  flex: 1; overflow-y: auto; padding-bottom: 120px;
+  -webkit-overflow-scrolling: touch;
+}
+#v-insert-review .review-grid-2col {
+  display: grid; grid-template-columns: repeat(2, 1fr);
+  gap: 12px; padding: 16px;
+}
+#v-insert-review .review-card {
+  display: flex; flex-direction: column;
+  background: white; border-radius: 12px;
+  overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+#v-insert-review .review-card img {
+  width: 100%; height: 80px;
+  object-fit: cover;
+}
+#v-insert-review .review-card .info {
+  padding: 10px 12px;
+}
+#v-insert-review .review-card .info h3 {
+  font-weight: 900; font-size: 14px; margin: 0 0 4px 0;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+#v-insert-review .review-card .pillars {
+  display: flex; gap: 6px; font-size: 12px;
+}
+#v-insert-review .billing-card {
+  margin: 0 16px 24px; padding: 20px;
+  background: #fff; border-radius: 16px;
+  border: 1px dashed #e2e8f0;
+}
+#v-insert-review .billing-card h3 {
+  margin: 0 0 16px 0; font-size: 16px; font-weight: 800; color: #0f172a;
+}
+#v-insert-review .billing-row {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 8px; margin-bottom: 10px; flex-wrap: wrap;
+}
+#v-insert-review .billing-row.total {
+  margin-top: 16px; padding-top: 16px; border-top: 1px solid #e2e8f0;
+  font-weight: 800; font-size: 18px;
+}
+#v-insert-review .billing-row.highlight-green { color: #10b981; font-weight: 900; }
+#v-insert-review .price-bold { font-weight: 900; font-size: 18px; }
+#v-insert-review .strike { text-decoration: line-through; opacity: 0.4; font-size: 14px; margin-right: 8px; }
+#v-insert-review .badge-free { color: #10b981; font-size: 20px; font-weight: 900; }
+#v-insert-review .billing-divider { height: 1px; background: #e2e8f0; margin: 16px 0; }
+#v-insert-review .service-info {
+  background: #f0fdf4; padding: 12px; border-radius: 8px;
+  margin-top: 10px; border: 1px dashed #10b981;
+}
+#v-insert-review .service-info .explanation {
+  font-size: 12px; color: #15803d; margin: 5px 0 0 0;
+}
+#v-insert-review .price-tag { font-weight: 700; color: #10b981; }
+#v-insert-review .airbnb-footer {
+  position: fixed; bottom: 0; left: 0; width: 100%;
+  background: white; border-top: 1px solid #ebebeb;
+  padding: 16px; padding-bottom: calc(16px + env(safe-area-inset-bottom));
+  z-index: 10000;
+}
+#v-insert-review .airbnb-footer .footer-line {
+  height: 1px; background: #ebebeb; margin: 0 0 12px 0;
+}
+#v-insert-review .primary-btn-black {
+  width: calc(100% - 32px); margin: 0 16px;
+  background: #222222; color: white;
+  height: 54px; border-radius: 8px;
+  font-weight: bold; font-size: 16px; border: none;
+  cursor: pointer; -webkit-tap-highlight-color: transparent;
+}
+
+/* Step-Flow Monetisierung: Gold-Schimmer & Footer-Konstanz [cite: 2026-02-25] */
+.step-view {
+  padding-bottom: 120px;
+}
+.step-view .premium-header-shimmer {
+  background: linear-gradient(90deg, #ffffff 0%, #fff9e6 50%, #ffffff 100%);
+  background-size: 200% 100%;
+  animation: goldShimmer 3s infinite;
+  padding: 40px 20px;
+  text-align: center;
+  border-bottom: 1px solid #f2e6c2;
+}
+@keyframes goldShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.step-view .review-minimal-list {
+  padding: 16px;
+}
+.step-view .mini-summary-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: #fcfcfc;
+  border-radius: 12px;
+  border: 1px solid #f0f0f0;
+}
+.step-view .mini-summary-item img {
+  width: 56px; height: 56px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+.step-view .mini-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.step-view .mini-info .name { font-weight: 700; color: #1e293b; }
+.step-view .mini-info .price { font-size: 15px; color: #10b981; font-weight: 600; }
+.step-view .cashflow-selector {
+  padding: 0 20px 16px;
+}
+.step-view .option-card {
+  padding: 20px;
+  border-radius: 12px;
+  border: 2px solid #e2e8f0;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.step-view .option-card.active {
+  border-color: #10b981;
+  box-shadow: 0 0 0 1px #10b981;
+}
+.step-view .option-card .top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.step-view .option-card .label { font-weight: 700; color: #1e293b; }
+.step-view .option-card .price-big { font-size: 20px; font-weight: 900; color: #10b981; }
+.step-view .option-card .sub-note { font-size: 12px; color: #64748b; margin: 0; }
+.step-view .revenue-preview-box {
+  margin: 20px;
+  padding: 15px;
+  background: #fcfcfc;
+  border-radius: 12px;
+  color: #888;
+  font-size: 13px;
+  text-align: center;
+  border: 1px solid #f0f0f0;
+}
+.step-view .revenue-preview-box strong {
+  color: #444;
+}
+/* Footer-Konstanz: Daumen-Position halten [cite: 2026-02-23] */
+.step-view .airbnb-footer.step-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100px;
+  background: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px;
+  padding-bottom: calc(16px + env(safe-area-inset-bottom));
+  border-top: 1px solid #ebebeb;
+  z-index: 10000;
+}
+.step-view .airbnb-footer .footer-line {
+  height: 1px;
+  background: #ebebeb;
+  margin: 0 0 12px 0;
+}
+.step-view .primary-btn-black {
+  width: calc(100% - 40px);
+  height: 56px;
+  background: #222;
+  color: white;
+  border-radius: 8px;
+  font-weight: 900;
+  font-size: 17px;
+  border: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Step 3: Success-View BÄM & Viralität [cite: 2026-02-25] */
+.success-view-bg { background: #f8fafc; text-align: center; overflow-y: auto; padding-bottom: 120px; position: relative; }
+.success-view-bg .confetti-overlay { position: absolute; inset: 0; pointer-events: none; z-index: 10; overflow: hidden; }
+.success-view-bg .success-header { padding: 40px 20px 20px; }
+.success-view-bg .live-pill-pulse { display: inline-block; background: #10b981; color: white; padding: 6px 16px; border-radius: 999px; font-weight: 800; font-size: 12px; letter-spacing: 1px; margin-bottom: 12px; }
+.success-view-bg .bam-title { font-size: 56px; font-weight: 900; color: #222; margin: 10px 0; transform: rotate(-3deg); animation: popAndRotate 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+@keyframes popAndRotate { 0% { transform: scale(0) rotate(-15deg); opacity: 0; } 100% { transform: scale(1) rotate(-3deg); opacity: 1; } }
+.success-view-bg .success-header p { margin: 0; font-size: 15px; color: #64748b; }
+.success-view-bg .live-status-card-container { padding: 0 16px; }
+.success-view-bg .live-card { background: white; border-radius: 20px; margin: 20px 0; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.08); position: relative; text-align: left; border: 2px solid #10b981; animation: glowSuccess 2s infinite alternate; }
+@keyframes glowSuccess { from { box-shadow: 0 10px 30px rgba(16, 185, 129, 0.1); } to { box-shadow: 0 10px 40px rgba(16, 185, 129, 0.3); } }
+.success-view-bg .active-badge { position: absolute; top: 12px; left: 12px; background: #10b981; color: white; padding: 4px 10px; border-radius: 8px; font-weight: bold; font-size: 11px; z-index: 2; }
+.success-view-bg .live-card img { width: 100%; height: 160px; object-fit: cover; display: block; }
+.success-view-bg .live-card-body { padding: 15px; }
+.success-view-bg .price-row { display: flex; justify-content: space-between; align-items: center; margin-top: 5px; }
+.success-view-bg .abhol-badge { color: #10b981; font-weight: 900; font-size: 14px; }
+.success-view-bg .viral-section { padding: 24px 16px; }
+.success-view-bg .viral-section h3 { margin: 0 0 16px; font-size: 18px; font-weight: 800; color: #0f172a; }
+.success-view-bg .share-actions-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.success-view-bg .share-item { background: white; border: 1px solid #ebebeb; border-radius: 16px; padding: 15px 5px; font-weight: bold; font-size: 12px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 8px; transition: transform 0.15s, background 0.15s; -webkit-tap-highlight-color: transparent; }
+.success-view-bg .share-item:active { transform: scale(0.95); background: #f0fdf4; }
