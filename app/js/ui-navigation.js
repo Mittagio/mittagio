@@ -596,6 +596,10 @@
     if (preselectDay && typeof preselectDay === 'string') { window.weekPlanDay = preselectDay; if (typeof getWeekIndexForDate === 'function') window.weekPlanKWIndex = Math.max(0, getWeekIndexForDate(preselectDay)); }
     if (typeof preselectKW === 'number' && preselectKW >= 0 && preselectKW < 8) window.weekPlanKWIndex = preselectKW;
     window.weekPlanMode = 'overview';
+    /* Handy-Back-Taste: Vor Wochenplan immer Dashboard-State im Stack, damit popstate zum Dashboard führt [cite: Plan Wochenplan 2026-02-25] */
+    if (typeof history !== 'undefined' && (!history.state || history.state.section !== 'dashboard')) {
+      if (typeof history.pushState === 'function') history.pushState({ section: 'dashboard', view: 'provider-home', mode: typeof window.mode !== 'undefined' ? window.mode : 'provider' }, '', location.pathname);
+    }
     setProviderNavActive('provider-week');
     showView(views.providerWeek);
     if(typeof setProviderPageHeader === 'function') setProviderPageHeader('Wochenplan');

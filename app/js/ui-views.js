@@ -30,7 +30,8 @@
     var dataCookbookId = data.dataCookbookId ? ' data-cookbook-id="' + esc(String(data.dataCookbookId)) + '"' : '';
     var dataDate = data.dataDate ? ' data-date="' + esc(String(data.dataDate)) + '"' : '';
     var hasAbhol = !!(data.hasPickupCode);
-    var badgeHtml = hasAbhol ? '<span class="prov-card-abhol-badge" style="position:absolute;bottom:6px;right:6px;padding:4px 8px;border-radius:8px;background:rgba(15,23,42,0.9);color:#fff;font-size:11px;font-weight:800;">🧾</span>' : '';
+    var showAbholBadge = data.showAbholBadge !== false;
+    var badgeHtml = (hasAbhol && showAbholBadge) ? '<span class="prov-card-abhol-badge" style="position:absolute;bottom:6px;right:6px;padding:4px 8px;border-radius:8px;background:rgba(15,23,42,0.9);color:#fff;font-size:11px;font-weight:800;">🧾</span>' : '';
     if (compact) {
       return '<div class="prov-card inserat-bar-card kw-slot-compact"' + dataOfferId + dataCookbookId + dataDate + ' role="button" tabindex="0" style="display:flex;align-items:center;padding:8px 12px;border-radius:12px;background:#fff;border:1px solid #e5e7eb;width:100%;margin:0 0 6px 0;box-shadow:0 1px 3px rgba(0,0,0,0.04);cursor:pointer;">' +
         '<div style="width:48px;height:48px;min-width:48px;border-radius:10px;overflow:hidden;flex-shrink:0;position:relative;">' +
@@ -62,8 +63,8 @@
       '<div class="prov-list-item-body" style="flex:1;padding-left:16px;display:flex;flex-direction:column;min-width:0;">' +
         '<h3 class="prov-list-item-title" style="font-family:\'Montserrat\',sans-serif;font-weight:900;font-size:16px;margin:0;color:#1a1a1a;line-height:1.3;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">' + name + '</h3>' +
         pillarsBlock +
-        '<div class="prov-list-item-meta-row" style="display:flex;justify-content:flex-start;align-items:center;margin-top:auto;">' +
-          '<span class="price-tag" style="font-weight:800;font-size:1.25rem;">' + price + '</span>' +
+        '<div class="prov-list-item-meta-row' + (data.dashboardCard ? ' prov-list-item-meta-row-dashboard' : '') + '" style="display:flex;justify-content:flex-end;align-items:center;margin-top:auto;">' +
+          '<span class="price-tag' + (data.dashboardCard ? ' prov-list-item-price-informational' : '') + '" style="font-weight:800;font-size:1.25rem;">' + price + '</span>' +
         '</div>' +
       '</div>' +
     '</div>';
