@@ -1617,7 +1617,7 @@
     /* Inseratflow: Über Provider-Bottom-Nav (z-index 999) legen */
     /* Wizard/InseratCard: Backdrop unter Sheet, damit Klicks die Karte treffen (nicht Backdrop) */
     #wbd.active { z-index: 999 !important; background: radial-gradient(ellipse at center, rgba(254,243,199,0.35) 0%, rgba(251,191,36,0.08) 35%, rgba(0,0,0,0.65) 100%); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
-    #wizard.sheet--kitchen.active { z-index: 1001 !important; }
+    #wizard.sheet--kitchen.active { z-index: 20000 !important; }
     /* Inseratsauswahl-Sheet (createFlowBd/createFlowSheet) – Footer bündig, Airbnb-Style [cite: 2026-02-21] */
     #createFlowBd { z-index: 997; opacity: 0; pointer-events: none; transition: opacity 0.25s ease; background: rgba(0,0,0,0.5); }
     #createFlowBd.active { opacity: 1; pointer-events: auto; }
@@ -1744,20 +1744,30 @@
       margin-top: -4px;
     }
     /* ===== MASTERCARD KANON [cite: 2026-02-21, User Prompt] ===== */
+    /* Keyframes: Slide-In/Out für Mastercard [cite: 2026-02-25] */
+    @keyframes mastercardSlideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+    @keyframes mastercardSlideDown {
+      from { transform: translateY(0); }
+      to { transform: translateY(100%); }
+    }
     /* 1. DIE SHELL: Verhindert das "Aufsitz-Gefühl", 100% S25-Screen */
     #wizard[data-flow="listing"] .mastercard-container,
     .mastercard-main-container {
       display: flex !important;
       flex-direction: column !important;
+      justify-content: space-between !important;
       align-items: center !important;
     }
     #wizard[data-flow="listing"] .mastercard-container {
       position: fixed;
-      inset: 0;
+      top: 0; left: 0;
       width: 100vw;
       height: 100vh;
       background: #ffffff;
-      z-index: 2000;
+      z-index: 20000;
       margin: 0 !important;
       padding: 0 !important;
       border: none !important;
@@ -1767,6 +1777,9 @@
     }
     #wizard[data-flow="listing"] .mastercard-container.is-open {
       transform: translateY(0);
+    }
+    #wizard[data-flow="listing"] .mastercard-container.slide-down {
+      transform: translateY(100%);
     }
     /* mastercard-overlay: Hintergrund-Dimmer für Slide-Down [cite: 2026-02-21] */
     .mastercard-overlay {
@@ -1801,9 +1814,9 @@
     #wizard[data-flow="listing"] .inserat-price-pill-input {
       border: none;
       font-size: 42px;
-      font-weight: 900;
+      font-weight: 400;
       text-align: center;
-      color: #0f172a;
+      color: #FFB800;
       width: 180px;
       outline: none;
       background: transparent;
@@ -2097,8 +2110,14 @@
     }
     .airbnb-footer-minimal,
     #wizard[data-flow="listing"] .inserat-step1-nav.inserat-immo-footer {
-      background: #0f172a;
-      padding: 16px 24px max(34px, env(safe-area-inset-bottom));
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
+      background: #222222;
+      padding: 16px 24px;
+      padding-bottom: env(safe-area-inset-bottom);
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -3300,8 +3319,9 @@
       margin: 0 !important;
       border-radius: 0 !important;
       z-index: 500 !important;
-      padding: 12px 24px calc(12px + env(safe-area-inset-bottom)) 24px !important;
-      background: #000000 !important;
+      padding: 12px 24px !important;
+      padding-bottom: env(safe-area-inset-bottom) !important;
+      background: #222222 !important;
       border-top: none !important;
     }
     /* Footer-Padding reduziert wenn Nav ausgeblendet */
@@ -3712,10 +3732,12 @@
       bottom: 0 !important;
       left: 0 !important;
       right: 0 !important;
+      width: 100% !important;
       margin: 0 !important;
       background: #ffffff !important;
       border-top: 1px solid #ebebeb !important;
-      padding: 16px 20px calc(16px + env(safe-area-inset-bottom, 0)) !important;
+      padding: 16px 20px !important;
+      padding-bottom: env(safe-area-inset-bottom) !important;
       min-height: 72px !important;
       box-sizing: border-box !important;
     }
@@ -4053,8 +4075,8 @@
     /* Preis: € 70% Größe, Superscript – Preis-Gelb [cite: 2026-02-25] */
     #wizard[data-flow="listing"] .inserat-price-pill-euro,
     #wizard[data-flow="listing"] .price-section .inserat-price-pill-euro {
-      font-size: 0.7em !important; font-weight: 500; color: var(--color-price-yellow, #FFB800);
-      vertical-align: super; margin-left: 4px; line-height: 1;
+      font-size: 0.55em !important; font-weight: 400; color: var(--color-price-yellow, #FFB800);
+      vertical-align: super; margin-left: 4px; line-height: 1; opacity: 0.9;
     }
     /* Verdienst-Vorschau: Preis-Gelb, dezent (nicht fett) [cite: 2026-02-25] */
     #wizard[data-flow="listing"] #inserat-verdienst-vorschau.inserat-verdienst-vorschau,
@@ -7026,8 +7048,8 @@
     #v-provider-cookbook .cookbook-swipe-hint{ display:none !important; }
     #v-provider-cookbook .cookbook-category-pills{ background:transparent; }
     #v-provider-cookbook .cookbook-action-bar{ background:rgba(255,255,255,0.7) !important; backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border-top:1px solid rgba(255,255,255,0.4) !important; box-shadow:0 -4px 24px rgba(0,0,0,0.06); }
-    /* Kochbuch: Footer auf Body-Ebene – z-index 10001 wie Header [cite: 2026-02-23, 2026-02-25] */
-    .cookbook-footer-fixed{ position:fixed !important; bottom:0 !important; left:0; width:100%; z-index:10001; background:#fff !important; padding:16px max(20px, env(safe-area-inset-right)) calc(16px + env(safe-area-inset-bottom, 0)) max(20px, env(safe-area-inset-left)); padding-bottom:env(safe-area-inset-bottom, 0); border-top:1px solid #ebebeb; display:flex; justify-content:center; align-items:center; box-sizing:border-box; }
+    /* Kochbuch: Footer fixiert, Safe-Area, nur Content scrollt [cite: 2026-02-23, 2026-02-25] */
+    .cookbook-footer-fixed{ position:fixed !important; bottom:0; left:0; width:100%; z-index:10000; background:#ffffff !important; padding:16px max(20px, env(safe-area-inset-right)) max(20px, env(safe-area-inset-left)); padding-bottom:env(safe-area-inset-bottom); margin-bottom:0; border-top:1px solid #ebebeb; display:flex; justify-content:center; align-items:center; box-sizing:border-box; }
     .cookbook-footer-fixed .cookbook-footer-btn-inserieren{ max-width:400px; width:100%; min-height:56px; border-radius:16px; border:none; background:#222222; color:#fff; font-size:16px; font-weight:800; cursor:pointer; -webkit-tap-highlight-color:transparent; }
     .cookbook-footer-fixed .cookbook-footer-btn-inserieren:active{ opacity:0.9; transform:scale(0.99); }
     .cookbook-footer-fixed .cookbook-footer-btn-inserieren:disabled,
@@ -7109,8 +7131,8 @@
     }
     /* Wochenplan: identischer Header wie Meine Küche (KW-Badge entfernt, linksbündig) */
     #v-provider-week .week-header-minimal .week-header-row{ display:flex; align-items:center; justify-content:flex-start; width:100%; gap:12px; position:relative; }
-    #v-provider-week .week-header-kw-badge{ display:inline-flex !important; align-items:center; padding:6px 12px; border-radius:12px; background:rgba(0,0,0,0.06); font-size:15px; font-weight:800; color:#0f172a; }
-    #v-provider-week .week-header-kw-trigger{ position:relative; z-index:2; display:inline-flex; align-items:center; gap:6px; background:none; border:none; padding:4px 0; cursor:pointer; font-family:inherit; }
+    #v-provider-week .week-header-kw-badge{ display:inline-flex !important; align-items:center; padding:10px 16px; border-radius:12px; background:rgba(0,0,0,0.06); font-size:15px; font-weight:800; color:#0f172a; }
+    #v-provider-week .week-header-kw-trigger{ position:relative; z-index:2; display:inline-flex; align-items:center; gap:6px; background:none; border:none; padding:0; cursor:pointer; font-family:inherit; min-height:60px; min-width:60px; -webkit-tap-highlight-color:transparent; }
     #v-provider-week .week-header-compact{ background:rgba(245,245,240,0.95) !important; backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); font-family:'Montserrat',sans-serif; position:sticky; top:0; z-index:9999; }
     #v-provider-week .week-header-title-left,
     #v-provider-week .prov-page-header-title{ margin:0; font-family:'Montserrat','Inter',sans-serif !important; font-weight:900 !important; font-size:20px !important; letter-spacing:-0.03em; color:#0f172a !important; text-align:left; }
@@ -7495,7 +7517,7 @@
       #v-provider-week .kw-slot-flat{ display:flex; align-items:center; gap:10px; text-align:left; padding:10px 12px; min-height:52px; }
       #v-provider-week .kw-slot-flat .kw-slot-flat-body{ display:flex; align-items:center; gap:10px; flex:1; min-width:0; }
       #v-provider-week .kw-slot-flat .kw-slot-flat-title{ font-size:16px; font-weight:800; color:#18181b; line-height:1.25; display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1; min-width:0; }
-      #v-provider-week .kw-slot-flat .kw-slot-flat-price{ font-size:14px; font-weight:500; color:var(--color-price-yellow, #FFB800); flex-shrink:0; margin-left:auto; }
+      #v-provider-week .kw-slot-flat .kw-slot-flat-price{ font-size:14px; font-weight:400; color:#FFB800; flex-shrink:0; margin-left:auto; text-align:right; }
       #v-provider-week .kw-slot-flat .kw-slot-cat-icon{ font-size:18px; flex-shrink:0; }
       #v-provider-week .kw-cookbook-strip-wrap{ flex-shrink:0; background:linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(248,250,252,0.95) 50%, rgba(241,245,249,0.92) 100%); backdrop-filter:blur(40px); -webkit-backdrop-filter:blur(40px); border-bottom:1px solid rgba(0,0,0,0.06); padding:10px 0 14px; }
       #v-provider-week .kw-cookbook-drag-strip{ display:flex; flex-wrap:nowrap; align-items:center; gap:10px; padding:0 16px; overflow-x:auto; -webkit-overflow-scrolling:touch; scroll-snap-type:x proximity; }
@@ -7503,13 +7525,13 @@
       #v-provider-week .kw-smart-suggestions-strip .kw-suggestion-card:active{ cursor:grabbing; }
       #v-provider-week .kw-smart-suggestions-strip .kw-suggestion-card.dragging{ transform:scale(0.95); opacity:0.85; cursor:grabbing; }
       #v-provider-week .kw-suggestion-compact .kw-suggestion-name{ font-size:12px; font-weight:700; color:#1a1a1a; line-height:1.2; text-align:center; display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:100%; order:1; margin-bottom:6px; }
-      #v-provider-week .kw-smart-suggestions-strip .kw-suggestion-thumb{ width:48px; height:48px; border-radius:12px; flex-shrink:0; margin-bottom:6px; border:2px solid rgba(255,255,255,0.8); box-shadow:0 2px 8px rgba(0,0,0,0.08); order:2; }
-      #v-provider-week .kw-suggestion-compact .kw-suggestion-thumb-mini{ width:40px; height:40px; border-radius:10px; margin-bottom:6px; }
+      #v-provider-week .kw-smart-suggestions-strip .kw-suggestion-thumb{ width:100%; aspect-ratio:1; max-height:48px; border-radius:8px; flex-shrink:0; margin-bottom:6px; border:none; box-shadow:0 2px 8px rgba(0,0,0,0.08); order:2; background-size:cover; background-position:center; }
+      #v-provider-week .kw-suggestion-compact .kw-suggestion-thumb-mini{ width:100%; aspect-ratio:1; max-height:40px; border-radius:8px; margin-bottom:6px; }
       #v-provider-week .kw-suggestion-compact{ min-width:72px; max-width:72px; padding:8px 6px 6px; }
-      #v-provider-week .kw-suggestion-compact .kw-suggestion-price{ font-size:13px; font-weight:500; color:var(--color-price-yellow, #FFB800); display:block; order:3; }
+      #v-provider-week .kw-suggestion-compact .kw-suggestion-price{ font-size:13px; font-weight:400; color:#FFB800; display:block; order:3; text-align:right; width:100%; }
       #v-provider-week .kw-smart-suggestions-strip .kw-suggestion-sparkle{ font-size:12px; margin-bottom:2px; filter:drop-shadow(0 0 6px rgba(255,215,0,0.5)); }
       #v-provider-week .kw-suggestion-compact .kw-suggestion-sparkle{ display:none; }
-      #v-provider-week .kw-suggestion-badge{ display:block; font-size:9px; font-weight:800; color:#059669; text-transform:uppercase; letter-spacing:0.03em; margin-top:4px; text-align:center; }
+      #v-provider-week .kw-suggestion-badge{ display:none !important; }
       #v-provider-week .kw-smart-suggestions-strip .kw-suggestion-dismiss{ display:none !important; }
       #v-provider-week .kw-slot-empty.kw-slot-ghost-highlight{ animation: kwSlotGhostPulse 1.2s ease-in-out infinite; border-color:#0ea5e9; background:rgba(14,165,233,0.08); box-shadow:0 0 0 2px rgba(14,165,233,0.4), 0 0 20px rgba(14,165,233,0.2); }
       #v-provider-week .kw-slot-roll-in{ animation: kwSlotRollIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
@@ -7551,14 +7573,14 @@
       .week-magic-sheet-btn{ display:flex; align-items:center; gap:12px; width:100%; min-height:52px; padding:0 16px; border:none; border-radius:14px; background:#f8fafc; font-size:15px; font-weight:700; color:#1a1a1a; cursor:pointer; text-align:left; transition:background 0.2s; }
       .week-magic-sheet-btn:active{ background:#e2e8f0; }
       .week-magic-sheet-emo{ font-size:20px; }
-      /* Kebab Dropdown: 12px Radius, Icons, Trennlinie vor Team-Vorschau [cite: 2026-02-23] */
-      #v-provider-week .week-kebab-trigger{ min-width:44px; min-height:44px; padding:0; border-radius:12px; border:none; background:rgba(0,0,0,0.06); display:flex; align-items:center; justify-content:center; color:#1a1a1a; cursor:pointer; -webkit-tap-highlight-color:transparent; transition:background 0.2s; }
-      #v-provider-week .week-kebab-trigger:active{ background:rgba(0,0,0,0.1); }
-      #v-provider-week .week-kebab-trigger i{ flex-shrink:0; width:20px; height:20px; }
-      .week-kebab-dropdown{ position:absolute; top:calc(100% + 6px); right:0; background:#fff; border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.12); border:1px solid rgba(0,0,0,0.06); padding:6px; z-index:100; min-width:180px; }
-      .week-kebab-separator{ border-top:1px solid #ebebeb; margin:4px 0; }
-      .week-kebab-item{ display:flex; align-items:center; gap:10px; width:100%; min-height:44px; padding:0 14px; border:none; border-radius:10px; background:transparent; font-size:14px; font-weight:600; color:#1a1a1a; cursor:pointer; text-align:left; transition:background 0.2s; }
-      .week-kebab-item i{ flex-shrink:0; }
+      /* Kebab: High-End Glaseffekt, S25 Native-First [cite: 2026-02-18, 2026-02-25] */
+      #v-provider-week .week-kebab-trigger{ min-width:52px; min-height:52px; padding:0; border-radius:12px; border:none; background:rgba(255,255,255,0.7); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); display:flex; align-items:center; justify-content:center; color:#1a1a1a; cursor:pointer; -webkit-tap-highlight-color:transparent; transition:background 0.2s; }
+      #v-provider-week .week-kebab-trigger:active{ background:rgba(0,0,0,0.08); }
+      #v-provider-week .week-kebab-trigger i{ flex-shrink:0; width:22px; height:22px; }
+      .week-kebab-dropdown{ position:absolute; top:calc(100% + 6px); right:0; background:rgba(255,255,255,0.96); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border-radius:20px; box-shadow:0 12px 40px rgba(0,0,0,0.15); border:1px solid rgba(0,0,0,0.06); padding:8px; z-index:100; min-width:200px; }
+      .week-kebab-separator{ border-top:1px solid #ebebeb; margin:6px 0; }
+      .week-kebab-item{ display:flex; align-items:center; gap:12px; width:100%; min-height:56px; padding:0 16px; border:none; border-radius:14px; background:transparent; font-size:15px; font-weight:600; color:#1a1a1a; cursor:pointer; text-align:left; transition:background 0.2s; }
+      .week-kebab-item i{ flex-shrink:0; width:22px !important; height:22px !important; }
       .week-kebab-item:active{ background:#f1f5f9; }
       /* Verschieben-Sheet (Long-Press) */
       .kw-move-overlay{ position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:1100; display:flex; align-items:flex-end; justify-content:center; padding:0 20px  calc(80px + env(safe-area-inset-bottom)); animation:fadeIn 0.2s ease; }
@@ -7606,9 +7628,12 @@
       body.provider-week-active #providerNavWrap,
       body.provider-week-active .bottom-navigation,
       body.provider-week-active .bottom-nav{ display:none !important; transition: opacity 0.25s ease, visibility 0.25s ease; }
-      /* Wochenplan-Footer: fixiert wie Kochbuch, bündig mit Home-Bar [cite: 2026-02-23, 2026-02-25] */
-      #v-provider-week .week-view-footer{ position:fixed; bottom:0; left:0; width:100%; margin:0; padding:12px 20px calc(12px + env(safe-area-inset-bottom, 0)); background:#ffffff; border-top:1px solid #ebebeb; box-sizing:border-box; z-index:1000; }
-      #v-provider-week .week-view-footer-btn{ width:100%; min-height:48px; border-radius:12px; border:none; background:#222222; color:#ffffff; font-size:16px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:transform 0.1s, opacity 0.2s; -webkit-tap-highlight-color:transparent; }
+      /* Wochenplan-Footer: fixiert, Safe-Area, bündig mit Handy-Unterkante [cite: 2026-02-23, 2026-02-25] */
+      /* Wochenplan-Footer: Hard-Lock, Safe-Area, Button bündig über Home-Bar [cite: 2026-02-23, 2026-02-25] */
+      #v-provider-week .week-view-footer,
+      #weekViewFooter{ position:fixed !important; bottom:0; left:0; width:100%; z-index:10000; margin:0; margin-bottom:0; padding:12px 20px; padding-bottom:env(safe-area-inset-bottom); background:#ffffff; border-top:1px solid #ebebeb; box-sizing:border-box; }
+      #v-provider-week .week-view-footer-btn,
+      #weekViewFooter .week-view-footer-btn{ width:100%; min-height:48px; margin-bottom:0; border-radius:8px; border:none; background:#222222; color:#ffffff; font-size:16px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:transform 0.1s, opacity 0.2s; -webkit-tap-highlight-color:transparent; }
       #v-provider-week .week-view-footer-btn:active{ transform:scale(0.98); }
       /* Dashboard: Dein Wochenplan – klare Trennung von KPIs, App-Kasten, S25-Safe */
       #providerWeekSection .prov-card{ padding:var(--card-padding, 20px); border-radius:24px; box-shadow:0 4px 20px rgba(0,0,0,0.06); border:none; background:#fff; }

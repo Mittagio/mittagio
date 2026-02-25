@@ -365,8 +365,14 @@
     window.addEventListener('popstate', function(event){
       try { if (navigator.vibrate) navigator.vibrate(10); } catch(e){}
       if (window.mode !== 'provider') return;
-      if (isWizardOpen() && typeof closeMastercard === 'function') {
-        closeMastercard();
+      if (isWizardOpen() && (typeof closeMastercardWithAnim === 'function' || typeof closeMastercard === 'function')) {
+        var wiz = document.getElementById('wizard');
+        if (wiz && wiz.getAttribute('data-flow') === 'listing' && typeof closeMastercardWithAnim === 'function') {
+          var card = document.querySelector('#wizard .mastercard-container, #wizard .liquid-master-panel');
+          closeMastercardWithAnim(card);
+        } else {
+          closeMastercard();
+        }
         return;
       }
       if (isProfileSubOpen() && typeof showProviderProfileSub === 'function') {

@@ -1,8 +1,15 @@
   // ========== Demo-Modus (für Tests, standardmäßig aus) [cite: 2026-02-25] ==========
   if (typeof window !== 'undefined') { window.DEMO_MODE = false; }
-  /** Einheitliche Haptik: navigator.vibrate([ms]) für Gesten/Erfolge [cite: S25 2026-02-23] */
-  function vibrate(ms){ try { if(navigator.vibrate) navigator.vibrate(Array.isArray(ms) ? ms : [ms]); } catch(e){} }
-  if (typeof window !== 'undefined') { window.vibrate = vibrate; }
+  /** User-Interaction Unlock: navigator.vibrate nur nach erstem Klick (Blocked call beheben) [cite: 2026-02-25] */
+  function vibrate(ms){ try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate(Array.isArray(ms) ? ms : [ms]); } catch(e){} }
+  if (typeof window !== 'undefined') {
+    window.vibrate = vibrate;
+    (function setUserHasInteractedOnFirstClick(){
+      function mark(){ window.userHasInteracted = true; document.removeEventListener('click', mark); document.removeEventListener('touchstart', mark, { passive: true }); }
+      document.addEventListener('click', mark, { once: true });
+      document.addEventListener('touchstart', mark, { once: true, passive: true });
+    })();
+  }
   function toggleDemoMode() {
     if (typeof window === 'undefined') return;
     window.DEMO_MODE = !window.DEMO_MODE;
@@ -345,7 +352,7 @@
       dishFavs.add(sid);
       if(btn && btn.querySelector('i')) btn.querySelector('i').style.fill = '#E34D4D';
       showToast('Zu Favoriten hinzugefügt! ❤️');
-      if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10);
+      if(typeof haptic==='function') haptic(10); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10);
     }
     save(LS.dishFavs, Array.from(dishFavs));
     if(typeof renderFavorites === 'function') renderFavorites();
@@ -2636,7 +2643,7 @@
   
   // Haptic Feedback (verbessert: kurze, dezent Vibration)
   function triggerHapticFeedback(pattern = [15]){
-    if('vibrate' in navigator){
+    if (window.userHasInteracted && 'vibrate' in navigator){
       navigator.vibrate(pattern); // Standard: 15ms, oder Pattern wie [10, 5, 10]
     }
   }
@@ -3219,7 +3226,7 @@
       syncToggleState();
       
       // Haptic Feedback (falls unterstützt)
-      if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10);
+      if(typeof haptic==='function') haptic(10); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10);
     };
   }
   
@@ -5594,7 +5601,7 @@
       var box = document.querySelector('#wizard .liquid-master-panel');
       var slider = document.querySelector('#wizard .inserat-steps-slider');
       if(box && slider && slider.getAttribute('data-inserat-step')==='2'){
-        try{ if(navigator.vibrate) navigator.vibrate(5); }catch(err){}
+        try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(5); }catch(err){}
         if(typeof w !== 'undefined'){ w.inseratStep=1; try{ localStorage.setItem('wizard_draft', JSON.stringify(w)); }catch(err){} }
         slider.setAttribute('data-inserat-step','1');
         var airbnbFooter = box.querySelector('[data-inserat-step="2"]');
@@ -5607,10 +5614,17 @@
         return;
       }
     }
-    // Wizard schließen (Step 1 → Galerie/Dashboard)
+    // Wizard schließen (Step 1 → Galerie/Dashboard) [cite: Navigations-Lock 2026-02-25]
+    // Zurück-Geste: Nur Inserat-Overlay schließen (#wizard.active entfernen), App nicht verlassen
     if(document.getElementById('wizard') && document.getElementById('wizard').classList.contains('active')){
-      try{ if(navigator.vibrate) navigator.vibrate(5); }catch(err){}
-      closeWizard();
+      var wiz = document.getElementById('wizard');
+      if(wiz.getAttribute('data-flow') === 'listing' && typeof closeMastercardWithAnim === 'function'){
+        var card = document.querySelector('#wizard .mastercard-container, #wizard .liquid-master-panel');
+        closeMastercardWithAnim(card);
+      } else {
+        try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(5); }catch(err){}
+        closeWizard();
+      }
       e.preventDefault();
       pushViewState(null, location.pathname);
       return;
@@ -5715,7 +5729,7 @@
         e.preventDefault();
         return;
       } else if(providerView === 'v-provider-cookbook'){
-        try{ if(navigator.vibrate) navigator.vibrate(5); }catch(err){}
+        try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(5); }catch(err){}
         showProviderHome();
         e.preventDefault();
         return;
@@ -5785,7 +5799,7 @@
       if(!id) return;
       ev.preventDefault();
       ev.stopPropagation();
-      try { if(typeof hapticLight === 'function') hapticLight(); else if(navigator.vibrate) navigator.vibrate(10); } catch(e){}
+      try { if(typeof hapticLight === 'function') hapticLight(); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); } catch(e){}
       if(typeof startListingFlow === 'function') startListingFlow({ editOfferId: id, entryPoint: 'ACTIVE_LISTING' });
     }, true);
   })();
@@ -5801,7 +5815,7 @@
     var sheet = document.getElementById('saveScopeSheet');
     if(bd) bd.style.display = 'block';
     if(sheet) sheet.style.display = 'block';
-    try { if(navigator.vibrate) navigator.vibrate(10); if(typeof hapticLight === 'function') hapticLight(); } catch(e){}
+    try { if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); if(typeof hapticLight === 'function') hapticLight(); } catch(e){}
   }
   function closeSaveScopeDialog(){
     _saveScopeCallbacks = null;
@@ -5817,8 +5831,8 @@
     var btnCookbook = document.getElementById('saveScopeToCookbook');
     var btnCancel = document.getElementById('saveScopeCancel');
     if(bd) bd.addEventListener('click', closeSaveScopeDialog);
-    if(btnOnly) btnOnly.addEventListener('click', function(){ if(_saveScopeCallbacks && typeof _saveScopeCallbacks.onlyCurrent === 'function'){ _saveScopeCallbacks.onlyCurrent(); } closeSaveScopeDialog(); try { if(navigator.vibrate) navigator.vibrate(20); } catch(e){} });
-    if(btnCookbook) btnCookbook.addEventListener('click', function(){ if(_saveScopeCallbacks && typeof _saveScopeCallbacks.saveToCookbook === 'function'){ _saveScopeCallbacks.saveToCookbook(); } closeSaveScopeDialog(); try { if(navigator.vibrate) navigator.vibrate(20); } catch(e){} });
+    if(btnOnly) btnOnly.addEventListener('click', function(){ if(_saveScopeCallbacks && typeof _saveScopeCallbacks.onlyCurrent === 'function'){ _saveScopeCallbacks.onlyCurrent(); } closeSaveScopeDialog(); try { if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(20); } catch(e){} });
+    if(btnCookbook) btnCookbook.addEventListener('click', function(){ if(_saveScopeCallbacks && typeof _saveScopeCallbacks.saveToCookbook === 'function'){ _saveScopeCallbacks.saveToCookbook(); } closeSaveScopeDialog(); try { if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(20); } catch(e){} });
     if(btnCancel) btnCancel.addEventListener('click', closeSaveScopeDialog);
   })();
   if(typeof window !== 'undefined'){ window.showSaveScopeDialog = showSaveScopeDialog; window.closeSaveScopeDialog = closeSaveScopeDialog; }
@@ -5830,7 +5844,7 @@
     var sheet = document.getElementById('wizardExitSaveSheet');
     if(bd) bd.style.display = 'block';
     if(sheet) sheet.style.display = 'flex';
-    try { if(navigator.vibrate) navigator.vibrate(10); if(typeof hapticLight === 'function') hapticLight(); } catch(e){}
+    try { if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); if(typeof hapticLight === 'function') hapticLight(); } catch(e){}
   }
   function closeWizardExitSavePrompt(){
     _wizardExitSaveCallbacks = null;
@@ -5846,8 +5860,8 @@
     var btnDiscard = document.getElementById('wizardExitDiscard');
     var btnCancel = document.getElementById('wizardExitCancel');
     if(bd) bd.addEventListener('click', closeWizardExitSavePrompt);
-    if(btnSave) btnSave.addEventListener('click', function(){ if(_wizardExitSaveCallbacks && typeof _wizardExitSaveCallbacks.onSave === 'function') _wizardExitSaveCallbacks.onSave(); closeWizardExitSavePrompt(); try { if(navigator.vibrate) navigator.vibrate(20); } catch(e){} });
-    if(btnDiscard) btnDiscard.addEventListener('click', function(){ if(_wizardExitSaveCallbacks && typeof _wizardExitSaveCallbacks.onDiscard === 'function') _wizardExitSaveCallbacks.onDiscard(); closeWizardExitSavePrompt(); try { if(navigator.vibrate) navigator.vibrate(20); } catch(e){} });
+    if(btnSave) btnSave.addEventListener('click', function(){ if(_wizardExitSaveCallbacks && typeof _wizardExitSaveCallbacks.onSave === 'function') _wizardExitSaveCallbacks.onSave(); closeWizardExitSavePrompt(); try { if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(20); } catch(e){} });
+    if(btnDiscard) btnDiscard.addEventListener('click', function(){ if(_wizardExitSaveCallbacks && typeof _wizardExitSaveCallbacks.onDiscard === 'function') _wizardExitSaveCallbacks.onDiscard(); closeWizardExitSavePrompt(); try { if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(20); } catch(e){} });
     if(btnCancel) btnCancel.addEventListener('click', closeWizardExitSavePrompt);
   })();
   if(typeof window !== 'undefined'){ window.showWizardExitSavePrompt = showWizardExitSavePrompt; window.closeWizardExitSavePrompt = closeWizardExitSavePrompt; }
@@ -6073,7 +6087,7 @@
       var priceStr = typeof euro === 'function' ? euro(c.price || 0) : (Number(c.price || 0).toFixed(2).replace('.', ',') + ' €');
       tile.innerHTML = '<span class="renner-speed-top-badge">TOP</span><div class="renner-speed-img-wrap"><img src="' + imgEsc + '" alt=""></div><div class="renner-speed-body"><div class="renner-speed-name">' + nameEsc + '</div><div class="renner-speed-price-wrap"><span class="renner-speed-price">' + priceStr + '</span></div></div>';
       var doOpen = function(){
-        try { if(navigator.vibrate) navigator.vibrate(10); } catch(e){}
+        try { if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); } catch(e){}
         if(typeof haptic === 'function') haptic(10);
         var date = createFlowPreselectedDate || (typeof isoDate === 'function' ? isoDate(new Date()) : '');
         var ep = createFlowOriginView || 'dashboard';
@@ -6253,7 +6267,7 @@
     var priceInp = document.getElementById('quickEditPrice');
     var quantityInp = document.getElementById('quickEditQuantity');
     document.getElementById('quickEditApply').onclick = function(){
-      try { if(navigator.vibrate) navigator.vibrate(10); } catch(e){}
+      try { if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); } catch(e){}
       var newPrice = priceInp.value.trim() !== '' ? parseFloat(priceInp.value.replace(',', '.')) : NaN;
       var newQty = quantityInp.value.trim() !== '' ? parseInt(quantityInp.value, 10) : undefined;
       var o = offers.find(function(x){ return String(x.id) === String(offer.id); });
@@ -6355,7 +6369,7 @@
 
   /** High-End Error: Haptik 100ms, optional Shake am Element, Toast am oberen Rand (mattes Orange). */
   function showSoftError(message, element){
-    try { if(navigator.vibrate) navigator.vibrate(100); else if(typeof haptic === 'function') haptic(100); } catch(e){}
+    try { if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(100); else if(typeof haptic === 'function') haptic(100); } catch(e){}
     if(element && element.classList){ element.classList.add('shake-horizontal'); setTimeout(function(){ element.classList.remove('shake-horizontal'); }, 300); }
     var el = document.getElementById('toastSoftError');
     if(!el){
@@ -8739,7 +8753,7 @@
     message.style.display = 'block';
     
     // Haptic Feedback
-    if('vibrate' in navigator){
+    if (window.userHasInteracted && 'vibrate' in navigator){
       navigator.vibrate([50, 30, 50]);
     }
   }
@@ -8788,7 +8802,7 @@
 
   const btnOnboardingComplete = document.getElementById('btnOnboardingComplete');
   if(btnOnboardingComplete) btnOnboardingComplete.onclick = function(){
-    if(typeof haptic === 'function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10);
+    if(typeof haptic === 'function') haptic(10); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10);
     if(typeof startListingFlow === 'function') startListingFlow({ entryPoint: 'dashboard' });
   };
   
@@ -9331,10 +9345,11 @@
   document.addEventListener('click', function(e){
     var trig = e.target.closest('.prov-header-reset-trigger');
     if(!trig || e.target.closest('input') || e.target.closest('button')) return;
+    if (e.target.closest('#weekHeaderKWTrigger')) return; // KW-Selector Priorität [cite: 2026-02-25]
     var view = trig.getAttribute('data-reset-view');
     if(!view) return;
     e.preventDefault();
-    try { if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); } catch(err){}
+    try { if(typeof haptic==='function') haptic(10); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); } catch(err){}
     scrollActiveViewToTopAndCloseOverlays();
     var scrollEl = null;
     if(view === 'home') scrollEl = document.querySelector('#v-provider-home .dashboard-floating-wrap');
@@ -9354,7 +9369,7 @@
     var headerTitle = e.target.closest('.provider-sub-header h1');
     if(!headerTitle || e.target.closest('button')) return;
     e.preventDefault();
-    try { if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); } catch(err){}
+    try { if(typeof haptic==='function') haptic(10); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); } catch(err){}
     scrollActiveViewToTopAndCloseOverlays();
     var sub = headerTitle.closest('.provider-profile-sub');
     if(sub){
@@ -9396,7 +9411,7 @@
         if(pullY >= PTR_THRESHOLD){
           try {
             if(viewId) try { sessionStorage.setItem(SCROLL_KEY + '_' + viewId, String(el.scrollTop)); } catch(s){}
-            if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10);
+            if(typeof haptic==='function') haptic(10); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10);
           } catch(err){}
           if(typeof showToast==='function') showToast('Aktualisiere…', 800);
           onRefresh();
@@ -9499,7 +9514,7 @@
     if(tripleTapTimer) clearTimeout(tripleTapTimer);
     if(tripleTapCount >= 3){
       tripleTapCount = 0;
-      try { if(navigator.vibrate) navigator.vibrate(50); } catch(v){}
+      try { if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(50); } catch(v){}
       if(typeof showLoginView === 'function') showLoginView(); else if(typeof showView === 'function' && views && views.providerLogin) showView(views.providerLogin);
       return true;
     }
@@ -9868,7 +9883,7 @@
               if(ev.target && ev.target.closest && ev.target.closest('.dashboard-pillar-icon')) return;
               ev.preventDefault();
               ev.stopPropagation();
-              try { if(typeof hapticLight === 'function') hapticLight(); else if(navigator.vibrate) navigator.vibrate(10); } catch(e){}
+              try { if(typeof hapticLight === 'function') hapticLight(); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); } catch(e){}
               if(offerId && typeof startListingFlow === 'function') startListingFlow({ editOfferId: offerId, entryPoint: 'ACTIVE_LISTING' });
             };
           })(String(o.id));
@@ -9939,12 +9954,12 @@
               ev.preventDefault();
               offer.active = false;
               if(typeof save === 'function' && typeof LS !== 'undefined') save(LS.offers, offers);
-              try { if(navigator.vibrate) navigator.vibrate([15, 30, 15]); } catch(e){}
+              try { if(window.userHasInteracted && navigator.vibrate) navigator.vibrate([15, 30, 15]); } catch(e){}
               if(typeof showToast === 'function') showToast('Ausverkauft');
               if(typeof renderProviderHome === 'function') renderProviderHome();
             } else if(dx > 50){
               ev.preventDefault();
-              try { if(navigator.vibrate) navigator.vibrate(10); } catch(e){}
+              try { if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); } catch(e){}
               if(offer.active === false){
                 offer.active = true;
                 if(typeof save === 'function' && typeof LS !== 'undefined') save(LS.offers, offers);
@@ -9967,7 +9982,7 @@
               if(!card) return;
               var id = card.getAttribute('data-offer-id');
               var pillar = pillarEl.getAttribute('data-pillar');
-              try { if(typeof hapticLight === 'function') hapticLight(); else if(navigator.vibrate) navigator.vibrate(10); } catch(e){}
+              try { if(typeof hapticLight === 'function') hapticLight(); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); } catch(e){}
               if(id && typeof startListingFlow === 'function') startListingFlow({ editOfferId: id, entryPoint: 'ACTIVE_LISTING', openToPillar: pillar || undefined });
               return;
             }
@@ -9977,7 +9992,7 @@
             if(id && typeof startListingFlow === 'function'){
               ev.preventDefault();
               ev.stopPropagation();
-              try { if(typeof hapticLight === 'function') hapticLight(); else if(navigator.vibrate) navigator.vibrate(10); } catch(e){}
+              try { if(typeof hapticLight === 'function') hapticLight(); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); } catch(e){}
               startListingFlow({ editOfferId: id, entryPoint: 'ACTIVE_LISTING' });
             }
           });
@@ -10284,7 +10299,7 @@
     const btnFirstDishToday = document.getElementById('btnProviderFirstDishToday');
     if(btnFirstDishToday){
       btnFirstDishToday.onclick = function(){
-        try { if(typeof haptic === 'function') haptic(6); else if(navigator.vibrate) navigator.vibrate(10); } catch(e){}
+        try { if(typeof haptic === 'function') haptic(6); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); } catch(e){}
         createFlowPreselectedDate = typeof isoDate === 'function' ? isoDate(new Date()) : null;
         createFlowOriginView = 'dashboard';
         if(typeof openCreateFlowSheet === 'function') openCreateFlowSheet();
@@ -10353,7 +10368,7 @@
         const btnProviderEmptyAddDish = document.getElementById('btnProviderEmptyAddDish');
         if(btnProviderEmptyAddDish){
           btnProviderEmptyAddDish.onclick = () => {
-            try { if(typeof haptic === 'function') haptic(6); else if(navigator.vibrate) navigator.vibrate(10); } catch(e){}
+            try { if(typeof haptic === 'function') haptic(6); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); } catch(e){}
             if(typeof openCreateFlowSheet === 'function'){ createFlowPreselectedDate = typeof isoDate === 'function' ? isoDate(new Date()) : null; createFlowOriginView = 'dashboard'; openCreateFlowSheet(); }
             else if(typeof startListingFlow === 'function') startListingFlow({ entryPoint: 'dashboard' });
             else if(typeof openDishFlow === 'function') openDishFlow();
@@ -11027,7 +11042,7 @@
     var cellH = 22;
     tensEl.style.transform = 'translateY(-' + (tens * cellH) + 'px)';
     onesEl.style.transform = 'translateY(-' + (ones * cellH) + 'px)';
-    try { if (navigator.vibrate) navigator.vibrate(10); } catch(e){}
+    try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); } catch(e){}
     window.__kwActivateCountPrev = count;
   }
   function renderWeekPlanBoard(){
@@ -11043,19 +11058,19 @@
     var kwBadge = document.getElementById('weekHeaderKWBadge');
     var kwTrigger = document.getElementById('weekHeaderKWTrigger');
     if (kwBadge) kwBadge.textContent = getKWLabel(weekPlanKWIndex);
-    if (kwTrigger && !kwTrigger._bound) { kwTrigger._bound = true; kwTrigger.onclick = function(e){ e.preventDefault(); try { if (navigator.vibrate) navigator.vibrate(12); } catch(err){} openKWSelector(); }; }
+    if (kwTrigger && !kwTrigger._bound) { kwTrigger._bound = true; kwTrigger.onclick = function(e){ e.preventDefault(); try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate(12); } catch(err){} openKWSelector(); }; }
     /* Kebab: Toggle + Aussenklick schliessen */
     var kebabBtn = document.getElementById('btnWeekKebab');
     var kebabDrop = document.getElementById('weekKebabDropdown');
     if (kebabBtn && kebabDrop && !kebabBtn._bound) {
       kebabBtn._bound = true;
-      kebabBtn.onclick = function(e){ e.stopPropagation(); var opening = kebabDrop.style.display === 'none'; if (opening) { try { if (navigator.vibrate) navigator.vibrate([5, 15, 5]); } catch(err){} } if(typeof haptic === 'function') haptic(6); kebabDrop.style.display = opening ? 'block' : 'none'; kebabBtn.setAttribute('aria-expanded', kebabDrop.style.display !== 'none'); };
+      kebabBtn.onclick = function(e){ e.stopPropagation(); var opening = kebabDrop.style.display === 'none'; if (opening) { try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate([5, 15, 5]); } catch(err){} } if(typeof haptic === 'function') haptic(6); kebabDrop.style.display = opening ? 'block' : 'none'; kebabBtn.setAttribute('aria-expanded', kebabDrop.style.display !== 'none'); };
       document.addEventListener('click', function closeKebab(ev){ if (!kebabDrop.contains(ev.target) && ev.target !== kebabBtn) { kebabDrop.style.display = 'none'; kebabBtn.setAttribute('aria-expanded', 'false'); } });
     }
     var btnPreviewClose = document.getElementById('btnWeekPreviewClose');
     if (btnPreviewClose && !btnPreviewClose._bound) {
       btnPreviewClose._bound = true;
-      btnPreviewClose.onclick = function(){ try { if (navigator.vibrate) navigator.vibrate(5); } catch(e){} document.body.classList.remove('week-preview-mode'); if (typeof haptic === 'function') haptic(6); };
+      btnPreviewClose.onclick = function(){ try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate(5); } catch(e){} document.body.classList.remove('week-preview-mode'); if (typeof haptic === 'function') haptic(6); };
     }
     var season = typeof getSeasonForWeek === 'function' ? getSeasonForWeek(weekPlanKWIndex) : null;
     var seasonIcon = document.getElementById('weekSeasonIcon');
@@ -11084,7 +11099,7 @@
       });
       save(LS.week, week);
       if (typeof showToast === 'function') showToast('Plan aus Vorwoche übernommen \uD83D\uDD04');
-      try { if (navigator.vibrate) navigator.vibrate(100); } catch(err){}
+      try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate(100); } catch(err){}
     })();
     var dayNames = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
     var p = (provider && provider.profile) ? provider.profile : {};
@@ -11124,7 +11139,7 @@
           e.dataTransfer.setData('text/plain', cookbookId);
           e.dataTransfer.effectAllowed = 'copy';
           pill.classList.add('dragging');
-          try { if(navigator.vibrate) navigator.vibrate(5); } catch(err){}
+          try { if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(5); } catch(err){}
           if(typeof haptic === 'function') haptic(6);
         };
         pill.ondragend = function(){ pill.classList.remove('dragging'); };
@@ -11207,7 +11222,7 @@
       slotEl.ondragover = function(e){
         e.preventDefault();
         e.dataTransfer.dropEffect = 'copy';
-        if(!slotEl.classList.contains('kw-slot-drop-over')){ slotEl.classList.add('kw-slot-drop-over'); try{ if(navigator.vibrate) navigator.vibrate(2); }catch(err){} }
+        if(!slotEl.classList.contains('kw-slot-drop-over')){ slotEl.classList.add('kw-slot-drop-over'); try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(2); }catch(err){} }
       };
       slotEl.ondragleave = function(){ slotEl.classList.remove('kw-slot-drop-over'); };
       slotEl.ondrop = function(e){
@@ -11215,7 +11230,7 @@
         slotEl.classList.remove('kw-slot-drop-over');
         var cookbookId = e.dataTransfer.getData('text/plain');
         if(!cookbookId || typeof addCookbookEntryToWeek !== 'function') return;
-        try { if(navigator.vibrate) navigator.vibrate(15); } catch(err){}
+        try { if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(15); } catch(err){}
         addCookbookEntryToWeek(dayKey, cookbookId);
         if(typeof haptic === 'function') haptic(6);
         renderWeekPlanBoard();
@@ -11243,11 +11258,11 @@
       btnKwWeekActivate.onclick = function(){
         if (count <= 0) return;
         if (typeof haptic === 'function') haptic(10);
-        else if (navigator.vibrate) navigator.vibrate(10);
+        else if (window.userHasInteracted && navigator.vibrate) navigator.vibrate(10);
         if (typeof bulkActivateWeekDraftsForDates === 'function') bulkActivateWeekDraftsForDates(draftKeysInKW);
       };
       if (count > (window.__kwLastActivateCount || 0)) {
-        try { if (navigator.vibrate) navigator.vibrate(30); } catch(e){}
+        try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate(30); } catch(e){}
       }
       window.__kwLastActivateCount = count;
     }
@@ -11281,7 +11296,7 @@
     if (btnKwPdf) btnKwPdf.onclick = function(){ var d=document.getElementById('weekKebabDropdown'); if(d)d.style.display='none'; if(typeof haptic==='function')haptic(6); if(typeof printWeekCard==='function')printWeekCard(); };
     if (btnKwShare) btnKwShare.onclick = function(){ var d=document.getElementById('weekKebabDropdown'); if(d)d.style.display='none'; if(typeof haptic==='function')haptic(6); if(typeof shareWeekPlanAsImage==='function') shareWeekPlanAsImage(); else if(typeof shareWeekPlan==='function') shareWeekPlan(); };
     var btnKwScreenshot = document.getElementById('weekKebabScreenshot');
-    if (btnKwScreenshot) btnKwScreenshot.onclick = function(){ var d=document.getElementById('weekKebabDropdown'); if(d)d.style.display='none'; try { if(navigator.vibrate) navigator.vibrate(15); } catch(e){} if(typeof haptic==='function')haptic(6); document.body.classList.add('week-preview-mode'); if(typeof showToast==='function') showToast('Team-Vorschau – Schließen zum Beenden'); };
+    if (btnKwScreenshot) btnKwScreenshot.onclick = function(){ var d=document.getElementById('weekKebabDropdown'); if(d)d.style.display='none'; try { if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(15); } catch(e){} if(typeof haptic==='function')haptic(6); document.body.classList.add('week-preview-mode'); if(typeof showToast==='function') showToast('Team-Vorschau – Schließen zum Beenden'); };
     var monday = getWeekMonday(weekPlanKWIndex);
     var sunday = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + 6);
     // KW-Badge entfernt (Layout-Symmetrie: Header wie Meine Küche)
@@ -11312,7 +11327,7 @@
           var dish = shuffled[idx % shuffled.length];
           if (!dayKey || !dish || typeof addCookbookEntryToWeek !== 'function'){ idx++; setTimeout(flyNext, 100); return; }
           slot.classList.add('kw-slot-roll-in');
-          try { if (navigator.vibrate) navigator.vibrate(10); } catch(e){}
+          try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); } catch(e){}
           addCookbookEntryToWeek(dayKey, String(dish.id), { silent: true });
           setTimeout(function(){ slot.classList.remove('kw-slot-roll-in'); idx++; setTimeout(flyNext, 120); }, 350);
         }
@@ -11383,11 +11398,11 @@
     window.__weekMagicFabBound = true;
     setTimeout(function(){
       var fab = document.getElementById('weekMagicFab');
-      if (fab) fab.onclick = function(){ try { if (navigator.vibrate) navigator.vibrate([15, 10, 20]); } catch(e){} openWeekMagicSheet(); };
+      if (fab) fab.onclick = function(){ try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate([15, 10, 20]); } catch(e){} openWeekMagicSheet(); };
       var kebab = document.getElementById('btnWeekKebab');
       var kebabDrop = document.getElementById('weekKebabDropdown');
       if (kebab && kebabDrop) {
-        kebab.onclick = function(e){ e.stopPropagation(); var opening = kebabDrop.style.display !== 'block'; if (opening) { try { if (navigator.vibrate) navigator.vibrate([5, 15, 5]); } catch(e){} } if (typeof haptic === 'function') haptic(6); kebabDrop.style.display = opening ? 'block' : 'none'; if (opening && typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons(); };
+        kebab.onclick = function(e){ e.stopPropagation(); var opening = kebabDrop.style.display !== 'block'; if (opening) { try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate([5, 15, 5]); } catch(e){} } if (typeof haptic === 'function') haptic(6); kebabDrop.style.display = opening ? 'block' : 'none'; if (opening && typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons(); };
         document.addEventListener('click', function(){ if (kebabDrop) kebabDrop.style.display = 'none'; });
         kebab.addEventListener('click', function(e){ e.stopPropagation(); });
         if (kebabDrop) kebabDrop.onclick = function(e){ e.stopPropagation(); };
@@ -11402,6 +11417,8 @@
     /* Nur KW-Board. Ohne weekDays/weekList → Board anzeigen. */
     if(!dayWrap || !list){
       if (boardWrap) boardWrap.style.display = 'flex';
+      var kwTr = document.getElementById('weekHeaderKWTrigger');
+      if (kwTr && !kwTr._bound) { kwTr._bound = true; kwTr.onclick = function(e){ e.preventDefault(); try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate(12); } catch(err){} if(typeof openKWSelector === 'function') openKWSelector(); }; }
       if (boardWrap && typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard();
       if (typeof renderProviderWeekPreview === 'function') renderProviderWeekPreview();
       return;
@@ -11802,7 +11819,7 @@
             day: date
           });
           offers.push(newOffer);
-          try { if (navigator.vibrate) navigator.vibrate(30); } catch(err){}
+          try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate(30); } catch(err){}
         });
       });
       save(LS.offers, offers);
@@ -13094,7 +13111,7 @@
     document.querySelectorAll('.tgtg-accordion-trigger').forEach(function(trigger){
       trigger.onclick = function(){
         if(typeof haptic === 'function') haptic(6);
-        try { if(navigator.vibrate) navigator.vibrate(10); } catch(e){}
+        try { if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); } catch(e){}
         var item = trigger.closest('.tgtg-accordion-item');
         if(!item) return;
         var isOpen = item.classList.contains('open');
@@ -14095,7 +14112,7 @@
   };
   if(cookbookActionLive) cookbookActionLive.onclick=()=>{
     const ent = window._cookbookActionEntry;
-    if(ent){ try{ if(navigator.vibrate) navigator.vibrate([10, 30, 10]); } catch(e){} closeCookbookActionSheet(); if(typeof startListingFlow === 'function') startListingFlow({ dishId: ent.id, date: typeof isoDate === 'function' ? isoDate(new Date()) : '', entryPoint: 'dashboard', skipQuickPost: true }); }
+    if(ent){ try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate([10, 30, 10]); } catch(e){} closeCookbookActionSheet(); if(typeof startListingFlow === 'function') startListingFlow({ dishId: ent.id, date: typeof isoDate === 'function' ? isoDate(new Date()) : '', entryPoint: 'dashboard', skipQuickPost: true }); }
   };
   if(cookbookActionDelete) cookbookActionDelete.onclick=()=>{
     const ent = window._cookbookActionEntry;
@@ -14232,7 +14249,7 @@
         if(!blob){ done(); if(typeof shareWeekPlan === 'function') shareWeekPlan(); return; }
         var file = new File([blob], 'wochenplan-status.jpg', { type: 'image/jpeg' });
         if(navigator.share && navigator.canShare && navigator.canShare({ files: [file] })){
-          try{ if(navigator.vibrate) navigator.vibrate([10, 30]); }catch(e){}
+          try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate([10, 30]); }catch(e){}
           navigator.share({ files: [file], title: 'Unser Wochenplan', text: providerName + ' – Jetzt vorbestellen!' }).then(function(){
             done();
             if(typeof showToast === 'function') showToast('Status-Bild geteilt!');
@@ -14291,7 +14308,7 @@
       ? `📅 Hunger für die ganze Woche geplant? Schau dir unseren neuen Wochenplan an!\n\n📍 ${providerName}\n\n${weekOffers.slice(0, 5).map(o => `🍴 ${o.day}: ${o.dish} - ${euro(o.price)}`).join('\n')}${weekOffers.length > 5 ? `\n... und ${weekOffers.length - 5} weitere Leckereien!` : ''}\n\nJetzt für die Mittagsbox planen & Schlange überspringen:\n👉 ${shareUrl}\n\n#mittagio #wochenplan #mittagspause #lecker`
       : `📅 Hunger für die ganze Woche geplant? Schau dir unseren neuen Wochenplan an!\n\n📍 ${providerName}\n\n${weekOffers.slice(0, 5).map(o => `🍴 ${o.day}: ${o.dish} - ${euro(o.price)}`).join('\n')}${weekOffers.length > 5 ? `\n... und ${weekOffers.length - 5} weitere Leckereien!` : ''}\n\nJetzt online entdecken & entspannt genießen:\n👉 ${shareUrl}\n\n#mittagio #wochenplan #mittagspause #lecker`;
     if(navigator.share){
-      navigator.share({ title: shareTitle, text: shareText, url: shareUrl }).then(() => { try { if(navigator.vibrate) navigator.vibrate(15); } catch(e){} showToast('Wochenplan geteilt!'); }).catch((err) => {
+      navigator.share({ title: shareTitle, text: shareText, url: shareUrl }).then(() => { try { if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(15); } catch(e){} showToast('Wochenplan geteilt!'); }).catch((err) => {
         if(err.name !== 'AbortError'){ if(typeof copyToClipboard === 'function') copyToClipboard(shareText); showToast('Link kopiert!'); }
       });
     } else {
@@ -14626,7 +14643,7 @@
       cb.push(ent);
       if(typeof save === 'function' && typeof LS !== 'undefined') save(LS.cookbook, cb);
       if(typeof window !== 'undefined') window.cookbook = cb;
-      try { if(navigator.vibrate) navigator.vibrate([30, 50, 30]); } catch(e){}
+      try { if(window.userHasInteracted && navigator.vibrate) navigator.vibrate([30, 50, 30]); } catch(e){}
       if(typeof renderCookbook === 'function') renderCookbook();
       if(typeof showToast === 'function') showToast('Erfolgreich in dein Kochbuch übernommen!');
       if(andThen) andThen(ent);
@@ -14729,7 +14746,7 @@
       if(progressBar) progressBar.style.width = (t * 100) + '%';
       if(current >= total){
         if(counterEl) counterEl.classList.add('cookbook-ingest-pop');
-        try{ if(navigator.vibrate) navigator.vibrate(50); } catch(e){}
+        try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(50); } catch(e){}
         if(flashEl){ flashEl.style.opacity = '1'; }
         setTimeout(function(){
           overlay.style.opacity = '0';
@@ -14870,6 +14887,8 @@
     selectedCookbookId = list.length ? list[cookbookMagazineIndex].id : null;
 
     if(!list.length){
+      var ingestOverlayEmpty = document.getElementById('cookbookIngestOverlay');
+      if(ingestOverlayEmpty) ingestOverlayEmpty.style.display = 'none';
       var footerWrapEmpty = document.getElementById('cookbookFooterWrap');
       if(footerWrapEmpty) footerWrapEmpty.style.display = 'none';
       if(mine.length === 0){
@@ -15014,14 +15033,14 @@
             if(!Number.isNaN(val) && val >= 0){
               var ent = cookbook.find(function(c){ return String(c.id) === String(entry.id); });
               if(ent){ ent.price = val; if(typeof save === 'function' && typeof LS !== 'undefined') save(LS.cookbook, cookbook); }
-              try { if(navigator.vibrate) navigator.vibrate(5); } catch(err){}
+              try { if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(5); } catch(err){}
             }
             updateCookbookFooterButton();
           };
         }
         if(priceHistoryEl){
           var lastPrice = priceHistoryEl.getAttribute('data-last-price');
-          priceHistoryEl.onclick = function(e){ e.preventDefault(); e.stopPropagation(); if(!lastPrice) return; var ent = cookbook.find(function(c){ return String(c.id) === String(entry.id); }); if(!ent) return; var num = parseFloat(lastPrice); if(Number.isNaN(num)) return; ent.price = num; if(priceInput){ priceInput.value = num % 1 === 0 ? String(num) : num.toFixed(2); } if(typeof save === 'function' && typeof LS !== 'undefined') save(LS.cookbook, cookbook); try { if(navigator.vibrate) navigator.vibrate(5); } catch(err){} updateCookbookFooterButton(); };
+          priceHistoryEl.onclick = function(e){ e.preventDefault(); e.stopPropagation(); if(!lastPrice) return; var ent = cookbook.find(function(c){ return String(c.id) === String(entry.id); }); if(!ent) return; var num = parseFloat(lastPrice); if(Number.isNaN(num)) return; ent.price = num; if(priceInput){ priceInput.value = num % 1 === 0 ? String(num) : num.toFixed(2); } if(typeof save === 'function' && typeof LS !== 'undefined') save(LS.cookbook, cookbook); try { if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(5); } catch(err){} updateCookbookFooterButton(); };
           priceHistoryEl.onkeydown = function(e){ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); priceHistoryEl.click(); } };
         }
         function onCardClick(e){
@@ -15029,7 +15048,7 @@
           if(window._cookbookSwipeHandled) return;
           e.preventDefault();
           e.stopPropagation();
-          try { if(navigator.vibrate) navigator.vibrate(15); } catch(err){}
+          try { if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(15); } catch(err){}
           if(typeof openCookbookActionSheet === 'function') openCookbookActionSheet(entry);
         }
         card.addEventListener('click', onCardClick, true);
@@ -15060,7 +15079,7 @@
             cookbookMagazineIndex = idx;
             var cardAt = cards[idx];
             selectedCookbookId = cardAt ? cardAt.getAttribute('data-cookbook-entry-id') : null;
-            try { if(navigator.vibrate) navigator.vibrate(10); } catch(err){}
+            try { if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); } catch(err){}
             updateCookbookFooterButton();
           }
         }
@@ -15097,7 +15116,7 @@
           if(typeof save === 'function' && typeof LS !== 'undefined') save(LS.cookbook, cookbook);
           var savedEl = card.querySelector('.cookbook-price-saved');
           if(savedEl){ savedEl.classList.add('cookbook-price-saved-visible'); setTimeout(function(){ savedEl.classList.remove('cookbook-price-saved-visible'); }, 2000); }
-          try { if(navigator.vibrate) navigator.vibrate([10, 50]); } catch(err){}
+          try { if(window.userHasInteracted && navigator.vibrate) navigator.vibrate([10, 50]); } catch(err){}
           if(typeof closeCookbookActionSheet === 'function') closeCookbookActionSheet();
           if(typeof startListingFlow === 'function') startListingFlow({ dishId: entry.id, date: typeof isoDate === 'function' ? isoDate(new Date()) : '', entryPoint: 'cookbook', skipQuickPost: true, initialPrice: price });
         };
@@ -15165,7 +15184,7 @@
   }
   function closeCookbookLiveSheet(){ var bd = document.getElementById('cookbookLiveSheetBd'); var sheet = document.getElementById('cookbookLiveSheet'); if(bd){ bd.style.display = 'none'; bd.classList.remove('active'); } if(sheet) sheet.classList.remove('active'); }
   function showCookbookVictoryOverlay(dayLabel, thenCallback){
-    try { if(typeof haptic === 'function') haptic([12, 55, 12]); else if(navigator.vibrate) navigator.vibrate([12, 55, 12]); } catch(e){}
+    try { if(typeof haptic === 'function') haptic([12, 55, 12]); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate([12, 55, 12]); } catch(e){}
     var overlay = document.createElement('div');
     overlay.className = 'cookbook-victory-overlay';
     overlay.innerHTML = '<div class="check-wrap"><span>✓</span></div>';
@@ -15659,6 +15678,9 @@
     const wizard = document.getElementById('wizard');
     if(wbd) wbd.classList.add('active');
     if(wizard) wizard.classList.add('active');
+    if(w && w.kind === 'listing'){
+      if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(20);
+    }
     if(w && w.kind === 'listing' && document.body.classList.contains('provider-mode')){
       var pn = document.getElementById('providerNavWrap');
       if(pn) pn.style.setProperty('display', 'none', 'important');
@@ -15720,6 +15742,22 @@
   }
   if(typeof window !== 'undefined') window.closeMastercard = closeMastercard;
 
+  /** Schließt die Mastercard mit Slide-Down-Animation [cite: 2026-02-25] */
+  function closeMastercardWithAnim(panel){
+    var container = panel || document.getElementById('mastercard-container') || document.querySelector('#wizard .mastercard-container, #wizard .mastercard-main-container');
+    if(!container || !container.classList.contains('mastercard-container')){
+      if(typeof closeMastercard === 'function') closeMastercard();
+      return;
+    }
+    try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(8); }catch(e){}
+    container.classList.remove('is-open');
+    container.classList.add('slide-down');
+    setTimeout(function(){
+      if(typeof closeMastercard === 'function') closeMastercard();
+    }, 300);
+  }
+  if(typeof window !== 'undefined') window.closeMastercardWithAnim = closeMastercardWithAnim;
+
   /** Schließt die Mastercard mit S25-Slide-Down (translateY 100%) [cite: 2026-02-21] */
   function closeMastercardSlideDown(panel, entryPoint){
     entryPoint = entryPoint || (w && w.ctx && w.ctx.entryPoint) || 'dashboard';
@@ -15759,8 +15797,8 @@
     }
     var p = panel || document.querySelector('#wizard .mastercard-container, #wizard .liquid-master-panel');
     if(p && (p.classList.contains('mastercard-container') || p.classList.contains('mastercard-main-container'))){
-      closeMastercard();
-    } else if(p && !p.classList.contains('x-pop-away')){ requestAnimationFrame(function(){ p.classList.add('x-pop-away'); setTimeout(function(){ closeWizard(); navigateAfterWizardExit(entryPoint); }, 280); }); } else { closeMastercard(); }
+      if(typeof closeMastercardWithAnim === 'function') closeMastercardWithAnim(p); else closeMastercard();
+    } else if(p && !p.classList.contains('x-pop-away')){ requestAnimationFrame(function(){ p.classList.add('x-pop-away'); setTimeout(function(){ closeWizard(); navigateAfterWizardExit(entryPoint); }, 280); }); } else { if(typeof closeMastercardWithAnim === 'function') closeMastercardWithAnim(p); else closeMastercard(); }
   }
 
   /**
@@ -16164,8 +16202,8 @@
       input.oninput=()=>{ w.data.name=input.value; };
       box.appendChild(input);
       const nav=document.createElement('div'); nav.style.cssText='display:flex;gap:10px;margin-top:20px;';
-      const btnNext=document.createElement('button'); btnNext.type='button'; btnNext.className='btn'; btnNext.textContent='Weiter'; btnNext.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); w.step++; rebuildWizard(); };
-      const btnAbort=document.createElement('button'); btnAbort.type='button'; btnAbort.className='btn secondary'; btnAbort.textContent='Abbrechen'; btnAbort.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); closeWizard(); };
+      const btnNext=document.createElement('button'); btnNext.type='button'; btnNext.className='btn'; btnNext.textContent='Weiter'; btnNext.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); w.step++; rebuildWizard(); };
+      const btnAbort=document.createElement('button'); btnAbort.type='button'; btnAbort.className='btn secondary'; btnAbort.textContent='Abbrechen'; btnAbort.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); closeWizard(); };
       nav.appendChild(btnAbort); nav.appendChild(btnNext); box.appendChild(nav);
       setWizardContent(box);
       return;
@@ -16183,8 +16221,8 @@
       const h=document.createElement('div'); h.className='hint'; h.textContent='Tipp: Straße, PLZ, Ort - getrennt mit Komma.';
       box.appendChild(h);
       const nav=document.createElement('div'); nav.style.cssText='display:flex;gap:10px;margin-top:20px;';
-      const btnBack=document.createElement('button'); btnBack.type='button'; btnBack.className='btn secondary'; btnBack.textContent='Zurück'; btnBack.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); w.step--; rebuildWizard(); };
-      const btnNext=document.createElement('button'); btnNext.type='button'; btnNext.className='btn'; btnNext.textContent='Weiter'; btnNext.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); w.step++; rebuildWizard(); };
+      const btnBack=document.createElement('button'); btnBack.type='button'; btnBack.className='btn secondary'; btnBack.textContent='Zurück'; btnBack.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); w.step--; rebuildWizard(); };
+      const btnNext=document.createElement('button'); btnNext.type='button'; btnNext.className='btn'; btnNext.textContent='Weiter'; btnNext.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); w.step++; rebuildWizard(); };
       nav.appendChild(btnBack); nav.appendChild(btnNext); box.appendChild(nav);
       setWizardContent(box);
       return;
@@ -16258,8 +16296,8 @@
       }
 
       const nav2=document.createElement('div'); nav2.style.cssText='display:flex;gap:10px;margin-top:20px;';
-      const btnBack2=document.createElement('button'); btnBack2.type='button'; btnBack2.className='btn secondary'; btnBack2.textContent='Zurück'; btnBack2.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); w.step--; rebuildWizard(); };
-      const btnNext2=document.createElement('button'); btnNext2.type='button'; btnNext2.className='btn'; btnNext2.textContent='Weiter'; btnNext2.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); w.step++; rebuildWizard(); };
+      const btnBack2=document.createElement('button'); btnBack2.type='button'; btnBack2.className='btn secondary'; btnBack2.textContent='Zurück'; btnBack2.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); w.step--; rebuildWizard(); };
+      const btnNext2=document.createElement('button'); btnNext2.type='button'; btnNext2.className='btn'; btnNext2.textContent='Weiter'; btnNext2.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); w.step++; rebuildWizard(); };
       nav2.appendChild(btnBack2); nav2.appendChild(btnNext2); box.appendChild(nav2);
       setWizardContent(box);
       return;
@@ -16299,8 +16337,8 @@
         wrap.appendChild(prev);
       }
       const nav3=document.createElement('div'); nav3.style.cssText='display:flex;gap:10px;margin-top:20px;';
-      const btnBack3=document.createElement('button'); btnBack3.type='button'; btnBack3.className='btn secondary'; btnBack3.textContent='Zurück'; btnBack3.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); w.step--; rebuildWizard(); };
-      const btnNext3=document.createElement('button'); btnNext3.type='button'; btnNext3.className='btn'; btnNext3.textContent='Weiter'; btnNext3.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); w.step++; rebuildWizard(); };
+      const btnBack3=document.createElement('button'); btnBack3.type='button'; btnBack3.className='btn secondary'; btnBack3.textContent='Zurück'; btnBack3.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); w.step--; rebuildWizard(); };
+      const btnNext3=document.createElement('button'); btnNext3.type='button'; btnNext3.className='btn'; btnNext3.textContent='Weiter'; btnNext3.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); w.step++; rebuildWizard(); };
       nav3.appendChild(btnBack3); nav3.appendChild(btnNext3); wrap.appendChild(nav3);
       setWizardContent(wrap);
       return;
@@ -16330,12 +16368,12 @@
       cta.type='button';
       cta.textContent='Erstes Gericht erstellen';
       cta.onclick=()=>{
-        if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10);
+        if(typeof haptic==='function') haptic(10); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10);
         saveProviderProfileFromWizard();
         closeWizard();
         startWizard('listing');
       };
-      const btnBack4=document.createElement('button'); btnBack4.type='button'; btnBack4.className='btn secondary'; btnBack4.textContent='Zurück'; btnBack4.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); w.step--; rebuildWizard(); };
+      const btnBack4=document.createElement('button'); btnBack4.type='button'; btnBack4.className='btn secondary'; btnBack4.textContent='Zurück'; btnBack4.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); w.step--; rebuildWizard(); };
       box.appendChild(summary);
       box.appendChild(btnBack4);
       box.appendChild(cta);
@@ -16434,14 +16472,14 @@
       sheet.appendChild(box);
       const saveDraft = () => { localStorage.setItem('wizard_draft', JSON.stringify(w)); };
       const dismissKeyboard = ()=>{ try { if(document.activeElement && document.activeElement.blur) document.activeElement.blur(); } catch(e){} };
-      const hapticLight = ()=>{ try { if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); } catch(e){} };
+      const hapticLight = ()=>{ try { if(typeof haptic==='function') haptic(10); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); } catch(e){} };
       var entryPoint = (w.ctx && w.ctx.entryPoint) || 'dashboard';
       var isPlanMode = (entryPoint === 'week');
       var isFastTrack = (entryPoint === 'ACTIVE_LISTING' || entryPoint === 'WEEKLY_PLAN_EDIT');
       var useTwoStepFlow = !isPlanMode && !isFastTrack && (entryPoint === 'dashboard' || entryPoint === 'cookbook');
       if(useTwoStepFlow && typeof w.inseratStep !== 'number') w.inseratStep = 1;
       var inseratStep = useTwoStepFlow ? (w.inseratStep === 2 ? 2 : 1) : 1;
-      if(inseratStep === 1){ try{ if(navigator.vibrate) navigator.vibrate(10); }catch(e){} }
+      if(inseratStep === 1){ try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); }catch(e){} }
       var listingDebounceTimer = null; /* Debounce f├╝r Autovervollst├ñndigung + Bildvorschl├ñge */
       var LISTING_IMAGES_BASE = 'https://images.unsplash.com/';
       var listingImageMap = {
@@ -16549,7 +16587,7 @@
             fb.classList.toggle('free-mode',type==='pro');
             fb.classList.toggle('is-free-mode',type==='pro');
           }
-          try{ if(navigator.vibrate) navigator.vibrate(10); }catch(e){}
+          try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); }catch(e){}
         }
         cardClassic.onclick=function(){ hapticLight(); selectPacket('classic'); };
         cardPremium.onclick=function(){ hapticLight(); selectPacket('pro'); };
@@ -16811,7 +16849,7 @@
       function toggleHeaderSelection(type){ hapticLight(); renderSelectionContent(type); photoTile.classList.add('is-selecting'); }
       closeX.onclick=function(e){ e.preventDefault(); e.stopPropagation();
         if(photoTile.classList.contains('is-selecting')){ hapticLight(); closeHeaderSelection(); return; }
-        try{ if(typeof haptic==='function') haptic(15); else if(navigator.vibrate) navigator.vibrate(15); }catch(e){}
+        try{ if(typeof haptic==='function') haptic(15); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(15); }catch(e){}
         if(typeof handleWizardExit==='function'){ handleWizardExit(box); return; }
         var panel=box; if(panel&&!panel.classList.contains('x-pop-away')){ requestAnimationFrame(function(){ panel.classList.add('x-pop-away'); setTimeout(function(){ closeWizard(); }, 280); }); } else { closeWizard(); }
       };
@@ -16862,7 +16900,7 @@
       btnClearName.setAttribute('aria-label','Name löschen');
       btnClearName.textContent='\uD83D\uDDD1\uFE0F';
       btnClearName.style.cssText='position:absolute; right:2px; top:8px; width:24px; height:24px; border:none; background:transparent; color:#94a3b8; font-size:12px; cursor:pointer; display:flex; align-items:center; justify-content:center; border-radius:50%; flex-shrink:0; opacity:0.7;';
-      btnClearName.onclick=function(e){ e.preventDefault(); e.stopPropagation(); if(navigator.vibrate) navigator.vibrate(10); hapticLight(); inputDish.value=''; w.data.dish=''; saveDraft(); adjustTitleFontSize(); inputDish.focus(); };
+      btnClearName.onclick=function(e){ e.preventDefault(); e.stopPropagation(); if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); hapticLight(); inputDish.value=''; w.data.dish=''; saveDraft(); adjustTitleFontSize(); inputDish.focus(); };
       nameInputWrap.appendChild(inputDish);
       nameInputWrap.appendChild(btnClearName);
       stepName.appendChild(nameInputWrap);
@@ -16969,7 +17007,7 @@
       var hasAllergens=!!(w.data.allergens&&w.data.allergens.length);
       var hasExtras=!!(w.data.extras&&w.data.extras.length);
       function handlePowerBarInteraction(type){
-        try{ if(navigator.vibrate) navigator.vibrate(15); }catch(e){}
+        try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(15); }catch(e){}
         hapticLight();
         var item=powerBar.querySelector('.power-item[data-type="'+type+'"]');
         if(item){ item.classList.add('press-anim'); setTimeout(function(){ item.classList.remove('press-anim'); }, 200); }
@@ -17082,7 +17120,7 @@
         if(finishBtn){
           finishBtn.textContent='✓ Gespeichert';
           finishBtn.style.background='#222222';
-          if(window.navigator.vibrate) window.navigator.vibrate([10,30,10]);
+          if(window.userHasInteracted && window.navigator.vibrate) window.navigator.vibrate([10,30,10]);
         }
         quickAdjustPanel.style.transition='transform 0.3s cubic-bezier(0.32,0.72,0,1)';
         requestAnimationFrame(function(){
@@ -17096,7 +17134,7 @@
           }, 320);
         });
       }
-      function closeQuickAdjust(){ if(navigator.vibrate) navigator.vibrate(20); quickAdjustPanel.style.display='none'; quickAdjustPanel.innerHTML=''; updatePowerBarFromData(); }
+      function closeQuickAdjust(){ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(20); quickAdjustPanel.style.display='none'; quickAdjustPanel.innerHTML=''; updatePowerBarFromData(); }
       function openQuickAdjust(type){
         hapticLight();
         quickAdjustPanel.innerHTML='';
@@ -17198,7 +17236,7 @@
         if (typeof updateWizardFooter === 'function') updateWizardFooter();
       }
       function triggerValidationError(btn){
-        try{ if(navigator.vibrate) navigator.vibrate([50,50,50]); }catch(e){}
+        try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate([50,50,50]); }catch(e){}
         var name=(w.data.dish||'').trim();
         var price=Number(w.data.price)||0;
         if(name.length<2) stepName.classList.add('inserat-validation-error');
@@ -17235,7 +17273,7 @@
           label.textContent=(item.dish||item.name||'Gericht').substring(0,12);
           wrap.appendChild(thumb);
           wrap.appendChild(label);
-          wrap.onclick=function(e){ e.preventDefault(); e.stopPropagation(); hapticLight(); if(navigator.vibrate) navigator.vibrate(10); w.data.dish=item.dish||item.name||''; w.data.price=item.price||0; w.data.photoData=item.image||item.imageUrl||''; w.data.photoObjectPosition=typeof item.objectPosition==='number'?item.objectPosition:(typeof item.objectPosition==='string'?parseFloat(item.objectPosition)||50:50); saveDraft(); var inp=box.querySelector('#gericht-name'); var priceInp=box.querySelector('#gericht-preis'); var img=box.querySelector('#mainImagePreview'); if(inp) inp.value=w.data.dish||''; if(priceInp) priceInp.value=(w.data.price>0?Number(w.data.price).toFixed(2).replace('.',','):''); if(img){ img.src=w.data.photoData||img.src; img.style.display=w.data.photoData?'block':'none'; img.style.objectPosition='center '+(w.data.photoObjectPosition||50)+'%'; } var plc=box.querySelector('.inserat-photo-placeholder-center'); if(plc){ if(w.data.photoData) plc.remove(); } else if(!w.data.photoData){ var ph=box.querySelector('.inserat-photo-tile'); if(ph){ var div=document.createElement('div'); div.className='inserat-photo-placeholder-center'; div.style.cssText='position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#e2e8f0;pointer-events:none;'; div.innerHTML='<span style="font-size:48px;opacity:0.5;">📷</span>'; ph.appendChild(div); } } var pt=box.querySelector('.inserat-photo-tile'); if(pt){ pt.classList.toggle('inserat-photo-placeholder',!w.data.photoData); pt.classList.toggle('pulse-soft',!w.data.photoData); } var ov=box.querySelector('.ebay-photo-overlay'); if(ov) ov.style.pointerEvents=w.data.photoData?'none':'auto'; if(typeof adjustTitleFontSize==='function') adjustTitleFontSize(); if(typeof checkMastercardValidation==='function') checkMastercardValidation(); if(typeof updateProfit==='function') updateProfit(String(w.data.price||0)); };
+          wrap.onclick=function(e){ e.preventDefault(); e.stopPropagation(); hapticLight(); if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); w.data.dish=item.dish||item.name||''; w.data.price=item.price||0; w.data.photoData=item.image||item.imageUrl||''; w.data.photoObjectPosition=typeof item.objectPosition==='number'?item.objectPosition:(typeof item.objectPosition==='string'?parseFloat(item.objectPosition)||50:50); saveDraft(); var inp=box.querySelector('#gericht-name'); var priceInp=box.querySelector('#gericht-preis'); var img=box.querySelector('#mainImagePreview'); if(inp) inp.value=w.data.dish||''; if(priceInp) priceInp.value=(w.data.price>0?Number(w.data.price).toFixed(2).replace('.',','):''); if(img){ img.src=w.data.photoData||img.src; img.style.display=w.data.photoData?'block':'none'; img.style.objectPosition='center '+(w.data.photoObjectPosition||50)+'%'; } var plc=box.querySelector('.inserat-photo-placeholder-center'); if(plc){ if(w.data.photoData) plc.remove(); } else if(!w.data.photoData){ var ph=box.querySelector('.inserat-photo-tile'); if(ph){ var div=document.createElement('div'); div.className='inserat-photo-placeholder-center'; div.style.cssText='position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#e2e8f0;pointer-events:none;'; div.innerHTML='<span style="font-size:48px;opacity:0.5;">📷</span>'; ph.appendChild(div); } } var pt=box.querySelector('.inserat-photo-tile'); if(pt){ pt.classList.toggle('inserat-photo-placeholder',!w.data.photoData); pt.classList.toggle('pulse-soft',!w.data.photoData); } var ov=box.querySelector('.ebay-photo-overlay'); if(ov) ov.style.pointerEvents=w.data.photoData?'none':'auto'; if(typeof adjustTitleFontSize==='function') adjustTitleFontSize(); if(typeof checkMastercardValidation==='function') checkMastercardValidation(); if(typeof updateProfit==='function') updateProfit(String(w.data.price||0)); };
           cookbookQuickSelect.appendChild(wrap);
         });
         step1Container.appendChild(cookbookQuickSelect);
@@ -17368,7 +17406,7 @@
           if(typeof handlePriceFastInsert==='function') handlePriceFastInsert(box);
           if(updateStep2ContextZoneRef) updateStep2ContextZoneRef();
           w.inseratStep=2; saveDraft();
-          try{ if(navigator.vibrate) navigator.vibrate([10, 50]); }catch(err){}
+          try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate([10, 50]); }catch(err){}
           if(slider){ try{ history.pushState({inseratStep:2},'','#'); }catch(e){} slider.setAttribute('data-inserat-step','2'); var wizardEl=document.getElementById('wizard'); if(wizardEl) wizardEl.classList.add('inserat-step2-active'); var f=box.querySelector('[data-inserat-step="2"]'); if(f) f.style.display='flex'; }
         };
         step1NavRow.appendChild(btnSpeichernCb);
@@ -17404,7 +17442,7 @@
           if(typeof handlePriceFastInsert==='function') handlePriceFastInsert(box);
           if(updateStep2ContextZoneRef) updateStep2ContextZoneRef();
           w.inseratStep=2; saveDraft();
-          try{ if(navigator.vibrate) navigator.vibrate([10, 50]); }catch(err){}
+          try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate([10, 50]); }catch(err){}
           if(slider){
             try{ history.pushState({inseratStep:2},'','#'); }catch(e){}
             var sweepEl=box.querySelector('.step2-slot-machine-sweep');
@@ -17523,13 +17561,13 @@
         var btnFortsetzen = draftOverlay.querySelector('.draft-restore-fortsetzen');
         var btnNeu = draftOverlay.querySelector('.draft-restore-neu');
         if(btnFortsetzen) btnFortsetzen.onclick = function(){
-          try { if(navigator.vibrate) navigator.vibrate(10); } catch(e){}
+          try { if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); } catch(e){}
           hapticLight();
           draftOverlay.classList.add('draft-restore-overlay-out');
           setTimeout(function(){ draftOverlay.remove(); box.classList.remove('draft-card-ghost'); if(w.ctx) w.ctx.showDraftOverlay = false; }, 320);
         };
         if(btnNeu) btnNeu.onclick = function(){
-          try { if(navigator.vibrate) navigator.vibrate(10); } catch(e){}
+          try { if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); } catch(e){}
           hapticLight();
           draftOverlay.classList.add('draft-restore-overlay-out');
           setTimeout(function(){
@@ -17863,7 +17901,7 @@
       } else {
         syncWrap.style.display = 'none';
       }
-      syncCheck.onchange = function(){ try { if(typeof hapticLight === 'function') hapticLight(); else if(navigator.vibrate) navigator.vibrate(10); } catch(e){} };
+      syncCheck.onchange = function(){ try { if(typeof hapticLight === 'function') hapticLight(); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); } catch(e){} };
     }
     const bd = document.getElementById('publishFeeBd');
     const sheet = document.getElementById('publishFeeSheet');
@@ -17950,7 +17988,7 @@
         step3Container.appendChild(c);
       }
     }
-    if(typeof vibrate === 'function') vibrate([100, 50, 100]); else if(navigator.vibrate) navigator.vibrate([100, 50, 100]);
+    if(typeof vibrate === 'function') vibrate([100, 50, 100]); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate([100, 50, 100]);
     slider.setAttribute('data-inserat-step', '3');
     var wizardEl = document.getElementById('wizard');
     if(wizardEl) wizardEl.classList.add('inserat-step3-active');
@@ -17972,7 +18010,7 @@
     try {
       if(navigator.share){
         await navigator.share({ title: 'Mein neues Inserat', text: shareText, url: shareUrl });
-        if(navigator.vibrate) navigator.vibrate(10);
+        if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10);
         if(typeof showToast === 'function') showToast('Geteilt 📤');
       } else {
         var waUrl = 'https://wa.me/?text=' + encodeURIComponent(shareText + ' ' + shareUrl);
@@ -18018,7 +18056,7 @@
     try {
       if(navigator.share){
         await navigator.share({ title: title, text: text, url: url });
-        if(navigator.vibrate) navigator.vibrate(10);
+        if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10);
         if(typeof showToast === 'function') showToast('Geteilt!');
       } else {
         const whatsappUrl = 'https://wa.me/?text=' + encodeURIComponent(text);
@@ -18122,7 +18160,7 @@
     
     // 1. Konfetti zünden [cite: 2026-01-26, 2026-02-16]
     createConfetti();
-    if(navigator.vibrate) navigator.vibrate([50, 30, 50]);
+    if(window.userHasInteracted && navigator.vibrate) navigator.vibrate([50, 30, 50]);
 
     var withPickup = !!d.hasPickupCode;
     var checkmarkTitle = document.getElementById('inseratSuccessCheckmarkTitle');
@@ -18267,7 +18305,7 @@
 
   /** Victory-Konfetti nach 200-Gerichte-Import im Kochbuch [cite: 2026-02-18, 2026-02-25] */
   function triggerCookbookVictoryConfetti() {
-    try { if (navigator.vibrate) navigator.vibrate([100, 50, 100]); } catch (e) {}
+    try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate([100, 50, 100]); } catch (e) {}
     var wrap = document.createElement('div');
     wrap.setAttribute('aria-hidden', 'true');
     wrap.style.cssText = 'position:fixed; inset:0; pointer-events:none; z-index:9999; overflow:hidden;';
@@ -18297,7 +18335,7 @@
   }
 
   function showWeekActivationSuccessSheet(kwLabel, umsatzSum){
-    try { if (navigator.vibrate) navigator.vibrate([100, 50, 100]); } catch(e) {}
+    try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate([100, 50, 100]); } catch(e) {}
     var titleEl = document.getElementById('weekActivationSuccessTitle');
     var subEl = document.getElementById('weekActivationSuccessSub');
     if (titleEl) titleEl.textContent = (kwLabel || 'KW') + ' ist live!';
@@ -18313,7 +18351,7 @@
     if (btnShare && !btnShare._weekSuccessBound) {
       btnShare._weekSuccessBound = true;
       btnShare.onclick = function(){
-        try { if (navigator.vibrate) navigator.vibrate(10); } catch(e) {}
+        try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); } catch(e) {}
         var shareText = typeof getWeekActivationShareText === 'function' ? getWeekActivationShareText(kwLabel) : null;
         if (!shareText && typeof shareWeekPlan === 'function') { shareWeekPlan(); return; }
         var shareUrl = location.origin + (location.pathname || '').replace(/\/$/, '') + '#/plan/' + encodeURIComponent(providerId());
@@ -18526,17 +18564,17 @@
   })();
 
   function openPricingFairnessOverlay(){
-    if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10);
+    if(typeof haptic==='function') haptic(10); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10);
     var bd=document.getElementById('pricingFairnessBd'); var ov=document.getElementById('pricingFairnessOverlay');
     if(bd) bd.classList.add('active'); if(ov) ov.classList.add('active');
   }
   function closePricingFairnessOverlay(){
-    if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10);
+    if(typeof haptic==='function') haptic(10); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10);
     var bd=document.getElementById('pricingFairnessBd'); var ov=document.getElementById('pricingFairnessOverlay');
     if(bd) bd.classList.remove('active'); if(ov) ov.classList.remove('active');
   }
   function openInfoLegendSheet(){
-    if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10);
+    if(typeof haptic==='function') haptic(10); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10);
     var bd=document.getElementById('infoLegendBackdrop'); var sheet=document.getElementById('info-legend-sheet');
     if(bd){ bd.style.pointerEvents='auto'; bd.style.opacity='1'; bd.classList.add('active'); }
     if(sheet){ sheet.style.transform='translateY(0)'; sheet.classList.add('active'); }
@@ -18544,7 +18582,7 @@
     var btn=document.getElementById('infoLegendVerstandenBtn'); if(btn&&!btn._bound){ btn._bound=true; btn.onclick=function(){ closeInfoLegendSheet(); }; }
   }
   function closeInfoLegendSheet(){
-    if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10);
+    if(typeof haptic==='function') haptic(10); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10);
     var bd=document.getElementById('infoLegendBackdrop'); var sheet=document.getElementById('info-legend-sheet');
     if(bd){ bd.style.pointerEvents='none'; bd.style.opacity='0'; bd.classList.remove('active'); }
     if(sheet){ sheet.style.transform='translateY(100%)'; sheet.classList.remove('active'); }
