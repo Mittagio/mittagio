@@ -383,6 +383,15 @@
         return;
       }
       var state = event.state;
+      /* Fail-Safe: state null/undefined obwohl Wochenplan oder Kochbuch aktiv – zwingend zum Dashboard [cite: 2026-02-25] */
+      if (!state || state.section == null) {
+        var current = getCurrentSection();
+        if (current === 'week' || current === 'cookbook') {
+          try { if (navigator.vibrate) navigator.vibrate(5); } catch(e){}
+          showSection('dashboard', false);
+          return;
+        }
+      }
       if (state && state.section) {
         showSection(state.section, false);
         if (state.section === 'week') {
