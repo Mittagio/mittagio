@@ -11043,13 +11043,13 @@
     var kwBadge = document.getElementById('weekHeaderKWBadge');
     var kwTrigger = document.getElementById('weekHeaderKWTrigger');
     if (kwBadge) kwBadge.textContent = getKWLabel(weekPlanKWIndex);
-    if (kwTrigger && !kwTrigger._bound) { kwTrigger._bound = true; kwTrigger.onclick = function(e){ e.preventDefault(); openKWSelector(); }; }
+    if (kwTrigger && !kwTrigger._bound) { kwTrigger._bound = true; kwTrigger.onclick = function(e){ e.preventDefault(); try { if (navigator.vibrate) navigator.vibrate(12); } catch(err){} openKWSelector(); }; }
     /* Kebab: Toggle + Aussenklick schliessen */
     var kebabBtn = document.getElementById('btnWeekKebab');
     var kebabDrop = document.getElementById('weekKebabDropdown');
     if (kebabBtn && kebabDrop && !kebabBtn._bound) {
       kebabBtn._bound = true;
-      kebabBtn.onclick = function(e){ e.stopPropagation(); try { if (navigator.vibrate) navigator.vibrate(5); } catch(err){} if(typeof haptic === 'function') haptic(6); kebabDrop.style.display = kebabDrop.style.display === 'none' ? 'block' : 'none'; kebabBtn.setAttribute('aria-expanded', kebabDrop.style.display !== 'none'); };
+      kebabBtn.onclick = function(e){ e.stopPropagation(); var opening = kebabDrop.style.display === 'none'; if (opening) { try { if (navigator.vibrate) navigator.vibrate([5, 15, 5]); } catch(err){} } if(typeof haptic === 'function') haptic(6); kebabDrop.style.display = opening ? 'block' : 'none'; kebabBtn.setAttribute('aria-expanded', kebabDrop.style.display !== 'none'); };
       document.addEventListener('click', function closeKebab(ev){ if (!kebabDrop.contains(ev.target) && ev.target !== kebabBtn) { kebabDrop.style.display = 'none'; kebabBtn.setAttribute('aria-expanded', 'false'); } });
     }
     var btnPreviewClose = document.getElementById('btnWeekPreviewClose');
@@ -11386,11 +11386,11 @@
     window.__weekMagicFabBound = true;
     setTimeout(function(){
       var fab = document.getElementById('weekMagicFab');
-      if (fab) fab.onclick = function(){ openWeekMagicSheet(); };
+      if (fab) fab.onclick = function(){ try { if (navigator.vibrate) navigator.vibrate([15, 10, 20]); } catch(e){} openWeekMagicSheet(); };
       var kebab = document.getElementById('btnWeekKebab');
       var kebabDrop = document.getElementById('weekKebabDropdown');
       if (kebab && kebabDrop) {
-        kebab.onclick = function(e){ e.stopPropagation(); if (typeof haptic === 'function') haptic(6); kebabDrop.style.display = kebabDrop.style.display === 'block' ? 'none' : 'block'; if (kebabDrop.style.display === 'block' && typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons(); };
+        kebab.onclick = function(e){ e.stopPropagation(); var opening = kebabDrop.style.display !== 'block'; if (opening) { try { if (navigator.vibrate) navigator.vibrate([5, 15, 5]); } catch(e){} } if (typeof haptic === 'function') haptic(6); kebabDrop.style.display = opening ? 'block' : 'none'; if (opening && typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons(); };
         document.addEventListener('click', function(){ if (kebabDrop) kebabDrop.style.display = 'none'; });
         kebab.addEventListener('click', function(e){ e.stopPropagation(); });
         if (kebabDrop) kebabDrop.onclick = function(e){ e.stopPropagation(); };
@@ -14641,6 +14641,7 @@
             if(typeof window !== 'undefined') window.cookbook = cookbook;
             if(typeof renderCookbook === 'function') renderCookbook();
             if(typeof showToast === 'function') showToast(total + ' Gerichte importiert');
+            if(typeof triggerCookbookVictoryConfetti === 'function') triggerCookbookVictoryConfetti();
           }, 300);
         }, 120);
         return;
@@ -18126,6 +18127,29 @@
       c.style.animationDuration = (Math.random() * 2 + 2) + 's';
       container.appendChild(c);
     }
+  }
+
+  /** Victory-Konfetti nach 200-Gerichte-Import im Kochbuch [cite: 2026-02-18, 2026-02-25] */
+  function triggerCookbookVictoryConfetti() {
+    try { if (navigator.vibrate) navigator.vibrate([100, 50, 100]); } catch (e) {}
+    var wrap = document.createElement('div');
+    wrap.setAttribute('aria-hidden', 'true');
+    wrap.style.cssText = 'position:fixed; inset:0; pointer-events:none; z-index:9999; overflow:hidden;';
+    var colors = ['#10b981', '#059669', '#34d399', '#FACC15', '#a7f3d0'];
+    for (var i = 0; i < 50; i++) {
+      var c = document.createElement('div');
+      c.className = 'confetti';
+      c.style.left = Math.random() * 100 + '%';
+      c.style.top = '-20px';
+      c.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+      c.style.width = (Math.random() * 8 + 5) + 'px';
+      c.style.height = c.style.width;
+      c.style.animationDelay = (Math.random() * 2) + 's';
+      c.style.animationDuration = (Math.random() * 2 + 2) + 's';
+      wrap.appendChild(c);
+    }
+    document.body.appendChild(wrap);
+    setTimeout(function() { if (wrap.parentNode) wrap.parentNode.removeChild(wrap); }, 3500);
   }
 
   function closeInseratSuccessSheet(){

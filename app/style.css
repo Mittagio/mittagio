@@ -4716,24 +4716,25 @@
     .provider-nav-pill .provider-nav-label{ font-size:10px; font-weight:700; text-align:center; letter-spacing:0.02em; display:block; }
     .provider-nav-pill .navbtn:not(.active) .provider-nav-label{ color:rgba(255,255,255,0.5); }
     .provider-nav-pill .navbtn.active .provider-nav-label{ color:#fff; }
-    /* Bottom-Nav: eckig (border-radius 0), am Gehäuserand – Icons/Texte nach oben (padding-bottom min. 25px) [cite: 2026-02-21 S25] */
+    /* Bottom-Nav: bündig am Displayrand, Safe-Area, Airbnb-Footer [cite: 2026-02-23, 2026-02-25] */
     #providerNavWrap.provider-nav-wrap-pill{
-      bottom: 0 !important; left: 0 !important; right: 0 !important;
+      position: fixed !important; bottom: 0 !important; left: 0 !important; right: 0 !important;
       width: 100% !important; box-sizing: border-box; z-index: 1052 !important;
       border-radius: 0 !important; margin: 0 !important;
+      padding-bottom: env(safe-area-inset-bottom, 0) !important;
     }
     #providerNavWrap #providerNav{
       min-height: 75px;
-      padding: 12px 24px calc(25px + env(safe-area-inset-bottom, 0));
+      padding: 12px 24px 25px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       border-radius: 0 !important;
     }
-    /* Airbnb-Style Footer: Reinweiß, feine Trennlinie, safe-area [cite: Dashboard 2.1] */
+    /* Airbnb-Style Footer: bündig, Reinweiß, feine Trennlinie #ebebeb [cite: 2026-02-23, 2026-02-25] */
     body.provider-mode #providerNavWrap.provider-nav-wrap-pill{
-      background: var(--airbnb-white, #ffffff) !important;
-      border-top: 1px solid var(--airbnb-border, #ebebeb) !important;
+      background: #ffffff !important;
+      border-top: 1px solid #ebebeb !important;
     }
     body.provider-mode #providerNav.provider-nav-pill{
       background: var(--airbnb-white, #ffffff) !important;
@@ -7000,7 +7001,7 @@
     #v-provider-cookbook .cookbook-category-pills{ background:transparent; }
     #v-provider-cookbook .cookbook-action-bar{ background:rgba(255,255,255,0.7) !important; backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border-top:1px solid rgba(255,255,255,0.4) !important; box-shadow:0 -4px 24px rgba(0,0,0,0.06); }
     /* Kochbuch: fixierter Footer (Airbnb-Style) [cite: REFACTOR KOCHBUCH 2026-02-23] */
-    #v-provider-cookbook .cookbook-footer-fixed{ position:fixed; left:0; right:0; bottom:0; z-index:100; background:#fff; border-top:1px solid #e2e8f0; padding:16px max(20px, env(safe-area-inset-right)) calc(16px + env(safe-area-inset-bottom, 0)) max(20px, env(safe-area-inset-left)); box-sizing:border-box; }
+    #v-provider-cookbook .cookbook-footer-fixed{ position:fixed; bottom:0; left:0; width:100%; z-index:1000; background:#ffffff; border-top:1px solid #ebebeb; padding:16px max(20px, env(safe-area-inset-right)) calc(16px + env(safe-area-inset-bottom, 0)) max(20px, env(safe-area-inset-left)); box-sizing:border-box; }
     #v-provider-cookbook .cookbook-footer-btn-inserieren{ width:100%; min-height:56px; border-radius:16px; border:none; background:#222222; color:#fff; font-size:16px; font-weight:800; cursor:pointer; -webkit-tap-highlight-color:transparent; }
     #v-provider-cookbook .cookbook-footer-btn-inserieren:active{ opacity:0.9; transform:scale(0.99); }
     /* Kochbuch: editierbares Preisfeld in der Karte [cite: REFACTOR KOCHBUCH 2026-02-23] */
@@ -7027,16 +7028,18 @@
     }
     #v-provider-week.view.active::before,
     #v-provider-week.view.active::after{
-      content:''; position:absolute; pointer-events:none; z-index:0;
+      content:''; position:absolute; pointer-events:none !important; z-index:0;
     }
     #v-provider-week.view.active::before{
-      top:-15%; left:-10%; width:45%; height:45%; border-radius:50%; background:radial-gradient(ellipse at 30% 20%, rgba(226,232,240,0.6) 0%, transparent 70%); filter:blur(80px); pointer-events:none;
+      top:-15%; left:-10%; width:45%; height:45%; border-radius:50%; background:radial-gradient(ellipse at 30% 20%, rgba(226,232,240,0.6) 0%, transparent 70%); filter:blur(80px); pointer-events:none !important;
     }
     #v-provider-week.view.active::after{
-      bottom:-10%; right:-10%; width:40%; height:40%; border-radius:50%; background:radial-gradient(ellipse at 70% 80%, rgba(203,213,225,0.5) 0%, transparent 70%); filter:blur(80px); pointer-events:none;
+      bottom:-10%; right:-10%; width:40%; height:40%; border-radius:50%; background:radial-gradient(ellipse at 70% 80%, rgba(203,213,225,0.5) 0%, transparent 70%); filter:blur(80px); pointer-events:none !important;
     }
     #v-provider-week.view.active > header,
-    #v-provider-week.view.active > #kwBoardWrap{ position:relative; z-index:1; }
+    #v-provider-week.view.active > #kwBoardWrap{ position:relative; z-index:9999; }
+    #v-provider-week.view.active #weekHeaderKWTrigger,
+    #v-provider-week.view.active #btnWeekKebab{ position:relative; z-index:10000; }
     /* Wochenplan-Header: Minimal, KW-Badge links, Kebab rechts [cite: 2026-02-20 Final Header Kill] */
     #v-provider-week .week-header-minimal{
       position:sticky; top:0; z-index:50;
@@ -7050,8 +7053,8 @@
     /* Wochenplan: identischer Header wie Meine Küche (KW-Badge entfernt, linksbündig) */
     #v-provider-week .week-header-minimal .week-header-row{ display:flex; align-items:center; justify-content:flex-start; width:100%; gap:12px; position:relative; }
     #v-provider-week .week-header-kw-badge{ display:inline-flex !important; align-items:center; padding:6px 12px; border-radius:12px; background:rgba(0,0,0,0.06); font-size:15px; font-weight:800; color:#0f172a; }
-    #v-provider-week .week-header-kw-trigger{ position:relative; z-index:2; }
-    #v-provider-week .week-header-compact{ background:rgba(245,245,240,0.95) !important; backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); font-family:'Montserrat',sans-serif; position:sticky; top:0; z-index:100; }
+    #v-provider-week .week-header-kw-trigger{ position:relative; z-index:2; display:inline-flex; align-items:center; gap:6px; background:none; border:none; padding:4px 0; cursor:pointer; font-family:inherit; }
+    #v-provider-week .week-header-compact{ background:rgba(245,245,240,0.95) !important; backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); font-family:'Montserrat',sans-serif; position:sticky; top:0; z-index:9999; }
     #v-provider-week .week-header-title-left,
     #v-provider-week .prov-page-header-title{ margin:0; font-family:'Montserrat','Inter',sans-serif !important; font-weight:900 !important; font-size:20px !important; letter-spacing:-0.03em; color:#0f172a !important; text-align:left; }
     #v-provider-week .week-header-actions{ display:flex; align-items:center; gap:8px; margin-left:auto; }
@@ -7478,7 +7481,7 @@
       #v-provider-week .kw-digit-cell{ height:22px; line-height:22px; font-size:16px; font-weight:900; text-align:center; flex-shrink:0; color:#fff; }
       #v-provider-week .kw-activation-disclaimer{ font-size:10px; font-weight:600; color:#71717a; margin:0; text-align:center; line-height:1.3; }
       /* Magic FAB: schwebend über Activation-Dock, Daumenbereich [cite: 2026-02-23] */
-      #v-provider-week .week-magic-fab{ position:fixed; bottom:calc(140px + env(safe-area-inset-bottom, 0)); right:24px; width:56px; height:56px; border-radius:50%; border:none; background:#fff; box-shadow:0 4px 20px rgba(0,0,0,0.12); display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:1001; transition:transform 0.2s, box-shadow 0.2s; -webkit-tap-highlight-color:transparent; }
+      #v-provider-week .week-magic-fab{ position:fixed; bottom:calc(140px + env(safe-area-inset-bottom, 0)); right:24px; width:56px; height:56px; border-radius:50%; border:none; background:#fff; box-shadow:0 4px 20px rgba(0,0,0,0.12); display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:10001; transition:transform 0.2s, box-shadow 0.2s; -webkit-tap-highlight-color:transparent; }
       body:not(.kw-activation-dock-visible) #v-provider-week .week-magic-fab{ bottom:calc(72px + env(safe-area-inset-bottom, 0)); }
       #v-provider-week .week-magic-fab:active{ transform:scale(0.95); }
       #v-provider-week .week-magic-fab-icon{ font-size:24px; }
@@ -7492,7 +7495,7 @@
       /* Kebab Dropdown: 12px Radius, Icons, Trennlinie vor Team-Vorschau [cite: 2026-02-23] */
       #v-provider-week .week-kebab-trigger{ min-width:44px; min-height:44px; padding:0; border-radius:12px; border:none; background:rgba(0,0,0,0.06); display:flex; align-items:center; justify-content:center; color:#1a1a1a; cursor:pointer; -webkit-tap-highlight-color:transparent; transition:background 0.2s; }
       #v-provider-week .week-kebab-trigger:active{ background:rgba(0,0,0,0.1); }
-      #v-provider-week .week-kebab-trigger i{ flex-shrink:0; }
+      #v-provider-week .week-kebab-trigger i{ flex-shrink:0; width:20px; height:20px; }
       .week-kebab-dropdown{ position:absolute; top:calc(100% + 6px); right:0; background:#fff; border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.12); border:1px solid rgba(0,0,0,0.06); padding:6px; z-index:100; min-width:180px; }
       .week-kebab-separator{ border-top:1px solid #ebebeb; margin:4px 0; }
       .week-kebab-item{ display:flex; align-items:center; gap:10px; width:100%; min-height:44px; padding:0 14px; border:none; border-radius:10px; background:transparent; font-size:14px; font-weight:600; color:#1a1a1a; cursor:pointer; text-align:left; transition:background 0.2s; }
