@@ -1240,6 +1240,7 @@
     /* Kochbuch Magazin-Karte: feste Größe wie Magazin – keine Größenänderung beim Swipen/Blättern */
     #v-provider-cookbook .cookbook-magazine-card{ transition:box-shadow 0.2s ease; min-height:420px; }
     #v-provider-cookbook .cookbook-magazine-card .cookbook-magazine-img-wrap{ height:240px; min-height:240px; flex-shrink:0; overflow:hidden; position:relative; }
+    #v-provider-cookbook .cookbook-magazine-card .cookbook-magazine-img-wrap img{ object-position:center 20px; }
     #v-provider-cookbook .cookbook-magazine-dots{ display:flex; justify-content:center; gap:6px; margin-top:12px; flex-shrink:0; }
     #v-provider-cookbook .cookbook-magazine-dots .cookbook-dot{ width:8px; height:8px; border-radius:50%; background:rgba(0,0,0,0.15); transition:background 0.2s; }
     #v-provider-cookbook .cookbook-magazine-dots .cookbook-dot.on{ background:#10b981; }
@@ -7010,7 +7011,7 @@
     #v-provider-profile .provider-profile-hero-cta--yellow{ background:#FFD700; color:#1a1a1a; box-shadow:0 4px 16px rgba(255,215,0,0.35); }
     #v-provider-profile .provider-profile-hero-cta--emerald{ background:#10b981; color:#fff; box-shadow:0 4px 16px rgba(16,185,129,0.25); }
     #v-provider-profile .provider-profile-hero-icon-wrap{ width:56px; height:56px; border-radius:16px; background:#f1f3f5; display:flex; align-items:center; justify-content:center; font-size:28px; margin-bottom:8px; }
-    #v-provider-cookbook{ min-height:100vh; min-height:100dvh; width:100%; box-sizing:border-box; }
+    #v-provider-cookbook{ min-height:100vh; min-height:100dvh; width:100%; box-sizing:border-box; overscroll-behavior-y:none !important; }
     #v-provider-cookbook.view.active{ display:flex !important; flex-direction:column !important; height:100vh; height:100dvh; max-height:100vh; max-height:100dvh; overflow:hidden; }
     /* Kochbuch: Header fixiert, bündig oben – Rahmenstabilität [cite: 2026-02-25] */
     #v-provider-cookbook.view.active > header{
@@ -7034,6 +7035,7 @@
       max-height:calc(100vh - 120px - 80px);
       overflow-y:auto !important;
       -webkit-overflow-scrolling:touch;
+      overscroll-behavior-y:none !important;
       background:transparent;
       pointer-events:auto;
       padding-bottom:calc(24px + env(safe-area-inset-bottom, 0));
@@ -7060,11 +7062,12 @@
     /* Kochbuch: editierbares Preisfeld in der Karte [cite: REFACTOR KOCHBUCH 2026-02-23] */
     #v-provider-cookbook .cookbook-price-cell{ display:flex; flex-direction:column; align-items:flex-end; flex-shrink:0; min-height:48px; }
     #v-provider-cookbook .cookbook-price-row{ display:flex; align-items:baseline; gap:2px; }
-    #v-provider-cookbook .cookbook-card-price-input{ width:4.5em; min-width:48px; font-size:22px; font-weight:800; color:#0f172a; background:transparent; border:none; border-bottom:2px solid #e2e8f0; padding:4px 4px 4px 8px; text-align:right; -moz-appearance:textfield; }
+    #v-provider-cookbook .cookbook-card-price-input{ width:4.5em; min-width:48px; font-size:22px; font-weight:400; color:#FFB800; background:transparent; border:none; border-bottom:2px solid #e2e8f0; padding:4px 4px 4px 8px; text-align:right; -moz-appearance:textfield; }
     #v-provider-cookbook .cookbook-card-price-input::-webkit-outer-spin-button,
     #v-provider-cookbook .cookbook-card-price-input::-webkit-inner-spin-button{ -webkit-appearance:none; margin:0; }
     #v-provider-cookbook .cookbook-card-price-input:focus{ outline:none; border-bottom-color:#10b981; }
-    #v-provider-cookbook .cookbook-price-suffix{ font-size:22px; font-weight:800; color:#0f172a; flex-shrink:0; }
+    #v-provider-cookbook .cookbook-price-suffix{ font-size:22px; font-weight:400; color:#FFB800; flex-shrink:0; }
+    #v-provider-cookbook .cookbook-magazine-card h2{ font-weight:900 !important; }
     #v-provider-cookbook .cookbook-price-saved{ opacity:0; pointer-events:none; font-size:18px; margin-left:6px; transition:opacity 0.2s ease; }
     #v-provider-cookbook .cookbook-price-saved.cookbook-price-saved-visible{ opacity:1; }
     #v-provider-cookbook .price-history{ font-size:11px; color:#999999; font-weight:400; margin-top:4px; cursor:pointer; -webkit-tap-highlight-color:transparent; line-height:1.2; }
@@ -7097,6 +7100,38 @@
     }
     .mittagio-dual-btn:active{ opacity:0.9; transform:scale(0.99); }
     .mittagio-dual-btn-inserieren{ background:#222222 !important; }
+
+    /* Archiv: Fade-in-up Transition beim Kategorie-Wechsel [cite: 2026-02-25] */
+    @keyframes archiv-fade-in-up{
+      0%{ opacity:0; transform:translateY(10px); }
+      100%{ opacity:1; transform:translateY(0); }
+    }
+    #archivGridContainer.archiv-fade-in-up{
+      animation:archiv-fade-in-up 300ms cubic-bezier(0.32, 0.72, 0, 1) forwards;
+    }
+
+    /* Archiv: Smart-Search-Kinetik – Suchleiste nach oben schieben beim Scrollen [cite: 2026-02-25] */
+    #archivSearchWrap{
+      transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.2s ease, margin-top 0.3s ease;
+      transform-origin: top;
+    }
+    .search-wrap-hidden{
+      transform: translateY(-100%);
+      opacity: 0;
+      margin-top: -50px;
+      pointer-events: none;
+    }
+    .v-provider-archiv .archiv-category-pills{ transition: margin-top 0.3s ease; }
+    /* Pills nachrücken wenn SearchWrap versteckt – Header-Kompression */
+    .v-provider-archiv #archivSearchWrap.search-wrap-hidden + #archivCategoryPills{ margin-top: -50px; }
+
+    /* Archiv: Magazin-Prinzip – Kategorie-Pills, Clean-Cards [cite: 2026-02-25] */
+    .v-provider-archiv .archiv-category-pills{ overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+    .v-provider-archiv .archiv-category-pills::-webkit-scrollbar{ display:none; }
+    .v-provider-archiv .archiv-cat-pill{ transition:background 0.2s, color 0.2s; flex-shrink:0; }
+    .v-provider-archiv .archiv-cat-pill.active{ background:#FFB800 !important; color:#1a1a1a !important; }
+    .v-provider-archiv .archiv-archiv-card:active{ transform:scale(0.98); }
+    .v-provider-archiv .archiv-archiv-card img{ object-position:center 20px; }
 
     /* Wochenplan: Mesh-Hintergrund + Slate-50 [cite: 2026-02-18] */
     #v-provider-week.view{ display:none; }
