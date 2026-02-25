@@ -72,6 +72,7 @@
 
   /** Single Source: Header-Titel für alle 5 Anbieter-Seiten beim Laden setzen.
    * Jede Seite ruft diese Funktion mit dem jeweiligen Titel auf.
+   * Wochenplan-FAB (#weekMagicFab): Klickbarkeit/Z-Index/Position in app/style.css (Agent 2026-02-25).
    * @param {string} title - z.B. "Meine Küche", "Meine Abholung", "Wochenplan", "Mein Kochbuch", "Mein Profil"
    */
   function setProviderPageHeader(title){

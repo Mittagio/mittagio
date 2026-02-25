@@ -604,6 +604,9 @@
     showView(views.providerWeek);
     if(typeof setProviderPageHeader === 'function') setProviderPageHeader('Wochenplan');
     if(typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard(); else renderWeekPlan();
+    if(typeof window.ensureWeekMagicFabBound === 'function') window.ensureWeekMagicFabBound();
+    if(typeof window.ensureWeekHeaderKWTriggerBound === 'function') window.ensureWeekHeaderKWTriggerBound();
+    if(typeof window.ensureWeekKebabBound === 'function') window.ensureWeekKebabBound();
     var newPath = location.pathname + '?week=' + window.weekPlanKWIndex + '&day=' + window.weekPlanDay;
     pushViewState({section: 'week', view: 'provider-week', mode: window.mode, week: window.weekPlanKWIndex, day: window.weekPlanDay}, newPath);
     /* Master-Fix: Kein scroll-basierter Header – weekHeaderCompact bleibt permanent sticky */

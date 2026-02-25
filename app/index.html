@@ -1234,12 +1234,12 @@
           <div class="prov-page-header-actions prov-header-toolbar" style="display:flex; gap:8px; align-items:center; position:relative;">
             <button type="button" id="btnWeekPreviewClose" class="week-preview-close-btn" style="display:none; min-height:44px; padding:0 16px; border-radius:12px; border:none; background:rgba(0,0,0,0.08); font-size:14px; font-weight:700; color:#1a1a1a; cursor:pointer;">Schließen</button>
             <button type="button" id="btnWeekKebab" class="week-kebab-trigger" title="Menü" aria-label="Menü" aria-haspopup="true" aria-expanded="false"><i data-lucide="more-vertical"></i></button>
-            <div id="weekKebabDropdown" class="week-kebab-dropdown" style="display:none;">
-              <button type="button" class="week-kebab-item" id="weekKebabSaveTemplate"><i data-lucide="save" style="width:18px;height:18px;"></i> Eigene Vorlage speichern</button>
-              <button type="button" class="week-kebab-item" id="weekKebabPdf"><i data-lucide="printer" style="width:18px;height:18px;"></i> Drucken</button>
-              <button type="button" class="week-kebab-item" id="weekKebabShare"><i data-lucide="share-2" style="width:18px;height:18px;"></i> Teilen</button>
+            <div id="weekKebabDropdown" class="week-kebab-dropdown week-kebab-bottom-sheet" style="display:none;">
+              <button type="button" class="week-kebab-item" id="weekKebabShare"><i data-lucide="share-2" style="width:20px;height:20px;"></i> Teilen</button>
+              <button type="button" class="week-kebab-item" id="weekKebabScreenshot"><i data-lucide="eye" style="width:20px;height:20px;"></i> Wochenplan Vorschau</button>
+              <button type="button" class="week-kebab-item" id="weekKebabPdf"><i data-lucide="printer" style="width:20px;height:20px;"></i> Drucken</button>
               <div class="week-kebab-separator" role="separator"></div>
-              <button type="button" class="week-kebab-item" id="weekKebabScreenshot"><i data-lucide="camera" style="width:18px;height:18px;"></i> Team-Vorschau</button>
+              <button type="button" class="week-kebab-item" id="weekKebabSaveTemplate"><i data-lucide="save" style="width:20px;height:20px;"></i> Eigene Vorlage speichern</button>
             </div>
           </div>
           <button type="button" class="week-header-done-btn" id="weekHeaderDoneBtn" style="display:none;" aria-label="Fertig">Fertig</button>
@@ -1439,12 +1439,13 @@
       <button type="button" class="cookbook-action-sheet-btn" onclick="closeCookbookActionSheet()">Abbrechen</button>
     </div>
 
-    <!-- Provider-Profil "Meins" – Single-Page: Logo+Name als Header, 4er-Grid, Overlays [cite: 2026-02-21 Masterplan] -->
+    <!-- Provider-Profil "Meins" – Single-Page: Mein Betrieb-Karte, 2x2 KPIs, 4-Säulen-Grid [cite: 2026-02-18, 2026-02-25] -->
     <section class="view onboarding-view" id="v-provider-profile" style="display:flex; flex-direction:column; min-height:0;">
       <div id="providerProfileContent" class="provider-profile-content-rebuild provider-profile-single-page">
         <div id="providerProfileMainContent" class="account-settings-airbnb">
-        <!-- Profil-Header: Logo + Name direkt (Ehemals Ebene 1) [cite: 2026-02-21] -->
-        <div id="providerProfileMasterKachel" class="account-master-kachel account-profile-header">
+        <!-- Header: Klickbare Karte "Mein Betrieb" für Logo- und Namens-Edits [cite: 2026-02-18] -->
+        <div id="providerProfileMasterKachel" class="account-master-kachel account-profile-header provider-profile-mein-betrieb-card" role="button" tabindex="0" aria-label="Mein Betrieb bearbeiten">
+          <span class="provider-profile-mein-betrieb-label">Mein Betrieb</span>
           <div class="account-master-left">
             <img id="providerProfileMasterLogo" src="assets/images/mittagio-logo.png" alt="" class="account-master-logo" />
             <div>
@@ -1452,16 +1453,34 @@
               <p id="providerProfileMasterOrt" class="account-master-ort">Ort</p>
             </div>
           </div>
+          <i data-lucide="chevron-right" class="provider-profile-mein-betrieb-chevron" style="width:20px;height:20px;color:#94a3b8;"></i>
         </div>
-        <!-- 3 Stats: Umsatz, Inserate, Kochbuch [cite: 2026-01-29] -->
-        <div class="account-stats-row">
-          <div class="account-stat account-stat-umsatz"><span id="accountStatUmsatz">0,00 €</span><small>Umsatz</small></div>
-          <div class="account-stat"><span id="accountStatInserate">0</span><small>Inserate</small></div>
-          <div class="account-stat"><span id="accountStatKochbuch">0</span><small>Kochbuch</small></div>
+        <!-- KPIs: 2x2 Grid "Deine Gesamtleistung" – Dashboard-Parameter (Grüner Umsatz, Höhe, Padding, Font-Weights) [cite: 2026-02-25] -->
+        <div class="provider-profile-kpis-wrap">
+          <h3 class="provider-profile-kpis-title">Deine Gesamtleistung</h3>
+          <div class="provider-profile-kpis-grid dashboard-kasten-kpis-profile" id="providerProfileKpisGrid">
+            <div class="provider-profile-kpi-cell" id="profileKpiUmsatz" role="button" tabindex="0">
+              <p class="kpi-label kpi-label-umsatz">Umsatz</p>
+              <p id="accountStatUmsatz" class="kpi-umsatz-value">0,00 €</p>
+            </div>
+            <div class="provider-profile-kpi-cell" id="profileKpiInserate" role="button" tabindex="0">
+              <p class="kpi-label">Inserate</p>
+              <p id="accountStatInserate">0</p>
+            </div>
+            <div class="provider-profile-kpi-cell" id="profileKpiKochbuch" role="button" tabindex="0">
+              <p class="kpi-label">Kochbuch</p>
+              <p id="accountStatKochbuch">0</p>
+            </div>
+            <div class="provider-profile-kpi-cell" id="profileKpiAbholungen" role="button" tabindex="0">
+              <p class="kpi-label">Abholnummern</p>
+              <p id="accountStatAbholungen">0</p>
+            </div>
+          </div>
         </div>
 
         <!-- 4er-Kachel-Grid: Die Schaltzentrale [cite: 2026-02-21] -->
-        <div class="account-grid-nav account-grid-4">
+        <h3 class="provider-profile-grid-title">Hauptmenü</h3>
+        <div class="account-grid-nav account-grid-4" id="providerProfileFourPillars">
           <button type="button" id="btnAccountMeinGeld" class="account-tile">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 18V6"/></svg>
             <span>Mein Geld</span>
@@ -1507,18 +1526,19 @@
           </div>
         </section>
 
-        <!-- Footer: Impressum, Datenschutz, AGB [cite: 2026-02-21] -->
-        <div class="account-legal-footer">
-          <a href="#/impressum" class="account-legal-link">Impressum</a>
-          <span class="account-legal-sep">·</span>
-          <a href="#/datenschutz" class="account-legal-link">Datenschutz</a>
-          <span class="account-legal-sep">·</span>
-          <a href="#/agb" class="account-legal-link">AGB</a>
-        </div>
-
-        <button type="button" id="btnProviderLogout" aria-label="Abmelden" class="account-logout-btn">
-          <i data-lucide="log-out" style="width:20px;height:20px;"></i><span>Abmelden</span>
-        </button>
+        <!-- Footer: Airbnb-Style (weiß, #ebebeb Linie, Safe-Area), Logout dezent unten [cite: 2026-02-23] -->
+        <footer class="provider-profile-footer provider-profile-footer-airbnb">
+          <div class="account-legal-footer">
+            <a href="#/impressum" class="account-legal-link">Impressum</a>
+            <span class="account-legal-sep">·</span>
+            <a href="#/datenschutz" class="account-legal-link">Datenschutz</a>
+            <span class="account-legal-sep">·</span>
+            <a href="#/agb" class="account-legal-link">AGB</a>
+          </div>
+          <button type="button" id="btnProviderLogout" aria-label="Abmelden" class="account-logout-btn account-logout-btn-dezent">
+            <i data-lucide="log-out" style="width:18px;height:18px;"></i><span>Abmelden</span>
+          </button>
+        </footer>
         </div>
 
         <!-- Meine Regeln Overlay: zeigt providerProfileSubService als Slide-In [cite: 2026-02-21] -->
@@ -1818,6 +1838,63 @@
             <button type="button" id="btnProviderSupportMike" class="provider-support-mike-btn">Mike kontaktieren</button>
             <p class="provider-support-mike-hint">E-Mail an support@mittagio.de – Mike meldet sich garantiert innerhalb von 24h persönlich.</p>
           </div>
+        </div>
+      </div>
+
+      <!-- Sub-View: Mein Geld – Quick-Access, Filter-Pills, PDF-Export (S25-PWA, Karten) [cite: 2026-02-25] -->
+      <div id="providerProfileSubGeld" class="provider-profile-sub provider-profile-sub-geld" style="display:none; flex-direction:column; min-height:0;">
+        <header class="provider-sub-header provider-profile-sub-header-geld" style="background:#fff; padding:10px 20px 12px; padding-top:calc(10px + env(safe-area-inset-top, 0)); border-bottom:1px solid #e5e7eb; position:sticky; top:0; z-index:50; display:flex; align-items:center; gap:14px;">
+          <button type="button" id="providerProfileBackGeld" aria-label="Zurück" style="width:44px; height:44px; border-radius:14px; background:transparent; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+            <i data-lucide="chevron-left" style="width:22px; height:22px; color:#1a1a1a;"></i>
+          </button>
+          <h1 style="margin:0; font-size:18px; font-weight:950; letter-spacing:-0.03em; color:#1a1a1a;">Mein Geld</h1>
+        </header>
+        <div class="provider-profile-sub-geld-body" style="flex:1; overflow-y:auto; min-height:0;">
+          <div class="geld-scroll-inner" style="padding:20px 20px 16px; padding-left:max(20px, env(safe-area-inset-left)); padding-right:max(20px, env(safe-area-inset-right));">
+            <!-- Quick-Access-Karten: Gestern + Aktueller Monat -->
+            <div class="geld-quick-cards" id="geldQuickCards">
+              <button type="button" id="geldQuickGestern" class="geld-quick-card" data-period="yesterday" aria-label="Beleg Gestern">
+                <span class="geld-quick-card-icon">📄</span>
+                <span class="geld-quick-card-label">Gestern</span>
+                <span class="geld-quick-card-hint">Beleg ausdrucken</span>
+              </button>
+              <button type="button" id="geldQuickMonat" class="geld-quick-card" data-period="currentMonth" aria-label="Aktueller Monat">
+                <span class="geld-quick-card-icon">📅</span>
+                <span class="geld-quick-card-label">Aktueller Monat</span>
+                <span class="geld-quick-card-hint">Monatsauszug</span>
+              </button>
+            </div>
+            <!-- Horizontale Filter-Pills: Zeitraum (Monate) -->
+            <p class="geld-pills-title">Zeitraum wählen</p>
+            <div class="geld-pills-wrap" id="geldPillsWrap" role="tablist">
+              <!-- Pills werden per JS befüllt (z. B. Jan, Feb, …) -->
+            </div>
+            <!-- Prominenter PDF-Export-Button (erscheint bei Zeitraum-Auswahl) -->
+            <div id="geldPdfExportWrap" class="geld-pdf-export-wrap" style="display:none;">
+              <p id="geldPdfExportLabel" class="geld-pdf-export-label"></p>
+              <button type="button" id="geldPdfExportBtn" class="geld-pdf-export-btn">
+                <i data-lucide="file-down" style="width:22px;height:22px;"></i>
+                <span>PDF exportieren</span>
+              </button>
+            </div>
+            <!-- Abrechnungen & PDF-Archiv (Karten-Links) -->
+            <div class="geld-options-cards">
+              <button type="button" id="accountGeldAbrechnungenSub" class="account-geld-option account-geld-option-inline geld-option-card">
+                <span class="account-geld-icon">💰</span>
+                <span><strong>Abrechnungen &amp; Belege</strong><small>Abrechnungen einsehen</small></span>
+                <i data-lucide="chevron-right" style="width:20px;height:20px;color:#9ca3af;"></i>
+              </button>
+              <button type="button" id="accountGeldBillingArchiveSub" class="account-geld-option account-geld-option-inline geld-option-card">
+                <span class="account-geld-icon">🧾</span>
+                <span><strong>PDF-Archiv</strong><small>Belege herunterladen</small></span>
+                <i data-lucide="chevron-right" style="width:20px;height:20px;color:#9ca3af;"></i>
+              </button>
+            </div>
+          </div>
+          <!-- Footer: Airbnb-Schema (weiß, graue Linie, safe-area) -->
+          <footer class="geld-footer-airbnb" id="geldFooterAirbnb">
+            <div class="geld-footer-inner" style="border-top:1px solid #ebebeb; background:#fff; padding:16px 20px calc(16px + env(safe-area-inset-bottom)); padding-left:max(20px, env(safe-area-inset-left)); padding-right:max(20px, env(safe-area-inset-right));"></div>
+          </footer>
         </div>
       </div>
       </div>

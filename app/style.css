@@ -6891,8 +6891,33 @@
     /* Account Settings Airbnb-Style: Master-Kachel + Grid + Accordion [cite: 2026-02-18] */
     .account-settings-airbnb{ display:flex; flex-direction:column; gap:20px; }
     .account-master-kachel{ display:flex; align-items:center; justify-content:space-between; padding:20px; background:#fff; border-radius:20px; box-shadow:0 4px 20px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04); cursor:pointer; min-height:80px; transition:transform 0.15s ease, box-shadow 0.2s ease; -webkit-tap-highlight-color:transparent; }
-    .account-master-kachel.account-profile-header{ cursor:default; }
-    .account-master-kachel.account-profile-header:active{ transform:none; }
+    .account-master-kachel.account-profile-header{ cursor:pointer; }
+    .account-master-kachel.account-profile-header:active{ transform:scale(0.98); }
+    .provider-profile-mein-betrieb-card .provider-profile-mein-betrieb-label{ display:block; font-size:11px; font-weight:800; color:#94a3b8; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:6px; }
+    .provider-profile-mein-betrieb-card .account-master-left{ flex:1; min-width:0; }
+    .provider-profile-mein-betrieb-chevron{ flex-shrink:0; }
+    /* 2x2 KPI-Grid "Deine Gesamtleistung" – Dashboard-Parameter [cite: 2026-02-25] */
+    .provider-profile-kpis-wrap{ width:100%; }
+    .provider-profile-kpis-title{ margin:0 0 12px; font-size:16px; font-weight:800; color:#0f172a; letter-spacing:-0.02em; }
+    #v-provider-profile .dashboard-kasten-kpis-profile{
+      display:grid; grid-template-columns:repeat(2, 1fr); gap:16px;
+      padding:20px env(safe-area-inset-right, 0) 32px env(safe-area-inset-left, 0);
+      padding-left:max(16px, env(safe-area-inset-left, 0)); padding-right:max(16px, env(safe-area-inset-right, 0));
+      background:#f5f5f0; border-radius:20px; position:relative;
+    }
+    #v-provider-profile .dashboard-kasten-kpis-profile .provider-profile-kpi-cell{
+      display:flex; flex-direction:column; align-items:flex-start; min-height:64px; padding:12px 0 0;
+    }
+    #v-provider-profile .dashboard-kasten-kpis-profile .kpi-label{
+      font-size:10px !important; font-weight:800 !important; color:#94a3b8 !important; text-transform:uppercase;
+      letter-spacing:0.12em; margin-bottom:4px !important;
+    }
+    #v-provider-profile .dashboard-kasten-kpis-profile .kpi-umsatz-value,
+    #v-provider-profile .dashboard-kasten-kpis-profile #accountStatUmsatz{ color:var(--status-active-green) !important; font-weight:900 !important; font-size:18px !important; }
+    #v-provider-profile .dashboard-kasten-kpis-profile .kpi-label-umsatz{ font-weight:900 !important; color:var(--status-active-green) !important; }
+    #v-provider-profile .dashboard-kasten-kpis-profile #accountStatInserate,
+    #v-provider-profile .dashboard-kasten-kpis-profile #accountStatKochbuch,
+    #v-provider-profile .dashboard-kasten-kpis-profile #accountStatAbholungen{ font-size:18px !important; font-weight:900 !important; color:#1a1a1a !important; }
     .account-master-left{ display:flex; align-items:center; gap:16px; }
     .account-master-logo{ width:56px; height:56px; border-radius:14px; object-fit:cover; }
     /* Single-Page: Stats-Reihe unter Header [cite: 2026-02-21] */
@@ -6923,6 +6948,38 @@
     .account-accordion-inner{ padding:0 20px 16px; font-size:14px; color:#64748b; line-height:1.5; }
     .account-logout-btn{ margin-top:8px; width:100%; min-height:52px; padding:14px 20px; background:#fef2f2; border:2px solid #fecaca; border-radius:16px; font-size:15px; font-weight:700; color:#b91c1c; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; -webkit-tap-highlight-color:transparent; }
     .account-logout-btn:active{ transform:scale(0.98); }
+    /* Profil-Footer: Airbnb-Style (weiß, #ebebeb Linie, Safe-Area), Logout dezent [cite: 2026-02-23] */
+    .provider-profile-footer.provider-profile-footer-airbnb{
+      margin-top:auto; padding-top:20px; padding-bottom:calc(20px + env(safe-area-inset-bottom));
+      border-top:1px solid #ebebeb; background:#fff; width:100%;
+    }
+    .provider-profile-footer-airbnb .account-legal-footer{ padding:0 0 16px; }
+    .account-logout-btn-dezent{ margin-top:0 !important; min-height:44px !important; padding:10px 16px !important; background:transparent !important; border:1px solid #e5e7eb !important; font-size:14px !important; font-weight:600 !important; color:#64748b !important; }
+    .account-logout-btn-dezent:active{ background:#f8fafc !important; }
+    .provider-profile-grid-title{ margin:0 0 10px; font-size:16px; font-weight:800; color:#0f172a; }
+    .account-geld-option-inline{ margin-bottom:12px; }
+    /* Mein Geld Sub-View: Quick-Access-Karten, Pills, PDF-Export (S25-PWA) [cite: 2026-02-25] */
+    .geld-quick-cards{ display:grid; grid-template-columns:repeat(2, 1fr); gap:12px; margin-bottom:20px; }
+    .geld-quick-card{ display:flex; flex-direction:column; align-items:flex-start; justify-content:center; min-height:88px; padding:16px; border:none; border-radius:20px; background:#fff; box-shadow:0 4px 16px rgba(0,0,0,0.06); cursor:pointer; transition:transform 0.15s ease, box-shadow 0.2s ease; text-align:left; font-family:inherit; -webkit-tap-highlight-color:transparent; }
+    .geld-quick-card:active{ transform:scale(0.97); }
+    .geld-quick-card-icon{ font-size:28px; margin-bottom:6px; }
+    .geld-quick-card-label{ font-size:15px; font-weight:800; color:#1a1a1a; }
+    .geld-quick-card-hint{ font-size:12px; font-weight:600; color:#64748b; margin-top:2px; }
+    .geld-quick-card.active{ box-shadow:0 4px 20px rgba(16,185,129,0.25); border:2px solid var(--status-active-green, #10b981); }
+    .geld-pills-title{ margin:0 0 10px; font-size:14px; font-weight:700; color:#64748b; }
+    .geld-pills-wrap{ display:flex; gap:8px; overflow-x:auto; padding-bottom:8px; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+    .geld-pills-wrap::-webkit-scrollbar{ display:none; }
+    .geld-pill{ flex-shrink:0; min-height:44px; padding:0 18px; border-radius:22px; border:2px solid #e5e7eb; background:#fff; font-size:14px; font-weight:700; color:#475569; cursor:pointer; transition:border-color 0.2s, background 0.2s, color 0.2s; -webkit-tap-highlight-color:transparent; }
+    .geld-pill:active{ background:#f8fafc; }
+    .geld-pill.active{ border-color:var(--status-active-green, #10b981); background:rgba(16,185,129,0.08); color:#0f172a; }
+    .geld-pdf-export-wrap{ margin:20px 0 24px; padding:20px; border-radius:20px; background:linear-gradient(135deg, rgba(16,185,129,0.12), rgba(16,185,129,0.06)); border:2px solid rgba(16,185,129,0.3); }
+    .geld-pdf-export-label{ margin:0 0 12px; font-size:14px; font-weight:700; color:#0f172a; }
+    .geld-pdf-export-btn{ display:flex; align-items:center; justify-content:center; gap:10px; width:100%; min-height:56px; padding:0 24px; border:none; border-radius:16px; background:var(--status-active-green, #10b981); color:#fff; font-size:16px; font-weight:800; cursor:pointer; box-shadow:0 4px 14px rgba(16,185,129,0.35); transition:transform 0.12s; -webkit-tap-highlight-color:transparent; }
+    .geld-pdf-export-btn:active{ transform:scale(0.98); }
+    .geld-options-cards{ display:flex; flex-direction:column; gap:12px; margin-top:8px; }
+    .geld-option-card{ border-radius:16px !important; }
+    .geld-footer-airbnb{ flex-shrink:0; }
+    .geld-footer-airbnb .geld-footer-inner{ margin-top:auto; }
     /* Legal Footer: Impressum, Datenschutz, AGB [cite: 2026-02-21] */
     .account-legal-footer{ padding:20px 0 12px; text-align:center; font-size:13px; }
     .account-legal-link{ color:#64748b; text-decoration:none; font-weight:600; }
@@ -7153,7 +7210,7 @@
     #v-provider-week.view.active > header,
     #v-provider-week.view.active > #kwBoardWrap{ position:relative; z-index:9999; }
     #v-provider-week.view.active #weekHeaderKWTrigger,
-    #v-provider-week.view.active #btnWeekKebab{ position:relative; z-index:10000; }
+    #v-provider-week.view.active #btnWeekKebab{ position:relative; z-index:1010 !important; }
     /* Wochenplan-Header: Minimal, KW-Badge links, Kebab rechts [cite: 2026-02-20 Final Header Kill] */
     #v-provider-week .week-header-minimal{
       position:sticky; top:0; z-index:50;
@@ -7166,8 +7223,12 @@
     }
     /* Wochenplan: identischer Header wie Meine Küche (KW-Badge entfernt, linksbündig) */
     #v-provider-week .week-header-minimal .week-header-row{ display:flex; align-items:center; justify-content:flex-start; width:100%; gap:12px; position:relative; }
-    #v-provider-week .week-header-kw-badge{ display:inline-flex !important; align-items:center; padding:10px 16px; border-radius:12px; background:rgba(0,0,0,0.06); font-size:15px; font-weight:800; color:#0f172a; }
-    #v-provider-week .week-header-kw-trigger{ position:relative; z-index:2; display:inline-flex; align-items:center; gap:6px; background:none; border:none; padding:0; cursor:pointer; font-family:inherit; min-height:60px; min-width:60px; -webkit-tap-highlight-color:transparent; }
+    #v-provider-week .week-header-kw-badge{ display:inline-flex !important; align-items:center; padding:10px 16px; border-radius:12px; background:rgba(0,0,0,0.06); font-size:15px; font-weight:800; color:#0f172a; pointer-events:none; }
+    /* KW-Trigger klickbar: über Parent, pointer-events, Touch-Ziel [cite: 2026-02-25] */
+    #v-provider-week .week-header-kw-trigger,
+    #weekHeaderKWTrigger{ position:relative !important; z-index:10 !important; display:inline-flex !important; align-items:center; gap:6px; background:none; border:none; padding:0; cursor:pointer; font-family:inherit; min-height:60px; min-width:60px; -webkit-tap-highlight-color:transparent; pointer-events:auto !important; transition:opacity 0.15s ease, transform 0.15s ease; }
+    #v-provider-week .week-header-kw-trigger:active,
+    #weekHeaderKWTrigger:active{ opacity:0.9; transform:scale(0.98); }
     #v-provider-week .week-header-compact{ background:rgba(245,245,240,0.95) !important; backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); font-family:'Montserrat',sans-serif; position:sticky; top:0; z-index:9999; }
     #v-provider-week .week-header-title-left,
     #v-provider-week .prov-page-header-title{ margin:0; font-family:'Montserrat','Inter',sans-serif !important; font-weight:900 !important; font-size:20px !important; letter-spacing:-0.03em; color:#0f172a !important; text-align:left; }
@@ -7585,10 +7646,21 @@
       #v-provider-week .kw-slot.kw-slot-drop-over,
       #v-provider-week .kw-slot-empty.kw-slot-drop-over{ box-shadow:0 0 0 2px #10b981, 0 0 20px rgba(16,185,129,0.35); border-color:#10b981; background:rgba(16,185,129,0.06); }
       body.provider-week-active #v-provider-week .kw-board-scroll{ padding-bottom:calc(140px + env(safe-area-inset-bottom, 0px)) !important; }
-      /* Magic FAB: schwebend über Footer, Daumenbereich [cite: 2026-02-23, 2026-02-25] */
-      #v-provider-week .week-magic-fab{ position:fixed; bottom:calc(140px + env(safe-area-inset-bottom, 0)); right:24px; width:56px; height:56px; border-radius:50%; border:none; background:#fff; box-shadow:0 4px 20px rgba(0,0,0,0.12); display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:10001; transition:transform 0.2s, box-shadow 0.2s; -webkit-tap-highlight-color:transparent; }
-      #v-provider-week .week-magic-fab:active{ transform:scale(0.95); }
-      #v-provider-week .week-magic-fab-icon{ font-size:24px; }
+      /* Magic FAB: klickbar über Bottom-Nav, feste Position, Pointer-Events [cite: Agent 2026-02-25] */
+      #v-provider-week .week-magic-fab,
+      #weekMagicFab{
+        position:fixed !important;
+        bottom:calc(20px + env(safe-area-inset-bottom, 0) + 60px) !important;
+        right:20px !important;
+        width:56px; height:56px; border-radius:50%; border:none; background:#fff;
+        box-shadow:0 4px 20px rgba(0,0,0,0.12); display:flex; align-items:center; justify-content:center;
+        cursor:pointer; z-index:11000;
+        pointer-events:auto !important;
+        transition:transform 0.2s, box-shadow 0.2s; -webkit-tap-highlight-color:transparent;
+      }
+      #v-provider-week .week-magic-fab:active,
+      #weekMagicFab:active{ transform:scale(0.95); }
+      #v-provider-week .week-magic-fab-icon{ font-size:24px; pointer-events:none; }
       /* Magic Sheet */
       .week-magic-sheet-handle{ width:36px; height:4px; background:rgba(0,0,0,0.12); border-radius:2px; margin:10px auto 12px; }
       .week-magic-sheet-title{ margin:0 20px 16px; font-size:17px; font-weight:800; color:#0f172a; }
@@ -7597,13 +7669,18 @@
       .week-magic-sheet-btn:active{ background:#e2e8f0; }
       .week-magic-sheet-emo{ font-size:20px; }
       /* Kebab: High-End Glaseffekt, S25 Native-First, Touch-Target 60px [cite: 2026-02-18, 2026-02-25] */
-      #v-provider-week .week-kebab-trigger{ min-width:60px; min-height:60px; padding:0; border-radius:12px; border:none; background:rgba(255,255,255,0.7); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); display:flex; align-items:center; justify-content:center; color:#1a1a1a; cursor:pointer; -webkit-tap-highlight-color:transparent; transition:background 0.2s; }
-      #v-provider-week .week-kebab-trigger:active{ background:rgba(0,0,0,0.08); }
-      #v-provider-week .week-kebab-trigger i{ flex-shrink:0; width:22px; height:22px; }
-      .week-kebab-dropdown{ position:absolute; top:calc(100% + 6px); right:0; background:rgba(255,255,255,0.96); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border-radius:20px; box-shadow:0 12px 40px rgba(0,0,0,0.15); border:1px solid rgba(0,0,0,0.06); padding:8px; z-index:20005; min-width:200px; }
-      .week-kebab-separator{ border-top:1px solid #ebebeb; margin:6px 0; }
-      .week-kebab-item{ display:flex; align-items:center; gap:12px; width:100%; min-height:56px; padding:0 16px; border:none; border-radius:14px; background:transparent; font-size:15px; font-weight:600; color:#1a1a1a; cursor:pointer; text-align:left; transition:background 0.2s; }
-      .week-kebab-item i{ flex-shrink:0; width:22px !important; height:22px !important; }
+      /* Kebab-Trigger: z-index 1010, sattes Schwarz, große Touch-Area [cite: 2026-02-23] */
+      #v-provider-week .week-kebab-trigger,
+      #btnWeekKebab{ min-width:60px; min-height:60px; padding:12px; border-radius:12px; border:none; background:rgba(255,255,255,0.7); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); display:flex; align-items:center; justify-content:center; color:#222222 !important; cursor:pointer; -webkit-tap-highlight-color:transparent; transition:background 0.2s, transform 0.15s; z-index:1010 !important; pointer-events:auto !important; }
+      #v-provider-week .week-kebab-trigger:active,
+      #btnWeekKebab:active{ background:rgba(0,0,0,0.08); transform:scale(0.96); }
+      #v-provider-week .week-kebab-trigger i,
+      #btnWeekKebab i{ flex-shrink:0; width:22px; height:22px; color:inherit; }
+      /* Bottom-Sheet-Style: weiß, 16px Radius, 56px Zeilen, Montserrat fett, Safe-Area [cite: 2026-02-23] */
+      .week-kebab-dropdown{ position:absolute; top:calc(100% + 6px); right:0; background:#ffffff; border-radius:16px 16px 0 0; box-shadow:0 -4px 24px rgba(0,0,0,0.12); border:1px solid rgba(0,0,0,0.06); padding:8px 0 calc(8px + env(safe-area-inset-bottom, 0)); z-index:20005; min-width:220px; }
+      .week-kebab-separator{ border-top:1px solid #ebebeb; margin:6px 12px; }
+      .week-kebab-item{ display:flex; align-items:center; gap:12px; width:100%; min-height:56px; padding:0 20px; border:none; border-radius:0; background:transparent; font-family:'Montserrat','Inter',sans-serif; font-size:15px; font-weight:700; color:#222222; cursor:pointer; text-align:left; transition:background 0.2s; }
+      .week-kebab-item i{ flex-shrink:0; width:20px !important; height:20px !important; color:#222222; }
       .week-kebab-item:active{ background:#f1f5f9; }
       /* Verschieben-Sheet (Long-Press) */
       .kw-move-overlay{ position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:1100; display:flex; align-items:flex-end; justify-content:center; padding:0 20px  calc(80px + env(safe-area-inset-bottom)); animation:fadeIn 0.2s ease; }
@@ -7630,14 +7707,17 @@
       body.week-preview-mode #weekViewFooter{ display:none !important; }
       body.week-preview-mode #v-provider-week #btnWeekKebab{ display:none !important; }
       body.week-preview-mode #v-provider-week #btnWeekPreviewClose{ display:inline-flex !important; align-items:center; justify-content:center; }
-      /* Druck: sauberes A4 ohne UI-Buttons [cite: 2026-02-18] */
+      /* Druck: nur Wochenplan-Content (Grid), Navigation/Header ausblenden [cite: 2026-02-18, 2026-02-23] */
       @media print{
         #v-provider-week .week-magic-fab,
         #v-provider-week #kwBoardHeader,
+        #v-provider-week .kw-cookbook-strip-wrap,
         #weekViewFooter,
-        #v-provider-week .week-header-compact .week-kebab-trigger,
+        #v-provider-week .week-header-compact,
+        #v-provider-week .week-kebab-trigger,
         #v-provider-week .week-header-back-btn,
-        #v-provider-week #btnWeekPreviewClose{ display:none !important; }
+        #v-provider-week #btnWeekPreviewClose,
+        #providerNavWrap, #providerNav, .bottom, .topbar{ display:none !important; }
         #v-provider-week .kw-board-scroll{ padding-bottom:24px !important; }
         #v-provider-week .kw-grid{ break-inside:avoid; }
       }
@@ -7651,8 +7731,9 @@
       /* Wochenplan-Footer: nur bei provider-week-active sichtbar, Body-Level [cite: 2026-02-25] */
       #weekViewFooter{ display:none !important; }
       body.provider-week-active #weekViewFooter{ display:flex !important; flex-direction:column; }
-      /* Magic FAB: über Provider-Nav, klickbar [cite: Magic-Button 2026-02-25] */
-      body.provider-week-active #v-provider-week .week-magic-fab{ z-index:11000 !important; }
+      /* Magic FAB: über Provider-Nav, klickbar (Z-Index in Basis-Regel) [cite: Magic-Button 2026-02-25, Agent 2026-02-25] */
+      body.provider-week-active #v-provider-week .week-magic-fab,
+      body.provider-week-active #weekMagicFab{ z-index:11000 !important; pointer-events:auto !important; }
       /* Wochenplan-Footer: fixiert, Safe-Area, bündig mit Handy-Unterkante [cite: 2026-02-23, 2026-02-25] */
       .week-view-footer-fixed{ position:fixed !important; bottom:0; left:0; right:0; width:100%; z-index:10000; background:#ffffff !important; border-top:1px solid #ebebeb; padding-bottom:env(safe-area-inset-bottom) !important; box-sizing:border-box; }
       .week-view-footer-fixed .footer-content-wrapper{ padding:16px 20px; display:flex; flex-direction:column; align-items:center; gap:8px; }
@@ -7742,7 +7823,7 @@
       #v-provider-profile .provider-profile-row i[data-lucide]{ width:20px !important; height:20px !important; }
       #v-provider-profile .provider-profile-logout-btn:active{ transform:scale(0.98); opacity:0.9; }
       /* S25 Native-First: flüssiges flex-column, Scroll nicht blockieren [cite: s25-native-first] */
-      #v-provider-profile .provider-profile-sub{ flex:1; min-height:0; display:flex; flex-direction:column; background:#fff !important; }
+      #v-provider-profile .provider-profile-sub{ flex:1; min-height:0; display:flex; flex-direction:column; background:#fff !important; transition:transform 0.28s cubic-bezier(0.32,0.72,0,1); }
       #v-provider-profile .provider-profile-sub > .tgtg-list-wrap,
       #v-provider-profile .provider-profile-sub > div[style*="overflow-y:auto"]{ flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:20px 0 calc(120px + env(safe-area-inset-bottom, 0)); box-sizing:border-box; width:100%; }
       #v-provider-profile .provider-profile-sub .provider-sub-scroll{ flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:20px; padding-bottom:calc(120px + env(safe-area-inset-bottom, 0)); box-sizing:border-box; }
