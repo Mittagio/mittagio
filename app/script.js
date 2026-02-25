@@ -17849,6 +17849,8 @@
       }
       var primaryValid = isPrimaryValid();
 
+      /* Regel: Alle Gerichte nur in InseratCard Step 1 öffnen, dort bearbeiten; dann Speichern ODER Weiter je nach Entry [cite: 2026-02-25] */
+      /* Entry → Footer: dashboard (Neu/Renner) = Weiter | dashboard (Edit) = Speichern | cookbook = Speichern + Jetzt inserieren | week = Speichern | ACTIVE_LISTING/WEEKLY_PLAN_EDIT = Speichern */
       const actionSection=document.createElement('section');
       actionSection.id='inserat-action-section';
       actionSection.className='inserat-action-section fixed-footer' + (!isPlanMode && isInserierenRoute ? ' inserat-action-pricing inserat-action-layer' : '') + (isFastTrack ? ' inserat-action-layer' : '') + (isPlanMode ? ' inserat-action-plan' : '');
@@ -18189,6 +18191,8 @@
     w = w || {};
     w.kind = 'listing';
     w.step = 0;
+    /* Neues Gericht / openListingWizard: immer Step 1, kein alter inseratStep [cite: FLOW FIX 2026-02-25] */
+    if(!(w.ctx && w.ctx.editOfferId) && !(w.ctx && w.ctx.showDraftOverlay)) w.inseratStep = 1;
     var d = newDish || {};
     if(d.dish !== undefined || d.providerId !== undefined){
       w.data = Object.assign({}, w.data, d);
