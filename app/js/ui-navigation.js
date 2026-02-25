@@ -364,6 +364,10 @@
   function initPopstateHandler(){
     window.addEventListener('popstate', function(event){
       try { if (navigator.vibrate) navigator.vibrate(10); } catch(e){}
+      if (document.body.classList.contains('insert-review-active') && typeof window.closeReviewAndBack === 'function') {
+        window.closeReviewAndBack(true);
+        return;
+      }
       if (window.mode !== 'provider') return;
       if (isWizardOpen() && (typeof closeMastercardWithAnim === 'function' || typeof closeMastercard === 'function')) {
         var wiz = document.getElementById('wizard');

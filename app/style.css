@@ -7108,8 +7108,8 @@
     #v-provider-cookbook .cookbook-category-pills{ background:transparent; }
     #v-provider-cookbook .cookbook-action-bar{ background:rgba(255,255,255,0.7) !important; backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border-top:1px solid rgba(255,255,255,0.4) !important; box-shadow:0 -4px 24px rgba(0,0,0,0.06); }
     /* Kochbuch: Footer fixiert, Safe-Area, nur Content scrollt [cite: 2026-02-23, 2026-02-25] */
-    .cookbook-footer-fixed{ position:fixed !important; bottom:0; left:0; width:100%; z-index:10000; background:#ffffff !important; padding:16px max(20px, env(safe-area-inset-right)) max(20px, env(safe-area-inset-left)); padding-bottom:env(safe-area-inset-bottom); margin-bottom:0; border-top:1px solid #ebebeb; display:flex; justify-content:center; align-items:center; box-sizing:border-box; }
-    .cookbook-footer-fixed .cookbook-footer-btn-inserieren{ max-width:400px; width:100%; min-height:56px; border-radius:16px; border:none; background:#222222; color:#fff; font-size:16px; font-weight:800; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+    .cookbook-footer-fixed{ position:fixed !important; bottom:0; left:0; width:100%; z-index:10000; background:#ffffff !important; margin:0; border-radius:0; border-top:1px solid #ebebeb; padding:16px max(20px, env(safe-area-inset-right)) max(20px, env(safe-area-inset-left)); padding-bottom:calc(16px + env(safe-area-inset-bottom)); display:flex; justify-content:center; align-items:center; box-sizing:border-box; }
+    .cookbook-footer-fixed .cookbook-footer-btn-inserieren{ max-width:400px; width:100%; min-height:56px; border-radius:16px; border:none; background:#222222 !important; color:#fff; font-size:16px; font-weight:800; cursor:pointer; -webkit-tap-highlight-color:transparent; }
     .cookbook-footer-fixed .cookbook-footer-btn-inserieren:active{ opacity:0.9; transform:scale(0.99); }
     .cookbook-footer-fixed .cookbook-footer-btn-inserieren:disabled,
     .cookbook-footer-fixed .cookbook-footer-btn-inserieren[aria-disabled="true"]{ background:#94a3b8 !important; cursor:not-allowed; opacity:0.9; }
@@ -7654,7 +7654,7 @@
         right:20px !important;
         width:56px; height:56px; border-radius:50%; border:none; background:#fff;
         box-shadow:0 4px 20px rgba(0,0,0,0.12); display:flex; align-items:center; justify-content:center;
-        cursor:pointer; z-index:11000;
+        cursor:pointer; z-index:1200;
         pointer-events:auto !important;
         transition:transform 0.2s, box-shadow 0.2s; -webkit-tap-highlight-color:transparent;
       }
@@ -7733,7 +7733,7 @@
       body.provider-week-active #weekViewFooter{ display:flex !important; flex-direction:column; }
       /* Magic FAB: über Provider-Nav, klickbar (Z-Index in Basis-Regel) [cite: Magic-Button 2026-02-25, Agent 2026-02-25] */
       body.provider-week-active #v-provider-week .week-magic-fab,
-      body.provider-week-active #weekMagicFab{ z-index:11000 !important; pointer-events:auto !important; }
+      body.provider-week-active #weekMagicFab{ z-index:1200 !important; pointer-events:auto !important; }
       /* Wochenplan-Footer: fixiert, Safe-Area, bündig mit Handy-Unterkante [cite: 2026-02-23, 2026-02-25] */
       .week-view-footer-fixed{ position:fixed !important; bottom:0; left:0; right:0; width:100%; z-index:10000; background:#ffffff !important; border-top:1px solid #ebebeb; padding-bottom:env(safe-area-inset-bottom) !important; box-sizing:border-box; }
       .week-view-footer-fixed .footer-content-wrapper{ padding:16px 20px; display:flex; flex-direction:column; align-items:center; gap:8px; }
@@ -9424,3 +9424,25 @@
 .success-view-bg .share-actions-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
 .success-view-bg .share-item { background: white; border: 1px solid #ebebeb; border-radius: 16px; padding: 15px 5px; font-weight: bold; font-size: 12px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 8px; transition: transform 0.15s, background 0.15s; -webkit-tap-highlight-color: transparent; }
 .success-view-bg .share-item:active { transform: scale(0.95); background: #f0fdf4; }
+
+/* Pure Food Magazin – Schatzkammer [cite: 2026-02-18, 2026-02-25] */
+.magazine-scroll-area { background: #ffffff; }
+.treasure-card {
+  background: #fff; border-radius: 24px; margin-bottom: 30px;
+  overflow: hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.06);
+  transition: transform 0.2s cubic-bezier(0.2, 0, 0.2, 1);
+  cursor: pointer; -webkit-tap-highlight-color: transparent;
+}
+.treasure-card:active { transform: scale(0.97); }
+.treasure-card img { width: 100%; height: 320px; object-fit: cover; display: block; }
+.treasure-info { padding: 24px; text-align: left; }
+.treasure-name { font-weight: 900; font-size: 26px; color: #222; margin: 0 0 5px 0; }
+.treasure-price { font-size: 18px; color: #666; font-weight: 500; margin: 0; }
+.fly-image {
+  position: fixed;
+  transition: all 0.6s cubic-bezier(0.32, 0.72, 0, 1);
+  border-radius: 24px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+  object-fit: cover;
+  z-index: 10000;
+}

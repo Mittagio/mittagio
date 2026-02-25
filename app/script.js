@@ -14975,10 +14975,22 @@
     return count;
   }
 
-  /** Cookbook Magic Ingest: Master-Daten laden (app/data/master_dishes.json) */
+  /** Cookbook Magic Ingest: Master-Daten laden (app/data/master_dishes.json) [cite: 2026-02-25] */
+  var MASTER_DISHES_FALLBACK = [
+    { id: 'fb1', name: 'Wiener Schnitzel', category: 'Fleisch', image_url: 'https://images.unsplash.com/photo-1562967916-eb82221dfb92?auto=format&fit=crop&w=400&q=80', description: 'Panierte Schweinsschnitzel mit Zitrone.' },
+    { id: 'fb2', name: 'Gulasch mit Semmelknödel', category: 'Fleisch', image_url: 'https://images.unsplash.com/photo-1603360946369-d684f208fb84b?auto=format&fit=crop&w=400&q=80', description: 'Pikantes Rindergulasch.' },
+    { id: 'fb3', name: 'Käsespätzle', category: 'Veggie', image_url: 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=400&q=80', description: 'Mit Bergkäse und Röstzwiebeln.' },
+    { id: 'fb4', name: 'Linseneintopf', category: 'Fleisch', image_url: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&w=400&q=80', description: 'Schwäbischer Linseneintopf.' },
+    { id: 'fb5', name: 'Bratwurst mit Sauerkraut', category: 'Fleisch', image_url: 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=400&q=80', description: 'Thüringer Bratwurst.' }
+  ];
   function loadMasterDishes(cb){
     var url = 'data/master_dishes.json';
-    fetch(url).then(function(r){ return r.ok ? r.json() : []; }).then(function(arr){ if(typeof cb === 'function') cb(Array.isArray(arr) ? arr : []); }).catch(function(){ if(typeof cb === 'function') cb([]); });
+    fetch(url).then(function(r){ return r.ok ? r.json() : []; }).then(function(arr){
+      var list = Array.isArray(arr) && arr.length > 0 ? arr : MASTER_DISHES_FALLBACK;
+      if(typeof cb === 'function') cb(list);
+    }).catch(function(){
+      if(typeof cb === 'function') cb(MASTER_DISHES_FALLBACK);
+    });
   }
 
   /** Mittagio: Einzelnes Master-Gericht in Kochbuch-Entry mappen [cite: 2026-02-18, 2026-01-29] */
@@ -15046,74 +15058,76 @@
     });
   }
 
+  /** Pure Food Magazin: Kopieren & Fliegen – Bild gleitet in InseratCard [cite: 2026-02-18, 2026-02-25] */
+  window.copyAndFlyToListing = function(ev, dish, defaultPrice){
+    if(!dish) return;
+    var clickedCard = ev && ev.currentTarget ? ev.currentTarget : (ev && ev.target ? ev.target.closest('.treasure-card') : null);
+    var clickedImg = clickedCard ? clickedCard.querySelector('img') : null;
+    var rect = clickedImg ? clickedImg.getBoundingClientRect() : null;
+    var price = Number(dish.price) || Number(defaultPrice) || 8.9;
+    var draft = { data: { dish: (dish.name || '').trim() || 'Gericht', price: price, photoData: dish.image_url || dish.imageUrl || '', category: dish.category || 'Fleisch', description: dish.description || '', allergens: Array.isArray(dish.allergens) ? dish.allergens : [] }, ctx: { entryPoint: 'dashboard' } };
+    localStorage.setItem('wizard_draft', JSON.stringify(draft));
+    try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(20); }catch(e){}
+    var flyContainer = document.getElementById('fly-animation-container');
+    var flyImg = null;
+    if(clickedImg && flyContainer && rect){
+      flyImg = clickedImg.cloneNode(true);
+      flyImg.className = 'fly-image';
+      flyImg.style.cssText = 'top:' + rect.top + 'px; left:' + rect.left + 'px; width:' + rect.width + 'px; height:' + rect.height + 'px;';
+      flyContainer.appendChild(flyImg);
+      setTimeout(function(){
+        flyImg.style.top = '100px';
+        flyImg.style.left = '16px';
+        flyImg.style.width = 'calc(100% - 32px)';
+        flyImg.style.height = '250px';
+        flyImg.style.borderRadius = '16px';
+        flyImg.style.opacity = '0';
+      }, 50);
+    }
+    setTimeout(function(){
+      if(typeof closeCookbookMittagio === 'function') closeCookbookMittagio();
+      if(typeof startListingFlow === 'function') startListingFlow({ entryPoint: 'dashboard' });
+      if(flyImg && flyImg.parentNode) flyImg.remove();
+    }, flyImg ? 600 : 150);
+  };
+
+  window.closeSchatzkammer = function(){ if(typeof closeCookbookMittagio === 'function') closeCookbookMittagio(); };
+
+  function renderTreasureList(list, defaultPrice, containerEl){
+    if(!containerEl) return;
+    containerEl.innerHTML = '';
+    var dp = defaultPrice != null ? defaultPrice : 8.9;
+    var formatEuro = (typeof euro === 'function') ? euro : function(v){ return (typeof v === 'number' ? (v % 1 === 0 ? String(v) : v.toFixed(2)) : String(v)) + ' €'; };
+    if(!list || list.length === 0){
+      containerEl.innerHTML = '<p style="text-align:center; color:#64748b; padding:32px 16px; font-size:14px;">Keine Gerichte in dieser Kategorie.</p>';
+      return;
+    }
+    list.forEach(function(m){
+      var name = (m.name || 'Gericht').substring(0, 60);
+      var price = m.price != null && !Number.isNaN(Number(m.price)) ? Number(m.price) : dp;
+      var priceStr = formatEuro(price);
+      var imgUrl = (m.image_url || m.imageUrl || '').replace(/"/g, '&quot;');
+      var card = document.createElement('div');
+      card.className = 'treasure-card';
+      card.innerHTML = (imgUrl ? '<img src="' + imgUrl + '" alt="' + (name.replace(/"/g, '&quot;')) + '">' : '<div style="width:100%; height:320px; background:#e2e8f0;"></div>') + '<div class="treasure-info"><div class="treasure-name">' + (name.replace(/</g, '&lt;')) + '</div><div class="treasure-price">' + priceStr + '</div></div>';
+      card.onclick = function(ev){ if(typeof window.copyAndFlyToListing === 'function') window.copyAndFlyToListing(ev, m, dp); };
+      containerEl.appendChild(card);
+    });
+  }
+
   function openCookbookMittagio(){
     var layer = document.getElementById('cookbookMittagioLayer');
-    var listEl = document.getElementById('cookbookMittagioList');
-    var pillsEl = document.getElementById('archivCategoryPills');
+    var container = document.getElementById('treasureContainer');
     var btnClose = document.getElementById('btnCloseMittagio');
-    if(!layer || !listEl) return;
+    if(!layer || !container) return;
     if(typeof loadMasterDishes !== 'function') return;
-    listEl.innerHTML = '<p style="text-align:center; color:#64748b; padding:24px;">Lade …</p>';
-    if(pillsEl) pillsEl.innerHTML = '';
+    container.innerHTML = '<p style="text-align:center; color:#64748b; padding:24px;">Lade …</p>';
     layer.style.display = 'block';
-    if(btnClose && !btnClose._mittagioBound){ btnClose._mittagioBound = true; btnClose.onclick = function(){ closeCookbookMittagio(); }; }
-    /* Smart-Search-Kinetik: Scroll-Listener – Suche ausblenden beim Runterscrollen, einblenden beim Hoch [cite: 2026-02-25] */
-    var searchWrap = document.getElementById('archivSearchWrap');
-    if(searchWrap) searchWrap.classList.remove('search-wrap-hidden');
-    layer._archivLastScrollTop = 0;
-    if(!layer._archivScrollBound){
-      layer._archivScrollBound = true;
-      layer._archivLastScrollTop = 0;
-      var archivScrollTolerance = 10;
-      layer.addEventListener('scroll', function(){
-        var sw = document.getElementById('archivSearchWrap');
-        if(!sw) return;
-        var st = layer.scrollTop;
-        var delta = st - (layer._archivLastScrollTop || 0);
-        if(delta > archivScrollTolerance){
-          sw.classList.add('search-wrap-hidden');
-        } else if(delta < -archivScrollTolerance || st < 20){
-          sw.classList.remove('search-wrap-hidden');
-        }
-        layer._archivLastScrollTop = st;
-      }, { passive: true });
-    }
+    if(btnClose && !btnClose._mittagioBound){ btnClose._mittagioBound = true; btnClose.onclick = function(){ if(typeof window.closeSchatzkammer === 'function') window.closeSchatzkammer(); }; }
     loadMasterDishes(function(arr){
       var list = Array.isArray(arr) ? arr : [];
       var defaultPrice = 8.9;
-      var categories = ['Alle'];
-      var seen = {};
-      list.forEach(function(m){
-        var c = (m.category || 'Fleisch').trim();
-        if(c === 'Vegan' || c === 'Vegetarisch') c = 'Veggie';
-        if(c && !seen[c]){ seen[c] = true; categories.push(c); }
-      });
-      if(pillsEl){
-        pillsEl.innerHTML = categories.map(function(cat){
-          var active = archivCategoryFilter === cat ? ' active' : '';
-          return '<button type="button" class="archiv-cat-pill' + active + '" data-archiv-cat="' + (cat.replace(/"/g, '&quot;')) + '" style="min-height:32px; padding:6px 14px; border-radius:999px; border:none; background:' + (active ? '#FFB800' : '#f1f3f5') + '; color:' + (active ? '#1a1a1a' : '#64748b') + '; font-size:13px; font-weight:700; cursor:pointer;">' + (cat.replace(/</g, '&lt;')) + '</button>';
-        }).join('');
-        pillsEl.querySelectorAll('.archiv-cat-pill').forEach(function(btn){
-          btn.onclick = function(){
-            archivCategoryFilter = btn.getAttribute('data-archiv-cat') || 'Alle';
-            try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(5); } catch(e){}
-            var gridContainer = document.getElementById('archivGridContainer');
-            if(gridContainer){
-              listEl.innerHTML = '';
-              gridContainer.classList.remove('archiv-fade-in-up');
-              gridContainer.offsetHeight;
-              gridContainer.classList.add('archiv-fade-in-up');
-              gridContainer.onanimationend = function(){ gridContainer.classList.remove('archiv-fade-in-up'); gridContainer.onanimationend = null; };
-            }
-            var filtered = archivCategoryFilter === 'Alle' ? list : list.filter(function(m){ var c = (m.category || 'Fleisch').trim(); if(c === 'Vegan' || c === 'Vegetarisch') c = 'Veggie'; return c === archivCategoryFilter; });
-            renderArchivList(filtered, defaultPrice, listEl, pillsEl);
-            pillsEl.querySelectorAll('.archiv-cat-pill').forEach(function(b){ b.classList.remove('active'); b.style.background = '#f1f3f5'; b.style.color = '#64748b'; });
-            btn.classList.add('active'); btn.style.background = '#FFB800'; btn.style.color = '#1a1a1a';
-          };
-        });
-      }
-      var filtered = archivCategoryFilter === 'Alle' ? list : list.filter(function(m){ var c = (m.category || 'Fleisch').trim(); if(c === 'Vegan' || c === 'Vegetarisch') c = 'Veggie'; return c === archivCategoryFilter; });
-      renderArchivList(filtered, defaultPrice, listEl, pillsEl);
+      renderTreasureList(list, defaultPrice, container);
     });
   }
 
@@ -15563,7 +15577,12 @@
           e.preventDefault();
           e.stopPropagation();
           try { if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(15); } catch(err){}
-          if(typeof openCookbookActionSheet === 'function') openCookbookActionSheet(entry);
+          cookbookMagazineIndex = i;
+          selectedCookbookId = entry.id;
+          magazineEl.querySelectorAll('.cookbook-magazine-card').forEach(function(c){ c.classList.remove('cookbook-price-highlight'); });
+          if(priceInput){ priceInput.classList.add('cookbook-price-highlight'); priceInput.focus(); priceInput.select(); }
+          card.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+          if(typeof updateCookbookFooterButton === 'function') updateCookbookFooterButton();
         }
         card.addEventListener('click', onCardClick, true);
       });
