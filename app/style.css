@@ -3889,6 +3889,9 @@
       display: flex; width: 300%; flex: 1; min-height: 0;
       transition: transform 0.42s cubic-bezier(0.4, 0, 0.2, 1);
     }
+    .inserat-steps-slider[data-inserat-step="1"] .inserat-steps-track {
+      transform: translateX(0);
+    }
     .inserat-steps-slider[data-inserat-step="2"] .inserat-steps-track {
       transform: translateX(-33.33%);
     }
@@ -3997,18 +4000,6 @@
     .save-scope-btn-current { background: #f1f5f9; color: #0f172a; }
     .save-scope-btn-cookbook { background: #10b981; color: #fff; }
     .save-scope-cancel { background: transparent; color: #64748b; border: none; font-size: 14px; font-weight: 700; cursor: pointer; padding: 12px; }
-    /* Draft-Restore: Ghost-Card Overlay [cite: 2026-02-16] */
-    .draft-card-ghost { filter: saturate(0.88); transition: filter 0.35s ease; }
-    .draft-restore-overlay { position: absolute; inset: 0; z-index: 20; display: flex; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; background: rgba(15,23,42,0.35); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); transition: opacity 0.3s ease, transform 0.3s ease; }
-    .draft-restore-overlay.draft-restore-overlay-out { pointer-events: none; animation: draftOverlayOut 0.3s ease forwards; }
-    @keyframes draftOverlayOut { to { transform: scale(1.2); opacity: 0; } }
-    .draft-restore-overlay .draft-restore-box { background: #0f172a; color: #fff; padding: 24px 20px; border-radius: 20px; text-align: center; max-width: 320px; width: 100%; box-shadow: 0 20px 40px rgba(0,0,0,0.25); }
-    .draft-restore-overlay .draft-restore-text { margin: 0 0 20px; font-size: 16px; font-weight: 700; line-height: 1.4; color: rgba(255,255,255,0.95); }
-    .draft-restore-overlay .draft-restore-btns { display: flex; flex-direction: column; gap: 10px; }
-    .draft-restore-overlay .draft-restore-fortsetzen { min-height: 48px; padding: 14px 20px; border: none; border-radius: 14px; background: #10b981; color: #fff; font-size: 15px; font-weight: 800; cursor: pointer; transition: transform 0.1s ease, box-shadow 0.2s ease; box-shadow: 0 4px 16px rgba(16,185,129,0.4); }
-    .draft-restore-overlay .draft-restore-fortsetzen:active { transform: scale(0.98); }
-    .draft-restore-overlay .draft-restore-neu { min-height: 44px; padding: 12px 20px; border: 1px solid rgba(255,255,255,0.25); border-radius: 12px; background: transparent; color: rgba(255,255,255,0.85); font-size: 14px; font-weight: 700; cursor: pointer; transition: background 0.2s ease, color 0.2s ease; }
-    .draft-restore-overlay .draft-restore-neu:active { background: rgba(255,255,255,0.1); }
     /* Titel wie Detailseite (h2#sDish): 24px, 950, Abstand 0 0 8px, gleiche Typo */
     .inserat-unified-title-wrap {
       padding-bottom: 0;

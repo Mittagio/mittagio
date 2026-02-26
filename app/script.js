@@ -5684,7 +5684,7 @@
       var slider = document.querySelector('#wizard .inserat-steps-slider');
       if(box && slider && slider.getAttribute('data-inserat-step')==='2'){
         try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(5); }catch(err){}
-        if(typeof w !== 'undefined'){ w.inseratStep=1; try{ localStorage.setItem('wizard_draft', JSON.stringify(w)); }catch(err){} }
+        if(typeof w !== 'undefined'){ w.inseratStep=1; }
         slider.setAttribute('data-inserat-step','1');
         var airbnbFooter = box.querySelector('[data-inserat-step="2"]');
         if(airbnbFooter) airbnbFooter.style.display='none';
@@ -11330,13 +11330,13 @@
     try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); }catch(e){}
   };
 
-  /** Schlägt die Brücke vom Wizard zum Premium-Monetarisierung-Board. Nutzt localStorage als primäre Quelle. [cite: 2026-02-25] */
+  /** Schlägt die Brücke vom Wizard zum Premium-Monetarisierung-Board. Nutzt w (global) wenn vorhanden. [cite: 2026-02-26] */
   window.bridgeToPremiumMonetization = function(){
-    var draft = JSON.parse(localStorage.getItem('wizard_draft') || '{}');
-    var w = draft.data || {};
-    var name = (w.dish || '').trim() || 'Dein Gericht';
-    var price = Number(w.price) || 0;
-    var imageUrl = w.photoData || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=200&q=60';
+    var draft = (typeof w !== 'undefined' && w && w.data) ? { data: w.data, ctx: w.ctx } : JSON.parse(localStorage.getItem('wizard_draft') || '{}');
+    var wData = draft.data || {};
+    var name = (wData.dish || '').trim() || 'Dein Gericht';
+    var price = Number(wData.price) || 0;
+    var imageUrl = wData.photoData || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=200&q=60';
     var safe = function(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); };
     var container = document.getElementById('step2MiniList');
     if(container){
@@ -11358,17 +11358,17 @@
     var s2 = document.getElementById('v-step-2-monetize');
     var s3 = document.getElementById('v-step-3-success');
     if(!s2 || !s3) return;
-    var draft = JSON.parse(localStorage.getItem('wizard_draft') || '{}');
-    var w = draft.data || {};
+    var draft = (typeof w !== 'undefined' && w && w.data) ? { data: w.data } : JSON.parse(localStorage.getItem('wizard_draft') || '{}');
+    var wData = draft.data || {};
     var optSmart = document.getElementById('option-smart');
     var isSmart = optSmart && optSmart.classList.contains('active');
     var imgEl = document.getElementById('step3FinalImg');
     var titleEl = document.getElementById('step3FinalTitle');
     var priceEl = document.getElementById('step3FinalPrice');
     var abholBox = document.getElementById('step3AbholBox');
-    if(imgEl) imgEl.src = w.photoData || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=400&q=60';
-    if(titleEl) titleEl.textContent = (w.dish || '').trim() || 'Gericht';
-    if(priceEl) priceEl.textContent = (Number(w.price) || 0).toFixed(2).replace('.', ',') + ' €';
+    if(imgEl) imgEl.src = wData.photoData || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=400&q=60';
+    if(titleEl) titleEl.textContent = (wData.dish || '').trim() || 'Gericht';
+    if(priceEl) priceEl.textContent = (Number(wData.price) || 0).toFixed(2).replace('.', ',') + ' €';
     if(abholBox) abholBox.style.display = isSmart ? 'block' : 'none';
     try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate([30, 100, 30, 200]); }catch(e){}
     s2.style.transition = 'opacity 0.2s ease';
@@ -11391,10 +11391,10 @@
 
   /** Viralitäts-Engine: WhatsApp & Link-Kopieren [cite: 2026-02-25] */
   window.triggerWhatsAppShare = function(){
-    var draft = JSON.parse(localStorage.getItem('wizard_draft') || '{}');
-    var w = draft.data || {};
-    var name = (w.dish || '').trim() || 'unser heutiges Gericht';
-    var price = (Number(w.price) || 0).toFixed(2).replace('.', ',') + ' €';
+    var draft = (typeof w !== 'undefined' && w && w.data) ? { data: w.data, ctx: w.ctx } : JSON.parse(localStorage.getItem('wizard_draft') || '{}');
+    var wData = draft.data || {};
+    var name = (wData.dish || '').trim() || 'unser heutiges Gericht';
+    var price = (Number(wData.price) || 0).toFixed(2).replace('.', ',') + ' €';
     var shopLink = location.origin + (location.pathname || '/') + '#offer/' + ((draft.ctx && draft.ctx.editOfferId) || '');
     var text = encodeURIComponent('🍴 *Frisch bei uns:* ' + name + '\n💰 Nur ' + price + '\n\nHier direkt ansehen und reservieren:\n' + shopLink);
     window.open('https://wa.me/?text=' + text, '_blank');
@@ -11402,7 +11402,7 @@
   };
 
   window.copyListingLink = function(){
-    var draft = JSON.parse(localStorage.getItem('wizard_draft') || '{}');
+    var draft = (typeof w !== 'undefined' && w && w.ctx) ? { ctx: w.ctx } : JSON.parse(localStorage.getItem('wizard_draft') || '{}');
     var shopLink = location.origin + (location.pathname || '/') + '#offer/' + ((draft.ctx && draft.ctx.editOfferId) || '');
     if(typeof copyToClipboard === 'function') copyToClipboard(shopLink);
     else try{ navigator.clipboard.writeText(shopLink); }catch(e){}
@@ -16049,7 +16049,6 @@
         priceInput.value = '8,90';
         w.data.price = 8.9;
       }
-      try { localStorage.setItem('wizard_draft', JSON.stringify(w)); } catch (e) {}
     }
   }
   /** Top-30 Gerichte als Autocomplete-Quelle [cite: 2026-01-29, 2026-02-21] */
@@ -16370,33 +16369,8 @@
       startWizard('listing', context);
       return;
     }
-    // Direkt zur Inseratcard (Karte mit blauem „Datum für Wochenplan wählen“ / „Im Kochbuch speichern“) – keine Zwischenkarte
-    /* Entwurf-Wiederherstellung: Fortsetzen erlaubt wenn User Flow unterbrochen hat [cite: Master-Trichter 2026-02-26] */
-    /* Renner/Kochbuch-Explizit: Kein Draft – immer InseratCard Schritt 1 [cite: FLOW FIX 2026-02-25] */
-    if(!context.editOfferId && !context.dishId && !context.fromCookbookId){
-      try {
-        var draftStr = localStorage.getItem('wizard_draft');
-        if(draftStr){
-          var draft = JSON.parse(draftStr);
-          if(draft && draft.kind === 'listing'){
-            if(draft.step !== 0){ draft.step = 0; localStorage.setItem('wizard_draft', JSON.stringify(draft)); }
-            draft.ctx = draft.ctx || {};
-            draft.ctx.entryPoint = context.entryPoint || draft.ctx.entryPoint;
-            draft.ctx.date = context.date || draft.ctx.date;
-            draft.ctx.showDraftOverlay = true;
-            draft.ctx.fromDraftRestore = true;
-            draft.ctx.draftRestoreContext = context;
-            draft.data = draft.data || {};
-            draft.data.day = context.date || draft.data.day || (typeof isoDate === 'function' ? isoDate(new Date()) : '');
-            draft.step = 0;
-            draft.inseratStep = 1;  /* Immer mit Schritt 1 starten [cite: InseratCard Step1 Fix] */
-            w = draft;
-            openMastercard(w.data || { dish:'', price:0, category:'Fleisch', reuse:{enabled:true} });
-            return;
-          }
-        }
-      } catch(e) { localStorage.removeItem('wizard_draft'); }
-    }
+    /* RADIKALE BEREINIGUNG: Kein Draft – immer frischer Start zu InseratCard Schritt 1 [cite: 2026-02-26] */
+    try { localStorage.removeItem('wizard_draft'); } catch(e) {}
     /* Wochenplan/Kochbuch „Neues Gericht“: immer InseratCard Schritt 1 (STEP_EDIT), nie openListingWizard [cite: FLOW FIX 2026-02-25] */
     if(!context.editOfferId && !context.dishId && !context.fromCookbookId && context.entryPoint !== 'cookbook' && context.entryPoint !== 'week'){
       openListingWizard(context);
@@ -17012,7 +16986,7 @@
       collapsingHeader.style.cssText='position:sticky; top:0; z-index:12; flex-shrink:0; padding:12px 16px; padding-top:max(12px, env(safe-area-inset-top)); background:#fff; backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); text-align:center; font-family:\'Montserrat\',sans-serif; font-weight:900; font-size:18px; color:#0f172a; border-bottom:1px solid rgba(0,0,0,0.06);';
       box.appendChild(collapsingHeader);
       sheet.appendChild(box);
-      const saveDraft = () => { localStorage.setItem('wizard_draft', JSON.stringify(w)); };
+      const saveDraft = () => { /* Kein Draft mehr – radikale Bereinigung [cite: 2026-02-26] */ };
       const dismissKeyboard = ()=>{ try { if(document.activeElement && document.activeElement.blur) document.activeElement.blur(); } catch(e){} };
       const hapticLight = ()=>{ try { if(typeof haptic==='function') haptic(10); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); } catch(e){} };
       var entryPoint = (w.ctx && w.ctx.entryPoint) || 'dashboard';
@@ -17858,10 +17832,9 @@
         }
         var linkSpeichern = box.querySelector('#btnSpeichernKochbuch');
         if (linkSpeichern) {
-          var draftLinkEnabled = (w.ctx && w.ctx.fromDraftRestore) || valid;
-          linkSpeichern.disabled = !draftLinkEnabled;
-          linkSpeichern.style.opacity = draftLinkEnabled ? '1' : '0.3';
-          linkSpeichern.style.pointerEvents = draftLinkEnabled ? 'auto' : 'none';
+            linkSpeichern.disabled = !valid;
+          linkSpeichern.style.opacity = valid ? '1' : '0.3';
+          linkSpeichern.style.pointerEvents = valid ? 'auto' : 'none';
         }
         if (stepName) stepName.classList.remove('inserat-validation-error');
         if (priceSection) priceSection.classList.remove('inserat-validation-error');
@@ -17938,7 +17911,7 @@
         /* Master-Trichter: Edit = Änderungen speichern | Neu = links Speichern (Kochbuch), rechts Weiter [cite: Master-Trichter 2026-02-26] */
         var step1NavRow=document.createElement('div');
         step1NavRow.className='app-footer-main inserat-step1-nav inserat-airbnb-footer';
-        step1NavRow.style.cssText='display:flex; width:100%; align-items:stretch; justify-content:' + (!!(w.ctx&&w.ctx.editOfferId) || !!(w.ctx&&w.ctx.fromCookbookFooter) ? 'center' : 'space-between') + '; gap:12px; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; padding:0 16px;';
+        step1NavRow.style.cssText='display:flex; width:100%; align-items:stretch; justify-content:center; gap:12px; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; padding:0 16px;';
         var isEditMode=!!(w.ctx&&w.ctx.editOfferId);
         var footerBtnText=isEditMode?'Änderungen speichern':'Weiter';
         if(!isEditMode && !(w.ctx&&w.ctx.fromCookbookFooter)){
@@ -17947,20 +17920,11 @@
           linkSpeichern.id='btnSpeichernKochbuch';
           linkSpeichern.className='inserat-footer-link btn-secondary-link';
           linkSpeichern.style.cssText='background:none; border:none; padding:12px 0; font-size:15px; font-weight:bold; color:#222222; cursor:pointer; text-decoration:underline; flex-shrink:0; min-height:48px; align-self:center;';
-          linkSpeichern.textContent=(w.ctx&&w.ctx.fromDraftRestore)?'Speichern als Entwurf':'Speichern';
-          linkSpeichern.disabled=(w.ctx&&w.ctx.fromDraftRestore)?false:!primaryValid;
-          linkSpeichern.style.opacity=((w.ctx&&w.ctx.fromDraftRestore)||primaryValid)?'1':'0.3';
-          linkSpeichern.style.pointerEvents=((w.ctx&&w.ctx.fromDraftRestore)||primaryValid)?'auto':'none';
+          linkSpeichern.textContent='Speichern';
+          linkSpeichern.disabled=!primaryValid;
+          linkSpeichern.style.opacity=primaryValid?'1':'0.3';
+          linkSpeichern.style.pointerEvents=primaryValid?'auto':'none';
           linkSpeichern.onclick=function(){
-            if(w.ctx&&w.ctx.fromDraftRestore){
-              hapticLight();
-              if(typeof haptic==='function') haptic(50);
-              try{ localStorage.setItem('wizard_draft', JSON.stringify(w)); }catch(e){}
-              closeWizard(false);
-              if(typeof showToast==='function') showToast('Entwurf gespeichert');
-              if(typeof navigateAfterWizardExit==='function') navigateAfterWizardExit(w.ctx&&w.ctx.entryPoint||'dashboard');
-              return;
-            }
             if(!isPrimaryValid()){ if(typeof showToast==='function') showToast('Bitte Name, Preis und Foto eingeben.'); if(typeof triggerValidationError==='function') triggerValidationError(this); return; }
             hapticLight();
             if(typeof haptic==='function') haptic(50);
@@ -17973,7 +17937,7 @@
         btnWeiter.type='button';
         btnWeiter.id='btnNext';
         btnWeiter.className='btn-primary-black footer-main-button';
-        btnWeiter.style.cssText='flex:1; min-height:48px; height:48px; padding:0 24px; border:none; border-radius:8px; background:#222222 !important; color:white !important; font-size:16px; font-weight:800; cursor:pointer;';
+        btnWeiter.style.cssText='min-width:140px; min-height:48px; height:48px; padding:0 24px; border:none; border-radius:8px; background:#222222 !important; color:white !important; font-size:16px; font-weight:800; cursor:pointer;';
         btnWeiter.textContent=footerBtnText;
         btnWeiter.disabled=true;
         btnWeiter.style.opacity='0.3';
@@ -18112,35 +18076,6 @@
         requestAnimationFrame(function(){ updateFooterVisibility(); });
       }
 
-      if(w.ctx && w.ctx.showDraftOverlay){
-        if(!box.style.position) box.style.position = 'relative';
-        box.classList.add('draft-card-ghost');
-        var draftOverlay = document.createElement('div');
-        draftOverlay.className = 'draft-restore-overlay';
-        draftOverlay.setAttribute('role','dialog');
-        draftOverlay.setAttribute('aria-label','Entwurf fortsetzen');
-        draftOverlay.innerHTML = '<div class="draft-restore-box"><p class="draft-restore-text">Du hast hier noch einen Entwurf. M├Âchtest du ihn fertigstellen?</p><div class="draft-restore-btns"><button type="button" class="draft-restore-fortsetzen">Fortsetzen</button><button type="button" class="draft-restore-neu">Neu starten</button></div></div>';
-        var btnFortsetzen = draftOverlay.querySelector('.draft-restore-fortsetzen');
-        var btnNeu = draftOverlay.querySelector('.draft-restore-neu');
-        if(btnFortsetzen) btnFortsetzen.onclick = function(){
-          try { if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); } catch(e){}
-          hapticLight();
-          draftOverlay.classList.add('draft-restore-overlay-out');
-          setTimeout(function(){ draftOverlay.remove(); box.classList.remove('draft-card-ghost'); if(w.ctx) w.ctx.showDraftOverlay = false; }, 320);
-        };
-        if(btnNeu) btnNeu.onclick = function(){
-          try { if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); } catch(e){}
-          hapticLight();
-          draftOverlay.classList.add('draft-restore-overlay-out');
-          setTimeout(function(){
-            draftOverlay.remove();
-            localStorage.removeItem('wizard_draft');
-            startWizard('listing', w.ctx && w.ctx.draftRestoreContext ? w.ctx.draftRestoreContext : (w.ctx || {}));
-          }, 320);
-        };
-        box.appendChild(draftOverlay);
-      }
-
       } /* Ende else (Step 1) */
 
       /* Keyboard-Scroll-Sync: Input bleibt 20px ├╝ber Tastatur (visualViewport + scroll-margin) [cite: 2026-02-18, 2026-02-21] */
@@ -18227,7 +18162,7 @@
     w.kind = 'listing';
     w.step = 0;
     /* Neues Gericht / openListingWizard: immer Step 1, kein alter inseratStep [cite: FLOW FIX 2026-02-25] */
-    if(!(w.ctx && w.ctx.editOfferId) && !(w.ctx && w.ctx.showDraftOverlay)) w.inseratStep = 1;
+    if(!(w.ctx && w.ctx.editOfferId)) w.inseratStep = 1;
     var d = newDish || {};
     if(d.dish !== undefined || d.providerId !== undefined){
       w.data = Object.assign({}, w.data, d);
