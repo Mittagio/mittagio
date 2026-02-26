@@ -1,5 +1,6 @@
   // ========== Demo-Modus (für Tests, standardmäßig aus) [cite: 2026-02-25] ==========
   if (typeof window !== 'undefined') { window.DEMO_MODE = false; }
+  /** DEBUG_WEEKPLAN: In Konsole setzen (window.DEBUG_WEEKPLAN=true) für FAB/KW/Footer-Klick-Logs [cite: 2026-02-25] */
   /** User-Interaction Unlock: navigator.vibrate nur nach erstem Klick (Blocked call beheben) [cite: 2026-02-25] */
   function vibrate(ms){ try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate(Array.isArray(ms) ? ms : [ms]); } catch(e){} }
   if (typeof window !== 'undefined') {
@@ -6303,6 +6304,19 @@
       toast.style.opacity = '0';
     }, 3000);
   }
+  /** Smart-Save-Blase: Plopp & Schwebe beim Drop [cite: 2026-02-18, 2026-02-26] */
+  window.spawnSmartBubble = function(x, y){
+    var bubble = document.createElement('div');
+    bubble.className = 'smart-save-bubble';
+    bubble.innerText = '0,00 €';
+    var cx = typeof x === 'number' ? x : (window.innerWidth / 2);
+    var cy = typeof y === 'number' ? y : (window.innerHeight / 2);
+
+    bubble.style.left = (cx - 30) + 'px';
+    bubble.style.top = (cy - 20) + 'px';
+    document.body.appendChild(bubble);
+    setTimeout(function(){ bubble.remove(); }, 800);
+  };
   /** Quick-Edit Overlay: nur Preis und Menge, Fokus im Preisfeld [cite: Quick-Actions Swipe] */
   function openQuickEditOverlay(offer){
     if(!offer || typeof offers === 'undefined') return;
@@ -11002,18 +11016,21 @@
     var sheet = document.getElementById('kwSelectorSheet');
     var list = document.getElementById('kwSelectorList');
     if (!bd || !sheet || !list) return;
+    if (typeof getWeekMonday !== 'function' || typeof getWeekDayKeys !== 'function' || typeof getISOWeek !== 'function') return;
+    var pid = typeof providerId === 'function' ? providerId() : '';
     if (typeof haptic === 'function') haptic(6);
     list.innerHTML = '';
     for (var w = 0; w < 12; w++) {
       var monday = getWeekMonday(w);
+      if (!monday || typeof monday.getFullYear !== 'function') continue;
       var sunday = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + 6);
       var fromStr = monday.getDate() + '.' + (monday.getMonth() + 1) + '.';
       var toStr = sunday.getDate() + '.' + (sunday.getMonth() + 1) + '.';
       var hasPlanned = (function(k){
-        var ks = getWeekDayKeys(k);
+        var ks = typeof getWeekDayKeys === 'function' ? getWeekDayKeys(k) : [];
         return ks.some(function(key){
-          var pe = (week[key] || []).filter(function(x){ return x.providerId === providerId(); });
-          var lo = (offers || []).filter(function(o){ return o.providerId === providerId() && o.day === key; });
+          var pe = (week[key] || []).filter(function(x){ return x.providerId === pid; });
+          var lo = (offers || []).filter(function(o){ return o.providerId === pid && o.day === key; });
           return pe.length > 0 || lo.length > 0;
         });
       })(w);
@@ -11143,6 +11160,7 @@
     }
     weekFooter.classList.remove('week-footer-hidden');
     btnWeekViewFooter.onclick = function(){
+      if (window.DEBUG_WEEKPLAN) console.log('[Wochenplan] Gerichte aktivieren geklickt, count=' + count);
       if (count > 0) {
         if (typeof haptic === 'function') haptic(10);
         else if (window.userHasInteracted && navigator.vibrate) navigator.vibrate(10);
@@ -11162,13 +11180,14 @@
   /** Öffnet die InseratCard direkt bei Schritt 2 (Monetarisierung) für Bulk-Aktivierung. */
   function openBulkActivateToStep2(draftKeysInKW){
     if (!draftKeysInKW || !draftKeysInKW.length) return;
-    var profile = normalizeProviderProfile(provider.profile || {});
+    var pid = typeof providerId === 'function' ? providerId() : '';
+    var profile = typeof normalizeProviderProfile === 'function' ? normalizeProviderProfile(provider.profile || {}) : {};
     if (profile.abholnummerEnabledByDefault === undefined || profile.abholnummerEnabledByDefault === null) {
-      if (typeof showToast === 'function') showToast('Bitte zuerst Abholnummer-Standard im Profil festlegen.');
+      if (typeof showToast === 'function') showToast('Gehe zu Profil → Abholnummer-Standard festlegen, dann kannst du Gerichte aktivieren.');
       return;
     }
     var firstDate = draftKeysInKW[0];
-    var entries = (week[firstDate] || []).filter(function(e){ return e.providerId === providerId(); });
+    var entries = (week[firstDate] || []).filter(function(e){ return e.providerId === pid; });
     var firstEntry = entries[0];
     var cookbookId = firstEntry && firstEntry.cookbookId ? firstEntry.cookbookId : null;
     if (!cookbookId) {
@@ -11427,10 +11446,10 @@
     /* Magic FAB: bei jedem render neu binden – Klick öffnet openWeekMagicSheet [cite: 2026-02-18, 2026-02-25] */
     var fab = document.getElementById('weekMagicFab');
     if (fab) {
-      fab.onclick = function(){ try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate([15, 10, 20]); } catch(e){} if (typeof openWeekMagicSheet === 'function') openWeekMagicSheet(); };
+      fab.onclick = function(){ if (window.DEBUG_WEEKPLAN) console.log('[Wochenplan] FAB geklickt'); try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate([15, 10, 20]); } catch(e){} if (typeof openWeekMagicSheet === 'function') openWeekMagicSheet(); };
     }
     var kwTrigger = document.getElementById('weekHeaderKWTrigger');
-    if (kwTrigger && !kwTrigger._bound) { kwTrigger._bound = true; kwTrigger.onclick = function(e){ e.preventDefault(); try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate(12); } catch(err){} openKWSelector(); }; }
+    if (kwTrigger && !kwTrigger._bound) { kwTrigger._bound = true; kwTrigger.onclick = function(e){ if (window.DEBUG_WEEKPLAN) console.log('[Wochenplan] KW-Trigger geklickt'); e.preventDefault(); try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate(12); } catch(err){} openKWSelector(); }; }
     var grid = document.getElementById('kwGrid');
     if (!grid) return;
     /* Header: KW-Badge [cite: 2026-02-21] */
@@ -11607,7 +11626,8 @@
         slotEl.classList.remove('kw-slot-drop-over');
         var cookbookId = e.dataTransfer.getData('text/plain');
         if(!cookbookId || typeof addCookbookEntryToWeek !== 'function') return;
-        try { if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(15); } catch(err){}
+        try { if(window.userHasInteracted && navigator.vibrate) navigator.vibrate([20, 50, 20]); } catch(err){}
+        if(typeof window.spawnSmartBubble === 'function') window.spawnSmartBubble(e.clientX, e.clientY);
         addCookbookEntryToWeek(dayKey, cookbookId);
         if(typeof haptic === 'function') haptic(6);
         renderWeekPlanBoard();

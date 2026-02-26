@@ -4119,7 +4119,14 @@
     #wizard[data-flow="listing"] .inserat-prognose-wrap.inserat-umsatzprognose p {
       font-size: 12px; font-weight: 600; color: #94a3b8;
     }
-    /* MODE_PLAN (week/cookbook): Blue „In den Wochenplan einplanen“ + grüner „Nur im Kochbuch“ [cite: 2026-02-18] */
+    /* MODE_PLAN (week/cookbook): Speichern-Button zentriert, volle Breite [cite: 2026-02-25] */
+    #wizard[data-flow="listing"] .inserat-action-section.inserat-action-plan .app-footer-main {
+      display: flex !important; justify-content: center !important; align-items: center !important; width: 100% !important;
+    }
+    #wizard[data-flow="listing"] .inserat-action-section.inserat-action-plan .app-footer-main .btn-primary-black {
+      width: 100% !important; flex: 1 !important; max-width: 100% !important;
+      display: flex !important; justify-content: center !important; align-items: center !important;
+    }
     /* MODE_PLAN: Blauer Wochenplan-Button, grüner Kochbuch-Button [cite: 2026-02-18] */
     #wizard[data-flow="listing"] .inserat-action-section.inserat-action-plan .inserat-btn-plan-primary {
       width: 100%; min-height: 56px; padding: 16px 20px; border-radius: 20px; border: none; cursor: pointer;
@@ -7637,16 +7644,21 @@
       #v-provider-week .kw-cookbook-drag-label{ font-size:13px; font-weight:700; color:#64748b; margin-right:4px; }
       #v-provider-week .kw-cookbook-drag-pill{ padding:8px 14px; border-radius:12px; background:rgba(255,255,255,0.8); border:1px solid rgba(16,185,129,0.35); color:#0f766e; font-size:13px; font-weight:700; cursor:grab; user-select:none; transition:transform 0.15s, box-shadow 0.15s; }
       #v-provider-week .kw-cookbook-drag-pill:active{ cursor:grabbing; }
-      #v-provider-week .kw-cookbook-drag-pill.dragging{ transform:scale(0.95); opacity:0.8; cursor:grabbing; }
       #v-provider-week .kw-cookbook-drag-pill:hover{ box-shadow:0 2px 12px rgba(16,185,129,0.2); transform:scale(1.02); }
       #v-provider-week .kw-cookbook-drag-pill{ position:relative; padding-right:36px; }
       #v-provider-week .kw-pill-dismiss{ position:absolute; top:4px; right:4px; width:24px; height:24px; border:none; background:rgba(0,0,0,0.08); border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; color:#64748b; font-size:14px; line-height:1; padding:0; flex-shrink:0; transition:background 0.15s, color 0.15s; }
       #v-provider-week .kw-pill-dismiss:hover{ background:rgba(239,68,68,0.2); color:#dc2626; }
       #v-provider-week .kw-pill-dismiss:active{ transform:scale(0.95); }
       #v-provider-week .kw-pill-dismiss i{ width:14px; height:14px; }
+      /* Magnet-Slot Glimmer: Ready-to-Drop [cite: 2026-02-18] */
       #v-provider-week .kw-slot.kw-slot-drop-over,
-      #v-provider-week .kw-slot-empty.kw-slot-drop-over{ box-shadow:0 0 0 2px #10b981, 0 0 20px rgba(16,185,129,0.35); border-color:#10b981; background:rgba(16,185,129,0.06); }
+      #v-provider-week .kw-slot-empty.kw-slot-drop-over{ background:rgba(16,185,129,0.08) !important; border:2px dashed #10b981 !important; transform:scale(1.02); box-shadow:0 0 0 2px #10b981, 0 0 20px rgba(16,185,129,0.35), inset 0 0 15px rgba(16,185,129,0.1); transition:all 0.2s ease; }
+      /* Theken-Renner / Cookbook-Pill während des Draggens [cite: 2026-02-18] */
+      #v-provider-week .kw-cookbook-drag-pill.dragging{ opacity:0.9; transform:scale(1.1) rotate(-2deg); box-shadow:0 25px 50px rgba(0,0,0,0.15); z-index:10001; cursor:grabbing; }
       body.provider-week-active #v-provider-week .kw-board-scroll{ padding-bottom:calc(140px + env(safe-area-inset-bottom, 0px)) !important; }
+      /* Smart-Save-Blase: Plopp & Schwebe [cite: 2026-02-18, 2026-02-26] */
+      .smart-save-bubble{ position:fixed; background:white; color:#10b981; padding:6px 12px; border-radius:20px; font-weight:900; font-size:14px; box-shadow:0 4px 15px rgba(0,0,0,0.1); pointer-events:none; z-index:10002; animation:bubbleRise 0.8s ease-out forwards; }
+      @keyframes bubbleRise{ 0%{ transform:translateY(0) scale(0.5); opacity:0; } 30%{ transform:translateY(-20px) scale(1.1); opacity:1; } 100%{ transform:translateY(-60px) scale(1); opacity:0; } }
       /* Magic FAB: klickbar über Bottom-Nav, feste Position, Pointer-Events [cite: Agent 2026-02-25] */
       #v-provider-week .week-magic-fab,
       #weekMagicFab{
@@ -7733,9 +7745,9 @@
       #weekViewFooter{ display:none !important; }
       body.provider-week-active #weekViewFooter{ display:flex !important; flex-direction:column; }
       #weekViewFooter.week-footer-hidden{ display:none !important; }
-      /* Magic FAB: über Provider-Nav, klickbar (Z-Index in Basis-Regel) [cite: Magic-Button 2026-02-25, Agent 2026-02-25] */
+      /* Magic FAB: über Footer (z-index 10050), klickbar [cite: 2026-02-25 Fehlersuche] */
       body.provider-week-active #v-provider-week .week-magic-fab,
-      body.provider-week-active #weekMagicFab{ z-index:1200 !important; pointer-events:auto !important; }
+      body.provider-week-active #weekMagicFab{ z-index:10050 !important; pointer-events:auto !important; }
       /* Wochenplan-Footer: Airbnb-Standard – weiß, #ebebeb-Linie, Safe-Area [cite: 2026-02-23, 2026-02-25] */
       .week-view-footer-fixed{ position:fixed !important; bottom:0; left:0; right:0; width:100%; z-index:10000; background:#ffffff !important; border-top:1px solid #ebebeb; padding-bottom:env(safe-area-inset-bottom) !important; box-sizing:border-box; }
       .week-view-footer-fixed .footer-content-wrapper{ padding:16px 20px; display:flex; flex-direction:column; align-items:center; gap:8px; }
