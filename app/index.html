@@ -33,14 +33,14 @@
 </head>
 <body>
 <!-- Print-Branding: Oben Anbietername, unten Powered by metallio.de – nur bei Druck sichtbar [cite: 2026-02-26] -->
-<div id="print-only-branding" style="display:none; position:absolute; left:-9999px;">
+<div id="print-only-branding" class="s5-html-print-hide">
   <div class="print-header"><h1 id="print-merchant-name">Wochenplan</h1></div>
   <div class="print-footer">Powered by metallio.de</div>
 </div>
 <!-- 9:16 Share-Template (1080×1920) für WhatsApp-Status – versteckt, wird von script.js befüllt [cite: 2026-02-18] -->
-<div id="shareTemplate916" class="share-template-916" style="position:fixed; left:-9999px; top:0; width:1080px; height:1920px; background:#fff; overflow:hidden; z-index:9999; box-sizing:border-box;"><!-- Inhalt dynamisch --></div>
-<div id="shareTemplate916Overlay" class="share-template-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:10000; align-items:center; justify-content:center; font-size:18px; font-weight:700; color:#fff; text-align:center; padding:24px;">Dein Status-Bild wird erstellt...</div>
-<div id="demoBadge" class="demo-badge" style="display:none;" title="Klick zum Umschalten" aria-label="Demo-Modus">Demo</div>
+<div id="shareTemplate916" class="share-template-916 s5-html-share-tpl"><!-- Inhalt dynamisch --></div>
+<div id="shareTemplate916Overlay" class="share-template-overlay s5-html-share-overlay">Dein Status-Bild wird erstellt...</div>
+<div id="demoBadge" class="demo-badge s5-html-display-none" title="Klick zum Umschalten" aria-label="Demo-Modus">Demo</div>
 <div class="app" id="app">
   <div class="topbar" id="topbar">
       <div class="topbar-inner">
@@ -51,18 +51,18 @@
 
   <main>
     <!-- Öffentliche Wochenplan-Ansicht (Magic Link): #/plan/[Anbieter-ID] – Read-Only, 3 Säulen, nur Verkaufspreis -->
-    <section class="view" id="v-plan-public" style="display:none; min-height:100vh; background:#f8fafc; padding:0 0 env(safe-area-inset-bottom, 0);">
-      <header style="background:#fff; border-bottom:1px solid rgba(0,0,0,0.06); padding:16px 20px; position:sticky; top:0; z-index:50;">
-        <div style="display:flex; align-items:center; gap:12px;">
-          <div id="planPublicLogo" style="width:48px; height:48px; border-radius:14px; background:#f1f3f5; background-size:cover; background-position:center;"></div>
+    <section class="view s5-html-plan-public" id="v-plan-public">
+      <header class="s5-html-plan-header">
+        <div class="s5-html-flex-gap12">
+          <div id="planPublicLogo" class="s5-html-plan-logo"></div>
           <div>
-            <h1 id="planPublicName" class="ds-h2" style="margin:0;">Wochenplan</h1>
-            <p class="ds-body" style="margin:2px 0 0; font-size:13px; font-weight:600;">Unser Wochenplan ist online!</p>
+            <h1 id="planPublicName" class="ds-h2 s5-html-margin-0">Wochenplan</h1>
+            <p class="ds-body s5-html-body-sub">Unser Wochenplan ist online!</p>
           </div>
         </div>
-        <a href="#" id="planPublicBack" style="display:inline-flex; align-items:center; gap:6px; margin-top:16px; font-size:14px; font-weight:700; color:var(--brand,#FFD700); text-decoration:none;">← Zur App</a>
+        <a href="#" id="planPublicBack" class="s5-html-plan-back">← Zur App</a>
       </header>
-      <div id="planPublicList" style="width:100%; max-width:100%; margin:0; padding:20px max(16px, env(safe-area-inset-right)) 24px max(16px, env(safe-area-inset-left)); box-sizing:border-box;"></div>
+      <div id="planPublicList" class="s5-html-plan-list"></div>
     </section>
 
     <!-- CUSTOMER: Discover - App-like UX (Final Spec) -->
@@ -72,36 +72,36 @@
         <!-- Zeile 1: Minimalist – Standort links, Logo mittig, Kalender rechts [cite: 2026-02-20 Schritt 1.4] -->
         <div class="discover-header-top-row discover-header-minimal">
           <div class="discover-location-row-wrap">
-            <button type="button" id="btnDiscoverLocationText" class="discover-location-btn-inner" style="display:flex; align-items:center; gap:4px; background:none; border:none; padding:0; cursor:pointer; min-width:0; text-align:left;">
-              <span class="discover-location-pin" style="font-size:14px; line-height:1;">📍</span>
+            <button type="button" id="btnDiscoverLocationText" class="discover-location-btn-inner s5-html-loc-btn">
+              <span class="discover-location-pin s5-html-pin-14">📍</span>
               <span id="discoverCurrentLocation" class="discover-location-text">Standort wählen...</span>
             </button>
           </div>
           <span class="discover-logo">MITTAGIO</span>
           <div class="discover-header-right-anchor">
-            <button type="button" id="btnDiscoverLocationGPS" class="discover-gps-btn" aria-label="Standort per GPS" style="display:none;">
-              <i data-lucide="map-pin" style="width:16px;height:16px;"></i>
+            <button type="button" id="btnDiscoverLocationGPS" class="discover-gps-btn s5-html-display-none" aria-label="Standort per GPS">
+              <i data-lucide="map-pin" class="s5-html-icon-16"></i>
             </button>
             <button type="button" id="btnDiscoverCalendar" class="discover-calendar-btn" aria-label="Datum wählen" title="Datum wählen">
-              <i data-lucide="calendar" style="width:20px;height:20px;"></i>
+              <i data-lucide="calendar" class="s5-html-icon-20"></i>
             </button>
           </div>
         </div>
 
         <!-- Standort-Dropdown (Bleibt funktional gleich, nur Design-Update) -->
-        <div id="discoverLocationExpanded" style="display:none; position:fixed; z-index:99999; background:#fff; border-radius:24px; box-shadow:0 20px 40px rgba(0,0,0,0.15); border:1px solid rgba(0,0,0,0.05); overflow:hidden; min-width:300px; max-width:calc(100vw - 32px); top:80px; left:16px;">
-          <div style="padding:24px;">
-            <h3 class="ds-h2-850" style="margin:0 0 16px;">Wo suchst du?</h3>
-            <button type="button" id="discoverLocationBtnNadel" class="btn-cust-primary" style="width:100%; height:56px; border-radius:16px; margin-bottom:16px;">
-              <i data-lucide="navigation" style="width:20px;height:20px;"></i>
+        <div id="discoverLocationExpanded" class="s5-html-loc-expanded">
+          <div class="s5-html-pad24">
+            <h3 class="ds-h2-850 s5-html-h3-mb16">Wo suchst du?</h3>
+            <button type="button" id="discoverLocationBtnNadel" class="btn-cust-primary s5-html-loc-btn-nadel">
+              <i data-lucide="navigation" class="s5-html-icon-20"></i>
               <span>Aktueller Standort</span>
             </button>
-            <div style="font-size:12px; font-weight:700; color:#94a3b8; text-align:center; margin-bottom:16px; display:flex; align-items:center; gap:10px;">
-              <div style="flex:1; height:1px; background:#f1f3f5;"></div><span>ODER</span><div style="flex:1; height:1px; background:#f1f3f5;"></div>
+            <div class="s5-html-loc-or">
+              <div class="s5-html-flex-line"></div><span>ODER</span><div class="s5-html-flex-line"></div>
             </div>
-            <input type="text" id="discoverLocationInput" placeholder="PLZ oder Stadt..." style="width:100%; height:52px; padding:0 16px; border-radius:14px; border:2px solid #f1f3f5; font-size:16px; background:#f8f9fa; color:#1a1a1a; outline:none; transition:border-color 0.2s; box-sizing:border-box;" />
-            <div id="discoverLocationSuggestions" style="max-height:200px; overflow-y:auto; margin-top:8px;"></div>
-            <button type="button" id="discoverLocationClose" style="margin-top:16px; width:100%; height:44px; background:none; border:none; font-size:14px; font-weight:700; color:#64748b; cursor:pointer;">Abbrechen</button>
+            <input type="text" id="discoverLocationInput" placeholder="PLZ oder Stadt..." class="s5-html-loc-input" />
+            <div id="discoverLocationSuggestions" class="s5-html-suggestions"></div>
+            <button type="button" id="discoverLocationClose" class="s5-html-loc-close">Abbrechen</button>
           </div>
         </div>
 
@@ -110,21 +110,21 @@
           <div id="discoverCategoriesBar" class="discover-header-pills cust-chip-bar discover-pills-compact">
             <!-- Dynamisch: Alle, Fleisch, Vegetarisch, Vegan -->
           </div>
-          <div class="discover-radius-time-row discover-filter-row-slim" style="display:none;">
-            <div class="discover-radius-row" style="display:flex; align-items:center; gap:8px;">
+          <div class="discover-radius-time-row discover-filter-row-slim s5-html-display-none">
+            <div class="discover-radius-row s5-html-radius-row">
               <button type="button" id="discoverRadiusBtn" class="discover-radius-pill" aria-label="Hunger-Radius">
                 <span id="discoverRadiusIcon">📍</span>
                 <span id="discoverRadiusLabel">500m</span>
-                <i data-lucide="chevron-down" id="discoverRadiusChevron" style="width:14px;height:14px;margin-left:2px;"></i>
+                <i data-lucide="chevron-down" id="discoverRadiusChevron" class="s5-html-chevron-14"></i>
               </button>
-              <div id="discoverRadiusDropdown" style="display:none; position:absolute; top:100%; left:16px; margin-top:4px; background:#fff; border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.12); border:1px solid rgba(0,0,0,0.06); z-index:100; min-width:120px; padding:6px;">
+              <div id="discoverRadiusDropdown" class="s5-html-radius-dropdown">
                 <button type="button" data-radius="500" class="discover-radius-opt">500m</button>
                 <button type="button" data-radius="1000" class="discover-radius-opt">1 km</button>
                 <button type="button" data-radius="3000" class="discover-radius-opt">3 km</button>
                 <button type="button" data-radius="5000" class="discover-radius-opt">5 km</button>
               </div>
             </div>
-            <div id="discoverDaysBar" class="cust-chip-bar discover-calendar-sticky" style="display:none;">
+            <div id="discoverDaysBar" class="cust-chip-bar discover-calendar-sticky s5-html-display-none">
               <!-- Zeit-Buttons entfernt – nur Kalender-Icon -->
             </div>
           </div>
@@ -132,45 +132,45 @@
       </header>
 
       <!-- Listenansicht ("Speisekarte") + Karten-Container (Overlay) – S25 Safe-Area -->
-      <main class="discover-main" style="position:relative;">
-        <div id="discoverOffers" class="discover-offers-list" style="display:flex; flex-direction:column; padding:0 0 8px;">
+      <main class="discover-main s5-html-discover-main">
+        <div id="discoverOffers" class="discover-offers-list s5-html-offers-col">
           <!-- Dynamisch befüllt -->
         </div>
 
         <!-- Kartenansicht: Leaflet-Karte Schorndorf, gelbe/grüne Pins, „Hier suchen“ + Nadel -->
-        <div id="discoverMap" class="discover-map-wrap" style="display:none; position:absolute; inset:0; top:0; bottom:80px; padding:0; flex-direction:column;">
-          <div id="discoverMapCanvas" class="discover-map-canvas" style="width:100%; height:100%; border-radius:0; position:relative; overflow:hidden;">
-            <div id="discoverMapLeaflet" style="width:100%; height:100%; min-height:280px;"></div>
+        <div id="discoverMap" class="discover-map-wrap s5-html-map-wrap">
+          <div id="discoverMapCanvas" class="discover-map-canvas s5-html-map-canvas">
+            <div id="discoverMapLeaflet" class="s5-html-map-leaflet"></div>
           </div>
-          <div id="discoverMapToolbar" style="position:absolute; top:12px; left:12px; right:12px; display:flex; gap:8px; align-items:center; z-index:400; pointer-events:none;"><div style="pointer-events:auto;"><button type="button" id="discoverMapBtnHierSuchen" style="display:none; padding:10px 16px; border-radius:999px; background:#fff; border:2px solid #e5e7eb; font-size:14px; font-weight:700; color:#1a1a1a; box-shadow:0 4px 12px rgba(0,0,0,0.1); cursor:pointer;">In diesem Bereich suchen</button></div><div style="flex:1;"></div><button type="button" id="discoverMapBtnLocation" style="pointer-events:auto; width:48px; height:48px; border-radius:50%; background:#fff; border:2px solid #e5e7eb; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(0,0,0,0.1); cursor:pointer;" title="Mein Standort"><i data-lucide="navigation" style="width:22px;height:22px;color:#1a1a1a;"></i></button></div>
+          <div id="discoverMapToolbar" class="s5-html-map-toolbar"><div class="s5-html-pointer-auto"><button type="button" id="discoverMapBtnHierSuchen" class="s5-html-map-btn-hier">In diesem Bereich suchen</button></div><div class="s5-html-flex-1"></div><button type="button" id="discoverMapBtnLocation" class="s5-html-map-btn-loc" title="Mein Standort"><i data-lucide="navigation" class="s5-html-icon-22"></i></button></div>
         </div>
 
         <!-- Pin-Drawer: Bild, Preis, 3 Säulen, Geh-/Fahrminuten, Wegbeschreibung -->
-        <div id="discoverPinDrawer" class="discover-pin-drawer" style="position:fixed; left:0; right:0; bottom:0; transition:transform 0.35s cubic-bezier(0.32,0.72,0,1); background:#fff; border-radius:24px 24px 0 0; box-shadow:0 -8px 32px rgba(0,0,0,0.18); z-index:200; padding:16px 20px calc(20px + env(safe-area-inset-bottom)); max-height:55vh; overflow-y:auto;">
-          <div class="discover-pin-drawer-handle" style="width:44px; height:5px; background:#d1d5db; border-radius:3px; margin:0 auto 16px;"></div>
-          <div id="discoverPinDrawerImageWrap" style="width:100%; height:180px; border-radius:16px; background:#f1f3f5; overflow:hidden;"><img id="discoverPinDrawerImage" alt="" style="width:100%; height:100%; object-fit:cover;"></div>
-          <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin:14px 0 10px;">
-            <div id="discoverPinDrawerTitle" style="font-size:20px; font-weight:800; color:#1a1a1a; flex:1; min-width:0;"></div>
-            <div id="discoverPinDrawerPrice" style="font-size:18px; font-weight:900; color:var(--brand); flex-shrink:0;"></div>
+        <div id="discoverPinDrawer" class="discover-pin-drawer s5-html-drawer">
+          <div class="discover-pin-drawer-handle s5-html-drawer-handle"></div>
+          <div id="discoverPinDrawerImageWrap" class="s5-html-drawer-imgwrap"><img id="discoverPinDrawerImage" alt="" class="s5-html-drawer-img"></div>
+          <div class="s5-html-drawer-row">
+            <div id="discoverPinDrawerTitle" class="s5-html-drawer-title"></div>
+            <div id="discoverPinDrawerPrice" class="s5-html-drawer-price"></div>
           </div>
-          <div id="discoverPinDrawerPillars" class="card-pillars" style="display:flex; gap:14px; margin-bottom:12px;"></div>
-          <div id="discoverPinDrawerNavRow" style="display:flex; align-items:center; gap:12px; margin-bottom:16px; flex-wrap:wrap;">
-            <span id="discoverPinDrawerMinutes" style="font-size:14px; font-weight:700; color:#64748b;"></span>
-            <a id="discoverPinDrawerRoute" href="#" target="_blank" rel="noopener" style="display:inline-flex; align-items:center; gap:6px; padding:10px 16px; border-radius:14px; background:rgba(0,0,0,0.06); font-size:14px; font-weight:700; color:#1a1a1a; text-decoration:none;">Wegbeschreibung</a>
+          <div id="discoverPinDrawerPillars" class="card-pillars s5-html-drawer-pillars"></div>
+          <div id="discoverPinDrawerNavRow" class="s5-html-drawer-navrow">
+            <span id="discoverPinDrawerMinutes" class="s5-html-drawer-minutes"></span>
+            <a id="discoverPinDrawerRoute" href="#" target="_blank" rel="noopener" class="s5-html-drawer-route">Wegbeschreibung</a>
           </div>
-          <button type="button" class="btn-cust-primary" id="discoverPinDrawerBtn" style="width:100%; min-height:56px; border-radius:16px; font-size:16px; font-weight:800;">Gericht ansehen</button>
+          <button type="button" class="btn-cust-primary s5-html-drawer-btn" id="discoverPinDrawerBtn">Gericht ansehen</button>
         </div>
-        <div id="discoverPinDrawerBackdrop" style="position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:199; opacity:0; visibility:hidden;" onclick="closeDiscoverPinDrawer()"></div>
+        <div id="discoverPinDrawerBackdrop" class="s5-html-drawer-backdrop" onclick="closeDiscoverPinDrawer()"></div>
 
         <!-- Leerer Feed (Empty State): kein weißer Schirm – freundliche Ansage + Standort ändern -->
-        <div id="discoverEmpty" style="display:none; text-align:center; padding:48px 24px 60px;">
-          <div style="width:160px; height:160px; margin:0 auto 24px; border-radius:24px; overflow:hidden; box-shadow:0 8px 32px rgba(0,0,0,0.08); background:#f8f9fa;">
-            <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&amp;fit=crop&amp;w=400&amp;q=80" alt="" style="width:100%; height:100%; object-fit:cover;" loading="lazy" />
+        <div id="discoverEmpty" class="s5-html-empty-wrap">
+          <div class="s5-html-empty-imgbox">
+            <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&amp;fit=crop&amp;w=400&amp;q=80" alt="" class="s5-html-drawer-img" loading="lazy" />
           </div>
-          <h2 class="ds-empty-title" style="max-width:320px; margin-left:auto; margin-right:auto;">Hunger?</h2>
-          <p class="ds-body" style="line-height:1.6; margin-bottom:28px; max-width:320px; margin-left:auto; margin-right:auto;">Momentan gibt es keine aktiven Angebote in deiner Nähe. Schau später nochmal vorbei oder ändere deinen Standort.</p>
-          <button class="btn-cust-primary" type="button" onclick="openDiscoverLocationSearch();" style="width:100%; max-width:280px; margin:0 auto;">
-            <i data-lucide="map-pin" style="width:20px;height:20px;"></i>
+          <h2 class="ds-empty-title s5-html-empty-title-mw">Hunger?</h2>
+          <p class="ds-body s5-html-empty-p">Momentan gibt es keine aktiven Angebote in deiner Nähe. Schau später nochmal vorbei oder ändere deinen Standort.</p>
+          <button class="btn-cust-primary s5-html-empty-btn" type="button" onclick="openDiscoverLocationSearch();">
+            <i data-lucide="map-pin" class="s5-html-icon-20"></i>
             <span>Standort ändern</span>
           </button>
         </div>
@@ -184,96 +184,96 @@
     </section>
 
     <!-- Provider-Billing: einheitlich helles Layout -->
-    <section class="view content-padding-bottom-compact" id="v-provider-billing" style="min-height:100vh; padding:20px;">
+    <section class="view content-padding-bottom-compact s5-html-billing-section" id="v-provider-billing">
       <div class="provider-header-bar">
         <h1>Finanzen & Abrechnung</h1>
         <button id="btnBillingBack" class="btn-back" type="button">
-          <i data-lucide="chevron-left" style="width:24px; height:24px;"></i> Zurück
+          <i data-lucide="chevron-left" class="s5-html-icon-24"></i> Zurück
         </button>
       </div>
 
       <!-- Karte 1: Meine Kontodaten -->
-      <div class="panel" id="billingCardKontodaten" style="border-radius:16px; padding:24px; margin-bottom:20px; box-shadow:0 2px 12px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04);">
-        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
-          <span style="font-size:15px; font-weight:700; color:#1a1a1a;">Kontodaten</span>
-          <span id="billingKontodatenStatus" style="font-size:12px; font-weight:700; padding:6px 12px; border-radius:20px; background:rgba(34,197,94,0.15); color:#16a34a;">Hinterlegt</span>
+      <div class="panel s5-html-billing-card" id="billingCardKontodaten">
+        <div class="s5-html-billing-row">
+          <span class="s5-html-billing-label">Kontodaten</span>
+          <span id="billingKontodatenStatus" class="s5-html-billing-status">Hinterlegt</span>
         </div>
-        <div style="background:#f8f7f2; border-radius:12px; padding:16px 20px; margin-bottom:16px; border:1px solid rgba(0,0,0,0.06);">
-          <div style="font-size:14px; color:#64748b; margin-bottom:4px;">Kartenvorschau</div>
-          <div id="billingKartenvorschau" style="font-size:18px; font-weight:700; color:#1a1a1a; letter-spacing:2px;">•••• •••• •••• 1234</div>
+        <div class="s5-html-billing-preview-wrap">
+          <div class="s5-html-billing-preview-label">Kartenvorschau</div>
+          <div id="billingKartenvorschau" class="s5-html-billing-preview-num">•••• •••• •••• 1234</div>
         </div>
-        <button type="button" id="btnBillingZahlungsmittel" style="width:100%; padding:14px; border-radius:12px; border:2px solid rgba(0,0,0,0.1); background:#fff; color:#0A84FF; font-weight:700; font-size:15px; cursor:pointer;">Zahlungsmittel ändern</button>
+        <button type="button" id="btnBillingZahlungsmittel" class="s5-html-billing-btn-zahl">Zahlungsmittel ändern</button>
       </div>
 
       <!-- Karte 2: Tagesabrechnungen (Live-Umsatz heute) -->
-      <div class="panel" id="billingCardTagesabrechnungen" style="border-radius:16px; padding:24px; margin-bottom:20px; box-shadow:0 2px 12px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04); background:#fff;">
-        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
-          <span style="font-size:15px; font-weight:700; color:#1a1a1a;">Tagesumsatz (heute)</span>
-          <span id="billingTodayRevenue" style="font-size:18px; font-weight:950; color:#16a34a;">0,00 €</span>
+      <div class="panel s5-html-billing-card-white" id="billingCardTagesabrechnungen">
+        <div class="s5-html-billing-row">
+          <span class="s5-html-billing-label">Tagesumsatz (heute)</span>
+          <span id="billingTodayRevenue" class="s5-html-billing-revenue">0,00 €</span>
         </div>
-        <div id="billingTodayList" style="display:flex; flex-direction:column; gap:8px;">
+        <div id="billingTodayList" class="s5-html-billing-list-col">
           <!-- Heute verkaufte Abholnummern -->
         </div>
-        <div id="billingTodayEmpty" class="hint" style="color:#64748b; text-align:center; padding:16px 0; display:none;">Noch keine Umsätze heute.</div>
+        <div id="billingTodayEmpty" class="hint s5-html-billing-hint-empty">Noch keine Umsätze heute.</div>
       </div>
 
       <!-- Karte 3: Meine Abrechnungen -->
-      <div class="panel" style="border-radius:16px; padding:24px; box-shadow:0 2px 12px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04);">
-        <div style="font-size:15px; font-weight:700; color:#1a1a1a; margin-bottom:16px;">Abrechnungen</div>
-        <div id="billingList" style="display:flex; flex-direction:column; gap:0;">
+      <div class="panel s5-html-billing-panel">
+        <div class="s5-html-billing-heading">Abrechnungen</div>
+        <div id="billingList" class="s5-html-billing-list">
           <!-- Zeilen: Datum, Posten, Betrag, PDF-Icon – wird von renderBilling befüllt -->
         </div>
-        <div id="billingListEmpty" class="hint" style="color:#64748b; text-align:center; padding:32px 16px; display:none;">Noch keine Abrechnungen vorhanden.</div>
+        <div id="billingListEmpty" class="hint s5-html-billing-hint-list">Noch keine Abrechnungen vorhanden.</div>
       </div>
     </section>
 
     <!-- Admin-Dashboard: /admin – Clean, modern, KPIs, Inserats-Feed, Buchhaltung, CSV-Export -->
-    <section class="view content-padding-bottom-compact" id="v-admin" style="min-height:100vh; padding:20px; background:#f8f7f2;">
-      <div style="width:100%; max-width:100%; margin:0; padding-left:max(16px, env(safe-area-inset-left)); padding-right:max(16px, env(safe-area-inset-right)); box-sizing:border-box;">
-        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:24px;">
-          <h1 class="ds-h1" style="margin:0;">Admin</h1>
-          <a href="#" onclick="location.hash=''; showDiscover(); return false;" style="display:inline-flex; align-items:center; gap:6px; font-size:14px; font-weight:700; color:#64748b; text-decoration:none;"><i data-lucide="chevron-left" style="width:18px;height:18px;"></i> Zurück</a>
+    <section class="view content-padding-bottom-compact s5-html-admin-section" id="v-admin">
+      <div class="s5-html-admin-wrap">
+        <div class="s5-html-admin-header-row">
+          <h1 class="ds-h1 s5-html-margin-0">Admin</h1>
+          <a href="#" onclick="location.hash=''; showDiscover(); return false;" class="s5-html-admin-back"><i data-lucide="chevron-left" class="s5-html-icon-18"></i> Zurück</a>
         </div>
         <!-- KPI-Sektion -->
-        <div id="adminKpis" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:16px; margin-bottom:24px;">
-          <div style="background:#fff; border-radius:16px; padding:20px; box-shadow:0 2px 12px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04);">
-            <div style="font-size:12px; font-weight:700; color:#64748b; text-transform:uppercase; margin-bottom:4px;">Tagesumsatz</div>
-            <div id="adminKpiUmsatz" style="font-size:28px; font-weight:900; color:#16a34a;">0,00 €</div>
+        <div id="adminKpis" class="s5-html-admin-kpis">
+          <div class="s5-html-admin-kpi-card">
+            <div class="s5-html-admin-kpi-label">Tagesumsatz</div>
+            <div id="adminKpiUmsatz" class="s5-html-admin-kpi-value-green">0,00 €</div>
           </div>
-          <div style="background:#fff; border-radius:16px; padding:20px; box-shadow:0 2px 12px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04);">
-            <div style="font-size:12px; font-weight:700; color:#64748b; text-transform:uppercase; margin-bottom:4px;">Aktive Inserate</div>
-            <div id="adminKpiInserate" style="font-size:28px; font-weight:900; color:#1a1a1a;">0</div>
+          <div class="s5-html-admin-kpi-card">
+            <div class="s5-html-admin-kpi-label">Aktive Inserate</div>
+            <div id="adminKpiInserate" class="s5-html-admin-kpi-value-dark">0</div>
           </div>
-          <div style="background:#fff; border-radius:16px; padding:20px; box-shadow:0 2px 12px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04);">
-            <div style="font-size:12px; font-weight:700; color:#64748b; text-transform:uppercase; margin-bottom:4px;">Abholnummern gebucht</div>
-            <div id="adminKpiAbholnummern" style="font-size:28px; font-weight:900; color:#3b82f6;">0</div>
+          <div class="s5-html-admin-kpi-card">
+            <div class="s5-html-admin-kpi-label">Abholnummern gebucht</div>
+            <div id="adminKpiAbholnummern" class="s5-html-admin-kpi-value-blue">0</div>
           </div>
         </div>
         <!-- Inserats-Feed (Live-Angebote, 3 Säulen) -->
-        <div style="background:#fff; border-radius:16px; padding:20px; margin-bottom:24px; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
-          <div style="font-size:15px; font-weight:800; color:#1a1a1a; margin-bottom:16px;">Inserats-Feed (Live)</div>
-          <div id="adminFeedList" style="display:flex; flex-direction:column; gap:12px;"></div>
+        <div class="s5-html-admin-card">
+          <div class="s5-html-admin-feed-title">Inserats-Feed (Live)</div>
+          <div id="adminFeedList" class="s5-html-admin-feed-list"></div>
         </div>
         <!-- Buchhaltungs-Tabelle + Summenzeile + CSV -->
-        <div style="background:#fff; border-radius:16px; padding:20px; margin-bottom:24px; box-shadow:0 2px 12px rgba(0,0,0,0.06); overflow-x:auto;">
-          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
-            <div style="font-size:15px; font-weight:800; color:#1a1a1a;">Buchhaltung</div>
-            <button type="button" id="adminBtnCsvExport" style="padding:10px 18px; border-radius:10px; border:none; background:#FFD700; color:#1a1a1a; font-weight:800; font-size:14px; cursor:pointer;">CSV-Export</button>
+        <div class="s5-html-admin-card-overflow">
+          <div class="s5-html-billing-row">
+            <div class="s5-html-admin-section-title">Buchhaltung</div>
+            <button type="button" id="adminBtnCsvExport" class="s5-html-admin-btn-csv">CSV-Export</button>
           </div>
-          <table style="width:100%; border-collapse:collapse; font-size:14px;">
+          <table class="s5-html-admin-table">
             <thead>
-              <tr style="border-bottom:2px solid #e5e7eb;">
-                <th style="text-align:left; padding:12px 8px; color:#64748b; font-weight:700;">Datum</th>
-                <th style="text-align:left; padding:12px 8px; color:#64748b; font-weight:700;">Anbieter</th>
-                <th style="text-align:left; padding:12px 8px; color:#64748b; font-weight:700;">Inserat-ID</th>
-                <th style="text-align:right; padding:12px 8px; color:#64748b; font-weight:700;">Basis (4,99 €)</th>
-                <th style="text-align:right; padding:12px 8px; color:#64748b; font-weight:700;">Abholnummer (0,89 €)</th>
-                <th style="text-align:right; padding:12px 8px; color:#64748b; font-weight:700;">Gesamtbetrag</th>
+              <tr class="s5-html-admin-thead-tr">
+                <th class="s5-html-admin-th-left">Datum</th>
+                <th class="s5-html-admin-th-left">Anbieter</th>
+                <th class="s5-html-admin-th-left">Inserat-ID</th>
+                <th class="s5-html-admin-th-right">Basis (4,99 €)</th>
+                <th class="s5-html-admin-th-right">Abholnummer (0,89 €)</th>
+                <th class="s5-html-admin-th-right">Gesamtbetrag</th>
               </tr>
             </thead>
             <tbody id="adminTableBody"></tbody>
             <tfoot>
-              <tr id="adminTableSum" style="border-top:2px solid #1a1a1a; font-weight:800; background:#f8f7f2;"></tr>
+              <tr id="adminTableSum" class="s5-html-admin-sum-tr"></tr>
             </tfoot>
           </table>
         </div>
@@ -283,59 +283,59 @@
     <!-- CUSTOMER: Favorites – Fokus auf HEUTE, 2x2 Grid, Pull-to-Reveal -->
     <section class="view customer-view" id="v-fav">
       <header class="cust-header-sticky">
-        <div style="display:flex; align-items:center; justify-content:space-between;">
+        <div class="s5-html-fav-header-row">
           <h1>Deine Favoriten ⚡</h1>
-          <button type="button" id="btnFavShareHeader" aria-label="Teilen" style="width:40px; height:40px; border-radius:12px; background:#f1f3f5; border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#1a1a1a;">
-            <i data-lucide="share-2" style="width:20px;height:20px;"></i>
+          <button type="button" id="btnFavShareHeader" aria-label="Teilen" class="s5-html-fav-share-btn">
+            <i data-lucide="share-2" class="s5-html-icon-20"></i>
           </button>
         </div>
       </header>
 
       <div class="customer-main-wrap">
         <!-- Empty State -->
-        <div id="favEmptyState" style="display:none; flex-direction:column; align-items:center; text-align:center; padding:80px 20px;">
-          <div style="width:120px; height:120px; margin-bottom:24px; background:rgba(255,215,0,0.1); border-radius:40px; display:flex; align-items:center; justify-content:center;">
-            <i data-lucide="heart" style="width:48px; height:48px; color:#1a1a1a;"></i>
+        <div id="favEmptyState" class="s5-html-tmp-1">
+          <div class="s5-html-tmp-2">
+            <i data-lucide="heart" class="s5-html-tmp-3"></i>
           </div>
-          <h2 class="ds-empty-title" style="max-width:280px;">Deine Favoriten sind leer</h2>
-          <p class="ds-body" style="line-height:1.6; margin-bottom:32px; max-width:280px;">Sichere dir dein Mittagessen! Markiere Gerichte mit ❤️ – sie landen hier bei deinen Favoriten.</p>
-          <button class="btn-cust-primary" type="button" onclick="showDiscover();" style="width:100%; max-width:260px; margin:0 auto; background:var(--brand); color:#1a1a1a;">
-            <i data-lucide="compass" style="width:20px;height:20px;"></i>
+          <h2 class="ds-empty-title s5-html-tmp-4">Deine Favoriten sind leer</h2>
+          <p class="ds-body s5-html-tmp-5">Sichere dir dein Mittagessen! Markiere Gerichte mit ❤️ – sie landen hier bei deinen Favoriten.</p>
+          <button class="btn-cust-primary s5-html-tmp-6" type="button" onclick="showDiscover();">
+            <i data-lucide="compass" class="s5-html-tmp-7"></i>
             <span>Jetzt entdecken</span>
           </button>
         </div>
         
-        <div id="favContent" style="display:none;">
+        <div id="favContent" class="s5-html-tmp-8">
           <!-- 2x2 Grid für Gerichte -->
-          <div id="sectionDishesWrapper" style="padding:20px 0;">
-            <h3 style="padding:0 20px; margin:0 0 16px; font-size:15px; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:0.05em;">Gerichte in deiner Box</h3>
+          <div id="sectionDishesWrapper" class="s5-html-tmp-9">
+            <h3 class="s5-html-tmp-10">Gerichte in deiner Box</h3>
             <div id="favDishes" class="fav-grid">
               <!-- Dynamisch befüllt (fav-card) -->
             </div>
             
-            <div id="emptyFavDishes" style="display:none; text-align:center; padding:40px 20px; margin:0 20px; background:#f8f9fa; border-radius:24px; border:2px dashed #e2e8f0;">
-              <p style="font-size:14px; font-weight:700; color:#64748b; margin:0;">Noch keine Gerichte in der Box.</p>
+            <div id="emptyFavDishes" class="s5-html-tmp-11">
+              <p class="s5-html-tmp-12">Noch keine Gerichte in der Box.</p>
             </div>
           </div>
           
           <!-- Trenner -->
-          <div id="favProviderSeparator" style="height:32px; border-bottom:1px solid rgba(0,0,0,0.05); margin-bottom:32px;"></div>
+          <div id="favProviderSeparator" class="s5-html-tmp-13"></div>
           
           <!-- Lieblings-Anbieter -->
-          <div id="sectionProvidersWrapper" style="padding:20px 0; border-top:1px solid rgba(0,0,0,0.03);">
-            <h3 style="padding:0 20px; margin:0 0 16px; font-size:15px; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:0.05em;">Deine Lieblings-Betriebe</h3>
-            <div id="favProviders" style="display:flex; flex-direction:column; gap:12px; padding:0 20px;">
+          <div id="sectionProvidersWrapper" class="s5-html-tmp-14">
+            <h3 class="s5-html-tmp-15">Deine Lieblings-Betriebe</h3>
+            <div id="favProviders" class="s5-html-tmp-16">
               <!-- Dynamisch befüllt -->
             </div>
           </div>
           
           <!-- Pull-to-Reveal: Nächste Tage erst nach Nach-unten-ziehen sichtbar -->
-          <div id="favPullHint" style="display:none; text-align:center; padding:16px; margin-top:24px; font-size:13px; color:#999; font-weight:500;">
+          <div id="favPullHint" class="s5-html-tmp-17">
             Nach unten ziehen für Morgen &amp; Übermorgen
           </div>
-          <div id="favUpcomingPreview" style="margin-top:16px; display:none; opacity:0; transition:opacity 0.3s ease;">
-            <div class="section-title" style="margin-bottom:16px; font-size:18px; font-weight:800; color:#1a1a1a; padding:0 20px;">Morgen &amp; Übermorgen</div>
-            <div id="favUpcomingDays" style="display:flex; flex-direction:column; gap:16px; padding:0 20px;"></div>
+          <div id="favUpcomingPreview" class="s5-html-tmp-18">
+            <div class="section-title s5-html-tmp-19">Morgen &amp; Übermorgen</div>
+            <div id="favUpcomingDays" class="s5-html-tmp-20"></div>
           </div>
         </div>
       </div>

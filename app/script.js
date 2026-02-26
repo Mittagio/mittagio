@@ -275,17 +275,13 @@
     const abholnummer = !!(p && p.orderingEnabled !== false && (data.hasPickupCode || p.hasPickupCode));
     const mehrweg = !!(p && (p.reuse && p.reuse.enabled));
     
-    // Bild-Wrapper: 12px Padding, innen 4:3 mit border-radius 12px und hellgrauem Rahmen
+    // Bild-Wrapper: 12px Padding, innen 4:3 mit border-radius 12px und hellgrauem Rahmen (Sprint 5: CSS-Klassen)
     const imgWrap = document.createElement('div');
     imgWrap.className = 'discover-card-img-wrap';
-    imgWrap.style.cssText = 'padding:12px; box-sizing:border-box;';
     const imgContainer = document.createElement('div');
     imgContainer.className = 'discover-card-img-inner';
-    imgContainer.style.cssText = 'position:relative; width:100%; aspect-ratio:4/3; overflow:hidden; border-radius:12px; border:1px solid rgba(0,0,0,0.08); background:#f1f3f5;';
-    
     const img = document.createElement('img');
     img.className = 'cust-card-img';
-    img.style.cssText = 'display:block; width:100%; height:100%; object-fit:cover;';
     img.src = data.imageUrl || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=800&q=80';
     img.loading = 'lazy';
     function setImgLoaded(){ img.classList.add('img-loaded'); }
@@ -293,12 +289,12 @@
     if(img.complete) setImgLoaded();
     imgContainer.appendChild(img);
     const likeBtn = document.createElement('button');
-    likeBtn.style.cssText = 'position:absolute; top:8px; right:8px; width:32px; height:32px; border-radius:10px; background:rgba(255,255,255,0.9); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#E34D4D; box-shadow:0 2px 8px rgba(0,0,0,0.1);';
+    likeBtn.className = 'discover-card-btn-like';
     likeBtn.innerHTML = `<i data-lucide="heart" style="width:18px; height:18px; ${isFavorited ? 'fill:#E34D4D;' : ''}"></i>`;
     likeBtn.onclick = (e) => { e.stopPropagation(); toggleFavorite(data.id, likeBtn); };
     imgContainer.appendChild(likeBtn);
     const shareBtn = document.createElement('button');
-    shareBtn.style.cssText = 'position:absolute; top:8px; right:44px; width:32px; height:32px; border-radius:10px; background:rgba(255,255,255,0.9); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#1a1a1a; box-shadow:0 2px 8px rgba(0,0,0,0.1);';
+    shareBtn.className = 'discover-card-btn-share';
     shareBtn.innerHTML = '<i data-lucide="share-2" style="width:16px;height:16px;"></i>';
     shareBtn.onclick = (e) => { e.stopPropagation(); shareOffer(data); };
     imgContainer.appendChild(shareBtn);
@@ -308,7 +304,6 @@
     // 3-Säulen-Icons direkt unter dem Bild (vor Text): 🍴 🧾 🔄, inaktiv ausgegraut
     const pillarsRow = document.createElement('div');
     pillarsRow.className = 'discover-card-pillars card-pillars';
-    pillarsRow.style.cssText = 'display:flex; align-items:center; gap:8px; padding:6px 16px 8px; font-size:18px; line-height:1;';
     pillarsRow.innerHTML = [
       '<span class="pillar-icon" title="Vor Ort" style="' + (vorOrt ? '' : 'opacity:0.4; filter:grayscale(100%);') + '">🍴</span>',
       '<span class="pillar-icon" title="Abholnummer" style="' + (abholnummer ? '' : 'opacity:0.4; filter:grayscale(100%);') + '">🧾</span>',
@@ -320,20 +315,17 @@
     body.className = 'cust-card-body';
     
     const title = document.createElement('h3');
-    title.className = 'cust-card-title';
-    title.style.cssText = 'margin:0 0 4px; padding:0 16px; font-size:17px; font-weight:900; color:#1a1a1a; letter-spacing:-0.02em; line-height:1.25;';
+    title.className = 'cust-card-title discover-card-title';
     title.textContent = data.dish || 'Gericht';
     body.appendChild(title);
     
     const providerPriceRow = document.createElement('div');
-    providerPriceRow.style.cssText = 'display:flex; align-items:center; justify-content:space-between; padding:0 16px 6px;';
+    providerPriceRow.className = 'discover-card-provider-price-row';
     const providerLine = document.createElement('div');
-    providerLine.className = 'cust-card-meta';
-    providerLine.style.cssText = 'margin:0; font-size:12px; font-weight:600; color:#64748b;';
+    providerLine.className = 'cust-card-meta discover-card-provider-line';
     providerLine.innerHTML = `<i data-lucide="store" style="width:14px;height:14px;vertical-align:middle;"></i> <span>${(data.providerName || 'Anbieter').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</span>`;
     const price = document.createElement('div');
-    price.className = 'cust-card-price price-pill';
-    price.style.cssText = 'font-size:15px; font-weight:900; color:var(--brand,#FFD700);';
+    price.className = 'cust-card-price price-pill discover-card-price';
     price.textContent = euro(data.price);
     providerPriceRow.appendChild(providerLine);
     providerPriceRow.appendChild(price);
@@ -341,14 +333,11 @@
 
     // CTA: schmaler, zentriert (nicht volle Breite)
     const ctaWrap = document.createElement('div');
-    ctaWrap.style.cssText = 'padding:8px 16px 0; display:flex; justify-content:center;';
+    ctaWrap.className = 'discover-card-cta-wrap';
     const ctaBtn = document.createElement('button');
     ctaBtn.type = 'button';
-    ctaBtn.className = 'btn btn-mittagsbox-cta';
-    ctaBtn.style.cssText = 'width:auto; min-width:200px; min-height:48px; padding:0 24px; border-radius:14px; background:#FFD700; color:#1a1a1a; font-weight:800; font-size:16px; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; transition:transform 0.2s, box-shadow 0.2s;';
+    ctaBtn.className = 'btn btn-mittagsbox-cta discover-card-cta-btn';
     ctaBtn.innerHTML = '<span style="font-size:18px;line-height:1;">🍱</span> <span>In meine Box</span>';
-    ctaBtn.onmouseover = () => { ctaBtn.style.transform = 'scale(1.02)'; ctaBtn.style.boxShadow = '0 4px 12px rgba(255,215,0,0.4)'; };
-    ctaBtn.onmouseout = () => { ctaBtn.style.transform = 'scale(1)'; ctaBtn.style.boxShadow = 'none'; };
     ctaBtn.onclick = (e) => {
       e.stopPropagation();
       e.preventDefault();
@@ -362,7 +351,7 @@
         if(typeof updateHeaderBasket === 'function') updateHeaderBasket();
       });
     };
-    if(!abholnummer){ ctaBtn.style.background = '#e5e5e5'; ctaBtn.style.color = '#888'; ctaBtn.style.cursor = 'not-allowed'; ctaBtn.disabled = true; }
+    if(!abholnummer){ ctaBtn.classList.add('is-disabled'); ctaBtn.disabled = true; }
     ctaWrap.appendChild(ctaBtn);
     body.appendChild(ctaWrap);
     
@@ -370,7 +359,7 @@
       const walkingMinutes = Math.round(Number(data.distanceKm) * 12);
       const carMinutes = Math.round(Number(data.distanceKm) * 1.5);
       const mobilityRow = document.createElement('div');
-      mobilityRow.style.cssText = 'margin-top:8px; padding:6px 16px 10px; font-size:11px; color:#94a3b8; font-weight:600; display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap; border-top:1px solid rgba(0,0,0,0.04);';
+      mobilityRow.className = 'discover-card-mobility-row';
       mobilityRow.innerHTML = `<span>🚶 ${walkingMinutes < 1 ? '< 1' : walkingMinutes} min</span><span style="color:#e2e8f0;">|</span><span>🚗 ${carMinutes < 1 ? '< 1' : carMinutes} min</span>`;
       body.appendChild(mobilityRow);
     }
@@ -1301,13 +1290,12 @@
     var wrap = document.createElement('div');
     wrap.id = 'providerBusinessDataCardWrap';
     wrap.className = 'provider-settings-card provider-business-data-card';
-    wrap.setAttribute('style', 'background:#fff; border-radius:24px; padding:24px; border:none; box-shadow:0 1px 3px rgba(0,0,0,0.06);');
     var title = document.createElement('h3');
-    title.setAttribute('style', 'margin:0 0 6px; font-size:17px; font-weight:800; color:#1a1a1a;');
+    title.className = 's5-pbd-title';
     title.textContent = 'Betriebsdaten';
     wrap.appendChild(title);
     var subtitle = document.createElement('p');
-    subtitle.setAttribute('style', 'margin:0 0 20px; font-size:14px; color:#64748b; line-height:1.4;');
+    subtitle.className = 's5-pbd-subtitle';
     subtitle.textContent = 'Betriebsname oder Adresse suchen – Adresse wird automatisch ausgefüllt.';
     wrap.appendChild(subtitle);
     wrap.appendChild(MittagioForm.createInputGroup(PROVIDER_BUSINESS_FIELDS[0]));
@@ -1317,13 +1305,12 @@
     wrap.appendChild(MittagioForm.createInputGroup(PROVIDER_BUSINESS_FIELDS[4]));
     wrap.appendChild(MittagioForm.createInputGroup(PROVIDER_BUSINESS_FIELDS[5]));
     var webGroup = MittagioForm.createInputGroup(PROVIDER_BUSINESS_FIELDS[6]);
-    webGroup.style.marginBottom = '24px';
+    webGroup.classList.add('s5-pbd-web-group');
     wrap.appendChild(webGroup);
     var btn = document.createElement('button');
     btn.type = 'button';
     btn.id = 'btnProviderSaveBusiness';
-    btn.className = 'btn-primary';
-    btn.setAttribute('style', 'width:100%; min-height:56px; border-radius:16px; font-size:16px; font-weight:800; background:#FFD700; color:#1a1a1a; border:none; box-shadow:0 4px 12px rgba(255,215,0,0.2); margin-top:20px;');
+    btn.className = 'btn-primary s5-pbd-save-btn';
     btn.textContent = 'Daten speichern';
     wrap.appendChild(btn);
     return wrap;
@@ -2168,8 +2155,7 @@
       if(empty) empty.remove();
       var emptyDiv = document.createElement('div');
       emptyDiv.className = 'discover-map-empty';
-      emptyDiv.style.cssText = 'position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; text-align:center; background:linear-gradient(180deg, #e8f4f8 0%, #f0f7fa 100%);';
-      emptyDiv.innerHTML = '<div style="font-size:48px; margin-bottom:16px;">🗺️</div><div style="font-size:18px; font-weight:800; color:#1a1a1a; margin-bottom:8px;">Keine Angebote im Radius</div><div style="font-size:14px; color:#64748b;">Erweitere den Hunger-Radius oder wechsle die Kategorie.</div>';
+      emptyDiv.innerHTML = '<div class="discover-map-empty-icon">🗺️</div><div class="discover-map-empty-title">Keine Angebote im Radius</div><div class="discover-map-empty-sub">Erweitere den Hunger-Radius oder wechsle die Kategorie.</div>';
       mapEl.parentNode.appendChild(emptyDiv);
       if(discoverLeafletMap){ discoverLeafletMarkers.forEach(function(m){ discoverLeafletMap.removeLayer(m); }); discoverLeafletMarkers = []; }
       return;
@@ -2178,7 +2164,7 @@
     var empty = mapEl.parentNode.querySelector('.discover-map-empty');
     if(empty) empty.remove();
     if(typeof L === 'undefined'){
-      mapEl.innerHTML = '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#f0f7fa;color:#64748b;">Karte wird geladen…</div>';
+      mapEl.innerHTML = '<div class="discover-map-loading">Karte wird geladen…</div>';
       return;
     }
     if(!discoverLeafletMap){
@@ -2295,10 +2281,8 @@
   function openDiscoverDateSheet(){
     var backdrop = document.createElement('div');
     backdrop.className = 'discover-date-sheet-backdrop';
-    backdrop.style.cssText = 'position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:2998; opacity:0; transition:opacity 0.2s;';
     var sheet = document.createElement('div');
     sheet.className = 'discover-date-sheet';
-    sheet.style.cssText = 'position:fixed; left:10px; right:10px; bottom:calc(20px + env(safe-area-inset-bottom)); background:#fff; border-radius:20px; padding:20px; z-index:2999; box-shadow:0 8px 32px rgba(0,0,0,0.15); transform:translateY(120%); transition:transform 0.3s cubic-bezier(0.32,0.72,0,1);';
     var days = [];
     var today = new Date();
     for(var i = 0; i < 7; i++){
@@ -2307,14 +2291,14 @@
       var label = i === 0 ? 'Heute' : i === 1 ? 'Morgen' : i === 2 ? 'Übermorgen' : ['So','Mo','Di','Mi','Do','Fr','Sa'][d.getDay()] + ', ' + d.getDate() + '.' + (d.getMonth()+1) + '.';
       days.push({ id: iso, label: label });
     }
-    sheet.innerHTML = '<p style="margin:0 0 16px; font-size:16px; font-weight:800; color:#0f172a;">Datum wählen</p><div style="display:flex; flex-direction:column; gap:8px;">' + days.map(function(d){
+    sheet.innerHTML = '<p class="discover-date-sheet-heading">Datum wählen</p><div class="discover-date-sheet-list">' + days.map(function(d){
       var isActive = activeDay === d.id;
-      return '<button type="button" class="discover-date-opt' + (isActive ? ' active' : '') + '" data-day="' + d.id + '" style="padding:14px 16px; border-radius:14px; border:2px solid ' + (isActive ? '#0f172a' : 'rgba(0,0,0,0.08)') + '; background:' + (isActive ? '#0f172a' : '#fff') + '; color:' + (isActive ? '#fff' : '#0f172a') + '; font-size:15px; font-weight:700; cursor:pointer; text-align:left;">' + d.label + '</button>';
+      return '<button type="button" class="discover-date-opt' + (isActive ? ' active' : '') + '" data-day="' + d.id + '">' + d.label + '</button>';
     }).join('') + '</div>';
     document.body.appendChild(backdrop);
     document.body.appendChild(sheet);
-    requestAnimationFrame(function(){ requestAnimationFrame(function(){ backdrop.style.opacity = '1'; sheet.style.transform = 'translateY(0)'; }); });
-    function close(){ backdrop.style.opacity = '0'; sheet.style.transform = 'translateY(120%)'; setTimeout(function(){ backdrop.remove(); sheet.remove(); }, 300); }
+    requestAnimationFrame(function(){ requestAnimationFrame(function(){ backdrop.classList.add('is-open'); sheet.classList.add('is-open'); }); });
+    function close(){ backdrop.classList.remove('is-open'); sheet.classList.remove('is-open'); setTimeout(function(){ backdrop.remove(); sheet.remove(); }, 300); }
     backdrop.onclick = close;
     sheet.querySelectorAll('.discover-date-opt').forEach(function(btn){
       btn.onclick = function(){ activeDay = btn.getAttribute('data-day'); renderDiscoverDays(); renderDiscover(); close(); };
@@ -2571,16 +2555,13 @@
     if(!o || !o.allergens || o.allergens.length === 0) return;
     
     const overlay = document.createElement('div');
-    overlay.style.cssText = 'position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.8); z-index:2000; display:flex; align-items:center; justify-content:center; padding:20px;';
-    overlay.onclick = (e) => {
-      if(e.target === overlay) {
-        document.body.removeChild(overlay);
-      }
+    overlay.className = 's5-overlay-dark';
+    overlay.onclick = function(e){
+      if(e.target === overlay) document.body.removeChild(overlay);
     };
-    
     const content = document.createElement('div');
-    content.style.cssText = 'background:linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border-radius:24px; padding:24px; max-width:420px; width:100%; border:2px solid rgba(255,255,255,0.1); box-shadow:0 8px 32px rgba(0,0,0,0.5); max-height:90vh; overflow:hidden; display:flex; flex-direction:column;';
-    content.onclick = (e) => e.stopPropagation();
+    content.className = 's5-modal-dark';
+    content.onclick = function(e){ e.stopPropagation(); };
     
     // Allergene-Mapping (vereinfacht - sollte mit ALLERGENE_STANDARD arbeiten)
     const raw = o.allergens.map(a => String(a||'').trim());
@@ -2820,7 +2801,7 @@
     
     const overlay = document.createElement('div');
     overlay.id = 'matchOverlayTinder';
-    overlay.style.cssText = 'position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:2000; display:flex; align-items:center; justify-content:center;';
+    overlay.className = 's5-overlay-dark s5-overlay-inset';
     overlay.innerHTML = `
       <div class="match-overlay" style="text-align:center; padding:40px; max-width:320px;">
         <div style="font-size:80px; margin-bottom:16px;">😋</div>
@@ -2923,18 +2904,7 @@
     
     // Temporäre Kopie des Bildes erstellen
     const flyImg = img.cloneNode(true);
-    flyImg.style.cssText = `
-      position:fixed;
-      width:100px;
-      height:100px;
-      object-fit:cover;
-      border-radius:16px;
-      z-index:9999;
-      pointer-events:none;
-      box-shadow:0 8px 24px rgba(0,0,0,0.3);
-      transition:all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-    `;
-    
+    flyImg.className = 's5-fly-thumb';
     const cardRect = card.getBoundingClientRect();
     const favRect = favNavBtn.getBoundingClientRect();
     
@@ -2989,20 +2959,8 @@
     };
     
     const content = document.createElement('div');
-    content.style.cssText = `
-      position:fixed;
-      top:50%;
-      left:50%;
-      transform:translate(-50%, -50%);
-      background:#fff;
-      border-radius:24px;
-      padding:24px;
-      max-width:90vw;
-      width:400px;
-      box-shadow:0 8px 32px rgba(0,0,0,0.2);
-      z-index:101;
-    `;
-    content.onclick = (e) => e.stopPropagation();
+    content.className = 's5-provider-quickview-content';
+    content.onclick = function(e){ e.stopPropagation(); };
     
     content.innerHTML = `
       <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
@@ -3446,207 +3404,59 @@
   }
   
   // Entscheidungs-Kachel (Heute-Fokus): 2x2 Grid mit 3 Säulen in unterer Leiste
-  function createDecisionTile(o, opts={}){
+  function createDecisionTile(o, opts){
+    opts = opts || {};
     const data = normalizeOffer(o);
     const interactive = opts.interactive !== false;
     const card = document.createElement('div');
     card.className = 'decision-tile';
-    card.style.cssText = `
-      position: relative;
-      background: #fff;
-      border-radius: 16px;
-      overflow: hidden;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      cursor: pointer;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-      display: flex;
-      flex-direction: column;
-      aspect-ratio: 1;
-    `;
-    
-    if(interactive){
-      card.onclick = () => openOffer(data.id);
-      card.onmouseover = () => {
-        card.style.transform = 'scale(1.02)';
-        card.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
-      };
-      card.onmouseout = () => {
-        card.style.transform = 'scale(1)';
-        card.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
-      };
-    }
-    
+    if(interactive) card.onclick = function(){ openOffer(data.id); };
     const imgSrc = data.imageUrl || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70';
-    
-    // Bild-Container (mit Overlay für 3 Säulen)
     const imgContainer = document.createElement('div');
-    imgContainer.style.cssText = `
-      position: relative;
-      width: 100%;
-      flex: 1;
-      overflow: hidden;
-      background: #f0f0f0;
-    `;
-    
+    imgContainer.className = 'decision-tile-img-wrap';
     const img = document.createElement('img');
     img.src = imgSrc;
     img.alt = data.dish || '';
-    img.style.cssText = `
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    `;
     imgContainer.appendChild(img);
-    
-    // Rotes X oben rechts (Ausschlussverfahren)
     const dismissBtn = document.createElement('button');
     dismissBtn.type = 'button';
-    dismissBtn.style.cssText = `
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: rgba(231, 76, 60, 0.95);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: 2px solid #fff;
-      color: #fff;
-      font-size: 18px;
-      font-weight: 900;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      z-index: 20;
-      box-shadow: 0 2px 8px rgba(231, 76, 60, 0.4);
-      transition: transform 0.2s ease;
-    `;
+    dismissBtn.className = 'decision-tile-dismiss';
     dismissBtn.innerHTML = '&#10005;';
-    dismissBtn.onclick = (e) => {
+    dismissBtn.onclick = function(e){
       e.stopPropagation();
       triggerHapticFeedback([10]);
-      // Kachel ausblenden (Ausschlussverfahren)
       card.style.opacity = '0';
       card.style.transform = 'scale(0.9)';
-      setTimeout(() => {
-        if(card.parentNode) card.parentNode.removeChild(card);
-      }, 200);
+      setTimeout(function(){ if(card.parentNode) card.parentNode.removeChild(card); }, 200);
       showToast('Gericht ausgeschlossen');
     };
-    dismissBtn.onmouseover = () => {
-      dismissBtn.style.transform = 'scale(1.1)';
-    };
-    dismissBtn.onmouseout = () => {
-      dismissBtn.style.transform = 'scale(1)';
-    };
     imgContainer.appendChild(dismissBtn);
-    
-    // 3 Säulen in unterer Leiste (im Bild-Overlay)
     const pillarsRow = document.createElement('div');
-    pillarsRow.style.cssText = `
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 50%, transparent 100%);
-      padding: 12px 8px 8px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 12px;
-      z-index: 10;
-    `;
-    
-    const offerProvider = offers.find(p => p.providerId === data.providerId);
+    pillarsRow.className = 'decision-tile-pillars';
+    const offerProvider = offers.find(function(p){ return p.providerId === data.providerId; });
     const orderingEnabled = offerProvider && (offerProvider.orderingEnabled !== false && (data.hasPickupCode || offerProvider.hasPickupCode));
     const hasDineIn = offerProvider && (offerProvider.dineInPossible !== false || data.dineInPossible);
-    const hasReuse = offerProvider && (offerProvider.reuse && offerProvider.reuse.enabled);
-    
-    // Säule 1: Vor Ort 🍴
     const pillar1 = document.createElement('div');
-    pillar1.style.cssText = `
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: ${hasDineIn ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.4)'};
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: 1px solid rgba(255,255,255,0.5);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 16px;
-      opacity: ${hasDineIn ? '1' : '0.4'};
-      filter: ${hasDineIn ? 'none' : 'grayscale(100%)'};
-    `;
-    pillar1.textContent = '🍴';
+    pillar1.className = 'decision-tile-pillar' + (hasDineIn ? ' is-active' : '');
+    pillar1.textContent = '\uD83C\uDF74';
     pillarsRow.appendChild(pillar1);
-    
-    // Säule 2: Abholnummer 🧾
     const pillar2 = document.createElement('div');
-    pillar2.style.cssText = `
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: ${orderingEnabled ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.4)'};
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: 1px solid rgba(255,255,255,0.5);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 16px;
-      opacity: ${orderingEnabled ? '1' : '0.4'};
-      filter: ${orderingEnabled ? 'none' : 'grayscale(100%)'};
-    `;
-    pillar2.textContent = '🧾';
+    pillar2.className = 'decision-tile-pillar' + (orderingEnabled ? ' is-active' : '');
+    pillar2.textContent = '\uD83C\uDF9E';
     pillarsRow.appendChild(pillar2);
-    
-    // Säule 3: Mehrweg 🔄 - ENTFERNT (nur noch im Profil)
-    
     imgContainer.appendChild(pillarsRow);
     card.appendChild(imgContainer);
-    
-    // Footer: Name & Preis in Gelb
     const footer = document.createElement('div');
-    footer.style.cssText = `
-      background: var(--brand);
-      padding: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      min-height: 60px;
-    `;
-    
+    footer.className = 'decision-tile-footer';
     const dishName = document.createElement('div');
-    dishName.style.cssText = `
-      font-weight: 900;
-      font-size: 14px;
-      color: #1a1a1a;
-      line-height: 1.3;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-    `;
+    dishName.className = 'decision-tile-dish-name';
     dishName.textContent = data.dish || 'Gericht';
     footer.appendChild(dishName);
-    
     const price = document.createElement('div');
-    price.style.cssText = `
-      font-weight: 900;
-      font-size: 18px;
-      color: #1a1a1a;
-    `;
+    price.className = 'decision-tile-price';
     price.textContent = euro(data.price);
     footer.appendChild(price);
-    
     card.appendChild(footer);
-    
     return card;
   }
   
@@ -3769,40 +3579,33 @@
     const imgSrc = data.imageUrl || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70';
     
     if(isPolaroid){
-      // Kompakte Polaroid-Karte: Foto nimmt exakt 50% Höhe ein
-      img.style.cssText = 'position:relative; width:100%; height:50%; min-height:140px; max-height:140px; overflow:hidden; background:#f0f0f0;';
-      img.innerHTML = `<img alt="${esc(data.dish||'')}" src="${esc(imgSrc)}" style="width:100%; height:100%; object-fit:cover;" />`;
-      
-      // Keine Icons mehr auf dem Bild – 3 Säulen als Balken unter dem Anbieter
-      
-      // Preis-Sticker: Rechts unten auf Foto (gelbe Pill systemweit)
+      img.classList.add('s5-polaroid-img');
+      img.innerHTML = '<img alt="' + esc(data.dish||'') + '" src="' + esc(imgSrc) + '" style="width:100%; height:100%; object-fit:cover;" />';
       const priceSticker = document.createElement('div');
-      priceSticker.className = 'price-pill';
-      priceSticker.style.cssText = 'position:absolute; bottom:8px; right:8px; padding:6px 12px; border-radius:999px; font-weight:900; font-size:14px; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 8px rgba(255,215,0,0.3); z-index:10;';
+      priceSticker.className = 'price-pill s5-on-img';
       priceSticker.textContent = euro(data.price);
       img.appendChild(priceSticker);
       if(data.photoDataIsStandard){
         const symbolHint = document.createElement('div');
-        symbolHint.style.cssText = 'position:absolute; bottom:8px; left:8px; right:56px; background:rgba(255,255,255,0.85); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); padding:6px 10px; border-radius:12px; border:1px solid rgba(255,255,255,0.4); z-index:10;';
-        symbolHint.innerHTML = '<p style="margin:0; font-size:10px; font-weight:800; color:#1a1a1a; text-transform:uppercase; display:flex; align-items:center; gap:6px;"><span>ℹ️</span> Symbolbild: Abweichungen zum Original möglich</p>';
+        symbolHint.className = 's5-symbol-hint';
+        symbolHint.innerHTML = '<p style="margin:0; font-size:10px; font-weight:800; color:#1a1a1a; text-transform:uppercase; display:flex; align-items:center; gap:6px;"><span>\u2139\uFE0F</span> Symbolbild: Abweichungen zum Original m\u00F6glich</p>';
         img.appendChild(symbolHint);
       }
     } else {
       img.style.position = 'relative';
       img.style.overflow = 'hidden';
-      img.innerHTML = `<img alt="${esc(data.dish||'')}" src="${esc(imgSrc)}" style="width:100%; height:100%; object-fit:cover;" />`;
+      img.innerHTML = '<img alt="' + esc(data.dish||'') + '" src="' + esc(imgSrc) + '" style="width:100%; height:100%; object-fit:cover;" />';
       if(data.photoDataIsStandard){
         const symbolHint = document.createElement('div');
-        symbolHint.style.cssText = 'position:absolute; bottom:8px; left:8px; right:8px; background:rgba(255,255,255,0.85); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); padding:6px 12px; border-radius:12px; border:1px solid rgba(255,255,255,0.4);';
-        symbolHint.innerHTML = '<p style="margin:0; font-size:10px; font-weight:800; color:#1a1a1a; text-transform:uppercase; display:flex; align-items:center; gap:6px;"><span>ℹ️</span> Symbolbild: Abweichungen zum Original möglich</p>';
+        symbolHint.className = 's5-symbol-hint s5-symbol-hint-full';
+        symbolHint.innerHTML = '<p style="margin:0; font-size:10px; font-weight:800; color:#1a1a1a; text-transform:uppercase; display:flex; align-items:center; gap:6px;"><span>\u2139\uFE0F</span> Symbolbild: Abweichungen zum Original m\u00F6glich</p>';
         img.appendChild(symbolHint);
       }
     }
 
-    // Polaroid: 3 Säulen (🍴 🔄 🧾) direkt unter dem Bild – Konzept: Icons unter Bild, dann Name/Preis/Zeit
     if(isPolaroid){
       const barsWrap = document.createElement('div');
-      barsWrap.style.cssText = 'padding:10px 16px; background:#fff; border-top:1px solid rgba(0,0,0,0.04);';
+      barsWrap.className = 's5-bars-wrap';
       barsWrap.innerHTML = renderPillarBars(hasDineIn, orderingEnabled, hasReuse);
       card.appendChild(img);
       card.appendChild(barsWrap);
@@ -3821,34 +3624,21 @@
     // Body
     const body=document.createElement('div');
     body.className='body';
-    if(isPolaroid){
-      // Polaroid: Weißer Hintergrund für Body (Holz nur im View-Hintergrund) - Clean-up: Keine grauen Linien/Schattenboxen
-      body.style.cssText = 'background:#fff; padding:0; flex:1; display:flex; flex-direction:column; border:none; box-shadow:none;';
-    }
+    if(isPolaroid) body.classList.add('s5-polaroid-body');
     
-    // Polaroid: Gerichtname in Marker-Schrift mit Teilen-Icon
     if(isPolaroid){
       const titleRow = document.createElement('div');
-      titleRow.style.cssText = 'margin-top:12px; padding:0 16px; display:flex; align-items:center; justify-content:space-between; gap:8px;';
-      
+      titleRow.className = 's5-polaroid-title-row';
       const title = document.createElement('h3');
-      title.style.cssText = "font-family:'Montserrat','Inter',system-ui,sans-serif; font-weight:800; font-size:18px; color:var(--tgtg-title-color,#0f172a); text-transform:none; letter-spacing:-0.02em; line-height:1.3; margin:0; flex:1; text-align:center;";
+      title.className = 's5-polaroid-title';
       title.textContent = data.dish || 'Gericht';
       titleRow.appendChild(title);
-      
-      // Teilen-Icon rechts neben dem Namen
       const shareBtn = document.createElement('button');
       shareBtn.type = 'button';
-      shareBtn.style.cssText = 'width:32px; height:32px; border-radius:50%; background:rgba(0,0,0,0.05); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; transition:background 0.2s ease;';
-      shareBtn.onmouseover = () => { shareBtn.style.background = 'rgba(0,0,0,0.1)'; };
-      shareBtn.onmouseout = () => { shareBtn.style.background = 'rgba(0,0,0,0.05)'; };
-      shareBtn.onclick = (e) => {
-        e.stopPropagation();
-        shareOffer(data);
-      };
+      shareBtn.className = 's5-share-btn-round';
+      shareBtn.onclick = function(e){ e.stopPropagation(); shareOffer(data); };
       shareBtn.innerHTML = iconMarkup('share-2', {size: 16});
       titleRow.appendChild(shareBtn);
-      
       body.appendChild(titleRow);
     } else {
       // Standard-Titelzeile: Dish name (max 2 Zeilen)
@@ -3864,10 +3654,8 @@
     // Anbieter: Restaurant-Name (nur bei Polaroid) – Säulen bereits unter Bild
     if(isPolaroid){
       const providerEl = document.createElement('p');
-      providerEl.style.cssText = 'margin:8px 0 0; padding:0 16px; text-align:center; font-size:13px; font-weight:600; color:#666; cursor:pointer; transition:opacity 0.2s ease;';
-      providerEl.onmouseover = () => { providerEl.style.opacity = '0.7'; };
-      providerEl.onmouseout = () => { providerEl.style.opacity = '1'; };
-      providerEl.innerHTML = `<i data-lucide="store" style="width:14px;height:14px; margin-right:4px;"></i> <span>${esc(data.providerName || 'Anbieter')}</span>`;
+      providerEl.className = 's5-provider-line';
+      providerEl.innerHTML = '<i data-lucide="store" style="width:14px;height:14px; margin-right:4px;"></i> <span>' + esc(data.providerName || 'Anbieter') + '</span>';
       providerEl.onclick = (e) => {
         e.stopPropagation();
         if(data.providerId) showProviderProfilePublic(data.providerId);
@@ -3880,7 +3668,7 @@
       // Mobilitäts-Zeile: Minimalistisch, einzeilig, kleine Schrift (10-12px)
       if(data.distanceKm != null && !usePreviewData){
         const mobilityRow = document.createElement('div');
-        mobilityRow.style.cssText = 'margin-top:6px; padding:0 16px; display:flex; align-items:center; justify-content:center; gap:10px; font-size:11px; color:#666; font-weight:500; line-height:1.4;';
+        mobilityRow.className = 's5-mobility-line';
         
         // Gehzeit: 5 km/h = 12 Minuten pro km
         const walkingMinutes = Math.round(Number(data.distanceKm) * 12);
@@ -3987,25 +3775,12 @@
     // Actions: Primary CTA "In meine Box" (gelber Button ohne graue Box)
     if(interactive){
       if(isPolaroid){
-        // Polaroid: Gelber Button direkt auf weißem Rand (ohne graue Box)
         const orderBtn = document.createElement('button');
         orderBtn.type = 'button';
-        orderBtn.style.cssText = 'width:calc(100% - 32px); margin:12px 16px; min-height:48px; background:#FFCC00; color:#1a1a1a; font-weight:900; font-size:16px; border:none; border-radius:12px; box-shadow:0 4px 12px rgba(255,204,0,0.3); display:flex; align-items:center; justify-content:center; gap:8px; cursor:pointer; transition:transform 0.2s ease, box-shadow 0.2s ease;';
-        orderBtn.onmouseover = () => {
-          orderBtn.style.transform = 'translateY(-2px)';
-          orderBtn.style.boxShadow = '0 6px 16px rgba(255,204,0,0.4)';
-        };
-        orderBtn.onmouseout = () => {
-          orderBtn.style.transform = 'translateY(0)';
-          orderBtn.style.boxShadow = '0 4px 12px rgba(255,204,0,0.3)';
-        };
-        orderBtn.innerHTML = `<span style="font-size:18px;line-height:1;">🍱</span> <span>In meine Box</span>`;
+        orderBtn.className = 's5-order-btn-polaroid' + (!data.hasPickupCode ? ' is-disabled' : '');
+        orderBtn.innerHTML = '<span style="font-size:18px;line-height:1;">\uD83C\uDF71</span> <span>In meine Box</span>';
         orderBtn.disabled = !data.hasPickupCode;
-        if(orderBtn.disabled){
-          orderBtn.style.opacity = '0.5';
-          orderBtn.style.cursor = 'not-allowed';
-        }
-        orderBtn.onclick = (e) => {
+        orderBtn.onclick = function(e){
           e.stopPropagation();
           if(orderBtn.disabled) return;
           const thumb = card.querySelector('img');
@@ -4174,19 +3949,15 @@
     const imgSrc = data.imageUrl || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70';
     
     const img = document.createElement('div');
-    img.className = 'fav-card-img-wrap';
-    img.style.cssText = 'position:relative; height:96px; overflow:hidden; background:#f1f5f9;';
+    img.className = 'fav-card-img-wrap s5-fav-img';
     const imgEl = document.createElement('img');
     imgEl.src = imgSrc;
     imgEl.alt = esc(data.dish||'Gericht');
-    imgEl.className = 'fav-card-img';
-    imgEl.style.cssText = 'width:100%; height:100%; object-fit:cover;';
+    imgEl.className = 'fav-card-img s5-fav-img-el';
     img.appendChild(imgEl);
-    
     const removeBtn = document.createElement('button');
     removeBtn.type = 'button';
-    removeBtn.className = 'tgtg-btn-remove';
-    removeBtn.style.cssText = 'position:absolute; top:6px; right:6px; z-index:10; width:28px; height:28px; border-radius:50%; background:rgba(255,255,255,0.95); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; padding:0; box-shadow:0 1px 3px rgba(0,0,0,0.08);';
+    removeBtn.className = 'tgtg-btn-remove s5-fav-remove';
     removeBtn.innerHTML = '<i data-lucide="x" style="width:14px;height:14px;color:#E34D4D;stroke-width:3;"></i>';
     removeBtn.onclick = (e) => {
       e.stopPropagation();
@@ -4203,8 +3974,7 @@
     img.appendChild(removeBtn);
     
     const body = document.createElement('div');
-    body.className = 'fav-card-body';
-    body.style.cssText = 'padding:10px 12px; flex:1; display:flex; flex-direction:column; gap:2px; min-height:0;';
+    body.className = 'fav-card-body s5-fav-body';
     body.innerHTML = `
       <p class="tgtg-fav-meta" style="font-size:11px; font-weight:700; color:#94a3b8; margin:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${esc(data.providerName||'Anbieter')}</p>
       <p class="tgtg-fav-title" style="font-size:14px; font-weight:800; color:var(--tgtg-title-color,#0f172a); margin:0; line-height:1.3; overflow:hidden; text-overflow:ellipsis; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;">${esc(data.dish||'Gericht')}</p>
@@ -4518,26 +4288,23 @@
     
     // Zeige Vorschau nur wenn es Gerichte gibt
     if(upcomingDaysList.length > 0){
-      upcomingDaysList.forEach(({dayKey, dayLabel, dishes}) => {
+      upcomingDaysList.forEach(function(obj){
+        var dayKey = obj.dayKey, dayLabel = obj.dayLabel, dishes = obj.dishes;
         const daySection = document.createElement('div');
-        daySection.style.cssText = 'margin-bottom:20px;';
-        
+        daySection.className = 's5-day-section';
         const dayTitle = document.createElement('div');
-        dayTitle.style.cssText = 'font-size:14px; font-weight:700; color:#666; margin-bottom:10px; text-transform:uppercase; letter-spacing:0.5px;';
+        dayTitle.className = 's5-day-title';
         dayTitle.textContent = dayLabel;
         daySection.appendChild(dayTitle);
-        
-        // Horizontale Scroll-Liste für kompakte Darstellung
         const scrollContainer = document.createElement('div');
-        scrollContainer.style.cssText = 'display:flex; gap:10px; overflow-x:auto; padding-bottom:8px; scrollbar-width:thin; -webkit-overflow-scrolling:touch;';
+        scrollContainer.className = 's5-scroll-container';
         scrollContainer.style.scrollbarWidth = 'thin';
         
-        dishes.forEach(o => {
-          const data = normalizeOffer(o);
-          const miniCard = createUpcomingDayCard(data, dayKey);
+        dishes.forEach(function(o){
+          var data = normalizeOffer(o);
+          var miniCard = createUpcomingDayCard(data, dayKey);
           scrollContainer.appendChild(miniCard);
         });
-        
         daySection.appendChild(scrollContainer);
         upcomingDays.appendChild(daySection);
       });
@@ -4547,44 +4314,29 @@
   // Kompakte Karte für kommende Tage
   function createUpcomingDayCard(data, dayKey){
     const card = document.createElement('div');
-    card.className = 'tgtg-upcoming-card';
-    card.style.cssText = 'flex:0 0 auto; width:140px; background:#fff; border-radius:16px; border:1px solid var(--tgtg-divider,rgba(0,0,0,0.06)); box-shadow:none; overflow:hidden; cursor:pointer; transition:border-color 0.2s ease;';
-    
-    card.onclick = () => {
-      openOffer(data.id);
-    };
-    
-    // Mini-Bild (kompakt)
+    card.className = 'tgtg-upcoming-card s5-upcoming-card';
+    card.onclick = function(){ openOffer(data.id); };
     const img = document.createElement('div');
-    img.style.cssText = 'width:100%; height:80px; background:#f0f0f0; overflow:hidden; position:relative;';
+    img.className = 's5-upcoming-img';
     const imgSrc = data.imageUrl || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70';
-    img.innerHTML = `<img src="${esc(imgSrc)}" alt="${esc(data.dish||'')}" style="width:100%; height:100%; object-fit:cover;" />`;
+    img.innerHTML = '<img src="' + esc(imgSrc) + '" alt="' + esc(data.dish||'') + '" style="width:100%; height:100%; object-fit:cover;" />';
     card.appendChild(img);
-    
-    // Body
     const body = document.createElement('div');
-    body.style.cssText = 'padding:8px;';
-    
-    // Gerichtname (kompakt)
+    body.className = 's5-upcoming-body';
     const title = document.createElement('div');
-    title.style.cssText = "font-family:'Montserrat','Inter',system-ui,sans-serif; font-weight:700; font-size:12px; color:var(--tgtg-title-color,#0f172a); margin-bottom:4px; line-height:1.2; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;";
+    title.className = 's5-upcoming-title';
     title.textContent = data.dish || 'Gericht';
     body.appendChild(title);
-    
-    // Restaurant-Name (sehr kompakt)
     const provider = document.createElement('div');
-    provider.style.cssText = 'font-size:10px; color:#999; margin-bottom:6px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;';
+    provider.className = 's5-upcoming-provider';
     provider.textContent = data.providerName || 'Anbieter';
     body.appendChild(provider);
-    
-    // 3 Säulen-Icons (dezent, klein)
-    const offerProvider = offers.find(p => p.providerId === data.providerId);
+    const offerProvider = offers.find(function(p){ return p.providerId === data.providerId; });
     const orderingEnabled = offerProvider && (offerProvider.orderingEnabled !== false && (data.hasPickupCode || offerProvider.hasPickupCode));
     const hasDineIn = offerProvider && (offerProvider.dineInPossible !== false || data.dineInPossible);
     const hasReuse = offerProvider && (offerProvider.reuse && offerProvider.reuse.enabled);
-    
     const iconsRow = document.createElement('div');
-    iconsRow.style.cssText = 'display:flex; align-items:center; justify-content:center; gap:6px;';
+    iconsRow.className = 's5-upcoming-icons';
     iconsRow.innerHTML = `
       <span style="font-size:14px; opacity:${hasDineIn ? '1' : '0.3'};" title="Vor Ort">🍴</span>
       <span style="font-size:14px; opacity:${orderingEnabled ? '1' : '0.3'};" title="Abholnummer">🧾</span>
@@ -4678,7 +4430,7 @@
     card.onclick = () => openOffer(data.id);
 
     const removeBtn = document.createElement('button');
-    removeBtn.style.cssText = 'position:absolute; top:8px; right:8px; z-index:20; width:28px; height:28px; border-radius:10px; background:rgba(255,255,255,0.9); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.1);';
+    removeBtn.classList.add('s5-pickup-card-remove');
     removeBtn.innerHTML = '<i data-lucide="x" style="width:16px; height:16px; color:#E34D4D;"></i>';
     removeBtn.onclick = (e) => { e.stopPropagation(); toggleDishFav(data.id); renderFavorites(); };
     card.appendChild(removeBtn);
@@ -4704,7 +4456,7 @@
     title.textContent = data.dish || 'Gericht';
     body.appendChild(title);
     const meta = document.createElement('div');
-    meta.style.cssText = 'font-size:13px; font-weight:600; color:var(--header-subtitle-color); margin-bottom:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;';
+    meta.className = 's5-pickup-meta';
     meta.textContent = data.providerName || 'Anbieter';
     body.appendChild(meta);
 
@@ -4746,10 +4498,10 @@
     body.appendChild(actions);
 
     const abgeholtRow = document.createElement('div');
-    abgeholtRow.style.cssText = 'margin-top:10px; font-size:12px; font-weight:600; color:var(--header-subtitle-color);';
+    abgeholtRow.className = 's5-abgeholt-row';
     const abgeholtToggle = document.createElement('button');
     abgeholtToggle.type = 'button';
-    abgeholtToggle.style.cssText = 'background:none; border:none; padding:0; cursor:pointer; font-size:12px; font-weight:700; color:#22c55e; text-decoration:underline;';
+    abgeholtToggle.className = 's5-abgeholt-toggle';
     abgeholtToggle.textContent = abgeholt ? '✓ Abgeholt · Erneut anzeigen' : 'Als abgeholt markieren';
     abgeholtToggle.onclick = (e) => {
       e.stopPropagation();
@@ -4819,39 +4571,29 @@
   // Anbieter-Favoriten-Karte: Kompakte Zeile mit Name, Text und 3 Icons
   function createFavoriteProviderCard(providerData, offersToday, hasOfferToday){
     const card = document.createElement('div');
-    card.className = 'cust-card';
-    card.style.cssText = 'flex-direction:row; padding:12px; align-items:center; gap:16px; margin-bottom:12px;';
-    if(!hasOfferToday) card.style.opacity = '0.6';
-    
+    card.className = 'cust-card fav-provider-card' + (!hasOfferToday ? ' is-muted' : '');
     const logo = document.createElement('div');
-    logo.style.cssText = 'width:56px; height:56px; border-radius:16px; background:#f1f3f5; display:flex; align-items:center; justify-content:center; font-size:28px; flex-shrink:0;';
-    logo.textContent = '🍽️';
+    logo.className = 'fav-provider-logo';
+    logo.textContent = '\uD83C\uDF7D\uFE0F';
     card.appendChild(logo);
-    
     const body = document.createElement('div');
-    body.style.flex = '1';
-    body.style.minWidth = '0';
-    
+    body.className = 'fav-provider-body';
     const name = document.createElement('h4');
-    name.style.cssText = 'margin:0 0 2px; font-size:16px; font-weight:850; color:#1a1a1a; letter-spacing:-0.01em;';
+    name.className = 'fav-provider-name';
     name.textContent = providerData.providerName || 'Anbieter';
     body.appendChild(name);
-    
     const status = document.createElement('div');
-    status.style.cssText = 'font-size:13px; font-weight:600; color:#64748b;';
+    status.className = 'fav-provider-status' + (hasOfferToday ? ' has-offer' : '');
     if(hasOfferToday){
-      const offer = offersToday[0];
+      var offer = offersToday[0];
       status.textContent = offer.dish || 'Heute im Angebot';
-      status.style.color = 'var(--brand2)';
     } else {
       status.textContent = 'Heute kein Angebot';
     }
     body.appendChild(status);
     card.appendChild(body);
-    
     const pillars = document.createElement('div');
-    pillars.className = 'card-pillars';
-    pillars.style.marginTop = '0';
+    pillars.className = 'card-pillars fav-provider-pillars';
     
     const orderingEnabled = providerData.orderingEnabled !== false && (offersToday.length > 0 && offersToday.some(o => normalizeOffer(o).hasPickupCode));
     const hasDineIn = providerData.dineInPossible !== false || (offersToday.length > 0 && offersToday.some(o => normalizeOffer(o).dineInPossible));
@@ -5394,12 +5136,11 @@
     // Allergene Overlay
     window.showAllergensOverlay = function(){
       const ov = document.createElement('div');
-      ov.style.cssText = 'position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.8); z-index:2000; display:flex; align-items:center; justify-content:center; padding:20px;';
-      ov.onclick = (e) => { if(e.target === ov) ov.remove(); };
-      
+      ov.className = 's5-overlay-dark';
+      ov.onclick = function(e){ if(e.target === ov) ov.remove(); };
       const content = document.createElement('div');
-      content.style.cssText = 'background:linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border-radius:24px; padding:24px; max-width:420px; width:100%; border:2px solid rgba(255,255,255,0.1); box-shadow:0 8px 32px rgba(0,0,0,0.5); max-height:90vh; overflow:hidden; display:flex; flex-direction:column;';
-      content.onclick = (e) => e.stopPropagation();
+      content.className = 's5-modal-dark';
+      content.onclick = function(e){ e.stopPropagation(); };
       
       const codes = (o.allergens || []).map(a => {
         const u = String(a).toUpperCase();
@@ -5434,12 +5175,11 @@
     };
     window.showExtrasDetailOverlay = function(){
       const ov = document.createElement('div');
-      ov.className = 'extras-detail-overlay';
-      ov.style.cssText = 'position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.8); z-index:2000; display:flex; align-items:center; justify-content:center; padding:20px;';
+      ov.className = 'extras-detail-overlay s5-overlay-dark';
       ov.onclick = function(e){ if(e.target === ov) ov.remove(); };
       const list = (o.extras || []).map(function(e){ return (e.name || '') + (e.price ? ' (+' + (typeof euro === 'function' ? euro(e.price) : e.price + ' €') + ')' : ''); }).filter(Boolean);
       const content = document.createElement('div');
-      content.style.cssText = 'background:linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border-radius:24px; padding:24px; max-width:420px; width:100%; border:2px solid rgba(255,255,255,0.1); box-shadow:0 8px 32px rgba(0,0,0,0.5);';
+      content.className = 's5-modal-dark';
       content.onclick = function(e){ e.stopPropagation(); };
       content.innerHTML = '<div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;"><h3 style="color:#fff; font-size:20px; font-weight:900; margin:0;">Extras</h3><button type="button" class="extras-overlay-close" style="background:none; border:none; color:#fff; cursor:pointer;"><i data-lucide="x"></i></button></div><div style="color:rgba(255,255,255,0.9); font-size:14px;">' + (list.length ? list.map(function(t){ return '<div style="padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.1);">' + (typeof esc === 'function' ? esc(t) : t) + '</div>'; }).join('') : '<p style="color:rgba(255,255,255,0.5);">Keine Extras.</p>') + '</div>';
       var closeBtn = content.querySelector('.extras-overlay-close');
@@ -6327,19 +6067,16 @@
   
   // Toast helper
   function showToast(message){
-    // Simple snackbar-style toast
     let toast = document.getElementById('toast');
     if(!toast){
       toast = document.createElement('div');
       toast.id = 'toast';
-      toast.style.cssText = 'position:fixed; bottom:90px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,.85); color:#fff; padding:12px 20px; border-radius:12px; font-size:14px; z-index:100; opacity:0; transition:opacity .3s; pointer-events:none;';
+      toast.className = 'toast-s5';
       document.body.appendChild(toast);
     }
     toast.textContent = message;
-    toast.style.opacity = '1';
-    setTimeout(() => {
-      toast.style.opacity = '0';
-    }, 3000);
+    toast.classList.add('is-visible');
+    setTimeout(function(){ toast.classList.remove('is-visible'); }, 3000);
   }
   /** Smart-Save-Blase: Plopp & Schwebe beim Drop [cite: 2026-02-18, 2026-02-26] */
   window.spawnSmartBubble = function(x, y){
@@ -6362,29 +6099,27 @@
     if(!bd){
       bd = document.createElement('div');
       bd.id = 'quickEditBd';
-      bd.className = 'backdrop';
-      bd.style.cssText = 'position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:1050; display:none; opacity:0; transition:opacity 0.25s;';
+      bd.className = 'backdrop s5-backdrop-kitchen';
       document.body.appendChild(bd);
     }
     if(!sheet){
       sheet = document.createElement('div');
       sheet.id = 'quickEditSheet';
-      sheet.className = 'sheet sheet--kitchen';
-      sheet.style.cssText = 'position:fixed; left:0; right:0; bottom:0; z-index:1051; background:#fff; border-radius:24px 24px 0 0; padding:24px; padding-bottom:calc(24px + env(safe-area-inset-bottom)); max-height:85vh; overflow-y:auto; transform:translateY(100%); transition:transform 0.3s cubic-bezier(0.4,0,0.2,1); box-shadow:0 -8px 32px rgba(0,0,0,0.15);';
+      sheet.className = 'sheet sheet--kitchen s5-sheet-kitchen';
       document.body.appendChild(sheet);
     }
     var priceVal = Number(offer.price) != null && !Number.isNaN(Number(offer.price)) ? Number(offer.price) : 0;
     var quantityVal = (offer.quantity != null && offer.quantity !== '') ? Number(offer.quantity) : (offer.portions != null ? Number(offer.portions) : '');
     if(quantityVal === '' || Number.isNaN(quantityVal)) quantityVal = '';
     var dishName = (offer.dish || offer.title || 'Gericht').trim() || 'Gericht';
-    sheet.innerHTML = '<div style="width:40px; height:4px; background:rgba(0,0,0,0.12); border-radius:2px; margin:0 auto 20px;"></div>' +
-      '<h3 style="margin:0 0 8px; font-size:20px; font-weight:900; color:#0f172a;">Schnell bearbeiten</h3>' +
-      '<p style="margin:0 0 20px; font-size:14px; color:#64748b;">' + (dishName.length > 40 ? dishName.substring(0,40) + '…' : dishName) + '</p>' +
-      '<label style="display:block; margin-bottom:8px; font-size:12px; font-weight:800; color:#64748b; text-transform:uppercase;">Preis (€)</label>' +
-      '<input type="number" step="0.01" min="0" id="quickEditPrice" placeholder="z.B. 5,99" value="' + (priceVal > 0 ? String(priceVal) : '') + '" style="width:100%; padding:14px 16px; border:2px solid #e2e8f0; border-radius:12px; font-size:16px; font-weight:700; margin-bottom:20px; box-sizing:border-box;" inputmode="decimal" />' +
-      '<label style="display:block; margin-bottom:8px; font-size:12px; font-weight:800; color:#64748b; text-transform:uppercase;">Menge (Portionen)</label>' +
-      '<input type="number" min="0" id="quickEditQuantity" placeholder="z.B. 30" value="' + (quantityVal !== '' ? String(quantityVal) : '') + '" style="width:100%; padding:14px 16px; border:2px solid #e2e8f0; border-radius:12px; font-size:16px; font-weight:700; margin-bottom:24px; box-sizing:border-box;" inputmode="numeric" />' +
-      '<button type="button" id="quickEditApply" style="width:100%; min-height:56px; border-radius:16px; border:none; background:#222; color:#fff; font-size:16px; font-weight:800; cursor:pointer;">Speichern</button>';
+    sheet.innerHTML = '<div class="s5-sheet-handle"></div>' +
+      '<h3 class="s5-sheet-title">Schnell bearbeiten</h3>' +
+      '<p class="s5-sheet-subtitle">' + (dishName.length > 40 ? dishName.substring(0,40) + '…' : dishName) + '</p>' +
+      '<label class="s5-sheet-label-upper">Preis (€)</label>' +
+      '<input type="number" step="0.01" min="0" id="quickEditPrice" placeholder="z.B. 5,99" value="' + (priceVal > 0 ? String(priceVal) : '') + '" class="s5-sheet-input" inputmode="decimal" />' +
+      '<label class="s5-sheet-label-upper">Menge (Portionen)</label>' +
+      '<input type="number" min="0" id="quickEditQuantity" placeholder="z.B. 30" value="' + (quantityVal !== '' ? String(quantityVal) : '') + '" class="s5-sheet-input-mb24" inputmode="numeric" />' +
+      '<button type="button" id="quickEditApply" class="s5-sheet-btn-dark">Speichern</button>';
     var priceInp = document.getElementById('quickEditPrice');
     var quantityInp = document.getElementById('quickEditQuantity');
     document.getElementById('quickEditApply').onclick = function(){
@@ -6397,17 +6132,16 @@
         if(newQty !== undefined && newQty >= 0) o.quantity = newQty;
         if(typeof save === 'function' && typeof LS !== 'undefined') save(LS.offers, offers);
       }
-      bd.style.display = 'none';
-      bd.style.opacity = '0';
-      sheet.style.transform = 'translateY(100%)';
+      bd.classList.remove('is-open');
+      sheet.classList.remove('is-open');
       if(typeof showToast === 'function') showToast('Gespeichert');
       if(typeof renderProviderHome === 'function') renderProviderHome();
     };
-    function close(){ bd.style.opacity = '0'; sheet.style.transform = 'translateY(100%)'; setTimeout(function(){ bd.style.display = 'none'; }, 300); }
+    function close(){ bd.classList.remove('is-open'); sheet.classList.remove('is-open'); }
     bd.onclick = function(ev){ if(ev.target === bd) close(); };
-    bd.style.display = 'block';
+    bd.classList.add('is-open');
     requestAnimationFrame(function(){
-      sheet.style.transform = 'translateY(0)';
+      sheet.classList.add('is-open');
       if(priceInp){ priceInp.focus(); priceInp.select && priceInp.select(); }
     });
   }
@@ -6421,41 +6155,39 @@
     if(!bd){
       bd = document.createElement('div');
       bd.id = 'powerSalesBd';
-      bd.className = 'backdrop';
-      bd.style.cssText = 'position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:1050; display:none; opacity:0; transition:opacity 0.25s;';
+      bd.className = 'backdrop s5-backdrop-kitchen';
       document.body.appendChild(bd);
     }
     if(!sheet){
       sheet = document.createElement('div');
       sheet.id = 'powerSalesSheet';
-      sheet.className = 'sheet sheet--kitchen';
-      sheet.style.cssText = 'position:fixed; left:0; right:0; bottom:0; z-index:1051; background:#fff; border-radius:24px 24px 0 0; padding:24px; padding-bottom:calc(24px + env(safe-area-inset-bottom)); max-height:85vh; overflow-y:auto; transform:translateY(100%); transition:transform 0.3s cubic-bezier(0.4,0,0.2,1); box-shadow:0 -8px 32px rgba(0,0,0,0.15);';
+      sheet.className = 'sheet sheet--kitchen s5-sheet-kitchen';
       document.body.appendChild(sheet);
     }
     var basePrice = Number(offer.price) || 0;
     var selectedDiscount = 0;
     var lastPortions = false;
     var dishName = (offer.dish || offer.title || 'Gericht').trim() || 'Gericht';
-    sheet.innerHTML = '<div style="width:40px; height:4px; background:rgba(0,0,0,0.12); border-radius:2px; margin:0 auto 20px;"></div>' +
-      '<h3 style="margin:0 0 8px; font-size:20px; font-weight:900; color:#0f172a;">Power-Sales</h3>' +
-      '<p style="margin:0 0 20px; font-size:14px; color:#64748b;">' + (dishName.length > 40 ? dishName.substring(0,40) + '…' : dishName) + '</p>' +
-      '<p style="margin:0 0 10px; font-size:12px; font-weight:800; color:#64748b; text-transform:uppercase;">Rabatt</p>' +
-      '<div id="powerSalesPills" style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:20px;"></div>' +
-      '<p style="margin:0 0 8px; font-size:12px; font-weight:800; color:#64748b;">Festpreis (optional)</p>' +
-      '<input type="number" step="0.01" min="0" id="powerSalesFestpreis" placeholder="z.B. ' + (basePrice > 0 ? basePrice.toFixed(2).replace('.', ',') : '5,99') + '" style="width:100%; padding:14px 16px; border:2px solid #e2e8f0; border-radius:12px; font-size:16px; font-weight:700; margin-bottom:16px; box-sizing:border-box;" inputmode="decimal" />' +
-      '<label style="display:flex; align-items:center; gap:12px; margin-bottom:24px; cursor:pointer;"><input type="checkbox" id="powerSalesLastPortions" style="width:24px; height:24px;" /> <span style="font-size:15px; font-weight:700; color:#0f172a;">Letzte Portionen – Badge anzeigen</span></label>' +
-      '<button type="button" id="powerSalesApply" style="width:100%; min-height:56px; border-radius:16px; border:none; background:#222; color:#fff; font-size:16px; font-weight:800; cursor:pointer;">Anwenden</button>';
+    sheet.innerHTML = '<div class="s5-sheet-handle"></div>' +
+      '<h3 class="s5-sheet-title">Power-Sales</h3>' +
+      '<p class="s5-sheet-subtitle">' + (dishName.length > 40 ? dishName.substring(0,40) + '…' : dishName) + '</p>' +
+      '<p class="s5-sheet-label-small">Rabatt</p>' +
+      '<div id="powerSalesPills" class="s5-sheet-pills-wrap"></div>' +
+      '<p class="s5-sheet-label-inline">Festpreis (optional)</p>' +
+      '<input type="number" step="0.01" min="0" id="powerSalesFestpreis" placeholder="z.B. ' + (basePrice > 0 ? basePrice.toFixed(2).replace('.', ',') : '5,99') + '" class="s5-sheet-input-mb16" inputmode="decimal" />' +
+      '<label class="s5-sheet-label-row"><input type="checkbox" id="powerSalesLastPortions" class="s5-sheet-checkbox" /> <span class="s5-sheet-label-text">Letzte Portionen – Badge anzeigen</span></label>' +
+      '<button type="button" id="powerSalesApply" class="s5-sheet-btn-dark">Anwenden</button>';
     var pillsWrap = document.getElementById('powerSalesPills');
     [10, 20, 30, 40, 50].forEach(function(pct){
       var btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'power-sales-pill';
       btn.textContent = '-' + pct + '%';
-      btn.style.cssText = 'padding:12px 20px; border-radius:12px; border:2px solid #e2e8f0; background:#fff; font-size:15px; font-weight:800; color:#64748b; cursor:pointer; transition:all 0.2s;';
+      btn.classList.add('s5-power-pill');
       btn.onclick = function(){
         if(typeof vibrate === 'function') vibrate(5);
-        pillsWrap.querySelectorAll('.power-sales-pill').forEach(function(b){ b.style.background = '#fff'; b.style.borderColor = '#e2e8f0'; b.style.color = '#64748b'; });
-        btn.style.background = '#0f172a'; btn.style.borderColor = '#0f172a'; btn.style.color = '#fff';
+        pillsWrap.querySelectorAll('.power-sales-pill').forEach(function(b){ b.classList.remove('is-active'); });
+        btn.classList.add('is-active');
         selectedDiscount = pct;
       };
       pillsWrap.appendChild(btn);
@@ -6474,17 +6206,16 @@
         o.lastPortions = !!(lastPortionsCb && lastPortionsCb.checked);
         if(typeof save === 'function' && typeof LS !== 'undefined') save(LS.offers, offers);
       }
-      bd.style.display = 'none';
-      bd.style.opacity = '0';
-      sheet.style.transform = 'translateY(100%)';
+      bd.classList.remove('is-open');
+      sheet.classList.remove('is-open');
       if(typeof showToast === 'function') showToast('Power-Sales angewendet');
       if(typeof renderProviderHome === 'function') renderProviderHome();
     };
     lastPortionsCb.onchange = function(){ lastPortions = lastPortionsCb.checked; };
-    function close(){ bd.style.opacity = '0'; sheet.style.transform = 'translateY(100%)'; setTimeout(function(){ bd.style.display = 'none'; }, 300); }
+    function close(){ bd.classList.remove('is-open'); sheet.classList.remove('is-open'); }
     bd.onclick = function(ev){ if(ev.target === bd) close(); };
-    bd.style.display = 'block';
-    requestAnimationFrame(function(){ bd.style.opacity = '1'; sheet.style.transform = 'translateY(0)'; });
+    bd.classList.add('is-open');
+    requestAnimationFrame(function(){ sheet.classList.add('is-open'); });
   }
   if(typeof window !== 'undefined') window.openPowerSalesOverlay = openPowerSalesOverlay;
 
@@ -6496,13 +6227,12 @@
     if(!el){
       el = document.createElement('div');
       el.id = 'toastSoftError';
-      el.className = 'toast-soft-error';
-      el.style.cssText = 'position:fixed; top:calc(60px + env(safe-area-inset-top)); left:16px; right:16px; background:#FF9500; color:#fff; padding:14px 18px; border-radius:14px; font-size:14px; font-weight:600; z-index:1100; opacity:0; transition:opacity .25s; pointer-events:none; text-align:center; box-shadow:0 4px 20px rgba(255,149,0,0.35);';
+      el.className = 'toast-soft-error s5-toast-soft';
       document.body.appendChild(el);
     }
     el.textContent = message || 'Etwas ist schiefgelaufen.';
-    el.style.opacity = '1';
-    setTimeout(function(){ el.style.opacity = '0'; }, 3500);
+    el.classList.add('is-visible');
+    setTimeout(function(){ el.classList.remove('is-visible'); }, 3500);
   }
 
   async function copyShareLink(){
@@ -7731,8 +7461,7 @@
       const cartBox = document.getElementById('cartBox');
       if(cartBox){
         const infoDiv = document.createElement('div');
-        infoDiv.className = 'hint';
-        infoDiv.style.cssText = 'background:#fff3cd; border:1px solid #ffc107; border-radius:12px; padding:12px; margin-bottom:16px; text-align:center;';
+        infoDiv.className = 'hint s5-info-warning';
         infoDiv.innerHTML = 'ℹ️ Zahlung abgebrochen';
         cartBox.insertBefore(infoDiv, cartBox.firstChild);
       }
@@ -8531,7 +8260,7 @@
     const entryPanel = document.getElementById('onboardingEntryPanel') || document.querySelector('#v-provider-onboarding-entry .panel');
     if(hasDraft && onboardingDraftDish && entryPanel){
       const banner = document.createElement('div');
-      banner.style.cssText = 'margin-bottom:24px; padding:16px; background:#f0f7f0; border-radius:12px; border:1px solid #4caf50;';
+      banner.className = 's5-banner-green';
       banner.innerHTML = `
         <div style="font-weight:600; font-size:16px; margin-bottom:8px; color:#2e7d32;">Du hast ein Gericht vorbereitet</div>
         <div style="font-size:14px; line-height:1.4; margin-bottom:12px; color:#666;">Möchtest du weitermachen?</div>
@@ -9856,8 +9585,7 @@
         for(let i=0;i<6;i++){
           const c = topN[i];
           const tile = document.createElement('div');
-          tile.className = 'cookbook-tile tgtg-cookbook-tile';
-          tile.style.cssText = 'border-radius:var(--tgtg-img-radius,18px); background:#fff; overflow:hidden; cursor:pointer; display:flex; flex-direction:column; min-height:0; min-width:0; border:none; border-bottom:1px solid rgba(0,0,0,0.06);';
+          tile.className = 'cookbook-tile tgtg-cookbook-tile' + (c ? ' tile-filled' : '');
           tile.setAttribute('role','button');
           tile.setAttribute('tabindex','0');
           if(c){
@@ -9872,7 +9600,6 @@
               dataDate: todayKey
             }) : '<div class="prov-card" data-cookbook-id="' + esc(String(c.id)) + '" data-date="' + esc(todayKey) + '">' + esc(c.dish || 'Gericht') + ' ' + euro(c.price || 0) + '</div>';
             tile.innerHTML = cookbookCardHtml;
-            tile.style.cssText = 'width:100%; border-radius:0; background:transparent; overflow:visible; cursor:pointer; display:block; border:none; border-bottom:1px solid #e5e7eb;';
             tile.onclick = function(ev){ if(!ev.target.closest('a')) { if(typeof startListingFlow==='function') startListingFlow({ dishId: c.id, date: todayKey }); } };
             tile.onkeydown = function(ev){ if(ev.key==='Enter'||ev.key===' '){ ev.preventDefault(); if(typeof startListingFlow==='function') startListingFlow({ dishId: c.id, date: todayKey }); } };
           } else {
@@ -10154,13 +9881,14 @@
         paidOrders.slice(0, 10).forEach(function(ord, i){
           const pill = document.createElement('div');
           const isFirst = i === 0;
-          pill.style.cssText = 'flex-shrink:0; width:40px; height:40px; border-radius:50%; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center; background:' + (isFirst ? '#ffde00' : '#f1f1f1') + '; color:' + (isFirst ? '#1a1a1a' : 'rgba(0,0,0,0.4)') + '; box-shadow:' + (isFirst ? 'inset 0 1px 2px rgba(0,0,0,0.08)' : 'none') + ';';
+          pill.classList.add('s5-week-pill');
+          if(isFirst) pill.classList.add('is-first');
           pill.textContent = '#' + (ord.pickupCode || ord.id.slice(-3));
           providerNextPickupPills.appendChild(pill);
         });
         if(paidOrders.length === 0){
           const empty = document.createElement('div');
-          empty.style.cssText = 'font-size:13px; color:rgba(0,0,0,0.4);';
+          empty.className = 's5-week-empty';
           empty.textContent = 'Heute noch keine';
           providerNextPickupPills.appendChild(empty);
         }
@@ -10519,7 +10247,7 @@
       if(!draftEl){
         draftEl = document.createElement('p');
         draftEl.id = 'providerWeekDraftCount';
-        draftEl.style.cssText = 'font-size:13px; font-weight:700; color:#64748b; margin:0 0 12px;';
+        draftEl.classList.add('s5-draft-count');
         dayWrap.parentNode.insertBefore(draftEl, dayWrap);
       }
       draftEl.textContent = draftCount + ' Entwurf' + (draftCount !== 1 ? 'e' : '') + ' in den nächsten 4 Wochen';
@@ -11109,16 +10837,14 @@
     if (!overlay) {
       overlay = document.createElement('div');
       overlay.id = 'addDishToDayBd';
-      overlay.className = 'backdrop';
-      overlay.style.cssText = 'display:none; z-index:1190;';
+      overlay.className = 'backdrop s5-add-dish-bd';
       overlay.onclick = function(){ closeAddDishToDaySheet(); };
       document.body.appendChild(overlay);
     }
     if (!sheet) {
       sheet = document.createElement('div');
       sheet.id = 'addDishToDaySheet';
-      sheet.className = 'week-magic-sheet kw-selector-sheet';
-      sheet.style.cssText = 'position:fixed; left:0; right:0; bottom:0; border-radius:24px 24px 0 0; background:rgba(255,255,255,0.98); padding:16px 20px max(24px, env(safe-area-inset-bottom)); z-index:1191; display:none; flex-direction:column; gap:12px; box-shadow:0 -8px 32px rgba(0,0,0,0.1);';
+      sheet.className = 'week-magic-sheet kw-selector-sheet s5-add-dish-sheet';
       sheet.onclick = function(e){ e.stopPropagation(); };
       document.body.appendChild(sheet);
     }
@@ -11126,7 +10852,7 @@
     if (!title) { title = document.createElement('h3'); title.className = 'week-magic-sheet-title add-dish-to-day-title'; title.style.margin = '0 0 8px 0'; sheet.appendChild(title); }
     title.textContent = 'Zu welchem Tag hinzufügen?';
     var list = sheet.querySelector('.add-dish-to-day-list');
-    if (!list) { list = document.createElement('div'); list.className = 'add-dish-to-day-list'; list.style.cssText = 'display:flex; flex-direction:column; gap:8px;'; sheet.appendChild(list); }
+    if (!list) { list = document.createElement('div'); list.className = 'add-dish-to-day-list'; sheet.appendChild(list); }
     list.innerHTML = '';
     keys.forEach(function(key, i){
       var d = new Date(key + 'T12:00:00');
@@ -11144,14 +10870,14 @@
       };
       list.appendChild(btn);
     });
-    overlay.style.display = 'block';
-    sheet.style.display = 'flex';
+    overlay.classList.add('is-open');
+    sheet.classList.add('is-open');
   }
   function closeAddDishToDaySheet(){
     var overlay = document.getElementById('addDishToDayBd');
     var sheet = document.getElementById('addDishToDaySheet');
-    if (overlay) overlay.style.display = 'none';
-    if (sheet) sheet.style.display = 'none';
+    if (overlay) overlay.classList.remove('is-open');
+    if (sheet) sheet.classList.remove('is-open');
   }
   /** Rolling Counter: Pro-Ziffer-Animation, Haptik-Sync [cite: 2026-02-23] */
   function initKwRollingCounter(){
@@ -11448,7 +11174,12 @@
     for(var i = 0; i < 50; i++){
       var c = document.createElement('div');
       c.className = 'confetti';
-      c.style.cssText = 'position:absolute;left:' + (Math.random() * 100) + '%;width:' + (Math.random() * 8 + 5) + 'px;height:' + (Math.random() * 8 + 5) + 'px;background:' + colors[Math.floor(Math.random() * colors.length)] + ';animation:confetti-fall 3s linear forwards;animation-delay:' + (Math.random() * 2) + 's;animation-duration:' + (Math.random() * 2 + 2) + 's;';
+      c.style.left = (Math.random() * 100) + '%';
+      c.style.width = (Math.random() * 8 + 5) + 'px';
+      c.style.height = c.style.width;
+      c.style.background = colors[Math.floor(Math.random() * colors.length)];
+      c.style.animationDelay = (Math.random() * 2) + 's';
+      c.style.animationDuration = (Math.random() * 2 + 2) + 's';
       container.appendChild(c);
     }
   };
@@ -12542,8 +12273,7 @@
       templates.forEach(function(t){
         var btn = document.createElement('button');
         btn.type = 'button';
-        btn.className = 'week-template-item';
-        btn.style.cssText = 'display:flex; align-items:center; justify-content:space-between; padding:14px 16px; border-radius:14px; border:1px solid rgba(0,0,0,0.08); background:rgba(255,255,255,0.8); text-align:left; cursor:pointer; font-size:15px; font-weight:700; color:#1a1a1a;';
+        btn.className = 'week-template-item s5-sheet-btn';
         btn.innerHTML = '<span>' + (typeof esc === 'function' ? esc(t.name || 'Vorlage') : (t.name || 'Vorlage')) + '</span><span style="font-size:12px; color:#64748b;">' + (t.days ? Object.keys(t.days).reduce(function(sum, i){ return sum + (t.days[i] && t.days[i].length ? t.days[i].length : 0); }, 0) : 0) + ' Gerichte</span>';
         btn.onclick = function(){ if (typeof haptic === 'function') haptic(6); closeWeekTemplatesSheet(); showWeekTemplatePreview(t.id); };
         list.appendChild(btn);
@@ -12578,7 +12308,7 @@
         var entries = (tpl.days && tpl.days[i]) ? tpl.days[i] : [];
         var names = entries.map(function(e){ return e.dish || 'Gericht'; }).slice(0, 3).join(' · ') || '—';
         var row = document.createElement('div');
-        row.style.cssText = 'padding:10px 12px; border-radius:12px; background:rgba(0,0,0,0.04); font-size:14px;';
+        row.className = 's5-sheet-row-muted';
         row.innerHTML = '<strong>' + dayNames[i] + '</strong>: ' + names;
         daysEl.appendChild(row);
       }
@@ -12637,7 +12367,7 @@
     list.style.gridTemplateColumns = 'repeat(2, 1fr)';
     mine.forEach(function(c){
       var card = document.createElement('div');
-      card.style.cssText = 'background:#fff; border-radius:16px; border:1px solid #f1f3f5; overflow:hidden; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.04); display:flex; flex-direction:column;';
+      card.className = 's5-card-white';
       var imgUrl = c.photoData || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=200&q=60';
       card.innerHTML = '<div style="height:80px; width:100%; background:#f1f3f5;"><img src="' + imgUrl + '" style="width:100%; height:100%; object-fit:cover;"></div><div style="padding:10px;"><div style="font-size:13px; font-weight:800; color:#1a1a1a;">' + esc(c.dish) + '</div><div style="font-size:11px; font-weight:700; color:#1a1a1a;">' + euro(c.price||0) + '</div></div>';
       card.onclick = function(){
@@ -12652,17 +12382,14 @@
           var key = isoDate(d);
           var btn = document.createElement('button');
           btn.type = 'button';
-          btn.className = 'week-day-pill';
+          btn.className = 'week-day-pill s5-pill';
           btn.setAttribute('data-date', key);
           btn.textContent = (i === 0 ? 'Heute' : (d.getDate() + '.' + (d.getMonth()+1) + '.'));
-          btn.style.cssText = 'min-height:48px; border-radius:12px; border:2px solid #e2e8f0; background:#f8f9fa; font-size:12px; font-weight:800; color:#64748b;';
           (function(k){
             btn.onclick = function(){
               if(typeof haptic === 'function') haptic(6);
               weekMultiSelectDays[k] = !weekMultiSelectDays[k];
-              this.style.background = weekMultiSelectDays[k] ? '#FFDE00' : '#f8f9fa';
-              this.style.color = weekMultiSelectDays[k] ? '#fff' : '#64748b';
-              this.style.borderColor = weekMultiSelectDays[k] ? '#FFDE00' : '#e2e8f0';
+              this.classList.toggle('is-selected', weekMultiSelectDays[k]);
               var n = Object.keys(weekMultiSelectDays).filter(function(x){ return weekMultiSelectDays[x]; }).length;
               var doneBtn = document.getElementById('btnWeekMultiDone');
               if(doneBtn) doneBtn.textContent = n ? 'Fertig – auf ' + n + ' Tage setzen' : 'Fertig';
@@ -12673,8 +12400,7 @@
         var doneBtn = document.createElement('button');
         doneBtn.type = 'button';
         doneBtn.id = 'btnWeekMultiDone';
-        doneBtn.className = 'week-add-more';
-        doneBtn.style.cssText = 'grid-column:1/-1; margin-top:12px; min-height:56px; border-radius:16px; font-size:16px; font-weight:800; border:none; background:#FFDE00; color:#1a1a1a; cursor:pointer;';
+        doneBtn.className = 'week-add-more s5-done-btn';
         doneBtn.textContent = 'Fertig';
         doneBtn.onclick = function(){
           var keys = Object.keys(weekMultiSelectDays).filter(function(k){ return weekMultiSelectDays[k]; });
@@ -12738,7 +12464,7 @@
       }
       show.forEach(function(c){
         var card = document.createElement('div');
-        card.style.cssText = 'background:#fff; border-radius:16px; border:1px solid #f1f3f5; overflow:hidden; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.04); display:flex; flex-direction:column;';
+        card.className = 's5-card-white';
         var imgUrl = c.photoData || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=200&q=60';
         card.innerHTML = '<div style="height:80px; width:100%; background:#f1f3f5;"><img src="' + imgUrl + '" style="width:100%; height:100%; object-fit:cover;"></div><div style="padding:10px;"><div style="font-size:13px; font-weight:800; color:#1a1a1a; line-height:1.2; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; height:32px;">' + esc(c.dish) + '</div><div style="font-size:11px; font-weight:700; color:#1a1a1a; margin-top:4px;">' + euro(c.price||0) + '</div></div>';
         card.onclick = function(){
@@ -12898,11 +12624,10 @@
     if(!sheet){
       sheet = document.createElement('div');
       sheet.id = 'copyDaySheet';
-      sheet.className = 'bottom-sheet';
-      sheet.style.cssText = 'position:fixed; left:0; right:0; bottom:0; background:#fff; border-radius:20px 20px 0 0; box-shadow:0 -4px 20px rgba(0,0,0,0.15); z-index:9999; padding:20px 20px calc(20px + env(safe-area-inset-bottom)); display:none;';
-      sheet.innerHTML = '<div style="font-weight:800; font-size:16px; margin-bottom:16px;">An welchen Tag kopieren?</div><div id="copyDayList"></div><button type="button" class="btn secondary" style="margin-top:16px; width:100%; min-height:48px;" id="copyDayCancel">Abbrechen</button>';
+      sheet.className = 'bottom-sheet s5-copy-day-sheet';
+      sheet.innerHTML = '<div class="s5-sheet-copyday-title">An welchen Tag kopieren?</div><div id="copyDayList"></div><button type="button" class="btn secondary s5-sheet-copyday-btn" id="copyDayCancel">Abbrechen</button>';
       document.body.appendChild(sheet);
-      document.getElementById('copyDayCancel').onclick = function(){ sheet.style.display = 'none'; };
+      document.getElementById('copyDayCancel').onclick = function(){ sheet.classList.remove('is-open'); };
     }
     var list = document.getElementById('copyDayList');
     list.innerHTML = '';
@@ -12911,8 +12636,7 @@
       var label = weekDayShortLabel(d, keys.indexOf(key));
       var btn = document.createElement('button');
       btn.type = 'button';
-      btn.className = 'btn secondary';
-      btn.style.cssText = 'width:100%; min-height:48px; margin-bottom:8px; border-radius:12px; font-size:15px; font-weight:700;';
+      btn.className = 'btn secondary s5-sheet-btn-full';
       btn.textContent = label;
       btn.onclick = function(){
         if(!week[key]) week[key] = [];
@@ -12938,16 +12662,15 @@
     for(var i = 0; i < 28; i++){ var d = new Date(); d.setDate(d.getDate() + i); keys.push(isoDate(d)); }
     var otherDays = keys.filter(function(k){ return k !== dayKey; });
     var overlay = document.createElement('div');
-    overlay.style.cssText = 'position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:9998; display:flex; flex-direction:column; justify-content:flex-end; padding:20px; box-sizing:border-box;';
-    overlay.innerHTML = '<div style="background:#fff; border-radius:20px 20px 0 0; padding:20px; max-height:70vh; overflow-y:auto;"><div style="font-weight:800; font-size:16px; margin-bottom:16px;">Auf welchen Tag verschieben?</div><div id="moveDayList"></div><button type="button" class="kw-move-cancel" style="width:100%; min-height:48px; margin-top:16px; border-radius:14px; font-weight:700; background:#f1f3f5; border:none; cursor:pointer;">Abbrechen</button></div>';
+    overlay.className = 's5-sheet-overlay-bottom';
+    overlay.innerHTML = '<div class="s5-sheet-panel-bottom"><div class="s5-sheet-move-title">Auf welchen Tag verschieben?</div><div id="moveDayList"></div><button type="button" class="kw-move-cancel s5-sheet-move-cancel">Abbrechen</button></div>';
     var list = overlay.querySelector('#moveDayList');
     otherDays.slice(0, 14).forEach(function(key){
       var d = new Date(key + 'T12:00:00');
       var label = ['So','Mo','Di','Mi','Do','Fr','Sa'][d.getDay()] + ', ' + d.getDate() + '.';
       var btn = document.createElement('button');
       btn.type = 'button';
-      btn.className = 'btn secondary';
-      btn.style.cssText = 'width:100%; min-height:48px; margin-bottom:8px; border-radius:12px; font-size:15px; font-weight:700;';
+      btn.className = 'btn secondary s5-sheet-btn-full';
       btn.textContent = label;
       btn.onclick = function(){
         if(typeof haptic === 'function') haptic(6);
@@ -13359,7 +13082,6 @@
       const pillarsHtml = pillars.length ? pillars.join(' ') : '<span style="font-size:18px; opacity:0.6;">📦</span>';
       const row = document.createElement('div');
       row.className = 'pickup-row' + (isPickedUp ? ' picked-up' : '');
-      row.style.cssText = 'display:flex; align-items:center; gap:16px; padding:16px; border-bottom:1px solid var(--border); ' + (isPickedUp ? 'opacity:0.5; background:#f8f8f8;' : 'cursor:pointer;');
       row.innerHTML = `
         <div style="display:flex; align-items:center; gap:12px; flex-shrink:0;">
           <div style="font-size:32px; font-weight:900; font-family:monospace; color:var(--brand); min-width:70px; text-align:center; line-height:1;">${esc(codeDisplay)}</div>
@@ -13989,23 +13711,23 @@
       extrasListEl.innerHTML = '';
       list.forEach(function(extra, idx){
         var row = document.createElement('div');
-        row.style.cssText = 'display:flex; align-items:center; gap:10px; padding:12px 14px; background:#f8fafc; border-radius:12px; border:1px solid #e2e8f0;';
+        row.className = 's5-extras-row';
         var nameInp = document.createElement('input');
         nameInp.type = 'text';
+        nameInp.className = 's5-extras-name-inp';
         nameInp.placeholder = 'z. B. Beilagensalat';
         nameInp.value = (extra && extra.name) ? String(extra.name) : '';
-        nameInp.style.cssText = 'flex:1; min-width:0; padding:10px 12px; border:2px solid #e2e8f0; border-radius:10px; font-size:15px; font-weight:600;';
         var priceInp = document.createElement('input');
         priceInp.type = 'text';
         priceInp.inputMode = 'decimal';
+        priceInp.className = 's5-extras-price-inp';
         priceInp.placeholder = '0,00';
         priceInp.value = (extra && typeof extra.price === 'number') ? Number(extra.price).toFixed(2).replace('.', ',') : ((extra && extra.price) ? String(extra.price) : '');
-        priceInp.style.cssText = 'width:72px; padding:10px 8px; border:2px solid #e2e8f0; border-radius:10px; font-size:15px; font-weight:700; text-align:right;';
         var removeBtn = document.createElement('button');
         removeBtn.type = 'button';
+        removeBtn.className = 's5-extras-remove-btn';
         removeBtn.setAttribute('aria-label', 'Entfernen');
         removeBtn.innerHTML = '&#10005;';
-        removeBtn.style.cssText = 'width:40px; height:40px; border:none; border-radius:10px; background:rgba(220,38,38,0.1); color:#dc2626; font-size:18px; font-weight:800; cursor:pointer; flex-shrink:0;';
         function syncExtra(){
           if(!provider.profile) provider.profile = {};
           if(!Array.isArray(provider.profile.defaultExtras)) provider.profile.defaultExtras = [];
@@ -14030,7 +13752,7 @@
           if(typeof showToast === 'function') showToast('Extra entfernt');
         };
         var eurLabel = document.createElement('span');
-        eurLabel.style.cssText = 'font-size:14px; font-weight:700; color:#64748b;';
+        eurLabel.className = 's5-extras-eur';
         eurLabel.textContent = '€';
         row.appendChild(nameInp);
         row.appendChild(eurLabel);
@@ -15074,8 +14796,7 @@
       var imgStyle = 'width:100%; height:140px; object-fit:cover; object-position:center 20px; border-radius:16px 16px 0 0;';
       var img = m.image_url ? '<img src="' + (m.image_url || '').replace(/"/g, '&quot;') + '" alt="" style="' + imgStyle + '" />' : '<div style="width:100%; height:140px; background:#e2e8f0; border-radius:16px 16px 0 0;"></div>';
       var card = document.createElement('div');
-      card.className = 'cookbook-mittagio-item archiv-archiv-card';
-      card.style.cssText = 'background:#fff; border-radius:16px; overflow:hidden; border:1px solid rgba(0,0,0,0.06); cursor:pointer; display:flex; flex-direction:column; box-shadow:0 1px 3px rgba(0,0,0,0.04); -webkit-tap-highlight-color:transparent;';
+      card.className = 'cookbook-mittagio-item archiv-archiv-card s5-card-tile';
       card.innerHTML = '<div style="flex-shrink:0; overflow:hidden;">' + img + '</div><div style="padding:12px; flex:1; display:flex; flex-direction:column; justify-content:space-between;"><div style="font-weight:900; font-size:15px; color:#1a1a1a; line-height:1.2;">' + (name.replace(/</g, '&lt;')) + '</div><div style="font-weight:400; font-size:16px; color:#FFB800; margin-top:6px;">' + priceStr + '</div></div>';
       card.onclick = function(){ if(typeof haptic === 'function') haptic(6); copyArchivDishToCookbook(m, defaultPrice); };
       listEl.appendChild(card);
@@ -15097,7 +14818,10 @@
     if(clickedImg && flyContainer && rect){
       flyImg = clickedImg.cloneNode(true);
       flyImg.className = 'fly-image';
-      flyImg.style.cssText = 'top:' + rect.top + 'px; left:' + rect.left + 'px; width:' + rect.width + 'px; height:' + rect.height + 'px;';
+      flyImg.style.top = rect.top + 'px';
+      flyImg.style.left = rect.left + 'px';
+      flyImg.style.width = rect.width + 'px';
+      flyImg.style.height = rect.height + 'px';
       flyContainer.appendChild(flyImg);
       setTimeout(function(){
         flyImg.style.top = '100px';
@@ -15163,20 +14887,18 @@
     if(!bd){
       bd = document.createElement('div');
       bd.id = 'mittagioDualActionBd';
-      bd.className = 'backdrop';
-      bd.style.cssText = 'position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:99999; display:none;';
+      bd.className = 'backdrop s5-backdrop-dual';
       bd.onclick = function(){ closeMittagioDualActionCard(); };
       document.body.appendChild(bd);
     }
     if(!sheet){
       sheet = document.createElement('div');
       sheet.id = 'mittagioDualActionSheet';
-      sheet.className = 'mittagio-dual-action-sheet';
-      sheet.style.cssText = 'position:fixed; left:50%; bottom:0; transform:translateX(-50%); width:100%; max-width:400px; background:#fff; border-radius:20px 20px 0 0; padding:20px 20px calc(20px + env(safe-area-inset-bottom)); z-index:100000; box-shadow:0 -8px 32px rgba(0,0,0,0.12); display:none; flex-direction:column; gap:16px;';
+      sheet.className = 'mittagio-dual-action-sheet s5-sheet-dual';
       document.body.appendChild(sheet);
     }
     var name = (m.name || 'Gericht').substring(0, 60);
-    sheet.innerHTML = '<div class="mittagio-dual-action-title" style="font-size:18px; font-weight:800; color:#1a1a1a; margin:0;">' + (name.replace(/</g, '&lt;')) + '</div>' +
+    sheet.innerHTML = '<div class="mittagio-dual-action-title s5-modal-dual-title">' + (name.replace(/</g, '&lt;')) + '</div>' +
       '<button type="button" class="mittagio-dual-btn mittagio-dual-btn-copy">In mein Kochbuch kopieren</button>' +
       '<button type="button" class="mittagio-dual-btn mittagio-dual-btn-inserieren">⚡ Jetzt direkt inserieren</button>';
     var btnCopy = sheet.querySelector('.mittagio-dual-btn-copy');
@@ -15236,17 +14958,16 @@
     if(!bd){
       bd = document.createElement('div');
       bd.id = 'cookbookIngestPriceBd';
-      bd.className = 'backdrop';
-      bd.style.cssText = 'position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:1060; display:none;';
+      bd.className = 'backdrop s5-backdrop-center';
       document.body.appendChild(bd);
     }
     if(!sheet){
       sheet = document.createElement('div');
       sheet.id = 'cookbookIngestPriceSheet';
-      sheet.style.cssText = 'position:fixed; left:50%; top:50%; transform:translate(-50%,-50%); z-index:1061; background:#fff; border-radius:20px; padding:24px; min-width:280px; max-width:90vw; box-shadow:0 8px 32px rgba(0,0,0,0.2);';
+      sheet.className = 's5-sheet-center';
       document.body.appendChild(sheet);
     }
-    sheet.innerHTML = '<h3 style="margin:0 0 8px; font-size:18px; font-weight:800; color:#1a1a1a;">Standardpreis für Import</h3><p style="margin:0 0 16px; font-size:14px; color:#64748b;">Alle importierten Gerichte erhalten diesen Preis (€).</p><input type="number" step="0.01" min="0" id="cookbookIngestPriceInput" value="8.90" placeholder="8,90" style="width:100%; padding:14px 16px; border:2px solid #e2e8f0; border-radius:12px; font-size:16px; font-weight:700; margin-bottom:16px; box-sizing:border-box;" inputmode="decimal" /><button type="button" id="cookbookIngestPriceBtn" style="width:100%; min-height:48px; border-radius:12px; border:none; background:#222; color:#fff; font-size:15px; font-weight:800; cursor:pointer;">Import starten</button>';
+    sheet.innerHTML = '<h3 class="s5-modal-ingest-h3">Standardpreis für Import</h3><p class="s5-modal-ingest-p">Alle importierten Gerichte erhalten diesen Preis (€).</p><input type="number" step="0.01" min="0" id="cookbookIngestPriceInput" value="8.90" placeholder="8,90" class="s5-modal-ingest-input" inputmode="decimal" /><button type="button" id="cookbookIngestPriceBtn" class="s5-modal-ingest-btn">Import starten</button>';
     var inp = document.getElementById('cookbookIngestPriceInput');
     function closeModal(){
       bd.style.display = 'none';
@@ -15725,11 +15446,10 @@
         var label = i === 0 ? 'Heute' : (i === 1 ? 'Morgen' : (d.getDate() + '.' + (d.getMonth()+1) + '.'));
         var btnDay = document.createElement('button');
         btnDay.type = 'button';
-        btnDay.className = 'btn';
-        btnDay.style.cssText = 'min-height:44px; padding:0 14px; border-radius:12px; font-size:14px; font-weight:700; ' + (key === cookbookLiveSheetChosenDate ? 'background:var(--prov-brand,#0ea5e9); color:#fff; border:none;' : 'background:#f1f3f5; color:#475569; border:2px solid #e2e8f0;');
+        btnDay.className = 'btn s5-cookbook-day-btn' + (key === cookbookLiveSheetChosenDate ? ' is-selected' : '');
         btnDay.textContent = label;
         btnDay.dataset.date = key;
-        (function(k){ btnDay.onclick = function(){ if(typeof haptic === 'function') haptic(6); cookbookLiveSheetChosenDate = k; dateWrap.querySelectorAll('button').forEach(function(b){ var isSel = b.dataset.date === k; b.style.background = isSel ? 'var(--prov-brand,#0ea5e9)' : '#f1f3f5'; b.style.color = isSel ? '#fff' : '#475569'; b.style.border = isSel ? 'none' : '2px solid #e2e8f0'; }); }; })(key);
+        (function(k){ btnDay.onclick = function(){ if(typeof haptic === 'function') haptic(6); cookbookLiveSheetChosenDate = k; dateWrap.querySelectorAll('button').forEach(function(b){ b.classList.toggle('is-selected', b.dataset.date === k); }); }; })(key);
         dateWrap.appendChild(btnDay);
       }
     }
@@ -16751,7 +16471,7 @@
       input.value = w.data.name || '';
       input.oninput=()=>{ w.data.name=input.value; };
       box.appendChild(input);
-      const nav=document.createElement('div'); nav.style.cssText='display:flex;gap:10px;margin-top:20px;';
+      const nav=document.createElement('div'); nav.className='s5-nav-row';
       const btnNext=document.createElement('button'); btnNext.type='button'; btnNext.className='btn'; btnNext.textContent='Weiter'; btnNext.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); w.step++; rebuildWizard(); };
       const btnAbort=document.createElement('button'); btnAbort.type='button'; btnAbort.className='btn secondary'; btnAbort.textContent='Abbrechen'; btnAbort.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); closeWizard(); };
       nav.appendChild(btnAbort); nav.appendChild(btnNext); box.appendChild(nav);
@@ -16770,7 +16490,7 @@
       box.appendChild(input);
       const h=document.createElement('div'); h.className='hint'; h.textContent='Tipp: Straße, PLZ, Ort - getrennt mit Komma.';
       box.appendChild(h);
-      const nav=document.createElement('div'); nav.style.cssText='display:flex;gap:10px;margin-top:20px;';
+      const nav=document.createElement('div'); nav.className='s5-nav-row';
       const btnBack=document.createElement('button'); btnBack.type='button'; btnBack.className='btn secondary'; btnBack.textContent='Zurück'; btnBack.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); w.step--; rebuildWizard(); };
       const btnNext=document.createElement('button'); btnNext.type='button'; btnNext.className='btn'; btnNext.textContent='Weiter'; btnNext.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); w.step++; rebuildWizard(); };
       nav.appendChild(btnBack); nav.appendChild(btnNext); box.appendChild(nav);
@@ -16845,7 +16565,7 @@
         box.appendChild(endRow);
       }
 
-      const nav2=document.createElement('div'); nav2.style.cssText='display:flex;gap:10px;margin-top:20px;';
+      const nav2=document.createElement('div'); nav2.className='s5-nav-row';
       const btnBack2=document.createElement('button'); btnBack2.type='button'; btnBack2.className='btn secondary'; btnBack2.textContent='Zurück'; btnBack2.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); w.step--; rebuildWizard(); };
       const btnNext2=document.createElement('button'); btnNext2.type='button'; btnNext2.className='btn'; btnNext2.textContent='Weiter'; btnNext2.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); w.step++; rebuildWizard(); };
       nav2.appendChild(btnBack2); nav2.appendChild(btnNext2); box.appendChild(nav2);
@@ -16886,7 +16606,7 @@
         prev.innerHTML = `<div class="hint">Vorschau:</div><div class="plogo" style="width:60px;height:60px;border-radius:14px"><img src="${w.data.logoData}" alt="Logo" /></div>`;
         wrap.appendChild(prev);
       }
-      const nav3=document.createElement('div'); nav3.style.cssText='display:flex;gap:10px;margin-top:20px;';
+      const nav3=document.createElement('div'); nav3.className='s5-nav-row';
       const btnBack3=document.createElement('button'); btnBack3.type='button'; btnBack3.className='btn secondary'; btnBack3.textContent='Zurück'; btnBack3.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); w.step--; rebuildWizard(); };
       const btnNext3=document.createElement('button'); btnNext3.type='button'; btnNext3.className='btn'; btnNext3.textContent='Weiter'; btnNext3.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); w.step++; rebuildWizard(); };
       nav3.appendChild(btnBack3); nav3.appendChild(btnNext3); wrap.appendChild(nav3);
@@ -17009,17 +16729,14 @@
     {
       setWizardQuestion('', '');
       const sheet = document.createElement('div');
-      sheet.className = 'inserat-card-sheet';
+      sheet.className = 'inserat-card-sheet s5-inserat-sheet';
       sheet.setAttribute('data-inserat-card', 'true');
-      sheet.style.cssText = 'padding:0; overflow:visible; display:flex; flex-direction:column; min-height:0; border-radius:0; background:transparent;';
       const box = document.createElement('div');
-      box.className='liquid-master-panel modern-inserat-card mastercard-container scout-master-card vendor-area glass-express-step0 inserat-universal-mask inserat-master-flow liquid-panel listing-glass-panel s25-floating-panel inserat-airbnb-refactor';
+      box.className='liquid-master-panel s5-inserat-box modern-inserat-card mastercard-container scout-master-card vendor-area glass-express-step0 inserat-universal-mask inserat-master-flow liquid-panel listing-glass-panel s25-floating-panel inserat-airbnb-refactor';
       box.setAttribute('data-inserat-card','true');
-      box.style.cssText='padding:0; overflow:hidden; display:flex; flex-direction:column; min-height:0;';
       var collapsingHeader=document.createElement('div');
-      collapsingHeader.className='inserat-collapsing-header mastercard-header';
+      collapsingHeader.className='inserat-collapsing-header mastercard-header s5-inserat-header';
       collapsingHeader.innerHTML='<span class="inserat-collapsing-title">Dein Inserat</span>';
-      collapsingHeader.style.cssText='position:sticky; top:0; z-index:12; flex-shrink:0; padding:12px 16px; padding-top:max(12px, env(safe-area-inset-top)); background:#fff; backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); text-align:center; font-family:\'Montserrat\',sans-serif; font-weight:900; font-size:18px; color:#0f172a; border-bottom:1px solid rgba(0,0,0,0.06);';
       box.appendChild(collapsingHeader);
       sheet.appendChild(box);
       const saveDraft = () => { /* Kein Draft mehr – radikale Bereinigung [cite: 2026-02-26] */ };
@@ -17078,36 +16795,31 @@
         step1Container=step1Pane;
         /* Step 2: Monetarisierung ÔÇô zwei vertikale Kacheln [cite: Drei-Schritte-Gesetz 2026-02-21] */
         var step2Wrap=document.createElement('div');
-        step2Wrap.className='inserat-step2-wrap mastercard-step-money';
-        step2Wrap.style.cssText='display:flex; flex-direction:column; align-items:center; text-align:center; flex:1; min-height:0; overflow-y:auto; padding:20px; padding-bottom:calc(140px + env(safe-area-inset-bottom, 0));';
+        step2Wrap.className='inserat-step2-wrap s5-step2-wrap mastercard-step-money';
         var thumbUrl=w.data.photoData||'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=200&q=60';
         var objPos2=(typeof w.data.photoObjectPosition==='number')?w.data.photoObjectPosition:(typeof w.data.photoCropY==='number'?Math.round(50+(w.data.photoCropY/80)*50):50);
         var dishNameS2=(w.data.dish||'').trim()||'Gericht';
         var priceS2=Number(w.data.price)||0;
         var euroS2=typeof euro==='function'?euro(priceS2):(priceS2.toFixed(2).replace('.',',')+' Ôé¼');
         var miniPreview=document.createElement('div');
-        miniPreview.className='mini-dish-preview';
-        miniPreview.style.cssText='display:flex; align-items:center; gap:12px; padding:12px 0; margin-bottom:16px; border-bottom:1px solid rgba(15,23,42,0.08); flex-shrink:0;';
+        miniPreview.className='mini-dish-preview s5-mini-preview';
         miniPreview.innerHTML='<img src="'+thumbUrl+'" id="money-dish-img" class="mini-thumb" alt="" style="width:56px;height:56px;border-radius:12px;object-fit:cover;object-position:center '+objPos2+'%; background:#e8ecf0;"><div class="mini-details" style="flex:1;min-width:0;"><h3 id="money-dish-name" style="margin:0;font-size:17px;font-weight:900;color:#0f172a;">'+esc(dishNameS2)+'</h3><span id="money-dish-price" style="font-size:15px;font-weight:700;color:#64748b;">'+euroS2+'</span></div>';
         step2Wrap.appendChild(miniPreview);
         updateStep2ContextZoneRef=function(){ if(!miniPreview||!miniPreview.isConnected) return; var t=w.data.photoData||'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=200&q=60'; var op=(typeof w.data.photoObjectPosition==='number')?w.data.photoObjectPosition:(typeof w.data.photoCropY==='number'?Math.round(50+(w.data.photoCropY/80)*50):50); var dn=(w.data.dish||'').trim()||'Gericht'; var pr=Number(w.data.price)||0; var eu=typeof euro==='function'?euro(pr):(pr.toFixed(2).replace('.',',')+' €'); var imgEl=document.getElementById('money-dish-img'); var nameEl=document.getElementById('money-dish-name'); var priceEl=document.getElementById('money-dish-price'); if(imgEl){ imgEl.src=t; imgEl.style.objectPosition='center '+op+'%'; } if(nameEl) nameEl.textContent=dn; if(priceEl) priceEl.textContent=eu; var umsatzValEl=document.getElementById('step2UmsatzVal'); if(umsatzValEl){ var u25=(pr*25).toFixed(2).replace('.',','); umsatzValEl.textContent=u25+' €'; } };
         var moneyHeadline=document.createElement('h2');
-        moneyHeadline.className='money-headline';
+        moneyHeadline.className='money-headline s5-money-headline';
         moneyHeadline.textContent='Wähle dein Paket';
-        moneyHeadline.style.cssText='margin:0 0 20px; font-size:18px; font-weight:800; color:#0f172a;';
         step2Wrap.appendChild(moneyHeadline);
         var umsatzVorschauEl=document.createElement('div');
         umsatzVorschauEl.id='step2UmsatzVorschau';
-        umsatzVorschauEl.className='step2-umsatz-vorschau';
-        umsatzVorschauEl.style.cssText='margin-bottom:20px; padding:14px 16px; background:rgba(15,23,42,0.04); border-radius:12px; text-align:left; width:100%; box-sizing:border-box;';
+        umsatzVorschauEl.className='step2-umsatz-vorschau s5-umsatz-box';
         var priceS2ForUmsatz=Number(w.data.price)||0;
         var umsatz25=(priceS2ForUmsatz*25).toFixed(2).replace('.',',');
         umsatzVorschauEl.innerHTML='<div style="font-size:12px; font-weight:800; color:#64748b; margin-bottom:4px;">Möglicher Umsatz (bei 25 Portionen)</div><div id="step2UmsatzVal" style="font-size:22px; font-weight:900; color:#0f172a;">'+umsatz25+' €</div><div style="font-size:11px; color:#94a3b8; margin-top:12px; line-height:1.4;">Inserat: 0,00 €<br>Service-Gebühr: 0,89 € pro Abholnummer (nur bei erfolgreichem Verkauf via Stripe)</div>';
         step2Wrap.appendChild(umsatzVorschauEl);
         /* Zero-Entry: Zwei Kacheln – Standard 4,99 oben, Abholnummer 0,00 unten (aktiv) [cite: ZERO-COST PICKUP 2026-02-23] */
         var pricingContainer=document.createElement('div');
-        pricingContainer.className='pricing-container inserat-step2-two-tiles';
-        pricingContainer.style.cssText='display:flex; flex-direction:column; gap:20px; padding:0; margin-top:0; flex:1; width:100%; max-width:100%;';
+        pricingContainer.className='pricing-container s5-pricing-container inserat-step2-two-tiles';
         var existingOfferS2=(w.ctx&&w.ctx.editOfferId&&typeof offers!=='undefined')?offers.find(function(o){return o.id===w.ctx.editOfferId;}):null;
         var todayKeyS2=typeof isoDate==='function'?isoDate(new Date()):'';
         var isEditActiveS2=!!(existingOfferS2&&existingOfferS2.day===todayKeyS2&&existingOfferS2.active!==false);
@@ -17149,12 +16861,10 @@
         step2Pane.id='mastercard-step-money';
         /* Step 3: Live-Erfolg [cite: 2026-02-21] */
         var step3Pane=document.createElement('div');
-        step3Pane.className='inserat-step3-pane';
-        step3Pane.style.cssText='display:flex; flex-direction:column; flex:1; min-height:0;';
+        step3Pane.className='inserat-step3-pane s5-step3-pane';
         var step3ConfettiWrap=document.createElement('div');
         step3ConfettiWrap.id='step3ConfettiContainer';
-        step3ConfettiWrap.className='success-confetti';
-        step3ConfettiWrap.style.cssText='position:absolute; inset:0; pointer-events:none; z-index:10; overflow:hidden;';
+        step3ConfettiWrap.className='success-confetti s5-step3-confetti-wrap';
         step3ConfettiWrap.setAttribute('aria-hidden','true');
         step3Pane.appendChild(step3ConfettiWrap);
         var step3Content=document.createElement('div');
@@ -17164,8 +16874,7 @@
         successCheckWrap.innerHTML='<div class="success-checkmark">LIVE</div>';
         step3Content.appendChild(successCheckWrap);
         var liveStatusCard=document.createElement('div');
-        liveStatusCard.className='live-status-card';
-        liveStatusCard.style.cssText='position:relative;';
+        liveStatusCard.className='live-status-card s5-live-relative';
         var thumbS3=w.data.photoData||'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=400&q=60';
         var objPosS3=(typeof w.data.photoObjectPosition==='number')?w.data.photoObjectPosition:(typeof w.data.photoCropY==='number'?Math.round(50+(w.data.photoCropY/80)*50):50);
         var dishS3=(w.data.dish||'').trim()||'Gericht';
@@ -17180,9 +16889,8 @@
         step3Pane.appendChild(step3Content);
         step3Pane.id='mastercard-step-live';
         var step3Footer=document.createElement('footer');
-        step3Footer.className='app-footer-main';
+        step3Footer.className='app-footer-main s5-step3-footer';
         step3Footer.setAttribute('data-inserat-step','3');
-        step3Footer.style.cssText='position:fixed; left:0; right:0; bottom:0; z-index:500; display:none; flex-direction:row; align-items:stretch; justify-content:space-between; gap:12px; width:100%;';
         var btnShare=document.createElement('button');
         btnShare.type='button';
         btnShare.className='footer-link-secondary sharing-trigger btn-secondary-link';
@@ -17190,9 +16898,8 @@
         btnShare.innerHTML='<span class="share-icon">­ƒôñ</span> Teilen';
         var btnFinish=document.createElement('button');
         btnFinish.type='button';
-        btnFinish.className='footer-btn-primary btn-primary-black';
+        btnFinish.className='footer-btn-primary btn-primary-black s5-btn-finish';
         btnFinish.id='footerFinish';
-        btnFinish.style.cssText='flex:1; min-height:48px; padding:0 24px; border:none; border-radius:8px; background:#222222; color:#ffffff; font-size:16px; font-weight:800; cursor:pointer;';
         btnFinish.textContent='Zum Dashboard';
         step3Footer.appendChild(btnShare);
         step3Footer.appendChild(btnFinish);
@@ -17215,12 +16922,10 @@
       function getPhotoObjectPosition(){ var v=w.data.photoObjectPosition; if(typeof v==='number') return Math.max(0,Math.min(100,v)); var cy=w.data.photoCropY; if(typeof cy==='number') return Math.round(50+(cy/80)*50); return 50; }
       function setPhotoObjectPosition(p){ w.data.photoObjectPosition=Math.max(0,Math.min(100,p)); w.data.photoCropY=undefined; saveDraft(); }
       const photoContainer=document.createElement('div');
-      photoContainer.className='inserat-photo-container';
-      photoContainer.style.cssText='position:relative; overflow:hidden; flex-shrink:0; width:100%; height:190px; min-height:190px; max-height:190px; margin:0; padding:0;';
+      photoContainer.className='inserat-photo-container s5-photo-container';
       const photoTile=document.createElement('section');
       photoTile.id='photoModule';
-      photoTile.className='inserat-photo-tile photo-section photo-section-ebay photo-module-ebay photo-header'+(w.data.photoData ? '' : ' pulse-soft inserat-photo-placeholder');
-      photoTile.style.cssText='position:relative; overflow:hidden; flex-shrink:0; width:100%; height:190px; min-height:190px; max-height:190px; margin:0; padding:0;';
+      photoTile.className='inserat-photo-tile s5-photo-tile photo-section photo-section-ebay photo-module-ebay photo-header'+(w.data.photoData ? '' : ' pulse-soft inserat-photo-placeholder');
       var imgSrc=w.data.photoData||'';
       var objPos=getPhotoObjectPosition();
       var imgEl=document.createElement('img');
@@ -17228,14 +16933,12 @@
       if(!w.data.photoData) imgEl.style.display='none';
       var cameraInput=document.createElement('input');
       cameraInput.type='file'; cameraInput.id='cameraInput'; cameraInput.accept='image/*'; cameraInput.setAttribute('capture','environment'); cameraInput.style.display='none';
-      var overlay=document.createElement('div'); overlay.className='ebay-photo-overlay';
-      overlay.style.cssText='position:absolute;inset:0;cursor:pointer;';
+      var overlay=document.createElement('div'); overlay.className='ebay-photo-overlay s5-photo-overlay';
       overlay.style.setProperty('pointer-events', w.data.photoData?'none':'auto', 'important');
       photoTile.appendChild(imgEl); photoTile.appendChild(cameraInput); photoTile.appendChild(overlay);
       if(!w.data.photoData){
         var placeholderCenter=document.createElement('div');
-        placeholderCenter.className='inserat-photo-placeholder-center';
-        placeholderCenter.style.cssText='position:absolute; inset:0; display:flex; align-items:center; justify-content:center; background:#e2e8f0; pointer-events:none;';
+        placeholderCenter.className='inserat-photo-placeholder-center s5-photo-placeholder-center';
         placeholderCenter.innerHTML='<span style="font-size:48px; opacity:0.5;">📷</span>';
         photoTile.appendChild(placeholderCenter);
       }
@@ -17243,7 +16946,7 @@
       overlay.onclick=function(e){ if(!e.target.closest('.photo-suggestion')){ e.stopPropagation(); cameraInput.click(); } };
       photoTile.onclick=function(ev){ if(ev.target.closest('.close-wizard-x')||ev.target.closest('.btn-close-master')||ev.target.closest('.ebay-photo-overlay')) return; if(w.data.photoData&&(ev.target===imgEl||ev.target.closest('.ebay-preview-img'))) return; cameraInput.click(); };
       /* Lightbox: Klick auf Bild öffnet Großansicht, schließt per Klick auf Bild oder Hintergrund [cite: FINALIZE SHEET 2026-02-23] */
-      function openPhotoLightbox(src){ if(!src) return; hapticLight(); var lb=document.getElementById('photo-lightbox'); if(!lb){ lb=document.createElement('div'); lb.id='photo-lightbox'; lb.className='photo-lightbox-overlay'; lb.style.cssText='position:fixed;inset:0;background:#000;z-index:20000;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.28s ease;'; var img=document.createElement('img'); img.className='photo-lightbox-img'; img.style.cssText='max-width:100%;max-height:100%;object-fit:contain;transform:scale(0.85);transition:transform 0.3s cubic-bezier(0.34,1.2,0.64,1);'; var closeBtn=document.createElement('button'); closeBtn.type='button'; closeBtn.className='photo-lightbox-close'; closeBtn.setAttribute('aria-label','Schließen'); closeBtn.innerHTML='&#10005;'; closeBtn.style.cssText='position:absolute;top:16px;right:16px;width:48px;height:48px;background:rgba(255,255,255,0.2);border:none;border-radius:50%;color:#fff;font-size:28px;cursor:pointer;z-index:1;display:flex;align-items:center;justify-content:center;'; function closeLb(){ lb.style.opacity='0'; lb.querySelector('.photo-lightbox-img').style.transform='scale(0.85)'; setTimeout(function(){ lb.style.display='none'; lb.classList.remove('photo-lightbox-open'); }, 280); } closeBtn.onclick=function(e){ e.stopPropagation(); closeLb(); }; lb.onclick=function(e){ if(e.target===lb) closeLb(); }; img.onclick=function(e){ e.stopPropagation(); closeLb(); }; lb.appendChild(img); lb.appendChild(closeBtn); document.body.appendChild(lb); } var lbImg=lb.querySelector('.photo-lightbox-img'); lbImg.src=src; lb.style.display='flex'; lb.style.opacity='0'; requestAnimationFrame(function(){ requestAnimationFrame(function(){ lb.style.opacity='1'; lb.classList.add('photo-lightbox-open'); lb.querySelector('.photo-lightbox-img').style.transform='scale(1)'; }); }); }
+      function openPhotoLightbox(src){ if(!src) return; hapticLight(); var lb=document.getElementById('photo-lightbox'); if(!lb){ lb=document.createElement('div'); lb.id='photo-lightbox'; lb.className='photo-lightbox-overlay s5-lightbox'; var img=document.createElement('img'); img.className='photo-lightbox-img s5-lightbox-img'; var closeBtn=document.createElement('button'); closeBtn.type='button'; closeBtn.className='photo-lightbox-close s5-lightbox-close'; closeBtn.setAttribute('aria-label','Schließen'); closeBtn.innerHTML='&#10005;'; function closeLb(){ lb.style.opacity='0'; lb.querySelector('.photo-lightbox-img').style.transform='scale(0.85)'; setTimeout(function(){ lb.style.display='none'; lb.classList.remove('photo-lightbox-open'); }, 280); } closeBtn.onclick=function(e){ e.stopPropagation(); closeLb(); }; lb.onclick=function(e){ if(e.target===lb) closeLb(); }; img.onclick=function(e){ e.stopPropagation(); closeLb(); }; lb.appendChild(img); lb.appendChild(closeBtn); document.body.appendChild(lb); } var lbImg=lb.querySelector('.photo-lightbox-img'); lbImg.src=src; lb.style.display='flex'; lb.style.opacity='0'; requestAnimationFrame(function(){ requestAnimationFrame(function(){ lb.style.opacity='1'; lb.classList.add('photo-lightbox-open'); lb.querySelector('.photo-lightbox-img').style.transform='scale(1)'; }); }); }
       /* Trigger NUR auf Bild, nicht auf X oder Kamera [cite: FINALIZE SHEET 2026-02-23] */
       photoContainer.onclick=function(ev){ if(ev.target.closest('.close-wizard-x')||ev.target.closest('.btn-close-master')||ev.target.closest('.ebay-photo-overlay')) return; if(w.data.photoData) openPhotoLightbox(imgEl.src||w.data.photoData); };
       if(cameraInput){
@@ -17285,9 +16988,8 @@
       var showSuggestions=!w.data.photoData&&listingSuggestionsVisible()&&urls.length;
       if(showSuggestions){
         var sugWrap=document.createElement('div');
-        sugWrap.className='inserat-photo-suggestions-wrap';
-        sugWrap.style.cssText='position:absolute;bottom:12px;left:0;right:0;display:flex;gap:12px;justify-content:center;align-items:center;pointer-events:auto;';
-        urls.forEach(function(u,i){ var im=document.createElement('img'); im.className='photo-suggestion'; im.src=u; im.alt=''; im.dataset.suggestionIndex=i; im.style.cssText='width:48px;height:48px;object-fit:cover;border-radius:10px;cursor:pointer;pointer-events:auto;'; im.onclick=(function(idx){ return function(e){ e.stopPropagation(); if(typeof triggerHapticFeedback==='function') triggerHapticFeedback([5]); w.data.photoData=getListingSuggestionUrls()[idx]; w.data.photoDataIsStandard=true; setPhotoObjectPosition(50); saveDraft(); if(imgEl){ imgEl.src=w.data.photoData; imgEl.style.display='block'; imgEl.style.objectPosition='center 50%'; } var plc=photoTile.querySelector('.inserat-photo-placeholder-center'); if(plc) plc.remove(); photoTile.classList.remove('inserat-photo-placeholder','pulse-soft'); overlay.style.pointerEvents='none'; if(sugWrap) sugWrap.style.display='none'; if(typeof checkMastercardValidation==='function') checkMastercardValidation(); }; })(i); sugWrap.appendChild(im); });
+        sugWrap.className='inserat-photo-suggestions-wrap s5-sug-wrap';
+        urls.forEach(function(u,i){ var im=document.createElement('img'); im.className='photo-suggestion s5-sug-img'; im.src=u; im.alt=''; im.dataset.suggestionIndex=i; im.onclick=(function(idx){ return function(e){ e.stopPropagation(); if(typeof triggerHapticFeedback==='function') triggerHapticFeedback([5]); w.data.photoData=getListingSuggestionUrls()[idx]; w.data.photoDataIsStandard=true; setPhotoObjectPosition(50); saveDraft(); if(imgEl){ imgEl.src=w.data.photoData; imgEl.style.display='block'; imgEl.style.objectPosition='center 50%'; } var plc=photoTile.querySelector('.inserat-photo-placeholder-center'); if(plc) plc.remove(); photoTile.classList.remove('inserat-photo-placeholder','pulse-soft'); overlay.style.pointerEvents='none'; if(sugWrap) sugWrap.style.display='none'; if(typeof checkMastercardValidation==='function') checkMastercardValidation(); }; })(i); sugWrap.appendChild(im); });
         sugWrap.style.pointerEvents='auto';
         overlay.appendChild(sugWrap);
       }
@@ -17307,10 +17009,9 @@
       }
       var closeX=document.createElement('button');
       closeX.type='button';
-      closeX.className='close-wizard-x close-mastercard btn-close-master';
+      closeX.className='close-wizard-x close-mastercard btn-close-master s5-close-x';
       closeX.setAttribute('aria-label','Schließen');
       closeX.innerHTML='<span aria-hidden="true">&#10005;</span>';
-      closeX.style.cssText='position:absolute;top:12px;left:12px;width:32px;height:32px;background:rgba(255,255,255,0.8);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:50%;color:#1a1a1a;display:flex;align-items:center;justify-content:center;z-index:150;border:none;cursor:pointer;font-size:18px;line-height:1;font-family:system-ui,sans-serif;';
       photoTile.appendChild(closeX);
       var selectionOverlay=document.createElement('div');
       selectionOverlay.className='selection-overlay';
@@ -17341,36 +17042,36 @@
           (typeof ALLERGENS_14!=='undefined'?ALLERGENS_14:[]).forEach(function(a){
             var code=a.short; var name=a.name||code; var active=(w.data.allergens||[]).includes(code);
             var emo=(typeof ALLERGEN_EMOJI!=='undefined'&&ALLERGEN_EMOJI[code])?ALLERGEN_EMOJI[code]:'';
-            var pill=document.createElement('button'); pill.type='button'; pill.className='extra-pill inserat-allergen-pill' + (active ? ' active' : ''); pill.style.cssText='cursor:pointer;'; pill.textContent=(emo ? emo + ' ' : '') + name; pill.title=name;
+            var pill=document.createElement('button'); pill.type='button'; pill.className='extra-pill inserat-allergen-pill cursor-pointer' + (active ? ' active' : ''); pill.textContent=(emo ? emo + ' ' : '') + name; pill.title=name;
             pill.onclick=function(){ hapticLight(); if(!w.data.allergens) w.data.allergens=[]; if((w.data.allergens||[]).includes(code)){ w.data.allergens=w.data.allergens.filter(function(x){ return x!==code; }); } else{ w.data.allergens.push(code); } w.data.wantsAllergens=true; saveDraft(); pill.classList.toggle('active',(w.data.allergens||[]).includes(code)); if(typeof updatePowerBarFromBox==='function') updatePowerBarFromBox(); };
             selectionOverlayInner.appendChild(pill);
           });
-          var allergenRow=document.createElement('div'); allergenRow.style.cssText='display:flex; flex-direction:column; gap:10px; padding:12px 0 0; margin-top:8px; border-top:1px solid rgba(0,0,0,0.06);';
+          var allergenRow=document.createElement('div'); allergenRow.className='s5-allergen-row';
           var btnFertigAll=document.createElement('button'); btnFertigAll.type='button'; btnFertigAll.className='inserat-fertig-kachel'; btnFertigAll.textContent='Fertig'; btnFertigAll.onclick=function(){ hapticLight(); closeHeaderSelection(); if(typeof updatePowerBarFromBox==='function') updatePowerBarFromBox(); };
-          var btnSaveDefault=document.createElement('button'); btnSaveDefault.type='button'; btnSaveDefault.textContent='Als Standard speichern'; btnSaveDefault.style.cssText='padding:10px 16px; border-radius:999px; border:2px solid #10b981; background:transparent; color:#059669; font-weight:700; cursor:pointer; font-size:13px;'; btnSaveDefault.onclick=function(){ hapticLight(); if(!provider.profile) provider.profile={}; provider.profile.defaultAllergens=(w.data.allergens||[]).slice(); provider.profile.wantsAllergensByDefault=!!(w.data.allergens&&w.data.allergens.length); if(typeof save==='function') save(LS.provider,provider); if(typeof showToast==='function') showToast('Als Standard f├╝r zuk├╝nftige Inserate gespeichert'); else alert('Als Standard gespeichert.'); };
+          var btnSaveDefault=document.createElement('button'); btnSaveDefault.type='button'; btnSaveDefault.className='s5-btn-emerald-outline'; btnSaveDefault.textContent='Als Standard speichern'; btnSaveDefault.onclick=function(){ hapticLight(); if(!provider.profile) provider.profile={}; provider.profile.defaultAllergens=(w.data.allergens||[]).slice(); provider.profile.wantsAllergensByDefault=!!(w.data.allergens&&w.data.allergens.length); if(typeof save==='function') save(LS.provider,provider); if(typeof showToast==='function') showToast('Als Standard f├╝r zuk├╝nftige Inserate gespeichert'); else alert('Als Standard gespeichert.'); };
           allergenRow.appendChild(btnSaveDefault); allergenRow.appendChild(btnFertigAll); selectionOverlayInner.appendChild(allergenRow);
         } else if(type==='extras'){
           var defaultExtras = (profile.defaultExtras && profile.defaultExtras.length) ? profile.defaultExtras.slice() : [{ name:'Beilagensalat', price:2.5 }, { name:'Mayo', price:0.5 }, { name:'Ketchup', price:0.5 }, { name:'So├ƒe', price:1 }, { name:'Brot', price:1.5 }];
           if(!Array.isArray(w.data.extras)) w.data.extras=[];
-          var extrasListWrap=document.createElement('div'); extrasListWrap.style.cssText='display:flex; flex-wrap:wrap; gap:8px; align-items:center;';
+          var extrasListWrap=document.createElement('div'); extrasListWrap.className='s5-extras-list-wrap';
           defaultExtras.forEach(function(opt){
             var ex=w.data.extras.find(function(e){ return e.name===opt.name; }); var active=!!ex && Number(ex.price||0)>0; if(!ex) ex={ name:opt.name, price:0 };
-            var pillWrap=document.createElement('div'); pillWrap.style.cssText='display:flex; align-items:center; gap:6px;';
-            var btn=document.createElement('button'); btn.type='button'; btn.className='extra-pill' + (active ? ' active' : ''); btn.style.cssText='cursor:pointer;'; btn.textContent='\u2795 ' + opt.name;
-            btn.onclick=function(){ hapticLight(); var idx=w.data.extras.findIndex(function(e){ return e.name===opt.name; }); if(idx>=0){ w.data.extras.splice(idx,1); } else{ w.data.extras.push({ name:opt.name, price:opt.price }); } saveDraft(); var hasEx=!!w.data.extras.find(function(e){ return e.name===opt.name; }) && Number((w.data.extras.find(function(e){ return e.name===opt.name; })||{}).price||0)>0; btn.classList.toggle('active',hasEx); if(typeof updatePowerBarFromBox==='function') updatePowerBarFromBox(); if(pillWrap.querySelector('input')){ var next=w.data.extras.find(function(e){ return e.name===opt.name; }); if(next&&Number(next.price||0)>0){ pillWrap.querySelector('input').value=Number(next.price).toFixed(2).replace('.',','); } else { var inpWrap=pillWrap.querySelector('span'); if(inpWrap) inpWrap.remove(); } } else if(hasEx){ var inpWrap=document.createElement('span'); inpWrap.style.cssText='display:inline-flex; align-items:center; background:rgba(255,255,255,0.6); border-radius:999px; padding:4px 8px;'; var plus=document.createElement('span'); plus.style.cssText='font-size:10px; font-weight:800; color:#10b981; margin-right:4px;'; plus.textContent='+'; var inp=document.createElement('input'); inp.type='text'; inp.inputMode='decimal'; inp.style.cssText='width:36px; background:transparent; border:none; padding:0; font-size:12px; font-weight:800; color:#10b981; outline:none;'; var e=w.data.extras.find(function(x){ return x.name===opt.name; }); inp.value=Number((e&&e.price)||0).toFixed(2).replace('.',','); inp.oninput=function(){ if(e) e.price=parseFloat((inp.value||'0').replace(',','.'))||0; saveDraft(); }; inp.onclick=function(ev){ ev.stopPropagation(); }; var eur=document.createElement('span'); eur.style.cssText='font-size:10px; font-weight:800; color:#10b981; margin-left:2px;'; eur.textContent='Ôé¼'; inpWrap.appendChild(plus); inpWrap.appendChild(inp); inpWrap.appendChild(eur); pillWrap.appendChild(inpWrap); } };
+            var pillWrap=document.createElement('div'); pillWrap.className='s5-pill-wrap';
+            var btn=document.createElement('button'); btn.type='button'; btn.className='extra-pill' + (active ? ' active' : ''); btn.textContent='\u2795 ' + opt.name;
+            btn.onclick=function(){ hapticLight(); var idx=w.data.extras.findIndex(function(e){ return e.name===opt.name; }); if(idx>=0){ w.data.extras.splice(idx,1); } else{ w.data.extras.push({ name:opt.name, price:opt.price }); } saveDraft(); var hasEx=!!w.data.extras.find(function(e){ return e.name===opt.name; }) && Number((w.data.extras.find(function(e){ return e.name===opt.name; })||{}).price||0)>0; btn.classList.toggle('active',hasEx); if(typeof updatePowerBarFromBox==='function') updatePowerBarFromBox(); if(pillWrap.querySelector('input')){ var next=w.data.extras.find(function(e){ return e.name===opt.name; }); if(next&&Number(next.price||0)>0){ pillWrap.querySelector('input').value=Number(next.price).toFixed(2).replace('.',','); } else { var inpWrap=pillWrap.querySelector('span'); if(inpWrap) inpWrap.remove(); } } else if(hasEx){ var inpWrap=document.createElement('span'); inpWrap.className='s5-extra-price-wrap'; var plus=document.createElement('span'); plus.className='s5-extra-plus'; plus.textContent='+'; var inp=document.createElement('input'); inp.type='text'; inp.inputMode='decimal'; inp.className='s5-extra-price-inp'; var e=w.data.extras.find(function(x){ return x.name===opt.name; }); inp.value=Number((e&&e.price)||0).toFixed(2).replace('.',','); inp.oninput=function(){ if(e) e.price=parseFloat((inp.value||'0').replace(',','.'))||0; saveDraft(); }; inp.onclick=function(ev){ ev.stopPropagation(); }; var eur=document.createElement('span'); eur.className='s5-extra-eur'; eur.textContent='€'; inpWrap.appendChild(plus); inpWrap.appendChild(inp); inpWrap.appendChild(eur); pillWrap.appendChild(inpWrap); } };
             pillWrap.appendChild(btn);
-            if(active){ var inpWrap=document.createElement('span'); inpWrap.style.cssText='display:inline-flex; align-items:center; background:rgba(255,255,255,0.6); border-radius:999px; padding:4px 8px;'; var plus=document.createElement('span'); plus.style.cssText='font-size:10px; font-weight:800; color:#10b981; margin-right:4px;'; plus.textContent='+'; var inp=document.createElement('input'); inp.type='text'; inp.inputMode='decimal'; inp.style.cssText='width:36px; background:transparent; border:none; padding:0; font-size:12px; font-weight:800; color:#10b981; outline:none;'; inp.value=Number(ex.price).toFixed(2).replace('.',','); inp.oninput=function(){ ex.price=parseFloat((inp.value||'0').replace(',','.'))||0; saveDraft(); }; inp.onclick=function(ev){ ev.stopPropagation(); }; var eur=document.createElement('span'); eur.style.cssText='font-size:10px; font-weight:800; color:#10b981; margin-left:2px;'; eur.textContent='Ôé¼'; inpWrap.appendChild(plus); inpWrap.appendChild(inp); inpWrap.appendChild(eur); pillWrap.appendChild(inpWrap); }
+            if(active){ var inpWrap=document.createElement('span'); inpWrap.className='s5-extra-price-wrap'; var plus=document.createElement('span'); plus.className='s5-extra-plus'; plus.textContent='+'; var inp=document.createElement('input'); inp.type='text'; inp.inputMode='decimal'; inp.className='s5-extra-price-inp'; inp.value=Number(ex.price).toFixed(2).replace('.',','); inp.oninput=function(){ ex.price=parseFloat((inp.value||'0').replace(',','.'))||0; saveDraft(); }; inp.onclick=function(ev){ ev.stopPropagation(); }; var eur=document.createElement('span'); eur.className='s5-extra-eur'; eur.textContent='€'; inpWrap.appendChild(plus); inpWrap.appendChild(inp); inpWrap.appendChild(eur); pillWrap.appendChild(inpWrap); }
             extrasListWrap.appendChild(pillWrap);
           });
           selectionOverlayInner.appendChild(extrasListWrap);
-          var extrasAddRow=document.createElement('div'); extrasAddRow.style.cssText='display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:10px; padding:8px 0; border-top:1px solid rgba(0,0,0,0.06);';
-          var addNameInp=document.createElement('input'); addNameInp.type='text'; addNameInp.placeholder='Neues Extra'; addNameInp.style.cssText='padding:8px 12px; border-radius:10px; border:2px solid rgba(0,0,0,0.08); width:120px; font-size:14px;';
-          var addPriceInp=document.createElement('input'); addPriceInp.type='text'; addPriceInp.inputMode='decimal'; addPriceInp.placeholder='0,00'; addPriceInp.style.cssText='padding:8px 12px; border-radius:10px; border:2px solid rgba(0,0,0,0.08); width:56px; font-size:14px;';
-          var btnAddExtra=document.createElement('button'); btnAddExtra.type='button'; btnAddExtra.textContent='Hinzufügen'; btnAddExtra.style.cssText='padding:8px 14px; border-radius:999px; border:none; background:#10b981; color:#fff; font-weight:700; cursor:pointer; font-size:13px;'; btnAddExtra.onclick=function(){ hapticLight(); var name=(addNameInp.value||'').trim(); if(!name) return; var price=parseFloat((addPriceInp.value||'0').replace(',','.'))||0; if(w.data.extras.some(function(e){ return e.name===name; })) return; w.data.extras.push({ name:name, price:price }); saveDraft(); addNameInp.value=''; addPriceInp.value=''; if(typeof updatePowerBarFromBox==='function') updatePowerBarFromBox(); var pillWrap=document.createElement('div'); pillWrap.style.cssText='display:flex; align-items:center; gap:6px;'; var btn=document.createElement('button'); btn.type='button'; btn.className='extra-pill active'; btn.style.cssText='cursor:pointer;'; btn.textContent='\u2795 '+name; btn.onclick=function(){ hapticLight(); var idx=w.data.extras.findIndex(function(e){ return e.name===name; }); if(idx>=0){ w.data.extras.splice(idx,1); } saveDraft(); pillWrap.remove(); if(typeof updatePowerBarFromBox==='function') updatePowerBarFromBox(); }; pillWrap.appendChild(btn); if(price>0){ var inpWrap=document.createElement('span'); inpWrap.style.cssText='display:inline-flex; align-items:center; background:rgba(255,255,255,0.6); border-radius:999px; padding:4px 8px;'; var e=w.data.extras.find(function(x){ return x.name===name; }); inpWrap.innerHTML='<span style="font-size:10px; font-weight:800; color:#10b981; margin-right:4px;">+</span><input type="text" inputmode="decimal" style="width:36px; background:transparent; border:none; padding:0; font-size:12px; font-weight:800; color:#10b981; outline:none;" value="'+Number(price).toFixed(2).replace('.',',')+'"><span style="font-size:10px; font-weight:800; color:#10b981; margin-left:2px;">Ôé¼</span>'; var inp=inpWrap.querySelector('input'); if(inp&&e){ inp.oninput=function(){ e.price=parseFloat((inp.value||'0').replace(',','.'))||0; saveDraft(); }; inp.onclick=function(ev){ ev.stopPropagation(); }; } pillWrap.appendChild(inpWrap); } extrasListWrap.appendChild(pillWrap); if(typeof showToast==='function') showToast('Extra hinzugef├╝gt'); };
+          var extrasAddRow=document.createElement('div'); extrasAddRow.className='s5-extras-add-row';
+          var addNameInp=document.createElement('input'); addNameInp.type='text'; addNameInp.className='s5-add-name-inp'; addNameInp.placeholder='Neues Extra';
+          var addPriceInp=document.createElement('input'); addPriceInp.type='text'; addPriceInp.inputMode='decimal'; addPriceInp.className='s5-add-price-inp'; addPriceInp.placeholder='0,00';
+          var btnAddExtra=document.createElement('button'); btnAddExtra.type='button'; btnAddExtra.className='s5-btn-add-extra'; btnAddExtra.textContent='Hinzufügen'; btnAddExtra.onclick=function(){ hapticLight(); var name=(addNameInp.value||'').trim(); if(!name) return; var price=parseFloat((addPriceInp.value||'0').replace(',','.'))||0; if(w.data.extras.some(function(e){ return e.name===name; })) return; w.data.extras.push({ name:name, price:price }); saveDraft(); addNameInp.value=''; addPriceInp.value=''; if(typeof updatePowerBarFromBox==='function') updatePowerBarFromBox(); var pillWrap=document.createElement('div'); pillWrap.className='s5-pill-wrap'; var btn=document.createElement('button'); btn.type='button'; btn.className='extra-pill active'; btn.textContent='\u2795 '+name; btn.onclick=function(){ hapticLight(); var idx=w.data.extras.findIndex(function(e){ return e.name===name; }); if(idx>=0){ w.data.extras.splice(idx,1); } saveDraft(); pillWrap.remove(); if(typeof updatePowerBarFromBox==='function') updatePowerBarFromBox(); }; pillWrap.appendChild(btn); if(price>0){ var inpWrap=document.createElement('span'); inpWrap.className='s5-extra-price-wrap'; var e=w.data.extras.find(function(x){ return x.name===name; }); inpWrap.innerHTML='<span class="s5-extra-plus">+</span><input type="text" inputmode="decimal" class="s5-extra-price-inp" value="'+Number(price).toFixed(2).replace('.',',')+'"><span class="s5-extra-eur">€</span>'; var inp=inpWrap.querySelector('input'); if(inp&&e){ inp.oninput=function(){ e.price=parseFloat((inp.value||'0').replace(',','.'))||0; saveDraft(); }; inp.onclick=function(ev){ ev.stopPropagation(); }; } pillWrap.appendChild(inpWrap); } extrasListWrap.appendChild(pillWrap); if(typeof showToast==='function') showToast('Extra hinzugef├╝gt'); };
           extrasAddRow.appendChild(addNameInp); extrasAddRow.appendChild(addPriceInp); extrasAddRow.appendChild(btnAddExtra); selectionOverlayInner.appendChild(extrasAddRow);
-          var extrasBtnRow=document.createElement('div'); extrasBtnRow.style.cssText='display:flex; flex-direction:column; gap:10px; padding:12px 0 0; margin-top:8px; border-top:1px solid rgba(0,0,0,0.06);';
+          var extrasBtnRow=document.createElement('div'); extrasBtnRow.className='s5-extras-btn-row';
           var btnFertigEx=document.createElement('button'); btnFertigEx.type='button'; btnFertigEx.className='inserat-fertig-kachel'; btnFertigEx.textContent='Fertig'; btnFertigEx.onclick=function(){ hapticLight(); closeHeaderSelection(); if(typeof updatePowerBarFromBox==='function') updatePowerBarFromBox(); };
-          var btnSaveExtras=document.createElement('button'); btnSaveExtras.type='button'; btnSaveExtras.textContent='In Inserateinstellungen ├╝bernehmen'; btnSaveExtras.style.cssText='padding:10px 16px; border-radius:999px; border:2px solid #10b981; background:transparent; color:#059669; font-weight:700; cursor:pointer; font-size:13px;'; btnSaveExtras.onclick=function(){ hapticLight(); if(!provider.profile) provider.profile={}; if(!Array.isArray(provider.profile.defaultExtras)) provider.profile.defaultExtras=[]; (w.data.extras||[]).forEach(function(e){ if(!e||!e.name) return; var has=provider.profile.defaultExtras.some(function(d){ return d&&d.name===e.name; }); if(!has) provider.profile.defaultExtras.push({ name:e.name, price:Number(e.price)||0 }); }); if(typeof save==='function') save(LS.provider,provider); if(typeof showToast==='function') showToast('Extras in Inserateinstellungen gespeichert'); else alert('Gespeichert.'); };
+          var btnSaveExtras=document.createElement('button'); btnSaveExtras.type='button'; btnSaveExtras.className='s5-btn-emerald-outline'; btnSaveExtras.textContent='In Inserateinstellungen ├╝bernehmen'; btnSaveExtras.onclick=function(){ hapticLight(); if(!provider.profile) provider.profile={}; if(!Array.isArray(provider.profile.defaultExtras)) provider.profile.defaultExtras=[]; (w.data.extras||[]).forEach(function(e){ if(!e||!e.name) return; var has=provider.profile.defaultExtras.some(function(d){ return d&&d.name===e.name; }); if(!has) provider.profile.defaultExtras.push({ name:e.name, price:Number(e.price)||0 }); }); if(typeof save==='function') save(LS.provider,provider); if(typeof showToast==='function') showToast('Extras in Inserateinstellungen gespeichert'); else alert('Gespeichert.'); };
           extrasBtnRow.appendChild(btnSaveExtras); extrasBtnRow.appendChild(btnFertigEx); selectionOverlayInner.appendChild(extrasBtnRow);
         } else if(type==='time'){
           selectionOverlayInner.classList.add('selection-overlay-inner--time');
@@ -17379,9 +17080,9 @@
           var tEnd=(pwParts[1]||'14:00').trim();
           if(tStart.length===4) tStart='0'+tStart;
           if(tEnd.length===4) tEnd='0'+tEnd;
-          var row=document.createElement('div'); row.className='inserat-time-morph-row'; row.style.cssText='display:flex; align-items:center; justify-content:center; gap:12px; flex-wrap:wrap; padding:16px 0;';
-          var inpStart=document.createElement('input'); inpStart.type='time'; inpStart.className='inserat-pickup-time-input'; inpStart.value=tStart; inpStart.style.cssText='padding:10px 14px; border-radius:12px; border:2px solid rgba(0,0,0,0.08); background:rgba(255,255,255,0.7); backdrop-filter:blur(10px); font-size:16px; font-weight:700;';
-          var inpEnd=document.createElement('input'); inpEnd.type='time'; inpEnd.className='inserat-pickup-time-input'; inpEnd.value=tEnd; inpEnd.style.cssText='padding:10px 14px; border-radius:12px; border:2px solid rgba(0,0,0,0.08); background:rgba(255,255,255,0.7); backdrop-filter:blur(10px); font-size:16px; font-weight:700;';
+          var row=document.createElement('div'); row.className='inserat-time-morph-row s5-time-morph-row';
+          var inpStart=document.createElement('input'); inpStart.type='time'; inpStart.className='inserat-pickup-time-input s5-time-inp'; inpStart.value=tStart;
+          var inpEnd=document.createElement('input'); inpEnd.type='time'; inpEnd.className='inserat-pickup-time-input s5-time-inp'; inpEnd.value=tEnd;
           var upd=function(){ w.data.pickupWindow=inpStart.value+' – '+inpEnd.value; saveDraft(); if(typeof updatePowerBarFromBox==='function') updatePowerBarFromBox(); };
           inpStart.onchange=function(){ hapticLight(); upd(); };
           inpEnd.onchange=function(){ hapticLight(); upd(); };
@@ -17410,27 +17111,23 @@
 
       /* Content-Sheet: Weißer Wrapper, Zero Gap [cite: REFACTOR 2026-02-23] */
       var contentSheet=document.createElement('div');
-      contentSheet.className='inserat-content-sheet';
-      contentSheet.style.cssText='width:100%; background:#ffffff; border-top-left-radius:24px; border-top-right-radius:24px; flex:1;';
+      contentSheet.className='inserat-content-sheet s5-content-sheet';
       scrollArea.appendChild(contentSheet);
 
       // ========== 2. EBENE (Titel): Textarea + Mülleimer rechts [cite: REFACTOR 2026-02-23] ==========
       const stepName=document.createElement('div');
       stepName.id='step-name';
-      stepName.className='inserat-section inserat-unified-title-wrap inserat-name-sticky';
-      stepName.style.cssText='width:100%; margin-top:0; margin-bottom:0; display:flex; justify-content:center; position:sticky; top:0; z-index:10; background:#ffffff; padding:8px 0; border-bottom:1px solid #f2f2f2;';
+      stepName.className='inserat-section inserat-unified-title-wrap inserat-name-sticky s5-step-name';
       var nameInputWrap=document.createElement('div');
-      nameInputWrap.className='inserat-name-input-wrap';
-      nameInputWrap.style.cssText='position:relative; width:100%; display:flex; align-items:flex-start; min-height:44px;';
+      nameInputWrap.className='inserat-name-input-wrap s5-name-input-wrap';
       const inputDish=document.createElement('textarea');
       inputDish.id='gericht-name';
       inputDish.setAttribute('autocomplete','off');
       inputDish.rows=1;
-      inputDish.className='ghost-input inserat-detail-style-title magnet-input inserat-gericht-name-extra input-giant-name inserat-name-textarea';
+      inputDish.className='ghost-input inserat-detail-style-title s5-input-dish magnet-input inserat-gericht-name-extra input-giant-name inserat-name-textarea';
       inputDish.value=w.data.dish||'';
       inputDish.placeholder='Was bietest du heute an?';
       inputDish.autocomplete='off';
-      inputDish.style.cssText='flex:1; color:#1a1a1a; font-family:system-ui,-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,sans-serif; font-weight:800; font-style:normal; box-sizing:border-box; border:none; background:transparent; outline:none; padding-right:32px; padding-top:4px; padding-bottom:4px; resize:none; overflow:hidden; min-height:36px; text-align:center;';
       function adjustTitleFontSize(){
         var el = inputDish;
         if(!el || !el.offsetParent) return;
@@ -17447,7 +17144,7 @@
       btnClearName.className='inserat-name-clear-btn';
       btnClearName.setAttribute('aria-label','Name löschen');
       btnClearName.textContent='\uD83D\uDDD1\uFE0F';
-      btnClearName.style.cssText='position:absolute; right:2px; top:8px; width:24px; height:24px; border:none; background:transparent; color:#94a3b8; font-size:12px; cursor:pointer; display:flex; align-items:center; justify-content:center; border-radius:50%; flex-shrink:0; opacity:0.7;';
+      btnClearName.classList.add('s5-btn-clear-name');
       btnClearName.onclick=function(e){ e.preventDefault(); e.stopPropagation(); if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); hapticLight(); inputDish.value=''; w.data.dish=''; saveDraft(); adjustTitleFontSize(); inputDish.focus(); };
       nameInputWrap.appendChild(inputDish);
       nameInputWrap.appendChild(btnClearName);
@@ -17456,37 +17153,31 @@
 
       // ========== 3. Beschreibung + Hilfe-Zeile [cite: REFACTOR 2026-02-23] ==========
       var descWrap=document.createElement('div');
-      descWrap.className='inserat-desc-wrap';
-      descWrap.style.cssText='width:100%; padding:6px 0 8px 0; border-bottom:1px solid #f2f2f2;';
+      descWrap.className='inserat-desc-wrap s5-desc-wrap';
       var descriptionTextarea=document.createElement('textarea');
       descriptionTextarea.id='gerichtDesc';
-      descriptionTextarea.className='input-description';
+      descriptionTextarea.className='input-description s5-desc-textarea';
       descriptionTextarea.placeholder='Zutaten oder Besonderheiten...';
       descriptionTextarea.value=w.data.description||'';
-      descriptionTextarea.style.cssText='width:100%; border:none; font-size:14px; color:#64748b; resize:none; padding:4px 0 2px 0; margin:0; text-align:center; background:transparent; outline:none; box-sizing:border-box; min-height:36px;';
       descriptionTextarea.oninput=function(){ w.data.description=descriptionTextarea.value; saveDraft(); };
       descWrap.appendChild(descriptionTextarea);
       contentSheet.appendChild(descWrap);
 
       // ========== 4. Kategorie-Pills (Green Categories: Fleisch, Veggie, Vegan) [cite: 2026-02-23] ==========
       var pillGroup=document.createElement('div');
-      pillGroup.className='pill-group system-content-body';
-      pillGroup.style.cssText='display:flex; flex-direction:column; gap:6px; margin-top:8px; margin-bottom:0; padding-top:8px; align-items:center; width:100%; border-top:1px solid #f2f2f2;';
+      pillGroup.className='pill-group system-content-body s5-pill-group';
       var catValues=['Fleisch','Veggie','Vegan'];
       var catEmojis=['\uD83E\uDD69','\uD83E\uDD66','\uD83C\uDF3F'];
       var currentCat=w.data.category||'Fleisch';
       if(currentCat==='Vegetarisch'||currentCat==='Salat') currentCat='Veggie';
       if(!catValues.includes(currentCat)) w.data.category='Fleisch'; else w.data.category=currentCat;
       var categoryPills=document.createElement('div');
-      categoryPills.className='pill-cloud categories category-pills-green';
+      categoryPills.className='pill-cloud categories category-pills-green s5-category-pills';
       categoryPills.id='categoryPills';
-      categoryPills.style.cssText='display:flex; flex-wrap:wrap; gap:6px; align-items:center; justify-content:center;';
       catValues.forEach(function(c,i){
         var b=document.createElement('button');
         b.type='button';
-        b.className='pill power-item category-pill'+(w.data.category===c?' active':'');
-        b.style.cssText='min-height:40px; padding:8px 14px; border-radius:12px; border:none; font-size:13px; font-weight:700; cursor:pointer;';
-        if(w.data.category===c){ b.style.background='#222222'; b.style.color='#ffffff'; } else { b.style.background='#f2f2f2'; b.style.color='#6b7280'; }
+        b.className='pill power-item category-pill s5-category-pill'+(w.data.category===c?' active':'');
         b.innerHTML='<span style="font-size:14px;">'+(catEmojis[i]||'')+'</span> ' + c;
         b.setAttribute('title',c);
         b.dataset.category=c;
@@ -17495,14 +17186,8 @@
           var cat=this.dataset.category;
           w.data.category=cat;
           saveDraft();
-          categoryPills.querySelectorAll('.category-pill').forEach(function(p){
-            p.classList.remove('active');
-            p.style.background='#f2f2f2';
-            p.style.color='#6b7280';
-          });
+          categoryPills.querySelectorAll('.category-pill').forEach(function(p){ p.classList.remove('active'); });
           this.classList.add('active');
-          this.style.background='#222222';
-          this.style.color='#ffffff';
         };
         categoryPills.appendChild(b);
       });
@@ -17510,17 +17195,14 @@
       contentSheet.appendChild(pillGroup);
 
       var systemDivider=document.createElement('div');
-      systemDivider.className='minimal-divider mastercard-step-edit-divider system-divider';
-      systemDivider.style.cssText='width:40px; height:2px; background:#f1f5f9; margin:5px auto 6px; border-radius:2px;';
+      systemDivider.className='minimal-divider mastercard-step-edit-divider system-divider s5-system-divider';
       contentSheet.appendChild(systemDivider);
 
       // ========== 5. Preis (Giant) & Extras-Button [cite: FINALE NEUAUFBAU 2026-02-21] ==========
       var priceSection=document.createElement('div');
-      priceSection.className='price-section';
-      priceSection.style.cssText='display:flex; flex-direction:column; align-items:center; gap:6px; margin-bottom:8px; margin-top:4px;';
+      priceSection.className='price-section s5-price-section';
       var priceInputWrapper=document.createElement('div');
-      priceInputWrapper.className='price-input-wrapper';
-      priceInputWrapper.style.cssText='display:flex; align-items:center; justify-content:center; gap:8px;';
+      priceInputWrapper.className='price-input-wrapper s5-price-input-wrap';
       var stepPriceWrap=document.createElement('div');
       stepPriceWrap.id='step-price';
       stepPriceWrap.className='inserat-price-pill-wrap price-input-wrapper';
@@ -17539,8 +17221,8 @@
       stepPriceWrap.appendChild(eurSpan);
       priceInputWrapper.appendChild(stepPriceWrap);
       var feeNoteEl=document.createElement('div');
-      feeNoteEl.className='inserat-fee-note';
-      feeNoteEl.style.cssText='font-size:13px; color:#64748b; margin-top:6px; display:'+(w.data.hasPickupCode?'block':'none')+';';
+      feeNoteEl.className='inserat-fee-note s5-fee-note';
+      feeNoteEl.style.display=w.data.hasPickupCode?'block':'none';
       feeNoteEl.textContent='0,89 € pro Vorgang inkl. Gebühren';
       feeNoteEl.setAttribute('id','inserat-fee-note');
       if(w.data.hasPickupCode && inputPrice){ inputPrice.disabled=true; }
@@ -17548,15 +17230,13 @@
       priceSection.appendChild(feeNoteEl);
       var verdienstWrap = document.createElement('div');
       verdienstWrap.id = 'inserat-verdienst-vorschau';
-      verdienstWrap.className = 'inserat-verdienst-vorschau';
-      verdienstWrap.style.cssText = 'display:none; font-size:13px; margin-top:6px;';
+      verdienstWrap.className = 'inserat-verdienst-vorschau s5-verdienst-wrap';
       priceSection.appendChild(verdienstWrap);
       contentSheet.appendChild(priceSection);
 
       // ========== 6. Power-Bar [cite: Regel 2026-02-23] Reihenfolge: ­ƒì┤ Vor Ort -> ­ƒöä Mehrweg -> ­ƒòÆ Abholzeit -> ­ƒî¥ Allergene -> Ô×ò Extras ==========
       const powerBar=document.createElement('div');
-      powerBar.className='inserat-power-bar pillar-row inserat-unified-pills inserat-soft-shell power-bar-module';
-      powerBar.style.cssText='border-top:1px solid #f2f2f2; padding-top:12px; margin-top:4px;';
+      powerBar.className='inserat-power-bar s5-power-bar pillar-row inserat-unified-pills inserat-soft-shell power-bar-module';
       var hasDineIn=w.data.dineInPossible!==false;
       var hasReuse=!!(w.data.reuse&&w.data.reuse.enabled);
       var hasTimeValue=!!(w.data.pickupWindow&&w.data.pickupWindow.trim())||(w.data.mealStart&&w.data.mealEnd);
@@ -17602,8 +17282,7 @@
       addPowerItem('\u26A0\uFE0F','Allergene','allergene',hasAllergens);
       addPowerItem('\u002B','Extras','extras',hasExtras);
       var powerBarExtras=document.createElement('div');
-      powerBarExtras.className='power-bar-extras';
-      powerBarExtras.style.cssText='width:100%; display:flex; flex-direction:column; gap:8px; margin-top:8px; padding-top:8px; border-top:1px solid #f2f2f2;';
+      powerBarExtras.className='power-bar-extras s5-power-bar-extras';
       function updateMastercardFeedback(){
         renderPowerBarExtras();
       }
@@ -17657,14 +17336,12 @@
         }
         if(mehrwegActive){
           var rebowl=document.createElement('div');
-          rebowl.className='inserat-rebowl-option';
-          rebowl.style.cssText='display:flex; align-items:center; justify-content:space-between; padding:8px 12px; background:rgba(16,185,129,0.06); border-radius:10px; border:1px solid rgba(16,185,129,0.2); margin-top:8px;';
+          rebowl.className='inserat-rebowl-option s5-rebowl';
           rebowl.innerHTML='<span style="font-size:13px; font-weight:600; color:#0f172a;">Rebowl-Option: + 5,00 € Pfand</span>';
           var pfandBtn=document.createElement('button');
           pfandBtn.type='button';
-          pfandBtn.className='inserat-pfand-toggle';
+          pfandBtn.className='inserat-pfand-toggle s5-pfand-btn';
           pfandBtn.textContent=(w.data.reuse&&w.data.reuse.deposit>0)?'5,00 €':'+ Hinzufügen';
-          pfandBtn.style.cssText='padding:6px 12px; border-radius:8px; border:1px solid #10b981; background:#fff; color:#10b981; font-size:12px; font-weight:700; cursor:pointer;';
           pfandBtn.onclick=function(){ hapticLight(); w.data.reuse=w.data.reuse||{}; w.data.reuse.deposit=w.data.reuse.deposit>0?0:5; saveDraft(); pfandBtn.textContent=(w.data.reuse.deposit>0)?'5,00 €':'+ Hinzufügen'; updateMastercardFeedback(); };
           rebowl.appendChild(pfandBtn);
           powerBarExtras.appendChild(rebowl);
@@ -17676,8 +17353,7 @@
       renderPowerBarExtras();
       const quickAdjustPanel=document.createElement('div');
       quickAdjustPanel.id='quick-adjust-sheet';
-      quickAdjustPanel.className='inserat-quick-adjust-panel quick-adjust-sheet';
-      quickAdjustPanel.style.cssText='display:none; position:fixed; left:50%; bottom:0; width:100%; max-width:400px; z-index:6000; background:#ffffff; border-radius:24px 24px 0 0; padding:20px 16px 0; margin:0; box-shadow:none; border-top:1px solid #ebebeb; max-height:70vh; overflow-y:auto; padding-bottom:0;';
+      quickAdjustPanel.className='inserat-quick-adjust-panel quick-adjust-sheet s5-quick-adjust-panel';
       function updatePowerBarFromData(){ if(typeof updatePowerBarFromBox==='function') updatePowerBarFromBox(); }
       function closeQuickAdjustWithFeedback(type){
         var finishBtn=quickAdjustPanel.querySelector('.quick-adjust-fertig');
@@ -17707,24 +17383,23 @@
         quickAdjustPanel.style.display='block';
         requestAnimationFrame(function(){ requestAnimationFrame(function(){ quickAdjustPanel.style.transform='translate(-50%, 0)'; }); });
         var headline=document.createElement('h3');
-        headline.className='quick-adjust-headline';
-        headline.style.cssText='margin:0 0 16px; font-size:18px; font-weight:800; color:#0f172a;';
+        headline.className='quick-adjust-headline s5-panel-headline';
         if(type==='time'){
           headline.textContent='Abholzeit';
           quickAdjustPanel.appendChild(headline);
           var pwParts=(w.data.pickupWindow||'11:30 – 14:00').split(/\s*[–\-]\s*/);
           var tStart=(pwParts[0]||'11:30').trim(); var tEnd=(pwParts[1]||'14:00').trim();
           if(tStart.length===4) tStart='0'+tStart; if(tEnd.length===4) tEnd='0'+tEnd;
-          var row=document.createElement('div'); row.style.cssText='display:flex; align-items:center; justify-content:center; gap:12px; flex-wrap:wrap; padding:8px 0;';
-          var inpStart=document.createElement('input'); inpStart.type='time'; inpStart.value=tStart; inpStart.style.cssText='padding:12px 16px; border-radius:12px; border:2px solid #e2e8f0; background:#f8fafc; font-size:16px; font-weight:700;';
-          var inpEnd=document.createElement('input'); inpEnd.type='time'; inpEnd.value=tEnd; inpEnd.style.cssText='padding:12px 16px; border-radius:12px; border:2px solid #e2e8f0; background:#f8fafc; font-size:16px; font-weight:700;';
+          var row=document.createElement('div'); row.className='s5-panel-time-row';
+          var inpStart=document.createElement('input'); inpStart.type='time'; inpStart.className='s5-time-inp-panel'; inpStart.value=tStart;
+          var inpEnd=document.createElement('input'); inpEnd.type='time'; inpEnd.className='s5-time-inp-panel'; inpEnd.value=tEnd;
           inpStart.onchange=inpEnd.onchange=function(){ w.data.pickupWindow=inpStart.value+' – '+inpEnd.value; saveDraft(); };
           row.appendChild(inpStart); row.appendChild(document.createTextNode(' bis ')); row.appendChild(inpEnd);
           quickAdjustPanel.appendChild(row);
         } else if(type==='allergens'){
           headline.textContent='Allergene';
           quickAdjustPanel.appendChild(headline);
-          var wrap=document.createElement('div'); wrap.style.cssText='display:flex; flex-wrap:wrap; gap:8px;';
+          var wrap=document.createElement('div'); wrap.className='s5-panel-wrap';
           var list=(typeof ALLERGENS_14!=='undefined'?ALLERGENS_14:[]).slice();
           list.sort(function(a,b){ return String(a.name||'').localeCompare(String(b.name||'')); });
           list.forEach(function(a){
@@ -17736,8 +17411,7 @@
           });
           quickAdjustPanel.appendChild(wrap);
           var disclaimer=document.createElement('p');
-          disclaimer.className='inserat-allergen-disclaimer';
-          disclaimer.style.cssText='margin:16px 0 0 0; font-size:11px; font-style:italic; color:#94a3b8; line-height:1.4;';
+          disclaimer.className='inserat-allergen-disclaimer s5-panel-disclaimer';
           disclaimer.textContent='Hinweis: Kennzeichnung erfolgt eigenverantwortlich durch den Anbieter. Keine Gewährleistung durch die Plattform.';
           quickAdjustPanel.appendChild(disclaimer);
         } else if(type==='extras'){
@@ -17745,23 +17419,22 @@
           quickAdjustPanel.appendChild(headline);
           var defaultExtras=(profile.defaultExtras&&profile.defaultExtras.length)?profile.defaultExtras.slice():[{name:'Beilagensalat',price:2.5},{name:'Mayo',price:0.5},{name:'Ketchup',price:0.5},{name:'Soße',price:1},{name:'Brot',price:1.5}];
           if(!Array.isArray(w.data.extras)) w.data.extras=[];
-          var extrasListWrap=document.createElement('div'); extrasListWrap.style.cssText='display:flex; flex-wrap:wrap; gap:8px; align-items:center;';
+          var extrasListWrap=document.createElement('div'); extrasListWrap.className='s5-extras-list-wrap';
           defaultExtras.forEach(function(opt){
             var ex=w.data.extras.find(function(e){ return e.name===opt.name; }); var active=!!ex&&Number(ex.price||0)>0; if(!ex) ex={name:opt.name,price:0};
-            var pillWrap=document.createElement('div'); pillWrap.style.cssText='display:flex; align-items:center; gap:6px;';
-            var btn=document.createElement('button'); btn.type='button'; btn.className='extra-pill'+(active?' active':''); btn.style.cssText='cursor:pointer;'; btn.textContent='➕ '+opt.name;
-            btn.onclick=function(){ hapticLight(); var idx=w.data.extras.findIndex(function(e){ return e.name===opt.name; }); if(idx>=0){ w.data.extras.splice(idx,1); } else{ w.data.extras.push({name:opt.name,price:opt.price}); } saveDraft(); var hasEx=!!w.data.extras.find(function(e){ return e.name===opt.name; })&&Number((w.data.extras.find(function(e){ return e.name===opt.name; })||{}).price||0)>0; btn.className='extra-pill'+(hasEx?' active':''); if(hasEx&&!pillWrap.querySelector('input')){ var inpWrap=document.createElement('span'); inpWrap.style.cssText='display:inline-flex; align-items:center; background:rgba(255,255,255,0.6); border-radius:999px; padding:4px 8px;'; var next=w.data.extras.find(function(e){ return e.name===opt.name; }); inpWrap.innerHTML='<span style="font-size:10px; font-weight:800; color:#10b981; margin-right:4px;">+</span><input type="text" inputmode="decimal" style="width:36px; background:transparent; border:none; padding:0; font-size:12px; font-weight:800; color:#10b981; outline:none;" value="'+Number((next&&next.price)||0).toFixed(2).replace(".",",")+'"><span style="font-size:10px; font-weight:800; color:#10b981; margin-left:2px;">€</span>'; var inp=inpWrap.querySelector('input'); if(inp){ var e=w.data.extras.find(function(x){ return x.name===opt.name; }); inp.oninput=function(){ if(e) e.price=parseFloat((inp.value||"0").replace(",","."))||0; saveDraft(); }; inp.onclick=function(ev){ ev.stopPropagation(); }; pillWrap.appendChild(inpWrap); } } else if(!hasEx){ var o=pillWrap.querySelector('span'); if(o) o.remove(); } };
+            var pillWrap=document.createElement('div'); pillWrap.className='s5-pill-wrap';
+            var btn=document.createElement('button'); btn.type='button'; btn.className='extra-pill'+(active?' active':''); btn.textContent='➕ '+opt.name;
+            btn.onclick=function(){ hapticLight(); var idx=w.data.extras.findIndex(function(e){ return e.name===opt.name; }); if(idx>=0){ w.data.extras.splice(idx,1); } else{ w.data.extras.push({name:opt.name,price:opt.price}); } saveDraft(); var hasEx=!!w.data.extras.find(function(e){ return e.name===opt.name; })&&Number((w.data.extras.find(function(e){ return e.name===opt.name; })||{}).price||0)>0; btn.className='extra-pill'+(hasEx?' active':''); if(hasEx&&!pillWrap.querySelector('input')){ var inpWrap=document.createElement('span'); inpWrap.className='s5-extra-price-wrap'; var next=w.data.extras.find(function(e){ return e.name===opt.name; }); inpWrap.innerHTML='<span class="s5-extra-plus">+</span><input type="text" inputmode="decimal" class="s5-extra-price-inp" value="'+Number((next&&next.price)||0).toFixed(2).replace(".",",")+'"><span class="s5-extra-eur">€</span>'; var inp=inpWrap.querySelector('input'); if(inp){ var e=w.data.extras.find(function(x){ return x.name===opt.name; }); inp.oninput=function(){ if(e) e.price=parseFloat((inp.value||"0").replace(",","."))||0; saveDraft(); }; inp.onclick=function(ev){ ev.stopPropagation(); }; pillWrap.appendChild(inpWrap); } } else if(!hasEx){ var o=pillWrap.querySelector('span'); if(o) o.remove(); } };
             pillWrap.appendChild(btn);
-            if(active){ var inpWrap=document.createElement('span'); inpWrap.style.cssText='display:inline-flex; align-items:center; background:rgba(255,255,255,0.6); border-radius:999px; padding:4px 8px;'; inpWrap.innerHTML='<span style="font-size:10px; font-weight:800; color:#10b981; margin-right:4px;">+</span><input type="text" inputmode="decimal" style="width:36px; background:transparent; border:none; padding:0; font-size:12px; font-weight:800; color:#10b981; outline:none;" value="'+Number(ex.price).toFixed(2).replace(".",",")+'"><span style="font-size:10px; font-weight:800; color:#10b981; margin-left:2px;">€</span>'; var inp=inpWrap.querySelector('input'); if(inp){ inp.oninput=function(){ ex.price=parseFloat((inp.value||"0").replace(",","."))||0; saveDraft(); }; inp.onclick=function(ev){ ev.stopPropagation(); }; } pillWrap.appendChild(inpWrap); }
+            if(active){ var inpWrap=document.createElement('span'); inpWrap.className='s5-extra-price-wrap'; inpWrap.innerHTML='<span class="s5-extra-plus">+</span><input type="text" inputmode="decimal" class="s5-extra-price-inp" value="'+Number(ex.price).toFixed(2).replace(".",",")+'"><span class="s5-extra-eur">€</span>'; var inp=inpWrap.querySelector('input'); if(inp){ inp.oninput=function(){ ex.price=parseFloat((inp.value||"0").replace(",","."))||0; saveDraft(); }; inp.onclick=function(ev){ ev.stopPropagation(); }; } pillWrap.appendChild(inpWrap); }
             extrasListWrap.appendChild(pillWrap);
           });
           quickAdjustPanel.appendChild(extrasListWrap);
         }
         var btnFertig=document.createElement('button');
         btnFertig.type='button';
-        btnFertig.className='inserat-fertig-kachel quick-adjust-fertig';
+        btnFertig.className='inserat-fertig-kachel quick-adjust-fertig s5-panel-btn-finish';
         btnFertig.textContent='Fertig';
-        btnFertig.style.cssText='width:100%; min-height:56px; margin-top:20px; padding:16px 24px; padding-bottom:calc(16px + env(safe-area-inset-bottom,0)); border:none; border-radius:0; background:#222222; color:#ffffff; font-size:16px; font-weight:800; cursor:pointer; position:sticky; bottom:0; z-index:6010;';
         btnFertig.onclick=function(){ hapticLight(); closeQuickAdjustWithFeedback(type); };
         quickAdjustPanel.appendChild(btnFertig);
       }
@@ -17837,7 +17510,7 @@
           label.textContent=(item.dish||item.name||'Gericht').substring(0,12);
           wrap.appendChild(thumb);
           wrap.appendChild(label);
-          wrap.onclick=function(e){ e.preventDefault(); e.stopPropagation(); hapticLight(); if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); w.data.dish=item.dish||item.name||''; w.data.price=item.price||0; w.data.photoData=item.image||item.imageUrl||''; w.data.photoObjectPosition=typeof item.objectPosition==='number'?item.objectPosition:(typeof item.objectPosition==='string'?parseFloat(item.objectPosition)||50:50); saveDraft(); var inp=box.querySelector('#gericht-name'); var priceInp=box.querySelector('#gericht-preis'); var img=box.querySelector('#mainImagePreview'); if(inp) inp.value=w.data.dish||''; if(priceInp) priceInp.value=(w.data.price>0?Number(w.data.price).toFixed(2).replace('.',','):''); if(img){ img.src=w.data.photoData||img.src; img.style.display=w.data.photoData?'block':'none'; img.style.objectPosition='center '+(w.data.photoObjectPosition||50)+'%'; } var plc=box.querySelector('.inserat-photo-placeholder-center'); if(plc){ if(w.data.photoData) plc.remove(); } else if(!w.data.photoData){ var ph=box.querySelector('.inserat-photo-tile'); if(ph){ var div=document.createElement('div'); div.className='inserat-photo-placeholder-center'; div.style.cssText='position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#e2e8f0;pointer-events:none;'; div.innerHTML='<span style="font-size:48px;opacity:0.5;">📷</span>'; ph.appendChild(div); } } var pt=box.querySelector('.inserat-photo-tile'); if(pt){ pt.classList.toggle('inserat-photo-placeholder',!w.data.photoData); pt.classList.toggle('pulse-soft',!w.data.photoData); } var ov=box.querySelector('.ebay-photo-overlay'); if(ov) ov.style.pointerEvents=w.data.photoData?'none':'auto'; if(typeof adjustTitleFontSize==='function') adjustTitleFontSize(); if(typeof checkMastercardValidation==='function') checkMastercardValidation(); if(typeof updateProfit==='function') updateProfit(String(w.data.price||0)); };
+          wrap.onclick=function(e){ e.preventDefault(); e.stopPropagation(); hapticLight(); if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); w.data.dish=item.dish||item.name||''; w.data.price=item.price||0; w.data.photoData=item.image||item.imageUrl||''; w.data.photoObjectPosition=typeof item.objectPosition==='number'?item.objectPosition:(typeof item.objectPosition==='string'?parseFloat(item.objectPosition)||50:50); saveDraft(); var inp=box.querySelector('#gericht-name'); var priceInp=box.querySelector('#gericht-preis'); var img=box.querySelector('#mainImagePreview'); if(inp) inp.value=w.data.dish||''; if(priceInp) priceInp.value=(w.data.price>0?Number(w.data.price).toFixed(2).replace('.',','):''); if(img){ img.src=w.data.photoData||img.src; img.style.display=w.data.photoData?'block':'none'; img.style.objectPosition='center '+(w.data.photoObjectPosition||50)+'%'; } var plc=box.querySelector('.inserat-photo-placeholder-center'); if(plc){ if(w.data.photoData) plc.remove(); } else if(!w.data.photoData){ var ph=box.querySelector('.inserat-photo-tile'); if(ph){ var div=document.createElement('div'); div.className='inserat-photo-placeholder-center s5-photo-placeholder-center'; div.innerHTML='<span style="font-size:48px;opacity:0.5;">📷</span>'; ph.appendChild(div); } } var pt=box.querySelector('.inserat-photo-tile'); if(pt){ pt.classList.toggle('inserat-photo-placeholder',!w.data.photoData); pt.classList.toggle('pulse-soft',!w.data.photoData); } var ov=box.querySelector('.ebay-photo-overlay'); if(ov) ov.style.pointerEvents=w.data.photoData?'none':'auto'; if(typeof adjustTitleFontSize==='function') adjustTitleFontSize(); if(typeof checkMastercardValidation==='function') checkMastercardValidation(); if(typeof updateProfit==='function') updateProfit(String(w.data.price||0)); };
           cookbookQuickSelect.appendChild(wrap);
         });
         step1Container.appendChild(cookbookQuickSelect);
@@ -17890,14 +17563,12 @@
 
       if(entryPoint === 'dashboard' || (w.ctx && w.ctx.editOfferId)){
       var step1NavRow=document.createElement('div');
-      step1NavRow.className='app-footer-main inserat-step1-nav inserat-airbnb-footer';
-      step1NavRow.style.cssText='display:flex; width:100%; align-items:stretch; justify-content:center; gap:12px; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; padding:0 16px; padding-bottom:calc(16px + env(safe-area-inset-bottom, 0));';
+      step1NavRow.className='app-footer-main s5-step1-nav-row inserat-step1-nav inserat-airbnb-footer';
       if(showSpeichernShortcut){
         var linkSpeichern=document.createElement('button');
         linkSpeichern.type='button';
         linkSpeichern.id='btnSpeichernKochbuch';
-        linkSpeichern.className='inserat-footer-link btn-secondary-link';
-        linkSpeichern.style.cssText='background:none; border:none; padding:12px 0; font-size:15px; font-weight:bold; color:#222222; cursor:pointer; text-decoration:underline; flex-shrink:0; min-height:48px; align-self:center;';
+        linkSpeichern.className='inserat-footer-link btn-secondary-link s5-link-speichern';
         linkSpeichern.textContent=(w.ctx&&w.ctx.editOfferId)?'Änderungen speichern':(entryPoint==='week'?'Speichern':'Im Kochbuch speichern');
         linkSpeichern.disabled=!primaryValid;
         linkSpeichern.style.opacity=primaryValid?'1':'0.3';
@@ -17939,8 +17610,7 @@
       var btnWeiter=document.createElement('button');
       btnWeiter.type='button';
       btnWeiter.id='btnNext';
-      btnWeiter.className='btn-primary-black footer-main-button';
-      btnWeiter.style.cssText='min-width:140px; min-height:48px; height:48px; padding:0 24px; border:none; border-radius:8px; background:#222222 !important; color:white !important; font-size:16px; font-weight:800; cursor:pointer;';
+      btnWeiter.className='btn-primary-black footer-main-button s5-btn-weiter';
       btnWeiter.textContent='Weiter';
       btnWeiter.disabled=true;
       btnWeiter.style.opacity='0.3';
@@ -17970,12 +17640,10 @@
       } else {
         /* Plan-Mode: Nur Primär-Button, ohne Abbrechen [cite: MASTER-CARD FIX 2026-02-23] */
         var planRow=document.createElement('div');
-        planRow.className='app-footer-main';
-        planRow.style.cssText='display:flex; width:100%; align-items:center; justify-content:center;';
+        planRow.className='app-footer-main s5-plan-row';
         var btnEinplanen=document.createElement('button');
         btnEinplanen.type='button';
-        btnEinplanen.className='btn-primary-black';
-        btnEinplanen.style.cssText='flex:1; height:48px; min-width:180px; padding:0 24px; border:none; border-radius:8px; background:#222222; color:white; font-size:16px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center;';
+        btnEinplanen.className='btn-primary-black s5-btn-einplanen';
         btnEinplanen.textContent=(entryPoint === 'week' ? 'Speichern' : 'Im Kochbuch speichern');
         btnEinplanen.disabled=!primaryValid;
         btnEinplanen.style.opacity=primaryValid?'1':'0.3';
@@ -18016,24 +17684,22 @@
       if(slider){
         box.appendChild(slider);
         var airbnbFooter=document.createElement('div');
-        airbnbFooter.className='app-footer-main inserat-step1-nav';
+        airbnbFooter.className='app-footer-main inserat-step1-nav s5-airbnb-footer';
         airbnbFooter.setAttribute('data-inserat-step','2');
-        airbnbFooter.style.cssText='display:'+(inseratStep===2?'flex':'none')+'; position:fixed; left:0; right:0; bottom:0; z-index:500; flex-direction:row; align-items:stretch; justify-content:space-between; gap:12px; width:100%;';
+        airbnbFooter.style.display=inseratStep===2?'flex':'none';
         var linkZurueck=document.createElement('button');
         linkZurueck.type='button';
-        linkZurueck.className='inserat-footer-link';
-        linkZurueck.style.cssText='background:none; border:none; padding:12px 0; font-size:15px; font-weight:bold; color:#222222; cursor:pointer; text-decoration:underline; flex-shrink:0;';
+        linkZurueck.className='inserat-footer-link s5-link-zurueck';
         linkZurueck.textContent='Zurück';
         linkZurueck.className='btn-secondary-link';
         linkZurueck.onclick=function(){ hapticLight(); w.inseratStep=1; saveDraft(); if(slider) slider.setAttribute('data-inserat-step','1'); if(box) box.classList.remove('has-action-layer'); airbnbFooter.style.display='none'; var sf=box.querySelector('[data-inserat-step="3"]'); if(sf) sf.style.display='none'; var wizardEl=document.getElementById('wizard'); if(wizardEl){ wizardEl.classList.remove('inserat-step2-active'); wizardEl.classList.remove('inserat-step3-active'); } };
         var footerBtn=document.createElement('button');
         footerBtn.type='button';
-        footerBtn.className='btn-primary-black' + (w.data.pricingChoice==='499' ? ' inserat-footer-btn--499' : ' free-mode is-free-mode');
-        footerBtn.style.cssText='flex:1; min-height:48px; padding:0 24px; border:none; border-radius:8px; background:#222222 !important; color:#ffffff !important; font-size:16px; font-weight:800; cursor:pointer;';
+        footerBtn.className='btn-primary-black s5-footer-btn' + (w.data.pricingChoice==='499' ? ' inserat-footer-btn--499' : ' free-mode is-free-mode');
         footerBtn.textContent=(w.data.pricingChoice==='499' ? 'Jetzt für 4,99 € inserieren' : 'Jetzt für 0,00 € inserieren');
         var footerFeeHint=document.createElement('div');
-        footerFeeHint.className='inserat-step2-fee-hint';
-        footerFeeHint.style.cssText='font-size:12px; color:#64748b; margin-top:6px; display:'+(w.data.pricingChoice==='pro'?'block':'none')+'; width:100%; flex-basis:100%;';
+        footerFeeHint.className='inserat-step2-fee-hint s5-footer-fee-hint';
+        footerFeeHint.style.display=w.data.pricingChoice==='pro'?'block':'none';
         footerFeeHint.textContent='0,89 € Gebühr pro Verkauf';
         airbnbFooter.appendChild(linkZurueck);
         airbnbFooter.appendChild(footerBtn);
@@ -18507,7 +18173,12 @@
       for(var i = 0; i < 50; i++){
         var c = document.createElement('div');
         c.className = 'confetti';
-        c.style.cssText = 'position:absolute; left:' + (Math.random() * 100) + '%; width:' + (Math.random() * 8 + 5) + 'px; height:' + (Math.random() * 8 + 5) + 'px; background:' + colors[Math.floor(Math.random() * colors.length)] + '; animation:confetti-fall 3s linear forwards; animation-delay:' + (Math.random() * 2) + 's; animation-duration:' + (Math.random() * 2 + 2) + 's;';
+        c.style.left = (Math.random() * 100) + '%';
+        c.style.width = (Math.random() * 8 + 5) + 'px';
+        c.style.height = c.style.width;
+        c.style.background = colors[Math.floor(Math.random() * colors.length)];
+        c.style.animationDelay = (Math.random() * 2) + 's';
+        c.style.animationDuration = (Math.random() * 2 + 2) + 's';
         step3Container.appendChild(c);
       }
     }
@@ -18830,8 +18501,8 @@
   function triggerCookbookVictoryConfetti() {
     try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate([100, 50, 100]); } catch (e) {}
     var wrap = document.createElement('div');
+    wrap.className = 's5-confetti-wrap';
     wrap.setAttribute('aria-hidden', 'true');
-    wrap.style.cssText = 'position:fixed; inset:0; pointer-events:none; z-index:9999; overflow:hidden;';
     var colors = ['#10b981', '#059669', '#34d399', '#FACC15', '#a7f3d0'];
     for (var i = 0; i < 50; i++) {
       var c = document.createElement('div');
@@ -19210,16 +18881,15 @@
   function showSaveSuccessOverlay(title, thenCallback){
     try { if(typeof haptic==='function') haptic([12, 55, 12]); } catch(e){}
     var overlay = document.createElement('div');
-    overlay.className = 'save-success-overlay';
+    overlay.className = 'save-success-overlay s5-overlay-blur';
     overlay.setAttribute('role', 'dialog');
     overlay.setAttribute('aria-label', title);
-    overlay.style.cssText = 'position:fixed; inset:0; background:rgba(255,255,255,0.95); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); z-index:3500; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; box-sizing:border-box;';
     var titleEsc = (title || 'Gespeichert').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    overlay.innerHTML = '<div style="display:flex; flex-direction:column; align-items:center; gap:20px; text-align:center; max-width:320px;">' +
-      '<div style="width:80px; height:80px; border-radius:50%; background:rgba(16,185,129,0.15); border:3px solid #10b981; display:flex; align-items:center; justify-content:center;"><span style="font-size:44px; color:#059669;">✓</span></div>' +
-      '<div style="font-size:20px; font-weight:900; color:#1a1a1a;">' + titleEsc + '</div>' +
-      '<p style="margin:0; font-size:14px; color:#64748b;">Du findest es in deiner Übersicht.</p>' +
-      '<button type="button" class="save-success-done-btn" style="width:100%; min-height:52px; border-radius:16px; background:#1a1a1a; color:#fff; font-size:16px; font-weight:800; border:none; cursor:pointer; margin-top:8px;">Fertig</button>' +
+    overlay.innerHTML = '<div class="s5-overlay-success-wrap">' +
+      '<div class="s5-overlay-success-circle"><span class="s5-overlay-success-check">✓</span></div>' +
+      '<div class="s5-overlay-success-title">' + titleEsc + '</div>' +
+      '<p class="s5-overlay-success-p">Du findest es in deiner Übersicht.</p>' +
+      '<button type="button" class="save-success-done-btn s5-overlay-success-btn">Fertig</button>' +
       '</div>';
     document.body.appendChild(overlay);
     var btn = overlay.querySelector('.save-success-done-btn');
@@ -19366,7 +19036,7 @@
       editor.style.zIndex='50';
       
       const editorContent = document.createElement('div');
-      editorContent.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:24px;padding:24px;max-width:90vw;max-height:90vh;overflow:auto;z-index:51;box-shadow:0 8px 32px rgba(0,0,0,.2);';
+      editorContent.className = 's5-editor-content';
       
       const aiAnalysisPromise = useWizard ? analyzeFoodPhoto(imageDataUrl) : Promise.resolve(null);
       
@@ -19395,13 +19065,13 @@
         
         const previewImg = document.createElement('img');
         previewImg.alt = '';
-        previewImg.style.cssText = 'width:100%;max-width:400px;display:block;border-radius:12px;';
+        previewImg.className = 's5-preview-img';
         const previewWrap = document.createElement('div');
-        previewWrap.style.cssText = 'border-radius:16px;overflow:hidden;border:1px solid #eee;margin-bottom:16px;background:#f5f5f5';
+        previewWrap.className = 's5-preview-wrap';
         previewWrap.appendChild(previewImg);
         
         const heading = document.createElement('h3');
-        heading.style.cssText = 'margin:0 0 16px;font-size:18px;font-weight:900;';
+        heading.className = 's5-editor-heading';
         heading.textContent = 'Foto bearbeiten';
         const hint = document.createElement('div');
         hint.className = 'hint';
@@ -19414,7 +19084,7 @@
           const rowH = document.createElement('div');
           rowH.style.marginBottom = '12px';
           const labelH = document.createElement('label');
-          labelH.style.cssText = 'display:block;font-size:13px;margin-bottom:4px;';
+          labelH.className = 's5-editor-label';
           labelH.textContent = 'Ausschnitt horizontal';
           const rangeH = document.createElement('input');
           rangeH.type = 'range';
@@ -19431,7 +19101,7 @@
           const rowV = document.createElement('div');
           rowV.style.marginBottom = '12px';
           const labelV = document.createElement('label');
-          labelV.style.cssText = 'display:block;font-size:13px;margin-bottom:4px;';
+          labelV.className = 's5-editor-label';
           labelV.textContent = 'Ausschnitt vertikal';
           const rangeV = document.createElement('input');
           rangeV.type = 'range';
@@ -20204,7 +19874,7 @@
           if(!statusEl){
             statusEl = document.createElement('div');
             statusEl.id = 'appOnlineStatus';
-            statusEl.style.cssText = 'position:fixed; bottom:0; left:0; right:0; background:#d32f2f; color:#fff; font-size:12px; font-weight:700; text-align:center; padding:6px; z-index:9999; box-shadow:0 -2px 10px rgba(0,0,0,0.2);';
+            statusEl.className = 's5-status-bar';
             statusEl.textContent = 'Keine Internetverbindung – Offline-Modus aktiv';
             document.body.appendChild(statusEl);
           } else {

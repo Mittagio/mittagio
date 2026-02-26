@@ -81,9 +81,9 @@
     }
     view.classList.add('active');
     if(id === 'v-pickup-code') view.style.display = 'flex';
-    else if(id === 'v-provider-week') view.style.cssText = 'display:flex; flex-direction:column; min-height:100vh; visibility:visible; opacity:1;';
-    else if(id === 'v-provider-cookbook') view.style.cssText = 'display:flex !important; flex-direction:column !important; height:100vh; height:100dvh; max-height:100vh; max-height:100dvh; overflow:hidden; visibility:visible; opacity:1; width:100%; position:relative;';
-    else if(isProviderView) view.style.cssText = 'display:block !important; min-height:100vh; height:auto; width:100%; visibility:visible; opacity:1; position:relative;';
+    else if(id === 'v-provider-week') view.classList.add('s5-view-provider-week');
+    else if(id === 'v-provider-cookbook') view.classList.add('s5-view-provider-cookbook');
+    else if(isProviderView) view.classList.add('s5-view-provider-default');
     else view.style.display = 'block';
     document.querySelectorAll('.view').forEach(v => {
       if(v === view) return;
