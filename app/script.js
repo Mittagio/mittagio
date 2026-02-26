@@ -17863,6 +17863,7 @@
       actionSection.id='inserat-action-section';
       actionSection.className='inserat-action-section fixed-footer inserat-action-pricing inserat-action-layer';
 
+      if(entryPoint === 'dashboard' || (w.ctx && w.ctx.editOfferId)){
       var step1NavRow=document.createElement('div');
       step1NavRow.className='app-footer-main inserat-step1-nav inserat-airbnb-footer';
       step1NavRow.style.cssText='display:flex; width:100%; align-items:stretch; justify-content:center; gap:12px; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; padding:0 16px; padding-bottom:calc(16px + env(safe-area-inset-bottom, 0));';
@@ -17939,7 +17940,8 @@
         } else { rebuildWizard(); }
       };
       step1NavRow.appendChild(btnWeiter);
-      actionSection.appendChild(step1NavRow); else {
+      actionSection.appendChild(step1NavRow);
+      } else {
         /* Plan-Mode: Nur Primär-Button, ohne Abbrechen [cite: MASTER-CARD FIX 2026-02-23] */
         var planRow=document.createElement('div');
         planRow.className='app-footer-main';
