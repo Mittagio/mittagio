@@ -1092,7 +1092,6 @@
     #abholnummerExplainBd:not(.active),
     #weekActivationSuccessBd:not(.active){ display:none !important; opacity:0 !important; pointer-events:none !important; visibility:hidden !important; }
     #pricingFairnessBd:not(.active){ display:none !important; opacity:0 !important; pointer-events:none !important; }
-    #cookbookActionSheetBd:not(.active),
     #cookbookLiveSheetBd:not(.active),
     #cookbookWeekSheetBd:not(.cookbook-week-bd-visible){ display:none !important; opacity:0 !important; pointer-events:none !important; visibility:hidden !important; }
     /* Preisübersicht als Bottom-Sheet (S25): von unten hochgleitend */
@@ -1290,28 +1289,6 @@
     .cookbook-ingest-progress-bar{
       height:100%; width:0%; background:#fff; border-radius:999px; transition:width 0.05s linear;
     }
-    /* Kochbuch Action-Sheet */
-    #cookbookActionSheetBd{ z-index:999; }
-    .cookbook-action-sheet{
-      position:fixed;
-      bottom:0;
-      left:0;
-      right:0;
-      background:#fff;
-      border-radius:20px 20px 0 0;
-      padding:16px 20px calc(20px + env(safe-area-inset-bottom, 0));
-      box-shadow:0 -4px 24px rgba(0,0,0,.12);
-      border-top:1px solid rgba(0,0,0,0.06);
-      z-index:1000;
-    }
-    .cookbook-action-sheet-handle{ width:40px; height:4px; background:rgba(0,0,0,0.15); border-radius:2px; margin:0 auto 16px; }
-    .cookbook-action-sheet-title{ font-weight:800; font-size:18px; color:#1a1a1a; margin-bottom:16px; text-align:center; }
-    .cookbook-action-sheet-btn{ width:100%; min-height:52px; border-radius:14px; background:#fff; border:1px solid rgba(0,0,0,0.06); color:#1a1a1a; font-weight:700; font-size:15px; margin-bottom:10px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; box-shadow:0 2px 8px rgba(0,0,0,0.03); }
-    .cookbook-action-sheet-btn-yellow{ background:#FACC15; color:#1a1a1a; border:none; box-shadow:0 2px 12px rgba(250,204,21,0.3); }
-    .cookbook-action-sheet-btn-primary{ background:#007AFF; color:#fff; border:none; box-shadow:0 2px 12px rgba(0,122,255,0.35); }
-    .cookbook-action-sheet-btn-danger{ color:#dc2626; border-color:rgba(220,38,38,0.3); }
-    .cookbook-action-sheet-grid3{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:10px; }
-    .cookbook-action-sheet-grid3 .cookbook-action-sheet-btn{ margin-bottom:0; font-size:12px; min-height:44px; }
     .cookbook-week-sheet.cookbook-week-visible{ transform:translateY(0); }
     #cookbookWeekSheetBd.cookbook-week-bd-visible{ opacity:1; }
     #cookbookWeekSheet .cookbook-week-day-btn{ animation:cookbookWeekStagger 0.35s ease-out backwards; }

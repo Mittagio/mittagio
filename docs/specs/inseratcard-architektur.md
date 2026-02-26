@@ -4,6 +4,27 @@ Die InseratCard ist das universelle Herzstück der App. Sie ist die **einzige** 
 
 ---
 
+## 0. InseratCard Schritt 1 – Einstiege und Footer (Stand: 26.02.2026)
+
+**Wer kommt hin:** Alle Einstiege landen zuerst in Schritt 1 (Bild 1). Kein direkter Sprung zu Schritt 2 außer bei Bulk-Aktivierung.
+
+| Einstieg | Aufruf | entryPoint | Footer (Schritt 1) | Danach |
+|----------|--------|------------|-------------------|--------|
+| **Dashboard + Neues Gericht** | openCreateFlowSheet → „Neues Gericht" → openDishFlow | dashboard | Links: Speichern (→ Kochbuch) · Rechts: Weiter | Weiter → Schritt 2 Monetarisierung |
+| **Dashboard + Renner bearbeiten** | Klick auf Karte → startListingFlow(editOfferId) | ACTIVE_LISTING | Nur: Speichern | Speichern → Wizard schließen, Dashboard |
+| **Kochbuch-Karte Tap** | Tap auf Magazin-Karte → startListingFlow(dishId, cookbook, skipQuickPost) | cookbook | Links: Speichern · Rechts: Weiter | Weiter → Schritt 2 |
+| **Kochbuch-Footer „Dieses Gericht jetzt inserieren"** | Footer-Button → startListingFlow(dishId, cookbook, skipQuickPost, fromCookbookFooter) | cookbook | Nur: Weiter | Weiter → Schritt 2 |
+| **Kochbuch + Neues Gericht** | Plus-Button → openDishFlow(null, cookbook) | cookbook | Links: Speichern · Rechts: Weiter | Weiter → Schritt 2 |
+| **Wochenplan + leerer Slot** | Tap auf leeren Tag → startListingFlow(week) | week | Nur: Speichern | Speichern → Wochenplan-Eintrag |
+| **Wochenplan + belegte Karte** | Tap auf geplantes Gericht → startListingFlow(editOfferId, week) | WEEKLY_PLAN_EDIT | Nur: Speichern | Speichern → Wizard schließen |
+| **Entwurf fortsetzen** | Draft-Overlay „Fortsetzen" | (aus Draft) | Links: Speichern als Entwurf · Rechts: Weiter | Speichern als Entwurf → Draft in localStorage, Wizard schließen |
+
+**Validierung:** Beide Buttons (Speichern, Weiter) sind deaktiviert, bis Name (≥2 Zeichen), Preis (>0) und Foto (kein Platzhalter) gesetzt sind.
+
+**Edit-Modus:** Bei editOfferId (Renner bearbeiten, WEEKLY_PLAN_EDIT) nur ein Button: „Änderungen speichern". Kein linker Speichern-Link.
+
+---
+
 ## 1. Visueller Aufbau (Top-to-Bottom)
 
 - **Header-Bild (190px):** Oben bündig. Enthält das „Foto ändern“-Modul und im Live-Zustand den pulsierenden Live-Badge („LIVE“ mit grünem Punkt).
