@@ -1619,10 +1619,10 @@
     /* Wizard/InseratCard: Backdrop unter Sheet, damit Klicks die Karte treffen (nicht Backdrop) */
     #wbd.active { z-index: 999 !important; background: radial-gradient(ellipse at center, rgba(254,243,199,0.35) 0%, rgba(251,191,36,0.08) 35%, rgba(0,0,0,0.65) 100%); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
     #wizard.sheet--kitchen.active { z-index: 20000 !important; }
-    /* Inseratsauswahl-Sheet (createFlowBd/createFlowSheet) – Footer bündig, Airbnb-Style [cite: 2026-02-21] */
-    #createFlowBd { z-index: 997; opacity: 0; pointer-events: none; transition: opacity 0.25s ease; background: rgba(0,0,0,0.5); }
+    /* Inseratsauswahl-Sheet (createFlowBd/createFlowSheet) – Deckelung Thekenrenner [cite: Beweis-Modus 2026-02-26] */
+    #createFlowBd { z-index: 499; opacity: 0; pointer-events: none; transition: opacity 0.25s ease; background: rgba(0,0,0,0.5); }
     #createFlowBd.active { opacity: 1; pointer-events: auto; }
-    #createFlowSheet { z-index: 998; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.34, 1.2, 0.64, 1); position: fixed; bottom: 0; left: 0; right: 0; max-height: 85vh; border-radius: 0; margin: 0 !important; background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.6); box-shadow: 0 -10px 40px rgba(0,0,0,0.12); display: flex; flex-direction: column; overflow: hidden; }
+    #createFlowSheet { z-index: 500 !important; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.34, 1.2, 0.64, 1); position: fixed; bottom: 0; left: 0; right: 0; max-height: 85vh; border-radius: 0; margin: 0 !important; background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.6); box-shadow: 0 -10px 40px rgba(0,0,0,0.12); display: flex; flex-direction: column; overflow: hidden; }
     #createFlowSheet.active { transform: translateY(0); }
     #createFlowSheet.sheet--kitchen .handle { background: rgba(0,0,0,0.15); width: 40px; height: 4px; border-radius: 2px; margin: 8px auto 4px; }
     #createFlowSheet .create-flow-selection-body { display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden; }
@@ -7198,7 +7198,9 @@
     .v-provider-archiv .archiv-archiv-card:active{ transform:scale(0.98); }
     .v-provider-archiv .archiv-archiv-card img{ object-position:center 20px; }
 
-    /* Wochenplan: Mesh-Hintergrund + Slate-50 [cite: 2026-02-18] */
+    /* Wochenplan: Layer-Hierarchie + Beweis-Modus [cite: Ultimative Klick-Stabilität 2026-02-26] */
+    #v-provider-week{ position:relative; z-index:1; }
+    #weekMagicFab, .week-kebab-dropdown{ position:fixed !important; z-index:9999 !important; }
     #v-provider-week.view{ display:none; }
     #v-provider-week.view.active{
       display:flex !important; flex-direction:column !important; min-height:100vh; min-height:100dvh; height:100vh; height:100dvh;
@@ -7216,9 +7218,9 @@
       bottom:-10%; right:-10%; width:40%; height:40%; border-radius:50%; background:radial-gradient(ellipse at 70% 80%, rgba(203,213,225,0.5) 0%, transparent 70%); filter:blur(80px); pointer-events:none !important;
     }
     #v-provider-week.view.active > header,
-    #v-provider-week.view.active > #kwBoardWrap{ position:relative; z-index:9999; }
+    #v-provider-week.view.active > #kwBoardWrap{ position:relative; z-index:1050; }
     #v-provider-week.view.active #weekHeaderKWTrigger,
-    #v-provider-week.view.active #btnWeekKebab{ position:relative; z-index:1010 !important; }
+    #v-provider-week.view.active #btnWeekKebab{ position:relative; z-index:1050 !important; }
     /* Wochenplan-Header: Minimal, KW-Badge links, Kebab rechts [cite: 2026-02-20 Final Header Kill] */
     #v-provider-week .week-header-minimal{
       position:sticky; top:0; z-index:50;
@@ -7233,11 +7235,12 @@
     #v-provider-week .week-header-minimal .week-header-row{ display:flex; align-items:center; justify-content:flex-start; width:100%; gap:12px; position:relative; }
     #v-provider-week .week-header-kw-badge{ display:inline-flex !important; align-items:center; padding:10px 16px; border-radius:12px; background:rgba(0,0,0,0.06); font-size:15px; font-weight:800; color:#0f172a; pointer-events:none; }
     /* KW-Trigger klickbar: über Parent, pointer-events, Touch-Ziel [cite: 2026-02-25] */
+    #v-provider-week .prov-page-header-left[data-reset-view="week"]{ position:relative; display:flex !important; align-items:stretch !important; justify-content:flex-start; flex:1; min-width:0; }
     #v-provider-week .week-header-kw-trigger,
-    #weekHeaderKWTrigger{ position:relative !important; z-index:10 !important; display:inline-flex !important; align-items:center; gap:6px; background:none; border:none; padding:0; cursor:pointer; font-family:inherit; min-height:60px; min-width:60px; -webkit-tap-highlight-color:transparent; pointer-events:auto !important; transition:opacity 0.15s ease, transform 0.15s ease; }
+    #weekHeaderKWTrigger{ position:relative !important; z-index:10 !important; display:inline-flex !important; align-items:center; justify-content:center; gap:6px; background:none; border:none; padding:0; cursor:pointer; font-family:inherit; flex:1; align-self:stretch; width:100%; height:100%; min-height:48px; -webkit-tap-highlight-color:transparent; pointer-events:auto !important; transition:opacity 0.15s ease, transform 0.15s ease; }
     #v-provider-week .week-header-kw-trigger:active,
     #weekHeaderKWTrigger:active{ opacity:0.9; transform:scale(0.98); }
-    #v-provider-week .week-header-compact{ background:rgba(245,245,240,0.95) !important; backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); font-family:'Montserrat',sans-serif; position:sticky; top:0; z-index:9999; }
+    #v-provider-week .week-header-compact{ background:rgba(245,245,240,0.95) !important; backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); font-family:'Montserrat',sans-serif; position:sticky; top:0; z-index:1050; }
     #v-provider-week .week-header-title-left,
     #v-provider-week .prov-page-header-title{ margin:0; font-family:'Montserrat','Inter',sans-serif !important; font-weight:900 !important; font-size:20px !important; letter-spacing:-0.03em; color:#0f172a !important; text-align:left; }
     #v-provider-week .week-header-actions{ display:flex; align-items:center; gap:8px; margin-left:auto; }
@@ -7667,7 +7670,7 @@
         right:20px !important;
         width:56px; height:56px; border-radius:50%; border:none; background:#fff;
         box-shadow:0 4px 20px rgba(0,0,0,0.12); display:flex; align-items:center; justify-content:center;
-        cursor:pointer; z-index:1200;
+        cursor:pointer; z-index:9999 !important;
         pointer-events:auto !important;
         transition:transform 0.2s, box-shadow 0.2s; -webkit-tap-highlight-color:transparent;
       }
@@ -7690,7 +7693,7 @@
       #v-provider-week .week-kebab-trigger i,
       #btnWeekKebab i{ flex-shrink:0; width:22px; height:22px; color:inherit; }
       /* Bottom-Sheet-Style: weiß, 16px Radius, 56px Zeilen, Montserrat fett, Safe-Area [cite: 2026-02-23] */
-      .week-kebab-dropdown{ position:absolute; top:calc(100% + 6px); right:0; background:#ffffff; border-radius:16px 16px 0 0; box-shadow:0 -4px 24px rgba(0,0,0,0.12); border:1px solid rgba(0,0,0,0.06); padding:8px 0 calc(8px + env(safe-area-inset-bottom, 0)); z-index:20005; min-width:220px; }
+      .week-kebab-dropdown{ position:fixed !important; top:calc(60px + env(safe-area-inset-top, 0)) !important; right:16px !important; left:auto !important; bottom:auto !important; background:#ffffff; border-radius:16px; box-shadow:0 4px 24px rgba(0,0,0,0.12); border:1px solid rgba(0,0,0,0.06); padding:8px 0 calc(8px + env(safe-area-inset-bottom, 0)); z-index:9999 !important; min-width:220px; }
       .week-kebab-separator{ border-top:1px solid #ebebeb; margin:6px 12px; }
       .week-kebab-item{ display:flex; align-items:center; gap:12px; width:100%; min-height:56px; padding:0 20px; border:none; border-radius:0; background:transparent; font-family:'Montserrat','Inter',sans-serif; font-size:15px; font-weight:700; color:#222222; cursor:pointer; text-align:left; transition:background 0.2s; }
       .week-kebab-item i{ flex-shrink:0; width:20px !important; height:20px !important; color:#222222; }
@@ -7747,7 +7750,7 @@
       #weekViewFooter.week-footer-hidden{ display:none !important; }
       /* Magic FAB: über Footer (z-index 10050), klickbar [cite: 2026-02-25 Fehlersuche] */
       body.provider-week-active #v-provider-week .week-magic-fab,
-      body.provider-week-active #weekMagicFab{ z-index:10050 !important; pointer-events:auto !important; }
+      body.provider-week-active #weekMagicFab{ z-index:9999 !important; pointer-events:auto !important; }
       /* Wochenplan-Footer: Airbnb-Standard – weiß, #ebebeb-Linie, Safe-Area [cite: 2026-02-23, 2026-02-25] */
       .week-view-footer-fixed{ position:fixed !important; bottom:0; left:0; right:0; width:100%; z-index:10000; background:#ffffff !important; border-top:1px solid #ebebeb; padding-bottom:env(safe-area-inset-bottom) !important; box-sizing:border-box; }
       .week-view-footer-fixed .footer-content-wrapper{ padding:16px 20px; display:flex; flex-direction:column; align-items:center; gap:8px; }

@@ -10052,7 +10052,7 @@
                 if(typeof showToast === 'function') showToast('Wieder verfügbar');
                 if(typeof renderProviderHome === 'function') renderProviderHome();
               } else {
-                if(typeof openQuickEditOverlay === 'function') openQuickEditOverlay(offer); else if(typeof openPowerSalesOverlay === 'function') openPowerSalesOverlay(offer);
+                if(typeof startListingFlow === 'function') startListingFlow({ editOfferId: offer.id, entryPoint: 'ACTIVE_LISTING' });
               }
             }
           }, { passive: false });
@@ -11160,7 +11160,7 @@
     }
     weekFooter.classList.remove('week-footer-hidden');
     btnWeekViewFooter.onclick = function(){
-      if (window.DEBUG_WEEKPLAN) console.log('[Wochenplan] Gerichte aktivieren geklickt, count=' + count);
+      console.log('[Wochenplan] Gerichte aktivieren geklickt, count=' + count);
       if (count > 0) {
         if (typeof haptic === 'function') haptic(10);
         else if (window.userHasInteracted && navigator.vibrate) navigator.vibrate(10);
@@ -11443,26 +11443,12 @@
     provider = load(LS.provider, provider);
     var wrap = document.getElementById('kwBoardWrap');
     if (wrap) wrap.style.display = 'flex';
-    /* Magic FAB: bei jedem render neu binden – Klick öffnet openWeekMagicSheet [cite: 2026-02-18, 2026-02-25] */
-    var fab = document.getElementById('weekMagicFab');
-    if (fab) {
-      fab.onclick = function(){ if (window.DEBUG_WEEKPLAN) console.log('[Wochenplan] FAB geklickt'); try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate([15, 10, 20]); } catch(e){} if (typeof openWeekMagicSheet === 'function') openWeekMagicSheet(); };
-    }
-    var kwTrigger = document.getElementById('weekHeaderKWTrigger');
-    if (kwTrigger && !kwTrigger._bound) { kwTrigger._bound = true; kwTrigger.onclick = function(e){ if (window.DEBUG_WEEKPLAN) console.log('[Wochenplan] KW-Trigger geklickt'); e.preventDefault(); try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate(12); } catch(err){} openKWSelector(); }; }
+    setTimeout(function(){ if (typeof initWeekPlanInteractions === 'function') initWeekPlanInteractions(); }, 100);
     var grid = document.getElementById('kwGrid');
     if (!grid) return;
     /* Header: KW-Badge [cite: 2026-02-21] */
     var kwBadge = document.getElementById('weekHeaderKWBadge');
     if (kwBadge) kwBadge.textContent = getKWLabel(weekPlanKWIndex);
-    /* Kebab: Toggle + Aussenklick schliessen */
-    var kebabBtn = document.getElementById('btnWeekKebab');
-    var kebabDrop = document.getElementById('weekKebabDropdown');
-    if (kebabBtn && kebabDrop && !kebabBtn._bound) {
-      kebabBtn._bound = true;
-      kebabBtn.onclick = function(e){ e.stopPropagation(); var opening = kebabDrop.style.display === 'none'; if (opening) { try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate([5, 15, 5]); } catch(err){} } if(typeof haptic === 'function') haptic(6); kebabDrop.style.display = opening ? 'block' : 'none'; kebabBtn.setAttribute('aria-expanded', kebabDrop.style.display !== 'none'); };
-      document.addEventListener('click', function closeKebab(ev){ if (!kebabDrop.contains(ev.target) && ev.target !== kebabBtn) { kebabDrop.style.display = 'none'; kebabBtn.setAttribute('aria-expanded', 'false'); } });
-    }
     var btnPreviewClose = document.getElementById('btnWeekPreviewClose');
     if (btnPreviewClose && !btnPreviewClose._bound) {
       btnPreviewClose._bound = true;
@@ -11593,7 +11579,7 @@
           slotEl.setAttribute('data-day', key);
           slotEl.setAttribute('data-slot', String(slot));
           if (!isLive) slotEl.setAttribute('data-draft', '1');
-          slotEl.onclick = (function(k, idx, ent){ return function(e){ e.stopPropagation(); if(slotEl.classList.contains('kw-slot-swipe-delete') || slotEl.classList.contains('kw-slot-swipe-copy')) return; if(typeof haptic === 'function') haptic(6); weekPlanDay = k; if(isLive && items[idx] && items[idx].id){ if(typeof startListingFlow === 'function') startListingFlow({ editOfferId: items[idx].id, date: k, entryPoint: 'WEEKLY_PLAN_EDIT' }); } else { if(typeof startListingFlow === 'function') startListingFlow({ date: k, entryPoint: 'week', dishId: ent ? ent.cookbookId : undefined }); } }; })(key, slot, entry);
+          slotEl.onclick = (function(k, idx, ent){ return function(e){ e.stopPropagation(); var dishId = ent ? ent.cookbookId : undefined; console.log('[Wochenplan] Klick auf Slot: day=' + k + ', dishId=' + dishId); if(slotEl.classList.contains('kw-slot-swipe-delete') || slotEl.classList.contains('kw-slot-swipe-copy')) return; this.style.outline = '2px solid red'; setTimeout(() => { this.style.outline = 'none'; }, 150); if(typeof haptic === 'function') haptic(6); weekPlanDay = k; if(isLive && items[idx] && items[idx].id){ if(typeof startListingFlow === 'function') startListingFlow({ editOfferId: items[idx].id, date: k, entryPoint: 'WEEKLY_PLAN_EDIT' }); } else { if(typeof startListingFlow === 'function') startListingFlow({ date: k, entryPoint: 'week', dishId: dishId }); } }; })(key, slot, entry);
           slotsWrap.appendChild(slotEl);
         }
       }
@@ -11606,7 +11592,7 @@
         empty.setAttribute('aria-label', isDayEmpty ? 'Noch nichts geplant' : 'Gericht hinzufügen für ' + dayLabel + ', ' + dateLabel);
         var emptyText = isDayEmpty ? 'Noch nichts geplant' : 'Gericht hinzufügen';
         empty.innerHTML = '<span class="kw-slot-empty-icon">' + (isDayEmpty ? '' : '+') + '</span><span class="kw-slot-empty-text">' + emptyText + '</span>';
-        empty.onclick = (function(k){ return function(e){ e.preventDefault(); e.stopPropagation(); if(typeof haptic === 'function') haptic(6); weekPlanDay = k; if(typeof startListingFlow === 'function') startListingFlow({ date: k, entryPoint: 'week' }); }; })(key);
+        empty.onclick = (function(k){ return function(e){ e.stopPropagation(); var dishId; console.log('[Wochenplan] Klick auf Slot: day=' + k + ', dishId=' + dishId); this.style.outline = '2px solid red'; setTimeout(() => { this.style.outline = 'none'; }, 150); if(typeof haptic === 'function') haptic(6); weekPlanDay = k; if(typeof startListingFlow === 'function') startListingFlow({ date: k, entryPoint: 'week' }); }; })(key);
         slotsWrap.appendChild(empty);
       }
       grid.appendChild(card);
@@ -11779,7 +11765,6 @@
       fab.onclick = function(){ try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate([15, 10, 20]); } catch(e){} openWeekMagicSheet(); };
     }
   }
-  if (typeof window !== 'undefined') window.ensureWeekMagicFabBound = ensureWeekMagicFabBound;
   /** KW-Trigger („KW 9“) beim Öffnen des Wochenplans binden, damit Kalenderwoche klickbar ist */
   function ensureWeekHeaderKWTriggerBound(){
     var kwTr = document.getElementById('weekHeaderKWTrigger');
@@ -11793,7 +11778,6 @@
       };
     }
   }
-  if (typeof window !== 'undefined') window.ensureWeekHeaderKWTriggerBound = ensureWeekHeaderKWTriggerBound;
   /** Kebab-Menü (⋮) beim Öffnen des Wochenplans binden, Haptik 40ms – überschreibt Bindung für konsistentes Feedback */
   function ensureWeekKebabBound(){
     var kebabBtn = document.getElementById('btnWeekKebab');
@@ -11820,23 +11804,55 @@
       document.addEventListener('click', closeOnOutside);
     }
   }
-  if (typeof window !== 'undefined') window.ensureWeekKebabBound = ensureWeekKebabBound;
-  /* Magic FAB + Kebab: einmalige Bindung */
-  if (!window.__weekMagicFabBound) {
-    window.__weekMagicFabBound = true;
-    setTimeout(function(){
-      var fab = document.getElementById('weekMagicFab');
-      if (fab) fab.onclick = function(){ try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate([15, 10, 20]); } catch(e){} openWeekMagicSheet(); };
-      var kebab = document.getElementById('btnWeekKebab');
-      var kebabDrop = document.getElementById('weekKebabDropdown');
-      if (kebab && kebabDrop) {
-        kebab.onclick = function(e){ e.stopPropagation(); var opening = kebabDrop.style.display !== 'block'; if (opening) { try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate([5, 15, 5]); } catch(e){} } if (typeof haptic === 'function') haptic(6); kebabDrop.style.display = opening ? 'block' : 'none'; if (opening && typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons(); };
-        document.addEventListener('click', function(){ if (kebabDrop) kebabDrop.style.display = 'none'; });
-        kebab.addEventListener('click', function(e){ e.stopPropagation(); });
-        if (kebabDrop) kebabDrop.onclick = function(e){ e.stopPropagation(); };
+  /** Wochenplan: Einmalige Bindung aller Interaktionen (KW-Trigger, FAB, Kebab) [cite: Layer-Reset 2026-02-26] */
+  function initWeekPlanInteractions(){
+    var kwTr = document.getElementById('weekHeaderKWTrigger');
+    if (kwTr) {
+      kwTr.onclick = function(e){
+        this.style.outline = '2px solid red'; setTimeout(() => { this.style.outline = 'none'; }, 150);
+        console.log('[Wochenplan] KW-Trigger geklickt');
+        e.preventDefault();
+        e.stopPropagation();
+        try { if (navigator.vibrate) navigator.vibrate(50); } catch(err){}
+        if (typeof openKWSelector === 'function') openKWSelector();
+      };
+    }
+    var fab = document.getElementById('weekMagicFab');
+    if (fab) {
+      fab.onclick = function(){
+        this.style.outline = '2px solid red'; setTimeout(() => { this.style.outline = 'none'; }, 150);
+        console.log('[Wochenplan] FAB geklickt');
+        try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate([15, 10, 20]); } catch(e){}
+        if (typeof openWeekMagicSheet === 'function') openWeekMagicSheet();
+      };
+    }
+    var kebabBtn = document.getElementById('btnWeekKebab');
+    var kebabDrop = document.getElementById('weekKebabDropdown');
+    if (kebabBtn && kebabDrop) {
+      kebabBtn.onclick = function(e){
+        this.style.outline = '2px solid red'; setTimeout(() => { this.style.outline = 'none'; }, 150);
+        console.log('[Wochenplan] Kebab geklickt');
+        e.stopPropagation();
+        var opening = kebabDrop.style.display !== 'block';
+        if (opening) { try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate([5, 15, 5]); } catch(err){} }
+        if (typeof haptic === 'function') haptic(6);
+        kebabDrop.style.display = opening ? 'block' : 'none';
+        kebabBtn.setAttribute('aria-expanded', opening ? 'true' : 'false');
+        if (opening && typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+      };
+      if (!document.__weekKebabCloseBound) {
+        document.__weekKebabCloseBound = true;
+        document.addEventListener('click', function(ev){
+          if (!kebabDrop.contains(ev.target) && ev.target !== kebabBtn) {
+            kebabDrop.style.display = 'none';
+            kebabBtn.setAttribute('aria-expanded', 'false');
+          }
+        });
       }
-    }, 500);
+      kebabDrop.onclick = function(e){ e.stopPropagation(); };
+    }
   }
+  if (typeof window !== 'undefined') window.initWeekPlanInteractions = initWeekPlanInteractions;
   function renderWeekPlan(){
     updateSessionActivity();
     var boardWrap = document.getElementById('kwBoardWrap');
@@ -11845,8 +11861,7 @@
     /* Nur KW-Board. Ohne weekDays/weekList → Board anzeigen. */
     if(!dayWrap || !list){
       if (boardWrap) boardWrap.style.display = 'flex';
-      var kwTr = document.getElementById('weekHeaderKWTrigger');
-      if (kwTr && !kwTr._bound) { kwTr._bound = true; kwTr.onclick = function(e){ e.preventDefault(); try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate(12); } catch(err){} if(typeof openKWSelector === 'function') openKWSelector(); }; }
+      setTimeout(function(){ if (typeof initWeekPlanInteractions === 'function') initWeekPlanInteractions(); }, 100);
       if (boardWrap && typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard();
       if (typeof renderProviderWeekPreview === 'function') renderProviderWeekPreview();
       return;
@@ -16520,7 +16535,7 @@
             wantsAllergens: !!(x.allergens && Array.isArray(x.allergens) && x.allergens.length > 0),
             extras: Array.isArray(x.extras) ? JSON.parse(JSON.stringify(x.extras)) : [],
             reuse: x.reuse && (x.reuse.enabled !== undefined || x.reuse.deposit !== undefined) ? JSON.parse(JSON.stringify(x.reuse)) : { enabled: globalReuseEnabled, deposit: globalReuseEnabled ? defaultReuseDeposit : 0 },
-            photoData: x.photoData || '',
+            photoData: x.photoData || x.imageUrl || '',
             cookbookId: x.id,
             day: ctx.date || createFlowPreselectedDate || isoDate(new Date())
           };
@@ -17227,11 +17242,11 @@
       function setPhotoObjectPosition(p){ w.data.photoObjectPosition=Math.max(0,Math.min(100,p)); w.data.photoCropY=undefined; saveDraft(); }
       const photoContainer=document.createElement('div');
       photoContainer.className='inserat-photo-container';
-      photoContainer.style.cssText='position:relative; overflow:hidden; flex-shrink:0; width:100%; height:250px; min-height:250px; max-height:250px; margin:0; padding:0;';
+      photoContainer.style.cssText='position:relative; overflow:hidden; flex-shrink:0; width:100%; height:190px; min-height:190px; max-height:190px; margin:0; padding:0;';
       const photoTile=document.createElement('section');
       photoTile.id='photoModule';
       photoTile.className='inserat-photo-tile photo-section photo-section-ebay photo-module-ebay photo-header'+(w.data.photoData ? '' : ' pulse-soft inserat-photo-placeholder');
-      photoTile.style.cssText='position:relative; overflow:hidden; flex-shrink:0; width:100%; height:250px; min-height:250px; max-height:250px; margin:0; padding:0;';
+      photoTile.style.cssText='position:relative; overflow:hidden; flex-shrink:0; width:100%; height:190px; min-height:190px; max-height:190px; margin:0; padding:0;';
       var imgSrc=w.data.photoData||'';
       var objPos=getPhotoObjectPosition();
       var imgEl=document.createElement('img');
@@ -17973,11 +17988,11 @@
         step1NavRow.appendChild(btnJetztInserieren);
         actionSection.appendChild(step1NavRow);
       } else if(entryPoint === 'dashboard'){
-        /* Mode-basierter Footer: Weiter (MODE_NEW/Renner) oder Speichern (MODE_EDIT), ohne Abbrechen [cite: FLOW FIX 2026-02-23] */
+        /* Mode-basierter Footer: Neuanlage = Jetzt für 4,99 € | Edit = Änderungen speichern [cite: Inserat-Trichter 2026-02-26] */
         var step1NavRow=document.createElement('div');
         step1NavRow.className='app-footer-main';
         step1NavRow.style.cssText='display:flex; width:100%; align-items:stretch; justify-content:center;';
-        var footerBtnText=(typeof currentWizardMode!=='undefined'&&currentWizardMode==='MODE_EDIT')?'Speichern':'Weiter';
+        var footerBtnText=(typeof currentWizardMode!=='undefined'&&currentWizardMode==='MODE_EDIT')?'Änderungen speichern':'Jetzt für 4,99 € inserieren';
         var btnWeiter=document.createElement('button');
         btnWeiter.type='button';
         btnWeiter.id='btnNext';
@@ -17990,7 +18005,7 @@
         btnWeiter.onclick=function(){
           if(!isPrimaryValid()){ if(typeof showToast==='function') showToast('Bitte Name, Preis und Foto eingeben.'); if(typeof triggerValidationError==='function') triggerValidationError(this); return; }
           hapticLight();
-          if(footerBtnText==='Speichern'){
+          if(typeof currentWizardMode!=='undefined'&&currentWizardMode==='MODE_EDIT'){
             var o=previewOfferFromWizard();
             var offerId=(w.ctx&&w.ctx.editOfferId)||(o&&o.id)||null;
             if(offerId) try{ sessionStorage.setItem('mittagio_last_saved_offer_id', String(offerId)); }catch(e){}
@@ -18204,6 +18219,7 @@
   function openListingWizard(context){
     context = context || {};
     var today = typeof isoDate === 'function' ? isoDate(new Date()) : '';
+    var entryDish = (context.entryDishName && typeof context.entryDishName === 'string') ? context.entryDishName.trim() : '';
     w = {
       kind: 'listing',
       step: 0,
@@ -18214,7 +18230,7 @@
       },
       inseratStep: 1
     };
-    openMastercard({ name:'', price:'', category:'Fleisch', isReusable:true, day: context.date || today }, context.entryPoint);
+    openMastercard({ name: entryDish, dish: entryDish, price: 0, category: 'Fleisch', isReusable: true, day: context.date || today }, context.entryPoint);
   }
   if(typeof window !== 'undefined') window.openListingWizard = openListingWizard;
 
