@@ -5620,16 +5620,8 @@
     };
   }
 
-  // Android Hardware-Back: Wizard sofort schließen [cite: Universal-Linker 2026-02-26]
+  // Android Hardware-Back: Kontextbasierte Zurück-Navigation [cite: History-Context 2026-02-26]
   window.addEventListener('popstate', function(e){
-    // Wizard/Mastercard sofort schließen bei Handy-Zurück
-    var wizardActive = document.getElementById('wizard') && document.getElementById('wizard').classList.contains('active');
-    if (wizardActive && typeof window.closeListingFlow === 'function') {
-      try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); } catch(err){}
-      window.closeListingFlow();
-      e.preventDefault();
-      return;
-    }
     // AGB Onboarding Modal schließen
     if(document.getElementById('agbOnboardingSheet') && document.getElementById('agbOnboardingSheet').classList.contains('active')){
       closeAgbOnboardingModal();
@@ -5696,9 +5688,10 @@
         return;
       }
     }
-    // Wizard schließen (Step 1 → Galerie/Dashboard) [cite: Navigations-Lock 2026-02-25]
-    // Zurück-Geste: Nur Inserat-Overlay schließen (#wizard.active entfernen), App nicht verlassen
+    // Wizard schließen (Step 1 → zurück in Kontext) [cite: History-Context 2026-02-26]
+    // Fall A: InseratCard offen → closeMastercardWithAnim, navigateAfterWizardExit(entryPoint); Haupt-Nav wieder sichtbar
     if(document.getElementById('wizard') && document.getElementById('wizard').classList.contains('active')){
+      window.__popstateWizardHandled = true;
       var wiz = document.getElementById('wizard');
       if(wiz.getAttribute('data-flow') === 'listing' && typeof closeMastercardWithAnim === 'function'){
         var card = document.querySelector('#wizard .mastercard-container, #wizard .liquid-master-panel');
@@ -5708,7 +5701,6 @@
         closeWizard();
       }
       e.preventDefault();
-      pushViewState(null, location.pathname);
       return;
     }
     // Sheet schließen
@@ -11035,14 +11027,18 @@
     return idx;
   }
   function openKWSelector(){
+    if (typeof console !== 'undefined' && console.log) console.log('KW Open triggered');
     var bd = document.getElementById('kwSelectorBd');
     var sheet = document.getElementById('kwSelectorSheet');
     var list = document.getElementById('kwSelectorList');
-    if (!bd || !sheet || !list) return;
-    if (typeof getWeekMonday !== 'function' || typeof getWeekDayKeys !== 'function' || typeof getISOWeek !== 'function') return;
+    if (!bd || !sheet || !list) {
+      if (typeof console !== 'undefined' && console.warn) console.warn('KW Selector: missing element', { bd: !!bd, sheet: !!sheet, list: !!list });
+      return;
+    }
     var pid = typeof providerId === 'function' ? providerId() : '';
     if (typeof haptic === 'function') haptic(6);
     list.innerHTML = '';
+    if (typeof getWeekMonday === 'function' && typeof getWeekDayKeys === 'function' && typeof getISOWeek === 'function') {
     for (var w = 0; w < 12; w++) {
       var monday = getWeekMonday(w);
       if (!monday || typeof monday.getFullYear !== 'function') continue;
@@ -11064,13 +11060,18 @@
       btn.onclick = (function(k){ return function(){ if(typeof haptic === 'function') haptic(6); weekPlanKWIndex = k; var keys = getWeekDayKeys(k); if(keys.indexOf(weekPlanDay) === -1) weekPlanDay = keys[0]; closeKWSelector(); if(typeof pushViewState === 'function') pushViewState({ section: 'week', view: 'provider-week', mode: typeof mode !== 'undefined' ? mode : 'provider', week: k, day: weekPlanDay }, (typeof location !== 'undefined' && location.pathname) + '?week=' + k + '&day=' + weekPlanDay); renderWeekPlanBoard(); }; })(w);
       list.appendChild(btn);
     }
-    /* KW-Selector Fix: .active überspringt display:none !important [cite: Universal-Linker 2026-02-26] */
-    bd.classList.add('active');
-    sheet.classList.add('active');
+    }
+    /* KW-Emergency-Fix: Force Display – Kalender öffnet immer, egal welche KW [cite: 2026-02-26] */
     bd.style.setProperty('display', 'block', 'important');
-    bd.style.opacity = '1';
-    bd.style.pointerEvents = 'auto';
+    bd.style.setProperty('opacity', '1', 'important');
+    bd.style.setProperty('pointer-events', 'auto', 'important');
+    bd.style.setProperty('z-index', '10000', 'important');
+    bd.style.setProperty('background', 'rgba(0,0,0,0.5)', 'important');
+    bd.classList.add('active');
     sheet.style.setProperty('display', 'flex', 'important');
+    sheet.style.setProperty('opacity', '1', 'important');
+    sheet.style.setProperty('z-index', '10001', 'important');
+    sheet.classList.add('active');
   }
   function closeKWSelector(){
     var bd = document.getElementById('kwSelectorBd');
@@ -16207,8 +16208,8 @@
       document.body.style.overflow = 'hidden';
       document.body.style.overscrollBehavior = 'none';
       requestAnimationFrame(function(){ requestAnimationFrame(function(){ if(typeof applyVendorFooterPadding==='function') applyVendorFooterPadding(); }); });
-      /* Handy-Zurück: history.pushState damit popstate → closeListingFlow [cite: Event-Leitungen 2026-02-26] */
-      if(typeof pushViewState === 'function') pushViewState({ wizard: true, listing: true }, location.pathname);
+      /* History-Context: pushState für native Zurück-Geste → popstate schließt InseratCard [cite: History-Context 2026-02-26] */
+      if(typeof pushViewState === 'function') pushViewState({ view: 'inserat-card', wizard: true, listing: true }, location.pathname);
     } else {
       pushViewState({wizard: true}, location.pathname);
     }
@@ -16364,11 +16365,7 @@
     document.body.classList.add('vendor-area');
     // Action-Controller: Herkunft für Button-Logik (Dashboard / Kochbuch / Wochenplan)
     if(!context.entryPoint) context.entryPoint = context.dishId ? 'cookbook' : (context.fromWeek ? 'week' : 'dashboard');
-    /* Ausnahme: openToStep===2 ausschließlich für Bulk-Aktivierung (mehrere Daten) [cite: Master-Trichter 2026-02-26] */
-    if(context.openToStep === 2 && context.bulkDraftDates && context.bulkDraftDates.length){
-      startWizard('listing', context);
-      return;
-    }
+    /* 3-Schritt Mastercard: Alle Flows (auch Bulk) starten bei Schritt 1 [cite: FLOW FIX 2026-02-26] */
     /* RADIKALE BEREINIGUNG: Kein Draft – immer frischer Start zu InseratCard Schritt 1 [cite: 2026-02-26] */
     try { localStorage.removeItem('wizard_draft'); } catch(e) {}
     /* Wochenplan/Kochbuch „Neues Gericht“: immer InseratCard Schritt 1 (STEP_EDIT), nie openListingWizard [cite: FLOW FIX 2026-02-25] */
@@ -16549,8 +16546,8 @@
       if(!w.data.reuse) w.data.reuse = { enabled: !!profile.reuseEnabledByDefault, deposit: profile.reuseEnabledByDefault ? 3 : 0 };
       else if(w.data.reuse.enabled === undefined) w.data.reuse.enabled = !!profile.reuseEnabledByDefault;
       if(w.data.reuse.enabled && (w.data.reuse.deposit === undefined || w.data.reuse.deposit === 0)) w.data.reuse.deposit = (provider.profile && typeof provider.profile.reuseDepositDefault === 'number') ? provider.profile.reuseDepositDefault : 3;
-      /* Master-Trichter Final-Seal: Jeder normale Klick (Edit, Wochenplan, Renner, Kochbuch) → Schritt 1. Ausnahme: openToStep===2 nur für Bulk-Aktivierung [cite: Master-Trichter 2026-02-26] */
-      if(!(ctx.openToStep === 2 && ctx.bulkDraftDates && ctx.bulkDraftDates.length)) w.inseratStep = 1;
+      /* 3-Schritt Mastercard: Immer Schritt 1 als Einstieg [cite: FLOW FIX 2026-02-26] */
+      w.inseratStep = 1;
       w.ctx = ctx;
       openWizard();
       openMastercard(w.data || { dish:'', price:0, category:'Fleisch', reuse:{enabled:true} });
@@ -16990,13 +16987,9 @@
       const dismissKeyboard = ()=>{ try { if(document.activeElement && document.activeElement.blur) document.activeElement.blur(); } catch(e){} };
       const hapticLight = ()=>{ try { if(typeof haptic==='function') haptic(10); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); } catch(e){} };
       var entryPoint = (w.ctx && w.ctx.entryPoint) || 'dashboard';
-      var isPlanMode = (entryPoint === 'week') || (entryPoint === 'cookbook' && w.ctx && w.ctx.dishId && !w.ctx.skipQuickPost);
-      var isFastTrack = (entryPoint === 'ACTIVE_LISTING' || entryPoint === 'WEEKLY_PLAN_EDIT');
-      var isBulkActivate = !!(w.ctx && w.ctx.bulkDraftDates && w.ctx.bulkDraftDates.length);
-      var useTwoStepFlow = isBulkActivate || (!isPlanMode && !isFastTrack && (entryPoint === 'dashboard' || entryPoint === 'cookbook'));
-      if(useTwoStepFlow && typeof w.inseratStep !== 'number') w.inseratStep = 1;
-      if((w.ctx && w.ctx.openToStep === 2) || isBulkActivate){ w.inseratStep = 2; }
-      var inseratStep = useTwoStepFlow ? (w.inseratStep === 2 ? 2 : 1) : 1;
+      /* 3-Schritt Mastercard: Immer Editierung → Monetarisierung → Live [cite: FLOW FIX 2026-02-26] */
+      if(typeof w.inseratStep !== 'number') w.inseratStep = 1;
+      var inseratStep = Math.max(1, Math.min(3, w.inseratStep));
       if(inseratStep === 1){ try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); }catch(e){} }
       var listingDebounceTimer = null; /* Debounce f├╝r Autovervollst├ñndigung + Bildvorschl├ñge */
       var LISTING_IMAGES_BASE = 'https://images.unsplash.com/';
@@ -17029,12 +17022,11 @@
       }
       function listingSuggestionsVisible(){ var cat = w.data.category; return !!cat || (w.data.photoSuggestionKey && listingImageMap[w.data.photoSuggestionKey]); }
 
-      // ========== 2-SCHRITT AIRBNB-FLOW: Slider (Step 1 Ôåö Step 2) oder Step 1 nur (Plan-Mode) ==========
+      // ========== 3-SCHRITT MASTERCARD: Editierung → Monetarisierung → Live [cite: Drei-Schritte-Gesetz 2026-02-26] ==========
       var step1Container = box;
       var slider = null;
       var updateStep2ContextZoneRef = null;
-      if(useTwoStepFlow){
-        slider=document.createElement('div');
+      slider=document.createElement('div');
         slider.className='inserat-steps-slider';
         slider.setAttribute('data-inserat-step', String(inseratStep));
         var track=document.createElement('div');
@@ -17175,10 +17167,6 @@
         step2Sweep.className='step2-slot-machine-sweep';
         step2Sweep.setAttribute('aria-hidden','true');
         box.appendChild(step2Sweep);
-      } else {
-        box.id='mastercard-step-edit';
-        box.classList.add('mastercard-step-center');
-      }
 
       {
 
@@ -17368,8 +17356,9 @@
       closeX.onclick=function(e){ e.preventDefault(); e.stopPropagation();
         if(photoTile.classList.contains('is-selecting')){ hapticLight(); closeHeaderSelection(); return; }
         try{ if(typeof haptic==='function') haptic(15); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(15); }catch(e){}
-        if(typeof handleWizardExit==='function'){ handleWizardExit(box); return; }
-        var panel=box; if(panel&&!panel.classList.contains('x-pop-away')){ requestAnimationFrame(function(){ panel.classList.add('x-pop-away'); setTimeout(function(){ closeWizard(); }, 280); }); } else { closeWizard(); }
+        /* X = Hardware-Zurück: dieselbe Aktion wie History-Back [cite: History-Context 2026-02-26] */
+        if(typeof history !== 'undefined' && history.length > 1){ history.back(); return; }
+        if(typeof closeListingFlow==='function') closeListingFlow();
       };
 
       const scrollArea=document.createElement('div');
@@ -17729,7 +17718,7 @@
         var calcVal = document.getElementById('calc-val');
         if(calcVal) calcVal.textContent = (price * 30).toFixed(2).replace('.',',');
         var verdienstEl = document.getElementById('inserat-verdienst-vorschau');
-        if(verdienstEl && !isPlanMode){
+        if(verdienstEl){
           var verdienst = Math.max(0, (price - 0.89) * 30);
           verdienstEl.textContent = 'Dein Verdienst (ca. 30 Portionen): ' + verdienst.toFixed(2).replace('.',',') + ' €';
           verdienstEl.style.display = price > 0 ? 'block' : 'none';
@@ -17806,8 +17795,8 @@
         if(ch) ch.classList.toggle('is-scrolled', scrollArea.scrollTop > 60);
       });
 
-      // 9. ACTION BUTTONS – updateWizardFooter zentral [cite: MASTER-CARD FIX 2026-02-23]
-      var isInserierenRoute = (entryPoint === 'dashboard' || entryPoint === 'week' || entryPoint === 'cookbook');
+      // 9. ACTION BUTTONS – 3-Schritt Mastercard: Speichern (Shortcut) + Weiter (Primary) [cite: FLOW FIX 2026-02-26]
+      var showSpeichernShortcut = !!(w.ctx && w.ctx.editOfferId) || entryPoint === 'week' || entryPoint === 'cookbook';
       function isPrimaryValid(){
         var d = !!(w.data.dish && String(w.data.dish).trim().length >= 2);
         var p = Number(w.data.price) > 0;
@@ -17841,138 +17830,88 @@
       }
       var primaryValid = isPrimaryValid();
 
-      /* Regel: Alle Gerichte nur in InseratCard Step 1 öffnen, dort bearbeiten; dann Speichern ODER Weiter je nach Entry [cite: 2026-02-25] */
-      /* Entry → Footer: dashboard (Neu/Renner) = Weiter | dashboard (Edit) = Speichern | cookbook = Speichern + Jetzt inserieren | week = Speichern | ACTIVE_LISTING/WEEKLY_PLAN_EDIT = Speichern */
+      /* 3-Schritt Mastercard: Links Speichern (Shortcut) | Rechts Weiter (Primary) – Airbnb-Style [cite: 2026-02-23] */
       const actionSection=document.createElement('section');
       actionSection.id='inserat-action-section';
-      actionSection.className='inserat-action-section fixed-footer' + (!isPlanMode && isInserierenRoute ? ' inserat-action-pricing inserat-action-layer' : '') + (isFastTrack ? ' inserat-action-layer' : '') + (isPlanMode ? ' inserat-action-plan' : '');
+      actionSection.className='inserat-action-section fixed-footer inserat-action-pricing inserat-action-layer';
 
-      if(isFastTrack){
-        /* Fast-Track: Änderungen speichern → direkt schließen (Step 2/3 entfällt) [cite: 3-Schritte-Flow 2026-02-26] */
-        var step1NavRow=document.createElement('div');
-        step1NavRow.className='inserat-step1-nav system-footer-merged app-footer-main inserat-airbnb-footer';
-        step1NavRow.style.cssText='display:flex; width:100%; align-items:stretch; justify-content:center; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb;';
-        var btnSpeichern=document.createElement('button');
-        btnSpeichern.type='button';
-        btnSpeichern.id='btnNext';
-        btnSpeichern.className='btn-primary-black footer-main-button';
-        btnSpeichern.style.cssText='flex:1; min-height:48px; height:48px; padding:0 24px; border:none; border-radius:8px; background:#222222 !important; color:white !important; font-size:16px; font-weight:800; cursor:pointer;';
-        btnSpeichern.textContent='Speichern';
-        btnSpeichern.disabled=!primaryValid;
-        btnSpeichern.style.opacity=primaryValid?'1':'0.3';
-        btnSpeichern.style.pointerEvents=primaryValid?'auto':'none';
-        if(primaryValid) btnSpeichern.classList.add('is-ready');
-        btnSpeichern.onclick=function(){
+      var step1NavRow=document.createElement('div');
+      step1NavRow.className='app-footer-main inserat-step1-nav inserat-airbnb-footer';
+      step1NavRow.style.cssText='display:flex; width:100%; align-items:stretch; justify-content:center; gap:12px; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; padding:0 16px; padding-bottom:calc(16px + env(safe-area-inset-bottom, 0));';
+      if(showSpeichernShortcut){
+        var linkSpeichern=document.createElement('button');
+        linkSpeichern.type='button';
+        linkSpeichern.id='btnSpeichernKochbuch';
+        linkSpeichern.className='inserat-footer-link btn-secondary-link';
+        linkSpeichern.style.cssText='background:none; border:none; padding:12px 0; font-size:15px; font-weight:bold; color:#222222; cursor:pointer; text-decoration:underline; flex-shrink:0; min-height:48px; align-self:center;';
+        linkSpeichern.textContent=(w.ctx&&w.ctx.editOfferId)?'Änderungen speichern':(entryPoint==='week'?'Speichern':'Im Kochbuch speichern');
+        linkSpeichern.disabled=!primaryValid;
+        linkSpeichern.style.opacity=primaryValid?'1':'0.3';
+        linkSpeichern.style.pointerEvents=primaryValid?'auto':'none';
+        linkSpeichern.onclick=function(){
           if(!isPrimaryValid()){ if(typeof showToast==='function') showToast('Bitte Name, Preis und Foto eingeben.'); if(typeof triggerValidationError==='function') triggerValidationError(this); return; }
           hapticLight();
-          var o=previewOfferFromWizard();
-          var offerId=(w.ctx&&w.ctx.editOfferId)||(o&&o.id)||null;
-          if(offerId) try{ sessionStorage.setItem('mittagio_last_saved_offer_id', String(offerId)); }catch(e){}
-          var published=typeof publishOffer==='function'?publishOffer(o):null;
-          closeWizard(true);
-          if(entryPoint==='WEEKLY_PLAN_EDIT'&&typeof renderWeekPlanBoard==='function') renderWeekPlanBoard();
-          else if(typeof showProviderHome==='function') showProviderHome();
-        };
-        step1NavRow.appendChild(btnSpeichern);
-        actionSection.appendChild(step1NavRow);
-      } else if(isPlanMode){
-        /* Plan-Mode: Nur Primär-Button, ohne Abbrechen [cite: MASTER-CARD FIX 2026-02-23] */
-        var planNavRow=document.createElement('div');
-        planNavRow.className='app-footer-main';
-        planNavRow.style.cssText='display:flex; width:100%; align-items:center; justify-content:center;';
-        var btnWeekPlan=document.createElement('button');
-        btnWeekPlan.type='button';
-        btnWeekPlan.className='btn-primary-black' + (primaryValid ? ' is-ready' : '');
-        btnWeekPlan.style.cssText='flex:1; height:48px; min-width:180px; padding:0 24px; border:none; border-radius:8px; background:#222222; color:white; font-size:16px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center;';
-        btnWeekPlan.textContent=(entryPoint === 'week' ? 'Speichern' : 'Im Kochbuch speichern');
-        btnWeekPlan.disabled=!primaryValid;
-        btnWeekPlan.style.opacity=primaryValid?'1':'0.3';
-        btnWeekPlan.style.pointerEvents=primaryValid?'auto':'none';
-        btnWeekPlan.onclick=function(){
-          if(!isPrimaryValid()){ if(typeof showToast==='function') showToast('Bitte Name, Preis und Foto eingeben.'); if(typeof triggerValidationError==='function') triggerValidationError(this); return; }
+          if(w.ctx&&w.ctx.editOfferId){
+            var o=previewOfferFromWizard();
+            var offerId=(w.ctx.editOfferId)||(o&&o.id)||null;
+            if(offerId) try{ sessionStorage.setItem('mittagio_last_saved_offer_id', String(offerId)); }catch(e){}
+            if(typeof publishOffer==='function') publishOffer(o);
+            closeWizard(true);
+            if(entryPoint==='WEEKLY_PLAN_EDIT'&&typeof renderWeekPlanBoard==='function') renderWeekPlanBoard();
+            else if(typeof showProviderHome==='function') showProviderHome();
+            return;
+          }
           if(typeof haptic==='function') haptic(50);
-          var id=saveToCookbookFromWizard();
-          if(entryPoint === 'cookbook' && id){
+          var id=typeof saveToCookbookFromWizard==='function'?saveToCookbookFromWizard():null;
+          if(entryPoint==='cookbook'&&id){
             closeWizard(true);
             if(typeof showToast==='function') showToast('Gericht im Kochbuch aktualisiert 📖');
             if(typeof navigateAfterWizardExit==='function') navigateAfterWizardExit('cookbook');
-          } else if(id && w.data.day){
+            return;
+          }
+          if(id&&w.data.day){
             if(!week[w.data.day]) week[w.data.day]=[];
             var c=cookbook.find(function(x){ return x.id===id; });
             if(c) week[w.data.day].push({ providerId:c.providerId, cookbookId:c.id, dish:c.dish, price:c.price });
             save(LS.week, week);
             closeWizard(true);
             showSaveSuccessSheet({ title:'Im Wochenplan gespeichert', sub:'Dein Gericht ist im Wochenplan eingetragen.', dishName: w.data.dish||'', price: w.data.price, imageUrl: w.data.photoData||'', savedEntryId: id, savedDay: w.data.day, onFertig: function(){ if(typeof showToast==='function') showToast('Im Wochenplan gespeichert 📅'); if(typeof showProviderWeek==='function') showProviderWeek(); }, onLive: null });
-          } else if(id){ if(typeof showToast==='function') showToast('Bitte zuerst ein Datum im Wochenplan wählen'); }
-        };
-        planNavRow.appendChild(btnWeekPlan);
-        actionSection.appendChild(planNavRow);
-      } else if(entryPoint === 'dashboard' || entryPoint === 'cookbook'){
-        /* Master-Trichter: Edit = Änderungen speichern | Neu = links Speichern (Kochbuch), rechts Weiter [cite: Master-Trichter 2026-02-26] */
-        var step1NavRow=document.createElement('div');
-        step1NavRow.className='app-footer-main inserat-step1-nav inserat-airbnb-footer';
-        step1NavRow.style.cssText='display:flex; width:100%; align-items:stretch; justify-content:center; gap:12px; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; padding:0 16px;';
-        var isEditMode=!!(w.ctx&&w.ctx.editOfferId);
-        var footerBtnText=isEditMode?'Änderungen speichern':'Weiter';
-        if(!isEditMode && !(w.ctx&&w.ctx.fromCookbookFooter)){
-          var linkSpeichern=document.createElement('button');
-          linkSpeichern.type='button';
-          linkSpeichern.id='btnSpeichernKochbuch';
-          linkSpeichern.className='inserat-footer-link btn-secondary-link';
-          linkSpeichern.style.cssText='background:none; border:none; padding:12px 0; font-size:15px; font-weight:bold; color:#222222; cursor:pointer; text-decoration:underline; flex-shrink:0; min-height:48px; align-self:center;';
-          linkSpeichern.textContent='Speichern';
-          linkSpeichern.disabled=!primaryValid;
-          linkSpeichern.style.opacity=primaryValid?'1':'0.3';
-          linkSpeichern.style.pointerEvents=primaryValid?'auto':'none';
-          linkSpeichern.onclick=function(){
-            if(!isPrimaryValid()){ if(typeof showToast==='function') showToast('Bitte Name, Preis und Foto eingeben.'); if(typeof triggerValidationError==='function') triggerValidationError(this); return; }
-            hapticLight();
-            if(typeof haptic==='function') haptic(50);
-            var id=typeof saveToCookbookFromWizard==='function'?saveToCookbookFromWizard():null;
-            if(id){ closeWizard(true); if(typeof navigateAfterWizardExit==='function') navigateAfterWizardExit('dashboard'); }
-          };
-          step1NavRow.appendChild(linkSpeichern);
-        }
-        var btnWeiter=document.createElement('button');
-        btnWeiter.type='button';
-        btnWeiter.id='btnNext';
-        btnWeiter.className='btn-primary-black footer-main-button';
-        btnWeiter.style.cssText='min-width:140px; min-height:48px; height:48px; padding:0 24px; border:none; border-radius:8px; background:#222222 !important; color:white !important; font-size:16px; font-weight:800; cursor:pointer;';
-        btnWeiter.textContent=footerBtnText;
-        btnWeiter.disabled=true;
-        btnWeiter.style.opacity='0.3';
-        btnWeiter.style.pointerEvents='none';
-        btnWeiter.onclick=function(){
-          if(!isPrimaryValid()){ if(typeof showToast==='function') showToast('Bitte Name, Preis und Foto eingeben.'); if(typeof triggerValidationError==='function') triggerValidationError(this); return; }
-          hapticLight();
-          if(isEditMode){
-            var o=previewOfferFromWizard();
-            var offerId=(w.ctx&&w.ctx.editOfferId)||(o&&o.id)||null;
-            if(offerId) try{ sessionStorage.setItem('mittagio_last_saved_offer_id', String(offerId)); }catch(e){}
-            var published=typeof publishOffer==='function'?publishOffer(o):null;
-            closeWizard(true);
-            if(typeof showProviderHome==='function') showProviderHome();
             return;
           }
-          if(typeof handlePriceFastInsert==='function') handlePriceFastInsert(box);
-          if(updateStep2ContextZoneRef) updateStep2ContextZoneRef();
-          w.inseratStep=2; saveDraft();
-          try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(15); }catch(err){}
-          if(typeof window.bridgeToPremiumMonetization==='function'){
-            window.bridgeToPremiumMonetization();
-          } else if(slider){
-            try{ history.pushState({inseratStep:2},'','#'); }catch(e){}
-            var sweepEl=box.querySelector('.step2-slot-machine-sweep');
-            if(sweepEl){ sweepEl.classList.remove('animate'); sweepEl.offsetHeight; sweepEl.classList.add('animate'); sweepEl.addEventListener('animationend',function onSweepEnd(){ sweepEl.removeEventListener('animationend',onSweepEnd); sweepEl.classList.remove('animate'); },{once:true}); }
-            slider.setAttribute('data-inserat-step','2');
-            var wizardEl=document.getElementById('wizard');
-            if(wizardEl) wizardEl.classList.add('inserat-step2-active');
-            var f=box.querySelector('[data-inserat-step="2"]'); if(f) f.style.display='flex';
-          } else { rebuildWizard(); }
+          if(id){ if(typeof showToast==='function') showToast('Bitte zuerst ein Datum im Wochenplan wählen'); }
         };
-        step1NavRow.appendChild(btnWeiter);
-        actionSection.appendChild(step1NavRow);
-      } else {
+        step1NavRow.appendChild(linkSpeichern);
+      }
+      var btnWeiter=document.createElement('button');
+      btnWeiter.type='button';
+      btnWeiter.id='btnNext';
+      btnWeiter.className='btn-primary-black footer-main-button';
+      btnWeiter.style.cssText='min-width:140px; min-height:48px; height:48px; padding:0 24px; border:none; border-radius:8px; background:#222222 !important; color:white !important; font-size:16px; font-weight:800; cursor:pointer;';
+      btnWeiter.textContent='Weiter';
+      btnWeiter.disabled=true;
+      btnWeiter.style.opacity='0.3';
+      btnWeiter.style.pointerEvents='none';
+      btnWeiter.onclick=function(){
+        if(!isPrimaryValid()){ if(typeof showToast==='function') showToast('Bitte Name, Preis und Foto eingeben.'); if(typeof triggerValidationError==='function') triggerValidationError(this); return; }
+        hapticLight();
+        if(typeof handlePriceFastInsert==='function') handlePriceFastInsert(box);
+        if(updateStep2ContextZoneRef) updateStep2ContextZoneRef();
+        w.inseratStep=2; saveDraft();
+        try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(15); }catch(err){}
+        if(typeof window.bridgeToPremiumMonetization==='function'){
+          window.bridgeToPremiumMonetization();
+        } else if(slider){
+          try{ history.pushState({inseratStep:2},'','#'); }catch(e){}
+          var sweepEl=box.querySelector('.step2-slot-machine-sweep');
+          if(sweepEl){ sweepEl.classList.remove('animate'); sweepEl.offsetHeight; sweepEl.classList.add('animate'); sweepEl.addEventListener('animationend',function onSweepEnd(){ sweepEl.removeEventListener('animationend',onSweepEnd); sweepEl.classList.remove('animate'); },{once:true}); }
+          slider.setAttribute('data-inserat-step','2');
+          var wizardEl=document.getElementById('wizard');
+          if(wizardEl) wizardEl.classList.add('inserat-step2-active');
+          var f=box.querySelector('[data-inserat-step="2"]'); if(f) f.style.display='flex';
+        } else { rebuildWizard(); }
+      };
+      step1NavRow.appendChild(btnWeiter);
+      actionSection.appendChild(step1NavRow); else {
         /* Plan-Mode: Nur Primär-Button, ohne Abbrechen [cite: MASTER-CARD FIX 2026-02-23] */
         var planRow=document.createElement('div');
         planRow.className='app-footer-main';

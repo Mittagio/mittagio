@@ -3232,7 +3232,7 @@
 <div id="printView" class="print-view"></div>
 
 <!-- Provider Wizard sheet (single reusable) – Küchenmodus -->
-<div class="backdrop" id="wbd" onclick="if(event.target===this){ var w=document.getElementById('wizard'); if(w&&w.getAttribute('data-flow')==='listing'&&typeof closeMastercard==='function') closeMastercard(); else if(typeof closeWizard==='function') closeWizard(); }"></div>
+<div class="backdrop" id="wbd" onclick="if(event.target===this){ var w=document.getElementById('wizard'); if(w&&w.classList.contains('active')){ if(w.getAttribute('data-flow')==='listing'&&typeof history!=='undefined'&&history.length>1){ history.back(); } else if(w.getAttribute('data-flow')==='listing'&&typeof closeMastercard==='function'){ closeMastercard(); } else if(typeof closeWizard==='function'){ closeWizard(); } } }"></div>
 <div class="sheet sheet--kitchen" id="wizard">
   <div class="handle"></div>
   <div class="sheet-body wizard-sheet-body">

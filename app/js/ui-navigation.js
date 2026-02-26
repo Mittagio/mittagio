@@ -330,10 +330,14 @@
     window.__navSuppressPush = false;
   }
 
-  /** handleBack: Zentrale Zurück-Logik – nutzt history.back() für echten Verlauf [cite: DASHBOARD 2.1] */
+  /** handleBack: Zentrale Zurück-Logik – nutzt history.back() für echten Verlauf [cite: DASHBOARD 2.1, History-Context 2026-02-26] */
   function handleBack(){
     try { if (typeof haptic === 'function') haptic(6); else if (navigator.vibrate) navigator.vibrate(10); } catch(e){}
     if (window.mode === 'provider') {
+      if (isWizardOpen() && typeof history !== 'undefined' && history.length > 1) {
+        history.back();
+        return;
+      }
       if (isWizardOpen() && typeof closeMastercard === 'function') {
         closeMastercard();
         return;
@@ -360,7 +364,7 @@
     }
   }
 
-  /** Popstate: Hardware-Zurück – UI aus event.state wiederherstellen [cite: DASHBOARD 2.1] */
+  /** Popstate: Hardware-Zurück – UI aus event.state wiederherstellen [cite: DASHBOARD 2.1, History-Context 2026-02-26] */
   function initPopstateHandler(){
     window.addEventListener('popstate', function(event){
       try { if (navigator.vibrate) navigator.vibrate(10); } catch(e){}
@@ -369,7 +373,8 @@
         return;
       }
       if (window.mode !== 'provider') return;
-      if (isWizardOpen() && (typeof closeMastercardWithAnim === 'function' || typeof closeMastercard === 'function')) {
+      if (window.__popstateWizardHandled) { window.__popstateWizardHandled = false; }
+      else if (isWizardOpen() && (typeof closeMastercardWithAnim === 'function' || typeof closeMastercard === 'function')) {
         var wiz = document.getElementById('wizard');
         if (wiz && wiz.getAttribute('data-flow') === 'listing' && typeof closeMastercardWithAnim === 'function') {
           var card = document.querySelector('#wizard .mastercard-container, #wizard .liquid-master-panel');
