@@ -2110,6 +2110,7 @@
       box-shadow: none;
       transform: translateY(0);
     }
+    /* InseratCard-Footer: bündig am Displayrand, S25 Edge-to-Edge [cite: 2026-02-23, 2026-02-26] */
     .airbnb-footer-minimal,
     #wizard[data-flow="listing"] .inserat-step1-nav.inserat-immo-footer {
       position: fixed;
@@ -2117,14 +2118,15 @@
       left: 0;
       right: 0;
       width: 100%;
+      max-width: 100vw;
       background: #222222;
-      padding: 16px 24px;
-      padding-bottom: env(safe-area-inset-bottom);
+      padding: 16px max(16px, env(safe-area-inset-right)) calc(16px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
       display: flex;
       align-items: center;
       justify-content: space-between;
       margin: 0 !important;
       border-radius: 0 !important;
+      box-sizing: border-box;
     }
     /* 2. FIXED HEADER: Bleibt oben stehen */
     #wizard[data-flow="listing"] .mastercard-header {

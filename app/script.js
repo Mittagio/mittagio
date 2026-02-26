@@ -11160,7 +11160,6 @@
     }
     weekFooter.classList.remove('week-footer-hidden');
     btnWeekViewFooter.onclick = function(){
-      console.log('[Wochenplan] Gerichte aktivieren geklickt, count=' + count);
       if (count > 0) {
         if (typeof haptic === 'function') haptic(10);
         else if (window.userHasInteracted && navigator.vibrate) navigator.vibrate(10);
@@ -11579,7 +11578,7 @@
           slotEl.setAttribute('data-day', key);
           slotEl.setAttribute('data-slot', String(slot));
           if (!isLive) slotEl.setAttribute('data-draft', '1');
-          slotEl.onclick = (function(k, idx, ent){ return function(e){ e.stopPropagation(); var dishId = ent ? ent.cookbookId : undefined; console.log('[Wochenplan] Klick auf Slot: day=' + k + ', dishId=' + dishId); if(slotEl.classList.contains('kw-slot-swipe-delete') || slotEl.classList.contains('kw-slot-swipe-copy')) return; this.style.outline = '2px solid red'; setTimeout(() => { this.style.outline = 'none'; }, 150); if(typeof haptic === 'function') haptic(6); weekPlanDay = k; if(isLive && items[idx] && items[idx].id){ if(typeof startListingFlow === 'function') startListingFlow({ editOfferId: items[idx].id, date: k, entryPoint: 'WEEKLY_PLAN_EDIT' }); } else { if(typeof startListingFlow === 'function') startListingFlow({ date: k, entryPoint: 'week', dishId: dishId }); } }; })(key, slot, entry);
+          slotEl.onclick = (function(k, idx, ent){ return function(e){ e.stopPropagation(); if(slotEl.classList.contains('kw-slot-swipe-delete') || slotEl.classList.contains('kw-slot-swipe-copy')) return; var dishId = ent ? ent.cookbookId : undefined; if(typeof haptic === 'function') haptic(6); weekPlanDay = k; if(isLive && items[idx] && items[idx].id){ if(typeof startListingFlow === 'function') startListingFlow({ editOfferId: items[idx].id, date: k, entryPoint: 'week' }); } else { if(typeof startListingFlow === 'function') startListingFlow({ date: k, entryPoint: 'week', dishId: dishId }); } }; })(key, slot, entry);
           slotsWrap.appendChild(slotEl);
         }
       }
@@ -11592,7 +11591,7 @@
         empty.setAttribute('aria-label', isDayEmpty ? 'Noch nichts geplant' : 'Gericht hinzufügen für ' + dayLabel + ', ' + dateLabel);
         var emptyText = isDayEmpty ? 'Noch nichts geplant' : 'Gericht hinzufügen';
         empty.innerHTML = '<span class="kw-slot-empty-icon">' + (isDayEmpty ? '' : '+') + '</span><span class="kw-slot-empty-text">' + emptyText + '</span>';
-        empty.onclick = (function(k){ return function(e){ e.stopPropagation(); var dishId; console.log('[Wochenplan] Klick auf Slot: day=' + k + ', dishId=' + dishId); this.style.outline = '2px solid red'; setTimeout(() => { this.style.outline = 'none'; }, 150); if(typeof haptic === 'function') haptic(6); weekPlanDay = k; if(typeof startListingFlow === 'function') startListingFlow({ date: k, entryPoint: 'week' }); }; })(key);
+        empty.onclick = (function(k){ return function(e){ e.stopPropagation(); if(typeof haptic === 'function') haptic(6); weekPlanDay = k; if(typeof startListingFlow === 'function') startListingFlow({ date: k, entryPoint: 'week' }); }; })(key);
         slotsWrap.appendChild(empty);
       }
       grid.appendChild(card);
@@ -11809,8 +11808,6 @@
     var kwTr = document.getElementById('weekHeaderKWTrigger');
     if (kwTr) {
       kwTr.onclick = function(e){
-        this.style.outline = '2px solid red'; setTimeout(() => { this.style.outline = 'none'; }, 150);
-        console.log('[Wochenplan] KW-Trigger geklickt');
         e.preventDefault();
         e.stopPropagation();
         try { if (navigator.vibrate) navigator.vibrate(50); } catch(err){}
@@ -11820,8 +11817,6 @@
     var fab = document.getElementById('weekMagicFab');
     if (fab) {
       fab.onclick = function(){
-        this.style.outline = '2px solid red'; setTimeout(() => { this.style.outline = 'none'; }, 150);
-        console.log('[Wochenplan] FAB geklickt');
         try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate([15, 10, 20]); } catch(e){}
         if (typeof openWeekMagicSheet === 'function') openWeekMagicSheet();
       };
@@ -11830,8 +11825,6 @@
     var kebabDrop = document.getElementById('weekKebabDropdown');
     if (kebabBtn && kebabDrop) {
       kebabBtn.onclick = function(e){
-        this.style.outline = '2px solid red'; setTimeout(() => { this.style.outline = 'none'; }, 150);
-        console.log('[Wochenplan] Kebab geklickt');
         e.stopPropagation();
         var opening = kebabDrop.style.display !== 'block';
         if (opening) { try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate([5, 15, 5]); } catch(err){} }
