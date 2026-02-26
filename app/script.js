@@ -11607,6 +11607,7 @@
           slotEl.setAttribute('data-day', key);
           slotEl.setAttribute('data-slot', String(slot));
           if (!isLive) slotEl.setAttribute('data-draft', '1');
+          /* hasContent → Edit (startListingFlow); leerer Slot → Selection (openDishFlow) [cite: Bauleiter 2026-02-25] */
           slotEl.onclick = (function(k, idx, ent){ return function(e){ e.stopPropagation(); if(slotEl.classList.contains('kw-slot-swipe-delete') || slotEl.classList.contains('kw-slot-swipe-copy')) return; var dishId = ent ? ent.cookbookId : undefined; if(typeof haptic === 'function') haptic(6); weekPlanDay = k; if(isLive && items[idx] && items[idx].id){ if(typeof startListingFlow === 'function') startListingFlow({ editOfferId: items[idx].id, date: k, entryPoint: 'week' }); } else { if(typeof startListingFlow === 'function') startListingFlow({ date: k, entryPoint: 'week', dishId: dishId }); } }; })(key, slot, entry);
           slotsWrap.appendChild(slotEl);
         }
@@ -11620,12 +11621,23 @@
         empty.setAttribute('aria-label', isDayEmpty ? 'Noch nichts geplant' : 'Gericht hinzufügen für ' + dayLabel + ', ' + dateLabel);
         var emptyText = isDayEmpty ? 'Noch nichts geplant' : 'Gericht hinzufügen';
         empty.innerHTML = '<span class="kw-slot-empty-icon">' + (isDayEmpty ? '' : '+') + '</span><span class="kw-slot-empty-text">' + emptyText + '</span>';
-        empty.onclick = (function(k){ return function(e){ e.stopPropagation(); if(typeof haptic === 'function') haptic(6); weekPlanDay = k; if(typeof startListingFlow === 'function') startListingFlow({ date: k, entryPoint: 'week' }); }; })(key);
+        empty.onclick = (function(k){ return function(e){ e.stopPropagation(); if(typeof haptic === 'function') haptic(6); weekPlanDay = k; if(typeof openDishFlow === 'function') openDishFlow(k, 'week'); }; })(key);
         slotsWrap.appendChild(empty);
       }
       grid.appendChild(card);
     });
     attachKWBoardSlotGestures(grid);
+    var scrollEl = document.getElementById('kwBoardScroll');
+    if (scrollEl) {
+      var spacer = document.getElementById('kwBoardFooterSpacer');
+      if (!spacer) {
+        spacer = document.createElement('div');
+        spacer.id = 'kwBoardFooterSpacer';
+        spacer.className = 'app-footer-spacer';
+        spacer.setAttribute('aria-hidden', 'true');
+        scrollEl.appendChild(spacer);
+      }
+    }
     grid.querySelectorAll('.kw-slot, .kw-slot-empty').forEach(function(slotEl){
       var dayKey = slotEl.getAttribute('data-day');
       if(!dayKey) return;
@@ -16953,6 +16965,8 @@
     setWizardNextDefault();
     w.step = 0;
     setWizardHeader('', '');
+    var wContent = document.getElementById('wContent');
+    if (wContent) wContent.innerHTML = '';
     const profile = normalizeProviderProfile(provider.profile || {});
     const profileWindow = profile.mealWindow || DEFAULT_MEAL_WINDOW;
     const defaultReuseDeposit = (provider.profile && typeof provider.profile.reuseDepositDefault === 'number') ? provider.profile.reuseDepositDefault : 3;
@@ -16974,7 +16988,7 @@
       sheet.setAttribute('data-inserat-card', 'true');
       sheet.style.cssText = 'padding:0; overflow:visible; display:flex; flex-direction:column; min-height:0; border-radius:0; background:transparent;';
       const box = document.createElement('div');
-      box.className='liquid-master-panel mastercard-container scout-master-card vendor-area glass-express-step0 inserat-universal-mask inserat-master-flow liquid-panel listing-glass-panel s25-floating-panel inserat-card inserat-airbnb-refactor';
+      box.className='liquid-master-panel modern-inserat-card mastercard-container scout-master-card vendor-area glass-express-step0 inserat-universal-mask inserat-master-flow liquid-panel listing-glass-panel s25-floating-panel inserat-airbnb-refactor';
       box.setAttribute('data-inserat-card','true');
       box.style.cssText='padding:0; overflow:hidden; display:flex; flex-direction:column; min-height:0;';
       var collapsingHeader=document.createElement('div');
@@ -17092,11 +17106,13 @@
           saveDraft();
           var fb=box.querySelector('[data-inserat-step="2"] .btn-primary-black');
           if(fb){
-            fb.textContent=(type==='classic' ? 'Jetzt für 4,99 € inserieren' : 'Jetzt kostenlos inserieren');
+            fb.textContent=(type==='classic' ? 'Jetzt für 4,99 € inserieren' : 'Jetzt für 0,00 € inserieren');
             fb.classList.toggle('inserat-footer-btn--499',type==='classic');
             fb.classList.toggle('free-mode',type==='pro');
             fb.classList.toggle('is-free-mode',type==='pro');
           }
+          var feeHintStep2=box.querySelector('.inserat-step2-fee-hint');
+          if(feeHintStep2){ feeHintStep2.style.display=(type==='pro'?'block':'none'); }
           try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); }catch(e){}
         }
         cardClassic.onclick=function(){ hapticLight(); selectPacket('classic'); };
@@ -17490,13 +17506,21 @@
       inputPrice.setAttribute('inputmode','decimal');
       inputPrice.placeholder='0,00';
       inputPrice.value=(w.data.price>0?Number(w.data.price).toFixed(2).replace('.',','):'');
+      if(w.data.hasPickupCode){ w.data.price=0; inputPrice.value='0,00'; }
       var eurSpan=document.createElement('span');
       eurSpan.className='currency inserat-price-pill-euro';
       eurSpan.textContent=' \u20AC';
       stepPriceWrap.appendChild(inputPrice);
       stepPriceWrap.appendChild(eurSpan);
       priceInputWrapper.appendChild(stepPriceWrap);
+      var feeNoteEl=document.createElement('div');
+      feeNoteEl.className='inserat-fee-note';
+      feeNoteEl.style.cssText='font-size:13px; color:#64748b; margin-top:6px; display:'+(w.data.hasPickupCode?'block':'none')+';';
+      feeNoteEl.textContent='0,89 € pro Vorgang inkl. Gebühren';
+      feeNoteEl.setAttribute('id','inserat-fee-note');
+      if(w.data.hasPickupCode && inputPrice){ inputPrice.disabled=true; }
       priceSection.appendChild(priceInputWrapper);
+      priceSection.appendChild(feeNoteEl);
       var verdienstWrap = document.createElement('div');
       verdienstWrap.id = 'inserat-verdienst-vorschau';
       verdienstWrap.className = 'inserat-verdienst-vorschau';
@@ -17506,7 +17530,7 @@
 
       // ========== 6. Power-Bar [cite: Regel 2026-02-23] Reihenfolge: ­ƒì┤ Vor Ort -> ­ƒöä Mehrweg -> ­ƒòÆ Abholzeit -> ­ƒî¥ Allergene -> Ô×ò Extras ==========
       const powerBar=document.createElement('div');
-      powerBar.className='inserat-power-bar inserat-unified-pills inserat-soft-shell power-bar-module';
+      powerBar.className='inserat-power-bar pillar-row inserat-unified-pills inserat-soft-shell power-bar-module';
       powerBar.style.cssText='border-top:1px solid #f2f2f2; padding-top:12px; margin-top:4px;';
       var hasDineIn=w.data.dineInPossible!==false;
       var hasReuse=!!(w.data.reuse&&w.data.reuse.enabled);
@@ -17521,7 +17545,11 @@
         if(type==='vor-ort'||type==='mehrweg'||type==='abholnummer'){
           if(item){
             var isActive=item.classList.toggle('active');
-            if(type==='vor-ort'){ w.data.dineInPossible=isActive; } else if(type==='mehrweg'){ w.data.reuse=w.data.reuse||{}; w.data.reuse.enabled=isActive; } else if(type==='abholnummer'){ w.data.hasPickupCode=isActive; }
+            if(type==='vor-ort'){ w.data.dineInPossible=isActive; } else if(type==='mehrweg'){ w.data.reuse=w.data.reuse||{}; w.data.reuse.enabled=isActive;             } else if(type==='abholnummer'){
+              w.data.hasPickupCode=isActive;
+              if(isActive){ w.data.price=0; if(inputPrice){ inputPrice.value='0,00'; inputPrice.disabled=true; } if(feeNoteEl){ feeNoteEl.style.display='block'; feeNoteEl.textContent='0,89 € pro Vorgang inkl. Gebühren'; } }
+              else { if(inputPrice){ inputPrice.disabled=false; } if(feeNoteEl){ feeNoteEl.style.display='none'; } }
+            }
             saveDraft();
           }
         } else {
@@ -17741,7 +17769,7 @@
         setTimeout(function(){ try{ inputPrice.focus(); }catch(err){} }, 150);
       });
       inputPrice.onblur=function(){ if(w.data.price>0) inputPrice.value=Number(w.data.price).toFixed(2).replace('.',','); dismissKeyboard(); hapticLight(); if(priceSection) priceSection.classList.remove('hero-morph-active'); };
-      inputPrice.oninput=()=>{ var v=inputPrice.value.replace(',','.'); w.data.price=parseFloat(v)||0; saveDraft(); updateProfit(v); hapticLight(); if(typeof checkMastercardValidation==='function') checkMastercardValidation(); if(updateStep2ContextZoneRef) updateStep2ContextZoneRef(); };
+      inputPrice.oninput=()=>{ if(w.data.hasPickupCode){ inputPrice.value='0,00'; w.data.price=0; saveDraft(); if(typeof checkMastercardValidation==='function') checkMastercardValidation(); if(updateStep2ContextZoneRef) updateStep2ContextZoneRef(); return; } var v=inputPrice.value.replace(',','.'); w.data.price=parseFloat(v)||0; saveDraft(); updateProfit(v); hapticLight(); if(typeof checkMastercardValidation==='function') checkMastercardValidation(); if(updateStep2ContextZoneRef) updateStep2ContextZoneRef(); };
       inputPrice.onfocus=function(){ hapticLight(); };
       function checkMastercardValidation(){
         if (typeof updateWizardFooter === 'function') updateWizardFooter();
@@ -17974,7 +18002,14 @@
         footerBtn.type='button';
         footerBtn.className='btn-primary-black' + (w.data.pricingChoice==='499' ? ' inserat-footer-btn--499' : ' free-mode is-free-mode');
         footerBtn.style.cssText='flex:1; min-height:48px; padding:0 24px; border:none; border-radius:8px; background:#222222 !important; color:#ffffff !important; font-size:16px; font-weight:800; cursor:pointer;';
-        footerBtn.textContent=(w.data.pricingChoice==='499' ? 'Jetzt für 4,99 € inserieren' : 'Jetzt kostenlos inserieren');
+        footerBtn.textContent=(w.data.pricingChoice==='499' ? 'Jetzt für 4,99 € inserieren' : 'Jetzt für 0,00 € inserieren');
+        var footerFeeHint=document.createElement('div');
+        footerFeeHint.className='inserat-step2-fee-hint';
+        footerFeeHint.style.cssText='font-size:12px; color:#64748b; margin-top:6px; display:'+(w.data.pricingChoice==='pro'?'block':'none')+'; width:100%; flex-basis:100%;';
+        footerFeeHint.textContent='0,89 € Gebühr pro Verkauf';
+        airbnbFooter.appendChild(linkZurueck);
+        airbnbFooter.appendChild(footerBtn);
+        airbnbFooter.appendChild(footerFeeHint);
         footerBtn.onclick=function(){
           hapticLight();
           var bulkDates=(w.ctx&&w.ctx.bulkDraftDates)||[];
@@ -18007,8 +18042,6 @@
             setTimeout(function(){ showPublishFeeModal(o); }, 800);
           }
         };
-        airbnbFooter.appendChild(linkZurueck);
-        airbnbFooter.appendChild(footerBtn);
         box.appendChild(airbnbFooter);
         var updateFooterVisibility=function(){ var s=1; try{ var sl=box.querySelector('.inserat-steps-slider'); if(sl) s=parseInt(sl.getAttribute('data-inserat-step')||'1',10); }catch(e){} airbnbFooter.style.display=s===2?'flex':'none'; var sf=box.querySelector('[data-inserat-step="3"]'); if(sf) sf.style.display=s===3?'flex':'none'; };
         slider.addEventListener('transitionend', updateFooterVisibility);
@@ -19577,7 +19610,7 @@
   // Routes:
   //   /checkout/success?session_id=xxx OR ?orderId=xxx
   //   /checkout/cancel?orderId=xxx OR ?session_id=xxx
-  //   /abholnummer/:orderId (Legacy: /abholcode/ bleibt für Deep-Links)
+  //   /abholnummer/:orderId (Legacy: /abholnummer/ für Deep-Links)
   {
     const urlParams = new URLSearchParams(window.location.search);
     const path = window.location.pathname;
@@ -19643,19 +19676,19 @@
       }
     });
     
-    // Abholnummer Route: /abholcode/:orderId
-    // Support: /abholcode?orderId=xxx OR hash #abholcode/:orderId
-    if(path.includes('/abholcode') || hash.includes('#abholcode/') || urlParams.has('abholcode')){
+    // Abholnummer Route: /abholnummer/:orderId
+    // Support: /abholnummer?orderId=xxx OR hash #abholnummer/:orderId
+    if(path.includes('/abholnummer') || hash.includes('#abholnummer/') || urlParams.has('abholnummer')){
       let orderId = null;
       
-      // Try hash first: #abholcode/:orderId
-      if(hash.includes('#abholcode/')){
-        orderId = hash.split('#abholcode/')[1]?.split('?')[0]?.split('#')[0];
+      // Try hash first: #abholnummer/:orderId
+      if(hash.includes('#abholnummer/')){
+        orderId = hash.split('#abholnummer/')[1]?.split('?')[0]?.split('#')[0];
       }
       
-      // Try query param: ?abholcode=xxx or ?orderId=xxx
+      // Try query param: ?abholnummer=xxx or ?orderId=xxx
       if(!orderId){
-        orderId = urlParams.get('abholcode') || urlParams.get('orderId');
+        orderId = urlParams.get('abholnummer') || urlParams.get('orderId');
       }
       
       if(orderId){

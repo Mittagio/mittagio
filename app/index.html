@@ -1175,6 +1175,7 @@
         <!-- Empty State (Full Dashboard leer) – wird per JS mit High-End-Inhalt befüllt -->
         <div id="providerEmptyDashboard" class="empty-state-container provider-empty-state" style="display:none; padding:48px 24px; background:#fff; border-radius:24px; border:1px solid rgba(0,0,0,0.06); box-shadow:0 4px 24px rgba(0,0,0,0.06);"></div>
 
+        <div class="list-footer-spacer" aria-hidden="true"></div>
       </div>
     </section>
 
@@ -1227,7 +1228,7 @@
     </section>
 
     <section class="view onboarding-view" id="v-provider-week">
-      <header class="week-header-compact week-header-minimal prov-page-header dynamic-header system-header" id="weekHeaderCompact">
+      <header class="week-header-compact weekplan-controls-bar week-header-minimal prov-page-header dynamic-header system-header" id="weekHeaderCompact">
         <div class="prov-page-header-row week-header-row">
           <button type="button" id="weekHeaderBackBtn" class="week-header-back-btn" aria-label="Zurück zum Dashboard" style="flex-shrink:0; width:44px; height:44px; min-width:44px; min-height:44px; display:flex; align-items:center; justify-content:center; background:none; border:none; padding:0; cursor:pointer; margin-right:8px; border-radius:12px; color:#0f172a;"><i data-lucide="chevron-left" style="width:24px;height:24px;"></i></button>
           <div class="prov-page-header-left prov-header-reset-trigger" data-reset-view="week" style="flex:1; min-width:0; display:flex; align-items:center; gap:8px;">
@@ -1260,6 +1261,7 @@
         <div id="kwBoardScroll" class="kw-board-scroll">
           <div id="kwEmptyWeekTemplateCta" class="kw-empty-week-template-cta" style="display:none; position:absolute; inset:0; align-items:center; justify-content:center; padding:24px; pointer-events:none; z-index:2;"><div style="pointer-events:auto;"><button type="button" id="btnKwLoadTemplate" class="kw-load-template-btn" style="display:inline-flex; align-items:center; gap:10px; min-height:56px; padding:0 28px; border-radius:20px; border:2px solid rgba(14,165,233,0.4); background:rgba(255,255,255,0.95); backdrop-filter:blur(12px); color:#0c4a6e; font-size:16px; font-weight:800; cursor:pointer; box-shadow:0 4px 20px rgba(14,165,233,0.15);"><span style="font-size:22px;">📂</span><span>Vorlage laden</span></button></div></div>
           <div class="kw-grid" id="kwGrid"></div>
+          <div class="list-footer-spacer" aria-hidden="true"></div>
         </div>
         <div class="kw-action-bar-fixed" id="kwActionBarFixed" style="display:none;"></div>
         <!-- Magic FAB: schwebend unten rechts über Tab-Bar [cite: 2026-02-20] -->
@@ -2003,7 +2005,7 @@
               <li><strong>🔄 Mehrweg:</strong> Nachhaltigkeits-Toggle.</li>
               <li><strong>🧾 Abholnummer:</strong> Zusatzservice für 0,89 €.</li>
             </ul>
-            <p style="margin:0;"><strong>Wording:</strong> Die Verwendung der Begriffe „Ticket“ oder „Abholcode“ ist untersagt. Es gilt ausschließlich die Abholnummer.</p>
+            <p style="margin:0;"><strong>Wording:</strong> Es gilt ausschließlich die Bezeichnung Abholnummer.</p>
           </div>
         </details>
         <details class="agb-provider-item" style="background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
