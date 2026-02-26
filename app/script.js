@@ -5620,8 +5620,16 @@
     };
   }
 
-  // Android Hardware-Back unterstützen
+  // Android Hardware-Back unterstützen [cite: Event-Leitungen 2026-02-26]
   window.addEventListener('popstate', function(e){
+    // Wizard/Mastercard sofort schließen bei Handy-Zurück
+    var wizardActive = document.getElementById('wizard') && document.getElementById('wizard').classList.contains('active');
+    if (wizardActive && typeof window.closeListingFlow === 'function') {
+      try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); } catch(err){}
+      window.closeListingFlow();
+      e.preventDefault();
+      return;
+    }
     // AGB Onboarding Modal schließen
     if(document.getElementById('agbOnboardingSheet') && document.getElementById('agbOnboardingSheet').classList.contains('active')){
       closeAgbOnboardingModal();
@@ -6089,6 +6097,21 @@
     printHtml(buildWeekCardHtml());
   }
 
+  /** Kebab → Drucken: window.print() mit Print-only-Branding [cite: Airbnb Header Clean 2026-02-26] */
+  function triggerPrint(){
+    var el = document.getElementById('print-merchant-name');
+    if (el) {
+      var name = (typeof provider !== 'undefined' && provider && provider.profile && provider.profile.name)
+        ? String(provider.profile.name).trim() : (localStorage.getItem('merchantName') || 'Unser Wochenplan');
+      el.textContent = name ? 'WOCHENPLAN – ' + name : 'Mein Wochenplan';
+    }
+    try { if (navigator.vibrate) navigator.vibrate(50); } catch(e){}
+    document.body.classList.add('print-current-page');
+    var removeClass = function(){ document.body.classList.remove('print-current-page'); window.removeEventListener('afterprint', removeClass); };
+    window.addEventListener('afterprint', removeClass);
+    window.print();
+  }
+
   // Share Payload für Offer Details
   let sharePayload = { subject: '', body: '', url: '' };
   
@@ -6249,7 +6272,7 @@
     const actions = [
       {label: 'Bearbeiten', action: () => {
         closeCreateFlowSheet(); // Falls offen
-        startListingFlow({editOfferId: offerId});
+        startListingFlow({editOfferId: offerId, entryPoint: 'ACTIVE_LISTING'});
       }},
       {label: 'Duplizieren', action: () => {
         const newOffer = {...offer, id: cryptoId(), createdAt: Date.now()};
@@ -10258,7 +10281,7 @@
           if(el.tagName !== 'BUTTON'){
             el.onclick = () => {
               const offerId = el.dataset.offerId;
-              startListingFlow({editOfferId: offerId});
+              startListingFlow({editOfferId: offerId, entryPoint: 'ACTIVE_LISTING'});
             };
           }
         });
@@ -11041,14 +11064,18 @@
       btn.onclick = (function(k){ return function(){ if(typeof haptic === 'function') haptic(6); weekPlanKWIndex = k; var keys = getWeekDayKeys(k); if(keys.indexOf(weekPlanDay) === -1) weekPlanDay = keys[0]; closeKWSelector(); if(typeof pushViewState === 'function') pushViewState({ section: 'week', view: 'provider-week', mode: typeof mode !== 'undefined' ? mode : 'provider', week: k, day: weekPlanDay }, (typeof location !== 'undefined' && location.pathname) + '?week=' + k + '&day=' + weekPlanDay); renderWeekPlanBoard(); }; })(w);
       list.appendChild(btn);
     }
-    bd.style.display = 'block';
-    sheet.style.display = 'flex';
+    bd.classList.add('active');
+    bd.style.setProperty('display', 'block', 'important');
+    bd.style.opacity = '1';
+    bd.style.pointerEvents = 'auto';
+    sheet.style.setProperty('display', 'flex', 'important');
+    sheet.classList.add('active');
   }
   function closeKWSelector(){
     var bd = document.getElementById('kwSelectorBd');
     var sheet = document.getElementById('kwSelectorSheet');
-    if (bd) bd.style.display = 'none';
-    if (sheet) sheet.style.display = 'none';
+    if (bd) { bd.classList.remove('active'); bd.style.display = 'none'; }
+    if (sheet) { sheet.classList.remove('active'); sheet.style.display = 'none'; }
   }
   function openAddDishToDaySheet(cookbookId, keys, grid){
     if (!keys || !keys.length || typeof addCookbookEntryToWeek !== 'function') return;
@@ -11647,7 +11674,7 @@
     if (btnKwLoadTemplate) btnKwLoadTemplate.onclick = function(){ if (typeof haptic === 'function') haptic(6); if (typeof openWeekTemplatesSheet === 'function') openWeekTemplatesSheet(); };
     var btnKwPdf = document.getElementById('weekKebabPdf');
     var btnKwShare = document.getElementById('weekKebabShare');
-    if (btnKwPdf) btnKwPdf.onclick = function(){ var d=document.getElementById('weekKebabDropdown'); if(d)d.style.display='none'; if(typeof haptic==='function')haptic(6); if(typeof printWeekCard==='function')printWeekCard(); };
+    if (btnKwPdf) btnKwPdf.onclick = function(){ var d=document.getElementById('weekKebabDropdown'); if(d)d.style.display='none'; if(typeof haptic==='function')haptic(6); if(typeof triggerPrint==='function')triggerPrint(); else if(typeof printWeekCard==='function')printWeekCard(); };
     if (btnKwShare) btnKwShare.onclick = function(){ var d=document.getElementById('weekKebabDropdown'); if(d)d.style.display='none'; if(typeof haptic==='function')haptic(6); if(typeof shareWeekPlanAsImage==='function') shareWeekPlanAsImage(); else if(typeof shareWeekPlan==='function') shareWeekPlan(); };
     var btnKwScreenshot = document.getElementById('weekKebabScreenshot');
     if (btnKwScreenshot) btnKwScreenshot.onclick = function(){ var d=document.getElementById('weekKebabDropdown'); if(d)d.style.display='none'; try { if(navigator.vibrate) navigator.vibrate(40); } catch(e){} if(typeof haptic==='function')haptic(6); document.body.classList.add('week-preview-mode'); if(typeof showToast==='function') showToast('Wochenplan-Vorschau – Schließen zum Beenden'); };
@@ -11803,6 +11830,20 @@
       document.addEventListener('click', closeOnOutside);
     }
   }
+  /** Kebab-Menü (⋮) ein-/ausblenden – für Klick-Bindung und externe Aufrufe [cite: Event-Leitungen 2026-02-26] */
+  function toggleWeekKebabMenu(){
+    var kebabBtn = document.getElementById('btnWeekKebab');
+    var kebabDrop = document.getElementById('weekKebabDropdown');
+    if (!kebabBtn || !kebabDrop) return;
+    var opening = kebabDrop.style.display !== 'block';
+    try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate(opening ? 40 : 5); } catch(err){}
+    if (typeof haptic === 'function') haptic(6);
+    kebabDrop.style.display = opening ? 'block' : 'none';
+    kebabBtn.setAttribute('aria-expanded', opening ? 'true' : 'false');
+    if (opening && typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+  }
+  if (typeof window !== 'undefined') window.toggleWeekKebabMenu = toggleWeekKebabMenu;
+
   /** Wochenplan: Einmalige Bindung aller Interaktionen (KW-Trigger, FAB, Kebab) [cite: Layer-Reset 2026-02-26] */
   function initWeekPlanInteractions(){
     var kwTr = document.getElementById('weekHeaderKWTrigger');
@@ -11826,12 +11867,7 @@
     if (kebabBtn && kebabDrop) {
       kebabBtn.onclick = function(e){
         e.stopPropagation();
-        var opening = kebabDrop.style.display !== 'block';
-        if (opening) { try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate([5, 15, 5]); } catch(err){} }
-        if (typeof haptic === 'function') haptic(6);
-        kebabDrop.style.display = opening ? 'block' : 'none';
-        kebabBtn.setAttribute('aria-expanded', opening ? 'true' : 'false');
-        if (opening && typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+        if (typeof toggleWeekKebabMenu === 'function') toggleWeekKebabMenu();
       };
       if (!document.__weekKebabCloseBound) {
         document.__weekKebabCloseBound = true;
@@ -16244,8 +16280,11 @@
       document.body.style.overflow = 'hidden';
       document.body.style.overscrollBehavior = 'none';
       requestAnimationFrame(function(){ requestAnimationFrame(function(){ if(typeof applyVendorFooterPadding==='function') applyVendorFooterPadding(); }); });
+      /* Handy-Zurück: history.pushState damit popstate → closeListingFlow [cite: Event-Leitungen 2026-02-26] */
+      if(typeof pushViewState === 'function') pushViewState({ wizard: true, listing: true }, location.pathname);
+    } else {
+      pushViewState({wizard: true}, location.pathname);
     }
-    pushViewState({wizard: true}, location.pathname);
     localStorage.setItem('mittagio_wizard_open', 'true');
   }
   /** .w-actions wurde entfernt – Navigation nur noch im #wContent (content-driven). */
@@ -16254,12 +16293,14 @@
   /** @param {boolean} [clearDraft=false] - Bei true Entwurf löschen (z.B. nach erfolgreichem Speichern). Frage 5 A: Sonst Entwurf behalten für "Letzten Entwurf fortsetzen?" */
   function closeWizard(clearDraft){
     const wizard = document.getElementById('wizard');
-    document.getElementById('wbd').classList.remove('active');
+    var wbd = document.getElementById('wbd');
+    if (wbd) wbd.classList.remove('active');
     if(wizard){ wizard.classList.remove('active','inserat-step2-active'); wizard.removeAttribute('data-flow'); }
     document.body.classList.remove('wizard-inserat-open', 'vendor-area');
-    updateSystemTheme(false);
     document.body.style.overflow = '';
     document.body.style.overscrollBehavior = '';
+    document.querySelectorAll('.modal-backdrop, .backdrop').forEach(function(el){ if(el){ el.style.display='none'; el.classList.remove('active'); el.style.opacity='0'; el.style.pointerEvents='none'; if(el.classList.contains('modal-backdrop') && el.parentNode) el.remove(); } });
+    updateSystemTheme(false);
     var pn = document.getElementById('providerNavWrap');
     if(pn && document.body.classList.contains('provider-mode')) pn.style.removeProperty('display');
     restoreWizardActionsBar();
@@ -16288,6 +16329,7 @@
     document.body.classList.remove('vendor-area', 'wizard-inserat-open');
     document.body.style.overflow = '';
     document.body.style.overscrollBehavior = '';
+    document.querySelectorAll('.modal-backdrop').forEach(function(el){ if(el && el.parentNode) el.remove(); });
     var wbd = document.getElementById('wbd');
     if(wbd) wbd.classList.remove('active');
     var wizard = document.getElementById('wizard');
@@ -16296,6 +16338,8 @@
     if(typeof navigateAfterWizardExit === 'function') navigateAfterWizardExit((w && w.ctx && w.ctx.entryPoint) || 'dashboard');
   }
   if(typeof window !== 'undefined') window.closeMastercard = closeMastercard;
+  /** Alias für Handy-Back / X-Button: closeListingFlow = closeMastercard [cite: Event-Leitungen 2026-02-26] */
+  if(typeof window !== 'undefined') window.closeListingFlow = closeMastercard;
 
   /** Schließt die Mastercard mit Slide-Down-Animation [cite: 2026-02-25] */
   function closeMastercardWithAnim(panel){
@@ -16600,6 +16644,9 @@
       if(!w.data.reuse) w.data.reuse = { enabled: !!profile.reuseEnabledByDefault, deposit: profile.reuseEnabledByDefault ? 3 : 0 };
       else if(w.data.reuse.enabled === undefined) w.data.reuse.enabled = !!profile.reuseEnabledByDefault;
       if(w.data.reuse.enabled && (w.data.reuse.deposit === undefined || w.data.reuse.deposit === 0)) w.data.reuse.deposit = (provider.profile && typeof provider.profile.reuseDepositDefault === 'number') ? provider.profile.reuseDepositDefault : 3;
+      /* 3-Schritte-Flow: Immer mit Schritt 1 starten (außer Bulk-Aktivierung) [cite: Inserat-Trichter 2026-02-26] */
+      if(!(ctx.openToStep === 2 && ctx.bulkDraftDates && ctx.bulkDraftDates.length)) w.inseratStep = 1;
+      w.ctx = ctx;
       openWizard();
       openMastercard(w.data || { dish:'', price:0, category:'Fleisch', reuse:{enabled:true} });
     }
@@ -17577,10 +17624,10 @@
         hapticLight();
         var item=powerBar.querySelector('.power-item[data-type="'+type+'"]');
         if(item){ item.classList.add('press-anim'); setTimeout(function(){ item.classList.remove('press-anim'); }, 200); }
-        if(type==='vor-ort'||type==='mehrweg'){
+        if(type==='vor-ort'||type==='mehrweg'||type==='abholnummer'){
           if(item){
             var isActive=item.classList.toggle('active');
-            if(type==='vor-ort'){ w.data.dineInPossible=isActive; } else if(type==='mehrweg'){ w.data.reuse=w.data.reuse||{}; w.data.reuse.enabled=isActive; }
+            if(type==='vor-ort'){ w.data.dineInPossible=isActive; } else if(type==='mehrweg'){ w.data.reuse=w.data.reuse||{}; w.data.reuse.enabled=isActive; } else if(type==='abholnummer'){ w.data.hasPickupCode=isActive; }
             saveDraft();
           }
         } else {
@@ -17600,7 +17647,9 @@
         btn.onclick=function(){ handlePowerBarInteraction(type); };
         powerBar.appendChild(btn);
       }
+      var hasAbholnummer=!!w.data.hasPickupCode;
       addPowerItem('\uD83C\uDF74','Vor Ort','vor-ort',hasDineIn);
+      addPowerItem('\uD83D\uDCFE','Abholnummer','abholnummer',hasAbholnummer);
       addPowerItem('\uD83D\uDD04','Mehrweg','mehrweg',hasReuse);
       addPowerItem('\uD83D\uDCEB','Abholzeit','zeit',hasTimeValue);
       addPowerItem('\u26A0\uFE0F','Allergene','allergene',hasAllergens);
@@ -17615,6 +17664,7 @@
         powerBarExtras.innerHTML='';
         var mehrwegActive=powerBar.querySelector('.power-item[data-type="mehrweg"]')&&powerBar.querySelector('.power-item[data-type="mehrweg"]').classList.contains('active');
         var vorOrtActive=powerBar.querySelector('.power-item[data-type="vor-ort"]')&&powerBar.querySelector('.power-item[data-type="vor-ort"]').classList.contains('active');
+        var abholnummerActive=powerBar.querySelector('.power-item[data-type="abholnummer"]')&&powerBar.querySelector('.power-item[data-type="abholnummer"]').classList.contains('active');
         var hasAllergens=!!(w.data.allergens&&w.data.allergens.length);
         var hasExtras=!!(w.data.extras&&w.data.extras.length);
         var allergenLabels=[];
@@ -17633,7 +17683,7 @@
             extrasLabels.push(pr>0 ? e.name+' (+'+Number(pr).toFixed(2).replace('.',',')+' €)' : e.name);
           });
         }
-        var hasAnyFeedback=hasAllergens||hasExtras||mehrwegActive||vorOrtActive;
+        var hasAnyFeedback=hasAllergens||hasExtras||mehrwegActive||vorOrtActive||abholnummerActive;
         if(hasAnyFeedback){
           var feedbackList=document.createElement('div');
           feedbackList.className='feedback-list';
@@ -17655,6 +17705,7 @@
           if(hasExtras) addFeedbackRow('\u2795', extrasLabels.join(', '));
           if(mehrwegActive) addFeedbackRow('\uD83D\uDD04', (w.data.reuse&&w.data.reuse.deposit>0)?'Mehrweg (+ '+(Number(w.data.reuse.deposit).toFixed(2).replace('.',','))+' € Pfand)':'Mehrweg');
           if(vorOrtActive) addFeedbackRow('\uD83C\uDF74', 'Essen vor Ort möglich');
+          if(abholnummerActive) addFeedbackRow('\uD83D\uDCFE', 'Abholnummer aktiv');
           powerBarExtras.appendChild(feedbackList);
         }
         if(mehrwegActive){
@@ -17885,10 +17936,10 @@
       actionSection.className='inserat-action-section fixed-footer' + (!isPlanMode && isInserierenRoute ? ' inserat-action-pricing inserat-action-layer' : '') + (isFastTrack ? ' inserat-action-layer' : '') + (isPlanMode ? ' inserat-action-plan' : '');
 
       if(isFastTrack){
-        /* Fast-Track: Airbnb-Footer ohne Abbrechen [cite: MASTER-CARD FIX 2026-02-23] */
+        /* Fast-Track: Änderungen speichern → direkt schließen (Step 2/3 entfällt) [cite: 3-Schritte-Flow 2026-02-26] */
         var step1NavRow=document.createElement('div');
-        step1NavRow.className='inserat-step1-nav system-footer-merged app-footer-main';
-        step1NavRow.style.cssText='display:flex; width:100%; align-items:stretch; justify-content:center;';
+        step1NavRow.className='inserat-step1-nav system-footer-merged app-footer-main inserat-airbnb-footer';
+        step1NavRow.style.cssText='display:flex; width:100%; align-items:stretch; justify-content:center; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb;';
         var btnSpeichern=document.createElement('button');
         btnSpeichern.type='button';
         btnSpeichern.id='btnNext';
@@ -17981,11 +18032,12 @@
         step1NavRow.appendChild(btnJetztInserieren);
         actionSection.appendChild(step1NavRow);
       } else if(entryPoint === 'dashboard'){
-        /* Mode-basierter Footer: Neuanlage = Jetzt für 4,99 € | Edit = Änderungen speichern [cite: Inserat-Trichter 2026-02-26] */
+        /* 3-Schritte-Flow: Neuanlage = Weiter → Step 2 | Edit = Änderungen speichern → direkt schließen [cite: Inserat-Trichter 2026-02-26] */
         var step1NavRow=document.createElement('div');
-        step1NavRow.className='app-footer-main';
-        step1NavRow.style.cssText='display:flex; width:100%; align-items:stretch; justify-content:center;';
-        var footerBtnText=(typeof currentWizardMode!=='undefined'&&currentWizardMode==='MODE_EDIT')?'Änderungen speichern':'Jetzt für 4,99 € inserieren';
+        step1NavRow.className='app-footer-main inserat-step1-nav inserat-airbnb-footer';
+        step1NavRow.style.cssText='display:flex; width:100%; align-items:stretch; justify-content:center; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb;';
+        var isEditMode=!!(w.ctx&&w.ctx.editOfferId);
+        var footerBtnText=isEditMode?'Änderungen speichern':'Weiter';
         var btnWeiter=document.createElement('button');
         btnWeiter.type='button';
         btnWeiter.id='btnNext';
@@ -17998,7 +18050,7 @@
         btnWeiter.onclick=function(){
           if(!isPrimaryValid()){ if(typeof showToast==='function') showToast('Bitte Name, Preis und Foto eingeben.'); if(typeof triggerValidationError==='function') triggerValidationError(this); return; }
           hapticLight();
-          if(typeof currentWizardMode!=='undefined'&&currentWizardMode==='MODE_EDIT'){
+          if(isEditMode){
             var o=previewOfferFromWizard();
             var offerId=(w.ctx&&w.ctx.editOfferId)||(o&&o.id)||null;
             if(offerId) try{ sessionStorage.setItem('mittagio_last_saved_offer_id', String(offerId)); }catch(e){}
@@ -18199,6 +18251,16 @@
       }
       setWizardContent(sheet);
       requestAnimationFrame(function(){ requestAnimationFrame(function(){ box.classList.add('is-open'); if(typeof applyVendorFooterPadding==='function') applyVendorFooterPadding(); }); });
+      /* openToPillar: Scroll zu Säulen-Bereich (Vor Ort, Abholnummer, Mehrweg) [cite: Event-Leitungen 2026-02-26] */
+      var openToPillarVal = w.ctx && w.ctx.openToPillar;
+      if(openToPillarVal){
+        var pillarMap = { dineIn: 'vor-ort', pickupCode: 'abholnummer', reuse: 'mehrweg', allergens: 'allergene', extras: 'extras' };
+        var pillarType = pillarMap[openToPillarVal] || openToPillarVal;
+        setTimeout(function(){
+          var target = box.querySelector('.power-item[data-type="' + pillarType + '"]');
+          if(target && typeof target.scrollIntoView === 'function') target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 350);
+      }
       /* Keyboard Management: Kein automatischer Focus – Tastatur nur bei aktivem Berühren [cite: Anti-Flash 2026-02-23] */
       var photoEl = box.querySelector('.photo-header, .inserat-photo-tile');
       if(photoEl && !w.data.photoData) photoEl.classList.add('inserat-card-photo-pulse');
