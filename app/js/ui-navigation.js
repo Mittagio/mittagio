@@ -255,18 +255,17 @@
     }
   }
 
+  /** Adapter: einzige History-Quelle ist window.navigate (script.js). Kein direkter history.pushState/replaceState. */
   function pushViewState(state, url, doPush){
-    if (doPush === false) {
-      if (typeof history.replaceState === 'function') history.replaceState(state, '', url || location.pathname);
-      return;
-    }
     if (window.__navSuppressPush) return;
-    url = url || location.pathname;
-    if (typeof history.replaceState === 'function' && history.length === 1) {
-      history.replaceState(state, '', url);
-      if (typeof history.pushState === 'function') history.pushState(state, '', url);
-    } else if (typeof history.pushState === 'function') {
-      history.pushState(state, '', url);
+    var viewKey = state != null && state.view != null ? state.view : (state != null ? state.section : null);
+    if (typeof window.navigate === 'function') {
+      window.navigate(viewKey, {
+        replace: doPush === false,
+        skipHistory: false,
+        stateExtra: state ? (function(){ var o = {}; for (var k in state) { if (state.hasOwnProperty(k)) o[k] = state[k]; } return o; })() : null,
+        url: url
+      });
     }
   }
 
@@ -322,9 +321,9 @@
     else if (sectionId === 'billing') fn = showProviderBilling;
     if (fn) {
       fn();
-      if (!doPush && typeof history.replaceState === 'function') {
+      if (!doPush && typeof window.navigate === 'function') {
         var viewMap = { dashboard:'v-provider-home', cookbook:'v-provider-cookbook', week:'v-provider-week', profile:'v-provider-profile', pickups:'v-provider-pickups', billing:'v-provider-billing' };
-        history.replaceState({ section: sectionId, view: viewMap[sectionId], mode: window.mode }, '', location.pathname);
+        window.navigate(sectionId, { replace: true, stateExtra: { section: sectionId, view: viewMap[sectionId], mode: window.mode }, url: location.pathname });
       }
     }
     window.__navSuppressPush = false;
@@ -443,7 +442,8 @@
     pushViewState({view: 'start', mode: window.mode}, location.pathname);
   }
 
-  function showDiscover(){
+  /** showDiscover(opts): opts.skipHistory = true → nur UI, kein pushState/replaceState (History zentral vom Aufrufer). */
+  function showDiscover(opts){
     setCustomerNavActive('discover');
     showView(views.discover);
     renderChips();
@@ -456,7 +456,7 @@
     if(fabModeToggle) fabModeToggle.style.display = 'flex';
     const toggleTopbar = document.getElementById('toggleDiscoverViewTopbar');
     if(toggleTopbar) toggleTopbar.style.display = 'flex';
-    pushViewState({view: 'discover', mode: window.mode}, location.pathname);
+    if (!opts || !opts.skipHistory) pushViewState({view: 'discover', mode: window.mode}, location.pathname);
   }
   function showFav(){
     setCustomerNavActive('fav');
@@ -604,8 +604,8 @@
     if (typeof preselectKW === 'number' && preselectKW >= 0 && preselectKW < 8) window.weekPlanKWIndex = preselectKW;
     window.weekPlanMode = 'overview';
     /* Handy-Back-Taste: Vor Wochenplan immer Dashboard-State im Stack, damit popstate zum Dashboard führt [cite: Plan Wochenplan 2026-02-25] */
-    if (typeof history !== 'undefined' && (!history.state || history.state.section !== 'dashboard')) {
-      if (typeof history.pushState === 'function') history.pushState({ section: 'dashboard', view: 'provider-home', mode: typeof window.mode !== 'undefined' ? window.mode : 'provider' }, '', location.pathname);
+    if (typeof window.navigate === 'function' && (!history.state || history.state.section !== 'dashboard')) {
+      window.navigate('provider-home', { stateExtra: { section: 'dashboard', view: 'provider-home', mode: typeof window.mode !== 'undefined' ? window.mode : 'provider' }, url: location.pathname });
     }
     setProviderNavActive('provider-week');
     showView(views.providerWeek);

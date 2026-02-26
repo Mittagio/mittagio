@@ -3,11 +3,9 @@
     /* INPUT-FOCUS-RESET: Kein blauer/gelber Standard-Rahmen [cite: STRENGER CODE-CLEANUP 2026-02-23] */
     input:focus, textarea:focus, select:focus, button:focus { outline: none !important; box-shadow: none !important; }
     #step-name input:focus, .input-giant-name:focus, .input-description:focus, .ghost-input:focus { border-bottom: 1px solid #222222 !important; }
-    /* 1. DIE ANIMATIONS-KURVE (S25-Standard) [cite: 2026-02-21] */
-    :root { --s25-slide-curve: cubic-bezier(0.2, 0.8, 0.2, 1); }
-    /* Airbnb Branding & UI [cite: Dashboard 2.1] */
-    /* STRENGE EBENEN-HIERARCHIE - NICHT ÄNDERN [cite: Baustellen-Anweisung 2026-02-25] */
+    /* ========== EIN globaler :root Token-Block (Sprint 3) ========== */
     :root {
+      --s25-slide-curve: cubic-bezier(0.2, 0.8, 0.2, 1);
       --layer-content: 10;
       --layer-sticky-elements: 100;
       --layer-navigation-header: 500;
@@ -18,13 +16,130 @@
       --airbnb-white: #ffffff;
       --airbnb-border: #ebebeb;
       --price-yellow: #FFD700;
-      /** Preis-Branding Anbieterseite: kräftiges Bernstein-Gelb [cite: 2026-02-25] */
       --color-price-yellow: #FFB800;
       --status-active-green: #2ecc71;
       --status-active-blue: #3498db;
       --status-active-orange: #f39c12;
       --status-inactive: #d1d1d1;
+
+      /* Mittagio High-End Farbpalette */
+      --bg:#FFFFFF;
+      --bg-polaroid:#FFFFFF;
+      --card:#FFFFFF;
+      --text:#334155;
+      --muted:#6b6b6b;
+      --border:#e7e1d5;
+      --tgtg-divider: 1px solid rgba(0,0,0,0.06);
+      --tgtg-shadow-minimal: 0 1px 3px rgba(0,0,0,0.04);
+      --tgtg-spacing: 24px;
+      --tgtg-spacing-lg: 32px;
+      --tgtg-img-radius: 18px;
+      --tgtg-title-color: #0f172a;
+      --shadow: 0 1px 3px rgba(0,0,0,0.04);
+      --shadow2: 0 2px 8px rgba(0,0,0,0.06);
+      --radius: 18px;
+      --brand:#FFD700;
+      --brand2:#2ECC71;
+      --brand3:#27AE60;
+      --sticker-green:#27AE60;
+      --danger:#E34D4D;
+      --font-polaroid-marker: 'Inter', system-ui, sans-serif;
+      --r-sm: 10px;
+      --r-md: 14px;
+      --r-lg: 18px;
+      --r-xl: 24px;
+      --r-full: 999px;
+      --s-1: 4px;
+      --s-2: 8px;
+      --s-3: 12px;
+      --s-4: 16px;
+      --s-5: 20px;
+      --s-6: 24px;
+      --s-8: 32px;
+      --card-padding: 20px;
+      --font-title: 18px;
+      --font-title-lg: 20px;
+      --font-body: 14px;
+      --font-body-lg: 16px;
+      --font-meta: 12px;
+      --font-meta-sm: 13px;
+      --font-weight-semibold: 600;
+      --font-weight-bold: 700;
+      --color-bg: #FFFFFF;
+      --color-surface: #FFFFFF;
+      --color-border: #EAEAEA;
+      --color-text: #1A1A1A;
+      --color-text-secondary: #6B6B6B;
+      --color-brand-yellow: #FFD700;
+      --color-emerald: #10b981;
+      --color-success-green: #2ECC71;
+      --color-eco-green: #27AE60;
+      --color-slate-text: #334155;
+      --color-soft-yellow-bg: rgba(255, 204, 0, 0.15);
+      --color-soft-green-bg: rgba(31, 157, 85, 0.12);
+      --color-soft-grey-bg: rgba(0, 0, 0, 0.06);
+      --icon-inline: 16px;
+      --icon-inline-lg: 18px;
+      --icon-header: 20px;
+      --icon-header-lg: 22px;
+      --icon-nav: 22px;
+      --icon-nav-lg: 24px;
+      --btn-height-min: 44px;
+      --btn-height-md: 48px;
+      --badge-height: 24px;
+      --badge-px: 10px;
+      --badge-px-lg: 12px;
+      --header-bg: rgba(255,255,255,0.92);
+      --header-blur: 16px;
+      --header-border: none;
+      --header-padding-y: 12px;
+      --header-padding-x: 16px;
+      --header-title-size: 20px;
+      --header-title-weight: 900;
+      --header-title-spacing: -0.03em;
+      --header-title-color: #0f172a;
+      --header-subtitle-color: #64748b;
+      --header-input-size: 15px;
+      --header-input-weight: 500;
+      --pill-min-height: 44px;
+      --pill-font-size: 14px;
+      --pill-font-weight: 700;
+      --pill-radius: 22px;
+      --pill-bg-inactive: #e5e7eb;
+      --pill-color-inactive: #64748b;
+      --pill-active-emerald: #059669;
+      --section-title-size: 18px;
+      --section-title-weight: 800;
+      --list-title-weight: 800;
+      --body-text-size: 15px;
+      --body-text-color: #64748b;
+      --font-main: 'Montserrat', 'Inter', sans-serif;
+      --color-title: #0f172a;
+      --color-body: #64748b;
+      --size-h1: 24px;
+      --size-h2: 20px;
+      --size-list-title: 18px;
+      --size-body: 15px;
+      --weight-heavy: 900;
+      --weight-bold: 800;
+      --weight-medium: 600;
+      --weight-hero: 950;
+      --radius-card: 16px;
+      --radius-panel: 24px;
+      --abholnummer-size: 2.5rem;
+      --abholnummer-weight: 950;
+      --content-padding-bottom: 120px;
+      --content-padding-bottom-compact: 90px;
+      --list-photo-size: 100px;
+      --list-photo-radius: 16px;
+
+      /* Support-Layout (Anbieter + Inseratsflow) */
+      --support-border:#e5e7eb;
+      --support-border-radius:12px;
+      --support-padding:16px;
+      --support-padding-lg:24px;
     }
+    /* ========== / :root ========== */
     /* Flying-Dish: Sternschnuppen-Animation für Magic-Game [cite: 2026-02-23] */
     .flying-dish {
       position: fixed;
@@ -99,139 +214,6 @@
     /* Init-Gate: kein Flackern – Body wird von script.js nach View-Switch sichtbar geschaltet */
     body { visibility: hidden; }
     body.body-visible { visibility: visible !important; }
-    :root{
-      /* Mittagio High-End Farbpalette */
-      --bg:#FFFFFF; /* Native App: reine Leinwand, kein Beige [cite: Tabula Rasa] */
-      --bg-polaroid:#FFFFFF; /* Kein Polaroid-Beige mehr – einheitlich weiß */
-      --card:#FFFFFF;
-      --text:#334155;   /* Slate Grey - edler als reines Schwarz */
-      --muted:#6b6b6b;
-      --border:#e7e1d5;
-      /* TGTG-Airbnb Fusion: keine Schlagschatten, Inset-Dividers */
-      --tgtg-divider: 1px solid rgba(0,0,0,0.06);
-      --tgtg-shadow-minimal: 0 1px 3px rgba(0,0,0,0.04);
-      --tgtg-spacing: 24px;
-      --tgtg-spacing-lg: 32px;
-      --tgtg-img-radius: 18px;
-      --tgtg-title-color: #0f172a;
-      /* Legacy-Kompatibilität */
-      --shadow: 0 1px 3px rgba(0,0,0,0.04);
-      --shadow2: 0 2px 8px rgba(0,0,0,0.06);
-      --radius: 18px;
-      --brand:#FFD700;   /* Mittagio Gold - Primär (Korb, Abholnummer-Buttons) */
-      --brand2:#2ECC71;  /* Erfolgs-Grün - Profit (Netto-Umsatz) */
-      --brand3:#27AE60;  /* Mehrweg-Grün - Dezent (Blatt-Icon) */
-      --sticker-green:#27AE60; /* Preis-Sticker & Mehrweg-Badge (Polaroid-Card) */
-      --danger:#E34D4D;
-      --font-polaroid-marker: 'Inter', system-ui, sans-serif;
-      /* Design Tokens - PWA Light */
-      /* Radius */
-      --r-sm: 10px;
-      --r-md: 14px;
-      --r-lg: 18px;
-      --r-xl: 24px;
-      --r-full: 999px;
-      
-      /* Spacing */
-      --s-1: 4px;
-      --s-2: 8px;
-      --s-3: 12px;
-      --s-4: 16px;
-      --s-5: 20px;
-      --s-6: 24px;
-      --s-8: 32px;
-      --card-padding: 20px; /* Einheitliches Padding für alle Karten (Anbieter & Kunde) */
-      
-      /* Typography */
-      --font-title: 18px;
-      --font-title-lg: 20px;
-      --font-body: 14px;
-      --font-body-lg: 16px;
-      --font-meta: 12px;
-      --font-meta-sm: 13px;
-      --font-weight-semibold: 600;
-      --font-weight-bold: 700;
-      
-      /* Colors (Light) */
-      --color-bg: #FFFFFF;
-      --color-surface: #FFFFFF;
-      --color-border: #EAEAEA;
-      --color-text: #1A1A1A;
-      --color-text-secondary: #6B6B6B;
-      --color-brand-yellow: #FFD700;  /* Mittagio Gold */
-      --color-emerald: #10b981;       /* High-Tech-Gastro Akzent (Inseratsflow, Pills) */
-      --color-success-green: #2ECC71;  /* Erfolgs-Grün - Profit */
-      --color-eco-green: #27AE60;      /* Mehrweg-Grün - Dezent */
-      --color-slate-text: #334155;     /* Slate Grey - Texte */
-      --color-soft-yellow-bg: rgba(255, 204, 0, 0.15);
-      --color-soft-green-bg: rgba(31, 157, 85, 0.12);
-      --color-soft-grey-bg: rgba(0, 0, 0, 0.06);
-      
-      /* Icon Sizes */
-      --icon-inline: 16px;
-      --icon-inline-lg: 18px;
-      --icon-header: 20px;
-      --icon-header-lg: 22px;
-      --icon-nav: 22px;
-      --icon-nav-lg: 24px;
-      
-      /* Button Heights */
-      --btn-height-min: 44px;
-      --btn-height-md: 48px;
-      
-      /* Badge */
-      --badge-height: 24px;
-      --badge-px: 10px;
-      --badge-px-lg: 12px;
-      
-      /* ========== EINHEITLICH: HEADER & LAYOUT (Kunde + Anbieter) ========== */
-      --header-bg: rgba(255,255,255,0.92);
-      --header-blur: 16px;
-      --header-border: none;
-      --header-padding-y: 12px;
-      --header-padding-x: 16px;
-      --header-title-size: 20px;
-      --header-title-weight: 900;
-      --header-title-spacing: -0.03em;
-      --header-title-color: #0f172a;
-      --header-subtitle-color: #64748b;
-      --header-input-size: 15px;
-      --header-input-weight: 500;
-      --pill-min-height: 44px;
-      --pill-font-size: 14px;
-      --pill-font-weight: 700;
-      --pill-radius: 22px;
-      --pill-bg-inactive: #e5e7eb;
-      --pill-color-inactive: #64748b;
-      --pill-active-emerald: #059669;
-      --section-title-size: 18px;
-      --section-title-weight: 800;
-      --list-title-weight: 800;
-      --body-text-size: 15px;
-      --body-text-color: #64748b;
-      /* Nutzung: .prov-header, .prov-page-header, .discover-header-sticky, Pills (Kunde + Kochbuch) */
-
-      /* ========== EISERNES DESIGN-SYSTEM (Schritt 1.6) ========== */
-      --font-main: 'Montserrat', 'Inter', sans-serif;
-      --color-title: #0f172a;
-      --color-body: #64748b;
-      --size-h1: 24px;
-      --size-h2: 20px;
-      --size-list-title: 18px;
-      --size-body: 15px;
-      --weight-heavy: 900;
-      --weight-bold: 800;
-      --weight-medium: 600;
-      --weight-hero: 950;
-      --radius-card: 16px;
-      --radius-panel: 24px;
-      --abholnummer-size: 2.5rem;
-      --abholnummer-weight: 950;
-      --content-padding-bottom: 120px;
-      --content-padding-bottom-compact: 90px;
-      --list-photo-size: 100px;
-      --list-photo-radius: 16px;
-    }
     /* ========== EISERNE SCHRIFT-REGEL (Typography Master) [cite: 2026-02-19] ========== */
     /* Haupttitel (zentriert): 20px, 900, -0.03em, Midnight Blue #0f172a */
     .ds-h1, .ds-h2{ font-size: 20px !important; font-weight: 900 !important; letter-spacing: -0.03em; color: #0f172a !important; }
@@ -3531,7 +3513,7 @@
       margin: 0; margin-top: 0; /* Bild bündig oben, 0px [cite: 2026-02-21] */
     }
     .liquid-master-panel .photo-header.inserat-photo-tile .inserat-photo-placeholder,
-    .liquid-master-panel .photo-header:not(:has(img[src])) {
+    .liquid-master-panel .photo-header.inserat-photo-placeholder {
       background: #f8fafc; display: flex; align-items: center; justify-content: center; gap: 15px; overflow: hidden;
     }
     /* Header-Morph: selection-overlay für Allergene/Extras im Header (Frosted Glass) */
@@ -3818,7 +3800,7 @@
     #wizard[data-flow="listing"] .app-footer-main .btn-secondary-link:active,
     #wizard[data-flow="listing"] .app-footer-main .btn-primary-black:active { transform: scale(0.98); }
     /* Scroll-Bereich: Platz für Footer, letzter Preis-Eintrag komplett sichtbar [cite: FINALIZE SHEET 2026-02-23] */
-    body.provider-mode #wizard[data-flow="listing"] .liquid-master-panel:has(.inserat-action-layer) .inserat-scroll-area {
+    body.provider-mode #wizard[data-flow="listing"] .liquid-master-panel.has-action-layer .inserat-scroll-area {
       padding-bottom: calc(120px + env(safe-area-inset-bottom, 0));
     }
     /* Noble Floating Bottom: Aktions-Kacheln 16px über Nav-Pille, Nav-Pille 12px Abstand [cite: 2026-02-20] */
@@ -4219,15 +4201,8 @@
       box-shadow: 0 -2px 24px rgba(0,0,0,0.08); border-top: 1px solid rgba(255,255,255,0.6);
     }
 
-    /* Einheitliches Support-Layout: Anbieter + Inseratsflow (Buttons, Panels, Abstände wie Support-Sheet) */
-    :root{
-      --support-border:#e5e7eb;
-      --support-border-radius:12px;
-      --support-padding:16px;
-      --support-padding-lg:24px;
-    }
-    /* Provider-App: Design-System Schritt 1.7 – Schwerer, professioneller */
-    :root{
+    /* ========== Provider-Overrides: nur unter body.provider-mode (Sprint 3) ========== */
+    body.provider-mode {
       --provider-bg: #F5F5F7;
       --provider-surface: #ffffff;
       --provider-surface-alt: #f0f0eb;
@@ -4248,12 +4223,10 @@
       --glass-border: rgba(255,255,255,0.4);
       --glass-shadow: 0 8px 32px rgba(0,0,0,0.06);
       --glass-inner-glow: inset 0 1px 0 rgba(255,255,255,0.8);
-      --card-radius-premium: 24px;
+      --card-radius-premium: 16px;
       --card-shadow-soft: 0 4px 20px rgba(0,0,0,0.05);
       --card-shadow-hover: 0 12px 40px rgba(0,0,0,0.08);
     }
-    /* Anbieter Design-System: Card-Radius 16px (Ruhe durch Ordnung), Seitenrand 16px */
-    body.provider-mode { --card-radius-premium: 16px; }
     /* Provider: einheitlich Warmes Beige #F8F7F2 – kein Farbsprung zwischen Dashboard/Wochenplan/Inserat */
     body.provider-mode [id^="v-provider-"].view{ position:relative; background: var(--provider-bg) !important; }
     body.provider-mode #v-provider-home,
@@ -6562,11 +6535,11 @@
       position:relative;
       background:#F2F2F7;
     }
-    body.provider-mode main:has(#v-provider-home.view.active){
+    body.provider-mode main.is-provider-home{
       overflow:hidden !important;
       height:100vh !important; height:100dvh !important; min-height:0;
     }
-    body.provider-mode main:has(#v-provider-home.view.active) > #v-provider-home.view.active{
+    body.provider-mode main.is-provider-home > #v-provider-home.view.active{
       height:100% !important; min-height:100% !important;
     }
     body.provider-mode main > *:not(#fabProviderAddOffer){ position: relative; z-index: 1; }
@@ -7107,7 +7080,7 @@
     #v-provider-profile .provider-profile-hero{ display:flex; overflow-x:auto; overflow-y:hidden; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; gap:16px; padding:16px 20px 24px; padding-left:calc(20px + env(safe-area-inset-left, 0)); padding-right:calc(20px + env(safe-area-inset-right, 0)); scrollbar-width:none; flex-shrink:0; }
     #v-provider-profile .provider-profile-hero::-webkit-scrollbar{ display:none; }
     #v-provider-profile .provider-profile-hero-slide{ flex:0 0 calc(100% - 32px); min-width:calc(100% - 32px); scroll-snap-align:start; scroll-snap-stop:always; border-radius:16px; overflow:hidden; background:#FFFFFF; box-shadow:0 1px 3px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04); display:flex; flex-direction:column; min-height:260px; box-sizing:border-box; }
-    #v-provider-profile .provider-profile-hero-slide:not(:has(.provider-profile-hero-slide-img)){ padding:20px; }
+    #v-provider-profile .provider-profile-hero-slide.is-no-hero-img{ padding:20px; }
     #v-provider-profile .provider-profile-hero-slide-img{ width:100%; aspect-ratio:16/10; object-fit:cover; background:#f1f3f5; }
     #v-provider-profile .provider-profile-hero-slide-body{ padding:20px; flex:1; display:flex; flex-direction:column; gap:12px; }
     #v-provider-profile .provider-profile-hero-slide-title{ margin:0; font-size:18px; font-weight:900; color:#1a1a1a; line-height:1.3; font-family: var(--font-main); }
@@ -7656,7 +7629,7 @@
       #v-provider-week .kw-slot-empty .kw-slot-empty-text{ color:#94a3b8; }
       #v-provider-week .kw-slot-empty:active{ background:#e2e8f0; color:#64748b; }
       /* Leerer Tag: einzige Kachel etwas höher für ruhigere Optik */
-      #v-provider-week .kw-slots:has(.kw-slot-empty:only-child) .kw-slot-empty{ min-height:72px; }
+      #v-provider-week .kw-slots.is-single-empty .kw-slot-empty{ min-height:72px; }
       /* Kebab dropdown: verhindern dass Klick auf Item sofort schliesst */
       .week-kebab-dropdown .week-kebab-item{ -webkit-tap-highlight-color:transparent; }
       #v-provider-week .kw-slot-small{ display:flex; align-items:center; gap:8px; padding:8px 10px; backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border-radius:12px; border:1px solid rgba(255,255,255,0.5); }
@@ -7965,7 +7938,7 @@
       #v-provider-profile .tgtg-list-wrap{ background:#fff !important; flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:16px max(16px, env(safe-area-inset-right, 0)) calc(120px + env(safe-area-inset-bottom, 0)) max(16px, env(safe-area-inset-left, 0)); display:flex; flex-direction:column; box-sizing:border-box; width:100% !important; max-width:none !important; gap:0; }
       /* Container-Sprengung: Keine max-width, keine festen Breiten */
       #v-provider-profile .tgtg-list{ background:#fff !important; margin:0; border-radius:0; border:none !important; box-shadow:none !important; overflow:hidden; width:100% !important; max-width:none !important; }
-      #v-provider-profile .tgtg-list:has(.tgtg-accordion){ box-shadow:none !important; border:none !important; border-radius:0; margin:0; }
+      #v-provider-profile .tgtg-list.has-accordion{ box-shadow:none !important; border:none !important; border-radius:0; margin:0; }
       #v-provider-profile .tgtg-section-title{ font-size:11px; font-weight:800; letter-spacing:0.06em; color:#64748b; text-transform:uppercase; margin:0 0 4px; padding:12px 16px 4px; padding-left:max(16px, env(safe-area-inset-left, 0)); padding-right:max(16px, env(safe-area-inset-right, 0)); }
       /* Zeile = von ganz links bis ganz rechts. Icon links, Pfeil rechts [TGTG] */
       #v-provider-profile .tgtg-row{

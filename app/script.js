@@ -37,7 +37,7 @@
   const STRIPE_PUBLISHABLE_KEY = 'pk_test_51SyuhZPDULtp9rWO6GTtCQRqfLD7NggIpBa3RaDrBhF68nIwhEoiVkeuebq0llGsONAysRFCb4Hh3ofwcqYGiwri00DLckU2l9';  // Stripe Test – Geheimschlüssel nur in Netlify (STRIPE_SECRET_KEY)
   window.MITTAGIO_STRIPE = window.MITTAGIO_STRIPE || { publishableKey: STRIPE_PUBLISHABLE_KEY, apiBase: '' };
 
-  // --- Storage keys ---
+  // ========== STORE ==========
   const LS = {
     offers: 'mittagio_offers_v2',
     favs: 'mittagio_favs_v1',
@@ -57,14 +57,58 @@
     swipeOnboardingShown: 'mittagio_swipe_onboarding_shown_v1',
     cookbookSwipeHintShown: 'mittagio_cookbook_swipe_hint_v1',
     providerSession: 'mittagio_provider_session_v1',
-    favPillars: 'mittagio_fav_pillars_v1', // { [dishId]: { vorOrt, abholnummer, mehrweg } } – 3-Säulen beim Favorisieren einfrieren
-    transactions: 'mittagio_transactions_v1', // Transaktionen pro Inserat
-    weekTemplates: 'mittagio_week_templates_v1', // Wochen-Vorlagen: [{ id, name, createdAt, days: { 0..6: [{ cookbookId, dish, price }] } }]
-    inseratQuickbook: 'mittagio_inserat_quickbook_v1' // Zuletzt verwendete Inserate für Quick-Select: [{ id, dish, price, image, objectPosition }]
+    favPillars: 'mittagio_fav_pillars_v1',
+    transactions: 'mittagio_transactions_v1',
+    weekTemplates: 'mittagio_week_templates_v1',
+    inseratQuickbook: 'mittagio_inserat_quickbook_v1'
   };
-  const load = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } };
-  const save = (k, v) => localStorage.setItem(k, JSON.stringify(v));
-  if(typeof window !== 'undefined'){ window.LS = LS; window.load = load; window.save = save; }
+  function load(k, d){ try { var v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch(e){ return d; } }
+  function save(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }
+  function remove(key){ try { localStorage.removeItem(key); } catch(e){} }
+  function getMode(){ try { return load(LS.mode, 'customer'); } catch(e){ return 'customer'; } }
+  function setMode(nextMode){
+    save(LS.mode, nextMode);
+    if(typeof document !== 'undefined' && document.body) document.body.classList.toggle('provider-mode', nextMode === 'provider');
+    if(typeof window !== 'undefined') window.mode = nextMode;
+  }
+  if(typeof window !== 'undefined'){ window.LS = LS; window.load = load; window.save = save; window.remove = remove; window.getMode = getMode; window.setMode = setMode; }
+  // ========== /STORE ==========
+
+  /** Einzige Stelle für History: pushState/replaceState. opts: { replace=false, skipHistory=false, stateExtra=null, url=undefined } */
+  function navigate(viewKey, opts){
+    opts = opts || {};
+    if(opts.skipHistory) return;
+    var state, url;
+    if(viewKey == null || viewKey === ''){
+      state = (opts.stateExtra && typeof opts.stateExtra === 'object') ? opts.stateExtra : {};
+      url = opts.url !== undefined ? opts.url : (location.pathname + (location.search || '') || '/');
+    } else {
+      state = { view: viewKey };
+      if(typeof getMode === 'function') state.mode = getMode();
+      if(opts.stateExtra && typeof opts.stateExtra === 'object'){ for(var k in opts.stateExtra){ if(opts.stateExtra.hasOwnProperty(k)) state[k] = opts.stateExtra[k]; } }
+      url = opts.url !== undefined ? opts.url : (viewKey === 'discover' ? '#discover' : (location.pathname + (location.search || '') || '/'));
+    }
+    try {
+      if(typeof history === 'undefined' || !history.replaceState) return;
+      if(opts.replace) history.replaceState(state, '', url);
+      else history.pushState(state, '', url);
+    } catch(e){}
+    /* Layout-Flags auf main (Sprint 4): keine :has-Abhängigkeit im CSS */
+    var main = document.querySelector('main');
+    if(main && viewKey != null && viewKey !== ''){
+      var raw = (typeof viewKey === 'string' && viewKey.indexOf('v-') === 0) ? viewKey.slice(2) : viewKey;
+      var classKey = raw;
+      if(raw === 'dashboard') classKey = 'provider-home';
+      else if(raw === 'pickups') classKey = 'provider-pickups';
+      else if(raw === 'week') classKey = 'provider-week';
+      else if(raw === 'cookbook') classKey = 'provider-cookbook';
+      else if(raw === 'profile') classKey = 'provider-profile';
+      else if(raw === 'billing') classKey = 'provider-billing';
+      [].slice.call(main.classList).forEach(function(c){ if(c.indexOf('is-') === 0) main.classList.remove(c); });
+      main.classList.add('is-' + classKey);
+    }
+  }
+  if(typeof window !== 'undefined') window.navigate = navigate;
 
   // Abholzeit-Slots 11:00–14:30 im 15-Minuten-Takt (zentral für Cart + Checkout)
   function getTimeSlots(){
@@ -407,14 +451,12 @@
    */
   
   /**
-   * Load orders from localStorage
+   * Load orders from store
    * @returns {Order[]}
    */
   function loadOrders(){
     try {
-      const stored = localStorage.getItem(LS.orders);
-      if(!stored) return [];
-      const parsed = JSON.parse(stored);
+      var parsed = load(LS.orders, []);
       return Array.isArray(parsed) ? parsed : [];
     } catch(e){
       console.error('Error loading orders:', e);
@@ -423,21 +465,16 @@
   }
   
   /**
-   * Save orders to localStorage
+   * Save orders to store
    * @param {Order[]} ordersList
    */
   function saveOrders(ordersList){
     try {
-      localStorage.setItem(LS.orders, JSON.stringify(ordersList || []));
+      save(LS.orders, ordersList || []);
     } catch(e){
       if(e.name === 'QuotaExceededError'){
-        // Bei Speicherüberlauf: nur letzte 200 Bestellungen behalten
-        const trimmed = (ordersList || []).slice(-200);
-        try {
-          localStorage.setItem(LS.orders, JSON.stringify(trimmed));
-        } catch(e2){
-          console.error('Error saving orders (trimmed):', e2);
-        }
+        var trimmed = (ordersList || []).slice(-200);
+        try { save(LS.orders, trimmed); } catch(e2){ console.error('Error saving orders (trimmed):', e2); }
       } else {
         console.error('Error saving orders:', e);
       }
@@ -1153,15 +1190,16 @@
     return out.slice(0, 12);
   }
 
-  /** Bis zu 3 Bilder semantisch zum Gerichtsnamen (für Bibliothek). */
+  /** Bis zu 3 Bilder semantisch zum Gerichtsnamen (für Bibliothek). urls = Array von Strings, max. 3 eindeutig. */
   function getDishImagesForName(name){
     const n = String(name||'').trim().toLowerCase();
     if(!n) return DISH_DB.slice(0,3).map(x=>x.img);
     const match = DISH_DB.filter(x=>(x.dish||'').toLowerCase().includes(n) || n.includes((x.dish||'').toLowerCase()));
-    const urls = [...match.map(x=>x.img)];
-    const rest = DISH_DB.filter(x=>!urls.includes(x.img));
-    while(urls.length<3 && rest.length) urls.push(rest.shift().img);
-    return urls.slice(0,3);
+    const urls = match.map(x => x.img).filter(Boolean);
+    const unique = [...new Set(urls)];
+    const rest = DISH_DB.filter(x=>!unique.includes(x.img));
+    while(unique.length < 3 && rest.length) unique.push(rest.shift().img);
+    return unique.slice(0, 3);
   }
 
   /* buildAddress, parseAddress, normalizeProviderProfile, formatLunchWeekdays, normalizeOffer → js/utils.js */
@@ -1341,7 +1379,7 @@
       else { slotSettings.appendChild(card); }
     }
     if(subId && contentEl) contentEl.scrollTop = 0;
-    if(subId && typeof history !== 'undefined') history.pushState({ section: 'profile', profileSub: subId }, '', location.pathname + location.search || '/');
+    if(subId && typeof navigate === 'function') navigate('profile', { stateExtra: { section: 'profile', profileSub: subId }, url: location.pathname + (location.search || '') || '/' });
     if(subId === 'geld' && typeof initGeldSubView === 'function') initGeldSubView();
     if((subId === 'settings' || subId === 'times' || subId === 'service') && typeof renderProviderProfileMealSelects === 'function') renderProviderProfileMealSelects();
     if((subId === 'settings' || subId === 'service') && typeof updateProviderSettingsTimeDisplay === 'function') updateProviderSettingsTimeDisplay();
@@ -2348,7 +2386,7 @@
     }
     
     // Filter: Entferne bereits gelikte oder abgelehnte Gerichte
-    const favorites = JSON.parse(localStorage.getItem('mittagio_favorites') || '[]');
+    const favorites = load('mittagio_favorites', []);
     const disliked = JSON.parse(sessionStorage.getItem('mittagio_disliked') || '[]');
     
     list = list.filter(o => {
@@ -2752,10 +2790,10 @@
     // 3-Säulen einfrieren: Status beim Favorisieren speichern
     setFavPillars(dishKey, { vorOrt, abholnummer, mehrweg });
     
-    const favorites = JSON.parse(localStorage.getItem('mittagio_favorites') || '[]');
+    const favorites = load('mittagio_favorites', []);
     if(!favorites.includes(dishKey)){
       favorites.push(dishKey);
-      localStorage.setItem('mittagio_favorites', JSON.stringify(favorites));
+      save('mittagio_favorites', favorites);
     }
     if(!dishFavs.has(dishKey)){
       dishFavs.add(dishKey);
@@ -5071,7 +5109,7 @@
     }
     
     // Favorite State
-    const favorites = JSON.parse(localStorage.getItem('mittagio_favorites') || '[]');
+    const favorites = load('mittagio_favorites', []);
     const isFav = favorites.includes(id);
     const heartIcon = sFavoriteBtn ? sFavoriteBtn.querySelector('i[data-lucide="heart"]') : null;
     if(heartIcon){
@@ -5289,10 +5327,10 @@
           primaryCTAText.textContent = 'Wird hinzugefügt...';
           
           // Auto-Favorite
-          const favs = JSON.parse(localStorage.getItem('mittagio_favorites') || '[]');
+          const favs = load('mittagio_favorites', []);
           if(!favs.includes(o.id)){
             favs.push(o.id);
-            localStorage.setItem('mittagio_favorites', JSON.stringify(favs));
+            save('mittagio_favorites', favs);
             dishFavs.add(o.id);
             save(LS.dishFavs, Array.from(dishFavs));
             if(heartIcon) heartIcon.style.fill = '#e74c3c';
@@ -5329,16 +5367,16 @@
           sInfoHint.style.display = 'block';
         }
         btnCTA.onclick = () => {
-          const favs = JSON.parse(localStorage.getItem('mittagio_favorites') || '[]');
+          const favs = load('mittagio_favorites', []);
           if(!favs.includes(o.id)){
             favs.push(o.id);
-            localStorage.setItem('mittagio_favorites', JSON.stringify(favs));
+            save('mittagio_favorites', favs);
             dishFavs.add(o.id);
             save(LS.dishFavs, Array.from(dishFavs));
             if(heartIcon) heartIcon.style.fill = '#e74c3c';
           }
-          const currentCount = parseInt(localStorage.getItem(`provider_${o.providerId}_requests`) || '0', 10);
-          localStorage.setItem(`provider_${o.providerId}_requests`, String(currentCount + 1));
+          const currentCount = load('provider_' + o.providerId + '_requests', 0) || 0;
+          save('provider_' + o.providerId + '_requests', currentCount + 1);
           triggerHapticFeedback([10, 20]);
           btnCTA.disabled = true;
           btnCTA.classList.add('success');
@@ -5620,8 +5658,33 @@
     };
   }
 
-  // Android Hardware-Back: Kontextbasierte Zurück-Navigation [cite: History-Context 2026-02-26]
+  // Back-Navigation Regeln (Customer/Provider) – Single Source statt langer if/else [cite: History-Context 2026-02-26]
+  // Discover = Root; Back von Discover/Start: kein Wechsel zu Start, v-start → Discover
+  var BACK_RULES = {
+    'v-fav': showDiscover,
+    'v-cart': showDiscover,
+    'v-orders': showProfile,
+    'v-profile': showDiscover,
+    'v-discover': function(){ /* noop – Discover ist Root */ },
+    'v-start': showDiscover
+  };
+  var PROVIDER_BACK_RULES = {
+    'v-provider-profile': showProviderHome,
+    'v-provider-pickups': showProviderHome,
+    'v-provider-cookbook': function(){ try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(5); }catch(err){} showProviderHome(); },
+    'v-provider-billing': showProviderProfile
+  };
+
   window.addEventListener('popstate', function(e){
+    // Fallback: Ziel-View aus e.state?.view (Primary) oder location.hash ohne '#' (Secondary); sonst stabil Discover als Root
+    var view = (e.state && e.state.view != null) ? String(e.state.view) : '';
+    if(!view) view = (location.hash || '').replace(/^#/, '').trim();
+    if(!view){
+      if(typeof setMode === 'function') setMode('customer');
+      if(typeof showDiscover === 'function') showDiscover({ skipHistory: true });
+      try { if(typeof navigate === 'function') navigate('discover', { replace: true }); } catch(err){}
+      return;
+    }
     // AGB Onboarding Modal schließen
     if(document.getElementById('agbOnboardingSheet') && document.getElementById('agbOnboardingSheet').classList.contains('active')){
       closeAgbOnboardingModal();
@@ -5632,14 +5695,14 @@
     if(document.getElementById('pickupConfirmSheet') && document.getElementById('pickupConfirmSheet').classList.contains('active')){
       closePickupConfirmSheet();
       e.preventDefault();
-      pushViewState(null, location.pathname);
+      if(typeof navigate === 'function') navigate(null, { replace: true, url: location.pathname });
       return;
     }
     // Create Flow Sheet schließen
     if(document.getElementById('createFlowSheet') && document.getElementById('createFlowSheet').classList.contains('active')){
       closeCreateFlowSheet();
       e.preventDefault();
-      pushViewState(null, location.pathname);
+      if(typeof navigate === 'function') navigate(null, { replace: true, url: location.pathname });
       return;
     }
     // Insert Review View schließen (Hardware-Back) [cite: 2026-02-25]
@@ -5652,21 +5715,21 @@
     if(document.getElementById('faqSheet') && document.getElementById('faqSheet').classList.contains('active')){
       closeFaqSheet();
       e.preventDefault();
-      pushViewState(null, location.pathname);
+      if(typeof navigate === 'function') navigate(null, { replace: true, url: location.pathname });
       return;
     }
     // Login Modal schließen
     if(document.getElementById('loginSheet') && document.getElementById('loginSheet').classList.contains('active')){
       closeLoginSheet();
       e.preventDefault();
-      pushViewState(null, location.pathname);
+      if(typeof navigate === 'function') navigate(null, { replace: true, url: location.pathname });
       return;
     }
     // Provider Login Modal schließen
     if(document.getElementById('providerLoginSheet') && document.getElementById('providerLoginSheet').style.display !== 'none'){
       closeProviderLoginModal();
       e.preventDefault();
-      pushViewState(null, location.pathname);
+      if(typeof navigate === 'function') navigate(null, { replace: true, url: location.pathname });
       return;
     }
     // Inserat Step 2 → Step 1 (Hardware Back / Swipe) [cite: MASTER-CARD FIX 2026-02-23]
@@ -5678,6 +5741,7 @@
         try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(5); }catch(err){}
         if(typeof w !== 'undefined'){ w.inseratStep=1; }
         slider.setAttribute('data-inserat-step','1');
+        box.classList.remove('has-action-layer');
         var airbnbFooter = box.querySelector('[data-inserat-step="2"]');
         if(airbnbFooter) airbnbFooter.style.display='none';
         var sf = box.querySelector('[data-inserat-step="3"]');
@@ -5707,7 +5771,7 @@
     if(document.getElementById('sheet') && document.getElementById('sheet').classList.contains('active')){
       closeSheet();
       e.preventDefault();
-      pushViewState(null, location.pathname);
+      if(typeof navigate === 'function') navigate(null, { replace: true, url: location.pathname });
       return;
     }
     // Onboarding back navigation
@@ -5716,22 +5780,22 @@
       if(currentView.id === 'v-provider-onboarding-preview'){
         showOnboardingBusiness();
         e.preventDefault();
-        pushViewState(null, location.pathname);
+        if(typeof navigate === 'function') navigate(null, { replace: true, url: location.pathname });
         return;
       } else if(currentView.id === 'v-provider-onboarding-business'){
         showOnboardingSignup();
         e.preventDefault();
-        pushViewState(null, location.pathname);
+        if(typeof navigate === 'function') navigate(null, { replace: true, url: location.pathname });
         return;
       } else if(currentView.id === 'v-provider-onboarding-signup'){
         showOnboardingEntry(!!onboardingDraftDish);
         e.preventDefault();
-        pushViewState(null, location.pathname);
+        if(typeof navigate === 'function') navigate(null, { replace: true, url: location.pathname });
         return;
       } else if(currentView.id === 'v-provider-onboarding-first-dish'){
         showOnboardingEntry(!!onboardingDraftDish);
         e.preventDefault();
-        pushViewState(null, location.pathname);
+        if(typeof navigate === 'function') navigate(null, { replace: true, url: location.pathname });
         return;
       } else if(currentView.id === 'v-provider-onboarding-entry'){
         // Animation für 3-Punkt-Erklärung
@@ -5754,61 +5818,19 @@
           showProfile();
         }
         e.preventDefault();
-        pushViewState(null, location.pathname);
+        if(typeof navigate === 'function') navigate(null, { replace: true, url: location.pathname });
         return;
       }
     }
     
-    // In-App Navigation: Zurück zu vorheriger View innerhalb der App
-    // Prüfe ob wir in einer Customer-View sind
+    // In-App Navigation: Zurück zu vorheriger View (BACK_RULES / PROVIDER_BACK_RULES)
     if(currentView){
       const viewId = currentView.id;
-      if(viewId === 'v-fav'){
-        showDiscover();
-        e.preventDefault();
-        return;
-      } else if(viewId === 'v-cart'){
-        showDiscover();
-        e.preventDefault();
-        return;
-      } else if(viewId === 'v-orders'){
-        showProfile();
-        e.preventDefault();
-        return;
-      } else if(viewId === 'v-profile'){
-        showDiscover();
-        e.preventDefault();
-        return;
-      } else if(viewId === 'v-discover'){
-        showStart();
-        e.preventDefault();
-        return;
-      } else if(viewId === 'v-start'){
-        // Bleib auf Start oder gehe zu Discover
-        showStart();
-        e.preventDefault();
-        return;
-      }
-    }
-    
-    // Provider Views
-    if(mode === 'provider'){
-      const providerView = currentView ? currentView.id : '';
-      if(providerView === 'v-provider-profile'){
-        showProviderHome();
-        e.preventDefault();
-        return;
-      } else if(providerView === 'v-provider-pickups'){
-        showProviderHome();
-        e.preventDefault();
-        return;
-      } else if(providerView === 'v-provider-cookbook'){
-        try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(5); }catch(err){}
-        showProviderHome();
-        e.preventDefault();
-        return;
-      } else if(providerView === 'v-provider-billing'){
-        showProviderProfile();
+      const isProvider = (typeof getMode === 'function' && getMode() === 'provider');
+      const rules = isProvider ? PROVIDER_BACK_RULES : BACK_RULES;
+      const action = rules[viewId];
+      if(typeof action === 'function'){
+        action();
         e.preventDefault();
         return;
       }
@@ -6094,7 +6116,7 @@
     var el = document.getElementById('print-merchant-name');
     if (el) {
       var name = (typeof provider !== 'undefined' && provider && provider.profile && provider.profile.name)
-        ? String(provider.profile.name).trim() : (localStorage.getItem('merchantName') || 'Unser Wochenplan');
+        ? String(provider.profile.name).trim() : (load('merchantName', 'Unser Wochenplan') || 'Unser Wochenplan');
       el.textContent = name ? 'WOCHENPLAN – ' + name : 'Mein Wochenplan';
     }
     try { if (navigator.vibrate) navigator.vibrate(50); } catch(e){}
@@ -7997,9 +8019,9 @@
 
   function updateProfileView(){
     var pwaTipEl = document.getElementById('profilePwaTip');
-    if(pwaTipEl) pwaTipEl.style.display = (localStorage.getItem('mittagio_pwa_tip_dismissed') === 'true') ? 'none' : 'block';
+    if(pwaTipEl) pwaTipEl.style.display = load('mittagio_pwa_tip_dismissed', false) ? 'none' : 'block';
     var btnDismissPwa = document.getElementById('btnDismissPwaTip');
-    if(btnDismissPwa && !btnDismissPwa._pwaBound){ btnDismissPwa._pwaBound = true; btnDismissPwa.onclick = function(){ try { localStorage.setItem('mittagio_pwa_tip_dismissed', 'true'); } catch(e) {} var el = document.getElementById('profilePwaTip'); if(el) el.style.display = 'none'; }; }
+    if(btnDismissPwa && !btnDismissPwa._pwaBound){ btnDismissPwa._pwaBound = true; btnDismissPwa.onclick = function(){ save('mittagio_pwa_tip_dismissed', true); var el = document.getElementById('profilePwaTip'); if(el) el.style.display = 'none'; }; }
     const isLoggedIn = customer.loggedIn;
     const firstName = customer.name ? customer.name.split(' ')[0] : '';
     const fullName = customer.name || 'Gast';
@@ -8403,8 +8425,8 @@
       return true;
     }
     deleteCookie(SESSION_COOKIE_NAME);
-    localStorage.removeItem(LS.providerSession);
-    localStorage.removeItem('mittagio_current_session_id');
+    remove(LS.providerSession);
+    remove('mittagio_current_session_id');
     provider.loggedIn = false;
     provider.current_session_id = null;
     save(LS.provider, provider);
@@ -8425,7 +8447,7 @@
       provider.current_session_id = null;
       save(LS.provider, provider);
       deleteCookie(SESSION_COOKIE_NAME);
-      localStorage.removeItem('mittagio_current_session_id');
+      remove('mittagio_current_session_id');
       showToast('Du wurdest auf einem anderen Gerät angemeldet.', 4000);
       setMode('provider');
       showView(views.providerLogin);
@@ -8546,12 +8568,12 @@
   
   function showOnboardingSignup(){
     showView(views.providerOnboardingSignup);
-    pushViewState({onboarding: 'signup'}, location.pathname);
+    if(typeof navigate === 'function') navigate('onboarding', { stateExtra: { onboarding: 'signup' }, url: location.pathname });
   }
   
   function showOnboardingBusiness(){
     showView(views.providerOnboardingBusiness);
-    pushViewState({onboarding: 'business'}, location.pathname);
+    if(typeof navigate === 'function') navigate('onboarding', { stateExtra: { onboarding: 'business' }, url: location.pathname });
   }
   
   // Onboarding-Preview: 5-Ebenen-InseratCard-Struktur [cite: 2026-02-18]
@@ -8585,7 +8607,7 @@
 
   function showOnboardingPreview(dishId){
     showView(views.providerOnboardingPreview);
-    pushViewState({onboarding: 'preview'}, location.pathname);
+    if(typeof navigate === 'function') navigate('onboarding', { stateExtra: { onboarding: 'preview' }, url: location.pathname });
     
     const savedDish = dishId ? cookbook.find(c => c.id === dishId) : cookbook.find(c => c.providerId === providerId());
     const previewCard = document.getElementById('onboardingPreviewCard');
@@ -8696,9 +8718,9 @@
   obCacheIds.forEach(id => {
     const el = document.getElementById(id);
     if(el){
-      const cached = localStorage.getItem('cache_' + id);
+      const cached = load('cache_' + id, '');
       if(cached) el.value = cached;
-      if(id !== 'onboardingDishPrice') el.addEventListener('input', () => localStorage.setItem('cache_' + id, el.value));
+      if(id !== 'onboardingDishPrice') el.addEventListener('input', () => save('cache_' + id, el.value));
     }
   });
   // Onboarding Preis: +/- Buttons, Komma immer gesetzt, 1-Daumen
@@ -8713,21 +8735,21 @@
       inp.value = String(val);
       inp.setAttribute('value', val);
       disp.textContent = val.toFixed(2).replace('.',',')+' €';
-      localStorage.setItem('cache_onboardingDishPrice', String(val));
+      save('cache_onboardingDishPrice', val);
     }
-    const cached = localStorage.getItem('cache_onboardingDishPrice');
-    if(cached){ const v = parseFloat(cached.replace(',','.'))||8.5; updatePrice(v); }
+    const cached = load('cache_onboardingDishPrice', '');
+    if(cached !== '' && cached != null){ var v = typeof cached === 'number' ? cached : (parseFloat(String(cached).replace(',','.'))||8.5); updatePrice(v); }
     btnMinus.onclick = () => { let v = parseFloat((inp.value||'8.5').replace(',','.'))||0; if(v>=0.5) updatePrice(v-0.5); };
     btnPlus.onclick = () => { let v = parseFloat((inp.value||'8.5').replace(',','.'))||0; updatePrice(v+0.5); };
   })();
   // Radio Buttons Cache (Kategorie)
   const dietRadios = document.querySelectorAll('input[name="dishDiet"]');
-  const cachedDiet = localStorage.getItem('cache_dishDiet');
+  const cachedDiet = load('cache_dishDiet', '');
   if(cachedDiet) {
     dietRadios.forEach(r => { if(r.value === cachedDiet) r.checked = true; });
   }
   dietRadios.forEach(r => {
-    r.addEventListener('change', () => localStorage.setItem('cache_dishDiet', r.value));
+    r.addEventListener('change', () => save('cache_dishDiet', r.value));
   });
   // ------------------------------------------------
   
@@ -8774,7 +8796,7 @@
       save(LS.onboardingDraft, null);
       
       // Clear Input Cache
-      ['onboardingDishName', 'onboardingDishPrice', 'onboardingPickupTimeStart', 'onboardingPickupTimeEnd'].forEach(id => localStorage.removeItem('cache_' + id));
+      ['onboardingDishName', 'onboardingDishPrice', 'onboardingPickupTimeStart', 'onboardingPickupTimeEnd'].forEach(id => remove('cache_' + id));
 
       // Proceed to business screen
       showOnboardingBusiness();
@@ -8790,9 +8812,9 @@
   // --- AUTO-SAVE STEP 2 ---
   const elEmail = document.getElementById('onboardingEmail');
   if(elEmail){
-    const cachedEmail = localStorage.getItem('cache_onboardingEmail');
+    const cachedEmail = load('cache_onboardingEmail', '');
     if(cachedEmail) elEmail.value = cachedEmail;
-    elEmail.addEventListener('input', () => localStorage.setItem('cache_onboardingEmail', elEmail.value));
+    elEmail.addEventListener('input', () => save('cache_onboardingEmail', elEmail.value));
   }
   // -----------------------
   
@@ -8884,7 +8906,7 @@
       // Clear draft
       onboardingDraftDish = null;
       save(LS.onboardingDraft, null);
-      ['onboardingDishName', 'onboardingDishPrice', 'onboardingDishDesc', 'onboardingPickupTimeStart', 'onboardingPickupTimeEnd'].forEach(id => localStorage.removeItem('cache_' + id));
+      ['onboardingDishName', 'onboardingDishPrice', 'onboardingDishDesc', 'onboardingPickupTimeStart', 'onboardingPickupTimeEnd'].forEach(id => remove('cache_' + id));
     }
 
     provider.onboardingCompleted = true;
@@ -8936,9 +8958,9 @@
   if(btnProvLogout){
     btnProvLogout.onclick=()=>{
       deleteCookie(SESSION_COOKIE_NAME);
-      localStorage.removeItem(LS.providerSession);
-      localStorage.removeItem('mittagio_current_session_id');
-      try { localStorage.removeItem('user_role'); } catch(e){}
+      remove(LS.providerSession);
+      remove('mittagio_current_session_id');
+      remove('user_role');
       provider.loggedIn = false;
       provider.current_session_id = null;
       save(LS.provider, provider);
@@ -8951,9 +8973,9 @@
   if(btnProviderLogout){
     btnProviderLogout.onclick=()=>{
       deleteCookie(SESSION_COOKIE_NAME);
-      localStorage.removeItem(LS.providerSession);
-      localStorage.removeItem('mittagio_current_session_id');
-      try { localStorage.removeItem('user_role'); } catch(e){}
+      remove(LS.providerSession);
+      remove('mittagio_current_session_id');
+      remove('user_role');
       provider.loggedIn = false;
       provider.current_session_id = null;
       save(LS.provider, provider);
@@ -9729,7 +9751,7 @@
     // Kunden-Nachfrage: Request-Count aus LocalStorage
     const requestCountEl = document.getElementById('providerRequestCount');
     if(requestCountEl){
-      const requestCount = parseInt(localStorage.getItem(`provider_${providerId()}_requests`) || '0', 10);
+      const requestCount = load('provider_' + providerId() + '_requests', 0) || 0;
       requestCountEl.textContent = requestCount;
       
       // Sektion nur anzeigen wenn Requests vorhanden
@@ -9938,8 +9960,8 @@
           const hasExtras = !!(o.extras && Array.isArray(o.extras) && o.extras.length > 0);
           const dishName = d.dish || d.title || 'Gericht';
           const isLive = o.active !== false;
-          const viewsCount = parseInt(localStorage.getItem('mittagio_views_' + o.id) || '0', 10);
-          const favCount = (JSON.parse(localStorage.getItem('mittagio_favorites') || '[]')).filter(function(id){ return id === o.id; }).length;
+          const viewsCount = load('mittagio_views_' + o.id, 0) || 0;
+          const favCount = (load('mittagio_favorites', [])).filter(function(id){ return id === o.id; }).length;
           const pickupsForOffer = todayOrders.filter(function(ord){ return ord.dishId === o.id; });
           const orderCount = pickupsForOffer.length;
           const paidWithCode = pickupsForOffer.filter(function(ord){ return ord.status === 'PAID' && ord.pickupCode; });
@@ -10804,7 +10826,7 @@
         if (typeof getWeekIndexForDate === 'function') weekPlanKWIndex = Math.max(0, getWeekIndexForDate(dateKey));
         weekPlanDay = dateKey;
         window.__kwSmartSuggestionFocusDay = dateKey;
-        if (typeof pushViewState === 'function') pushViewState({ section: 'week', view: 'provider-week', mode: typeof mode !== 'undefined' ? mode : 'provider', week: weekPlanKWIndex, day: weekPlanDay }, (typeof location !== 'undefined' && location.pathname) + '?week=' + weekPlanKWIndex + '&day=' + weekPlanDay);
+        if (typeof navigate === 'function') navigate('provider-week', { stateExtra: { section: 'week', view: 'provider-week', mode: typeof mode !== 'undefined' ? mode : 'provider', week: weekPlanKWIndex, day: weekPlanDay }, url: (typeof location !== 'undefined' && location.pathname) + '?week=' + weekPlanKWIndex + '&day=' + weekPlanDay });
         if (typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard();
         setTimeout(function(){
           var el = document.getElementById('day-' + dateKey);
@@ -11057,7 +11079,7 @@
       btn.type = 'button';
       btn.className = 'week-magic-sheet-btn kw-selector-item' + (w === weekPlanKWIndex ? ' kw-selector-active' : '');
       btn.innerHTML = 'KW ' + getISOWeek(monday) + ': ' + fromStr + ' – ' + toStr + (hasPlanned ? ' <span class="kw-selector-dot"></span>' : '');
-      btn.onclick = (function(k){ return function(){ if(typeof haptic === 'function') haptic(6); weekPlanKWIndex = k; var keys = getWeekDayKeys(k); if(keys.indexOf(weekPlanDay) === -1) weekPlanDay = keys[0]; closeKWSelector(); if(typeof pushViewState === 'function') pushViewState({ section: 'week', view: 'provider-week', mode: typeof mode !== 'undefined' ? mode : 'provider', week: k, day: weekPlanDay }, (typeof location !== 'undefined' && location.pathname) + '?week=' + k + '&day=' + weekPlanDay); renderWeekPlanBoard(); }; })(w);
+      btn.onclick = (function(k){ return function(){ if(typeof haptic === 'function') haptic(6); weekPlanKWIndex = k; var keys = getWeekDayKeys(k); if(keys.indexOf(weekPlanDay) === -1) weekPlanDay = keys[0]; closeKWSelector(); if(typeof navigate === 'function') navigate('provider-week', { stateExtra: { section: 'week', view: 'provider-week', mode: typeof mode !== 'undefined' ? mode : 'provider', week: k, day: weekPlanDay }, url: (typeof location !== 'undefined' && location.pathname) + '?week=' + k + '&day=' + weekPlanDay }); renderWeekPlanBoard(); }; })(w);
       list.appendChild(btn);
     }
     }
@@ -11264,7 +11286,7 @@
     view.style.display = 'block';
     setTimeout(function(){ view.style.transform = 'translateX(0)'; }, 10);
     document.body.classList.add('insert-review-active');
-    try{ history.pushState({view: 'insert-review'}, ''); }catch(e){}
+    try{ if(typeof navigate === 'function') navigate('insert-review', {}); }catch(e){}
   };
   window.showInsertReview = window.openInsertReview;
 
@@ -11333,7 +11355,7 @@
 
   /** Schlägt die Brücke vom Wizard zum Premium-Monetarisierung-Board. Nutzt w (global) wenn vorhanden. [cite: 2026-02-26] */
   window.bridgeToPremiumMonetization = function(){
-    var draft = (typeof w !== 'undefined' && w && w.data) ? { data: w.data, ctx: w.ctx } : JSON.parse(localStorage.getItem('wizard_draft') || '{}');
+    var draft = (typeof w !== 'undefined' && w && w.data) ? { data: w.data, ctx: w.ctx } : load('wizard_draft', {});
     var wData = draft.data || {};
     var name = (wData.dish || '').trim() || 'Dein Gericht';
     var price = Number(wData.price) || 0;
@@ -11359,7 +11381,7 @@
     var s2 = document.getElementById('v-step-2-monetize');
     var s3 = document.getElementById('v-step-3-success');
     if(!s2 || !s3) return;
-    var draft = (typeof w !== 'undefined' && w && w.data) ? { data: w.data } : JSON.parse(localStorage.getItem('wizard_draft') || '{}');
+    var draft = (typeof w !== 'undefined' && w && w.data) ? { data: w.data } : load('wizard_draft', {});
     var wData = draft.data || {};
     var optSmart = document.getElementById('option-smart');
     var isSmart = optSmart && optSmart.classList.contains('active');
@@ -11384,7 +11406,7 @@
 
   /** Flow-Abschluss: Draft löschen, Dashboard zeigen [cite: 2026-02-25] */
   window.resetFlowToDashboard = function(){
-    localStorage.removeItem('wizard_draft');
+    remove('wizard_draft');
     var s3 = document.getElementById('v-step-3-success');
     if(s3) s3.style.display = 'none';
     if(typeof showProviderHome === 'function') showProviderHome();
@@ -11392,7 +11414,7 @@
 
   /** Viralitäts-Engine: WhatsApp & Link-Kopieren [cite: 2026-02-25] */
   window.triggerWhatsAppShare = function(){
-    var draft = (typeof w !== 'undefined' && w && w.data) ? { data: w.data, ctx: w.ctx } : JSON.parse(localStorage.getItem('wizard_draft') || '{}');
+    var draft = (typeof w !== 'undefined' && w && w.data) ? { data: w.data, ctx: w.ctx } : load('wizard_draft', {});
     var wData = draft.data || {};
     var name = (wData.dish || '').trim() || 'unser heutiges Gericht';
     var price = (Number(wData.price) || 0).toFixed(2).replace('.', ',') + ' €';
@@ -11403,7 +11425,7 @@
   };
 
   window.copyListingLink = function(){
-    var draft = (typeof w !== 'undefined' && w && w.ctx) ? { ctx: w.ctx } : JSON.parse(localStorage.getItem('wizard_draft') || '{}');
+    var draft = (typeof w !== 'undefined' && w && w.ctx) ? { ctx: w.ctx } : load('wizard_draft', {});
     var shopLink = location.origin + (location.pathname || '/') + '#offer/' + ((draft.ctx && draft.ctx.editOfferId) || '');
     if(typeof copyToClipboard === 'function') copyToClipboard(shopLink);
     else try{ navigator.clipboard.writeText(shopLink); }catch(e){}
@@ -11624,6 +11646,7 @@
         empty.onclick = (function(k){ return function(e){ e.stopPropagation(); if(typeof haptic === 'function') haptic(6); weekPlanDay = k; if(typeof openDishFlow === 'function') openDishFlow(k, 'week'); }; })(key);
         slotsWrap.appendChild(empty);
       }
+      if (slotsWrap.children.length === 1 && slotsWrap.querySelector('.kw-slot-empty')) slotsWrap.classList.add('is-single-empty'); else slotsWrap.classList.remove('is-single-empty');
       grid.appendChild(card);
     });
     attachKWBoardSlotGestures(grid);
@@ -13619,6 +13642,10 @@
         trigger.setAttribute('aria-expanded', !isOpen ? 'true' : 'false');
       };
     });
+    /* Layout-Flag: Hero-Slides ohne Bild (ersetzt :has() in CSS) */
+    document.querySelectorAll('#v-provider-profile .provider-profile-hero-slide').forEach(function(slide){
+      if(!slide.querySelector('.provider-profile-hero-slide-img')) slide.classList.add('is-no-hero-img');
+    });
     var btnProviderImpressum = document.getElementById('btnProviderImpressum');
     var impressumContent = document.getElementById('providerImpressumContent');
     if(btnProviderImpressum && impressumContent) btnProviderImpressum.onclick = function(){ if(typeof haptic === 'function') haptic(6); impressumContent.style.display = impressumContent.style.display === 'none' ? 'block' : 'none'; };
@@ -14280,7 +14307,7 @@
   function isAdmin(){
     const urlParams = new URLSearchParams(window.location.search);
     if(urlParams.get('admin') === '1') return true;
-    try { return localStorage.getItem(ADMIN_FLAG_KEY) === '1'; } catch(e){ return false; }
+    try { return load(ADMIN_FLAG_KEY, '') === '1' || load(ADMIN_FLAG_KEY, 0) === 1; } catch(e){ return false; }
   }
   function showAdminView(){
     if(!isAdmin()){
@@ -14376,7 +14403,7 @@
     btnProvFaq.onclick=()=>{
       showLegalPage('faq-provider');
       if(mode === 'provider'){
-        pushViewState({view: 'provider-faq', mode: mode}, '/anbieter/hilfe/faq');
+        if(typeof navigate === 'function') navigate('provider-faq', { stateExtra: { view: 'provider-faq', mode: mode }, url: '/anbieter/hilfe/faq' });
       }
     };
   }
@@ -14392,7 +14419,7 @@
       showView(views.providerBilling);
       renderBilling();
       // Browser-Verlauf aktualisieren
-      pushViewState({view: 'provider-billing', mode: mode}, location.pathname);
+      if(typeof navigate === 'function') navigate('provider-billing', { stateExtra: { view: 'provider-billing', mode: mode }, url: location.pathname });
     };
   }
   const btnBillingBack = document.getElementById('btnBillingBack');
@@ -14481,7 +14508,7 @@
         };
         const url = urlMap[page];
         if(url){
-          pushViewState({view: `provider-${page}`, mode: mode}, url);
+          if(typeof navigate === 'function') navigate('provider-' + page, { stateExtra: { view: 'provider-' + page, mode: mode }, url: url });
         }
       }
     }
@@ -14740,7 +14767,7 @@
       return;
     }
     var snapshot = { providerId: pid, providerName, logoUrl, firstDishImage, offers: weekOffers, updatedAt: Date.now() };
-    try { localStorage.setItem(PUBLIC_PLAN_KEY + pid, JSON.stringify(snapshot)); } catch(e) {}
+    try { save(PUBLIC_PLAN_KEY + pid, snapshot); } catch(e) {}
     var shareUrl = location.origin + location.pathname.replace(/\/$/, '') + '#/plan/' + encodeURIComponent(pid);
     var shareTitle = 'Unser Wochenplan ist online!';
     var weekMsg = typeof generateWhatsAppShareMessage === 'function' ? generateWhatsAppShareMessage('week') : null;
@@ -14769,9 +14796,7 @@
     document.getElementById('customerNav') && (document.getElementById('customerNav').style.display = 'none');
     document.getElementById('providerNavWrap') && (document.getElementById('providerNavWrap').style.display = 'none');
     document.body.classList.remove('provider-mode');
-    var raw = null;
-    try { raw = localStorage.getItem(PUBLIC_PLAN_KEY + providerId); } catch(e) {}
-    var data = raw ? (function(){ try { return JSON.parse(raw); } catch(e) { return null; } })() : null;
+    var data = load(PUBLIC_PLAN_KEY + providerId, null);
     if(!data || !data.offers || data.offers.length === 0){
       list.innerHTML = '<div style="text-align:center; padding:48px 24px;"><p style="font-size:16px; font-weight:700; color:#1a1a1a; margin-bottom:8px;">Wochenplan nicht verfügbar</p><p style="font-size:14px; color:#64748b;">Der Link ist abgelaufen oder der Anbieter hat den Plan noch nicht geteilt.</p><a href="#" onclick="location.hash=\'\'; if(typeof showDiscover===\'function\') showDiscover(); return false;" style="display:inline-block; margin-top:20px; font-size:15px; font-weight:700; color:var(--brand);">Zur App</a></div>';
       if(nameEl) nameEl.textContent = 'Wochenplan';
@@ -16221,11 +16246,11 @@
       document.body.style.overscrollBehavior = 'none';
       requestAnimationFrame(function(){ requestAnimationFrame(function(){ if(typeof applyVendorFooterPadding==='function') applyVendorFooterPadding(); }); });
       /* History-Context: pushState für native Zurück-Geste → popstate schließt InseratCard [cite: History-Context 2026-02-26] */
-      if(typeof pushViewState === 'function') pushViewState({ view: 'inserat-card', wizard: true, listing: true }, location.pathname);
+      if(typeof navigate === 'function') navigate('inserat-card', { stateExtra: { view: 'inserat-card', wizard: true, listing: true }, url: location.pathname });
     } else {
-      pushViewState({wizard: true}, location.pathname);
+      if(typeof navigate === 'function') navigate(null, { stateExtra: { wizard: true }, url: location.pathname });
     }
-    localStorage.setItem('mittagio_wizard_open', 'true');
+    save('mittagio_wizard_open', true);
   }
   /** .w-actions wurde entfernt – Navigation nur noch im #wContent (content-driven). */
   function clearWizardActionsBar(){ /* no-op */ }
@@ -16245,8 +16270,8 @@
     var pn = document.getElementById('providerNavWrap');
     if(pn && document.body.classList.contains('provider-mode')) pn.style.removeProperty('display');
     restoreWizardActionsBar();
-    localStorage.removeItem('mittagio_wizard_open');
-    if(clearDraft) localStorage.removeItem('wizard_draft');
+    remove('mittagio_wizard_open');
+    if(clearDraft) remove('wizard_draft');
     if(typeof window !== 'undefined') window._wizardInitialDataSnapshot = null;
   }
   /** Rücksprung nach Schließen der InseratCard gemäß entryPoint [cite: 2026-02-16 Smart-Exit] */
@@ -16379,7 +16404,7 @@
     if(!context.entryPoint) context.entryPoint = context.dishId ? 'cookbook' : (context.fromWeek ? 'week' : 'dashboard');
     /* 3-Schritt Mastercard: Alle Flows (auch Bulk) starten bei Schritt 1 [cite: FLOW FIX 2026-02-26] */
     /* RADIKALE BEREINIGUNG: Kein Draft – immer frischer Start zu InseratCard Schritt 1 [cite: 2026-02-26] */
-    try { localStorage.removeItem('wizard_draft'); } catch(e) {}
+    try { remove('wizard_draft'); } catch(e) {}
     /* Wochenplan/Kochbuch „Neues Gericht“: immer InseratCard Schritt 1 (STEP_EDIT), nie openListingWizard [cite: FLOW FIX 2026-02-25] */
     if(!context.editOfferId && !context.dishId && !context.fromCookbookId && context.entryPoint !== 'cookbook' && context.entryPoint !== 'week'){
       openListingWizard(context);
@@ -17930,10 +17955,11 @@
         if(typeof window.bridgeToPremiumMonetization==='function'){
           window.bridgeToPremiumMonetization();
         } else if(slider){
-          try{ history.pushState({inseratStep:2},'','#'); }catch(e){}
+          try{ if(typeof navigate === 'function') navigate(null, { stateExtra: { inseratStep: 2 }, url: '#' }); }catch(e){}
           var sweepEl=box.querySelector('.step2-slot-machine-sweep');
           if(sweepEl){ sweepEl.classList.remove('animate'); sweepEl.offsetHeight; sweepEl.classList.add('animate'); sweepEl.addEventListener('animationend',function onSweepEnd(){ sweepEl.removeEventListener('animationend',onSweepEnd); sweepEl.classList.remove('animate'); },{once:true}); }
           slider.setAttribute('data-inserat-step','2');
+          if(box) box.classList.add('has-action-layer');
           var wizardEl=document.getElementById('wizard');
           if(wizardEl) wizardEl.classList.add('inserat-step2-active');
           var f=box.querySelector('[data-inserat-step="2"]'); if(f) f.style.display='flex';
@@ -17999,7 +18025,7 @@
         linkZurueck.style.cssText='background:none; border:none; padding:12px 0; font-size:15px; font-weight:bold; color:#222222; cursor:pointer; text-decoration:underline; flex-shrink:0;';
         linkZurueck.textContent='Zurück';
         linkZurueck.className='btn-secondary-link';
-        linkZurueck.onclick=function(){ hapticLight(); w.inseratStep=1; saveDraft(); if(slider) slider.setAttribute('data-inserat-step','1'); airbnbFooter.style.display='none'; var sf=box.querySelector('[data-inserat-step="3"]'); if(sf) sf.style.display='none'; var wizardEl=document.getElementById('wizard'); if(wizardEl){ wizardEl.classList.remove('inserat-step2-active'); wizardEl.classList.remove('inserat-step3-active'); } };
+        linkZurueck.onclick=function(){ hapticLight(); w.inseratStep=1; saveDraft(); if(slider) slider.setAttribute('data-inserat-step','1'); if(box) box.classList.remove('has-action-layer'); airbnbFooter.style.display='none'; var sf=box.querySelector('[data-inserat-step="3"]'); if(sf) sf.style.display='none'; var wizardEl=document.getElementById('wizard'); if(wizardEl){ wizardEl.classList.remove('inserat-step2-active'); wizardEl.classList.remove('inserat-step3-active'); } };
         var footerBtn=document.createElement('button');
         footerBtn.type='button';
         footerBtn.className='btn-primary-black' + (w.data.pricingChoice==='499' ? ' inserat-footer-btn--499' : ' free-mode is-free-mode');
@@ -19626,7 +19652,7 @@
       if(sessionId || orderId){
         handleCheckoutSuccess(sessionId, orderId);
         // Clean URL (remove query params)
-        window.history.replaceState({}, '', window.location.pathname);
+        if(typeof navigate === 'function') navigate(null, { replace: true, url: window.location.pathname });
       }
     }
     
@@ -19637,7 +19663,7 @@
       if(orderId || sessionId){
         handleCheckoutCancel(orderId, sessionId);
         // Clean URL
-        window.history.replaceState({}, '', window.location.pathname);
+        if(typeof navigate === 'function') navigate(null, { replace: true, url: window.location.pathname });
       }
     }
     
@@ -19696,7 +19722,7 @@
       if(orderId){
         showPickupCode(orderId);
         // Clean URL
-        window.history.replaceState({}, '', window.location.pathname);
+        if(typeof navigate === 'function') navigate(null, { replace: true, url: window.location.pathname });
       }
     }
     
@@ -19712,7 +19738,7 @@
     }
     if(offerId){
       openOffer(offerId);
-      window.history.replaceState({}, '', window.location.pathname);
+      if(typeof navigate === 'function') navigate(null, { replace: true, url: window.location.pathname });
     }
   } // Ende Route Handler Block
   
@@ -19947,7 +19973,7 @@
   // Auto-Reload-Logik (alle 30 Sekunden, nur wenn offline). Nicht reloaden wenn InseratCard offen (Eingabe würde verloren gehen).
   function autoReloadIfNeeded(){
     if(!navigator.onLine && mode === 'provider'){
-      if(localStorage.getItem('mittagio_wizard_open') === 'true') return;
+      if(load('mittagio_wizard_open', false) === true) return;
       const lastReload = load('mittagio_last_reload', 0);
       const now = Date.now();
       if(now - lastReload > 30000){
@@ -19976,18 +20002,10 @@
     } catch(e) {}
     renderChips();
 
-  // init nav bindings
-  if(mode==='provider' && !provider.loggedIn) mode='customer';
-  if(mode==='start') mode='customer';
-  // Auto-Login Wiedererkennung: user_role === 'provider' → direkt Dashboard, Discovery überspringen [cite: Agent-Modus]
-  try {
-    var ur = localStorage.getItem('user_role');
-    if(ur === 'provider' && provider && provider.loggedIn && checkSessionValidity()){
-      mode = 'provider';
-      save(LS.mode, mode);
-    }
-  } catch(e){}
-  
+  // Startlogik: IMMER Discover – kein Restore der letzten View, Provider nur nach aktivem Umschalten
+  mode = 'customer';
+  save(LS.mode, 'customer');
+
   // Single-Session: Cookie aus DB wiederherstellen, falls fehlt (z. B. nach Reload)
   if(mode === 'provider' && provider.loggedIn && provider.current_session_id && !getCookie(SESSION_COOKIE_NAME)){
     setCookie(SESSION_COOKIE_NAME, provider.current_session_id, window.SESSION_COOKIE_DAYS || 30);
@@ -20006,7 +20024,7 @@
   /* Scroll vor Reload speichern (Smart Refresh) – getScrollElForView/RESTORE_SCROLL_KEY oben definiert */
   function saveScrollBeforeUnload(){
     try {
-      var viewId = localStorage.getItem('mittagio_last_view');
+      var viewId = load('mittagio_last_view', '') || '';
       if(!viewId || mode !== 'provider') return;
       var el = getScrollElForView(viewId);
       if(el && el.scrollTop > 0) sessionStorage.setItem(RESTORE_SCROLL_KEY + '_' + viewId, String(el.scrollTop));
@@ -20035,8 +20053,9 @@
   } else if(planMatch && typeof showPlanPublicView === 'function'){
     showPlanPublicView(decodeURIComponent(planMatch[1]));
   } else {
-    setMode(mode);
-    if(mode==='provider') providerScrollReset();
+    setMode('customer');
+    if(typeof showDiscover === 'function') showDiscover({ skipHistory: true });
+    try { if(typeof navigate === 'function') navigate('discover', { replace: true }); } catch(err){}
   }
   try { if(document.body){ document.body.style.visibility = 'visible'; document.body.classList.add('body-visible'); } } catch(e) {} /* Init-Gate: nach View-Switch anzeigen */
   window.addEventListener('hashchange', function(){
@@ -20092,12 +20111,7 @@
     if(missing.length === 0 && oneActive){}
     else {}
   }, 500);
-  // --- Init-Block (Mode, Icons, PWA, Live-Sync) ---
-  // Zweites Script: Zugriff auf Mode/LS nur über localStorage (eigener Scope)
-  var MODE_KEY = 'mittagio_mode_v1';
-  var ORDERS_KEY = 'mittagio_orders_v1';
-  var OFFERS_KEY = 'mittagio_offers_v2';
-  function getMode(){ try { return localStorage.getItem(MODE_KEY) || 'customer'; } catch(e){ return 'customer'; } }
+  // --- Init-Block (Icons, PWA, Live-Sync) – getMode/setMode aus STORE ---
   // Icon-Initialisierung (immer, nicht nur bei Service Worker)
   function initIcons(){
     if(typeof lucide !== 'undefined' && typeof lucide.createIcons === 'function'){
@@ -20170,7 +20184,7 @@
   // LIVE SYNC & OFFLINE HANDLING
   function setupLiveSync(){
     window.addEventListener('storage', (e) => {
-      if(e.key === ORDERS_KEY || e.key === OFFERS_KEY){
+      if(e.key === LS.orders || e.key === LS.offers){
         if(typeof refreshCurrentView === 'function') refreshCurrentView();
       }
     });
