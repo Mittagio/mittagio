@@ -5620,7 +5620,7 @@
     };
   }
 
-  // Android Hardware-Back unterstützen [cite: Event-Leitungen 2026-02-26]
+  // Android Hardware-Back: Wizard sofort schließen [cite: Universal-Linker 2026-02-26]
   window.addEventListener('popstate', function(e){
     // Wizard/Mastercard sofort schließen bei Handy-Zurück
     var wizardActive = document.getElementById('wizard') && document.getElementById('wizard').classList.contains('active');
@@ -6097,7 +6097,7 @@
     printHtml(buildWeekCardHtml());
   }
 
-  /** Kebab → Drucken: window.print() mit Print-only-Branding [cite: Airbnb Header Clean 2026-02-26] */
+  /** Kebab → Drucken: window.print() mit Dual-Branding (Anbietername oben, Powered by metallio.de unten) [cite: Print-Branding 2026-02-26] */
   function triggerPrint(){
     var el = document.getElementById('print-merchant-name');
     if (el) {
@@ -11064,12 +11064,13 @@
       btn.onclick = (function(k){ return function(){ if(typeof haptic === 'function') haptic(6); weekPlanKWIndex = k; var keys = getWeekDayKeys(k); if(keys.indexOf(weekPlanDay) === -1) weekPlanDay = keys[0]; closeKWSelector(); if(typeof pushViewState === 'function') pushViewState({ section: 'week', view: 'provider-week', mode: typeof mode !== 'undefined' ? mode : 'provider', week: k, day: weekPlanDay }, (typeof location !== 'undefined' && location.pathname) + '?week=' + k + '&day=' + weekPlanDay); renderWeekPlanBoard(); }; })(w);
       list.appendChild(btn);
     }
+    /* KW-Selector Fix: .active überspringt display:none !important [cite: Universal-Linker 2026-02-26] */
     bd.classList.add('active');
+    sheet.classList.add('active');
     bd.style.setProperty('display', 'block', 'important');
     bd.style.opacity = '1';
     bd.style.pointerEvents = 'auto';
     sheet.style.setProperty('display', 'flex', 'important');
-    sheet.classList.add('active');
   }
   function closeKWSelector(){
     var bd = document.getElementById('kwSelectorBd');
@@ -11830,7 +11831,7 @@
       document.addEventListener('click', closeOnOutside);
     }
   }
-  /** Kebab-Menü (⋮) ein-/ausblenden – für Klick-Bindung und externe Aufrufe [cite: Event-Leitungen 2026-02-26] */
+  /** Kebab-Menü (⋮) ein-/ausblenden – display: block/none, z-index 9999 [cite: Universal-Linker 2026-02-26] */
   function toggleWeekKebabMenu(){
     var kebabBtn = document.getElementById('btnWeekKebab');
     var kebabDrop = document.getElementById('weekKebabDropdown');
@@ -11844,7 +11845,7 @@
   }
   if (typeof window !== 'undefined') window.toggleWeekKebabMenu = toggleWeekKebabMenu;
 
-  /** Wochenplan: Einmalige Bindung aller Interaktionen (KW-Trigger, FAB, Kebab) [cite: Layer-Reset 2026-02-26] */
+  /** Wochenplan: KW-Trigger, FAB, Kebab fest verbunden [cite: Universal-Linker 2026-02-26] */
   function initWeekPlanInteractions(){
     var kwTr = document.getElementById('weekHeaderKWTrigger');
     if (kwTr) {
@@ -16299,7 +16300,8 @@
     document.body.classList.remove('wizard-inserat-open', 'vendor-area');
     document.body.style.overflow = '';
     document.body.style.overscrollBehavior = '';
-    document.querySelectorAll('.modal-backdrop, .backdrop').forEach(function(el){ if(el){ el.style.display='none'; el.classList.remove('active'); el.style.opacity='0'; el.style.pointerEvents='none'; if(el.classList.contains('modal-backdrop') && el.parentNode) el.remove(); } });
+    /* Radikaler Cleanup: .modal-backdrop restlos vernichten [cite: Universal-Linker 2026-02-26] */
+    document.querySelectorAll('.modal-backdrop').forEach(function(el){ if(el && el.parentNode) el.remove(); });
     updateSystemTheme(false);
     var pn = document.getElementById('providerNavWrap');
     if(pn && document.body.classList.contains('provider-mode')) pn.style.removeProperty('display');
@@ -16338,7 +16340,7 @@
     if(typeof navigateAfterWizardExit === 'function') navigateAfterWizardExit((w && w.ctx && w.ctx.entryPoint) || 'dashboard');
   }
   if(typeof window !== 'undefined') window.closeMastercard = closeMastercard;
-  /** Alias für Handy-Back / X-Button: closeListingFlow = closeMastercard [cite: Event-Leitungen 2026-02-26] */
+  /** Alias für Handy-Back / X-Button: closeListingFlow = closeMastercard [cite: Universal-Linker 2026-02-26] */
   if(typeof window !== 'undefined') window.closeListingFlow = closeMastercard;
 
   /** Schließt die Mastercard mit Slide-Down-Animation [cite: 2026-02-25] */
@@ -16436,13 +16438,13 @@
     document.body.classList.add('vendor-area');
     // Action-Controller: Herkunft für Button-Logik (Dashboard / Kochbuch / Wochenplan)
     if(!context.entryPoint) context.entryPoint = context.dishId ? 'cookbook' : (context.fromWeek ? 'week' : 'dashboard');
-    // Bulk-Aktivierung: Direkt zu Schritt 2 (Monetarisierung), ohne Draft-Check
+    /* Ausnahme: openToStep===2 ausschließlich für Bulk-Aktivierung (mehrere Daten) [cite: Master-Trichter 2026-02-26] */
     if(context.openToStep === 2 && context.bulkDraftDates && context.bulkDraftDates.length){
       startWizard('listing', context);
       return;
     }
     // Direkt zur Inseratcard (Karte mit blauem „Datum für Wochenplan wählen“ / „Im Kochbuch speichern“) – keine Zwischenkarte
-    // Entwurf-Wiederherstellung: Ghost-Card – Karte mit Overlay rendern, Check vor voller Interaktivität [cite: 2026-02-16]
+    /* Entwurf-Wiederherstellung: Fortsetzen erlaubt wenn User Flow unterbrochen hat [cite: Master-Trichter 2026-02-26] */
     /* Renner/Kochbuch-Explizit: Kein Draft – immer InseratCard Schritt 1 [cite: FLOW FIX 2026-02-25] */
     if(!context.editOfferId && !context.dishId && !context.fromCookbookId){
       try {
@@ -16644,7 +16646,7 @@
       if(!w.data.reuse) w.data.reuse = { enabled: !!profile.reuseEnabledByDefault, deposit: profile.reuseEnabledByDefault ? 3 : 0 };
       else if(w.data.reuse.enabled === undefined) w.data.reuse.enabled = !!profile.reuseEnabledByDefault;
       if(w.data.reuse.enabled && (w.data.reuse.deposit === undefined || w.data.reuse.deposit === 0)) w.data.reuse.deposit = (provider.profile && typeof provider.profile.reuseDepositDefault === 'number') ? provider.profile.reuseDepositDefault : 3;
-      /* 3-Schritte-Flow: Immer mit Schritt 1 starten (außer Bulk-Aktivierung) [cite: Inserat-Trichter 2026-02-26] */
+      /* Master-Trichter Final-Seal: Jeder normale Klick (Edit, Wochenplan, Renner, Kochbuch) → Schritt 1. Ausnahme: openToStep===2 nur für Bulk-Aktivierung [cite: Master-Trichter 2026-02-26] */
       if(!(ctx.openToStep === 2 && ctx.bulkDraftDates && ctx.bulkDraftDates.length)) w.inseratStep = 1;
       w.ctx = ctx;
       openWizard();
@@ -17995,44 +17997,8 @@
         };
         planNavRow.appendChild(btnWeekPlan);
         actionSection.appendChild(planNavRow);
-      } else if(entryPoint === 'cookbook'){
-        /* Kochbuch Step 1: Links Speichern, Rechts Jetzt inserieren [cite: 2026-02-18] */
-        var step1NavRow=document.createElement('div');
-        step1NavRow.className='inserat-step1-nav system-footer-merged app-footer-main';
-        step1NavRow.style.cssText='display:flex; width:100%; align-items:stretch; justify-content:space-between; gap:12px;';
-        var btnSpeichernCb=document.createElement('button');
-        btnSpeichernCb.type='button';
-        btnSpeichernCb.className='btn-secondary-link';
-        btnSpeichernCb.style.cssText='background:none; border:none; padding:12px 0; font-size:15px; font-weight:bold; color:#222222; cursor:pointer; text-decoration:underline; flex-shrink:0;';
-        btnSpeichernCb.textContent='Speichern';
-        btnSpeichernCb.onclick=function(){
-          if(!isPrimaryValid()){ if(typeof showToast==='function') showToast('Bitte Name, Preis und Foto eingeben.'); return; }
-          hapticLight();
-          var id=saveToCookbookFromWizard();
-          if(id){ closeWizard(true); if(typeof showToast==='function') showToast('Im Kochbuch gespeichert'); if(typeof showProviderCookbook==='function') showProviderCookbook(); }
-        };
-        var btnJetztInserieren=document.createElement('button');
-        btnJetztInserieren.type='button';
-        btnJetztInserieren.className='btn-primary-black footer-main-button' + (primaryValid ? ' is-ready' : '');
-        btnJetztInserieren.style.cssText='flex:1; min-height:48px; padding:0 24px; border:none; border-radius:8px; background:#222222 !important; color:white !important; font-size:16px; font-weight:800; cursor:pointer;';
-        btnJetztInserieren.textContent='Jetzt inserieren';
-        btnJetztInserieren.disabled=!primaryValid;
-        btnJetztInserieren.style.opacity=primaryValid?'1':'0.3';
-        btnJetztInserieren.style.pointerEvents=primaryValid?'auto':'none';
-        btnJetztInserieren.onclick=function(){
-          if(!isPrimaryValid()){ if(typeof showToast==='function') showToast('Bitte Name, Preis und Foto eingeben.'); return; }
-          hapticLight();
-          if(typeof handlePriceFastInsert==='function') handlePriceFastInsert(box);
-          if(updateStep2ContextZoneRef) updateStep2ContextZoneRef();
-          w.inseratStep=2; saveDraft();
-          try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate([10, 50]); }catch(err){}
-          if(slider){ try{ history.pushState({inseratStep:2},'','#'); }catch(e){} slider.setAttribute('data-inserat-step','2'); var wizardEl=document.getElementById('wizard'); if(wizardEl) wizardEl.classList.add('inserat-step2-active'); var f=box.querySelector('[data-inserat-step="2"]'); if(f) f.style.display='flex'; }
-        };
-        step1NavRow.appendChild(btnSpeichernCb);
-        step1NavRow.appendChild(btnJetztInserieren);
-        actionSection.appendChild(step1NavRow);
-      } else if(entryPoint === 'dashboard'){
-        /* 3-Schritte-Flow: Neuanlage = Weiter → Step 2 | Edit = Änderungen speichern → direkt schließen [cite: Inserat-Trichter 2026-02-26] */
+      } else if(entryPoint === 'dashboard' || entryPoint === 'cookbook'){
+        /* Master-Trichter: Edit = Änderungen speichern | Neu (inkl. Kochbuch) = Weiter → Schritt 2 Monetarisierung [cite: Master-Trichter 2026-02-26] */
         var step1NavRow=document.createElement('div');
         step1NavRow.className='app-footer-main inserat-step1-nav inserat-airbnb-footer';
         step1NavRow.style.cssText='display:flex; width:100%; align-items:stretch; justify-content:center; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb;';

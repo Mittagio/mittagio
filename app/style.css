@@ -1543,7 +1543,8 @@
       body.print-current-page #print-only-branding,
       body.print-current-page #app{ display:block !important }
       body.print-current-page #printView{ display:none !important }
-      body.print-current-page #print-only-branding{ width:100% }
+      /* Dual-Branding: Oben Anbietername, unten Powered by metallio.de [cite: Print-Branding 2026-02-26] */
+      body.print-current-page #print-only-branding{ display:block !important; position:relative !important; left:auto !important; width:100% }
       body.print-current-page .print-header{ text-align:center; margin-bottom:30px; padding-top:20px }
       body.print-current-page .print-header h1{ font-family:'Montserrat',sans-serif; font-weight:900; text-transform:uppercase; font-size:28px; color:#222; margin:0 }
       body.print-current-page .print-divider{ height:2px; background:#222; width:100px; margin:10px auto }
@@ -1553,7 +1554,8 @@
       body.print-current-page .thekenrenner-scroll, body.print-current-page .no-print,
       body.print-current-page #providerNavWrap, body.print-current-page #providerNav,
       body.print-current-page #weekViewFooter, body.print-current-page .topbar,
-      body.print-current-page .kw-action-bar-fixed, body.print-current-page .week-kebab-trigger{ display:none !important }
+      body.print-current-page .kw-action-bar-fixed, body.print-current-page .week-kebab-trigger,
+      body.print-current-page .backdrop{ display:none !important }
       body.print-current-page .week-plan-container{ width:100%; box-shadow:none !important }
       #printView .print-card{
         border:1px solid #ddd; border-radius:12px; padding:16px; margin-bottom:12px;
@@ -2130,7 +2132,7 @@
       box-shadow: none;
       transform: translateY(0);
     }
-    /* InseratCard-Footer Airbnb-Style: weiß, 0px margin/radius, bündig, feine Linie oben [cite: 3-Schritte-Flow 2026-02-26] */
+    /* InseratCard-Footer: Weiß, #ebebeb Linie oben, 0px Margin/Radius, S25 safe-area [cite: 2026-02-23, S25 Footer 2026-02-26] */
     #wizard[data-flow="listing"] .inserat-step1-nav.inserat-airbnb-footer {
       position: fixed;
       bottom: 0;
@@ -2140,7 +2142,7 @@
       max-width: 100vw;
       background: #ffffff !important;
       border-top: 1px solid #ebebeb;
-      padding: 16px max(16px, env(safe-area-inset-right)) calc(16px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+      padding: 16px max(16px, env(safe-area-inset-right)) calc(16px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left));
       display: flex;
       align-items: center;
       justify-content: center;
@@ -2158,7 +2160,7 @@
       width: 100%;
       max-width: 100vw;
       background: #222222;
-      padding: 16px max(16px, env(safe-area-inset-right)) calc(16px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+      padding: 16px max(16px, env(safe-area-inset-right)) calc(16px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left));
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -3779,7 +3781,7 @@
       background: #ffffff !important;
       border-top: 1px solid #ebebeb !important;
       padding: 16px 20px !important;
-      padding-bottom: env(safe-area-inset-bottom) !important;
+      padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px)) !important;
       min-height: 72px !important;
       box-sizing: border-box !important;
     }
@@ -7732,7 +7734,7 @@
       #btnWeekKebab:active{ background:rgba(0,0,0,0.08); transform:scale(0.96); }
       #v-provider-week .week-kebab-trigger i,
       #btnWeekKebab i{ flex-shrink:0; width:22px; height:22px; color:inherit; }
-      /* Bottom-Sheet-Style: weiß, 16px Radius, 56px Zeilen, Montserrat fett, Safe-Area [cite: 2026-02-23] */
+      /* Bottom-Sheet-Style: weiß, 16px Radius, 56px Zeilen, Montserrat fett, Safe-Area, z-index 9999 über Content [cite: 2026-02-23, Universal-Linker 2026-02-26] */
       .week-kebab-dropdown{ position:fixed !important; top:calc(60px + env(safe-area-inset-top, 0)) !important; right:16px !important; left:auto !important; bottom:auto !important; background:#ffffff; border-radius:16px; box-shadow:0 4px 24px rgba(0,0,0,0.12); border:1px solid rgba(0,0,0,0.06); padding:8px 0 calc(8px + env(safe-area-inset-bottom, 0)); z-index:9999 !important; min-width:220px; }
       .week-kebab-separator{ border-top:1px solid #ebebeb; margin:6px 12px; }
       .week-kebab-item{ display:flex; align-items:center; gap:12px; width:100%; min-height:56px; padding:0 20px; border:none; border-radius:0; background:transparent; font-family:'Montserrat','Inter',sans-serif; font-size:15px; font-weight:700; color:#222222; cursor:pointer; text-align:left; transition:background 0.2s; }

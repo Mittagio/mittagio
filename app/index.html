@@ -32,6 +32,11 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<!-- Print-Branding: Oben Anbietername, unten Powered by metallio.de – nur bei Druck sichtbar [cite: 2026-02-26] -->
+<div id="print-only-branding" style="display:none; position:absolute; left:-9999px;">
+  <div class="print-header"><h1 id="print-merchant-name">Wochenplan</h1></div>
+  <div class="print-footer">Powered by metallio.de</div>
+</div>
 <!-- 9:16 Share-Template (1080×1920) für WhatsApp-Status – versteckt, wird von script.js befüllt [cite: 2026-02-18] -->
 <div id="shareTemplate916" class="share-template-916" style="position:fixed; left:-9999px; top:0; width:1080px; height:1920px; background:#fff; overflow:hidden; z-index:9999; box-sizing:border-box;"><!-- Inhalt dynamisch --></div>
 <div id="shareTemplate916Overlay" class="share-template-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:10000; align-items:center; justify-content:center; font-size:18px; font-weight:700; color:#fff; text-align:center; padding:24px;">Dein Status-Bild wird erstellt...</div>
