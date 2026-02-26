@@ -19969,6 +19969,9 @@
   
   // Initialisierung: erst nach allen Scripts (ui-navigation mit setMode etc.)
   function initApp(){
+    try {
+      if(document.body){ document.body.style.visibility = 'visible'; document.body.classList.add('body-visible'); }
+    } catch(e) {}
     renderChips();
 
   // init nav bindings
@@ -20033,7 +20036,7 @@
     setMode(mode);
     if(mode==='provider') providerScrollReset();
   }
-  document.body.style.visibility = 'visible'; /* Init-Gate: nach View-Switch anzeigen */
+  try { if(document.body){ document.body.style.visibility = 'visible'; document.body.classList.add('body-visible'); } } catch(e) {} /* Init-Gate: nach View-Switch anzeigen */
   window.addEventListener('hashchange', function(){
     var m = (location.hash || '').match(/^#\/plan\/(.+)$/);
     if(m && typeof showPlanPublicView === 'function') showPlanPublicView(decodeURIComponent(m[1]));
@@ -20177,26 +20180,29 @@
     }, 10000);
 
     function updateOnlineStatus(){
-      const isOnline = navigator.onLine;
-      let statusEl = document.getElementById('appOnlineStatus');
-      if(!isOnline){
-        if(!statusEl){
-          statusEl = document.createElement('div');
-          statusEl.id = 'appOnlineStatus';
-          statusEl.style.cssText = 'position:fixed; bottom:0; left:0; right:0; background:#d32f2f; color:#fff; font-size:12px; font-weight:700; text-align:center; padding:6px; z-index:9999; box-shadow:0 -2px 10px rgba(0,0,0,0.2);';
-          statusEl.textContent = '⚠️ Keine Internetverbindung – Offline-Modus aktiv';
-          document.body.appendChild(statusEl);
+      try {
+        if(!document.body) return;
+        var isOnline = navigator.onLine;
+        var statusEl = document.getElementById('appOnlineStatus');
+        if(!isOnline){
+          if(!statusEl){
+            statusEl = document.createElement('div');
+            statusEl.id = 'appOnlineStatus';
+            statusEl.style.cssText = 'position:fixed; bottom:0; left:0; right:0; background:#d32f2f; color:#fff; font-size:12px; font-weight:700; text-align:center; padding:6px; z-index:9999; box-shadow:0 -2px 10px rgba(0,0,0,0.2);';
+            statusEl.textContent = 'Keine Internetverbindung – Offline-Modus aktiv';
+            document.body.appendChild(statusEl);
+          } else {
+            statusEl.style.display = 'block';
+          }
         } else {
-          statusEl.style.display = 'block';
+          if(statusEl) statusEl.style.display = 'none';
         }
-      } else {
-        if(statusEl) statusEl.style.display = 'none';
-      }
+      } catch(e) {}
     }
     
     window.addEventListener('online', updateOnlineStatus);
     window.addEventListener('offline', updateOnlineStatus);
-    updateOnlineStatus();
+    requestAnimationFrame(function(){ try { updateOnlineStatus(); } catch(e) {} });
   }
 
   function refreshCurrentView(silent=false){

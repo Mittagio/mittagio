@@ -98,6 +98,7 @@
     .app-footer-main .footer-btn-primary { pointer-events: auto !important; }
     /* Init-Gate: kein Flackern – Body wird von script.js nach View-Switch sichtbar geschaltet */
     body { visibility: hidden; }
+    body.body-visible { visibility: visible !important; }
     :root{
       /* Mittagio High-End Farbpalette */
       --bg:#FFFFFF; /* Native App: reine Leinwand, kein Beige [cite: Tabula Rasa] */
@@ -287,6 +288,7 @@
       touch-action: pan-y pinch-zoom; overscroll-behavior-y: none;
     }
     body.provider-mode{ overflow-y:hidden; }
+    /* Rettung: Bei weißem Bildschirm testweise overflow entfernen – dann overflow-y: visible; setzen um Content außerhalb sichtbar zu machen */
 
     /* Interaktions-Schutz: Schnelle Taps ohne 300ms-Delay (touch-action: manipulation) [Stabilität] */
     .navbtn, #providerNav .navbtn, .prov-card, .status-pill, .func-icon-btn, .power-bar-legend-trigger,
