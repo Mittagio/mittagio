@@ -10775,7 +10775,7 @@
         if (typeof getWeekIndexForDate === 'function') weekPlanKWIndex = Math.max(0, getWeekIndexForDate(dateKey));
         weekPlanDay = dateKey;
         window.__kwSmartSuggestionFocusDay = dateKey;
-        if (typeof pushViewState === 'function') pushViewState({ view: 'provider-week', mode: typeof mode !== 'undefined' ? mode : 'provider', week: weekPlanKWIndex, day: weekPlanDay }, (typeof location !== 'undefined' && location.pathname) + '?week=' + weekPlanKWIndex + '&day=' + weekPlanDay);
+        if (typeof pushViewState === 'function') pushViewState({ section: 'week', view: 'provider-week', mode: typeof mode !== 'undefined' ? mode : 'provider', week: weekPlanKWIndex, day: weekPlanDay }, (typeof location !== 'undefined' && location.pathname) + '?week=' + weekPlanKWIndex + '&day=' + weekPlanDay);
         if (typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard();
         setTimeout(function(){
           var el = document.getElementById('day-' + dateKey);
@@ -11021,7 +11021,7 @@
       btn.type = 'button';
       btn.className = 'week-magic-sheet-btn kw-selector-item' + (w === weekPlanKWIndex ? ' kw-selector-active' : '');
       btn.innerHTML = 'KW ' + getISOWeek(monday) + ': ' + fromStr + ' – ' + toStr + (hasPlanned ? ' <span class="kw-selector-dot"></span>' : '');
-      btn.onclick = (function(k){ return function(){ if(typeof haptic === 'function') haptic(6); weekPlanKWIndex = k; var keys = getWeekDayKeys(k); if(keys.indexOf(weekPlanDay) === -1) weekPlanDay = keys[0]; closeKWSelector(); if(typeof pushViewState === 'function') pushViewState({ view: 'provider-week', mode: typeof mode !== 'undefined' ? mode : 'provider', week: k, day: weekPlanDay }, (typeof location !== 'undefined' && location.pathname) + '?week=' + k + '&day=' + weekPlanDay); renderWeekPlanBoard(); }; })(w);
+      btn.onclick = (function(k){ return function(){ if(typeof haptic === 'function') haptic(6); weekPlanKWIndex = k; var keys = getWeekDayKeys(k); if(keys.indexOf(weekPlanDay) === -1) weekPlanDay = keys[0]; closeKWSelector(); if(typeof pushViewState === 'function') pushViewState({ section: 'week', view: 'provider-week', mode: typeof mode !== 'undefined' ? mode : 'provider', week: k, day: weekPlanDay }, (typeof location !== 'undefined' && location.pathname) + '?week=' + k + '&day=' + weekPlanDay); renderWeekPlanBoard(); }; })(w);
       list.appendChild(btn);
     }
     bd.style.display = 'block';
@@ -11130,19 +11130,19 @@
       return sum + (week[key] || []).filter(function(x){ return x.providerId === providerId(); }).length;
     }, 0);
     var weekFooter = document.getElementById('weekViewFooter');
-    var btnProviderWeekFooter = document.getElementById('btnProviderWeekFooter');
-    if (!weekFooter || !btnProviderWeekFooter) return;
+    var btnWeekViewFooter = document.getElementById('btnWeekViewFooter');
+    if (!weekFooter || !btnWeekViewFooter) return;
     var count = totalDraftDishes;
     if (count > 0) {
-      btnProviderWeekFooter.innerHTML = '<span class="kw-activate-count-wrap">[<span id="kwActivateCount">' + count + '</span>] Gerichte jetzt aktivieren</span>';
-      btnProviderWeekFooter.disabled = false;
-      btnProviderWeekFooter.classList.remove('kw-activation-disabled');
+      btnWeekViewFooter.innerHTML = '<span class="kw-activate-count-wrap">[<span id="kwActivateCount">' + count + '</span>] Gerichte jetzt aktivieren</span>';
+      btnWeekViewFooter.disabled = false;
+      btnWeekViewFooter.classList.remove('kw-activation-disabled');
     } else {
-      btnProviderWeekFooter.innerHTML = 'Zum Dashboard';
-      btnProviderWeekFooter.disabled = false;
-      btnProviderWeekFooter.classList.remove('kw-activation-disabled');
+      weekFooter.classList.add('week-footer-hidden');
+      return;
     }
-    btnProviderWeekFooter.onclick = function(){
+    weekFooter.classList.remove('week-footer-hidden');
+    btnWeekViewFooter.onclick = function(){
       if (count > 0) {
         if (typeof haptic === 'function') haptic(10);
         else if (window.userHasInteracted && navigator.vibrate) navigator.vibrate(10);
@@ -11401,7 +11401,7 @@
       else if (typeof showSection === 'function') showSection(section, false);
     }, 300);
   }
-  if (typeof window !== 'undefined') window.closeWeekplanWithNativeAnim = closeWeekplanWithNativeAnim;
+  if (typeof window !== 'undefined') { window.closeWeekplanWithNativeAnim = closeWeekplanWithNativeAnim; window.closeProviderWeek = closeWeekplanWithNativeAnim; }
   /** Slide-Out bei Hardware-Zurück im Kochbuch [cite: 2026-02-18, 2026-02-25] */
   function closeCookbookWithNativeAnim(){
     var cbView = document.getElementById('v-provider-cookbook');
@@ -11424,11 +11424,10 @@
     provider = load(LS.provider, provider);
     var wrap = document.getElementById('kwBoardWrap');
     if (wrap) wrap.style.display = 'flex';
-    /* Magic FAB + KW-Trigger früh binden, damit sie auch bei frühem return funktionieren [cite: Plan Wochenplan 2026-02-25] */
+    /* Magic FAB: bei jedem render neu binden – Klick öffnet openWeekMagicSheet [cite: 2026-02-18, 2026-02-25] */
     var fab = document.getElementById('weekMagicFab');
-    if (fab && !fab._magicBound) {
-      fab._magicBound = true;
-      fab.onclick = function(){ try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate([15, 10, 20]); } catch(e){} openWeekMagicSheet(); };
+    if (fab) {
+      fab.onclick = function(){ try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate([15, 10, 20]); } catch(e){} if (typeof openWeekMagicSheet === 'function') openWeekMagicSheet(); };
     }
     var kwTrigger = document.getElementById('weekHeaderKWTrigger');
     if (kwTrigger && !kwTrigger._bound) { kwTrigger._bound = true; kwTrigger.onclick = function(e){ e.preventDefault(); try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate(12); } catch(err){} openKWSelector(); }; }
@@ -11588,7 +11587,7 @@
         empty.setAttribute('aria-label', isDayEmpty ? 'Noch nichts geplant' : 'Gericht hinzufügen für ' + dayLabel + ', ' + dateLabel);
         var emptyText = isDayEmpty ? 'Noch nichts geplant' : 'Gericht hinzufügen';
         empty.innerHTML = '<span class="kw-slot-empty-icon">' + (isDayEmpty ? '' : '+') + '</span><span class="kw-slot-empty-text">' + emptyText + '</span>';
-        empty.onclick = (function(k){ return function(e){ e.preventDefault(); e.stopPropagation(); if(typeof haptic === 'function') haptic(6); weekPlanDay = k; createFlowPreselectedDate = k; createFlowOriginView = 'week'; if(typeof openCreateFlowSheet === 'function') openCreateFlowSheet(); }; })(key);
+        empty.onclick = (function(k){ return function(e){ e.preventDefault(); e.stopPropagation(); if(typeof haptic === 'function') haptic(6); weekPlanDay = k; if(typeof startListingFlow === 'function') startListingFlow({ date: k, entryPoint: 'week' }); }; })(key);
         slotsWrap.appendChild(empty);
       }
       grid.appendChild(card);
@@ -16395,9 +16394,9 @@
         }
       } catch(e) { localStorage.removeItem('wizard_draft'); }
     }
-    /* Wochenplan/Kochbuch „Neues Gericht“: immer InseratCard Schritt 1 (STEP_EDIT), nie openListingWizard */
+    /* Wochenplan/Kochbuch „Neues Gericht“: immer InseratCard Schritt 1 (STEP_EDIT), nie openListingWizard [cite: FLOW FIX 2026-02-25] */
     if(!context.editOfferId && !context.dishId && !context.fromCookbookId && context.entryPoint !== 'cookbook' && context.entryPoint !== 'week'){
-      openListingWizard();
+      openListingWizard(context);
       return;
     }
     startWizard('listing', context);
@@ -16506,6 +16505,8 @@
             day: ctx.date || createFlowPreselectedDate || isoDate(new Date())
           };
           if(isRennerFastTrack) w.ctx.rennerFastTrack = true;
+          /* Kochbuch „Dieses Gericht jetzt inserieren“ + Dashboard Renner: immer InseratCard Schritt 1 (Edit) [cite: 2026-02-25] */
+          if(ctx.entryPoint === 'cookbook' || ctx.entryPoint === 'dashboard') w.inseratStep = 1;
         } else {
           const defaultVorOrt = (provider.profile && provider.profile.dineInPossibleDefault !== undefined) ? !!provider.profile.dineInPossibleDefault : true;
           const globalReuseEnabled = !!profile.reuseEnabledByDefault;
@@ -18179,9 +18180,21 @@
   }
 
 
-  function openListingWizard(){
-    var d = { name:'', price:'', category:'Fleisch', isReusable:true };
-    openMastercard(d);
+  /** Neues Gericht (Dashboard): Immer frischer Schritt 1, kein alter Inserat-State [cite: FLOW FIX 2026-02-25] */
+  function openListingWizard(context){
+    context = context || {};
+    var today = typeof isoDate === 'function' ? isoDate(new Date()) : '';
+    w = {
+      kind: 'listing',
+      step: 0,
+      data: {},
+      ctx: {
+        entryPoint: context.entryPoint || 'dashboard',
+        date: context.date || today
+      },
+      inseratStep: 1
+    };
+    openMastercard({ name:'', price:'', category:'Fleisch', isReusable:true, day: context.date || today }, context.entryPoint);
   }
   if(typeof window !== 'undefined') window.openListingWizard = openListingWizard;
 
@@ -18201,7 +18214,8 @@
         dish: d.name || d.dish || '',
         price: d.price || 0,
         category: d.category || 'Fleisch',
-        reuse: d.reuse && typeof d.reuse === 'object' ? d.reuse : { enabled: d.isReusable !== false }
+        reuse: d.reuse && typeof d.reuse === 'object' ? d.reuse : { enabled: d.isReusable !== false },
+        day: d.day || (w.ctx && w.ctx.date) || (typeof isoDate === 'function' ? isoDate(new Date()) : '')
       });
     }
     w.ctx = w.ctx || {};

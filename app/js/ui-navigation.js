@@ -91,10 +91,10 @@
       v.style.setProperty('display', 'none', 'important');
     });
     /* Body-Klassen zentral: alte entfernen, nur neue setzen [cite: GLOBAL NATIVE NAV 2026-02-23] */
-    document.body.classList.remove('provider-week-active', 'provider-cookbook-active');
+    document.body.classList.remove('provider-week-active', 'provider-cookbook-active', 'cookbook-active');
     if (id !== 'v-provider-cookbook') document.body.classList.remove('cookbook-from-dashboard');
     if (id === 'v-provider-week') document.body.classList.add('provider-week-active');
-    else if (id === 'v-provider-cookbook') document.body.classList.add('provider-cookbook-active');
+    else if (id === 'v-provider-cookbook') { document.body.classList.add('provider-cookbook-active', 'cookbook-active'); }
     window.scrollTo({ top: 0, behavior: isProviderView ? 'auto' : 'smooth' });
     if (document.documentElement) document.documentElement.scrollTop = 0;
     if (document.body) document.body.scrollTop = 0;
@@ -398,11 +398,9 @@
         closeWeekplanWithNativeAnim(targetSection);
         return;
       }
-      /* Gesten-Fix: Im Kochbuch führt Zurück-Wischen zum Dashboard, App nicht verlassen [cite: 2026-02-18, 2026-02-25] */
-      var cookbookView = document.getElementById('v-provider-cookbook');
-      if (cookbookView && cookbookView.classList.contains('active')) {
-        try { if (navigator.vibrate) navigator.vibrate(5); } catch(e){}
-        showSection('dashboard', false);
+      /* Kochbuch: Slide-Out bei Hardware-Zurück [cite: 2026-02-18, 2026-02-25] */
+      if ((document.body.classList.contains('provider-cookbook-active') || document.body.classList.contains('cookbook-active')) && typeof closeCookbookWithNativeAnim === 'function') {
+        closeCookbookWithNativeAnim();
         return;
       }
       var state = event.state;
